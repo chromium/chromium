@@ -5,7 +5,6 @@
 // clang-format off
 import 'chrome://settings/lazy_load.js';
 
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SettingsOmniboxExtensionEntryElement, SettingsSearchEngineEntryElement} from 'chrome://settings/lazy_load.js';
 import type {SearchEngine, CrActionMenuElement} from 'chrome://settings/settings.js';
 import {ExtensionControlBrowserProxyImpl, PrefsBrowserProxy, PrefService, SearchEnginesBrowserProxyImpl, ChoiceMadeLocation, SearchEnginesInteractions} from 'chrome://settings/settings.js';
@@ -319,7 +318,6 @@ suite('SearchEngineEntryTest', function() {
 
     entry.engine = createSampleSearchEngine({extension});
     await microtasksFinished();
-    flush();
     let indicator = getIndicator();
     assertFalse(indicator.hasAttribute('extension-can-be-disabled'));
     assertFalse(!!indicator.shadowRoot.querySelector('#disable'));
@@ -327,7 +325,6 @@ suite('SearchEngineEntryTest', function() {
     entry.engine = createSampleSearchEngine(
         {extension: {...extension, canBeDisabled: true}});
     await microtasksFinished();
-    flush();
     indicator = getIndicator();
     assertTrue(indicator.hasAttribute('extension-can-be-disabled'));
     assertTrue(!!indicator.shadowRoot.querySelector('#disable'));

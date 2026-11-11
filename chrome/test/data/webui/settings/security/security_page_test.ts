@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SettingsSecurityPageElement} from 'chrome://settings/lazy_load.js';
 import {ContentSetting, ContentSettingsTypes, DefaultSettingSource, SiteSettingsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {HttpsFirstModeSetting, SafeBrowsingSetting} from 'chrome://settings/lazy_load.js';
@@ -233,7 +232,6 @@ suite('Main', function() {
     prefService.setPrefValue(
         'generated.https_first_mode_enabled',
         HttpsFirstModeSetting.ENABLED_BALANCED);
-    flush();
 
     await eventToPromise('transitionend', collapse);
 
@@ -524,7 +522,7 @@ suite('FlagsDisabled', function() {
             '#safeBrowsingReportingToggle');
     assertTrue(!!safeBrowsingReportingToggle);
     page.$.safeBrowsingStandard.click();
-    flush();
+    await microtasksFinished();
 
     safeBrowsingReportingToggle.click();
     const result =
@@ -554,7 +552,6 @@ suite('FlagsDisabled', function() {
     assertEquals(
         SafeBrowsingSetting.ENHANCED,
         prefService.getPref('generated.safe_browsing').value);
-    flush();
     assertTrue(safeBrowsingReportingToggle.disabled);
     assertTrue(safeBrowsingReportingToggle.checked);
     assertTrue(
@@ -566,7 +563,6 @@ suite('FlagsDisabled', function() {
     assertEquals(
         SafeBrowsingSetting.STANDARD,
         prefService.getPref('generated.safe_browsing').value);
-    flush();
     assertFalse(safeBrowsingReportingToggle.disabled);
     assertTrue(safeBrowsingReportingToggle.checked);
   });
@@ -616,7 +612,6 @@ suite('FlagsDisabled', function() {
         // The safeBrowsingReportingToggle should be visible if the extended
         // reporting deprecation flag is not enabled.
         page.$.safeBrowsingStandard.click();
-        flush();
 
         await microtasksFinished();
         assertTrue(page.$.safeBrowsingStandard.expanded);
@@ -1013,7 +1008,6 @@ suite('SafeBrowsingMetrics', function() {
         'recordSafeBrowsingInteractionHistogram');
     testMetricsBrowserProxy.resetResolver('recordAction');
     page.$.safeBrowsingEnhanced.$.expandButton.click();
-    flush();
     const [enhancedExpandedResult, enhancedExpandedAction] = await Promise.all([
       testMetricsBrowserProxy.whenCalled(
           'recordSafeBrowsingInteractionHistogram'),
@@ -1031,7 +1025,6 @@ suite('SafeBrowsingMetrics', function() {
         'recordSafeBrowsingInteractionHistogram');
     testMetricsBrowserProxy.resetResolver('recordAction');
     page.$.safeBrowsingStandard.$.expandButton.click();
-    flush();
     const [standardExpandedResult, standardExpandedAction] = await Promise.all([
       testMetricsBrowserProxy.whenCalled(
           'recordSafeBrowsingInteractionHistogram'),
@@ -1067,7 +1060,6 @@ suite('SafeBrowsingMetrics', function() {
     testMetricsBrowserProxy.resetResolver('recordAction');
     page.shadowRoot.querySelector(
                        'settings-simple-confirmation-dialog')!.$.cancel.click();
-    flush();
     const [disableDeniedResult, disableDeniedAction] = await Promise.all([
       testMetricsBrowserProxy.whenCalled(
           'recordSafeBrowsingInteractionHistogram'),
@@ -1090,7 +1082,6 @@ suite('SafeBrowsingMetrics', function() {
     testMetricsBrowserProxy.resetResolver('recordAction');
     page.shadowRoot.querySelector('settings-simple-confirmation-dialog')!.$
         .confirm.click();
-    flush();
     const [disableConfirmedResult, disableConfirmedAction] = await Promise.all([
       testMetricsBrowserProxy.whenCalled(
           'recordSafeBrowsingInteractionHistogram'),
@@ -1244,7 +1235,7 @@ suite('SafeBrowsingLabelsAndToggles', function() {
       key: 'generated.safe_browsing',
       enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
     }]);
-    flush();
+    await microtasksFinished();
 
     const learnMoreLink = page.shadowRoot.querySelector<HTMLElement>(
         '#enhancedProtectionLearnMoreLink');
@@ -1438,7 +1429,6 @@ async function clickCancelOnDisableSafebrowsingDialog(
   assertTrue(!!confirmationDialog);
   const closePromise = eventToPromise('close', confirmationDialog);
   confirmationDialog.$.cancel.click();
-  flush();
   await closePromise;
   await microtasksFinished();
 }
@@ -1450,7 +1440,6 @@ async function clickConfirmOnDisableSafebrowsingDialog(
   assertTrue(!!confirmationDialog);
   const closePromise = eventToPromise('close', confirmationDialog);
   confirmationDialog.$.confirm.click();
-  flush();
   await closePromise;
   await microtasksFinished();
 }

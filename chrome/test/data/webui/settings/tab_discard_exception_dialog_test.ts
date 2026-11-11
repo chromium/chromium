@@ -4,7 +4,6 @@
 
 import 'chrome://settings/settings.js';
 
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {convertDateToWindowsEpoch, ExceptionAddDialogTabs, MAX_TAB_DISCARD_EXCEPTION_RULE_LENGTH, MemorySaverModeExceptionListAction, PerformanceBrowserProxyImpl, PerformanceMetricsProxyImpl, PrefsBrowserProxy, PrefService, TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE, TAB_DISCARD_EXCEPTIONS_PREF} from 'chrome://settings/settings.js';
 import type {ExceptionEditDialogElement, ExceptionTabbedAddDialogElement} from 'chrome://settings/settings.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertLT, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -53,17 +52,11 @@ suite('TabDiscardExceptionsDialog', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
 
-  function setupDialog(
-      dialog: ExceptionTabbedAddDialogElement|ExceptionEditDialogElement) {
-    document.body.appendChild(dialog);
-    flush();
-  }
-
   async function setupTabbedAddDialog():
       Promise<ExceptionTabbedAddDialogElement> {
     const addDialog: ExceptionTabbedAddDialogElement =
         document.createElement('tab-discard-exception-tabbed-add-dialog');
-    setupDialog(addDialog);
+    document.body.appendChild(addDialog);
     await performanceBrowserProxy.whenCalled('getCurrentOpenSites');
     performanceBrowserProxy.resetResolver('getCurrentOpenSites');
     await microtasksFinished();
@@ -73,7 +66,7 @@ suite('TabDiscardExceptionsDialog', function() {
   async function setupEditDialog(): Promise<ExceptionEditDialogElement> {
     const editDialog: ExceptionEditDialogElement =
         document.createElement('tab-discard-exception-edit-dialog');
-    setupDialog(editDialog);
+    document.body.appendChild(editDialog);
     editDialog.setRuleToEditForTesting(EXISTING_RULE);
     await microtasksFinished();
     return editDialog;
@@ -133,7 +126,6 @@ suite('TabDiscardExceptionsDialog', function() {
 
   function assertCancel() {
     dialog.$.cancelButton.click();
-    flush();
 
     assertFalse(dialog.$.dialog.open);
     assertDeepEquals(
@@ -158,7 +150,6 @@ suite('TabDiscardExceptionsDialog', function() {
 
   function assertSubmit(expectedRules: string[]) {
     dialog.$.actionButton.click();
-    flush();
 
     assertFalse(dialog.$.dialog.open);
     assertDeepEquals(

@@ -149,7 +149,6 @@ export {getToastManager} from 'chrome://resources/cr_elements/cr_toast/cr_toast_
 export {CrTooltipElement} from 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
 export {browserProxyFactory as batchUploadPromoProxyFactory} from 'chrome://resources/js/batch_upload_promo.mojom-webui.js';
 export type {PageHandlerInterface, PageRemote} from 'chrome://resources/js/batch_upload_promo.mojom-webui.js';
-export type {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 export {AccessibilityBrowserProxyImpl} from './a11y_page/a11y_browser_proxy.js';
 export type {AccessibilityBrowserProxy} from './a11y_page/a11y_browser_proxy.js';
 export {SettingsA11yPageElement, ToastAlertLevel} from './a11y_page/a11y_page.js';

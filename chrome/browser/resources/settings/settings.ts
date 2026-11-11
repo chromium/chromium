@@ -17,7 +17,6 @@ export type {ChromeSigninUserChoiceInfo, StoredAccount, SyncBrowserProxy, SyncPr
 export {prefToString, stringToPrefValue} from '/shared/settings/prefs/pref_util.js';
 export {PrefService} from '/shared/settings/prefs2/pref_service.js';
 export {PrefServiceObserverMixin} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
-export type {PrefServiceObserverMixinInterface} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
 export {PrefServiceObserverMixinLit} from '/shared/settings/prefs2/pref_service_observer_mixin_lit.js';
 export type {PrefServiceObserverMixinLitInterface} from '/shared/settings/prefs2/pref_service_observer_mixin_lit.js';
 export {PrefsBrowserProxy} from '/shared/settings/prefs2/prefs_browser_proxy.js';
@@ -26,7 +25,6 @@ export type {MetricsReporting, PrivacyPageBrowserProxy} from '/shared/settings/p
 export {SecureDnsMode, SecureDnsUiManagementMode, SecurityPageBrowserProxyImpl} from '/shared/settings/security_page/security_page_browser_proxy.js';
 export type {ResolverOption, SecureDnsSetting, SecurityPageBrowserProxy} from '/shared/settings/security_page/security_page_browser_proxy.js';
 export {WebUiListenerMixin} from '/shared/settings/web_ui_listener_mixin.js';
-export type {WebUiListenerMixinInterface} from '/shared/settings/web_ui_listener_mixin.js';
 export {browserProxyFactory as customizeColorSchemeModeBrowserProxyFactory, ColorSchemeMode, CustomizeColorSchemeModeClientCallbackRouter, CustomizeColorSchemeModeClientRemote, CustomizeColorSchemeModeHandlerRemote} from 'chrome://resources/cr_components/customize_color_scheme_mode/customize_color_scheme_mode.mojom-webui.js';
 export type {BrowserProxy as CustomizeColorSchemeModeBrowserProxy} from 'chrome://resources/cr_components/customize_color_scheme_mode/customize_color_scheme_mode.mojom-webui.js';
 export {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
@@ -77,7 +75,6 @@ export {SettingsAutofillPageV2Element} from './autofill_page/autofill_page_v2.js
 export {CollapsibleAutofillSettingsCardElement} from './autofill_page/collapsible_autofill_settings_card.js';
 export {PasswordManagerImpl, PasswordManagerPage} from './autofill_page/passwords/password_manager_proxy.js';
 export type {PasswordManagerProxy} from './autofill_page/passwords/password_manager_proxy.js';
-export {BaseMixin} from './base_mixin.js';
 // <if expr="not is_chromeos">
 export {DefaultBrowserBrowserProxyImpl} from './default_browser_page/default_browser_browser_proxy.js';
 export type {DefaultBrowserBrowserProxy, DefaultBrowserInfo} from './default_browser_page/default_browser_browser_proxy.js';
@@ -173,7 +170,5 @@ export type {SearchResult, SettingsSearchHandlerInterface} from './settings_sear
 export {MAX_QUERY_LENGTH, SettingsUiElement} from './settings_ui/settings_ui.js';
 export {SiteFaviconElement} from './site_favicon.js';
 export {convertDateToWindowsEpoch} from './time.js';
-export {TooltipMixin} from './tooltip_mixin.js';
-export type {TooltipMixinInterface} from './tooltip_mixin.js';
 export {WindowProxyImpl} from './window_proxy.js';
 export type {WindowProxy} from './window_proxy.js';

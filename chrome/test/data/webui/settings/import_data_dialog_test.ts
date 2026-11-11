@@ -4,7 +4,6 @@
 
 // clang-format off
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-import {dashToCamelCase} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {BrowserProfile, ImportDataBrowserProxy, SettingsCheckboxElement, SettingsImportDataDialogElement} from 'chrome://settings/lazy_load.js';
 import {ImportDataBrowserProxyImpl, ImportDataStatus} from 'chrome://settings/lazy_load.js';
 import {PrefService, PrefsBrowserProxy} from 'chrome://settings/settings.js';
@@ -122,9 +121,9 @@ suite('ImportDataDialog', function() {
 
   async function ensureSettingsCheckboxCheckedStatus(
       prefName: string, checked: boolean) {
-    const id = dashToCamelCase(prefName.replace(/_/g, '-'));
     const settingsCheckbox =
-        dialog.shadowRoot.querySelector<SettingsCheckboxElement>(`#${id}`)!;
+        dialog.shadowRoot.querySelector<SettingsCheckboxElement>(
+            `[pref-key="${prefName}"]`)!;
 
     if (settingsCheckbox.checked !== checked) {
       // Use click operation to produce a 'change' event.

@@ -613,7 +613,6 @@ build_webui("build") {
   }
 
   css_files = [
-    "settings_columned_section.css",
     "settings_columned_section_lit.css",
     "settings_shared.css",
     "settings_shared_lit.css",
@@ -720,7 +719,6 @@ build_webui("build") {
     "privacy_page/personalization_options.css",
     "privacy_page/privacy_guide/privacy_guide_completion_fragment.css",
     "privacy_page/privacy_guide/privacy_guide_dialog.css",
-    "privacy_page/privacy_guide/privacy_guide_fragment_shared.css",
     "privacy_page/privacy_guide/privacy_guide_fragment_shared_lit.css",
     "privacy_page/privacy_guide/privacy_guide_page.css",
     "privacy_page/privacy_guide/privacy_guide_promo.css",
