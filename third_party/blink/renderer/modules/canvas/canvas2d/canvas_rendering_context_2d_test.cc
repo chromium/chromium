@@ -1716,7 +1716,7 @@ TEST_P(CanvasRenderingContext2DTest, TextRenderingTest) {
   CreateContext(kLowLatency);
   Context2D()->setFont("10px sans-serif");
   EXPECT_EQ(GetContext2DState().GetFontDescription().TextRendering(),
-            TextRenderingMode::kAutoTextRendering);
+            TextRenderingMode::kAuto);
   // Update the textRendering to "geometricPrecision"
   std::optional<V8CanvasTextRendering> textRendering =
       V8CanvasTextRendering::Create("geometricPrecision");

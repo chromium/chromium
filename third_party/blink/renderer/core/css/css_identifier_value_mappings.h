@@ -1014,16 +1014,16 @@ template <>
 inline CSSIdentifierValue::CSSIdentifierValue(TextRenderingMode e)
     : CSSValue(kIdentifierClass) {
   switch (e) {
-    case kAutoTextRendering:
+    case TextRenderingMode::kAuto:
       value_id_ = CSSValueID::kAuto;
       break;
-    case kOptimizeSpeed:
+    case TextRenderingMode::kOptimizeSpeed:
       value_id_ = CSSValueID::kOptimizespeed;
       break;
-    case kOptimizeLegibility:
+    case TextRenderingMode::kOptimizeLegibility:
       value_id_ = CSSValueID::kOptimizelegibility;
       break;
-    case kGeometricPrecision:
+    case TextRenderingMode::kGeometricPrecision:
       value_id_ = CSSValueID::kGeometricprecision;
       break;
   }
@@ -1033,13 +1033,13 @@ template <>
 inline TextRenderingMode CSSIdentifierValue::ConvertTo() const {
   switch (value_id_) {
     case CSSValueID::kAuto:
-      return kAutoTextRendering;
+      return TextRenderingMode::kAuto;
     case CSSValueID::kOptimizespeed:
-      return kOptimizeSpeed;
+      return TextRenderingMode::kOptimizeSpeed;
     case CSSValueID::kOptimizelegibility:
-      return kOptimizeLegibility;
+      return TextRenderingMode::kOptimizeLegibility;
     case CSSValueID::kGeometricprecision:
-      return kGeometricPrecision;
+      return TextRenderingMode::kGeometricPrecision;
     default:
       break;
   }

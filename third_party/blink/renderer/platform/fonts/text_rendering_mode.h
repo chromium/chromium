@@ -31,8 +31,10 @@
 
 namespace blink {
 
-enum TextRenderingMode {
-  kAutoTextRendering,
+// https://w3c.github.io/svgwg/svg2-draft/painting.html#TextRenderingProperty
+// https://html.spec.whatwg.org/C/#dom-context-2d-textrendering-auto
+enum class TextRenderingMode : uint32_t {
+  kAuto,
   kOptimizeSpeed,
   kOptimizeLegibility,
   kGeometricPrecision

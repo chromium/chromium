@@ -132,7 +132,7 @@ TextRenderingMode CanvasTextRenderingToTextRenderingMode(
     V8CanvasTextRendering::Enum text_rendering) {
   switch (text_rendering) {
     case (V8CanvasTextRendering::Enum::kAuto):
-      return TextRenderingMode::kAutoTextRendering;
+      return TextRenderingMode::kAuto;
     case (V8CanvasTextRendering::Enum::kOptimizeSpeed):
       return TextRenderingMode::kOptimizeSpeed;
     case (V8CanvasTextRendering::Enum::kOptimizeLegibility):

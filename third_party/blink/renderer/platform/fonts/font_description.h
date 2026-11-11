@@ -420,7 +420,7 @@ class PLATFORM_EXPORT FontDescription {
     font_variant_alternates_ = std::move(alternates);
   }
   void SetTextRendering(TextRenderingMode rendering) {
-    fields_.text_rendering_ = rendering;
+    fields_.text_rendering_ = std::to_underlying(rendering);
     UpdateTypesettingFeatures();
   }
   void SetOrientation(FontOrientation orientation);

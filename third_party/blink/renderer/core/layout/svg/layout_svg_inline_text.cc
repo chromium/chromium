@@ -173,7 +173,8 @@ void LayoutSVGInlineText::UpdateScaledFont() {
 
 float LayoutSVGInlineText::ComputeFontScale(const LayoutObject& layout_object) {
   const ComputedStyle& style = layout_object.Style();
-  if (style.GetFontDescription().TextRendering() == kGeometricPrecision) {
+  if (style.GetFontDescription().TextRendering() ==
+      TextRenderingMode::kGeometricPrecision) {
     return 1;
   }
   const float scaling_factor =

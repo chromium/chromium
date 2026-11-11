@@ -346,7 +346,7 @@ TEST_F(FontDescriptionTest, AllFeaturesHash) {
   key_a = font_description.GetHash();
   EXPECT_EQ(key_a, key_b);
 
-  font_description.SetTextRendering(kOptimizeLegibility);
+  font_description.SetTextRendering(TextRenderingMode::kOptimizeLegibility);
   key_b = font_description.GetHash();
   EXPECT_NE(key_a, key_b);
   key_a = font_description.GetHash();
@@ -545,7 +545,7 @@ TEST_F(FontDescriptionTest, ToString) {
   description.SetWeight(FontSelectionValue(32.6));
   description.SetStretch(FontSelectionValue(33.7));
 
-  description.SetTextRendering(kOptimizeLegibility);
+  description.SetTextRendering(TextRenderingMode::kOptimizeLegibility);
 
   EXPECT_EQ(
       "family_list=[A, B], feature_settings=[cccc=76,dddd=94], "

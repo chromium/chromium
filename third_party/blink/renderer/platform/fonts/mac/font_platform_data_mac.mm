@@ -267,7 +267,8 @@ SkFont FontPlatformData::CreateSkFont(
   // used.  See crbug.com/152304
   if (font_description &&
       (font_description->FontSmoothing() == FontSmoothingMode::kAntialiased ||
-       font_description->TextRendering() == kGeometricPrecision)) {
+       font_description->TextRendering() ==
+           TextRenderingMode::kGeometricPrecision)) {
     skfont.setHinting(SkFontHinting::kNone);
   }
   return skfont;

@@ -186,10 +186,10 @@ static void FontSynthesisSmallCapsValue(FontBuilder& b) {
 }
 
 static void FontTextRenderingBase(FontDescription& d) {
-  d.SetTextRendering(kGeometricPrecision);
+  d.SetTextRendering(TextRenderingMode::kGeometricPrecision);
 }
 static void FontTextRenderingValue(FontBuilder& b) {
-  b.SetTextRendering(kOptimizeLegibility);
+  b.SetTextRendering(TextRenderingMode::kOptimizeLegibility);
 }
 
 static void FontKerningBase(FontDescription& d) {

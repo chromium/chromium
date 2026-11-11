@@ -121,7 +121,9 @@ class CORE_EXPORT FontBuilder {
                                  false);
   }
   static FontSizeAdjust InitialSizeAdjust() { return FontSizeAdjust(); }
-  static TextRenderingMode InitialTextRendering() { return kAutoTextRendering; }
+  static TextRenderingMode InitialTextRendering() {
+    return TextRenderingMode::kAuto;
+  }
   static FontDescription::FontVariantCaps InitialVariantCaps() {
     return FontDescription::kCapsNormal;
   }

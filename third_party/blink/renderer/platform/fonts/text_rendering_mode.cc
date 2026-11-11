@@ -10,7 +10,7 @@ namespace blink {
 
 String ToString(TextRenderingMode mode) {
   switch (mode) {
-    case TextRenderingMode::kAutoTextRendering:
+    case TextRenderingMode::kAuto:
       return "Auto";
     case TextRenderingMode::kOptimizeSpeed:
       return "OptimizeSpeed";

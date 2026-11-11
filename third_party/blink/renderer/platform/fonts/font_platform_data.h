@@ -164,7 +164,7 @@ class PLATFORM_EXPORT FontPlatformData
   bool synthetic_bold_ = false;
   bool synthetic_italic_ = false;
   bool avoid_embedded_bitmaps_ = false;
-  TextRenderingMode text_rendering_ = TextRenderingMode::kAutoTextRendering;
+  TextRenderingMode text_rendering_ = TextRenderingMode::kAuto;
   FontOrientation orientation_ = FontOrientation::kHorizontal;
   ResolvedFontFeatures resolved_font_features_;
 

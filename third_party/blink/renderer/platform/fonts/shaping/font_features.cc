@@ -50,7 +50,8 @@ void FontFeatureRange::FromFontDescription(
   }
 
   {
-    bool default_is_off = description.TextRendering() == blink::kOptimizeSpeed;
+    bool default_is_off =
+        description.TextRendering() == TextRenderingMode::kOptimizeSpeed;
     bool letter_spacing = description.LetterSpacing() != 0;
     constexpr auto normal = FontDescription::kNormalLigaturesState;
     constexpr auto enabled = FontDescription::kEnabledLigaturesState;

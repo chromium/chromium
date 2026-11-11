@@ -39,7 +39,7 @@ static SimpleFontData* CreateTestSimpleFontData(bool force_rotation = false) {
   return MakeGarbageCollected<SimpleFontData>(
       MakeGarbageCollected<FontPlatformData>(
           skia::DefaultTypeface(), std::string(), 10, false, false,
-          TextRenderingMode::kAutoTextRendering, ResolvedFontFeatures{},
+          TextRenderingMode::kAuto, ResolvedFontFeatures{},
           force_rotation ? FontOrientation::kVerticalUpright
                          : FontOrientation::kHorizontal),
       nullptr);

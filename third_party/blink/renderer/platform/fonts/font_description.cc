@@ -101,7 +101,7 @@ FontDescription::FontDescription() {
   fields_.contextual_ligatures_state_ = kNormalLigaturesState;
   fields_.keyword_size_ = 0;
   fields_.font_smoothing_ = std::to_underlying(FontSmoothingMode::kAuto);
-  fields_.text_rendering_ = kAutoTextRendering;
+  fields_.text_rendering_ = std::to_underlying(TextRenderingMode::kAuto);
   fields_.synthetic_bold_ = false;
   fields_.synthetic_italic_ = false;
   fields_.synthetic_oblique_ = false;
@@ -334,13 +334,13 @@ void FontDescription::UpdateTypesettingFeatures() {
   fields_.typesetting_features_ = 0;
 
   switch (TextRendering()) {
-    case kAutoTextRendering:
+    case TextRenderingMode::kAuto:
       break;
-    case kOptimizeSpeed:
+    case TextRenderingMode::kOptimizeSpeed:
       fields_.typesetting_features_ &= ~(blink::kKerning | kLigatures);
       break;
-    case kGeometricPrecision:
-    case kOptimizeLegibility:
+    case TextRenderingMode::kGeometricPrecision:
+    case TextRenderingMode::kOptimizeLegibility:
       fields_.typesetting_features_ |= blink::kKerning | kLigatures;
       break;
   }

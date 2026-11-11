@@ -91,7 +91,7 @@ SimpleFontData* CreateTestFontData(bool is_fixed_pitch) {
   sk_sp<SkTypeface> typeface = sk_make_sp<TestTypeface>(is_fixed_pitch);
   auto* platform_data = MakeGarbageCollected<FontPlatformData>(
       std::move(typeface), std::string(), 0, false, false,
-      TextRenderingMode::kAutoTextRendering, ResolvedFontFeatures());
+      TextRenderingMode::kAuto, ResolvedFontFeatures());
   return MakeGarbageCollected<SimpleFontData>(platform_data);
 }
 

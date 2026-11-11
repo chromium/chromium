@@ -25,7 +25,7 @@ class DummyFontFaceSource : public CSSFontFaceSource {
         MakeGarbageCollected<FontPlatformData>(
             skia::DefaultTypeface(), /* name */ std::string(),
             /* text_size */ 0, /* synthetic_bold */ false,
-            /* synthetic_italic */ false, TextRenderingMode::kAutoTextRendering,
+            /* synthetic_italic */ false, TextRenderingMode::kAuto,
             ResolvedFontFeatures{}));
   }
 

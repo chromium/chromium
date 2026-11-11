@@ -92,7 +92,7 @@ TEST_F(FontPlatformDataTest, GeometricPrecision) {
     return MakeGarbageCollected<FontPlatformData>(
         typeface, name,
         /* text_size */ 10, /* synthetic_bold */ false,
-        /* synthetic_italic */ false, kGeometricPrecision,
+        /* synthetic_italic */ false, TextRenderingMode::kGeometricPrecision,
         ResolvedFontFeatures());
   };
 

@@ -27,7 +27,7 @@ void EnsureHasNativeSmallCaps(const String& font_family_name) {
   FontPlatformData* font_platform_data = MakeGarbageCollected<FontPlatformData>(
       test_typeface, font_family_name.Utf8(),
       /* text_size */ 16, /* synthetic_bold */ false,
-      /* synthetic_italic */ false, TextRenderingMode::kAutoTextRendering,
+      /* synthetic_italic */ false, TextRenderingMode::kAuto,
       ResolvedFontFeatures{});
   // System font names are magical. The family name of the system font in the
   // test below yields ".AppleSystemUIFont", which seems to be a generic role
