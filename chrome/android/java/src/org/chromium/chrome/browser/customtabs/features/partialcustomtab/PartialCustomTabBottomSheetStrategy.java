@@ -55,7 +55,6 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.ContentGestureListener.GestureState;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsCoordinator;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.CustomTabProfileType;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
@@ -92,6 +91,9 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
 
     /** Minimal height the bottom sheet CCT should show is half of the display height. */
     private static final float MINIMAL_HEIGHT_RATIO = 0.5f;
+
+    /** Minimal height an ephemeral bottom sheet CCT should show is 30% of the display height. */
+    private static final double EPHEMERAL_MINIMAL_HEIGHT_RATIO = 0.3;
 
     private static final int MINIMAL_ALLOWED_HEIGHT_DP = 220;
     private static final int SPINNER_FADEIN_DURATION_MS = 100;
@@ -360,9 +362,8 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
         assert !isFullHeight() : "initialHeightInPortraitMode() is used in portrait mode only";
         int minInitialHeight = (int) (mDisplayHeight * MINIMAL_HEIGHT_RATIO);
 
-        if (ChromeFeatureList.sPCctMinimumHeight.isEnabled() && mIsEphemeral) {
-            minInitialHeight =
-                    (int) (mDisplayHeight * ChromeFeatureList.sPCctMinimumHeightRatio.getValue());
+        if (mIsEphemeral) {
+            minInitialHeight = (int) (mDisplayHeight * EPHEMERAL_MINIMAL_HEIGHT_RATIO);
             float density = mActivity.getResources().getDisplayMetrics().density;
             int minAllowedHeightPx = (int) (MINIMAL_ALLOWED_HEIGHT_DP * density);
             minInitialHeight = Math.max(minAllowedHeightPx, minInitialHeight);

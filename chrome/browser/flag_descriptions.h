@@ -6493,12 +6493,6 @@ inline constexpr char kRefreshFeedOnRestartName[] =
 inline constexpr char kRefreshFeedOnRestartDescription[] =
     "Refresh feed when Chrome restarts.";
 
-inline constexpr char kPCCTMinimumHeightName[] =
-    "Change the minimum height of pCCT to 30%.";
-inline constexpr char kPCCTMinimumHeightDescription[] =
-    "When enabled, this sets the minimum "
-    "height to 30% or 220dp, whichever is greater, for ephemeral pCCTs.";
-
 inline constexpr char kPictureInPictureMovesToolbarAndroidName[] =
     "Picture-in-Picture moves toolbar to top on Android";
 inline constexpr char kPictureInPictureMovesToolbarAndroidDescription[] =

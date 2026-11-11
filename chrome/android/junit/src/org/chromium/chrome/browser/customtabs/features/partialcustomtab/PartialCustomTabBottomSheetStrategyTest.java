@@ -1044,11 +1044,10 @@ public class PartialCustomTabBottomSheetStrategyTest {
     }
 
     @Test
-    @EnableFeatures("PCCTMinimumHeight:pcct_minimum_height_ratio/0.7")
-    public void create_heightIsClampedToMinimumRatioOfDeviceHeightFromFeature() {
-        // Scenario: Requested height is lower than the minimum defined by the feature's ratio.
-        // Expected: The height is clamped UP to the ratio-defined minimum.
-        final double minHeightRatio = 0.7;
+    public void create_heightIsClampedToMinimumRatioOfDeviceHeight() {
+        // Scenario: Requested height for an ephemeral PCCT is lower than the 30% minimum ratio.
+        // Expected: The height is clamped UP to the ephemeral ratio-defined minimum.
+        final double minHeightRatio = 0.3;
         final int requestedHeight = 100; // A value lower than any minimum.
 
         final int ratioCalculatedHeightPx = (int) (DEVICE_HEIGHT * minHeightRatio);
@@ -1067,16 +1066,19 @@ public class PartialCustomTabBottomSheetStrategyTest {
     }
 
     @Test
-    @EnableFeatures("PCCTMinimumHeight:pcct_minimum_height_ratio/0.05")
     public void create_heightIsClampedToAbsoluteMinimumWhenRatioIsTooSmall() {
-        // Scenario: The feature's ratio calculates a height smaller than the hardcoded minimum.
-        // Expected: The height is clamped UP to the absolute minimum (220).
+        // Scenario: On a compact portrait display, the ephemeral minimum height ratio calculates a
+        // height smaller than the hardcoded minimum.
+        // Expected: The height is clamped UP to the absolute minimum (220dp).
+        mPCCTTestRule.configCompactDevice_Portrait();
         final int requestedHeight = 100; // A value lower than any minimum.
         final int absoluteMinHeightDp = 220;
 
         final int expectedMinContentHeightPx =
                 (int) (absoluteMinHeightDp * PartialCustomTabTestRule.DENSITY);
-        final int expectedY = DEVICE_HEIGHT - expectedMinContentHeightPx;
+        final int expectedY =
+                PartialCustomTabTestRule.DEVICE_HEIGHT_COMPACT_PORTRAIT
+                        - expectedMinContentHeightPx;
 
         createEphemeralPcctAtHeight(requestedHeight);
         mPCCTTestRule.verifyWindowFlagsSet();
@@ -1088,21 +1090,20 @@ public class PartialCustomTabBottomSheetStrategyTest {
     }
 
     @Test
-    @EnableFeatures("PCCTMinimumHeight:pcct_minimum_height_ratio/0.6")
-    public void create_requestedHeightIsUsedWhenAboveFeatureMinimum() {
-        final double minHeightRatio = 0.6;
+    public void create_requestedHeightIsUsedWhenAboveEphemeralMinimum() {
+        final double minHeightRatio = 0.3;
         final int absoluteMinHeightDp = 220;
 
         final int absoluteMinHeightPx =
                 (int) (absoluteMinHeightDp * PartialCustomTabTestRule.DENSITY);
         final int ratioCalculatedHeightPx = (int) (DEVICE_HEIGHT * minHeightRatio);
 
-        final int featureMinContentHeightPx =
+        final int ephemeralMinContentHeightPx =
                 Math.max(absoluteMinHeightPx, ratioCalculatedHeightPx);
 
-        // Scenario: The requested height is valid and above the feature's minimum.
+        // Scenario: The requested height is valid and above the ephemeral minimum.
         // Expected: The requested height should be used without modification.
-        final int requestedHeight = featureMinContentHeightPx + 200;
+        final int requestedHeight = ephemeralMinContentHeightPx + 200;
         final int expectedY = DEVICE_HEIGHT - requestedHeight;
 
         createEphemeralPcctAtHeight(requestedHeight);
@@ -1115,9 +1116,9 @@ public class PartialCustomTabBottomSheetStrategyTest {
     }
 
     @Test
-    public void create_heightIsClampedToDefaultMinimumWhenFeatureIsDisabled() {
-        // Scenario: The new feature is disabled.
-        // Expected: The logic falls back to the default minimum (50% of screen height).
+    public void create_heightIsClampedToDefaultMinimumWhenNotEphemeral() {
+        // Scenario: The PCCT is not ephemeral.
+        // Expected: The height is clamped to the default minimum (50% of screen height).
         final int requestedHeight = 100;
 
         // The default minimum height is 50% of device height.
@@ -1128,8 +1129,8 @@ public class PartialCustomTabBottomSheetStrategyTest {
         mPCCTTestRule.verifyWindowFlagsSet();
 
         assertEquals(
-                "Window y-position should be clamped by the default 50% minimum when feature is"
-                        + " disabled.",
+                "Window y-position should be clamped by the default 50% minimum when not"
+                        + " ephemeral.",
                 expectedY, mPCCTTestRule.getWindowAttributes().y);
     }
 

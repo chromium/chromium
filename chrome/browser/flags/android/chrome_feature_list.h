@@ -266,7 +266,6 @@ BASE_DECLARE_FEATURE(kOnStartupWindowPolicy);
 BASE_DECLARE_FEATURE(kOneStepAimAccess);
 BASE_DECLARE_FEATURE(kOpenDownloadInPreferredApp);
 BASE_DECLARE_FEATURE(kOptimizeGeolocationHeaderGeneration);
-BASE_DECLARE_FEATURE(kPCCTMinimumHeight);
 BASE_DECLARE_FEATURE(kPageAnnotationsService);
 BASE_DECLARE_FEATURE(kPageContentProvider);
 BASE_DECLARE_FEATURE(kPartnerCustomizationsUma);

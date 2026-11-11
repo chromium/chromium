@@ -8178,14 +8178,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "pcct-minimum-height",
-    "owners": [
-      "adelm@google.com",
-      "chrome-connective-tissue@google.com"
-    ],
-    "expiry_milestone": 160
-  },
-  {
     "name": "pdf-accessibility-heuristic-enhancements",
     "owners": [ "kristislee@google.com", "komo-eng@google.com", "//ui/accessibility/OWNERS" ],
     "expiry_milestone": 170
