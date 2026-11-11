@@ -360,6 +360,49 @@ TEST_F(ResourceMultiBufferDataProviderTest, DidFailBlockedByOrbDoesNotRetry) {
 }
 
 TEST_F(ResourceMultiBufferDataProviderTest,
+       DidFailBlockedByOrbAfterSameOriginResponsePreservesOriginState) {
+  url_index_ = std::make_unique<UrlIndex>(
+      &fetch_context_, task_environment_.GetMainThreadTaskRunner());
+  constexpr int kBlockSize = 1 << 15;
+
+  Initialize(kHttpUrl, 0);
+  auto reader = CreateReader(kBlockSize);
+  task_environment_.FastForwardUntilNoTasksRemain();
+  ASSERT_TRUE(loader_);
+  Start();
+
+  // Initial request receives a synthetic 206 response from a service worker
+  // (establishing a non-opaque `data_origin_` on `url_data_`), delivers 50
+  // bytes, and finishes early, scheduling a retry from byte 50.
+  WebURLResponse response(url_);
+  response.SetHttpStatusCode(kHttpPartialContent);
+  response.SetHttpHeaderField(WebString::FromUtf8("Content-Range"),
+                              WebString::FromUtf8("bytes 0-49/1024"));
+  response.SetExpectedContentLength(50);
+  response.SetWasFetchedViaServiceWorker(true);
+  loader_->DidReceiveResponse(response);
+  EXPECT_FALSE(url_data_->is_cors_cross_origin());
+
+  loader_->DidReceiveData(std::string(50, 'A'));
+  EXPECT_CALL(fetch_context_, CreateUrlLoader(_)).Times(1);
+  loader_->DidFinishLoading();
+  task_environment_.FastForwardUntilNoTasksRemain();
+  ASSERT_TRUE(loader_);
+
+  // When the retry falls through to the network and is blocked by ORB before a
+  // response arrives, `url_data_->is_cors_cross_origin()` must remain false
+  // (matching the untainted failure when an opaque 206 response is rejected by
+  // `CanAcceptDataFrom()`, b/576132668).
+  scoped_refptr<UrlData> url_data = url_data_;
+  EXPECT_CALL(*this, RedirectCallback(testing::IsNull()));
+  loader_->DidFail(WebURLError(net::ERR_BLOCKED_BY_ORB, url_));
+  EXPECT_FALSE(url_data->is_cors_cross_origin());
+  loader_ = nullptr;
+  reader.reset();
+  StopWhenLoad();
+}
+
+TEST_F(ResourceMultiBufferDataProviderTest,
        DidFailWebSecurityViolationDoesNotRetry) {
   Initialize(kHttpUrl, 100);
   EXPECT_CALL(fetch_context_, CreateUrlLoader(_)).Times(1);
@@ -507,10 +550,15 @@ TEST_F(ResourceMultiBufferDataProviderTest, TestRedirects) {
 // Tests partial response after a redirect.
 TEST_F(ResourceMultiBufferDataProviderTest, TestRedirectedPartialResponse) {
   Initialize(kHttpUrl, 0);
+  auto reader = CreateReader(4096);
   Start();
-  PartialResponse(0, 2048, 32000);
+  PartialResponse(0, 2047, 32000);
+  loader_->DidReceiveData(std::string(2048, 'a'));
   Redirect(kHttpRedirect);
   PartialResponse(2048, 4096, 32000);
+  EXPECT_TRUE(url_data_->Valid());
+  loader_ = nullptr;
+  reader.reset();
   StopWhenLoad();
 }
 
@@ -1720,6 +1768,7 @@ TEST_F(ResourceMultiBufferDataProviderTest, ServiceWorkerFailureDoesNotRetry) {
 TEST_F(ResourceMultiBufferDataProviderTest,
        PartialResponseMismatchedInstanceSizeFails) {
   Initialize(kHttpUrl, 0);
+  auto reader = CreateReader(10);
   Start();
 
   // First response pins `url_data_->length()` to 1,000,000.
@@ -1729,7 +1778,8 @@ TEST_F(ResourceMultiBufferDataProviderTest,
   loader_->DidReceiveResponse(response1);
   EXPECT_EQ(url_data_->length(), 1000000);
 
-  // Empty body triggers a retry from byte 0.
+  // Truncated non-empty body triggers a retry from byte 1.
+  loader_->DidReceiveData(std::string(1, 'a'));
   loader_->DidFinishLoading();
   task_environment_.FastForwardUntilNoTasksRemain();
 
@@ -1739,15 +1789,19 @@ TEST_F(ResourceMultiBufferDataProviderTest,
   WebURLResponse response2(url_);
   response2.SetHttpStatusCode(kHttpPartialContent);
   response2.SetHttpHeaderField(WebString::FromUtf8("Content-Range"),
-                               WebString::FromUtf8("bytes 0-7776/7777"));
-  response2.SetExpectedContentLength(7777);
+                               WebString::FromUtf8("bytes 1-7776/7777"));
+  response2.SetExpectedContentLength(7776);
   loader_->DidReceiveResponse(response2);
   EXPECT_EQ(url_data_->length(), 1000000);
+  loader_ = nullptr;
+  reader.reset();
+  StopWhenLoad();
 }
 
 TEST_F(ResourceMultiBufferDataProviderTest,
        OkResponseMismatchedContentLengthFails) {
   Initialize(kHttpUrl, 0);
+  auto reader = CreateReader(10);
   Start();
 
   // First response pins `url_data_->length()` to 1,000,000.
@@ -1757,7 +1811,8 @@ TEST_F(ResourceMultiBufferDataProviderTest,
   loader_->DidReceiveResponse(response1);
   EXPECT_EQ(url_data_->length(), 1000000);
 
-  // Empty body triggers a retry from byte 0.
+  // Truncated non-empty body triggers a retry from byte 1.
+  loader_->DidReceiveData(std::string(1, 'a'));
   loader_->DidFinishLoading();
   task_environment_.FastForwardUntilNoTasksRemain();
 
@@ -1769,17 +1824,24 @@ TEST_F(ResourceMultiBufferDataProviderTest,
   response2.SetExpectedContentLength(kPositionNotSpecified);
   loader_->DidReceiveResponse(response2);
   EXPECT_EQ(url_data_->length(), 1000000);
+  loader_ = nullptr;
+  reader.reset();
+  StopWhenLoad();
 
-  // Likewise, a mid-resource 200 OK response reporting a different
-  // Content-Length (e.g. b/574206996) must be rejected without overwriting
-  // `url_data_->length()`.
-  url_data_->OnRedirect(
-      blink::BindOnce(&ResourceMultiBufferDataProviderTest::RedirectCallback,
-                      Unretained(this)));
+  // Likewise, on a fresh load whose length is pinned to 1,000,000, a
+  // mid-resource 200 OK response reporting a different Content-Length (e.g.
+  // b/574206996) must be rejected without overwriting `url_data_->length()`.
+  Initialize(kHttpUrl, 0);
+  reader = CreateReader(10);
+  Start();
+  loader_->DidReceiveResponse(response1);
+  EXPECT_EQ(url_data_->length(), 1000000);
+
   auto mid_loader = std::make_unique<ResourceMultiBufferDataProvider>(
-      url_data_.get(), /*pos=*/1, /*is_client_audio_element=*/false,
+      url_data_.get(), /*pos=*/2, /*is_client_audio_element=*/false,
       task_environment_.GetMainThreadTaskRunner());
   ResourceMultiBufferDataProvider* raw_mid_loader = mid_loader.get();
+  loader_ = nullptr;
   url_data_->multibuffer()->AddProvider(std::move(mid_loader));
   loader_ = raw_mid_loader;
   Start();
@@ -1790,6 +1852,483 @@ TEST_F(ResourceMultiBufferDataProviderTest,
   response3.SetExpectedContentLength(500000);
   loader_->DidReceiveResponse(response3);
   EXPECT_EQ(url_data_->length(), 1000000);
+  loader_ = nullptr;
+  reader.reset();
+  StopWhenLoad();
+}
+
+TEST_F(ResourceMultiBufferDataProviderTest,
+       EmptyBodyResponseDoesNotRetryInDidFinishLoading) {
+  Initialize(kHttpUrl, 0);
+  Start();
+
+  // Any 0-byte response whose Content-Length > 0 (whether an ordinary network
+  // 200 OK or an opaque HEAD response returned by a service worker) must fail
+  // immediately in DidFinishLoading() rather than retrying from byte 0, and
+  // must evict the failed UrlData from UrlIndex.
+  WebURLResponse response(url_);
+  response.SetHttpStatusCode(kHttpOK);
+  response.SetHttpHeaderField(WebString::FromUtf8("Accept-Ranges"),
+                              WebString::FromUtf8("bytes"));
+  response.SetExpectedContentLength(2345);
+  url_data_->Use();
+  loader_->DidReceiveResponse(response);
+  EXPECT_EQ(url_data_,
+            url_index_->GetByUrl(url_, UrlData::CORS_UNSPECIFIED,
+                                 UrlData::kNormal, security_origin_));
+
+  EXPECT_CALL(*this, RedirectCallback(scoped_refptr<UrlData>(nullptr)));
+  EXPECT_CALL(fetch_context_, CreateUrlLoader(_)).Times(0);
+  loader_->DidFinishLoading();
+  task_environment_.FastForwardUntilNoTasksRemain();
+  EXPECT_NE(url_data_,
+            url_index_->GetByUrl(url_, UrlData::CORS_UNSPECIFIED,
+                                 UrlData::kNormal, security_origin_));
+  testing::Mock::VerifyAndClearExpectations(&fetch_context_);
+  StopWhenLoad();
+
+  // Even after block 0 is cached in `url_data_->multibuffer()->map()`, a
+  // mid-resource range request that receives 0 payload bytes (or only bytes
+  // discarded by `bytes_to_discard_`) must fail immediately rather than
+  // retrying.
+  url_index_ = std::make_unique<UrlIndex>(
+      &fetch_context_, task_environment_.GetMainThreadTaskRunner());
+  constexpr int kBlockSize = 1 << 15;
+  Initialize(kHttpUrl, 0);
+  auto reader = CreateReader(kBlockSize);
+  task_environment_.FastForwardUntilNoTasksRemain();
+  ASSERT_TRUE(loader_);
+  Start();
+
+  WebURLResponse initial_206(url_);
+  initial_206.SetHttpStatusCode(kHttpPartialContent);
+  initial_206.SetHttpHeaderField(WebString::FromUtf8("Content-Range"),
+                                 WebString::FromUtf8("bytes 0-32767/100000"));
+  initial_206.SetExpectedContentLength(kBlockSize);
+  loader_->DidReceiveResponse(initial_206);
+  loader_->DidReceiveData(std::string(kBlockSize, 'a'));
+  ASSERT_FALSE(url_data_->multibuffer()->map().empty());
+
+  auto mid_loader = std::make_unique<ResourceMultiBufferDataProvider>(
+      url_data_.get(), /*pos=*/2, /*is_client_audio_element=*/false,
+      task_environment_.GetMainThreadTaskRunner());
+  ResourceMultiBufferDataProvider* raw_mid_loader = mid_loader.get();
+  loader_ = nullptr;
+  url_data_->multibuffer()->AddProvider(std::move(mid_loader));
+  loader_ = raw_mid_loader;
+  Start();
+
+  WebURLResponse empty_mid_206(url_);
+  empty_mid_206.SetHttpStatusCode(kHttpPartialContent);
+  empty_mid_206.SetHttpHeaderField(
+      WebString::FromUtf8("Content-Range"),
+      WebString::FromUtf8("bytes 65532-99999/100000"));
+  empty_mid_206.SetExpectedContentLength(100000 - 65532);
+  loader_->DidReceiveResponse(empty_mid_206);
+  // Deliver 4 pre-range bytes that are completely discarded before EOF.
+  loader_->DidReceiveData(std::string(4, 'x'));
+
+  EXPECT_CALL(*this, RedirectCallback(scoped_refptr<UrlData>(nullptr)));
+  EXPECT_CALL(fetch_context_, CreateUrlLoader(_)).Times(0);
+  loader_->DidFinishLoading();
+  task_environment_.FastForwardUntilNoTasksRemain();
+  loader_ = nullptr;
+  reader.reset();
+  StopWhenLoad();
+}
+
+TEST_F(ResourceMultiBufferDataProviderTest,
+       ServiceWorkerShortResponseDoesNotRetryInDidFinishLoading) {
+  url_index_ = std::make_unique<UrlIndex>(
+      &fetch_context_, task_environment_.GetMainThreadTaskRunner());
+  constexpr int kBlockSize = 1 << 15;
+
+  Initialize(kHttpUrl, 0);
+  auto reader = CreateReader(kBlockSize);
+  task_environment_.FastForwardUntilNoTasksRemain();
+  ASSERT_TRUE(loader_);
+  Start();
+
+  // An opaque service worker response whose decoded body is shorter than its
+  // Content-Length (even when `range_supported()` is true via Accept-Ranges)
+  // must fail immediately in DidFinishLoading() rather than issuing a retry
+  // whose Range header would disclose the decoded byte count.
+  WebURLResponse response(url_);
+  response.SetHttpStatusCode(kHttpOK);
+  response.SetHttpHeaderField(WebString::FromUtf8("Accept-Ranges"),
+                              WebString::FromUtf8("bytes"));
+  response.SetExpectedContentLength(5000);
+  response.SetType(network::mojom::FetchResponseType::kOpaque);
+  response.SetWasFetchedViaServiceWorker(true);
+  response.SetUrlListViaServiceWorker(std::vector<WebURL>{url_});
+  loader_->DidReceiveResponse(response);
+  EXPECT_TRUE(url_data_->range_supported());
+  EXPECT_TRUE(url_data_->is_cors_cross_origin());
+
+  loader_->DidReceiveData(std::string(1337, 'x'));
+  EXPECT_CALL(*this, RedirectCallback(scoped_refptr<UrlData>(nullptr)));
+  EXPECT_CALL(fetch_context_, CreateUrlLoader(_)).Times(0);
+  loader_->DidFinishLoading();
+  task_environment_.FastForwardUntilNoTasksRemain();
+  loader_ = nullptr;
+  reader.reset();
+  StopWhenLoad();
+}
+
+TEST_F(ResourceMultiBufferDataProviderTest,
+       ServiceWorkerPartialResponseSubBlockRetriesInDidFinishLoading) {
+  url_index_ = std::make_unique<UrlIndex>(
+      &fetch_context_, task_environment_.GetMainThreadTaskRunner());
+  constexpr int kBlockSize = 1 << 15;
+
+  Initialize(kHttpUrl, 0);
+  auto reader = CreateReader(kBlockSize);
+  task_environment_.FastForwardUntilNoTasksRemain();
+  ASSERT_TRUE(loader_);
+  Start();
+
+  // A non-opaque 206 Partial Content response from a service worker that
+  // delivers fewer bytes than a 32 KiB MultiBuffer block (leaving `fifo_`
+  // non-empty and `multibuffer()->map()` empty) must still retry from the next
+  // byte offset in DidFinishLoading().
+  WebURLResponse response(url_);
+  response.SetHttpStatusCode(kHttpPartialContent);
+  response.SetHttpHeaderField(WebString::FromUtf8("Content-Range"),
+                              WebString::FromUtf8("bytes 0-98/1000"));
+  response.SetExpectedContentLength(99);
+  response.SetWasFetchedViaServiceWorker(true);
+  loader_->DidReceiveResponse(response);
+
+  loader_->DidReceiveData(std::string(99, 'A'));
+  EXPECT_TRUE(url_data_->multibuffer()->map().empty());
+  EXPECT_CALL(*this, RedirectCallback(_)).Times(0);
+  EXPECT_CALL(fetch_context_, CreateUrlLoader(_)).Times(1);
+  loader_->DidFinishLoading();
+  task_environment_.FastForwardUntilNoTasksRemain();
+  loader_ = nullptr;
+  reader.reset();
+  StopWhenLoad();
+}
+
+TEST_F(ResourceMultiBufferDataProviderTest,
+       OpaqueServiceWorkerRejectsDifferentUrlAndMidResourceOkResponse) {
+  url_index_ = std::make_unique<UrlIndex>(
+      &fetch_context_, task_environment_.GetMainThreadTaskRunner());
+  constexpr int kBlockSize = 1 << 15;
+  constexpr char kRequestUrl[] = "https://attacker.example/audio.mp3";
+  constexpr char kSecretUrl[] = "https://victim.example/secret";
+  constexpr char kProbeUrl[] = "https://victim.example/probe?len=100000";
+
+  Initialize(kRequestUrl, 0);
+  auto reader = CreateReader(kBlockSize);
+  task_environment_.FastForwardUntilNoTasksRemain();
+  ASSERT_TRUE(loader_);
+  url_data_->Use();
+  Start();
+
+  // 1. Initial opaque service worker 206 response pins `kSecretUrl` and length
+  // 100,000, and must not be inserted into `url_index_`.
+  WebURL secret_url{KURL(kSecretUrl)};
+  WebURLResponse response1{secret_url};
+  response1.SetHttpStatusCode(kHttpPartialContent);
+  response1.SetHttpHeaderField(WebString::FromUtf8("Content-Range"),
+                               WebString::FromUtf8("bytes 0-32767/100000"));
+  response1.SetExpectedContentLength(kBlockSize);
+  response1.SetType(network::mojom::FetchResponseType::kOpaque);
+  response1.SetWasFetchedViaServiceWorker(true);
+  response1.SetUrlListViaServiceWorker(std::vector<WebURL>{secret_url});
+  loader_->DidReceiveResponse(response1);
+  EXPECT_EQ(url_data_->length(), 100000);
+  EXPECT_TRUE(url_data_->is_cors_cross_origin());
+  EXPECT_NE(url_data_,
+            url_index_->GetByUrl(KURL(kRequestUrl), UrlData::CORS_UNSPECIFIED,
+                                 UrlData::kNormal, security_origin_));
+
+  loader_->DidReceiveData(std::string(kBlockSize, 'a'));
+
+  // 2. A follow-up range request at block 1 answered by the service worker with
+  // a different same-origin URL (`kProbeUrl`) must be rejected even if its
+  // instance size matches 100,000 (preventing b/576134162 size probing).
+  auto range_loader1 = std::make_unique<ResourceMultiBufferDataProvider>(
+      url_data_.get(), /*pos=*/1, /*is_client_audio_element=*/false,
+      task_environment_.GetMainThreadTaskRunner());
+  ResourceMultiBufferDataProvider* raw_range_loader1 = range_loader1.get();
+  loader_ = nullptr;
+  url_data_->multibuffer()->AddProvider(std::move(range_loader1));
+  loader_ = raw_range_loader1;
+  Start();
+
+  EXPECT_CALL(*this, RedirectCallback(scoped_refptr<UrlData>(nullptr)));
+  WebURL probe_url{KURL(kProbeUrl)};
+  WebURLResponse probe_response{probe_url};
+  probe_response.SetHttpStatusCode(kHttpPartialContent);
+  probe_response.SetHttpHeaderField(
+      WebString::FromUtf8("Content-Range"),
+      WebString::FromUtf8("bytes 32768-65535/100000"));
+  probe_response.SetExpectedContentLength(kBlockSize);
+  probe_response.SetType(network::mojom::FetchResponseType::kOpaque);
+  probe_response.SetWasFetchedViaServiceWorker(true);
+  probe_response.SetUrlListViaServiceWorker(std::vector<WebURL>{probe_url});
+  loader_->DidReceiveResponse(probe_response);
+
+  loader_ = nullptr;
+  reader.reset();
+  StopWhenLoad();
+
+  // 3. On a fresh load, a mid-resource (pos > 0) 200 OK opaque service worker
+  // response (e.g. from a tampered RequestInit that stripped Range) must be
+  // rejected even for the exact same URL, whereas a 206 Partial Content
+  // pass-through response for the exact same URL succeeds.
+  Initialize(kRequestUrl, 0);
+  reader = CreateReader(kBlockSize);
+  task_environment_.FastForwardUntilNoTasksRemain();
+  ASSERT_TRUE(loader_);
+  Start();
+  loader_->DidReceiveResponse(response1);
+  loader_->DidReceiveData(std::string(kBlockSize, 'a'));
+
+  auto range_loader2 = std::make_unique<ResourceMultiBufferDataProvider>(
+      url_data_.get(), /*pos=*/1, /*is_client_audio_element=*/false,
+      task_environment_.GetMainThreadTaskRunner());
+  ResourceMultiBufferDataProvider* raw_range_loader2 = range_loader2.get();
+  loader_ = nullptr;
+  url_data_->multibuffer()->AddProvider(std::move(range_loader2));
+  loader_ = raw_range_loader2;
+  Start();
+
+  WebURLResponse same_url_206{secret_url};
+  same_url_206.SetHttpStatusCode(kHttpPartialContent);
+  same_url_206.SetHttpHeaderField(
+      WebString::FromUtf8("Content-Range"),
+      WebString::FromUtf8("bytes 32768-65535/100000"));
+  same_url_206.SetExpectedContentLength(kBlockSize);
+  same_url_206.SetType(network::mojom::FetchResponseType::kOpaque);
+  same_url_206.SetWasFetchedViaServiceWorker(true);
+  same_url_206.SetUrlListViaServiceWorker(std::vector<WebURL>{secret_url});
+  EXPECT_CALL(*this, RedirectCallback(_)).Times(0);
+  loader_->DidReceiveResponse(same_url_206);
+
+  auto range_loader3 = std::make_unique<ResourceMultiBufferDataProvider>(
+      url_data_.get(), /*pos=*/2, /*is_client_audio_element=*/false,
+      task_environment_.GetMainThreadTaskRunner());
+  ResourceMultiBufferDataProvider* raw_range_loader3 = range_loader3.get();
+  loader_ = nullptr;
+  url_data_->multibuffer()->AddProvider(std::move(range_loader3));
+  loader_ = raw_range_loader3;
+  Start();
+
+  EXPECT_CALL(*this, RedirectCallback(scoped_refptr<UrlData>(nullptr)));
+  WebURLResponse same_url_200{secret_url};
+  same_url_200.SetHttpStatusCode(kHttpOK);
+  same_url_200.SetExpectedContentLength(100000);
+  same_url_200.SetType(network::mojom::FetchResponseType::kOpaque);
+  same_url_200.SetWasFetchedViaServiceWorker(true);
+  same_url_200.SetUrlListViaServiceWorker(std::vector<WebURL>{secret_url});
+  loader_->DidReceiveResponse(same_url_200);
+
+  loader_ = nullptr;
+  reader.reset();
+  StopWhenLoad();
+
+  // 4. Mixing an opaque service worker response with a native opaque response
+  // (or vice versa) on the same UrlData is rejected even when both return 206
+  // for the exact same URL.
+  Initialize(kSecretUrl, 0);
+  reader = CreateReader(kBlockSize);
+  task_environment_.FastForwardUntilNoTasksRemain();
+  ASSERT_TRUE(loader_);
+  Start();
+  loader_->DidReceiveResponse(response1);
+  loader_->DidReceiveData(std::string(kBlockSize, 'a'));
+
+  auto sw_to_native_loader = std::make_unique<ResourceMultiBufferDataProvider>(
+      url_data_.get(), /*pos=*/1, /*is_client_audio_element=*/false,
+      task_environment_.GetMainThreadTaskRunner());
+  ResourceMultiBufferDataProvider* raw_sw_to_native = sw_to_native_loader.get();
+  loader_ = nullptr;
+  url_data_->multibuffer()->AddProvider(std::move(sw_to_native_loader));
+  loader_ = raw_sw_to_native;
+  Start();
+
+  EXPECT_CALL(*this, RedirectCallback(scoped_refptr<UrlData>(nullptr)));
+  WebURLResponse native_206{secret_url};
+  native_206.SetHttpStatusCode(kHttpPartialContent);
+  native_206.SetHttpHeaderField(
+      WebString::FromUtf8("Content-Range"),
+      WebString::FromUtf8("bytes 32768-65535/100000"));
+  native_206.SetExpectedContentLength(kBlockSize);
+  native_206.SetType(network::mojom::FetchResponseType::kOpaque);
+  loader_->DidReceiveResponse(native_206);
+
+  loader_ = nullptr;
+  reader.reset();
+  StopWhenLoad();
+
+  Initialize(kSecretUrl, 0);
+  reader = CreateReader(kBlockSize);
+  task_environment_.FastForwardUntilNoTasksRemain();
+  ASSERT_TRUE(loader_);
+  Start();
+  WebURLResponse native_initial_206{secret_url};
+  native_initial_206.SetHttpStatusCode(kHttpPartialContent);
+  native_initial_206.SetHttpHeaderField(
+      WebString::FromUtf8("Content-Range"),
+      WebString::FromUtf8("bytes 0-32767/100000"));
+  native_initial_206.SetExpectedContentLength(kBlockSize);
+  native_initial_206.SetType(network::mojom::FetchResponseType::kOpaque);
+  loader_->DidReceiveResponse(native_initial_206);
+  loader_->DidReceiveData(std::string(kBlockSize, 'a'));
+
+  auto native_to_sw_loader = std::make_unique<ResourceMultiBufferDataProvider>(
+      url_data_.get(), /*pos=*/1, /*is_client_audio_element=*/false,
+      task_environment_.GetMainThreadTaskRunner());
+  ResourceMultiBufferDataProvider* raw_native_to_sw = native_to_sw_loader.get();
+  loader_ = nullptr;
+  url_data_->multibuffer()->AddProvider(std::move(native_to_sw_loader));
+  loader_ = raw_native_to_sw;
+  Start();
+
+  EXPECT_CALL(*this, RedirectCallback(scoped_refptr<UrlData>(nullptr)));
+  loader_->DidReceiveResponse(same_url_206);
+
+  loader_ = nullptr;
+  reader.reset();
+  StopWhenLoad();
+}
+
+TEST_F(ResourceMultiBufferDataProviderTest,
+       FailedRedirectDoesNotMutateOrInvalidateCachedDestinationUrlData) {
+  // 1. Seed `url_index_` with a healthy cached entry for `kHttpRedirect`
+  // (using `ServiceWorkerMode::kSkip`, which `WillFollowRedirect()` selects for
+  // network redirects when `kDisallowMixedOpaqueMediaResponses` is enabled).
+  KURL dest_url(kHttpRedirect);
+  scoped_refptr<UrlData> cached_dest = url_index_->GetByUrl(
+      dest_url, UrlData::CORS_UNSPECIFIED, UrlData::kNormal, security_origin_,
+      media::DataSource::EncodingMode::kIdentity,
+      UrlData::ServiceWorkerMode::kSkip);
+  cached_dest->Use();
+  cached_dest->set_range_supported();
+  cached_dest->set_length(1024);
+  cached_dest->set_etag(kEtag);
+  cached_dest->set_cacheable(true);
+  cached_dest->SetDataOrigin(dest_url, /*is_cors_cross_origin=*/false);
+  ASSERT_TRUE(cached_dest->Valid());
+  ASSERT_EQ(cached_dest, url_index_->TryInsert(cached_dest));
+
+  bool cached_dest_redirect_called = false;
+  cached_dest->OnRedirect(blink::BindOnce(
+      [](bool* called, const scoped_refptr<UrlData>&) { *called = true; },
+      Unretained(&cached_dest_redirect_called)));
+
+  // 2. Start a request to `kHttpUrl` that redirects to `kHttpRedirect` and
+  // fails with HTTP 404 carrying different headers.
+  Initialize(kHttpUrl, 0);
+  Start();
+  WebURL redirect_target{dest_url};
+  WebURLResponse redirect_response(url_);
+  ASSERT_TRUE(loader_->WillFollowRedirect(redirect_target, redirect_response));
+
+  EXPECT_CALL(*this, RedirectCallback(scoped_refptr<UrlData>(nullptr)));
+  WebURLResponse not_found_response(dest_url);
+  not_found_response.SetHttpStatusCode(404);
+  not_found_response.SetHttpHeaderField(WebString::FromUtf8("ETag"),
+                                        WebString::FromUtf8("\"clobbered\""));
+  not_found_response.SetHttpHeaderField(WebString::FromUtf8("Cache-Control"),
+                                        WebString::FromUtf8("no-store"));
+  loader_->DidReceiveResponse(not_found_response);
+
+  // `cached_dest` must remain valid, unmodified, and indexed in `url_index_`.
+  EXPECT_FALSE(cached_dest_redirect_called);
+  EXPECT_TRUE(cached_dest->Valid());
+  EXPECT_EQ(cached_dest->length(), 1024);
+  EXPECT_EQ(cached_dest->etag(), kEtag);
+  EXPECT_TRUE(cached_dest->cacheable());
+  EXPECT_EQ(cached_dest,
+            url_index_->GetByUrl(dest_url, UrlData::CORS_UNSPECIFIED,
+                                 UrlData::kNormal, security_origin_,
+                                 media::DataSource::EncodingMode::kIdentity,
+                                 UrlData::ServiceWorkerMode::kSkip));
+  StopWhenLoad();
+
+  // 3. Repeat with a redirected 206 response whose instance size mismatches
+  // `cached_dest->length()`.
+  Initialize(kHttpUrl, 0);
+  Start();
+  ASSERT_TRUE(loader_->WillFollowRedirect(redirect_target, redirect_response));
+
+  EXPECT_CALL(*this, RedirectCallback(scoped_refptr<UrlData>(nullptr)));
+  WebURLResponse mismatched_206(dest_url);
+  mismatched_206.SetHttpStatusCode(kHttpPartialContent);
+  mismatched_206.SetHttpHeaderField(WebString::FromUtf8("Content-Range"),
+                                    WebString::FromUtf8("bytes 0-99/9999"));
+  mismatched_206.SetExpectedContentLength(100);
+  mismatched_206.SetHttpHeaderField(WebString::FromUtf8("ETag"),
+                                    WebString::FromUtf8("\"clobbered\""));
+  loader_->DidReceiveResponse(mismatched_206);
+
+  EXPECT_FALSE(cached_dest_redirect_called);
+  EXPECT_TRUE(cached_dest->Valid());
+  EXPECT_EQ(cached_dest->length(), 1024);
+  EXPECT_EQ(cached_dest->etag(), kEtag);
+  EXPECT_EQ(cached_dest,
+            url_index_->GetByUrl(dest_url, UrlData::CORS_UNSPECIFIED,
+                                 UrlData::kNormal, security_origin_,
+                                 media::DataSource::EncodingMode::kIdentity,
+                                 UrlData::ServiceWorkerMode::kSkip));
+  StopWhenLoad();
+
+  // 4. Verify that a cross-origin redirect that fails with HTTP 404 still marks
+  // the failing initial UrlData as CORS cross-origin.
+  Initialize("http://localhost:18080/start", 0);
+  Start();
+  scoped_refptr<UrlData> cross_origin_failed_data = url_data_;
+  WebURL cross_origin_target{KURL("http://127.0.0.1:18081/missing")};
+  WebURLResponse cross_redirect_response(url_);
+  ASSERT_TRUE(loader_->WillFollowRedirect(cross_origin_target,
+                                          cross_redirect_response));
+
+  EXPECT_CALL(*this, RedirectCallback(scoped_refptr<UrlData>(nullptr)));
+  WebURLResponse cross_404(cross_origin_target);
+  cross_404.SetHttpStatusCode(404);
+  loader_->DidReceiveResponse(cross_404);
+  EXPECT_TRUE(cross_origin_failed_data->is_cors_cross_origin());
+  StopWhenLoad();
+
+  // 5. Verify that redirecting from a UrlData with a known length to a cached
+  // non-HTTP UrlData whose response reports unknown `ExpectedContentLength()`
+  // (`kPositionNotSpecified`) fails cleanly without mutating the cached entry
+  // or crashing in `RedirectTo()` when the existing lengths conflict.
+  security_origin_ = SecurityOrigin::Create(KURL("file:///"));
+  KURL file_dest_url("file:///tmp/dest.webm");
+  scoped_refptr<UrlData> cached_file_dest = url_index_->GetByUrl(
+      file_dest_url, UrlData::CORS_UNSPECIFIED, UrlData::kNormal,
+      security_origin_, media::DataSource::EncodingMode::kIdentity,
+      UrlData::ServiceWorkerMode::kSkip);
+  cached_file_dest->Use();
+  cached_file_dest->set_range_supported();
+  cached_file_dest->set_length(1024);
+  cached_file_dest->SetDataOrigin(file_dest_url,
+                                  /*is_cors_cross_origin=*/false);
+  ASSERT_TRUE(cached_file_dest->Valid());
+  ASSERT_EQ(cached_file_dest, url_index_->TryInsert(cached_file_dest));
+
+  Initialize("file:///tmp/src.webm", 0);
+  Start();
+  url_data_->SetDataOrigin(url_, /*is_cors_cross_origin=*/false);
+  url_data_->set_length(4096);
+  WebURL file_redirect_target{file_dest_url};
+  WebURLResponse file_redirect_response(url_);
+  ASSERT_TRUE(loader_->WillFollowRedirect(file_redirect_target,
+                                          file_redirect_response));
+
+  EXPECT_CALL(*this, RedirectCallback(scoped_refptr<UrlData>(nullptr)));
+  WebURLResponse unknown_len_file_response(file_dest_url);
+  unknown_len_file_response.SetExpectedContentLength(kPositionNotSpecified);
+  loader_->DidReceiveResponse(unknown_len_file_response);
+
+  EXPECT_TRUE(cached_file_dest->Valid());
+  EXPECT_EQ(cached_file_dest->length(), 1024);
+  StopWhenLoad();
 }
 
 // Regression test for crbug.com/579225207: if an earlier request on `UrlData`
@@ -1802,55 +2341,76 @@ TEST_F(ResourceMultiBufferDataProviderTest,
   base::test::ScopedFeatureList feature_list(
       media::kDisallowMixedOpaqueMediaResponses);
 
+  // Seed `url_index_` with a healthy cached entry for `kHttpRedirect` so we
+  // also verify an orphaned in-flight redirect provider on a failed `UrlData`
+  // cannot hijack or invalidate a shared `UrlIndex` entry.
+  KURL dest_url(kHttpRedirect);
+  scoped_refptr<UrlData> cached_dest = url_index_->GetByUrl(
+      dest_url, UrlData::CORS_UNSPECIFIED, UrlData::kNormal, security_origin_,
+      media::DataSource::EncodingMode::kIdentity,
+      UrlData::ServiceWorkerMode::kSkip);
+  cached_dest->Use();
+  cached_dest->set_range_supported();
+  cached_dest->set_length(1024);
+  cached_dest->SetDataOrigin(dest_url, /*is_cors_cross_origin=*/false);
+  ASSERT_TRUE(cached_dest->Valid());
+  ASSERT_EQ(cached_dest, url_index_->TryInsert(cached_dest));
+
   Initialize(kHttpUrl, 0);
+  ResourceMultiBufferDataProvider* first_loader = loader_;
   Start();
 
-  EXPECT_CALL(*this, RedirectCallback(scoped_refptr<UrlData>(nullptr)));
-  loader_->DidFail(WebURLError(net::ERR_BLOCKED_BY_ORB, url_));
-  EXPECT_TRUE(url_data_->is_cors_cross_origin());
-
-  // Start a second provider on the same `url_data_` (which still has no
-  // `data_origin_` set) and deliver a non-opaque response.
-  url_data_->OnRedirect(
-      blink::BindOnce(&ResourceMultiBufferDataProviderTest::RedirectCallback,
-                      Unretained(this)));
+  // Start two concurrent in-flight range providers (`pos = 1` direct and
+  // `pos = 2` redirected to `kHttpRedirect`) before `first_loader` fails via
+  // `CrossOriginFail()`.
   auto second_loader = std::make_unique<ResourceMultiBufferDataProvider>(
-      url_data_.get(), /*pos=*/0, /*is_client_audio_element=*/false,
+      url_data_.get(), /*pos=*/1, /*is_client_audio_element=*/false,
       task_environment_.GetMainThreadTaskRunner());
   ResourceMultiBufferDataProvider* raw_second_loader = second_loader.get();
-  loader_ = nullptr;
   url_data_->multibuffer()->AddProvider(std::move(second_loader));
   loader_ = raw_second_loader;
   Start();
 
+  auto redir_loader = std::make_unique<ResourceMultiBufferDataProvider>(
+      url_data_.get(), /*pos=*/2, /*is_client_audio_element=*/false,
+      task_environment_.GetMainThreadTaskRunner());
+  ResourceMultiBufferDataProvider* raw_redir_loader = redir_loader.get();
+  url_data_->multibuffer()->AddProvider(std::move(redir_loader));
+  loader_ = raw_redir_loader;
+  Start();
+  WebURL redir_target{dest_url};
+  WebURLResponse redir_response(url_);
+  redir_response.SetHttpStatusCode(302);
+  ASSERT_TRUE(
+      raw_redir_loader->WillFollowRedirect(redir_target, redir_response));
+
+  // `first_loader` fails with `ERR_BLOCKED_BY_ORB`, marking `url_data_` as
+  // failed and CORS cross-origin.
+  loader_ = first_loader;
+  EXPECT_CALL(*this, RedirectCallback(scoped_refptr<UrlData>(nullptr)));
+  first_loader->DidFail(WebURLError(net::ERR_BLOCKED_BY_ORB, url_));
+  EXPECT_TRUE(url_data_->is_cors_cross_origin());
+  EXPECT_TRUE(url_data_->HasFailed());
+
+  // In-flight `raw_second_loader` receiving a non-opaque response must fail
+  // cleanly.
+  url_data_->OnRedirect(
+      blink::BindOnce(&ResourceMultiBufferDataProviderTest::RedirectCallback,
+                      Unretained(this)));
   EXPECT_CALL(*this, RedirectCallback(scoped_refptr<UrlData>(nullptr)));
   WebURLResponse response(url_);
   response.SetHttpStatusCode(kHttpPartialContent);
   response.SetHttpHeaderField(WebString::FromUtf8("Content-Range"),
-                              WebString::FromUtf8("bytes 0-1023/1024"));
+                              WebString::FromUtf8("bytes 32768-33791/65536"));
   response.SetExpectedContentLength(1024);
   response.SetType(network::mojom::FetchResponseType::kBasic);
-  loader_->DidReceiveResponse(response);
+  raw_second_loader->DidReceiveResponse(response);
 
-  // Also verify the redirect path when `old_url_data` had `CrossOriginFail()`
-  // and an in-flight request redirects to a fresh destination `UrlData`.
+  // In-flight `raw_redir_loader` completing its redirect to `kHttpRedirect`
+  // must also fail cleanly without mutating or invalidating `cached_dest`.
   url_data_->OnRedirect(
       blink::BindOnce(&ResourceMultiBufferDataProviderTest::RedirectCallback,
                       Unretained(this)));
-  auto redir_loader = std::make_unique<ResourceMultiBufferDataProvider>(
-      url_data_.get(), /*pos=*/0, /*is_client_audio_element=*/false,
-      task_environment_.GetMainThreadTaskRunner());
-  ResourceMultiBufferDataProvider* raw_redir_loader = redir_loader.get();
-  loader_ = nullptr;
-  url_data_->multibuffer()->AddProvider(std::move(redir_loader));
-  loader_ = raw_redir_loader;
-  Start();
-
-  WebURL redir_target{KURL(kHttpRedirect)};
-  WebURLResponse redir_response(url_);
-  redir_response.SetHttpStatusCode(302);
-  ASSERT_TRUE(loader_->WillFollowRedirect(redir_target, redir_response));
-
   EXPECT_CALL(*this, RedirectCallback(scoped_refptr<UrlData>(nullptr)));
   WebURLResponse target_response(redir_target);
   target_response.SetHttpStatusCode(kHttpPartialContent);
@@ -1858,7 +2418,16 @@ TEST_F(ResourceMultiBufferDataProviderTest,
                                      WebString::FromUtf8("bytes 0-1023/1024"));
   target_response.SetExpectedContentLength(1024);
   target_response.SetType(network::mojom::FetchResponseType::kBasic);
-  loader_->DidReceiveResponse(target_response);
+  raw_redir_loader->DidReceiveResponse(target_response);
+
+  EXPECT_TRUE(cached_dest->Valid());
+  EXPECT_FALSE(cached_dest->is_cors_cross_origin());
+  EXPECT_EQ(cached_dest,
+            url_index_->GetByUrl(dest_url, UrlData::CORS_UNSPECIFIED,
+                                 UrlData::kNormal, security_origin_,
+                                 media::DataSource::EncodingMode::kIdentity,
+                                 UrlData::ServiceWorkerMode::kSkip));
+  StopWhenLoad();
 }
 
 // Regression test for crbug.com/579225207: an opaque-origin `response_url`
@@ -2037,6 +2606,333 @@ TEST_F(ResourceMultiBufferDataProviderTest,
     reader.reset();
     StopWhenLoad();
   }
+}
+
+// Regression test for b/581380020: a mid-resource HTTP 416 response (whether
+// direct or after a redirect to a fresh UrlData) must be rejected when
+// `byte_pos() < url_data_->length()`, and a valid HTTP 416 at
+// `byte_pos() >= url_data_->length()` after a redirect must propagate the
+// pinned `length()` onto the destination UrlData so a subsequent response
+// cannot overwrite it with a different resource size.
+TEST_F(ResourceMultiBufferDataProviderTest,
+       RangeNotSatisfiableValidatesAndPreservesPinnedLength) {
+  constexpr char kUrl1[] = "https://example.com/part1.mp4";
+  constexpr char kUrl2[] = "https://example.com/part2.mp4";
+  constexpr int kBlockSize = 1 << 15;
+  constexpr int64_t kPinnedLength = 65536;
+
+  // Case 1: Mid-resource (`byte_pos() < length()`) HTTP 416 after a redirect
+  // to a fresh UrlData is rejected without unpinning `length()`.
+  {
+    url_index_ = std::make_unique<UrlIndex>(
+        &fetch_context_, task_environment_.GetMainThreadTaskRunner());
+    security_origin_ = SecurityOrigin::Create(KURL(kUrl1));
+
+    Initialize(kUrl1, 0);
+    auto reader = CreateReader(kBlockSize * 2);
+    task_environment_.FastForwardUntilNoTasksRemain();
+    ASSERT_TRUE(loader_);
+    loader_->Start();
+
+    WebURL url1{KURL(kUrl1)};
+    WebURL url2{KURL(kUrl2)};
+    WebURLResponse response1{url1};
+    response1.SetHttpStatusCode(kHttpPartialContent);
+    response1.SetHttpHeaderField(WebString::FromUtf8("Content-Range"),
+                                 WebString::FromUtf8("bytes 0-32767/65536"));
+    response1.SetHttpHeaderField(WebString::FromUtf8("Accept-Ranges"),
+                                 WebString::FromUtf8("bytes"));
+    response1.SetExpectedContentLength(kBlockSize);
+    response1.SetType(network::mojom::FetchResponseType::kBasic);
+    loader_->DidReceiveResponse(response1);
+    ASSERT_TRUE(loader_);
+    EXPECT_EQ(url_data_->length(), kPinnedLength);
+
+    loader_->DidReceiveData(std::string(kBlockSize, 'a'));
+    loader_->DidFinishLoading();
+    task_environment_.FastForwardUntilNoTasksRemain();
+    ASSERT_TRUE(loader_);
+
+    // Follow-up range request at block 1 (`byte_pos() == 32768 < 65536`)
+    // redirects same-origin to `kUrl2` and returns HTTP 416.
+    WebURLResponse redir_to_2{url1};
+    redir_to_2.SetHttpStatusCode(302);
+    ASSERT_TRUE(loader_->WillFollowRedirect(url2, redir_to_2));
+
+    EXPECT_CALL(*this, RedirectCallback(testing::IsNull()));
+    WebURLResponse response_416{url2};
+    response_416.SetHttpStatusCode(416);
+    response_416.SetType(network::mojom::FetchResponseType::kBasic);
+    loader_->DidReceiveResponse(response_416);
+    EXPECT_EQ(url_data_->length(), kPinnedLength);
+
+    loader_ = nullptr;
+    reader.reset();
+    StopWhenLoad();
+  }
+
+  // Case 2: Valid HTTP 416 at `byte_pos() >= length()` after a redirect to a
+  // fresh UrlData propagates `kPinnedLength` onto the redirected UrlData.
+  {
+    url_index_ = std::make_unique<UrlIndex>(
+        &fetch_context_, task_environment_.GetMainThreadTaskRunner());
+    security_origin_ = SecurityOrigin::Create(KURL(kUrl1));
+
+    // Start an in-flight range request at block 2 (`byte_pos() == 65536`)
+    // before `length_` is known, then pin `length_` to `65536` (as if an
+    // earlier provider on the same `UrlData` completed its header parse while
+    // this provider was in flight).
+    Initialize(kUrl1, 2);
+    Start();
+    url_data_->SetDataOrigin(KURL(kUrl1), /*is_cors_cross_origin=*/false);
+    url_data_->set_length(kPinnedLength);
+
+    WebURL url1{KURL(kUrl1)};
+    WebURL url2{KURL(kUrl2)};
+    WebURLResponse redir_to_2{url1};
+    redir_to_2.SetHttpStatusCode(302);
+    ASSERT_TRUE(loader_->WillFollowRedirect(url2, redir_to_2));
+
+    EXPECT_CALL(*this, RedirectCallback(testing::NotNull()))
+        .WillOnce(
+            Invoke(this, &ResourceMultiBufferDataProviderTest::SetUrlData));
+    WebURLResponse response_416{url2};
+    response_416.SetHttpStatusCode(416);
+    response_416.SetType(network::mojom::FetchResponseType::kBasic);
+    loader_.ExtractAsDangling()->DidReceiveResponse(response_416);
+
+    ASSERT_TRUE(url_data_);
+    EXPECT_EQ(url_data_->url(), KURL(kUrl2));
+    EXPECT_EQ(url_data_->length(), kPinnedLength);
+    StopWhenLoad();
+  }
+}
+
+// Verifies that when a Service Worker intercepts a local media request (e.g.
+// `/local.mp4`) with `Response.redirect('https://cdn.com/video.mp4')` and still
+// provides the target response via the Service Worker (which `CorsURLLoader`
+// marks `kOpaque` due to the cross-origin redirect hop), the load uses an
+// unindexed `UrlData` that replays `/local.mp4` on follow-up range requests and
+// neither fails against nor mutates an existing native `UrlIndex` entry for
+// `https://cdn.com/video.mp4`.
+TEST_F(ResourceMultiBufferDataProviderTest,
+       ServiceWorkerOpaqueRedirectUsesUnindexedUrlDataWithoutColliding) {
+  constexpr char kPageOrigin[] = "https://example.com";
+  constexpr char kLocalUrl[] = "https://example.com/local.mp4";
+  constexpr char kCdnUrl[] = "https://cdn.com/video.mp4";
+  constexpr int kBlockSize = 1 << 15;
+
+  url_index_ = std::make_unique<UrlIndex>(
+      &fetch_context_, task_environment_.GetMainThreadTaskRunner());
+  security_origin_ = SecurityOrigin::Create(KURL(kPageOrigin));
+
+  // 1. First load `https://cdn.com/video.mp4` natively (`length = 50000`),
+  // populating `url_index_` under `(kCdnUrl, kAllow)`.
+  Initialize(kCdnUrl, 0);
+  auto cdn_reader = CreateReader(kBlockSize);
+  ASSERT_TRUE(loader_);
+  url_data_->Use();
+  Start();
+
+  WebURL cdn_web_url{KURL(kCdnUrl)};
+  WebURLResponse native_cdn_206{cdn_web_url};
+  native_cdn_206.SetHttpStatusCode(kHttpPartialContent);
+  native_cdn_206.SetHttpHeaderField(WebString::FromUtf8("Content-Range"),
+                                    WebString::FromUtf8("bytes 0-32767/50000"));
+  native_cdn_206.SetExpectedContentLength(kBlockSize);
+  native_cdn_206.SetType(network::mojom::FetchResponseType::kOpaque);
+  loader_->DidReceiveResponse(native_cdn_206);
+  loader_->DidReceiveData(std::string(kBlockSize, 'c'));
+
+  scoped_refptr<UrlData> indexed_cdn_data = url_data_;
+  ASSERT_EQ(indexed_cdn_data,
+            url_index_->GetByUrl(KURL(kCdnUrl), UrlData::CORS_UNSPECIFIED,
+                                 UrlData::kNormal, security_origin_));
+  EXPECT_EQ(indexed_cdn_data->length(), 50000);
+  EXPECT_FALSE(indexed_cdn_data->HasOpaqueServiceWorkerResponse());
+  loader_ = nullptr;
+  cdn_reader.reset();
+  StopWhenLoad();
+
+  // 2. Now load `/local.mp4`, where the Service Worker responds with
+  // `Response.redirect('https://cdn.com/video.mp4')` and then serves local
+  // 99,999-byte media chunks through the Service Worker (tainted `kOpaque` by
+  // `CorsURLLoader`).
+  Initialize(kLocalUrl, 0);
+  auto local_reader = CreateReader(kBlockSize * 2);
+  ASSERT_TRUE(loader_);
+  url_data_->Use();
+  loader_->Start();
+
+  WebURL local_web_url{KURL(kLocalUrl)};
+  WebURLResponse sw_redirect{local_web_url};
+  sw_redirect.SetHttpStatusCode(302);
+  sw_redirect.SetWasFetchedViaServiceWorker(true);
+  ASSERT_TRUE(loader_->WillFollowRedirect(cdn_web_url, sw_redirect));
+
+  EXPECT_CALL(*this, RedirectCallback(testing::NotNull()))
+      .WillOnce([&](const scoped_refptr<UrlData>& new_url_data) {
+        local_reader.reset();
+        SetUrlDataAndObserveRedirects(new_url_data);
+        local_reader = CreateReader(kBlockSize * 2);
+      });
+  WebURLResponse sw_opaque_local_bytes{cdn_web_url};
+  sw_opaque_local_bytes.SetHttpStatusCode(kHttpPartialContent);
+  sw_opaque_local_bytes.SetHttpHeaderField(
+      WebString::FromUtf8("Content-Range"),
+      WebString::FromUtf8("bytes 0-32767/99999"));
+  sw_opaque_local_bytes.SetExpectedContentLength(kBlockSize);
+  sw_opaque_local_bytes.SetType(network::mojom::FetchResponseType::kOpaque);
+  sw_opaque_local_bytes.SetWasFetchedViaServiceWorker(true);
+  sw_opaque_local_bytes.SetUrlListViaServiceWorker(
+      std::vector<WebURL>{local_web_url});
+  loader_->DidReceiveResponse(sw_opaque_local_bytes);
+  ASSERT_TRUE(url_data_);
+  EXPECT_NE(url_data_, indexed_cdn_data);
+  EXPECT_EQ(url_data_->url(), KURL(kCdnUrl));
+  EXPECT_EQ(url_data_->request_url(), KURL(kLocalUrl));
+  EXPECT_TRUE(url_data_->has_original_request_url());
+  EXPECT_TRUE(url_data_->HasOpaqueServiceWorkerResponse());
+  EXPECT_EQ(url_data_->length(), 99999);
+
+  // `indexed_cdn_data` in `url_index_` must remain valid and untouched.
+  EXPECT_TRUE(indexed_cdn_data->Valid());
+  EXPECT_EQ(indexed_cdn_data->length(), 50000);
+  EXPECT_FALSE(indexed_cdn_data->HasOpaqueServiceWorkerResponse());
+  EXPECT_EQ(indexed_cdn_data,
+            url_index_->GetByUrl(KURL(kCdnUrl), UrlData::CORS_UNSPECIFIED,
+                                 UrlData::kNormal, security_origin_));
+
+  // 3. Follow-up range request at block 1 replays `/local.mp4` and succeeds.
+  loader_->DidReceiveData(std::string(kBlockSize, 'l'));
+  auto range_loader = std::make_unique<ResourceMultiBufferDataProvider>(
+      url_data_.get(), /*pos=*/1, /*is_client_audio_element=*/false,
+      task_environment_.GetMainThreadTaskRunner());
+  ResourceMultiBufferDataProvider* raw_range_loader = range_loader.get();
+  loader_ = nullptr;
+  url_data_->multibuffer()->AddProvider(std::move(range_loader));
+  loader_ = raw_range_loader;
+  Start();
+  ASSERT_TRUE(loader_->WillFollowRedirect(cdn_web_url, sw_redirect));
+
+  EXPECT_CALL(*this, RedirectCallback(_)).Times(0);
+  WebURLResponse sw_opaque_local_bytes_part2{cdn_web_url};
+  sw_opaque_local_bytes_part2.SetHttpStatusCode(kHttpPartialContent);
+  sw_opaque_local_bytes_part2.SetHttpHeaderField(
+      WebString::FromUtf8("Content-Range"),
+      WebString::FromUtf8("bytes 32768-65535/99999"));
+  sw_opaque_local_bytes_part2.SetExpectedContentLength(kBlockSize);
+  sw_opaque_local_bytes_part2.SetType(
+      network::mojom::FetchResponseType::kOpaque);
+  sw_opaque_local_bytes_part2.SetWasFetchedViaServiceWorker(true);
+  sw_opaque_local_bytes_part2.SetUrlListViaServiceWorker(
+      std::vector<WebURL>{local_web_url});
+  loader_->DidReceiveResponse(sw_opaque_local_bytes_part2);
+
+  loader_ = nullptr;
+  local_reader.reset();
+  StopWhenLoad();
+}
+
+// Verifies that Service Worker redirect + opaque response sequences do not trip
+// the post-`TryInsert()` or post-`RedirectTo()` `CHECK` even when
+// `kDisallowMixedOpaqueMediaResponses` is disabled.
+TEST_F(ResourceMultiBufferDataProviderTest,
+       ServiceWorkerRedirectWithKillSwitchDisabledDoesNotCrash) {
+  base::test::ScopedFeatureList disable_mixed_opaque;
+  disable_mixed_opaque.InitAndDisableFeature(
+      media::kDisallowMixedOpaqueMediaResponses);
+
+  constexpr char kPageOrigin[] = "https://example.com";
+  constexpr char kUrlA[] = "https://cdn.com/a.mp4";
+  constexpr char kUrlB[] = "https://cdn.com/b.mp4";
+  constexpr char kUrlC[] = "https://cdn.com/c.mp4";
+  constexpr int kBlockSize = 1 << 15;
+
+  url_index_ = std::make_unique<UrlIndex>(
+      &fetch_context_, task_environment_.GetMainThreadTaskRunner());
+  security_origin_ = SecurityOrigin::Create(KURL(kPageOrigin));
+
+  // V1 loads `cdn.com/a.mp4`: block 0 responds with opaque SW fetch of
+  // `cdn.com/b.mp4`, and follow-up range request responds with opaque SW fetch
+  // of `cdn.com/a.mp4` (rejected cleanly due to URL mismatch).
+  Initialize(kUrlA, 0);
+  auto reader1 = CreateReader(kBlockSize * 2);
+  ASSERT_TRUE(loader_);
+  url_data_->Use();
+  Start();
+
+  WebURL url_a{KURL(kUrlA)};
+  WebURL url_b{KURL(kUrlB)};
+  WebURL url_c{KURL(kUrlC)};
+  WebURLResponse v1_resp0{url_b};
+  v1_resp0.SetHttpStatusCode(kHttpPartialContent);
+  v1_resp0.SetHttpHeaderField(WebString::FromUtf8("Content-Range"),
+                              WebString::FromUtf8("bytes 0-32767/65536"));
+  v1_resp0.SetExpectedContentLength(kBlockSize);
+  v1_resp0.SetType(network::mojom::FetchResponseType::kOpaque);
+  v1_resp0.SetWasFetchedViaServiceWorker(true);
+  v1_resp0.SetUrlListViaServiceWorker(std::vector<WebURL>{url_b});
+  loader_->DidReceiveResponse(v1_resp0);
+  loader_->DidReceiveData(std::string(kBlockSize, 'b'));
+
+  auto v1_range_loader = std::make_unique<ResourceMultiBufferDataProvider>(
+      url_data_.get(), /*pos=*/1, /*is_client_audio_element=*/false,
+      task_environment_.GetMainThreadTaskRunner());
+  ResourceMultiBufferDataProvider* raw_v1_range_loader = v1_range_loader.get();
+  loader_ = nullptr;
+  url_data_->multibuffer()->AddProvider(std::move(v1_range_loader));
+  loader_ = raw_v1_range_loader;
+  Start();
+
+  EXPECT_CALL(*this, RedirectCallback(scoped_refptr<UrlData>(nullptr)));
+  WebURLResponse v1_resp1{url_a};
+  v1_resp1.SetHttpStatusCode(kHttpPartialContent);
+  v1_resp1.SetHttpHeaderField(WebString::FromUtf8("Content-Range"),
+                              WebString::FromUtf8("bytes 32768-65535/65536"));
+  v1_resp1.SetExpectedContentLength(kBlockSize);
+  v1_resp1.SetType(network::mojom::FetchResponseType::kOpaque);
+  v1_resp1.SetWasFetchedViaServiceWorker(true);
+  v1_resp1.SetUrlListViaServiceWorker(std::vector<WebURL>{url_a});
+  loader_->DidReceiveResponse(v1_resp1);
+  loader_ = nullptr;
+  reader1.reset();
+  StopWhenLoad();
+
+  // V2 loads `cdn.com/c.mp4` and redirects via `Response.redirect` to
+  // `cdn.com/a.mp4` with an opaque SW response.
+  Initialize(kUrlC, 0);
+  auto reader2 = CreateReader(kBlockSize);
+  ASSERT_TRUE(loader_);
+  Start();
+
+  WebURLResponse sw_redir{url_c};
+  sw_redir.SetHttpStatusCode(302);
+  sw_redir.SetWasFetchedViaServiceWorker(true);
+  ASSERT_TRUE(loader_->WillFollowRedirect(url_a, sw_redir));
+
+  EXPECT_CALL(*this, RedirectCallback(testing::NotNull()))
+      .WillOnce([&](const scoped_refptr<UrlData>& new_url_data) {
+        reader2.reset();
+        SetUrlDataAndObserveRedirects(new_url_data);
+        reader2 = CreateReader(kBlockSize);
+      });
+  WebURLResponse v2_resp{url_a};
+  v2_resp.SetHttpStatusCode(kHttpPartialContent);
+  v2_resp.SetHttpHeaderField(WebString::FromUtf8("Content-Range"),
+                             WebString::FromUtf8("bytes 0-32767/65536"));
+  v2_resp.SetExpectedContentLength(kBlockSize);
+  v2_resp.SetType(network::mojom::FetchResponseType::kOpaque);
+  v2_resp.SetWasFetchedViaServiceWorker(true);
+  v2_resp.SetUrlListViaServiceWorker(std::vector<WebURL>{url_a});
+  loader_->DidReceiveResponse(v2_resp);
+  ASSERT_TRUE(url_data_);
+  EXPECT_TRUE(url_data_->has_original_request_url());
+  EXPECT_EQ(url_data_->request_url(), KURL(kUrlC));
+
+  loader_ = nullptr;
+  reader2.reset();
+  StopWhenLoad();
 }
 
 }  // namespace blink

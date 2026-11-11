@@ -342,6 +342,8 @@ TEST_F(UrlIndexTest, DestructionWithOrphanedUrlData) {
 
   EXPECT_FALSE(a->url_index());
   EXPECT_FALSE(b->url_index());
+  EXPECT_TRUE(a->HasFailed());
+  EXPECT_FALSE(a->Valid());
 }
 
 TEST_F(UrlIndexTest, RedirectToPreservesCrossOrigin) {
@@ -574,6 +576,245 @@ TEST_F(UrlIndexTest, KeyRemovalAndSlotReuse) {
   second->SetDataOrigin(url, /*is_cors_cross_origin=*/false);
   EXPECT_EQ(second, url_index_->TryInsert(second));
   EXPECT_EQ(second, GetByUrl(url, UrlData::CORS_UNSPECIFIED));
+}
+
+TEST_F(UrlIndexTest, FailRemovesUrlDataFromUrlIndex) {
+  KURL url("http://foo.bar.com/video.mp4");
+  scoped_refptr<UrlData> a = GetByUrl(url, UrlData::CORS_UNSPECIFIED);
+  a->Use();
+  a->set_range_supported();
+  a->set_length(2345);
+  EXPECT_TRUE(a->Valid());
+  EXPECT_EQ(a, url_index_->TryInsert(a));
+  EXPECT_EQ(a, GetByUrl(url, UrlData::CORS_UNSPECIFIED));
+
+  a->Fail();
+  EXPECT_FALSE(a->Valid());
+  EXPECT_NE(a, GetByUrl(url, UrlData::CORS_UNSPECIFIED));
+}
+
+TEST_F(UrlIndexTest, OpaqueServiceWorkerOriginRequiresExactUrlMatch) {
+  KURL req_url("https://attacker.example/audio.mp3");
+  KURL secret_url("https://victim.example/secret");
+  KURL probe_url("https://victim.example/probe?len=100");
+  KURL cdn_edge1("https://cdn.example/video.mp4?token=1");
+  KURL cdn_edge2("https://cdn.example/video.mp4?token=2");
+
+  // Native opaque responses allow same-origin URL changes across redirects
+  // (e.g. CDN token/edge redirects).
+  scoped_refptr<UrlData> native_opaque =
+      GetByUrl(cdn_edge1, UrlData::CORS_UNSPECIFIED);
+  native_opaque->SetDataOrigin(cdn_edge1, /*is_cors_cross_origin=*/true);
+  EXPECT_TRUE(native_opaque->CanAcceptDataFrom(cdn_edge2,
+                                               /*is_cors_cross_origin=*/true));
+  // A service worker opaque response for the same URL cannot be mixed onto a
+  // native opaque UrlData (e.g. if the worker re-fetches the same URL with
+  // different credentials).
+  EXPECT_FALSE(native_opaque->CanAcceptDataFrom(
+      cdn_edge1, /*is_cors_cross_origin=*/true,
+      /*has_cross_origin_redirect=*/false,
+      /*was_fetched_via_service_worker=*/true));
+
+  // Even when `kDisallowMixedOpaqueMediaResponses` is disabled, an incoming
+  // opaque service worker response with a different same-origin URL must still
+  // be rejected on a natively-established opaque UrlData.
+  {
+    base::test::ScopedFeatureList disable_mixed_opaque;
+    disable_mixed_opaque.InitAndDisableFeature(
+        media::kDisallowMixedOpaqueMediaResponses);
+    EXPECT_FALSE(native_opaque->CanAcceptDataFrom(
+        cdn_edge2, /*is_cors_cross_origin=*/true,
+        /*has_cross_origin_redirect=*/false,
+        /*was_fetched_via_service_worker=*/true));
+  }
+
+  // When an opaque response was fetched via a service worker, exact response
+  // URL equality and matching service worker provenance are required.
+  scoped_refptr<UrlData> sw_opaque =
+      GetByUrl(req_url, UrlData::CORS_UNSPECIFIED);
+  sw_opaque->SetDataOrigin(secret_url, /*is_cors_cross_origin=*/true,
+                           /*has_cross_origin_redirect=*/false,
+                           /*was_fetched_via_service_worker=*/true);
+  EXPECT_TRUE(
+      sw_opaque->CanAcceptDataFrom(secret_url, /*is_cors_cross_origin=*/true,
+                                   /*has_cross_origin_redirect=*/false,
+                                   /*was_fetched_via_service_worker=*/true));
+  EXPECT_FALSE(
+      sw_opaque->CanAcceptDataFrom(probe_url, /*is_cors_cross_origin=*/true,
+                                   /*has_cross_origin_redirect=*/false,
+                                   /*was_fetched_via_service_worker=*/true));
+  EXPECT_FALSE(
+      sw_opaque->CanAcceptDataFrom(secret_url, /*is_cors_cross_origin=*/true,
+                                   /*has_cross_origin_redirect=*/false,
+                                   /*was_fetched_via_service_worker=*/false));
+
+  // Non-opaque service worker responses continue to use same-origin matching.
+  KURL same_origin_1("https://attacker.example/part1");
+  KURL same_origin_2("https://attacker.example/part2");
+  scoped_refptr<UrlData> sw_non_opaque =
+      GetByUrl(req_url, UrlData::CORS_UNSPECIFIED);
+  sw_non_opaque->SetDataOrigin(same_origin_1, /*is_cors_cross_origin=*/false,
+                               /*has_cross_origin_redirect=*/false,
+                               /*was_fetched_via_service_worker=*/true);
+  EXPECT_TRUE(sw_non_opaque->CanAcceptDataFrom(
+      same_origin_2, /*is_cors_cross_origin=*/false,
+      /*has_cross_origin_redirect=*/false,
+      /*was_fetched_via_service_worker=*/true));
+}
+
+TEST_F(UrlIndexTest, OpaqueServiceWorkerOriginNotIndexedOrMerged) {
+  KURL req_url("https://attacker.example/audio.mp3");
+  KURL secret_url("https://victim.example/secret");
+
+  // Opaque responses fetched via a service worker must not be inserted into
+  // UrlIndex, even when the service worker re-requests the exact same URL
+  // `req_url` (e.g. with modified credentials).
+  scoped_refptr<UrlData> sw_opaque =
+      GetByUrl(req_url, UrlData::CORS_UNSPECIFIED);
+  sw_opaque->Use();
+  sw_opaque->set_range_supported();
+  sw_opaque->set_length(2345);
+  sw_opaque->SetDataOrigin(req_url, /*is_cors_cross_origin=*/true,
+                           /*has_cross_origin_redirect=*/false,
+                           /*was_fetched_via_service_worker=*/true);
+  EXPECT_TRUE(sw_opaque->Valid());
+  EXPECT_EQ(sw_opaque, url_index_->TryInsert(sw_opaque));
+  EXPECT_NE(sw_opaque, GetByUrl(req_url, UrlData::CORS_UNSPECIFIED));
+
+  // If a native opaque entry is indexed for `req_url`, attempting to insert an
+  // opaque service worker entry for the same key must neither merge with nor
+  // replace the indexed native entry.
+  scoped_refptr<UrlData> native_opaque =
+      GetByUrl(req_url, UrlData::CORS_UNSPECIFIED);
+  native_opaque->Use();
+  native_opaque->set_range_supported();
+  native_opaque->set_length(1000);
+  native_opaque->SetDataOrigin(req_url, /*is_cors_cross_origin=*/true);
+  EXPECT_TRUE(native_opaque->Valid());
+  EXPECT_EQ(native_opaque, url_index_->TryInsert(native_opaque));
+  EXPECT_EQ(native_opaque, GetByUrl(req_url, UrlData::CORS_UNSPECIFIED));
+
+  EXPECT_EQ(sw_opaque, url_index_->TryInsert(sw_opaque));
+  EXPECT_EQ(native_opaque, GetByUrl(req_url, UrlData::CORS_UNSPECIFIED));
+  EXPECT_EQ(native_opaque->length(), 1000);
+
+  // A native opaque response whose `data_origin()` was upgraded in-place from
+  // HTTP to HTTPS (without a service worker) is still indexed normally.
+  KURL http_media_url("http://cdn.example/media.mp4");
+  KURL https_media_url("https://cdn.example/media.mp4");
+  scoped_refptr<UrlData> upgraded_opaque =
+      GetByUrl(http_media_url, UrlData::CORS_UNSPECIFIED);
+  upgraded_opaque->Use();
+  upgraded_opaque->set_range_supported();
+  upgraded_opaque->SetDataOrigin(https_media_url,
+                                 /*is_cors_cross_origin=*/true);
+  EXPECT_TRUE(upgraded_opaque->Valid());
+  EXPECT_EQ(upgraded_opaque, url_index_->TryInsert(upgraded_opaque));
+  EXPECT_EQ(upgraded_opaque,
+            GetByUrl(http_media_url, UrlData::CORS_UNSPECIFIED));
+
+  // Non-opaque service worker entries are still indexed and shared.
+  KURL same_origin_url("https://example.com/media.mp4");
+  KURL same_origin_sw_url("https://example.com/cached_media.mp4");
+  scoped_refptr<UrlData> sw_non_opaque =
+      GetByUrl(same_origin_url, UrlData::CORS_UNSPECIFIED);
+  sw_non_opaque->Use();
+  sw_non_opaque->set_range_supported();
+  sw_non_opaque->SetDataOrigin(same_origin_sw_url,
+                               /*is_cors_cross_origin=*/false,
+                               /*has_cross_origin_redirect=*/false,
+                               /*was_fetched_via_service_worker=*/true);
+  EXPECT_TRUE(sw_non_opaque->Valid());
+  EXPECT_EQ(sw_non_opaque, url_index_->TryInsert(sw_non_opaque));
+  EXPECT_EQ(sw_non_opaque,
+            GetByUrl(same_origin_url, UrlData::CORS_UNSPECIFIED));
+}
+
+TEST_F(UrlIndexTest, RedirectToPropagatesLength) {
+  KURL url1("http://foo.bar.com/part1.mp4");
+  KURL url2("http://foo.bar.com/part2.mp4");
+  scoped_refptr<UrlData> a = GetByUrl(url1, UrlData::CORS_UNSPECIFIED);
+  scoped_refptr<UrlData> b = GetByUrl(url2, UrlData::CORS_UNSPECIFIED);
+
+  a->set_length(4096);
+  EXPECT_EQ(b->length(), kPositionNotSpecified);
+
+  a->RedirectTo(b);
+  EXPECT_EQ(b->length(), 4096);
+}
+
+TEST_F(UrlIndexTest,
+       NonOpaqueServiceWorkerPlusNativeOpaqueDoesNotSynthesizeOpaqueSwState) {
+  base::test::ScopedFeatureList disable_mixed_opaque;
+  disable_mixed_opaque.InitAndDisableFeature(
+      media::kDisallowMixedOpaqueMediaResponses);
+
+  KURL req_url("https://example.com/a.mp4");
+  KURL sw_url("https://example.com/b.mp4");
+
+  // A non-opaque service worker response
+  // (`was_fetched_via_service_worker=true`, `is_cors_cross_origin=false`)
+  // followed by a native opaque response when the kill-switch is disabled must
+  // not synthesize `HasOpaqueServiceWorkerResponse() == true` out of separate
+  // responses.
+  scoped_refptr<UrlData> sw_non_opaque =
+      GetByUrl(req_url, UrlData::CORS_UNSPECIFIED);
+  sw_non_opaque->Use();
+  sw_non_opaque->set_range_supported();
+  sw_non_opaque->set_length(1024);
+  sw_non_opaque->SetDataOrigin(sw_url, /*is_cors_cross_origin=*/false,
+                               /*has_cross_origin_redirect=*/false,
+                               /*was_fetched_via_service_worker=*/true);
+  EXPECT_FALSE(sw_non_opaque->HasOpaqueServiceWorkerResponse());
+  ASSERT_EQ(sw_non_opaque, url_index_->TryInsert(sw_non_opaque));
+
+  scoped_refptr<UrlData> native_opaque =
+      url_index_->GetByUrl(req_url, UrlData::CORS_UNSPECIFIED,
+                           UrlData::kCacheDisabled, security_origin_);
+  native_opaque->Use();
+  native_opaque->set_range_supported();
+  native_opaque->set_length(1024);
+  native_opaque->SetDataOrigin(req_url, /*is_cors_cross_origin=*/true,
+                               /*has_cross_origin_redirect=*/false,
+                               /*was_fetched_via_service_worker=*/false);
+  EXPECT_FALSE(native_opaque->HasOpaqueServiceWorkerResponse());
+
+  // Merging `native_opaque` into `sw_non_opaque` via `TryInsert()` (once lookup
+  // mode is normal) must not trip `SetDataOrigin()`'s or `DidReceiveResponse`'s
+  // post-`TryInsert()` `CanAcceptDataFrom()` invariant.
+  scoped_refptr<UrlData> merge_candidate = url_index_->GetByUrl(
+      KURL("https://example.com/other_temp.mp4"), UrlData::CORS_UNSPECIFIED,
+      UrlData::kNormal, security_origin_);
+  merge_candidate->SetDataOrigin(req_url, /*is_cors_cross_origin=*/true,
+                                 /*has_cross_origin_redirect=*/false,
+                                 /*was_fetched_via_service_worker=*/false);
+  merge_candidate->set_length(1024);
+  EXPECT_TRUE(sw_non_opaque->CanAcceptDataFrom(
+      req_url, /*is_cors_cross_origin=*/true,
+      /*has_cross_origin_redirect=*/false,
+      /*was_fetched_via_service_worker=*/false));
+  sw_non_opaque->SetDataOrigin(req_url, /*is_cors_cross_origin=*/true,
+                               /*has_cross_origin_redirect=*/false,
+                               /*was_fetched_via_service_worker=*/false);
+  EXPECT_FALSE(sw_non_opaque->HasOpaqueServiceWorkerResponse());
+  EXPECT_TRUE(sw_non_opaque->CanAcceptDataFrom(
+      req_url, /*is_cors_cross_origin=*/true,
+      /*has_cross_origin_redirect=*/false,
+      /*was_fetched_via_service_worker=*/false));
+
+  // RedirectTo() propagates `HasOpaqueServiceWorkerResponse()` when the source
+  // actually received an opaque service worker response.
+  scoped_refptr<UrlData> actual_opaque_sw =
+      GetByUrl(KURL("https://cdn.example/src.mp4"), UrlData::CORS_UNSPECIFIED);
+  actual_opaque_sw->SetDataOrigin(KURL("https://cdn.example/src.mp4"),
+                                  /*is_cors_cross_origin=*/true,
+                                  /*has_cross_origin_redirect=*/false,
+                                  /*was_fetched_via_service_worker=*/true);
+  EXPECT_TRUE(actual_opaque_sw->HasOpaqueServiceWorkerResponse());
+  scoped_refptr<UrlData> redirect_dest =
+      GetByUrl(KURL("https://cdn.example/dst.mp4"), UrlData::CORS_UNSPECIFIED);
+  actual_opaque_sw->RedirectTo(redirect_dest);
+  EXPECT_TRUE(redirect_dest->HasOpaqueServiceWorkerResponse());
 }
 
 }  // namespace blink

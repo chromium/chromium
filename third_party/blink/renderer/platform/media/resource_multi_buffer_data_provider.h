@@ -111,15 +111,39 @@ class PLATFORM_EXPORT ResourceMultiBufferDataProvider
 
   int64_t byte_pos() const;
   int64_t block_size() const;
+  bool HasBufferedData() const;
 
-  // If we have made a range request, verify the response from the server.
+  // Resets `active_loader_` and fails `url_data_` (using `CrossOriginFail()`
+  // when `cross_origin_failure` is true).
+  void FailForInvalidResponse(bool cross_origin_failure);
+
+  // Validates a 206 Partial Content response's `Content-Range` header against
+  // `byte_pos()` and any existing length on `url_data_` and
+  // `destination_url_data`. On success, populates `*instance_size` and
+  // `*bytes_to_discard`.
   bool VerifyPartialResponse(const WebURLResponse& response,
-                             const scoped_refptr<UrlData>& url_data);
+                             const UrlData& destination_url_data,
+                             int64_t* instance_size,
+                             uint64_t* bytes_to_discard) const;
 
-  // Validates that |length| is compatible with any existing length on
-  // |url_data_| and |destination_url_data|, and updates |destination_url_data|.
-  bool TrySetLength(const scoped_refptr<UrlData>& destination_url_data,
-                    int64_t length);
+  // Validates a 200 OK response's `content_length` against any existing length
+  // on `url_data_` and `destination_url_data`, rejecting mid-resource opaque
+  // service worker 200 OK responses.
+  bool VerifyOkResponse(const UrlData& destination_url_data,
+                        int64_t content_length,
+                        bool is_cors_cross_origin,
+                        bool was_fetched_via_service_worker) const;
+
+  // Validates a 416 Range Not Satisfiable response, rejecting opaque or
+  // mid-resource (`byte_pos() < length`) 416 responses and verifying length
+  // compatibility between `url_data_` and `destination_url_data`.
+  bool VerifyRangeNotSatisfiableResponse(const UrlData& destination_url_data,
+                                         bool is_cors_cross_origin) const;
+
+  // Returns true if `length` is compatible with any existing length on both
+  // `url_data_` and `destination_url_data`.
+  bool HasCompatibleLengths(const UrlData& destination_url_data,
+                            int64_t length) const;
 
   // Current Position.
   MultiBufferBlockId pos_;
@@ -157,6 +181,10 @@ class PLATFORM_EXPORT ResourceMultiBufferDataProvider
   // True if any response handled by this data provider was fetched via a
   // service worker.
   bool was_fetched_via_service_worker_ = false;
+
+  // True if the current request received any payload bytes past
+  // `bytes_to_discard_`. Reset on `Start()`.
+  bool received_data_ = false;
 
   size_t total_bytes_received_ = 0;
 

@@ -132,6 +132,9 @@ void UrlData::set_valid_until(base::Time valid_until) {
 
 bool UrlData::MergeFrom(const scoped_refptr<UrlData>& other) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (HasFailed() || other->HasFailed()) {
+    return false;
+  }
   // Unindexed UrlData instances replay `original_request_url_` on follow-up
   // range requests to preserve redirect-chain provenance and response tainting
   // (e.g., cross-origin bounce-backs or no-cors cross-origin redirects under
@@ -146,6 +149,13 @@ bool UrlData::MergeFrom(const scoped_refptr<UrlData>& other) {
   // resource, so when we merge the metadata, we can use the most
   // optimistic values.
   CHECK(security_origin_->IsSameOriginWith(other->security_origin_.get()));
+  // Do not merge opaque responses fetched via a service worker, as the service
+  // worker may have synthesized or re-fetched the response with different
+  // parameters (e.g. credentials) or from a different cross-origin URL.
+  if (HasOpaqueServiceWorkerResponse() ||
+      other->HasOpaqueServiceWorkerResponse()) {
+    return false;
+  }
   // Do not merge when the other UrlData has an incompatible origin, or if the
   // other UrlData is missing an origin while this UrlData has one already
   // configured.
@@ -154,7 +164,8 @@ bool UrlData::MergeFrom(const scoped_refptr<UrlData>& other) {
   }
   const KURL other_origin = other->data_origin_.value_or(KURL());
   if (!CanAcceptDataFrom(other_origin, other->is_cors_cross_origin_,
-                         other->has_cross_origin_redirect_)) {
+                         other->has_cross_origin_redirect_,
+                         other->has_opaque_service_worker_response_)) {
     return false;
   }
   // Do not merge if either UrlData already has a known length and the other
@@ -166,10 +177,13 @@ bool UrlData::MergeFrom(const scoped_refptr<UrlData>& other) {
   }
   if (other->data_origin_.has_value()) {
     SetDataOrigin(*other->data_origin_, other->is_cors_cross_origin_,
-                  other->has_cross_origin_redirect_);
+                  other->has_cross_origin_redirect_,
+                  other->has_opaque_service_worker_response_);
   } else {
     set_is_cors_cross_origin(other->is_cors_cross_origin_);
     has_cross_origin_redirect_ |= other->has_cross_origin_redirect_;
+    has_opaque_service_worker_response_ |=
+        other->has_opaque_service_worker_response_;
   }
 
   valid_until_ = std::max(valid_until_, other->valid_until_);
@@ -235,11 +249,17 @@ void UrlData::set_passed_timing_allow_origin_check(
 
 void UrlData::RedirectTo(const scoped_refptr<UrlData>& url_data) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  CHECK(length_ == kPositionNotSpecified ||
+        url_data->HasCompatibleLength(length_));
   // Copy any cached data over to the new location.
   url_data->multibuffer()->MergeFrom(multibuffer());
+  url_data->set_length(length_);
   url_data->set_is_cors_cross_origin(is_cors_cross_origin());
   if (has_cross_origin_redirect()) {
     url_data->has_cross_origin_redirect_ = true;
+  }
+  if (has_opaque_service_worker_response_) {
+    url_data->has_opaque_service_worker_response_ = true;
   }
   if (passed_timing_allow_origin_check_.has_value()) {
     url_data->set_passed_timing_allow_origin_check(
@@ -255,6 +275,11 @@ void UrlData::RedirectTo(const scoped_refptr<UrlData>& url_data) {
 
 void UrlData::Fail() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  scoped_refptr<UrlData> self(this);
+  has_failed_ = true;
+  if (multibuffer()->map().empty()) {
+    OnEmpty();
+  }
   // Handled similar to a redirect.
   Vector<RedirectCB> redirect_callbacks;
   redirect_callbacks.swap(redirect_callbacks_);
@@ -265,7 +290,9 @@ void UrlData::Fail() {
 
 void UrlData::CrossOriginFail() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  set_is_cors_cross_origin(true);
+  if (!data_origin_) {
+    set_is_cors_cross_origin(true);
+  }
   Fail();
 }
 
@@ -281,18 +308,29 @@ void UrlData::Use() {
 
 bool UrlData::CanAcceptDataFrom(const KURL& origin,
                                 bool is_cors_cross_origin,
-                                bool has_cross_origin_redirect) const {
+                                bool has_cross_origin_redirect,
+                                bool was_fetched_via_service_worker) const {
+  const bool incoming_opaque_service_worker_response =
+      is_cors_cross_origin && was_fetched_via_service_worker;
   // Mixing non-opaque and opaque responses on a resource that has already
   // received a response or failed a cross-origin check is not allowed, as
   // consumers may have already checked origin tainting based on the earlier
-  // state.
+  // state. Likewise, once a response has established `data_origin_`, an
+  // opaque response fetched via a service worker cannot be mixed with a
+  // direct network response (even for the same URL, as the service worker
+  // may have altered request parameters such as credentials).
   if (base::FeatureList::IsEnabled(media::kDisallowMixedOpaqueMediaResponses)) {
     if (is_cors_cross_origin_ && !is_cors_cross_origin) {
       return false;
     }
-    if (data_origin_.has_value() && !is_cors_cross_origin_ &&
-        is_cors_cross_origin) {
-      return false;
+    if (data_origin_.has_value()) {
+      if (!is_cors_cross_origin_ && is_cors_cross_origin) {
+        return false;
+      }
+      if (has_opaque_service_worker_response_ !=
+          incoming_opaque_service_worker_response) {
+        return false;
+      }
     }
   }
 
@@ -308,6 +346,19 @@ bool UrlData::CanAcceptDataFrom(const KURL& origin,
 
   if (!data_origin_) {
     return true;
+  }
+
+  // When an opaque response came from a service worker (either on the existing
+  // UrlData or on the incoming response, so this holds even when
+  // `kDisallowMixedOpaqueMediaResponses` is disabled), require exact response
+  // URL consistency (`*data_origin_ == origin`) rather than just same-origin
+  // matching. Otherwise a service worker can mix different opaque URLs on the
+  // same origin on the same UrlData to probe cross-origin resource sizes via
+  // length compatibility checks.
+  if ((has_opaque_service_worker_response_ ||
+       incoming_opaque_service_worker_response) &&
+      *data_origin_ != origin) {
+    return false;
   }
 
   if (cors_mode_ == UrlData::CORS_UNSPECIFIED && *data_origin_ != origin) {
@@ -326,21 +377,26 @@ bool UrlData::CanAcceptDataFrom(const KURL& origin,
 
 void UrlData::SetDataOrigin(const KURL& origin,
                             bool is_cors_cross_origin,
-                            bool has_cross_origin_redirect) {
+                            bool has_cross_origin_redirect,
+                            bool was_fetched_via_service_worker) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   CHECK(CanAcceptDataFrom(origin, is_cors_cross_origin,
-                          has_cross_origin_redirect));
+                          has_cross_origin_redirect,
+                          was_fetched_via_service_worker));
   if (!data_origin_) {
     data_origin_ = origin;
   }
   // The actual cors checks are done in the net layer.
   // `SetDataOrigin()` is called on each range response as well as during
-  // `MergeFrom()`. Latch both flags monotonically so that once any range
-  // response is opaque or crossed origins (e.g. in CORS mode where
+  // `MergeFrom()`. Latch these flags monotonically so that once any range
+  // response is opaque, crossed origins (e.g. in CORS mode where
   // `CanAcceptDataFrom()` permits mixing direct and redirected range
-  // responses), a subsequent response cannot clear the latched state.
+  // responses), or was an opaque service worker response, a subsequent
+  // response cannot clear the latched state.
   set_is_cors_cross_origin(is_cors_cross_origin);
   has_cross_origin_redirect_ |= has_cross_origin_redirect;
+  has_opaque_service_worker_response_ |=
+      is_cors_cross_origin && was_fetched_via_service_worker;
 }
 
 void UrlData::OnEmpty() {
@@ -361,6 +417,9 @@ bool UrlData::FullyCached() {
 
 bool UrlData::Valid() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (HasFailed()) {
+    return false;
+  }
   base::Time now = base::Time::Now();
   if (!range_supported_ && !FullyCached())
     return false;
@@ -370,6 +429,11 @@ bool UrlData::Valid() {
   if (now - last_used_ < base::Seconds(kUrlMappingTimeoutSeconds))
     return true;
   return false;
+}
+
+bool UrlData::HasFailed() const {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  return has_failed_ || !url_index_;
 }
 
 void UrlData::set_last_modified(base::Time last_modified) {
@@ -492,6 +556,14 @@ bool IsNewDataForSameResource(const scoped_refptr<UrlData>& new_entry,
 scoped_refptr<UrlData> UrlIndex::TryInsert(
     const scoped_refptr<UrlData>& url_data) {
   if (url_data->has_original_request_url()) {
+    return url_data;
+  }
+
+  // Do not index or merge opaque responses fetched via a service worker so a
+  // service-worker-supplied opaque response (which may have been fetched from
+  // a different cross-origin URL or with altered request parameters such as
+  // credentials) cannot be shared or spliced with other loads of the same URL.
+  if (url_data->HasOpaqueServiceWorkerResponse()) {
     return url_data;
   }
 

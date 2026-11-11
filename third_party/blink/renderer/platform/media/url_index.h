@@ -200,25 +200,32 @@ class PLATFORM_EXPORT UrlData : public RefCounted<UrlData> {
   // replayed on follow-up range requests (e.g. a cross-origin bounce-back).
   bool has_cross_origin_redirect() const { return has_cross_origin_redirect_; }
 
+  // True if this UrlData received an opaque response that was fetched via a
+  // service worker.
+  bool HasOpaqueServiceWorkerResponse() const {
+    return has_opaque_service_worker_response_;
+  }
+
   // Notifies the url index that this is currently used.
   // The url <-> URLData mapping will be eventually be invalidated if
   // this is not called regularly.
   void Use();
 
   // Returns true if this UrlData has not yet had a data origin set, or if
-  // |origin|, |is_cors_cross_origin|, and |has_cross_origin_redirect| are
-  // compatible with the existing data origin, CORS cross-origin state, and
-  // redirect state.
+  // |origin|, |is_cors_cross_origin|, |has_cross_origin_redirect|, and
+  // |was_fetched_via_service_worker| are compatible with the existing state.
   bool CanAcceptDataFrom(const KURL& origin,
                          bool is_cors_cross_origin,
-                         bool has_cross_origin_redirect = false) const;
+                         bool has_cross_origin_redirect = false,
+                         bool was_fetched_via_service_worker = false) const;
 
-  // Sets the data origin, CORS cross-origin state, and cross-origin redirect
-  // state. Must only be called when CanAcceptDataFrom(origin,
-  // is_cors_cross_origin, has_cross_origin_redirect) is true.
+  // Sets the data origin, CORS cross-origin state, cross-origin redirect
+  // state, and service worker provenance. Must only be called when
+  // CanAcceptDataFrom() is true.
   void SetDataOrigin(const KURL& origin,
                      bool is_cors_cross_origin,
-                     bool has_cross_origin_redirect = false);
+                     bool has_cross_origin_redirect = false,
+                     bool was_fetched_via_service_worker = false);
 
   // Setters.
   void set_length(int64_t length);
@@ -235,12 +242,16 @@ class PLATFORM_EXPORT UrlData : public RefCounted<UrlData> {
   // resource).
   void RedirectTo(const scoped_refptr<UrlData>& to);
 
-  // Fail, tell all clients that a failure has occurred.
+  // Fail, tell all clients that a failure has occurred. Permanently marks this
+  // UrlData as invalid for reuse via UrlIndex, and immediately evicts it from
+  // UrlIndex if it has no cached blocks.
   void Fail();
 
-  // Marks this data as CORS cross-origin before calling Fail(). Used when a
-  // request fails due to cross-origin security restrictions (e.g., ORB, CORP,
-  // or CORS violations) before a response is received.
+  // Marks this data as CORS cross-origin if no data origin has been established
+  // yet, then calls Fail(). Used when a request fails due to cross-origin
+  // security restrictions (e.g., ORB, CORP, or CORS violations) so initial
+  // cross-origin blocks are marked cross-origin without mutating the taint
+  // state of an already-established UrlData.
   void CrossOriginFail();
 
   // Callback for receiving notifications when a redirect occurs.
@@ -255,6 +266,10 @@ class PLATFORM_EXPORT UrlData : public RefCounted<UrlData> {
   // A single media player instance may choose to ignore this for resources
   // that have already been opened.
   bool Valid();
+
+  // True once Fail() has been called on this UrlData or its owning UrlIndex
+  // has been destroyed.
+  bool HasFailed() const;
 
   // Virtual so we can override it for testing.
   virtual ResourceMultiBuffer* multibuffer();
@@ -295,8 +310,9 @@ class PLATFORM_EXPORT UrlData : public RefCounted<UrlData> {
   // Requesting document's security origin.
   const scoped_refptr<const SecurityOrigin> security_origin_;
 
-  // Origin of the data, should only be different from the
-  // url_.DeprecatedGetOriginAsURL() when service workers are involved.
+  // Full response URL that established the resource's origin (empty for
+  // constructed `new Response()` service worker responses). May differ from
+  // `url_` due to redirects, HTTPS upgrades, or service worker responses.
   std::optional<KURL> data_origin_;
 
   // Cross-origin access mode.
@@ -345,6 +361,13 @@ class PLATFORM_EXPORT UrlData : public RefCounted<UrlData> {
   // True if loading this UrlData traversed a cross-origin redirect that must be
   // replayed on follow-up range requests.
   bool has_cross_origin_redirect_ = false;
+
+  // True if any response establishing or merged into this UrlData was an
+  // opaque response fetched via a service worker.
+  bool has_opaque_service_worker_response_ = false;
+
+  // True once Fail() has been called on this UrlData.
+  bool has_failed_ = false;
 
   // Last time some media time used this resource.
   // Note that we use base::Time rather than base::TimeTicks because
