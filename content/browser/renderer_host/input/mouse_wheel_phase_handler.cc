@@ -4,6 +4,8 @@
 
 #include "content/browser/renderer_host/input/mouse_wheel_phase_handler.h"
 
+#include <cmath>
+
 #include "base/functional/bind.h"
 #include "base/trace_event/trace_event.h"
 #include "components/input/render_widget_host_input_event_router.h"
@@ -100,10 +102,28 @@ void MouseWheelPhaseHandler::AddPhaseIfNeededAndScheduleEndEvent(
       }
       case TOUCHPAD_SCROLL_MAY_BEGIN:
         mouse_wheel_event.phase = blink::WebMouseWheelEvent::kPhaseBegan;
+        initial_wheel_event_ = mouse_wheel_event;
+        first_scroll_update_ack_state_ = FirstScrollUpdateAckState::kNotArrived;
         touchpad_scroll_phase_state_ = TOUCHPAD_SCROLL_IN_PROGRESS;
         break;
       case TOUCHPAD_SCROLL_IN_PROGRESS:
-        mouse_wheel_event.phase = blink::WebMouseWheelEvent::kPhaseChanged;
+        // If the first scroll update of this sequence was not consumed and the
+        // user reverses direction without lifting their fingers, end the
+        // current sequence and start a new one so the new direction can
+        // re-latch (matching timer-based latching above).
+        if (ShouldBreakLatchingDueToDirectionChange(mouse_wheel_event)) {
+          SendSyntheticWheelEventWithPhaseEnded(should_route_event);
+          mouse_wheel_event.phase = blink::WebMouseWheelEvent::kPhaseBegan;
+          initial_wheel_event_ = mouse_wheel_event;
+          first_scroll_update_ack_state_ =
+              FirstScrollUpdateAckState::kNotArrived;
+        } else {
+          if ((mouse_wheel_event.delta_x || mouse_wheel_event.delta_y) &&
+              !initial_wheel_event_.delta_x && !initial_wheel_event_.delta_y) {
+            initial_wheel_event_ = mouse_wheel_event;
+          }
+          mouse_wheel_event.phase = blink::WebMouseWheelEvent::kPhaseChanged;
+        }
         break;
       default:
         NOTREACHED();
@@ -226,21 +246,26 @@ bool MouseWheelPhaseHandler::HasDifferentModifiers(
 
 bool MouseWheelPhaseHandler::ShouldBreakLatchingDueToDirectionChange(
     const blink::WebMouseWheelEvent& wheel_event) const {
-  // This function is called to check if breaking timer-based wheel scroll
-  // latching sequence is needed or not, and timer-based wheel scroll latching
-  // happens only when scroll state is unknown.
-  CHECK(touchpad_scroll_phase_state_ == TOUCHPAD_SCROLL_STATE_UNKNOWN,
+  // This function is called to check if breaking either a timer-based wheel
+  // scroll latching sequence or a touchpad scroll sequence is needed.
+  CHECK(touchpad_scroll_phase_state_ == TOUCHPAD_SCROLL_STATE_UNKNOWN ||
+            touchpad_scroll_phase_state_ == TOUCHPAD_SCROLL_IN_PROGRESS,
         base::NotFatalUntil::M152);
   if (first_scroll_update_ack_state_ != FirstScrollUpdateAckState::kNotConsumed)
     return false;
 
-  bool consistent_x_direction =
-      (wheel_event.delta_x == 0 && initial_wheel_event_.delta_x == 0) ||
-      wheel_event.delta_x * initial_wheel_event_.delta_x > 0;
-  bool consistent_y_direction =
-      (wheel_event.delta_y == 0 && initial_wheel_event_.delta_y == 0) ||
-      wheel_event.delta_y * initial_wheel_event_.delta_y > 0;
-  return !consistent_x_direction || !consistent_y_direction;
+  if ((!wheel_event.delta_x && !wheel_event.delta_y) ||
+      (!initial_wheel_event_.delta_x && !initial_wheel_event_.delta_y)) {
+    return false;
+  }
+  const bool initial_main_axis_is_x = std::abs(initial_wheel_event_.delta_x) >
+                                      std::abs(initial_wheel_event_.delta_y);
+  const bool current_main_axis_is_x =
+      std::abs(wheel_event.delta_x) > std::abs(wheel_event.delta_y);
+  return initial_main_axis_is_x != current_main_axis_is_x ||
+         (current_main_axis_is_x
+              ? wheel_event.delta_x * initial_wheel_event_.delta_x < 0
+              : wheel_event.delta_y * initial_wheel_event_.delta_y < 0);
 }
 
 void MouseWheelPhaseHandler::GestureEventAck(

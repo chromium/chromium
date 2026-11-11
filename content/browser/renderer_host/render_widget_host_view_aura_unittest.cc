@@ -2218,6 +2218,253 @@ TEST_F(RenderWidgetHostViewAuraTest,
   EXPECT_EQ(WebMouseWheelEvent::kPhaseBegan, wheel_event->phase);
 }
 
+// Tests that touchpad scroll latching (a scroll sequence that started with a
+// GFC, e.g. on Wayland) breaks when the scroll direction changes and the first
+// GSU of the sequence was not consumed.
+TEST_F(RenderWidgetHostViewAuraTest,
+       TouchpadScrollLatchingBreaksWithDirectionChange) {
+  InitViewForFrame(nullptr);
+  view_->ShowWithVisibility(PageVisibilityState::kVisible);
+
+  // The user puts their fingers down.
+  ui::ScrollEvent fling_cancel(ui::EventType::kScrollFlingCancel,
+                               gfx::Point(2, 2), ui::EventTimeForNow(), 0, 0, 0,
+                               0, 0, 2);
+  view_->OnScrollEvent(&fling_cancel);
+  GetAndResetDispatchedMessages();
+
+  // The user scrolls in a direction that nothing can scroll in.
+  ui::ScrollEvent scroll0(ui::EventType::kScroll, gfx::Point(2, 2),
+                          ui::EventTimeForNow(), 0, 0, 5, 0, 5, 2);
+  view_->OnScrollEvent(&scroll0);
+  MockWidgetInputHandler::MessageVector events =
+      GetAndResetDispatchedMessages();
+  ASSERT_EQ("MouseWheel", GetMessageNames(events));
+  const WebMouseWheelEvent* wheel_event =
+      static_cast<const WebMouseWheelEvent*>(
+          &events[0]->ToEvent()->Event()->Event());
+  EXPECT_EQ(WebMouseWheelEvent::kPhaseBegan, wheel_event->phase);
+  events[0]->ToEvent()->CallCallback(
+      blink::mojom::InputEventResultState::kNotConsumed);
+
+  // ACK the GSU as NOT_CONSUMED.
+  events = GetAndResetDispatchedMessages();
+  ASSERT_EQ("GestureScrollBegin GestureScrollUpdate", GetMessageNames(events));
+  events[0]->ToEvent()->CallCallback(
+      blink::mojom::InputEventResultState::kNotConsumed);
+  events[1]->ToEvent()->CallCallback(
+      blink::mojom::InputEventResultState::kNotConsumed);
+  EXPECT_EQ(
+      content::TOUCHPAD_SCROLL_IN_PROGRESS,
+      GetMouseWheelPhaseHandler()->touchpad_scroll_phase_state_for_test());
+
+  // Continuing in the same direction keeps the latching.
+  ui::ScrollEvent scroll1(ui::EventType::kScroll, gfx::Point(2, 2),
+                          ui::EventTimeForNow(), 0, 0, 5, 0, 5, 2);
+  view_->OnScrollEvent(&scroll1);
+  events = GetAndResetDispatchedMessages();
+  ASSERT_EQ("MouseWheel GestureScrollUpdate", GetMessageNames(events));
+  wheel_event = static_cast<const WebMouseWheelEvent*>(
+      &events[0]->ToEvent()->Event()->Event());
+  EXPECT_EQ(WebMouseWheelEvent::kPhaseChanged, wheel_event->phase);
+  events[1]->ToEvent()->CallCallback(
+      blink::mojom::InputEventResultState::kNotConsumed);
+
+  // Reversing the direction without lifting the fingers ends the current
+  // sequence and starts a new one.
+  ui::ScrollEvent scroll2(ui::EventType::kScroll, gfx::Point(2, 2),
+                          ui::EventTimeForNow(), 0, 0, -5, 0, -5, 2);
+  view_->OnScrollEvent(&scroll2);
+  events = GetAndResetDispatchedMessages();
+  ASSERT_EQ("MouseWheel GestureScrollEnd MouseWheel", GetMessageNames(events));
+  wheel_event = static_cast<const WebMouseWheelEvent*>(
+      &events[0]->ToEvent()->Event()->Event());
+  EXPECT_EQ(WebMouseWheelEvent::kPhaseEnded, wheel_event->phase);
+  wheel_event = static_cast<const WebMouseWheelEvent*>(
+      &events[2]->ToEvent()->Event()->Event());
+  EXPECT_EQ(WebMouseWheelEvent::kPhaseBegan, wheel_event->phase);
+  EXPECT_EQ(
+      content::TOUCHPAD_SCROLL_IN_PROGRESS,
+      GetMouseWheelPhaseHandler()->touchpad_scroll_phase_state_for_test());
+}
+
+// Tests that touchpad scroll latching does not break on a direction change
+// when the first GSU of the sequence was consumed.
+TEST_F(RenderWidgetHostViewAuraTest,
+       TouchpadScrollLatchingKeptWithDirectionChangeAfterConsumedGSU) {
+  InitViewForFrame(nullptr);
+  view_->ShowWithVisibility(PageVisibilityState::kVisible);
+
+  ui::ScrollEvent fling_cancel(ui::EventType::kScrollFlingCancel,
+                               gfx::Point(2, 2), ui::EventTimeForNow(), 0, 0, 0,
+                               0, 0, 2);
+  view_->OnScrollEvent(&fling_cancel);
+  GetAndResetDispatchedMessages();
+
+  ui::ScrollEvent scroll0(ui::EventType::kScroll, gfx::Point(2, 2),
+                          ui::EventTimeForNow(), 0, 0, 5, 0, 5, 2);
+  view_->OnScrollEvent(&scroll0);
+  MockWidgetInputHandler::MessageVector events =
+      GetAndResetDispatchedMessages();
+  ASSERT_EQ("MouseWheel", GetMessageNames(events));
+  events[0]->ToEvent()->CallCallback(
+      blink::mojom::InputEventResultState::kNotConsumed);
+
+  // ACK the GSU as CONSUMED.
+  events = GetAndResetDispatchedMessages();
+  ASSERT_EQ("GestureScrollBegin GestureScrollUpdate", GetMessageNames(events));
+  events[0]->ToEvent()->CallCallback(
+      blink::mojom::InputEventResultState::kConsumed);
+  events[1]->ToEvent()->CallCallback(
+      blink::mojom::InputEventResultState::kConsumed);
+
+  ui::ScrollEvent scroll1(ui::EventType::kScroll, gfx::Point(2, 2),
+                          ui::EventTimeForNow(), 0, 0, -5, 0, -5, 2);
+  view_->OnScrollEvent(&scroll1);
+  events = GetAndResetDispatchedMessages();
+  ASSERT_EQ("MouseWheel GestureScrollUpdate", GetMessageNames(events));
+  const WebMouseWheelEvent* wheel_event =
+      static_cast<const WebMouseWheelEvent*>(
+          &events[0]->ToEvent()->Event()->Event());
+  EXPECT_EQ(WebMouseWheelEvent::kPhaseChanged, wheel_event->phase);
+}
+
+// Tests that small secondary-axis scroll deltas (e.g. vertical jitter during a
+// large horizontal scroll) do not count as a direction change and do not break
+// touchpad scroll latching when the main axis of movement stays the same.
+TEST_F(RenderWidgetHostViewAuraTest,
+       TouchpadScrollLatchingKeptWithSecondaryAxisJitter) {
+  InitViewForFrame(nullptr);
+  view_->ShowWithVisibility(PageVisibilityState::kVisible);
+
+  ui::ScrollEvent fling_cancel(ui::EventType::kScrollFlingCancel,
+                               gfx::Point(2, 2), ui::EventTimeForNow(), 0, 0, 0,
+                               0, 0, 2);
+  view_->OnScrollEvent(&fling_cancel);
+  GetAndResetDispatchedMessages();
+
+  // Start with a horizontal scroll whose first GSU is not consumed.
+  ui::ScrollEvent scroll0(ui::EventType::kScroll, gfx::Point(2, 2),
+                          ui::EventTimeForNow(), 0, 50, 1, 50, 1, 2);
+  view_->OnScrollEvent(&scroll0);
+  MockWidgetInputHandler::MessageVector events =
+      GetAndResetDispatchedMessages();
+  ASSERT_EQ("MouseWheel", GetMessageNames(events));
+  events[0]->ToEvent()->CallCallback(
+      blink::mojom::InputEventResultState::kNotConsumed);
+
+  events = GetAndResetDispatchedMessages();
+  ASSERT_EQ("GestureScrollBegin GestureScrollUpdate", GetMessageNames(events));
+  events[0]->ToEvent()->CallCallback(
+      blink::mojom::InputEventResultState::kNotConsumed);
+  events[1]->ToEvent()->CallCallback(
+      blink::mojom::InputEventResultState::kNotConsumed);
+
+  // Continue scrolling in the same horizontal direction with opposite vertical
+  // jitter. Since the main axis of movement is still +x, latching is kept.
+  ui::ScrollEvent scroll1(ui::EventType::kScroll, gfx::Point(2, 2),
+                          ui::EventTimeForNow(), 0, 50, -2, 50, -2, 2);
+  view_->OnScrollEvent(&scroll1);
+  events = GetAndResetDispatchedMessages();
+  ASSERT_EQ("MouseWheel GestureScrollUpdate", GetMessageNames(events));
+  const WebMouseWheelEvent* wheel_event =
+      static_cast<const WebMouseWheelEvent*>(
+          &events[0]->ToEvent()->Event()->Event());
+  EXPECT_EQ(WebMouseWheelEvent::kPhaseChanged, wheel_event->phase);
+  events[1]->ToEvent()->CallCallback(
+      blink::mojom::InputEventResultState::kNotConsumed);
+
+  // Reversing the main axis (-x) breaks latching even if the secondary axis
+  // has the same sign as the initial event.
+  ui::ScrollEvent scroll2(ui::EventType::kScroll, gfx::Point(2, 2),
+                          ui::EventTimeForNow(), 0, -50, 1, -50, 1, 2);
+  view_->OnScrollEvent(&scroll2);
+  events = GetAndResetDispatchedMessages();
+  ASSERT_EQ("MouseWheel GestureScrollEnd MouseWheel", GetMessageNames(events));
+  wheel_event = static_cast<const WebMouseWheelEvent*>(
+      &events[0]->ToEvent()->Event()->Event());
+  EXPECT_EQ(WebMouseWheelEvent::kPhaseEnded, wheel_event->phase);
+  wheel_event = static_cast<const WebMouseWheelEvent*>(
+      &events[2]->ToEvent()->Event()->Event());
+  EXPECT_EQ(WebMouseWheelEvent::kPhaseBegan, wheel_event->phase);
+}
+
+// Tests that when a touchpad scroll initiates a history-swipe overscroll in one
+// direction and then reverses direction without lifting the fingers, the
+// direction reversal cancels the overscroll rather than initiating a history
+// navigation in the other direction.
+TEST_F(RenderWidgetHostViewAuraOverscrollTest,
+       TouchpadScrollDirectionChangeCancelsOverscroll) {
+  SetUpOverscrollEnvironment();
+
+  ui::ScrollEvent fling_cancel(ui::EventType::kScrollFlingCancel,
+                               gfx::Point(2, 2), ui::EventTimeForNow(), 0, 0, 0,
+                               0, 0, 2);
+  view_->OnScrollEvent(&fling_cancel);
+  GetAndResetDispatchedMessages();
+
+  // Scroll right past the overscroll start threshold (60 DIPs) to initiate an
+  // east history-swipe overscroll.
+  ui::ScrollEvent scroll_east(ui::EventType::kScroll, gfx::Point(2, 2),
+                              ui::EventTimeForNow(), 0, 70, 0, 70, 0, 2);
+  view_->OnScrollEvent(&scroll_east);
+  MockWidgetInputHandler::MessageVector events =
+      GetAndResetDispatchedMessages();
+  ASSERT_EQ("MouseWheel", GetMessageNames(events));
+  events[0]->ToEvent()->CallCallback(
+      blink::mojom::InputEventResultState::kNotConsumed);
+
+  events = GetAndResetDispatchedMessages();
+  ASSERT_EQ("GestureScrollBegin GestureScrollUpdate", GetMessageNames(events));
+  events[0]->ToEvent()->CallCallback(
+      blink::mojom::InputEventResultState::kConsumed);
+  events[1]->ToEvent()->CallCallback(
+      blink::mojom::InputEventResultState::kNotConsumed);
+  EXPECT_EQ(OVERSCROLL_EAST, overscroll_mode());
+  EXPECT_EQ(OverscrollSource::TOUCHPAD, overscroll_source());
+  EXPECT_EQ(OVERSCROLL_EAST, overscroll_delegate()->current_mode());
+
+  // Reverse direction enough to abort the east overscroll.
+  ui::ScrollEvent scroll_west1(ui::EventType::kScroll, gfx::Point(2, 2),
+                               ui::EventTimeForNow(), 0, -20, 0, -20, 0, 2);
+  view_->OnScrollEvent(&scroll_west1);
+  events = GetAndResetDispatchedMessages();
+  ASSERT_EQ("MouseWheel GestureScrollEnd MouseWheel", GetMessageNames(events));
+  events[1]->ToEvent()->CallCallback(
+      blink::mojom::InputEventResultState::kNotConsumed);
+  events[2]->ToEvent()->CallCallback(
+      blink::mojom::InputEventResultState::kNotConsumed);
+
+  events = GetAndResetDispatchedMessages();
+  ASSERT_EQ("GestureScrollBegin", GetMessageNames(events));
+  events[0]->ToEvent()->CallCallback(
+      blink::mojom::InputEventResultState::kConsumed);
+  EXPECT_EQ(OVERSCROLL_NONE, overscroll_mode());
+  EXPECT_EQ(OverscrollSource::NONE, overscroll_source());
+  EXPECT_EQ(OVERSCROLL_NONE, overscroll_delegate()->current_mode());
+
+  // Continue scrolling in the reverse direction well past the overscroll
+  // threshold. Overscroll in the west direction must not be initiated.
+  ui::ScrollEvent scroll_west2(ui::EventType::kScroll, gfx::Point(2, 2),
+                               ui::EventTimeForNow(), 0, -100, 0, -100, 0, 2);
+  view_->OnScrollEvent(&scroll_west2);
+  events = GetAndResetDispatchedMessages();
+  ASSERT_EQ("MouseWheel", GetMessageNames(events));
+  EXPECT_EQ(OVERSCROLL_NONE, overscroll_mode());
+  EXPECT_EQ(OverscrollSource::NONE, overscroll_source());
+  EXPECT_EQ(OVERSCROLL_NONE, overscroll_delegate()->current_mode());
+  EXPECT_EQ(OVERSCROLL_NONE, overscroll_delegate()->completed_mode());
+
+  // Lifting the fingers ends the sequence without completing any navigation.
+  ui::ScrollEvent fling_start(ui::EventType::kScrollFlingStart,
+                              gfx::Point(2, 2), ui::EventTimeForNow(), 0, 0, 0,
+                              0, 0, 2);
+  view_->OnScrollEvent(&fling_start);
+  EXPECT_EQ(OVERSCROLL_NONE, overscroll_mode());
+  EXPECT_EQ(OVERSCROLL_NONE, overscroll_delegate()->current_mode());
+  EXPECT_EQ(OVERSCROLL_NONE, overscroll_delegate()->completed_mode());
+}
+
 TEST_F(RenderWidgetHostViewAuraTest,
        TimerBasedLatchingBreaksWithAutoscrollStart) {
   // Set the mouse_wheel_phase_handler_ timer timeout to a large value to make

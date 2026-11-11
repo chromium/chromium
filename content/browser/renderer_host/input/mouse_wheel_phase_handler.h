@@ -113,6 +113,10 @@ class CONTENT_EXPORT MouseWheelPhaseHandler {
   bool IsWithinSlopRegion(const blink::WebMouseWheelEvent& wheel_event) const;
   bool HasDifferentModifiers(
       const blink::WebMouseWheelEvent& wheel_event) const;
+  // Returns true when the first scroll update of the current sequence was not
+  // consumed and `wheel_event` scrolls along a different main axis or in the
+  // opposite direction from `initial_wheel_event_`. Used by both timer based
+  // latching and phase based touchpad scrolling.
   bool ShouldBreakLatchingDueToDirectionChange(
       const blink::WebMouseWheelEvent& wheel_event) const;
 
@@ -127,9 +131,13 @@ class CONTENT_EXPORT MouseWheelPhaseHandler {
   // dispatch timer is running.
   gfx::Vector2dF first_wheel_location_;
 
-  // This is used to break the timer based latching when the new wheel event has
-  // different modifiers or when it is in a different direction from the
-  // previous wheel events and the scrolling has been ignored.
+  // The first wheel event of the current scroll sequence (for phase based
+  // touchpad scrolling, the first one with a non-zero delta). In timer based
+  // latching it is used to break the latching when the new wheel event has
+  // different modifiers. In both timer based latching and phase based touchpad
+  // scrolling it is used to break the latching when the new wheel event is in
+  // a different direction from the previous wheel events and the first scroll
+  // update of the sequence was not consumed.
   blink::WebMouseWheelEvent initial_wheel_event_;
 
   FirstScrollUpdateAckState first_scroll_update_ack_state_ =
