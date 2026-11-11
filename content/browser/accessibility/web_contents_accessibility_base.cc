@@ -3302,7 +3302,9 @@ static int64_t JNI_WebContentsAccessibilityImpl_Init(
     JNIEnv* env,
     const JavaRef<jobject>& jweb_contents) {
   WebContents* web_contents = WebContents::FromJavaWebContents(jweb_contents);
-  CHECK(web_contents, base::NotFatalUntil::M159);
+  // TODO(crbug.com/584572674): CHECK-exclusion:  Convert to a CHECK once we are
+  // confident it won't be triggered.
+  CHECK(web_contents, base::NotFatalUntil::M163);
 
   return reinterpret_cast<intptr_t>(
       new WebContentsAccessibilityBase(web_contents));
