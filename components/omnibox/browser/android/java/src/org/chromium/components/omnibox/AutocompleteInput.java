@@ -274,7 +274,10 @@ public class AutocompleteInput implements UserData {
                     PageClassification.NTP_OMNIBOX_COMPOSEBOX;
             case PageClassification.SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT ->
                     PageClassification.SRP_OMNIBOX_COMPOSEBOX;
-            case PageClassification.OTHER, PageClassification.ANDROID_SHORTCUTS_WIDGET ->
+            case PageClassification.BLANK,
+                    PageClassification.HOME_PAGE,
+                    PageClassification.OTHER,
+                    PageClassification.ANDROID_SHORTCUTS_WIDGET ->
                     PageClassification.OTHER_OMNIBOX_COMPOSEBOX;
             // LINT.ThenChange(/chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/fusebox/FuseboxCoordinator.java:FuseboxSupportedPageClassifications)
             default -> {

@@ -251,7 +251,13 @@ public class AutocompleteInputUnitTest {
                         Map.entry(
                                 PageClassification.SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
                                 PageClassification.SRP_OMNIBOX_COMPOSEBOX),
-                        // Web
+                        // Web, blank, and custom homepage
+                        Map.entry(
+                                PageClassification.BLANK,
+                                PageClassification.OTHER_OMNIBOX_COMPOSEBOX),
+                        Map.entry(
+                                PageClassification.HOME_PAGE,
+                                PageClassification.OTHER_OMNIBOX_COMPOSEBOX),
                         Map.entry(
                                 PageClassification.OTHER,
                                 PageClassification.OTHER_OMNIBOX_COMPOSEBOX),
