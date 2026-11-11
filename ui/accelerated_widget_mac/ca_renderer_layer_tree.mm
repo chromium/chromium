@@ -998,13 +998,15 @@ CARendererLayerTree::ContentLayer::ContentLayer(
 CARendererLayerTree::ContentLayer::ContentLayer(
     TransformLayer* parent_layer,
     std::vector<CABackdropFilter> backdrop_filters,
-    const gfx::RRectF& backdrop_filter_bounds)
+    const gfx::RRectF& backdrop_filter_bounds,
+    const std::optional<gfx::RectF>& backdrop_filter_clip)
     : parent_layer_(parent_layer),
       rect_(backdrop_filter_bounds.rect()),
       ca_filter_(kCAFilterLinear),
       type_(CALayerType::kBackdropFilter),
       backdrop_filters_(std::move(backdrop_filters)),
-      backdrop_filter_bounds_(backdrop_filter_bounds) {}
+      backdrop_filter_bounds_(backdrop_filter_bounds),
+      backdrop_filter_clip_(backdrop_filter_clip) {}
 
 CARendererLayerTree::ContentLayer::~ContentLayer() {
   [ca_layer_ removeFromSuperlayer];
@@ -1073,7 +1075,8 @@ void CARendererLayerTree::TransformLayer::AddContentLayer(
   if (!params.backdrop_filters.empty()) {
     gfx::RRectF bounds = params.backdrop_filter_bounds.value_or(
         gfx::RRectF(gfx::RectF(params.rect)));
-    content_layers_.emplace_back(this, params.backdrop_filters, bounds);
+    content_layers_.emplace_back(this, params.backdrop_filters, bounds,
+                                 params.backdrop_filter_clip);
   }
   content_layers_.emplace_back(this, params);
 }
@@ -1294,7 +1297,8 @@ void CARendererLayerTree::ContentLayer::CommitToCA(
     update_opacity = old_layer_->opacity_ != opacity_;
     update_ca_filter = old_layer_->ca_filter_ != ca_filter_;
     update_backdrop_filter_bounds =
-        old_layer_->backdrop_filter_bounds_ != backdrop_filter_bounds_;
+        old_layer_->backdrop_filter_bounds_ != backdrop_filter_bounds_ ||
+        old_layer_->backdrop_filter_clip_ != backdrop_filter_clip_;
     update_backdrop_filter = old_layer_->backdrop_filters_ != backdrop_filters_;
     if (type_ == CALayerType::kVideo) {
       av_layer_.preventsCapture =
@@ -1494,8 +1498,10 @@ void CARendererLayerTree::ContentLayer::CommitBackdropFilterToCA(
     // cornerRadius, maskedCorners, and masksToBounds = YES, avoiding expensive
     // offscreen mask render passes in WindowServer. Only fall back to a
     // CAShapeLayer mask when the corners are elliptical or have multiple
-    // distinct non-zero radii.
-    if (ApplyCornerRadiusToCALayer(ca_layer_, bounds, tree()->scale_factor_)) {
+    // distinct non-zero radii, or an otherwise-allowed shape is being clipped
+    // in a way that stops it from being valid.
+    if (!backdrop_filter_clip_ &&
+        ApplyCornerRadiusToCALayer(ca_layer_, bounds, tree()->scale_factor_)) {
       if (ca_layer_.mask) {
         ca_layer_.mask = nil;
       }
@@ -1508,7 +1514,15 @@ void CARendererLayerTree::ContentLayer::CommitBackdropFilterToCA(
             CGColorGetConstantColor(kCGColorBlack);
       }
       backdrop_mask_ca_layer_.position = CGPointZero;
-      backdrop_mask_ca_layer_.bounds = ca_layer_.bounds;
+      if (backdrop_filter_clip_.has_value()) {
+        gfx::RectF dip_clip_rect = backdrop_filter_clip_.value();
+        dip_clip_rect.Scale(1.0f / tree()->scale_factor_);
+        backdrop_mask_ca_layer_.bounds =
+            CGRectMake(dip_clip_rect.x(), dip_clip_rect.y(),
+                       dip_clip_rect.width(), dip_clip_rect.height());
+      } else {
+        backdrop_mask_ca_layer_.bounds = ca_layer_.bounds;
+      }
       backdrop_mask_ca_layer_.contentsScale = tree()->scale_factor_;
       base::apple::ScopedCFTypeRef<CGPathRef> path =
           CreatePathForRRect(bounds, tree()->scale_factor_);

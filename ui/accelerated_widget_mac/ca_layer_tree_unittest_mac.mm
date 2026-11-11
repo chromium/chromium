@@ -57,6 +57,7 @@ struct CALayerProperties {
   bool allow_solid_color_layers = true;
   std::vector<ui::CABackdropFilter> backdrop_filters;
   std::optional<gfx::RRectF> backdrop_filter_bounds;
+  std::optional<gfx::RectF> backdrop_filter_clip;
 };
 
 base::apple::ScopedCFTypeRef<CVPixelBufferRef> CreateCVPixelBuffer(
@@ -82,7 +83,8 @@ bool ScheduleCALayer(ui::CARendererLayerTree* tree,
       properties->contents_rect, properties->rect, properties->background_color,
       properties->edge_aa_mask, properties->opacity, properties->filter,
       gfx::HDRMetadata(), properties->protected_video_type, false,
-      properties->backdrop_filters, properties->backdrop_filter_bounds));
+      properties->backdrop_filters, properties->backdrop_filter_bounds,
+      properties->backdrop_filter_clip));
 }
 
 void UpdateCALayerTree(std::unique_ptr<ui::CARendererLayerTree>& ca_layer_tree,
@@ -1555,6 +1557,64 @@ TEST_F(CALayerTreeTest, BackdropFilterBoundsOval) {
   EXPECT_DOUBLE_EQ(50.0, backdrop_layer.mask.bounds.size.height);
   EXPECT_DOUBLE_EQ(0.0, backdrop_layer.cornerRadius);
 }
+
+TEST_F(CALayerTreeTest, BackdropFilterBoundsCircleClipped) {
+  CALayerProperties properties;
+  properties.rect = gfx::Rect(0, 0, 160, 160);
+  properties.scale_factor = 2.0f;
+  properties.backdrop_filters.push_back(
+      ui::CABackdropFilter{.blur_radius = 30.0f});
+  // Circle: width 160, height 160, radius 80.
+  // Circles have uniform X and Y radii (kSingle), so they would clip natively
+  // via cornerRadius if there were no clip.
+  properties.backdrop_filter_bounds =
+      gfx::RRectF(SkRRect::MakeOval(SkRect::MakeXYWH(0, 0, 160, 160)));
+  properties.backdrop_filter_clip = gfx::RectF(20, 20, 140, 140);
+
+  std::unique_ptr<ui::CARendererLayerTree> ca_layer_tree;
+  UpdateCALayerTree(ca_layer_tree, &properties, superlayer_);
+
+  // This now forces the use of a clipped path.
+  CALayer* backdrop_layer = [GetOnlyTransformLayer() sublayers][0];
+  ASSERT_NE(nil, backdrop_layer.mask);
+  EXPECT_TRUE([backdrop_layer.mask isKindOfClass:[CAShapeLayer class]]);
+  CAShapeLayer* shape_mask = (CAShapeLayer*)backdrop_layer.mask;
+  EXPECT_NE(nil, shape_mask.path);
+  EXPECT_DOUBLE_EQ(10.0, backdrop_layer.mask.bounds.origin.x);
+  EXPECT_DOUBLE_EQ(10.0, backdrop_layer.mask.bounds.origin.y);
+  EXPECT_DOUBLE_EQ(70.0, backdrop_layer.mask.bounds.size.width);
+  EXPECT_DOUBLE_EQ(70.0, backdrop_layer.mask.bounds.size.height);
+  EXPECT_DOUBLE_EQ(0.0, backdrop_layer.cornerRadius);
+}
+
+TEST_F(CALayerTreeTest, BackdropFilterBoundsOvalClipped) {
+  CALayerProperties properties;
+  properties.rect = gfx::Rect(0, 0, 200, 100);
+  properties.scale_factor = 2.0f;
+  properties.backdrop_filters.push_back({.blur_radius = 30.0f});
+  // Non-circular oval: width 200, height 100 (rx != ry).
+  // This requires a CAShapeLayer mask since CoreAnimation cornerRadius only
+  // supports circular radii.
+  properties.backdrop_filter_bounds =
+      gfx::RRectF(SkRRect::MakeOval(SkRect::MakeXYWH(0, 0, 200, 100)));
+  // Additionally, add a clip that cuts into the rrect.
+  properties.backdrop_filter_clip = gfx::RectF(20, 20, 180, 80);
+
+  std::unique_ptr<ui::CARendererLayerTree> ca_layer_tree;
+  UpdateCALayerTree(ca_layer_tree, &properties, superlayer_);
+
+  CALayer* backdrop_layer = [GetOnlyTransformLayer() sublayers][0];
+  ASSERT_NE(nil, backdrop_layer.mask);
+  EXPECT_TRUE([backdrop_layer.mask isKindOfClass:[CAShapeLayer class]]);
+  CAShapeLayer* shape_mask = (CAShapeLayer*)backdrop_layer.mask;
+  EXPECT_NE(nil, shape_mask.path);
+  EXPECT_DOUBLE_EQ(10.0, backdrop_layer.mask.bounds.origin.x);
+  EXPECT_DOUBLE_EQ(10.0, backdrop_layer.mask.bounds.origin.y);
+  EXPECT_DOUBLE_EQ(90.0, backdrop_layer.mask.bounds.size.width);
+  EXPECT_DOUBLE_EQ(40.0, backdrop_layer.mask.bounds.size.height);
+  EXPECT_DOUBLE_EQ(0.0, backdrop_layer.cornerRadius);
+}
+
 TEST_F(CALayerTreeTest, BackdropFilterBlurAndColorMatrix) {
   CALayerProperties properties;
   properties.rect = gfx::Rect(0, 0, 256, 256);

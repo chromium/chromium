@@ -320,7 +320,16 @@ CALayerBackdropResult ExtractBackdropFilter(
       gfx::RectF effective_visible_rect = visible_rect;
       effective_visible_rect.Outset(1.0f);
       if (!effective_visible_rect.Contains(bounds->rect())) {
-        return CALayerBackdropResult::kUnsupportedRRectClip;
+        // Need to have a second clip rect for the visible area.
+        ca_layer_overlay->backdrop_filter_clip = visible_rect;
+        ca_layer_overlay->backdrop_filter_clip->Intersect(bounds->rect());
+        if (ca_layer_overlay->backdrop_filter_clip->IsEmpty()) {
+          // CARendererLayerTree treats empty `bounds` as "unspecified" and falls back
+          // to the full padded quad `rect_`, so reject empty bounds here.
+          return CALayerBackdropResult::kEmptyBounds;
+        }
+        ca_layer_overlay->backdrop_filter_clip->Offset(
+            -bounds->rect().OffsetFromOrigin());
       }
     }
     // CARendererLayerTree treats empty `bounds` as "unspecified" and falls back

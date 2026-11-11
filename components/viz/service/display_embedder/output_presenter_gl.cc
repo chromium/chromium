@@ -181,7 +181,8 @@ void OutputPresenterGL::ScheduleOverlayPlane(
           overlay_plane_candidate.hdr_metadata,
           overlay_plane_candidate.protected_video_type,
           overlay_plane_candidate.is_render_pass_draw_quad, std::move(filters),
-          overlay_plane_candidate.backdrop_filter_bounds),
+          overlay_plane_candidate.backdrop_filter_bounds,
+          overlay_plane_candidate.backdrop_filter_clip),
       std::move(backpressure_fences));
 
 #endif

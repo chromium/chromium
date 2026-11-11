@@ -26,7 +26,8 @@ CARendererLayerParams::CARendererLayerParams(
     gfx::ProtectedVideoType protected_video_type,
     bool is_render_pass_draw_quad,
     std::vector<CABackdropFilter> backdrop_filters,
-    std::optional<gfx::RRectF> backdrop_filter_bounds)
+    std::optional<gfx::RRectF> backdrop_filter_bounds,
+    std::optional<gfx::RectF> backdrop_filter_clip)
     : is_clipped(is_clipped),
       clip_rect(clip_rect),
       rounded_corner_bounds(rounded_corner_bounds),
@@ -44,7 +45,8 @@ CARendererLayerParams::CARendererLayerParams(
       protected_video_type(protected_video_type),
       is_render_pass_draw_quad(is_render_pass_draw_quad),
       backdrop_filters(std::move(backdrop_filters)),
-      backdrop_filter_bounds(std::move(backdrop_filter_bounds)) {}
+      backdrop_filter_bounds(std::move(backdrop_filter_bounds)),
+      backdrop_filter_clip(std::move(backdrop_filter_clip)) {}
 
 CARendererLayerParams::CARendererLayerParams(
     const CARendererLayerParams& other) = default;

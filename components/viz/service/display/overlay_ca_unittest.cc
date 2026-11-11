@@ -484,9 +484,10 @@ class CALayerOverlayRPDQTest : public CALayerOverlayTest {
   void SetBackdropFilter(
       cc::FilterOperations backdrop_filters,
       std::optional<SkPath> backdrop_filter_bounds = std::nullopt,
-      gfx::Vector2dF filters_scale = gfx::Vector2dF(1, 1)) {
+      gfx::Vector2dF filters_scale = gfx::Vector2dF(1, 1),
+      gfx::Rect visible_rect = kOverlayRect) {
     quad_->SetNew(pass_->shared_quad_state_list.back(), kOverlayRect,
-                  kOverlayRect, render_pass_id_, kInvalidResourceId,
+                  visible_rect, render_pass_id_, kInvalidResourceId,
                   gfx::RectF(), gfx::Size(), false);
     quad_->SetFilters(/*filters=*/{}, std::move(backdrop_filters),
                       std::move(backdrop_filter_bounds), filters_scale,
@@ -670,6 +671,29 @@ TEST_F(CALayerOverlayRPDQTest,
   ASSERT_TRUE(ca_layer_list_.back().backdrop_filter_params.has_value());
   EXPECT_EQ(15.0f, ca_layer_list_.back().backdrop_filter_params->blur_radius);
   EXPECT_EQ(gfx::RRectF(rrect), ca_layer_list_.back().backdrop_filter_bounds);
+}
+
+TEST_F(CALayerOverlayRPDQTest,
+       RenderPassDrawQuadBackdropFilterBoundsAsymmetricClipped) {
+  SkVector radii[4] = {
+      {40.0f, 40.0f}, {10.0f, 10.0f}, {40.0f, 40.0f}, {10.0f, 10.0f}};
+  SkRRect rrect;
+  rrect.setRectRadii(
+      SkRect::MakeXYWH(kOverlayRect.x(), kOverlayRect.y(), kOverlayRect.width(),
+                       kOverlayRect.height()),
+      radii);
+  gfx::Rect clipped_rect = kOverlayRect;
+  clipped_rect.Inset(gfx::Insets::TLBR(20, 20, 0, 0));
+  SetBackdropFilter(
+      cc::FilterOperations({cc::FilterOperation::CreateBlurFilter(15.0f)}),
+      SkPath::RRect(rrect), gfx::Vector2dF(1, 1), clipped_rect);
+  ProcessForOverlays();
+  EXPECT_EQ(1U, test::NumOverlaysExcludingPrimaryPlane(ca_layer_list_));
+  ASSERT_TRUE(ca_layer_list_.back().backdrop_filter_params.has_value());
+  EXPECT_EQ(15.0f, ca_layer_list_.back().backdrop_filter_params->blur_radius);
+  EXPECT_EQ(gfx::RRectF(rrect), ca_layer_list_.back().backdrop_filter_bounds);
+  EXPECT_EQ(gfx::RectF(clipped_rect),
+            ca_layer_list_.back().backdrop_filter_clip);
 }
 
 TEST_F(CALayerOverlayRPDQTest, RenderPassDrawQuadBackdropFilterChainRejected) {

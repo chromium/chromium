@@ -65,7 +65,8 @@ struct GL_EXPORT CARendererLayerParams {
       gfx::ProtectedVideoType protected_video_type,
       bool is_render_pass_draw_quad,
       std::vector<CABackdropFilter> backdrop_filters = {},
-      std::optional<gfx::RRectF> backdrop_filter_bounds = std::nullopt);
+      std::optional<gfx::RRectF> backdrop_filter_bounds = std::nullopt,
+      std::optional<gfx::RectF> backdrop_filter_clip = std::nullopt);
   CARendererLayerParams(const CARendererLayerParams& other);
   ~CARendererLayerParams();
 
@@ -89,6 +90,7 @@ struct GL_EXPORT CARendererLayerParams {
   // Clip bounds in RenderPass local space. Must be representable via native
   // CALayer cornerRadius + maskedCorners. If std::nullopt, defaults to `rect`.
   std::optional<gfx::RRectF> backdrop_filter_bounds;
+  std::optional<gfx::RectF> backdrop_filter_clip;
 };
 
 }  // namespace ui
