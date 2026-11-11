@@ -59,6 +59,11 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/network/public/cpp/ip_address_space_util.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "services/network/public/mojom/client_security_state.mojom.h"
+#include "services/network/public/mojom/ip_address_space.mojom.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
@@ -93,6 +98,39 @@ base::TimeDelta g_min_cross_origin_query_interval = base::Seconds(1);
 bool IsUrlAllowedForWebInstall(const GURL& url) {
   return url.SchemeIs(url::kHttpsScheme) ||
          (url.SchemeIs(url::kHttpScheme) && net::IsLocalhost(url));
+}
+
+// Builds a ClientSecurityState representing `rfh` for Local Network Access
+// (LNA) enforcement on browser-initiated manifest fetches.
+// Note: Because `WebInstallManifestFetcher` uses the profile's browser-process
+// URLLoaderFactory (which has no URLLoaderNetworkServiceObserver to service
+// LNA permission prompts), `local_network_access_request_policy` is hard-set
+// to `kBlock` (fail-closed) rather than `kPermissionBlock`.
+// TODO(crbug.com/562207183): Expose `BuildClientSecurityState()` (or
+// `PolicyContainerPolicies::ip_address_space`) on `content::RenderFrameHost` so
+// policy-container overrides such as `CSP: treat-as-public-address` are also
+// reflected here.
+network::mojom::ClientSecurityStatePtr BuildFrameClientSecurityState(
+    content::RenderFrameHost& rfh) {
+  const GURL& url = rfh.GetLastCommittedURL();
+  std::optional<network::CalculateClientAddressSpaceParams> params;
+  std::optional<network::mojom::IPAddressSpace> sw_address_space;
+  if (const network::mojom::URLResponseHead* response_head =
+          rfh.GetLastResponseHead()) {
+    if (response_head->was_fetched_via_service_worker &&
+        response_head->client_address_space !=
+            network::mojom::IPAddressSpace::kUnknown) {
+      sw_address_space = response_head->client_address_space;
+    }
+    params.emplace(sw_address_space, &response_head->remote_endpoint);
+  }
+  auto state = network::mojom::ClientSecurityState::New();
+  state->ip_address_space = network::CalculateClientAddressSpace(url, params);
+  state->is_web_secure_context =
+      network::IsOriginPotentiallyTrustworthy(rfh.GetLastCommittedOrigin());
+  state->local_network_access_request_policy =
+      network::mojom::LocalNetworkAccessRequestPolicy::kBlock;
+  return state;
 }
 
 std::optional<blink::mojom::WebInstallIssueReason> GetIssueReasonForFetchError(
@@ -252,6 +290,11 @@ void WebInstallServiceImpl::CreateIfAllowed(
   // from window.open() opener).
   if (render_frame_host->IsSandboxed(network::mojom::WebSandboxFlags::kAll)) {
     mojo::ReportBadMessage("WebInstall not allowed in a sandboxed contexts");
+    return;
+  }
+
+  if (!network::IsOriginPotentiallyTrustworthy(
+          render_frame_host->GetLastCommittedOrigin())) {
     return;
   }
 
@@ -548,7 +591,9 @@ void WebInstallServiceImpl::InstallFromManifestInternal(
   // DataErrors (invalid JSON, missing id) are returned accurately. This
   // prevents sites from using error differences to detect Incognito mode.
   manifest_fetcher_ = std::make_unique<WebInstallManifestFetcher>(
-      install_target, initiating_profile->GetURLLoaderFactory());
+      install_target, initiating_profile->GetURLLoaderFactory(),
+      render_frame_host().GetLastCommittedOrigin(),
+      BuildFrameClientSecurityState(render_frame_host()));
 
   manifest_fetcher_->Fetch(base::BindOnce(
       &WebInstallServiceImpl::OnManifestFetched, weak_ptr_factory_.GetWeakPtr(),

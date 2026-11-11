@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/jobs/parse_manifest_from_string_job.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -13,9 +14,11 @@
 #include "base/values.h"
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
 #include "components/webapps/browser/web_contents/web_app_url_loader.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/page_manifest_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
+#include "ui/base/page_transition_types.h"
 #include "url/url_constants.h"
 
 namespace web_app {
@@ -40,8 +43,15 @@ ParseManifestFromStringJob::ParseManifestFromStringJob(
 ParseManifestFromStringJob::~ParseManifestFromStringJob() = default;
 
 void ParseManifestFromStringJob::Start() {
+  // Force a fresh, unprivileged SiteInstance in a new BrowsingInstance when
+  // loading about:blank so `web_contents_` does not reuse a renderer process
+  // left behind by a previously loaded origin.
+  content::NavigationController::LoadURLParams load_params{
+      GURL(url::kAboutBlankURL)};
+  load_params.transition_type = ui::PAGE_TRANSITION_GENERATED;
+  load_params.force_new_browsing_instance = true;
   url_loader_->LoadUrl(
-      GURL(url::kAboutBlankURL), &*web_contents_,
+      std::move(load_params), &*web_contents_,
       webapps::WebAppUrlLoader::UrlComparison::kExact,
       base::BindOnce(&ParseManifestFromStringJob::OnAboutBlankLoaded,
                      weak_ptr_factory_.GetWeakPtr()));

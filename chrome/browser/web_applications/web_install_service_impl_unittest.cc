@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/functional/callback_helpers.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -490,6 +491,20 @@ TEST_F(WebInstallServiceImplTest, CreateIfAllowed_NonHttpsScheme) {
   base::test::TestFuture<blink::mojom::WebInstallServiceResult> future;
   remote->InstallFromManifest(/*options=*/nullptr, future.GetCallback());
   // The pipe is reset, so flushing should cause a disconnect.
+  remote.FlushForTesting();
+  EXPECT_FALSE(remote.is_connected());
+}
+
+// CreateIfAllowed with an untrustworthy HTTP URL resets the receiver.
+TEST_F(WebInstallServiceImplTest, CreateIfAllowed_UntrustworthyHttpRejected) {
+  NavigateAndCommit(GURL("http://insecure.example.com/index.html"));
+
+  mojo::Remote<blink::mojom::WebInstallService> remote;
+  WebInstallServiceImpl::CreateIfAllowed(web_contents()->GetPrimaryMainFrame(),
+                                         remote.BindNewPipeAndPassReceiver());
+
+  base::test::TestFuture<blink::mojom::WebInstallServiceResult> future;
+  remote->InstallFromManifest(/*options=*/nullptr, future.GetCallback());
   remote.FlushForTesting();
   EXPECT_FALSE(remote.is_connected());
 }
@@ -1152,6 +1167,38 @@ TEST_F(WebInstallServiceImplTest,
       CountUkmEntriesWithResult(ukm_recorder, Entry::kResultByInstalledAppName,
                                 WebInstallServiceResult::kInstallCommandFailed),
       1);
+}
+
+// Verifies that InstallFromManifest populates request_initiator and
+// trusted_params->client_security_state on the manifest ResourceRequest so
+// the network service enforces Local Network Access checks.
+TEST_F(WebInstallServiceImplTest,
+       InstallFromManifest_PopulatesClientSecurityStateForLna) {
+  BindService();
+
+  std::optional<network::ResourceRequest> captured_request;
+  profile_url_loader_factory().SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        captured_request = request;
+      }));
+  profile_url_loader_factory().AddResponse(
+      GURL(kManifestUrl), network::mojom::URLResponseHead::New(),
+      /*content=*/std::string(),
+      network::URLLoaderCompletionStatus(net::ERR_CONNECTION_REFUSED));
+
+  EXPECT_EQ(InstallFromManifestUrl(GURL(kManifestUrl)),
+            blink::mojom::WebInstallServiceResult::kDataError);
+
+  ASSERT_TRUE(captured_request.has_value());
+  EXPECT_EQ(captured_request->request_initiator,
+            url::Origin::Create(GURL(kDocumentUrl)));
+  ASSERT_TRUE(captured_request->trusted_params.has_value());
+  ASSERT_TRUE(captured_request->trusted_params->client_security_state);
+  EXPECT_TRUE(captured_request->trusted_params->client_security_state
+                  ->is_web_secure_context);
+  EXPECT_EQ(captured_request->trusted_params->client_security_state
+                ->local_network_access_request_policy,
+            network::mojom::LocalNetworkAccessRequestPolicy::kBlock);
 }
 
 // Navigating away before the install completes aborts the install with

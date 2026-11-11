@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <string>
+#include <utility>
 
 #include "base/auto_reset.h"
 #include "base/functional/callback.h"
@@ -35,9 +36,13 @@ size_t g_max_manifest_length = kMaxManifestLength;
 
 WebInstallManifestFetcher::WebInstallManifestFetcher(
     GURL manifest_url,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    std::optional<url::Origin> initiator_origin,
+    network::mojom::ClientSecurityStatePtr client_security_state)
     : manifest_url_(std::move(manifest_url)),
-      url_loader_factory_(std::move(url_loader_factory)) {
+      url_loader_factory_(std::move(url_loader_factory)),
+      initiator_origin_(std::move(initiator_origin)),
+      client_security_state_(std::move(client_security_state)) {
   CHECK(manifest_url_.SchemeIs(url::kHttpsScheme) ||
         (manifest_url_.SchemeIs(url::kHttpScheme) &&
          net::IsLocalhost(manifest_url_)));
@@ -96,6 +101,14 @@ void WebInstallManifestFetcher::Fetch(FetchCallback callback) {
   resource_request->method = "GET";
   // Cookies are not allowed.
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+  if (initiator_origin_) {
+    resource_request->request_initiator = *initiator_origin_;
+  }
+  if (client_security_state_) {
+    resource_request->trusted_params.emplace();
+    resource_request->trusted_params->client_security_state =
+        client_security_state_.Clone();
+  }
 
   simple_url_loader_ = network::SimpleURLLoader::Create(
       std::move(resource_request), traffic_annotation);

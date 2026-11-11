@@ -79,6 +79,7 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/network/public/cpp/network_switches.h"
 #include "skia/ext/image_operations.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features_generated.h"
@@ -848,6 +849,53 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromCrossOriginManifestBrowserTest,
   const std::deque<AppInstalledBy> installed_by = GetInstalledBy(app_id);
   ASSERT_EQ(installed_by.size(), 1u);
   EXPECT_EQ(installed_by.front().requesting_url(), initiating_url);
+}
+
+// Verifies that a public origin cannot fetch a manifest from a loopback/local
+// endpoint via WebInstallManifestFetcher (Local Network Access enforcement,
+// https://crbug.com/574375869).
+class WebInstallFromManifestLocalNetworkAccessBrowserTest
+    : public WebInstallFromCrossOriginManifestBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    WebInstallFromCrossOriginManifestBrowserTest::SetUpCommandLine(
+        command_line);
+    ASSERT_TRUE(embedded_https_test_server().InitializeAndListen());
+    // Treat `embedded_https_test_server()` as IPAddressSpace::kPublic while
+    // `secondary_server_` remains on 127.0.0.1 (IPAddressSpace::kLoopback).
+    command_line->AppendSwitchASCII(
+        network::switches::kIpAddressSpaceOverrides,
+        base::StrCat({embedded_https_test_server().host_port_pair().ToString(),
+                      "=public"}));
+  }
+
+  void SetUpOnMainThread() override {
+    WebInstallFromCrossOriginManifestBrowserTest::SetUpOnMainThread();
+    embedded_https_test_server().StartAcceptingConnections();
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(WebInstallFromManifestLocalNetworkAccessBrowserTest,
+                       PublicToLoopbackManifestFetch_BlockedByLna) {
+  const GURL initiating_url =
+      embedded_https_test_server().GetURL("a.test", "/simple.html");
+  const GURL loopback_manifest_url =
+      secondary_server_.GetURL("b.test", kCrossOriginManifestPath);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initiating_url));
+  SetPermissionResponse(/*permission_granted=*/true);
+  permissions::PermissionRequestObserver observer(web_contents());
+
+  // The network service's LocalNetworkAccessUrlLoaderInterceptor blocks the
+  // public -> loopback connection at the socket layer before any HTTP request
+  // is transmitted.
+  ASSERT_TRUE(TryInstallFromManifest(loopback_manifest_url));
+
+  EXPECT_FALSE(observer.request_shown());
+  EXPECT_EQ(manifest_response().http_request(), nullptr);
+  EXPECT_FALSE(ResultExists());
+  ASSERT_TRUE(ErrorExists());
+  EXPECT_EQ(GetErrorName(), kDataError);
 }
 
 // When the user denies the Web Install permission prompt, the install is

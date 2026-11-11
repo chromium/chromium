@@ -16,7 +16,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "chrome/browser/web_applications/model/web_install_manifest_fetch_error.h"
+#include "services/network/public/mojom/client_security_state.mojom.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace net {
 struct RedirectInfo;
@@ -43,7 +45,9 @@ class WebInstallManifestFetcher {
 
   WebInstallManifestFetcher(
       GURL manifest_url,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      std::optional<url::Origin> initiator_origin = std::nullopt,
+      network::mojom::ClientSecurityStatePtr client_security_state = nullptr);
 
   ~WebInstallManifestFetcher();
 
@@ -68,6 +72,8 @@ class WebInstallManifestFetcher {
 
   GURL manifest_url_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+  std::optional<url::Origin> initiator_origin_;
+  network::mojom::ClientSecurityStatePtr client_security_state_;
 
   FetchCallback fetch_callback_;
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
