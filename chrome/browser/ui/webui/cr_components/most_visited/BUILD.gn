@@ -18,6 +18,7 @@ source_set("most_visited") {
   public_deps = [ "//chrome/browser/ui/search" ]
   deps = [
     "//base",
+    "//chrome/app:generated_resources",
     "//chrome/browser:browser_features",
     "//chrome/browser/new_tab_page",
     "//chrome/browser/ntp_tiles",
@@ -36,6 +37,7 @@ source_set("most_visited") {
     "//components/prefs",
     "//components/search",
     "//components/search_engines",
+    "//components/strings:components_strings",
     "//components/tabs:public",
     "//content/public/browser",
     "//mojo/public/cpp/bindings",

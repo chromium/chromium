@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "base/strings/strcat.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_handler.h"
@@ -29,6 +30,10 @@
 #include "chrome/browser/browser_features.h"
 #include "components/history_clusters/core/features.h"
 #include "ui/compositor/compositor_switches.h"
+#include "ui/webui/buildflags.h"
+#if BUILDFLAG(ENABLE_WEBUI_NTP)
+#include "chrome/browser/ui/webui/cr_components/most_visited/most_visited_handler.h"
+#endif
 #endif
 
 namespace {
@@ -152,6 +157,21 @@ content::ScopedWebUIConfigRegistration RegisterSearchboxTestConfig() {
           content::DefaultWebUIConfig<TestSearchboxWebUIController>>(
           content::kChromeUIScheme, chrome::kChromeUIWebUITestHost));
 }
+
+#if BUILDFLAG(ENABLE_WEBUI_NTP)
+class TestMostVisitedWebUIController : public TestMojoWebUIController {
+ public:
+  explicit TestMostVisitedWebUIController(content::WebUI* web_ui)
+      : TestMojoWebUIController(web_ui) {
+    content::WebUIDataSource* source = CreateWebUITestDataSource();
+    source->AddLocalizedStrings(MostVisitedHandler::GetWebUIDataSourceDict());
+  }
+
+  WEB_UI_CONTROLLER_TYPE_DECL();
+};
+
+WEB_UI_CONTROLLER_TYPE_IMPL(TestMostVisitedWebUIController)
+#endif  // BUILDFLAG(ENABLE_WEBUI_NTP)
 #endif
 
 }  // namespace
@@ -284,11 +304,13 @@ IN_PROC_BROWSER_TEST_F(CrComponentsHistoryClustersTest, UrlVisit) {
   RunTest("cr_components/history_clusters/url_visit_test.js", "mocha.run()");
 }
 
+#if BUILDFLAG(ENABLE_WEBUI_NTP)
 class CrComponentsMostVisitedTest : public WebUIMochaBrowserTest {
- protected:
-  CrComponentsMostVisitedTest() {
-    set_test_loader_host(chrome::kChromeUINewTabPageHost);
-  }
+ private:
+  content::ScopedWebUIConfigRegistration config_{std::make_unique<
+      content::DefaultWebUIConfig<TestMostVisitedWebUIController>>(
+      content::kChromeUIScheme,
+      chrome::kChromeUIWebUITestHost)};
 };
 
 IN_PROC_BROWSER_TEST_F(CrComponentsMostVisitedTest, General) {
@@ -370,6 +392,8 @@ IN_PROC_BROWSER_TEST_F(CrComponentsMostVisitedTest, NonEditable) {
           "runMochaSuite('NonEditable');");
 }
 
+#endif  // BUILDFLAG(ENABLE_WEBUI_NTP)
+
 typedef WebUIMochaBrowserTest CrComponentsThemeColorPickerTest;
 IN_PROC_BROWSER_TEST_F(CrComponentsThemeColorPickerTest, ThemeColor) {
   set_test_loader_host(chrome::kChromeUICustomizeChromeSidePanelHost);
@@ -395,6 +419,7 @@ IN_PROC_BROWSER_TEST_F(CrComponentsThemeColorPickerTest, ThemeHueSliderDialog) {
           "mocha.run()");
 }
 
+#if BUILDFLAG(ENABLE_WEBUI_NTP)
 class CrComponentsPreloadingTest : public CrComponentsMostVisitedTest {
  protected:
   CrComponentsPreloadingTest() {
@@ -415,6 +440,7 @@ class CrComponentsPreloadingTest : public CrComponentsMostVisitedTest {
 IN_PROC_BROWSER_TEST_F(CrComponentsPreloadingTest, Preloading) {
   RunTest("cr_components/most_visited_test.js", "runMochaSuite('Preloading');");
 }
+#endif  // BUILDFLAG(ENABLE_WEBUI_NTP)
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 using CrComponentsComposeboxTest = WebUIMochaBrowserTest;

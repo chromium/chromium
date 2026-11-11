@@ -29,6 +29,10 @@ class GURL;
 class Profile;
 class NewTabPagePreloadPipelineManager;
 
+namespace base {
+class DictValue;
+}  // namespace base
+
 namespace content {
 class WebContents;
 }  // namespace content
@@ -62,6 +66,8 @@ class MostVisitedHandler : public most_visited::mojom::MostVisitedPageHandler,
   MostVisitedHandler(const MostVisitedHandler&) = delete;
   MostVisitedHandler& operator=(const MostVisitedHandler&) = delete;
   ~MostVisitedHandler() override;
+
+  static base::DictValue GetWebUIDataSourceDict();
 
   // See MostVisitedSites::EnableTileTypes.
   virtual void EnableTileTypes(
