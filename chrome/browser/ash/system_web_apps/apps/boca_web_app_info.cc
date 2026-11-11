@@ -14,7 +14,6 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/boca/boca_manager_factory.h"
 #include "chrome/browser/ash/system_web_apps/apps/system_web_app_install_utils.h"
-#include "chrome/browser/enterprise/util/affiliation.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -23,10 +22,10 @@
 #include "chromeos/ash/components/boca/boca_session_manager.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/browser_delegate/browser_delegate.h"
-#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/tabs/public/tab_context_menu_command.h"
+#include "components/user_manager/user.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
@@ -57,8 +56,16 @@ bool IsEnabled(Profile* profile) {
     return false;
   }
 
-  if (!ash::InstallAttributes::IsInitialized() ||
-      !enterprise_util::IsProfileAffiliated(profile)) {
+  // This runs from CreateBrowserContextServices(), before the user manager
+  // reports the profile as added. The user's policy status is already set:
+  // UserCloudPolicyManagerAsh::OnStoreLoaded() records it before publishing
+  // the policy.
+  //
+  // Device-local accounts are always affiliated in the user manager. They are
+  // excluded here to keep the app out of managed guest and kiosk sessions.
+  const user_manager::User* user =
+      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile);
+  if (!user || user->IsDeviceLocalAccount() || !user->IsAffiliated()) {
     return false;
   }
 

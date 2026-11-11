@@ -9,45 +9,81 @@
 #include "ash/webui/boca_ui/url_constants.h"
 #include "base/containers/flat_set.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/policy/chrome_browser_policy_connector.h"
-#include "chrome/browser/policy/profile_policy_connector.h"
+#include "chrome/browser/ash/login/test/chrome_user_session_test_environment_delegate.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/ash/components/browser_context_helper/fake_browser_context_helper_delegate.h"
-#include "components/prefs/testing_pref_service.h"
-#include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
+#include "components/account_id/account_id.h"
+#include "components/account_id/account_id_literal.h"
+#include "components/prefs/pref_service.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "components/tabs/public/tab_context_menu_command.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace {
 
-constexpr char kProfile[] = "Default";
-constexpr char kAffiliationId1[] = "affiliation-id-1";
+constexpr auto kAccountId =
+    AccountId::Literal::FromUserEmailGaiaId("user@example.com",
+                                            GaiaId::Literal("1234567890"));
 
 class BocaSystemAppDelegateTest : public testing::Test {
  protected:
-  BocaSystemAppDelegateTest()
-      : profile_manager_(TestingBrowserProcess::GetGlobal()) {}
-
   void SetUp() override {
-    ASSERT_TRUE(profile_manager_.SetUp());
-    profile_ = profile_manager_.CreateTestingProfile(kProfile);
+    auto* browser_process = TestingBrowserProcess::GetGlobal();
+    user_session_test_environment_ = std::make_unique<
+        ash::test::UserSessionTestEnvironment>(
+        browser_process->local_state(),
+        std::make_unique<ash::test::ChromeUserSessionTestEnvironmentDelegate>(
+            browser_process));
+    const user_manager::User* user = AddUser();
+    ASSERT_TRUE(user);
+    user_session_test_environment_->LogIn(user->GetAccountId());
+    profile_ = Profile::FromBrowserContext(
+        ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+            user->GetAccountId()));
+    ASSERT_TRUE(profile_);
     delegate_ = std::make_unique<BocaSystemAppDelegate>(profile_);
   }
+
+  void TearDown() override {
+    delegate_.reset();
+    profile_ = nullptr;
+    user_session_test_environment_.reset();
+  }
+
+  // Adds the user the test logs in. A regular user by default.
+  virtual user_manager::User* AddUser() {
+    return user_session_test_environment_->AddRegularUser(kAccountId);
+  }
+
+  // Marks the logged-in user as affiliated with the device.
+  void SetUserAffiliated() {
+    user_manager::UserManager::Get()->SetUserPolicyStatus(
+        kAccountId, /*is_managed=*/true, /*is_affiliated=*/true);
+  }
+
   const BocaSystemAppDelegate* delegate() const { return delegate_.get(); }
+  ash::test::UserSessionTestEnvironment* user_session_test_environment() {
+    return user_session_test_environment_.get();
+  }
   base::test::ScopedFeatureList* scoped_feature_list() {
     return &scoped_feature_list_;
   }
-  TestingProfile* profile() { return profile_; }
+  Profile* profile() { return profile_; }
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  TestingProfileManager profile_manager_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
   std::unique_ptr<BocaSystemAppDelegate> delegate_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  raw_ptr<TestingProfile> profile_;
+  raw_ptr<Profile> profile_ = nullptr;
 };
 
 TEST_F(BocaSystemAppDelegateTest, AppShowFromSearchAndShelfByDefault) {
@@ -75,42 +111,28 @@ TEST_F(BocaSystemAppDelegateTest, AppDisabledForUnAffliatedUser) {
 }
 
 TEST_F(BocaSystemAppDelegateTest, AppDisabledFromPref) {
-  profile()->GetProfilePolicyConnector()->SetUserAffiliationIdsForTesting(
-      {kAffiliationId1});
-  g_browser_process->browser_policy_connector()
-      ->SetDeviceAffiliatedIdsForTesting({kAffiliationId1});
-  profile()->GetTestingPrefService()->SetUserPref(
-      ash::prefs::kClassManagementToolsAvailabilitySetting,
-      base::Value("disabled"));
+  SetUserAffiliated();
+  profile()->GetPrefs()->SetString(
+      ash::prefs::kClassManagementToolsAvailabilitySetting, "disabled");
   EXPECT_FALSE(delegate()->IsAppEnabled());
 }
 
 TEST_F(BocaSystemAppDelegateTest, BocaDisabledByDefaultFromPref) {
-  profile()->GetProfilePolicyConnector()->SetUserAffiliationIdsForTesting(
-      {kAffiliationId1});
-  g_browser_process->browser_policy_connector()
-      ->SetDeviceAffiliatedIdsForTesting({kAffiliationId1});
-  profile()->GetTestingPrefService()->SetUserPref(
-      ash::prefs::kClassManagementToolsAvailabilitySetting, base::Value(""));
+  SetUserAffiliated();
+  profile()->GetPrefs()->SetString(
+      ash::prefs::kClassManagementToolsAvailabilitySetting, "");
   EXPECT_FALSE(delegate()->IsAppEnabled());
 }
 
 TEST_F(BocaSystemAppDelegateTest, AppEnabledFromPref) {
-  profile()->GetProfilePolicyConnector()->SetUserAffiliationIdsForTesting(
-      {kAffiliationId1});
-  g_browser_process->browser_policy_connector()
-      ->SetDeviceAffiliatedIdsForTesting({kAffiliationId1});
-  profile()->GetTestingPrefService()->SetUserPref(
-      ash::prefs::kClassManagementToolsAvailabilitySetting,
-      base::Value("teacher"));
+  SetUserAffiliated();
+  profile()->GetPrefs()->SetString(
+      ash::prefs::kClassManagementToolsAvailabilitySetting, "teacher");
   EXPECT_TRUE(delegate()->IsAppEnabled());
 }
 
 TEST_F(BocaSystemAppDelegateTest, OverrideURLScopeChecks) {
-  profile()->GetProfilePolicyConnector()->SetUserAffiliationIdsForTesting(
-      {kAffiliationId1});
-  g_browser_process->browser_policy_connector()
-      ->SetDeviceAffiliatedIdsForTesting({kAffiliationId1});
+  SetUserAffiliated();
   EXPECT_TRUE(delegate()->IsUrlInSystemAppScope(GURL()));
 }
 
@@ -192,6 +214,24 @@ TEST_F(BocaSystemAppConsumerDelegateTest, AllowedTabMenuCommands) {
   EXPECT_EQ((base::flat_set<tabs::TabContextMenuCommand>{tabs::CommandReload,
                                                          tabs::CommandGoBack}),
             *commands);
+}
+
+// Logs in a managed guest session instead of a regular user.
+class BocaSystemAppDelegatePublicAccountTest
+    : public BocaSystemAppDelegateTest {
+ protected:
+  user_manager::User* AddUser() override {
+    return user_session_test_environment()->AddPublicAccountUser(
+        policy::GenerateDeviceLocalAccountUserId(
+            "public-account", policy::DeviceLocalAccountType::kPublicSession));
+  }
+};
+
+TEST_F(BocaSystemAppDelegatePublicAccountTest,
+       AppDisabledForDeviceLocalAccount) {
+  profile()->GetPrefs()->SetString(
+      ash::prefs::kClassManagementToolsAvailabilitySetting, "teacher");
+  EXPECT_FALSE(delegate()->IsAppEnabled());
 }
 
 }  // namespace

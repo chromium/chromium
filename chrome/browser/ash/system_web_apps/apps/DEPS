@@ -17,7 +17,6 @@ include_rules = [
   "+chrome/browser/ash/crostini",
   "+chrome/browser/content_settings/host_content_settings_map_factory.h",
   "+chrome/browser/ash/drive",
-  "+chrome/browser/enterprise/util/affiliation.h",
   "+chrome/browser/ash/file_system_provider",
   "+chrome/browser/ash/first_run",
   "+chrome/browser/ash/fusebox",
