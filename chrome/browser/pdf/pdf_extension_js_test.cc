@@ -33,7 +33,9 @@
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "chrome/test/base/web_ui_test_data_source.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -106,6 +108,14 @@ class PDFExtensionJSTestBase : public PDFExtensionTestBase {
     return new_tab ? LoadPdfInNewTab(url) : LoadPdf(url);
   }
 
+  // Makes the PDF extension's view report focus, for tests that enter
+  // fullscreen. Fullscreen requests from unfocused views are rejected, and
+  // browser tests that run in parallel can't rely on OS-level window
+  // activation.
+  void set_simulate_view_focus(bool simulate_view_focus) {
+    simulate_view_focus_ = simulate_view_focus;
+  }
+
  private:
   // Runs the extensions test at chrome/test/data/pdf/<filename> on the PDF file
   // at chrome/test/data/pdf/<pdf_filename>, where |filename| is loaded as a JS
@@ -119,6 +129,12 @@ class PDFExtensionJSTestBase : public PDFExtensionTestBase {
         pdf_extension_test_util::GetOnlyPdfExtensionHost(
             GetActiveWebContents());
     ASSERT_TRUE(extension_host);
+
+    if (simulate_view_focus_) {
+      content::RenderWidgetHostView* view = extension_host->GetView();
+      ASSERT_TRUE(view);
+      view->SetHasFocusForTesting(true);
+    }
 
     extensions::ResultCatcher catcher;
     constexpr char kModuleLoaderTemplate[] =
@@ -151,6 +167,7 @@ class PDFExtensionJSTestBase : public PDFExtensionTestBase {
   }
 
   std::unique_ptr<DevToolsAgentCoverageObserver> coverage_handler_;
+  bool simulate_view_focus_ = false;
 };
 
 class PDFExtensionJSTest : public base::test::WithFeatureOverride,
@@ -371,6 +388,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, Fullscreen) {
     GTEST_SKIP() << "TODO(crbug.com/463783828): Test is flaky on Mac.";
   }
 #endif
+  set_simulate_view_focus(true);
   // Use a PDF document with multiple pages, to exercise navigating between
   // pages.
   RunTestsInJsModule("fullscreen_test.js", "test-bookmarks.pdf");
@@ -718,6 +736,8 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2Test, Ink2DrawSizeSelector) {
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2Test, Ink2ViewerToolbar) {
+  // Some tests enter fullscreen.
+  set_simulate_view_focus(true);
   RunTestsInJsModule("ink2_viewer_toolbar_test.js", "test.pdf");
 }
 
