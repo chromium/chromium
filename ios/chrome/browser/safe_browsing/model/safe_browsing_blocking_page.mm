@@ -109,7 +109,7 @@ void ReportOnSecurityInterstitialProceeded(
   router->OnSecurityInterstitialProceeded(
       url, safe_browsing::GetThreatTypeStringForInterstitial(threat_type),
       /*net_error_code=*/0, referrer_chain, /*tab_title=*/"",
-      /*extension_initiator=*/std::nullopt);
+      /*initiator=*/std::nullopt);
 }
 
 }  // namespace

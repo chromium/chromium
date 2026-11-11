@@ -661,6 +661,53 @@ TEST_F(EventInitiatorUtilsTest,
                       .process_nodes(0)
                       .process_id());
 }
+
+TEST_F(EventInitiatorUtilsTest,
+       EventInitiatorWebContentsGatesCdpOnReportingDeviceInfoEligibility) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      /*enabled_features=*/{kEnterpriseExtensionActorAttribution,
+                            kEventReportingCdpAttribution},
+      /*disabled_features=*/{});
+
+  content::WebContents* web_contents =
+      web_contents_factory_.CreateWebContents(&profile_);
+  ProcessTree tree;
+  tree.process_nodes.emplace_back(/*process_id=*/4242,
+                                  /*parent_process_id=*/100, "/usr/bin/node",
+                                  "/tmp/agent.js");
+  TabCdpActorTracker::GetOrCreateForWebContents(web_contents)
+      ->buffer()
+      .OnExternalActorCommandHandled(
+          ExternalProcessInfo::TRANSPORT_TYPE_WEBSOCKET,
+          net::IPEndPoint(net::IPAddress::IPv4Localhost(), 51234),
+          std::move(tree));
+
+  // Even when machine-scoped real-time URL check is enabled, user-scoped
+  // security event reporting on an unaffiliated profile does not allow device
+  // info for the `WebContents` overload.
+  profile_.GetPrefs()->SetInteger(kEnterpriseRealTimeUrlCheckMode,
+                                  REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED);
+  profile_.GetPrefs()->SetInteger(kEnterpriseRealTimeUrlCheckScope,
+                                  policy::POLICY_SCOPE_MACHINE);
+  test::SetOnSecurityEventReporting(profile_.GetPrefs(), /*enabled=*/true,
+                                    /*enabled_event_names=*/{},
+                                    /*enabled_opt_in_events=*/{},
+                                    /*machine_scope=*/false);
+  EXPECT_FALSE(GetActiveEventInitiatorInfo(web_contents).has_value());
+
+  // Extension attribution is profile-scoped and still returned.
+  InstallExtension(ManifestLocation::kInternal,
+                   extensions::Extension::FROM_WEBSTORE);
+  ExtensionActorTracker::SetActiveActor(web_contents, kExtensionId,
+                                        "Page.navigate");
+  std::optional<EventInitiatorInfo> ext_initiator =
+      GetActiveEventInitiatorInfo(web_contents);
+  ASSERT_TRUE(ext_initiator.has_value());
+  EXPECT_TRUE(ext_initiator->has_chrome_extension());
+  EXPECT_FALSE(ext_initiator->has_external_process_info());
+  EXPECT_EQ(kExtensionId, ext_initiator->chrome_extension().id());
+}
 #endif  // BUILDFLAG(ENTERPRISE_CDP_ATTRIBUTION)
 
 // Tests attribution to Gemini in Chrome (Glic) actor tasks. Members are

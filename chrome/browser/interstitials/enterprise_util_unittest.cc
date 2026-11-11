@@ -50,6 +50,11 @@
 #include "chrome/browser/enterprise/connectors/reporting/extension_actor_tracker.h"
 #endif
 
+#if BUILDFLAG(ENTERPRISE_CDP_ATTRIBUTION)
+#include "chrome/browser/enterprise/connectors/reporting/tab_cdp_actor_tracker.h"
+#include "components/enterprise/common/proto/synced/browser_events.pb.h"
+#endif
+
 using ::testing::_;
 using testing::DoAll;
 using testing::Return;
@@ -563,3 +568,59 @@ TEST_F(InterstitialEnterpriseUtilTest,
 }
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS) &&
         // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+
+#if BUILDFLAG(ENTERPRISE_CDP_ATTRIBUTION)
+TEST_F(InterstitialEnterpriseUtilTest, InterstitialEventsIncludeCdpInitiator) {
+  scoped_feature_list_.InitAndEnableFeature(
+      enterprise_connectors::kEventReportingCdpAttribution);
+  Profile* profile = profile_manager_.CreateTestingProfile("testing_profile");
+  EnableReportingPolicy(profile);
+
+  content::WebContents* web_contents =
+      web_contents_factory_.CreateWebContents(profile);
+  enterprise_connectors::TabCdpActorTracker::GetOrCreateForWebContents(
+      web_contents)
+      ->buffer()
+      .OnDevToolsUiAttached();
+
+  auto expect_upload_with_initiator = [&](auto trigger) {
+    base::RunLoop run_loop;
+    ::chrome::cros::reporting::proto::UploadEventsRequest event_request;
+    EXPECT_CALL(*client_, UploadSecurityEvent)
+        .WillOnce(
+            [&event_request, &run_loop](
+                bool /*include_device_info*/,
+                ::chrome::cros::reporting::proto::UploadEventsRequest&& request,
+                policy::CloudPolicyClient::ResultCallback /*callback*/) {
+              event_request = std::move(request);
+              run_loop.Quit();
+            });
+    trigger();
+    run_loop.Run();
+
+    ASSERT_EQ(1, event_request.events_size());
+    EXPECT_EQ(::chrome::cros::reporting::proto::BrowserFeatureInfo::
+                  FEATURE_TYPE_DEVTOOLS_UI,
+              event_request.events(0)
+                  .initiator()
+                  .browser_feature_info()
+                  .feature_type());
+  };
+
+  expect_upload_with_initiator([&]() {
+    MaybeTriggerUrlFilteringInterstitialEvent(
+        web_contents, GURL("https://phishing.com/"), "ENTERPRISE_BLOCKED_SEEN",
+        safe_browsing::RTLookupResponse(), "Test Tab Title");
+  });
+  expect_upload_with_initiator([&]() {
+    MaybeTriggerSecurityInterstitialShownEvent(
+        web_contents, GURL("https://phishing.com/"), "PHISHING",
+        /*net_error_code=*/0, "Test Tab Title");
+  });
+  expect_upload_with_initiator([&]() {
+    MaybeTriggerSecurityInterstitialProceededEvent(
+        web_contents, GURL("https://phishing.com/"), "PHISHING",
+        /*net_error_code=*/0, "Test Tab Title");
+  });
+}
+#endif  // BUILDFLAG(ENTERPRISE_CDP_ATTRIBUTION)
