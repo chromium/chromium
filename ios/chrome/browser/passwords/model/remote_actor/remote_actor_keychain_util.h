@@ -28,6 +28,16 @@ inline NSString* const kRemoteActorKeychainService =
 // and must not be called on the main/UI thread.
 std::optional<std::vector<uint8_t>> GetRemoteActorSharedSymmetricKey();
 
+// Deletes the symmetric key from the shared Keychain access group using default
+// Remote Actor attributes. Returns `true` if the key was deleted or did not
+// exist, or `false` if a Keychain error occurred.
+//
+// Note: This function performs synchronous Keychain IPC (`SecItemDelete`) and
+// may block. It must be called on a background sequence that allows blocking
+// (e.g., a `base::ThreadPool` task runner with `base::MayBlock()`), and must
+// not be called on the main/UI thread.
+bool DeleteRemoteActorSharedSymmetricKey();
+
 // Sets an override for the Keychain access group used by
 // `GetRemoteActorSharedSymmetricKey()`. Passing `nil` or an empty string causes
 // Keychain queries to omit `kSecAttrAccessGroup`. For testing purposes only.

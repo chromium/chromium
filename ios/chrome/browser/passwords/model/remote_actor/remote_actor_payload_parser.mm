@@ -90,5 +90,10 @@ ParseRemoteActorPayload(std::string_view base64_payload,
       std::vector<uint8_t> key, GetRemoteActorSharedSymmetricKey(),
       [] { return RemoteActorParsingError::kMissingKeyInKeychain; });
 
-  return ParseRemoteActorPayload(base64_payload, base64_nonce, key);
+  ASSIGN_OR_RETURN(
+      remote_actor::proto::RemoteActorPasswordUploadRequest request,
+      ParseRemoteActorPayload(base64_payload, base64_nonce, key));
+
+  DeleteRemoteActorSharedSymmetricKey();
+  return request;
 }
