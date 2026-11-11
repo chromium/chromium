@@ -159,6 +159,16 @@ struct ScriptToolAction {
   blink.mojom.ScriptToolToken? tool_id;
 };
 
+// Executes dynamic JavaScript code string in the document, in an isolated
+// world. If the script returns a promise, waits for it to settle.
+struct ExecuteJsAction {
+  string script_code;
+  // How long the script, and the promise it returns, if any, may take. 0 means
+  // `actor::kExecuteJsDefaultTimeout`. Longer values are clamped to
+  // `actor::kExecuteJsMaxTimeout`.
+  uint32 timeout_ms;
+};
+
 // Union of tool-specific actions.
 union ToolAction {
   ClickAction click;
@@ -169,6 +179,7 @@ union ToolAction {
   TypeAction type;
   ScriptToolAction script_tool;
   ScrollToAction scroll_to;
+  ExecuteJsAction execute_js;
 };
 
 // All information required to invoke a tool in the renderer.
@@ -205,6 +216,22 @@ struct ScriptToolResponse {
   // The result of executing the action. If not provided, the action resulted in
   // a navigation and the result will be on the next Document.
   string? result;
+};
+
+struct ExecuteJsResponse {
+  // The value the script produced, as JSON when it can be serialized and as
+  // its string conversion otherwise. At most `actor::kExecuteJsMaxResultBytes`
+  // bytes long.
+  string result;
+
+  // Whether `result` was truncated to fit the size limit.
+  bool truncated;
+
+  // A human-readable description of the JavaScript error that made the script
+  // fail, e.g. the reason the promise the script returned was rejected. When
+  // set, `result` is empty. Only set by the renderer, when it can describe the
+  // error. Mirrors ExecuteJsResult.js_error_message in actions_data.proto.
+  string? js_error_message;
 };
 
 // Represents the outcome of tool initialization.
@@ -287,6 +314,11 @@ struct ActionResult {
   // If the action is a script tool, provides the result of that execution. This
   // is only populated if the execution was successful.
   ScriptToolResponse? script_tool_response;
+
+  // If the action is execute_js, provides the result of that execution. This
+  // is only populated if the execution was successful, or if it failed with a
+  // JavaScript error that the renderer could describe.
+  ExecuteJsResponse? execute_js_response;
 
   // Time at which execution of the action was complete and page
   // stabilization was started. This field may not be available if the action's

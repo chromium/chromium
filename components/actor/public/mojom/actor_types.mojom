@@ -638,6 +638,23 @@ enum ActionResultCode {
   // The target surface is not in a tab.
   kGeminiPanelNotInTab = 2202,
 
+  ///////////////////////////////////////////////////////////////////////
+  // Codes 2300-2399: Errors for the ExecuteJs tool.
+
+  // The script threw an exception, or the promise it returned was rejected.
+  kExecuteJsScriptFailed = 2300,
+
+  // The script, or the promise it returned, did not finish within the timeout.
+  kExecuteJsTimeout = 2301,
+
+  // The target frame started a cross-document navigation while the script was
+  // running, for example because the script submitted a form.
+  kExecuteJsNavigated = 2302,
+
+  // The target document is not the tab's main frame document. ExecuteJs only
+  // runs in the main frame.
+  kExecuteJsTargetNotMainFrame = 2303,
+
   // Please see the comment above about adding new values.
 };
 
