@@ -27,7 +27,14 @@ class GlicShareLinkNavigationThrottle : public content::NavigationThrottle {
 
   // content::NavigationThrottle:
   ThrottleCheckResult WillStartRequest() override;
+  ThrottleCheckResult WillRedirectRequest() override;
   const char* GetNameForLogging() override;
+
+ protected:
+  virtual void InvokeGlic();
+
+ private:
+  ThrottleCheckResult HandleRequest();
 };
 
 }  // namespace glic

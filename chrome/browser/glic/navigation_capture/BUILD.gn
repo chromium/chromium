@@ -47,6 +47,7 @@ if (!is_android) {
     sources = [
       "glic_marketing_page_tab_helper_browsertest.cc",
       "glic_navigation_throttle_browsertest.cc",
+      "glic_share_link_navigation_throttle_browsertest.cc",
     ]
 
     deps = [

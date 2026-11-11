@@ -373,4 +373,8 @@ BASE_FEATURE(kGlicExperimentalTriggeringKeepInstanceOnUnbind,
              // Enabled on all platforms including BUILDFLAG(IS_ANDROID);
              // cpp_feature_parser requires a literal FeatureState constant.
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kGlicConversationSharing, base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<std::string> kGlicConversationSharingCaptureUrls{
+    &kGlicConversationSharing, "glic-conversation-sharing-capture-urls", ""};
 }  // namespace features

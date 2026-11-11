@@ -20,6 +20,7 @@
 #include "chrome/browser/enterprise/data_protection/view_source_navigation_throttle.h"
 #include "chrome/browser/glic/host/glic_guest_navigation_throttle.h"
 #include "chrome/browser/glic/navigation_capture/glic_navigation_throttle.h"
+#include "chrome/browser/glic/navigation_capture/glic_share_link_navigation_throttle.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/interstitials/enterprise_util.h"
 #include "chrome/browser/lookalikes/lookalike_url_navigation_throttle.h"
@@ -642,6 +643,7 @@ void CreateAndAddChromeThrottlesForNavigation(
   webapps::WebAppUrlLoader::MaybeCreateAndAddNavigationThrottle(registry);
 
   glic::GlicNavigationThrottle::MaybeCreateAndAdd(registry);
+  glic::GlicShareLinkNavigationThrottle::MaybeCreateAndAdd(registry);
   glic::GlicGuestNavigationThrottle::MaybeCreateAndAdd(registry);
 
   pwc::PwcNavigationThrottle::MaybeCreateAndAdd(registry);

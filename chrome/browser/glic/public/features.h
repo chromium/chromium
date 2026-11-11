@@ -299,6 +299,10 @@ BASE_DECLARE_FEATURE(kGlicAskGeminiWayfinding);
 // instance cleanup while an experimental triggering actuation session is
 // active, unless the last bound/pinned tab itself was closed (b/581951225).
 BASE_DECLARE_FEATURE(kGlicExperimentalTriggeringKeepInstanceOnUnbind);
+
+BASE_DECLARE_FEATURE(kGlicConversationSharing);
+extern const base::FeatureParam<std::string>
+    kGlicConversationSharingCaptureUrls;
 }  // namespace features
 
 #endif  // CHROME_BROWSER_GLIC_PUBLIC_FEATURES_H_
