@@ -330,6 +330,39 @@ public class FuseboxMetricsUnitTest {
     }
 
     @Test
+    public void testNotifyAttachmentsPopupToggled_ShowPopup_PinnedToolButtonsVisible() {
+        PopupButtonData pinnedAi =
+                new PopupButtonData.Builder()
+                        .setText("AI Mode")
+                        .setType(PopupButtonType.TOOL)
+                        .setProtoId(ToolMode.TOOL_MODE_UNSPECIFIED)
+                        .build();
+        PopupButtonData pinnedPtm =
+                new PopupButtonData.Builder()
+                        .setText("PTM")
+                        .setType(PopupButtonType.TOOL)
+                        .setProtoId(ToolMode.TOOL_MODE_GEMINI_PRO)
+                        .build();
+        mPropertyModel.set(
+                FuseboxProperties.POPUP_PINNED_TOOL_BUTTON_DATA_LIST, List.of(pinnedAi, pinnedPtm));
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord("Omnibox.MobileFusebox.AttachmentsPopupToggled", true)
+                        .expectIntRecord(
+                                "Omnibox.MobileFusebox.ToolButtonShown",
+                                ToolMode.TOOL_MODE_UNSPECIFIED)
+                        .expectIntRecord(
+                                "Omnibox.MobileFusebox.ToolButtonShown",
+                                ToolMode.TOOL_MODE_GEMINI_PRO)
+                        .build();
+
+        mMetrics.notifyAttachmentsPopupToggled(/* toShowPopup= */ true, mPropertyModel, mTracker);
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
     public void testNotifyAttachmentsPopupToggled_HidePopup() {
         var histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(

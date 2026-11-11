@@ -1588,11 +1588,10 @@ class FuseboxMediator implements BackPressHandler {
         List<PopupButtonData> pinnedToolButtonDataList = new ArrayList<>();
         if (inputState != null) {
             if (!mIsDesktopPlatform) {
-                if (OmniboxFeatures.hasFuseboxPinnedSection()) {
-                    pinnedToolButtonDataList.add(createAiModeToolButtonData());
-                } else {
-                    toolButtonDataList.add(createAiModeToolButtonData());
-                }
+                (shouldPinToolButton(ToolMode.TOOL_MODE_UNSPECIFIED)
+                                ? pinnedToolButtonDataList
+                                : toolButtonDataList)
+                        .add(createAiModeToolButtonData());
             }
 
             for (ToolConfig toolConfig : inputState.getToolConfigs()) {
@@ -1616,7 +1615,7 @@ class FuseboxMediator implements BackPressHandler {
                                         || toolMode != ToolMode.TOOL_MODE_CANVAS);
                 boolean hasColor = !shouldTintRequestTypeButtonIcon(iconId);
 
-                toolButtonDataList.add(
+                PopupButtonData buttonData =
                         new PopupButtonData.Builder()
                                 .setType(PopupButtonType.TOOL)
                                 .setOnClicked(this::onDynamicButtonClicked)
@@ -1628,7 +1627,9 @@ class FuseboxMediator implements BackPressHandler {
                                 .setProtoId(toolMode)
                                 .setHasColor(hasColor)
                                 .setTooltip(tooltip)
-                                .build());
+                                .build();
+                (shouldPinToolButton(toolMode) ? pinnedToolButtonDataList : toolButtonDataList)
+                        .add(buttonData);
             }
         }
 
@@ -1689,6 +1690,16 @@ class FuseboxMediator implements BackPressHandler {
         mModel.set(
                 FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST,
                 showModelPicker ? modelButtonDataList : List.of());
+    }
+
+    private static boolean shouldPinToolButton(@ToolMode int toolMode) {
+        if (!OmniboxFeatures.hasFuseboxPinnedSection()) {
+            return false;
+        }
+        return switch (toolMode) {
+            case ToolMode.TOOL_MODE_UNSPECIFIED, ToolMode.TOOL_MODE_GEMINI_PRO -> true;
+            default -> false;
+        };
     }
 
     private void updateAttachmentConfigs(@Nullable InputState inputState) {
