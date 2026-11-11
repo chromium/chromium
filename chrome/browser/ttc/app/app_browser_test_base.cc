@@ -32,6 +32,7 @@
 #include "media/audio/test_audio_thread.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/channel_layout.h"
+#include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -101,8 +102,12 @@ void AppBrowserTestBase::SetUpBrowserContextKeyedServices(
 
 void AppBrowserTestBase::SetUpOnMainThread() {
   PlatformBrowserTest::SetUpOnMainThread();
+  host_resolver()->AddRule("*", "127.0.0.1");
   embedded_test_server()->ServeFilesFromSourceDirectory("chrome/test/data");
   ASSERT_TRUE(embedded_test_server()->Start());
+  embedded_https_test_server().ServeFilesFromSourceDirectory(
+      "chrome/test/data");
+  ASSERT_TRUE(embedded_https_test_server().Start());
 
   audio_manager_ = std::make_unique<media::MockAudioManager>(
       std::make_unique<media::TestAudioThread>());

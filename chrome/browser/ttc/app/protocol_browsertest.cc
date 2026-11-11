@@ -2,25 +2,79 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string>
+
+#include "base/check.h"
+#include "base/json/json_writer.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "base/values.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_task.h"
+#include "chrome/browser/actor/tools/open_url_tool_request.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/optimization_guide/mock_remote_model_executor.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ttc/app/app_browser_test_base.h"
 #include "chrome/browser/ttc/core/session_controller_impl.h"
 #include "chrome/browser/ttc/core/session_journal_impl.h"
 #include "chrome/browser/ttc/core/states.h"
 #include "chrome/browser/ttc/core/ttc_keyed_service.h"
+#include "components/actor/core/task_source_info.h"
+#include "components/history/core/browser/history_service.h"
+#include "components/history/core/browser/history_service_observer.h"
+#include "components/history/core/browser/history_types.h"
+#include "components/keyed_service/core/service_access_type.h"
 #include "components/optimization_guide/proto/features/streaming/ttc.pb.h"
 #include "components/ttc/app/ttc_backend.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace ttc {
 
 using base::test::TestFuture;
 namespace proto = optimization_guide::proto;
+
+namespace {
+
+// Observes `HistoryService` and waits for the next `OnURLVisited` notification
+// matching `expected_url`.
+class HistoryVisitWaiter : public history::HistoryServiceObserver {
+ public:
+  HistoryVisitWaiter(history::HistoryService* history_service,
+                     const GURL& expected_url)
+      : expected_url_(expected_url) {
+    CHECK(history_service);
+    observation_.Observe(history_service);
+  }
+  ~HistoryVisitWaiter() override = default;
+
+  history::VisitedURLInfo Wait() { return future_.Take(); }
+
+  // history::HistoryServiceObserver:
+  void OnURLVisited(history::HistoryService* history_service,
+                    const history::VisitedURLInfo& visited_url_info) override {
+    if (visited_url_info.url_row.url() == expected_url_ && !future_.IsReady()) {
+      future_.SetValue(visited_url_info);
+    }
+  }
+
+ private:
+  const GURL expected_url_;
+  TestFuture<history::VisitedURLInfo> future_;
+  base::ScopedObservation<history::HistoryService,
+                          history::HistoryServiceObserver>
+      observation_{this};
+};
+
+}  // namespace
 
 // Tests Ttc-MES protocol interactions. Exercises the full Ttc stack, from the
 // service down to the frames handed to the model execution service.
@@ -291,6 +345,50 @@ IN_PROC_BROWSER_TEST_F(TtcProtocolBrowserTest,
   EXPECT_TRUE(backend()->is_transport_connected());
   EXPECT_EQ(session_controller()->GetSessionLifecycle(),
             SessionLifecycle::kLive);
+}
+
+IN_PROC_BROWSER_TEST_F(TtcProtocolBrowserTest,
+                       SessionStatusPropagatesServerSessionIdToActorTask) {
+  StartSessionAndConnectBackend();
+  RespondSessionStatus(proto::SessionStatusResponse::STATE_CONNECTED,
+                       "server_session_42");
+
+  actor::ActorKeyedService* actor_service =
+      actor::ActorKeyedService::Get(profile());
+  ASSERT_NE(actor_service, nullptr);
+  const actor::ActorTask* task =
+      actor_service->GetTask(session_controller()->GetActorTaskId());
+  ASSERT_NE(task, nullptr);
+  EXPECT_EQ(task->source_info().type, actor::TaskSourceInfo::Client::kTtc);
+  EXPECT_EQ(task->source_info().id, "server_session_42");
+}
+
+IN_PROC_BROWSER_TEST_F(TtcProtocolBrowserTest,
+                       ToolNavigationRecordsActorVisit) {
+  StartSessionAndConnectBackend();
+  RespondSessionStatus(proto::SessionStatusResponse::STATE_CONNECTED,
+                       "server_session_42");
+
+  const GURL target_url =
+      embedded_https_test_server().GetURL("example.com", "/title1.html");
+  HistoryVisitWaiter visit_waiter(
+      HistoryServiceFactory::GetForProfile(profile(),
+                                           ServiceAccessType::EXPLICIT_ACCESS),
+      target_url);
+
+  proto::TtcServerFrame tool_frame;
+  proto::ToolCall* tool_call = tool_frame.mutable_tool_call();
+  tool_call->set_call_id("call_1");
+  tool_call->set_name(std::string(actor::OpenUrlToolRequest::kModelFacingName));
+  tool_call->set_arguments_json(*base::WriteJson(
+      base::DictValue()
+          .Set(actor::OpenUrlToolRequest::kUrlParam, target_url.spec())
+          .Set(actor::OpenUrlToolRequest::kNewTabParam, false)));
+  SimulateResponse(tool_frame);
+
+  const history::VisitedURLInfo visit = visit_waiter.Wait();
+  EXPECT_EQ(visit.visit_row.source, history::SOURCE_ACTOR);
+  EXPECT_FALSE(visit.visit_row.consider_for_ntp_most_visited);
 }
 
 }  // namespace ttc
