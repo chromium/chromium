@@ -8,19 +8,36 @@
 
 #include <algorithm>
 #include <atomic>
+#include <optional>
 #include <string>
+#include <utility>
+#include <vector>
 
 #include "base/barrier_closure.h"
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions_win.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/scoped_os_info_override_win.h"
+#include "base/test/scoped_path_override.h"
+#include "base/test/test_future.h"
+#include "base/test/test_reg_util_win.h"
+#include "base/win/registry.h"
 #include "base/win/scoped_co_mem.h"
+#include "base/win/scoped_com_initializer.h"
+#include "base/win/shortcut.h"
+#include "base/win/windows_version.h"
+#include "chrome/installer/util/install_util.h"
 #include "chrome/installer/util/shell_util.h"
+#include "chrome/installer/util/taskbar_util.h"
+#include "chrome/installer/util/util_constants.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -122,6 +139,57 @@ TEST_F(TaskbarManagerTest, PinToTaskbar) {
       browser_util::PinResultMetric::kFeatureNotAvailable,
       expected_bucket_count);
   EXPECT_FALSE(result_);
+}
+
+// With the fallback enabled on Windows 10, a missing Limited Access Feature no
+// longer ends the flow; `IPinnedList3` is consulted instead. The test binary
+// has no Start Menu shortcut, so the fallback reports that pinning is not
+// allowed, and it never reaches the step that would actually pin anything.
+TEST_F(TaskbarManagerTest, FallbackUsedForBrowserOnWin10) {
+  if (browser_util::PinLimitedAccessFeatureAvailable()) {
+    GTEST_SKIP() << "The fallback only runs when the feature is unavailable.";
+  }
+  base::test::ScopedFeatureList feature_list(
+      browser_util::kWin10TaskbarPinFallback);
+
+  browser_util::ShouldOfferToPin(
+      ShellUtil::GetBrowserModelId(InstallUtil::IsPerUserInstall()),
+      browser_util::PinAppToTaskbarChannel::kPinToTaskbarInfoBar,
+      base::BindOnce(&TaskbarManagerTest::OnCanPinToTaskbarResult,
+                     base::Unretained(this)));
+
+  got_result_.Run();
+  EXPECT_FALSE(result_);
+  const bool fallback_supported =
+      base::win::GetVersion() < base::win::Version::WIN11 &&
+      CanPinShortcutToTaskbar();
+  histogram_tester_.ExpectUniqueSample(
+      kShouldPinResultMetric,
+      fallback_supported ? browser_util::PinResultMetric::kPinningNotAllowed
+                         : browser_util::PinResultMetric::kFeatureNotAvailable,
+      1);
+}
+
+// The fallback can only pin the browser's own shortcut, so requests for any
+// other App User Model ID, such as a web app's, must not use it.
+TEST_F(TaskbarManagerTest, FallbackNotUsedForOtherAppUserModelIds) {
+  if (browser_util::PinLimitedAccessFeatureAvailable()) {
+    GTEST_SKIP() << "The fallback only runs when the feature is unavailable.";
+  }
+  base::test::ScopedFeatureList feature_list(
+      browser_util::kWin10TaskbarPinFallback);
+
+  browser_util::ShouldOfferToPin(
+      L"Chromium.TaskbarManagerTest.WebApp",
+      browser_util::PinAppToTaskbarChannel::kPinWebApp,
+      base::BindOnce(&TaskbarManagerTest::OnCanPinToTaskbarResult,
+                     base::Unretained(this)));
+
+  got_result_.Run();
+  EXPECT_FALSE(result_);
+  histogram_tester_.ExpectUniqueSample(
+      kShouldPinResultMetric,
+      browser_util::PinResultMetric::kFeatureNotAvailable, 1);
 }
 
 // Most of a pin flow now runs on a background sequence, and a flow that bails
@@ -379,4 +447,196 @@ TEST_F(TaskbarManagerAppUserModelIdTest, ConcurrentPublicRequestsAllComplete) {
   run_loop.Run();
 
   EXPECT_EQ(kConcurrentFlowCount, results);
+}
+
+// Exercises the `IPinnedList3` fallback end to end on any host. The OS version
+// is faked as Windows 10 21H1 so the fallback is eligible even on Windows 11
+// bots, the Start Menu and Desktop directories and the policy registry hives
+// are redirected so the tests are hermetic, and `SetCanPinToTaskbarDelegate()`
+// blocks the real `IPinnedList3::Modify()` so nothing is ever pinned to the
+// host's taskbar.
+class TaskbarManagerPinnedList3FallbackTest : public testing::Test {
+ public:
+  void SetUp() override {
+    if (browser_util::PinLimitedAccessFeatureAvailable()) {
+      GTEST_SKIP() << "The fallback only runs when the feature is unavailable.";
+    }
+    ASSERT_TRUE(com_initializer_.Succeeded());
+    ASSERT_NO_FATAL_FAILURE(
+        registry_override_.OverrideRegistry(HKEY_CURRENT_USER));
+    ASSERT_NO_FATAL_FAILURE(
+        registry_override_.OverrideRegistry(HKEY_LOCAL_MACHINE));
+    SetCanPinToTaskbarDelegate(&BlockPinning);
+
+    app_user_model_id_ =
+        ShellUtil::GetBrowserModelId(InstallUtil::IsPerUserInstall());
+    exe_path_ = base::PathService::CheckedGet(base::FILE_EXE);
+    base::FilePath start_menu;
+    ASSERT_TRUE(base::PathService::Get(base::DIR_START_MENU, &start_menu));
+    shortcut_path_ =
+        start_menu.Append(InstallUtil::GetShortcutName() + installer::kLnkExt);
+  }
+
+  void TearDown() override { SetCanPinToTaskbarDelegate(nullptr); }
+
+ protected:
+  static bool BlockPinning() { return false; }
+
+  static bool CreateShortcut(const base::FilePath& path,
+                             const base::FilePath& target) {
+    base::win::ShortcutProperties properties;
+    properties.set_target(target);
+    return base::win::CreateOrUpdateShortcutLink(
+        path, properties, base::win::ShortcutOperation::kCreateAlways);
+  }
+
+  // Runs `ShouldOfferToPin()` (if `check_only`) or `PinAppToTaskbar()` and
+  // returns the single result it recorded.
+  browser_util::PinResultMetric RunFlow(bool check_only,
+                                        const std::wstring& app_user_model_id) {
+    base::HistogramTester histogram_tester;
+    base::test::TestFuture<bool> future;
+    if (check_only) {
+      browser_util::ShouldOfferToPin(
+          app_user_model_id,
+          browser_util::PinAppToTaskbarChannel::kPinToTaskbarInfoBar,
+          future.GetCallback());
+    } else {
+      browser_util::PinAppToTaskbar(
+          app_user_model_id,
+          browser_util::PinAppToTaskbarChannel::kSettingsPage,
+          future.GetCallback());
+    }
+    const bool result = future.Get();
+    const std::vector<base::Bucket> buckets = histogram_tester.GetAllSamples(
+        check_only ? kShouldPinResultMetric : kPinResultMetric);
+    EXPECT_EQ(1u, buckets.size());
+    if (buckets.empty()) {
+      return browser_util::PinResultMetric::kMaxValue;
+    }
+    const auto metric =
+        static_cast<browser_util::PinResultMetric>(buckets[0].min);
+    EXPECT_EQ(metric == browser_util::PinResultMetric::kSuccess, result);
+    return metric;
+  }
+
+  // The result the fallback should produce for `shortcut` once it reaches the
+  // real `IPinnedList3`. That depends on the host: Windows 10 reports whether
+  // it is pinned, but newer Windows 11 builds no longer provide the interface.
+  static browser_util::PinResultMetric ExpectedIPinnedList3Result(
+      const base::FilePath& shortcut,
+      bool check_only) {
+    const std::optional<bool> is_pinned = IsShortcutPinnedToTaskbar(shortcut);
+    if (!is_pinned.has_value()) {
+      return browser_util::PinResultMetric::kCOMError;
+    }
+    if (*is_pinned) {
+      return browser_util::PinResultMetric::kAlreadyPinned;
+    }
+    // `BlockPinning()` makes the actual pin fail.
+    return check_only ? browser_util::PinResultMetric::kSuccess
+                      : browser_util::PinResultMetric::kTaskbarManagerError;
+  }
+
+  base::test::ScopedFeatureList feature_list_{
+      browser_util::kWin10TaskbarPinFallback};
+  base::test::ScopedOSInfoOverride os_override_{
+      base::test::ScopedOSInfoOverride::Type::kWin10Pro21H1};
+  base::ScopedPathOverride start_menu_override_{base::DIR_START_MENU};
+  base::ScopedPathOverride common_start_menu_override_{
+      base::DIR_COMMON_START_MENU};
+  base::ScopedPathOverride user_desktop_override_{base::DIR_USER_DESKTOP};
+  base::ScopedPathOverride common_desktop_override_{base::DIR_COMMON_DESKTOP};
+  registry_util::RegistryOverrideManager registry_override_;
+  base::win::ScopedCOMInitializer com_initializer_;
+  content::BrowserTaskEnvironment task_environment_;
+  std::wstring app_user_model_id_;
+  base::FilePath exe_path_;
+  base::FilePath shortcut_path_;
+};
+
+TEST_F(TaskbarManagerPinnedList3FallbackTest, NoShortcut) {
+  EXPECT_EQ(browser_util::PinResultMetric::kPinningNotAllowed,
+            RunFlow(/*check_only=*/true, app_user_model_id_));
+  EXPECT_EQ(browser_util::PinResultMetric::kPinningNotAllowed,
+            RunFlow(/*check_only=*/false, app_user_model_id_));
+}
+
+// A Start Menu shortcut for another install of the browser must not be pinned.
+TEST_F(TaskbarManagerPinnedList3FallbackTest, ShortcutForOtherExeIgnored) {
+  ASSERT_TRUE(CreateShortcut(shortcut_path_,
+                             exe_path_.DirName().Append(L"other_install.exe")));
+  EXPECT_EQ(browser_util::PinResultMetric::kPinningNotAllowed,
+            RunFlow(/*check_only=*/true, app_user_model_id_));
+}
+
+TEST_F(TaskbarManagerPinnedList3FallbackTest, PerUserShortcut) {
+  ASSERT_TRUE(CreateShortcut(shortcut_path_, exe_path_));
+  EXPECT_EQ(ExpectedIPinnedList3Result(shortcut_path_, /*check_only=*/true),
+            RunFlow(/*check_only=*/true, app_user_model_id_));
+  EXPECT_EQ(ExpectedIPinnedList3Result(shortcut_path_, /*check_only=*/false),
+            RunFlow(/*check_only=*/false, app_user_model_id_));
+}
+
+TEST_F(TaskbarManagerPinnedList3FallbackTest, SystemLevelShortcut) {
+  base::FilePath common_start_menu;
+  ASSERT_TRUE(
+      base::PathService::Get(base::DIR_COMMON_START_MENU, &common_start_menu));
+  const base::FilePath shortcut = common_start_menu.Append(
+      InstallUtil::GetShortcutName() + installer::kLnkExt);
+  ASSERT_TRUE(CreateShortcut(shortcut, exe_path_));
+  EXPECT_EQ(ExpectedIPinnedList3Result(shortcut, /*check_only=*/true),
+            RunFlow(/*check_only=*/true, app_user_model_id_));
+}
+
+TEST_F(TaskbarManagerPinnedList3FallbackTest, DesktopShortcut) {
+  base::FilePath user_desktop;
+  ASSERT_TRUE(base::PathService::Get(base::DIR_USER_DESKTOP, &user_desktop));
+  const base::FilePath shortcut =
+      user_desktop.Append(InstallUtil::GetShortcutName() + installer::kLnkExt);
+  ASSERT_TRUE(CreateShortcut(shortcut, exe_path_));
+  EXPECT_EQ(ExpectedIPinnedList3Result(shortcut, /*check_only=*/true),
+            RunFlow(/*check_only=*/true, app_user_model_id_));
+}
+
+// The "Do not allow pinning programs to the Taskbar" Group Policy wins, whether
+// it is set per machine or per user.
+TEST_F(TaskbarManagerPinnedList3FallbackTest, GroupPolicyBlocksFallback) {
+  ASSERT_TRUE(CreateShortcut(shortcut_path_, exe_path_));
+  for (HKEY root : {HKEY_LOCAL_MACHINE, HKEY_CURRENT_USER}) {
+    base::win::RegKey key(root,
+                          L"Software\\Policies\\Microsoft\\Windows\\Explorer",
+                          KEY_SET_VALUE);
+    ASSERT_EQ(ERROR_SUCCESS, key.WriteValue(L"NoPinningToTaskbar", 1));
+    EXPECT_EQ(browser_util::PinResultMetric::kPinningNotAllowed,
+              RunFlow(/*check_only=*/true, app_user_model_id_));
+    EXPECT_EQ(browser_util::PinResultMetric::kPinningNotAllowed,
+              RunFlow(/*check_only=*/false, app_user_model_id_));
+    ASSERT_EQ(ERROR_SUCCESS, key.DeleteValue(L"NoPinningToTaskbar"));
+  }
+}
+
+TEST_F(TaskbarManagerPinnedList3FallbackTest, NotUsedForOtherAppUserModelIds) {
+  ASSERT_TRUE(CreateShortcut(shortcut_path_, exe_path_));
+  EXPECT_EQ(browser_util::PinResultMetric::kFeatureNotAvailable,
+            RunFlow(/*check_only=*/true, app_user_model_id_ + L".WebApp"));
+}
+
+TEST_F(TaskbarManagerPinnedList3FallbackTest, NotUsedOnUnsupportedWindows) {
+  ASSERT_TRUE(CreateShortcut(shortcut_path_, exe_path_));
+  // Windows 11, and Windows 10 before RS5 (kWin10Pro is version 1703).
+  for (auto os : {base::test::ScopedOSInfoOverride::Type::kWin11Pro,
+                  base::test::ScopedOSInfoOverride::Type::kWin10Pro}) {
+    base::test::ScopedOSInfoOverride os_override(os);
+    EXPECT_EQ(browser_util::PinResultMetric::kFeatureNotAvailable,
+              RunFlow(/*check_only=*/true, app_user_model_id_));
+  }
+}
+
+TEST_F(TaskbarManagerPinnedList3FallbackTest, NotUsedWhenFeatureDisabled) {
+  ASSERT_TRUE(CreateShortcut(shortcut_path_, exe_path_));
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(browser_util::kWin10TaskbarPinFallback);
+  EXPECT_EQ(browser_util::PinResultMetric::kFeatureNotAvailable,
+            RunFlow(/*check_only=*/true, app_user_model_id_));
 }

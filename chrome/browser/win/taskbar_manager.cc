@@ -8,15 +8,20 @@
 #include <stddef.h>
 
 #include <array>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
 
 #include "base/containers/circular_deque.h"
+#include "base/feature_list.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/lazy_thread_pool_task_runner.h"
@@ -28,8 +33,14 @@
 #include "base/win/hstring_reference.h"
 #include "base/win/limited_access_features.h"
 #include "base/win/post_async_results.h"
+#include "base/win/registry.h"
+#include "base/win/shortcut.h"
+#include "base/win/windows_version.h"
 #include "build/branding_buildflags.h"
+#include "chrome/installer/util/install_util.h"
 #include "chrome/installer/util/shell_util.h"
+#include "chrome/installer/util/taskbar_util.h"
+#include "chrome/installer/util/util_constants.h"
 #include "content/public/browser/browser_thread.h"
 #include "taskbar_manager.h"
 #include "windows.ui.shell.h"
@@ -351,6 +362,105 @@ void PinWithLimitedAccessFeature(
                      check_only, std::move(callback)));
 }
 
+// Returns true if the "Do not allow pinning programs to the Taskbar" Group
+// Policy is set.
+bool IsTaskbarPinningDisabledByPolicy() {
+  for (HKEY root : {HKEY_LOCAL_MACHINE, HKEY_CURRENT_USER}) {
+    base::win::RegKey key(root,
+                          L"Software\\Policies\\Microsoft\\Windows\\Explorer",
+                          KEY_QUERY_VALUE);
+    DWORD value = 0;
+    if (key.Valid() &&
+        key.ReadValueDW(L"NoPinningToTaskbar", &value) == ERROR_SUCCESS &&
+        value != 0) {
+      return true;
+    }
+  }
+  return false;
+}
+
+// Returns a Start Menu or Desktop shortcut for this Chrome install, preferring
+// Start Menu over Desktop and per-user over system-level, or an empty path if
+// there is none that targets the running executable.
+base::FilePath FindShortcutForCurrentExe() {
+  base::FilePath current_exe;
+  if (!base::PathService::Get(base::FILE_EXE, &current_exe)) {
+    return base::FilePath();
+  }
+  for (ShellUtil::ShortcutLocation location :
+       {ShellUtil::SHORTCUT_LOCATION_START_MENU_ROOT,
+        ShellUtil::SHORTCUT_LOCATION_DESKTOP}) {
+    for (ShellUtil::ShellChange level :
+         {ShellUtil::CURRENT_USER, ShellUtil::SYSTEM_LEVEL}) {
+      base::FilePath shortcut_dir;
+      if (!ShellUtil::GetShortcutPath(location, level, &shortcut_dir)) {
+        continue;
+      }
+      base::FilePath shortcut = shortcut_dir.Append(
+          base::StrCat({InstallUtil::GetShortcutName(), installer::kLnkExt}));
+      base::FilePath target;
+      if (base::PathExists(shortcut) &&
+          base::win::ResolveShortcut(shortcut, &target, nullptr) &&
+          base::FilePath::CompareEqualIgnoreCase(target.value(),
+                                                 current_exe.value())) {
+        return shortcut;
+      }
+    }
+  }
+  return base::FilePath();
+}
+
+// Checks whether a shortcut for the browser is pinned, and (when `check_only`
+// is false) pins it with the legacy `IPinnedList3` shell API that PWA pinning
+// also uses on older versions of Windows. Used on Windows 10 when
+// `ITaskbarManager` is unavailable. Unlike `ITaskbarManager`, pinning via
+// `IPinnedList3` does not show a Windows confirmation dialog, so
+// `check_only=false` must only be used after the user asked Chrome to pin
+// itself.
+void PinWithPinnedList3(bool check_only, ResultMetricCallback callback) {
+  CHECK(g_pin_task_runner.Get()->RunsTasksInCurrentSequence());
+  if (IsTaskbarPinningDisabledByPolicy()) {
+    std::move(callback).Run(PinResultMetric::kPinningNotAllowed);
+    return;
+  }
+  base::FilePath shortcut = FindShortcutForCurrentExe();
+  if (shortcut.empty()) {
+    std::move(callback).Run(PinResultMetric::kPinningNotAllowed);
+    return;
+  }
+  std::optional<bool> is_pinned = IsShortcutPinnedToTaskbar(shortcut);
+  if (!is_pinned.has_value()) {
+    std::move(callback).Run(PinResultMetric::kCOMError);
+    return;
+  }
+  if (*is_pinned) {
+    std::move(callback).Run(PinResultMetric::kAlreadyPinned);
+    return;
+  }
+  if (check_only) {
+    std::move(callback).Run(PinResultMetric::kSuccess);
+    return;
+  }
+  if (!PinShortcutToTaskbar(shortcut)) {
+    std::move(callback).Run(PinResultMetric::kTaskbarManagerError);
+    return;
+  }
+  ::SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, nullptr, nullptr);
+  std::move(callback).Run(PinResultMetric::kSuccess);
+}
+
+// Whether `PinWithPinnedList3()` may stand in for `ITaskbarManager`. It only
+// knows how to pin the browser's own shortcut, so it is limited to requests for
+// the browser's App User Model ID (not, for example, web apps), and to the
+// Windows 10 versions where `IPinnedList3` pinning still works.
+bool CanUsePinnedList3Fallback(const std::wstring& app_user_model_id) {
+  return base::win::GetVersion() < base::win::Version::WIN11 &&
+         CanPinShortcutToTaskbar() &&
+         app_user_model_id ==
+             ShellUtil::GetBrowserModelId(InstallUtil::IsPerUserInstall()) &&
+         base::FeatureList::IsEnabled(kWin10TaskbarPinFallback);
+}
+
 void PinAppToTaskbarInternal(const std::wstring& app_user_model_id,
                              PinAppToTaskbarChannel channel,
                              bool check_only,
@@ -384,6 +494,10 @@ void PinAppToTaskbarInternal(const std::wstring& app_user_model_id,
       std::move(callback), channel, check_only));
 
   if (!PinLimitedAccessFeatureAvailable()) {
+    if (CanUsePinnedList3Fallback(app_user_model_id)) {
+      PinWithPinnedList3(check_only, std::move(pin_result_callback));
+      return;
+    }
     std::move(pin_result_callback).Run(PinResultMetric::kFeatureNotAvailable);
     return;
   }
@@ -397,6 +511,8 @@ void PinAppToTaskbarInternal(const std::wstring& app_user_model_id,
 }
 
 }  // namespace
+
+BASE_FEATURE(kWin10TaskbarPinFallback, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool PinLimitedAccessFeatureAvailable() {
   static constexpr wchar_t taskbar_api_token[] =

@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 
@@ -41,6 +42,11 @@ enum class PinAppToTaskbarChannel {
 // Returns true if the com.microsoft.windows.taskbar.pin feature can be used.
 bool PinLimitedAccessFeatureAvailable();
 
+// When enabled, Windows 10 falls back to the legacy `IPinnedList3` shell API to
+// pin a browser shortcut if `ITaskbarManager` is unavailable. This does not
+// show the Windows confirmation dialog.
+BASE_DECLARE_FEATURE(kWin10TaskbarPinFallback);
+
 // `callback` is called with true if pinning is supported, and the app is not
 // currently pinned to the taskbar, false otherwise. There must be a shortcut
 // with `app_user_model_id` in the start menu for pinning to be supported.
@@ -66,21 +72,21 @@ enum class PinResultMetric {
   // Shortcut was pinned, or we successfully determined if we should pin.
   kSuccess = 0,
 
-  // `PinLimitedAccessFeatureAvailable` returned false.
+  // `PinLimitedAccessFeatureAvailable` returned false and the `IPinnedList3`
+  // fallback was not used.
   kFeatureNotAvailable = 1,
 
   // There are a number of COM calls that can fail. This is unexpected.
   kCOMError = 2,
 
-  // Error calling ITaskbarManager method.
+  // Error calling ITaskbarManager method or `IPinnedList3` pin fallback.
   kTaskbarManagerError = 3,
 
   // Error posting async results.
   kPostAsyncResultsFailed = 4,
 
-  // `get_IsPinningAllowed` false. This could be because there is no shortcut to
-  // the app in the start menu, or some other Windows criteria for app pinning
-  // has not been met.
+  // `get_IsPinningAllowed` false, or the `IPinnedList3` fallback found pinning
+  // disabled by Group Policy or no matching browser shortcut.
   kPinningNotAllowed = 5,
 
   // Chrome already pinned to taskbar.
