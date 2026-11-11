@@ -58,7 +58,7 @@ enum class DetailsContext {
 // Associated username.
 @property(nonatomic, copy) NSString* username;
 
-// The user's display name, if this is a passkey. Always empty otherwise.
+// The user's display name, if this is a passkey.
 @property(nonatomic, copy) NSString* userDisplayName;
 
 // The federation providing this credential, if any.

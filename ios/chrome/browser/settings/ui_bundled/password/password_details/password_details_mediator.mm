@@ -143,28 +143,30 @@ bool ShouldDisplayCredentialAsMuted(
   return false;
 }
 
-// Returns true if the credential matches the other arguments.
-bool AreMatchingCredentials(const CredentialUIEntry& credential,
-                            CredentialDetails* credential_details,
-                            NSString* old_username,
-                            NSString* old_user_display_name) {
-  return
-      [credential_details.signonRealm
-          isEqualToString:base::SysUTF8ToNSString(
-                              credential.GetFirstSignonRealm())] &&
-      [old_username
-          isEqualToString:base::SysUTF16ToNSString(credential.username)] &&
-      [old_user_display_name isEqualToString:base::SysUTF16ToNSString(
-                                                 credential.user_display_name)];
+// Returns true if `credential` is a passkey matching the other arguments.
+bool IsMatchingPasskey(const CredentialUIEntry& credential,
+                       CredentialDetails* credential_details,
+                       NSString* old_username,
+                       NSString* old_user_display_name) {
+  return !credential.passkey_credential_id.empty() &&
+         [credential_details.signonRealm
+             isEqualToString:base::SysUTF8ToNSString(
+                                 credential.GetFirstSignonRealm())] &&
+         [old_username
+             isEqualToString:base::SysUTF16ToNSString(credential.username)] &&
+         [old_user_display_name
+             isEqualToString:base::SysUTF16ToNSString(
+                                 credential.user_display_name)];
 }
 
-// Returns true if the credential matches the other arguments.
-bool AreMatchingCredentials(const CredentialUIEntry& credential,
-                            CredentialDetails* credential_details,
-                            NSString* old_username,
-                            NSString* old_password,
-                            NSString* old_note) {
-  return [credential_details.signonRealm
+// Returns true if `credential` is a password matching the other arguments.
+bool IsMatchingPassword(const CredentialUIEntry& credential,
+                        CredentialDetails* credential_details,
+                        NSString* old_username,
+                        NSString* old_password,
+                        NSString* old_note) {
+  return credential.passkey_credential_id.empty() &&
+         [credential_details.signonRealm
              isEqualToString:base::SysUTF8ToNSString(
                                  credential.GetFirstSignonRealm())] &&
          [old_username
@@ -396,8 +398,8 @@ bool AreMatchingCredentials(const CredentialUIEntry& credential,
     it = std::ranges::find_if(
         _credentials, [credentialDetails, oldUsername, oldUserDisplayName](
                           const CredentialUIEntry& credential) {
-          return AreMatchingCredentials(credential, credentialDetails,
-                                        oldUsername, oldUserDisplayName);
+          return IsMatchingPasskey(credential, credentialDetails, oldUsername,
+                                   oldUserDisplayName);
         });
 
     // There should be no reason not to find the credential in the vector of
@@ -413,8 +415,8 @@ bool AreMatchingCredentials(const CredentialUIEntry& credential,
     it = std::ranges::find_if(
         _credentials, [credentialDetails, oldUsername, oldPassword,
                        oldNote](const CredentialUIEntry& credential) {
-          return AreMatchingCredentials(credential, credentialDetails,
-                                        oldUsername, oldPassword, oldNote);
+          return IsMatchingPassword(credential, credentialDetails, oldUsername,
+                                    oldPassword, oldNote);
         });
 
     // There should be no reason not to find the credential in the vector of
