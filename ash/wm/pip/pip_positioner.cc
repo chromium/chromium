@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "ash/constants/ash_features.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
@@ -25,6 +26,15 @@ namespace ash {
 namespace {
 const float kPipDismissMovementProportion = 1.5f;
 }  // namespace
+
+// static
+bool PipPositioner::IsAutoLayout(const WindowState* window_state) {
+  if (!features::IsPipAutoLayoutToggleEnabled()) {
+    return true;
+  }
+  const PipParams* params = window_state->window()->GetProperty(kPipParamsKey);
+  return !params || params->auto_layout;
+}
 
 gfx::Rect PipPositioner::GetBoundsForDrag(const display::Display& display,
                                           const gfx::Rect& bounds_in_screen,
@@ -64,6 +74,9 @@ gfx::Rect PipPositioner::GetDismissedPosition(
 
 gfx::Rect PipPositioner::GetPositionAfterMovementAreaChange(
     WindowState* window_state) {
+  if (!IsAutoLayout(window_state)) {
+    return window_state->window()->GetBoundsInScreen();
+  }
   // Restore to previous bounds if we have them. This lets us move the PIP
   // window back to its original bounds after transient movement area changes,
   // like the keyboard popping up and pushing the PIP window up.

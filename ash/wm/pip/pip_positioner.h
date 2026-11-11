@@ -27,6 +27,11 @@ class ASH_EXPORT PipPositioner {
 
   ~PipPositioner() = delete;
 
+  // Returns true if the PIP window uses the "auto layout" mode (see
+  // `kPipParamsKey`), which snaps the window to the edge of the PIP movement
+  // area, avoids obstacles and supports fling, swipe-to-dismiss and tuck.
+  static bool IsAutoLayout(const WindowState* window_state);
+
   // Adjusts bounds during a drag of a PIP window. For example, this will
   // ensure that the PIP window cannot leave the PIP movement area.
   // If the window is transformed with `gfx::Transform`, it returns
@@ -45,7 +50,8 @@ class ASH_EXPORT PipPositioner {
 
   // Gets the position the PIP window should be moved to after a movement area
   // change. For example, if the shelf is changed from auto-hidden to always
-  // shown, the PIP window should move up to not intersect it.
+  // shown, the PIP window should move up to not intersect it. If the window
+  // does not use the auto layout mode, this returns the current bounds.
   static gfx::Rect GetPositionAfterMovementAreaChange(
       WindowState* window_state);
 

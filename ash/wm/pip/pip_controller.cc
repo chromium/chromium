@@ -4,8 +4,10 @@
 
 #include "ash/wm/pip/pip_controller.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/public/cpp/window_properties.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/screen_util.h"
 #include "ash/shell.h"
@@ -45,6 +47,7 @@ gfx::Size PreserveAspectRatio(aura::Window* pip_window,
 
   gfx::SizeF* aspect_ratio_size =
       pip_window->GetProperty(aura::client::kAspectRatio);
+  CHECK(aspect_ratio_size);
 
   buffer_size_clone.SetToMin(max_size);
   buffer_size_clone.SetToMax(min_size);
@@ -219,6 +222,9 @@ void PipController::UpdatePipBounds() {
     return;
   }
   WindowState* window_state = WindowState::Get(pip_window_);
+  if (!PipPositioner::IsAutoLayout(window_state)) {
+    return;
+  }
   if (!ash::PipPositioner::HasSnapFraction(window_state) &&
       IsArcWindow(pip_window_)) {
     // Prevent PiP bounds from being updated between window state change into
@@ -305,6 +311,38 @@ void PipController::OnWindowDestroying(aura::Window* window) {
   UnsetPipWindow(window);
 }
 
+void PipController::OnWindowPropertyChanged(aura::Window* window,
+                                            const void* key,
+                                            intptr_t old) {
+  if (key != kPipParamsKey || !features::IsPipAutoLayoutToggleEnabled()) {
+    return;
+  }
+  CHECK_EQ(window, pip_window_);
+
+  const auto* old_params = reinterpret_cast<const PipParams*>(old);
+  const bool old_auto_layout = !old_params || old_params->auto_layout;
+  WindowState* window_state = WindowState::Get(window);
+  const bool new_auto_layout = PipPositioner::IsAutoLayout(window_state);
+  if (old_auto_layout == new_auto_layout) {
+    return;
+  }
+
+  if (!new_auto_layout) {
+    if (is_tucked_) {
+      UntuckWindow();
+    }
+    // Keep the window where it is. The snap fraction is not used when the
+    // auto layout mode is off.
+    PipPositioner::ClearSnapFraction(window_state);
+    return;
+  }
+
+  // Animate the window to its resting position, and save the snap fraction so
+  // that the position is restored after movement area changes.
+  UpdatePipBounds();
+  PipPositioner::SaveSnapFraction(window_state, window->GetBoundsInScreen());
+}
+
 bool PipController::HandleDoubleTap(const ui::Event& event) {
   return pip_size_switch_handler_.ProcessDoubleTapEvent(event);
 }
@@ -330,6 +368,11 @@ bool PipController::PipSizeSwitchHandler::ProcessDoubleTapEvent(
     return false;
   }
 
+  const PipParams* params = window_state->window()->GetProperty(kPipParamsKey);
+  if (params && !params->double_tap_to_resize) {
+    return false;
+  }
+
   return ResizePip(window_state);
 }
 
@@ -351,6 +394,10 @@ bool PipController::PipSizeSwitchHandler::ResizePip(WindowState* window_state) {
   }
 
   if (!Shell::Get()->pip_controller()->CanResizePip()) {
+    return false;
+  }
+
+  if (!window_state->window()->GetProperty(aura::client::kAspectRatio)) {
     return false;
   }
 

@@ -53,6 +53,9 @@ class ASH_EXPORT PipController : public aura::WindowObserver {
 
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override;
+  void OnWindowPropertyChanged(aura::Window* window,
+                               const void* key,
+                               intptr_t old) override;
 
  private:
   class PipSizeSwitchHandler {

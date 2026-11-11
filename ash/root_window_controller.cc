@@ -1226,6 +1226,7 @@ void RootWindowController::CreateContainers() {
       kShellWindowId_PipContainer, "PipContainer", non_lock_screen_containers);
   ::wm::SetChildWindowVisibilityChangesAnimated(pip_container);
   pip_container->SetProperty(::wm::kUsesScreenCoordinatesKey, true);
+  window_util::SetChildrenUseExtendedHitRegionForWindow(pip_container);
 
   aura::Window* arc_ime_parent_container = CreateContainer(
       kShellWindowId_ArcImeWindowParentContainer, "ArcImeWindowParentContainer",

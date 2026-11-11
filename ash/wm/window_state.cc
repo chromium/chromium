@@ -838,7 +838,8 @@ void WindowState::OnRevertDrag(const gfx::PointF& location) {
 }
 
 void WindowState::OnActivationLost() {
-  if (IsPip()) {
+  const PipParams* pip_params = window_->GetProperty(kPipParamsKey);
+  if (IsPip() && (!pip_params || !pip_params->activatable)) {
     views::Widget::GetWidgetForNativeWindow(window_)
         ->widget_delegate()
         ->SetCanActivate(false);
@@ -1112,7 +1113,8 @@ void WindowState::SetBoundsDirect(const gfx::Rect& bounds_in_parent) {
     // of the screen, which makes the snap fraction logic fail. Ensure to snap
     // it again.
     if (IsPip() && !is_dragged() &&
-        !Shell::Get()->pip_controller()->is_tucked()) {
+        !Shell::Get()->pip_controller()->is_tucked() &&
+        PipPositioner::IsAutoLayout(this)) {
       wm::ConvertRectToScreen(window_->GetRootWindow(), &actual_new_bounds);
       actual_new_bounds = CollisionDetectionUtils::GetRestingPosition(
           display, actual_new_bounds,
@@ -1256,9 +1258,13 @@ void WindowState::OnPrePipStateChange(WindowStateType old_window_state_type) {
     // widget may not exit in some unit tests.
     // TODO(oshima): Fix unit tests and add DCHECK.
     if (widget) {
-      widget->widget_delegate()->SetCanActivate(false);
-      if (widget->IsActive())
-        widget->Deactivate();
+      const PipParams* pip_params = window_->GetProperty(kPipParamsKey);
+      if (!pip_params || !pip_params->activatable) {
+        widget->widget_delegate()->SetCanActivate(false);
+        if (widget->IsActive()) {
+          widget->Deactivate();
+        }
+      }
       Shell::Get()->focus_cycler()->AddWidget(widget);
     }
     wm::SetWindowVisibilityAnimationType(
@@ -1589,7 +1595,8 @@ void WindowState::OnWindowVisibilityChanged(aura::Window* window,
       // updated when it transitions from minimized to PiP. In this case, snap
       // fraction is updated in
       // `ClientControlledShellSurface::OnPostWidgetCommit`.
-      if (!PipPositioner::HasSnapFraction(this) && !IsArcWindow(window)) {
+      if (!PipPositioner::HasSnapFraction(this) && !IsArcWindow(window) &&
+          PipPositioner::IsAutoLayout(this)) {
         PipPositioner::SaveSnapFraction(this, window_->GetBoundsInScreen());
       }
       Shell::Get()->pip_controller()->SetPipWindow(window);

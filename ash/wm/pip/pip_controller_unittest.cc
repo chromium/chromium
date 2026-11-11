@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/collision_detection/collision_detection_utils.h"
@@ -382,6 +383,24 @@ TEST_P(PipToggleResizeFeatureTest, TestHotKeyToggleTheSizeOfThePipWindow) {
 }
 
 // Assume true is for mouse clicks and false is for gesture taps.
+TEST_P(PipToggleResizeFeatureTest, DoubleClickDoesNotResizeWhenDisabled) {
+  auto window = CreateAppWindow(gfx::Rect(300, 300), WindowStateType::kPip);
+  window->SetProperty(kPipParamsKey, PipParams{.double_tap_to_resize = false});
+
+  DoubleTapWindowCenter(window.get());
+
+  EXPECT_FALSE(WindowState::Get(window.get())->bounds_changed_by_user());
+}
+
+TEST_P(PipToggleResizeFeatureTest, HotkeyDoesNotResizeWithoutAspectRatio) {
+  auto window = CreateAppWindow(gfx::Rect(300, 300), WindowStateType::kPip);
+  window->ClearProperty(aura::client::kAspectRatio);
+
+  PressHotKey(window.get());
+
+  EXPECT_FALSE(WindowState::Get(window.get())->bounds_changed_by_user());
+}
+
 INSTANTIATE_TEST_SUITE_P(All, PipToggleResizeFeatureTest, testing::Bool());
 
 }  // namespace ash

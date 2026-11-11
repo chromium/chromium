@@ -121,6 +121,30 @@ ASH_PUBLIC_EXPORT extern const aura::WindowProperty<bool>* const
 ASH_PUBLIC_EXPORT extern const aura::WindowProperty<bool*>* const
     kMinimizeOnBackKey;
 
+// Parameters that configure ash's behavior for a PIP window.
+struct ASH_PUBLIC_EXPORT PipParams {
+  // Whether the PIP window uses the "auto layout" mode, in which ash snaps the
+  // window to the edge of the PIP movement area, avoids obstacles, and supports
+  // fling, swipe-to-dismiss, and tuck. When false, these are disabled and the
+  // window stays where it is placed. Only takes effect when
+  // `features::kPipAutoLayoutToggle` is enabled.
+  bool auto_layout = true;
+
+  // Whether the PIP window stays activatable (e.g. Document PIP, which hosts
+  // interactive web content).
+  bool activatable = false;
+
+  // Whether double-tapping or double-clicking the PIP window toggles its size.
+  bool double_tap_to_resize = true;
+
+  bool operator==(const PipParams&) const = default;
+};
+
+// A property key to store `PipParams` for a PIP window. When unset, default
+// `PipParams` values are used.
+ASH_PUBLIC_EXPORT extern const aura::WindowProperty<PipParams*>* const
+    kPipParamsKey;
+
 // If true, the current PIP window is spawned from this window.
 // Android PIP has two types of behavior depending on how many activities the
 // original task has before entering PIP.
@@ -230,6 +254,7 @@ DECLARE_EXPORTED_UI_CLASS_PROPERTY_TYPE(ASH_PUBLIC_EXPORT,
                                         ash::ArcGameControlsFlag)
 DECLARE_EXPORTED_UI_CLASS_PROPERTY_TYPE(ASH_PUBLIC_EXPORT,
                                         ash::ArcResizeLockType)
+DECLARE_EXPORTED_UI_CLASS_PROPERTY_TYPE(ASH_PUBLIC_EXPORT, ash::PipParams*)
 DECLARE_EXPORTED_UI_CLASS_PROPERTY_TYPE(ASH_PUBLIC_EXPORT,
                                         ash::ResizeShadowType)
 DECLARE_EXPORTED_UI_CLASS_PROPERTY_TYPE(ASH_PUBLIC_EXPORT, ash::WindowBackdrop*)

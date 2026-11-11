@@ -1335,6 +1335,10 @@ BASE_FEATURE(kPhoneHubMonochromeNotificationIcons,
 BASE_FEATURE(kPhoneHubShortQuickActionPodsTitles,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables toggling the PiP "auto layout" mode (e.g. snap to the display edge)
+// via a pin button on PiP windows.
+BASE_FEATURE(kPipAutoLayoutToggle, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables or disables the preference of using constant frame rate for camera
 // when streaming.
 BASE_FEATURE(kPreferConstantFrameRate, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -2500,6 +2504,10 @@ bool IsPasswordLockoutRecoveryRoutingEnabled() {
 
 bool IsPerDeskShelfEnabled() {
   return base::FeatureList::IsEnabled(kPerDeskShelf);
+}
+
+bool IsPipAutoLayoutToggleEnabled() {
+  return base::FeatureList::IsEnabled(kPipAutoLayoutToggle);
 }
 
 bool IsPhoneHubMonochromeNotificationIconsEnabled() {

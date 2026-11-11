@@ -9,13 +9,16 @@
 #include <tuple>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/keyboard/ui/test/keyboard_test_util.h"
 #include "ash/metrics/pip_uma.h"
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
+#include "ash/public/cpp/window_properties.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wm/collision_detection/collision_detection_utils.h"
 #include "ash/wm/drag_window_resizer.h"
 #include "ash/wm/pip/pip_controller.h"
 #include "ash/wm/pip/pip_positioner.h"
@@ -847,6 +850,122 @@ TEST_P(PipWindowResizerTest, PipPinchResizeWithNoMaximumSizeRestrinction) {
 // We should add some way to try multiple layouts.
 INSTANTIATE_TEST_SUITE_P(All,
                          PipWindowResizerTest,
+                         testing::Values(std::make_tuple("500x400", 0u),
+                                         std::make_tuple("500x400/r", 0u),
+                                         std::make_tuple("500x400/u", 0u),
+                                         std::make_tuple("500x400/l", 0u),
+                                         std::make_tuple("1000x800*2", 0u),
+                                         std::make_tuple("500x400,500x400", 0u),
+                                         std::make_tuple("500x400,500x400",
+                                                         1u)));
+
+// Tests for the PIP window whose auto layout mode is off.
+class PipWindowResizerAutoLayoutOffTest : public PipWindowResizerTest {
+ public:
+  PipWindowResizerAutoLayoutOffTest() = default;
+  PipWindowResizerAutoLayoutOffTest(const PipWindowResizerAutoLayoutOffTest&) =
+      delete;
+  PipWindowResizerAutoLayoutOffTest& operator=(
+      const PipWindowResizerAutoLayoutOffTest&) = delete;
+  ~PipWindowResizerAutoLayoutOffTest() override = default;
+
+ protected:
+  void PreparePipWindowWithAutoLayoutOff(const gfx::Rect& bounds) {
+    PreparePipWindow(bounds);
+    window()->SetProperty(kPipParamsKey, PipParams{.auto_layout = false});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kPipAutoLayoutToggle};
+};
+
+TEST_P(PipWindowResizerAutoLayoutOffTest, DoesNotSnapToEdge) {
+  PreparePipWindowWithAutoLayoutOff({200, 200, 100, 100});
+  std::unique_ptr<PipWindowResizer> resizer(CreateResizerForTest(HTCAPTION));
+  ASSERT_TRUE(resizer.get());
+
+  resizer->Drag(CalculateDragPoint(*resizer, 0, 10), 0);
+  resizer->CompleteDrag();
+
+  EXPECT_EQ(gfx::Rect(200, 210, 100, 100),
+            test_state()->last_requested_bounds());
+}
+
+TEST_P(PipWindowResizerAutoLayoutOffTest, DoesNotFling) {
+  PreparePipWindowWithAutoLayoutOff({200, 200, 100, 100});
+  std::unique_ptr<PipWindowResizer> resizer(CreateResizerForTest(HTCAPTION));
+  ASSERT_TRUE(resizer.get());
+
+  resizer->Drag(CalculateDragPoint(*resizer, 0, 10), 0);
+  Fling(std::move(resizer), 0.f, 4000.f);
+
+  EXPECT_EQ(gfx::Rect(200, 210, 100, 100),
+            test_state()->last_requested_bounds());
+}
+
+TEST_P(PipWindowResizerAutoLayoutOffTest, DoesNotSwipeToDismiss) {
+  PreparePipWindowWithAutoLayoutOff({8, 8, 100, 100});
+  std::unique_ptr<PipWindowResizer> resizer(CreateResizerForTest(HTCAPTION));
+  ASSERT_TRUE(resizer.get());
+
+  // Drag past the top edge without dismissing or clamping to the movement area.
+  resizer->Drag(CalculateDragPoint(*resizer, 0, -90), 0);
+  resizer->CompleteDrag();
+
+  EXPECT_FALSE(widget()->IsClosed());
+  EXPECT_EQ(gfx::Rect(8, -82, 100, 100), test_state()->last_requested_bounds());
+}
+
+TEST_P(PipWindowResizerAutoLayoutOffTest, DoesNotTuck) {
+  // On the secondary display, dragging the window off its left edge moves the
+  // window to the primary display.
+  if (std::get<1>(GetParam()) == 1u) {
+    GTEST_SKIP();
+  }
+  PreparePipWindowWithAutoLayoutOff({8, 100, 100, 100});
+  // Start the drag near the right edge of the window so that the drag point
+  // stays inside the display. Otherwise, the window moves to another display.
+  std::unique_ptr<PipWindowResizer> resizer(
+      CreateResizerForTest(HTCAPTION, gfx::Point(100, 150)));
+  ASSERT_TRUE(resizer.get());
+
+  // Drag past the left edge without tucking or clamping to the movement area.
+  resizer->Drag(CalculateDragPoint(*resizer, -70, 0), 0);
+  resizer->CompleteDrag();
+
+  EXPECT_FALSE(Shell::Get()->pip_controller()->is_tucked());
+  EXPECT_EQ(gfx::Rect(-62, 100, 100, 100),
+            test_state()->last_requested_bounds());
+}
+
+TEST_P(PipWindowResizerAutoLayoutOffTest, CanDragOutsideMovementArea) {
+  PreparePipWindowWithAutoLayoutOff({200, 200, 100, 100});
+  gfx::Rect movement_area = CollisionDetectionUtils::GetMovementArea(
+      WindowState::Get(window())->GetDisplay());
+  ::wm::ConvertRectFromScreen(window()->parent(), &movement_area);
+
+  gfx::Rect display_bounds = WindowState::Get(window())->GetDisplay().bounds();
+  ::wm::ConvertRectFromScreen(window()->parent(), &display_bounds);
+
+  // Start the drag near the top edge of the window, and drag to the bottom of
+  // the display. The drag point stays inside the display so that the window
+  // doesn't move to another display.
+  std::unique_ptr<PipWindowResizer> resizer(
+      CreateResizerForTest(HTCAPTION, gfx::Point(250, 210)));
+  ASSERT_TRUE(resizer.get());
+  const int dy = display_bounds.bottom() - 1 - 210;
+  resizer->Drag(CalculateDragPoint(*resizer, 0, dy), 0);
+  const gfx::Rect expected(200, 200 + dy, 100, 100);
+  EXPECT_GT(expected.bottom(), movement_area.bottom());
+  EXPECT_EQ(expected, test_state()->last_requested_bounds());
+
+  resizer->CompleteDrag();
+  EXPECT_EQ(expected, test_state()->last_requested_bounds());
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PipWindowResizerAutoLayoutOffTest,
                          testing::Values(std::make_tuple("500x400", 0u),
                                          std::make_tuple("500x400/r", 0u),
                                          std::make_tuple("500x400/u", 0u),

@@ -92,8 +92,9 @@ PipWindowResizer::PipWindowResizer(WindowState* window_state, bool for_pinch)
   if (is_resize) {
     UMA_HISTOGRAM_ENUMERATION(kAshPipEventsHistogramName,
                               AshPipEvents::FREE_RESIZE);
-  } else {
-    // Don't allow swipe-to-dismiss for resizes.
+  } else if (PipPositioner::IsAutoLayout(window_state)) {
+    // Don't allow swipe-to-dismiss for resizes, or when the auto layout mode
+    // is off.
     gfx::Rect area =
         CollisionDetectionUtils::GetMovementArea(window_state->GetDisplay());
     // Check in which directions we can dismiss. Usually this is only in one
@@ -170,13 +171,16 @@ void PipWindowResizer::Drag(const gfx::PointF& location_in_parent,
       may_dismiss_vertically_ = false;
   }
 
-  // If we aren't dismissing, make sure to collide with objects.
+  // If we aren't dismissing, make sure to collide with objects in the auto
+  // layout mode.
   if (!may_dismiss_horizontally_ && !may_dismiss_vertically_) {
     // Reset opacity if it's not a dismiss gesture.
     Shell::Get()->pip_controller()->SetDimOpacity(0.f);
     GetTarget()->layer()->SetOpacity(1.f);
-    new_bounds = PipPositioner::GetBoundsForDrag(display, new_bounds,
-                                                 GetTarget()->transform());
+    if (PipPositioner::IsAutoLayout(window_state())) {
+      new_bounds = PipPositioner::GetBoundsForDrag(display, new_bounds,
+                                                   GetTarget()->transform());
+    }
   } else {
     gfx::Rect in_screen_bounds = new_bounds;
     in_screen_bounds.Intersect(area);
@@ -226,13 +230,15 @@ void PipWindowResizer::Pinch(const gfx::PointF& location_in_parent,
                            &last_location_in_screen_.value());
   wm::ConvertRectToScreen(GetTarget()->parent(), &new_bounds);
 
-  // Ensure that the PiP window stays inside the PiP movement area.
-  // This has to be consistent with `PipWindowResizer::Drag()`, as otherwise
-  // it can cause jump during transition from pinch to drag. This could be
-  // due to change (b/292768858).
-  display::Display display = window_state()->GetDisplay();
-  new_bounds = PipPositioner::GetBoundsForDrag(display, new_bounds,
-                                               GetTarget()->transform());
+  // In the auto layout mode, ensure that the PiP window stays inside the PiP
+  // movement area. This has to be consistent with `PipWindowResizer::Drag()`,
+  // as otherwise it can cause jump during transition from pinch to drag. This
+  // could be due to change (b/292768858).
+  if (PipPositioner::IsAutoLayout(window_state())) {
+    display::Display display = window_state()->GetDisplay();
+    new_bounds = PipPositioner::GetBoundsForDrag(display, new_bounds,
+                                                 GetTarget()->transform());
+  }
 
   // Convert back to root window coordinates for setting bounds.
   wm::ConvertRectFromScreen(GetTarget()->parent(), &new_bounds);
@@ -295,15 +301,20 @@ void PipWindowResizer::CompleteDrag() {
   window_state()->ClearRestoreBounds();
   window_state()->SetBoundsChangedByUser(moved_or_resized_);
 
+  // Fling, swipe-to-dismiss, tuck and snapping to the resting position are only
+  // supported in the auto layout mode.
+  const bool auto_layout = PipPositioner::IsAutoLayout(window_state());
+
   int fling_amount = fling_velocity_x_ * fling_velocity_x_ +
                      fling_velocity_y_ * fling_velocity_y_;
   // Trigger a dismiss if less than |kPipDismissFraction| of the PIP window area
   // is on-screen, or, if it was flung faster than
   // |kPipSwipeToDimissFlingThresholdSquared| during a dismiss gesture.
   bool should_dismiss_or_tuck =
-      in_screen_fraction_ < kPipDismissFraction ||
-      (in_screen_fraction_ != 1.f &&
-       fling_amount >= kPipSwipeToDismissFlingThresholdSquared);
+      auto_layout &&
+      (in_screen_fraction_ < kPipDismissFraction ||
+       (in_screen_fraction_ != 1.f &&
+        fling_amount >= kPipSwipeToDismissFlingThresholdSquared));
   bool should_tuck = should_dismiss_or_tuck && may_dismiss_horizontally_;
   bool should_dismiss = should_dismiss_or_tuck && !should_tuck;
 
@@ -321,12 +332,14 @@ void PipWindowResizer::CompleteDrag() {
     bool left = center_point.x() < display_bounds_center.x();
     Shell::Get()->pip_controller()->TuckWindow(left);
   } else {
-    // Animate the PIP window to its resting position.
+    // In the auto layout mode, animate the PIP window to its resting position;
+    // otherwise, keep the intended bounds.
     gfx::Rect intended_bounds;
 
     // The window should be flung when the gesture is not an edge resize.
     const bool is_edge_resize = details().bounds_change & kBoundsChange_Resizes;
-    if (!is_edge_resize && fling_amount > kPipMovementFlingThresholdSquared) {
+    if (auto_layout && !is_edge_resize &&
+        fling_amount > kPipMovementFlingThresholdSquared) {
       intended_bounds = ComputeFlungPosition();
     } else {
       if (last_location_in_screen_.has_value()) {
@@ -352,9 +365,12 @@ void PipWindowResizer::CompleteDrag() {
         (details().source == wm::WINDOW_MOVE_SOURCE_MOUSE)
             ? display::Screen::Get()->GetDisplayMatching(intended_bounds)
             : window_state()->GetDisplay();
-    gfx::Rect resting_bounds = CollisionDetectionUtils::GetRestingPosition(
-        target_display, intended_bounds,
-        CollisionDetectionUtils::RelativePriority::kPictureInPicture);
+    gfx::Rect resting_bounds =
+        auto_layout
+            ? CollisionDetectionUtils::GetRestingPosition(
+                  target_display, intended_bounds,
+                  CollisionDetectionUtils::RelativePriority::kPictureInPicture)
+            : intended_bounds;
 
     // It is possible the drag left the window on a different display than
     // intended, if so move the window.
@@ -367,7 +383,7 @@ void PipWindowResizer::CompleteDrag() {
 
     base::TimeDelta duration =
         base::Milliseconds(kPipSnapToEdgeAnimationDurationMs);
-    SetBoundsWMEvent event(resting_bounds, /*animate=*/true, duration);
+    SetBoundsWMEvent event(resting_bounds, /*animate=*/auto_layout, duration);
     window_state()->OnWMEvent(&event);
 
     ui::Layer* layer = GetTarget()->layer();
@@ -388,9 +404,11 @@ void PipWindowResizer::CompleteDrag() {
     // TODO(edcourtney): This may not be the best place for this. Consider
     // doing this a different way or saving these bounds at a later point when
     // the work area changes.
-    wm::ConvertRectToScreen(window_state()->window()->GetRootWindow(),
-                                &resting_bounds);
-    PipPositioner::SaveSnapFraction(window_state(), resting_bounds);
+    if (auto_layout) {
+      wm::ConvertRectToScreen(window_state()->window()->GetRootWindow(),
+                              &resting_bounds);
+      PipPositioner::SaveSnapFraction(window_state(), resting_bounds);
+    }
   }
 }
 
