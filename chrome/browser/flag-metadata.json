@@ -1854,7 +1854,7 @@
   {
     "name": "capability-delegation-digital-credentials",
     "owners": ["mamir@chromium.org", "web-identity-eng@google.com"],
-    "expiry_milestone": 160
+    "expiry_milestone": 170
   },
   {
     "name": "capability-element-icon-only-mode",
@@ -10271,12 +10271,12 @@
   {
     "name": "web-identity-digital-credentials",
     "owners": ["mamir@chromium.org", "goto@chromium.org", "web-identity-eng@google.com"],
-    "expiry_milestone": 160
+    "expiry_milestone": 170
   },
   {
     "name": "web-identity-digital-credentials-creation",
     "owners": ["mamir@chromium.org", "web-identity-eng@google.com"],
-    "expiry_milestone": 160
+    "expiry_milestone": 170
   },
   {
     "name": "web-machine-learning-neural-network",
