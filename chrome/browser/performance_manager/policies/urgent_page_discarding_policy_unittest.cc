@@ -5,21 +5,125 @@
 #include "chrome/browser/performance_manager/policies/urgent_page_discarding_policy.h"
 
 #include <memory>
+#include <optional>
 
+#include "base/memory/available_memory_monitor.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory_coordinator/memory_consumer.h"
 #include "base/memory_coordinator/test_memory_consumer_registry.h"
 #include "base/memory_coordinator/utils.h"
+#include "base/scoped_observation.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/browser/performance_manager/policies/discard_eligibility_policy.h"
+#include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
 #include "chrome/browser/performance_manager/policies/policy_features.h"
 #include "chrome/browser/performance_manager/test_support/page_discarding_utils.h"
 #include "components/performance_manager/decorators/page_aggregator.h"
+#include "components/performance_manager/graph/page_node_impl.h"
+#include "components/performance_manager/public/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace performance_manager {
 namespace policies {
+
+#if BUILDFLAG(IS_WIN)
+class UrgentPageDiscardingPolicyMemoryMonitorTest : public GraphTestHarness {
+ public:
+  UrgentPageDiscardingPolicyMemoryMonitorTest()
+      : GraphTestHarness(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    feature_list_.InitWithFeatures(
+        {performance_manager::features::kDiscardOnCommitLimit},
+        {features::kSustainedPMUrgentDiscarding});
+  }
+
+  void SetUp() override {
+    GraphTestHarness::SetUp();
+    graph()->PassToGraph(std::make_unique<PageDiscardingHelper>());
+  }
+
+ protected:
+  class CountingMemoryMonitor : public base::AvailableMemoryMonitor {
+   public:
+    ~CountingMemoryMonitor() override = default;
+    int poll_count() const { return poll_count_; }
+
+   private:
+    std::optional<MemorySample> ComputeAvailableMemory() override {
+      ++poll_count_;
+      return std::nullopt;
+    }
+
+    int poll_count_ = 0;
+  };
+
+  std::unique_ptr<UrgentPageDiscardingPolicy> CreatePolicy() {
+    return std::make_unique<UrgentPageDiscardingPolicy>(&monitor_);
+  }
+
+  base::TestMemoryConsumerRegistry memory_consumer_registry_;
+  CountingMemoryMonitor monitor_;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(UrgentPageDiscardingPolicyMemoryMonitorTest, MonitorFollowsPageDemand) {
+  auto* policy = graph()->PassToGraph(CreatePolicy());
+  task_env().FastForwardBy(base::Seconds(4));
+  EXPECT_EQ(0, monitor_.poll_count());
+
+  auto first_page = CreateNode<PageNodeImpl>();
+  auto second_page = CreateNode<PageNodeImpl>();
+  task_env().FastForwardBy(base::Seconds(2));
+  EXPECT_EQ(1, monitor_.poll_count());
+  first_page.reset();
+  task_env().FastForwardBy(base::Seconds(2));
+  EXPECT_EQ(2, monitor_.poll_count());
+  second_page.reset();
+  task_env().FastForwardBy(base::Seconds(4));
+  EXPECT_EQ(2, monitor_.poll_count());
+
+  auto resumed_page = CreateNode<PageNodeImpl>();
+  task_env().FastForwardBy(base::Seconds(2));
+  EXPECT_EQ(3, monitor_.poll_count());
+  auto owned_policy = graph()->TakeFromGraphAs(policy);
+  task_env().FastForwardBy(base::Seconds(4));
+  EXPECT_EQ(3, monitor_.poll_count());
+
+  // Reattaching to a graph that already has pages must resume monitoring.
+  graph()->PassToGraph(std::move(owned_policy));
+  task_env().FastForwardBy(base::Seconds(2));
+  EXPECT_EQ(4, monitor_.poll_count());
+  owned_policy = graph()->TakeFromGraphAs(policy);
+}
+
+TEST_F(UrgentPageDiscardingPolicyMemoryMonitorTest,
+       OtherObserversKeepMonitoring) {
+  class OtherObserver : public base::AvailableMemoryMonitor::Observer {
+   public:
+    void OnAvailableMemoryUpdated(
+        const base::AvailableMemoryMonitor::MemorySample& sample) override {}
+  } observer;
+  base::ScopedObservation<base::AvailableMemoryMonitor,
+                          base::AvailableMemoryMonitor::Observer>
+      observation{&observer};
+  observation.Observe(&monitor_);
+  auto* policy = graph()->PassToGraph(CreatePolicy());
+  auto page = CreateNode<PageNodeImpl>();
+  task_env().FastForwardBy(base::Seconds(2));
+  EXPECT_EQ(1, monitor_.poll_count());
+
+  page.reset();
+  task_env().FastForwardBy(base::Seconds(4));
+  EXPECT_EQ(3, monitor_.poll_count());
+  observation.Reset();
+  task_env().FastForwardBy(base::Seconds(4));
+  EXPECT_EQ(3, monitor_.poll_count());
+  auto owned_policy = graph()->TakeFromGraphAs(policy);
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 class UrgentPageDiscardingPolicyTest
     : public testing::GraphTestHarnessWithMockDiscarder {

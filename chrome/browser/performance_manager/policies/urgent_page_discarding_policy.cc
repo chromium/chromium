@@ -52,7 +52,8 @@ constexpr base::MemoryConsumerTraits kUrgentPageDiscardingPolicyTraits(
 
 }  // namespace
 
-UrgentPageDiscardingPolicy::UrgentPageDiscardingPolicy()
+UrgentPageDiscardingPolicy::UrgentPageDiscardingPolicy(
+    base::AvailableMemoryMonitor* monitor_for_testing)
     : sustained_memory_pressure_timer_(
           FROM_HERE,
           base::Seconds(5),
@@ -62,7 +63,8 @@ UrgentPageDiscardingPolicy::UrgentPageDiscardingPolicy()
 #if BUILDFLAG(IS_WIN)
   if (base::FeatureList::IsEnabled(
           performance_manager::features::kDiscardOnCommitLimit)) {
-    monitor_ = base::AvailableMemoryMonitor::Get();
+    monitor_ = monitor_for_testing ? monitor_for_testing
+                                   : base::AvailableMemoryMonitor::Get();
   }
 #endif
 
@@ -74,27 +76,51 @@ UrgentPageDiscardingPolicy::UrgentPageDiscardingPolicy()
     memory_consumer_registration_.emplace(
         "UrgentPageDiscardingPolicy", kUrgentPageDiscardingPolicyTraits, this);
   }
+}
 
-  if (monitor_) {
-    monitor_->AddObserver(this);
-  }
-}
-UrgentPageDiscardingPolicy::~UrgentPageDiscardingPolicy() {
-  if (monitor_) {
-    monitor_->RemoveObserver(this);
-  }
-}
+UrgentPageDiscardingPolicy::~UrgentPageDiscardingPolicy() = default;
 
 void UrgentPageDiscardingPolicy::OnPassedToGraph(Graph* graph) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(PageDiscardingHelper::GetFromGraph(graph))
       << "A PageDiscardingHelper instance should be registered against the "
          "graph in order to use this policy.";
+#if BUILDFLAG(IS_WIN)
+  if (monitor_) {
+    graph->AddPageNodeObserver(this);
+    if (!graph->GetAllPageNodes().empty()) {
+      monitor_observation_.Observe(monitor_.get());
+    }
+  }
+#endif
 }
 
 void UrgentPageDiscardingPolicy::OnTakenFromGraph(Graph* graph) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+#if BUILDFLAG(IS_WIN)
+  if (monitor_) {
+    monitor_observation_.Reset();
+    graph->RemovePageNodeObserver(this);
+  }
+#endif
 }
+
+#if BUILDFLAG(IS_WIN)
+void UrgentPageDiscardingPolicy::OnPageNodeAdded(const PageNode* page_node) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!monitor_observation_.IsObserving()) {
+    monitor_observation_.Observe(monitor_.get());
+  }
+}
+
+void UrgentPageDiscardingPolicy::OnBeforePageNodeRemoved(
+    const PageNode* page_node) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (GetOwningGraph()->GetAllPageNodes().size() == 1) {
+    monitor_observation_.Reset();
+  }
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS)
 void UrgentPageDiscardingPolicy::OnReclaimTarget(

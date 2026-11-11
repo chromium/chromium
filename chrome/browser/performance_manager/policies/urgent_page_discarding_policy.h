@@ -18,6 +18,11 @@
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/system_node.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "base/scoped_observation.h"
+#include "components/performance_manager/public/graph/page_node.h"
+#endif
+
 namespace performance_manager {
 
 namespace policies {
@@ -25,10 +30,16 @@ namespace policies {
 // Urgently discard a tab when receiving a memory pressure signal.
 class UrgentPageDiscardingPolicy
     : public GraphOwned,
+#if BUILDFLAG(IS_WIN)
+      public PageNodeObserver,
+#endif
       public base::MemoryConsumer,
       public base::AvailableMemoryMonitor::Observer {
  public:
-  UrgentPageDiscardingPolicy();
+  // Only tests should specify `monitor_for_testing`. In production, the policy
+  // uses base::AvailableMemoryMonitor::Get() for commit-limit monitoring.
+  explicit UrgentPageDiscardingPolicy(
+      base::AvailableMemoryMonitor* monitor_for_testing = nullptr);
   ~UrgentPageDiscardingPolicy() override;
   UrgentPageDiscardingPolicy(const UrgentPageDiscardingPolicy& other) = delete;
   UrgentPageDiscardingPolicy& operator=(const UrgentPageDiscardingPolicy&) =
@@ -49,6 +60,12 @@ class UrgentPageDiscardingPolicy
   // base::AvailableMemoryMonitor::Observer:
   void OnAvailableMemoryUpdated(
       const base::AvailableMemoryMonitor::MemorySample& sample) override;
+
+#if BUILDFLAG(IS_WIN)
+  // PageNodeObserver:
+  void OnPageNodeAdded(const PageNode* page_node) override;
+  void OnBeforePageNodeRemoved(const PageNode* page_node) override;
+#endif
 
   // Callback for `sustained_memory_pressure_evaluator_`.
   void OnSustainedMemoryPressure(bool is_sustained_memory_pressure);
@@ -73,6 +90,12 @@ class UrgentPageDiscardingPolicy
       sustained_memory_pressure_evaluator_;
 
   raw_ptr<base::AvailableMemoryMonitor> monitor_ = nullptr;
+
+#if BUILDFLAG(IS_WIN)
+  base::ScopedObservation<base::AvailableMemoryMonitor,
+                          base::AvailableMemoryMonitor::Observer>
+      monitor_observation_{this};
+#endif
 
   // While in a sustained memory pressure state, continue discarding a tab every
   // time the timer fires.
