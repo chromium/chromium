@@ -4,6 +4,7 @@
 
 #include "chrome/browser/glic/service/glic_invoke_handler.h"
 
+#include <algorithm>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -392,12 +393,6 @@ void GlicInvokeHandler::Invoke() {
     }
   }
 
-  if (!options_.tab_sharing.tabs_to_pin.empty()) {
-    CHECK(options_.tab_sharing.pin_trigger != GlicPinTrigger::kUnknown);
-    instance_->GetSharingManagerInternal().PinTabs(
-        options_.tab_sharing.tabs_to_pin, options_.tab_sharing.pin_trigger);
-  }
-
   std::vector<std::unique_ptr<GlicInvokeTask>> tasks;
 
   // A clipboard policy task checks a single payload, so only one of prompts and
@@ -450,6 +445,22 @@ void GlicInvokeHandler::Invoke() {
 
   if (options_.fre_override != mojom::FreOverride::kUnspecified) {
     show_options.fre_override = options_.fre_override;
+  }
+
+  if (!options_.tab_sharing.tabs_to_pin.empty()) {
+    CHECK(options_.tab_sharing.pin_trigger != GlicPinTrigger::kUnknown);
+    // When `tabs_to_pin` includes the target tab, bind it before `PinTabs`
+    // (after capturing `show_options` above) so `OnTabPinningStatusEvent` sees
+    // it bound to `instance_` and skips creating an inactive side-panel
+    // embedder for the foreground target tab.
+    if (IsTabTarget() && std::ranges::contains(options_.tab_sharing.tabs_to_pin,
+                                               GetTab().GetHandle())) {
+      instance_->BindTabWithoutShowing(&GetTab(),
+                                       options_.tab_sharing.pin_trigger,
+                                       /*pin_on_bind=*/false);
+    }
+    instance_->GetSharingManagerInternal().PinTabs(
+        options_.tab_sharing.tabs_to_pin, options_.tab_sharing.pin_trigger);
   }
 
   const bool should_show_panel =

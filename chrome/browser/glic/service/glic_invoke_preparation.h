@@ -9,10 +9,13 @@
 
 #include "base/types/expected.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
+#include "chrome/browser/glic/service/glic_invoke_handler.h"
 
 class Profile;
 
 namespace glic {
+
+class GlicSharingManagerInternal;
 
 // Validates static caller configuration on `options` before resolving surfaces
 // or instances. Returns the matching `GlicInvokeError` if invalid, or
@@ -41,6 +44,16 @@ bool HasSpecialCaseWebFre(const GlicInvokeOptions& options);
 // Eligible profiles get the native FRE when no entry point or experiment asked
 // for a specific web FRE.
 bool CanUseNativeFre(const GlicInvokeOptions& options, Profile* profile);
+
+// Expands `options.tab_sharing` to pin all multi-selected tabs (plus the active
+// target tab) with `GlicPinTrigger::kInstanceCreation` when `options` describes
+// a default show/toggle invocation targeting the active tab.
+void MaybePopulateSelectedTabsToPin(
+    Profile* profile,
+    const GlicSharingManagerInternal& sharing_manager,
+    const GlicInvokeHandler::ResolvedTarget& resolved_target,
+    bool has_auto_submit_passkey,
+    GlicInvokeOptions& options);
 
 }  // namespace glic
 

@@ -846,6 +846,9 @@ base::WeakPtr<GlicInstanceImpl> GlicInstanceCoordinatorImpl::InvokeInternal(
     return nullptr;
   }
 
+  const GlicInvokeHandler::ResolvedTarget initial_resolved_target =
+      resolved_target;
+
   // Leave the conversation in the floaty instead of pulling it into the
   // targeted tab's side panel.
   if (*keep_in_floaty && tab) {
@@ -868,6 +871,8 @@ base::WeakPtr<GlicInstanceImpl> GlicInstanceCoordinatorImpl::InvokeInternal(
   // Now that the instance is fully resolved, we can safely resolve the
   // `LastActiveOrNew` surface and mutate `options.target.surface` to point to
   // the appropriate final target, before running the surface resolver.
+  const bool had_last_active_or_new =
+      std::holds_alternative<LastActiveOrNew>(options.target.surface);
   if (auto* last_active_or_new =
           std::get_if<LastActiveOrNew>(&options.target.surface)) {
     std::optional<Target::Surface> last_active =
@@ -883,6 +888,12 @@ base::WeakPtr<GlicInstanceImpl> GlicInstanceCoordinatorImpl::InvokeInternal(
       return nullptr;
     }
   }
+
+  const GlicInvokeHandler::ResolvedTarget& target_for_pinning =
+      had_last_active_or_new ? resolved_target : initial_resolved_target;
+  MaybePopulateSelectedTabsToPin(
+      profile_, instance->GetSharingManagerInternal(), target_for_pinning,
+      auto_submit_passkey.has_value(), options);
 
   // Route eligible profiles to Android native FRE.
   if (CanUseNativeFre(options, profile_)) {

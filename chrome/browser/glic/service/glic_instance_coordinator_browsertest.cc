@@ -2276,4 +2276,68 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorGeicBrowserTest,
       instance->GetSharingManagerInternal().IsTabPinned(new_tab->GetHandle()));
 }
 
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
+                       TogglePinsAllSelectedTabs) {
+  tabs::TabInterface* tab0 = GetTabListInterface()->GetActiveTab();
+  tabs::TabInterface* tab1 = CreateAndActivateTab(GURL("about:blank"));
+  tabs::TabInterface* tab2 = CreateAndActivateTab(GURL("about:blank"));
+  tabs::TabInterface* tab3 = CreateAndActivateTab(GURL("about:blank"));
+
+  GetTabListInterface()->HighlightTabs(
+      tab3->GetHandle(),
+      {tab0->GetHandle(), tab2->GetHandle(), tab3->GetHandle()});
+
+  ToggleGlicForActiveTab();
+  ASSERT_OK_AND_ASSIGN(auto* instance, WaitForGlicOpen(tab3));
+  ASSERT_OK(WaitForGlicClient(instance));
+
+  EXPECT_THAT(instance->GetSharingManagerInternal().GetPinnedTabs(),
+              testing::ElementsAre(tab0, tab2, tab3));
+  EXPECT_FALSE(
+      instance->GetSharingManagerInternal().IsTabPinned(tab1->GetHandle()));
+  EXPECT_EQ(GetInstanceForTab(tab0), instance);
+  EXPECT_EQ(GetInstanceForTab(tab2), instance);
+  EXPECT_EQ(GetInstanceForTab(tab3), instance);
+  EXPECT_EQ(GetInstanceForTab(tab1), nullptr);
+
+  // Close while keeping the instance alive, add `tab1` to the selection, and
+  // verify re-opening pins the newly selected tab onto the same instance.
+  PreventDeletionOnClose(instance);
+  ASSERT_OK(CloseGlicForTabAndWait(tab3));
+
+  GetTabListInterface()->HighlightTabs(tab3->GetHandle(),
+                                       {tab0->GetHandle(), tab1->GetHandle(),
+                                        tab2->GetHandle(), tab3->GetHandle()});
+
+  ToggleGlicForActiveTab();
+  ASSERT_OK_AND_ASSIGN(instance, WaitForGlicOpen(tab3));
+  EXPECT_THAT(instance->GetSharingManagerInternal().GetPinnedTabs(),
+              testing::ElementsAre(tab0, tab2, tab3, tab1));
+  EXPECT_EQ(GetInstanceForTab(tab1), instance);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
+                       DefaultInvokePinsAllSelectedTabs) {
+  tabs::TabInterface* tab0 = GetTabListInterface()->GetActiveTab();
+  tabs::TabInterface* tab1 = CreateAndActivateTab(GURL("about:blank"));
+  tabs::TabInterface* tab2 = CreateAndActivateTab(GURL("about:blank"));
+
+  GetTabListInterface()->HighlightTabs(tab2->GetHandle(),
+                                       {tab0->GetHandle(), tab2->GetHandle()});
+
+  base::test::TestFuture<void> success_future;
+  GlicInvokeOptions options(mojom::InvocationSource::kTopChromeButton);
+  options.target.surface = DefaultSurface{GetBrowser()};
+  options.on_success = success_future.GetCallback();
+  coordinator().Invoke(std::move(options));
+
+  EXPECT_TRUE(success_future.Wait());
+  ASSERT_OK_AND_ASSIGN(auto* instance, WaitForGlicOpen(tab2));
+
+  EXPECT_THAT(instance->GetSharingManagerInternal().GetPinnedTabs(),
+              testing::ElementsAre(tab0, tab2));
+  EXPECT_FALSE(
+      instance->GetSharingManagerInternal().IsTabPinned(tab1->GetHandle()));
+}
+
 }  // namespace glic
