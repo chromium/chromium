@@ -26,6 +26,7 @@ source_set("ui") {
     "//components/webauthn/ios:features",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/favicon/model",
+    "//ios/chrome/browser/intelligence/bwg/ui",
     "//ios/chrome/browser/settings/ui_bundled/password:title_view",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/bottom_sheet:bottom_sheet_util",
