@@ -124,6 +124,14 @@ CONTENT_EXPORT extern const base::FeatureParam<size_t>
 // To enable this, also enable `kPrefetchOffTheMainThread`.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchOffTheMainThreadForceForTesting);
 
+// When enabled, `PrePrefetchService::Create()` creates the `PrefetchService` of
+// the `BrowserContext` if not yet created. This is for a Finch experiment to
+// evaluate the performance impact of making `PrePrefetchService` always depend
+// on `PrefetchService`, and will be removed after the experiment. Takes effect
+// only when `PrePrefetchService::Create()` is called, i.e. only if
+// `kPrefetchOffTheMainThread` is enabled.
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrePrefetchServiceCreatesPrefetchService);
+
 // Cancels unrelated prefetch when a navigation is started.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchCancelUnrelatedPrefetch);
 

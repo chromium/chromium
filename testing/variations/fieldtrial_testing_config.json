@@ -15878,6 +15878,21 @@
             ]
         }
     ],
+    "PrePrefetchServiceCreatesPrefetchService": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PrePrefetchServiceCreatesPrefetchService"
+                    ]
+                }
+            ]
+        }
+    ],
     "PreReadIcuData": [
         {
             "platforms": [

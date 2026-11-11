@@ -423,6 +423,24 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Preloading.Prefetch.PrePrefetch.EagerPrefetchServiceCreationTime"
+    units="microseconds" expires_after="2027-05-10">
+  <owner>hiroshige@chromium.org</owner>
+  <owner>taiyo@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    Records the time taken by `BrowserContextImpl::GetPrefetchService()` called
+    in `PrePrefetchService::Create()`, which creates `PrefetchService` (if not
+    yet created) when the `PrePrefetchServiceCreatesPrefetchService` feature is
+    enabled. Used to evaluate the cost of creating `PrefetchService` in
+    `PrePrefetchService::Create()` (e.g. during
+    `android_webview::AwBrowserContext` construction).
+
+    Only recorded on clients with high-resolution clocks.
+  </summary>
+</histogram>
+
+<histogram
     name="Preloading.Prefetch.PrePrefetch.PrePrefetchServiceThreadBlockTime"
     units="ms" expires_after="2027-04-18">
   <owner>taiyo@chromium.org</owner>

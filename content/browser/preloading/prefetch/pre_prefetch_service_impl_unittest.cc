@@ -16,6 +16,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/time/time.h"
+#include "content/browser/browser_context_impl.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/prefetch/prefetch_test_util_internal.h"
 #include "content/browser/preloading/prefetch/prefetch_url_loader_factory_utils.h"
@@ -85,6 +87,46 @@ class PrePrefetchServiceImplTest : public testing::Test {
 TEST_F(PrePrefetchServiceImplTest, CreateOnUIThread) {
   auto service = PrePrefetchService::Create(browser_context());
   EXPECT_NE(service, nullptr);
+}
+
+// Test the metrics recorded by `PrePrefetchService::Create()`.
+TEST_F(PrePrefetchServiceImplTest, CreationMetrics) {
+  auto service = PrePrefetchService::Create(browser_context());
+  ASSERT_NE(service, nullptr);
+  histogram_tester().ExpectTotalCount(
+      "Preloading.Prefetch.PrePrefetch.EagerPrefetchServiceCreationTime", 0);
+}
+
+class PrePrefetchServiceImplCreatesPrefetchServiceTest
+    : public PrePrefetchServiceImplTest {
+ public:
+  void SetUp() override {
+    PrePrefetchServiceImplTest::SetUp();
+    // Initialized after `PrePrefetchServiceImplTest::SetUp()`, so that this is
+    // destroyed before the `base::test::ScopedFeatureList` of the base class.
+    creates_prefetch_service_feature_list_.InitAndEnableFeature(
+        features::kPrePrefetchServiceCreatesPrefetchService);
+  }
+
+ private:
+  base::test::ScopedFeatureList creates_prefetch_service_feature_list_;
+};
+
+// Test that `PrePrefetchService::Create()` creates `PrefetchService` when
+// `features::kPrePrefetchServiceCreatesPrefetchService` is enabled.
+TEST_F(PrePrefetchServiceImplCreatesPrefetchServiceTest,
+       CreatesPrefetchService) {
+  const bool is_high_resolution = base::TimeTicks::IsHighResolution();
+
+  auto service = PrePrefetchService::Create(browser_context());
+  ASSERT_NE(service, nullptr);
+  histogram_tester().ExpectTotalCount(
+      "Preloading.Prefetch.PrePrefetch.EagerPrefetchServiceCreationTime",
+      is_high_resolution ? 1 : 0);
+
+  // `PrefetchService` is already created.
+  ASSERT_TRUE(
+      BrowserContextImpl::From(browser_context())->GetPrefetchService());
 }
 
 // Test that `PrePrefetchServiceImpl::StartPrePrefetchRequest` can be called
