@@ -453,6 +453,7 @@ public class CustomTabActivityTest {
     @Test
     @SmallTest
     @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/394668480
+    @DisabledTest(message = "https://crbug.com/584456889")
     public void testContextMenuEntriesBeforeFirstRun() throws Exception {
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(createMinimalCustomTabIntent());
         // Mark the first run as not completed. This has to be done after we start the intent,
@@ -485,6 +486,7 @@ public class CustomTabActivityTest {
     @Test
     @SmallTest
     @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/394668480
+    @DisabledTest(message = "https://crbug.com/584456889")
     public void testContextMenuPreviewPage() throws Exception {
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(createMinimalCustomTabIntent());
         ContextMenuUtils.selectContextMenuItem(
@@ -1329,6 +1331,7 @@ public class CustomTabActivityTest {
     /** Tests that page load metrics are sent. */
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/584456889")
     public void testPageLoadMetricsAreSent() throws Exception {
         checkPageLoadMetrics(true);
     }
@@ -2198,6 +2201,7 @@ public class CustomTabActivityTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/584456889")
     public void closeButton_closesActivityIfNoLandingPage() throws TimeoutException {
         Context context = getInstrumentation().getTargetContext().getApplicationContext();
         Intent intent =
