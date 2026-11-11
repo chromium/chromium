@@ -150,13 +150,19 @@ void ExplainSuggestion::OpenTabForSearch(const std::string& query) {
 }
 
 void ExplainSuggestion::AskGemini() {
+  // Grab a weak pointer to `tab_` before `Invoke()`, which may synchronously
+  // close the overlay and destroy `this`.
+  base::WeakPtr<tabs::TabInterface> tab = tab_->GetWeakPtr();
   GlicKeyedService* service = GlicKeyedService::Get(tab_->GetProfile());
   CHECK(service);
   // TODO(liuwilliam): Add the text.
   service->Invoke(GlicInvokeOptions(
       Target(*tab_), mojom::InvocationSource::kTextSelectionWidget));
+  if (!tab) {
+    return;
+  }
   if (auto* controller =
-          SelectionOverlayController::FromTabWebContents(tab_->GetContents())) {
+          SelectionOverlayController::FromTabWebContents(tab->GetContents())) {
     // Closing the overlay may destroy `this`.
     controller->Close();
   }

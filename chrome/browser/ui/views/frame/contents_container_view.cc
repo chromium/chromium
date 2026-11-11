@@ -297,7 +297,7 @@ void ContentsContainerView::SetBorderRoundedCornersFrom(
     ai_overlay_dialog_view_->holder()->SetNativeViewCornerRadii(radii);
   }
 
-  if (glic_selection_overlay_view_) {
+  if (glic_selection_overlay_view_ && glic_selection_overlay_view_->layer()) {
     glic_selection_overlay_view_->layer()->SetRoundedCornerRadius(radii);
   }
 

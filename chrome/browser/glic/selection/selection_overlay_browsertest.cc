@@ -40,6 +40,7 @@
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/tabs/page_context_eligibility_helper.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/search_test_utils.h"
@@ -850,6 +851,78 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayQuickAnswersSuggestionsBrowserTest,
   const auto& actions = listener.actions();
   ASSERT_EQ(actions.size(), 1u);
   EXPECT_EQ(actions[0]->title, "Ask Gemini");
+}
+
+// When `AskGemini()` is invoked for a backgrounded tab in a Glic-bound tab
+// group, `Invoke()` synchronously opens the side panel for the active group
+// tab, which closes the backgrounded overlay and destroys the
+// `ExplainSuggestion` before `Invoke()` returns.
+IN_PROC_BROWSER_TEST_F(SelectionOverlayQuickAnswersSuggestionsBrowserTest,
+                       AskGeminiClosesBackgroundedOverlayInBoundTabGroup) {
+  AddQuickAnswersHint(GetSimpleTestUrl(), /*is_eligible=*/true);
+  tabs::TabInterface* tab1 = CreateAndActivateTab(GetSimpleTestUrl());
+  tabs::TabInterface* tab2 = CreateAndActivateTab(GetSimpleTestUrl());
+  TabStripModel* tab_strip_model = GetBrowser()->GetTabStripModel();
+  tab_groups::TabGroupId group =
+      tab_strip_model->AddToNewGroup({tab_strip_model->GetIndexOfTab(tab1),
+                                      tab_strip_model->GetIndexOfTab(tab2)});
+
+  GlicInstanceImpl* instance = static_cast<GlicInstanceImpl*>(
+      coordinator().ShowInstanceForTabGroup(group));
+  ASSERT_TRUE(instance);
+  ASSERT_OK(WaitForGlicOpen(tab2));
+  ASSERT_OK(CloseAllEmbeddersAndWait(instance));
+
+  ActivateTab(tab1);
+  content::WebContents* web_contents = tab1->GetContents();
+  ASSERT_TRUE(content::ExecJs(web_contents, R"(
+    document.body.innerText = 'Before text Selected target After text';
+    const textNode = document.body.firstChild;
+    const range = document.createRange();
+    range.setStart(textNode, 12);
+    range.setEnd(textNode, 27);
+    const selection = window.getSelection();
+    selection.removeAllRanges();
+    selection.addRange(range);
+  )"));
+
+  auto* controller =
+      SelectionOverlayController::FromTabWebContents(web_contents);
+  ASSERT_TRUE(controller);
+  gfx::Rect view_bounds = web_contents->GetViewBounds();
+  gfx::Rect selection_bounds(view_bounds.x() + 10, view_bounds.y() + 10, 100,
+                             50);
+  controller->ShowWithSelection(web_contents->GetPrimaryMainFrame(),
+                                selection_bounds,
+                                selection::InteractionOptions::New(),
+                                ::selection::EntryPoint::kContextMenuText);
+  ASSERT_OK(RunUntilEqual(
+      [&]() { return controller->state(); },
+      SelectionOverlayController::State::kOverlay,
+      "Timeout waiting for SelectionOverlayController state to be kOverlay"));
+
+  TestSuggestedActionsListener listener;
+  controller->GetSuggestedActionsForTesting(listener.GetCallback());
+  listener.WaitForBatches(1);
+  const auto& actions = listener.actions();
+  ASSERT_EQ(actions.size(), 2u);
+  ASSERT_EQ(actions[1]->title, "Explain");
+
+  mojo::AssociatedRemote<selection::ExplainFulfillment> remote;
+  static_cast<selection::SelectionOverlayPageHandler*>(controller)
+      ->ExecuteSuggestedAction(
+          actions[1]->id,
+          mojo::GenericPendingAssociatedReceiver(
+              remote.BindNewEndpointAndPassDedicatedReceiver()));
+
+  ActivateTab(tab2);
+  ASSERT_EQ(controller->state(),
+            SelectionOverlayController::State::kBackground);
+
+  remote->AskGemini();
+  remote.FlushForTesting();
+  EXPECT_OK(WaitForGlicOpen(tab2));
+  EXPECT_EQ(controller->state(), SelectionOverlayController::State::kOff);
 }
 
 class SelectionOverlayQuickAnswersServerSuggestionsBrowserTest
