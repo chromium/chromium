@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
+
 #include "base/location.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -31,6 +33,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/features.h"
@@ -88,8 +91,10 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/actions/action_id.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/color/color_variant.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/layer_solid_color.h"
@@ -3929,6 +3934,9 @@ class ContextualTasksPinnedButtonActiveIndicatorCircleHighlightInteractiveTest
         {contextual_tasks::kContextualTasksPinnedButtonActiveIndicator,
          {{"ContextualTasksPinnedButtonActiveIndicatorCircleHighlight",
            "true"}}});
+    enabled_features.push_back(
+        {contextual_tasks::kContextualTasksUnifyPinButtonLogos,
+         {{"ContextualTasksUnifyPinButtonLogo", "gray-super-g"}}});
     return enabled_features;
   }
 };
@@ -4080,8 +4088,7 @@ IN_PROC_BROWSER_TEST_F(
     EphemeralButtonShowsCircleHighlightOnlyWhenPanelClosed) {
   raw_ptr<ContextualTasksButton> ephemeral_button = nullptr;
   RunTestSequence(
-      SignIntoEligibleAccount(), InstrumentTab(kFirstTab),
-      Do([&]() {
+      SignIntoEligibleAccount(), InstrumentTab(kFirstTab), Do([&]() {
         PinnedToolbarActionsModel::Get(browser()->GetProfile())
             ->UpdatePinnedState(kActionSidePanelShowContextualTasks, false);
       }),
@@ -4091,7 +4098,12 @@ IN_PROC_BROWSER_TEST_F(
           kContextualTasksEphemeralToolbarButtonElementId,
           [&ephemeral_button](ContextualTasksButton* button) {
             ephemeral_button = button;
-            return button->GetStatusIndicatorForTesting() != nullptr &&
+            const std::optional<ui::ImageModel>& image_model =
+                button->GetImageModel(views::Button::STATE_NORMAL);
+            return image_model.has_value() && image_model->IsVectorIcon() &&
+                   image_model->GetVectorIcon().color() ==
+                       ui::ColorVariant(kColorToolbarButtonIcon) &&
+                   button->GetStatusIndicatorForTesting() != nullptr &&
                    !button->GetStatusIndicatorForTesting()->GetVisible() &&
                    !button->ShouldShowCircleHighlight() &&
                    button->GetBackground() == nullptr &&
@@ -4103,7 +4115,12 @@ IN_PROC_BROWSER_TEST_F(
       CheckView(
           kContextualTasksEphemeralToolbarButtonElementId,
           [](ContextualTasksButton* button) {
-            return button->GetStatusIndicatorForTesting() != nullptr &&
+            const std::optional<ui::ImageModel>& image_model =
+                button->GetImageModel(views::Button::STATE_NORMAL);
+            return image_model.has_value() && image_model->IsVectorIcon() &&
+                   image_model->GetVectorIcon().color() ==
+                       ui::ColorVariant(kColorToolbarButtonIcon) &&
+                   button->GetStatusIndicatorForTesting() != nullptr &&
                    !button->GetStatusIndicatorForTesting()->GetVisible() &&
                    button->ShouldShowCircleHighlight() &&
                    button->GetBackground() != nullptr &&
@@ -4111,8 +4128,7 @@ IN_PROC_BROWSER_TEST_F(
           },
           true),
       RemoveTaskFromTab(0),
-      WaitForHide(kContextualTasksEphemeralToolbarButtonElementId),
-      Do([&]() {
+      WaitForHide(kContextualTasksEphemeralToolbarButtonElementId), Do([&]() {
         ASSERT_NE(ephemeral_button, nullptr);
         EXPECT_FALSE(ephemeral_button->ShouldShowCircleHighlight());
       }));
