@@ -90,13 +90,12 @@ TEST_F(SmbFsHostTest, UnmountOnDestruction) {
   EXPECT_CALL(mock_disk_mount_manager_, UnmountPath(kMountPath, _))
       .WillOnce(base::test::RunOnceCallback<1>(ash::MountError::kSuccess));
 
-  base::RunLoop run_loop;
   std::unique_ptr<SmbFsHost> host = std::make_unique<SmbFsHost>(
       std::make_unique<ash::disks::MountPoint>(base::FilePath(kMountPath),
                                                &mock_disk_mount_manager_),
       &mock_delegate_, std::move(smbfs_remote_),
       std::move(delegate_pending_receiver_));
-  run_loop.RunUntilIdle();
+  delegate_remote_.FlushForTesting();
   host.reset();
 }
 
