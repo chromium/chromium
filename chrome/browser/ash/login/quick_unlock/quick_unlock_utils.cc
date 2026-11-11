@@ -19,7 +19,6 @@
 #include "base/feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/quick_unlock/pin_backend.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/grit/browser_resources.h"
 #include "chromeos/ash/components/osauth/public/auth_policy_utils.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -271,26 +270,6 @@ bool IsFingerprintSupported() {
       base::CommandLine::ForCurrentProcess();
   return base::FeatureList::IsEnabled(features::kQuickUnlockFingerprint) &&
          command_line->HasSwitch(switches::kFingerprintSensorLocation);
-}
-
-bool IsFingerprintEnabled(Profile* profile, Purpose purpose) {
-  // Don't need to check these when using flags to control fingerprint behavior
-  // in tests.
-  auto* test_api = TestApi::Get();
-  if (!test_api || !test_api->IsQuickUnlockOverridden()) {
-    if (!IsFingerprintSupported())
-      return false;
-
-    // Disable fingerprint if the profile does not belong to the primary user.
-    if (profile != ProfileManager::GetPrimaryUserProfile())
-      return false;
-  }
-
-  // Disable fingerprint if disallowed by policy.
-  if (IsFingerprintDisabledByPolicy(profile->GetPrefs(), purpose))
-    return false;
-
-  return true;
 }
 
 void AddFingerprintResources(content::WebUIDataSource* html_source) {

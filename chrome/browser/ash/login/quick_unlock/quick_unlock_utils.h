@@ -19,7 +19,6 @@ class WebUIDataSource;
 
 class PrefRegistrySimple;
 class PrefService;
-class Profile;
 
 namespace ash {
 namespace quick_unlock {
@@ -126,9 +125,6 @@ bool IsPinEnabled();
 
 // Returns true if the fingerprint is supported by the device.
 bool IsFingerprintSupported();
-
-// Returns true if the fingerprint is allowed for specified profile.
-bool IsFingerprintEnabled(Profile* profile, Purpose purpose);
 
 // Returns true if the fingerprint unlock is disabled by policy for the
 // specified purpose. If purpose is kAny, then it is regarded as enabled if any
