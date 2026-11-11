@@ -4,6 +4,14 @@
 
 package org.chromium.chrome.browser.language;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import android.app.Activity;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -12,14 +20,25 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.LocaleUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.language.AppLanguagePromoDialog.LanguageItemAdapter;
 import org.chromium.chrome.browser.language.settings.LanguageItem;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.translate.FakeTranslateBridgeJni;
 import org.chromium.chrome.browser.translate.TranslateBridgeJni;
+import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.components.feature_engagement.FeatureProperties;
+import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.feature_engagement.UiFormat;
+import org.chromium.ui.modaldialog.DialogDismissalCause;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,10 +47,13 @@ import java.util.LinkedHashSet;
 
 /** Tests for the AppPromoDialog class. */
 @RunWith(BaseRobolectricTestRunner.class)
+@DisableFeatures(ChromeFeatureList.USER_EDUCATION_INTERRUPTIVE_COOLDOWN_GROUP)
 public class AppLanguagePromoDialogTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Profile mProfile;
+    @Mock private Tracker mTracker;
+    @Mock private ModalDialogManager mModalDialogManager;
 
     LanguageItem mFollowSystem;
     LanguageItem mLangAf;
@@ -298,6 +320,53 @@ public class AppLanguagePromoDialogTest {
         Assert.assertTrue(AppLanguagePromoDialog.shouldShowPrompt(mProfile, online));
         mFakeTranslateBridge.setAppLanguagePromptShown(true);
         Assert.assertFalse(AppLanguagePromoDialog.shouldShowPrompt(mProfile, online));
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.USER_EDUCATION_FRAMEWORK,
+        ChromeFeatureList.USER_EDUCATION_INTERRUPTIVE_COOLDOWN_GROUP
+    })
+    public void testShouldShowPrompt_CooldownGroupEnabledAndAllowed() {
+        TrackerFactory.setTrackerForTests(mTracker);
+        mFakeLanguageBridge.setULPLanguages(Arrays.asList("fr"));
+        FeatureProperties expectedProps = new FeatureProperties(UiFormat.DIALOG);
+        when(mTracker.shouldTriggerHelpUi(
+                        eq(FeatureConstants.APP_LANGUAGE_PROMO_FEATURE), eq(expectedProps)))
+                .thenReturn(true);
+
+        Assert.assertTrue(AppLanguagePromoDialog.shouldShowPrompt(mProfile, /* isOnline= */ true));
+
+        verify(mTracker)
+                .shouldTriggerHelpUi(FeatureConstants.APP_LANGUAGE_PROMO_FEATURE, expectedProps);
+        verify(mTracker, never()).dismissed(FeatureConstants.APP_LANGUAGE_PROMO_FEATURE);
+
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        AppLanguagePromoDialog dialog =
+                new AppLanguagePromoDialog(activity, mProfile, mModalDialogManager, () -> {});
+        dialog.mAdapter =
+                makeLanguageItemAdapter(Arrays.asList(mLangAf), Arrays.asList(mLangEnUs), mLangAf);
+        dialog.onDismissAppLanguageModal(DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
+
+        verify(mTracker).dismissed(FeatureConstants.APP_LANGUAGE_PROMO_FEATURE);
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.USER_EDUCATION_FRAMEWORK,
+        ChromeFeatureList.USER_EDUCATION_INTERRUPTIVE_COOLDOWN_GROUP
+    })
+    public void testShouldShowPrompt_CooldownGroupEnabledAndBlocked() {
+        TrackerFactory.setTrackerForTests(mTracker);
+        mFakeLanguageBridge.setULPLanguages(Arrays.asList("fr"));
+        when(mTracker.shouldTriggerHelpUi(
+                        eq(FeatureConstants.APP_LANGUAGE_PROMO_FEATURE),
+                        any(FeatureProperties.class)))
+                .thenReturn(false);
+
+        Assert.assertFalse(AppLanguagePromoDialog.shouldShowPrompt(mProfile, /* isOnline= */ true));
+
+        verify(mTracker, never()).dismissed(FeatureConstants.APP_LANGUAGE_PROMO_FEATURE);
     }
 
     private static LanguageItemAdapter makeLanguageItemAdapter(

@@ -26,10 +26,15 @@ import org.chromium.base.LocaleUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.language.settings.LanguageItem;
 import org.chromium.chrome.browser.language.settings.LanguagesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.translate.TranslateBridge;
+import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.components.feature_engagement.FeatureProperties;
+import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.feature_engagement.UiFormat;
 import org.chromium.components.language.AndroidLanguageMetricsBridge;
 import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -60,7 +65,7 @@ public class AppLanguagePromoDialog {
     private final PropertyModel mLoadingModal;
     private final RestartAction mRestartAction;
 
-    private LanguageItemAdapter mAdapter;
+    @VisibleForTesting LanguageItemAdapter mAdapter;
 
     /** Annotation for row item type. Either a LanguageItem or separator */
     @IntDef({ItemType.LANGUAGE, ItemType.SEPARATOR, ItemType.MORE_LANGUAGES})
@@ -451,6 +456,10 @@ public class AppLanguagePromoDialog {
         }
         recordOtherLanguagesShown(mAdapter.areOtherLanguagesShown());
         TranslateBridge.setAppLanguagePromptShown(mProfile);
+        if (TrackerFactory.isInterruptiveCooldownGroupEnabled()) {
+            TrackerFactory.getTrackerForProfile(mProfile)
+                    .dismissed(FeatureConstants.APP_LANGUAGE_PROMO_FEATURE);
+        }
     }
 
     public void onDismissConfirmModal(@DialogDismissalCause int dismissalCause) {
@@ -674,7 +683,20 @@ public class AppLanguagePromoDialog {
 
         recordOnlineStatus(isOnline);
         // Only show the prompt if online.
-        return isOnline;
+        if (!isOnline) {
+            return false;
+        }
+
+        if (TrackerFactory.isInterruptiveCooldownGroupEnabled()) {
+            Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
+            FeatureProperties featureProperties = new FeatureProperties(UiFormat.DIALOG);
+            if (!tracker.shouldTriggerHelpUi(
+                    FeatureConstants.APP_LANGUAGE_PROMO_FEATURE, featureProperties)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**
