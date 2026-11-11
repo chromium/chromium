@@ -17,11 +17,11 @@
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/types/expected.h"
-#include "components/browser_actuator/internal/transport/message_stream_client.h"
 #include "components/browser_actuator/internal/transport/transport_message_observer.h"
 #include "components/browser_actuator/public/transport/common.h"
 #include "components/browser_actuator/public/transport/transport_channel.h"
 #include "components/browser_actuator/public/transport/transport_session_registry.h"
+#include "components/stream_transport/internal/message_stream_client.h"
 
 namespace browser_actuator {
 class ActuatorDownstreamMessage;

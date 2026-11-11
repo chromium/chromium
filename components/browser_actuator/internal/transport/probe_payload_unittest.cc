@@ -10,7 +10,7 @@
 #include <string_view>
 
 #include "base/test/gmock_expected_support.h"
-#include "components/browser_actuator/internal/transport/proto/transport_messages.pb.h"
+#include "components/stream_transport/internal/proto/transport_messages.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

@@ -1,0 +1,54 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("upstream_message_client") {
+  sources = [
+    "upstream_message_client.cc",
+    "upstream_message_client.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/browser_actuator/public/transport",
+    "//net",
+    "//services/network/public/cpp",
+    "//url",
+  ]
+
+  deps = [
+    "//components/endpoint_fetcher",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager",
+    "//components/stream_transport/internal:features",
+    "//components/stream_transport/internal:metrics_utils",
+    "//components/stream_transport/internal/proto",
+    "//services/network/public/mojom",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "upstream_message_client_unittest.cc" ]
+
+  deps = [
+    ":upstream_message_client",
+    "//base",
+    "//base/test:test_support",
+    "//components/browser_actuator/public/transport",
+    "//components/signin/public/identity_manager:test_support",
+    "//components/stream_transport/internal:features",
+    "//components/stream_transport/internal/proto",
+    "//components/stream_transport/internal/proto:task_ingress_proto",
+    "//net",
+    "//net/traffic_annotation:test_support",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+    "//testing/gtest",
+    "//url",
+  ]
+
+  visibility = [ "//components/stream_transport:unit_tests" ]
+}

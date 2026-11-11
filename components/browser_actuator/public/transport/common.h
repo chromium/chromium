@@ -21,7 +21,7 @@ enum class PayloadType {
   kProbe = 5,
 };
 // LINT.ThenChange(
-//     //components/browser_actuator/internal/transport/metrics_utils.h:PayloadTypeToMetricSuffix,
+//     //components/stream_transport/internal/metrics_utils.h:PayloadTypeToMetricSuffix,
 //     //components/browser_actuator/internal/transport/session_stream_recorder.cc:FromUpstreamProtoPayloadType,
 //     //components/browser_actuator/public/transport/payload_type_mapping.h:RoutablePayloadTypes,
 //     //tools/metrics/histograms/metadata/browser_actuator/histograms.xml:BrowserActuatorTransportPayloadType)

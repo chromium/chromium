@@ -12,11 +12,11 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "components/browser_actuator/internal/transport/features.h"
 #include "components/browser_actuator/internal/transport/transport_handler_factory_registry_impl.h"
 #include "components/browser_actuator/internal/transport/transport_session_impl.h"
 #include "components/browser_actuator/public/transport/common.h"
 #include "components/browser_actuator/test_support/transport/mock_transport_channel.h"
+#include "components/stream_transport/internal/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

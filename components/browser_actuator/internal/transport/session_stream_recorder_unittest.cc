@@ -21,11 +21,11 @@
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "components/browser_actuator/internal/transport/probe_payload.h"
-#include "components/browser_actuator/internal/transport/proto/transport_messages.pb.h"
 #include "components/browser_actuator/public/transport/common.h"
 #include "components/browser_actuator/public/transport/payload_type_mapping.h"
 #include "components/browser_actuator/public/transport/transport_session.h"
 #include "components/sharing_message/proto/actuator_downstream_message.pb.h"
+#include "components/stream_transport/internal/proto/transport_messages.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

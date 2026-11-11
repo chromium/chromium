@@ -27,9 +27,6 @@ source_set("unit_tests") {
     ":internal",
     "//base",
     "//components/browser_actuator/internal/transport:unit_tests",
-    "//components/browser_actuator/internal/transport/oauth:unit_tests",
-    "//components/browser_actuator/internal/transport/proto_stream_client:unit_tests",
-    "//components/browser_actuator/internal/transport/upstream_message_client:unit_tests",
     "//testing/gtest",
   ]
 

@@ -21,15 +21,15 @@
 #include "components/browser_actuator/internal/transport/control_transport_handler.h"
 #include "components/browser_actuator/internal/transport/downstream_message_sequencer.h"
 #include "components/browser_actuator/internal/transport/probe_transport_handler.h"
-#include "components/browser_actuator/internal/transport/proto/transport_messages.pb.h"
-#include "components/browser_actuator/internal/transport/resume_body_connection_delegate.h"
-#include "components/browser_actuator/internal/transport/stream_connection_delegate.h"
 #include "components/browser_actuator/internal/transport/transport_handler_factory_registry_impl.h"
 #include "components/browser_actuator/internal/transport/transport_message_observer.h"
 #include "components/browser_actuator/internal/transport/transport_session_impl.h"
 #include "components/browser_actuator/internal/transport/transport_session_registry_impl.h"
-#include "components/browser_actuator/internal/transport/upstream_message_client/upstream_message_client.h"
 #include "components/sharing_message/proto/actuator_downstream_message.pb.h"
+#include "components/stream_transport/internal/proto/transport_messages.pb.h"
+#include "components/stream_transport/internal/resume_body_connection_delegate.h"
+#include "components/stream_transport/internal/stream_connection_delegate.h"
+#include "components/stream_transport/internal/upstream_message_client/upstream_message_client.h"
 
 namespace browser_actuator::transport {
 

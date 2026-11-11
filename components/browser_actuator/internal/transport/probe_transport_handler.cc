@@ -22,9 +22,9 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/browser_actuator/internal/transport/probe_payload.h"
-#include "components/browser_actuator/internal/transport/proto/transport_messages.pb.h"
 #include "components/browser_actuator/public/transport/common.h"
 #include "components/browser_actuator/public/transport/transport_session.h"
+#include "components/stream_transport/internal/proto/transport_messages.pb.h"
 
 namespace browser_actuator::transport {
 

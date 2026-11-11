@@ -28,14 +28,14 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "components/browser_actuator/internal/transport/metrics_utils.h"
-#include "components/browser_actuator/internal/transport/proto/transport_messages.pb.h"
-#include "components/browser_actuator/internal/transport/proto/transport_messages.to_value.h"
 #include "components/browser_actuator/public/transport/common.h"
 #include "components/browser_actuator/public/transport/payload_type_mapping.h"
 #include "components/browser_actuator/public/transport/transport_session.h"
 #include "components/sharing_message/proto/actuator_downstream_message.pb.h"
 #include "components/sharing_message/proto/actuator_downstream_message.to_value.h"
+#include "components/stream_transport/internal/metrics_utils.h"
+#include "components/stream_transport/internal/proto/transport_messages.pb.h"
+#include "components/stream_transport/internal/proto/transport_messages.to_value.h"
 
 namespace browser_actuator::transport {
 

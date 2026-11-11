@@ -1,0 +1,57 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//components/proto_extras/proto_extras.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+proto_library("task_ingress_proto") {
+  visibility = [
+    "//chrome/browser/browser_actuator/*",
+    "//components/browser_actuator/*",
+    "//components/stream_transport/*",
+  ]
+  sources = [ "task_ingress.proto" ]
+  deps = [ "//third_party/protobuf:any_proto" ]
+  proto_in_dir = "//"
+}
+
+proto_library("proto") {
+  visibility = [
+    "//chrome/browser/browser_actuator/internals:*",
+    "//chrome/browser/sharing/browser_actuator/*",
+    "//components/browser_actuator/*",
+    "//components/stream_transport/*",
+  ]
+  sources = [ "transport_messages.proto" ]
+  deps = [
+    "//components/sharing_message/proto",
+    "//third_party/protobuf:any_proto",
+  ]
+  proto_in_dir = "//"
+}
+
+# base::Value serialization for the transport messages, used by
+# chrome://browser-actuator-internals to dump recorded sessions.
+proto_extras("transport_messages_extras") {
+  # The template forwards `visibility` to the generated sub-targets, which the
+  # group for this target depends on, so `:*` has to be allowed as well.
+  visibility = [
+    ":*",
+    "//components/browser_actuator/internal/transport:*",
+    "//components/stream_transport/internal:*",
+  ]
+  sources = [
+    "task_ingress.proto",
+    "transport_messages.proto",
+  ]
+  deps = [
+    ":proto",
+    ":task_ingress_proto",
+  ]
+  extras_deps = [
+    "//components/proto_extras:any_proto_extras",
+    "//components/sharing_message/proto:actuator_downstream_message_extras",
+  ]
+  proto_in_dir = "//"
+}

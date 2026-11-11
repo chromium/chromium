@@ -2,53 +2,24 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//components/proto_extras/proto_extras.gni")
-import("//third_party/protobuf/proto_library.gni")
+_forwarding_header = "$target_gen_dir/transport_messages.pb.h"
 
-proto_library("task_ingress_proto") {
-  visibility = [
-    "//chrome/browser/browser_actuator/*",
-    "//components/browser_actuator/*",
-  ]
-  sources = [ "task_ingress.proto" ]
-  deps = [ "//third_party/protobuf:any_proto" ]
-  proto_in_dir = "//"
-}
+write_file(
+    _forwarding_header,
+    [
+      "// Generated forwarding header until callers move to //components/stream_transport.",
+      "#ifndef COMPONENTS_BROWSER_ACTUATOR_INTERNAL_TRANSPORT_PROTO_TRANSPORT_MESSAGES_PB_H_",
+      "#define COMPONENTS_BROWSER_ACTUATOR_INTERNAL_TRANSPORT_PROTO_TRANSPORT_MESSAGES_PB_H_",
+      "#include \"components/stream_transport/internal/proto/transport_messages.pb.h\"",
+      "#endif  // COMPONENTS_BROWSER_ACTUATOR_INTERNAL_TRANSPORT_PROTO_TRANSPORT_MESSAGES_PB_H_",
+    ])
 
-proto_library("proto") {
+source_set("proto") {
   visibility = [
     "//chrome/browser/browser_actuator/internals:*",
     "//chrome/browser/sharing/browser_actuator/*",
     "//components/browser_actuator/*",
   ]
-  sources = [ "transport_messages.proto" ]
-  deps = [
-    "//components/sharing_message/proto",
-    "//third_party/protobuf:any_proto",
-  ]
-  proto_in_dir = "//"
-}
-
-# base::Value serialization for the transport messages, used by
-# chrome://browser-actuator-internals to dump recorded sessions.
-proto_extras("transport_messages_extras") {
-  # The template forwards `visibility` to the generated sub-targets, which the
-  # group for this target depends on, so `:*` has to be allowed as well.
-  visibility = [
-    ":*",
-    "//components/browser_actuator/internal/transport:*",
-  ]
-  sources = [
-    "task_ingress.proto",
-    "transport_messages.proto",
-  ]
-  deps = [
-    ":proto",
-    ":task_ingress_proto",
-  ]
-  extras_deps = [
-    "//components/proto_extras:any_proto_extras",
-    "//components/sharing_message/proto:actuator_downstream_message_extras",
-  ]
-  proto_in_dir = "//"
+  sources = [ _forwarding_header ]
+  public_deps = [ "//components/stream_transport/internal/proto" ]
 }

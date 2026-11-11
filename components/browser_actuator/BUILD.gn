@@ -13,9 +13,5 @@ group("unit_tests") {
     # Fails `gn gen` if the transport starts depending on browser actuation
     # code.
     "//components/browser_actuator/internal/transport:isolation_check",
-
-    # Rust gtest tests, linked into the C++ test binary and run wherever
-    # components_unittests runs.
-    "//components/browser_actuator/internal/transport/proto_stream_client:stream_body_parser_unittests",
   ]
 }

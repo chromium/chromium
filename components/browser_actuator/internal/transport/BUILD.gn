@@ -6,44 +6,10 @@
 # public/transport/ may depend on the rest of //components/browser_actuator;
 # DEPS and :isolation_check enforce that.
 
-# Wire-format-agnostic seams of the transport: the consumer-facing
-# MessageStreamClient interface and the StreamConnectionDelegate resume/auth
-# policy seam. Concrete transports live in subdirectories.
-source_set("transport") {
-  sources = [
-    "message_stream_client.h",
-    "resume_body_connection_delegate.cc",
-    "resume_body_connection_delegate.h",
-    "stream_connection_delegate.cc",
-    "stream_connection_delegate.h",
-    "stream_framer.h",
-  ]
-
-  public_deps = [ "//base" ]
-
-  deps = [ "//services/network/public/cpp" ]
-}
-
-# Utilities internal to the transport.
-source_set("metrics_utils") {
-  sources = [ "metrics_utils.h" ]
-
-  public_deps = [
-    "//base",
-    "//components/browser_actuator/public/transport",
-  ]
-
-  visibility = [ "//components/browser_actuator/internal/transport/*" ]
-}
-
-# Features and params of the transport.
 source_set("features") {
-  sources = [
-    "features.cc",
-    "features.h",
-  ]
+  sources = [ "features.h" ]
 
-  public_deps = [ "//base" ]
+  public_deps = [ "//components/stream_transport/internal:features" ]
 
   visibility = [
     "//chrome/browser/sharing/browser_actuator:*",
@@ -61,7 +27,7 @@ source_set("probe_payload") {
 
   public_deps = [
     "//base",
-    "//components/browser_actuator/internal/transport/proto",
+    "//components/stream_transport/internal/proto",
   ]
 }
 
@@ -80,16 +46,16 @@ source_set("session_stream_recorder") {
 
   public_deps = [
     "//base",
-    "//components/browser_actuator/internal/transport/proto",
     "//components/browser_actuator/public/transport",
     "//components/browser_actuator/public/transport:payload_type_mapping",
     "//components/sharing_message/proto",
+    "//components/stream_transport/internal/proto",
   ]
 
   deps = [
-    ":metrics_utils",
-    "//components/browser_actuator/internal/transport/proto:transport_messages_extras",
     "//components/sharing_message/proto:actuator_downstream_message_extras",
+    "//components/stream_transport/internal:metrics_utils",
+    "//components/stream_transport/internal/proto:transport_messages_extras",
     "//third_party/protobuf:protobuf_lite",
   ]
 }
@@ -118,19 +84,19 @@ source_set("channel") {
 
   public_deps = [
     ":session_stream_recorder",
-    ":transport",
     "//components/browser_actuator/public/transport",
     "//components/browser_actuator/public/transport:payload_type_mapping",
     "//components/sharing_message/proto",
+    "//components/stream_transport/internal:transport",
   ]
 
   deps = [
-    ":features",
-    ":metrics_utils",
     ":probe_payload",
     "//base",
-    "//components/browser_actuator/internal/transport/proto",
-    "//components/browser_actuator/internal/transport/upstream_message_client",
+    "//components/stream_transport/internal:features",
+    "//components/stream_transport/internal:metrics_utils",
+    "//components/stream_transport/internal/proto",
+    "//components/stream_transport/internal/upstream_message_client",
   ]
 }
 
@@ -156,15 +122,15 @@ source_set("service") {
 
   deps = [
     ":channel",
-    ":features",
     ":session_stream_recorder",
-    ":transport",
-    "//components/browser_actuator/internal/transport/oauth",
-    "//components/browser_actuator/internal/transport/proto_stream_client",
-    "//components/browser_actuator/internal/transport/proto_stream_client:rust_stream_framer",
-    "//components/browser_actuator/internal/transport/upstream_message_client",
     "//components/browser_actuator/public/transport",
     "//components/signin/public/base",
+    "//components/stream_transport/internal:features",
+    "//components/stream_transport/internal:transport",
+    "//components/stream_transport/internal/oauth",
+    "//components/stream_transport/internal/proto_stream_client",
+    "//components/stream_transport/internal/proto_stream_client:rust_stream_framer",
+    "//components/stream_transport/internal/upstream_message_client",
     "//net",
     "//services/network/public/cpp",
   ]
@@ -178,9 +144,7 @@ source_set("unit_tests") {
     "downstream_message_sequencer_unittest.cc",
     "probe_payload_unittest.cc",
     "probe_transport_handler_unittest.cc",
-    "resume_body_connection_delegate_unittest.cc",
     "session_stream_recorder_unittest.cc",
-    "stream_connection_delegate_unittest.cc",
     "transport_channel_impl_unittest.cc",
     "transport_handler_factory_registry_impl_unittest.cc",
     "transport_handler_unittest.cc",
@@ -192,24 +156,24 @@ source_set("unit_tests") {
 
   deps = [
     ":channel",
-    ":features",
-    ":metrics_utils",
     ":probe_payload",
     ":service",
     ":session_stream_recorder",
-    ":transport",
-    "test_support",
     "//base",
     "//base/test:test_support",
-    "//components/browser_actuator/internal/transport/proto",
-    "//components/browser_actuator/internal/transport/proto_stream_client",
-    "//components/browser_actuator/internal/transport/upstream_message_client",
     "//components/browser_actuator/public/transport",
     "//components/browser_actuator/public/transport:payload_type_mapping",
     "//components/browser_actuator/test_support/transport",
     "//components/sharing_message/proto",
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager:test_support",
+    "//components/stream_transport/internal:features",
+    "//components/stream_transport/internal:metrics_utils",
+    "//components/stream_transport/internal:transport",
+    "//components/stream_transport/internal/proto",
+    "//components/stream_transport/internal/proto_stream_client",
+    "//components/stream_transport/internal/test_support",
+    "//components/stream_transport/internal/upstream_message_client",
     "//net",
     "//net/traffic_annotation:test_support",
     "//services/network:test_support",
@@ -230,23 +194,23 @@ group("isolation_check") {
 
   deps = [
     ":channel",
-    ":features",
-    ":metrics_utils",
     ":probe_payload",
     ":service",
     ":session_stream_recorder",
-    ":transport",
-    "oauth",
-    "proto",
-    "proto:transport_messages_extras",
-    "proto_stream_client",
-    "proto_stream_client:rust_stream_framer",
-    "test_support",
-    "upstream_message_client",
     "//components/browser_actuator/public/transport",
     "//components/browser_actuator/public/transport:payload_type_mapping",
     "//components/browser_actuator/public/transport:service",
     "//components/browser_actuator/test_support/transport",
+    "//components/stream_transport/internal:features",
+    "//components/stream_transport/internal:metrics_utils",
+    "//components/stream_transport/internal:transport",
+    "//components/stream_transport/internal/oauth",
+    "//components/stream_transport/internal/proto",
+    "//components/stream_transport/internal/proto:transport_messages_extras",
+    "//components/stream_transport/internal/proto_stream_client",
+    "//components/stream_transport/internal/proto_stream_client:rust_stream_framer",
+    "//components/stream_transport/internal/test_support",
+    "//components/stream_transport/internal/upstream_message_client",
   ]
 
   assert_no_deps = [

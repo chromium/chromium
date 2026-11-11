@@ -9,8 +9,8 @@
 
 #include "base/logging.h"
 #include "base/sequence_checker.h"
-#include "components/browser_actuator/internal/transport/proto/transport_messages.pb.h"
 #include "components/browser_actuator/public/transport/transport_session.h"
+#include "components/stream_transport/internal/proto/transport_messages.pb.h"
 
 namespace browser_actuator::transport {
 

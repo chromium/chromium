@@ -1,0 +1,15 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+group("unit_tests") {
+  testonly = true
+
+  deps = [
+    "//components/stream_transport/internal:unit_tests",
+    "//components/stream_transport/internal/oauth:unit_tests",
+    "//components/stream_transport/internal/proto_stream_client:stream_body_parser_unittests",
+    "//components/stream_transport/internal/proto_stream_client:unit_tests",
+    "//components/stream_transport/internal/upstream_message_client:unit_tests",
+  ]
+}

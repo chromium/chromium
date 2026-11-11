@@ -23,8 +23,6 @@
 #include "base/test/task_environment.h"
 #include "base/types/expected.h"
 #include "components/browser_actuator/internal/transport/downstream_message_sequencer.h"
-#include "components/browser_actuator/internal/transport/metrics_utils.h"
-#include "components/browser_actuator/internal/transport/proto/transport_messages.pb.h"
 #include "components/browser_actuator/internal/transport/transport_handler_factory_registry_impl.h"
 #include "components/browser_actuator/internal/transport/transport_session_registry_impl.h"
 #include "components/browser_actuator/public/transport/common.h"
@@ -34,6 +32,8 @@
 #include "components/browser_actuator/test_support/transport/mock_transport_handler_factory.h"
 #include "components/browser_actuator/test_support/transport/test_constants.h"
 #include "components/sharing_message/proto/actuator_downstream_message.pb.h"
+#include "components/stream_transport/internal/metrics_utils.h"
+#include "components/stream_transport/internal/proto/transport_messages.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

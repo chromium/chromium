@@ -1,0 +1,71 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Wire-format-agnostic seams of the transport: the consumer-facing
+# MessageStreamClient interface and the StreamConnectionDelegate resume/auth
+# policy seam. Concrete transports live in subdirectories.
+source_set("transport") {
+  sources = [
+    "message_stream_client.h",
+    "resume_body_connection_delegate.cc",
+    "resume_body_connection_delegate.h",
+    "stream_connection_delegate.cc",
+    "stream_connection_delegate.h",
+    "stream_framer.h",
+  ]
+
+  public_deps = [ "//base" ]
+
+  deps = [ "//services/network/public/cpp" ]
+}
+
+# Utilities internal to the transport.
+source_set("metrics_utils") {
+  sources = [ "metrics_utils.h" ]
+
+  public_deps = [
+    "//base",
+    "//components/browser_actuator/public/transport",
+  ]
+
+  visibility = [
+    "//components/browser_actuator/internal/transport/*",
+    "//components/stream_transport/internal/*",
+  ]
+}
+
+# Features and params of the transport.
+source_set("features") {
+  sources = [
+    "features.cc",
+    "features.h",
+  ]
+
+  public_deps = [ "//base" ]
+
+  visibility = [
+    "//chrome/browser/sharing/browser_actuator:*",
+    "//components/browser_actuator/*",
+    "//components/stream_transport/*",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "resume_body_connection_delegate_unittest.cc",
+    "stream_connection_delegate_unittest.cc",
+  ]
+
+  deps = [
+    ":transport",
+    "//base",
+    "//base/test:test_support",
+    "//services/network/public/cpp",
+    "//testing/gtest",
+  ]
+
+  visibility = [ "//components/stream_transport:unit_tests" ]
+}

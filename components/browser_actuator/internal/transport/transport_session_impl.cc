@@ -19,8 +19,6 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/browser_actuator/internal/transport/downstream_message_sequencer.h"
-#include "components/browser_actuator/internal/transport/metrics_utils.h"
-#include "components/browser_actuator/internal/transport/proto/transport_messages.pb.h"
 #include "components/browser_actuator/public/transport/payload_type_mapping.h"
 #include "components/browser_actuator/public/transport/transport_channel.h"
 #include "components/browser_actuator/public/transport/transport_handler.h"
@@ -28,6 +26,8 @@
 #include "components/browser_actuator/public/transport/transport_handler_factory_registry.h"
 #include "components/browser_actuator/public/transport/transport_session_registry.h"
 #include "components/sharing_message/proto/actuator_downstream_message.pb.h"
+#include "components/stream_transport/internal/metrics_utils.h"
+#include "components/stream_transport/internal/proto/transport_messages.pb.h"
 
 namespace browser_actuator::transport {
 namespace {

@@ -22,10 +22,10 @@
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
-#include "components/browser_actuator/internal/transport/proto/transport_messages.pb.h"
 #include "components/browser_actuator/internal/transport/transport_message_observer.h"
 #include "components/browser_actuator/public/transport/transport_session_registry.h"
 #include "components/sharing_message/proto/actuator_downstream_message.pb.h"
+#include "components/stream_transport/internal/proto/transport_messages.pb.h"
 
 namespace base {
 class DictValue;

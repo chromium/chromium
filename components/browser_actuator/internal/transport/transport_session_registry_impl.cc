@@ -12,9 +12,9 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
-#include "components/browser_actuator/internal/transport/features.h"
-#include "components/browser_actuator/internal/transport/metrics_utils.h"
 #include "components/browser_actuator/internal/transport/transport_session_impl.h"
+#include "components/stream_transport/internal/features.h"
+#include "components/stream_transport/internal/metrics_utils.h"
 
 namespace browser_actuator::transport {
 namespace {

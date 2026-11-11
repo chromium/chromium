@@ -1,0 +1,15 @@
+include_rules = [
+  "-components/browser_actuator",
+  "+components/browser_actuator/public/transport",
+  "+components/stream_transport/internal",
+  "+services/network",
+]
+
+specific_include_rules = {
+  ".*_unittest\\.cc": [
+    "+net/base/net_errors.h",
+  ],
+  "rust_stream_framer_unittest\\.cc": [
+    "+third_party/fuzztest/src/fuzztest/fuzztest.h",
+  ],
+}
