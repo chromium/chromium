@@ -114,7 +114,10 @@ FFMPEG_TEST_CASE(Cr117912,
                  "security/117912.webm",
                  DEMUXER_ERROR_COULD_NOT_OPEN,
                  DEMUXER_ERROR_COULD_NOT_OPEN);
-FFMPEG_TEST_CASE(Cr123481, "security/123481.ogv", PIPELINE_OK, PIPELINE_OK);
+FFMPEG_TEST_CASE(Cr123481,
+                 "security/123481.ogv",
+                 DEMUXER_ERROR_COULD_NOT_OPEN,
+                 DEMUXER_ERROR_COULD_NOT_OPEN);
 FFMPEG_TEST_CASE(Cr132779,
                  "security/132779.webm",
                  DEMUXER_ERROR_COULD_NOT_PARSE,
