@@ -3997,6 +3997,11 @@
       status: "stable",
     },
     {
+      // Enables the defaultindeterminate attribute on <input type="checkbox">.
+      // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/DefaultIndeterminate/explainer.md
+      name: "InputDefaultIndeterminateAttribute",
+    },
+    {
       // Prevents running DefaultEventHandler on disabled input elements.
       // Enabled in M153, safe to remove in M155.
       // https://issues.chromium.org/issues/533188858
