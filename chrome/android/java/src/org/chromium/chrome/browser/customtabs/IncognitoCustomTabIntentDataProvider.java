@@ -15,12 +15,10 @@ import static org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider
 import static org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.getClientPackageNameFromSessionOrCallingActivity;
 import static org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.isTrustedCustomTab;
 
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.util.Pair;
 
 import androidx.browser.customtabs.CustomTabsIntent;
 
@@ -41,9 +39,6 @@ import org.chromium.chrome.browser.flags.CustomTabProfileType;
 import org.chromium.chrome.browser.util.WindowFeatures;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * A model class that parses the incoming intent for incognito Custom Tabs specific customization
  * data.
@@ -58,7 +53,6 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
     private final CustomTabIntentDataHolder mDataHolder;
     private final ColorProvider mColorProvider;
     private final Drawable mCloseButtonIcon;
-    private final List<Pair<String, PendingIntent>> mMenuEntries = new ArrayList<>();
 
     private final @Nullable String mUrlToLoad;
 
@@ -164,7 +158,6 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
             featureUsage.log(CustomTabsFeature.EXTRA_EXIT_ANIMATION_BUNDLE);
         }
         featureUsage.log(CustomTabsFeature.EXTRA_OPEN_NEW_INCOGNITO_TAB);
-        if (!mMenuEntries.isEmpty()) featureUsage.log(CustomTabsFeature.EXTRA_MENU_ITEMS);
         if (getClientPackageName() != null) featureUsage.log(CustomTabsFeature.CTF_PACKAGE_NAME);
         if (IntentUtils.safeHasExtra(intent, IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE)) {
             featureUsage.log(CustomTabsFeature.EXTRA_CALLING_ACTIVITY_PACKAGE);
@@ -337,15 +330,6 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
     @Override
     public @CustomTabsUiType int getUiType() {
         return mDataHolder.mUiType;
-    }
-
-    @Override
-    public List<String> getMenuTitles() {
-        ArrayList<String> list = new ArrayList<>();
-        for (Pair<String, PendingIntent> pair : mMenuEntries) {
-            list.add(pair.first);
-        }
-        return list;
     }
 
     @Override
