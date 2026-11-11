@@ -32,9 +32,9 @@ class ActorSurfaceLookup {
     return *lookup;
   }
 
-  ActorSurface* Get(ActorSurfaceHandle handle) const {
+  ActorSurface* Get(ActorSurfaceHandle actor_surface_handle) const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    auto it = registered_surfaces_.find(handle);
+    auto it = registered_surfaces_.find(actor_surface_handle);
     return it == registered_surfaces_.end() ? nullptr : it->second.get();
   }
 
@@ -52,17 +52,19 @@ class ActorSurfaceLookup {
     return next_handle_++;
   }
 
-  void Register(ActorSurfaceHandle handle, ActorSurface* surface) {
-    CHECK(!handle.is_null());
+  void Register(ActorSurfaceHandle actor_surface_handle,
+                ActorSurface* surface) {
+    CHECK(!actor_surface_handle.is_null());
     CHECK(surface);
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    auto [it, inserted] = registered_surfaces_.emplace(handle, surface);
-    CHECK(inserted) << "Duplicate ActorSurfaceHandle: " << handle;
+    auto [it, inserted] =
+        registered_surfaces_.emplace(actor_surface_handle, surface);
+    CHECK(inserted) << "Duplicate ActorSurfaceHandle: " << actor_surface_handle;
   }
 
-  void Unregister(ActorSurfaceHandle handle) {
+  void Unregister(ActorSurfaceHandle actor_surface_handle) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    auto it = registered_surfaces_.find(handle);
+    auto it = registered_surfaces_.find(actor_surface_handle);
     CHECK(it != registered_surfaces_.end());
     std::optional<tabs::TabHandle> tab = it->second->GetTabHandle();
     registered_surfaces_.erase(it);
@@ -72,7 +74,7 @@ class ActorSurfaceLookup {
     if (!tab || !base::SequencedTaskRunner::HasCurrentDefault()) {
       return;
     }
-    recently_destroyed_tabs_[*tab] = handle;
+    recently_destroyed_tabs_[*tab] = actor_surface_handle;
     // Clear the destroyed handle after a PostTask. Safe to use base::Unretained
     // since ActorSurfaceLookup is a singleton.
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -86,9 +88,9 @@ class ActorSurfaceLookup {
   // earlier in the current task; see `recently_destroyed_tabs_`.
   ActorSurfaceHandle GetForTab(tabs::TabHandle tab) const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    for (const auto& [handle, surface] : registered_surfaces_) {
+    for (const auto& [actor_surface_handle, surface] : registered_surfaces_) {
       if (surface->GetTabHandle() == tab) {
-        return handle;
+        return actor_surface_handle;
       }
     }
     // Maybe the tab was just deleted. Find it from the recent deletions.
@@ -101,9 +103,9 @@ class ActorSurfaceLookup {
   ActorSurfaceHandle GetForWebContents(
       const content::WebContents* web_contents) const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    for (const auto& [handle, surface] : registered_surfaces_) {
+    for (const auto& [actor_surface_handle, surface] : registered_surfaces_) {
       if (surface->GetWebContents() == web_contents) {
-        return handle;
+        return actor_surface_handle;
       }
     }
     return ActorSurfaceHandle::Null();
@@ -111,15 +113,16 @@ class ActorSurfaceLookup {
 
   // Inverse of GetForTab(). Falls back to surfaces destroyed earlier in the
   // current task; see `recently_destroyed_tabs_`.
-  tabs::TabHandle GetTabForHandle(ActorSurfaceHandle handle) const {
+  tabs::TabHandle GetTabForHandle(
+      ActorSurfaceHandle actor_surface_handle) const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    if (ActorSurface* surface = Get(handle)) {
+    if (ActorSurface* surface = Get(actor_surface_handle)) {
       return surface->GetTabHandle().value_or(tabs::TabHandle::Null());
     }
     // Maybe the surface's tab was just deleted. Find it from the recent
     // deletions.
     for (const auto& [tab, destroyed_handle] : recently_destroyed_tabs_) {
-      if (destroyed_handle == handle) {
+      if (destroyed_handle == actor_surface_handle) {
         return tab;
       }
     }
@@ -209,18 +212,19 @@ ActorSurfaceHandle ActorSurfaceHandle::NextHandle() {
 }
 
 // static
-void ActorSurfaceHandle::Register(ActorSurfaceHandle handle,
+void ActorSurfaceHandle::Register(ActorSurfaceHandle actor_surface_handle,
                                   ActorSurface* surface) {
-  ActorSurfaceLookup::GetInstance().Register(handle, surface);
+  ActorSurfaceLookup::GetInstance().Register(actor_surface_handle, surface);
 }
 
 // static
-void ActorSurfaceHandle::Unregister(ActorSurfaceHandle handle) {
-  ActorSurfaceLookup::GetInstance().Unregister(handle);
+void ActorSurfaceHandle::Unregister(ActorSurfaceHandle actor_surface_handle) {
+  ActorSurfaceLookup::GetInstance().Unregister(actor_surface_handle);
 }
 
-std::ostream& operator<<(std::ostream& os, ActorSurfaceHandle handle) {
-  return os << "ActorSurfaceHandle(" << handle.raw_value() << ")";
+std::ostream& operator<<(std::ostream& os,
+                         ActorSurfaceHandle actor_surface_handle) {
+  return os << "ActorSurfaceHandle(" << actor_surface_handle.raw_value() << ")";
 }
 
 }  // namespace actor

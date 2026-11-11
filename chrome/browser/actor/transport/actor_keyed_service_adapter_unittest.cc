@@ -126,11 +126,12 @@ TEST_F(ActorKeyedServiceAdapterTest, StartTaskPopulatesTitleAndBoundSurfaces) {
 TEST_F(ActorKeyedServiceAdapterTest, StartTaskBindsHeadlessSurface) {
   ScopedHeadlessActorSurface headless =
       actor_service_->CreateHeadlessActorSurface();
-  const ActorSurfaceHandle handle = headless.actor_surface_handle();
+  const ActorSurfaceHandle actor_surface_handle =
+      headless.actor_surface_handle();
 
   proto::StartTaskRequest request;
   proto::TargetSurface* target = request.add_target_surfaces();
-  target->set_tab_id(handle.raw_value());
+  target->set_tab_id(actor_surface_handle.raw_value());
   target->set_execution_mode(proto::TargetSurface::HEADLESS);
   base::test::TestFuture<TaskId, proto::StartTaskResponse> future;
   adapter_.StartTask(request, future.GetCallback());
@@ -138,10 +139,11 @@ TEST_F(ActorKeyedServiceAdapterTest, StartTaskBindsHeadlessSurface) {
   const auto& [task_id, response] = future.Get();
   EXPECT_EQ(response.status(), proto::StartTaskResponse::STATUS_OK);
   ASSERT_EQ(response.bound_surfaces_size(), 1);
-  EXPECT_EQ(response.bound_surfaces(0).tab_id(), handle.raw_value());
+  EXPECT_EQ(response.bound_surfaces(0).tab_id(),
+            actor_surface_handle.raw_value());
   ActorTask* task = actor_service_->GetTask(task_id);
   ASSERT_TRUE(task);
-  EXPECT_TRUE(task->IsActingOnActorSurface(handle));
+  EXPECT_TRUE(task->IsActingOnActorSurface(actor_surface_handle));
 }
 
 TEST_F(ActorKeyedServiceAdapterTest,
@@ -151,12 +153,14 @@ TEST_F(ActorKeyedServiceAdapterTest,
   // actor surface ID.
   ScopedHeadlessActorSurface headless =
       actor_service_->CreateHeadlessActorSurface();
-  const ActorSurfaceHandle handle = headless.actor_surface_handle();
-  ActorSurface* surface = handle.Get();
+  const ActorSurfaceHandle actor_surface_handle =
+      headless.actor_surface_handle();
+  ActorSurface* surface = actor_surface_handle.Get();
   ASSERT_TRUE(surface);
   std::unique_ptr<tabs::MockTabInterface> mock_tab =
       CreateMockTab(surface->GetWebContents());
-  ASSERT_NE(mock_tab->GetHandle().raw_value(), handle.raw_value());
+  ASSERT_NE(mock_tab->GetHandle().raw_value(),
+            actor_surface_handle.raw_value());
 
   proto::StartTaskRequest request;
   request.add_target_surfaces()->set_tab_id(mock_tab->GetHandle().raw_value());
@@ -171,7 +175,8 @@ TEST_F(ActorKeyedServiceAdapterTest,
   // CreateMockTab() made the surface tab-backed. Demote it before `headless`
   // is destroyed, because ActorKeyedService::DestroyHeadlessActorSurface()
   // CHECKs that the surface is not tab-backed.
-  actor_service_->GetSurfaceRegistry().OnSurfaceWillBeDemoted(handle);
+  actor_service_->GetSurfaceRegistry().OnSurfaceWillBeDemoted(
+      actor_surface_handle);
 }
 
 TEST_F(ActorKeyedServiceAdapterTest,

@@ -12,30 +12,30 @@
 
 namespace actor {
 
-ActorSurfaceImpl::ActorSurfaceImpl(ActorSurfaceHandle handle,
+ActorSurfaceImpl::ActorSurfaceImpl(ActorSurfaceHandle actor_surface_handle,
                                    tabs::TabHandle tab)
-    : handle_(handle),
+    : actor_surface_handle_(actor_surface_handle),
       tab_(tab),
       actor_tab_data_(std::make_unique<ActorTabData>()) {
   CHECK(tab.Get());
-  ActorSurfaceHandle::Register(handle_, this);
+  ActorSurfaceHandle::Register(actor_surface_handle_, this);
 }
 
-ActorSurfaceImpl::ActorSurfaceImpl(ActorSurfaceHandle handle,
+ActorSurfaceImpl::ActorSurfaceImpl(ActorSurfaceHandle actor_surface_handle,
                                    content::WebContents* headless_contents)
-    : handle_(handle),
+    : actor_surface_handle_(actor_surface_handle),
       headless_contents_(headless_contents),
       actor_tab_data_(std::make_unique<ActorTabData>()) {
   CHECK(headless_contents_);
-  ActorSurfaceHandle::Register(handle_, this);
+  ActorSurfaceHandle::Register(actor_surface_handle_, this);
 }
 
 ActorSurfaceImpl::~ActorSurfaceImpl() {
-  ActorSurfaceHandle::Unregister(handle_);
+  ActorSurfaceHandle::Unregister(actor_surface_handle_);
 }
 
 ActorSurfaceHandle ActorSurfaceImpl::GetHandle() const {
-  return handle_;
+  return actor_surface_handle_;
 }
 
 bool ActorSurfaceImpl::IsTab() const {

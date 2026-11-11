@@ -100,7 +100,7 @@ void OnCreateActorTabComplete(
         /*stop_task_on_detach=*/true,
         base::BindOnce(
             [](actor::ActorKeyedService::CreateActorTabCallback callback,
-               tabs::TabHandle handle, actor::TaskId task_id,
+               tabs::TabHandle tab_handle, actor::TaskId task_id,
                base::WeakPtr<actor::AggregatedJournal> journal,
                actor::mojom::ActionResultPtr result) {
               if (journal) {
@@ -110,7 +110,7 @@ void OnCreateActorTabComplete(
                         .Add("AddTab result", actor::ToDebugString(*result))
                         .Build());
               }
-              std::move(callback).Run(handle.Get());
+              std::move(callback).Run(tab_handle.Get());
             },
             std::move(callback), tab->GetHandle(), task.id(),
             journal.GetWeakPtr()));

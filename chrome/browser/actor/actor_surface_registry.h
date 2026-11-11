@@ -45,7 +45,7 @@ class ActorSurfaceRegistry : public HeadlessWebContentsManager::Observer {
   // Profile-scoped lookups: return null if no matching surface is owned by
   // this profile's registry. Contrast with ActorSurfaceHandle::Get(), which is
   // process-wide and profile-agnostic.
-  ActorSurface* Get(ActorSurfaceHandle handle) const;
+  ActorSurface* Get(ActorSurfaceHandle actor_surface_handle) const;
   ActorSurface* GetForTab(tabs::TabHandle tab) const;
   ActorSurface* GetForHeadless(const content::WebContents* contents) const;
 
@@ -68,14 +68,14 @@ class ActorSurfaceRegistry : public HeadlessWebContentsManager::Observer {
   //
   // Both must be called while the tab exists: after the WebContents is inserted
   // into a tab, and before the tab is destroyed.
-  void OnSurfacePromoted(ActorSurfaceHandle handle);
-  void OnSurfaceWillBeDemoted(ActorSurfaceHandle handle);
+  void OnSurfacePromoted(ActorSurfaceHandle actor_surface_handle);
+  void OnSurfaceWillBeDemoted(ActorSurfaceHandle actor_surface_handle);
 
-  // Called to destroy the headless surface represented by `handle` and its
-  // WebContents. The surface is dropped before the WebContents is destroyed. A
-  // no-op if the surface is already gone. For tab-backed surfaces, cleanup is
-  // done via OnTabWillBeDestroyed() instead.
-  void DestroyHeadlessActorSurface(ActorSurfaceHandle handle,
+  // Called to destroy the headless surface represented by
+  // `actor_surface_handle` and its WebContents. The surface is dropped before
+  // the WebContents is destroyed. A no-op if the surface is already gone. For
+  // tab-backed surfaces, cleanup is done via OnTabWillBeDestroyed() instead.
+  void DestroyHeadlessActorSurface(ActorSurfaceHandle actor_surface_handle,
                                    base::PassKey<ActorKeyedService>);
 
   // HeadlessWebContentsManager::Observer:
@@ -87,7 +87,7 @@ class ActorSurfaceRegistry : public HeadlessWebContentsManager::Observer {
   base::WeakPtr<ActorSurfaceRegistry> GetWeakPtr();
 
  private:
-  ActorSurfaceImpl* GetImpl(ActorSurfaceHandle handle) const;
+  ActorSurfaceImpl* GetImpl(ActorSurfaceHandle actor_surface_handle) const;
 
   // Creates and destroys the WebContents backing headless surfaces.
   const raw_ptr<HeadlessWebContentsManager> headless_manager_;

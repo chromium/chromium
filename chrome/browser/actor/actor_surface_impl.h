@@ -27,8 +27,9 @@ class ActorTabData;
 // ActorSurfaceHandle::Get().
 class ActorSurfaceImpl final : public ActorSurface {
  public:
-  ActorSurfaceImpl(ActorSurfaceHandle handle, tabs::TabHandle tab);
-  ActorSurfaceImpl(ActorSurfaceHandle handle,
+  ActorSurfaceImpl(ActorSurfaceHandle actor_surface_handle,
+                   tabs::TabHandle tab);
+  ActorSurfaceImpl(ActorSurfaceHandle actor_surface_handle,
                    content::WebContents* headless_contents);
 
   // Disallow copy/assign.
@@ -53,7 +54,7 @@ class ActorSurfaceImpl final : public ActorSurface {
   void SetHeadless();
 
   // Unique ID for this surface.
-  const ActorSurfaceHandle handle_;
+  const ActorSurfaceHandle actor_surface_handle_;
 
   // Set when this surface is backed by a tab; mutually exclusive with
   // `headless_contents_`.

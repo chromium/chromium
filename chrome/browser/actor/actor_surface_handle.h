@@ -106,8 +106,8 @@ class ActorSurfaceHandle {
                                     ActorSurfaceHandle) = default;
 
   template <typename H>
-  friend H AbslHashValue(H h, ActorSurfaceHandle handle) {
-    return H::combine(std::move(h), handle.raw_value_);
+  friend H AbslHashValue(H h, ActorSurfaceHandle actor_surface_handle) {
+    return H::combine(std::move(h), actor_surface_handle.raw_value_);
   }
 
  private:
@@ -123,14 +123,16 @@ class ActorSurfaceHandle {
   static ActorSurfaceHandle NextHandle();
 
   // Registers or unregisters an ActorSurface in the lookup table.
-  static void Register(ActorSurfaceHandle handle, ActorSurface* surface);
-  static void Unregister(ActorSurfaceHandle handle);
+  static void Register(ActorSurfaceHandle actor_surface_handle,
+                       ActorSurface* surface);
+  static void Unregister(ActorSurfaceHandle actor_surface_handle);
 
   // Underlying integer value of the handle. Defaults to 0 (kNullValue).
   int32_t raw_value_ = kNullValue;
 };
 
-std::ostream& operator<<(std::ostream& os, ActorSurfaceHandle handle);
+std::ostream& operator<<(std::ostream& os,
+                         ActorSurfaceHandle actor_surface_handle);
 
 }  // namespace actor
 

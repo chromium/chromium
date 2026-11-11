@@ -1861,20 +1861,20 @@ void BuildActionsResultWithObservations(
     // implemented by not putting the tab into the LastActedTabs set.
     // TODO(b/565820285): Decide how to handle headless surfaces here: observe
     // them, or skip them until headless observation is supported.
-    TabHandle handle = actor_surface_handle.GetTabHandle();
-    if (handle == TabHandle::Null()) {
+    TabHandle tab_handle = actor_surface_handle.GetTabHandle();
+    if (tab_handle == TabHandle::Null()) {
       continue;
     }
 
     ActorSurface* actor_surface = actor_surface_handle.Get();
     if (!actor_surface) {
       apc::TabObservation* tab_observation = response->add_tabs();
-      tab_observation->set_id(handle.raw_value());
+      tab_observation->set_id(tab_handle.raw_value());
       tab_observation->set_result(
           apc::TabObservation::TAB_OBSERVATION_TAB_WENT_AWAY);
       actor_service->GetJournal().Log(GURL(), task.id(), "TabObservationFailed",
                                       JournalDetailsBuilder()
-                                          .Add("tabId", handle.raw_value())
+                                          .Add("tabId", tab_handle.raw_value())
                                           .AddError("TabWentAway")
                                           .Build());
     } else if (!actor_surface->GetWebContents()
@@ -1883,18 +1883,18 @@ void BuildActionsResultWithObservations(
       // TODO(crbug.com/392167142): We should also handle the crashed subframes.
       // However we don't want unrelated subframe crash to terminate the task.
       apc::TabObservation* tab_observation = response->add_tabs();
-      tab_observation->set_id(handle.raw_value());
+      tab_observation->set_id(tab_handle.raw_value());
       tab_observation->set_result(
           apc::TabObservation::TAB_OBSERVATION_PAGE_CRASHED);
       actor_service->GetJournal().Log(GURL(), task.id(), "TabObservationFailed",
                                       JournalDetailsBuilder()
-                                          .Add("tabId", handle.raw_value())
+                                          .Add("tabId", tab_handle.raw_value())
                                           .AddError("Page crashed")
                                           .Build());
     } else {
       apc::TabObservation* tab_observation = response->add_tabs();
       tabs_to_fetch.emplace(actor_surface_handle, tab_observation);
-      tab_observation->set_id(handle.raw_value());
+      tab_observation->set_id(tab_handle.raw_value());
       if (skip_async_observation_information) {
         tab_observation->set_result(apc::TabObservation::TAB_OBSERVATION_OK);
       }
