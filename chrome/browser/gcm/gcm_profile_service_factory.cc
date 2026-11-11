@@ -10,7 +10,6 @@
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/single_thread_task_runner_thread_mode.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -43,10 +42,6 @@ namespace gcm {
 namespace {
 
 #if !BUILDFLAG(IS_ANDROID)
-// When enabled, GCM will use a dedicated thread for network operations instead
-// of the IO thread.
-BASE_FEATURE(kGCMUseDedicatedNetworkThread, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Requests a ProxyResolvingSocketFactory on the UI thread. Note that a WeakPtr
 // of GCMProfileService is needed to detect when the KeyedService shuts down,
 // and avoid calling into |profile| which might have also been destroyed.
@@ -74,17 +69,6 @@ void RequestProxyResolvingSocketFactory(
                                 std::move(profile), std::move(service),
                                 std::move(receiver)));
 }
-
-scoped_refptr<base::SequencedTaskRunner> GetNetworkThreadTaskRunner() {
-  if (base::FeatureList::IsEnabled(kGCMUseDedicatedNetworkThread)) {
-    return base::ThreadPool::CreateSingleThreadTaskRunner(
-        {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
-         base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-        base::SingleThreadTaskRunnerThreadMode::SHARED);
-  }
-  return content::GetIOThreadTaskRunner({});
-}
-
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 GCMProfileServiceFactory::GlobalTestingFactory& GetTestingFactory() {
@@ -182,7 +166,7 @@ GCMProfileServiceFactory::BuildServiceInstanceForBrowserContext(
       content::GetNetworkConnectionTracker(), chrome::GetChannel(),
       gcm::GetProductCategoryForSubtypes(profile->GetPrefs()),
       std::make_unique<GCMClientFactory>(), content::GetUIThreadTaskRunner({}),
-      GetNetworkThreadTaskRunner(), blocking_task_runner,
+      content::GetIOThreadTaskRunner({}), blocking_task_runner,
       g_browser_process->os_crypt_async());
 #endif
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
