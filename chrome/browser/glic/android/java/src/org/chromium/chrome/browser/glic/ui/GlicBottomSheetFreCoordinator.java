@@ -85,7 +85,7 @@ class GlicBottomSheetFreCoordinator {
         mCloseButton = mRootView.findViewById(R.id.glic_fre_close_button);
 
         ViewCompat.setAccessibilityPaneTitle(
-                mRootView, context.getString(R.string.glic_fre_dialog_title));
+                mContentContainer, context.getString(R.string.glic_fre_dialog_title));
 
         mAcceptButton.setOnClickListener(v -> onClick(true));
         mCloseButton.setOnClickListener(v -> onClick(false));
