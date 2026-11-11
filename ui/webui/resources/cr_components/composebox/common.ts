@@ -57,11 +57,12 @@ export enum ProcessFilesError {
   NONE = 0,
   INVALID_TYPE = 1,
   FILE_TOO_LARGE = 2,
-  FILE_EMPTY = 3,
-  MAX_FILES_EXCEEDED = 4,
-  MAX_IMAGES_EXCEEDED = 5,
-  MAX_PDFS_EXCEEDED = 6,
-  FILE_UPLOAD_NOT_ALLOWED = 7,
+  IMAGE_TOO_LARGE = 3,
+  FILE_EMPTY = 4,
+  MAX_FILES_EXCEEDED = 5,
+  MAX_IMAGES_EXCEEDED = 6,
+  MAX_PDFS_EXCEEDED = 7,
+  FILE_UPLOAD_NOT_ALLOWED = 8,
 }
 
 export enum TabSuggestionsState {
@@ -687,6 +688,11 @@ export function hasAllowedInputs(
 // instead.
 export function getLoadTimeBoolean(id: string, defaultValue: boolean): boolean {
   return loadTimeData.valueExists(id) ? loadTimeData.getBoolean(id) :
+                                        defaultValue;
+}
+
+export function getLoadTimeInteger(id: string, defaultValue: number): number {
+  return loadTimeData.valueExists(id) ? loadTimeData.getInteger(id) :
                                         defaultValue;
 }
 

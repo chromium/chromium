@@ -22,7 +22,7 @@ import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {ComposeboxFile, ComposeboxFileValidationError, ComposeboxInputModel, ContextType, ContextualSearchInputStateDeletionType, FILE_VALIDATION_ERRORS_MAP, getFileMimeType, getLoadTimeBoolean, isContextUploadStatusTerminal, isValidTabId, ProcessFilesError, recordBoolean, recordContextAdditionMethod, recordContextualElementClickedMetric, recordEnumerationValue, recordInputTypeShown, recordModelModeSelection, recordModelModeShown, recordRichImageSuggestClicked, recordSingleTabMenuItemAction, recordToolModeSelection, recordToolModeShown, recordUserAction, SingleTabMenuItemAction, SingleTabType, SubmitButtonIconType, TabSuggestionsState, VoiceSearchAction} from './common.js';
+import {ComposeboxFile, ComposeboxFileValidationError, ComposeboxInputModel, ContextType, ContextualSearchInputStateDeletionType, FILE_VALIDATION_ERRORS_MAP, getFileMimeType, getLoadTimeBoolean, getLoadTimeInteger, isContextUploadStatusTerminal, isHeifImage, isValidTabId, mapUploadErrorToProcessFilesError, ProcessFilesError, recordBoolean, recordContextAdditionMethod, recordContextualElementClickedMetric, recordEnumerationValue, recordInputTypeShown, recordModelModeSelection, recordModelModeShown, recordRichImageSuggestClicked, recordSingleTabMenuItemAction, recordToolModeSelection, recordToolModeShown, recordUserAction, SingleTabMenuItemAction, SingleTabType, SubmitButtonIconType, TabSuggestionsState, VoiceSearchAction} from './common.js';
 import type {BrowserFileUpload, ComposeboxFuseboxActionRequest, ComposeboxState, ContextualUpload, DriveUpload, TabUpload} from './common.js';
 import type {PageHandlerRemote} from './composebox.mojom-webui.js';
 import {AimButtonMode} from './composebox_aim_button.js';
@@ -271,6 +271,10 @@ export const ComposeboxEmbedderMixin =
         maxFileCount: number =
             loadTimeData.getInteger('composeboxFileMaxCount');
         maxFileSize: number = loadTimeData.getInteger('composeboxFileMaxSize');
+        maxImageFileSize: number =
+            getLoadTimeInteger('composeboxImageMaxSize', 20 * 1024 * 1024);
+        limitAllImages: boolean =
+            getLoadTimeBoolean('composeboxLimitAllImages', true);
         attachmentFileTypes: string[] =
             loadTimeData.getString('composeboxAttachmentFileTypes').split(',');
         imageFileTypes: string[] =
@@ -2332,11 +2336,12 @@ export const ComposeboxEmbedderMixin =
                   this.i18n('composeboxFileUploadInvalidEmptySize');
               break;
             case ProcessFilesError.FILE_TOO_LARGE:
+            case ProcessFilesError.IMAGE_TOO_LARGE:
               metric = ComposeboxFileValidationError.FILE_SIZE_TOO_LARGE;
-              const unitMiB = 1024 * 1024;
               this.errorMessage = this.i18n(
                   'composeboxFileUploadInvalidTooLarge',
-                  Math.floor(this.maxFileSize / unitMiB));
+                  this.getMaxFileSizeMiB_(
+                      error === ProcessFilesError.IMAGE_TOO_LARGE));
               break;
             case ProcessFilesError.INVALID_TYPE:
               this.errorMessage = this.i18n('composeFileTypesAllowedError');
@@ -2925,6 +2930,40 @@ export const ComposeboxEmbedderMixin =
           }
         }
 
+        private getMaxFileSizeMiB_(useImageLimit: boolean): number {
+          const unitMiB = 1024 * 1024;
+          const maxBytes = useImageLimit ?
+              Math.min(this.maxFileSize, this.maxImageFileSize) :
+              this.maxFileSize;
+          return Math.floor(maxBytes / unitMiB);
+        }
+
+        shouldUseImageFileSizeLimit(
+            inputType: InputType, fileType: string): boolean {
+          if (this.maxImageFileSize <= 0) {
+            return false;
+          }
+          const isHeif = isHeifImage({type: fileType});
+          const isImage = inputType === InputType.kLensImage ||
+              fileType.toLowerCase().startsWith('image/');
+          return this.limitAllImages ? isImage : isHeif;
+        }
+
+        getProcessFilesErrorForUploadError(
+            errorType: ContextUploadErrorType,
+            file: {name: string, type: string}): ProcessFilesError {
+          const processFilesError =
+              mapUploadErrorToProcessFilesError(errorType);
+          if (processFilesError === ProcessFilesError.FILE_TOO_LARGE) {
+            const mimeType = getFileMimeType(file);
+            if (this.shouldUseImageFileSizeLimit(
+                    this.getInputType(mimeType), mimeType)) {
+              return ProcessFilesError.IMAGE_TOO_LARGE;
+            }
+          }
+          return processFilesError;
+        }
+
         // LINT.IfChange(getValidationError)
         getValidationError(
             inputType: InputType, fileType: string, fileSize: number,
@@ -2940,9 +2979,17 @@ export const ComposeboxEmbedderMixin =
             }
           }
 
-          if (fileSize === 0 || fileSize > this.maxFileSize) {
-            return fileSize === 0 ? ProcessFilesError.FILE_EMPTY :
-                                    ProcessFilesError.FILE_TOO_LARGE;
+          if (fileSize === 0) {
+            return ProcessFilesError.FILE_EMPTY;
+          }
+          const useImageLimit =
+              this.shouldUseImageFileSizeLimit(inputType, fileType);
+          const maxFileSize = useImageLimit ?
+              Math.min(this.maxFileSize, this.maxImageFileSize) :
+              this.maxFileSize;
+          if (fileSize > maxFileSize) {
+            return useImageLimit ? ProcessFilesError.IMAGE_TOO_LARGE :
+                                   ProcessFilesError.FILE_TOO_LARGE;
           }
 
           if (!this.isFileAllowed(fileType)) {
@@ -3039,8 +3086,8 @@ export const ComposeboxEmbedderMixin =
         }
 
         getErrorMessageForUploadStatus(
-            status: ContextUploadStatus,
-            errorType: ContextUploadErrorType|null): string|null {
+            status: ContextUploadStatus, errorType: ContextUploadErrorType|null,
+            file?: ComposeboxFile|null): string|null {
           if (!isContextUploadStatusTerminal(status) ||
               status === ContextUploadStatus.kUploadSuccessful ||
               status === ContextUploadStatus.kUploadReplaced) {
@@ -3052,6 +3099,15 @@ export const ComposeboxEmbedderMixin =
                                     FILE_VALIDATION_ERRORS_MAP.get(errorType) :
                                     undefined) ??
                   'composeboxFileUploadValidationFailed';
+              if (errorKey === 'composeboxFileUploadInvalidTooLarge') {
+                const mimeType = file ? getFileMimeType(file) : '';
+                const inputType =
+                    file ? file.inputType : this.getInputType(mimeType);
+                const useImageLimit = !!file &&
+                    this.shouldUseImageFileSizeLimit(inputType, mimeType);
+                return this.i18n(
+                    errorKey, this.getMaxFileSizeMiB_(useImageLimit));
+              }
               return this.i18n(errorKey);
             }
             case ContextUploadStatus.kUploadFailed:
@@ -3071,7 +3127,7 @@ export const ComposeboxEmbedderMixin =
           let file = this.attachedContext.get(token) ?? null;
           if (file) {
             errorMessage =
-                this.getErrorMessageForUploadStatus(status, errorType);
+                this.getErrorMessageForUploadStatus(status, errorType, file);
             if (isContextUploadStatusTerminal(status) &&
                 status !== ContextUploadStatus.kUploadSuccessful) {
               if (file.objectUrl && file.objectUrl.startsWith('blob:')) {
@@ -3499,6 +3555,8 @@ export interface ComposeboxEmbedderMixinInterface extends I18nMixinLitInterface,
   composeboxSource: string;
   maxFileCount: number;
   maxFileSize: number;
+  maxImageFileSize: number;
+  limitAllImages: boolean;
   recentTabId: number|null;
   attachmentFileTypes: string[];
   imageFileTypes: string[];
@@ -3688,6 +3746,11 @@ export interface ComposeboxEmbedderMixinInterface extends I18nMixinLitInterface,
   clearAllInputs(
       querySubmitted: boolean, shouldBlockAutoSuggestedTabs: boolean): void;
   handleProcessFilesError(error: ProcessFilesError): void;
+  shouldUseImageFileSizeLimit(inputType: InputType, fileType: string): boolean;
+  getProcessFilesErrorForUploadError(errorType: ContextUploadErrorType, file: {
+    name: string,
+    type: string,
+  }): ProcessFilesError;
   getValidationError(
       inputType: InputType, fileType: string, fileSize: number,
       totalCount: number, currentTypeCount: number): ProcessFilesError;

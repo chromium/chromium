@@ -4,6 +4,9 @@
 
 #include "components/omnibox/common/composebox_features.h"
 
+#include <algorithm>
+
+#include "base/strings/string_util.h"
 #include "build/build_config.h"
 
 namespace omnibox {
@@ -42,6 +45,17 @@ BASE_FEATURE(kComposeboxUnselectMatchOnTabExit,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kComposeboxPersonalizedHintText,
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kComposeboxImageFileSizeLimit, base::FEATURE_ENABLED_BY_DEFAULT);
+
+const base::FeatureParam<int> kComposeboxImageMaxSizeBytes(
+    &kComposeboxImageFileSizeLimit,
+    "max_image_size_bytes",
+    20 * 1024 * 1024);
+
+const base::FeatureParam<bool> kComposeboxLimitAllImages(
+    &kComposeboxImageFileSizeLimit,
+    "limit_all_images",
+    true);
 const base::FeatureParam<bool> kKeepMenuOpenOnTabSelectForRealbox(
     &kContextManagementInComposebox,
     "KeepMenuOpenOnTabSelectForRealboxComposebox",
@@ -117,6 +131,34 @@ bool IsSingleTabMenuItemInComposeboxEnabled() {
 bool IsTabStateUnificationInComposeboxEnabled() {
   return base::FeatureList::IsEnabled(kContextManagementInComposebox) &&
          kContextManagementInComposeboxTabStateUnification.Get();
+}
+
+bool IsComposeboxHeifMimeType(std::string_view mime_type) {
+  return base::EqualsCaseInsensitiveASCII(mime_type, "image/heic") ||
+         base::EqualsCaseInsensitiveASCII(mime_type, "image/heif");
+}
+
+bool ShouldUseComposeboxImageFileSizeLimit(std::string_view mime_type,
+                                           bool is_image) {
+  if (!base::FeatureList::IsEnabled(kComposeboxImageFileSizeLimit) ||
+      kComposeboxImageMaxSizeBytes.Get() <= 0) {
+    return false;
+  }
+  if (kComposeboxLimitAllImages.Get()) {
+    return is_image || base::StartsWith(mime_type, "image/",
+                                        base::CompareCase::INSENSITIVE_ASCII);
+  }
+  return IsComposeboxHeifMimeType(mime_type);
+}
+
+uint64_t GetComposeboxMaxFileSizeBytes(std::string_view mime_type,
+                                       bool is_image,
+                                       uint64_t max_attachment_size) {
+  if (!ShouldUseComposeboxImageFileSizeLimit(mime_type, is_image)) {
+    return max_attachment_size;
+  }
+  return std::min(max_attachment_size,
+                  static_cast<uint64_t>(kComposeboxImageMaxSizeBytes.Get()));
 }
 
 }  // namespace omnibox

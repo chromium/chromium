@@ -254,6 +254,7 @@ source_set("omnibox_popup_file_selector_browsertest") {
     "//chrome/browser/ui/webui/searchbox:searchbox_test_utils",
     "//chrome/test:test_support",
     "//components/omnibox/common",
+    "//components/omnibox/common:features",
     "//content/test:test_support",
     "//testing/gmock",
     "//ui/shell_dialogs:test_support",

@@ -581,6 +581,12 @@ base::DictValue SearchboxHandler::GetProfileIndependentWebUIDataSourceDict(
   dict.Set(
       "composeboxUnselectMatchOnTabExit",
       base::FeatureList::IsEnabled(omnibox::kComposeboxUnselectMatchOnTabExit));
+  dict.Set("composeboxImageMaxSize",
+           base::FeatureList::IsEnabled(omnibox::kComposeboxImageFileSizeLimit)
+               ? omnibox::kComposeboxImageMaxSizeBytes.Get()
+               : 0);
+  dict.Set("composeboxLimitAllImages",
+           omnibox::kComposeboxLimitAllImages.Get());
 
   return dict;
 }

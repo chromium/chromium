@@ -35,6 +35,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/lens/lens_features.h"
+#include "components/omnibox/common/composebox_features.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -446,6 +447,70 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupFileSelectorBrowserTest,
   EXPECT_EQ(file_attachment->error_type.value(),
             contextual_search::ContextUploadErrorType::
                 kBrowserProcessingMaxFilesExceededError);
+}
+
+class OmniboxPopupFileSelectorImageSizeLimitBrowserTest
+    : public OmniboxPopupFileSelectorBrowserTest {
+ public:
+  OmniboxPopupFileSelectorImageSizeLimitBrowserTest() {
+    image_limit_feature_list_.InitAndEnableFeatureWithParameters(
+        omnibox::kComposeboxImageFileSizeLimit,
+        {{"max_image_size_bytes", "5"}, {"limit_all_images", "true"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList image_limit_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(OmniboxPopupFileSelectorImageSizeLimitBrowserTest,
+                       ImageExceedingImageSizeLimitTriggersFileTooLargeError) {
+  auto* omnibox_controller = BrowserWindow::FromBrowser(browser())
+                                 ->GetLocationBar()
+                                 ->GetOmniboxController();
+  MockOmniboxEditModel mock_edit_model(omnibox_controller);
+
+  OmniboxPopupFileSelector file_selector(
+      browser()->GetWindow()->GetNativeWindow());
+
+  auto* web_contents = browser()->GetTabStripModel()->GetActiveWebContents();
+  file_selector.OpenFileUploadDialog(web_contents,
+                                     /*is_image=*/true, &mock_edit_model,
+                                     std::nullopt,
+                                     /*was_ai_mode_open=*/true);
+
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath heic_file_path =
+      temp_dir.GetPath().AppendASCII("oversized.heic");
+  ASSERT_TRUE(base::WriteFile(heic_file_path, "0123456789"));
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_edit_model,
+              OpenAiMode(OmniboxEditModel::AimActivation::kContextMenu))
+      .WillOnce([&run_loop]() { run_loop.Quit(); });
+
+  file_selector.FileSelected(
+      ui::SelectedFileInfo(heic_file_path, heic_file_path), 0);
+
+  run_loop.Run();
+
+  SearchboxContextData* searchbox_context_data =
+      SearchboxContextData::From(browser());
+  ASSERT_TRUE(searchbox_context_data);
+
+  auto context = searchbox_context_data->TakePendingContext();
+  ASSERT_TRUE(context);
+  ASSERT_EQ(context->file_infos.size(), 1u);
+
+  const auto& file_attachment = context->file_infos[0]->get_file_attachment();
+  EXPECT_EQ(file_attachment->name, "oversized.heic");
+  EXPECT_THAT(file_attachment->mime_type,
+              testing::AnyOf("image/heic", "image/heif"));
+  ASSERT_TRUE(file_attachment->error_type.has_value());
+  EXPECT_EQ(file_attachment->error_type.value(),
+            contextual_search::ContextUploadErrorType::
+                kBrowserProcessingFileTooLargeError);
 }
 
 class OmniboxPopupFileSelectorAimBrowserTest : public InProcessBrowserTest {

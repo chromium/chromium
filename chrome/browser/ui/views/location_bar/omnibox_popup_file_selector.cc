@@ -11,6 +11,7 @@
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/unguessable_token.h"
@@ -41,6 +42,7 @@
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_mime_type.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
+#include "components/omnibox/common/composebox_features.h"
 #include "components/omnibox/common/input_state.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/omnibox/common/omnibox_metrics_utils.h"
@@ -192,10 +194,15 @@ std::string GetMimeTypeForFile(const base::FilePath& path, bool is_image) {
 }
 
 std::unique_ptr<FileData> ReadFileData(const base::FilePath& path,
-                                       bool is_image,
-                                       size_t max_file_size) {
+                                       size_t max_attachment_size,
+                                       bool is_image) {
   auto file_data = std::make_unique<FileData>();
   file_data->path = path;
+  file_data->mime_type = GetMimeTypeForFile(path, is_image);
+  // Decide by MIME type, not `is_image`. The image picker allows all files,
+  // and `AddFileContextFromBrowser()` also uses the MIME type.
+  const uint64_t max_file_size = omnibox::GetComposeboxMaxFileSizeBytes(
+      file_data->mime_type, /*is_image=*/false, max_attachment_size);
 
   std::optional<int64_t> file_size = base::GetFileSize(path);
   if (file_size.has_value()) {
@@ -217,19 +224,7 @@ std::unique_ptr<FileData> ReadFileData(const base::FilePath& path,
     return file_data;
   }
 
-  file_data->mime_type = GetMimeTypeForFile(path, is_image);
   return file_data;
-}
-
-bool IsImageFile(const base::FilePath& path) {
-  return path.MatchesExtension(FILE_PATH_LITERAL(".png")) ||
-         path.MatchesExtension(FILE_PATH_LITERAL(".jpg")) ||
-         path.MatchesExtension(FILE_PATH_LITERAL(".jpeg")) ||
-         path.MatchesExtension(FILE_PATH_LITERAL(".webp")) ||
-         path.MatchesExtension(FILE_PATH_LITERAL(".gif")) ||
-         path.MatchesExtension(FILE_PATH_LITERAL(".bmp")) ||
-         path.MatchesExtension(FILE_PATH_LITERAL(".heic")) ||
-         path.MatchesExtension(FILE_PATH_LITERAL(".heif"));
 }
 
 }  // namespace
@@ -274,29 +269,30 @@ void OmniboxPopupFileSelector::MultiFilesSelected(
       // pushes a direct validation error to SearchboxContextData.
       // The frontend immediately displays the global limit error toast and
       // deletes this dummy context silently, rendering no failed chip.
-      contextual_search::ContextUploadErrorType error_type =
-          contextual_search::ContextUploadErrorType::
-              kBrowserProcessingMaxFilesExceededError;
-      if (is_image_ || IsImageFile(file.path())) {
+      const std::string mime_type = GetMimeTypeForFile(file.path(), is_image_);
+      contextual_search::ContextUploadErrorType error_type = contextual_search::
+          ContextUploadErrorType::kBrowserProcessingMaxFilesExceededError;
+      if (is_image_ || base::StartsWith(mime_type, "image/",
+                                        base::CompareCase::INSENSITIVE_ASCII)) {
         error_type = contextual_search::ContextUploadErrorType::
             kBrowserProcessingMaxImagesExceededError;
-      } else if (file.path().MatchesExtension(FILE_PATH_LITERAL(".pdf"))) {
+      } else if (mime_type == "application/pdf") {
         error_type = contextual_search::ContextUploadErrorType::
             kBrowserProcessingMaxPdfsExceededError;
       }
-      UpdateSearchboxContextData(
-          lens::MimeType::kUnknown, /*image_data_url=*/"",
-          file.path().BaseName().AsUTF8Unsafe(),
-          /*mime_string=*/"application/octet-stream",
-          base::unexpected(error_type));
+      UpdateSearchboxContextData(lens::MimeType::kUnknown,
+                                 /*image_data_url=*/"",
+                                 file.path().BaseName().AsUTF8Unsafe(),
+                                 /*mime_string=*/"application/octet-stream",
+                                 base::unexpected(error_type));
       break;
     }
     valid_files_count++;
     has_posted_tasks = true;
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-        base::BindOnce(&ReadFileData, file.path(), is_image_,
-                       GetMaxAttachmentSizeBytes()),
+        base::BindOnce(&ReadFileData, file.path(), GetMaxAttachmentSizeBytes(),
+                       is_image_),
         base::BindOnce(&OmniboxPopupFileSelector::OnFileDataReady,
                        weak_factory_.GetWeakPtr()));
   }
@@ -330,7 +326,7 @@ void OmniboxPopupFileSelector::OnFileDataReady(
   if (file_data->error.has_value()) {
     UpdateSearchboxContextData(lens::MimeType::kUnknown,
                                /*image_data_url=*/"", file_name,
-                               /*mime_string=*/"application/octet-stream",
+                               file_data->mime_type,
                                base::unexpected(file_data->error.value()));
     OpenAiMode();
     return;

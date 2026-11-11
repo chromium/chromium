@@ -1174,6 +1174,100 @@ TEST_F(ContextualSearchboxHandlerTest, AddFileFromBrowser_FileTooLarge) {
                                 kBrowserProcessingFileTooLargeError);
 }
 
+TEST_F(ContextualSearchboxHandlerTest,
+       AddFileFromBrowser_ImageSizeLimitDefaultLimitsAllImages) {
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndEnableFeatureWithParameters(
+      omnibox::kComposeboxImageFileSizeLimit,
+      {{"max_image_size_bytes", "10"}, {"limit_all_images", "true"}});
+
+  profile()->GetPrefs()->SetInteger(
+      contextual_search::kSearchContentSharingSettings,
+      static_cast<int>(
+          contextual_search::SearchContentSharingSettingsValue::kEnabled));
+
+  scoped_config()
+      .config.mutable_composebox()
+      ->mutable_attachment_upload()
+      ->set_max_size_bytes(100);
+  scoped_config()
+      .config.mutable_composebox()
+      ->mutable_attachment_upload()
+      ->set_mime_types_allowed("application/pdf");
+  scoped_config()
+      .config.mutable_composebox()
+      ->mutable_image_upload()
+      ->set_mime_types_allowed("image/png,image/heic");
+
+  // 15-byte HEIC and PNG exceed the 10-byte image limit.
+  for (const std::string& mime_type : {"image/heic", "image/png"}) {
+    std::vector<uint8_t> test_data(15, 1);
+    base::test::TestFuture<base::expected<
+        base::UnguessableToken, contextual_search::ContextUploadErrorType>>
+        future;
+    handler().AddFileContextFromBrowser("large_image", mime_type,
+                                        mojo_base::BigBuffer(test_data),
+                                        std::nullopt, future.GetCallback());
+    auto result = future.Take();
+    ASSERT_FALSE(result.has_value());
+    EXPECT_EQ(result.error(), contextual_search::ContextUploadErrorType::
+                                  kBrowserProcessingFileTooLargeError);
+  }
+}
+
+TEST_F(ContextualSearchboxHandlerTest,
+       AddFileFromBrowser_ImageSizeLimitFallbackLimitsHeifOnly) {
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndEnableFeatureWithParameters(
+      omnibox::kComposeboxImageFileSizeLimit,
+      {{"max_image_size_bytes", "10"}, {"limit_all_images", "false"}});
+
+  profile()->GetPrefs()->SetInteger(
+      contextual_search::kSearchContentSharingSettings,
+      static_cast<int>(
+          contextual_search::SearchContentSharingSettingsValue::kEnabled));
+
+  scoped_config().config.mutable_composebox()->set_max_num_files(5);
+  scoped_config()
+      .config.mutable_composebox()
+      ->mutable_attachment_upload()
+      ->set_max_size_bytes(100);
+  scoped_config()
+      .config.mutable_composebox()
+      ->mutable_image_upload()
+      ->set_mime_types_allowed("image/png,image/heic");
+
+  // 15-byte HEIC fails when limit_all_images=false.
+  {
+    std::vector<uint8_t> heic_data(15, 1);
+    base::test::TestFuture<base::expected<
+        base::UnguessableToken, contextual_search::ContextUploadErrorType>>
+        future;
+    handler().AddFileContextFromBrowser("photo.heic", "image/heic",
+                                        mojo_base::BigBuffer(heic_data),
+                                        std::nullopt, future.GetCallback());
+    auto result = future.Take();
+    ASSERT_FALSE(result.has_value());
+    EXPECT_EQ(result.error(), contextual_search::ContextUploadErrorType::
+                                  kBrowserProcessingFileTooLargeError);
+  }
+
+  // 15-byte PNG succeeds when limit_all_images=false (under 100-byte attachment
+  // limit).
+  {
+    EXPECT_CALL(query_controller(), StartFileUploadFlow);
+    std::vector<uint8_t> png_data(15, 1);
+    base::test::TestFuture<base::expected<
+        base::UnguessableToken, contextual_search::ContextUploadErrorType>>
+        future;
+    handler().AddFileContextFromBrowser("photo.png", "image/png",
+                                        mojo_base::BigBuffer(png_data),
+                                        std::nullopt, future.GetCallback());
+    auto result = future.Take();
+    EXPECT_TRUE(result.has_value());
+  }
+}
+
 TEST_F(ContextualSearchboxHandlerTest, AddFileFromBrowser_UnsupportedType) {
   base::test::ScopedFeatureList local_feature_list;
   local_feature_list.InitAndDisableFeature(
