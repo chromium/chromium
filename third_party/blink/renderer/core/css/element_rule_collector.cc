@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/core/css/css_keyframes_rule.h"
 #include "third_party/blink/renderer/core/css/css_media_rule.h"
 #include "third_party/blink/renderer/core/css/css_nested_declarations_rule.h"
+#include "third_party/blink/renderer/core/css/css_private_bindings.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/css_rule_list.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
@@ -75,6 +76,12 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
+
+void MatchedRule::Trace(Visitor* visitor) const {
+  visitor->Trace(rule_);
+  visitor->Trace(private_bindings_);
+}
+
 namespace {
 
 struct CumulativeRulePerfKey {
@@ -716,7 +723,10 @@ bool ElementRuleCollector::CollectMatchingRulesForListInternal(
     }
     unsigned layer_order = layer_seeker.SeekLayerOrder(rule_data.GetPosition());
     DidMatchRule(&rule_data, layer_order, container_query_set, result.proximity,
-                 result, style_sheet_index);
+                 result, style_sheet_index,
+                 rule_set->HasCSSPrivateBindings()
+                     ? rule_set->GetCSSPrivateBindings(*rule_data.Rule())
+                     : nullptr);
   }
 
   if (perf_trace_enabled) {
@@ -1283,6 +1293,7 @@ void ElementRuleCollector::SortAndTransferMatchedRules(
       result_.AddMatchedProperties(
           &matched_rule.Rule()->Properties(),
           matched_rule.Rule()->GetMixinParameterBindings(),
+          matched_rule.private_bindings_,
           {.link_match_type = static_cast<uint8_t>(
                AdjustLinkMatchType(inside_link_, matched_rule.LinkMatchType())),
            .valid_property_filter = static_cast<uint8_t>(
@@ -1373,7 +1384,8 @@ void ElementRuleCollector::DidMatchRule(
     const ContainerQuerySet* container_query_set,
     unsigned proximity,
     const SelectorChecker::MatchResult& result,
-    int style_sheet_index) {
+    int style_sheet_index,
+    const CSSPrivateBindings* private_bindings) {
   PseudoId dynamic_pseudo = result.dynamic_pseudo;
   // If we're matching normal rules, set a pseudo bit if we really just
   // matched a pseudo-element.
@@ -1482,7 +1494,8 @@ void ElementRuleCollector::DidMatchRule(
           static_cast<MatchFlags>(MatchFlag::kAffectedByStartingStyle));
     }
     matched_rules_.emplace_back(rule_data, layer_order, proximity,
-                                style_sheet_index, precompute_hover);
+                                style_sheet_index, precompute_hover,
+                                private_bindings);
   }
 }
 

@@ -34,6 +34,7 @@ namespace blink {
 
 class CascadeInterpolations;
 class CascadeResolver;
+class CSSPrivateBindings;
 class CSSMathFunctionValue;
 class CSSParserContext;
 class CSSParserTokenStream;
@@ -817,6 +818,7 @@ class CORE_EXPORT StyleCascade {
   const TreeScope* GetTreeScope(CascadePriority) const;
   const MixinParameterBindings* GetMixinParameterBindings(
       CascadePriority) const;
+  const CSSPrivateBindings* GetCSSPrivateBindings(CascadePriority) const;
   const CSSProperty& ResolveSurrogate(const CSSProperty& surrogate);
 
   void CountUse(WebFeature);
@@ -826,6 +828,7 @@ class CORE_EXPORT StyleCascade {
   MatchResult match_result_;
   CascadeInterpolations interpolations_;
   CascadeMap map_;
+  const CSSPrivateBindings* current_css_private_bindings_ = nullptr;
   // When a declaration is applied to ComputedStyle, the we mark it as
   // already_applied in the CascadeMap. This makes it possible to avoid applying
   // the same declaration twice during a single call to Apply:

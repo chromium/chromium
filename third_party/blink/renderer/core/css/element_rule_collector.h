@@ -42,6 +42,7 @@
 
 namespace blink {
 
+class CSSPrivateBindings;
 class Element;
 class ElementResolveContext;
 class ElementRuleCollector;
@@ -72,7 +73,8 @@ class MatchedRule {
               uint16_t layer_order,
               unsigned proximity,
               unsigned style_sheet_index,
-              bool precompute_hover)
+              bool precompute_hover,
+              const CSSPrivateBindings* private_bindings = nullptr)
       : sort_key_((static_cast<uint64_t>(layer_order) << 48) |
                   (static_cast<uint64_t>(rule_data->Specificity()) << 16) |
                   (65535 - ClampTo<uint16_t>(proximity))),
@@ -80,13 +82,14 @@ class MatchedRule {
                    << kBitsForPositionInRuleData) +
                   rule_data->GetPosition()),
         rule_(rule_data->Rule()),
+        private_bindings_(private_bindings),
         link_match_type_(rule_data->LinkMatchType()),
         precompute_hover_(precompute_hover),
         valid_property_filter_(
             static_cast<unsigned>(rule_data->GetValidPropertyFilter())),
         selector_index_(rule_data->SelectorIndex()) {}
 
-  void Trace(Visitor* visitor) const { visitor->Trace(rule_); }
+  CORE_EXPORT void Trace(Visitor* visitor) const;
 
  private:
   StyleRule* Rule() const { return rule_; }
@@ -115,6 +118,7 @@ class MatchedRule {
   uint64_t position_;
 
   Member<StyleRule> rule_;
+  Member<const CSSPrivateBindings> private_bindings_;
 
   // NOTE: If we need some more spare bits, we can probably move some bits
   // in position_ upwards and use some of the bottom. Right now, though,
@@ -296,7 +300,8 @@ class CORE_EXPORT ElementRuleCollector {
                     const ContainerQuerySet*,
                     unsigned proximity,
                     const SelectorChecker::MatchResult&,
-                    int style_sheet_index);
+                    int style_sheet_index,
+                    const CSSPrivateBindings*);
 
   void AppendCSSOMWrapperForRule(const TreeScope* tree_scope_containing_rule,
                                  const MatchedRule& matched_rule,

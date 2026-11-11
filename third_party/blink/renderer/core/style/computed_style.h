@@ -3713,22 +3713,10 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
   CORE_EXPORT StyleNonInheritedVariables& MutableNonInheritedVariables();
   CORE_EXPORT void SetVariableData(const AtomicString& name,
                                    CSSVariableData* value,
-                                   bool is_inherited_property) {
-    if (is_inherited_property) {
-      MutableInheritedVariables().SetData(name, value);
-    } else {
-      MutableNonInheritedVariables().SetData(name, value);
-    }
-  }
+                                   bool is_inherited_property);
   CORE_EXPORT void SetVariableValue(const AtomicString& name,
                                     const CSSValue* value,
-                                    bool is_inherited_property) {
-    if (is_inherited_property) {
-      MutableInheritedVariables().SetValue(name, value);
-    } else {
-      MutableNonInheritedVariables().SetValue(name, value);
-    }
-  }
+                                    bool is_inherited_property);
 
   EWhiteSpace WhiteSpace() const {
     return ToWhiteSpace(GetWhiteSpaceCollapse(), GetTextWrapMode());

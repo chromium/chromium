@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/core/animation/css/css_transition_data.h"
 #include "third_party/blink/renderer/core/css/css_paint_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
+#include "third_party/blink/renderer/core/css/css_private_bindings.h"
 #include "third_party/blink/renderer/core/css/css_property_equality.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
@@ -2270,6 +2271,7 @@ static bool HasInitialVariables(const StyleInitialData* initial_data) {
 
 bool ComputedStyle::HasVariables() const {
   return !InheritedVariables().IsEmpty() ||
+         !InheritedPrivateVariables().IsEmpty() ||
          !NonInheritedVariables().IsEmpty() ||
          HasInitialVariables(InitialData());
 }
@@ -2342,6 +2344,10 @@ CSSVariableData* GetVariableDataInternal(const T& style_or_builder,
             style_or_builder.InheritedVariablesInternal().GetData(name)) {
       return *data;
     }
+    if (auto data =
+            style_or_builder.InheritedPrivateVariables().GetData(name)) {
+      return *data;
+    }
   }
   if (!inherited_hint.value_or(false)) {
     if (auto data =
@@ -2362,6 +2368,10 @@ const CSSValue* GetVariableValue(
     std::optional<bool> inherited_hint = std::nullopt) {
   if (inherited_hint.value_or(true)) {
     if (auto data = style_or_builder.InheritedVariables().GetValue(name)) {
+      return *data;
+    }
+    if (auto data =
+            style_or_builder.InheritedPrivateVariables().GetValue(name)) {
       return *data;
     }
   }
@@ -3149,9 +3159,14 @@ void ComputedStyleBuilder::PropagateIndependentInheritedProperties(
     const ComputedStyle& parent_style) {
   ComputedStyleBuilderBase::PropagateIndependentInheritedProperties(
       parent_style);
-  if (!HasVariableReference() && !HasVariableDeclaration() &&
-      InheritedVariablesInternal() != parent_style.InheritedVariables()) {
-    SetInheritedVariablesInternal(parent_style.InheritedVariablesInternal());
+  if (!HasVariableReference() && !HasVariableDeclaration()) {
+    if (InheritedVariablesInternal() != parent_style.InheritedVariables()) {
+      SetInheritedVariablesInternal(parent_style.InheritedVariablesInternal());
+    }
+    if (InheritedPrivateVariables() !=
+        parent_style.InheritedPrivateVariables()) {
+      SetInheritedPrivateVariables(parent_style.InheritedPrivateVariables());
+    }
   }
 }
 
@@ -3365,6 +3380,32 @@ CSSVariableData* ComputedStyleBuilder::GetVariableData(
     const AtomicString& name,
     bool is_inherited_property) const {
   return blink::GetVariableDataInternal(*this, name, is_inherited_property);
+}
+
+// TODO(crbug.com/579829752): Add non-inherited private storage and route writes
+// by is_inherited_property when private @property registrations are supported.
+void ComputedStyleBuilder::SetVariableData(const AtomicString& name,
+                                           CSSVariableData* value,
+                                           bool is_inherited_property) {
+  if (CSSPrivateBindings::IsPrivateName(name)) {
+    MutableInheritedPrivateVariablesInternal().SetData(name, value);
+  } else if (is_inherited_property) {
+    MutableInheritedVariables().SetData(name, value);
+  } else {
+    MutableNonInheritedVariables().SetData(name, value);
+  }
+}
+
+void ComputedStyleBuilder::SetVariableValue(const AtomicString& name,
+                                            const CSSValue* value,
+                                            bool is_inherited_property) {
+  if (CSSPrivateBindings::IsPrivateName(name)) {
+    MutableInheritedPrivateVariablesInternal().SetValue(name, value);
+  } else if (is_inherited_property) {
+    MutableInheritedVariables().SetValue(name, value);
+  } else {
+    MutableNonInheritedVariables().SetValue(name, value);
+  }
 }
 
 STATIC_ASSERT_ENUM(cc::OverscrollBehavior::Type::kAuto,

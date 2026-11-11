@@ -34,8 +34,10 @@
 #include <type_traits>
 
 #include "base/numerics/clamped_math.h"
+#include "third_party/blink/renderer/core/css/css_private_bindings.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
+#include "third_party/blink/renderer/platform/wtf/hash_functions.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
 namespace blink {
@@ -43,20 +45,28 @@ namespace blink {
 void MatchedProperties::Trace(Visitor* visitor) const {
   visitor->Trace(properties);
   visitor->Trace(mixin_parameter_bindings);
+  visitor->Trace(css_private_bindings);
 }
 
 void MatchResult::AddMatchedProperties(
     const CSSPropertyValueSet* properties,
     const MixinParameterBindings* mixin_parameter_bindings,
+    const CSSPrivateBindings* css_private_bindings,
     MatchedProperties::Data data) {
   unsigned mixin_parameter_bindings_hash =
       mixin_parameter_bindings ? mixin_parameter_bindings->GetHash() : 0;
+  // Rules with different @private scopes must not share a cache entry.
+  unsigned css_private_bindings_hash =
+      css_private_bindings ? HashPointer(css_private_bindings) : 0;
 
   data.tree_order = current_tree_order_;
   matched_properties_.emplace_back(const_cast<CSSPropertyValueSet*>(properties),
-                                   mixin_parameter_bindings, data);
-  matched_properties_hashes_.emplace_back(
-      properties->GetHash() ^ mixin_parameter_bindings_hash, data);
+                                   mixin_parameter_bindings,
+                                   css_private_bindings, data);
+  matched_properties_hashes_.emplace_back(properties->GetHash() ^
+                                              mixin_parameter_bindings_hash ^
+                                              css_private_bindings_hash,
+                                          data);
 
   if (properties->ModifiedSinceHashing()) {
     // These properties were mutated as some point after original

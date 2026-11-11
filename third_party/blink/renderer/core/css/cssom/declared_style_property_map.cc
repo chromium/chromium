@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/css/cssom/declared_style_property_map.h"
 
+#include "base/check.h"
+#include "third_party/blink/renderer/core/css/css_grouping_rule.h"
 #include "third_party/blink/renderer/core/css/css_private_rule.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/css_style_rule.h"
@@ -176,7 +178,12 @@ void DeclaredStylePropertyMap::NotifyRuleMutation() {
   if (owner_rule_ && owner_rule_->parentStyleSheet()) {
     StyleSheetContents* parent_contents =
         owner_rule_->parentStyleSheet()->Contents();
-    parent_contents->NotifyRuleChanged(GetStyleRule());
+    StyleRule* changed_rule =
+        GetPrivateRule()
+            ? FindClosestParentStyleRuleOrNull(owner_rule_->parentRule())
+            : GetStyleRule();
+    CHECK(changed_rule);
+    parent_contents->NotifyRuleChanged(changed_rule);
   }
 }
 

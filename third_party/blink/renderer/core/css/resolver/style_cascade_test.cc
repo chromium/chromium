@@ -15,16 +15,15 @@
 #include "third_party/blink/renderer/core/css/css_initial_color_value.h"
 #include "third_party/blink/renderer/core/css/css_pending_substitution_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
+#include "third_party/blink/renderer/core/css/css_private_bindings.h"
 #include "third_party/blink/renderer/core/css/css_revert_value.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
-#include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
 #include "third_party/blink/renderer/core/css/document_style_environment_variables.h"
 #include "third_party/blink/renderer/core/css/media_query_evaluator.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_local_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_property_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
-#include "third_party/blink/renderer/core/css/parser/css_variable_parser.h"
 #include "third_party/blink/renderer/core/css/properties/css_property_instances.h"
 #include "third_party/blink/renderer/core/css/properties/css_property_ref.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
@@ -124,6 +123,15 @@ class TestCascade {
     Add(ParseDeclarationBlock(block, mode), options);
   }
 
+  void Add(String block,
+           const CSSPrivateBindings* css_private_bindings,
+           AddOptions options = {}) {
+    CSSParserMode mode = options.origin == CascadeOrigin::kUserAgent
+                             ? kUASheetMode
+                             : kHTMLStandardMode;
+    Add(ParseDeclarationBlock(block, mode), css_private_bindings, options);
+  }
+
   void Add(String block, CascadeOrigin origin) {
     Add(block, {.origin = origin});
   }
@@ -133,14 +141,19 @@ class TestCascade {
   }
 
   void Add(const CSSPropertyValueSet* set, AddOptions options = {}) {
+    Add(set, /*css_private_bindings=*/nullptr, options);
+  }
+
+  void Add(const CSSPropertyValueSet* set,
+           const CSSPrivateBindings* css_private_bindings,
+           AddOptions options = {}) {
     DCHECK_LE(options.origin, CascadeOrigin::kAuthor)
         << "Animations not supported";
     DCHECK_LE(current_origin_, options.origin)
         << "Please add declarations in order";
     EnsureAtLeast(options.origin);
     cascade_.MutableMatchResult().AddMatchedProperties(
-        set,
-        /*mixin_parameter_bindings=*/nullptr,
+        set, /*mixin_parameter_bindings=*/nullptr, css_private_bindings,
         {
             .link_match_type = static_cast<uint8_t>(options.link_match_type),
             .is_inline_style = options.is_inline_style,
@@ -495,6 +508,37 @@ TEST_F(StyleCascadeTest, ApplyCustomProperty) {
 
   EXPECT_EQ("10px", cascade.ComputedValue("--x"));
   EXPECT_EQ("nope", cascade.ComputedValue("--y"));
+}
+
+TEST_F(StyleCascadeTest, CSSPrivateBindingsAcrossOrigins) {
+  ScopedCSSPrivateForTest scoped_feature(true);
+  RuleSet* rule_set = css_test_helpers::CreateRuleSet(
+      GetDocument(), "#target { @private { --x: 10px; } }");
+  base::span<const RuleData> rules = rule_set->IdRules(AtomicString("target"));
+  // The style rule and the rule carrying the @private declarations.
+  ASSERT_EQ(2u, rules.size());
+  const CSSPrivateBindings* bindings =
+      rule_set->GetCSSPrivateBindings(*rules.front().Rule());
+  ASSERT_TRUE(bindings);
+  const CSSPropertyValueSet& declarations =
+      To<StyleRule>(rules.front().Rule()->ChildRules()->front().Get())
+          ->Properties();
+
+  for (CascadeOrigin origin : {CascadeOrigin::kUserAgent, CascadeOrigin::kUser,
+                               CascadeOrigin::kAuthor}) {
+    TestCascade cascade(GetDocument());
+    cascade.Add(&declarations, bindings, {.origin = origin});
+    cascade.Add("width:var(--x)", bindings, {.origin = origin});
+    cascade.Apply();
+    EXPECT_EQ("10px", cascade.ComputedValue("width"));
+    EXPECT_EQ(g_null_atom, cascade.ComputedValue("--x"));
+
+    TestCascade overridden(GetDocument());
+    overridden.Add(&declarations, bindings, {.origin = origin});
+    overridden.Add("--x:20px; width:var(--x)", bindings, {.origin = origin});
+    overridden.Apply();
+    EXPECT_EQ("20px", overridden.ComputedValue("width"));
+  }
 }
 
 TEST_F(StyleCascadeTest, ApplyMultipleTimes) {

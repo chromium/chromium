@@ -589,6 +589,18 @@
       highlight_style_comes_from_originating_element: true,
     },
     {
+      name: "InheritedPrivateVariables",
+      inherited: true,
+      semi_independent_variable: true,
+      field_template: "external",
+      type_name: "StyleInheritedVariables",
+      include_paths: ["third_party/blink/renderer/core/style/style_inherited_variables.h"],
+      default_value: "StyleInheritedVariables()",
+      field_group: "inherited",
+      computed_style_custom_functions: [],
+      highlight_style_comes_from_originating_element: true,
+    },
+    {
       name: "HighlightData",
       inherited: true,
       field_template: "external",

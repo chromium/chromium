@@ -1038,6 +1038,22 @@ void RuleSet::AddChildRules(StyleRule* parent_rule,
   for (StyleRuleBase* rule : rules) {
     if (auto* style_rule = DynamicTo<StyleRule>(rule)) {
       if (style_rule->IsPrivateRule()) {
+        if (parent_rule && apply_mixins_stack.empty()) {
+          // Add the @private declarations as a rule with the parent's
+          // selectors, so they cascade with the parent's other declarations.
+          auto selectors = CSSSelectorList::Copy(parent_rule->FirstSelector());
+          StyleRule* declarations = StyleRule::Create(
+              selectors,
+              const_cast<CSSPropertyValueSet*>(&style_rule->Properties()),
+              parent_rule->GetMixinParameterBindings());
+          AddStyleRule(declarations, parent_rule, medium, mixins,
+                       add_rule_flags, apply_mixins_stack, container_queries,
+                       cascade_layer, style_scope);
+          if (private_scope_) {
+            private_bindings_.Set(declarations,
+                                  private_scope_->ForPrivateDeclarations());
+          }
+        }
         continue;
       }
       AddStyleRule(style_rule, parent_rule, medium, mixins, add_rule_flags,

@@ -422,6 +422,7 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
 
   // The @private names in scope for the given rule, or null if none.
   const CSSPrivateBindings* GetCSSPrivateBindings(const StyleRule&) const;
+  bool HasCSSPrivateBindings() const { return !private_bindings_.empty(); }
 
   base::span<const RuleData> IdRules(const AtomicString& key) const {
     return id_rules_.Find(key);

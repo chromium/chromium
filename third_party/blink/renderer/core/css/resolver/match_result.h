@@ -43,6 +43,7 @@
 
 namespace blink {
 
+class CSSPrivateBindings;
 class CSSPropertyValueSet;
 
 struct CORE_EXPORT MatchedProperties {
@@ -90,15 +91,18 @@ struct CORE_EXPORT MatchedProperties {
 
   MatchedProperties(CSSPropertyValueSet* properties_arg,
                     const MixinParameterBindings* mixin_parameter_bindings_arg,
+                    const CSSPrivateBindings* css_private_bindings_arg,
                     const Data& data_arg)
       : properties(properties_arg),
         mixin_parameter_bindings(mixin_parameter_bindings_arg),
+        css_private_bindings(css_private_bindings_arg),
         data_(data_arg) {}
 
   void Trace(Visitor*) const;
 
   Member<CSSPropertyValueSet> properties;
   Member<const MixinParameterBindings> mixin_parameter_bindings;
+  Member<const CSSPrivateBindings> css_private_bindings;
   Data data_;
 };
 
@@ -108,6 +112,7 @@ static_assert(std::has_unique_object_representations_v<MatchedProperties::Data>,
 struct SameSizeAsMatchedProperties {
   Member<void*> properties;
   Member<void*> mixin_parameter_bindings;
+  Member<void*> css_private_bindings;
   uint8_t data_[8];
 };
 
@@ -144,7 +149,15 @@ class CORE_EXPORT MatchResult {
   void AddMatchedProperties(
       const CSSPropertyValueSet* properties,
       const MixinParameterBindings* mixin_parameter_bindings,
+      const CSSPrivateBindings* css_private_bindings,
       MatchedProperties::Data types);
+  void AddMatchedProperties(
+      const CSSPropertyValueSet* properties,
+      const MixinParameterBindings* mixin_parameter_bindings,
+      MatchedProperties::Data types) {
+    AddMatchedProperties(properties, mixin_parameter_bindings,
+                         /*css_private_bindings=*/nullptr, types);
+  }
   bool HasMatchedProperties() const { return matched_properties_.size(); }
 
   void BeginAddingAuthorRulesForTreeScope(const TreeScope&);

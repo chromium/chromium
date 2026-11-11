@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_pending_substitution_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
+#include "third_party/blink/renderer/core/css/css_private_bindings.h"
 #include "third_party/blink/renderer/core/css/css_syntax_string_parser.h"
 #include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
 #include "third_party/blink/renderer/core/css/css_unset_value.h"
@@ -71,6 +72,7 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
+#include "third_party/blink/renderer/platform/heap/heap_auto_reset.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
@@ -164,6 +166,11 @@ const MixinParameterBindings* MixinParameterBindingsAt(
   const MatchedProperties& properties =
       result.GetMatchedProperties()[rule_index];
   return properties.mixin_parameter_bindings;
+}
+
+const CSSPrivateBindings* CSSPrivateBindingsAt(const MatchResult& result,
+                                               wtf_size_t rule_index) {
+  return result.GetMatchedProperties()[rule_index].css_private_bindings;
 }
 
 PropertyHandle ToPropertyHandle(const CSSProperty& property,
@@ -366,6 +373,7 @@ std::unique_ptr<CSSBitset> StyleCascade::ReleaseImportantSet() {
 
 void StyleCascade::Reset() {
   map_.Reset();
+  current_css_private_bindings_ = nullptr;
   match_result_.Reset();
   interpolations_.Reset();
   has_applied_ = false;
@@ -507,8 +515,17 @@ void StyleCascade::CollectFromMatchResult() {
     }
     ExpandCascade(
         properties, GetDocument(), index++,
-        [this](CascadePriority cascade_priority,
-               const AtomicString& custom_property_name) {
+        [this, &properties](CascadePriority cascade_priority,
+                            const AtomicString& custom_property_name) {
+          if (properties.css_private_bindings) {
+            if (const AtomicString& hygienic_name =
+                    properties.css_private_bindings->Lookup(
+                        custom_property_name);
+                !hygienic_name.IsNull()) {
+              map_.Add(hygienic_name, cascade_priority);
+              return;
+            }
+          }
           map_.Add(custom_property_name, cascade_priority);
         },
         [this](CascadePriority cascade_priority, CSSPropertyID property_id) {
@@ -1022,6 +1039,10 @@ void StyleCascade::LookupAndApplyDeclaration(const CSSProperty& property,
   const TreeScope* tree_scope = GetTreeScope(*priority);
   const MixinParameterBindings* mixin_parameter_bindings =
       GetMixinParameterBindings(*priority);
+  // Make this declaration's in-scope @private variables visible to var() while
+  // resolving.
+  HeapAutoReset<const CSSPrivateBindings> reset_local_bindings(
+      &current_css_private_bindings_, GetCSSPrivateBindings(*priority));
   value = Resolve(property, *value, tree_scope, mixin_parameter_bindings,
                   *priority, origin, resolver);
   DCHECK(IsA<CustomProperty>(property) || !value->IsUnparsedDeclaration());
@@ -1818,6 +1839,17 @@ bool StyleCascade::ResolveVarInto(CSSParserTokenStream& stream,
         return AppendDataWithFallback(argument.value(), stream, tree_scope,
                                       resolver, context, function_context, out);
       }
+    }
+  }
+
+  // An in-scope @private variable shadows a global custom property of the same
+  // name, so check for one first.
+  if ((!function_context || !function_context->function) &&
+      current_css_private_bindings_) {
+    if (const AtomicString& hygienic_name =
+            current_css_private_bindings_->Lookup(var_name);
+        !hygienic_name.IsNull()) {
+      var_name = hygienic_name;
     }
   }
 
@@ -3158,6 +3190,21 @@ const MixinParameterBindings* StyleCascade::GetMixinParameterBindings(
     return MixinParameterBindingsAt(match_result_, priority.GetRuleIndex());
   }
   return nullptr;
+}
+
+const CSSPrivateBindings* StyleCascade::GetCSSPrivateBindings(
+    CascadePriority priority) const {
+  switch (priority.GetOrigin()) {
+    case CascadeOrigin::kUserAgent:
+    case CascadeOrigin::kUser:
+    case CascadeOrigin::kAuthor:
+      return CSSPrivateBindingsAt(match_result_, priority.GetRuleIndex());
+    case CascadeOrigin::kNone:
+    case CascadeOrigin::kAuthorPresentationalHint:
+    case CascadeOrigin::kAnimation:
+    case CascadeOrigin::kTransition:
+      return nullptr;
+  }
 }
 
 const CSSProperty& StyleCascade::ResolveSurrogate(const CSSProperty& property) {

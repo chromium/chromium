@@ -1226,6 +1226,26 @@ TEST_F(ComputedStyleTest, InheritedVariableNames) {
   EXPECT_TRUE(style->GetVariableNames().Contains("--b"));
 }
 
+TEST_F(ComputedStyleTest, PrivateVariablesNotEnumerated) {
+  const AtomicString name = PropertyRegistry::AllocatePrivatePropertyName();
+  CSSVariableData* data = css_test_helpers::CreateVariableData("green");
+  const CSSValue* value = CSSIdentifierValue::Create(CSSValueID::kGreen);
+  ComputedStyleBuilder builder = CreateComputedStyleBuilder();
+  builder.SetVariableData(name, data, /*is_inherited_property=*/true);
+  builder.SetVariableValue(name, value, /*is_inherited_property=*/true);
+  builder.SetVariableData(AtomicString("--public"), data,
+                          /*is_inherited_property=*/true);
+  const ComputedStyle* style = builder.TakeStyle();
+
+  EXPECT_EQ(data, style->GetVariableData(name));
+  EXPECT_EQ(value, style->InheritedPrivateVariables().GetValue(name).value_or(
+                       nullptr));
+  EXPECT_FALSE(style->InheritedVariables().GetData(name).has_value());
+  EXPECT_FALSE(style->InheritedVariables().GetValue(name).has_value());
+  ASSERT_EQ(1u, style->GetVariableNamesCount());
+  EXPECT_EQ(AtomicString("--public"), style->GetVariableNames()[0]);
+}
+
 TEST_F(ComputedStyleTest, NonInheritedVariableNames) {
   using css_test_helpers::CreateVariableData;
 

@@ -52,6 +52,7 @@ class CORE_EXPORT CachedMatchedProperties final
   struct Key {
     UntracedMember<CSSPropertyValueSet> properties;
     UntracedMember<const MixinParameterBindings> mixin_parameter_bindings;
+    UntracedMember<const CSSPrivateBindings> css_private_bindings;
     MatchedProperties::Data data;
   };
   Vector<Key> matched_properties;

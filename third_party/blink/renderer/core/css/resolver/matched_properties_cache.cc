@@ -37,6 +37,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
+#include "third_party/blink/renderer/core/css/css_private_bindings.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/properties/css_property_ref.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
@@ -76,12 +77,12 @@ CachedMatchedProperties::CachedMatchedProperties(
     const MatchedPropertiesVector& properties,
     StyleAdjuster::ElementTypeForCache element_type,
     unsigned clock)
-    : matched_properties(properties,
-                         [](const MatchedProperties& property) {
-                           return Key{property.properties,
-                                      property.mixin_parameter_bindings,
-                                      property.data_};
-                         }),
+    : matched_properties(
+          properties,
+          [](const MatchedProperties& property) {
+            return Key{property.properties, property.mixin_parameter_bindings,
+                       property.css_private_bindings, property.data_};
+          }),
       entries({Entry{style, parent_style, layout_parent_style,
                      originating_element_style, element_type, clock}}) {}
 
@@ -286,6 +287,9 @@ bool CachedMatchedProperties::CorrespondsTo(
                                 cached_it.mixin_parameter_bindings.Get())) {
       return false;
     }
+    if (lookup_it.css_private_bindings != cached_it.css_private_bindings) {
+      return false;
+    }
   }
   return true;
 }
@@ -297,6 +301,7 @@ void CachedMatchedProperties::RefreshKey(
        std::views::zip(lookup_properties, matched_properties)) {
     cached_it.properties = lookup_it.properties;
     cached_it.mixin_parameter_bindings = lookup_it.mixin_parameter_bindings;
+    cached_it.css_private_bindings = lookup_it.css_private_bindings;
   }
 }
 
@@ -439,10 +444,11 @@ void MatchedPropertiesCache::Trace(Visitor* visitor) const {
 
 static inline bool ShouldRemoveMPCEntry(CachedMatchedProperties& value,
                                         const LivenessBroker& info) {
-  for (const auto& [properties, mixin_parameter_bindings, metadata] :
-       value.matched_properties) {
+  for (const auto& [properties, mixin_parameter_bindings, css_private_bindings,
+                    metadata] : value.matched_properties) {
     if (!info.IsHeapObjectAlive(properties) ||
         !info.IsHeapObjectAlive(mixin_parameter_bindings) ||
+        !info.IsHeapObjectAlive(css_private_bindings) ||
         properties->ModifiedSinceHashing()) {
       return true;
     }

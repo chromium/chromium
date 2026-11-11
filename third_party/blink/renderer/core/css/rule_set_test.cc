@@ -95,9 +95,11 @@ TEST(RuleSetTest, CSSPrivateBindingsForNestedRules) {
     }
   )CSS");
   RuleSet& rule_set = sheet.GetRuleSet();
-  ASSERT_EQ(1u, rule_set.IdRules(AtomicString("outer")).size());
+  // #outer and #shadow each have a @private block, which adds a second rule
+  // with the same selector.
+  ASSERT_EQ(2u, rule_set.IdRules(AtomicString("outer")).size());
   ASSERT_EQ(1u, rule_set.IdRules(AtomicString("inherited")).size());
-  ASSERT_EQ(1u, rule_set.IdRules(AtomicString("shadow")).size());
+  ASSERT_EQ(2u, rule_set.IdRules(AtomicString("shadow")).size());
   const RuleData& outer = rule_set.IdRules(AtomicString("outer")).front();
   const RuleData& inherited =
       rule_set.IdRules(AtomicString("inherited")).front();
@@ -118,6 +120,37 @@ TEST(RuleSetTest, CSSPrivateBindingsForNestedRules) {
   EXPECT_EQ(outer_y, PrivateNameFor(rule_set, shadow, "--y"));
 }
 
+TEST(RuleSetTest, CSSPrivateBindingsForPrivateDeclarations) {
+  test::TaskEnvironment task_environment;
+  ScopedCSSPrivateForTest scoped_feature(true);
+  css_test_helpers::TestStyleSheet sheet;
+
+  sheet.AddCSSRules(R"CSS(
+    #outer {
+      @private {
+        --x: outer;
+      }
+      #nested {
+        @private {
+          --y: var(--x);
+        }
+      }
+    }
+  )CSS");
+  RuleSet& rule_set = sheet.GetRuleSet();
+  base::span<const RuleData> nested = rule_set.IdRules(AtomicString("nested"));
+  ASSERT_EQ(2u, nested.size());
+  const RuleData& style_rule = nested[0];
+  const RuleData& declarations = nested[1];
+
+  EXPECT_FALSE(PrivateNameFor(rule_set, style_rule, "--x").IsNull());
+  EXPECT_FALSE(PrivateNameFor(rule_set, style_rule, "--y").IsNull());
+  // Private declarations only see the names declared for their own style rule.
+  EXPECT_TRUE(PrivateNameFor(rule_set, declarations, "--x").IsNull());
+  EXPECT_EQ(PrivateNameFor(rule_set, style_rule, "--y"),
+            PrivateNameFor(rule_set, declarations, "--y"));
+}
+
 TEST(RuleSetTest, CSSPrivateBindingsShareNameInSameScope) {
   test::TaskEnvironment task_environment;
   ScopedCSSPrivateForTest scoped_feature(true);
@@ -135,7 +168,9 @@ TEST(RuleSetTest, CSSPrivateBindingsShareNameInSameScope) {
   )CSS");
   RuleSet& rule_set = sheet.GetRuleSet();
   base::span<const RuleData> rules = rule_set.IdRules(AtomicString("target"));
-  ASSERT_EQ(1u, rules.size());
+  // The style rule, plus one rule for each of the two @private blocks. Those
+  // rules have the parent's selectors and carry the @private declarations.
+  ASSERT_EQ(3u, rules.size());
 
   // Both @private blocks declare the same private property.
   const StyleRule* rule = rules.front().Rule();
@@ -174,7 +209,7 @@ TEST(RuleSetTest, CSSPrivateBindingsInsideGroupRule) {
     }
   )CSS");
   RuleSet& rule_set = sheet.GetRuleSet();
-  ASSERT_EQ(1u, rule_set.IdRules(AtomicString("outer")).size());
+  ASSERT_EQ(2u, rule_set.IdRules(AtomicString("outer")).size());
   ASSERT_EQ(1u, rule_set.IdRules(AtomicString("nested")).size());
   ASSERT_EQ(1u, rule_set.IdRules(AtomicString("sibling")).size());
   const RuleData& outer = rule_set.IdRules(AtomicString("outer")).front();
