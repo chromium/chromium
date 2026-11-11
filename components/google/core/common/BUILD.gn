@@ -4,7 +4,6 @@
 
 static_library("common") {
   sources = [
-    "google_switches.cc",
     "google_switches.h",
     "google_tld_list.h",
     "google_util.cc",

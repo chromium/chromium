@@ -7,11 +7,20 @@
 
 namespace switches {
 
-// All switches in alphabetical order. The switches should be documented
-// alongside the definition of their values in the .cc file.
-extern const char kGoogleBaseSuggestionURL[];
-extern const char kGoogleBaseURL[];
-extern const char kIgnoreGooglePortNumbers[];
+// All switches in alphabetical order.
+
+// Specifies an alternate suggestion URL to use for speaking to Google. Useful
+// for testing.
+inline constexpr char kGoogleBaseSuggestionURL[] = "google-base-suggestion-url";
+
+// Specifies an alternate URL to use for speaking to Google. Useful for testing.
+inline constexpr char kGoogleBaseURL[] = "google-base-url";
+
+// When set, this will ignore the PortPermission passed in the google_util.h
+// methods and ignore the port numbers. This makes it easier to run tests for
+// features that use these methods (directly or indirectly) with the
+// EmbeddedTestServer, which is more representative of production.
+inline constexpr char kIgnoreGooglePortNumbers[] = "ignore-google-port-numbers";
 
 }  // namespace switches
 
