@@ -14,7 +14,13 @@ namespace password_manager::features {
 #if !BUILDFLAG(IS_ANDROID)
 // Enables sharing credentials with Gemini (`RemoteActorType::kGemini`) by
 // uploading them to Passbox and granting the actor permission to use them.
-BASE_FEATURE(kRemoteActorCredentialSharing, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kRemoteActorCredentialSharing,
+#if BUILDFLAG(IS_IOS)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
 
 // Enables sharing credentials with Search Agent (`RemoteActorType::kSearch`)
 // by uploading them to Passbox and granting the actor permission to use them.

@@ -17012,11 +17012,7 @@
     "RemoteActorCredentialSharing": [
         {
             "platforms": [
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
+                "ios"
             ],
             "experiments": [
                 {
