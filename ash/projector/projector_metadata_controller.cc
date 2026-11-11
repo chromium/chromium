@@ -4,17 +4,21 @@
 
 #include "ash/projector/projector_metadata_controller.h"
 
+#include <string>
+
 #include "ash/projector/projector_metadata_model.h"
 #include "ash/projector/projector_metrics.h"
 #include "ash/projector/projector_ui_controller.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/i18n/chinese_helpers.h"
+#include "base/i18n/icubridge/default_icu_locale.h"
+#include "base/i18n/language_tag.h"
 #include "base/logging.h"
 #include "base/task/current_thread.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "third_party/icu/source/common/unicode/locid.h"
 
 namespace ash {
 namespace {
@@ -34,12 +38,14 @@ bool SaveFile(const std::string& content, const base::FilePath& path) {
   return base::WriteFile(path, content);
 }
 
-const std::string GetFormattedLangauge(const icu::Locale& locale) {
-  const std::string language = locale.getLanguage();
-  if (language == "zh") {
-    return "zh_TW";
+// Returns the caption language for `locale`: Chinese is always zh-TW, and
+// other languages only keep their language subtag.
+base::i18n::LanguageTag GetFormattedLangauge(
+    const base::i18n::LanguageTag& locale) {
+  if (base::i18n::IsChinese(locale)) {
+    return base::i18n::GetKnownLanguageTag("zh-TW");
   }
-  return language;
+  return locale.WithLanguageSubtagOnly();
 }
 
 }  // namespace
@@ -50,8 +56,11 @@ ProjectorMetadataController::~ProjectorMetadataController() = default;
 
 void ProjectorMetadataController::OnRecordingStarted() {
   metadata_ = std::make_unique<ProjectorMetadata>();
+  // The metadata stores the caption language in the legacy ICU format, e.g.
+  // "zh_TW".
   metadata_->SetCaptionLanguage(
-      GetFormattedLangauge(icu::Locale::getDefault()));
+      GetFormattedLangauge(base::i18n::GetDefaultIcuLocale())
+          .ToLegacyICUFormat());
   metadata_->SetMetadataVersionNumber(MetadataVersionNumber::kV2);
 }
 

@@ -296,11 +296,8 @@ void GooglePhotosFetcher<T>::OnTokenReceived(
                                       "application/json");
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kAuthorization,
                                       "Bearer " + token_info.token);
-  auto language_tag = ash::GetLanguageTag();
-  if (!language_tag.empty()) {
-    resource_request->headers.SetHeader(
-        net::HttpRequestHeaders::kAcceptLanguage, language_tag);
-  }
+  resource_request->headers.SetHeader(net::HttpRequestHeaders::kAcceptLanguage,
+                                      ash::GetLanguageTag().tag_string());
 
   auto loader = network::SimpleURLLoader::Create(std::move(resource_request),
                                                  traffic_annotation_);

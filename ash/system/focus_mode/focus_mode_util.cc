@@ -16,6 +16,8 @@
 #include "ash/system/model/clock_model.h"
 #include "ash/system/model/system_tray_model.h"
 #include "base/check_op.h"
+#include "base/i18n/icu4c_tag_converter.h"
+#include "base/i18n/icubridge/default_icu_locale.h"
 #include "base/i18n/time_formatting.h"
 #include "base/i18n/unicodestring.h"
 #include "base/metrics/histogram_functions.h"
@@ -71,7 +73,8 @@ std::u16string GetDurationString(base::TimeDelta duration_to_format,
           : 0;
 
   icu::MeasureFormat measure_format(
-      icu::Locale::getDefault(),
+      base::i18n::IcuLocaleConverter::GetInstance().FromLanguageTag(
+          base::i18n::GetDefaultIcuLocale()),
       digital_format ? UMeasureFormatWidth::UMEASFMT_WIDTH_NUMERIC
                      : UMeasureFormatWidth::UMEASFMT_WIDTH_SHORT,
       status);

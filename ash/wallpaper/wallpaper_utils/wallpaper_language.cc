@@ -4,23 +4,14 @@
 
 #include "ash/wallpaper/wallpaper_utils/wallpaper_language.h"
 
-#include <string>
-
-#include "base/check.h"
-#include "third_party/icu/source/common/unicode/locid.h"
-#include "third_party/icu/source/common/unicode/utypes.h"
+#include "base/i18n/icubridge/default_icu_locale.h"
+#include "base/i18n/language_tag.h"
 
 namespace ash {
 
-// Returns a language tag for the device's locale. If there is a failure while
-// obtaining the language tag, an empty string is returned.
-std::string GetLanguageTag() {
-  auto locale = icu::Locale::getDefault();
-  DCHECK(locale.getLanguage());
-
-  UErrorCode status = U_ZERO_ERROR;
-  auto language_tag = locale.toLanguageTag<std::string>(status);
-  return U_SUCCESS(status) ? language_tag : "";
+// Returns a language tag for the device's locale.
+base::i18n::LanguageTag GetLanguageTag() {
+  return base::i18n::GetDefaultIcuLocale();
 }
 
 }  // namespace ash

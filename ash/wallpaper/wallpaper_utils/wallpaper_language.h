@@ -5,14 +5,13 @@
 #ifndef ASH_WALLPAPER_WALLPAPER_UTILS_WALLPAPER_LANGUAGE_H_
 #define ASH_WALLPAPER_WALLPAPER_UTILS_WALLPAPER_LANGUAGE_H_
 
-#include <string>
-
 #include "ash/ash_export.h"
+#include "base/i18n/language_tag.h"
 
 namespace ash {
 
 // Returns the device language tag.
-ASH_EXPORT std::string GetLanguageTag();
+ASH_EXPORT base::i18n::LanguageTag GetLanguageTag();
 
 }  // namespace ash
 

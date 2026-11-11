@@ -4,72 +4,64 @@
 
 #include "ash/wallpaper/wallpaper_utils/wallpaper_language.h"
 
-#include "base/logging.h"
-#include "testing/gmock/include/gmock/gmock.h"
+#include "base/i18n/language_tag.h"
+#include "base/i18n/tag_converters.h"
+#include "base/i18n/test/scoped_icu_locale.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/icu/source/common/unicode/locid.h"
-#include "third_party/icu/source/common/unicode/utypes.h"
 
 namespace ash {
 
 namespace {
 
-void SetIcuLocale(const char* locale_name) {
-  UErrorCode error_code = U_ZERO_ERROR;
-  icu::Locale locale(locale_name);
-  icu::Locale::setDefault(locale, error_code);
-}
+using ::base::i18n::GetKnownLanguageTag;
+using ::base::i18n::GetLanguageTagFromString;
+using ::base::i18n::ScopedDefaultIcuLocale;
 
 }  // namespace
 
 TEST(WallpaperLanguageTest, AustraliaLocale) {
-  SetIcuLocale("en_AU");
+  ScopedDefaultIcuLocale scoped_locale(GetKnownLanguageTag("en-AU"));
 
-  EXPECT_EQ("en-AU", ash::GetLanguageTag());
+  EXPECT_EQ("en-AU", ash::GetLanguageTag().tag_string());
 }
 
 TEST(WallpaperLanguageTest, ChineseLocale) {
-  SetIcuLocale("zh_CN");
+  ScopedDefaultIcuLocale scoped_locale(GetKnownLanguageTag("zh-CN"));
 
-  EXPECT_EQ("zh-CN", ash::GetLanguageTag());
-}
-
-TEST(WallpaperLanguageTest, IllFormedLanguage) {
-  SetIcuLocale("123-123");
-
-  // Language is undefined.
-  EXPECT_EQ("und-123", ash::GetLanguageTag());
+  EXPECT_EQ("zh-CN", ash::GetLanguageTag().tag_string());
 }
 
 TEST(WallpaperLanguageTest, FakeLocale) {
-  SetIcuLocale("en-Zzzz");
+  ScopedDefaultIcuLocale scoped_locale(
+      GetLanguageTagFromString("en-Zzzz").value());
 
-  EXPECT_EQ("en-Zzzz", ash::GetLanguageTag());
+  EXPECT_EQ("en-Zzzz", ash::GetLanguageTag().tag_string());
 }
 
 TEST(WallpaperLanguageTest, OnlyLanguage) {
-  SetIcuLocale("en");
+  ScopedDefaultIcuLocale scoped_locale(GetKnownLanguageTag("en"));
 
-  EXPECT_EQ("en", ash::GetLanguageTag());
+  EXPECT_EQ("en", ash::GetLanguageTag().tag_string());
 }
 
 TEST(WallpaperLanguageTest, NoLocale) {
-  SetIcuLocale("");
+  ScopedDefaultIcuLocale scoped_locale(GetKnownLanguageTag("und"));
 
   // Language is undefined.
-  EXPECT_EQ("und", ash::GetLanguageTag());
+  EXPECT_EQ("und", ash::GetLanguageTag().tag_string());
 }
 
 TEST(WallpaperLanguageTest, FakeLanguage) {
-  SetIcuLocale("zr");
+  ScopedDefaultIcuLocale scoped_locale(GetLanguageTagFromString("zr").value());
 
-  EXPECT_EQ("zr", ash::GetLanguageTag());
+  EXPECT_EQ("zr", ash::GetLanguageTag().tag_string());
 }
 
 TEST(WallpaperLanguageTest, FakeLanguageFakeLocale) {
-  SetIcuLocale("zr-ZZ");
+  ScopedDefaultIcuLocale scoped_locale(
+      GetLanguageTagFromString("zr-ZZ").value());
 
-  EXPECT_EQ("zr-ZZ", ash::GetLanguageTag());
+  EXPECT_EQ("zr-ZZ", ash::GetLanguageTag().tag_string());
 }
 
 }  // namespace ash

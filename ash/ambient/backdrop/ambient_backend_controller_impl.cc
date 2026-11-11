@@ -114,11 +114,8 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
   resource_request->load_flags =
       net::LOAD_BYPASS_CACHE | net::LOAD_DISABLE_CACHE;
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
-  auto language_tag = ash::GetLanguageTag();
-  if (!language_tag.empty()) {
-    resource_request->headers.SetHeader(
-        net::HttpRequestHeaders::kAcceptLanguage, language_tag);
-  }
+  resource_request->headers.SetHeader(net::HttpRequestHeaders::kAcceptLanguage,
+                                      ash::GetLanguageTag().tag_string());
 
   for (const auto& header : request.headers) {
     std::string encoded_value;
