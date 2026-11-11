@@ -7,7 +7,6 @@
 
 #include <optional>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -24,8 +23,6 @@ class WebContents;
 }  // namespace content
 
 namespace glic {
-
-class GlicKeyedService;
 
 class ShakeTriggerClient {
  public:
@@ -59,7 +56,6 @@ class ShakeTrigger {
 
   base::WeakPtr<content::WebContents> web_contents_;
   const raw_ref<ShakeTriggerClient> client_;
-  raw_ptr<GlicKeyedService> glic_keyed_service_;
 
   std::optional<gfx::PointF> last_shake_point_;
   std::optional<gfx::Vector2dF> last_shake_dir_;

@@ -4,15 +4,12 @@
 
 #include "chrome/browser/glic/selection/shake_trigger.h"
 
-#include <utility>
-
 #include "base/feature_list.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/features.h"
-#include "chrome/browser/glic/public/glic_invoke_options.h"
-#include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/selection/selection_overlay_invocation_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/glic_enums.mojom-shared.h"
+#include "chrome/browser/selection/metrics_logger.h"
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
@@ -36,10 +33,7 @@ constexpr base::TimeDelta kShakeTimeout = base::Milliseconds(1000);
 
 ShakeTrigger::ShakeTrigger(content::WebContents* web_contents,
                            ShakeTriggerClient& client)
-    : web_contents_(web_contents->GetWeakPtr()),
-      client_(client),
-      glic_keyed_service_(GlicKeyedService::Get(
-          Profile::FromBrowserContext(web_contents->GetBrowserContext()))) {}
+    : web_contents_(web_contents->GetWeakPtr()), client_(client) {}
 
 ShakeTrigger::~ShakeTrigger() = default;
 
@@ -95,19 +89,13 @@ void ShakeTrigger::TriggerRegionCapture() {
   if (!client_->IsTextSelectionSharingEnabled() || !IsEnabled()) {
     return;
   }
-  if (!glic_keyed_service_) {
-    return;
-  }
   auto* tab_interface =
       tabs::TabInterface::MaybeGetFromContents(web_contents_.get());
   if (!tab_interface) {
     return;
   }
-  GlicInvokeOptions options(
-      Target(*tab_interface),
-      glic::mojom::InvocationSource::kCaptureRegionHotkey);
-  options.wait_for_panel_open = true;
-  glic_keyed_service_->Invoke(std::move(options));
+  InvokeSelectionOverlay(*tab_interface,
+                         ::selection::EntryPoint::kCursorWiggle);
 }
 
 void ShakeTrigger::ProcessMouseMove(const blink::WebMouseEvent& mouse_event) {

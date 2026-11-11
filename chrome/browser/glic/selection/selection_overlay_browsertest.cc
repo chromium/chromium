@@ -72,6 +72,7 @@
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/hit_test_region_observer.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/generic_pending_associated_receiver.h"
@@ -88,6 +89,7 @@
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/unowned_user_data/user_data_factory.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/widget/any_widget_observer.h"
@@ -2788,6 +2790,116 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "Glic.Invoke.InvocationSource",
       mojom::InvocationSource::kCaptureRegionHotkey, 1);
+  EXPECT_TRUE(GlicSidePanelCoordinator::IsShowing(tab));
+}
+
+class SelectionOverlayShakeTriggerBrowserTest
+    : public SelectionOverlayPromptBrowserTest {
+ public:
+  SelectionOverlayShakeTriggerBrowserTest() {
+    shake_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kGlicShakeTrigger, {{"only_on_side_panel", "false"}}}}, {});
+  }
+  ~SelectionOverlayShakeTriggerBrowserTest() override = default;
+
+  void SetUpOnMainThread() override {
+    SelectionOverlayPromptBrowserTest::SetUpOnMainThread();
+    GetProfile()->GetPrefs()->SetBoolean(prefs::kGlicShakeTriggerEnabled, true);
+  }
+
+ protected:
+  void SimulateCursorWiggle(content::WebContents* web_contents) {
+    content::WaitForHitTestData(web_contents->GetPrimaryMainFrame());
+    for (int i = 0; i < 6; ++i) {
+      content::SimulateMouseEvent(web_contents,
+                                  blink::WebInputEvent::Type::kMouseMove,
+                                  gfx::Point(i % 2 == 0 ? 10 : 50, 10));
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList shake_feature_list_;
+};
+
+// Wiggling the cursor when the side panel is closed opens the selection overlay
+// directly without opening the Glic side panel.
+IN_PROC_BROWSER_TEST_F(SelectionOverlayShakeTriggerBrowserTest,
+                       ShakeOpensOverlayWithoutSidePanelWhenClosed) {
+  tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
+  content::WebContents* web_contents = tab->GetContents();
+  auto* controller =
+      SelectionOverlayController::FromTabWebContents(web_contents);
+  ASSERT_TRUE(controller);
+  ASSERT_FALSE(GlicSidePanelCoordinator::IsShowing(tab));
+  ASSERT_FALSE(coordinator().IsAnyPanelShowing());
+
+  base::HistogramTester histogram_tester;
+  SimulateCursorWiggle(web_contents);
+
+  ASSERT_OK(RunUntilEqual([controller]() { return controller->state(); },
+                          SelectionOverlayController::State::kOverlay,
+                          "Timeout waiting for overlay to reach kOverlay"));
+  EXPECT_EQ(controller->GetSelectedRegionCount(), 0u);
+  EXPECT_FALSE(GlicSidePanelCoordinator::IsShowing(tab));
+  EXPECT_FALSE(coordinator().IsAnyPanelShowing());
+  histogram_tester.ExpectUniqueSample("SmartSelection.Invocation.ByEntryPoint",
+                                      ::selection::EntryPoint::kCursorWiggle,
+                                      1);
+  histogram_tester.ExpectTotalCount("Glic.Invoke.InvocationSource", 0);
+
+  controller->Close();
+}
+
+// Wiggling the cursor with an active text selection when the side panel is
+// closed pre-selects the text in the overlay without opening the side panel.
+IN_PROC_BROWSER_TEST_F(SelectionOverlayShakeTriggerBrowserTest,
+                       ShakePreselectsTextSelectionWithoutSidePanelWhenClosed) {
+  tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
+  content::WebContents* web_contents = tab->GetContents();
+  auto* controller =
+      SelectionOverlayController::FromTabWebContents(web_contents);
+  ASSERT_TRUE(controller);
+  auto* selection_observer = GlicSelectionObserver::From(tab);
+  ASSERT_TRUE(selection_observer);
+  ASSERT_TRUE(SelectAllAndWaitForBounds(web_contents));
+  ASSERT_TRUE(base::test::RunUntil([selection_observer]() {
+    return selection_observer->GetCurrentSelectionBounds().has_value();
+  }));
+  ASSERT_FALSE(GlicSidePanelCoordinator::IsShowing(tab));
+
+  base::HistogramTester histogram_tester;
+  SimulateCursorWiggle(web_contents);
+
+  ASSERT_OK(RunUntilEqual([controller]() { return controller->state(); },
+                          SelectionOverlayController::State::kOverlay,
+                          "Timeout waiting for overlay to reach kOverlay"));
+  EXPECT_EQ(controller->GetSelectedRegionCount(), 1u);
+  EXPECT_FALSE(GlicSidePanelCoordinator::IsShowing(tab));
+  EXPECT_FALSE(coordinator().IsAnyPanelShowing());
+  histogram_tester.ExpectUniqueSample("SmartSelection.Invocation.ByEntryPoint",
+                                      ::selection::EntryPoint::kCursorWiggle,
+                                      1);
+  histogram_tester.ExpectTotalCount("Glic.Invoke.InvocationSource", 0);
+
+  controller->Close();
+}
+
+// Wiggling the cursor when the side panel is already open hands the capture
+// session to the open side panel.
+IN_PROC_BROWSER_TEST_F(SelectionOverlayShakeTriggerBrowserTest,
+                       ShakeInvokesGlicWhenSidePanelOpen) {
+  tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
+  ASSERT_TRUE(OpenGlicForActiveTab().has_value());
+  ASSERT_TRUE(GlicSidePanelCoordinator::IsShowing(tab));
+
+  base::HistogramTester histogram_tester;
+  SimulateCursorWiggle(tab->GetContents());
+
+  ASSERT_TRUE(base::test::RunUntil([&histogram_tester]() {
+    return histogram_tester.GetBucketCount(
+               "Glic.Invoke.InvocationSource",
+               mojom::InvocationSource::kCaptureRegionHotkey) == 1;
+  }));
   EXPECT_TRUE(GlicSidePanelCoordinator::IsShowing(tab));
 }
 

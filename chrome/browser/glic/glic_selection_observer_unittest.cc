@@ -1445,6 +1445,7 @@ TEST_F(GlicSelectionObserverPromptTest, ShakeInvokesRegionCapture) {
   NavigateAndCommit(GURL("https://example.com/"));
 
   tabs::MockTabInterface mock_tab;
+  EXPECT_CALL(mock_tab, GetContents()).WillRepeatedly(Return(web_contents()));
   tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
                                                        &mock_tab);
 
