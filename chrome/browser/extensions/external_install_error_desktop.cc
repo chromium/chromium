@@ -348,9 +348,7 @@ ExternalInstallErrorDesktop::~ExternalInstallErrorDesktop() {
   BrowserContextDependencyManager::GetInstance()
       ->AssertBrowserContextWasntDestroyed(browser_context_);
 #endif
-  if (global_error_.get()) {
-    error_service_->RemoveUnownedGlobalError(global_error_.get());
-  }
+  RemoveGlobalErrorFromService();
 }
 
 void ExternalInstallErrorDesktop::OnInstallPromptDone(
@@ -402,8 +400,13 @@ void ExternalInstallErrorDesktop::ShowDialog(BrowserWindowInterface* browser) {
   CHECK(install_ui_.get(), base::NotFatalUntil::M161);
   CHECK(prompt_.get(), base::NotFatalUntil::M161);
   CHECK(browser, base::NotFatalUntil::M161);
-  content::WebContents* web_contents = nullptr;
-  web_contents = browser->GetTabStripModel()->GetActiveWebContents();
+
+  // Remove the menu alert immediately so ShowDialog() cannot be invoked a
+  // second time after `prompt_` has been moved into the dialog.
+  RemoveGlobalErrorFromService();
+
+  content::WebContents* web_contents =
+      browser->GetTabStripModel()->GetActiveWebContents();
   manager_->DidChangeInstallAlertVisibility(this, true);
   ExtensionInstallPrompt::GetDefaultShowDialogCallback().Run(
       std::make_unique<ExtensionInstallPromptShowParams>(web_contents),
@@ -478,30 +481,39 @@ void ExternalInstallErrorDesktop::OnDialogReady(
   if (alert_type_ == BUBBLE_ALERT) {
     global_error_ =
         std::make_unique<ExternalInstallBubbleAlert>(this, prompt_.get());
-    error_service_->AddUnownedGlobalError(global_error_.get());
-
-    if (!manager_->has_currently_visible_install_alert()) {
-      // |browser| is nullptr during unit tests, so call
-      // DidChangeInstallAlertVisibility() regardless because we depend on this
-      // in unit tests.
-      manager_->DidChangeInstallAlertVisibility(this, true);
-      BrowserWindowInterface* browser =
-          ProfileBrowserCollection::GetForProfile(
-              Profile::FromBrowserContext(browser_context_))
-              ->FindTabbedBrowser(/*match_original_profiles=*/true);
-      if (browser) {
-        global_error_->ShowBubbleView(browser);
-      }
-    }
   } else {
     CHECK(alert_type_ == MENU_ALERT, base::NotFatalUntil::M161);
     global_error_ = std::make_unique<ExternalInstallMenuAlert>(this);
-    error_service_->AddUnownedGlobalError(global_error_.get());
+  }
+
+  error_service_->AddUnownedGlobalError(global_error_.get());
+  is_global_error_added_ = true;
+
+  if (alert_type_ == BUBBLE_ALERT &&
+      !manager_->has_currently_visible_install_alert()) {
+    // |browser| is nullptr during unit tests, so call
+    // DidChangeInstallAlertVisibility() regardless because we depend on this
+    // in unit tests.
+    manager_->DidChangeInstallAlertVisibility(this, true);
+    BrowserWindowInterface* browser =
+        ProfileBrowserCollection::GetForProfile(
+            Profile::FromBrowserContext(browser_context_))
+            ->FindTabbedBrowser(/*match_original_profiles=*/true);
+    if (browser) {
+      global_error_->ShowBubbleView(browser);
+    }
   }
 }
 
 void ExternalInstallErrorDesktop::RemoveError() {
   manager_->RemoveExternalInstallError(extension_id_);
+}
+
+void ExternalInstallErrorDesktop::RemoveGlobalErrorFromService() {
+  if (is_global_error_added_) {
+    is_global_error_added_ = false;
+    error_service_->RemoveUnownedGlobalError(global_error_.get());
+  }
 }
 
 }  // namespace extensions

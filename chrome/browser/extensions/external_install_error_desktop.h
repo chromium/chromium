@@ -86,6 +86,9 @@ class ExternalInstallErrorDesktop : public ExternalInstallError,
   // Removes the error.
   void RemoveError();
 
+  // Removes `global_error_` from `error_service_` if currently registered.
+  void RemoveGlobalErrorFromService();
+
   // The associated BrowserContext.
   raw_ptr<content::BrowserContext> browser_context_;
 
@@ -106,8 +109,9 @@ class ExternalInstallErrorDesktop : public ExternalInstallError,
   std::unique_ptr<InstallPromptData> prompt_;
 
   // The UI for the given error, which will take the form of either a menu
-  // alert or a bubble alert (depending on the `alert_type_`.
+  // alert or a bubble alert (depending on the `alert_type_`).
   std::unique_ptr<GlobalError> global_error_;
+  bool is_global_error_added_ = false;
 
   // The WebstoreDataFetcher to use in order to populate the error with webstore
   // information of the extension.

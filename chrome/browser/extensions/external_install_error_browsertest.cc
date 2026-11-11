@@ -17,6 +17,9 @@
 #include "chrome/browser/extensions/external_install_manager.h"
 #include "chrome/browser/extensions/external_provider_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/global_error/global_error.h"
+#include "chrome/browser/ui/global_error/global_error_service.h"
+#include "chrome/browser/ui/global_error/global_error_service_factory.h"
 #include "chrome/browser/ui/global_error/global_error_waiter.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
@@ -232,6 +235,32 @@ IN_PROC_BROWSER_TEST_F(ExternalInstallErrorTest,
       "the way (Chromium|Chrome) works.\n\nMy extension 1";
   EXPECT_TRUE(re2::RE2::FullMatch(
       base::UTF16ToUTF8(alert_prompt->GetDialogTitle()), title_regex_pattern));
+}
+
+// Showing the external install dialog moves `prompt_` into the dialog and must
+// immediately unregister the menu alert from GlobalErrorService so ShowDialog()
+// cannot be invoked again.
+IN_PROC_BROWSER_TEST_F(ExternalInstallErrorTest,
+                       MenuAlertRemovedWhenDialogShown) {
+  FeatureSwitch::ScopedOverride feature_override(
+      FeatureSwitch::prompt_for_external_extensions(), true);
+
+  constexpr char kId[] = "ldnnhddmnhbkjipkidpdiheffobcpfmf";
+  InstallExternalExtension(kId, "1.0.0.0", "good.crx");
+
+  GlobalErrorService* error_service =
+      GlobalErrorServiceFactory::GetForProfile(profile());
+  GlobalError* global_error =
+      error_service->GetHighestSeverityGlobalErrorWithAppMenuItem();
+  ASSERT_TRUE(global_error);
+  const int command_id = global_error->MenuItemCommandID();
+
+  global_error->ExecuteMenuItem(GetBrowserWindowInterface());
+
+  EXPECT_EQ(nullptr,
+            error_service->GetGlobalErrorByMenuItemCommandID(command_id));
+  EXPECT_EQ(nullptr,
+            error_service->GetHighestSeverityGlobalErrorWithAppMenuItem());
 }
 
 }  // namespace extensions
