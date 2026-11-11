@@ -225,11 +225,13 @@ void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
   // that handles application/pdf should use the generic OOPIF template,
   // not Chrome's PDF-specific embedder HTML.
   bool is_for_generic_mime_handler = false;
+  const MimeTypesHandler* handler = nullptr;
   if (const auto* extension =
           extensions::ExtensionRegistry::Get(web_contents->GetBrowserContext())
               ->enabled_extensions()
               .GetByID(extension_id)) {
-    if (const MimeTypesHandler* handler = MimeTypesHandler::Get(*extension)) {
+    handler = MimeTypesHandler::Get(*extension);
+    if (handler) {
       is_for_generic_mime_handler = !handler->IsPluginExtension();
     }
   }
@@ -248,7 +250,7 @@ void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
     // Set the payload without creating a MimeHandlerView.
     payload = extensions::CreateTemplateMimeHandlerPage(
         response_url, response_head->mime_type, internal_id,
-        /*use_oopif=*/true);
+        /*use_oopif=*/true, handler);
   } else {
     // The resource is handled by frame-based MimeHandlerView, so let the
     // MimeHandlerView code set the payload.

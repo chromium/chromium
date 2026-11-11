@@ -953,4 +953,14 @@ IN_PROC_BROWSER_TEST_F(GenericMimeHandlerBrowserTest,
   EXPECT_EQ("prompt", content::EvalJs(extension_frame, kQueryGeolocation));
 }
 
+// The page around a generic handler is not expected to take the background
+// color of the built-in PDF viewer, which handles the same MIME type.
+IN_PROC_BROWSER_TEST_F(GenericMimeHandlerBrowserTest,
+                       EmbedderPageHasNoBuiltInPdfBackgroundColor) {
+  ASSERT_TRUE(LoadHandlerAndGetExtensionFrame());
+
+  EXPECT_EQ("", content::EvalJs(GetActiveWebContents(),
+                                "document.body.style.backgroundColor"));
+}
+
 }  // namespace extensions

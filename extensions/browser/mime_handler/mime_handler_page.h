@@ -8,6 +8,7 @@
 #include <string>
 
 class GURL;
+class MimeTypesHandler;
 
 namespace extensions {
 
@@ -20,10 +21,15 @@ namespace extensions {
 // handlers like PDF and generic MIME handlers).  Otherwise uses the legacy
 // GuestView embed template with a background color derived from the plugin info
 // registered for `resource_url`.
+//
+// `handler` belongs to the extension that handles the stream and gives the
+// background color of either template, or is null to use the plugin info
+// registered for `resource_url`.
 std::string CreateTemplateMimeHandlerPage(const GURL& resource_url,
                                           const std::string& mime_type,
                                           const std::string& internal_id,
-                                          bool use_oopif);
+                                          bool use_oopif,
+                                          const MimeTypesHandler* handler);
 
 }  // namespace extensions
 
