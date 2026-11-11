@@ -166,7 +166,9 @@ void Location::setProtocol(v8::Isolate* isolate,
                            const String& protocol,
                            ExceptionState& exception_state) {
   KURL url = GetDocument()->Url();
-  if (!url.SetProtocol(protocol)) {
+  if (!url.SetProtocol(
+          protocol,
+          KURL::SpecialSchemeTransition::kForbidNonSpecialToSpecial)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,
         StrCat({"'", protocol, "' is an invalid protocol."}));

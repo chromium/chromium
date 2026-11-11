@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 34 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 29 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] URL: Setting <a://example.net>.protocol = '' The empty string is not a valid scheme. Setter leaves the URL unchanged.
   assert_equals: expected "a://example.net" but got "file:///A://example.net"
 [FAIL] URL: Setting <a://example.net>.protocol = 'b'
@@ -18,16 +18,6 @@ Found 34 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "a://example.net" but got "file:///A://example.net"
 [FAIL] URL: Setting <a://example.net>.protocol = 'bé' Non-ASCII is rejected
   assert_equals: expected "a://example.net" but got "file:///A://example.net"
-[FAIL] URL: Setting <ssh://me@example.net>.protocol = 'http' Can’t switch from non-special scheme to special
-  assert_equals: expected "ssh://me@example.net" but got "http://me@example.net/"
-[FAIL] URL: Setting <ssh://me@example.net>.protocol = 'https'
-  assert_equals: expected "ssh://me@example.net" but got "https://me@example.net/"
-[FAIL] URL: Setting <ssh://me@example.net>.protocol = 'file'
-  assert_equals: expected "ssh://me@example.net" but got "file://me%40example.net/"
-[FAIL] URL: Setting <ssh://example.net>.protocol = 'file'
-  assert_equals: expected "ssh://example.net" but got "file://example.net/"
-[FAIL] URL: Setting <nonsense:///test>.protocol = 'https'
-  assert_equals: expected "nonsense:///test" but got "https://test/"
 [FAIL] URL: Setting <http://test/>.protocol = 'h\r\ntt	ps' Tab and newline are stripped
   assert_equals: expected "https://test/" but got "http://test/"
 [FAIL] URL: Setting <http://test/>.protocol = 'https\r'

@@ -197,7 +197,18 @@ class PLATFORM_EXPORT KURL {
   bool IsAboutSrcdocUrl() const;  // Is about:srcdoc, ignoring query/ref
                                   // strings..
 
-  bool SetProtocol(const StringView&);
+  // Per https://url.spec.whatwg.org/#scheme-state, a non-special URL cannot
+  // adopt a special scheme and vice versa. KURL::SetProtocol has historically
+  // allowed these transitions; |kForbidNonSpecialToSpecial| aligns the JS
+  // `URL.protocol` / `Location.protocol` setters with the spec while leaving
+  // internal callers unaffected. Gated by
+  // DisallowSpecialSchemeOnNonSpecialUrl.
+  enum class SpecialSchemeTransition {
+    kAllow,
+    kForbidNonSpecialToSpecial,
+  };
+  bool SetProtocol(const StringView&,
+                   SpecialSchemeTransition = SpecialSchemeTransition::kAllow);
   void SetHost(const String&);
 
   void RemovePort();

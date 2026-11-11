@@ -17,7 +17,7 @@ PASS a.href is 'https://www.mydomain.com/path/'
 Set protocol to empty string
 PASS a.href is 'https://www.mydomain.com/path/'
 Set protocol to http on malformed URL
-PASS a.href is 'http:/??bar'
+FAIL a.href should be http:/??bar. Was foo:??bar.
 Set protocol to a URL which points to a local file
 PASS a.href is 'f-oo:path'
 Set protocol to undefined

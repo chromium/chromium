@@ -38,7 +38,8 @@ void UrlUtils::setProtocol(const String& value) {
   if (kurl.IsNull()) {
     return;
   }
-  kurl.SetProtocol(value);
+  kurl.SetProtocol(value,
+                   KURL::SpecialSchemeTransition::kForbidNonSpecialToSpecial);
   SetUrl(kurl);
 }
 

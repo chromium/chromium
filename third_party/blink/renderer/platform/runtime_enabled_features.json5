@@ -2607,6 +2607,10 @@
       status: "stable",
     },
     {
+      name: "DisallowSpecialSchemeOnNonSpecialUrl",
+      status: "stable",
+    },
+    {
       name: "DisconnectWebSocketOnBFCache",
       status: "stable",
     },
