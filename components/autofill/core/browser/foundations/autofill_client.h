@@ -1002,7 +1002,10 @@ class AutofillClient {
   // `entity` and `source_url` are only valid for the duration of the call -
   // embedders copy what they need.
   // `decision_cb` must be run at most once, may be run synchronously, and may
-  // be dropped without running (treated as no decision).
+  // be dropped without running (treated as no decision). Starting a new
+  // verification while a prior verification UI is active must dismiss the prior
+  // UI first (running its callback with `kDismiss` or dropping it) so at most
+  // one verification session is active per tab.
   // The embedder owns dismissing its UI on navigation / tab close -
   // //components does not hide it. `field_bounds` were captured when the
   // suggestion was accepted and may be stale after an asynchronous reauth or

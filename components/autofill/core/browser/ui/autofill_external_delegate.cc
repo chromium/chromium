@@ -1975,31 +1975,34 @@ void AutofillExternalDelegate::OnAutofillAiSuppressionUndone(
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
+struct AutofillExternalDelegate::PendingVerification {
+  FormGlobalId form;
+  FieldGlobalId field;
+};
+
 void AutofillExternalDelegate::ShowAttributionVerification(
     const FormGlobalId& form_id,
     const FieldGlobalId& field_id,
     const gfx::RectF& field_bounds,
     const GURL& source_url,
     const EntityInstance& filled_entity) {
+  PendingVerification verified{.form = form_id, .field = field_id};
   manager_->client().ShowAutofillAiAttributionVerification(
       filled_entity, source_url, field_bounds,
       base::BindOnce(&AutofillExternalDelegate::ApplyVerificationDecision,
-                     weak_ptr_factory_.GetWeakPtr(), form_id, field_id));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(verified)));
 }
 
 void AutofillExternalDelegate::ApplyVerificationDecision(
-    const FormGlobalId& form_id,
-    const FieldGlobalId& field_id,
-    AutofillClient::AutofillAiVerificationDecision decision) {
-  using Decision = AutofillClient::AutofillAiVerificationDecision;
+    const PendingVerification& v,
+    Decision decision) {
   switch (decision) {
+    case Decision::kConfirm:
+    case Decision::kDismiss:
+      break;
     case Decision::kUndo:
     case Decision::kHide:
-      manager_->UndoAutofill(mojom::ActionPersistence::kFill, form_id,
-                             field_id);
-      break;
-    case Decision::kDismiss:
-    case Decision::kConfirm:
+      manager_->UndoAutofill(mojom::ActionPersistence::kFill, v.form, v.field);
       break;
   }
 }

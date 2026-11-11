@@ -4879,6 +4879,24 @@ TEST_F(AutofillExternalDelegateAttributionVerificationTest,
       .Run(AutofillClient::AutofillAiVerificationDecision::kUndo);
 }
 
+// Tests that running the decision callback after the delegate was destroyed
+// does not crash and does not undo the autofill.
+TEST_F(AutofillExternalDelegateAttributionVerificationTest,
+       DecisionHideAfterDelegateDestroyedDoesNotUndo) {
+  EntityInstance passport =
+      AddPassportWithSources({GURL("https://mail.google.com/")});
+  AutofillClient::AutofillAiVerificationDecisionCallback decision_cb =
+      AcceptAndCaptureDecisionCallback(passport);
+  ASSERT_FALSE(decision_cb.is_null());
+
+  test_api(autofill_manager())
+      .SetExternalDelegate(
+          std::make_unique<TestExternalDelegate>(&autofill_manager()));
+  EXPECT_CALL(autofill_manager(), UndoAutofill).Times(0);
+  std::move(decision_cb)
+      .Run(AutofillClient::AutofillAiVerificationDecision::kHide);
+}
+
 // Tests that for an entity fetched asynchronously, the entity is filled,
 // suggestions are hidden, and verification is requested.
 TEST_F(AutofillExternalDelegateAttributionVerificationTest,

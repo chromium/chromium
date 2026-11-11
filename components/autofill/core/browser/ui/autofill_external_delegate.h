@@ -280,6 +280,11 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate {
   void OnAutofillAiSuppressionUndone(EntityInstance::EntityId entity_id,
                                      FieldGlobalId field_id);
 
+  // Context bound into the verification UI callback for a filled Personal
+  // Context entity.
+  struct PendingVerification;
+  using Decision = AutofillClient::AutofillAiVerificationDecision;
+
   // Asks the client to show the SPII verification UI for `filled_entity`.
   void ShowAttributionVerification(const FormGlobalId& form_id,
                                    const FieldGlobalId& field_id,
@@ -288,10 +293,8 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate {
                                    const EntityInstance& filled_entity);
 
   // Handles the user decision returned by the SPII verification UI.
-  void ApplyVerificationDecision(
-      const FormGlobalId& form_id,
-      const FieldGlobalId& field_id,
-      AutofillClient::AutofillAiVerificationDecision decision);
+  void ApplyVerificationDecision(const PendingVerification& v,
+                                 Decision decision);
 
   base::WeakPtr<AutofillExternalDelegate> GetWeakPtr();
 
