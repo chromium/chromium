@@ -57,7 +57,7 @@ class TestWin32Window {
 
   ~TestWin32Window();
 
-  HWND Create(DWORD style, const wchar_t* class_name);
+  HWND Create(DWORD style);
 
  private:
   HWND hwnd_ = NULL;
@@ -69,7 +69,8 @@ TestWin32Window::~TestWin32Window() {
   }
 }
 
-HWND TestWin32Window::Create(DWORD style, const wchar_t* class_name) {
+HWND TestWin32Window::Create(DWORD style) {
+  const wchar_t class_name[] = L"TestWin32Window";
   WNDCLASSEX wcex = {sizeof(wcex)};
   wcex.lpfnWndProc = DefWindowProc;
   wcex.hInstance = ::GetModuleHandle(nullptr);
@@ -275,17 +276,9 @@ TEST_F(WindowVisibleAndFullyOpaqueTest, PopupChromeWindow) {
 
 TEST_F(WindowVisibleAndFullyOpaqueTest, PopupWindow) {
   TestWin32Window test_window;
-  HWND hwnd = test_window.Create(WS_POPUPWINDOW, L"TestWin32Window");
+  HWND hwnd = test_window.Create(WS_POPUPWINDOW);
   Rect win_rect;
-  // Normal Popup Windows are considered visible.
-  EXPECT_TRUE(CheckWindowVisibleAndFullyOpaque(hwnd, &win_rect));
-}
-
-TEST_F(WindowVisibleAndFullyOpaqueTest, PopupTooltipWindow) {
-  TestWin32Window test_window;
-  HWND hwnd = test_window.Create(WS_POPUPWINDOW, L"AppTooltip");
-  Rect win_rect;
-  // Popup Windows with "tooltip" in the class name are not considered visible.
+  // Normal Popup Windows are not considered visible.
   EXPECT_FALSE(CheckWindowVisibleAndFullyOpaque(hwnd, &win_rect));
 }
 
