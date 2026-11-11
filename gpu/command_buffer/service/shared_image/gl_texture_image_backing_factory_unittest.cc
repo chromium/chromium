@@ -37,6 +37,7 @@
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_version_info.h"
 #include "ui/gl/progress_reporter.h"
+#include "ui/gl/scoped_restore_texture.h"
 
 using testing::AtLeast;
 
@@ -134,6 +135,11 @@ class GLTextureImageBackingFactoryWithFormatTest
 // SharedImageFormat parameterized tests for initial data upload. Only a subset
 // of formats support upload.
 using GLTextureImageBackingFactoryInitialDataTest =
+    GLTextureImageBackingFactoryWithFormatTest;
+
+// SharedImageFormat parameterized tests for immutable storage across all
+// single-plane formats.
+using GLTextureImageBackingFactoryUncompressedFormatTest =
     GLTextureImageBackingFactoryWithFormatTest;
 
 // SharedImageFormat parameterized tests with a factory that supports pixel
@@ -294,7 +300,7 @@ TEST_F(GLTextureImageBackingFactoryTest, TexImageTexStorageEquivalence) {
       EXPECT_EQ(image_gl_type, storage_gl_type);
     }
 
-    // confirm that we support TexStorage2D only if we support TexImage2D:
+    // Confirm that we support TexStorage2D iff we support TexImage2D:
     int image_internal_format = format_desc.image_internal_format;
     bool supports_tex_image =
         validators->texture_internal_format.IsValid(image_internal_format) &&
@@ -302,8 +308,72 @@ TEST_F(GLTextureImageBackingFactoryTest, TexImageTexStorageEquivalence) {
         validators->pixel_type.IsValid(image_gl_type);
     bool supports_tex_storage =
         validators->texture_internal_format_storage.IsValid(storage_format);
-    if (supports_tex_storage)
-      EXPECT_TRUE(supports_tex_image);
+    EXPECT_EQ(supports_tex_image, supports_tex_storage) << format.ToString();
+  }
+}
+
+// Verifies that when ext_texture_storage is enabled, every uncompressed
+// single-plane format supported by GLTextureImageBackingFactory allocates
+// texture storage via glTexStorage2DEXT rather than falling back to
+// glTexImage2D.
+TEST_P(GLTextureImageBackingFactoryUncompressedFormatTest, ImmutableStorage) {
+  if (!context_state_->feature_info()->feature_flags().ext_texture_storage) {
+    GTEST_SKIP();
+  }
+
+  viz::SharedImageFormat format = get_format();
+  if (format == viz::SinglePlaneFormat::kBGR_565 || format.IsCompressed()) {
+    GTEST_SKIP();
+  }
+
+  gfx::Size size(64, 64);
+  auto color_space = gfx::ColorSpace::CreateSRGB();
+  GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
+  gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
+  gpu::SharedImageUsageSet usage = {SHARED_IMAGE_USAGE_GLES2_READ,
+                                    SHARED_IMAGE_USAGE_GLES2_WRITE};
+  if (!backing_factory_->CanCreateSharedImage(
+          usage, format, size, /*thread_safe=*/false, gfx::EMPTY_BUFFER,
+          GrContextType::kGL, {})) {
+    GTEST_SKIP();
+  }
+
+  auto mailbox = Mailbox::Generate();
+  SkAlphaType alpha_type = GetAlphaType(format);
+  auto backing = backing_factory_->CreateSharedImage(
+      mailbox,
+      {format, size, color_space, surface_origin, alpha_type, usage,
+       "TestLabel"},
+      surface_handle, /*is_thread_safe=*/false);
+  ASSERT_TRUE(backing) << format.ToString();
+
+  std::unique_ptr<SharedImageRepresentationFactoryRef> shared_image =
+      shared_image_manager_.Register(std::move(backing), &memory_type_tracker_);
+  ASSERT_TRUE(shared_image) << format.ToString();
+
+  if (!use_passthrough()) {
+    auto gl_representation =
+        shared_image_representation_factory_.ProduceGLTexture(mailbox);
+    ASSERT_TRUE(gl_representation) << format.ToString();
+    auto* texture = gl_representation->GetTexture(/*plane_index=*/0);
+    ASSERT_TRUE(texture) << format.ToString();
+    EXPECT_TRUE(texture->HasImmutableStorage()) << format.ToString();
+  } else {
+    auto gl_representation =
+        shared_image_representation_factory_.ProduceGLTexturePassthrough(
+            mailbox);
+    ASSERT_TRUE(gl_representation) << format.ToString();
+    auto texture = gl_representation->GetTexturePassthrough(/*plane_index=*/0);
+    ASSERT_TRUE(texture) << format.ToString();
+
+    gl::GLApi* api = gl::g_current_gl_context;
+    const GLenum target = texture->target();
+    gl::ScopedRestoreTexture scoped_restore(api, target, texture->service_id());
+
+    GLint immutable_format = GL_FALSE;
+    api->glGetTexParameterivFn(target, GL_TEXTURE_IMMUTABLE_FORMAT,
+                               &immutable_format);
+    EXPECT_EQ(immutable_format, GL_TRUE) << format.ToString();
   }
 }
 
@@ -747,6 +817,11 @@ const auto kReadbackFormats =
 INSTANTIATE_TEST_SUITE_P(,
                          GLTextureImageBackingFactoryWithReadbackTest,
                          kReadbackFormats,
+                         TestParamToString);
+
+INSTANTIATE_TEST_SUITE_P(,
+                         GLTextureImageBackingFactoryUncompressedFormatTest,
+                         ::testing::ValuesIn(viz::SinglePlaneFormat::kAll),
                          TestParamToString);
 
 }  // anonymous namespace

@@ -408,6 +408,11 @@ GLFormatDesc GLFormatCaps::ToGLFormatDescOverrideHalfFloatType(
       format_desc.data_type == GL_HALF_FLOAT) {
     format_desc.image_internal_format = GL_RGBA16F;
   }
+  if (format_desc.image_internal_format == GL_RED_EXT &&
+      format_desc.data_format == GL_RED_EXT &&
+      format_desc.data_type == GL_HALF_FLOAT) {
+    format_desc.image_internal_format = GL_R16F;
+  }
   return format_desc;
 }
 

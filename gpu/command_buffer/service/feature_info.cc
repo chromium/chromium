@@ -1404,6 +1404,14 @@ void FeatureInfo::InitializeFeatures(uint32_t complete_fbo_for_workarounds) {
 
     validators_.texture_internal_format_storage.AddValue(GL_R8_EXT);
     validators_.texture_internal_format_storage.AddValue(GL_RG8_EXT);
+    if (validators_.pixel_type.IsValid(GL_FLOAT)) {
+      validators_.texture_internal_format_storage.AddValue(GL_R32F_EXT);
+      validators_.texture_internal_format_storage.AddValue(GL_RG32F_EXT);
+    }
+    if (validators_.pixel_type.IsValid(GL_HALF_FLOAT_OES)) {
+      validators_.texture_internal_format_storage.AddValue(GL_R16F_EXT);
+      validators_.texture_internal_format_storage.AddValue(GL_RG16F_EXT);
+    }
   }
 
   const bool is_texture_norm16_supported_for_webgl2_or_es3 =
@@ -1431,7 +1439,6 @@ void FeatureInfo::InitializeFeatures(uint32_t complete_fbo_for_workarounds) {
     validators_.texture_internal_format.AddValue(GL_RG16_SNORM_EXT);
     validators_.texture_internal_format.AddValue(GL_RGB16_SNORM_EXT);
     validators_.texture_internal_format.AddValue(GL_RGBA16_SNORM_EXT);
-    validators_.texture_internal_format.AddValue(GL_RED_EXT);
 
     validators_.read_pixel_format.AddValue(GL_R16_EXT);
     validators_.read_pixel_format.AddValue(GL_RG16_EXT);

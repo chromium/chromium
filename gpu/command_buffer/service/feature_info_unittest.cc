@@ -553,6 +553,14 @@ TEST_P(FeatureInfoTest, InitializeGLES2EXT_texture_storage) {
       GL_LUMINANCE16F_EXT));
   EXPECT_FALSE(info_->validators()->texture_internal_format_storage.IsValid(
       GL_LUMINANCE_ALPHA16F_EXT));
+  EXPECT_FALSE(info_->validators()->texture_internal_format_storage.IsValid(
+      GL_R32F_EXT));
+  EXPECT_FALSE(info_->validators()->texture_internal_format_storage.IsValid(
+      GL_RG32F_EXT));
+  EXPECT_FALSE(info_->validators()->texture_internal_format_storage.IsValid(
+      GL_R16F_EXT));
+  EXPECT_FALSE(info_->validators()->texture_internal_format_storage.IsValid(
+      GL_RG16F_EXT));
 }
 
 TEST_P(FeatureInfoTest, InitializeEXT_texture_storage) {
@@ -583,6 +591,14 @@ TEST_P(FeatureInfoTest, InitializeEXT_texture_storage) {
       GL_LUMINANCE16F_EXT));
   EXPECT_FALSE(info_->validators()->texture_internal_format_storage.IsValid(
       GL_LUMINANCE_ALPHA16F_EXT));
+  EXPECT_FALSE(info_->validators()->texture_internal_format_storage.IsValid(
+      GL_R32F_EXT));
+  EXPECT_FALSE(info_->validators()->texture_internal_format_storage.IsValid(
+      GL_RG32F_EXT));
+  EXPECT_FALSE(info_->validators()->texture_internal_format_storage.IsValid(
+      GL_R16F_EXT));
+  EXPECT_FALSE(info_->validators()->texture_internal_format_storage.IsValid(
+      GL_RG16F_EXT));
 }
 
 TEST_P(FeatureInfoTest, InitializeEXT_texture_storage_BGRA8888) {
@@ -612,6 +628,14 @@ TEST_P(FeatureInfoTest, InitializeEXT_texture_storage_float) {
       GL_LUMINANCE32F_EXT));
   EXPECT_TRUE(info_->validators()->texture_internal_format_storage.IsValid(
       GL_LUMINANCE_ALPHA32F_EXT));
+  EXPECT_TRUE(info_->validators()->texture_internal_format_storage.IsValid(
+      GL_R32F_EXT));
+  EXPECT_TRUE(info_->validators()->texture_internal_format_storage.IsValid(
+      GL_RG32F_EXT));
+  EXPECT_FALSE(info_->validators()->texture_internal_format_storage.IsValid(
+      GL_R16F_EXT));
+  EXPECT_FALSE(info_->validators()->texture_internal_format_storage.IsValid(
+      GL_RG16F_EXT));
 }
 
 TEST_P(FeatureInfoTest, InitializeEXT_texture_storage_half_float) {
@@ -629,6 +653,33 @@ TEST_P(FeatureInfoTest, InitializeEXT_texture_storage_half_float) {
       GL_LUMINANCE16F_EXT));
   EXPECT_TRUE(info_->validators()->texture_internal_format_storage.IsValid(
       GL_LUMINANCE_ALPHA16F_EXT));
+  EXPECT_TRUE(info_->validators()->texture_internal_format_storage.IsValid(
+      GL_R16F_EXT));
+  EXPECT_TRUE(info_->validators()->texture_internal_format_storage.IsValid(
+      GL_RG16F_EXT));
+  EXPECT_FALSE(info_->validators()->texture_internal_format_storage.IsValid(
+      GL_R32F_EXT));
+  EXPECT_FALSE(info_->validators()->texture_internal_format_storage.IsValid(
+      GL_RG32F_EXT));
+}
+
+TEST_P(FeatureInfoTest, InitializeGLES2EXT_texture_storage_float_without_rg) {
+  SetupInitExpectationsWithGLVersion(
+      "GL_EXT_texture_storage GL_OES_texture_float GL_OES_texture_half_float",
+      "", "OpenGL ES 2.0");
+  EXPECT_FALSE(info_->feature_flags().ext_texture_rg);
+  EXPECT_TRUE(info_->validators()->texture_internal_format_storage.IsValid(
+      GL_RGBA32F_EXT));
+  EXPECT_TRUE(info_->validators()->texture_internal_format_storage.IsValid(
+      GL_RGBA16F_EXT));
+  EXPECT_FALSE(info_->validators()->texture_internal_format_storage.IsValid(
+      GL_R32F_EXT));
+  EXPECT_FALSE(info_->validators()->texture_internal_format_storage.IsValid(
+      GL_RG32F_EXT));
+  EXPECT_FALSE(info_->validators()->texture_internal_format_storage.IsValid(
+      GL_R16F_EXT));
+  EXPECT_FALSE(info_->validators()->texture_internal_format_storage.IsValid(
+      GL_RG16F_EXT));
 }
 
 // Check how to handle ES, texture_storage and BGRA combination; 10 tests.
@@ -1342,6 +1393,18 @@ TEST_P(FeatureInfoTest, InitializeEXT_texture_rgWithFloat) {
   EXPECT_TRUE(info_->validators()->read_pixel_format.IsValid(GL_RG_EXT));
   EXPECT_TRUE(info_->validators()->render_buffer_format.IsValid(GL_R8_EXT));
   EXPECT_TRUE(info_->validators()->render_buffer_format.IsValid(GL_RG8_EXT));
+  EXPECT_TRUE(
+      info_->validators()->texture_internal_format_storage.IsValid(GL_R8_EXT));
+  EXPECT_TRUE(
+      info_->validators()->texture_internal_format_storage.IsValid(GL_RG8_EXT));
+  EXPECT_TRUE(info_->validators()->texture_internal_format_storage.IsValid(
+      GL_R16F_EXT));
+  EXPECT_TRUE(info_->validators()->texture_internal_format_storage.IsValid(
+      GL_RG16F_EXT));
+  EXPECT_TRUE(info_->validators()->texture_internal_format_storage.IsValid(
+      GL_R32F_EXT));
+  EXPECT_TRUE(info_->validators()->texture_internal_format_storage.IsValid(
+      GL_RG32F_EXT));
 }
 
 TEST_P(FeatureInfoTest, InitializeEXT_texture_norm16) {

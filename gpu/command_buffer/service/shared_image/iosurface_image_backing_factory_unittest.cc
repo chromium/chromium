@@ -1614,7 +1614,7 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest, TexImageTexStorageEquivalence) {
       EXPECT_EQ(image_gl_type, storage_gl_type);
     }
 
-    // confirm that we support TexStorage2D only if we support TexImage2D:
+    // Confirm that we support TexStorage2D iff we support TexImage2D:
     int image_internal_format = format_desc.image_internal_format;
     bool supports_tex_image =
         validators->texture_internal_format.IsValid(image_internal_format) &&
@@ -1622,9 +1622,7 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest, TexImageTexStorageEquivalence) {
         validators->pixel_type.IsValid(image_gl_type);
     bool supports_tex_storage =
         validators->texture_internal_format_storage.IsValid(storage_format);
-    if (supports_tex_storage) {
-      EXPECT_TRUE(supports_tex_image);
-    }
+    EXPECT_EQ(supports_tex_image, supports_tex_storage) << format.ToString();
   }
 }
 
