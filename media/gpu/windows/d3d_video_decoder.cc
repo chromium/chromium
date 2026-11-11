@@ -236,19 +236,12 @@ bool D3DVideoDecoder::RecreateDecoderWrapper() {
              : 8);
   }
 
-  // Release any existing decoder wrapper, output views, and cached backend
-  // textures and flush the device context before creating a new hardware
-  // decoder instance.
-  const bool had_existing_resources =
-      d3d_video_decoder_wrapper_ || !picture_buffers_.empty() ||
-      texture_selector_ || decoder_configurator_;
+  // Release any existing decoder wrapper, picture buffers, and cached backend
+  // resources before creating a new hardware decoder instance.
   d3d_video_decoder_wrapper_.reset();
   ClearPictureBuffers();
   texture_selector_.reset();
   decoder_configurator_.reset();
-  if (had_existing_resources) {
-    backend_->ReleaseResources();
-  }
 
   auto decoder_configurator_result = backend_->CreateDecoderConfigurator(
       bit_depth, config_, chroma_sampling_, gpu_preferences_, gpu_workarounds_,
@@ -401,7 +394,6 @@ void D3DVideoDecoder::Initialize(const VideoDecoderConfig& config,
       ClearPictureBuffers();
       texture_selector_.reset();
       decoder_configurator_.reset();
-      backend_->ReleaseResources();
       return;
     }
     profile_ = config.profile();
@@ -834,10 +826,14 @@ void D3DVideoDecoder::CreatePictureBuffers() {
 
 void D3DVideoDecoder::ClearPictureBuffers() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (picture_buffers_.empty()) {
+    return;
+  }
   for (auto& buffer : picture_buffers_) {
     buffer->ResetOutputView();
   }
   picture_buffers_.clear();
+  backend_->ReleaseResources();
 }
 
 D3DPictureBuffer* D3DVideoDecoder::GetPicture() {

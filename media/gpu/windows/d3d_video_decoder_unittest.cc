@@ -662,4 +662,44 @@ TEST_F(D3DVideoDecoderTest,
   Mock::VerifyAndClearExpectations(mock_d3d11_device_context_.Get());
 }
 
+TEST_F(D3DVideoDecoderTest,
+       InitialConfigChangeWithoutPictureBuffersDoesNotFlushContext) {
+  CreateDecoder();
+
+  VideoDecoderConfig normal =
+      TestVideoConfig::NormalCodecProfile(VideoCodec::kH264, H264PROFILE_MAIN);
+  EXPECT_CALL(*mock_d3d11_video_device_.Get(), CreateVideoDecoder(_, _, _))
+      .Times(1);
+  InitializeDecoder(normal, true);
+  EXPECT_EQ(GetPictureBufferCount(), 0u);
+
+  VideoDecoderConfig large = TestVideoConfig::Large(VideoCodec::kH264);
+  auto mock_decoder = std::make_unique<NiceMock<MockAcceleratedVideoDecoder>>();
+  ON_CALL(*mock_decoder, GetProfile()).WillByDefault(Return(large.profile()));
+  ON_CALL(*mock_decoder, GetPicSize())
+      .WillByDefault(Return(large.coded_size()));
+  ON_CALL(*mock_decoder, GetVisibleRect())
+      .WillByDefault(Return(large.visible_rect()));
+  ON_CALL(*mock_decoder, GetBitDepth()).WillByDefault(Return(8u));
+  ON_CALL(*mock_decoder, GetChromaSampling())
+      .WillByDefault(Return(VideoChromaSampling::k420));
+  ON_CALL(*mock_decoder, GetVideoColorSpace())
+      .WillByDefault(Return(large.color_space_info()));
+  EXPECT_CALL(*mock_decoder, Decode())
+      .WillOnce(Return(AcceleratedVideoDecoder::kConfigChange))
+      .WillOnce(Return(AcceleratedVideoDecoder::kRanOutOfStreamData));
+  SetAcceleratedVideoDecoder(std::move(mock_decoder));
+
+  EXPECT_CALL(*mock_d3d11_device_context_.Get(), Flush()).Times(0);
+  EXPECT_CALL(*mock_d3d11_video_device_.Get(), CreateVideoDecoder(_, _, _))
+      .Times(1);
+
+  const std::array<uint8_t, 1> bitstream = {1};
+  base::test::TestFuture<DecoderStatus> decode_future;
+  decoder_->Decode(DecoderBuffer::CopyFrom(bitstream),
+                   decode_future.GetCallback());
+  EXPECT_TRUE(decode_future.Get().is_ok());
+  Mock::VerifyAndClearExpectations(mock_d3d11_device_context_.Get());
+}
+
 }  // namespace media

@@ -142,8 +142,9 @@ class MEDIA_GPU_EXPORT D3DVideoDecoder : public VideoDecoder,
   // gpu main thread.
   void CreatePictureBuffers();
 
-  // Releases decoder-bound output views on all current picture buffers and
-  // clears |picture_buffers_|.
+  // Releases decoder-bound output views on all current picture buffers, clears
+  // |picture_buffers_|, and releases cached backend resources if any picture
+  // buffers existed.
   void ClearPictureBuffers();
 
   // Measure the number of picture buffers that are currently unused, and see if
