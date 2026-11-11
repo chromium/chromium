@@ -25,16 +25,13 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.content.browser.AudioFocusDelegate.AudioFocusRequestResult;
-import org.chromium.content_public.browser.ContentFeatureList;
 
 import java.lang.reflect.Method;
 
 /** Unit tests for {@link AudioFocusDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures(ContentFeatureList.ALLOW_DELAYED_AUDIO_FOCUS_GAIN_ANDROID)
 public class AudioFocusDelegateTest {
     private static final String AUDIO_FOCUS_REQUEST_RESULT_HISTOGRAM =
             "Media.Android.AudioFocusRequestResult";

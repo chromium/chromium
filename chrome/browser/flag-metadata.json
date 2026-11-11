@@ -286,14 +286,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "allow-delayed-audio-focus-gain-android",
-    "owners": [
-      "philyan@chromium.org",
-      "media-dev@chromium.org"
-    ],
-    "expiry_milestone": 160
-  },
-  {
     "name": "allow-insecure-localhost",
     "owners": [ "cthomp@chromium.org", "security-dev@chromium.org" ],
     "expiry_milestone": 130

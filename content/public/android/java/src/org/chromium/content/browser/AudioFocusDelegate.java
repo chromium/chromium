@@ -26,8 +26,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.content_public.browser.ContentFeatureList;
-import org.chromium.content_public.browser.ContentFeatureMap;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -136,14 +134,10 @@ public class AudioFocusDelegate implements AudioManager.OnAudioFocusChangeListen
                         .setContentType(AudioAttributes.CONTENT_TYPE_UNKNOWN)
                         .build();
 
-        boolean allowDelayedFocus =
-                ContentFeatureMap.isEnabled(
-                        ContentFeatureList.ALLOW_DELAYED_AUDIO_FOCUS_GAIN_ANDROID);
-
         mFocusRequest =
                 new AudioFocusRequest.Builder(mFocusType)
                         .setAudioAttributes(playbackAttributes)
-                        .setAcceptsDelayedFocusGain(allowDelayedFocus)
+                        .setAcceptsDelayedFocusGain(true)
                         .setWillPauseWhenDucked(false)
                         .setOnAudioFocusChangeListener(this, mHandler)
                         .build();
@@ -162,17 +156,13 @@ public class AudioFocusDelegate implements AudioManager.OnAudioFocusChangeListen
                 getAudioFocusRequestResult(result),
                 AudioFocusRequestResult.COUNT);
 
-        if (allowDelayedFocus) {
-            // If the request returns AUDIOFOCUS_REQUEST_DELAYED, the system has registered our
-            // request but hasn't granted focus yet (e.g. during a phone call). We return true
-            // to treat this as a successful acquisition, allowing playback to proceed immediately
-            // despite the delay. This differs from AudioFocusDelegate::AudioFocusResult::kDelayed
-            // which indicates the browser itself is deferring the request.
-            return result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED
-                    || result == AudioManager.AUDIOFOCUS_REQUEST_DELAYED;
-        }
-
-        return result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED;
+        // If the request returns AUDIOFOCUS_REQUEST_DELAYED, the system has registered our
+        // request but hasn't granted focus yet (e.g. during a phone call). We return true
+        // to treat this as a successful acquisition, allowing playback to proceed immediately
+        // despite the delay. This differs from AudioFocusDelegate::AudioFocusResult::kDelayed
+        // which indicates the browser itself is deferring the request.
+        return result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED
+                || result == AudioManager.AUDIOFOCUS_REQUEST_DELAYED;
     }
 
     private @AudioFocusRequestResult int getAudioFocusRequestResult(int result) {

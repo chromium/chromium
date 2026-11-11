@@ -32,7 +32,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &blink::features::kInputCursorAnchorInfoMigration,
     &blink::features::kViewportSegments,
     &blink::features::kWebHID,
-    &media::kAllowDelayedAudioFocusGainAndroid,
     &media::kAndroidEnableBackgroundMediaCapturing,
     &input::features::kInputOnViz,
     &features::kAndroidCaptureKeyEvents,
