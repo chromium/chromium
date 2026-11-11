@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.actor;
 
-import org.chromium.base.lifetime.Destroyable;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
@@ -18,7 +17,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
  * in-memory background tab or a cold state loaded from disk.
  */
 @NullMarked
-public interface BackgroundPoolTab extends Destroyable {
+public interface BackgroundPoolTab {
 
     /** Returns the unique original tab ID of this background tab. */
     @TabId
@@ -52,7 +51,4 @@ public interface BackgroundPoolTab extends Destroyable {
      * @return The attached Tab instance.
      */
     Tab attachTab(TabModel tabModel, int index, @Nullable TabState placeholderTabState);
-
-    @Override
-    default void destroy() {}
 }

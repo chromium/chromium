@@ -135,20 +135,6 @@ public class ColdBackgroundTabTest {
     }
 
     @Test
-    public void testDestroy_clearsWebContentsState() {
-        ColdBackgroundTab tab =
-                new ColdBackgroundTab(
-                        mBackgroundTabPool,
-                        ORIGINAL_TAB_ID,
-                        mBackgroundTabState,
-                        PLACEHOLDER_TAB_ID);
-
-        tab.destroy();
-
-        assertNull(mBackgroundTabState.contentsState);
-    }
-
-    @Test
     public void testAttachTab_withPlaceholderTabInModel_removesPlaceholder() {
         when(mTabModel.getTabById(PLACEHOLDER_TAB_ID)).thenReturn(mPlaceholderTab);
 

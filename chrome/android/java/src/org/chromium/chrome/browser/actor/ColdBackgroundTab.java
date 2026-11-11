@@ -56,7 +56,7 @@ public class ColdBackgroundTab implements BackgroundPoolTab {
 
     @Override
     public Tab attachTab(TabModel tabModel, int index, @Nullable TabState placeholderTabState) {
-        assert mTabState != null : "ColdBackgroundTab has already been attached or destroyed.";
+        assert mTabState != null : "ColdBackgroundTab has already been attached.";
         mPool.removeTabById(mTabId);
 
         Tab placeholderTab = tabModel.getTabById(mPlaceholderTabId);
@@ -83,13 +83,5 @@ public class ColdBackgroundTab implements BackgroundPoolTab {
             targetState.tabGroupId = placeholderState.tabGroupId;
         }
         targetState.isPinned = placeholderState.isPinned;
-    }
-
-    @Override
-    public void destroy() {
-        if (mTabState != null) {
-            mTabState.contentsState = null;
-            mTabState = null;
-        }
     }
 }
