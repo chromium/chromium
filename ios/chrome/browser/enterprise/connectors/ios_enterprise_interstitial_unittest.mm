@@ -302,7 +302,7 @@ TEST_F(IOSEnterpriseInterstitialTest, HandProceedCommand) {
   auto test_page = CreateWarningPage(CreateWarnUnsafeResource());
   test_page->HandleCommand(security_interstitials::CMD_PROCEED);
 
-  std::set<SBThreatType> allowed_threats;
+  safe_browsing::SBThreatTypeSet allowed_threats;
   EXPECT_TRUE(allow_list->AreUnsafeNavigationsAllowed(GURL(kTestUrl),
                                                       &allowed_threats));
   EXPECT_THAT(
@@ -320,7 +320,7 @@ TEST_F(IOSEnterpriseInterstitialTest, RemovePendingDecisionsUponDestruction) {
       SafeBrowsingUrlAllowList::FromWebState(&web_state_);
   allow_list->AddPendingUnsafeNavigationDecision(
       GURL(kTestUrl), SBThreatType::SB_THREAT_TYPE_MANAGED_POLICY_WARN);
-  std::set<safe_browsing::SBThreatType> pending_threats;
+  safe_browsing::SBThreatTypeSet pending_threats;
   ASSERT_TRUE(allow_list->IsUnsafeNavigationDecisionPending(GURL(kTestUrl),
                                                             &pending_threats));
   EXPECT_THAT(

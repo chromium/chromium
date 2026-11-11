@@ -54,7 +54,7 @@ class PendingUnsafeResourceStorage {
     void ThreatPolicyBatchUpdated(
         SafeBrowsingUrlAllowList* allow_list,
         const GURL& url,
-        const std::set<safe_browsing::SBThreatType>& threat_types,
+        const safe_browsing::SBThreatTypeSet& threat_types,
         SafeBrowsingUrlAllowList::Policy policy) override;
     void SafeBrowsingAllowListDestroyed(
         SafeBrowsingUrlAllowList* allow_list) override;

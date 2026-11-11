@@ -9,6 +9,7 @@
 #import "ios/components/security_interstitials/safe_browsing/ios_unsafe_resource_util.h"
 
 using safe_browsing::SBThreatType;
+using safe_browsing::SBThreatTypeSet;
 using security_interstitials::UnsafeResource;
 
 namespace {
@@ -16,11 +17,11 @@ namespace {
 bool IsUnsafeResourcePending(const UnsafeResource& resource) {
   SafeBrowsingUrlAllowList* allow_list = GetAllowListForResource(resource);
   GURL decision_url = SafeBrowsingUrlAllowList::GetDecisionUrl(resource);
-  std::set<SBThreatType> pending_threat_types;
+  SBThreatTypeSet pending_threat_types;
   return allow_list &&
          allow_list->IsUnsafeNavigationDecisionPending(decision_url,
                                                        &pending_threat_types) &&
-         pending_threat_types.contains(resource.threat_type);
+         pending_threat_types.Has(resource.threat_type);
 }
 }  // namespace
 
@@ -110,15 +111,14 @@ void PendingUnsafeResourceStorage::ResourcePolicyObserver::ThreatPolicyUpdated(
 }
 
 void PendingUnsafeResourceStorage::ResourcePolicyObserver::
-    ThreatPolicyBatchUpdated(
-        SafeBrowsingUrlAllowList* allow_list,
-        const GURL& url,
-        const std::set<safe_browsing::SBThreatType>& threat_types,
-        SafeBrowsingUrlAllowList::Policy policy) {
+    ThreatPolicyBatchUpdated(SafeBrowsingUrlAllowList* allow_list,
+                             const GURL& url,
+                             const safe_browsing::SBThreatTypeSet& threat_types,
+                             SafeBrowsingUrlAllowList::Policy policy) {
   const UnsafeResource* resource = storage_->resource();
   if (policy == SafeBrowsingUrlAllowList::Policy::kPending ||
       url != resource->navigation_url ||
-      !threat_types.contains(resource->threat_type)) {
+      !threat_types.Has(resource->threat_type)) {
     return;
   }
 

@@ -159,9 +159,9 @@ TEST_P(SafeBrowsingBlockingPageTest_V4V5, HandleProceedCommand) {
   // Send the proceed command.
   SendCommand(security_interstitials::CMD_PROCEED);
 
-  std::set<SBThreatType> allowed_threats;
+  safe_browsing::SBThreatTypeSet allowed_threats;
   EXPECT_TRUE(allow_list->AreUnsafeNavigationsAllowed(url_, &allowed_threats));
-  EXPECT_TRUE(allowed_threats.contains(resource_.threat_type));
+  EXPECT_TRUE(allowed_threats.Has(resource_.threat_type));
   EXPECT_TRUE(navigation_manager_->ReloadWasCalled());
 
   // Verify that metrics are recorded correctly.
@@ -219,11 +219,11 @@ TEST_P(SafeBrowsingBlockingPageTest_V4V5,
        RemovePendingDecisionsUponDestruction) {
   SafeBrowsingUrlAllowList* allow_list =
       SafeBrowsingUrlAllowList::FromWebState(&web_state_);
-  std::set<safe_browsing::SBThreatType> pending_threats;
+  safe_browsing::SBThreatTypeSet pending_threats;
   ASSERT_TRUE(
       allow_list->IsUnsafeNavigationDecisionPending(url_, &pending_threats));
   ASSERT_EQ(1U, pending_threats.size());
-  ASSERT_TRUE(pending_threats.contains(resource_.threat_type));
+  ASSERT_TRUE(pending_threats.Has(resource_.threat_type));
 
   page_ = nullptr;
 

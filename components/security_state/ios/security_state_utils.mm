@@ -33,7 +33,7 @@ MaliciousContentStatus GetMaliciousContentStatus(
   // There is no malicious content if there is no allowed unsafe resource and no
   // pending decision.
   const GURL& visible_url = visible_item->GetVirtualURL();
-  std::set<safe_browsing::SBThreatType> threats;
+  safe_browsing::SBThreatTypeSet threats;
   bool is_unsafe_resource_allowed_or_pending =
       allow_list->AreUnsafeNavigationsAllowed(visible_url, &threats) ||
       allow_list->IsUnsafeNavigationDecisionPending(visible_url, &threats);

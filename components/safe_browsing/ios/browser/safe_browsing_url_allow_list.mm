@@ -8,6 +8,7 @@
 #import "ios/web/public/web_state.h"
 
 using safe_browsing::SBThreatType;
+using safe_browsing::SBThreatTypeSet;
 
 // static
 GURL SafeBrowsingUrlAllowList::GetDecisionUrl(
@@ -35,7 +36,7 @@ void SafeBrowsingUrlAllowList::RemoveObserver(Observer* observer) {
 
 bool SafeBrowsingUrlAllowList::AreUnsafeNavigationsAllowed(
     const GURL& url,
-    std::set<SBThreatType>* threat_types) const {
+    SBThreatTypeSet* threat_types) const {
   return ContainsThreats(url, Policy::kAllowed, threat_types);
 }
 
@@ -51,7 +52,7 @@ void SafeBrowsingUrlAllowList::DisallowUnsafeNavigations(const GURL& url) {
 
 bool SafeBrowsingUrlAllowList::IsUnsafeNavigationDecisionPending(
     const GURL& url,
-    std::set<SBThreatType>* threat_types) const {
+    SBThreatTypeSet* threat_types) const {
   return ContainsThreats(url, Policy::kPending, threat_types);
 }
 
@@ -88,16 +89,16 @@ void SafeBrowsingUrlAllowList::SetThreatPolicy(
     Policy policy) {
   auto& decisions = GetUnsafeNavigationDecisions(url);
   if (policy == Policy::kDisallowed) {
-    decisions.allowed_threats.erase(threat_type);
-    decisions.pending_threats.erase(threat_type);
+    decisions.allowed_threats.Remove(threat_type);
+    decisions.pending_threats.Remove(threat_type);
   }
   if (policy == Policy::kPending) {
-    decisions.allowed_threats.erase(threat_type);
-    decisions.pending_threats.insert(threat_type);
+    decisions.allowed_threats.Remove(threat_type);
+    decisions.pending_threats.Put(threat_type);
   }
   if (policy == Policy::kAllowed) {
-    decisions.allowed_threats.insert(threat_type);
-    decisions.pending_threats.erase(threat_type);
+    decisions.allowed_threats.Put(threat_type);
+    decisions.pending_threats.Remove(threat_type);
   }
   for (auto& observer : observers_) {
     observer.ThreatPolicyUpdated(this, url, threat_type, policy);
@@ -108,8 +109,8 @@ void SafeBrowsingUrlAllowList::SetThreatPolicy(
 bool SafeBrowsingUrlAllowList::ContainsThreats(
     const GURL& url,
     Policy policy,
-    std::set<SBThreatType>* threat_types) const {
-  const std::set<SBThreatType>* threats_with_policy = nullptr;
+    SBThreatTypeSet* threat_types) const {
+  const SBThreatTypeSet* threats_with_policy = nullptr;
   switch (policy) {
     case Policy::kAllowed:
       threats_with_policy = &GetUnsafeNavigationDecisions(url).allowed_threats;
@@ -129,7 +130,7 @@ bool SafeBrowsingUrlAllowList::ContainsThreats(
 }
 
 void SafeBrowsingUrlAllowList::RevertPolicy(const GURL& url, Policy policy) {
-  std::set<SBThreatType>* decisions_to_revert = nullptr;
+  SBThreatTypeSet* decisions_to_revert = nullptr;
   switch (policy) {
     case Policy::kAllowed:
       decisions_to_revert = &GetUnsafeNavigationDecisions(url).allowed_threats;
@@ -143,8 +144,8 @@ void SafeBrowsingUrlAllowList::RevertPolicy(const GURL& url, Policy policy) {
   if (!decisions_to_revert)
     return;
 
-  std::set<SBThreatType> disallowed_threats;
-  disallowed_threats.swap(*decisions_to_revert);
+  SBThreatTypeSet disallowed_threats = *decisions_to_revert;
+  decisions_to_revert->Clear();
   for (auto& observer : observers_) {
     observer.ThreatPolicyBatchUpdated(this, url, disallowed_threats,
                                       Policy::kDisallowed);

@@ -6,7 +6,6 @@
 #define COMPONENTS_SAFE_BROWSING_IOS_BROWSER_SAFE_BROWSING_URL_ALLOW_LIST_H_
 
 #include <map>
-#include <set>
 
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
@@ -42,7 +41,7 @@ class SafeBrowsingUrlAllowList
     virtual void ThreatPolicyBatchUpdated(
         SafeBrowsingUrlAllowList* allow_list,
         const GURL& url,
-        const std::set<safe_browsing::SBThreatType>& threat_type,
+        const safe_browsing::SBThreatTypeSet& threat_types,
         Policy policy) {}
 
     // Called when |allow_list| is about to be destroyed.
@@ -65,7 +64,7 @@ class SafeBrowsingUrlAllowList
   // is non-null, it is populated with the allowed threat types.
   bool AreUnsafeNavigationsAllowed(
       const GURL& url,
-      std::set<safe_browsing::SBThreatType>* threat_types = nullptr) const;
+      safe_browsing::SBThreatTypeSet* threat_types = nullptr) const;
 
   // Allows future unsafe navigations to |url| that encounter threats with
   // |threat_type|.
@@ -80,7 +79,7 @@ class SafeBrowsingUrlAllowList
   // types.
   bool IsUnsafeNavigationDecisionPending(
       const GURL& url,
-      std::set<safe_browsing::SBThreatType>* threat_types = nullptr) const;
+      safe_browsing::SBThreatTypeSet* threat_types = nullptr) const;
 
   // Records that a navigation to |url| has encountered |threat_type|, but the
   // user has not yet chosen whether to allow the navigation.
@@ -100,8 +99,8 @@ class SafeBrowsingUrlAllowList
   struct UnsafeNavigationDecisions {
     UnsafeNavigationDecisions();
     ~UnsafeNavigationDecisions();
-    std::set<safe_browsing::SBThreatType> allowed_threats;
-    std::set<safe_browsing::SBThreatType> pending_threats;
+    safe_browsing::SBThreatTypeSet allowed_threats;
+    safe_browsing::SBThreatTypeSet pending_threats;
   };
 
   // Returns a reference to the UnsafeNavigationDecisions for |url|.  The path
@@ -118,10 +117,9 @@ class SafeBrowsingUrlAllowList
 
   // Returns whether the list contains any |policy| decisions for |url|.
   // Populates |threat_types| with found threats if provided.
-  bool ContainsThreats(
-      const GURL& url,
-      Policy policy,
-      std::set<safe_browsing::SBThreatType>* threat_types) const;
+  bool ContainsThreats(const GURL& url,
+                       Policy policy,
+                       safe_browsing::SBThreatTypeSet* threat_types) const;
 
   // Disallows all threats that for |url| that are currently allowed under
   // |policy|.

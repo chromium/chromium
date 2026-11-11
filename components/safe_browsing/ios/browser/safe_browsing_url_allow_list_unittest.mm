@@ -10,6 +10,7 @@
 #include "testing/platform_test.h"
 
 using safe_browsing::SBThreatType;
+using safe_browsing::SBThreatTypeSet;
 
 namespace {
 // Constants used in tests.
@@ -28,7 +29,7 @@ class MockAllowListObserver : public SafeBrowsingUrlAllowList::Observer {
   MOCK_METHOD4(ThreatPolicyBatchUpdated,
                void(SafeBrowsingUrlAllowList*,
                     const GURL&,
-                    const std::set<SBThreatType>&,
+                    const SBThreatTypeSet&,
                     SafeBrowsingUrlAllowList::Policy));
 };
 // Mocked WebStateObserver for use in tests.
@@ -86,14 +87,12 @@ TEST_F(SafeBrowsingUrlAllowListTest, AllowUnsafeNavigations) {
   allow_list()->AllowUnsafeNavigations(url, kSecondThreatType);
 
   // Verify that navigations to |url| are allowed for both threat types.
-  std::set<SBThreatType> allowed_threat_types;
+  SBThreatTypeSet allowed_threat_types;
   EXPECT_TRUE(
       allow_list()->AreUnsafeNavigationsAllowed(url, &allowed_threat_types));
   EXPECT_EQ(2U, allowed_threat_types.size());
-  EXPECT_NE(allowed_threat_types.find(kFirstThreatType),
-            allowed_threat_types.end());
-  EXPECT_NE(allowed_threat_types.find(kSecondThreatType),
-            allowed_threat_types.end());
+  EXPECT_TRUE(allowed_threat_types.Has(kFirstThreatType));
+  EXPECT_TRUE(allowed_threat_types.Has(kSecondThreatType));
 
   // Disallow unsafe navigations to |url| and verify that the list is updated.
   EXPECT_CALL(
@@ -129,14 +128,12 @@ TEST_F(SafeBrowsingUrlAllowListTest, AddPendingDecisions) {
   allow_list()->AddPendingUnsafeNavigationDecision(url, kSecondThreatType);
 
   // Verify that the pending decisions for both threat types are recorded.
-  std::set<SBThreatType> pending_threat_types;
+  SBThreatTypeSet pending_threat_types;
   EXPECT_TRUE(allow_list()->IsUnsafeNavigationDecisionPending(
       url, &pending_threat_types));
   EXPECT_EQ(2U, pending_threat_types.size());
-  EXPECT_NE(pending_threat_types.find(kFirstThreatType),
-            pending_threat_types.end());
-  EXPECT_NE(pending_threat_types.find(kSecondThreatType),
-            pending_threat_types.end());
+  EXPECT_TRUE(pending_threat_types.Has(kFirstThreatType));
+  EXPECT_TRUE(pending_threat_types.Has(kSecondThreatType));
 
   // Remove the pending decisions and verify that the allow list is updated.
   EXPECT_CALL(

@@ -71,13 +71,13 @@ void UrlCheckerDelegateImpl::StartDisplayingBlockingPageHelper(
 
   // Check if navigations to `resource`'s URL have already been allowed for the
   // given threat type.
-  std::set<safe_browsing::SBThreatType> allowed_threats;
+  safe_browsing::SBThreatTypeSet allowed_threats;
   const GURL url = resource.url;
   safe_browsing::SBThreatType threat_type = resource.threat_type;
   SafeBrowsingUrlAllowList* allow_list =
       SafeBrowsingUrlAllowList::FromWebState(web_state);
   if (allow_list->AreUnsafeNavigationsAllowed(url, &allowed_threats)) {
-    if (allowed_threats.contains(threat_type)) {
+    if (allowed_threats.Has(threat_type)) {
       resource.DispatchCallback(FROM_HERE, /*proceed=*/true,
                                 /*showed_interstitial=*/false,
                                 /*has_post_commit_interstitial_skipped=*/false);
