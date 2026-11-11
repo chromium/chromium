@@ -551,7 +551,7 @@
   {
     "name": "android-page-info-as-app-menu-item",
     "owners": [ "madhavpruthi@google.com", "ckitagawa@chromium.org"  ],
-    "expiry_milestone": 160
+    "expiry_milestone": 170
   },
   {
     "name": "android-pdf-reuse-fragment",
@@ -4628,7 +4628,7 @@
   {
     "name": "enable-swipe-to-switch-pane",
     "owners": ["madhavpruthi@google.com", "ckitagawa@chromium.org","clank-tab-dev@google.com"],
-    "expiry_milestone": 160
+    "expiry_milestone": 170
   },
   {
     "name": "enable-tab-audio-muting",
@@ -7889,7 +7889,7 @@
   {
     "name": "on-demand-background-tab-context-capture-optimization",
     "owners": [ "madhavpruthi@google.com", "clank-tab-dev@google.com" ],
-    "expiry_milestone": 160
+    "expiry_milestone": 170
   },
   {
     "name": "on-device-app-controls",
