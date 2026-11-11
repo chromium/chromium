@@ -11,7 +11,7 @@ found in the LICENSE file.
         android:height="@dimen/task_header_divider_height"
         android:gravity="center">
         <shape android:shape="rectangle">
-            <solid android:color="?attr/colorPrimaryContainer" />
+            <solid android:color="@color/divider_color" />
         </shape>
     </item>
 </layer-list>
