@@ -7479,7 +7479,7 @@
       includes_currentcolor: true,
       typedom_types: ["Keyword"],
       converter: "ConvertGapDecorationColorDataList",
-      invalidate: ["paint"],
+      invalidate: ["paint", "gap-decorations"],
     },
     {
       name: "row-rule-color",
@@ -7496,7 +7496,7 @@
       includes_currentcolor: true,
       typedom_types: ["Keyword"],
       converter: "ConvertGapDecorationColorDataList",
-      invalidate: ["paint"],
+      invalidate: ["paint", "gap-decorations"],
     },
     {
       name: "column-rule-style",
@@ -7570,7 +7570,7 @@
       converter: "ConvertGapDecorationWidthDataList",
       keywords: ["thin", "medium", "thick"],
       typedom_types: ["Keyword", "Length"],
-      invalidate: ["paint"],
+      invalidate: ["paint", "gap-decorations"],
       affected_by_zoom: true,
     },
     {
@@ -7587,7 +7587,7 @@
       converter: "ConvertGapDecorationWidthDataList",
       keywords: ["thin", "medium", "thick"],
       typedom_types: ["Keyword", "Length"],
-      invalidate: ["paint"],
+      invalidate: ["paint", "gap-decorations"],
       affected_by_zoom: true,
     },
     {
