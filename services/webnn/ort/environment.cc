@@ -1235,11 +1235,7 @@ EpWorkarounds Environment::GetEpWorkarounds(
       SelectEpDevices(registered_ep_devices, device_type);
   for (const auto* ep_device : selected_ep_devices) {
     CHECK(ep_device);
-    std::string_view ep_name = ort_api->EpDevice_EpName(ep_device);
-    const auto iter = kKnownEPs.find(ep_name);
-    if (iter != kKnownEPs.end()) {
-      workarounds |= iter->second.workarounds;
-    }
+    workarounds |= GetEpWorkaroundsForEp(ort_api->EpDevice_EpName(ep_device));
   }
   return workarounds;
 }

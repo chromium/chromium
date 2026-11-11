@@ -381,6 +381,13 @@ inline CompiledModelFormat EpCompiledModelFormat(std::string_view ep_name) {
                                : CompiledModelFormat::kNone;
 }
 
+// Returns the workarounds of the execution provider named `ep_name`, or the
+// default (none) for an unknown execution provider.
+inline EpWorkarounds GetEpWorkaroundsForEp(std::string_view ep_name) {
+  const auto iter = kKnownEPs.find(ep_name);
+  return iter != kKnownEPs.end() ? iter->second.workarounds : EpWorkarounds();
+}
+
 }  // namespace webnn
 
 #endif  // SERVICES_WEBNN_PUBLIC_CPP_EXECUTION_PROVIDERS_INFO_H_

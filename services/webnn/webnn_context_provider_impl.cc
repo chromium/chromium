@@ -763,8 +763,11 @@ void WebNNContextProviderImpl::OnOrtEnvCreated(
         scoped_trace.AddStep("RequestWebNNCompilerContext");
 
         // Compute the context properties so the compiler context can be
-        // requested before the dispatch context is created.
-        const EpWorkarounds ep_workarounds = env->GetEpWorkarounds(device_type);
+        // requested before the dispatch context is created. The workarounds
+        // must come from the compile target rather than the EPs the online
+        // path would select, and match `DispatchContextImplOrt::Create()`.
+        const EpWorkarounds ep_workarounds =
+            GetEpWorkaroundsForEp(selected_device->ep_name);
         ContextProperties properties =
             ort::ContextImplOrt::GetContextProperties(
                 ep_workarounds.resample2d_limit_to_nchw);

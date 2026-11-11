@@ -42,8 +42,8 @@ DispatchContextImplOrt::Create(
   auto session_options =
       ort::SessionOptions::CreateForDispatch(target_device, env);
 
-  OrtHardwareDeviceType device_type = WebnnToOrtDeviceType(options->device);
-  EpWorkarounds ep_workarounds = env->GetEpWorkarounds(device_type);
+  // Must match the workarounds sent to the Compiler process.
+  EpWorkarounds ep_workarounds = GetEpWorkaroundsForEp(target_device.ep_name);
 
   auto* dispatch_context = new DispatchContextImplOrt(
       std::move(receiver), std::move(model_loader_receiver),

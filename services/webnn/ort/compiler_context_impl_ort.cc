@@ -34,11 +34,6 @@ base::unexpected<mojom::ErrorPtr> BuildGraphError() {
                                             "Failed to build graph."));
 }
 
-EpWorkarounds GetEpWorkaroundsForEp(std::string_view ep_name) {
-  const auto iter = kKnownEPs.find(ep_name);
-  return iter != kKnownEPs.end() ? iter->second.workarounds : EpWorkarounds();
-}
-
 }  // namespace
 
 struct CompilerContextImplOrt::CompilationResult {
