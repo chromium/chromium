@@ -14,7 +14,9 @@
 #include "base/test/gmock_move_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ttc/core/features.h"
@@ -282,3 +284,64 @@ IN_PROC_BROWSER_TEST_F(CustomizeToolbarHandlerBrowserTest,
   EXPECT_EQ(padded_bitmap.height(), kToolbarIconSize);
   EXPECT_TRUE(has_transparent_border(padded_bitmap, -kIconSizeDelta / 2));
 }
+
+// The "Ask about this" action is listed only when Smart Selection is enabled.
+class CustomizeToolbarHandlerSmartSelectionBrowserTest
+    : public CustomizeToolbarHandlerBrowserTest,
+      public testing::WithParamInterface<bool> {
+ protected:
+  static bool IsSmartSelectionEnabled() { return GetParam(); }
+
+ private:
+  glic::GlicTestEnvironment glic_test_environment_{
+      {},
+      [] {
+        auto features = glic::GetDefaultEnabledGlicTestFeatures();
+        if (IsSmartSelectionEnabled()) {
+          features.push_back(features::kGlicSelectionOverlayPromptBox);
+        }
+        return features;
+      }(),
+      [] {
+        auto features = glic::GetDefaultDisabledGlicTestFeatures();
+        if (!IsSmartSelectionEnabled()) {
+          features.push_back(features::kGlicSelectionOverlayPromptBox);
+        }
+        return features;
+      }()};
+};
+
+IN_PROC_BROWSER_TEST_P(CustomizeToolbarHandlerSmartSelectionBrowserTest,
+                       ListedInToolsOnlyWithSmartSelection) {
+  std::vector<side_panel::customize_chrome::mojom::ActionPtr> actions;
+  base::MockCallback<CustomizeToolbarHandler::ListActionsCallback> callback;
+  EXPECT_CALL(callback, Run(_)).Times(1).WillOnce(MoveArg(&actions));
+  handler().ListActions(callback.Get());
+
+  const auto it = std::ranges::find(
+      actions,
+      side_panel::customize_chrome::mojom::ActionId::kGlicSmartSelection,
+      &side_panel::customize_chrome::mojom::Action::id);
+  if (!IsSmartSelectionEnabled()) {
+    EXPECT_EQ(it, actions.end());
+    return;
+  }
+  ASSERT_NE(it, actions.end());
+  EXPECT_EQ((*it)->category,
+            side_panel::customize_chrome::mojom::CategoryId::kTools);
+
+  // Toggling it in Customize Chrome pins and unpins the toolbar button.
+  PinnedToolbarActionsModel* const model =
+      PinnedToolbarActionsModel::Get(browser()->GetProfile());
+  handler().PinAction(
+      side_panel::customize_chrome::mojom::ActionId::kGlicSmartSelection, true);
+  EXPECT_TRUE(model->Contains(kActionGlicSmartSelectionToolbar));
+  handler().PinAction(
+      side_panel::customize_chrome::mojom::ActionId::kGlicSmartSelection,
+      false);
+  EXPECT_FALSE(model->Contains(kActionGlicSmartSelectionToolbar));
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         CustomizeToolbarHandlerSmartSelectionBrowserTest,
+                         testing::Bool());

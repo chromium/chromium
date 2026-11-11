@@ -67,6 +67,8 @@ source_set("browser_tests") {
     ":customize_toolbar",
     "//base/test:test_support",
     "//chrome/browser/glic",
+    "//chrome/browser/glic/public:features",
+    "//chrome/browser/glic/test_support",
     "//chrome/browser/search_engines",
     "//chrome/browser/ttc/core:features",
     "//chrome/browser/ui:browser_actions",

@@ -36,6 +36,7 @@ enum ActionId {
   kContextualTasks,
   kTtc,
   kShowTabsFromOtherDevices,
+  kGlicSmartSelection,
 };
 
 // Unique identifiers for categories the actions can belong to.

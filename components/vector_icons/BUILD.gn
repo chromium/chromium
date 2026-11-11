@@ -124,6 +124,7 @@ if (current_toolchain == default_toolchain) {
       "cookie.icon",
       "cookie_chrome_refresh_old.icon",
       "credit_card_spark.icon",
+      "crop_auto.icon",
       "crop_free.icon",
       "crop_free_old.icon",
       "dangerous_chrome_refresh_old.icon",

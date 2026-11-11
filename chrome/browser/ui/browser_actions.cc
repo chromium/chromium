@@ -36,9 +36,13 @@
 #include "chrome/browser/glic/browser_ui/glic_vector_icon_manager.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_feature.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
+#include "chrome/browser/glic/selection/selection_overlay_invocation_helper.h"
 #include "chrome/browser/history_clusters/history_clusters_side_panel_utils.h"
 #include "chrome/browser/indigo/indigo_page_action_controller.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
@@ -47,6 +51,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/ai_mode_button_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/selection/metrics_logger.h"
 #include "chrome/browser/sharing_hub/sharing_hub_features.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/accelerator_table.h"
@@ -2599,6 +2604,33 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
                 IDR_GLIC_BUTTON_VECTOR_ICON),
             /*is_pinnable=*/false)
             .Build());
+
+    // Only offered when Smart Selection opens the overlay directly.
+    if (bwi->GetType() == BrowserWindowInterface::TYPE_NORMAL &&
+        base::FeatureList::IsEnabled(
+            features::kGlicSmartSelectionToolbarButton) &&
+        base::FeatureList::IsEnabled(
+            features::kGlicSelectionOverlayPromptBox) &&
+        glic::GetGlicProviderSpec(bwi->GetProfile())
+            .SupportsFeature(glic::GlicFeature::kCaptureRegion)) {
+      root_action_item_->AddChild(
+          ChromeMenuAction(
+              base::BindRepeating(
+                  [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                     actions::ActionInvocationContext context) {
+                    if (tabs::TabInterface* tab =
+                            bwi->GetActiveTabInterface()) {
+                      glic::InvokeSelectionOverlay(
+                          *tab, selection::EntryPoint::kToolbarButton);
+                    }
+                  },
+                  bwi),
+              kActionGlicSmartSelectionToolbar,
+              IDS_GLIC_TOOLBAR_ASK_ABOUT_THIS_LABEL,
+              IDS_GLIC_TOOLBAR_ASK_ABOUT_THIS_LABEL,
+              vector_icons::kCropAutoIcon)
+              .Build());
+    }
   }
 
   if (base::FeatureList::IsEnabled(features::kIndigo)) {

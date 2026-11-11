@@ -59,6 +59,7 @@ BASE_DECLARE_FEATURE(kGlicSelectionSmallChip);
 extern const base::FeatureParam<bool> kGlicSelectionSmallChipOnTop;
 
 BASE_DECLARE_FEATURE(kGlicSuggestionContextMenu);
+BASE_DECLARE_FEATURE(kGlicSmartSelectionToolbarButton);
 
 BASE_DECLARE_FEATURE(kGlicCreateTabAdjacent);
 

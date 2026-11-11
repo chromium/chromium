@@ -328,6 +328,7 @@ if (!is_android) {
       "//chrome/browser/prefs",
       "//chrome/browser/resources/omnibox_popup:resources_grit",
       "//chrome/browser/search_engines",
+      "//chrome/browser/selection",
       "//chrome/browser/sharing_hub",
       "//chrome/browser/signin",
       "//chrome/browser/skills",

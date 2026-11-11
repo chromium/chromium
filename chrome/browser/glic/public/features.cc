@@ -58,6 +58,10 @@ const base::FeatureParam<bool> kGlicSelectionSmallChipOnTop{
     &kGlicSelectionSmallChip, "on_top", true};
 
 BASE_FEATURE(kGlicSuggestionContextMenu, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGlicSmartSelectionToolbarButton,
+             // Enabled on all platforms including BUILDFLAG(IS_ANDROID);
+             // cpp_feature_parser requires a literal FeatureState constant.
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicClearTurnIdOnPanelWillOpen,
              base::FEATURE_DISABLED_BY_DEFAULT);

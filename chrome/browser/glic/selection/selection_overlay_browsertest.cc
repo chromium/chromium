@@ -19,10 +19,12 @@
 #include "chrome/browser/glic/host/glic_web_contents_warming_pool.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 #include "chrome/browser/glic/public/provider_features.h"
 #include "chrome/browser/glic/selection/explain_suggestion.h"
 #include "chrome/browser/glic/selection/explain_suggestion_fre.h"
 #include "chrome/browser/glic/selection/selection_overlay_controller.h"
+#include "chrome/browser/glic/selection/selection_overlay_invocation_helper.h"
 #include "chrome/browser/glic/selection/selection_overlay_untrusted_ui.h"
 #include "chrome/browser/glic/selection/selection_suggestion.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
@@ -34,6 +36,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/selection/features.h"
+#include "chrome/browser/selection/metrics_logger.h"
 #include "chrome/browser/selection/mojom/action.mojom.h"
 #include "chrome/browser/selection/suggestion_service.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
@@ -2736,6 +2739,56 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPrewarmBrowserTest,
                            ->GetAs<SelectionOverlayUntrustedUI>();
   ASSERT_TRUE(untrusted_ui);
   EXPECT_FALSE(untrusted_ui->HasPendingPageHandlerForTesting());
+}
+
+// With the panel closed, the toolbar entry point opens the overlay directly
+// and pre-selects the current text selection.
+IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
+                       InvokeSelectionOverlayPreselectsTextSelection) {
+  tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
+  content::WebContents* web_contents = tab->GetContents();
+  auto* controller =
+      SelectionOverlayController::FromTabWebContents(web_contents);
+  ASSERT_TRUE(controller);
+  auto* selection_observer = GlicSelectionObserver::From(tab);
+  ASSERT_TRUE(selection_observer);
+  ASSERT_TRUE(SelectAllAndWaitForBounds(web_contents));
+  ASSERT_TRUE(base::test::RunUntil([selection_observer]() {
+    return selection_observer->GetCurrentSelectionBounds().has_value();
+  }));
+  ASSERT_FALSE(GlicSidePanelCoordinator::IsShowing(tab));
+
+  base::HistogramTester histogram_tester;
+  InvokeSelectionOverlay(*tab, ::selection::EntryPoint::kToolbarButton);
+
+  ASSERT_OK(RunUntilEqual([controller]() { return controller->state(); },
+                          SelectionOverlayController::State::kOverlay,
+                          "Timeout waiting for overlay to reach kOverlay"));
+  EXPECT_EQ(controller->GetSelectedRegionCount(), 1u);
+  EXPECT_FALSE(GlicSidePanelCoordinator::IsShowing(tab));
+  histogram_tester.ExpectUniqueSample("SmartSelection.Invocation.ByEntryPoint",
+                                      ::selection::EntryPoint::kToolbarButton,
+                                      1);
+  histogram_tester.ExpectTotalCount("Glic.Invoke.InvocationSource", 0);
+
+  controller->Close();
+}
+
+// With the panel open, the toolbar entry point hands the capture to the panel
+// instead of opening the overlay itself.
+IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
+                       InvokeSelectionOverlayHandsOffToOpenPanel) {
+  tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
+  ASSERT_TRUE(OpenGlicForActiveTab().has_value());
+  ASSERT_TRUE(GlicSidePanelCoordinator::IsShowing(tab));
+
+  base::HistogramTester histogram_tester;
+  InvokeSelectionOverlay(*tab, ::selection::EntryPoint::kToolbarButton);
+
+  histogram_tester.ExpectUniqueSample(
+      "Glic.Invoke.InvocationSource",
+      mojom::InvocationSource::kCaptureRegionHotkey, 1);
+  EXPECT_TRUE(GlicSidePanelCoordinator::IsShowing(tab));
 }
 
 }  // namespace glic

@@ -141,6 +141,8 @@ MojoActionForChromeAction(actions::ActionId action_id) {
     case kActionSidePanelShowTabsFromOtherDevices:
       return side_panel::customize_chrome::mojom::ActionId::
           kShowTabsFromOtherDevices;
+    case kActionGlicSmartSelectionToolbar:
+      return side_panel::customize_chrome::mojom::ActionId::kGlicSmartSelection;
     default:
       return std::nullopt;
   }
@@ -206,6 +208,8 @@ std::optional<actions::ActionId> ChromeActionForMojoAction(
       return kActionSidePanelShowContextualTasks;
     case side_panel::customize_chrome::mojom::ActionId::kTtc:
       return kActionTtcToolbar;
+    case side_panel::customize_chrome::mojom::ActionId::kGlicSmartSelection:
+      return kActionGlicSmartSelectionToolbar;
     default:
       return std::nullopt;
   }
@@ -400,6 +404,8 @@ void CustomizeToolbarHandler::ListActions(ListActionsCallback callback) {
   add_action(kActionTtcToolbar,
              side_panel::customize_chrome::mojom::CategoryId::kTools);
   add_action(kActionSidePanelShowLensOverlayResults,
+             side_panel::customize_chrome::mojom::CategoryId::kTools);
+  add_action(kActionGlicSmartSelectionToolbar,
              side_panel::customize_chrome::mojom::CategoryId::kTools);
   add_action(kActionSidePanelShowSearchCompanion,
              side_panel::customize_chrome::mojom::CategoryId::kTools);

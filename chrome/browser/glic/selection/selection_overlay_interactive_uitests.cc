@@ -37,8 +37,11 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/selection/features.h"
+#include "chrome/browser/selection/metrics_logger.h"
 #include "chrome/browser/selection/suggestion_service.h"
 #include "chrome/browser/selection/suggestion_tool.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -74,6 +77,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "ui/actions/actions.h"
 #include "ui/base/accelerators/global_accelerator_listener/global_accelerator_listener.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -2342,6 +2346,31 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPrompt,
           "  chip.click();"
           "  return true;"
           "}"));
+}
+
+// The "Ask about this" toolbar action opens the overlay and attributes the
+// session to the toolbar entry point.
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPrompt,
+                       ToolbarActionShowsOverlay) {
+  const auto GetToolbarAction = [this]() {
+    return actions::ActionManager::Get().FindAction(
+        kActionGlicSmartSelectionToolbar,
+        BrowserActions::From(browser())->root_action_item());
+  };
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  base::HistogramTester histogram_tester;
+
+  RunTestSequence(
+      LoadPageAndWaitForPaint(kActiveTab),
+      // Fail fast instead of timing out in WaitForShow() below.
+      CheckResult(
+          [GetToolbarAction]() { return GetToolbarAction() != nullptr; }, true),
+      Do([GetToolbarAction]() { GetToolbarAction()->InvokeAction(); }),
+      WaitForShow(OverlayBaseController::kOverlayId), Do([&histogram_tester]() {
+        histogram_tester.ExpectUniqueSample(
+            "SmartSelection.Invocation.ByEntryPoint",
+            ::selection::EntryPoint::kToolbarButton, 1);
+      }));
 }
 
 IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPrompt,

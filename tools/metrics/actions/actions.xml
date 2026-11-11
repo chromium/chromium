@@ -39,6 +39,8 @@ should be able to be added at any place in this file.
       summary="Clear browsing data action"/>
   <variant name=".kActionCopyUrl" summary="Copy url action"/>
   <variant name=".kActionDevTools" summary="Developer tools action"/>
+  <variant name=".kActionGlicSmartSelectionToolbar"
+      summary="Glic smart selection toolbar button action"/>
   <variant name=".kActionNewIncognitoWindow"
       summary="New incognito window action"/>
   <variant name=".kActionNewIsolatedWindow"
@@ -32214,6 +32216,8 @@ should be able to be added at any place in this file.
     <variant name=".PinnedDevToolsButton"
         summary="Pinned developer tools button"/>
     <variant name=".PinnedGlicButton" summary="Pinned glic button"/>
+    <variant name=".PinnedGlicSmartSelectionButton"
+        summary="Pinned glic smart selection button"/>
     <variant name=".PinnedNewIncognitoWindowButton"
         summary="Pinned new incognito window button"/>
     <variant name=".PinnedNewIsolatedWindowButton"
