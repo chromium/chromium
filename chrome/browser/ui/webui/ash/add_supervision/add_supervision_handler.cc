@@ -10,8 +10,6 @@
 
 #include "base/check.h"
 #include "base/check_deref.h"
-#include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/profiles/profile.h"
@@ -19,6 +17,8 @@
 #include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_handler_utils.h"
 #include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_metrics_recorder.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_service.h"
+#include "components/services/app_service/public/cpp/app_update.h"
 #include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/signin/public/base/consent_level.h"
@@ -40,12 +40,14 @@ AddSupervisionHandler::AddSupervisionHandler(
     content::WebUI* web_ui,
     signin::IdentityManager* identity_manager,
     supervised_user::SupervisedUserService* supervised_user_service,
+    apps::AppService* app_service,
     Delegate* delegate)
     : web_ui_(web_ui),
       identity_manager_(identity_manager),
       // The handler is only created for a supervised account, which always has
       // a SupervisedUserService.
       supervised_user_service_(CHECK_DEREF(supervised_user_service)),
+      app_service_(CHECK_DEREF(app_service)),
       receiver_(this, std::move(receiver)),
       delegate_(delegate) {
   identity_manager_observation_.Observe(identity_manager_);
@@ -82,18 +84,16 @@ void AddSupervisionHandler::GetInstalledArcApps(
   }
 
   std::vector<std::string> installed_arc_apps;
-  apps::AppServiceProxyFactory::GetForProfile(profile)
-      ->AppRegistryCache()
-      .ForEachApp(
-          [&installed_arc_apps, profile](const apps::AppUpdate& update) {
-            if (ShouldIncludeAppUpdate(update)) {
-              std::string package_name =
-                  arc::AppIdToArcPackageName(update.AppId(), profile);
-              if (!package_name.empty()) {
-                installed_arc_apps.push_back(package_name);
-              }
-            }
-          });
+  app_service_->AppRegistryCache().ForEachApp(
+      [&installed_arc_apps, profile](const apps::AppUpdate& update) {
+        if (ShouldIncludeAppUpdate(update)) {
+          std::string package_name =
+              arc::AppIdToArcPackageName(update.AppId(), profile);
+          if (!package_name.empty()) {
+            installed_arc_apps.push_back(package_name);
+          }
+        }
+      });
 
   std::move(callback).Run(installed_arc_apps);
 }

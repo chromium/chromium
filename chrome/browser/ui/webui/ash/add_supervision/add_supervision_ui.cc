@@ -30,6 +30,7 @@
 #include "chromeos/ash/components/supervised_user/supervised_user_service_provider.h"
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/google/core/common/google_util.h"
+#include "components/services/app_service/public/cpp/app_service_registry.h"
 #include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
@@ -216,10 +217,12 @@ void AddSupervisionUI::BindInterface(
       IdentityManagerProvider::Get().Find(account_id);
   supervised_user::SupervisedUserService* supervised_user_service =
       SupervisedUserServiceProvider::Get().Find(account_id);
+  apps::AppService* app_service =
+      apps::AppServiceRegistry::Get()->Find(account_id);
 
   mojo_api_handler_ = std::make_unique<AddSupervisionHandler>(
       std::move(receiver), web_ui(), identity_manager, supervised_user_service,
-      this);
+      app_service, this);
 }
 
 void AddSupervisionUI::SetUpResources(const std::string& app_locale) {

@@ -15,6 +15,10 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
+namespace apps {
+class AppService;
+}  // namespace apps
+
 namespace content {
 class WebUI;
 }  // namespace content
@@ -52,12 +56,16 @@ class AddSupervisionHandler
   };
 
   // |delegate| is owned by the caller and its lifetime must outlive |this|.
+  // |app_service| must not be null, and must outlive |this|. It is the
+  // AppService for the user of |web_ui|'s Profile, which is destroyed on the
+  // Profile shutdown, i.e. after |web_ui| and |this| are destroyed.
   AddSupervisionHandler(
       mojo::PendingReceiver<add_supervision::mojom::AddSupervisionHandler>
           receiver,
       content::WebUI* web_ui,
       signin::IdentityManager* identity_manager,
       supervised_user::SupervisedUserService* supervised_user_service,
+      apps::AppService* app_service,
       Delegate* delegate);
 
   AddSupervisionHandler(const AddSupervisionHandler&) = delete;
@@ -94,6 +102,10 @@ class AddSupervisionHandler
   // The supervised user service for the account being supervised. Injected by
   // AddSupervisionUI, which resolves it for the account's profile.
   raw_ref<supervised_user::SupervisedUserService> supervised_user_service_;
+
+  // The AppService for the user of the account being supervised. Injected by
+  // AddSupervisionUI. Outlives |this|.
+  const raw_ref<apps::AppService> app_service_;
 
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>

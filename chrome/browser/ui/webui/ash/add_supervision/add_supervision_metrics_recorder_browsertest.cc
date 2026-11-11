@@ -17,7 +17,9 @@
 #include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_ui.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/ash/components/supervised_user/supervised_user_service_provider.h"
+#include "components/account_id/account_id.h"
 #include "components/application_locale_storage/application_locale_storage.h"
+#include "components/services/app_service/public/cpp/app_service_registry.h"
 #include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -67,14 +69,14 @@ class AddSupervisionMetricsRecorderTest : public InProcessBrowserTest {
                                        ->application_locale_storage()
                                        ->GetTag()
                                        .tag_string()));
+    const AccountId& account_id = session_manager::SessionManager::Get()
+                                      ->GetPrimarySession()
+                                      ->account_id();
     AddSupervisionHandler add_supervision_handler(
         std::move(receiver), &test_web_ui_,
         identity_test_env_->identity_manager(),
-        SupervisedUserServiceProvider::Get().Find(
-            session_manager::SessionManager::Get()
-                ->GetPrimarySession()
-                ->account_id()),
-        &add_supervision_ui);
+        SupervisedUserServiceProvider::Get().Find(account_id),
+        apps::AppServiceRegistry::Get()->Find(account_id), &add_supervision_ui);
     add_supervision_handler.NotifySupervisionEnabled();
   }
 
