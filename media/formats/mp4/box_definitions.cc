@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/containers/auto_spanification_helper.h"
 #include "base/containers/span.h"
 #include "base/containers/span_writer.h"
 #include "base/logging.h"

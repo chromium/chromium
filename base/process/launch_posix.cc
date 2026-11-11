@@ -29,7 +29,6 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
-#include "base/containers/auto_spanification_helper.h"
 #include "base/containers/span.h"
 #include "base/debug/debugger.h"
 #include "base/files/dir_reader_posix.h"

@@ -81,7 +81,6 @@
 #include <numeric>
 
 #include "base/check_op.h"
-#include "base/containers/auto_spanification_helper.h"
 #include "base/containers/span.h"
 #include "base/cpu.h"
 #include "base/memory/aligned_memory.h"

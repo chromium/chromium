@@ -11,7 +11,6 @@
 
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
-#include "base/containers/auto_spanification_helper.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"

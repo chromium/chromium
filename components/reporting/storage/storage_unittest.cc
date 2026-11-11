@@ -12,7 +12,6 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
-#include "base/containers/auto_spanification_helper.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span_writer.h"
 #include "base/files/scoped_temp_dir.h"
