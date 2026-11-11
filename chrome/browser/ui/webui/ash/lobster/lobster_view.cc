@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/webui/ash/lobster/lobster_view.h"
 
-#include "ash/constants/ash_features.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect.h"
@@ -79,9 +78,7 @@ void LobsterView::ResizeDueToAutoResize(content::WebContents* source,
 
 void LobsterView::ShowUI() {
   WebUIBubbleDialogView::ShowUI();
-  if (base::FeatureList::IsEnabled(ash::features::kLobsterDraggingSupport)) {
-    SetupDraggingSupport();
-  }
+  SetupDraggingSupport();
 }
 
 void LobsterView::SetContentsBounds(content::WebContents* source,
@@ -93,7 +90,7 @@ void LobsterView::SetContentsBounds(content::WebContents* source,
 }
 
 bool LobsterView::IsDraggingEnabled() {
-  return base::FeatureList::IsEnabled(ash::features::kLobsterDraggingSupport);
+  return true;
 }
 
 bool LobsterView::IsResizingEnabled() {
