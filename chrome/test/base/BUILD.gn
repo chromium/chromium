@@ -1670,9 +1670,11 @@ if (use_aura || is_android || is_mac) {
     } else if (is_android) {
       sources += [ "android/drag_and_drop_test_utils_android.cc" ]
       deps += [
+        "//chrome/test:drag_and_drop_test_support_jni_headers",
         "//content/public/android:jar_jni",
         "//content/public/common",
         "//net",
+        "//third_party/blink/public/common:headers",
         "//ui/android",
         "//ui/base/clipboard:clipboard_types",
       ]

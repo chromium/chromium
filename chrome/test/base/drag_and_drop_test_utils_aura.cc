@@ -296,8 +296,8 @@ struct DragStartWaiter::PlatformState : public aura::client::DragDropClient,
   raw_ptr<aura::client::DragDropClient> old_client_ = nullptr;
   base::ScopedObservation<aura::Window, aura::WindowObserver>
       window_observation_{this};
-  base::RunLoop run_loop_;
-  base::RunLoop release_loop_;
+  base::RunLoop run_loop_{base::RunLoop::Type::kNestableTasksAllowed};
+  base::RunLoop release_loop_{base::RunLoop::Type::kNestableTasksAllowed};
   base::OnceClosure on_drag_started_callback_;
   std::unique_ptr<ui::OSExchangeData> captured_data_;
   bool suppress_passing_further_ = false;

@@ -20,6 +20,10 @@
 #include "base/win/windows_types.h"
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/scoped_java_ref.h"
+#endif
+
 #if defined(USE_AURA)
 namespace aura {
 class Window;
@@ -38,6 +42,21 @@ class OSExchangeData;
 }  // namespace ui
 
 namespace drag_and_drop_test_utils {
+
+#if BUILDFLAG(IS_ANDROID)
+// The drag payload captured by `DragStartWaiter` on Android: the
+// `android.content.ClipData` that `DragAndDropDelegateImpl` built when the web
+// drag started. For an image drag, its item is a `DropDataProvider` content URI
+// whose bytes were cached exactly as in a real drag.
+struct CapturedDragData {
+  CapturedDragData();
+  CapturedDragData(const CapturedDragData&) = delete;
+  CapturedDragData& operator=(const CapturedDragData&) = delete;
+  ~CapturedDragData();
+
+  base::android::ScopedJavaGlobalRef<jobject> clip_data;
+};
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Test helper for simulating drag and drop happening in WebContents.
 // Acts as the **Drag Target Injector**: programmatically simulates OS-level
@@ -101,6 +120,16 @@ class DragAndDropSimulator {
   // Returns true upon success.
   bool SimulateDragEnter(const gfx::Point& location,
                          std::unique_ptr<ui::OSExchangeData> data);
+#else
+  // Simulates notification that the drag captured by `DragStartWaiter` (see
+  // `DragStartWaiter::TakeCapturedData()`) entered the specified `location`
+  // inside `drag_contents`. The captured `ClipData` is dispatched through the
+  // Java `EventForwarder`, so `SimulateDrop()` exercises the same `ClipData`
+  // parsing and content URI filtering as a real drop.
+  // `location` is relative to `drag_contents`.
+  // Returns true upon success.
+  bool SimulateDragEnter(const gfx::Point& location,
+                         std::unique_ptr<CapturedDragData> data);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)
@@ -142,13 +171,18 @@ class DragAndDropSimulator {
   std::unique_ptr<PlatformState> state_;
 };
 
-#if !BUILDFLAG(IS_ANDROID)
 // Helper for waiting until a drag-and-drop starts (e.g., in response to a
 // mouse-down + mouse-move simulated by the test).
 // Acts as the `Drag Source Interceptor`: overrides platform drag handlers to
 // intercept the drag initiation at the source window, capture the pristine
 // `OSExchangeData` containing Blink-generated metadata, and suppress the
 // native blocking run loop that would otherwise halt the test runner thread.
+//
+// On Android, the waiter observes drags that `DragAndDropDelegateImpl` starts
+// from `web_contents`'s container view and captures the `ClipData` Chrome
+// builds for the drag. A suppressed drag never reaches the system, so
+// `ReleaseDrag()` (also run on destruction) clears `DropDataProvider`'s cache
+// and delivers `ACTION_DRAG_ENDED` to `web_contents` to end it.
 //
 // This class must be used exclusively on the UI thread.
 //
@@ -171,12 +205,17 @@ class DragStartWaiter {
   // initiated.
   void WaitUntilDragStart();
 
-  // Releases the suppressed drag loop after capturing `OSExchangeData`.
+  // Ends the suppressed drag after capturing its drag data.
   void ReleaseDrag();
 
+#if !BUILDFLAG(IS_ANDROID)
   // Extracts the captured `OSExchangeData` received from Blink when the drag
   // was initiated.
   std::unique_ptr<ui::OSExchangeData> TakeCapturedData();
+#else
+  // Extracts the `ClipData` built when the drag was initiated.
+  std::unique_ptr<CapturedDragData> TakeCapturedData();
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Configures the waiter to intercept and suppress the drag propagation,
   // preventing the OS from passing the drag request down to the window manager.
@@ -187,7 +226,6 @@ class DragStartWaiter {
 
   std::unique_ptr<PlatformState> state_;
 };
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace drag_and_drop_test_utils
 

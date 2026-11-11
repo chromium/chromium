@@ -224,6 +224,12 @@
             android:exported="false"
             tools:node="remove" />
 
+        <!-- Mirrors the production provider for image data from Drag and Drop. -->
+        <provider android:name="org.chromium.ui.dragdrop.DropDataContentProvider"
+            android:authorities="{{ manifest_package|default(default_manifest_package) }}.DropDataProvider"
+            android:exported="false"
+            android:grantUriPermissions="true" />
+
         <!-- Restricting to just 2 native-only services, one for zygote and one for non-zygote. -->
         {% for i in range(2) %}
         <service android:name="org.chromium.content.app.NativeOnlySandboxedProcessService{{ i }}"

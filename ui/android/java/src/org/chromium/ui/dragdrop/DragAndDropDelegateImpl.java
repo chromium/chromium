@@ -32,6 +32,7 @@ import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -82,6 +83,21 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
     }
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:AndroidDragTargetType)
+
+    /** Test-only interceptor for drags that this class hands to the system. */
+    public interface DragStartInterceptorForTesting {
+        /**
+         * Called with the {@link ClipData} built for a drag right before {@link
+         * View#startDragAndDrop}. Returning true consumes the drag: no system drag starts, this
+         * delegate tracks no drag state, and the caller is told that the drag started.
+         */
+        boolean onDragStarting(View containerView, @Nullable ClipData clipData);
+
+        /** Called once {@link View#startDragAndDrop} has started a system drag. */
+        void onDragStarted(View containerView, @Nullable ClipData clipData);
+    }
+
+    private static @Nullable DragStartInterceptorForTesting sDragStartInterceptorForTesting;
 
     private int mShadowWidth;
     private int mShadowHeight;
@@ -166,6 +182,13 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
         if (clipdata == null && dropData.hasImage()) {
             return false;
         }
+        if (sDragStartInterceptorForTesting != null
+                && sDragStartInterceptorForTesting.onDragStarting(containerView, clipdata)) {
+            // No system drag will end this one, so drop the drag shadow state that
+            // createDragShadowBuilder() stored.
+            reset();
+            return true;
+        }
         mIsDragStarted = true;
         mDragTargetType = getDragTargetType(dropData);
 
@@ -174,8 +197,19 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
                 && mDragAndDropBrowserDelegate.getSupportDropInChrome()) {
             myLocalState = dropData;
         }
-        return containerView.startDragAndDrop(
-                clipdata, dragShadowBuilder, myLocalState, buildFlags(dropData));
+        boolean started =
+                containerView.startDragAndDrop(
+                        clipdata, dragShadowBuilder, myLocalState, buildFlags(dropData));
+        if (started && sDragStartInterceptorForTesting != null) {
+            sDragStartInterceptorForTesting.onDragStarted(containerView, clipdata);
+        }
+        return started;
+    }
+
+    public static void setDragStartInterceptorForTesting(
+            @Nullable DragStartInterceptorForTesting interceptor) {
+        sDragStartInterceptorForTesting = interceptor;
+        ResettersForTesting.register(() -> sDragStartInterceptorForTesting = null);
     }
 
     @Override

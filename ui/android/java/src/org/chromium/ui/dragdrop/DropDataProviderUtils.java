@@ -14,6 +14,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -54,7 +56,8 @@ public class DropDataProviderUtils {
      *
      * @return Whether the image cache was successfully cleared.
      */
-    static boolean clearImageCache(boolean imageIsInUse) {
+    @VisibleForTesting
+    public static boolean clearImageCache(boolean imageIsInUse) {
         Bundle bundle = new Bundle();
         bundle.putBoolean(DropDataProviderImpl.IMAGE_USAGE_PARAM, imageIsInUse);
         try {
