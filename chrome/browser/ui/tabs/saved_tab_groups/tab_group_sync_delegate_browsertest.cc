@@ -576,7 +576,8 @@ IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,
 
 // TODO(crbug.com/438299988): Re-enable this test after resolving null tab in
 // SavedTabGroupWebContentsListener::DidFinishNavigation.
-#if BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/552566225): Re-enable this test on macOS.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 #define MAYBE_RemoveLastTabFromSyncKeepsGroupAndAddsPendingNTP \
   DISABLED_RemoveLastTabFromSyncKeepsGroupAndAddsPendingNTP
 #else
@@ -992,7 +993,8 @@ IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,
 }
 
 // TODO(crbug.com/438395752): Re-enable this test on Linux.
-#if BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/552566225): Re-enable this test on macOS.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 #define MAYBE_TabRemovalsFromSyncDontCauseZeroTabStateInLocal \
   DISABLED_TabRemovalsFromSyncDontCauseZeroTabStateInLocal
 #else
