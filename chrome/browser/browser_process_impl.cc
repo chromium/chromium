@@ -898,21 +898,27 @@ void RequestProxyResolvingSocketFactory(
 }  // namespace
 
 void BrowserProcessImpl::EndSession() {
-  // Mark all the profiles as clean.
-  ProfileManager* pm = profile_manager();
   scoped_refptr<RundownTaskCounter> rundown_counter =
       base::MakeRefCounted<RundownTaskCounter>();
-  for (Profile* profile : pm->GetLoadedProfiles()) {
+
+  // `pm` is null if the session ends once StartTearDown() has started
+  // destroying the ProfileManager (e.g., a non-queued WM_ENDSESSION is
+  // dispatched within StartTearDown()). Destroyed profiles schedule their own
+  // pref writes, which are not waited for here.
+  if (ProfileManager* pm = profile_manager(); pm) {
+    // Mark all the profiles as clean.
+    for (Profile* profile : pm->GetLoadedProfiles()) {
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
-    ExitTypeService* exit_type_service =
-        ExitTypeService::GetInstanceForProfile(profile);
-    if (exit_type_service) {
-      exit_type_service->SetCurrentSessionExitType(ExitType::kForcedShutdown);
-    }
+      ExitTypeService* exit_type_service =
+          ExitTypeService::GetInstanceForProfile(profile);
+      if (exit_type_service) {
+        exit_type_service->SetCurrentSessionExitType(ExitType::kForcedShutdown);
+      }
 #endif
-    if (profile->GetPrefs()) {
-      profile->GetPrefs()->CommitPendingWrite(
-          base::OnceClosure(), rundown_counter->GetRundownClosure());
+      if (profile->GetPrefs()) {
+        profile->GetPrefs()->CommitPendingWrite(
+            base::OnceClosure(), rundown_counter->GetRundownClosure());
+      }
     }
   }
 
@@ -920,17 +926,20 @@ void BrowserProcessImpl::EndSession() {
   metrics::MetricsService* metrics = g_browser_process->metrics_service();
   if (metrics) {
     metrics->LogCleanShutdown();
-#if !BUILDFLAG(IS_CHROMEOS)
-    // The MetricsService may update Local State prefs in memory without
-    // writing the updated prefs to disk, so schedule a Local State write now.
-    //
-    // Do not schedule a write on ChromeOS because writing to disk multiple
-    // times during shutdown was causing shutdown problems. See
-    // crbug.com/41062061.
-    local_state_->CommitPendingWrite(base::OnceClosure(),
-                                     rundown_counter->GetRundownClosure());
-#endif
   }
+#if !BUILDFLAG(IS_CHROMEOS)
+  // The MetricsService may update Local State prefs in memory without
+  // writing the updated prefs to disk, so schedule a Local State write now.
+  // Also needed if the session ends within StartTearDown() (e.g., a non-queued
+  // WM_ENDSESSION is dispatched there): earlier Local State commits are not
+  // waited for, and the process is terminated right after this.
+  //
+  // Do not schedule a write on ChromeOS because writing to disk multiple
+  // times during shutdown was causing shutdown problems. See
+  // crbug.com/41062061.
+  local_state_->CommitPendingWrite(base::OnceClosure(),
+                                   rundown_counter->GetRundownClosure());
+#endif
 
   // This wait is legitimate and necessary on Windows, since the process will
   // be terminated soon.

@@ -26,6 +26,7 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/scoped_multi_source_observation.h"
+#include "base/scoped_observation.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -33,6 +34,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/values_test_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "base/version.h"
@@ -48,6 +50,7 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_destroyer.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -632,6 +635,53 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest,
   }
 
   ASSERT_TRUE(succeeded) << "profile->EndSession() timed out too often.";
+}
+
+// Calls EndSession() from ~ProfileManager, where profile_manager() already
+// returns null, as when the session ends during StartTearDown() (e.g.
+// WM_ENDSESSION to the status tray). Unlike there, the profiles still exist.
+class ProfileBrowserTestEndSessionDuringTeardown
+    : public ProfileBrowserTest,
+      public ProfileManagerObserver {
+ protected:
+  void SetUpOnMainThread() override {
+    ProfileBrowserTest::SetUpOnMainThread();
+    profile_manager_observation_.Observe(g_browser_process->profile_manager());
+  }
+
+  void TearDown() override {
+    ProfileBrowserTest::TearDown();
+    EXPECT_TRUE(end_session_called_);
+  }
+
+  // ProfileManagerObserver:
+  void OnProfileManagerDestroying() override {
+    profile_manager_observation_.Reset();
+    ASSERT_EQ(nullptr, g_browser_process->profile_manager());
+    // Not on disk yet; EndSession() must write it.
+    g_browser_process->local_state()->SetString(prefs::kProfileLastUsed,
+                                                "EndSessionDuringTeardown");
+    g_browser_process->EndSession();
+    end_session_called_ = true;
+#if !BUILDFLAG(IS_CHROMEOS)  // EndSession() does not write Local State there.
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    base::DictValue local_state = base::test::ParseJsonDictFromFile(
+        base::PathService::CheckedGet(chrome::DIR_USER_DATA)
+            .Append(chrome::kLocalStateFilename));
+    EXPECT_THAT(local_state.FindStringByDottedPath(prefs::kProfileLastUsed),
+                testing::Pointee(std::string("EndSessionDuringTeardown")));
+#endif
+  }
+
+ private:
+  base::ScopedObservation<ProfileManager, ProfileManagerObserver>
+      profile_manager_observation_{this};
+  bool end_session_called_ = false;
+};
+
+IN_PROC_BROWSER_TEST_F(ProfileBrowserTestEndSessionDuringTeardown,
+                       EndSessionWithoutProfileManager) {
+  // The checks run in OnProfileManagerDestroying(), during teardown.
 }
 
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_MAC)
