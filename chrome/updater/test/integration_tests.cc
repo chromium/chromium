@@ -3917,6 +3917,8 @@ class IntegrationTestUserInSystem : public IntegrationTest {
 
     IntegrationTest::SetUp();
 
+    // Test mode is entered for both updaters below.
+    test_server_ = std::make_unique<ScopedServer>();
     for (auto commands : {test_commands_, user_test_commands_}) {
       commands->EnterTestMode(
           test_server_->update_url(), test_server_->crash_upload_url(),
@@ -4022,8 +4024,7 @@ class IntegrationTestUserInSystem : public IntegrationTest {
 
   scoped_refptr<IntegrationTestCommands> user_test_commands_ =
       CreateIntegrationTestCommandsUser(UpdaterScope::kUser);
-  std::unique_ptr<ScopedServer> test_server_ =
-      std::make_unique<ScopedServer>(test_commands_);
+  std::unique_ptr<ScopedServer> test_server_;
 
  private:
   // Even though the updater itself supports installing per-user applications at
