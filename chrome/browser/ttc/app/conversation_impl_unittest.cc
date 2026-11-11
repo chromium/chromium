@@ -17,6 +17,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
+#include "build/build_config.h"
 #include "chrome/browser/ttc/app/audio_controller_impl.h"
 #include "chrome/browser/ttc/core/session_controller.h"
 #include "chrome/browser/ttc/core/states.h"
@@ -200,8 +201,12 @@ class ConversationImplTest : public testing::Test {
   // AudioController backed by `audio_manager_`. Both are reachable via
   // backend() and audio_controller().
   ConversationImpl& CreateConversation() {
+    auto backend = std::make_unique<MockTtcBackend>();
+    ON_CALL(*backend, GetSessionId()).WillByDefault([]() {
+      return std::optional<std::string>("test-session-id");
+    });
     conversation_ = std::make_unique<ConversationImpl>(
-        std::make_unique<MockTtcBackend>(),
+        std::move(backend),
         std::make_unique<AudioControllerImpl>(GetAudioStreamFactoryBinder(),
                                               GetAudioSystemFactory()),
         session_controller_);
@@ -601,6 +606,41 @@ TEST_F(ConversationImplTest, AudioCapturedBeforeMuteIsNotSent) {
 
   ASSERT_TRUE(session_controller_.last_audio_level().has_value());
   EXPECT_FLOAT_EQ(*session_controller_.last_audio_level(), 0.0f);
+}
+
+TEST_F(ConversationImplTest,
+       BackendInitializedForwardsSessionIdToSessionController) {
+  ConversationImpl& conversation = CreateConversation();
+
+  EXPECT_CALL(backend(), GetSessionId())
+      .WillOnce(testing::Return(std::string("server-session-789")));
+  conversation.OnBackendInitialized();
+
+  EXPECT_EQ(session_controller_.session_id(), "server-session-789");
+}
+
+TEST_F(ConversationImplTest,
+       BackendInitializedWithoutSessionIdReportsErrorAndCloses) {
+  ConversationImpl& conversation = CreateConversation();
+
+  EXPECT_CALL(backend(), GetSessionId())
+      .WillOnce(testing::Return(std::nullopt));
+  EXPECT_CALL(backend(), Close()).Times(1);
+
+  conversation.OnBackendInitialized();
+  EXPECT_EQ(session_controller_.session_id(), std::nullopt);
+  EXPECT_EQ(session_controller_.last_error(), ErrorCode::kInternalBackendError);
+  EXPECT_NE(session_controller_.GetSessionLifecycle(), SessionLifecycle::kLive);
+}
+
+
+TEST_F(ConversationImplTest, BackendInitializedIgnoredWhenSessionFinished) {
+  ConversationImpl& conversation = CreateConversation();
+
+  session_controller_.SetSessionLifecycle(SessionLifecycle::kFinished);
+  EXPECT_CALL(backend(), GetSessionId()).Times(0);
+  conversation.OnBackendInitialized();
+  EXPECT_EQ(session_controller_.session_id(), std::nullopt);
 }
 
 }  // namespace ttc

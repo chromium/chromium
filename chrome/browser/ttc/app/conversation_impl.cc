@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ttc/app/conversation_impl.h"
 
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "base/check.h"
@@ -127,6 +129,15 @@ void ConversationImpl::OnBackendInitialized() {
       SessionLifecycle::kFinished) {
     return;
   }
+  std::optional<std::string> session_id = backend_->GetSessionId();
+  if (!session_id.has_value()) {
+    session_controller_->GetJournal().Log("TtcBackendMissingSessionId", {});
+    session_controller_->OnError(ErrorCode::kInternalBackendError);
+    backend_->Close();
+    return;
+  }
+  CHECK(!session_id->empty());
+  session_controller_->SetSessionId(*session_id);
   backend_->SendToolSetUpdate(session_controller_->GetToolDefinitions());
   // Capture starts first, so that the session goes live unmuted.
   audio_controller_->StartCapture(/*device_id=*/"");
