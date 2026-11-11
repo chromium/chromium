@@ -38,6 +38,7 @@ std::unique_ptr<WorkerSettings> WorkerSettings::Copy(
       old_settings->allow_running_of_insecure_content_;
   new_settings->strictly_block_blockable_mixed_content_ =
       old_settings->strictly_block_blockable_mixed_content_;
+  new_settings->webgpu_enabled_ = old_settings->webgpu_enabled_;
   new_settings->generic_font_family_settings_ =
       old_settings->generic_font_family_settings_;
   return new_settings;
@@ -50,6 +51,7 @@ void WorkerSettings::CopyFlagValuesFromSettings(Settings* settings) {
       settings->GetAllowRunningOfInsecureContent();
   strictly_block_blockable_mixed_content_ =
       settings->GetStrictlyBlockBlockableMixedContent();
+  webgpu_enabled_ = settings->GetWebGPUEnabled();
   generic_font_family_settings_ = settings->GetGenericFontFamilySettings();
 }
 

@@ -28,7 +28,11 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/navigator_base.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/workers/worker_global_scope.h"
+#include "third_party/blink/renderer/core/workers/worker_settings.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_enum_conversions.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_adapter.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_buffer.h"
@@ -125,6 +129,19 @@ WebGPUExecutionContextToken GetExecutionContextToken(
     return To<LocalDOMWindow>(execution_context)->document()->Token();
   }
   NOTREACHED();
+}
+
+// Returns whether the embedder has allowed WebGPU for the given context via
+// the `webgpu_enabled` WebPreference (e.g. Android WebView's
+// AwSettings.setWebGraphicsEnabled).
+bool IsWebGPUEnabledBySettings(ExecutionContext* execution_context) {
+  if (auto* window = DynamicTo<LocalDOMWindow>(execution_context)) {
+    return window->GetFrame()->GetSettings()->GetWebGPUEnabled();
+  }
+  if (auto* worker = DynamicTo<WorkerGlobalScope>(execution_context)) {
+    return worker->GetWorkerSettings()->GetWebGPUEnabled();
+  }
+  return true;
 }
 
 }  // anonymous namespace
@@ -376,10 +393,19 @@ void GPU::RequestAdapterImpl(
 ScriptPromise<IDLNullable<GPUAdapter>> GPU::requestAdapter(
     ScriptState* script_state,
     const GPURequestAdapterOptions* options) {
-  // Remind developers when they are using WebGPU on unsupported platforms.
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLNullable<GPUAdapter>>>(
+          script_state);
+  auto promise = resolver->Promise();
+
   ExecutionContext* execution_context = GetExecutionContext();
-  if (execution_context &&
-      !base::FeatureList::IsEnabled(features::kWebGPUService)) {
+  if (!execution_context) {
+    resolver->Resolve(nullptr);
+    return promise;
+  }
+
+  // Remind developers when they are using WebGPU on unsupported platforms.
+  if (!base::FeatureList::IsEnabled(features::kWebGPUService)) {
     execution_context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kJavaScript,
         mojom::blink::ConsoleMessageLevel::kInfo,
@@ -388,10 +414,15 @@ ScriptPromise<IDLNullable<GPUAdapter>> GPU::requestAdapter(
         "Implementation-Status#implementation-status"));
   }
 
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<IDLNullable<GPUAdapter>>>(
-          script_state);
-  auto promise = resolver->Promise();
+  // requestAdapter() never rejects; resolve with null if the embedder has
+  // disabled WebGPU for this context.
+  if (!IsWebGPUEnabledBySettings(execution_context)) {
+    AddConsoleWarning(execution_context,
+                      "WebGPU has been disabled by the embedder.");
+    resolver->Resolve(nullptr);
+    return promise;
+  }
+
   RequestAdapterImpl(script_state, options, resolver);
   return promise;
 }

@@ -262,6 +262,12 @@
       initial: true,
     },
 
+    // Whether navigator.gpu.requestAdapter() may return an adapter.
+    {
+      name: "webGPUEnabled",
+      initial: true,
+    },
+
     {
       name: "webGLErrorsToConsoleEnabled",
       initial: true,

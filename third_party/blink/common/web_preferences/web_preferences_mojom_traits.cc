@@ -85,6 +85,7 @@ bool StructTraits<blink::mojom::WebPreferencesDataView,
       data.allow_file_access_from_file_urls();
   out->webgl1_enabled = data.webgl1_enabled();
   out->webgl2_enabled = data.webgl2_enabled();
+  out->webgpu_enabled = data.webgpu_enabled();
   out->privileged_webgl_extensions_enabled =
       data.privileged_webgl_extensions_enabled();
   out->webgl_errors_to_console_enabled = data.webgl_errors_to_console_enabled();

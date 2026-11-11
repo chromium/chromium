@@ -95,6 +95,7 @@ class CORE_EXPORT WebSettingsImpl final : public WebSettings {
   void SetInvertedColors(bool) override;
   void SetWebGL1Enabled(bool) override;
   void SetWebGL2Enabled(bool) override;
+  void SetWebGPUEnabled(bool) override;
   void SetGenericFontFamily(GenericFontFamily,
                             const WebString&,
                             UScriptCode = USCRIPT_COMMON) override;

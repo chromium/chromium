@@ -431,6 +431,10 @@ void WebSettingsImpl::SetWebGL2Enabled(bool enabled) {
   settings_->SetWebGL2Enabled(enabled);
 }
 
+void WebSettingsImpl::SetWebGPUEnabled(bool enabled) {
+  settings_->SetWebGPUEnabled(enabled);
+}
+
 void WebSettingsImpl::SetRenderVSyncNotificationEnabled(bool enabled) {
   render_v_sync_notification_enabled_ = enabled;
 }

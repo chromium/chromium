@@ -1660,6 +1660,7 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
 
   settings->SetWebGL1Enabled(prefs.webgl1_enabled);
   settings->SetWebGL2Enabled(prefs.webgl2_enabled);
+  settings->SetWebGPUEnabled(prefs.webgpu_enabled);
 
   // Enable WebGL errors to the JS console if requested.
   settings->SetWebGLErrorsToConsoleEnabled(

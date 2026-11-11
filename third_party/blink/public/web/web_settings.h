@@ -138,6 +138,7 @@ class WebSettings {
   virtual void SetSmoothScrollForFindEnabled(bool) = 0;
   virtual void SetWebGL1Enabled(bool) = 0;
   virtual void SetWebGL2Enabled(bool) = 0;
+  virtual void SetWebGPUEnabled(bool) = 0;
   // For GenericFontFamily::kFixed, Osaka font should be represented as "Osaka",
   // not "Osaka-Mono".
   virtual void SetGenericFontFamily(GenericFontFamily,

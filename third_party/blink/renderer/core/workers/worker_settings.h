@@ -38,6 +38,7 @@ class CORE_EXPORT WorkerSettings {
   bool GetStrictlyBlockBlockableMixedContent() const {
     return strictly_block_blockable_mixed_content_;
   }
+  bool GetWebGPUEnabled() const { return webgpu_enabled_; }
 
   const GenericFontFamilySettings& GetGenericFontFamilySettings() const {
     return generic_font_family_settings_;
@@ -54,6 +55,13 @@ class CORE_EXPORT WorkerSettings {
   bool strict_mixed_content_checking_ = false;
   bool allow_running_of_insecure_content_ = false;
   bool strictly_block_blockable_mixed_content_ = false;
+  // Populated from Settings for dedicated workers. Defaults to true for shared
+  // and service workers, which do not have a parent page's Settings (shared
+  // workers are not supported in Android WebView, the primary embedder using
+  // the per-page webgpu_enabled preference).
+  // TODO(crbug.com/582296097): Figure out how to handle service workers in a
+  // follow-up change.
+  bool webgpu_enabled_ = true;
 
   GenericFontFamilySettings generic_font_family_settings_;
 };
