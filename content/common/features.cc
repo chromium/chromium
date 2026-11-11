@@ -932,6 +932,11 @@ BASE_FEATURE(kTrustedTypesFromLiteral, base::FEATURE_DISABLED_BY_DEFAULT);
 #if BUILDFLAG(IS_WIN)
 BASE_FEATURE(kUpdateDirectManipulationHelperOnParentChange,
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Exercises event-based I/O in ordinary Win32 renderers independently of Basic
+// Process activation. Other process types retain the IOCP backend.
+BASE_FEATURE(kUseEventBasedMessagePumpForIOInRenderer,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 // Validate the code signing identity of the network process before establishing

@@ -136,8 +136,10 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <malloc.h>
+
 #include <cstring>
 
+#include "base/message_loop/message_pump_win.h"
 #include "ui/base/l10n/l10n_util_win.h"
 #include "ui/display/win/dpi.h"
 #elif BUILDFLAG(IS_MAC)
@@ -1190,6 +1192,13 @@ NO_STACK_PROTECTOR int ContentMainRunnerImpl::Run() {
               ContentMainDelegate::InvokedInChildProcess())) {
         InitializeFieldTrialAndFeatureList();
       }
+#if BUILDFLAG(IS_WIN)
+      if (process_type == switches::kRendererProcess &&
+          base::FeatureList::IsEnabled(
+              features::kUseEventBasedMessagePumpForIOInRenderer)) {
+        base::MessagePumpForIO::EnableEventBasedPump();
+      }
+#endif
       if (delegate_->ShouldInitializePerfetto(
               ContentMainDelegate::InvokedInChildProcess())) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)

@@ -231,6 +231,18 @@ bool CurrentIOThread::RegisterJobObject(HANDLE job,
   return GetMessagePumpForIO()->RegisterJobObject(job, handler);
 }
 
+bool CurrentIOThread::SupportsIOEvents() const {
+  DCHECK(current_->IsBoundToCurrentThread());
+  return GetMessagePumpForIO()->SupportsIOEvents();
+}
+
+bool CurrentIOThread::WatchIOEvent(
+    MessagePumpForIO::IOEventWatchController* controller,
+    MessagePumpForIO::IOEventHandler* handler) {
+  DCHECK(current_->IsBoundToCurrentThread());
+  return GetMessagePumpForIO()->WatchIOEvent(controller, handler);
+}
+
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 bool CurrentIOThread::WatchFileDescriptor(
     int fd,

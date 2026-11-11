@@ -183,7 +183,11 @@ std::unique_ptr<MessagePump> MessagePump::Create(MessagePumpType type) {
 #endif
 
     case MessagePumpType::IO:
+#if BUILDFLAG(IS_WIN)
+      return MessagePumpForIO::Create();
+#else
       return std::make_unique<MessagePumpForIO>();
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_ANDROID)
     case MessagePumpType::JAVA:

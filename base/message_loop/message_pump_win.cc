@@ -11,6 +11,7 @@
 #include <cstdint>
 #include <memory>
 #include <type_traits>
+#include <utility>
 
 #include "base/auto_reset.h"
 #include "base/check.h"
@@ -22,7 +23,9 @@
 #include "base/features.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/message_loop/message_pump_for_io_event_win.h"
 #include "base/message_loop/message_pump_wakeup_counter.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/task_features.h"
@@ -34,6 +37,10 @@
 namespace base {
 
 namespace {
+
+// Configured before pump creation; testing overrides use the same ordering.
+bool g_use_event_based_io_pump = false;
+bool g_force_event_based_io_pump_for_testing = false;
 
 // Returns the number of milliseconds before |next_task_time|, clamped between
 // zero and the biggest DWORD value (or INFINITE if |next_task_time.is_max()|).
@@ -56,7 +63,6 @@ DWORD GetSleepTimeoutMs(TimeTicks next_task_time,
   static_assert(!std::is_signed_v<DWORD>, "DWORD is unexpectedly signed");
   return saturated_cast<DWORD>(timeout_ms);
 }
-
 
 }  // namespace
 
@@ -763,13 +769,46 @@ MessagePumpForIO::IOHandler::IOHandler(const Location& from_here)
 
 MessagePumpForIO::IOHandler::~IOHandler() = default;
 
-MessagePumpForIO::MessagePumpForIO() {
+MessagePumpForIO::MessagePumpForIO() = default;
+
+MessagePumpForIO::~MessagePumpForIO() = default;
+
+// static
+std::unique_ptr<MessagePumpForIO> MessagePumpForIO::Create() {
+  if (g_use_event_based_io_pump || g_force_event_based_io_pump_for_testing) {
+    return std::make_unique<MessagePumpForIOEventImpl>();
+  }
+  return std::make_unique<MessagePumpForIOCompletionPortImpl>();
+}
+
+// static
+void MessagePumpForIO::EnableEventBasedPump() {
+  g_use_event_based_io_pump = true;
+}
+
+// static
+bool MessagePumpForIO::SetEventBasedPumpForTesting(bool enabled) {
+  return std::exchange(g_force_event_based_io_pump_for_testing, enabled);
+}
+
+bool MessagePumpForIO::SupportsIOEvents() const {
+  return false;
+}
+
+bool MessagePumpForIO::WatchIOEvent(IOEventWatchController* controller,
+                                    IOEventHandler* handler) {
+  // Completion events require the event-based I/O pump.
+  NOTREACHED();
+}
+
+MessagePumpForIOCompletionPortImpl::MessagePumpForIOCompletionPortImpl() {
   port_.Set(::CreateIoCompletionPort(INVALID_HANDLE_VALUE, nullptr,
                                      reinterpret_cast<ULONG_PTR>(nullptr), 1));
   DCHECK(port_.is_valid());
 }
 
-MessagePumpForIO::~MessagePumpForIO() = default;
+MessagePumpForIOCompletionPortImpl::~MessagePumpForIOCompletionPortImpl() =
+    default;
 
 void MessagePumpForIO::ScheduleWork() {
   // This is the only MessagePumpForIO method which can be called outside of
@@ -781,12 +820,8 @@ void MessagePumpForIO::ScheduleWork() {
     return;  // Work already scheduled.
   }
 
-  // Make sure the MessagePump does some work for us.
-  const BOOL ret = ::PostQueuedCompletionStatus(
-      port_.get(), 0, reinterpret_cast<ULONG_PTR>(this),
-      reinterpret_cast<OVERLAPPED*>(this));
-  if (ret) {
-    return;  // Post worked perfectly.
+  if (ScheduleNativeWork()) {
+    return;
   }
 
   // See comment in MessagePumpForUI::ScheduleWork() for this error recovery.
@@ -806,8 +841,8 @@ void MessagePumpForIO::ScheduleDelayedWork(
   // DoRunLoop() with the correct timeout when it's out of immediate tasks.
 }
 
-bool MessagePumpForIO::RegisterIOHandler(HANDLE file_handle,
-                                         IOHandler* handler) {
+bool MessagePumpForIOCompletionPortImpl::RegisterIOHandler(HANDLE file_handle,
+                                                           IOHandler* handler) {
   DCHECK_CALLED_ON_VALID_THREAD(bound_thread_);
 
   HANDLE port = ::CreateIoCompletionPort(
@@ -830,8 +865,14 @@ bool MessagePumpForIO::RegisterIOHandler(HANDLE file_handle,
   return true;
 }
 
-bool MessagePumpForIO::RegisterJobObject(HANDLE job_handle,
-                                         IOHandler* handler) {
+bool MessagePumpForIOCompletionPortImpl::ScheduleNativeWork() {
+  return ::PostQueuedCompletionStatus(
+             port_.get(), 0, reinterpret_cast<ULONG_PTR>(this),
+             reinterpret_cast<OVERLAPPED*>(this)) != FALSE;
+}
+
+bool MessagePumpForIOCompletionPortImpl::RegisterJobObject(HANDLE job_handle,
+                                                           IOHandler* handler) {
   DCHECK_CALLED_ON_VALID_THREAD(bound_thread_);
 
   JOBOBJECT_ASSOCIATE_COMPLETION_PORT info;
@@ -900,7 +941,7 @@ void MessagePumpForIO::WaitForWork(Delegate::NextWorkInfo next_work_info) {
   WaitForIOCompletion(timeout);
 }
 
-bool MessagePumpForIO::WaitForIOCompletion(DWORD timeout) {
+bool MessagePumpForIOCompletionPortImpl::WaitForIOCompletion(DWORD timeout) {
   DCHECK_CALLED_ON_VALID_THREAD(bound_thread_);
 
   IOItem item;
@@ -938,7 +979,8 @@ bool MessagePumpForIO::WaitForIOCompletion(DWORD timeout) {
 }
 
 // Asks the OS for another IO completion result.
-bool MessagePumpForIO::GetIOItem(DWORD timeout, IOItem* item) {
+bool MessagePumpForIOCompletionPortImpl::GetIOItem(DWORD timeout,
+                                                   IOItem* item) {
   DCHECK_CALLED_ON_VALID_THREAD(bound_thread_);
 
   ULONG_PTR key = reinterpret_cast<ULONG_PTR>(nullptr);
@@ -968,7 +1010,8 @@ bool MessagePumpForIO::GetIOItem(DWORD timeout, IOItem* item) {
   return true;
 }
 
-bool MessagePumpForIO::ProcessInternalIOItem(const IOItem& item) {
+bool MessagePumpForIOCompletionPortImpl::ProcessInternalIOItem(
+    const IOItem& item) {
   DCHECK_CALLED_ON_VALID_THREAD(bound_thread_);
 
   if (reinterpret_cast<void*>(this) ==

@@ -26,6 +26,8 @@
 
 namespace base {
 
+class MessagePumpForIOEventImpl;
+
 // MessagePumpWin serves as the base for specialized versions of the MessagePump
 // for Windows. It provides basic functionality like handling of observers and
 // controlling the lifetime of the message pump.
@@ -70,10 +72,12 @@ class BASE_EXPORT MessagePumpWin : public MessagePump {
   //         therefore are expected to keep pumping application tasks without
   //         necessitating a `ScopedAllowApplicationTasksInNativeNestedLoop`.
   //
-  //   * MessagePumpforIO: there's a dummy IO completion item with `this` as an
-  //     lpCompletionKey in the queue which is about to wakeup
+  //   * MessagePumpForIOCompletionPortImpl: there's a dummy IO completion item
+  //     with `this` as an lpCompletionKey in the queue about to wake up
   //     WaitForIOCompletion(). MessagePumpForIO doesn't support nesting so
   //     this is simpler than MessagePumpForUI.
+  //   * MessagePumpForIOEventImpl: the task-wakeup event is signaled or about
+  //     to be signaled by ScheduleWork().
   //
   // Note that this should not be used for memory ordering. It is accessed via
   // `memory_order_relaxed` in all cases.
@@ -217,9 +221,9 @@ class BASE_EXPORT MessagePumpForUI : public MessagePumpWin {
 
 //-----------------------------------------------------------------------------
 // MessagePumpForIO extends MessagePumpWin with methods that are particular to a
-// MessageLoop instantiated with TYPE_IO. This version of MessagePump does not
-// deal with Windows mesagges, and instead has a Run loop based on Completion
-// Ports so it is better suited for IO operations.
+// MessageLoop instantiated with TYPE_IO. Completion ports are the default.
+// Renderer startup selects completion-event watches when its event-pump feature
+// is enabled, to support Windows Basic Processes.
 //
 class BASE_EXPORT MessagePumpForIO : public MessagePumpWin {
  public:
@@ -255,10 +259,10 @@ class BASE_EXPORT MessagePumpForIO : public MessagePumpWin {
   };
 
   // Clients interested in receiving OS notifications when asynchronous IO
-  // operations complete should implement this interface and register themselves
-  // with the message pump.
+  // operations complete use IOHandler with completion-port pumps or
+  // IOEventHandler with event-based pumps.
   //
-  // Typical use #1:
+  // Completion-port example:
   //   class MyFile : public IOHandler {
   //     MyFile() : IOHandler(FROM_HERE) {
   //       ...
@@ -276,20 +280,58 @@ class BASE_EXPORT MessagePumpForIO : public MessagePumpWin {
   //     void DoSomeIo() {
   //       ...
   //       IOContext* context = new IOContext;
-  //       ReadFile(file_, buffer, num_bytes, &read, &context);
+  //       ReadFile(file_, buffer, num_bytes, &read, context->GetOverlapped());
   //     }
   //     HANDLE file_;
   //   };
   //
-  // Typical use #2:
-  // Same as the previous example, except that in order to deal with the
-  // requirement stated for the destructor, the class calls WaitForIOCompletion
-  // from the destructor to block until all IO finishes.
-  //     ~MyFile() {
-  //       while(pending_)
-  //         message_pump->WaitForIOCompletion(INFINITE, this);
+  // Completion-event example (all methods run on the I/O thread):
+  //   class MyEventFile : public IOEventHandler {
+  //    public:
+  //     explicit MyEventFile(win::ScopedHandle event_handle)
+  //         : IOEventHandler(FROM_HERE), watch_(std::move(event_handle)) {
+  //       ...  // Initialize file_ for overlapped I/O.
+  //       CHECK(message_pump->SupportsIOEvents());
+  //       CHECK(message_pump->WatchIOEvent(&watch_, this));
+  //       context_.GetOverlapped()->hEvent = watch_.event_handle();
   //     }
+  //     // Do not destroy this object while an operation is pending.
+  //     ~MyEventFile() {
+  //       DCHECK(!pending_);
+  //       watch_.StopWatching();
+  //     }
+  //     void DoSomeIo() {
+  //       DCHECK(!pending_);
+  //       const BOOL ok = ReadFile(file_, buffer, num_bytes, nullptr,
+  //                                context_.GetOverlapped());
+  //       PCHECK(ok || GetLastError() == ERROR_IO_PENDING);
+  //       pending_ = true;
+  //     }
+  //     void OnIOEventSignaled(IOEventWatchController* controller) override {
+  //       DCHECK_EQ(controller, &watch_);
+  //       DCHECK(pending_);
+  //       DWORD bytes_transferred = 0;
+  //       // This example keeps file_ valid until completion.
+  //       const BOOL ok = GetOverlappedResult(
+  //           file_, context_.GetOverlapped(), &bytes_transferred, FALSE);
+  //       const DWORD error = ok ? ERROR_SUCCESS : GetLastError();
+  //       pending_ = false;
+  //       ...  // Handle bytes_transferred and error.
+  //     }
+  //    private:
+  //     HANDLE file_;
+  //     IOContext context_;
+  //     IOEventWatchController watch_;
+  //     bool pending_ = false;
+  //   };
   //
+  // Event-based pumps do not use RegisterIOHandler(). The wait consumes the
+  // event signal before notification. Use a separate context and controller for
+  // each concurrently pending operation.
+  //
+  // Keep handlers, contexts, buffers, and event controllers alive until pending
+  // I/O completes; destroying the pump or stopping a watch does not establish
+  // completion.
   class BASE_EXPORT IOHandler {
    public:
     explicit IOHandler(const Location& from_here);
@@ -312,25 +354,133 @@ class BASE_EXPORT MessagePumpForIO : public MessagePumpWin {
     const Location io_handler_location_;
   };
 
-  MessagePumpForIO();
+  class IOEventHandler;
+
+  // Owns a supplied completion event and its watch, not the file handle or
+  // OVERLAPPED.
+  // The handler must outlive its watch. The controller and operation state
+  // must outlive pending I/O using this event.
+  // Watching and stopping must happen on the I/O thread. After pump teardown,
+  // the detached controller can be destroyed on any thread.
+  // Stopping a watch does not cancel or drain its outstanding I/O.
+  class BASE_EXPORT IOEventWatchController {
+   public:
+    // Takes ownership of a valid, initially unsignaled auto-reset event with
+    // SYNCHRONIZE and EVENT_MODIFY_STATE access. Callers may supply a brokered
+    // handle when local event creation is unavailable.
+    explicit IOEventWatchController(win::ScopedHandle event_handle);
+    ~IOEventWatchController();
+
+    IOEventWatchController(const IOEventWatchController&) = delete;
+    IOEventWatchController& operator=(const IOEventWatchController&) = delete;
+
+    HANDLE event_handle() const;
+    void StopWatching();
+
+   private:
+    friend class MessagePumpForIOEventImpl;
+
+    WaitableEvent event_;
+    raw_ptr<MessagePumpForIOEventImpl> pump_ = nullptr;
+    raw_ptr<IOEventHandler> handler_ = nullptr;
+  };
+
+  class BASE_EXPORT IOEventHandler {
+   public:
+    explicit IOEventHandler(const Location& from_here);
+
+    // The pump is the only waiter and consumes the signal before notification.
+    // While its file handle is valid, the consumer can retrieve the I/O result
+    // with GetOverlappedResult(..., FALSE). Do not use bWait=TRUE with these
+    // events: the pump has consumed the completion signal, so waiting again
+    // risks hanging. During shutdown, the completed operation can instead be
+    // retired without querying its result.
+    virtual void OnIOEventSignaled(IOEventWatchController* controller) = 0;
+
+    const Location& io_handler_location() const LIFETIME_BOUND {
+      return io_handler_location_;
+    }
+
+   protected:
+    virtual ~IOEventHandler() = default;
+
+   private:
+    const Location io_handler_location_;
+  };
+
+  // Creates an IOCP pump unless event-based pumps were enabled at startup or
+  // selected by the testing override.
+  static std::unique_ptr<MessagePumpForIO> Create();
+
+  // Selects event-based pumps for the process. Must be called during startup,
+  // before any I/O pumps are created.
+  static void EnableEventBasedPump();
+
+  // Overrides subsequent Create() calls to use events when enabled. Returns
+  // the previous override, which must be restored in reverse nesting order.
+  // Setting or restoring the override must not overlap pump creation.
+  // Existing pumps and the production selection are unaffected.
+  static bool SetEventBasedPumpForTesting(bool enabled);
+
   ~MessagePumpForIO() override;
 
   // MessagePump methods:
-  void ScheduleWork() override;
+  void ScheduleWork() final;
   void ScheduleDelayedWork(
       const Delegate::NextWorkInfo& next_work_info) override;
+
+  // Returns whether this pump supports completion-event watches.
+  virtual bool SupportsIOEvents() const;
+
+  // Adds the event in `controller` to the watched I/O events, notifying
+  // `handler` when it is signaled. The controller must remain alive until the
+  // watch is stopped or the pump is destroyed; the handler must outlive the
+  // watch. The controller and operation state must also outlive any pending
+  // I/O using the event, even after the watch stops. Returns false if the wait
+  // set is full. Only event-based pumps support this operation.
+  [[nodiscard]] virtual bool WatchIOEvent(IOEventWatchController* controller,
+                                          IOEventHandler* handler);
 
   // Register the handler to be used when asynchronous IO for the given file
   // completes. The registration persists as long as |file_handle| is valid, so
   // |handler| must be valid as long as there is pending IO for the given file.
   // Returns true iff the registration succeeds.
-  [[nodiscard]] bool RegisterIOHandler(HANDLE file_handle, IOHandler* handler);
+  // Requires a completion-port pump (!SupportsIOEvents()); calling this on an
+  // event-based pump is a contract violation, not a registration failure.
+  [[nodiscard]] virtual bool RegisterIOHandler(HANDLE file_handle,
+                                               IOHandler* handler) = 0;
 
   // Register the handler to be used to process job events. The registration
   // persists as long as the job object is live, so |handler| must be valid
   // until the job object is destroyed. Returns true if the registration
   // succeeded, and false otherwise.
-  bool RegisterJobObject(HANDLE job_handle, IOHandler* handler);
+  // Requires a completion-port pump (!SupportsIOEvents()); calling this on an
+  // event-based pump is a contract violation, not a registration failure.
+  virtual bool RegisterJobObject(HANDLE job_handle, IOHandler* handler) = 0;
+
+ protected:
+  MessagePumpForIO();
+
+  // Waits up to `timeout` milliseconds for a completion or task wakeup.
+  // Returns true if a notification was handled.
+  virtual bool WaitForIOCompletion(DWORD timeout) = 0;
+
+ private:
+  // Signals native task work from any thread. Returns false on failure.
+  virtual bool ScheduleNativeWork() = 0;
+
+  void DoRunLoop() final;
+  NOINLINE NOT_TAIL_CALLED void WaitForWork(
+      Delegate::NextWorkInfo next_work_info);
+};
+
+class BASE_EXPORT MessagePumpForIOCompletionPortImpl : public MessagePumpForIO {
+ public:
+  MessagePumpForIOCompletionPortImpl();
+  ~MessagePumpForIOCompletionPortImpl() override;
+
+  bool RegisterIOHandler(HANDLE file_handle, IOHandler* handler) override;
+  bool RegisterJobObject(HANDLE job_handle, IOHandler* handler) override;
 
  private:
   struct IOItem {
@@ -340,16 +490,10 @@ class BASE_EXPORT MessagePumpForIO : public MessagePumpWin {
     DWORD error;
   };
 
-  void DoRunLoop() override;
-  NOINLINE NOT_TAIL_CALLED void WaitForWork(
-      Delegate::NextWorkInfo next_work_info);
+  bool ScheduleNativeWork() override;
+  bool WaitForIOCompletion(DWORD timeout) override;
   bool GetIOItem(DWORD timeout, IOItem* item);
   bool ProcessInternalIOItem(const IOItem& item);
-  // Waits for the next IO completion for up to |timeout| milliseconds.
-  // Return true if any IO operation completed, and false if the timeout
-  // expired. If the completion port received any messages, the associated
-  // handlers will have been invoked before returning from this code.
-  bool WaitForIOCompletion(DWORD timeout);
 
   // The completion port associated with this thread.
   win::ScopedHandle port_;

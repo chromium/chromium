@@ -1901,6 +1901,8 @@ component("base") {
       "memory/platform_shared_memory_mapper_win.cc",
       "memory/platform_shared_memory_region_win.cc",
       "memory/protected_memory_win.cc",
+      "message_loop/message_pump_for_io_event_win.cc",
+      "message_loop/message_pump_for_io_event_win.h",
       "message_loop/message_pump_win.cc",
       "message_loop/message_pump_win.h",
       "moving_window.h",

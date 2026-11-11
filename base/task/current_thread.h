@@ -312,6 +312,10 @@ class BASE_EXPORT CurrentIOThread : public CurrentThread {
   [[nodiscard]] bool RegisterIOHandler(HANDLE file,
                                        MessagePumpForIO::IOHandler* handler);
   bool RegisterJobObject(HANDLE job, MessagePumpForIO::IOHandler* handler);
+  bool SupportsIOEvents() const;
+  [[nodiscard]] bool WatchIOEvent(
+      MessagePumpForIO::IOEventWatchController* controller,
+      MessagePumpForIO::IOEventHandler* handler);
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   // Please see WatchableIOMessagePumpPosix for definition.
   // Prefer base::FileDescriptorWatcher for non-critical IO.

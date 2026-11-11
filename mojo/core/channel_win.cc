@@ -13,6 +13,7 @@
 #include <memory>
 #include <optional>
 #include <tuple>
+#include <utility>
 
 #include "base/compiler_specific.h"
 #include "base/containers/queue.h"
@@ -29,6 +30,7 @@
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
+#include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/win_util.h"
@@ -83,7 +85,8 @@ class ChannelWinMessageQueue {
 
 class ChannelWin : public Channel,
                    public base::CurrentThread::DestructionObserver,
-                   public base::MessagePumpForIO::IOHandler {
+                   public base::MessagePumpForIO::IOHandler,
+                   public base::MessagePumpForIO::IOEventHandler {
  public:
   ChannelWin(Delegate* delegate,
              ConnectionParams connection_params,
@@ -91,6 +94,7 @@ class ChannelWin : public Channel,
              scoped_refptr<base::SingleThreadTaskRunner> io_task_runner)
       : Channel(delegate, handle_policy),
         base::MessagePumpForIO::IOHandler(FROM_HERE),
+        base::MessagePumpForIO::IOEventHandler(FROM_HERE),
         is_untrusted_process_(connection_params.is_untrusted_process()),
         self_(this),
         io_task_runner_(io_task_runner) {
@@ -210,14 +214,49 @@ class ChannelWin : public Channel,
   }
 
  private:
+  struct EventIOState {
+    EventIOState(base::win::ScopedHandle read_event,
+                 base::win::ScopedHandle write_event)
+        : read_watch(std::move(read_event)),
+          write_watch(std::move(write_event)) {}
+
+    base::MessagePumpForIO::IOEventWatchController read_watch;
+    base::MessagePumpForIO::IOEventWatchController write_watch;
+  };
+
   // May run on any thread.
   ~ChannelWin() override = default;
 
   void StartOnIOThread() {
+    DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
     base::CurrentThread::Get()->AddDestructionObserver(this);
-    if (!base::CurrentIOThread::Get()->RegisterIOHandler(handle_.get(), this)) {
-      OnError(Error::kConnectionFailed);
-      return;
+    auto io_thread = base::CurrentIOThread::Get();
+    if (io_thread->SupportsIOEvents()) {
+      // TODO(crbug.com/424506430): Supply brokered events for Basic Processes
+      // instead of creating them locally.
+      base::win::ScopedHandle read_event(
+          ::CreateEventW(nullptr, FALSE, FALSE, nullptr));
+      base::win::ScopedHandle write_event(
+          ::CreateEventW(nullptr, FALSE, FALSE, nullptr));
+      if (!read_event.is_valid() || !write_event.is_valid()) {
+        OnError(Error::kConnectionFailed);
+        return;
+      }
+      event_io_ = std::make_unique<EventIOState>(std::move(read_event),
+                                                 std::move(write_event));
+      if (!io_thread->WatchIOEvent(&event_io_->read_watch, this) ||
+          !io_thread->WatchIOEvent(&event_io_->write_watch, this)) {
+        event_io_.reset();
+        OnError(Error::kConnectionFailed);
+        return;
+      }
+      read_context_.GetOverlapped()->hEvent =
+          event_io_->read_watch.event_handle();
+    } else {
+      if (!io_thread->RegisterIOHandler(handle_.get(), this)) {
+        OnError(Error::kConnectionFailed);
+        return;
+      }
     }
 
     counted_for_metrics_ = IsRendererProcessForMetrics();
@@ -237,9 +276,13 @@ class ChannelWin : public Channel,
     // as a result of a ReadFile() failure on the channel.
     scoped_refptr<ChannelWin> keep_alive(this);
 
-    // Now that we have registered our IOHandler, we can start writing.
+    // Completion dispatch is now ready, so queued writes can be issued.
     {
       base::AutoLock lock(write_lock_);
+      if (event_io_) {
+        write_context_.GetOverlapped()->hEvent =
+            event_io_->write_watch.event_handle();
+      }
       if (delay_writes_) {
         delay_writes_ = false;
         if (!WriteNextNoLock()) {
@@ -252,6 +295,8 @@ class ChannelWin : public Channel,
   }
 
   void ShutDownOnIOThread() {
+    DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
+    is_shutting_down_ = true;
     base::CurrentThread::Get()->RemoveDestructionObserver(this);
 
     {
@@ -274,6 +319,7 @@ class ChannelWin : public Channel,
     } else {
       handle_.Close();
     }
+    MaybeFinishEventShutdown();
 
     if (counted_for_metrics_) {
       DCHECK_GT(g_open_channel_metrics.open_channels, 0u);
@@ -289,6 +335,63 @@ class ChannelWin : public Channel,
     DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
     if (self_) {
       ShutDownOnIOThread();
+    }
+  }
+
+  void MaybeFinishEventShutdown() {
+    DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
+    CHECK(is_shutting_down_);
+    if (!event_io_ || pending_read_) {
+      return;
+    }
+    {
+      base::AutoLock lock(write_lock_);
+      if (pending_write_) {
+        return;
+      }
+      write_context_.GetOverlapped()->hEvent = nullptr;
+    }
+    read_context_.GetOverlapped()->hEvent = nullptr;
+    event_io_.reset();
+  }
+
+  // base::MessagePumpForIO::IOEventHandler:
+  void OnIOEventSignaled(
+      base::MessagePumpForIO::IOEventWatchController* controller) override {
+    DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
+    CHECK(event_io_);
+
+    if (is_shutting_down_) {
+      // The pipe is closed or leaked. Retire only completed operations,
+      // keeping this alive through watch cleanup and write-lock release.
+      CHECK(!handle_.is_valid());
+      scoped_refptr<ChannelWin> keep_alive;
+      if (controller == &event_io_->read_watch) {
+        if (!pending_read_ ||
+            !HasOverlappedIoCompleted(read_context_.GetOverlapped())) {
+          return;
+        }
+        keep_alive = std::move(pending_read_);
+      } else {
+        CHECK_EQ(controller, &event_io_->write_watch);
+        base::AutoLock lock(write_lock_);
+        if (!pending_write_ ||
+            !HasOverlappedIoCompleted(write_context_.GetOverlapped())) {
+          return;
+        }
+        keep_alive = std::move(pending_write_);
+      }
+      MaybeFinishEventShutdown();
+      return;
+    }
+
+    if (controller == &event_io_->read_watch) {
+      OnReadDone();
+    } else {
+      CHECK_EQ(controller, &event_io_->write_watch);
+      // Synchronize with WriteFile(), which may still be returning on another
+      // thread after the completion event has been signaled.
+      OnWriteDone();
     }
   }
 
@@ -397,7 +500,8 @@ class ChannelWin : public Channel,
     }
   }
 
-  bool WriteNoLock(Channel::Message* message) {
+  bool WriteNoLock(Channel::Message* message)
+      EXCLUSIVE_LOCKS_REQUIRED(write_lock_) {
     // We can release all the handles immediately now that we're attempting an
     // actual write to the remote process.
     //
@@ -420,14 +524,15 @@ class ChannelWin : public Channel,
     BOOL ok = WriteFile(handle_.get(), message->data(),
                         static_cast<DWORD>(message->data_num_bytes()), NULL,
                         write_context_.GetOverlapped());
-    if (ok || GetLastError() == ERROR_IO_PENDING) {
+    const DWORD error = ok ? ERROR_SUCCESS : ::GetLastError();
+    if (error == ERROR_SUCCESS || error == ERROR_IO_PENDING) {
       pending_write_ = this;
       return true;
     }
     return false;
   }
 
-  bool WriteNextNoLock() {
+  bool WriteNextNoLock() EXCLUSIVE_LOCKS_REQUIRED(write_lock_) {
     if (outgoing_messages_.IsEmpty()) {
       return true;
     }
@@ -439,7 +544,10 @@ class ChannelWin : public Channel,
 
   void OnWriteError(Error error) {
     DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
-    DCHECK(reject_writes_);
+    {
+      base::AutoLock lock(write_lock_);
+      CHECK(reject_writes_);
+    }
 
     if (error == Error::kDisconnected) {
       // If we can't write because the pipe is disconnected then continue
@@ -469,14 +577,17 @@ class ChannelWin : public Channel,
   // A reference to this Channel, held while a read is outstanding.
   scoped_refptr<ChannelWin> pending_read_;
 
+  std::unique_ptr<EventIOState> event_io_;
+  bool is_shutting_down_ = false;
+
   // Protects all fields potentially accessed on multiple threads via Write().
   base::Lock write_lock_;
-  base::MessagePumpForIO::IOContext write_context_;
-  ChannelWinMessageQueue outgoing_messages_;
-  bool delay_writes_ = true;
-  bool reject_writes_ = false;
+  base::MessagePumpForIO::IOContext write_context_ GUARDED_BY(write_lock_);
+  ChannelWinMessageQueue outgoing_messages_ GUARDED_BY(write_lock_);
+  bool delay_writes_ GUARDED_BY(write_lock_) = true;
+  bool reject_writes_ GUARDED_BY(write_lock_) = false;
   // A reference to this Channel, held while a write is outstanding.
-  scoped_refptr<ChannelWin> pending_write_;
+  scoped_refptr<ChannelWin> pending_write_ GUARDED_BY(write_lock_);
 
   bool leak_handle_ = false;
 };

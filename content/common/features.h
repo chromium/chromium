@@ -275,6 +275,7 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kTrustedTypesFromLiteral);
 #if BUILDFLAG(IS_WIN)
 CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kUpdateDirectManipulationHelperOnParentChange);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kUseEventBasedMessagePumpForIOInRenderer);
 #endif
 #if BUILDFLAG(IS_MAC)
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kValidateNetworkServiceProcessIdentity);
