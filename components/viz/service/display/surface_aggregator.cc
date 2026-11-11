@@ -1659,14 +1659,6 @@ void SurfaceAggregator::SetRenderPassDamageRect(
             "Compositing.SurfaceAggregator.RenderPassDamageType",
             is_output_rect ? RenderPassDamage::kOutputRect
                            : RenderPassDamage::kRootClipped);
-
-        const auto render_pass_overdamage =
-            copy_pass->output_rect.size().Area64() -
-            root_clip_in_render_pass_space.size().Area64();
-
-        UMA_HISTOGRAM_COUNTS_10M(
-            "Compositing.SurfaceAggregator.ExcessPixelsClipped",
-            render_pass_overdamage);
       }
     }
 
