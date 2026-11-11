@@ -137,11 +137,6 @@ inline constexpr char kChroMenuSearchScoringDescription[] =
     "\"1.0,0.8,0.85,0.6\"). Empty or invalid entries keep their default "
     "value. Only takes effect when #chro-menu-search is also enabled.";
 
-inline constexpr char kCredentialManagementUnifiedUiName[] =
-    "Credential Management Unified UI";
-inline constexpr char kCredentialManagementUnifiedUiDescription[] =
-    "Enables the Unified UI for the credential management password APIs.";
-
 inline constexpr char kCrossDeviceSigninFromDesktopName[] =
     "Cross-Device Sign-in From Desktop";
 inline constexpr char kCrossDeviceSigninFromDesktopDescription[] =

@@ -2648,14 +2648,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "credential-management-unified-ui",
-    "owners": [
-      "derinel@google.com",
-      "anki-team@google.com"
-    ],
-    "expiry_milestone": 160
-  },
-  {
     "name": "critical-action-history",
     "owners": [
       "kalinino@google.com",
