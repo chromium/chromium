@@ -63,6 +63,7 @@ if (is_win || is_mac || is_linux) {
       "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/extensions:browser_tests",
       "//chrome/test:test_support",
+      "//chrome/test/base:fake_gaia_mixin",
       "//chrome/test/supervised_user:test_support",
       "//content/test:test_support",
       "//testing/gtest",

@@ -85,6 +85,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui/interaction",
     "//chrome/browser/ui/passwords",
     "//chrome/browser/ui/views/permissions",
+    "//chrome/browser/ui/views/toolbar:test_support",
     "//chrome/browser/ui/webauthn",
     "//chrome/test:test_support",
     "//components/permissions",
@@ -144,7 +145,9 @@ if (!is_chromeos_device) {
       "//chrome/browser/ui/views/location_bar:test_support",
       "//chrome/browser/ui/views/page_info",
       "//chrome/browser/ui/views/permissions",
+      "//chrome/browser/ui/views/toolbar:test_support",
       "//chrome/test:test_support",
+      "//chrome/test/permissions",
       "//ui/events:test_support",
     ]
   }

@@ -101,4 +101,8 @@ source_set("interactive_ui_tests") {
     "//testing/gmock",
     "//ui/views",
   ]
+
+  if (!is_chromeos) {
+    deps += [ "//chrome/test/permissions" ]
+  }
 }

@@ -211,6 +211,7 @@ source_set("interactive_ui_tests") {
     "//chrome/browser/ui/global_media_controls",
     "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_test_path_utils",
     "//components/global_media_controls",
     "//components/live_caption:constants",
     "//components/live_caption:utils",

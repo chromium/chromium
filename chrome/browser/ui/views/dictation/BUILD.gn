@@ -158,6 +158,7 @@ source_set("interactive_ui_tests") {
     "//chrome/common:constants",
     "//chrome/common/extensions/api",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_test_utils",
     "//chrome/test/user_education",
     "//components/feature_engagement/public",
     "//components/prefs",

@@ -290,6 +290,8 @@ source_set("browser_tests") {
   deps = [
     "//chrome/browser/ui:browser_window_header",
     "//chrome/browser/ui/views/frame:browser_view_header",
+    "//chrome/browser/ui/views/location_bar:test_support",
+    "//chrome/test/base:chrome_test_path_utils",
   ]
 
   if (!is_android) {
@@ -446,6 +448,7 @@ source_set("interactive_ui_tests") {
     "//chrome/common",
     "//chrome/test:test_support",
     "//chrome/test/interaction",
+    "//chrome/test/permissions",
     "//chrome/test/user_education",
     "//components/custom_handlers",
     "//components/javascript_dialogs",

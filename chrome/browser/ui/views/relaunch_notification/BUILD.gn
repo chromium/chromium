@@ -150,6 +150,7 @@ if (!is_chromeos) {
     deps = [
       ":relaunch_notification",
       "//base",
+      "//chrome/browser/ui/views/toolbar:test_support",
       "//chrome/test:test_support",
       "//testing/gtest",
     ]

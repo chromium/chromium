@@ -65,6 +65,7 @@ source_set("interactive_ui_tests") {
     "//chrome/browser/ui/views/frame:toolbar_button_provider",
     "//chrome/browser/ui/views/page_action",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_test_utils",
     "//components/autofill/core/common",
     "//components/desktop_to_mobile_promos",
     "//components/feature_engagement/public",

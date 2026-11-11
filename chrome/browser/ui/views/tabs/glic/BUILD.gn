@@ -95,6 +95,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui/views/glic",
     "//chrome/browser/ui/views/interaction",
     "//chrome/browser/ui/views/tabs:tab_strip",
+    "//chrome/browser/ui/views/toolbar:test_support",
     "//chrome/common:chrome_features",
     "//chrome/test/base:in_process_browser_test",
     "//components/keyed_service/content",

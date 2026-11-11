@@ -138,6 +138,7 @@ source_set("interactive_ui_tests") {
     "//chrome/browser/ui/views/frame",
     "//chrome/browser/ui/views/page_info",
     "//chrome/browser/ui/views/toolbar",
+    "//chrome/browser/ui/web_applications/test:test_support_ui",
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/common",
     "//chrome/test:test_support",

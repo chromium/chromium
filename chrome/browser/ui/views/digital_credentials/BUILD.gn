@@ -53,6 +53,7 @@ if (!is_android) {
       "//chrome/browser:chrome_content_browser_client",
       "//chrome/browser/digital_credentials",
       "//chrome/test:test_support",
+      "//chrome/test/base:chrome_test_path_utils",
       "//ui/events:test_support",
     ]
   }

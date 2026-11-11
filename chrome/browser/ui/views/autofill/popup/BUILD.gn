@@ -602,6 +602,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui/views/autofill/payments:bnpl_issuer_linked_pill",
     "//chrome/test:test_support",
     "//chrome/test/base:testing_browser_process",
+    "//components/autofill/content/browser:test_support",
     "//components/favicon/core/test:test_support",
     "//components/image_fetcher/core:test_support",
     "//testing/gmock",
