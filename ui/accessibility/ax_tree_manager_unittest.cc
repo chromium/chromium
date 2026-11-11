@@ -296,8 +296,8 @@ TEST(AXTreeManagerTest, MenuPopupDeleteWhileExposedFiresEnd) {
       std::make_unique<AXTree>(CreateInitialUpdate(CreateRootOnlyUpdate())));
 
   ASSERT_TRUE(manager.GetTree()->Unserialize(CreateMenuUpdate(false)));
-  EXPECT_TRUE(HasGeneratedEvent(manager.event_generator(),
-                                AXEventGenerator::Event::MENU_POPUP_START, 2));
+  EXPECT_FALSE(HasGeneratedEvent(manager.event_generator(),
+                                 AXEventGenerator::Event::MENU_POPUP_START, 2));
 
   manager.event_generator().ClearEvents();
   ASSERT_TRUE(manager.GetTree()->Unserialize(CreateRootOnlyUpdate()));
@@ -308,7 +308,7 @@ TEST(AXTreeManagerTest, MenuPopupDeleteWhileExposedFiresEnd) {
   EXPECT_EQ(2, manager.fired_events()[0].node_id);
 }
 
-TEST(AXTreeManagerTest, MenuPopupDeleteWhileIgnoredDoesNotFireEnd) {
+TEST(AXTreeManagerTest, MenuPopupDeleteWhileIgnoredFiresEnd) {
   TestMenuPopupAXTreeManager manager(
       std::make_unique<AXTree>(CreateInitialUpdate(CreateRootOnlyUpdate())));
 
@@ -317,16 +317,19 @@ TEST(AXTreeManagerTest, MenuPopupDeleteWhileIgnoredDoesNotFireEnd) {
 
   ASSERT_TRUE(manager.GetTree()->Unserialize(CreateRootOnlyUpdate()));
 
-  EXPECT_TRUE(manager.fired_events().empty());
+  ASSERT_EQ(1u, manager.fired_events().size());
+  EXPECT_EQ(AXEventGenerator::Event::MENU_POPUP_END,
+            manager.fired_events()[0].event_type);
+  EXPECT_EQ(2, manager.fired_events()[0].node_id);
 }
 
-TEST(AXTreeManagerTest, MenuPopupHideThenDeleteFiresOneEnd) {
+TEST(AXTreeManagerTest, MenuPopupHideThenDeleteFiresTwoEnds) {
   TestMenuPopupAXTreeManager manager(
       std::make_unique<AXTree>(CreateInitialUpdate(CreateRootOnlyUpdate())));
 
   ASSERT_TRUE(manager.GetTree()->Unserialize(CreateMenuUpdate(false)));
-  ASSERT_TRUE(HasGeneratedEvent(manager.event_generator(),
-                                AXEventGenerator::Event::MENU_POPUP_START, 2));
+  ASSERT_FALSE(HasGeneratedEvent(manager.event_generator(),
+                                 AXEventGenerator::Event::MENU_POPUP_START, 2));
   manager.event_generator().ClearEvents();
 
   ASSERT_TRUE(manager.GetTree()->Unserialize(CreateMenuUpdate(true)));
@@ -339,7 +342,7 @@ TEST(AXTreeManagerTest, MenuPopupHideThenDeleteFiresOneEnd) {
   ASSERT_TRUE(manager.GetTree()->Unserialize(CreateRootOnlyUpdate()));
 
   EXPECT_EQ(
-      1, CountFiredEvents(manager, AXEventGenerator::Event::MENU_POPUP_END, 2));
+      2, CountFiredEvents(manager, AXEventGenerator::Event::MENU_POPUP_END, 2));
 }
 
 TEST(AXTreeManagerTest, CrashOnRoleChangeToInlineText) {
