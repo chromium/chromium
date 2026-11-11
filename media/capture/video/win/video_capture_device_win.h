@@ -16,6 +16,7 @@
 #include <wrl/client.h>
 
 #include <map>
+#include <memory>
 #include <optional>
 #include <string>
 
@@ -24,6 +25,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
+#include "media/capture/capture_export.h"
 #include "media/capture/video/video_capture_device.h"
 #include "media/capture/video/win/capability_list_win.h"
 #include "media/capture/video/win/sink_filter_win.h"
@@ -37,8 +39,8 @@ class Location;
 namespace media {
 
 // All the methods in the class can only be run on a COM initialized thread.
-class VideoCaptureDeviceWin : public VideoCaptureDevice,
-                              public SinkFilterObserver {
+class CAPTURE_EXPORT VideoCaptureDeviceWin : public VideoCaptureDevice,
+                                             public SinkFilterObserver {
  public:
   // A utility class that wraps the AM_MEDIA_TYPE type and guarantees that
   // we free the structure when exiting the scope.  DCHECKing is also done to
@@ -84,6 +86,14 @@ class VideoCaptureDeviceWin : public VideoCaptureDevice,
   VideoCaptureDeviceWin(const VideoCaptureDeviceDescriptor& device_descriptor,
                         Microsoft::WRL::ComPtr<IBaseFilter> capture_filter);
 
+  // Creates a device that uses the given graph builders instead of the system
+  // DirectShow ones in Init().
+  static std::unique_ptr<VideoCaptureDeviceWin> CreateForTesting(
+      const VideoCaptureDeviceDescriptor& device_descriptor,
+      Microsoft::WRL::ComPtr<IBaseFilter> capture_filter,
+      Microsoft::WRL::ComPtr<IGraphBuilder> graph_builder,
+      Microsoft::WRL::ComPtr<ICaptureGraphBuilder2> capture_graph_builder);
+
   VideoCaptureDeviceWin(const VideoCaptureDeviceWin&) = delete;
   VideoCaptureDeviceWin& operator=(const VideoCaptureDeviceWin&) = delete;
 
@@ -110,6 +120,12 @@ class VideoCaptureDeviceWin : public VideoCaptureDevice,
     kError       // Error accessing HW functions.
                  // User needs to recover by destroying the object.
   };
+
+  VideoCaptureDeviceWin(
+      const VideoCaptureDeviceDescriptor& device_descriptor,
+      Microsoft::WRL::ComPtr<IBaseFilter> capture_filter,
+      Microsoft::WRL::ComPtr<IGraphBuilder> graph_builder,
+      Microsoft::WRL::ComPtr<ICaptureGraphBuilder2> capture_graph_builder);
 
   static bool GetCameraAndVideoControls(
       Microsoft::WRL::ComPtr<IBaseFilter> capture_filter,
@@ -140,24 +156,11 @@ class VideoCaptureDeviceWin : public VideoCaptureDevice,
   InternalState state_ GUARDED_BY(lock_);
   std::unique_ptr<VideoCaptureDevice::Client> client_ GUARDED_BY(lock_);
 
-  Microsoft::WRL::ComPtr<IBaseFilter> capture_filter_;
-
-  Microsoft::WRL::ComPtr<IGraphBuilder> graph_builder_;
-  Microsoft::WRL::ComPtr<ICaptureGraphBuilder2> capture_graph_builder_;
-
-  Microsoft::WRL::ComPtr<IMediaControl> media_control_;
-  Microsoft::WRL::ComPtr<IPin> input_sink_pin_;
-  Microsoft::WRL::ComPtr<IPin> output_capture_pin_;
-
-  scoped_refptr<SinkFilter> sink_filter_;
-
   // Map of all capabilities this device support.
   CapabilityList capabilities_;
 
   VideoCaptureFormat capture_format_;
 
-  Microsoft::WRL::ComPtr<ICameraControl> camera_control_;
-  Microsoft::WRL::ComPtr<IVideoProcAmp> video_control_;
   // These flags keep the manual/auto mode between cycles of SetPhotoOptions().
   bool white_balance_mode_manual_;
   bool exposure_mode_manual_;
@@ -172,6 +175,37 @@ class VideoCaptureDeviceWin : public VideoCaptureDevice,
   bool enable_get_photo_state_;
 
   std::optional<int> camera_rotation_;
+
+  // The DirectShow objects below are declared last and in this order on
+  // purpose; members are destroyed in reverse order of declaration.
+  //
+  // Stop() and Disconnect() don't guarantee that an upstream filter has stopped
+  // delivering samples: some filters return from Stop() without joining their
+  // streaming thread, and only join it when their last COM reference is
+  // released. Until then that thread may call into |input_sink_pin_| and,
+  // through it, into |this|. Therefore:
+  // - |capture_filter_| must be destroyed after everything else that refers to
+  //   the capture filter, so that its destruction releases the last reference
+  //   and joins the thread.
+  // - |sink_filter_| and |input_sink_pin_| must be destroyed after
+  //   |capture_filter_|, so the thread never calls into a freed pin.
+  // - The graph members must be destroyed after |capture_filter_|, because the
+  //   graph owns any intermediate filters it inserted between the capture
+  //   filter and the sink (e.g. an AVI decompressor for HDYC), which the thread
+  //   may also call into.
+  // - All of them must be declared after the other members, so that |this| is
+  //   still intact if the thread calls FrameReceived() or FrameDropped().
+  const scoped_refptr<SinkFilter> sink_filter_;
+  const Microsoft::WRL::ComPtr<IPin> input_sink_pin_;
+
+  Microsoft::WRL::ComPtr<IGraphBuilder> graph_builder_;
+  Microsoft::WRL::ComPtr<ICaptureGraphBuilder2> capture_graph_builder_;
+  Microsoft::WRL::ComPtr<IMediaControl> media_control_;
+
+  const Microsoft::WRL::ComPtr<IBaseFilter> capture_filter_;
+  Microsoft::WRL::ComPtr<IPin> output_capture_pin_;
+  Microsoft::WRL::ComPtr<ICameraControl> camera_control_;
+  Microsoft::WRL::ComPtr<IVideoProcAmp> video_control_;
 };
 
 }  // namespace media
