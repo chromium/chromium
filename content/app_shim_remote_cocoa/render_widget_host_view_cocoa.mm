@@ -430,6 +430,10 @@ gfx::PointF GetSanitizedFlippedPoint(NSPoint point, CGFloat height) {
 static NSWindow* __weak _deferredResignKeyWindow;
 
 + (void)initialize {
+  if (self != [RenderWidgetHostViewCocoa class]) {
+    return;
+  }
+
   RenderWidgetHostViewMacEditCommandHelper::AddEditingSelectorsToClass(self);
 }
 

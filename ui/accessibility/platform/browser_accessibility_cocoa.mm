@@ -558,6 +558,10 @@ bool IsAXCustomActionNamesForTestingProjectionEnabled() {
 }
 
 + (void)initialize {
+  if (self != [BrowserAccessibilityCocoa class]) {
+    return;
+  }
+
   gAttributeToMethodNameMap = @{
     NSAccessibilityColumnsAttribute : @"columns",
     NSAccessibilityColumnIndexRangeAttribute : @"columnIndexRange",

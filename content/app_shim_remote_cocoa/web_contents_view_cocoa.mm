@@ -138,6 +138,10 @@ gfx::PointF GetSanitizedFlippedPoint(NSPoint point, CGFloat height) {
 }
 
 + (void)initialize {
+  if (self != [WebContentsViewCocoa class]) {
+    return;
+  }
+
   // Create the WindowOcclusionCheckerMac shared instance.
   // TODO(crbug.com/505314004): Remove once
   // `remote_cocoa::features::kTrackAllTopLevelWindowsForOcclusion` is enabled
