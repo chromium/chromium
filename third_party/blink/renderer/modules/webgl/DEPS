@@ -39,6 +39,9 @@ include_rules = [
 
 specific_include_rules = {
     ".*_test\\.cc": [
+        "+cc/layers/layer.h",
+        "+components/viz/common/resources/release_callback.h",
+        "+components/viz/common/resources/transferable_resource.h",
         "+components/viz/test/test_context_provider.h",
         "+gpu/config/gpu_finch_features.h",
     ],

@@ -37,6 +37,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "cc/layers/layer.h"
 #include "components/viz/common/resources/release_callback.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "components/viz/test/test_context_provider.h"
@@ -53,6 +54,7 @@
 #include "third_party/blink/renderer/platform/graphics/test/gpu_compositing_test_platform.h"
 #include "third_party/blink/renderer/platform/graphics/test/gpu_test_utils.h"
 #include "third_party/blink/renderer/platform/graphics/test/test_webgraphics_shared_image_interface_provider.h"
+#include "third_party/blink/renderer/platform/testing/layer_tree_host_embedder.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "ui/gl/gpu_preference.h"
 #include "v8/include/v8.h"
@@ -1370,4 +1372,25 @@ TEST_F(DrawingBufferTest, SoftwareCompositorResourceRecycling) {
 
   drawing_buffer_->BeginDestruction();
 }
+
+TEST_F(DrawingBufferTest, BeginDestructionDetachesCcLayerClient) {
+  LayerTreeHostEmbedder layer_tree;
+  scoped_refptr<cc::Layer> layer = drawing_buffer_->CcLayer();
+  ASSERT_NE(layer, nullptr);
+  layer_tree.layer_tree_host()->SetRootLayer(layer);
+
+  EXPECT_TRUE(layer->draws_content());
+  EXPECT_TRUE(layer->Update());
+
+  // Mark dirty again, then begin destruction while holding `drawing_buffer_`
+  // alive via `scoped_refptr`. The layer must immediately detach its client.
+  EXPECT_TRUE(drawing_buffer_->MarkContentsChanged());
+  drawing_buffer_->BeginDestruction();
+
+  EXPECT_EQ(nullptr, drawing_buffer_->client());
+  EXPECT_EQ(nullptr, drawing_buffer_->CcLayer());
+  EXPECT_FALSE(layer->draws_content());
+  EXPECT_FALSE(layer->Update());
+}
+
 }  // namespace blink
