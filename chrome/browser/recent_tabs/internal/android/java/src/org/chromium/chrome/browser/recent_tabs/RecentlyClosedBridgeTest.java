@@ -95,12 +95,11 @@ public class RecentlyClosedBridgeTest {
         when(mSyncService.getActiveDataTypes()).thenReturn(Set.of(DataType.SAVED_TAB_GROUP));
         SyncServiceFactory.setInstanceForTesting(mSyncService);
 
-        mActivityTestRule.waitForActivityNativeInitializationComplete();
+        mActivity = mActivityTestRule.startOnBlankPage().getActivity();
 
         // Disable snackbars from the {@link UndoBarController} which can break this test.
-        mActivityTestRule.getActivity().getSnackbarManager().disableForTesting();
+        mActivity.getSnackbarManager().disableForTesting();
 
-        mActivity = mActivityTestRule.getActivity();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mRecentlyClosedBridge =
@@ -112,11 +111,8 @@ public class RecentlyClosedBridgeTest {
                             0,
                             mRecentlyClosedBridge.getRecentlyClosedEntries(MAX_ENTRY_COUNT).size());
                 });
-        mActivity = mActivityTestRule.getActivity();
         mTabModelSelector = mActivity.getTabModelSelectorSupplier().get();
         mTabModel = mTabModelSelector.getModel(false);
-        final Tab tab = mActivityTestRule.getActivityTab();
-        ChromeTabUtils.waitForInteractable(tab);
     }
 
     @After

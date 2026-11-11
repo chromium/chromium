@@ -40,7 +40,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.chrome.test.transit.CctTransitTestRule;
 import org.chromium.content_public.browser.GestureListenerManager;
 import org.chromium.content_public.browser.GestureStateListener;
 import org.chromium.content_public.browser.RenderCoordinates;
@@ -59,8 +59,7 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/578060232
 public class CustomTabEngagementSignalsTest {
-    @Rule
-    public CustomTabActivityTestRule mCustomTabActivityTestRule = new CustomTabActivityTestRule();
+    @Rule public CctTransitTestRule mCustomTabActivityTestRule = new CctTransitTestRule();
 
     private static final class GestureStateListenerImpl extends GestureStateListener {
         public final CallbackHelper scrollEndCallbackHelper = new CallbackHelper();
@@ -126,7 +125,7 @@ public class CustomTabEngagementSignalsTest {
 
         Intent intent =
                 new CustomTabsIntent.Builder(session).setUrlBarHidingEnabled(false).build().intent;
-        mCustomTabActivityTestRule.prepareUrlIntent(intent, TEST_URL);
+        mCustomTabActivityTestRule.getActivityTestRule().prepareUrlIntent(intent, TEST_URL);
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
 
         WebContents webContents = mCustomTabActivityTestRule.getWebContents();
@@ -135,7 +134,6 @@ public class CustomTabEngagementSignalsTest {
                     GestureListenerManager.fromWebContents(webContents)
                             .addListener(mGestureStateListener);
                 });
-        ChromeTabUtils.waitForInteractable(mCustomTabActivityTestRule.getActivityTab());
         CriteriaHelper.pollUiThread(
                 () -> {
                     Criteria.checkThat(

@@ -121,6 +121,8 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
+import org.chromium.chrome.test.transit.page.BasePageStation;
+import org.chromium.chrome.test.transit.page.CctPageStation;
 import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
@@ -2871,7 +2873,7 @@ public class UrlOverridingTest {
         launchTwa("com.foo.bar", url);
         ChromeActivity activity = mCustomTabActivityRule.getActivity();
         Tab tab = activity.getActivityTab();
-        ChromeTabUtils.waitForInteractable(tab);
+        BasePageStation.waitForPage(tab, url, CctPageStation.newBuilder());
 
         Assert.assertTrue(tab.isTabInPWA());
         Assert.assertFalse(tab.getWebContents().hasOpener());
