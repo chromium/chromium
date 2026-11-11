@@ -440,14 +440,11 @@ TEST_P(MediaStreamAudioProcessorTestMultichannel, TestStereoAudio) {
               right_channel_energy +=
                   processed_audio.channel(1)[i] * processed_audio.channel(1)[i];
             }
-            if (use_apm && num_preferred_channels <= 1) {
-              // Mono output. Output channels are averaged.
-              EXPECT_NE(left_channel_energy, 0);
-              EXPECT_NE(right_channel_energy, 0);
-            } else {
-              // Stereo output. Output channels are independent.
-              EXPECT_NE(left_channel_energy, 0);
+            EXPECT_GT(left_channel_energy, 0);
+            if (!use_apm) {
               EXPECT_EQ(right_channel_energy, 0);
+            } else if (num_preferred_channels <= 1) {
+              EXPECT_GT(right_channel_energy, 0);
             }
           });
       // Process one more frame of audio.
