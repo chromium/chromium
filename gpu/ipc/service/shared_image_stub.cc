@@ -68,14 +68,61 @@ bool IsSupportedFormat(viz::SharedImageFormat format) {
   return true;
 }
 
-bool ValidateClientInfo(const gpu::SharedImageMetadata& info) {
+bool IsSupportedUsageForFormat(viz::SharedImageFormat format,
+                               gpu::SharedImageUsageSet usage,
+                               viz::mojom::GpuClientType client_type) {
+  if (format != viz::SinglePlaneFormat::kR_8 &&
+      format != viz::SinglePlaneFormat::kR_F16) {
+    return true;
+  }
+
+  // MLContext (WebNN) can create kR_8 and kR_F16 shared images.
+  if (usage.Has(gpu::SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR)) {
+    constexpr gpu::SharedImageUsageSet kSupportedWebNNUsages =
+        gpu::SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR |
+        gpu::SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR_READ |
+        gpu::SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR_WRITE |
+        gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
+        gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE |
+        gpu::SHARED_IMAGE_USAGE_WEBGPU_SHARED_BUFFER;
+    if (kSupportedWebNNUsages.HasAll(usage)) {
+      return true;
+    }
+  }
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // CameraBufferFactory on ChromeOS can create kR_8 shared images.
+  if (format == viz::SinglePlaneFormat::kR_8 &&
+      client_type == viz::mojom::GpuClientType::kVideoCapture &&
+      usage.Has(gpu::SHARED_IMAGE_USAGE_CPU_ONLY_READ_WRITE)) {
+    constexpr gpu::SharedImageUsageSet kSupportedCameraUsages =
+        gpu::SHARED_IMAGE_USAGE_CPU_ONLY_READ_WRITE |
+        gpu::SHARED_IMAGE_USAGE_CPU_READ |
+        gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY;
+    if (kSupportedCameraUsages.HasAll(usage)) {
+      return true;
+    }
+  }
+#endif
+
+  LOG(ERROR) << "SharedImageStub: Incompatible usage: " << usage.ToString()
+             << " for format: " << format.ToString();
+  return false;
+}
+
+bool ValidateClientInfo(const gpu::SharedImageMetadata& info,
+                        viz::mojom::GpuClientType client_type) {
   if (!IsSupportedFormat(info.format)) {
     return false;
   }
 
   if (!gpu::IsValidClientUsage(info.usage)) {
     LOG(ERROR) << "SharedImageStub: Invalid client usage: "
-               << static_cast<uint32_t>(info.usage);
+               << info.usage.ToString();
+    return false;
+  }
+
+  if (!IsSupportedUsageForFormat(info.format, info.usage, client_type)) {
     return false;
   }
 
@@ -248,7 +295,7 @@ void SharedImageStub::OnCreateSharedImage(
   TRACE_EVENT2("gpu", "SharedImageStub::OnCreateSharedImage", "width",
                params->si_info->meta.size.width(), "height",
                params->si_info->meta.size.height());
-  if (!ValidateClientInfo(params->si_info->meta)) {
+  if (!ValidateClientInfo(params->si_info->meta, channel_->client_type())) {
     OnError();
     return;
   }
@@ -277,7 +324,7 @@ void SharedImageStub::OnCreateSharedImageWithData(
                params->si_info->meta.size.height());
 
   auto& metadata = params->si_info->meta;
-  if (!ValidateClientInfo(metadata)) {
+  if (!ValidateClientInfo(metadata, channel_->client_type())) {
     OnError();
     return;
   }
@@ -369,7 +416,7 @@ bool SharedImageStub::CreateSharedImage(
     std::optional<SharedImagePoolId> pool_id) {
   TRACE_EVENT2("gpu", "SharedImageStub::CreateSharedImage", "width",
                info.size.width(), "height", info.size.height());
-  if (!ValidateClientInfo(info)) {
+  if (!ValidateClientInfo(info, channel_->client_type())) {
     OnError();
     return false;
   }
