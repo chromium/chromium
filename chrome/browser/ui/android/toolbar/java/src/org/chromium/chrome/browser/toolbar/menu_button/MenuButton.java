@@ -264,9 +264,7 @@ public class MenuButton extends FrameLayout implements TintObserver {
         mMenuBadgeAnimatorSet.start();
     }
 
-    /**
-     * @return Whether the update badge is showing.
-     */
+    /** Returns whether the update badge is showing. */
     boolean isShowingAppMenuUpdateBadge() {
         return mUpdateBadgeView != null && mUpdateBadgeView.getVisibility() == View.VISIBLE;
     }

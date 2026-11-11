@@ -347,9 +347,7 @@ class MenuButtonMediator implements AppMenuObserver {
         mAppMenuPropertiesDelegate = appMenuCoordinator.getAppMenuPropertiesDelegate();
     }
 
-    /**
-     * @return Whether the badge is showing (either in the toolbar).
-     */
+    /** Returns whether the badge is showing (either in the toolbar). */
     private boolean isShowingAppMenuUpdateBadge() {
         return mPropertyModel.get(MenuButtonProperties.SHOW_UPDATE_BADGE).mShowUpdateBadge;
     }

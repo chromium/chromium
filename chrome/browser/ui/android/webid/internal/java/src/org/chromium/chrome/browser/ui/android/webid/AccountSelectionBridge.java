@@ -125,7 +125,7 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
     /**
      * Shows the accounts in a bottom sheet UI allowing user to select one.
      *
-     * @param rpForDisplay is the formatted RP URL to display in the FedCM prompt.
+     * @param rpData is the data for the relying party.
      * @param accounts is the list of accounts to be shown.
      * @param idpDataList is the list of IDP datas.
      * @param newAccounts represents the newly logged in accounts.
@@ -146,7 +146,7 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
      * Shows a bottomsheet prompting the user to sign in to an IDP for the purpose of federated
      * login when the IDP sign-in status is signin but no accounts are received from the fetch.
      *
-     * @param rpForDisplay is the formatted RP URL to display in the FedCM prompt.
+     * @param rpData is the data for the relying party.
      * @param idpForDisplay is the formatted IDP URL to display in the FedCM prompt.
      * @param idpMetadata is the metadata of the IDP.
      * @param rpContext is an enum representing the desired text to be used in the title of the
@@ -168,7 +168,7 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
      * Shows a bottomsheet detailing the error that has occurred in the user's attempt to sign-in
      * through federated login.
      *
-     * @param rpForDisplay is the formatted RP URL to display in the FedCM prompt.
+     * @param rpData is the data for the relying party.
      * @param idpForDisplay is the formatted IDP URL to display in the FedCM prompt.
      * @param idpMetadata is the metadata of the IDP.
      * @param rpContext is a {@link String} representing the desired text to be used in the title of
@@ -192,7 +192,7 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
      * Shows a bottomsheet prompting the user to sign-in to an RP with an IDP with a spinner to
      * indicate that contents are loading.
      *
-     * @param rpForDisplay is the formatted RP URL to display in the FedCM prompt.
+     * @param rpData is the data for the relying party.
      * @param idpForDisplay is the formatted IDP URL to display in the FedCM prompt.
      * @param rpContext is a {@link String} representing the desired text to be used in the title of
      *     the FedCM prompt: "signin", "continue", etc.

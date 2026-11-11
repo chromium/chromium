@@ -17,7 +17,6 @@ public interface SurveyUiDelegate {
      * shown, the given runnable(s) are be used to notify SurveyClient the outcome of the survey
      * invitation.
      *
-     * @param surveyConfig Config of the survey.
      * @param onSurveyAccepted Callback to run when survey invitation is accepted.
      * @param onSurveyDeclined Callback to run when survey invitation is declined.
      * @param onSurveyPresentationFailed Callback to run when survey invitation failed to show.

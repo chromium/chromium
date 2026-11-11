@@ -84,13 +84,23 @@ class WebAppHeaderLayoutMediator
      * Constructs the instance of {@link WebAppHeaderLayoutMediator}.
      *
      * @param model model that encapsulates UI state for the view
+     * @param headerDelegate delegate used to disable and re-enable header controls
      * @param desktopWindowStateManager desktop window state manager that provides updates on window
      *     state
-     * @param tabSupplier supplier current active tab
-     * @param nonDraggableAreasSupplier provides header's non-draggable areas
+     * @param scrimManager provides scrim visibility; header controls are disabled while the scrim
+     *     is visible
+     * @param tabSupplier supplier of the current active tab
+     * @param headerControlPositionSupplier provides positions of header controls, used to compute
+     *     header's non-draggable areas
      * @param themeColorProvider provides theme for top level controls
      * @param webAppHeaderMinHeightFromResources minimal height from resources in px that web app
      *     header must take
+     * @param headerButtonSize size of a header control button in px
+     * @param displayMode resolved {@link DisplayMode} of the web app
+     * @param setHeaderAsOverlayCallback callback notified when the header switches to or from
+     *     overlay mode
+     * @param clientPackageName package name of the client app used to persist the user's window
+     *     controls overlay preference, or null if unknown
      */
     WebAppHeaderLayoutMediator(
             PropertyModel model,
@@ -311,8 +321,8 @@ class WebAppHeaderLayoutMediator
     }
 
     /**
-     * @return {@link MonotonicObservableSupplier} that signal current width of the flexible area in which
-     *     the header lays out controls.
+     * Returns {@link MonotonicObservableSupplier} that signals the current width of the flexible
+     * area in which the header lays out controls.
      */
     public MonotonicObservableSupplier<Integer> getUnoccludedWidthSupplier() {
         return mAppHeaderUnoccludedWidthSupplier;
@@ -430,9 +440,7 @@ class WebAppHeaderLayoutMediator
         }
     }
 
-    /**
-     * @return true when header is visible, false otherwise.
-     */
+    /** Returns true when header is visible, false otherwise. */
     public boolean isVisible() {
         return mModel.get(WebAppHeaderLayoutProperties.IS_VISIBLE);
     }

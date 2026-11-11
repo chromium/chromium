@@ -176,11 +176,35 @@ public class WebAppHeaderLayoutCoordinator
     /**
      * Creates an instance of {@link WebAppHeaderLayoutCoordinator}.
      *
+     * @param activity the {@link Activity} hosting the web app header.
      * @param viewStub a stub in which web app header will be inflated into.
      * @param desktopWindowStateManager a class that notifies about desktop windowing state changes.
+     * @param tabSupplier supplier of the current active tab.
+     * @param themeColorProvider provides theme colors for the header controls.
+     * @param browserServicesIntentDataProvider provides intent data of the current web app, which
+     *     must be a WebAPK or a TWA.
+     * @param scrimManager provides scrim visibility; header controls are disabled while the scrim
+     *     is visible.
+     * @param historyDelegate delegate used by the back button to show the navigation history popup.
+     * @param setHeaderAsOverlayCallback callback notified when the header switches to or from
+     *     overlay mode.
+     * @param browserControlsStateProvider provides browser controls state, used to track Android
+     *     controls visibility.
+     * @param appMenuCoordinatorSupplier supplier of the {@link AppMenuCoordinator} used by the menu
+     *     button.
+     * @param browserStateBrowserControlsVisibilityDelegate delegate for forcing persistent display
+     *     of browser controls.
+     * @param activityWindowAndroid the {@link WindowAndroid} of the activity.
+     * @param requestRenderRunnable runnable that requests a re-rendering of the compositor view
+     *     containing the menu button.
+     * @param clientPackageName package name of the client app, or null if unknown.
+     * @param chromeAndroidTaskSupplier supplier of the {@link ChromeAndroidTask} that hosts the
+     *     extensions toolbar.
+     * @param tabModelSelector the {@link TabModelSelector} used by the extensions toolbar.
      * @param tabCreator a {@link TabCreator} used by the extensions toolbar to open external URLs
      *     (e.g., Chrome Web Store or extension management) in a standard browser window rather than
      *     inside the web app.
+     * @param modalDialogManager the {@link ModalDialogManager} used by the extensions toolbar.
      */
     public WebAppHeaderLayoutCoordinator(
             Activity activity,
@@ -451,10 +475,10 @@ public class WebAppHeaderLayoutCoordinator
     }
 
     /**
-     * @return The header width left over for the app name once the controls are accounted for, in
-     *     px. Uses the right-aligned controls' live width when they have been laid out, since the
-     *     static estimate in {@link #calculateUIControlsMinWidth()} counts the origin text as 0 and
-     *     omits the extensions toolbar.
+     * Returns the header width left over for the app name once the controls are accounted for, in
+     * px. Uses the right-aligned controls' live width when they have been laid out, since the
+     * static estimate in {@link #calculateUIControlsMinWidth()} counts the origin text as 0 and
+     * omits the extensions toolbar.
      */
     private int calculateRoomForAppNamePx() {
         assert mView != null;
@@ -478,8 +502,8 @@ public class WebAppHeaderLayoutCoordinator
     }
 
     /**
-     * @return The width in px reserved for the app name, including its horizontal margins, or 0
-     *     until a name has been bound.
+     * Returns the width in px reserved for the app name, including its horizontal margins, or 0
+     * until a name has been bound.
      */
     int getAppNameWidthPxForTesting() {
         return mAppNameWidthPx;
@@ -798,9 +822,9 @@ public class WebAppHeaderLayoutCoordinator
     }
 
     /**
-     * @return The total minimum width of the initialized controls in px. This includes display mode
-     *     buttons, as well as a space allotment for the header content when in
-     *     WINDOW_CONTROLS_OVERLAY mode.
+     * Returns the total minimum width of the initialized controls in px. This includes display mode
+     * buttons, as well as a space allotment for the header content when in WINDOW_CONTROLS_OVERLAY
+     * mode.
      */
     @VisibleForTesting
     int calculateUIControlsMinWidth() {
@@ -836,9 +860,7 @@ public class WebAppHeaderLayoutCoordinator
         return totalWidthPx;
     }
 
-    /**
-     * @return The header control button width in dp.
-     */
+    /** Returns the header control button width in dp. */
     @VisibleForTesting
     int getHeaderControlButtonWidthDp() {
         if (mView == null) return 0;
@@ -846,9 +868,7 @@ public class WebAppHeaderLayoutCoordinator
         return Math.round(mHeaderControlButtonWidthPx / density);
     }
 
-    /**
-     * @return The header button padding in dp.
-     */
+    /** Returns the header button padding in dp. */
     @VisibleForTesting
     int getHeaderButtonPaddingDp() {
         if (mView == null) return 0;
@@ -885,16 +905,12 @@ public class WebAppHeaderLayoutCoordinator
         }
     }
 
-    /**
-     * @return true when header is visible, false otherwise.
-     */
+    /** Returns true when header is visible, false otherwise. */
     public boolean isVisible() {
         return mMediator != null && mMediator.isVisible();
     }
 
-    /**
-     * @return true when back&refresh buttons are visible, false otherwise.
-     */
+    /** Returns true when back&refresh buttons are visible, false otherwise. */
     public boolean isShowingButtons() {
         return mShowButtons;
     }

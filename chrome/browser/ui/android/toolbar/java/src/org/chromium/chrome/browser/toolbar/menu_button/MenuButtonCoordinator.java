@@ -84,6 +84,7 @@ public class MenuButtonCoordinator extends ToolbarChildButton {
      *     pending update.
      * @param isInOverviewModeSupplier Supplier of overview mode state.
      * @param themeColorProvider Provider of theme color changes.
+     * @param incognitoStateProvider Provider of incognito state changes.
      * @param menuButtonStateSupplier Supplier of the menu button state.
      * @param onMenuButtonClicked Runnable to run on menu button click.
      * @param menuButtonId Resource id that should be used to locate the underlying view.
@@ -220,9 +221,7 @@ public class MenuButtonCoordinator extends ToolbarChildButton {
         mAppMenuButtonHelper.highlightMenuItemOnShow(menuItemId);
     }
 
-    /**
-     * @return Whether the menu button is present and visible.
-     */
+    /** Returns whether the menu button is present and visible. */
     @Override
     public boolean isVisible() {
         if (mVisibilityDelegate != null) {
@@ -273,7 +272,7 @@ public class MenuButtonCoordinator extends ToolbarChildButton {
         mAppMenuButtonHelper = null;
     }
 
-    /** @return Observer for menu state change. */
+    /** Returns observer for menu state change. */
     public @Nullable Runnable getStateObserver() {
         return mMediator != null ? mMediator::updateStateChanged : null;
     }
@@ -351,9 +350,9 @@ public class MenuButtonCoordinator extends ToolbarChildButton {
      * Creates an animator for the MenuButton during the process offocusing or unfocusing the
      * UrlBar. The animation translate and fades the button into/out of view.
      *
-     * @return The Animator object for the MenuButton.
      * @param isFocusingUrl Whether the animation is for focusing the URL, meaning the button is
      *     fading out of view, or un-focusing, meaning it's fading into view.
+     * @return The Animator object for the MenuButton.
      */
     public Animator getUrlFocusingAnimator(boolean isFocusingUrl) {
         return mMediator.getUrlFocusingAnimator(

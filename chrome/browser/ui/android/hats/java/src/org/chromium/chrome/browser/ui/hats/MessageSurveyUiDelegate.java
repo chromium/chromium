@@ -126,6 +126,8 @@ public class MessageSurveyUiDelegate implements SurveyUiDelegate {
      *     MessageDispatcherProvider#from(WindowAndroid)}
      * @param modelSelector TabModel selector used to retrieve tab information. Used to decide if
      *     current tab is fully loaded and not in incognito.
+     * @param crashUploadPermissionSupplier Supplier of whether crash upload permission is granted.
+     *     The survey prompt is only shown when it returns true.
      */
     public MessageSurveyUiDelegate(
             PropertyModel customModel,
@@ -206,9 +208,7 @@ public class MessageSurveyUiDelegate implements SurveyUiDelegate {
         destroy();
     }
 
-    /**
-     * @return Whether survey can be shown in the current session.
-     */
+    /** Returns whether survey can be shown in the current session. */
     private boolean canShowSurveyPrompt() {
         return mCrashUploadPermissionSupplier.get();
     }
