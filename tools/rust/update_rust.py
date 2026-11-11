@@ -45,10 +45,10 @@ sys.path.append(
 # https://chromium.googlesource.com/chromium/src/+/main/docs/updating_clang.md
 # Reverting problematic toolchain rolls is safe, though.
 RUST_REVISION = '96a18bf5ffa2b24f9cf3d1c731a9eb121c1acad9'
-CRUBIT_REVISION = '6cdbd6b427cbaf539e32c84d8df42a4830981304'
+CRUBIT_REVISION = '6ce4ac2e07631f21f2d9699499d98793380492b9'
 BINDGEN_REVISION = '73c69d681eec90b84ffba4f993b5fb2f19580781'
 # If you change the above without changing RUST_REVISION, increment this.
-RUST_SUB_REVISION = 4
+RUST_SUB_REVISION = 5
 
 # Hash of src/stage0.json, which itself contains the stage0 toolchain hashes.
 # We trust the Rust build system checks, but to ensure it is not tampered with
