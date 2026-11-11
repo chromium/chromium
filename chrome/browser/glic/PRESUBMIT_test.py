@@ -464,9 +464,96 @@ class CheckGlicFeaturesDefaultStateTest(unittest.TestCase):
     self.assertEqual(len(results), 1)
     self.assertEqual(results[0].type, 'error')
     self.assertIn('kGlicNewFeature', results[0].items[0])
-    self.assertIn(
+    self.assertIn('// Default-enabled platforms:', results[0].message)
+    self.assertNotIn(
       'FEATURE_ENABLED_BY_DEFAULT_ALL_PLATFORMS', results[0].message
     )
+
+  def testGlicFeatureDefaultEnabledPlatformsComment(self):
+    mock_input_api = _MockInputApiWithChange()
+    mock_input_api.InitFiles(
+      [
+        PRESUBMIT_test_mocks.MockFile(
+          'chrome/browser/glic/public/features.cc',
+          [
+            '// Does a thing.',
+            '// Default-enabled platforms: all (same behavior as desktop).',
+            'BASE_FEATURE(kGlicNewFeature, base::FEATURE_ENABLED_BY_DEFAULT);',
+            '// Default-enabled platforms: Android only (Android-only flag).',
+            'BASE_FEATURE(kGlicAndroidFlag, base::FEATURE_ENABLED_BY_DEFAULT);',
+          ],
+        ),
+      ]
+    )
+    mock_output_api = PRESUBMIT_test_mocks.MockOutputApi()
+    results = PRESUBMIT.CheckChangeOnUpload(mock_input_api, mock_output_api)
+    self.assertEqual(results, [])
+
+  def testGlicFeatureDefaultEnabledPlatformsCommentWithoutValue(self):
+    mock_input_api = _MockInputApiWithChange()
+    mock_input_api.InitFiles(
+      [
+        PRESUBMIT_test_mocks.MockFile(
+          'chrome/browser/glic/public/features.cc',
+          [
+            '// Default-enabled platforms:',
+            'BASE_FEATURE(kGlicNewFeature, base::FEATURE_ENABLED_BY_DEFAULT);',
+          ],
+        ),
+      ]
+    )
+    mock_output_api = PRESUBMIT_test_mocks.MockOutputApi()
+    results = PRESUBMIT.CheckChangeOnUpload(mock_input_api, mock_output_api)
+    self.assertEqual(len(results), 1)
+    self.assertEqual(results[0].type, 'error')
+
+  def testGlicFeatureDefaultEnabledPlatformsCommentNotDirectlyAbove(self):
+    mock_input_api = _MockInputApiWithChange()
+    mock_input_api.InitFiles(
+      [
+        PRESUBMIT_test_mocks.MockFile(
+          'chrome/browser/glic/public/features.cc',
+          [
+            '// Default-enabled platforms: all (same behavior as desktop).',
+            'BASE_FEATURE(kGlicOtherFeature, base::FEATURE_DISABLED_BY_DEFAULT);',
+            'BASE_FEATURE(kGlicNewFeature, base::FEATURE_ENABLED_BY_DEFAULT);',
+          ],
+        ),
+      ]
+    )
+    mock_output_api = PRESUBMIT_test_mocks.MockOutputApi()
+    results = PRESUBMIT.CheckChangeOnUpload(mock_input_api, mock_output_api)
+    self.assertEqual(len(results), 1)
+    self.assertIn('kGlicNewFeature', results[0].items[0])
+
+  def testGlicFeatureWithBuildflagConditional(self):
+    mock_input_api = _MockInputApiWithChange()
+    mock_input_api.InitFiles(
+      [
+        PRESUBMIT_test_mocks.MockFile(
+          'chrome/browser/glic/public/features.cc',
+          [
+            'BASE_FEATURE(kGlicDesktopOnlyFeature,',
+            '#if BUILDFLAG(IS_ANDROID)',
+            '             base::FEATURE_DISABLED_BY_DEFAULT',
+            '#else',
+            '             base::FEATURE_ENABLED_BY_DEFAULT',
+            '#endif',
+            ');',
+            'BASE_FEATURE(kGlicAndroidOnlyFeature,',
+            '#if BUILDFLAG(IS_ANDROID)',
+            '             base::FEATURE_ENABLED_BY_DEFAULT',
+            '#else',
+            '             base::FEATURE_DISABLED_BY_DEFAULT',
+            '#endif',
+            ');',
+          ],
+        ),
+      ]
+    )
+    mock_output_api = PRESUBMIT_test_mocks.MockOutputApi()
+    results = PRESUBMIT.CheckChangeOnUpload(mock_input_api, mock_output_api)
+    self.assertEqual(results, [])
 
   def testGlicFeatureWithExplicitEnabledMacros(self):
     mock_input_api = _MockInputApiWithChange()
@@ -549,9 +636,6 @@ class CheckGlicFeaturesDefaultStateTest(unittest.TestCase):
     self.assertEqual(len(results), 1)
     self.assertEqual(results[0].type, 'error')
     self.assertIn('kGlicFeatureInCommon', results[0].items[0])
-    self.assertIn(
-      'FEATURE_ENABLED_BY_DEFAULT_ALL_PLATFORMS', results[0].message
-    )
 
   def testNonGlicFeatureEnabledByDefaultInChromeCommon(self):
     mock_input_api = _MockInputApiWithChange()

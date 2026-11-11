@@ -142,8 +142,8 @@ def _CheckGlicFeaturesDefaultState(input_api, output_api):
             if not is_glic_dir and 'Glic' not in feature_name:
                 continue
 
-            # Check if bare base::FEATURE_ENABLED_BY_DEFAULT is used without
-            # explicit platform BUILDFLAG conditionals.
+            # Flag bare base::FEATURE_ENABLED_BY_DEFAULT without explicit
+            # platform BUILDFLAG conditionals or a platform-scope comment.
             if (
                 not raw_enabled_pattern.search(feature_body)
                 or 'BUILDFLAG(' in feature_body
@@ -162,23 +162,53 @@ def _CheckGlicFeaturesDefaultState(input_api, output_api):
             if lines[start_line - 1].strip().startswith('//'):
                 continue
 
+            if _HasDefaultEnabledPlatformsComment(lines, start_line):
+                continue
+
             errors.append(
                 f'{local_path}:{start_line}: Feature "{feature_name}" uses '
-                'base::FEATURE_ENABLED_BY_DEFAULT directly.'
+                'base::FEATURE_ENABLED_BY_DEFAULT without specifying '
+                'platform scope.'
             )
 
     if not errors:
         return []
+    # Don't point at the FEATURE_ENABLED_BY_DEFAULT_* macros in features.h:
+    # //PRESUBMIT.py (CheckBaseFeatureMacro) rejects them for new features
+    # because tools/metrics/common/cpp_feature_parser.py can't resolve them.
+    # See b/582871743.
     message = (
-        'Glic feature(s) must explicitly specify default enablement per\n'
-        'platform instead of using base::FEATURE_ENABLED_BY_DEFAULT.\n'
-        'Please use one of the following macros from '
-        'chrome/browser/glic/public/features.h:\n'
-        '  - FEATURE_ENABLED_BY_DEFAULT_NON_ANDROID\n'
-        '  - FEATURE_ENABLED_BY_DEFAULT_ANDROID_ONLY\n'
-        '  - FEATURE_ENABLED_BY_DEFAULT_ALL_PLATFORMS'
+        'Glic feature(s) use bare base::FEATURE_ENABLED_BY_DEFAULT without\n'
+        'specifying intended platforms. Confirm the target platforms in a\n'
+        'comment directly above the feature:\n'
+        f'  {_DEFAULT_ENABLED_PLATFORMS_PREFIX} <platforms and reason>\n'
+        '  (e.g. "all (killswitch for ...)", "Android only (file is only '
+        'built on Android)", or "desktop only (not built on Android)")\n'
+        'Or, if the default differs across platforms in a cross-platform\n'
+        'file, use an #if BUILDFLAG(...) / #else block with literal\n'
+        'base::FEATURE_ENABLED_BY_DEFAULT /\n'
+        'base::FEATURE_DISABLED_BY_DEFAULT values.'
     )
     return [output_api.PresubmitError(message, items=errors)]
+
+
+_DEFAULT_ENABLED_PLATFORMS_PREFIX = '// Default-enabled platforms:'
+
+
+def _HasDefaultEnabledPlatformsComment(lines, start_line):
+    """Whether the comment block directly above line `start_line` (1-based)
+    has a non-empty "// Default-enabled platforms: <...>" line."""
+    index = start_line - 2
+    while index >= 0:
+        line = lines[index].strip()
+        if not line.startswith('//'):
+            return False
+        if line.startswith(_DEFAULT_ENABLED_PLATFORMS_PREFIX) and line[
+            len(_DEFAULT_ENABLED_PLATFORMS_PREFIX):
+        ].strip():
+            return True
+        index -= 1
+    return False
 
 
 def _CheckGlicInvocationSource(input_api, output_api):
