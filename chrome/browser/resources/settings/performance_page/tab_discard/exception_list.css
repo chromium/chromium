@@ -9,15 +9,6 @@
  * #include=cr-shared-style-lit settings-shared-lit
  * #css_wrapper_metadata_end */
 
-:host-context([settings-refresh-2026]) {
-  background-color: var(--color-settings-section-background);
-  border-radius: 4px;
-
-  .list-frame {
-    padding-inline-start: var(--cr-section-padding);
-  }
-}
-
 .cr-padded-text {
   flex: 1;
 }

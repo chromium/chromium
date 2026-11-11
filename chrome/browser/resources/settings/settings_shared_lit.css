@@ -51,17 +51,22 @@
   cr-link-row,
   .settings-box,
   settings-toggle-button,
-  settings-columned-section {
+  settings-columned-section,
+  .list-frame {
     --cr-actionable-row-background-color:
         var(--color-settings-section-background);
     --cr-section-vertical-padding: 16px;
     border-radius: 4px;
   }
 
-  .cr-row {
+  .cr-row,
+  .list-frame {
     background-color: var(--color-settings-section-background);
   }
 
+  .list-frame {
+    padding-inline-start: var(--cr-section-padding);
+  }
 }
 
 /* Common styles for Material Design settings. */
