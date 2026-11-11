@@ -5384,12 +5384,12 @@ targets.bundle(
                 per_test_modifications = {
                     "components_unittests": targets.mixin(
                         swarming = targets.swarming(
-                            shards = 2,
+                            shards = 3,
                         ),
                     ),
                     "ios_chrome_unittests": targets.mixin(
                         swarming = targets.swarming(
-                            shards = 2,
+                            shards = 3,
                         ),
                     ),
                 },
@@ -5411,12 +5411,12 @@ targets.bundle(
                 per_test_modifications = {
                     "components_unittests": targets.mixin(
                         swarming = targets.swarming(
-                            shards = 2,
+                            shards = 3,
                         ),
                     ),
                     "ios_chrome_unittests": targets.mixin(
                         swarming = targets.swarming(
-                            shards = 2,
+                            shards = 3,
                         ),
                     ),
                 },
@@ -5524,12 +5524,12 @@ targets.bundle(
                 per_test_modifications = {
                     "components_unittests": targets.mixin(
                         swarming = targets.swarming(
-                            shards = 2,
+                            shards = 3,
                         ),
                     ),
                     "ios_chrome_unittests": targets.mixin(
                         swarming = targets.swarming(
-                            shards = 2,
+                            shards = 3,
                         ),
                     ),
                 },
@@ -5549,12 +5549,12 @@ targets.bundle(
                 per_test_modifications = {
                     "components_unittests": targets.mixin(
                         swarming = targets.swarming(
-                            shards = 2,
+                            shards = 3,
                         ),
                     ),
                     "ios_chrome_unittests": targets.mixin(
                         swarming = targets.swarming(
-                            shards = 2,
+                            shards = 3,
                         ),
                     ),
                 },

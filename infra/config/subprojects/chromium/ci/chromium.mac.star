@@ -1317,28 +1317,6 @@ ios_builder(
             "xcode_27_main",
             "xctest",
         ],
-        per_test_modifications = {
-            # TODO(crbug.com/583893443): Re-enable on CQ once sharding works
-            # reliably with iOS test runner crash retries.
-            "components_unittests iPad (A16) 27.0": targets.mixin(
-                ci_only = True,
-            ),
-            "components_unittests iPhone 16 26.5": targets.mixin(
-                ci_only = True,
-            ),
-            "components_unittests iPhone 16 27.0": targets.mixin(
-                ci_only = True,
-            ),
-            "ios_chrome_unittests iPad (A16) 27.0": targets.mixin(
-                ci_only = True,
-            ),
-            "ios_chrome_unittests iPhone 16 26.5": targets.mixin(
-                ci_only = True,
-            ),
-            "ios_chrome_unittests iPhone 16 27.0": targets.mixin(
-                ci_only = True,
-            ),
-        },
     ),
     cpu = cpu.ARM64,
     console_view_entry = [
