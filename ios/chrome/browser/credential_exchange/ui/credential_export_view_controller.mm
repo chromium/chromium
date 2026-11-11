@@ -138,7 +138,7 @@ NSString* const kCredentialSectionIdentifier = @"CredentialSection";
         group.GetCredentials();
 
     for (const password_manager::CredentialUIEntry& entry : credentialEntries) {
-      if (entry.passkey_credential_id.empty()) {
+      if (!entry.IsPasskey()) {
         credentialsToExport.push_back(entry);
       }
     }
@@ -504,7 +504,7 @@ NSString* const kCredentialSectionIdentifier = @"CredentialSection";
 
     for (const password_manager::CredentialUIEntry& entry :
          group.GetCredentials()) {
-      if (entry.passkey_credential_id.empty() && !entry.password.empty()) {
+      if (!entry.IsPasskey() && !entry.password.empty()) {
         return YES;
       }
     }

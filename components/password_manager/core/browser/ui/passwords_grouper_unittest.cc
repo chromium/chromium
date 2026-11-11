@@ -203,6 +203,10 @@ TEST_F(PasswordsGrouperTest, GetPasskeyFor) {
   grouper().GroupCredentials(/*stored_credentials=*/{}, {passkey},
                              base::DoNothing());
   EXPECT_EQ(grouper().GetPasskeyFor(CredentialUIEntry(passkey)), passkey);
+  EXPECT_FALSE(grouper()
+                   .GetPasskeyFor(CredentialUIEntry(
+                       CreateStoredCredential("https://test.com/")))
+                   .has_value());
 }
 
 TEST_F(PasswordsGrouperTest, GetPasskeyForNoMatchingGroup) {
@@ -229,6 +233,10 @@ TEST_F(PasswordsGrouperTest, GetPasskeyNoPasskeyForMatchingGroup) {
 
   PasskeyCredential passkey = CreatePasskey("test.com");
   EXPECT_FALSE(grouper().GetPasskeyFor(CredentialUIEntry(passkey)).has_value());
+  EXPECT_FALSE(grouper()
+                   .GetPasskeyFor(CredentialUIEntry(
+                       CreateStoredCredential("https://test.com/")))
+                   .has_value());
 }
 
 TEST_F(PasswordsGrouperTest, GetAffiliatedGroupsWithGroupingInfo) {

@@ -476,8 +476,8 @@ bool PasswordsPrivateDelegateImpl::ChangeCredential(
     updated_credential.note = base::UTF8ToUTF16(*credential.note);
   }
   if (credential.display_name) {
-    CHECK(!updated_credential.passkey_credential_id.empty());
-    updated_credential.user_display_name =
+    CHECK(updated_credential.IsPasskey());
+    updated_credential.passkey_info->user_display_name =
         base::UTF8ToUTF16(*credential.display_name);
   }
   switch (saved_passwords_presenter_.EditSavedCredentials(*original_credential,
@@ -524,7 +524,7 @@ void PasswordsPrivateDelegateImpl::RemoveCredential(
   if (entry->blocked_by_user) {
     base::RecordAction(
         base::UserMetricsAction("PasswordManager_RemovePasswordException"));
-  } else if (!entry->passkey_credential_id.empty()) {
+  } else if (entry->IsPasskey()) {
     base::RecordAction(
         base::UserMetricsAction("PasswordManager_RemovePasskey"));
   } else {
@@ -1314,10 +1314,12 @@ PasswordsPrivateDelegateImpl::CreatePasswordUiEntryFromCredentialUiEntry(
                            domain_info.signon_realm = domain.signon_realm;
                            return domain_info;
                          });
-  entry.is_passkey = !credential.passkey_credential_id.empty();
+  entry.is_passkey = credential.IsPasskey();
   entry.username = base::UTF16ToUTF8(credential.username);
   if (entry.is_passkey) {
-    entry.display_name = base::UTF16ToUTF8(credential.user_display_name);
+    entry.display_name =
+        base::UTF16ToUTF8(credential.passkey_info->user_display_name);
+    entry.hidden = credential.passkey_info->hidden;
   }
   if (credential.creation_time.has_value()) {
     entry.creation_time =
@@ -1347,7 +1349,6 @@ PasswordsPrivateDelegateImpl::CreatePasswordUiEntryFromCredentialUiEntry(
             base::i18n::datetime_options::MD::Medium()));
     entry.backup_password = std::move(backup_password_info);
   }
-  entry.hidden = credential.hidden;
   if (base::FeatureList::IsEnabled(
           password_manager::features::
               kPasswordCompromiseWarningInDetailsCard) &&

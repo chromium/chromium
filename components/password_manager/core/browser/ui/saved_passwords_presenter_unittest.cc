@@ -1048,7 +1048,7 @@ TEST_F(SavedPasswordsPresenterTest, DeletePasskey) {
 
   std::vector<CredentialUIEntry> passkeys = presenter().GetSavedCredentials();
   ASSERT_EQ(passkeys.size(), 1u);
-  ASSERT_FALSE(passkeys.at(0).passkey_credential_id.empty());
+  ASSERT_TRUE(passkeys.at(0).IsPasskey());
 
   MockSavedPasswordsPresenterObserver observer;
   presenter().AddObserver(&observer);
@@ -1094,9 +1094,10 @@ TEST_F(SavedPasswordsPresenterTest, EditPasskey) {
   std::vector<CredentialUIEntry> passkeys = presenter().GetSavedCredentials();
   ASSERT_EQ(passkeys.size(), 1u);
   CredentialUIEntry& original_passkey = passkeys.at(0);
+  ASSERT_TRUE(original_passkey.IsPasskey());
   CredentialUIEntry updated_passkey = original_passkey;
   updated_passkey.username = u"anya";
-  updated_passkey.user_display_name = u"Anya Forger";
+  updated_passkey.passkey_info->user_display_name = u"Anya Forger";
 
   MockSavedPasswordsPresenterObserver observer;
   presenter().AddObserver(&observer);
@@ -1110,7 +1111,8 @@ TEST_F(SavedPasswordsPresenterTest, EditPasskey) {
   passkeys = presenter().GetSavedCredentials();
   ASSERT_EQ(passkeys.size(), 1u);
   EXPECT_EQ(passkeys.at(0).username, u"anya");
-  EXPECT_EQ(passkeys.at(0).user_display_name, u"Anya Forger");
+  ASSERT_TRUE(passkeys.at(0).IsPasskey());
+  EXPECT_EQ(passkeys.at(0).passkey_info->user_display_name, u"Anya Forger");
   presenter().RemoveObserver(&observer);
 }
 
@@ -1148,11 +1150,12 @@ TEST_F(SavedPasswordsPresenterTest, EditPasskeyNotFound) {
   std::vector<CredentialUIEntry> passkeys = presenter().GetSavedCredentials();
   ASSERT_EQ(passkeys.size(), 1u);
   CredentialUIEntry& original_passkey = passkeys.at(0);
+  ASSERT_TRUE(original_passkey.IsPasskey());
   CredentialUIEntry updated_passkey = original_passkey;
   updated_passkey.username = u"anya";
-  updated_passkey.passkey_credential_id = {1, 2, 3, 4};
-  ASSERT_NE(original_passkey.passkey_credential_id,
-            updated_passkey.passkey_credential_id);
+  updated_passkey.passkey_info->credential_id = {1, 2, 3, 4};
+  ASSERT_NE(original_passkey.passkey_info->credential_id,
+            updated_passkey.passkey_info->credential_id);
 
   MockSavedPasswordsPresenterObserver observer;
   presenter().AddObserver(&observer);

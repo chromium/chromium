@@ -111,12 +111,10 @@ const CGFloat kMinFaviconSize = 16.0;
     password_manager::AffiliatedGroup group = item.affiliatedGroup;
     for (const password_manager::CredentialUIEntry& credential :
          group.GetCredentials()) {
-      if (credential.passkey_credential_id.empty()) {
-        passwordsToExport.push_back(credential);
-      } else {
-        std::string credentialId(credential.passkey_credential_id.begin(),
-                                 credential.passkey_credential_id.end());
-        std::string rpId = credential.rp_id;
+      if (credential.IsPasskey()) {
+        std::string credentialId(credential.passkey_info->credential_id.begin(),
+                                 credential.passkey_info->credential_id.end());
+        std::string rpId = credential.passkey_info->rp_id;
         std::optional<sync_pb::WebauthnCredentialSpecifics> passkey =
             _passkeyModel->GetPasskey(
                 rpId, credentialId,
@@ -125,6 +123,8 @@ const CGFloat kMinFaviconSize = 16.0;
         if (passkey.has_value() && !passkey->hidden()) {
           passkeysToExport.push_back(*std::move(passkey));
         }
+      } else {
+        passwordsToExport.push_back(credential);
       }
     }
   }

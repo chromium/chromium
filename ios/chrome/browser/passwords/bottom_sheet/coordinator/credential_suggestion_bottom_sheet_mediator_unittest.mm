@@ -23,6 +23,7 @@
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
 #import "components/password_manager/core/browser/password_string.h"
+#import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/ios/password_manager_java_script_feature.h"
 #import "components/password_manager/ios/shared_password_controller.h"
 #import "components/password_manager/ios/test_helpers.h"
@@ -986,4 +987,64 @@ TEST_F(CredentialSuggestionBottomSheetMediatorTest, FetchesPasskeyCredentials) {
   EXPECT_EQ(credential.value(), expectedCredential);
 
   [mockController stopMocking];
+}
+
+// Tests that `getCredentialForFormSuggestion:` resolves the matching credential
+// type when the mediator holds both a password and a passkey with the same
+// username.
+TEST_F(CredentialSuggestionBottomSheetMediatorTest,
+       GetCredentialForFormSuggestionMixedCredentials) {
+  CreateMediatorWithDefaultSuggestions();
+  ASSERT_TRUE(mediator_);
+
+  password_manager::CredentialUIEntry passwordCredential;
+  passwordCredential.username = u"test1";
+  passwordCredential.password = password_manager::PasswordString(u"secret");
+  password_manager::CredentialFacet facet;
+  facet.url = GURL(kTestUrl);
+  facet.signon_realm = facet.url.spec();
+  passwordCredential.facets = {facet};
+
+  std::vector<uint8_t> credentialId = {1, 2, 3, 4};
+  std::vector<uint8_t> userId = {5, 6, 7, 8};
+  password_manager::CredentialUIEntry passkeyCredential(
+      password_manager::PasskeyCredential(
+          password_manager::PasskeyCredential::Source::kICloudKeychain,
+          password_manager::PasskeyCredential::RpId(kTestRpId),
+          password_manager::PasskeyCredential::CredentialId(credentialId),
+          password_manager::PasskeyCredential::UserId(userId),
+          password_manager::PasskeyCredential::Username("test1"),
+          password_manager::PasskeyCredential::DisplayName(kTestDisplayName1)));
+
+  FormSuggestion* passkeySuggestion = [FormSuggestion
+      suggestionWithValue:base::SysUTF8ToNSString(kTestDisplayName1)
+       displayDescription:nil
+                     icon:nil
+                     type:autofill::SuggestionType::kWebauthnCredential
+                  payload:autofill::Suggestion::Payload(
+                              autofill::Suggestion::Guid(
+                                  base::Base64Encode(credentialId)))
+           requiresReauth:YES];
+  FormSuggestion* passwordSuggestion = [FormSuggestion
+      suggestionWithValue:@"test1"
+       displayDescription:nil
+                     icon:nil
+                     type:autofill::SuggestionType::kAutocompleteEntry
+                  payload:autofill::Suggestion::Payload()
+           requiresReauth:NO];
+
+  // Password precedes passkey: passkey lookup skips password without crashing.
+  [mediator_ setCredentialsForTesting:{passwordCredential, passkeyCredential}];
+  std::optional<password_manager::CredentialUIEntry> matchedPasskey =
+      [mediator_ getCredentialForFormSuggestion:passkeySuggestion];
+  ASSERT_TRUE(matchedPasskey.has_value());
+  EXPECT_EQ(*matchedPasskey, passkeyCredential);
+
+  // Passkey precedes password: password lookup skips passkey with same
+  // username.
+  [mediator_ setCredentialsForTesting:{passkeyCredential, passwordCredential}];
+  std::optional<password_manager::CredentialUIEntry> matchedPassword =
+      [mediator_ getCredentialForFormSuggestion:passwordSuggestion];
+  ASSERT_TRUE(matchedPassword.has_value());
+  EXPECT_EQ(*matchedPassword, passwordCredential);
 }

@@ -51,7 +51,7 @@ constexpr const char* kBulkMovePasswordsToAccountButtonClickedUserAction =
 // Returns true if the credential passed is a password (not a passkey) and not
 // stored in the account store.
 bool IsCredentialLocalPassword(const CredentialUIEntry& credential) {
-  return credential.passkey_credential_id.empty() &&
+  return !credential.IsPasskey() &&
          !credential.stored_in.contains(
              password_manager::PasswordForm::Store::kAccountStore);
 }
@@ -291,10 +291,10 @@ bool IsCredentialLocalPassword(const CredentialUIEntry& credential) {
     if (entry.blocked_by_user) {
       continue;
     }
-    if (entry.passkey_credential_id.empty()) {
-      passwordsCount++;
-    } else {
+    if (entry.IsPasskey()) {
       passkeysCount++;
+    } else {
+      passwordsCount++;
     }
   }
   struct CredentialCounts credentialCounts;

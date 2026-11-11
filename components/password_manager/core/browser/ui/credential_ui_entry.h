@@ -119,6 +119,24 @@ struct CredentialUIEntry {
     base::Time creation_timestamp;
   };
 
+  // Passkey-specific fields for entries representing a WebAuthn passkey.
+  struct PasskeyInfo {
+    // Non-empty credential id as a byte string.
+    // https://w3c.github.io/webauthn/#credential-id
+    std::vector<uint8_t> credential_id;
+
+    // The user's display name.
+    std::u16string user_display_name;
+
+    // Indicates that the credential was marked for deletion (e.g. by a website)
+    // and should be marked as such in management surfaces.
+    bool hidden = false;
+
+    // The relying party identifier.
+    // https://w3c.github.io/webauthn/#relying-party-identifier
+    std::string rp_id;
+  };
+
   struct Less {
     bool operator()(const CredentialUIEntry& lhs,
                     const CredentialUIEntry& rhs) const;
@@ -140,11 +158,6 @@ struct CredentialUIEntry {
   CredentialUIEntry& operator=(const CredentialUIEntry& other);
   CredentialUIEntry& operator=(CredentialUIEntry&& other);
 
-  // If this is a passkey, a non empty credential id as a byte string. Empty
-  // otherwise.
-  // https://w3c.github.io/webauthn/#credential-id
-  std::vector<uint8_t> passkey_credential_id;
-
   // List of facets represented by this entry which contains the display name,
   // url and sign-on realm of a credential.
   std::vector<CredentialFacet> facets;
@@ -152,14 +165,15 @@ struct CredentialUIEntry {
   // The current username.
   std::u16string username;
 
-  // The user's display name, if this is a passkey. Always empty otherwise.
-  std::u16string user_display_name;
-
   // The current password.
   PasswordString password;
 
   // Recovery password for automatic password change.
   std::optional<BackupPasswordInfo> backup_password;
+
+  // Passkey-specific metadata, if this is a passkey. `std::nullopt` otherwise.
+  // When set, `credential_id` must be non-empty.
+  std::optional<PasskeyInfo> passkey_info;
 
   // The origin of identity provider used for federated login.
   url::SchemeHostPort federation_origin;
@@ -191,14 +205,8 @@ struct CredentialUIEntry {
   // site. Defaults to |date_created|.
   base::Time last_used_time;
 
-  // Indicates that the credential was marked for deletion (e.g. by a website)
-  // and should be marked as such in management surfaces. Used for passkeys
-  // only.
-  bool hidden = false;
-
-  // The relying party identifier. Used for passkeys only, empty otherwise.
-  // https://w3c.github.io/webauthn/#relying-party-identifier
-  std::string rp_id;
+  // Returns true if this entry represents a passkey.
+  bool IsPasskey() const;
 
   // Information about password insecurities.
   bool IsLeaked() const;

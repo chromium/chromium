@@ -29,7 +29,7 @@ bool ShouldShowLocalOnlyIcon(const CredentialUIEntry& credential,
     return false;
   }
 
-  if (!credential.passkey_credential_id.empty()) {
+  if (credential.IsPasskey()) {
     // The local -> account migration flow only covers passwords.
     return false;
   }

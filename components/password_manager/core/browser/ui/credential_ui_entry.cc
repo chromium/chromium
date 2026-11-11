@@ -182,12 +182,14 @@ CredentialUIEntry::CredentialUIEntry(const std::vector<PasswordForm>& forms)
     : CredentialUIEntry(FromPasswordForms(forms)) {}
 
 CredentialUIEntry::CredentialUIEntry(const PasskeyCredential& passkey)
-    : passkey_credential_id(passkey.credential_id()),
-      username(base::UTF8ToUTF16(passkey.username())),
-      user_display_name(base::UTF8ToUTF16(passkey.display_name())),
-      creation_time(passkey.creation_time()),
-      hidden(passkey.hidden()),
-      rp_id(passkey.rp_id()) {
+    : username(base::UTF8ToUTF16(passkey.username())),
+      passkey_info(PasskeyInfo{
+          .credential_id = passkey.credential_id(),
+          .user_display_name = base::UTF8ToUTF16(passkey.display_name()),
+          .hidden = passkey.hidden(),
+          .rp_id = passkey.rp_id(),
+      }),
+      creation_time(passkey.creation_time()) {
   CHECK(!passkey.credential_id().empty());
   CredentialFacet facet;
   facet.url = GURL(base::StrCat(
@@ -224,6 +226,14 @@ CredentialUIEntry& CredentialUIEntry::operator=(
     const CredentialUIEntry& other) = default;
 CredentialUIEntry& CredentialUIEntry::operator=(CredentialUIEntry&& other) =
     default;
+
+bool CredentialUIEntry::IsPasskey() const {
+  if (!passkey_info.has_value()) {
+    return false;
+  }
+  CHECK(!passkey_info->credential_id.empty());
+  return true;
+}
 
 bool CredentialUIEntry::IsLeaked() const {
   return password_issues.contains(InsecureType::kLeaked);
@@ -333,9 +343,9 @@ CredentialSortKey CreateCredentialSortKey(const CredentialUIEntry& credential) {
       credential.GetFirstSignonRealm(), credential.GetURL(),
       credential.blocked_by_user, credential.username,
       credential.federation_origin);
-  if (!credential.passkey_credential_id.empty()) {
-    key.passkey_display_name = credential.user_display_name;
-    key.passkey_credential_id = credential.passkey_credential_id;
+  if (credential.IsPasskey()) {
+    key.passkey_display_name = credential.passkey_info->user_display_name;
+    key.passkey_credential_id = credential.passkey_info->credential_id;
   }
   return key;
 }

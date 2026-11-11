@@ -171,7 +171,8 @@
     auto it = std::ranges::find_if(
         _credentials,
         [&credentialId](const password_manager::CredentialUIEntry& credential) {
-          return credential.passkey_credential_id == *credentialId;
+          return credential.IsPasskey() &&
+                 credential.passkey_info->credential_id == *credentialId;
         });
     return it != _credentials.end()
                ? std::optional<password_manager::CredentialUIEntry>(*it)
@@ -182,8 +183,7 @@
   auto it = std::ranges::find_if(
       _credentials,
       [&username](const password_manager::CredentialUIEntry& credential) {
-        return credential.passkey_credential_id.empty() &&
-               credential.username == username;
+        return !credential.IsPasskey() && credential.username == username;
       });
   return it != _credentials.end()
              ? std::optional<password_manager::CredentialUIEntry>(*it)

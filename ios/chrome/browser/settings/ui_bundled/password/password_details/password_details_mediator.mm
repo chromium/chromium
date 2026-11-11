@@ -70,7 +70,9 @@ bool MatchesRealmUsernamePasswordAndCreationTime(
          base::SysNSStringToUTF16(credentialDetails.password) ==
              credential.password &&
          base::SysNSStringToUTF16(credentialDetails.userDisplayName) ==
-             credential.user_display_name &&
+             (credential.IsPasskey()
+                  ? credential.passkey_info->user_display_name
+                  : std::u16string()) &&
          credentialDetails.creationTime == credential.creation_time;
 }
 
@@ -148,7 +150,7 @@ bool IsMatchingPasskey(const CredentialUIEntry& credential,
                        CredentialDetails* credential_details,
                        NSString* old_username,
                        NSString* old_user_display_name) {
-  return !credential.passkey_credential_id.empty() &&
+  return credential.IsPasskey() &&
          [credential_details.signonRealm
              isEqualToString:base::SysUTF8ToNSString(
                                  credential.GetFirstSignonRealm())] &&
@@ -156,7 +158,7 @@ bool IsMatchingPasskey(const CredentialUIEntry& credential,
              isEqualToString:base::SysUTF16ToNSString(credential.username)] &&
          [old_user_display_name
              isEqualToString:base::SysUTF16ToNSString(
-                                 credential.user_display_name)];
+                                 credential.passkey_info->user_display_name)];
 }
 
 // Returns true if `credential` is a password matching the other arguments.
@@ -165,7 +167,7 @@ bool IsMatchingPassword(const CredentialUIEntry& credential,
                         NSString* old_username,
                         NSString* old_password,
                         NSString* old_note) {
-  return credential.passkey_credential_id.empty() &&
+  return !credential.IsPasskey() &&
          [credential_details.signonRealm
              isEqualToString:base::SysUTF8ToNSString(
                                  credential.GetFirstSignonRealm())] &&
@@ -407,9 +409,10 @@ bool IsMatchingPassword(const CredentialUIEntry& credential,
     DCHECK(it != _credentials.end());
 
     originalCredential = *it;
+    CHECK(originalCredential.IsPasskey());
     updatedCredential = originalCredential;
     updatedCredential.username = SysNSStringToUTF16(credentialDetails.username);
-    updatedCredential.user_display_name =
+    updatedCredential.passkey_info->user_display_name =
         SysNSStringToUTF16(credentialDetails.userDisplayName);
   } else if ([credentialDetails.password length] != 0) {
     it = std::ranges::find_if(

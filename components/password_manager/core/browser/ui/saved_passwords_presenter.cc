@@ -157,10 +157,10 @@ bool SavedPasswordsPresenter::IsWaitingForPasswordStore() const {
 
 bool SavedPasswordsPresenter::RemoveCredential(
     const CredentialUIEntry& credential) {
-  if (!credential.passkey_credential_id.empty()) {
+  if (credential.IsPasskey()) {
     CHECK(passkey_store_);
-    std::string credential_id(credential.passkey_credential_id.begin(),
-                              credential.passkey_credential_id.end());
+    std::string credential_id(credential.passkey_info->credential_id.begin(),
+                              credential.passkey_info->credential_id.end());
     if (!passkey_store_->DeletePasskey(std::move(credential_id), FROM_HERE)) {
       return false;
     }
@@ -370,11 +370,10 @@ SavedPasswordsPresenter::EditResult
 SavedPasswordsPresenter::EditSavedCredentials(
     const CredentialUIEntry& original_credential,
     const CredentialUIEntry& updated_credential) {
-  if (original_credential.passkey_credential_id.empty()) {
-    return EditPassword(original_credential, updated_credential);
-  } else {
+  if (original_credential.IsPasskey()) {
     return EditPasskey(updated_credential);
   }
+  return EditPassword(original_credential, updated_credential);
 }
 
 void SavedPasswordsPresenter::MoveCredentialsToAccount(
@@ -448,8 +447,8 @@ std::vector<CredentialUIEntry> SavedPasswordsPresenter::GetSavedPasswords()
     const {
   auto credentials = GetSavedCredentials();
   std::erase_if(credentials, [](const auto& credential) {
-    return !credential.passkey_credential_id.empty() ||
-           credential.blocked_by_user || credential.federation_origin.IsValid();
+    return credential.IsPasskey() || credential.blocked_by_user ||
+           credential.federation_origin.IsValid();
   });
   return credentials;
 }
@@ -772,7 +771,7 @@ void SavedPasswordsPresenter::MaybeGroupCredentials(
 
 SavedPasswordsPresenter::EditResult SavedPasswordsPresenter::EditPasskey(
     const CredentialUIEntry& updated_credential) {
-  CHECK(!updated_credential.passkey_credential_id.empty());
+  CHECK(updated_credential.IsPasskey());
   CHECK(passkey_store_);
   std::optional<PasskeyCredential> original_credential =
       passwords_grouper_->GetPasskeyFor(updated_credential);
@@ -781,7 +780,7 @@ SavedPasswordsPresenter::EditResult SavedPasswordsPresenter::EditPasskey(
   }
   std::string new_username = base::UTF16ToUTF8(updated_credential.username);
   std::string new_display_name =
-      base::UTF16ToUTF8(updated_credential.user_display_name);
+      base::UTF16ToUTF8(updated_credential.passkey_info->user_display_name);
   IsUsernameChanged username_changed(new_username !=
                                      original_credential->username());
   IsDisplayNameChanged display_name_changed(

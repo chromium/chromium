@@ -42,7 +42,7 @@ api::passwords_private::UrlCollection CreateUrlCollectionFromGURL(
 
 extensions::api::passwords_private::PasswordStoreSet StoreSetFromCredential(
     const CredentialUIEntry& credential) {
-  if (!credential.passkey_credential_id.empty()) {
+  if (credential.IsPasskey()) {
     return extensions::api::passwords_private::PasswordStoreSet::kAccount;
   }
   if (credential.stored_in.contains(Store::kAccountStore) &&

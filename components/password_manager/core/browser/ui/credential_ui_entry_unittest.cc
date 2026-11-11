@@ -70,7 +70,8 @@ TEST(CredentialUIEntryTest, CredentialUIEntryFromFormRecoveryFlagOn) {
   CredentialUIEntry entry = CredentialUIEntry(form);
 
   unsigned long size = 1;
-  EXPECT_TRUE(entry.passkey_credential_id.empty());
+  EXPECT_FALSE(entry.IsPasskey());
+  EXPECT_FALSE(entry.passkey_info.has_value());
   EXPECT_EQ(entry.facets.size(), size);
   EXPECT_EQ(entry.facets[0].signon_realm, "https://g.com/");
   EXPECT_EQ(entry.stored_in.size(), size);
@@ -152,12 +153,18 @@ TEST(CredentialUIEntryTest, CredentialUIEntryFromPasskey) {
       PasskeyCredential::CredentialId(cred_id),
       PasskeyCredential::UserId(user_id),
       PasskeyCredential::Username(base::UTF16ToUTF8(kUsername)),
-      PasskeyCredential::DisplayName(base::UTF16ToUTF8(kDisplayName)));
+      PasskeyCredential::DisplayName(base::UTF16ToUTF8(kDisplayName)),
+      /*creation_time=*/std::nullopt,
+      /*last_used_time=*/std::nullopt,
+      /*hidden=*/true);
   CredentialUIEntry entry(passkey);
-  EXPECT_EQ(entry.passkey_credential_id, cred_id);
+  EXPECT_TRUE(entry.IsPasskey());
+  ASSERT_TRUE(entry.passkey_info.has_value());
+  EXPECT_EQ(entry.passkey_info->credential_id, cred_id);
   EXPECT_EQ(entry.username, kUsername);
-  EXPECT_EQ(entry.user_display_name, kDisplayName);
-  EXPECT_EQ(entry.rp_id, kRpId);
+  EXPECT_EQ(entry.passkey_info->user_display_name, kDisplayName);
+  EXPECT_TRUE(entry.passkey_info->hidden);
+  EXPECT_EQ(entry.passkey_info->rp_id, kRpId);
   ASSERT_EQ(entry.facets.size(), 1u);
   EXPECT_EQ(entry.facets.at(0).url, GURL("https://rpid.com/"));
   EXPECT_EQ(entry.facets.at(0).signon_realm, "https://rpid.com");
@@ -391,7 +398,7 @@ TEST(CredentialUIEntryTest, PasskeyDifferentSortKeyForDifferentDisplayName) {
       PasskeyCredential::DisplayName("Display Name 1"));
   CredentialUIEntry passkey1(std::move(passkey_credential));
   CredentialUIEntry passkey2 = passkey1;
-  passkey2.user_display_name = u"Display Name 2";
+  passkey2.passkey_info->user_display_name = u"Display Name 2";
 
   EXPECT_NE(CreateCredentialSortKey(passkey1),
             CreateCredentialSortKey(passkey2));

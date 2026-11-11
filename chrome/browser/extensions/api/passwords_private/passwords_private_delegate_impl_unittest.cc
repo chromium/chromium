@@ -149,7 +149,8 @@ MATCHER_P(PasswordUiEntryDataEquals, expected, "") {
                         arg.affiliated_domains[0].signon_realm) &&
          testing::Value(expected.get().username, arg.username) &&
          testing::Value(expected.get().display_name, arg.display_name) &&
-         testing::Value(expected.get().stored_in, arg.stored_in);
+         testing::Value(expected.get().stored_in, arg.stored_in) &&
+         testing::Value(expected.get().hidden, arg.hidden);
 }
 
 void ExpectAuthentication(scoped_refptr<PasswordsPrivateDelegateImpl> delegate,
@@ -1360,6 +1361,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, GetPasskeyInGroups) {
   scoped_refptr<PasswordsPrivateDelegateImpl> delegate = CreateDelegate();
 
   sync_pb::WebauthnCredentialSpecifics passkey = CreatePasskey();
+  passkey.set_hidden(true);
   passkey_model()->AddNewPasskeyForTesting(passkey);
 
   PasswordForm password =
@@ -1386,6 +1388,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, GetPasskeyInGroups) {
   expected_entry2.display_name = passkey.user_display_name();
   expected_entry2.stored_in =
       api::passwords_private::PasswordStoreSet::kAccount;
+  expected_entry2.hidden = true;
   EXPECT_THAT(groups[0].entries,
               testing::UnorderedElementsAre(
                   PasswordUiEntryDataEquals(testing::ByRef(expected_entry1)),
