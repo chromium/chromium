@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tab_bottom_sheet;
 
 import static org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetUtils.isActivityInactive;
 import static org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetUtils.isEdgeToEdgeEnabled;
+import static org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetUtils.isSmoothKeyboardResizeEnabled;
 import static org.chromium.ui.animation.AnimationListeners.onAnimationEnd;
 
 import android.animation.ValueAnimator;
@@ -46,7 +47,7 @@ import java.util.List;
 
 /** Helper class for showing placeholders while resizing the Web View in the Tab Bottom Sheet. */
 @NullMarked
-public class WebViewResizingHelper {
+public class WebViewResizingHelper implements ImeResizePredictor.Delegate {
     /** Token to unlock/release a requested resize. */
     @FunctionalInterface
     public interface ResizeLock {
@@ -67,8 +68,10 @@ public class WebViewResizingHelper {
     private final ActivityStateObserver mActivityStateObserver;
     private final WindowInsetObserver mWindowInsetObserver;
     private final BottomSheetObserver mBottomSheetObserver;
+    private final @Nullable ImeResizePredictor mImePredictor;
 
     private final Context mContext;
+    private final View mContainerView;
     private final FrameLayout mResizingContainer;
     private final View mExpandedContentGroup;
     private final WindowAndroid mWindowAndroid;
@@ -94,6 +97,7 @@ public class WebViewResizingHelper {
     private boolean mIsViewportSizeFixed;
     private boolean mPauseInsetUpdates;
     private @Nullable TimeoutRunnable mPendingTimeoutRunnable;
+    private boolean mAwaitingDeferredFadeIn;
 
     /**
      * Constructs a {@link WebViewResizingHelper} with a nullable {@link BottomSheetController} and
@@ -116,6 +120,7 @@ public class WebViewResizingHelper {
             boolean isSidePanel,
             @Nullable CoBrowseComponentProvider componentProvider) {
         mContext = containerView.getContext();
+        mContainerView = containerView;
         mWindowAndroid = windowAndroid;
         mBottomSheetController = bottomSheetController;
         mIsSidePanel = isSidePanel;
@@ -131,6 +136,19 @@ public class WebViewResizingHelper {
 
         mResizingContainer = new FrameLayout(mContext);
         mResizingContainer.setClipChildren(true);
+
+        mImePredictor =
+                !mIsSidePanel && isSmoothKeyboardResizeEnabled()
+                        ? new ImeResizePredictor(
+                                mContainerView,
+                                mResizingContainer,
+                                mWindowAndroid,
+                                mInsetObserver,
+                                mBottomSheetController,
+                                mIsSidePanel,
+                                mWebUiTopMarginPx,
+                                this)
+                        : null;
         mOnLayoutChangeListener =
                 CommonOnLayoutChangeListeners.createSizeChangedListener(
                         () -> {
@@ -148,7 +166,7 @@ public class WebViewResizingHelper {
         if (mInsetObserver != null) {
             mInsetObserver.addWindowInsetsAnimationListener(mInsetAnimationListener);
         }
-        if (isEdgeToEdgeEnabled() && !mIsSidePanel) {
+        if (!mIsSidePanel && (isEdgeToEdgeEnabled() || isSmoothKeyboardResizeEnabled())) {
             if (mInsetObserver != null) {
                 mInsetObserver.addObserver(mWindowInsetObserver);
             }
@@ -219,8 +237,11 @@ public class WebViewResizingHelper {
             mInsetObserver.removeWindowInsetsAnimationListener(mInsetAnimationListener);
             mInsetObserver.removeObserver(mWindowInsetObserver);
         }
-        if (mBottomSheetController != null) {
+        if (!mIsSidePanel && mBottomSheetController != null) {
             mBottomSheetController.removeObserver(mBottomSheetObserver);
+        }
+        if (mImePredictor != null) {
+            mImePredictor.destroy();
         }
         mWindowAndroid.removeActivityStateObserver(mActivityStateObserver);
         mResizingContainer.removeOnLayoutChangeListener(mOnLayoutChangeListener);
@@ -249,6 +270,10 @@ public class WebViewResizingHelper {
                 mResizingContainer.addView(mResizingPlaceholder, /* index= */ 0);
             }
         }
+        if (mImePredictor != null) {
+            mImePredictor.reset();
+        }
+        mAwaitingDeferredFadeIn = false;
         mThinWebView = null;
         mIsViewportSizeFixed = false;
         mPauseInsetUpdates = false;
@@ -290,7 +315,12 @@ public class WebViewResizingHelper {
     }
 
     private void updateSafeAreaInsets(boolean ignoreCache) {
-        updateSafeAreaInsets(ignoreCache, NO_SAFE_AREA_OVERRIDE);
+        @Px
+        int bottomSafeAreaOverridePx =
+                mImePredictor != null
+                        ? mImePredictor.resolveTargetBottomSafeInsetPx()
+                        : NO_SAFE_AREA_OVERRIDE;
+        updateSafeAreaInsets(ignoreCache, bottomSafeAreaOverridePx);
     }
 
     /**
@@ -301,6 +331,7 @@ public class WebViewResizingHelper {
      * @param bottomSafeAreaOverridePx Explicit bottom safe area inset override in pixels, or {@link
      *     #NO_SAFE_AREA_OVERRIDE} to use the default inset from window insets.
      */
+    @Override
     public void updateSafeAreaInsets(boolean ignoreCache, @Px int bottomSafeAreaOverridePx) {
         if (!isEdgeToEdgeEnabled() || mIsSidePanel || isActivityInactive(mWindowAndroid)) {
             return;
@@ -393,6 +424,35 @@ public class WebViewResizingHelper {
         }
     }
 
+    @Override
+    public boolean isViewportSizeFixed() {
+        return mIsViewportSizeFixed;
+    }
+
+    @Override
+    public void onPostResizeReconciled(boolean sizeChanged) {
+        if (mAwaitingDeferredFadeIn) {
+            mAwaitingDeferredFadeIn = false;
+            armPostResizeFadeIn(sizeChanged);
+        }
+    }
+
+    @Override
+    public void restoreVisibilityIfAwaitingFadeIn() {
+        if (mAwaitingDeferredFadeIn) {
+            mAwaitingDeferredFadeIn = false;
+            if (mThinWebView != null) {
+                View webView = mThinWebView.getView();
+                webView.setAlpha(1f);
+                webView.setVisibility(View.VISIBLE);
+            }
+            if (mResizingPlaceholder != null) {
+                mResizingPlaceholder.setVisibility(View.INVISIBLE);
+                mResizingPlaceholder.setAlpha(1f);
+            }
+        }
+    }
+
     private void enableResizingMode() {
         if (mThinWebView == null) return;
 
@@ -421,6 +481,10 @@ public class WebViewResizingHelper {
         mAnimationHandler.startAnimation(valueAnimator);
 
         mIsViewportSizeFixed = true;
+        if (mImePredictor != null) {
+            mImePredictor.removePendingImeEndLayoutListener();
+        }
+        mAwaitingDeferredFadeIn = false;
         if (mPlaceholderCoordinator != null) {
             mPlaceholderCoordinator.setIsResizing(true);
         }
@@ -439,6 +503,13 @@ public class WebViewResizingHelper {
             mPlaceholderCoordinator.setIsResizing(false);
         }
         mAnimationHandler.forceFinishAnimation();
+
+        if (mImePredictor != null) {
+            mAwaitingDeferredFadeIn = true;
+            mImePredictor.onDisableResizingMode();
+            return;
+        }
+
         boolean sizeChanged = updateBounds(/* ignoreCache= */ true);
         armPostResizeFadeIn(sizeChanged);
     }
@@ -510,7 +581,25 @@ public class WebViewResizingHelper {
     }
 
     private boolean updateBounds(boolean ignoreCache) {
-        return updateBounds(ignoreCache, NO_HEIGHT_OVERRIDE, NO_SAFE_AREA_OVERRIDE);
+        if (mImePredictor != null) {
+            if (mImePredictor.isPaused()
+                    || mImePredictor.isAnimationRunning()
+                    || mImePredictor.isPendingLayoutListenerAttached()) {
+                return false;
+            }
+        }
+        @Px
+        int bottomSafeAreaOverridePx =
+                mImePredictor != null
+                        ? mImePredictor.resolveTargetBottomSafeInsetPx()
+                        : NO_SAFE_AREA_OVERRIDE;
+        if (mImePredictor != null && mIsViewportSizeFixed) {
+            if (!mPauseInsetUpdates && !isActivityInactive(mWindowAndroid)) {
+                updateSafeAreaInsets(ignoreCache, bottomSafeAreaOverridePx);
+            }
+            return false;
+        }
+        return updateBounds(ignoreCache, NO_HEIGHT_OVERRIDE, bottomSafeAreaOverridePx);
     }
 
     /**
@@ -523,6 +612,7 @@ public class WebViewResizingHelper {
      *     #NO_SAFE_AREA_OVERRIDE} to use the default inset from window insets.
      * @return True if container dimensions changed, false otherwise.
      */
+    @Override
     public boolean updateBounds(
             boolean ignoreCache, @Px int heightOverridePx, @Px int bottomSafeAreaOverridePx) {
         if (mPauseInsetUpdates || isActivityInactive(mWindowAndroid)) {
@@ -620,6 +710,9 @@ public class WebViewResizingHelper {
     }
 
     private WindowInsetsAnimationListener createInsetAnimationListener() {
+        if (mImePredictor != null) {
+            return createSmoothResizeInsetAnimationListener();
+        }
         return new WindowInsetsAnimationListener() {
             @Override
             public void onPrepare(WindowInsetsAnimationCompat animation) {
@@ -644,6 +737,9 @@ public class WebViewResizingHelper {
     }
 
     private ActivityStateObserver createActivityStateObserver() {
+        if (mImePredictor != null) {
+            return createSmoothResizeActivityStateObserver();
+        }
         return new ActivityStateObserver() {
             @Override
             public void onActivityResumed() {
@@ -653,6 +749,9 @@ public class WebViewResizingHelper {
     }
 
     private WindowInsetObserver createWindowInsetObserver() {
+        if (mImePredictor != null) {
+            return createSmoothResizeWindowInsetObserver();
+        }
         return new WindowInsetObserver() {
             @Override
             public void onInsetChanged() {
@@ -667,6 +766,9 @@ public class WebViewResizingHelper {
     }
 
     private BottomSheetObserver createBottomSheetObserver() {
+        if (mImePredictor != null) {
+            return createSmoothResizeBottomSheetObserver();
+        }
         return new BottomSheetObserver() {
             @Override
             public void onSheetContentChanged(@Nullable BottomSheetContent newContent) {
@@ -675,6 +777,105 @@ public class WebViewResizingHelper {
 
             @Override
             public void onContainerBottomMarginChanged(@Px int bottomMargin) {
+                updateBounds();
+            }
+        };
+    }
+
+    private WindowInsetsAnimationListener createSmoothResizeInsetAnimationListener() {
+        return new WindowInsetsAnimationListener() {
+            @Override
+            public void onPrepare(WindowInsetsAnimationCompat animation) {
+                if (mImePredictor != null) {
+                    mImePredictor.onPrepareAnimation(animation);
+                }
+            }
+
+            @Override
+            public void onStart(
+                    WindowInsetsAnimationCompat animation,
+                    WindowInsetsAnimationCompat.BoundsCompat bounds) {
+                if (mImePredictor != null) {
+                    mImePredictor.onStartAnimation(animation, bounds);
+                }
+            }
+
+            @Override
+            public void onProgress(
+                    WindowInsetsCompat insets, List<WindowInsetsAnimationCompat> list) {
+                if (mImePredictor != null) {
+                    mImePredictor.onProgressAnimation(list);
+                }
+            }
+
+            @Override
+            public void onEnd(WindowInsetsAnimationCompat animation) {
+                if (mImePredictor != null) {
+                    mImePredictor.onEndAnimation(animation);
+                }
+            }
+        };
+    }
+
+    private ActivityStateObserver createSmoothResizeActivityStateObserver() {
+        return new ActivityStateObserver() {
+            @Override
+            public void onActivityResumed() {
+                if (mImePredictor != null) {
+                    mImePredictor.onActivityResumed();
+                }
+            }
+        };
+    }
+
+    private WindowInsetObserver createSmoothResizeWindowInsetObserver() {
+        return new WindowInsetObserver() {
+            @Override
+            public void onInsetChanged() {
+                if (mImePredictor != null && mImePredictor.isOtherSheetContentShowing()) {
+                    return;
+                }
+                updateBounds();
+            }
+
+            @Override
+            public void onKeyboardInsetChanged(int inset) {
+                if (mImePredictor != null) {
+                    mImePredictor.onKeyboardInsetChanged();
+                }
+                if (!isEdgeToEdgeEnabled()) {
+                    if (mImePredictor != null && mImePredictor.isOtherSheetContentShowing()) {
+                        return;
+                    }
+                    updateBounds();
+                }
+            }
+        };
+    }
+
+    private BottomSheetObserver createSmoothResizeBottomSheetObserver() {
+        return new BottomSheetObserver() {
+            @Override
+            public void onSheetContentChanged(@Nullable BottomSheetContent newContent) {
+                if (mImePredictor != null) {
+                    mImePredictor.onSheetContentChanged();
+                }
+            }
+
+            @Override
+            public void onSheetStateChanged(int newState, int reason) {
+                if (mImePredictor != null) {
+                    mImePredictor.onSheetStateChanged(newState);
+                }
+            }
+
+            @Override
+            public void onContainerBottomMarginChanged(@Px int bottomMargin) {
+                if (mImePredictor != null
+                        && (mImePredictor.shouldSuppressBottomMarginUpdate()
+                                || mImePredictor.isOtherSheetContentShowing())) {
+                    return;
+                }
                 updateBounds();
             }
         };
@@ -696,5 +897,9 @@ public class WebViewResizingHelper {
 
     @Nullable TimeoutRunnable getPendingTimeoutRunnableForTesting() {
         return mPendingTimeoutRunnable;
+    }
+
+    WindowInsetObserver getWindowInsetObserverForTesting() {
+        return mWindowInsetObserver;
     }
 }
