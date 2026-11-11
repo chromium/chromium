@@ -448,6 +448,7 @@
   <message name="IDS_FUSEBOX_CANVAS_SUBTEXT" desc="Subtext displayed under the Canvas button in the Fusebox popup." formatter_data="android_java">
     Build and code
   </message>
+  <message name="IDS_FUSEBOX_PTM_TOOL_SUBTEXT" desc="Optional subtext displayed under an additional tool button in the Fusebox popup." formatter_data="android_java" translateable="false"></message>
   <message name="IDS_NTP_SEARCH_BOX_HINT_MAKE_A_PLAN" desc="Cycling hint text displayed inside the New Tab Page search box to suggest using AI Mode to make a plan." formatter_data="android_java">
     Make a plan
   </message>

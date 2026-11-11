@@ -3477,12 +3477,16 @@ public class FuseboxMediatorUnitTest {
         assertEquals(
                 mContext.getString(R.string.fusebox_canvas_subtext),
                 mMediator.getToolSubtext(ToolMode.TOOL_MODE_CANVAS));
+        assertEquals(
+                mContext.getString(R.string.fusebox_ptm_tool_subtext),
+                mMediator.getToolSubtext(ToolMode.TOOL_MODE_GEMINI_PRO));
         assertEquals("", mMediator.getToolSubtext(ToolMode.TOOL_MODE_DEEP_SEARCH));
 
         OmniboxFeatures.setUseAccordionForTesting(false);
         assertEquals("", mMediator.getToolSubtext(ToolMode.TOOL_MODE_UNSPECIFIED));
         assertEquals("", mMediator.getToolSubtext(ToolMode.TOOL_MODE_IMAGE_GEN));
         assertEquals("", mMediator.getToolSubtext(ToolMode.TOOL_MODE_CANVAS));
+        assertEquals("", mMediator.getToolSubtext(ToolMode.TOOL_MODE_GEMINI_PRO));
         assertEquals("", mMediator.getToolSubtext(ToolMode.TOOL_MODE_DEEP_SEARCH));
     }
 
