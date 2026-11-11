@@ -13412,6 +13412,7 @@ from previous Chrome versions.
   <int value="-501679339" label="CrossDeviceTaskHandoff:disabled"/>
   <int value="-501461773" label="GlicActorUiOverlayMagicCursor:disabled"/>
   <int value="-500807692" label="Apb144Patch7:disabled"/>
+  <int value="-500705256" label="CoreAnimationBackdropFilter:disabled"/>
   <int value="-500367371" label="CCTPageInsightsHubBetterScroll:enabled"/>
   <int value="-500187265"
       label="NtpFeatureOptimizationDismissModulesRemoval:enabled"/>
@@ -19312,6 +19313,7 @@ from previous Chrome versions.
   <int value="1261095642" label="AndroidDesktopAimGate:disabled"/>
   <int value="1261379424" label="DecodeLossyWebPImagesToYUV:disabled"/>
   <int value="1261620998" label="IntentPickerPWAPersistence:disabled"/>
+  <int value="1261678231" label="CoreAnimationBackdropFilter:enabled"/>
   <int value="1261713150" label="ChromeHomeOptOutSnackbar:disabled"/>
   <int value="1262469513" label="GesturePropertiesDBusService:disabled"/>
   <int value="1262747485"

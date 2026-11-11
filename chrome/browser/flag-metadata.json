@@ -2609,6 +2609,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "core-animation-backdrop-filter",
+    "owners": [ "dfried@chromium.org", "lizeb@chromium.org", "ccameron@chromium.org" ],
+    "expiry_milestone": 165
+  },
+  {
     "name": "cpe-passkey-largeblob-support",
     "owners": ["rgod@google.com", "bling-transactions-eng@google.com"],
     "expiry_milestone": 170

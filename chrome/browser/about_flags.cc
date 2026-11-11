@@ -349,6 +349,7 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
+#include "ui/base/cocoa/ca_backdrop_filter_api.h"
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN)
@@ -8343,6 +8344,13 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // defined(ARCH_CPU_ARM_FAMILY)
 #endif  // BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_MAC)
+    {"core-animation-backdrop-filter",
+     flag_descriptions::kCoreAnimationBackdropFilterName,
+     flag_descriptions::kCoreAnimationBackdropFilterDescription, kOsMac,
+     FEATURE_VALUE_TYPE(ui::kCoreAnimationBackdropFilter)},
+#endif
 
 #if BUILDFLAG(IS_ANDROID)
     {"force-startup-signin-promo",
