@@ -5,10 +5,14 @@
 #ifndef ASH_SYSTEM_INPUT_DEVICE_SETTINGS_INPUT_DEVICE_SETTINGS_METADATA_H_
 #define ASH_SYSTEM_INPUT_DEVICE_SETTINGS_INPUT_DEVICE_SETTINGS_METADATA_H_
 
+#include <optional>
+#include <string>
+#include <string_view>
+#include <vector>
+
 #include "ash/ash_export.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/system/input_device_settings/input_device_settings_utils.h"
-#include "base/containers/flat_map.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/devices/keyboard_device.h"
 
@@ -34,31 +38,39 @@ enum class DeviceImageDestination {
 };
 
 struct ASH_EXPORT MouseMetadata {
-  MouseMetadata();
-  MouseMetadata(mojom::CustomizationRestriction customization_restriction,
-                mojom::MouseButtonConfig config,
-                std::optional<std::string> name = std::nullopt);
-  ~MouseMetadata();
-  MouseMetadata(const MouseMetadata& other);
+  constexpr MouseMetadata() = default;
+  constexpr MouseMetadata(
+      mojom::CustomizationRestriction customization_restriction,
+      mojom::MouseButtonConfig config,
+      std::optional<std::string_view> name = std::nullopt)
+      : customization_restriction(customization_restriction),
+        mouse_button_config(config),
+        name(name) {}
+  constexpr ~MouseMetadata() = default;
+  constexpr MouseMetadata(const MouseMetadata& other) = default;
 
   mojom::CustomizationRestriction customization_restriction;
   mojom::MouseButtonConfig mouse_button_config;
-  std::optional<std::string> name = std::nullopt;
+  std::optional<std::string_view> name = std::nullopt;
   bool operator==(const MouseMetadata& other) const;
 };
 
 struct ASH_EXPORT GraphicsTabletMetadata {
-  GraphicsTabletMetadata();
-  GraphicsTabletMetadata(
+  constexpr GraphicsTabletMetadata() = default;
+  constexpr GraphicsTabletMetadata(
       mojom::CustomizationRestriction customization_restriction,
       mojom::GraphicsTabletButtonConfig config,
-      std::optional<std::string> name = std::nullopt);
-  ~GraphicsTabletMetadata();
-  GraphicsTabletMetadata(const GraphicsTabletMetadata& other);
+      std::optional<std::string_view> name = std::nullopt)
+      : customization_restriction(customization_restriction),
+        graphics_tablet_button_config(config),
+        name(name) {}
+  constexpr ~GraphicsTabletMetadata() = default;
+  constexpr GraphicsTabletMetadata(const GraphicsTabletMetadata& other) =
+      default;
 
   mojom::CustomizationRestriction customization_restriction;
   mojom::GraphicsTabletButtonConfig graphics_tablet_button_config;
-  std::optional<std::string> name = std::nullopt;
+  std::optional<std::string_view> name = std::nullopt;
   bool operator==(const GraphicsTabletMetadata& other) const;
 };
 
@@ -91,22 +103,6 @@ ASH_EXPORT const KeyboardMouseComboMetadata* GetKeyboardMouseComboMetadata(
 // This function returns the device type of the input device.
 ASH_EXPORT DeviceType GetDeviceType(const ui::InputDevice& device);
 
-// This function returns the mouse metadata list.
-ASH_EXPORT const base::flat_map<VendorProductId, MouseMetadata>&
-GetMouseMetadataList();
-
-// This function returns the graphics tablet metadata list.
-ASH_EXPORT const base::flat_map<VendorProductId, GraphicsTabletMetadata>&
-GetGraphicsTabletMetadataList();
-
-// This function returns the keyboard mouse combo metadata list.
-ASH_EXPORT const base::flat_map<VendorProductId, KeyboardMouseComboMetadata>&
-GetKeyboardMouseComboMetadataList();
-
-// This function returns the keyboard metadata list.
-ASH_EXPORT const base::flat_map<VendorProductId, KeyboardMetadata>&
-GetKeyboardMetadataList();
-
 // This function returns the button remapping list from the peripherals.
 ASH_EXPORT std::vector<mojom::ButtonRemappingPtr>
 GetButtonRemappingListForConfig(mojom::MouseButtonConfig mouse_button_config);
@@ -122,10 +118,6 @@ GetPenButtonRemappingListForConfig(
 ASH_EXPORT std::vector<mojom::ButtonRemappingPtr>
 GetTabletButtonRemappingListForConfig(
     mojom::GraphicsTabletButtonConfig graphics_tablet_button_config);
-
-// This function returns the vid pid alias list.
-ASH_EXPORT const base::flat_map<VendorProductId, VendorProductId>&
-GetVidPidAliasList();
 
 // This function returns whether or not a device has an associated companion
 // app.

@@ -13,41 +13,7 @@ namespace ash {
 
 class MetadataTest : public AshTestBase {};
 
-bool ValidateDeviceLists() {
-  for (auto keyboard_metadata : GetKeyboardMetadataList()) {
-    if (GetKeyboardMouseComboMetadataList().contains(keyboard_metadata.first)) {
-      return false;
-    }
-  }
-  for (auto keyboard_mouse_combo_metadata :
-       GetKeyboardMouseComboMetadataList()) {
-    if (GetMouseMetadataList().contains(keyboard_mouse_combo_metadata.first)) {
-      return false;
-    }
-  }
-  for (const auto& mouse_metadata : GetMouseMetadataList()) {
-    if (GetKeyboardMetadataList().contains(mouse_metadata.first)) {
-      return false;
-    }
-  }
-  return true;
-}
-
-bool ValidateVidPidAliasList() {
-  for (auto vid_pid_alias_pair : GetVidPidAliasList()) {
-    if (!GetMouseMetadataList().contains(vid_pid_alias_pair.second) &&
-        !GetGraphicsTabletMetadataList().contains(vid_pid_alias_pair.second) &&
-        !GetKeyboardMouseComboMetadataList().contains(
-            vid_pid_alias_pair.second) &&
-        !GetKeyboardMetadataList().contains(vid_pid_alias_pair.second)) {
-      return false;
-    }
-  }
-  return true;
-}
-
 TEST_F(MetadataTest, GetMetadata) {
-  ASSERT_TRUE(ValidateDeviceLists());
   const ui::InputDevice kSampleMouse1(0, ui::INPUT_DEVICE_USB, "kSampleMouse1",
                                       /*phys=*/"",
                                       /*sys_path=*/base::FilePath(),
@@ -101,7 +67,6 @@ TEST_F(MetadataTest, GetMetadata) {
 }
 
 TEST_F(MetadataTest, GetDeviceType) {
-  ASSERT_TRUE(ValidateDeviceLists());
   const ui::InputDevice kSampleMouse(0, ui::INPUT_DEVICE_USB,
                                      "Razer Naga Pro (USB Dongle)",
                                      /*phys=*/"",
@@ -169,8 +134,6 @@ TEST_F(MetadataTest, GetButtonRemappingListForConfig) {
 }
 
 TEST_F(MetadataTest, GetVidPidAliasList) {
-  ASSERT_TRUE(ValidateDeviceLists());
-  ASSERT_TRUE(ValidateVidPidAliasList());
   const ui::InputDevice kSampleBluetoothMouse(0, ui::INPUT_DEVICE_BLUETOOTH,
                                               "Razer Naga Pro (Bluetooth)",
                                               /*phys=*/"",

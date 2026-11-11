@@ -316,9 +316,10 @@ mojom::GraphicsTabletPtr BuildMojomGraphicsTablet(
     mojom::GraphicsTabletButtonConfig graphics_tablet_button_config) {
   mojom::GraphicsTabletPtr mojom_graphics_tablet = mojom::GraphicsTablet::New();
   auto* metadata = GetGraphicsTabletMetadata(graphics_tablet);
-  std::string name = metadata && metadata->name.has_value()
-                         ? metadata->name.value()
-                         : graphics_tablet.name;
+  std::string_view name;
+  if (metadata) {
+    name = metadata->name.value_or(graphics_tablet.name);
+  }
   mojom_graphics_tablet->name = name;
   mojom_graphics_tablet->id = graphics_tablet.id;
   mojom_graphics_tablet->customization_restriction = customization_restriction;
@@ -1809,7 +1810,7 @@ std::string GetMouseName(const ui::InputDevice& mouse) {
   if (!mouse_metadata || !mouse_metadata->name.has_value()) {
     return mouse.name;
   }
-  return mouse_metadata->name.value();
+  return std::string(mouse_metadata->name.value());
 }
 
 mojom::CustomizationRestriction
