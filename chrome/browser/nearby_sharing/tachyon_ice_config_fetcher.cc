@@ -8,6 +8,8 @@
 #include <string>
 
 #include "base/functional/bind.h"
+#include "base/i18n/icubridge/default_icu_locale.h"
+#include "base/i18n/language_tag.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -27,7 +29,6 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
-#include "third_party/icu/source/common/unicode/locid.h"
 #include "url/gurl.h"
 
 namespace {
@@ -83,7 +84,7 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 // Returns the ISO country code for the locale currently set as the
 // user's device language.
 const std::string GetCurrentCountryCode() {
-  return icu::Locale::getDefault().getCountry();
+  return std::string(base::i18n::GetDefaultIcuLocale().region_subtag());
 }
 
 void BuildLocationHint(tachyon_proto::LocationHint* location_hint,

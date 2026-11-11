@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "third_party/icu/source/common/unicode/locid.h"
+#include "base/i18n/language_tag.h"
 #include "third_party/nearby/sharing/proto/rpc_resources.pb.h"
 
 // Sort |contacts| by the following fields:
@@ -20,10 +20,14 @@
 // |contacts| has a unique ContactRecord::id(). The ordering between fields is
 // locale-dependent. For example, 'Å' will be sorted with these 'A's for
 // US-based sorting, whereas 'Å' will be sorted after 'Z' for Sweden-based
-// sorting, because 'Å' comes after 'Z' in the Swedish alphabet. By default,
-// |locale| is inferred from system settings.
+// sorting, because 'Å' comes after 'Z' in the Swedish alphabet.
 void SortNearbyShareContactRecords(
     std::vector<nearby::sharing::proto::ContactRecord>* contacts,
-    icu::Locale locale = icu::Locale::getDefault());
+    const base::i18n::LanguageTag& locale);
+
+// Same as above, but |locale| is inferred from the default ICU locale (see
+// base::i18n::GetDefaultIcuLocale()).
+void SortNearbyShareContactRecords(
+    std::vector<nearby::sharing::proto::ContactRecord>* contacts);
 
 #endif  // CHROME_BROWSER_NEARBY_SHARING_CONTACTS_NEARBY_SHARE_CONTACTS_SORTER_H_

@@ -4,6 +4,8 @@
 
 #include "chrome/services/sharing/nearby/platform/webrtc.h"
 
+#include "base/i18n/icubridge/default_icu_locale.h"
+#include "base/i18n/language_tag.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "chrome/services/sharing/nearby/test_support/mock_webrtc_dependencies.h"
@@ -13,7 +15,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/webrtc/api/data_channel_interface.h"
 #include "third_party/webrtc/api/make_ref_counted.h"
-#include "unicode/locid.h"
 
 namespace nearby::chrome {
 
@@ -206,7 +207,7 @@ TEST_F(WebRtcMediumTest, GetMessengerAndSendMessageWithUnknownLocationHint) {
               sharing::MockWebRtcDependencies::SendMessageCallback callback) {
             // Validate we get the default country code if we pass an UNKNOWN
             // location hint.
-            EXPECT_EQ(icu::Locale::getDefault().getCountry(),
+            EXPECT_EQ(base::i18n::GetDefaultIcuLocale().region_subtag(),
                       location_hint->location);
             EXPECT_EQ(
                 ::sharing::mojom::LocationStandardFormat::ISO_3166_1_ALPHA_2,
@@ -281,7 +282,7 @@ TEST_F(WebRtcMediumTest, DISABLED_GetMessenger_StartAndStopReceivingMessages) {
                   callback) {
             // Expect the unknown location hint to get defaulted by the time we
             // get here.
-            EXPECT_EQ(icu::Locale::getDefault().getCountry(),
+            EXPECT_EQ(base::i18n::GetDefaultIcuLocale().region_subtag(),
                       location_hint->location);
             EXPECT_EQ(
                 ::sharing::mojom::LocationStandardFormat::ISO_3166_1_ALPHA_2,

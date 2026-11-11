@@ -6,6 +6,8 @@
 
 #include <string_view>
 
+#include "base/i18n/icu4c_tag_converter.h"
+#include "base/i18n/icubridge/default_icu_locale.h"
 #include "base/i18n/string_compare.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -15,8 +17,10 @@
 
 CredentialComparator::CredentialComparator() {
   UErrorCode error = U_ZERO_ERROR;
-  collator_.reset(
-      icu::Collator::createInstance(icu::Locale::getDefault(), error));
+  collator_.reset(icu::Collator::createInstance(
+      base::i18n::IcuLocaleConverter::GetInstance().FromLanguageTag(
+          base::i18n::GetDefaultIcuLocale()),
+      error));
 }
 
 CredentialComparator::~CredentialComparator() = default;

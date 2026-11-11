@@ -7,6 +7,8 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "base/i18n/icubridge/default_icu_locale.h"
+#include "base/i18n/language_tag.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notimplemented.h"
 #include "base/task/sequenced_task_runner.h"
@@ -29,7 +31,6 @@
 #include "third_party/webrtc/api/jsep.h"
 #include "third_party/webrtc/api/peer_connection_interface.h"
 #include "third_party/webrtc_overrides/environment.h"
-#include "unicode/locid.h"
 
 namespace nearby::chrome {
 
@@ -97,7 +98,7 @@ net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 // Returns the ISO country code for the locale currently set as the
 // user's device language.
 const std::string GetCurrentCountryCode() {
-  return std::string(icu::Locale::getDefault().getCountry());
+  return std::string(base::i18n::GetDefaultIcuLocale().region_subtag());
 }
 
 class ProxyAsyncDnsResolverFactory final

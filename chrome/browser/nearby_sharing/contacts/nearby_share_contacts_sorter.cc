@@ -8,6 +8,9 @@
 #include <optional>
 #include <string>
 
+#include "base/i18n/icu4c_tag_converter.h"
+#include "base/i18n/icubridge/default_icu_locale.h"
+#include "base/i18n/language_tag.h"
 #include "base/i18n/string_compare.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
@@ -135,11 +138,17 @@ class ContactRecordComparator {
 
 void SortNearbyShareContactRecords(
     std::vector<nearby::sharing::proto::ContactRecord>* contacts,
-    icu::Locale locale) {
+    const base::i18n::LanguageTag& locale) {
   UErrorCode error = U_ZERO_ERROR;
-  std::unique_ptr<icu::Collator> collator(
-      icu::Collator::createInstance(locale, error));
+  std::unique_ptr<icu::Collator> collator(icu::Collator::createInstance(
+      base::i18n::IcuLocaleConverter::GetInstance().FromLanguageTag(locale),
+      error));
   ContactRecordComparator comparator(U_SUCCESS(error) ? collator.get()
                                                       : nullptr);
   std::sort(contacts->begin(), contacts->end(), comparator);
+}
+
+void SortNearbyShareContactRecords(
+    std::vector<nearby::sharing::proto::ContactRecord>* contacts) {
+  SortNearbyShareContactRecords(contacts, base::i18n::GetDefaultIcuLocale());
 }

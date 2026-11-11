@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/i18n/language_tag.h"
 #include "base/no_destructor.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/nearby/sharing/proto/rpc_resources.pb.h"
@@ -120,7 +121,7 @@ const std::vector<nearby::sharing::proto::ContactRecord>& contacts() {
 void VerifySort(
     const std::vector<nearby::sharing::proto::ContactRecord>& expected_contacts,
     const std::vector<nearby::sharing::proto::ContactRecord>& unsorted_contacts,
-    icu::Locale locale) {
+    const base::i18n::LanguageTag& locale) {
   // Try a few different permutations of |unsorted_contacts|, which should all
   // be sorted to |expected_contacts|.
   auto rng = std::default_random_engine{};
@@ -167,7 +168,8 @@ TEST(NearbyShareContactsSorter, US) {
       contacts()[8],  contacts()[7],  contacts()[6],  contacts()[14],
       contacts()[18], contacts()[12], contacts()[11], contacts()[9],
       contacts()[10], contacts()[5],  contacts()[4]};
-  VerifySort(expected_contacts, contacts(), icu::Locale::getUS());
+  VerifySort(expected_contacts, contacts(),
+             base::i18n::GetKnownLanguageTag("en-US"));
 }
 
 TEST(NearbyShareContactsSorter, Sweden) {
@@ -198,7 +200,7 @@ TEST(NearbyShareContactsSorter, Sweden) {
       contacts()[17], contacts()[12], contacts()[11], contacts()[9],
       contacts()[10], contacts()[5],  contacts()[4]};
   VerifySort(expected_contacts, contacts(),
-             icu::Locale("SV", "SV", "Traditional_POSIX"));
+             base::i18n::GetKnownLanguageTag("sv-SE"));
 }
 
 TEST(NearbyShareContactsSorter, China) {
@@ -228,5 +230,6 @@ TEST(NearbyShareContactsSorter, China) {
       contacts()[1],  contacts()[17], contacts()[3],  contacts()[0],
       contacts()[8],  contacts()[7],  contacts()[6],  contacts()[14],
       contacts()[18], contacts()[5],  contacts()[4]};
-  VerifySort(expected_contacts, contacts(), icu::Locale::getChina());
+  VerifySort(expected_contacts, contacts(),
+             base::i18n::GetKnownLanguageTag("zh-CN"));
 }

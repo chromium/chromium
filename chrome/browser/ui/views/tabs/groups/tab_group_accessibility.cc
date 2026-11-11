@@ -8,6 +8,8 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/i18n/icu4c_tag_converter.h"
+#include "base/i18n/icubridge/default_icu_locale.h"
 #include "base/i18n/unicodestring.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -55,9 +57,10 @@ std::u16string MakeICUFormattedTabTitleList(
   // Use UNITS type to avoid conjunctions like "and".
   // on the last item of the list.
   std::unique_ptr<icu::ListFormatter> formatter(
-      icu::ListFormatter::createInstance(icu::Locale::getDefault(),
-                                         ULISTFMT_TYPE_UNITS,
-                                         ULISTFMT_WIDTH_WIDE, error));
+      icu::ListFormatter::createInstance(
+          base::i18n::IcuLocaleConverter::GetInstance().FromLanguageTag(
+              base::i18n::GetDefaultIcuLocale()),
+          ULISTFMT_TYPE_UNITS, ULISTFMT_WIDTH_WIDE, error));
   if (U_FAILURE(error) || !formatter) {
     return std::u16string();
   }

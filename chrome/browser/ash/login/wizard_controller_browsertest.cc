@@ -19,6 +19,8 @@
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
+#include "base/i18n/icubridge/default_icu_locale.h"
+#include "base/i18n/language_tag.h"
 #include "base/i18n/time_formatting.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -153,7 +155,6 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/icu/source/common/unicode/locid.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -468,14 +469,14 @@ IN_PROC_BROWSER_TEST_F(WizardControllerTest, SwitchLanguage) {
 
   // Checking the default locale. Provided that the profile is cleared in SetUp.
   EXPECT_EQ("en-US", g_browser_process->GetApplicationLocale());
-  EXPECT_STREQ("en", icu::Locale::getDefault().getLanguage());
+  EXPECT_EQ("en", base::i18n::GetDefaultIcuLocale().language_subtag());
   EXPECT_FALSE(base::i18n::IsRTL());
   const std::u16string en_str =
       l10n_util::GetStringUTF16(IDS_LOGIN_GET_STARTED);
 
   RunSwitchLanguageTest("fr", "fr", true);
   EXPECT_EQ("fr", g_browser_process->GetApplicationLocale());
-  EXPECT_STREQ("fr", icu::Locale::getDefault().getLanguage());
+  EXPECT_EQ("fr", base::i18n::GetDefaultIcuLocale().language_subtag());
   EXPECT_FALSE(base::i18n::IsRTL());
   const std::u16string fr_str =
       l10n_util::GetStringUTF16(IDS_LOGIN_GET_STARTED);
@@ -484,7 +485,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerTest, SwitchLanguage) {
 
   RunSwitchLanguageTest("ar", "ar", true);
   EXPECT_EQ("ar", g_browser_process->GetApplicationLocale());
-  EXPECT_STREQ("ar", icu::Locale::getDefault().getLanguage());
+  EXPECT_EQ("ar", base::i18n::GetDefaultIcuLocale().language_subtag());
   EXPECT_TRUE(base::i18n::IsRTL());
   const std::u16string ar_str =
       l10n_util::GetStringUTF16(IDS_LOGIN_GET_STARTED);
