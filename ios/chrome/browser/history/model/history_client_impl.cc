@@ -43,6 +43,12 @@ void HistoryClientImpl::OnHistoryServiceCreated(
           &HistoryClientImpl::OnFaviconsChanged, base::Unretained(this)));
 }
 
+bool HistoryClientImpl::CanDeferBackendInit() const {
+  // TODO(crbug.com/542537280): Support deferred HistoryBackend initialization
+  // on iOS as well.
+  return false;
+}
+
 void HistoryClientImpl::Shutdown() {
   favicons_changed_subscription_ = {};
   StopObservingBookmarkModel();

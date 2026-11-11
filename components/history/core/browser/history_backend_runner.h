@@ -7,6 +7,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
+#include "base/task/deferred_sequenced_task_runner.h"
 #include "base/task/sequenced_task_runner.h"
 
 namespace history {
@@ -18,8 +19,8 @@ struct HistoryDatabaseParams;
 // initialization lifecycle of HistoryBackend.
 //
 // In particular, it supports deferring HistoryBackend initialization to avoid
-// resource contention during startup, ensuring that HistoryBackend::Init is
-// scheduled before any subsequent task or query is posted to the task runner.
+// resource contention during startup, queueing tasks posted to GetTaskRunner()
+// until EnsureInitScheduled() schedules HistoryBackend::Init.
 class HistoryBackendRunner {
  public:
   HistoryBackendRunner(scoped_refptr<base::SequencedTaskRunner> task_runner,
@@ -33,18 +34,19 @@ class HistoryBackendRunner {
 
   ~HistoryBackendRunner();
 
-  // Schedules HistoryBackend::Init if it has not already been scheduled.
+  // Schedules HistoryBackend::Init if it has not already been scheduled, and
+  // flushes any tasks queued on GetTaskRunner().
   void EnsureInitScheduled();
 
-  // Returns the task runner, guaranteeing that HistoryBackend::Init has been
-  // scheduled first.
+  // Returns a task runner that executes tasks on `task_runner_` after
+  // EnsureInitScheduled() has been called. When `defer_init` is true, tasks
+  // posted before EnsureInitScheduled() are queued in FIFO order without
+  // scheduling HistoryBackend::Init immediately.
   base::SequencedTaskRunner* GetTaskRunner();
 
-  // Returns the task runner without ensuring Init has been scheduled.
+  // Returns the underlying task runner without queueing behind Init.
   // This is used for tasks that do not require the backend database to be
-  // initialized (e.g. updating in-memory sync/device metadata, shutdown),
-  // or callers (such as sync delegates) that explicitly ensure Init is run
-  // before their tasks execute.
+  // initialized (e.g. updating in-memory sync/device metadata, shutdown).
   scoped_refptr<base::SequencedTaskRunner> task_runner() const {
     return task_runner_;
   }
@@ -56,6 +58,7 @@ class HistoryBackendRunner {
   SEQUENCE_CHECKER(sequence_checker_);
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  scoped_refptr<base::DeferredSequencedTaskRunner> deferred_task_runner_;
   scoped_refptr<HistoryBackend> backend_;
   bool init_scheduled_ = false;
 };

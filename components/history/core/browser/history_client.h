@@ -34,6 +34,12 @@ class HistoryClient {
   // Called upon HistoryService creation.
   virtual void OnHistoryServiceCreated(HistoryService* history_service) = 0;
 
+  // Returns true if the embedder supports deferring `HistoryBackend`
+  // initialization during startup and guarantees that
+  // `HistoryService::EnsureBackendInitScheduled()` will be invoked once
+  // startup completes.
+  virtual bool CanDeferBackendInit() const = 0;
+
   // Called before HistoryService is shutdown.
   virtual void Shutdown() = 0;
 

@@ -50,6 +50,11 @@ void ChromeHistoryClient::OnHistoryServiceCreated(
   }
 }
 
+bool ChromeHistoryClient::CanDeferBackendInit() const {
+  return !AfterStartupTaskUtils::IsBrowserStartupComplete() &&
+         base::FeatureList::IsEnabled(history::kDeferHistoryBackendInit);
+}
+
 void ChromeHistoryClient::Shutdown() {
   favicons_changed_subscription_ = {};
   StopObservingBookmarkModel();

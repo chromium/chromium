@@ -45,6 +45,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
+#include "components/history/core/browser/download_row.h"
 #include "components/history/core/browser/features.h"
 #include "components/history/core/browser/history_backend.h"
 #include "components/history/core/browser/history_client.h"
@@ -1752,6 +1753,9 @@ namespace {
 class NonAddableChromeUrlHistoryClient : public HistoryClient {
  public:
   void OnHistoryServiceCreated(HistoryService* history_service) override {}
+  bool CanDeferBackendInit() const override {
+    return base::FeatureList::IsEnabled(kDeferHistoryBackendInit);
+  }
   void Shutdown() override {}
   CanAddURLCallback GetThreadSafeCanAddURLCallback() const override {
     return base::BindRepeating([](const GURL& url) {
@@ -1859,6 +1863,8 @@ TEST_F(HistoryServiceTest, NonAddableUrlsShortCircuitedInVisitAndFaviconApis) {
                bitmap_data, gfx::Size(16, 16));
   CloneFaviconMappingsForPages(source_url, {favicon_base::IconType::kFavicon},
                                {addable_dest, non_addable_dest});
+  EXPECT_FALSE(history_service_->is_backend_init_scheduled_for_testing());
+  history_service_->EnsureBackendInitScheduled();
   EXPECT_TRUE(history_service_->is_backend_init_scheduled_for_testing());
 
   base::test::TestFuture<std::vector<favicon_base::FaviconRawBitmapResult>>
@@ -1991,6 +1997,29 @@ TEST_F(OrderingHistoryServiceTest, EnsureAddPageConstructsSelfLink) {
   EXPECT_EQ(weak_visit_delegate_->get_added_links(), expected_links);
 }
 
+namespace {
+
+class DeferredInitTestHistoryClient : public HistoryClient {
+ public:
+  void OnHistoryServiceCreated(HistoryService* history_service) override {}
+  bool CanDeferBackendInit() const override {
+    return base::FeatureList::IsEnabled(kDeferHistoryBackendInit);
+  }
+  void Shutdown() override {}
+  CanAddURLCallback GetThreadSafeCanAddURLCallback() const override {
+    return base::BindRepeating([](const GURL& url) { return url.is_valid(); });
+  }
+  void NotifyProfileError(sql::InitStatus init_status,
+                          const std::string& diagnostics) override {}
+  std::unique_ptr<HistoryBackendClient> CreateBackendClient() override {
+    return nullptr;
+  }
+  void UpdateBookmarkLastUsedTime(int64_t bookmark_node_id,
+                                  base::Time time) override {}
+};
+
+}  // namespace
+
 TEST_F(HistoryServiceTest, DeferredInitWithSyncControllerDelegate) {
   // Tear down the default HistoryService created by SetUp().
   CleanupHistoryService();
@@ -1998,26 +2027,30 @@ TEST_F(HistoryServiceTest, DeferredInitWithSyncControllerDelegate) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kDeferHistoryBackendInit);
 
-  history_service_ = std::make_unique<history::HistoryService>();
+  history_service_ = std::make_unique<history::HistoryService>(
+      std::make_unique<DeferredInitTestHistoryClient>(), nullptr, nullptr,
+      nullptr);
   history_service_->Init(TestHistoryDatabaseParamsForPath(history_dir_));
 
   // The backend init should not be scheduled yet because init is deferred.
   EXPECT_FALSE(history_service_->is_backend_init_scheduled_for_testing());
   EXPECT_FALSE(history_service_->backend_loaded());
 
-  // Getting the sync controller delegate should not cause backend init to be
-  // scheduled or run.
+  // Getting the sync controller delegate or invoking methods on it while
+  // deferred queues the tasks behind backend init rather than triggering init
+  // immediately.
   auto delegate = history_service_->GetHistorySyncControllerDelegate();
   ASSERT_TRUE(delegate);
-  EXPECT_FALSE(history_service_->is_backend_init_scheduled_for_testing());
-  EXPECT_FALSE(history_service_->backend_loaded());
-
-  // Invoking a method on the delegate triggers the DelegateProvider on the
-  // backend sequence, which ensures the backend is initialized.
+  delegate->ClearMetadataIfStopped();
   base::test::TestFuture<base::ListValue> future;
   delegate->GetAllNodesForDebugging(future.GetCallback());
-  EXPECT_TRUE(future.Wait());
+  EXPECT_FALSE(history_service_->is_backend_init_scheduled_for_testing());
+  EXPECT_FALSE(history_service_->backend_loaded());
+  EXPECT_FALSE(future.IsReady());
 
+  // Scheduling backend init runs Init followed by the queued delegate tasks.
+  history_service_->EnsureBackendInitScheduled();
+  EXPECT_TRUE(future.Wait());
   EXPECT_TRUE(history_service_->backend_loaded());
 }
 
@@ -2031,7 +2064,8 @@ TEST_F(HistoryServiceTest, DeferredInitNotTriggeredByEarlyCallsAndShutdown) {
   TestDeviceInfoTracker device_info_tracker;
   TestLocalDeviceInfoProvider local_device_info_provider;
   history_service_ = std::make_unique<history::HistoryService>(
-      nullptr, nullptr, &device_info_tracker, &local_device_info_provider);
+      std::make_unique<DeferredInitTestHistoryClient>(), nullptr,
+      &device_info_tracker, &local_device_info_provider);
   history_service_->Init(TestHistoryDatabaseParamsForPath(history_dir_));
 
   // Init() notifies device info and local device cache GUID, which should not
@@ -2059,6 +2093,98 @@ TEST_F(HistoryServiceTest, DeferredInitNotTriggeredByEarlyCallsAndShutdown) {
   history_service_->Shutdown();
   history_service_.reset();
   run_loop.Run();
+}
+
+TEST_F(HistoryServiceTest,
+       BackendTasksAndQueriesDeferredUntilEnsureBackendInitScheduled) {
+  CleanupHistoryService();
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kDeferHistoryBackendInit);
+
+  history_service_ = std::make_unique<history::HistoryService>(
+      std::make_unique<DeferredInitTestHistoryClient>(), nullptr, nullptr,
+      nullptr);
+  history_service_->Init(TestHistoryDatabaseParamsForPath(history_dir_));
+
+  EXPECT_FALSE(history_service_->is_backend_init_scheduled_for_testing());
+  EXPECT_FALSE(history_service_->backend_loaded());
+
+  // Scheduling a DB task via `ScheduleDBTask()` or querying
+  // `GetNextDownloadId()` / `QueryDownloads()` should queue the work behind
+  // init without scheduling `HistoryBackend::Init()` immediately.
+  int invoke_count = 0;
+  bool done_invoked = false;
+  base::RunLoop db_task_loop;
+  history_service_->ScheduleDBTask(
+      FROM_HERE,
+      std::unique_ptr<HistoryDBTask>(new HistoryDBTaskImpl(
+          &invoke_count, &done_invoked, db_task_loop.QuitClosure())),
+      &tracker_);
+  EXPECT_FALSE(history_service_->is_backend_init_scheduled_for_testing());
+
+  base::test::TestFuture<uint32_t> download_id_future;
+  history_service_->GetNextDownloadId(download_id_future.GetCallback());
+  base::test::TestFuture<std::vector<DownloadRow>> query_downloads_future;
+  history_service_->QueryDownloads(query_downloads_future.GetCallback());
+  EXPECT_FALSE(history_service_->is_backend_init_scheduled_for_testing());
+  EXPECT_EQ(0, invoke_count);
+  EXPECT_FALSE(done_invoked);
+  EXPECT_FALSE(download_id_future.IsReady());
+  EXPECT_FALSE(query_downloads_future.IsReady());
+
+  // Once `EnsureBackendInitScheduled()` is invoked, both
+  // `HistoryBackend::Init()` and the queued tasks should execute in order.
+  history_service_->EnsureBackendInitScheduled();
+  EXPECT_TRUE(history_service_->is_backend_init_scheduled_for_testing());
+
+  EXPECT_TRUE(download_id_future.Wait());
+  EXPECT_TRUE(query_downloads_future.Wait());
+  EXPECT_TRUE(query_downloads_future.Get().empty());
+  db_task_loop.Run();
+  EXPECT_TRUE(history_service_->backend_loaded());
+  EXPECT_EQ(HistoryDBTaskImpl::kWantInvokeCount, invoke_count);
+  EXPECT_TRUE(done_invoked);
+}
+
+TEST_F(HistoryServiceTest, ShutdownWithQueuedPostInitTasksDropsTasks) {
+  CleanupHistoryService();
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kDeferHistoryBackendInit);
+
+  history_service_ = std::make_unique<history::HistoryService>(
+      std::make_unique<DeferredInitTestHistoryClient>(), nullptr, nullptr,
+      nullptr);
+  history_service_->Init(TestHistoryDatabaseParamsForPath(history_dir_));
+
+  // Queue tasks behind deferred init, then shut down before init is ever
+  // scheduled. `~HistoryBackendRunner()` should drop the queued tasks without
+  // running them and destroy `HistoryBackend` on the background task runner.
+  int invoke_count = 0;
+  bool done_invoked = false;
+  history_service_->ScheduleDBTask(
+      FROM_HERE,
+      std::unique_ptr<HistoryDBTask>(new HistoryDBTaskImpl(
+          &invoke_count, &done_invoked, base::DoNothing())),
+      &tracker_);
+  base::test::TestFuture<uint32_t> download_id_future;
+  history_service_->GetNextDownloadId(download_id_future.GetCallback());
+  base::test::TestFuture<std::vector<DownloadRow>> query_downloads_future;
+  history_service_->QueryDownloads(query_downloads_future.GetCallback());
+  auto sync_delegate = history_service_->GetHistorySyncControllerDelegate();
+  sync_delegate->ClearMetadataIfStopped();
+  EXPECT_FALSE(history_service_->is_backend_init_scheduled_for_testing());
+
+  base::RunLoop destroy_loop;
+  history_service_->SetOnBackendDestroyTask(destroy_loop.QuitClosure());
+  history_service_->Shutdown();
+  history_service_.reset();
+  destroy_loop.Run();
+  EXPECT_EQ(0, invoke_count);
+  EXPECT_FALSE(done_invoked);
+  EXPECT_FALSE(download_id_future.IsReady());
+  EXPECT_FALSE(query_downloads_future.IsReady());
 }
 
 }  // namespace history

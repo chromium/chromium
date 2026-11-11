@@ -152,6 +152,10 @@ void HistoryClientFakeBookmarks::OnHistoryServiceCreated(
     HistoryService* history_service) {
 }
 
+bool HistoryClientFakeBookmarks::CanDeferBackendInit() const {
+  return false;
+}
+
 void HistoryClientFakeBookmarks::Shutdown() {
 }
 

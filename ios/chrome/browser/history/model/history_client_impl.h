@@ -39,6 +39,7 @@ class HistoryClientImpl : public history::HistoryClient,
   // history::HistoryClient implementation.
   void OnHistoryServiceCreated(
       history::HistoryService* history_service) override;
+  bool CanDeferBackendInit() const override;
   void Shutdown() override;
   history::CanAddURLCallback GetThreadSafeCanAddURLCallback() const override;
   void NotifyProfileError(sql::InitStatus init_status,

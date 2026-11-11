@@ -1183,10 +1183,9 @@ class HistoryService : public KeyedService,
   // each visit added to the VisitedLinks hashtable.
   void LogTransitionMetricsForVisit(ui::PageTransition transition);
 
-  // Returns the backend task runner from `backend_runner_`, ensuring that
-  // HistoryBackend::Init has been scheduled first if it was deferred during
-  // startup. This is called when dispatching queries and requests to
-  // HistoryBackend.
+  // Returns the backend task runner from `backend_runner_`. When backend
+  // initialization is deferred during startup, tasks posted to this runner are
+  // queued in FIFO order until EnsureBackendInitScheduled() is called.
   base::SequencedTaskRunner* GetBackendTaskRunner() const;
 
   // Dispatches a task to the backend sequence without triggering backend

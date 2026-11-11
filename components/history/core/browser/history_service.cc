@@ -574,6 +574,8 @@ void HistoryService::ScheduleDBTaskForUI(
 }
 
 void HistoryService::FlushForTest(base::OnceClosure flushed) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  EnsureBackendInitScheduled();
   GetBackendTaskRunner()->PostTaskAndReply(FROM_HERE, base::DoNothing(),
                                            std::move(flushed));
 }
@@ -688,6 +690,7 @@ void HistoryService::AddPage(HistoryAddPageArgs add_page_args) {
         add_page_args.bookmark_id.value(), add_page_args.time);
   }
 
+  EnsureBackendInitScheduled();
   ScheduleTask(PRIORITY_NORMAL,
                base::BindOnce(&HistoryBackend::AddPage, history_backend_,
                               add_page_args));
@@ -1552,15 +1555,23 @@ void HistoryService::Cleanup() {
     // Get rid of the in-memory backend.
     in_memory_backend_.reset();
 
+    // Reset `backend_runner_` before moving `history_backend_` into
+    // `HistoryBackend::Closing` so any unexecuted closures queued in
+    // `backend_runner_` are destroyed on the UI thread while `history_backend_`
+    // still holds a strong reference, ensuring the final `HistoryBackend`
+    // reference is released on `task_runner`.
+    scoped_refptr<base::SequencedTaskRunner> task_runner =
+        backend_runner_->task_runner();
+    backend_runner_.reset();
+
     // Unload the backend without forcing DB initialization if it was never
     // loaded.
-    PostBackendTaskWithoutInit(
+    task_runner->PostTask(
         FROM_HERE,
         base::BindOnce(&HistoryBackend::Closing, std::move(history_backend_)));
+  } else {
+    backend_runner_.reset();
   }
-
-  // Clear `backend_runner_` to make sure it's not used after Cleanup().
-  backend_runner_.reset();
 
   local_device_info_available_subscription_ = {};
   local_device_info_provider_ = nullptr;
@@ -1642,7 +1653,7 @@ void HistoryService::Init(
 }
 
 bool HistoryService::ShouldDeferBackendInit() const {
-  return base::FeatureList::IsEnabled(kDeferHistoryBackendInit);
+  return history_client_ && history_client_->CanDeferBackendInit();
 }
 
 void HistoryService::EnsureBackendInitScheduled() const {
@@ -1714,7 +1725,7 @@ HistoryService::GetHistorySyncControllerDelegate() {
   // because this getter itself must also run in the backend sequence, and the
   // proxy object below will take care of that.
   return std::make_unique<syncer::ProxyDataTypeControllerDelegate>(
-      backend_runner_->task_runner(),
+      GetBackendTaskRunner(),
       base::BindRepeating(&HistoryBackend::GetHistorySyncControllerDelegate,
                           base::Unretained(history_backend_.get())));
 }
@@ -1724,7 +1735,7 @@ HistoryService::GetJourneysSyncControllerDelegate() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(backend_runner_);
   return std::make_unique<syncer::ProxyDataTypeControllerDelegate>(
-      backend_runner_->task_runner(),
+      GetBackendTaskRunner(),
       base::BindRepeating(&HistoryBackend::GetJourneysSyncControllerDelegate,
                           base::Unretained(history_backend_.get())));
 }

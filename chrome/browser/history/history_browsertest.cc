@@ -16,6 +16,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_test_util.h"
+#include "chrome/browser/after_startup_task_utils.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history/history_tab_helper.h"
 #include "chrome/browser/history/history_test_utils.h"
@@ -24,6 +25,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/webui_url_constants.h"
@@ -32,6 +34,8 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/download/public/common/download_features.h"
+#include "components/history/core/browser/features.h"
 #include "components/history/core/browser/history_backend.h"
 #include "components/history/core/browser/history_database.h"
 #include "components/history/core/browser/history_db_task.h"
@@ -1682,4 +1686,80 @@ IN_PROC_BROWSER_TEST_F(HistoryVisitedLinksBrowserTest,
   ASSERT_TRUE(observer2.GetVisitedLinkSalt().has_value());
   EXPECT_NE(observer.GetVisitedLinkSalt().value(),
             observer2.GetVisitedLinkSalt().value());
+}
+
+class HistoryDeferredBackendInitBrowserTest : public InProcessBrowserTest {
+ public:
+  HistoryDeferredBackendInitBrowserTest() {
+    // Launch with the default New Tab Page instead of about:blank.
+    set_open_about_blank_on_browser_launch(false);
+    // Explicitly disable kDeferredDownloadHistoryLoading so
+    // DownloadHistory::QueryDownloads() runs during startup.
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{history::kDeferHistoryBackendInit},
+        /*disabled_features=*/{
+            download::features::kDeferredDownloadHistoryLoading});
+  }
+
+  void PreRunTestOnMainThread() override {
+    // Hold a StartupInProgressRef while waiting for the initial NTP navigation
+    // and DownloadManager initialization so AfterStartupTaskUtils does not
+    // mark startup complete prematurely.
+    auto startup_ref = AfterStartupTaskUtils::RegisterStartupInProgressRef(
+        StartupIsCompleteReason::kFailsafeTimeout);
+
+    std::vector<BrowserWindowInterface*> browsers =
+        GetAllBrowserWindowInterfaces();
+    ASSERT_FALSE(browsers.empty());
+    BrowserWindowInterface* const browser_window = browsers.front();
+    Profile* const profile = browser_window->GetProfile();
+    ASSERT_TRUE(profile);
+
+    // Ensure DownloadManager (and DownloadCoreServiceImpl / DownloadHistory)
+    // is initialized during startup while kDeferredDownloadHistoryLoading is
+    // disabled, exercising both GetNextDownloadId() and QueryDownloads().
+    ASSERT_TRUE(profile->GetDownloadManager());
+
+    content::WebContents* const active_contents =
+        browser_window->GetTabStripModel()->GetActiveWebContents();
+    ASSERT_TRUE(active_contents);
+    EXPECT_TRUE(content::WaitForLoadStop(active_contents));
+    EXPECT_EQ(GURL(chrome::kChromeUINewTabURL),
+              active_contents->GetLastCommittedURL());
+
+    history::HistoryService* const history_service =
+        HistoryServiceFactory::GetForProfile(
+            profile, ServiceAccessType::EXPLICIT_ACCESS);
+    ASSERT_TRUE(history_service);
+
+    // Before startup completes, HistoryBackend initialization must not be
+    // scheduled even after NTP load and DownloadHistory startup queries.
+    EXPECT_FALSE(AfterStartupTaskUtils::IsBrowserStartupComplete());
+    EXPECT_FALSE(history_service->is_backend_init_scheduled_for_testing());
+    EXPECT_FALSE(history_service->BackendLoaded());
+
+    startup_ref.reset();
+
+    // InProcessBrowserTest::PreRunTestOnMainThread() calls
+    // AfterStartupTaskUtils::SetBrowserStartupIsCompleteForTesting().
+    InProcessBrowserTest::PreRunTestOnMainThread();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(HistoryDeferredBackendInitBrowserTest,
+                       DeferredDuringNtpStartupThenLoadsAfterStartup) {
+  history::HistoryService* const history_service =
+      HistoryServiceFactory::GetForProfile(browser()->GetProfile(),
+                                           ServiceAccessType::EXPLICIT_ACCESS);
+  ASSERT_TRUE(history_service);
+
+  // Now that PreRunTestOnMainThread() has marked browser startup complete,
+  // HistoryBackend initialization should be scheduled and complete cleanly.
+  EXPECT_TRUE(AfterStartupTaskUtils::IsBrowserStartupComplete());
+  EXPECT_TRUE(history_service->is_backend_init_scheduled_for_testing());
+  ui_test_utils::WaitForHistoryToLoad(history_service);
+  EXPECT_TRUE(history_service->BackendLoaded());
 }
