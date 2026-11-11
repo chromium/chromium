@@ -19,6 +19,10 @@ source_set("coordinator") {
     "passkey_suggestion_bottom_sheet_mediator.h",
     "passkey_suggestion_bottom_sheet_mediator.mm",
     "password_suggestion_bottom_sheet_exit_reason.h",
+    "remote_actor_credential_bottom_sheet_coordinator.h",
+    "remote_actor_credential_bottom_sheet_coordinator.mm",
+    "remote_actor_credential_bottom_sheet_mediator.h",
+    "remote_actor_credential_bottom_sheet_mediator.mm",
   ]
   deps = [
     "//base",
