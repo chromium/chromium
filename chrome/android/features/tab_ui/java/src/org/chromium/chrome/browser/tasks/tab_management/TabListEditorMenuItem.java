@@ -67,6 +67,7 @@ public class TabListEditorMenuItem {
 
     /**
      * @param context for loading resources.
+     * @param listItem The {@link ListItem} backing this menu item.
      */
     TabListEditorMenuItem(Context context, ListItem listItem) {
         mContext = context;

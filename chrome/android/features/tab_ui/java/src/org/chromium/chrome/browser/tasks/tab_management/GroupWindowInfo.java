@@ -126,6 +126,7 @@ public class GroupWindowInfo {
      * @param localGroupId The local tab group ID {@link Token}, if available.
      * @param savedGroup The {@link SavedTabGroup} instance, if synced.
      * @param state The {@link GroupWindowState} of the group.
+     * @param localTabs Pre-resolved tabs belonging to the group, or an empty list.
      * @return A new {@link GroupWindowInfo} instance.
      */
     private static GroupWindowInfo forLocalOrSyncedGroupInternal(

@@ -246,9 +246,7 @@ public abstract class TabListEditorAction {
             List<String> tabGroupSyncIds,
             @Nullable MotionEventInfo triggeringMotion);
 
-    /**
-     * @return Whether to hide the editor after taking the action.
-     */
+    /** Returns whether to hide the editor after taking the action. */
     public abstract boolean shouldHideEditorAfterAction();
 
     /**

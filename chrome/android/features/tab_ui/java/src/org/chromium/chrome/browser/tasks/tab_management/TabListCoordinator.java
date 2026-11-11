@@ -180,12 +180,16 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
      * @param onModelTokenChange Callback to invoke whenever a model changes. Only currently
      *     respected in TabListMode.BOTTOM_STRIP mode.
      * @param emptyViewParent {@link ViewGroup} The root view of the empty state view.
-     * @param emptyImageResId Drawable resource for empty state. @StringRes int
-     *     emptyHeadingStringResId, @StringRes int emptySubheadingStringResId, @Nullable Runnable
-     *     onTabGroupCreation,
+     * @param emptyImageResId Drawable resource for empty state.
+     * @param emptyHeadingStringResId String resource for the empty state heading.
+     * @param emptySubheadingStringResId String resource for the empty state subheading.
+     * @param onTabGroupCreation Should be run when the UI is used to create a tab group.
      * @param allowDragAndDrop Whether to allow drag and drop for this tab list coordinator.
      * @param tabSwitcherDragHandler An instance of the {@link TabSwitcherDragHandler}.
      * @param undoBarExplicitTrigger An interface to explicitly trigger the undo closure snackbar.
+     * @param snackbarManager The {@link SnackbarManager} to show snackbars, if any.
+     * @param allowedSelectionCount The maximum number of tabs that can be selected at once. If
+     *     equal to UNLIMITED_SELECTION, then unlimited.
      * @param dataProvider Scoped tab data provider, or null to use the global TabModel.
      */
     TabListCoordinator(
@@ -719,8 +723,8 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
     }
 
     /**
-     * @return The container {@link androidx.recyclerview.widget.RecyclerView} that is showing the
-     *         tab list UI.
+     * Returns the container {@link androidx.recyclerview.widget.RecyclerView} that is showing the
+     * tab list UI.
      */
     public TabListRecyclerView getContainerView() {
         return mRecyclerView;

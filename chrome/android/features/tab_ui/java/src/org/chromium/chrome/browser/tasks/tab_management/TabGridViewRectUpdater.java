@@ -31,8 +31,8 @@ public class TabGridViewRectUpdater implements ViewRectUpdateStrategy {
      * @param view The {@link View} whose bounds will be tracked.
      * @param rect The {@link Rect} instance that will be updated by this class with the view's
      *     calculated bounds. This object is modified directly.
-     * @param onRectChanged A {@link Runnable} that will be executed whenever the |rect| parameter
-     *     is updated.
+     * @param onRectChanged A {@link Runnable} that will be executed whenever the {@code rect}
+     *     parameter is updated.
      */
     public TabGridViewRectUpdater(View view, Rect rect, Runnable onRectChanged) {
         mView = view;

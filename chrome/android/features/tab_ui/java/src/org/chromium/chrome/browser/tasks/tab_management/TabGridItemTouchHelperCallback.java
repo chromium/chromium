@@ -143,6 +143,8 @@ public class TabGridItemTouchHelperCallback extends TabListItemTouchHelperCallba
      *     considered as a remove operation.
      * @param mergeThreshold Defines the percentage threshold as a decimal of how much area of the
      *     two items need to be overlapped in order to be considered as a merge operation.
+     * @param ungroupThreshold Defines the threshold for a drag to be considered as an ungroup
+     *     operation.
      */
     void setupCallback(
             float swipeToDismissThreshold, float mergeThreshold, float ungroupThreshold) {

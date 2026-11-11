@@ -59,16 +59,12 @@ public class IphMessageService extends MessageService<@MessageType Integer, @UiT
             mIsIncognito = isIncognito;
         }
 
-        /**
-         * @return The {@link MessageCardView.ActionProvider} for the associated IPH.
-         */
+        /** Returns the {@link MessageCardView.ActionProvider} for the associated IPH. */
         MessageCardView.ActionProvider getAcceptActionProvider() {
             return mAcceptActionProvider;
         }
 
-        /**
-         * @return The {@link ServiceDismissActionProvider} for the associated IPH.
-         */
+        /** Returns the {@link ServiceDismissActionProvider} for the associated IPH. */
         MessageCardView.ActionProvider getDismissActionProvider() {
             return mDismissActionProvider;
         }

@@ -75,6 +75,7 @@ public class MessageCardViewUtils {
      *
      * @param actionButton The button whose background color we want to modify.
      * @param isIncognito Whether the background color is used for incognito mode.
+     * @param isLargeMessageCard Whether the message card view requesting is a large message card.
      */
     public static void setActionButtonBackgroundColor(
             ButtonCompat actionButton, boolean isIncognito, boolean isLargeMessageCard) {

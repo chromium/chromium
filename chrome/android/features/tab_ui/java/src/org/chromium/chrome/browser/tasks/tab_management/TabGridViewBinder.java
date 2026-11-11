@@ -68,8 +68,9 @@ public class TabGridViewBinder {
     /**
      * Main entrypoint for binding TabGridView
      *
-     * @param view The view to bind to.
      * @param model The model to bind.
+     * @param view The view to bind to.
+     * @param propertyKey The property that changed, or null to bind all properties.
      */
     public static void bindTab(
             PropertyModel model, ViewGroup view, @Nullable PropertyKey propertyKey) {

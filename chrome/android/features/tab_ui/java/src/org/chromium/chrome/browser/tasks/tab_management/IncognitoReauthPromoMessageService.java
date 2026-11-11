@@ -114,6 +114,7 @@ public class IncognitoReauthPromoMessageService
 
     /**
      * @param profile {@link Profile} to use to check the re-auth status.
+     * @param context The Android {@link Context}.
      * @param sharedPreferencesManager The {@link SharedPreferencesManager} to query about re-auth
      *     promo shared preference.
      * @param incognitoReauthManager The {@link IncognitoReauthManager} to trigger re-auth for the

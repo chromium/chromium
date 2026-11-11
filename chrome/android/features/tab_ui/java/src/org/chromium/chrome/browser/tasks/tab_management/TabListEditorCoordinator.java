@@ -152,9 +152,7 @@ public class TabListEditorCoordinator {
         /** Hides the TabListEditor, notifying that the exit was due to a specific action. */
         void hideByAction();
 
-        /**
-         * @return Whether or not the TabListEditor consumed the event.
-         */
+        /** Returns whether or not the TabListEditor consumed the event. */
         boolean handleBackPressed();
 
         /**
@@ -164,14 +162,10 @@ public class TabListEditorCoordinator {
          */
         void configureToolbarWithMenuItems(List<TabListEditorAction> actions);
 
-        /**
-         * @return Whether the TabListEditor is visible.
-         */
+        /** Returns whether the TabListEditor is visible. */
         boolean isVisible();
 
-        /**
-         * @return Whether the TabListEditor needs to be cleaned up.
-         */
+        /** Returns whether the TabListEditor needs to be cleaned up. */
         boolean needsCleanUp();
 
         /** Sets the toolbar title when no items are selected. */
@@ -459,9 +453,7 @@ public class TabListEditorCoordinator {
         }
     }
 
-    /**
-     * @return The {@link SelectionDelegate} that is used in this component.
-     */
+    /** Returns the {@link SelectionDelegate} that is used in this component. */
     public SelectionDelegate<TabListEditorItemSelectionId> getSelectionDelegate() {
         return mSelectionDelegate;
     }
@@ -491,9 +483,7 @@ public class TabListEditorCoordinator {
                 quickMode);
     }
 
-    /**
-     * @return {@link TabListEditorController} that can control the TabListEditor.
-     */
+    /** Returns the {@link TabListEditorController} that can control the TabListEditor. */
     public TabListEditorController getController() {
         return mTabListEditorController;
     }

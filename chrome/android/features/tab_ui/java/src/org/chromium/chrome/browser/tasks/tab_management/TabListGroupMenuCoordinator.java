@@ -44,6 +44,7 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
      * @param onItemClicked A callback for listening to clicks.
      * @param tabModelSupplier The supplier of the tab model.
      * @param tabGroupSyncService Used to checking if a group is shared or synced.
+     * @param collaborationService Used to fetch collaboration and group data.
      * @param activity The {@link Context} that the coordinator resides in.
      */
     public TabListGroupMenuCoordinator(

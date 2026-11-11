@@ -323,9 +323,7 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
         }
     }
 
-    /**
-     * @return {@link Supplier} that provides dialog visibility.
-     */
+    /** Returns whether the tab grid dialog is visible. */
     @Override
     public boolean isTabGridDialogVisible() {
         return mTabGridDialogCoordinator != null && mTabGridDialogCoordinator.isVisible();

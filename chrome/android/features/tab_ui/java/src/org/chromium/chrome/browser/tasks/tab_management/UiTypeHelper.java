@@ -11,9 +11,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManage
 /** List of helper methods for operations involving {@link UiType}. */
 @NullMarked
 public class UiTypeHelper {
-    /**
-     * @return True if the given integer is a valid UiType.
-     */
+    /** Returns true if the given integer is a valid UiType. */
     public static boolean isValidUiType(int type) {
         return switch (type) {
             case UiType.TAB,
@@ -25,7 +23,8 @@ public class UiTypeHelper {
                     UiType.ARCHIVED_TABS_MESSAGE,
                     UiType.TAB_GROUP_SUGGESTION_MESSAGE,
                     UiType.IPH_MESSAGE,
-                    UiType.COLLABORATION_ACTIVITY_MESSAGE -> true;
+                    UiType.COLLABORATION_ACTIVITY_MESSAGE ->
+                    true;
             default -> false;
         };
     }
