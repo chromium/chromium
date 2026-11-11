@@ -334,6 +334,19 @@ void ThrottlingNetworkTransaction::SetIsSharedDictionaryReadAllowedCallback(
   NOTREACHED();
 }
 
+void ThrottlingNetworkTransaction::DeferNetworkErrorLoggingForBodyDecoding() {
+  network_transaction_->DeferNetworkErrorLoggingForBodyDecoding();
+}
+
+void ThrottlingNetworkTransaction::CompleteNetworkErrorLoggingForBodyDecoding(
+    int result) {
+  // Do not forward DevTools-emulated disconnects to NEL.
+  if (failed_) {
+    return;
+  }
+  network_transaction_->CompleteNetworkErrorLoggingForBodyDecoding(result);
+}
+
 net::ConnectionAttempts ThrottlingNetworkTransaction::GetConnectionAttempts()
     const {
   return network_transaction_->GetConnectionAttempts();

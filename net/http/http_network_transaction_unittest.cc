@@ -26350,6 +26350,136 @@ TEST_P(HttpNetworkTransactionNetworkErrorLoggingTest, CreateReportSuccess) {
 }
 
 TEST_P(HttpNetworkTransactionNetworkErrorLoggingTest,
+       DeferredReportUsesDecodedResult) {
+  for (int decoded_result : {OK, ERR_CONTENT_DECODING_FAILED}) {
+    SCOPED_TRACE(decoded_result);
+    size_t report_index = network_error_logging_service()->errors().size();
+    std::string extra_header_string = extra_headers_.ToString();
+    MockWrite data_writes[] = {
+        MockWrite("GET / HTTP/1.1\r\n"
+                  "Host: www.example.org\r\n"
+                  "Connection: keep-alive\r\n"),
+        MockWrite(ASYNC, extra_header_string),
+    };
+    MockRead data_reads[] = {
+        MockRead("HTTP/1.0 200 OK\r\n\r\n"),
+        MockRead("hello world"),
+        MockRead(SYNCHRONOUS, OK),
+    };
+    StaticSocketDataProvider data(data_reads, data_writes);
+    session_deps_.socket_factory->AddSocketDataProvider(&data);
+    SSLSocketDataProvider ssl(ASYNC, OK);
+    session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl);
+
+    auto session = CreateSession(&session_deps_);
+    auto trans = std::make_unique<HttpNetworkTransaction>(DEFAULT_PRIORITY,
+                                                          session.get());
+    TestCompletionCallback callback;
+    ASSERT_THAT(callback.GetResult(trans->Start(&request_, callback.callback(),
+                                                NetLogWithSource())),
+                IsOk());
+    trans->DeferNetworkErrorLoggingForBodyDecoding();
+
+    std::string response_data;
+    ASSERT_THAT(ReadTransaction(trans.get(), &response_data), IsOk());
+    EXPECT_EQ("hello world", response_data);
+    EXPECT_EQ(report_index, network_error_logging_service()->errors().size());
+
+    trans->CompleteNetworkErrorLoggingForBodyDecoding(decoded_result);
+    ASSERT_EQ(report_index + 1,
+              network_error_logging_service()->errors().size());
+    CheckReport(report_index, 200 /* status_code */, decoded_result);
+
+    trans->CompleteNetworkErrorLoggingForBodyDecoding(ERR_CONNECTION_RESET);
+    ASSERT_EQ(report_index + 1,
+              network_error_logging_service()->errors().size());
+    CheckReport(report_index, 200 /* status_code */, decoded_result);
+
+    trans.reset();
+    ASSERT_EQ(report_index + 1,
+              network_error_logging_service()->errors().size());
+    CheckReport(report_index, 200 /* status_code */, decoded_result);
+  }
+}
+
+TEST_P(HttpNetworkTransactionNetworkErrorLoggingTest,
+       DeferredReportReportsCancellation) {
+  std::string extra_header_string = extra_headers_.ToString();
+  MockWrite data_writes[] = {
+      MockWrite("GET / HTTP/1.1\r\n"
+                "Host: www.example.org\r\n"
+                "Connection: keep-alive\r\n"),
+      MockWrite(ASYNC, extra_header_string),
+  };
+  MockRead data_reads[] = {
+      MockRead("HTTP/1.0 200 OK\r\n\r\n"),
+      MockRead("hello world"),
+      MockRead(SYNCHRONOUS, OK),
+  };
+  StaticSocketDataProvider data(data_reads, data_writes);
+  session_deps_.socket_factory->AddSocketDataProvider(&data);
+  SSLSocketDataProvider ssl(ASYNC, OK);
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl);
+
+  auto session = CreateSession(&session_deps_);
+  auto trans =
+      std::make_unique<HttpNetworkTransaction>(DEFAULT_PRIORITY, session.get());
+  TestCompletionCallback callback;
+  ASSERT_THAT(callback.GetResult(trans->Start(&request_, callback.callback(),
+                                              NetLogWithSource())),
+              IsOk());
+  trans->DeferNetworkErrorLoggingForBodyDecoding();
+
+  std::string response_data;
+  ASSERT_THAT(ReadTransaction(trans.get(), &response_data), IsOk());
+  EXPECT_THAT(network_error_logging_service()->errors(), IsEmpty());
+
+  // The HTTP body is complete, but decoding has not reported a terminal result.
+  trans.reset();
+  ASSERT_EQ(1u, network_error_logging_service()->errors().size());
+  CheckReport(0 /* index */, 200 /* status_code */, ERR_ABORTED);
+}
+
+TEST_P(HttpNetworkTransactionNetworkErrorLoggingTest,
+       DeferralDoesNotOverrideHeaderReport) {
+  std::string extra_header_string = extra_headers_.ToString();
+  MockWrite data_writes[] = {
+      MockWrite("GET / HTTP/1.1\r\n"
+                "Host: www.example.org\r\n"
+                "Connection: keep-alive\r\n"),
+      MockWrite(ASYNC, extra_header_string),
+  };
+  MockRead data_reads[] = {
+      MockRead("HTTP/1.0 404 Not Found\r\n"),
+      MockRead("Content-Length: 100\r\n\r\n"),  // Body is never read.
+  };
+  StaticSocketDataProvider data(data_reads, data_writes);
+  session_deps_.socket_factory->AddSocketDataProvider(&data);
+  SSLSocketDataProvider ssl(ASYNC, OK);
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl);
+
+  auto session = CreateSession(&session_deps_);
+  auto trans =
+      std::make_unique<HttpNetworkTransaction>(DEFAULT_PRIORITY, session.get());
+  TestCompletionCallback callback;
+  ASSERT_THAT(callback.GetResult(trans->Start(&request_, callback.callback(),
+                                              NetLogWithSource())),
+              IsOk());
+  ASSERT_EQ(1u, network_error_logging_service()->errors().size());
+  CheckReport(0 /* index */, 404 /* status_code */, OK);
+
+  trans->DeferNetworkErrorLoggingForBodyDecoding();
+  trans->CompleteNetworkErrorLoggingForBodyDecoding(
+      ERR_CONTENT_DECODING_FAILED);
+  ASSERT_EQ(1u, network_error_logging_service()->errors().size());
+  CheckReport(0 /* index */, 404 /* status_code */, OK);
+
+  trans.reset();
+  ASSERT_EQ(1u, network_error_logging_service()->errors().size());
+  CheckReport(0 /* index */, 404 /* status_code */, OK);
+}
+
+TEST_P(HttpNetworkTransactionNetworkErrorLoggingTest,
        CreateReportDNSErrorAfterStartSync) {
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
   auto trans =

@@ -760,6 +760,7 @@ component("net") {
     "http/http_stream_pool_tcp_based_attempt.h",
     "http/http_stream_request.cc",
     "http/http_stream_request.h",
+    "http/http_transaction.cc",
     "http/http_transaction.h",
     "http/http_transaction_factory.h",
     "http/http_util.cc",

@@ -386,6 +386,7 @@ HttpNetworkTransaction::~HttpNetworkTransaction() {
 #if BUILDFLAG(ENABLE_REPORTING)
   // If no error or success report has been generated yet at this point, then
   // this network transaction was prematurely cancelled.
+  network_error_logging_report_deferred_ = false;
   GenerateNetworkErrorLoggingReport(ERR_ABORTED);
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 
@@ -880,6 +881,25 @@ void HttpNetworkTransaction::SetIsSharedDictionaryReadAllowedCallback(
     base::RepeatingCallback<bool()> callback) {
   // This method should not be called for this class.
   NOTREACHED();
+}
+
+void HttpNetworkTransaction::DeferNetworkErrorLoggingForBodyDecoding() {
+#if BUILDFLAG(ENABLE_REPORTING)
+  if (!network_error_logging_report_generated_) {
+    network_error_logging_report_deferred_ = true;
+  }
+#endif
+}
+
+void HttpNetworkTransaction::CompleteNetworkErrorLoggingForBodyDecoding(
+    int result) {
+#if BUILDFLAG(ENABLE_REPORTING)
+  if (!network_error_logging_report_deferred_) {
+    return;
+  }
+  network_error_logging_report_deferred_ = false;
+  GenerateNetworkErrorLoggingReport(result);
+#endif
 }
 
 void HttpNetworkTransaction::ResumeAfterConnected(int result) {
@@ -2013,8 +2033,10 @@ void HttpNetworkTransaction::GenerateNetworkErrorLoggingReport(int rv) {
   DCHECK_NE(rv, ERR_IO_PENDING);
   DCHECK_LE(rv, 0);
 
-  if (network_error_logging_report_generated_)
+  if (network_error_logging_report_generated_ ||
+      network_error_logging_report_deferred_) {
     return;
+  }
   network_error_logging_report_generated_ = true;
 
   NetworkErrorLoggingService* service =
@@ -2417,6 +2439,7 @@ void HttpNetworkTransaction::ResetStateForAuthRestart() {
   terminal_state_ = TerminalState::kAborted;
 #if BUILDFLAG(ENABLE_REPORTING)
   network_error_logging_report_generated_ = false;
+  network_error_logging_report_deferred_ = false;
   start_timeticks_ = base::TimeTicks::Now();
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 }

@@ -206,6 +206,19 @@ class NET_EXPORT_PRIVATE HttpTransaction {
   virtual void SetIsSharedDictionaryReadAllowedCallback(
       base::RepeatingCallback<bool()> callback) = 0;
 
+  // Defers NEL until a response body decoding wrapper (such as CDT) finishes
+  // decoding. Call after headers and before reading the body. Does nothing if
+  // NEL has already completed, for example for an HTTP error or redirect.
+  // Restart clears the deferral; destruction without completion is reported as
+  // cancellation.
+  // Intermediate wrappers must forward both methods. Defaults do nothing.
+  virtual void DeferNetworkErrorLoggingForBodyDecoding();
+
+  // Completes deferred NEL with OK or the terminal read error, before notifying
+  // the consumer. Does nothing unless NEL is deferred. Client-local failures
+  // must not be passed as response decoding errors.
+  virtual void CompleteNetworkErrorLoggingForBodyDecoding(int result);
+
   virtual ConnectionAttempts GetConnectionAttempts() const = 0;
 
   // Configures the transaction to close the network connection, if any, on

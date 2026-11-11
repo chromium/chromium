@@ -562,6 +562,31 @@ TEST_P(NetworkErrorLoggingServiceTest, FailureReportQueued) {
               .Set(NetworkErrorLoggingService::kTypeKey, "tcp.refused"))));
 }
 
+TEST_P(NetworkErrorLoggingServiceTest, ContentEncodingFailureReportQueued) {
+  service()->OnHeader(kNak_, kOrigin_, kServerIP_, kHeader_);
+  FinishLoading(true /* load_success */);
+
+  for (Error error_type :
+       {ERR_UNEXPECTED_CONTENT_DICTIONARY_HEADER, ERR_CONTENT_DECODING_FAILED,
+        ERR_ZSTD_WINDOW_SIZE_TOO_BIG}) {
+    SCOPED_TRACE(ErrorToString(error_type));
+    size_t report_index = reports().size();
+    service()->OnRequest(
+        MakeRequestDetails(kNak_, kUrl_, error_type, "GET", 200));
+
+    ASSERT_EQ(report_index + 1, reports().size());
+    EXPECT_THAT(
+        reports()[report_index].body,
+        Pointee(IsSupersetOfValue(
+            base::DictValue()
+                .Set(NetworkErrorLoggingService::kSamplingFractionKey, 1.0)
+                .Set(NetworkErrorLoggingService::kStatusCodeKey, 200)
+                .Set(NetworkErrorLoggingService::kPhaseKey, "application")
+                .Set(NetworkErrorLoggingService::kTypeKey,
+                     "http.response.invalid.content_encoding"))));
+  }
+}
+
 TEST_P(NetworkErrorLoggingServiceTest, UnknownFailureReportQueued) {
   static const std::string kHeaderFailureFraction1 =
       "{\"report_to\":\"group\",\"max_age\":86400,\"failure_fraction\":1.0}";

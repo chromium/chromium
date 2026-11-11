@@ -21,6 +21,25 @@ Information about network requests comes directly from
 which informs `NetworkErrorLoggingService` of the details of the request such
 as the remote IP address and outcome (a `net::Error` code).
 
+For dictionary-compressed (`dcb` and `dcz`) responses using an available shared
+dictionary, body completion is deferred to `SharedDictionaryNetworkTransaction`
+so that NEL observes the decoded body's final result rather than just the
+underlying HTTP stream. Invalid compression-dictionary signatures or hashes,
+content decoding failures, and oversized Zstandard windows are reported as
+application-phase `http.response.invalid.content_encoding`. This classification
+maps the net error codes directly without adding report fields. Transport errors,
+cancellation, and success sampling retain their existing semantics. Local
+dictionary read failures and unavailable decoders leave NEL deferred and retain
+cancellation reporting on destruction, rather than reporting an invalid server
+response. Responses reported at headers, such as HTTP errors and redirects, are
+not deferred.
+
+This mechanism covers CDT (`dcb`/`dcz`) only, not ordinary `br`, `gzip`, or `zstd`
+decoding in `URLRequestHttpJob`. It reports the decoder's result; empty streams
+and truncated streams ending at clean HTTP EOF retain the existing decoder
+compatibility behavior.
+DevTools-emulated disconnects are not forwarded as body-decoding completion.
+
 The `NetworkErrorLoggingService` finds a NEL policy applicable to the request
 (previously set by a `NEL` header), and if one exists, potentially queues a
 NEL report to be uploaded out-of-band to the policy's specified Reporting

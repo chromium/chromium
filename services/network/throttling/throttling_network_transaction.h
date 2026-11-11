@@ -96,6 +96,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ThrottlingNetworkTransaction
       override;
   void SetIsSharedDictionaryReadAllowedCallback(
       base::RepeatingCallback<bool()> callback) override;
+  void DeferNetworkErrorLoggingForBodyDecoding() override;
+  void CompleteNetworkErrorLoggingForBodyDecoding(int result) override;
   net::ConnectionAttempts GetConnectionAttempts() const override;
   void CloseConnectionOnDestruction() override;
 

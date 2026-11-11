@@ -254,6 +254,9 @@ class MockNetworkTransaction final : public HttpTransaction {
   void SetIsSharedDictionaryReadAllowedCallback(
       base::RepeatingCallback<bool()> callback) override {}
 
+  void DeferNetworkErrorLoggingForBodyDecoding() override;
+  void CompleteNetworkErrorLoggingForBodyDecoding(int result) override;
+
   ConnectionAttempts GetConnectionAttempts() const override;
 
   void CloseConnectionOnDestruction() override;
@@ -266,6 +269,14 @@ class MockNetworkTransaction final : public HttpTransaction {
 
   const ConnectedCallback& connected_callback() const {
     return connected_callback_;
+  }
+
+  int body_decoding_deferral_count() const {
+    return body_decoding_deferral_count_;
+  }
+
+  const std::vector<int>& body_decoding_results() const {
+    return body_decoding_results_;
   }
 
   base::WeakPtr<MockNetworkTransaction> AsWeakPtr() {
@@ -350,6 +361,9 @@ class MockNetworkTransaction final : public HttpTransaction {
 
   base::RepeatingCallback<void(HttpRequestHeaders*)>
       modify_request_headers_callback_;
+
+  int body_decoding_deferral_count_ = 0;
+  std::vector<int> body_decoding_results_;
 
   base::WeakPtrFactory<MockNetworkTransaction> weak_factory_{this};
 };

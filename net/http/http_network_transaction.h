@@ -121,6 +121,8 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
       base::RepeatingCallback<void(HttpRequestHeaders*)> callback) override;
   void SetIsSharedDictionaryReadAllowedCallback(
       base::RepeatingCallback<bool()> callback) override;
+  void DeferNetworkErrorLoggingForBodyDecoding() override;
+  void CompleteNetworkErrorLoggingForBodyDecoding(int result) override;
   void CloseConnectionOnDestruction() override;
 
   // HttpStreamRequest::Delegate methods:
@@ -494,6 +496,9 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
 #if BUILDFLAG(ENABLE_REPORTING)
   // Whether a NEL report has already been generated. Reset when restarting.
   bool network_error_logging_report_generated_ = false;
+  // Whether NEL is deferred until body decoding completes. Reset when
+  // restarting.
+  bool network_error_logging_report_deferred_ = false;
   // Cache some fields from |request_| that we'll need to construct a NEL
   // report about the request.  (NEL report construction happens after we've
   // cleared the |request_| pointer.)

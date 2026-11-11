@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -30,6 +31,7 @@
 #include "net/ssl/ssl_private_key.h"
 #include "net/test/gtest_util.h"
 #include "net/test/test_with_task_environment.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -281,6 +283,118 @@ TEST_F(SharedDictionaryNetworkTransactionTest, SyncDictionary) {
   int read_result = read_callback.WaitForResult();
   EXPECT_THAT(read_result, kTestData.size());
   EXPECT_EQ(kTestData, std::string(buf->data(), read_result));
+}
+
+TEST_F(SharedDictionaryNetworkTransactionTest,
+       DecodedReadCompletesDeferredLogging) {
+  const struct {
+    bool use_shared_zstd;
+    bool synchronous_reads;
+    int expected_result;
+  } kTestCases[] = {
+      {false, true, OK},
+      {false, false, ERR_UNEXPECTED_CONTENT_DICTIONARY_HEADER},
+      {false, false, ERR_CONTENT_DECODING_FAILED},
+#if !defined(NET_DISABLE_ZSTD)
+      {true, false, OK},
+      {true, true, ERR_UNEXPECTED_CONTENT_DICTIONARY_HEADER},
+      {true, true, ERR_CONTENT_DECODING_FAILED},
+#endif  // !defined(NET_DISABLE_ZSTD)
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.use_shared_zstd ? "dcz" : "dcb");
+    SCOPED_TRACE(test_case.synchronous_reads ? "sync" : "async");
+    SCOPED_TRACE(test_case.expected_result);
+    scoped_mock_transaction_.reset();
+    scoped_mock_transaction_.emplace(test_case.use_shared_zstd
+                                         ? kZstdDictionaryTestTransaction
+                                         : kBrotliDictionaryTestTransaction);
+    if (test_case.synchronous_reads) {
+      scoped_mock_transaction_->test_mode = TEST_MODE_SYNC_NET_READ;
+    }
+    if (test_case.expected_result != OK) {
+      scoped_mock_transaction_->handler = base::BindRepeating(
+          [](bool use_shared_zstd, int expected_result,
+             const HttpRequestInfo* request, std::string* response_status,
+             std::string* response_headers, std::string* response_data) {
+            *response_data = use_shared_zstd ? kZstdEncodedDataString
+                                             : kBrotliEncodedDataString;
+            if (expected_result == ERR_UNEXPECTED_CONTENT_DICTIONARY_HEADER) {
+              ++(*response_data)[0];
+            } else {
+              // Preserve the CDT signature and dictionary hash. 0x91 is invalid
+              // Brotli window bits and does not match the Zstd frame magic.
+              const size_t header_size = use_shared_zstd ? 40 : 36;
+              (*response_data)[header_size] = '\x91';
+            }
+          },
+          test_case.use_shared_zstd, test_case.expected_result);
+    }
+
+    MockHttpRequest request(*scoped_mock_transaction_);
+    request.dictionary_getter = base::BindRepeating(
+        [](const std::optional<SharedDictionaryIsolationKey>& isolation_key,
+           const GURL& request_url) -> scoped_refptr<SharedDictionary> {
+          return base::MakeRefCounted<DummySyncDictionary>(kTestDictionaryData);
+        });
+    SharedDictionaryNetworkTransaction transaction(
+        CreateNetworkTransaction(),
+        /*enable_shared_zstd=*/test_case.use_shared_zstd);
+    base::WeakPtr<MockNetworkTransaction> network_transaction =
+        network_layer().last_transaction();
+    ASSERT_TRUE(network_transaction);
+    transaction.SetIsSharedDictionaryReadAllowedCallback(
+        base::BindRepeating([]() { return true; }));
+
+    TestCompletionCallback start_callback;
+    ASSERT_THAT(start_callback.GetResult(transaction.Start(
+                    &request, start_callback.callback(), NetLogWithSource())),
+                test::IsError(OK));
+    EXPECT_EQ(1, network_transaction->body_decoding_deferral_count());
+    EXPECT_THAT(network_transaction->body_decoding_results(),
+                testing::IsEmpty());
+
+    auto buf = base::MakeRefCounted<IOBufferWithSize>(kDefaultBufferSize);
+    int read_result;
+    do {
+      TestCompletionCallback read_callback;
+      read_result = transaction.Read(
+          buf.get(), buf->size(),
+          base::BindOnce(
+              [](base::WeakPtr<MockNetworkTransaction> network_transaction,
+                 int result) {
+                if (result <= 0) {
+                  EXPECT_THAT(network_transaction->body_decoding_results(),
+                              testing::ElementsAre(result));
+                } else {
+                  EXPECT_THAT(network_transaction->body_decoding_results(),
+                              testing::IsEmpty());
+                }
+                return result;
+              },
+              network_transaction)
+              .Then(read_callback.callback()));
+      if (test_case.synchronous_reads) {
+        EXPECT_NE(ERR_IO_PENDING, read_result);
+      } else {
+        EXPECT_EQ(ERR_IO_PENDING, read_result);
+      }
+      if (read_result == ERR_IO_PENDING) {
+        EXPECT_THAT(network_transaction->body_decoding_results(),
+                    testing::IsEmpty());
+      }
+      read_result = read_callback.GetResult(read_result);
+      if (read_result > 0) {
+        EXPECT_THAT(network_transaction->body_decoding_results(),
+                    testing::IsEmpty());
+      }
+    } while (read_result > 0);
+
+    EXPECT_EQ(test_case.expected_result, read_result);
+    EXPECT_THAT(network_transaction->body_decoding_results(),
+                testing::ElementsAre(test_case.expected_result));
+  }
 }
 
 TEST_F(SharedDictionaryNetworkTransactionTest,
@@ -613,6 +727,9 @@ TEST_F(SharedDictionaryNetworkTransactionTest, NoMatchingDictionary) {
       });
   SharedDictionaryNetworkTransaction transaction(CreateNetworkTransaction(),
                                                  /*enable_shared_zstd=*/false);
+  base::WeakPtr<MockNetworkTransaction> network_transaction =
+      network_layer().last_transaction();
+  ASSERT_TRUE(network_transaction);
   transaction.SetIsSharedDictionaryReadAllowedCallback(
       base::BindRepeating([]() { return true; }));
 
@@ -621,6 +738,7 @@ TEST_F(SharedDictionaryNetworkTransactionTest, NoMatchingDictionary) {
                                 NetLogWithSource()),
               test::IsError(ERR_IO_PENDING));
   EXPECT_THAT(start_callback.WaitForResult(), test::IsError(OK));
+  EXPECT_EQ(0, network_transaction->body_decoding_deferral_count());
 
   scoped_refptr<IOBufferWithSize> buf =
       base::MakeRefCounted<IOBufferWithSize>(kDefaultBufferSize);
@@ -631,6 +749,12 @@ TEST_F(SharedDictionaryNetworkTransactionTest, NoMatchingDictionary) {
   int read_result = read_callback.WaitForResult();
   EXPECT_THAT(read_result, kTestData.size());
   EXPECT_EQ(kTestData, std::string(buf->data(), read_result));
+
+  TestCompletionCallback eof_callback;
+  EXPECT_THAT(eof_callback.GetResult(transaction.Read(buf.get(), buf->size(),
+                                                      eof_callback.callback())),
+              test::IsError(OK));
+  EXPECT_THAT(network_transaction->body_decoding_results(), testing::IsEmpty());
 }
 
 TEST_F(SharedDictionaryNetworkTransactionTest, OpaqueFrameOrigin) {
@@ -727,6 +851,9 @@ TEST_F(SharedDictionaryNetworkTransactionTest, NoSbrContentEncoding) {
       });
   SharedDictionaryNetworkTransaction transaction(CreateNetworkTransaction(),
                                                  /*enable_shared_zstd=*/false);
+  base::WeakPtr<MockNetworkTransaction> network_transaction =
+      network_layer().last_transaction();
+  ASSERT_TRUE(network_transaction);
   transaction.SetIsSharedDictionaryReadAllowedCallback(
       base::BindRepeating([]() { return true; }));
 
@@ -735,6 +862,7 @@ TEST_F(SharedDictionaryNetworkTransactionTest, NoSbrContentEncoding) {
                                 NetLogWithSource()),
               test::IsError(ERR_IO_PENDING));
   EXPECT_THAT(start_callback.WaitForResult(), test::IsError(OK));
+  EXPECT_EQ(0, network_transaction->body_decoding_deferral_count());
   histogram_tester.ExpectUniqueSample(
       "Net.SharedDictionary.Transaction.Outcome",
       SharedDictionaryTransactionOutcome::kDictionaryNotUsed, 1);
@@ -751,6 +879,12 @@ TEST_F(SharedDictionaryNetworkTransactionTest, NoSbrContentEncoding) {
   // SharedDictionaryNetworkTransaction must not decode the body.
   EXPECT_THAT(read_result, kBrotliEncodedDataString.size());
   EXPECT_EQ(kBrotliEncodedDataString, std::string(buf->data(), read_result));
+
+  TestCompletionCallback eof_callback;
+  EXPECT_THAT(eof_callback.GetResult(transaction.Read(buf.get(), buf->size(),
+                                                      eof_callback.callback())),
+              test::IsError(OK));
+  EXPECT_THAT(network_transaction->body_decoding_results(), testing::IsEmpty());
 }
 
 TEST_F(SharedDictionaryNetworkTransactionTest, WrongContentDictionaryHeader) {
@@ -1066,6 +1200,9 @@ TEST_F(SharedDictionaryNetworkTransactionTest,
       base::Unretained(&dictionary));
   SharedDictionaryNetworkTransaction transaction(CreateNetworkTransaction(),
                                                  /*enable_shared_zstd=*/false);
+  base::WeakPtr<MockNetworkTransaction> network_transaction =
+      network_layer().last_transaction();
+  ASSERT_TRUE(network_transaction);
   transaction.SetIsSharedDictionaryReadAllowedCallback(
       base::BindRepeating([]() { return true; }));
 
@@ -1074,6 +1211,7 @@ TEST_F(SharedDictionaryNetworkTransactionTest,
                                 NetLogWithSource()),
               test::IsError(ERR_IO_PENDING));
   EXPECT_THAT(start_callback.WaitForResult(), test::IsError(OK));
+  EXPECT_EQ(1, network_transaction->body_decoding_deferral_count());
 
   base::OnceCallback<void(int)> dictionary_read_all_callback =
       dictionary_ptr->TakeReadAllCallback();
@@ -1087,10 +1225,12 @@ TEST_F(SharedDictionaryNetworkTransactionTest,
       test::IsError(ERR_IO_PENDING));
   RunUntilIdle();
   EXPECT_FALSE(read_callback.have_result());
+  EXPECT_THAT(network_transaction->body_decoding_results(), testing::IsEmpty());
 
   std::move(dictionary_read_all_callback).Run(ERR_FAILED);
 
   EXPECT_EQ(ERR_DICTIONARY_LOAD_FAILED, read_callback.WaitForResult());
+  EXPECT_THAT(network_transaction->body_decoding_results(), testing::IsEmpty());
 }
 
 TEST_F(SharedDictionaryNetworkTransactionTest, Restart) {

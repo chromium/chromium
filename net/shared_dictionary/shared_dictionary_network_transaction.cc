@@ -232,6 +232,7 @@ void SharedDictionaryNetworkTransaction::OnStartCompleted(
   }
 
   shared_dictionary_response_info_->did_use_shared_dictionary = true;
+  network_transaction_->DeferNetworkErrorLoggingForBodyDecoding();
   std::move(callback).Run(result);
 }
 
@@ -341,7 +342,7 @@ void SharedDictionaryNetworkTransaction::OnReadSharedDictionary(
 
 int SharedDictionaryNetworkTransaction::RestartIgnoringLastError(
     CompletionOnceCallback callback) {
-  shared_dictionary_response_info_.reset();
+  ResetResponse();
   return network_transaction_->RestartIgnoringLastError(
       base::BindOnce(&SharedDictionaryNetworkTransaction::OnStartCompleted,
                      base::Unretained(this), std::move(callback)));
@@ -351,7 +352,7 @@ int SharedDictionaryNetworkTransaction::RestartWithCertificate(
     scoped_refptr<X509Certificate> client_cert,
     scoped_refptr<SSLPrivateKey> client_private_key,
     CompletionOnceCallback callback) {
-  shared_dictionary_response_info_.reset();
+  ResetResponse();
   return network_transaction_->RestartWithCertificate(
       std::move(client_cert), std::move(client_private_key),
       base::BindOnce(&SharedDictionaryNetworkTransaction::OnStartCompleted,
@@ -361,7 +362,7 @@ int SharedDictionaryNetworkTransaction::RestartWithCertificate(
 int SharedDictionaryNetworkTransaction::RestartWithAuth(
     const AuthCredentials& credentials,
     CompletionOnceCallback callback) {
-  shared_dictionary_response_info_.reset();
+  ResetResponse();
   return network_transaction_->RestartWithAuth(
       credentials,
       base::BindOnce(&SharedDictionaryNetworkTransaction::OnStartCompleted,
@@ -370,6 +371,26 @@ int SharedDictionaryNetworkTransaction::RestartWithAuth(
 
 bool SharedDictionaryNetworkTransaction::IsReadyToRestartForAuth() {
   return network_transaction_->IsReadyToRestartForAuth();
+}
+
+void SharedDictionaryNetworkTransaction::ResetResponse() {
+  shared_compression_stream_.reset();
+  shared_dictionary_response_info_.reset();
+  shared_dictionary_encoding_type_ = SharedDictionaryEncodingType::kNotUsed;
+}
+
+void SharedDictionaryNetworkTransaction::CompleteNetworkErrorLogging(
+    int result) {
+  if (result <= 0 && result != ERR_IO_PENDING) {
+    network_transaction_->CompleteNetworkErrorLoggingForBodyDecoding(result);
+  }
+}
+
+void SharedDictionaryNetworkTransaction::OnReadCompleted(
+    CompletionOnceCallback callback,
+    int result) {
+  CompleteNetworkErrorLogging(result);
+  std::move(callback).Run(result);
 }
 
 int SharedDictionaryNetworkTransaction::Read(IOBuffer* buf,
@@ -388,7 +409,7 @@ int SharedDictionaryNetworkTransaction::Read(IOBuffer* buf,
       pending_read_task_ =
           std::make_unique<PendingReadTask>(buf, buf_len, std::move(callback));
       return ERR_IO_PENDING;
-    case DictionaryStatus::kFinished:
+    case DictionaryStatus::kFinished: {
       if (!shared_compression_stream_) {
         // Wrap the source `network_transaction_` with a
         // SharedDictionaryHeaderCheckerSourceStream to check the header
@@ -425,13 +446,20 @@ int SharedDictionaryNetworkTransaction::Read(IOBuffer* buf,
                                   shared_dictionary_encoding_type_);
       }
       // When NET_DISABLE_BROTLI or NET_DISABLE_ZSTD is set,
-      // `shared_compression_stream_` can be null.
+      // `shared_compression_stream_` can be null. Leave NEL deferred so this
+      // client-local failure retains cancellation reporting on destruction.
       if (!shared_compression_stream_) {
         return ERR_CONTENT_DECODING_FAILED;
       }
-      return shared_compression_stream_->Read(buf, buf_len,
-                                              std::move(callback));
+      int result = shared_compression_stream_->Read(
+          buf, buf_len,
+          base::BindOnce(&SharedDictionaryNetworkTransaction::OnReadCompleted,
+                         base::Unretained(this), std::move(callback)));
+      CompleteNetworkErrorLogging(result);
+      return result;
+    }
     case DictionaryStatus::kFailed:
+      // A local dictionary read failure is not an invalid server response.
       return ERR_DICTIONARY_LOAD_FAILED;
   }
 }

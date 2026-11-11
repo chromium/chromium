@@ -138,6 +138,12 @@ class NET_EXPORT SharedDictionaryNetworkTransaction : public HttpTransaction {
 
   void OnReadSharedDictionary(base::Time read_start_time, int result);
 
+  // Forwards only terminal read results, excluding ERR_IO_PENDING, to NEL.
+  void CompleteNetworkErrorLogging(int result);
+  // Completes deferred NEL before invoking the consumer's read callback.
+  void OnReadCompleted(CompletionOnceCallback callback, int result);
+  void ResetResponse();
+
   int OnConnected(const TransportInfo& info, CompletionOnceCallback callback);
 
   const bool enable_shared_zstd_;

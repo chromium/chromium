@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
@@ -19,6 +20,7 @@
 #include "net/base/chunked_upload_data_stream.h"
 #include "net/base/completion_repeating_callback.h"
 #include "net/base/load_timing_info.h"
+#include "net/base/net_errors.h"
 #include "net/http/http_transaction_test_util.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_with_source.h"
@@ -27,6 +29,7 @@
 #include "services/network/throttling/throttling_network_interceptor.h"
 #include "services/network/throttling/throttling_network_transaction.h"
 #include "services/network/throttling/throttling_upload_data_stream.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -161,6 +164,10 @@ class ThrottlingControllerTestHelper {
   TestCallback* callback() { return &callback_; }
   ThrottlingNetworkTransaction* transaction() { return transaction_.get(); }
 
+  const std::vector<int>& body_decoding_results() {
+    return network_layer_.last_transaction()->body_decoding_results();
+  }
+
   void FastForwardUntilNoTasksRemain() {
     task_environment_.FastForwardUntilNoTasksRemain();
   }
@@ -223,6 +230,42 @@ TEST(ThrottlingControllerTest, FailOnStart) {
 
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(helper.callback()->run_count(), 0);
+}
+
+TEST(ThrottlingControllerTest, BodyDecodingCompleteForwarded) {
+  ThrottlingControllerTestHelper helper;
+  helper.SetNetworkState(false, 0, 0);
+  ASSERT_EQ(net::OK, helper.Start(false));
+  ASSERT_FALSE(helper.HasFailed());
+
+  const std::vector<int> results = {net::OK, net::ERR_CONTENT_DECODING_FAILED,
+                                    net::ERR_CONNECTION_RESET,
+                                    net::ERR_INTERNET_DISCONNECTED};
+  for (int result : results) {
+    helper.transaction()->CompleteNetworkErrorLoggingForBodyDecoding(result);
+  }
+
+  EXPECT_EQ(results, helper.body_decoding_results());
+}
+
+// Verifies that DevTools-emulated disconnects are not forwarded to NEL.
+TEST(ThrottlingControllerTest, BodyDecodingCompleteNotForwardedWhenOffline) {
+  ThrottlingControllerTestHelper helper;
+  helper.SetNetworkState(false, 0, 0);
+  ASSERT_EQ(net::OK, helper.Start(false));
+  ASSERT_FALSE(helper.HasFailed());
+
+  // Update the active interceptor without replacing it in the controller.
+  ThrottlingNetworkInterceptor* interceptor =
+      helper.GetThrottlingProfile()->FindInterceptor(GURL("http://dot.com"));
+  ASSERT_TRUE(interceptor);
+  interceptor->UpdateConditions(NetworkConditions(true));
+  int result = helper.Read();
+  ASSERT_EQ(net::ERR_INTERNET_DISCONNECTED, result);
+  ASSERT_TRUE(helper.HasFailed());
+
+  helper.transaction()->CompleteNetworkErrorLoggingForBodyDecoding(result);
+  EXPECT_THAT(helper.body_decoding_results(), testing::IsEmpty());
 }
 
 TEST(ThrottlingControllerTest, CancelTransaction) {

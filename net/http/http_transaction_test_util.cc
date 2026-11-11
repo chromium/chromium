@@ -756,6 +756,15 @@ void MockNetworkTransaction::SetConnectedCallback(
   connected_callback_ = callback;
 }
 
+void MockNetworkTransaction::DeferNetworkErrorLoggingForBodyDecoding() {
+  ++body_decoding_deferral_count_;
+}
+
+void MockNetworkTransaction::CompleteNetworkErrorLoggingForBodyDecoding(
+    int result) {
+  body_decoding_results_.push_back(result);
+}
+
 ConnectionAttempts MockNetworkTransaction::GetConnectionAttempts() const {
   // TODO(ricea): Replace this with a proper implementation if needed.
   return {};
