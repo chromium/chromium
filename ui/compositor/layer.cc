@@ -74,7 +74,9 @@ void CheckSnapped(float snapped_position) {
   // uncommon device scale factor is applied.
   const float kEplison = 0.003f;
   float diff = std::abs(snapped_position - std::round(snapped_position));
-  CHECK_LT(diff, kEplison, base::NotFatalUntil::M163);
+  // TODO(crbug.com/581966881): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_LT(diff, kEplison);
 }
 #endif
 
