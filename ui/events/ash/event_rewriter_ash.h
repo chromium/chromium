@@ -241,9 +241,7 @@ class EventRewriterAsh : public EventRewriter {
     privacy_screen_supported_ = supported;
   }
 
-  // Enable/disable alt + key or mouse event remapping. For Alt + left click
-  // mapping to the right click, it only applies if the feature
-  // `chromeos::features::kUseSearchClickForRightClick` is not enabled.
+  // Enable/disable alt + key or mouse event remapping.
   void set_alt_down_remapping_enabled(bool enabled) {
     is_alt_down_remapping_enabled_ = enabled;
   }
