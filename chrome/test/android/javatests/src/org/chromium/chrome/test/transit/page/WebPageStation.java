@@ -52,6 +52,16 @@ public class WebPageStation extends CtaPageStation {
         return new Builder<>(WebPageStation::new);
     }
 
+    /** {@link #waitForPage(Tab, String, Builder)} for a web page. */
+    public static WebPageStation waitForWebPage(Tab tab, String url) {
+        return waitForPage(tab, url, newBuilder());
+    }
+
+    /** {@link #waitForPageLoad(TripBuilder, Tab, String, Builder)} for a web page. */
+    public static WebPageStation waitForWebPageLoad(TripBuilder trip, Tab tab, String url) {
+        return waitForPageLoad(trip, tab, url, newBuilder());
+    }
+
     /** Condition to check the page url does not match any of the prohibited urls. */
     public static class PageUrlDoesNotMatchCondition extends Condition {
         private final List<String> mProhibitedUrls;

@@ -50,6 +50,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -191,7 +192,7 @@ public class WarmupManagerTest {
                             return tabCreator.createNewTab(
                                     new LoadUrlParams(url), type, parent, index);
                         });
-        ChromeTabUtils.waitForTabPageLoaded(tab, url);
+        WebPageStation.waitForWebPage(tab, url);
         return tab;
     }
 

@@ -5,13 +5,18 @@
 package org.chromium.chrome.test.transit.page;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.junit.Assert.assertNotNull;
+
+import android.app.Activity;
 
 import com.google.errorprone.annotations.CheckReturnValue;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.TriStateUtils;
 import org.chromium.base.test.transit.ConditionStatusWithResult;
 import org.chromium.base.test.transit.ConditionWithResult;
 import org.chromium.base.test.transit.Element;
+import org.chromium.base.test.transit.Triggers;
 import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.tab.Tab;
@@ -20,6 +25,7 @@ import org.chromium.chrome.test.transit.tabmodel.TabAddedCondition;
 import org.chromium.chrome.test.transit.tabmodel.TabSelectedCondition;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.PageTransition;
+import org.chromium.ui.base.WindowAndroid;
 
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -154,6 +160,21 @@ public class BasePageStation<HostActivity extends ChromeActivity>
         public Builder<PageT> initForLoadingUrlOnSameTab(
                 String url, BasePageStation<?> previousStation) {
             mConfig.initFrom(previousStation);
+            if (mConfig.mExpectedUrlSubstring == null) {
+                mConfig.withExpectedUrlSubstring(url);
+            }
+            return this;
+        }
+
+        /**
+         * Expect to show |tab|, already selected, with |url| loaded or loading. For when there is
+         * no previous Station to init from.
+         */
+        public Builder<PageT> initForLoadingUrlOnTab(String url, Tab tab) {
+            if (mConfig.mIncognito == null) {
+                mConfig.withIncognito(tab.isIncognito());
+            }
+            withTabAlreadySelected(tab);
             if (mConfig.mExpectedUrlSubstring == null) {
                 mConfig.withExpectedUrlSubstring(url);
             }
@@ -314,6 +335,56 @@ public class BasePageStation<HostActivity extends ChromeActivity>
                 .withTimeout(10000)
                 .withPossiblyAlreadyFulfilled()
                 .waitForAnd(new PageLoadCallbackCondition(loadedTabElement.value()));
+    }
+
+    /**
+     * Runs |trigger| on the UI thread to start a Trip that also waits for a new page load in the
+     * same tab. Use it for loads that may keep the URL, such as reloads, same-document loads and
+     * back navigations restored from the back/forward cache.
+     */
+    @CheckReturnValue
+    public TripBuilder runOnUiThreadToNewPageLoad(Runnable trigger) {
+        return runOnUiThreadTo(trigger)
+                .withPossiblyAlreadyFulfilled()
+                .waitForAnd(
+                        new PageLoadStoppedCondition(
+                                loadedTabElement.value(), /* expectedUrl= */ null));
+    }
+
+    /**
+     * Hops on at the page |tab| shows once a URL containing |url| is loaded. Passes right away if
+     * it already is; use {@link #waitForPageLoad} to wait for a new load. |tab| must be its
+     * Activity's current tab.
+     */
+    public static <PageT extends BasePageStation<?>> PageT waitForPage(
+            Tab tab, String url, Builder<PageT> builder) {
+        return Triggers.noopTo()
+                .hopOnTo(getActivityOfTab(tab), builder.initForLoadingUrlOnTab(url, tab).build());
+    }
+
+    /**
+     * Like {@link #waitForPage(Tab, String, Builder)}, but runs |trip|'s trigger and also waits for
+     * the load it starts in |tab| to stop, so it also works for reloads, same-URL navigations and
+     * back navigations restored from the back/forward cache.
+     */
+    public static <PageT extends BasePageStation<?>> PageT waitForPageLoad(
+            TripBuilder trip, Tab tab, String url, Builder<PageT> builder) {
+        return trip.withPossiblyAlreadyFulfilled()
+                .waitForAnd(new PageLoadStoppedCondition(tab, /* expectedUrl= */ null))
+                .hopOnTo(getActivityOfTab(tab), builder.initForLoadingUrlOnTab(url, tab).build());
+    }
+
+    private static Activity getActivityOfTab(Tab tab) {
+        Activity activity =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            // Not TabUtils.getActivity(), which needs the WebContents that frozen
+                            // tabs don't have.
+                            WindowAndroid window = tab.getWindowAndroid();
+                            return window == null ? null : window.getActivity().get();
+                        });
+        assertNotNull("Tab is not attached to an Activity: " + tab, activity);
+        return activity;
     }
 
     private static class CorrectActivityTabCondition<ActivityT extends ChromeActivity>

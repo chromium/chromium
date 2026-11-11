@@ -28,6 +28,8 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
+import org.chromium.base.test.transit.Triggers;
+import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -47,7 +49,8 @@ import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.ui.web_app_header.WebAppHeaderLayoutCoordinator;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.OverrideContextWrapperTestRule;
-import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.chrome.test.transit.page.BasePageStation;
+import org.chromium.chrome.test.transit.page.CctPageStation;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.webapps.WebappsUtils;
 import org.chromium.content_public.common.ContentSwitches;
@@ -181,16 +184,8 @@ public class WebAppHeaderLayoutBrowserTest {
         verifyBackButtonEnabled(true);
 
         // Click back and verify that previous page is shown that is in scope of the web app.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    var webAppHeaderCoordinator = getWebAppHeaderLayoutCoordinator();
-                    webAppHeaderCoordinator
-                            .getWebAppHeaderLayout()
-                            .findViewById(R.id.back_button)
-                            .performClick();
-                });
-
-        ChromeTabUtils.waitForTabPageLoaded(tab, mTestPage);
+        BasePageStation.waitForPageLoad(
+                clickHeaderBackButtonTo(), tab, mTestPage, CctPageStation.newBuilder());
         verifyBrowserControlsVisibility(false);
         verifyBackButtonEnabled(false);
     }
@@ -248,15 +243,9 @@ public class WebAppHeaderLayoutBrowserTest {
         verifyBackButtonEnabled(true);
         assertTrue(ThreadUtils.runOnUiThreadBlocking(tab::canGoBack));
 
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    getWebAppHeaderLayoutCoordinator()
-                            .getWebAppHeaderLayout()
-                            .findViewById(R.id.back_button)
-                            .performClick();
-                });
-
-        ChromeTabUtils.waitForTabPageLoaded(tab, mTestPage);
+        // |inScopePage2| contains |mTestPage|, so also wait for the back navigation to load.
+        BasePageStation.waitForPageLoad(
+                clickHeaderBackButtonTo(), tab, mTestPage, CctPageStation.newBuilder());
         verifyBackButtonEnabled(false);
         assertFalse(ThreadUtils.runOnUiThreadBlocking(tab::canGoBack));
     }
@@ -292,6 +281,15 @@ public class WebAppHeaderLayoutBrowserTest {
                 },
                 10000,
                 CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+    }
+
+    private TripBuilder clickHeaderBackButtonTo() {
+        return Triggers.runOnUiThreadTo(
+                () ->
+                        getWebAppHeaderLayoutCoordinator()
+                                .getWebAppHeaderLayout()
+                                .findViewById(R.id.back_button)
+                                .performClick());
     }
 
     private WebAppHeaderLayoutCoordinator getWebAppHeaderLayoutCoordinator() {
