@@ -159,12 +159,25 @@ size_t AlignAndZeroPad(std::vector<uint8_t>* buffer,
 }
 
 // Sends raw USB Mass Storage Bulk-Only Transport (BOT) command transactions
-// (`CBW` -> optional data phase with `STALL` recovery -> `CSW`) over
-// `device::mojom::UsbDevice`.
+// (`CBW` -> optional data phase -> `CSW`, with data/CSW `STALL` clearing and
+// BOT Reset Recovery) over `device::mojom::UsbDevice`.
 class UsbBotTransport {
  public:
+  // Outcome of one BOT transaction.
+  enum class Result {
+    // A transfer or BOT Reset Recovery failed, or the CSW was unusable.
+    kTransportError,
+    // The CSW reported `kCswStatusCommandPassed`.
+    kCommandPassed,
+    // The CSW reported `kCswStatusCommandFailed` (`CHECK CONDITION`).
+    kCommandFailed,
+    // The command should be resent as is: the CSW reported a Phase Error and
+    // BOT Reset Recovery completed, or a data-out phase stalled or was only
+    // partially accepted even though the CSW reported Command Passed.
+    kRetryCommand,
+  };
   using TransactionCallback =
-      base::OnceCallback<void(std::optional<uint8_t> csw_status,
+      base::OnceCallback<void(Result result,
                               std::vector<uint8_t> received_data)>;
 
   UsbBotTransport(device::mojom::UsbDevice* device,
@@ -190,23 +203,28 @@ class UsbBotTransport {
     tag_ = ++(*next_tag_);
     data_phase_ = data_phase;
     timeout_ms_ = static_cast<uint32_t>(timeout.InMilliseconds());
+    expected_data_length_ = 0;
+    is_data_out_ = false;
+    data_phase_stalled_ = false;
+    retried_csw_after_stall_ = false;
     received_data_.clear();
     callback_ = std::move(callback);
 
-    uint32_t data_length = 0;
     uint8_t direction_flags = kDirectionHostToDevice;
     if (const auto* data_in = std::get_if<DataInPhase>(&data_phase_)) {
       CHECK_GT(data_in->length, 0u);
-      data_length = data_in->length;
+      expected_data_length_ = data_in->length;
       direction_flags = kDirectionDeviceToHost;
     } else if (const auto* data_out = std::get_if<DataOutPhase>(&data_phase_)) {
       CHECK(!data_out->data.empty());
-      data_length = base::checked_cast<uint32_t>(data_out->data.size());
+      expected_data_length_ =
+          base::checked_cast<uint32_t>(data_out->data.size());
+      is_data_out_ = true;
       direction_flags = kDirectionHostToDevice;
     }
 
     std::vector<uint8_t> command_block = BuildCommandBlockWrapper(
-        tag_, data_length, direction_flags, scsi_command);
+        tag_, expected_data_length_, direction_flags, scsi_command);
     device_->GenericTransferOut(
         endpoints_.endpoint_out, command_block, timeout_ms_,
         base::BindOnce(&UsbBotTransport::OnCommandBlockSent,
@@ -217,7 +235,7 @@ class UsbBotTransport {
   void OnCommandBlockSent(device::mojom::UsbTransferStatus status) {
     if (status != device::mojom::UsbTransferStatus::COMPLETED) {
       data_phase_ = std::monostate{};
-      return std::move(callback_).Run(std::nullopt, {});
+      return std::move(callback_).Run(Result::kTransportError, {});
     }
     if (const auto* data_in = std::get_if<DataInPhase>(&data_phase_)) {
       device_->GenericTransferIn(
@@ -240,6 +258,7 @@ class UsbBotTransport {
   void OnDataInReceived(device::mojom::UsbTransferStatus status,
                         base::span<const uint8_t> data) {
     if (status == device::mojom::UsbTransferStatus::STALLED) {
+      data_phase_stalled_ = true;
       received_data_.assign(data.begin(), data.end());
       device_->ClearHalt(device::mojom::UsbTransferDirection::INBOUND,
                          endpoints_.endpoint_in,
@@ -250,7 +269,7 @@ class UsbBotTransport {
     if (status != device::mojom::UsbTransferStatus::COMPLETED &&
         status != device::mojom::UsbTransferStatus::SHORT_PACKET) {
       data_phase_ = std::monostate{};
-      return std::move(callback_).Run(std::nullopt, {});
+      return std::move(callback_).Run(Result::kTransportError, {});
     }
     received_data_.assign(data.begin(), data.end());
     ReadCommandStatus();
@@ -259,6 +278,7 @@ class UsbBotTransport {
   void OnDataOutSent(device::mojom::UsbTransferStatus status) {
     data_phase_ = std::monostate{};
     if (status == device::mojom::UsbTransferStatus::STALLED) {
+      data_phase_stalled_ = true;
       device_->ClearHalt(device::mojom::UsbTransferDirection::OUTBOUND,
                          endpoints_.endpoint_out,
                          base::BindOnce(&UsbBotTransport::OnDataStallCleared,
@@ -266,7 +286,7 @@ class UsbBotTransport {
       return;
     }
     if (status != device::mojom::UsbTransferStatus::COMPLETED) {
-      return std::move(callback_).Run(std::nullopt, {});
+      return std::move(callback_).Run(Result::kTransportError, {});
     }
     ReadCommandStatus();
   }
@@ -274,7 +294,7 @@ class UsbBotTransport {
   void OnDataStallCleared(bool success) {
     if (!success) {
       data_phase_ = std::monostate{};
-      return std::move(callback_).Run(std::nullopt, {});
+      return std::move(callback_).Run(Result::kTransportError, {});
     }
     ReadCommandStatus();
   }
@@ -289,21 +309,116 @@ class UsbBotTransport {
 
   void OnCommandStatusReceived(device::mojom::UsbTransferStatus status,
                                base::span<const uint8_t> status_bytes) {
-    // TODO(crbug.com/538632205): Per BOT 1.0 §6.7.2 / Figure 2, handle a
-    // `STALLED` status on the CSW read itself with `ClearHalt(INBOUND)` and a
-    // single retry of the CSW read before falling back to Reset Recovery.
+    // Per BOT 1.0 §5.3.3 / Figure 2, clear `INBOUND` halt and retry reading the
+    // CSW once on the first `STALLED` status; if the retry also stalls, perform
+    // Reset Recovery (§5.3.4).
+    if (status == device::mojom::UsbTransferStatus::STALLED) {
+      if (!retried_csw_after_stall_) {
+        retried_csw_after_stall_ = true;
+        device_->ClearHalt(device::mojom::UsbTransferDirection::INBOUND,
+                           endpoints_.endpoint_in,
+                           base::BindOnce(&UsbBotTransport::OnCswStallCleared,
+                                          weak_factory_.GetWeakPtr()));
+        return;
+      }
+      StartResetRecovery(Result::kTransportError);
+      return;
+    }
     if (status != device::mojom::UsbTransferStatus::COMPLETED &&
         status != device::mojom::UsbTransferStatus::SHORT_PACKET) {
-      return std::move(callback_).Run(std::nullopt, {});
+      return std::move(callback_).Run(Result::kTransportError, {});
     }
     std::optional<CommandStatusWrapper> status_wrapper =
         ParseCommandStatusWrapper(status_bytes);
+    // Per BOT 1.0 §6.3 & §6.5, perform Reset Recovery when the CSW is invalid,
+    // reports a Phase Error (`bCSWStatus == 2`), or is non-meaningful
+    // (`bCSWStatus > 2` or `dCSWDataResidue > dCBWDataTransferLength` for
+    // status 0/1).
     if (!status_wrapper ||
         status_wrapper->signature != kCommandStatusWrapperSignature ||
-        status_wrapper->tag != tag_) {
-      return std::move(callback_).Run(std::nullopt, {});
+        status_wrapper->tag != tag_ ||
+        status_wrapper->status > kCswStatusPhaseError) {
+      StartResetRecovery(Result::kTransportError);
+      return;
     }
-    std::move(callback_).Run(status_wrapper->status, std::move(received_data_));
+    if (status_wrapper->status == kCswStatusPhaseError) {
+      StartResetRecovery(Result::kRetryCommand);
+      return;
+    }
+    if (status_wrapper->data_residue > expected_data_length_) {
+      StartResetRecovery(Result::kTransportError);
+      return;
+    }
+    if (is_data_out_) {
+      // A host-to-device transfer that stalled or left residue but still
+      // reports `kCswStatusCommandPassed` (BOT 1.0 §6.7.3 Case 11) may have
+      // left sectors unwritten. Never let it pass silently; resending the same
+      // `WRITE (10)` is idempotent, so ask the caller to retry it.
+      if (status_wrapper->status == kCswStatusCommandPassed &&
+          (data_phase_stalled_ || status_wrapper->data_residue != 0)) {
+        return std::move(callback_).Run(Result::kRetryCommand, {});
+      }
+    } else {
+      const size_t transferred =
+          expected_data_length_ - status_wrapper->data_residue;
+      if (received_data_.size() > transferred) {
+        received_data_.resize(transferred);
+      }
+    }
+    std::move(callback_).Run(status_wrapper->status == kCswStatusCommandPassed
+                                 ? Result::kCommandPassed
+                                 : Result::kCommandFailed,
+                             std::move(received_data_));
+  }
+
+  void OnCswStallCleared(bool success) {
+    if (!success) {
+      return std::move(callback_).Run(Result::kTransportError, {});
+    }
+    ReadCommandStatus();
+  }
+
+  void StartResetRecovery(Result result_after_reset) {
+    received_data_.clear();
+    auto params = device::mojom::UsbControlTransferParams::New();
+    params->type = device::mojom::UsbControlTransferType::CLASS;
+    params->recipient = device::mojom::UsbControlTransferRecipient::INTERFACE;
+    params->request = kBotBulkOnlyMassStorageResetRequest;
+    params->value = 0;
+    params->index = endpoints_.interface_number;
+    device_->ControlTransferOut(
+        std::move(params), {},
+        static_cast<uint32_t>(kUsbCommandTimeout.InMilliseconds()),
+        base::BindOnce(&UsbBotTransport::OnResetControlTransferDone,
+                       weak_factory_.GetWeakPtr(), result_after_reset));
+  }
+
+  void OnResetControlTransferDone(Result result_after_reset,
+                                  device::mojom::UsbTransferStatus status) {
+    if (status != device::mojom::UsbTransferStatus::COMPLETED) {
+      return std::move(callback_).Run(Result::kTransportError, {});
+    }
+    device_->ClearHalt(
+        device::mojom::UsbTransferDirection::INBOUND, endpoints_.endpoint_in,
+        base::BindOnce(&UsbBotTransport::OnResetInboundCleared,
+                       weak_factory_.GetWeakPtr(), result_after_reset));
+  }
+
+  void OnResetInboundCleared(Result result_after_reset, bool success) {
+    if (!success) {
+      return std::move(callback_).Run(Result::kTransportError, {});
+    }
+    device_->ClearHalt(
+        device::mojom::UsbTransferDirection::OUTBOUND, endpoints_.endpoint_out,
+        base::BindOnce(&UsbBotTransport::OnResetOutboundCleared,
+                       weak_factory_.GetWeakPtr(), result_after_reset));
+  }
+
+  void OnResetOutboundCleared(Result result_after_reset, bool success) {
+    if (!success) {
+      return std::move(callback_).Run(Result::kTransportError, {});
+    }
+    std::move(callback_).Run(result_after_reset, {});
   }
 
   const raw_ptr<device::mojom::UsbDevice> device_;
@@ -312,15 +427,20 @@ class UsbBotTransport {
   uint32_t tag_ = 0;
   DataPhase data_phase_;
   uint32_t timeout_ms_ = 0;
+  uint32_t expected_data_length_ = 0;
+  bool is_data_out_ = false;
+  bool data_phase_stalled_ = false;
+  bool retried_csw_after_stall_ = false;
   std::vector<uint8_t> received_data_;
   TransactionCallback callback_;
   base::WeakPtrFactory<UsbBotTransport> weak_factory_{this};
 };
 
-// Executes SCSI commands over `UsbBotTransport`, automatically issuing
-// `REQUEST SENSE` on `CHECK CONDITION` (CSW status 1) and retrying when the
-// sense data reports a transient `UNIT ATTENTION` or `NOT READY` (becoming
-// ready) condition.
+// Executes SCSI commands over `UsbBotTransport`, resending a command when the
+// transport reports `kRetryCommand` (after a Phase Error or an incomplete
+// data-out phase) and issuing `REQUEST SENSE` on `CHECK CONDITION`
+// (`kCswStatusCommandFailed`) to retry transient `UNIT ATTENTION` or
+// `NOT READY` (becoming ready) conditions.
 class UsbScsiCommandRunner {
  public:
   using CommandCallback =
@@ -349,7 +469,6 @@ class UsbScsiCommandRunner {
     data_phase_ = data_phase;
     attempts_left_ = attempts_left;
     timeout_ = timeout;
-    last_sense_key_ = 0;
     callback_ = std::move(callback);
     AttemptCommand();
   }
@@ -358,25 +477,27 @@ class UsbScsiCommandRunner {
 
  private:
   void AttemptCommand() {
+    last_sense_key_ = 0;
     transport_.ExecuteTransaction(
         scsi_command_, data_phase_, timeout_,
         base::BindOnce(&UsbScsiCommandRunner::OnCommandTransactionDone,
                        base::Unretained(this)));
   }
 
-  void OnCommandTransactionDone(std::optional<uint8_t> csw_status,
+  void OnCommandTransactionDone(UsbBotTransport::Result result,
                                 std::vector<uint8_t> received_data) {
-    if (!csw_status.has_value()) {
-      data_phase_ = std::monostate{};
-      return std::move(callback_).Run(false, {});
-    }
-    if (*csw_status == 0) {
+    if (result == UsbBotTransport::Result::kCommandPassed) {
       data_phase_ = std::monostate{};
       return std::move(callback_).Run(true, std::move(received_data));
     }
-    // TODO(crbug.com/538632205): Perform Bulk-Only Mass Storage Reset and
-    // ClearHalt recovery when `csw_status == 2` (Phase Error).
-    if (*csw_status != 1) {
+    if (result == UsbBotTransport::Result::kRetryCommand &&
+        attempts_left_ > 1) {
+      // `UsbBotTransport` has already left the device ready for a new CBW.
+      --attempts_left_;
+      AttemptCommand();
+      return;
+    }
+    if (result != UsbBotTransport::Result::kCommandFailed) {
       data_phase_ = std::monostate{};
       return std::move(callback_).Run(false, {});
     }
@@ -396,12 +517,13 @@ class UsbScsiCommandRunner {
                        base::Unretained(this)));
   }
 
-  void OnRequestSenseTransactionDone(std::optional<uint8_t> csw_status,
+  void OnRequestSenseTransactionDone(UsbBotTransport::Result result,
                                      std::vector<uint8_t> sense_data) {
     // USB Mass Storage devices return fixed-format sense data (response code
     // 0x70 for current errors or 0x71 for deferred errors), where the sense key
     // is in byte 2 (bits 0..3) and ASC / ASCQ are in bytes 12 and 13.
-    if (csw_status != 0 || sense_data.size() < 14) {
+    if (result != UsbBotTransport::Result::kCommandPassed ||
+        sense_data.size() < 14) {
       data_phase_ = std::monostate{};
       return std::move(callback_).Run(false, {});
     }
@@ -829,7 +951,7 @@ class MojoUsbBotTransfer : public Operation::UsbTransfer {
         SendCommandWithRetry(
             BuildScsiReadWrite10Command(kScsiWrite10Opcode, backup_gpt_start,
                                         kBackupGptBlocks),
-            DataOutPhase{current_chunk_}, /*attempts_left=*/1,
+            DataOutPhase{current_chunk_}, /*attempts_left=*/3,
             kUsbCommandTimeout,
             base::BindOnce(&MojoUsbBotTransfer::OnBackupGptWiped,
                            base::Unretained(this)));

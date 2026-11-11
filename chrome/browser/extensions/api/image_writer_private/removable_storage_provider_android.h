@@ -59,6 +59,12 @@ inline constexpr uint8_t kScsiSenseKeyUnitAttention = 0x06;
 // PROCESS OF BECOMING READY" (0x04 / 0x01).
 inline constexpr uint8_t kScsiAscLogicalUnitNotReady = 0x04;
 inline constexpr uint8_t kScsiAscqBecomingReady = 0x01;
+// USB Mass Storage Bulk-Only Transport 1.0 class-specific request (§3.1) and
+// Command Status Wrapper `bCSWStatus` values (§5.2, Table 5.3).
+inline constexpr uint8_t kBotBulkOnlyMassStorageResetRequest = 0xFF;
+inline constexpr uint8_t kCswStatusCommandPassed = 0;
+inline constexpr uint8_t kCswStatusCommandFailed = 1;
+inline constexpr uint8_t kCswStatusPhaseError = 2;
 
 struct CommandStatusWrapper {
   uint32_t signature = 0;

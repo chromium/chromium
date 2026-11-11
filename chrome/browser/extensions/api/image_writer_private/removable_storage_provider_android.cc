@@ -487,15 +487,13 @@ class MojoUsbCapacityReader {
         status_wrapper->tag != active_tag_) {
       return std::move(active_callback_).Run(false, {});
     }
-    // Status 0x00 indicates Command Passed (good status) per the USB Mass
-    // Storage Bulk-Only Transport 1.0 specification (Table 5.3).
-    if (status_wrapper->status == 0) {
+    if (status_wrapper->status == kCswStatusCommandPassed) {
       return std::move(active_callback_).Run(true, std::move(active_data_));
     }
-    // Status 0x01 indicates Command Failed (for example, `UNIT ATTENTION` on
-    // newly connected media); issue `REQUEST SENSE` and retry if attempts
-    // remain.
-    if (status_wrapper->status != 1 || attempts_left_ <= 1) {
+    // Issue `REQUEST SENSE` on `kCswStatusCommandFailed` (for example, `UNIT
+    // ATTENTION` on newly connected media) and retry if attempts remain.
+    if (status_wrapper->status != kCswStatusCommandFailed ||
+        attempts_left_ <= 1) {
       return std::move(active_callback_).Run(false, {});
     }
     --attempts_left_;
@@ -551,7 +549,7 @@ class MojoUsbCapacityReader {
     if (!status_wrapper ||
         status_wrapper->signature != kCommandStatusWrapperSignature ||
         status_wrapper->tag != request_sense_tag_ ||
-        status_wrapper->status != 0) {
+        status_wrapper->status != kCswStatusCommandPassed) {
       return std::move(active_callback_).Run(false, {});
     }
     SendActiveCommandBlock();
@@ -966,6 +964,9 @@ std::vector<uint8_t> BuildCommandBlockWrapper(
 
 std::optional<CommandStatusWrapper> ParseCommandStatusWrapper(
     base::span<const uint8_t> bytes) {
+  if (bytes.size() != kCommandStatusWrapperSize) {
+    return std::nullopt;
+  }
   base::SpanReader reader(bytes);
   CommandStatusWrapper status_wrapper;
   if (!reader.ReadU32LittleEndian(status_wrapper.signature) ||
