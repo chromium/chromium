@@ -92,6 +92,40 @@ std::optional<base::FilePath> GetActiveFile(UpdaterScope /*scope*/,
       .Append(id);
 }
 
+// Returns the Managed Preferences file that holds the updater's platform
+// policies.
+base::FilePath GetManagedPreferencesPath() {
+  return GetLibraryFolderPath(UpdaterScope::kSystem)
+      ->Append("Managed Preferences")
+      .Append(LEGACY_GOOGLE_UPDATE_APPID ".plist");
+}
+
+// Flushes the preferences cache by killing the defaults server, so that new
+// processes read the current Managed Preferences.
+void FlushPreferencesCache() {
+  base::Process process = base::LaunchProcess({"killall", "cfprefsd"}, {});
+  if (!process.IsValid()) {
+    VLOG(2) << "Failed to launch the process to refresh preferences.";
+  }
+  // Exit code is not checked because it is not 0 when `cfprefsd` is not
+  // found.
+  EXPECT_TRUE(
+      process.WaitForExitWithTimeout(TestTimeouts::action_timeout(), nullptr));
+}
+
+// Removes the platform policies that `SetPlatformPolicies` writes.
+void DeletePlatformPolicies() {
+  const base::FilePath path = GetManagedPreferencesPath();
+  if (!base::PathExists(path)) {
+    return;
+  }
+  EXPECT_TRUE(base::DeleteFile(path)) << "Failed to delete " << path;
+  // The domain may no longer exist, so ignore the result.
+  CFPreferencesSynchronize(CFSTR(LEGACY_GOOGLE_UPDATE_APPID),
+                           kCFPreferencesAnyUser, kCFPreferencesCurrentHost);
+  FlushPreferencesCache();
+}
+
 }  // namespace
 
 base::FilePath GetSetupExecutablePath() {
@@ -105,6 +139,12 @@ base::TimeDelta GetOverinstallTimeoutForEnterTestMode() {
 
 void Clean(UpdaterScope scope) {
   CleanProcesses();
+
+  if (IsSystemInstall(scope)) {
+    // Platform policies live outside the install directory and would otherwise
+    // apply to later tests on the same machine.
+    DeletePlatformPolicies();
+  }
 
   std::optional<base::FilePath> path = GetInstallDirectory(scope);
   EXPECT_TRUE(path);
@@ -443,10 +483,8 @@ void SetPlatformPolicies(const base::DictValue& values) {
     }
     all_policies[base::SysUTF8ToNSString(app_id)] = app_policies;
 
-    NSURL* const managed_preferences_url = base::apple::FilePathToNSURL(
-        GetLibraryFolderPath(UpdaterScope::kSystem)
-            ->Append("Managed Preferences")
-            .Append(LEGACY_GOOGLE_UPDATE_APPID ".plist"));
+    NSURL* const managed_preferences_url =
+        base::apple::FilePathToNSURL(GetManagedPreferencesPath());
     ASSERT_TRUE([[NSDictionary dictionaryWithObject:all_policies
                                              forKey:@"updatePolicies"]
         writeToURL:managed_preferences_url
@@ -455,16 +493,7 @@ void SetPlatformPolicies(const base::DictValue& values) {
   }
   ASSERT_TRUE(CFPreferencesSynchronize(domain, kCFPreferencesAnyUser,
                                        kCFPreferencesCurrentHost));
-
-  // Force flushing preferences cache by killing the defaults server.
-  base::Process process = base::LaunchProcess({"killall", "cfprefsd"}, {});
-  if (!process.IsValid()) {
-    VLOG(2) << "Failed to launch the process to refresh preferences.";
-  }
-  // Exit code is not checked because it is not 0 when `cfprefsd` is not
-  // found.
-  EXPECT_TRUE(
-      process.WaitForExitWithTimeout(TestTimeouts::action_timeout(), nullptr));
+  FlushPreferencesCache();
 }
 
 void PrivilegedHelperInstall(UpdaterScope scope) {
