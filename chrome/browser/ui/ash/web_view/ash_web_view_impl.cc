@@ -7,9 +7,9 @@
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/task/sequenced_task_runner.h"
-#include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/new_window/chrome_new_window_client.h"
+#include "components/webrtc/media_capture_dispatcher.h"
 #include "content/public/browser/focused_node_details.h"
 #include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/media_session.h"
@@ -205,8 +205,8 @@ void AshWebViewImpl::RequestMediaAccessPermission(
         std::unique_ptr<content::MediaStreamUI>());
     return;
   }
-  MediaCaptureDevicesDispatcher::GetInstance()->ProcessMediaAccessRequest(
-      web_contents, request, std::move(callback), /*extension=*/nullptr);
+  webrtc::MediaCaptureDispatcher::GetInstance()->ProcessMediaAccessRequest(
+      web_contents, request, std::move(callback));
 }
 
 bool AshWebViewImpl::CheckMediaAccessPermission(
@@ -216,7 +216,7 @@ bool AshWebViewImpl::CheckMediaAccessPermission(
   if (!params_.can_record_media) {
     return false;
   }
-  return MediaCaptureDevicesDispatcher::GetInstance()
+  return webrtc::MediaCaptureDispatcher::GetInstance()
       ->CheckMediaAccessPermission(render_frame_host, security_origin, type);
 }
 

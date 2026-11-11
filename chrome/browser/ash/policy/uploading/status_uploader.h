@@ -13,11 +13,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
-#include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "components/webrtc/media_capture_dispatcher.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -30,7 +31,7 @@ struct StatusCollectorParams;
 
 // Class responsible for periodically uploading device status from the
 // passed StatusCollector.
-class StatusUploader : public MediaCaptureDevicesDispatcher::Observer {
+class StatusUploader : public webrtc::MediaCaptureDispatcher::Observer {
  public:
   // Constructor. |client| must be registered and must stay
   // valid and registered through the lifetime of this StatusUploader
@@ -55,7 +56,7 @@ class StatusUploader : public MediaCaptureDevicesDispatcher::Observer {
   // audio/video captured in this session it will be blocked till reboot.
   bool IsScreenshotAllowed();
 
-  // MediaCaptureDevicesDispatcher::Observer implementation
+  // webrtc::MediaCaptureDispatcher::Observer:
   void OnRequestUpdate(int render_process_id,
                        int render_frame_id,
                        blink::mojom::MediaStreamType stream_type,
@@ -110,6 +111,11 @@ class StatusUploader : public MediaCaptureDevicesDispatcher::Observer {
 
   // True if there has been any captured media in this session.
   bool has_captured_media_;
+
+  // Observes media requests to update `has_captured_media_`.
+  base::ScopedObservation<webrtc::MediaCaptureDispatcher,
+                          webrtc::MediaCaptureDispatcher::Observer>
+      media_capture_observation_{this};
 
   // Used to prevent a race condition where two status uploads are being
   // executed in parallel.

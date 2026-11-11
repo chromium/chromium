@@ -248,6 +248,7 @@ source_set("unit_tests") {
     "//chrome/browser/chromeos/extensions/external_loader",
     "//chrome/browser/device_identity",
     "//chrome/browser/extensions",
+    "//chrome/browser/media/webrtc",
     "//chrome/browser/policy:test_support",
     "//chrome/browser/prefs",
     "//chrome/browser/signin",

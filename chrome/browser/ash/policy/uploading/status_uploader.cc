@@ -70,7 +70,8 @@ StatusUploader::StatusUploader(
       has_captured_media_(false) {
   // Track whether any media capture devices are in use - this changes what
   // type of information we are allowed to upload.
-  MediaCaptureDevicesDispatcher::GetInstance()->AddObserver(this);
+  media_capture_observation_.Observe(
+      webrtc::MediaCaptureDispatcher::GetInstance());
   // Listen for changes to the upload delay, and start sending updates to the
   // server.
   upload_frequency_subscription_ =
@@ -88,9 +89,7 @@ StatusUploader::StatusUploader(
   ScheduleNextStatusUpload();
 }
 
-StatusUploader::~StatusUploader() {
-  MediaCaptureDevicesDispatcher::GetInstance()->RemoveObserver(this);
-}
+StatusUploader::~StatusUploader() = default;
 
 bool StatusUploader::ScheduleNextStatusUpload(bool immediately) {
   // Don't schedule a new status upload if there's a status upload in progress

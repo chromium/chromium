@@ -21,6 +21,7 @@
 #include "chrome/browser/ash/policy/status_collector/device_status_collector.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
+#include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/dbus/power/power_manager_client.h"
@@ -87,6 +88,10 @@ class StatusUploaderTest : public testing::Test {
     // Keep a pointer to the mock collector because collector_ gets cleared
     // when it is passed to the StatusUploader constructor.
     collector_ptr_ = collector_.get();
+
+    // StatusUploader observes webrtc::MediaCaptureDispatcher::GetInstance().
+    // Create it here, as ChromeBrowserMainParts does early in production.
+    MediaCaptureDevicesDispatcher::GetInstance();
   }
 
   void TearDown() override {

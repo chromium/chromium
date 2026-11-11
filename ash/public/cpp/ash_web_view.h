@@ -57,7 +57,7 @@ class ASH_PUBLIC_EXPORT AshWebView : public views::View {
     bool suppress_navigation = false;
 
     // If enabled, AshWebView can record media based on the permissions
-    // requested from `MediaCaptureDevicesDispatcher`.
+    // requested from `webrtc::MediaCaptureDispatcher`.
     // When disabled, no media recording is allowed. It is set to `false` by
     // default as recording media is a privacy sensitive operation.
     bool can_record_media = false;

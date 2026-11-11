@@ -96,5 +96,6 @@ specific_include_rules = {
   ],
   ".*unittest\\.cc": [
     "+chrome/browser/global_features.h",
+    "+chrome/browser/media/webrtc/media_capture_devices_dispatcher.h",
   ],
 }

@@ -15,10 +15,10 @@ static_library("web_view") {
   deps = [
     "//ash/public/cpp",
     "//base",
-    "//chrome/browser/media/webrtc",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/ui/ash/new_window",
+    "//components/webrtc:media_capture_dispatcher",
     "//content/public/browser",
     "//ui/aura",
     "//ui/base",

@@ -43,6 +43,7 @@
 #include "chrome/browser/device_identity/device_oauth2_token_service.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
 #include "chrome/browser/global_features.h"
+#include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/policy/messaging_layer/public/report_client_test_util.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -204,6 +205,10 @@ class DeviceCloudPolicyManagerAshTest
 
   void SetUp() override {
     DeviceSettingsTestBase::SetUp();
+
+    // StatusUploader observes webrtc::MediaCaptureDispatcher::GetInstance().
+    // Create it here, as ChromeBrowserMainParts does early in production.
+    MediaCaptureDevicesDispatcher::GetInstance();
 
     device_management_service_.ScheduleInitialization(0);
     base::RunLoop().RunUntilIdle();

@@ -18,15 +18,17 @@ include_rules = [
   "+chrome/browser/ash/policy/status_collector",
   "+chrome/browser/ash/settings",
   "+chrome/browser/device_identity",
-  "+chrome/browser/media/webrtc",
   "+chrome/browser/policy",
   "+chrome/browser/profiles",
   "+chrome/common/extensions",
   "+chrome/test/base",
+
+  "+components/webrtc/media_capture_dispatcher.h",
 ]
 
 specific_include_rules = {
   ".*unittest\\.cc": [
+    "+chrome/browser/media/webrtc/media_capture_devices_dispatcher.h",
     "+chrome/browser/prefs",
   ],
 }
