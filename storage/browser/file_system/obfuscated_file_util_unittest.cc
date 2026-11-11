@@ -904,6 +904,52 @@ class ObfuscatedFileUtilTest : public testing::Test,
     ASSERT_EQ(db, db2);
   }
 
+  void GetDirectoryDatabase_DefaultBucketWithDifferentIdsTestBody() {
+    // Simulate the default bucket being deleted and recreated with a new ID,
+    // while URLs with the old ID (e.g. from a FileSystemAccess handle obtained
+    // before the deletion) or a stale cached default bucket are still in use.
+    BucketLocator recreated_default_bucket = default_bucket_;
+    recreated_default_bucket.id =
+        BucketId::FromUnsafeValue(default_bucket_.id.value() + 1000);
+    ASSERT_TRUE(recreated_default_bucket.is_default);
+
+    FileSystemURL old_bucket_url = FileSystemURL::CreateForTest(
+        storage_key(), kFileSystemTypeTemporary, base::FilePath());
+    old_bucket_url.SetBucket(default_bucket_);
+    FileSystemURL new_bucket_url = FileSystemURL::CreateForTest(
+        storage_key(), kFileSystemTypeTemporary, base::FilePath());
+    new_bucket_url.SetBucket(recreated_default_bucket);
+    // URLs from the legacy FileSystem API don't have a bucket, and use the
+    // cached default bucket instead.
+    FileSystemURL no_bucket_url = FileSystemURL::CreateForTest(
+        storage_key(), kFileSystemTypeTemporary, base::FilePath());
+
+    SandboxDirectoryDatabase* old_bucket_db =
+        ofu()->GetDirectoryDatabase(old_bucket_url, /*create=*/true);
+    ASSERT_TRUE(old_bucket_db);
+    SandboxDirectoryDatabase* new_bucket_db =
+        ofu()->GetDirectoryDatabase(new_bucket_url, /*create=*/true);
+    ASSERT_TRUE(new_bucket_db);
+    SandboxDirectoryDatabase* no_bucket_db =
+        ofu()->GetDirectoryDatabase(no_bucket_url, /*create=*/true);
+    ASSERT_TRUE(no_bucket_db);
+
+    // The cached default bucket is the original one.
+    EXPECT_EQ(old_bucket_db, no_bucket_db);
+
+    if (is_third_party_context()) {
+      // Third-party default buckets use a different directory per bucket ID,
+      // so they should get separate databases.
+      EXPECT_NE(old_bucket_db, new_bucket_db);
+      EXPECT_EQ(2U, ofu()->directories_.size());
+    } else {
+      // First-party default buckets use the same directory regardless of the
+      // bucket ID, so there must only be one database for it.
+      EXPECT_EQ(old_bucket_db, new_bucket_db);
+      EXPECT_EQ(1U, ofu()->directories_.size());
+    }
+  }
+
   int64_t ComputeCurrentUsage() {
     return sandbox_file_system_.ComputeCurrentStorageKeyUsage() -
            sandbox_file_system_.ComputeCurrentDirectoryDatabaseUsage();
@@ -2516,6 +2562,11 @@ TEST_P(ObfuscatedFileUtilTest, DestroyDirectoryDatabase_Isolated) {
 
 TEST_P(ObfuscatedFileUtilTest, GetDirectoryDatabase_Isolated) {
   GetDirectoryDatabase_IsolatedTestBody();
+}
+
+TEST_P(ObfuscatedFileUtilTest,
+       GetDirectoryDatabase_DefaultBucketWithDifferentIds) {
+  GetDirectoryDatabase_DefaultBucketWithDifferentIdsTestBody();
 }
 
 TEST_P(ObfuscatedFileUtilTest, OpenPathInNonDirectory) {
