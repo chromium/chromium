@@ -143,23 +143,15 @@ class WidgetActivationWaiter : public views::WidgetObserver {
 
   // Eventually returns true if the actual activation state matches `activated`.
   // Returns false if the Widget is destroyed before that activation state ever
-  // matches `activated`.
+  // matches `activated`. Activation may change more than once before settling
+  // (e.g. while a previous window closes), so keep waiting until it matches.
   bool WaitForActivationState(bool activated) {
-    if (!widget_) {
-      return false;
+    while (widget_ && widget_->IsActive() != activated) {
+      run_loop_ = std::make_unique<base::RunLoop>();
+      run_loop_->Run();
+      run_loop_.reset();
     }
-
-    if (widget_->IsActive() == activated) {
-      return true;
-    }
-
-    run_loop_ = std::make_unique<base::RunLoop>();
-    run_loop_->Run();
-
-    if (!widget_) {
-      return false;
-    }
-    return widget_->IsActive() == activated;
+    return !!widget_;
   }
 
   // views::WidgetObserver:
@@ -167,7 +159,9 @@ class WidgetActivationWaiter : public views::WidgetObserver {
   void OnWidgetDestroying(views::Widget*) override {
     widget_->RemoveObserver(this);
     widget_ = nullptr;
-    run_loop_->Quit();
+    if (run_loop_) {
+      run_loop_->Quit();
+    }
   }
 
   void OnWidgetActivationChanged(views::Widget*, bool active) override {
@@ -355,19 +349,6 @@ class DocumentPictureInPictureWindowControllerBrowserTest
   const std::string GetWindowPageTitle(content::WebContents* web_contents) {
     return EvalJs(web_contents, "getWindowPageTitle();").ExtractString();
   }
-
-  // Watch for destruction of a WebContents. `is_destroyed()` will report if the
-  // WebContents has been destroyed yet.
-  class DestructionObserver : public content::WebContentsObserver {
-   public:
-    explicit DestructionObserver(content::WebContents* web_contents)
-        : content::WebContentsObserver(web_contents) {}
-
-    void WebContentsDestroyed() override { Observe(/*web_contents=*/nullptr); }
-
-    // If we've stopped observing, it's because the WebContents was destroyed.
-    bool is_destroyed() const { return !web_contents(); }
-  };
 
  protected:
   virtual bool UseStandaloneDocumentPip() const { return false; }
@@ -634,7 +615,8 @@ IN_PROC_BROWSER_TEST_P(DocumentPictureInPictureWindowControllerLifecycleTest,
 
   ASSERT_TRUE(window_controller()->GetWebContents());
   ASSERT_TRUE(window_controller()->GetChildWebContents());
-  DestructionObserver w(window_controller()->GetChildWebContents());
+  content::WebContentsDestroyedWatcher destroyed_watcher(
+      window_controller()->GetChildWebContents());
 
   // Now open the window a second time, without previously closing the
   // original window.
@@ -643,10 +625,11 @@ IN_PROC_BROWSER_TEST_P(DocumentPictureInPictureWindowControllerLifecycleTest,
   ASSERT_EQ(true, EvalJs(active_web_contents,
                          "documentPictureInPicture.requestWindow()"
                          ".then(w => true)"));
-  base::RunLoop().RunUntilIdle();
 
-  // The first WebContents should be destroyed.
-  EXPECT_TRUE(w.is_destroyed());
+  // The first WebContents should be destroyed. Closing it runs the page's
+  // unload handlers in the renderer first, so it is destroyed asynchronously.
+  destroyed_watcher.Wait();
+  EXPECT_TRUE(destroyed_watcher.IsDestroyed());
 
   // The new window should be visible, active, and focused.
   ASSERT_TRUE(GetRenderWidgetHostView());
