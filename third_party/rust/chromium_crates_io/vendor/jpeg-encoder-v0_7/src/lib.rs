@@ -309,6 +309,31 @@ mod tests {
     }
 
     #[test]
+    fn test_exact_quantization() {
+        let row = [0u8, 0, 0, 246, 255, 255, 255, 255];
+        let mut data = Vec::with_capacity(64);
+        for _ in 0..8 {
+            data.extend_from_slice(&row);
+        }
+
+        let mut default_result = Vec::new();
+        let encoder = Encoder::new(&mut default_result, 85);
+        assert!(!encoder.exact_quantization());
+        encoder.encode(&data, 8, 8, ColorType::Luma).unwrap();
+
+        let mut exact_result = Vec::new();
+        let mut encoder = Encoder::new(&mut exact_result, 85);
+        encoder.set_exact_quantization(true);
+        assert!(encoder.exact_quantization());
+        encoder.encode(&data, 8, 8, ColorType::Luma).unwrap();
+
+        let (default_img, _) = decode(&default_result);
+        let (exact_img, _) = decode(&exact_result);
+        assert_eq!(&default_img[..8], &[0, 1, 0, 247, 254, 255, 254, 255]);
+        assert_eq!(&exact_img[..8], &[0, 1, 0, 246, 254, 255, 255, 255]);
+    }
+
+    #[test]
     fn test_rgb_2_1() {
         let (data, width, height) = create_test_img_rgb();
 

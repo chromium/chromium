@@ -1,0 +1,371 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Sergio Gonzalez Martin <sergiog@microsoft.com>
+Date: Tue, 10 Nov 2026 00:00:00 +0000
+Subject: [PATCH] Add opt-in exact reciprocal quantization and fix
+ average-subsampling bottom padding
+
+Add Encoder::set_exact_quantization to opt into 16-bit variable-shift
+reciprocal quantization matching libjpeg-turbo, and repeat the last
+downsampled row at partial-iMCU bottom edges when using
+ChromaSubsamplingMethod::Average.
+
+Upstream PR: https://github.com/vstroebel/jpeg-encoder/pull/44
+
+diff --git a/third_party/rust/chromium_crates_io/vendor/jpeg-encoder-v0_7/src/encoder.rs b/third_party/rust/chromium_crates_io/vendor/jpeg-encoder-v0_7/src/encoder.rs
+index adacbd216e152..c20060b0977ee 100644
+--- a/third_party/rust/chromium_crates_io/vendor/jpeg-encoder-v0_7/src/encoder.rs
++++ b/third_party/rust/chromium_crates_io/vendor/jpeg-encoder-v0_7/src/encoder.rs
+@@ -236,6 +236,7 @@ pub struct Encoder<W: JfifWrite> {
+     restart_interval: Option<u16>,
+ 
+     optimize_huffman_table: bool,
++    exact_quantization: bool,
+ 
+     app_segments: Vec<(u8, Vec<u8>)>,
+ }
+@@ -281,6 +282,7 @@ impl<W: JfifWrite> Encoder<W> {
+             progressive_scans: None,
+             restart_interval: None,
+             optimize_huffman_table: false,
++            exact_quantization: false,
+             app_segments: Vec::new(),
+         }
+     }
+@@ -394,6 +396,18 @@ impl<W: JfifWrite> Encoder<W> {
+         self.optimize_huffman_table
+     }
+ 
++    /// Set if exact 16-bit reciprocal quantization matching libjpeg should be used.
++    ///
++    /// By default, a fixed 15-bit reciprocal shift is used.
++    pub fn set_exact_quantization(&mut self, exact_quantization: bool) {
++        self.exact_quantization = exact_quantization;
++    }
++
++    /// Returns if exact 16-bit reciprocal quantization is enabled.
++    pub fn exact_quantization(&self) -> bool {
++        self.exact_quantization
++    }
++
+     /// Appends a custom app segment to the JFIF file
+     ///
+     /// Segment numbers need to be in the range between 1 and 15<br>
+@@ -557,8 +571,18 @@ impl<W: JfifWrite> Encoder<W> {
+         }
+ 
+         let q_tables = [
+-            QuantizationTable::new_with_quality(&self.quantization_tables[0], self.quality, true),
+-            QuantizationTable::new_with_quality(&self.quantization_tables[1], self.quality, false),
++            QuantizationTable::new_with_quality(
++                &self.quantization_tables[0],
++                self.quality,
++                true,
++                self.exact_quantization,
++            ),
++            QuantizationTable::new_with_quality(
++                &self.quantization_tables[1],
++                self.quality,
++                false,
++                self.exact_quantization,
++            ),
+         ];
+ 
+         let jpeg_color_type = image.get_jpeg_color_type();
+@@ -798,6 +822,11 @@ impl<W: JfifWrite> Encoder<W> {
+                         for h_offset in 0..component.horizontal_sampling_factor as usize {
+                             let bx = block_x * 8 * max_h_sampling + (h_offset * 8);
+                             let by = v_offset * 8;
++                            let imcu_rows = (usize::from(height)
++                                .saturating_sub(block_y * 8 * max_v_sampling))
++                            .min(8 * max_v_sampling);
++                            let max_start_y =
++                                imcu_rows.div_ceil(v_stride).saturating_sub(1) * v_stride;
+                             let mut block = if average {
+                                 get_block_averaged(
+                                     &row[i],
+@@ -806,6 +835,7 @@ impl<W: JfifWrite> Encoder<W> {
+                                     h_stride,
+                                     v_stride,
+                                     buffer_width,
++                                    max_start_y,
+                                 )
+                             } else {
+                                 get_block(&row[i], bx, by, h_stride, v_stride, buffer_width)
+@@ -1072,13 +1102,23 @@ impl<W: JfifWrite> Encoder<W> {
+ 
+             let average = self.chroma_subsampling_method == ChromaSubsamplingMethod::Average
+                 && (h_scale > 1 || v_scale > 1);
++            let max_start_y =
++                usize::from(height).div_ceil(v_scale).saturating_sub(1) * v_scale;
+ 
+             for block_y in 0..rows {
+                 for block_x in 0..cols {
+                     let bx = block_x * 8 * h_scale;
+                     let by = block_y * 8 * v_scale;
+                     let mut block = if average {
+-                        get_block_averaged(&row[i], bx, by, h_scale, v_scale, buffer_width)
++                        get_block_averaged(
++                            &row[i],
++                            bx,
++                            by,
++                            h_scale,
++                            v_scale,
++                            buffer_width,
++                            max_start_y,
++                        )
+                     } else {
+                         get_block(&row[i], bx, by, h_scale, v_scale, buffer_width)
+                     };
+@@ -1293,6 +1333,7 @@ fn get_block_averaged(
+     col_stride: usize,
+     row_stride: usize,
+     width: usize,
++    max_start_y: usize,
+ ) -> AlignedBlock {
+     let mut block = [0i16; 64];
+     let n = col_stride * row_stride;
+@@ -1303,7 +1344,8 @@ fn get_block_averaged(
+     for y in 0..8 {
+         for x in 0..8 {
+             let ix = start_x + (x * col_stride);
+-            let iy = start_y + (y * row_stride);
++            // Repeat the last downsampled row at the bottom edge (matching libjpeg jcprepct.c).
++            let iy = (start_y + (y * row_stride)).min(max_start_y);
+ 
+             let mut sum = 0usize;
+             for dy in 0..row_stride {
+@@ -1372,7 +1414,7 @@ mod tests {
+         }
+ 
+         let nearest = get_block(&data, 0, 0, 2, 2, width);
+-        let averaged = get_block_averaged(&data, 0, 0, 2, 2, width);
++        let averaged = get_block_averaged(&data, 0, 0, 2, 2, width, 14);
+ 
+         assert!(nearest.data.iter().all(|&v| v == -128));
+         assert!(averaged.data.iter().all(|&v| v == 126 - 128));
+@@ -1387,7 +1429,7 @@ mod tests {
+             *v = if (i % width) % 2 == 0 { 1 } else { 2 };
+         }
+ 
+-        let averaged = get_block_averaged(&data, 0, 0, 2, 2, width);
++        let averaged = get_block_averaged(&data, 0, 0, 2, 2, width, 14);
+         assert_eq!(averaged.data[0], 1 - 128);
+         assert_eq!(averaged.data[1], 2 - 128);
+         assert_eq!(averaged.data[8], 1 - 128);
+diff --git a/third_party/rust/chromium_crates_io/vendor/jpeg-encoder-v0_7/src/lib.rs b/third_party/rust/chromium_crates_io/vendor/jpeg-encoder-v0_7/src/lib.rs
+index 88503e3208af5..04caceae578a9 100644
+--- a/third_party/rust/chromium_crates_io/vendor/jpeg-encoder-v0_7/src/lib.rs
++++ b/third_party/rust/chromium_crates_io/vendor/jpeg-encoder-v0_7/src/lib.rs
+@@ -308,6 +308,31 @@ mod tests {
+         check_result(data, width, height, &mut result, PixelFormat::RGB24);
+     }
+ 
++    #[test]
++    fn test_exact_quantization() {
++        let row = [0u8, 0, 0, 246, 255, 255, 255, 255];
++        let mut data = Vec::with_capacity(64);
++        for _ in 0..8 {
++            data.extend_from_slice(&row);
++        }
++
++        let mut default_result = Vec::new();
++        let encoder = Encoder::new(&mut default_result, 85);
++        assert!(!encoder.exact_quantization());
++        encoder.encode(&data, 8, 8, ColorType::Luma).unwrap();
++
++        let mut exact_result = Vec::new();
++        let mut encoder = Encoder::new(&mut exact_result, 85);
++        encoder.set_exact_quantization(true);
++        assert!(encoder.exact_quantization());
++        encoder.encode(&data, 8, 8, ColorType::Luma).unwrap();
++
++        let (default_img, _) = decode(&default_result);
++        let (exact_img, _) = decode(&exact_result);
++        assert_eq!(&default_img[..8], &[0, 1, 0, 247, 254, 255, 254, 255]);
++        assert_eq!(&exact_img[..8], &[0, 1, 0, 246, 254, 255, 255, 255]);
++    }
++
+     #[test]
+     fn test_rgb_2_1() {
+         let (data, width, height) = create_test_img_rgb();
+diff --git a/third_party/rust/chromium_crates_io/vendor/jpeg-encoder-v0_7/src/quantization.rs b/third_party/rust/chromium_crates_io/vendor/jpeg-encoder-v0_7/src/quantization.rs
+index 93055e6f8370b..2199bf04e0b5b 100644
+--- a/third_party/rust/chromium_crates_io/vendor/jpeg-encoder-v0_7/src/quantization.rs
++++ b/third_party/rust/chromium_crates_io/vendor/jpeg-encoder-v0_7/src/quantization.rs
+@@ -184,9 +184,9 @@ static DEFAULT_CHROMA_TABLES: [[u16; 64]; 9] = [
+ 
+ const SHIFT: u32 = 2 * 8 - 1;
+ 
+-fn compute_reciprocal(divisor: u32) -> (i32, i32) {
++fn compute_reciprocal(divisor: u32) -> (i32, i32, u32) {
+     if divisor <= 1 {
+-        return (1, 0);
++        return (1, 0, 0);
+     }
+ 
+     let mut reciprocals = (1 << SHIFT) / divisor;
+@@ -203,13 +203,40 @@ fn compute_reciprocal(divisor: u32) -> (i32, i32) {
+         }
+     }
+ 
+-    (reciprocals as i32, correction as i32)
++    (reciprocals as i32, correction as i32, SHIFT)
++}
++
++fn compute_reciprocal_exact(divisor: u32) -> (i32, i32, u32) {
++    if divisor <= 1 {
++        return (1, 0, 0);
++    }
++
++    let b = divisor.ilog2();
++    let mut r = 16 + b;
++
++    let mut reciprocals = (1u64 << r) / divisor as u64;
++    let fractional = (1u64 << r) % divisor as u64;
++
++    // Correction for rounding errors in division (matching libjpeg-turbo jcdctmgr.c).
++    let mut correction = divisor / 2;
++
++    if fractional == 0 {
++        reciprocals >>= 1;
++        r -= 1;
++    } else if fractional <= correction as u64 {
++        correction += 1;
++    } else {
++        reciprocals += 1;
++    }
++
++    (reciprocals as i32, correction as i32, r)
+ }
+ 
+ pub struct QuantizationTable {
+     table: [NonZeroU16; 64],
+     reciprocals: [i32; 64],
+     corrections: [i32; 64],
++    shifts: [u32; 64],
+ }
+ 
+ impl QuantizationTable {
+@@ -217,6 +244,7 @@ impl QuantizationTable {
+         table: &QuantizationTableType,
+         quality: u8,
+         luma: bool,
++        exact: bool,
+     ) -> QuantizationTable {
+         let table = match table {
+             QuantizationTableType::Custom(table) => Self::get_user_table(table),
+@@ -232,18 +260,26 @@ impl QuantizationTable {
+ 
+         let mut reciprocals = [0i32; 64];
+         let mut corrections = [0i32; 64];
++        let mut shifts = [0u32; 64];
+ 
+         for i in 0..64 {
+-            let (reciprocal, correction) = compute_reciprocal(table[i].get() as u32);
++            let divisor = table[i].get() as u32;
++            let (reciprocal, correction, shift) = if exact {
++                compute_reciprocal_exact(divisor)
++            } else {
++                compute_reciprocal(divisor)
++            };
+ 
+             reciprocals[i] = reciprocal;
+             corrections[i] = correction;
++            shifts[i] = shift;
+         }
+ 
+         QuantizationTable {
+             table,
+             reciprocals,
+             corrections,
++            shifts,
+         }
+     }
+ 
+@@ -293,11 +329,12 @@ impl QuantizationTable {
+ 
+         let reciprocal = self.reciprocals[index];
+         let corrections = self.corrections[index];
++        let shift = self.shifts[index];
+ 
+         let abs_value = value.abs();
+ 
+         let mut product = (abs_value + corrections) * reciprocal;
+-        product >>= SHIFT;
++        product >>= shift;
+ 
+         if value != abs_value {
+             product *= -1;
+@@ -313,14 +350,24 @@ mod tests {
+ 
+     #[test]
+     fn test_new_100() {
+-        let q = QuantizationTable::new_with_quality(&QuantizationTableType::Default, 100, true);
++        let q = QuantizationTable::new_with_quality(
++            &QuantizationTableType::Default,
++            100,
++            true,
++            false,
++        );
+ 
+         for &v in &q.table {
+             let v = v.get();
+             assert_eq!(v, 1 << 3);
+         }
+ 
+-        let q = QuantizationTable::new_with_quality(&QuantizationTableType::Default, 100, false);
++        let q = QuantizationTable::new_with_quality(
++            &QuantizationTableType::Default,
++            100,
++            false,
++            false,
++        );
+ 
+         for &v in &q.table {
+             let v = v.get();
+@@ -330,10 +377,44 @@ mod tests {
+ 
+     #[test]
+     fn test_new_100_quantize() {
+-        let q = QuantizationTable::new_with_quality(&QuantizationTableType::Default, 100, true);
++        let q = QuantizationTable::new_with_quality(
++            &QuantizationTableType::Default,
++            100,
++            true,
++            false,
++        );
+ 
+         for i in -255..255 {
+             assert_eq!(i, q.quantize(i << 3, 0));
+         }
+     }
++
++    #[test]
++    fn test_quantize_exact_matches_rounded_division() {
++        for quality in [1, 50, 75, 85, 95, 100] {
++            for luma in [true, false] {
++                let q = QuantizationTable::new_with_quality(
++                    &QuantizationTableType::Default,
++                    quality,
++                    luma,
++                    true,
++                );
++                for index in 0..64 {
++                    let divisor = q.table[index].get() as i32;
++                    for val in -8192i16..=8192 {
++                        let abs_val = (val as i32).abs();
++                        let mut expected = ((abs_val + divisor / 2) / divisor) as i16;
++                        if val < 0 {
++                            expected = -expected;
++                        }
++                        assert_eq!(
++                            q.quantize(val, index),
++                            expected,
++                            "mismatch at quality={quality}, luma={luma}, index={index}, divisor={divisor}, val={val}"
++                        );
++                    }
++                }
++            }
++        }
++    }
+ }
