@@ -36,6 +36,8 @@
 #include "chrome/browser/selection/features.h"
 #include "chrome/browser/selection/mojom/action.mojom.h"
 #include "chrome/browser/selection/suggestion_service.h"
+#include "chrome/browser/ui/lens/lens_overlay_controller.h"
+#include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/tabs/page_context_eligibility_helper.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/common/chrome_features.h"
@@ -196,6 +198,70 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayBrowserTest,
       "Glic.WarmingPool.ContainerCreationReason",
       GlicWebContentsWarmingPool::ContainerCreationReason::kSelectionOverlay,
       1);
+}
+
+IN_PROC_BROWSER_TEST_F(SelectionOverlayBrowserTest, ClosesWhenLensOpened) {
+  tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
+  auto* controller =
+      SelectionOverlayController::FromTabWebContents(tab->GetContents());
+  ASSERT_TRUE(controller);
+  controller->Show(/*options=*/nullptr,
+                   ::selection::EntryPoint::kKeyboardShortcut);
+  ASSERT_OK(RunUntilEqual(
+      [&]() { return controller->state(); },
+      SelectionOverlayController::State::kOverlay,
+      "Timeout waiting for SelectionOverlayController state to be kOverlay"));
+
+  std::optional<SelectionOverlayController::CloseReason> close_reason;
+  base::CallbackListSubscription closed_subscription =
+      controller->RegisterOverlayClosedCallback(base::BindLambdaForTesting(
+          [&close_reason](SelectionOverlayController::CloseReason reason) {
+            close_reason = reason;
+          }));
+
+  auto* lens_search_controller = LensSearchController::From(tab);
+  ASSERT_TRUE(lens_search_controller);
+  lens_search_controller->OpenLensOverlay(
+      lens::LensOverlayInvocationSource::kToolbar);
+
+  EXPECT_EQ(controller->state(), SelectionOverlayController::State::kOff);
+  EXPECT_EQ(close_reason, SelectionOverlayController::CloseReason::kOther);
+  EXPECT_FALSE(lens_search_controller->IsOff());
+  ASSERT_OK(RunUntilEqual(
+      [&]() {
+        return lens_search_controller->lens_overlay_controller()->state();
+      },
+      LensOverlayController::State::kOverlay,
+      "Timeout waiting for LensOverlayController state to be kOverlay"));
+}
+
+IN_PROC_BROWSER_TEST_F(SelectionOverlayBrowserTest, ClosesLensWhenOpened) {
+  tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
+  auto* lens_search_controller = LensSearchController::From(tab);
+  ASSERT_TRUE(lens_search_controller);
+  lens_search_controller->OpenLensOverlay(
+      lens::LensOverlayInvocationSource::kAppMenu);
+  EXPECT_FALSE(lens_search_controller->IsOff());
+  ASSERT_OK(RunUntilEqual(
+      [&]() {
+        return lens_search_controller->lens_overlay_controller()->state();
+      },
+      LensOverlayController::State::kOverlay,
+      "Timeout waiting for LensOverlayController state to be kOverlay"));
+
+  auto* controller =
+      SelectionOverlayController::FromTabWebContents(tab->GetContents());
+  ASSERT_TRUE(controller);
+  controller->Show(/*options=*/nullptr,
+                   ::selection::EntryPoint::kKeyboardShortcut);
+
+  EXPECT_TRUE(lens_search_controller->IsOff());
+  EXPECT_EQ(lens_search_controller->lens_overlay_controller()->state(),
+            LensOverlayController::State::kOff);
+  ASSERT_OK(RunUntilEqual(
+      [&]() { return controller->state(); },
+      SelectionOverlayController::State::kOverlay,
+      "Timeout waiting for SelectionOverlayController state to be kOverlay"));
 }
 
 namespace {

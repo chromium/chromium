@@ -246,7 +246,6 @@ void LensSearchController::OpenLensOverlay(
     return;
   }
 
-
   // If the overlay is already active, don't start a new session. This can
   // happen if the side panel is open and the user reinvokes the overlay.
   if (IsOff()) {
@@ -258,6 +257,7 @@ void LensSearchController::OpenLensOverlay(
   }
 
   should_show_csb_ = should_show_csb;
+  will_open_callbacks_.Notify();
   lens_overlay_controller_->ShowUI(invocation_source);
 }
 
@@ -293,6 +293,7 @@ void LensSearchController::OpenLensOverlayWithPendingRegion(
   StartLensSession(invocation_source);
 
   should_show_csb_ = false;
+  will_open_callbacks_.Notify();
   lens_overlay_controller_->ShowUIWithPendingRegion(
       invocation_source, std::move(region), region_bitmap);
 }
@@ -325,6 +326,7 @@ void LensSearchController::OpenLensOverlayInCurrentSession() {
   }
 
   // Otherwise, the overlay must be fully closed. Open the overlay as normal.
+  will_open_callbacks_.Notify();
   lens_overlay_controller_->ShowUI(invocation_source);
 }
 
@@ -742,6 +744,11 @@ void LensSearchController::ClearVisualSelectionThumbnail() {
 void LensSearchController::SetThumbnailCreatedCallback(
     base::RepeatingCallback<void(const std::string&)> callback) {
   thumbnail_created_callback_ = std::move(callback);
+}
+
+base::CallbackListSubscription LensSearchController::RegisterWillOpenCallback(
+    base::RepeatingClosure callback) {
+  return will_open_callbacks_.Add(std::move(callback));
 }
 
 base::WeakPtr<LensSearchController> LensSearchController::GetWeakPtr() {
@@ -1381,7 +1388,6 @@ void LensSearchController::WillDetach(tabs::TabInterface* tab,
       return;
   }
 }
-
 
 Profile* LensSearchController::GetProfile() {
   return Profile::FromBrowserContext(tab_->GetContents()->GetBrowserContext());

@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/lens/core/mojom/lens.mojom.h"
@@ -253,6 +254,10 @@ class LensSearchController {
   void SetThumbnailCreatedCallback(
       base::RepeatingCallback<void(const std::string&)> callback);
 
+  // Registers a callback to be invoked when Lens is about to open on this tab.
+  base::CallbackListSubscription RegisterWillOpenCallback(
+      base::RepeatingClosure callback);
+
   // Whether the user has selected a region on the overlay.
   bool HasRegionSelection();
 
@@ -345,8 +350,10 @@ class LensSearchController {
       bool use_dark_mode,
       lens::LensOverlayGen204Controller* gen204_controller);
 
-  // Override these methods to be able to track calls made to the query flow router.
-  virtual std::unique_ptr<lens::LensQueryFlowRouter> CreateLensQueryFlowRouter();
+  // Override these methods to be able to track calls made to the query flow
+  // router.
+  virtual std::unique_ptr<lens::LensQueryFlowRouter>
+  CreateLensQueryFlowRouter();
 
   // Override these methods to be able to track calls made to the side panel
   // coordinator.
@@ -485,7 +492,6 @@ class LensSearchController {
   void WillDetach(tabs::TabInterface* tab,
                   tabs::TabInterface::DetachReason reason);
 
-
   // Whether the LensSearchController has been initialized. Meaning, all the
   // dependencies have been initialized and the controller is ready to use.
   bool initialized_ = false;
@@ -576,6 +582,9 @@ class LensSearchController {
 
   // Callback to be invoked when a thumbnail is created.
   base::RepeatingCallback<void(const std::string&)> thumbnail_created_callback_;
+
+  // Callbacks to be notified when Lens is about to open on this tab.
+  base::RepeatingClosureList will_open_callbacks_;
 
   // Unowned IdentityManager for fetching access tokens. Could be null for
   // incognito profiles.

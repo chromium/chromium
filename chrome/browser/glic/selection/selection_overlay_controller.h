@@ -319,6 +319,7 @@ class SelectionOverlayController
       uint32_t start_offset,
       uint32_t end_offset);
   void GetSuggestedActionsImpl(SuggestedActionsCallback callback);
+  void CloseLensOverlayIfNeeded();
   // Callers must check `CanStartSession()` before staging any session state.
   void ShowImpl(mojom::TabContextOptionsPtr options);
   // Replaces any existing selected regions with a single region created from

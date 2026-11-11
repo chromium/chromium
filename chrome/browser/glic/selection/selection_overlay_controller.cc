@@ -41,6 +41,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/tabs/page_context_eligibility_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
@@ -48,6 +49,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/lens/lens_overlay_dismissal_source.h"
 #include "components/optimization_guide/content/browser/page_context_eligibility_observer.h"
 #include "components/optimization_guide/core/feature_registry/feature_keys.h"
 #include "components/optimization_guide/proto/features/smart_selection_suggestions.pb.h"
@@ -291,6 +293,11 @@ SelectionOverlayController::SelectionOverlayController(
   tab_subscriptions_.push_back(tab_->RegisterWillDeactivate(
       base::BindRepeating(&SelectionOverlayController::WillDeactivate,
                           weak_factory_.GetWeakPtr())));
+  if (auto* lens_search_controller = LensSearchController::From(tab_)) {
+    tab_subscriptions_.push_back(
+        lens_search_controller->RegisterWillOpenCallback(base::BindRepeating(
+            &SelectionOverlayController::CloseUI, weak_factory_.GetWeakPtr())));
+  }
   GlicKeyedService* service = GlicKeyedService::Get(tab_->GetProfile());
   CHECK(service);
   tab_subscriptions_.push_back(
@@ -695,6 +702,7 @@ void SelectionOverlayController::CaptureRegion(
                      mojom::CaptureRegionErrorReason::kUnknown);
     return;
   }
+  selection_overlay_controller->CloseLensOverlayIfNeeded();
   if (!selection_overlay_controller->CanStartSession()) {
     mojo::Remote<mojom::CaptureRegionObserver> remote(std::move(observer));
     remote->OnUpdate(mojom::CaptureRegionResultPtr(),
@@ -758,8 +766,17 @@ bool SelectionOverlayController::CanStartSession() {
   return true;
 }
 
+void SelectionOverlayController::CloseLensOverlayIfNeeded() {
+  if (auto* lens_search_controller = LensSearchController::From(tab_);
+      lens_search_controller && !lens_search_controller->IsOff()) {
+    lens_search_controller->CloseLensSync(
+        lens::LensOverlayDismissalSource::kUnexpectedSidePanelOpen);
+  }
+}
+
 void SelectionOverlayController::Show(mojom::TabContextOptionsPtr options,
                                       ::selection::EntryPoint entry_point) {
+  CloseLensOverlayIfNeeded();
   if (!CanStartSession()) {
     return;
   }
@@ -825,6 +842,7 @@ void SelectionOverlayController::ShowWithSelection(
     const gfx::Rect& selection_bounds,
     selection::InteractionOptionsPtr interaction_options,
     ::selection::EntryPoint entry_point) {
+  CloseLensOverlayIfNeeded();
   if (!CanStartSession()) {
     return;
   }

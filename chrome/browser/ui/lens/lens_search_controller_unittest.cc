@@ -152,4 +152,21 @@ TEST_F(LensSearchControllerTest, LensOverlayControllerFromTabInterface) {
   EXPECT_EQ(LensOverlayController::From(&tab_without_lens), nullptr);
 }
 
+TEST_F(LensSearchControllerTest, OpenLensOverlay_NotifiesWillOpenCallbacks) {
+  int call_count = 0;
+  base::CallbackListSubscription subscription =
+      controller_->RegisterWillOpenCallback(
+          base::BindRepeating([](int* count) { ++(*count); }, &call_count));
+
+  ON_CALL(mock_tab_interface_, IsActivated()).WillByDefault(Return(false));
+  controller_->OpenLensOverlay(lens::LensOverlayInvocationSource::kToolbar);
+  EXPECT_EQ(call_count, 0);
+  EXPECT_TRUE(controller_->IsOff());
+
+  ON_CALL(mock_tab_interface_, IsActivated()).WillByDefault(Return(true));
+  controller_->OpenLensOverlay(lens::LensOverlayInvocationSource::kToolbar);
+  EXPECT_EQ(call_count, 1);
+  EXPECT_FALSE(controller_->IsOff());
+}
+
 }  // namespace lens
