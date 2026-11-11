@@ -32,6 +32,15 @@ BASE_DECLARE_FEATURE(kTtcFre);
 // (pipeline health, timeline, tool calls, problems and audio) for debugging.
 BASE_DECLARE_FEATURE(kTtcDebugTools);
 
+// Enables Human-on-the-Loop (HOTL) local user confirmation before executing
+// click_element tool actions.
+BASE_DECLARE_FEATURE(kTtcHotlClickConfirmation);
+
+// Finch-configurable timeout waiting for the user to respond to a HOTL
+// confirmation prompt via voice or UI button click.
+inline constexpr base::FeatureParam<base::TimeDelta> kHotlConfirmationTimeout{
+    &kTtcHotlClickConfirmation, "confirmation_timeout", base::Seconds(10)};
+
 }  // namespace ttc
 
 #endif  // CHROME_BROWSER_TTC_CORE_FEATURES_H_
