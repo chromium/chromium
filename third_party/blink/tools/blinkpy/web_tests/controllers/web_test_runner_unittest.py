@@ -33,6 +33,7 @@ import sys
 import threading
 import unittest
 
+from blinkpy.common import message_pool
 from blinkpy.common.host_mock import MockHost
 from blinkpy.common.system.system_host_mock import MockSystemHost
 from blinkpy.web_tests import run_web_tests
@@ -608,7 +609,7 @@ class WorkerTests(unittest.TestCase):
         ]
         return Worker(self.DummyCaller(), '/results', options, {})
 
-    def test_del_during_log_write_does_not_write_again(self):
+    def test_collect_during_log_write_does_not_write_again(self):
         logger = logging.getLogger(Worker.__module__)
         self.addCleanup(logger.setLevel, logger.level)
         logger.setLevel(logging.DEBUG)
@@ -622,10 +623,30 @@ class WorkerTests(unittest.TestCase):
         self.assertIsNone(stream.collect_during_write)
         self.assertFalse(stream.reentered)
 
-    def test_del_stops_driver_without_logging(self):
-        worker = self._make_worker()
-        worker._port = mock.Mock()
-        driver = worker._driver = mock.Mock()
-        with self.assertNoLogs(Worker.__module__, level=logging.DEBUG):
-            del worker
+    def test_pool_stops_driver_when_handle_raises(self):
+        driver = mock.Mock()
+
+        def start(worker):
+            worker._port = mock.Mock(**{'get_option.return_value': None})
+            worker._driver = driver
+
+        options = run_web_tests.parse_args(['--platform', 'test-mac-mac10.11'])[
+            0
+        ]
+        with (
+            mock.patch.object(Worker, 'start', start),
+            mock.patch.object(
+                Worker, 'handle', side_effect=RuntimeError('handle failed')
+            ),
+        ):
+            with self.assertRaisesRegex(RuntimeError, 'handle failed'):
+                with message_pool.get(
+                    mock.Mock(),
+                    lambda connection: Worker(
+                        connection, '/results', options, {}
+                    ),
+                    1,
+                    MockHost(),
+                ) as pool:
+                    pool.run([('test_list', 'shard', [], 0)])
         driver.stop.assert_called_once_with()

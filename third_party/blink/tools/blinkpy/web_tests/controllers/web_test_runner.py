@@ -355,14 +355,6 @@ class Worker(object):
         self._driver = None
         self._num_tests = 0
 
-    def __del__(self):
-        # Don't log here. The garbage collector can run `__del__()` in the
-        # middle of another logging call, and logging again from the same
-        # thread can deadlock on a non-reentrant stream lock (for example,
-        # typ's captured output while blink_python_tests runs).
-        if self._driver:
-            self._driver.stop()
-
     def start(self):
         """This method is called when the object is starting to be used and it is safe
         for the object to create state that does not need to be pickled (usually this means
@@ -431,12 +423,12 @@ class Worker(object):
         return result.device_failed
 
     def stop(self):
+        # The message pool calls this in the worker process even if `handle()`
+        # raised.
         _log.debug('%s cleaning up', self._name)
         self._kill_driver()
 
     def _kill_driver(self):
-        # Be careful about how and when we kill the driver; if driver.stop()
-        # raises an exception, this routine may get re-entered via __del__.
         if self._driver:
             # When tracing we need to go through the standard shutdown path to
             # ensure that the trace is recorded properly.
