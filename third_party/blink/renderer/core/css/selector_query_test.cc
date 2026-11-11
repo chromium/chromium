@@ -375,6 +375,79 @@ TEST(SelectorQueryTest, FastPathScoped) {
   }
 }
 
+TEST(SelectorQueryTest, ScopedQueryIgnoresUnrelatedPreviousSiblings) {
+  test::TaskEnvironment task_environment;
+  ScopedNullExecutionContext execution_context;
+  auto* document =
+      HTMLDocument::CreateForTest(execution_context.GetExecutionContext());
+  document->write(R"HTML(
+    <!DOCTYPE html>
+    <ul>
+      <li id=scope>
+        <div class=userContainer>
+          <strong><a id=match class=avatar href="/"></a></strong>
+        </div>
+      </li>
+    </ul>
+  )HTML");
+  Element* scope = document->getElementById(AtomicString("scope"));
+  Element* match = document->getElementById(AtomicString("match"));
+  ASSERT_TRUE(scope && match);
+  const AtomicString selector(".userContainer > strong > a.avatar[href]");
+
+  EXPECT_EQ(match, scope->QuerySelector(selector));
+#if DCHECK_IS_ON() || defined(RELEASE_QUERY_STATS)
+  const unsigned checks_without_sibling =
+      SelectorQuery::LastQueryStats().check_class;
+#endif
+
+  // Querying each item in a long sibling list must not scan unrelated
+  // preceding items for this child-only selector.
+  Element* unrelated_sibling = document->CreateRawElement(html_names::kLiTag);
+  scope->parentNode()->InsertBefore(unrelated_sibling, scope);
+  EXPECT_EQ(match, scope->QuerySelector(selector));
+#if DCHECK_IS_ON() || defined(RELEASE_QUERY_STATS)
+  EXPECT_EQ(checks_without_sibling,
+            SelectorQuery::LastQueryStats().check_class);
+#endif
+}
+
+TEST(SelectorQueryTest, ScopedSubjectSiblingQueryIgnoresExternalSiblings) {
+  test::TaskEnvironment task_environment;
+  ScopedNullExecutionContext execution_context;
+  auto* document =
+      HTMLDocument::CreateForTest(execution_context.GetExecutionContext());
+  document->write(R"HTML(
+    <!DOCTYPE html>
+    <main>
+      <div class=chain-start></div>
+      <div class=chain-middle></div>
+      <div class=chain-end></div>
+      <section id=scope class=target>
+        <div class=target></div>
+      </section>
+    </main>
+  )HTML");
+  Element* scope = document->getElementById(AtomicString("scope"));
+  ASSERT_TRUE(scope);
+  const AtomicString selector(
+      ".chain-start + .chain-middle + .chain-end + .target");
+
+  EXPECT_EQ(0u, scope->QuerySelectorAll(selector)->length());
+#if DCHECK_IS_ON() || defined(RELEASE_QUERY_STATS)
+  const unsigned checks_with_siblings =
+      SelectorQuery::LastQueryStats().check_class;
+#endif
+
+  while (Element* sibling = ElementTraversal::PreviousSibling(*scope)) {
+    scope->parentNode()->RemoveChild(sibling);
+  }
+  EXPECT_EQ(0u, scope->QuerySelectorAll(selector)->length());
+#if DCHECK_IS_ON() || defined(RELEASE_QUERY_STATS)
+  EXPECT_EQ(checks_with_siblings, SelectorQuery::LastQueryStats().check_class);
+#endif
+}
+
 TEST(SelectorQueryTest, QuirksModeSlowPath) {
   test::TaskEnvironment task_environment;
   ScopedNullExecutionContext execution_context;

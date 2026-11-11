@@ -434,10 +434,11 @@ void SelectorQuery::Execute(
   // level).
   const bool is_html_doc = IsA<HTMLDocument>(root_node.GetDocument());
   const unsigned subject_compound_idx = compounds_.size() - 1;
+  const unsigned subject_level_start_idx =
+      FindStartOfLevel(subject_compound_idx);
   unsigned start_compound_idx = FirstCompoundNotSeenBeforeRoot(
       root_node,
-      /*from_idx=*/0, /*to_idx=*/FindStartOfLevel(subject_compound_idx),
-      is_html_doc,
+      /*from_idx=*/0, /*to_idx=*/subject_level_start_idx, is_html_doc,
       /*horizontally=*/false);
   start_compound_idx = FindStartOfLevel(start_compound_idx);
 
@@ -445,10 +446,21 @@ void SelectorQuery::Execute(
   // this state change can actually be temporary; if we match some siblings
   // and then go down a level without matching the rest, we go back
   // to the start of the level.
-  start_compound_idx = FirstCompoundNotSeenBeforeRoot(
-      root_node, /*from_idx=*/start_compound_idx,
-      /*to_idx=*/subject_compound_idx, is_html_doc,
-      /*horizontally=*/true);
+  // The subject and its siblings must be inside the query subtree, so only
+  // levels above the subject need an external sibling prescan.
+  if (start_compound_idx < subject_level_start_idx) {
+    // Only compounds preceding the last one at this level can be matched by
+    // siblings before the root.
+    unsigned end_compound_idx = start_compound_idx;
+    while (end_compound_idx < subject_compound_idx &&
+           compounds_[end_compound_idx].next_compound_is_horizontal) {
+      ++end_compound_idx;
+    }
+    start_compound_idx = FirstCompoundNotSeenBeforeRoot(
+        root_node, /*from_idx=*/start_compound_idx,
+        /*to_idx=*/end_compound_idx, is_html_doc,
+        /*horizontally=*/true);
+  }
 
   // NOTE: If we only skip one level/compound, and it's a descendant/indirect
   // adjacent selector, then we could probably avoid need_full_check. For now,
