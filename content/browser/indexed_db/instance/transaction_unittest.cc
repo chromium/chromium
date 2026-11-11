@@ -95,6 +95,30 @@ class TransactionTestBase : public IndexedDBTestBase {
       int priority = 0) {
     if (db_->connections_.empty()) {
       db_->OpenInternal();
+      if (!db_->IsObjectStoreIdInMetadata(1)) {
+        PartitionedLockHolder locks;
+        lock_manager().AcquireLocks(
+            db_->BuildLockRequestsForTransaction(
+                blink::mojom::IDBTransactionMode::VersionChange, {}),
+            locks, base::DoNothing());
+        CHECK(!locks.locks.empty());
+
+        std::unique_ptr<BackingStore::Transaction> transaction =
+            db_->backing_store_db()->CreateTransaction(
+                blink::mojom::IDBTransactionDurability::Relaxed,
+                blink::mojom::IDBTransactionMode::VersionChange);
+        CHECK(transaction->Begin(std::move(locks.locks)).ok());
+        CHECK(transaction->SetDatabaseVersion(1).ok());
+        CHECK(transaction
+                  ->CreateObjectStore(1, u"store", blink::IndexedDBKeyPath(),
+                                      /*auto_increment=*/false)
+                  .ok());
+        StatusOr<bool> async_work =
+            transaction->CommitPhaseOne(base::DoNothing(), base::DoNothing());
+        CHECK(async_work.has_value());
+        CHECK(!async_work.value());
+        CHECK(transaction->CommitPhaseTwo().ok());
+      }
     }
     storage::BucketClientInfo client_info;
     client_info.context_token = blink::LocalFrameToken();

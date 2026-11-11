@@ -665,6 +665,72 @@ TEST_P(IndexedDBTest, InvalidObjectStoreId) {
   }
 }
 
+// Operations (such as, but not limited to, Put) that try to act on an object
+// store outside the transaction's declared scope should be blocked.
+TEST_P(IndexedDBTest, PutOutsideTransactionScope) {
+  constexpr int64_t kObjectStoreId = 10;
+  constexpr int64_t kOtherObjectStoreId = 20;
+  mojo::Remote<blink::mojom::IDBFactory> factory;
+  BindFactory(factory.BindNewPipeAndPassReceiver(),
+              GetOrCreateBucket(GetTestStorageKey()));
+
+  MojoConnectionHelper mojo_helper;
+  mojo_helper.OpenAndExpectUpgradeNeeded(factory.get());
+  mojo_helper.vc_txn->CreateObjectStore(kObjectStoreId, u"store",
+                                        blink::IndexedDBKeyPath(),
+                                        /*auto_increment=*/false);
+  mojo_helper.vc_txn->CreateObjectStore(kOtherObjectStoreId, u"other",
+                                        blink::IndexedDBKeyPath(),
+                                        /*auto_increment=*/false);
+  base::RunLoop open_loop;
+  EXPECT_CALL(mojo_helper.open_callbacks, MockedOpenSuccess)
+      .WillOnce(RunClosure(open_loop.QuitClosure()));
+  mojo_helper.vc_txn->Commit(0);
+  open_loop.Run();
+
+  mojo::AssociatedRemote<blink::mojom::IDBTransaction> transaction;
+  mojo_helper.database->CreateTransaction(
+      transaction.BindNewEndpointAndPassReceiver(), /*transaction_id=*/2,
+      {kObjectStoreId}, blink::mojom::IDBTransactionMode::ReadWrite,
+      blink::mojom::IDBTransactionDurability::Relaxed);
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  transaction->Put(kOtherObjectStoreId, blink::mojom::IDBValue::New(),
+                   IndexedDBKey(u"key"), blink::mojom::IDBPutMode::AddOrUpdate,
+                   {}, base::DoNothing());
+  EXPECT_EQ("Object store is outside transaction scope",
+            bad_message_observer.WaitForBadMessage());
+}
+
+TEST_P(IndexedDBTest, CreateTransactionWithDeletedObjectStore) {
+  constexpr int64_t kObjectStoreId = 10;
+  mojo::Remote<blink::mojom::IDBFactory> factory;
+  BindFactory(factory.BindNewPipeAndPassReceiver(),
+              GetOrCreateBucket(GetTestStorageKey()));
+
+  MojoConnectionHelper mojo_helper;
+  mojo_helper.OpenAndExpectUpgradeNeeded(factory.get());
+  mojo_helper.vc_txn->CreateObjectStore(kObjectStoreId, u"store",
+                                        blink::IndexedDBKeyPath(),
+                                        /*auto_increment=*/false);
+
+  mojo_helper.vc_txn->DeleteObjectStore(kObjectStoreId);
+  base::RunLoop open_loop;
+  EXPECT_CALL(mojo_helper.open_callbacks, MockedOpenSuccess)
+      .WillOnce(RunClosure(open_loop.QuitClosure()));
+  mojo_helper.vc_txn->Commit(0);
+  open_loop.Run();
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  mojo::AssociatedRemote<blink::mojom::IDBTransaction> transaction;
+  mojo_helper.database->CreateTransaction(
+      transaction.BindNewEndpointAndPassReceiver(), /*transaction_id=*/2,
+      {kObjectStoreId}, blink::mojom::IDBTransactionMode::ReadOnly,
+      blink::mojom::IDBTransactionDurability::Relaxed);
+  EXPECT_EQ("Invalid object_store_id in transaction scope",
+            bad_message_observer.WaitForBadMessage());
+}
+
 TEST_P(IndexedDBTest, NotifyIndexedDBListChanged) {
   const int64_t kDBVersion1 = 1;
   const int64_t kDBVersion2 = 2;
@@ -2522,7 +2588,11 @@ TEST_F(IndexedDBSqliteTest, BlobReadPutsOffIdleWork) {
                           blink::mojom::IDBPutMode::AddOnly,
                           std::vector<IndexedDBIndexKeys>(),
                           put_callback.Get());
+  base::RunLoop open_loop;
+  EXPECT_CALL(mojo_helper.open_callbacks, MockedOpenSuccess)
+      .WillOnce(RunClosure(open_loop.QuitClosure()));
   mojo_helper.vc_txn->Commit(0);
+  open_loop.Run();
 
   // Open a read transaction to get the record with the blob and verify reading
   // the blob resets the idle timer.

@@ -1013,18 +1013,6 @@ bool Database::IsObjectStoreIdInMetadata(int64_t object_store_id) const {
   return metadata().object_stores.contains(object_store_id);
 }
 
-bool Database::IsObjectStoreIdAndMaybeIndexIdInMetadata(
-    int64_t object_store_id,
-    int64_t index_id) const {
-  if (!IsObjectStoreIdInMetadata(object_store_id)) {
-    return false;
-  }
-  const IndexedDBObjectStoreMetadata& object_store_metadata =
-      GetObjectStoreMetadata(object_store_id);
-  return index_id == IndexedDBIndexMetadata::kInvalidId ||
-         object_store_metadata.indexes.contains(index_id);
-}
-
 storage::mojom::IdbDatabaseMetadataPtr Database::GetIdbInternalsMetadata()
     const {
   storage::mojom::IdbDatabaseMetadataPtr info =
@@ -1153,15 +1141,6 @@ void Database::ConnectionClosed(base::OnceClosure forward_on_close,
 
 bool Database::CanBeDestroyed() {
   return !connection_coordinator_.HasTasks() && connections_.empty();
-}
-
-const IndexedDBObjectStoreMetadata* Database::GetObjectStoreMetadataIfExists(
-    int64_t object_store_id) const {
-  auto object_store_it = metadata().object_stores.find(object_store_id);
-  if (object_store_it != metadata().object_stores.end()) {
-    return &object_store_it->second;
-  }
-  return nullptr;
 }
 
 const IndexedDBObjectStoreMetadata& Database::GetObjectStoreMetadata(
