@@ -51,15 +51,6 @@ void RecordFencedFrameCreationOutcome(
       kFencedFrameCreationOrNavigationOutcomeHistogram, outcome);
 }
 
-void RecordOpaqueFencedFrameSizeCoercion(bool did_coerce) {
-  base::UmaHistogramBoolean(kIsOpaqueFencedFrameSizeCoercedHistogram,
-                            did_coerce);
-}
-
-void RecordFencedFrameResizedAfterSizeFrozen() {
-  base::UmaHistogramBoolean(kIsFencedFrameResizedAfterSizeFrozen, true);
-}
-
 void RecordFencedFrameUnsandboxedFlags(network::mojom::WebSandboxFlags flags) {
   using WebSandboxFlags = network::mojom::WebSandboxFlags;
   for (int32_t i = 1; i <= static_cast<int32_t>(WebSandboxFlags::kMaxValue);

@@ -26,12 +26,6 @@ const size_t kMaxAdAuctionAdComponents = 0;
 inline constexpr char kFencedFrameCreationOrNavigationOutcomeHistogram[] =
     "Blink.FencedFrame.CreationOrNavigationOutcome";
 
-inline constexpr char kIsOpaqueFencedFrameSizeCoercedHistogram[] =
-    "Blink.FencedFrame.IsOpaqueFrameSizeCoerced";
-
-inline constexpr char kIsFencedFrameResizedAfterSizeFrozen[] =
-    "Blink.FencedFrame.IsFrameResizedAfterSizeFrozen";
-
 inline constexpr char kFencedFrameMandatoryUnsandboxedFlagsSandboxed[] =
     "Blink.FencedFrame.MandatoryUnsandboxedFlagsSandboxed";
 
@@ -86,8 +80,6 @@ BLINK_COMMON_EXPORT bool IsValidUrnUuidURL(const GURL& url);
 // Record fenced frame related UMAs.
 BLINK_COMMON_EXPORT void RecordFencedFrameCreationOutcome(
     const FencedFrameCreationOutcome outcome);
-BLINK_COMMON_EXPORT void RecordOpaqueFencedFrameSizeCoercion(bool did_coerce);
-BLINK_COMMON_EXPORT void RecordFencedFrameResizedAfterSizeFrozen();
 BLINK_COMMON_EXPORT void RecordFencedFrameUnsandboxedFlags(
     network::mojom::WebSandboxFlags flags);
 BLINK_COMMON_EXPORT void RecordFencedFrameFailedSandboxLoadInTopLevelFrame(
