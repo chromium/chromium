@@ -996,6 +996,135 @@ TEST_F(PolicyMapTest, MergeValuesDictionaryIncompatibleConflictType) {
           base::BindRepeating(&l10n_util::GetStringUTF16)));
 }
 
+TEST_F(PolicyMapTest, MergeValuesListConflictTypes) {
+  base::ListValue list_a = GetList<std::string>({"a"});
+  base::ListValue list_b = GetList<std::string>({"b"});
+  base::ListValue list_ab = GetList<std::string>({"a", "b"});
+  base::ListValue list_c = GetList<std::string>({"c"});
+
+  // Primary entry is a user cloud policy (simulating user cloud priority
+  // override alongside user cloud merging).
+  PolicyMap::Entry entry(POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+                         POLICY_SOURCE_CLOUD, base::Value(list_a.Clone()),
+                         nullptr);
+  // Included in merge, value matches final merged list -> Supersede.
+  entry.AddConflictingPolicy(PolicyMap::Entry(
+      POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
+      base::Value(list_ab.Clone()), nullptr));
+  // Included in merge, value differs from final merged list -> Merged.
+  entry.AddConflictingPolicy(PolicyMap::Entry(
+      POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE, POLICY_SOURCE_PLATFORM,
+      base::Value(list_b.Clone()), nullptr));
+  // Excluded from merge (user platform), value differs -> Override.
+  entry.AddConflictingPolicy(PolicyMap::Entry(
+      POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER, POLICY_SOURCE_PLATFORM,
+      base::Value(list_c.Clone()), nullptr));
+  // Excluded from merge (recommended level), value matches -> Supersede.
+  entry.AddConflictingPolicy(PolicyMap::Entry(
+      POLICY_LEVEL_RECOMMENDED, POLICY_SCOPE_MACHINE,
+      POLICY_SOURCE_COMMAND_LINE, base::Value(list_ab.Clone()), nullptr));
+  // Eligible scope/level/source for merge, but wrong value type -> Override.
+  entry.AddConflictingPolicy(PolicyMap::Entry(
+      POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE, POLICY_SOURCE_COMMAND_LINE,
+      base::Value("invalid string value"), nullptr));
+
+  PolicyMap policy_map;
+  policy_map.Set(kTestPolicyName1, std::move(entry));
+
+  PolicyListMerger merger({kTestPolicyName1});
+  merger.SetAllowUserCloudPolicyMerging(true);
+  policy_map.MergeValues({&merger});
+
+  // Clone the map to verify Entry::DeepCopy() preserves ConflictType::Merged.
+  PolicyMap cloned_map = policy_map.Clone();
+  for (const PolicyMap* map : {&policy_map, &cloned_map}) {
+    const PolicyMap::Entry* merged_entry = map->Get(kTestPolicyName1);
+    ASSERT_NE(merged_entry, nullptr);
+    EXPECT_EQ(merged_entry->source, POLICY_SOURCE_MERGED);
+    EXPECT_EQ(*merged_entry->value(base::Value::Type::LIST), list_ab);
+    EXPECT_TRUE(merged_entry->HasMessage(PolicyMap::MessageType::kWarning));
+    ASSERT_EQ(merged_entry->conflicts.size(), 6u);
+    EXPECT_EQ(merged_entry->conflicts[0].conflict_type(),
+              PolicyMap::ConflictType::Supersede);
+    EXPECT_EQ(merged_entry->conflicts[1].conflict_type(),
+              PolicyMap::ConflictType::Merged);
+    EXPECT_EQ(merged_entry->conflicts[2].conflict_type(),
+              PolicyMap::ConflictType::Override);
+    EXPECT_EQ(merged_entry->conflicts[3].conflict_type(),
+              PolicyMap::ConflictType::Supersede);
+    EXPECT_EQ(merged_entry->conflicts[4].conflict_type(),
+              PolicyMap::ConflictType::Override);
+    EXPECT_EQ(merged_entry->conflicts[5].conflict_type(),
+              PolicyMap::ConflictType::Merged);
+  }
+}
+
+TEST_F(PolicyMapTest, MergeValuesDictionaryConflictTypes) {
+  base::DictValue dict_a;
+  dict_a.Set("k1", "v1");
+  base::DictValue dict_b;
+  dict_b.Set("k2", "v2");
+  base::DictValue dict_ab;
+  dict_ab.Set("k1", "v1");
+  dict_ab.Set("k2", "v2");
+  base::DictValue dict_c;
+  dict_c.Set("k3", "v3");
+
+  PolicyMap::Entry entry(POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+                         POLICY_SOURCE_CLOUD, base::Value(dict_a.Clone()),
+                         nullptr);
+  // Included in merge, value matches final merged dict -> Supersede.
+  entry.AddConflictingPolicy(PolicyMap::Entry(
+      POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
+      base::Value(dict_ab.Clone()), nullptr));
+  // Included in merge, value differs from final merged dict -> Merged.
+  entry.AddConflictingPolicy(PolicyMap::Entry(
+      POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE, POLICY_SOURCE_PLATFORM,
+      base::Value(dict_b.Clone()), nullptr));
+  // Excluded from merge (user platform), value differs -> Override.
+  entry.AddConflictingPolicy(PolicyMap::Entry(
+      POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER, POLICY_SOURCE_PLATFORM,
+      base::Value(dict_c.Clone()), nullptr));
+  // Excluded from merge (recommended level), value matches -> Supersede.
+  entry.AddConflictingPolicy(PolicyMap::Entry(
+      POLICY_LEVEL_RECOMMENDED, POLICY_SCOPE_MACHINE,
+      POLICY_SOURCE_COMMAND_LINE, base::Value(dict_ab.Clone()), nullptr));
+  // Eligible scope/level/source for merge, but wrong value type -> Override.
+  entry.AddConflictingPolicy(PolicyMap::Entry(
+      POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE, POLICY_SOURCE_COMMAND_LINE,
+      base::Value("invalid string value"), nullptr));
+
+  PolicyMap policy_map;
+  policy_map.Set(kTestPolicyName1, std::move(entry));
+
+  PolicyDictionaryMerger merger({kTestPolicyName1});
+  merger.SetAllowedPoliciesForTesting({kTestPolicyName1});
+  merger.SetAllowUserCloudPolicyMerging(true);
+  policy_map.MergeValues({&merger});
+
+  PolicyMap cloned_map = policy_map.Clone();
+  for (const PolicyMap* map : {&policy_map, &cloned_map}) {
+    const PolicyMap::Entry* merged_entry = map->Get(kTestPolicyName1);
+    ASSERT_NE(merged_entry, nullptr);
+    EXPECT_EQ(merged_entry->source, POLICY_SOURCE_MERGED);
+    EXPECT_EQ(*merged_entry->value(base::Value::Type::DICT), dict_ab);
+    EXPECT_TRUE(merged_entry->HasMessage(PolicyMap::MessageType::kWarning));
+    ASSERT_EQ(merged_entry->conflicts.size(), 6u);
+    EXPECT_EQ(merged_entry->conflicts[0].conflict_type(),
+              PolicyMap::ConflictType::Supersede);
+    EXPECT_EQ(merged_entry->conflicts[1].conflict_type(),
+              PolicyMap::ConflictType::Merged);
+    EXPECT_EQ(merged_entry->conflicts[2].conflict_type(),
+              PolicyMap::ConflictType::Override);
+    EXPECT_EQ(merged_entry->conflicts[3].conflict_type(),
+              PolicyMap::ConflictType::Supersede);
+    EXPECT_EQ(merged_entry->conflicts[4].conflict_type(),
+              PolicyMap::ConflictType::Override);
+    EXPECT_EQ(merged_entry->conflicts[5].conflict_type(),
+              PolicyMap::ConflictType::Merged);
+  }
+}
+
 TEST_F(PolicyMapTest, MergeValuesGroup) {
   base::ListValue abc = GetList<std::string>({"a", "b", "c"});
   base::ListValue ab = GetList<std::string>({"a", "b"});
@@ -1190,32 +1319,42 @@ TEST_F(PolicyMapTest, EntryAddConflict) {
   PolicyMap::Entry conflict24(POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
                               POLICY_SOURCE_PLATFORM, base::Value(gh.Clone()),
                               nullptr);
+  PolicyMap::Entry conflict25(POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+                              POLICY_SOURCE_PLATFORM, base::Value(ab.Clone()),
+                              nullptr);
 
   conflict21.AddConflictingPolicy(conflict22.DeepCopy());
   conflict21.AddConflictingPolicy(conflict23.DeepCopy());
   conflict21.AddConflictingPolicy(conflict24.DeepCopy());
+  conflict21.AddConflictingPolicy(conflict25.DeepCopy());
   case2.AddConflictingPolicy(conflict21.DeepCopy());
 
-  EXPECT_TRUE(case2.conflicts.size() == 4);
+  EXPECT_EQ(case2.conflicts.size(), 5u);
   EXPECT_TRUE(case2.conflicts.at(0).entry().Equals(conflict22));
   EXPECT_TRUE(case2.conflicts.at(1).entry().Equals(conflict23));
   EXPECT_TRUE(case2.conflicts.at(2).entry().Equals(conflict24));
+  EXPECT_TRUE(case2.conflicts.at(3).entry().Equals(conflict25));
   EXPECT_TRUE(conflict21.conflicts.at(0).entry().Equals(conflict22));
   EXPECT_TRUE(conflict21.conflicts.at(1).entry().Equals(conflict23));
   EXPECT_TRUE(conflict21.conflicts.at(2).entry().Equals(conflict24));
+  EXPECT_TRUE(conflict21.conflicts.at(3).entry().Equals(conflict25));
   EXPECT_EQ(case2.conflicts.at(0).conflict_type(),
-            PolicyMap::ConflictType::Supersede);
+            PolicyMap::ConflictType::Override);
   EXPECT_EQ(case2.conflicts.at(1).conflict_type(),
             PolicyMap::ConflictType::Override);
   EXPECT_EQ(case2.conflicts.at(2).conflict_type(),
             PolicyMap::ConflictType::Override);
   EXPECT_EQ(case2.conflicts.at(3).conflict_type(),
+            PolicyMap::ConflictType::Supersede);
+  EXPECT_EQ(case2.conflicts.at(4).conflict_type(),
             PolicyMap::ConflictType::Override);
   EXPECT_EQ(conflict21.conflicts.at(0).conflict_type(),
             PolicyMap::ConflictType::Supersede);
   EXPECT_EQ(conflict21.conflicts.at(1).conflict_type(),
             PolicyMap::ConflictType::Override);
   EXPECT_EQ(conflict21.conflicts.at(2).conflict_type(),
+            PolicyMap::ConflictType::Override);
+  EXPECT_EQ(conflict21.conflicts.at(3).conflict_type(),
             PolicyMap::ConflictType::Override);
 }
 

@@ -41,7 +41,7 @@ class POLICY_EXPORT PolicyMap {
 
   // Types of conflicts that can be associated with policies. New conflict types
   // must be added here in order to appear in the policy table.
-  enum class ConflictType { None, Override, Supersede };
+  enum class ConflictType { None, Override, Supersede, Merged };
 
   // Forward declare class so that it can be used in Entry.
   class EntryConflict;

@@ -2272,6 +2272,23 @@ message Policy {
   // Other sources that set the same policy. Including the ones that are
   // merged in or have the same value.
   repeated Policy conflicts = 7;
+
+  // Describes how a conflicting policy entry relates to the applied policy.
+  enum ConflictType {
+    CONFLICT_TYPE_UNSPECIFIED = 0;
+    // The entry's value differs from the applied policy and was not merged.
+    CONFLICT = 1;
+    // The entry was not applied because another scope or source took
+    // precedence (or policies were merged), and its value is the same as the
+    // applied policy.
+    SUPERSEDED = 2;
+    // The entry contributed to a merged policy (`SOURCE_MERGED`) and its
+    // pre-merge value differs from the final merged value.
+    MERGED = 3;
+  }
+
+  // Only set on entries in `conflicts`.
+  optional ConflictType conflict_type = 8;
 }
 
 // Extension policy information.

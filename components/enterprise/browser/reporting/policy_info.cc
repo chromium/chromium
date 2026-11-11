@@ -5,6 +5,7 @@
 #include "components/enterprise/browser/reporting/policy_info.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/json/json_writer.h"
 #include "base/strings/string_util.h"
@@ -13,6 +14,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_manager.h"
+#include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/strings/grit/components_strings.h"
 
@@ -78,20 +80,38 @@ em::Policy_PolicySource GetSource(const base::Value& policy) {
                << *policy.GetDict().FindInt("source");
 }
 
+em::Policy_ConflictType GetConflictType(const base::Value& policy) {
+  switch (static_cast<policy::PolicyMap::ConflictType>(
+      *policy.GetDict().FindInt("conflictType"))) {
+    case policy::PolicyMap::ConflictType::Override:
+      return em::Policy_ConflictType_CONFLICT;
+    case policy::PolicyMap::ConflictType::Supersede:
+      return em::Policy_ConflictType_SUPERSEDED;
+    case policy::PolicyMap::ConflictType::Merged:
+      return em::Policy_ConflictType_MERGED;
+    case policy::PolicyMap::ConflictType::None:
+      return em::Policy_ConflictType_CONFLICT_TYPE_UNSPECIFIED;
+  }
+  NOTREACHED() << "Invalid policy conflict type: "
+               << *policy.GetDict().FindInt("conflictType");
+}
+
 void UpdateConflictedPolicy(em::Policy* policy_info,
                             const base::Value& policy) {
   policy_info->set_level(GetLevel(policy));
   policy_info->set_scope(GetScope(policy));
   policy_info->set_source(GetSource(policy));
+  policy_info->set_conflict_type(GetConflictType(policy));
 }
 
-void UpdateConflictedPolicies(const std::string conflict_key,
+void UpdateConflictedPolicies(std::string_view conflict_key,
                               em::Policy* policy_info,
                               const base::DictValue& policy) {
-  if (!policy.contains(conflict_key)) {
+  const base::ListValue* conflicted_policies = policy.FindList(conflict_key);
+  if (!conflicted_policies) {
     return;
   }
-  for (const auto& conflicted_policy : *policy.FindList(conflict_key)) {
+  for (const auto& conflicted_policy : *conflicted_policies) {
     UpdateConflictedPolicy(policy_info->add_conflicts(), conflicted_policy);
   }
 }

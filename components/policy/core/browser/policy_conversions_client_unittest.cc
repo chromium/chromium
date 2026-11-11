@@ -21,6 +21,7 @@
 #include "components/policy/core/common/mock_policy_service.h"
 #include "components/policy/core/common/policy_details.h"
 #include "components/policy/core/common/policy_map.h"
+#include "components/policy/core/common/policy_merger.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/schema.h"
 #include "components/policy/core/common/schema_registry.h"
@@ -576,6 +577,62 @@ TEST_F(PolicyConversionsClientTest, GetPolicyValuesMojo_AllSourcesMerged) {
   EXPECT_EQ(std::optional<bool>(false),
             policies.at(kPolicyName2)->all_sources_merged);
   EXPECT_EQ(std::nullopt, policies.at(kPolicyName3)->all_sources_merged);
+}
+
+TEST_F(PolicyConversionsClientTest, GetPolicyValues_ConflictTypes) {
+  PolicyMap::Entry entry(POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                         POLICY_SOURCE_CLOUD,
+                         base::Value(base::ListValue().Append("a")), nullptr);
+  // Merged source matching final merged value -> Supersede.
+  entry.AddConflictingPolicy(PolicyMap::Entry(
+      POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE, POLICY_SOURCE_PLATFORM,
+      base::Value(base::ListValue().Append("a").Append("b")), nullptr));
+  // Unmerged source with differing value -> Override.
+  entry.AddConflictingPolicy(
+      PolicyMap::Entry(POLICY_LEVEL_RECOMMENDED, POLICY_SCOPE_MACHINE,
+                       POLICY_SOURCE_COMMAND_LINE,
+                       base::Value(base::ListValue().Append("c")), nullptr));
+
+  PolicyMap policy_map;
+  policy_map.Set(kPolicyName1, std::move(entry));
+  PolicyListMerger merger({kPolicyName1});
+  policy_map.MergeValues({&merger});
+
+  StubPolicyConversionsClient raw_client;
+  raw_client.EnableConvertTypes(false);
+  base::DictValue raw_policies =
+      GetPolicyValues(raw_client, policy_map, std::nullopt);
+  const base::DictValue* raw_policy = raw_policies.FindDict(kPolicyName1);
+  ASSERT_NE(nullptr, raw_policy);
+
+  const base::ListValue* raw_conflicts = raw_policy->FindList("conflicts");
+  ASSERT_NE(nullptr, raw_conflicts);
+  ASSERT_EQ(2u, raw_conflicts->size());
+  EXPECT_EQ(static_cast<int>(PolicyMap::ConflictType::Override),
+            (*raw_conflicts)[0].GetDict().FindInt("conflictType"));
+  EXPECT_EQ(static_cast<int>(PolicyMap::ConflictType::Merged),
+            (*raw_conflicts)[1].GetDict().FindInt("conflictType"));
+
+  const base::ListValue* raw_superseded = raw_policy->FindList("superseded");
+  ASSERT_NE(nullptr, raw_superseded);
+  ASSERT_EQ(1u, raw_superseded->size());
+  EXPECT_EQ(static_cast<int>(PolicyMap::ConflictType::Supersede),
+            (*raw_superseded)[0].GetDict().FindInt("conflictType"));
+
+  StubPolicyConversionsClient ui_client;
+  base::DictValue ui_policies =
+      GetPolicyValues(ui_client, policy_map, std::nullopt);
+  const base::DictValue* ui_policy = ui_policies.FindDict(kPolicyName1);
+  ASSERT_NE(nullptr, ui_policy);
+  EXPECT_FALSE((*ui_policy->FindList("conflicts"))[0].GetDict().contains(
+      "conflictType"));
+
+  base::flat_map<std::string, mojom::PolicyPtr> mojo_policies =
+      GetPolicyValuesMojo(ui_client, policy_map, std::nullopt);
+  const mojom::PolicyPtr& mojo_policy = mojo_policies.at(kPolicyName1);
+  EXPECT_EQ(2u, mojo_policy->conflicts.size());
+  EXPECT_EQ(1u, mojo_policy->superseded.size());
+  EXPECT_EQ(std::optional<bool>(false), mojo_policy->all_sources_merged);
 }
 
 // Messages come from both the `PolicyMap::Entry` and the `PolicyErrorMap`.
