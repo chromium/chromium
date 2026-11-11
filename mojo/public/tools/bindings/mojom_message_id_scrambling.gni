@@ -1,0 +1,47 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Configures `message_scrambling_args` and `message_scrambling_inputs` when
+# `enable_scrambled_message_ids` is true in `mojom.gni`. Kept free of external
+# imports so it can be unit-tested in isolation with `gn gen`.
+
+declare_args() {
+  # Explicit salt string for message ID scrambling. When empty and
+  # mojom_message_id_salt_path is "//chrome/VERSION", defaults to the
+  # BUILD number from //chrome/VERSION.
+  mojom_message_id_salt = ""
+
+  # The path to a file whose contents can be used as the basis for a message
+  # ID scrambling salt when mojom_message_id_salt is unset and a custom file
+  # path is specified by external consumers.
+  mojom_message_id_salt_path = "//chrome/VERSION"
+}
+
+_salt = mojom_message_id_salt
+if (_salt == "" && mojom_message_id_salt_path == "//chrome/VERSION") {
+  foreach(_line, read_file(mojom_message_id_salt_path, "list lines")) {
+    _kv = []
+    _kv = string_split(_line, "=")
+    if (_kv[0] == "BUILD" && _kv != [ "BUILD" ]) {
+      _salt = _kv[1]
+    }
+  }
+  assert(_salt != "",
+         "Failed to parse BUILD= from " + mojom_message_id_salt_path)
+}
+
+if (_salt != "") {
+  message_scrambling_args = [
+    "--scrambled_message_id_salt",
+    _salt,
+  ]
+  message_scrambling_inputs = []
+} else {
+  assert(mojom_message_id_salt_path != "")
+  message_scrambling_args = [
+    "--scrambled_message_id_salt_path",
+    rebase_path(mojom_message_id_salt_path, root_build_dir),
+  ]
+  message_scrambling_inputs = [ mojom_message_id_salt_path ]
+}

@@ -272,8 +272,19 @@ group("tests") {
     "checks/mojom_restrictions_checks_unittest.py",
     "generators/mojom_rust_generator_unittest.py",
     "mojom_bindings_generator_unittest.py",
+    "mojom_message_id_scrambling.gni",
     "//third_party/markupsafe/",
   ]
   data += mojom_generator_sources
   data += jinja2_sources
+  if (current_toolchain == host_toolchain) {
+    # `buildtools` names the Linux directory `linux64`, not `$host_os`.
+    _gn_dir = host_os
+    if (_gn_dir == "linux") {
+      _gn_dir = "linux64"
+    }
+    if (path_exists("//buildtools/$_gn_dir")) {
+      data += [ "//buildtools/$_gn_dir/" ]
+    }
+  }
 }
