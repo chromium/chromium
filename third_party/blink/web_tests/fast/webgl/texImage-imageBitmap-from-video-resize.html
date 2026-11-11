@@ -19,10 +19,13 @@ var testOptions = {sourceName: "HTMLVideoElement", imageSource: video,
                    resultsCanvas: canvas, printDebugInfoToConsole: false};
 prepareWebGLContext(testOptions);
 
-video.oncanplaythrough = function() {
+video.requestVideoFrameCallback(function() {
+    video.pause();
     prepareResizedImageBitmapsAndRuntTests(testOptions);
-};
+});
 
+video.muted = true;
 video.preload = "auto";
 video.src = "resources/red-green-blue-white-2x2.webm";
+video.play();
 </script>

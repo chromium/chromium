@@ -141,74 +141,89 @@ function runTest(bitmaps, alphaVal, colorSpaceEffective, testOptions)
 }
 
 function prepareResizedImageBitmapsAndRuntTest(testOptions) {
-    var bitmaps = [];
-    var imageSource= testOptions.imageSource;
-    var options = {resizeWidth: testOptions.resizeWidth,
-                   resizeHeight: testOptions.resizeHeight,
-                   resizeQuality: testOptions.resizeQuality};
-    var p1 = createImageBitmap(imageSource, options).then(
-        function(imageBitmap) { bitmaps.defaultOption = imageBitmap });
+  testOptions = Object.assign({}, testOptions);
+  var bitmaps = [];
+  var imageSource = testOptions.imageSource;
+  var options = {
+    resizeWidth: testOptions.resizeWidth,
+    resizeHeight: testOptions.resizeHeight,
+    resizeQuality: testOptions.resizeQuality
+  };
+  var p1 = createImageBitmap(imageSource, options).then(function(imageBitmap) {
+    bitmaps.defaultOption = imageBitmap;
+  });
 
-    options.imageOrientation = "from-image";
-    options.premultiplyAlpha = "premultiply";
-    var p2 = createImageBitmap(imageSource, options).then(
-        function(imageBitmap) { bitmaps.noFlipYPremul = imageBitmap });
+  options.imageOrientation = 'from-image';
+  options.premultiplyAlpha = 'premultiply';
+  var p2 = createImageBitmap(imageSource, options).then(function(imageBitmap) {
+    bitmaps.noFlipYPremul = imageBitmap;
+  });
 
-    options.premultiplyAlpha = "default";
-    var p3 = createImageBitmap(imageSource, options).then(
-        function(imageBitmap) { bitmaps.noFlipYDefault = imageBitmap });
+  options.premultiplyAlpha = 'default';
+  var p3 = createImageBitmap(imageSource, options).then(function(imageBitmap) {
+    bitmaps.noFlipYDefault = imageBitmap;
+  });
 
-    options.premultiplyAlpha = "none";
-    var p4 = createImageBitmap(imageSource, options).then(
-        function(imageBitmap) { bitmaps.noFlipYUnpremul = imageBitmap });
+  options.premultiplyAlpha = 'none';
+  var p4 = createImageBitmap(imageSource, options).then(function(imageBitmap) {
+    bitmaps.noFlipYUnpremul = imageBitmap;
+  });
 
-    options.imageOrientation = "flipY";
-    options.premultiplyAlpha = "premultiply";
-    var p5 = createImageBitmap(imageSource, options).then(
-        function(imageBitmap) { bitmaps.flipYPremul = imageBitmap });
+  options.imageOrientation = 'flipY';
+  options.premultiplyAlpha = 'premultiply';
+  var p5 = createImageBitmap(imageSource, options).then(function(imageBitmap) {
+    bitmaps.flipYPremul = imageBitmap;
+  });
 
-    options.premultiplyAlpha = "default";
-    var p6 = createImageBitmap(imageSource, options).then(
-        function(imageBitmap) { bitmaps.flipYDefault = imageBitmap });
+  options.premultiplyAlpha = 'default';
+  var p6 = createImageBitmap(imageSource, options).then(function(imageBitmap) {
+    bitmaps.flipYDefault = imageBitmap;
+  });
 
-    options.premultiplyAlpha = "none";
-    var p7 = createImageBitmap(imageSource, options).then(
-        function(imageBitmap) { bitmaps.flipYUnpremul = imageBitmap });
+  options.premultiplyAlpha = 'none';
+  var p7 = createImageBitmap(imageSource, options).then(function(imageBitmap) {
+    bitmaps.flipYUnpremul = imageBitmap;
+  });
 
-    options = {resizeWidth: testOptions.resizeWidth,
-               resizeHeight: testOptions.resizeHeight,
-               resizeQuality: testOptions.resizeQuality};
-    var p8 = createImageBitmap(imageSource, options).then(
-        function(imageBitmap) { bitmaps.colorSpaceDef = imageBitmap });
+  options = {
+    resizeWidth: testOptions.resizeWidth,
+    resizeHeight: testOptions.resizeHeight,
+    resizeQuality: testOptions.resizeQuality
+  };
+  var p8 = createImageBitmap(imageSource, options).then(function(imageBitmap) {
+    bitmaps.colorSpaceDef = imageBitmap;
+  });
 
-    options.colorSpaceConversion = "none";
-    var p9 = createImageBitmap(imageSource, options).then(
-        function(imageBitmap) { bitmaps.colorSpaceNone = imageBitmap });
+  options.colorSpaceConversion = 'none';
+  var p9 = createImageBitmap(imageSource, options).then(function(imageBitmap) {
+    bitmaps.colorSpaceNone = imageBitmap;
+  });
 
-    options.colorSpaceConversion = "default";
-    var p10 = createImageBitmap(imageSource, options).then(
-        function(imageBitmap) { bitmaps.colorSpaceDefault = imageBitmap });
+  options.colorSpaceConversion = 'default';
+  var p10 = createImageBitmap(imageSource, options).then(function(imageBitmap) {
+    bitmaps.colorSpaceDefault = imageBitmap;
+  });
 
-    return Promise.all([p1, p2, p3, p4, p5, p6, p7, p8, p9, p10]).then(
-        function() {
-            var alphaVal = 0.5;
-            runTest(bitmaps, alphaVal, false, testOptions);
-        });
+  return Promise.all([p1, p2, p3, p4, p5, p6, p7, p8, p9, p10])
+      .then(function() {
+        var alphaVal = 0.5;
+        runTest(bitmaps, alphaVal, false, testOptions);
+      });
 }
 
 function prepareResizedImageBitmapsAndRuntTests(testOptions) {
-    testOptions.resizeQuality = resizeQualities[0];
-    var p1 = prepareResizedImageBitmapsAndRuntTest(testOptions);
-    testOptions.resizeQuality = resizeQualities[1];
-    var p2 = prepareResizedImageBitmapsAndRuntTest(testOptions);
-    testOptions.resizeQuality = resizeQualities[2];
-    var p3 = prepareResizedImageBitmapsAndRuntTest(testOptions);
-    testOptions.resizeQuality = resizeQualities[3];
-    var p4 = prepareResizedImageBitmapsAndRuntTest(testOptions);
+  var p1 = prepareResizedImageBitmapsAndRuntTest(
+      Object.assign({}, testOptions, {resizeQuality: resizeQualities[0]}));
+  var p2 = prepareResizedImageBitmapsAndRuntTest(
+      Object.assign({}, testOptions, {resizeQuality: resizeQualities[1]}));
+  var p3 = prepareResizedImageBitmapsAndRuntTest(
+      Object.assign({}, testOptions, {resizeQuality: resizeQualities[2]}));
+  var p4 = prepareResizedImageBitmapsAndRuntTest(
+      Object.assign({}, testOptions, {resizeQuality: resizeQualities[3]}));
 
-    return Promise.all([p1, p2, p3, p4]).then(function() {
-            DrawResultsOnCanvas(testOptions);
-    });
+  return Promise.all([p1, p2, p3, p4]).then(function() {
+    DrawResultsOnCanvas(testOptions);
+  });
 }
 
 function prepareWebGLContext(testOptions) {
