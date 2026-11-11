@@ -65,6 +65,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListL
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType;
+import org.chromium.chrome.browser.tasks.tab_management.data_provider.TabListDataProvider;
 import org.chromium.chrome.browser.tasks.tab_management.labels.TabListHighlighter;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
@@ -185,6 +186,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
      * @param allowDragAndDrop Whether to allow drag and drop for this tab list coordinator.
      * @param tabSwitcherDragHandler An instance of the {@link TabSwitcherDragHandler}.
      * @param undoBarExplicitTrigger An interface to explicitly trigger the undo closure snackbar.
+     * @param dataProvider Scoped tab data provider, or null to use the global TabModel.
      */
     TabListCoordinator(
             @TabListMode int mode,
@@ -215,7 +217,8 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
             @Nullable TabSwitcherDragHandler tabSwitcherDragHandler,
             @Nullable UndoBarExplicitTrigger undoBarExplicitTrigger,
             @Nullable SnackbarManager snackbarManager,
-            int allowedSelectionCount) {
+            int allowedSelectionCount,
+            @Nullable TabListDataProvider dataProvider) {
         mMode = mode;
         mTabActionState = initialTabActionState;
         mActivity = activity;
@@ -344,6 +347,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
                         .setRequiresThumbnailUpdateOnDeselect(
                                 layoutType == TabListLayoutType.GROUPED)
                         .setTabClosingSource(tabClosingSource)
+                        .setDataProvider(dataProvider)
                         .build();
 
         mMediator =

@@ -1912,6 +1912,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(TAB_SWITCHER_GROUP_SUGGESTIONS_ANDROID, false);
     public static final MutableFlagWithSafeDefault sTabSwitcherGroupSuggestionsTestModeAndroid =
             newMutableFlagWithSafeDefault(TAB_SWITCHER_GROUP_SUGGESTIONS_TEST_MODE_ANDROID, false);
+    public static final MutableFlagWithSafeDefault sTabUiDataVirtualization =
+            newMutableFlagWithSafeDefault(TAB_UI_DATA_VIRTUALIZATION, false);
     public static final MutableFlagWithSafeDefault sTipsSelfService =
             newMutableFlagWithSafeDefault(TIPS_SELF_SERVICE, false);
     public static final MutableFlagWithSafeDefault sToolbarScrollAblation =
@@ -2703,6 +2705,12 @@ public abstract class ChromeFeatureList {
     public static final MutableBooleanParamWithSafeDefault
             sTabBottomSheetSuppressBottomToolbarWhileOpen =
                     sTabBottomSheet.newBooleanParam("suppress_bottom_toolbar_while_open", false);
+    public static final MutableBooleanParamWithSafeDefault sTabUiDataVirtualizationFlat =
+            sTabUiDataVirtualization.newBooleanParam("enable_flat", true);
+    public static final MutableBooleanParamWithSafeDefault sTabUiDataVirtualizationGrouped =
+            sTabUiDataVirtualization.newBooleanParam("enable_grouped", true);
+    public static final MutableBooleanParamWithSafeDefault sTabUiDataVirtualizationNested =
+            sTabUiDataVirtualization.newBooleanParam("enable_nested", true);
     public static final MutableBooleanParamWithSafeDefault sXplatSyncedSetupThemesObservationOnly =
             sXplatSyncedSetupThemes.newBooleanParam(
                     XPLAT_SYNCED_SETUP_THEMES_OBSERVATION_ONLY, false);

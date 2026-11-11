@@ -478,7 +478,8 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                             tabSwitcherDragHandler,
                             /* undoBarExplicitTrigger= */ null,
                             /* snackbarManager= */ null,
-                            TabListEditorCoordinator.UNLIMITED_SELECTION);
+                            TabListEditorCoordinator.UNLIMITED_SELECTION,
+                            /* dataProvider= */ null);
             mTabListCoordinator = tabListCoordinator;
             TabGridItemLongPressOrchestrator.OnLongPressTabItemEventListener
                     longPressItemEventListener = this::onLongPressOnTabCard;

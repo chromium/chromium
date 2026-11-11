@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
+import org.chromium.base.Token;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
@@ -45,6 +46,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListL
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabListEditorExitMetricGroups;
+import org.chromium.chrome.browser.tasks.tab_management.data_provider.FlatTabListDataProvider;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -66,6 +68,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -348,9 +351,12 @@ public class TabListEditorCoordinator {
     private final @TabComponentId int mComponentId;
     private final int mAllowedSelectionCount;
     private final SnackbarManager mSnackbarManager;
+    private final Set<Integer> mVisibleTabIds = new HashSet<>();
 
     private @Nullable MultiThumbnailCardProvider mMultiThumbnailCardProvider;
     private @Nullable TabListCoordinator mTabListCoordinator;
+    private @Nullable FlatTabListDataProvider mDataProvider;
+    private @Nullable Token mTabGroupId;
     private @Nullable PropertyModelChangeProcessor mTabListEditorLayoutChangeProcessor;
     private @Nullable TabListEditorIphController mIphController;
     private @TabActionState int mTabActionState;
@@ -470,7 +476,19 @@ public class TabListEditorCoordinator {
     public void resetWithListOfTabs(
             @Nullable List<Tab> tabs, @Nullable List<String> tabGroupSyncIds, boolean quickMode) {
         assumeNonNull(mTabListCoordinator);
-        mTabListCoordinator.resetWithListOfTabs(tabs, tabGroupSyncIds, quickMode);
+        mTabGroupId = (tabs == null || tabs.isEmpty()) ? null : tabs.get(0).getTabGroupId();
+        mVisibleTabIds.clear();
+        if (tabs != null) {
+            for (Tab tab : tabs) {
+                mVisibleTabIds.add(tab.getId());
+            }
+        }
+        // The data provider path in TabListMediator requires tabGroupSyncIds to be null, so
+        // normalize an empty list to null.
+        mTabListCoordinator.resetWithListOfTabs(
+                tabs,
+                tabGroupSyncIds == null || tabGroupSyncIds.isEmpty() ? null : tabGroupSyncIds,
+                quickMode);
     }
 
     /**
@@ -486,6 +504,10 @@ public class TabListEditorCoordinator {
         if (mTabListCoordinator != null) {
             mTabListCoordinator.onDestroy();
             mTabListCoordinator = null;
+        }
+        if (mDataProvider != null) {
+            mDataProvider.destroy();
+            mDataProvider = null;
         }
         if (mTabListEditorLayoutChangeProcessor != null) {
             mTabListEditorLayoutChangeProcessor.destroy();
@@ -654,6 +676,18 @@ public class TabListEditorCoordinator {
                         : R.drawable.phone_tab_switcher_empty_state_illustration_static;
         ViewGroup emptyViewParent = mTabListEditorLayout.findViewById(R.id.list_content);
         if (emptyViewParent == null) emptyViewParent = mTabListEditorLayout;
+        // Like FlatLayoutDelegate, the provider shows the tabs the editor was reset with, plus
+        // tabs later added to the first tab's group (e.g. by sync).
+        if (TabUiFeatureUtilities.isTabUiDataVirtualizationEnabled(mLayoutType)
+                && mLayoutType == TabListLayoutType.FLAT) {
+            mDataProvider =
+                    new FlatTabListDataProvider(
+                            mCurrentTabModelSupplier,
+                            tab ->
+                                    mVisibleTabIds.contains(tab.getId())
+                                            || (mTabGroupId != null
+                                                    && mTabGroupId.equals(tab.getTabGroupId())));
+        }
         mTabListCoordinator =
                 new TabListCoordinator(
                         TabListMode.GRID,
@@ -684,7 +718,8 @@ public class TabListEditorCoordinator {
                         /* tabSwitcherDragHandler= */ null,
                         mUndoBarExplicitTrigger,
                         mSnackbarManager,
-                        mAllowedSelectionCount);
+                        mAllowedSelectionCount,
+                        /* dataProvider= */ mDataProvider);
 
         // Note: The TabListEditorCoordinator is always created after native is initialized.
         mTabListCoordinator.initWithNative(regularProfile);
