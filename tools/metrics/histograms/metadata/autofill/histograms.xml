@@ -5540,6 +5540,23 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.FormEvents.OneTimePassword" enum="AutofillFormEvent"
+    expires_after="2027-11-08">
+  <owner>trangm@google.com</owner>
+  <owner>src/components/one_time_tokens/OWNERS</owner>
+  <summary>
+    Autofill form events for forms with a one-time password field. These are
+    recorded when such a form is parsed, when the user interacts with it or
+    Chrome proactively shows a one-time password suggestion on it, when a
+    one-time password suggestion is shown or filled, and when the form is
+    submitted after such an interaction. Events with the &quot;once&quot; suffix
+    are recorded at most once per page load.
+
+    There are no server-side one-time password suggestions, so fills and
+    submissions after a fill are recorded in the local suggestion buckets.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.FormEvents.PromoCode"
     enum="AutofillPromoCodeFormEvent" expires_after="2027-04-30">
   <owner>vinnypersky@google.com</owner>
