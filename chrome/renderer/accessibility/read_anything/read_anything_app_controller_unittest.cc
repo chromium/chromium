@@ -4831,6 +4831,31 @@ class ReadAnythingAppControllerReadabilityTest
     controller().OnRenderedTextBlocksAvailable(
         {u"Title", u"This is the article paragraph text."});
   }
+
+  // Makes a new tree active with its Readability content already drawn, so
+  // tree updates and rendered text blocks trigger mapping. Returns the new
+  // tree's ID.
+  ui::AXTreeID SetUpTreeForReadabilityMapping() {
+    ui::AXTreeID tree_id = ui::AXTreeID::CreateNewAXTreeID();
+    controller().OnActiveAXTreeIDChanged(tree_id, ukm::kInvalidSourceId,
+                                         /*is_pdf=*/false);
+    controller().OnReadabilityDistillationStateChanged(
+        read_anything::mojom::ReadAnythingDistillationState::
+            kDistillationWithContent);
+    return tree_id;
+  }
+
+  // Sends a tree whose root is a single text node with `text`.
+  void SendTextTree(ui::AXTreeID tree_id,
+                    const std::u16string& text,
+                    bool loaded = false) {
+    ui::AXTreeUpdate update;
+    test::SetUpdateTreeID(&update, tree_id);
+    update.tree_data.loaded = loaded;
+    update.root_id = 1;
+    update.nodes = {test::TextNode(1, text)};
+    AccessibilityEventReceived({update});
+  }
 };
 
 TEST_F(ReadAnythingAppControllerReadabilityTest,
@@ -6130,10 +6155,109 @@ TEST_F(ReadAnythingAppControllerReadabilityTest,
 }
 
 TEST_F(ReadAnythingAppControllerReadabilityTest,
+       MapRenderedText_Success_ResetsFlagsAndStoresMap) {
+  ui::AXTreeID tree_id = SetUpTreeForReadabilityMapping();
+  controller().OnRenderedTextBlocksAvailable({u"block1", u"block2"});
+  model().set_is_readability_mapping_in_progress(true);
+
+  SendTextTree(tree_id, u"block1");
+
+  EXPECT_FALSE(model().should_map_rendered_text_to_tree_for_readability());
+  EXPECT_FALSE(model().is_readability_mapping_in_progress());
+  ASSERT_EQ(model().text_to_ax_map().size(), 2u);
+  EXPECT_FALSE(model().text_to_ax_map()[0].empty());
+  EXPECT_TRUE(model().text_to_ax_map()[1].empty());
+}
+
+TEST_F(ReadAnythingAppControllerReadabilityTest,
+       MapRenderedText_DefersUntilTreeHasEnoughText) {
+  base::HistogramTester histograms;
+  ui::AXTreeID tree_id = SetUpTreeForReadabilityMapping();
+  std::vector<std::u16string> blocks = {
+      u"Article Title - Header",
+      u"This is the full body paragraph of the distilled article content."};
+  controller().OnRenderedTextBlocksAvailable(blocks);
+
+  // Too little of the text matches while the page is loading.
+  SendTextTree(tree_id, u"Header");
+  EXPECT_TRUE(model().should_map_rendered_text_to_tree_for_readability());
+
+  SendTextTree(tree_id,
+               u"Header and unrelated navigation links before body loads");
+  EXPECT_TRUE(model().should_map_rendered_text_to_tree_for_readability());
+  EXPECT_TRUE(model().text_to_ax_map().empty());
+  histograms.ExpectTotalCount(
+      "Accessibility.ReadAnything.ReadabilityMapping.SuccessRate", 0);
+
+  // Once the full tree arrives, mapping succeeds and stops retrying.
+  SendTextTree(tree_id, blocks[1]);
+  EXPECT_FALSE(model().should_map_rendered_text_to_tree_for_readability());
+  ASSERT_EQ(model().text_to_ax_map().size(), 2u);
+  EXPECT_FALSE(model().text_to_ax_map()[1].empty());
+  histograms.ExpectTotalCount(
+      "Accessibility.ReadAnything.ReadabilityMapping.SuccessRate", 1);
+}
+
+TEST_F(ReadAnythingAppControllerReadabilityTest,
+       MapRenderedText_AcceptsLowMatchRateWhenPageFinishedLoading) {
+  base::HistogramTester histograms;
+  ui::AXTreeID tree_id = SetUpTreeForReadabilityMapping();
+  model().set_page_finished_loading(true);
+  controller().OnRenderedTextBlocksAvailable(
+      {u"Article Title - Header",
+       u"This is the full body paragraph of the distilled article content."});
+
+  SendTextTree(tree_id, u"Header");
+
+  EXPECT_FALSE(model().should_map_rendered_text_to_tree_for_readability());
+  histograms.ExpectUniqueSample(
+      "Accessibility.ReadAnything.ReadabilityMapping.SuccessRate", 6, 1);
+}
+
+TEST_F(ReadAnythingAppControllerReadabilityTest,
+       MapRenderedText_AcceptsLowMatchRateWhenTreeLoaded) {
+  base::HistogramTester histograms;
+  ui::AXTreeID tree_id = SetUpTreeForReadabilityMapping();
+  controller().OnRenderedTextBlocksAvailable(
+      {u"Article Title - Header",
+       u"This is the full body paragraph of the distilled article content."});
+
+  SendTextTree(tree_id, u"Header", /*loaded=*/true);
+
+  EXPECT_FALSE(model().should_map_rendered_text_to_tree_for_readability());
+  histograms.ExpectUniqueSample(
+      "Accessibility.ReadAnything.ReadabilityMapping.SuccessRate", 6, 1);
+}
+
+TEST_F(ReadAnythingAppControllerReadabilityTest,
+       MapRenderedText_StopsRetryingWhenLoadedTreeHasNoText) {
+  ui::AXTreeID tree_id = SetUpTreeForReadabilityMapping();
+  controller().OnRenderedTextBlocksAvailable({u"block1"});
+  model().set_is_readability_mapping_in_progress(true);
+  ui::AXTreeUpdate empty_update;
+  test::SetUpdateTreeID(&empty_update, tree_id);
+  empty_update.root_id = 1;
+  empty_update.nodes = {test::GenericContainerNode(1)};
+
+  // While still loading, an empty tree keeps mapping pending.
+  AccessibilityEventReceived({empty_update});
+  EXPECT_TRUE(model().should_map_rendered_text_to_tree_for_readability());
+  EXPECT_TRUE(model().is_readability_mapping_in_progress());
+
+  // Once loaded, an empty tree stops further retries.
+  model().set_page_finished_loading(true);
+  AccessibilityEventReceived({empty_update});
+  EXPECT_FALSE(model().should_map_rendered_text_to_tree_for_readability());
+  EXPECT_FALSE(model().is_readability_mapping_in_progress());
+}
+
+TEST_F(ReadAnythingAppControllerReadabilityTest,
        UpdateContent_ResetsReadabilitySelectTextState) {
   // Dirty the model state with data from a previous distillation.
   model().set_readability_text_blocks({u"stale block 1", u"stale block 2"});
   model().set_should_map_rendered_text_to_tree_for_readability(true);
+  model().SetTextToAXMap(
+      {{{.id = 1, .start = 0, .end = 5, .ax_node_offset = 0}}});
 
   // 3. Call UpdateContent
   controller().UpdateContent("New Title", "New Content");
@@ -6141,6 +6265,7 @@ TEST_F(ReadAnythingAppControllerReadabilityTest,
   // 4. Verify that the state was properly reset.
   EXPECT_TRUE(model().readability_text_blocks().empty());
   EXPECT_FALSE(model().should_map_rendered_text_to_tree_for_readability());
+  EXPECT_TRUE(model().text_to_ax_map().empty());
 }
 
 TEST_F(ReadAnythingAppControllerReadabilityTest,

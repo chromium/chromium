@@ -29,6 +29,7 @@
 #include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "chrome/common/read_anything/read_anything.mojom-shared.h"
 #include "chrome/common/read_anything/read_anything_util.h"
@@ -1250,9 +1251,11 @@ void ReadAnythingAppController::DrawReadabilityContent() {
   model_.set_current_content_distillation_method(
       ReadAnythingAppModel::DistillationMethod::kReadability);
 
-  // Reset text blocks when content is updated and reset should map flag to
-  // not trigger a false positive when rendered text is not ready.
+  // Reset text blocks and the old mapping when content is updated, and reset
+  // should map flag to not trigger a false positive when rendered text is not
+  // ready.
   model_.set_readability_text_blocks({});
+  model_.SetTextToAXMap({});
   model_.set_should_map_rendered_text_to_tree_for_readability(false);
   model_.set_is_readability_mapping_in_progress(true);
   ExecuteJavaScript("chrome.readingMode.updateContent();");
@@ -3387,20 +3390,45 @@ void ReadAnythingAppController::MaybeMapRenderedTextToTree() {
   }
 
   // Only attempt mapping if we have text blocks from the WebUI.
-  if (model_.readability_text_blocks().empty()) {
+  if (model_.readability_text_blocks().empty() ||
+      !model_.should_map_rendered_text_to_tree_for_readability()) {
     return;
   }
 
-  if (model_.MapRenderedTextToTree(model_.readability_text_blocks())) {
-    model_.set_is_readability_mapping_in_progress(false);
-    ExecuteJavaScript("chrome.readingMode.onRenderedTextMappingReady();");
+  const ui::AXSerializableTree* tree = model_.GetValidActiveTree();
+  if (!tree) {
+    return;
+  }
 
-    // Process any selection that was deferred while text mapping was still in
-    // progress.
-    if (model_.requires_post_process_selection() &&
-        !read_aloud_model_.speech_playing()) {
-      PostProcessSelection();
-    }
+  base::expected<ReadAnythingTextAligner::TextToAXMap,
+                 ReadAnythingTextAligner::AlignmentError>
+      text_to_ax_map = ReadAnythingTextAligner::MapRenderedTextToTree(
+          model_.readability_text_blocks(), *tree,
+          model_.page_finished_loading() || tree->data().loaded);
+
+  // Not enough text matched yet. Try again on the next tree update.
+  if (!text_to_ax_map.has_value() &&
+      text_to_ax_map.error() ==
+          ReadAnythingTextAligner::AlignmentError::kLowMatchRate) {
+    return;
+  }
+
+  // Mapping is finished, either with a result or because the loaded page has
+  // no text. Stop retrying.
+  model_.set_is_readability_mapping_in_progress(false);
+  model_.set_should_map_rendered_text_to_tree_for_readability(false);
+  if (!text_to_ax_map.has_value()) {
+    return;
+  }
+
+  model_.SetTextToAXMap(std::move(text_to_ax_map.value()));
+  ExecuteJavaScript("chrome.readingMode.onRenderedTextMappingReady();");
+
+  // Process any selection that was deferred while text mapping was still in
+  // progress.
+  if (model_.requires_post_process_selection() &&
+      !read_aloud_model_.speech_playing()) {
+    PostProcessSelection();
   }
 }
 

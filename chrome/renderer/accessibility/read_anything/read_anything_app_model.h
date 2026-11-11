@@ -527,10 +527,9 @@ class ReadAnythingAppModel {
     return text_to_ax_map_;
   }
 
-  // Maps the distilled rendered text from the WebUI with the AXtree.
-  // Returns true if the AXtree was successfully processed and we can
-  // notify the frontend that the mapping is ready.
-  bool MapRenderedTextToTree(const std::vector<std::u16string>& blocks);
+  // Stores the result of mapping the rendered Readability text to the AXTree,
+  // and updates `readability_display_node_ids_` to match.
+  void SetTextToAXMap(ReadAnythingTextAligner::TextToAXMap map);
 
   // Returns the AX mapping for the given index. This is the primary interface
   // for the WebUI to consume the results of the mapping algorithm. The index
