@@ -604,8 +604,8 @@ void AutofillAgent::EnableCustomFormControlScripts(
   if (!unsafe_render_frame() || custom_form_control_agent_) {
     return;
   }
-  custom_form_control_agent_ = std::make_unique<CustomFormControlAgent>(
-      unsafe_render_frame(), world_id, registry);
+  custom_form_control_agent_ =
+      std::make_unique<CustomFormControlAgent>(this, world_id, registry);
 }
 
 CustomFormControlScriptExecutor*

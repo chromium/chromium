@@ -6,8 +6,12 @@
 
 #include <utility>
 
+#include "base/check_deref.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "components/autofill/content/renderer/autofill_agent.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/web/web_document.h"
@@ -16,10 +20,11 @@
 namespace autofill {
 
 CustomFormControlAgent::CustomFormControlAgent(
-    content::RenderFrame* render_frame,
+    AutofillAgent* autofill_agent,
     int32_t world_id,
     blink::AssociatedInterfaceRegistry& registry)
-    : executor_(render_frame, world_id) {
+    : autofill_agent_(CHECK_DEREF(autofill_agent)),
+      executor_(autofill_agent_->unsafe_render_frame(), world_id) {
   // The registry belongs to the frame. The weak pointer drops requests that
   // arrive after this is destroyed.
   registry.AddInterface<mojom::CustomFormControlAgent>(base::BindRepeating(
@@ -40,7 +45,15 @@ void CustomFormControlAgent::LoadUnsafeScript(
     std::move(callback).Run(false);
     return;
   }
-  std::move(callback).Run(executor_.LoadScript(script));
+  const bool success = executor_.LoadScript(script);
+  if (success && base::FeatureList::IsEnabled(
+                     features::kAutofillCustomFormControlExtraction)) {
+    // `force=false` suffices because any newly detected custom form controls
+    // change the extracted `FormData`, invalidating the `FormCache` entry for
+    // affected forms.
+    autofill_agent_->TriggerFormExtraction(/*force=*/false);
+  }
+  std::move(callback).Run(success);
 }
 
 bool CustomFormControlAgent::IsCurrentDocument(

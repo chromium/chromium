@@ -8,16 +8,21 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/raw_ref.h"
+#include "base/check_deref.h"
 #include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "components/autofill/content/common/mojom/autofill_agent.mojom.h"
+#include "components/autofill/content/renderer/autofill_agent.h"
+#include "components/autofill/content/renderer/autofill_renderer_test.h"
+#include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/form_field_data.h"
 #include "content/public/common/isolated_world_ids.h"
 #include "content/public/renderer/render_frame.h"
-#include "content/public/renderer/render_frame_observer.h"
-#include "content/public/test/render_view_test.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -26,6 +31,10 @@
 
 namespace autofill {
 namespace {
+
+using ::testing::_;
+using ::testing::ElementsAre;
+using ::testing::Property;
 
 // A minimal script that returns an empty manager.
 constexpr char kValidScript[] =
@@ -36,31 +45,11 @@ constexpr int32_t kWorldId = content::ISOLATED_WORLD_ID_CONTENT_END + 1;
 
 using Remote = mojo::AssociatedRemote<mojom::CustomFormControlAgent>;
 
-// Calls `CustomFormControlAgent::OnDestruct()` when the frame is destroyed,
-// like `AutofillAgent` does.
-class OnDestructNotifier : public content::RenderFrameObserver {
- public:
-  OnDestructNotifier(content::RenderFrame* render_frame,
-                     CustomFormControlAgent& agent)
-      : content::RenderFrameObserver(render_frame), agent_(agent) {}
-
- private:
-  void OnDestruct() override { agent_->OnDestruct(); }
-
-  const raw_ref<CustomFormControlAgent> agent_;
-};
-
-class CustomFormControlAgentTest : public content::RenderViewTest {
+class CustomFormControlAgentTest : public test::AutofillRendererTest {
  protected:
   void SetUp() override {
-    content::RenderViewTest::SetUp();
-    agent_ = std::make_unique<CustomFormControlAgent>(GetMainRenderFrame(),
-                                                      kWorldId, registry_);
-  }
-
-  void TearDown() override {
-    agent_.reset();
-    content::RenderViewTest::TearDown();
+    test::AutofillRendererTest::SetUp();
+    autofill_agent().EnableCustomFormControlScripts(kWorldId, registry_);
   }
 
   // Binds `remote` to the agent through `registry`, as the browser does.
@@ -87,11 +76,14 @@ class CustomFormControlAgentTest : public content::RenderViewTest {
     return GetMainFrame()->GetDocument().Token();
   }
 
-  CustomFormControlAgent& agent() { return *agent_; }
+  CustomFormControlScriptExecutor& executor() {
+    return CHECK_DEREF(autofill_agent().custom_form_control_script_executor());
+  }
 
  private:
+  base::test::ScopedFeatureList feature_list_{
+      features::kAutofillCustomFormControlScripts};
   blink::AssociatedInterfaceRegistry registry_;
-  std::unique_ptr<CustomFormControlAgent> agent_;
 };
 
 // Tests that the browser can load scripts through the interface and learns
@@ -100,11 +92,11 @@ TEST_F(CustomFormControlAgentTest, LoadsScripts) {
   Remote remote;
   ASSERT_TRUE(Bind(remote));
   EXPECT_TRUE(LoadUnsafeScript(remote, GetDocumentToken(), kValidScript));
-  EXPECT_TRUE(agent().executor().has_manager());
+  EXPECT_TRUE(executor().has_manager());
 
   EXPECT_FALSE(
       LoadUnsafeScript(remote, GetDocumentToken(), "throw new Error();"));
-  EXPECT_FALSE(agent().executor().has_manager());
+  EXPECT_FALSE(executor().has_manager());
 }
 
 // Tests that a script for a previous document, which the browser sent before
@@ -117,7 +109,7 @@ TEST_F(CustomFormControlAgentTest, IgnoresScriptForPreviousDocument) {
   ASSERT_NE(GetDocumentToken(), previous_document);
 
   EXPECT_FALSE(LoadUnsafeScript(remote, previous_document, kValidScript));
-  EXPECT_FALSE(agent().executor().has_manager());
+  EXPECT_FALSE(executor().has_manager());
   // The connection still works for the current document.
   EXPECT_TRUE(LoadUnsafeScript(remote, GetDocumentToken(), kValidScript));
 }
@@ -132,6 +124,38 @@ TEST_F(CustomFormControlAgentTest, RebindReplacesConnection) {
   EXPECT_TRUE(LoadUnsafeScript(second, GetDocumentToken(), kValidScript));
 }
 
+// Tests that loading a valid script triggers form re-extraction when
+// `features::kAutofillCustomFormControlExtraction` is enabled.
+TEST_F(CustomFormControlAgentTest, TriggersFormExtraction) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillCustomFormControlExtraction};
+  LoadHTML(R"(<form id="f"><div id="custom"></div><input id="input"></form>)");
+  WaitForFormsSeen();
+
+  Remote remote;
+  ASSERT_TRUE(Bind(remote));
+  EXPECT_CALL(
+      autofill_driver(),
+      FormsSeen(
+          ElementsAre(Property(
+              &FormData::fields,
+              ElementsAre(Property(&FormFieldData::id_attribute, u"custom"),
+                          Property(&FormFieldData::id_attribute, u"input")))),
+          _));
+  EXPECT_TRUE(LoadUnsafeScript(remote, GetDocumentToken(), R"(
+    function createCustomFormControlManager() {
+      return {
+        detectCustomFormControls: () => [{
+          canonicalDomNode: document.getElementById("custom"),
+          fieldType: "ADDRESS_HOME_COUNTRY",
+          isActive: true,
+        }],
+      };
+    }
+  )"));
+  WaitForFormsSeen();
+}
+
 // Tests that the reply is dropped if the script detaches its own frame.
 TEST_F(CustomFormControlAgentTest, DropsReplyIfScriptDetachesFrame) {
   LoadHTML("<iframe src='about:blank'></iframe>");
@@ -139,8 +163,15 @@ TEST_F(CustomFormControlAgentTest, DropsReplyIfScriptDetachesFrame) {
       GetMainFrame()->FirstChild()->ToWebLocalFrame();
   content::RenderFrame* child = content::RenderFrame::FromWebFrame(child_frame);
   blink::AssociatedInterfaceRegistry child_registry;
-  CustomFormControlAgent child_agent(child, kWorldId, child_registry);
-  OnDestructNotifier owner(child, child_agent);
+  // `AutofillAgent` deletes itself when `child` is destroyed, and calls
+  // `CustomFormControlAgent::OnDestruct()` in `AutofillAgent::OnDestruct()`.
+  auto* child_autofill_agent =
+      CreateAutofillAgent(child, /*password_autofill_agent=*/nullptr,
+                          /*password_generation_agent=*/nullptr,
+                          &child_registry)
+          .release();
+  child_autofill_agent->EnableCustomFormControlScripts(kWorldId,
+                                                       child_registry);
   Remote remote;
   ASSERT_TRUE(Bind(remote, child_registry));
 

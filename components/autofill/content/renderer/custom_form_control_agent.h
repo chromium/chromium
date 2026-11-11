@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <string>
 
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/content/common/mojom/autofill_agent.mojom.h"
 #include "components/autofill/content/renderer/custom_form_control_script_executor.h"
@@ -19,11 +20,9 @@ namespace blink {
 class AssociatedInterfaceRegistry;
 }  // namespace blink
 
-namespace content {
-class RenderFrame;
-}  // namespace content
-
 namespace autofill {
+
+class AutofillAgent;
 
 // Implements `mojom::CustomFormControlAgent` for a frame. The browser calls
 // `LoadUnsafeScript()` to load the custom form control script of the frame's
@@ -33,10 +32,10 @@ namespace autofill {
 // The frame's `AutofillAgent` owns the `CustomFormControlAgent`.
 class CustomFormControlAgent : public mojom::CustomFormControlAgent {
  public:
-  // Runs scripts in the isolated world `world_id` of `render_frame` (see
-  // `CustomFormControlScriptExecutor`), and registers the interface in
-  // `registry`, the frame's registry.
-  CustomFormControlAgent(content::RenderFrame* render_frame,
+  // Runs scripts in the isolated world `world_id` of `autofill_agent`'s frame
+  // (see `CustomFormControlScriptExecutor`), and registers the interface in
+  // `registry`, the frame's registry. `autofill_agent` must outlive this.
+  CustomFormControlAgent(AutofillAgent* autofill_agent,
                          int32_t world_id,
                          blink::AssociatedInterfaceRegistry& registry);
   CustomFormControlAgent(const CustomFormControlAgent&) = delete;
@@ -64,6 +63,8 @@ class CustomFormControlAgent : public mojom::CustomFormControlAgent {
   void BindReceiver(
       mojo::PendingAssociatedReceiver<mojom::CustomFormControlAgent>
           pending_receiver);
+
+  const raw_ref<AutofillAgent> autofill_agent_;
 
   CustomFormControlScriptExecutor executor_;
 
