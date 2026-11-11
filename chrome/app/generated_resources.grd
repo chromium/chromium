@@ -4370,6 +4370,9 @@ are declared in tools/grit/grit_args.gni.
         <message translateable="false" name="IDS_CERT_OID_AVA_POSTAL_CODE" desc="">
           postalCode
         </message>
+        <message translateable="false" name="IDS_CERT_OID_TRUST_ANCHOR_ID" desc="">
+          trustAnchorID
+        </message>
 
         <message name="IDS_CERT_EXT_NS_CERT_TYPE" desc="description of extension Netscape Certificate Type">
           Netscape Certificate Type

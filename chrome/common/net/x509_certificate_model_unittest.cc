@@ -729,9 +729,9 @@ TEST(X509CertificateModel, RelativeOidNameValue) {
       bssl::UpRef(builder->GetCertBuffer()));
   ASSERT_TRUE(model.is_valid());
   EXPECT_EQ(OptionalStringOrError(NotPresent()), model.GetSubjectCommonName());
-  EXPECT_EQ(OptionalStringOrError("OID.1.3.6.1.5.5.7.25.3 = 32473.1\n"),
+  EXPECT_EQ(OptionalStringOrError("trustAnchorID = 32473.1\n"),
             model.GetSubjectName());
-  EXPECT_EQ(OptionalStringOrError("OID.1.3.6.1.5.5.7.25.3 = 32473.1\n"),
+  EXPECT_EQ(OptionalStringOrError("trustAnchorID = 32473.1\n"),
             model.GetIssuerName());
 }
 
