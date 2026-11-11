@@ -174,8 +174,7 @@ void LayoutInline::StyleDidChange(
       SetNeedsCollectInlines();
     }
   }
-  if (RuntimeEnabledFeatures::AnnotationSpaceOnStartEnabled() &&
-      IsInlineRubyText()) {
+  if (IsInlineRubyText()) {
     View()->SetContainsAnnotations();
   }
 

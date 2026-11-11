@@ -2495,18 +2495,9 @@ TEST_F(BlockLayoutAlgorithmTest, ComputeInitialBlockStartAnnotationSpace) {
   FragmentGeometry fragment_geometry1 = CalculateInitialFragmentGeometry(
       space1, node1, /* break_token */ nullptr, /* is_intrinsic */ false);
 
-  // 1. Flag OFF test
-  {
-    ScopedAnnotationSpaceOnStartForTest enable_flag(false);
-    BlockLayoutAlgorithm algorithm({node1, fragment_geometry1, space1});
-    EXPECT_EQ(LayoutUnit(10),
-              algorithm.ComputeInitialBlockStartAnnotationSpace());
-  }
-
-  // 2. Flag ON & conditions matched test (border=0, overflow=visible)
+  // 1. Conditions matched test (border=0, overflow=visible)
   // margin-top(20) + padding-top(10) = 30
   {
-    ScopedAnnotationSpaceOnStartForTest enable_flag(true);
     ConstraintSpaceBuilder builder(
         WritingMode::kHorizontalTb,
         {WritingMode::kHorizontalTb, TextDirection::kLtr},
@@ -2522,9 +2513,8 @@ TEST_F(BlockLayoutAlgorithmTest, ComputeInitialBlockStartAnnotationSpace) {
               algorithm.ComputeInitialBlockStartAnnotationSpace());
   }
 
-  // 3. Flag ON & border != 0 test
+  // 2. Border != 0 test
   {
-    ScopedAnnotationSpaceOnStartForTest enable_flag(true);
     BlockNode node2(GetLayoutBoxByElementId("target2"));
     ConstraintSpace space2 = ConstructBlockLayoutTestConstraintSpace(
         {WritingMode::kHorizontalTb, TextDirection::kLtr},
@@ -2539,9 +2529,8 @@ TEST_F(BlockLayoutAlgorithmTest, ComputeInitialBlockStartAnnotationSpace) {
               algorithm.ComputeInitialBlockStartAnnotationSpace());
   }
 
-  // 4. Flag ON & overflow != visible test
+  // 3. Overflow != visible test
   {
-    ScopedAnnotationSpaceOnStartForTest enable_flag(true);
     BlockNode node3(GetLayoutBoxByElementId("target3"));
     ConstraintSpace space3 = ConstructBlockLayoutTestConstraintSpace(
         {WritingMode::kHorizontalTb, TextDirection::kLtr},
@@ -2556,9 +2545,8 @@ TEST_F(BlockLayoutAlgorithmTest, ComputeInitialBlockStartAnnotationSpace) {
               algorithm.ComputeInitialBlockStartAnnotationSpace());
   }
 
-  // 5. Flag ON & paint containment (is_new_formatting_context) test
+  // 4. Paint containment (is_new_formatting_context) test
   {
-    ScopedAnnotationSpaceOnStartForTest enable_flag(true);
     BlockNode node4(GetLayoutBoxByElementId("target4"));
     ConstraintSpace space4 = ConstructBlockLayoutTestConstraintSpace(
         {WritingMode::kHorizontalTb, TextDirection::kLtr},
@@ -2573,9 +2561,8 @@ TEST_F(BlockLayoutAlgorithmTest, ComputeInitialBlockStartAnnotationSpace) {
               algorithm.ComputeInitialBlockStartAnnotationSpace());
   }
 
-  // 6. Flag ON & negative margin test
+  // 5. Negative margin test
   {
-    ScopedAnnotationSpaceOnStartForTest enable_flag(true);
     BlockNode node5(GetLayoutBoxByElementId("target5"));
     ConstraintSpaceBuilder builder(
         WritingMode::kHorizontalTb,
@@ -2597,7 +2584,6 @@ TEST_F(BlockLayoutAlgorithmTest, ComputeInitialBlockStartAnnotationSpace) {
 }
 
 TEST_F(BlockLayoutAlgorithmTest, PreviousSiblingBlockEndAnnotationSpace) {
-  ScopedAnnotationSpaceOnStartForTest enable_flag(true);
   LoadAhem();
 
   SetBodyInnerHTML(R"HTML(

@@ -696,12 +696,6 @@
       // crbug.com/538260158
       name: "AnnotationSpaceForMultiCol",
       status: "experimental",
-      depends_on: ["AnnotationSpaceOnStart"],
-    },
-    {
-      // crbug.com/445727139
-      name: "AnnotationSpaceOnStart",
-      status: "stable",
     },
     {
       name: "AnonymousIframe",

@@ -1405,8 +1405,7 @@ const LayoutResult* BlockLayoutAlgorithm::FinishLayout(
       border_box_size.inline_size);
   container_builder_.SetFragmentsTotalBlockSize(border_box_size.block_size);
 
-  if (RuntimeEnabledFeatures::AnnotationSpaceOnStartEnabled() &&
-      GetConstraintSpace().ContainsAnnotations() &&
+  if (GetConstraintSpace().ContainsAnnotations() &&
       !GetConstraintSpace().IsNewFormattingContext() &&
       previous_inflow_position->block_end_annotation_space > LayoutUnit() &&
       Borders().block_end == 0) {
@@ -3103,8 +3102,7 @@ PreviousInflowPosition BlockLayoutAlgorithm::ComputeInflowPosition(
   }
 
   LayoutUnit previous_sibling_block_end_annotation_space;
-  if (RuntimeEnabledFeatures::AnnotationSpaceOnStartEnabled() &&
-      GetConstraintSpace().ContainsAnnotations() && child.IsBlock() &&
+  if (GetConstraintSpace().ContainsAnnotations() && child.IsBlock() &&
       annotation_space > LayoutUnit()) {
     previous_sibling_block_end_annotation_space = annotation_space;
   }
@@ -3626,9 +3624,7 @@ ConstraintSpace BlockLayoutAlgorithm::CreateConstraintSpaceForChild(
         line_clamp_data_.data.IsLineClampContext() &&
         (constraint_space.ShouldTextBoxTrimInsideWhenLineClamp() ||
          container_builder_.ShouldTextBoxTrimNodeEnd()));
-    if (child.IsBlock() &&
-        RuntimeEnabledFeatures::AnnotationSpaceOnStartEnabled() &&
-        GetConstraintSpace().ContainsAnnotations() &&
+    if (child.IsBlock() && GetConstraintSpace().ContainsAnnotations() &&
         (RuntimeEnabledFeatures::AnnotationSpaceForMultiColEnabled() ||
          !GetConstraintSpace().IsInsideBalancedColumns()) &&
         block_start_annotation_space > LayoutUnit()) {
@@ -4152,8 +4148,7 @@ LayoutUnit BlockLayoutAlgorithm::ComputeInitialBlockStartAnnotationSpace()
   const ConstraintSpace& space = GetConstraintSpace();
   // Allow ruby annotations to overflow to the block-start margin if the
   // container has no block-start border.
-  if (RuntimeEnabledFeatures::AnnotationSpaceOnStartEnabled() &&
-      space.ContainsAnnotations() && !space.IsNewFormattingContext() &&
+  if (space.ContainsAnnotations() && !space.IsNewFormattingContext() &&
       (RuntimeEnabledFeatures::AnnotationSpaceForMultiColEnabled() ||
        !space.IsInsideBalancedColumns()) &&
       Borders().block_start == 0) {

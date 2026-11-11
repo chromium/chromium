@@ -195,8 +195,7 @@ void LayoutBoxModelObject::StyleDidChange(
     }
   }
 
-  if (RuntimeEnabledFeatures::AnnotationSpaceOnStartEnabled() &&
-      new_style.GetTextEmphasisMark() != TextEmphasisMark::kNone) {
+  if (new_style.GetTextEmphasisMark() != TextEmphasisMark::kNone) {
     View()->SetContainsAnnotations();
   }
 

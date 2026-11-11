@@ -437,8 +437,7 @@ void InlineLayoutAlgorithm::CreateLine(const LineLayoutOpportunity& opportunity,
     SetTextEmphasisAnnotationMetrics(column_list, *line_box);
     line_info->SetAnnotationBlockStartAdjustment(SetAnnotationOverflow(
         *line_info, *line_box, line_box_metrics, annotation_metrics));
-  } else if (RuntimeEnabledFeatures::AnnotationSpaceOnStartEnabled() &&
-             GetConstraintSpace().ContainsAnnotations() &&
+  } else if (GetConstraintSpace().ContainsAnnotations() &&
              line_info->IsLastLine() && !line_info->IsEmptyLine()) {
     line_info->SetAnnotationBlockStartAdjustment(SetAnnotationOverflow(
         *line_info, *line_box, line_box_metrics, std::nullopt));
