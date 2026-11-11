@@ -323,8 +323,13 @@ std::string ProcessRDN(const bssl::RelativeDistinguishedName& rdn) {
       return std::string();
     rv += oid_text;
     std::string value;
-    if (!name_attribute.ValueAsStringWithUnsafeOptions(kNameStringHandling,
-                                                       &value)) {
+    if (name_attribute.value_tag == CBS_ASN1_RELATIVE_OID) {
+      value = net::x509_util::RelativeOidToString(name_attribute.value);
+      if (value.empty()) {
+        return std::string();
+      }
+    } else if (!name_attribute.ValueAsStringWithUnsafeOptions(
+                   kNameStringHandling, &value)) {
       return std::string();
     }
     rv += " = ";
