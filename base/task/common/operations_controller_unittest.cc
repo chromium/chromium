@@ -5,8 +5,10 @@
 #include "base/task/common/operations_controller.h"
 
 #include <algorithm>
+#include <array>
 #include <atomic>
 #include <cstdint>
+#include <optional>
 #include <utility>
 
 #include "base/memory/raw_ref.h"
@@ -121,16 +123,16 @@ class TestThread : public SimpleThread {
     while (true) {
       PlatformThread::YieldCurrentThread();
       bool was_started = started_->load(std::memory_order_relaxed);
-      STACK_ALLOCATED_IGNORE("https://crbug.com/350256130")
-      std::vector<OperationsController::OperationToken> tokens;
-      for (int i = 0; i < 100; ++i) {
-        tokens.push_back(controller_->TryBeginOperation());
+      std::array<std::optional<OperationsController::OperationToken>, 100>
+          tokens;
+      for (auto& token : tokens) {
+        token.emplace(controller_->TryBeginOperation());
       }
       if (!was_started) {
         continue;
       }
       if (std::ranges::any_of(tokens,
-                              [](const auto& token) { return !token; })) {
+                              [](const auto& token) { return !*token; })) {
         break;
       }
     }
