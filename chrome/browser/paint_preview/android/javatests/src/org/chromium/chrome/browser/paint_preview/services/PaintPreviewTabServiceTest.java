@@ -74,7 +74,8 @@ public class PaintPreviewTabServiceTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mPaintPreviewTabService = PaintPreviewTabServiceFactory.getServiceInstance();
+                    mPaintPreviewTabService =
+                            PaintPreviewTabServiceFactory.getServiceInstance(mTab.getProfile());
                     mTab.loadUrl(new LoadUrlParams(url));
                 });
         // Give the tab time to complete layout before hiding.
@@ -96,7 +97,8 @@ public class PaintPreviewTabServiceTest {
         // Allow time to capture.
         CriteriaHelper.pollUiThread(
                 () -> {
-                    mPaintPreviewTabService = PaintPreviewTabServiceFactory.getServiceInstance();
+                    mPaintPreviewTabService =
+                            PaintPreviewTabServiceFactory.getServiceInstance(mTab.getProfile());
                     return mPaintPreviewTabService.hasCaptureForTab(tabId);
                 },
                 "Paint Preview didn't get captured.",
@@ -147,7 +149,8 @@ public class PaintPreviewTabServiceTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mPaintPreviewTabService = PaintPreviewTabServiceFactory.getServiceInstance();
+                    mPaintPreviewTabService =
+                            PaintPreviewTabServiceFactory.getServiceInstance(mTab.getProfile());
                     mTab.loadUrl(new LoadUrlParams(url));
                 });
         // Give the tab time to complete layout before hiding.
@@ -169,7 +172,8 @@ public class PaintPreviewTabServiceTest {
         // Allow time to capture.
         CriteriaHelper.pollUiThread(
                 () -> {
-                    mPaintPreviewTabService = PaintPreviewTabServiceFactory.getServiceInstance();
+                    mPaintPreviewTabService =
+                            PaintPreviewTabServiceFactory.getServiceInstance(mTab.getProfile());
                     return mPaintPreviewTabService.hasCaptureForTab(tabId);
                 },
                 "Paint Preview didn't get captured.",
@@ -211,7 +215,8 @@ public class PaintPreviewTabServiceTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mPaintPreviewTabService = PaintPreviewTabServiceFactory.getServiceInstance();
+                    mPaintPreviewTabService =
+                            PaintPreviewTabServiceFactory.getServiceInstance(mTab.getProfile());
                     assertTrue(
                             mPaintPreviewTabService.previewExistsPreNative(
                                     mTemporaryFolder.getRoot().getPath(), 2));
@@ -233,7 +238,8 @@ public class PaintPreviewTabServiceTest {
     public void testOnRestoreCompleted_destroyable() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mPaintPreviewTabService = PaintPreviewTabServiceFactory.getServiceInstance();
+                    mPaintPreviewTabService =
+                            PaintPreviewTabServiceFactory.getServiceInstance(mTab.getProfile());
                     Destroyable destroyable =
                             mPaintPreviewTabService.onRestoreCompleted(
                                     mTabModelSelector, /* runAudit= */ false);

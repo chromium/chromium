@@ -56,7 +56,7 @@ public class TabbedPaintPreview implements UserData {
 
     private final TabObserver mTabObserver;
     private final TabViewProvider mTabbedPaintPreviewViewProvider;
-    private final PaintPreviewTabService mPaintPreviewTabService;
+    private final @Nullable PaintPreviewTabService mPaintPreviewTabService;
 
     private Tab mTab;
     private @Nullable PlayerManager mPlayerManager;
@@ -80,7 +80,8 @@ public class TabbedPaintPreview implements UserData {
     private TabbedPaintPreview(Tab tab) {
         mTab = tab;
         mTabbedPaintPreviewViewProvider = new TabbedPaintPreviewViewProvider();
-        mPaintPreviewTabService = PaintPreviewTabServiceFactory.getServiceInstance();
+        mPaintPreviewTabService =
+                PaintPreviewTabServiceFactory.getServiceInstance(tab.getProfile());
         mTabObserver =
                 new TabObserver() {
                     @Override
@@ -120,7 +121,12 @@ public class TabbedPaintPreview implements UserData {
     }
 
     void capture(Callback<Boolean> successCallback) {
-        getService().captureTab(mTab, successCallback);
+        PaintPreviewTabService service = getService();
+        if (service == null) {
+            successCallback.onResult(false);
+            return;
+        }
+        service.captureTab(mTab, successCallback);
     }
 
     @EnsuresNonNullIf("mTab")
@@ -144,7 +150,8 @@ public class TabbedPaintPreview implements UserData {
         }
 
         // Check if a capture exists. This is a quick check using a cache.
-        if (!getService().hasCaptureForTab(mTab.getId())) {
+        PaintPreviewTabService service = getService();
+        if (service == null || !service.hasCaptureForTab(mTab.getId())) {
             TraceEvent.end("TabbedPaintPreview.maybeShow");
             return false;
         }
@@ -156,7 +163,7 @@ public class TabbedPaintPreview implements UserData {
                 new PlayerManager(
                         mTab.getUrl(),
                         mTab.getContext(),
-                        getService(),
+                        service,
                         String.valueOf(mTab.getId()),
                         listener,
                         ChromeColors.getPrimaryBackgroundColor(mTab.getContext(), false),
@@ -314,7 +321,7 @@ public class TabbedPaintPreview implements UserData {
         }
     }
 
-    private PaintPreviewTabService getService() {
+    private @Nullable PaintPreviewTabService getService() {
         if (sPaintPreviewTabServiceForTesting == null) return mPaintPreviewTabService;
 
         return sPaintPreviewTabServiceForTesting;

@@ -54,11 +54,13 @@ public class StartupPaintPreviewHelperTest {
         Tab tab = page.getTab();
         CriteriaHelper.pollUiThread(
                 () ->
-                        PaintPreviewTabServiceFactory.getServiceInstance()
+                        PaintPreviewTabServiceFactory.getServiceInstance(tab.getProfile())
                                 .hasNativeServiceForTesting(),
                 "Native tab service not loaded");
         CriteriaHelper.pollUiThread(
-                () -> PaintPreviewTabServiceFactory.getServiceInstance().isNativeCacheInitialized(),
+                () ->
+                        PaintPreviewTabServiceFactory.getServiceInstance(tab.getProfile())
+                                .isNativeCacheInitialized(),
                 "Native capture cache not loaded");
 
         // Verify no capture exists for this tab and no paint preview is showing.
@@ -105,11 +107,13 @@ public class StartupPaintPreviewHelperTest {
         Tab tab = page.getTab();
         CriteriaHelper.pollUiThread(
                 () ->
-                        PaintPreviewTabServiceFactory.getServiceInstance()
+                        PaintPreviewTabServiceFactory.getServiceInstance(tab.getProfile())
                                 .hasNativeServiceForTesting(),
                 "Native tab service not loaded");
         CriteriaHelper.pollUiThread(
-                () -> PaintPreviewTabServiceFactory.getServiceInstance().isNativeCacheInitialized(),
+                () ->
+                        PaintPreviewTabServiceFactory.getServiceInstance(tab.getProfile())
+                                .isNativeCacheInitialized(),
                 "Native capture cache not loaded");
 
         // Verify no capture exists for this tab and no paint preview is showing.
@@ -171,7 +175,7 @@ public class StartupPaintPreviewHelperTest {
                         : "Paint preview capture should have not existed.";
         CriteriaHelper.pollUiThread(
                 () ->
-                        PaintPreviewTabServiceFactory.getServiceInstance()
+                        PaintPreviewTabServiceFactory.getServiceInstance(tab.getProfile())
                                         .hasCaptureForTab(tab.getId())
                                 == shouldHaveCapture,
                 shownMessage);

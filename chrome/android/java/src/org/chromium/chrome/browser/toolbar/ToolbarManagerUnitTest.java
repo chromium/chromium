@@ -354,7 +354,7 @@ public class ToolbarManagerUnitTest {
                 mPictureInPictureBridgeNatives);
         PaintPreviewTabServiceFactoryJni.setInstanceForTesting(
                 mPaintPreviewTabServiceFactoryNatives);
-        when(mPaintPreviewTabServiceFactoryNatives.getServiceInstanceForCurrentProfile())
+        when(mPaintPreviewTabServiceFactoryNatives.getServiceInstanceForProfile(any()))
                 .thenReturn(null);
         LocationBarModelJni.setInstanceForTesting(mLocationBarModelNatives);
         when(mLocationBarModelNatives.init(any())).thenReturn(mNativeLocationBarModelAndroid);

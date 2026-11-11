@@ -22,7 +22,9 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.page_load_metrics.PageLoadMetrics;
 import org.chromium.chrome.browser.paint_preview.StartupPaintPreviewMetrics.PaintPreviewMetricsObserver;
+import org.chromium.chrome.browser.paint_preview.services.PaintPreviewTabService;
 import org.chromium.chrome.browser.paint_preview.services.PaintPreviewTabServiceFactory;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
@@ -102,9 +104,15 @@ public class StartupPaintPreviewHelper implements Destroyable {
                         // Avoid running the audit in multi-window mode as otherwise we will delete
                         // data that is possibly in use by the other Activity's TabModelSelector.
                         assert mServiceObserver == null;
-                        mServiceObserver =
-                                PaintPreviewTabServiceFactory.getServiceInstance()
-                                        .onRestoreCompleted(mTabModelSelector, runAudit);
+                        // onTabStateInitialized() is triggered by TabPersistentStore.restoreTabs()
+                        // in initializeState(), which runs after initializeCompositor() has
+                        // initialized the regular TabModel with its non-OTR Profile.
+                        Profile profile = mTabModelSelector.getModel(false).getProfile();
+                        assert profile != null;
+                        PaintPreviewTabService service =
+                                PaintPreviewTabServiceFactory.getServiceInstance(profile);
+                        assert service != null;
+                        mServiceObserver = service.onRestoreCompleted(mTabModelSelector, runAudit);
                         if (mTabModelSelectorObserver != null) {
                             mTabModelSelector.removeObserver(mTabModelSelectorObserver);
                             mTabModelSelectorObserver = null;

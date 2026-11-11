@@ -15,9 +15,11 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
-#include "chrome/browser/paint_preview/android/jni_headers/PaintPreviewTabServiceFactory_jni.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
-#include "chrome/browser/profiles/profile_manager.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/paint_preview/android/jni_headers/PaintPreviewTabServiceFactory_jni.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace paint_preview {
@@ -67,14 +69,14 @@ SimpleFactoryKey* PaintPreviewTabServiceFactory::GetKeyToUse(
 
 #if BUILDFLAG(IS_ANDROID)
 static base::android::ScopedJavaLocalRef<jobject>
-JNI_PaintPreviewTabServiceFactory_GetServiceInstanceForCurrentProfile(
-    JNIEnv* env) {
-  ProfileKey* profile_key =
-      ProfileManager::GetLastUsedProfile()->GetProfileKey();
-  base::android::ScopedJavaGlobalRef<jobject> java_ref =
-      PaintPreviewTabServiceFactory::GetServiceInstance(profile_key)
-          ->GetJavaRef();
-  return base::android::ScopedJavaLocalRef<jobject>(java_ref);
+JNI_PaintPreviewTabServiceFactory_GetServiceInstanceForProfile(
+    Profile* profile) {
+  PaintPreviewTabService* service =
+      PaintPreviewTabServiceFactory::GetServiceInstance(
+          profile->GetProfileKey());
+  return service
+             ? base::android::ScopedJavaLocalRef<jobject>(service->GetJavaRef())
+             : nullptr;
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
