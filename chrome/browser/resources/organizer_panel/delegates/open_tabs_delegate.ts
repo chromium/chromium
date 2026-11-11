@@ -155,7 +155,11 @@ export class OpenTabsDelegate implements
   }
 
   private async updateTabs_() {
+    const startTime = performance.now();
     const {profileData} = await this.browserProxy_.handler.getProfileData();
+    chrome.histograms?.recordTime?.(
+        'Tabs.Organizer.WebUI.OpenTabsDataReceived',
+        Math.round(performance.now() - startTime));
     this.updateFromProfileData_(profileData);
   }
 

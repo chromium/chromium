@@ -2672,6 +2672,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Tabs.Organizer.PageHandlerConstructionDelay" units="ms"
+    expires_after="2027-05-02">
+  <owner>agale@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    The delay between when the OrganizerPanelUI is constructed and when the
+    OrganizerPanelPageHandler is constructed.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.Organizer.PanelDisplayedDuration" units="ms"
+    expires_after="2027-05-02">
+  <owner>agale@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Records the duration the Organizer panel is open from the time it is shown
+    until the time it is closed.
+  </summary>
+</histogram>
+
 <histogram name="Tabs.Organizer.Section.{Section}.ExpandedStateOnOpen"
     enum="BooleanSectionExpanded" expires_after="2027-05-02">
   <owner>agale@chromium.org</owner>
@@ -2727,6 +2747,37 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="Action" variants="OrganizerAction"/>
   <token key="State" variants="OrganizerListState"/>
+</histogram>
+
+<histogram name="Tabs.Organizer.WebUI.LoadCompletedTime" units="ms"
+    expires_after="2027-05-02">
+  <owner>agale@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    The amount of time between the RenderFrameHost StartProvisionalLoad event
+    and the RenderFrameHost DocumentOnLoadCompleted event for the Organizer
+    panel WebUI page.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.Organizer.WebUI.LoadDocumentTime" units="ms"
+    expires_after="2027-05-02">
+  <owner>agale@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    The amount of time between the RenderFrameHost StartProvisionalLoad and
+    DidFinishDocumentLoad events for the Organizer panel WebUI page.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.Organizer.WebUI.OpenTabsDataReceived" units="ms"
+    expires_after="2027-05-02">
+  <owner>agale@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    The time taken for the Organizer panel WebUI in the renderer to receive the
+    profile tab list data from the browser via getProfileData().
+  </summary>
 </histogram>
 
 <histogram name="Tabs.Organizer.WebUI.TimeTo{Action}In{State}List" units="ms"

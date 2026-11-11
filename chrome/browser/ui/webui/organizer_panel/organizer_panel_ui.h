@@ -9,6 +9,7 @@
 #include <optional>
 #include <string_view>
 
+#include "base/timer/elapsed_timer.h"
 #include "base/values.h"
 #include "chrome/browser/ui/webui/organizer_panel/foreign_tabs.mojom.h"
 #include "chrome/browser/ui/webui/organizer_panel/organizer_panel.mojom.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/ui/webui/tab_search/tab_search.mojom.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
+#include "chrome/browser/ui/webui/webui_load_timer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -121,6 +123,11 @@ class OrganizerPanelUI
       this};
   mojo::Receiver<organizer_panel::mojom::TabGroupsOrganizerPageHandlerFactory>
       tab_groups_page_factory_receiver_{this};
+
+  WebuiLoadTimer webui_load_timer_;
+
+  // Tracks the duration between WebUI construction and PageHandler creation.
+  std::optional<base::ElapsedTimer> page_handler_timer_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

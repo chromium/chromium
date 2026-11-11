@@ -7,10 +7,12 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 
 #include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/timer/elapsed_timer.h"
 #include "chrome/browser/ui/animation/browser_animation_types.h"
 #include "chrome/browser/ui/views/tabs/organizer/organizer_panel_host.h"
 #include "components/site_engagement/content/site_engagement_service.h"
@@ -120,6 +122,7 @@ class OrganizerPanelController {
   OrganizerPanelCloseAction close_action_ =
       OrganizerPanelCloseAction::kNoAction;
   int num_tabs_closed_ = 0;
+  std::optional<base::ElapsedTimer> displayed_timer_;
 
   content::WebContents* EnsureWebContentsCreated();
   void UpdatePanelWebContents();

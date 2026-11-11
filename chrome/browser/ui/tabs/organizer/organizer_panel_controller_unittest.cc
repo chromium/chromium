@@ -108,17 +108,20 @@ TEST_F(OrganizerPanelControllerTest, Initial) {
 }
 
 TEST_F(OrganizerPanelControllerTest, OrganizerPanelEnabled) {
+  base::HistogramTester histogram_tester;
   base::UserActionTester user_action_tester;
 
   controller()->SetOrganizerVisible(true);
   EXPECT_TRUE(controller()->IsOrganizerPanelVisible());
   EXPECT_EQ(1, user_action_tester.GetActionCount("OrganizerPanel.Open"));
   EXPECT_EQ(0, user_action_tester.GetActionCount("OrganizerPanel.Close"));
+  histogram_tester.ExpectTotalCount("Tabs.Organizer.PanelDisplayedDuration", 0);
 
   controller()->SetOrganizerVisible(false);
   EXPECT_FALSE(controller()->IsOrganizerPanelVisible());
   EXPECT_EQ(1, user_action_tester.GetActionCount("OrganizerPanel.Open"));
   EXPECT_EQ(1, user_action_tester.GetActionCount("OrganizerPanel.Close"));
+  histogram_tester.ExpectTotalCount("Tabs.Organizer.PanelDisplayedDuration", 1);
 }
 
 TEST_F(OrganizerPanelControllerTest, Subscription) {

@@ -316,6 +316,7 @@ void OrganizerPanelController::SetOrganizerVisible(bool visible,
   if (is_visible_) {
     close_action_ = OrganizerPanelCloseAction::kNoAction;
     num_tabs_closed_ = 0;
+    displayed_timer_.emplace();
     if (auto* const interface =
             BrowserUserEducationInterface::From(&*browser_window_)) {
       const base::Feature& iph_feature =
@@ -364,6 +365,11 @@ void OrganizerPanelController::RecordCloseMetrics() {
   base::UmaHistogramEnumeration("Tabs.Organizer.CloseAction", close_action_);
   base::UmaHistogramCounts100("Tabs.Organizer.NumTabsClosedPerInstance",
                               num_tabs_closed_);
+  if (displayed_timer_.has_value()) {
+    base::UmaHistogramMediumTimes("Tabs.Organizer.PanelDisplayedDuration",
+                                  displayed_timer_->Elapsed());
+    displayed_timer_.reset();
+  }
   close_action_ = OrganizerPanelCloseAction::kNoAction;
   num_tabs_closed_ = 0;
 }

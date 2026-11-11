@@ -61,6 +61,7 @@ source_set("organizer_panel") {
     "//chrome/browser/ui/views/tabs/organizer",
     "//chrome/browser/ui/webui:favicon_source",
     "//chrome/browser/ui/webui:theme_source",
+    "//chrome/browser/ui/webui:webui_load_timer",
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/metrics_reporter",
     "//chrome/browser/ui/webui/tab_search",

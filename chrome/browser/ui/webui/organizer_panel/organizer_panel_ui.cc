@@ -9,6 +9,8 @@
 
 #include "base/check.h"
 #include "base/json/json_writer.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -40,6 +42,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/webui/webui_util.h"
 
@@ -78,7 +81,10 @@ OrganizerPanelUI::OrganizerPanelUI(content::WebUI* web_ui)
     : TopChromeWebUIController(
           web_ui,
           /*enable_chrome_send=*/webui::IsWebUIDataSourceShared(web_ui),
-          /*enable_chrome_histograms=*/true) {
+          /*enable_chrome_histograms=*/true),
+      webui_load_timer_(web_ui->GetWebContents(),
+                        "Tabs.Organizer.WebUI.LoadDocumentTime",
+                        "Tabs.Organizer.WebUI.LoadCompletedTime") {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       Profile::FromWebUI(web_ui), chrome::kChromeUIOrganizerPanelHost);
 
@@ -156,6 +162,11 @@ OrganizerPanelUI::OrganizerPanelUI(content::WebUI* web_ui)
     content::URLDataSource::Add(webui_profile,
                                 std::make_unique<ThemeSource>(webui_profile));
   }
+
+  page_handler_timer_.emplace();
+  TRACE_EVENT_BEGIN("browser", "OrganizerPanelPageHandlerConstructionDelay",
+                    perfetto::NamedTrack::FromPointer(
+                        "OrganizerPanelPageHandlerConstructionDelay", this));
 }
 
 OrganizerPanelUI::~OrganizerPanelUI() = default;
@@ -232,6 +243,14 @@ void OrganizerPanelUI::CreatePageHandler(
     organizer_panel_page_factory_receiver_.ReportBadMessage(
         "Invalid page pending remote or receiver in CreatePageHandler");
     return;
+  }
+  if (page_handler_timer_.has_value()) {
+    TRACE_EVENT_END("browser",
+                    perfetto::NamedTrack::FromPointer(
+                        "OrganizerPanelPageHandlerConstructionDelay", this));
+    base::UmaHistogramMediumTimes("Tabs.Organizer.PageHandlerConstructionDelay",
+                                  page_handler_timer_->Elapsed());
+    page_handler_timer_.reset();
   }
   organizer_panel_page_handler_ = std::make_unique<OrganizerPanelPageHandler>(
       std::move(receiver), std::move(page), web_ui()->GetWebContents(), this);
