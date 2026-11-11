@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Pair;
 
+import androidx.annotation.CheckResult;
 import androidx.annotation.GuardedBy;
 import androidx.annotation.VisibleForTesting;
 
@@ -17,6 +18,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.BuildConfig;
@@ -24,6 +26,7 @@ import org.chromium.build.annotations.Contract;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -251,6 +254,35 @@ public class SharedPreferencesManager {
         PreferenceKeyChecker swappedOut = mKeyChecker;
         mKeyChecker = null;
         ResettersForTesting.register(() -> mKeyChecker = swappedOut);
+    }
+
+    /**
+     * Starts notifying {@code onChanged} whenever {@code key} changes in this manager's file.
+     *
+     * <p>The caller must retain a strong reference to the returned {@link SharedPreferenceObserver}
+     * (typically in a field) for as long as notifications are desired, and call {@link
+     * SharedPreferenceObserver#destroy()} to stop observing; Android holds underlying listeners
+     * weakly. Notifications are delivered on the main thread, like the underlying {@link
+     * SharedPreferences.OnSharedPreferenceChangeListener}.
+     */
+    @CheckResult
+    public SharedPreferenceObserver observe(String key, Runnable onChanged) {
+        return observe(Set.of(key), unused -> onChanged.run());
+    }
+
+    /**
+     * Starts notifying {@code onKeyChanged} with the changed key whenever any of {@code keys}
+     * changes in this manager's file.
+     *
+     * <p>See {@link #observe(String, Runnable)} for lifetime and threading details.
+     */
+    @CheckResult
+    public SharedPreferenceObserver observe(
+            Collection<String> keys, Callback<String> onKeyChanged) {
+        for (String key : keys) {
+            checkIsKeyInUse(key);
+        }
+        return new SharedPreferenceObserver(getSharedPrefs(), Set.copyOf(keys), onKeyChanged);
     }
 
     private void checkIsKeyInUse(String key) {

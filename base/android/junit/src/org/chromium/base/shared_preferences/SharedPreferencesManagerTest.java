@@ -31,11 +31,14 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.build.BuildConfig;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /** Unit tests for {@link SharedPreferencesManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -957,5 +960,145 @@ public class SharedPreferencesManagerTest {
     @Test
     public void testNamedManager_notReusedAcrossTests2() {
         assertNamedManagerUsesCurrentTestPrefs();
+    }
+
+    // Observers.
+
+    @Test
+    public void testObserve_singleKeyNotifiedAndDestroyStopsNotifications() {
+        AtomicInteger intCalls = new AtomicInteger();
+        AtomicInteger boolCalls = new AtomicInteger();
+        SharedPreferenceObserver intObserver =
+                mSubject.observe("int_key", intCalls::incrementAndGet);
+        SharedPreferenceObserver boolObserver =
+                mSubject.observe("bool_key", boolCalls::incrementAndGet);
+
+        mSubject.writeInt("int_key", 1);
+        mSubject.writeString("string_key", "unobserved");
+
+        assertEquals(1, intCalls.get());
+        assertEquals(0, boolCalls.get());
+
+        mSubject.writeBoolean("bool_key", true);
+        assertEquals(1, boolCalls.get());
+
+        intObserver.destroy();
+        mSubject.writeInt("int_key", 2);
+        assertEquals(1, intCalls.get());
+
+        // Calling destroy() again, or receiving a late callback after destroy(), is a no-op.
+        intObserver.destroy();
+        intObserver.onSharedPreferenceChanged(ContextUtils.getAppSharedPreferences(), "int_key");
+        assertEquals(1, intCalls.get());
+
+        boolObserver.destroy();
+    }
+
+    @Test
+    public void testObserve_multiKeyPassesChangedKeyAndSnapshotsCollection() {
+        List<String> mutableKeys = new ArrayList<>(Arrays.asList("int_key", "bool_key"));
+        List<String> observed = new ArrayList<>();
+        SharedPreferenceObserver observer = mSubject.observe(mutableKeys, observed::add);
+
+        // Mutating the input collection after observe() must not affect the subscription.
+        mutableKeys.clear();
+        mutableKeys.add("string_key");
+
+        mSubject.writeInt("int_key", 1);
+        mSubject.writeString("string_key", "unobserved");
+        mSubject.writeBoolean("bool_key", true);
+
+        assertEquals(Arrays.asList("int_key", "bool_key"), observed);
+        observer.destroy();
+    }
+
+    @Test
+    public void testObserve_managersOnDifferentFilesDoNotCrossNotify() {
+        SharedPreferencesManager managerA = new SharedPreferencesManager(FILE_A, mChecker);
+        SharedPreferencesManager managerB = new SharedPreferencesManager(FILE_B, mChecker);
+        AtomicInteger callsA = new AtomicInteger();
+        AtomicInteger callsB = new AtomicInteger();
+        AtomicInteger callsDefault = new AtomicInteger();
+        SharedPreferenceObserver observerA = managerA.observe("int_key", callsA::incrementAndGet);
+        SharedPreferenceObserver observerB = managerB.observe("int_key", callsB::incrementAndGet);
+        SharedPreferenceObserver observerDefault =
+                mSubject.observe("int_key", callsDefault::incrementAndGet);
+
+        managerA.writeInt("int_key", 1);
+
+        assertEquals(1, callsA.get());
+        assertEquals(0, callsB.get());
+        assertEquals(0, callsDefault.get());
+
+        observerA.destroy();
+        observerB.destroy();
+        observerDefault.destroy();
+    }
+
+    @Test
+    public void testObserve_managersOnSameFileCrossNotify() {
+        // Per-profile (for Default) and global keys share the legacy default file via distinct
+        // registry-scoped managers; a write through one manager notifies an observer created from
+        // the other.
+        PreferenceKeyRegistry registryA = registryWith("int_key");
+        PreferenceKeyRegistry registryB = registryWith("int_key");
+        SharedPreferencesManager defaultA =
+                SharedPreferencesManager.getInstanceForRegistry(registryA);
+        SharedPreferencesManager defaultB =
+                SharedPreferencesManager.getInstanceForRegistry(registryB);
+        AtomicInteger defaultCalls = new AtomicInteger();
+        SharedPreferenceObserver defaultObserver =
+                defaultA.observe("int_key", defaultCalls::incrementAndGet);
+
+        defaultB.writeInt("int_key", 7);
+        assertEquals(1, defaultCalls.get());
+        assertEquals(7, defaultA.readInt("int_key"));
+        defaultObserver.destroy();
+
+        SharedPreferencesManager namedA = SharedPreferencesManager.getInstance(FILE_A, registryA);
+        SharedPreferencesManager namedB = SharedPreferencesManager.getInstance(FILE_A, registryB);
+        AtomicInteger namedCalls = new AtomicInteger();
+        SharedPreferenceObserver namedObserver =
+                namedA.observe("int_key", namedCalls::incrementAndGet);
+
+        namedB.writeInt("int_key", 8);
+        assertEquals(1, namedCalls.get());
+        assertEquals(8, namedA.readInt("int_key"));
+        namedObserver.destroy();
+    }
+
+    @Test
+    public void testObserve_nullKeyIgnored() {
+        AtomicInteger calls = new AtomicInteger();
+        SharedPreferenceObserver observer = mSubject.observe("int_key", calls::incrementAndGet);
+
+        // Android 11+ (API 30+) passes a null key when SharedPreferences.Editor#clear() runs.
+        observer.onSharedPreferenceChanged(ContextUtils.getAppSharedPreferences(), null);
+        ContextUtils.getAppSharedPreferences().edit().clear().commit();
+
+        assertEquals(0, calls.get());
+        observer.destroy();
+    }
+
+    @Test
+    public void testObserve_checksKeysAgainstRegistry() {
+        SharedPreferenceObserver single = mSubject.observe("int_key", () -> {});
+        verify(mChecker).checkIsKeyInUse(eq("int_key"));
+        single.destroy();
+
+        SharedPreferenceObserver multi =
+                mSubject.observe(Arrays.asList("bool_key", "string_key"), key -> {});
+        verify(mChecker).checkIsKeyInUse(eq("bool_key"));
+        verify(mChecker).checkIsKeyInUse(eq("string_key"));
+        multi.destroy();
+
+        Assume.assumeTrue(BuildConfig.ENABLE_ASSERTS);
+        SharedPreferencesManager strictManager =
+                SharedPreferencesManager.getInstance(FILE_A, registryWith("int_key"));
+        RuntimeException e =
+                assertThrows(
+                        RuntimeException.class,
+                        () -> strictManager.observe("unregistered_key", () -> {}));
+        assertTrue(e.getMessage().contains("unregistered_key"));
     }
 }

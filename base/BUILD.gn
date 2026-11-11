@@ -6061,6 +6061,7 @@ if (is_android) {
       "android/java/src/org/chromium/base/shared_preferences/KnownPreferenceKeyRegistries.java",
       "android/java/src/org/chromium/base/shared_preferences/PreferenceKeyChecker.java",
       "android/java/src/org/chromium/base/shared_preferences/PreferenceKeyRegistry.java",
+      "android/java/src/org/chromium/base/shared_preferences/SharedPreferenceObserver.java",
       "android/java/src/org/chromium/base/shared_preferences/SharedPreferencesManager.java",
       "android/java/src/org/chromium/base/shared_preferences/StrictPreferenceKeyChecker.java",
     ]
