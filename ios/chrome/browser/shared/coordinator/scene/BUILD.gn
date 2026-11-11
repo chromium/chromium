@@ -317,6 +317,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/main/ui_bundled",
     "//ios/chrome/browser/menu/public",
     "//ios/chrome/browser/passwords/model/remote_actor",
+    "//ios/chrome/browser/passwords/model/remote_actor/test:test_support",
     "//ios/chrome/browser/policy/model:policy_util",
     "//ios/chrome/browser/prerender/model",
     "//ios/chrome/browser/saved_tab_groups/model",

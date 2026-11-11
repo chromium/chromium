@@ -8,14 +8,11 @@
 #import <utility>
 
 #import "base/strings/sys_string_conversions.h"
-#import "base/types/expected.h"
-#import "ios/chrome/browser/passwords/model/remote_actor/proto/remote_actor_password_upload_request.pb.h"
 #import "ios/chrome/browser/passwords/model/remote_actor/remote_actor_constants.h"
-#import "ios/chrome/browser/passwords/model/remote_actor/remote_actor_payload_parser.h"
 #import "net/base/url_util.h"
 #import "url/gurl.h"
 
-std::optional<RemoteActorRequest> ParseRemoteActorRequestFromURL(
+std::optional<RemoteActorRequest> ExtractRemoteActorRequestFromURL(
     const GURL& url) {
   std::string payload;
   std::string nonce;
@@ -28,16 +25,8 @@ std::optional<RemoteActorRequest> ParseRemoteActorRequestFromURL(
     return std::nullopt;
   }
 
-  base::expected<remote_actor::proto::RemoteActorPasswordUploadRequest,
-                 RemoteActorParsingError>
-      result = ParseRemoteActorPayload(payload, nonce);
-  if (!result.has_value()) {
-    return std::nullopt;
-  }
-
   return RemoteActorRequest{
       .payload = std::move(payload),
       .nonce = std::move(nonce),
-      .request = std::move(*result),
   };
 }

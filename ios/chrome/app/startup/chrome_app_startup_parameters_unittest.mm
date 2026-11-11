@@ -955,12 +955,7 @@ TEST_F(AppStartupParametersTest, RemoteActorURL_Success) {
   ASSERT_TRUE(params.remoteActorRequest.has_value());
   EXPECT_EQ(test_data.expectation.payload, params.remoteActorRequest->payload);
   EXPECT_EQ(test_data.expectation.nonce, params.remoteActorRequest->nonce);
-  EXPECT_EQ(test_data.expectation.request.gaia_id(),
-            params.remoteActorRequest->request.gaia_id());
-  EXPECT_EQ(test_data.expectation.request.domain(),
-            params.remoteActorRequest->request.domain());
-  EXPECT_EQ(test_data.expectation.request.task_id(),
-            params.remoteActorRequest->request.task_id());
+  EXPECT_FALSE(params.remoteActorRequest->request.has_value());
 }
 
 // Tests that a Remote Actor URL with a different scheme is also recognized when
@@ -982,8 +977,9 @@ TEST_F(AppStartupParametersTest, RemoteActorURL_DifferentScheme) {
   EXPECT_TRUE([params externalURL].is_empty());
   EXPECT_EQ(REMOTE_ACTOR_CREDENTIAL_SHARING, [params postOpeningAction]);
   ASSERT_TRUE(params.remoteActorRequest.has_value());
-  EXPECT_EQ(test_data.expectation.request.gaia_id(),
-            params.remoteActorRequest->request.gaia_id());
+  EXPECT_EQ(test_data.expectation.payload, params.remoteActorRequest->payload);
+  EXPECT_EQ(test_data.expectation.nonce, params.remoteActorRequest->nonce);
+  EXPECT_FALSE(params.remoteActorRequest->request.has_value());
 }
 
 // Tests that Remote Actor URLs are ignored when the feature flag is disabled.
@@ -1036,9 +1032,9 @@ TEST_F(AppStartupParametersTest, RemoteActorURL_MissingPayloadOrNonce) {
   EXPECT_EQ(nil, params2);
 }
 
-// Tests that Remote Actor URLs with invalid or un-decryptable payload return
-// nil.
-TEST_F(AppStartupParametersTest, RemoteActorURL_InvalidPayload) {
+// Tests that Remote Actor URLs with an un-decryptable payload do not access the
+// Keychain synchronously during startup parameter parsing.
+TEST_F(AppStartupParametersTest, RemoteActorURL_DefersPayloadDecryption) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       password_manager::features::kRemoteActorCredentialSharing);
@@ -1054,7 +1050,12 @@ TEST_F(AppStartupParametersTest, RemoteActorURL_InvalidPayload) {
                applicationMode:ApplicationModeForTabOpening::UNDETERMINED
           forceApplicationMode:NO];
 
-  EXPECT_EQ(nil, params);
+  ASSERT_TRUE(params);
+  EXPECT_EQ(REMOTE_ACTOR_CREDENTIAL_SHARING, [params postOpeningAction]);
+  ASSERT_TRUE(params.remoteActorRequest.has_value());
+  EXPECT_EQ("invalid_payload", params.remoteActorRequest->payload);
+  EXPECT_EQ("invalid_nonce", params.remoteActorRequest->nonce);
+  EXPECT_FALSE(params.remoteActorRequest->request.has_value());
 }
 
 // Tests that `SaveFieldTrialValuesForGroupApp()` sets

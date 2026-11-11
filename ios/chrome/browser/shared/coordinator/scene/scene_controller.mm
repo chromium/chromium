@@ -16,8 +16,10 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/task/thread_pool.h"
 #import "base/time/time.h"
 #import "base/trace_event/trace_event.h"
+#import "base/types/expected.h"
 #import "base/types/expected_macros.h"
 #import "components/breadcrumbs/core/breadcrumbs_status.h"
 #import "components/data_sharing/public/data_sharing_utils.h"
@@ -96,6 +98,7 @@
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/passwords/model/remote_actor/proto/remote_actor_password_upload_request.pb.h"
 #import "ios/chrome/browser/passwords/model/remote_actor/remote_actor_callback_util.h"
+#import "ios/chrome/browser/passwords/model/remote_actor/remote_actor_payload_parser.h"
 #import "ios/chrome/browser/passwords/model/remote_actor/remote_actor_precondition_checker.h"
 #import "ios/chrome/browser/picture_in_picture/model/picture_in_picture_scene_agent.h"
 #import "ios/chrome/browser/policy/model/browser_management_service.h"
@@ -312,6 +315,13 @@ GeminiAppSwitcherAccountStatus GetAppSwitcherAccountStatus(
   return GeminiAppSwitcherAccountStatus::kBothSignedOut;
 }
 
+// Decrypts `payload` and `nonce` on a background sequence.
+base::expected<remote_actor::proto::RemoteActorPasswordUploadRequest,
+               RemoteActorParsingError>
+DecryptRemoteActorPayload(std::string payload, std::string nonce) {
+  return ParseRemoteActorPayload(payload, nonce);
+}
+
 }  // namespace
 
 // If `params` is for a Dino game URL, update transition type to allow opening.
@@ -356,8 +366,7 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
   NSData* _imageSearchData;
   // A property to track a pending Remote Actor credential sharing request
   // across tab switcher dismissal.
-  std::optional<remote_actor::proto::RemoteActorPasswordUploadRequest>
-      _remoteActorRequest;
+  std::optional<RemoteActorRequest> _remoteActorRequest;
   BOOL _handleExternalIntentsInProgress;
 }
 
@@ -981,7 +990,7 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
   AppStartupParameters* startupParameters = self.startupParameters;
   _imageSearchData = [startupParameters imageSearchData];
   if (startupParameters && startupParameters.remoteActorRequest) {
-    _remoteActorRequest = startupParameters.remoteActorRequest->request;
+    _remoteActorRequest = startupParameters.remoteActorRequest;
   } else {
     _remoteActorRequest.reset();
   }
@@ -2723,24 +2732,57 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
 }
 
 // Consumes and returns the pending Remote Actor request if one is available.
-- (std::optional<remote_actor::proto::RemoteActorPasswordUploadRequest>)
-    getPendingRemoteActorRequest {
+- (std::optional<RemoteActorRequest>)consumePendingRemoteActorRequest {
   if (_remoteActorRequest) {
     return std::exchange(_remoteActorRequest, std::nullopt);
   }
   AppStartupParameters* startupParameters = self.startupParameters;
   if (startupParameters && startupParameters.remoteActorRequest) {
-    return startupParameters.remoteActorRequest->request;
+    return startupParameters.remoteActorRequest;
   }
   return std::nullopt;
 }
 
 // Handles a Remote Actor credential sharing request from an external app.
 - (void)handleRemoteActorCredentialSharing {
-  ASSIGN_OR_RETURN(
-      remote_actor::proto::RemoteActorPasswordUploadRequest request,
-      [self getPendingRemoteActorRequest], [] {});
+  ASSIGN_OR_RETURN(RemoteActorRequest remoteActorRequest,
+                   [self consumePendingRemoteActorRequest], [] {});
 
+  if (remoteActorRequest.request.has_value()) {
+    [self processDecryptedRemoteActorRequest:*remoteActorRequest.request];
+    return;
+  }
+
+  __weak __typeof(self) weakSelf = self;
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
+      base::BindOnce(&DecryptRemoteActorPayload,
+                     std::move(remoteActorRequest.payload),
+                     std::move(remoteActorRequest.nonce)),
+      base::BindOnce(
+          [](SceneController* controller,
+             base::expected<
+                 remote_actor::proto::RemoteActorPasswordUploadRequest,
+                 RemoteActorParsingError> result) {
+            [controller handleParsedRemoteActorPayload:std::move(result)];
+          },
+          weakSelf));
+}
+
+// Handles the result of background decryption for a Remote Actor request.
+- (void)handleParsedRemoteActorPayload:
+    (base::expected<remote_actor::proto::RemoteActorPasswordUploadRequest,
+                    RemoteActorParsingError>)result {
+  if (!self.currentInterface.browser || !result.has_value()) {
+    return;
+  }
+  [self processDecryptedRemoteActorRequest:*result];
+}
+
+// Validates preconditions and presents the Remote Actor credential bottom sheet
+// for a decrypted `request`.
+- (void)processDecryptedRemoteActorRequest:
+    (const remote_actor::proto::RemoteActorPasswordUploadRequest&)request {
   base::expected<void, RemoteActorPreconditionError> preconditionResult =
       CheckRemoteActorPreconditions(self.currentInterface.profile,
                                     request.gaia_id());

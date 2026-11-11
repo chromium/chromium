@@ -8,6 +8,7 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
+#import "base/threading/thread_restrictions.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/identity_test_utils.h"
 #import "components/supervised_user/test_support/kids_chrome_management_test_utils.h"
@@ -37,6 +38,9 @@
 #import "ios/chrome/browser/menu/public/menu_action_type.h"
 #import "ios/chrome/browser/menu/public/menu_histograms.h"
 #import "ios/chrome/browser/passwords/model/remote_actor/remote_actor_constants.h"
+#import "ios/chrome/browser/passwords/model/remote_actor/remote_actor_keychain_util.h"
+#import "ios/chrome/browser/passwords/model/remote_actor/test/remote_actor_test_util.h"
+#import "ios/chrome/browser/passwords/model/remote_actor/test/scoped_keychain_access_group_override.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_service_factory.h"
@@ -530,9 +534,10 @@ TEST_F(SceneControllerTest,
            applicationMode:ApplicationModeForTabOpening::UNDETERMINED
       forceApplicationMode:NO];
   RemoteActorRequest actor_request;
-  actor_request.request.set_task_id("task-123");
-  actor_request.request.set_gaia_id("expected-gaia-id");
-  actor_request.request.set_domain("https://example.com");
+  actor_request.request.emplace();
+  actor_request.request->set_task_id("task-123");
+  actor_request.request->set_gaia_id("expected-gaia-id");
+  actor_request.request->set_domain("https://example.com");
   startup_params.remoteActorRequest = actor_request;
   [connection_information_ setStartupParameters:startup_params];
 
@@ -561,11 +566,11 @@ TEST_F(SceneControllerTest,
   MakePrimaryAccountAvailable("user@example.com");
   CoreAccountInfo primary_account = GetIdentityManager()->GetPrimaryAccountInfo(
       signin::ConsentLevel::kSignin);
-  actor_request.request.set_gaia_id(primary_account.gaia.ToString());
+  actor_request.request->set_gaia_id(primary_account.gaia.ToString());
   startup_params.remoteActorRequest = actor_request;
 
   [[[mock_scene_handler_ expect] ignoringNonObjectArgs]
-      showRemoteActorCredentialBottomSheetWithRequest:actor_request.request];
+      showRemoteActorCredentialBottomSheetWithRequest:*actor_request.request];
   OCMReject([mock_application openURL:[OCMArg any]
                               options:[OCMArg any]
                     completionHandler:[OCMArg any]]);
@@ -624,9 +629,10 @@ TEST_F(SceneControllerTest,
       forceApplicationMode:NO];
   startup_params.postOpeningAction = REMOTE_ACTOR_CREDENTIAL_SHARING;
   RemoteActorRequest actor_request;
-  actor_request.request.set_task_id("task-cached");
-  actor_request.request.set_gaia_id(primary_account.gaia.ToString());
-  actor_request.request.set_domain("https://example.com");
+  actor_request.request.emplace();
+  actor_request.request->set_task_id("task-cached");
+  actor_request.request->set_gaia_id(primary_account.gaia.ToString());
+  actor_request.request->set_domain("https://example.com");
   startup_params.remoteActorRequest = actor_request;
   [connection_information_ setStartupParameters:startup_params];
 
@@ -647,7 +653,7 @@ TEST_F(SceneControllerTest,
                           dismissGemini:YES]);
 
   [[[mock_scene_handler_ expect] ignoringNonObjectArgs]
-      showRemoteActorCredentialBottomSheetWithRequest:actor_request.request];
+      showRemoteActorCredentialBottomSheetWithRequest:*actor_request.request];
 
   [(id<TabOpening>)scene_controller_
       dismissModalsAndMaybeOpenSelectedTabInMode:ApplicationModeForTabOpening::
@@ -660,7 +666,7 @@ TEST_F(SceneControllerTest,
   // The cached request was consumed, so triggering the action again is a
   // no-op.
   [[[mock_scene_handler_ reject] ignoringNonObjectArgs]
-      showRemoteActorCredentialBottomSheetWithRequest:actor_request.request];
+      showRemoteActorCredentialBottomSheetWithRequest:*actor_request.request];
   ProceduralBlock action = [scene_controller_
       completionBlockForTriggeringAction:REMOTE_ACTOR_CREDENTIAL_SHARING];
   ASSERT_NE(action, nil);
@@ -693,12 +699,71 @@ TEST_F(SceneControllerTest,
                                       completion:nil];
 
   [[[mock_scene_handler_ reject] ignoringNonObjectArgs]
-      showRemoteActorCredentialBottomSheetWithRequest:actor_request.request];
+      showRemoteActorCredentialBottomSheetWithRequest:*actor_request.request];
   action();
   EXPECT_OCMOCK_VERIFY(mock_scene_handler_);
   [partial_scene_controller stopMocking];
   [mock_scene_state stopMocking];
 
+  FirstRun::RemoveSentinel();
+  FirstRun::ClearStateForTesting();
+}
+
+// Tests that `REMOTE_ACTOR_CREDENTIAL_SHARING` decrypts encrypted `payload` and
+// `nonce` on a background thread without blocking the UI thread.
+TEST_F(SceneControllerTest,
+       RemoteActorCredentialSharingDecryptsOnBackgroundThread) {
+  base::File::Error file_error;
+  FirstRun::RemoveSentinel();
+  FirstRun::CreateSentinel(&file_error);
+  FirstRun::LoadSentinelInfo();
+  FirstRun::ClearStateForTesting();
+
+  ScopedRemoteActorKeychainAccessGroupOverrideForTesting keychain_override(nil);
+  std::vector<uint8_t> key(32, 0xAB);
+  ASSERT_TRUE(SetRemoteActorSharedSymmetricKeyForTesting(
+      key, nil, kRemoteActorKeychainAccount, kRemoteActorKeychainService));
+
+  MakePrimaryAccountAvailable("user@example.com");
+  CoreAccountInfo primary_account = GetIdentityManager()->GetPrimaryAccountInfo(
+      signin::ConsentLevel::kSignin);
+
+  remote_actor::proto::RemoteActorPasswordUploadRequest proto_request;
+  proto_request.set_task_id("task-async");
+  proto_request.set_gaia_id(primary_account.gaia.ToString());
+  proto_request.set_domain("example.com");
+
+  std::optional<std::pair<std::string, std::string>> encrypted =
+      CreateEncryptedRemoteActorPayloadForTesting(proto_request, key);
+  ASSERT_TRUE(encrypted.has_value());
+
+  AppStartupParameters* startup_params = [[AppStartupParameters alloc]
+       initWithExternalURL:GURL()
+               completeURL:GURL()
+           applicationMode:ApplicationModeForTabOpening::UNDETERMINED
+      forceApplicationMode:NO];
+  RemoteActorRequest actor_request;
+  actor_request.payload = encrypted->first;
+  actor_request.nonce = encrypted->second;
+  startup_params.remoteActorRequest = actor_request;
+  [connection_information_ setStartupParameters:startup_params];
+
+  [[[mock_scene_handler_ expect] ignoringNonObjectArgs]
+      showRemoteActorCredentialBottomSheetWithRequest:proto_request];
+
+  ProceduralBlock action = [scene_controller_
+      completionBlockForTriggeringAction:REMOTE_ACTOR_CREDENTIAL_SHARING];
+  ASSERT_NE(action, nil);
+
+  {
+    base::ScopedDisallowBlocking disallow_blocking;
+    action();
+  }
+  task_environment_.RunUntilIdle();
+
+  EXPECT_OCMOCK_VERIFY(mock_scene_handler_);
+  DeleteRemoteActorSharedSymmetricKeyForTesting(
+      nil, kRemoteActorKeychainAccount, kRemoteActorKeychainService);
   FirstRun::RemoveSentinel();
   FirstRun::ClearStateForTesting();
 }

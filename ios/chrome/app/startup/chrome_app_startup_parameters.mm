@@ -375,7 +375,7 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
   }
 
   std::optional<RemoteActorRequest> request =
-      ParseRemoteActorRequestFromURL(net::GURLWithNSURL(completeURL));
+      ExtractRemoteActorRequestFromURL(net::GURLWithNSURL(completeURL));
   if (!request.has_value()) {
     return nil;
   }
