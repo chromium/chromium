@@ -388,22 +388,6 @@ public class EducationalTipModuleMediatorUnitTest {
         verify(mActionDelegate).getProfileSupplier();
     }
 
-    @Test
-    public void testBottomSheetObserver_DefaultBrowser_SkipsOnInteractionComplete() {
-        mEducationalTipModuleMediator.setModuleTypeForTesting(ModuleType.DEFAULT_BROWSER_PROMO);
-        verify(mBottomSheetController).addObserver(mBottomSheetObserverCaptor.capture());
-
-        // Simulate sheet dismissal with interaction complete (clicked button).
-        mBottomSheetObserverCaptor
-                .getValue()
-                .onSheetStateChanged(
-                        BottomSheetController.SheetState.HIDDEN,
-                        BottomSheetController.StateChangeReason.INTERACTION_COMPLETE);
-
-        // verify updateModule was NOT called (profile supplier never accessed).
-        verify(mActionDelegate, never()).getProfileSupplier();
-    }
-
     private void testShowModuleImpl(
             @ModuleType int moduleType, int titleId, int descriptionId, int imageResource) {
         mEducationalTipModuleMediator.setModuleTypeForTesting(moduleType);

@@ -3906,21 +3906,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             }
 
             @Override
-            public boolean maybeShowDefaultBrowserPromoWithRoleManager() {
-                Profile profile = getProfileSupplier().get();
-                if (profile == null) return false;
-
-                Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
-                var windowAndroid = assertNonNull(getWindowAndroid());
-                return DefaultBrowserPromoUtils.getInstance()
-                        .prepareLaunchPromoIfNeeded(
-                                ChromeTabbedActivity.this,
-                                windowAndroid,
-                                tracker,
-                                DefaultBrowserPromoUtils.DefaultBrowserPromoEntryPoint.SET_UP_LIST);
-            }
-
-            @Override
             public boolean supportCustomizedNtpTheme() {
                 var windowAndroid = assertNonNull(getWindowAndroid());
                 return NtpCustomizationPromoManager.canTriggerCustomizationPromo(

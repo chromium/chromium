@@ -56,17 +56,10 @@ public class DefaultBrowserPromoUtils {
         void onDefaultBrowserPromoTriggered();
     }
 
-    /** An interface to allow external components to suppress the default browser promo. */
-    public interface DefaultBrowserPromoDelegate {
-        /** Returns true if the default browser promo should be suppressed. */
-        boolean shouldSuppressPromo();
-    }
-
     private final DefaultBrowserPromoImpressionCounter mImpressionCounter;
     private final DefaultBrowserStateProvider mStateProvider;
 
     private static @Nullable DefaultBrowserPromoUtils sInstance;
-    private static @Nullable DefaultBrowserPromoDelegate sDelegate;
 
     private final ObserverList<DefaultBrowserPromoTriggerStateListener>
             mDefaultBrowserPromoTriggerStateListeners;
@@ -74,7 +67,6 @@ public class DefaultBrowserPromoUtils {
     @IntDef({
         DefaultBrowserPromoEntryPoint.APP_MENU,
         DefaultBrowserPromoEntryPoint.SETTINGS,
-        DefaultBrowserPromoEntryPoint.SET_UP_LIST,
         DefaultBrowserPromoEntryPoint.CHROME_STARTUP,
         DefaultBrowserPromoEntryPoint.FRE,
         DefaultBrowserPromoEntryPoint.APP_MENU_RMD,
@@ -83,7 +75,6 @@ public class DefaultBrowserPromoUtils {
     public @interface DefaultBrowserPromoEntryPoint {
         int APP_MENU = 0;
         int SETTINGS = 1;
-        int SET_UP_LIST = 2;
         int CHROME_STARTUP = 3;
         int FRE = 4;
         int APP_MENU_RMD = 5;
@@ -106,14 +97,6 @@ public class DefaultBrowserPromoUtils {
                             new DefaultBrowserStateProvider());
         }
         return sInstance;
-    }
-
-    public static void setDelegate(DefaultBrowserPromoDelegate delegate) {
-        sDelegate = delegate;
-    }
-
-    public static @Nullable DefaultBrowserPromoDelegate getDelegateForTesting() {
-        return sDelegate;
     }
 
     static boolean isFeatureEnabled() {
@@ -187,16 +170,11 @@ public class DefaultBrowserPromoUtils {
      * Determine if default browser promo other than the Role Manager Promo should be displayed.
      * This is typically used for the Message banner promo triggered by pasting URLs.
      *
-     * <p>Conditions for showing: 1. The promo is not suppressed by the {@link
-     * DefaultBrowserPromoDelegate} (e.g., the Setup List is active). 2. The Role Manager Promo
-     * shouldn't be shown for the Startup entry point. 3. The impression count condition (ignoring
-     * max count) is met. 4. The current default browser state satisfies the pre-defined conditions.
+     * <p>Conditions for showing: 1. The Role Manager Promo shouldn't be shown for the Startup entry
+     * point. 2. The impression count condition (ignoring max count) is met. 3. The current default
+     * browser state satisfies the pre-defined conditions.
      */
     public boolean shouldShowNonRoleManagerPromo(Context context) {
-        if (sDelegate != null && sDelegate.shouldSuppressPromo()) {
-            return false;
-        }
-
         return !shouldShowRoleManagerPromo(context, DefaultBrowserPromoEntryPoint.CHROME_STARTUP)
                 && mImpressionCounter.shouldShowPromo(/* ignoreMaxCount= */ true)
                 && mStateProvider.shouldShowPromo();
@@ -204,9 +182,8 @@ public class DefaultBrowserPromoUtils {
 
     /**
      * This decides whether the dialog should be promoted. Returns true if: the feature is enabled,
-     * the {@link RoleManager} is available, the promo is not suppressed by the {@link
-     * DefaultBrowserPromoDelegate}, and both the impression count and current default browser state
-     * satisfy the pre-defined conditions.
+     * the {@link RoleManager} is available, and both the impression count and current default
+     * browser state satisfy the pre-defined conditions.
      *
      * @param context The context.
      * @param source The source of the click, one of {@link DefaultBrowserPromoEntryPoint}.
@@ -221,16 +198,9 @@ public class DefaultBrowserPromoUtils {
             return false;
         }
 
-        // Suppress the passive startup promo if the delegate (e.g. Setup List) says so.
-        if (source == DefaultBrowserPromoEntryPoint.CHROME_STARTUP
-                && sDelegate != null
-                && sDelegate.shouldSuppressPromo()) {
-            return false;
-        }
-
         int promoCount = mImpressionCounter.getPromoCount();
         if (source != DefaultBrowserPromoEntryPoint.CHROME_STARTUP) {
-            // For explicit actions (App menu, Settings, Setup List), we only check if the
+            // For explicit actions (App menu, Settings), we only check if the
             // Role Manager has been shown before.
             return promoCount == 0;
         }

@@ -13,7 +13,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 
 import java.util.HashSet;
-import java.util.function.Supplier;
 
 /** Utilities for educational tip modules. */
 @NullMarked
@@ -36,23 +35,14 @@ public class EducationalTipModuleUtils {
      * Creates a {@link BottomSheetObserver} that triggers an update callback when a bottom sheet is
      * dismissed.
      *
-     * @param shouldSkipUpdate A supplier that returns true if the update should be skipped (e.g.
-     *     for Default Browser when navigating to settings).
      * @param updateCallback The callback to run when the sheet is hidden.
      * @return A new BottomSheetObserver.
      */
-    public static BottomSheetObserver createBottomSheetObserver(
-            Supplier<Boolean> shouldSkipUpdate, Runnable updateCallback) {
+    public static BottomSheetObserver createBottomSheetObserver(Runnable updateCallback) {
         return new BottomSheetObserver() {
             @Override
             public void onSheetStateChanged(int newState, int reason) {
                 if (newState == BottomSheetController.SheetState.HIDDEN) {
-                    if (shouldSkipUpdate.get()
-                            && reason
-                                    == BottomSheetController.StateChangeReason
-                                            .INTERACTION_COMPLETE) {
-                        return;
-                    }
                     updateCallback.run();
                 }
             }

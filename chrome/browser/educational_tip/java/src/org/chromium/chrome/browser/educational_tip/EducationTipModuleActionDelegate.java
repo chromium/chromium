@@ -77,13 +77,6 @@ public interface EducationTipModuleActionDelegate {
     BottomSheetSigninAndHistorySyncConfig createHistorySyncBottomSheetConfig();
 
     /**
-     * Launch the Role Manager for the Setup list default browser promo if eligible.
-     *
-     * @return True if the Role Manager was shown.
-     */
-    boolean maybeShowDefaultBrowserPromoWithRoleManager();
-
-    /**
      * Returns whether customized NTP background can be displayed on this device. It returns true on
      * tablets, while checks whether edge-to-edge is enabled on phones.
      */

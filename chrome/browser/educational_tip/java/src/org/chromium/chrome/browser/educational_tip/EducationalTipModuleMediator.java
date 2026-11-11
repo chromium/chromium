@@ -57,8 +57,7 @@ public class EducationalTipModuleMediator {
         mDefaultBrowserPromoTriggerStateListener = this::removeModule;
 
         mBottomSheetObserver =
-                EducationalTipModuleUtils.createBottomSheetObserver(
-                        () -> mModuleType == ModuleType.DEFAULT_BROWSER_PROMO, this::updateModule);
+                EducationalTipModuleUtils.createBottomSheetObserver(this::updateModule);
         mActionDelegate.getBottomSheetController().addObserver(mBottomSheetObserver);
 
         mCallbackController = new CallbackController();
@@ -131,25 +130,19 @@ public class EducationalTipModuleMediator {
         }
 
         if (mModuleType == ModuleType.DEFAULT_BROWSER_PROMO) {
-            // For the Setup List version, we notify the system immediately to ensure mutual
-            // exclusion with other surfaces (banners on Messages/Settings pages).
-            if (SetupListModuleUtils.isSetupListModule(getModuleType())) {
-                notifyDefaultBrowserPromoVisible();
-            } else {
-                if (mTracker.isInitialized()) {
-                    boolean shouldDisplay =
-                            mTracker.shouldTriggerHelpUi(
-                                    FeatureConstants.DEFAULT_BROWSER_PROMO_MAGIC_STACK);
-                    if (shouldDisplay) {
-                        notifyDefaultBrowserPromoVisible();
-                    }
-                } else {
+            if (mTracker.isInitialized()) {
+                boolean shouldDisplay =
+                        mTracker.shouldTriggerHelpUi(
+                                FeatureConstants.DEFAULT_BROWSER_PROMO_MAGIC_STACK);
+                if (shouldDisplay) {
                     notifyDefaultBrowserPromoVisible();
-                    mTracker.addOnInitializedCallback(
-                            _ ->
-                                    mTracker.shouldTriggerHelpUi(
-                                            FeatureConstants.DEFAULT_BROWSER_PROMO_MAGIC_STACK));
                 }
+            } else {
+                notifyDefaultBrowserPromoVisible();
+                mTracker.addOnInitializedCallback(
+                        _ ->
+                                mTracker.shouldTriggerHelpUi(
+                                        FeatureConstants.DEFAULT_BROWSER_PROMO_MAGIC_STACK));
             }
         }
 
@@ -209,9 +202,7 @@ public class EducationalTipModuleMediator {
      * the educational tip module from the magic stack.
      */
     private void removeModule() {
-        if (!SetupListModuleUtils.isSetupListModule(mModuleType)) {
-            mModuleDelegate.removeModule(mModuleType);
-        }
+        mModuleDelegate.removeModule(mModuleType);
         removeDefaultBrowserPromoTriggerStateListener();
     }
 

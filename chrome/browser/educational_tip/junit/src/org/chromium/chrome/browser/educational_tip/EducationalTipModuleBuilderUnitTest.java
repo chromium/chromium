@@ -212,7 +212,7 @@ public class EducationalTipModuleBuilderUnitTest {
     @Test
     @DisableFeatures({ChromeFeatureList.SEGMENTATION_PLATFORM_EPHEMERAL_CARD_RANKER})
     public void testBuild_SetupList_BypassesGlobalKillSwitch() {
-        int setupListModule = ModuleType.DEFAULT_BROWSER_PROMO;
+        int setupListModule = ModuleType.ENHANCED_SAFE_BROWSING_PROMO;
         when(mSetupListManager.isSetupListActive()).thenReturn(true);
         when(mSetupListManager.isSetupListModule(setupListModule)).thenReturn(true);
         EducationalTipModuleBuilder builder =

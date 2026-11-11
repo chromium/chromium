@@ -583,45 +583,6 @@ public class DefaultBrowserPromoUtilsTest {
         watcher.assertExpected();
     }
 
-    @Test
-    public void testPrepareLaunchPromoIfNeeded_SetUpList() {
-        // First click: Promo (Role Manager Dialog) has never been shown.
-        when(mCounter.getPromoCount()).thenReturn(0);
-        Assert.assertTrue(
-                "Should show role manager on first click from Setup List.",
-                mUtils.prepareLaunchPromoIfNeeded(
-                        mActivity,
-                        mWindowAndroid,
-                        mMockTracker,
-                        DefaultBrowserPromoUtils.DefaultBrowserPromoEntryPoint.SET_UP_LIST));
-
-        // Second click: Promo Count > 0.
-        when(mCounter.getPromoCount()).thenReturn(1);
-        Assert.assertFalse(
-                "Should NOT show role manager on subsequent clicks from Setup List.",
-                mUtils.prepareLaunchPromoIfNeeded(
-                        mActivity,
-                        mWindowAndroid,
-                        mMockTracker,
-                        DefaultBrowserPromoUtils.DefaultBrowserPromoEntryPoint.SET_UP_LIST));
-    }
-
-    @Test
-    public void testPromo_SuppressedByDelegate() {
-        DefaultBrowserPromoUtils.DefaultBrowserPromoDelegate delegate =
-                Mockito.mock(DefaultBrowserPromoUtils.DefaultBrowserPromoDelegate.class);
-        when(delegate.shouldSuppressPromo()).thenReturn(true);
-        DefaultBrowserPromoUtils.setDelegate(delegate);
-
-        Assert.assertFalse(
-                "Should not promo when suppressed by delegate.",
-                mUtils.shouldShowRoleManagerPromo(
-                        mActivity,
-                        DefaultBrowserPromoUtils.DefaultBrowserPromoEntryPoint.CHROME_STARTUP));
-
-        DefaultBrowserPromoUtils.setDelegate(null);
-    }
-
     private void verifyOSSettingsFallbackIntentLaunched() {
         // Should fallback to System Settings Intent.
         Intent intent = shadowOf(mActivity).getNextStartedActivity();

@@ -88,11 +88,7 @@ public class EducationalTipModuleTwoCellCoordinator implements ModuleProvider {
                 mActionDelegate.getContext().getString(R.string.educational_tip_module_name));
 
         mBottomSheetObserver =
-                EducationalTipModuleUtils.createBottomSheetObserver(
-                        () ->
-                                mItem1Type == ModuleType.DEFAULT_BROWSER_PROMO
-                                        || mItem2Type == ModuleType.DEFAULT_BROWSER_PROMO,
-                        this::updateModule);
+                EducationalTipModuleUtils.createBottomSheetObserver(this::updateModule);
         mActionDelegate.getBottomSheetController().addObserver(mBottomSheetObserver);
 
         refreshSlots();
