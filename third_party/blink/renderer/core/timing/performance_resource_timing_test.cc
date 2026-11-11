@@ -327,4 +327,71 @@ TEST_F(PerformanceResourceTimingTest,
   EXPECT_TRUE(document.IsUseCounted(
       WebFeature::kPerformanceResourceTimingWorkerFinalBothGettersNonEmpty));
 }
+
+// The static router source types are response-derived attributes and must be
+// masked (empty) when the timing allow check failed, so that a page cannot
+// distinguish a delivered opaque response from a network error.
+TEST_F(PerformanceResourceTimingTest, ServiceWorkerRouterSourceIsGuardedByTao) {
+  V8TestingScope scope;
+  Initialize(scope.GetScriptState());
+
+  ExecutionContext* context = scope.GetExecutionContext();
+
+  mojom::blink::ResourceTimingInfo info;
+  info.allow_timing_details = false;
+  info.service_worker_router_info =
+      network::mojom::blink::ServiceWorkerRouterInfo::New();
+  info.service_worker_router_info->matched_source_type =
+      network::mojom::ServiceWorkerRouterSourceType::kNetwork;
+  info.service_worker_router_info->actual_source_type =
+      network::mojom::ServiceWorkerRouterSourceType::kNetwork;
+  info.timing = network::mojom::blink::LoadTimingInfo::New();
+  info.timing->service_worker_router_evaluation_start =
+      base::TimeTicks() + base::Milliseconds(200);
+  info.timing->service_worker_cache_lookup_start =
+      base::TimeTicks() + base::Milliseconds(300);
+
+  auto* resource_timing = MakeGarbageCollected<PerformanceResourceTiming>(
+      info.Clone(), g_empty_atom, base::TimeTicks() + base::Milliseconds(100),
+      context->CrossOriginIsolatedCapability(), context,
+      performance_->NavigationId().web_exposed_id);
+
+  EXPECT_TRUE(resource_timing->workerMatchedSourceType(context).empty());
+  EXPECT_TRUE(resource_timing->workerMatchedRouterSource(context).empty());
+  EXPECT_TRUE(resource_timing->workerFinalSourceType(context).empty());
+  EXPECT_TRUE(resource_timing->workerFinalRouterSource(context).empty());
+  EXPECT_EQ(resource_timing->workerRouterEvaluationStart(), 0.0);
+  EXPECT_EQ(resource_timing->workerCacheLookupStart(), 0.0);
+}
+
+// When a static router cache hit fails the timing allow check, fetchStart must
+// not fall back to the (masked, zero) responseStart, which would make it
+// smaller than startTime.
+TEST_F(PerformanceResourceTimingTest,
+       ServiceWorkerRouterCacheFetchStartWithoutTao) {
+  V8TestingScope scope;
+  Initialize(scope.GetScriptState());
+
+  ExecutionContext* context = scope.GetExecutionContext();
+
+  mojom::blink::ResourceTimingInfo info;
+  info.allow_timing_details = false;
+  info.start_time = base::TimeTicks() + base::Milliseconds(600);
+  info.service_worker_router_info =
+      network::mojom::blink::ServiceWorkerRouterInfo::New();
+  info.service_worker_router_info->matched_source_type =
+      network::mojom::ServiceWorkerRouterSourceType::kCache;
+  info.service_worker_router_info->actual_source_type =
+      network::mojom::ServiceWorkerRouterSourceType::kCache;
+  info.timing = network::mojom::blink::LoadTimingInfo::New();
+
+  auto* resource_timing = MakeGarbageCollected<PerformanceResourceTiming>(
+      info.Clone(), g_empty_atom, base::TimeTicks() + base::Milliseconds(100),
+      context->CrossOriginIsolatedCapability(), context,
+      performance_->NavigationId().web_exposed_id);
+
+  EXPECT_EQ(resource_timing->responseStart(), 0.0);
+  EXPECT_EQ(resource_timing->fetchStart(), resource_timing->startTime());
+  EXPECT_EQ(resource_timing->fetchStart(), 500);
+}
 }  // namespace blink

@@ -91,6 +91,16 @@ mojom::blink::ResourceTimingInfoPtr CreateResourceTimingInfo(
 
       info->did_reuse_connection = response->ConnectionReused();
     }
+
+    // The static router info is only attached to the response head when the
+    // network service actually delivers a response. Exposing it on entries
+    // that failed the timing allow check would let a page distinguish an
+    // opaque response from a network error (e.g. an ORB/CORP block), so it is
+    // only exposed when the timing allow check passed.
+    info->service_worker_router_info =
+        response->GetServiceWorkerRouterInfo()
+            ? response->GetServiceWorkerRouterInfo()->ToMojo()
+            : nullptr;
   } else {
     // [spec] https://fetch.spec.whatwg.org/#create-an-opaque-timing-info
 
@@ -105,11 +115,6 @@ mojom::blink::ResourceTimingInfoPtr CreateResourceTimingInfo(
       info->timing->service_worker_fetch_start = timing->WorkerFetchStart();
     }
   }
-
-  info->service_worker_router_info =
-      response->GetServiceWorkerRouterInfo()
-          ? response->GetServiceWorkerRouterInfo()->ToMojo()
-          : nullptr;
 
   bool allow_response_details = response->IsCorsSameOrigin();
 

@@ -233,7 +233,7 @@ DOMHighResTimeStamp PerformanceResourceTiming::workerStart() const {
 
 DOMHighResTimeStamp PerformanceResourceTiming::workerRouterEvaluationStart()
     const {
-  if (!info_->timing ||
+  if (!info_->allow_timing_details || !info_->timing ||
       info_->timing->service_worker_router_evaluation_start.is_null()) {
     return 0.0;
   }
@@ -244,7 +244,7 @@ DOMHighResTimeStamp PerformanceResourceTiming::workerRouterEvaluationStart()
 }
 
 DOMHighResTimeStamp PerformanceResourceTiming::workerCacheLookupStart() const {
-  if (!info_->timing ||
+  if (!info_->allow_timing_details || !info_->timing ||
       info_->timing->service_worker_cache_lookup_start.is_null()) {
     return 0.0;
   }
@@ -255,7 +255,10 @@ DOMHighResTimeStamp PerformanceResourceTiming::workerCacheLookupStart() const {
 }
 
 AtomicString PerformanceResourceTiming::GetWorkerMatchedRouterSource() const {
-  if (!info_->service_worker_router_info ||
+  // The router source types are response-derived attributes and must be
+  // masked when the timing allow check failed.
+  // https://fetch.spec.whatwg.org/#create-an-opaque-timing-info
+  if (!info_->allow_timing_details || !info_->service_worker_router_info ||
       !info_->service_worker_router_info->matched_source_type) {
     return AtomicString();
   }
@@ -265,7 +268,7 @@ AtomicString PerformanceResourceTiming::GetWorkerMatchedRouterSource() const {
 }
 
 AtomicString PerformanceResourceTiming::GetWorkerFinalRouterSource() const {
-  if (!info_->service_worker_router_info ||
+  if (!info_->allow_timing_details || !info_->service_worker_router_info ||
       !info_->service_worker_router_info->actual_source_type) {
     return AtomicString();
   }
@@ -396,10 +399,12 @@ DOMHighResTimeStamp PerformanceResourceTiming::fetchStart() const {
   // source type is cache, we will not have a fetch start. For compatibility,
   // we set this to responseStart (as written in explainer
   // https://github.com/WICG/service-worker-static-routing-api/blob/main/resource-timing-api.md
-  // ).
+  // ). responseStart() is masked to 0 when the timing allow check failed, so
+  // only take this shortcut when it passed; otherwise fetchStart would drop
+  // below startTime.
   if (RuntimeEnabledFeatures::ServiceWorkerStaticRouterTimingInfoEnabled(
           DynamicTo<LocalDOMWindow>(source())) &&
-      info_->service_worker_router_info &&
+      info_->allow_timing_details && info_->service_worker_router_info &&
       info_->service_worker_router_info->actual_source_type ==
           network::mojom::ServiceWorkerRouterSourceType::kCache) {
     return responseStart();
