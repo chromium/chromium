@@ -930,6 +930,13 @@ inline constexpr char kGeminiActOnWebAllowedForURLs[] =
 inline constexpr char kGeminiActOnWebBlockedForURLs[] =
     "ios.actuation_on_web_blocked_for_urls";
 
+// An integer pref that holds the policy value for whether Gemini Spark is
+// allowed to connect to Chrome and use auto browse (0 = Enabled,
+// 1 = Disabled). Defaults to 1 (Disabled). Only meaningful for managed
+// profiles; consumers should ignore it when the profile is unmanaged (see
+// GlicEnabling on desktop).
+inline constexpr char kGeminiSparkSettings[] = "ios.gemini_spark_settings";
+
 // An integer determining the enabled status of Gen Ai by policy.
 // 0 or 1 means all covered generative AI features are enabled, while 2 means
 // that they are disabled.

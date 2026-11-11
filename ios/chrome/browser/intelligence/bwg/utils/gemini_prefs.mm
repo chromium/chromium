@@ -44,6 +44,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterIntegerPref(prefs::kGeminiActOnWebSettings, 0);
   registry->RegisterListPref(prefs::kGeminiActOnWebAllowedForURLs);
   registry->RegisterListPref(prefs::kGeminiActOnWebBlockedForURLs);
+  registry->RegisterIntegerPref(
+      prefs::kGeminiSparkSettings,
+      static_cast<int>(gemini::SparkSettingsPolicy::kNotAllowed));
   registry->RegisterBooleanPref(prefs::kAIHubEligibilityTriggered, false);
 }
 

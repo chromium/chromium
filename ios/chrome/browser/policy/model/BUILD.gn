@@ -32,6 +32,8 @@ source_set("model") {
     "configuration_policy_handler_list_factory.mm",
     "device_management_service_configuration_ios.h",
     "device_management_service_configuration_ios.mm",
+    "gemini_spark_settings_policy_handler.cc",
+    "gemini_spark_settings_policy_handler.h",
     "management_state.h",
     "management_state.mm",
     "management_status_providers_ios.h",
@@ -339,6 +341,7 @@ source_set("unit_tests") {
     "browser_signin_policy_handler_unittest.mm",
     "client_data_delegate_ios_unittest.cc",
     "cloud/user_policy_signin_service_unittest.mm",
+    "gemini_spark_settings_policy_handler_unittest.cc",
     "new_tab_page_location_policy_handler_unittest.cc",
     "policy_unittest.mm",
     "policy_util_unittest.mm",
@@ -374,6 +377,7 @@ source_set("unit_tests") {
     "//components/enterprise/browser/groups:features",
     "//components/enterprise/browser/identifiers",
     "//components/enterprise/client_certificates/core",
+    "//components/policy:generated",
     "//components/policy/core/browser:pref_mapping_test_support",
     "//components/policy/core/browser:test_support",
     "//components/policy/core/common",
@@ -422,6 +426,7 @@ source_set("unit_tests") {
     "//services/network/public/cpp",
     "//testing/gtest",
     "//third_party/ocmock",
+    "//ui/base",
   ]
 }
 

@@ -127,6 +127,16 @@ enum class SettingsPolicy {
   kNotAllowed = 1,
 };
 
+// Values for the `GeminiSparkSettings` enterprise policy
+// (`GeminiSparkSettings.yaml`) controlling whether Gemini Spark can connect to
+// Chrome.
+enum class SparkSettingsPolicy {
+  // Permits Gemini Spark integration for managed profiles.
+  kAllowed = 0,
+  // Blocks Gemini Spark integration for managed profiles (default).
+  kNotAllowed = 1,
+};
+
 // Default policy values for generative AI features.
 enum class GenAiDefaultSettingsPolicy {
   //  Allow GenAI features and improve AI models by using relevant data.

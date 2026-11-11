@@ -64,6 +64,7 @@
 #import "components/variations/pref_names.h"
 #import "components/variations/service/variations_service.h"
 #import "ios/chrome/browser/policy/model/browser_signin_policy_handler.h"
+#import "ios/chrome/browser/policy/model/gemini_spark_settings_policy_handler.h"
 #import "ios/chrome/browser/policy/model/new_tab_page_location_policy_handler.h"
 #import "ios/chrome/browser/policy/model/restrict_accounts_policy_handler.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -472,6 +473,8 @@ std::unique_ptr<policy::ConfigurationPolicyHandlerList> BuildPolicyHandlerList(
   handlers->AddHandler(std::make_unique<policy::URLSchemeListPolicyHandler>(
       policy::key::kGeminiActOnWebBlockedForURLs,
       prefs::kGeminiActOnWebBlockedForURLs));
+
+  handlers->AddHandler(std::make_unique<GeminiSparkSettingsPolicyHandler>());
 
   return handlers;
 }

@@ -55,6 +55,7 @@
 //ios/chrome/test/data/policy/pref_mapping/GeminiActOnWebBlockedForURLs.json
 //ios/chrome/test/data/policy/pref_mapping/GeminiActOnWebSettings.json
 //ios/chrome/test/data/policy/pref_mapping/GeminiSettings.json
+//ios/chrome/test/data/policy/pref_mapping/GeminiSparkSettings.json
 //ios/chrome/test/data/policy/pref_mapping/GenAiDefaultSettings.json
 //ios/chrome/test/data/policy/pref_mapping/IdleTimeout.json
 //ios/chrome/test/data/policy/pref_mapping/IdleTimeoutActions.json
