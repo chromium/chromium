@@ -16,6 +16,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.context_sharing.R.id.expanded_content_group;
+import static org.chromium.chrome.browser.context_sharing.R.id.web_ui_container;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -273,7 +274,8 @@ public class GlicBottomSheetContentUnitTest {
         container.addView(peekContainer);
         expandedGroup.setId(expanded_content_group);
         container.addView(expandedGroup);
-        View webUiContainer = new View(mContext);
+        FrameLayout webUiContainer = new FrameLayout(mContext);
+        webUiContainer.setId(web_ui_container);
         expandedGroup.addView(webUiContainer);
 
         GlicBottomSheetContent content =
@@ -355,6 +357,41 @@ public class GlicBottomSheetContentUnitTest {
 
         assertTrue(content.isNativeFreShowingForTesting());
         assertNotNull(expandedGroup.findViewById(R.id.glic_fre_accept_button));
+        content.destroy();
+    }
+
+    @Test
+    public void testNativeFre_HidesWebUiUntilFadeOutEnds() {
+        FrameLayout expandedGroup = new FrameLayout(mContext);
+        GlicBottomSheetContent content =
+                createContentWithNativeFre(expandedGroup, () -> {}, () -> {});
+        ViewGroup webUi = expandedGroup.findViewById(web_ui_container);
+
+        expandedGroup.findViewById(R.id.glic_fre_accept_button).performClick();
+        assertEquals(
+                View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS,
+                webUi.getImportantForAccessibility());
+        assertEquals(ViewGroup.FOCUS_BLOCK_DESCENDANTS, webUi.getDescendantFocusability());
+
+        ShadowLooper.idleMainLooper(CROSSFADE_ADVANCE_MS, TimeUnit.MILLISECONDS);
+        assertEquals(View.IMPORTANT_FOR_ACCESSIBILITY_AUTO, webUi.getImportantForAccessibility());
+        assertEquals(ViewGroup.FOCUS_BEFORE_DESCENDANTS, webUi.getDescendantFocusability());
+
+        content.destroy();
+    }
+
+    @Test
+    public void testNativeFre_TeardownShowsWebUi() {
+        FrameLayout expandedGroup = new FrameLayout(mContext);
+        GlicBottomSheetContent content =
+                createContentWithNativeFre(expandedGroup, () -> {}, () -> {});
+        ViewGroup webUi = expandedGroup.findViewById(web_ui_container);
+        assertEquals(ViewGroup.FOCUS_BLOCK_DESCENDANTS, webUi.getDescendantFocusability());
+
+        content.teardownNativeFre();
+        assertEquals(View.IMPORTANT_FOR_ACCESSIBILITY_AUTO, webUi.getImportantForAccessibility());
+        assertEquals(ViewGroup.FOCUS_BEFORE_DESCENDANTS, webUi.getDescendantFocusability());
+
         content.destroy();
     }
 
