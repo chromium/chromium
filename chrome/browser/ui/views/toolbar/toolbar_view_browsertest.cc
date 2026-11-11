@@ -4,10 +4,15 @@
 
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 
+#include <tuple>
+#include <vector>
+
 #include "base/i18n/base_i18n_switches.h"
 #include "base/i18n/rtl.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/layout_constants.h"
@@ -22,7 +27,10 @@
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/home_button.h"
+#include "chrome/browser/ui/views/toolbar/overflow_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_divider.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_glic_actor_task_icon.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -31,13 +39,20 @@
 #include "components/contextual_tasks/public/features.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/view.h"
+#include "ui/views/view_utils.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/constants/chromeos_features.h"
+#endif
 
 using ToolbarViewUnitTest = InProcessBrowserTest;
 
@@ -765,3 +780,120 @@ IN_PROC_BROWSER_TEST_P(ToolbarViewCircularContextualTasksBrowserTest,
 INSTANTIATE_TEST_SUITE_P(All,
                          ToolbarViewCircularContextualTasksBrowserTest,
                          testing::Bool());
+
+class ToolbarViewGlicAvatarCrashTest
+    : public InProcessBrowserTest,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
+ public:
+  ToolbarViewGlicAvatarCrashTest() {
+    const char* location =
+        IsLeftOfProfile()
+            ? features::kGlicToolbarButtonLocationLeftOfProfileChip
+            : features::kGlicToolbarButtonLocationRightOfOmnibox;
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {features::kInitialWebUI, {}},
+        {features::kGlic, {}},
+        {features::kGlicHorizontalTabToolbarButton, {}},
+        {features::kGlicActorUi,
+         {{features::kGlicActorUiTaskIconName, "true"}}},
+        {features::kGlicToolbarButtonLocation,
+         {{features::kGlicToolbarButtonLocationParam.name, location}}},
+#if BUILDFLAG(IS_CHROMEOS)
+        {chromeos::features::kFeatureManagementGlic, {}},
+#endif
+    };
+    std::vector<base::test::FeatureRef> disabled_features = {
+        features::kGlicCountryFiltering,
+        features::kGlicLocaleFiltering,
+        features::kWebUIGlicButton,
+        features::kWebUIToolbar,
+    };
+    if (IsWebUIAvatarEnabled()) {
+      enabled_features.push_back({features::kWebUIAvatarButton, {}});
+    } else {
+      disabled_features.push_back(features::kWebUIAvatarButton);
+    }
+    feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                disabled_features);
+  }
+
+  bool IsLeftOfProfile() const { return std::get<0>(GetParam()); }
+  bool IsWebUIAvatarEnabled() const { return std::get<1>(GetParam()); }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(ToolbarViewGlicAvatarCrashTest,
+                       ShowAndHideGlicActorTaskIcon) {
+  ToolbarView* toolbar_view =
+      BrowserView::GetBrowserViewForBrowser(browser())->toolbar();
+
+  ASSERT_EQ(toolbar_view->avatar_toolbar_button() == nullptr,
+            IsWebUIAvatarEnabled());
+
+  views::LabelButton* glic_button = toolbar_view->GetGlicButton();
+  ASSERT_TRUE(glic_button);
+  ASSERT_EQ(glic_button->parent(), toolbar_view);
+
+  // Show the Glic button first so sibling buttons anchored relative to a
+  // visible Glic button (such as `contextual_tasks_button_`) settle into their
+  // pre-task positions before recording `initial_index`.
+  toolbar_view->SetGlicShowState(true);
+  ASSERT_TRUE(glic_button->GetVisible());
+  const size_t initial_index = toolbar_view->GetIndexOf(glic_button).value();
+
+  auto expect_expected_slot = [&]() {
+    EXPECT_EQ(toolbar_view->GetIndexOf(glic_button), initial_index);
+    if (IsLeftOfProfile()) {
+      views::View* expected_next =
+          IsWebUIAvatarEnabled()
+              ? static_cast<views::View*>(toolbar_view->overflow_button())
+              : static_cast<views::View*>(
+                    toolbar_view->avatar_toolbar_button());
+      ASSERT_TRUE(expected_next);
+      EXPECT_EQ(initial_index + 1, toolbar_view->GetIndexOf(expected_next));
+    } else {
+      ASSERT_LT(initial_index + 1, toolbar_view->children().size());
+      EXPECT_TRUE(views::IsViewClass<ToolbarDivider>(
+          toolbar_view->children()[initial_index + 1]));
+      ASSERT_TRUE(toolbar_view->overflow_button());
+      EXPECT_LT(initial_index + 1,
+                toolbar_view->GetIndexOf(toolbar_view->overflow_button()));
+    }
+  };
+  expect_expected_slot();
+
+  auto* task_icon = toolbar_view->glic_actor_task_icon();
+  ASSERT_TRUE(task_icon);
+  EXPECT_FALSE(task_icon->GetVisible());
+
+  // Showing the Glic actor task icon reparents `glic_button` into the actor
+  // buttons container.
+  toolbar_view->ShowGlicActorTaskIcon();
+  EXPECT_TRUE(task_icon->GetVisible());
+  EXPECT_TRUE(task_icon->parent()->GetVisible());
+  EXPECT_EQ(toolbar_view->GetGlicButton(), glic_button);
+  EXPECT_EQ(glic_button->parent(), task_icon->parent());
+  EXPECT_NE(glic_button->parent(), toolbar_view);
+  EXPECT_FALSE(toolbar_view->GetIndexOf(glic_button).has_value());
+
+  // Hiding the Glic actor task icon must not crash when `avatar_` is null and
+  // must restore `glic_button` to its original toolbar index.
+  toolbar_view->HideGlicActorTaskIcon();
+  EXPECT_FALSE(task_icon->GetVisible());
+  EXPECT_FALSE(task_icon->parent()->GetVisible());
+  EXPECT_TRUE(glic_button->GetVisible());
+  EXPECT_EQ(toolbar_view->GetGlicButton(), glic_button);
+  EXPECT_EQ(glic_button->parent(), toolbar_view);
+  expect_expected_slot();
+
+  // Re-running `FinalizeHideGlicActorTaskIcon()` when `glic_button` is already
+  // parented to `toolbar_view` must remain a no-op on child ordering.
+  toolbar_view->FinalizeHideGlicActorTaskIcon();
+  expect_expected_slot();
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ToolbarViewGlicAvatarCrashTest,
+                         testing::Combine(testing::Bool(), testing::Bool()));

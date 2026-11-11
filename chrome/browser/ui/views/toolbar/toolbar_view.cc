@@ -1073,12 +1073,20 @@ void ToolbarView::FinalizeHideGlicActorTaskIcon() {
   glic_actor_task_icon_->SetVisible(false);
   glic_actor_task_icon_->SetTaskIconToDefault();
 
-  size_t insertion_index = GetIndexOf(avatar_.get()).value();
-  if (glic_button_divider_) {
-    insertion_index = GetIndexOf(glic_button_divider_).value();
+  if (glic_button_view_->parent() != this) {
+    size_t insertion_index = 0;
+    if (glic_button_divider_) {
+      insertion_index = GetIndexOf(glic_button_divider_.get()).value();
+    } else if (avatar_) {
+      insertion_index = GetIndexOf(avatar_.get()).value();
+    } else {
+      CHECK(overflow_button_);
+      insertion_index = GetIndexOf(overflow_button_.get()).value();
+    }
+    glic_button_view_ =
+        AddChildViewAt(glic_button_view_.get(), insertion_index);
+    glic_button_ = glic_button_view_;
   }
-  glic_button_view_ = AddChildViewAt(glic_button_view_.get(), insertion_index);
-  glic_button_ = glic_button_view_;
   glic_actor_button_container_->SetVisible(false);
   glic_button_view_->Expand();
   glic_button_view_->ResetSplitButtonCornerStyling();
