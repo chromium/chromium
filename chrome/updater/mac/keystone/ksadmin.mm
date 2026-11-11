@@ -133,9 +133,9 @@ constexpr char kCommandWriteBrandFile[] = "write-brand-file";
 constexpr char kCommandBrandValue[] = "brand-value";
 constexpr char kCommandTaggedPkgPath[] = "tagged-pkg-path";
 
-bool HasSwitch(const std::string& arg,
+bool HasSwitch(std::string_view arg,
                const std::map<std::string, std::string>& switches) {
-  if (switches.contains(arg)) {
+  if (switches.contains(std::string(arg))) {
     return true;
   }
   static constexpr std::string_view kDeleteAliases[] = {"d"};
@@ -381,7 +381,7 @@ class KSAdminApp : public App {
       const std::vector<updater::UpdateService::AppState>& states) const;
   void MaybeInstallUpdater(UpdaterScope scope) const;
 
-  bool HasSwitch(const std::string& arg) const;
+  bool HasSwitch(std::string_view arg) const;
   std::string SwitchValue(const std::string& arg) const;
 
   NSDictionary<NSString*, KSTicket*>* LoadTicketStore(UpdaterScope) const;
@@ -827,7 +827,7 @@ void KSAdminApp::DoListAppUpdate(UpdaterScope scope) {
           update_check_result, base::BindOnce(&KSAdminApp::Shutdown, this)));
 }
 
-bool KSAdminApp::HasSwitch(const std::string& arg) const {
+bool KSAdminApp::HasSwitch(std::string_view arg) const {
   return updater::HasSwitch(arg, switches_);
 }
 
@@ -1042,18 +1042,19 @@ void KSAdminApp::FirstTaskRun() {
       return;
     }
   }
-  const std::map<std::string, void (KSAdminApp::*)()> commands = {
-      {kCommandDelete, &KSAdminApp::Delete},
-      {kCommandInstall, &KSAdminApp::UpdateApp},
-      {kCommandList, &KSAdminApp::ListAppUpdate},
-      {kCommandKsadminVersion, &KSAdminApp::PrintVersion},
-      {kCommandPrintTag, &KSAdminApp::PrintTag},
-      {kCommandPrintTickets, &KSAdminApp::PrintTickets},
-      {kCommandRegister, &KSAdminApp::Register},
-      {kCommandXattrTagBrand, &KSAdminApp::PrintXattrTagBrand},
-      {kCommandReadPkgTag, &KSAdminApp::ReadPkgTag},
-  };
-  for (const auto& [command, method] : commands) {
+  static constexpr auto kCommands =
+      base::MakeFixedFlatMap<std::string_view, void (KSAdminApp::*)()>({
+          {kCommandDelete, &KSAdminApp::Delete},
+          {kCommandInstall, &KSAdminApp::UpdateApp},
+          {kCommandList, &KSAdminApp::ListAppUpdate},
+          {kCommandKsadminVersion, &KSAdminApp::PrintVersion},
+          {kCommandPrintTag, &KSAdminApp::PrintTag},
+          {kCommandPrintTickets, &KSAdminApp::PrintTickets},
+          {kCommandRegister, &KSAdminApp::Register},
+          {kCommandXattrTagBrand, &KSAdminApp::PrintXattrTagBrand},
+          {kCommandReadPkgTag, &KSAdminApp::ReadPkgTag},
+      });
+  for (const auto& [command, method] : kCommands) {
     if (HasSwitch(command)) {
       (this->*method)();
       return;
@@ -1062,7 +1063,7 @@ void KSAdminApp::FirstTaskRun() {
 
   // Fallbacks to Register: if none of the above exist, these switches signal
   // an intent to register.
-  for (const std::string& command :
+  for (std::string_view command :
        {kCommandTag, kCommandTagKey, kCommandTagPath, kCommandBrandKey,
         kCommandBrandPath, kCommandVersion, kCommandVersionKey,
         kCommandVersionPath, kCommandXCPath}) {
