@@ -20,7 +20,7 @@
 #include "base/containers/map_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/memory/weak_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
@@ -101,21 +101,17 @@ bool IsManager(v8::Local<v8::Value> value) {
 // When the promise settles, V8 runs a reaction (`OnPromiseFulfilled()` or
 // `OnPromiseRejected()`) that only knows the call id, and uses this map to find
 // the executor. The reaction can't point to the executor directly, since the
-// executor may be destroyed before the promise settles. It can't hold a
-// `WeakPtr` either: its data can only be a V8 value, so the `WeakPtr` would
-// need a separate C++ allocation, which V8 doesn't free when it
-// garbage-collects the reaction (e.g. after the context is released). So the
-// map is static, outliving all executors, and executors erase their entry when
-// the call ends. A reaction for a call that ended finds no entry and does
-// nothing.
+// executor may be destroyed before the promise settles. Instead, the map is
+// static, outliving all executors, and executors erase their entry when the
+// call ends. A reaction for a call that ended finds no entry and does nothing.
 //
 // Call ids come from `g_next_call_id`, which only increases, so an id is never
 // reused. The reactions get the id as a `Number`, which represents integers up
 // to 2^53 exactly. Both are only used on the renderer's main thread.
-std::map<uint64_t, base::WeakPtr<CustomFormControlScriptExecutor>>&
+std::map<uint64_t, raw_ref<CustomFormControlScriptExecutor>>&
 GetCallsAwaitingPromise() {
   static base::NoDestructor<
-      std::map<uint64_t, base::WeakPtr<CustomFormControlScriptExecutor>>>
+      std::map<uint64_t, raw_ref<CustomFormControlScriptExecutor>>>
       calls;
   return *calls;
 }
@@ -126,10 +122,10 @@ uint64_t g_next_call_id = 1;
 // ended.
 CustomFormControlScriptExecutor* GetWaitingExecutor(
     const v8::FunctionCallbackInfo<v8::Value>& info) {
-  base::WeakPtr<CustomFormControlScriptExecutor>* executor = base::FindOrNull(
+  raw_ref<CustomFormControlScriptExecutor>* executor = base::FindOrNull(
       GetCallsAwaitingPromise(),
       static_cast<uint64_t>(info.DataV2().As<v8::Number>()->Value()));
-  return executor ? executor->get() : nullptr;
+  return executor ? &executor->get() : nullptr;
 }
 
 // Returns the isolate of `render_frame`, or null if the frame is gone.
@@ -393,13 +389,7 @@ bool CustomFormControlScriptExecutor::LoadScript(std::string_view script) {
   // The promise that `pending_call_` awaits belongs to the dropped manager, so
   // the call fails.
   if (pending_call_) {
-    base::WeakPtr<CustomFormControlScriptExecutor> weak_this =
-        weak_ptr_factory_.GetWeakPtr();
     RunPendingCallback(GetIsolate(render_frame()), {}, {});
-    // The callback may destroy the executor.
-    if (!weak_this) {
-      return false;
-    }
   }
   if (!render_frame()) {
     return false;
@@ -415,18 +405,13 @@ bool CustomFormControlScriptExecutor::LoadScript(std::string_view script) {
   // Running the script may detach the frame, e.g. through event handlers of the
   // page that the script triggers, or by calling `frameElement.remove()` in an
   // iframe. That releases the world's script context and destroys the
-  // `RenderFrame`, and the creator may then even destroy this executor.
-  base::WeakPtr<CustomFormControlScriptExecutor> weak_this =
-      weak_ptr_factory_.GetWeakPtr();
+  // `RenderFrame`.
   v8::Local<v8::Value> manager =
       frame->ExecuteScriptInIsolatedWorldAndReturnValue(
           world_id_,
           blink::WebScriptSource(
               blink::WebString::FromUtf8(WrapScript(script))),
           blink::BackForwardCacheAware::kAllow);
-  if (!weak_this) {
-    return false;
-  }
   // Don't keep a manager of a released context: if the script detached the
   // frame, `WillReleaseScriptContext()` has already run and wouldn't drop it.
   // (Navigations that the script starts commit asynchronously, after this
@@ -641,7 +626,7 @@ void CustomFormControlScriptExecutor::SetCallbackForPromise(
     return;
   }
   pending_call_ = std::make_unique<PendingCall>(call_id, std::move(callback));
-  GetCallsAwaitingPromise()[call_id] = weak_ptr_factory_.GetWeakPtr();
+  GetCallsAwaitingPromise().emplace(call_id, *this);
 }
 
 // static

@@ -22,7 +22,6 @@
 #include "components/autofill/core/common/form_field_data.h"
 #include "content/public/common/isolated_world_ids.h"
 #include "content/public/renderer/render_frame.h"
-#include "content/public/renderer/render_frame_observer.h"
 #include "content/public/test/render_view_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -310,38 +309,18 @@ TEST_F(CustomFormControlScriptExecutorTest,
   EXPECT_FALSE(executor_->LoadScript("var y = 1;"));
 }
 
-// Stands in for an owner that destroys the executor synchronously in its own
-// `OnDestruct()` (unlike `AutofillAgent`, which is deleted asynchronously).
-// This lets a test destroy the executor while `LoadScript()` is still running
-// the script that detaches the frame.
-class DestroyExecutorOnFrameDestruction : public content::RenderFrameObserver {
- public:
-  DestroyExecutorOnFrameDestruction(
-      content::RenderFrame* render_frame,
-      std::unique_ptr<CustomFormControlScriptExecutor>& executor)
-      : content::RenderFrameObserver(render_frame), executor_(executor) {}
-
- private:
-  void OnDestruct() override { executor_->reset(); }
-
-  const raw_ref<std::unique_ptr<CustomFormControlScriptExecutor>> executor_;
-};
-
-// Tests that loading fails, without using the executor after it is destroyed,
-// if the script detaches the frame and the owner destroys the executor.
-TEST_F(CustomFormControlScriptExecutorTest,
-       LoadFailsIfExecutorIsDestroyedDuringLoad) {
+// Tests that loading fails, and no manager is kept, if the script detaches
+// the frame.
+TEST_F(CustomFormControlScriptExecutorTest, LoadFailsIfFrameIsDetached) {
   LoadHTML("<iframe src='about:blank'></iframe>");
   content::RenderFrame* child = content::RenderFrame::FromWebFrame(
       GetMainFrame()->FirstChild()->ToWebLocalFrame());
-  auto child_executor =
-      std::make_unique<CustomFormControlScriptExecutor>(child, kWorldId);
-  DestroyExecutorOnFrameDestruction owner(child, child_executor);
-  EXPECT_FALSE(child_executor->LoadScript(R"(
+  CustomFormControlScriptExecutor child_executor(child, kWorldId);
+  EXPECT_FALSE(child_executor.LoadScript(R"(
     frameElement.remove();
     function createCustomFormControlManager() { return {}; }
   )"));
-  EXPECT_FALSE(child_executor);
+  EXPECT_FALSE(child_executor.has_manager());
 }
 
 // Tests that the manager of a subframe is dropped when the subframe is

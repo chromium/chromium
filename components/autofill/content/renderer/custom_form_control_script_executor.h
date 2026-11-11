@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
-#include "base/memory/weak_ptr.h"
 #include "base/types/strong_alias.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "third_party/blink/public/web/web_node.h"
@@ -219,8 +218,6 @@ class CustomFormControlScriptExecutor : public content::RenderFrameObserver {
 
   // The call that waits for a promise, if any.
   std::unique_ptr<PendingCall> pending_call_;
-
-  base::WeakPtrFactory<CustomFormControlScriptExecutor> weak_ptr_factory_{this};
 };
 
 }  // namespace autofill
