@@ -376,7 +376,6 @@ class ASH_EXPORT EcheTray
   // The unload timer to force close EcheTray in case unload error.
   std::unique_ptr<base::DelayTimer> unload_timer_;
 
-  raw_ptr<views::View, DanglingUntriaged> header_view_ = nullptr;
   raw_ptr<views::Button> close_button_ = nullptr;
   raw_ptr<views::Button> minimize_button_ = nullptr;
   raw_ptr<views::Button> arrow_back_button_ = nullptr;

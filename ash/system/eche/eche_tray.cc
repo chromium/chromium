@@ -707,10 +707,11 @@ void EcheTray::InitBubble(
   auto bubble_view = std::make_unique<TrayBubbleView>(init_params);
   bubble_view->SetCanActivate(true);
 
-  header_view_ = bubble_view->AddChildView(CreateBubbleHeaderView(phone_name));
+  auto* header_view =
+      bubble_view->AddChildView(CreateBubbleHeaderView(phone_name));
 
   // We need the header be always visible with the same size.
-  bubble_view->box_layout()->SetFlexForView(header_view_, 0, true);
+  bubble_view->box_layout()->SetFlexForView(header_view, 0, true);
   bubble_view->box_layout()->set_inside_border_insets(kBubblePadding);
 
   // TODO(b/271478560): Re-use initializer_webview_ when available, once support
