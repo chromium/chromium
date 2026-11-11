@@ -77,10 +77,6 @@ void ConversationImpl::SetMicMuted(bool muted) {
   }
 }
 
-bool ConversationImpl::IsMicMuted() const {
-  return !audio_controller_->is_capturing();
-}
-
 SessionJournal& ConversationImpl::GetJournal() {
   return session_controller_->GetJournal();
 }
@@ -139,7 +135,6 @@ void ConversationImpl::OnBackendInitialized() {
   CHECK(!session_id->empty());
   session_controller_->SetSessionId(*session_id);
   backend_->SendToolSetUpdate(session_controller_->GetToolDefinitions());
-  // Capture starts first, so that the session goes live unmuted.
   audio_controller_->StartCapture(/*device_id=*/"");
   session_controller_->SetSessionLifecycle(SessionLifecycle::kLive);
 }

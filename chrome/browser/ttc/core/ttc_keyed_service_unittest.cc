@@ -56,7 +56,6 @@ class FakeConversation : public Conversation {
       const optimization_guide::proto::AnnotatedPageContent& apc) override {}
   void OnPageContextInvalidated() override {}
   void SetMicMuted(bool muted) override {}
-  bool IsMicMuted() const override { return false; }
   SessionJournal& GetJournal() override {
     return session_controller_->GetJournal();
   }

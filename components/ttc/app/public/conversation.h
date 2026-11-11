@@ -47,10 +47,10 @@ class Conversation {
   // conversation's page context may be stale.
   virtual void OnPageContextInvalidated() = 0;
 
-  // Mutes or unmutes the user's microphone. While muted no audio is captured
-  // or sent to the model; the model can still finish a reply in progress.
+  // Mutes or unmutes the user's microphone in TTC (as opposed to the OS or
+  // hardware muting it). While muted no audio is captured or sent to the model;
+  // the model can still finish a reply in progress.
   virtual void SetMicMuted(bool muted) = 0;
-  virtual bool IsMicMuted() const = 0;
 
   // Returns the journal for recording events in this session.
   virtual SessionJournal& GetJournal() = 0;

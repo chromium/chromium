@@ -138,6 +138,11 @@ class SessionControllerImpl : public SessionController,
   SessionLifecycle session_lifecycle_ = SessionLifecycle::kInitializing;
   Speaker speaker_ = Speaker::kIdle;
 
+  // Whether the user muted the microphone in TTC, as opposed to the OS or
+  // hardware muting it (see `OnSystemMicMuteChanged()`). Sessions go live
+  // unmuted.
+  bool app_mic_muted_ = false;
+
   base::ObserverList<SessionController::Observer> observers_;
 
   // The transcripts of the current exchange.

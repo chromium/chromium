@@ -98,7 +98,7 @@ class TtcKeyedService : public KeyedService, public base::SupportsUserData {
   // false if there's no live session, or the microphone already was in that
   // state.
   bool SetMicMuted(bool muted);
-  // Whether the active session's microphone is muted. False if there's no live
+  // Whether the user muted the active session's microphone. False if there's no
   // session.
   bool IsMicMuted() const;
   // The party currently speaking in the active session. kIdle if there's no

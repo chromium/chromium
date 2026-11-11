@@ -144,6 +144,10 @@ void SessionControllerImpl::SetSessionLifecycle(SessionLifecycle lifecycle) {
                        .Add("new_state", lifecycle)
                        .Build());
   session_lifecycle_ = lifecycle;
+  // Only a live session can be muted.
+  if (lifecycle != SessionLifecycle::kLive) {
+    app_mic_muted_ = false;
+  }
   for (SessionController::Observer& observer : observers_) {
     observer.OnSessionLifecycleChanged(lifecycle);
   }
@@ -307,13 +311,14 @@ Speaker SessionControllerImpl::GetSpeaker() const {
 }
 
 bool SessionControllerImpl::SetMicMuted(bool muted) {
-  // Capture only starts once the session is live.
+  // Only a live session can be muted.
   if (session_lifecycle_ != SessionLifecycle::kLive ||
-      conversation_->IsMicMuted() == muted) {
+      app_mic_muted_ == muted) {
     return false;
   }
   GetJournal().Log("TtcMicMuted",
                    actor::JournalDetailsBuilder().Add("muted", muted).Build());
+  app_mic_muted_ = muted;
   conversation_->SetMicMuted(muted);
   for (SessionController::Observer& observer : observers_) {
     observer.OnMicMutedChanged(muted);
@@ -322,9 +327,9 @@ bool SessionControllerImpl::SetMicMuted(bool muted) {
 }
 
 bool SessionControllerImpl::IsMicMuted() const {
-  return session_lifecycle_ == SessionLifecycle::kLive &&
-         conversation_->IsMicMuted();
+  return app_mic_muted_;
 }
+
 void SessionControllerImpl::EndSessionAsync() {
   SetSessionLifecycle(SessionLifecycle::kFinished);
 

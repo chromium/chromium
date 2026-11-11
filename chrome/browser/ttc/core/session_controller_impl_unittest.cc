@@ -465,18 +465,10 @@ TEST_F(TtcSessionControllerImplTest,
 #endif  // BUILDFLAG(ENABLE_TTC_WEBUI)
 
 TEST_F(TtcSessionControllerImplTest, SetMicMuted) {
-  // Declared first so it outlives `controller`, whose destructor still asks the
-  // conversation whether the mic is muted.
-  bool muted = false;
   SessionControllerImpl controller(*service_);
   controller.SetSessionLifecycle(SessionLifecycle::kLive);
-  ON_CALL(*mock_conversation_, IsMicMuted()).WillByDefault([&muted] {
-    return muted;
-  });
-  EXPECT_CALL(*mock_conversation_, SetMicMuted(true))
-      .WillOnce([&muted](bool value) { muted = value; });
-  EXPECT_CALL(*mock_conversation_, SetMicMuted(false))
-      .WillOnce([&muted](bool value) { muted = value; });
+  EXPECT_CALL(*mock_conversation_, SetMicMuted(true));
+  EXPECT_CALL(*mock_conversation_, SetMicMuted(false));
   testing::NiceMock<MockSessionControllerObserver> observer;
   controller.AddObserver(&observer);
 
@@ -497,13 +489,10 @@ TEST_F(TtcSessionControllerImplTest, SetMicMuted) {
 
 TEST_F(TtcSessionControllerImplTest, MicCanOnlyBeMutedOnceLive) {
   SessionControllerImpl controller(*service_);
-  ON_CALL(*mock_conversation_, IsMicMuted())
-      .WillByDefault(testing::Return(true));
 
-  // Capture hasn't started yet, but that isn't muting.
-  EXPECT_FALSE(controller.IsMicMuted());
   EXPECT_CALL(*mock_conversation_, SetMicMuted(testing::_)).Times(0);
   EXPECT_FALSE(controller.SetMicMuted(true));
+  EXPECT_FALSE(controller.IsMicMuted());
 }
 
 TEST_F(TtcSessionControllerImplTest, FinishedSessionIgnoresMicMute) {
@@ -515,6 +504,22 @@ TEST_F(TtcSessionControllerImplTest, FinishedSessionIgnoresMicMute) {
 
   EXPECT_CALL(*mock_conversation_, SetMicMuted(testing::_)).Times(0);
   EXPECT_FALSE(controller.SetMicMuted(true));
+}
+
+TEST_F(TtcSessionControllerImplTest, FinishingSessionEndsMicMute) {
+  SessionControllerImpl controller(*service_);
+  controller.SetSessionLifecycle(SessionLifecycle::kLive);
+  EXPECT_CALL(*mock_conversation_, SetMicMuted(true));
+  ASSERT_TRUE(controller.SetMicMuted(true));
+  testing::NiceMock<MockSessionControllerObserver> observer;
+  controller.AddObserver(&observer);
+
+  EXPECT_CALL(*mock_conversation_, SetMicMuted(false)).Times(0);
+  EXPECT_CALL(observer, OnMicMutedChanged).Times(0);
+  controller.SetSessionLifecycle(SessionLifecycle::kFinished);
+  EXPECT_FALSE(controller.IsMicMuted());
+
+  controller.RemoveObserver(&observer);
 }
 
 TEST_F(TtcSessionControllerImplTest, SpeakerChangesReachObservers) {

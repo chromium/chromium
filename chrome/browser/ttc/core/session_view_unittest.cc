@@ -20,7 +20,7 @@ class FakeSessionViewDelegate : public SessionViewDelegate {
   void set_session_lifecycle(SessionLifecycle lifecycle) {
     session_lifecycle_ = lifecycle;
   }
-  void set_mic_muted(bool muted) { mic_muted_ = muted; }
+  void set_app_mic_muted(bool muted) { app_mic_muted_ = muted; }
 
   // SessionViewDelegate:
   Profile* GetProfile() override { return nullptr; }
@@ -31,12 +31,12 @@ class FakeSessionViewDelegate : public SessionViewDelegate {
   SessionLifecycle GetSessionLifecycle() const override {
     return session_lifecycle_;
   }
-  bool IsMicMuted() const override { return mic_muted_; }
+  bool IsMicMuted() const override { return app_mic_muted_; }
   Speaker GetSpeaker() const override { return Speaker::kIdle; }
 
  private:
   SessionLifecycle session_lifecycle_ = SessionLifecycle::kInitializing;
-  bool mic_muted_ = false;
+  bool app_mic_muted_ = false;
 };
 
 class FakeSessionView : public SessionView {
@@ -61,7 +61,7 @@ class TtcSessionViewTest : public testing::Test {
   }
 
   void SetMicMuted(bool muted) {
-    delegate_.set_mic_muted(muted);
+    delegate_.set_app_mic_muted(muted);
     view_.OnMicMutedChanged(muted);
   }
 
@@ -104,8 +104,8 @@ TEST_F(TtcSessionViewTest, KeepsShowingMutedOnceFinished) {
   SetSessionLifecycle(SessionLifecycle::kLive);
   SetMicMuted(true);
 
-  // A finished session isn't muted anymore, but keeps showing its last state.
-  delegate_.set_mic_muted(false);
+  // A finished session keeps showing its last state.
+  delegate_.set_app_mic_muted(false);
   SetSessionLifecycle(SessionLifecycle::kFinished);
   EXPECT_EQ(view_.GetUiState(), UiState::kMicMuted);
 }

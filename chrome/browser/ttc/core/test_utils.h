@@ -32,7 +32,6 @@ class MockConversation : public Conversation {
               (override));
   MOCK_METHOD(void, OnPageContextInvalidated, (), (override));
   MOCK_METHOD(void, SetMicMuted, (bool), (override));
-  MOCK_METHOD(bool, IsMicMuted, (), (const, override));
   MOCK_METHOD(SessionJournal&, GetJournal, (), (override));
 };
 

@@ -574,14 +574,11 @@ TEST_F(ConversationImplTest, MuteStopsAndResumesCapture) {
   conversation.Start();
   conversation.OnBackendInitialized();
   EXPECT_TRUE(audio_controller().is_capturing());
-  EXPECT_FALSE(conversation.IsMicMuted());
 
   conversation.SetMicMuted(true);
-  EXPECT_TRUE(conversation.IsMicMuted());
   EXPECT_FALSE(audio_controller().is_capturing());
 
   conversation.SetMicMuted(false);
-  EXPECT_FALSE(conversation.IsMicMuted());
   EXPECT_TRUE(audio_controller().is_capturing());
 }
 
