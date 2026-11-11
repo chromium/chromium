@@ -1,7 +1,7 @@
 Name: Kotlin Stdlib
 Short Name: kotlin-stdlib
-URL: https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib/2.5.0-Beta2/kotlin-stdlib-2.5.0-Beta2.jar
-Version: 2.5.0-Beta2
+URL: https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib/2.5.0-RC/kotlin-stdlib-2.5.0-RC.jar
+Version: 2.5.0-RC
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE

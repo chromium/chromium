@@ -1987,12 +1987,12 @@
     {
         "name": "kotlin-parcelize-runtime",
         "group": "org.jetbrains.kotlin",
-        "version": "2.5.0-Beta2"
+        "version": "2.5.0-RC"
     },
     {
         "name": "kotlin-stdlib",
         "group": "org.jetbrains.kotlin",
-        "version": "2.5.0-Beta2"
+        "version": "2.5.0-RC"
     },
     {
         "name": "kotlin-stdlib-jdk7",
