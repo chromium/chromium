@@ -10,3 +10,4 @@ check_raw_ptr_in_container:
     - "std::list"
     - "std::queue"
     - "std::set"
+    - "base::internal::flat_tree"
