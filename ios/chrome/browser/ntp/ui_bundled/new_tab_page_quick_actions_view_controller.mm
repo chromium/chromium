@@ -5,26 +5,24 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_quick_actions_view_controller.h"
 
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
-#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_quick_actions_button_factory.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_shortcuts_handler.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_utils.h"
+#import "ios/chrome/browser/ntp/ui_bundled/ntp_quick_action_button.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
-#import "ios/chrome/grit/ios_strings.h"
-#import "ui/base/l10n/l10n_util.h"
 
 namespace {
 
 // The spacing in points between the buttons.
 constexpr CGFloat kButtonStackViewSpacing = 8.0;
 
-// Width ratio of the leading quick action button to the total width of the
-// quick actions row when there are three (3) buttons in the row.
-constexpr CGFloat kLeadingActionWidthFactor = 0.36;
+// Width of the compact quick action buttons when in Split Toolbar mode with
+// at least 3 visible buttons.
+constexpr CGFloat kCompactButtonWidth = 80.0;
 
 }  // namespace
 
@@ -33,22 +31,20 @@ constexpr CGFloat kLeadingActionWidthFactor = 0.36;
   UIStackView* _buttonStackView;
 
   // Quick action buttons.
-  UIButton* _aimButton;
-  UIButton* _aimImageGenerationButton;
-  UIButton* _aimAttachImageButton;
-  UIButton* _incognitoSearchButton;
+  NTPQuickActionButton* _aimButton;
+  NTPQuickActionButton* _aimImageGenerationButton;
+  NTPQuickActionButton* _aimAttachImageButton;
+  NTPQuickActionButton* _incognitoSearchButton;
 
   // Whether AIM image generation is allowed.
   BOOL _aimImageGenerationAllowed;
   // Whether attaching images to an AIM search query is allowed.
   BOOL _aimAttachImagesAllowed;
 
-  // Constraint for the width of the AI Mode button in Split Toolbar mode.
-  NSLayoutConstraint* _aimButtonSplitToolbarWidthConstraint;
-
-  // Constraints for the width of the additional AIM buttons.
+  // Width constraints for the compact buttons in Split Toolbar mode.
   NSLayoutConstraint* _aimImageGenerationButtonWidthConstraint;
   NSLayoutConstraint* _aimAttachImageButtonWidthConstraint;
+  NSLayoutConstraint* _incognitoSearchButtonWidthConstraint;
 
   // The custom title for the AIM button.
   NSString* _aimTitle;
@@ -66,10 +62,9 @@ constexpr CGFloat kLeadingActionWidthFactor = 0.36;
   _aimTitle = [title copy];
   _aimIcon = icon;
   _aimAccessibilityLabel = [accessibilityLabel copy];
-  [NewTabPageQuickActionsButtonFactory updateButton:_aimButton
-                                          withTitle:_aimTitle
-                                               icon:_aimIcon
-                                 accessibilityLabel:_aimAccessibilityLabel];
+  [_aimButton updateTitle:_aimTitle
+                     icon:_aimIcon
+       accessibilityLabel:_aimAccessibilityLabel];
 }
 
 - (void)setAIMImageGenerationAllowed:(BOOL)imageGenerationAllowed
@@ -117,12 +112,13 @@ constexpr CGFloat kLeadingActionWidthFactor = 0.36;
   switch (arm) {
     case AimButtonRefactorArm::kFocusComposeboxAimQuickAction:
     case AimButtonRefactorArm::kDisabled: {
-      _aimButton = [NewTabPageQuickActionsButtonFactory
+      _aimButton = [NTPQuickActionButton
           aimButtonWithTitle:_aimTitle
                         icon:_aimIcon
-          accessibilityLabel:_aimAccessibilityLabel];
-      _incognitoSearchButton = [NewTabPageQuickActionsButtonFactory
-          incognitoSearchButtonWithTitle:YES];
+          accessibilityLabel:_aimAccessibilityLabel
+                  layoutType:NTPQuickActionButtonLayout::kRegular];
+      _incognitoSearchButton = [NTPQuickActionButton
+          incognitoSearchButton:NTPQuickActionButtonLayout::kRegular];
 
       _buttonStackView = [self createButtonStackWithArrangedSubviews:@[
         _aimButton, _incognitoSearchButton
@@ -130,66 +126,55 @@ constexpr CGFloat kLeadingActionWidthFactor = 0.36;
       break;
     }
     case AimButtonRefactorArm::kImageGenerationQuickAction: {
-      _aimButton = [NewTabPageQuickActionsButtonFactory
+      _aimButton = [NTPQuickActionButton
           aimButtonWithTitle:_aimTitle
                         icon:_aimIcon
-          accessibilityLabel:_aimAccessibilityLabel];
-      _aimImageGenerationButton =
-          [NewTabPageQuickActionsButtonFactory aimImageGenerationButton];
+          accessibilityLabel:_aimAccessibilityLabel
+                  layoutType:NTPQuickActionButtonLayout::kRegular];
+      _aimImageGenerationButton = [NTPQuickActionButton
+          aimImageGenerationButton:NTPQuickActionButtonLayout::kCompact];
       // Attach Images is a fallback button if image generation is not
       // available.
-      _aimAttachImageButton =
-          [NewTabPageQuickActionsButtonFactory aimAttachImageButton];
-      _incognitoSearchButton = [NewTabPageQuickActionsButtonFactory
-          incognitoSearchButtonWithTitle:NO];
+      _aimAttachImageButton = [NTPQuickActionButton
+          aimAttachImageButton:NTPQuickActionButtonLayout::kCompact];
+      _incognitoSearchButton = [NTPQuickActionButton
+          incognitoSearchButton:NTPQuickActionButtonLayout::kCompact];
 
       _buttonStackView = [self createButtonStackWithArrangedSubviews:@[
         _aimButton, _aimImageGenerationButton, _aimAttachImageButton,
         _incognitoSearchButton
       ]];
 
-      _aimButtonSplitToolbarWidthConstraint = [_aimButton.widthAnchor
-          constraintEqualToAnchor:_buttonStackView.widthAnchor
-                       multiplier:kLeadingActionWidthFactor];
       _aimImageGenerationButtonWidthConstraint =
           [_aimImageGenerationButton.widthAnchor
-              constraintEqualToAnchor:_incognitoSearchButton.widthAnchor];
+              constraintEqualToConstant:kCompactButtonWidth];
       _aimAttachImageButtonWidthConstraint = [_aimAttachImageButton.widthAnchor
-          constraintEqualToAnchor:_incognitoSearchButton.widthAnchor];
-
-      [NSLayoutConstraint activateConstraints:@[
-        _aimButtonSplitToolbarWidthConstraint,
-        _aimImageGenerationButtonWidthConstraint,
-        _aimAttachImageButtonWidthConstraint,
-      ]];
-      [self updateButtonVisibility];
+          constraintEqualToConstant:kCompactButtonWidth];
+      _incognitoSearchButtonWidthConstraint =
+          [_incognitoSearchButton.widthAnchor
+              constraintEqualToConstant:kCompactButtonWidth];
       break;
     }
     case AimButtonRefactorArm::kAttachImageQuickAction: {
-      _aimButton = [NewTabPageQuickActionsButtonFactory
+      _aimButton = [NTPQuickActionButton
           aimButtonWithTitle:_aimTitle
                         icon:_aimIcon
-          accessibilityLabel:_aimAccessibilityLabel];
-      _aimAttachImageButton =
-          [NewTabPageQuickActionsButtonFactory aimAttachImageButton];
-      _incognitoSearchButton = [NewTabPageQuickActionsButtonFactory
-          incognitoSearchButtonWithTitle:NO];
+          accessibilityLabel:_aimAccessibilityLabel
+                  layoutType:NTPQuickActionButtonLayout::kRegular];
+      _aimAttachImageButton = [NTPQuickActionButton
+          aimAttachImageButton:NTPQuickActionButtonLayout::kCompact];
+      _incognitoSearchButton = [NTPQuickActionButton
+          incognitoSearchButton:NTPQuickActionButtonLayout::kCompact];
 
       _buttonStackView = [self createButtonStackWithArrangedSubviews:@[
         _aimButton, _aimAttachImageButton, _incognitoSearchButton
       ]];
 
-      _aimButtonSplitToolbarWidthConstraint = [_aimButton.widthAnchor
-          constraintEqualToAnchor:_buttonStackView.widthAnchor
-                       multiplier:kLeadingActionWidthFactor];
       _aimAttachImageButtonWidthConstraint = [_aimAttachImageButton.widthAnchor
-          constraintEqualToAnchor:_incognitoSearchButton.widthAnchor];
-
-      [NSLayoutConstraint activateConstraints:@[
-        _aimButtonSplitToolbarWidthConstraint,
-        _aimAttachImageButtonWidthConstraint,
-      ]];
-      [self updateButtonVisibility];
+          constraintEqualToConstant:kCompactButtonWidth];
+      _incognitoSearchButtonWidthConstraint =
+          [_incognitoSearchButton.widthAnchor
+              constraintEqualToConstant:kCompactButtonWidth];
       break;
     }
     case AimButtonRefactorArm::kAimAsModule:
@@ -230,7 +215,7 @@ constexpr CGFloat kLeadingActionWidthFactor = 0.36;
       UITraitHorizontalSizeClass.class, UITraitVerticalSizeClass.class
     ]
                        withAction:@selector(updateButtonStackConstraints)];
-    [self updateButtonStackConstraints];
+    [self updateButtonVisibility];
   }
 }
 
@@ -277,28 +262,25 @@ constexpr CGFloat kLeadingActionWidthFactor = 0.36;
         arm == AimButtonRefactorArm::kAttachImageQuickAction);
   NSUInteger numberOfVisibleButtons = [self numberOfVisibleButtons];
 
-  UIButton* incognitoSearchButton = _incognitoSearchButton;
-  NSString* incognitoSearchButtonTitle =
-      (numberOfVisibleButtons < 3)
-          ? l10n_util::GetNSString(IDS_IOS_NTP_QUICK_ACTIONS_INCOGNITO)
-          : nil;
-  [NewTabPageQuickActionsButtonFactory
-            updateButton:incognitoSearchButton
-               withTitle:incognitoSearchButtonTitle
-                    icon:incognitoSearchButton.configuration.image
-      accessibilityLabel:incognitoSearchButton.accessibilityLabel];
+  BOOL showAllButtonTitles =
+      !IsSplitToolbarMode(self) || numberOfVisibleButtons < 3;
+  NTPQuickActionButtonLayout dynamicLayoutType =
+      showAllButtonTitles ? NTPQuickActionButtonLayout::kRegular
+                          : NTPQuickActionButtonLayout::kCompact;
 
   _aimImageGenerationButtonWidthConstraint.active =
-      !_aimImageGenerationButton.isHidden;
-  _aimAttachImageButtonWidthConstraint.active = !_aimAttachImageButton.isHidden;
+      !showAllButtonTitles && !_aimImageGenerationButton.isHidden;
+  _aimAttachImageButtonWidthConstraint.active =
+      !showAllButtonTitles && !_aimAttachImageButton.isHidden;
+  _incognitoSearchButtonWidthConstraint.active = !showAllButtonTitles;
 
-  if (!IsSplitToolbarMode(self) || numberOfVisibleButtons < 3) {
-    _aimButtonSplitToolbarWidthConstraint.active = NO;
-    _buttonStackView.distribution = UIStackViewDistributionFillEqually;
-    return;
-  }
-  _aimButtonSplitToolbarWidthConstraint.active = YES;
-  _buttonStackView.distribution = UIStackViewDistributionFill;
+  _buttonStackView.distribution = showAllButtonTitles
+                                      ? UIStackViewDistributionFillEqually
+                                      : UIStackViewDistributionFill;
+  _aimButton.layoutType = NTPQuickActionButtonLayout::kRegular;
+  _aimImageGenerationButton.layoutType = dynamicLayoutType;
+  _aimAttachImageButton.layoutType = dynamicLayoutType;
+  _incognitoSearchButton.layoutType = dynamicLayoutType;
 }
 
 // Returns the number of visible buttons in `_buttonStackView`.

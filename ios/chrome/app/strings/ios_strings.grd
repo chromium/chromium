@@ -5612,8 +5612,14 @@ You can restart anytime.
       <message name="IDS_IOS_NTP_FEED_SIGNIN_PROMO_DISABLE_SNACKBAR_MESSAGE" desc="The test shown in the snackbar message when sign-in promo is trigger when sign-in is disabled. [iOS only]">
         Not available on your device
       </message>
+      <message name="IDS_IOS_NTP_QUICK_ACTIONS_ADD" desc="The title of the attach image button in the quick actions buttons in NTP. Used to attach an image to a prompt. [iOS only]">
+        Add
+      </message>
       <message name="IDS_IOS_NTP_QUICK_ACTIONS_AIM" desc="The title of the AI Mode button in the quick actions buttons in NTP">
         AI Mode
+      </message>
+      <message name="IDS_IOS_NTP_QUICK_ACTIONS_CREATE" desc="The title of the image generation button in the quick actions buttons in NTP. Used to create an AI image. [iOS only]">
+        Create
       </message>
       <message name="IDS_IOS_NTP_QUICK_ACTIONS_INCOGNITO" desc="The title of the incognito button in the quick actions buttons in NTP">
         Incognito
