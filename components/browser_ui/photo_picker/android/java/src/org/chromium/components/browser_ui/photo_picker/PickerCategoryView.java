@@ -198,6 +198,7 @@ public class PickerCategoryView extends RelativeLayout
      *     selection.
      * @param contentResolver The ContentResolver to use to retrieve image metadata from disk.
      * @param multiSelectionAllowed Whether to allow the user to select more than one image.
+     * @param delegate The delegate that handles toolbar dialog actions.
      */
     @SuppressWarnings("unchecked") // mSelectableListLayout
     public PickerCategoryView(

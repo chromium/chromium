@@ -94,6 +94,7 @@ class FileEnumWorkerTask extends AsyncTask<@Nullable List<PickerBitmap>> {
      * @param windowAndroid The window wrapper associated with the current activity.
      * @param callback The callback to use to communicate back the results.
      * @param filter The file filter to apply to the list.
+     * @param mimeTypes The list of MIME types to enumerate.
      * @param contentResolver The ContentResolver to use to retrieve image metadata from disk.
      */
     FileEnumWorkerTask(

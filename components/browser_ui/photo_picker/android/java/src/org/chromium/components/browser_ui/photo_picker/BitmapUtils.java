@@ -23,10 +23,10 @@ import java.util.List;
 @NullMarked
 class BitmapUtils {
     /**
-     * Takes a |bitmap| and (if |!fullWidth|) returns a square thumbnail of |width|x|width| from the
-     * center of the bitmap specified, or (if |fullWidth|) an image that scaled to fit within
-     * |width|. The image is rotated according to the Exif information, if needed (on Nougat and up
-     * only).
+     * Takes a {@code bitmap} and (if {@code !fullWidth}) returns a square thumbnail of {@code
+     * width}x{@code width} from the center of the bitmap specified, or (if {@code fullWidth}) an
+     * image that scaled to fit within {@code width}. The image is rotated according to the Exif
+     * information, if needed (on Nougat and up only).
      *
      * @param bitmap The bitmap to adjust.
      * @param width The desired width (and height if fullWidth is false).
@@ -49,16 +49,16 @@ class BitmapUtils {
     }
 
     /**
-     * Given a FileDescriptor, decodes the contents and returns a square thumbnail of
-     * |width|x|width| from the center of the bitmap specified, or (if |fullwidth|) an image that
-     * scaled to fit within |width|. The image is rotated according to the Exif information, if
-     * needed (on Nougat and up only).
+     * Given a FileDescriptor, decodes the contents and returns a square thumbnail of {@code
+     * size}x{@code size} from the center of the bitmap specified, or (if {@code fullWidth}) an
+     * image that scaled to fit within {@code size}. The image is rotated according to the Exif
+     * information, if needed (on Nougat and up only).
      *
      * @param descriptor The FileDescriptor for the file to read.
      * @param size The width of the bitmap to return.
-     * @param fullWidth Whether full screen width is in use. When true, the image returned is
-     *     |width| wide and whatever height scales to. When false, a rectangular |width|x|width|
-     *     image is returned.
+     * @param fullWidth Whether full screen width is in use. When true, the image returned is {@code
+     *     size} wide and whatever height scales to. When false, a rectangular {@code size}x{@code
+     *     size} image is returned.
      * @return The resulting bitmap and its ratio.
      */
     public static @Nullable Pair<Bitmap, Float> decodeBitmapFromFileDescriptor(
@@ -78,18 +78,18 @@ class BitmapUtils {
     }
 
     /**
-     * Given a FileDescriptor, decodes the video and returns a square thumbnail of |width|x|width|
-     * from the center of the bitmap specified, or (if |fullwidth|) an image that scaled to fit
-     * within |width|. The image is rotated according to the Exif information, if needed (on Nougat
-     * and up only).
+     * Given a FileDescriptor, decodes the video and returns a square thumbnail of {@code
+     * width}x{@code width} from the center of the bitmap specified, or (if {@code fullWidth}) an
+     * image that scaled to fit within {@code width}. The image is rotated according to the Exif
+     * information, if needed (on Nougat and up only).
      *
      * @param retriever The MediaMetadataRetriever to use (must have source already set).
      * @param descriptor The FileDescriptor for the file to read.
      * @param width The width of the bitmap to return.
      * @param frames The number of frames to extract.
-     * @param fullWidth Whether full screen width is in use. When true, the image returned is
-     *     |width| wide and whatever height scales to. When false, a rectangular |width|x|width|
-     *     image is returned.
+     * @param fullWidth Whether full screen width is in use. When true, the image returned is {@code
+     *     width} wide and whatever height scales to. When false, a rectangular {@code width}x{@code
+     *     width} image is returned.
      * @param intervalMs The interval between frames (in milliseconds).
      * @return A list of extracted frames.
      */
@@ -118,7 +118,7 @@ class BitmapUtils {
     /**
      * Calculates the sub-sampling factor {@link BitmapFactory#inSampleSize} option for a given
      * image dimensions, which will be used to create a bitmap of a pre-determined size (as small as
-     * possible without either dimension shrinking below |minSize|.
+     * possible without either dimension shrinking below {@code minSize}.
      *
      * @param width The calculated width of the image to decode.
      * @param height The calculated height of the image to decode.
@@ -134,7 +134,7 @@ class BitmapUtils {
     }
 
     /**
-     * Ensures a |bitmap| is at least |size| in both width and height.
+     * Ensures a {@code bitmap} is at least {@code size} in both width and height.
      *
      * @param bitmap The bitmap to modify.
      * @param size The minimum size (width and height).
@@ -216,8 +216,8 @@ class BitmapUtils {
     }
 
     /**
-     * Crops a |bitmap| to a certain square |size| and (on Nougat and up only) rotates it according
-     * to the Exif information, if needed.
+     * Crops a {@code bitmap} to a certain square {@code size} and (on Nougat and up only) rotates
+     * it according to the Exif information, if needed.
      *
      * @param bitmap The bitmap to crop.
      * @param size The size desired (width and height).
@@ -261,7 +261,7 @@ class BitmapUtils {
     }
 
     /**
-     * Scales a |bitmap| to a certain size.
+     * Scales a {@code bitmap} to a certain size.
      *
      * @param bitmap The bitmap to scale.
      * @param scaleMaxSize What to scale it to.

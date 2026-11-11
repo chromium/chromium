@@ -17,13 +17,13 @@ import java.util.PriorityQueue;
 /**
  * On Android, notification updates will be dropped if there are too many updates within a second.
  * This class throttles all the notifications that will be sent to the NotificationManager. One
- * notification update will be sent on each |UPDATE_DELAY_MILLIS| interval. Notification tasks with
- * high priorities will be sent first, and arriving order matters too. To use this class, create a
- * {@link PendingNotificationTask} that handles notification creation and posting, and call the
- * addPendingNotificationTask() method. Before canceling a notification, call
- * cancelPendingNotificationTask() to ensure all the pending tasks are removed.
- * TODO(qinmin): convert all notification code to use this class instead of directly sending
- * notifications to the NotificationManager.
+ * notification update will be sent on each {@code UPDATE_DELAY_MILLIS} interval. Notification tasks
+ * with high priorities will be sent first, and arriving order matters too. To use this class,
+ * create a {@link PendingNotificationTask} that handles notification creation and posting, and call
+ * the addPendingNotificationTask() method. Before canceling a notification, call
+ * cancelPendingNotificationTask() to ensure all the pending tasks are removed. TODO(qinmin):
+ * convert all notification code to use this class instead of directly sending notifications to the
+ * NotificationManager.
  */
 @NullMarked
 public class ThrottlingNotificationScheduler {
@@ -138,7 +138,10 @@ public class ThrottlingNotificationScheduler {
         return null;
     }
 
-    /** Get the next task from the queue, and schedule another task |UPDATE_DELAY_MILLIS| later. */
+    /**
+     * Get the next task from the queue, and schedule another task {@code UPDATE_DELAY_MILLIS}
+     * later.
+     */
     private void pumpQueue() {
         PendingNotificationTask task = mPendingNotificationTasks.poll();
         if (task != null) {

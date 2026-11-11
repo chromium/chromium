@@ -107,7 +107,7 @@ public class PickerBitmapViewHolder extends ViewHolder
     }
 
     /**
-     * Display a single item from |position| in the PickerCategoryView.
+     * Display a single item from {@code position} in the PickerCategoryView.
      *
      * @param categoryView The PickerCategoryView to use to fetch the image.
      * @param position The position of the item to fetch.

@@ -11,8 +11,6 @@ import org.chromium.build.annotations.Nullable;
 @NullMarked
 public interface AppHeaderStateProvider {
 
-    /**
-     * @return The window's {@link AppHeaderState} information.
-     */
+    /** Returns the window's {@link AppHeaderState} information. */
     @Nullable AppHeaderState getAppHeaderState();
 }

@@ -42,9 +42,7 @@ public final class NotificationFeatureMap extends FeatureMap {
     public static final List<CachedFlag> sCachedFlags =
             List.of(sAndroidResizeLargeNotificationBitmaps, sCacheNotificationsEnabled);
 
-    /**
-     * @return the singleton NotificationFeatureMap.
-     */
+    /** Returns the singleton NotificationFeatureMap. */
     public static NotificationFeatureMap getInstance() {
         return sInstance;
     }

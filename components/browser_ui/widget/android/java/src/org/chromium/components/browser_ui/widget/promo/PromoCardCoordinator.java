@@ -83,11 +83,10 @@ public class PromoCardCoordinator {
     /**
      * Create the Coordinator of PromoCard that owns the view and the change process.
      *
-     * @param context Context used to create the view.
+     * @param view the {@link PromoCardView}
      * @param model {@link PropertyModel} built with {@link PromoCardProperties}.
      * @param featureName Name of the feature of this promo. Will be used to create keys for
      *     SharedPreference.
-     * @param layoutStyle {@link LayoutStyle} used for the promo.
      */
     public static PromoCardCoordinator createFromView(
             View view, PropertyModel model, String featureName) {
@@ -133,12 +132,12 @@ public class PromoCardCoordinator {
         mImpressionTracker = null;
     }
 
-    /** @return {@link PromoCardView} held by this promo component. */
+    /** Returns the {@link PromoCardView} held by this promo component. */
     public View getView() {
         return mPromoCardView;
     }
 
-    /** @return Name of the feature this promo is representing. */
+    /** Returns the name of the feature this promo is representing. */
     public String getFeatureName() {
         return mFeatureName;
     }

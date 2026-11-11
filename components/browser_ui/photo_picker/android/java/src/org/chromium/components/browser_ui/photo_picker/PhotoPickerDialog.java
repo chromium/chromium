@@ -86,6 +86,7 @@ public class PhotoPickerDialog extends FullscreenAlertDialog
      * @param multiSelectionAllowed Whether the photo picker should allow multiple items to be
      *     selected.
      * @param mimeTypes A list of mime types to show in the dialog.
+     * @param shouldPadForContent Whether the content should be padded to avoid window insets.
      */
     public PhotoPickerDialog(
             WindowAndroid windowAndroid,

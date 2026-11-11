@@ -65,6 +65,9 @@ public interface NotificationWrapperBuilder {
     NotificationWrapperBuilder addAction(int icon, CharSequence title, PendingIntent intent);
 
     /**
+     * @param icon The resource ID of the icon for the action.
+     * @param title The title of the action.
+     * @param intent The {@link PendingIntentProvider} to fire when the action is invoked.
      * @param actionType is for UMA. In Chrome, this is {@link NotificationUmaTracker.ActionType}.
      */
     NotificationWrapperBuilder addAction(
@@ -73,7 +76,12 @@ public interface NotificationWrapperBuilder {
     @Deprecated
     NotificationWrapperBuilder addAction(NotificationCompat.Action action);
 
-    /** @param actionType is for UMA. In Chrome, this is {@link NotificationUmaTracker.ActionType}. */
+    /**
+     * @param action The action to add.
+     * @param flags The flags used to create the action's {@link PendingIntent}.
+     * @param actionType is for UMA. In Chrome, this is {@link NotificationUmaTracker.ActionType}.
+     * @param requestCode The request code used to create the action's {@link PendingIntent}.
+     */
     NotificationWrapperBuilder addAction(
             NotificationCompat.Action action, int flags, int actionType, int requestCode);
 
