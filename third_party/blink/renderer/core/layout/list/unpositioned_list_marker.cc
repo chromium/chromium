@@ -125,7 +125,8 @@ void UnpositionedListMarker::AddToBox(
     items_builder->AddListMarker(marker_physical_fragment, marker_offset);
     return;
   }
-  container_builder->AddResult(marker_layout_result, marker_offset);
+  container_builder->AddResult(marker_layout_result, marker_offset,
+                               /*margins=*/BoxStrut());
 }
 
 void UnpositionedListMarker::AddToBoxWithoutLineBoxes(
@@ -145,7 +146,8 @@ void UnpositionedListMarker::AddToBoxWithoutLineBoxes(
 
   DCHECK(container_builder);
   DCHECK(!container_builder->ItemsBuilder());
-  container_builder->AddResult(marker_layout_result, offset);
+  container_builder->AddResult(marker_layout_result, offset,
+                               /*margins=*/BoxStrut());
 
   // Whether the list marker should affect the block size or not is not
   // well-defined, but 3 out of 4 impls do.
