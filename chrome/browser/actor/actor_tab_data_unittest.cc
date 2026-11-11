@@ -14,15 +14,10 @@
 #include "chrome/common/chrome_features.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
-#include "components/tabs/public/mock_tab_interface.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
 namespace actor {
 namespace {
-
-using ::testing::ReturnRef;
 
 constexpr std::string_view
     kActorPageContextAPCComparisonActorIsIdenticalToPreviousFetchMetricName =
@@ -31,20 +26,7 @@ constexpr std::string_view
     kActorPageContextAPCComparisonGlicIsIdenticalToPreviousFetchMetricName =
         "Actor.PageContext.APC.Comparison.Glic.IsIdenticalToPreviousFetch";
 
-class ActorTabDataTest : public testing::Test {
- public:
-  ActorTabDataTest() = default;
-  ~ActorTabDataTest() override = default;
-
-  void SetUp() override {
-    ON_CALL(mock_tab_, GetUnownedUserDataHost())
-        .WillByDefault(ReturnRef(user_data_host_));
-  }
-
- protected:
-  tabs::MockTabInterface mock_tab_;
-  ::ui::UnownedUserDataHost user_data_host_;
-};
+using ActorTabDataTest = testing::Test;
 
 TEST_F(ActorTabDataTest, DidObserveContentRecordsMetrics) {
   base::test::ScopedFeatureList scoped_feature_list;
@@ -52,9 +34,7 @@ TEST_F(ActorTabDataTest, DidObserveContentRecordsMetrics) {
       features::kGlicActorApcComparison, {{"sampling-rate", "1.0"}});
 
   base::HistogramTester histogram_tester;
-  auto tab_data_ptr = std::make_unique<ActorTabData>(&mock_tab_);
-  ActorTabData* tab_data = ActorTabData::From(&mock_tab_);
-  ASSERT_TRUE(tab_data);
+  auto tab_data = std::make_unique<ActorTabData>();
 
   optimization_guide::proto::AnnotatedPageContent content1;
   content1.set_tab_id(1);
@@ -101,8 +81,7 @@ TEST_F(ActorTabDataTest, DidObserveContentRecordsNoMetricsWhenDisabled) {
   scoped_feature_list.InitAndDisableFeature(features::kGlicActorApcComparison);
 
   base::HistogramTester histogram_tester;
-  auto tab_data_ptr = std::make_unique<ActorTabData>(&mock_tab_);
-  ActorTabData* tab_data = ActorTabData::From(&mock_tab_);
+  auto tab_data = std::make_unique<ActorTabData>();
 
   optimization_guide::proto::AnnotatedPageContent content;
   content.set_tab_id(1);
@@ -121,9 +100,7 @@ TEST_F(ActorTabDataTest, DidObserveContentRecordsNoMetricsWhenDisabled) {
 }
 
 TEST_F(ActorTabDataTest, LastObservedScriptToolIds) {
-  auto tab_data_ptr = std::make_unique<ActorTabData>(&mock_tab_);
-  ActorTabData* tab_data = ActorTabData::From(&mock_tab_);
-  ASSERT_TRUE(tab_data);
+  auto tab_data = std::make_unique<ActorTabData>();
 
   const base::UnguessableToken document_id = base::UnguessableToken::Create();
   const blink::ScriptToolToken tool_id;

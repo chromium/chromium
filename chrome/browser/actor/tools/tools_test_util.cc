@@ -366,7 +366,8 @@ ActorTask& ActorToolsTest::actor_task() const {
 void ActorToolsTest::SetPageContent(
     base::OnceClosure quit_closure,
     optimization_guide::AIPageContentResultOrError page_content) {
-  auto* tab_data = ActorTabData::From(active_tab());
+  auto* tab_data =
+      ActorTabData::From(ActorSurfaceHandle::From(active_tab()->GetHandle()));
   tab_data->DidObserveContent(*page_content, ApcSource::kActor);
   std::move(quit_closure).Run();
 }

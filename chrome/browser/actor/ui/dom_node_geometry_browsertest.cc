@@ -156,8 +156,8 @@ class ActorUiDomNodeGeometryBrowserTest
         apc.main_frame_data().document_identifier().serialized_token(),
         &aria_label_to_dom_node_);
 
-    tab_data_ =
-        ActorTabData::From(browser()->tab_strip_model()->GetActiveTab());
+    tab_data_ = ActorTabData::From(ActorSurfaceHandle::From(
+        browser()->tab_strip_model()->GetActiveTab()->GetHandle()));
     tab_data_->DidObserveContent(apc, ApcSource::kActor);
     std::move(quit_closure).Run();
   }

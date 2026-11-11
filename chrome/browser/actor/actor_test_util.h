@@ -24,7 +24,6 @@
 #include "base/types/expected.h"
 #include "chrome/browser/actor/actor_proto_conversion.h"
 #include "chrome/browser/actor/actor_surface_tab_helper.h"
-#include "chrome/browser/actor/actor_tab_data.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_task_delegate.h"
 #include "chrome/browser/actor/enterprise_policy_checker.h"
@@ -519,9 +518,9 @@ class ScopedMockTabObservationResult {
   ~ScopedMockTabObservationResult();
 };
 
-// Helper struct for unit tests that require a mock TabInterface and its
-// associated ActorTabData. When `web_contents` is provided, the tab also gets
-// an ActorSurfaceTabHelper so it has a surface in ActorSurfaceRegistry, as
+// Helper struct for unit tests that require a mock TabInterface. When
+// `web_contents` is provided, the tab also gets an ActorSurfaceTabHelper so it
+// has a surface (and the surface's ActorTabData) in ActorSurfaceRegistry, as
 // real tabs do via TabFeatures.
 struct TestTabState {
   explicit TestTabState(content::WebContents* web_contents = nullptr);
@@ -534,7 +533,6 @@ struct TestTabState {
 
   tabs::MockTabInterface tab;
   ::ui::UnownedUserDataHost user_data_host;
-  std::unique_ptr<ActorTabData> tab_data;
   std::unique_ptr<ActorSurfaceTabHelper> actor_surface_tab_helper;
 };
 

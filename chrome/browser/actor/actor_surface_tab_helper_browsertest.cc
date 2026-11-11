@@ -42,7 +42,9 @@ IN_PROC_BROWSER_TEST_F(ActorSurfaceTabHelperBrowserTest,
   EXPECT_TRUE(first_surface->IsTab());
   EXPECT_EQ(first_surface->GetTabHandle(), first_tab->GetHandle());
   EXPECT_EQ(first_surface->GetWebContents(), first_tab->GetContents());
-  EXPECT_EQ(first_surface->GetActorTabData(), ActorTabData::From(first_tab));
+  EXPECT_EQ(
+      first_surface->GetActorTabData(),
+      ActorTabData::From(ActorSurfaceHandle::From(first_tab->GetHandle())));
   EXPECT_EQ(ActorSurfaceHandle::From(first_tab->GetHandle()).Get(),
             first_surface);
 

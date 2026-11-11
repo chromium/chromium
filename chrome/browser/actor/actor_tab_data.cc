@@ -13,10 +13,8 @@
 #include "chrome/browser/actor/actor_metrics.h"
 #include "chrome/browser/actor/actor_surface.h"
 #include "chrome/browser/actor/ui/dom_node_geometry.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/common/chrome_features.h"
 #include "components/optimization_guide/proto/features/common_quality_data.equal.h"
-#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 namespace actor {
 
@@ -34,21 +32,11 @@ double ShouldRecordApcComparison() {
 
 }  // namespace
 
-DEFINE_USER_DATA(ActorTabData);
-
-ActorTabData::ActorTabData(tabs::TabInterface* tab)
-    : scoped_unowned_user_data_(std::in_place,
-                                tab->GetUnownedUserDataHost(),
-                                *this) {}
-
 ActorTabData::ActorTabData() = default;
 
 ActorTabData::~ActorTabData() = default;
 
-ActorTabData* ActorTabData::From(tabs::TabInterface* tab) {
-  return tab ? Get(tab->GetUnownedUserDataHost()) : nullptr;
-}
-
+// static
 ActorTabData* ActorTabData::From(ActorSurfaceHandle actor_surface_handle) {
   ActorSurface* actor_surface = actor_surface_handle.Get();
   return actor_surface ? actor_surface->GetActorTabData() : nullptr;

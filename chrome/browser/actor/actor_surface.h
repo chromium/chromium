@@ -53,7 +53,8 @@ class ActorSurface {
   virtual std::optional<tabs::TabHandle> GetTabHandle() const = 0;
 
   // Per-surface actor data, e.g. the last observed page content used for
-  // TOCTOU validation.
+  // TOCTOU validation. Never null. Owned by the surface, so it is kept across
+  // promotion and demotion.
   virtual ActorTabData* GetActorTabData() const = 0;
 };
 

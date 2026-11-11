@@ -153,7 +153,8 @@ class ActorClickToolBrowserTest : public ActorToolsTest {
                                          future.GetCallback());
     optimization_guide::AIPageContentResultOrError result = future.Take();
     ASSERT_TRUE(result.has_value());
-    auto* tab_data = ActorTabData::From(active_tab());
+    auto* tab_data =
+        ActorTabData::From(ActorSurfaceHandle::From(active_tab()->GetHandle()));
     ASSERT_NE(tab_data, nullptr);
     tab_data->DidObserveContent(result->proto, ApcSource::kGlic);
   }

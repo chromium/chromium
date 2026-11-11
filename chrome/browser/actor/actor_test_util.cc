@@ -1083,7 +1083,6 @@ TestTabState::TestTabState(content::WebContents* web_contents) {
   ON_CALL(tab, GetUnownedUserDataHost())
       .WillByDefault(::testing::ReturnRef(user_data_host));
 
-  tab_data = std::make_unique<ActorTabData>(&tab);
   if (web_contents) {
     actor_surface_tab_helper = std::make_unique<ActorSurfaceTabHelper>(tab);
   }

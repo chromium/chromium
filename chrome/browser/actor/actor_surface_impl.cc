@@ -14,7 +14,9 @@ namespace actor {
 
 ActorSurfaceImpl::ActorSurfaceImpl(ActorSurfaceHandle handle,
                                    tabs::TabHandle tab)
-    : handle_(handle), tab_(tab) {
+    : handle_(handle),
+      tab_(tab),
+      actor_tab_data_(std::make_unique<ActorTabData>()) {
   CHECK(tab.Get());
   ActorSurfaceHandle::Register(handle_, this);
 }
@@ -56,25 +58,18 @@ std::optional<tabs::TabHandle> ActorSurfaceImpl::GetTabHandle() const {
 }
 
 ActorTabData* ActorSurfaceImpl::GetActorTabData() const {
-  if (IsTab()) {
-    tabs::TabInterface* tab = tab_->Get();
-    CHECK(tab);
-    return ActorTabData::From(tab);
-  }
+  CHECK(actor_tab_data_);
   return actor_tab_data_.get();
 }
 
 void ActorSurfaceImpl::SetTab(tabs::TabHandle tab) {
   tab_ = tab;
   headless_contents_ = nullptr;
-  // The tab's own `ActorTabData` takes over.
-  actor_tab_data_.reset();
 }
 
 void ActorSurfaceImpl::SetHeadless() {
   headless_contents_ = GetWebContents();
   tab_.reset();
-  actor_tab_data_ = std::make_unique<ActorTabData>();
 }
 
 }  // namespace actor

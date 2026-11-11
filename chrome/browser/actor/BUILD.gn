@@ -385,12 +385,10 @@ source_set("actor_tab_data_impl") {
     ":actor",
     "//base",
     "//chrome/browser/actor/ui:dom_node_geometry",
-    "//chrome/browser/ui/tabs:tabs_public",
     "//chrome/common",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/optimization_guide/proto:optimization_guide_proto_extras_equal",
     "//ui/base/metadata",
-    "//ui/base/unowned_user_data",
   ]
 }
 

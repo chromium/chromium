@@ -18,6 +18,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/actor/actor_metrics.h"
 #include "chrome/browser/actor/actor_proto_conversion.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_tab_data.h"
 #include "chrome/browser/actor/actor_util.h"
 #include "chrome/browser/glic/host/context/glic_sharing_utils.h"
@@ -227,7 +228,8 @@ void HandleFetchPageResult(
     }
 
     if (tab) {
-      if (auto* actor_tab_data = actor::ActorTabData::From(tab.get())) {
+      if (auto* actor_tab_data = actor::ActorTabData::From(
+              actor::ActorSurfaceHandle::From(tab->GetHandle()))) {
         actor_tab_data->DidObserveContent(
             *page_context.annotated_page_content_result,
             actor::ApcSource::kGlic);

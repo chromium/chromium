@@ -525,7 +525,8 @@ IN_PROC_BROWSER_TEST_F(ActorSelectToolBrowserTest,
   // seen by a client using APC.
   GetPageApc();
   const auto* apc =
-      ActorTabData::From(active_tab())->GetLastObservedPageContent();
+      ActorTabData::From(ActorSurfaceHandle::From(active_tab()->GetHandle()))
+          ->GetLastObservedPageContent();
   ASSERT_TRUE(apc);
 
   const std::string document_id =

@@ -919,11 +919,9 @@ void ActorKeyedService::RequestActorSurfaceObservation(
               }
 
               if (ActorSurface* actor_surface = actor_surface_handle.Get()) {
-                if (ActorTabData* tab_data = actor_surface->GetActorTabData()) {
-                  tab_data->DidObserveContent(
-                      *fetch_result.annotated_page_content_result,
-                      actor::ApcSource::kActor);
-                }
+                actor_surface->GetActorTabData()->DidObserveContent(
+                    *fetch_result.annotated_page_content_result,
+                    actor::ApcSource::kActor);
               }
             }
 

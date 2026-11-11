@@ -145,7 +145,6 @@ class WalletReminderNoticePageActionController;
 
 namespace actor {
 class ActorSurfaceTabHelper;
-class ActorTabData;
 }  // namespace actor
 
 namespace actor::ui {
@@ -713,7 +712,6 @@ class TabFeatures {
   std::unique_ptr<AskBeforeHttpDialogController>
       ask_before_http_dialog_controller_;
 
-  std::unique_ptr<actor::ActorTabData> actor_tab_data_;
   std::unique_ptr<actor::ActorSurfaceTabHelper> actor_surface_tab_helper_;
 
 #if !BUILDFLAG(IS_ANDROID)

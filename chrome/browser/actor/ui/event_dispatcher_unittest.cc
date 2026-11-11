@@ -153,8 +153,9 @@ TEST_F(EventDispatcherTest, SingleMouseMove_DomNode) {
                                 ModelPageTargetType::kDomNode, 1);
   histograms_.ExpectBucketCount(kModelPageTargetTypeHistogram,
                                 ModelPageTargetType::kPoint, 0);
-  histograms_.ExpectBucketCount(kComputedTargetResultHistogram,
-                                ComputedTargetResult::kMissingActorTabData, 1);
+  histograms_.ExpectBucketCount(
+      kComputedTargetResultHistogram,
+      ComputedTargetResult::kMissingAnnotatedPageContent, 1);
 }
 
 TEST_F(EventDispatcherTest, TwoToolRequests) {
@@ -489,10 +490,15 @@ class EventDispatcherRendererResolvedTest : public EventDispatcherTest {
 };
 
 TEST_F(EventDispatcherRendererResolvedTest, MissingActorTabData) {
-  // A surface whose tab has no ActorTabData.
+  // The surface is destroyed earlier in the same task: its tab can still be
+  // resolved from the handle, but there is no ActorTabData any more.
   tabs::MockTabInterface tab;
-  ActorSurfaceImpl actor_surface(ActorSurfaceHandle::CreateForTesting(),
-                                 tab.GetHandle());
+  auto actor_surface = std::make_unique<ActorSurfaceImpl>(
+      ActorSurfaceHandle::CreateForTesting(), tab.GetHandle());
+  MoveMouseToolRequest tr(actor_surface->GetHandle(),
+                          PageTarget(gfx::Point(100, 200)));
+  actor_surface.reset();
+
   EXPECT_CALL(*mock_state_manager_,
               OnUiEvent(VariantWith<MouseMove>(AllOf(
                             Field(&MouseMove::tab_handle, tab.GetHandle()),
@@ -504,9 +510,6 @@ TEST_F(EventDispatcherRendererResolvedTest, MissingActorTabData) {
       .WillOnce(WithArgs<1>([&](UiCompleteCallback callback) {
         std::move(callback).Run(MakeOkResult());
       }));
-
-  MoveMouseToolRequest tr(actor_surface.GetHandle(),
-                          PageTarget(gfx::Point(100, 200)));
 
   TestFuture<ActionResultPtr> result;
   dispatcher_->OnPreTool(tr, result.GetCallback());
@@ -551,7 +554,8 @@ TEST_F(EventDispatcherRendererResolvedTest, TargetSuccess_PriorityOverDomNode) {
   ::actor::TestTabState tab_state;
   ActorSurfaceImpl actor_surface(ActorSurfaceHandle::CreateForTesting(),
                                  tab_state.tab.GetHandle());
-  tab_state.tab_data->SetLastRendererResolvedTarget(gfx::Point(55, 66));
+  actor_surface.GetActorTabData()->SetLastRendererResolvedTarget(
+      gfx::Point(55, 66));
 
   EXPECT_CALL(
       *mock_state_manager_,
@@ -583,7 +587,8 @@ TEST_F(EventDispatcherRendererResolvedTest, TargetSuccess_PriorityOverPoint) {
   ::actor::TestTabState tab_state;
   ActorSurfaceImpl actor_surface(ActorSurfaceHandle::CreateForTesting(),
                                  tab_state.tab.GetHandle());
-  tab_state.tab_data->SetLastRendererResolvedTarget(gfx::Point(55, 66));
+  actor_surface.GetActorTabData()->SetLastRendererResolvedTarget(
+      gfx::Point(55, 66));
 
   EXPECT_CALL(
       *mock_state_manager_,

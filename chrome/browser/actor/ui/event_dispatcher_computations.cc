@@ -81,7 +81,8 @@ PointTarget DerivePointFromApc(ActorTabData* actor_tab_data,
 
 PointTarget ComputeMouseTarget(tabs::TabInterface::Handle tab,
                                const PageTarget& target) {
-  ActorTabData* actor_tab_data = ActorTabData::From(tab.Get());
+  ActorTabData* actor_tab_data =
+      ActorTabData::From(ActorSurfaceHandle::From(tab));
   if (base::FeatureList::IsEnabled(
           features::kGlicActorSplitValidateAndExecute) &&
       base::FeatureList::IsEnabled(features::kGlicActorUiMagicCursor)) {

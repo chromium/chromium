@@ -15,25 +15,20 @@
 #include "content/public/browser/web_contents.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
 namespace actor {
 namespace {
 
 using ::testing::Return;
-using ::testing::ReturnRef;
 
 class ActorSurfaceTest : public ChromeRenderViewHostTestHarness {
  public:
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
     ON_CALL(mock_tab_, GetContents()).WillByDefault(Return(web_contents()));
-    ON_CALL(mock_tab_, GetUnownedUserDataHost())
-        .WillByDefault(ReturnRef(user_data_host_));
   }
 
  protected:
-  ::ui::UnownedUserDataHost user_data_host_;
   tabs::MockTabInterface mock_tab_;
 };
 
@@ -87,28 +82,22 @@ TEST_F(ActorSurfaceTest, WebContentsFollowsTabSwap) {
   EXPECT_EQ(surface.GetWebContents(), swapped.get());
 }
 
-TEST_F(ActorSurfaceTest, TabBackedReturnsTabActorTabData) {
-  ActorSurfaceImpl surface(ActorSurfaceHandle::CreateForTesting(),
-                           mock_tab_.GetHandle());
-  auto tab_data = std::make_unique<ActorTabData>(&mock_tab_);
+TEST_F(ActorSurfaceTest, TabBackedOwnsActorTabData) {
+  const ActorSurfaceHandle handle = ActorSurfaceHandle::CreateForTesting();
+  auto surface =
+      std::make_unique<ActorSurfaceImpl>(handle, mock_tab_.GetHandle());
 
-  EXPECT_EQ(surface.GetActorTabData(), tab_data.get());
-  EXPECT_EQ(surface.GetActorTabData(), ActorTabData::From(&mock_tab_));
+  EXPECT_EQ(ActorTabData::From(handle), surface->GetActorTabData());
+
+  surface.reset();
+  EXPECT_EQ(ActorTabData::From(handle), nullptr);
 }
 
-TEST_F(ActorSurfaceTest, TabBackedWithoutActorTabDataReturnsNull) {
-  ActorSurfaceImpl surface(ActorSurfaceHandle::CreateForTesting(),
-                           mock_tab_.GetHandle());
-
-  EXPECT_EQ(surface.GetActorTabData(), nullptr);
-}
-
-TEST_F(ActorSurfaceTest, WithoutTabOwnsActorTabData) {
+TEST_F(ActorSurfaceTest, HeadlessBackedOwnsActorTabData) {
   const ActorSurfaceHandle handle = ActorSurfaceHandle::CreateForTesting();
   ActorSurfaceImpl surface(handle, web_contents());
 
   ActorTabData* tab_data = surface.GetActorTabData();
-  ASSERT_TRUE(tab_data);
   EXPECT_EQ(ActorTabData::From(handle), tab_data);
   EXPECT_EQ(tab_data->GetLastObservedPageContent(), nullptr);
 

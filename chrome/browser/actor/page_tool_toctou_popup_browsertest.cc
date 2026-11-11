@@ -73,7 +73,8 @@ class PageToolToctouPopupBypassTest : public ActorToolsTest {
             [](tabs::TabInterface* tab, base::OnceClosure quit,
                optimization_guide::AIPageContentResultOrError result) {
               ASSERT_TRUE(result.has_value());
-              if (auto* tab_data = ActorTabData::From(tab)) {
+              if (auto* tab_data = ActorTabData::From(
+                      ActorSurfaceHandle::From(tab->GetHandle()))) {
                 tab_data->DidObserveContent(result->proto,
                                             actor::ApcSource::kActor);
               }
@@ -153,7 +154,8 @@ IN_PROC_BROWSER_TEST_F(PageToolToctouPopupBypassTest,
   tabs::TabInterface* tab = browser()->GetActiveTabInterface();
   ASSERT_TRUE(tab);
   ASSERT_TRUE(tab->IsInNormalWindow());
-  ASSERT_NE(ActorTabData::From(tab), nullptr);
+  ASSERT_NE(ActorTabData::From(ActorSurfaceHandle::From(tab->GetHandle())),
+            nullptr);
 
   gfx::Point click_pt = SetUpAttackAndSwap(tab);
 
@@ -179,7 +181,9 @@ IN_PROC_BROWSER_TEST_F(PageToolToctouPopupBypassTest,
   ASSERT_FALSE(popup_tab->IsInNormalWindow());
 
   // Verify fix: ActorTabData now exists for popup tabs.
-  ASSERT_NE(ActorTabData::From(popup_tab), nullptr);
+  ASSERT_NE(
+      ActorTabData::From(ActorSurfaceHandle::From(popup_tab->GetHandle())),
+      nullptr);
 
   gfx::Point click_pt = SetUpAttackAndSwap(popup_tab);
 

@@ -9,13 +9,10 @@
 #include <optional>
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/actor/actor_surface_handle.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
-#include "components/tabs/public/tab_interface.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
-#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/gfx/geometry/point.h"
 
 namespace actor {
@@ -26,19 +23,16 @@ namespace ui {
 class DomNodeGeometry;
 }
 
-// Represents data that the actor service stores for a tab, or for a surface
-// without a tab.
+// Represents data that the actor service stores for an ActorSurface (tab or
+// headless surface). Owned by the surface, so it is kept intact when the
+// surface is promoted to a tab or demoted back to headless.
 class ActorTabData {
  public:
-  // Registers as user data on `tab`, so `From(tab)` finds it.
-  explicit ActorTabData(tabs::TabInterface* tab);
-  // Data for a surface without a tab, owned by that surface. Not registered as
-  // user data; reach it through `From(ActorSurfaceHandle)`.
   ActorTabData();
   ~ActorTabData();
 
-  DECLARE_USER_DATA(ActorTabData);
-  static ActorTabData* From(tabs::TabInterface* tab);
+  // Returns the data of the surface identified by `actor_surface_handle`, or
+  // nullptr if that surface no longer exists.
   static ActorTabData* From(ActorSurfaceHandle actor_surface_handle);
 
   // Stores `result`'s page content, along with the internal IDs of the script
@@ -85,10 +79,6 @@ class ActorTabData {
       last_observed_script_tool_ids_;
   std::unique_ptr<ui::DomNodeGeometry> last_observed_dom_node_geometry_;
   std::optional<gfx::Point> last_renderer_resolved_target_;
-
-  // Only set when the data belongs to a tab.
-  std::optional<::ui::ScopedUnownedUserData<ActorTabData>>
-      scoped_unowned_user_data_;
 };
 
 }  // namespace actor

@@ -5,15 +5,19 @@
 #include "chrome/browser/actor/actor_surface_registry.h"
 
 #include <memory>
+#include <string>
 
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_metrics.h"
 #include "chrome/browser/actor/actor_surface.h"
+#include "chrome/browser/actor/actor_tab_data.h"
 #include "chrome/browser/actor/headless_web_contents_manager.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/actor/core/actor_features.h"
+#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
@@ -31,6 +35,12 @@ using ::testing::Return;
 
 base::PassKey<ActorKeyedService> TestPassKey() {
   return ActorKeyedService::GetPassKeyForTesting();
+}
+
+void ObserveContentWithTitle(ActorTabData& tab_data, const std::string& title) {
+  optimization_guide::proto::AnnotatedPageContent content;
+  content.mutable_main_frame_data()->set_title(title);
+  tab_data.DidObserveContent(content, ApcSource::kActor);
 }
 
 class ActorSurfaceRegistryTest : public testing::Test {
@@ -146,6 +156,26 @@ TEST_F(ActorSurfaceRegistryTest, PromotionKeepsHandleAndRetargetsLookups) {
   EXPECT_EQ(registry_->GetForHeadless(contents), nullptr);
 }
 
+// The last observation is kept across promotion: it is the same WebContents,
+// so it still describes the page the model last saw.
+TEST_F(ActorSurfaceRegistryTest, PromotionKeepsActorTabData) {
+  ActorSurface* surface = registry_->CreateHeadlessWebContents(TestPassKey());
+  content::WebContents* contents = surface->GetWebContents();
+  ActorTabData* tab_data = surface->GetActorTabData();
+  ObserveContentWithTitle(*tab_data, "headless");
+
+  ON_CALL(mock_tab1_, GetContents()).WillByDefault(Return(contents));
+  tabs::TabLookupFromWebContents::CreateForWebContents(contents, &mock_tab1_);
+  registry_->OnSurfacePromoted(surface->GetHandle());
+
+  ASSERT_TRUE(surface->IsTab());
+  EXPECT_EQ(surface->GetActorTabData(), tab_data);
+  const optimization_guide::proto::AnnotatedPageContent* observed =
+      surface->GetActorTabData()->GetLastObservedPageContent();
+  ASSERT_TRUE(observed);
+  EXPECT_EQ(observed->main_frame_data().title(), "headless");
+}
+
 TEST_F(ActorSurfaceRegistryTest, DemotionKeepsHandleAndRetargetsLookups) {
   registry_->OnTabCreated(mock_tab1_);
   ActorSurface* surface = registry_->GetForTab(tab_handle());
@@ -161,6 +191,23 @@ TEST_F(ActorSurfaceRegistryTest, DemotionKeepsHandleAndRetargetsLookups) {
 
   EXPECT_EQ(registry_->GetForHeadless(web_contents1_.get()), surface);
   EXPECT_EQ(registry_->GetForTab(tab_handle()), nullptr);
+}
+
+TEST_F(ActorSurfaceRegistryTest, DemotionKeepsActorTabData) {
+  registry_->OnTabCreated(mock_tab1_);
+  ActorSurface* surface = registry_->GetForTab(tab_handle());
+  ASSERT_TRUE(surface);
+  ActorTabData* tab_data = surface->GetActorTabData();
+  ObserveContentWithTitle(*tab_data, "tab");
+
+  registry_->OnSurfaceWillBeDemoted(surface->GetHandle());
+
+  ASSERT_FALSE(surface->IsTab());
+  EXPECT_EQ(surface->GetActorTabData(), tab_data);
+  const optimization_guide::proto::AnnotatedPageContent* observed =
+      surface->GetActorTabData()->GetLastObservedPageContent();
+  ASSERT_TRUE(observed);
+  EXPECT_EQ(observed->main_frame_data().title(), "tab");
 }
 
 TEST_F(ActorSurfaceRegistryTest, TabSurfaceHandleIsTabHandleValue) {

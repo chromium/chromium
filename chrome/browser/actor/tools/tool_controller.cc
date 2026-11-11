@@ -210,9 +210,8 @@ void ToolController::Invoke(ResultCallback result_callback) {
 
   // Not all tools operate on a surface.
   if (ActorSurface* actor_surface = target_actor_surface_handle.Get()) {
-    if (ActorTabData* tab_data = actor_surface->GetActorTabData()) {
-      last_observed_page_content = tab_data->GetLastObservedPageContent();
-    }
+    last_observed_page_content =
+        actor_surface->GetActorTabData()->GetLastObservedPageContent();
   }
 
   mojom::ActionResultPtr toctou_result =

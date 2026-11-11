@@ -203,11 +203,8 @@ GlicActorGeneralUiTest::CheckActorTabDataHasAnnotatedPageContentCache() {
   return Steps(Do([&]() {
     // TODO(crbug.com/420669167): Needs to be reconsidered for multi-tab.
     const AnnotatedPageContent* cached_apc =
-        actor::ActorTabData::From(GetActorTask()
-                                      ->GetLastActedActorSurfaces()
-                                      .begin()
-                                      ->GetTabHandle()
-                                      .Get())
+        actor::ActorTabData::From(
+            *GetActorTask()->GetLastActedActorSurfaces().begin())
             ->GetLastObservedPageContent();
     EXPECT_TRUE(cached_apc);
     EXPECT_THAT(*annotated_page_content_, EqualsProto(*cached_apc));
@@ -270,11 +267,8 @@ MultiStep GlicActorGeneralUiTest::ReadTinyTargetBoundsAndAssertApcHitTest(
         EXPECT_EQ(button_bounds.size(), gfx::Size(20, 20));
 
         const apc::AnnotatedPageContent* cached_apc =
-            actor::ActorTabData::From(GetActorTask()
-                                          ->GetLastActedActorSurfaces()
-                                          .begin()
-                                          ->GetTabHandle()
-                                          .Get())
+            actor::ActorTabData::From(
+                *GetActorTask()->GetLastActedActorSurfaces().begin())
                 ->GetLastObservedPageContent();
         ASSERT_TRUE(cached_apc);
 

@@ -680,8 +680,8 @@ MultiStep GlicActorUiTest::GetPageContextForActorTab() {
                 annotated_page_content_ =
                     std::make_unique<AnnotatedPageContent>(
                         serialized_apc.As<AnnotatedPageContent>().value());
-                actor::ActorTabData* tab_data =
-                    actor::ActorTabData::From(tab_handle_.Get());
+                actor::ActorTabData* tab_data = actor::ActorTabData::From(
+                    actor::ActorSurfaceHandle::From(tab_handle_));
                 if (tab_data) {
                   tab_data->DidObserveContent(*annotated_page_content_,
                                               actor::ApcSource::kActor);

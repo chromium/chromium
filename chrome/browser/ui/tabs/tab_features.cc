@@ -17,7 +17,6 @@
 #include "base/time/default_tick_clock.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_surface_tab_helper.h"
-#include "chrome/browser/actor/actor_tab_data.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller.h"
 #include "chrome/browser/banners/app_banner_manager_desktop.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -760,8 +759,6 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   }  // IsInNormalWindow() end.
 
   if (base::FeatureList::IsEnabled(features::kGlicActor)) {
-    actor_tab_data_ =
-        GetUserDataFactory().CreateInstance<actor::ActorTabData>(tab, &tab);
     actor_surface_tab_helper_ =
         GetUserDataFactory().CreateInstance<actor::ActorSurfaceTabHelper>(tab,
                                                                           tab);
