@@ -34,6 +34,7 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.base.test.transit.Triggers;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -53,6 +54,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.test.MockCertVerifierRuleAndroid;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.webapk.lib.client.WebApkValidator;
 import org.chromium.components.webapk.proto.WebApkProto;
@@ -61,6 +63,7 @@ import org.chromium.components.webapps.AddToHomescreenDialogView;
 import org.chromium.components.webapps.AddToHomescreenProperties;
 import org.chromium.components.webapps.AddToHomescreenViewDelegate;
 import org.chromium.components.webapps.AppType;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.common.ContentSwitches;
@@ -364,8 +367,10 @@ public class WebApkIntegrationTest {
                     ChromeActivityTestRule.waitFor(ChromeTabbedActivity.class, STARTUP_TIMEOUT);
             ChromeActivityTestRule.waitForActivityCompletelyLoaded(tabbedActivity);
             Tab tab = ThreadUtils.runOnUiThreadBlocking(() -> tabbedActivity.getActivityTab());
-            ChromeTabUtils.loadUrlOnUiThread(tab, pageUrl);
-            ChromeTabUtils.waitForTabPageLoaded(tab, pageUrl);
+            WebPageStation.waitForWebPageLoad(
+                    Triggers.runOnUiThreadTo(() -> tab.loadUrl(new LoadUrlParams(pageUrl))),
+                    tab,
+                    pageUrl);
 
             HistogramWatcher installWatcher =
                     HistogramWatcher.newSingleRecordWatcher("WebApk.Install.InstallEvent", 3);

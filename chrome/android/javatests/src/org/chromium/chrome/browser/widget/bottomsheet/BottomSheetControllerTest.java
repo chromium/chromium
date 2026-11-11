@@ -45,7 +45,6 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
@@ -71,7 +70,6 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ViewUtils;
-import org.chromium.url.GURL;
 
 import java.util.concurrent.TimeoutException;
 
@@ -669,7 +667,7 @@ public class BottomSheetControllerTest {
 
     @Test
     @MediumTest
-    public void testCustomLifecycleContent() throws TimeoutException {
+    public void testCustomLifecycleContent() {
         requestContentInSheet(mHighPriorityContent, true);
         requestContentInSheet(mLowPriorityContent, false);
 
@@ -681,22 +679,8 @@ public class BottomSheetControllerTest {
         requestContentInSheet(customLifecycleContent, false);
         assertEquals(mHighPriorityContent, mSheetController.getCurrentSheetContent());
 
-        // Change URL and wait for PageLoadStarted event.
-        CallbackHelper pageLoadStartedHelper = new CallbackHelper();
-        Tab tab = mActivityTestRule.getActivityTab();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    tab.addObserver(
-                            new TabObserver() {
-                                @Override
-                                public void onPageLoadStarted(Tab tab, GURL url) {
-                                    pageLoadStartedHelper.notifyCalled();
-                                }
-                            });
-                });
-        int currentCallCount = pageLoadStartedHelper.getCallCount();
-        ChromeTabUtils.loadUrlOnUiThread(tab, "about:blank");
-        pageLoadStartedHelper.waitForCallback(currentCallCount, 1);
+        // Change URL. Starting the page load clears the requests without a custom lifecycle.
+        mPage = mPage.loadAboutBlank();
 
         ThreadUtils.runOnUiThreadBlocking(mTestSupport::endAllAnimations);
         assertEquals(customLifecycleContent, mSheetController.getCurrentSheetContent());

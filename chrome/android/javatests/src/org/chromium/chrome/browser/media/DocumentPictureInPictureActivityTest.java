@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.content_public.browser.WebContents;
@@ -51,13 +52,14 @@ public class DocumentPictureInPictureActivityTest {
     public FreshCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
+    private WebPageStation mPage;
     private Tab mTab;
     private WebContents mParentWebContents;
     private WebContents mWebContents;
 
     @Before
     public void setUp() {
-        mActivityTestRule.startOnTestServerUrl("/chrome/test/data/android/simple.html");
+        mPage = mActivityTestRule.startOnTestServerUrl("/chrome/test/data/android/simple.html");
         mTab = mActivityTestRule.getActivityTab();
         mParentWebContents = mTab.getWebContents();
 
@@ -239,12 +241,7 @@ public class DocumentPictureInPictureActivityTest {
     public void testOpaqueOriginFinishesActivity() throws Exception {
         // Navigate the parent tab to a data URL (which results in an opaque origin).
         final String dataUrl = "data:text/html,<html><body>Hello</body></html>";
-        ChromeTabUtils.waitForTabPageLoaded(
-                mTab,
-                dataUrl,
-                () -> {
-                    ChromeTabUtils.loadUrlOnUiThread(mTab, dataUrl);
-                });
+        mPage = mPage.loadWebPageProgrammatically(dataUrl);
 
         // Re-establish the native PiP session with the parent WebContents at its new URL.
         ThreadUtils.runOnUiThreadBlocking(
