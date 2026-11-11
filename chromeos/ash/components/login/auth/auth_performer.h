@@ -142,11 +142,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthPerformer {
   void AuthenticateAsKiosk(std::unique_ptr<UserContext> context,
                            AuthOperationCallback callback);
 
-  // Attempts to authenticate session with fingerprint auth factor.
-  // Session will become authenticated upon success.
-  void AuthenticateWithFingerprint(std::unique_ptr<UserContext> context,
-                                   AuthOperationCallback callback);
-
   void AuthenticateWithLegacyFingerprint(std::unique_ptr<UserContext> context,
                                          AuthOperationCallback callback);
 

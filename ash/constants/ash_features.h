@@ -308,7 +308,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::FeatureParam<base::TimeDelta> kEcheScanningCycleOnTime;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::FeatureParam<base::TimeDelta> kEcheScanningCycleOffTime;
-COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kFingerprintAuthFactor);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kForceEnableServerSideSpeechRecognition);
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -920,7 +919,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFastPairSoftwareScanningEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFastPairSavedDevicesEnabled();
 
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFilesLocalImageSearchEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFingerprintAuthFactorEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsFixStaticIpForTwoManagedEthPortsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFjordOobeEnabled();
