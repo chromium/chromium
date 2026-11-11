@@ -5,13 +5,16 @@
 #ifndef ASH_WEBUI_SHIMLESS_RMA_BACKEND_EXTERNAL_APP_DIALOG_H_
 #define ASH_WEBUI_SHIMLESS_RMA_BACKEND_EXTERNAL_APP_DIALOG_H_
 
+#include <memory>
 #include <string>
 
+#include "ash/shell_observer.h"
 #include "ash/webui/shimless_rma/backend/shimless_rma_delegate.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
 #include "url/gurl.h"
@@ -25,13 +28,18 @@ class WebDialogView;
 class Widget;
 }  // namespace views
 
+namespace ash {
+class Shell;
+}  // namespace ash
+
 namespace ash::shimless_rma {
 
 // Provides a dialog to show external apps on shimless rma screen. It creates a
 // WebDialogView, and disables some API (e.g. opening tabs, opening file
 // chooser) to prevent them being used in shimless rma screen.
 class ExternalAppDialog : public ui::WebDialogDelegate,
-                          public content::WebContentsObserver {
+                          public content::WebContentsObserver,
+                          public ShellObserver {
  public:
   using ConsoleLogCallback =
       base::RepeatingCallback<void(logging::LogSeverity log_level,
@@ -84,12 +92,12 @@ class ExternalAppDialog : public ui::WebDialogDelegate,
   // Closes the open dialog in test. Does nothing if there is no open dialog.
   static void CloseForTesting();
 
+  ~ExternalAppDialog() override;
+
  protected:
   explicit ExternalAppDialog(const InitParams& params);
   ExternalAppDialog(const ExternalAppDialog&) = delete;
   ExternalAppDialog& operator=(const ExternalAppDialog&) = delete;
-
-  ~ExternalAppDialog() override;
 
  private:
   // ui::WebDialogDelegate overrides:
@@ -109,16 +117,22 @@ class ExternalAppDialog : public ui::WebDialogDelegate,
       const std::u16string& source_id,
       const std::optional<std::u16string>& untrusted_stack_trace) override;
 
+  // ShellObserver overrides:
+  void OnShellDestroying() override;
+
   // Set to true once setup for webcontent is initialized.
   bool has_web_content_setup_ = false;
-  // views::WebDialogView that owns this delegate.
+  // The widget that shows the dialog. Declared before `web_dialog_view_`,
+  // which points into it.
+  std::unique_ptr<views::Widget> widget_;
+  // The widget's views::WebDialogView, which calls this delegate.
   raw_ptr<views::WebDialogView> web_dialog_view_;
-  // views::Widget that owns this delegate.
-  raw_ptr<views::Widget> widget_;
   // Delegate for accessing //chrome.
   base::WeakPtr<ShimlessRmaDelegate> shimless_rma_delegate_;
   // Callback for handling the console log from the app.
   ConsoleLogCallback on_console_log_;
+
+  base::ScopedObservation<Shell, ShellObserver> shell_observation_{this};
 };
 
 }  // namespace ash::shimless_rma

@@ -12,9 +12,14 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "base/check_op.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/ptr_util.h"
+#include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "components/permissions/permission_request_manager.h"
 #include "content/public/browser/console_message.h"
@@ -38,7 +43,30 @@ namespace ash::shimless_rma {
 
 namespace {
 
-ExternalAppDialog* g_instance = nullptr;
+// Owns the open dialog.
+std::unique_ptr<ExternalAppDialog>& OpenDialog() {
+  static base::NoDestructor<std::unique_ptr<ExternalAppDialog>> dialog;
+  return *dialog;
+}
+
+// Owns a closed dialog until a posted task frees it.
+std::unique_ptr<ExternalAppDialog>& ClosedDialog() {
+  static base::NoDestructor<std::unique_ptr<ExternalAppDialog>> dialog;
+  return *dialog;
+}
+
+void DeleteClosedDialog() {
+  ClosedDialog().reset();
+}
+
+// The dialog closes from within its WebContents or its widget's teardown,
+// which must not free them, so the closed dialog is freed in a posted task.
+void OnOpenDialogClosed(const std::string& json_retval) {
+  ClosedDialog() = std::move(OpenDialog());
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&DeleteClosedDialog));
+}
+
 base::RepeatingCallback<void(const ExternalAppDialog::InitParams&)>*
     g_mock_show_function = nullptr;
 
@@ -123,7 +151,7 @@ ExternalAppDialog::InitParams::~InitParams() = default;
 
 // static
 void ExternalAppDialog::Show(const InitParams& params) {
-  if (g_instance) {
+  if (OpenDialog()) {
     LOG(ERROR) << "Can only show one ExternalAppDialog";
     return;
   }
@@ -131,18 +159,19 @@ void ExternalAppDialog::Show(const InitParams& params) {
     g_mock_show_function->Run(params);
     return;
   }
-  new ExternalAppDialog(params);
+  OpenDialog() = base::WrapUnique(new ExternalAppDialog(params));
 }
 
 // static
 content::WebContents* ExternalAppDialog::GetWebContents() {
-  return g_instance ? g_instance->web_dialog_view_->web_contents() : nullptr;
+  return OpenDialog() ? OpenDialog()->web_dialog_view_->web_contents()
+                      : nullptr;
 }
 
 // static
 void ExternalAppDialog::CloseForTesting() {
-  if (g_instance) {
-    g_instance->widget_->Close();
+  if (OpenDialog()) {
+    OpenDialog()->widget_->Close();
   }
 }
 
@@ -161,12 +190,11 @@ ExternalAppDialog::ScopedMockShowForTesting::~ScopedMockShowForTesting() {
 ExternalAppDialog::ExternalAppDialog(const InitParams& params)
     : content::WebContentsObserver(nullptr),
       on_console_log_(params.on_console_log) {
-  CHECK_EQ(g_instance, nullptr);
-  g_instance = this;
-
   shimless_rma_delegate_ = params.shimless_rma_delegate;
 
   set_can_close(true);
+  set_delete_on_close(false);
+  RegisterOnDialogClosedCallback(base::BindOnce(&OnOpenDialogClosed));
   set_can_resize(false);
   set_center_dialog_title_text(true);
   set_close_dialog_on_escape(false);
@@ -175,7 +203,7 @@ ExternalAppDialog::ExternalAppDialog(const InitParams& params)
   set_dialog_title(base::UTF8ToUTF16(params.app_name));
 
   views::Widget::InitParams widget_params{
-      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET};
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET};
   widget_params.z_order = ui::ZOrderLevel::kFloatingWindow;
   web_dialog_view_ = new views::WebDialogView(
       params.context, this, std::make_unique<WebContentsHandler>());
@@ -184,15 +212,14 @@ ExternalAppDialog::ExternalAppDialog(const InitParams& params)
       ash::Shell::GetContainer(ash::Shell::GetPrimaryRootWindow(),
                                ash::kShellWindowId_LockSystemModalContainer);
 
-  widget_ = new views::Widget;
+  widget_ = std::make_unique<views::Widget>();
   widget_->Init(std::move(widget_params));
   widget_->Show();
+
+  shell_observation_.Observe(ash::Shell::Get());
 }
 
-ExternalAppDialog::~ExternalAppDialog() {
-  CHECK_EQ(g_instance, this);
-  g_instance = nullptr;
-}
+ExternalAppDialog::~ExternalAppDialog() = default;
 
 void ExternalAppDialog::GetDialogSize(gfx::Size* size) const {
   gfx::Size screen_size = display::Screen::Get()->GetPrimaryDisplay().size();
@@ -242,6 +269,13 @@ void ExternalAppDialog::OnDidAddMessageToConsole(
     on_console_log_.Run(content::ConsoleMessageLevelToLogSeverity(log_level),
                         message, line_no, source_id);
   }
+}
+
+void ExternalAppDialog::OnShellDestroying() {
+  // Posted tasks no longer run, so free the dialogs now, while their windows
+  // and browser context are still alive.
+  OpenDialog().reset();
+  ClosedDialog().reset();
 }
 
 }  // namespace ash::shimless_rma
