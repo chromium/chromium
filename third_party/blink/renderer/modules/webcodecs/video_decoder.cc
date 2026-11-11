@@ -713,7 +713,6 @@ VideoDecoder::MakeOutput(scoped_refptr<MediaOutputType> output,
       auto wrapped_output = media::VideoFrame::WrapVideoFrame(
           output, output->format(), output->visible_rect(),
           output->natural_size());
-      wrapped_output->set_color_space(output->ColorSpace());
       wrapped_output->metadata().frame_duration = duration;
       output = wrapped_output;
     }
