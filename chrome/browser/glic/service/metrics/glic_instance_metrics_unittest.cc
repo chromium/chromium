@@ -2930,6 +2930,275 @@ TEST_F(GlicInstanceMetricsTest, TooltipMetrics_Impression) {
   histogram_tester_.ExpectTotalCount("Glic.Tooltip.MultiTab.Impression", 2);
 }
 
+TEST_F(GlicInstanceMetricsTest,
+       TooltipMetrics_ClosedWhileShown_OnFloatyClosed) {
+  ShowOptions show_options{FloatingShowOptions{}};
+  metrics_.OnShowInFloaty(show_options);
+
+  metrics_.OnTooltipImpression(mojom::TooltipImpressionType::kTooltip1);
+  metrics_.OnFloatyClosed();
+
+  histogram_tester_.ExpectUniqueSample("Glic.Tooltip.MultiTab.ClosedWhileShown",
+                                       true, 1);
+
+  // Subsequent destruction should NOT double-record.
+  metrics_.OnInstanceDestroyed();
+  histogram_tester_.ExpectTotalCount("Glic.Tooltip.MultiTab.ClosedWhileShown",
+                                     1);
+}
+
+TEST_F(GlicInstanceMetricsTest,
+       TooltipMetrics_ClosedWhileShown_OnSidePanelClosed) {
+  EXPECT_CALL(mock_tab_, GetTabHandle()).WillRepeatedly(testing::Return(1));
+  ShowOptions show_options{SidePanelShowOptions{mock_tab_}};
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
+  metrics_.OnShowInSidePanel(&mock_tab_);
+
+  metrics_.OnTooltipImpression(mojom::TooltipImpressionType::kTooltip1);
+  metrics_.OnSidePanelClosed(
+      static_cast<tabs::TabInterface*>(&mock_tab_),
+      GlicInstanceMetrics::CloseReason::kExplicitlyClosed);
+
+  histogram_tester_.ExpectUniqueSample("Glic.Tooltip.MultiTab.ClosedWhileShown",
+                                       true, 1);
+
+  // Subsequent destruction should NOT double-record.
+  metrics_.OnInstanceDestroyed();
+  histogram_tester_.ExpectTotalCount("Glic.Tooltip.MultiTab.ClosedWhileShown",
+                                     1);
+}
+
+TEST_F(GlicInstanceMetricsTest,
+       TooltipMetrics_ClosedWhileShown_OnUnbindOpenEmbedder) {
+  EXPECT_CALL(mock_tab_, GetTabHandle()).WillRepeatedly(testing::Return(1));
+  ShowOptions show_options{SidePanelShowOptions{mock_tab_}};
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
+  metrics_.OnShowInSidePanel(&mock_tab_);
+
+  metrics_.OnTooltipImpression(mojom::TooltipImpressionType::kTooltip1);
+  task_environment_.FastForwardBy(base::Seconds(3));
+  metrics_.OnUnbindEmbedder(SidePanelEmbedderKey{&mock_tab_});
+
+  histogram_tester_.ExpectUniqueSample("Glic.Tooltip.MultiTab.ClosedWhileShown",
+                                       true, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Tooltip.MultiTab.PanelCloseWithin10s", true, 1);
+
+  metrics_.OnInstanceDestroyed();
+  histogram_tester_.ExpectTotalCount("Glic.Tooltip.MultiTab.ClosedWhileShown",
+                                     1);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Tooltip.MultiTab.PanelCloseWithin10s", 1);
+}
+
+TEST_F(GlicInstanceMetricsTest,
+       TooltipMetrics_ClosedWhileShown_OnUnbindOpenFloatyEmbedder) {
+  ShowOptions show_options{FloatingShowOptions{}};
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
+  metrics_.OnShowInFloaty(show_options);
+
+  metrics_.OnTooltipImpression(mojom::TooltipImpressionType::kTooltip1);
+  task_environment_.FastForwardBy(base::Seconds(3));
+  metrics_.OnUnbindEmbedder(FloatingEmbedderKey{});
+
+  histogram_tester_.ExpectUniqueSample("Glic.Tooltip.MultiTab.ClosedWhileShown",
+                                       true, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Tooltip.MultiTab.PanelCloseWithin10s", true, 1);
+
+  metrics_.OnInstanceDestroyed();
+  histogram_tester_.ExpectTotalCount("Glic.Tooltip.MultiTab.ClosedWhileShown",
+                                     1);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Tooltip.MultiTab.PanelCloseWithin10s", 1);
+}
+
+TEST_F(GlicInstanceMetricsTest,
+       TooltipMetrics_ClosedWhileShown_OnBoundTabDestroyed) {
+  tabs::MockTabInterface background_tab;
+  EXPECT_CALL(mock_tab_, GetTabHandle()).WillRepeatedly(testing::Return(1));
+  EXPECT_CALL(background_tab, GetTabHandle())
+      .WillRepeatedly(testing::Return(2));
+
+  // Open side panel on background_tab, then switch away (kTabSwitched removes
+  // it from `side_panel_open_times_`) and open on mock_tab_.
+  ShowOptions bg_options{SidePanelShowOptions{background_tab}};
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, bg_options);
+  metrics_.OnShowInSidePanel(&background_tab);
+  metrics_.OnSidePanelClosed(static_cast<tabs::TabInterface*>(&background_tab),
+                             GlicInstanceMetrics::CloseReason::kTabSwitched);
+
+  metrics_.OnShowInSidePanel(&mock_tab_);
+  metrics_.OnTooltipImpression(mojom::TooltipImpressionType::kTooltip1);
+  task_environment_.FastForwardBy(base::Seconds(3));
+
+  // Closing the backgrounded tab must NOT falsely emit tooltip close metrics.
+  metrics_.OnBoundTabDestroyed(&background_tab, /*is_active_embedder=*/false);
+  histogram_tester_.ExpectTotalCount("Glic.Tooltip.MultiTab.ClosedWhileShown",
+                                     0);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Tooltip.MultiTab.PanelCloseWithin10s", 0);
+
+  // Closing the active open-panel tab emits both tooltip close metrics once.
+  metrics_.OnBoundTabDestroyed(&mock_tab_, /*is_active_embedder=*/true);
+  histogram_tester_.ExpectUniqueSample("Glic.Tooltip.MultiTab.ClosedWhileShown",
+                                       true, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Tooltip.MultiTab.PanelCloseWithin10s", true, 1);
+
+  metrics_.OnInstanceDestroyed();
+  histogram_tester_.ExpectTotalCount("Glic.Tooltip.MultiTab.ClosedWhileShown",
+                                     1);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Tooltip.MultiTab.PanelCloseWithin10s", 1);
+}
+
+TEST_F(GlicInstanceMetricsTest,
+       TooltipMetrics_ClosedWhileShown_DetachThenCloseOriginalTab) {
+  tabs::MockTabInterface detached_tab;
+  EXPECT_CALL(detached_tab, GetTabHandle()).WillRepeatedly(testing::Return(2));
+
+  ShowOptions sp_options{SidePanelShowOptions{detached_tab}};
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, sp_options);
+  metrics_.OnShowInSidePanel(&detached_tab);
+
+  // Detaching to Floaty leaves `detached_tab` in `side_panel_open_times_`
+  // without an OnSidePanelClosed() callback.
+  metrics_.OnDetach();
+  metrics_.OnShowInFloaty(ShowOptions{FloatingShowOptions{}});
+  metrics_.OnTooltipImpression(mojom::TooltipImpressionType::kTooltip1);
+  task_environment_.FastForwardBy(base::Seconds(3));
+
+  // Closing the original tab while Floaty is active must NOT emit close metrics
+  // or clear the tooltip flag before the Floaty window closes.
+  metrics_.OnBoundTabDestroyed(&detached_tab, /*is_active_embedder=*/false);
+  histogram_tester_.ExpectTotalCount("Glic.Tooltip.MultiTab.ClosedWhileShown",
+                                     0);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Tooltip.MultiTab.PanelCloseWithin10s", 0);
+
+  metrics_.OnFloatyClosed();
+  histogram_tester_.ExpectUniqueSample("Glic.Tooltip.MultiTab.ClosedWhileShown",
+                                       true, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Tooltip.MultiTab.PanelCloseWithin10s", true, 1);
+}
+
+TEST_F(GlicInstanceMetricsTest,
+       TooltipMetrics_ClosedWhileShown_OnInstanceDestroyed) {
+  metrics_.OnVisibilityChanged(true);
+  metrics_.OnTooltipImpression(mojom::TooltipImpressionType::kTooltip1);
+  metrics_.OnInstanceDestroyed();
+
+  histogram_tester_.ExpectUniqueSample("Glic.Tooltip.MultiTab.ClosedWhileShown",
+                                       true, 1);
+}
+
+TEST_F(GlicInstanceMetricsTest,
+       TooltipMetrics_ClosedWhileShown_RecordsFalseAfterHidden) {
+  ShowOptions show_options{FloatingShowOptions{}};
+  metrics_.OnShowInFloaty(show_options);
+
+  metrics_.OnTooltipImpression(mojom::TooltipImpressionType::kTooltip1);
+  metrics_.OnTooltipHidden();
+  task_environment_.FastForwardBy(base::Seconds(2));
+  metrics_.OnFloatyClosed();
+
+  histogram_tester_.ExpectUniqueSample("Glic.Tooltip.MultiTab.ClosedWhileShown",
+                                       false, 1);
+  // PanelCloseWithin10s still tracks closes within 10s of an impression.
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Tooltip.MultiTab.PanelCloseWithin10s", true, 1);
+}
+
+TEST_F(GlicInstanceMetricsTest,
+       TooltipMetrics_ClosedWhileShown_ReShownAfterHidden) {
+  metrics_.OnVisibilityChanged(true);
+  metrics_.OnTooltipImpression(mojom::TooltipImpressionType::kTooltip1);
+  metrics_.OnTooltipHidden();
+  metrics_.OnTooltipImpression(mojom::TooltipImpressionType::kTooltip2a);
+  metrics_.OnInstanceDestroyed();
+
+  histogram_tester_.ExpectUniqueSample("Glic.Tooltip.MultiTab.ClosedWhileShown",
+                                       true, 1);
+}
+
+TEST_F(GlicInstanceMetricsTest,
+       TooltipMetrics_ClosedWhileShown_NotEmittedOnTabSwitched) {
+  EXPECT_CALL(mock_tab_, GetTabHandle()).WillRepeatedly(testing::Return(1));
+  ShowOptions show_options{SidePanelShowOptions{mock_tab_}};
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
+  metrics_.OnShowInSidePanel(&mock_tab_);
+  metrics_.OnVisibilityChanged(true);
+
+  metrics_.OnTooltipImpression(mojom::TooltipImpressionType::kTooltip1);
+  metrics_.OnSidePanelClosed(static_cast<tabs::TabInterface*>(&mock_tab_),
+                             GlicInstanceMetrics::CloseReason::kTabSwitched);
+  metrics_.OnVisibilityChanged(false);
+
+  histogram_tester_.ExpectTotalCount("Glic.Tooltip.MultiTab.ClosedWhileShown",
+                                     0);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Tooltip.MultiTab.PanelCloseWithin10s", 0);
+
+  // Destroying the hidden switched-away instance later must not falsely record
+  // either close metric.
+  metrics_.OnInstanceDestroyed();
+  histogram_tester_.ExpectTotalCount("Glic.Tooltip.MultiTab.ClosedWhileShown",
+                                     0);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Tooltip.MultiTab.PanelCloseWithin10s", 0);
+}
+
+TEST_F(GlicInstanceMetricsTest,
+       TooltipMetrics_ClosedWhileShown_PreservedAcrossClientReady) {
+  metrics_.OnShowInFloaty(ShowOptions{FloatingShowOptions{}});
+  metrics_.OnVisibilityChanged(true);
+  metrics_.OnTooltipImpression(mojom::TooltipImpressionType::kTooltip1);
+
+  // PanelWillOpenComplete (OnClientReady) can arrive after initial tooltip
+  // impressions without tearing down the web client.
+  metrics_.OnClientReady();
+  metrics_.OnTooltipHidden();
+  metrics_.OnFloatyClosed();
+
+  histogram_tester_.ExpectUniqueSample("Glic.Tooltip.MultiTab.ClosedWhileShown",
+                                       false, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Tooltip.MultiTab.PanelCloseWithin10s", true, 1);
+}
+
+TEST_F(GlicInstanceMetricsTest,
+       TooltipMetrics_ClosedWhileShown_ClearedOnWebClientCleared) {
+  metrics_.OnShowInFloaty(ShowOptions{FloatingShowOptions{}});
+  metrics_.OnVisibilityChanged(true);
+  metrics_.OnTooltipImpression(mojom::TooltipImpressionType::kTooltip1);
+
+  // Simulate web client reload, crash recovery, or hibernation.
+  metrics_.OnWebClientCleared();
+  metrics_.OnFloatyClosed();
+
+  histogram_tester_.ExpectTotalCount("Glic.Tooltip.MultiTab.ClosedWhileShown",
+                                     0);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Tooltip.MultiTab.PanelCloseWithin10s", 0);
+}
+
+TEST_F(GlicInstanceMetricsTest,
+       TooltipMetrics_ClosedWhileShown_NotEmittedWithoutImpressionOrUnknown) {
+  metrics_.OnShowInFloaty(ShowOptions{FloatingShowOptions{}});
+  metrics_.OnFloatyClosed();
+  histogram_tester_.ExpectTotalCount("Glic.Tooltip.MultiTab.ClosedWhileShown",
+                                     0);
+
+  metrics_.OnVisibilityChanged(true);
+  metrics_.OnTooltipImpression(mojom::TooltipImpressionType::kUnknown);
+  metrics_.OnInstanceDestroyed();
+
+  histogram_tester_.ExpectTotalCount("Glic.Tooltip.MultiTab.ClosedWhileShown",
+                                     0);
+}
+
 TEST_F(GlicInstanceMetricsTest, TooltipMetrics_MultiTabPromptSubmitted) {
   testing::NiceMock<MockGlicSharingManager> sharing_manager;
   GlicInstanceMetrics metrics(&profile_metrics_service_, &sharing_manager,
@@ -3113,10 +3382,17 @@ TEST_F(
 
 TEST_F(GlicInstanceMetricsTest,
        TooltipMetrics_PanelCloseWithin10s_NoImpressionAndRefreshesTimestamp) {
-  metrics_.OnInstanceDestroyed();
-  histogram_tester_.ExpectTotalCount(
-      "Glic.Tooltip.MultiTab.PanelCloseWithin10s", 0);
+  {
+    testing::NiceMock<MockGlicSharingManager> sharing_manager;
+    GlicInstanceMetrics no_impression_metrics(
+        &profile_metrics_service_, &sharing_manager, nullptr, &profile_);
+    no_impression_metrics.OnVisibilityChanged(true);
+    no_impression_metrics.OnInstanceDestroyed();
+    histogram_tester_.ExpectTotalCount(
+        "Glic.Tooltip.MultiTab.PanelCloseWithin10s", 0);
+  }
 
+  metrics_.OnVisibilityChanged(true);
   metrics_.OnTooltipImpression(mojom::TooltipImpressionType::kTooltip1);
   task_environment_.FastForwardBy(base::Seconds(8));
   metrics_.OnTooltipImpression(mojom::TooltipImpressionType::kTooltip2a);
@@ -3128,6 +3404,7 @@ TEST_F(GlicInstanceMetricsTest,
 }
 
 TEST_F(GlicInstanceMetricsTest, TooltipMetrics_PanelCloseWithin10s_Emitted) {
+  metrics_.OnVisibilityChanged(true);
   metrics_.OnTooltipImpression(mojom::TooltipImpressionType::kTooltip1);
   task_environment_.FastForwardBy(base::Seconds(5));
   metrics_.OnInstanceDestroyed();
@@ -3138,6 +3415,7 @@ TEST_F(GlicInstanceMetricsTest, TooltipMetrics_PanelCloseWithin10s_Emitted) {
 
 TEST_F(GlicInstanceMetricsTest,
        TooltipMetrics_PanelCloseWithin10s_After10sRecordsFalse) {
+  metrics_.OnVisibilityChanged(true);
   metrics_.OnTooltipImpression(mojom::TooltipImpressionType::kTooltip1);
   task_environment_.FastForwardBy(base::Seconds(11));
   metrics_.OnInstanceDestroyed();

@@ -1456,8 +1456,8 @@ void GlicInstanceImpl::MaybeShowHostUi(
 }
 
 void GlicInstanceImpl::OnBoundTabDestroyed(tabs::TabInterface* tab) {
-  instance_metrics_.OnBoundTabDestroyed();
   EmbedderKey key = GetEmbedderKeyForTab(tab);
+  instance_metrics_.OnBoundTabDestroyed(tab, IsActiveEmbedder(key));
   OnEmbedderClosed(key);
   if (active_embedder_key_ == key) {
     host_.SetDelegate(&empty_embedder_delegate_);
@@ -1951,6 +1951,7 @@ void GlicInstanceImpl::Hibernate() {
   VLOG(1) << "Glic [InstanceImpl] Hibernate, id=" << id_.value();
   DeactivateCurrentEmbedder();
   host_.Hibernate();
+  instance_metrics_.OnWebClientCleared();
 }
 
 void GlicInstanceImpl::Shutdown() {
@@ -2030,6 +2031,7 @@ void GlicInstanceImpl::NotifyPanelWillOpen(
 }
 
 void GlicInstanceImpl::OnWebClientCleared() {
+  instance_metrics_.OnWebClientCleared();
   observers_.Notify(&GlicInstanceObserver::OnInstanceWebClientCleared, *this);
   NotifyPanelWillOpen(mojom::InvocationSource::kDefaultValue, std::nullopt);
 }

@@ -1712,6 +1712,12 @@ export declare interface GlicBrowserHostMetrics {
   /** Called when a multi-tab sharing tooltip is shown. */
   onTooltipImpression?(impression: TooltipImpressionType): void;
 
+  /**
+   * Called when a currently displayed multi-tab sharing tooltip is hidden in
+   * the web client (e.g. dismissed, timed out, or engaged with).
+   */
+  onTooltipHidden?(): void;
+
   // Removed fields and methods :
   onModelChanged?(): never;  // Last seen on Canary 146.0.7639.0
 }

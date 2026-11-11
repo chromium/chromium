@@ -1618,6 +1618,11 @@ class GlicWebClientHandler
     host().instance_metrics().OnTooltipImpression(impression);
   }
 
+  void OnTooltipHidden() override {
+    LogApiRequest(GlicHostApiRequestId::kOnTooltipHidden);
+    host().instance_metrics().OnTooltipHidden();
+  }
+
   void SetSyntheticExperimentState(const std::string& trial_name,
                                    const std::string& group_name) override {
     LogApiRequest(GlicHostApiRequestId::kSetSyntheticExperimentState);

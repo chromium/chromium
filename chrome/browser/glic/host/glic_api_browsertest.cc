@@ -5792,6 +5792,11 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testMetrics) {
       /*expected_bucket_count=*/1));
   ASSERT_OK(histogram_tester.WaitForTotalCount(
       "Glic.Api.RequestCounts.OnTooltipImpression", 1));
+  ASSERT_OK(histogram_tester.WaitForTotalCount(
+      "Glic.Api.RequestCounts.OnTooltipHidden", 1));
+  ASSERT_OK(CloseGlicForTabAndWait(GetTabListInterface()->GetActiveTab()));
+  histogram_tester.ExpectUniqueSample("Glic.Tooltip.MultiTab.ClosedWhileShown",
+                                      false, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testUserInputSubmittedPromptType) {
