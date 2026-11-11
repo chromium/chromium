@@ -7,22 +7,14 @@
 -All/GetDisplayMediaHiDpiBrowserTest.Capture/3840x2160
 
 -All/PDFExtensionJSInk2Test.Ink2/*
--All/PDFExtensionJSInk2Test.Ink2BottomToolbar/*
--All/PDFExtensionScrollTest.WithArrowLeftRightScrollToPage/*
 -All/PDFExtensionJSInk2TextTest.Ink2TextBottomToolbar/*
--All/SearchEnginePreconnectorNoDelaysBrowserTest.PreconnectOnlyInForeground/*
 -All/SoftNavigationTest.LayoutShift/*
 -BackForwardCachePageLoadMetricsObserverBrowserTest.LayoutShiftNormalization_AfterBackForwardCacheRestore
--UnframedIsolatedWebAppBrowserTest.PopupResize_CanSubceedMinimumWindowSize_And_InnerAndOuterSizesAreCorrect
 
 # TODO(crbug.com/40688401) This test requires full Picture-in-Picture support.
 -FedCmAccountSelectionViewBrowserTest.DisabledWhenOccluded
 
--FindInPageControllerTest.FindMovesOnTabClose_Issue1343052
 -LayoutInstabilityTest.*
--PrintBrowserTest.NoResizeEvent
--PrintBrowserTest.NoScrolling
--ProfilePickerEnterpriseCreationFlowBrowserTest.CreateSignedInProfileWithSuggestedTwoFactorAuthSetup
 -All/WebAppBrowserTest.PWASizeIsCorrectlyRestored/*
 -All/WebAppBrowserTest.SetBounds/*
 -All/WebAppBrowserTest.WindowOffsetsClampedToScreen/*
