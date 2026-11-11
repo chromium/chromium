@@ -127,6 +127,7 @@ static_library("printing") {
     "//chrome/browser/ash/profiles",
     "//chrome/browser/component_updater",
     "//chrome/browser/local_discovery",
+    "//chrome/browser/policy",
     "//chrome/browser/printing",
     "//chrome/browser/sync:factories",
     "//chrome/browser/ui:chrome_pages",

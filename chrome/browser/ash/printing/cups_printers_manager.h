@@ -32,6 +32,10 @@ namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
 
+namespace policy {
+class PolicyService;
+}  // namespace policy
+
 namespace user_prefs {
 class PrefRegistrySyncable;
 }  // namespace user_prefs
@@ -84,12 +88,15 @@ class CupsPrintersManager : public PrinterInstallationManager,
 
   // Factory function.
   // `application_locale_storage` must be non-null and must outlive the returned
-  // object. `url_loader_factory` must be non-null.
+  // object. `url_loader_factory` must be non-null. `policy_service` is the
+  // policy service of `profile`. It must be non-null and must outlive the
+  // returned object.
   static std::unique_ptr<CupsPrintersManager> Create(
       PrefService& local_state,
       const ApplicationLocaleStorage* application_locale_storage,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      Profile* profile);
+      Profile* profile,
+      const policy::PolicyService* policy_service);
 
   // Factory function that allows injected dependencies, for testing.  Ownership
   // is not taken of any of the raw-pointer arguments.

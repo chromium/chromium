@@ -1294,7 +1294,8 @@ std::unique_ptr<CupsPrintersManager> CupsPrintersManager::Create(
     PrefService& local_state,
     const ApplicationLocaleStorage* application_locale_storage,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    Profile* profile) {
+    Profile* profile,
+    const policy::PolicyService* policy_service) {
   return std::make_unique<CupsPrintersManagerImpl>(
       application_locale_storage,
       SyncedPrintersManagerFactory::GetInstance()->GetForBrowserContext(
@@ -1304,7 +1305,8 @@ std::unique_ptr<CupsPrintersManager> CupsPrintersManager::Create(
       DlcserviceClient::Get(),
       UsbPrinterNotificationController::Create(profile),
       PrintServersManager::Create(local_state, profile),
-      EnterprisePrintersProvider::Create(CrosSettings::Get(), profile),
+      EnterprisePrintersProvider::Create(CrosSettings::Get(), profile,
+                                         policy_service),
       PrinterEventTrackerFactory::GetInstance()->GetForBrowserContext(profile),
       profile->GetPrefs());
 }

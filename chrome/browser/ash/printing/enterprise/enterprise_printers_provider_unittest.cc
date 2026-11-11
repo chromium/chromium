@@ -21,6 +21,7 @@
 #include "chrome/browser/ash/printing/enterprise/bulk_printers_calculator_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
@@ -168,8 +169,9 @@ class EnterprisePrintersProviderTest : public testing::Test {
     user_printers_calculator_->SetData(
         std::make_unique<std::string>(kBulkPolicyContents));
 
-    provider_ =
-        EnterprisePrintersProvider::Create(CrosSettings::Get(), &profile_);
+    provider_ = EnterprisePrintersProvider::Create(
+        CrosSettings::Get(), &profile_,
+        profile_.GetProfilePolicyConnector()->policy_service());
     base::RunLoop().RunUntilIdle();
   }
 

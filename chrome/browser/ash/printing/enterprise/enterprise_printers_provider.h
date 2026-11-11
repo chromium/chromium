@@ -13,6 +13,10 @@ namespace chromeos {
 class Printer;
 }  // namespace chromeos
 
+namespace policy {
+class PolicyService;
+}  // namespace policy
+
 namespace user_prefs {
 class PrefRegistrySyncable;
 }  // namespace user_prefs
@@ -43,10 +47,13 @@ class EnterprisePrintersProvider {
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
-  // |settings| is the source of device policies. |profile| is a user profile.
+  // |settings| is the source of device policies. |profile| is a user profile
+  // and |policy_service| is its policy service, which must be non-null. Both
+  // must outlive the provider.
   static std::unique_ptr<EnterprisePrintersProvider> Create(
       CrosSettings* settings,
-      Profile* profile);
+      Profile* profile,
+      const policy::PolicyService* policy_service);
 
   EnterprisePrintersProvider(const EnterprisePrintersProvider&) = delete;
   EnterprisePrintersProvider& operator=(const EnterprisePrintersProvider&) =

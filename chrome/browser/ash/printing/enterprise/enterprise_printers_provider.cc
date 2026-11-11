@@ -10,16 +10,17 @@
 #include <vector>
 
 #include "ash/constants/ash_pref_names.h"
+#include "base/check_deref.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ash/printing/enterprise/bulk_printers_calculator.h"
 #include "chrome/browser/ash/printing/enterprise/bulk_printers_calculator_factory.h"
 #include "chrome/browser/ash/printing/enterprise/calculators_policies_binder.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "chromeos/printing/printer_translator.h"
@@ -56,8 +57,10 @@ std::vector<std::string> ConvertToVector(const base::ListValue& list) {
 class EnterprisePrintersProviderImpl : public EnterprisePrintersProvider,
                                        public BulkPrintersCalculator::Observer {
  public:
-  EnterprisePrintersProviderImpl(CrosSettings* settings, Profile* profile)
-      : profile_(profile) {
+  EnterprisePrintersProviderImpl(CrosSettings* settings,
+                                 Profile* profile,
+                                 const policy::PolicyService* policy_service)
+      : profile_(profile), policy_service_(CHECK_DEREF(policy_service)) {
     // initialization of pref_change_registrar
     pref_change_registrar_.Init(profile->GetPrefs());
 
@@ -255,16 +258,10 @@ class EnterprisePrintersProviderImpl : public EnterprisePrintersProvider,
 
   // Checks if given policy is set and if it is a dictionary
   bool PolicyWithDataIsSet(const char* policy_name) {
-    policy::ProfilePolicyConnector* policy_connector =
-        profile_->GetProfilePolicyConnector();
-    if (!policy_connector) {
-      // something is wrong
-      return false;
-    }
     const policy::PolicyNamespace policy_namespace =
         policy::PolicyNamespace(policy::PolicyDomain::POLICY_DOMAIN_CHROME, "");
     const policy::PolicyMap& policy_map =
-        policy_connector->policy_service()->GetPolicies(policy_namespace);
+        policy_service_->GetPolicies(policy_namespace);
     const base::Value* value =
         policy_map.GetValue(policy_name, base::Value::Type::DICT);
     return value != nullptr;
@@ -289,6 +286,8 @@ class EnterprisePrintersProviderImpl : public EnterprisePrintersProvider,
 
   // Profile (user) settings.
   raw_ptr<Profile> profile_;
+  // Policy service of `profile_`, not owned.
+  const raw_ref<const policy::PolicyService> policy_service_;
   AccountId account_id_;
   PrefChangeRegistrar pref_change_registrar_;
 
@@ -309,8 +308,10 @@ void EnterprisePrintersProvider::RegisterProfilePrefs(
 // static
 std::unique_ptr<EnterprisePrintersProvider> EnterprisePrintersProvider::Create(
     CrosSettings* settings,
-    Profile* profile) {
-  return std::make_unique<EnterprisePrintersProviderImpl>(settings, profile);
+    Profile* profile,
+    const policy::PolicyService* policy_service) {
+  return std::make_unique<EnterprisePrintersProviderImpl>(settings, profile,
+                                                          policy_service);
 }
 
 }  // namespace ash

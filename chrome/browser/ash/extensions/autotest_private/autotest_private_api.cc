@@ -130,6 +130,7 @@
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/policy/chrome_policy_conversions_client.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
@@ -2874,7 +2875,8 @@ ExtensionFunction::ResponseAction AutotestPrivateGetPrinterListFunction::Run() {
   printers_manager_ = ash::CupsPrintersManager::Create(
       CHECK_DEREF(g_browser_process->local_state()),
       g_browser_process->GetFeatures()->application_locale_storage(),
-      g_browser_process->shared_url_loader_factory(), profile);
+      g_browser_process->shared_url_loader_factory(), profile,
+      profile->GetProfilePolicyConnector()->policy_service());
   printers_manager_->AddObserver(this);
 
   // Set up a timer to finish waiting after 10 seconds

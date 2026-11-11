@@ -13,7 +13,6 @@ include_rules = [
   "+chrome/browser/ash/settings",
   "+chrome/browser/browser_process.h",
   "+chrome/browser/local_discovery",
-  "+chrome/browser/policy",
   "+chrome/browser/printing",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash/system_web_apps",
@@ -36,6 +35,10 @@ specific_include_rules = {
   ],
   "cups_printers_manager_factory\\.cc": [
     "+chrome/browser/global_features.h",
+    "+chrome/browser/policy/profile_policy_connector.h",
+  ],
+  "enterprise_printers_provider_unittest\\.cc": [
+    "+chrome/browser/policy/profile_policy_connector.h",
   ],
   "(server_printers_fetcher|server_printers_provider_unittest)\\.cc": [
     # IPP protocol; it is needed for communication with print servers.
