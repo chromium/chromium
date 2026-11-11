@@ -29,7 +29,6 @@
       "network_test_runner": ["./legacy_test_runner/network_test_runner/network_test_runner.js"],
       "performance_test_runner": ["./legacy_test_runner/performance_test_runner/performance_test_runner.js"],
       "sdk_test_runner": ["./legacy_test_runner/sdk_test_runner/sdk_test_runner.js"],
-      "security_test_runner": ["./legacy_test_runner/security_test_runner/security_test_runner.js"],
       "sources_test_runner": ["./legacy_test_runner/sources_test_runner/sources_test_runner.js"],
       "devtools/*": ["./*"]
     }
