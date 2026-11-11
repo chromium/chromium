@@ -31,7 +31,8 @@
                chip:(ActuationWorklogChip*)chip;
 
 // Displays an interactive intervention below the worklog, or dismisses any
-// active intervention if `intervention` is nil.
+// active intervention if `intervention` is nil. No-op if `intervention` is
+// already displayed.
 - (void)setIntervention:(ActuationInterventionData*)intervention;
 
 // Resets and clears all worklog timeline items and state.

@@ -27,7 +27,7 @@
 
 // Stops observing the current data source and resets the worklog. No-op if
 // none is observed.
-- (void)stopObservingTask;
+- (void)stopObservingDataSource;
 
 @end
 

@@ -189,4 +189,28 @@ TEST_F(ActuationWorklogViewControllerTest, TestInterventionFlow) {
   EXPECT_TRUE(card_view.hidden);
 }
 
+// Tests that setting the displayed intervention again doesn't redraw it, and
+// that it can be displayed again after a reset.
+TEST_F(ActuationWorklogViewControllerTest, TestSameInterventionIsNotRedrawn) {
+  ActuationInterventionAction* action =
+      [[ActuationInterventionAction alloc] initWithIdentifier:kActionIdentifier
+                                                        title:@"Continue"];
+  ActuationInterventionData* intervention =
+      [ActuationInterventionData rowItemWithActions:@[ action ]];
+  NSString* button_id =
+      ActuationInterventionActionButtonAccessibilityIdentifier(0);
+
+  [consumer() setIntervention:intervention];
+  UIView* button = FindViewById(view_controller_.view, button_id);
+  ASSERT_NE(button, nil);
+
+  [consumer() setIntervention:intervention];
+  EXPECT_EQ(FindViewById(view_controller_.view, button_id), button);
+
+  [consumer() reset];
+  EXPECT_EQ(FindViewById(view_controller_.view, button_id), nil);
+  [consumer() setIntervention:intervention];
+  EXPECT_NE(FindViewById(view_controller_.view, button_id), nil);
+}
+
 }  // namespace

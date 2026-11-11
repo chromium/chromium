@@ -13,18 +13,12 @@
 // Consumer protocol for receiving suggestions to be coordinated and presented.
 @protocol ActuationSuggestionsConsumer <NSObject>
 
-// Sets the available suggestions for selection for the currently active
-// `worklogItem`.
+// Presents `suggestions` for the active `worklogItem`, or dismisses any
+// presented suggestions if `suggestions` is nil. Setting the presented
+// `suggestions` again only updates their `worklogItem`, e.g. after a
+// suggestion reselection.
 - (void)setSuggestions:(NSArray<ActorFormSuggestion*>*)suggestions
     forActiveWorklogItem:(ActuationWorklogItem*)worklogItem;
-
-// Replaces the active `worklogItem` of the displayed suggestions following a
-// suggestion reselection. No-op if no suggestions are displayed.
-- (void)updateActiveWorklogItemForReselectedSuggestion:
-    (ActuationWorklogItem*)worklogItem;
-
-// Clears and dismisses any active suggestions coordination.
-- (void)clearSuggestions;
 
 @end
 

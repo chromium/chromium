@@ -31,7 +31,7 @@
 }
 
 - (void)stopObservingTask {
-  [self.coordinator stopObservingTask];
+  [self.coordinator stopObservingDataSource];
   [_taskStore disconnect];
   _taskStore = nil;
 }

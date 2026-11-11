@@ -23,11 +23,6 @@ source_set("actor_types") {
   ]
 }
 
-source_set("actor_task_data_source") {
-  sources = [ "actor_task_data_source.h" ]
-  public_deps = [ ":actor_types" ]
-}
-
 source_set("actor_task_ui_protocols") {
   sources = [
     "actor_task_intervention_delegate.h",

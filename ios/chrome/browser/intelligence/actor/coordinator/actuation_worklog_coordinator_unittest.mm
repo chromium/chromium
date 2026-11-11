@@ -66,10 +66,10 @@ TEST_F(ActuationWorklogCoordinatorTest, TestStartAndStopLifecycle) {
   EXPECT_EQ(coordinator.viewController, nil);
 }
 
-// Tests that updating the active worklog item updates the worklog item on the
-// suggestions coordinator.
+// Tests that setting the presented suggestions again only updates the worklog
+// item on the suggestions coordinator.
 TEST_F(ActuationWorklogCoordinatorTest,
-       TestUpdateActiveWorklogItemForReselectedSuggestion) {
+       TestSetPresentedSuggestionsUpdatesWorklogItem) {
   ActuationWorklogCoordinator* coordinator =
       [[ActuationWorklogCoordinator alloc]
           initWithBaseViewController:base_view_controller_
@@ -81,11 +81,11 @@ TEST_F(ActuationWorklogCoordinatorTest,
   id<ActuationSuggestionsConsumer> consumer =
       static_cast<id<ActuationSuggestionsConsumer>>(coordinator);
 
-  ActorFormSuggestion* suggestion =
-      CreateCredentialSuggestion(u"user@example.com", u"example.com");
+  NSArray<ActorFormSuggestion*>* suggestions =
+      @[ CreateCredentialSuggestion(u"user@example.com", u"example.com") ];
   ActuationWorklogItem* item = [ActuationWorklogItem simpleItemWithTitle:@"Item"
                                                                   active:YES];
-  [consumer setSuggestions:@[ suggestion ] forActiveWorklogItem:item];
+  [consumer setSuggestions:suggestions forActiveWorklogItem:item];
   id<ActuationSuggestionsPresenter> presenter =
       coordinator.viewController.suggestionsPresenter;
   ASSERT_NE(presenter, nil);
@@ -96,9 +96,44 @@ TEST_F(ActuationWorklogCoordinatorTest,
 
   ActuationWorklogItem* updated_item =
       [ActuationWorklogItem simpleItemWithTitle:@"Updated" active:YES];
-  [consumer updateActiveWorklogItemForReselectedSuggestion:updated_item];
+  [consumer setSuggestions:suggestions forActiveWorklogItem:updated_item];
   EXPECT_EQ(coordinator.viewController.suggestionsPresenter, presenter);
   EXPECT_EQ(suggestions_coordinator.worklogItem, updated_item);
+
+  [coordinator stop];
+}
+
+// Tests that new suggestions replace the presented ones with a new suggestions
+// presenter.
+TEST_F(ActuationWorklogCoordinatorTest,
+       TestSetNewSuggestionsReplacesPresenter) {
+  ActuationWorklogCoordinator* coordinator =
+      [[ActuationWorklogCoordinator alloc]
+          initWithBaseViewController:base_view_controller_
+                             browser:browser_.get()];
+
+  [coordinator start];
+  ASSERT_NE(coordinator.viewController, nil);
+
+  id<ActuationSuggestionsConsumer> consumer =
+      static_cast<id<ActuationSuggestionsConsumer>>(coordinator);
+  ActuationWorklogItem* item = [ActuationWorklogItem simpleItemWithTitle:@"Item"
+                                                                  active:YES];
+
+  [consumer setSuggestions:@[ CreateCredentialSuggestion(u"user1@example.com",
+                                                         u"example.com") ]
+      forActiveWorklogItem:item];
+  id<ActuationSuggestionsPresenter> presenter1 =
+      coordinator.viewController.suggestionsPresenter;
+  ASSERT_NE(presenter1, nil);
+
+  [consumer setSuggestions:@[ CreateCredentialSuggestion(u"user2@example.com",
+                                                         u"example.com") ]
+      forActiveWorklogItem:item];
+  id<ActuationSuggestionsPresenter> presenter2 =
+      coordinator.viewController.suggestionsPresenter;
+  EXPECT_NE(presenter2, nil);
+  EXPECT_NE(presenter1, presenter2);
 
   [coordinator stop];
 }
@@ -128,7 +163,7 @@ TEST_F(ActuationWorklogCoordinatorTest,
       coordinator.viewController.suggestionsPresenter;
   EXPECT_NE(presenter1, nil);
 
-  [consumer clearSuggestions];
+  [consumer setSuggestions:nil forActiveWorklogItem:nil];
   EXPECT_EQ(coordinator.viewController.suggestionsPresenter, nil);
 
   ActorFormSuggestion* suggestion2 =
@@ -168,7 +203,7 @@ TEST_F(ActuationWorklogCoordinatorTest,
   EXPECT_NE(coordinator.viewController.suggestionsPresenter, nil);
 
   // Closing the floaty or ending observation cleans up suggestions.
-  [coordinator stopObservingTask];
+  [coordinator stopObservingDataSource];
   EXPECT_EQ(coordinator.viewController.suggestionsPresenter, nil);
 
   // Reopening the floaty and receiving suggestions succeeds cleanly.

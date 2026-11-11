@@ -21,6 +21,8 @@
   ActuationWorklogViewController* _viewController;
   // Coordinator managing suggestion picker presentation.
   ActuationSuggestionsCoordinator* _suggestionsCoordinator;
+  // Suggestions presented by `_suggestionsCoordinator`.
+  NSArray<ActorFormSuggestion*>* _presentedSuggestions;
 }
 
 #pragma mark - ChromeCoordinator
@@ -36,7 +38,7 @@
 }
 
 - (void)stop {
-  [self clearSuggestions];
+  [self stopSuggestionsCoordinator];
   [_mediator disconnect];
   _mediator = nil;
   _viewController.mutator = nil;
@@ -48,7 +50,17 @@
 
 - (void)setSuggestions:(NSArray<ActorFormSuggestion*>*)suggestions
     forActiveWorklogItem:(ActuationWorklogItem*)worklogItem {
-  CHECK(!_suggestionsCoordinator, base::NotFatalUntil::M166);
+  // The presented `suggestions` are matched by their elements, since a data
+  // source may resend them in a different array.
+  if ([suggestions isEqualToArray:_presentedSuggestions]) {
+    _suggestionsCoordinator.worklogItem = worklogItem;
+    return;
+  }
+  [self stopSuggestionsCoordinator];
+  if (!suggestions) {
+    return;
+  }
+  _presentedSuggestions = [suggestions copy];
   _suggestionsCoordinator = [[ActuationSuggestionsCoordinator alloc]
       initWithBaseViewController:_viewController
                          browser:self.browser
@@ -59,17 +71,6 @@
   _viewController.suggestionsPresenter = _suggestionsCoordinator;
 }
 
-- (void)updateActiveWorklogItemForReselectedSuggestion:
-    (ActuationWorklogItem*)worklogItem {
-  _suggestionsCoordinator.worklogItem = worklogItem;
-}
-
-- (void)clearSuggestions {
-  [_suggestionsCoordinator stop];
-  _suggestionsCoordinator = nil;
-  _viewController.suggestionsPresenter = nil;
-}
-
 #pragma mark - Public
 
 - (void)startObservingDataSource:(id<ActorTaskDataSource>)dataSource
@@ -77,15 +78,25 @@
   [_mediator startObservingDataSource:dataSource actionHandler:actionHandler];
 }
 
-- (void)stopObservingTask {
-  [self clearSuggestions];
-  [_mediator stopObservingTask];
+- (void)stopObservingDataSource {
+  [self stopSuggestionsCoordinator];
+  [_mediator stopObservingDataSource];
 }
 
 #pragma mark - Properties
 
 - (ActuationWorklogViewController*)viewController {
   return _viewController;
+}
+
+#pragma mark - Private
+
+// Stops presenting the suggestions, if any.
+- (void)stopSuggestionsCoordinator {
+  [_suggestionsCoordinator stop];
+  _suggestionsCoordinator = nil;
+  _presentedSuggestions = nil;
+  _viewController.suggestionsPresenter = nil;
 }
 
 @end

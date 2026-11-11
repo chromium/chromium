@@ -16,10 +16,10 @@ source_set("coordinator") {
     "actuation_worklog_mediator.mm",
   ]
   deps = [
+    ":actor_task_data_source",
     "//base",
     "//components/autofill/core/browser",
     "//components/autofill/ios/browser",
-    "//ios/chrome/browser/intelligence/actor/public:actor_task_data_source",
     "//ios/chrome/browser/intelligence/actor/public:actor_task_ui_protocols",
     "//ios/chrome/browser/intelligence/actor/public:actor_types",
     "//ios/chrome/browser/intelligence/actor/tools/model:actor_tool_interface",
@@ -35,6 +35,10 @@ source_set("coordinator") {
   ]
 }
 
+source_set("actor_task_data_source") {
+  sources = [ "actor_task_data_source.h" ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
@@ -43,11 +47,11 @@ source_set("unit_tests") {
     "actuation_worklog_mediator_unittest.mm",
   ]
   deps = [
+    ":actor_task_data_source",
     ":coordinator",
     "//base",
     "//components/password_manager/core/browser/actor_login:common",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/intelligence/actor/public:actor_task_data_source",
     "//ios/chrome/browser/intelligence/actor/public:actor_task_ui_protocols",
     "//ios/chrome/browser/intelligence/actor/public:actor_types",
     "//ios/chrome/browser/intelligence/actor/tools/model:actor_tool_interface",

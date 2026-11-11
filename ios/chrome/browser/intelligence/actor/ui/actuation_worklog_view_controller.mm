@@ -65,6 +65,8 @@ using intelligence::actor::kSpacingLarge;
   ActuationHeaderContentVariants* _headerContentVariants;
   // Offscreen header for content-independent height calculation.
   ActuationHeaderView* _sizingHeaderView;
+  // Intervention displayed by `_interventionView`, if any.
+  ActuationInterventionData* _intervention;
 
   BOOL _actuationActive;
 }
@@ -120,6 +122,7 @@ using intelligence::actor::kSpacingLarge;
   [self setupConstraints];
   [self updateHeaderContent];
   [self updateVisibility];
+  [self updateIntervention];
 }
 
 #pragma mark - ActuationWorklogConsumer
@@ -159,7 +162,12 @@ using intelligence::actor::kSpacingLarge;
 }
 
 - (void)setIntervention:(ActuationInterventionData*)intervention {
-  [_interventionView configureWithData:intervention];
+  // Configuring `_interventionView` again would redraw its buttons.
+  if (_intervention == intervention) {
+    return;
+  }
+  _intervention = intervention;
+  [self updateIntervention];
   [self notifyHeightDidChange];
 }
 
@@ -171,7 +179,10 @@ using intelligence::actor::kSpacingLarge;
   [_fullView reset];
   [_scrollView setContentOffset:CGPointZero animated:NO];
   _compactHeightConstraint.constant = 0.0;
-  [self setIntervention:nil];
+  // The height must be reported even without an intervention update.
+  _intervention = nil;
+  [self updateIntervention];
+  [self notifyHeightDidChange];
 }
 
 #pragma mark - ActuationWorklogCompactViewDelegate
@@ -295,6 +306,11 @@ using intelligence::actor::kSpacingLarge;
   BOOL minimized = _displayMode == ActuationWorklogDisplayModeMinimized;
   _interventionView.alpha = minimized ? 0.0 : 1.0;
   _interventionView.accessibilityElementsHidden = minimized;
+}
+
+// Updates `_interventionView` for `_intervention`.
+- (void)updateIntervention {
+  [_interventionView configureWithData:_intervention];
 }
 
 // Calculates current fitting height and notifies the delegate. The reported

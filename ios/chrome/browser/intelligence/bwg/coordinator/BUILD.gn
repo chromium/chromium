@@ -77,7 +77,7 @@ source_set("actor_task_store") {
     "gemini_actor_task_store.mm",
   ]
   public_deps = [
-    "//ios/chrome/browser/intelligence/actor/public:actor_task_data_source",
+    "//ios/chrome/browser/intelligence/actor/coordinator:actor_task_data_source",
     "//ios/chrome/browser/intelligence/actor/public:actor_task_ui_protocols",
     "//ios/chrome/browser/intelligence/actor/public:actor_types",
   ]

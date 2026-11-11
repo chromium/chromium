@@ -157,7 +157,7 @@
 
 - (void)geminiContainerMediator:(GeminiContainerMediator*)mediator
      didStopActuationTaskWithID:(actor::ActorTaskId)taskID {
-  [_actuationWorklogCoordinator stopObservingTask];
+  [_actuationWorklogCoordinator stopObservingDataSource];
 }
 
 #pragma mark - Private

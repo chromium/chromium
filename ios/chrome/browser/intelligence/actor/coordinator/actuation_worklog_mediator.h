@@ -15,9 +15,8 @@
 @protocol ActuationSuggestionsConsumer;
 @protocol ActuationWorklogConsumer;
 
-// Translates the worklog published by an `ActorTaskDataSource` into
-// displayable timeline items and action chips for an
-// `ActuationWorklogConsumer`.
+// Displays the worklog states published by an `ActorTaskDataSource` in an
+// `ActuationWorklogConsumer`, sending only the entries that changed.
 @interface ActuationWorklogMediator
     : NSObject <ActuationSuggestionsDelegate, ActuationWorklogMutator>
 
@@ -35,7 +34,7 @@
 
 // Stops observing the current data source and resets the worklog. No-op if
 // none is observed.
-- (void)stopObservingTask;
+- (void)stopObservingDataSource;
 
 // Disconnects the mediator and cleans up references.
 - (void)disconnect;
