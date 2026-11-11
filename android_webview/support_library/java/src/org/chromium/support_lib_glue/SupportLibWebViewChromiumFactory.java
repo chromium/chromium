@@ -192,7 +192,9 @@ public class SupportLibWebViewChromiumFactory
                     Features.ENQUEUE_PRECONNECT,
                     AwFeatures.WEBVIEW_PROFILE_STORE_NOT_TRIGGER_STARTUP,
                     Features.CROSS_ORIGIN_ISOLATED_ALLOW_LIST,
-                    AwFeatures.WEBVIEW_CROSS_ORIGIN_ALLOWLIST_API);
+                    AwFeatures.WEBVIEW_CROSS_ORIGIN_ALLOWLIST_API,
+                    Features.WEB_GRAPHICS_ENABLED + Features.DEV_SUFFIX,
+                    AwFeatures.WEBVIEW_WEB_GRAPHICS_SWITCH_ENABLED);
 
     // mAwInit.getLazyInitLock() guards access to fields that are lazily initialized.
     // This lock is shared across WebViewChromiumAwInit, WebViewChromiumFactoryProvider,
@@ -438,6 +440,8 @@ public class SupportLibWebViewChromiumFactory
         ApiCall.GOOGLE_ACCOUNTS_EVENT_IS_NAVIGATION_REQUEST,
         ApiCall.CONFIGURE_ISOLATED_SITES,
         ApiCall.CAN_CONFIGURE_ISOLATED_SITES,
+        ApiCall.SET_WEB_GRAPHICS_ENABLED,
+        ApiCall.GET_WEB_GRAPHICS_ENABLED,
         // Add new constants above. The final constant should have a trailing comma for cleaner
         // diffs.
         ApiCall.COUNT, // Added to suppress WrongConstant in #recordApiCall
@@ -691,8 +695,10 @@ public class SupportLibWebViewChromiumFactory
         int GOOGLE_ACCOUNTS_EVENT_IS_NAVIGATION_REQUEST = 241;
         int CONFIGURE_ISOLATED_SITES = 242;
         int CAN_CONFIGURE_ISOLATED_SITES = 243;
+        int SET_WEB_GRAPHICS_ENABLED = 244;
+        int GET_WEB_GRAPHICS_ENABLED = 245;
         // Remember to update AndroidXWebkitApiCall in enums.xml when adding new values here
-        int COUNT = 244;
+        int COUNT = 246;
     }
 
     // LINT.ThenChange(/tools/metrics/histograms/metadata/android/enums.xml:AndroidXWebkitApiCall)

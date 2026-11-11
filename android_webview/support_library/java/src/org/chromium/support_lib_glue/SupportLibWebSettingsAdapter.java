@@ -620,4 +620,22 @@ class SupportLibWebSettingsAdapter implements WebSettingsBoundaryInterface {
             return mAwSettings.getDownloadFaviconsEnabled();
         }
     }
+
+    @Override
+    public void setWebGraphicsEnabled(boolean enabled) {
+        try (TraceEvent ignored =
+                TraceEvent.scoped("WebView.APICall.AndroidX.SET_WEB_GRAPHICS_ENABLED")) {
+            recordApiCall(ApiCall.SET_WEB_GRAPHICS_ENABLED);
+            mAwSettings.setWebGraphicsEnabled(enabled);
+        }
+    }
+
+    @Override
+    public boolean getWebGraphicsEnabled() {
+        try (TraceEvent ignored =
+                TraceEvent.scoped("WebView.APICall.AndroidX.GET_WEB_GRAPHICS_ENABLED")) {
+            recordApiCall(ApiCall.GET_WEB_GRAPHICS_ENABLED);
+            return mAwSettings.getWebGraphicsEnabled();
+        }
+    }
 }

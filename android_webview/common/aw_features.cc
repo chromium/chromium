@@ -481,6 +481,10 @@ BASE_FEATURE(kWebViewWarmupNetworkService, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kWebViewWebAuthnRequiresSecureOrigin,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Kill switch for WebSettings setWebGraphicsEnabled.
+BASE_FEATURE(kWebViewWebGraphicsSwitchEnabled,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Kill switch for reporting web performance metrics.
 BASE_FEATURE(kWebViewWebPerformanceMetricsReporting,
              base::FEATURE_ENABLED_BY_DEFAULT);

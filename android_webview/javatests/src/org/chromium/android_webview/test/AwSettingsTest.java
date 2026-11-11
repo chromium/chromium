@@ -44,6 +44,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -4224,5 +4225,254 @@ public class AwSettingsTest {
                         "Android.WebView.SetAllowUniversalAccessFromFileURLs", false);
         settings.setAllowUniversalAccessFromFileUrls(false);
         watcherFalse.assertExpected();
+    }
+
+    class AwSettingsWebGraphicsEnabledTestHelper extends AwSettingsTestHelper<Boolean> {
+        private static final String WEBGL_ENABLED_STRING = "WebGL Enabled";
+        private static final String WEBGL_DISABLED_STRING = "WebGL Disabled";
+        private static final String WEBGPU_UNAVAILABLE_STRING = "WebGPU: unavailable";
+        private static final String WEBGPU_NULL_ADAPTER_STRING = "WebGPU: null adapter";
+        private static final String WEBGPU_ADAPTER_STRING = "WebGPU: adapter";
+        private static final String JS_OBJECT_NAME = "resultListener";
+
+        private final TestWebMessageListener mWebMessageListener;
+        private final boolean mTestWebGPU;
+
+        AwSettingsWebGraphicsEnabledTestHelper(
+                AwTestContainerView containerView,
+                TestAwContentsClient contentViewClient,
+                boolean testWebGPU)
+                throws Throwable {
+            super(containerView, contentViewClient, true);
+            mTestWebGPU = testWebGPU;
+            mWebMessageListener = new TestWebMessageListener();
+            TestWebMessageListener.addWebMessageListenerOnUiThread(
+                    mAwContents, JS_OBJECT_NAME, new String[] {"*"}, mWebMessageListener);
+        }
+
+        @Override
+        protected Boolean getAlteredValue() {
+            return DISABLED;
+        }
+
+        @Override
+        protected Boolean getInitialValue() {
+            return ENABLED;
+        }
+
+        @Override
+        protected Boolean getCurrentValue() {
+            return mAwSettings.getWebGraphicsEnabled();
+        }
+
+        @Override
+        protected void setCurrentValue(Boolean value) {
+            mAwSettings.setWebGraphicsEnabled(value);
+        }
+
+        @Override
+        protected void doEnsureSettingHasValue(Boolean value) throws Throwable {
+            if (mTestWebGPU) {
+                ensureWebGPUHasValue(value);
+            } else {
+                ensureWebGLHasValue(value);
+            }
+        }
+
+        private void ensureWebGLHasValue(Boolean value) throws Throwable {
+            loadDataSync(getWebGLData());
+            Assert.assertEquals(
+                    value == ENABLED ? WEBGL_ENABLED_STRING : WEBGL_DISABLED_STRING,
+                    mWebMessageListener.waitForOnPostMessage().getAsString());
+        }
+
+        private void ensureWebGPUHasValue(Boolean value) throws Throwable {
+            // WebGPU is only exposed in secure contexts, so load with an https base URL.
+            mActivityTestRule.loadDataWithBaseUrlSync(
+                    mAwContents,
+                    mContentViewClient.getOnPageFinishedHelper(),
+                    getWebGPUData(),
+                    "text/html",
+                    false,
+                    "https://example.com/",
+                    null);
+            String result = mWebMessageListener.waitForOnPostMessage().getAsString();
+            if (result.equals(WEBGPU_UNAVAILABLE_STRING)) {
+                // navigator.gpu is not exposed in this configuration; nothing to verify.
+                return;
+            }
+            Assert.assertEquals(
+                    value == ENABLED ? WEBGPU_ADAPTER_STRING : WEBGPU_NULL_ADAPTER_STRING, result);
+        }
+
+        private String getWebGPUData() {
+            return "<html><head><script>"
+                    + "function checkWebGPU() {"
+                    + "  if (!navigator.gpu) {"
+                    + "    "
+                    + JS_OBJECT_NAME
+                    + ".postMessage('"
+                    + WEBGPU_UNAVAILABLE_STRING
+                    + "');"
+                    + "    return;"
+                    + "  }"
+                    + "  navigator.gpu.requestAdapter().then(function(adapter) {"
+                    + "    "
+                    + JS_OBJECT_NAME
+                    + ".postMessage(adapter === null ? '"
+                    + WEBGPU_NULL_ADAPTER_STRING
+                    + "' : '"
+                    + WEBGPU_ADAPTER_STRING
+                    + "');"
+                    + "  });"
+                    + "}"
+                    + "</script></head><body onload=\"checkWebGPU();\"></body></html>";
+        }
+
+        private String getWebGLData() {
+            return "<html><head><script>"
+                    + "function checkWebGL() {"
+                    + "  var c1 = document.createElement('canvas');"
+                    + "  var gl1 = c1.getContext('webgl') || c1.getContext('experimental-webgl');"
+                    + "  var c2 = document.createElement('canvas');"
+                    + "  var gl2 = c2.getContext('webgl2');"
+                    + "  if (gl1 !== null && gl2 !== null) {"
+                    + "    "
+                    + JS_OBJECT_NAME
+                    + ".postMessage('"
+                    + WEBGL_ENABLED_STRING
+                    + "');"
+                    + "  } else if (gl1 === null && gl2 === null) {"
+                    + "    "
+                    + JS_OBJECT_NAME
+                    + ".postMessage('"
+                    + WEBGL_DISABLED_STRING
+                    + "');"
+                    + "  } else {"
+                    + "    "
+                    + JS_OBJECT_NAME
+                    + ".postMessage('Partial: webgl=' + (gl1 !== null)"
+                    + "        + ', webgl2=' + (gl2 !== null));"
+                    + "  }"
+                    + "}"
+                    + "</script></head><body onload=\"checkWebGL();\"></body></html>";
+        }
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(AwFeatures.WEBVIEW_WEB_GRAPHICS_SWITCH_ENABLED)
+    @CommandLineFlags.Add({"ignore-gpu-blocklist"})
+    @Feature({"AndroidWebView", "Preferences"})
+    public void testWebGraphicsEnabledWithTwoViews() throws Throwable {
+        ViewPair views = createViews();
+        runPerViewSettingsTest(
+                new AwSettingsWebGraphicsEnabledTestHelper(
+                        views.getContainer0(), views.getClient0(), /* testWebGPU= */ false),
+                new AwSettingsWebGraphicsEnabledTestHelper(
+                        views.getContainer1(), views.getClient1(), /* testWebGPU= */ false));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(AwFeatures.WEBVIEW_WEB_GRAPHICS_SWITCH_ENABLED)
+    @CommandLineFlags.Add({"ignore-gpu-blocklist", "enable-unsafe-webgpu"})
+    @DisableIf.Build(
+            supported_abis_includes = "x86",
+            message = "Dawn (use_dawn) is not built on Android x86/x64")
+    @DisableIf.Build(
+            supported_abis_includes = "x86_64",
+            message = "Dawn (use_dawn) is not built on Android x86/x64")
+    @Feature({"AndroidWebView", "Preferences"})
+    public void testWebGraphicsEnabledWebGPUWithTwoViews() throws Throwable {
+        ViewPair views = createViews();
+        runPerViewSettingsTest(
+                new AwSettingsWebGraphicsEnabledTestHelper(
+                        views.getContainer0(), views.getClient0(), /* testWebGPU= */ true),
+                new AwSettingsWebGraphicsEnabledTestHelper(
+                        views.getContainer1(), views.getClient1(), /* testWebGPU= */ true));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(AwFeatures.WEBVIEW_WEB_GRAPHICS_SWITCH_ENABLED)
+    @CommandLineFlags.Add({"ignore-gpu-blocklist"})
+    @Feature({"AndroidWebView", "Preferences"})
+    public void testWebGraphicsEnabledDynamicToggleOnSameView() throws Throwable {
+        doTestWebGraphicsEnabledDynamicToggleOnSameView(/* testWebGPU= */ false);
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(AwFeatures.WEBVIEW_WEB_GRAPHICS_SWITCH_ENABLED)
+    @CommandLineFlags.Add({"ignore-gpu-blocklist", "enable-unsafe-webgpu"})
+    @DisableIf.Build(
+            supported_abis_includes = "x86",
+            message = "Dawn (use_dawn) is not built on Android x86/x64")
+    @DisableIf.Build(
+            supported_abis_includes = "x86_64",
+            message = "Dawn (use_dawn) is not built on Android x86/x64")
+    @Feature({"AndroidWebView", "Preferences"})
+    public void testWebGraphicsEnabledWebGPUDynamicToggleOnSameView() throws Throwable {
+        doTestWebGraphicsEnabledDynamicToggleOnSameView(/* testWebGPU= */ true);
+    }
+
+    private void doTestWebGraphicsEnabledDynamicToggleOnSameView(boolean testWebGPU)
+            throws Throwable {
+        final TestAwContentsClient contentClient = new TestAwContentsClient();
+        final AwTestContainerView testContainerView =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(contentClient);
+        AwSettingsWebGraphicsEnabledTestHelper helper =
+                new AwSettingsWebGraphicsEnabledTestHelper(
+                        testContainerView, contentClient, testWebGPU);
+
+        // Default is enabled (WebGL 1 / WebGL 2 contexts and WebGPU adapter succeed).
+        helper.ensureSettingHasInitialValue();
+
+        // Disable web graphics and verify WebGL 1 / WebGL 2 contexts and WebGPU adapters are null.
+        helper.setAlteredSettingValue();
+        helper.ensureSettingHasAlteredValue();
+
+        // Re-enable web graphics and verify everything is available again.
+        helper.setInitialSettingValue();
+        helper.ensureSettingHasInitialValue();
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(AwFeatures.WEBVIEW_WEB_GRAPHICS_SWITCH_ENABLED)
+    @CommandLineFlags.Add({"ignore-gpu-blocklist"})
+    @Feature({"AndroidWebView", "Preferences"})
+    public void testWebGraphicsEnabledFeatureFlagDisabled() throws Throwable {
+        doTestWebGraphicsEnabledFeatureFlagDisabled(/* testWebGPU= */ false);
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(AwFeatures.WEBVIEW_WEB_GRAPHICS_SWITCH_ENABLED)
+    @CommandLineFlags.Add({"ignore-gpu-blocklist", "enable-unsafe-webgpu"})
+    @DisableIf.Build(
+            supported_abis_includes = "x86",
+            message = "Dawn (use_dawn) is not built on Android x86/x64")
+    @DisableIf.Build(
+            supported_abis_includes = "x86_64",
+            message = "Dawn (use_dawn) is not built on Android x86/x64")
+    @Feature({"AndroidWebView", "Preferences"})
+    public void testWebGraphicsEnabledWebGPUFeatureFlagDisabled() throws Throwable {
+        doTestWebGraphicsEnabledFeatureFlagDisabled(/* testWebGPU= */ true);
+    }
+
+    private void doTestWebGraphicsEnabledFeatureFlagDisabled(boolean testWebGPU) throws Throwable {
+        final TestAwContentsClient contentClient = new TestAwContentsClient();
+        final AwTestContainerView testContainerView =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(contentClient);
+        AwSettingsWebGraphicsEnabledTestHelper helper =
+                new AwSettingsWebGraphicsEnabledTestHelper(
+                        testContainerView, contentClient, testWebGPU);
+        helper.ensureSettingHasInitialValue();
+        helper.setAlteredSettingValue();
+        // When the feature flag is disabled, setWebGraphicsEnabled(false) is a no-op and WebGL /
+        // WebGPU stay enabled.
+        helper.ensureSettingHasInitialValue();
     }
 }

@@ -1554,6 +1554,9 @@ public final class ProductionSupportedFlagList {
                 AwFeatures.WEBVIEW_OBSERVE_ACCESSIBILITY_STATE,
                 "When enabled, WebView starts observing for Android OS accessibility changes on"
                         + " startup."),
+        Flag.baseFeature(
+                AwFeatures.WEBVIEW_WEB_GRAPHICS_SWITCH_ENABLED,
+                "Enables the WebSettings setWebGraphicsEnabled method."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };

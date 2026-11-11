@@ -186,4 +186,8 @@ public interface WebSettingsBoundaryInterface {
     void setDownloadFaviconsEnabled(boolean enabled);
 
     boolean getDownloadFaviconsEnabled();
+
+    void setWebGraphicsEnabled(boolean enabled);
+
+    boolean getWebGraphicsEnabled();
 }

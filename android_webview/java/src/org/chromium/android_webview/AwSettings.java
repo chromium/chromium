@@ -185,6 +185,7 @@ public class AwSettings {
     private boolean mSpatialNavigationEnabled; // Default depends on device features.
     private boolean mDownloadFaviconsEnabled = true;
     private boolean mEnableSupportedHardwareAcceleratedFeatures;
+    private boolean mWebGraphicsEnabled = true;
     private int mMixedContentMode = WebSettings.MIXED_CONTENT_NEVER_ALLOW;
 
     @SpeculativeLoadingAllowedFlags
@@ -2455,6 +2456,36 @@ public class AwSettings {
         synchronized (mAwSettingsLock) {
             return mHyperlinkContextMenuItems;
         }
+    }
+
+    /**
+     * Sets whether web graphics APIs (WebGL 1, WebGL 2 and WebGPU) are available to content in this
+     * WebView. Defaults to true. Has no effect unless the WebViewWebGraphicsSwitchEnabled feature
+     * is enabled.
+     */
+    public void setWebGraphicsEnabled(boolean enabled) {
+        if (TRACE) Log.i(TAG, "setWebGraphicsEnabled=" + enabled);
+        synchronized (mAwSettingsLock) {
+            if (!AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_WEB_GRAPHICS_SWITCH_ENABLED)) {
+                return;
+            }
+            if (mWebGraphicsEnabled != enabled) {
+                mWebGraphicsEnabled = enabled;
+                mEventHandler.updateWebkitPreferencesLocked();
+            }
+        }
+    }
+
+    public boolean getWebGraphicsEnabled() {
+        synchronized (mAwSettingsLock) {
+            return getWebGraphicsEnabledLocked();
+        }
+    }
+
+    @CalledByNative
+    private boolean getWebGraphicsEnabledLocked() {
+        assert Thread.holdsLock(mAwSettingsLock);
+        return mWebGraphicsEnabled;
     }
 
     private void updateFontScaleLocked() {

@@ -731,10 +731,16 @@ void AwSettings::PopulateWebPreferencesLocked(JNIEnv* env,
   web_prefs->accelerated_2d_canvas_enabled =
       web_prefs->accelerated_2d_canvas_enabled &&
       enable_supported_hardware_accelerated_features;
-  // Always allow webgl. Webview always requires access to the GPU even if
-  // it only does software draws. WebGL will not show up in software draw so
-  // there is no more brokenness for user. This makes it easier for apps that
-  // want to start running webgl content before webview is first attached.
+  // Always allow web graphics (WebGL and WebGPU) unless explicitly disabled
+  // via AwSettings. Webview always requires access to the GPU even if it only
+  // does software draws. WebGL will not show up in software draw so there is
+  // no more brokenness for user. This makes it easier for apps that want to
+  // start running webgl content before webview is first attached.
+  bool web_graphics_enabled =
+      Java_AwSettings_getWebGraphicsEnabledLocked(env, obj);
+  web_prefs->webgl1_enabled = web_prefs->webgl1_enabled && web_graphics_enabled;
+  web_prefs->webgl2_enabled = web_prefs->webgl2_enabled && web_graphics_enabled;
+  web_prefs->webgpu_enabled = web_prefs->webgpu_enabled && web_graphics_enabled;
 
   // If strict mixed content checking is enabled then running should not be
   // allowed.

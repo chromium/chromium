@@ -1123,6 +1123,8 @@ chromium-metrics-reviews@google.com.
   <int value="241" label="GoogleAccountsEvent.isNavigationRequest"/>
   <int value="242" label="Profile.configureIsolatedSites"/>
   <int value="243" label="Profile.canConfigureIsolatedSites"/>
+  <int value="244" label="WebSettingsCompat.setWebGraphicsEnabled"/>
+  <int value="245" label="WebSettingsCompat.getWebGraphicsEnabled"/>
 <!-- LINT.ThenChange(/android_webview/support_library/java/src/org/chromium/support_lib_glue/SupportLibWebViewChromiumFactory.java:ApiCall) -->
 
 </enum>

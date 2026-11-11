@@ -124,6 +124,7 @@ BASE_DECLARE_FEATURE(kWebViewUseWVLESForLayeredStudy);
 BASE_DECLARE_FEATURE(kWebViewVizDirectCompositorThreadIpcFrameSinkManager);
 BASE_DECLARE_FEATURE(kWebViewWarmupNetworkService);
 BASE_DECLARE_FEATURE(kWebViewWebAuthnRequiresSecureOrigin);
+BASE_DECLARE_FEATURE(kWebViewWebGraphicsSwitchEnabled);
 BASE_DECLARE_FEATURE(kWebViewWebPerformanceMetricsReporting);
 // Don't add new features to the end! Insert them in alphabetical order to
 // reduce conflicts.
