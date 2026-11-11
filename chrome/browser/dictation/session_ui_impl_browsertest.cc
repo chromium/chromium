@@ -4,8 +4,8 @@
 
 #include "chrome/browser/dictation/session_ui_impl.h"
 
+#include "base/check.h"
 #include "base/memory/weak_ptr.h"
-#include "build/build_config.h"
 #include "chrome/browser/dictation/dictation_interactive_browser_test_base.h"
 #include "chrome/browser/dictation/dictation_keyed_service.h"
 #include "chrome/browser/dictation/listener_stream_provider.h"
@@ -48,18 +48,44 @@ namespace dictation {
 
 class SessionStateObserver : public ui::test::StateObserver<SessionState> {
  public:
-  explicit SessionStateObserver(SessionController* controller) {
-    subscription_ = controller->AddSessionStateChangedCallback(
-        base::BindRepeating(&SessionStateObserver::OnStateObserverStateChanged,
+  explicit SessionStateObserver(DictationKeyedService* service) {
+    CHECK(service);
+    SessionController* controller = service->session_controller();
+    CHECK(controller);
+    initial_state_ = controller->GetState();
+    state_subscription_ = controller->AddSessionStateChangedCallback(
+        base::BindRepeating(&SessionStateObserver::OnSessionStateChanged,
+                            base::Unretained(this)));
+    tab_subscription_ = service->AddDictationTabChangedCallback(
+        base::BindRepeating(&SessionStateObserver::OnDictationTabChanged,
                             base::Unretained(this)));
   }
 
   SessionState GetStateObserverInitialState() const override {
-    return SessionState::kInactive;
+    return initial_state_;
   }
 
  private:
-  base::CallbackListSubscription subscription_;
+  void OnSessionStateChanged(SessionState state) {
+    if (state == SessionState::kEnded) {
+      // Wait for DictationKeyedService::EndSession() to finish resetting the
+      // session (which notifies OnDictationTabChanged(nullptr)) before
+      // reporting kEnded, so subsequent test steps see session_controller() as
+      // null and UI views as closed.
+      return;
+    }
+    OnStateObserverStateChanged(state);
+  }
+
+  void OnDictationTabChanged(tabs::TabInterface* tab) {
+    if (!tab) {
+      OnStateObserverStateChanged(SessionState::kEnded);
+    }
+  }
+
+  SessionState initial_state_ = SessionState::kInactive;
+  base::CallbackListSubscription state_subscription_;
+  base::CallbackListSubscription tab_subscription_;
 };
 
 DECLARE_STATE_IDENTIFIER_VALUE(SessionStateObserver, kSessionStateIdentifier);
@@ -94,9 +120,8 @@ class DictationSessionUiImplBrowserTest
   }
 
   auto ObserveSessionStateChanges() {
-    return ObserveState(kSessionStateIdentifier, [this]() {
-      return dictation_service().session_controller();
-    });
+    return ObserveState(kSessionStateIdentifier,
+                        [this]() { return &dictation_service(); });
   }
 
   auto WaitForSessionState(SessionState state) {
@@ -340,9 +365,8 @@ IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
   // clang-format on
 }
 
-// TODO(b/581316985): Reenable this
 IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
-                       DISABLED_BackgroundTabActivationEndsSession) {
+                       BackgroundTabActivationEndsSession) {
   // Add a second tab with the first tab in the foreground.
   ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
   browser()->GetTabStripModel()->ActivateTabAt(0);
@@ -371,7 +395,7 @@ IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
 
     // Once the finalization completes the session should be ended.
     ExtensionAPISetStreamState(ExtensionStreamState::kComplete),
-    WaitForSessionState(SessionState::kInactive),
+    WaitForSessionState(SessionState::kEnded),
     CheckHasSession(false),
 
     // Switch back to the first tab and ensure the UI does not reappear.
@@ -660,23 +684,14 @@ IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
     CheckElementWithinBounds(DictationOverlayView::kViewElementIdForTesting,
                              target_bounds),
     ExtensionAPISetStreamState(ExtensionStreamState::kComplete),
-    WaitForSessionState(SessionState::kInactive),
+    WaitForSessionState(SessionState::kEnded),
     InAnyContext(WaitForHide(DictationOverlayView::kViewElementIdForTesting))
   );
   // clang-format on
 }
 
-// TODO(crbug.com/581421020): Flaky on Windows ASAN
-#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
-#define MAYBE_AutoSessionEndDelayedShutdownOnAttachedStreamComplete \
-  DISABLED_AutoSessionEndDelayedShutdownOnAttachedStreamComplete
-#else
-#define MAYBE_AutoSessionEndDelayedShutdownOnAttachedStreamComplete \
-  AutoSessionEndDelayedShutdownOnAttachedStreamComplete
-#endif
-IN_PROC_BROWSER_TEST_F(
-    DictationSessionUiImplBrowserTest,
-    MAYBE_AutoSessionEndDelayedShutdownOnAttachedStreamComplete) {
+IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
+                       AutoSessionEndDelayedShutdownOnAttachedStreamComplete) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
   const GURL url =
       embedded_test_server()->GetURL("/textinput/simple_textinput.html");
@@ -691,7 +706,7 @@ IN_PROC_BROWSER_TEST_F(
     ExtensionAPISetStreamState(ExtensionStreamState::kTranscribing),
     WaitForSessionState(SessionState::kTranscribing),
     ExtensionAPISetStreamState(ExtensionStreamState::kComplete),
-    WaitForSessionState(SessionState::kInactive),
+    WaitForSessionState(SessionState::kEnded),
     InAnyContext(WaitForHide(DictationOverlayView::kViewElementIdForTesting)),
     CheckHasSession(false)
   );
@@ -775,16 +790,8 @@ IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
   // clang-format on
 }
 
-// TODO(crbug.com/582769094): Flaky on Windows ASAN
-#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
-#define MAYBE_OverlayButtonUpdatesOnStreamStateChange \
-  DISABLED_OverlayButtonUpdatesOnStreamStateChange
-#else
-#define MAYBE_OverlayButtonUpdatesOnStreamStateChange \
-  OverlayButtonUpdatesOnStreamStateChange
-#endif
 IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
-                       MAYBE_OverlayButtonUpdatesOnStreamStateChange) {
+                       OverlayButtonUpdatesOnStreamStateChange) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
   const GURL url =
       embedded_test_server()->GetURL("/textinput/simple_textarea.html");
@@ -826,9 +833,9 @@ IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
         DictationOverlayView::kWaveformElementIdForTesting,
         &views::View::GetEnabled, false)),
 
-    // Transition to kInactive: session ends and overlay hides.
+    // Transition to kEnded: session ends and overlay hides.
     ExtensionAPISetStreamState(ExtensionStreamState::kComplete),
-    WaitForSessionState(SessionState::kInactive),
+    WaitForSessionState(SessionState::kEnded),
     InAnyContext(WaitForHide(DictationOverlayView::kViewElementIdForTesting))
   );
   // clang-format on
@@ -859,15 +866,8 @@ IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
   // clang-format on
 }
 
-// TODO(crbug.com/582747074): Flaky on Windows ASAN
-#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
-#define MAYBE_OverlayButtonEndsActiveStream \
-  DISABLED_OverlayButtonEndsActiveStream
-#else
-#define MAYBE_OverlayButtonEndsActiveStream OverlayButtonEndsActiveStream
-#endif
 IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
-                       MAYBE_OverlayButtonEndsActiveStream) {
+                       OverlayButtonEndsActiveStream) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
   const GURL url =
       embedded_test_server()->GetURL("/textinput/simple_textarea.html");
@@ -891,7 +891,7 @@ IN_PROC_BROWSER_TEST_F(DictationSessionUiImplBrowserTest,
     CheckResult(GetSessionState(), SessionState::kFinalizing),
 
     ExtensionAPISetStreamState(ExtensionStreamState::kComplete),
-    WaitForSessionState(SessionState::kInactive),
+    WaitForSessionState(SessionState::kEnded),
     InAnyContext(WaitForHide(DictationOverlayView::kViewElementIdForTesting))
   );
   // clang-format on
