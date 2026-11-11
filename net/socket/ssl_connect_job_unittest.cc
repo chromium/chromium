@@ -117,7 +117,6 @@ const ProxyServer kHttpProxyServer{ProxyServer::SCHEME_HTTP,
 
 const ProxyChain kHttpProxyChain{kHttpProxyServer};
 
-
 // Test fixture runs with Happy Eyeballs v2 both enabled and disabled, based on
 // the boolean test parameter.
 //
@@ -1278,7 +1277,6 @@ TEST_P(SSLConnectJobTest, TrustAnchorIDs) {
     }
   }
 }
-
 
 // Test that `SSLConnectJob` passes the ECHConfigList from DNS to
 // `SSLClientSocket`.
@@ -2581,6 +2579,53 @@ TEST_P(SSLConnectJobOptimisticDnsTest, HistogramsChainedRestarts) {
   histogram_tester.ExpectTotalCount("Net.SSLConnectJob.CompleteTime.Succeeded",
                                     1);
   histogram_tester.ExpectTotalCount("Net.SSLConnectJob.CompleteTime.Failed", 0);
+}
+
+TEST_P(SSLConnectJobOptimisticDnsTest, UsedAnswerAndOptimisticDnsMetrics) {
+  base::HistogramTester histogram_tester;
+  HostResolverEndpointResult endpoint;
+  endpoint.ip_endpoints = {IPEndPoint(ParseIP("1::"), 8441)};
+  host_resolver_.rules()->AddRule(
+      "host",
+      MockHostResolverBase::RuleResolver::RuleResult(std::vector{endpoint}));
+  host_resolver_.set_is_stale_while_refreshing(true);
+
+  // First connection attempt (Stale DNS) succeeds TCP but fails TLS, then
+  // retries with fresh DNS and succeeds.
+  StaticSocketDataProvider data1;
+  data1.set_expected_addresses(AddressList(endpoint.ip_endpoints));
+  data1.set_connect_data(MockConnect(SYNCHRONOUS, OK));
+  socket_factory_.AddSocketDataProvider(&data1);
+
+  SSLSocketDataProvider ssl_fail(ASYNC, ERR_CERT_COMMON_NAME_INVALID);
+  socket_factory_.AddSSLSocketDataProvider(&ssl_fail);
+
+  StaticSocketDataProvider data2;
+  data2.set_expected_addresses(AddressList(endpoint.ip_endpoints));
+  data2.set_connect_data(MockConnect(SYNCHRONOUS, OK));
+  socket_factory_.AddSocketDataProvider(&data2);
+
+  SSLSocketDataProvider ssl_success(ASYNC, OK);
+  socket_factory_.AddSSLSocketDataProvider(&ssl_success);
+
+  TestConnectJobDelegate test_delegate;
+  std::unique_ptr<ConnectJob> ssl_connect_job =
+      CreateConnectJob(&test_delegate, ProxyChain::Direct());
+
+  EXPECT_THAT(ssl_connect_job->Connect(), test::IsError(ERR_IO_PENDING));
+  EXPECT_THAT(test_delegate.WaitForResult(), test::IsOk());
+
+  histogram_tester.ExpectUniqueSample(
+      "Net.DNS.OptimisticDns.SSLConnect.Outcome",
+      HostCache::OptimisticDnsSslConnectionOutcome::
+          kFailedAndRetriedWithFreshDns,
+      1);
+  // The final SSL connection succeeded on the fresh DNS retry.
+  histogram_tester.ExpectUniqueSample(
+      "Net.DNS.UsedAnswer.Ssl.FreshnessStatus",
+      HostCache::UsedAnswerFreshnessStatus::kFreshFromNetwork, 1);
+  histogram_tester.ExpectUniqueTimeSample("Net.DNS.UsedAnswer.Ssl.Age",
+                                          base::TimeDelta(), 1);
 }
 
 }  // namespace

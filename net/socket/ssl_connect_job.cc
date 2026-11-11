@@ -310,6 +310,11 @@ int SSLConnectJob::DoTransportConnectComplete(int result) {
     nested_socket_->GetPeerAddress(&server_address_);
     dns_aliases_ = nested_socket_->GetDnsAliases();
     is_connected_via_stale_dns_ = nested_connect_job_->IsConnectedViaStaleDns();
+    if (tcp_connect_job_) {
+      used_answer_freshness_status_ =
+          tcp_connect_job_->used_answer_freshness_status();
+      cache_staleness_ = tcp_connect_job_->cache_staleness();
+    }
   }
 
   return result;
@@ -477,6 +482,10 @@ int SSLConnectJob::DoSSLConnectComplete(int result) {
   // `disable_stale_dns_ = true` on the next connection attempt, guaranteeing
   // `is_connected_via_stale_dns_` will be false if that fresh attempt fails.
   if (result != OK && is_connected_via_stale_dns_) {
+    HostCache::RecordOptimisticDnsSslConnectionOutcomeMetrics(
+        HostCache::OptimisticDnsSslConnectionOutcome::
+            kFailedAndRetriedWithFreshDns,
+        cache_staleness_);
     ResetStateForRestart();
     disable_stale_dns_ = true;
     last_restart_success_outcome_ = Outcome::kSucceededAfterStaleDnsRetry;
@@ -544,6 +553,16 @@ int SSLConnectJob::DoSSLConnectComplete(int result) {
                                           ech_retry_configs_, connect_timing_);
 
   if (result == OK || IsCertificateError(result)) {
+    if (is_connected_via_stale_dns_) {
+      HostCache::RecordOptimisticDnsSslConnectionOutcomeMetrics(
+          HostCache::OptimisticDnsSslConnectionOutcome::kSucceeded,
+          cache_staleness_);
+    }
+    if (used_answer_freshness_status_.has_value()) {
+      HostCache::RecordUsedAnswerMetrics(HostCache::UsedAnswerProtocol::kSsl,
+                                         *used_answer_freshness_status_,
+                                         cache_staleness_);
+    }
     SetSocket(std::move(ssl_socket_), std::move(dns_aliases_));
   } else if (result == ERR_SSL_CLIENT_AUTH_CERT_NEEDED) {
     ssl_cert_request_info_ = base::MakeRefCounted<SSLCertRequestInfo>();
@@ -596,6 +615,8 @@ void SSLConnectJob::ResetStateForRestart() {
   ssl_negotiation_started_ = false;
   is_connected_via_stale_dns_ = false;
   nested_job_had_tcp_attempt_ = false;
+  used_answer_freshness_status_.reset();
+  cache_staleness_.reset();
   resolve_error_info_ = ResolveErrorInfo();
   server_address_ = IPEndPoint();
 }

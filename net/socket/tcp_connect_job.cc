@@ -275,9 +275,14 @@ int TcpConnectJob::DoServiceEndpointsUpdated(
   CHECK(!is_done_);
   DCHECK(!dns_request_complete_);
 
+  if (dns_request_ && dns_request_->GetStaleInfo()) {
+    cache_staleness_ = *dns_request_->GetStaleInfo();
+  }
+
   // If we have fresh endpoints, try to promote any active stale connectors to
   // the fresh state, and clear unstarted stale attempts.
-  MaybePromoteStaleConnectors();
+  MaybePromoteStaleConnectors(
+      /*dns_request_finished=*/dns_request_final_result.has_value());
 
   // Reset progress through endpoint results, as new ones may have been inserted
   // before the one that was currently under consideration.
@@ -395,6 +400,7 @@ int TcpConnectJob::DoTryAdvanceWaitingConnectors() {
       if (!stale_state_.primary_connector) {
         stale_state_.primary_connector = std::make_unique<Connector>(
             this, "stale_primary", /*created_by_slow_timer=*/false);
+        stale_state_.primary_connector->set_started_with_stale_dns(true);
       }
     }
 
@@ -474,6 +480,9 @@ void TcpConnectJob::OnSlow(bool is_stale) {
   // "primary" and "ipv4".
   state.ipv4_connector = std::make_unique<Connector>(
       this, "second", /*created_by_slow_timer=*/true);
+  if (is_stale) {
+    state.ipv4_connector->set_started_with_stale_dns(true);
+  }
   if (!state.primary_connector->is_connecting_to_ipv6()) {
     std::swap(state.primary_connector, state.ipv4_connector);
   }
@@ -629,7 +638,7 @@ int TcpConnectJob::AdvanceConnectionState(ConnectionState& state,
   return ERR_IO_PENDING;
 }
 
-void TcpConnectJob::MaybePromoteStaleConnectors() {
+void TcpConnectJob::MaybePromoteStaleConnectors(bool dns_request_finished) {
   if (!IsDualRaceOptimisticDnsEnabled() || !dns_request_ ||
       dns_request_->IsStaleWhileRefreshing()) {
     return;
@@ -642,12 +651,23 @@ void TcpConnectJob::MaybePromoteStaleConnectors() {
   auto try_promote = [&](std::unique_ptr<Connector>& stale_connector,
                          std::unique_ptr<Connector>& fresh_connector) {
     if (stale_connector && !stale_connector->is_done()) {
+      bool matched = false;
+      if (stale_connector->current_address() && !results.empty()) {
+        matched =
+            IsEndpointInFreshList(*stale_connector->current_address(), results);
+        if (!stale_connector->recorded_ip_match_metrics() &&
+            (matched || dns_request_finished)) {
+          HostCache::RecordOptimisticDnsStaleIpMatchMetrics(
+              HostCache::OptimisticDnsProtocol::kTcp, matched,
+              cache_staleness_);
+          stale_connector->set_recorded_ip_match_metrics(true);
+        }
+      }
       if (!fresh_connector || fresh_connector->is_waiting_for_endpoint() ||
           fresh_connector->is_waiting_on_dns() || fresh_connector->is_done() ||
           !fresh_connector->current_address()) {
-        if (stale_connector->current_address() &&
-            IsEndpointInFreshList(*stale_connector->current_address(),
-                                  results)) {
+        if (matched) {
+          stale_connector->set_was_promoted_to_fresh_dns(true);
           fresh_connector = std::move(stale_connector);
         }
       }
@@ -912,6 +932,24 @@ int TcpConnectJob::SetDone(int result, Connector* connector) {
     resolution_details_ = dns_request_->GetResolutionDetails();
   }
 
+  if (!disable_stale_dns_ && dns_request_ &&
+      !dns_request_->IsStaleWhileRefreshing() &&
+      !dns_request_->GetEndpointResults().empty()) {
+    for (Connector* c : {stale_state_.primary_connector.get(),
+                         stale_state_.ipv4_connector.get(),
+                         fresh_state_.primary_connector.get(),
+                         fresh_state_.ipv4_connector.get()}) {
+      if (c && c->started_with_stale_dns() && c->current_address() &&
+          !c->recorded_ip_match_metrics()) {
+        bool matched = IsEndpointInFreshList(
+            *c->current_address(), dns_request_->GetEndpointResults());
+        HostCache::RecordOptimisticDnsStaleIpMatchMetrics(
+            HostCache::OptimisticDnsProtocol::kTcp, matched, cache_staleness_);
+        c->set_recorded_ip_match_metrics(true);
+      }
+    }
+  }
+
   if (result == OK) {
     DCHECK(EndpointsCryptoReady());
     DCHECK(connector);
@@ -954,6 +992,47 @@ int TcpConnectJob::SetDone(int result, Connector* connector) {
 
     CHECK(!is_connected_via_stale_dns_.has_value());
     is_connected_via_stale_dns_ = calculate_is_connected_via_stale_dns();
+
+    if (dns_request_) {
+      auto calculate_freshness_status =
+          [&]() -> HostCache::UsedAnswerFreshnessStatus {
+        if (!disable_stale_dns_ && connector->started_with_stale_dns()) {
+          if (connector->was_promoted_to_fresh_dns()) {
+            return HostCache::UsedAnswerFreshnessStatus::
+                kExpiredCacheConfirmedByFreshDns;
+          }
+          if (!dns_request_->IsStaleWhileRefreshing() &&
+              !dns_request_->GetEndpointResults().empty()) {
+            if (connector->current_address() &&
+                IsEndpointInFreshList(*connector->current_address(),
+                                      dns_request_->GetEndpointResults())) {
+              return HostCache::UsedAnswerFreshnessStatus::
+                  kExpiredCacheConfirmedByFreshDns;
+            }
+            return HostCache::UsedAnswerFreshnessStatus::
+                kExpiredCacheDivergedFromFreshDns;
+          }
+          if (dns_request_complete_ &&
+              dns_request_->GetEndpointResults().empty()) {
+            return HostCache::UsedAnswerFreshnessStatus::
+                kExpiredCacheAfterFreshDnsFailed;
+          }
+          return HostCache::UsedAnswerFreshnessStatus::
+              kExpiredCacheFinishedBeforeFreshDns;
+        }
+        if ((resolution_details_.has_value() &&
+             resolution_details_->source == ResolutionSource::kCache) ||
+            (cache_staleness_.has_value() && !cache_staleness_->is_stale())) {
+          return HostCache::UsedAnswerFreshnessStatus::kValidFromCache;
+        }
+        return HostCache::UsedAnswerFreshnessStatus::kFreshFromNetwork;
+      };
+
+      used_answer_freshness_status_ = calculate_freshness_status();
+      HostCache::RecordUsedAnswerMetrics(HostCache::UsedAnswerProtocol::kTcp,
+                                         *used_answer_freshness_status_,
+                                         cache_staleness_);
+    }
   } else {
     // If there were no attempts, there were no usable addresses. Use `result`
     // in that case.

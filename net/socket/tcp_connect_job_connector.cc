@@ -164,6 +164,9 @@ int TcpConnectJob::Connector::DoObtainIPEndPoint() {
   current_attempt_started_as_stale_ =
       is_stale || (!parent_->disable_stale_dns_ && parent_->dns_request_ &&
                    parent_->dns_request_->IsStaleWhileRefreshing());
+  started_with_stale_dns_ = current_attempt_started_as_stale_;
+  was_promoted_to_fresh_dns_ = false;
+  recorded_ip_match_metrics_ = false;
 
   if (is_stale && service_endpoint) {
     current_service_endpoint_ = *service_endpoint;

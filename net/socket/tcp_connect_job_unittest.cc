@@ -1318,7 +1318,6 @@ TEST_F(TcpConnectJobTest, H2Disabled) {
                           /*expect_sync_result=*/true);
 }
 
-
 // Test that setting EchMode::kDisabled makes `svcb_optional_` true.
 TEST_F(TcpConnectJobTest, EchModeDisabled) {
   ssl_config_service_.SetEchModeGetter(
@@ -4888,6 +4887,223 @@ TEST_P(TcpConnectJobOptimisticDnsTest, HistogramsMultipleSupersededAttempts) {
       TcpConnectJob::SuccessSource::kInitialConnectorFirstAttempt, 1);
   histogram_tester.ExpectUniqueSample(
       "Net.TcpConnectJob.SupersededAttemptCount", 2, 1);
+}
+
+TEST_F(TcpConnectJobTest, UsedAnswerMetrics_ValidCacheHit) {
+  base::HistogramTester histogram_tester;
+  const auto endpoint = CreateServiceEndpoint({kIpV4Endpoint1});
+  auto request = host_resolver_.AddFakeRequest();
+
+  HostCache::EntryStaleness staleness;
+  staleness.age = base::Seconds(20);
+  staleness.original_ttl = base::Seconds(10);
+  staleness.expired_by = base::Seconds(-40);
+  request->set_stale_info(staleness);
+
+  ResolutionDetails resolution_details;
+  resolution_details.source = ResolutionSource::kCache;
+  request->set_resolution_details(resolution_details);
+  request->add_endpoint(endpoint).CompleteStartSynchronously(OK);
+
+  AddConnect(MockConnect(SYNCHRONOUS, OK), kIpV4Endpoint1);
+  InitRunAndExpectSuccess(kIpV4Endpoint1, endpoint,
+                          /*expect_sync_result=*/true);
+
+  histogram_tester.ExpectUniqueSample(
+      "Net.DNS.UsedAnswer.Tcp.FreshnessStatus",
+      HostCache::UsedAnswerFreshnessStatus::kValidFromCache, 1);
+  histogram_tester.ExpectUniqueTimeSample("Net.DNS.UsedAnswer.Tcp.Age",
+                                          base::Seconds(20), 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Net.DNS.UsedAnswer.Tcp.Age.ValidCache", base::Seconds(20), 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Net.DNS.UsedAnswer.Tcp.ValidCache.RemainingTtl", base::Seconds(40), 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.DNS.UsedAnswer.Tcp.IsExpiredByWireTtl", true, 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Net.DNS.UsedAnswer.Tcp.ExpiredByWireTtl.OverdueBy", base::Seconds(10),
+      1);
+}
+
+TEST_P(TcpConnectJobOptimisticDnsTest,
+       UsedAnswerMetrics_OptimisticDnsPromoted) {
+  if (!UseStaleConnectors()) {
+    GTEST_SKIP()
+        << "Connector promotion only applies when dual-race mode is enabled.";
+  }
+
+  base::HistogramTester histogram_tester;
+  const auto endpoint = CreateServiceEndpoint({kIpV4Endpoint1});
+  auto request = host_resolver_.AddFakeRequest();
+
+  std::array<MockConnectCompleter, 1> connect_completers;
+  AddConnect(MockConnect(&connect_completers[0]), kIpV4Endpoint1);
+
+  EXPECT_THAT(InitAndStart(), IsError(ERR_IO_PENDING));
+
+  HostCache::EntryStaleness staleness;
+  staleness.age = base::Seconds(80);
+  staleness.original_ttl = base::Seconds(60);
+  staleness.expired_by = base::Seconds(20);
+  staleness.network_changes = 1;
+  request->set_stale_info(staleness)
+      .set_crypto_ready(true)
+      .set_is_stale_while_refreshing(true)
+      .set_endpoints({endpoint})
+      .CallOnServiceEndpointsUpdated();
+
+  // Fresh DNS arrives with the same IP while the stale connector is connecting.
+  request->ClearStaleInfo()
+      .set_is_stale_while_refreshing(false)
+      .set_endpoints({endpoint})
+      .CallOnServiceEndpointRequestFinished(OK);
+
+  connect_completers[0].Complete(OK);
+  WaitForSuccess(kIpV4Endpoint1, endpoint);
+
+  histogram_tester.ExpectUniqueSample(
+      "Net.DNS.UsedAnswer.Tcp.FreshnessStatus",
+      HostCache::UsedAnswerFreshnessStatus::kExpiredCacheConfirmedByFreshDns,
+      1);
+  histogram_tester.ExpectUniqueTimeSample("Net.DNS.UsedAnswer.Tcp.Age",
+                                          base::Seconds(80), 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Net.DNS.UsedAnswer.Tcp.Age.ExpiredCacheConfirmedByFreshDns",
+      base::Seconds(80), 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Net.DNS.UsedAnswer.Tcp.ExpiredCache.ExpiredBy", base::Seconds(20), 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Net.DNS.UsedAnswer.Tcp.ExpiredCache.ExpiredBy.ConfirmedByFreshDns",
+      base::Seconds(20), 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.DNS.UsedAnswer.Tcp.ExpiredCache.NetworkChanges", 1, 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Net.DNS.OptimisticDns.Tcp.StaleIpMatchFreshDns.Age.Matched",
+      base::Seconds(80), 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Net.DNS.OptimisticDns.Tcp.StaleIpMatchFreshDns.ExpiredBy.Matched",
+      base::Seconds(20), 1);
+}
+
+TEST_P(TcpConnectJobOptimisticDnsTest,
+       UsedAnswerMetrics_StaggeredFreshDnsPromotesWithoutPrematureDivergence) {
+  if (!UseStaleConnectors()) {
+    GTEST_SKIP()
+        << "Connector promotion only applies when dual-race mode is enabled.";
+  }
+
+  base::HistogramTester histogram_tester;
+  const auto stale_ipv4_endpoint = CreateServiceEndpoint({kIpV4Endpoint1});
+  const auto fresh_ipv6_endpoint = CreateServiceEndpoint({kIpV6Endpoint1});
+  const auto fresh_both_endpoint =
+      CreateServiceEndpoint({kIpV6Endpoint1, kIpV4Endpoint1});
+  auto request = host_resolver_.AddFakeRequest();
+
+  std::array<MockConnectCompleter, 2> connect_completers;
+  AddConnect(MockConnect(&connect_completers[0]), kIpV4Endpoint1);
+  AddConnect(MockConnect(&connect_completers[1]), kIpV6Endpoint1);
+
+  EXPECT_THAT(InitAndStart(), IsError(ERR_IO_PENDING));
+
+  HostCache::EntryStaleness staleness;
+  staleness.age = base::Seconds(80);
+  staleness.original_ttl = base::Seconds(60);
+  staleness.expired_by = base::Seconds(20);
+  request->set_stale_info(staleness)
+      .set_crypto_ready(true)
+      .set_is_stale_while_refreshing(true)
+      .set_endpoints({stale_ipv4_endpoint})
+      .CallOnServiceEndpointsUpdated();
+
+  // Partial fresh update arrives with only IPv6 (A query still in flight).
+  // The IPv6 fresh attempt fails immediately so fresh_state_ is idle when the
+  // A query arrives next.
+  request->ClearStaleInfo()
+      .set_is_stale_while_refreshing(false)
+      .set_endpoints({fresh_ipv6_endpoint})
+      .CallOnServiceEndpointsUpdated();
+  connect_completers[1].Complete(ERR_CONNECTION_REFUSED);
+
+  // No divergence metric should have been recorded on the partial update.
+  histogram_tester.ExpectTotalCount(
+      "Net.DNS.OptimisticDns.Tcp.StaleIpMatchFreshDns.Age.Diverged", 0);
+
+  // Final fresh DNS update includes the matching IPv4 address.
+  request->set_endpoints({fresh_both_endpoint})
+      .CallOnServiceEndpointRequestFinished(OK);
+
+  connect_completers[0].Complete(OK);
+  WaitForSuccess(kIpV4Endpoint1, fresh_both_endpoint,
+                 {ConnectionAttempt(kIpV6Endpoint1, ERR_CONNECTION_REFUSED)});
+
+  histogram_tester.ExpectTotalCount(
+      "Net.DNS.OptimisticDns.Tcp.StaleIpMatchFreshDns.Age.Diverged", 0);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Net.DNS.OptimisticDns.Tcp.StaleIpMatchFreshDns.Age.Matched",
+      base::Seconds(80), 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.DNS.UsedAnswer.Tcp.FreshnessStatus",
+      HostCache::UsedAnswerFreshnessStatus::kExpiredCacheConfirmedByFreshDns,
+      1);
+}
+
+TEST_P(TcpConnectJobOptimisticDnsTest,
+       UsedAnswerMetrics_StaleCompletesAfterDivergentFreshDns) {
+  if (!UseStaleConnectors()) {
+    GTEST_SKIP()
+        << "Connector promotion only applies when dual-race mode is enabled.";
+  }
+
+  base::HistogramTester histogram_tester;
+  const auto stale_endpoint = CreateServiceEndpoint({kIpV6Endpoint1});
+  const auto fresh_endpoint = CreateServiceEndpoint({kIpV4Endpoint1});
+  auto request = host_resolver_.AddFakeRequest();
+
+  std::array<MockConnectCompleter, 2> connect_completers;
+  AddConnect(MockConnect(&connect_completers[0]), kIpV6Endpoint1);  // Stale
+  AddConnect(MockConnect(&connect_completers[1]), kIpV4Endpoint1);  // Fresh
+
+  EXPECT_THAT(InitAndStart(), IsError(ERR_IO_PENDING));
+
+  HostCache::EntryStaleness staleness;
+  staleness.age = base::Seconds(95);
+  staleness.original_ttl = base::Seconds(60);
+  staleness.expired_by = base::Seconds(35);
+  request->set_stale_info(staleness)
+      .set_crypto_ready(true)
+      .set_is_stale_while_refreshing(true)
+      .set_endpoints({stale_endpoint})
+      .set_aliases(kDnsAliases)
+      .CallOnServiceEndpointsUpdated();
+
+  // Fresh DNS completes with a divergent endpoint, which fails to connect.
+  request->ClearStaleInfo()
+      .set_is_stale_while_refreshing(false)
+      .set_endpoints({fresh_endpoint})
+      .CallOnServiceEndpointRequestFinished(OK);
+  connect_completers[1].Complete(ERR_CONNECTION_REFUSED);
+
+  // Stale connection completes afterwards.
+  connect_completers[0].Complete(OK);
+  WaitForSuccess(kIpV6Endpoint1, stale_endpoint,
+                 {ConnectionAttempt(kIpV4Endpoint1, ERR_CONNECTION_REFUSED)});
+
+  histogram_tester.ExpectUniqueSample(
+      "Net.DNS.UsedAnswer.Tcp.FreshnessStatus",
+      HostCache::UsedAnswerFreshnessStatus::kExpiredCacheDivergedFromFreshDns,
+      1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Net.DNS.UsedAnswer.Tcp.Age.ExpiredCacheDivergedFromFreshDns",
+      base::Seconds(95), 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Net.DNS.UsedAnswer.Tcp.ExpiredCache.ExpiredBy.DivergedFromFreshDns",
+      base::Seconds(35), 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Net.DNS.OptimisticDns.Tcp.StaleIpMatchFreshDns.Age.Diverged",
+      base::Seconds(95), 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Net.DNS.OptimisticDns.Tcp.StaleIpMatchFreshDns.ExpiredBy.Diverged",
+      base::Seconds(35), 1);
 }
 
 }  // namespace

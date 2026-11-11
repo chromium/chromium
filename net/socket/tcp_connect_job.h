@@ -159,6 +159,14 @@ class NET_EXPORT_PRIVATE TcpConnectJob
   // pooling).
   bool IsWaitingOnPossibleAsyncDeletion() const;
 
+  std::optional<HostCache::UsedAnswerFreshnessStatus>
+  used_answer_freshness_status() const {
+    return used_answer_freshness_status_;
+  }
+  const std::optional<HostCache::EntryStaleness>& cache_staleness() const {
+    return cache_staleness_;
+  }
+
   static base::TimeDelta ConnectionTimeout();
 
   // Calculates the IPv6 fallback time. If the `kIPv6FallbackBasedOnRTT` feature
@@ -323,7 +331,7 @@ class NET_EXPORT_PRIVATE TcpConnectJob
   // they do, those stale connectors are "promoted" (moved into the
   // `fresh_state_`) so their progress is not discarded. Connectors that do not
   // match the fresh results remain in the stale state.
-  void MaybePromoteStaleConnectors();
+  void MaybePromoteStaleConnectors(bool dns_request_finished);
 
   // Returns the next `IPEndPoint` that `connector` should connect to, and logs
   // that endpoint has been attempted. Never returns the same IPEndPoint twice.
@@ -466,6 +474,12 @@ class NET_EXPORT_PRIVATE TcpConnectJob
   // Whether the connection was established using a stale DNS result. Evaluated
   // once the connection completes and cached here.
   std::optional<bool> is_connected_via_stale_dns_;
+
+  // Freshness classification and HostCache staleness snapshot of the DNS answer
+  // used to establish the connection.
+  std::optional<HostCache::UsedAnswerFreshnessStatus>
+      used_answer_freshness_status_;
+  std::optional<HostCache::EntryStaleness> cache_staleness_;
 
   // True if the job should not use stale DNS results. This is used by
   // SSLConnectJob to retry connections with fresh DNS results.

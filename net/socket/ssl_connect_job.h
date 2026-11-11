@@ -20,6 +20,7 @@
 #include "net/base/completion_repeating_callback.h"
 #include "net/base/net_export.h"
 #include "net/base/network_anonymization_key.h"
+#include "net/dns/host_cache.h"
 #include "net/dns/public/host_resolver_results.h"
 #include "net/dns/public/resolution_details.h"
 #include "net/dns/public/resolve_error_info.h"
@@ -260,10 +261,15 @@ class NET_EXPORT_PRIVATE SSLConnectJob : public ConnectJob,
   // flow. `endpoint_result_` will then contain the endpoint to reconnect to.
   std::optional<std::vector<uint8_t>> ech_retry_configs_;
 
-
   // True if the connection was established using a stale DNS result. Passed
   // up from the nested ConnectJob.
   bool is_connected_via_stale_dns_ = false;
+
+  // Freshness classification and HostCache staleness snapshot of the DNS answer
+  // used to establish the underlying TCP connection.
+  std::optional<HostCache::UsedAnswerFreshnessStatus>
+      used_answer_freshness_status_;
+  std::optional<HostCache::EntryStaleness> cache_staleness_;
 
   // True if the use of stale DNS results should be disabled for this connection
   // attempt. Set to true when a previous connection attempt via stale DNS

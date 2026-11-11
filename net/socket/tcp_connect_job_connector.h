@@ -121,6 +121,21 @@ class TcpConnectJob::Connector {
            next_state_ == State::kWaitForCryptoReady;
   }
 
+  void set_started_with_stale_dns(bool started_with_stale_dns) {
+    started_with_stale_dns_ = started_with_stale_dns;
+  }
+  bool started_with_stale_dns() const { return started_with_stale_dns_; }
+
+  void set_was_promoted_to_fresh_dns(bool was_promoted_to_fresh_dns) {
+    was_promoted_to_fresh_dns_ = was_promoted_to_fresh_dns;
+  }
+  bool was_promoted_to_fresh_dns() const { return was_promoted_to_fresh_dns_; }
+
+  void set_recorded_ip_match_metrics(bool recorded_ip_match_metrics) {
+    recorded_ip_match_metrics_ = recorded_ip_match_metrics;
+  }
+  bool recorded_ip_match_metrics() const { return recorded_ip_match_metrics_; }
+
  private:
   // Note that while in either of the "Wait" states, this is waiting on more
   // ServiceEndpoint data. The parent ConnectJob signals that data may be
@@ -198,6 +213,18 @@ class TcpConnectJob::Connector {
   std::optional<ServiceEndpoint> final_service_endpoint_;
 
   base::TimeTicks start_time_;
+
+  // True if the current connection attempt started using a stale (Optimistic)
+  // DNS endpoint.
+  bool started_with_stale_dns_ = false;
+
+  // True if this connector started with a stale DNS endpoint and was later
+  // promoted to `fresh_state_` when fresh DNS results confirmed the IP.
+  bool was_promoted_to_fresh_dns_ = false;
+
+  // True once `Net.DNS.OptimisticDns.Tcp.StaleIpMatchFreshDns.*` metrics have
+  // been recorded for the current connection attempt.
+  bool recorded_ip_match_metrics_ = false;
 };
 
 }  // namespace net
