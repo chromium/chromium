@@ -45,6 +45,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_cursor_position.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_device_manager.h"
+#include "ui/ozone/platform/wayland/host/wayland_data_drag_controller.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_offer.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_event_source.h"
@@ -176,6 +177,21 @@ bool WaylandWindowDragController::StartDragSession(
     }
   }
 
+  auto serial = GetSerial(drag_source, origin);
+  if (!serial) {
+    LOG(ERROR) << "Failed to retrieve dnd serial. origin=" << origin
+               << " drag_source=" << drag_source;
+    return false;
+  }
+
+  if (auto* data_drag_controller = connection_->data_drag_controller()) {
+    auto weak_this = weak_factory_.GetWeakPtr();
+    if (data_drag_controller->AbortPendingDrop() &&
+        (!weak_this || state_ != State::kIdle)) {
+      return weak_this && state_ != State::kIdle;
+    }
+  }
+
   // TODO(crbug.com/340398746): This should be a CHECK instead. However
   // currently buggy compositors, eg: KWin 6, which do not send
   // data_source.dnd_finish|cancelled in some cases. In such a case for a data
@@ -190,13 +206,6 @@ bool WaylandWindowDragController::StartDragSession(
                   "resetting shared data device state.";
     data_device_->ResetDragDelegate();
     CHECK(!connection_->IsDragInProgress());
-  }
-
-  auto serial = GetSerial(drag_source, origin);
-  if (!serial) {
-    LOG(ERROR) << "Failed to retrieve dnd serial. origin=" << origin
-               << " drag_source=" << drag_source;
-    return false;
   }
 
   VLOG(1) << "Starting Window Drag session. tracker_id=" << serial->value

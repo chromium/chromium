@@ -275,6 +275,7 @@ void DesktopDragDropClientOzone::UpdateDragImage(const gfx::ImageSkia& image,
 #endif  // BUILDFLAG(LINUX)
 
 void DesktopDragDropClientOzone::DragCancel() {
+  has_pending_drag_update_ = false;
   ResetDragDropTarget();
   selected_operation_ = DragOperation::kNone;
 
@@ -307,16 +308,26 @@ void DesktopDragDropClientOzone::OnDragEnter(const gfx::PointF& location,
   drag_location_ = location;
   available_operations_ = operations;
   modifiers_ = modifiers;
+  has_pending_drag_update_ = false;
 }
 
 void DesktopDragDropClientOzone::OnDragDataAvailable(
     std::unique_ptr<ui::OSExchangeData> data) {
   CHECK(data, base::NotFatalUntil::M163);
   data_to_drop_ = std::move(data);
+  const bool send_drag_update = std::exchange(has_pending_drag_update_, false);
+  auto alive = weak_factory_.GetWeakPtr();
   std::unique_ptr<ui::DropTargetEvent> event = UpdateTargetAndCreateDropEvent();
-  if (event) {
-    observers_.Notify(&aura::client::DragDropClientObserver::OnDragUpdated,
-                      *event);
+  if (!alive || !data_to_drop_ || !event) {
+    return;
+  }
+  observers_.Notify(&aura::client::DragDropClientObserver::OnDragUpdated,
+                    *event);
+  if (!alive || !data_to_drop_) {
+    return;
+  }
+  if (send_drag_update && delegate_) {
+    current_drag_update_info_ = delegate_->OnDragUpdated(*event);
   }
 }
 
@@ -327,8 +338,10 @@ int DesktopDragDropClientOzone::OnDragMotion(const gfx::PointF& location,
   available_operations_ = operations;
   modifiers_ = modifiers;
 
-  // If |data_to_drop_| doesn't have data, return that we accept everything.
+  // If |data_to_drop_| lacks data, accept copy/move optimistically and record
+  // that OnDragUpdated() must be sent once OnDragDataAvailable() arrives.
   if (!data_to_drop_) {
+    has_pending_drag_update_ = true;
     return ui::DragDropTypes::DRAG_COPY | ui::DragDropTypes::DRAG_MOVE;
   }
 
@@ -384,6 +397,7 @@ void DesktopDragDropClientOzone::OnDragDrop(int modifiers) {
 
 void DesktopDragDropClientOzone::OnDragLeave() {
   data_to_drop_.reset();
+  has_pending_drag_update_ = false;
   drag_location_ = {};
   available_operations_ = 0;
   modifiers_ = 0;

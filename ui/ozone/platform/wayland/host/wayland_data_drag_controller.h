@@ -73,9 +73,11 @@ class WaylandSurface;
 // 2. The data is being dragged from another application. In this case, the
 // window is notified right away about the enter event and a data fetching task
 // is posted to the thread pool. Once fully fetched, the data is delivered to
-// the entered window. If the drag cursor leaves the window or the entered
-// windows gets destroyed while the data is still being fetched, the fetching
-// task is cancelled and the whole drag session is aborted.
+// the entered window. If a drop arrives while data is still being fetched, the
+// drop (and any subsequent leave event) is deferred until fetching completes.
+// If the drag cursor leaves the window without dropping, or the entered window
+// gets destroyed while the data is still being fetched, the fetching task is
+// cancelled and the session is aborted.
 class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
                                   public WaylandDataSource::Delegate,
                                   public WaylandWindowObserver,
@@ -118,6 +120,12 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
   // will be propagated as usual (e.g. if the user moves the mouse out of our
   // window and then back over it again).
   void CancelSession();
+
+  // If an incoming drop is waiting on async data fetching (meaning the
+  // compositor's drag grab has already ended), cancels the fetch, cleans up
+  // the deferred drop/leave state, and resets the data device delegate if
+  // needed. Returns true if a pending drop was aborted.
+  bool AbortPendingDrop();
 
   // Returns true if there is an in-progress drag session owned by the data drag
   // controller.
@@ -174,6 +182,12 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
     kCompleted,
   };
 
+  enum class PendingDropState {
+    kNone,
+    kDrop,
+    kDropAndLeave,
+  };
+
   // WaylandDataDevice::DragDelegate:
   bool IsDragSource() const override;
   void DrawIcon() override;
@@ -211,6 +225,7 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
 
   void OnDataFetchingFinished(
       base::TimeTicks start_time,
+      scoped_refptr<CancelFlag> cancel_flag,
       std::unique_ptr<ui::OSExchangeData> received_data);
 
   void StartSessionInternal(int operations,
@@ -218,14 +233,17 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
                             uint32_t serial);
 
   void OnDataFetched(base::TimeTicks start_time,
+                     scoped_refptr<CancelFlag> cancel_flag,
                      std::map<std::string, std::vector<uint8_t>> fetched_data);
 
   void OnPortalPathsExtracted(
       base::TimeTicks start_time,
+      scoped_refptr<CancelFlag> cancel_flag,
       std::map<std::string, std::vector<uint8_t>> fetched_data,
       std::vector<std::string> paths);
 
   void CancelDataFetchingIfNeeded();
+  void AbortPendingDropIfNeeded();
 
   // Resets everything to idle state. Does nothing if the current state is
   // already `kIdle`.
@@ -281,6 +299,11 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
 
   // In outgoing sessions, tracks if any drag enter has already been received.
   bool has_received_enter_ = false;
+
+  // In incoming sessions, tracks whether wl_data_device.drop (and subsequent
+  // wl_data_device.leave) arrived while async data fetching was still in
+  // progress (`state_ == State::kFetching`).
+  PendingDropState pending_drop_state_ = PendingDropState::kNone;
 
   // Data offered by us to the other side.
   std::unique_ptr<WaylandDataSource> data_source_;

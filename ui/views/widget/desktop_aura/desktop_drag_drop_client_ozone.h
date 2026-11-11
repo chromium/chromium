@@ -166,6 +166,10 @@ class VIEWS_EXPORT DesktopDragDropClientOzone
   // The data to be delivered through the drag and drop.
   std::unique_ptr<ui::OSExchangeData> data_to_drop_;
 
+  // True when OnDragMotion() arrived before OnDragDataAvailable(), so
+  // OnDragUpdated() must be dispatched once drag data becomes available.
+  bool has_pending_drag_update_ = false;
+
   // The most recent native coordinates of an incoming drag. Updated while
   // the mouse is moved, and used at dropping.
   gfx::PointF drag_location_;

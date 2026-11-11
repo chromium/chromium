@@ -16,8 +16,15 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
+#include "base/location.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/pickle.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/deferred_sequenced_task_runner.h"
+#include "base/task/task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
@@ -44,7 +51,9 @@
 #include "ui/ozone/platform/wayland/host/wayland_data_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_event_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_serial_tracker.h"
+#include "ui/ozone/platform/wayland/host/wayland_toplevel_window.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
+#include "ui/ozone/platform/wayland/host/wayland_window_drag_controller.h"
 #include "ui/ozone/platform/wayland/test/mock_pointer.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
 #include "ui/ozone/platform/wayland/test/scoped_wl_array.h"
@@ -277,6 +286,21 @@ class WaylandDataDragControllerTest : public WaylandDragDropTest {
   void WaitForDragDropTasks() {
     base::ThreadPoolInstance::Get()->FlushForTesting();
     base::RunLoop().RunUntilIdle();
+  }
+
+  // Wraps `data_fetch_task_runner_` in a `base::DeferredSequencedTaskRunner`
+  // that stays unstarted until the returned runner is run or destroyed. This
+  // keeps incoming sessions in `State::kFetching` deterministically without
+  // blocking a ThreadPool worker.
+  [[nodiscard]] base::ScopedClosureRunner DeferDataFetching() {
+    auto target_runner = base::ThreadPool::CreateSequencedTaskRunner(
+        {base::TaskPriority::USER_VISIBLE, base::MayBlock()});
+    auto deferred_runner =
+        base::MakeRefCounted<base::DeferredSequencedTaskRunner>(
+            std::move(target_runner));
+    drag_controller()->data_fetch_task_runner_ = deferred_runner;
+    return base::ScopedClosureRunner(base::BindOnce(
+        &base::DeferredSequencedTaskRunner::Start, std::move(deferred_runner)));
   }
 
   std::unique_ptr<MockDropHandler> drop_handler_;
@@ -1335,48 +1359,319 @@ TEST_P(WaylandDataDragControllerTest, StartDragWithCorrectSerialForDragSource) {
   });
 }
 
-// With an incoming DnD session, this ensures that data drag controller
-// gracefully handles drop events received while the data fetching is still
-// unfinished. Regression test for https://crbug.com/1400872.
+// With an incoming DnD session, verifies that a drop (and subsequent leave)
+// arriving while data fetching is still in progress is deferred until the data
+// fetch finishes rather than silently discarded.
+// Regression test for https://crbug.com/1400872 and https://crbug.com/40238823.
 TEST_P(WaylandDataDragControllerTest, DropWhileFetchingData) {
   const uint32_t surface_id = window_->root_surface()->get_surface_id();
-  // TODO(crbug.com/328783999): Use a RunLoop here (like in
-  // DropSeveralMimeTypes) so we can pass `no_nested_runloops=true` to
-  // `PostToServerAndWait()`.
 
-  // Data for each offered mime-type is asynchronously read (eg: using
-  // wl_display.sync callbacks, etc), so a single roundtrip - done implicitly
-  // in PostToServerAndWait() impl - isn't enough to fetch all the data, which
-  // is exactly the goal in this test case, so that we can send the "early" drop
-  // and ensure it does not crash in the next step.
+  // Data for each offered mime-type is asynchronously read on the thread pool,
+  // so sending `enter`, `drop`, and `leave` in the same server flush (matching
+  // Wayland compositors on button release) delivers `drop` and `leave` while
+  // the controller is still in `State::kFetching`.
   EXPECT_CALL(*drop_handler_, OnDragEnter(_, _, _)).Times(1);
+  EXPECT_CALL(*drop_handler_, MockDragMotion(_, _, _)).Times(1);
   EXPECT_CALL(*drop_handler_, MockOnDragDataAvailable()).Times(0);
-  PostToServerAndWait(
-      [surface_id](wl::TestWaylandServerThread* server) {
-        auto* data_device = server->data_device_manager()->data_device();
-        auto* data_offer = data_device->CreateAndSendDataOffer();
-        data_offer->OnOffer(
-            kMimeTypePlainText,
-            ToClipboardData(std::string(kSampleTextForDragAndDrop)));
+  EXPECT_CALL(*drop_handler_, MockOnDragDrop()).Times(0);
+  EXPECT_CALL(*drop_handler_, OnDragLeave()).Times(0);
+  base::ScopedClosureRunner start_fetching = DeferDataFetching();
+  PostToServerAndWait([surface_id](wl::TestWaylandServerThread* server) {
+    auto* data_device = server->data_device_manager()->data_device();
+    auto* data_offer = data_device->CreateAndSendDataOffer();
+    data_offer->OnOffer(
+        kMimeTypePlainText,
+        ToClipboardData(std::string(kSampleTextForDragAndDrop)));
+    data_offer->OnOffer(
+        kMimeTypeUriList,
+        ToClipboardData(std::string("file:///home/user/file\r\n")));
+    data_offer->OnSourceActions(WL_DATA_DEVICE_MANAGER_DND_ACTION_COPY);
 
-        auto* surface = server->GetObject<wl::MockSurface>(surface_id);
-        data_device->OnEnter(server->GetNextSerial(), surface->resource(),
-                             wl_fixed_from_int(0), wl_fixed_from_int(0),
-                             data_offer);
-
-        // Sending `drop` right after `enter` here ensures drag controller has
-        // not yet had the chance to (even) start the data fetching, which helps
-        // avoiding flakiness (quite common in this kind of test case).
-        data_device->OnDrop();
-      },
-      false);
+    auto* surface = server->GetObject<wl::MockSurface>(surface_id);
+    data_device->OnEnter(server->GetNextSerial(), surface->resource(),
+                         wl_fixed_from_int(10), wl_fixed_from_int(10),
+                         data_offer);
+    data_device->OnDrop();
+    data_device->OnLeave();
+  });
   Mock::VerifyAndClearExpectations(drop_handler_.get());
-
   EXPECT_FALSE(drop_handler_->dropped_data());
 
-  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
-    server->data_device_manager()->data_device()->OnLeave();
+  // Once the background data fetch completes, the deferred data availability,
+  // drop, and leave notifications must be delivered in order.
+  {
+    ::testing::InSequence seq;
+    EXPECT_CALL(*drop_handler_, MockOnDragDataAvailable()).Times(1);
+    EXPECT_CALL(*drop_handler_, MockOnDragDrop()).Times(1);
+    EXPECT_CALL(*drop_handler_, OnDragLeave()).Times(1);
+  }
+  start_fetching.RunAndReset();
+  WaitForDragDropTasks();
+  WaylandTestBase::SyncDisplay();
+  Mock::VerifyAndClearExpectations(drop_handler_.get());
+
+  ASSERT_NE(drop_handler_->dropped_data(), nullptr);
+  EXPECT_TRUE(drop_handler_->dropped_data()->HasString());
+  EXPECT_TRUE(drop_handler_->dropped_data()->HasFile());
+  std::optional<std::vector<FileInfo>> filenames =
+      drop_handler_->dropped_data()->GetFilenames();
+  ASSERT_TRUE(filenames.has_value());
+  ASSERT_EQ(filenames->size(), 1u);
+  EXPECT_EQ(filenames->front().path.AsUTF8Unsafe(), "/home/user/file");
+  EXPECT_FALSE(data_device()->IsDragInProgress());
+  EXPECT_EQ(drag_controller_state(), WaylandDataDragController::State::kIdle);
+}
+
+// Verifies that if `wl_data_device.drop` arrives while fetching and the fetch
+// finishes before `wl_data_device.leave` arrives, the drop is delivered on
+// fetch completion and the subsequent leave cleans up the session.
+TEST_P(WaylandDataDragControllerTest, DropWhileFetchingDataLeaveAfterFetch) {
+  const uint32_t surface_id = window_->root_surface()->get_surface_id();
+
+  EXPECT_CALL(*drop_handler_, OnDragEnter(_, _, _)).Times(1);
+  EXPECT_CALL(*drop_handler_, MockDragMotion(_, _, _)).Times(1);
+  EXPECT_CALL(*drop_handler_, MockOnDragDataAvailable()).Times(0);
+  EXPECT_CALL(*drop_handler_, MockOnDragDrop()).Times(0);
+  base::ScopedClosureRunner start_fetching = DeferDataFetching();
+  PostToServerAndWait([surface_id](wl::TestWaylandServerThread* server) {
+    auto* data_device = server->data_device_manager()->data_device();
+    auto* data_offer = data_device->CreateAndSendDataOffer();
+    data_offer->OnOffer(
+        kMimeTypePlainText,
+        ToClipboardData(std::string(kSampleTextForDragAndDrop)));
+    data_offer->OnSourceActions(WL_DATA_DEVICE_MANAGER_DND_ACTION_COPY);
+
+    auto* surface = server->GetObject<wl::MockSurface>(surface_id);
+    data_device->OnEnter(server->GetNextSerial(), surface->resource(),
+                         wl_fixed_from_int(10), wl_fixed_from_int(10),
+                         data_offer);
+    data_device->OnDrop();
   });
+  Mock::VerifyAndClearExpectations(drop_handler_.get());
+
+  {
+    ::testing::InSequence seq;
+    EXPECT_CALL(*drop_handler_, MockOnDragDataAvailable()).Times(1);
+    EXPECT_CALL(*drop_handler_, MockOnDragDrop()).Times(1);
+  }
+  EXPECT_CALL(*drop_handler_, OnDragLeave()).Times(0);
+  start_fetching.RunAndReset();
+  WaitForDragDropTasks();
+  WaylandTestBase::SyncDisplay();
+  Mock::VerifyAndClearExpectations(drop_handler_.get());
+
+  ASSERT_NE(drop_handler_->dropped_data(), nullptr);
+  EXPECT_EQ(kSampleTextForDragAndDrop16,
+            drop_handler_->dropped_data()->GetString());
+
+  EXPECT_CALL(*drop_handler_, OnDragLeave()).Times(1);
+  SendDndLeave();
+  Mock::VerifyAndClearExpectations(drop_handler_.get());
+  EXPECT_FALSE(data_device()->IsDragInProgress());
+  EXPECT_EQ(drag_controller_state(), WaylandDataDragController::State::kIdle);
+}
+
+// Verifies that destroying the target window while a deferred drop is still
+// waiting on async data fetching (even before `wl_data_device.leave` arrives)
+// cancels the pending drop cleanly and resets the controller to idle.
+TEST_P(WaylandDataDragControllerTest, DestroyWindowWhileDropPending) {
+  const uint32_t surface_id = window_->root_surface()->get_surface_id();
+
+  EXPECT_CALL(*drop_handler_, OnDragEnter(_, _, _)).Times(1);
+  EXPECT_CALL(*drop_handler_, MockDragMotion(_, _, _)).Times(1);
+  EXPECT_CALL(*drop_handler_, MockOnDragDataAvailable()).Times(0);
+  EXPECT_CALL(*drop_handler_, MockOnDragDrop()).Times(0);
+  EXPECT_CALL(*drop_handler_, OnDragLeave()).Times(0);
+  base::ScopedClosureRunner start_fetching = DeferDataFetching();
+  PostToServerAndWait([surface_id](wl::TestWaylandServerThread* server) {
+    auto* data_device = server->data_device_manager()->data_device();
+    auto* data_offer = data_device->CreateAndSendDataOffer();
+    data_offer->OnOffer(
+        kMimeTypePlainText,
+        ToClipboardData(std::string(kSampleTextForDragAndDrop)));
+    data_offer->OnOffer(
+        kMimeTypeUtf8PlainText,
+        ToClipboardData(std::string(kSampleTextForDragAndDrop)));
+
+    auto* surface = server->GetObject<wl::MockSurface>(surface_id);
+    data_device->OnEnter(server->GetNextSerial(), surface->resource(),
+                         wl_fixed_from_int(0), wl_fixed_from_int(0),
+                         data_offer);
+    data_device->OnDrop();
+  });
+  Mock::VerifyAndClearExpectations(drop_handler_.get());
+
+  EXPECT_CALL(*drop_handler_, MockOnDragDataAvailable()).Times(0);
+  EXPECT_CALL(*drop_handler_, MockOnDragDrop()).Times(0);
+  EXPECT_CALL(*drop_handler_, OnDragLeave()).Times(0);
+  window_.reset();
+  EXPECT_FALSE(data_device()->IsDragInProgress());
+  EXPECT_EQ(drag_controller_state(), WaylandDataDragController::State::kIdle);
+
+  start_fetching.RunAndReset();
+  WaitForDragDropTasks();
+  SendDndLeave();
+  WaylandTestBase::SyncDisplay();
+  Mock::VerifyAndClearExpectations(drop_handler_.get());
+  EXPECT_FALSE(drop_handler_->dropped_data());
+  EXPECT_FALSE(data_device()->IsDragInProgress());
+  EXPECT_EQ(drag_controller_state(), WaylandDataDragController::State::kIdle);
+}
+
+// Verifies that a new incoming drag arriving while an earlier deferred drop is
+// still fetching aborts the stale pending drop and delivers the new drag.
+TEST_P(WaylandDataDragControllerTest, NewIncomingDragWhileDropPending) {
+  const uint32_t surface_id = window_->root_surface()->get_surface_id();
+  constexpr char kSecondText[] = "Second drag payload";
+
+  EXPECT_CALL(*drop_handler_, OnDragEnter(_, _, _)).Times(2);
+  EXPECT_CALL(*drop_handler_, MockDragMotion(_, _, _)).Times(2);
+  EXPECT_CALL(*drop_handler_, OnDragLeave()).Times(1);
+  base::ScopedClosureRunner start_fetching = DeferDataFetching();
+  PostToServerAndWait([surface_id,
+                       kSecondText](wl::TestWaylandServerThread* server) {
+    auto* data_device = server->data_device_manager()->data_device();
+    auto* surface = server->GetObject<wl::MockSurface>(surface_id);
+
+    auto* offer_1 = data_device->CreateAndSendDataOffer();
+    offer_1->OnOffer(kMimeTypePlainText,
+                     ToClipboardData(std::string(kSampleTextForDragAndDrop)));
+    data_device->OnEnter(server->GetNextSerial(), surface->resource(),
+                         wl_fixed_from_int(5), wl_fixed_from_int(5), offer_1);
+    data_device->OnDrop();
+    data_device->OnLeave();
+
+    auto* offer_2 = data_device->CreateAndSendDataOffer();
+    offer_2->OnOffer(kMimeTypePlainText,
+                     ToClipboardData(std::string(kSecondText)));
+    data_device->OnEnter(server->GetNextSerial(), surface->resource(),
+                         wl_fixed_from_int(15), wl_fixed_from_int(15), offer_2);
+    data_device->OnDrop();
+    data_device->OnLeave();
+  });
+  Mock::VerifyAndClearExpectations(drop_handler_.get());
+
+  EXPECT_CALL(*drop_handler_, MockOnDragDataAvailable()).Times(1);
+  EXPECT_CALL(*drop_handler_, MockOnDragDrop()).Times(1);
+  EXPECT_CALL(*drop_handler_, OnDragLeave()).Times(1);
+  start_fetching.RunAndReset();
+  WaitForDragDropTasks();
+  WaylandTestBase::SyncDisplay();
+  Mock::VerifyAndClearExpectations(drop_handler_.get());
+
+  ASSERT_NE(drop_handler_->dropped_data(), nullptr);
+  EXPECT_EQ(u"Second drag payload", drop_handler_->dropped_data()->GetString());
+  EXPECT_FALSE(data_device()->IsDragInProgress());
+  EXPECT_EQ(drag_controller_state(), WaylandDataDragController::State::kIdle);
+}
+
+// Verifies that starting an outgoing drag session while an incoming drop is
+// pending preserves the in-flight drop if serial validation fails, and aborts
+// the pending drop cleanly once serial validation succeeds (even before
+// `wl_data_device.leave` arrives).
+TEST_P(WaylandDataDragControllerTest, StartSessionWhileDropPending) {
+  const uint32_t surface_id = window_->root_surface()->get_surface_id();
+
+  EXPECT_CALL(*drop_handler_, OnDragEnter(_, _, _)).Times(1);
+  EXPECT_CALL(*drop_handler_, MockDragMotion(_, _, _)).Times(1);
+  base::ScopedClosureRunner start_fetching = DeferDataFetching();
+  PostToServerAndWait([surface_id](wl::TestWaylandServerThread* server) {
+    auto* data_device = server->data_device_manager()->data_device();
+    auto* data_offer = data_device->CreateAndSendDataOffer();
+    data_offer->OnOffer(
+        kMimeTypePlainText,
+        ToClipboardData(std::string(kSampleTextForDragAndDrop)));
+    auto* surface = server->GetObject<wl::MockSurface>(surface_id);
+    data_device->OnEnter(server->GetNextSerial(), surface->resource(),
+                         wl_fixed_from_int(5), wl_fixed_from_int(5),
+                         data_offer);
+    data_device->OnDrop();
+  });
+  Mock::VerifyAndClearExpectations(drop_handler_.get());
+
+  // Focus the window without pressing a mouse button so `origin_window` is
+  // valid while `GetAndValidateSerialForDrag()` fails. `StartSession()` must
+  // reject without cancelling the pending incoming drop.
+  SendPointerEnter(window_.get(), &delegate_);
+  OSExchangeData outgoing_data;
+  outgoing_data.SetString(u"outgoing");
+  EXPECT_CALL(*drop_handler_, OnDragLeave()).Times(0);
+  EXPECT_FALSE(
+      drag_controller()->StartSession(outgoing_data, DragDropTypes::DRAG_COPY,
+                                      DragEventSource::kMouse, window()));
+  EXPECT_EQ(drag_controller_state(),
+            WaylandDataDragController::State::kFetching);
+  Mock::VerifyAndClearExpectations(drop_handler_.get());
+
+  // With a valid pointer press serial, `StartSession()` aborts the pending
+  // incoming drop and starts the outgoing session (whose server-side
+  // `wl_data_device.enter` delivers `u"outgoing"`, while the aborted incoming
+  // fetch never delivers its drop).
+  SendPointerButton(window_.get(), &delegate_, BTN_LEFT, /*pressed=*/true);
+  EXPECT_CALL(*drop_handler_, OnDragLeave()).Times(1);
+  EXPECT_TRUE(
+      drag_controller()->StartSession(outgoing_data, DragDropTypes::DRAG_COPY,
+                                      DragEventSource::kMouse, window()));
+  Mock::VerifyAndClearExpectations(drop_handler_.get());
+
+  EXPECT_CALL(*drop_handler_, OnDragEnter(_, _, _)).Times(1);
+  EXPECT_CALL(*drop_handler_, MockOnDragDataAvailable()).Times(1);
+  EXPECT_CALL(*drop_handler_, MockDragMotion(_, _, _)).Times(1);
+  EXPECT_CALL(*drop_handler_, MockOnDragDrop()).Times(0);
+  start_fetching.RunAndReset();
+  WaitForDragDropTasks();
+  WaylandTestBase::SyncDisplay();
+  Mock::VerifyAndClearExpectations(drop_handler_.get());
+  ASSERT_NE(drop_handler_->dropped_data(), nullptr);
+  EXPECT_EQ(u"outgoing", drop_handler_->dropped_data()->GetString());
+
+  EXPECT_CALL(*drop_handler_, OnDragLeave()).Times(1);
+  SendDndCancelled();
+  Mock::VerifyAndClearExpectations(drop_handler_.get());
+  EXPECT_EQ(drag_controller_state(), WaylandDataDragController::State::kIdle);
+}
+
+// Verifies that starting a window drag session while an incoming drop is
+// pending (after `wl_data_device.leave` has already cleared `drag_delegate_`)
+// aborts the stuck pending drop fetch before starting the window drag.
+TEST_P(WaylandDataDragControllerTest, StartWindowDragSessionWhileDropPending) {
+  const uint32_t surface_id = window_->root_surface()->get_surface_id();
+
+  EXPECT_CALL(*drop_handler_, OnDragEnter(_, _, _)).Times(1);
+  EXPECT_CALL(*drop_handler_, MockDragMotion(_, _, _)).Times(1);
+  base::ScopedClosureRunner start_fetching = DeferDataFetching();
+  PostToServerAndWait([surface_id](wl::TestWaylandServerThread* server) {
+    auto* data_device = server->data_device_manager()->data_device();
+    auto* data_offer = data_device->CreateAndSendDataOffer();
+    data_offer->OnOffer(
+        kMimeTypePlainText,
+        ToClipboardData(std::string(kSampleTextForDragAndDrop)));
+    auto* surface = server->GetObject<wl::MockSurface>(surface_id);
+    data_device->OnEnter(server->GetNextSerial(), surface->resource(),
+                         wl_fixed_from_int(5), wl_fixed_from_int(5),
+                         data_offer);
+    data_device->OnDrop();
+    data_device->OnLeave();
+  });
+  Mock::VerifyAndClearExpectations(drop_handler_.get());
+  ASSERT_FALSE(connection()->IsDragInProgress());
+  ASSERT_EQ(drag_controller_state(),
+            WaylandDataDragController::State::kFetching);
+
+  FocusAndPressLeftPointerButton(window_.get(), &delegate_);
+  EXPECT_CALL(*drop_handler_, OnDragLeave()).Times(1);
+  EXPECT_TRUE(connection()->window_drag_controller()->StartDragSession(
+      window_->AsWaylandToplevelWindow(), DragEventSource::kMouse));
+  Mock::VerifyAndClearExpectations(drop_handler_.get());
+  EXPECT_EQ(drag_controller_state(), WaylandDataDragController::State::kIdle);
+
+  EXPECT_CALL(*drop_handler_, MockOnDragDataAvailable()).Times(0);
+  EXPECT_CALL(*drop_handler_, MockOnDragDrop()).Times(0);
+  start_fetching.RunAndReset();
+  WaitForDragDropTasks();
+  Mock::VerifyAndClearExpectations(drop_handler_.get());
+
+  SendDndCancelled();
 }
 
 // Regression test for https://crbug.com/1405176.
