@@ -562,12 +562,6 @@ PhysicalRect LayoutReplaced::LocalSelectionVisualRect() const {
   return PhysicalRect(PhysicalOffset(), StitchedSize());
 }
 
-bool LayoutReplaced::RespectsCSSOverflow() const {
-  NOT_DESTROYED();
-  const Element* element = DynamicTo<Element>(GetNode());
-  return element && element->IsReplacedElementRespectingCSSOverflow();
-}
-
 bool LayoutReplaced::ClipsToContentBox() const {
   NOT_DESTROYED();
   if (!RespectsCSSOverflow()) {

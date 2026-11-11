@@ -230,7 +230,6 @@
 #include "third_party/blink/renderer/core/html/html_style_element.h"
 #include "third_party/blink/renderer/core/html/html_table_rows_collection.h"
 #include "third_party/blink/renderer/core/html/html_template_element.h"
-#include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/html/menu_safe_triangle.h"
 #include "third_party/blink/renderer/core/html/nesting_level_incrementer.h"
 #include "third_party/blink/renderer/core/html/parser/fragment_parser.h"
@@ -14319,22 +14318,6 @@ void Element::RemoveAttributeHinted(const AtomicString& name,
 
 bool Element::IsDocumentElement() const {
   return this == GetDocument().documentElement();
-}
-
-bool Element::IsReplacedElementRespectingCSSOverflow() const {
-  // See https://github.com/w3c/csswg-drafts/issues/7144 for details on enabling
-  // ink overflow for replaced elements.
-  if (GetPseudoId() == kPseudoIdViewTransitionNew ||
-      GetPseudoId() == kPseudoIdViewTransitionOld) {
-    return true;
-  }
-
-  return IsA<HTMLVideoElement>(this) || IsA<HTMLCanvasElement>(this) ||
-         IsA<HTMLImageElement>(this) ||
-         (IsA<SVGSVGElement>(this) &&
-          To<SVGSVGElement>(this)->IsOutermostSVGSVGElement() &&
-          !IsDocumentElement()) ||
-         IsA<HTMLFrameOwnerElement>(this);
 }
 
 AnchorPositionScrollData& Element::EnsureAnchorPositionScrollData() {

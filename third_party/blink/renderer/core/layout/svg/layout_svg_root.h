@@ -132,6 +132,7 @@ class CORE_EXPORT LayoutSVGRoot final : public LayoutReplaced {
   }
 
  private:
+  bool RespectsCSSOverflow() const override;
   OverflowClipAxes ComputeOverflowClipAxes() const override;
   PhysicalRect ComputeContentsVisualOverflow() const override;
 

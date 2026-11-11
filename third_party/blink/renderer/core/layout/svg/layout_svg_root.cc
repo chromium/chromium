@@ -547,6 +547,10 @@ PaintLayerType LayoutSVGRoot::LayerTypeRequired() const {
   return layer_type_required;
 }
 
+bool LayoutSVGRoot::RespectsCSSOverflow() const {
+  return !IsDocumentElement();
+}
+
 OverflowClipAxes LayoutSVGRoot::ComputeOverflowClipAxes() const {
   NOT_DESTROYED();
 

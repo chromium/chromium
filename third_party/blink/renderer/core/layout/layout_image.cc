@@ -408,6 +408,14 @@ PhysicalNaturalSizingInfo LayoutImage::GetNaturalDimensions() const {
   return natural_dimensions_;
 }
 
+bool LayoutImage::RespectsCSSOverflow() const {
+  NOT_DESTROYED();
+  // We only support 'overflow' on <img> at the moment. See crbug.com/40883997
+  // for a feature request to support it on <input type=image> and
+  // https://github.com/w3c/csswg-drafts/issues/7144 for overall discussion.
+  return IsA<HTMLImageElement>(GetNode());
+}
+
 bool LayoutImage::IsUnsizedImage() const {
   NOT_DESTROYED();
   const ComputedStyle& style = this->Style();

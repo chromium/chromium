@@ -155,6 +155,7 @@ class CORE_EXPORT LayoutImage : public LayoutReplaced {
                      const PhysicalOffset& paint_offset) const override;
 
  private:
+  bool RespectsCSSOverflow() const override;
   bool IsImage() const override {
     NOT_DESTROYED();
     return true;

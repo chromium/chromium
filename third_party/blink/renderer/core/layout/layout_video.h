@@ -71,6 +71,10 @@ class CORE_EXPORT LayoutVideo final : public LayoutMedia {
   }
 
  private:
+  bool RespectsCSSOverflow() const final {
+    NOT_DESTROYED();
+    return true;
+  }
   void UpdateAfterLayout() final;
   void UpdateFromElement() final;
   void InvalidateCompositing();

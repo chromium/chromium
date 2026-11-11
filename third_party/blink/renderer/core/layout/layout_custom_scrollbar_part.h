@@ -92,6 +92,10 @@ class CORE_EXPORT LayoutCustomScrollbarPart final : public LayoutReplaced {
                             bool suppress_use_counters);
 
  private:
+  bool RespectsCSSOverflow() const override {
+    NOT_DESTROYED();
+    return false;
+  }
   bool ShouldBeHandledAsInline(const ComputedStyle&) const override {
     NOT_DESTROYED();
     return false;

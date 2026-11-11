@@ -2084,8 +2084,6 @@ class CORE_EXPORT Element : public ContainerNode {
 
   bool IsDocumentElement() const;
 
-  bool IsReplacedElementRespectingCSSOverflow() const;
-
   void RemovePopoverData();
   PopoverData& EnsurePopoverData();
   PopoverData* GetPopoverData() const;
