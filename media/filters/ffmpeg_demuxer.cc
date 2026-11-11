@@ -19,7 +19,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
@@ -1554,7 +1553,7 @@ void FFmpegDemuxer::OnFindStreamInfoDone(int result) {
       media_track = media_tracks->AddAudioTrack(
           audio_config, stream_enabled, track_id, MediaTrack::Kind("main"),
           track_label, track_language);
-      media_track->set_id(MediaTrack::Id(base::NumberToString(track_id)));
+      media_track->set_id(MediaTrack::IntegralId(track_id));
       DCHECK(track_id_to_demux_stream_map_.find(media_track->track_id()) ==
              track_id_to_demux_stream_map_.end());
       track_id_to_demux_stream_map_[media_track->track_id()] =
@@ -1568,7 +1567,7 @@ void FFmpegDemuxer::OnFindStreamInfoDone(int result) {
       media_track = media_tracks->AddVideoTrack(
           video_config, stream_enabled, track_id, MediaTrack::Kind("main"),
           track_label, track_language);
-      media_track->set_id(MediaTrack::Id(base::NumberToString(track_id)));
+      media_track->set_id(MediaTrack::IntegralId(track_id));
       DCHECK(track_id_to_demux_stream_map_.find(media_track->track_id()) ==
              track_id_to_demux_stream_map_.end());
       track_id_to_demux_stream_map_[media_track->track_id()] =

@@ -5,9 +5,11 @@
 #ifndef MEDIA_BASE_MEDIA_TRACK_H_
 #define MEDIA_BASE_MEDIA_TRACK_H_
 
+#include <concepts>
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/types/strong_alias.h"
 #include "media/base/media_export.h"
 #include "media/base/stream_parser.h"
@@ -65,6 +67,11 @@ class MEDIA_EXPORT MediaTrack {
 
   static MediaTrack::Kind VideoKindToString(MediaTrack::VideoKind kind);
   static MediaTrack::Kind AudioKindToString(MediaTrack::AudioKind kind);
+
+  template <std::integral T>
+  static MediaTrack::Id IntegralId(T numeric_track_id) {
+    return MediaTrack::Id{base::NumberToString(numeric_track_id)};
+  }
 
   ~MediaTrack();
   MediaTrack(const MediaTrack&);

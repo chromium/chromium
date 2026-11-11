@@ -9,7 +9,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/time/time.h"
 #include "media/base/media_util.h"
@@ -154,8 +153,8 @@ class SourceBufferStateTest : public ::testing::Test {
 
   ChunkDemuxerStream* CreateDemuxerStream(DemuxerStream::Type type) {
     static unsigned track_id = 0;
-    demuxer_streams_.push_back(base::WrapUnique(new ChunkDemuxerStream(
-        type, MediaTrack::Id(base::NumberToString(++track_id)))));
+    demuxer_streams_.push_back(base::WrapUnique(
+        new ChunkDemuxerStream(type, MediaTrack::IntegralId(++track_id))));
     return demuxer_streams_.back().get();
   }
 
