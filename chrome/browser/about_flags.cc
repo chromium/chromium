@@ -4907,7 +4907,7 @@ const FeatureEntry::Choice kPromptAPIToolUseChoices[] = {
 const FeatureEntry::Choice kGemma4Choices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
     {flags_ui::kGenericExperimentChoiceEnabled, switches::kEnableFeatures,
-     "OptimizationGuideManifestBroker,"
+     "OnDeviceModelConversationBackend,OptimizationGuideManifestBroker,"
      "AIApiFoundationalModel:model_version/v4"}};
 
 // Scores options with EmbeddingGemma V1 or the Prompt API's foundation model
