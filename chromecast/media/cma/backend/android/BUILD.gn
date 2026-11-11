@@ -71,17 +71,28 @@ android_library("audio_track_java") {
 }
 
 test("cast_android_cma_backend_unittests") {
-  deps = [ ":unit_tests" ]
+  deps = [
+    ":audio_track_java",
+    ":unit_tests",
+  ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "volume_cache_test.cc" ]
+  sources = [
+    "audio_sink_android_audiotrack_impl_unittest.cc",
+    "volume_cache_test.cc",
+  ]
 
   deps = [
     ":cast_media_android",
     "//base",
     "//base/test:run_all_unittests",
+    "//base/test:test_support",
+    "//chromecast/media/api",
+    "//chromecast/media/cma/base",
+    "//chromecast/public",
+    "//media",
     "//testing/gtest",
   ]
 }

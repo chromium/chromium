@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/compiler_specific.h"
@@ -42,8 +43,7 @@
 
 #define POST_TASK_TO_CALLER_THREAD(task, ...) \
   caller_task_runner_->PostTask(              \
-      FROM_HERE,                              \
-      base::BindOnce(task, weak_factory_.GetWeakPtr(), ##__VA_ARGS__));
+      FROM_HERE, base::BindOnce(task, weak_this_, ##__VA_ARGS__));
 
 using base::android::JavaRef;
 
@@ -77,10 +77,13 @@ AudioSinkAndroidAudioTrackImpl::AudioSinkAndroidAudioTrackImpl(
       limiter_volume_multiplier_(1.0f),
       direct_pcm_buffer_address_(nullptr),
       direct_rendering_delay_address_(nullptr),
+      direct_audio_track_timestamp_address_(nullptr),
       feeder_thread_("AudioTrack feeder thread"),
       feeder_task_runner_(nullptr),
       caller_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
-      state_(kStateUninitialized) {
+      state_(kStateUninitialized),
+      pending_data_bytes_after_reformat_(0),
+      pending_data_bytes_already_fed_(0) {
   LOG(INFO) << __func__ << "(" << this << "):"
             << " num_channels_=" << num_channels_
             << " input_samples_per_second_=" << input_samples_per_second_
@@ -91,6 +94,8 @@ AudioSinkAndroidAudioTrackImpl::AudioSinkAndroidAudioTrackImpl(
   CHECK(delegate_, base::NotFatalUntil::M163);
   CHECK_GT(num_channels_, 0, base::NotFatalUntil::M163);
   CHECK_GT(input_samples_per_second_, 0, base::NotFatalUntil::M163);
+
+  weak_this_ = weak_factory_.GetWeakPtr();
 
   base::Thread::Options options;
   options.thread_type = base::ThreadType::kRealtimeAudio;
@@ -170,6 +175,9 @@ int AudioSinkAndroidAudioTrackImpl::GetStartThresholdInFrames() {
 void AudioSinkAndroidAudioTrackImpl::FinalizeOnFeederThread() {
   RUN_ON_FEEDER_THREAD(FinalizeOnFeederThread);
   wait_for_eos_task_.Cancel();
+  pending_data_ = nullptr;
+  pending_data_bytes_after_reformat_ = 0;
+  pending_data_bytes_already_fed_ = 0;
 
   if (j_audio_sink_audiotrack_impl_) {
     Java_AudioSinkAudioTrackImpl_close(base::android::AttachCurrentThread(),
@@ -200,16 +208,19 @@ void AudioSinkAndroidAudioTrackImpl::WritePcm(
     scoped_refptr<DecoderBufferBase> data) {
   CHECK(caller_task_runner_->BelongsToCurrentThread(),
         base::NotFatalUntil::M163);
-  CHECK(!pending_data_, base::NotFatalUntil::M163);
-  pending_data_ = std::move(data);
-  pending_data_bytes_already_fed_ = 0;
-  FeedData();
+  FeedData(std::move(data));
 }
 
-void AudioSinkAndroidAudioTrackImpl::FeedData() {
-  RUN_ON_FEEDER_THREAD(FeedData);
+void AudioSinkAndroidAudioTrackImpl::FeedData(
+    scoped_refptr<DecoderBufferBase> data) {
+  RUN_ON_FEEDER_THREAD(FeedData, std::move(data));
 
-  CHECK(pending_data_, base::NotFatalUntil::M163);
+  CHECK(data, base::NotFatalUntil::M163);
+  CHECK(!pending_data_, base::NotFatalUntil::M163);
+  pending_data_ = std::move(data);
+  pending_data_bytes_after_reformat_ = 0;
+  pending_data_bytes_already_fed_ = 0;
+
   if (pending_data_->end_of_stream()) {
     state_ = kStateGotEos;
     ScheduleWaitForEosTask();
@@ -315,7 +326,7 @@ int AudioSinkAndroidAudioTrackImpl::ReformatData() {
         *UNSAFE_TODO(dst++) = *UNSAFE_TODO(src[c]++);
       }
     }
-    return base::checked_cast<int>(pending_data_->data_size()) /
+    return static_cast<int>(pending_data_->data_size()) /
            (sizeof(float) / sizeof(int16_t));
   } else {
     float* dst = reinterpret_cast<float*>(direct_pcm_buffer_address_);
@@ -324,7 +335,7 @@ int AudioSinkAndroidAudioTrackImpl::ReformatData() {
         *UNSAFE_TODO(dst++) = *UNSAFE_TODO(src[c]++);
       }
     }
-    return base::checked_cast<int>(pending_data_->data_size());
+    return static_cast<int>(pending_data_->data_size());
   }
 }
 
@@ -345,18 +356,27 @@ void AudioSinkAndroidAudioTrackImpl::TrackRawMonotonicClockDeviation() {
 void AudioSinkAndroidAudioTrackImpl::FeedDataContinue() {
   RUN_ON_FEEDER_THREAD(FeedDataContinue);
 
-  CHECK(pending_data_, base::NotFatalUntil::M163);
-  CHECK(pending_data_bytes_already_fed_, base::NotFatalUntil::M163);
+  if (!pending_data_ || pending_data_bytes_already_fed_ < 0 ||
+      pending_data_bytes_already_fed_ >= pending_data_bytes_after_reformat_) {
+    LOG(ERROR) << __func__ << "(" << this << "): Invalid pending state,"
+               << " has_pending_data=" << !!pending_data_
+               << " fed=" << pending_data_bytes_already_fed_
+               << " total=" << pending_data_bytes_after_reformat_;
+    SignalError(AudioSinkAndroid::SinkError::kInternalError);
+    return;
+  }
 
   int left_to_send =
       pending_data_bytes_after_reformat_ - pending_data_bytes_already_fed_;
   LOG(INFO) << __func__ << "(" << this << "): send remaining " << left_to_send
             << "/" << pending_data_bytes_after_reformat_;
 
-  UNSAFE_TODO(
-      memmove(direct_pcm_buffer_address_,
-              direct_pcm_buffer_address_ + pending_data_bytes_already_fed_,
-              left_to_send));
+  if (pending_data_bytes_already_fed_ > 0) {
+    UNSAFE_TODO(
+        memmove(direct_pcm_buffer_address_,
+                direct_pcm_buffer_address_ + pending_data_bytes_already_fed_,
+                left_to_send));
+  }
 
   int bytes_per_frame =
       num_channels_ * (use_hw_av_sync_ ? sizeof(int16_t) : sizeof(float));
@@ -372,7 +392,17 @@ void AudioSinkAndroidAudioTrackImpl::FeedDataContinue() {
       base::android::AttachCurrentThread(), j_audio_sink_audiotrack_impl_,
       left_to_send, timestamp_ns_new);
 
-  CHECK(written == left_to_send, base::NotFatalUntil::M163);
+  if (written < 0) {
+    LOG(ERROR) << __func__ << "(" << this << "): Cannot write PCM via JNI!";
+    SignalError(AudioSinkAndroid::SinkError::kInternalError);
+    return;
+  }
+
+  if (written != left_to_send) {
+    LOG(ERROR) << __func__ << "(" << this << "): Wrote " << written
+               << " instead of " << left_to_send;
+    // continue anyway, better to do a best-effort than fail completely
+  }
 
   // RenderingDelay was returned through JNI via direct buffers.
   sink_rendering_delay_.delay_microseconds = direct_rendering_delay_address_[0];
@@ -385,10 +415,19 @@ void AudioSinkAndroidAudioTrackImpl::FeedDataContinue() {
 }
 
 void AudioSinkAndroidAudioTrackImpl::PostPcmCallback() {
-  RUN_ON_CALLER_THREAD(PostPcmCallback);
+  CHECK(feeder_task_runner_->BelongsToCurrentThread(),
+        base::NotFatalUntil::M163);
   CHECK(pending_data_, base::NotFatalUntil::M163);
   pending_data_ = nullptr;
+  pending_data_bytes_after_reformat_ = 0;
   pending_data_bytes_already_fed_ = 0;
+  POST_TASK_TO_CALLER_THREAD(
+      &AudioSinkAndroidAudioTrackImpl::NotifyWritePcmCompletion);
+}
+
+void AudioSinkAndroidAudioTrackImpl::NotifyWritePcmCompletion() {
+  CHECK(caller_task_runner_->BelongsToCurrentThread(),
+        base::NotFatalUntil::M163);
   delegate_->OnWritePcmCompletion(MediaPipelineBackendAndroid::kBufferSuccess);
 }
 
@@ -397,6 +436,9 @@ void AudioSinkAndroidAudioTrackImpl::SignalError(
   CHECK(feeder_task_runner_->BelongsToCurrentThread(),
         base::NotFatalUntil::M163);
   state_ = kStateError;
+  pending_data_ = nullptr;
+  pending_data_bytes_after_reformat_ = 0;
+  pending_data_bytes_already_fed_ = 0;
   PostError(error);
 }
 
@@ -420,7 +462,7 @@ void AudioSinkAndroidAudioTrackImpl::SetPaused(bool paused) {
     state_ = kStateNormalPlayback;
     Java_AudioSinkAudioTrackImpl_play(base::android::AttachCurrentThread(),
                                       j_audio_sink_audiotrack_impl_);
-    if (pending_data_ && pending_data_bytes_already_fed_) {
+    if (pending_data_ && pending_data_bytes_after_reformat_ > 0) {
       // The last data buffer was partially fed, complete it now.
       FeedDataContinue();
     }

@@ -96,7 +96,7 @@ class AudioSinkAndroidAudioTrackImpl : public AudioSinkAndroid {
  private:
   void FinalizeOnFeederThread();
 
-  void FeedData();
+  void FeedData(scoped_refptr<DecoderBufferBase> data);
   void FeedDataContinue();
 
   void ScheduleWaitForEosTask();
@@ -111,6 +111,7 @@ class AudioSinkAndroidAudioTrackImpl : public AudioSinkAndroid {
   void TrackRawMonotonicClockDeviation();
 
   void PostPcmCallback();
+  void NotifyWritePcmCompletion();
 
   void SignalError(AudioSinkAndroid::SinkError error);
   void PostError(AudioSinkAndroid::SinkError error);
@@ -164,6 +165,7 @@ class AudioSinkAndroidAudioTrackImpl : public AudioSinkAndroid {
 
   MediaPipelineBackendAndroid::RenderingDelay sink_rendering_delay_;
 
+  base::WeakPtr<AudioSinkAndroidAudioTrackImpl> weak_this_;
   base::WeakPtrFactory<AudioSinkAndroidAudioTrackImpl> weak_factory_{this};
 };
 
