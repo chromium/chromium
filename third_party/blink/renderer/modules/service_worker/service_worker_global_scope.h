@@ -33,6 +33,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
@@ -147,6 +148,15 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
   void MaybeRecordNetworkRequestUrlForPushEvents(const KURL& url) override;
   void MaybeRecordFetchError(int net_error_code,
                              const FetchRequestData* request_data) override;
+  // Returns a custom TypeError message when `request_data` consumed the
+  // `race-network-and-fetch-handler` loader (`kRaceLoaderUsed`), failed with
+  // `net::ERR_ABORTED`, and
+  // `kServiceWorkerRaceNetworkRequestAbortedErrorMessage` is enabled; returns
+  // `std::nullopt` otherwise. Must be called on the worker context thread
+  // before `MaybeRecordFetchError()` erases the token's loader state.
+  std::optional<String> GetCustomFetchErrorMessage(
+      int net_error_code,
+      const FetchRequestData* request_data) const override;
   bool IsInFencedFrame() const override;
   void NotifyWebSocketActivity() override;
 

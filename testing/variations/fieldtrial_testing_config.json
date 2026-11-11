@@ -17891,6 +17891,27 @@
             ]
         }
     ],
+    "ServiceWorkerRaceNetworkRequestAbortedErrorMessage": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ServiceWorkerRaceNetworkRequestAbortedErrorMessage"
+                    ]
+                }
+            ]
+        }
+    ],
     "ServiceWorkerRaceNetworkRequestDeprecateTwoPhaseWrite": [
         {
             "platforms": [

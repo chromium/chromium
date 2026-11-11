@@ -5,13 +5,17 @@
 #include "third_party/blink/renderer/modules/service_worker/service_worker_global_scope.h"
 
 #include <memory>
+#include <optional>
+#include <utility>
 
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "net/base/net_errors.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/renderer/core/fetch/fetch_request_data.h"
 #include "third_party/blink/renderer/core/inspector/worker_devtools_params.h"
@@ -409,5 +413,134 @@ TEST_F(ServiceWorkerGlobalScopeTest, RaceNetworkRequestLoaderStateTransitions) {
   histogram_tester.ExpectUniqueSample(
       "ServiceWorker.FetchInFetchHandler.RaceURLLoaderNetError", 0, 1);
 }
+
+class ServiceWorkerGlobalScopeAbortedErrorMessageTest
+    : public ServiceWorkerGlobalScopeTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  ServiceWorkerGlobalScopeAbortedErrorMessageTest() {
+    feature_list_.InitWithFeatureState(
+        features::kServiceWorkerRaceNetworkRequestAbortedErrorMessage,
+        IsCustomMessageEnabled());
+  }
+
+  bool IsCustomMessageEnabled() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Verifies that `GetCustomFetchErrorMessage()` returns the custom aborted-race
+// TypeError message only when `kRaceLoaderUsed` + `net::ERR_ABORTED` + feature
+// flag enabled (before `MaybeRecordFetchError()` erases the loader state), and
+// returns `std::nullopt` for fallback loaders, non-ERR_ABORTED errors, or
+// requests without a race token.
+TEST_P(ServiceWorkerGlobalScopeAbortedErrorMessageTest,
+       GetCustomFetchErrorMessage) {
+  const KURL script_url("http://fake.url/");
+  worker_thread_->Start(GlobalScopeCreationParams::CreateForWorkerForTesting(
+                            security_origin_.get(), script_url),
+                        WorkerBackingThreadStartupData::CreateDefault(),
+                        std::make_unique<WorkerDevToolsParams>());
+
+  base::WaitableEvent completion_event;
+  PostCrossThreadTask(
+      *worker_thread_->GetWorkerBackingThread().BackingThread().GetTaskRunner(),
+      FROM_HERE,
+      CrossThreadBindOnce(&base::WaitableEvent::Signal,
+                          CrossThreadUnretained(&completion_event)));
+  completion_event.Wait();
+
+  const bool expect_custom = IsCustomMessageEnabled();
+  base::RunLoop run_loop;
+
+  PostCrossThreadTask(
+      *worker_thread_->GetWorkerBackingThread().BackingThread().GetTaskRunner(),
+      FROM_HERE,
+      CrossThreadBindOnce(
+          [](WorkerThread* thread, bool expect_custom,
+             base::RunLoop* run_loop_ptr) {
+            auto* global_scope =
+                To<ServiceWorkerGlobalScope>(thread->GlobalScope());
+
+            auto register_and_consume = [&](int fetch_event_id) {
+              const base::UnguessableToken token =
+                  base::UnguessableToken::Create();
+              mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>
+                  pending_remote;
+              std::ignore = pending_remote.InitWithNewPipeAndPassReceiver();
+              global_scope->InsertNewItemToRaceNetworkRequestsForTesting(
+                  fetch_event_id, token, std::move(pending_remote),
+                  KURL("https://example.com/"));
+              EXPECT_TRUE(
+                  global_scope->FindRaceNetworkRequestURLLoaderFactory(token)
+                      .has_value());
+              auto* request_data =
+                  MakeGarbageCollected<FetchRequestData>(global_scope);
+              request_data->SetServiceWorkerRaceNetworkRequestToken(token);
+              return std::make_pair(token, request_data);
+            };
+
+            // 1. kRaceLoaderUsed + ERR_ABORTED before MaybeRecordFetchError()
+            // erases the token's loader state.
+            auto [token1, req1] = register_and_consume(/*fetch_event_id=*/1);
+            std::optional<String> msg1 =
+                global_scope->GetCustomFetchErrorMessage(net::ERR_ABORTED,
+                                                         req1);
+            if (expect_custom) {
+              ASSERT_TRUE(msg1.has_value());
+              EXPECT_EQ(
+                  "The service worker race-network-and-fetch-handler request "
+                  "was cancelled before 'fetch()' settled.",
+                  *msg1);
+            } else {
+              EXPECT_FALSE(msg1.has_value());
+            }
+            global_scope->MaybeRecordFetchError(net::ERR_ABORTED, req1);
+            EXPECT_EQ(ServiceWorkerRaceNetworkRequestLoaderState::kNotFound,
+                      global_scope->GetRaceNetworkRequestLoaderState(token1));
+            EXPECT_FALSE(
+                global_scope->GetCustomFetchErrorMessage(net::ERR_ABORTED, req1)
+                    .has_value());
+
+            // 2. kRaceLoaderUsed + non-ERR_ABORTED error.
+            auto [token2, req2] = register_and_consume(/*fetch_event_id=*/2);
+            EXPECT_FALSE(global_scope
+                             ->GetCustomFetchErrorMessage(
+                                 net::ERR_NAME_NOT_RESOLVED, req2)
+                             .has_value());
+            global_scope->MaybeRecordFetchError(net::ERR_NAME_NOT_RESOLVED,
+                                                req2);
+
+            // 3. kFallbackDueToAlreadyConsumed (second fetch(event.request)) +
+            // ERR_ABORTED.
+            auto [token3, req3] = register_and_consume(/*fetch_event_id=*/3);
+            EXPECT_FALSE(
+                global_scope->FindRaceNetworkRequestURLLoaderFactory(token3)
+                    .has_value());
+            EXPECT_FALSE(
+                global_scope->GetCustomFetchErrorMessage(net::ERR_ABORTED, req3)
+                    .has_value());
+            global_scope->MaybeRecordFetchError(net::ERR_ABORTED, req3);
+
+            // 4. Request without a race network request token + ERR_ABORTED.
+            auto* untokenized_req =
+                MakeGarbageCollected<FetchRequestData>(global_scope);
+            EXPECT_FALSE(global_scope
+                             ->GetCustomFetchErrorMessage(net::ERR_ABORTED,
+                                                          untokenized_req)
+                             .has_value());
+
+            run_loop_ptr->Quit();
+          },
+          CrossThreadUnretained(worker_thread_.get()), expect_custom,
+          CrossThreadUnretained(&run_loop)));
+
+  run_loop.Run();
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ServiceWorkerGlobalScopeAbortedErrorMessageTest,
+                         testing::Bool());
 
 }  // namespace blink

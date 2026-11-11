@@ -34,6 +34,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/check_is_test.h"
@@ -788,6 +789,33 @@ void ServiceWorkerGlobalScope::MaybeRecordFetchError(
       }
     }
   }
+}
+
+std::optional<String> ServiceWorkerGlobalScope::GetCustomFetchErrorMessage(
+    int net_error_code,
+    const FetchRequestData* request_data) const {
+  DCHECK(IsContextThread());
+  // Check the $O(1)$ error code and inline token before looking up the
+  // per-token loader state map. Subsequent `fetch(event.request)` calls that
+  // fell back to the default loader (`kFallbackDueToAlreadyConsumed`) do not
+  // match `kRaceLoaderUsed`, and `FeatureList::IsEnabled()` is evaluated last
+  // so unaffected requests pay zero flag-lookup overhead and Finch only
+  // activates on affected clients.
+  if (net_error_code != net::ERR_ABORTED || !request_data ||
+      !request_data->ServiceWorkerRaceNetworkRequestToken()) {
+    return std::nullopt;
+  }
+  if (GetRaceNetworkRequestLoaderState(
+          request_data->ServiceWorkerRaceNetworkRequestToken()) !=
+      ServiceWorkerRaceNetworkRequestLoaderState::kRaceLoaderUsed) {
+    return std::nullopt;
+  }
+  if (!base::FeatureList::IsEnabled(
+          features::kServiceWorkerRaceNetworkRequestAbortedErrorMessage)) {
+    return std::nullopt;
+  }
+  return "The service worker race-network-and-fetch-handler request was "
+         "cancelled before 'fetch()' settled.";
 }
 
 bool ServiceWorkerGlobalScope::HasRangeFetchEvent(

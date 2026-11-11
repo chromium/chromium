@@ -2097,6 +2097,13 @@ const base::FeatureParam<bool> kSpeculativeServiceWorkerWarmUpOnPointerover{
 const base::FeatureParam<bool> kSpeculativeServiceWorkerWarmUpOnPointerdown{
     &kSpeculativeServiceWorkerWarmUp, "sw_warm_up_on_pointerdown", true};
 
+// Rejects `fetch(event.request)` in a ServiceWorker fetch handler with a
+// dedicated cancellation TypeError message instead of generic "Failed to fetch"
+// when a `race-network-and-fetch-handler` request fails with `net::ERR_ABORTED`
+// before receiving response headers.
+BASE_FEATURE(kServiceWorkerRaceNetworkRequestAbortedErrorMessage,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables fallback to network request when the RaceNetworkRequest Mojo pipe is
 // disconnected.
 BASE_FEATURE(kServiceWorkerRaceNetworkRequestFallbackOnDisconnect,

@@ -116,6 +116,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/filter/filter_source_stream_test_util.h"
 #include "net/http/http_no_vary_search_data.h"
+#include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -123,6 +124,7 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/parsed_headers.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/service_worker_router_info.mojom-shared.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
@@ -6789,6 +6791,301 @@ IN_PROC_BROWSER_TEST_P(
     base::RunLoop().RunUntilIdle();
   }
   EXPECT_EQ(1, GetRequestCount(relative_url));
+}
+
+class ServiceWorkerRaceNetworkRequestAbortedErrorMessageBrowserTest
+    : public ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest {
+ public:
+  static constexpr char kExpectedAbortedMessage[] =
+      "The service worker race-network-and-fetch-handler request was "
+      "cancelled before 'fetch()' settled.";
+
+  ServiceWorkerRaceNetworkRequestAbortedErrorMessageBrowserTest() {
+    feature_list_.InitWithFeatureState(
+        blink::features::kServiceWorkerRaceNetworkRequestAbortedErrorMessage,
+        IsCustomAbortedErrorMessageEnabled());
+  }
+  ~ServiceWorkerRaceNetworkRequestAbortedErrorMessageBrowserTest() override =
+      default;
+
+ protected:
+  bool IsCustomAbortedErrorMessageEnabled() const { return GetParam(); }
+
+  std::string ExpectedRaceAbortedMessage() const {
+    return IsCustomAbortedErrorMessageEnabled() ? kExpectedAbortedMessage
+                                                : "Failed to fetch";
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ServiceWorkerRaceNetworkRequestAbortedErrorMessageBrowserTest,
+    testing::Bool());
+
+// Verifies that when a main-resource `race-network-and-fetch-handler` request
+// fails with `net::ERR_ABORTED` before receiving response headers,
+// `fetch(event.request)` rejects with the custom cancellation TypeError message
+// when the feature flag is enabled, and preserves `"Failed to fetch"` when
+// disabled.
+IN_PROC_BROWSER_TEST_P(
+    ServiceWorkerRaceNetworkRequestAbortedErrorMessageBrowserTest,
+    MainResource_AbortedBeforeHeaders) {
+  SetupAndRegisterServiceWorker();
+  const GURL test_url = embedded_test_server()->GetURL(
+      "/service_worker/mock_response?sw_report_fetch_error");
+
+  URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
+      [&](URLLoaderInterceptor::RequestParams* params) {
+        if (params->url_request.url != test_url) {
+          return false;
+        }
+        params->client->OnComplete(
+            network::URLLoaderCompletionStatus(net::ERR_ABORTED));
+        return true;
+      }));
+
+  NavigateToURLBlockUntilNavigationsComplete(shell(), test_url, 1);
+
+  std::optional<base::DictValue> dict = base::JSONReader::ReadDict(
+      GetInnerText().ExtractString(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  ASSERT_TRUE(dict.has_value());
+
+  EXPECT_EQ(true, dict->FindBool("isTypeError"));
+  EXPECT_EQ("TypeError", *dict->FindString("name"));
+  EXPECT_EQ(ExpectedRaceAbortedMessage(), *dict->FindString("message"));
+
+  const std::string* stack = dict->FindString("stack");
+  ASSERT_TRUE(stack);
+  EXPECT_NE(std::string::npos, stack->find(ExpectedRaceAbortedMessage()));
+  if (IsCustomAbortedErrorMessageEnabled()) {
+    EXPECT_EQ(std::string::npos, stack->find("Failed to fetch"));
+  } else {
+    EXPECT_NE(std::string::npos, stack->find("race_network_request_base.js"));
+  }
+}
+
+// Verifies the authentic subresource cancellation path without URL loader
+// interception: when the fetch handler responds immediately with a synthetic
+// response while holding `fetch(event.request)` in `waitUntil()`, client pipe
+// teardown cancels the slow race network request (`ERR_ABORTED`) before
+// headers arrive.
+IN_PROC_BROWSER_TEST_P(
+    ServiceWorkerRaceNetworkRequestAbortedErrorMessageBrowserTest,
+    Subresource_ClientDisconnectAbortsRaceBeforeHeaders) {
+  SetupAndRegisterServiceWorker();
+  ReloadBlockUntilNavigationsComplete(shell(), 1);
+  ASSERT_EQ(true, EvalJs(GetPrimaryMainFrame(),
+                         "!!navigator.serviceWorker.controller"));
+
+  const std::string subresource_script = R"(
+    new Promise(async resolve => {
+      let responseText = '';
+      const errorPromise = new Promise(resolveError => {
+        navigator.serviceWorker.addEventListener('message', event => {
+          if (event.data && event.data.type === 'race_error_recorded') {
+            resolveError(event.data.error);
+          }
+        });
+      });
+      responseText = await fetch(
+          '/service_worker/mock_response?server_slow&' +
+          'sw_synthetic_reply_and_record_race_error')
+          .then(r => r.text());
+      const error = await errorPromise;
+      resolve(JSON.stringify({responseText, error}));
+    });
+  )";
+  std::optional<base::DictValue> result = base::JSONReader::ReadDict(
+      EvalJs(GetPrimaryMainFrame(), subresource_script).ExtractString(),
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ("[ServiceWorkerRaceNetworkRequest] Response from the fetch handler",
+            *result->FindString("responseText"));
+  const base::DictValue* err = result->FindDict("error");
+  ASSERT_TRUE(err);
+
+  EXPECT_EQ(true, err->FindBool("isTypeError"));
+  EXPECT_EQ("TypeError", *err->FindString("name"));
+  EXPECT_EQ(ExpectedRaceAbortedMessage(), *err->FindString("message"));
+  const std::string* stack = err->FindString("stack");
+  ASSERT_TRUE(stack);
+  EXPECT_NE(std::string::npos, stack->find(ExpectedRaceAbortedMessage()));
+  if (IsCustomAbortedErrorMessageEnabled()) {
+    EXPECT_EQ(std::string::npos, stack->find("Failed to fetch"));
+  } else {
+    EXPECT_NE(std::string::npos, stack->find("race_network_request_base.js"));
+  }
+}
+
+// Verifies that when `net::ERR_ABORTED` occurs after response headers have been
+// received, `fetch(event.request)` has already resolved with the `Response`,
+// and `response.text()` fails with `"Failed to fetch"` rather than the
+// pre-settlement race cancellation message.
+IN_PROC_BROWSER_TEST_P(
+    ServiceWorkerRaceNetworkRequestAbortedErrorMessageBrowserTest,
+    MainResource_AbortedAfterHeadersResolvesFetch) {
+  SetupAndRegisterServiceWorker();
+  const GURL test_url = embedded_test_server()->GetURL(
+      "/service_worker/mock_response?sw_report_post_headers_abort");
+
+  URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
+      [&](URLLoaderInterceptor::RequestParams* params) {
+        if (params->url_request.url != test_url) {
+          return false;
+        }
+        auto head = network::mojom::URLResponseHead::New();
+        head->headers = net::HttpResponseHeaders::Builder(
+                            net::HttpVersion(1, 1), "404 Not Found")
+                            .AddHeader("Content-Type", "text/plain")
+                            .Build();
+        head->mime_type = "text/plain";
+        head->parsed_headers = network::PopulateParsedHeaders(
+            head->headers.get(), params->url_request.url);
+
+        mojo::ScopedDataPipeProducerHandle producer;
+        mojo::ScopedDataPipeConsumerHandle consumer;
+        CHECK_EQ(MOJO_RESULT_OK,
+                 mojo::CreateDataPipe(nullptr, producer, consumer));
+        params->client->OnReceiveResponse(std::move(head), std::move(consumer),
+                                          std::nullopt);
+        producer.reset();
+        params->client->OnComplete(
+            network::URLLoaderCompletionStatus(net::ERR_ABORTED));
+        return true;
+      }));
+
+  NavigateToURLBlockUntilNavigationsComplete(shell(), test_url, 1);
+
+  std::optional<base::DictValue> dict = base::JSONReader::ReadDict(
+      GetInnerText().ExtractString(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  ASSERT_TRUE(dict.has_value());
+
+  EXPECT_EQ(true, dict->FindBool("fetchResolved"));
+  EXPECT_EQ(404, dict->FindInt("status"));
+  const base::DictValue* body_err = dict->FindDict("bodyError");
+  ASSERT_TRUE(body_err);
+  EXPECT_EQ(true, body_err->FindBool("isTypeError"));
+  EXPECT_EQ("Failed to fetch", *body_err->FindString("message"));
+}
+
+// Verifies that non-`ERR_ABORTED` network errors (such as connection resets)
+// continue to reject with `"Failed to fetch"` even when the feature is enabled,
+// so genuine network failures are never masked as race cancellations.
+IN_PROC_BROWSER_TEST_P(
+    ServiceWorkerRaceNetworkRequestAbortedErrorMessageBrowserTest,
+    MainResource_NonAbortedNetworkErrorPreservesFailedToFetch) {
+  SetupAndRegisterServiceWorker();
+  const GURL test_url = embedded_test_server()->GetURL(
+      "/service_worker/mock_response?sw_report_fetch_error");
+
+  URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
+      [&](URLLoaderInterceptor::RequestParams* params) {
+        if (params->url_request.url != test_url) {
+          return false;
+        }
+        params->client->OnComplete(
+            network::URLLoaderCompletionStatus(net::ERR_CONNECTION_RESET));
+        return true;
+      }));
+
+  NavigateToURLBlockUntilNavigationsComplete(shell(), test_url, 1);
+
+  std::optional<base::DictValue> dict = base::JSONReader::ReadDict(
+      GetInnerText().ExtractString(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  ASSERT_TRUE(dict.has_value());
+
+  EXPECT_EQ(true, dict->FindBool("isTypeError"));
+  EXPECT_EQ("TypeError", *dict->FindString("name"));
+  EXPECT_EQ("Failed to fetch", *dict->FindString("message"));
+}
+
+// Verifies that only the `fetch(event.request)` call that actually consumed the
+// race loader receives the custom cancellation message; concurrent
+// `fetch(event.request.clone())` and subsequent fallback `fetch(event.request)`
+// calls preserve `"Failed to fetch"`.
+IN_PROC_BROWSER_TEST_P(
+    ServiceWorkerRaceNetworkRequestAbortedErrorMessageBrowserTest,
+    FallbackAndClonedFetchesPreserveFailedToFetch) {
+  SetupAndRegisterServiceWorker();
+  const GURL test_url = embedded_test_server()->GetURL(
+      "/service_worker/mock_response?sw_report_second_fetch_error");
+
+  URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
+      [&](URLLoaderInterceptor::RequestParams* params) {
+        if (params->url_request.url != test_url) {
+          return false;
+        }
+        params->client->OnComplete(
+            network::URLLoaderCompletionStatus(net::ERR_ABORTED));
+        return true;
+      }));
+
+  NavigateToURLBlockUntilNavigationsComplete(shell(), test_url, 1);
+
+  std::optional<base::DictValue> dict = base::JSONReader::ReadDict(
+      GetInnerText().ExtractString(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  ASSERT_TRUE(dict.has_value());
+
+  const base::DictValue* first_err = dict->FindDict("firstError");
+  const base::DictValue* second_err = dict->FindDict("secondError");
+  const base::DictValue* clone_err = dict->FindDict("cloneError");
+  ASSERT_TRUE(first_err && second_err && clone_err);
+
+  EXPECT_EQ(ExpectedRaceAbortedMessage(), *first_err->FindString("message"));
+  EXPECT_EQ("Failed to fetch", *second_err->FindString("message"));
+  EXPECT_EQ("Failed to fetch", *clone_err->FindString("message"));
+}
+
+// Verifies that explicit script cancellation via `AbortController.abort()`
+// continues to reject with `AbortError` (`DOMException`) rather than the
+// race cancellation `TypeError`.
+IN_PROC_BROWSER_TEST_P(
+    ServiceWorkerRaceNetworkRequestAbortedErrorMessageBrowserTest,
+    ExplicitAbortSignalPreservesAbortError) {
+  SetupAndRegisterServiceWorker();
+  const GURL test_url = embedded_test_server()->GetURL(
+      "/service_worker/mock_response?server_slow&sw_report_abort_signal_error");
+
+  NavigateToURLBlockUntilNavigationsComplete(shell(), test_url, 1);
+
+  std::optional<base::DictValue> dict = base::JSONReader::ReadDict(
+      GetInnerText().ExtractString(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  ASSERT_TRUE(dict.has_value());
+
+  EXPECT_EQ(false, dict->FindBool("isTypeError"));
+  EXPECT_EQ("AbortError", *dict->FindString("name"));
+}
+
+// Verifies that non-racing ServiceWorker routes (`source: 'fetch-event'`)
+// continue to reject with `"Failed to fetch"` on `net::ERR_ABORTED`.
+IN_PROC_BROWSER_TEST_P(
+    ServiceWorkerRaceNetworkRequestAbortedErrorMessageBrowserTest,
+    NonRaceRoutePreservesFailedToFetch) {
+  SetupAndRegisterServiceWorker();
+  const GURL test_url = embedded_test_server()->GetURL(
+      "/service_worker/no_race?sw_report_fetch_error");
+
+  URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
+      [&](URLLoaderInterceptor::RequestParams* params) {
+        if (params->url_request.url != test_url) {
+          return false;
+        }
+        params->client->OnComplete(
+            network::URLLoaderCompletionStatus(net::ERR_ABORTED));
+        return true;
+      }));
+
+  NavigateToURLBlockUntilNavigationsComplete(shell(), test_url, 1);
+
+  std::optional<base::DictValue> dict = base::JSONReader::ReadDict(
+      GetInnerText().ExtractString(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  ASSERT_TRUE(dict.has_value());
+
+  EXPECT_EQ(true, dict->FindBool("isTypeError"));
+  EXPECT_EQ("Failed to fetch", *dict->FindString("message"));
 }
 
 class ServiceWorkerAutoPreloadBrowserTest
