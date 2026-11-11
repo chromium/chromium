@@ -16,6 +16,7 @@ crbug.com/584454161 [ Linux ] external/wpt/encoding/encodeInto-tail-unmodified.a
 crbug.com/584454161 [ Linux ] external/wpt/encoding/encodeInto-tail-unmodified.any.serviceworker.html [ Skip ]
 crbug.com/584454161 [ Linux ] external/wpt/encoding/encodeInto-tail-unmodified.any.sharedworker.html [ Skip ]
 crbug.com/584454161 [ Linux ] external/wpt/encoding/encodeInto-tail-unmodified.any.worker.html [ Skip ]
+crbug.com/584512866 [ Linux ] inspector-protocol/worker/worker-no-js-in-interrupt.js [ Skip ]
 
 
 # Deliberate infinite recursion. A JS exception is expected, but may crash with
