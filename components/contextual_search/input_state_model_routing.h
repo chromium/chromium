@@ -28,25 +28,42 @@ struct FileInfo;
 // `std::map<std::string, std::string>` interchangeably.
 using UrlParams = std::map<std::string, std::string>;
 
-// Which attachments may go to SRP. Each mode includes the earlier ones.
+// Which attachments may go to SRP. Names and values match the `SrpInputMode`
+// the server will send, so keep them in sync.
+// Modes up to `kAnyCombinationImagesFiles` each include the earlier ones. The
+// later modes build on `kAnyCombinationImagesFiles`, so tabs and Drive files
+// can move to SRP in either order.
 enum class SrpInputMode {
-  kNone = 0,            // No attachments go to SRP.
-  kSingleImage = 1,     // Adds one image.
-  kMultiImage = 2,      // Adds two or more images.
-  kAnyCombination = 3,  // Adds files, with or without images.
+  // No attachments go to SRP.
+  kNone = 0,
+  // Adds one image.
+  kSingleImage = 1,
+  // Adds two or more images.
+  kMultiImage = 2,
+  // Adds files, with or without images.
+  kAnyCombinationImagesFiles = 3,
+  // Adds tabs to `kAnyCombinationImagesFiles`.
+  kAnyCombinationImagesFilesTabs = 4,
+  // Adds Drive files to `kAnyCombinationImagesFiles`.
+  kAnyCombinationImagesFilesDrive = 5,
+  // Adds tabs and Drive files to `kAnyCombinationImagesFiles`.
+  kAnyCombinationAllTypes = 6,
 };
 
 // Attachment groups allowed on SRP.
 struct SrpEligibleAttachments {
   bool single_image = false;
   bool multi_image = false;
-  bool any_combination = false;
+  bool files = false;  // Non-image uploads, with any number of images.
+  bool tabs = false;
+  bool drive = false;
 };
 
 // Returns the groups each `mode` allows.
 SrpEligibleAttachments EligibleAttachmentsForMode(SrpInputMode mode);
 
-// Parses "none", "single_image", "multi_image" or "any_combination".
+// Parses a mode's name in snake case, e.g. "single_image" or
+// "any_combination_images_files_tabs".
 std::optional<SrpInputMode> ParseSrpInputMode(std::string_view name);
 
 // Returns the `srp_input_mode` param, or `kSingleImage` if missing or
@@ -86,8 +103,7 @@ struct FulfillmentDecision {
 AttachmentCounts CountAttachments(const std::vector<FileInfo>& file_infos,
                                   size_t pending_tab_count);
 
-// Returns whether the attachments may go to SRP. Tabs and Drive files never
-// can.
+// Returns whether the attachments may go to SRP.
 bool AttachmentsCanGoToSrp(const AttachmentCounts& attachments,
                            const SrpEligibleAttachments& eligible);
 
