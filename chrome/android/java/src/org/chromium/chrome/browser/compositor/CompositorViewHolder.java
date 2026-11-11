@@ -587,9 +587,8 @@ public class CompositorViewHolder extends FrameLayout
     }
 
     private static boolean isFullscreenApiMigrationEnabled() {
-        if (ChromeFeatureList.sFullscreenInsetsApiMigration.isEnabled()) return true;
-        return DeviceInfo.isAutomotive()
-                && ChromeFeatureList.sFullscreenInsetsApiMigrationOnAutomotive.isEnabled();
+        return ChromeFeatureList.sFullscreenInsetsApiMigration.isEnabled()
+                || DeviceInfo.isAutomotive();
     }
 
     private boolean isInFullscreenMode(int uiVisibility, View view) {

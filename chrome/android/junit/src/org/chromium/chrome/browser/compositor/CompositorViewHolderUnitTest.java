@@ -138,10 +138,7 @@ import java.util.List;
 
 /** Unit tests for {@link CompositorViewHolder}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@DisableFeatures({
-    ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
-    ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
-})
+@DisableFeatures(ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION)
 public class CompositorViewHolderUnitTest {
     // Subclass needed to stub getWindowVisibleDisplayFrame(), set initial dimensions without
     // triggering onSizeChanged(), and forward post() to the main looper when detached.
@@ -644,10 +641,7 @@ public class CompositorViewHolderUnitTest {
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
-    })
+    @EnableFeatures(ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION)
     public void testHandleSystemUiVisibilityChangesWithUpdatedFullscreenApis() {
         when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
 
