@@ -249,9 +249,14 @@ Manifest CreateEmptyValidManifest() {
 
 }  // namespace
 
-class ManifestMojomTraitsTest : public testing::Test {
+using ManifestMojomTraitsTest = testing::Test;
+
+// Tests that use mojo::internal::MessageDispatchContext to inspect
+// deserialization errors. The context is stored in sequence-local storage, so
+// these tests need a task environment; the other traits tests don't.
+class ManifestMojomTraitsDispatchContextTest : public testing::Test {
  private:
-  base::test::TaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
 // Tests the StructTraits path for ShortcutItem with localized name field.
@@ -490,7 +495,8 @@ TEST_F(ManifestMojomTraitsTest, FullManifestRoundTrip) {
   EXPECT_EQ(original, round_tripped);
 }
 
-TEST_F(ManifestMojomTraitsTest, InvalidManifestFailsToDeserialize) {
+TEST_F(ManifestMojomTraitsDispatchContextTest,
+       InvalidManifestFailsToDeserialize) {
   base::HistogramTester histogram_tester;
 
   mojo::Message message;
@@ -498,11 +504,9 @@ TEST_F(ManifestMojomTraitsTest, InvalidManifestFailsToDeserialize) {
 
   mojom::ManifestPtr bad_manifest = mojom::Manifest::New();
   // start_url is empty, violating the start_url validity invariant.
-  mojo::Message serialized = mojom::Manifest::SerializeAsMessage(&bad_manifest);
-
   Manifest out = CreateEmptyValidManifest();
   EXPECT_FALSE(
-      mojom::Manifest::DeserializeFromMessage(std::move(serialized), &out));
+      mojo::test::SerializeAndDeserialize<mojom::Manifest>(bad_manifest, out));
 
   histogram_tester.ExpectBucketCount(
       "WebApp.Manifest.InvariantViolation",
@@ -513,7 +517,8 @@ TEST_F(ManifestMojomTraitsTest, InvalidManifestFailsToDeserialize) {
             dispatch_context.error_trace()[0].custom_code());
 }
 
-TEST_F(ManifestMojomTraitsTest, CrossOriginIdFailsToDeserialize) {
+TEST_F(ManifestMojomTraitsDispatchContextTest,
+       CrossOriginIdFailsToDeserialize) {
   base::HistogramTester histogram_tester;
 
   mojo::Message message;
@@ -523,11 +528,10 @@ TEST_F(ManifestMojomTraitsTest, CrossOriginIdFailsToDeserialize) {
   bad_manifest->start_url = GURL("https://example.com/start");
   bad_manifest->id = GURL("https://evil.com/id");
   bad_manifest->scope = GURL("https://example.com/");
-  mojo::Message serialized = mojom::Manifest::SerializeAsMessage(&bad_manifest);
 
   Manifest out = CreateEmptyValidManifest();
   EXPECT_FALSE(
-      mojom::Manifest::DeserializeFromMessage(std::move(serialized), &out));
+      mojo::test::SerializeAndDeserialize<mojom::Manifest>(bad_manifest, out));
 
   histogram_tester.ExpectBucketCount(
       "WebApp.Manifest.InvariantViolation",
