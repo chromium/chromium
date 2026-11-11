@@ -1,0 +1,38 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("remote_actor") {
+  sources = [
+    "remote_actor_keychain_util.h",
+    "remote_actor_keychain_util.mm",
+    "remote_actor_payload_parser.h",
+    "remote_actor_payload_parser.mm",
+  ]
+  public_deps = [
+    "//base",
+    "//ios/chrome/browser/passwords/model/remote_actor/proto",
+  ]
+  deps = [ "//crypto" ]
+  frameworks = [
+    "Foundation.framework",
+    "Security.framework",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "remote_actor_payload_parser_unittest.mm" ]
+  deps = [
+    ":remote_actor",
+    "//base",
+    "//base/test:test_support",
+    "//crypto",
+    "//ios/chrome/browser/passwords/model/remote_actor/proto",
+    "//testing/gtest",
+  ]
+  frameworks = [
+    "Foundation.framework",
+    "Security.framework",
+  ]
+}
