@@ -239,8 +239,9 @@ CaptureHandleManager::CaptureHandleManager() {
 }
 
 CaptureHandleManager::~CaptureHandleManager() {
-  CHECK(!BrowserThread::IsThreadInitialized(BrowserThread::IO),
-        base::NotFatalUntil::M160);
+  // DCHECK-exclusion: This was seen to cause shutdown hangs on ChromeOS perhaps
+  // due to touching other threads atomics. See crbug.com/577236878.
+  DCHECK(!BrowserThread::IsThreadInitialized(BrowserThread::IO));
 }
 
 void CaptureHandleManager::OnCaptureStarted(
