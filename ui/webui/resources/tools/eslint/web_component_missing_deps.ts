@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 import {AST_NODE_TYPES as Node, ESLintUtils} from '/third_party/node/node_modules/@typescript-eslint/utils/dist/index.js';
-import type {TSESLint, TSESTree} from '/third_party/node/node_modules/@typescript-eslint/utils/dist/index.js';
+import type {TSESTree} from '/third_party/node/node_modules/@typescript-eslint/utils/dist/index.js';
 import type * as ts from '/third_party/node/node_modules/typescript/lib/typescript.js';
 import assert from 'node:assert';
 import path from 'node:path';
 
-import {extractClassImport, isType} from './query_utils.js';
+import {extractClassImport, getSourceFiles, isType, parseSourceFile} from './query_utils.js';
 
 type Options = [];
 type MessageIds = 'missingImportStatement'|'missingImportStatementWithLazyLoad';
@@ -32,14 +32,7 @@ export const webComponentMissingDeps = ESLintUtils.RuleCreator.withoutDocs<
   defaultOptions: [],
   create(context) {
     function extractImportsUrlsFromFile(file: ts.SourceFile): string[] {
-      const parserOptions = context.languageOptions.parserOptions;
-      const parser =
-          context.languageOptions.parser as TSESLint.Parser.ParserModule;
-      assert.ok('parse' in parser);
-      const ast = parser.parse(file.text, {
-        ...parserOptions,
-        filePath: file.fileName,
-      });
+      const ast = parseSourceFile(file, context);
       return ast.body
           .filter(
               (node: TSESTree.ProgramStatement):
@@ -52,11 +45,7 @@ export const webComponentMissingDeps = ESLintUtils.RuleCreator.withoutDocs<
     const templateFilename = context.filename.replaceAll('\\', '/');
     assert.ok(templateFilename.endsWith('.html.ts'));
 
-    const services = ESLintUtils.getParserServices(context);
-    const compilerOptions = services.program.getCompilerOptions();
-
-    const sourceFiles = services.program.getSourceFiles().filter(
-        f => f.fileName.startsWith(compilerOptions.rootDir + '/'));
+    const sourceFiles = getSourceFiles(context);
 
     // The file where imports are expected to exist.
     let classDefinitionFile =

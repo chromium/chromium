@@ -8,7 +8,7 @@ import type ts from '/third_party/node/node_modules/typescript/lib/typescript.js
 import assert from 'node:assert';
 import path from 'node:path';
 
-import {dashCaseToCamelCase, isCrLitElementSubclass, isIdentifier, isLiteral, isType} from './query_utils.js';
+import {dashCaseToCamelCase, extractTemplateFromFile, getSourceFiles, isCrLitElementSubclass, isIdentifier, isLiteral, isType} from './query_utils.js';
 
 type Options = [];
 type MessageIds = 'incorrectDollarSignNotation'|'missingId'|
@@ -51,27 +51,6 @@ function collectTemplateLiterals(
     }
   }
   return results;
-}
-
-function extractTemplateFromFile(
-    context: TSESLint.RuleContext<MessageIds, Options>,
-    templateFile: ts.SourceFile): TSESTree.BlockStatement|null {
-  const parser = context.languageOptions.parser as TSESLint.Parser.ParserModule;
-  const parserOptions = context.languageOptions.parserOptions;
-  assert.ok(parser && 'parse' in parser);
-  const templateAst = parser.parse(templateFile.text, {
-    ...parserOptions,
-    filePath: templateFile.fileName,
-  }) as TSESTree.Program;
-  for (const statement of templateAst.body) {
-    const decl = statement.type === Node.ExportNamedDeclaration ?
-        statement.declaration! :
-        statement;
-    if (decl.type === Node.FunctionDeclaration && decl.id!.name === 'getHtml') {
-      return decl.body;
-    }
-  }
-  return null;
 }
 
 // Necessary info to track about each CrLitElement subclass definition
@@ -237,11 +216,7 @@ export const litElementInvalidInterface = ESLintUtils.RuleCreator.withoutDocs<
   },
   defaultOptions: [],
   create(context) {
-    const services = ESLintUtils.getParserServices(context);
-    const compilerOptions = services.program.getCompilerOptions();
-
-    const sourceFiles = services.program.getSourceFiles().filter(
-        f => f.fileName.startsWith(compilerOptions.rootDir + '/'));
+    const sourceFiles = getSourceFiles(context);
 
     const classFilename = context.filename.replaceAll('\\', '/');
     const templateFilename = classFilename.replace(/\.ts$/, '.html.ts');
@@ -290,10 +265,13 @@ export const litElementInvalidInterface = ESLintUtils.RuleCreator.withoutDocs<
       },
 
       'Program:exit'() {
+        let fileTemplateBlock: TSESTree.BlockStatement|null = null;
         for (const classInfo of classInfos.values()) {
-          const templateBlock: TSESTree.BlockStatement|null = templateFile ?
-              extractTemplateFromFile(context, templateFile) :
-              classInfo.inlinedRenderBlock;
+          if (templateFile && !fileTemplateBlock) {
+            fileTemplateBlock = extractTemplateFromFile(templateFile, context);
+          }
+          const templateBlock: TSESTree.BlockStatement|null =
+              fileTemplateBlock ?? classInfo.inlinedRenderBlock;
           assert.ok(templateBlock);
           classInfo.visitTemplateBlock(templateBlock);
 

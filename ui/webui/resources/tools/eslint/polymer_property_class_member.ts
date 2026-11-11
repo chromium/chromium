@@ -6,7 +6,7 @@ import type {TSESTree} from '/third_party/node/node_modules/@typescript-eslint/t
 import {ESLintUtils} from '/third_party/node/node_modules/@typescript-eslint/utils/dist/index.js';
 import assert from 'node:assert';
 
-import {isIdentifier, isPolymerElementSubclass} from './query_utils.js';
+import {isIdentifier, isPolymerElementSubclass, PROPERTIES_METHOD_PROPERTY_SELECTOR} from './query_utils.js';
 
 type Options = [];
 type MessageIds = 'missingClassMember';
@@ -45,7 +45,7 @@ export const polymerPropertyClassMemberRule = ESLintUtils.RuleCreator.withoutDoc
         polymerProperties = new Map();
         currentClass = node;
       },
-      'ClassDeclaration > ClassBody > MethodDefinition[key.name="properties"] > FunctionExpression > BlockStatement > ReturnStatement > ObjectExpression > Property'(
+      [`ClassDeclaration > ${PROPERTIES_METHOD_PROPERTY_SELECTOR}`](
           node: TSESTree.Property) {
         if (!isPolymerElement) {
           return;

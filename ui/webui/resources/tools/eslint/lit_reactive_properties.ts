@@ -9,7 +9,7 @@ import ts from '/third_party/node/node_modules/typescript/lib/typescript.js';
 import assert from 'node:assert';
 import path from 'node:path';
 
-import {extractClassImport, extractPropertiesFromClass, isIdentifier, isType, LIT_IMPORT_REGEX} from './query_utils.js';
+import {extractClassImport, extractPropertiesFromClass, getSourceFiles, isIdentifier, isType, LIT_IMPORT_REGEX} from './query_utils.js';
 
 type Options = [];
 type MessageIds = 'missingLitProperty'|'getterInLitTemplate';
@@ -134,11 +134,8 @@ export const litReactiveProperties = ESLintUtils.RuleCreator.withoutDocs<
     assert.ok(templateFilename.endsWith('.html.ts'));
 
     const services = ESLintUtils.getParserServices(context);
-    const compilerOptions = services.program.getCompilerOptions();
     const checker = services.program.getTypeChecker();
-
-    const sourceFiles = services.program.getSourceFiles().filter(
-        f => f.fileName.startsWith(compilerOptions.rootDir + '/'));
+    const sourceFiles = getSourceFiles(context);
 
     let hasLitImport = false;
 

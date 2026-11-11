@@ -8,7 +8,7 @@ import ts from '/third_party/node/node_modules/typescript/lib/typescript.js';
 import assert from 'node:assert';
 import path from 'node:path';
 
-import {camelCaseToDashCase, dashCaseToCamelCase, extractClassImport, extractPropertiesFromClass, getLitPropertyType, isIdentifier, isLiteral, isType, LIT_IMPORT_REGEX} from './query_utils.js';
+import {camelCaseToDashCase, dashCaseToCamelCase, extractClassImport, extractPropertiesFromClass, getLitPropertyType, getSourceFiles, isIdentifier, isLiteral, isType, LIT_IMPORT_REGEX} from './query_utils.js';
 
 type Options = [];
 type MessageIds = 'bindingTypeMismatch'|'camelCaseAttribute'|
@@ -451,10 +451,7 @@ export const litElementExpressions = ESLintUtils.RuleCreator.withoutDocs<
     assert.ok(templateFilename.endsWith('.html.ts'));
 
     const services = ESLintUtils.getParserServices(context);
-    const compilerOptions = services.program.getCompilerOptions();
-
-    const sourceFiles = services.program.getSourceFiles().filter(
-        f => f.fileName.startsWith(compilerOptions.rootDir + '/'));
+    const sourceFiles = getSourceFiles(context);
 
     let hasLitImport = false;
     let className = '';

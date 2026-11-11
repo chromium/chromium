@@ -20,6 +20,9 @@ export const LIT_IMPORT_REGEX =
 export const POLYMER_ELEMENT_EXTENDS_MIXIN_SELECTOR =
     'CallExpression[callee.name=/Mixin(Polymer)?$/][arguments.0.name="PolymerElement"]';
 
+export const PROPERTIES_METHOD_PROPERTY_SELECTOR =
+    'ClassBody > MethodDefinition[key.name="properties"] > FunctionExpression > BlockStatement > ReturnStatement > ObjectExpression > Property';
+
 export function isCrLitElementType(
     type: ts.Type, checker: ts.TypeChecker,
     visited: Set<ts.Type> = new Set()): boolean {
@@ -267,16 +270,32 @@ export function getLitPropertyType(
   return null;
 }
 
-export function extractPropertiesFromClass(
-    file: ts.SourceFile, className: string,
-    context: TSESLint.RuleContext<string, readonly unknown[]>) {
+export function getSourceFiles(
+    context: TSESLint.RuleContext<string, readonly unknown[]>):
+    ts.SourceFile[] {
+  const services = ESLintUtils.getParserServices(context);
+  const compilerOptions = services.program.getCompilerOptions();
+  return services.program.getSourceFiles().filter(
+      f => f.fileName.startsWith(compilerOptions.rootDir + '/'));
+}
+
+export function parseSourceFile(
+    file: ts.SourceFile,
+    context: TSESLint.RuleContext<string, readonly unknown[]>):
+    TSESTree.Program {
   const parser = context.languageOptions.parser as TSESLint.Parser.ParserModule;
   const parserOptions = context.languageOptions.parserOptions;
   assert.ok(parser && 'parse' in parser);
-  const ast = parser.parse(file.text, {
+  return parser.parse(file.text, {
     ...parserOptions,
     filePath: file.fileName,
   }) as TSESTree.Program;
+}
+
+export function extractPropertiesFromClass(
+    file: ts.SourceFile, className: string,
+    context: TSESLint.RuleContext<string, readonly unknown[]>) {
+  const ast = parseSourceFile(file, context);
 
   // Handle case where `className` points to a TSTypeAliasDeclaration in the
   // same file. For example className='FooBarElement' and the code is as follows
@@ -296,6 +315,23 @@ export function extractPropertiesFromClass(
 
   // Match on class name suffix as well because some UIs use aliasing.
   const propertiesQuery = esquery.parse(`ClassDeclaration[id.name=/${
-      className}/] > ClassBody > MethodDefinition[key.name="properties"] > FunctionExpression > BlockStatement > ReturnStatement > ObjectExpression > Property`);
+      className}/] > ${PROPERTIES_METHOD_PROPERTY_SELECTOR}`);
   return esquery.match(ast, propertiesQuery);
+}
+
+export function extractTemplateFromFile(
+    templateFile: ts.SourceFile,
+    context: TSESLint.RuleContext<string, readonly unknown[]>):
+    TSESTree.BlockStatement|null {
+  const templateAst = parseSourceFile(templateFile, context);
+  for (const statement of templateAst.body) {
+    const decl = isType(statement, Node.ExportNamedDeclaration) ?
+        statement.declaration :
+        statement;
+    if (decl && isType(decl, Node.FunctionDeclaration) &&
+        decl.id?.name === 'getHtml') {
+      return decl.body;
+    }
+  }
+  return null;
 }
