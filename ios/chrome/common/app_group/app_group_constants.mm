@@ -23,6 +23,8 @@ extern NSString* const kChromeUserIsEligibleForGeminiCapability =
     @"UserIsEligibleForGemini";
 extern NSString* const kChromeSupportOpenLinksParametersFromCapability =
     @"SupportOpenLinksParametersFrom";
+extern NSString* const kChromeSupportsRemoteActorCredentialSharingCapability =
+    @"SupportsRemoteActorCredentialSharing";
 extern NSString* const kChromeSupportShareDefaultBrowserStatusCapability =
     @"SupportShareDefaultBrowserStatus";
 

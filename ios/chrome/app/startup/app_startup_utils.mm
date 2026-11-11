@@ -5,6 +5,7 @@
 #import "ios/chrome/app/startup/app_startup_utils.h"
 
 #import "base/apple/bundle_locations.h"
+#import "components/password_manager/core/common/password_manager_features.h"
 #import "ios/chrome/browser/default_browser/model/features.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
@@ -210,6 +211,17 @@ void SaveFieldTrialValuesForGroupApp() {
         removeObjectForKey:app_group::kChromeSupportsAISummarizationCapability];
     [capabilities
         removeObjectForKey:app_group::kChromeUserIsEligibleForGeminiCapability];
+  }
+
+  if (password_manager::features::RemoteActorCredentialSharingEnabled()) {
+    [capabilities
+        setObject:@YES
+           forKey:app_group::
+                      kChromeSupportsRemoteActorCredentialSharingCapability];
+  } else {
+    [capabilities
+        removeObjectForKey:
+            app_group::kChromeSupportsRemoteActorCredentialSharingCapability];
   }
 
   [shared_defaults setObject:capabilities

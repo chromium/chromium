@@ -11,6 +11,7 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/password_manager/core/browser/manage_passwords_referrer.h"
+#import "components/password_manager/core/common/password_manager_features.h"
 #import "ios/chrome/app/app_startup_parameters.h"
 #import "ios/chrome/app/startup/app_launch_metrics.h"
 #import "ios/chrome/app/startup/app_startup_utils.h"
@@ -50,6 +51,8 @@ class AppStartupParametersTest : public PlatformTest {
 
   ~AppStartupParametersTest() override {
     ResetEnableNewStartupFlowEnabledForTesting();
+    [app_group::GetCommonGroupUserDefaults()
+        removeObjectForKey:app_group::kChromeCapabilitiesPreference];
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -920,6 +923,49 @@ TEST_F(AppStartupParametersTest,
   scoped_feature_list.InitWithFeatures(
       {}, {kPageActionMenu, kAppSwitcherAISummarization});
   EXPECT_FALSE(IsAppSwitcherAISummarizationTestingExternalURLEnabled());
+}
+
+// Tests that `SaveFieldTrialValuesForGroupApp()` sets
+// `kChromeSupportsRemoteActorCredentialSharingCapability` when the feature is
+// enabled.
+TEST_F(AppStartupParametersTest, SaveFieldTrialValues_RemoteActorEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      password_manager::features::kRemoteActorCredentialSharing);
+
+  SaveFieldTrialValuesForGroupApp();
+
+  NSUserDefaults* defaults = app_group::GetCommonGroupUserDefaults();
+  NSDictionary* capabilities =
+      [defaults dictionaryForKey:app_group::kChromeCapabilitiesPreference];
+  EXPECT_TRUE([capabilities
+          [app_group::kChromeSupportsRemoteActorCredentialSharingCapability]
+      boolValue]);
+}
+
+// Tests that `SaveFieldTrialValuesForGroupApp()` removes
+// `kChromeSupportsRemoteActorCredentialSharingCapability` when the feature is
+// disabled.
+TEST_F(AppStartupParametersTest, SaveFieldTrialValues_RemoteActorDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      password_manager::features::kRemoteActorCredentialSharing);
+
+  // Pre-populate defaults to verify it gets cleared when feature is disabled.
+  NSUserDefaults* defaults = app_group::GetCommonGroupUserDefaults();
+  [defaults setObject:@{
+    app_group::kChromeSupportsRemoteActorCredentialSharingCapability : @YES
+  }
+               forKey:app_group::kChromeCapabilitiesPreference];
+
+  SaveFieldTrialValuesForGroupApp();
+
+  NSDictionary* capabilities =
+      [defaults dictionaryForKey:app_group::kChromeCapabilitiesPreference];
+  EXPECT_NSEQ(
+      nil,
+      capabilities
+          [app_group::kChromeSupportsRemoteActorCredentialSharingCapability]);
 }
 
 }  // namespace

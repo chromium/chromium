@@ -104,6 +104,7 @@ source_set("utils") {
   deps = [
     ":startup_basic",
     "//base",
+    "//components/password_manager/core/common:features",
     "//ios/chrome/browser/default_browser/model:features",
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/shared/public/features:system_flags",
@@ -121,6 +122,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/password_manager/core/browser",
+    "//components/password_manager/core/common:features",
     "//ios/chrome/app",
     "//ios/chrome/app/startup:startup_basic",
     "//ios/chrome/browser/default_browser/model:test_support",

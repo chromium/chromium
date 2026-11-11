@@ -56,6 +56,10 @@ extern NSString* const kChromeUserIsEligibleForGeminiCapability;
 // links in chrome.
 extern NSString* const kChromeSupportOpenLinksParametersFromCapability;
 
+// Capability declaring whether the current version of Chrome supports remote
+// actor credential sharing.
+extern NSString* const kChromeSupportsRemoteActorCredentialSharingCapability;
+
 // Share default browser promo status capability.
 extern NSString* const kChromeSupportShareDefaultBrowserStatusCapability;
 
