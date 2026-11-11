@@ -452,7 +452,6 @@ public class TabGridDialogTest {
     @Test
     @MediumTest
     @RequiresRestart("Group creation modal dialog is sometimes persistent after dismissing")
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/394671175
     public void testTabGroupDialogUi() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         createTabs(cta, false, 2);
@@ -730,7 +729,6 @@ public class TabGridDialogTest {
     @Test
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO}) // crbug.com/391655333
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/578245446
     public void testDialogSelectionEditor_BookmarkSingleTabView() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         SnackbarManager snackbarManager = cta.getSnackbarManager();
@@ -770,7 +768,6 @@ public class TabGridDialogTest {
     @Test
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO}) // crbug.com/391655333
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/578245446
     public void testDialogSelectionEditor_BookmarkTabsView() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         SnackbarManager snackbarManager = cta.getSnackbarManager();
