@@ -590,7 +590,9 @@ void TabHoverCardController::StartThumbnailObservation(
 
   CHECK(anchor_target, base::NotFatalUntil::M162);
   CHECK(hover_card_, base::NotFatalUntil::M162);
-  CHECK(waiting_for_preview(), base::NotFatalUntil::M162);
+  // TODO(crbug.com/584203133): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(waiting_for_preview());
 
   const TabCardData& card_data = std::get<TabCardData>(anchor_target->data());
   auto thumbnail = card_data.thumbnail;
