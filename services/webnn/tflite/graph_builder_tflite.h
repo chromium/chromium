@@ -832,25 +832,35 @@ class GraphBuilderTflite final {
 
   base::expected<OperatorOffset, std::string> SerializeInstanceNormalization(
       const mojom::InstanceNormalization& instance_normalization);
+  bool CanSerializeInstanceNormalizationAsComposite(
+      const mojom::InstanceNormalization& instance_normalization);
+  // Emits an `odml.group_norm` composite with `num_groups == channels`, which
+  // ML Drift lowers to a dedicated group-size-1 kernel for instance norm.
+  base::expected<OperatorOffset, std::string>
+  SerializeInstanceNormalizationAsComposite(
+      const mojom::InstanceNormalization& instance_normalization);
   base::expected<OperatorOffset, std::string> SerializeLayerNormalization(
+      const mojom::LayerNormalization& layer_normalization);
+  bool CanSerializeLayerNormalizationAsComposite(
       const mojom::LayerNormalization& layer_normalization);
   // Emits a `BuiltinOperator_STABLEHLO_COMPOSITE` operator named
   // `odml.group_norm` with `sub_type = 1` (LayerNorm), which LiteRT lowers to
-  // the fused ML Drift `layer_norm` kernel. Returns `std::nullopt` if the
-  // operation doesn't meet the kernel's preconditions, in which case the
-  // caller should fall back to emulating layer normalization with primitives.
-  std::optional<OperatorOffset> SerializeLayerNormalizationAsComposite(
+  // the fused ML Drift `layer_norm` kernel.
+  base::expected<OperatorOffset, std::string>
+  SerializeLayerNormalizationAsComposite(
       const mojom::LayerNormalization& layer_normalization);
-  // Appends a decomposition subgraph for layer normalization (innermost axis,
-  // primitive operators) and returns its subgraph index, which composite
-  // operators reference as a fallback when no delegate claims them.
+  // Appends a primitive-op decomposition subgraph over `reduction_axes` and
+  // returns its index, used as the composite's fallback when undelegated. The
+  // subgraph signature is `[input, scale?, bias?] -> [output]`.
   base::expected<int32_t, std::string>
-  SerializeLayerNormalizationDecompositionSubgraph(
+  SerializeNormalizationDecompositionSubgraph(
       base::span<const int32_t> input_dimensions,
+      base::span<const int32_t> reduction_axes,
       ::tflite::TensorType tensor_type,
       float epsilon,
       bool has_scale,
-      bool has_bias);
+      bool has_bias,
+      std::string_view subgraph_name);
   base::expected<OperatorOffset, std::string> SerializeLeakyRelu(
       const mojom::LeakyRelu& leaky_relu);
   base::expected<OperatorOffset, std::string> SerializeLinear(
