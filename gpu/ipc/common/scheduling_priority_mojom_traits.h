@@ -14,8 +14,8 @@
 namespace mojo {
 
 template <>
-struct GPU_IPC_COMMON_EXPORT EnumTraits<gpu::mojom::SchedulingPriority,
-                                        gpu::SchedulingPriority> {
+struct GPU_IPC_COMMON_EXPORT
+    EnumTraits<gpu::mojom::SchedulingPriority, gpu::SchedulingPriority> {
   static gpu::mojom::SchedulingPriority ToMojom(
       gpu::SchedulingPriority priority) {
     switch (priority) {
@@ -24,7 +24,7 @@ struct GPU_IPC_COMMON_EXPORT EnumTraits<gpu::mojom::SchedulingPriority,
       case gpu::SchedulingPriority::kNormal:
         return gpu::mojom::SchedulingPriority::kNormal;
       case gpu::SchedulingPriority::kLow:
-        return gpu::mojom::SchedulingPriority::kNormal;
+        return gpu::mojom::SchedulingPriority::kLow;
       default:
         NOTREACHED();
     }

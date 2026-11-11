@@ -28,9 +28,12 @@ const gpu::SchedulingPriority kGpuStreamPriorityUI =
 const gpu::SchedulingPriority kGpuStreamPriorityMedia =
     gpu::SchedulingPriority::kHigh;
 
-// Used for renderer raster worker context.
+// Used for renderer raster worker context by default. Historically this was
+// set to kLow, but due to a Mojo serialization bug (crbug.com/40287938) it ran
+// at kNormal for several years. Default to kNormal and gate kLow behind
+// features::kLowPriorityGpuWorkerStream.
 const gpu::SchedulingPriority kGpuStreamPriorityWorker =
-    gpu::SchedulingPriority::kLow;
+    gpu::SchedulingPriority::kNormal;
 
 }  // namespace content
 

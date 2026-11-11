@@ -11,6 +11,7 @@
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/ipc/common/command_buffer_id.h"
 #include "gpu/ipc/common/gpu_channel.mojom.h"
 #include "gpu/ipc/service/gpu_channel_manager.h"
@@ -78,6 +79,36 @@ TEST_F(GpuChannelTest, CreateSharedImageWithMipmapRejected) {
   EXPECT_FALSE(channel_manager()->LookupChannel(kClientId));
 }
 
+TEST_F(GpuChannelTest, CreateLowPriorityCommandBuffer) {
+  int32_t kClientId = 1;
+  GpuChannel* channel = CreateChannel(kClientId, true);
+  ASSERT_TRUE(channel);
+
+  int32_t kRouteId =
+      static_cast<int32_t>(GpuChannelReservedRoutes::kMaxValue) + 1;
+  auto init_params = mojom::CreateCommandBufferParams::New();
+  init_params->stream_id = 0;
+  init_params->stream_priority = SchedulingPriority::kLow;
+  init_params->attribs =
+      mojom::ContextCreationAttribs::NewGles(mojom::GLESCreationAttribs::New());
+  init_params->active_url = GURL();
+  gpu::ContextResult result = gpu::ContextResult::kSuccess;
+  gpu::Capabilities capabilities;
+  gpu::GLCapabilities gl_capabilities;
+  CreateCommandBuffer(*channel, std::move(init_params), kRouteId,
+                      GetSharedMemoryRegion(), &result, &capabilities,
+                      &gl_capabilities);
+  EXPECT_EQ(result, gpu::ContextResult::kSuccess);
+
+  CommandBufferStub* stub = channel->LookupCommandBuffer(kRouteId);
+  ASSERT_TRUE(stub);
+  EXPECT_EQ(
+      channel->scheduler()->GetSequenceDefaultPriority(stub->sequence_id()),
+      SchedulingPriority::kLow);
+  EXPECT_EQ(channel->scheduler()->GetSequencePriority(stub->sequence_id()),
+            SchedulingPriority::kLow);
+}
+
 class GpuChannelExitForContextLostTest : public GpuChannelTestCommon {
  public:
   GpuChannelExitForContextLostTest()
@@ -101,8 +132,9 @@ TEST_F(GpuChannelExitForContextLostTest,
   base::RunLoop().RunUntilIdle();
 
   // If the channel is destroyed, then skip the test.
-  if (!channel_manager()->LookupChannel(kClientId))
+  if (!channel_manager()->LookupChannel(kClientId)) {
     return;
+  }
 
   // Try to create a context.
   int32_t kRouteId =

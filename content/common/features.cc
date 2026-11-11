@@ -507,6 +507,10 @@ BASE_FEATURE(kLocalNetworkAccessForFencedFrameNavigations,
 BASE_FEATURE(kLocalNetworkAccessForFencedFrameNavigationsWarningOnly,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Schedules worker GPU streams (kGpuStreamIdWorker) at
+// gpu::SchedulingPriority::kLow instead of kGpuStreamPriorityWorker (kNormal).
+BASE_FEATURE(kLowPriorityGpuWorkerStream, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, allows the ReusePrerenderingProcessForMainFrames feature
 // and the ProcessPerSiteUpToMainFrameThreshold feature to reuse processes
 // even when DevTools was ever attached.

@@ -1595,10 +1595,13 @@ RenderThreadImpl::SharedCompositorWorkerContextProvider(
       support_gpu_rasterization ? gpu::SharedMemoryLimits::ForGPURasterContext()
                                 : gpu::SharedMemoryLimits();
   base::TimeTicks create_start_time = base::TimeTicks::Now();
+  const gpu::SchedulingPriority stream_priority =
+      base::FeatureList::IsEnabled(features::kLowPriorityGpuWorkerStream)
+          ? gpu::SchedulingPriority::kLow
+          : kGpuStreamPriorityWorker;
   shared_worker_context_provider_ =
       viz::ContextProviderCommandBuffer::CreateForRaster(
-          std::move(gpu_channel_host), kGpuStreamIdWorker,
-          kGpuStreamPriorityWorker,
+          std::move(gpu_channel_host), kGpuStreamIdWorker, stream_priority,
           GURL("chrome://gpu/RenderThreadImpl::CreateOffscreenContext/"
                "RenderWorker"),
           /*automatic_flushes=*/false, /*support_locking=*/true,
@@ -1644,8 +1647,12 @@ void RenderThreadImpl::SharedMediaContextProvider(
 
   auto shared_memory_limits = gpu::SharedMemoryLimits::ForGPURasterContext();
 
+  const gpu::SchedulingPriority stream_priority =
+      base::FeatureList::IsEnabled(features::kLowPriorityGpuWorkerStream)
+          ? gpu::SchedulingPriority::kLow
+          : kGpuStreamPriorityWorker;
   auto context_provider = viz::ContextProviderCommandBuffer::CreateForRaster(
-      std::move(gpu_channel_host), kGpuStreamIdWorker, kGpuStreamPriorityWorker,
+      std::move(gpu_channel_host), kGpuStreamIdWorker, stream_priority,
       GURL("chrome://gpu/RenderThreadImpl::CreateOffscreenContext/"
            "MediaWorker"),
       /*automatic_flushes=*/false, /*support_locking=*/true,

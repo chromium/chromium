@@ -140,8 +140,9 @@ Scheduler::Sequence::~Sequence() {
 }
 
 bool Scheduler::Sequence::ShouldYieldTo(const Sequence* other) const {
-  if (task_runner() != other->task_runner())
+  if (task_runner() != other->task_runner()) {
     return false;
+  }
   if (!running()) {
     return false;
   }
@@ -150,8 +151,9 @@ bool Scheduler::Sequence::ShouldYieldTo(const Sequence* other) const {
 }
 
 void Scheduler::Sequence::SetEnabled(bool enabled) {
-  if (enabled_ == enabled)
+  if (enabled_ == enabled) {
     return;
+  }
   enabled_ = enabled;
   auto track =
       perfetto::NamedTrack::FromPointer("gpu::Scheduler::Sequence", this);
@@ -220,8 +222,9 @@ Scheduler::~Scheduler() {
   // finished/destroyed and none of the threads are running by the time
   // scheduler is destroyed.
   DCHECK(scheduler_sequence_map_.empty());
-  for (const auto& per_thread_state : per_thread_state_map_)
+  for (const auto& per_thread_state : per_thread_state_map_) {
     DCHECK(!per_thread_state.second.running);
+  }
 }
 
 SequenceId Scheduler::CreateSequence(
@@ -321,6 +324,15 @@ SchedulingPriority Scheduler::GetSequenceDefaultPriority(
   return SchedulingPriority::kNormal;
 }
 
+SchedulingPriority Scheduler::GetSequencePriority(SequenceId sequence_id) {
+  base::AutoLock auto_lock(lock());
+  Sequence* sequence = GetSequence(sequence_id);
+  if (sequence) {
+    return sequence->current_priority_;
+  }
+  return SchedulingPriority::kNormal;
+}
+
 void Scheduler::SetSequencePriority(SequenceId sequence_id,
                                     SchedulingPriority priority) {
   base::AutoLock auto_lock(lock());
@@ -337,8 +349,9 @@ void Scheduler::ScheduleTask(Task task) {
 
 void Scheduler::ScheduleTasks(std::vector<Task> tasks) {
   base::AutoLock auto_lock(lock());
-  for (auto& task : tasks)
+  for (auto& task : tasks) {
     ScheduleTaskHelper(std::move(task));
+  }
 }
 
 void Scheduler::ScheduleTaskHelper(Task task) {

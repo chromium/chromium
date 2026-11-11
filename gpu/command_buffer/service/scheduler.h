@@ -127,6 +127,10 @@ class GPU_COMMAND_BUFFER_SERVICE_EXPORT Scheduler {
   SchedulingPriority GetSequenceDefaultPriority(SequenceId sequence_id)
       LOCKS_EXCLUDED(lock());
 
+  // Gets the current priority of the sequence.
+  SchedulingPriority GetSequencePriority(SequenceId sequence_id)
+      LOCKS_EXCLUDED(lock());
+
   // Changes a sequence's priority. Used in WaitForGetOffset/TokenInRange to
   // temporarily increase a sequence's priority.
   void SetSequencePriority(SequenceId sequence_id, SchedulingPriority priority)
