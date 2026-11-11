@@ -20,4 +20,13 @@ source_set("haptics") {
     "//base",
     "//mojo/public/cpp/bindings",
   ]
+
+  if (is_android) {
+    sources += [
+      "haptics_manager_android.cc",
+      "haptics_manager_android.h",
+    ]
+
+    deps += [ "//services/device/haptics/android:haptics_jni_headers" ]
+  }
 }

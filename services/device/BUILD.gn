@@ -516,6 +516,7 @@ if (is_android) {
       "//services/device/battery/android:battery_monitor_java",
       "//services/device/generic_sensor:java",
       "//services/device/geolocation:geolocation_java",
+      "//services/device/haptics/android:haptics_java",
       "//services/device/hid:java",
       "//services/device/nfc/android:java",
       "//services/device/public/java:nfc_java",

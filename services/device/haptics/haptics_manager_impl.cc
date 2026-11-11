@@ -9,8 +9,13 @@
 #include <utility>
 
 #include "base/notimplemented.h"
+#include "build/build_config.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "services/device/haptics/haptics_manager_android.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace device {
 
@@ -35,8 +40,12 @@ void HapticsManagerImpl::PlatformPlayHaptics(mojom::HapticEffect effect,
 // static
 void HapticsManagerImpl::Create(
     mojo::PendingReceiver<mojom::HapticsService> receiver) {
+#if BUILDFLAG(IS_ANDROID)
+  HapticsManagerAndroid::Create(std::move(receiver));
+#else
   mojo::MakeSelfOwnedReceiver(std::make_unique<HapticsManagerImpl>(),
                               std::move(receiver));
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace device
