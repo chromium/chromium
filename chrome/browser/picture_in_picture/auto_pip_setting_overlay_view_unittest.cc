@@ -10,24 +10,14 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/test/views_test_base.h"
+#include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
-#include "ui/views/widget/widget_observer.h"
 #include "ui/views/widget/widget_utils.h"
-
-namespace {
-
-class MockWidgetObserver : public views::WidgetObserver {
- public:
-  MOCK_METHOD(void, OnWidgetClosing, (views::Widget*), ());
-};
-
-}  // namespace
 
 class AutoPipSettingOverlayViewTest : public views::ViewsTestBase {
  public:
@@ -207,17 +197,14 @@ TEST_F(AutoPipSettingOverlayViewTest, TestOverlayViewShownWithDelay) {
 TEST_F(AutoPipSettingOverlayViewTest, TestDeletingOverlayClosesBubble) {
   setting_overlay()->ShowBubble(anchor_view_widget()->GetNativeView());
 
-  MockWidgetObserver widget_observer;
   views::Widget* widget =
       setting_overlay()->get_view_for_testing()->GetWidget();
-  widget->AddObserver(&widget_observer);
+  views::test::WidgetDestroyedWaiter destroyed_waiter(widget);
 
   // Removing and deleting the setting overlay should close the bubble widget.
-  EXPECT_CALL(widget_observer, OnWidgetClosing(widget)).WillOnce([&]() {
-    widget->RemoveObserver(&widget_observer);
-  });
   RemoveAndDeleteSettingOverlay();
-  testing::Mock::VerifyAndClearExpectations(&widget_observer);
+  EXPECT_TRUE(widget->IsClosed());
+  destroyed_waiter.Wait();
 }
 
 namespace {
