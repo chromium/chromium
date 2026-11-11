@@ -80,7 +80,12 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
                        const gfx::Range& preedit_cursor);
   void OnCommitString(std::string_view text);
   void OnCursorPosition(int32_t index, int32_t anchor);
+  // `index` and `length` are UTF-8 byte offsets into the surrounding text last
+  // sent to the compositor.
   void OnDeleteSurroundingText(int32_t index, uint32_t length);
+  // `index` is a UTF-8 byte offset relative to the current cursor position, and
+  // `length` is measured in UTF-8 bytes, as in text-input-v1.
+  void OnDeleteSurroundingTextRelativeToCursor(int32_t index, uint32_t length);
   void OnKeysym(uint32_t keysym,
                 uint32_t state,
                 uint32_t modifiers,
@@ -113,6 +118,9 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
   // keyboard when it would be immediately reshown anyway, e.g. when changing
   // focus from one text input to another.
   void MaybeUpdateActivated(bool skip_virtual_keyboard_update);
+  // Deletes the UTF-8 byte range [`start`, `end`) of the predicted surrounding
+  // text. The range must cover the current selection.
+  void DeleteSurroundingTextInRange(size_t start, size_t end);
 
   const raw_ptr<WaylandConnection>
       connection_;  // TODO(jani) Handle this better

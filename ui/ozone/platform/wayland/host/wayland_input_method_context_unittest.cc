@@ -16,6 +16,7 @@
 #include "base/i18n/break_iterator.h"
 #include "base/memory/raw_ptr.h"
 #include "base/nix/xdg_util.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -711,11 +712,53 @@ TEST_P(WaylandInputMethodContextTest, SetSurroundingTextForShortText) {
         auto* text_input = server->text_input_manager_v1()->text_input();
         Mock::VerifyAndClearExpectations(text_input);
 
-        // Test OnDeleteSurroundingText with this input.
+        // Test OnDeleteSurroundingText with this input. Delete the
+        // selection. The index is relative to the cursor at its end.
         zwp_text_input_v1_send_delete_surrounding_text(
-            text_input->resource(), kExpectedSentRange.start(),
+            text_input->resource(),
+            -base::checked_cast<int32_t>(kExpectedSentRange.length()),
             kExpectedSentRange.length());
       });
+
+  EXPECT_EQ(
+      input_method_context_delegate_->last_on_delete_surrounding_text_args(),
+      (std::pair<size_t, size_t>(0, 0)));
+  EXPECT_EQ(
+      input_method_context_->predicted_state_for_testing().surrounding_text,
+      std::u16string(40, u'あ'));
+  EXPECT_EQ(input_method_context_->predicted_state_for_testing().selection,
+            gfx::Range(20));
+}
+
+TEST_P(WaylandInputMethodContextTest, SetSurroundingTextWithReversedSelection) {
+  const std::u16string text(50, u'あ');
+  // The cursor is at 20, and the anchor is at 30.
+  constexpr gfx::Range range(30, 20);
+
+  const std::string kExpectedSentText(base::UTF16ToUTF8(text));
+  // The mock server stores the range as (anchor, cursor).
+  constexpr gfx::Range kExpectedSentRange(90, 60);
+
+  PostToServerAndWait([kExpectedSentText, kExpectedSentRange](
+                          wl::TestWaylandServerThread* server) {
+    EXPECT_CALL(*server->text_input_manager_v1()->text_input(),
+                SetSurroundingText(kExpectedSentText, kExpectedSentRange))
+        .Times(1);
+  });
+
+  input_method_context_->SetSurroundingText(text, gfx::Range(0, 50),
+                                            gfx::Range::InvalidRange(), range);
+  connection_->Flush();
+
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    auto* text_input = server->text_input_manager_v1()->text_input();
+    Mock::VerifyAndClearExpectations(text_input);
+
+    // Delete the selection. The index is relative to the cursor at 60 bytes,
+    // which is the start of the selection here.
+    zwp_text_input_v1_send_delete_surrounding_text(text_input->resource(), 0,
+                                                   30);
+  });
 
   EXPECT_EQ(
       input_method_context_delegate_->last_on_delete_surrounding_text_args(),
@@ -760,9 +803,11 @@ TEST_P(WaylandInputMethodContextTest, SetSurroundingTextForLongText) {
         auto* text_input = server->text_input_manager_v1()->text_input();
         Mock::VerifyAndClearExpectations(text_input);
 
-        // Test OnDeleteSurroundingText with this input.
+        // Test OnDeleteSurroundingText with this input. Delete the
+        // selection. The index is relative to the cursor at its end.
         zwp_text_input_v1_send_delete_surrounding_text(
-            text_input->resource(), expected_sent_range.start(),
+            text_input->resource(),
+            -base::checked_cast<int32_t>(expected_sent_range.length()),
             expected_sent_range.length());
       });
 
@@ -809,9 +854,11 @@ TEST_P(WaylandInputMethodContextTest, SetSurroundingTextForLongTextInLeftEdge) {
         auto* text_input = server->text_input_manager_v1()->text_input();
         Mock::VerifyAndClearExpectations(text_input);
 
-        // Test OnDeleteSurroundingText with this input.
+        // Test OnDeleteSurroundingText with this input. Delete the
+        // selection. The index is relative to the cursor at its end.
         zwp_text_input_v1_send_delete_surrounding_text(
-            text_input->resource(), expected_sent_range.start(),
+            text_input->resource(),
+            -base::checked_cast<int32_t>(expected_sent_range.length()),
             expected_sent_range.length());
       });
 
@@ -859,9 +906,11 @@ TEST_P(WaylandInputMethodContextTest,
         auto* text_input = server->text_input_manager_v1()->text_input();
         Mock::VerifyAndClearExpectations(text_input);
 
-        // Test OnDeleteSurroundingText with this input.
+        // Test OnDeleteSurroundingText with this input. Delete the
+        // selection. The index is relative to the cursor at its end.
         zwp_text_input_v1_send_delete_surrounding_text(
-            text_input->resource(), expected_sent_range.start(),
+            text_input->resource(),
+            -base::checked_cast<int32_t>(expected_sent_range.length()),
             expected_sent_range.length());
       });
 
@@ -906,8 +955,9 @@ TEST_P(WaylandInputMethodContextTest, DeleteSurroundingTextWithExtendedRange) {
     Mock::VerifyAndClearExpectations(text_input);
 
     // Test OnDeleteSurroundingText with this input.
-    // One char more deletion for each before and after the selection.
-    zwp_text_input_v1_send_delete_surrounding_text(text_input->resource(), 57,
+    // One char more deletion for each before and after the selection. The
+    // index is relative to the cursor at the end of the selection.
+    zwp_text_input_v1_send_delete_surrounding_text(text_input->resource(), -33,
                                                    36);
   });
 
@@ -919,6 +969,78 @@ TEST_P(WaylandInputMethodContextTest, DeleteSurroundingTextWithExtendedRange) {
       std::u16string(38, u'あ'));
   EXPECT_EQ(input_method_context_->predicted_state_for_testing().selection,
             gfx::Range(19));
+}
+
+TEST_P(WaylandInputMethodContextTest, DeleteSurroundingTextBeforeCursor) {
+  // text-input-v1 specifies the index relative to the cursor.
+  input_method_context_->SetSurroundingText(
+      u"Vi\u00ea", gfx::Range(0, 3), gfx::Range::InvalidRange(), gfx::Range(3));
+  connection_->Flush();
+
+  // Delete U+00EA, which is 2 bytes in UTF-8, before the cursor.
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    auto* text_input = server->text_input_manager_v1()->text_input();
+    zwp_text_input_v1_send_delete_surrounding_text(text_input->resource(), -2,
+                                                   2);
+  });
+
+  EXPECT_EQ(
+      input_method_context_delegate_->last_on_delete_surrounding_text_args(),
+      (std::pair<size_t, size_t>(1, 0)));
+  EXPECT_EQ(
+      input_method_context_->predicted_state_for_testing().surrounding_text,
+      u"Vi");
+  EXPECT_EQ(input_method_context_->predicted_state_for_testing().selection,
+            gfx::Range(2));
+}
+
+TEST_P(WaylandInputMethodContextTest, DeleteSurroundingTextAfterCursor) {
+  input_method_context_->SetSurroundingText(
+      u"abc", gfx::Range(0, 3), gfx::Range::InvalidRange(), gfx::Range(1));
+  connection_->Flush();
+
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    auto* text_input = server->text_input_manager_v1()->text_input();
+    zwp_text_input_v1_send_delete_surrounding_text(text_input->resource(), 0,
+                                                   2);
+  });
+
+  EXPECT_EQ(
+      input_method_context_delegate_->last_on_delete_surrounding_text_args(),
+      (std::pair<size_t, size_t>(0, 2)));
+  EXPECT_EQ(
+      input_method_context_->predicted_state_for_testing().surrounding_text,
+      u"a");
+  EXPECT_EQ(input_method_context_->predicted_state_for_testing().selection,
+            gfx::Range(1));
+}
+
+TEST_P(WaylandInputMethodContextTest, DeleteSurroundingTextOutOfRange) {
+  input_method_context_->SetSurroundingText(
+      u"abc", gfx::Range(0, 3), gfx::Range::InvalidRange(), gfx::Range(1));
+  connection_->Flush();
+
+  // The range starts before the beginning of the text.
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    auto* text_input = server->text_input_manager_v1()->text_input();
+    zwp_text_input_v1_send_delete_surrounding_text(text_input->resource(), -2,
+                                                   2);
+  });
+  // The range ends after the end of the text.
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    auto* text_input = server->text_input_manager_v1()->text_input();
+    zwp_text_input_v1_send_delete_surrounding_text(text_input->resource(), 0,
+                                                   3);
+  });
+
+  EXPECT_FALSE(
+      input_method_context_delegate_->last_on_delete_surrounding_text_args()
+          .has_value());
+  EXPECT_EQ(
+      input_method_context_->predicted_state_for_testing().surrounding_text,
+      u"abc");
+  EXPECT_EQ(input_method_context_->predicted_state_for_testing().selection,
+            gfx::Range(1));
 }
 
 TEST_P(WaylandInputMethodContextTest, DeleteSurroundingTextInIncorrectOrder) {
@@ -937,7 +1059,7 @@ TEST_P(WaylandInputMethodContextTest, DeleteSurroundingTextInIncorrectOrder) {
     auto* text_input = server->text_input_manager_v1()->text_input();
     Mock::VerifyAndClearExpectations(text_input);
 
-    zwp_text_input_v1_send_delete_surrounding_text(text_input->resource(), 4,
+    zwp_text_input_v1_send_delete_surrounding_text(text_input->resource(), -1,
                                                    1);
   });
   EXPECT_EQ(
@@ -951,7 +1073,7 @@ TEST_P(WaylandInputMethodContextTest, DeleteSurroundingTextInIncorrectOrder) {
     auto* text_input = server->text_input_manager_v1()->text_input();
     Mock::VerifyAndClearExpectations(text_input);
 
-    zwp_text_input_v1_send_delete_surrounding_text(text_input->resource(), 1,
+    zwp_text_input_v1_send_delete_surrounding_text(text_input->resource(), -3,
                                                    3);
   });
 
@@ -1013,7 +1135,7 @@ TEST_P(WaylandInputMethodContextTest,
     auto* text_input = server->text_input_manager_v1()->text_input();
     Mock::VerifyAndClearExpectations(text_input);
 
-    zwp_text_input_v1_send_delete_surrounding_text(text_input->resource(), 0,
+    zwp_text_input_v1_send_delete_surrounding_text(text_input->resource(), -6,
                                                    6);
   });
 

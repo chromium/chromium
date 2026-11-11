@@ -39,7 +39,7 @@ void TextInputV1SetSurroundingText(wl_client* client,
                                    uint32_t cursor,
                                    uint32_t anchor) {
   GetUserDataAs<MockZwpTextInputV1>(resource)->SetSurroundingText(
-      text, gfx::Range(cursor, anchor));
+      text, gfx::Range(anchor, cursor));
 }
 
 void TextInputV1SetContentType(wl_client* client,

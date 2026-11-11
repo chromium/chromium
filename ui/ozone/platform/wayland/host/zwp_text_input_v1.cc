@@ -210,8 +210,9 @@ void ZwpTextInputV1Impl::SetCursorRect(const gfx::Rect& rect) {
 void ZwpTextInputV1Impl::SetSurroundingText(const std::string& text,
                                             const gfx::Range& preedit_range,
                                             const gfx::Range& selection_range) {
+  // The cursor is the end of the selection range, and the anchor is its start.
   zwp_text_input_v1_set_surrounding_text(
-      obj_.get(), text.c_str(), selection_range.start(), selection_range.end());
+      obj_.get(), text.c_str(), selection_range.end(), selection_range.start());
 }
 
 void ZwpTextInputV1Impl::SetContentType(ui::TextInputType type,
