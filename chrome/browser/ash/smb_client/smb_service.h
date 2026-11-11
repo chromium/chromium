@@ -133,6 +133,8 @@ class SmbService : public KeyedService,
   bool IsAnySmbShareConfigured();
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(SmbServiceWithSmbfsTest,
+                           LazyHostLocatorRegistration);
   FRIEND_TEST_ALL_PREFIXES(SmbServiceWithSmbfsTest, MountInvalidSaved);
   FRIEND_TEST_ALL_PREFIXES(SmbServiceWithSmbfsTest, MountInvalidPreconfigured);
 
@@ -206,7 +208,8 @@ class SmbService : public KeyedService,
   // Handles the response from attempting to update Kerberos credentials.
   void OnUpdateKerberosCredentialsResponse(bool success);
 
-  // Registers host locators for |share_finder_|.
+  // Lazily registers host locators for |share_finder_| and starts observing
+  // network changes on first use.
   void RegisterHostLocators();
 
   // Set up Multicast DNS host locator.
@@ -253,6 +256,10 @@ class SmbService : public KeyedService,
   void RecordMountCount() const;
 
   static bool disable_share_discovery_for_testing_;
+
+  // True once mDNS/NetBIOS host locators and the network change observer have
+  // been registered.
+  bool host_locators_registered_ = false;
 
   const file_system_provider::ProviderId provider_id_;
   raw_ptr<Profile> profile_;

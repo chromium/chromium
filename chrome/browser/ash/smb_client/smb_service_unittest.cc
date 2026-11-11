@@ -7,6 +7,7 @@
 #include <string_view>
 
 #include "ash/constants/ash_pref_names.h"
+#include "base/auto_reset.h"
 #include "base/check_deref.h"
 #include "base/json/json_reader.h"
 #include "base/strings/string_number_conversions.h"
@@ -586,6 +587,27 @@ TEST_F(SmbServiceWithSmbfsTest, IsAnySmbShareConfigured) {
 
   CreateService(profile());
   EXPECT_TRUE(smb_service->IsAnySmbShareConfigured());
+}
+
+TEST_F(SmbServiceWithSmbfsTest, LazyHostLocatorRegistration) {
+  // Disable NetBIOS discovery so exercising real host locator registration does
+  // not require a live PermissionBrokerClient D-Bus instance in unit tests.
+  profile()->GetPrefs()->SetBoolean(ash::prefs::kNetBiosShareDiscoveryEnabled,
+                                    false);
+  CreateService(profile());
+  base::AutoReset<bool> enable_discovery(
+      &SmbService::disable_share_discovery_for_testing_, false);
+
+  // Completing setup with no saved or preconfigured shares should not register
+  // host locators.
+  base::RunLoop setup_loop;
+  smb_service->OnSetupCompleteForTesting(setup_loop.QuitClosure());
+  setup_loop.Run();
+  EXPECT_FALSE(smb_service->host_locators_registered_);
+
+  // Explicitly discovering shares in the network registers host locators.
+  smb_service->GatherSharesInNetwork(base::DoNothing(), base::DoNothing());
+  EXPECT_TRUE(smb_service->host_locators_registered_);
 }
 
 }  // namespace ash::smb_client

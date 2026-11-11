@@ -255,6 +255,7 @@ SmbFsShare* SmbService::GetSmbFsShareForPath(const base::FilePath& path) {
 
 void SmbService::GatherSharesInNetwork(HostDiscoveryResponse discovery_callback,
                                        GatherSharesResponse shares_callback) {
+  RegisterHostLocators();
   auto preconfigured_shares = GetPreconfiguredSharePathsForDropdown();
   if (!preconfigured_shares.empty()) {
     shares_callback.Run(std::move(preconfigured_shares), false);
@@ -479,6 +480,7 @@ void SmbService::RestoreMounts() {
   saved_smbfs_shares = registry_.GetAll();
 
   if (!saved_smbfs_shares.empty() || !preconfigured_shares.empty()) {
+    RegisterHostLocators();
     share_finder_->DiscoverHostsInNetwork(base::BindOnce(
         &SmbService::OnHostsDiscovered, weak_ptr_factory_.GetWeakPtr(),
         std::move(saved_smbfs_shares), std::move(preconfigured_shares)));
@@ -580,11 +582,9 @@ void SmbService::OnSetupKerberosResponse(bool success) {
 
 void SmbService::CompleteSetup() {
   share_finder_ = std::make_unique<SmbShareFinder>(GetSmbProviderClient());
-  RegisterHostLocators();
 
   GetProviderService()->RegisterProvider(std::make_unique<SmbProvider>());
   RestoreMounts();
-  net::NetworkChangeNotifier::AddNetworkChangeObserver(this);
 
   if (setup_complete_callback_) {
     std::move(setup_complete_callback_).Run();
@@ -606,7 +606,7 @@ void SmbService::SetSmbFsMounterCreationCallbackForTesting(
 }
 
 void SmbService::RegisterHostLocators() {
-  if (disable_share_discovery_for_testing_) {
+  if (disable_share_discovery_for_testing_ || host_locators_registered_) {
     return;
   }
 
@@ -616,6 +616,11 @@ void SmbService::RegisterHostLocators() {
   } else {
     LOG(WARNING) << "SmbService: NetBios discovery disabled.";
   }
+
+  // Only observe network changes to refresh cached hosts once SMB discovery is
+  // actually used.
+  net::NetworkChangeNotifier::AddNetworkChangeObserver(this);
+  host_locators_registered_ = true;
 }
 
 void SmbService::SetUpMdnsHostLocator() {
