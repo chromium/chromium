@@ -1780,7 +1780,7 @@ recorded in the same way, even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.DisabledAfterHide" enum="BooleanHit"
-    expires_after="2026-12-06">
+    expires_after="2027-12-06">
   <owner>grt@chromium.org</owner>
   <owner>lucasradaelli@google.com</owner>
   <summary>
@@ -1874,23 +1874,6 @@ recorded in the same way, even if they fit the naming pattern. -->
     is first used. This is tracked only one per instance, and is recorded as the
     accessibility code is enable.
   </summary>
-</histogram>
-
-<histogram name="Accessibility.EventProcessingTime3{Variation}" units="ms"
-    expires_after="2026-12-06">
-  <owner>grt@chromium.org</owner>
-  <owner>lucasradaelli@google.com</owner>
-  <summary>
-    The round-trip time to send a set of accessibility mode flags from the
-    browser process to a renderer and receive and process the first set of
-    updates and events. Recorded once each time the browser process receives the
-    first set of updates and events from a renderer following {Variation} call
-    to RenderAccessibility::SetMode.
-  </summary>
-  <token key="Variation">
-    <variant name=".First" summary="the very first"/>
-    <variant name=".NotFirst" summary="all but the first"/>
-  </token>
 </histogram>
 
 <histogram name="Accessibility.ExperimentalModeFlag.FormControls"

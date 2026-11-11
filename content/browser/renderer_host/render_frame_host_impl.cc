@@ -4260,8 +4260,6 @@ void RenderFrameHostImpl::AccessibilityReset() {
   }
 
   accessibility_reset_token_ = ++g_accessibility_reset_token;
-  is_first_accessibility_request_ = false;
-  accessibility_reset_start_ = base::TimeTicks::Now();
   render_accessibility_->Reset(*accessibility_reset_token_);
 }
 
@@ -12229,15 +12227,6 @@ void RenderFrameHostImpl::HandleAXEvents(
       }
     }
   }
-
-  if (!accessibility_reset_start_.is_null()) {
-    base::UmaHistogramMediumTimes(
-        is_first_accessibility_request_
-            ? "Accessibility.EventProcessingTime3.First"
-            : "Accessibility.EventProcessingTime3.NotFirst",
-        base::TimeTicks::Now() - accessibility_reset_start_);
-    accessibility_reset_start_ = base::TimeTicks();
-  }
 }
 
 void RenderFrameHostImpl::HandleAXLocationChanges(
@@ -14361,8 +14350,6 @@ void RenderFrameHostImpl::UpdateAccessibilityMode() {
   last_ax_mode_ = ax_mode;
 
   if (ax_mode.has_mode(ui::AXMode::kWebContents)) {
-    is_first_accessibility_request_ = !render_accessibility_;
-    accessibility_reset_start_ = base::TimeTicks::Now();
     if (!render_accessibility_) {
       // Render accessibility is not enabled yet, so bind the interface first.
       GetRemoteAssociatedInterfaces()->GetInterface(&render_accessibility_);

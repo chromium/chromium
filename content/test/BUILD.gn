@@ -2460,7 +2460,6 @@ test("content_browsertests") {
 
   if (use_aura) {
     sources += [
-      "../browser/accessibility/accessibility_metrics_browsertest.cc",
       "../browser/accessibility/touch_accessibility_aura_browsertest.cc",
       "../browser/renderer_host/input/event_latency_aura_browsertest.cc",
       "../browser/renderer_host/input/touch_selection_controller_client_aura_browsertest.cc",
