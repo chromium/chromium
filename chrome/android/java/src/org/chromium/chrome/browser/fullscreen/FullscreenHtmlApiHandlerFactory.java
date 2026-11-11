@@ -30,8 +30,7 @@ public class FullscreenHtmlApiHandlerFactory {
     }
 
     private static boolean isFullscreenApiMigrationEnabled() {
-        if (ChromeFeatureList.sFullscreenInsetsApiMigration.isEnabled()) return true;
-        return DeviceInfo.isAutomotive()
-                && ChromeFeatureList.sFullscreenInsetsApiMigrationOnAutomotive.isEnabled();
+        return ChromeFeatureList.sFullscreenInsetsApiMigration.isEnabled()
+                || DeviceInfo.isAutomotive();
     }
 }
