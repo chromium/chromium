@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_WEBAUTHN_WEBAUTHN_METRICS_UTIL_H_
 #define CHROME_BROWSER_WEBAUTHN_WEBAUTHN_METRICS_UTIL_H_
 
+#include <cstddef>
+
 namespace webauthn::metrics {
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -75,6 +77,76 @@ void RecordGPMCachedOpportunisticallyRetrievedKeyEvent(
 void RecordCombinedSelectorShown(int credential_count);
 void RecordCombinedSelectorAccept(int credential_count, bool default_selected);
 void RecordCombinedSelectorCancelButtonClicked();
+
+// Enum for the WebAuthentication.Ambient.DisplayOutcome histogram.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class AmbientDisplayOutcome {
+  // LINT.IfChange(AmbientDisplayOutcome)
+  kShown = 0,
+  kNoCredentials = 1,
+  kNotPrimaryPage = 2,
+  kNoPermissionRequestManager = 3,
+  kAnotherRequestPending = 4,
+  kMaxValue = kAnotherRequestPending,
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/webauthn/enums.xml:AmbientDisplayOutcome)
+};
+
+// Enum for the WebAuthentication.Ambient.InitialUiMode histogram.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class AmbientInitialUiMode {
+  // LINT.IfChange(AmbientInitialUiMode)
+  kBubble = 0,
+  kChipOnlyRequestedBySite = 1,
+  kChipOnlyCooldownActive = 2,
+  kMaxValue = kChipOnlyCooldownActive,
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/webauthn/enums.xml:AmbientInitialUiMode)
+};
+
+// Enum for the WebAuthentication.Ambient.BubbleResolution.* histograms.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class AmbientBubbleResolution {
+  // LINT.IfChange(AmbientBubbleResolution)
+  kCredentialSelected = 0,
+  kDismissed = 1,
+  kIgnored = 2,
+  kMaxValue = kIgnored,
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/webauthn/enums.xml:AmbientBubbleResolution)
+};
+
+// Enum for the WebAuthentication.Ambient.CredentialSelectionMethod histogram.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class AmbientCredentialSelectionMethod {
+  // LINT.IfChange(AmbientCredentialSelectionMethod)
+  kSignInButtonClicked = 0,
+  kExpandedDefaultCredentialClicked = 1,
+  kExpandedNonDefaultCredentialClicked = 2,
+  kMaxValue = kExpandedNonDefaultCredentialClicked,
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/webauthn/enums.xml:AmbientCredentialSelectionMethod)
+};
+
+// Enum for the WebAuthentication.Ambient.ChipOnlyOutcome histogram.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class AmbientChipOnlyOutcome {
+  // LINT.IfChange(AmbientChipOnlyOutcome)
+  kBubbleActivated = 0,
+  kIgnored = 1,
+  kMaxValue = kIgnored,
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/webauthn/enums.xml:AmbientChipOnlyOutcome)
+};
+
+void RecordAmbientDisplayOutcome(AmbientDisplayOutcome outcome);
+void RecordAmbientInitialUiMode(AmbientInitialUiMode mode);
+void RecordAmbientBubbleCredentialCount(size_t credential_count);
+void RecordAmbientBubbleResolution(bool bubble_initially_shown,
+                                   AmbientBubbleResolution resolution);
+void RecordAmbientCredentialSelectionMethod(
+    AmbientCredentialSelectionMethod method);
+void RecordAmbientChipOnlyOutcome(AmbientChipOnlyOutcome outcome);
 
 }  // namespace webauthn::metrics
 

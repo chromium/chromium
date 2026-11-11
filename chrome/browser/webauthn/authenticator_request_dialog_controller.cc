@@ -1878,8 +1878,7 @@ void AuthenticatorRequestDialogController::StartAutofillRequest() {
   }
   ReportConditionalUiPasskeyCount(credentials.size());
 
-  if (ui_presentation() == UIPresentation::kAmbient &&
-      (!credentials.empty() || !passwords_.empty())) {
+  if (ui_presentation() == UIPresentation::kAmbient) {
     auto* controller =
         ambient_signin::AmbientSigninController::GetOrCreateForCurrentDocument(
             render_frame_host);

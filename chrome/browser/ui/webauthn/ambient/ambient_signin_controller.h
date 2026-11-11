@@ -16,6 +16,11 @@ namespace content {
 class RenderFrameHost;
 }  // namespace content
 
+namespace permissions {
+struct PermissionPromptDecision;
+struct PermissionRequestData;
+}  // namespace permissions
+
 namespace ambient_signin {
 
 // This class is responsible for displaying sign-in methods such as passkeys in
@@ -39,16 +44,30 @@ class AmbientSigninController
   friend class content::DocumentUserData<AmbientSigninController>;
   DOCUMENT_USER_DATA_KEY_DECL();
 
-  void OnMechanismSelected(size_t index);
+  void OnMechanismSelected(size_t index, bool from_expanded_list);
+  void OnBubbleShown();
   void OnBubbleDismissed();
+  void OnPermissionDecided(
+      const permissions::PermissionPromptDecision& decision,
+      const permissions::PermissionRequestData& request_data);
+  void FinalizeRequestMetrics();
   void Close();
 
   // AuthenticatorRequestDialogModel::Observer
+  void OnStartOver() override;
   void OnRequestComplete() override;
   void OnModelDestroyed(AuthenticatorRequestDialogModel* model) override;
 
   raw_ptr<AuthenticatorRequestDialogModel> model_ = nullptr;
   std::vector<size_t> credential_indices_;
+
+  // Information about request flow that is tracked for metrics collection.
+  bool is_restarting_ = false;
+  bool request_active_ = false;
+  bool request_started_as_bubble_ = false;
+  bool bubble_shown_ = false;
+  bool bubble_dismissed_ = false;
+  bool credential_selected_ = false;
 
   base::WeakPtrFactory<AmbientSigninController> weak_ptr_factory_{this};
 };

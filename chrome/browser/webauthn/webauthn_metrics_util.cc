@@ -5,6 +5,7 @@
 #include "chrome/browser/webauthn/webauthn_metrics_util.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
 
 namespace {
 
@@ -71,6 +72,41 @@ void RecordGPMCachedOpportunisticallyRetrievedKeyEvent(
         WebAuthenticationGPMCachedOpportunisticallyRetrievedKeyEvent event) {
   base::UmaHistogramEnumeration(
       kCachedOpportunisticallyRetrievedKeyEventTypeHistogram, event);
+}
+
+void RecordAmbientDisplayOutcome(AmbientDisplayOutcome outcome) {
+  base::UmaHistogramEnumeration("WebAuthentication.Ambient.DisplayOutcome",
+                                outcome);
+}
+
+void RecordAmbientInitialUiMode(AmbientInitialUiMode mode) {
+  base::UmaHistogramEnumeration("WebAuthentication.Ambient.InitialUiMode",
+                                mode);
+}
+
+void RecordAmbientBubbleCredentialCount(size_t credential_count) {
+  base::UmaHistogramCounts100("WebAuthentication.Ambient.BubbleCredentialCount",
+                              base::saturated_cast<int>(credential_count));
+}
+
+void RecordAmbientBubbleResolution(bool bubble_initially_shown,
+                                   AmbientBubbleResolution resolution) {
+  base::UmaHistogramEnumeration(
+      bubble_initially_shown
+          ? "WebAuthentication.Ambient.BubbleResolution.InitiallyShown"
+          : "WebAuthentication.Ambient.BubbleResolution.OpenedFromChip",
+      resolution);
+}
+
+void RecordAmbientCredentialSelectionMethod(
+    AmbientCredentialSelectionMethod method) {
+  base::UmaHistogramEnumeration(
+      "WebAuthentication.Ambient.CredentialSelectionMethod", method);
+}
+
+void RecordAmbientChipOnlyOutcome(AmbientChipOnlyOutcome outcome) {
+  base::UmaHistogramEnumeration("WebAuthentication.Ambient.ChipOnlyOutcome",
+                                outcome);
 }
 
 }  // namespace webauthn::metrics

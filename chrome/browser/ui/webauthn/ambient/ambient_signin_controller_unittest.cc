@@ -10,11 +10,13 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/time/time.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/webauthn/ambient/ambient_login_permission_controller.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
+#include "chrome/browser/webauthn/webauthn_metrics_util.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
@@ -197,7 +199,7 @@ TEST_F(AmbientSigninControllerTest, ShowMultipleCredentials) {
   base::RunLoop run_loop;
   permission_controller()->SetFinishedNotificationForTesting(
       run_loop.QuitClosure());
-  ambient_request->SelectCredential(1);
+  ambient_request->SelectCredential(1, /*from_expanded_list=*/true);
   EXPECT_EQ(permission_controller()->state(),
             AmbientLoginPermissionController::State::kRequestAdded);
 
@@ -506,6 +508,7 @@ TEST_F(AmbientSigninControllerTest, DismissalCountExpiresAfterThirtyDays) {
 }
 
 TEST_F(AmbientSigninControllerTest, AmbientChipOnlySuppressesInitialBubble) {
+  base::HistogramTester histograms;
   auto model = CreatePasskeyModel(main_rfh());
   model->ambient_chip_only = true;
 
@@ -514,6 +517,181 @@ TEST_F(AmbientSigninControllerTest, AmbientChipOnlySuppressesInitialBubble) {
   ASSERT_NE(current_ambient_request(), nullptr);
   EXPECT_FALSE(current_ambient_request()->ShouldBubbleStartOpen());
   CompleteRequestAndWait(model.get());
+
+  histograms.ExpectUniqueSample(
+      "WebAuthentication.Ambient.DisplayOutcome",
+      webauthn::metrics::AmbientDisplayOutcome::kShown, 1);
+  histograms.ExpectUniqueSample(
+      "WebAuthentication.Ambient.InitialUiMode",
+      webauthn::metrics::AmbientInitialUiMode::kChipOnlyRequestedBySite, 1);
+  histograms.ExpectUniqueSample(
+      "WebAuthentication.Ambient.ChipOnlyOutcome",
+      webauthn::metrics::AmbientChipOnlyOutcome::kIgnored, 1);
+  histograms.ExpectTotalCount("WebAuthentication.Ambient.BubbleCredentialCount",
+                              0);
+  histograms.ExpectTotalCount(
+      "WebAuthentication.Ambient.BubbleResolution.InitiallyShown", 0);
+  histograms.ExpectTotalCount(
+      "WebAuthentication.Ambient.BubbleResolution.OpenedFromChip", 0);
+}
+
+TEST_F(AmbientSigninControllerTest, MetricsForNoCredentialsAndPendingRequest) {
+  base::HistogramTester histograms;
+
+  // Empty model records kNoCredentials.
+  auto empty_model =
+      base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
+  empty_model->relying_party_id = "example.com";
+  controller()->Show(empty_model.get());
+  empty_model->OnRequestComplete();
+  histograms.ExpectUniqueSample(
+      "WebAuthentication.Ambient.DisplayOutcome",
+      webauthn::metrics::AmbientDisplayOutcome::kNoCredentials, 1);
+
+  // Active request followed by another request while pending records
+  // kAnotherRequestPending.
+  auto model1 = CreatePasskeyModel(main_rfh());
+  controller()->Show(model1.get());
+  prompt_factory_->WaitForPermissionBubble();
+  histograms.ExpectBucketCount("WebAuthentication.Ambient.DisplayOutcome",
+                               webauthn::metrics::AmbientDisplayOutcome::kShown,
+                               1);
+
+  controller()->Show(model1.get());
+  histograms.ExpectBucketCount(
+      "WebAuthentication.Ambient.DisplayOutcome",
+      webauthn::metrics::AmbientDisplayOutcome::kAnotherRequestPending, 1);
+  CompleteRequestAndWait(model1.get());
+}
+
+TEST_F(AmbientSigninControllerTest,
+       MetricsForBubbleResolutionsAndSelectionMethods) {
+  base::HistogramTester histograms;
+
+  // 1. Bubble initially shown, user ignores it (request completes without
+  // interaction).
+  auto model1 = CreatePasskeyModel(main_rfh());
+  controller()->Show(model1.get());
+  prompt_factory_->WaitForPermissionBubble();
+  ASSERT_NE(current_ambient_request(), nullptr);
+  current_ambient_request()->OnBubbleShown();
+  CompleteRequestAndWait(model1.get());
+  histograms.ExpectUniqueSample(
+      "WebAuthentication.Ambient.BubbleCredentialCount", 1, 1);
+  histograms.ExpectUniqueSample(
+      "WebAuthentication.Ambient.BubbleResolution.InitiallyShown",
+      webauthn::metrics::AmbientBubbleResolution::kIgnored, 1);
+
+  // 2. Bubble initially shown with 2 credentials, user unfolds and selects the
+  // second (non-default) credential.
+  auto model2 = CreatePasskeyModel(main_rfh());
+  model2->mechanisms.emplace_back(
+      AuthenticatorRequestDialogModel::Mechanism::Credential(
+          {device::AuthenticatorType::kEnclave, {7, 8, 9}, std::nullopt}),
+      u"username2",
+      ::features::IsRoundedIconsEnabled() ? vector_icons::kPasskeyIcon
+                                          : vector_icons::kPasskeyOldIcon,
+      base::BindRepeating(
+          [](AuthenticatorRequestDialogModel* m) { m->OnRequestComplete(); },
+          base::Unretained(model2.get())));
+  controller()->Show(model2.get());
+  prompt_factory_->WaitForPermissionBubble();
+  ASSERT_NE(current_ambient_request(), nullptr);
+  current_ambient_request()->SelectCredential(/*index=*/1,
+                                              /*from_expanded_list=*/true);
+
+  base::RunLoop accept_loop;
+  permission_controller()->SetFinishedNotificationForTesting(
+      accept_loop.QuitClosure());
+  permission_request_manager()->Accept(std::monostate());
+  accept_loop.Run();
+
+  histograms.ExpectBucketCount(
+      "WebAuthentication.Ambient.BubbleCredentialCount", 2, 1);
+  histograms.ExpectBucketCount(
+      "WebAuthentication.Ambient.BubbleResolution.InitiallyShown",
+      webauthn::metrics::AmbientBubbleResolution::kCredentialSelected, 1);
+  histograms.ExpectUniqueSample(
+      "WebAuthentication.Ambient.CredentialSelectionMethod",
+      webauthn::metrics::AmbientCredentialSelectionMethod::
+          kExpandedNonDefaultCredentialClicked,
+      1);
+
+  // 3. Chip-only mode where user clicks the chip to activate the bubble, then
+  // dismisses the bubble.
+  auto model3 = CreatePasskeyModel(main_rfh());
+  model3->ambient_chip_only = true;
+  controller()->Show(model3.get());
+  prompt_factory_->WaitForPermissionBubble();
+  ASSERT_NE(current_ambient_request(), nullptr);
+  current_ambient_request()->OnBubbleShown();
+  current_ambient_request()->OnBubbleDismissed();
+  CompleteRequestAndWait(model3.get());
+
+  histograms.ExpectUniqueSample(
+      "WebAuthentication.Ambient.ChipOnlyOutcome",
+      webauthn::metrics::AmbientChipOnlyOutcome::kBubbleActivated, 1);
+  histograms.ExpectUniqueSample(
+      "WebAuthentication.Ambient.BubbleResolution.OpenedFromChip",
+      webauthn::metrics::AmbientBubbleResolution::kDismissed, 1);
+
+  // 4. Restarting a request via OnStartOver() does not emit duplicate
+  // DisplayOutcome, InitialUiMode, BubbleCredentialCount, BubbleResolution, or
+  // CredentialSelectionMethod samples.
+  auto model4 = CreatePasskeyModel(main_rfh());
+  controller()->Show(model4.get());
+  prompt_factory_->WaitForPermissionBubble();
+  ASSERT_NE(current_ambient_request(), nullptr);
+  current_ambient_request()->OnBubbleShown();
+
+  {
+    base::RunLoop loop;
+    permission_controller()->SetFinishedNotificationForTesting(
+        loop.QuitClosure());
+    permission_request_manager()->Accept(std::monostate());
+    loop.Run();
+  }
+
+  histograms.ExpectBucketCount("WebAuthentication.Ambient.DisplayOutcome",
+                               webauthn::metrics::AmbientDisplayOutcome::kShown,
+                               4);
+  histograms.ExpectBucketCount("WebAuthentication.Ambient.InitialUiMode",
+                               webauthn::metrics::AmbientInitialUiMode::kBubble,
+                               3);
+  histograms.ExpectBucketCount(
+      "WebAuthentication.Ambient.BubbleCredentialCount", 1, 3);
+  histograms.ExpectTotalCount(
+      "WebAuthentication.Ambient.BubbleResolution.InitiallyShown", 3);
+  histograms.ExpectTotalCount(
+      "WebAuthentication.Ambient.CredentialSelectionMethod", 2);
+
+  model4->OnStartOver();
+  controller()->Show(model4.get());
+  prompt_factory_->WaitForPermissionBubble();
+  ASSERT_NE(current_ambient_request(), nullptr);
+  current_ambient_request()->OnBubbleShown();
+
+  {
+    base::RunLoop loop;
+    permission_controller()->SetFinishedNotificationForTesting(
+        loop.QuitClosure());
+    permission_request_manager()->Accept(std::monostate());
+    loop.Run();
+  }
+  model4->OnRequestComplete();
+
+  histograms.ExpectBucketCount("WebAuthentication.Ambient.DisplayOutcome",
+                               webauthn::metrics::AmbientDisplayOutcome::kShown,
+                               4);
+  histograms.ExpectBucketCount("WebAuthentication.Ambient.InitialUiMode",
+                               webauthn::metrics::AmbientInitialUiMode::kBubble,
+                               3);
+  histograms.ExpectBucketCount(
+      "WebAuthentication.Ambient.BubbleCredentialCount", 1, 3);
+  histograms.ExpectTotalCount(
+      "WebAuthentication.Ambient.BubbleResolution.InitiallyShown", 3);
+  histograms.ExpectTotalCount(
+      "WebAuthentication.Ambient.CredentialSelectionMethod", 2);
 }
 
 }  // namespace ambient_signin

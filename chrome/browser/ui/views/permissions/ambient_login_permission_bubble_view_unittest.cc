@@ -153,7 +153,7 @@ class MockAmbientDelegate : public TestPermissionBubbleViewDelegate {
     embedding_origin_ = embedding_origin;
   }
 
-  void OnCredentialSelected(size_t index) {
+  void OnCredentialSelected(size_t index, bool from_expanded_list) {
     selected_credential_index_ = index;
   }
 
@@ -600,9 +600,9 @@ TEST_F(AmbientLoginPermissionBubbleViewTest,
   requests.push_back(
       std::make_unique<ambient_signin::AmbientLoginPermissionRequest>(
           GURL("https://example.com"), std::move(creds),
-          base::BindOnce(
-              [](std::optional<size_t>* out, size_t index) { *out = index; },
-              &selected_cred_index),
+          base::BindOnce([](std::optional<size_t>* out, size_t index,
+                            bool) { *out = index; },
+                         &selected_cred_index),
           std::move(fed_creds),
           base::BindOnce(
               [](std::optional<size_t>* out, size_t index) { *out = index; },
@@ -658,9 +658,9 @@ TEST_F(AmbientLoginPermissionBubbleViewTest,
   requests.push_back(
       std::make_unique<ambient_signin::AmbientLoginPermissionRequest>(
           GURL("https://example.com"), std::move(creds),
-          base::BindOnce(
-              [](std::optional<size_t>* out, size_t index) { *out = index; },
-              &selected_cred_index),
+          base::BindOnce([](std::optional<size_t>* out, size_t index,
+                            bool) { *out = index; },
+                         &selected_cred_index),
           std::move(fed_creds),
           base::BindOnce(
               [](std::optional<size_t>* out, size_t index) { *out = index; },
@@ -1330,7 +1330,7 @@ TEST_F(AmbientLoginPermissionBubbleViewTest,
                                        u"Google Password Manager");
   static_cast<ambient_signin::AmbientLoginPermissionRequest*>(
       passkey_delegate.Requests()[0].get())
-      ->SelectCredential(0);
+      ->SelectCredential(0, /*from_expanded_list=*/false);
   PermissionPromptChipModel passkey_chip_model(passkey_delegate.GetWeakPtr());
   passkey_chip_model.UpdateWithUserDecision(
       permissions::PermissionAction::GRANTED);

@@ -506,6 +506,10 @@ void AmbientLoginPermissionBubbleView::Show() {
 void AmbientLoginPermissionBubbleView::AddedToWidget() {
   PermissionPromptBubbleBaseView::AddedToWidget();
   widget_close_observer_.Observe(GetWidget());
+  if (ambient_signin::AmbientLoginPermissionRequest* ambient_request =
+          GetAmbientRequest()) {
+    ambient_request->OnBubbleShown();
+  }
 
   if (auto* title_label =
           views::AsViewClass<views::Label>(GetBubbleFrameView()->title())) {
@@ -536,7 +540,7 @@ void AmbientLoginPermissionBubbleView::OnSignInButtonClicked(
   if (ambient_signin::AmbientLoginPermissionRequest* ambient_request =
           GetAmbientRequest()) {
     if (!ambient_request->credentials().empty()) {
-      ambient_request->SelectCredential(0);
+      ambient_request->SelectCredential(0, /*from_expanded_list=*/false);
     } else if (!ambient_request->federated_credentials().empty()) {
       ambient_request->SelectFederatedCredential(0);
     }
@@ -632,7 +636,7 @@ void AmbientLoginPermissionBubbleView::OnCredentialClicked(
   }
   if (ambient_signin::AmbientLoginPermissionRequest* ambient_request =
           GetAmbientRequest()) {
-    ambient_request->SelectCredential(index);
+    ambient_request->SelectCredential(index, /*from_expanded_list=*/true);
   }
   RunButtonCallback(static_cast<int>(PermissionDialogButton::kAccept));
 }

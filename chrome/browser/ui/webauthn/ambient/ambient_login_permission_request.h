@@ -86,7 +86,7 @@ struct FederatedCredential {
 class AmbientLoginPermissionRequest : public permissions::PermissionRequest {
  public:
   using PasskeyOrPasswordSelectedCallback =
-      base::OnceCallback<void(size_t index)>;
+      base::OnceCallback<void(size_t index, bool from_expanded_list)>;
   using FederatedCredentialSelectedCallback =
       base::OnceCallback<void(size_t index)>;
 
@@ -98,6 +98,8 @@ class AmbientLoginPermissionRequest : public permissions::PermissionRequest {
     // Whether the bubble opens automatically along with the chip. Otherwise,
     // only the chip is shown, and the bubble opens when the user clicks it.
     bool bubble_starts_open = true;
+    // Called when the ambient sign-in bubble is shown.
+    base::OnceClosure bubble_shown_callback = base::DoNothing();
     // Called when the user explicitly dismisses the bubble (e.g. via the close
     // button or Escape key).
     base::OnceClosure bubble_dismissed_callback = base::DoNothing();
@@ -131,11 +133,16 @@ class AmbientLoginPermissionRequest : public permissions::PermissionRequest {
 
   // Records the chosen credential index to be passed to
   // `credential_selected_callback_` when the permission request is accepted.
-  void SelectCredential(size_t index);
+  // `from_expanded_list` indicates whether the user unfolded the bubble before
+  // selecting the credential, which is used for metrics.
+  void SelectCredential(size_t index, bool from_expanded_list);
 
   // Records the chosen federated credential index to be passed to
   // `federated_selected_callback_` when the permission request is accepted.
   void SelectFederatedCredential(size_t index);
+
+  // Called when the ambient sign-in bubble is shown.
+  void OnBubbleShown();
 
   // Called when the user explicitly dismisses the ambient sign-in bubble.
   void OnBubbleDismissed();
@@ -163,8 +170,10 @@ class AmbientLoginPermissionRequest : public permissions::PermissionRequest {
   std::vector<FederatedCredential> federated_credentials_;
   FederatedCredentialSelectedCallback federated_selected_callback_;
   PermissionDecidedCallback caller_permission_decided_callback_;
+  base::OnceClosure bubble_shown_callback_;
   base::OnceClosure bubble_dismissed_callback_;
   std::optional<size_t> selected_credential_index_;
+  bool selected_from_expanded_list_ = false;
   std::optional<size_t> selected_federated_index_;
   const bool bubble_starts_open_;
 };

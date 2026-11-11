@@ -26,6 +26,70 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<!-- LINT.IfChange(AmbientBubbleResolution) -->
+
+<enum name="AmbientBubbleResolution">
+  <int value="0" label="User selected a credential"/>
+  <int value="1" label="User dismissed the bubble"/>
+  <int value="2" label="User ignored the bubble (no interaction)"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/webauthn/webauthn_metrics_util.h:AmbientBubbleResolution) -->
+
+<!-- LINT.IfChange(AmbientChipOnlyOutcome) -->
+
+<enum name="AmbientChipOnlyOutcome">
+  <int value="0" label="User activated the bubble from the chip"/>
+  <int value="1" label="User ignored the chip"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/webauthn/webauthn_metrics_util.h:AmbientChipOnlyOutcome) -->
+
+<!-- LINT.IfChange(AmbientCredentialSelectionMethod) -->
+
+<enum name="AmbientCredentialSelectionMethod">
+  <int value="0" label="Clicked sign in without unfolding the bubble"/>
+  <int value="1"
+      label="Unfolded the bubble and clicked the default credential"/>
+  <int value="2"
+      label="Unfolded the bubble and selected a non-default credential"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/webauthn/webauthn_metrics_util.h:AmbientCredentialSelectionMethod) -->
+
+<!-- LINT.IfChange(AmbientDisplayOutcome) -->
+
+<enum name="AmbientDisplayOutcome">
+  <int value="0" label="UI was shown"/>
+  <int value="1" label="Not shown: no credentials available"/>
+  <int value="2" label="Not shown: requesting page is not primary"/>
+  <int value="3"
+      label="Not shown: no PermissionRequestManager for WebContents"/>
+  <int value="4" label="Not shown: another ambient request is already pending"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/webauthn/webauthn_metrics_util.h:AmbientDisplayOutcome) -->
+
+<!-- LINT.IfChange(AmbientInitialUiMode) -->
+
+<enum name="AmbientInitialUiMode">
+  <int value="0" label="Bubble shown initially"/>
+  <int value="1" label="Chip-only mode requested by the site"/>
+  <int value="2" label="Chip-only mode because cooldown is active"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/webauthn/webauthn_metrics_util.h:AmbientInitialUiMode) -->
+
+<!-- LINT.IfChange(AmbientRequestedCredentialTypes) -->
+
+<enum name="AmbientRequestedCredentialTypes">
+  <int value="0" label="Passkeys only"/>
+  <int value="1" label="Passwords only"/>
+  <int value="2" label="Passkeys and passwords"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/webauth/authenticator_common_impl.cc:AmbientRequestedCredentialTypes) -->
+
 <enum name="ChangePinEvent">
   <int value="0" label="A PIN change request is triggered in settings."/>
   <int value="1" label="A PIN change request is triggered in PIN dialog."/>

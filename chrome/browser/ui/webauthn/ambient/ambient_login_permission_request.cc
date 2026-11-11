@@ -45,6 +45,7 @@ AmbientLoginPermissionRequest::AmbientLoginPermissionRequest(
       federated_selected_callback_(std::move(federated_selected_callback)),
       caller_permission_decided_callback_(
           std::move(options.permission_decided_callback)),
+      bubble_shown_callback_(std::move(options.bubble_shown_callback)),
       bubble_dismissed_callback_(std::move(options.bubble_dismissed_callback)),
       bubble_starts_open_(options.bubble_starts_open) {}
 
@@ -63,9 +64,11 @@ AmbientLoginPermissionRequest::AmbientLoginPermissionRequest(
 
 AmbientLoginPermissionRequest::~AmbientLoginPermissionRequest() = default;
 
-void AmbientLoginPermissionRequest::SelectCredential(size_t index) {
+void AmbientLoginPermissionRequest::SelectCredential(size_t index,
+                                                     bool from_expanded_list) {
   CHECK_LT(index, credentials_.size());
   selected_credential_index_ = index;
+  selected_from_expanded_list_ = from_expanded_list;
   selected_federated_index_.reset();
 }
 
@@ -73,6 +76,13 @@ void AmbientLoginPermissionRequest::SelectFederatedCredential(size_t index) {
   CHECK_LT(index, federated_credentials_.size());
   selected_federated_index_ = index;
   selected_credential_index_.reset();
+  selected_from_expanded_list_ = false;
+}
+
+void AmbientLoginPermissionRequest::OnBubbleShown() {
+  if (bubble_shown_callback_) {
+    std::move(bubble_shown_callback_).Run();
+  }
 }
 
 void AmbientLoginPermissionRequest::OnBubbleDismissed() {
@@ -93,9 +103,10 @@ void AmbientLoginPermissionRequest::OnPermissionDecided(
       }
     } else if (!credentials_.empty()) {
       federated_selected_callback_.Reset();
+      const size_t index = selected_credential_index_.value_or(0);
       if (credential_selected_callback_) {
         std::move(credential_selected_callback_)
-            .Run(selected_credential_index_.value_or(0));
+            .Run(index, selected_from_expanded_list_);
       }
     } else if (!federated_credentials_.empty()) {
       credential_selected_callback_.Reset();
