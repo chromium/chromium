@@ -1180,7 +1180,7 @@ IN_PROC_BROWSER_TEST_F(TabStripControllerFocusTransitionBrowserTest,
 }
 
 // Without rich animations the controller snaps the motion to its resting
-// state: no transition is reported and an ephemeral group is dissolved
+// state: no transition is reported and an ephemeral group is removed
 // synchronously on exit.
 IN_PROC_BROWSER_TEST_F(TabStripControllerFocusTransitionBrowserTest,
                        ReducedMotionSnapsWithoutHoldingEphemeralGroup) {

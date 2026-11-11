@@ -3416,10 +3416,10 @@ TEST_F(TabStripModelTest, CloseAllTabsInGroup_EphemeralGroup) {
   EXPECT_TRUE(tabstrip()->group_model()->ContainsTabGroup(ephemeral_group));
 }
 
-// Moving every tab of an ephemeral group to another window dissolves the group
+// Moving every tab of an ephemeral group to another window removes the group
 // rather than transplanting it, and is reported as its own exit reason instead
 // of looking like the group's last tab was closed.
-TEST_F(TabStripModelTest, MovingEphemeralGroupToAnotherWindowDissolvesIt) {
+TEST_F(TabStripModelTest, MovingEphemeralGroupToAnotherWindowRemovesIt) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       {features::kTabGroupsFocusing, features::kNonGroupFocus}, {});
@@ -3509,7 +3509,7 @@ TEST_F(TabStripModelTest, EphemeralGroupRemovalLock_KeepsGroupUntilReleased) {
   EXPECT_EQ(ephemeral_group, tabstrip()->GetTabGroupForTab(1));
   EXPECT_EQ(ephemeral_group, tabstrip()->GetTabGroupForTab(2));
 
-  // Releasing the lock dissolves the group.
+  // Releasing the lock removes the group.
   lock.RunAndReset();
   EXPECT_FALSE(tabstrip()->group_model()->ContainsTabGroup(ephemeral_group));
   EXPECT_EQ(std::nullopt, tabstrip()->GetTabGroupForTab(1));
@@ -3517,7 +3517,7 @@ TEST_F(TabStripModelTest, EphemeralGroupRemovalLock_KeepsGroupUntilReleased) {
 }
 
 TEST_F(TabStripModelTest,
-       EphemeralGroupRemovalLock_ReleasedDuringNotificationDissolvesOnce) {
+       EphemeralGroupRemovalLock_ReleasedDuringNotificationRemovesOnce) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       {features::kTabGroupsFocusing, features::kNonGroupFocus}, {});
@@ -3536,7 +3536,7 @@ TEST_F(TabStripModelTest,
         // An observer that takes the lock but finds nothing to animate (e.g.
         // under reduced motion) releases it before this notification returns.
         // The group must survive the release so that `ExitFocusMode()` can
-        // dissolve it exactly once after the notification.
+        // remove it exactly once after the notification.
         base::ScopedClosureRunner lock =
             tabstrip()->TakeEphemeralGroupRemovalLock(ephemeral_group);
         ASSERT_TRUE(lock);
@@ -3695,6 +3695,133 @@ TEST_F(TabStripModelTest, OnTabGroupPromotedOnlyForPromotion) {
               testing::ElementsAre(regular_group, ephemeral_group));
 
   tabstrip()->RemoveObserver(&observer);
+}
+
+namespace {
+
+// Runs `closure` from inside the OnTabGroupFocusChanged() notification, i.e.
+// while the TabStripModel's reentrancy guard is held by the mutation that sent
+// the notification.
+class ReentrantFocusObserver : public TabStripModelObserver {
+ public:
+  explicit ReentrantFocusObserver(base::OnceClosure closure)
+      : closure_(std::move(closure)) {}
+
+  void OnTabGroupFocusChanged(
+      std::optional<tab_groups::TabGroupId> new_focused_group_id,
+      std::optional<tab_groups::TabGroupId> old_focused_group_id) override {
+    if (closure_) {
+      std::move(closure_).Run();
+    }
+  }
+
+ private:
+  base::OnceClosure closure_;
+};
+
+}  // namespace
+
+// Every public focus-mode entry point takes the reentrancy guard, so calling
+// one from inside a TabStripModel notification CHECKs.
+TEST_F(TabStripModelTest, FocusModeEntryPointsRejectReentrancy) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {features::kTabGroupsFocusing, features::kNonGroupFocus}, {});
+
+  PrepareTabs(tabstrip(), 4);
+  tabstrip()->ForgetAllOpeners();
+  const tab_groups::TabGroupId group_a = tabstrip()->AddToNewGroup({0});
+  const tab_groups::TabGroupId group_b = tabstrip()->AddToNewGroup({1});
+
+  // ExitFocusMode() from within EnterFocusMode()'s notification.
+  {
+    ReentrantFocusObserver observer(base::BindOnce(
+        [](TabStripModel* model) { model->ExitFocusMode(); }, tabstrip()));
+    tabstrip()->AddObserver(&observer);
+    EXPECT_DEATH_IF_SUPPORTED(tabstrip()->EnterFocusMode(group_a), "");
+    tabstrip()->RemoveObserver(&observer);
+  }
+
+  // EnterFocusMode(group) from within ExitFocusMode()'s notification.
+  tabstrip()->EnterFocusMode(group_a);
+  {
+    ReentrantFocusObserver observer(base::BindOnce(
+        [](TabStripModel* model, tab_groups::TabGroupId group) {
+          model->EnterFocusMode(group);
+        },
+        tabstrip(), group_b));
+    tabstrip()->AddObserver(&observer);
+    EXPECT_DEATH_IF_SUPPORTED(tabstrip()->ExitFocusMode(), "");
+    tabstrip()->RemoveObserver(&observer);
+  }
+
+  // RotateFocusedGroup() from within ExitFocusMode()'s notification.
+  {
+    ReentrantFocusObserver observer(base::BindOnce(
+        [](TabStripModel* model) { model->RotateFocusedGroup(true); },
+        tabstrip()));
+    tabstrip()->AddObserver(&observer);
+    EXPECT_DEATH_IF_SUPPORTED(tabstrip()->ExitFocusMode(), "");
+    tabstrip()->RemoveObserver(&observer);
+  }
+
+  // EnterFocusMode(indices) (non-group focus) from within a notification.
+  {
+    ReentrantFocusObserver observer(base::BindOnce(
+        [](TabStripModel* model) { model->EnterFocusMode({2, 3}); },
+        tabstrip()));
+    tabstrip()->AddObserver(&observer);
+    EXPECT_DEATH_IF_SUPPORTED(tabstrip()->ExitFocusMode(), "");
+    tabstrip()->RemoveObserver(&observer);
+  }
+
+  // PromoteEphemeralTabGroup() from within EnterFocusMode(indices)'s
+  // notification.
+  tabstrip()->ExitFocusMode();
+  {
+    ReentrantFocusObserver observer(base::BindOnce(
+        [](TabStripModel* model) {
+          model->PromoteEphemeralTabGroup(*model->GetFocusedGroup());
+        },
+        tabstrip()));
+    tabstrip()->AddObserver(&observer);
+    EXPECT_DEATH_IF_SUPPORTED(tabstrip()->EnterFocusMode({2, 3}), "");
+    tabstrip()->RemoveObserver(&observer);
+  }
+}
+
+// Focus-mode transitions triggered from inside other guarded mutations (e.g.
+// activating a tab outside the focused group from ActivateTabAt()) go through
+// the unguarded *Impl paths and must not trip the reentrancy guard.
+TEST_F(TabStripModelTest, FocusModeExitFromGuardedMutationDoesNotReenter) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {features::kTabGroupsFocusing, features::kNonGroupFocus}, {});
+
+  PrepareTabs(tabstrip(), 3);
+  tabstrip()->ForgetAllOpeners();
+  const tab_groups::TabGroupId group = tabstrip()->AddToNewGroup({0, 1});
+
+  // Regular group: activating an outside tab exits focus mode.
+  tabstrip()->EnterFocusMode(group);
+  ASSERT_EQ(group, tabstrip()->GetFocusedGroup());
+  tabstrip()->ActivateTabAt(2);
+  EXPECT_EQ(std::nullopt, tabstrip()->GetFocusedGroup());
+  EXPECT_TRUE(tabstrip()->group_model()->ContainsTabGroup(group));
+
+  // Ephemeral group: activating an outside tab exits focus mode and removes
+  // the group, all from within ActivateTabAt()'s guard.
+  const tab_groups::TabGroupId ephemeral = tabstrip()->EnterFocusMode({2});
+  ASSERT_EQ(ephemeral, tabstrip()->GetFocusedGroup());
+  tabstrip()->ActivateTabAt(0);
+  EXPECT_EQ(std::nullopt, tabstrip()->GetFocusedGroup());
+  EXPECT_FALSE(tabstrip()->group_model()->ContainsTabGroup(ephemeral));
+
+  // Closing the focused group's tabs exits focus mode from within
+  // CloseAllTabsInGroup()'s guard.
+  tabstrip()->EnterFocusMode(group);
+  tabstrip()->CloseAllTabsInGroup(group);
+  EXPECT_EQ(std::nullopt, tabstrip()->GetFocusedGroup());
 }
 
 TEST_F(TabStripModelTest, AddToNewSplit_MultipleIndices_Active) {

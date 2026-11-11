@@ -1192,7 +1192,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabGroupViewBrowserTest,
   EXPECT_EQ(group_view_b->layer(), nullptr);
 }
 
-// Exiting focus on an ephemeral (non-group focus) group defers dissolving the
+// Exiting focus on an ephemeral (non-group focus) group defers removing the
 // group in the model until the exit motion finishes, so the group view stays
 // alive and shrinks both its unfocus button and header away while the
 // unrelated tabs grow back.
@@ -1260,13 +1260,13 @@ IN_PROC_BROWSER_TEST_F(VerticalTabGroupViewBrowserTest,
   EXPECT_TRUE(unrelated_tab_view->GetVisible());
 
   FinishFocusMotion();
-  // Dissolving the ephemeral group at the end of kExit must not kick off a
+  // Removing the ephemeral group at the end of kExit must not kick off a
   // secondary layout animation.
   EXPECT_FALSE(IsAnyTabLayoutAnimating());
   EXPECT_FALSE(model->group_model()->ContainsTabGroup(group_id));
   EXPECT_EQ(find_group_view(), nullptr);
   EXPECT_EQ(unrelated_tab_view->height(), unrelated_tab_height);
-  // The dissolved group's tabs were reparented into the container as the exit
+  // The removed group's tabs were reparented into the container as the exit
   // motion ended; neither they nor the unrelated tab keep a fade layer.
   for (views::View* child : unpinned_view->children()) {
     EXPECT_EQ(child->layer(), nullptr);

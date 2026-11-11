@@ -528,7 +528,7 @@ class NonGroupFocusDissolutionTest : public TabStripModelContextMenuTest {
 };
 
 TEST_F(NonGroupFocusDissolutionTest,
-       AddToNewGroupDissolvesEphemeralFocusedGroup) {
+       AddToNewGroupRemovesEphemeralFocusedGroup) {
   const tab_groups::TabGroupId ephemeral_group =
       StartNonGroupFocus(/*tab_count=*/3, /*focused_tab_count=*/2);
 
@@ -558,7 +558,7 @@ TEST_F(NonGroupFocusDissolutionTest,
 }
 
 TEST_F(NonGroupFocusDissolutionTest,
-       ActivatingTabOutsideEphemeralGroupDissolvesIt) {
+       ActivatingTabOutsideEphemeralGroupRemovesIt) {
   const tab_groups::TabGroupId ephemeral_group =
       StartNonGroupFocus(/*tab_count=*/2, /*focused_tab_count=*/1);
   base::HistogramTester histogram_tester;
@@ -575,7 +575,7 @@ TEST_F(NonGroupFocusDissolutionTest,
 }
 
 TEST_F(NonGroupFocusDissolutionTest,
-       InsertingTabOutsideEphemeralGroupDissolvesIt) {
+       InsertingTabOutsideEphemeralGroupRemovesIt) {
   const tab_groups::TabGroupId ephemeral_group =
       StartNonGroupFocus(/*tab_count=*/2, /*focused_tab_count=*/2);
 
@@ -589,8 +589,7 @@ TEST_F(NonGroupFocusDissolutionTest,
   EXPECT_EQ(tab_strip_model()->GetTabGroupForTab(2), std::nullopt);
 }
 
-TEST_F(NonGroupFocusDissolutionTest,
-       UngroupingFocusedEphemeralGroupDissolvesIt) {
+TEST_F(NonGroupFocusDissolutionTest, UngroupingFocusedEphemeralGroupRemovesIt) {
   const tab_groups::TabGroupId ephemeral_group =
       StartNonGroupFocus(/*tab_count=*/2, /*focused_tab_count=*/2);
 
@@ -604,7 +603,7 @@ TEST_F(NonGroupFocusDissolutionTest,
 }
 
 TEST_F(NonGroupFocusDissolutionTest,
-       FocusingAnotherGroupDissolvesEphemeralFocusedGroup) {
+       FocusingAnotherGroupRemovesEphemeralFocusedGroup) {
   const tab_groups::TabGroupId ephemeral_group =
       StartNonGroupFocus(/*tab_count=*/3, /*focused_tab_count=*/2);
   const tab_groups::TabGroupId other_group =
@@ -630,7 +629,7 @@ TEST_F(NonGroupFocusDissolutionTest,
 }
 
 TEST_F(NonGroupFocusDissolutionTest,
-       ToggleGroupedDissolvesEphemeralGroupAndCreatesPermanentGroup) {
+       ToggleGroupedRemovesEphemeralGroupAndCreatesPermanentGroup) {
   const tab_groups::TabGroupId ephemeral_group =
       StartNonGroupFocus(/*tab_count=*/2, /*focused_tab_count=*/2);
   base::HistogramTester histogram_tester;

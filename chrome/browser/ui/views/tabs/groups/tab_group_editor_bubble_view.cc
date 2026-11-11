@@ -555,7 +555,8 @@ bool TabGroupEditorBubbleView::OwnsGroup() const {
 void TabGroupEditorBubbleView::OnEphemeralGroupPromoted() {
   UpdateGroupVisuals();
   browser_->GetTabStripModel()->PromoteEphemeralTabGroup(group_);
-  OnBubbleClose();
+  // The widget's close callback runs OnBubbleClose(); do not call it here as
+  // well or the bubble metrics are recorded twice.
   if (GetWidget()) {
     GetWidget()->CloseWithReason(
         views::Widget::ClosedReason::kAcceptButtonClicked);
