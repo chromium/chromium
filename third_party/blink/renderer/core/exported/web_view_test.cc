@@ -4307,9 +4307,6 @@ class WebViewDragWithLayoutChangeTest
     EXPECT_TRUE(drag_state.drag_src_);
     EXPECT_EQ(drag_state.drag_type_, kDragSourceActionImage);
   }
-
- private:
-  ScopedGenerateDragOverlayBeforeDragStartForTest enable_feature_ = true;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,

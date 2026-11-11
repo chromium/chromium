@@ -1365,12 +1365,10 @@ bool DragController::PopulateDragDataTransfer(
     return false;
   }
 
-  if (RuntimeEnabledFeatures::GenerateDragOverlayBeforeDragStartEnabled()) {
-    // Reset these variables in case the drag is canceled by means different
-    // than `DragEnded()`.
-    drag_origin_hit_test_result_ = HitTestResult();
-    drag_overlay_ = DragOverlay();
-  }
+  // Reset these variables in case the drag is canceled by means different
+  // than `DragEnded()`.
+  drag_origin_hit_test_result_ = HitTestResult();
+  drag_overlay_ = DragOverlay();
 
   const HitTestResult hit_test_result =
       src->GetEventHandler().HitTestResultAtLocation(
@@ -1409,9 +1407,7 @@ bool DragController::PopulateDragDataTransfer(
     data_transfer->WriteSelection(src->Selection());
   } else if (state.drag_type_ == kDragSourceActionImage) {
     auto* element = DynamicTo<Element>(node);
-    if (image_url.IsEmpty() || !element ||
-        (RuntimeEnabledFeatures::GenerateDragOverlayBeforeDragStartEnabled() &&
-         !CanDragImage(*element))) {
+    if (image_url.IsEmpty() || !element || !CanDragImage(*element)) {
       return false;
     }
     PrepareDataTransferForImageDrag(src, data_transfer, element, link_url,
@@ -1444,15 +1440,12 @@ bool DragController::PopulateDragDataTransfer(
   // Document goes away.
   SetExecutionContext(src->DomWindow());
 
-  if (RuntimeEnabledFeatures::GenerateDragOverlayBeforeDragStartEnabled()) {
-    drag_origin_hit_test_result_ = hit_test_result;
-    if (state.drag_type_ == kDragSourceActionLink) {
-      SelectEnclosingAnchorIfContentEditable(src);
-    }
-    drag_overlay_ =
-        DetermineDragOverlay(src, state, drag_origin_hit_test_result_,
-                             drag_origin, mouse_dragged_point);
+  drag_origin_hit_test_result_ = hit_test_result;
+  if (state.drag_type_ == kDragSourceActionLink) {
+    SelectEnclosingAnchorIfContentEditable(src);
   }
+  drag_overlay_ = DetermineDragOverlay(src, state, drag_origin_hit_test_result_,
+                                       drag_origin, mouse_dragged_point);
 
   return true;
 }
@@ -1468,53 +1461,18 @@ bool DragController::StartDrag(LocalFrame* frame,
 
   const gfx::Point mouse_dragged_point = frame->View()->ConvertFromRootFrame(
       gfx::ToFlooredPoint(drag_event.PositionInRootFrame()));
-  if (RuntimeEnabledFeatures::GenerateDragOverlayBeforeDragStartEnabled()) {
-    // `drag_origin_hit_test_result_` is set in `PopulateDragDataTransfer()`,
-    // which must be called before `StartDrag()`.
-    CHECK(drag_origin_hit_test_result_.InnerNode());
-    // The member `drag_overlay_` was created before the `dragstart` event was
-    // fired. A listener for the event could have changed the drag image on the
-    // `dataTransfer` object.
-    auto data_transfer_overlay = DragOverlayForDataTransferImage(
-        frame, state, drag_origin_hit_test_result_, drag_initiation_location,
-        mouse_dragged_point);
-    if (data_transfer_overlay.drag_image) {
-      drag_overlay_.drag_image = std::move(data_transfer_overlay.drag_image);
-      drag_overlay_.overlay_rect = data_transfer_overlay.overlay_rect;
-    }
-  } else {
-    const HitTestResult hit_test_result =
-        frame->GetEventHandler().HitTestResultAtLocation(
-            HitTestLocation(drag_initiation_location));
-    Node* hit_inner_node = hit_test_result.InnerNode();
-    if (!hit_inner_node ||
-        !state.drag_src_->IsShadowIncludingInclusiveAncestorOf(
-            *hit_inner_node)) {
-      // The original node being dragged isn't under the drag origin anymore...
-      // maybe it was hidden or moved out from under the cursor. Regardless, we
-      // don't want to start a drag on something that's not actually under the
-      // drag origin.
-      return false;
-    }
-    // Validate that the drag source has the data required to start a drag of
-    // their type.
-    if (state.drag_type_ == kDragSourceActionImage) {
-      const KURL& image_url = hit_test_result.AbsoluteImageURL();
-      auto* element = DynamicTo<Element>(state.drag_src_.Get());
-      if (image_url.IsEmpty() || !element || !CanDragImage(*element)) {
-        return false;
-      }
-    } else if (state.drag_type_ == kDragSourceActionLink) {
-      if (hit_test_result.AbsoluteLinkURL().IsEmpty()) {
-        return false;
-      }
-    }
-    if (state.drag_type_ == kDragSourceActionLink) {
-      SelectEnclosingAnchorIfContentEditable(frame);
-    }
-    drag_overlay_ =
-        DetermineDragOverlay(frame, state, hit_test_result,
-                             drag_initiation_location, mouse_dragged_point);
+  // `drag_origin_hit_test_result_` is set in `PopulateDragDataTransfer()`,
+  // which must be called before `StartDrag()`.
+  CHECK(drag_origin_hit_test_result_.InnerNode());
+  // The member `drag_overlay_` was created before the `dragstart` event was
+  // fired. A listener for the event could have changed the drag image on the
+  // `dataTransfer` object.
+  auto data_transfer_overlay = DragOverlayForDataTransferImage(
+      frame, state, drag_origin_hit_test_result_, drag_initiation_location,
+      mouse_dragged_point);
+  if (data_transfer_overlay.drag_image) {
+    drag_overlay_.drag_image = std::move(data_transfer_overlay.drag_image);
+    drag_overlay_.overlay_rect = data_transfer_overlay.overlay_rect;
   }
 
   const gfx::Point effective_drag_initiation_location =

@@ -3568,14 +3568,6 @@
       status: "stable",
     },
     {
-      // When enabled, the drag image overlay for an element will be created
-      // before the "dragstart" event is fired. This fixes a bug that made
-      // drags not start if the "dragstart" event caused a layout shift that
-      // made the mouse hit test miss the drag source.
-      name: "GenerateDragOverlayBeforeDragStart",
-      status: "stable",
-    },
-    {
       // Killswitch for the visible deprecation warning banner shown on
       // XSLT-transformed documents. This will be present until the banner is
       // removed in M158.
