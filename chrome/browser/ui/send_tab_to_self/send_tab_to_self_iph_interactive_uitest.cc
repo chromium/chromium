@@ -23,9 +23,11 @@
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_sub_menu_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toasts/toast_view.h"
+#include "chrome/browser/ui/views/frame/base_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/browser_tab_strip_controller.h"
-#include "chrome/browser/ui/views/tabs/tab.h"
+#include "chrome/browser/ui/views/tabs/common/tab_strip_collection_controller.h"
+#include "chrome/browser/ui/views/tabs/tab/tab_context_menu_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/test/vertical_tabs_browser_test_mixin.h"
 #include "chrome/browser/ui/views/user_education/browser_user_education_service.h"
@@ -61,6 +63,7 @@
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_utils.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -553,11 +556,32 @@ class SendTabToSelfIphInteractiveUiTest : public InteractiveFeaturePromoTest {
   }
 
   void CloseTabContextMenu() {
+    auto* const browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+    if (auto* const base_region = views::AsViewClass<BaseTabStripRegionView>(
+            browser_view->tab_strip_view())) {
+      base_region->GetTabStripCollectionController()
+          ->GetTabContextMenuController()
+          ->CloseMenu();
+      return;
+    }
     static_cast<BrowserTabStripController*>(
-        BrowserView::GetBrowserViewForBrowser(browser())
-            ->horizontal_tab_strip_for_testing()
-            ->controller())
+        browser_view->horizontal_tab_strip_for_testing()->controller())
         ->CloseContextMenuForTesting();
+  }
+
+  auto NameTab(std::string_view name, int tab_index) {
+    return NameViewRelative(
+        kBrowserViewElementId, name,
+        base::BindOnce(
+            [](int index, BrowserView* browser_view) -> views::View* {
+              auto* const model = browser_view->browser()->GetTabStripModel();
+              if (index < 0 || index >= model->count()) {
+                return nullptr;
+              }
+              return browser_view->tab_strip_view()->GetTabAnchorView(
+                  model->GetTabAtIndex(index)->GetHandle());
+            },
+            tab_index));
   }
 
 #if BUILDFLAG(IS_MAC)
@@ -665,8 +689,8 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfIphInteractiveUiTest,
           user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
       CheckHelpBubbleAnchoredToTab(browser(), 1),
       CheckHelpBubbleBodyText(IDS_TUTORIAL_SEND_TAB_TO_SELF_STEP_1_BODY),
-      NameDescendantViewByType<Tab>(kBrowserViewElementId, kSecondTabName, 1),
-      MoveMouseTo(kSecondTabName), ClickMouse(ui_controls::RIGHT),
+      NameTab(kSecondTabName, 1), MoveMouseTo(kSecondTabName),
+      ClickMouse(ui_controls::RIGHT),
       // Step 2: Context menu open, bubble on Send Tab to Self menu item.
       WaitForShow(kTabSendTabToSelfMenuItem), SelectSendTabToSelfDeviceItem(),
       // Completion step: bubble anchored to the toast notification.
@@ -700,9 +724,8 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfIphInteractiveUiTest,
                  /*baseline_cl=*/kScreenshotBaselineCL),
       // 3. Step 2: Bubble anchored to Send Tab to Self menu item in context
       // menu.
-      NameDescendantViewByType<Tab>(kBrowserViewElementId, kSecondTabName, 1),
-      MoveMouseTo(kSecondTabName), ClickMouse(ui_controls::RIGHT),
-      WaitForShow(kTabSendTabToSelfMenuItem),
+      NameTab(kSecondTabName, 1), MoveMouseTo(kSecondTabName),
+      ClickMouse(ui_controls::RIGHT), WaitForShow(kTabSendTabToSelfMenuItem),
       InAnyContext(Screenshot(
           user_education::HelpBubbleView::kHelpBubbleElementIdForTesting,
           /*screenshot_name=*/"SendTabToSelfTutorialStep2MenuItem",
@@ -735,8 +758,8 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfIphInteractiveUiTest,
       // Step 1: Wait for the bubble on the active tab.
       WaitForShow(
           user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
-      NameDescendantViewByType<Tab>(kBrowserViewElementId, kSecondTabName, 1),
-      MoveMouseTo(kSecondTabName), ClickMouse(ui_controls::RIGHT),
+      NameTab(kSecondTabName, 1), MoveMouseTo(kSecondTabName),
+      ClickMouse(ui_controls::RIGHT),
       // Step 2: Context menu open, bubble anchored to Send Tab to Self item.
       WaitForShow(kTabSendTabToSelfMenuItem),
       WithElement(kTabSendTabToSelfMenuItem,
@@ -807,8 +830,8 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfIphInteractiveUiTest,
       CheckHelpBubbleAnchoredToTab(browser(), 1),
       CheckHelpBubbleBodyText(IDS_TUTORIAL_SEND_TAB_TO_SELF_STEP_1_BODY),
       // Right-clicking the promo tab (index 1) advances the tutorial to Step 2.
-      NameDescendantViewByType<Tab>(kBrowserViewElementId, kSecondTabName, 1),
-      MoveMouseTo(kSecondTabName), ClickMouse(ui_controls::RIGHT),
+      NameTab(kSecondTabName, 1), MoveMouseTo(kSecondTabName),
+      ClickMouse(ui_controls::RIGHT),
       InAnyContext(WaitForShow(kTabSendTabToSelfMenuItem)),
       InAnyContext(WaitForShow(
           user_education::HelpBubbleView::kHelpBubbleElementIdForTesting)),

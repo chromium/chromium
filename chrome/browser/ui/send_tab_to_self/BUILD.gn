@@ -115,9 +115,11 @@ source_set("interactive_ui_tests") {
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/tabs",
     "//chrome/browser/ui/toasts",
+    "//chrome/browser/ui/views/frame:base_tab_strip_region_view",
     "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/browser/ui/views/send_tab_to_self",
-    "//chrome/browser/ui/views/tabs:tab",
+    "//chrome/browser/ui/views/tabs/common:impl",
+    "//chrome/browser/ui/views/tabs/tab",
     "//chrome/browser/ui/views/user_education",
     "//chrome/browser/user_education",
     "//chrome/test:test_support",
@@ -128,6 +130,7 @@ source_set("interactive_ui_tests") {
     "//components/user_education/views",
     "//content/test:test_support",
     "//ui/base:ozone_buildflags",
+    "//ui/views",
   ]
   if (use_ozone) {
     deps += [ "//ui/ozone" ]

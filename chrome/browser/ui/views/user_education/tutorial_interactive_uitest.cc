@@ -17,6 +17,10 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/tabs/common/tab_view.h"
+#include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab/tab_close_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
@@ -49,6 +53,7 @@
 #include "ui/events/event.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
+#include "ui/views/view_utils.h"
 #include "ui/webui/tracked_element/tracked_element_handler.h"
 #include "ui/webui/tracked_element/tracked_element_web_ui.h"
 
@@ -268,10 +273,25 @@ IN_PROC_BROWSER_TEST_F(WebUITutorialInteractiveUitest,
   RunTestSequence(
       AddInstrumentedTab(kNewTabPageId, chrome::ChromeUINewTabPageURLAsGURL()),
       StartTutorial(kNewTabPageId),
-      NameViewRelative(kTabStripElementId, kTabCloseButtonId,
-                       [](TabStrip* tab_strip) {
-                         return tab_strip->tab_at(1)->close_button().get();
-                       }),
+      NameViewRelative(
+          kBrowserViewElementId, kTabCloseButtonId,
+          base::BindOnce([](BrowserView* browser_view) -> views::View* {
+            auto* const model = browser_view->browser()->GetTabStripModel();
+            if (model->count() <= 1) {
+              return nullptr;
+            }
+            views::View* const tab_view =
+                browser_view->tab_strip_view()->GetTabAnchorView(
+                    model->GetTabAtIndex(1)->GetHandle());
+            if (auto* const tab = views::AsViewClass<Tab>(tab_view)) {
+              return tab->close_button();
+            }
+            if (auto* const unified_tab =
+                    views::AsViewClass<TabView>(tab_view)) {
+              return unified_tab->close_button_for_testing();
+            }
+            return nullptr;
+          })),
       PressButton(kTabCloseButtonId), WaitForHide(kNewTabPageId));
 }
 

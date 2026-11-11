@@ -20,6 +20,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/ui/browser_command_controller.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/layout_constants.h"
@@ -28,6 +29,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/test/vertical_tabs_interactive_test_mixin.h"
 #include "chrome/browser/ui/views/toolbar/reload_button.h"
@@ -173,10 +175,22 @@ class ToolbarViewTest : public ToolbarAccessibilityTest {
   auto OpenSideBySideTab(int tab_index) {
     const char kTabToHover[] = "Tab to hover";
 
-    return Steps(NameDescendantViewByType<Tab>(kTabStripElementId, kTabToHover,
-                                               tab_index),
-                 MoveMouseTo(kTabToHover), ClickMouse(ui_controls::RIGHT),
-                 SelectMenuItem(TabMenuModel::kSplitTabsMenuItem));
+    return Steps(
+        NameViewRelative(
+            kBrowserViewElementId, kTabToHover,
+            base::BindOnce(
+                [](int index, BrowserView* browser_view) -> views::View* {
+                  auto* const model =
+                      browser_view->browser()->GetTabStripModel();
+                  if (index < 0 || index >= model->count()) {
+                    return nullptr;
+                  }
+                  return browser_view->tab_strip_view()->GetTabAnchorView(
+                      model->GetTabAtIndex(index)->GetHandle());
+                },
+                tab_index)),
+        MoveMouseTo(kTabToHover), ClickMouse(ui_controls::RIGHT),
+        SelectMenuItem(TabMenuModel::kSplitTabsMenuItem));
   }
 
  private:

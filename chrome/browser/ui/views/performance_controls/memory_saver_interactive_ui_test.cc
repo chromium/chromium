@@ -357,12 +357,19 @@ class MemorySaverChipInteractiveTest
     return steps;
   }
 
-  auto NameTab(size_t index, std::string name) {
+  auto NameTab(int index, std::string name) {
     return NameViewRelative(
-        kTabStripElementId, name,
-        base::BindOnce([](size_t index, TabStrip* tab_strip)
-                           -> views::View* { return tab_strip->tab_at(index); },
-                       index));
+        kBrowserViewElementId, name,
+        base::BindOnce(
+            [](int index, BrowserView* browser_view) -> views::View* {
+              auto* const model = browser_view->browser()->GetTabStripModel();
+              if (index < 0 || index >= model->count()) {
+                return nullptr;
+              }
+              return browser_view->tab_strip_view()->GetTabAnchorView(
+                  model->GetTabAtIndex(index)->GetHandle());
+            },
+            index));
   }
 
   // Sets discard usage on the active tab for deterministic UI testing.
