@@ -100,19 +100,6 @@ public class GlicMetrics {
      * Records, when a web contents context menu closes, whether a Glic item shown in it was
      * clicked. Desktop records the same histogram.
      *
-     * @param source The invocation source of the shown item: a context menu link, page, text
-     *     selection or shared image source.
-     * @param executed Whether the user clicked the item.
-     */
-    public static void recordWebContentsContextMenuResult(
-            @GlicInvocationSource int source, boolean executed) {
-        recordWebContentsContextMenuResult(/* profile= */ null, source, executed);
-    }
-
-    /**
-     * Records, when a web contents context menu closes, whether a Glic item shown in it was
-     * clicked. Desktop records the same histogram.
-     *
      * @param profile The Profile where the menu was shown, or null if unavailable.
      * @param source The invocation source of the shown item: a context menu link, page, text
      *     selection or shared image source.
@@ -152,17 +139,6 @@ public class GlicMetrics {
             default:
                 return null;
         }
-    }
-
-    /**
-     * Recorded when Chrome attempts to send the user's selected text to Glic, after the user taps
-     * the 'Ask Gemini' item in the text selection menu. Pairs with Glic.EntryPoint.Click.{Ntp,
-     * Other} to form a click to successful-send funnel.
-     *
-     * @param succeeded Whether the selected text was successfully handed off to the Glic service.
-     */
-    public static void recordSendSelectedTextSucceeded(boolean succeeded) {
-        recordSendSelectedTextSucceeded(/* profile= */ null, succeeded);
     }
 
     /**
