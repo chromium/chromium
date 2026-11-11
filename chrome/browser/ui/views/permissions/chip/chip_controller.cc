@@ -413,6 +413,13 @@ void ChipController::RemoveBubbleObserverAndResetTimersAndChipCallbacks() {
   if (bubble_widget) {
     disallowed_custom_cursors_scope_.RunAndReset();
     bubble_widget->RemoveObserver(this);
+    // `Close()` is asynchronous. Forget the bubble and any decision made on it
+    // before closing it, so that neither synchronous close callbacks nor a
+    // prompt shown in the same task (e.g. for the tab switched to) see it as
+    // showing, and its destruction can't dismiss or decide that prompt's
+    // requests.
+    bubble_tracker_.SetView(nullptr);
+    prompt_decision_.reset();
     bubble_widget->Close();
     permission_prompt_observers_.Notify(&Observer::OnPermissionPromptHidden);
   }

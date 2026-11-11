@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <vector>
+
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
@@ -38,6 +41,8 @@
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/omnibox/browser/open_tab_provider.h"
 #include "components/permissions/features.h"
+#include "components/permissions/permission_request_manager.h"
+#include "components/permissions/permission_uma_constants.h"
 #include "components/permissions/test/permission_request_observer.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -45,12 +50,15 @@
 #include "content/public/test/test_devtools_protocol_client.h"
 #include "net/dns/mock_host_resolver.h"
 #include "services/device/public/cpp/device_features.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/views_test_utils.h"
+#include "ui/views/test/widget_test.h"
 #include "ui/views/view_utils.h"
+#include "ui/views/widget/widget.h"
 
 namespace {
 
@@ -346,6 +354,122 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestChipGestureInsensitiveBrowserTest,
       lb->GetChipController()->is_collapse_timer_running_for_testing());
   EXPECT_FALSE(lb->GetChipController()->is_dismiss_timer_running_for_testing());
 }
+
+// Records the decisions made on one tab's permission requests.
+class RequestDecisionRecorder
+    : public permissions::PermissionRequestManager::Observer {
+ public:
+  explicit RequestDecisionRecorder(
+      permissions::PermissionRequestManager* manager) {
+    observation_.Observe(manager);
+  }
+
+  const std::vector<permissions::PermissionAction>& decisions() const {
+    return decisions_;
+  }
+
+  // permissions::PermissionRequestManager::Observer:
+  void OnRequestDecided(permissions::PermissionAction action) override {
+    decisions_.push_back(action);
+  }
+
+ private:
+  std::vector<permissions::PermissionAction> decisions_;
+  base::ScopedObservation<permissions::PermissionRequestManager,
+                          permissions::PermissionRequestManager::Observer>
+      observation_{this};
+};
+
+struct TabSwitchTestCase {
+  const char* name;
+  // Whether the user decides on the other tab's prompt right before switching
+  // back, so that its bubble is still closing, with the decision pending, when
+  // the switch happens.
+  bool decide_on_other_tab_before_switch;
+};
+
+// All tabs in a window share one `ChipController`. These tests check that
+// the asynchronous close of the previous tab's prompt bubble doesn't resolve
+// the request of the tab switched to.
+class PermissionRequestChipTabSwitchBrowserTest
+    : public InProcessBrowserTest,
+      public testing::WithParamInterface<TabSwitchTestCase> {
+ private:
+  // Makes the chip expand, and so open its prompt bubble, synchronously.
+  const gfx::AnimationTestApi::RenderModeResetter disable_rich_animations_ =
+      gfx::AnimationTestApi::SetRichAnimationRenderMode(
+          gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
+};
+
+IN_PROC_BROWSER_TEST_P(PermissionRequestChipTabSwitchBrowserTest,
+                       RequestStaysPendingWhenSwitchingBackFromOpenBubble) {
+  TabStripModel* tab_strip = browser()->GetTabStripModel();
+  LocationBar* lb = GetLocationBar(browser());
+  ChipController* chip_controller = lb->GetChipController();
+
+  test::PermissionRequestManagerTestApi test_api_tab_0(browser());
+  permissions::PermissionRequestManager* manager_tab_0 =
+      test_api_tab_0.manager();
+  RequestDecisionRecorder decisions_tab_0(manager_tab_0);
+  permissions::PermissionRequestObserver observer_tab_0(
+      tab_strip->GetActiveWebContents());
+  test_api_tab_0.AddSimpleRequest(
+      tab_strip->GetActiveWebContents()->GetPrimaryMainFrame(),
+      permissions::RequestType::kNotifications);
+  observer_tab_0.Wait();
+  ASSERT_TRUE(WaitForBubbleAnchor(lb));
+  ASSERT_TRUE(chip_controller->IsBubbleShowing());
+
+  chrome::NewTabToRight(browser());
+  tab_strip->ActivateTabAt(1);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+  test::PermissionRequestManagerTestApi test_api_tab_1(browser());
+  permissions::PermissionRequestObserver observer_tab_1(
+      tab_strip->GetActiveWebContents());
+  test_api_tab_1.AddSimpleRequest(
+      tab_strip->GetActiveWebContents()->GetPrimaryMainFrame(),
+      permissions::RequestType::kGeolocation);
+  observer_tab_1.Wait();
+  ASSERT_TRUE(WaitForBubbleAnchor(lb));
+  views::Widget* tab_1_bubble = chip_controller->GetBubbleWidget();
+  ASSERT_TRUE(tab_1_bubble);
+  views::test::WidgetDestroyedWaiter tab_1_bubble_destroyed(tab_1_bubble);
+
+  if (GetParam().decide_on_other_tab_before_switch) {
+    chip_controller->PromptDecided(permissions::PermissionAction::GRANTED);
+  }
+  tab_strip->ActivateTabAt(0);
+  tab_1_bubble_destroyed.Wait();
+
+  EXPECT_TRUE(manager_tab_0->IsRequestInProgress());
+  EXPECT_THAT(decisions_tab_0.decisions(), testing::IsEmpty());
+  ASSERT_TRUE(WaitForBubbleAnchor(lb));
+  EXPECT_TRUE(chip_controller->IsPermissionPromptChipVisible());
+  ASSERT_TRUE(chip_controller->IsBubbleShowing());
+
+  // Closing tab 0's own bubble must not apply a decision left over from tab 1.
+  views::Widget* tab_0_bubble = chip_controller->GetBubbleWidget();
+  views::test::WidgetDestroyedWaiter tab_0_bubble_destroyed(tab_0_bubble);
+  tab_0_bubble->CloseWithReason(views::Widget::ClosedReason::kEscKeyPressed);
+  tab_0_bubble_destroyed.Wait();
+
+  EXPECT_THAT(
+      decisions_tab_0.decisions(),
+      testing::Not(testing::Contains(permissions::PermissionAction::GRANTED)));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PermissionRequestChipTabSwitchBrowserTest,
+    testing::ValuesIn<TabSwitchTestCase>({
+        {.name = "OtherTabBubbleOpen",
+         .decide_on_other_tab_before_switch = false},
+        {.name = "OtherTabDecisionPendingOnBubbleClose",
+         .decide_on_other_tab_before_switch = true},
+    }),
+    [](const testing::TestParamInfo<TabSwitchTestCase>& info) {
+      return info.param.name;
+    });
 
 class PermissionRequestChipBrowserUiTest : public UiBrowserTest {
  public:
