@@ -168,6 +168,7 @@ crbug.com/40157443 [ iPad ] AutofillAddCreditCardTestCase/testCancelButtonDismis
 crbug.com/40157443 [ iPad ] AutofillAddCreditCardTestCase/testAddButtonOnValidNumber [ Pass Failure ]
 crbug.com/451607065 [ Device ] AutofillCvcStorageSettingsTestCase/testDeleteActionsAreRecorded [ Pass Failure ]
 crbug.com/576277206 [ iOS26 iPad Simulator ] AutofillCvcStorageSettingsTestCase/testDeleteActionsAreRecorded [ Pass Failure ]
+crbug.com/451607065 [ iOS27.3 iPhone Simulator ] AutofillCvcStorageSettingsTestCase/testDeleteActionsAreRecorded [ Failure ]
 crbug.com/485239638 [ Device ] AutofillCreditCardSettingsTestCase/testServerCardViewSkipsMandatoryReauth [ Pass Failure ]
 
 # Migrated from in-source test disable annotations: tab_switcher.
@@ -605,3 +606,5 @@ crbug.com/583813595 [ iPhone ] PolicyTestCase/testEnterpriseBubbleInEnhancedSafe
 
 # Gardening suppression 2026-11-11
 crbug.com/584669470 [ Release Device ] UserPolicyTestCase/testThatPoliciesAreLoadedFromStoreWhenSignedInAtStartup [ Pass Failure ]
+crbug.com/584394355 [ iPad ] GeminiContainerTestCase/testOpenAndCloseGeminiTwice [ Failure ]
+crbug.com/584738140 [ iPad Device ] PageInfoTestCase/testContextMenuOpenInNewWindow [ Pass Failure ]
