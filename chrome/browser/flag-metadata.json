@@ -8535,7 +8535,7 @@
       "read-aloud-tiger-team@google.com",
       "//ui/accessibility/OWNERS"
     ],
-    "expiry_milestone": 160
+    "expiry_milestone": 180
   },
   {
     "name": "read-anything-distiller-refactor",
