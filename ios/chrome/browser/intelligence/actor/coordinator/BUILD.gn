@@ -19,7 +19,6 @@ source_set("coordinator") {
     "//base",
     "//components/autofill/core/browser",
     "//components/autofill/ios/browser",
-    "//ios/chrome/app/strings",
     "//ios/chrome/browser/intelligence/actor/public:actor_task_data_source",
     "//ios/chrome/browser/intelligence/actor/public:actor_task_ui_protocols",
     "//ios/chrome/browser/intelligence/actor/public:actor_types",
@@ -31,9 +30,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/coordinator/scene/state",
     "//ios/chrome/browser/shared/model/browser",
-    "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/common/ui/colors",
-    "//ui/base",
     "//url",
   ]
 }

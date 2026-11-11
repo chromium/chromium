@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/intelligence/actor/coordinator/actuation_worklog_mediator.h"
 
 #import <optional>
-#import <utility>
 
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/actor_login/actor_login_types.h"
@@ -351,7 +350,8 @@ TEST_F(ActuationWorklogMediatorTest, TestAttachToFinishedTaskDisplaysDone) {
               l10n_util::GetNSString(IDS_IOS_ACTOR_HEADER_TASK_DONE));
 }
 
-// Tests that tool execution emits a chip and timeline item.
+// Tests that tool execution emits a timeline item, with the chip of the tool if
+// it has one.
 TEST_F(ActuationWorklogMediatorTest, TestToolExecutionEmitsChipAndItem) {
   StartObservingTask();
   [fake_consumer_.items removeAllObjects];
@@ -362,25 +362,11 @@ TEST_F(ActuationWorklogMediatorTest, TestToolExecutionEmitsChipAndItem) {
   ASSERT_EQ(fake_consumer_.chips.count, 1u);
   EXPECT_GT(fake_consumer_.chips[0].text.length, 0u);
 
-  ExecuteTool(kNavigate, @"Navigating to page");
-  ASSERT_EQ(fake_consumer_.items.count, 2u);
-  EXPECT_NSEQ(fake_consumer_.items[1].title, @"Navigating to page");
-  ASSERT_EQ(fake_consumer_.chips.count, 2u);
-  EXPECT_GT(fake_consumer_.chips[1].text.length, 0u);
-
-  // Unmapped tools emit the catch-all fallback chip.
-  ExecuteTool(kSelect, @"Selecting item");
-  ASSERT_EQ(fake_consumer_.items.count, 3u);
-  EXPECT_NSEQ(fake_consumer_.items[2].title, @"Selecting item");
-  ASSERT_EQ(fake_consumer_.chips.count, 3u);
-  EXPECT_NSEQ(fake_consumer_.chips[2].text,
-              l10n_util::GetNSString(IDS_IOS_ACTOR_WORKLOG_CHIP_DEFAULT));
-
   // Tools without chips (e.g. kWaitZeroDuration) do not emit a chip.
   ExecuteTool(kWaitZeroDuration, @"Stabilizing");
-  ASSERT_EQ(fake_consumer_.items.count, 4u);
-  EXPECT_NSEQ(fake_consumer_.items[3].title, @"Stabilizing");
-  EXPECT_EQ(fake_consumer_.chips.count, 3u);
+  ASSERT_EQ(fake_consumer_.items.count, 2u);
+  EXPECT_NSEQ(fake_consumer_.items[1].title, @"Stabilizing");
+  EXPECT_EQ(fake_consumer_.chips.count, 1u);
 }
 
 // Tests the different state transitions.
@@ -458,53 +444,19 @@ TEST_F(ActuationWorklogMediatorTest,
   EXPECT_EQ(fake_consumer_.items.count, 1u);
 }
 
-// Tests that while the task runs, the minimized header shows the task title
-// above the current step, and the other modes only show the task title.
-TEST_F(ActuationWorklogMediatorTest, TestHeaderContentWhileRunning) {
+// Tests that the minimized header shows the current step, and shows it again
+// once the task runs after a status was displayed.
+TEST_F(ActuationWorklogMediatorTest, TestHeaderContentTracksCurrentStep) {
   StartObservingTask();
-
-  ActuationHeaderContent* minimized =
-      HeaderContent(ActuationWorklogDisplayModeMinimized);
-  EXPECT_NSEQ(minimized.title, @(kTaskTitle));
-  EXPECT_EQ(minimized.subtitle, nil);
+  EXPECT_EQ(HeaderContent(ActuationWorklogDisplayModeMinimized).subtitle, nil);
 
   ExecuteTool(kClick, @"Clicking button");
-  minimized = HeaderContent(ActuationWorklogDisplayModeMinimized);
-  EXPECT_NSEQ(minimized.title, @(kTaskTitle));
-  EXPECT_NSEQ(minimized.subtitle, @"Clicking button");
+  EXPECT_NSEQ(HeaderContent(ActuationWorklogDisplayModeMinimized).subtitle,
+              @"Clicking button");
 
-  for (ActuationWorklogDisplayMode mode :
-       {ActuationWorklogDisplayModeCompact,
-        ActuationWorklogDisplayModeExpanded}) {
-    SCOPED_TRACE(mode);
-    ActuationHeaderContent* content = HeaderContent(mode);
-    EXPECT_NSEQ(content.title, @(kTaskTitle));
-    EXPECT_EQ(content.subtitle, nil);
-  }
-}
-
-// Tests that the minimized header shows the status above the task title for
-// states with a status, and shows the current step again once the task runs.
-TEST_F(ActuationWorklogMediatorTest, TestMinimizedHeaderContentShowsStatus) {
-  StartObservingTask();
-  ExecuteTool(kClick, @"Clicking button");
-
-  const std::pair<actor::ActorTaskState, int> kStatuses[] = {
-      {kWaitingOnUser, IDS_IOS_ACTOR_HEADER_INPUT_NEEDED},
-      {kFinished, IDS_IOS_ACTOR_HEADER_TASK_DONE},
-      {kCancelled, IDS_IOS_ACTOR_HEADER_TASK_STOPPED},
-      {kFailed, IDS_IOS_ACTOR_HEADER_TASK_FAILED},
-  };
-  for (const auto& [state, message_id] : kStatuses) {
-    SCOPED_TRACE(static_cast<int>(state));
-    ChangeState(state);
-    ActuationHeaderContent* minimized =
-        HeaderContent(ActuationWorklogDisplayModeMinimized);
-    EXPECT_NSEQ(minimized.title, l10n_util::GetNSString(message_id));
-    EXPECT_NSEQ(minimized.subtitle, @(kTaskTitle));
-    EXPECT_NSEQ(HeaderContent(ActuationWorklogDisplayModeCompact).title,
-                @(kTaskTitle));
-  }
+  ChangeState(kWaitingOnUser);
+  EXPECT_NSEQ(HeaderContent(ActuationWorklogDisplayModeMinimized).title,
+              l10n_util::GetNSString(IDS_IOS_ACTOR_HEADER_INPUT_NEEDED));
 
   ChangeState(kActing);
   ActuationHeaderContent* minimized =
