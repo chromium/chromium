@@ -4,8 +4,11 @@
 
 #include "chrome/app_shim/app_shim_controller.h"
 
+#import <Cocoa/Cocoa.h>
+
 #include "base/apple/foundation_util.h"
 #include "base/base_switches.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
@@ -15,15 +18,22 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/test/multiprocess_test.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_timeouts.h"
 #include "base/threading/thread.h"
+#include "chrome/app_shim/app_shim_application.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/common/mac/app_mode_common.h"
+#include "components/remote_cocoa/app_shim/features.h"
 #include "components/variations/variations_crash_keys.h"
 #include "components/variations/variations_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "testing/multiprocess_func_list.h"
+#import "ui/base/test/scoped_fake_nswindow_focus.h"
 
 namespace {
 
@@ -251,4 +261,101 @@ TEST_F(AppShimControllerTest, FinalizeFeatureStateWithFieldTrials) {
   EXPECT_FALSE(base::FeatureList::GetEarlyAccessedFeatureForTesting());
   EXPECT_EQ(2, feature_param1.Get());
   EXPECT_EQ(0, feature_param2.Get());
+}
+
+@interface AppShimTestFakeWindow : NSWindow
+@property(strong, nonatomic) NSEvent* lastEvent;
+@property(assign, nonatomic) BOOL wasHandlingSendEvent;
+@end
+
+@implementation AppShimTestFakeWindow
+
+@synthesize lastEvent = _lastEvent;
+@synthesize wasHandlingSendEvent = _wasHandlingSendEvent;
+
+- (BOOL)canBecomeKeyWindow {
+  return YES;
+}
+
+- (void)sendEvent:(NSEvent*)event {
+  self.lastEvent = event;
+  self.wasHandlingSendEvent =
+      [base::apple::ObjCCastStrict<CrApplication>(NSApp) isHandlingSendEvent];
+}
+
+@end
+
+MULTIPROCESS_TEST_MAIN(AppShimApplicationSendEventMain) {
+  [AppShimApplication sharedApplication];
+  CHECK([NSApp isKindOfClass:[AppShimApplication class]]);
+
+  NSEvent* cmd_a_key_up = [NSEvent keyEventWithType:NSEventTypeKeyUp
+                                           location:NSZeroPoint
+                                      modifierFlags:NSEventModifierFlagCommand
+                                          timestamp:0
+                                       windowNumber:0
+                                            context:nil
+                                         characters:@"a"
+                        charactersIgnoringModifiers:@"a"
+                                          isARepeat:NO
+                                            keyCode:0];
+
+  // With no key window during early feature access, Cmd+KeyUp is a safe no-op
+  // and does not trigger an early feature access violation.
+  {
+    base::ScopedPathOverride user_data_dir_override(chrome::DIR_USER_DATA);
+    base::test::ScopedFeatureList clear_feature_list;
+    clear_feature_list.InitWithNullFeatureAndFieldTrialLists();
+    base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+    AppShimController::PreInitFeatureState(command_line);
+    base::FeatureList::ResetEarlyFeatureAccessTrackerForTesting();
+
+    CHECK_EQ(nil, NSApp.keyWindow);
+    [NSApp sendEvent:cmd_a_key_up];
+    CHECK(!base::FeatureList::GetEarlyAccessedFeatureForTesting());
+  }
+
+  ui::test::ScopedFakeNSWindowFocus fake_focus;
+  AppShimTestFakeWindow* fake_window = [[AppShimTestFakeWindow alloc] init];
+  fake_window.releasedWhenClosed = NO;
+  [fake_window makeKeyWindow];
+  CHECK_EQ(fake_window, NSApp.keyWindow);
+
+  // When enabled (default), Cmd+KeyUp is forwarded to the key window and
+  // ScopedSendingEvent marks NSApp as handling sendEvent:.
+  {
+    base::test::ScopedFeatureList enable_feature(
+        remote_cocoa::features::kForwardCmdKeyUpEventsToWindow);
+    [NSApp sendEvent:cmd_a_key_up];
+    CHECK_EQ(cmd_a_key_up, fake_window.lastEvent);
+    CHECK(fake_window.wasHandlingSendEvent);
+    CHECK(![base::apple::ObjCCastStrict<CrApplication>(NSApp)
+        isHandlingSendEvent]);
+  }
+
+  // When the killswitch is disabled, Cmd+KeyUp is not forwarded to the key
+  // window.
+  fake_window.lastEvent = nil;
+  {
+    base::test::ScopedFeatureList disable_feature;
+    disable_feature.InitAndDisableFeature(
+        remote_cocoa::features::kForwardCmdKeyUpEventsToWindow);
+    [NSApp sendEvent:cmd_a_key_up];
+    CHECK_EQ(nil, fake_window.lastEvent);
+  }
+
+  [fake_window close];
+  return 0;
+}
+
+TEST_F(AppShimControllerTest, AppShimApplicationCmdKeyUpForwardedToWindow) {
+  base::CommandLine command_line(
+      base::GetMultiProcessTestChildBaseCommandLine());
+  command_line.AppendSwitch(switches::kDoNotCreateNSAppForTests);
+  base::Process child = base::SpawnMultiProcessTestChild(
+      "AppShimApplicationSendEventMain", command_line, base::LaunchOptions());
+  int rv = -1;
+  ASSERT_TRUE(base::WaitForMultiprocessTestChildExit(
+      child, TestTimeouts::action_timeout(), &rv));
+  EXPECT_EQ(0, rv);
 }

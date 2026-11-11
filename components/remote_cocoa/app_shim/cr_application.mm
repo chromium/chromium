@@ -4,11 +4,81 @@
 
 #include "components/remote_cocoa/app_shim/cr_application.h"
 
+#include <Carbon/Carbon.h>  // for <HIToolbox/Events.h>
+
 #include "base/apple/call_with_eh_frame.h"
+#include "base/feature_list.h"
 #include "base/mac/mac_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/crash/core/common/crash_key.h"
+#include "components/remote_cocoa/app_shim/features.h"
+
+namespace {
+
+// Calling -[NSEvent description] is rather slow to build up the event
+// description. The description is stored in a crash key to aid debugging, so
+// this helper function constructs a shorter, but still useful, description.
+// See <https://crbug.com/40542574>.
+std::string DescriptionForNSEvent(NSEvent* event) {
+  std::string desc = base::StringPrintf(
+      "NSEvent type=%ld modifierFlags=0x%lx locationInWindow=(%g,%g)",
+      event.type, event.modifierFlags, event.locationInWindow.x,
+      event.locationInWindow.y);
+  switch (event.type) {
+    case NSEventTypeKeyDown:
+    case NSEventTypeKeyUp: {
+      // Some NSEvents return a string with NUL in event.characters, see
+      // <https://crbug.com/41379586>. To make matters worse, in rare cases,
+      // NSEvent.characters or NSEvent.charactersIgnoringModifiers can throw an
+      // NSException complaining that "TSMProcessRawKeyCode failed". Since we're
+      // trying to gather a crash key here, if that exception happens, just
+      // remark that it happened and continue rather than crashing the browser.
+      std::string characters, unmodified_characters;
+      @try {
+        characters = base::SysNSStringToUTF8([event.characters
+            stringByReplacingOccurrencesOfString:@"\0"
+                                      withString:@"\\x00"]);
+        unmodified_characters =
+            base::SysNSStringToUTF8([event.charactersIgnoringModifiers
+                stringByReplacingOccurrencesOfString:@"\0"
+                                          withString:@"\\x00"]);
+      } @catch (id exception) {
+        characters = "(exception)";
+        unmodified_characters = "(exception)";
+      }
+      desc += base::StringPrintf(
+          " keyCode=0x%d ARepeat=%d characters='%s' unmodifiedCharacters='%s'",
+          event.keyCode, event.ARepeat, characters.c_str(),
+          unmodified_characters.c_str());
+      break;
+    }
+    case NSEventTypeLeftMouseDown:
+    case NSEventTypeLeftMouseDragged:
+    case NSEventTypeLeftMouseUp:
+    case NSEventTypeOtherMouseDown:
+    case NSEventTypeOtherMouseDragged:
+    case NSEventTypeOtherMouseUp:
+    case NSEventTypeRightMouseDown:
+    case NSEventTypeRightMouseDragged:
+    case NSEventTypeRightMouseUp:
+      desc += base::StringPrintf(" buttonNumber=%ld clickCount=%ld",
+                                 event.buttonNumber, event.clickCount);
+      break;
+    case NSEventTypeAppKitDefined:
+    case NSEventTypeSystemDefined:
+    case NSEventTypeApplicationDefined:
+    case NSEventTypePeriodic:
+      desc += base::StringPrintf(" subtype=%d data1=%ld data2=%ld",
+                                 event.subtype, event.data1, event.data2);
+      break;
+    default:
+      break;
+  }
+  return desc;
+}
+
+}  // namespace
 
 @implementation CrApplication {
   BOOL _handlingSendEvent;
@@ -99,6 +169,45 @@
                                  dequeue:dequeue];
   });
   return event;
+}
+
+- (void)sendEvent:(NSEvent*)event {
+  static crash_reporter::CrashKeyString<256> nseventKey("nsevent");
+  crash_reporter::ScopedCrashKeyString scopedKey(&nseventKey,
+                                                 DescriptionForNSEvent(event));
+
+  base::apple::CallWithEHFrame(^{
+    base::mac::ScopedSendingEvent sendingEventScoper;
+
+    BOOL sendEventToKeyWindow = NO;
+    if (event.type == NSEventTypeKeyDown &&
+        (event.keyCode == kVK_JIS_Eisu || event.keyCode == kVK_JIS_Kana)) {
+      // Mac Eisu and Kana keydown events are by default swallowed by sendEvent
+      // and sent directly to IME, which prevents ui keydown events from firing.
+      // These events need to be sent to [NSApp keyWindow] for handling.
+      sendEventToKeyWindow = YES;
+    } else if (event.type == NSEventTypeKeyUp &&
+               (event.modifierFlags & NSEventModifierFlagCommand) &&
+               // `keyWindow` must be nil-checked before querying `FeatureList`:
+               // during app shim bootstrap (before `FinalizeFeatureState()`
+               // runs and before any windows exist), querying non-early-allowed
+               // features triggers a CHECK crash.
+               self.keyWindow &&
+               base::FeatureList::IsEnabled(
+                   remote_cocoa::features::kForwardCmdKeyUpEventsToWindow)) {
+      // The base NSApplication implementation of sendEvent: swallows keyUp
+      // events if the command modifier is present. We work around this by
+      // forwarding them to the key window to ensure all keyUp events are
+      // reported and handled (crbug.com/407598429, crbug.com/438807261).
+      sendEventToKeyWindow = YES;
+    }
+
+    if (sendEventToKeyWindow) {
+      [self.keyWindow sendEvent:event];
+    } else {
+      [super sendEvent:event];
+    }
+  });
 }
 
 @end

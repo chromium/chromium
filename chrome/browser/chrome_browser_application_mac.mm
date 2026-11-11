@@ -4,22 +4,16 @@
 
 #import "chrome/browser/chrome_browser_application_mac.h"
 
-#include <Carbon/Carbon.h>  // for <HIToolbox/Events.h>
-
-#include "base/apple/call_with_eh_frame.h"
 #include "base/apple/foundation_util.h"
 #include "base/check.h"
 #include "base/command_line.h"
 #import "base/mac/mac_util.h"
 #include "base/observer_list.h"
-#include "base/strings/stringprintf.h"
-#include "base/strings/sys_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #import "chrome/browser/app_controller_mac.h"
 #import "chrome/browser/mac/exception_processor.h"
 #include "chrome/browser/ui/cocoa/l10n_util.h"
 #include "chrome/common/chrome_switches.h"
-#include "components/crash/core/common/crash_key.h"
 #import "components/crash/core/common/objc_zombie.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/native_event_processor_mac.h"
@@ -28,11 +22,6 @@
 #include "content/public/common/content_features.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/base/cocoa/accessibility_focus_overrider.h"
-
-// When enabled, causes sendEvent: to manually forward KeyUp events that have
-// the command modifier to the application's key window instead of to |super|.
-// Used as a killswitch if this has unintended consequences.
-BASE_FEATURE(kForwardCmdKeyUpEventsToWindow, base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace chrome_browser_application_mac {
 
@@ -54,72 +43,6 @@ void CancelTerminate() {
 }
 
 }  // namespace chrome_browser_application_mac
-
-namespace {
-
-// Calling -[NSEvent description] is rather slow to build up the event
-// description. The description is stored in a crash key to aid debugging, so
-// this helper function constructs a shorter, but still useful, description.
-// See <https://crbug.com/40542574>.
-std::string DescriptionForNSEvent(NSEvent* event) {
-  std::string desc = base::StringPrintf(
-      "NSEvent type=%ld modifierFlags=0x%lx locationInWindow=(%g,%g)",
-      event.type, event.modifierFlags, event.locationInWindow.x,
-      event.locationInWindow.y);
-  switch (event.type) {
-    case NSEventTypeKeyDown:
-    case NSEventTypeKeyUp: {
-      // Some NSEvents return a string with NUL in event.characters, see
-      // <https://crbug.com/41379586>. To make matters worse, in rare cases,
-      // NSEvent.characters or NSEvent.charactersIgnoringModifiers can throw an
-      // NSException complaining that "TSMProcessRawKeyCode failed". Since we're
-      // trying to gather a crash key here, if that exception happens, just
-      // remark that it happened and continue rather than crashing the browser.
-      std::string characters, unmodified_characters;
-      @try {
-        characters = base::SysNSStringToUTF8([event.characters
-            stringByReplacingOccurrencesOfString:@"\0"
-                                      withString:@"\\x00"]);
-        unmodified_characters =
-            base::SysNSStringToUTF8([event.charactersIgnoringModifiers
-                stringByReplacingOccurrencesOfString:@"\0"
-                                          withString:@"\\x00"]);
-      } @catch (id exception) {
-        characters = "(exception)";
-        unmodified_characters = "(exception)";
-      }
-      desc += base::StringPrintf(
-          " keyCode=0x%d ARepeat=%d characters='%s' unmodifiedCharacters='%s'",
-          event.keyCode, event.ARepeat, characters.c_str(),
-          unmodified_characters.c_str());
-      break;
-    }
-    case NSEventTypeLeftMouseDown:
-    case NSEventTypeLeftMouseDragged:
-    case NSEventTypeLeftMouseUp:
-    case NSEventTypeOtherMouseDown:
-    case NSEventTypeOtherMouseDragged:
-    case NSEventTypeOtherMouseUp:
-    case NSEventTypeRightMouseDown:
-    case NSEventTypeRightMouseDragged:
-    case NSEventTypeRightMouseUp:
-      desc += base::StringPrintf(" buttonNumber=%ld clickCount=%ld",
-                                 event.buttonNumber, event.clickCount);
-      break;
-    case NSEventTypeAppKitDefined:
-    case NSEventTypeSystemDefined:
-    case NSEventTypeApplicationDefined:
-    case NSEventTypePeriodic:
-      desc += base::StringPrintf(" subtype=%d data1=%ld data2=%ld",
-                                 event.subtype, event.data1, event.data2);
-      break;
-    default:
-      break;
-  }
-  return desc;
-}
-
-}  // namespace
 
 @interface BrowserCrApplication () <NativeEventProcessor> {
   // A counter for enhanced user interface enable (+1) and disable (-1)
@@ -324,7 +247,6 @@ std::string DescriptionForNSEvent(NSEvent* event) {
   [AppController.sharedController stopTryingToTerminateApplication];
 }
 
-
 // AppKit calls this after most events, and may activate the input method for
 // the key window's focused view inside it. With an input method such as
 // Japanese, the activation waits on the input method process, so trace it.
@@ -340,51 +262,24 @@ std::string DescriptionForNSEvent(NSEvent* event) {
   TRACE_EVENT_INSTANT("toplevel", "KeyWindow", "KeyWin",
                       [[NSApp keyWindow] windowNumber]);
 
-  static crash_reporter::CrashKeyString<256> nseventKey("nsevent");
-  crash_reporter::ScopedCrashKeyString scopedKey(&nseventKey,
-                                                 DescriptionForNSEvent(event));
-
-  base::apple::CallWithEHFrame(^{
-    static const bool kKioskMode =
-        base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kKioskMode);
-    if (kKioskMode) {
-      // In kiosk mode, we want to prevent context menus from appearing,
-      // so simply discard menu-generating events instead of passing them
-      // along.
-      BOOL couldTriggerContextMenu =
-          event.type == NSEventTypeRightMouseDown ||
-          (event.type == NSEventTypeLeftMouseDown &&
-           (event.modifierFlags & NSEventModifierFlagControl));
-      if (couldTriggerContextMenu)
-        return;
+  static const bool kKioskMode =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kKioskMode);
+  if (kKioskMode) {
+    // In kiosk mode, we want to prevent context menus from appearing,
+    // so simply discard menu-generating events instead of passing them
+    // along.
+    BOOL couldTriggerContextMenu =
+        event.type == NSEventTypeRightMouseDown ||
+        (event.type == NSEventTypeLeftMouseDown &&
+         (event.modifierFlags & NSEventModifierFlagControl));
+    if (couldTriggerContextMenu) {
+      return;
     }
-    base::mac::ScopedSendingEvent sendingEventScoper;
-    content::ScopedNotifyNativeEventProcessorObserver scopedObserverNotifier(
-        &self->_observers, event);
+  }
+  content::ScopedNotifyNativeEventProcessorObserver scopedObserverNotifier(
+      &_observers, event);
 
-    BOOL sendEventToKeyWindow = NO;
-    if (event.type == NSEventTypeKeyDown &&
-        (event.keyCode == kVK_JIS_Eisu || event.keyCode == kVK_JIS_Kana)) {
-      // Mac Eisu and Kana keydown events are by default swallowed by sendEvent
-      // and sent directly to IME, which prevents ui keydown events from firing.
-      // These events need to be sent to [NSApp keyWindow] for handling.
-      sendEventToKeyWindow = YES;
-    } else if (event.type == NSEventTypeKeyUp &&
-               event.modifierFlags & NSEventModifierFlagCommand &&
-               base::FeatureList::IsEnabled(kForwardCmdKeyUpEventsToWindow)) {
-      // The base NSApplication implementation of sendEvent: swallows keyUp
-      // events if the command modifier is present. We work around this by
-      // forwarding them to [NSApp keyWindow] to ensure all keyUp events are
-      // reported and handled (crbug.com/407598429, crbug.com/438807261).
-      sendEventToKeyWindow = YES;
-    }
-
-    if (sendEventToKeyWindow) {
-      [NSApp.keyWindow sendEvent:event];
-    } else {
-      [super sendEvent:event];
-    }
-  });
+  [super sendEvent:event];
 }
 
 // Accessibility Support

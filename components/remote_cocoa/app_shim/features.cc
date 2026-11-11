@@ -42,6 +42,11 @@ BASE_FEATURE(kMacFullScreenAuxiliaryFileDialog,
 BASE_FEATURE(kClearFirstResponderInToolbarFullScreenWindow,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When enabled, causes -[CrApplication sendEvent:] to manually forward KeyUp
+// events that have the command modifier to the application's key window instead
+// of to |super|. Used as a killswitch if this has unintended consequences.
+BASE_FEATURE(kForwardCmdKeyUpEventsToWindow, base::FEATURE_ENABLED_BY_DEFAULT);
+
 // When enabled, `NativeWidgetNSWindowBridge` registers all top-level
 // (non-child, non-tooltip) Views windows with `WindowOcclusionCheckerMac`,
 // rather than only tracking windows that contain a `WebContentsViewCocoa`.

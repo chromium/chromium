@@ -131,7 +131,9 @@ source_set("unit_tests") {
     "//chrome/app_shim",
     "//chrome/common:app_mode_app_support",
     "//chrome/common:constants",
+    "//components/remote_cocoa/app_shim:features",
     "//components/variations",
     "//testing/gtest",
+    "//ui/base:test_support",
   ]
 }

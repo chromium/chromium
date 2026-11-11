@@ -22,6 +22,8 @@ BASE_DECLARE_FEATURE(kMacFullScreenAuxiliaryFileDialog);
 REMOTE_COCOA_APP_SHIM_EXPORT
 BASE_DECLARE_FEATURE(kClearFirstResponderInToolbarFullScreenWindow);
 REMOTE_COCOA_APP_SHIM_EXPORT
+BASE_DECLARE_FEATURE(kForwardCmdKeyUpEventsToWindow);
+REMOTE_COCOA_APP_SHIM_EXPORT
 BASE_DECLARE_FEATURE(kTrackAllTopLevelWindowsForOcclusion);
 }  // namespace remote_cocoa::features
 
