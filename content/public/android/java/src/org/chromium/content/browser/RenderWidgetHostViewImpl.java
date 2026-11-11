@@ -4,14 +4,8 @@
 
 package org.chromium.content.browser;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
-import org.jni_zero.JniPtr;
-import org.jni_zero.JniRawPtr;
-import org.jni_zero.JniType;
-import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -29,10 +23,7 @@ import org.chromium.content_public.browser.RenderWidgetHostView;
 @JNINamespace("content")
 @NullMarked
 public class RenderWidgetHostViewImpl implements RenderWidgetHostView {
-    @JniType("::content::RenderWidgetHostViewAndroid")
-    interface NativeRenderWidgetHostViewAndroid extends JniTypeToken {}
-
-    private @Nullable JniRawPtr<NativeRenderWidgetHostViewAndroid> mNativeRenderWidgetHostView;
+    private long mNativeRenderWidgetHostView;
 
     // Remember the stack for clearing native the native stack for debugging use after destroy.
     private @Nullable Throwable mNativeDestroyThrowable;
@@ -40,15 +31,13 @@ public class RenderWidgetHostViewImpl implements RenderWidgetHostView {
     private @TriState int mIsGestureNavigationModeCached;
 
     @CalledByNative
-    static RenderWidgetHostViewImpl create(
-            JniRawPtr<NativeRenderWidgetHostViewAndroid> renderWidgetHostView) {
-        return new RenderWidgetHostViewImpl(renderWidgetHostView);
+    private static RenderWidgetHostViewImpl create(long renderWidgetHostViewLong) {
+        return new RenderWidgetHostViewImpl(renderWidgetHostViewLong);
     }
 
     /** Do not call this constructor from Java, use native WebContents->GetRenderWidgetHostView. */
-    private RenderWidgetHostViewImpl(
-            JniRawPtr<NativeRenderWidgetHostViewAndroid> renderWidgetHostView) {
-        mNativeRenderWidgetHostView = renderWidgetHostView;
+    private RenderWidgetHostViewImpl(long renderWidgetHostViewLong) {
+        mNativeRenderWidgetHostView = renderWidgetHostViewLong;
     }
 
     @Override
@@ -115,51 +104,47 @@ public class RenderWidgetHostViewImpl implements RenderWidgetHostView {
     // ====================
 
     public boolean isDestroyed() {
-        return mNativeRenderWidgetHostView == null;
+        return getNativePtr() == 0;
     }
 
-    private JniPtr<NativeRenderWidgetHostViewAndroid> getNativePtr() {
-        return assumeNonNull(mNativeRenderWidgetHostView);
+    private long getNativePtr() {
+        return mNativeRenderWidgetHostView;
     }
 
     @CalledByNative
     private void clearNativePtr() {
-        if (mNativeRenderWidgetHostView != null) {
-            mNativeRenderWidgetHostView.release();
-            mNativeRenderWidgetHostView = null;
-        }
+        mNativeRenderWidgetHostView = 0;
         mNativeDestroyThrowable = new RuntimeException("clearNativePtr");
     }
 
     private void checkNotDestroyed() {
-        if (mNativeRenderWidgetHostView != null) return;
+        if (getNativePtr() != 0) return;
         throw new IllegalStateException(
                 "Native RenderWidgetHostViewAndroid already destroyed", mNativeDestroyThrowable);
     }
 
     @NativeMethods
     interface Natives {
-        boolean isReady(JniPtr<NativeRenderWidgetHostViewAndroid> self);
+        boolean isReady(long nativeRenderWidgetHostViewAndroid);
 
-        int getBackgroundColor(JniPtr<NativeRenderWidgetHostViewAndroid> self);
+        int getBackgroundColor(long nativeRenderWidgetHostViewAndroid);
 
-        void dismissTextHandles(JniPtr<NativeRenderWidgetHostViewAndroid> self);
+        void dismissTextHandles(long nativeRenderWidgetHostViewAndroid);
 
-        void showContextMenuAtTouchHandle(
-                JniPtr<NativeRenderWidgetHostViewAndroid> self, int x, int y);
+        void showContextMenuAtTouchHandle(long nativeRenderWidgetHostViewAndroid, int x, int y);
 
-        void onViewportInsetBottomChanged(JniPtr<NativeRenderWidgetHostViewAndroid> self);
+        void onViewportInsetBottomChanged(long nativeRenderWidgetHostViewAndroid);
 
         void writeContentBitmapToDiskAsync(
-                JniPtr<NativeRenderWidgetHostViewAndroid> self,
+                long nativeRenderWidgetHostViewAndroid,
                 int width,
                 int height,
                 String path,
                 Callback<String> callback);
 
-        void onResume(JniPtr<NativeRenderWidgetHostViewAndroid> self);
+        void onResume(long nativeRenderWidgetHostViewAndroid);
 
         void setIsGestureNavigationMode(
-                JniPtr<NativeRenderWidgetHostViewAndroid> self, boolean isGestureNavigationMode);
+                long nativeRenderWidgetHostViewAndroid, boolean isGestureNavigationMode);
     }
 }
