@@ -1804,6 +1804,21 @@ void SearchboxHandler::SetPopupSelection(
 void SearchboxHandler::OpenPopupSelection(
     uint32_t result_sequence_id,
     searchbox::mojom::OmniboxPopupSelectionPtr selection,
+    searchbox::mojom::ActionModifiersPtr modifiers) {
+  // All current call paths are keyboard events (Enter on a keyword chip); mouse
+  // clicks use `OpenAutocompleteMatch()`, `ExecuteAction()`, or
+  // `ActivateKeyword()`.
+  OpenPopupSelectionWithDisposition(
+      result_sequence_id, std::move(selection),
+      ComputeWindowOpenDisposition(/*mouse_button=*/0, modifiers->alt_key,
+                                   modifiers->ctrl_key, modifiers->meta_key,
+                                   modifiers->shift_key,
+                                   /*via_keyboard=*/true));
+}
+
+void SearchboxHandler::OpenPopupSelectionWithDisposition(
+    uint32_t result_sequence_id,
+    searchbox::mojom::OmniboxPopupSelectionPtr selection,
     ui::mojom::WindowOpenDisposition disposition) {
   const OmniboxPopupSelection popup_selection =
       ConvertSelection(std::move(selection));
@@ -1838,7 +1853,10 @@ void SearchboxHandler::OpenPopupSelection(
       return;
     }
 
-    edit_model()->OpenSelection(popup_selection);
+    // All current call paths are keyboard events (Ctrl+Enter, Enter in the
+    // Omnibox view, or `OpenPopupSelection()` above).
+    edit_model()->OpenSelection(popup_selection, base::TimeTicks::Now(),
+                                disposition, /*via_keyboard=*/true);
     return;
   }
 

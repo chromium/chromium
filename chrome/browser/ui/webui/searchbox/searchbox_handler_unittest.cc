@@ -2580,7 +2580,7 @@ TEST_F(WebuiOmniboxHandlerTest, OpenPopupSelection_CtrlEnterWithNoMatch) {
   selection->state = searchbox::mojom::SelectionLineState::kCtrlEnter;
   selection->action_index = 0;
 
-  handler_->OpenPopupSelection(
+  handler_->OpenPopupSelectionWithDisposition(
       omnibox_controller_->autocomplete_controller()->result().sequence_id(),
       std::move(selection), ui::mojom::WindowOpenDisposition::kCurrentTab);
 }
@@ -2606,9 +2606,67 @@ TEST_F(WebuiOmniboxHandlerTest, OpenPopupSelection_CtrlEnterWithMatch) {
   selection->state = searchbox::mojom::SelectionLineState::kCtrlEnter;
   selection->action_index = 0;
 
-  handler_->OpenPopupSelection(
+  handler_->OpenPopupSelectionWithDisposition(
       omnibox_controller_->autocomplete_controller()->result().sequence_id(),
       std::move(selection), ui::mojom::WindowOpenDisposition::kCurrentTab);
+}
+
+TEST_F(WebuiOmniboxHandlerTest, OpenPopupSelection_RespectsModifiers) {
+  page_.FlushForTesting();
+  testing::Mock::VerifyAndClearExpectations(&page_);
+
+  test_omnibox_view_->SetUserText(u"google");
+  omnibox_controller_->edit_model()->StartAutocomplete(false);
+
+  TestOmniboxClient* client =
+      static_cast<TestOmniboxClient*>(omnibox_controller_->client());
+
+  auto make_selection = []() {
+    auto selection = searchbox::mojom::OmniboxPopupSelection::New();
+    selection->line = 0;
+    selection->state = searchbox::mojom::SelectionLineState::kNormal;
+    selection->action_index = 0;
+    return selection;
+  };
+  const uint32_t seq_id =
+      omnibox_controller_->autocomplete_controller()->result().sequence_id();
+
+  // Shift+Enter -> `kNewWindow`.
+  EXPECT_CALL(*client, OnAutocompleteAccept(
+                           _, _, ui::mojom::WindowOpenDisposition::kNewWindow,
+                           _, _, _, _, _, _, _, _))
+      .Times(1);
+  handler_->OpenPopupSelection(
+      seq_id, make_selection(),
+      searchbox::mojom::ActionModifiers::New(
+          /*alt_key=*/false, /*ctrl_key=*/false, /*meta_key=*/false,
+          /*shift_key=*/true));
+  testing::Mock::VerifyAndClearExpectations(client);
+
+  // Alt+Enter -> `kNewForegroundTab`.
+  EXPECT_CALL(*client,
+              OnAutocompleteAccept(
+                  _, _, ui::mojom::WindowOpenDisposition::kNewForegroundTab, _,
+                  _, _, _, _, _, _, _))
+      .Times(1);
+  handler_->OpenPopupSelection(
+      seq_id, make_selection(),
+      searchbox::mojom::ActionModifiers::New(
+          /*alt_key=*/true, /*ctrl_key=*/false, /*meta_key=*/false,
+          /*shift_key=*/false));
+  testing::Mock::VerifyAndClearExpectations(client);
+
+  // Alt+Shift+Enter -> `kNewBackgroundTab`.
+  EXPECT_CALL(*client,
+              OnAutocompleteAccept(
+                  _, _, ui::mojom::WindowOpenDisposition::kNewBackgroundTab, _,
+                  _, _, _, _, _, _, _))
+      .Times(1);
+  handler_->OpenPopupSelection(
+      seq_id, make_selection(),
+      searchbox::mojom::ActionModifiers::New(
+          /*alt_key=*/true, /*ctrl_key=*/false, /*meta_key=*/false,
+          /*shift_key=*/true));
 }
 
 TEST_F(WebuiOmniboxHandlerTest, OpenLensSearch) {

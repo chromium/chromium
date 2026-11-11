@@ -501,7 +501,14 @@ interface PageHandler {
   // Opens a specified popup selection.
   OpenPopupSelection(uint32 result_sequence_id,
                      OmniboxPopupSelection selection,
-                     ui.mojom.WindowOpenDisposition disposition);
+                     ActionModifiers modifiers);
+
+  // Opens a specified popup selection with a pre-computed disposition.
+  // TODO(crbug.com/483117840): Can be eliminated once we have full WebUI popup.
+  OpenPopupSelectionWithDisposition(
+      uint32 result_sequence_id,
+      OmniboxPopupSelection selection,
+      ui.mojom.WindowOpenDisposition disposition);
 
   // Informs the browser that the user has changed the selected suggestion. The
   // new suggestion is located at |line|. |navigation_predictor|

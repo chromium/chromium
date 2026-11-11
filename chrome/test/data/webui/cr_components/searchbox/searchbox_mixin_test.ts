@@ -647,7 +647,8 @@ suite('SearchboxMixinTest', () => {
     assertTrue(enterEvent.defaultPrevented);
     await microtasksFinished();
 
-    const args = await testProxy.handler.whenCalled('openPopupSelection');
+    const args =
+        await testProxy.handler.whenCalled('openPopupSelectionWithDisposition');
     assertEquals(0, args.selection.line);
     assertEquals(SelectionLineState.kCtrlEnter, args.selection.state);
   });
@@ -3329,7 +3330,8 @@ suite('SearchboxMixinVirtualFocusTest', () => {
     await microtasksFinished();
 
     assertTrue(ctrlEnterEvent.defaultPrevented);
-    const args = await testProxy.handler.whenCalled('openPopupSelection');
+    const args =
+        await testProxy.handler.whenCalled('openPopupSelectionWithDisposition');
     assertEquals(0, args.selection.line);
     assertEquals(SelectionLineState.kCtrlEnter, args.selection.state);
   });
@@ -4041,22 +4043,34 @@ suite('SearchboxMixinVirtualFocusTest', () => {
         assertEquals('cats', mockInput.inputElement.value);
 
         // Enter asks the browser to open the keyword chip selection, which
-        // searches the keyword for the text.
+        // searches the keyword for the text, forwarding modifier keys.
         mockInput.inputElement.dispatchEvent(createKeyboardEvent('Enter'));
         await microtasksFinished();
         assertEquals(1, testProxy.handler.getCallCount('openPopupSelection'));
-        const args = testProxy.handler.getArgs('openPopupSelection')[0];
+        let args = testProxy.handler.getArgs('openPopupSelection')[0];
         assertDeepEquals(
             {line: 0, state: SelectionLineState.kKeywordMode, actionIndex: 0},
             args.selection);
+        assertDeepEquals(
+            {altKey: false, ctrlKey: false, metaKey: false, shiftKey: false},
+            args.modifiers);
         assertEquals(
             0, testProxy.handler.getCallCount('openAutocompleteMatch'));
+
+        mockInput.inputElement.dispatchEvent(
+            createKeyboardEvent('Enter', {altKey: true, shiftKey: true}));
+        await microtasksFinished();
+        assertEquals(2, testProxy.handler.getCallCount('openPopupSelection'));
+        args = testProxy.handler.getArgs('openPopupSelection')[1];
+        assertDeepEquals(
+            {altKey: true, ctrlKey: false, metaKey: false, shiftKey: true},
+            args.modifiers);
 
         // Without text after the keyword, Enter does nothing.
         mockInput.inputElement.value = '';
         mockInput.inputElement.dispatchEvent(createKeyboardEvent('Enter'));
         await microtasksFinished();
-        assertEquals(1, testProxy.handler.getCallCount('openPopupSelection'));
+        assertEquals(2, testProxy.handler.getCallCount('openPopupSelection'));
         assertEquals(
             0, testProxy.handler.getCallCount('openAutocompleteMatch'));
       });

@@ -446,6 +446,10 @@ void ContextualTasksExtensionHandler::SetPopupSelection(
 void ContextualTasksExtensionHandler::OpenPopupSelection(
     uint32_t result_sequence_id,
     searchbox::mojom::OmniboxPopupSelectionPtr selection,
+    searchbox::mojom::ActionModifiersPtr modifiers) {}
+void ContextualTasksExtensionHandler::OpenPopupSelectionWithDisposition(
+    uint32_t result_sequence_id,
+    searchbox::mojom::OmniboxPopupSelectionPtr selection,
     ui::mojom::WindowOpenDisposition disposition) {}
 void ContextualTasksExtensionHandler::OnNavigationLikely(
     uint8_t line,

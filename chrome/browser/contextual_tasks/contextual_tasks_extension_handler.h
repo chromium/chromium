@@ -180,6 +180,10 @@ class ContextualTasksExtensionHandler
   void OpenPopupSelection(
       uint32_t result_sequence_id,
       searchbox::mojom::OmniboxPopupSelectionPtr selection,
+      searchbox::mojom::ActionModifiersPtr modifiers) override;
+  void OpenPopupSelectionWithDisposition(
+      uint32_t result_sequence_id,
+      searchbox::mojom::OmniboxPopupSelectionPtr selection,
       ui::mojom::WindowOpenDisposition disposition) override;
   void OnNavigationLikely(
       uint8_t line,
