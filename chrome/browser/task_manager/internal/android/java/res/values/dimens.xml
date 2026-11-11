@@ -22,6 +22,5 @@ found in the LICENSE file.
     <dimen name="task_header_padding_vertical">6dp</dimen>
     <dimen name="task_header_margin_horizontal">4dp</dimen>
     <dimen name="task_item_column_padding">16dp</dimen>
-    <dimen name="task_item_corner_radius">20dp</dimen>
     <dimen name="task_item_margin_bottom">4dp</dimen>
 </resources>
