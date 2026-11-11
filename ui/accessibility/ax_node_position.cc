@@ -50,11 +50,19 @@ std::string ToString(const AXPositionKind kind) {
 AXNodePosition::AXPositionInstance AXNodePosition::CreatePosition(
     const AXNode& node,
     int child_index_or_text_offset,
-    ax::mojom::TextAffinity affinity) {
-  if (!node.tree())
+    ax::mojom::TextAffinity affinity,
+    std::optional<ax::mojom::OffsetType> offset_type) {
+  if (!node.tree()) {
     return CreateNullPosition();
+  }
 
-  if (IsTextPositionAnchor(node)) {
+  // TODO(crbug.com/527726308): Add an Android-only CHECK that `offset_type` is
+  // not `std::nullopt` once all Android callers provide it.
+  const ax::mojom::OffsetType resolved_offset_type = offset_type.value_or(
+      IsTextPositionAnchor(node) ? ax::mojom::OffsetType::kText
+                                 : ax::mojom::OffsetType::kChild);
+
+  if (resolved_offset_type == ax::mojom::OffsetType::kText) {
     // TODO(accessibility) It is a mistake for the caller to try to create a
     // text position with BEFORE_TEXT as the text offset. Correct the callers
     // that are doing this.
@@ -76,6 +84,10 @@ AXNodePosition::AXPositionInstance AXNodePosition::CreatePosition(
       << "\n* IsLeafNodeForTreePosition(): " << IsLeafNodeForTreePosition(node)
       << "\n* Tree: " << node.tree()->ToString();
 
+  // TODO(crbug.com/527726308): Map leaf tree positions
+  // (`IsLeafNodeForTreePosition(node)`) to start/end of anchor so
+  // `AXPosition`'s leaf invariant holds when `OffsetType::kChild` is passed on
+  // a leaf node.
   return CreateTreePosition(node, child_index_or_text_offset);
 }
 

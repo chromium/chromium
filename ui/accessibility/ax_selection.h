@@ -5,7 +5,10 @@
 #ifndef UI_ACCESSIBILITY_AX_SELECTION_H_
 #define UI_ACCESSIBILITY_AX_SELECTION_H_
 
+#include <optional>
+
 #include "ui/accessibility/ax_constants.mojom.h"
+#include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_export.h"
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_tree_id.h"
@@ -34,9 +37,11 @@ class AX_EXPORT AXSelection final {
   AXNodeID anchor_object_id = kInvalidAXNodeID;
   int anchor_offset = ax::mojom::kNoSelectionOffset;
   ax::mojom::TextAffinity anchor_affinity;
+  std::optional<ax::mojom::OffsetType> anchor_offset_type;
   AXNodeID focus_object_id = kInvalidAXNodeID;
   int focus_offset = ax::mojom::kNoSelectionOffset;
   ax::mojom::TextAffinity focus_affinity;
+  std::optional<ax::mojom::OffsetType> focus_offset_type;
 
   AXSelection& ToUnignoredSelection();
 

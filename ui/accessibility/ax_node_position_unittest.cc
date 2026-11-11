@@ -17989,4 +17989,80 @@ TEST_F(AXPositionTest,
             ax::mojom::Role::kInlineTextBox);
 }
 
+TEST_F(AXPositionTest, CreatePositionWithExplicitOffsetType) {
+  // Tree structure:
+  // ++1 kRootWebArea (non-leaf container, 2 children)
+  // ++++2 kStaticText "hello"
+  // ++++3 kStaticText "world"
+  AXNodeData root_data;
+  root_data.id = 1;
+  root_data.role = ax::mojom::Role::kRootWebArea;
+  root_data.child_ids = {2, 3};
+
+  AXNodeData first_text;
+  first_text.id = 2;
+  first_text.role = ax::mojom::Role::kStaticText;
+  first_text.SetName("hello");
+
+  AXNodeData second_text;
+  second_text.id = 3;
+  second_text.role = ax::mojom::Role::kStaticText;
+  second_text.SetName("world");
+
+  SetTree(CreateAXTree({root_data, first_text, second_text}));
+
+  const AXNode* root = GetTree()->GetFromId(1);
+  const AXNode* text_node = GetTree()->GetFromId(2);
+  ASSERT_NE(nullptr, root);
+  ASSERT_NE(nullptr, text_node);
+  ASSERT_FALSE(AXNodePosition::IsLeafNodeForTreePosition(*root));
+
+  // Unset (`std::nullopt`) keeps the `IsTextPositionAnchor()` fallback: a
+  // non-leaf container gets a tree position, and a text leaf gets a text
+  // position.
+  TestPositionType unset_on_root = AXNodePosition::CreatePosition(
+      *root, 1, ax::mojom::TextAffinity::kDownstream, std::nullopt);
+  EXPECT_TRUE(unset_on_root->IsTreePosition());
+  EXPECT_EQ(1, unset_on_root->child_index());
+
+  TestPositionType unset_on_text = AXNodePosition::CreatePosition(
+      *text_node, 2, ax::mojom::TextAffinity::kDownstream, std::nullopt);
+  EXPECT_TRUE(unset_on_text->IsTextPosition());
+  EXPECT_EQ(2, unset_on_text->text_offset());
+
+  // Explicit `OffsetType::kText` overrides `IsTextPositionAnchor()` even on a
+  // non-leaf container.
+  TestPositionType explicit_text_on_root = AXNodePosition::CreatePosition(
+      *root, 3, ax::mojom::TextAffinity::kUpstream,
+      ax::mojom::OffsetType::kText);
+  EXPECT_TRUE(explicit_text_on_root->IsTextPosition());
+  EXPECT_TRUE(explicit_text_on_root->IsValid());
+  EXPECT_EQ(3, explicit_text_on_root->text_offset());
+  EXPECT_EQ(ax::mojom::TextAffinity::kUpstream,
+            explicit_text_on_root->affinity());
+
+  // Explicit `OffsetType::kChild` creates a tree position on a container, and
+  // on a leaf when `BEFORE_TEXT` is passed.
+  TestPositionType explicit_child_on_root = AXNodePosition::CreatePosition(
+      *root, 2, ax::mojom::TextAffinity::kDownstream,
+      ax::mojom::OffsetType::kChild);
+  EXPECT_TRUE(explicit_child_on_root->IsTreePosition());
+  EXPECT_TRUE(explicit_child_on_root->IsValid());
+  EXPECT_EQ(2, explicit_child_on_root->child_index());
+
+  TestPositionType explicit_child_on_leaf = AXNodePosition::CreatePosition(
+      *text_node, AXNodePosition::BEFORE_TEXT,
+      ax::mojom::TextAffinity::kDownstream, ax::mojom::OffsetType::kChild);
+  EXPECT_TRUE(explicit_child_on_leaf->IsTreePosition());
+  EXPECT_TRUE(explicit_child_on_leaf->IsValid());
+  EXPECT_EQ(AXNodePosition::BEFORE_TEXT, explicit_child_on_leaf->child_index());
+
+  // `kText` maps `BEFORE_TEXT` to text offset 0.
+  TestPositionType before_text_pos = AXNodePosition::CreatePosition(
+      *text_node, AXNodePosition::BEFORE_TEXT,
+      ax::mojom::TextAffinity::kDownstream, ax::mojom::OffsetType::kText);
+  EXPECT_TRUE(before_text_pos->IsTextPosition());
+  EXPECT_EQ(0, before_text_pos->text_offset());
+}
+
 }  // namespace ui

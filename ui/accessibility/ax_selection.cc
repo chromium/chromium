@@ -75,9 +75,11 @@ AXSelection::AXSelection(const AXTree& tree)
       anchor_object_id(tree.data().sel_anchor_object_id),
       anchor_offset(tree.data().sel_anchor_offset),
       anchor_affinity(tree.data().sel_anchor_affinity),
+      anchor_offset_type(tree.data().sel_anchor_offset_type),
       focus_object_id(tree.data().sel_focus_object_id),
       focus_offset(tree.data().sel_focus_offset),
       focus_affinity(tree.data().sel_focus_affinity),
+      focus_offset_type(tree.data().sel_focus_offset_type),
       tree_id_(tree.GetAXTreeID()) {}
 
 AXSelection& AXSelection::ToUnignoredSelection() {

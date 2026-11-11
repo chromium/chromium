@@ -210,4 +210,57 @@ TEST(AXSelectionTest, UnignoredSelection) {
   TEST_SELECTION(tree_update, test_ax_tree_manager.GetTree(), input, expected);
 }
 
+TEST(AXSelectionTest, OffsetTypes) {
+  // 1
+  // |_____
+  // |    |
+  // 2    3
+  AXTreeUpdate tree_update;
+  tree_update.has_tree_data = true;
+  tree_update.tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
+  tree_update.root_id = 1;
+  tree_update.nodes.resize(3);
+  tree_update.nodes[0].id = 1;
+  tree_update.nodes[0].role = ax::mojom::Role::kGenericContainer;
+  tree_update.nodes[0].child_ids = {2, 3};
+  tree_update.nodes[1].id = 2;
+  tree_update.nodes[1].role = ax::mojom::Role::kStaticText;
+  tree_update.nodes[1].SetName("text");
+  tree_update.nodes[2].id = 3;
+  tree_update.nodes[2].role = ax::mojom::Role::kStaticText;
+  tree_update.nodes[2].SetName("more");
+
+  // `AXSelection` copies both explicit `sel_anchor_offset_type` and
+  // `sel_focus_offset_type` values from `AXTreeData`.
+  tree_update.tree_data.sel_anchor_object_id = 2;
+  tree_update.tree_data.sel_anchor_offset = 1;
+  tree_update.tree_data.sel_anchor_offset_type = ax::mojom::OffsetType::kText;
+  tree_update.tree_data.sel_focus_object_id = 1;
+  tree_update.tree_data.sel_focus_offset = 2;
+  tree_update.tree_data.sel_focus_offset_type = ax::mojom::OffsetType::kChild;
+  TestSingleAXTreeManager test_ax_tree_manager(
+      std::make_unique<AXTree>(tree_update));
+  AXTree* tree = test_ax_tree_manager.GetTree();
+
+  AXSelection selection(*tree);
+  EXPECT_EQ(ax::mojom::OffsetType::kText, selection.anchor_offset_type);
+  EXPECT_EQ(ax::mojom::OffsetType::kChild, selection.focus_offset_type);
+
+  AXSelection unignored = tree->GetUnignoredSelection();
+  EXPECT_EQ(ax::mojom::OffsetType::kText, unignored.anchor_offset_type);
+  EXPECT_EQ(ax::mojom::OffsetType::kChild, unignored.focus_offset_type);
+
+  // Also verify when the offset types are omitted (`std::nullopt`).
+  AXTreeUpdate unset_update;
+  unset_update.has_tree_data = true;
+  unset_update.tree_data = tree->data();
+  unset_update.tree_data.sel_anchor_offset_type = std::nullopt;
+  unset_update.tree_data.sel_focus_offset_type = std::nullopt;
+  ASSERT_TRUE(tree->Unserialize(unset_update));
+
+  AXSelection unset_selection(*tree);
+  EXPECT_EQ(std::nullopt, unset_selection.anchor_offset_type);
+  EXPECT_EQ(std::nullopt, unset_selection.focus_offset_type);
+}
+
 }  // namespace ui
