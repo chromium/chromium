@@ -634,6 +634,13 @@ public final class ProductionSupportedFlagList {
                 "MemoryCoordinatorLastResortGC",
                 "Clears strong references in the MemoryCache in last resort GC."),
         Flag.baseFeature(
+                "FontResourceDecodedMemoryAccounting",
+                "Counts decoded font data in MemoryCache size accounting."),
+        Flag.baseFeature(
+                "ResourceEncodedMemoryAccounting",
+                "Stops counting released encoded resource data in MemoryCache size"
+                        + " accounting."),
+        Flag.baseFeature(
                 "StatefulMemoryPressure",
                 "When enabled, some caches will change their max size for the duration of memory"
                     + " pressure. When disabled, those caches will periodically evict all entries"
