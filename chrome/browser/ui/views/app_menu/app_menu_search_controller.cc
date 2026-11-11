@@ -175,9 +175,6 @@ AppMenuSearchController::AppMenuSearchController(
   query_changed_subscription_ =
       search_bar_->AddTextChangedCallback(base::BindRepeating(
           &AppMenuSearchController::OnQueryChanged, base::Unretained(this)));
-  back_pressed_subscription_ =
-      search_bar_->AddBackPressedCallback(base::BindRepeating(
-          &AppMenuSearchController::OnBackPressed, base::Unretained(this)));
 }
 
 AppMenuSearchController::~AppMenuSearchController() = default;
@@ -215,28 +212,33 @@ std::unique_ptr<actions::ActionItem> AppMenuSearchController::Search(
 }
 
 void AppMenuSearchController::OnQueryChanged() {
-  std::unique_ptr<actions::ActionItem> results = Search(search_bar_->GetText());
+  const std::u16string_view query = search_bar_->GetText();
+  if (base::TrimWhitespace(query, base::TRIM_ALL).empty()) {
+    // The query was cleared. Show the main menu
+    // instead of previous search results.
+    RestoreMenu();
+    return;
+  }
+
+  std::unique_ptr<actions::ActionItem> results = Search(query);
   if (!results) {
     // The query is below the minimum query length threshold. Keep the current
-    // rows, so only the back button leaves the results.
+    // rows until the query is long enough or cleared.
     return;
   }
 
   actions::ActionItem* results_ptr = results.get();
   std::unique_ptr<actions::ActionItem> old_results = std::move(search_results_);
   search_results_ = std::move(results);
-  search_bar_->SetLeadingIcon(AppMenuSearchBarView::LeadingIcon::kBack);
   delegate_->ShowSearchResults(results_ptr, std::move(old_results));
 }
 
-void AppMenuSearchController::OnBackPressed() {
+void AppMenuSearchController::RestoreMenu() {
   if (!search_results_) {
     return;
   }
 
-  std::unique_ptr<actions::ActionItem> old_results = std::move(search_results_);
-  search_bar_->SetLeadingIcon(AppMenuSearchBarView::LeadingIcon::kSearch);
-  delegate_->RestoreMenu(std::move(old_results));
+  delegate_->RestoreMenu(std::move(search_results_));
 }
 
 void AppMenuSearchController::FlattenHierarchyRecursive(

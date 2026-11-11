@@ -11,7 +11,6 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -47,8 +46,6 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuSearchBarView,
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuSearchBarView,
                                       kSearchIconElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuSearchBarView,
-                                      kBackButtonElementId);
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuSearchBarView,
                                       kClearButtonElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuSearchBarView,
                                       kSeparatorElementId);
@@ -63,11 +60,6 @@ class AppMenuSearchBarView::SearchField : public views::Textfield,
   SearchField& operator=(const SearchField&) = delete;
   ~SearchField() override;
 
-  void SetLeadingIcon(LeadingIcon icon);
-
-  [[nodiscard]] base::CallbackListSubscription AddBackPressedCallback(
-      base::RepeatingClosure callback);
-
   // views::Textfield:
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
@@ -78,20 +70,14 @@ class AppMenuSearchBarView::SearchField : public views::Textfield,
                       const ui::KeyEvent& key_event) override;
 
  private:
-  // Notifies `back_pressed_callbacks_`, then clears the query.
-  void OnBackPressed();
-
   // Empties the query and keeps the search bar focused.
   void ClearQuery();
 
   // Shows the clear button only while there is a query.
   void UpdateClearButtonVisibility();
 
-  LeadingIcon leading_icon_ = LeadingIcon::kSearch;
   raw_ptr<views::ImageView> search_icon_ = nullptr;
-  raw_ptr<views::ImageButton> back_button_ = nullptr;
   raw_ptr<views::ImageButton> clear_button_ = nullptr;
-  base::RepeatingClosureList back_pressed_callbacks_;
   base::CallbackListSubscription text_changed_subscription_;
 };
 
@@ -124,20 +110,6 @@ AppMenuSearchBarView::SearchField::SearchField() {
   search_icon->SetCanProcessEventsWithinSubtree(false);
   search_icon->SetProperty(views::kElementIdentifierKey, kSearchIconElementId);
   search_icon_ = AddChildView(std::move(search_icon));
-
-  auto back_button = views::CreateVectorImageButtonWithNativeTheme(
-      base::BindRepeating(&SearchField::OnBackPressed, base::Unretained(this)),
-      features::IsRoundedIconsEnabled() ? vector_icons::kArrowBackIcon
-                                        : vector_icons::kArrowBackOldIcon,
-      icon_size);
-  back_button->GetViewAccessibility().SetName(
-      l10n_util::GetStringUTF16(IDS_ACCNAME_BACK));
-  back_button->SetTooltipText(l10n_util::GetStringUTF16(IDS_ACCNAME_BACK));
-  back_button->SetVisible(false);
-  back_button->SetFocusBehavior(FocusBehavior::NEVER);
-  back_button->SetProperty(views::kElementIdentifierKey, kBackButtonElementId);
-  views::InstallCircleHighlightPathGenerator(back_button.get());
-  back_button_ = AddChildView(std::move(back_button));
 
   auto clear_button = views::CreateVectorImageButtonWithNativeTheme(
       base::BindRepeating(&SearchField::ClearQuery, base::Unretained(this)),
@@ -187,30 +159,9 @@ void AppMenuSearchBarView::SearchField::Layout(PassKey) {
                                  icon_size, icon_size);
 
   search_icon_->SetBoundsRect(leading_bounds);
-  back_button_->SetBoundsRect(leading_bounds);
   clear_button_->SetBoundsRect(gfx::Rect(width() - kIconPadding - icon_size,
                                          leading_bounds.y(), icon_size,
                                          icon_size));
-}
-
-void AppMenuSearchBarView::SearchField::SetLeadingIcon(LeadingIcon icon) {
-  if (leading_icon_ == icon) {
-    return;
-  }
-  leading_icon_ = icon;
-  search_icon_->SetVisible(icon == LeadingIcon::kSearch);
-  back_button_->SetVisible(icon == LeadingIcon::kBack);
-}
-
-base::CallbackListSubscription
-AppMenuSearchBarView::SearchField::AddBackPressedCallback(
-    base::RepeatingClosure callback) {
-  return back_pressed_callbacks_.Add(std::move(callback));
-}
-
-void AppMenuSearchBarView::SearchField::OnBackPressed() {
-  back_pressed_callbacks_.Notify();
-  ClearQuery();
 }
 
 void AppMenuSearchBarView::SearchField::ClearQuery() {
@@ -265,10 +216,6 @@ AppMenuSearchBarView::AppMenuSearchBarView() {
 
 AppMenuSearchBarView::~AppMenuSearchBarView() = default;
 
-void AppMenuSearchBarView::SetLeadingIcon(LeadingIcon icon) {
-  search_field_->SetLeadingIcon(icon);
-}
-
 std::u16string_view AppMenuSearchBarView::GetText() const {
   return search_field_->GetText();
 }
@@ -280,11 +227,6 @@ void AppMenuSearchBarView::SetText(std::u16string_view text) {
 base::CallbackListSubscription AppMenuSearchBarView::AddTextChangedCallback(
     views::PropertyChangedCallback callback) {
   return search_field_->AddTextChangedCallback(std::move(callback));
-}
-
-base::CallbackListSubscription AppMenuSearchBarView::AddBackPressedCallback(
-    base::RepeatingClosure callback) {
-  return search_field_->AddBackPressedCallback(std::move(callback));
 }
 
 BEGIN_METADATA(AppMenuSearchBarView)

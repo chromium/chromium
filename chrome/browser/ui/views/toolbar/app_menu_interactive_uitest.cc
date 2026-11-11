@@ -325,20 +325,20 @@ IN_PROC_BROWSER_TEST_F(AppMenuSearchInteractiveTest, SearchBarKeyEventRouting) {
                         &views::Textfield::GetText, u"do"),
       CheckViewProperty(AppMenuSearchBarView::kSearchFieldElementId,
                         &views::View::HasFocus, true),
-      WaitForShow(AppMenuSearchBarView::kBackButtonElementId),
       WaitForHide(AppMenuModel::kMoreToolsMenuItem),
-      // Pressing Escape clears the search query while keeping search results
-      // and the back button visible without closing the menu.
+      // The leading icon stays the search icon while results are shown.
+      CheckViewProperty(AppMenuSearchBarView::kSearchIconElementId,
+                        &views::View::GetVisible, true),
+      // Pressing Escape clears the search query and restores the normal menu
+      // without closing it.
       SendKeyPress(kBrowserViewElementId, ui::VKEY_ESCAPE, ui::EF_NONE),
       CheckViewProperty(AppMenuSearchBarView::kSearchFieldElementId,
                         &views::Textfield::GetText, u""),
       CheckViewProperty(AppMenuSearchBarView::kSearchFieldElementId,
                         &views::View::HasFocus, true),
-      WaitForShow(AppMenuSearchBarView::kBackButtonElementId),
-      // Pressing the back button restores the normal menu and search icon.
-      PressButton(AppMenuSearchBarView::kBackButtonElementId),
-      WaitForShow(AppMenuSearchBarView::kSearchIconElementId),
-      WaitForShow(AppMenuModel::kMoreToolsMenuItem));
+      WaitForShow(AppMenuModel::kMoreToolsMenuItem),
+      CheckViewProperty(AppMenuSearchBarView::kSearchIconElementId,
+                        &views::View::GetVisible, true));
 }
 
 // Classic app menu; `AppMenuOtherDeviceTabsGlowUpInteractiveTest` covers

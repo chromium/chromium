@@ -2550,11 +2550,6 @@ class ActionAppMenuWithSearchTest : public ActionAppMenuTest {
         AppMenuSearchBarView::kSearchIconElementId);
   }
 
-  views::Button* GetBackButton(AppMenuSearchBarView* search_bar) {
-    return views::Button::AsButton(search_bar->GetViewByElementId(
-        AppMenuSearchBarView::kBackButtonElementId));
-  }
-
   void ActivateMenuItemWithEnter(views::MenuItemView* item) {
     views::MenuController* controller = item->GetMenuController();
     ASSERT_NE(controller, nullptr);
@@ -2813,7 +2808,6 @@ TEST_F(ActionAppMenuWithSearchTest, ShortSearchQueryKeepsNormalMenu) {
 
   EXPECT_EQ(root->GetSubmenu()->children().size(), row_count);
   EXPECT_TRUE(GetSearchIcon(search_bar)->GetVisible());
-  EXPECT_FALSE(GetBackButton(search_bar)->GetVisible());
 
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
   menu.CloseMenu();
@@ -2857,8 +2851,7 @@ TEST_F(ActionAppMenuWithSearchTest, SearchQueryShowsOnlyResults) {
   views::MenuItemView* result = root->GetMenuItemByID(kActionShowDownloadsPage);
   ASSERT_NE(result, nullptr);
   EXPECT_EQ(root->GetMenuItemByID(kActionPrint), nullptr);
-  EXPECT_TRUE(GetBackButton(search_bar)->GetVisible());
-  EXPECT_FALSE(GetSearchIcon(search_bar)->GetVisible());
+  EXPECT_TRUE(GetSearchIcon(search_bar)->GetVisible());
 
   // Results are flat, full-width rows: no card insets, one line is kMedium.
   EXPECT_EQ(result->GetHighlightInsets(), gfx::Insets());
@@ -3176,7 +3169,8 @@ TEST_F(ActionAppMenuWithSearchTest, ZoomSearchResultsShowLiveZoomPercent) {
   menu.CloseMenu();
 }
 
-TEST_F(ActionAppMenuWithSearchTest, SearchQueryWithoutMatchesShowsBackButton) {
+TEST_F(ActionAppMenuWithSearchTest,
+       SearchQueryWithoutMatchesShowsNoResultsRow) {
   base::MockCallback<base::RepeatingClosure> on_menu_closed;
   ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
 
@@ -3195,7 +3189,7 @@ TEST_F(ActionAppMenuWithSearchTest, SearchQueryWithoutMatchesShowsBackButton) {
 
   search_bar->SetText(u"qzxjqzxj");
 
-  // A single "No results" row is the only scrollable row, and back is offered.
+  // A single "No results" row is the only scrollable row.
   EXPECT_EQ(search_row->parent(), search_row_parent);
   EXPECT_EQ(search_row_parent->GetIndexOf(search_row), search_row_index);
   ASSERT_EQ(submenu->children().size(), 1u);
@@ -3205,8 +3199,7 @@ TEST_F(ActionAppMenuWithSearchTest, SearchQueryWithoutMatchesShowsBackButton) {
   EXPECT_EQ(no_results_item->title(),
             l10n_util::GetStringUTF16(IDS_SEARCH_NO_RESULTS));
   EXPECT_FALSE(no_results_item->GetEnabled());
-  EXPECT_TRUE(GetBackButton(search_bar)->GetVisible());
-  EXPECT_FALSE(GetSearchIcon(search_bar)->GetVisible());
+  EXPECT_TRUE(GetSearchIcon(search_bar)->GetVisible());
 
   const views::Separator* separator = GetSeparator(search_bar);
   ASSERT_NE(separator, nullptr);
@@ -3244,7 +3237,6 @@ TEST_F(ActionAppMenuWithSearchTest, ChangingSearchQueryReplacesResults) {
   EXPECT_NE(root->GetMenuItemByID(kActionShowDownloadsPage), nullptr);
   EXPECT_EQ(search_row->parent(), search_row_parent);
   EXPECT_EQ(search_row_parent->GetIndexOf(search_row), search_row_index);
-  EXPECT_TRUE(GetBackButton(search_bar)->GetVisible());
 
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
   menu.CloseMenu();
@@ -3323,7 +3315,7 @@ TEST_F(ActionAppMenuWithSearchTest, SearchResultsPreserveCheckableItems) {
   menu.CloseMenu();
 }
 
-TEST_F(ActionAppMenuWithSearchTest, BackButtonRestoresNormalMenu) {
+TEST_F(ActionAppMenuWithSearchTest, ClearButtonRestoresNormalMenu) {
   base::MockCallback<base::RepeatingClosure> on_menu_closed;
   ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
 
@@ -3340,17 +3332,23 @@ TEST_F(ActionAppMenuWithSearchTest, BackButtonRestoresNormalMenu) {
 
   search_field->RequestFocus();
   ASSERT_TRUE(search_field->HasFocus());
+  views::Button* clear_button = GetClearButton(search_bar);
+  ASSERT_NE(clear_button, nullptr);
+  EXPECT_FALSE(clear_button->GetVisible());
+
   search_bar->SetText(u"Downloads");
-  ASSERT_TRUE(GetBackButton(search_bar)->GetVisible());
+  ASSERT_TRUE(clear_button->GetVisible());
   ASSERT_FALSE(search_bar->GetText().empty());
+  ASSERT_NE(root->GetMenuItemByID(kActionShowDownloadsPage), nullptr);
   ASSERT_EQ(root->GetMenuItemByID(kActionPrint), nullptr);
   EXPECT_TRUE(search_field->HasFocus());
+  EXPECT_TRUE(GetSearchIcon(search_bar)->GetVisible());
 
-  views::test::ButtonTestApi(GetBackButton(search_bar))
-      .NotifyDefaultMouseClick();
+  views::test::ButtonTestApi(clear_button).NotifyDefaultMouseClick();
 
+  // The query and the previous results are gone, and the normal menu is back.
   EXPECT_TRUE(search_field->HasFocus());
-  EXPECT_FALSE(GetBackButton(search_bar)->GetVisible());
+  EXPECT_FALSE(clear_button->GetVisible());
   EXPECT_TRUE(GetSearchIcon(search_bar)->GetVisible());
   EXPECT_TRUE(search_bar->GetText().empty());
   EXPECT_EQ(submenu->children().size(), row_count_at_open);
@@ -3375,7 +3373,10 @@ TEST_F(ActionAppMenuWithSearchTest, BackButtonRestoresNormalMenu) {
   menu.CloseMenu();
 }
 
-TEST_F(ActionAppMenuWithSearchTest, ClearButtonKeepsResults) {
+// Every way of emptying the query restores the normal menu, not only the clear
+// button.
+TEST_F(ActionAppMenuWithSearchTest, EscapeAndDeletingQueryRestoreNormalMenu) {
+  widget_->Show();
   base::MockCallback<base::RepeatingClosure> on_menu_closed;
   ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
 
@@ -3383,30 +3384,37 @@ TEST_F(ActionAppMenuWithSearchTest, ClearButtonKeepsResults) {
   ASSERT_TRUE(menu.IsShowing());
 
   views::MenuItemView* root = menu.root_menu_item_for_testing();
+  views::MenuController* controller = root->GetMenuController();
+  ASSERT_NE(controller, nullptr);
   AppMenuSearchBarView* search_bar = menu.search_bar_for_testing();
   ASSERT_NE(search_bar, nullptr);
-  views::Button* clear_button = GetClearButton(search_bar);
-  ASSERT_NE(clear_button, nullptr);
-  EXPECT_FALSE(clear_button->GetVisible());
+  GetSearchField(search_bar)->RequestFocus();
+  ASSERT_TRUE(controller->HasFocusedTextfield());
 
+  // Escape clears the query and restores the normal menu without closing it.
   search_bar->SetText(u"Downloads");
-  ASSERT_NE(root->GetMenuItemByID(kActionShowDownloadsPage), nullptr);
-  EXPECT_TRUE(clear_button->GetVisible());
-  EXPECT_TRUE(GetBackButton(search_bar)->GetVisible());
-
-  views::test::ButtonTestApi(clear_button).NotifyDefaultMouseClick();
-
-  // The query is gone, but the results stay until back is pressed.
+  ASSERT_EQ(root->GetMenuItemByID(kActionPrint), nullptr);
+  ui::KeyEvent escape_event(ui::EventType::kKeyPressed, ui::VKEY_ESCAPE,
+                            ui::EF_NONE);
+  controller->OnWillDispatchKeyEvent(&escape_event);
+  EXPECT_TRUE(menu.IsShowing());
   EXPECT_TRUE(search_bar->GetText().empty());
-  EXPECT_FALSE(clear_button->GetVisible());
-  EXPECT_NE(root->GetMenuItemByID(kActionShowDownloadsPage), nullptr);
-  EXPECT_EQ(root->GetMenuItemByID(kActionPrint), nullptr);
-  EXPECT_TRUE(GetBackButton(search_bar)->GetVisible());
-
-  views::test::ButtonTestApi(GetBackButton(search_bar))
-      .NotifyDefaultMouseClick();
   EXPECT_NE(root->GetMenuItemByID(kActionPrint), nullptr);
-  EXPECT_FALSE(GetBackButton(search_bar)->GetVisible());
+  EXPECT_TRUE(GetSearchIcon(search_bar)->GetVisible());
+
+  // Deleting the last characters of the query also restores the normal menu.
+  // A query that is too short to search keeps the results until it is empty.
+  search_bar->SetText(u"Do");
+  ASSERT_EQ(root->GetMenuItemByID(kActionPrint), nullptr);
+  ui::KeyEvent back_event(ui::EventType::kKeyPressed, ui::VKEY_BACK,
+                          ui::EF_NONE);
+  controller->OnWillDispatchKeyEvent(&back_event);
+  ASSERT_EQ(search_bar->GetText(), u"D");
+  EXPECT_EQ(root->GetMenuItemByID(kActionPrint), nullptr);
+  controller->OnWillDispatchKeyEvent(&back_event);
+  EXPECT_TRUE(search_bar->GetText().empty());
+  EXPECT_NE(root->GetMenuItemByID(kActionPrint), nullptr);
+  EXPECT_TRUE(GetSearchIcon(search_bar)->GetVisible());
 
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
   menu.CloseMenu();
@@ -3450,8 +3458,9 @@ TEST_F(ActionAppMenuWithSearchTest, SearchResultsKeepMenuWidth) {
   EXPECT_EQ(container->width(), menu_width);
   EXPECT_EQ(submenu->width(), submenu_width);
 
-  // Back restores the normal menu, which lays out at its own width again.
-  views::test::ButtonTestApi(GetBackButton(search_bar))
+  // Clearing the query restores the normal menu, which lays out at its own
+  // width again.
+  views::test::ButtonTestApi(GetClearButton(search_bar))
       .NotifyDefaultMouseClick();
   EXPECT_EQ(container->width(), menu_width);
   EXPECT_EQ(submenu->width(), submenu_width);
@@ -3509,17 +3518,17 @@ TEST_F(ActionAppMenuWithSearchTest,
   // The same notification row stays above the search bar while the results
   // are shown.
   search_bar->SetText(u"Downloads");
-  ASSERT_TRUE(GetBackButton(search_bar)->GetVisible());
+  ASSERT_TRUE(GetClearButton(search_bar)->GetVisible());
   EXPECT_EQ(root->GetMenuItemByID(kActionUpgradeDialog), upgrade_item);
   EXPECT_EQ(upgrade_item->parent(), header);
   EXPECT_EQ(search_row->parent(), header);
   EXPECT_EQ(header->GetIndexOf(search_row), search_row_index_at_open);
 
-  views::test::ButtonTestApi(GetBackButton(search_bar))
+  views::test::ButtonTestApi(GetClearButton(search_bar))
       .NotifyDefaultMouseClick();
 
-  // Back adds the normal rows below the search bar again, but not the
-  // notification.
+  // Clearing the query adds the normal rows below the search bar again, but
+  // not the notification.
   EXPECT_EQ(root->GetMenuItemByID(kActionUpgradeDialog), upgrade_item);
   EXPECT_EQ(upgrade_item->parent(), header);
   EXPECT_EQ(search_row->parent(), header);
@@ -3623,7 +3632,7 @@ TEST_F(ActionAppMenuWithSearchTest, CloseMenuDuringLiveRebuildIsDeferred) {
                                    &closed_callback_ran,
                                    run_loop.QuitClosure());
 
-    views::test::ButtonTestApi(GetBackButton(search_bar))
+    views::test::ButtonTestApi(GetClearButton(search_bar))
         .NotifyDefaultMouseClick();
 
     EXPECT_EQ(menu, nullptr);

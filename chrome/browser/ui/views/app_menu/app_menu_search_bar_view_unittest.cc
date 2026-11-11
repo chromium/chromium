@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/views/chrome_views_test_base.h"
-#include "components/strings/grit/components_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event.h"
@@ -45,11 +44,6 @@ class AppMenuSearchBarViewTest : public ChromeViewsTestBase {
   views::View* GetSearchIcon(AppMenuSearchBarView* search_bar) {
     return search_bar->GetViewByElementId(
         AppMenuSearchBarView::kSearchIconElementId);
-  }
-
-  views::Button* GetBackButton(AppMenuSearchBarView* search_bar) {
-    return views::Button::AsButton(search_bar->GetViewByElementId(
-        AppMenuSearchBarView::kBackButtonElementId));
   }
 
   views::Button* GetClearButton(AppMenuSearchBarView* search_bar) {
@@ -136,88 +130,17 @@ TEST_F(AppMenuSearchBarViewTest, MouseAndKeyboardInteractions) {
       static_cast<views::View*>(search_field)->OnKeyPressed(escape_event));
 }
 
-TEST_F(AppMenuSearchBarViewTest, LeadingIconToggles) {
+TEST_F(AppMenuSearchBarViewTest, SearchIconStaysVisibleWithQuery) {
   auto search_bar = std::make_unique<AppMenuSearchBarView>();
   views::View* icon = GetSearchIcon(search_bar.get());
-  views::Button* back_button = GetBackButton(search_bar.get());
   ASSERT_NE(icon, nullptr);
-  ASSERT_NE(back_button, nullptr);
-
   EXPECT_TRUE(icon->GetVisible());
-  EXPECT_FALSE(back_button->GetVisible());
-  EXPECT_EQ(back_button->GetFocusBehavior(), views::View::FocusBehavior::NEVER);
 
-  search_bar->SetLeadingIcon(AppMenuSearchBarView::LeadingIcon::kBack);
-  EXPECT_FALSE(icon->GetVisible());
-  EXPECT_TRUE(back_button->GetVisible());
-
-  search_bar->SetLeadingIcon(AppMenuSearchBarView::LeadingIcon::kSearch);
+  search_bar->SetText(u"downloads");
   EXPECT_TRUE(icon->GetVisible());
-  EXPECT_FALSE(back_button->GetVisible());
-}
 
-TEST_F(AppMenuSearchBarViewTest, BackPressClearsText) {
-  auto widget = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
-  auto* search_bar =
-      widget->SetContentsView(std::make_unique<AppMenuSearchBarView>());
-  widget->Show();
-  search_bar->SetText(u"downloads");
-  search_bar->SetLeadingIcon(AppMenuSearchBarView::LeadingIcon::kBack);
-
-  EXPECT_FALSE(search_bar->GetText().empty());
-
-  views::test::ButtonTestApi(GetBackButton(search_bar))
-      .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
-                                  gfx::Point(), base::TimeTicks(),
-                                  ui::EF_LEFT_MOUSE_BUTTON,
-                                  ui::EF_LEFT_MOUSE_BUTTON));
-
-  EXPECT_TRUE(search_bar->GetText().empty());
-  EXPECT_TRUE(GetSearchField(search_bar)->HasFocus());
-}
-
-TEST_F(AppMenuSearchBarViewTest, BackPressNotifiesTextChanged) {
-  auto widget = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
-  auto* search_bar =
-      widget->SetContentsView(std::make_unique<AppMenuSearchBarView>());
-  search_bar->SetText(u"downloads");
-  search_bar->SetLeadingIcon(AppMenuSearchBarView::LeadingIcon::kBack);
-
-  int notifications = 0;
-  base::CallbackListSubscription subscription =
-      search_bar->AddTextChangedCallback(
-          base::BindLambdaForTesting([&]() { ++notifications; }));
-
-  views::test::ButtonTestApi(GetBackButton(search_bar))
-      .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
-                                  gfx::Point(), base::TimeTicks(),
-                                  ui::EF_LEFT_MOUSE_BUTTON,
-                                  ui::EF_LEFT_MOUSE_BUTTON));
-
-  EXPECT_GT(notifications, 0);
-  EXPECT_TRUE(search_bar->GetText().empty());
-}
-
-TEST_F(AppMenuSearchBarViewTest, BackPressNotifiesBackPressed) {
-  auto widget = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
-  auto* search_bar =
-      widget->SetContentsView(std::make_unique<AppMenuSearchBarView>());
-  search_bar->SetText(u"downloads");
-  search_bar->SetLeadingIcon(AppMenuSearchBarView::LeadingIcon::kBack);
-
-  int notifications = 0;
-  base::CallbackListSubscription subscription =
-      search_bar->AddBackPressedCallback(base::BindLambdaForTesting([&]() {
-        ++notifications;
-        // Runs before the query is cleared.
-        EXPECT_EQ(search_bar->GetText(), u"downloads");
-      }));
-
-  views::test::ButtonTestApi(GetBackButton(search_bar))
-      .NotifyDefaultMouseClick();
-
-  EXPECT_EQ(notifications, 1);
-  EXPECT_TRUE(search_bar->GetText().empty());
+  search_bar->SetText(u"");
+  EXPECT_TRUE(icon->GetVisible());
 }
 
 TEST_F(AppMenuSearchBarViewTest, ClearButtonClearsText) {
@@ -242,16 +165,12 @@ TEST_F(AppMenuSearchBarViewTest, ClearButtonClearsText) {
   base::CallbackListSubscription text_sub = search_bar->AddTextChangedCallback(
       base::BindLambdaForTesting([&]() { ++text_changed_count; }));
 
-  int back_pressed_count = 0;
-  base::CallbackListSubscription back_sub = search_bar->AddBackPressedCallback(
-      base::BindLambdaForTesting([&]() { ++back_pressed_count; }));
-
   views::test::ButtonTestApi(clear_button).NotifyDefaultMouseClick();
   EXPECT_TRUE(search_bar->GetText().empty());
   EXPECT_FALSE(clear_button->GetVisible());
   EXPECT_TRUE(GetSearchField(search_bar)->HasFocus());
+  EXPECT_TRUE(GetSearchIcon(search_bar)->GetVisible());
   EXPECT_GT(text_changed_count, 0);
-  EXPECT_EQ(back_pressed_count, 0);
 }
 
 TEST_F(AppMenuSearchBarViewTest, RtlLayoutMirrorsIcons) {
@@ -267,11 +186,9 @@ TEST_F(AppMenuSearchBarViewTest, RtlLayoutMirrorsIcons) {
 
   views::Textfield* search_field = GetSearchField(search_bar);
   views::View* search_icon = GetSearchIcon(search_bar);
-  views::Button* back_button = GetBackButton(search_bar);
   views::Button* clear_button = GetClearButton(search_bar);
 
   EXPECT_GT(search_icon->GetMirroredBounds().x(), search_field->width() / 2);
-  EXPECT_EQ(back_button->GetMirroredBounds(), search_icon->GetMirroredBounds());
   EXPECT_LT(clear_button->GetMirroredBounds().right(),
             search_field->width() / 2);
 }

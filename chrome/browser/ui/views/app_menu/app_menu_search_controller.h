@@ -31,7 +31,7 @@ class BaseAction;
 // querying FuzzyFinder, and constructing an ephemeral ActionItem results tree
 // for the UI to render. It searches whenever the search bar's query changes,
 // owns the results tree, and has its `Delegate` show the results. When the
-// back button is pressed, it has the `Delegate` show the normal menu again.
+// query is cleared, it shows the main menu again.
 class AppMenuSearchController {
  public:
   // Implemented by the app menu that shows the search results.
@@ -129,12 +129,12 @@ class AppMenuSearchController {
   };
 
   // Searches for the search bar's query and has `delegate_` show the results.
-  // Leaves the menu as it is when the query is below the minimum query length
-  // threshold.
+  // Restores the normal menu when the query is empty, and leaves the menu as it
+  // is when the query is below the minimum query length threshold.
   void OnQueryChanged();
 
-  // Has `delegate_` restore the normal menu again.
-  void OnBackPressed();
+  // Show the main menu instead of the search results.
+  void RestoreMenu();
 
   // Recursively traverses action and its children to extract searchable leaf
   // items into search_items_, tracking contextual text and category types.
@@ -178,7 +178,6 @@ class AppMenuSearchController {
   std::unique_ptr<actions::ActionItem> search_results_;
 
   base::CallbackListSubscription query_changed_subscription_;
-  base::CallbackListSubscription back_pressed_subscription_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_APP_MENU_APP_MENU_SEARCH_CONTROLLER_H_

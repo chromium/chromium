@@ -79,12 +79,6 @@ class AppMenuSearchControllerTest
   }
 
  protected:
-  bool IsBackButtonVisible() {
-    return search_bar_
-        ->GetViewByElementId(AppMenuSearchBarView::kBackButtonElementId)
-        ->GetVisible();
-  }
-
   // `scope_` and `recent_tabs_menu_` must be declared before `menu_root_` so
   // that underlying delegate ActionItems and the recent tab actions bound to
   // `recent_tabs_menu_` outlive the actions stored in `menu_root_`.
@@ -930,7 +924,6 @@ TEST_F(AppMenuSearchControllerTest, ChangingQueryReplacesResults) {
   search_bar_->SetText(u"Print");
   // The previous results are freed once the menu shows the new ones.
   EXPECT_FALSE(first_results);
-  EXPECT_TRUE(IsBackButtonVisible());
 }
 
 TEST_F(AppMenuSearchControllerTest, ShortQueryKeepsResults) {
@@ -940,8 +933,8 @@ TEST_F(AppMenuSearchControllerTest, ShortQueryKeepsResults) {
                            .Build());
   controller_->InitializeSearchIndex();
 
+  // A query below the minimum length shows no results.
   search_bar_->SetText(u"N");
-  EXPECT_FALSE(IsBackButtonVisible());
 
   base::WeakPtr<actions::ActionItem> results;
   EXPECT_CALL(delegate_, ShowSearchResults(testing::NotNull(), testing::_))
@@ -951,26 +944,54 @@ TEST_F(AppMenuSearchControllerTest, ShortQueryKeepsResults) {
       });
   search_bar_->SetText(u"New");
   EXPECT_TRUE(results);
-  EXPECT_TRUE(IsBackButtonVisible());
 
+  // Shortening the query below the minimum length keeps the results.
   search_bar_->SetText(u"N");
   EXPECT_TRUE(results);
-  EXPECT_TRUE(IsBackButtonVisible());
-
-  search_bar_->SetText(std::u16string());
-  EXPECT_TRUE(results);
-  EXPECT_TRUE(IsBackButtonVisible());
-
-  EXPECT_CALL(delegate_, RestoreMenu(testing::_));
-  views::test::ButtonTestApi(
-      views::Button::AsButton(search_bar_->GetViewByElementId(
-          AppMenuSearchBarView::kBackButtonElementId)))
-      .NotifyDefaultMouseClick();
-  EXPECT_FALSE(results);
-  EXPECT_FALSE(IsBackButtonVisible());
 }
 
-TEST_F(AppMenuSearchControllerTest, BackPressShowsNormalMenu) {
+TEST_F(AppMenuSearchControllerTest, EmptyQueryRestoresMenu) {
+  menu_root_->AddChild(actions::ActionItem::Builder()
+                           .SetActionId(kActionNewTab)
+                           .SetText(u"New Tab")
+                           .Build());
+  controller_->InitializeSearchIndex();
+
+  base::WeakPtr<actions::ActionItem> results;
+  testing::InSequence sequence;
+  EXPECT_CALL(delegate_, ShowSearchResults(testing::NotNull(), testing::_))
+      .WillOnce([&results](actions::ActionItem* shown,
+                           std::unique_ptr<actions::ActionItem> old_results) {
+        results = shown->GetAsWeakPtr();
+      });
+  EXPECT_CALL(delegate_, RestoreMenu(testing::_))
+      .WillOnce([&results](std::unique_ptr<actions::ActionItem> old_results) {
+        // The results must outlive the call so the menu can remove the rows
+        // pointing into them first.
+        EXPECT_TRUE(results);
+        EXPECT_EQ(results.get(), old_results.get());
+      });
+  search_bar_->SetText(u"New");
+  search_bar_->SetText(std::u16string());
+  // The results are freed once the menu is restored.
+  EXPECT_FALSE(results);
+}
+
+TEST_F(AppMenuSearchControllerTest, WhitespaceQueryRestoresMenu) {
+  menu_root_->AddChild(actions::ActionItem::Builder()
+                           .SetActionId(kActionNewTab)
+                           .SetText(u"New Tab")
+                           .Build());
+  controller_->InitializeSearchIndex();
+
+  testing::InSequence sequence;
+  EXPECT_CALL(delegate_, ShowSearchResults(testing::NotNull(), testing::_));
+  EXPECT_CALL(delegate_, RestoreMenu(testing::_));
+  search_bar_->SetText(u"New");
+  search_bar_->SetText(u"   ");
+}
+
+TEST_F(AppMenuSearchControllerTest, ClearButtonRestoresMenu) {
   menu_root_->AddChild(actions::ActionItem::Builder()
                            .SetActionId(kActionNewTab)
                            .SetText(u"New Tab")
@@ -983,10 +1004,25 @@ TEST_F(AppMenuSearchControllerTest, BackPressShowsNormalMenu) {
   search_bar_->SetText(u"New");
   views::test::ButtonTestApi(
       views::Button::AsButton(search_bar_->GetViewByElementId(
-          AppMenuSearchBarView::kBackButtonElementId)))
+          AppMenuSearchBarView::kClearButtonElementId)))
       .NotifyDefaultMouseClick();
   EXPECT_TRUE(search_bar_->GetText().empty());
-  EXPECT_FALSE(IsBackButtonVisible());
+  EXPECT_TRUE(
+      search_bar_
+          ->GetViewByElementId(AppMenuSearchBarView::kSearchIconElementId)
+          ->GetVisible());
+}
+
+TEST_F(AppMenuSearchControllerTest, EmptyQueryWithoutResultsDoesNothing) {
+  menu_root_->AddChild(actions::ActionItem::Builder()
+                           .SetActionId(kActionNewTab)
+                           .SetText(u"New Tab")
+                           .Build());
+  controller_->InitializeSearchIndex();
+
+  // `delegate_` is a StrictMock, so any delegate call fails the test.
+  search_bar_->SetText(u"N");
+  search_bar_->SetText(std::u16string());
 }
 
 TEST_F(AppMenuSearchControllerTest, OtherDeviceTabsSubmenuIndexed) {

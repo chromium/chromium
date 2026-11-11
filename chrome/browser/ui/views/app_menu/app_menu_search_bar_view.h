@@ -19,12 +19,8 @@ class AppMenuSearchBarView : public views::BoxLayoutView {
   METADATA_HEADER(AppMenuSearchBarView, views::BoxLayoutView)
 
  public:
-  // The icon occupying the leading slot.
-  enum class LeadingIcon { kSearch, kBack };
-
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSearchFieldElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSearchIconElementId);
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kBackButtonElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kClearButtonElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSeparatorElementId);
 
@@ -33,17 +29,10 @@ class AppMenuSearchBarView : public views::BoxLayoutView {
   AppMenuSearchBarView& operator=(const AppMenuSearchBarView&) = delete;
   ~AppMenuSearchBarView() override;
 
-  void SetLeadingIcon(LeadingIcon icon);
-
   std::u16string_view GetText() const;
   void SetText(std::u16string_view text);
   [[nodiscard]] base::CallbackListSubscription AddTextChangedCallback(
       views::PropertyChangedCallback callback);
-
-  // Runs `callback` when the back button is pressed, before the query is
-  // cleared.
-  [[nodiscard]] base::CallbackListSubscription AddBackPressedCallback(
-      base::RepeatingClosure callback);
 
  private:
   // The textfield, with the focus and key handling it needs inside the menu.
