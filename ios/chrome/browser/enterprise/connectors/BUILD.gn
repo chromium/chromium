@@ -24,7 +24,6 @@ source_set("connectors") {
     "//components/signin/public/identity_manager",
     "//google_apis",
     "//ios/chrome/browser/enterprise/common",
-    "//ios/chrome/browser/enterprise/connectors/analysis",
     "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile",

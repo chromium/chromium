@@ -4,8 +4,6 @@
 
 source_set("analysis") {
   sources = [
-    "analysis_service_settings.h",
-    "analysis_service_settings.mm",
     "content_analysis_info.h",
     "content_analysis_info.mm",
   ]
