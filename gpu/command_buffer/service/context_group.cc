@@ -380,15 +380,6 @@ ContextGroup::InitializeWithCompleteFramebufferForWorkarounds(
                  feature_info_->workarounds().webgl_or_caps_max_texture_size);
   }
 
-  if (feature_info_->workarounds().max_3d_array_texture_size) {
-    max_3d_texture_size =
-        std::min(max_3d_texture_size,
-                 feature_info_->workarounds().max_3d_array_texture_size);
-    max_array_texture_layers =
-        std::min(max_array_texture_layers,
-                 feature_info_->workarounds().max_3d_array_texture_size);
-  }
-
   // Managers are not used by the passthrough command decoder. Save memory by
   // not allocating them.
   if (!use_passthrough_cmd_decoder_) {

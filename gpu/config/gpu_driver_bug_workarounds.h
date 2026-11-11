@@ -40,7 +40,6 @@ class GPU_CONFIG_EXPORT GpuDriverBugWorkarounds {
 
   // Note: 0 here means use driver limit.
   GLint webgl_or_caps_max_texture_size = 0;
-  GLint max_3d_array_texture_size = 0;
 };
 
 }  // namespace gpu
