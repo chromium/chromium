@@ -1458,7 +1458,7 @@
   {
     "name": "auxiliary-search-donation",
     "owners": [ "gangwu@chromium.org", "chrome-mobile-search@google.com" ],
-    "expiry_milestone": 160
+    "expiry_milestone": 170
   },
   {
     "name": "auxiliary-search-history-donation",
