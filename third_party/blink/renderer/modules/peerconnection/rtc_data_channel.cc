@@ -658,12 +658,14 @@ void RTCDataChannel::ContextDestroyed() {
   stopped_ = true;
   state_ = webrtc::DataChannelInterface::kClosed;
   feature_handle_for_scheduler_.reset();
+  CancelPendingMessages();
 }
 
 // ActiveScriptWrappable
 bool RTCDataChannel::HasPendingActivity() const {
-  if (stopped_)
+  if (state_ == webrtc::DataChannelInterface::kClosed) {
     return false;
+  }
 
   // A RTCDataChannel object must not be garbage collected if its
   // * readyState is connecting and at least one event listener is registered
@@ -688,15 +690,15 @@ bool RTCDataChannel::HasPendingActivity() const {
       has_valid_listeners |= HasEventListeners(event_type_names::kError) ||
                              HasEventListeners(event_type_names::kClose);
       break;
-    default:
-      break;
+    case webrtc::DataChannelInterface::kClosed:
+      NOTREACHED();
   }
 
-  if (has_valid_listeners)
+  if (has_valid_listeners) {
     return true;
+  }
 
-  return state_ != webrtc::DataChannelInterface::kClosed &&
-         bufferedAmount() > 0;
+  return bufferedAmount() > 0 || !pending_messages_.empty();
 }
 
 void RTCDataChannel::Trace(Visitor* visitor) const {
@@ -748,6 +750,7 @@ void RTCDataChannel::OnStateChange(
       break;
     case webrtc::DataChannelInterface::kClosed: {
       feature_handle_for_scheduler_.reset();
+      CancelPendingMessages();
       auto error = channel()->error();
       if (!error.ok()) {
         LOG(ERROR) << "DataChannel error: \"" << error.message() << "\""
@@ -832,6 +835,15 @@ void RTCDataChannel::Dispose() {
     // Clear the weak persistent reference to this on-heap object.
     observer_->Unregister();
   }
+}
+
+void RTCDataChannel::CancelPendingMessages() {
+  for (auto& message : pending_messages_) {
+    if (message->type_ == PendingMessage::Type::kBufferPending) {
+      message->blob_reader_->Cancel();
+    }
+  }
+  pending_messages_.clear();
 }
 
 const webrtc::scoped_refptr<webrtc::DataChannelInterface>&
@@ -950,7 +962,6 @@ void RTCDataChannel::BlobReader::DidFinishLoading(FileReaderData data) {
   message_->buffer_ = webrtc::DataBuffer(buffer, true);
   message_->type_ = RTCDataChannel::PendingMessage::Type::kBufferReady;
   data_channel_->ProcessSendQueue();
-  Dispose();
 }
 
 void RTCDataChannel::BlobReader::DidFail(FileErrorCode error) {
@@ -961,7 +972,6 @@ void RTCDataChannel::BlobReader::DidFail(FileErrorCode error) {
       "Couldn't read Blob content, skipping message."));
   message_->type_ = RTCDataChannel::PendingMessage::Type::kBlobFailure;
   data_channel_->ProcessSendQueue();
-  Dispose();
 }
 
 RTCDataChannel::BlobReader::BlobReader(ExecutionContext* context,
@@ -972,8 +982,7 @@ RTCDataChannel::BlobReader::BlobReader(ExecutionContext* context,
           this,
           GetExecutionContext()->GetTaskRunner(TaskType::kFileReading))),
       data_channel_(data_channel),
-      message_(message),
-      keep_alive_({}, this) {}
+      message_(message) {}
 
 RTCDataChannel::BlobReader::~BlobReader() = default;
 
@@ -996,14 +1005,12 @@ bool RTCDataChannel::BlobReader::HasFinishedLoading() const {
 }
 
 void RTCDataChannel::BlobReader::ContextDestroyed() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  loader_->Cancel();
-  Dispose();
+  Cancel();
 }
 
-void RTCDataChannel::BlobReader::Dispose() {
+void RTCDataChannel::BlobReader::Cancel() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  keep_alive_.Clear();
+  loader_->Cancel();
 }
 
 }  // namespace blink

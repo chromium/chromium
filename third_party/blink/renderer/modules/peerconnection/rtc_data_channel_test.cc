@@ -20,6 +20,8 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/run_until.h"
 #include "base/test/test_simple_task_runner.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/functional/any_invocable.h"
@@ -35,8 +37,11 @@
 #include "third_party/blink/renderer/core/typed_arrays/dom_data_view.h"
 #include "third_party/blink/renderer/modules/peerconnection/mock_rtc_peer_connection_handler_platform.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/blob/blob_data.h"
+#include "third_party/blink/renderer/platform/blob/testing/fake_blob.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/page_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
@@ -79,6 +84,27 @@ void RunSynchronous(base::TestSimpleTaskRunner* thread,
 class MockEventListener final : public NativeEventListener {
  public:
   MOCK_METHOD(void, Invoke, (ExecutionContext * executionContext, Event*));
+};
+
+// A Blob implementation whose ReadAll() reports its size (so FileReaderLoader
+// arms its SimpleWatcher) and then stalls without completing.
+class StalledBlob final : public FakeBlob {
+ public:
+  explicit StalledBlob(const String& body) : FakeBlob("uuid", body) {}
+
+  void ReadAll(
+      mojo::ScopedDataPipeProducerHandle handle,
+      mojo::PendingRemote<mojom::blink::BlobReaderClient> client) override {
+    producer_handle_ = std::move(handle);
+    client_remote_.Bind(std::move(client));
+    client_remote_->OnCalculatedSize(body_.size(), body_.size());
+  }
+
+  bool HasStartedReading() const { return client_remote_.is_bound(); }
+
+ private:
+  mojo::ScopedDataPipeProducerHandle producer_handle_;
+  mojo::Remote<mojom::blink::BlobReaderClient> client_remote_;
 };
 
 class MockPeerConnectionHandler : public MockRTCPeerConnectionHandlerPlatform {
@@ -628,6 +654,70 @@ TEST_F(RTCDataChannelTest, NoSendAfterClose) {
     channel->send(blob, exception_state);
     EXPECT_TRUE(exception_state.HadException());
   }
+}
+
+TEST_F(RTCDataChannelTest, CloseWhileBlobPendingCancelsLoader) {
+  StalledBlob stalled_blob("hello");
+  mojo::Receiver<mojom::blink::Blob> blob_receiver(&stalled_blob);
+
+  webrtc::scoped_refptr<MockDataChannel> webrtc_channel(
+      new webrtc::RefCountedObject<MockDataChannel>(signaling_thread()));
+  WeakPersistent<RTCDataChannel> weak_channel;
+  {
+    auto* channel = MakeGarbageCollected<RTCDataChannel>(execution_context_,
+                                                         webrtc_channel);
+    weak_channel = channel;
+    webrtc_channel->ChangeState(webrtc::DataChannelInterface::kOpen);
+
+    auto* blob = MakeGarbageCollected<Blob>(BlobDataHandle::Create(
+        "uuid", "text/plain", 5, blob_receiver.BindNewPipeAndPassRemote()));
+    channel->send(blob, IGNORE_EXCEPTION_FOR_TESTING);
+    base::RunLoop().RunUntilIdle();
+    EXPECT_TRUE(stalled_blob.HasStartedReading());
+    base::RunLoop().RunUntilIdle();
+  }
+
+  ThreadState::Current()->CollectAllGarbageForTesting(
+      cppgc::EmbedderStackState::kNoHeapPointers);
+  EXPECT_TRUE(weak_channel);
+
+  webrtc_channel->ChangeState(webrtc::DataChannelInterface::kClosed);
+  ThreadState::Current()->CollectAllGarbageForTesting(
+      cppgc::EmbedderStackState::kNoHeapPointers);
+  EXPECT_FALSE(weak_channel);
+}
+
+TEST_F(RTCDataChannelTest, ContextDestroyedWhileBlobPendingCancelsLoader) {
+  StalledBlob stalled_blob("hello");
+  mojo::Receiver<mojom::blink::Blob> blob_receiver(&stalled_blob);
+
+  webrtc::scoped_refptr<MockDataChannel> webrtc_channel(
+      new webrtc::RefCountedObject<MockDataChannel>(signaling_thread()));
+  Persistent<NullExecutionContext> context =
+      MakeGarbageCollected<NullExecutionContext>();
+  WeakPersistent<RTCDataChannel> weak_channel;
+  {
+    auto* channel =
+        MakeGarbageCollected<RTCDataChannel>(context, webrtc_channel);
+    weak_channel = channel;
+    webrtc_channel->ChangeState(webrtc::DataChannelInterface::kOpen);
+
+    auto* blob = MakeGarbageCollected<Blob>(BlobDataHandle::Create(
+        "uuid", "text/plain", 5, blob_receiver.BindNewPipeAndPassRemote()));
+    channel->send(blob, IGNORE_EXCEPTION_FOR_TESTING);
+    base::RunLoop().RunUntilIdle();
+    EXPECT_TRUE(stalled_blob.HasStartedReading());
+    base::RunLoop().RunUntilIdle();
+  }
+
+  ThreadState::Current()->CollectAllGarbageForTesting(
+      cppgc::EmbedderStackState::kNoHeapPointers);
+  EXPECT_TRUE(weak_channel);
+
+  context->NotifyContextDestroyed();
+  ThreadState::Current()->CollectAllGarbageForTesting(
+      cppgc::EmbedderStackState::kNoHeapPointers);
+  EXPECT_FALSE(weak_channel);
 }
 
 }  // namespace blink

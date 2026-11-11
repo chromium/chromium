@@ -33,7 +33,6 @@ class SelfKeepAliveCreationKey final {
   friend class MojoWatcher;
   friend class PausableScriptExecutor;
   friend class Responder;
-  friend class RTCDataChannel;
   friend class SetMediaKeysHandler;
   friend class ThreadedMessagingProxyBase;
 };
