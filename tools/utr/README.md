@@ -43,37 +43,49 @@ You can also click on the same 📄 symbol next to a test suite's step further
 down the build page to see the UTR invocation that will run the entire suite.
 
 Alternatively, if you don't have a specific builder name already at hand, you
-can choose a relevant gardened builder on the
+can choose a relevant builder on the
 [Chromium build console](https://build.chromium.org/) that runs the test suite
-you're interested in. Some basic builders you can use are listed below:
+you're interested in. Some basic CQ try builders you can use are listed below:
 
-- [Linux Tests](https://ci.chromium.org/ui/p/chromium/builders/ci/Linux%20Tests),
-  runs basic functional test suites on Linux VMs. Use `-B ci -b 'Linux Tests'`
+- **Linux:**
+  [linux-rel](https://ci.chromium.org/ui/p/chromium/builders/try/linux-rel),
+  runs basic functional test suites on Linux x64 VMs. Use `-B try -b linux-rel`
   on the UTR cmd line.
-- [Win10 Tests x64](https://ci.chromium.org/ui/p/chromium/builders/ci/Win10%20Tests%20x64),
-  runs basic functional test suites on Windows10 VMs. Use `-B ci -b
-  'Win10 Tests x64'` on the UTR cmd line.
-- [mac14-tests](https://ci.chromium.org/ui/p/chromium/builders/ci/mac14-tests),
-  runs basic functional test suites on Mac-14 VMs. Use `-B ci -b mac14-tests`
-  on the UTR cmd line.
-- [ios-simulator](https://ci.chromium.org/ui/p/chromium/builders/ci/ios-simulator),
-  runs basic functional test suites on iOS simulators hosted on Mac VMs. Use
-  `-B ci -b ios-simulator` on the UTR cmd line.
-- [android-13-x64-rel](https://ci.chromium.org/ui/p/chromium/builders/ci/android-13-x64-rel),
-  runs basic functional test suites on Android-13 emulators on intel. Use `-B
-  ci -b android-13-x64-rel` on the UTR cmd line.
-- [android-pie-arm64-rel](https://ci.chromium.org/ui/p/chromium/builders/ci/android-pie-arm64-rel),
-  runs basic functional test suites on Android Pie arm64 devices. Use `-B ci -b
-  android-pie-arm64-rel` on the UTR cmd line.
-- [linux-chromeos-rel](https://ci.chromium.org/ui/p/chromium/builders/ci/linux-chromeos-rel),
+- **Windows:**
+  [win-rel](https://ci.chromium.org/ui/p/chromium/builders/try/win-rel), runs
+  basic functional test suites on Windows x64 VMs. Use `-B try -b win-rel` on
+  the UTR cmd line.
+- **Mac:**
+  [mac-rel](https://ci.chromium.org/ui/p/chromium/builders/try/mac-rel), runs
+  basic functional test suites on macOS arm64 VMs. Use `-B try -b mac-rel` on
+  the UTR cmd line.
+- **iOS:**
+  [ios-simulator](https://ci.chromium.org/ui/p/chromium/builders/try/ios-simulator),
+  runs basic functional test suites on iOS arm64 simulators hosted on Mac VMs.
+  Use `-B try -b ios-simulator` on the UTR cmd line.
+- **Android (x64 emulator):**
+  [android-x64-rel](https://ci.chromium.org/ui/p/chromium/builders/try/android-x64-rel),
+  runs basic functional test suites on Android x64 AVD emulators on GCE
+  (preferred over `android-arm64-rel` for general Android testing due to broad
+  suite coverage). Use `-B try -b android-x64-rel` on the UTR cmd line (or
+  [android-desktop-x64-rel](https://ci.chromium.org/ui/p/chromium/builders/try/android-desktop-x64-rel)
+  with `-B try -b android-desktop-x64-rel` for Android Desktop).
+- **Android (arm64 device):**
+  [android-arm64-rel](https://ci.chromium.org/ui/p/chromium/builders/try/android-arm64-rel),
+  runs hardware-dependent test suites (such as GPU tests) on physical Android
+  arm64 devices (limited device capacity and a smaller subset of test suites
+  than x64 emulators). Use `-B try -b android-arm64-rel` on the UTR cmd line.
+- **ChromeOS (linux-chromeos):**
+  [linux-chromeos-rel](https://ci.chromium.org/ui/p/chromium/builders/try/linux-chromeos-rel),
   runs basic functional test suites in CrOS-flavored builds of Chromium running
   on Linux. (See
   [here](https://chromium.googlesource.com/chromium/src/+/main/docs/chromeos_build_instructions.md#Chromium-OS-on-Linux-linux_chromeos)
-  for more info on this config.) Use `-B ci -b linux-chromeos-rel` on the UTR
+  for more info on this config.) Use `-B try -b linux-chromeos-rel` on the UTR
   cmd line.
-- [chromeos-amd64-generic-rel-gtest](https://ci.chromium.org/ui/p/chromium/builders/ci/chromeos-amd64-generic-rel-gtest),
-  runs basic functional test suites on CrOS VMs running on intel. Use `-B ci -b
-  chromeos-amd64-generic-rel-gtest` on the UTR cmd line.
+- **ChromeOS (VM):**
+  [chromeos-amd64-generic-rel](https://ci.chromium.org/ui/p/chromium/builders/try/chromeos-amd64-generic-rel),
+  runs basic functional test suites on CrOS VMs running on Intel. Use `-B try -b
+  chromeos-amd64-generic-rel` on the UTR cmd line.
 
 *** note
 Note the following:
@@ -83,8 +95,47 @@ Note the following:
 - Not all cross-compilations are supported. The UTR will flag a warning in such
   cases (eg compiling a Mac test from a Linux machine). Your mileage may vary
   when running the UTR from a platform that differs from the one used on the
-  builder.
+  builder:
+  - **Linux hosts** can build Linux and ChromeOS natively, and cross-compile
+    Android and [Windows](../../docs/win_cross.md). Cross-compiling
+    [Mac](../../docs/apple_platform_linkers.md) is partially supported (works
+    for most standard test targets, but fails when `enable_dsyms = true` such as
+    `is_asan = true` or `is_official_build = true` due to missing Linux
+    `dsymutil`, or when targets invoke macOS-only Xcode asset tools); iOS is not
+    supported on Linux.
+  - **Mac hosts** can build Mac and iOS simulator targets, and cross-compile
+    [Windows](../../docs/win_cross.md).
+  - **Windows hosts** can only build Windows targets.
+  - When cross-compiling to a different OS or CPU architecture, ensure your
+    `.gclient` includes the target platform in `target_os` (e.g., `"android"`,
+    `"win"`, `"mac"`, `"ios"`, `"chromeos"`) and/or `target_cpu` (e.g.,
+    `"arm64"`, `"x64"`, `"arm"`, `"x86"`, etc.) and run `gclient sync`.
 ***
+
+### Actions and Common Flags
+
+Run `vpython3 tools/utr/run.py -h` (or `vpython3 tools/utr/run.py compile -h`
+for compile-specific flags) to see all options:
+
+- **Actions:** `compile` (compiles targets; omit `-t` to compile `all`), `test`
+  (runs already-compiled tests on Swarming), or `compile-and-test`. For `test`
+  and `compile-and-test`, the UTR waits for all Swarming shards to finish and
+  prints the final results URL before exiting.
+- `-B <bucket>` / `-b <builder>` / `-t <test_suite>`: Target bucket (`try` or
+  `ci`), builder name, and test suite (pass `-t` multiple times for multiple
+  suites).
+- `-n <N>`: Runs the build/test invocation `N` times without cleaning the build
+  dir and exits on the first failure (useful for reproducing flakes across
+  separate runs, unlike `--gtest_repeat=N` which repeats inside a single task).
+- `--build-dir <dir>` (`-o <dir>`): Custom output directory (defaults to
+  `out/UTR<builder_name>`).
+- `--keep-gn-args` / `--overwrite-gn-args`, `--skip-config-validation`,
+  `--force` (`-f`): Pre-answers config-mismatch prompts (e.g. when local
+  `args.gn` differs or when cross-compiling in non-interactive environments).
+- `--no-rbe`, `--no-coverage-instrumentation`, `--use-autoninja`: Compile flags
+  that must be placed **after** the `compile` or `compile-and-test` action.
+- `--`: Passes all remaining arguments directly to the test invocation (e.g.
+  `-- --gtest_filter=TestClass.TestCase`).
 
 ### Command-line Examples
 
@@ -239,6 +290,24 @@ introduced the regression:
 ![bisect result](docs/bisect_result.png)
 
 **6.** Don't forget to `git bisect reset` when finished bisecting.
+
+## Troubleshooting
+
+- **Authentication errors:** If binary downloads or Swarming/ResultDB calls
+  stall or fail with `luci-auth` errors, authenticate with:
+
+  ```sh
+  luci-auth login -scopes https://www.googleapis.com/auth/userinfo.email
+  ```
+
+- **Missing CAS inputs on RBE workers (e.g. in Cog workspaces):** If remote
+  compilation fails because RBE workers cannot find local virtual files (such as
+  `build/util/LASTCHANGE.dummy`), pass `--no-rbe` **after** the `compile` or
+  `compile-and-test` action to compile locally:
+
+  ```sh
+  vpython3 tools/utr/run.py -B try -b linux-rel -t base_unittests compile-and-test --no-rbe
+  ```
 
 ## Questions/feedback
 
