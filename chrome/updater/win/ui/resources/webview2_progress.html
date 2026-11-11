@@ -62,8 +62,12 @@
             color: #1a73e8;
             font-weight: 500;
         }
-        button:hover {
+        button:hover:not(:disabled) {
             background-color: #f8f9fa;
+        }
+        button:disabled {
+            color: #80868b;
+            cursor: default;
         }
         .marquee { animation: marquee 2s infinite linear;
           width: 30% !important; }
@@ -78,12 +82,12 @@
 
         <div id="app-name" hidden></div>
 
-        <div class="progress-bar-container">
+        <div id="progress-container" class="progress-bar-container">
             <div id="progress-bar" class="progress-bar-fill" role="progressbar"
                  aria-valuemin="0" aria-valuemax="100"></div>
         </div>
 
-        <button id="cancel-btn"></button>
+        <button id="action-btn"></button>
     </div>
 
     <script>
@@ -97,16 +101,18 @@
         window.addEventListener('error', reportPageFailure);
         window.addEventListener('unhandledrejection', reportPageFailure);
         const statusText = document.getElementById('status-text');
-        const cancelButton = document.getElementById('cancel-btn');
+        const actionButton = document.getElementById('action-btn');
+        const progressContainer = document.getElementById('progress-container');
         const bar = document.getElementById('progress-bar');
         const appNameText = document.getElementById('app-name');
         let cancelingText = '';
+        let complete = false;
 
         // The host sends localized text and metadata. The page owns layout and
         // rendering, and never interprets installer states or resource IDs.
         window.updateUI = ({statusText: text, title, language, textDirection,
-                            cancelText, cancelingText: canceling, progress,
-                            isMarquee, complete, appName}) => {
+                            cancelText, closeText, cancelingText: canceling, progress,
+                            isMarquee, complete: isComplete, appName}) => {
             if (pageFailed) {
                 return false;
             }
@@ -114,7 +120,9 @@
             document.documentElement.dir = textDirection;
             document.title = title;
             statusText.textContent = text;
-            cancelButton.textContent = cancelText;
+            const wasComplete = complete;
+            complete = isComplete;
+            actionButton.textContent = complete ? closeText : cancelText;
             cancelingText = canceling;
             const position = Number.isFinite(progress) ?
                 Math.max(0, Math.min(100, progress)) : 0;
@@ -126,16 +134,25 @@
             } else {
                 bar.setAttribute('aria-valuenow', String(position));
             }
-            cancelButton.hidden = complete;
+            progressContainer.hidden = complete;
             appNameText.textContent = appName || '';
             appNameText.hidden = !appName || complete;
             document.body.hidden = false;
+            if (complete && !wasComplete) {
+                actionButton.disabled = false;
+                actionButton.focus();
+            }
             return true;
         };
 
-        cancelButton.addEventListener('click', () => {
+        actionButton.addEventListener('click', () => {
+            if (complete) {
+                actionButton.disabled = true;
+                window.chrome?.webview?.postMessage('close_window');
+                return;
+            }
             statusText.textContent = cancelingText;
-            cancelButton.disabled = true;
+            actionButton.disabled = true;
             window.chrome?.webview?.postMessage('cancel_installation');
         });
 

@@ -194,6 +194,9 @@ base::DictValue WebView2ProgressWnd::GetUIUpdate() const {
   update.Set("cancelingText",
              base::WideToUTF8(GetLocalizedString(IDS_CANCELING_BASE,
                                                  language_info_.translation)));
+  update.Set("closeText",
+             base::WideToUTF8(GetLocalizedString(IDS_UPDATER_CLOSE_BASE,
+                                                 language_info_.translation)));
   update.Set("progress", state_.progress_pos);
   update.Set("isMarquee", state_.is_marquee);
   update.Set("complete", state_.complete);
@@ -450,11 +453,20 @@ void WebView2ProgressWnd::OnWebMessageReceived(const std::wstring& message) {
     return;
   }
   // Handle messages from javascript.
-  if (message == L"cancel_installation") {
+  if (message == L"close_window") {
+    // A page cannot dismiss an active installation through the completion
+    // action.
+    if (!state_.complete) {
+      return;
+    }
+    lifecycle_ = Lifecycle::kClosing;
+    StopTimeouts();
+    ::PostMessage(hwnd(), WM_CLOSE, 0, 0);
+  } else if (message == L"cancel_installation") {
     lifecycle_ = Lifecycle::kClosing;
     StopTimeouts();
     VLOG(2) << "User clicked cancel in the HTML UI.";
-    if (events_) {
+    if (events_ && !state_.complete) {
       events_->DoCancel();
     }
     ::PostMessage(hwnd(), WM_CLOSE, 0, 0);

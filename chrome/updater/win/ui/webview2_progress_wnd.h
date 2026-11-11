@@ -127,6 +127,7 @@ class WebView2ProgressWnd : public gfx::WindowImpl, public AppInstallProgress {
                            ProgressTimeoutIsNotPostponed);
   FRIEND_TEST_ALL_PREFIXES(WebView2ProgressWndTest, PageFailureFallsBack);
   FRIEND_TEST_ALL_PREFIXES(WebView2ProgressWndTest, ClosingCancelsRecovery);
+  FRIEND_TEST_ALL_PREFIXES(WebView2ProgressWndTest, CloseOnlyAfterCompletion);
   FRIEND_TEST_ALL_PREFIXES(WebView2ProgressWndTest,
                            CancellationPreventsRecovery);
 

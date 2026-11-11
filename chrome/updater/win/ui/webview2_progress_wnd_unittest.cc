@@ -38,12 +38,27 @@
 #include "chrome/updater/win/ui/message_loop.h"
 #include "chrome/updater/win/ui/resources/updater_installer_strings.h"
 #include "chrome/updater/win/ui/ui_util.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
+#include "url/gurl.h"
 
 namespace updater::ui {
 namespace {
 constexpr base::TimeDelta kHangGuard = base::Seconds(5);
+
+class MockCompletionEvents : public ProgressWndEvents {
+ public:
+  MOCK_METHOD(void, DoClose, (), (override));
+  MOCK_METHOD(void, DoExit, (), (override));
+  MOCK_METHOD(bool, DoLaunchBrowser, (const std::string&), (override));
+  MOCK_METHOD(bool,
+              DoRestartBrowser,
+              (bool, const std::vector<GURL>&),
+              (override));
+  MOCK_METHOD(bool, DoReboot, (), (override));
+  MOCK_METHOD(void, DoCancel, (), (override));
+};
 
 // Exercises real HWND dispatch and timers, but never starts WebView2 processes.
 class RecoveryTestWindow : public WebView2ProgressWnd {
@@ -307,6 +322,36 @@ TEST_F(WebView2ProgressWndTest, CancellationPreventsRecovery) {
   }));
 }
 
+TEST_F(WebView2ProgressWndTest, CloseOnlyAfterCompletion) {
+  RunOnSTAThread(base::BindOnce([] {
+    for (const wchar_t* command : {L"close_window", L"cancel_installation"}) {
+      for (CompletionCodes code : {CompletionCodes::COMPLETION_CODE_SUCCESS,
+                                   CompletionCodes::COMPLETION_CODE_ERROR}) {
+        testing::StrictMock<MockCompletionEvents> events;
+        RecoveryTestWindow wnd;
+        wnd.SetEventSink(&events);
+        wnd.Init(nullptr, gfx::Rect(0, 0, 100, 100));
+        wnd.OnWebMessageReceived(L"close_window");
+        EXPECT_TRUE(wnd.CanUseWebView());
+        MSG msg = {};
+        EXPECT_FALSE(
+            ::PeekMessage(&msg, wnd.hwnd(), WM_CLOSE, WM_CLOSE, PM_NOREMOVE));
+
+        ObserverCompletionInfo info;
+        info.completion_code = code;
+        info.completion_text = u"Completion details";
+        wnd.OnComplete(info);
+        // A queued Cancel arriving after completion also closes without
+        // cancelling.
+        wnd.OnWebMessageReceived(command);
+        EXPECT_FALSE(wnd.CanUseWebView());
+        EXPECT_EQ(wnd.RunNativeLoop(), 0);
+        EXPECT_FALSE(::IsWindow(wnd.hwnd()));
+      }
+    }
+  }));
+}
+
 TEST_F(WebView2ProgressWndTest, RetainsApplicationNameBeforePageIsReady) {
   RunOnSTAThread(base::BindOnce([] {
     WebView2ProgressWnd wnd;
@@ -354,6 +399,7 @@ TEST_F(WebView2ProgressWndTest, PreservesDetailedCompletionMessages) {
       EXPECT_EQ(*update.FindString("statusText"),
                 "Specific application failure");
       EXPECT_EQ(update.FindBool("complete"), true);
+      EXPECT_EQ(update.FindBool("isMarquee"), false);
     }
   }));
 }
@@ -361,6 +407,7 @@ TEST_F(WebView2ProgressWndTest, PreservesDetailedCompletionMessages) {
 TEST_F(WebView2ProgressWndTest, CompletionMessagesNormalizeLineEndings) {
   RunOnSTAThread(base::BindOnce([] {
     WebView2ProgressWnd wnd;
+    EXPECT_EQ(wnd.GetUIUpdateForTesting().FindBool("complete"), false);
     ObserverCompletionInfo info = {
         .completion_text = u"First line\r\n\r\nMore detail\nLast line"};
     for (CompletionCodes code : {CompletionCodes::COMPLETION_CODE_SUCCESS,
@@ -368,6 +415,8 @@ TEST_F(WebView2ProgressWndTest, CompletionMessagesNormalizeLineEndings) {
       info.completion_code = code;
       wnd.OnComplete(info);
       const base::DictValue update = wnd.GetUIUpdateForTesting();
+      EXPECT_EQ(update.FindBool("complete"), true);
+      EXPECT_EQ(update.FindBool("isMarquee"), false);
       ASSERT_TRUE(update.FindString("statusText"));
       EXPECT_EQ(*update.FindString("statusText"),
                 "First line\n\nMore detail\nLast line");
@@ -463,6 +512,10 @@ TEST_F(WebView2ProgressWndTest, LocalizedPayloadRoundTripsJson) {
           EXPECT_EQ(*update.FindString("cancelText"),
                     base::WideToUTF8(GetLocalizedString(
                         IDS_CANCEL_INSTALLATION_BASE, lang)));
+          ASSERT_TRUE(update.FindString("closeText"));
+          EXPECT_EQ(*update.FindString("closeText"),
+                    base::WideToUTF8(
+                        GetLocalizedString(IDS_UPDATER_CLOSE_BASE, lang)));
           ASSERT_TRUE(update.FindString("cancelingText"));
           EXPECT_EQ(
               *update.FindString("cancelingText"),
