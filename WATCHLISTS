@@ -732,7 +732,9 @@
     },
     'browser_actuator': {
       'filepath': 'components/browser_actuator/' \
+                  '|components/stream_transport/' \
                   '|chrome/browser/browser_actuator/' \
+                  '|chrome/browser/stream_transport/' \
                   '|chrome/browser/sharing/browser_actuator/'
     },
     'browser_components': {

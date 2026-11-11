@@ -25,7 +25,7 @@ class TransportSession;
 // Downstream payloads arrive as a PayloadType plus serialized bytes, and each
 // handler parses those bytes into its own concrete message type. The transport
 // never names a feature's proto: doing so would make
-// //components/browser_actuator depend on the proto of every feature it
+// //components/stream_transport depend on the proto of every feature it
 // carries, including features in //chrome/browser that this component's DEPS
 // disallows. There is also no generic alternative -- `MessageLite` is abstract
 // and cannot be parsed into, and the `Any::UnpackTo()` escape hatch needs a

@@ -55,7 +55,7 @@ rust_static_library("stream_body_parser") {
 }
 
 # Rust gtest tests for the parser; linked into components_unittests via
-# the //components/browser_actuator:unit_tests group.
+# the //components/stream_transport:unit_tests group.
 rust_static_library("stream_body_parser_unittests") {
   testonly = true
   is_gtest_unittests = true

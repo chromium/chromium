@@ -1,61 +1,33 @@
 # Browser Actuator
 
-`//components/browser_actuator` is a layered Chromium component that provides
-the foundational architecture for service-oriented browser actuation.
+`//components/browser_actuator` is the cross-platform home for the Browser
+Actuator service, which lets a remote backend drive browser actions on the
+user's behalf. The `//chrome` integration (`KeyedService` factory and
+`chrome://browser-actuator-internals` WebUI) lives in
+`//chrome/browser/browser_actuator`.
 
-## Component Organization
+## Directory Structure
 
-This is a [layered component](https://www.chromium.org/developers/design-documents/layered-components-design/)
-designed for cross-platform reuse, and it also cleanly separates public APIs
-and internal implementations.
+- `public/`: Public header interface (`BrowserActuatorService`) and feature
+  flags (`features.h`). Embedders and consumers outside this component should
+  only depend on `public/`.
+- `internal/`: Concrete implementation (`BrowserActuatorServiceImpl`) and its
+  unit tests. Visibility is restricted to this component and the `//chrome`
+  service factory.
+- `colocation/`: Colocation proof generation (`ColocationProofBuilder`,
+  `ColocationTimeSource`) for proving device proximity.
+- `test_support/`: Mock implementation (`MockBrowserActuatorService`) for unit
+  and integration testing.
 
-* `public/`: Public API headers and feature flags defining the service
-  interface (`BrowserActuatorService`), allowing embedders (e.g., `//chrome`,
-  `//ios`) to consume the service without depending on internal implementation
-  details.
-* `internal/`: The service implementation (`BrowserActuatorServiceImpl`).
-* `test_support/`: Fakes, mocks, and test utilities for unit and browser
-  integration testing.
+## Stream Transport (`//components/stream_transport`)
 
-### Transport
+The multiplexed, session-oriented bidirectional streaming transport layer lives
+in [`//components/stream_transport`](../stream_transport/README.md) (with its
+profile `KeyedService` factory at
+`//chrome/browser/stream_transport:stream_transport`).
 
-The bi-directional transport between Chrome and the server lives in the
-`transport/` subdirectories and does not depend on anything else in this
-component, so other features can use it on its own:
-
-* `public/transport/`: interfaces for features and embedders
-  (`TransportService`, `TransportChannel`, `TransportSession`,
-  `TransportHandler`, `TransportHandlerFactory`, their registries, and
-  `PayloadType`).
-* `internal/transport/`: `TransportServiceImpl`, the channel, session and
-  registry implementations, control commands, the session stream recorder,
-  the transport protos, and the wire layer (see `internal/transport/README.md`).
-* `test_support/transport/`: mocks for the transport interfaces.
-
-`TransportService` is a per-profile KeyedService of its own, created by
-`//chrome/browser/browser_actuator/transport:TransportServiceFactory`. The
-factory decides the endpoints and whether sessions are recorded, so the
-transport reads none of its clients' features. Features that use the transport
-depend on `TransportServiceFactory` directly rather than on
-`BrowserActuatorService`.
-
-`DEPS` files forbid transport code from including the rest of this component,
-and `//components/browser_actuator/internal/transport:isolation_check` fails
-`gn gen` if a transport target depends on it.
-
----
-
-## Building & Testing
-
-When building and testing, you can use the following commands:
-
-### Build
-```zsh
-autoninja -C out/Default components/browser_actuator
-```
-
-### Run Unit Tests
-To run unit tests for this component, use `autotest.py`:
-```zsh
-tools/autotest.py -C out/Default components/browser_actuator
-```
+Feature consumers that only need the streaming transport depend on
+`//components/stream_transport/public` (and
+`//components/stream_transport/public:service` plus
+`stream_transport::TransportServiceFactory` in `//chrome/browser`) directly
+without depending on `BrowserActuatorService`.
