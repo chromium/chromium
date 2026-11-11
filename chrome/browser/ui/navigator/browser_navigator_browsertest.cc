@@ -2771,6 +2771,11 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
                   blink::WebInputEvent::Modifiers::kAltKey;
 #endif
 
+  // The renderer drops input while it defers commits or main frame updates
+  // (e.g. paint holding until first contentful paint). Wait for a frame to be
+  // submitted so the click below is not dropped.
+  content::WaitForCopyableViewInWebContents(old_contents);
+
   content::WebContentsAddedObserver new_contents_observer;
   content::SimulateMouseClickAt(old_contents, modifiers,
                                 blink::WebMouseEvent::Button::kLeft, center);
