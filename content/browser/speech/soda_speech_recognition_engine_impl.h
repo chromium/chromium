@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_SPEECH_SODA_SPEECH_RECOGNITION_ENGINE_IMPL_H_
 #define CONTENT_BROWSER_SPEECH_SODA_SPEECH_RECOGNITION_ENGINE_IMPL_H_
 
+#include <optional>
+
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "content/browser/speech/speech_recognition_engine.h"
@@ -59,6 +61,7 @@ class CONTENT_EXPORT SodaSpeechRecognitionEngineImpl
   void TakeAudioChunk(const AudioChunk& data) override;
   void AudioChunksEnded() override;
   int GetDesiredAudioChunkDurationMs() const override;
+  void SetAudioParameters(media::AudioParameters audio_parameters) override;
 
   // media::mojom::SpeechRecognitionRecognizerClient:
   void OnSpeechRecognitionRecognitionEvent(
@@ -86,6 +89,8 @@ class CONTENT_EXPORT SodaSpeechRecognitionEngineImpl
 
   void Abort(media::mojom::SpeechRecognitionErrorCode error);
 
+  void MaybeReportPendingError();
+
   media::mojom::AudioDataS16Ptr ConvertToAudioDataS16(const AudioChunk& data);
 
   base::OnceCallback<void()> on_ready_callback_;
@@ -108,6 +113,10 @@ class CONTENT_EXPORT SodaSpeechRecognitionEngineImpl
 
   // A flag indicating the recognition state.
   bool is_start_recognition_ = false;
+
+  // Stores an error emitted during initialization before recognition starts so
+  // it can be surfaced once SpeechRecognizerImpl enters an active state.
+  std::optional<media::mojom::SpeechRecognitionErrorCode> pending_error_;
 
   base::TimeDelta audio_duration_;
 

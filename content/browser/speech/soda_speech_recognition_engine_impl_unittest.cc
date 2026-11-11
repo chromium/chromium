@@ -408,4 +408,76 @@ TEST_F(SodaSpeechRecognitionEngineImplTest,
   ExpectResultsReceived(expected_results);
 }
 
+TEST_F(SodaSpeechRecognitionEngineImplTest, RecognizerDisconnectAborts) {
+  SpeechRecognitionSessionConfig config;
+  client_under_test_ = CreateSpeechRecognition(
+      config, fake_speech_recognition_mgr_delegate_.get(), true);
+  ASSERT_TRUE(client_under_test_->Initialize());
+  ASSERT_TRUE(base::test::RunUntil([&]() { return recognition_ready_; }));
+
+  client_under_test_->StartRecognition();
+  mock_service_->ResetRecognizerReceiver();
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return error_ == media::mojom::SpeechRecognitionErrorCode::kAborted;
+  }));
+}
+
+TEST_F(SodaSpeechRecognitionEngineImplTest,
+       RecognizerDisconnectDuringInitializationAbortsWhenStarting) {
+  SpeechRecognitionSessionConfig config;
+  client_under_test_ =
+      std::make_unique<SodaSpeechRecognitionEngineImpl>(config);
+  client_under_test_->set_delegate(this);
+  client_under_test_->SetSpeechRecognitionManagerDelegateForTesting(
+      fake_speech_recognition_mgr_delegate_.get());
+
+  // Initialize() runs in CreateSession() before SpeechRecognizerImpl reaches
+  // STATE_STARTING, so an immediate utility-process crash during SODA load is
+  // ignored by SpeechRecognizerFsm until SetAudioParameters()/StartRecognition.
+  ASSERT_TRUE(client_under_test_->Initialize());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return mock_service_->HasBoundRecognizer(); }));
+  mock_service_->ResetRecognizerReceiver();
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return error_ == media::mojom::SpeechRecognitionErrorCode::kAborted;
+  }));
+
+  // Simulate SpeechRecognizerFsm dropping EVENT_ENGINE_ERROR in STATE_IDLE /
+  // STATE_PREPARING, then transitioning into STATE_STARTING via
+  // SetAudioParameters().
+  error_ = media::mojom::SpeechRecognitionErrorCode::kNone;
+  int frames_per_buffer =
+      (SpeechRecognizerImpl::kAudioSampleRate *
+       client_under_test_->GetDesiredAudioChunkDurationMs()) /
+      1000;
+  media::AudioParameters audio_parameters(
+      media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+      SpeechRecognizerImpl::kChannelLayoutConfig,
+      SpeechRecognizerImpl::kAudioSampleRate, frames_per_buffer);
+  client_under_test_->SetAudioParameters(audio_parameters);
+  EXPECT_EQ(media::mojom::SpeechRecognitionErrorCode::kAborted, error_);
+
+  // SetAudioParameters() consumes the pending error, so StartRecognition() does
+  // not re-emit it.
+  error_ = media::mojom::SpeechRecognitionErrorCode::kNone;
+  client_under_test_->StartRecognition();
+  EXPECT_EQ(media::mojom::SpeechRecognitionErrorCode::kNone, error_);
+
+  // StartRecognition() surfaces and consumes the pending error when
+  // SetAudioParameters() was already called before Initialize().
+  client_under_test_ = CreateSpeechRecognition(
+      config, fake_speech_recognition_mgr_delegate_.get(), false);
+  ASSERT_TRUE(client_under_test_->Initialize());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return mock_service_->HasBoundRecognizer(); }));
+  mock_service_->ResetRecognizerReceiver();
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return error_ == media::mojom::SpeechRecognitionErrorCode::kAborted;
+  }));
+
+  error_ = media::mojom::SpeechRecognitionErrorCode::kNone;
+  client_under_test_->StartRecognition();
+  EXPECT_EQ(media::mojom::SpeechRecognitionErrorCode::kAborted, error_);
+}
+
 }  // namespace content

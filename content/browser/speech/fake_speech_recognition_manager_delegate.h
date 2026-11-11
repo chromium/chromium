@@ -76,6 +76,14 @@ class MockOnDeviceWebSpeechRecognitionService
 
   void SendSpeechRecognitionError();
 
+  void ResetRecognizerReceiver();
+
+  bool HasBoundRecognizer() const { return recognizer_receiver_.is_bound(); }
+
+  bool HasActiveContext() const {
+    return !speech_recognition_contexts_.empty();
+  }
+
   base::WeakPtr<MockOnDeviceWebSpeechRecognitionService> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }

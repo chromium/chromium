@@ -35,6 +35,8 @@ void MockOnDeviceWebSpeechRecognitionService::BindRecognizer(
     mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient> client,
     media::mojom::SpeechRecognitionOptionsPtr options,
     BindRecognizerCallback callback) {
+  recognizer_receiver_.reset();
+  recognizer_client_remote_.reset();
   recognizer_receiver_.Bind(std::move(receiver));
   recognizer_client_remote_.Bind(std::move(client));
   recognizer_client_remote_.set_disconnect_handler(base::BindOnce(
@@ -78,6 +80,10 @@ void MockOnDeviceWebSpeechRecognitionService::SendSpeechRecognitionError() {
   recognizer_client_remote_->OnSpeechRecognitionError();
 }
 
+void MockOnDeviceWebSpeechRecognitionService::ResetRecognizerReceiver() {
+  recognizer_receiver_.reset();
+}
+
 void MockOnDeviceWebSpeechRecognitionService::OnRecognizerClientDisconnected() {
   recognizer_client_remote_.reset();
   recognizer_receiver_.reset();
@@ -96,12 +102,12 @@ void MockOnDeviceWebSpeechRecognitionService::
 void FakeSpeechRecognitionManagerDelegate::CheckRecognitionIsAllowed(
     int session_id,
     base::OnceCallback<void(bool ask_user, bool is_allowed)> callback) {
-  NOTREACHED();
+  std::move(callback).Run(/*ask_user=*/false, /*is_allowed=*/true);
 }
 
 SpeechRecognitionEventListener*
 FakeSpeechRecognitionManagerDelegate::GetEventListener() {
-  NOTREACHED();
+  return nullptr;
 }
 
 void FakeSpeechRecognitionManagerDelegate::BindSpeechRecognitionContext(

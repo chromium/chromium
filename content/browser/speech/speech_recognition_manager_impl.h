@@ -163,6 +163,7 @@ class CONTENT_EXPORT SpeechRecognitionManagerImpl
     bool abort_requested = false;
     bool stop_requested = false;
     bool has_error = false;
+    bool has_received_results = false;
     SpeechRecognitionSessionConfig config;
     SpeechRecognitionSessionContext context;
     scoped_refptr<SpeechRecognizer> recognizer;
@@ -227,6 +228,7 @@ class CONTENT_EXPORT SpeechRecognitionManagerImpl
   int microphone_session_id_ = kSessionIDInvalid;
   int last_session_id_ = kSessionIDInvalid;
   bool is_dispatching_event_ = false;
+  bool on_device_speech_recognition_failed_ = false;
   std::unique_ptr<SpeechRecognitionManagerDelegate> delegate_;
   const int requester_id_;
 

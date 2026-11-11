@@ -4,6 +4,8 @@
 
 #include "content/browser/speech/soda_speech_recognition_engine_impl.h"
 
+#include <utility>
+
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
@@ -70,6 +72,8 @@ bool SodaSpeechRecognitionEngineImpl::Initialize() {
     return false;
   }
 
+  pending_error_.reset();
+
   // Create a SpeechRecognitionContext and bind it to the current
   // SodaSpeechRecognitionEngineImpl. The SpeechRecognitionContext passes the
   // SpeechRecognitionRecognizer receiver and moves the
@@ -104,6 +108,10 @@ bool SodaSpeechRecognitionEngineImpl::Initialize() {
       base::BindPostTaskToCurrentDefault(base::BindOnce(
           &SodaSpeechRecognitionEngineImpl::OnRecognizerDisconnected,
           weak_factory_.GetWeakPtr())));
+  speech_recognition_recognizer_.set_disconnect_handler(
+      base::BindPostTaskToCurrentDefault(base::BindOnce(
+          &SodaSpeechRecognitionEngineImpl::OnRecognizerDisconnected,
+          weak_factory_.GetWeakPtr())));
   return true;
 }
 
@@ -112,6 +120,7 @@ void SodaSpeechRecognitionEngineImpl::StartRecognition() {
 
   is_start_recognition_ = true;
   audio_duration_ = base::TimeDelta();
+  MaybeReportPendingError();
 }
 
 void SodaSpeechRecognitionEngineImpl::UpdateRecognitionContext(
@@ -125,6 +134,7 @@ void SodaSpeechRecognitionEngineImpl::UpdateRecognitionContext(
 void SodaSpeechRecognitionEngineImpl::EndRecognition() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   is_start_recognition_ = false;
+  pending_error_.reset();
   base::UmaHistogramLongTimes100(kWebSpeechSodaDuration, audio_duration_);
 }
 
@@ -148,6 +158,13 @@ void SodaSpeechRecognitionEngineImpl::AudioChunksEnded() {
 
 int SodaSpeechRecognitionEngineImpl::GetDesiredAudioChunkDurationMs() const {
   return kAudioPacketIntervalMs;
+}
+
+void SodaSpeechRecognitionEngineImpl::SetAudioParameters(
+    media::AudioParameters audio_parameters) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+  SpeechRecognitionEngine::SetAudioParameters(audio_parameters);
+  MaybeReportPendingError();
 }
 
 // media::mojom::SpeechRecognitionRecognizerClient:
@@ -225,6 +242,9 @@ void SodaSpeechRecognitionEngineImpl::OnRecognizerBound(
 
 void SodaSpeechRecognitionEngineImpl::OnRecognizerDisconnected() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+  speech_recognition_context_.reset();
+  speech_recognition_recognizer_.reset();
+  speech_recognition_recognizer_client_.reset();
   Abort(media::mojom::SpeechRecognitionErrorCode::kAborted);
 }
 
@@ -248,10 +268,27 @@ void SodaSpeechRecognitionEngineImpl::Abort(
   DVLOG(1) << "Aborting with error " << error_code;
 
   if (error_code != media::mojom::SpeechRecognitionErrorCode::kNone) {
-    delegate_->OnSpeechRecognitionEngineError(
-        media::mojom::SpeechRecognitionError(
-            error_code, media::mojom::SpeechAudioErrorDetails::kNone));
+    if (!is_start_recognition_) {
+      pending_error_ = error_code;
+    }
+    if (delegate_) {
+      delegate_->OnSpeechRecognitionEngineError(
+          media::mojom::SpeechRecognitionError(
+              error_code, media::mojom::SpeechAudioErrorDetails::kNone));
+    }
   }
+}
+
+void SodaSpeechRecognitionEngineImpl::MaybeReportPendingError() {
+  if (!pending_error_.has_value() || !delegate_) {
+    return;
+  }
+  media::mojom::SpeechRecognitionErrorCode error_code =
+      *std::exchange(pending_error_, std::nullopt);
+  DVLOG(1) << "Reporting pending error " << error_code;
+  delegate_->OnSpeechRecognitionEngineError(
+      media::mojom::SpeechRecognitionError(
+          error_code, media::mojom::SpeechAudioErrorDetails::kNone));
 }
 
 media::mojom::AudioDataS16Ptr

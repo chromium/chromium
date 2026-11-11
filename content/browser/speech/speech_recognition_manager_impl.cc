@@ -688,6 +688,12 @@ void SpeechRecognitionManagerImpl::OnRecognitionResults(
     return;
   }
 
+  if (std::ranges::any_of(results, [](const auto& result) {
+        return !result->hypotheses.empty();
+      })) {
+    GetSession(session_id)->has_received_results = true;
+  }
+
   if (SpeechRecognitionEventListener* delegate_listener = GetDelegateListener())
     delegate_listener->OnRecognitionResults(session_id, results);
   if (SpeechRecognitionEventListener* listener = GetListener(session_id))
@@ -708,6 +714,13 @@ void SpeechRecognitionManagerImpl::OnRecognitionError(
   session->has_error = true;
 
   LogBackendSpecificErrorOccurred(session->config, error.code);
+  if (!session->abort_requested && !session->has_received_results &&
+      UseOnDeviceSpeechRecognition(session->config) &&
+      (error.code == media::mojom::SpeechRecognitionErrorCode::kAborted ||
+       error.code ==
+           media::mojom::SpeechRecognitionErrorCode::kServiceNotAllowed)) {
+    on_device_speech_recognition_failed_ = true;
+  }
 
   if (SpeechRecognitionEventListener* delegate_listener = GetDelegateListener())
     delegate_listener->OnRecognitionError(session_id, error);
@@ -991,8 +1004,9 @@ SpeechRecognitionSessionContext SpeechRecognitionManagerImpl::GetSessionContext(
 bool SpeechRecognitionManagerImpl::UseOnDeviceSpeechRecognition(
     const SpeechRecognitionSessionConfig& config) {
 #if !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_ANDROID)
-  return config.on_device &&
-         (config.on_device_available || !config.allow_cloud_fallback);
+  return config.on_device && ((config.on_device_available &&
+                               !on_device_speech_recognition_failed_) ||
+                              !config.allow_cloud_fallback);
 #else
   return false;
 #endif
