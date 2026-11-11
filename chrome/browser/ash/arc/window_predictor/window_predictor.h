@@ -5,14 +5,15 @@
 #ifndef CHROME_BROWSER_ASH_ARC_WINDOW_PREDICTOR_WINDOW_PREDICTOR_H_
 #define CHROME_BROWSER_ASH_ARC_WINDOW_PREDICTOR_WINDOW_PREDICTOR_H_
 
-#include <memory>
-#include <vector>
+#include <stdint.h>
+
+#include <string>
 
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
-#include "chrome/browser/ash/arc/window_predictor/arc_predictor_app_launch_handler.h"
 #include "chrome/browser/ash/arc/window_predictor/window_predictor_utils.h"
 #include "chromeos/ash/experiences/arc/mojom/app.mojom.h"
+#include "components/services/app_service/public/cpp/intent.h"
 
 namespace arc {
 

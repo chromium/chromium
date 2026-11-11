@@ -6,8 +6,6 @@ assert(is_chromeos)
 
 static_library("window_predictor") {
   sources = [
-    "arc_predictor_app_launch_handler.cc",
-    "arc_predictor_app_launch_handler.h",
     "window_predictor.cc",
     "window_predictor.h",
     "window_predictor_utils.cc",
@@ -17,10 +15,10 @@ static_library("window_predictor") {
   deps = [
     "//base",
     "//chrome/browser/ash/app_list/arc",
-    "//chrome/browser/profiles:profile_manager",
     "//chromeos/ash/experiences/arc/mojom",
     "//chromeos/ui/base",
     "//components/app_restore",
+    "//components/services/app_service",
     "//ui/display",
     "//ui/gfx",
   ]
