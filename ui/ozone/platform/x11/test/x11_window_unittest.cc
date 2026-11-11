@@ -347,6 +347,23 @@ TEST_F(X11WindowTest, FrameTypeChangeUpdatesDecorationInsets) {
   ASSERT_NE(x11_window, x11::Window::None);
 
   EXPECT_EQ(kBounds, window->GetBoundsInPixels());
+
+  if (!window->CanSetDecorationInsets()) {
+    // Without a window manager that supports _GTK_FRAME_EXTENTS (e.g. on Xvfb
+    // without one), the property is never set and the bounds never change.
+    EXPECT_TRUE(GetGtkFrameExtents(x11_window).empty());
+    delegate.set_insets(gfx::Insets());
+    window->OnFrameTypeChanged();
+    EXPECT_TRUE(GetGtkFrameExtents(x11_window).empty());
+    EXPECT_EQ(kBounds, window->GetBoundsInPixels());
+    delegate.set_insets(kInsets);
+    window->OnFrameTypeChanged();
+    EXPECT_TRUE(GetGtkFrameExtents(x11_window).empty());
+    EXPECT_EQ(kBounds, window->GetBoundsInPixels());
+    delegate.set_window(nullptr);
+    return;
+  }
+
   EXPECT_EQ(std::vector<uint32_t>({22, 22, 19, 25}),
             GetGtkFrameExtents(x11_window));
 
