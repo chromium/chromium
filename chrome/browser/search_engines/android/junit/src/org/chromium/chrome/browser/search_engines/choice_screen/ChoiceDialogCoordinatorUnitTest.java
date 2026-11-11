@@ -47,15 +47,21 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.R;
 import org.chromium.chrome.browser.search_engines.choice_screen.ChoiceDialogCoordinator.DialogSuppressionStatus;
 import org.chromium.chrome.browser.search_engines.choice_screen.ChoiceDialogCoordinator.ViewHolderImpl;
 import org.chromium.chrome.browser.search_engines.choice_screen.ChoiceDialogMediator.LaunchChoiceScreenTapHandlingStatus;
+import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.components.feature_engagement.FeatureProperties;
+import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.feature_engagement.UiFormat;
 import org.chromium.components.search_engines.SearchEngineChoiceService;
 import org.chromium.components.search_engines.SearchEngineCountryDelegate.ChoiceScope;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -70,6 +76,7 @@ import java.util.stream.IntStream;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(ChromeFeatureList.CHROME_SEARCH_ONLY_CLAY_SCOPE)
+@DisableFeatures(ChromeFeatureList.USER_EDUCATION_INTERRUPTIVE_COOLDOWN_GROUP)
 public class ChoiceDialogCoordinatorUnitTest {
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
     public @Rule FakeTimeTestRule mFakeTimeRule = new FakeTimeTestRule();
@@ -79,6 +86,8 @@ public class ChoiceDialogCoordinatorUnitTest {
     private @Mock ModalDialogManager mModalDialogManager;
     private @Mock ActivityLifecycleDispatcher mLifecycleDispatcher;
     private @Mock SearchEngineChoiceService mSearchEngineChoiceService;
+    private @Mock Profile mProfile;
+    private @Mock Tracker mTracker;
     private @Captor ArgumentCaptor<PropertyModel> mModelCaptor;
     private @Captor ArgumentCaptor<PauseResumeWithNativeObserver> mLifecycleObserverCaptor;
 
@@ -574,6 +583,87 @@ public class ChoiceDialogCoordinatorUnitTest {
         activityController.pause().stop().destroy();
     }
 
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.USER_EDUCATION_FRAMEWORK,
+        ChromeFeatureList.USER_EDUCATION_INTERRUPTIVE_COOLDOWN_GROUP
+    })
+    public void testShowDialog_recordsCooldownGroupWithBypassProperties() {
+        TrackerFactory.setTrackerForTests(mTracker);
+        var shouldShowSupplier = ObservableSuppliers.createNullable(true);
+        doReturn(shouldShowSupplier)
+                .when(mSearchEngineChoiceService)
+                .getIsDeviceChoiceRequiredSupplier();
+        doReturn(true).when(mSearchEngineChoiceService).isDeviceChoiceDialogEligible();
+        FeatureProperties expectedProps = new FeatureProperties(UiFormat.DIALOG);
+        doReturn(true)
+                .when(mTracker)
+                .shouldTriggerHelpUi(
+                        eq(FeatureConstants.SEARCH_ENGINE_CHOICE_PROMO_FEATURE), eq(expectedProps));
+
+        assertTrue(ChoiceDialogCoordinator.maybeShowInternal(this::createCoordinatorWithMocks));
+        shadowOf(Looper.getMainLooper()).idle();
+
+        verify(mTracker)
+                .shouldTriggerHelpUi(
+                        FeatureConstants.SEARCH_ENGINE_CHOICE_PROMO_FEATURE, expectedProps);
+        verify(mTracker, never()).dismissed(FeatureConstants.SEARCH_ENGINE_CHOICE_PROMO_FEATURE);
+        verify(mModalDialogManager)
+                .showDialog(
+                        mModelCaptor.capture(),
+                        eq(ModalDialogType.APP),
+                        eq(ModalDialogPriority.VERY_HIGH));
+
+        shouldShowSupplier.set(false);
+        shadowOf(Looper.getMainLooper()).idle();
+        PropertyModel model = mModelCaptor.getValue();
+        model.get(ModalDialogProperties.CONTROLLER)
+                .onClick(model, ModalDialogProperties.ButtonType.POSITIVE);
+
+        verify(mModalDialogManager).dismissDialog(any(), eq(DialogDismissalCause.UNKNOWN));
+        verify(mTracker).dismissed(FeatureConstants.SEARCH_ENGINE_CHOICE_PROMO_FEATURE);
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.USER_EDUCATION_FRAMEWORK,
+        ChromeFeatureList.USER_EDUCATION_INTERRUPTIVE_COOLDOWN_GROUP
+    })
+    public void testShowDialog_shownEvenWhenTrackerRejectsPromo() {
+        TrackerFactory.setTrackerForTests(mTracker);
+        var shouldShowSupplier = ObservableSuppliers.createNullable(true);
+        doReturn(shouldShowSupplier)
+                .when(mSearchEngineChoiceService)
+                .getIsDeviceChoiceRequiredSupplier();
+        doReturn(true).when(mSearchEngineChoiceService).isDeviceChoiceDialogEligible();
+        FeatureProperties expectedProps = new FeatureProperties(UiFormat.DIALOG);
+        doReturn(false)
+                .when(mTracker)
+                .shouldTriggerHelpUi(
+                        eq(FeatureConstants.SEARCH_ENGINE_CHOICE_PROMO_FEATURE), eq(expectedProps));
+
+        assertTrue(ChoiceDialogCoordinator.maybeShowInternal(this::createCoordinatorWithMocks));
+        shadowOf(Looper.getMainLooper()).idle();
+
+        verify(mTracker)
+                .shouldTriggerHelpUi(
+                        FeatureConstants.SEARCH_ENGINE_CHOICE_PROMO_FEATURE, expectedProps);
+        verify(mModalDialogManager)
+                .showDialog(
+                        mModelCaptor.capture(),
+                        eq(ModalDialogType.APP),
+                        eq(ModalDialogPriority.VERY_HIGH));
+
+        shouldShowSupplier.set(false);
+        shadowOf(Looper.getMainLooper()).idle();
+        PropertyModel model = mModelCaptor.getValue();
+        model.get(ModalDialogProperties.CONTROLLER)
+                .onClick(model, ModalDialogProperties.ButtonType.POSITIVE);
+
+        verify(mModalDialogManager).dismissDialog(any(), eq(DialogDismissalCause.UNKNOWN));
+        verify(mTracker, never()).dismissed(FeatureConstants.SEARCH_ENGINE_CHOICE_PROMO_FEATURE);
+    }
+
     private ChoiceDialogCoordinator createCoordinatorWithMocks(
             SearchEngineChoiceService searchEngineChoiceService) {
         return new ChoiceDialogCoordinator(
@@ -581,7 +671,8 @@ public class ChoiceDialogCoordinatorUnitTest {
                 mViewHolder,
                 mModalDialogManager,
                 mLifecycleDispatcher,
-                searchEngineChoiceService);
+                searchEngineChoiceService,
+                mProfile);
     }
 
     /**

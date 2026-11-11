@@ -3086,7 +3086,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         }
 
         if (ChoiceDialogCoordinator.maybeShow(
-                mActivity, mModalDialogManagerSupplier.get(), mActivityLifecycleDispatcher)) {
+                mActivity,
+                mModalDialogManagerSupplier.get(),
+                mActivityLifecycleDispatcher,
+                profile)) {
             return true;
         }
 

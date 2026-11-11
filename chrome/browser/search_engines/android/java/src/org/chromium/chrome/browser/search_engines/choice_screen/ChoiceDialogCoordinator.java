@@ -26,11 +26,18 @@ import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.R;
 import org.chromium.chrome.browser.search_engines.choice_screen.ChoiceDialogMediator.DialogType;
+import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.components.feature_engagement.FeatureProperties;
+import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.feature_engagement.UiFormat;
 import org.chromium.components.search_engines.SearchEngineChoiceService;
 import org.chromium.components.search_engines.SearchEngineCountryDelegate.ChoiceScope;
 import org.chromium.components.search_engines.SearchEnginesFeatureUtils;
@@ -74,6 +81,8 @@ public class ChoiceDialogCoordinator implements ChoiceDialogMediator.Delegate {
     private final ChoiceDialogMediator mMediator;
     private final PropertyModel mModel;
     private final ModalDialogManager mModalDialogManager;
+    private final @Nullable Profile mProfile;
+    private boolean mIsFeatureEngagementTriggered;
 
     private final ModalDialogManagerObserver mDialogAddedObserver =
             new ModalDialogManagerObserver() {
@@ -90,6 +99,11 @@ public class ChoiceDialogCoordinator implements ChoiceDialogMediator.Delegate {
                     if (model != mModel) return;
 
                     mMediator.onDialogDismissed();
+                    if (mIsFeatureEngagementTriggered && mProfile != null) {
+                        mIsFeatureEngagementTriggered = false;
+                        TrackerFactory.getTrackerForProfile(mProfile)
+                                .dismissed(FeatureConstants.SEARCH_ENGINE_CHOICE_PROMO_FEATURE);
+                    }
                     RecordUserAction.record("OsDefaultsChoiceDialogClosed");
                 }
             };
@@ -109,6 +123,19 @@ public class ChoiceDialogCoordinator implements ChoiceDialogMediator.Delegate {
             Activity activity,
             ModalDialogManager modalDialogManager,
             ActivityLifecycleDispatcher lifecycleDispatcher) {
+        return maybeShow(activity, modalDialogManager, lifecycleDispatcher, /* profile= */ null);
+    }
+
+    /**
+     * Attempts to show the device defaults apps choice dialog.
+     *
+     * @return {@code true} if the dialog will be shown, {@code false} otherwise.
+     */
+    public static boolean maybeShow(
+            Activity activity,
+            ModalDialogManager modalDialogManager,
+            ActivityLifecycleDispatcher lifecycleDispatcher,
+            @Nullable Profile profile) {
         return maybeShowInternal(
                 searchEngineChoiceService ->
                         new ChoiceDialogCoordinator(
@@ -116,7 +143,8 @@ public class ChoiceDialogCoordinator implements ChoiceDialogMediator.Delegate {
                                 new ViewHolderImpl(activity),
                                 modalDialogManager,
                                 lifecycleDispatcher,
-                                searchEngineChoiceService));
+                                searchEngineChoiceService,
+                                profile));
     }
 
     @VisibleForTesting
@@ -150,9 +178,11 @@ public class ChoiceDialogCoordinator implements ChoiceDialogMediator.Delegate {
             ViewHolder viewHolder,
             ModalDialogManager modalDialogManager,
             ActivityLifecycleDispatcher lifecycleDispatcher,
-            SearchEngineChoiceService searchEngineChoiceService) {
+            SearchEngineChoiceService searchEngineChoiceService,
+            @Nullable Profile profile) {
         mContext = context;
         mViewHolder = viewHolder;
+        mProfile = profile;
         mModel =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(ModalDialogProperties.CUSTOM_VIEW, mViewHolder.getView())
@@ -231,6 +261,17 @@ public class ChoiceDialogCoordinator implements ChoiceDialogMediator.Delegate {
         recordShowDialogStatus(suppressionStatus);
         if (suppressionStatus != DialogSuppressionStatus.CAN_SHOW) {
             return; // Suppress the dialog.
+        }
+
+        if (mProfile != null && TrackerFactory.isInterruptiveCooldownGroupEnabled()) {
+            Tracker tracker = TrackerFactory.getTrackerForProfile(mProfile);
+            FeatureProperties featureProperties = new FeatureProperties(UiFormat.DIALOG);
+            // Intentionally ignore a false return value: this regulatory prompt must never be
+            // suppressed by Feature Engagement, and this call only records its contribution to the
+            // interruptive cooldown group.
+            mIsFeatureEngagementTriggered =
+                    tracker.shouldTriggerHelpUi(
+                            FeatureConstants.SEARCH_ENGINE_CHOICE_PROMO_FEATURE, featureProperties);
         }
 
         mModalDialogManager.addObserver(mDialogAddedObserver);
