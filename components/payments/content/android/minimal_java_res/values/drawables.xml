@@ -10,5 +10,6 @@ found in the LICENSE file.
          identical Google Pay vector payload. -->
     <drawable name="googlepay_pill">@drawable/google_pay</drawable>
     <drawable name="googlepay_pill_with_gradient">@drawable/google_pay</drawable>
+    <drawable name="googlepay_with_gradient">@drawable/google_pay</drawable>
     <drawable name="googlewallet">@drawable/google_pay</drawable>
 </resources>

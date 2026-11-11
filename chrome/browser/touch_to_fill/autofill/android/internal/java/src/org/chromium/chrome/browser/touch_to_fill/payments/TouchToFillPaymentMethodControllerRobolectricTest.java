@@ -247,7 +247,8 @@ import java.util.stream.StreamSupport;
 @DisableFeatures({
     AutofillFeatures.AUTOFILL_ENABLE_SECURITY_TOUCH_EVENT_FILTERING_ANDROID,
     AutofillFeatures.AUTOFILL_ENABLE_AI_BASED_AMOUNT_EXTRACTION,
-    AutofillFeatures.AUTOFILL_ENABLE_PAY_NOW_PAY_LATER_TABS
+    AutofillFeatures.AUTOFILL_ENABLE_PAY_NOW_PAY_LATER_TABS,
+    AutofillFeatures.AUTOFILL_ENABLE_GRADIENT_GOOGLE_LOGOS
 })
 public class TouchToFillPaymentMethodControllerRobolectricTest {
     private static final CreditCard VISA =
@@ -3521,6 +3522,32 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         mTouchToFillPaymentMethodModel.get(DISMISS_HANDLER).onResult(StateChangeReason.SWIPE);
 
         assertEquals(1, getUserActionCount(TABBED_HOME_SCREEN_DISMISSED));
+    }
+
+    @Test
+    @EnableFeatures({AutofillFeatures.AUTOFILL_ENABLE_GRADIENT_GOOGLE_LOGOS})
+    public void testShowPaymentMethodsWithGradientGPayLogo() {
+        mCoordinator.showPaymentMethods(
+                List.of(VISA_SUGGESTION), new TouchToFillDisplayOptions().showGPayLogo(true));
+
+        ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
+        assertThat(getModelsOfType(itemList, HEADER).size(), is(1));
+        PropertyModel headerModel = itemList.get(0).model;
+        assertThat(headerModel.get(IMAGE_DRAWABLE_ID), is(R.drawable.googlepay_with_gradient));
+    }
+
+    @Test
+    @EnableFeatures({
+        AutofillFeatures.AUTOFILL_ENABLE_PAY_NOW_PAY_LATER_TABS,
+        AutofillFeatures.AUTOFILL_ENABLE_GRADIENT_GOOGLE_LOGOS
+    })
+    public void testShowPaymentMethodsWithTabsAndGradientGPayLogo() {
+        mCoordinator.showPaymentMethods(
+                List.of(VISA_SUGGESTION, BNPL_SUGGESTION), new TouchToFillDisplayOptions());
+
+        assertThat(
+                mTouchToFillPaymentMethodModel.get(TABBED_HEADER_LOGO_DRAWABLE_ID),
+                is(R.drawable.googlepay_with_gradient));
     }
 
     private static List<PropertyModel> getModelsOfType(ModelList items, int type) {

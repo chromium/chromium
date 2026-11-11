@@ -572,7 +572,7 @@ class TouchToFillPaymentMethodMediator implements AutofillImageFetcher.Observer 
 
     private void setTabbedHomeScreenItems() {
         mModel.set(CURRENT_SCREEN, TABBED_HOME_SCREEN);
-        mModel.set(TABBED_HEADER_LOGO_DRAWABLE_ID, R.drawable.google_pay);
+        mModel.set(TABBED_HEADER_LOGO_DRAWABLE_ID, getGPayLogoDrawableId());
         mModel.set(TABBED_HEADER_TITLE_ID, R.string.autofill_payment_method_bottom_sheet_title);
         // Default to Pay Now tab
         onTabSelected(PAY_NOW);
@@ -1647,10 +1647,16 @@ class TouchToFillPaymentMethodMediator implements AutofillImageFetcher.Observer 
                         .with(
                                 IMAGE_DRAWABLE_ID,
                                 shouldShowGPayLogo
-                                        ? R.drawable.google_pay
+                                        ? getGPayLogoDrawableId()
                                         : R.drawable.fre_product_logo)
                         .with(TITLE_ID, R.string.autofill_payment_method_bottom_sheet_title)
                         .build());
+    }
+
+    private @DrawableRes int getGPayLogoDrawableId() {
+        return ChromeFeatureList.isEnabled(AutofillFeatures.AUTOFILL_ENABLE_GRADIENT_GOOGLE_LOGOS)
+                ? R.drawable.googlepay_with_gradient
+                : R.drawable.google_pay;
     }
 
     private ListItem buildHeaderForLoyaltyCards(boolean firstTimeUsage) {
