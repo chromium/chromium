@@ -866,7 +866,7 @@ std::unique_ptr<views::Widget> DeskBarViewBase::CreateDeskWidget(
 
   std::unique_ptr<views::Widget> widget = std::make_unique<views::Widget>();
   views::Widget::InitParams params(
-      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.activatable = views::Widget::InitParams::Activatable::kYes;
   params.accept_events = true;
@@ -878,6 +878,10 @@ std::unique_ptr<views::Widget> DeskBarViewBase::CreateDeskWidget(
   params.layer_type = ui::LAYER_NOT_DRAWN;
 
   if (type == Type::kOverview) {
+    // On overview exit, the overview desk bar is handed to a
+    // `CleanupAnimationObserver`, which requires the widget to own its native
+    // widget.
+    params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
     // Overview desk bar should live under the currently-active desk container
     // on `root`.
     params.context = root;
