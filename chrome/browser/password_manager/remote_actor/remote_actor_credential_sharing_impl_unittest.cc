@@ -115,6 +115,11 @@ std::unique_ptr<KeyedService> CreateMockRemoteActorCredentialSharingService(
 class RemoteActorCredentialSharingImplTest
     : public ChromeRenderViewHostTestHarness {
  public:
+  RemoteActorCredentialSharingImplTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kRemoteActorCredentialSharing},
+        /*disabled_features=*/{features::kRemoteActorCredentialSharingSearch});
+  }
   ~RemoteActorCredentialSharingImplTest() override = default;
 
   TestingProfile::TestingFactories GetTestingFactories() const override {
@@ -315,8 +320,7 @@ class RemoteActorCredentialSharingImplTest
       platform_management_service_override_{
           policy::ManagementServiceFactory::GetForPlatform(),
           policy::EnterpriseManagementAuthority::NONE};
-  base::test::ScopedFeatureList feature_list_{
-      features::kRemoteActorCredentialSharing};
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Verify that when the feature flag kRemoteActorCredentialSharing is enabled,
@@ -1084,6 +1088,52 @@ TEST_F(RemoteActorCredentialSharingImplTest,
   base::test::TestFuture<bool> result;
   remote->RequestAgentAuthentication(account_info_.GetGaiaId().ToString(),
                                      "google.com", "actor_id",
+                                     result.GetCallback());
+  EXPECT_FALSE(result.Get());
+  histograms.ExpectUniqueSample(
+      "PasswordManager.RemoteActorCredentialSharing.Result",
+      RemoteActorCredentialSharingResult::kOtherError, 1);
+  histograms.ExpectTotalCount(
+      "PasswordManager.RemoteActorCredentialSharing.Gemini.Result", 0);
+  histograms.ExpectTotalCount(
+      "PasswordManager.RemoteActorCredentialSharing.Search.Result", 0);
+}
+
+TEST_F(RemoteActorCredentialSharingImplTest,
+       SearchFeatureDisabled_SearchOriginRejected) {
+  // `kRemoteActorCredentialSharingSearch` is explicitly disabled in the base
+  // fixture while `kRemoteActorCredentialSharing` is enabled.
+  base::HistogramTester histograms;
+  mojo::AssociatedRemote<chrome::mojom::RemoteActorCredentialSharing> remote =
+      SetUpAndBindFlow(GURL("https://search.google.com"));
+  content::RenderFrameHostTester::For(main_rfh())->SimulateUserActivation();
+  base::test::TestFuture<bool> result;
+  remote->RequestAgentAuthentication(account_info_.GetGaiaId().ToString(),
+                                     "google.com", "search_task_id",
+                                     result.GetCallback());
+  EXPECT_FALSE(result.Get());
+  histograms.ExpectUniqueSample(
+      "PasswordManager.RemoteActorCredentialSharing.Result",
+      RemoteActorCredentialSharingResult::kOtherError, 1);
+  histograms.ExpectTotalCount(
+      "PasswordManager.RemoteActorCredentialSharing.Gemini.Result", 0);
+  histograms.ExpectTotalCount(
+      "PasswordManager.RemoteActorCredentialSharing.Search.Result", 0);
+}
+
+TEST_F(RemoteActorCredentialSharingImplTest,
+       GeminiFeatureDisabled_GeminiOriginRejected) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kRemoteActorCredentialSharingSearch},
+      /*disabled_features=*/{features::kRemoteActorCredentialSharing});
+  base::HistogramTester histograms;
+  mojo::AssociatedRemote<chrome::mojom::RemoteActorCredentialSharing> remote =
+      SetUpAndBindFlow(GURL("https://gemini.google.com"));
+  content::RenderFrameHostTester::For(main_rfh())->SimulateUserActivation();
+  base::test::TestFuture<bool> result;
+  remote->RequestAgentAuthentication(account_info_.GetGaiaId().ToString(),
+                                     "google.com", "gemini_task_id",
                                      result.GetCallback());
   EXPECT_FALSE(result.Get());
   histograms.ExpectUniqueSample(

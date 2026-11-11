@@ -16,7 +16,9 @@ namespace password_manager {
 
 TEST(RemoteActorCredentialSharingServiceTest, FactoryCreatesInstance) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kRemoteActorCredentialSharing);
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kRemoteActorCredentialSharing},
+      /*disabled_features=*/{features::kRemoteActorCredentialSharingSearch});
 
   content::BrowserTaskEnvironment task_environment;
   TestingProfile profile;
@@ -25,9 +27,40 @@ TEST(RemoteActorCredentialSharingServiceTest, FactoryCreatesInstance) {
   EXPECT_NE(service, nullptr);
 }
 
+TEST(RemoteActorCredentialSharingServiceTest,
+     FactoryCreatesInstanceWhenSearchEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kRemoteActorCredentialSharingSearch},
+      /*disabled_features=*/{features::kRemoteActorCredentialSharing});
+
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  RemoteActorCredentialSharingService* service =
+      RemoteActorCredentialSharingServiceFactory::GetForProfile(&profile);
+  EXPECT_NE(service, nullptr);
+}
+
+TEST(RemoteActorCredentialSharingServiceTest, FactoryReturnsNullWhenDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{features::kRemoteActorCredentialSharing,
+                             features::kRemoteActorCredentialSharingSearch});
+
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  RemoteActorCredentialSharingService* service =
+      RemoteActorCredentialSharingServiceFactory::GetForProfile(&profile);
+  EXPECT_EQ(service, nullptr);
+}
+
 TEST(RemoteActorCredentialSharingServiceTest, FactoryReturnsNullForIncognito) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kRemoteActorCredentialSharing);
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kRemoteActorCredentialSharing,
+                            features::kRemoteActorCredentialSharingSearch},
+      /*disabled_features=*/{});
 
   content::BrowserTaskEnvironment task_environment;
   TestingProfile profile;
