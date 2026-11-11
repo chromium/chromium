@@ -1415,13 +1415,6 @@ bool ClientTagBasedDataTypeProcessor::IsModelReadyToSyncForTest() const {
   return model_ready_to_sync_;
 }
 
-void ClientTagBasedDataTypeProcessor::SetAttachmentUploaderForTest(
-    std::unique_ptr<AttachmentUploader> attachment_uploader) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  attachment_uploader_ = std::move(attachment_uploader);
-  StartOrResumePendingAttachmentUploads();
-}
-
 void ClientTagBasedDataTypeProcessor::ExpireAllEntries(
     MetadataChangeList* metadata_changes) {
   CHECK(metadata_changes);
@@ -1940,7 +1933,8 @@ void ClientTagBasedDataTypeProcessor::
 
 void ClientTagBasedDataTypeProcessor::StartOrResumePendingAttachmentUploads() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (model_error_.has_value() || !entity_tracker_ || !attachment_uploader_) {
+  if (model_error_.has_value() || !entity_tracker_ ||
+      !activation_request_.attachment_uploader) {
     return;
   }
 
@@ -1958,7 +1952,7 @@ void ClientTagBasedDataTypeProcessor::StartOrResumeAttachmentUpload(
   CHECK(entity.HasPendingAttachmentUpload());
   CHECK(!entity.HasAttachmentUploadInProgress());
   CHECK(!entity.storage_key().empty());
-  if (!attachment_uploader_) {
+  if (!activation_request_.attachment_uploader) {
     return;
   }
 
@@ -1984,12 +1978,14 @@ void ClientTagBasedDataTypeProcessor::StartOrResumeAttachmentUpload(
     AttachmentUploader::UploadUrlCallback upload_url_callback = base::BindOnce(
         &ClientTagBasedDataTypeProcessor::OnAttachmentUploadResumeUrlReceived,
         weak_ptr_factory_for_controller_.GetWeakPtr(), storage_key);
-    abort_attachment_upload_callback = attachment_uploader_->StartUpload(
-        file_path, std::move(upload_url_callback),
-        std::move(completion_callback));
+    abort_attachment_upload_callback =
+        activation_request_.attachment_uploader->StartUpload(
+            file_path, std::move(upload_url_callback),
+            std::move(completion_callback));
   } else {
-    abort_attachment_upload_callback = attachment_uploader_->ResumeUpload(
-        file_path, existing_upload_url, std::move(completion_callback));
+    abort_attachment_upload_callback =
+        activation_request_.attachment_uploader->ResumeUpload(
+            file_path, existing_upload_url, std::move(completion_callback));
   }
 
   entity.RecordAttachmentUploadStarted(

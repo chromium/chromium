@@ -18,6 +18,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -359,7 +360,6 @@ class FakeAttachmentUploader : public AttachmentUploader {
   };
 
   FakeAttachmentUploader() = default;
-  ~FakeAttachmentUploader() override = default;
 
   base::OnceClosure StartUpload(
       const base::FilePath& file_path,
@@ -416,6 +416,8 @@ class FakeAttachmentUploader : public AttachmentUploader {
   int cancelled_count() const { return cancelled_count_; }
 
  private:
+  ~FakeAttachmentUploader() override = default;
+
   void CancelUpload(int upload_id) {
     if (pending_uploads_.erase(upload_id) > 0) {
       cancelled_count_++;
@@ -427,14 +429,6 @@ class FakeAttachmentUploader : public AttachmentUploader {
   int cancelled_count_ = 0;
   base::WeakPtrFactory<FakeAttachmentUploader> weak_ptr_factory_{this};
 };
-
-FakeAttachmentUploader* InstallFakeAttachmentUploader(
-    ClientTagBasedDataTypeProcessor* processor) {
-  auto uploader = std::make_unique<FakeAttachmentUploader>();
-  FakeAttachmentUploader* raw_uploader = uploader.get();
-  processor->SetAttachmentUploaderForTest(std::move(uploader));
-  return raw_uploader;
-}
 
 }  // namespace
 
@@ -461,6 +455,7 @@ class ClientTagBasedDataTypeProcessorTest : public ::testing::Test {
   void SetUp() override {
     bridge_ = std::make_unique<TestDataTypeSyncBridge>(
         GetDataType(), SupportsIncrementalUpdates());
+    attachment_uploader_ = base::MakeRefCounted<FakeAttachmentUploader>();
     histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
 
@@ -497,6 +492,7 @@ class ClientTagBasedDataTypeProcessorTest : public ::testing::Test {
     request.authenticated_gaia_id = authenticated_gaia_id;
     request.sync_mode = sync_mode;
     request.configuration_start_time = base::Time::Now();
+    request.attachment_uploader = attachment_uploader_;
 
     error_reported_ = false;
 
@@ -548,6 +544,7 @@ class ClientTagBasedDataTypeProcessorTest : public ::testing::Test {
                             SupportsIncrementalUpdates())
                       : std::make_unique<TestDataTypeSyncBridge>(
                             GetDataType(), SupportsIncrementalUpdates());
+    attachment_uploader_ = base::MakeRefCounted<FakeAttachmentUploader>();
     worker_ = nullptr;
     run_loop_.reset();
     CheckPostConditions();
@@ -602,6 +599,10 @@ class ClientTagBasedDataTypeProcessorTest : public ::testing::Test {
   FakeDataTypeSyncBridge::Store* db() const { return bridge()->mutable_db(); }
 
   MockDataTypeWorker* worker() const { return worker_.get(); }
+
+  FakeAttachmentUploader* attachment_uploader() {
+    return attachment_uploader_.get();
+  }
 
   ClientTagBasedDataTypeProcessor* type_processor() const {
     return static_cast<ClientTagBasedDataTypeProcessor*>(
@@ -688,6 +689,8 @@ class ClientTagBasedDataTypeProcessorTest : public ::testing::Test {
   base::ScopedTempDir temp_dir_;
 
   std::unique_ptr<TestDataTypeSyncBridge> bridge_;
+
+  scoped_refptr<FakeAttachmentUploader> attachment_uploader_;
 
   // This run loop is used to wait for OnReadyToConnect is called.
   std::unique_ptr<base::RunLoop> run_loop_;
@@ -4015,8 +4018,6 @@ TEST_F(ClientTagBasedDataTypeProcessorWithUniquePositionTest,
 TEST_F(ClientTagBasedDataTypeProcessorTest,
        ShouldHoldBackEntityWithPendingAttachmentWithoutBlockingOtherEntities) {
   InitializeToReadyState();
-  FakeAttachmentUploader* uploader =
-      InstallFakeAttachmentUploader(type_processor());
 
   // Write `kKey1` with a pending attachment and `kKey2` without an attachment,
   // then report the resumable `upload_url` for `kKey1`.
@@ -4025,13 +4026,13 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
       kKey1, GeneratePrefEntityData(kKey1, kValue1), file_path,
       std::make_unique<EmptyMetadataChangeList>().get());
   WritePrefItem(bridge(), kKey2, kValue2);
-  uploader->ReportUploadUrl(GURL(kUploadSessionUrl));
+  attachment_uploader()->ReportUploadUrl(GURL(kUploadSessionUrl));
 
   // Only `kKey2` should be committed while `kKey1` remains held back with its
   // persisted `upload_url`.
-  EXPECT_TRUE(uploader->HasPendingUpload());
-  EXPECT_EQ(uploader->GetFilePath(), file_path);
-  EXPECT_TRUE(uploader->GetExistingUploadUrl().is_empty());
+  EXPECT_TRUE(attachment_uploader()->HasPendingUpload());
+  EXPECT_EQ(attachment_uploader()->GetFilePath(), file_path);
+  EXPECT_TRUE(attachment_uploader()->GetExistingUploadUrl().is_empty());
   EXPECT_EQ(db()->GetMetadata(kKey1)
                 .attachment_metadata()
                 .pending_upload()
@@ -4045,15 +4046,13 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
 TEST_F(ClientTagBasedDataTypeProcessorTest,
        ShouldCommitEntityWithAttachmentAfterUploadCompletes) {
   InitializeToReadyState();
-  FakeAttachmentUploader* uploader =
-      InstallFakeAttachmentUploader(type_processor());
   type_processor()->PutWithAttachment(
       kKey1, GeneratePrefEntityData(kKey1, kValue1), CreateTemporaryFile(),
       std::make_unique<EmptyMetadataChangeList>().get());
 
   // Completing the upload persists `temporary_blob_id` in metadata and unblocks
   // the entity for commit.
-  uploader->CompleteUpload(base::ok(kTemporaryBlobId));
+  attachment_uploader()->CompleteUpload(base::ok(kTemporaryBlobId));
 
   EXPECT_EQ(db()->GetMetadata(kKey1)
                 .attachment_metadata()
@@ -4075,12 +4074,10 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
 TEST_F(ClientTagBasedDataTypeProcessorTest,
        ShouldClearTemporaryBlobIdAfterAttachmentCommitAck) {
   InitializeToReadyState();
-  FakeAttachmentUploader* uploader =
-      InstallFakeAttachmentUploader(type_processor());
   type_processor()->PutWithAttachment(
       kKey1, GeneratePrefEntityData(kKey1, kValue1), CreateTemporaryFile(),
       std::make_unique<EmptyMetadataChangeList>().get());
-  uploader->CompleteUpload(base::ok(kTemporaryBlobId));
+  attachment_uploader()->CompleteUpload(base::ok(kTemporaryBlobId));
 
   // Acknowledging the commit clears the one-time `temporary_blob_id` token
   // while keeping `attachment_metadata` to record that the entity has a
@@ -4100,8 +4097,6 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
 TEST_F(ClientTagBasedDataTypeProcessorTest,
        ShouldResumeInterruptedAttachmentUploadOnRestart) {
   InitializeToReadyState();
-  FakeAttachmentUploader* uploader1 =
-      InstallFakeAttachmentUploader(type_processor());
 
   // Start an attachment upload and persist its resumable `upload_url` before
   // restarting. Also store the entity data in `db()` so `GetDataForCommit()`
@@ -4113,7 +4108,7 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
   type_processor()->PutWithAttachment(
       kKey1, std::move(entity_data), file_path,
       std::make_unique<EmptyMetadataChangeList>().get());
-  uploader1->ReportUploadUrl(GURL(kUploadSessionUrl));
+  attachment_uploader()->ReportUploadUrl(GURL(kUploadSessionUrl));
   ASSERT_EQ(db()->GetMetadata(kKey1)
                 .attachment_metadata()
                 .pending_upload()
@@ -4122,20 +4117,19 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
 
   // Simulate browser restart keeping the persisted database.
   ResetState(/*keep_db=*/true);
-  FakeAttachmentUploader* uploader2 =
-      InstallFakeAttachmentUploader(type_processor());
   InitializeToReadyState();
 
   // `kKey1` should remain held back and `FakeAttachmentUploader` should be
   // asked to resume using the persisted `file_path` and `upload_url`.
   EXPECT_EQ(worker()->GetNumPendingCommits(), 0U);
-  ASSERT_TRUE(uploader2->HasPendingUpload());
-  EXPECT_EQ(uploader2->GetFilePath(), file_path);
-  EXPECT_EQ(uploader2->GetExistingUploadUrl(), GURL(kUploadSessionUrl));
+  ASSERT_TRUE(attachment_uploader()->HasPendingUpload());
+  EXPECT_EQ(attachment_uploader()->GetFilePath(), file_path);
+  EXPECT_EQ(attachment_uploader()->GetExistingUploadUrl(),
+            GURL(kUploadSessionUrl));
 
   // Completing the resumed upload loads the entity data from the bridge (since
   // cached commit data is not persisted across restarts) and commits `kKey1`.
-  uploader2->CompleteUpload(base::ok(kTemporaryBlobId));
+  attachment_uploader()->CompleteUpload(base::ok(kTemporaryBlobId));
   worker()->VerifyPendingCommits({{GetPrefHash(kKey1)}});
   const CommitRequestData* commit_request =
       worker()->GetLatestPendingCommitForHash(GetPrefHash(kKey1));
@@ -4148,17 +4142,15 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
 TEST_F(ClientTagBasedDataTypeProcessorTest,
        ShouldCancelInFlightAttachmentUploadOnDelete) {
   InitializeToReadyState();
-  FakeAttachmentUploader* uploader =
-      InstallFakeAttachmentUploader(type_processor());
 
   type_processor()->PutWithAttachment(
       kKey1, GeneratePrefEntityData(kKey1, kValue1), CreateTemporaryFile(),
       std::make_unique<EmptyMetadataChangeList>().get());
-  ASSERT_TRUE(uploader->HasPendingUpload());
+  ASSERT_TRUE(attachment_uploader()->HasPendingUpload());
 
   bridge()->DeleteItem(kKey1);
-  EXPECT_FALSE(uploader->HasPendingUpload());
-  EXPECT_EQ(uploader->cancelled_count(), 1);
+  EXPECT_FALSE(attachment_uploader()->HasPendingUpload());
+  EXPECT_EQ(attachment_uploader()->cancelled_count(), 1);
 }
 
 // Verifies that overwriting an entity via `PutWithAttachment()` cancels the
@@ -4166,19 +4158,17 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
 TEST_F(ClientTagBasedDataTypeProcessorTest,
        ShouldCancelInFlightAttachmentUploadOnPutWithAttachment) {
   InitializeToReadyState();
-  FakeAttachmentUploader* uploader =
-      InstallFakeAttachmentUploader(type_processor());
 
   type_processor()->PutWithAttachment(
       kKey1, GeneratePrefEntityData(kKey1, kValue1), CreateTemporaryFile(),
       std::make_unique<EmptyMetadataChangeList>().get());
-  ASSERT_TRUE(uploader->HasPendingUpload());
+  ASSERT_TRUE(attachment_uploader()->HasPendingUpload());
 
   type_processor()->PutWithAttachment(
       kKey1, GeneratePrefEntityData(kKey1, kValue2), CreateTemporaryFile(),
       std::make_unique<EmptyMetadataChangeList>().get());
-  EXPECT_TRUE(uploader->HasPendingUpload());
-  EXPECT_EQ(uploader->cancelled_count(), 1);
+  EXPECT_TRUE(attachment_uploader()->HasPendingUpload());
+  EXPECT_EQ(attachment_uploader()->cancelled_count(), 1);
 }
 
 // Verifies that untracking an entity by storage key or client tag hash cancels
@@ -4186,28 +4176,26 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
 TEST_F(ClientTagBasedDataTypeProcessorTest,
        ShouldCancelInFlightAttachmentUploadOnUntrackEntity) {
   InitializeToReadyState();
-  FakeAttachmentUploader* uploader =
-      InstallFakeAttachmentUploader(type_processor());
 
   // Start an upload for `kKey1` and untrack it by storage key.
   type_processor()->PutWithAttachment(
       kKey1, GeneratePrefEntityData(kKey1, kValue1), CreateTemporaryFile(),
       std::make_unique<EmptyMetadataChangeList>().get());
-  ASSERT_TRUE(uploader->HasPendingUpload());
+  ASSERT_TRUE(attachment_uploader()->HasPendingUpload());
 
   type_processor()->UntrackEntityForStorageKey(kKey1);
-  EXPECT_FALSE(uploader->HasPendingUpload());
-  EXPECT_EQ(uploader->cancelled_count(), 1);
+  EXPECT_FALSE(attachment_uploader()->HasPendingUpload());
+  EXPECT_EQ(attachment_uploader()->cancelled_count(), 1);
 
   // Start an upload for `kKey2` and untrack it by client tag hash.
   type_processor()->PutWithAttachment(
       kKey2, GeneratePrefEntityData(kKey2, kValue2), CreateTemporaryFile(),
       std::make_unique<EmptyMetadataChangeList>().get());
-  ASSERT_TRUE(uploader->HasPendingUpload());
+  ASSERT_TRUE(attachment_uploader()->HasPendingUpload());
 
   type_processor()->UntrackEntityForClientTagHash(GetPrefHash(kKey2));
-  EXPECT_FALSE(uploader->HasPendingUpload());
-  EXPECT_EQ(uploader->cancelled_count(), 2);
+  EXPECT_FALSE(attachment_uploader()->HasPendingUpload());
+  EXPECT_EQ(attachment_uploader()->cancelled_count(), 2);
 }
 
 // Verifies that overriding an existing entity with a new storage key for the
@@ -4215,23 +4203,21 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
 TEST_F(ClientTagBasedDataTypeProcessorTest,
        ShouldCancelInFlightAttachmentUploadWhenOverridingStorageKey) {
   InitializeToReadyState();
-  FakeAttachmentUploader* uploader =
-      InstallFakeAttachmentUploader(type_processor());
 
   // Start an attachment upload for client tag `kKey1` under storage key
   // `kKey1`.
   type_processor()->PutWithAttachment(
       kKey1, GeneratePrefEntityData(kKey1, kValue1), CreateTemporaryFile(),
       std::make_unique<EmptyMetadataChangeList>().get());
-  ASSERT_TRUE(uploader->HasPendingUpload());
+  ASSERT_TRUE(attachment_uploader()->HasPendingUpload());
 
   // Re-create the entity with the same client tag (`kKey1`) under a new storage
   // key (`kKey2`) without an attachment, which cancels the previous upload and
   // unblocks the entity to commit immediately.
   type_processor()->Put(kKey2, GeneratePrefEntityData(kKey1, kValue2),
                         std::make_unique<EmptyMetadataChangeList>().get());
-  EXPECT_FALSE(uploader->HasPendingUpload());
-  EXPECT_EQ(uploader->cancelled_count(), 1);
+  EXPECT_FALSE(attachment_uploader()->HasPendingUpload());
+  EXPECT_EQ(attachment_uploader()->cancelled_count(), 1);
   worker()->VerifyPendingCommits({{GetPrefHash(kKey1)}});
 }
 
@@ -4240,8 +4226,6 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
 TEST_F(ClientTagBasedDataTypeProcessorTest,
        ShouldPauseInFlightAttachmentUploadOnDisconnectSync) {
   InitializeToReadyState();
-  FakeAttachmentUploader* uploader =
-      InstallFakeAttachmentUploader(type_processor());
 
   // Start an attachment upload and disconnect Sync while the upload is in
   // flight, which pauses the upload by running its abort callback while
@@ -4249,20 +4233,20 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
   type_processor()->PutWithAttachment(
       kKey1, GeneratePrefEntityData(kKey1, kValue1), CreateTemporaryFile(),
       std::make_unique<EmptyMetadataChangeList>().get());
-  ASSERT_TRUE(uploader->HasPendingUpload());
+  ASSERT_TRUE(attachment_uploader()->HasPendingUpload());
 
   DisconnectSync();
-  EXPECT_FALSE(uploader->HasPendingUpload());
-  EXPECT_EQ(uploader->cancelled_count(), 1);
+  EXPECT_FALSE(attachment_uploader()->HasPendingUpload());
+  EXPECT_EQ(attachment_uploader()->cancelled_count(), 1);
 
   // Connecting Sync resumes the paused upload, and disconnecting again pauses
   // it a second time.
   OnSyncStarting();
-  ASSERT_TRUE(uploader->HasPendingUpload());
+  ASSERT_TRUE(attachment_uploader()->HasPendingUpload());
 
   DisconnectSync();
-  EXPECT_FALSE(uploader->HasPendingUpload());
-  EXPECT_EQ(uploader->cancelled_count(), 2);
+  EXPECT_FALSE(attachment_uploader()->HasPendingUpload());
+  EXPECT_EQ(attachment_uploader()->cancelled_count(), 2);
 }
 
 // Verifies that a failed attachment upload cancels the pending upload, persists
@@ -4270,32 +4254,26 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
 // entity to commit its specifics without the attachment.
 TEST_F(ClientTagBasedDataTypeProcessorTest,
        ShouldCancelAttachmentUploadAndCommitEntityOnUploadFailure) {
-  InitializeToMetadataLoaded();
-  FakeAttachmentUploader* uploader =
-      InstallFakeAttachmentUploader(type_processor());
+  InitializeToReadyState();
 
-  // Queue and start the attachment upload before `OnSyncStarting()` connects so
-  // `ConnectIfReady()` exercises skipping an already in-progress upload.
   const base::FilePath file_path = CreateTemporaryFile();
   type_processor()->PutWithAttachment(
       kKey1, GeneratePrefEntityData(kKey1, kValue1), file_path,
       std::make_unique<EmptyMetadataChangeList>().get());
-  ASSERT_TRUE(uploader->HasPendingUpload());
-
-  OnSyncStarting();
+  ASSERT_TRUE(attachment_uploader()->HasPendingUpload());
   EXPECT_EQ(worker()->GetNumPendingCommits(), 0U);
-  uploader->ReportUploadUrl(GURL(kUploadSessionUrl));
+  attachment_uploader()->ReportUploadUrl(GURL(kUploadSessionUrl));
   ASSERT_TRUE(db()->GetMetadata(kKey1).has_attachment_metadata());
 
   // Failing the upload cancels `pending_upload` in persisted metadata, deletes
   // the staging file without invoking the upload cancellation callback, and
   // nudges the entity to commit its specifics without an attachment.
-  uploader->CompleteUpload(
+  attachment_uploader()->CompleteUpload(
       base::unexpected(AttachmentUploadError::kTransientError));
   FlushThreadPoolTasks();
 
-  EXPECT_FALSE(uploader->HasPendingUpload());
-  EXPECT_EQ(uploader->cancelled_count(), 0);
+  EXPECT_FALSE(attachment_uploader()->HasPendingUpload());
+  EXPECT_EQ(attachment_uploader()->cancelled_count(), 0);
   EXPECT_FALSE(db()->GetMetadata(kKey1).has_attachment_metadata());
   EXPECT_FALSE(base::PathExists(file_path));
   worker()->VerifyPendingCommits({{GetPrefHash(kKey1)}});
@@ -4311,21 +4289,19 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
 TEST_F(ClientTagBasedDataTypeProcessorTest,
        ShouldPreserveInFlightAttachmentUploadOnPut) {
   InitializeToReadyState();
-  FakeAttachmentUploader* uploader =
-      InstallFakeAttachmentUploader(type_processor());
   type_processor()->PutWithAttachment(
       kKey1, GeneratePrefEntityData(kKey1, kValue1), CreateTemporaryFile(),
       std::make_unique<EmptyMetadataChangeList>().get());
-  uploader->ReportUploadUrl(GURL(kUploadSessionUrl));
+  attachment_uploader()->ReportUploadUrl(GURL(kUploadSessionUrl));
 
   // Updating specifics via `Put()` (without a new attachment) updates the
   // cached payload while keeping the existing attachment upload in flight.
   WritePrefItem(bridge(), kKey1, kValue2);
-  uploader->CompleteUpload(base::ok(kTemporaryBlobId));
+  attachment_uploader()->CompleteUpload(base::ok(kTemporaryBlobId));
 
   // Once the upload completes, the commit carries both the updated specifics
   // (`kValue2`) and the uploaded attachment.
-  EXPECT_EQ(uploader->cancelled_count(), 0);
+  EXPECT_EQ(attachment_uploader()->cancelled_count(), 0);
   worker()->VerifyPendingCommits({{GetPrefHash(kKey1)}});
   const CommitRequestData* commit_request =
       worker()->GetLatestPendingCommitForHash(GetPrefHash(kKey1));
@@ -4340,8 +4316,6 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
 TEST_F(ClientTagBasedDataTypeProcessorTest,
        ShouldStartAttachmentUploadWhenSpecificsAreUnchanged) {
   InitializeToReadyState();
-  FakeAttachmentUploader* uploader =
-      InstallFakeAttachmentUploader(type_processor());
 
   // Commit and acknowledge an initial entity without an attachment so its
   // specifics (`kValue1`) are already synced.
@@ -4355,26 +4329,33 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
       kKey1, GeneratePrefEntityData(kKey1, kValue1), CreateTemporaryFile(),
       std::make_unique<EmptyMetadataChangeList>().get());
 
-  EXPECT_TRUE(uploader->HasPendingUpload());
+  EXPECT_TRUE(attachment_uploader()->HasPendingUpload());
   EXPECT_EQ(worker()->GetNumPendingCommits(), 0U);
 }
 
-// Verifies that pending attachment uploads are not started when an attachment
-// uploader is installed after the processor has encountered a model error.
+// Verifies that pending attachment uploads are not started when Sync starts
+// after the processor has encountered a model error.
 TEST_F(ClientTagBasedDataTypeProcessorTest,
        ShouldNotStartPendingAttachmentUploadsAfterModelError) {
   InitializeToReadyState();
+  const base::FilePath file_path = CreateTemporaryFile();
+  std::unique_ptr<EntityData> entity_data =
+      GeneratePrefEntityData(kKey1, kValue1);
+  db()->PutData(kKey1, *entity_data);
   type_processor()->PutWithAttachment(
-      kKey1, GeneratePrefEntityData(kKey1, kValue1), CreateTemporaryFile(),
+      kKey1, std::move(entity_data), file_path,
       std::make_unique<EmptyMetadataChangeList>().get());
 
+  // Simulate a browser restart where the model encounters an error after
+  // loading persisted metadata containing a pending attachment upload.
+  ResetState(/*keep_db=*/true);
+  InitializeToMetadataLoaded();
   ExpectError(ClientTagBasedDataTypeProcessor::ErrorSite::kReportedByBridge);
   type_processor()->ReportError(
       {FROM_HERE, ModelError::Type::kGenericTestError});
 
-  FakeAttachmentUploader* uploader =
-      InstallFakeAttachmentUploader(type_processor());
-  EXPECT_FALSE(uploader->HasPendingUpload());
+  OnSyncStarting();
+  EXPECT_FALSE(attachment_uploader()->HasPendingUpload());
 }
 
 }  // namespace syncer

@@ -4,6 +4,8 @@
 
 #include "components/sync/model/data_type_activation_request.h"
 
+#include "components/sync/model/attachment_uploader.h"
+
 namespace syncer {
 
 DataTypeActivationRequest::DataTypeActivationRequest() = default;

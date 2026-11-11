@@ -7,9 +7,11 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/notimplemented.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/sync/engine/data_type_activation_response.h"
+#include "components/sync/model/attachment_uploader.h"
 #include "components/sync/model/data_type_activation_request.h"
 #include "components/sync/model/type_entities_count.h"
 
@@ -105,10 +107,16 @@ void ProxyDataTypeControllerDelegate::OnSyncStarting(
   DataTypeActivationRequest proxy_request = request;
   proxy_request.error_handler =
       base::BindPostTaskToCurrentDefault(request.error_handler);
-  PostTask(
-      FROM_HERE,
-      base::BindOnce(&OnSyncStartingHelperOnModelThread, proxy_request,
-                     base::BindPostTaskToCurrentDefault(std::move(callback))));
+  if (request.attachment_uploader) {
+    // TODO(crbug.com/568634932): Wrap `request.attachment_uploader` in a
+    // `ProxyAttachmentUploader` that posts tasks across sequences.
+    NOTIMPLEMENTED();
+    proxy_request.attachment_uploader = nullptr;
+  }
+  PostTask(FROM_HERE,
+           base::BindOnce(
+               &OnSyncStartingHelperOnModelThread, std::move(proxy_request),
+               base::BindPostTaskToCurrentDefault(std::move(callback))));
 }
 
 void ProxyDataTypeControllerDelegate::OnSyncStopping(

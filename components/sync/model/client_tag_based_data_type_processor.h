@@ -44,7 +44,6 @@ class DataTypeState_Invalidation;
 
 namespace syncer {
 
-class AttachmentUploader;
 enum class AttachmentUploadError;
 class CommitQueue;
 
@@ -160,11 +159,6 @@ class ClientTagBasedDataTypeProcessor : public DataTypeProcessor,
   bool IsTrackingEntityForTest(const std::string& storage_key) const;
 
   bool IsModelReadyToSyncForTest() const;
-
-  // TODO(crbug.com/568634932): Pass `AttachmentUploader` via
-  // `DataTypeActivationRequest`.
-  void SetAttachmentUploaderForTest(
-      std::unique_ptr<AttachmentUploader> attachment_uploader);
 
   // Records a local entity creation or update that includes a new or modified
   // attachment at `attachment_file_path` to be uploaded before commit.
@@ -388,9 +382,6 @@ class ClientTagBasedDataTypeProcessor : public DataTypeProcessor,
   // proxy object to the actual CommitQueue implementation (aka the worker),
   // which lives on the sync sequence.
   std::unique_ptr<CommitQueue> worker_;
-
-  // Optional uploader used to coordinate blob attachment uploads.
-  std::unique_ptr<AttachmentUploader> attachment_uploader_;
 
   //////////////////
   // Entity state //

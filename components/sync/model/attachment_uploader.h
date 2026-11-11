@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/ref_counted.h"
 #include "base/types/expected.h"
 
 class GURL;
@@ -24,7 +25,11 @@ enum class AttachmentUploadError {
 };
 
 // Interface for starting and resuming blob attachment uploads.
-class AttachmentUploader {
+//
+// `AttachmentUploader` is reference-counted on a single sequence (not
+// thread-safe): all method calls, returned cancellation closures, and passed
+// callbacks must run on that same sequence.
+class AttachmentUploader : public base::RefCounted<AttachmentUploader> {
  public:
   // Invoked once the initial upload handshake succeeds and returns a valid
   // resumable session `upload_url` (`upload_url.is_valid()` is guaranteed; if
@@ -37,8 +42,6 @@ class AttachmentUploader {
   using CompletionCallback = base::OnceCallback<void(
       base::expected<std::string /*temporary_blob_id*/,
                      AttachmentUploadError>)>;
-
-  virtual ~AttachmentUploader() = default;
 
   // Starts a new upload for the local file at `file_path`. First invokes
   // `upload_url_callback` asynchronously once the resumable session URL is
@@ -61,6 +64,10 @@ class AttachmentUploader {
       const base::FilePath& file_path,
       const GURL& upload_url,
       CompletionCallback completion_callback) = 0;
+
+ protected:
+  friend class base::RefCounted<AttachmentUploader>;
+  virtual ~AttachmentUploader() = default;
 };
 
 }  // namespace syncer
