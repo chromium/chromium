@@ -34,11 +34,6 @@ enum TextDirection {
   TEXT_DIRECTION_MAX = LEFT_TO_RIGHT,
 };
 
-// Get the locale that the currently running process has been configured to use.
-// The return value is of the form language[-country] (e.g., en-US) where the
-// language is the 2 or 3 letter code from ISO-639.
-BASE_I18N_EXPORT std::string GetConfiguredLocale();
-
 // Returns true if the application text direction is right-to-left.
 BASE_I18N_EXPORT bool IsRTL();
 

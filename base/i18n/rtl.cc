@@ -19,7 +19,6 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/i18n/base_i18n_switches.h"
-#include "base/i18n/icu4c_tag_converter.h"
 #include "base/i18n/icubridge/default_icu_locale.h"
 #include "base/i18n/language_tag.h"
 #include "base/logging.h"
@@ -40,34 +39,6 @@
 
 namespace base::i18n {
 namespace {
-
-// Extract language, country and variant, but ignore keywords.  For example,
-// en-US, ca@valencia, ca-ES@valencia.
-std::string GetLocaleString(const icu::Locale& locale) {
-  const char* language = locale.getLanguage();
-  const char* country = locale.getCountry();
-  const char* variant = locale.getVariant();
-  const char* script = locale.getScript();
-
-  std::string result =
-      (language != nullptr && *language != '\0') ? language : "und";
-
-  if (script != nullptr && *script != '\0') {
-    result += '-';
-    result += script;
-  }
-
-  if (country != nullptr && *country != '\0') {
-    result += '-';
-    result += country;
-  }
-
-  if (variant != nullptr && *variant != '\0') {
-    result += '@' + base::ToLowerASCII(variant);
-  }
-
-  return result;
-}
 
 // Returns LEFT_TO_RIGHT or RIGHT_TO_LEFT if |character| has strong
 // directionality, returns UNKNOWN_DIRECTION if it doesn't. Please refer to
@@ -167,12 +138,6 @@ TextDirection GetTextDirectionInternal() {
 }
 
 }  // namespace
-
-// Convert the ICU default locale to a string.
-std::string GetConfiguredLocale() {
-  return GetLocaleString(
-      IcuLocaleConverter::GetInstance().FromLanguageTag(GetDefaultIcuLocale()));
-}
 
 bool IsRTL() {
   return GetTextDirectionInternal() == RIGHT_TO_LEFT;

@@ -11,6 +11,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+#include "base/i18n/icubridge/default_icu_locale.h"
 #include "base/i18n/language_tag.h"
 #include "base/i18n/rtl.h"
 #include "third_party/jni_zero/jni_zero.h"
@@ -73,7 +74,7 @@ std::u16string GetDisplayNameForLocale(
 }
 
 static std::string JNI_LocalizationUtils_GetNativeUiLocale() {
-  return base::i18n::GetConfiguredLocale();
+  return std::string(base::i18n::GetDefaultIcuLocale().tag_string());
 }
 
 }  // namespace l10n_util

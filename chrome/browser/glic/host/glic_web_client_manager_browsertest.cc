@@ -8,7 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/i18n/rtl.h"
+#include "base/i18n/icubridge/default_icu_locale.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -47,7 +47,7 @@ class TestSecurityInterstitialControllerClient
             web_contents,
             CreateMetricsHelper(request_url),
             /*prefs=*/nullptr,
-            base::i18n::GetConfiguredLocale(),
+            std::string(base::i18n::GetDefaultIcuLocale().tag_string()),
             /*default_safe_page=*/GURL("about:blank"),
             /*settings_page_helper=*/nullptr),
         on_proceed_(std::move(on_proceed)) {}
