@@ -1345,7 +1345,6 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "gce": "1",
             "os": "Ubuntu",
             "pool": "chrome.tests.intelligence"
           },
@@ -1380,7 +1379,6 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "gce": "1",
             "os": "Ubuntu",
             "pool": "chrome.tests.intelligence"
           },
@@ -1415,7 +1413,6 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "gce": "1",
             "os": "Ubuntu",
             "pool": "chrome.tests.intelligence"
           },
@@ -1450,7 +1447,6 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "gce": "1",
             "os": "Ubuntu",
             "pool": "chrome.tests.intelligence"
           },

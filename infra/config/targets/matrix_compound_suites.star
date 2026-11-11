@@ -953,28 +953,24 @@ targets.legacy_matrix_compound_suite(
         "chrome_ai_wpt_tests_manifest_cpu_suite": targets.legacy_matrix_config(
             mixins = [
                 "chrome-intelligence-swarming-pool",
-                "gce",
                 "x64_ai_wpt_shards",
             ],
         ),
         "chrome_ai_wpt_tests_manifest_cpu_conversation_suite": targets.legacy_matrix_config(
             mixins = [
                 "chrome-intelligence-swarming-pool",
-                "gce",
                 "x64_ai_wpt_shards",
             ],
         ),
         "chrome_ai_wpt_tests_manifest_cpu_gemma4_suite": targets.legacy_matrix_config(
             mixins = [
                 "chrome-intelligence-swarming-pool",
-                "gce",
                 "x64_ai_wpt_shards",
             ],
         ),
         "chrome_ai_wpt_tests_manifest_cpu_gemma4_conversation_suite": targets.legacy_matrix_config(
             mixins = [
                 "chrome-intelligence-swarming-pool",
-                "gce",
                 "x64_ai_wpt_shards",
             ],
         ),
