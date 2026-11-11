@@ -17,6 +17,7 @@ Googlers: go/chrome-bisect
 import abc
 import argparse
 import base64
+import concurrent.futures
 import copy
 import functools
 import glob
@@ -987,29 +988,31 @@ class ReleaseBuild(ArchiveBuild):
       for x in build_numbers
       if (not min_rev or min_rev <= x) and (not max_rev or x <= max_rev)
     ]
-    # Check if target archive build exists in batches.
-    # batch size is limited by maximum length for the command line. Which is
-    # 32,768 characters on Windows, which should be enough up to 400 files.
-    batch_size = 100
-    final_list = []
-    for batch in (
+    # Check if target archive build exists in batches. gsutil checks each path
+    # sequentially, so run small batches in parallel.
+    batch_size = 25
+    batches = [
       build_numbers[i : i + batch_size]
       for i in range(0, len(build_numbers), batch_size)
-    ):
-      sys.stdout.write('\rFetching revisions at marker %s\n' % batch[0])
-      sys.stdout.flush()
-      # List the files that exists with listing_platform_dir and archive_name.
-      # Gsutil could fail because some of the path not exists. It's safe to
-      # ignore them.
-      for path in GsutilList(
-        *[self._get_archive_path(x) for x in batch], ignore_fail=True
+    ]
+    print('Checking %d versions' % len(build_numbers))
+    final_list = []
+    # List the files that exists with listing_platform_dir and archive_name.
+    # Gsutil could fail because some of the path not exists. It's safe to
+    # ignore them.
+    with concurrent.futures.ThreadPoolExecutor(16) as executor:
+      for paths in executor.map(
+        lambda batch: GsutilList(
+          *[self._get_archive_path(x) for x in batch], ignore_fail=True
+        ),
+        batches,
       ):
-        match = revision_re.search(path)
-        if match:
-          final_list.append(ChromiumVersion(match[1]))
-    sys.stdout.write('\r')
-    sys.stdout.flush()
-    return final_list
+        for path in paths:
+          match = revision_re.search(path)
+          if match:
+            final_list.append(ChromiumVersion(match[1]))
+    # gsutil.py re-runs failed commands, which can list a path twice.
+    return sorted(set(final_list))
 
   def _get_listing_url(self):
     return self._get_release_bucket()
