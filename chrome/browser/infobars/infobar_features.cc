@@ -9,13 +9,14 @@
 
 namespace infobars {
 
-BASE_FEATURE(kCentralizedInfoBarFramework, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kCentralizedInfoBarFramework, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE_PARAM(bool,
                    kEnableAll,
                    &kCentralizedInfoBarFramework,
                    false);
 
+// LINT.IfChange(InfoBarMigrationParams)
 BASE_FEATURE_PARAM(bool,
                    kMigratedAlternateNav,
                    &kCentralizedInfoBarFramework,
@@ -236,6 +237,7 @@ const base::FeatureParam<bool>* GetInfoBarMigrationParam(
       return nullptr;
   }
 }
+// LINT.ThenChange(//chrome/browser/infobars/infobar_features_unittest.cc:InfoBarMigrationParams)
 
 bool IsInfoBarMigrated(InfoBarDelegate::InfoBarIdentifier infobar_id) {
 #if BUILDFLAG(IS_ANDROID)

@@ -151,6 +151,8 @@ class BrowserInfoBarManager : public BrowserCollectionObserver,
       InfoBarShowParams params);
 
   void OnActiveTabChanged(BrowserWindowInterface* browser);
+  void StartObservingBrowsersIfNeeded();
+  void StopObservingBrowsersIfIdle();
 
   // Returns true if `spec` is suppressed by enterprise policy. Checked at show
   // time (`Show()`, `Replace()`, `ShowGlobally()`); already-visible infobars

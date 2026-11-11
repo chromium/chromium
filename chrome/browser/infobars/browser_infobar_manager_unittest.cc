@@ -12,11 +12,13 @@
 
 #include "base/callback_list.h"
 #include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/infobars/confirm_infobar_creation_allowlist.h"
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
 #include "chrome/browser/infobars/infobar_spec.h"
@@ -52,6 +54,7 @@
 #include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/test/mock_base_window.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/base/unowned_user_data/user_data_factory.h"
 #include "ui/gfx/switches.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/controls/label.h"
@@ -245,18 +248,11 @@ class BrowserInfoBarManagerUnitTest : public testing::Test {
  protected:
   void SetUp() override {
     ASSERT_NE(nullptr, GlobalBrowserCollection::GetInstance());
+    ASSERT_NE(nullptr, manager());
     profile_ = std::make_unique<TestingProfile>();
-
-    if (!BrowserInfoBarManager::From(TestingBrowserProcess::GetGlobal())) {
-      owned_manager_ = std::make_unique<BrowserInfoBarManager>(
-          TestingBrowserProcess::GetGlobal());
-    }
   }
 
-  void TearDown() override {
-    owned_manager_.reset();
-    profile_.reset();
-  }
+  void TearDown() override { profile_.reset(); }
 
   BrowserInfoBarManager* manager() {
     return BrowserInfoBarManager::From(TestingBrowserProcess::GetGlobal());
@@ -273,7 +269,35 @@ class BrowserInfoBarManagerUnitTest : public testing::Test {
   content::RenderViewHostTestEnabler rvh_test_enabler_;
   tabs::TabModel::PreventFeatureInitializationForTesting prevent_tab_features_;
   std::unique_ptr<TestingProfile> profile_;
-  std::unique_ptr<BrowserInfoBarManager> owned_manager_;
+};
+
+class BrowserInfoBarManagerPreExistingBrowsersUnitTest
+    : public BrowserInfoBarManagerUnitTest {
+ protected:
+  BrowserInfoBarManagerPreExistingBrowsersUnitTest()
+      : manager_override_(
+            GlobalFeatures::GetUserDataFactoryForTesting()
+                .AddOverrideForTesting(base::BindRepeating([](BrowserProcess&) {
+                  // This test constructs and owns the manager itself.
+                  return std::unique_ptr<BrowserInfoBarManager>();
+                }))) {}
+
+  void SetUp() override {
+    // Recreate GlobalFeatures so the override applies before creating any
+    // browser windows.
+    TestingBrowserProcess::GetGlobal()->SetUpGlobalFeaturesForTesting(
+        /*profile_manager=*/false);
+    ASSERT_NE(nullptr, GlobalBrowserCollection::GetInstance());
+    ASSERT_EQ(nullptr, manager());
+    profile_ = std::make_unique<TestingProfile>();
+  }
+
+  void TearDown() override {
+    profile_.reset();
+    TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting();
+  }
+
+  ui::UserDataFactory::ScopedOverride manager_override_;
 };
 
 TEST_F(BrowserInfoBarManagerUnitTest, RegisterAndIsRegistered) {
@@ -286,17 +310,15 @@ TEST_F(BrowserInfoBarManagerUnitTest, RegisterAndIsRegistered) {
   EXPECT_TRUE(manager()->IsRegistered(id));
 }
 
-TEST_F(BrowserInfoBarManagerUnitTest, ConstructorObservesPreExistingBrowsers) {
-  owned_manager_.reset();
-  ASSERT_EQ(nullptr,
-            BrowserInfoBarManager::From(TestingBrowserProcess::GetGlobal()));
-
+TEST_F(BrowserInfoBarManagerPreExistingBrowsersUnitTest,
+       ConstructorObservesPreExistingBrowsers) {
+  std::unique_ptr<BrowserInfoBarManager> owned_manager;
   auto browser = CreateBrowserWindow();
   browser->AddTab();
 
-  owned_manager_ = std::make_unique<BrowserInfoBarManager>(
+  owned_manager = std::make_unique<BrowserInfoBarManager>(
       TestingBrowserProcess::GetGlobal());
-  ASSERT_EQ(owned_manager_.get(), manager());
+  ASSERT_EQ(owned_manager.get(), manager());
 
   const auto id = InfoBarDelegate::TEST_INFOBAR;
   manager()->Register(InfoBarSpec::Builder(id)

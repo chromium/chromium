@@ -475,18 +475,18 @@ IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest, FullscreenHiding) {
   manager()->Register(std::move(spec_hide));
 
   // 2. Register a spec with should_hide_in_fullscreen = false.
-  // We use a different identifier.
-  auto spec_show =
-      InfoBarSpec::Builder(InfoBarDelegate::DEV_TOOLS_INFOBAR_DELEGATE)
-          .SetMessageText(u"Show in fullscreen")
-          // should_hide_in_fullscreen defaults to false
-          .Build();
+  // Use a different identifier that the production registry never registers.
+  const auto show_id = InfoBarDelegate::POPUP_BLOCKED_INFOBAR_DELEGATE_MOBILE;
+  auto spec_show = InfoBarSpec::Builder(show_id)
+                       .SetMessageText(u"Show in fullscreen")
+                       // should_hide_in_fullscreen defaults to false
+                       .Build();
   manager()->Register(std::move(spec_show));
 
   // 3. Show them.
   tabs::TabInterface* tab1 = browser()->tab_strip_model()->GetActiveTab();
   manager()->Show(tab1, InfoBarDelegate::TEST_INFOBAR);
-  manager()->Show(tab1, InfoBarDelegate::DEV_TOOLS_INFOBAR_DELEGATE);
+  manager()->Show(tab1, show_id);
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -498,8 +498,7 @@ IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest, FullscreenHiding) {
   for (infobars::InfoBar* ib : infobar_manager->infobars()) {
     if (ib->delegate()->GetIdentifier() == InfoBarDelegate::TEST_INFOBAR) {
       ib_hide = ib;
-    } else if (ib->delegate()->GetIdentifier() ==
-               InfoBarDelegate::DEV_TOOLS_INFOBAR_DELEGATE) {
+    } else if (ib->delegate()->GetIdentifier() == show_id) {
       ib_show = ib;
     }
   }
@@ -699,7 +698,9 @@ IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest,
   // Second instance: a link click that leaves the infobar open, followed by
   // closing the tab, must also report exactly one kLinkClicked (not
   // kIgnored).
-  const auto second_identifier = InfoBarDelegate::DEV_TOOLS_INFOBAR_DELEGATE;
+  // Use an identifier the production registry never registers.
+  const auto second_identifier =
+      InfoBarDelegate::POPUP_BLOCKED_INFOBAR_DELEGATE_MOBILE;
   manager()->Register(
       InfoBarSpec::Builder(second_identifier)
           .SetMessageTextTemplate(u"Go to $1")
@@ -918,8 +919,9 @@ IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest, IsRegistered) {
   manager()->Register(
       InfoBarSpec::Builder(identifier).SetMessageText(u"Test Message").Build());
   EXPECT_TRUE(manager()->IsRegistered(identifier));
-  EXPECT_FALSE(
-      manager()->IsRegistered(InfoBarDelegate::DEV_TOOLS_INFOBAR_DELEGATE));
+  // Use an identifier the production registry never registers.
+  EXPECT_FALSE(manager()->IsRegistered(
+      InfoBarDelegate::POPUP_BLOCKED_INFOBAR_DELEGATE_MOBILE));
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest,
@@ -1965,10 +1967,12 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest,
                        PromotionalSpecsRespectPromotionsEnabledPref) {
+  // Use identifiers the production registry never registers.
   const auto promo_tab_id = InfoBarDelegate::TEST_INFOBAR;
   const auto promo_global_id =
-      InfoBarDelegate::DEFAULT_BROWSER_INFOBAR_DELEGATE;
-  const auto non_promo_id = InfoBarDelegate::PAGE_INFO_INFOBAR_DELEGATE;
+      InfoBarDelegate::POPUP_BLOCKED_INFOBAR_DELEGATE_MOBILE;
+  const auto non_promo_id =
+      InfoBarDelegate::SAVE_PASSWORD_INFOBAR_DELEGATE_MOBILE;
 
   manager()->Register(InfoBarSpec::Builder(promo_tab_id)
                           .SetMessageText(u"Promo Tab")

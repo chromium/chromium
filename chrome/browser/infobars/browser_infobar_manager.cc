@@ -487,15 +487,7 @@ DEFINE_USER_DATA(BrowserInfoBarManager);
 BrowserInfoBarManager::BrowserInfoBarManager(BrowserProcess* browser_process)
     : local_state_(browser_process->local_state()),
       scoped_unowned_user_data_(browser_process->GetUnownedUserDataHost(),
-                                *this) {
-  browser_collection_observation_.Observe(
-      GlobalBrowserCollection::GetInstance());
-  GlobalBrowserCollection::GetInstance()->ForEach(
-      [this](BrowserWindowInterface* browser) {
-        OnBrowserCreated(browser);
-        return true;
-      });
-}
+                                *this) {}
 
 BrowserInfoBarManager::~BrowserInfoBarManager() = default;
 
@@ -650,6 +642,8 @@ bool BrowserInfoBarManager::ShowGlobally(
     return false;
   }
 
+  StartObservingBrowsersIfNeeded();
+
   GlobalInfoBarContext& context = active_global_infobars_[identifier] =
       GlobalInfoBarContext{.spec = it->second, .params = std::move(params)};
 
@@ -691,6 +685,7 @@ bool BrowserInfoBarManager::ShowGlobally(
     // A false return must mean nothing is showing and nothing will appear
     // later, so drop the armed context.
     active_global_infobars_.erase(identifier);
+    StopObservingBrowsersIfIdle();
   }
   return added_any_infobars;
 }
@@ -775,6 +770,7 @@ void BrowserInfoBarManager::Hide(
       RemoveInfoBarWithoutResult(manager, infobar);
     }
     active_global_infobars_.erase(active_it);
+    StopObservingBrowsersIfIdle();
   }
 }
 
@@ -932,6 +928,28 @@ void BrowserInfoBarManager::OnActiveTabChanged(
   }
 
   last_active_managers_[browser] = new_manager;
+}
+
+void BrowserInfoBarManager::StartObservingBrowsersIfNeeded() {
+  if (browser_collection_observation_.IsObserving()) {
+    return;
+  }
+  browser_collection_observation_.Observe(
+      GlobalBrowserCollection::GetInstance());
+  GlobalBrowserCollection::GetInstance()->ForEach(
+      [this](BrowserWindowInterface* browser) {
+        OnBrowserCreated(browser);
+        return true;
+      });
+}
+
+void BrowserInfoBarManager::StopObservingBrowsersIfIdle() {
+  if (!active_global_infobars_.empty()) {
+    return;
+  }
+  browser_collection_observation_.Reset();
+  active_tab_subscriptions_.clear();
+  last_active_managers_.clear();
 }
 
 void BrowserInfoBarManager::TrackTabInstance(infobars::InfoBar* infobar) {
