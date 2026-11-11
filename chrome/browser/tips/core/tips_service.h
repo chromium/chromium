@@ -73,7 +73,15 @@ class TipsService : public KeyedService, public base::SupportsUserData {
   virtual void DetermineBestTip(std::map<std::string, float> custom_signals,
                                 OnBestTipChosen callback);
 
+  // Returns whether any registered tip has not been shown yet. Each tip is
+  // shown at most once, so once this returns false there is nothing left to
+  // schedule.
+  virtual bool HasRemainingTips() const;
+
  private:
+  // Returns whether the tip for `feature` has already been shown.
+  bool HasBeenShown(const TipsFeature& feature) const;
+
   // Returns the registered features whose tip has not been shown yet. Each tip
   // is shown at most once, so features that have been shown are skipped
   // entirely: their signals are not queried and they are not evaluated.

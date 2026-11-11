@@ -324,6 +324,10 @@ public class TipsUtils {
         // have started shutting down. Avoid passing it across JNI in that case.
         if (profile.shutdownStarted() || windowAndroid.isDestroyed()) return;
 
+        // Once every tip has been shown there is nothing left to schedule, so stop here. This also
+        // ends the hourly rescheduling loop below for this window.
+        if (!TipsSchedulerBridge.hasRemainingTips(profile)) return;
+
         Map<String, Float> customSignals = collectCustomSignals(windowAndroid);
 
         areTipsNotificationsEnabled(

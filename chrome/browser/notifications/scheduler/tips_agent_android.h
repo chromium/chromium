@@ -48,6 +48,11 @@ class TipsAgentAndroid : public notifications::TipsAgent {
       notifications::NotificationScheduleService* service,
       std::optional<notifications::NotificationData> data);
 
+  // Returns whether scheduling a tips notification is still worthwhile for
+  // `profile`. With self-service enabled, this is false once every registered
+  // tip has been shown. Always true on the legacy (non self-service) path.
+  static bool HasRemainingTips(Profile* profile);
+
   TipsAgentAndroid();
   ~TipsAgentAndroid() override;
 

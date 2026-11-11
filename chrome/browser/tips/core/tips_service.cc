@@ -64,18 +64,31 @@ void TipsService::RegisterFeature(std::unique_ptr<TipsFeature> feature) {
   registered_features_.push_back(std::move(feature));
 }
 
+bool TipsService::HasBeenShown(const TipsFeature& feature) const {
+#if BUILDFLAG(IS_ANDROID)
+  return pref_service_->GetBoolean(
+      GetFeatureTypePref(feature.GetFeatureType()));
+#else
+  return false;
+#endif
+}
+
 std::vector<raw_ptr<TipsFeature>> TipsService::GetFeaturesNotYetShown() const {
   std::vector<raw_ptr<TipsFeature>> features;
   for (const std::unique_ptr<TipsFeature>& feature : registered_features_) {
-#if BUILDFLAG(IS_ANDROID)
-    if (pref_service_->GetBoolean(
-            GetFeatureTypePref(feature->GetFeatureType()))) {
-      continue;
+    if (!HasBeenShown(*feature)) {
+      features.push_back(feature.get());
     }
-#endif
-    features.push_back(feature.get());
   }
   return features;
+}
+
+bool TipsService::HasRemainingTips() const {
+  return std::ranges::any_of(
+      registered_features_,
+      [this](const std::unique_ptr<TipsFeature>& feature) {
+        return !HasBeenShown(*feature);
+      });
 }
 
 void TipsService::DetermineBestTip(std::map<std::string, float> custom_signals,

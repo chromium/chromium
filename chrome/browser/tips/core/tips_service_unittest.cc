@@ -373,6 +373,23 @@ TEST_F(TipsServiceTest, DetermineBestTip_AllTipsShown_SkipsQuery) {
   EXPECT_EQ(feature_ptr->is_eligible_call_count_, 0);
 }
 
+TEST_F(TipsServiceTest, HasRemainingTips) {
+  service_->RegisterFeature(std::make_unique<MockTipsFeature>(
+      TipFeatureRank::kQuickDelete, TipsNotificationsFeatureType::kQuickDelete,
+      std::vector<SignalDefinition>{}, /*is_eligible=*/true));
+  service_->RegisterFeature(std::make_unique<MockTipsFeature>(
+      TipFeatureRank::kGoogleLens, TipsNotificationsFeatureType::kGoogleLens,
+      std::vector<SignalDefinition>{}, /*is_eligible=*/true));
+  EXPECT_TRUE(service_->HasRemainingTips());
+
+  pref_service_.SetBoolean(prefs::kAndroidTipNotificationShownQuickDelete,
+                           true);
+  EXPECT_TRUE(service_->HasRemainingTips());
+
+  pref_service_.SetBoolean(prefs::kAndroidTipNotificationShownLens, true);
+  EXPECT_FALSE(service_->HasRemainingTips());
+}
+
 TEST_F(TipsServiceTest, DetermineBestTip_SkipsShownTips) {
   // Higher-ranked and eligible, but already shown.
   auto shown_feature = std::make_unique<MockTipsFeature>(

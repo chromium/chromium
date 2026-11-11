@@ -348,6 +348,16 @@ void TipsAgentAndroid::OnBestTipChosen(
   ReplacePendingTipsNotification(service, std::move(*data));
 }
 
+// static
+bool TipsAgentAndroid::HasRemainingTips(Profile* profile) {
+  if (!base::FeatureList::IsEnabled(chrome::android::kTipsSelfService)) {
+    return true;
+  }
+  tips::TipsService* tips_service =
+      tips::TipsServiceFactory::GetForProfile(profile);
+  return !tips_service || tips_service->HasRemainingTips();
+}
+
 TipsAgentAndroid::TipsAgentAndroid() = default;
 
 TipsAgentAndroid::~TipsAgentAndroid() = default;
@@ -380,6 +390,11 @@ static void JNI_TipsSchedulerBridge_MaybeScheduleNotification(
                                                   service, std::move(overview));
           },
           profile, std::move(custom_signals), base::Unretained(service)));
+}
+
+static bool JNI_TipsSchedulerBridge_HasRemainingTips(JNIEnv* env,
+                                                     Profile* profile) {
+  return !profile || TipsAgentAndroid::HasRemainingTips(profile);
 }
 
 static void JNI_TipsSchedulerBridge_RemovePendingNotifications(

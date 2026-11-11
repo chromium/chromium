@@ -74,6 +74,7 @@ class MockTipsService : public tips::TipsService {
               DetermineBestTip,
               ((std::map<std::string, float>), OnBestTipChosen),
               (override));
+  MOCK_METHOD(bool, HasRemainingTips, (), (const, override));
 };
 
 class TipsAgentAndroidTest : public testing::Test {
@@ -415,4 +416,25 @@ TEST_F(TipsAgentAndroidTest, TestOnGetClientOverview_ScheduleNew) {
   TipsAgentAndroid::OnGetClientOverview(profile_.get(),
                                         /*custom_signals=*/{}, &mock_service_,
                                         std::move(overview));
+}
+
+TEST_F(TipsAgentAndroidTest, HasRemainingTips_SelfServiceDisabled_ReturnsTrue) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(chrome::android::kTipsSelfService);
+  EXPECT_CALL(*mock_tips_service_, HasRemainingTips()).Times(0);
+
+  EXPECT_TRUE(TipsAgentAndroid::HasRemainingTips(profile_.get()));
+}
+
+TEST_F(TipsAgentAndroidTest, HasRemainingTips_SelfServiceEnabled_UsesService) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(chrome::android::kTipsSelfService);
+
+  EXPECT_CALL(*mock_tips_service_, HasRemainingTips())
+      .WillOnce(::testing::Return(true));
+  EXPECT_TRUE(TipsAgentAndroid::HasRemainingTips(profile_.get()));
+
+  EXPECT_CALL(*mock_tips_service_, HasRemainingTips())
+      .WillOnce(::testing::Return(false));
+  EXPECT_FALSE(TipsAgentAndroid::HasRemainingTips(profile_.get()));
 }

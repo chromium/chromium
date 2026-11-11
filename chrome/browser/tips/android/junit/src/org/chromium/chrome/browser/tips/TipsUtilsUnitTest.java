@@ -24,11 +24,13 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -37,6 +39,8 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProviderSupplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tips.TipsPromoProperties.FeatureTipPromoData;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -56,6 +60,10 @@ public class TipsUtilsUnitTest {
     @Mock private Callback<TipsOptInCoordinator> mOnShowCallback;
 
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
+    @Mock private TipsSchedulerBridge.Natives mTipsSchedulerBridgeJni;
+    @Mock private Profile mProfile;
+    @Mock private ProfileProvider mProfileProvider;
+    @Mock private TipsPromoHandler mTipsPromoHandler;
 
     private Activity mActivity;
     private WindowAndroid mWindowAndroid;
@@ -64,6 +72,8 @@ public class TipsUtilsUnitTest {
     public void setUp() {
         mActivity = Robolectric.buildActivity(Activity.class).create().get();
         mWindowAndroid = new WindowAndroid(mActivity, /* occlusionTrackingAllowed= */ false);
+        TipsSchedulerBridgeJni.setInstanceForTesting(mTipsSchedulerBridgeJni);
+        when(mProfileProvider.getOriginalProfile()).thenReturn(mProfile);
     }
 
     @After
@@ -579,5 +589,47 @@ public class TipsUtilsUnitTest {
         BrowserControlsStateProviderSupplier.attach(
                 mWindowAndroid.getUnownedUserDataHost(),
                 ObservableSuppliers.createMonotonic(mBrowserControlsStateProvider));
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.ANDROID_TIPS_NOTIFICATIONS,
+        ChromeFeatureList.TIPS_SELF_SERVICE
+    })
+    public void testScheduleOrCancelTipsNotification_NoRemainingTips_StopsBeforeScheduling() {
+        when(mTipsSchedulerBridgeJni.hasRemainingTips(mProfile)).thenReturn(false);
+        TipsPromoHandlerFactory.register(
+                TipsNotificationsFeatureType.BOTTOM_OMNIBOX, () -> mTipsPromoHandler);
+
+        scheduleOrCancelTipsNotification();
+
+        verify(mTipsSchedulerBridgeJni).hasRemainingTips(mProfile);
+        verify(mTipsPromoHandler, never()).getCustomSignals(any());
+        verify(mTipsSchedulerBridgeJni, never()).maybeScheduleNotification(any(), any());
+        verify(mTipsSchedulerBridgeJni, never()).removePendingNotifications(any());
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.ANDROID_TIPS_NOTIFICATIONS,
+        ChromeFeatureList.TIPS_SELF_SERVICE
+    })
+    public void testScheduleOrCancelTipsNotification_RemainingTips_ContinuesScheduling() {
+        when(mTipsSchedulerBridgeJni.hasRemainingTips(mProfile)).thenReturn(true);
+        TipsPromoHandlerFactory.register(
+                TipsNotificationsFeatureType.BOTTOM_OMNIBOX, () -> mTipsPromoHandler);
+        // Stop after collecting signals, at the notifications-enabled check.
+        NotificationProxyUtils.setNotificationEnabledForTest(false);
+
+        scheduleOrCancelTipsNotification();
+
+        verify(mTipsPromoHandler).getCustomSignals(mWindowAndroid);
+    }
+
+    private void scheduleOrCancelTipsNotification() {
+        OneshotSupplierImpl<ProfileProvider> profileProviderSupplier = new OneshotSupplierImpl<>();
+        profileProviderSupplier.set(mProfileProvider);
+        TipsUtils.scheduleOrCancelTipsNotification(profileProviderSupplier, mWindowAndroid);
+        ShadowLooper.idleMainLooper();
     }
 }

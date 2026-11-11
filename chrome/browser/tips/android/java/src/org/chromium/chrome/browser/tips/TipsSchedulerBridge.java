@@ -28,6 +28,16 @@ final class TipsSchedulerBridge {
     }
 
     /**
+     * Returns whether scheduling a tips notification is still worthwhile, i.e. false once every tip
+     * has been shown (self-service only; always true on the legacy path).
+     *
+     * @param profile The current profile.
+     */
+    static boolean hasRemainingTips(Profile profile) {
+        return TipsSchedulerBridgeJni.get().hasRemainingTips(profile);
+    }
+
+    /**
      * Remove all pending tips notifications.
      *
      * @param profile The current profile.
@@ -43,6 +53,8 @@ final class TipsSchedulerBridge {
         void maybeScheduleNotification(
                 @JniType("Profile*") Profile profile,
                 @JniType("std::map<std::string, float>") Map<String, Float> customSignals);
+
+        boolean hasRemainingTips(@JniType("Profile*") Profile profile);
 
         void removePendingNotifications(@JniType("Profile*") Profile profile);
     }
