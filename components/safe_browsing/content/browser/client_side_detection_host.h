@@ -427,6 +427,10 @@ class ClientSideDetectionHost
   // once the document has loaded and the WebContents is visible; see
   // `RequestCapture()`. Runs `callback` with an empty image on failure.
   void CaptureScreenshot(ScreenshotCallback callback) override;
+  // Reports a browser-side classification that stopped before the classifier
+  // ran through `PhishingDetectionDone()`, like the renderer does.
+  void OnVisualClassificationEarlyReturn(
+      VisualClassificationEarlyReturnReason reason) override;
   // Determines visual features extraction capabilities.
   // `can_extract_visual_features_result` will be used to handle visual features
   // in ClientPhishingRequest after.
@@ -498,6 +502,38 @@ class ClientSideDetectionHost
       ClientSideDetectionType request_type) const;
 
   // --- Browser-side classification (kClientSideDetectionCopyFromSurface) ----
+
+  // A classification request that is captured and scored in the browser
+  // process instead of being sent to the renderer.
+  struct BrowserClassificationRequest {
+    GURL url;
+    ClientSideDetectionType request_type =
+        ClientSideDetectionType::CLIENT_SIDE_DETECTION_TYPE_UNSPECIFIED;
+    bool is_sample_ping = false;
+    std::optional<bool> did_match_high_confidence_allowlist;
+    bool is_invalid_ip = false;
+    base::TimeTicks start_time;
+  };
+
+  // Browser-side counterpart of the renderer's `StartPhishingDetection()`:
+  // applies the renderer's gates (scorer ready, not a session history
+  // navigation, http(s) URL, GET document), reporting failures through
+  // `PhishingDetectionDone()`, then captures the page and hands the image to
+  // `StartVisualClassification()`. A request still in flight is answered with
+  // CANCELLED first, as the renderer does.
+  void StartBrowserSideClassification(
+      ClientSideDetectionType request_type,
+      bool is_sample_ping,
+      std::optional<bool> did_match_high_confidence_allowlist,
+      bool is_invalid_ip);
+  void OnClassificationCaptureDone(const gfx::Image& image);
+  // If a browser-side classification (or its capture) is in flight, cancels it
+  // and reports `CLASSIFICATION_CANCELLED` while keeping CSD marked as running
+  // for the incoming request.
+  void CancelPendingBrowserSideClassification();
+  // Answers `browser_classification_` with `result` (a failure) through
+  // `PhishingDetectionDone()` and clears it.
+  void FinishBrowserSideClassification(PhishingDetectorResult result);
 
   // Why a capture was requested; only used to pair captures with the request
   // they belong to.
@@ -685,6 +721,13 @@ class ClientSideDetectionHost
   // The high resolution screenshot of the current tab. Should only be populated
   // when a user reports a site as unsafe.
   std::optional<SkBitmap> screenshot_;
+
+  // State of the browser-side classification request currently being captured
+  // or scored (`kClientSideDetectionCopyFromSurface`). Cleared when the request
+  // is answered before the classifier runs or cancelled; otherwise it goes
+  // stale once the base class reports the result, which `is_classifying()`
+  // reflects.
+  std::optional<BrowserClassificationRequest> browser_classification_;
 
   // The page capture in progress, if any.
   std::optional<PendingCapture> pending_capture_;

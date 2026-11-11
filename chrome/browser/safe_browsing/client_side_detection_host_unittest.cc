@@ -227,6 +227,7 @@ class MockClientSideDetectionService : public ClientSideDetectionService {
   MOCK_CONST_METHOD0(IsModelAvailable, bool());
   MOCK_CONST_METHOD0(HasImageEmbeddingModel, bool());
   MOCK_CONST_METHOD0(IsModelMetadataImageEmbeddingVersionMatching, bool());
+  MOCK_METHOD1(ClassifyPhishingThroughThresholds, void(ClientPhishingRequest*));
 };
 
 class MockSafeBrowsingUIManager : public SafeBrowsingUIManager {
@@ -662,6 +663,14 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
         ClientSideDetectionType::TRIGGER_MODELS,
         /*is_sample_ping=*/false, /*did_match_high_confidence_allowlist=*/false,
         /*is_invalid_ip=*/false, clock_.NowTicks(), error, std::nullopt);
+  }
+
+  void OnPhishingPreClassificationDone(
+      ClientSideDetectionType request_type =
+          ClientSideDetectionType::TRIGGER_MODELS) {
+    csd_host_->OnPhishingPreClassificationDone(
+        request_type, /*should_classify=*/true, /*is_sample_ping=*/false,
+        /*did_match_high_confidence_allowlist=*/false, /*is_invalid_ip=*/false);
   }
 
   // Sets up mock expectations on `csd_service_` and `database_manager_` for
@@ -7345,6 +7354,359 @@ class ClientSideDetectionHostCopyFromSurfaceTest
   base::HistogramTester histogram_tester_;
 };
 
+TEST_F(ClientSideDetectionHostCopyFromSurfaceTest, ClassifiesInBrowserProcess) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+  base::test::ScopedFeatureList default_timeout;
+  default_timeout.InitAndEnableFeature(kClientSideDetectionCopyFromSurface);
+  EXPECT_CALL(*scorer_, ApplyVisualTfLiteModel(_, _)).Times(1);
+
+  NavigateAndRunClassification();
+
+  // The renderer is never asked to classify.
+  fake_phishing_detector_.CheckMessage(/*url=*/nullptr);
+  EXPECT_EQ(capturer_->copy_count(), 1);
+  EXPECT_EQ(capturer_->last_timeout(), base::Seconds(1));
+  ExpectCaptureResult(ClientSideDetectionHost::BrowserCaptureResult::kSuccess);
+  ExpectDetectorResult(PhishingDetectorResult::CLASSIFICATION_SUCCESS);
+  // The begin/complete funnel is balanced, as on the renderer path.
+  histogram_tester_.ExpectBucketCount(
+      "SBClientPhishing.ClientSideDetectionEvent.TriggerModel",
+      ClientSideDetectionEvent::kImageClassificationBegin, 1);
+  histogram_tester_.ExpectBucketCount(
+      "SBClientPhishing.ClientSideDetectionEvent.TriggerModel",
+      ClientSideDetectionEvent::kImageClassificationComplete, 1);
+  histogram_tester_.ExpectTotalCount(
+      "SBClientPhishing.BrowserCaptureCopyDuration", 1);
+  histogram_tester_.ExpectTotalCount(
+      "SBClientPhishing.BrowserCaptureTotalDuration", 1);
+  Mock::VerifyAndClearExpectations(scorer_);
+}
+
+TEST_F(ClientSideDetectionHostCopyFromSurfaceTest,
+       MissingScorerReportsClassifierNotReady) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+  scorer_ = nullptr;
+  csd_service_->SetScorerForTesting(/*scorer=*/nullptr);
+
+  NavigateAndRunClassification();
+
+  EXPECT_EQ(capturer_->copy_count(), 0);
+  ExpectDetectorResult(PhishingDetectorResult::CLASSIFIER_NOT_READY);
+  histogram_tester_.ExpectBucketCount(
+      "SBClientPhishing.ClientSideDetectionEvent.TriggerModel",
+      ClientSideDetectionEvent::kImageClassificationBegin, 1);
+  histogram_tester_.ExpectBucketCount(
+      "SBClientPhishing.ClientSideDetectionEvent.TriggerModel",
+      ClientSideDetectionEvent::kImageClassificationComplete, 1);
+}
+
+TEST_F(ClientSideDetectionHostCopyFromSurfaceTest,
+       CopyErrorReportsVisualExtractionFailed) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+  EXPECT_CALL(*scorer_, ApplyVisualTfLiteModel(_, _)).Times(0);
+  capturer_->set_next_result(
+      base::unexpected(content::CopyFromSurfaceError::kFrameGone));
+
+  NavigateAndRunClassification();
+
+  EXPECT_EQ(capturer_->copy_count(), 1);
+  ExpectCaptureResult(
+      ClientSideDetectionHost::BrowserCaptureResult::kCopyFailed);
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.BrowserCaptureCopyFromSurfaceError",
+      content::CopyFromSurfaceError::kFrameGone, 1);
+  ExpectDetectorResult(PhishingDetectorResult::VISUAL_EXTRACTION_FAILED);
+  Mock::VerifyAndClearExpectations(scorer_);
+}
+
+TEST_F(ClientSideDetectionHostCopyFromSurfaceTest,
+       EmptyBitmapReportsVisualExtractionFailed) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+  // Android reports an unavailable surface as a successful, empty bitmap.
+  capturer_->set_next_result(viz::CopyOutputBitmapWithMetadata(SkBitmap()));
+
+  NavigateAndRunClassification();
+
+  ExpectCaptureResult(
+      ClientSideDetectionHost::BrowserCaptureResult::kEmptyBitmap);
+  ExpectDetectorResult(PhishingDetectorResult::VISUAL_EXTRACTION_FAILED);
+}
+
+TEST_F(ClientSideDetectionHostCopyFromSurfaceTest,
+       UnavailableSurfaceReportsVisualExtractionFailed) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+  capturer_->set_surface_available(false);
+
+  NavigateAndRunClassification();
+
+  EXPECT_EQ(capturer_->copy_count(), 0);
+  ExpectCaptureResult(
+      ClientSideDetectionHost::BrowserCaptureResult::kSurfaceUnavailable);
+  ExpectDetectorResult(PhishingDetectorResult::VISUAL_EXTRACTION_FAILED);
+}
+
+TEST_F(ClientSideDetectionHostCopyFromSurfaceTest, WaitsForTabToBecomeVisible) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+  web_contents()->WasHidden();
+
+  NavigateAndRunClassification();
+
+  // Parked: hidden tabs do not produce frames to copy.
+  EXPECT_EQ(capturer_->copy_count(), 0);
+  histogram_tester_.ExpectTotalCount(
+      "SBClientPhishing.PhishingDetectorResult.TriggerModel", 0);
+
+  web_contents()->WasShown();
+  task_environment()->RunUntilIdle();
+
+  EXPECT_EQ(capturer_->copy_count(), 1);
+  ExpectCaptureResult(ClientSideDetectionHost::BrowserCaptureResult::kSuccess);
+  ExpectDetectorResult(PhishingDetectorResult::CLASSIFICATION_SUCCESS);
+}
+
+TEST_F(ClientSideDetectionHostCopyFromSurfaceTest,
+       WaitsForDocumentToFinishLoading) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      url_, web_contents());
+  navigation->SetKeepLoading(true);
+  CommitAndRunClassification(navigation.get());
+
+  // Parked until the load event, like the renderer path.
+  ASSERT_FALSE(web_contents()->IsDocumentOnLoadCompletedInPrimaryMainFrame());
+  EXPECT_EQ(capturer_->copy_count(), 0);
+
+  navigation->StopLoading();
+  task_environment()->RunUntilIdle();
+
+  EXPECT_EQ(capturer_->copy_count(), 1);
+  ExpectDetectorResult(PhishingDetectorResult::CLASSIFICATION_SUCCESS);
+}
+
+TEST_F(ClientSideDetectionHostCopyFromSurfaceTest,
+       NavigationDropsPendingCapture) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+  web_contents()->WasHidden();
+  NavigateAndRunClassification();
+  EXPECT_EQ(capturer_->copy_count(), 0);
+
+  // Navigating away while the capture is parked cancels the request without a
+  // result, and records it as interrupted.
+  GURL other_url("https://other.example.com/");
+  database_manager_->SetAllowlistLookupDetailsForUrl(other_url, false);
+  NavigateAndCommit(other_url);
+  task_environment()->RunUntilIdle();
+  web_contents()->WasShown();
+  task_environment()->RunUntilIdle();
+
+  histogram_tester_.ExpectBucketCount(
+      "SBClientPhishing.ClientSideDetection.InterruptedByNavigation",
+      ClientSideDetectionType::TRIGGER_MODELS, 1);
+  // Only the second page's classification completes.
+  histogram_tester_.ExpectTotalCount(
+      "SBClientPhishing.PhishingDetectorResult.TriggerModel", 1);
+  EXPECT_EQ(capturer_->copy_count(), 1);
+}
+
+TEST_F(ClientSideDetectionHostCopyFromSurfaceTest,
+       NewRequestCancelsPendingClassification) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+  web_contents()->WasHidden();
+  NavigateAndRunClassification();
+  EXPECT_EQ(capturer_->copy_count(), 0);
+
+  // A higher-tier request supersedes the parked TRIGGER_MODELS one, which is
+  // answered with CANCELLED like the renderer does.
+  base::StatisticsRecorder::HistogramWaiter waiter(
+      "SBClientPhishing.PreClassificationCheckResult.KeyboardLockRequested");
+  csd_host_->KeyboardLockRequested();
+  waiter.Wait();
+  task_environment()->RunUntilIdle();
+
+  ExpectDetectorResult(PhishingDetectorResult::CLASSIFICATION_CANCELLED);
+  histogram_tester_.ExpectTotalCount(
+      "SBClientPhishing.PhishingDetectorResult.KeyboardLockRequested", 0);
+
+  web_contents()->WasShown();
+  task_environment()->RunUntilIdle();
+
+  EXPECT_EQ(capturer_->copy_count(), 1);
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.PhishingDetectorResult.KeyboardLockRequested",
+      PhishingDetectorResult::CLASSIFICATION_SUCCESS, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.BrowserCaptureResult.KeyboardLockRequested",
+      ClientSideDetectionHost::BrowserCaptureResult::kSuccess, 1);
+}
+
+TEST_F(ClientSideDetectionHostCopyFromSurfaceTest,
+       NewRequestCancelsRunningClassifier) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+  // Hold the page-load classification open inside the scorer; the next
+  // request scores normally.
+  base::OnceCallback<void(std::vector<double>)> held_callback;
+  EXPECT_CALL(*scorer_, ApplyVisualTfLiteModel(_, _))
+      .WillOnce([&](const gfx::Image& image,
+                    base::OnceCallback<void(std::vector<double>)> callback) {
+        held_callback = std::move(callback);
+      })
+      .WillOnce([](const gfx::Image& image,
+                   base::OnceCallback<void(std::vector<double>)> callback) {
+        std::move(callback).Run({0.9});
+      });
+  NavigateAndRunClassification();
+  ASSERT_TRUE(held_callback);
+  histogram_tester_.ExpectTotalCount(
+      "SBClientPhishing.PhishingDetectorResult.TriggerModel", 0);
+
+  // A higher-tier request cancels the running classifier, like the renderer
+  // does, and is answered itself afterwards.
+  base::StatisticsRecorder::HistogramWaiter waiter(
+      "SBClientPhishing.PreClassificationCheckResult.KeyboardLockRequested");
+  csd_host_->KeyboardLockRequested();
+  waiter.Wait();
+  task_environment()->RunUntilIdle();
+
+  ExpectDetectorResult(PhishingDetectorResult::CLASSIFICATION_CANCELLED);
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.PhishingDetectorResult.KeyboardLockRequested",
+      PhishingDetectorResult::CLASSIFICATION_SUCCESS, 1);
+
+  // The cancelled job's result is inert.
+  std::move(held_callback).Run({0.9});
+  task_environment()->RunUntilIdle();
+  ExpectDetectorResult(PhishingDetectorResult::CLASSIFICATION_CANCELLED);
+  histogram_tester_.ExpectBucketCount(
+      "SBClientPhishing.ClientSideDetectionEvent.TriggerModel",
+      ClientSideDetectionEvent::kImageClassificationBegin, 1);
+  histogram_tester_.ExpectBucketCount(
+      "SBClientPhishing.ClientSideDetectionEvent.TriggerModel",
+      ClientSideDetectionEvent::kImageClassificationComplete, 1);
+  Mock::VerifyAndClearExpectations(scorer_);
+}
+
+TEST_F(ClientSideDetectionHostCopyFromSurfaceTest,
+       EmbeddingCaptureSupersedesParkedClassification) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+  base::test::ScopedFeatureList skip_scoring;
+  skip_scoring.InitAndEnableFeature(
+      kSkipImageClassificationScoringForNonPageLoadTriggers);
+  PrepareImageEmbeddingModel();
+  EXPECT_CALL(*scorer_, ApplyVisualTfLiteModel(_, _)).Times(0);
+  EXPECT_CALL(*scorer_, ApplyVisualTfLiteModelImageEmbedding(_, _)).Times(1);
+  EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(_, _, _)).Times(1);
+
+  // The page-load classification parks on the hidden tab.
+  web_contents()->WasHidden();
+  NavigateAndRunClassification();
+  EXPECT_EQ(capturer_->copy_count(), 0);
+
+  // A skipped classification for another trigger needs a capture for its
+  // image embedding; it takes over and the parked request is cancelled.
+  base::StatisticsRecorder::HistogramWaiter waiter(
+      "SBClientPhishing.PreClassificationCheckResult.KeyboardLockRequested");
+  csd_host_->KeyboardLockRequested();
+  waiter.Wait();
+  task_environment()->RunUntilIdle();
+
+  ExpectDetectorResult(PhishingDetectorResult::CLASSIFICATION_CANCELLED);
+  ExpectCaptureResult(
+      ClientSideDetectionHost::BrowserCaptureResult::kSuperseded);
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.PhishingDetectorResult.KeyboardLockRequested",
+      PhishingDetectorResult::CLASSIFICATION_SKIPPED, 1);
+
+  web_contents()->WasShown();
+  task_environment()->RunUntilIdle();
+
+  EXPECT_EQ(capturer_->copy_count(), 1);
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.BrowserCaptureResult.KeyboardLockRequested",
+      ClientSideDetectionHost::BrowserCaptureResult::kSuccess, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.PhishingImageEmbeddingResult.KeyboardLockRequested",
+      ClientSideDetectionHostBase::ImageEmbeddingResult::kSuccess, 1);
+  Mock::VerifyAndClearExpectations(scorer_);
+}
+
+TEST_F(ClientSideDetectionHostCopyFromSurfaceTest,
+       FailuresUseUpgradedRequestTypeForEnhancedProtection) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+  base::test::ScopedFeatureList embedding_match;
+  embedding_match.InitAndEnableFeature(kClientSideDetectionImageEmbeddingMatch);
+  scorer_ = nullptr;
+  csd_service_->SetScorerForTesting(/*scorer=*/nullptr);
+
+  NavigateAndRunClassification();
+
+  // Like the renderer path: the begin event carries the requested type, the
+  // outcome the upgraded one.
+  histogram_tester_.ExpectBucketCount(
+      "SBClientPhishing.ClientSideDetectionEvent.TriggerModel",
+      ClientSideDetectionEvent::kImageClassificationBegin, 1);
+  histogram_tester_.ExpectTotalCount(
+      "SBClientPhishing.PhishingDetectorResult.TriggerModel", 0);
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.PhishingDetectorResult.ImageEmbeddingMatch",
+      PhishingDetectorResult::CLASSIFIER_NOT_READY, 1);
+  histogram_tester_.ExpectBucketCount(
+      "SBClientPhishing.ClientSideDetectionEvent.ImageEmbeddingMatch",
+      ClientSideDetectionEvent::kImageClassificationComplete, 1);
+}
+
+TEST_F(ClientSideDetectionHostCopyFromSurfaceTest,
+       ForwardBackNavigationIsNotClassified) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      url_, web_contents());
+  navigation->SetTransition(ui::PageTransitionFromInt(
+      ui::PAGE_TRANSITION_LINK | ui::PAGE_TRANSITION_FORWARD_BACK));
+  CommitAndRunClassification(navigation.get());
+
+  EXPECT_EQ(capturer_->copy_count(), 0);
+  ExpectDetectorResult(PhishingDetectorResult::FORWARD_BACK_TRANSITION);
+}
+
+TEST_F(ClientSideDetectionHostCopyFromSurfaceTest,
+       PostDocumentIsNotClassified) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      url_, web_contents());
+  navigation->SetMethod("POST");
+  CommitAndRunClassification(navigation.get());
+
+  EXPECT_EQ(capturer_->copy_count(), 0);
+  ExpectDetectorResult(PhishingDetectorResult::INVALID_DOCUMENT_LOADER);
+}
+
 TEST_F(ClientSideDetectionHostCopyFromSurfaceTest,
        SkippedClassificationCapturesForImageEmbedding) {
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
@@ -7354,7 +7716,11 @@ TEST_F(ClientSideDetectionHostCopyFromSurfaceTest,
   skip_scoring.InitAndEnableFeature(
       kSkipImageClassificationScoringForNonPageLoadTriggers);
 
+  // Let the page-load classification finish first; its non-phishy verdict is
+  // not sent, and its capture is released.
   NavigateAndRunClassification();
+  ASSERT_EQ(capturer_->copy_count(), 1);
+  Mock::VerifyAndClearExpectations(scorer_);
 
   PrepareImageEmbeddingModel();
   EXPECT_CALL(*scorer_, ApplyVisualTfLiteModel(_, _)).Times(0);
@@ -7377,7 +7743,7 @@ TEST_F(ClientSideDetectionHostCopyFromSurfaceTest,
   waiter.Wait();
   task_environment()->RunUntilIdle();
 
-  EXPECT_EQ(capturer_->copy_count(), 1);
+  EXPECT_EQ(capturer_->copy_count(), 2);
   histogram_tester_.ExpectUniqueSample(
       "SBClientPhishing.PhishingDetectorResult.KeyboardLockRequested",
       PhishingDetectorResult::CLASSIFICATION_SKIPPED, 1);
@@ -7393,6 +7759,147 @@ TEST_F(ClientSideDetectionHostCopyFromSurfaceTest,
 }
 
 TEST_F(ClientSideDetectionHostCopyFromSurfaceTest,
+       CopyTimeoutReportsVisualExtractionFailed) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+  base::test::ScopedFeatureList zero_timeout;
+  zero_timeout.InitAndEnableFeatureWithParameters(
+      kClientSideDetectionCopyFromSurface,
+      {{kCsdCopyFromSurfaceTimeout.name, "0s"}});
+  // The copy never completes; the browser-side watchdog does.
+  capturer_->set_defer_copy(true);
+
+  base::StatisticsRecorder::HistogramWaiter waiter(
+      "SBClientPhishing.PhishingDetectorResult.TriggerModel");
+  NavigateAndCommit(url_);
+  waiter.Wait();
+
+  ExpectCaptureResult(ClientSideDetectionHost::BrowserCaptureResult::kTimedOut);
+  ExpectDetectorResult(PhishingDetectorResult::VISUAL_EXTRACTION_FAILED);
+
+  // A late result is ignored.
+  capturer_->FinishDeferredCopy();
+  task_environment()->RunUntilIdle();
+  ExpectDetectorResult(PhishingDetectorResult::VISUAL_EXTRACTION_FAILED);
+}
+
+TEST_F(ClientSideDetectionHostCopyFromSurfaceTest,
+       ScorerChangeDuringCaptureDropsClassification) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+  capturer_->set_defer_copy(true);
+  NavigateAndRunClassification();
+  ASSERT_EQ(capturer_->copy_count(), 1);
+
+  // The service swaps its scorer while the copy is in flight; the old scorer is
+  // destroyed on a background thread, so the classification is dropped.
+  InstallScorer();
+  EXPECT_CALL(*scorer_, ApplyVisualTfLiteModel(_, _)).Times(0);
+  capturer_->FinishDeferredCopy();
+  task_environment()->RunUntilIdle();
+
+  histogram_tester_.ExpectTotalCount(
+      "SBClientPhishing.PhishingDetectorResult.TriggerModel", 0);
+  Mock::VerifyAndClearExpectations(scorer_);
+
+  // The next page classifies normally with the new scorer.
+  capturer_->set_defer_copy(false);
+  GURL other_url("https://other.example.com/");
+  database_manager_->SetAllowlistLookupDetailsForUrl(other_url, false);
+  base::StatisticsRecorder::HistogramWaiter waiter(
+      "SBClientPhishing.PreClassificationCheckResult");
+  NavigateAndCommit(other_url);
+  waiter.Wait();
+  task_environment()->RunUntilIdle();
+  EXPECT_EQ(capturer_->copy_count(), 2);
+  ExpectDetectorResult(PhishingDetectorResult::CLASSIFICATION_SUCCESS);
+}
+
+TEST_F(ClientSideDetectionHostCopyFromSurfaceTest,
+       SkippedScoringPreemptsRunningClassifier) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+  base::test::ScopedFeatureList skip_scoring;
+  skip_scoring.InitAndEnableFeature(
+      kSkipImageClassificationScoringForNonPageLoadTriggers);
+
+  // Hold the page-load classification open inside the scorer while it is
+  // actively scoring (`is_classifying()` is true, `pending_capture_` is empty).
+  base::OnceCallback<void(std::vector<double>)> held_callback;
+  EXPECT_CALL(*scorer_, ApplyVisualTfLiteModel(_, _))
+      .WillOnce([&](const gfx::Image& image,
+                    base::OnceCallback<void(std::vector<double>)> callback) {
+        held_callback = std::move(callback);
+      });
+  NavigateAndRunClassification();
+  ASSERT_TRUE(held_callback);
+
+  // A higher-tier non-page-load trigger skips scoring; it must cancel the
+  // in-flight browser-side classification BEFORE recording its own
+  // CLASSIFICATION_SKIPPED result so debugging metadata reflects the new
+  // request.
+  base::StatisticsRecorder::HistogramWaiter waiter(
+      "SBClientPhishing.PreClassificationCheckResult.KeyboardLockRequested");
+  csd_host_->KeyboardLockRequested();
+  waiter.Wait();
+  task_environment()->RunUntilIdle();
+
+  ExpectDetectorResult(PhishingDetectorResult::CLASSIFICATION_CANCELLED);
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.PhishingDetectorResult.KeyboardLockRequested",
+      PhishingDetectorResult::CLASSIFICATION_SKIPPED, 1);
+
+  ClientSideDetectionFeatureCache* feature_cache_map =
+      ClientSideDetectionFeatureCache::FromWebContents(web_contents());
+  ASSERT_NE(feature_cache_map, nullptr);
+  LoginReputationClientRequest::DebuggingMetadata* debugging_metadata =
+      feature_cache_map->GetDebuggingMetadataForURL(url_);
+  ASSERT_NE(debugging_metadata, nullptr);
+  EXPECT_EQ(debugging_metadata->phishing_detector_result(),
+            PhishingDetectorResult::CLASSIFICATION_SKIPPED);
+
+  // The cancelled classifier's late callback is a no-op.
+  std::move(held_callback).Run({0.9});
+  task_environment()->RunUntilIdle();
+  ExpectDetectorResult(PhishingDetectorResult::CLASSIFICATION_CANCELLED);
+  Mock::VerifyAndClearExpectations(scorer_);
+}
+
+TEST_F(ClientSideDetectionHostCopyFromSurfaceTest,
+       InvalidUrlFormatRequestWhenSchemeIsNotHttpOrHttps) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+  // `SetUp()` commits `about:blank`, so `current_url()` is not HTTP or HTTPS.
+  OnPhishingPreClassificationDone(ClientSideDetectionType::TRIGGER_MODELS);
+
+  EXPECT_EQ(capturer_->copy_count(), 0);
+  ExpectDetectorResult(PhishingDetectorResult::INVALID_URL_FORMAT_REQUEST);
+}
+
+TEST_F(ClientSideDetectionHostCopyFromSurfaceTest,
+       FailsWhenRenderWidgetHostViewMissing) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+  web_contents()->WasHidden();
+  NavigateAndCommit(url_);
+  process()->SimulateCrash();
+  web_contents()->WasShown();
+  ASSERT_EQ(web_contents()->GetRenderWidgetHostView(), nullptr);
+
+  OnPhishingPreClassificationDone(ClientSideDetectionType::TRIGGER_MODELS);
+
+  EXPECT_EQ(capturer_->copy_count(), 0);
+  ExpectCaptureResult(
+      ClientSideDetectionHost::BrowserCaptureResult::kViewMissing);
+  ExpectDetectorResult(PhishingDetectorResult::VISUAL_EXTRACTION_FAILED);
+}
+
+TEST_F(ClientSideDetectionHostCopyFromSurfaceTest,
        LowerTierTriggerBlockedWhileEmbeddingCapturePending) {
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
@@ -7401,7 +7908,10 @@ TEST_F(ClientSideDetectionHostCopyFromSurfaceTest,
   skip_scoring.InitAndEnableFeature(
       kSkipImageClassificationScoringForNonPageLoadTriggers);
 
+  // Finish the initial page-load classification first.
   NavigateAndRunClassification();
+  ASSERT_EQ(capturer_->copy_count(), 1);
+  Mock::VerifyAndClearExpectations(scorer_);
 
   PrepareImageEmbeddingModel();
   EXPECT_CALL(*scorer_, ApplyVisualTfLiteModel(_, _)).Times(0);
@@ -7416,7 +7926,7 @@ TEST_F(ClientSideDetectionHostCopyFromSurfaceTest,
   csd_host_->KeyboardLockRequested();
   keyboard_waiter.Wait();
   task_environment()->RunUntilIdle();
-  EXPECT_EQ(capturer_->copy_count(), 0);
+  EXPECT_EQ(capturer_->copy_count(), 1);
 
   // A lower-tier trigger (`VIBRATION_API`, Tier 3) must be blocked by the tier
   // guard while the higher-tier image-embedding capture is still pending.
@@ -7429,10 +7939,164 @@ TEST_F(ClientSideDetectionHostCopyFromSurfaceTest,
   // Showing the tab finishes the `KEYBOARD_LOCK_REQUESTED` embedding capture.
   web_contents()->WasShown();
   task_environment()->RunUntilIdle();
-  EXPECT_EQ(capturer_->copy_count(), 1);
+  EXPECT_EQ(capturer_->copy_count(), 2);
   histogram_tester_.ExpectUniqueSample(
       "SBClientPhishing.PhishingImageEmbeddingResult.KeyboardLockRequested",
       ClientSideDetectionHostBase::ImageEmbeddingResult::kSuccess, 1);
+  Mock::VerifyAndClearExpectations(scorer_);
+}
+
+TEST_F(ClientSideDetectionHostCopyFromSurfaceTest,
+       RenderProcessGoneResetsBrowserSideClassificationState) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+  web_contents()->WasHidden();
+  NavigateAndRunClassification();
+
+  // Start a higher-tier classification (`KEYBOARD_LOCK_REQUESTED`, Tier 2) and
+  // then simulate a renderer crash while it is parked.
+  base::StatisticsRecorder::HistogramWaiter keyboard_waiter(
+      "SBClientPhishing.PreClassificationCheckResult.KeyboardLockRequested");
+  csd_host_->KeyboardLockRequested();
+  keyboard_waiter.Wait();
+  task_environment()->RunUntilIdle();
+
+  csd_host_->PrimaryMainFrameRenderProcessGone(
+      base::TERMINATION_STATUS_PROCESS_CRASHED);
+
+  // Showing the tab after the crash does not resume the dropped capture, and a
+  // lower-tier same-page trigger (`VIBRATION_API`, Tier 3) is not blocked by
+  // stale `is_classifying()` state.
+  web_contents()->WasShown();
+  task_environment()->RunUntilIdle();
+  EXPECT_EQ(capturer_->copy_count(), 0);
+
+  base::StatisticsRecorder::HistogramWaiter waiter(
+      "SBClientPhishing.PreClassificationCheckResult.VibrationApi");
+  csd_host_->VibrationRequested();
+  waiter.Wait();
+  task_environment()->RunUntilIdle();
+  EXPECT_EQ(capturer_->copy_count(), 1);
+  histogram_tester_.ExpectTotalCount(
+      "SBClientPhishing.BlockingRequestType.VibrationApi", 0);
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.PhishingDetectorResult.VibrationApi",
+      PhishingDetectorResult::CLASSIFICATION_SUCCESS, 1);
+}
+
+TEST_F(ClientSideDetectionHostCopyFromSurfaceTest,
+       PhishyClassificationReusesCaptureForImageEmbedding) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+  PrepareImageEmbeddingModel();
+  EXPECT_CALL(*scorer_, ApplyVisualTfLiteModel(_, _)).Times(1);
+  EXPECT_CALL(*scorer_, ApplyVisualTfLiteModelImageEmbedding(_, _)).Times(1);
+  EXPECT_CALL(*csd_service_, ClassifyPhishingThroughThresholds(_))
+      .WillOnce([](ClientPhishingRequest* verdict) {
+        verdict->set_client_score(0.9f);
+        verdict->set_is_phishing(true);
+      });
+  std::unique_ptr<ClientPhishingRequest> sent_verdict;
+  EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(_, _, _))
+      .WillOnce(
+          [&](std::unique_ptr<ClientPhishingRequest> verdict,
+              ClientSideDetectionService::ClientReportPhishingRequestCallback
+                  callback,
+              const std::string& access_token) {
+            sent_verdict = std::move(verdict);
+          });
+
+  NavigateAndRunClassification();
+
+  // The single capture from classification is reused by image embedding
+  // without capturing the surface a second time.
+  EXPECT_EQ(capturer_->copy_count(), 1);
+  ExpectCaptureResult(ClientSideDetectionHost::BrowserCaptureResult::kSuccess);
+  ExpectDetectorResult(PhishingDetectorResult::CLASSIFICATION_SUCCESS);
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.PhishingImageEmbeddingResult.TriggerModel",
+      ClientSideDetectionHostBase::ImageEmbeddingResult::kSuccess, 1);
+  ASSERT_TRUE(sent_verdict);
+  EXPECT_EQ(sent_verdict->image_feature_embedding().embedding_value_size(), 1);
+  Mock::VerifyAndClearExpectations(scorer_);
+}
+
+TEST_F(ClientSideDetectionHostCopyFromSurfaceTest,
+       HigherTierRequestSupersedesParkedImageEmbeddingCapture) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+  base::test::ScopedFeatureList skip_scoring;
+  skip_scoring.InitAndEnableFeature(
+      kSkipImageClassificationScoringForNonPageLoadTriggers);
+
+  // Finish the initial page-load classification first.
+  NavigateAndRunClassification();
+  ASSERT_EQ(capturer_->copy_count(), 1);
+  Mock::VerifyAndClearExpectations(scorer_);
+
+  PrepareImageEmbeddingModel();
+  EXPECT_CALL(*scorer_, ApplyVisualTfLiteModel(_, _)).Times(0);
+  EXPECT_CALL(*scorer_, ApplyVisualTfLiteModelImageEmbedding(_, _)).Times(1);
+  std::vector<std::unique_ptr<ClientPhishingRequest>> sent_verdicts;
+  EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(_, _, _))
+      .WillRepeatedly(
+          [&](std::unique_ptr<ClientPhishingRequest> verdict,
+              ClientSideDetectionService::ClientReportPhishingRequestCallback
+                  callback,
+              const std::string& access_token) {
+            sent_verdicts.push_back(std::move(verdict));
+          });
+
+  // Hide the tab and fire a Tier 2 trigger (`VIBRATION_API`): classification
+  // is skipped and its image-embedding capture parks in `pending_capture_`.
+  web_contents()->WasHidden();
+  base::StatisticsRecorder::HistogramWaiter vibration_waiter(
+      "SBClientPhishing.PreClassificationCheckResult.VibrationApi");
+  csd_host_->VibrationRequested();
+  vibration_waiter.Wait();
+  task_environment()->RunUntilIdle();
+  EXPECT_EQ(capturer_->copy_count(), 1);
+  EXPECT_TRUE(sent_verdicts.empty());
+
+  // Fire a higher-tier trigger (`KEYBOARD_LOCK_REQUESTED`, Tier 1): its
+  // image-embedding capture supersedes `VIBRATION_API`'s parked capture, which
+  // finishes with `kFailed` and still sends its ping without an embedding.
+  base::StatisticsRecorder::HistogramWaiter keyboard_waiter(
+      "SBClientPhishing.PreClassificationCheckResult.KeyboardLockRequested");
+  csd_host_->KeyboardLockRequested();
+  keyboard_waiter.Wait();
+  task_environment()->RunUntilIdle();
+
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.BrowserCaptureResult.VibrationApi",
+      ClientSideDetectionHost::BrowserCaptureResult::kSuperseded, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.PhishingImageEmbeddingResult.VibrationApi",
+      ClientSideDetectionHostBase::ImageEmbeddingResult::kFailed, 1);
+  ASSERT_EQ(sent_verdicts.size(), 1u);
+  EXPECT_EQ(sent_verdicts[0]->client_side_detection_type(),
+            ClientSideDetectionType::VIBRATION_API);
+  EXPECT_FALSE(sent_verdicts[0]->has_image_feature_embedding());
+
+  // Showing the tab completes `KEYBOARD_LOCK_REQUESTED`'s capture and
+  // embedding and sends its ping.
+  web_contents()->WasShown();
+  task_environment()->RunUntilIdle();
+  EXPECT_EQ(capturer_->copy_count(), 2);
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.BrowserCaptureResult.KeyboardLockRequested",
+      ClientSideDetectionHost::BrowserCaptureResult::kSuccess, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.PhishingImageEmbeddingResult.KeyboardLockRequested",
+      ClientSideDetectionHostBase::ImageEmbeddingResult::kSuccess, 1);
+  ASSERT_EQ(sent_verdicts.size(), 2u);
+  EXPECT_EQ(sent_verdicts[1]->client_side_detection_type(),
+            ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED);
+  EXPECT_EQ(sent_verdicts[1]->image_feature_embedding().embedding_value_size(),
+            1);
   Mock::VerifyAndClearExpectations(scorer_);
 }
 

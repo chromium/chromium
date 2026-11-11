@@ -773,6 +773,7 @@ void ClientSideDetectionHost::CancelPendingRequests() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   weak_factory_.InvalidateWeakPtrs();
   DropPendingCapture();
+  browser_classification_.reset();
   CancelBrowserSideClassification();
   ClientSideDetectionHostBase::CancelPendingRequests();
 }
@@ -781,6 +782,19 @@ void ClientSideDetectionHost::CaptureScreenshot(ScreenshotCallback callback) {
   // The base class only asks for a capture outside of classification when it
   // needs one for image embedding.
   RequestCapture(CapturePurpose::kImageEmbedding, std::move(callback));
+}
+
+void ClientSideDetectionHost::OnVisualClassificationEarlyReturn(
+    VisualClassificationEarlyReturnReason reason) {
+  ClientSideDetectionHostBase::OnVisualClassificationEarlyReturn(reason);
+  // The other gates run before the capture in StartBrowserSideClassification(),
+  // so the only reason that reaches this point is a `Scorer` that went away
+  // while the capture was in flight. Report it the way the renderer reports a
+  // missing scorer so that PhishingDetectorResult keeps its semantics.
+  if (browser_classification_) {
+    FinishBrowserSideClassification(
+        PhishingDetectorResult::CLASSIFIER_NOT_READY);
+  }
 }
 
 void ClientSideDetectionHost::SetVisualCapturerForTesting(
@@ -843,6 +857,113 @@ ClientSideDetectionHost::PendingCapture::PendingCapture(
     ScreenshotCallback callback)
     : capture_id(capture_id), purpose(purpose), callback(std::move(callback)) {}
 ClientSideDetectionHost::PendingCapture::~PendingCapture() = default;
+
+void ClientSideDetectionHost::StartBrowserSideClassification(
+    ClientSideDetectionType request_type,
+    bool is_sample_ping,
+    std::optional<bool> did_match_high_confidence_allowlist,
+    bool is_invalid_ip) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK(base::FeatureList::IsEnabled(kClientSideDetectionCopyFromSurface));
+
+  // Like the renderer path, classification counts as started at dispatch, and
+  // the begin event carries the requested type while the request itself is
+  // upgraded for Enhanced Protection users (see StartVisualClassification()).
+  LogClientSideDetectionEvent(
+      ClientSideDetectionEvent::kImageClassificationBegin, request_type);
+  request_type = MaybeUpgradeRequestTypeForImageEmbeddingMatch(request_type);
+  browser_classification_ =
+      BrowserClassificationRequest{.url = current_url(),
+                                   .request_type = request_type,
+                                   .is_sample_ping = is_sample_ping,
+                                   .did_match_high_confidence_allowlist =
+                                       did_match_high_confidence_allowlist,
+                                   .is_invalid_ip = is_invalid_ip,
+                                   .start_time = tick_clock()->NowTicks()};
+  set_is_classifying(true);
+
+  // The renderer's gates, in its order (see
+  // ContentPhishingClassifierDelegate::MaybeStartClassification() and
+  // CanPerformPhishingDetection()).
+  base::WeakPtr<ClientSideDetectionServiceBase> service =
+      GetClientSideDetectionService();
+  if (!service || !service->GetScorer()) {
+    FinishBrowserSideClassification(
+        PhishingDetectorResult::CLASSIFIER_NOT_READY);
+    return;
+  }
+  content::NavigationEntry* entry =
+      web_contents()->GetController().GetLastCommittedEntry();
+  if (entry &&
+      (entry->GetTransitionType() & ui::PAGE_TRANSITION_FORWARD_BACK) != 0) {
+    FinishBrowserSideClassification(
+        PhishingDetectorResult::FORWARD_BACK_TRANSITION);
+    return;
+  }
+  if (!current_url().SchemeIsHTTPOrHTTPS()) {
+    FinishBrowserSideClassification(
+        PhishingDetectorResult::INVALID_URL_FORMAT_REQUEST);
+    return;
+  }
+  if (entry && entry->GetHasPostData()) {
+    FinishBrowserSideClassification(
+        PhishingDetectorResult::INVALID_DOCUMENT_LOADER);
+    return;
+  }
+
+  RequestCapture(
+      CapturePurpose::kClassification,
+      base::BindOnce(&ClientSideDetectionHost::OnClassificationCaptureDone,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void ClientSideDetectionHost::OnClassificationCaptureDone(
+    const gfx::Image& image) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK(browser_classification_);
+  if (image.IsEmpty()) {
+    FinishBrowserSideClassification(
+        PhishingDetectorResult::VISUAL_EXTRACTION_FAILED);
+    return;
+  }
+  // `browser_classification_` stays set while the classifier runs so that a
+  // request arriving before the result can cancel it.
+  const BrowserClassificationRequest& request = *browser_classification_;
+  StartVisualClassification(request.url, request.request_type,
+                            request.is_sample_ping,
+                            request.did_match_high_confidence_allowlist,
+                            request.is_invalid_ip, image, request.start_time);
+}
+
+void ClientSideDetectionHost::CancelPendingBrowserSideClassification() {
+  if (!browser_classification_ || !is_classifying()) {
+    return;
+  }
+  if (pending_capture_ &&
+      pending_capture_->purpose == CapturePurpose::kClassification) {
+    RecordCaptureResult(*pending_capture_, BrowserCaptureResult::kSuperseded);
+    pending_capture_.reset();
+  }
+  // Leave `image_embedder_` alone: cancelling it drops its callback and would
+  // silently abort an outgoing ping that already finished classification.
+  classifier_->CancelPendingClassification();
+  FinishBrowserSideClassification(
+      PhishingDetectorResult::CLASSIFICATION_CANCELLED);
+  // Reporting the cancelled request marked CSD as idle, but the new request
+  // is running.
+  set_is_csd_running(true);
+}
+
+void ClientSideDetectionHost::FinishBrowserSideClassification(
+    PhishingDetectorResult result) {
+  CHECK(browser_classification_);
+  BrowserClassificationRequest request = *browser_classification_;
+  browser_classification_.reset();
+  ClientSideDetectionHostBase::PhishingDetectionDone(
+      request.request_type, request.is_sample_ping,
+      request.did_match_high_confidence_allowlist, request.is_invalid_ip,
+      request.start_time, result, /*verdict=*/std::nullopt);
+}
 
 void ClientSideDetectionHost::RequestCapture(CapturePurpose purpose,
                                              ScreenshotCallback callback) {
@@ -1452,6 +1573,27 @@ void ClientSideDetectionHost::OnPhishingPreClassificationDone(
   }
 
   RecordSurfaceAvailabilityForCopy(request_type);
+
+  if (base::FeatureList::IsEnabled(kClientSideDetectionCopyFromSurface)) {
+    // Classify in the browser process instead of asking the renderer. A
+    // request still being captured or scored is answered with CANCELLED first,
+    // before the new request records its own result. The skip-scoring shortcut
+    // applies here too; the base class captures the page for image embedding
+    // on its own if it needs to.
+    CancelPendingBrowserSideClassification();
+    if (request_type != ClientSideDetectionType::TRIGGER_MODELS &&
+        base::FeatureList::IsEnabled(
+            kSkipImageClassificationScoringForNonPageLoadTriggers)) {
+      ReportSkippedClassification(request_type, is_sample_ping,
+                                  did_match_high_confidence_allowlist,
+                                  is_invalid_ip);
+      return;
+    }
+    StartBrowserSideClassification(request_type, is_sample_ping,
+                                   did_match_high_confidence_allowlist,
+                                   is_invalid_ip);
+    return;
+  }
 
   content::RenderFrameHost* rfh = web_contents()->GetPrimaryMainFrame();
 
