@@ -117,7 +117,7 @@ class ZstdSourceStream : public FilterSourceStream {
   }
 
   void* customMalloc(size_t size) {
-    void* address = malloc(size);
+    void* address = calloc(1, size);
     CHECK(address);
     malloc_sizes_.emplace(address, size);
     total_allocated_ += size;
