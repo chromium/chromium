@@ -2084,6 +2084,9 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
   html_source->AddBoolean("mandatoryReauthFeatureFlagEnabled",
                           is_mandatory_reauth_feature_flag_enabled);
 
+  const std::u16string opens_in_new_tab = base::EscapeForHTML(
+      l10n_util::GetStringUTF16(IDS_SETTINGS_OPENS_IN_NEW_TAB));
+
   html_source->AddString(
       "cardBenefitsToggleSublabel",
       l10n_util::GetStringFUTF16(
@@ -2091,8 +2094,8 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
               autofill::features::kAutofillEnableNewCardBenefitsToggleText)
               ? IDS_AUTOFILL_SETTINGS_PAGE_CARD_BENEFITS_TOGGLE_SUBLABEL_WITH_ISSUER_TERMS_APPLY_TEXT_AND_LEARN_LINK
               : IDS_AUTOFILL_SETTINGS_PAGE_CARD_BENEFITS_TOGGLE_SUBLABEL_WITH_LEARN_LINK,
-          chrome::kCardBenefitsLearnMoreURL,
-          l10n_util::GetStringUTF16(IDS_SETTINGS_OPENS_IN_NEW_TAB)));
+          base::EscapeForHTML(chrome::kCardBenefitsLearnMoreURL),
+          opens_in_new_tab));
 
   ui::Accelerator undo_accelerator(ui::VKEY_Z, ui::EF_PLATFORM_ACCELERATOR);
   html_source->AddString(
@@ -2135,24 +2138,24 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       "enableGmailOtpFillingDescription",
       l10n_util::GetStringFUTF16(
           IDS_AUTOFILL_GMAIL_OTP_FILLING_TOGGLE_DESCRIPTION,
-          chrome::kGmailOtpFillingLearnMoreURL,
-          l10n_util::GetStringUTF16(IDS_SETTINGS_OPENS_IN_NEW_TAB),
-          l10n_util::GetStringUTF16(
-              IDS_AUTOFILL_GMAIL_OTP_OPT_IN_LEARN_MORE_A11Y_NAME)));
+          base::EscapeForHTML(chrome::kGmailOtpFillingLearnMoreURL),
+          opens_in_new_tab,
+          base::EscapeForHTML(l10n_util::GetStringUTF16(
+              IDS_AUTOFILL_GMAIL_OTP_OPT_IN_LEARN_MORE_A11Y_NAME))));
   html_source->AddString("gmailOtpFillingLearnMoreUrl",
                          chrome::kGmailOtpFillingLearnMoreURL);
 
   html_source->AddString(
       "gmailOtpRequiredStep1",
-      l10n_util::GetStringFUTF16(
-          IDS_AUTOFILL_GMAIL_OTP_REQUIRED_STEP_1, chrome::kGmailSettingsURL,
-          l10n_util::GetStringUTF16(IDS_SETTINGS_OPENS_IN_NEW_TAB)));
+      l10n_util::GetStringFUTF16(IDS_AUTOFILL_GMAIL_OTP_REQUIRED_STEP_1,
+                                 base::EscapeForHTML(chrome::kGmailSettingsURL),
+                                 opens_in_new_tab));
   html_source->AddString(
       "gmailOtpRequiredStep2",
       l10n_util::GetStringFUTF16(
           IDS_AUTOFILL_GMAIL_OTP_REQUIRED_STEP_2,
-          chrome::kGmailSmartFeaturesURL,
-          l10n_util::GetStringUTF16(IDS_SETTINGS_OPENS_IN_NEW_TAB)));
+          base::EscapeForHTML(chrome::kGmailSmartFeaturesURL),
+          opens_in_new_tab));
 
   auto* autofill_client =
       autofill::ContentAutofillClient::FromWebContents(web_contents);
@@ -2188,8 +2191,9 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
   html_source->AddString(
       "autofillPayOverTimeSettingsSublabel",
       l10n_util::GetStringFUTF16(
-          IDS_AUTOFILL_BNPL_SETTINGS_SUBLABEL, chrome::kPayOverTimeLearnMoreUrl,
-          l10n_util::GetStringUTF16(IDS_SETTINGS_OPENS_IN_NEW_TAB)));
+          IDS_AUTOFILL_BNPL_SETTINGS_SUBLABEL,
+          base::EscapeForHTML(chrome::kPayOverTimeLearnMoreUrl),
+          opens_in_new_tab));
 
   html_source->AddString("googleWalletUrl", chrome::kWalletUrl);
 
@@ -4552,6 +4556,12 @@ void AddShortcutInputStrings(content::WebUIDataSource* html_source) {
 
 extern void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
                                      Profile* profile);
+
+void AddAutofillStringsForTesting(content::WebUIDataSource* html_source,
+                                  Profile* profile,
+                                  content::WebContents* web_contents) {
+  AddAutofillStrings(html_source, profile, web_contents);
+}
 
 #if !BUILDFLAG(IS_CHROMEOS)
 std::string GetPeopleSignInPromptSecondaryWithAccountForTesting(

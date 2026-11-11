@@ -554,6 +554,7 @@ if (!is_android) {
       "safety_hub_handler_unittest.cc",
       "saved_info_handler_unittest.cc",
       "search_engines_handler_unittest.cc",
+      "settings_localized_strings_provider_unittest.cc",
       "settings_media_devices_selection_handler_unittest.cc",
       "settings_security_key_handler_unittest.cc",
       "settings_utils_unittest.cc",

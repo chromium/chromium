@@ -1193,6 +1193,45 @@ suite('ContactInfoPageUiTest', function() {
         loadTimeData.getString('opensInNewTab'), loadingLink.ariaDescription);
   });
 
+  test(
+      'OtpFillingLearnMoreLinkAriaAttributesWithEscapedQuotes',
+      async function() {
+        const defaultDescription =
+            loadTimeData.getString('enableGmailOtpFillingDescription');
+        const escapedDescription = 'Autofill verification codes. ' +
+            '<a href="https://support.google.com/chrome" tabindex="0" ' +
+            'aria-description="Opens in a &quot;new&quot; tab" ' +
+            'aria-label="Learn more about &quot;Autofill&quot; verification ' +
+            'codes" target="_blank">Learn more</a>';
+        loadTimeData.overrideValues({
+          autofillGmailOtpFillingEnabled: true,
+          enableGmailOtpFillingDescription: escapedDescription,
+        });
+        try {
+          const {page, toggle} =
+              await createContactInfoPageForGmailOtpFilling();
+
+          const toggleLink = toggle.shadowRoot.querySelector('a');
+          assertTrue(!!toggleLink);
+          assertEquals(
+              'Learn more about "Autofill" verification codes',
+              toggleLink.ariaLabel);
+          assertEquals('Opens in a "new" tab', toggleLink.ariaDescription);
+
+          const loadingLink =
+              page.$.otpFillingLoadingSubLabelWithLink.querySelector('a');
+          assertTrue(!!loadingLink);
+          assertEquals(
+              'Learn more about "Autofill" verification codes',
+              loadingLink.ariaLabel);
+          assertEquals('Opens in a "new" tab', loadingLink.ariaDescription);
+        } finally {
+          loadTimeData.overrideValues({
+            enableGmailOtpFillingDescription: defaultDescription,
+          });
+        }
+      });
+
   test('OtpFillingLoadingSpinnerMinimumDuration', async function() {
     loadTimeData.overrideValues({autofillGmailOtpFillingEnabled: true});
     const autofillManager = new TestAutofillManager();

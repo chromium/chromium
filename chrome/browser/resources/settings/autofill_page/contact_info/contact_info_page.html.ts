@@ -38,8 +38,8 @@ export function getHtml(this: SettingsContactInfoPageElement) {
       </div>
       <settings-toggle-button id="autofillOtpFillingToggle" class="hr"
           ?hidden="${!this.shouldShowOtpFillingToggle_()}"
-          label="$i18n{enableGmailOtpFillingTitle}"
-          sub-label-with-link="$i18n{enableGmailOtpFillingDescription}"
+          label="$i18n{enableGmailOtpFillingTitle}" sub-label-with-link="${
+              this.getGmailOtpFillingDescription_().toString()}"
           @sub-label-link-clicked="${
               this.onGmailOtpFillingSubLabelLinkClicked_}"
           @settings-boolean-control-change="${
