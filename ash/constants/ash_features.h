@@ -473,8 +473,6 @@ BASE_DECLARE_FEATURE(kLobsterQuickInsertZeroState);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kLobsterDisabledByInvalidIME);
 COMPONENT_EXPORT(ASH_CONSTANTS)
-BASE_DECLARE_FEATURE(kLobsterI18n);
-COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kLobsterUseRewrittenQuery);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kLobsterAlwaysShowDisclaimerForTesting);
@@ -984,7 +982,6 @@ bool IsInternalServerSideSpeechRecognitionEnabledByFinch();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsKioskAppLaunchWatchdogEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLobsterEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLobsterDisabledByInvalidIME();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLobsterI18nEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLobsterUseRewrittenQuery();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLobsterAlwaysShowDisclaimerForTesting();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLoginScreenProxyClientCertAuthEnabled();

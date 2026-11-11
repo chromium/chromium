@@ -1013,9 +1013,6 @@ BASE_FEATURE(kLobsterDogfood, base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables lobster restriction based on the current active IME.
 BASE_FEATURE(kLobsterDisabledByInvalidIME, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables lobster i18n response.
-BASE_FEATURE(kLobsterI18n, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables lobster entry point in quick insert zero state.
 BASE_FEATURE(kLobsterQuickInsertZeroState, base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -2351,10 +2348,6 @@ bool IsLobsterDisabledByInvalidIME() {
 
 bool IsLobsterUseRewrittenQuery() {
   return base::FeatureList::IsEnabled(kLobsterUseRewrittenQuery);
-}
-
-bool IsLobsterI18nEnabled() {
-  return base::FeatureList::IsEnabled(kLobsterI18n);
 }
 
 bool IsLobsterAlwaysShowDisclaimerForTesting() {

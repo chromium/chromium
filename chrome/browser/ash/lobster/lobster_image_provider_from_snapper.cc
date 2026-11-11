@@ -97,8 +97,7 @@ manta::proto::Request CreateMantaRequest(std::string_view query,
 
   manta::proto::InputData& i18n_flag_input_data = *request.add_input_data();
   i18n_flag_input_data.set_tag(kLobsterI18nFlag);
-  i18n_flag_input_data.set_text(
-      ash::features::IsLobsterI18nEnabled() ? "true" : "false");
+  i18n_flag_input_data.set_text("true");
 
   return request;
 }
