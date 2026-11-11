@@ -169,6 +169,13 @@ if (is_android) {
     default_target_sdk_version = "37"
   }
 
+  # Optional extra XML attribute injected onto SandboxedGpuProcessService
+  # <service> declarations in AndroidManifest.
+  if (!defined(default_sandboxed_gpu_service_extra_attr)) {
+    default_sandboxed_gpu_service_extra_attr = ""
+  }
+  sandboxed_gpu_service_extra_attr = default_sandboxed_gpu_service_extra_attr
+
   if (!defined(default_lint_android_sdk_root)) {
     # Purposefully repeated so that downstream can change
     # default_android_sdk_root without changing lint version.

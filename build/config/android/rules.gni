@@ -436,9 +436,13 @@ if (!is_robolectric && enable_java_templates) {
         _rebased_includes = rebase_path(invoker.includes, root_build_dir)
         args += [ "--includes=$_rebased_includes" ]
       }
+      _variables = [
+        "sandboxed_gpu_service_extra_attr=$sandboxed_gpu_service_extra_attr",
+      ]
       if (defined(invoker.variables)) {
-        args += [ "--variables=${invoker.variables}" ]
+        _variables += invoker.variables
       }
+      args += [ "--variables=$_variables" ]
     }
   }
 

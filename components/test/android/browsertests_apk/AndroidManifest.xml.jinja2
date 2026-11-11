@@ -69,6 +69,16 @@ found in the LICENSE file.
                  android:exported="false" />
         {% endfor %}
 
+        {% for i in range(2) %}
+        <service android:name="org.chromium.content.app.SandboxedGpuProcessService{{ i }}"
+                 android:process=":sandboxed_gpu_process{{ i }}"
+                 android:isolatedProcess="false"
+                 {% if sandboxed_gpu_service_extra_attr != '' %}
+                 {{ sandboxed_gpu_service_extra_attr|safe }}
+                 {% endif %}
+                 android:exported="false" />
+        {% endfor %}
+
         <service android:name="org.chromium.build.gtest_apk.ProcessKeepaliveService"
                  android:process=":test_process"
                  android:exported="false" />

@@ -217,6 +217,16 @@
                  android:exported="false" />
         {% endfor %}
 
+        {% for i in range(2) %}
+        <service android:name="org.chromium.content.app.SandboxedGpuProcessService{{ i }}"
+                 android:process=":sandboxed_gpu_process{{ i }}"
+                 android:isolatedProcess="false"
+                 {% if sandboxed_gpu_service_extra_attr != '' %}
+                 {{ sandboxed_gpu_service_extra_attr|safe }}
+                 {% endif %}
+                 android:exported="false" />
+        {% endfor %}
+
         <!-- Disables at startup init of Emoji2. See http://crbug.com/40764422 -->
         <provider
             android:authorities="{{ manifest_package|default(default_manifest_package) }}.androidx-startup"

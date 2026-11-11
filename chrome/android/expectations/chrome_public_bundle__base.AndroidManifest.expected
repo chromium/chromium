@@ -321,6 +321,20 @@
         android:permission="$PACKAGE.permission.CHILD_SERVICE"
         android:process=":privileged_process9">
     </service>  # DIFF-ANCHOR: 40feb0a4
+    <service  # DIFF-ANCHOR: 9b807118
+        android:name="org.chromium.content.app.SandboxedGpuProcessService0"
+        android:exported="false"
+        android:isolatedProcess="false"
+        android:permission="$PACKAGE.permission.CHILD_SERVICE"
+        android:process=":sandboxed_gpu_process0">
+    </service>  # DIFF-ANCHOR: 9b807118
+    <service  # DIFF-ANCHOR: 775c7ab8
+        android:name="org.chromium.content.app.SandboxedGpuProcessService1"
+        android:exported="false"
+        android:isolatedProcess="false"
+        android:permission="$PACKAGE.permission.CHILD_SERVICE"
+        android:process=":sandboxed_gpu_process1">
+    </service>  # DIFF-ANCHOR: 775c7ab8
     <service  # DIFF-ANCHOR: b1e3e8bd
         android:name="org.chromium.content.app.SandboxedProcessService0"
         android:exported="false"
