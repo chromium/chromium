@@ -51,12 +51,16 @@ export interface AppTestFlags {
   useRealReadAloudModel?: boolean;
 }
 
+// Saved so stubAnimationFrame() doesn't leak into later tests.
+const originalRequestAnimationFrame = window.requestAnimationFrame;
+
 // Initializes all singletons, mocks, and controllers in their strict
 // dependency order without creating an AppElement.
 export function setupTestEnvironment(flags?: AppTestFlags): TestSetupResult {
   // Clearing the DOM must always be done first.
   document.body.innerHTML = window.trustedTypes!.emptyHTML;
   window.scrollTo(0, 0);
+  window.requestAnimationFrame = originalRequestAnimationFrame;
 
   // Browser Proxies: no dependencies.
   const browserProxy = new TestColorUpdaterBrowserProxy();

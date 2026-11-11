@@ -94,7 +94,10 @@ suite('SpeechController', () => {
   });
 
   suite('initializeSpeechTree', () => {
-    stubAnimationFrame();
+    setup(() => {
+      stubAnimationFrame();
+    });
+
     let initializedNode: Node|undefined;
     function mockInit() {
       readAloudModel.init = (node) => {
