@@ -22,7 +22,6 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.embedder_support.contextmenu.ChipDelegate;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuNativeDelegate;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
@@ -219,13 +218,12 @@ public class ContextMenuHelper {
                 && mCurrentContextMenuParams != null
                 && mOnMenuShown != null;
 
-        boolean isCustomItemPresent =
-                ChromeFeatureList.sCctContextualMenuItems.isEnabled()
-                        && mCurrentPopulator.hasCustomItems();
-
         final ContextMenuCoordinator menuCoordinator =
                 new ContextMenuCoordinator(
-                        activity, topContentOffsetPx, mCurrentNativeDelegate, isCustomItemPresent);
+                        activity,
+                        topContentOffsetPx,
+                        mCurrentNativeDelegate,
+                        mCurrentPopulator.hasCustomItems());
         mCurrentContextMenu = menuCoordinator;
         mChipDelegate = mCurrentPopulator.getChipDelegate();
 

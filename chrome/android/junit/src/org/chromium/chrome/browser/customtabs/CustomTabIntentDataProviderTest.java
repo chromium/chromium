@@ -1978,7 +1978,6 @@ public class CustomTabIntentDataProviderTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.CCT_CONTEXTUAL_MENU_ITEMS)
     public void testGetCustomConentActions_noneDefined() {
         Intent intent = new CustomTabsIntent.Builder().build().intent;
 
@@ -1988,7 +1987,6 @@ public class CustomTabIntentDataProviderTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.CCT_CONTEXTUAL_MENU_ITEMS)
     public void testGetCustomContentActions_returnsListOfCustomContentAction_whenDefined() {
         int id = 1;
         String label = "Pin Image";

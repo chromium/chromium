@@ -6017,12 +6017,6 @@ inline constexpr char kCCTAlwaysOpenInBrowserName[] =
 inline constexpr char kCCTAlwaysOpenInBrowserDescription[] =
     "Enable setting to always open Custom Tabs in the Chrome browser.";
 
-inline constexpr char kCCTContextualMenuItemsName[] =
-    "Enable Contextual Menu Items in CCT";
-inline constexpr char kCCTContextualMenuItemsDescription[] =
-    "When enabled, contextual menu items passed by developers will be visible "
-    "in CCTs.";
-
 inline constexpr char kCCTIncognitoAvailableToThirdPartyName[] =
     "Allow third party to open Custom Tabs Incognito mode";
 inline constexpr char kCCTIncognitoAvailableToThirdPartyDescription[] =

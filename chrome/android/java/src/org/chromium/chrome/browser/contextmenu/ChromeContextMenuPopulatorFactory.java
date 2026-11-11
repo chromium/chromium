@@ -13,7 +13,6 @@ import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulator.ContextMenuMode;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuItemDelegate;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuNativeDelegate;
@@ -52,11 +51,7 @@ public class ChromeContextMenuPopulatorFactory implements ContextMenuPopulatorFa
         mItemDelegate = itemDelegate;
         mShareDelegateSupplier = shareDelegate;
         mContextMenuMode = contextMenuMode;
-        if (ChromeFeatureList.sCctContextualMenuItems.isEnabled()) {
-            mCustomContentActions = customContentActions;
-        } else {
-            mCustomContentActions = List.of();
-        }
+        mCustomContentActions = customContentActions;
     }
 
     @Override

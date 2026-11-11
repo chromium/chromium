@@ -446,14 +446,10 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
         mIsDownloadRestrictedByPolicy = DownloadUtils.isDownloadRestrictedByPolicy(getProfile());
         mCustomActionMap = new SparseArray<>();
         mPendingIntentSender = new PendingIntentSender();
-        if (ChromeFeatureList.sCctContextualMenuItems.isEnabled()) {
-            if (customContentActions.size() > MAX_CUSTOM_MENU_ITEMS) {
-                customContentActions = customContentActions.subList(0, MAX_CUSTOM_MENU_ITEMS);
-            }
-            mCustomContentActions = customContentActions;
-        } else {
-            mCustomContentActions = List.of();
+        if (customContentActions.size() > MAX_CUSTOM_MENU_ITEMS) {
+            customContentActions = customContentActions.subList(0, MAX_CUSTOM_MENU_ITEMS);
         }
+        mCustomContentActions = customContentActions;
     }
 
     /**
@@ -749,8 +745,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                                     /* showInProductHelp= */ false,
                                     !mIsDownloadRestrictedByPolicy));
                 }
-                if (ChromeFeatureList.sCctContextualMenuItems.isEnabled()
-                        && mMode == ContextMenuMode.CUSTOM_TAB) {
+                if (mMode == ContextMenuMode.CUSTOM_TAB) {
                     boolean displayedAction = false;
                     for (CustomContentAction action : mCustomContentActions) {
                         if (action.getTargetType() == CustomTabsIntent.CONTENT_TARGET_TYPE_LINK) {
@@ -832,8 +827,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                                 !mIsDownloadRestrictedByPolicy));
             }
 
-            if (ChromeFeatureList.sCctContextualMenuItems.isEnabled()
-                    && mMode == ContextMenuMode.CUSTOM_TAB) {
+            if (mMode == ContextMenuMode.CUSTOM_TAB) {
                 boolean displayedAction = false;
                 for (CustomContentAction action : mCustomContentActions) {
                     if (action.getTargetType() == CustomTabsIntent.CONTENT_TARGET_TYPE_IMAGE) {
@@ -1024,8 +1018,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
 
     @Override
     public boolean onItemSelected(int itemId) {
-        if (ChromeFeatureList.sCctContextualMenuItems.isEnabled()
-                && mCustomActionMap.get(itemId) != null) {
+        if (mCustomActionMap.get(itemId) != null) {
             final CustomContentAction action = mCustomActionMap.get(itemId);
 
             assert action != null;
@@ -1535,10 +1528,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
 
     @Override
     public boolean hasCustomItems() {
-        if (ChromeFeatureList.sCctContextualMenuItems.isEnabled()) {
-            return !mCustomContentActions.isEmpty();
-        }
-        return false;
+        return !mCustomContentActions.isEmpty();
     }
 
     private WindowAndroid getWindow() {

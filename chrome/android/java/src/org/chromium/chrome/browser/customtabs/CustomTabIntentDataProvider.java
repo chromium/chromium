@@ -1929,10 +1929,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
 
     @Override
     public List<CustomContentAction> getCustomContentActions() {
-        if (ChromeFeatureList.sCctContextualMenuItems.isEnabled()) {
-            return CustomTabsIntent.getCustomContentActions(mIntent);
-        }
-        return List.of();
+        return CustomTabsIntent.getCustomContentActions(mIntent);
     }
 
     @Override

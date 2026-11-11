@@ -1917,14 +1917,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "cct-contextual-menu-items",
-    "owners": [
-      "adelm@google.com",
-      "chrome-connective-tissue@google.com"
-    ],
-    "expiry_milestone": 160
-  },
-  {
     "name": "cct-early-init-power-manager",
     "owners": ["mawieczorek@google.com"],
     "expiry_milestone": 165

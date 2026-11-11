@@ -3108,7 +3108,6 @@ public class ChromeContextMenuPopulatorTest {
     @Test
     @SmallTest
     @UiThreadTest
-    @EnableFeatures(ChromeFeatureList.CCT_CONTEXTUAL_MENU_ITEMS)
     public void testCustomContentActions_Link() throws PendingIntent.CanceledException {
         var linkHistogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -3196,7 +3195,6 @@ public class ChromeContextMenuPopulatorTest {
     @Test
     @SmallTest
     @UiThreadTest
-    @EnableFeatures(ChromeFeatureList.CCT_CONTEXTUAL_MENU_ITEMS)
     public void testCustomContentActions_Image() throws PendingIntent.CanceledException {
         var imageHistogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -3325,7 +3323,6 @@ public class ChromeContextMenuPopulatorTest {
     @Test
     @SmallTest
     @UiThreadTest
-    @EnableFeatures(ChromeFeatureList.CCT_CONTEXTUAL_MENU_ITEMS)
     public void testCustomContentActions_ImageLink_DoesNotSetPageUri()
             throws PendingIntent.CanceledException {
         var imageHistogramWatcher =
@@ -3427,7 +3424,6 @@ public class ChromeContextMenuPopulatorTest {
     @Test
     @SmallTest
     @UiThreadTest
-    @EnableFeatures(ChromeFeatureList.CCT_CONTEXTUAL_MENU_ITEMS)
     public void testCustomContentActions_enforcesLimitWithMixedActionTypes() {
         setAllMandatoryFlowsComplete();
 
@@ -3557,8 +3553,7 @@ public class ChromeContextMenuPopulatorTest {
     @Test
     @SmallTest
     @UiThreadTest
-    @EnableFeatures(ChromeFeatureList.CCT_CONTEXTUAL_MENU_ITEMS)
-    public void testHasCustomContextItems_DoesHaveWithFlagEnabled() {
+    public void testHasCustomContextItems_DoesHave() {
         setAllMandatoryFlowsComplete();
         List<CustomContentAction> customActions =
                 List.of(
@@ -3577,8 +3572,7 @@ public class ChromeContextMenuPopulatorTest {
     @Test
     @SmallTest
     @UiThreadTest
-    @EnableFeatures(ChromeFeatureList.CCT_CONTEXTUAL_MENU_ITEMS)
-    public void testHasCustomContextItems_HasNoneWithFlagEnabled() {
+    public void testHasCustomContextItems_HasNone() {
         setAllMandatoryFlowsComplete();
         initializePopulator(
                 ChromeContextMenuPopulator.ContextMenuMode.CUSTOM_TAB,
@@ -3586,29 +3580,8 @@ public class ChromeContextMenuPopulatorTest {
                 /** actions= */
                 List.of());
 
-        assertFalse("Custom context menu items should be present.", mPopulator.hasCustomItems());
-    }
-
-    @Test
-    @SmallTest
-    @UiThreadTest
-    @DisableFeatures(ChromeFeatureList.CCT_CONTEXTUAL_MENU_ITEMS)
-    public void testHasCustomContextItems_ShouldNotHaveWithFlagDisabled() {
-        setAllMandatoryFlowsComplete();
-        List<CustomContentAction> customActions =
-                List.of(
-                        createSimpleContentAction(
-                                /** actionId= */
-                                101));
-
-        initializePopulator(
-                ChromeContextMenuPopulator.ContextMenuMode.CUSTOM_TAB,
-                getHttpLinkParams(),
-                customActions);
-
         assertFalse(
-                "Custom context menu items should not be present when the flag is disabled.",
-                mPopulator.hasCustomItems());
+                "Custom context menu items should not be present.", mPopulator.hasCustomItems());
     }
 
     @Test
