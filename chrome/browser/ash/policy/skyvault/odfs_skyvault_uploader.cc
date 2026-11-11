@@ -235,6 +235,11 @@ void OdfsSkyvaultUploader::GetODFSMetadataAndStartIOTask() {
 
 void OdfsSkyvaultUploader::CheckReauthenticationAndStartIOTask(
     base::expected<ODFSMetadata, base::File::Error> metadata_or_error) {
+  if (cancelled_) {
+    OnEndUpload(/*url=*/{}, UploadError::kCancelled);
+    return;
+  }
+
   if (!metadata_or_error.has_value()) {
     // Try the move anyway.
     LOG(ERROR) << "Failed to get reauthentication required state: "

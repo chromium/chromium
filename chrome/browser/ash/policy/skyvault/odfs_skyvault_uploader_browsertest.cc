@@ -4,9 +4,12 @@
 
 #include "chrome/browser/ash/policy/skyvault/odfs_skyvault_uploader.h"
 
+#include "ash/constants/ash_extension_constants.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/check_deref.h"
+#include "base/functional/callback.h"
 #include "base/strings/strcat.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -34,6 +37,72 @@ using policy::local_user_files::SkyvaultOneDriveTest;
 using policy::local_user_files::UploadTrigger;
 
 namespace ash::cloud_upload {
+
+namespace {
+
+// A `FakeProvidedFileSystemOneDrive` that delivers `GetActions` callbacks
+// asynchronously via the current task runner, allowing tests to exercise
+// actions (such as cancellation) while `GetODFSMetadata` is in flight.
+class AsyncFakeProvidedFileSystemOneDrive
+    : public file_manager::test::FakeProvidedFileSystemOneDrive {
+ public:
+  using FakeProvidedFileSystemOneDrive::FakeProvidedFileSystemOneDrive;
+
+  void SetOnGetActionsCompleted(base::OnceClosure callback) {
+    on_get_actions_completed_ = std::move(callback);
+  }
+
+  ash::file_system_provider::AbortCallback GetActions(
+      const std::vector<base::FilePath>& entry_paths,
+      GetActionsCallback callback) override {
+    if (on_get_actions_completed_) {
+      callback = std::move(callback).Then(std::move(on_get_actions_completed_));
+    }
+    return FakeProvidedFileSystemOneDrive::GetActions(
+        entry_paths,
+        base::BindOnce(
+            [](GetActionsCallback callback,
+               const ash::file_system_provider::Actions& actions,
+               base::File::Error result) {
+              base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+                  FROM_HERE,
+                  base::BindOnce(std::move(callback), actions, result));
+            },
+            std::move(callback)));
+  }
+
+ private:
+  base::OnceClosure on_get_actions_completed_;
+};
+
+class AsyncFakeExtensionProviderOneDrive
+    : public ash::file_system_provider::FakeExtensionProvider {
+ public:
+  static std::unique_ptr<ProviderInterface> Create() {
+    return std::unique_ptr<ProviderInterface>(
+        new AsyncFakeExtensionProviderOneDrive());
+  }
+
+  std::unique_ptr<ash::file_system_provider::ProvidedFileSystemInterface>
+  CreateProvidedFileSystem(
+      Profile* profile,
+      const ash::file_system_provider::ProvidedFileSystemInfo& file_system_info)
+      override {
+    return std::make_unique<AsyncFakeProvidedFileSystemOneDrive>(
+        file_system_info);
+  }
+
+ private:
+  AsyncFakeExtensionProviderOneDrive()
+      : FakeExtensionProvider(extension_misc::kODFSExtensionId,
+                              ash::file_system_provider::Capabilities(
+                                  false,
+                                  false,
+                                  false,
+                                  extensions::SOURCE_NETWORK)) {}
+};
+
+}  // namespace
 
 // Tests the OneDrive upload workflow using the static
 // `OdfsSkyvaultUploader::Upload` method. Ensures that the upload completes
@@ -339,6 +408,58 @@ IN_PROC_BROWSER_TEST_F(OdfsSkyvaultUploaderTest,
       "Enterprise.SkyVault.Download.OneDrive.SignInError", false, 0);
   histogram_tester_.ExpectBucketCount(
       "Enterprise.SkyVault.Download.OneDrive.SignInError", true, 1);
+}
+
+// Test that cancelling an upload while `GetODFSMetadata` is in flight finishes
+// the upload with `UploadError::kCancelled` without requesting sign-in or
+// uploading the file.
+IN_PROC_BROWSER_TEST_F(OdfsSkyvaultUploaderTest,
+                       CancelledBeforeGetODFSMetadataFinishes) {
+  SetUpMyFiles();
+  ash::file_system_provider::MountOptions options(/*file_system_id=*/"odfs",
+                                                  /*display_name=*/"ODFS");
+  auto* async_file_system = static_cast<AsyncFakeProvidedFileSystemOneDrive*>(
+      file_manager::test::MountProvidedFileSystem(
+          profile(), extension_misc::kODFSExtensionId, options,
+          AsyncFakeExtensionProviderOneDrive::Create()));
+  provided_file_system_ = async_file_system;
+  provided_file_system_->SetReauthenticationRequired(true);
+
+  base::test::TestFuture<void> get_actions_completed;
+  async_file_system->SetOnGetActionsCompleted(
+      get_actions_completed.GetCallback());
+
+  const std::string test_file_name = "text.docx";
+  base::FilePath source_file_path =
+      CopyTestFile(test_file_name, my_files_dir());
+
+  base::MockCallback<base::RepeatingCallback<void(int64_t)>> progress_callback;
+  base::test::TestFuture<
+      storage::FileSystemURL,
+      std::optional<policy::local_user_files::MigrationUploadError>,
+      base::FilePath>
+      upload_callback;
+  base::WeakPtr<OdfsSkyvaultUploader> uploader = OdfsSkyvaultUploader::Upload(
+      profile(), source_file_path,
+      /*relative_source_path=*/base::FilePath(),
+      /*upload_root=*/kUploadRootPrefix, UploadTrigger::kDownload,
+      progress_callback.Get(), upload_callback.GetCallback());
+  ASSERT_TRUE(uploader);
+  EXPECT_FALSE(get_actions_completed.IsReady());
+  uploader->Cancel();
+
+  ASSERT_TRUE(get_actions_completed.Wait());
+
+  const auto notification_id = base::StrCat(
+      {policy::skyvault_ui_utils::kDownloadSignInNotificationPrefix, "1"});
+  EXPECT_FALSE(GetNotification(notification_id));
+  ASSERT_TRUE(upload_callback.IsReady());
+  auto [url, error, upload_root_path] = upload_callback.Get();
+  EXPECT_EQ(error, policy::local_user_files::MigrationUploadError::kCancelled);
+  EXPECT_FALSE(url.is_valid());
+  CheckPathNotFoundOnODFS(base::FilePath("/")
+                              .AppendASCII(kUploadRootPrefix)
+                              .AppendASCII(test_file_name));
 }
 
 }  // namespace ash::cloud_upload
