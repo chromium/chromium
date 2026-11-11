@@ -32,6 +32,7 @@
 #include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/hit_test_region_observer.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
@@ -515,6 +516,9 @@ IN_PROC_BROWSER_TEST_P(JavaScriptDialogOriginTest,
       document.body.appendChild(a);)",
                                           test_url);
   ASSERT_TRUE(content::ExecJs(tab, script));
+  // The renderer drops input that arrives before its first compositor frame
+  // has been submitted, so wait for hit test data before clicking.
+  content::WaitForHitTestData(tab->GetPrimaryMainFrame());
   content::SimulateMouseClickOrTapElementWithId(tab, "link");
   opened_tab_observer.Wait();
   ASSERT_EQ(2, browser()->tab_strip_model()->count());
