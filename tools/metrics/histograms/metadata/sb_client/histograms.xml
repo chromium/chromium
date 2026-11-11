@@ -332,8 +332,9 @@ useful for Chirp alerts (go/crca-alerts). -->
 
 <histogram name="SBClientDownload.UserGestureFileType.Attributes"
     enum="SBClientDownloadUserGestureFileTypeAttributes"
-    expires_after="2026-12-22">
+    expires_after="2027-06-22">
   <owner>xinghuilu@chromium.org</owner>
+  <owner>yawfrempong@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the attributes of a download that is allowed on user gesture. Logged
