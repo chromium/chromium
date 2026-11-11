@@ -91,6 +91,7 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -5734,6 +5735,60 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
   EXPECT_EQ(GURL(url::kAboutBlankURL), created_tab->GetLastCommittedURL());
   EXPECT_TRUE(
       created_tab->GetPrimaryMainFrame()->GetLastCommittedOrigin().opaque());
+}
+
+class ExtensionTabsInitiatorKillswitchTest : public ExtensionTabsTest {
+ public:
+  ExtensionTabsInitiatorKillswitchTest() {
+    feature_list_.InitAndDisableFeature(
+        extensions_features::kExtensionOpenTabSetInitiatorOrigin);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Verifies that disabling `kExtensionOpenTabSetInitiatorOrigin` leaves
+// `initiator_origin` unset for both `chrome.tabs.create()` and
+// `chrome.windows.create()`.
+IN_PROC_BROWSER_TEST_F(ExtensionTabsInitiatorKillswitchTest,
+                       DisabledKillswitchLeavesInitiatorOriginUnset) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL target_url =
+      embedded_test_server()->GetURL("a.com", "/empty.html");
+
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("KillswitchInitiatorTest").Build();
+
+  {
+    content::TestNavigationObserver nav_observer(target_url);
+    nav_observer.StartWatchingNewWebContents();
+
+    auto tabs_create = base::MakeRefCounted<TabsCreateFunction>();
+    tabs_create->set_extension(extension.get());
+    const std::string args =
+        base::StringPrintf(R"([{"url": "%s"}])", target_url.spec().c_str());
+    ASSERT_TRUE(utils::RunFunctionAndReturnSingleResult(tabs_create.get(), args,
+                                                        profile()));
+
+    nav_observer.Wait();
+    EXPECT_FALSE(nav_observer.last_initiator_origin().has_value());
+  }
+
+  {
+    content::TestNavigationObserver nav_observer(target_url);
+    nav_observer.StartWatchingNewWebContents();
+
+    auto windows_create = base::MakeRefCounted<WindowsCreateFunction>();
+    windows_create->set_extension(extension.get());
+    const std::string args =
+        base::StringPrintf(R"([{"url": "%s"}])", target_url.spec().c_str());
+    ASSERT_TRUE(utils::RunFunctionAndReturnSingleResult(windows_create.get(),
+                                                        args, profile()));
+
+    nav_observer.Wait();
+    EXPECT_FALSE(nav_observer.last_initiator_origin().has_value());
+  }
 }
 
 }  // namespace extensions

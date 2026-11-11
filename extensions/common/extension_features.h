@@ -236,6 +236,12 @@ BASE_DECLARE_FEATURE(kExtensionIconVariants);
 // lets the user choose site permissions.
 BASE_DECLARE_FEATURE(kExtensionInstallSiteAccessOptions);
 
+// If enabled (the default), `OpenTabHelper::MaybeSetInitiatorOrigin()`
+// populates `NavigateParams::initiator_origin` for extension-initiated
+// `chrome.tabs.create()` and `chrome.windows.create()` navigations without an
+// opener. If disabled (kill switch), `initiator_origin` is left unset.
+BASE_DECLARE_FEATURE(kExtensionOpenTabSetInitiatorOrigin);
+
 // If enabled, allows an extension to specify protocol_handlers keys in the
 // Manifest, registering a group of custom handlers so that the browser can
 // handle navigation requests to URLs with unknown schemes. This feature

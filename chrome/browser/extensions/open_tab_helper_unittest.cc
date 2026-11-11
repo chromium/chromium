@@ -143,4 +143,21 @@ TEST_F(OpenTabHelperUnitTest,
   EXPECT_FALSE(params.initiator_origin.has_value());
 }
 
+TEST_F(OpenTabHelperUnitTest,
+       MaybeSetInitiatorOrigin_DisabledFeatureLeavesNullopt) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      extensions_features::kExtensionOpenTabSetInitiatorOrigin);
+
+  auto extension = ExtensionBuilder("test_ext").Build();
+  auto function = base::MakeRefCounted<TabsCreateFunction>();
+  function->set_extension(extension);
+
+  NavigateParams params(profile(), GURL("https://example.com/"),
+                        ui::PAGE_TRANSITION_LINK);
+  OpenTabHelper::MaybeSetInitiatorOrigin(*function, params);
+
+  EXPECT_FALSE(params.initiator_origin.has_value());
+}
+
 }  // namespace extensions

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/open_tab_helper.h"
 
+#include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
@@ -309,6 +310,11 @@ bool OpenTabHelper::MaybeSetPdfNavigateParams(const ExtensionFunction& function,
 // static
 void OpenTabHelper::MaybeSetInitiatorOrigin(const ExtensionFunction& function,
                                             NavigateParams& navigate_params) {
+  if (!base::FeatureList::IsEnabled(
+          extensions_features::kExtensionOpenTabSetInitiatorOrigin)) {
+    return;
+  }
+
   const Extension* extension = function.extension();
   // PDF Viewer navigations are configured separately by
   // `MaybeSetPdfNavigateParams()`, which marks them as renderer-initiated with
