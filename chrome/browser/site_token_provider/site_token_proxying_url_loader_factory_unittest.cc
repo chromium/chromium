@@ -104,7 +104,8 @@ TEST_F(SiteTokenProxyingURLLoaderFactoryTest,
   EXPECT_EQ(0u, builder.num_interceptors());
 }
 
-TEST_F(SiteTokenProxyingURLLoaderFactoryTest, NoFlagIfEmptyAllowlist) {
+TEST_F(SiteTokenProxyingURLLoaderFactoryTest,
+       RequestNotProxiedIfEmptyAllowlist) {
   base::test::ScopedFeatureList empty_allowlist_feature_list;
   empty_allowlist_feature_list.InitAndEnableFeatureWithParameters(
       features::kSiteTokenProviderEnabled, {{"site_token_allowlist", ""}});
@@ -112,14 +113,7 @@ TEST_F(SiteTokenProxyingURLLoaderFactoryTest, NoFlagIfEmptyAllowlist) {
   TestingProfile empty_profile;
   network::URLLoaderFactoryBuilder builder;
   SiteTokenProxyingURLLoaderFactory::MaybeProxyRequest(&empty_profile, builder);
-  ASSERT_EQ(1u, builder.num_interceptors());
-
-  mojo::Remote<network::mojom::URLLoaderFactory> factory =
-      FinishBuilder(std::move(builder));
-
-  uint32_t options = CreateLoaderAndGetOptions(
-      factory.get(), GURL("https://example.com/article"));
-  EXPECT_FALSE(options & network::mojom::kURLLoadOptionUseHeaderClient);
+  EXPECT_EQ(0u, builder.num_interceptors());
 }
 
 TEST_F(SiteTokenProxyingURLLoaderFactoryTest,

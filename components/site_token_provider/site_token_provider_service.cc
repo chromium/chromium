@@ -70,6 +70,10 @@ bool SiteTokenProviderService::IsDomainAllowlisted(
   return allowed_domains_.contains(NormalizeDomain(domain));
 }
 
+bool SiteTokenProviderService::HasAllowlistedDomains() const {
+  return !allowed_domains_.empty();
+}
+
 void SiteTokenProviderService::SetTokenForTesting(  // IN-TEST
     std::string_view domain,
     std::string token) {

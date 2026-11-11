@@ -54,7 +54,7 @@ void SiteTokenProxyingURLLoaderFactory::MaybeProxyRequest(
   auto* service = profile
                       ? SiteTokenProviderServiceFactory::GetForProfile(profile)
                       : nullptr;
-  if (!service) {
+  if (!service || !service->HasAllowlistedDomains()) {
     return;
   }
 

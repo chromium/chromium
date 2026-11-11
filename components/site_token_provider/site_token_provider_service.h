@@ -47,6 +47,9 @@ class SiteTokenProviderService : public KeyedService,
   // Returns true if `domain` is in the allowlist for header injection.
   bool IsDomainAllowlisted(std::string_view domain) const;
 
+  // Returns true if any domain is allowlisted for header injection.
+  bool HasAllowlistedDomains() const;
+
   // Populates the internal token cache directly for testing purposes.
   void SetTokenForTesting(std::string_view domain, std::string token);
 

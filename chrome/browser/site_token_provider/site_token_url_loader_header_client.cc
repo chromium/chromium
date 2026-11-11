@@ -48,7 +48,7 @@ void SiteTokenURLLoaderHeaderClient::MaybeWrap(
 
   Profile* profile = Profile::FromBrowserContext(browser_context);
   auto* service = SiteTokenProviderServiceFactory::GetForProfile(profile);
-  if (!service) {
+  if (!service || !service->HasAllowlistedDomains()) {
     return;
   }
 
