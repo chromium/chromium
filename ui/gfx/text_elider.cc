@@ -32,7 +32,8 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "third_party/icu/source/common/unicode/rbbi.h"
+#include "third_party/icu/source/common/unicode/schriter.h"
+#include "third_party/icu/source/common/unicode/uchar.h"
 #include "third_party/icu/source/common/unicode/uloc.h"
 #include "third_party/icu/source/common/unicode/umachine.h"
 #include "ui/gfx/font_list.h"
@@ -805,22 +806,16 @@ std::u16string TruncateString(std::u16string_view string,
 
   int32_t index = static_cast<int32_t>(length - 1);
   if (word_break) {
-    // Use a word iterator to find the first boundary.
-    UErrorCode status = U_ZERO_ERROR;
-    std::unique_ptr<icu::BreakIterator> bi(
-        icu::RuleBasedBreakIterator::createWordInstance(
-            icu::Locale::getDefault(), status));
-    if (U_FAILURE(status)) {
+    // Use a word iterator to find the last word boundary before |length|. If
+    // there is none other than the beginning of the string, |index| stays at
+    // the end and we'll have to break in the middle of a word.
+    base::i18n::BreakIterator iter(string,
+                                   base::i18n::BreakIterator::BREAK_WORD);
+    if (!iter.Init()) {
       return base::StrCat({string.substr(0, length - 1), kElideString});
     }
-    icu::UnicodeString bi_text(string.data());
-    bi->setText(bi_text);
-    index = bi->preceding(static_cast<int32_t>(length));
-    if (index == icu::BreakIterator::DONE || index == 0) {
-      // We either found no valid word break at all, or one right at the
-      // beginning of the string. Go back to the end; we'll have to break in the
-      // middle of a word.
-      index = static_cast<int32_t>(length - 1);
+    while (iter.Advance() && iter.pos() < length) {
+      index = static_cast<int32_t>(iter.pos());
     }
   }
 

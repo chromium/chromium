@@ -140,8 +140,7 @@ std::vector<LanguageTag> GetCandidates() {
   candidates = l10n_util::GetLocaleOverrides();
   if (candidates.empty()) {
     // If no override was set, defer to ICU
-    return {base::i18n::IcuLocaleConverter::GetInstance().ToLanguageTag(
-        icu::Locale::getDefault())};
+    return {base::i18n::GetDefaultIcuLocale()};
   }
 #elif BUILDFLAG(IS_ANDROID)
   // On Android, query java.util.Locale for the default locale.
