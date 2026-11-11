@@ -64,7 +64,7 @@ Canvas2DResourceProvider::CreateWeakPtr() {
 }
 
 scoped_refptr<CanvasResourceSharedImage>
-Canvas2DResourceProvider::NewOrRecycledResource() {
+Canvas2DResourceProvider::NewOrRecycledResource(bool is_accelerated) {
   if (!image_pool_) {
     return nullptr;
   }
@@ -82,7 +82,7 @@ Canvas2DResourceProvider::NewOrRecycledResource() {
           CreateWeakPtr(), shared_image_interface_provider_, hdr_metadata_);
     } else {
       resource->Initialize(CreateWeakPtr(), context_provider_wrapper_,
-                           hdr_metadata_, is_accelerated_);
+                           hdr_metadata_, is_accelerated);
     }
     ++num_inflight_resources_;
     if (num_inflight_resources_ > max_inflight_resources_) {
@@ -117,8 +117,7 @@ Canvas2DResourceProvider::Canvas2DResourceProvider(
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     bool is_accelerated,
     gpu::SharedImageUsageSet shared_image_usage_flags)
-    : is_accelerated_(is_accelerated),
-      context_provider_wrapper_(std::move(context_provider_wrapper)),
+    : context_provider_wrapper_(std::move(context_provider_wrapper)),
       hdr_metadata_(hdr_metadata) {
   CHECK(context_provider_wrapper_);
 
@@ -141,7 +140,7 @@ Canvas2DResourceProvider::Canvas2DResourceProvider(
   }
 
   std::optional<gfx::BufferUsage> buffer_usage = std::nullopt;
-  if (!is_accelerated_) {
+  if (!is_accelerated) {
     // Ideally we should add SHARED_IMAGE_USAGE_CPU_WRITE_ONLY to the shared
     // image usage flag here since mailbox will be used for CPU writes by
     // the client. But doing that stops us from using CompoundImagebacking
@@ -168,13 +167,13 @@ Canvas2DResourceProvider::Canvas2DResourceProvider(
 
   image_pool_ = gpu::SharedImagePool<CanvasResourceSharedImage>::Create(
       image_info, sii,
-      is_accelerated_ ? "CanvasResourceRaster" : "CanvasResourceRasterGmb",
+      is_accelerated ? "CanvasResourceRaster" : "CanvasResourceRasterGmb",
       is_single_buffered ? 0 : kMaxRecycledCanvasResources, expiration_time);
 
-  resource_ = NewOrRecycledResource();
+  resource_ = NewOrRecycledResource(is_accelerated);
 
   // Single buffered mode supported only for accelerated canvas.
-  CHECK(!IsSingleBuffered() || is_accelerated_);
+  CHECK(!IsSingleBuffered() || is_accelerated);
 }
 
 Canvas2DResourceProvider::Canvas2DResourceProvider(
@@ -184,8 +183,7 @@ Canvas2DResourceProvider::Canvas2DResourceProvider(
     const gfx::ColorSpace& color_space,
     const gfx::HDRMetadata& hdr_metadata,
     WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider)
-    : is_accelerated_(false),
-      shared_image_interface_provider_(
+    : shared_image_interface_provider_(
           shared_image_interface_provider->GetWeakPtr()),
       hdr_metadata_(hdr_metadata) {
   CHECK(shared_image_interface_provider_);

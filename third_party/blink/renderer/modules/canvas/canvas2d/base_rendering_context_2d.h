@@ -465,6 +465,7 @@ class MODULES_EXPORT BaseRenderingContext2D
 
   Canvas2DColorParams color_params_;
   std::unique_ptr<Canvas2DResourceProvider> shared_image_provider_;
+  bool is_accelerated_ = false;
   sk_sp<SkSurface> surface_;
   std::unique_ptr<CanvasImageProvider> canvas_image_provider_;
   // Initialized on GPU-composited `shared_image_provider_` creation and

@@ -63,8 +63,6 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
 
   bool IsSingleBuffered() const;
 
-  bool IsAccelerated() const { return is_accelerated_; }
-
   int NumInflightResourcesForTesting() const { return num_inflight_resources_; }
 
   void SetResourceRecyclingEnabled(bool value);
@@ -85,7 +83,8 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
       scoped_refptr<CanvasResourceSharedImage>&& resource) override;
   void OnDestroyResource() override { --num_inflight_resources_; }
 
-  scoped_refptr<CanvasResourceSharedImage> NewOrRecycledResource();
+  scoped_refptr<CanvasResourceSharedImage> NewOrRecycledResource(
+      bool is_accelerated);
 
   base::WeakPtr<Canvas2DResourceProvider> CreateWeakPtr();
 
@@ -98,8 +97,6 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
   std::unique_ptr<gpu::SharedImagePool<CanvasResourceSharedImage>> image_pool_;
 
   scoped_refptr<CanvasResourceSharedImage> resource_;
-
-  const bool is_accelerated_;
 
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
   base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>
