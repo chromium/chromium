@@ -7075,7 +7075,7 @@
   {
     "name": "mobile-promo-on-desktop-with-qr-code-wave-2",
     "owners": ["bmcclure@google.com", "bling-pandamonium@google.com"],
-    "expiry_milestone": 155
+    "expiry_milestone": 172
   },
   {
     "name": "mobile-promo-on-desktop-with-reminder",
@@ -7090,7 +7090,7 @@
   {
     "name": "mobile-promo-on-desktop-with-reminder-wave-2",
     "owners": ["bmcclure@google.com", "bling-pandamonium@google.com"],
-    "expiry_milestone": 155
+    "expiry_milestone": 172
   },
   {
     "name": "model-based-page-classification",
