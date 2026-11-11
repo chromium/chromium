@@ -78,15 +78,6 @@ public interface Pane extends BackPressHandler {
      */
     void notifyLoadHint(@LoadHint int loadHint);
 
-    /**
-     * Called when a swipe starts to reveal this pane while another pane is still focused, right
-     * after {@link #notifyLoadHint} with {@link LoadHint#WARM}. If the swipe completes, this pane
-     * is focused and gets {@link LoadHint#HOT}; if it is cancelled, it gets {@link LoadHint#WARM}
-     * again. The pane can match the scroll position it will have once focused, so that it does not
-     * jump when the swipe completes.
-     */
-    default void prepareForSwipeReveal() {}
-
     /** Returns button data for the primary action on the page, such as adding a tab. */
     MonotonicObservableSupplier<FullButtonData> getActionButtonDataSupplier();
 

@@ -66,6 +66,7 @@ import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tab_ui.TabListMode;
 import org.chromium.chrome.browser.tab_ui.TabSwitcher;
 import org.chromium.chrome.browser.tab_ui.TabSwitcherCustomViewManager;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.toolbar.ToolbarPositionController;
 import org.chromium.chrome.browser.ui.actions.button.FullButtonData;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
@@ -156,6 +157,8 @@ public abstract class TabSwitcherPaneBase extends PaneBase
     protected @Nullable Tracker mTracker;
     private @Nullable PaneHubController mPaneHubController;
     private @Nullable Long mWaitForTabStateInitializedStartTimeMs;
+    // Whether a swipe shows this pane while another pane is still focused.
+    private boolean mIsPreviewing;
     private boolean mNativeInitialized;
 
     /**
@@ -256,13 +259,19 @@ public abstract class TabSwitcherPaneBase extends PaneBase
     @Override
     public void notifyLoadHint(@LoadHint int loadHint) {
         boolean isVisible = loadHint == LoadHint.HOT;
+        boolean wasPreviewing = mIsPreviewing;
+        mIsPreviewing = loadHint == LoadHint.PREVIEW;
         mIsVisibleSupplier.set(isVisible);
         removeDelayedCallbacks();
 
-        if (isVisible) {
+        // Show the tabs whenever the pane is on screen: focused, or sliding in during a swipe.
+        if (isVisible || mIsPreviewing) {
             createTabSwitcherPaneCoordinator();
             showAllTabs();
             setInitialScrollIndexOffset();
+        }
+
+        if (isVisible) {
             // TODO(crbug.com/40942549): This should only happen when the Pane becomes user visible
             // which might only happen after the Hub animation finishes. Figure out how to handle
             // that since the load hint for hot will come before the animation is started. Panes
@@ -273,8 +282,14 @@ public abstract class TabSwitcherPaneBase extends PaneBase
             cancelWaitForTabStateInitializedTimer();
         }
 
+        TabSwitcherPaneCoordinator coordinator = mTabSwitcherPaneCoordinatorSupplier.get();
+        // If a preview ends without focus, stop updating the tabs before cleanup runs.
+        boolean isPreviewEnding = wasPreviewing && !isVisible && !mIsPreviewing;
+        if (isPreviewEnding && coordinator != null) {
+            coordinator.prepareHiding();
+        }
+
         if (loadHint == LoadHint.WARM) {
-            TabSwitcherPaneCoordinator coordinator = mTabSwitcherPaneCoordinatorSupplier.get();
             if (coordinator != null) {
                 mHandler.postDelayed(mSoftCleanupRunnable, SOFT_CLEANUP_DELAY_MS);
             } else if (shouldEagerlyCreateCoordinator()) {
@@ -283,23 +298,12 @@ public abstract class TabSwitcherPaneBase extends PaneBase
         }
 
         if (loadHint == LoadHint.COLD) {
-            TabSwitcherPaneCoordinator coordinator = mTabSwitcherPaneCoordinatorSupplier.get();
             if (coordinator != null) {
                 mHandler.postDelayed(mSoftCleanupRunnable, SOFT_CLEANUP_DELAY_MS);
                 mHandler.postDelayed(mHardCleanupRunnable, HARD_CLEANUP_DELAY_MS);
                 mHandler.postDelayed(mDestroyCoordinatorRunnable, DESTROY_COORDINATOR_DELAY_MS);
             }
         }
-    }
-
-    @Override
-    public void prepareForSwipeReveal() {
-        // Cancel the soft cleanup that the WARM hint just scheduled so the cards keep their
-        // thumbnails and favicons while the swipe shows this pane. A cancelled swipe sends WARM
-        // again, which reschedules it.
-        removeDelayedCallbacks();
-        // Scroll to the current tab now so the pane does not jump when the swipe completes.
-        setInitialScrollIndexOffset();
     }
 
     @Override
@@ -745,6 +749,32 @@ public abstract class TabSwitcherPaneBase extends PaneBase
         mRootView.removeAllViews();
         mTabSwitcherCustomViewManager.setDelegate(null);
         coordinator.destroy();
+    }
+
+    /**
+     * Returns whether to show the tabs of {@code tabModel}: while the pane is visible and its model
+     * is active, or during a swipe preview.
+     */
+    protected boolean shouldShowTabs(TabModel tabModel) {
+        return mIsPreviewing || (mIsVisibleSupplier.get() && tabModel.isActiveModel());
+    }
+
+    /** Returns whether a swipe is previewing this pane. */
+    protected boolean isPreviewing() {
+        return mIsPreviewing;
+    }
+
+    /**
+     * Shows {@code tabs} in {@code coordinator}. During a swipe preview, this leaves message cards
+     * untouched, since they belong to the focused pane.
+     */
+    protected void resetCoordinatorTabs(
+            TabSwitcherPaneCoordinator coordinator, @Nullable List<Tab> tabs) {
+        if (mIsPreviewing) {
+            coordinator.showPreviewTabs(tabs);
+        } else {
+            coordinator.resetWithListOfTabs(tabs);
+        }
     }
 
     protected void startWaitForTabStateInitializedTimer() {

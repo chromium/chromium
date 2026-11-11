@@ -801,13 +801,27 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
      * @param tabList The {@link TabList} to show tabs for.
      */
     public void resetWithListOfTabs(@Nullable List<Tab> tabs) {
-        mMessageManager.beforeReset();
+        resetTabs(tabs, /* updateMessages= */ true);
+    }
+
+    /**
+     * Shows {@code tabs} during a swipe preview. Unlike {@link #resetWithListOfTabs}, this does not
+     * update message cards, because they belong to the focused pane.
+     *
+     * @param tabs The tabs to show, or null to clear the list.
+     */
+    public void showPreviewTabs(@Nullable List<Tab> tabs) {
+        resetTabs(tabs, /* updateMessages= */ false);
+    }
+
+    private void resetTabs(@Nullable List<Tab> tabs, boolean updateMessages) {
+        if (updateMessages) mMessageManager.beforeReset();
         // Quick mode being false here ensures the selected tab's thumbnail gets updated. With Hub
         // the TabListCoordinator no longer triggers thumbnail captures so this shouldn't guard
         // against the large amount of work that is used to.
         mTabListCoordinator.resetWithListOfTabs(
                 tabs, /* tabGroupSyncIds= */ null, /* quickMode= */ false);
-        mMessageManager.afterReset(tabs == null ? 0 : tabs.size());
+        if (updateMessages) mMessageManager.afterReset(tabs == null ? 0 : tabs.size());
         mTabListOnScrollListener.postUpdate(mTabListCoordinator.getContainerView());
         if (mTabGroupLabeller != null) {
             mTabGroupLabeller.showAll();

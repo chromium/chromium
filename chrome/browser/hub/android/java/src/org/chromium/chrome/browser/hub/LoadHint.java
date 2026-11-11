@@ -17,7 +17,7 @@ import java.lang.annotation.RetentionPolicy;
  *
  * <p>New entries should be added before {@link LoadHint.COUNT}.
  */
-@IntDef({LoadHint.COLD, LoadHint.WARM, LoadHint.HOT, LoadHint.COUNT})
+@IntDef({LoadHint.COLD, LoadHint.WARM, LoadHint.HOT, LoadHint.PREVIEW, LoadHint.COUNT})
 @Retention(RetentionPolicy.SOURCE)
 @NullMarked
 public @interface LoadHint {
@@ -32,6 +32,14 @@ public @interface LoadHint {
     /** The pane is visible to users now and can use any resources needed. */
     int HOT = 2;
 
+    /**
+     * The pane is on screen during a gesture, such as a swipe between panes, but another pane is
+     * still focused. The pane should show the content it will have once focused, without acting as
+     * the focused pane. {@link #HOT} follows if the pane gets focus, otherwise {@link #WARM} or
+     * {@link #COLD}.
+     */
+    int PREVIEW = 3;
+
     /** Must be last. */
-    int COUNT = 3;
+    int COUNT = 4;
 }

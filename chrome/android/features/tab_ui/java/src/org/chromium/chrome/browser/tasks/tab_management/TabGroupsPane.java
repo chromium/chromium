@@ -119,7 +119,9 @@ public class TabGroupsPane extends PaneBase {
 
     @Override
     public void notifyLoadHint(@LoadHint int loadHint) {
-        if (loadHint == LoadHint.HOT && mTabGroupListCoordinator == null) {
+        // Build the list whenever the pane is on screen: focused, or sliding in during a swipe.
+        boolean shouldShowList = loadHint == LoadHint.HOT || loadHint == LoadHint.PREVIEW;
+        if (shouldShowList && mTabGroupListCoordinator == null) {
             mTabGroupListCoordinator =
                     new TabGroupListCoordinator(
                             mContext,

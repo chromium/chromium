@@ -13,7 +13,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
-import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -29,7 +28,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -556,6 +554,7 @@ public class HubCoordinatorUnitTest {
 
     @Test
     public void prepareAndGetAdjacentPaneView_edgePanesReturnNull() {
+        mHubVisibilitySupplier.set(true);
         FrameLayout tabSwitcherView = new FrameLayout(mActivityController.get());
         FrameLayout incognitoTabSwitcherView = new FrameLayout(mActivityController.get());
         when(mTabSwitcherPane.getRootView()).thenReturn(tabSwitcherView);
@@ -568,9 +567,7 @@ public class HubCoordinatorUnitTest {
         assertEquals(
                 incognitoTabSwitcherView,
                 mHubCoordinator.prepareAndGetAdjacentPaneView(/* isSwipeLeft= */ true));
-        InOrder inOrder = inOrder(mIncognitoTabSwitcherPane);
-        inOrder.verify(mIncognitoTabSwitcherPane).notifyLoadHint(LoadHint.WARM);
-        inOrder.verify(mIncognitoTabSwitcherPane).prepareForSwipeReveal();
+        verify(mIncognitoTabSwitcherPane).notifyLoadHint(LoadHint.PREVIEW);
 
         // Move to last pane (INCOGNITO_TAB_SWITCHER).
         assertTrue(mPaneManager.focusPane(PaneId.INCOGNITO_TAB_SWITCHER));
@@ -583,18 +580,53 @@ public class HubCoordinatorUnitTest {
         assertEquals(
                 tabSwitcherView,
                 mHubCoordinator.prepareAndGetAdjacentPaneView(/* isSwipeLeft= */ false));
-        verify(mTabSwitcherPane).notifyLoadHint(LoadHint.WARM);
+        verify(mTabSwitcherPane).notifyLoadHint(LoadHint.PREVIEW);
     }
 
     @Test
     public void onSwipeSwitchCancel_setsLoadHintToWarm() {
-        mHubCoordinator.onSwipeSwitchCancel(true);
-        verify(mIncognitoTabSwitcherPane).notifyLoadHint(LoadHint.WARM);
+        mHubVisibilitySupplier.set(true);
+        mHubCoordinator.prepareAndGetAdjacentPaneView(/* isSwipeLeft= */ true);
+        clearInvocations(mIncognitoTabSwitcherPane);
 
+        mHubCoordinator.onSwipeSwitchCancel(true);
+
+        verify(mIncognitoTabSwitcherPane).notifyLoadHint(LoadHint.WARM);
+    }
+
+    @Test
+    public void onSwipeSwitchCancel_adjacentPaneChanged_warmsPreviewedPane() {
+        mHubVisibilitySupplier.set(true);
         assertTrue(mPaneManager.focusPane(PaneId.INCOGNITO_TAB_SWITCHER));
+        mHubCoordinator.prepareAndGetAdjacentPaneView(/* isSwipeLeft= */ false);
         clearInvocations(mTabSwitcherPane);
-        mHubCoordinator.onSwipeSwitchCancel(false);
+
+        // No pane is adjacent in this direction, so only the remembered preview gets WARM.
+        mHubCoordinator.onSwipeSwitchCancel(/* isSwipeLeft= */ true);
+
         verify(mTabSwitcherPane).notifyLoadHint(LoadHint.WARM);
+    }
+
+    @Test
+    public void onSwipeSwitchComplete_previewedPaneFocused_notWarmed() {
+        mHubVisibilitySupplier.set(true);
+        mHubCoordinator.prepareAndGetAdjacentPaneView(/* isSwipeLeft= */ true);
+        clearInvocations(mIncognitoTabSwitcherPane);
+
+        mHubCoordinator.onSwipeSwitchComplete(true);
+
+        verify(mIncognitoTabSwitcherPane, never()).notifyLoadHint(LoadHint.WARM);
+    }
+
+    @Test
+    public void destroy_duringPreview_warmsPreviewedPane() {
+        mHubVisibilitySupplier.set(true);
+        mHubCoordinator.prepareAndGetAdjacentPaneView(/* isSwipeLeft= */ true);
+        clearInvocations(mIncognitoTabSwitcherPane);
+
+        mHubCoordinator.destroy();
+
+        verify(mIncognitoTabSwitcherPane).notifyLoadHint(LoadHint.WARM);
     }
 
     @Test
