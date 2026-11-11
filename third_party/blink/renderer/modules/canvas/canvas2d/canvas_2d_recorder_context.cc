@@ -27,7 +27,6 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/numerics/angle_conversions.h"
 #include "base/numerics/safe_conversions.h"
@@ -387,10 +386,7 @@ Canvas2DRecorderContext::Canvas2DRecorderContext(float effective_zoom)
   state_stack_.push_back(MakeGarbageCollected<CanvasRenderingContext2DState>());
 }
 
-Canvas2DRecorderContext::~Canvas2DRecorderContext() {
-  UMA_HISTOGRAM_CUSTOM_COUNTS("Blink.Canvas.MaximumStateStackDepth",
-                              max_state_stack_depth_, 1, 33, 32);
-}
+Canvas2DRecorderContext::~Canvas2DRecorderContext() = default;
 
 void Canvas2DRecorderContext::save() {
   if (isContextLost()) [[unlikely]] {
@@ -407,8 +403,6 @@ void Canvas2DRecorderContext::save() {
   state_stack_.push_back(MakeGarbageCollected<CanvasRenderingContext2DState>(
       GetState(), CanvasRenderingContext2DState::kDontCopyClipList,
       CanvasRenderingContext2DState::SaveType::kSaveRestore));
-  max_state_stack_depth_ =
-      std::max(state_stack_.size(), max_state_stack_depth_);
 
   if (canvas) {
     canvas->save();
@@ -522,8 +516,6 @@ void Canvas2DRecorderContext::beginLayerImpl(ScriptState* script_state,
       SaveLayerForState(state, filter, layer_canvas);
   state_stack_.push_back(MakeGarbageCollected<CanvasRenderingContext2DState>(
       state, CanvasRenderingContext2DState::kDontCopyClipList, save_type));
-  max_state_stack_depth_ =
-      std::max(state_stack_.size(), max_state_stack_depth_);
 
   ValidateStateStack();
 
