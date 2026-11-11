@@ -9424,7 +9424,7 @@
   {
     "name": "tab-bottom-sheet-edge-to-edge",
     "owners": [ "bbetini@google.com", "clank-tab-dev@google.com" ],
-    "expiry_milestone": 160
+    "expiry_milestone": 170
   },
   {
     "name": "tab-bottom-sheet-full-height",
