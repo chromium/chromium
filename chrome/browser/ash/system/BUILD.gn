@@ -20,8 +20,6 @@ static_library("system") {
     "input_device_settings_impl_ozone.cc",
     "pointer_device_observer.cc",
     "pointer_device_observer.h",
-    "procfs_util.cc",
-    "procfs_util.h",
     "system_clock.cc",
     "system_clock.h",
     "system_clock_observer.cc",

@@ -186,7 +186,6 @@ class MojoUtils;
 }
 namespace system {
 class StatisticsProviderImpl;
-class ProcStatFile;
 }  // namespace system
 }  // namespace ash
 namespace audio {
@@ -612,7 +611,6 @@ class BASE_EXPORT ScopedAllowBlocking {
   friend class ash::StartupCustomizationDocument;  // http://crosbug.com/11103
   friend class ash::StartupUtils;
   friend class ash::converters::diagnostics::MojoUtils;  // http://b/322741627
-  friend class ash::system::ProcStatFile;
   friend class base::AdjustOOMScoreHelper;
   friend class base::ChromeOSVersionInfo;
   friend class base::Process;
