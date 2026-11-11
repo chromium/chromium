@@ -61,6 +61,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -182,12 +183,9 @@ void EnclaveAuthenticatorTestBase::SetUpInProcessBrowserTestFixture() {
   SyncTest::SetUpInProcessBrowserTestFixture();
   subscription_ =
       BrowserContextDependencyManager::GetInstance()
-          ->RegisterCreateServicesCallbackForTesting(
-              base::BindRepeating([](content::BrowserContext* context) {
-                IdentityTestEnvironmentProfileAdaptor::
-                    SetIdentityTestEnvironmentFactoriesOnBrowserContext(
-                        context);
-              }));
+          ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
+              &EnclaveAuthenticatorTestBase::OnWillCreateBrowserContextServices,
+              base::Unretained(this)));
 }
 
 void EnclaveAuthenticatorTestBase::SetUpOnMainThread() {
@@ -197,21 +195,6 @@ void EnclaveAuthenticatorTestBase::SetUpOnMainThread() {
       std::make_unique<IdentityTestEnvironmentProfileAdaptor>(
           browser()->GetProfile());
   identity_test_env().SetAutomaticIssueOfAccessTokens(true);
-
-  // Use the real CMTG client, talking to `cmtg_device_key_provider_fake()`
-  // through `url_loader_factory_`.
-  CmtgDeviceKeyProviderFactory::GetInstance()->SetTestingFactory(
-      browser()->GetProfile(),
-      base::BindOnce(
-          [](network::TestURLLoaderFactory* url_loader_factory,
-             content::BrowserContext* context)
-              -> std::unique_ptr<KeyedService> {
-            return std::make_unique<webauthn::CryptauthCmtgDeviceKeyProvider>(
-                *IdentityManagerFactory::GetForProfile(
-                    Profile::FromBrowserContext(context)),
-                url_loader_factory->GetSafeWeakWrapper());
-          },
-          base::Unretained(&url_loader_factory_)));
 
   sync_harness_ = SyncServiceImplHarness::Create(
       browser()->GetProfile(), SyncServiceImplHarness::SigninType::FAKE_SIGNIN);
@@ -236,6 +219,26 @@ void EnclaveAuthenticatorTestBase::SetUpOnMainThread() {
 void EnclaveAuthenticatorTestBase::TearDownOnMainThread() {
   identity_test_env_adaptor_.reset();
   SyncTest::TearDownOnMainThread();
+}
+
+void EnclaveAuthenticatorTestBase::OnWillCreateBrowserContextServices(
+    content::BrowserContext* context) {
+  IdentityTestEnvironmentProfileAdaptor::
+      SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
+  // Use the real CMTG client, talking to `cmtg_device_key_provider_fake()`
+  // through `url_loader_factory_`.
+  CmtgDeviceKeyProviderFactory::GetInstance()->SetTestingFactory(
+      context,
+      base::BindRepeating(
+          [](scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+             content::BrowserContext* context)
+              -> std::unique_ptr<KeyedService> {
+            return std::make_unique<webauthn::CryptauthCmtgDeviceKeyProvider>(
+                CHECK_DEREF(IdentityManagerFactory::GetForProfile(
+                    Profile::FromBrowserContext(context))),
+                url_loader_factory);
+          },
+          url_loader_factory_.GetSafeWeakWrapper()));
 }
 
 signin::IdentityTestEnvironment&

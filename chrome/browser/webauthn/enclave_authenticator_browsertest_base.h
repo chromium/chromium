@@ -48,6 +48,10 @@ namespace base {
 class CommandLine;
 }  // namespace base
 
+namespace content {
+class BrowserContext;
+}  // namespace content
+
 namespace signin {
 class IdentityTestEnvironment;
 }  // namespace signin
@@ -86,6 +90,8 @@ class EnclaveAuthenticatorTestBase : public SyncTest {
   void SetUpInProcessBrowserTestFixture() override;
   void SetUpOnMainThread() override;
   void TearDownOnMainThread() override;
+
+  void OnWillCreateBrowserContextServices(content::BrowserContext* context);
 
   signin::IdentityTestEnvironment& identity_test_env();
   webauthn::PasskeyModel& passkey_model();
@@ -135,7 +141,6 @@ class EnclaveAuthenticatorTestBase : public SyncTest {
   scoped_refptr<base::TestMockTimeTaskRunner> timer_task_runner_;
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
   std::unique_ptr<TempDir> temp_dir_;
-  base::CallbackListSubscription subscription_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
   std::unique_ptr<SyncServiceImplHarness> sync_harness_;
@@ -162,6 +167,7 @@ class EnclaveAuthenticatorTestBase : public SyncTest {
   std::unique_ptr<crypto::ScopedUserVerifyingKeysSupportedOverride>
       uvkey_override_;
   network::TestURLLoaderFactory url_loader_factory_;
+  base::CallbackListSubscription subscription_;
   std::unique_ptr<device::BluetoothAdapterFactory::GlobalOverrideValues>
       bluetooth_values_for_testing_;
   std::variant<crypto::ScopedNullUserVerifyingKeyProvider,

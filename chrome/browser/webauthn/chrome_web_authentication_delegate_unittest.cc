@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/rand_util.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -25,6 +26,8 @@
 #include "chrome/browser/webauthn/webauthn_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "chrome/test/base/testing_profile.h"
+#include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "components/webauthn/core/browser/passkey_change_quota_tracker.h"
@@ -46,7 +49,6 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_MAC)
-#include "chrome/test/base/testing_profile.h"
 #include "device/fido/mac/authenticator_config.h"
 #endif  // BUILDFLAG(IS_MAC)
 
@@ -92,12 +94,6 @@ class ChromeWebAuthenticationDelegateTest
  public:
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
-    PasskeyModelFactory::GetInstance()->SetTestingFactoryAndUse(
-        profile(),
-        base::BindRepeating(
-            [](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
-              return std::make_unique<webauthn::TestPasskeyModel>();
-            }));
     ChromeAuthenticatorRequestDelegate::SetGlobalObserverForTesting(&observer_);
   }
 
@@ -108,6 +104,17 @@ class ChromeWebAuthenticationDelegateTest
   }
 
  protected:
+  TestingProfile::TestingFactories GetTestingFactories() const override {
+    return {
+        TestingProfile::TestingFactory{
+            PasskeyModelFactory::GetInstance(),
+            base::BindRepeating(
+                [](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
+                  return std::make_unique<webauthn::TestPasskeyModel>();
+                })},
+    };
+  }
+
   Observer observer_;
 };
 
