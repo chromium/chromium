@@ -558,7 +558,6 @@
 <translation id="5305688511332277257">Нічога не ўсталявана</translation>
 <translation id="5317780077021120954">Захаваць</translation>
 <translation id="5318819489018851358">Абагуліць з Linux</translation>
-<translation id="5330145655348521461">Гэтыя файлы адкрыты на іншым працоўным стале. Каб бачыць яго, перайдзіце на профіль <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
 <translation id="5330512191124428349">Атрымаць інфармацыю</translation>
 <translation id="535792325654997756">Чалавек з катамі</translation>
 <translation id="5358764674931277">Частата кадраў</translation>
@@ -699,7 +698,6 @@
 <translation id="636254897931573416">Несапраўднае значэнне супадзення па суфіксе дамена</translation>
 <translation id="6364301859968397756">Сховішча арганізацыі запоўнена</translation>
 <translation id="6367976544441405720">Мікрааўтобус</translation>
-<translation id="637062427944097960">Гэты файл адкрыты на іншым працоўным стале. Каб праглядзець яго, перайдзіце на профіль <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
 <translation id="6394388407447716302">Толькі чытанне</translation>
 <translation id="6395575651121294044">Элементаў: <ph name="NUMBER_OF_FILES" /></translation>
 <translation id="6407769893376380348">Не ўдалося перамясціць файл "<ph name="FILE_NAME" />", бо ён зашыфраваны.</translation>

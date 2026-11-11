@@ -7,10 +7,8 @@
 <translation id="1026101648481255140">Qalisa Kabusha Ukufaka</translation>
 <translation id="102763973188675173">Enza ngendlela oyifisayo uphinde ulawule i-Google Chrome. Isibuyekezo siyatholakala.</translation>
 <translation id="1028061813283459617">Ukuze usule idatha yopheqululo kule divayisi kuphela, kuyilapho uyigcina ku-Google Account yakho, <ph name="BEGIN_LINK" />phuma ngemvume ku-Chrome<ph name="END_LINK" />.</translation>
-<translation id="1028770388543831319">Thola izakhi zokuphepha ezihamba phambili zeGoogle usendleleni, nge-app yeChrome efonini yakho</translation>
 <translation id="1036348656032585052">Vala</translation>
 <translation id="1042270987544905725">Chofoza ukuze uvale ibhokisi lokungena ngemvume leChrome</translation>
-<translation id="1051793555070215510">Sisize sithuthukise i-Incognito ngokuthatha le nhlolovo yomzuzu o-1.</translation>
 <translation id="1055295352198814912">Bonisa iGemini kuChrome kubha yemenyu yeMac bese uvula isinqamuleli sekhibhodi</translation>
 <translation id="1059838145689930908">Ukuze usebenzise lesi sandiso njenge-<ph name="USER_EMAIL_ADDRESS" />, ngena ngemvume kuChrome.</translation>
 <translation id="1065672644894730302">Okuncamelayo kwakho akukwazi ukufundwa.
@@ -18,7 +16,6 @@
 Ezinye izici kungenzeka zingabi khona futhi izinguquko kokuncamelayo ngeke zize zilondolozwe.</translation>
 <translation id="1086486568852410168">Sesha ngama-Google Lens</translation>
 <translation id="1088300314857992706"><ph name="USER_EMAIL_ADDRESS" /> ngaphambilini ibikade isebenzisa i-Chrome</translation>
-<translation id="110877069173485804">Lena yi-Chrome yakho</translation>
 <translation id="1125124144982679672">Ubani osebenzisa i-Chrome?</translation>
 <translation id="1142745911746664600">Ayikwazi ukubuyekeza i-Chrome</translation>
 <translation id="1148360048981192980">Ngokuzayo uma uvula iChrome ku-<ph name="DEVICE_TYPE" /> yakho, uzobona umyalelo wokusebenzisa Umphathi Wephasiwedi YeGoogle.</translation>
@@ -77,7 +74,6 @@ Ezinye izici kungenzeka zingabi khona futhi izinguquko kokuncamelayo ngeke zize 
             • Setha kabusha izinqamuleli zeChrome
             <ph name="LINE_BREAKS" />
             Amabhukhimakhi, umlando, namaphasiwedi alondoloziwe ngeke aze athinteke.</translation>
-<translation id="1619887657840448962">Ukuze kwenziwe i-Chrome iphephile, sikhubaza isandiso esilandelayo esingafakiwe kuhlu ku-<ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> futhi kungenzeka singezwe ngaphandle kolwazi lakho.</translation>
 <translation id="1628000112320670027">Thola usizo nge-Chrome</translation>
 <translation id="1632241302126471515">Sesha ngeChrome Canary</translation>
 <translation id="1640672724030957280">Iyadawuniloda...</translation>
@@ -102,7 +98,6 @@ Ezinye izici kungenzeka zingabi khona futhi izinguquko kokuncamelayo ngeke zize 
 <translation id="1838374766361614909">Sula usesho</translation>
 <translation id="1843347690926158494">Sesha le thebhu ngeGoogle Lens</translation>
 <translation id="1849248141818021764">Ngumuntu onomushwana wakho wokungena kuphela ongafunda idatha yakho ebetheliwe. Umshwana wokungena awuthunyelwa noma ulondolozwe yiGoogle. Uma ukhohlwa umushwana wakho wokungena noma ufuna ukushintsha le sethingi, uzodinga <ph name="BEGIN_LINK" />ukususa idatha yeChrome ku-akhawunti yakho<ph name="END_LINK" />.</translation>
-<translation id="1856809424654973980">Sebenzisa i-app yeChrome ukuze uqhubeke ubhrawuza usendleleni</translation>
 <translation id="1867503717113754604">Ngena ngemvume kuChrome ngeGoogle Account yakho ukuze usebenzise <ph name="START_GLIC_STYLING" />iGemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="1873233029667955273">I-Google Chrome akusona isiphequluli sakho esizenzakalelayo</translation>
 <translation id="1874309113135274312">I-beta yeGoogle Chrome (mDNS-In)</translation>
@@ -111,23 +106,16 @@ Ezinye izici kungenzeka zingabi khona futhi izinguquko kokuncamelayo ngeke zize 
 <translation id="1880677175115548835">Khetha umbhalo</translation>
 <translation id="1896602904211344018">Thola i-app yeChrome</translation>
 <translation id="1919130412786645364">Vumela ukungena ngemvume kwe-Chrome</translation>
-<translation id="1925069572871307609">Ukuze uthole izibuyekezo zesikhathi esizayo zeGoogle Chrome, uzodinga iWindows 10 uhlobo 1809 noma lwakamuva. Le khompyutha isebenzisa uhlobo oludala lweWindows 10.</translation>
-<translation id="1953553007165777902">Iyadawuniloda... Kusele imizuzu engu-<ph name="MINUTE" /></translation>
-<translation id="1975400514743766362">Yenza iGoogle iphephe usendleleni nge-app yeChrome ku-<ph name="DEVICE_TYPE" /> yakho</translation>
 <translation id="1979600810166324878">Hlala uphephile lapho usendleleni Ngokubhrawuza Okuphephe Ngokuthuthukisiwe kuChrome ye-iOS</translation>
 <translation id="2001586581944147178">Kwenze kube nzima kubantu abanokufinyelela kuthrafikhi yakho ye-inthanethi ukuze babone ukuthi imaphi amasayithi owavakashelayo. I-Chrome isebenzisa ukuxhuma okuvikelekile ukuze ibheke ikheli lasesizindeni se-inthanethi lesayithi ku-DNS (Isistimu Yokwetha Isizinda).</translation>
-<translation id="2005658457661191636">Sebenzisa i-app yeChrome ukuze usebenzise amathuluzi okuthenga angcono kakhulu usendleleni</translation>
-<translation id="2018528049276128029">Iphrofayela ngalinye linolwazi lwayo lwe-Chrome njengamabhukhimakhi, umlando, amaphasiwedi, nokuningi</translation>
 <translation id="2018879682492276940">Ukufakwa kwehlulekile. Sicela uzame futhi.</translation>
 <translation id="2024959665595762054">Ukuze usebenzise futhi ulondoloze idatha yeChrome kuGoogle Account yakho, qinisekisa ukuthi nguwe</translation>
 <translation id="2034233344106846793">IChrome ithuthukisa ukuxhuma okungavikelekile ku-HTTPS ngokuzenzekelayo lapho kungenzeka</translation>
 <translation id="2039417478970545937">Amasethingi.</translation>
-<translation id="2040220733769034247">Skena ikhodi ye-QR ngefoni yakho ukuze udawunilode iChrome bese ungena ngemvume kuGoogle Account yakho.</translation>
 <translation id="2044908892530830113">Bonisa usesho ngeChrome kubha yemenyu yeMac bese uvula isinqamuleli sekhibhodi</translation>
 <translation id="2050189601866423230">Ungaphina Imodi ye-AI yeGoogle Search ukuze ubuze imibuzo kalula njengoba ubhrawuza</translation>
 <translation id="2060311596979880693">Impumelelo! Manje usungakwazi ukubuza imibuzo kalula njengoba ubhrawuza ngeGoogle Search kuChrome</translation>
 <translation id="2091012649849228750">Ukuze uthole izibuyekezo zesikhathi esizayo ze-Google Chrome, uzodinga i-Windows 10 noma yakamuva. Le khompyutha isebenzisa i-Windows 8.</translation>
-<translation id="2094648590148273905">Imigomo ye-ChromeOS Flex</translation>
 <translation id="2094919256425865063">Yekela i-Chrome yize kunjalo?</translation>
 <translation id="2096213354152647998">Awukavakashi kamuva nje. IChrome isuse i-<ph name="PERMISSION" />.</translation>
 <translation id="2106831557840787829">I-ChromeOS Flex yenzeka <ph name="BEGIN_LINK_CROS_OSS" />ngenxa yesofthiwe yomthombo ovulekile eyengeziwe<ph name="END_LINK_CROS_OSS" />, njengoba kunjalo <ph name="BEGIN_LINK_LINUX_OSS" />ngendawo yokuthuthukiswa kwe-Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
@@ -136,7 +124,6 @@ Ezinye izici kungenzeka zingabi khona futhi izinguquko kokuncamelayo ngeke zize 
 <translation id="2120620239521071941">Lokhu kuzosusa izinto ezingu-<ph name="ITEMS_COUNT" /> kusuka kule divayisi. kuze uthole idatha yakho emuva kwesikhathi, ngena ngemvume ku-Chrome njengo-<ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Qalisa kabusha ukuze Ubuyekeze i-&amp;Chrome</translation>
 <translation id="2123055963409958220">Siza ukwenza i-Chrome ibengcono ngokubika <ph name="BEGIN_LINK" />izilungiselelo zamanje<ph name="END_LINK" /></translation>
-<translation id="2125838419757773031">Khetha isifunda sesikrini ukuze useshe</translation>
 <translation id="2126108037660393668">Ifayela elidawunilodiwe aliphumelelanga lapho liqinisekiswa.</translation>
 <translation id="2128411189117340671">Phatha amaphrofayela e-Chrome</translation>
 <translation id="2137162749895930932">Vala isikrini sokuhumusha</translation>
@@ -148,7 +135,6 @@ Ezinye izici kungenzeka zingabi khona futhi izinguquko kokuncamelayo ngeke zize 
 <translation id="2174917724755363426">Ukufaka akuqediwe. Uqinisekile ufuna ukukhansela?</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2190166659037789668">Buyekeza iphutha lokuchekha: <ph name="UPDATE_CHECK_ERROR" />.</translation>
-<translation id="2216543877350048334">Ukuze ususe i-Google Account yakho ku-Chrome, phuma ngemvume</translation>
 <translation id="2236949375853147973">Umsebenzi Wami</translation>
 <translation id="22791603784558743">Vala iGemini kuChrome Dev</translation>
 <translation id="2283228908180457226">Isithonjana esisha, isinqamuleli esifanayo: Chofoza ukuze ubuze imibuzo njengoba ubhrawuza ngephaneli eseceleni yeGoogle Search.</translation>
@@ -176,14 +162,12 @@ Ezinye izici kungenzeka zingabi khona futhi izinguquko kokuncamelayo ngeke zize 
 <translation id="2563121210305478421">Qalisa kabusha i-Chrome?</translation>
 <translation id="2569974318947988067">I-Chrome izozama ukuthuthukisa ukufuna ukuya ku-HTTPS</translation>
 <translation id="2571392474191184472">Inhlangano yakho iphatha iChrome</translation>
-<translation id="2574930892358684005">U-<ph name="EXISTING_USER" /> usengenile ngemvume kakade kule phrofayela ye-Chrome. Ukuze uqhubeke nokuphequlula ngokwehlukile, i-Chrome ingakwazi ukukudalela iphrofayela yakho.</translation>
 <translation id="2575799939951057838">Ukuvikeleka, iChrome ivala ukulungiselelwa kweJavaScript uma uvakashela isayithi okokuqala ngqa.
 
 Uma leli khasi lingasebenzi njengoba kulindelekile, zama ukuvumela ukulungiselela.</translation>
 <translation id="2580411288591421699">Ayikwazi ukufaka inguqulo ye-Google Chrome efana nalena esebenza manje. Sicela uvale i-Google Chrome uphinde uzame futhi.</translation>
 <translation id="2586406160782125153">Lokhu kuzosusa idatha yakho yokuphequlula kusukela kule divayisi. Ukuze uthole idatha yakho emuva kwesikhathi, ngena ngemvume ku-Chrome njengo-<ph name="USER_EMAIL" />.</translation>
 <translation id="259935314519650377">Yehlulekile ukufaka enqolobaneni isifaki esidawunilodiwe. Iphutha: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
-<translation id="2608461706055011366">Thola amazwibela asheshayo ale dokhumenti bese ubuza imibuzo ngeGemini kuChrome</translation>
 <translation id="2620436844016719705">Isistimu</translation>
 <translation id="263447411082773721">Gcina amaphasiwedi akho, amabhukhimakhi, nomlando kuvunyelaniswe ngokuphelele kuwo wonke amadivayisi. Finyelela kalula izakhi ozaziyo nozithandayo ngokubuyekeza ibhrawuza yakho ezenzakalelayo ibe yiChrome. IChrome izophinwa kutaskbar yakho ukuze ifinyeleleke ngokushesha.</translation>
 <translation id="2645435784669275700">I-ChromeOS</translation>
@@ -195,7 +179,6 @@ Uma leli khasi lingasebenzi njengoba kulindelekile, zama ukuvumela ukulungiselel
 <translation id="2674238339205910678">IChromeOS Flex ayikwazanga ukulondoloza idatha yeChrome kuGoogle Account yakho ngoba imininingwane yakho yokungena ngemvume ku-akhawunti iphelelwe yisikhathi</translation>
 <translation id="2681444469812712297">Vula i-<ph name="URL" /> ethebhini entsha ye-Google Chrome.</translation>
 <translation id="2699790011615497488">Vula iGemini kuChrome Beta</translation>
-<translation id="2712141162840347885">Khetha noma yini ukuze useshe ngeGoogle Lens noma ucindezele okuthi escape ukuze uphume kuGoogle Lens</translation>
 <translation id="2738871930057338499">Ayikwazi ukuxhuma ku-inthanethi I-HTTP 403 Yenqatshelwe. Sicela uchekhe ukulungiselelwa kommeleli wakho.</translation>
 <translation id="2742320827292110288">Isexwayiso: I-Google Chrome ayikwazi ukuvimbela izandiso kusukela ekurekhodeni umlando wesiphequluli sakho. Ukuze ukhubaze lesi sandiso kumodi ye-incognito, yekisa ukukhetha le nketho.</translation>
 <translation id="2747021967398957654">{count,plural, =1{Enye idatha yakho yeChrome ayikalondolozwa kuGoogle Account yakho njengamanje. Zama ukulinda imizuzu embalwa ngaphambi kokuphuma ngemvume. Uma uphuma ngemvume manje, le datha (into e-1) izosulwa.}one{Enye idatha yakho yeChrome ayikalondolozwa kuGoogle Account yakho njengamanje. Zama ukulinda imizuzu embalwa ngaphambi kokuphuma ngemvume. Uma uphuma ngemvume manje, le datha (izinto ezingu-{count}) izosulwa.}other{Enye idatha yakho yeChrome ayikalondolozwa kuGoogle Account yakho njengamanje. Zama ukulinda imizuzu embalwa ngaphambi kokuphuma ngemvume. Uma uphuma ngemvume manje, le datha (izinto ezingu-{count}) izosulwa.}}</translation>
@@ -223,12 +206,10 @@ Uma leli khasi lingasebenzi njengoba kulindelekile, zama ukuvumela ukulungiselel
 <translation id="2945997411976714835">Iphutha lokufaka: Inqubo yesifaki yehlulekile ukuqala.</translation>
 <translation id="2959224682348913614">U-<ph name="EXISTING_USER" /> usevele ungene ngemvume. Ukugcina ukubhrawuza kwakho kuhlukile, ngena ngemvume kuChrome kuphrofayela yakho njengo-<ph name="USER_EMAIL_ADDRESS" />. Uzophinde uthole amaphasiwedi wakho nokuningi ku-<ph name="DEVICE" />.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - Inethiwekhi Yokungena ngemvume - i-Chrome</translation>
-<translation id="2970681950995291301">Ukuze ususe i-Google Account yakho ku-Chrome, phuma ngemvume ku-Chrome ekhasini Lamasethingi</translation>
 <translation id="2976869732253036751">Thola isaziso sokulandelela intengo ngeChrome efonini yakho</translation>
 <translation id="2991167882679440829">Amaphasiwedi akho kanye nenye idatha yeChrome oyilondoloze kuGoogle Account yakho izosuswa kule divayisi. Ukuze uphinde uzisebenzise kuChrome, ngena ngemvume futhi.</translation>
 <translation id="2994465299455873643">Inikeza amasevisi okubethela nendlela evikelekile yokuthola i-<ph name="BROWSER_NAME" /> uma iphelelwa yisikhathi. Uma le sevisi ikhutshaziwe, i-<ph name="BROWSER_NAME" /> ingalahlekelwa ukufinyelela kudatha ebethelwe, futhi i-<ph name="BROWSER_NAME" /> kungenzeka ingakwazi ukuzithola.</translation>
 <translation id="3003694935412297923">Yonke imisebenzi</translation>
-<translation id="3018957014024118866">Phatha amakhukhi ezinkampani zangaphandle kanye nokuvikela ukulandelela (<ph name="URL" />)</translation>
 <translation id="3019382870990049182">Qalisa kabusha ukuze ubuyekeze i-&amp;ChromeOS Flex</translation>
 <translation id="3034219227076811559">IGoogle Search kuChrome</translation>
 <translation id="3037190258341683404">Ungaphina iGoogle Search kuChrome ukuze ubuze imibuzo njengoba ubhrawuza</translation>
@@ -240,18 +221,15 @@ Uma leli khasi lingasebenzi njengoba kulindelekile, zama ukuvumela ukulungiselel
 <translation id="3047590466164881923">Vala idayalogi yempendulo</translation>
 <translation id="306179102415443347">Sebenzisa isinqamuleli sakho ukuze ufike ngokushesha ku-Google Password Manager. Ungahambisa isinqamuleli sakho esikrinini sasekhaya sekhompyutha yakho noma isiqalisi se-app.</translation>
 <translation id="3065168410429928842">Ithebhu le-Chrome</translation>
-<translation id="3073571714401714450">Guqula iGemini kuChrome Dev</translation>
 <translation id="3080151273017101988">Qhubeka nokusebenzisa izinhlelo zokusebenza zangemuva ngenkathi i-Google Chrome ivaliwe</translation>
 <translation id="308397506772922478">Uma ukhohlwa umushwana wakho wokungena noma ufuna ukushintsha le sethingi, <ph name="BEGIN_LINK" />sula idatha yeChrome ku-akhawunti yakho<ph name="END_LINK" />.</translation>
 <translation id="3089427491314610412">U-<ph name="EXISTING_USER" /> usevele ungene ngemvume. Ukugcina ukubhrawuza kwakho kuhlukile, ngena ngemvume kuChrome kuphrofayela yakho njengo-<ph name="USER_EMAIL_ADDRESS" />. Uzophinde uthole ulwazi lwakho olulondoloziwe nokuningi ku-<ph name="DEVICE" />.</translation>
 <translation id="3100998948628680988">Qamba iphrofayela lakho le-Chrome</translation>
 <translation id="310459126943037700">Yehlulekile ukuqeda imisebenzi.</translation>
-<translation id="3104828284009500087">Sesha noma yini ekhasini</translation>
 <translation id="3112458742631356345">I-Chrome ivimbele lokhu kudawunilodwa ngoba ifayela alivamile ukudawunilodwa futhi lingase libe yingozi</translation>
 <translation id="3119573284443908657">I-Chromium ivimbele lokhu kudawuniloda ngoba ifayela lengobo yomlando lihlanganisa namanye amafayela angase afihle uhlelo olungayilungele ikhompyutha</translation>
 <translation id="3124332159330678621">Yenza ngokwezifiso i-Chrome ukuze unikeze ibhrawuza sakho ukubukeka okusha</translation>
 <translation id="3125851611828811913">Sesha futhi ubuze imibuzo noma yikuphi, ngisho noma iChrome incishisiwe. Ivumela iChrome ukuthi isebenze ngemuva.</translation>
-<translation id="3130333203120345554">Usesho olusha</translation>
 <translation id="3135560418014806498">Faka Iphrofayela yeChrome</translation>
 <translation id="3137969841538672700">Hudulela oseshweni</translation>
 <translation id="3140883423282498090">Izinguquko zakho zizosebenza ngesikhathi esilandelayo lapho uqalisa kabusha i-Google Chrome.</translation>
@@ -263,7 +241,6 @@ Uma leli khasi lingasebenzi njengoba kulindelekile, zama ukuvumela ukulungiselel
 <translation id="3222857603094643834">Sesha noma yini kuleli khasi nge-Google Lens</translation>
 <translation id="3226612997184048185">Uma futhi ulondoloza amabhukhimakhi ku-Google Account yakho, ungakwazi ukulandelela izintengo zomkhiqizo ku-Chrome futhi uthole isaziso uma intengo yehla.</translation>
 <translation id="3242123554343253302">Faka iphrofayela yeChrome</translation>
-<translation id="3242486428260808857">Thola okwengeziwe ngokuthenga ku-inthanethi uma usebenzisa i-app yeChrome ku-<ph name="DEVICE_TYPE" /> yakho</translation>
 <translation id="3245429137663807393">Uma futhi wabelana ngemibiko yokusetshenziswa kwe-Chrome, leyo mibiko ihlanganisa nama-URL owavakashelayo</translation>
 <translation id="3249558306861350254">Chofoza okuthi <ph name="BEGIN_BOLD" />Setha Okuzenzakalelayo<ph name="END_BOLD" /> kumasethingi akho eWindows.</translation>
 <translation id="3258706751219502154">Ukuze uthole amabhukhimakhi akho nokunye ku-<ph name="DEVICE" />, ngena ngemvume kuChrome</translation>
@@ -274,7 +251,6 @@ Uma leli khasi lingasebenzi njengoba kulindelekile, zama ukuvumela ukulungiselel
 <translation id="3294686910656423119">Izibalo zokusebenzisa nemibiko yokusaphazeka</translation>
 <translation id="3327226547491422998">Emva kwesikhathi, iChrome ingakubuza ukuthi uyafuna yini ukusebenzisa ulwazi olulondoloziwe ukuze ugcwalise ngokuzenzakalela amafomu</translation>
 <translation id="3352986031709923790">ikhona elingaphezulu ngakwesokudla lendawo yokusesha: ngakwesokudla okungu-<ph name="RIGHT" />%, phezulu okungu-<ph name="TOP" />%</translation>
-<translation id="3360895254066713204">Isisizi se-Chrome</translation>
 <translation id="3373752068427117404">Ezinye izakhi zeChrome nezandiso ziza nezinqamuleli. Ungakhetha ukuwavula futhi.</translation>
 <translation id="3379938682270551431">{0,plural, =0{I-Chrome izoqala kabusha manje}=1{I-Chrome izoqala kabusha kusekhondi elingu-1}one{I-Chrome izoqala kabusha kumasekhondi angu-#}other{I-Chrome izoqala kabusha kumasekhondi angu-#}}</translation>
 <translation id="3380249972812870825">Ukuze uvule iGemini kuChrome, cindezela okuthi <ph name="GLOBAL_HOTKEY" /></translation>
@@ -283,12 +259,8 @@ Uma leli khasi lingasebenzi njengoba kulindelekile, zama ukuvumela ukulungiselel
 <translation id="3438681572027105609">Ukuze uthole amaphasiwedi akho kanye nokwengeziwe kuwo wonke amadivayisi akho, ngena ngemvume kuChrome</translation>
 <translation id="3450887623636316740">Leli fayela kungenzeka libe nobungozi<ph name="LINE_BREAK" />I-Chrome ingakuhlolela lokhu okudawunilodwayo uma unikeza iphasiwedi. Ulwazi mayelana nefayela luthunyelwa kokuthi Ukuphequlula ngokuphephile kwe-Google, kodwa okuqukethwe kufayela kanye nephasiwedi kusala kudivayisi yakho.</translation>
 <translation id="3451115285585441894">Ingeza ku-Chrome...</translation>
-<translation id="345171907106878721">Zingeze ngokwakho ku-Chrome</translation>
-<translation id="3453763134178591239">Imigomo ye-ChromeOS</translation>
-<translation id="3475778264501649775">Thatha amaphasiwedi akho, amathebhu nokuningi usendleleni nge-app yeChrome efonini yakho</translation>
 <translation id="353676578689292511">{COUNT,plural, =1{Umlawuli wakho ucela ukuthi uqalise kabusha iChrome ukuze kusebenze okubuyekeziwe. Iwindi lakho Elizimele ngeke livuleke kabusha.}one{Umlawuli wakho ucela ukuthi uqalise kabusha iChrome ukuze kusebenze okubuyekeziwe. Amawindi akho Azimele angu-# ngeke avuleke kabusha.}other{Umlawuli wakho ucela ukuthi uqalise kabusha iChrome ukuze kusebenze okubuyekeziwe. Amawindi akho Azimele angu-# ngeke avuleke kabusha.}}</translation>
 <translation id="3539955434060988644">Vula ilinki kuwindi leChrome Inco&amp;gnito</translation>
-<translation id="354621070532799440">Isikhumbuzi: Izakhi zokuphepha ezihamba phambili zeGoogle ephaketheni lakho</translation>
 <translation id="3547866758548131919">Chofoza inkinobho ethi Finyeza ukuze wabelane ngale dokhumenti neGemini kuChrome ukuze uthole iqoqa elisheshayo futhi ubuze imibuzo yokulandelela</translation>
 <translation id="3576528680708590453">Umlawuli wakho wesistimu ulungise i-Google Chrome ukuvula esinye isiphequluli ikufinyelela i-<ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="3582972582564653026">Vumelanisa uphinde wenze kube ngeyakho i-Chrome kumadivayisi akho onkana</translation>
@@ -299,7 +271,6 @@ Uma leli khasi lingasebenzi njengoba kulindelekile, zama ukuvumela ukulungiselel
 <translation id="3598673391539778844">Bonisa iGemini kuChrome kugqoko lwesistimu</translation>
 <translation id="3616622400661108683">Buza ngekhontenti engaphandle kweChrome, njengamanye ama-app noma amafayela</translation>
 <translation id="3622716124581627104">Thola izinto noma izindawo bese ukopisha noma uhumusha umbhalo. Uma usebenzisa iGoogle Lens, isithombe-skrini sekhasi sithunyelwa kuGoogle. <ph name="LEARN_MORE" /></translation>
-<translation id="3622797965165704966">Manje sekulula ukusebenzisa i-Chrome nge-Akhawunti yakho ye-Google nakumakhompyutha abiwe.</translation>
 <translation id="3628103251823745322">U-<ph name="EXISTING_USER" /> usevele ungene ngemvume. Ukugcina ukubhrawuza kwakho kuhlukile, ngena ngemvume kuChrome kuphrofayela yakho njengo-<ph name="USER_EMAIL_ADDRESS" />. Uzothola nemininingwane yakho elondoloziwe nokuningi kuwo wonke amadivayisi akho.</translation>
 <translation id="3635073343384702370">I-Chrome ingahlola amaphasiwedi akho uma uwalondolozile</translation>
 <translation id="3635447126111966800">{COUNT,plural, =1{IChrome iqedile ukuvuselela. Ungasebenzisa uhlobo lwamuva ngemva nje kokuqalisa kabusha. Ngemuva kwalokho, amathebhu akho azovulwa kabusha. Iwindi lakho Elizimele ngeke livuleke kabusha.}one{IChrome iqedile ukuvuselela. Ungasebenzisa uhlobo lwamuva ngemva nje kokuqalisa kabusha. Ngemuva kwalokho, amathebhu akho azovulwa kabusha. Amawindi akho Azimele angu-# ngeke avuleke kabusha.}other{IChrome iqedile ukuvuselela. Ungasebenzisa uhlobo lwamuva ngemva nje kokuqalisa kabusha. Ngemuva kwalokho, amathebhu akho azovulwa kabusha. Amawindi akho Azimele angu-# ngeke avuleke kabusha.}}</translation>
@@ -322,16 +293,12 @@ Uma leli khasi lingasebenzi njengoba kulindelekile, zama ukuvumela ukulungiselel
 <translation id="3810973564298564668">Phatha</translation>
 <translation id="383455301564000773">Uthuthukela kuWindows 11? Dawuniloda iChrome ku-OneDrive ukuze ukulungele kusukela osukwini lokuqala.</translation>
 <translation id="383928141529488001">I-Google Chrome idinga ukufinyelela kwe-Bluetooth ukuze ihlole amadivayisi we-Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
-<translation id="3846683726093018685">**Fingqa:** Ngomusho owodwa onamagama angaphansi kwa-30, chaza abantu ebhekiswe kubo nenjongo eyinhloko yekhontenti yakho eku-screenshot.
-
-          **Phakamisa Imibuzo:** Sungula uhlu lwamachashazi olunemibuzo emi-3 ukuya kwemi-5 eshukumisa ingqondo engase ibuzwe umsebenzisi ukuze asiqonde kahle i-screenshot. Le mibuzo kufanele ihlanganise okungenani owodwa okhuluma ngokuqondile ngento ebukwayo, indlela eklanywe ngayo, noma indawo ekuyo.</translation>
 <translation id="386202838227397562">Sicela uvale wonke amawindi we-Google Chrome bese uzama futhi.</translation>
 <translation id="3869083394918739976">Ungaqhubeka nokuxoxa Ngemodi ye-AI ngaphandle kokushintsha amathebhu. Ukuze uqalise, ngena ngemvume kuChrome. Uzophinde uthole namaphasiwedi akho nokuningi kuwo wonke amadivayisi akho.</translation>
 <translation id="3873044882194371212">Vula isixhumanisi kuwindi le-Chrome inco&amp;gnito</translation>
 <translation id="3885770153807205175">Okokukhetha ulimi</translation>
 <translation id="3889417619312448367">Khipha i-Google Chrome</translation>
 <translation id="3892148308691398805">Kopisha umbhalo</translation>
-<translation id="3893650521827656233">Thola izakhi zokuphepha ezingcono kakhulu zeGoogle usendleleni ngeChrome.</translation>
 <translation id="3941890832296813527">Iphutha lokufaka: Igama lefayela lesifaki alivumelekile noma alisekelwe.</translation>
 <translation id="395904275706073188">Amakhasi avikelwe awakwazi ukufundwa. Zama ikhasi elehlukile.</translation>
 <translation id="3965532487635448963">Bonisa iGemini kuChrome kugqoko lwesistimu bese uvula isinqamuleli sekhibhodi</translation>
@@ -346,13 +313,11 @@ Uma leli khasi lingasebenzi njengoba kulindelekile, zama ukuvumela ukulungiselel
 <translation id="4023601594785368013">Ulimi loqobo: <ph name="LANGUAGE" /></translation>
 <translation id="4034249157893816477">Yakhelwe kuChrome ukuze ikusize wakhe, ulondoloze, futhi ugcwalise ngokuzenzekelayo amaphasiwedi aqinile. Faka isinqamuleli ukuze ufinyelele kalula.</translation>
 <translation id="4035053306113201399">I-ChromeOS idinga ukuqaliswa kabusha ukuze yenze kusebenze isibuyekezo.</translation>
-<translation id="4050175100176540509">Ukuthuthukiswa kokuphepha okubalulekile nezici ezintsha kuyathokala kunguqulo yakamuva.</translation>
 <translation id="4053720452172726777">Yenza ngokwezifiso futhi lawula i-Google Chrome</translation>
 <translation id="408393047846373801">Ukuze uthole amaphasiwedi akho kanye nokwengeziwe kuwo wonke amadivayisi akho, ngena ngemvume kuChrome. Le phasiwedi izolondolozwa kuGoogle Account yakho ngemva kokungena ngemvume.</translation>
 <translation id="4102173024714616627">Izandiso ziyizengezo ezikuvumela ukuthi uqambe ngokwabahlinzekelwayo iChrome. Ukusuka ekuhlaleni uhlelekile, ukuya ekwenzeni imisebenzi yansuku zonke ibe lula, izandiso zikusiza wenze iChrome ibe ngeyakho.</translation>
 <translation id="4110895483821904099">Setha iphrofayela yakho entsha ye-Chrome</translation>
 <translation id="4111566860456076004">I-Chrome ayikwazi ukuqinisekisa ukuthi lesi sandiso sivelaphi, futhi kungenzeka ukuthi asiphephile. Sisuse ku-Chrome ukuze singasakwazi ukubona nokushintsha idatha yakho kumasayithi owavakashelayo, okufaka phakathi ulwazi lomuntu siqu.</translation>
-<translation id="4147555960264124640">Ungena ngemvume nge-akhawunti ephethwe futhi unikeza umlawuli wayo ukulawula okungaphezulu kwephrofayela yakho ye-Google Chrome. Idatha yakho ye-Chrome, efana nezinhlelo zokusebenza zakho, amabhukhimakhi, umlando, amaphasiwedi, nezinye izilungiselelo zizoboshezelwa ngonaphakade ku-<ph name="USER_NAME" />. Uzokwazi ukususa le datha nge-Google ama-Akhawunti we-Ideshibhodi, kodwa ngeke uze ukwazi ukuhlobanisa le datha nenye i-akhawunti. <ph name="LEARN_MORE" /></translation>
 <translation id="4148957013307229264">Iyafaka...</translation>
 <translation id="4149882025268051530">Isifaki sihlulekile ukungaminyanisi ingobo yomlando. Sicela ulande i-Google Chrome futhi.</translation>
 <translation id="415112847282352845">Ukuze uthole amakheli akho nokwengeziwe kuwo wonke amadivayisi akho, ngena ngemvume kuChrome. Leli kheli lizolondolozwa kuGoogle Account yakho ngemva kokungena ngemvume.</translation>
@@ -364,9 +329,6 @@ Uma leli khasi lingasebenzi njengoba kulindelekile, zama ukuvumela ukulungiselel
 <translation id="4224210481850767180">Ukufaka kukhanseliwe.</translation>
 <translation id="4242034826641750751">I-Chrome idinga izimvume zekhamera nemakrofoni kule sayithi</translation>
 <translation id="424864128008805179">Phuma ngemvume ku-Chrome?</translation>
-<translation id="4251615635259297716">Xhumanisa idatha yakho ye-Chrome kule akhawunti?</translation>
-<translation id="4252262470181310206">Sebenza ngaphandle kokuphazamiseka ngama-app akho ayintandokazi njengeGoogle Drive neYouTube usendleleni ngeChrome.</translation>
-<translation id="4266456958461406346">Vula imenyu ethi okwengeziwe kwe-<ph name="THREE_DOTS_ICON" /></translation>
 <translation id="4275788652681621337">Khetha iphaneli yohlangothi</translation>
 <translation id="4280647692742956593">Dawuniloda iChrome efonini yakho ukuze uvule noma usungule amaqembu amasha amathebhu usendleleni.</translation>
 <translation id="4281844954008187215">Imigomo yesevisi</translation>
@@ -400,8 +362,6 @@ Uma leli khasi lingasebenzi njengoba kulindelekile, zama ukuvumela ukulungiselel
 <translation id="4600710005438004015">I-Chrome ayikwazanga ukubuyekezela kwinguqulo yakamuva, ngakho-ke uyalahlekelwa kuzici ezintsha nokulungiswa kokuphepha.</translation>
 <translation id="4608435347866444037">Sesha lesi sithombe ngeGoogle Lens</translation>
 <translation id="4624065194742029982">I-Chrome Incognito</translation>
-<translation id="4627412468266359539">Okokuzikhethela: Siza ukuthuthukisa izakhi nokusebenza kwe-ChromeOS Flex ngokuthumela ngokuzenzekelayo idatha yokuxilongwa nokusetshenziswa ku-Google.</translation>
-<translation id="4633000520311261472">Ukwenza i-Chrome ivikeleke, sikhubaze ezinye izandiso ezingafakwanga kuhlu lwe-<ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> futhi okungenzeka zifakwe ngaphandle kolwazi lakho.</translation>
 <translation id="4680828127924988555">Khansela Ukufaka</translation>
 <translation id="4720851490453439956">Isevisi Yangaphakathi Yesibuyekezi SeGoogle</translation>
 <translation id="4724676981607797757">Ukufaka kuhlulekile ngenxa yephutha lephrothokholi engasekelwe.</translation>
@@ -417,7 +377,6 @@ Uma leli khasi lingasebenzi njengoba kulindelekile, zama ukuvumela ukulungiselel
 <translation id="4803313124144656665">Vala iGoogle Search kuChrome</translation>
 <translation id="4828579605166583682">I-Google Chrome izama ukufaka esikhundleni samaphasiwedi akhona. Thayipha iphasiwedi yakho ye-Windows ukuze uvumele lokhu.</translation>
 <translation id="4836321460899997044">Iphrofayela yeChrome</translation>
-<translation id="4839733921943823254">Isinqamuleli Sephinikhodi</translation>
 <translation id="4842397268809523050">I-ChromeOS Flex ayikwazanga ukuvumelanisa idatha yakho ngoba Ukuvumelanisa akutholakali esizindeni sakho.</translation>
 <translation id="4851866215237571846">U-<ph name="EXISTING_USER" /> usevele ungene ngemvume.  Ukugcina ukubhrawuza kwakho kuhlukile, ngena ngemvume ku-Chrome kuphrofayela yakho njengo-<ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="4855026984605187434">Ukuze wabelane ngesikrini sakho, vumela ukurekhodwa kwesikrini kweChrome Kumasethingi Ohlelo.</translation>
@@ -436,7 +395,6 @@ Uma leli khasi lingasebenzi njengoba kulindelekile, zama ukuvumela ukulungiselel
 <translation id="4970761609246024540">Siyakwamukela kumaphrofayela we-Chrome</translation>
 <translation id="4970880042055371251">Uhlobo lwe-ChromeOS</translation>
 <translation id="4990567037958725628">I-Canary ye-Google Chrome</translation>
-<translation id="5000497292978544380">Imodi ye-AI yeGoogle Search</translation>
 <translation id="5003967926796347400">Chofoza okuthi “Google Password Manager”</translation>
 <translation id="5043786843026425788">Funda kabanzi mayelana nokusesha ngeGoogle Lens kuChrome</translation>
 <translation id="504867494566807945">Vula amalinki kuChrome kunoma iyiphi i-app. Futhi ukuze ifinyeleleke kalula, iphinwa ku-taskbar yakho.</translation>
@@ -444,7 +402,6 @@ Uma leli khasi lingasebenzi njengoba kulindelekile, zama ukuvumela ukulungiselel
 <translation id="5105120510934353742">Ukuze uthole izibuyekezo ezizayo zeGoogle Chrome, uzodinga imacOS 13 noma eyakamuva. Le khompyutha isebenzisa imacOS 12.</translation>
 <translation id="5114340746415930644">Bhala umushwana wokungena ozowusebenzisa futhi ulondoloze idatha yeChrome e-akhawuntini yakho, <ph name="USER_EMAIL" /></translation>
 <translation id="5120334927898581447">Ngena ngemvume ku-Chrome uma ungena ngemvume kwamanye amasevisi e-Google</translation>
-<translation id="5121592697493894155">IGoogle Search kuphaneli eseceleni</translation>
 <translation id="5126049312684316860">I-Chrome ilayisha kusengaphambili amakhasi engeziwe ongase uwavakashele, ukuze alayishe ngokushesha kakhudlwana lapho uwavakashela</translation>
 <translation id="5127558335897923940">Gcina iChrome Edokhini yakho ukuze ufike kuyo ngokushesha noma nini</translation>
 <translation id="5132929315877954718">Thola izinhlelo zokusebenza ezinhle, amageyimu, izandiso namatimu e-Google Chrome.</translation>
@@ -461,27 +418,20 @@ Ezinye izici kungenzeka zingatholakali. Sicela ucacise umkhombandlela wephrofaye
 <translation id="5179933070463113976">Ukuze usebenzise iGemini kuChrome, udinga ukungena ngemvume kuChrome ngeGoogle Account yakho</translation>
 <translation id="5190467473654176081">Yenza ngokwesifiso sakho iChrome ukuze uyinikeze ukubukeka okusha</translation>
 <translation id="5201744974236816379">isibuyekezo se-Chrome</translation>
-<translation id="521447420733633466">Uma wabelana ngedivayisi, abangane nomndeni bangaphequlula ngokwehlukile baphinde basethe i-Chrome ngendlela abayifunayo.</translation>
 <translation id="5234764350956374838">Cashisa</translation>
 <translation id="5239627039202700673">Sebenzisa i-Chrome noma nini lapho uchofoza amalinki emiyalezweni, kumadokhumenti, nakwamanye ama-app</translation>
 <translation id="524751727772074981">Buza noma yini, lapho ukhona, ngeGemini kuChrome</translation>
 <translation id="5247617065091903691">Ungaphina iphaneli eseceleni yeGoogle Search ukuze ubuze imibuzo njengoba ubhrawuza</translation>
-<translation id="5251420635869119124">Izihambeli zingasebenzisa i-Chrome ngaphandle kokushiya noma yini ngemuva.</translation>
 <translation id="5271833978500241046">Zisebenzise kanye nezinye izakhi zeGemini kuChrome</translation>
-<translation id="5286907366254680517">Okutholiwe</translation>
 <translation id="5320351714793324716">Uma uvumela amakhukhi, i-Chrome ingase iwasebenzise lapho ilayisha kusengaphambili</translation>
 <translation id="5321325624576443340">IGoogle Lens ayitholakali. Zama futhi emuva kwesikhathi.</translation>
 <translation id="5334309298019785904">I-ChromeOS ayikwazanga ukuvumelanisa idatha yakho ngoba ukuvumelanisa akutholakaleli isizinda sakho.</translation>
-<translation id="5334487786912937552">I-Chrome idinga imvume yokufinyelela kusitoreji ukuze idawunilode amafayela</translation>
-<translation id="5337648990166757586">Ongakukhetha: Siza ekuthuthukiseni izakhi nokusebenza kwe-ChromeOS ngokuthumela ngokuzenzekelayo idatha yokusetshenziswa neyokuxilonga ku-Google.</translation>
 <translation id="5346389065299425353">Julisa usesho lwakho ngokufaka amathebhu amaningi, amafayela, namathuluzi</translation>
 <translation id="5353252989841766347">Thumela amaphasiwedi kusukela ku-Chrome</translation>
 <translation id="5368118228313795342">Ikhodi eyengeziwe: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">Iphinda ilawule ukuthi yiliphi ikhasi eliboniswayo uma uqala i-Chrome noma usesho kusuka ku-Omnibox.</translation>
 <translation id="5394833366792865639">Yabelana ngethebhu ye-Chrome</translation>
-<translation id="5402307365844630024">Guqula iGemini kuChrome Beta</translation>
 <translation id="5414664742659847155">Hlukanisa iChrome kwamanye ama-app</translation>
-<translation id="541844421954567481">Sebenzisa amaphasiwedi akho, amathebhu nokuningi usendleleni nge-app yeChrome ku-<ph name="DEVICE_TYPE" /> yakho</translation>
 <translation id="5430073640787465221">Ifayela lakho lokuncamelayo limoshekile noma alivumelekile. 
 
 I-Google Chrome ayikwazi ukuthola izilungiselelo zakho.</translation>
@@ -500,7 +450,6 @@ I-Google Chrome ayikwazi ukuthola izilungiselelo zakho.</translation>
 <translation id="5602351063754773347">IChrome incoma ukuthi uyisuse. <ph name="BEGIN_LINK" />Funda kabanzi mayelana nezandiso ezisekelwayo<ph name="END_LINK" /></translation>
 <translation id="5610759359710387751">Yenza i-Chrome kube eyakho</translation>
 <translation id="5649156266046089790">Ngamaphrofayela weChrome ungahlukanisa zonke izinto zakho zeChrome. Sungula amaphrofayela wabangane nomndeni, noma uhlukanise phakathi komsebenzi nobumnandi.</translation>
-<translation id="5655063652337498476">Zitholele imikhiqizo ngekhamera yakho, landelela ukwehliswa kwentengo nokuningi usendleleni ngeChrome ku-iOS.</translation>
 <translation id="565744775970812598">I-<ph name="FILE_NAME" /> kungenzeka ibe ingozi, ngakho-ke i-Chrome iyivimbile.</translation>
 <translation id="566568153320186256">IChrome igcina amandla ebhethri ngokukhawulela umsebenzi ongemuva nemiphumela yokubuka, njengokuskrola okubushelelezi namazinga ohlaka lwevidiyo. <ph name="BEGIN_LINK" />Funda kabanzi mayelana Nesongi Samandla<ph name="END_LINK" /></translation>
 <translation id="567202749201779594">Sula idatha yeChrome e-akhawuntini yakho</translation>
@@ -513,33 +462,26 @@ I-Google Chrome ayikwazi ukuthola izilungiselelo zakho.</translation>
 <translation id="5717779012650642443">{COUNT,plural, =1{Ukuvikela Okuthuthukile kudinga uqalise kabusha iChrome ukuze kusebenze okubuyekeziwe. Iwindi lakho Elizimele ngeke livuleke kabusha.}one{Ukuvikela Okuthuthukile kudinga uqalise kabusha iChrome ukuze kusebenze okubuyekeziwe. Amawindi akho Azimele angu-# ngeke avuleke kabusha.}other{Ukuvikela Okuthuthukile kudinga uqalise kabusha iChrome ukuze kusebenze okubuyekeziwe. Amawindi akho Azimele angu-# ngeke avuleke kabusha.}}</translation>
 <translation id="5719246646468301581">Imigomo yesevisi eyengeziwe ye-Google Chrome neChrome OS</translation>
 <translation id="5736850870166430177">Uma isayithi lizama ukuntshontsha iphasiwedi yakho, noma uma udawuniloda ifayela eliyingozi, i-Chrome ingathumela nama-URL, kuhlanganise nokuthile okuqukethwe kulelo khasi, Ekuphequluleni Okuphephile</translation>
-<translation id="5742003800414899269">Sebenzisa i-app yeChrome ukuze usebenzise amathuluzi e-AI angcono kakhulu usendleleni</translation>
 <translation id="5756509061973259733">Iphrofayela ye-Chrome enale akhawunti isikhona akakade kule divayisi</translation>
-<translation id="5759947850379142561">Khetha noma yimuphi umbhalo noma isithombe ukuze useshe ngeGoogle Lens noma cindezela u-escape ukuze uphume kuGoogle Lens</translation>
 <translation id="5779427581965287859">Setha iChrome njengezenzakalelayo bese uyiphina ku-taskbar</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">Ayikwazanga ukuqalisa i-Chrome. Zama futhi.</translation>
 <translation id="5809516625706423866">Ayikwazi ukuxhuma ku-inthanethi I-HTTP 401 Ayigunyaziwe. Sicela uchekhe ukulungiselelwa kommeleli wakho.</translation>
 <translation id="5824893331272123205">Ayikwazanga ukulayisha leli phaneli, zama futhi</translation>
 <translation id="5825922397106002626">Susa <ph name="EXTENSION_NAME" /> kuChrome</translation>
-<translation id="5858486459377137936">Uzophuma ngemvume emasayithini amaningi uma uvala wonke amawindi e-Chrome, ngaphandle kwe-Google Account yakho uma ungene ngemvume ku-Chrome. Ukuvumela amasayithi akukhumbule, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="5860491529813859533">Vula</translation>
 <translation id="586971344380992563"><ph name="BEGIN_LINK" />I-Chrome ikuxwayisa<ph name="END_LINK" /> mayelana namasayithi angaphephile kanye nokudawunilodiwe</translation>
 <translation id="5894164573378901688">Ukuze usebenzise iGemini kuChrome, ngena ngemvume ngeGoogle Account ehlukile</translation>
 <translation id="5895138241574237353">Qalisa kabusha</translation>
-<translation id="5899008323405946573">Sebenzisa amathuluzi e-AI ahamba phambili eGoogle nge-app yeChrome efonini yakho</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - Inethiwekhi Yokugena ngemvume</translation>
 <translation id="5924017743176219022">Ixhuma Ku-inthanethi...</translation>
-<translation id="5940385492829620908">Iwebhu yakho, amabhukhimakhi, nezinye izinto ze-Chrome zihlala lapha.</translation>
 <translation id="5941711191222866238">Nciphisa</translation>
 <translation id="5941830788786076944">Yenza i-Google Chrome ibe isiphequluli sokuzenzakalelayo</translation>
 <translation id="5944731887996253728">IChrome izobuyekeza uma isikrini sakho singasetshenziswa</translation>
 <translation id="5947104538377036631">Isinqamuleli se-Chrome</translation>
 <translation id="5960071705175224773">Amasethingi akho ashintshwe yi-app engaziwa</translation>
 <translation id="5980111191913430208">Izandiso, ama-app, namatimu asuka emithonjeni engaziwa angalimaza idivayisi yakho. IChrome incoma ukuzifaka kuphela zisuka ku-<ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
-<translation id="6003112304606738118">Iyadawuniloda... Kusele amahora angu-<ph name="HOURS" /></translation>
 <translation id="6004427865367382148">{COUNT,plural, =1{Umlawuli wakho udinga uqalise kabusha iChrome ukuze kusebenze okubuyekeziwe. Kukhona iwindi le-Incognito noma Elizimele elivuliwe. Ngeke livuleke kabusha ngemva kokuqalisa kabusha.}one{Umlawuli wakho udinga uqalise kabusha iChrome ukuze kusebenze okubuyekeziwe. Kunamawindi e-Incognito Nazimele angu-# avuliwe kumaphrofayela. Ngeke avuleke ngemva kokuqalisa kabusha.}other{Umlawuli wakho udinga uqalise kabusha iChrome ukuze kusebenze okubuyekeziwe. Kunamawindi e-Incognito Nazimele angu-# avuliwe kumaphrofayela. Ngeke avuleke ngemva kokuqalisa kabusha.}}</translation>
-<translation id="6008161919456049856">Amaphasiwedi akho, izindlela zokukhokha, namakheli owalondoloze kuGoogle Account yakho azosuswa kule divayisi. Ukuze uphinde uzisebenzise kuChrome, ngena ngemvume futhi.</translation>
 <translation id="6009821354356307391">Cela ukulandelela</translation>
 <translation id="6014316319780893079"><ph name="BEGIN_LINK" />Ngamathuluzi avela ku-Chrome<ph name="END_LINK" />, ungabhrawuza ngokuphepha uhlale ulawula</translation>
 <translation id="6018578474045062808">Zama iGoogle Lens ngeChrome efonini yakho</translation>
@@ -554,10 +496,8 @@ I-Google Chrome ayikwazi ukuthola izilungiselelo zakho.</translation>
 <translation id="6071642418303142778">Ukuze uthole amaphasiwedi akho nokunye ku-<ph name="DEVICE" />, ngena ngemvume kuChrome</translation>
 <translation id="6075300983329039771">Inhlangano yakho, ebizwa <ph name="MANAGER" />, ifuna ungene ngemvume kuChrome</translation>
 <translation id="6077365059401096066">Ukuze uthole uhlu lokufundayo nokunye ku-<ph name="DEVICE" />, ngena ngemvume kuChrome</translation>
-<translation id="6113794647360055231">I-Chrome isanda kuba ngcono</translation>
 <translation id="6116004140911290070">Sebenzisa Amakhono kuChrome</translation>
 <translation id="6116252277240876590">Lolu limi lusetshenziselwa ukubonisa amamenyu, amasethingi, izexwayiso, nomunye umbhalo kuChrome</translation>
-<translation id="6117557075995890082">Sebenzisa i-app yeChrome ukuze uvikele iGoogle usendleleni</translation>
 <translation id="6127237283587442951">Sebenzisa iChrome ngokuzenzakalela futhi uyenze iphinwe</translation>
 <translation id="6134085236017727171">Ukuze usebenzise imakrofoni yakho, nikeza iChrome ukufinyelela <ph name="BEGIN_LINK" />amasethingi ohlelo<ph name="END_LINK" /></translation>
 <translation id="6135456723633883042">Lawa mathebhu asebenzisa izinsiza ezengeziwe. Ukuze uthuthukise ukusebenza kwakho, vumela iChrome iwenze ingasebenzi.</translation>
@@ -578,7 +518,6 @@ I-Google Chrome ayikwazi ukuthola izilungiselelo zakho.</translation>
 <translation id="6248988683584659830">Izilungiselelo zosesho</translation>
 <translation id="6251759518630934363">Ikuxwayisa mayelana namasayithi ayingozi, ngisho nalawo i-Google ebingazi ngawo ngaphambili, ngokuhlaziya idatha eningi evela kumasayithi kunokuvikela okujwayelekile. Ungakhetha ukweqa izexwayiso ze-Chrome.</translation>
 <translation id="6277547788421725101">Umzali wakho uvale "Izimvume zamasayithi, ama-app, nezandiso" ze-Chrome</translation>
-<translation id="627882678981830918">Enza ngokwezifiso uphinde ulawule i-Chrome. Setha i-Chrome njengokwakho okuzenzakalelayo.</translation>
 <translation id="6288580400488258237">Setha iGoogle Chrome njengebhrawuza evuleka ngokuzenzekela yakho uphinde uyisethe ku-taskbar yakho</translation>
 <translation id="6291089322031436445">Izinhlelo zokusebenza ze-Chrome Dev</translation>
 <translation id="6291549208091401781">I-Google Chrome isivele ifakelwe bonke abasebenzisi kukhompuyutha yakho.</translation>
@@ -594,7 +533,6 @@ I-Google Chrome ayikwazi ukuthola izilungiselelo zakho.</translation>
 <translation id="6357670763064300993">IGemini Enterprise kuChrome</translation>
 <translation id="6360449101159168105">Ngenkathi le thebhu ingasebenzi, inkumbulo iye yenzelwa isikhala ukugcina i-Chrome ishesha. Ungakhetha ukungahlanganisi le sayithi ekutheni ibe engasebenzi.</translation>
 <translation id="6362984640667950211">U-<ph name="EXISTING_USER" /> usengenile ngemvume. Ukugcina ukubhrawuza kwakho kuhlukile, ngena ngemvume kuChrome kuphrofayela yakho njengo-<ph name="USER_EMAIL_ADDRESS" />. Uzophinde uthole uhlu lwakho lokufunda nokuningi kuwo wonke amadivayisi akho.</translation>
-<translation id="6388799252195623474">ngisize ngalokhu</translation>
 <translation id="6401458660421980302">Ukuze uthumele le thebhu kwenye idivayisi, ngena ngemvume ku-Chrome lapho</translation>
 <translation id="6412673304250309937">Kuhlola ama-URL anohlu lwamasayithi angaphephile agcinwe ku-Chrome. Uma isayithi lizama ukuntshontsha iphasiwedi yakho, noma uma ulanda ifayela eliyingozi, i-Chrome ingathumela nama-URL, kuhlanganise nokuthile okuqukethwe kulelo khasi, Ekuphequluleni Okuphephile.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Inhlangano yakho ivala i-Chrome ngokuzenzekelayo uma ingasetshenziswanga umzuzu o-1. Idatha yokubhrawuza isuliwe. Lokhu kungase kuhlanganise umlando, ukugcwalisa ngokuzenzakalelayo, nokudawuniloda.}one{Inhlangano yakho ivala i-Chrome ngokuzenzekelayo uma ingasetshenziswanga imizuzu engu-#. Idatha yokubhrawuza isuliwe. Lokhu kungase kuhlanganise umlando, ukugcwalisa ngokuzenzakalelayo, nokudawuniloda.}other{Inhlangano yakho ivala i-Chrome ngokuzenzekelayo uma ingasetshenziswanga imizuzu engu-#. Idatha yokubhrawuza isuliwe. Lokhu kungase kuhlanganise umlando, ukugcwalisa ngokuzenzakalelayo, nokudawuniloda.}}</translation>
@@ -607,7 +545,6 @@ I-Google Chrome ayikwazi ukuthola izilungiselelo zakho.</translation>
 <translation id="6448835208126432197">Ukuze ukhethe ingxenye yesikrini kuGemini kuChrome, sebenzisa isinqamuleli sekhibhodi.</translation>
 <translation id="6473905796280459355">Iya ekhasini elithi Mayelana neChrome</translation>
 <translation id="6481963882741794338">Linka i-Chrome namanye amasevisi e-Google ngokwenza ngokomuntu ngamunye nezinye izinjongo</translation>
-<translation id="648319183876919572">Ukubhrawuza Ngokuphepha Okugqamile kwenza okuningi ukukuvikela kumawebhusayithi ayingozi nakokudawunilodiwe</translation>
 <translation id="6489302989675808168">Kuvuliwe • I-Chrome ayikwazi ukuqinisekisa ukuthi lesi sandiso sivela kuphi</translation>
 <translation id="6491330562720922580">Ikhodi ye-QR yokudawuniloda ibhrawuza yeChrome kumadivayisi eselula</translation>
 <translation id="6493527311031785448">I-Google Chrome izama uku-<ph name="AUTHENTICATION_PURPOSE" /></translation>
@@ -624,7 +561,6 @@ I-Google Chrome ayikwazi ukuthola izilungiselelo zakho.</translation>
 <translation id="659498884637196217">Ku-Google Password Manager kule divayisi</translation>
 <translation id="6612152958212564387">Awuthumeli izibalo zokusetshenziswa nemibiko yokusaphazeka kuGoogle. <ph name="BEGIN_LINK" />Lawula<ph name="END_LINK" /></translation>
 <translation id="6613949864921837107">Gcina amaphasiwedi wakho, amabhukhimakhi, nomlando kuvunyelaniswe ngokuphelele kuwo wonke amadivayisi ngokusetha iChrome njengebhrawuza yakho evuleka ngokuzenzekela.</translation>
-<translation id="6631524303639368205">Qhubeka lapho ogcine khona: IChrome ibuyisele amathebhu esikhathi esedlule. Ungakuvala lokhu ku-</translation>
 <translation id="6632012506031284914">ukuze useshe ngeChrome.</translation>
 <translation id="6632473616050862500">I-ChromeOS Flex yenzeka ngenxa <ph name="BEGIN_LINK_CROS_OSS" />yesofthiwe yomthombo ovulekile eyengeziwe<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6634299872736643004">Izinguquko kule sethingi zizosetshenziswa uma iChrome iqala kabusha.</translation>
@@ -636,7 +572,6 @@ I-Google Chrome ayikwazi ukuthola izilungiselelo zakho.</translation>
 <translation id="6706525880530967390">{count,plural, =1{IChrome idinga ukuqinisekisa ukuthi uwena ngaphambi kokuthi idatha ethile ilondolozwe kuGoogle Account yakho futhi isetshenziswe kuwo wonke amadivayisi akho. Uma uphuma ngemvume manje, le datha (into e-1) izosulwa.}one{IChrome idinga ukuqinisekisa ukuthi uwena ngaphambi kokuthi idatha ethile ilondolozwe kuGoogle Account yakho futhi isetshenziswe kuwo wonke amadivayisi akho. Uma uphuma ngemvume manje, le datha (izinto ezingu-{count}) izosulwa.}other{IChrome idinga ukuqinisekisa ukuthi uwena ngaphambi kokuthi idatha ethile ilondolozwe kuGoogle Account yakho futhi isetshenziswe kuwo wonke amadivayisi akho. Uma uphuma ngemvume manje, le datha (izinto ezingu-{count}) izosulwa.}}</translation>
 <translation id="6712881677154121168">Iphutha lokudawuniloda: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Yenza i-Chrome isheshe</translation>
-<translation id="6723445727540769832">Thola okuhamba phambili kweGoogle nge-app yeChrome efonini yakho</translation>
 <translation id="6734827584173583205">Awukavakashi kamuva nje. IChrome isuse i-<ph name="PERMISSION_1" />, i-<ph name="PERMISSION_2" />, nokungu-<ph name="COUNT" /> okwengeziwe.</translation>
 <translation id="6735387454586646204">Isistimu ye-ChromeOS Flex</translation>
 <translation id="674891594898436429">Chitha usesho olusebenzayo kule thebhu</translation>
@@ -655,14 +590,12 @@ I-Google Chrome ayikwazi ukuthola izilungiselelo zakho.</translation>
 <translation id="6881299373831449287">Ibuyekeza i-Chrome</translation>
 <translation id="6885412569789873916">Izinhlelo zokusebenza ze-beta ye-Chrome</translation>
 <translation id="6893363893008038481">Susa i-akhawunti kuChrome</translation>
-<translation id="689368324615299626">Thola okuhamba phambili kweGoogle nge-app yeChrome ku-<ph name="DEVICE_TYPE" /> yakho</translation>
 <translation id="6896758677409633944">Kopisha</translation>
 <translation id="6908182077349113099">Gcina amaphasiwedi akho, amabhukhimakhi, nomlando kuvunyelaniswe ngokuphelele kuwo wonke amadivayisi. Finyelela kalula izakhi ozaziyo nozithandayo ngokubuyekeza ibhrawuza yakho ezenzakalelayo ibe yiChrome.</translation>
 <translation id="6926772305569367352">Inkinobho ethi "Google Search kuChrome" kubha yamathuluzi inesithonjana esisha. Yichofoze ukuze ubuze imibuzo njengoba ubhrawuza ngeGoogle Search kuChrome.</translation>
 <translation id="6930294499209825">Igcina isofthiwe yakho yeGoogle ingeyakamuva. Uma le sevisi ikhutshaziswe noma imisiwe, isofthiwe yakho yeGoogle ngeke igcinwe ingeyakamuva, okusho ukuthi ukungavikeleki okungase kuphakame akukwazi ukulungiswa futhi izakhi zingase zingasebenzi. Le sevisi iyazikhipha uma ingekho isofthiwe yeGoogle eyisebenzisayo.</translation>
 <translation id="6933858244219479645">Isistimu ye-ChromeOS</translation>
 <translation id="6938166777909186039">Ukuze uthole izibuyekezo zesikhathi esizayo ze-Google Chrome, uzodinga i-Windows 10 noma yakamuva. Le khompyutha isebenzisa i-Windows 8.1.</translation>
-<translation id="6943584222992551122">Idatha yokuphequlula yalo muntu izosuswa kusukela kule divayisi. Ukuze uphinde uthole idatha, ngena ngemvume ku-Chrome njengo-<ph name="USER_EMAIL" />.</translation>
 <translation id="6962628299694876291">U-<ph name="EXISTING_USER" /> usevele ungene ngemvume. Ukugcina ukubhrawuza kwakho kuhlukile, ngena ngemvume kuChrome kuphrofayela yakho njengo-<ph name="USER_EMAIL_ADDRESS" />. Uzophinde uthole namaphasiwedi akho nokuningi kuwo wonke amadivayisi akho.</translation>
 <translation id="6965382102122355670">KULUNGILE</translation>
 <translation id="6967962315388095737">Umyalo wokubophezeleka ngaphakathi kwe-beta yeGoogle Chrome ukuze kuvunyelwe ithrafikhi ye-mDNS.</translation>
@@ -681,7 +614,6 @@ I-Google Chrome ayikwazi ukuthola izilungiselelo zakho.</translation>
 <translation id="7071827361006050863">I-Chrome izosula idatha yokubhrawuza maduze</translation>
 <translation id="7085332316435785646">Khetha ukuthi ufake phakathi umlando we-Chrome ukuze uthole umuzwa womuntu siqu kumasevisi e-Google</translation>
 <translation id="7088681679121566888">I-Chrome isesimweni sakamuva</translation>
-<translation id="708972073591616506">Sebenzisa amathuluzi akho ayintandokazi eGoogle AI usendleleni ngeChrome ku-iOS.</translation>
 <translation id="7096221564931416126">Khetha noma yimuphi umbhalo noma isithombe ukuze useshe ngeGoogle Lens</translation>
 <translation id="7098166902387133879">I-Google Chrome isebenzisa imakrofoni yakho.</translation>
 <translation id="7099479769133613710">Qalisa kabusha ukuze ubuyekeze i-&amp;ChromeOS</translation>
@@ -690,7 +622,6 @@ I-Google Chrome ayikwazi ukuthola izilungiselelo zakho.</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Isibuyekezo esisha se-Chrome siyatholakala futhi sizosetshenziswa maduze ngemuva kokuthi uqalise kabusha.}=1{Isibuyekezo esisha se-Chrome siyatholakala futhi sizosetshenziswa maduze ngemuva kokuthi uqalise kabusha. Iwindi lakho le-Incognito ngeke liphinde livuleke.}one{Isibuyekezo esisha se-Chrome siyatholakala futhi sizosetshenziswa maduze ngemuva kokuthi uqalise kabusha. Amawindi akho angu-# e-Incognito ngeke aze aphinde avuleke.}other{Isibuyekezo esisha se-Chrome siyatholakala futhi sizosetshenziswa maduze ngemuva kokuthi uqalise kabusha. Amawindi akho angu-# e-Incognito ngeke aze aphinde avuleke.}}</translation>
 <translation id="7161904924553537242">Siyakwamukela ku-Google Chrome</translation>
 <translation id="7193885263065350793">Inhlangano yakho ivala i-Chrome uma ingasetshenziswa isikhathi eingu-<ph name="TIMEOUT_DURATION" />.</translation>
-<translation id="7242029209006116544">Ungena ngemvume nge-akhawunti ephethwe futhi ukunikezela ukulawula kwayo ngaphezulu kwephrofayela yakho ye-Google Chrome. Idatha yakho ye-Chrome, efana nezinhlelo zakho zokusebenza, amabhukhimakhi, umlando, amaphasiwedi, nezinye izilungiselelo zizobophezeleka unaphakade ku-<ph name="USER_NAME" />. Uzokwazi ukususa le datha nge-deshibhodi yama-akhawunti we-Google, kodwa ngeke uze ukwazi ukuhlobanisa le datha nenye i-akhawunti. Ngokuzikhethela ungadala iphrofayela entsha ukuze ugcine idatha yakho ekhona ye-Chrome ihlukanisiwe. <ph name="LEARN_MORE" /></translation>
 <translation id="7274402351400635015">Ungasebenzisa iChrome noma nini lapho uchofoza amalinki emilayezo, amadokhumenti, kanye namanye ama-app. Izobuye iphinwe ku-taskbar yakho.</translation>
 <translation id="7285616922384953075">I-<ph name="MANAGER" /> iphatha iChrome</translation>
 <translation id="7285990705317078173">Dawuniloda iChrome efonini yakho ukuze ulandelele izintengo futhi uthole izexwayiso lapho kunokwehliswa kwentengo kunoma yiliphi isayithi</translation>
@@ -700,7 +631,6 @@ I-Google Chrome ayikwazi ukuthola izilungiselelo zakho.</translation>
 <translation id="7299899569525778554">Sesha kudeskithophu</translation>
 <translation id="7302361266603927550">Enye idatha yakho yeChrome ayikalondolozwa kuGoogle Account. Zama ukulinda imizuzu embalwa ngaphambi kokuphuma ngemvume. Uma uphuma ngemvume manje, le datha izosulwa.</translation>
 <translation id="7306401458628386911">Qala ukubhrawuza ngokushesha: IChrome manje ingaqala uma iWindows iqala.</translation>
-<translation id="7308322188646931570">I-Chrome idinga ukufinyelela kusitoreji ukuze ilande amafayela</translation>
 <translation id="7352651011704765696">Okuthile akuhambanga kahle</translation>
 <translation id="7371412052245999753">Ivikela inkumbulo yeChrome kwamanye ama-application ekhompyutheni yakho.</translation>
 <translation id="7374061268215476070">Ungavula kabusha iphaneli eseceleni yeGoogle Search ukuze ubuze imibuzo ngenkathi ubhrawuza</translation>
@@ -721,7 +651,6 @@ I-Google Chrome ayikwazi ukuthola izilungiselelo zakho.</translation>
 <translation id="7481213027396403996">Thola isivikelo esinamandla kakhulu se-Chrome</translation>
 <translation id="749228101751499733">Ngenkathi ungene ngemvume, ungasebenzisa amaphasiwedi akho nokuningi ukusuka kuGoogle Account yakho kuChrome. I-<ph name="SHORTCUT" /> ingashintsha amasethingi wakho wamasevisi eGoogle.</translation>
 <translation id="7496017508659652909">IChrome ilayisha ngaphambilini amakhasi okwenza ukubhrawuza nokusesha kusheshe. <ph name="BEGIN_LINK" />Funda kabanzi mayelana namakhasi okulayisha kuqala<ph name="END_LINK" /></translation>
-<translation id="7510190804000607802">Isikhumbuzi: Okungcono kakhulu kweGoogle ephaketheni lakho</translation>
 <translation id="7514258452813684157">Isevisi Yesibuyekezi SeGoogle</translation>
 <translation id="7515191208480168435">Ungaphina iGoogle Lens ukuze uyifinyelele kalula</translation>
 <translation id="7535429826459677826">I-Google Chrome Dev</translation>
@@ -733,7 +662,6 @@ I-Google Chrome ayikwazi ukuthola izilungiselelo zakho.</translation>
 <translation id="7596160425942761210">Ungasebenzisa iChrome noma nini uma uchofoza amalinki emilayezo, amadokhumenti, namanye ama-app</translation>
 <translation id="7606334485649076285">I-Google ChromeOS Flex</translation>
 <translation id="7627609214560473136">Ukuvikela idatha yakho vumela iChrome isuse izimvume emasayithini ongakawavakasheli muva nje.</translation>
-<translation id="7629695634924605473">I-Chrome ikuvumela ukuthi wazi uma amaphasiwedi akho afakwa engcupheni</translation>
 <translation id="7629898584100520089">Okokuqamba kwe-AI okufana namakhono kulondolozwa kuGoogle Account yakho futhi kulawulwa ngokuhlukile ekuvumelaniseni kweChrome</translation>
 <translation id="7641148173327520642">Umlawuli wakho wesistimu ulungiselele i-Google Chrome ukuthi ivule i-<ph name="ALTERNATIVE_BROWSER_NAME" /> ukuze ifinyelele ku-<ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7649070708921625228">Usizo</translation>
@@ -752,7 +680,6 @@ I-Google Chrome ayikwazi ukuthola izilungiselelo zakho.</translation>
 <translation id="7747138024166251722">Isifaki asikwazanga ukudala umkhombandlela wesikhashana. Sicela uhlolele isikhala esikhululekile sediski nemvume ukuze ufake isofthiwe.</translation>
 <translation id="7748969056734910029">Awukavakashi kamuva nje. IChrome isuse i-<ph name="PERMISSION_1" />, i-<ph name="PERMISSION_2" /></translation>
 <translation id="7759944311003584891">Sesha ngeChrome</translation>
-<translation id="7761834446675418963">Chofoza igama lakho ukuze uvule i-Chrome uphinde uqale ukudlulisa amehlo.</translation>
 <translation id="7777080907402804672">Uma isithombe singenayo incazelo ephelele, i-Chrome izozama ukukunikezela eyodwa. Ukuze udale izincazelo, izithombe zithunyelwa ku-Google. Ungavala lokhu kuzilungiselelo noma kunini.</translation>
 <translation id="778331955594035129">I-Chrome idinga imvume yendawo kule sayithi</translation>
 <translation id="7787950393032327779">Iphrofayela ibonakala isetshenziswa enye inqubo ye-Google Chrome (<ph name="PROCESS_ID" />) kwenye ikhompyutha (<ph name="HOST_NAME" />).  I-Chrome ikhiye iphrofayela ukuze ingamosheki. Uma uqinisekile ukuthi azikho ezinye izinqubo ezisebenzisa le phrofayela, ungavula iphrofayela uphinde uqalise kabusha i-Chrome.</translation>
@@ -770,9 +697,7 @@ I-Google Chrome ayikwazi ukuthola izilungiselelo zakho.</translation>
 <translation id="7849037457735762883">Qhubeka lapho ogcine khona: IChrome ingabuyisela amathebhu akho njalo lapho uqala kabusha Ukuze ukuvule lokhu, iya ku-</translation>
 <translation id="7868731902994556427">U-<ph name="EXISTING_USER" /> usengenile ngemvume. Ukugcina ukubhrawuza kwakho kuhlukile, ngena ngemvume kuChrome kuphrofayela yakho njengo-<ph name="USER_EMAIL_ADDRESS" />. Uzophinde uthole izandiso zakho nokuningi ku-<ph name="DEVICE" />.</translation>
 <translation id="7869620795354551924">Ukuze usebenzise amaphasiwedi akho agciniwe, landela ikhodi ye-QR, dawuniloda iChrome ye-iOS bese ungena ngemvume kuGoogle Account yakho</translation>
-<translation id="7872446069773932638">Iyadawuniloda... kusele imizuzwana engu-<ph name="SECONDS" /></translation>
 <translation id="7886087451482920026">Khetha umbhalo ngeGoogle Lens</translation>
-<translation id="7890208801193284374">Uma wabelana ngekhompyutha, abangani nomndeni bangadlulisa amehlo ngokuhlukene baphinde basethe i-Chrome ngendlela nje abayifunayo.</translation>
 <translation id="7896673875602241923">Umuntu othile ngaphambilini ungene ngemvume ku-Chrome kule khompuyutha njengo-<ph name="ACCOUNT_EMAIL_LAST" />. Sicela udale umsebenzisi omusha we-Chrome ukuze ugcine ulwazi lwakho luhlukile.</translation>
 <translation id="7904213866086517086">Vula kabusha iGoogle Search kuphaneli eseceleni</translation>
 <translation id="7904985524660297937">Zama iGemini kuGoogle Chrome</translation>
@@ -782,23 +707,18 @@ I-Google Chrome ayikwazi ukuthola izilungiselelo zakho.</translation>
 <translation id="7951272445806340501">I-ChromeOS Flex idinga ukuqalwa kabusha ukuze isibuyekezo sisebenze.</translation>
 <translation id="7959172989483770734">Phatha Amaphrofayela e-Chrome</translation>
 <translation id="7962410387636238736">Le khompuyutha ngeke isathola izibuyekezo ze-Google Chrome ngoba i-Windows XP ne-Windows Vista azisasekelwa</translation>
-<translation id="7988335136512059384">Thola izexwayiso zokwehliswa kwentengo ezintweni onentshisekelo kuzo nge-app yeChrome efonini yakho</translation>
 <translation id="8004582292198964060">Isiphequluli</translation>
 <translation id="8005666035647241369">Ku-Google Password Manager ekule divayisi</translation>
 <translation id="8008534537613507642">Phinda ufake i-Chrome</translation>
 <translation id="8009904340233602924">Sebenzisa i-Chrome ngaphandle kwe-akhawunti</translation>
-<translation id="8010081455002666927">Thola ngokuzenzakalela</translation>
 <translation id="8013993649590906847">Uma isithombe singenayo incazelo ephelele, i-Chrome izozama ukukunikezela eyodwa. Ukuze udale izincazelo, izithombe zithunyelwa ku-Google.</translation>
 <translation id="8019103195866286235">Lesi sandiso sisuswe ukushicilela ngunjiniyela waso, futhi kungenzeka sibe esingaphephile. Sisuse ku-Chrome ukuze singasakwazi ukubona nokushintsha idatha yakho kumasayithi owavakashelayo, okufaka phakathi ulwazi lwakho lomuntu siqu.</translation>
-<translation id="8038678618803403071">Finyelela kuzintandokazi zakho zeGoogle ngeChrome ku-<ph name="DEVICE_TYPE" /> yakho</translation>
 <translation id="8040768861829554732">Isandiso sifuna ukuthi ungene kuChrome</translation>
-<translation id="8041795619940733262">Buza iGoogle<ph name="LINE_BREAK" />mayelana nale thebhu</translation>
 <translation id="80471789339884597">Siyabonga ngokufaka. Kufanele uqalise kabusha wonke amabhrawuza akho ngaphambi kokusebenzisa i-<ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">I-ChromeOS Flex</translation>
 <translation id="8064965390968184078">1. Chofoza okuthi <ph name="BUTTON_LABEL" /> ngezansi
 2. Chofoza okuthi <ph name="BUTTON_2" /> kumasethingi akho eWindows
 3. Chofoza okuthi <ph name="BUTTON_3" /> esazisweni seWindows ukuze uphine iChrome kubha yakho yomsebenzi ukuze ufinyelele ngokushesha</translation>
-<translation id="8069447462453318634">Khetha okuthi "Phina kubha yamathuluzi"</translation>
 <translation id="8074398340364918139">Ukuze useshe isakhi noma isandiso esithile seChrome, thayipha isinqamuleli sayo kubha yekheli, kulandelwe inkinobho yekhibhodi oyikhethile</translation>
 <translation id="8077579734294125741">Amanye Amaphrofayili e-Chrome</translation>
 <translation id="8086881907087796310">Ukufakwa kwehlulekile ngenxa yokuthi ikhompyutha yakho ayihlangabezani nezimfuneko zenani elincane lehadiwe.</translation>
@@ -810,11 +730,9 @@ I-Google Chrome ayikwazi ukuthola izilungiselelo zakho.</translation>
 <translation id="8129812357326543296">Mayelana ne-Google Chrome</translation>
 <translation id="813913629614996137">Iyaqalisa...</translation>
 <translation id="8162006532256575008">Sebenzisa i-Chrome Ngaphandle kwe-Akhawunti</translation>
-<translation id="8172231188687329735">Thola i-app yeChrome ukuze ulondoloze amaphasiwedi usendleleni</translation>
 <translation id="8177472873527554730">Asikwazi ukuthola ikhontenti kuleli khasi</translation>
 <translation id="818985547157682832">Inkinobho ethi "Imodi ye-AI yeGoogle Search" kubha yamathuluzi inesithonjana esisha. Yichofoze ukuze ubuze imibuzo njengoba ubhrawuza ngeModi yeGoogle Search AI.</translation>
 <translation id="8196526165798579689">Sesha ngeChrome Dev</translation>
-<translation id="8203105157044679380">Iphaneli yeGoogle Search</translation>
 <translation id="8221491193165283816">Uvamise ukuvimba izaziso. Ukuze uvumele leli sayithi ukuthi likwazise, chofoza lapha.</translation>
 <translation id="8227493674161801700">Sesha ngeChrome Beta</translation>
 <translation id="8233224921566021881">IChrome idinga ukufinyelela kunethiwekhi yakho yendawo ukuze ithole futhi isebenzise amadivayisi aseduze</translation>
@@ -833,13 +751,10 @@ I-Google Chrome ayikwazi ukuthola izilungiselelo zakho.</translation>
 <translation id="835927394551949760">Buza i-Google</translation>
 <translation id="8362914115861174987">Humushela ku-</translation>
 <translation id="8366770919198174997">Yehlisa indlela yokusebenza kodwa yenza iChrome imelane nakakhulu nokuhlaselwa</translation>
-<translation id="8367705492654390392">Buza noma ngabe yini</translation>
 <translation id="8367950957770994118">Vula ngokushesha iGemini kuChrome noma nini lapho uyidinga</translation>
 <translation id="8370517070665726704">© <ph name="YEAR" /> Google LLC. Wonke amalungelo agodliwe.</translation>
 <translation id="8370748943308169953">Ikhodi ye-QR yokungena ngemvume kuChrome njengo-<ph name="USER_NAME" /></translation>
 <translation id="8374507495134902558">I-<ph name="IMPORTANT_UPDATE" /> isilungile. Ungaqalisa kabusha njengamanje, noma usethe ukuthi iChrome yenze ukubuyekeza uma ngokuzayo isikrini sakho siqhubeka sivuliwe futhi singasetshenziswa isikhathi esingaka <ph name="IDLE_DURATION" />.</translation>
-<translation id="8376752431516546391">Iphaneli eseceleni ye-Google Search</translation>
-<translation id="8377158135256176353">Guqula iGemini kuChrome Canary</translation>
 <translation id="8380754585531979907">Sebenzisa ikhibhodi yakho ukuze ufune phakathi kweGemini kuChrome nethebhu yakho evuliwe.</translation>
 <translation id="8387459386171870978">Qhubeka nokusebenzisa i-Chrome</translation>
 <translation id="8394720698884623075">Kuhlola ama-URL anohlu lwamasayithi angaphephile agcinwe ku-Chrome</translation>
@@ -852,7 +767,6 @@ I-Google Chrome ayikwazi ukuthola izilungiselelo zakho.</translation>
 <translation id="842852285618875960">Ufinyelele umkhawulo wamabhukhimakhi angu-<ph name="BOOKMARK_LIMIT" /> weGoogle Chrome, ngakho amanye amabhukhimakhi akho awakalondolozwa kuGoogle Account yakho okwamanje.
 
 Amabhukhimakhi amasha awakwazi ukulondolozwa e-akhawuntini yakho uze usule amanye. Uma uphuma ngemvume manje, amabhukhimakhi angalondoloziwe azosulwa.</translation>
-<translation id="8458117863387545390">Thola iChrome efonini yakho</translation>
 <translation id="8467931559764188481">Chitha iGoogle Search esebenzayo</translation>
 <translation id="848851325211467878">Ungene ngemvume njengo-<ph name="USER_NAME" />, <ph name="USER_EMAIL" />, ubulungu beGoogle. Vula imenyu ye-akhawunti</translation>
 <translation id="8496177819998570653">I-Google P&amp;assword Manager</translation>
@@ -906,10 +820,8 @@ Amabhukhimakhi amasha awakwazi ukulondolozwa e-akhawuntini yakho uze usule amany
 <translation id="8865415417596392024">Idatha ye-Chrome eku-akhawunti yakho</translation>
 <translation id="8897637834206928776">Isithonjana esisha, isinqamuleli esifanayo: Chofoza ukuze ubuze imibuzo njengoba ubhrawuza ngeGoogle Search kuphaneli eseceleni.</translation>
 <translation id="8914504000324227558">Phinda uqalise i-Chrome</translation>
-<translation id="8920304659326707347">Qhubeka lapho ugcine khona ngeChrome ku-iOS.</translation>
 <translation id="8922998289262614701">Susa idatha yale app kusukela kuChrome</translation>
 <translation id="8925636929359899517">Sisebenzisa ulwazi ukuthuthukisa le sevisi. Bheka <ph name="BEGIN_LINK1" />Inqubomgomo Yobumfihlo<ph name="END_LINK1" /> kanye <ph name="BEGIN_LINK2" />Nemigomo Yesevisi<ph name="END_LINK2" />.</translation>
-<translation id="8936233353620149764">Guqula iGemini kuChrome</translation>
 <translation id="8944232836376404813">Lesi senzo sizokwenza lokhu:
           <ph name="LINE_BREAKS" />
             • Setha kabusha ikhasi lakho lokuqalisa, ikhasi lethebhu entsha, injini yokusesha namathebhu aphiniwe
@@ -934,14 +846,10 @@ Amabhukhimakhi amasha awakwazi ukulondolozwa e-akhawuntini yakho uze usule amany
 <translation id="9090566250983691233">Funda ukuthi kungani i-Chrome ivimba amanye amafayela</translation>
 <translation id="9106236359747881194">Khetha umbhalo ozowusesha</translation>
 <translation id="911206726377975832">Phinda ususe idatha yakho yokudlulisa amehlo?</translation>
-<translation id="9134482777260927479">Usizo lomsebenzi wasekhaya</translation>
 <translation id="9138603949443464873">Ukuze ufake izinguquko zaho, qalisa kabusha i-Chrome</translation>
 <translation id="9148058034647219655">Phuma</translation>
-<translation id="9150331942025550505">Thola amandla e-AI uma usebenzisa i-app yeChrome ku-<ph name="DEVICE_TYPE" /> yakho</translation>
-<translation id="919706545465235479">Buyekeza i-Chrome ukuze uqale ukuvumelanisa</translation>
 <translation id="922152298093051471">Yenza i-Chrome ngokwezifiso</translation>
 <translation id="93760716455950538">Qala kabusha i-ChromeOS Flex</translation>
-<translation id="943390475793766444">I-Chrome incoma ukuskena leli fayela ngenxa yokuthi kungenzeka ukuthi liyingozi.</translation>
 <translation id="945522503751344254">Thumela impendulo</translation>
 <translation id="973195869036269770">IChromeOS ayikwazanga ukulondoloza idatha yeChrome kuGoogle Account yakho ngoba imininingwane yakho yokungena ngemvume ku-akhawunti iphelelwe yisikhathi</translation>
 <translation id="983803489796659991">Ukufaka kuhlulekile ngoba iseva yokubuyekeza ayinayo idatha ye-hash ye-application.</translation>

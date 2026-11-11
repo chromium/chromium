@@ -1874,7 +1874,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6750456911389438250">{count,plural, =1{Imported {count} history item}other{Imported {count} history items}}</translation>
 <translation id="6751817018972413719">{count,plural, =1{{count} option for credential available above your keyboard.}other{{count} options for credential available above your keyboard.}}</translation>
 <translation id="6753460329812070808">Suggestion removed from Chrome</translation>
-<translation id="6755200887046212842">Manage Accounts</translation>
+<translation id="6755200887046212842">Manage accounts</translation>
 <translation id="6757899787818440812">Medium height</translation>
 <translation id="6759709389246683070">You can touch and hold this tab to set a reminder to revisit later</translation>
 <translation id="6761393919622941301">Audio</translation>
@@ -2035,6 +2035,7 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL" />. You'll get 
 <translation id="728025568708172005">Show me around</translation>
 <translation id="7280980607183752256">This file can't be imported</translation>
 <translation id="7282197670900591579">Citron theme</translation>
+<translation id="7283937415134849498">To provide tailored help, Gemini shares some of your data (such as parts of your chats, location and other relevant info) with other Google services, like Maps and Flights. These services may use that info to improve, even if you later delete your Gemini history. Learn more in the <ph name="BEGIN_LINK" />Gemini Apps Privacy Hub<ph name="END_LINK" />.</translation>
 <translation id="7293429513719260019">Select language</translation>
 <translation id="72961285530871072">This will permanently delete your Level Up progress and feature usage data for Level Up will no longer be sent to Google for your profile.
 
@@ -2398,7 +2399,7 @@ You can restart at any time.</translation>
 <translation id="8366466717204352506">Check never run</translation>
 <translation id="8367705492654390392">Ask anything</translation>
 <translation id="8368001212524806591">Track price</translation>
-<translation id="8368198938968349418">Turn on Autofill…</translation>
+<translation id="8368198938968349418">Turn on AutoFill…</translation>
 <translation id="8370406443343902172">Go to Settings...</translation>
 <translation id="8370929854657845191">Expand to medium</translation>
 <translation id="8371494817541821097">Passkey created on <ph name="DATE" /></translation>
@@ -2607,6 +2608,7 @@ You can restart at any time.</translation>
 <translation id="8976382372951310360">Help</translation>
 <translation id="8976414606286374109">Cards are saved to your Google Account.</translation>
 <translation id="8981454092730389528">Google Activity controls</translation>
+<translation id="8987736167266086032">Pick up from where you left off</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, pinned site</translation>
 <translation id="8989779557457435460">Share current tab by default</translation>
 <translation id="8990960056509724223">File couldn't save due to your organisation's policies</translation>

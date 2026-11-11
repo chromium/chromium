@@ -558,7 +558,6 @@
 <translation id="5305688511332277257">कुछ भी इंस्टॉल नहीं है</translation>
 <translation id="5317780077021120954">सेव करें</translation>
 <translation id="5318819489018851358">Linux के साथ शेयर करें</translation>
-<translation id="5330145655348521461">ये फ़ाइलें किसी अलग डेस्कटॉप पर खुली हैं. उसे देखने के लिए <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />)  पर जाएं.</translation>
 <translation id="5330512191124428349">जानकारी पाएं</translation>
 <translation id="535792325654997756">बिल्लियों के साथ व्यक्ति</translation>
 <translation id="5358764674931277">फ़्रेम दर</translation>
@@ -699,7 +698,6 @@
 <translation id="636254897931573416">डोमेन सफ़िक्स से मिलती-जुलती वैल्यू अमान्य है</translation>
 <translation id="6364301859968397756">संगठन के डिवाइस का स्टोरेज भर गया है</translation>
 <translation id="6367976544441405720">वैन</translation>
-<translation id="637062427944097960">यह फ़ाइल किसी अलग डेस्कटॉप पर खुली है. उसे देखने के लिए <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) पर जाएं.</translation>
 <translation id="6394388407447716302">सिर्फ़ पढ़ने के लिए</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> आइटम</translation>
 <translation id="6407769893376380348"><ph name="FILE_NAME" /> को दूसरी जगह नहीं ले जाया जा सका, क्योंकि इसे एन्क्रिप्ट (सुरक्षित) किया गया है.</translation>

@@ -559,7 +559,6 @@
 <translation id="5305688511332277257">לא מותקנים אישורים</translation>
 <translation id="5317780077021120954">שמירה</translation>
 <translation id="5318819489018851358">‏שיתוף עם Linux</translation>
-<translation id="5330145655348521461">הקבצים האלה נפתחו בשולחן עבודה אחר. יש לעבור אל <ph name="USER_NAME" />‏ (<ph name="MAIL_ADDRESS" />) כדי להציג אותם.</translation>
 <translation id="5330512191124428349">פרטי קובץ</translation>
 <translation id="535792325654997756">אדם עם חתולים</translation>
 <translation id="5358764674931277">קצב פריימים</translation>
@@ -700,7 +699,6 @@
 <translation id="636254897931573416">ערך ההתאמה של סיומות האתרים לא תקין</translation>
 <translation id="6364301859968397756">נפח האחסון של הארגון מלא</translation>
 <translation id="6367976544441405720">רכב מסחרי</translation>
-<translation id="637062427944097960">הקובץ הזה נפתח בשולחן עבודה שונה. עבור אל <ph name="USER_NAME" />‏ (<ph name="MAIL_ADDRESS" />) כדי לראות אותו.</translation>
 <translation id="6394388407447716302">לקריאה בלבד</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> פריטים</translation>
 <translation id="6407769893376380348">לא ניתן להעביר את הקובץ <ph name="FILE_NAME" /> כי הוא מוצפן.</translation>

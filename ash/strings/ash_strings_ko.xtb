@@ -20,6 +20,7 @@
 <translation id="1056898198331236512">경고</translation>
 <translation id="1058009965971887428">의견 보내기</translation>
 <translation id="1059120031266247284">나와 공유됨</translation>
+<translation id="1060570945511946595">티켓 관리</translation>
 <translation id="1060847216467038176">삭제 버튼이 있는 <ph name="ITEM_LABEL" /></translation>
 <translation id="1062407476771304334">바꾸기</translation>
 <translation id="1065931689816135472"><ph name="BEGIN_PARAGRAPH1" />Google Drive에 백업합니다. 언제든지 간편하게 데이터를 복원하거나 다른 기기로 전환할 수 있습니다. 앱 데이터도 백업에 포함됩니다.<ph name="END_PARAGRAPH1" />
@@ -280,6 +281,7 @@
 <translation id="1757132445735080748">Linux 설정을 완료하려면 ChromeOS Flex를 업데이트하고 다시 시도하세요.</translation>
 <translation id="1757857692711134412">일몰까지 끄기</translation>
 <translation id="1763084151787818322">기타 작업</translation>
+<translation id="1767043563165955993">Android 앱에서 사용</translation>
 <translation id="1768138163688567246">내 화면 검색 닫기</translation>
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + 마침표 키보드 단축키가 변경되었습니다. Insert 키를 사용하려면 <ph name="LAUNCHER_KEY_NAME" /> 키 + Shift + Backspace 키를 누르세요.</translation>
 <translation id="1770726142253415363"><ph name="ROW_NUMBER" />행, <ph name="COLUMN_NUMBER" />열로 이동했습니다.</translation>
@@ -304,6 +306,7 @@
 <translation id="1838895407229022812">야간 조명이 꺼졌습니다.</translation>
 <translation id="1840920496749066704">°C</translation>
 <translation id="1841616161104323629">기기 기록이 누락되었습니다.</translation>
+<translation id="184273675144259287">Linux 앱 및 파일을 이전 백업으로 대체</translation>
 <translation id="1854180393107901205">전송 중지</translation>
 <translation id="1862077610023398675">컨트롤 숨기기</translation>
 <translation id="1862380676329487333">업데이트 및 로그아웃</translation>
@@ -333,6 +336,7 @@
 <translation id="1946615340060705561">해제하려면 'c' 키를 누르세요</translation>
 <translation id="1948405482892809935">다음 사용자로 전환</translation>
 <translation id="1954252331066828794">화면 녹화 완료됨</translation>
+<translation id="1954813140452229842">공유를 마운트하는 중에 오류가 발생했습니다. 사용자 인증 정보를 확인한 후 다시 시도해 주세요.</translation>
 <translation id="1956087014741188812">마우스 키 일시중지</translation>
 <translation id="1957958912175573503">언어 설정</translation>
 <translation id="1961239773406905488">동영상 카메라 미리보기 숨겨짐</translation>
@@ -352,6 +356,11 @@
 <translation id="1998100899771863792">현재 데스크</translation>
 <translation id="2001444736072756133"><ph name="CATEGORY" />, 파일, 앱 등을 검색합니다.</translation>
 <translation id="2011174342667534258">SDK 버전:</translation>
+<translation id="2017770349934140286">Google Play 및 Google Play에서 다운로드한 앱은 Chromebook에서 삭제됩니다.
+    <ph name="LINE_BREAKS1" />
+    영화, TV 프로그램, 음악, 도서와 같은 Google Play를 통해 구매한 콘텐츠뿐만 아니라 다른 앱에서 구매한 콘텐츠도 삭제될 수 있습니다.
+    <ph name="LINE_BREAKS2" />
+    다른 기기의 앱 또는 콘텐츠에는 영향을 미치지 않습니다.</translation>
 <translation id="2017998995161831444">살펴보기 앱에서 '도움말' 열기</translation>
 <translation id="2021864487439853900">잠금 해제하려면 클릭</translation>
 <translation id="2023167225947895179">추측하기 쉬운 PIN입니다.</translation>
@@ -381,6 +390,7 @@
 <translation id="212862741129535676">주파수 상태 점유율</translation>
 <translation id="2132302418721800944">화면 전체 녹화</translation>
 <translation id="2135456203358955318">고정 돋보기</translation>
+<translation id="2148219725039824548">공유를 마운트하는 중에 오류가 발생했습니다. 네트워크에서 지정된 공유를 찾을 수 없습니다.</translation>
 <translation id="2148716181193084225">오늘</translation>
 <translation id="2149229036084364364">이전 트랙으로 이동</translation>
 <translation id="2152796271648108398">현재 날씨</translation>
@@ -726,6 +736,7 @@
 <translation id="315116470104423982">모바일 데이터</translation>
 <translation id="3153444934357957346">멀티 로그인에는 계정을 <ph name="MULTI_PROFILE_USER_LIMIT" />개까지만 사용할 수 있습니다.</translation>
 <translation id="3154351730702813399">기기 관리자가 탐색 활동을 모니터링할 수 있습니다.</translation>
+<translation id="3157931365184549694">복구</translation>
 <translation id="316086887565479535">템플릿에 지원되지 않는 앱이 있습니다</translation>
 <translation id="3160929076476941240">2시간</translation>
 <translation id="316356270129335934"><ph name="MANAGER" />에서 <ph name="DEVICE_TYPE" /> 기기를 롤백 중입니다. 기기가 재설정되고 모든 데이터가 삭제됩니다.</translation>
@@ -776,6 +787,7 @@
 <translation id="3313950410573257029">연결 확인</translation>
 <translation id="3321628682574733415">잘못된 부모 코드</translation>
 <translation id="332827762492701193">알림이 숨겨져 있음</translation>
+<translation id="3328489342742826322">백업에서 복원하면 Linux 파일 폴더에 있는 기존 Linux 애플리케이션과 데이터가 삭제됩니다.</translation>
 <translation id="3333674550998107387"><ph name="NOTIFICATION_TITLE" /> 알림 펼치기</translation>
 <translation id="3339826665088060472">화면 캡처, 스크린샷을 찍고 화면을 녹화하는 도구</translation>
 <translation id="3340978935015468852">설정</translation>
@@ -835,6 +847,7 @@
         <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />위치 정확도 자세히 알아보기<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, 신호 강도 <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">앱 표시줄 자동 숨김</translation>
+<translation id="3500417806337761827">공유를 마운트하는 중에 오류가 발생했습니다. 너무 많은 SMB 공유가 이미 마운트되었습니다.</translation>
 <translation id="3505066820268455558">배터리 충전 중</translation>
 <translation id="3509391053705095206">휴대전화를 찾을 수 없습니다. 휴대전화에서 블루투스가 켜져 있는지 확인하세요.</translation>
 <translation id="3510164367642747937">마우스 커서 강조표시</translation>
@@ -959,6 +972,7 @@
 <translation id="3804737937830804242">카메라 접기</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{그림 이모티콘 1개. 다른 결과는 없습니다.}other{그림 이모티콘 #개. 다른 결과는 없습니다.}}</translation>
 <translation id="381202950560906753">다른 지문 추가</translation>
+<translation id="3819257035322786455">백업</translation>
 <translation id="3819261658055281761">시스템에서 이 기기의 장기 API 액세스 토큰을 저장하지 못했습니다.</translation>
 <translation id="3822403841174077928">서식을 포함하여 복사할 수 없음</translation>
 <translation id="3824621460022590830">기기 등록 토큰이 잘못되었습니다. 기기 소유자 또는 관리자에게 문의하세요. 오류 코드: <ph name="ERROR_CODE" /></translation>
@@ -1142,6 +1156,7 @@
 <translation id="4327147325944669226">게임 녹화</translation>
 <translation id="4329076911374908740">저장된 그룹의 최대 수에 도달했습니다.</translation>
 <translation id="4338109981321384717">돋보기</translation>
+<translation id="4340125850502689798">잘못된 사용자 이름</translation>
 <translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, 음소거됨</translation>
 <translation id="4351244548802238354">대화상자 닫기</translation>
 <translation id="435527878592612277">사진 선택</translation>
@@ -1621,6 +1636,7 @@
 <translation id="5727460725221669831">비밀번호를 잊어버렸거나 최근에 Google 계정 비밀번호를 변경한 경우 이 사용자를 복구해 보세요.</translation>
 <translation id="5733630091161562207">환영 알림</translation>
 <translation id="573413375004481890">사용 중인 일부 디스플레이가 기기에서 지원되지 않아 1개 디스플레이의 연결이 끊김</translation>
+<translation id="5734697361979786483">파일 공유 추가</translation>
 <translation id="5739548907438839901"><ph name="SIZE" />의 디스크 공간을 확보했습니다.</translation>
 <translation id="574392208103952083">보통</translation>
 <translation id="5745612484876805746">일몰 시 야간 조명이 자동으로 켜짐</translation>
@@ -1709,6 +1725,7 @@
 <translation id="5983567367406220847">활동이 없어 핫스팟이 사용 중지되었습니다.</translation>
 <translation id="598407983968395253">템플릿 사용</translation>
 <translation id="5984334442529819751">DLC 설치 중 오류가 발생했습니다(주로 재부팅이 필요합니다. 자세한 내용은 설정\&gt;\&gt;ChromeOS 정보에서 확인하세요).</translation>
+<translation id="5985458664595100876">URL 형식이 잘못되었습니다. \\server\share 및 smb://server/share 형식이 지원됩니다.</translation>
 <translation id="5986723678596105470">Google Meet으로 참여</translation>
 <translation id="598882571027504733">업데이트하려면 키보드가 연결된 상태로 Chromebook을 다시 시작하세요.</translation>
 <translation id="5990992855591814753">맞춤설정된 집중에 도움이 되는 재생목록으로 흐트러짐 없이 공부하세요. YouTube Premium을 3개월간 무료로 체험하고 YouTube Music 및 YouTube를 광고 없이 즐기세요. 약관이 적용됩니다.</translation>
@@ -1758,6 +1775,7 @@
 <translation id="6074087755403037157">베타 채널</translation>
 <translation id="6075098173600599596">대문자 사용 변경</translation>
 <translation id="6080689532560039067">시스템 시간 확인</translation>
+<translation id="6091761513005122595">공유가 성공적으로 마운트되었습니다.</translation>
 <translation id="6091929401758362855">재생목록: <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="6093867385179428431">관리자가 사용 중지함</translation>
 <translation id="6095008505822982596">말하기 속도</translation>
@@ -1929,6 +1947,7 @@
 <translation id="6582034443359256692">배터리 충전 수준을 계산하는 중입니다.</translation>
 <translation id="6586685375736417639">기기를 충전할 수 없음</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
+<translation id="6596816719288285829">IP 주소</translation>
 <translation id="6597017209724497268">샘플</translation>
 <translation id="6597278316891651699">카메라 미리보기가 왼쪽 하단으로 맞춰졌습니다. 시스템 표시 경로와 충돌합니다.</translation>
 <translation id="6605415194043280389">집중 모드 사용 중</translation>
@@ -1948,6 +1967,7 @@
 <translation id="6637729079642709226">시간 변경</translation>
 <translation id="6641720045729354415">실시간 자막을 전환합니다. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">이름별 정렬 순서 실행취소</translation>
+<translation id="6644513150317163574">URL 형식이 잘못되었습니다. SSO 인증이 사용될 경우 서버가 호스트 이름으로 지정되어야 합니다.</translation>
 <translation id="664793810957802384">추천 그룹의 항목</translation>
 <translation id="6649018507441623493">잠시 기다려 주세요.</translation>
 <translation id="6649641931981131786">화면 중앙에 위치하도록 카메라를 조절합니다.</translation>
@@ -2013,6 +2033,7 @@
 <translation id="6812232930908427253">데스크를 저장할 수 없습니다. 창 또는 탭이 너무 많습니다.</translation>
 <translation id="6818242057446442178">한 단어 뒤로 이동</translation>
 <translation id="6819327813400217281">카메라 미리보기가 왼쪽 하단으로 맞춰졌습니다</translation>
+<translation id="6820079682647046800">Kerberos 인증 실패</translation>
 <translation id="6820676911989879663">잠시 쉬어 가세요.</translation>
 <translation id="6827049576281411231">일정 창 닫기</translation>
 <translation id="682971198310367122">Google 개인정보처리방침</translation>
@@ -2043,6 +2064,7 @@
 <translation id="6919251195245069855">스마트 카드를 인식할 수 없습니다. 다시 시도해 보세요.</translation>
 <translation id="692135145298539227">삭제</translation>
 <translation id="6921427376813842559">기기 업데이트</translation>
+<translation id="6923633482430812883">공유를 마운트하는 중 오류가 발생했습니다. 연결하려는 파일 서버가 SMBv2 이상을 지원하는지 확인하세요.</translation>
 <translation id="6929081673585394903">컨트롤 표시</translation>
 <translation id="6931576957638141829">저장 위치</translation>
 <translation id="6935286146439255109">용지함 없음</translation>
@@ -2051,6 +2073,7 @@
 <translation id="6945221475159498467">선택</translation>
 <translation id="6945922087561257829">휴대전화가 모바일 네트워크에 연결되어 있습니다. 휴대전화와 Chromebook이 동일한 Wi-Fi 네트워크에 연결되어 있는지 확인한 후 다시 시도해 보세요. <ph name="LEARN_MORE" /></translation>
 <translation id="6950627417367801484">앱 복원</translation>
+<translation id="6960133692707095572">티켓 없이 방문</translation>
 <translation id="6960565108681981554">활성화되지 않았습니다. 이동통신사에 문의하세요.</translation>
 <translation id="696103774840402661">이 <ph name="DEVICE_TYPE" /> 기기 내 모든 사용자의 파일 및 로컬 데이터가 영구적으로 삭제되었습니다.</translation>
 <translation id="6961121602502368900">직장 프로필에서는 휴대전화 무음 설정을 사용할 수 없음</translation>
@@ -2090,6 +2113,7 @@
 <translation id="7061457967428964661">카메라 미리보기, 미리보기를 다른 가장자리로 이동시키려면 Ctrl + 화살표 키를 누르세요</translation>
 <translation id="7064351585062927183">다가오는 <ph name="DAY_OF_WEEK" /></translation>
 <translation id="7064734931812204395">Linux 컨테이너를 설정하는 중입니다. 여기에는 최대 30분이 걸릴 수 있습니다.</translation>
+<translation id="706626672220389329">공유를 마운트하는 중에 오류가 발생했습니다. 지정된 공유가 이미 마운트되었습니다.</translation>
 <translation id="7066646422045619941">관리자가 사용 중지한 네트워크입니다.</translation>
 <translation id="7067196344162293536">자동 회전</translation>
 <translation id="7076293881109082629">로그인</translation>
@@ -2476,6 +2500,7 @@
 <translation id="8168435359814927499">콘텐츠</translation>
 <translation id="8169177848833352618">이 머신은 Bruschetta 설치 요구사항을 충족하지 않습니다. 오류 코드는 <ph name="ERROR" />입니다.</translation>
 <translation id="8172370561760918656">선택된 왼쪽 상단 핸들, 화살표 키를 사용하여 이동</translation>
+<translation id="8177196903785554304">네트워크 세부정보</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="81817143961839203">이미지를 삽입할 수 없음</translation>
 <translation id="8182105986296479640">애플리케이션이 응답하지 않음</translation>
@@ -2510,6 +2535,7 @@
 <translation id="8262312463845990408">재생/일시중지 전환</translation>
 <translation id="8266751606569906450"><ph name="MINIMUM" />자 이상이어야 합니다.</translation>
 <translation id="8268302343625273732">Google 클래스룸의 모든 과제 보기</translation>
+<translation id="827488840488530039">방문하려는 페이지에서 Kerberos 티켓을 확인할 수 없습니다.</translation>
 <translation id="8277261673056602147">화면에서 텍스트 강조표시</translation>
 <translation id="8281886186245836920">건너뛰기</translation>
 <translation id="8282784978194352587">축하합니다.</translation>
@@ -2564,6 +2590,7 @@
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8458259704995116343">VM을 시작할 수 없습니다.</translation>
 <translation id="84613761564611563">네트워크 구성 UI를 요청했습니다. 잠시만 기다려 주세요.</translation>
+<translation id="8461914792118322307">프록시</translation>
 <translation id="8462305545768648477">텍스트 읽어주기 닫기</translation>
 <translation id="8463001014623882202">승인 실패</translation>
 <translation id="8466665972451889002"><ph name="GROUP_NAME" />의 항목 표시</translation>
@@ -2626,6 +2653,7 @@
 <translation id="8647931990447795414">사용자를 추가하려면 Family Link 부모 액세스 코드를 입력하세요</translation>
 <translation id="8649597172973390955">앱 표시줄 항상 표시</translation>
 <translation id="8657066291275741003">소문자</translation>
+<translation id="8662671328352114214"><ph name="TYPE" /> 네트워크에 연결</translation>
 <translation id="8662921061190671299">Calendar에 추가할 수 없음</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, 신호 강도 <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">부분 스크린샷을 캡처하려면 Enter를 누르세요</translation>
@@ -2672,6 +2700,7 @@
 <translation id="8760172428247796445">지금 <ph name="DEVICE_TYPE" /> 기기가 잠깁니다.
         <ph name="DOMAIN" />에서 스마트 카드를 삽입한 상태로 둘 것을 요청합니다.</translation>
 <translation id="8763883995157866248">기기를 절전 모드로 설정</translation>
+<translation id="8774379074441005279">복원 확인</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, 설치된 앱, 차단됨</translation>
 <translation id="8782565991310229362">키오스크 애플리케이션 실행이 취소되었습니다.</translation>
 <translation id="8784626084144195648">비닝 평균</translation>
@@ -2688,6 +2717,7 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">입력 방법 설정</translation>
 <translation id="8819728065740986820">자동 조절 충전 사용 설정됨</translation>
+<translation id="8821045908425223359">자동으로 IP 주소 설정</translation>
 <translation id="882204272221080310">펌웨어를 업데이트하여 보안 강화</translation>
 <translation id="8822104519413696986">이 게임은 터치 게임입니다</translation>
 <translation id="8825863694328519386">돌아가려면 왼쪽에서 스와이프하세요.</translation>
@@ -2747,6 +2777,7 @@
 <translation id="8980862970816311842">앱 그리드의 폴더 안팎으로 앱 아이콘 이동</translation>
 <translation id="8982906748181120328">Nearby 전체 공개</translation>
 <translation id="8983038754672563810">HSPA</translation>
+<translation id="8986362086234534611">저장 안함</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> 사용 중</translation>
 <translation id="8991648557324317894">취소하려면 fn + 빠른 입력 또는 Shift를 누르세요.</translation>
 <translation id="899350903320462459">알림 작업을 실행하려면 <ph name="LOGIN_ID" />(으)로 기기의 잠금을 해제하세요.</translation>
@@ -2759,6 +2790,7 @@
 <translation id="9013037634206938463">Linux를 설치하려면 <ph name="INSTALL_SIZE" />의 여유 공간이 있어야 합니다. 여유 공간을 늘리려면 기기에서 파일을 삭제하세요.</translation>
 <translation id="901668144954885282">Google Drive에 백업</translation>
 <translation id="9017320285115481645">Family Link 부모 액세스 코드를 입력하세요.</translation>
+<translation id="9024158959543687197">공유를 마운트하는 중에 오류가 발생했습니다. 파일 공유 URL을 확인한 후 다시 시도해 주세요.</translation>
 <translation id="9024331582947483881">전체화면</translation>
 <translation id="9026852570893462412">이 과정은 몇 분 정도 걸릴 수 있습니다. 가상 머신을 다운로드합니다.</translation>
 <translation id="9029736946581028033">기기가 곧 꺼짐</translation>

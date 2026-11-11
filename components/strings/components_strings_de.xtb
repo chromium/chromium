@@ -3,6 +3,7 @@
 <translationbundle lang="de">
 <translation id="1008557486741366299">Jetzt nicht</translation>
 <translation id="100957008357583611">Standort verwenden?</translation>
+<translation id="1010148478459329879">Unter <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> sind möglicherweise weitere Arten von Browserverlaufsdaten für dein Google-Konto gespeichert, z. B. dein <ph name="BEGIN_LINK_GAA" />Gemini-Verlauf<ph name="END_LINK_GAA" /></translation>
 <translation id="1010200102790553230">Seite später laden</translation>
 <translation id="1010225406377140704">Bitte den Absender um einen neuen Link</translation>
 <translation id="1011206368273183593">Dateien werden vorbereitet</translation>
@@ -4299,6 +4300,7 @@ Weitere Details:
 <translation id="8163468049564974856">Aktiviere Autofill, um sicher online zu bezahlen. Die Kartendetails werden in Google Wallet verschlüsselt.</translation>
 <translation id="8163866351304776260">Vierfache Lochung links</translation>
 <translation id="8164078261547504572">Möchtest du per E‑Mail über Preissenkungen informiert werden?</translation>
+<translation id="8166435925529495192">In deinem Google-Konto ist möglicherweise dein <ph name="BEGIN_LINK_GAA" />Gemini-Verlauf<ph name="END_LINK_GAA" /> gespeichert</translation>
 <translation id="8169175551046720804">Die Schlüssel „<ph name="DATA_CONTROLS_KEYS" />“ können nicht im selben Wörterbuch festgelegt werden</translation>
 <translation id="8172809706700703589">Erstelle eine Packliste für meine Reise</translation>
 <translation id="8174047975335711832">Gerätebezogene Informationen</translation>
@@ -4965,6 +4967,7 @@ Weitere Details:
     &lt;li&gt;Deinstalliere oder deaktiviere "<ph name="SOFTWARE_NAME" />".&lt;/li&gt;
     &lt;li&gt;Stelle eine Verbindung zu einem anderen Netzwerk her.&lt;/li&gt;
     &lt;/ul&gt;</translation>
+<translation id="992501626255096403">Unter <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> sind möglicherweise weitere Arten von Browserverlaufsdaten für dein Google-Konto gespeichert, z. B. Besuche im Rahmen des automatischen Browsens in deinem <ph name="BEGIN_LINK_GAA" />Gemini-Verlauf<ph name="END_LINK_GAA" /></translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">IBAN hinzufügen</translation>
 <translation id="995782501881226248">YouTube</translation>

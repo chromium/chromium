@@ -20,6 +20,7 @@
 <translation id="1056898198331236512">चेतावनी</translation>
 <translation id="1058009965971887428">सुझाव, शिकायत या राय दें</translation>
 <translation id="1059120031266247284">आपके साथ शेयर की गई</translation>
+<translation id="1060570945511946595">टिकट मैनेज करें</translation>
 <translation id="1060847216467038176"><ph name="ITEM_LABEL" /> के साथ इसे हटाने का बटन दिख रहा है</translation>
 <translation id="1062407476771304334">प्रतिस्थापित करें</translation>
 <translation id="1065931689816135472"><ph name="BEGIN_PARAGRAPH1" />Google Drive में बैक अप लें. जब चाहें, आसानी से अपना डेटा वापस पाएं या डिवाइस बदलें. बैकअप में ऐप्लिकेशन का डेटा शामिल होता है.<ph name="END_PARAGRAPH1" />
@@ -280,6 +281,7 @@
 <translation id="1757132445735080748">Linux का सेट अप पूरा करने के लिए, ChromeOS Flex को अपडेट करके दोबारा कोशिश करें.</translation>
 <translation id="1757857692711134412">यह सुविधा सूरज ढलने तक बंद रहेगी</translation>
 <translation id="1763084151787818322">अन्य कार्रवाइयां</translation>
+<translation id="1767043563165955993">Android ऐप्लिकेशन के साथ इस्तेमाल करें</translation>
 <translation id="1768138163688567246">'मेरी स्क्रीन पर खोजें' मोड बंद करें</translation>
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + पीरियड कीबोर्ड शॉर्टकट बदल गया है. Insert बटन का इस्तेमाल करने के लिए, <ph name="LAUNCHER_KEY_NAME" /> बटन + Shift + Backspace दबाएं.</translation>
 <translation id="1770726142253415363">लाइन <ph name="ROW_NUMBER" /> में, कॉलम संख्या <ph name="COLUMN_NUMBER" /> पर भेज दिया गया.</translation>
@@ -304,6 +306,7 @@
 <translation id="1838895407229022812">नाइट लाइट बंद है.</translation>
 <translation id="1840920496749066704">°C</translation>
 <translation id="1841616161104323629">डिवाइस का रिकॉर्ड मौजूद नहीं है.</translation>
+<translation id="184273675144259287">अपने Linux ऐप्लिकेशन और फ़ाइलों को पिछले बैकअप से बदलें</translation>
 <translation id="1854180393107901205">कास्ट करना रोकें</translation>
 <translation id="1862077610023398675">कंट्रोल छिपाएं</translation>
 <translation id="1862380676329487333">अपडेट करके साइन आउट करें</translation>
@@ -333,6 +336,7 @@
 <translation id="1946615340060705561">माउस बटन को छोड़ने के लिए "c" दबाएं</translation>
 <translation id="1948405482892809935">अगले उपयोगकर्ता पर स्विच करने के लिए</translation>
 <translation id="1954252331066828794">स्क्रीन रिकॉर्डिंग पूरी हुई</translation>
+<translation id="1954813140452229842">शेयर माउंट करने में गड़बड़ी. कृपया अपने क्रेडेंशियल देखें और दोबारा कोशिश करें.</translation>
 <translation id="1956087014741188812">कीबोर्ड से माउस के बटन इस्तेमाल करने की सुविधा रोकें</translation>
 <translation id="1957958912175573503">अपनी भाषा सेट करें</translation>
 <translation id="1961239773406905488">वीडियो कैमरे में झलक नहीं दिखाई जा रही है</translation>
@@ -352,6 +356,11 @@
 <translation id="1998100899771863792">मौजूदा डेस्क</translation>
 <translation id="2001444736072756133"><ph name="CATEGORY" />, फ़ाइलें, ऐप्लिकेशन, और दूसरी चीज़ें खोजें.</translation>
 <translation id="2011174342667534258">SDK टूल का वर्शन:</translation>
+<translation id="2017770349934140286">इस Chromebook से Google Play के साथ ही, उन सभी ऐप्लिकेशन को भी मिटा दिया जाएगा जिन्हें आपने Play से डाउनलोड किया था.
+    <ph name="LINE_BREAKS1" />
+    Google Play से खरीदा गया कॉन्टेंट, जैसे कि फ़िल्में, टीवी शो, संगीत, किताबें, और अन्य ऐप्लिकेशन से की गई खरीदारी भी मिटाई जा सकती है.
+    <ph name="LINE_BREAKS2" />
+    हालांकि, अन्य डिवाइसों पर मौजूद ऐप्लिकेशन या कॉन्टेंट पर इसका कोई असर नहीं पड़ेगा.</translation>
 <translation id="2017998995161831444">Explore ऐप्लिकेशन में "सहायता" खोलें</translation>
 <translation id="2021864487439853900">क्लिक करके अनलॉक करें</translation>
 <translation id="2023167225947895179">पिन का अनुमान लगाना आसान हो सकता है</translation>
@@ -381,6 +390,7 @@
 <translation id="212862741129535676">आवृत्ति स्थिति उपयोग प्रतिशत</translation>
 <translation id="2132302418721800944">फ़ुल स्क्रीन रिकॉर्ड करें</translation>
 <translation id="2135456203358955318">स्क्रीन पर कर्सर वाले हिस्से को बड़ा करके दिखाने की सुविधा</translation>
+<translation id="2148219725039824548">शेयर माउंट करने में गड़बड़ी. बताया गया शेयर नेटवर्क पर नहीं मिला.</translation>
 <translation id="2148716181193084225">आज</translation>
 <translation id="2149229036084364364">पिछले ट्रैक पर जाएं</translation>
 <translation id="2152796271648108398">मौजूदा मौसम</translation>
@@ -726,6 +736,7 @@
 <translation id="315116470104423982">मोबाइल डेटा</translation>
 <translation id="3153444934357957346">एक से ज़्यादा साइन-इन की सुविधा के लिए आपके पास ज़्यादा से ज़्यादा <ph name="MULTI_PROFILE_USER_LIMIT" /> खाते हो सकते हैं.</translation>
 <translation id="3154351730702813399">डिवाइस व्यवस्थापक आपकी ब्राउज़िंग गतिविधि की निगरानी कर सकता है.</translation>
+<translation id="3157931365184549694">वापस लाएं</translation>
 <translation id="316086887565479535">टेंप्लेट में मौजूद, काम नहीं करने वाले ऐप्लिकेशन</translation>
 <translation id="3160929076476941240">2 घंटे</translation>
 <translation id="316356270129335934"><ph name="MANAGER" />, आपके <ph name="DEVICE_TYPE" /> को रोल बैक कर रहा है. आपका डिवाइस रीसेट हो जाएगा. साथ ही, आपका सारा डेटा मिट जाएगा.</translation>
@@ -776,6 +787,7 @@
 <translation id="3313950410573257029">कनेक्शन की जांच करें</translation>
 <translation id="3321628682574733415">माता-पिता वाला कोड गलत है</translation>
 <translation id="332827762492701193">सूचनाएं छिपी हुई हैं</translation>
+<translation id="3328489342742826322">बैकअप डेटा बहाल करने से, आपके Linux फ़ाइलों और फ़ोल्डर में मौजूद Linux ऐप्लिकेशन और डेटा मिट जाएंगे.</translation>
 <translation id="3333674550998107387"><ph name="NOTIFICATION_TITLE" /> की सूचना को बड़ा करें</translation>
 <translation id="3339826665088060472">स्क्रीन कैप्चर, यानी कि स्क्रीनशॉट और स्क्रीन रिकॉर्ड करने के लिए टूल</translation>
 <translation id="3340978935015468852">सेटिंग</translation>
@@ -835,6 +847,7 @@
         <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />जगह की सटीक जानकारी देने की सुविधा के बारे में ज़्यादा जानें<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">शेल्फ़ के अपने आप छिपने की सुविधा चालू है</translation>
+<translation id="3500417806337761827">शेयर माउंट करने में गड़बड़ी हुई. बहुत से एसएमबी शेयर पहले ही माउंट कर दिए गए हैं.</translation>
 <translation id="3505066820268455558">बैटरी चार्ज हो रही है</translation>
 <translation id="3509391053705095206">आपका फ़ोन नहीं मिला. पक्का करें कि आपके फ़ोन का ब्लूटूथ चालू है.</translation>
 <translation id="3510164367642747937">माउस कर्सर को हाइलाइट करें</translation>
@@ -960,6 +973,7 @@
 <translation id="3804737937830804242">कैमरा छोटा करें</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 इमोजी. कोई और नतीजा नहीं मिला.}one{# इमोजी. कोई और नतीजा नहीं मिला.}other{# इमोजी. कोई और नतीजा नहीं मिला.}}</translation>
 <translation id="381202950560906753">दूसरा जोड़ें</translation>
+<translation id="3819257035322786455">बैकअप लें</translation>
 <translation id="3819261658055281761">सिस्टम इस डिवाइस के लिए लंबी समयावधि का API (एपीआई) ऐक्सेस टोकन स्टोर नहीं कर सका.</translation>
 <translation id="3822403841174077928">टेक्स्ट को फ़ॉर्मैटिंग के साथ कॉपी नहीं किया जा सका</translation>
 <translation id="3824621460022590830">डिवाइस का नाम दर्ज करने वाला टोकन अमान्य है. कृपया डिवाइस के मालिक या एडमिन से संपर्क करें. गड़बड़ी कोड: <ph name="ERROR_CODE" />.</translation>
@@ -1144,6 +1158,7 @@
 <translation id="4327147325944669226">गेम रिकॉर्ड करें</translation>
 <translation id="4329076911374908740">सेव किए जा सकने वाले टैब ग्रुप की तय सीमा पूरी हो गई है.</translation>
 <translation id="4338109981321384717">आवर्धक ग्लास</translation>
+<translation id="4340125850502689798">यह उपयोगकर्ता नाम गलत/अमान्य है</translation>
 <translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, म्यूट किया गया</translation>
 <translation id="4351244548802238354">संवाद बंद करें</translation>
 <translation id="435527878592612277">अपनी फ़ोटो चुनें</translation>
@@ -1623,6 +1638,7 @@
 <translation id="5727460725221669831">अगर आपको अपना पासवर्ड याद नहीं है या आपने हाल ही में अपने Google खाते का पासवर्ड बदला है, तो इस खाते का पासवर्ड रीसेट करें.</translation>
 <translation id="5733630091161562207">स्वागत वाली सूचना</translation>
 <translation id="573413375004481890">यह डिवाइस आपके सभी डिसप्ले के साथ काम नहीं कर सकता. इसलिए, एक डिसप्ले को डिसकनेक्ट किया गया है</translation>
+<translation id="5734697361979786483">फ़ाइल शेयर जोड़ें</translation>
 <translation id="5739548907438839901">डिस्क में <ph name="SIZE" /> स्टोरेज खाली किया गया.</translation>
 <translation id="574392208103952083">मीडियम</translation>
 <translation id="5745612484876805746">सूरज ढलने पर 'नाइट लाइट' अपने-आप चालू हो जाती है</translation>
@@ -1711,6 +1727,7 @@
 <translation id="5983567367406220847">कोई गतिविधि न होने की वजह से, हॉटस्पॉट बंद कर दिया गया है.</translation>
 <translation id="598407983968395253">टेंप्लेट का इस्तेमाल करें</translation>
 <translation id="5984334442529819751">डीएलसी इंस्टॉल करते समय कोई गड़बड़ी हुई (अक्सर, डिवाइस को फिर से चालू करने की ज़रूरत होती है. ज़्यादा जानने के लिए, सेटिंग\&gt;\&gt;ChromeOS के बारे में जानकारी पर जाएं).</translation>
+<translation id="5985458664595100876">यूआरएल का फ़ॉर्मेट गलत है. काम करने वाले फ़ॉर्मेट \\server\share और smb://server/share हैं.</translation>
 <translation id="5986723678596105470">Google Meet के ज़रिए शामिल हों</translation>
 <translation id="598882571027504733">अपडेट पाने के लिए, अटैच किए गए कीबोर्ड से अपने Chromebook को रीस्टार्ट करें.</translation>
 <translation id="5990992855591814753">आपकी दिलचस्पी के हिसाब से बनाई गई, फ़ोकस करने में मदद करने वाली प्लेलिस्ट सुनकर अपने काम पूरे करें. बिना किसी शुल्क के तीन महीनों के लिए YouTube Premium की सदस्यता लें और बिना विज्ञापन के YouTube Music और YouTube चलाएं. शर्तें लागू.</translation>
@@ -1761,6 +1778,7 @@
 <translation id="6074087755403037157">बीटा चैनल</translation>
 <translation id="6075098173600599596">कैपिटलाइज़ेशन बदलें</translation>
 <translation id="6080689532560039067">अपने सिस्टम के समय की जाँच करें</translation>
+<translation id="6091761513005122595">शेयर माउंट करना सफल रहा.</translation>
 <translation id="6091929401758362855">प्लेलिस्ट: <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="6093867385179428431">एडमिन ने बंद किया है</translation>
 <translation id="6095008505822982596">बोलने की दर</translation>
@@ -1932,6 +1950,7 @@
 <translation id="6582034443359256692">बैटरी के चार्जिंग लेवल का हिसाब लगाया जा रहा है.</translation>
 <translation id="6586685375736417639">डिवाइस चार्ज नहीं किया जा सकता</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
+<translation id="6596816719288285829">आईपी पता</translation>
 <translation id="6597017209724497268">नमूने</translation>
 <translation id="6597278316891651699">कैमरा इनपुट की झलक, अब नीचे बाएं कोने में दिखेगी. ऐसा, सिस्टम पर दूसरे ऐप्लिकेशन के साथ ओवरलैप होने की वजह से किया गया है.</translation>
 <translation id="6605415194043280389">फ़ोकस मोड चालू है</translation>
@@ -1951,6 +1970,7 @@
 <translation id="6637729079642709226">समय में बदलाव करें</translation>
 <translation id="6641720045729354415">लाइव कैप्शन की सुविधा टॉगल करें. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">नाम के हिसाब से लगाए गए क्रम को पहले जैसा करें</translation>
+<translation id="6644513150317163574">यूआरएल फ़ॉर्मैट अमान्य है एसएसओ (SSO) प्रमाणीकरण का इस्तेमाल होने पर सर्वर को होस्ट नाम के तौर पर लिखा जाना चाहिए.</translation>
 <translation id="664793810957802384">सुझाए गए ग्रुप में मौजूद आइटम</translation>
 <translation id="6649018507441623493">बस एक सेकंड...</translation>
 <translation id="6649641931981131786">स्क्रीन के बीच में दिखने के लिए, कैमरा अडजस्ट करें.</translation>
@@ -2016,6 +2036,7 @@
 <translation id="6812232930908427253">डेस्क सेव नहीं किया जा सका. बहुत ज़्यादा विंडो या टैब.</translation>
 <translation id="6818242057446442178">एक शब्द पीछे जाएं</translation>
 <translation id="6819327813400217281">कैमरा इनपुट की झलक, अब नीचे बाएं कोने में दिखेगी</translation>
+<translation id="6820079682647046800">Kerberos की पुष्टि नहीं की जा सकी</translation>
 <translation id="6820676911989879663">आज के लिए इतना ही!</translation>
 <translation id="6827049576281411231">इवेंट वाला पैनल बंद करें</translation>
 <translation id="682971198310367122">Google निजता नीति</translation>
@@ -2046,6 +2067,7 @@
 <translation id="6919251195245069855">आपका स्मार्ट कार्ड पहचाना नहीं जा सका. फिर से कोशिश करें.</translation>
 <translation id="692135145298539227">मिटाएं</translation>
 <translation id="6921427376813842559">डिवाइस को अपडेट करें</translation>
+<translation id="6923633482430812883">शेयर माउंट करने में गड़बड़ी. कृपया जाँचें कि आप जिस फ़ाइल सर्वर से कनेक्ट कर रहे हैं वह SMBv2 या उसके बाद के वर्शन पर काम करता है.</translation>
 <translation id="6929081673585394903">कंट्रोल दिखाएं</translation>
 <translation id="6931576957638141829">यहां सेव करें</translation>
 <translation id="6935286146439255109">पेपर ट्रे नहीं है</translation>
@@ -2054,6 +2076,7 @@
 <translation id="6945221475159498467">चुनें</translation>
 <translation id="6945922087561257829">आपका फ़ोन, मोबाइल नेटवर्क से कनेक्ट है. पक्का करें कि आपका फ़ोन और Chromebook एक ही वाई-फ़ाई नेटवर्क से कनेक्ट हों. इसके बाद, फिर से कोशिश करें. <ph name="LEARN_MORE" /></translation>
 <translation id="6950627417367801484">ऐप्लिकेशन बहाल करें</translation>
+<translation id="6960133692707095572">टिकट के बिना जाएं</translation>
 <translation id="6960565108681981554">यह चालू नहीं है. मोबाइल और इंटरनेट सेवा देने वाली कंपनी से संपर्क करें.</translation>
 <translation id="696103774840402661"><ph name="DEVICE_TYPE" /> से सभी उपयोगकर्ताओं की सभी फ़ाइलें और स्थानीय डेटा हमेशा के लिए मिटा दिया गया है.</translation>
 <translation id="6961121602502368900">वर्क प्रोफ़ाइल में, फ़ोन को साइलेंट रखने की सुविधा उपलब्ध नहीं है</translation>
@@ -2093,6 +2116,7 @@
 <translation id="7061457967428964661">कैमरा इनपुट की झलक को दूसरे कोने पर ले जाने के लिए, कंट्रोल के साथ ऐरो बटन दबाएं</translation>
 <translation id="7064351585062927183">अगला <ph name="DAY_OF_WEEK" /></translation>
 <translation id="7064734931812204395">Linux कंटेनर कॉन्फ़िगर हो रही है. इसमें 30 मिनट तक लग सकते हैं.</translation>
+<translation id="706626672220389329">शेयर माउंट करने में गड़बड़ी. बताया गया शेयर पहले से माउंट किया हुआ है.</translation>
 <translation id="7066646422045619941">यह नेटवर्क आपके व्यवस्थापक द्वारा अक्षम किया गया है.</translation>
 <translation id="7067196344162293536">अपने आप घूमना</translation>
 <translation id="7076293881109082629">साइन इन किया जा रहा है</translation>
@@ -2479,6 +2503,7 @@
 <translation id="8168435359814927499">कॉन्टेंट</translation>
 <translation id="8169177848833352618">माफ़ करें, इस मशीन पर Bruschetta इंस्टॉल नहीं किया जा सकता. गड़बड़ी का कोड <ph name="ERROR" /> है.</translation>
 <translation id="8172370561760918656">हैंडल, चुने गए हिस्से के सबसे ऊपर बाईं ओर मौजूद है. हैंडल को मूव करने के लिए, ऐरो बटन इस्तेमाल करें</translation>
+<translation id="8177196903785554304">नेटवर्क विवरण</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="81817143961839203">इमेज नहीं जोड़ी जा सकी</translation>
 <translation id="8182105986296479640">ऐप्लिकेशन काम नहीं कर रहा है</translation>
@@ -2513,6 +2538,7 @@
 <translation id="8262312463845990408">'चुनें और सुनें' सुविधा को रोकें या चालू करें</translation>
 <translation id="8266751606569906450">इसमें कम-से-कम <ph name="MINIMUM" /> वर्ण होने चाहिए</translation>
 <translation id="8268302343625273732">सभी असाइनमेंट Google Classroom में देखें</translation>
+<translation id="827488840488530039">आपको जिस पेज पर जाना है वह आपके Kerberos टिकट की पुष्टि नहीं कर सका</translation>
 <translation id="8277261673056602147">अपनी स्क्रीन पर मौजूद टेक्स्ट को हाइलाइट करें</translation>
 <translation id="8281886186245836920">अभी नहीं</translation>
 <translation id="8282784978194352587">आपने कर दिखाया!</translation>
@@ -2567,6 +2593,7 @@
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8458259704995116343">वीएम को शुरू नहीं किया जा सका.</translation>
 <translation id="84613761564611563">नेटवर्क कॉन्फ़िगर यूज़र इंटरफ़ेस (यूआई) का अनुरोध किया गया, कृृपया इंतज़ार करें...</translation>
+<translation id="8461914792118322307">प्रॉक्सी</translation>
 <translation id="8462305545768648477">'चुनें और सुनें' सुविधा बंद करें</translation>
 <translation id="8463001014623882202">अनुमति नहीं मिल सकी</translation>
 <translation id="8466665972451889002"><ph name="GROUP_NAME" /> में टैब दिखाएं</translation>
@@ -2629,6 +2656,7 @@
 <translation id="8647931990447795414">किसी व्यक्ति को जोड़ने के लिए, अपने Family Link का अभिभावक ऐक्सेस कोड डालें</translation>
 <translation id="8649597172973390955">अब शेल्फ़ हर समय उपलब्ध है</translation>
 <translation id="8657066291275741003">लोअरकेस</translation>
+<translation id="8662671328352114214"><ph name="TYPE" /> नेटवर्क में शामिल हों</translation>
 <translation id="8662921061190671299">Calendar में नहीं जोड़ा जा सका</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">स्क्रीन के किसी खास हिस्से का स्क्रीनशॉट लेने के लिए, Enter दबाएं</translation>
@@ -2675,6 +2703,7 @@
 <translation id="8760172428247796445">आपका <ph name="DEVICE_TYPE" /> अभी लॉक हो जाएगा.
         <ph name="DOMAIN" /> के लिए ज़रूरी है कि आप अपना स्मार्ट कार्ड डालकर रखें.</translation>
 <translation id="8763883995157866248">डिवाइस को स्लीप मोड में रखने के लिए</translation>
+<translation id="8774379074441005279">बहाल करने की पुष्टि करें</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, इंस्टॉल किया गया ऐप्लिकेशन, ब्लॉक किया गया</translation>
 <translation id="8782565991310229362">कियोस्क ऐप्स  लॉन्च रद्द किया गया.</translation>
 <translation id="8784626084144195648">बिन औसत</translation>
@@ -2691,6 +2720,7 @@
 <translation id="8814190375133053267">वाई-फ़ाई </translation>
 <translation id="881757059229893486">इनपुट के तरीकों की सेटिंग</translation>
 <translation id="8819728065740986820">अडैप्टिव चार्जिंग की सुविधा चालू है</translation>
+<translation id="8821045908425223359">आईपी पता अपने आप कॉन्फ़िगर होने दें</translation>
 <translation id="882204272221080310">अतिरिक्त सुरक्षा के लिए फ़र्मवेयर अपडेट करें.</translation>
 <translation id="8822104519413696986">यह, स्क्रीन छूकर खेला जाने वाला गेम है</translation>
 <translation id="8825863694328519386">वापस जाने के लिए, स्क्रीन के बाएं किनारे से स्वाइप करें</translation>
@@ -2750,6 +2780,7 @@
 <translation id="8980862970816311842">ऐप्लिकेशन ग्रिड में किसी ऐप्लिकेशन आइकॉन को किसी फ़ोल्डर के अंदर या बाहर ले जाने के लिए</translation>
 <translation id="8982906748181120328">आस-पास दिखे</translation>
 <translation id="8983038754672563810">HSPA</translation>
+<translation id="8986362086234534611">भूल जाएं</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> का इस्तेमाल करें</translation>
 <translation id="8991648557324317894">रद्द करने के लिए, fn + क्विक इंसर्ट या Shift दबाएं.</translation>
 <translation id="899350903320462459">सूचना से जुड़ी कार्रवाई करने के लिए डिवाइस को <ph name="LOGIN_ID" /> के तौर पर अनलॉक करें</translation>
@@ -2762,6 +2793,7 @@
 <translation id="9013037634206938463">Linux को इंस्टॉल करने के लिए, कम से कम <ph name="INSTALL_SIZE" /> खाली जगह होनी चाहिए. खाली जगह बढ़ाने के लिए अपने डिवाइस से फ़ाइलें मिटाएं.</translation>
 <translation id="901668144954885282">'Google डिस्क' में बैक अप लें</translation>
 <translation id="9017320285115481645">Family Link का अभिभावक ऐक्सेस कोड डालें.</translation>
+<translation id="9024158959543687197">शेयर माउंट करने में गड़बड़ी. फ़ाइल शेयर यूआरएल देखें और दोबारा कोशिश करें.</translation>
 <translation id="9024331582947483881">फ़ुल स्क्रीन</translation>
 <translation id="9026852570893462412">इस प्रोसेस में कुछ मिनट लग सकते हैं. वर्चुअल मशीन को डाउनलोड किया जा रहा है.</translation>
 <translation id="9029736946581028033">डिवाइस की बैटरी जल्द ही खत्म होने वाली है</translation>

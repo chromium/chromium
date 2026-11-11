@@ -20,6 +20,7 @@
 <translation id="1056898198331236512">تحذير</translation>
 <translation id="1058009965971887428">إرسال تقرير بالملاحظات</translation>
 <translation id="1059120031266247284">تمت مشاركة هذا الملف معك</translation>
+<translation id="1060570945511946595">إدارة التذاكر</translation>
 <translation id="1060847216467038176">‫<ph name="ITEM_LABEL" /> مع الزر "إزالة"</translation>
 <translation id="1062407476771304334">استبدال</translation>
 <translation id="1065931689816135472">‏<ph name="BEGIN_PARAGRAPH1" />يمكنك الاحتفاظ بنسخة احتياطية في Google Drive، ما يتيح استعادة بياناتك أو تبديل جهازك بسهولة في أي وقت. وتتضمّن نسختك الاحتياطية بيانات التطبيقات.<ph name="END_PARAGRAPH1" />
@@ -281,6 +282,7 @@
 <translation id="1757132445735080748">‏لإكمال عملية إعداد نظام التشغيل Linux، يُرجى تحديث نظام التشغيل ChromeOS Flex وإعادة المحاولة.</translation>
 <translation id="1757857692711134412">إيقاف الميزة حتى غروب الشمس</translation>
 <translation id="1763084151787818322">إجراءات أخرى</translation>
+<translation id="1767043563165955993">‏استخدام الحساب مع تطبيقات Android</translation>
 <translation id="1768138163688567246">إغلاق وضع "البحث على شاشتي"</translation>
 <translation id="1768366657309696705">‏تم تغيير اختصار لوحة المفاتيح <ph name="LAUNCHER_KEY_NAME" /> + مفتاح Period. لاستخدام مفتاح Insert، اضغط على مفتاح <ph name="LAUNCHER_KEY_NAME" /> + Shift + مفتاح Backspace.</translation>
 <translation id="1770726142253415363">تم النقل إلى الصف رقم <ph name="ROW_NUMBER" />، العمود رقم <ph name="COLUMN_NUMBER" />.</translation>
@@ -305,6 +307,7 @@
 <translation id="1838895407229022812">"الإضاءة الليلية" غير مفعّلة.</translation>
 <translation id="1840920496749066704">درجة مئوية</translation>
 <translation id="1841616161104323629">سجِلّ الجهاز مفقود.</translation>
+<translation id="184273675144259287">‏استبدال تطبيقات وملفات Linux بنسخة احتياطية سابقة</translation>
 <translation id="1854180393107901205">إيقاف البث</translation>
 <translation id="1862077610023398675">إخفاء عناصر التحكّم</translation>
 <translation id="1862380676329487333">تحديث وتسجيل الخروج</translation>
@@ -334,6 +337,7 @@
 <translation id="1946615340060705561">‏اضغط على المفتاح c لتحرير زر الماوس</translation>
 <translation id="1948405482892809935">التبديل إلى المستخدم التالي</translation>
 <translation id="1954252331066828794">اكتمل تسجيل الشاشة.</translation>
+<translation id="1954813140452229842">حدث خطأ في تحميل المشاركة. يُرجى التحقُّق من بيانات الاعتماد وإعادة المحاولة.</translation>
 <translation id="1956087014741188812">إيقاف استخدام مفاتيح الماوس مؤقتًا</translation>
 <translation id="1957958912175573503">تعيين اللغة</translation>
 <translation id="1961239773406905488">تم إخفاء معاينة الكاميرا</translation>
@@ -353,6 +357,11 @@
 <translation id="1998100899771863792">سطح المكتب الحالي</translation>
 <translation id="2001444736072756133">يمكنك البحث في <ph name="CATEGORY" /> والملفات والتطبيقات وغير ذلك.</translation>
 <translation id="2011174342667534258">‏إصدار حزمة تطوير البرامج (SDK):</translation>
+<translation id="2017770349934140286">‏سيتم حذف Google Play والتطبيقات التي تم تنزيلها من جهاز Chromebook هذا.
+    <ph name="LINE_BREAKS1" />
+    قد يُحذف أيضًا المحتوى الذي تم شراؤه من Google Play، مثل الأفلام والبرامج التلفزيونية والموسيقى والكتب، وكذلك المشتريات من تطبيقات أخرى.
+    <ph name="LINE_BREAKS2" />
+    لا يؤثر ذلك على التطبيقات أو المحتوى على الأجهزة الأخرى.</translation>
 <translation id="2017998995161831444">فتح محتوى "المساعدة" في تطبيق "استكشاف"</translation>
 <translation id="2021864487439853900">انقر لفتح قفل الشبكة.</translation>
 <translation id="2023167225947895179">قد يكون رقم التعريف الشخصي سهل التخمين</translation>
@@ -382,6 +391,7 @@
 <translation id="212862741129535676">نسبة إشغال حالة التردد</translation>
 <translation id="2132302418721800944">تسجيل فيديو في وضع ملء الشاشة</translation>
 <translation id="2135456203358955318">المكبّر الذي تم إرساؤه</translation>
+<translation id="2148219725039824548">حدث خطأ في تحميل المشاركة. لم يتم العثور على المشاركة المُحدَّدة في الشبكة.</translation>
 <translation id="2148716181193084225">اليوم</translation>
 <translation id="2149229036084364364">الانتقال إلى المقطع الصوتي السابق</translation>
 <translation id="2152796271648108398">الطقس الحالي</translation>
@@ -723,6 +733,7 @@
 <translation id="315116470104423982">بيانات الجوال</translation>
 <translation id="3153444934357957346">يمكنك الحصول فقط على ما يصل إلى <ph name="MULTI_PROFILE_USER_LIMIT" /> حساب في الدخول المتعدد.</translation>
 <translation id="3154351730702813399">قد يراقب مشرف الجهاز نشاط التصفح.</translation>
+<translation id="3157931365184549694">استعادة</translation>
 <translation id="316086887565479535">يحتوي النموذج على تطبيقات غير متوافقة.</translation>
 <translation id="3160929076476941240">ساعتان</translation>
 <translation id="316356270129335934">يعمل <ph name="MANAGER" /> على إعادة جهاز <ph name="DEVICE_TYPE" /> إلى الإصدار السابق. ستتم إعادة ضبط جهازك ويتم حذف كل البيانات المتوفّرة عليه.</translation>
@@ -773,6 +784,7 @@
 <translation id="3313950410573257029">التحقّق من الاتصال بالإنترنت</translation>
 <translation id="3321628682574733415">رمز أحد الوالدين غير صحيح</translation>
 <translation id="332827762492701193">الإشعارات مخفية.</translation>
+<translation id="3328489342742826322">‏ستؤدي الاستعادة من نسخة احتياطية إلى حذف تطبيقات Linux الحالية والبيانات في مجلد "ملفات Linux".</translation>
 <translation id="3333674550998107387">توسيع محتوى إشعار <ph name="NOTIFICATION_TITLE" /></translation>
 <translation id="3339826665088060472">لقطة الشاشة، أدوات التقاط لقطات الشاشة وتسجيلات الشاشة</translation>
 <translation id="3340978935015468852">الإعدادات</translation>
@@ -832,6 +844,7 @@
         <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />مزيد من المعلومات عن الإعداد "دقة الموقع الجغرافي"<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="3485319357743610354">حالة الأمان <ph name="SECURITY_STATUS" />، حالة الاتصال <ph name="CONNECTION_STATUS" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">إخفاء الرف تلقائيًا</translation>
+<translation id="3500417806337761827">‏حدث خطأ أثناء تثبيت المشاركة. سبَق وأن تمّ تثبيت العديد من مشاركات بروتوكول Server Message Block ‏(SMB).</translation>
 <translation id="3505066820268455558">جارٍ شحن البطارية</translation>
 <translation id="3509391053705095206">يتعذَّر العثور على هاتفك. تأكّد من أنّ البلوتوث مفعَّل على هاتفك.</translation>
 <translation id="3510164367642747937">تمييز مؤشر الماوس</translation>
@@ -957,6 +970,7 @@
 <translation id="3804737937830804242">تصغير الكاميرا</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{تم العثور على رمز إيموجي واحد. ما مِن نتائج أخرى.}zero{تم العثور على # رمز إيموجي. ما مِن نتائج أخرى.}two{تم العثور على رمزَي إيموجي. ما مِن نتائج أخرى.}few{تم العثور على # رموز إيموجي. ما مِن نتائج أخرى.}many{تم العثور على # رمز إيموجي. ما مِن نتائج أخرى.}other{تم العثور على # رمز إيموجي. ما مِن نتائج أخرى.}}</translation>
 <translation id="381202950560906753">إضافة بصمة إصبع أخرى</translation>
+<translation id="3819257035322786455">النسخ الاحتياطي</translation>
 <translation id="3819261658055281761">تعذَّر على النظام تخزين الرمز المميَّز طويل الأجل للوصول إلى واجهة برمجة التطبيقات على هذا الجهاز.</translation>
 <translation id="3822403841174077928">تعذَّر النسخ مع الحفاظ على التنسيق</translation>
 <translation id="3824621460022590830">الرمز المميز لتسجيل الجهاز غير صالح. يُرجى التواصل مع مشرف الجهاز أو مالكه. رمز الخطأ: <ph name="ERROR_CODE" /></translation>
@@ -1144,6 +1158,7 @@
 <translation id="4327147325944669226">تسجيل اللعبة</translation>
 <translation id="4329076911374908740">تم بلوغ الحد الأقصى لعدد المجموعات المحفوظة.</translation>
 <translation id="4338109981321384717">العدسة المكبرة</translation>
+<translation id="4340125850502689798">اسم المستخدم غير صالح</translation>
 <translation id="4348580496249286403">‫<ph name="VOLUME_LEVEL" />، الصوت مكتوم</translation>
 <translation id="4351244548802238354">إغلاق مربع الحوار</translation>
 <translation id="435527878592612277">اختيار صورتك</translation>
@@ -1623,6 +1638,7 @@
 <translation id="5727460725221669831">‏إذا نسيت كلمة المرور أو غيّرت كلمة مرور حسابك على Google مؤخرًا، جرِّب استرداد حساب هذا المستخدم.</translation>
 <translation id="5733630091161562207">إشعار الترحيب</translation>
 <translation id="573413375004481890">لا يمكن لهذا الجهاز توفير جميع شاشات العرض، لذلك تم قطع الاتصال بأحدها</translation>
+<translation id="5734697361979786483">إضافة خادم مشاركة الملفات</translation>
 <translation id="5739548907438839901">تم إخلاء مساحة <ph name="SIZE" /> على القرص.</translation>
 <translation id="574392208103952083">متوسط</translation>
 <translation id="5745612484876805746">تفعيل ميزة "الإضاءة الليلية" تلقائيًا عند غروب الشمس</translation>
@@ -1711,6 +1727,7 @@
 <translation id="5983567367406220847">تم إيقاف نقطة الاتصال بسبب عدم استخدامها.</translation>
 <translation id="598407983968395253">استخدام النموذج</translation>
 <translation id="5984334442529819751">‏حدث خطأ أثناء تثبيت المحتوى القابل للتنزيل (DLC). (غالبًا ما تكون إعادة التشغيل مطلوبة. يُرجى الاطّلاع على "الإعدادات"\&gt;\&gt;"لمحة عن ChromeOS" للحصول على مزيد من المعلومات).</translation>
+<translation id="5985458664595100876">‏تنسيق عنوان URL غير صالح. التنسيقات المدعومة هي \\server\share وsmb://server/share.</translation>
 <translation id="5986723678596105470">‏الانضمام عبر Google Meet</translation>
 <translation id="598882571027504733">‏للحصول على التحديث، يُرجى إعادة تشغيل جهاز Chromebook مع توصيل لوحة المفاتيح.</translation>
 <translation id="5990992855591814753">‏يمكنك إنجاز مهامك مع قوائم تشغيل مخصَّصة تساعدك على التركيز. استمتِع الآن بمحتوى YouTube Music وYouTube بلا إعلانات مع خدمة YouTube Premium لمدة 3 أشهر بدون تكلفة. تنطبق الأحكام.</translation>
@@ -1764,6 +1781,7 @@
 <translation id="6074087755403037157">قناة تجريبية</translation>
 <translation id="6075098173600599596">تغيير استخدام الأحرف اللاتينية الكبيرة</translation>
 <translation id="6080689532560039067">تحقق من وقت النظام</translation>
+<translation id="6091761513005122595">تم تحميل المشاركة بنجاح.</translation>
 <translation id="6091929401758362855">قائمة التشغيل: <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="6093867385179428431">أوقف المشرف هذه الإعدادات</translation>
 <translation id="6095008505822982596">معدّل سرعة الكلام</translation>
@@ -1935,6 +1953,7 @@
 <translation id="6582034443359256692">جارٍ حساب مستوى شحن البطارية</translation>
 <translation id="6586685375736417639">يتعذّر شحن الجهاز</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />، <ph name="SECONDARY_TEXT" /></translation>
+<translation id="6596816719288285829">‏عنوان IP</translation>
 <translation id="6597017209724497268">نماذج</translation>
 <translation id="6597278316891651699">تم توجيه الكاميرا إلى الزاوية السفلية اليسرى. هناك تعارض مع مساحة عرض نظام آخر.</translation>
 <translation id="6605415194043280389">"وضع التركيز" مفعَّل</translation>
@@ -1954,6 +1973,7 @@
 <translation id="6637729079642709226">تغيير الوقت</translation>
 <translation id="6641720045729354415">إيقاف/تفعيل ميزة "النسخ النصي التلقائي". <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">عكس نظام الترتيب حسب الاسم</translation>
+<translation id="6644513150317163574">‏تنسيق عنوان URL غير صالح. يجب تحديد الخادم كاسم مضيف عند استخدام مصادقة الدخول الموحّد (SSO).</translation>
 <translation id="664793810957802384">عناصر المجموعة المقترَحة</translation>
 <translation id="6649018507441623493">لحظة من فضلك...</translation>
 <translation id="6649641931981131786">عليك تعديل الكاميرا لتظهر صورتك في منتصف الشاشة.</translation>
@@ -2019,6 +2039,7 @@
 <translation id="6812232930908427253">لا يمكن حفظ سطح المكتب بسبب تخطّي عدد النوافذ أو علامات التبويب الحد المسموح به.</translation>
 <translation id="6818242057446442178">الرجوع بمقدار كلمة واحدة</translation>
 <translation id="6819327813400217281">تم توجيه الكاميرا إلى الزاوية السفلية اليسرى.</translation>
+<translation id="6820079682647046800">‏تعذّرت مصادقة Kerberos</translation>
 <translation id="6820676911989879663">حان وقت الاستراحة</translation>
 <translation id="6827049576281411231">إغلاق لوحة الأحداث</translation>
 <translation id="682971198310367122">‏سياسة خصوصية Google</translation>
@@ -2049,6 +2070,7 @@
 <translation id="6919251195245069855">لم يتم التعرُّف على البطاقة الذكية. يُرجى إعادة المحاولة.</translation>
 <translation id="692135145298539227">حذف</translation>
 <translation id="6921427376813842559">تحديث الجهاز</translation>
+<translation id="6923633482430812883">‏حدث خطأ أثناء تحميل المشاركة. لذا يُرجى التحقّق من أن خادم الملفات الذي تتصل به يدعم بروتوكول SMB الإصدار 2 أو الإصدارات الأحدث.</translation>
 <translation id="6929081673585394903">عرض عناصر التحكّم</translation>
 <translation id="6931576957638141829">حفظ في</translation>
 <translation id="6935286146439255109">درج الورق غير متاح</translation>
@@ -2057,6 +2079,7 @@
 <translation id="6945221475159498467">اختيار</translation>
 <translation id="6945922087561257829">‏يستخدم هاتفك شبكة جوّال. تأكَّد من أنّ هاتفك وجهاز Chromebook متصلان بشبكة Wi-Fi نفسها، ثم أعِد المحاولة. <ph name="LEARN_MORE" /></translation>
 <translation id="6950627417367801484">استعادة التطبيقات</translation>
+<translation id="6960133692707095572">الانتقال إلى الصفحة بدون تذكرة</translation>
 <translation id="6960565108681981554">لم يتم تفعيل الشبكة. يُرجى التواصل مع مشغّل شبكة الجوّال.</translation>
 <translation id="696103774840402661">تم حذف جميع الملفات والبيانات المحلّية لكلّ المستخدمين على الجهاز <ph name="DEVICE_TYPE" /> نهائيًا.</translation>
 <translation id="6961121602502368900">لا تتوفّر ميزة "كتم صوت الهاتف" على ملف العمل.</translation>
@@ -2096,6 +2119,7 @@
 <translation id="7061457967428964661">‏معاينة الكاميرا: اضغط على مفتاح Control + مفاتيح الأسهم لتحريك المعاينة إلى زاوية مختلفة.</translation>
 <translation id="7064351585062927183">يوم <ph name="DAY_OF_WEEK" /> القادم</translation>
 <translation id="7064734931812204395">‏جارٍ إعداد حاوية نظام التشغيل Linux. قد تستغرق عملية الإعداد ما يصل إلى 30 دقيقة.</translation>
+<translation id="706626672220389329">حدث خطأ في تحميل المشاركة. تم تحميل المشاركة المُحدّدة من قبل.</translation>
 <translation id="7066646422045619941">تم إيقاف هذه الشبكة من قِبل مشرفك.</translation>
 <translation id="7067196344162293536">التدوير التلقائي</translation>
 <translation id="7076293881109082629">تسجيل الدخول</translation>
@@ -2483,6 +2507,7 @@
 <translation id="8168435359814927499">المحتوى</translation>
 <translation id="8169177848833352618">‏لا يستوفي هذا الجهاز متطلبات تثبيت Bruschetta. رمز الخطأ هو <ph name="ERROR" />.</translation>
 <translation id="8172370561760918656">المقبض المحدَّد في أعلى اليمين، ويمكن استخدام مفاتيح الأسهم لتحريكه</translation>
+<translation id="8177196903785554304">تفاصيل الشبكة</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="81817143961839203">تعذَّر إدراج الصورة</translation>
 <translation id="8182105986296479640">التطبيق لا يستجيب.</translation>
@@ -2517,6 +2542,7 @@
 <translation id="8262312463845990408">استئناف التشغيل أو إيقافه مؤقتًا</translation>
 <translation id="8266751606569906450">يجب ألّا يقل عدد الأرقام في رقم التعريف الشخصي عن <ph name="MINIMUM" /></translation>
 <translation id="8268302343625273732">‏الاطّلاع على كل المهام في Google Classroom</translation>
+<translation id="827488840488530039">‏يتعذّر على الصفحة التي تحاول الانتقال إليها التحقّق من تذاكر Kerberos.</translation>
 <translation id="8277261673056602147">تمييز النص على الشاشة</translation>
 <translation id="8281886186245836920">التخطّي</translation>
 <translation id="8282784978194352587">أنجزت كل المطلوب!</translation>
@@ -2571,6 +2597,7 @@
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8458259704995116343">‏تعذّر بدء تشغيل الجهاز الافتراضي (VM).</translation>
 <translation id="84613761564611563">تم طلب واجهة المستخدم لإعداد الشبكة، يُرجى الانتظار...</translation>
+<translation id="8461914792118322307">الخادم الوكيل</translation>
 <translation id="8462305545768648477">إيقاف ميزة "سماع الاختيار"</translation>
 <translation id="8463001014623882202">تعذَّرت المصادقة</translation>
 <translation id="8466665972451889002">إظهار العناصر في "<ph name="GROUP_NAME" />"</translation>
@@ -2633,6 +2660,7 @@
 <translation id="8647931990447795414">‏لإضافة شخص، يُرجى إدخال رمز الدخول المخصّص للوالدَين في Family Link.</translation>
 <translation id="8649597172973390955">إظهار الرف دائمًا</translation>
 <translation id="8657066291275741003">استخدام أحرف صغيرة</translation>
+<translation id="8662671328352114214">الانضمام إلى شبكة <ph name="TYPE" /></translation>
 <translation id="8662921061190671299">‏تعذّرت إضافة الحدث إلى "تقويم Google"</translation>
 <translation id="8663756353922886599">حالة الاتصال <ph name="CONNECTION_STATUS" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">‏اضغط على المفتاح Enter لالتقاط صورة لجزء من الشاشة</translation>
@@ -2679,6 +2707,7 @@
 <translation id="8760172428247796445">سيتم قفل جهاز <ph name="DEVICE_TYPE" /> الآن.
         يتطلَّب <ph name="DOMAIN" /> منك الإبقاء على بطاقتك الذكية مُدخَلة.</translation>
 <translation id="8763883995157866248">ضبط الجهاز على وضع السكون</translation>
+<translation id="8774379074441005279">تأكيد الاستعادة</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />، تطبيق مثبّت محظور</translation>
 <translation id="8782565991310229362">‏تم إلغاء تشغيل تطبيق Kiosk.</translation>
 <translation id="8784626084144195648">تم تثبيت المعدل</translation>
@@ -2695,6 +2724,7 @@
 <translation id="8814190375133053267">‏لاسلكي، Wi-Fi</translation>
 <translation id="881757059229893486">إعدادات أساليب الإدخال</translation>
 <translation id="8819728065740986820">ميزة "الشحن الذكي" مفعّلة</translation>
+<translation id="8821045908425223359">‏ضبط عنوان IP تلقائيًا</translation>
 <translation id="882204272221080310">يمكنك تحديث البرامج الثابتة لمزيد من الأمان.</translation>
 <translation id="8822104519413696986">هذه اللعبة تعمل باللمس</translation>
 <translation id="8825863694328519386">التمرير السريع من اليسار للرجوع</translation>
@@ -2754,6 +2784,7 @@
 <translation id="8980862970816311842">نقل رمز تطبيق داخل مجلد في شبكة التطبيقات أو خارجه</translation>
 <translation id="8982906748181120328">مشاركة عن قرب</translation>
 <translation id="8983038754672563810">HSPA</translation>
+<translation id="8986362086234534611">حذف</translation>
 <translation id="8990809378771970590">استخدام <ph name="IME_NAME" /></translation>
 <translation id="8991648557324317894">‏للإلغاء، انقر على FN + مفتاح "الإدراج السريع" أو Shift.</translation>
 <translation id="899350903320462459">فتح قفل الجهاز بواسطة <ph name="LOGIN_ID" /> لتنفيذ إجراء الإشعارات</translation>
@@ -2766,6 +2797,7 @@
 <translation id="9013037634206938463">‏يجب توفير <ph name="INSTALL_SIZE" /> على الأقل من المساحة الخالية لتثبيت نظام التشغيل Linux. ولزيادة المساحة الخالية، يجب حذف ملفات من جهازك.</translation>
 <translation id="901668144954885282">‏الاحتفاظ بنسخة احتياطية في Google Drive</translation>
 <translation id="9017320285115481645">‏يُرجى إدخال رمز الدخول المخصّص للوالدين في Family Link.</translation>
+<translation id="9024158959543687197">‏حدث خطأ في تحميل المشاركة. يُرجى التحقُّق من عنوان URL لخادم مشاركة الملفات وإعادة المحاولة.</translation>
 <translation id="9024331582947483881">ملء الشاشة</translation>
 <translation id="9026852570893462412">قد تستغرق هذه العملية بضع دقائق. جارٍ تنزيل الآلة الافتراضية.</translation>
 <translation id="9029736946581028033">سيتوقّف الجهاز عن العمل قريبًا</translation>

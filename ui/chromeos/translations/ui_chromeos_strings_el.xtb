@@ -558,7 +558,6 @@
 <translation id="5305688511332277257">Δεν υπάρχει εγκατεστημένο</translation>
 <translation id="5317780077021120954">Αποθήκευση</translation>
 <translation id="5318819489018851358">Κοινοποίηση σε Linux</translation>
-<translation id="5330145655348521461">Αυτά τα αρχεία άνοιξαν σε διαφορετικό προφίλ. Μεταφερθείτε στο προφίλ <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) για να τα δείτε.</translation>
 <translation id="5330512191124428349">Λήψη πληροφοριών</translation>
 <translation id="535792325654997756">Άτομο με γάτες</translation>
 <translation id="5358764674931277">Ρυθμός καρέ</translation>
@@ -699,7 +698,6 @@
 <translation id="636254897931573416">Μη έγκυρη τιμή αντιστοιχίας επιθήματος τομέα</translation>
 <translation id="6364301859968397756">Ο αποθηκευτικός χώρος του οργανισμού είναι πλήρης</translation>
 <translation id="6367976544441405720">Βαν</translation>
-<translation id="637062427944097960">Αυτό το αρχείο άνοιξε σε διαφορετικό προφίλ. Μεταβείτε στο προφίλ <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) για να το δείτε.</translation>
 <translation id="6394388407447716302">Μόνο για ανάγνωση</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> στοιχεία</translation>
 <translation id="6407769893376380348">Δεν ήταν δυνατή η μετακίνηση του αρχείου <ph name="FILE_NAME" /> επειδή είναι κρυπτογραφημένο.</translation>

@@ -427,7 +427,6 @@
 <translation id="2650348088770008516">Vysvetlenie sprievodcu ochranou súkromia je zavreté</translation>
 <translation id="2650751991977523696">Stiahnuť súbor znova?</translation>
 <translation id="265156376773362237">Štandardné prednačítavanie</translation>
-<translation id="2651797114528729973">Gemini a vaše nevyhnutnosti na novom paneli s nástrojmi</translation>
 <translation id="2656405586795711023">Webové aplikácie</translation>
 <translation id="2664252182805397291">Zobraziť weby</translation>
 <translation id="2666092431469916601">Vrch</translation>
@@ -675,6 +674,7 @@
 <translation id="368978924030580338">{BOOKMARKS_COUNT,plural, =1{1 záložka je uložená iba v tomto zariadení. Ak ju chcete používať v ďalších zariadeniach, uložte si ju v účte Google.}few{# záložky sú uložené iba v tomto zariadení. Ak ich chcete používať v ďalších zariadeniach, uložte si ich v účte Google.}many{# bookmarks are saved only to this device. To use them on your other devices, save them in your Google Account.}other{# záložiek je uložených iba v tomto zariadení. Ak ich chcete používať v ďalších zariadeniach, uložte si ich v účte Google.}}</translation>
 <translation id="3692944402865947621">Súbor <ph name="FILE_NAME" /> sa nepodarilo stiahnuť, pretože umiestnenie úložiska nie je k dispozícii.</translation>
 <translation id="3699022356773522638">Chcete súbor stiahnuť?</translation>
+<translation id="3701167022068948696">Opraviť</translation>
 <translation id="3701515417135397388">Upozorniť, keď bolo heslo prezradené v rámci porušenia ochrany údajov</translation>
 <translation id="3703166520839776970">Ak sa tento problém opakuje, získajte ďalšie informácie od poskytovateľa <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> výberom možnosti Ďalšie podrobnosti nižšie.</translation>
 <translation id="3708100450779900829">Keď je zariadenie zložené, môžete vybrať nejakú možnosť alebo pridržaním panela s adresou zmeniť pozíciu</translation>
@@ -1329,7 +1329,6 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="6254139308321626268">Prezeráte si súbor PDF</translation>
 <translation id="6255809143828972562">Pomocou nástrojov Chromu môžete bezpečne prehliadať a mať všetko pod kontrolou</translation>
 <translation id="6259107733340311168">Dolný hárok s vylúčením zodpovednosti o signáloch sledovaných podnikom je otvorený na celú výšku</translation>
-<translation id="6259539576554609209">To najdôležitejšie priamo na paneli s nástrojmi. V <ph name="BEGIN_LINK" />nastaveniach<ph name="END_LINK" /> sa kedykoľvek môžete prepnúť späť.</translation>
 <translation id="6260260490042862943">Ovládanie webu</translation>
 <translation id="6264376385120300461">Napriek tomu stiahnuť</translation>
 <translation id="6264485186158353794">Späť do bezpečia</translation>
@@ -1437,7 +1436,6 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="6595046016124923392">Obrázky sa na zlepšovanie popisov pre vás odosielajú Googlu.</translation>
 <translation id="6602173570135186741">Automatické dopĺňanie a heslá</translation>
 <translation id="661266467055912436">Zvyšuje zabezpečenie na internete pre vás aj ostatných.</translation>
-<translation id="6615455863669487791">Ukázať</translation>
 <translation id="6621391692573306628">Ak chcete túto kartu odoslať do iného zariadenia, prihláste v oboch zariadeniach do Chromu</translation>
 <translation id="6627583120233659107">Upraviť priečinok</translation>
 <translation id="6633067410344541938">Odblokovať režim inkognito</translation>
@@ -1846,7 +1844,6 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="8084864785646838999">Časť vašej histórie sa tu nemusí zobrazovať. Ak si chcete pozrieť celú históriu Chromu, otvorte ju. Váš účet Google môže mať aj ďalšie formy histórie prehliadania na <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="8088176524274673045">Ak chcete zdieľať s ľuďmi nablízku, umožnite im naskenovať tento QR kód</translation>
 <translation id="8090732854597034573">Ak potrebuješ pomoc, požiadaj rodiča</translation>
-<translation id="8095180473590852507">Chrome má nový panel s nástrojmi vytvorený s dôrazom na pohodlie. V <ph name="BEGIN_LINK" />nastaveniach<ph name="END_LINK" /> sa kedykoľvek môžete prepnúť späť.</translation>
 <translation id="8101414242770404289">Žiadne karty z obdobia <ph name="TIME_PERIOD" /></translation>
 <translation id="810433609302852">Dolný hárok proma a krokov používania funkcie upozornení na tipy</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
@@ -2154,6 +2151,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="9205933215779845960">Danú stránku sa nepodarilo nájsť. Skontrolujte pravopis alebo skúste vyhľadať vo vyhľadávači <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="9206873250291191720">A</translation>
 <translation id="9212845824145208577">Nižšie to už nejde. Skúste začať nižšie na stránke.</translation>
+<translation id="9213433120051936369">Prispôsobenie vzhľadu</translation>
 <translation id="9218430445555521422">Nastaviť ako predvolený</translation>
 <translation id="9219103736887031265">Obrázky</translation>
 <translation id="922152298093051471">Prispôsobiť Chrome</translation>

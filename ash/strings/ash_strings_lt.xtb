@@ -20,6 +20,7 @@
 <translation id="1056898198331236512">Įspėjimas</translation>
 <translation id="1058009965971887428">Pateikti atsiliepimą</translation>
 <translation id="1059120031266247284">Bendrinama su jumis</translation>
+<translation id="1060570945511946595">Tvarkyti bilietus</translation>
 <translation id="1060847216467038176">„<ph name="ITEM_LABEL" />“ su pašalinimo mygtuku</translation>
 <translation id="1062407476771304334">Pakeisti</translation>
 <translation id="1065931689816135472"><ph name="BEGIN_PARAGRAPH1" />Sukurkite atsarginę kopiją „Google“ diske. Lengvai atkurkite duomenis arba perjunkite įrenginį bet kuriuo metu. Į atsarginę kopiją įtraukiami programų duomenys.<ph name="END_PARAGRAPH1" />
@@ -280,6 +281,7 @@
 <translation id="1757132445735080748">Jei norite baigti „Linux“ nustatymą, atnaujinkite „ChromeOS Flex“ ir bandykite dar kartą.</translation>
 <translation id="1757857692711134412">Išjungta iki saulėlydžio</translation>
 <translation id="1763084151787818322">Kiti veiksmai</translation>
+<translation id="1767043563165955993">Naudoti „Android“ programose</translation>
 <translation id="1768138163688567246">Uždaryti paiešką ekrane</translation>
 <translation id="1768366657309696705">Pakeistas spartusis klavišas <ph name="LAUNCHER_KEY_NAME" /> + taškas. Jei norite naudoti klavišą „Insert“, paspauskite <ph name="LAUNCHER_KEY_NAME" /> klavišą + antrojo lygio klavišą + naikinimo klavišą.</translation>
 <translation id="1770726142253415363">Perkelta į <ph name="ROW_NUMBER" /> eilutę, <ph name="COLUMN_NUMBER" /> stulpelį.</translation>
@@ -304,6 +306,7 @@
 <translation id="1838895407229022812">Nakties šviesa išjungta.</translation>
 <translation id="1840920496749066704">°C</translation>
 <translation id="1841616161104323629">Trūksta įrenginio įrašo.</translation>
+<translation id="184273675144259287">Pakeisti „Linux“ programas ir failus ankstesne atsargine kopija</translation>
 <translation id="1854180393107901205">Sustabdyti perdavimą</translation>
 <translation id="1862077610023398675">Slėpti valdiklius</translation>
 <translation id="1862380676329487333">Atnaujinti ir atsijungti</translation>
@@ -333,6 +336,7 @@
 <translation id="1946615340060705561">Paspauskite „c“, kad atleistumėte</translation>
 <translation id="1948405482892809935">Perjungti į kitą naudotoją</translation>
 <translation id="1954252331066828794">Ekrano vaizdo įrašymas baigtas</translation>
+<translation id="1954813140452229842">Klaida įdedant bendrinamą objektą. Patikrinkite prisijungimo duomenis ir bandykite dar kartą.</translation>
 <translation id="1956087014741188812">Pristabdyti pelės klavišų naudojimą</translation>
 <translation id="1957958912175573503">Kalbos nustatymas</translation>
 <translation id="1961239773406905488">Fotoaparato peržiūra paslėpta</translation>
@@ -352,6 +356,11 @@
 <translation id="1998100899771863792">Dabartinis darbalaukis</translation>
 <translation id="2001444736072756133">Ieškokite <ph name="CATEGORY" />, failų, programų ir kt.</translation>
 <translation id="2011174342667534258">SDK versija:</translation>
+<translation id="2017770349934140286">„Google Play“ ir programos, kurias atsisiuntėte iš „Google Play“, bus ištrintos iš šio „Chromebook“.
+    <ph name="LINE_BREAKS1" />
+    Turinys, kurį įsigijote sistemoje „Google Play“, pvz., filmai, TV serialai, muzika, knygos ir pirkiniai iš kitų programų, taip pat gali būti ištrintas.
+    <ph name="LINE_BREAKS2" />
+    Tai nepaveikia programų ar turinio kituose įrenginiuose.</translation>
 <translation id="2017998995161831444">Atidaryti pagalbos skiltį programoje „Explore“</translation>
 <translation id="2021864487439853900">Atrakinti spustelėjus</translation>
 <translation id="2023167225947895179">PIN kodas gali būti lengvai atspėjamas</translation>
@@ -381,6 +390,7 @@
 <translation id="212862741129535676">Dažnumo būsenos užėmimo procentas</translation>
 <translation id="2132302418721800944">Įrašyti viso ekrano režimu</translation>
 <translation id="2135456203358955318">Prie doko prijungtas didintuvas</translation>
+<translation id="2148219725039824548">Klaida įdedant bendrinamą objektą. Nurodytas bendrinamas objektas nerastas tinkle.</translation>
 <translation id="2148716181193084225">Šiandien</translation>
 <translation id="2149229036084364364">Eiti į ankstesnį takelį</translation>
 <translation id="2152796271648108398">Oras dabar</translation>
@@ -726,6 +736,7 @@ Kitu atveju įtaisytoji jutiklinė dalis bus vėl įjungta po <ph name="TIMEOUT_
 <translation id="315116470104423982">Duomenys mobiliesiems</translation>
 <translation id="3153444934357957346">Naudodami kelių paskyrų funkciją, galite turėti iki <ph name="MULTI_PROFILE_USER_LIMIT" /> paskyr.</translation>
 <translation id="3154351730702813399">Įrenginio administratorius gali stebėti jūsų naršymo veiklą.</translation>
+<translation id="3157931365184549694">Atkurti</translation>
 <translation id="316086887565479535">Nepalaikomos programos šablone</translation>
 <translation id="3160929076476941240">2 val.</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> grąžina ankstesnę „<ph name="DEVICE_TYPE" />“ versiją. Jūsų įrenginys bus nustatytas iš naujo ir visi duomenys bus ištrinti.</translation>
@@ -776,6 +787,7 @@ Kitu atveju įtaisytoji jutiklinė dalis bus vėl įjungta po <ph name="TIMEOUT_
 <translation id="3313950410573257029">Patikrinti ryšį</translation>
 <translation id="3321628682574733415">Netinkamas tėvų kodas</translation>
 <translation id="332827762492701193">Pranešimai paslėpti</translation>
+<translation id="3328489342742826322">Atkūrus atsargines failų kopijas bus ištrintos „Linux“ failų aplanke esančios „Linux“ programos ir duomenys.</translation>
 <translation id="3333674550998107387">Išskleisti pranešimą „<ph name="NOTIFICATION_TITLE" />“</translation>
 <translation id="3339826665088060472">Ekrano fiksavimo funkcija – tai ekrano kopijoms daryti ir ekranui įrašyti skirti įrankiai</translation>
 <translation id="3340978935015468852">Nustatymai</translation>
@@ -835,6 +847,7 @@ Kitu atveju įtaisytoji jutiklinė dalis bus vėl įjungta po <ph name="TIMEOUT_
         <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Sužinokite daugiau apie Vietovės nustatymo tikslumą<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signalo stiprumas <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Lentyna automatiškai slepiama</translation>
+<translation id="3500417806337761827">Montuojant bendrinimą įvyko klaida. Jau sumontuota per daug mažų ir vidutinių įmonių bendrinimų.</translation>
 <translation id="3505066820268455558">Akumuliatorius įkraunamas</translation>
 <translation id="3509391053705095206">Nepavyko rasti telefono. Patikrinkite, ar įjungtas telefono „Bluetooth“ ryšys.</translation>
 <translation id="3510164367642747937">Paryškinti pelės žymeklį</translation>
@@ -959,6 +972,7 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="3804737937830804242">Sutraukti fotoaparatą</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{Vienas jaustukas. Kitų rezultatų nėra.}one{# jaustukas. Kitų rezultatų nėra.}few{# jaustukai. Kitų rezultatų nėra.}many{# jaustuko. Kitų rezultatų nėra.}other{# jaustukų. Kitų rezultatų nėra.}}</translation>
 <translation id="381202950560906753">Pridėti kitą</translation>
+<translation id="3819257035322786455">Atsarginė kopija</translation>
 <translation id="3819261658055281761">Sistemai nepavyko išsaugoti šio įrenginio ilgalaikio API prieigos kodo.</translation>
 <translation id="3822403841174077928">Nepavyko nukopijuoti su formatavimu</translation>
 <translation id="3824621460022590830">Netinkamas įrenginio registracijos prieigos raktas. Susisiekite su įrenginio savininku ar administratoriumi. Klaidos kodas: <ph name="ERROR_CODE" />.</translation>
@@ -1145,6 +1159,7 @@ Kai kurios funkcijos ribojamos, kad būtų galima pailginti akumuliatoriaus veik
 <translation id="4327147325944669226">Įrašyti žaidimą</translation>
 <translation id="4329076911374908740">Pasiektas maksimalus išsaugotų grupių skaičius.</translation>
 <translation id="4338109981321384717">Didinamasis stiklas</translation>
+<translation id="4340125850502689798">Neteisingas naudotojo vardas</translation>
 <translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, nutildyta</translation>
 <translation id="4351244548802238354">Uždaryti dialogo langą</translation>
 <translation id="435527878592612277">Pasirinkite nuotrauką</translation>
@@ -1624,6 +1639,7 @@ Nėra jokių prijungtų įrenginių.</translation>
 <translation id="5727460725221669831">Jei pamiršote slaptažodį arba neseniai pakeitėte „Google“ paskyros slaptažodį, pabandykite atkurti šį naudotoją.</translation>
 <translation id="5733630091161562207">Pasisveikinimo pranešimas</translation>
 <translation id="573413375004481890">Šis įrenginys negali palaikyti visų ekranų, todėl vienas iš jų buvo atjungtas</translation>
+<translation id="5734697361979786483">Pridėti failų bendrinimo įrenginį</translation>
 <translation id="5739548907438839901">Atlaisvinta <ph name="SIZE" /> vietos diske.</translation>
 <translation id="574392208103952083">Vidutinis</translation>
 <translation id="5745612484876805746">Nakties šviesa įjungiama automatiškai saulei leidžiantis</translation>
@@ -1712,6 +1728,7 @@ Nėra jokių prijungtų įrenginių.</translation>
 <translation id="5983567367406220847">Dėl neaktyvumo viešosios interneto prieigos taškas išjungtas.</translation>
 <translation id="598407983968395253">Naudoti šabloną</translation>
 <translation id="5984334442529819751">Įdiegiant atsisiunčiamą turinį įvyko klaida (dažnai reikia paleisti iš naujo; jei reikia daugiau informacijos, žr. „Nustatymai\&gt;\&gt;Apie „ChromeOS“).</translation>
+<translation id="5985458664595100876">Netinkamas URL formatas. Palaikomi formatai yra „\\server\share“ ir „smb://server/share“.</translation>
 <translation id="5986723678596105470">Prisijungti prie „Google Meet“</translation>
 <translation id="598882571027504733">Kad gautumėte naujinį, iš naujo paleiskite „Chromebook“ su prijungta klaviatūra.</translation>
 <translation id="5990992855591814753">Naudokite suasmenintus grojaraščius, padedančius sutelkti dėmesį. Gaukite „YouTube Music“ ir „YouTube“ be skelbimų ir 3 mėnesius naudokitės „YouTube Premium“ be piniginio mokėjimo. Yra sąlygų.</translation>
@@ -1764,6 +1781,7 @@ Nėra jokių prijungtų įrenginių.</translation>
 <translation id="6074087755403037157">Beta kanalas</translation>
 <translation id="6075098173600599596">Pakeisti rašymą didžiosiomis raidėmis</translation>
 <translation id="6080689532560039067">Patikrinkite sistemos laiką</translation>
+<translation id="6091761513005122595">Bendrinamas objektas įdėtas sėkmingai.</translation>
 <translation id="6091929401758362855">Grojaraštis: <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="6093867385179428431">Išjungė administratorius</translation>
 <translation id="6095008505822982596">Kalbėjimo sparta</translation>
@@ -1935,6 +1953,7 @@ Naujas įdiegimas</translation>
 <translation id="6582034443359256692">Skaičiuojamas akumuliatoriaus įkrovos lygis.</translation>
 <translation id="6586685375736417639">Nepavyksta įkrauti įrenginio</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
+<translation id="6596816719288285829">IP adresas</translation>
 <translation id="6597017209724497268">Duomenų imčių skaičius</translation>
 <translation id="6597278316891651699">Fotoaparato peržiūra pridėta apatiniame kairiajame kampe. Nesuderinama su sistemos platforma.</translation>
 <translation id="6605415194043280389">„Focus“ įjungtas</translation>
@@ -1954,6 +1973,7 @@ Naujas įdiegimas</translation>
 <translation id="6637729079642709226">Laiko keitimas</translation>
 <translation id="6641720045729354415">Perjungti subtitrus realiuoju laiku. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">Anuliuoti rūšiavimo tvarką pagal pavadinimą</translation>
+<translation id="6644513150317163574">Netinkamas URL formatas. Serveris turi būti nurodytas kaip prieglobos pavadinimas, kai naudojamas vieno prisijungimo paslaugos autentifikavimas.</translation>
 <translation id="664793810957802384">Elementai siūlomoje grupėje</translation>
 <translation id="6649018507441623493">Šiek tiek palaukite...</translation>
 <translation id="6649641931981131786">Koreguokite fotoaparatą, kad būtumėte matomi ekrano centre.</translation>
@@ -2019,6 +2039,7 @@ Naujas įdiegimas</translation>
 <translation id="6812232930908427253">Nepavyko išsaugoti darbalaukio. Per daug langų ar skirtukų.</translation>
 <translation id="6818242057446442178">Grįžti per vieną žodį</translation>
 <translation id="6819327813400217281">Fotoaparato peržiūra pridėta apatiniame kairiajame kampe</translation>
+<translation id="6820079682647046800">„Kerberos“ autentifikavimas nepavyko</translation>
 <translation id="6820676911989879663">Padarykite pertrauką!</translation>
 <translation id="6827049576281411231">Uždaryti įvykio skydelį</translation>
 <translation id="682971198310367122">„Google“ privatumo politika</translation>
@@ -2049,6 +2070,7 @@ Naujas įdiegimas</translation>
 <translation id="6919251195245069855">Nepavyko atpažinti išmaniosios kortelės. Bandykite dar kartą.</translation>
 <translation id="692135145298539227">ištrinti</translation>
 <translation id="6921427376813842559">Įrenginio atnaujinimas</translation>
+<translation id="6923633482430812883">Klaida įdedant bendrinamą objektą. Patikrinkite, ar failo serveris, prie kurio prisijungiate, palaiko SMBv2 arba naujesnę versiją.</translation>
 <translation id="6929081673585394903">Rodyti valdiklius</translation>
 <translation id="6931576957638141829">Išsaugoti į</translation>
 <translation id="6935286146439255109">Nėra popieriaus dėklo</translation>
@@ -2057,6 +2079,7 @@ Naujas įdiegimas</translation>
 <translation id="6945221475159498467">Pasirinkti</translation>
 <translation id="6945922087561257829">Telefone naudojamas mobiliojo ryšio tinklas. Įsitikinkite, kad telefonas ir „Chromebook“ prijungti prie to paties „Wi-Fi“ tinklo, tada bandykite dar kartą. <ph name="LEARN_MORE" /></translation>
 <translation id="6950627417367801484">Atkurti programas</translation>
+<translation id="6960133692707095572">Apsilankyti be bilieto</translation>
 <translation id="6960565108681981554">Nesuaktyvinta. Susisiekite su operatoriumi.</translation>
 <translation id="696103774840402661">Visam laikui ištrinti visų naudotojų bet kurie failai ir vietiniai duomenys, esantys šiame įrenginyje (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="6961121602502368900">Telefono nutildymo funkcija nepasiekiama darbo profilyje</translation>
@@ -2096,6 +2119,7 @@ Naujas įdiegimas</translation>
 <translation id="7061457967428964661">Fotoaparato peržiūra: spustelėkite „Control“ ir rodyklės klavišą, kad perkeltumėte peržiūrą į kitą kampą</translation>
 <translation id="7064351585062927183">Ateinantis <ph name="DAY_OF_WEEK" /></translation>
 <translation id="7064734931812204395">Konfigūruojamas „Linux“ sudėtinis rodinys. Tai gali užtrukti iki 30 min.</translation>
+<translation id="706626672220389329">Klaida įdedant bendrinamą objektą. Nurodytas bendrinamas objektas jau įdėtas.</translation>
 <translation id="7066646422045619941">Šį tinklą išjungė jūsų administratorius.</translation>
 <translation id="7067196344162293536">Automatinis kaitaliojimas</translation>
 <translation id="7076293881109082629">Prisijungimas</translation>
@@ -2482,6 +2506,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="8168435359814927499">Turinys</translation>
 <translation id="8169177848833352618">Deja, šis įrenginys neatitinka „Bruschetta“ diegimo reikalavimų. Klaidos kodas: <ph name="ERROR" />.</translation>
 <translation id="8172370561760918656">Pasirinkta viršutinė kairioji rankenėlė, naudokite rodyklių klavišus, kad perkeltumėte</translation>
+<translation id="8177196903785554304">Išsami tinklo informacija</translation>
 <translation id="8179976553408161302">Įvesti</translation>
 <translation id="81817143961839203">Nepavyko įterpti vaizdo</translation>
 <translation id="8182105986296479640">Programa nereaguoja.</translation>
@@ -2516,6 +2541,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="8262312463845990408">Perjungti atkūrimą</translation>
 <translation id="8266751606569906450">Turi būti ne mažiau <ph name="MINIMUM" /> simb.</translation>
 <translation id="8268302343625273732">Žr. visas užduotis sistemoje „Google Classroom“</translation>
+<translation id="827488840488530039">Puslapiui, kuriame bandote apsilankyti, nepavyko patvirtinti jūsų „Kerberos“ bilietų</translation>
 <translation id="8277261673056602147">Teksto paryškinimas ekrane</translation>
 <translation id="8281886186245836920">Praleisti</translation>
 <translation id="8282784978194352587">Jums pavyko!</translation>
@@ -2570,6 +2596,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8458259704995116343">Nepavyko paleisti VM.</translation>
 <translation id="84613761564611563">Pateikta tinklo konfigūravimo NS užklausa, palaukite...</translation>
+<translation id="8461914792118322307">Tarpinis serveris</translation>
 <translation id="8462305545768648477">Uždaryti „Teksto ištarimo“ funkciją</translation>
 <translation id="8463001014623882202">Patvirtinti nepavyko</translation>
 <translation id="8466665972451889002">Rodyti elementus grupėje „<ph name="GROUP_NAME" />“</translation>
@@ -2632,6 +2659,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="8647931990447795414">Norėdami pridėti asmenį, įveskite „Family Link“ tėvų prieigos kodą</translation>
 <translation id="8649597172973390955">Lentyna visada rodoma</translation>
 <translation id="8657066291275741003">mažosios raidės</translation>
+<translation id="8662671328352114214">Prisijungimas prie „<ph name="TYPE" />“ tinklo</translation>
 <translation id="8662921061190671299">Nepavyko pridėti prie Kalendoriaus</translation>
 <translation id="8663756353922886599">„<ph name="CONNECTION_STATUS" />“, signalo stiprumas <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Paspauskite „Enter“, kad užfiksuotumėte dalinę ekrano kopiją</translation>
@@ -2678,6 +2706,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="8760172428247796445">Jūsų „<ph name="DEVICE_TYPE" />“ įrenginys dabar bus užrakintas.
         <ph name="DOMAIN" /> reikia, kad paliktumėte įdėtą išmaniąją kortelę.</translation>
 <translation id="8763883995157866248">Įjungti įrenginio miego būseną</translation>
+<translation id="8774379074441005279">Atkūrimo patvirtinimas</translation>
 <translation id="878215960996152260">„<ph name="APP_NAME" />“, įdiegta programa, užblokuota</translation>
 <translation id="8782565991310229362">Atšauktas viešojo terminalo programos paleidimas.</translation>
 <translation id="8784626084144195648">Intervalo vidurkis</translation>
@@ -2694,6 +2723,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="8814190375133053267">WI-Fi</translation>
 <translation id="881757059229893486">Įvesties metodų nustatymai</translation>
 <translation id="8819728065740986820">Prisitaikantis įkrovimas įjungtas</translation>
+<translation id="8821045908425223359">Automatiškai konfigūruoti IP adresą</translation>
 <translation id="882204272221080310">Atnaujinti programinę aparatinę įrangą, norint užtikrinti geresnę apsaugą.</translation>
 <translation id="8822104519413696986">Tai yra jutiklinio ekrano žaidimas</translation>
 <translation id="8825863694328519386">Kad grįžtumėte, perbraukite iš kairės</translation>
@@ -2753,6 +2783,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="8980862970816311842">Perkelti programos piktogramą į aplanką ir (arba) iš jo programų tinklelyje</translation>
 <translation id="8982906748181120328">Matomumas netoliese</translation>
 <translation id="8983038754672563810">HSPA</translation>
+<translation id="8986362086234534611">Pamiršti</translation>
 <translation id="8990809378771970590">Naudojama <ph name="IME_NAME" /></translation>
 <translation id="8991648557324317894">Paspauskite funkcijos klavišą ir spartųjį įterpimą arba „Shift“, kad atšauktumėte.</translation>
 <translation id="899350903320462459">Atrakinkite įrenginį su <ph name="LOGIN_ID" />, kad galėtumėte įvykdyti pranešimo veiksmą</translation>
@@ -2765,6 +2796,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="9013037634206938463">Norint įdiegti „Linux“ reikia <ph name="INSTALL_SIZE" /> laisvos vietos. Kad padidintumėte nemokamos saugyklos vietos, ištrinkite failus iš įrenginio.</translation>
 <translation id="901668144954885282">Atsarginės kopijos kūrimas „Google“ diske</translation>
 <translation id="9017320285115481645">Įveskite „Family Link“ tėvų prieigos kodą.</translation>
+<translation id="9024158959543687197">Klaida įdedant bendrinamą objektą. Patikrinkite failo bendrinamo objekto URL ir bandykite dar kartą.</translation>
 <translation id="9024331582947483881">visas ekranas</translation>
 <translation id="9026852570893462412">Šis procesas gali užtrukti kelias minutes. Atsisiunčiamas virtualus įrenginys.</translation>
 <translation id="9029736946581028033">Įrenginys netrukus išsijungs</translation>

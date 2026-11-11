@@ -20,6 +20,7 @@
 <translation id="1056898198331236512">Amaran</translation>
 <translation id="1058009965971887428">Laporkan maklum balas</translation>
 <translation id="1059120031266247284">Dikongsi dengan anda</translation>
+<translation id="1060570945511946595">Urus tiket</translation>
 <translation id="1060847216467038176"><ph name="ITEM_LABEL" /> dengan butang alih keluar</translation>
 <translation id="1062407476771304334">Gantikan</translation>
 <translation id="1065931689816135472"><ph name="BEGIN_PARAGRAPH1" />Sandarkan pada Google Drive. Pulihkan data atau tukar peranti anda dengan mudah pada bila-bila masa. Sandaran anda merangkumi data apl.<ph name="END_PARAGRAPH1" />
@@ -280,6 +281,7 @@
 <translation id="1757132445735080748">Untuk menyelesaikan persediaan Linux, kemas kini Chrome OS Flex dan cuba lagi.</translation>
 <translation id="1757857692711134412">Dimatikan sehingga matahari terbenam</translation>
 <translation id="1763084151787818322">Tindakan lain</translation>
+<translation id="1767043563165955993">Gunakan dengan apl Android</translation>
 <translation id="1768138163688567246">Tutup carian skrin saya</translation>
 <translation id="1768366657309696705">Pintasan papan kekunci <ph name="LAUNCHER_KEY_NAME" /> + Noktah telah berubah. Untuk menggunakan kekunci Insert, tekan kekunci <ph name="LAUNCHER_KEY_NAME" /> + Shift + Undur Ruang.</translation>
 <translation id="1770726142253415363">Dialihkan ke baris <ph name="ROW_NUMBER" />, lajur <ph name="COLUMN_NUMBER" />.</translation>
@@ -304,6 +306,7 @@
 <translation id="1838895407229022812">Cahaya Malam dimatikan.</translation>
 <translation id="1840920496749066704">°C</translation>
 <translation id="1841616161104323629">Rekod peranti tiada.</translation>
+<translation id="184273675144259287">Gantikan apl dan fail Linux anda dengan sandaran sebelumnya</translation>
 <translation id="1854180393107901205">Berhenti menghantar</translation>
 <translation id="1862077610023398675">Sembunyikan kawalan</translation>
 <translation id="1862380676329487333">Kemas kini dan log keluar</translation>
@@ -333,6 +336,7 @@
 <translation id="1946615340060705561">Tekan "c" untuk melepaskan butang tetikus</translation>
 <translation id="1948405482892809935">Beralih kepada pengguna seterusnya</translation>
 <translation id="1954252331066828794">Rakaman skrin selesai</translation>
+<translation id="1954813140452229842">Ralat melekapkan perkongsian. Sila semak bukti kelayakan anda dan cuba lagi.</translation>
 <translation id="1956087014741188812">Jeda kekunci tetikus</translation>
 <translation id="1957958912175573503">Tetapkan bahasa anda</translation>
 <translation id="1961239773406905488">Pratonton kamera disembunyikan</translation>
@@ -352,6 +356,11 @@
 <translation id="1998100899771863792">Meja semasa</translation>
 <translation id="2001444736072756133">Cari <ph name="CATEGORY" />, fail, apl anda dan pelbagai lagi.</translation>
 <translation id="2011174342667534258">Versi SDK:</translation>
+<translation id="2017770349934140286">Google Play dan apl yang telah anda muat turun daripada Google Play akan dipadamkan daripada Chromebook ini.
+    <ph name="LINE_BREAKS1" />
+    Kandungan yang telah anda beli melalui Google Play seperti filem, rancangan TV, muzik, buku serta pembelian daripada apl lain mungkin akan dipadamkan juga.
+    <ph name="LINE_BREAKS2" />
+    Tindakan ini tidak menjejaskan apl atau kandungan pada peranti lain.</translation>
 <translation id="2017998995161831444">Buka "Bantuan" pada apl Teroka</translation>
 <translation id="2021864487439853900">Klik untuk membuka kunci</translation>
 <translation id="2023167225947895179">PIN mungkin mudah untuk diteka</translation>
@@ -381,6 +390,7 @@
 <translation id="212862741129535676">Peratusan Penggunaan Keadaan Kekerapan</translation>
 <translation id="2132302418721800944">Rakam skrin penuh</translation>
 <translation id="2135456203358955318">Penggadang didok</translation>
+<translation id="2148219725039824548">Ralat melekapkan perkongsian. Perkongsian yang dinyatakan tidak ditemui pada rangkaian.</translation>
 <translation id="2148716181193084225">Hari ini</translation>
 <translation id="2149229036084364364">Akses runut sebelumnya</translation>
 <translation id="2152796271648108398">Cuaca semasa</translation>
@@ -726,6 +736,7 @@ Jika tidak, pad sentuh terbina dalam akan didayakan semula selepas <ph name="TIM
 <translation id="315116470104423982">Data mudah alih</translation>
 <translation id="3153444934357957346">Anda hanya boleh memiliki sehingga <ph name="MULTI_PROFILE_USER_LIMIT" /> akaun dalam log masuk berbilang.</translation>
 <translation id="3154351730702813399">Pentadbir peranti boleh memantau aktiviti penyemakan imbas anda.</translation>
+<translation id="3157931365184549694">Pulihkan</translation>
 <translation id="316086887565479535">Apl tidak disokong dalam templat</translation>
 <translation id="3160929076476941240">2 j</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> sedang mengundurkan <ph name="DEVICE_TYPE" /> anda. Peranti anda akan ditetapkan semula dan semua data akan dipadamkan.</translation>
@@ -776,6 +787,7 @@ Jika tidak, pad sentuh terbina dalam akan didayakan semula selepas <ph name="TIM
 <translation id="3313950410573257029">Semak sambungan</translation>
 <translation id="3321628682574733415">Kod ibu bapa salah</translation>
 <translation id="332827762492701193">Pemberitahuan disembunyikan</translation>
+<translation id="3328489342742826322">Tindakan memulihkan daripada sandaran akan memadamkan aplikasi dan data Linux yang sedia ada dalam folder fail Linux anda.</translation>
 <translation id="3333674550998107387">Kembangkan pemberitahuan <ph name="NOTIFICATION_TITLE" /></translation>
 <translation id="3339826665088060472">Tangkapan skrin, alatan untuk mengambil tangkapan skrin dan rakaman skrin</translation>
 <translation id="3340978935015468852">tetapan</translation>
@@ -835,6 +847,7 @@ Jika tidak, pad sentuh terbina dalam akan didayakan semula selepas <ph name="TIM
         <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Ketahui perihal Ketepatan Lokasi dengan lebih lanjut<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Kekuatan Isyarat <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Rak disembunyikan secara automatik</translation>
+<translation id="3500417806337761827">Ralat semasa melekapkan perkongsian. Terlalu banyak perkongsian SMB telah dilekapkan.</translation>
 <translation id="3505066820268455558">Pengecasan Bateri</translation>
 <translation id="3509391053705095206">Tidak dapat menemukan telefon anda. Pastikan Bluetooth telefon anda dihidupkan.</translation>
 <translation id="3510164367642747937">Serlahkan kursor tetikus</translation>
@@ -960,6 +973,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="3804737937830804242">Kuncupkan kamera</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 emoji. Tiada hasil carian lain.}other{# emoji. Tiada hasil carian lain.}}</translation>
 <translation id="381202950560906753">Tambahkan yang lain</translation>
+<translation id="3819257035322786455">Sandaran</translation>
 <translation id="3819261658055281761">Sistem gagal menyimpan token akses API jangka panjang untuk peranti ini.</translation>
 <translation id="3822403841174077928">Tidak dapat menyalin teks dengan pemformatan</translation>
 <translation id="3824621460022590830">Token pendaftaran peranti tidak sah. Sila hubungi pemilik atau pentadbir peranti anda. Kod ralat: <ph name="ERROR_CODE" />.</translation>
@@ -1142,6 +1156,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4327147325944669226">Rakam permainan</translation>
 <translation id="4329076911374908740">Bilangan maksimum kumpulan disimpan telah dicapai.</translation>
 <translation id="4338109981321384717">Kanta pembesar</translation>
+<translation id="4340125850502689798">Nama pengguna tidak sah</translation>
 <translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, Diredamkan</translation>
 <translation id="4351244548802238354">Tutup dialog</translation>
 <translation id="435527878592612277">Pilih foto anda</translation>
@@ -1621,6 +1636,7 @@ Tiada peranti disambungkan.</translation>
 <translation id="5727460725221669831">Jika anda terlupa kata laluan anda atau menukar kata laluan Google Account anda baru-baru ini, cuba pulihkan pengguna ini.</translation>
 <translation id="5733630091161562207">Pemberitahuan alu-aluan</translation>
 <translation id="573413375004481890">Peranti ini tidak dapat menyokong semua paparan anda, oleh itu, satu paparan telah diputuskan sambungan</translation>
+<translation id="5734697361979786483">Tambahkan perkongsian fail</translation>
 <translation id="5739548907438839901"><ph name="SIZE" /> ruang cakera dikosongkan.</translation>
 <translation id="574392208103952083">Sederhana</translation>
 <translation id="5745612484876805746">Cahaya Malam akan dihidupkan secara automatik pada waktu matahari terbenam</translation>
@@ -1709,6 +1725,7 @@ Tiada peranti disambungkan.</translation>
 <translation id="5983567367406220847">Tempat liputan telah dimatikan kerana tidak aktif.</translation>
 <translation id="598407983968395253">Gunakan templat</translation>
 <translation id="5984334442529819751">Terdapat ralat semasa memasang DLC (sering kali but semula diperlukan, semak Tetapan\&gt;\&gt;Perihal ChromeOS untuk mendapatkan maklumat lanjut).</translation>
+<translation id="5985458664595100876">Format URL tidak sah. Format yang disokong ialah \\server\share dan smb://server/share.</translation>
 <translation id="5986723678596105470">Sertai dengan Google Meet</translation>
 <translation id="598882571027504733">Untuk mendapatkan kemas kini, mulakan semula Chromebook dengan papan kekunci yang dipasang.</translation>
 <translation id="5990992855591814753">Kekal fokus dengan senarai main untuk fokus yang diperibadikan. Dapatkan YouTube Music dan YouTube, tanpa iklan, dengan 3 bulan YouTube Premium tanpa kos. Bersyarat.</translation>
@@ -1758,6 +1775,7 @@ Tiada peranti disambungkan.</translation>
 <translation id="6074087755403037157">Saluran beta</translation>
 <translation id="6075098173600599596">Ubah penggunaan huruf besar</translation>
 <translation id="6080689532560039067">Semak masa sistem anda</translation>
+<translation id="6091761513005122595">Perkongsian berjaya dilekapkan.</translation>
 <translation id="6091929401758362855">Senarai main: <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="6093867385179428431">Dilumpuhkan oleh pentadbir</translation>
 <translation id="6095008505822982596">Kadar pertuturan</translation>
@@ -1929,6 +1947,7 @@ Pemasangan baharu</translation>
 <translation id="6582034443359256692">Mengira paras pengecasan bateri.</translation>
 <translation id="6586685375736417639">Tidak boleh mengecas peranti</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
+<translation id="6596816719288285829">Alamat IP</translation>
 <translation id="6597017209724497268">Sampel</translation>
 <translation id="6597278316891651699">Kamera diautojajar ke penjuru kiri sebelah bawah. Bercanggah dengan permukaan sistem.</translation>
 <translation id="6605415194043280389">Fokus dihidupkan</translation>
@@ -1948,6 +1967,7 @@ Pemasangan baharu</translation>
 <translation id="6637729079642709226">Tukar masa</translation>
 <translation id="6641720045729354415">Togol Sari Kata Langsung. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">Buat asal tertib isihan mengikut nama</translation>
+<translation id="6644513150317163574">Format URL tidak sah. Pelayan mesti dinyatakan sebagai nama hos apabila pengesahan SSO digunakan.</translation>
 <translation id="664793810957802384">Item dalam kumpulan yang dicadangkan</translation>
 <translation id="6649018507441623493">Tunggu sebentar...</translation>
 <translation id="6649641931981131786">Laraskan kamera untuk memastikan anda berada di tengah-tengah skrin.</translation>
@@ -2013,6 +2033,7 @@ Pemasangan baharu</translation>
 <translation id="6812232930908427253">Tidak dapat menyimpan meja. Terlalu banyak tetingkap atau tab.</translation>
 <translation id="6818242057446442178">Undur satu perkataan</translation>
 <translation id="6819327813400217281">Kamera diautojajar ke penjuru kiri sebelah bawah</translation>
+<translation id="6820079682647046800">Pengesahan Kerberos gagal</translation>
 <translation id="6820676911989879663">Berehatlah!</translation>
 <translation id="6827049576281411231">Tutup panel acara</translation>
 <translation id="682971198310367122">Dasar privasi Google</translation>
@@ -2043,6 +2064,7 @@ Pemasangan baharu</translation>
 <translation id="6919251195245069855">Tidak dapat mengecam kad pintar anda. Cuba lagi.</translation>
 <translation id="692135145298539227">padam</translation>
 <translation id="6921427376813842559">Kemas kinikan peranti</translation>
+<translation id="6923633482430812883">Ralat semasa melekapkan kongsi. Sila pastikan bahawa pelayan fail yang bersambung dengan anda itu menyokong SMBv2 atau yang lebih baharu.</translation>
 <translation id="6929081673585394903">Tunjukkan kawalan</translation>
 <translation id="6931576957638141829">Simpan pada</translation>
 <translation id="6935286146439255109">Dulang kertas tiada</translation>
@@ -2051,6 +2073,7 @@ Pemasangan baharu</translation>
 <translation id="6945221475159498467">Pilih</translation>
 <translation id="6945922087561257829">Telefon anda menggunakan rangkaian mudah alih. Pastikan telefon dan Chromebook anda disambungkan kepada rangkaian Wi-Fi yang sama dan kemudian cuba sekali lagi. <ph name="LEARN_MORE" /></translation>
 <translation id="6950627417367801484">Pulihkan apl</translation>
+<translation id="6960133692707095572">Lawat tanpa tiket</translation>
 <translation id="6960565108681981554">Tidak diaktifkan. Hubungi pembawa anda.</translation>
 <translation id="696103774840402661">Semua fail dan data setempat untuk semua pengguna pada <ph name="DEVICE_TYPE" /> ini telah dipadamkan secara kekal.</translation>
 <translation id="6961121602502368900">Ciri Senyapkan telefon tidak tersedia pada profil kerja</translation>
@@ -2090,6 +2113,7 @@ Pemasangan baharu</translation>
 <translation id="7061457967428964661">Pratonton kamera, tekan control + kekunci anak panah untuk mengalihkan pratonton ke penjuru yang berbeza</translation>
 <translation id="7064351585062927183"><ph name="DAY_OF_WEEK" /> akan datang</translation>
 <translation id="7064734931812204395">Mengkonfigurasi bekas Linux. Proses ini mungkin mengambil masa sehingga 30 minit.</translation>
+<translation id="706626672220389329">Ralat melekapkan perkongsian. Perkongsian yang dinyatakan sudah dilekapkan.</translation>
 <translation id="7066646422045619941">Rangkaian ini dilumpuhkan oleh pentadbir anda.</translation>
 <translation id="7067196344162293536">Auto putar</translation>
 <translation id="7076293881109082629">Melog masuk</translation>
@@ -2476,6 +2500,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="8168435359814927499">Kandungan</translation>
 <translation id="8169177848833352618">Dukacita dimaklumkan bahawa mesin ini tidak memenuhi keperluan untuk pemasangan Bruschetta. Kod ralat ialah <ph name="ERROR" />.</translation>
 <translation id="8172370561760918656">Pemegang bahagian atas sebelah kiri dipilih, gunakan kekunci anak panah untuk digerakkan</translation>
+<translation id="8177196903785554304">Butiran Rangkaian</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="81817143961839203">Penyisipan imej gagal</translation>
 <translation id="8182105986296479640">Aplikasi tiada respons.</translation>
@@ -2510,6 +2535,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="8262312463845990408">Togol main balik</translation>
 <translation id="8266751606569906450">Mestilah sekurang-kurangnya <ph name="MINIMUM" /> aksara</translation>
 <translation id="8268302343625273732">Lihat semua tugasan dalam Google Classroom</translation>
+<translation id="827488840488530039">Laman yang cuba anda lawati tidak dapat mengesahkan tiket Kerberos anda</translation>
 <translation id="8277261673056602147">Serlahkan teks pada skrin anda</translation>
 <translation id="8281886186245836920">Langkau</translation>
 <translation id="8282784978194352587">Anda berjaya!</translation>
@@ -2564,6 +2590,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8458259704995116343">Gagal memulakan VM.</translation>
 <translation id="84613761564611563">UI yang dikonfigurasi rangkaian diminta, sila tunggu...</translation>
+<translation id="8461914792118322307">Proksi</translation>
 <translation id="8462305545768648477">Tutup Pilih untuk bercakap</translation>
 <translation id="8463001014623882202">Pemberian Keizinan Gagal</translation>
 <translation id="8466665972451889002">Paparkan item dalam <ph name="GROUP_NAME" /></translation>
@@ -2626,6 +2653,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="8647931990447795414">Untuk menambahkan orang, masukkan kod akses ibu bapa Family Link anda</translation>
 <translation id="8649597172973390955">Rak sentiasa ditunjukkan</translation>
 <translation id="8657066291275741003">huruf kecil</translation>
+<translation id="8662671328352114214">Sertai rangkaian <ph name="TYPE" /></translation>
 <translation id="8662921061190671299">Tidak dapat ditambahkan pada Calendar</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, Kekuatan Isyarat <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Tekan kekunci enter untuk menangkap tangkapan skrin separa</translation>
@@ -2672,6 +2700,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="8760172428247796445"><ph name="DEVICE_TYPE" /> anda akan dikunci sekarang.
         <ph name="DOMAIN" /> menghendaki anda memastikan kad pintar anda tidak dikeluarkan.</translation>
 <translation id="8763883995157866248">Tetapkan peranti kepada mod tidur</translation>
+<translation id="8774379074441005279">Sahkan Pemulihan</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, Apl yang Dipasang, Disekat</translation>
 <translation id="8782565991310229362">Pelancaran aplikasi kios dibatalkan.</translation>
 <translation id="8784626084144195648">Purata Bin</translation>
@@ -2688,6 +2717,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Tetapan Kaedah Masukan</translation>
 <translation id="8819728065740986820">Pengecasan boleh suai dihidupkan</translation>
+<translation id="8821045908425223359">Konfigurasikan alamat IP secara automatik</translation>
 <translation id="882204272221080310">Kemas kini perisian tegar untuk keselamatan tambahan.</translation>
 <translation id="8822104519413696986">Permainan ini ialah permainan sentuh</translation>
 <translation id="8825863694328519386">Leret dari kiri untuk kembali</translation>
@@ -2747,6 +2777,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="8980862970816311842">Alihkan ikon apl masuk/keluar daripada folder dalam grid apl</translation>
 <translation id="8982906748181120328">Keterlihatan berdekatan</translation>
 <translation id="8983038754672563810">HSPA</translation>
+<translation id="8986362086234534611">Lupa</translation>
 <translation id="8990809378771970590">Menggunakan <ph name="IME_NAME" /></translation>
 <translation id="8991648557324317894">Tekan fn + Sisipan Pantas atau Shift untuk membatalkan tindakan.</translation>
 <translation id="899350903320462459">Buka kunci peranti sebagai <ph name="LOGIN_ID" /> untuk melaksanakan tindakan pemberitahuan</translation>
@@ -2759,6 +2790,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="9013037634206938463"><ph name="INSTALL_SIZE" /> ruang kosong diperlukan untuk memasang Linux. Untuk meningkatkan ruang kosong, padamkan fail daripada peranti anda.</translation>
 <translation id="901668144954885282">Sandarkan pada Google Drive</translation>
 <translation id="9017320285115481645">Masukkan kod akses ibu bapa Family Link.</translation>
+<translation id="9024158959543687197">Ralat melekapkan perkongsian. Semak URL perkongsian fail dan cuba lagi.</translation>
 <translation id="9024331582947483881">skrin penuh</translation>
 <translation id="9026852570893462412">Proses ini mungkin mengambil masa beberapa minit. Memuat turun mesin maya.</translation>
 <translation id="9029736946581028033">Peranti akan dimatikan tidak lama lagi</translation>

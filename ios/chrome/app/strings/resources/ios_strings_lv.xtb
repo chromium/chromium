@@ -2035,6 +2035,7 @@ Lai turpinātu datorā, pārslēdzieties uz kontu <ph name="OTHER_EMAIL" />. Jū
 <translation id="728025568708172005">Sākt apskati</translation>
 <translation id="7280980607183752256">Šo failu nevar importēt.</translation>
 <translation id="7282197670900591579">Citronu krāsas motīvs</translation>
+<translation id="7283937415134849498">Lai sniegtu pielāgotu palīdzību, Gemini kopīgo noteiktus jūsu datus (piemēram, tērzēšanas sarunu fragmentus, atrašanās vietas datus un citu atbilstošu informāciju) ar citiem Google pakalpojumiem, piemēram, Maps un Lidojumi. Šie pakalpojumi var izmantot šo informāciju, lai uzlabotu darbību, pat ja vēlāk izdzēsīsiet savu Gemini vēsturi. Uzziniet vairāk <ph name="BEGIN_LINK" />Gemini Apps konfidencialitātes palīdzības centrā<ph name="END_LINK" />.</translation>
 <translation id="7293429513719260019">Atlasīt valodu</translation>
 <translation id="72961285530871072">Tiks neatgriezeniski dzēsts jūsu Level Up progress, un ar jūsu profilu saistītie Level Up funkciju lietojuma dati vairs netiks sūtīti uzņēmumam Google.
 
@@ -2607,6 +2608,7 @@ Varat jebkurā laikā atkal iespējot Level Up.</translation>
 <translation id="8976382372951310360">Palīdzība</translation>
 <translation id="8976414606286374109">Karšu informācija tiek saglabāta jūsu Google kontā.</translation>
 <translation id="8981454092730389528">Google aktivitātes vadīklas</translation>
+<translation id="8987736167266086032">Turpiniet darbu no vietas, kur to pārtraucāt</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, piesprausta vietne</translation>
 <translation id="8989779557457435460">Pēc noklusējuma kopīgot pašreizējo cilni</translation>
 <translation id="8990960056509724223">Failu nevarēja saglabāt jūsu organizācijas politiku dēļ.</translation>
@@ -2648,6 +2650,7 @@ Varat jebkurā laikā atkal iespējot Level Up.</translation>
 <translation id="91023216973987714">Maksājumu veidi</translation>
 <translation id="9106655997975673326">No ierīces <ph name="SOURCE_DEVICE" /></translation>
 <translation id="9107664647686727385">Uzlauztu paroļu pārbaude</translation>
+<translation id="9115035712231910133">Pievienots attēls “{title}”</translation>
 <translation id="9119764377203471454">Nevar pievienot pielikumus.</translation>
 <translation id="9124387962554796433">Google var izmantot jūsu vēsturi, lai personalizētu pakalpojumu Meklēšana un citus Google pakalpojumus.</translation>
 <translation id="9124978074365039456">Iepērcieties, tulkojiet un identificējiet redzamo saturu, izmantojot kameru un fotoattēlu galeriju.</translation>

@@ -2035,6 +2035,7 @@ Arvutis jätkamiseks minge üle kontole <ph name="OTHER_EMAIL" />. Saate selle k
 <translation id="728025568708172005">Alusta tutvustust</translation>
 <translation id="7280980607183752256">Seda faili ei saa importida.</translation>
 <translation id="7282197670900591579">Sidrunikollane teema</translation>
+<translation id="7283937415134849498">Kohandatud abi pakkumiseks jagab Gemini osa teie andmetest (nt osa teie vestlustest, asukohta ja muud asjakohast teavet) teiste Google’i teenustega, nagu Maps ja Lennud. Need teenused võivad seda teavet kasutada täiustuste tegemiseks, isegi kui te hiljem oma Gemini ajaloo kustutate. Vaadake lisateavet <ph name="BEGIN_LINK" />Gemini rakenduste privaatsusjaotisest<ph name="END_LINK" />.</translation>
 <translation id="7293429513719260019">Valige keel</translation>
 <translation id="72961285530871072">See kustutab jäädavalt teie Level Upi edenemise ja teie profiili Level Upi funktsioonide kasutusandmeid ei saadeta enam Google'ile.
 
@@ -2607,6 +2608,7 @@ Saate igal ajal uuesti alustada.</translation>
 <translation id="8976382372951310360">Abi</translation>
 <translation id="8976414606286374109">Kaardid salvestatakse teie Google'i kontole.</translation>
 <translation id="8981454092730389528">Google'i kontotegevuste haldus</translation>
+<translation id="8987736167266086032">Jätkake poolelijäänud kohast</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, kinnitatud sait</translation>
 <translation id="8989779557457435460">Jaga vaikimisi praegust vahelehte</translation>
 <translation id="8990960056509724223">Faili ei saanud teie organisatsiooni eeskirjade tõttu salvestada.</translation>

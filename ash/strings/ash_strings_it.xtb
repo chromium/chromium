@@ -20,6 +20,7 @@
 <translation id="1056898198331236512">Avviso</translation>
 <translation id="1058009965971887428">Invia feedback</translation>
 <translation id="1059120031266247284">Condivisi con te</translation>
+<translation id="1060570945511946595">Gestisci richieste</translation>
 <translation id="1060847216467038176"><ph name="ITEM_LABEL" /> con pulsante Rimuovi</translation>
 <translation id="1062407476771304334">Sostituisci</translation>
 <translation id="1065931689816135472"><ph name="BEGIN_PARAGRAPH1" />Esegui il backup su Google Drive. Ripristina facilmente i tuoi dati o cambia dispositivo in qualsiasi momento. Il backup include i dati dell'app.<ph name="END_PARAGRAPH1" />
@@ -280,6 +281,7 @@
 <translation id="1757132445735080748">Per completare la configurazione di Linux, aggiorna ChromeOS Flex e riprova.</translation>
 <translation id="1757857692711134412">Funzionalità disattivata fino al tramonto</translation>
 <translation id="1763084151787818322">Altre azioni</translation>
+<translation id="1767043563165955993">Usa con app per Android</translation>
 <translation id="1768138163688567246">Chiudi la ricerca sullo schermo</translation>
 <translation id="1768366657309696705">La scorciatoia da tastiera <ph name="LAUNCHER_KEY_NAME" /> + Punto è cambiata. Per usare il tasto Ins, premi il tasto <ph name="LAUNCHER_KEY_NAME" /> + Maiusc + Backspace.</translation>
 <translation id="1770726142253415363">Spostata alla riga <ph name="ROW_NUMBER" />, colonna <ph name="COLUMN_NUMBER" />.</translation>
@@ -304,6 +306,7 @@
 <translation id="1838895407229022812">Luminosità notturna non attiva.</translation>
 <translation id="1840920496749066704">°C</translation>
 <translation id="1841616161104323629">Record del dispositivo mancante.</translation>
+<translation id="184273675144259287">Sostituisci app e file Linux con un backup precedente</translation>
 <translation id="1854180393107901205">Interrompi trasmissione</translation>
 <translation id="1862077610023398675">Nascondi controlli</translation>
 <translation id="1862380676329487333">Aggiorna e disconnetti</translation>
@@ -333,6 +336,7 @@
 <translation id="1946615340060705561">Premi "C" per rilasciare</translation>
 <translation id="1948405482892809935">Passa all'utente successivo</translation>
 <translation id="1954252331066828794">Registrazione dello schermo completata</translation>
+<translation id="1954813140452229842">Errore durante il montaggio della condivisione. Verifica le tue credenziali e riprova.</translation>
 <translation id="1956087014741188812">Metti in pausa i tasti mouse</translation>
 <translation id="1957958912175573503">Imposta la lingua</translation>
 <translation id="1961239773406905488">Anteprima della videocamera nascosta</translation>
@@ -352,6 +356,11 @@
 <translation id="1998100899771863792">Scrivania corrente</translation>
 <translation id="2001444736072756133">Cerca <ph name="CATEGORY" />, file, app e altro ancora.</translation>
 <translation id="2011174342667534258">Versione SDK:</translation>
+<translation id="2017770349934140286">Google Play e le app che hai scaricato da Google Play verranno eliminate da questo Chromebook.
+    <ph name="LINE_BREAKS1" />
+    Possono essere eliminati anche i contenuti acquistati tramite Google Play, come film, programmi TV, musica, libri e acquisti da altre app.
+    <ph name="LINE_BREAKS2" />
+    Ciò non interessa app o contenuti su altri dispositivi.</translation>
 <translation id="2017998995161831444">Apri "Guida" nell'app Esplora</translation>
 <translation id="2021864487439853900">Fai clic per sbloccare</translation>
 <translation id="2023167225947895179">Il PIN potrebbe essere facile da indovinare</translation>
@@ -381,6 +390,7 @@
 <translation id="212862741129535676">Percentuale di occupazione dello stato di frequenza</translation>
 <translation id="2132302418721800944">Registra schermo intero</translation>
 <translation id="2135456203358955318">Lente d'ingrandimento ancorata</translation>
+<translation id="2148219725039824548">Errore durante il montaggio della condivisione. Impossibile trovare la condivisione specificata sulla rete.</translation>
 <translation id="2148716181193084225">Oggi</translation>
 <translation id="2149229036084364364">Vai alla traccia precedente</translation>
 <translation id="2152796271648108398">Meteo attuale</translation>
@@ -726,6 +736,7 @@ In caso contrario, il touchpad integrato verrà riattivato dopo <ph name="TIMEOU
 <translation id="315116470104423982">Dati mobili</translation>
 <translation id="3153444934357957346">Puoi avere massimo <ph name="MULTI_PROFILE_USER_LIMIT" /> account per l'accesso simultaneo.</translation>
 <translation id="3154351730702813399">L'amministratore del dispositivo potrebbe monitorare l'attività di navigazione.</translation>
+<translation id="3157931365184549694">Ripristina</translation>
 <translation id="316086887565479535">App non supportate nel modello</translation>
 <translation id="3160929076476941240">2 h</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> sta eseguendo il rollback di <ph name="DEVICE_TYPE" />. Il dispositivo verrà reimpostato e tutti i dati verranno eliminati.</translation>
@@ -776,6 +787,7 @@ In caso contrario, il touchpad integrato verrà riattivato dopo <ph name="TIMEOU
 <translation id="3313950410573257029">Controlla la connessione</translation>
 <translation id="3321628682574733415">Codice genitore errato</translation>
 <translation id="332827762492701193">Le notifiche sono nascoste</translation>
+<translation id="3328489342742826322">Il ripristino da un backup elimina le applicazioni Linux esistenti e i dati nelle tue cartelle di file Linux.</translation>
 <translation id="3333674550998107387">Espandi la notifica <ph name="NOTIFICATION_TITLE" /></translation>
 <translation id="3339826665088060472">Cattura schermo, strumenti per acquisire screenshot e registrazione dello schermo</translation>
 <translation id="3340978935015468852">impostazioni</translation>
@@ -835,6 +847,7 @@ In caso contrario, il touchpad integrato verrà riattivato dopo <ph name="TIMEOU
         <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Scopri di più sulla precisione della localizzazione<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensità del segnale <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Barra delle app nascosta in automatico</translation>
+<translation id="3500417806337761827">Errore durante il montaggio della condivisione. Sono già montate troppe condivisioni SMB.</translation>
 <translation id="3505066820268455558">Batteria in carica</translation>
 <translation id="3509391053705095206">Impossibile trovare il telefono. Assicurati che il Bluetooth del telefono sia attivo.</translation>
 <translation id="3510164367642747937">Evidenzia il puntatore del mouse</translation>
@@ -956,6 +969,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="3804737937830804242">Comprimi fotocamera</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 emoji. Nessun altro risultato.}other{# emoji. Nessun altro risultato.}}</translation>
 <translation id="381202950560906753">Aggiungine un'altra</translation>
+<translation id="3819257035322786455">Backup</translation>
 <translation id="3819261658055281761">Il sistema non è riuscito a memorizzare il token di accesso all'API a lungo termine per questo dispositivo.</translation>
 <translation id="3822403841174077928">Impossibile copiare la formattazione</translation>
 <translation id="3824621460022590830">Token di registrazione dei dispositivi non valido. Contatta l'amministratore o il proprietario del dispositivo. Codice di errore: <ph name="ERROR_CODE" />.</translation>
@@ -1139,6 +1153,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="4327147325944669226">Registra partita</translation>
 <translation id="4329076911374908740">È stato raggiunto il numero massimo di gruppi salvati.</translation>
 <translation id="4338109981321384717">Lente d'ingrandimento</translation>
+<translation id="4340125850502689798">Nome utente non valido</translation>
 <translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, disattivato</translation>
 <translation id="4351244548802238354">Chiudi finestra di dialogo</translation>
 <translation id="435527878592612277">Seleziona la foto</translation>
@@ -1618,6 +1633,7 @@ Nessun dispositivo connesso.</translation>
 <translation id="5727460725221669831">Se hai dimenticato la password o hai modificato la password del tuo Account Google di recente, prova a recuperare questo utente.</translation>
 <translation id="5733630091161562207">Notifica di benvenuto</translation>
 <translation id="573413375004481890">Questo dispositivo non può supportare tutti i tuoi display, pertanto uno è stato scollegato</translation>
+<translation id="5734697361979786483">Aggiungi condivisione file</translation>
 <translation id="5739548907438839901">Spazio su disco liberato: <ph name="SIZE" />.</translation>
 <translation id="574392208103952083">Medio</translation>
 <translation id="5745612484876805746">La funzione Luminosità notturna viene attivata automaticamente al tramonto</translation>
@@ -1706,6 +1722,7 @@ Nessun dispositivo connesso.</translation>
 <translation id="5983567367406220847">L'hotspot è stato disattivato per inattività.</translation>
 <translation id="598407983968395253">Utilizza modello</translation>
 <translation id="5984334442529819751">Errore durante l'installazione di DLC (spesso è necessario il riavvio; per ulteriori informazioni, vai a Impostazioni\&gt;\&gt;Informazioni su ChromeOS).</translation>
+<translation id="5985458664595100876">Formato dell'URL non valido. I formati supportati sono \\server\share e smb://server/share.</translation>
 <translation id="5986723678596105470">Partecipa con Google Meet</translation>
 <translation id="598882571027504733">Per scaricare l'aggiornamento, riavvia il Chromebook con la tastiera collegata.</translation>
 <translation id="5990992855591814753">Tieni tutto sotto controllo con playlist personalizzate per la concentrazione. YouTube Music e YouTube senza annunci con 3 mesi di YouTube Premium senza costi. Si applicano termini.</translation>
@@ -1755,6 +1772,7 @@ Nessun dispositivo connesso.</translation>
 <translation id="6074087755403037157">Canale beta</translation>
 <translation id="6075098173600599596">Modifica lettere maiuscole</translation>
 <translation id="6080689532560039067">Controlla l'ora del sistema</translation>
+<translation id="6091761513005122595">Condivisione montata correttamente.</translation>
 <translation id="6091929401758362855">Playlist: <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="6093867385179428431">Opzione disattivata dall'amministratore</translation>
 <translation id="6095008505822982596">Velocità voce</translation>
@@ -1926,6 +1944,7 @@ Nuova installazione</translation>
 <translation id="6582034443359256692">Calcolo del livello di carica della batteria in corso…</translation>
 <translation id="6586685375736417639">Impossibile ricaricare il dispositivo</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
+<translation id="6596816719288285829">Indirizzo IP</translation>
 <translation id="6597017209724497268">Esempi</translation>
 <translation id="6597278316891651699">Fotocamera allineata all'angolo in basso a sinistra. Conflitto con la piattaforma di sistema.</translation>
 <translation id="6605415194043280389">Modalità Niente distrazioni attiva</translation>
@@ -1945,6 +1964,7 @@ Nuova installazione</translation>
 <translation id="6637729079642709226">Modifica tempo</translation>
 <translation id="6641720045729354415">Attiva o disattiva Sottotitoli in tempo reale. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">Annulla l'ordinamento per nome</translation>
+<translation id="6644513150317163574">Formato URL non valido. Il server deve essere specificato come nome host quando viene utilizzata l'autenticazione SSO.</translation>
 <translation id="664793810957802384">Elementi nel gruppo suggerito</translation>
 <translation id="6649018507441623493">Solo un secondo...</translation>
 <translation id="6649641931981131786">Regola la fotocamera per metterti al centro dello schermo.</translation>
@@ -2010,6 +2030,7 @@ Nuova installazione</translation>
 <translation id="6812232930908427253">Impossibile salvare la scrivania. Troppe finestre o schede.</translation>
 <translation id="6818242057446442178">Indietro per parola</translation>
 <translation id="6819327813400217281">Fotocamera allineata all'angolo in basso a sinistra</translation>
+<translation id="6820079682647046800">Autenticazione Kerberos non riuscita</translation>
 <translation id="6820676911989879663">Fai una pausa!</translation>
 <translation id="6827049576281411231">Chiudi il riquadro degli eventi</translation>
 <translation id="682971198310367122">Norme sulla privacy di Google</translation>
@@ -2040,6 +2061,7 @@ Nuova installazione</translation>
 <translation id="6919251195245069855">Impossibile riconoscere la smart card. Riprova.</translation>
 <translation id="692135145298539227">elimina</translation>
 <translation id="6921427376813842559">Aggiorna il dispositivo</translation>
+<translation id="6923633482430812883">Errore durante il montaggio della condivisione. Verifica che il file server a cui vuoi collegarti supporti SMBv2 o versioni successive.</translation>
 <translation id="6929081673585394903">Mostra controlli</translation>
 <translation id="6931576957638141829">Salva in</translation>
 <translation id="6935286146439255109">Vassoio carta mancante</translation>
@@ -2048,6 +2070,7 @@ Nuova installazione</translation>
 <translation id="6945221475159498467">Seleziona</translation>
 <translation id="6945922087561257829">Il tuo telefono è connesso a una rete mobile. Assicurati che il telefono e Chromebook siano collegati alla stessa rete Wi-Fi, quindi riprova. <ph name="LEARN_MORE" />:</translation>
 <translation id="6950627417367801484">Ripristina le app</translation>
+<translation id="6960133692707095572">Visita senza richiesta</translation>
 <translation id="6960565108681981554">Non attiva. Contatta l'operatore.</translation>
 <translation id="696103774840402661">Tutti i file e i dati locali di tutti gli utenti su questo <ph name="DEVICE_TYPE" /> sono stati eliminati in modo permanente.</translation>
 <translation id="6961121602502368900">La funzionalità Disattiva audio non è disponibile sul profilo di lavoro</translation>
@@ -2087,6 +2110,7 @@ Nuova installazione</translation>
 <translation id="7061457967428964661">Per visualizzare in anteprima la fotocamera, premi Ctrl + tasti Freccia per spostare l'anteprima in un altro angolo</translation>
 <translation id="7064351585062927183">Il prossimo <ph name="DAY_OF_WEEK" /></translation>
 <translation id="7064734931812204395">Configurazione del contenitore Linux. L'operazione potrebbe richiedere fino a 30 minuti.</translation>
+<translation id="706626672220389329">Errore durante il montaggio della condivisione. La condivisione specificata è già montata.</translation>
 <translation id="7066646422045619941">Questa rete è stata disattivata dall'amministratore.</translation>
 <translation id="7067196344162293536">Ruota in modo automatico</translation>
 <translation id="7076293881109082629">Accesso</translation>
@@ -2473,6 +2497,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8168435359814927499">Contenuti</translation>
 <translation id="8169177848833352618">Purtroppo questo computer non soddisfa i requisiti per l'installazione di Bruschetta. Il codice di errore è <ph name="ERROR" />.</translation>
 <translation id="8172370561760918656">Handle superiore sinistro selezionato, utilizza i tasti freccia per spostarlo</translation>
+<translation id="8177196903785554304">Dettagli di rete</translation>
 <translation id="8179976553408161302">Invio</translation>
 <translation id="81817143961839203">Inserimento immagine non riuscito</translation>
 <translation id="8182105986296479640">L'applicazione non risponde.</translation>
@@ -2507,6 +2532,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8262312463845990408">Attiva/disattiva riproduzione</translation>
 <translation id="8266751606569906450">Deve contenere almeno <ph name="MINIMUM" /> caratteri</translation>
 <translation id="8268302343625273732">Visualizza tutti i compiti in Google Classroom</translation>
+<translation id="827488840488530039">La pagina che stai tentando di visitare non è riuscita a verificare le richieste di Kerberos</translation>
 <translation id="8277261673056602147">Evidenzia il testo sullo schermo</translation>
 <translation id="8281886186245836920">Salta</translation>
 <translation id="8282784978194352587">Ce l'hai fatta!</translation>
@@ -2561,6 +2587,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8458259704995116343">Avvio della VM non riuscito.</translation>
 <translation id="84613761564611563">Interfaccia utente di configurazione rete richiesta. Attendi...</translation>
+<translation id="8461914792118322307">Proxy</translation>
 <translation id="8462305545768648477">Chiudi Seleziona per ascoltare</translation>
 <translation id="8463001014623882202">Autorizzazione negata</translation>
 <translation id="8466665972451889002">Mostra elementi in <ph name="GROUP_NAME" /></translation>
@@ -2623,6 +2650,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8647931990447795414">Per aggiungere una persona, inserisci il codice accesso genitori di Family Link</translation>
 <translation id="8649597172973390955">Barra delle app sempre visualizzata</translation>
 <translation id="8657066291275741003">lettere minuscole</translation>
+<translation id="8662671328352114214">Aggiungi la rete <ph name="TYPE" /></translation>
 <translation id="8662921061190671299">Impossibile aggiungere a Calendar</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, intensità del segnale <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Premi invio per acquisire uno screenshot parziale</translation>
@@ -2668,6 +2696,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8760172428247796445">Il tuo dispositivo <ph name="DEVICE_TYPE" /> verrà bloccato adesso.
         <ph name="DOMAIN" /> richiede di reinserire la tua smartcard.</translation>
 <translation id="8763883995157866248">Attiva la modalità di sospensione sul dispositivo</translation>
+<translation id="8774379074441005279">Conferma il ripristino</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, app installata, bloccata</translation>
 <translation id="8782565991310229362">Avvio dell'applicazione kiosk annullato.</translation>
 <translation id="8784626084144195648">Media raccolta</translation>
@@ -2684,6 +2713,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Impostazioni metodi di immissione</translation>
 <translation id="8819728065740986820">Ricarica adattiva attiva</translation>
+<translation id="8821045908425223359">Configura automaticamente indirizzo IP</translation>
 <translation id="882204272221080310">Aggiorna il firmware per maggiore sicurezza.</translation>
 <translation id="8822104519413696986">Questo è un gioco touchscreen</translation>
 <translation id="8825863694328519386">Scorri da sinistra per tornare indietro</translation>
@@ -2743,6 +2773,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8980862970816311842">Sposta l'icona di un'app all'interno/all'esterno di una cartella nella griglia delle app</translation>
 <translation id="8982906748181120328">Visibilità nelle vicinanze</translation>
 <translation id="8983038754672563810">HSPA</translation>
+<translation id="8986362086234534611">Elimina</translation>
 <translation id="8990809378771970590">In uso: <ph name="IME_NAME" /></translation>
 <translation id="8991648557324317894">Premi Fn + Inserimento rapido o Maiusc per annullare.</translation>
 <translation id="899350903320462459">Sblocca il dispositivo con l'account <ph name="LOGIN_ID" /> per eseguire l'azione di notifica</translation>
@@ -2755,6 +2786,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="9013037634206938463">Sono necessari <ph name="INSTALL_SIZE" /> di spazio libero per installare Linux. Per aumentare lo spazio disponibile, elimina i file dal dispositivo.</translation>
 <translation id="901668144954885282">Backup su Google Drive</translation>
 <translation id="9017320285115481645">Inserisci il codice accesso genitori di Family Link.</translation>
+<translation id="9024158959543687197">Errore durante il montaggio della condivisione. Verifica l'URL condivisione file e riprova.</translation>
 <translation id="9024331582947483881">schermo intero</translation>
 <translation id="9026852570893462412">Questa procedura potrebbe richiedere alcuni minuti. Download della macchina virtuale in corso.</translation>
 <translation id="9029736946581028033">Il dispositivo si spegnerà a breve</translation>

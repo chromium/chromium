@@ -20,6 +20,7 @@
 <translation id="1056898198331236512">Waarschuwing</translation>
 <translation id="1058009965971887428">Feedback melden</translation>
 <translation id="1059120031266247284">Met jou gedeeld</translation>
+<translation id="1060570945511946595">Tickets beheren</translation>
 <translation id="1060847216467038176"><ph name="ITEM_LABEL" /> met verwijderknop</translation>
 <translation id="1062407476771304334">Vervangen</translation>
 <translation id="1065931689816135472"><ph name="BEGIN_PARAGRAPH1" />Maak een back-up op Google Drive. Zet je gegevens eenvoudig terug of schakel wanneer je wilt tussen apparaten. De back-up omvat app-gegevens.<ph name="END_PARAGRAPH1" />
@@ -280,6 +281,7 @@
 <translation id="1757132445735080748">Als je het instellen van Linux wilt afronden, update je Chrome OS Flex en probeer je het opnieuw.</translation>
 <translation id="1757857692711134412">Uit tot zonsondergang</translation>
 <translation id="1763084151787818322">Andere acties</translation>
+<translation id="1767043563165955993">Gebruiken met Android-apps</translation>
 <translation id="1768138163688567246">Mijn scherm doorzoeken sluiten</translation>
 <translation id="1768366657309696705">De sneltoets <ph name="LAUNCHER_KEY_NAME" /> + punt is veranderd. Als je de toets Insert wilt gebruiken, druk je op de <ph name="LAUNCHER_KEY_NAME" />-toets + Shift + Backspace.</translation>
 <translation id="1770726142253415363">Verplaatst naar rij <ph name="ROW_NUMBER" />, kolom <ph name="COLUMN_NUMBER" />.</translation>
@@ -304,6 +306,7 @@
 <translation id="1838895407229022812">Nachtverlichting staat uit.</translation>
 <translation id="1840920496749066704">°C</translation>
 <translation id="1841616161104323629">Ontbrekende apparaatrecord.</translation>
+<translation id="184273675144259287">Je Linux-apps en -bestanden vervangen door een eerdere back-up</translation>
 <translation id="1854180393107901205">Casten stoppen</translation>
 <translation id="1862077610023398675">Bedieningselementen verbergen</translation>
 <translation id="1862380676329487333">Updaten en uitloggen</translation>
@@ -333,6 +336,7 @@
 <translation id="1946615340060705561">Druk op c om los te laten</translation>
 <translation id="1948405482892809935">Overschakelen naar volgende gebruiker</translation>
 <translation id="1954252331066828794">Schermopname voltooid</translation>
+<translation id="1954813140452229842">Fout bij het activeren van de fileshare. Controleer je inloggegevens en probeer het opnieuw.</translation>
 <translation id="1956087014741188812">Muistoetsen onderbreken</translation>
 <translation id="1957958912175573503">Je taal instellen</translation>
 <translation id="1961239773406905488">Het cameravoorbeeld is verborgen</translation>
@@ -352,6 +356,11 @@
 <translation id="1998100899771863792">Huidig bureau</translation>
 <translation id="2001444736072756133">Doorzoek onder andere je <ph name="CATEGORY" />, bestanden en apps…</translation>
 <translation id="2011174342667534258">SDK-versie:</translation>
+<translation id="2017770349934140286">Google Play en apps die je hebt gedownload via Google Play, worden verwijderd van deze Chromebook.
+    <ph name="LINE_BREAKS1" />
+Content die je hebt gekocht via Google Play, zoals films, tv-series, muziek en boeken, en aankopen via andere apps kunnen ook worden verwijderd.
+    <ph name="LINE_BREAKS2" />
+Dit is niet van invloed op apps of content op andere apparaten.</translation>
 <translation id="2017998995161831444">Help openen in de app Ontdekken</translation>
 <translation id="2021864487439853900">Klik om te ontgrendelen</translation>
 <translation id="2023167225947895179">De pincode is mogelijk makkelijk te raden</translation>
@@ -381,6 +390,7 @@
 <translation id="212862741129535676">Bezettingspercentage van frequentiestatus</translation>
 <translation id="2132302418721800944">Opname van volledig scherm maken</translation>
 <translation id="2135456203358955318">Vastgezet vergrootglas</translation>
+<translation id="2148219725039824548">Fout bij het activeren van de fileshare. De opgegeven fileshare kan niet in het netwerk worden gevonden.</translation>
 <translation id="2148716181193084225">Vandaag</translation>
 <translation id="2149229036084364364">Naar de vorige track gaan</translation>
 <translation id="2152796271648108398">Huidig weer</translation>
@@ -726,6 +736,7 @@ Anders wordt de ingebouwde touchpad over <ph name="TIMEOUT_SECONDS" /> weer aang
 <translation id="315116470104423982">Mobiele data</translation>
 <translation id="3153444934357957346">Je kunt maximaal <ph name="MULTI_PROFILE_USER_LIMIT" /> accounts hebben in Toegang tot meerdere accounts.</translation>
 <translation id="3154351730702813399">De apparaatbeheerder kan je browseactiviteit controleren.</translation>
+<translation id="3157931365184549694">Herstellen</translation>
 <translation id="316086887565479535">Niet-ondersteunde apps in template</translation>
 <translation id="3160929076476941240">2 u</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> zet je <ph name="DEVICE_TYPE" /> terug naar een oudere versie. Je apparaat wordt gereset en alle gegevens worden verwijderd.</translation>
@@ -776,6 +787,7 @@ Anders wordt de ingebouwde touchpad over <ph name="TIMEOUT_SECONDS" /> weer aang
 <translation id="3313950410573257029">Verbinding checken</translation>
 <translation id="3321628682574733415">Onjuiste oudercode</translation>
 <translation id="332827762492701193">Meldingen zijn verborgen</translation>
+<translation id="3328489342742826322">Als je herstelt vanuit een back-up, worden bestaande Linux-apps en gegevens in je map met Linux-bestanden verwijderd.</translation>
 <translation id="3333674550998107387">Vouw de melding <ph name="NOTIFICATION_TITLE" /> uit</translation>
 <translation id="3339826665088060472">Screenshot, tools om screenshots en schermopnamen te maken</translation>
 <translation id="3340978935015468852">instellingen</translation>
@@ -835,6 +847,7 @@ Anders wordt de ingebouwde touchpad over <ph name="TIMEOUT_SECONDS" /> weer aang
         <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Meer informatie over Locatienauwkeurigheid<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Plank automatisch verborgen</translation>
+<translation id="3500417806337761827">Fout bij activeren van fileshare. Er zijn al te veel SMB-fileshares geactiveerd.</translation>
 <translation id="3505066820268455558">Batterij wordt opgeladen</translation>
 <translation id="3509391053705095206">Kan je telefoon niet vinden. Zorg dat bluetooth aanstaat op je telefoon.</translation>
 <translation id="3510164367642747937">Muisaanwijzer markeren</translation>
@@ -959,6 +972,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="3804737937830804242">Camera samenvouwen</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 emoji. Geen andere resultaten.}other{# emoji's. Geen andere resultaten.}}</translation>
 <translation id="381202950560906753">Nog een toevoegen</translation>
+<translation id="3819257035322786455">Back-up</translation>
 <translation id="3819261658055281761">Het opslaan van de langdurige API-toegangstoken voor dit apparaat is mislukt.</translation>
 <translation id="3822403841174077928">Kan niet kopiëren met opmaak</translation>
 <translation id="3824621460022590830">Token voor apparaatinschrijving is ongeldig. Neem contact op met de eigenaar of beheerder van het apparaat. Foutcode: <ph name="ERROR_CODE" />.</translation>
@@ -1142,6 +1156,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="4327147325944669226">Game opnemen</translation>
 <translation id="4329076911374908740">Maximumaantal opgeslagen groepen bereikt.</translation>
 <translation id="4338109981321384717">Vergrootglas</translation>
+<translation id="4340125850502689798">Ongeldige gebruikersnaam</translation>
 <translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, uit</translation>
 <translation id="4351244548802238354">Dialoogvenster sluiten</translation>
 <translation id="435527878592612277">Selecteer je foto</translation>
@@ -1621,6 +1636,7 @@ Geen apparaten verbonden.</translation>
 <translation id="5727460725221669831">Als je je wachtwoord bent vergeten of onlangs het wachtwoord van je Google-account hebt gewijzigd, probeer je deze gebruiker te herstellen.</translation>
 <translation id="5733630091161562207">Welkomstmelding</translation>
 <translation id="573413375004481890">Dit apparaat kan niet al je schermen ondersteunen, dus één scherm is ontkoppeld</translation>
+<translation id="5734697361979786483">Fileshare toevoegen</translation>
 <translation id="5739548907438839901"><ph name="SIZE" /> aan schijfruimte vrijgemaakt.</translation>
 <translation id="574392208103952083">Gemiddeld</translation>
 <translation id="5745612484876805746">Nachtverlichting wordt automatisch aangezet bij zonsondergang</translation>
@@ -1709,6 +1725,7 @@ Geen apparaten verbonden.</translation>
 <translation id="5983567367406220847">De hotspot is uitgezet vanwege inactiviteit.</translation>
 <translation id="598407983968395253">Template gebruiken</translation>
 <translation id="5984334442529819751">Fout bij het installeren van DLC (vaak is opnieuw opstarten vereist, controleer Instellingen\&gt;\&gt;Over ChromeOS voor meer informatie).</translation>
+<translation id="5985458664595100876">Ongeldige URL-indeling. Ondersteunde formaten zijn \\server\share en smb://server/share.</translation>
 <translation id="5986723678596105470">Deelnemen via Google Meet</translation>
 <translation id="598882571027504733">Als je de update wilt downloaden, sluit je het toetsenbord aan en start je je Chromebook opnieuw op</translation>
 <translation id="5990992855591814753">Blijf op schema met gepersonaliseerde focusplaylists. Neem YouTube Music en YouTube zonder advertenties en krijg YouTube Premium 3 maanden zonder kosten. Er zijn voorwaarden van toepassing.</translation>
@@ -1758,6 +1775,7 @@ Geen apparaten verbonden.</translation>
 <translation id="6074087755403037157">Bètakanaal</translation>
 <translation id="6075098173600599596">Hoofdlettergebruik wijzigen</translation>
 <translation id="6080689532560039067">De systeemtijd controleren</translation>
+<translation id="6091761513005122595">Fileshare geactiveerd.</translation>
 <translation id="6091929401758362855">Playlist: <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="6093867385179428431">Uitgezet door beheerder</translation>
 <translation id="6095008505822982596">Spreeksnelheid</translation>
@@ -1929,6 +1947,7 @@ Nieuwe installatie</translation>
 <translation id="6582034443359256692">Het oplaadniveau van de batterij wordt berekend.</translation>
 <translation id="6586685375736417639">Kan apparaat niet opladen</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
+<translation id="6596816719288285829">IP-adres</translation>
 <translation id="6597017209724497268">Voorbeelden</translation>
 <translation id="6597278316891651699">Camera uitgelijnd op de linkerbenedenhoek. Conflict met systeemoppervlak.</translation>
 <translation id="6605415194043280389">Focus staat aan</translation>
@@ -1948,6 +1967,7 @@ Nieuwe installatie</translation>
 <translation id="6637729079642709226">Tijd wijzigen</translation>
 <translation id="6641720045729354415">Live ondertiteling aan-/uitzetten. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">Sorteren op naam ongedaan maken</translation>
+<translation id="6644513150317163574">Ongeldige URL-indeling. ALs je SSO-verificatie gebruikt, moet de server als hostnaam worden opgegeven.</translation>
 <translation id="664793810957802384">Items in de voorgestelde groep</translation>
 <translation id="6649018507441623493">Een ogenblik…</translation>
 <translation id="6649641931981131786">Pas de camera aan zodat je in het midden van het scherm wordt geplaatst.</translation>
@@ -2013,6 +2033,7 @@ Nieuwe installatie</translation>
 <translation id="6812232930908427253">Kan bureau niet opslaan. Te veel vensters of tabbladen.</translation>
 <translation id="6818242057446442178">Terug per woord</translation>
 <translation id="6819327813400217281">Camera uitgelijnd op de linkerbenedenhoek</translation>
+<translation id="6820079682647046800">Kerberos-verificatie mislukt</translation>
 <translation id="6820676911989879663">Neem een pauze</translation>
 <translation id="6827049576281411231">Afsprakenvenster sluiten</translation>
 <translation id="682971198310367122">Privacybeleid van Google</translation>
@@ -2043,6 +2064,7 @@ Nieuwe installatie</translation>
 <translation id="6919251195245069855">Je smartkaart wordt niet herkend. Probeer het opnieuw.</translation>
 <translation id="692135145298539227">verwijderen</translation>
 <translation id="6921427376813842559">Apparaat updaten</translation>
+<translation id="6923633482430812883">Fout bij het activeren van de fileshare. Controleer of de bestandsserver waarmee je verbinding maakt, SMBv2 of hoger ondersteunt.</translation>
 <translation id="6929081673585394903">Bedieningselementen tonen</translation>
 <translation id="6931576957638141829">Opslaan in</translation>
 <translation id="6935286146439255109">Er ontbreekt een papierlade</translation>
@@ -2051,6 +2073,7 @@ Nieuwe installatie</translation>
 <translation id="6945221475159498467">Selecteren</translation>
 <translation id="6945922087561257829">Je telefoon gebruikt een mobiel netwerk. Zorg dat je telefoon en Chromebook met hetzelfde wifi-netwerk zijn verbonden en probeer het opnieuw. <ph name="LEARN_MORE" /></translation>
 <translation id="6950627417367801484">Apps herstellen</translation>
+<translation id="6960133692707095572">Bezoeken zonder ticket</translation>
 <translation id="6960565108681981554">Niet geactiveerd. Neem contact op met je provider.</translation>
 <translation id="696103774840402661">Alle bestanden en lokale gegevens voor alle gebruikers op deze <ph name="DEVICE_TYPE" /> zijn definitief verwijderd.</translation>
 <translation id="6961121602502368900">Geluid van telefoon kan niet worden uitgezet in je werkprofiel</translation>
@@ -2090,6 +2113,7 @@ Nieuwe installatie</translation>
 <translation id="7061457967428964661">Cameravoorbeeld, druk op Ctrl + pijltoetsen om het voorbeeld naar een andere hoek te verplaatsen</translation>
 <translation id="7064351585062927183">Komende <ph name="DAY_OF_WEEK" /></translation>
 <translation id="7064734931812204395">De Linux-container wordt geconfigureerd. Dit kan tot dertig minuten duren.</translation>
+<translation id="706626672220389329">Fout bij het activeren van de fileshare. De opgegeven fileshare is al geactiveerd.</translation>
 <translation id="7066646422045619941">Dit netwerk is uitgezet door je beheerder.</translation>
 <translation id="7067196344162293536">Automatisch draaien</translation>
 <translation id="7076293881109082629">Inloggen</translation>
@@ -2476,6 +2500,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8168435359814927499">Content</translation>
 <translation id="8169177848833352618">Dit apparaat voldoet niet aan de vereisten voor de installatie van Bruschetta. De foutcode is <ph name="ERROR" />.</translation>
 <translation id="8172370561760918656">Geselecteerde handgreep linksboven, gebruik de pijltoetsen om te verplaatsen</translation>
+<translation id="8177196903785554304">Netwerkdetails</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="81817143961839203">Invoegen van afbeelding is mislukt</translation>
 <translation id="8182105986296479640">App reageert niet</translation>
@@ -2510,6 +2535,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8262312463845990408">Afspelen aan-/uitzetten</translation>
 <translation id="8266751606569906450">Moet minstens <ph name="MINIMUM" /> tekens lang zijn</translation>
 <translation id="8268302343625273732">Alle opdrachten in Google Classroom bekijken</translation>
+<translation id="827488840488530039">De pagina die je wilt bezoeken, kan je Kerberos-tickets niet verifiëren</translation>
 <translation id="8277261673056602147">Tekst op je scherm markeren</translation>
 <translation id="8281886186245836920">Overslaan</translation>
 <translation id="8282784978194352587">Gelukt!</translation>
@@ -2564,6 +2590,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8458259704995116343">VM starten is mislukt.</translation>
 <translation id="84613761564611563">Gebruikersinterface voor netwerkconfiguratie aangevraagd. Een ogenblik geduld...</translation>
+<translation id="8461914792118322307">Proxy</translation>
 <translation id="8462305545768648477">'Selecteer om voor te lezen' sluiten</translation>
 <translation id="8463001014623882202">Autorisatie mislukt</translation>
 <translation id="8466665972451889002">Items in <ph name="GROUP_NAME" /> tonen</translation>
@@ -2626,6 +2653,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8647931990447795414">Voer de Family Link-toegangscode voor ouders in om iemand toe te voegen</translation>
 <translation id="8649597172973390955">Plank altijd zichtbaar</translation>
 <translation id="8657066291275741003">kleine letters</translation>
+<translation id="8662671328352114214">Deelnemen aan <ph name="TYPE" />-netwerk</translation>
 <translation id="8662921061190671299">Kan niet toevoegen aan Agenda</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Druk op Enter om een gedeeltelijk screenshot te maken</translation>
@@ -2672,6 +2700,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8760172428247796445">Je <ph name="DEVICE_TYPE" /> wordt nu vergrendeld.
         <ph name="DOMAIN" /> vereist dat je smartcard geplaatst blijft.</translation>
 <translation id="8763883995157866248">Slaapmodus aanzetten</translation>
+<translation id="8774379074441005279">Herstel bevestigen</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, geïnstalleerde app, geblokkeerd</translation>
 <translation id="8782565991310229362">Starten van kiosk-app geannuleerd.</translation>
 <translation id="8784626084144195648">Gemiddelde van gegroepeerde gegevens</translation>
@@ -2688,6 +2717,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8814190375133053267">Wifi</translation>
 <translation id="881757059229893486">Instellingen voor invoermethoden</translation>
 <translation id="8819728065740986820">Aangepast opladen staat aan</translation>
+<translation id="8821045908425223359">IP-adres automatisch configureren</translation>
 <translation id="882204272221080310">Firmware updaten voor extra beveiliging</translation>
 <translation id="8822104519413696986">Dit is een game met aanraakbediening</translation>
 <translation id="8825863694328519386">Swipe vanaf de linkerkant om terug te gaan</translation>
@@ -2747,6 +2777,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8980862970816311842">Een app-icoon verplaatsen naar/uit een map in het app-raster</translation>
 <translation id="8982906748181120328">Dichtbij aan</translation>
 <translation id="8983038754672563810">HSPA</translation>
+<translation id="8986362086234534611">Vergeten</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> gebruiken</translation>
 <translation id="8991648557324317894">Druk op fn + Snel invoegen of Shift om te annuleren.</translation>
 <translation id="899350903320462459">Ontgrendel het apparaat als <ph name="LOGIN_ID" /> om de meldingsactie uit te voeren</translation>
@@ -2759,6 +2790,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="9013037634206938463">Er is <ph name="INSTALL_SIZE" /> vrije opslagruimte vereist om Linux te installeren. Verwijder bestanden op het apparaat om opslagruimte vrij te maken.</translation>
 <translation id="901668144954885282">Back-up maken in Google Drive</translation>
 <translation id="9017320285115481645">Geef de Family Link-toegangscode voor ouders op.</translation>
+<translation id="9024158959543687197">Fout bij het activeren van de fileshare. Controleer de fileshare-URL en probeer het opnieuw.</translation>
 <translation id="9024331582947483881">volledig scherm</translation>
 <translation id="9026852570893462412">Dit proces kan enkele minuten duren. De virtuele machine wordt gedownload.</translation>
 <translation id="9029736946581028033">Apparaat gaat straks uit</translation>

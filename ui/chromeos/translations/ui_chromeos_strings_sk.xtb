@@ -558,7 +558,6 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="5305688511332277257">Žiadne nainštalované</translation>
 <translation id="5317780077021120954">Uložiť</translation>
 <translation id="5318819489018851358">Zdieľanie so systémom Linux</translation>
-<translation id="5330145655348521461">Tieto súbory sú otvorené na inej pracovnej ploche. Ak ich chcete zobraziť, prejdite do profilu <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
 <translation id="5330512191124428349">Získať informácie</translation>
 <translation id="535792325654997756">Osoba s mačkami</translation>
 <translation id="5358764674931277">Snímková frekvencia</translation>
@@ -699,7 +698,6 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="636254897931573416">Neplatná hodnota zhody prípony domény</translation>
 <translation id="6364301859968397756">Priestor organizácie je plný</translation>
 <translation id="6367976544441405720">Dodávka</translation>
-<translation id="637062427944097960">Tento súbor je otvorený na inej pracovnej ploche. Ak ho chcete zobraziť, prejdite do profilu <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
 <translation id="6394388407447716302">Iba na čítanie</translation>
 <translation id="6395575651121294044">Počet položiek: <ph name="NUMBER_OF_FILES" /></translation>
 <translation id="6407769893376380348">Súbor <ph name="FILE_NAME" /> sa nepodarilo presunúť, pretože je šifrovaný.</translation>

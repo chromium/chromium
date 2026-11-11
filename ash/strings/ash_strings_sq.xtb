@@ -20,6 +20,7 @@
 <translation id="1056898198331236512">Paralajmërim</translation>
 <translation id="1058009965971887428">Raporto komentin</translation>
 <translation id="1059120031266247284">Ndarë me ty</translation>
+<translation id="1060570945511946595">Menaxho biletat</translation>
 <translation id="1060847216467038176"><ph name="ITEM_LABEL" /> me butonin e heqjes</translation>
 <translation id="1062407476771304334">Zëvendëso</translation>
 <translation id="1065931689816135472"><ph name="BEGIN_PARAGRAPH1" />Rezervo në "Diskun e Google". Restauro të dhënat e tua ose ndërro me lehtësi pajisjen në çdo kohë. Rezervimi yt përfshin të dhënat e aplikacioneve.<ph name="END_PARAGRAPH1" />
@@ -280,6 +281,7 @@
 <translation id="1757132445735080748">Për të përfunduar konfigurimin e Linux, përditëso Chrome OS Flex dhe provo përsëri.</translation>
 <translation id="1757857692711134412">Joaktive deri në perëndim</translation>
 <translation id="1763084151787818322">Veprimet e tjera</translation>
+<translation id="1767043563165955993">Përdore me aplikacione për Android</translation>
 <translation id="1768138163688567246">Mbyll kërkimin në ekranin tim</translation>
 <translation id="1768366657309696705">Shkurtorja e tastierës për <ph name="LAUNCHER_KEY_NAME" /> + Pikë është ndryshuar. Për të përdorur tastin Insert, shtyp tastin <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
 <translation id="1770726142253415363">Është zhvendosur në rreshtin <ph name="ROW_NUMBER" />, kolonën <ph name="COLUMN_NUMBER" />.</translation>
@@ -304,6 +306,7 @@
 <translation id="1838895407229022812">"Drita e natës" është joaktive.</translation>
 <translation id="1840920496749066704">°C</translation>
 <translation id="1841616161104323629">Mungon regjistrimi i pajisjes.</translation>
+<translation id="184273675144259287">Zëvendëso aplikacionet dhe skedarët Linux me një rezervim të mëparshëm</translation>
 <translation id="1854180393107901205">Ndalo transmetimin</translation>
 <translation id="1862077610023398675">Fshih kontrollet</translation>
 <translation id="1862380676329487333">Përditëso dhe dil</translation>
@@ -333,6 +336,7 @@
 <translation id="1946615340060705561">Shtyp "c" për ta lëshuar</translation>
 <translation id="1948405482892809935">Kalo te përdoruesi tjetër</translation>
 <translation id="1954252331066828794">Regjistrimi i ekranit përfundoi</translation>
+<translation id="1954813140452229842">Gabim gjatë montimit të ndarjes. Kontrollo kredencialet e tua dhe provo përsëri.</translation>
 <translation id="1956087014741188812">Vendos në pauzë tastet e miut</translation>
 <translation id="1957958912175573503">Vendos gjuhën</translation>
 <translation id="1961239773406905488">Pamja paraprake e kamerës e fshehur</translation>
@@ -352,6 +356,11 @@
 <translation id="1998100899771863792">Tavolina aktuale e punës</translation>
 <translation id="2001444736072756133">Kërko te <ph name="CATEGORY" />, skedarët, aplikacionet dhe të tjera.</translation>
 <translation id="2011174342667534258">Versioni i SDK-së:</translation>
+<translation id="2017770349934140286">Google Play dhe aplikacionet që ke shkarkuar nga Google Play do të fshihen nga ky Chromebook.
+    <ph name="LINE_BREAKS1" />
+    Përmbajtjet që ke blerë nëpërmjet Google Play, si p.sh. filmat, shfaqjet televizive, muzika, librat, si dhe blerjet nga aplikacionet e tjera, mund të fshihen po ashtu.
+    <ph name="LINE_BREAKS2" />
+    Kjo nuk ndikon tek aplikacionet ose përmbajtja në pajisjet e tjera.</translation>
 <translation id="2017998995161831444">Hap "Ndihmën" në aplikacionin "Eksploro"</translation>
 <translation id="2021864487439853900">Kliko për ta shkyçur</translation>
 <translation id="2023167225947895179">Kodi PIN mund të jetë i lehtë për t'u gjetur</translation>
@@ -381,6 +390,7 @@
 <translation id="212862741129535676">Përqindja e shfrytëzimit të gjendjes së frekuencës</translation>
 <translation id="2132302418721800944">Regjistro ekranin e plotë</translation>
 <translation id="2135456203358955318">Zmadhuesi i stacionuar</translation>
+<translation id="2148219725039824548">Gabim gjatë montimit të ndarjes. Ndarja e specifikuar nuk u gjend në rrjet.</translation>
 <translation id="2148716181193084225">Sot</translation>
 <translation id="2149229036084364364">Shko te pjesa muzikore e mëparshme</translation>
 <translation id="2152796271648108398">Moti aktual</translation>
@@ -726,6 +736,7 @@ Në rast të kundërt, blloku i integruar me prekje do të riaktivizohet pas <ph
 <translation id="315116470104423982">Të dhëna celulare</translation>
 <translation id="3153444934357957346">Mund të kesh vetëm deri në <ph name="MULTI_PROFILE_USER_LIMIT" /> llogari në identifikimin e shumëfishtë.</translation>
 <translation id="3154351730702813399">Administratori i pajisjes mund të monitorojë aktivitetin tënd të shfletimit.</translation>
+<translation id="3157931365184549694">Restauro</translation>
 <translation id="316086887565479535">Aplikacione të pambështetura në shabllon</translation>
 <translation id="3160929076476941240">2 orë</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> po kthen pas pajisjen tënde <ph name="DEVICE_TYPE" />. Pajisja do të rivendoset dhe të gjitha të dhënat do të fshihen.</translation>
@@ -776,6 +787,7 @@ Në rast të kundërt, blloku i integruar me prekje do të riaktivizohet pas <ph
 <translation id="3313950410573257029">Kontrollo lidhjen</translation>
 <translation id="3321628682574733415">Kod i gabuar prindi</translation>
 <translation id="332827762492701193">Njoftimet janë të fshehura</translation>
+<translation id="3328489342742826322">Restaurimi nga një rezervim do të fshijë aplikacionet ekzistuese të Linux dhe të dhënat në dosjen e skedarëve të tu të Linux.</translation>
 <translation id="3333674550998107387">Zgjero njoftimin "<ph name="NOTIFICATION_TITLE" />"</translation>
 <translation id="3339826665088060472">"Regjistrimi i ekranit", veglat për të nxjerrë pamje ekrani dhe regjistrime ekrani</translation>
 <translation id="3340978935015468852">cilësimet</translation>
@@ -835,6 +847,7 @@ Në rast të kundërt, blloku i integruar me prekje do të riaktivizohet pas <ph
         <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Mëso më shumë për "Saktësinë e vendndodhjes"<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Rafti i fshehur automatikisht</translation>
+<translation id="3500417806337761827">Gabim në montimin e ndarjes. Janë montuar tashmë shumë ndarje SMB.</translation>
 <translation id="3505066820268455558">Bateria po karikohet</translation>
 <translation id="3509391053705095206">Telefoni yt nuk mund të gjendet. Sigurohu që të jetë aktivizuar Bluetooth-i i telefonit tënd.</translation>
 <translation id="3510164367642747937">Thekso kursorin e miut</translation>
@@ -959,6 +972,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="3804737937830804242">Palos kamerën</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 emoji. Nuk ka rezultate të tjera.}other{# emoji. Nuk ka rezultate të tjera.}}</translation>
 <translation id="381202950560906753">Shto një tjetër</translation>
+<translation id="3819257035322786455">Rezervimi</translation>
 <translation id="3819261658055281761">Sistemi nuk arriti të ruante kodin afatgjatë të qasjes së API-së për këtë pajisje.</translation>
 <translation id="3822403841174077928">Nuk mund të kopjohej me formatimin</translation>
 <translation id="3824621460022590830">Kodi i regjistrimit të pajisjes është i pavlefshëm. Kontakto me zotëruesin e pajisjes ose administratorin. Kodi i gabimit: <ph name="ERROR_CODE" />.</translation>
@@ -1142,6 +1156,7 @@ Disa veçori janë kufizuar për të rritur kohëzgjatjen e baterisë.</translat
 <translation id="4327147325944669226">Regjistro lojën</translation>
 <translation id="4329076911374908740">U arrit numri maksimal i grupeve të ruajtura.</translation>
 <translation id="4338109981321384717">Xhami zmadhues</translation>
+<translation id="4340125850502689798">Emri i përdoruesit është i pavlefshëm</translation>
 <translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, në heshtje</translation>
 <translation id="4351244548802238354">Mbyll dialogun</translation>
 <translation id="435527878592612277">Zgjidh foton tënde</translation>
@@ -1621,6 +1636,7 @@ Nuk ka pajisje të lidhura.</translation>
 <translation id="5727460725221669831">Nëse e ke harruar fjalëkalimin tënd ose e ke ndryshuar së fundi fjalëkalimin e "Llogarisë sate të Google", provo ta rikuperosh këtë përdorues.</translation>
 <translation id="5733630091161562207">Njoftimi i mirëseardhjes</translation>
 <translation id="573413375004481890">Kjo pajisje nuk mund t'i mbështeste të gjitha ekranet, kështu që një prej tyre është shkëputur</translation>
+<translation id="5734697361979786483">Shto një ndarje të skedarit</translation>
 <translation id="5739548907438839901">U lirua <ph name="SIZE" /> hapësirë në disk.</translation>
 <translation id="574392208103952083">Mesatar</translation>
 <translation id="5745612484876805746">"Drita e natës" aktivizohet automatikisht kur perëndon dielli</translation>
@@ -1709,6 +1725,7 @@ Nuk ka pajisje të lidhura.</translation>
 <translation id="5983567367406220847">Për shkak të mungesës së aktivitetit, zona e qasjes për internet është çaktivizuar.</translation>
 <translation id="598407983968395253">Përdor shabllonin</translation>
 <translation id="5984334442529819751">Gabim gjatë instalimit të përmbajtjes së shkarkueshme (zakonisht nevojitet rindezja, kontrollo Cilësimet\&gt;\&gt;Rreth ChromeOS për më shumë informacione).</translation>
+<translation id="5985458664595100876">Format i pavlefshëm i URL-së. Formatet e mbështetura janë \\server\share dhe smb://server/share.</translation>
 <translation id="5986723678596105470">Bashkohu me Google Meet</translation>
 <translation id="598882571027504733">Për të marrë përditësimin, rinise Chromebook me tastierën e lidhur.</translation>
 <translation id="5990992855591814753">Vazhdo të ecësh përpara me listat e personalizuara për luajtje për përqendrimin. Merr YouTube Music dhe YouTube, pa reklama, me 3 muaj në YouTube Premium pa asnjë kosto. Zbatohen kushtet.</translation>
@@ -1758,6 +1775,7 @@ Nuk ka pajisje të lidhura.</translation>
 <translation id="6074087755403037157">Kanali "Beta"</translation>
 <translation id="6075098173600599596">Ndrysho kapitalizimin</translation>
 <translation id="6080689532560039067">Kontrollo kohën e sistemit</translation>
+<translation id="6091761513005122595">Ndarja u montua me sukses.</translation>
 <translation id="6091929401758362855">Lista për luajtje: <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="6093867385179428431">Çaktivizuar nga administratori</translation>
 <translation id="6095008505822982596">Shpejtësia e të folurit</translation>
@@ -1929,6 +1947,7 @@ Instalim i ri</translation>
 <translation id="6582034443359256692">Niveli i karikimit të baterisë po llogaritet.</translation>
 <translation id="6586685375736417639">Pajisja nuk mund të karikohet</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
+<translation id="6596816719288285829">Adresa e IP-së</translation>
 <translation id="6597017209724497268">Shembuj</translation>
 <translation id="6597278316891651699">Pamja paraprake e kamerës ka kaluar në këndin e poshtëm majtas. Në konflikt me sipërfaqen e sistemit.</translation>
 <translation id="6605415194043280389">"Fokusi" është aktiv</translation>
@@ -1948,6 +1967,7 @@ Instalim i ri</translation>
 <translation id="6637729079642709226">Ndrysho kohën</translation>
 <translation id="6641720045729354415">Aktivizo/çaktivizo "Titrat në çast". <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">Zhbëj mënyrën e renditjes sipas emrit</translation>
+<translation id="6644513150317163574">Format i pavlefshëm URL-je. Serveri duhet të specifikohet si emër pritësi kur përdoret vërtetimi SSO.</translation>
 <translation id="664793810957802384">Artikujt në grupin e sugjeruar</translation>
 <translation id="6649018507441623493">Prit një sekondë…</translation>
 <translation id="6649641931981131786">Rregullo kamerën që të vendosesh në qendër të ekranit.</translation>
@@ -2013,6 +2033,7 @@ Instalim i ri</translation>
 <translation id="6812232930908427253">Tavolina e punës nuk mund të ruhej. Shumë dritare ose skeda.</translation>
 <translation id="6818242057446442178">Një fjalë pas</translation>
 <translation id="6819327813400217281">Pamja paraprake e kamerës ka kaluar në këndin e poshtëm majtas</translation>
+<translation id="6820079682647046800">Vërtetimi i Kerberos dështoi</translation>
 <translation id="6820676911989879663">Bëj një pushim!</translation>
 <translation id="6827049576281411231">Mbyll panelin e ngjarjes</translation>
 <translation id="682971198310367122">Politika e privatësisë së Google</translation>
@@ -2043,6 +2064,7 @@ Instalim i ri</translation>
 <translation id="6919251195245069855">Karta smart nuk mund të njihej. Provo përsëri.</translation>
 <translation id="692135145298539227">fshi</translation>
 <translation id="6921427376813842559">Përditëso pajisjen</translation>
+<translation id="6923633482430812883">Gabim gjatë montimit të ndarjes. Kontrollo që serveri i skedarëve me të cilin po lidhesh mbështet SMBv2 ose një version më të lartë.</translation>
 <translation id="6929081673585394903">Shfaq kontrollet</translation>
 <translation id="6931576957638141829">Ruaj te</translation>
 <translation id="6935286146439255109">Mungon një tabaka letre</translation>
@@ -2051,6 +2073,7 @@ Instalim i ri</translation>
 <translation id="6945221475159498467">Përzgjidhe</translation>
 <translation id="6945922087561257829">Telefoni yt po përdor rrjetin celular. Sigurohu që telefoni yt dhe Chromebook të jenë në të njëjtin rrjet Wi-Fi dhe më pas provo përsëri. <ph name="LEARN_MORE" /></translation>
 <translation id="6950627417367801484">Rivendos aplikacionet</translation>
+<translation id="6960133692707095572">Vizito pa biletë</translation>
 <translation id="6960565108681981554">Nuk është aktivizuar. Kontakto me operatorin celular.</translation>
 <translation id="696103774840402661">Të gjithë skedarët dhe të dhënat lokale për të gjithë përdoruesit në këtë <ph name="DEVICE_TYPE" /> janë fshirë përfundimisht.</translation>
 <translation id="6961121602502368900">"Vendose telefonin në heshtje" nuk ofrohet në profilin e punës</translation>
@@ -2090,6 +2113,7 @@ Instalim i ri</translation>
 <translation id="7061457967428964661">Pamja paraprake e kamerës; shtyp Control + tastet e shigjetave për ta lëvizur pamjen paraprake në një kënd tjetër</translation>
 <translation id="7064351585062927183">Ditën <ph name="DAY_OF_WEEK" /> që vjen</translation>
 <translation id="7064734931812204395">Kontejneri i Linux po konfigurohet. Kjo mund të zgjasë deri në 30 minuta.</translation>
+<translation id="706626672220389329">Gabim gjatë montimit të ndarjes. Ndarja e specifikuar është e montuar tashmë.</translation>
 <translation id="7066646422045619941">Ky rrjet është çaktivizuar nga administratori yt.</translation>
 <translation id="7067196344162293536">Rrotullim automatik</translation>
 <translation id="7076293881109082629">Po identifikohesh</translation>
@@ -2476,6 +2500,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="8168435359814927499">Përmbajtja</translation>
 <translation id="8169177848833352618">Fatkeqësisht, kjo pajisje nuk i plotëson kërkesat për instalimin e Bruschetta. Kodi i gabimit është <ph name="ERROR" />.</translation>
 <translation id="8172370561760918656">Është zgjedhur doreza e sipërme majtas; përdor tastet e shigjetave për ta zhvendosur</translation>
+<translation id="8177196903785554304">Detajet e rrjetit</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="81817143961839203">Futja e imazhit dështoi</translation>
 <translation id="8182105986296479640">Aplikacioni nuk përgjigjet.</translation>
@@ -2510,6 +2535,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="8262312463845990408">Aktivizo/çaktivizo luajtjen</translation>
 <translation id="8266751606569906450">Duhet të ketë të paktën <ph name="MINIMUM" /> karaktere</translation>
 <translation id="8268302343625273732">Shiko të gjitha detyrat te "Klasa e Google"</translation>
+<translation id="827488840488530039">Faqja që po përpiqesh të vizitosh nuk mund t'i verifikonte biletat e tua të Kerberos</translation>
 <translation id="8277261673056602147">Thekso tekstin në ekranin tënd</translation>
 <translation id="8281886186245836920">Anashkalo</translation>
 <translation id="8282784978194352587">Ia dole!</translation>
@@ -2564,6 +2590,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8458259704995116343">Nisja e VM-së dështoi.</translation>
 <translation id="84613761564611563">Kërkohet ndërfaqja e konfigurimit të rrjetit, qëndro në pritje...</translation>
+<translation id="8461914792118322307">Përfaqësues</translation>
 <translation id="8462305545768648477">Mbyll "Zgjidh që të thuhet"</translation>
 <translation id="8463001014623882202">Autorizimi dështoi</translation>
 <translation id="8466665972451889002">Shfaq artikujt në "<ph name="GROUP_NAME" />"</translation>
@@ -2626,6 +2653,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="8647931990447795414">Për të shtuar një person, fut kodin e qasjes së prindit për Family Link.</translation>
 <translation id="8649597172973390955">Rafti shfaqet gjithmonë</translation>
 <translation id="8657066291275741003">shkronja të vogla</translation>
+<translation id="8662671328352114214">Bashkohu në rrjetin <ph name="TYPE" /></translation>
 <translation id="8662921061190671299">Nuk mund të shtohej te "Kalendari"</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Shtyp "Enter" për të nxjerrë një pamje të pjesshme të ekranit</translation>
@@ -2672,6 +2700,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="8760172428247796445">Pajisja jote <ph name="DEVICE_TYPE" /> do të kyçet tani.
         <ph name="DOMAIN" /> kërkon që ta mbash kartën tënde inteligjente të futur.</translation>
 <translation id="8763883995157866248">Vendose pajisjen në modalitetin "në gjumë"</translation>
+<translation id="8774379074441005279">Konfirmo restaurimin</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, aplikacion i instaluar, i bllokuar</translation>
 <translation id="8782565991310229362">Hapja e aplikacionit "kioskë" u anulua.</translation>
 <translation id="8784626084144195648">Mesatarja e reduktimit</translation>
@@ -2688,6 +2717,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Cilësimet e metodave të hyrjes</translation>
 <translation id="8819728065740986820">"Karikimi me përshtatje" është aktiv</translation>
+<translation id="8821045908425223359">Konfiguro automatikisht adresën IP</translation>
 <translation id="882204272221080310">Përditëso firmuerin për më shumë siguri.</translation>
 <translation id="8822104519413696986">Kjo është një lojë me prekje</translation>
 <translation id="8825863694328519386">Rrëshqit nga e majta për t'u kthyer prapa</translation>
@@ -2747,6 +2777,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="8980862970816311842">Zhvendos një ikonë aplikacioni te/nga një dosje në rrjetën e aplikacioneve</translation>
 <translation id="8982906748181120328">Dukshmëria</translation>
 <translation id="8983038754672563810">HSPA</translation>
+<translation id="8986362086234534611">Harro</translation>
 <translation id="8990809378771970590">Po përdor <ph name="IME_NAME" /></translation>
 <translation id="8991648557324317894">Shtyp tastin fn + "Fut shpejt" ose Shift për ta anuluar.</translation>
 <translation id="899350903320462459">Shkyç pajisjen si <ph name="LOGIN_ID" /> për të kryer veprimin e njoftimit</translation>
@@ -2759,6 +2790,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="9013037634206938463">Për instalimin e Linux kërkohet <ph name="INSTALL_SIZE" /> hapësirë e lirë. Për të rritur nivelin e hapësirës së lirë, fshi skedarë nga pajisja jote.</translation>
 <translation id="901668144954885282">Rezervo në "Diskun e Google"</translation>
 <translation id="9017320285115481645">Fut kodin e qasjes së prindit për Family Link</translation>
+<translation id="9024158959543687197">Gabim gjatë montimit të ndarjes. Kontrollo URL-në e ndarjes së skedarit dhe provo përsëri.</translation>
 <translation id="9024331582947483881">ekrani i plotë</translation>
 <translation id="9026852570893462412">Procesi mund të zgjasë disa minuta. Po shkarkohet pajisja virtuale.</translation>
 <translation id="9029736946581028033">Pajisja do të fiket së shpejti</translation>

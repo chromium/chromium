@@ -427,7 +427,6 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="2650348088770008516">Đã đóng nội dung giải thích hướng dẫn về quyền riêng tư</translation>
 <translation id="2650751991977523696">Tải tệp xuống lần nữa?</translation>
 <translation id="265156376773362237">Tải trước ở chế độ chuẩn</translation>
-<translation id="2651797114528729973">Gemini cùng các công cụ thiết yếu nằm ngay trên thanh công cụ mới</translation>
 <translation id="2656405586795711023">Ứng dụng web</translation>
 <translation id="2664252182805397291">Xem các trang web</translation>
 <translation id="2666092431469916601">Trên cùng</translation>
@@ -675,6 +674,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="368978924030580338">{BOOKMARKS_COUNT,plural, =1{Có 1 dấu trang chỉ được lưu trên thiết bị này. Để sử dụng dấu trang này trên các thiết bị khác, hãy lưu dấu trang vào Tài khoản Google của bạn.}other{Có # dấu trang chỉ được lưu trên thiết bị này. Để sử dụng những dấu trang này trên các thiết bị khác, hãy lưu dấu trang vào Tài khoản Google của bạn.}}</translation>
 <translation id="3692944402865947621">Không tải <ph name="FILE_NAME" /> xuống được do không tìm thấy vị trí bộ nhớ.</translation>
 <translation id="3699022356773522638">Tải tệp xuống?</translation>
+<translation id="3701167022068948696">Khắc phục ngay</translation>
 <translation id="3701515417135397388">Cảnh báo bạn nếu mật khẩu bị lộ trong một sự cố rò rỉ dữ liệu</translation>
 <translation id="3703166520839776970">Nếu sự cố này vẫn tiếp diễn, hãy chọn "Thông tin chi tiết khác" bên dưới để tìm hiểu thêm thông tin từ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="3708100450779900829">Khi thiết bị gập lại, bạn có thể lựa chọn một phương án hoặc chạm và giữ thanh địa chỉ để thay đổi vị trí</translation>
@@ -1329,7 +1329,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="6254139308321626268">Bạn đang xem một tệp PDF</translation>
 <translation id="6255809143828972562">Với các công cụ của Chrome, bạn có thể duyệt web an toàn và luôn nắm quyền kiểm soát</translation>
 <translation id="6259107733340311168">Bảng dưới cùng chứa tuyên bố từ chối trách nhiệm về tín hiệu doanh nghiệp đã mở trên toàn màn hình</translation>
-<translation id="6259539576554609209">Các công cụ thiết yếu nay nằm ngay trên thanh công cụ. Bạn có thể chuyển về giao diện cũ bất cứ lúc nào trong phần <ph name="BEGIN_LINK" />cài đặt<ph name="END_LINK" /></translation>
 <translation id="6260260490042862943">Kiểm soát trang web</translation>
 <translation id="6264376385120300461">Vẫn tải xuống</translation>
 <translation id="6264485186158353794">Quay lại trang an toàn</translation>
@@ -1437,7 +1436,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="6595046016124923392">Các hình ảnh được gửi đến Google để cải thiện nội dung mô tả cho bạn.</translation>
 <translation id="6602173570135186741">Tự động điền và mật khẩu</translation>
 <translation id="661266467055912436">Tăng độ bảo mật cho bạn và mọi người trên web.</translation>
-<translation id="6615455863669487791">Hiển thị cho tôi</translation>
 <translation id="6621391692573306628">Để gửi thẻ này cho một thiết bị khác, hãy đăng nhập vào Chrome trên cả hai thiết bị</translation>
 <translation id="6627583120233659107">Chỉnh sửa thư mục</translation>
 <translation id="6633067410344541938">Mở khoá thẻ Ẩn danh</translation>
@@ -1846,7 +1844,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8084864785646838999">Một phần nhật ký duyệt web của bạn có thể không xuất hiện ở đây. Để xem toàn bộ nhật ký duyệt web trên Chrome, hãy mở nhật ký duyệt web đầy đủ trên Chrome. Tài khoản Google của bạn cũng có thể có các dạng nhật ký duyệt web khác tại <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="8088176524274673045">Để chia sẻ với những người ở gần, hãy cho phép họ quét Mã QR này</translation>
 <translation id="8090732854597034573">Nếu bạn cần trợ giúp, hãy nhờ cha mẹ</translation>
-<translation id="8095180473590852507">Chrome vừa có thanh công cụ mới, được thiết kế để bạn dùng thuận tiện hơn. Bạn có thể chuyển về giao diện cũ bất cứ lúc nào trong phần <ph name="BEGIN_LINK" />cài đặt<ph name="END_LINK" />.</translation>
 <translation id="8101414242770404289">Không có thẻ nào trong <ph name="TIME_PERIOD" /></translation>
 <translation id="810433609302852">Bảng thông báo quảng cáo tính năng kèm mẹo và các bước sử dụng ở dưới cùng</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
@@ -2154,6 +2151,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="9205933215779845960">Không tìm được trang đó. Hãy kiểm tra lỗi chính tả hoặc thử tìm kiếm trên <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="9206873250291191720">A</translation>
 <translation id="9212845824145208577">Không thể di chuyển xuống thấp hơn. Hãy thử bắt đầu ở phía dưới nữa của trang.</translation>
+<translation id="9213433120051936369">Tùy chỉnh giao diện</translation>
 <translation id="9218430445555521422">Đặt làm mặc định</translation>
 <translation id="9219103736887031265">Hình ảnh</translation>
 <translation id="922152298093051471">Tuỳ chỉnh Chrome</translation>

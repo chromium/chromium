@@ -427,7 +427,6 @@
 <translation id="2650348088770008516">गोपनीयता मार्गदर्शक स्पष्टीकरण बंद आहे</translation>
 <translation id="2650751991977523696">फाइल पुन्हा डाउनलोड करायची?</translation>
 <translation id="265156376773362237">साधारण प्रीलोडिंग</translation>
-<translation id="2651797114528729973">नवीन टूलबारवर Gemini आणि तुमच्या आवश्यक गोष्टी</translation>
 <translation id="2656405586795711023">वेब अ‍ॅप्स</translation>
 <translation id="2664252182805397291">साइट पहा</translation>
 <translation id="2666092431469916601">शीर्ष</translation>
@@ -675,6 +674,7 @@
 <translation id="368978924030580338">{BOOKMARKS_COUNT,plural, =1{१ बुकमार्क फक्त या डिव्हाइसवर सेव्ह केला आहे. तो तुमच्या इतर डिव्हाइसवर वापरण्यासाठी, तुमच्या Google खाते मध्ये सेव्ह करा.}other{# बुकमार्क फक्त या डिव्हाइसवर सेव्ह केले आहेत. ते तुमच्या इतर डिव्हाइसवर वापरण्यासाठी, तुमच्या Google खाते मध्ये सेव्ह करा.}}</translation>
 <translation id="3692944402865947621"><ph name="FILE_NAME" /> download failed because storage location is not reachable.</translation>
 <translation id="3699022356773522638">फाइल डाउनलोड करायची आहे का?</translation>
+<translation id="3701167022068948696">आता निराकरण करा</translation>
 <translation id="3701515417135397388">डेटा भंगामध्ये पासवर्ड धोक्यात आला असल्यास, तुम्हाला चेतावणी दिली जावी</translation>
 <translation id="3703166520839776970">ही समस्या येत राहिल्यास, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> कडून अधिक माहिती मिळवण्यासाठी खाली "आणखी तपशील" निवडा.</translation>
 <translation id="3708100450779900829">तुमचे डिव्हाइस फोल्ड केलेले असताना, तुम्ही स्थान बदलण्यासाठी, पर्याय निवडू शकता किंवा अ‍ॅड्रेस बारला स्‍पर्श करून धरून ठेवू शकता</translation>
@@ -1329,7 +1329,6 @@
 <translation id="6254139308321626268">तुम्ही PDF फाइल पाहत आहात</translation>
 <translation id="6255809143828972562">तुम्ही Chrome ची टूल वापरून सुरक्षितरीत्या ब्राउझ करू शकता आणि तुमचा डेटा नियंत्रित करू शकता</translation>
 <translation id="6259107733340311168">एंटरप्राइझ सिग्नल डिस्क्लेमर तळाशी असलेली शीट पूर्ण उंचीवर उघडली आहे</translation>
-<translation id="6259539576554609209">तुमच्या आवश्यक गोष्टी, थेट टूलबारवर. तुम्ही <ph name="BEGIN_LINK" />सेटिंग्ज<ph name="END_LINK" /> मध्ये कधीही परत स्विच करू शकता</translation>
 <translation id="6260260490042862943">साइट नियंत्रणे</translation>
 <translation id="6264376385120300461">तरीही डाउनलोड करा</translation>
 <translation id="6264485186158353794">सुरक्षिततेकडे परत</translation>
@@ -1437,7 +1436,6 @@
 <translation id="6595046016124923392">तुम्हाला दिसत असलेली वर्णने सुधारण्यासाठी इमेज Google कडे पाठवल्या जातात.</translation>
 <translation id="6602173570135186741">ऑटोफिल आणि पासवर्ड</translation>
 <translation id="661266467055912436">तुमच्यासाठी आणि वेबवरील प्रत्येकजणासाठी सुरक्षिततेत सुधारणा करते.</translation>
-<translation id="6615455863669487791">मला दर्शवा</translation>
 <translation id="6621391692573306628">हा टॅब दुसर्‍या डिव्हाइसवर पाठवण्यासाठी, दोन्ही डिव्हाइसवर Chrome मध्ये साइन इन करा</translation>
 <translation id="6627583120233659107">फोल्डर संपादित करा</translation>
 <translation id="6633067410344541938">गुप्त मोड अनलॉक करा</translation>
@@ -1846,7 +1844,6 @@
 <translation id="8084864785646838999">तुमचा काही इतिहास कदाचित इथे दिसणार नाही. तुमचा सर्व Chrome इतिहास पाहण्यासाठी, संपूर्ण Chrome इतिहास उघडा. तसेच, तुमच्या Google खाते मध्ये <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> वर ब्राउझिंग इतिहासाचे इतर प्रकार असू शकतात.</translation>
 <translation id="8088176524274673045">जवळपासच्या लोकांसोबत शेअर करण्यासाठी, त्यांना हा QR कोड स्कॅन करू द्या</translation>
 <translation id="8090732854597034573">तुम्हाला मदत हवी असल्यास, तुमच्या पालकांना विचारा</translation>
-<translation id="8095180473590852507">Chrome मध्ये नवीन टूलबार आहे, जो सोयीसाठी तयार केला आहे. तुम्ही <ph name="BEGIN_LINK" />सेटिंग्ज<ph name="END_LINK" /> मध्ये कधीही परत स्विच करू शकता.</translation>
 <translation id="8101414242770404289"><ph name="TIME_PERIOD" /> कालावधीमधील कोणतेही टॅब बंद केले जाणार नाहीत</translation>
 <translation id="810433609302852">तळाशी असलेल्या शीटमधील टिपा असलेल्या नोटिफिकेशनमध्ये प्रोमो आणि वापराच्या पायऱ्या दिसतात</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
@@ -2154,6 +2151,7 @@
 <translation id="9205933215779845960">ते पेज सापडले नाही. तुमचे शब्दलेखन तपासा किंवा <ph name="SEARCH_ENGINE" /> वर शोधून पहा.</translation>
 <translation id="9206873250291191720">A</translation>
 <translation id="9212845824145208577">तळाशी जाऊ शकत नाही. पेजच्या आणखी तळाशी जाऊन सुरुवात करून पहा.</translation>
+<translation id="9213433120051936369">स्वरूप कस्टमाइझ करा</translation>
 <translation id="9218430445555521422">डीफॉल्ट म्हणून सेट करा</translation>
 <translation id="9219103736887031265">इमेज</translation>
 <translation id="922152298093051471">Chrome कस्टमाइझ करा</translation>

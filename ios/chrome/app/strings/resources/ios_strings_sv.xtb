@@ -2035,6 +2035,7 @@ Byt till <ph name="OTHER_EMAIL" /> om du vill fortsätta på datorn. Du får lö
 <translation id="728025568708172005">Visa mig</translation>
 <translation id="7280980607183752256">Det går inte att importera den här filen</translation>
 <translation id="7282197670900591579">Citrongult tema</translation>
+<translation id="7283937415134849498">För att ge anpassad hjälp delar Gemini viss data (som delar av dina chattar, din plats och annan relevant information) med andra tjänster från Google, som Maps och Flights. Dessa tjänster kan använda informationen för att bli bättre, även om du raderar din Gemini-historik senare. Läs mer i <ph name="BEGIN_LINK" />integritetscentret för Gemini-apparna<ph name="END_LINK" />.</translation>
 <translation id="7293429513719260019">Välj språk</translation>
 <translation id="72961285530871072">Detta raderar dina framsteg i Level Up permanent och data om funktionsanvändning för Level Up skickas inte längre till Google för din profil.
 
@@ -2607,6 +2608,7 @@ Du kan starta om när som helst.</translation>
 <translation id="8976382372951310360">Hjälp</translation>
 <translation id="8976414606286374109">Korten sparas i Google-kontot.</translation>
 <translation id="8981454092730389528">Googles aktivitetsinställningar</translation>
+<translation id="8987736167266086032">Fortsätt där du slutade</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, fäst webbplats</translation>
 <translation id="8989779557457435460">Dela aktuell flik som standard</translation>
 <translation id="8990960056509724223">Det gick inte att spara filen på grund av organisationens policyer</translation>

@@ -2035,6 +2035,7 @@ Kompyuterda davom etish uchun <ph name="OTHER_EMAIL" /> hisobiga almashtiring. B
 <translation id="728025568708172005">Hammasini koʻrish</translation>
 <translation id="7280980607183752256">Bu faylni import qilish imkonsiz</translation>
 <translation id="7282197670900591579">Toʻq limon mavzu</translation>
+<translation id="7283937415134849498">Moslangan yordam taqdim etish uchun Gemini ayrim maʼlumotlaringizni (masalan, chatlarning bir qismi, joylashuv va boshqa aloqador axborot) Xaritalar va Parvozlar kabi boshqa Google xizmatlari bilan ulashadi. Bu xizmatlar, hatto keyinchalik Gemini tarixini oʻchirib tashlasangiz ham, yaxshilash uchun maʼlumotlardan foydalanishi mumkin. Batafsil: <ph name="BEGIN_LINK" />Gemini ilovalaridagi Maxfiylik majmuasi<ph name="END_LINK" />.</translation>
 <translation id="7293429513719260019">Til tanlash</translation>
 <translation id="72961285530871072">Bunda Level Up rivojingiz butunlay oʻchirib tashlanadi va Level Up funksiyasidan foydalanish maʼlumotlari profilingiz uchun Googlega yuborilmaydi.
 
@@ -2607,6 +2608,7 @@ Istalgan vaqtda qayta ishga tushirishingiz mumkin.</translation>
 <translation id="8976382372951310360">Yordam</translation>
 <translation id="8976414606286374109">Kartalar Google hisobingizda saqlanadi.</translation>
 <translation id="8981454092730389528">Google hisobidagi harakatlarni kuzatish</translation>
+<translation id="8987736167266086032">Ishni kelgan joyidan davom ettiring</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, mahkamlangan sayt</translation>
 <translation id="8989779557457435460">Birlamchi holatda joriy varaqni ulashish</translation>
 <translation id="8990960056509724223">Tashkilotingiz siyosatlari tufayli fayl saqlanmadi</translation>
@@ -2648,6 +2650,7 @@ Istalgan vaqtda qayta ishga tushirishingiz mumkin.</translation>
 <translation id="91023216973987714">Toʻlov usullari</translation>
 <translation id="9106655997975673326">“<ph name="SOURCE_DEVICE" />” qurilmasidan</translation>
 <translation id="9107664647686727385">Oshkor etilgan parollar uchun tekshirish</translation>
+<translation id="9115035712231910133">Biriktirilgan rasm: {title}</translation>
 <translation id="9119764377203471454">Biriktirma kiritish imkonsiz</translation>
 <translation id="9124387962554796433">Qidiruv va boshqa xizmatlarni sizga moslashtirish uchun Google tarix maʼlumotlaringizdan foydalanishi mumkin.</translation>
 <translation id="9124978074365039456">Kamera yoki galereya rasmi bilan mahsulot toping, matn tarjima qiling va atrofdagi obyektlar axborotini oling</translation>

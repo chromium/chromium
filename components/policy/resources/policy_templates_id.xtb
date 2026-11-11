@@ -3873,6 +3873,13 @@ Jika <ph name="NTPCARDSVISIBLE" /> disetel ke nonaktif, Kartu Outlook tidak akan
 <translation id="3284094172359247914">Penggunaan kontrol WebUSB API</translation>
 <translation id="3285231260918855067">Opasitas garis tepi teks watermark, dari 0 (transparan) hingga 100 (buram).</translation>
 <translation id="3286159327013237833">Aktifkan klik otomatis di layar login</translation>
+<translation id="3286515980166695377">Kebijakan ini sudah tidak digunakan lagi sejak M153 dan tidak lagi berlaku mulai M159. Tanda tangan ad-hoc untuk aplikasi native yang dibuat saat menginstal Progressive Web Application (PWA) kini diaktifkan secara permanen di <ph name="MAC_OS_NAME" />. Hal ini memastikan bahwa setiap aplikasi yang diinstal memiliki identitas unik untuk komponen sistem <ph name="MAC_OS_NAME" />.
+
+Jika kebijakan ini disetel ke Aktif atau tidak disetel, penggunaan tanda tangan ad-hoc akan diaktifkan untuk aplikasi native yang dibuat saat menginstal Progressive Web Application (PWA). Hal ini memastikan bahwa setiap aplikasi yang diinstal memiliki identitas unik untuk komponen sistem <ph name="MAC_OS_NAME" />.
+
+Jika kebijakan ini disetel ke Nonaktif, setiap aplikasi native yang dibuat saat menginstal Progressive Web Application akan memiliki identitas yang sama. Hal ini dapat mengganggu fungsi <ph name="MAC_OS_NAME" />.
+
+Nonaktifkan kebijakan ini hanya jika Anda menggunakan solusi keamanan endpoint yang memblokir aplikasi dengan tanda tangan ad-hoc.</translation>
 <translation id="3288595667065905535">Saluran rilis</translation>
 <translation id="3294430356898755483">Jike kebijakan disetel, administrator dapat menyiapkan daftar printer bagi pengguna mereka. Pemilihan printer dilakukan pada saat pengguna mencoba mencetak untuk pertama kalinya.
 
@@ -5766,6 +5773,13 @@ Jika menaikkan nilai di atas nilai default (128), Anda harus menanggung sendiri 
 
 Perlu diperhatikan bahwa batas yang diterapkan dipengaruhi oleh <ph name="ALLOW_SOCKET_POOL_SIZE_RANDOMIZATION_FOR_PROXIES_POLICY_NAME" />.</translation>
 <translation id="4528981768990874684">Nonaktifkan fitur <ph name="IP_PROTECTION_NAME" />.</translation>
+<translation id="4529292353296224032">Jika kebijakan ini disetel ke Aktif, screenshot yang diambil dengan pintasan keyboard
+atau API ekstensi tidak akan diizinkan. Jika kebijakan ini disetel ke Nonaktif atau tidak disetel, screenshot akan diizinkan.
+
+Pada <ph name="PRODUCT_NAME" /> versi 155 hingga 158, mengaktifkan kebijakan ini juga dapat mencegah ekstensi menghubungkan debugger melalui 'chrome.debugger.attach()', misalnya saat kebijakan <ph name="CHROME_VARIATIONS_POLICY_NAME" /> menonaktifkan semua variasi.
+
+Perlu diperhatikan bahwa pada <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" />, dan <ph name="LINUX_OS_NAME" />,
+kebijakan ini tidak mencegah pengambilan screenshot yang dilakukan melalui sistem operasi atau aplikasi pihak ketiga.</translation>
 <translation id="453031441196755904">Kebijakan ini tidak digunakan lagi.</translation>
 <translation id="4531088355818260318">Kebijakan ini memungkinkan penentuan daftar aturan untuk memasukkan header HTTP kustom ke dalam permintaan web yang cocok dengan pola URL tertentu. Header yang ditetapkan oleh kebijakan ini lebih diutamakan daripada header yang awalnya ada dalam permintaan, serta modifikasi yang dicoba dilakukan oleh pengguna atau ekstensi.
 
@@ -5937,6 +5951,21 @@ Kebijakan ini tidak akan berpengaruh jika <ph name="PROVISION_MANAGED_CLIENT_CER
       Jika disetel ke salah (false), rekaman paket jaringan tidak akan tersedia di perangkat.</translation>
 <translation id="4599810650416623373">Memblokir pengoptimalan JavaScript di situs ini</translation>
 <translation id="4600786265870346112">Aktifkan kursor besar</translation>
+<translation id="460264931744856609">Menyetel kebijakan akan mengontrol setelan pengelolaan ekstensi untuk <ph name="PRODUCT_NAME" />, termasuk setelan apa pun yang dikontrol oleh kebijakan terkait ekstensi yang sudah ada.
+
+Kebijakan ini hanya memetakan ID ekstensi atau URL update ke setelan khususnya. Konfigurasi default dapat disetel bagi ID khusus <ph name="DEFAULT_SCOPE" />, yang berlaku untuk semua ekstensi tanpa konfigurasi khusus dalam kebijakan ini.
+
+Kebijakan ini dapat mengganti konfigurasi per ekstensi dari kebijakan lama.
+
+Perhatikan bahwa setelan ekstensi per ID dari <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />, <ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />, <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" />, atau <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> hanya akan mewarisi 'installation_mode' dan 'update_url' dari setelan default <ph name="DEFAULT_SCOPE" />. Properti ini tidak akan mewarisi properti lainnya. Dengan URL update, konfigurasi akan berlaku untuk ekstensi dengan URL update tepat yang disebutkan dalam manifes ekstensi (http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy). Jika tanda 'override_update_url' disetel ke benar (true), ekstensi akan diinstal dan diupdate menggunakan URL "update" yang ditentukan dalam kebijakan <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> atau kolom 'update_url' dalam kebijakan ini. Tanda 'override_update_url' akan diabaikan jika 'update_url' adalah URL Chrome Web Store.
+
+Pada <ph name="PRODUCT_NAME" /> versi 155 hingga 158, menerapkan 'runtime_blocked_hosts' ke ekstensi dengan izin 'debugger' dapat sepenuhnya menonaktifkan 'chrome.debugger.attach()' di semua target, misalnya saat kebijakan <ph name="CHROME_VARIATIONS_POLICY_NAME" /> menonaktifkan semua variasi.
+
+Di instance <ph name="MS_WIN_NAME" />, aplikasi dan ekstensi yang bukan dari Chrome Web Store hanya dapat diinstal otomatis jika instance dihubungkan ke domain <ph name="MS_AD_NAME" />, dihubungkan ke <ph name="MS_AAD_NAME" />, atau didaftarkan di <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Di instance <ph name="MAC_OS_NAME" />, aplikasi dan ekstensi yang bukan dari Chrome Web Store hanya dapat diinstal otomatis jika instance dikelola melalui MDM, dihubungkan ke domain melalui MCX, atau didaftarkan di <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Catatan: Kebijakan ini hanya berlaku untuk platform yang mendukung ekstensi.</translation>
 <translation id="4602988345256038309">Izinkan koneksi dukungan jarak jauh ke perangkat ini</translation>
 <translation id="4605677392792989397">Menyetel kebijakan akan menetapkan daftar URL Login perusahaan (hanya protokol HTTP dan HTTPS). Layanan perlindungan sandi akan merekam hash sandi yang dilengkapi salt di URL ini dan menggunakannya untuk deteksi penggunaan ulang sandi. Agar <ph name="PRODUCT_NAME" /> dapat merekam hash sandi yang dilengkapi salt dengan benar, pastikan halaman login mengikuti pedoman ( https://www.chromium.org/developers/design-documents/create-amazing-password-forms ).
 

@@ -2033,6 +2033,7 @@
 <translation id="728025568708172005">بدء جولة إرشادية</translation>
 <translation id="7280980607183752256">يتعذّر استيراد هذا الملف</translation>
 <translation id="7282197670900591579">مظهر باللون الليموني</translation>
+<translation id="7283937415134849498">‏لتقديم مساعدة مخصّصة، يشارك Gemini بعض بياناتك (مثل أجزاء من محادثاتك وموقعك الجغرافي ومعلومات أخرى ذات صلة) مع خدمات Google الأخرى، مثل "خرائط Google" و"رحلات جوية من Google". وقد تستخدم الخدمات تلك المعلومات لتحسين أدائها، حتى إذا حذفْت سجلّك في Gemini لاحقًا. يمكنك الاطّلاع على مزيد من المعلومات في <ph name="BEGIN_LINK" />مركز الخصوصية على "تطبيقات Gemini"<ph name="END_LINK" />.</translation>
 <translation id="7293429513719260019">اختيار لغة</translation>
 <translation id="72961285530871072">‏سيؤدي هذا الإجراء إلى حذف مستوى تقدّمك في برنامج Level Up نهائيًا، ولن يتم إرسال بيانات استخدام ميزات البرنامج إلى Google لملفك الشخصي بعد الآن.
 
@@ -2606,6 +2607,7 @@
 <translation id="8976382372951310360">مساعدة</translation>
 <translation id="8976414606286374109">‏يتم حفظ بطاقات الائتمان في حسابك على Google.</translation>
 <translation id="8981454092730389528">‏عناصر التحكم في النشاط على Google</translation>
+<translation id="8987736167266086032">الاستئناف من حيث توقفت</translation>
 <translation id="8988107725234939347">‫"<ph name="WEBSITE_TITLE" />"، موقع إلكتروني مثبَّت</translation>
 <translation id="8989779557457435460">مشاركة علامة التبويب الحالية تلقائيًا</translation>
 <translation id="8990960056509724223">يتعذَّر حفظ الملف بسبب سياسات مؤسستك</translation>
@@ -2647,6 +2649,7 @@
 <translation id="91023216973987714">طُرق الدفع</translation>
 <translation id="9106655997975673326">من "<ph name="SOURCE_DEVICE" />"</translation>
 <translation id="9107664647686727385">التحقُّق من كلمات المرور المحتمَل تعرّضها للاختراق</translation>
+<translation id="9115035712231910133">‏الصورة المرفقة "{title}"</translation>
 <translation id="9119764377203471454">تتعذَّر إضافة المرفقات</translation>
 <translation id="9124387962554796433">‏قد تستخدم Google سجلّك لتخصيص "بحث Google" وخدمات Google الأخرى.</translation>
 <translation id="9124978074365039456">يمكنك التسوُّق وترجمة النصوص والتعرُّف على ما تراه باستخدام الكاميرا ومعرض الصور</translation>

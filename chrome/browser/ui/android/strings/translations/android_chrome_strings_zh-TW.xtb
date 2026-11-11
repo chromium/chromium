@@ -427,7 +427,6 @@
 <translation id="2650348088770008516">已關閉隱私權指南說明</translation>
 <translation id="2650751991977523696">要再次下載檔案嗎？</translation>
 <translation id="265156376773362237">標準預先載入模式</translation>
-<translation id="2651797114528729973">Gemini 和常用功能現已整合至新工具列</translation>
 <translation id="2656405586795711023">網頁應用程式</translation>
 <translation id="2664252182805397291">查看網站</translation>
 <translation id="2666092431469916601">置頂</translation>
@@ -675,6 +674,7 @@
 <translation id="368978924030580338">{BOOKMARKS_COUNT,plural, =1{這 1 個書籤只會儲存在這部裝置上。如要在其他裝置上使用，請儲存到 Google 帳戶。}other{這 # 個書籤只會儲存在這部裝置上。如要在其他裝置上使用，請儲存到 Google 帳戶。}}</translation>
 <translation id="3692944402865947621">無法連線至儲存位置，因此無法下載 <ph name="FILE_NAME" />。</translation>
 <translation id="3699022356773522638">要下載檔案嗎？</translation>
+<translation id="3701167022068948696">立即修正</translation>
 <translation id="3701515417135397388">在密碼因資料侵害事件而外洩時發出警告</translation>
 <translation id="3703166520839776970">如果這個問題持續發生，請選擇下方的「更多詳細資料」，即可洽詢「<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />」瞭解詳情。</translation>
 <translation id="3708100450779900829">你可以使用下方選項變更裝置摺起時的網址列位置。此外，按住網址列也可以變更位置</translation>
@@ -1329,7 +1329,6 @@
 <translation id="6254139308321626268">目前查看的是 PDF 檔案</translation>
 <translation id="6255809143828972562">Chrome 提供各種實用工具，讓你放心瀏覽網路，掌控一切設定</translation>
 <translation id="6259107733340311168">企業信號免責事項底部功能表已展開至完整高度</translation>
-<translation id="6259539576554609209">常用功能就在工具列上。你隨時可以前往<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />切換回原來的樣式</translation>
 <translation id="6260260490042862943">網站控制選項</translation>
 <translation id="6264376385120300461">仍要下載</translation>
 <translation id="6264485186158353794">返回安全網頁</translation>
@@ -1437,7 +1436,6 @@
 <translation id="6595046016124923392">系統會將圖片傳送到 Google，為你提供更完善的圖片說明。</translation>
 <translation id="6602173570135186741">自動填入和密碼</translation>
 <translation id="661266467055912436">可為你和所有網路使用者提供更完善的安全防護。</translation>
-<translation id="6615455863669487791">顯示</translation>
 <translation id="6621391692573306628">如要將這個分頁傳送到其他裝置，請在這兩部裝置上登入 Chrome</translation>
 <translation id="6627583120233659107">編輯資料夾</translation>
 <translation id="6633067410344541938">解鎖無痕模式</translation>
@@ -1802,6 +1800,7 @@
 <translation id="7956713633345437162">行動版書籤</translation>
 <translation id="7957413488482743710">虛擬卡片可隱藏真正的卡片，協助防範潛在詐欺活動。<ph name="BEGIN_LINK1" />進一步瞭解虛擬卡片<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">這部裝置上的分頁</translation>
+<translation id="7959802829514004148">無法下載 PDF</translation>
 <translation id="7961926449547174351">你已停用儲存空間存取權，請前往「設定」頁面啟用這項權限。</translation>
 <translation id="7965838025086216108">你可以在任何裝置上使用儲存的密碼，系統會將密碼儲存至 <ph name="ACCOUNT" /> 的 Google 密碼管理工具。</translation>
 <translation id="7968014550143838305">已加入閱讀清單</translation>
@@ -1845,7 +1844,6 @@
 <translation id="8084864785646838999">這裡可能沒有顯示所有歷史記錄，請開啟完整的 Chrome 歷史記錄，才能查看所有記錄。此外，Google 帳戶可能會儲存其他形式的瀏覽記錄，請參閱 <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />。</translation>
 <translation id="8088176524274673045">如要與附近的使用者分享，請讓對方掃描這個 QR 圖碼</translation>
 <translation id="8090732854597034573">如需協助，請找家長幫忙</translation>
-<translation id="8095180473590852507">Chrome 推出全新工具列，專為提升便利性而設計。你隨時可以前往<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />切換回原來的樣式。</translation>
 <translation id="8101414242770404289"><ph name="TIME_PERIOD" />期間沒有要關閉的分頁</translation>
 <translation id="810433609302852">提示通知功能宣傳內容和使用步驟的底部功能表</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
@@ -1890,6 +1888,7 @@
 <translation id="8244387390464017490">自訂新分頁</translation>
 <translation id="8244444485683708655">用相機拍照</translation>
 <translation id="8250920743982581267">文件</translation>
+<translation id="8254205582828322729">輕觸「儲存」，下次登入時就能輕鬆使用這組密碼</translation>
 <translation id="8257429805444572809">已取消訂閱「<ph name="DOMAIN" />」。</translation>
 <translation id="8258999165172757081">已新增</translation>
 <translation id="8259179246279078674">由於預先載入的網頁已經過加密，Google 不會得知預先載入網頁內容的相關資訊。Google 伺服器會知道哪些網站已透過私密方式預先載入。這項資訊僅用於預先載入網頁，不會與你 Google 帳戶的其他資訊連結。</translation>
@@ -1979,6 +1978,7 @@
 <translation id="8560602726703398413">在書籤中尋找閱讀清單</translation>
 <translation id="85618473456579127">輕觸右上方的「個人資料」</translation>
 <translation id="8565021320663436446">要移除<ph name="MEMBER_FULL_NAME" />嗎？</translation>
+<translation id="8567433453247478023">輕觸「隱私權和安全性」</translation>
 <translation id="8570677896027847510">無法安全下載檔案</translation>
 <translation id="8571213806525832805">過去 4 週</translation>
 <translation id="8580435650274205305">請輸入到期日</translation>
@@ -1999,6 +1999,7 @@
 <translation id="8635399646025169806">要保留分頁群組嗎？</translation>
 <translation id="8636825310635137004">如要存取您在其他裝置上開啟的分頁，請開啟同步處理功能。</translation>
 <translation id="8639963783467694461">自動填入設定</translation>
+<translation id="8642256427178803328">開啟「退出 Chrome 時鎖定無痕分頁」</translation>
 <translation id="8644482734962137770">Gemini 需要取得 Chrome 的使用權限</translation>
 <translation id="8662474268934425487">登入 <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8664979001105139458">檔案名稱已存在</translation>
@@ -2150,6 +2151,7 @@
 <translation id="9205933215779845960">找不到該頁面。請檢查錯別字或嘗試使用 <ph name="SEARCH_ENGINE" /> 搜尋。</translation>
 <translation id="9206873250291191720">A</translation>
 <translation id="9212845824145208577">無法再向下捲動。請嘗試從下一頁開始。</translation>
+<translation id="9213433120051936369">自訂外觀</translation>
 <translation id="9218430445555521422">設為預設</translation>
 <translation id="9219103736887031265">圖片</translation>
 <translation id="922152298093051471">自訂 Chrome</translation>

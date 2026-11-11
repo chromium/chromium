@@ -427,7 +427,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="2650348088770008516">개인 정보 보호 가이드 설명이 닫힘</translation>
 <translation id="2650751991977523696">파일을 다시 다운로드하시겠습니까?</translation>
 <translation id="265156376773362237">표준 미리 로드</translation>
-<translation id="2651797114528729973">새로운 툴바에서 Gemini와 필수 항목을 확인하세요</translation>
 <translation id="2656405586795711023">웹 앱</translation>
 <translation id="2664252182805397291">사이트 보기</translation>
 <translation id="2666092431469916601">상단</translation>
@@ -675,6 +674,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="368978924030580338">{BOOKMARKS_COUNT,plural, =1{북마크 1개가 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 Google 계정에 저장하세요.}other{북마크 #개가 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 Google 계정에 저장하세요.}}</translation>
 <translation id="3692944402865947621">저장 위치에 연결할 수 없어 <ph name="FILE_NAME" />을(를) 다운로드할 수 없습니다.</translation>
 <translation id="3699022356773522638">파일을 다운로드하시겠습니까?</translation>
+<translation id="3701167022068948696">지금 해결하기</translation>
 <translation id="3701515417135397388">정보 유출로 인해 비밀번호가 유출된 경우 경고</translation>
 <translation id="3703166520839776970">이 문제가 계속 발생하는 경우 아래의 '세부정보 더보기'를 선택하여 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />에서 자세히 알아보세요.</translation>
 <translation id="3708100450779900829">기기를 접은 상태에서 옵션을 선택하거나 주소 표시줄을 길게 터치하여 위치를 변경할 수 있습니다.</translation>
@@ -1329,7 +1329,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6254139308321626268">PDF 파일을 보는 중</translation>
 <translation id="6255809143828972562">Chrome의 도구로 안전하게 탐색하고 제어할 수 있습니다</translation>
 <translation id="6259107733340311168">엔터프라이즈 신호 면책 조항 하단 시트가 전체 높이로 열림</translation>
-<translation id="6259539576554609209">툴바에서 바로 필수 항목을 확인하세요. 언제든지 <ph name="BEGIN_LINK" />설정<ph name="END_LINK" />에서 다시 전환할 수 있습니다.</translation>
 <translation id="6260260490042862943">사이트 제어</translation>
 <translation id="6264376385120300461">무시하고 다운로드</translation>
 <translation id="6264485186158353794">안전한 페이지로 돌아가기</translation>
@@ -1437,7 +1436,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6595046016124923392">설명을 개선하기 위해 이미지가 Google로 전송되었습니다.</translation>
 <translation id="6602173570135186741">자동 완성 및 비밀번호</translation>
 <translation id="661266467055912436">모든 웹 사용자를 위해 보안을 향상합니다.</translation>
-<translation id="6615455863669487791">보기</translation>
 <translation id="6621391692573306628">이 탭을 다른 기기로 보내려면 두 기기 모두에서 Chrome에 로그인하세요.</translation>
 <translation id="6627583120233659107">폴더 수정</translation>
 <translation id="6633067410344541938">시크릿 모드 잠금 해제</translation>
@@ -1846,7 +1844,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="8084864785646838999">일부 방문 기록이 여기에 표시되지 않을 수 있습니다. 모든 Chrome 방문 기록을 보려면 전체 Chrome 방문 기록을 여세요. 또한 Google 계정의 내 활동(<ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />)에 방문 기록이 다른 형식으로 남아 있을 수도 있습니다.</translation>
 <translation id="8088176524274673045">근처에 있는 사람과 공유하려면 상대방이 QR 코드를 스캔하도록 하세요.</translation>
 <translation id="8090732854597034573">도움이 필요하면 부모님께 요청하세요</translation>
-<translation id="8095180473590852507">Chrome에 편의성을 위해 만들어진 새로운 툴바가 추가되었습니다. 언제든지 <ph name="BEGIN_LINK" />설정<ph name="END_LINK" />에서 다시 전환할 수 있습니다.</translation>
 <translation id="8101414242770404289"><ph name="TIME_PERIOD" /> 동안의 탭 없음</translation>
 <translation id="810433609302852">팁 알림 기능 프로모션 및 사용 단계 하단 시트</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
@@ -2154,6 +2151,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="9205933215779845960">페이지를 찾을 수 없습니다. 철자를 확인하거나 <ph name="SEARCH_ENGINE" />에서 검색해 보세요.</translation>
 <translation id="9206873250291191720">A</translation>
 <translation id="9212845824145208577">더 이상 아래로 내려갈 수 없습니다. 페이지 더 아래쪽에서 시작해 보세요.</translation>
+<translation id="9213433120051936369">디자인 사용자설정</translation>
 <translation id="9218430445555521422">기본값으로 설정</translation>
 <translation id="9219103736887031265">이미지</translation>
 <translation id="922152298093051471">Chrome 맞춤설정</translation>

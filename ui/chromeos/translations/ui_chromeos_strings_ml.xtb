@@ -558,7 +558,6 @@
 <translation id="5305688511332277257">ഒന്നും ഇന്‍സ്റ്റാള്‍ ചെയ്തിട്ടില്ല</translation>
 <translation id="5317780077021120954">സംരക്ഷിക്കുക</translation>
 <translation id="5318819489018851358">Linux-മായി പങ്കിടുക</translation>
-<translation id="5330145655348521461">ഈ ഫയലുകൾ മറ്റൊരു ഡെസ്‌ക്‌ടോപ്പിലാണ് തുറന്നിരിക്കുന്നത്. അത് കാണാൻ <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) എന്നതിലേക്ക് നീക്കുക.</translation>
 <translation id="5330512191124428349">വിവരം സ്വീകരിക്കുക</translation>
 <translation id="535792325654997756">വ്യക്തിയും പൂച്ചകളും</translation>
 <translation id="5358764674931277">ഫ്രെയിം എണ്ണം</translation>
@@ -699,7 +698,6 @@
 <translation id="636254897931573416">ഡൊമെയ്ന്‍ സഫിക്സ് പൊരുത്തത്തിന്റെ മൂല്യം അസാധുവാണ്</translation>
 <translation id="6364301859968397756">സ്ഥാപനത്തിന്റെ സ്റ്റോറേജ് നിറഞ്ഞു</translation>
 <translation id="6367976544441405720">വാൻ</translation>
-<translation id="637062427944097960">ഈ ഫയൽ മറ്റൊരു ഡെസ്‌ക്‌ടോപ്പിലാണ് തുറന്നിരിക്കുന്നത്. അത് കാണാൻ <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) എന്നതിലേക്ക് നീക്കുക.</translation>
 <translation id="6394388407447716302">വായന മാത്രം</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> ഇനങ്ങൾ</translation>
 <translation id="6407769893376380348"><ph name="FILE_NAME" /> എൻക്രിപ്റ്റ് ചെയ്തിരിക്കുന്നതിനാൽ അത് നീക്കാനായില്ല.</translation>

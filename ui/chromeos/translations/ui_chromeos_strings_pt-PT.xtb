@@ -558,7 +558,6 @@
 <translation id="5305688511332277257">Nenhum instalado</translation>
 <translation id="5317780077021120954">Guardar</translation>
 <translation id="5318819489018851358">Partilhar com Linux</translation>
-<translation id="5330145655348521461">Estes ficheiros foram abertos num ambiente de trabalho diferente. Mova para <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) para ver.</translation>
 <translation id="5330512191124428349">Obter informações</translation>
 <translation id="535792325654997756">Pessoa com gatos</translation>
 <translation id="5358764674931277">Velocidade de fotogramas</translation>
@@ -699,7 +698,6 @@
 <translation id="636254897931573416">Valor da correspondência do sufixo do domínio inválido</translation>
 <translation id="6364301859968397756">Armazenamento da organização cheio</translation>
 <translation id="6367976544441405720">Carrinha</translation>
-<translation id="637062427944097960">Este ficheiro foi aberto num ambiente de trabalho diferente. Mova para <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) para ver.</translation>
 <translation id="6394388407447716302">Só de leitura</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> itens</translation>
 <translation id="6407769893376380348">Não foi possível mover o ficheiro <ph name="FILE_NAME" /> porque está encriptado.</translation>

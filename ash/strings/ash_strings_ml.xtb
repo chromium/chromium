@@ -20,6 +20,7 @@
 <translation id="1056898198331236512">മുന്നറിയിപ്പ്</translation>
 <translation id="1058009965971887428">റിപ്പോർട്ട് ചെയ്തതിന്റെ ഫീഡ്ബാക്ക്</translation>
 <translation id="1059120031266247284">നിങ്ങളുമായി പങ്കിട്ടു</translation>
+<translation id="1060570945511946595">ടിക്കറ്റുകൾ മാനേജ് ചെയ്യുക</translation>
 <translation id="1060847216467038176"><ph name="ITEM_LABEL" /> എന്നതും നീക്കം ചെയ്യുക ബട്ടണും</translation>
 <translation id="1062407476771304334">മാറ്റിസ്ഥാപിക്കുക</translation>
 <translation id="1065931689816135472"><ph name="BEGIN_PARAGRAPH1" />Google ഡ്രൈവിലേക്ക് ബാക്കപ്പെടുക്കുക. ഏത് സമയത്തും ഡാറ്റ എളുപ്പത്തിൽ പുനഃസ്ഥാപിക്കുകയോ ഉപകരണം മാറുകയോ ചെയ്യുക. നിങ്ങളുടെ ബാക്കപ്പിൽ ആപ്പ് ഡാറ്റയും ഉൾപ്പെടുന്നു.<ph name="END_PARAGRAPH1" />
@@ -280,6 +281,7 @@
 <translation id="1757132445735080748">Linux സജ്ജീകരിക്കുന്നത് പൂർത്തിയാക്കാൻ, ChromeOS Flex അപ്ഡേറ്റ് ചെയ്ത് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="1757857692711134412">സൂര്യാസ്തമയം വരെ ഓഫാണ്</translation>
 <translation id="1763084151787818322">മറ്റ് പ്രവർത്തനങ്ങൾ</translation>
+<translation id="1767043563165955993">Android ആപ്പുകളിൽ ഉപയോഗിക്കുക</translation>
 <translation id="1768138163688567246">'എന്റെ സ്ക്രീൻ തിരയുക' അടയ്ക്കുക</translation>
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + പീരിയഡ് കീബോർഡ് കുറുക്കുവഴി മാറിയിട്ടുണ്ട്. Insert കീ ഉപയോഗിക്കാൻ, <ph name="LAUNCHER_KEY_NAME" /> കീ+ Shift + Backspace അമർത്തുക.</translation>
 <translation id="1770726142253415363"><ph name="ROW_NUMBER" />-ാം വരിയിലെ <ph name="COLUMN_NUMBER" />-ാം കോളത്തിലേക്ക് നീക്കി.</translation>
@@ -304,6 +306,7 @@
 <translation id="1838895407229022812">നൈറ്റ് ലൈറ്റ് ഓഫാണ്.</translation>
 <translation id="1840920496749066704">°C</translation>
 <translation id="1841616161104323629">ഉപകരണ റെക്കോർഡ് കണ്ടെത്താനായില്ല.</translation>
+<translation id="184273675144259287">നിങ്ങളുടെ Linux ആപ്പുകളും ഫയലുകളും മുമ്പത്തെ ബാക്കപ്പുമായി മാറ്റിസ്ഥാപിക്കുക</translation>
 <translation id="1854180393107901205">കാസ്റ്റ് ചെയ്യുന്നത് നിർത്തുക</translation>
 <translation id="1862077610023398675">നിയന്ത്രണങ്ങൾ മറയ്ക്കുക</translation>
 <translation id="1862380676329487333">അപ്ഡേറ്റ് ചെയ്ത് സൈൻ ഔട്ട് ചെയ്യുക</translation>
@@ -333,6 +336,7 @@
 <translation id="1946615340060705561">റിലീസ് ചെയ്യാൻ "c" അമർത്തുക</translation>
 <translation id="1948405482892809935">അടുത്ത ഉപയോക്താവിലേക്ക് മാറുക</translation>
 <translation id="1954252331066828794">സ്ക്രീൻ റെക്കോർഡിംഗ് പൂർത്തിയായി</translation>
+<translation id="1954813140452229842">പങ്കിടൽ മൗണ്ട് ചെയ്യുന്നതിൽ പിശക്. ക്രെഡൻഷ്യലുകൾ പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="1956087014741188812">മൗസ് കീകൾ താൽക്കാലികമായി നിർത്തുക</translation>
 <translation id="1957958912175573503">നിങ്ങളുടെ ഭാഷ സജ്ജീകരിക്കുക</translation>
 <translation id="1961239773406905488">ക്യാമറാ പ്രിവ്യു മറച്ചു</translation>
@@ -352,6 +356,11 @@
 <translation id="1998100899771863792">നിലവിലെ ഡെസ്‌ക്</translation>
 <translation id="2001444736072756133">നിങ്ങളുടെ <ph name="CATEGORY" />, ഫയലുകൾ, ആപ്പുകൾ എന്നിവയും മറ്റും തിരയൂ.</translation>
 <translation id="2011174342667534258">SDK പതിപ്പ്:</translation>
+<translation id="2017770349934140286">Google Play-യുംനിങ്ങൾ Google Play-യിൽ നിന്ന് ഡൗൺലോഡ് ചെയ്‌ത ആപ്പുകളും ഈ Chromebook-ൽ നിന്ന് ഇല്ലാതാക്കപ്പെടും.
+    <ph name="LINE_BREAKS1" />
+    Google Play-യിലൂടെ നിങ്ങൾ വാങ്ങിയ സിനിമകൾ, ടിവി ഷോകൾ, സംഗീതം, പുസ്‌തകങ്ങൾ എന്നിവയും മറ്റ് ആപ്പുകളിൽ നിന്നുള്ള വാങ്ങലുകളും ഇല്ലാതാക്കിയേക്കാം.
+    <ph name="LINE_BREAKS2" />
+    മറ്റ് ഉപകരണങ്ങളിലെ ആപ്പുകളെയോ ഉള്ളടക്കത്തെയോ ഇത് ബാധിക്കില്ല.</translation>
 <translation id="2017998995161831444">Explore ആപ്പിൽ "സഹായം" തുറക്കുക</translation>
 <translation id="2021864487439853900">അൺലോക്കുചെയ്യാൻ ക്ലിക്കുചെയ്യൂ</translation>
 <translation id="2023167225947895179">പിൻ നമ്പർ ഊഹിക്കാൻ എളുപ്പമുള്ളതാകാം</translation>
@@ -381,6 +390,7 @@
 <translation id="212862741129535676">ആവൃത്തി നില ഒക്യുപ്പെൻസി ശതമാനം</translation>
 <translation id="2132302418721800944">പൂർണ്ണ സ്ക്രീൻ റെക്കോർഡ് ചെയ്യുക</translation>
 <translation id="2135456203358955318">ഡോക്ക് ചെയ്‌ത മാഗ്‌നിഫയർ</translation>
+<translation id="2148219725039824548">പങ്കിടൽ മൗണ്ട് ചെയ്യുന്നതിൽ പിശക്. നെറ്റ്‌വർക്കിൽ നിർദ്ദിഷ്‌ട പങ്കിടൽ കണ്ടെത്തിയില്ല,</translation>
 <translation id="2148716181193084225">ഇന്ന്</translation>
 <translation id="2149229036084364364">മുമ്പത്തെ ട്രാക്കിലേക്ക് പോകുക</translation>
 <translation id="2152796271648108398">ഇപ്പോഴത്തെ കാലാവസ്ഥ</translation>
@@ -726,6 +736,7 @@
 <translation id="315116470104423982">മൊബൈല്‍ ഡാറ്റ</translation>
 <translation id="3153444934357957346">ഒന്നിലധികം സൈൻ ഇന്നുകളിൽ നിങ്ങൾക്ക് <ph name="MULTI_PROFILE_USER_LIMIT" /> അക്കൗണ്ടുകൾ വരെ മാത്രമേ ഉണ്ടായിരിക്കാൻ പാടുള്ളൂ.</translation>
 <translation id="3154351730702813399">നിങ്ങളുടെ ബ്രൗസിംഗ് ആക്‌റ്റിവിറ്റി ഉപകരണ അഡ്‌മിൻ നിരീക്ഷിച്ചേക്കാം.</translation>
+<translation id="3157931365184549694">പുനഃസ്ഥാപിക്കുക</translation>
 <translation id="316086887565479535">ടെംപ്ലേറ്റിൽ പിന്തുണയ്ക്കാത്ത ആപ്പുകളുണ്ട്</translation>
 <translation id="3160929076476941240">2 മണിക്കൂർ</translation>
 <translation id="316356270129335934">നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> മുമ്പത്തെ പതിപ്പിലേക്ക് <ph name="MANAGER" /> പുനഃസ്ഥാപിക്കുന്നു. നിങ്ങളുടെ ഉപകരണം റീസെറ്റ് ചെയ്യുകയും എല്ലാ ഡാറ്റയും ഇല്ലാതാകുകയും ചെയ്യും.</translation>
@@ -776,6 +787,7 @@
 <translation id="3313950410573257029">കണക്ഷൻ പരിശോധിക്കുക</translation>
 <translation id="3321628682574733415">രക്ഷാകർതൃ കോഡ് തെറ്റാണ്</translation>
 <translation id="332827762492701193">അറിയിപ്പുകൾ മറച്ചിരിക്കുന്നു</translation>
+<translation id="3328489342742826322">ബാക്കപ്പിൽ നിന്ന് പുനഃസ്ഥാപിക്കുന്നത്, നിങ്ങളുടെ നിലവിലുള്ള Linux ആപ്പുകളെയും നിങ്ങളുടെ Linux ഫയലുകളുടെ ഫോൾഡറിലെ ഡാറ്റയും ഇല്ലാതാക്കും.</translation>
 <translation id="3333674550998107387"><ph name="NOTIFICATION_TITLE" /> അറിയിപ്പ് വികസിപ്പിക്കുക</translation>
 <translation id="3339826665088060472">സ്ക്രീൻ ക്യാപ്ച്ചർ, സ്ക്രീൻഷോട്ടുകളും സ്ക്രീൻ റെക്കോർഡിംഗുകളും എടുക്കാനുള്ള ടൂളുകൾ</translation>
 <translation id="3340978935015468852">ക്രമീകരണങ്ങൾ</translation>
@@ -835,6 +847,7 @@
         <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />ലൊക്കേഷൻ കൃത്യതയെ കുറിച്ച് കൂടുതലറിയുക<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, സിഗ്‌നൽ ശക്തി <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">ഷെൽഫ് സ്വയമേവ മറച്ചു</translation>
+<translation id="3500417806337761827">പങ്കിടൽ മൗണ്ട് ചെയ്യുന്നതിൽ പിശക്. നിരവധി SMB പങ്കിടലുകൾ നിലവിൽ മൗണ്ട് ചെയ്‌തിരിക്കുന്നു.</translation>
 <translation id="3505066820268455558">ബാറ്ററി ചാർജ് ചെയ്യുന്നു</translation>
 <translation id="3509391053705095206">നിങ്ങളുടെ ഫോൺ കണ്ടെത്താനാകുന്നില്ല. ഫോണിൻ്റെ Bluetooth ഓണാണെന്ന് ഉറപ്പുവരുത്തുക.</translation>
 <translation id="3510164367642747937">മൗസ് കഴ്‌സർ ഹൈലൈറ്റ് ചെയ്യുക</translation>
@@ -959,6 +972,7 @@
 <translation id="3804737937830804242">ക്യാമറ ചുരുക്കുക</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{ഒരു ഇമോജി. മറ്റ് ഫലങ്ങളൊന്നുമില്ല.}other{# ഇമോജികൾ. മറ്റ് ഫലങ്ങളൊന്നുമില്ല.}}</translation>
 <translation id="381202950560906753">മറ്റൊന്ന് ചേർക്കുക</translation>
+<translation id="3819257035322786455">ബാക്കപ്പ്</translation>
 <translation id="3819261658055281761">ഈ ഉപകരണത്തിനായി ദീർഘ‌കാല API ആക്‌സസ് ടോക്കൺ സംഭരിക്കാൻ സിസ്‌റ്റത്തിന് കഴിഞ്ഞില്ല.</translation>
 <translation id="3822403841174077928">ഫോർമാറ്റിംഗ് ഉപയോഗിച്ച് പകർത്താനായില്ല</translation>
 <translation id="3824621460022590830">ഉപകരണ എൻറോൾമെന്റ് ടോക്കൺ സാധുവല്ല. നിങ്ങളുടെ ഉപകരണത്തിന്റെ ഉടമയെയോ അഡ്‌മിനെയോ ബന്ധപ്പെടുക. പിശക് കോഡ്: <ph name="ERROR_CODE" />.</translation>
@@ -1142,6 +1156,7 @@
 <translation id="4327147325944669226">ഗെയിം റെക്കോർഡ് ചെയ്യുക</translation>
 <translation id="4329076911374908740">സംരക്ഷിച്ച ഗ്രൂപ്പുകളുടെ പരമാവധി എണ്ണം എത്തി.</translation>
 <translation id="4338109981321384717">മാഗ്‌നിഫൈയിംഗ് ഗ്ലാസ്</translation>
+<translation id="4340125850502689798">ഉപയോക്തൃനാമം അസാധുവാണ്</translation>
 <translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, മ്യൂട്ട് ചെയ്തിരിക്കുന്നു</translation>
 <translation id="4351244548802238354">ഡയലോഗ് അടയ്‌ക്കുക</translation>
 <translation id="435527878592612277">നിങ്ങളുടെ ഫോട്ടോ തിരഞ്ഞെടുക്കുക</translation>
@@ -1621,6 +1636,7 @@
 <translation id="5727460725221669831">നിങ്ങൾ പാസ്‌വേഡ് മറന്നെങ്കിലോ അടുത്തിടെ നിങ്ങളുടെ Google Account പാസ്‌വേഡ് മാറ്റിയിട്ടുണ്ടെങ്കിലോ ഈ ഉപയോക്താവിനെ വീണ്ടെടുക്കാൻ ശ്രമിക്കുക.</translation>
 <translation id="5733630091161562207">സ്വാഗത അറിയിപ്പ്</translation>
 <translation id="573413375004481890">ഈ ഉപകരണത്തിന് നിങ്ങളുടെ എല്ലാ ഡിസ്പ്ലേകൾക്കും പിന്തുണ നൽകാനാവാത്തതിനാൽ ഒന്ന് വിച്ഛേദിച്ചു</translation>
+<translation id="5734697361979786483">ഫയൽ പങ്കിടൽ ചേർക്കുക</translation>
 <translation id="5739548907438839901"><ph name="SIZE" /> ഡിസ്‌ക് സ്‌പെയ്‌സ് സൃഷ്‌ടിച്ചു.</translation>
 <translation id="574392208103952083">ഇടത്തരം</translation>
 <translation id="5745612484876805746">സൂര്യാസ്‌തമയ സമയത്ത് നൈറ്റ് ലൈറ്റ് സ്വയമേവ ഓണാകും</translation>
@@ -1709,6 +1725,7 @@
 <translation id="5983567367406220847">നിഷ്‌ക്രിയത്വത്തെ തുടർന്ന്, ഹോട്ട്‌സ്പോട്ട് ഓഫാക്കി.</translation>
 <translation id="598407983968395253">ടെംപ്ലേറ്റ് ഉപയോഗിക്കുക</translation>
 <translation id="5984334442529819751">DLC ഇൻസ്റ്റാൾ ചെയ്യുന്നതിൽ പിശക് (പലപ്പോഴും റീബൂട്ട് ചെയ്യേണ്ടത് ആവശ്യമാണ്, കൂടുതൽ വിവരങ്ങൾക്ക് ക്രമീകരണം\&gt;\&gt;ChromeOS-നെ കുറിച്ച് എന്നതിൽ പരിശോധിക്കുക).</translation>
+<translation id="5985458664595100876">അസാധുവായ URL ഫോര്‍മാറ്റ്. \\server\share, smb://server/share എന്നിവയാണ്‌ പിന്തുണയ്‌ക്കുന്ന ഫോര്‍മാറ്റുകള്‍.</translation>
 <translation id="5986723678596105470">Google Meet ഉപയോഗിച്ച് ചേരുക</translation>
 <translation id="598882571027504733">അപ്ഡേറ്റ് നേടാൻ, അറ്റാച്ച് ചെയ്‌ത കീബോഡിനൊപ്പം Chromebook റീസ്‌റ്റാർട്ട് ചെയ്യുക.</translation>
 <translation id="5990992855591814753">വ്യക്തിപരമാക്കിയ, ഫോക്കസ് പ്ലേലിസ്‌റ്റുകൾ ഉപയോഗിച്ച് ട്രാക്കിൽ തുടരൂ. YouTube Music-ഉം YouTube-ഉം, പരസ്യരഹിതമായി, 3 മാസത്തെ YouTube Premium ഉൾപ്പെടെ സൗജന്യമായി നേടൂ. നിബന്ധനകൾ ബാധകം.</translation>
@@ -1758,6 +1775,7 @@
 <translation id="6074087755403037157">ബീറ്റ ചാനൽ</translation>
 <translation id="6075098173600599596">വലിയക്ഷരമാക്കൽ മാറ്റുക</translation>
 <translation id="6080689532560039067">നിങ്ങളുടെ സിസ്‌റ്റം സമയം പരിശോധിക്കുക</translation>
+<translation id="6091761513005122595">പങ്കിടൽ വിജയകരമായി മൗണ്ട് ചെയ്തു.</translation>
 <translation id="6091929401758362855">പ്ലേലിസ്റ്റ്: <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="6093867385179428431">അഡ്‌മിൻ പ്രവർത്തനരഹിതമാക്കി</translation>
 <translation id="6095008505822982596">വായനയുടെ വേഗത</translation>
@@ -1929,6 +1947,7 @@
 <translation id="6582034443359256692">ബാറ്ററി ചാർജ് നില കണക്കാക്കുന്നു.</translation>
 <translation id="6586685375736417639">ഉപകരണം ചാർജ് ചെയ്യാനാകുന്നില്ല</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
+<translation id="6596816719288285829">IP വിലാസം</translation>
 <translation id="6597017209724497268">സാമ്പിളുകൾ</translation>
 <translation id="6597278316891651699">താഴെ ഇടത് കോണിലേക്ക് ക്യാമറ സ്‌നാപ്പ് ചെയ്തു. സിസ്റ്റം സർഫേസിനെ ഓവർലാപ്പ് ചെയ്യുന്നു.</translation>
 <translation id="6605415194043280389">ഫോക്കസ് ഓണാണ്</translation>
@@ -1948,6 +1967,7 @@
 <translation id="6637729079642709226">സമയം മാറ്റുക</translation>
 <translation id="6641720045729354415">തത്സമയ ക്യാപ്ഷൻ മാറ്റുക. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">പേര് അനുസരിച്ചുള്ള അടുക്കൽ ക്രമം പഴയപടിയാക്കുക</translation>
+<translation id="6644513150317163574">URL ഫോർമാറ്റ് അസാധുവാണ്. SSO പരിശോധിച്ചുറപ്പിക്കൽ ഉപയോഗിക്കുമ്പോൾ ഹോസ്‌റ്റിൻ്റെ പേര് ആയി സെർവർ വ്യക്തമാക്കണം.</translation>
 <translation id="664793810957802384">നിർദ്ദേശിച്ച ഗ്രൂപ്പിലെ ഇനങ്ങൾ</translation>
 <translation id="6649018507441623493">ഒരു നിമിഷം മാത്രം…</translation>
 <translation id="6649641931981131786">നിങ്ങളെ സ്‌ക്രീനിന്റെ മധ്യത്തിലാക്കാൻ ക്യാമറ ക്രമീകരിക്കുക.</translation>
@@ -2013,6 +2033,7 @@
 <translation id="6812232930908427253">ഡെസ്‌ക് സംരക്ഷിക്കാനായില്ല. വിൻഡോകളും ടാബുകളും വളരെ കൂടുതലാണ്.</translation>
 <translation id="6818242057446442178">ഒരു വാക്ക് പിന്നിലേക്ക് പോവുക</translation>
 <translation id="6819327813400217281">താഴെ ഇടത് കോണിലേക്ക് ക്യാമറ സ്‌നാപ്പ് ചെയ്തു</translation>
+<translation id="6820079682647046800">Kerberos ടിക്കറ്റുകൾ പരിശോധിച്ചുറപ്പിക്കാനായില്ല</translation>
 <translation id="6820676911989879663">ഒരു ഇടവേള എടുക്കൂ!</translation>
 <translation id="6827049576281411231">ഇവന്റ് പാനൽ അടയ്ക്കുക</translation>
 <translation id="682971198310367122">Google സ്വകാര്യതാ നയം</translation>
@@ -2043,6 +2064,7 @@
 <translation id="6919251195245069855">നിങ്ങളുടെ സ്‌മാർട്ട് കാർഡ് തിരിച്ചറിയാൻ കഴിഞ്ഞില്ല. വീണ്ടും ശ്രമിക്കൂ.</translation>
 <translation id="692135145298539227">ഇല്ലാതാക്കൂ</translation>
 <translation id="6921427376813842559">ഉപകരണം അപ്‌ഡേറ്റ് ചെയ്യുക</translation>
+<translation id="6923633482430812883">പങ്കിടൽ മൗണ്ട് ചെയ്യുന്നതിൽ പിശക്. നിങ്ങൾ കണക്‌റ്റ് ചെയ്യുന്ന ഫയൽ സെർവർ SMBv2 അല്ലെങ്കിൽ അതിന് ശേഷമുള്ളത് പിന്തുണയ്‌ക്കുന്നു എന്ന് പരിശോധിക്കുക.</translation>
 <translation id="6929081673585394903">നിയന്ത്രണങ്ങൾ കാണിക്കുക</translation>
 <translation id="6931576957638141829">ഇനിപ്പറയുന്നതിലേക്ക് സംരക്ഷിക്കുക</translation>
 <translation id="6935286146439255109">പേപ്പർ ട്രേ കാണുന്നില്ല</translation>
@@ -2051,6 +2073,7 @@
 <translation id="6945221475159498467">തിരഞ്ഞെടുക്കുക</translation>
 <translation id="6945922087561257829">നിങ്ങളുടെ ഫോൺ ഉപയോഗിക്കുന്നത് ഒരു മൊബൈൽ നെറ്റ്‌വർക്കാണ്. നിങ്ങളുടെ ഫോണും Chromebook-ഉം ഒരേ വൈഫൈ നെറ്റ്‌വർക്കിലാണുള്ളതെന്ന് ഉറപ്പാക്കി വീണ്ടും ശ്രമിക്കുക. <ph name="LEARN_MORE" /></translation>
 <translation id="6950627417367801484">ആപ്പുകൾ പുനഃസ്ഥാപിക്കുക</translation>
+<translation id="6960133692707095572">ടിക്കറ്റില്ലാതെ സന്ദർശിക്കുക</translation>
 <translation id="6960565108681981554">സജീവമാക്കിയിട്ടില്ല. നിങ്ങളുടെ സേവനദാതാവിനെ ബന്ധപ്പെടുക.</translation>
 <translation id="696103774840402661">ഈ <ph name="DEVICE_TYPE" /> എന്നതിലെ എല്ലാ ഉപയോക്താക്കളുടെയും എല്ലാ ഫയലുകളും ലോക്കൽ ഡാറ്റയും ശാശ്വതമായി ഇല്ലാതാക്കി.</translation>
 <translation id="6961121602502368900">ഔദ്യോഗിക പ്രൊഫൈലിൽ ഫോൺ നിശബ്‌ദമാക്കൽ ലഭ്യമല്ല</translation>
@@ -2090,6 +2113,7 @@
 <translation id="7061457967428964661">ക്യാമറാ പ്രിവ്യൂ, പ്രിവ്യൂ മറ്റൊരു മൂലയിലേക്ക് നീക്കാൻ control + അമ്പടയാള കീകൾ അമർത്തുക</translation>
 <translation id="7064351585062927183">വരുന്ന <ph name="DAY_OF_WEEK" /></translation>
 <translation id="7064734931812204395">Linux കണ്ടെയ്‌നർ കോൺഫിഗർ ചെയ്യുന്നു. ഇതിന് 30 മിനിറ്റ് വരെ സമയമെടുത്തേക്കാം.</translation>
+<translation id="706626672220389329">പങ്കിടൽ മൗണ്ട് ചെയ്യുന്നതിൽ പിശക്. നിർദ്ദിഷ്‌ട പങ്കിടൽ മുമ്പേ മൗണ്ട് ചെയ്‌തിട്ടുണ്ട്.</translation>
 <translation id="7066646422045619941">നിങ്ങളുടെ അഡ്‌മിൻ ഈ നെറ്റ്‌വർക്ക് പ്രവർത്തനരഹിതമാക്കി.</translation>
 <translation id="7067196344162293536">സ്വയമേവ തിരിക്കുക</translation>
 <translation id="7076293881109082629">സൈൻ ഇൻ ചെയ്യുന്നു</translation>
@@ -2477,6 +2501,7 @@
 <translation id="8168435359814927499">ഉള്ളടക്കം</translation>
 <translation id="8169177848833352618">നിർഭാഗ്യവശാൽ ഈ ഉപകരണം, Bruschetta ഇൻസ്റ്റാൾ ചെയ്യുന്നതിനുള്ള മാനദണ്ഡങ്ങൾ പാലിക്കുന്നില്ല. പിശക് കോഡ് <ph name="ERROR" /> ആണ്.</translation>
 <translation id="8172370561760918656">മുകളിൽ ഇടതുവശത്തുള്ള ഹാൻഡിൽ തിരഞ്ഞെടുത്തു, നീക്കാൻ അമ്പടയാള കീകൾ ഉപയോഗിക്കുക</translation>
+<translation id="8177196903785554304">നെറ്റ്‌വർക്ക് വിശദാംശങ്ങൾ</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="81817143961839203">ചിത്രം ചേർക്കാനായില്ല</translation>
 <translation id="8182105986296479640">ആപ്പ് പ്രതികരിക്കുന്നില്ല.</translation>
@@ -2511,6 +2536,7 @@
 <translation id="8262312463845990408">പ്ലേബാക്ക് ടോഗിൾ ചെയ്യുക</translation>
 <translation id="8266751606569906450">ചുരുങ്ങിയത് <ph name="MINIMUM" /> പ്രതീകങ്ങൾ ഉണ്ടായിരിക്കണം</translation>
 <translation id="8268302343625273732">Google Classroom-ൽ എല്ലാ അസൈൻമെന്റുകളും കാണുക</translation>
+<translation id="827488840488530039">നിങ്ങൾ സന്ദർശിക്കാൻ ശ്രമിക്കുന്ന പേജിന് നിങ്ങളുടെ Kerberos ടിക്കറ്റുകൾ പരിശോധിച്ചുറപ്പിക്കാനായില്ല</translation>
 <translation id="8277261673056602147">നിങ്ങളുടെ സ്ക്രീനിലെ ടെക്സ്റ്റ് ഹൈലൈറ്റ് ചെയ്യുക</translation>
 <translation id="8281886186245836920">ഉപേക്ഷിക്കുക</translation>
 <translation id="8282784978194352587">നിങ്ങൾ പൂർത്തിയാക്കി!</translation>
@@ -2565,6 +2591,7 @@
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8458259704995116343">VM ആരംഭിക്കാനായില്ല.</translation>
 <translation id="84613761564611563">നെറ്റ്‌വർക്ക് കോൺഫിഗർ ചെയ്യാനുള്ള UI അഭ്യർത്ഥിച്ചു, കാത്തിരിക്കൂ...</translation>
+<translation id="8461914792118322307">പ്രോക്സി</translation>
 <translation id="8462305545768648477">വായിച്ചുകേൾക്കാൻ തിരഞ്ഞെടുക്കുക അടയ്ക്കുക</translation>
 <translation id="8463001014623882202">അംഗീകരിക്കാനായില്ല</translation>
 <translation id="8466665972451889002"><ph name="GROUP_NAME" /> എന്നതിൽ ഇനങ്ങൾ കാണിക്കുക</translation>
@@ -2627,6 +2654,7 @@
 <translation id="8647931990447795414">ഒരു വ്യക്തിയെ ചേർക്കാൻ, നിങ്ങളുടെ Family Link രക്ഷാകർതൃ ആക്‌സസ് കോഡ് നൽകുക</translation>
 <translation id="8649597172973390955">ഷെൽഫ് എപ്പോഴും ദൃശ്യമാക്കിയിരിക്കുന്നു</translation>
 <translation id="8657066291275741003">ചെറിയക്ഷരം</translation>
+<translation id="8662671328352114214"><ph name="TYPE" /> നെറ്റ്‌വർക്കിൽ ചേരുക</translation>
 <translation id="8662921061190671299">Calendar-ലേക്ക് ചേർക്കാനായില്ല</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, സിഗ്‌നൽ ശക്തി <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">ഭാഗിക സ്ക്രീൻഷോട്ട് എടുക്കാൻ Enter അമർത്തുക</translation>
@@ -2673,6 +2701,7 @@
 <translation id="8760172428247796445">നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> ഇപ്പോൾ ലോക്ക് ചെയ്യും.
         <ph name="DOMAIN" /> എന്നതിൽ തുടരുന്നതിന് നിങ്ങളുടെ സ്‌മാർട്ട് കാർഡ് ഇൻസേർട്ട് ചെയ്ത നിലയിൽ തുടരേണ്ടതുണ്ട്.</translation>
 <translation id="8763883995157866248">ഉപകരണം ഉറക്ക മോഡിൽ ഇടുക</translation>
+<translation id="8774379074441005279">പുനഃസ്ഥാപിക്കൽ സ്ഥിരീകരിക്കുക</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, ഇൻസ്‌റ്റാൾ ചെയ്‌ത ആപ്പ്, ബ്ലോക്ക് ചെയ്‌തിരിക്കുന്നു</translation>
 <translation id="8782565991310229362">കിയോസ്‌ക് ആപ്പ് ലോഞ്ച് ചെയ്യൽ റദ്ദാക്കി.</translation>
 <translation id="8784626084144195648">ബിൻ ചെയ്ത ശരാശരി</translation>
@@ -2689,6 +2718,7 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">ഇൻപുട്ട് രീതികളുടെ ക്രമീകരണം</translation>
 <translation id="8819728065740986820">അഡാപ്റ്റീവ് ചാർജിംഗ് ഓണാണ്</translation>
+<translation id="8821045908425223359">IP വിലാസം സ്വയമേവ കോൺഫിഗർ ചെയ്യുക</translation>
 <translation id="882204272221080310">അധിക സുരക്ഷയ്ക്കായി ഫേംവെയര്‍ അപ്‌ഡേറ്റ് ചെയ്യുക.</translation>
 <translation id="8822104519413696986">ഇതൊരു ടച്ച് ഗെയിമാണ്</translation>
 <translation id="8825863694328519386">തിരികെ പോകാൻ ഇടതുഭാഗത്ത് നിന്ന് സ്വൈപ്പ് ചെയ്യുക</translation>
@@ -2748,6 +2778,7 @@
 <translation id="8980862970816311842">ആപ്പ് ഗ്രിഡിലെ ഒരു ഫോൾഡറിനകത്തേക്കോ പുറത്തേക്കോ ഒരു ആപ്പ് ഐക്കൺ നീക്കുക</translation>
 <translation id="8982906748181120328">സമീപമുള്ള ദൃശ്യപരത</translation>
 <translation id="8983038754672563810">HSPA</translation>
+<translation id="8986362086234534611">മറന്നു</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> ഉപയോഗിക്കുന്നു</translation>
 <translation id="8991648557324317894">റദ്ദാക്കാൻ fn + ക്വിക്ക് ഇൻസേർട്ട് അല്ലെങ്കിൽ Shift അമർത്തുക.</translation>
 <translation id="899350903320462459">അറിയിപ്പ് പ്രവർത്തനം നിർവഹിക്കാൻ, <ph name="LOGIN_ID" /> ആയി ഉപകരണം അൺലോക്ക് ചെയ്യുക</translation>
@@ -2760,6 +2791,7 @@
 <translation id="9013037634206938463">Linux ഇന്‍സ്റ്റാള്‍ ചെയ്യാൻ <ph name="INSTALL_SIZE" /> ഇടം ആവശ്യമാണ്. ഇടം സൃഷ്‌ടിക്കാൻ, നിങ്ങളുടെ ഉപകരണത്തിൽ നിന്ന് ഫയലുകൾ ഇല്ലാതാക്കുക.</translation>
 <translation id="901668144954885282">Google ഡ്രൈവിലേക്ക് ബാക്കപ്പെടുക്കുക</translation>
 <translation id="9017320285115481645">Family Link രക്ഷാകർതൃ ആക്‌സസ് കോഡ് നൽകുക.</translation>
+<translation id="9024158959543687197">പങ്കിടൽ മൗണ്ട് ചെയ്യുന്നതിൽ പിശക്. ഫയൽ പങ്കിടൽ URL പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="9024331582947483881">പൂര്‍ണ്ണ സ്‌ക്രീന്‍</translation>
 <translation id="9026852570893462412">ഈ പ്രക്രിയയ്ക്ക് കുറച്ച് സമയമെടുത്തേക്കാം. വെർച്വൽ മെഷീൻ ഡൗൺലോഡ് ചെയ്യുന്നു.</translation>
 <translation id="9029736946581028033">ഉപകരണം ഉടൻ ഓഫാകും</translation>

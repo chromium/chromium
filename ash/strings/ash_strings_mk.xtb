@@ -20,6 +20,7 @@
 <translation id="1056898198331236512">Предупредување</translation>
 <translation id="1058009965971887428">Пријавување повратни информации</translation>
 <translation id="1059120031266247284">Споделено со вас</translation>
+<translation id="1060570945511946595">Управувајте со билетите</translation>
 <translation id="1060847216467038176"><ph name="ITEM_LABEL" /> со копче за отстранување</translation>
 <translation id="1062407476771304334">Замени</translation>
 <translation id="1065931689816135472"><ph name="BEGIN_PARAGRAPH1" />Направете бекап во Google Drive. Лесно враќајте ги податоците или менувајте ги уредите кога сакате. Бекапот ги опфаќа податоците од апликациите.<ph name="END_PARAGRAPH1" />
@@ -280,6 +281,7 @@
 <translation id="1757132445735080748">За да завршите со поставувањето на Linux, ажурирајте ја ChromeOS Flex и обидете се повторно.</translation>
 <translation id="1757857692711134412">Исклучено до зајдисонце</translation>
 <translation id="1763084151787818322">Други дејства</translation>
+<translation id="1767043563165955993">Користи со апликации на Android</translation>
 <translation id="1768138163688567246">Затвори го пребарувањето на мојот екран</translation>
 <translation id="1768366657309696705">Кратенката од тастатура <ph name="LAUNCHER_KEY_NAME" /> + Точка се промени. За да го користите копчето Insert, притиснете го копчето <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
 <translation id="1770726142253415363">Преместена на ред <ph name="ROW_NUMBER" />, колона <ph name="COLUMN_NUMBER" />.</translation>
@@ -304,6 +306,7 @@
 <translation id="1838895407229022812">„Ноќното светло“ е исклучено.</translation>
 <translation id="1840920496749066704">°C</translation>
 <translation id="1841616161104323629">Недостасува запис за уредот.</translation>
+<translation id="184273675144259287">Заменете ги апликациите и датотеките на Linux со претходен бекап</translation>
 <translation id="1854180393107901205">Запри со емитување</translation>
 <translation id="1862077610023398675">Скриј ги контролите</translation>
 <translation id="1862380676329487333">Ажурирај и одјави се</translation>
@@ -333,6 +336,7 @@
 <translation id="1946615340060705561">Притиснете „C“ за да пуштите</translation>
 <translation id="1948405482892809935">Префрлете се на следниот корисник</translation>
 <translation id="1954252331066828794">Снимањето на екранот заврши</translation>
+<translation id="1954813140452229842">Грешка при монтирање на споделувањето. Проверете ги вашите акредитиви и обидете се повторно.</translation>
 <translation id="1956087014741188812">Паузирај ја „Копчиња за глувче“</translation>
 <translation id="1957958912175573503">Поставете го вашиот јазик</translation>
 <translation id="1961239773406905488">Скриен е преглед на камерата</translation>
@@ -352,6 +356,11 @@
 <translation id="1998100899771863792">Моментална работна површина</translation>
 <translation id="2001444736072756133">Пребарувајте ги вашите <ph name="CATEGORY" />, датотеки, апликации и слично</translation>
 <translation id="2011174342667534258">Верзија на SDK:</translation>
+<translation id="2017770349934140286">Google Play и апликациите што сте ги презеле од Google Play ќе се избришат од овој Chromebook.
+    <ph name="LINE_BREAKS1" />
+    Можеби ќе се избришат и содржините што сте ги купиле преку Google Play, како филмови, ТВ-серии, музика, книги, како и купувањата од други апликации.
+    <ph name="LINE_BREAKS2" />
+    Ова не влијае на апликациите или содржините на други уреди.</translation>
 <translation id="2017998995161831444">Отворете „Помош“ во апликацијата Explore</translation>
 <translation id="2021864487439853900">Кликнете за да отклучите</translation>
 <translation id="2023167225947895179">PIN-кодот може да биде лесен за погодување</translation>
@@ -381,6 +390,7 @@
 <translation id="212862741129535676">Процент на зафатеност на фреквентна состојба</translation>
 <translation id="2132302418721800944">Снимање цел екран</translation>
 <translation id="2135456203358955318">Закотвена лупа</translation>
+<translation id="2148219725039824548">Грешка при монтирање на споделувањето. Наведеното споделување не е најдено на мрежата.</translation>
 <translation id="2148716181193084225">Денес</translation>
 <translation id="2149229036084364364">Одење на претходната песна</translation>
 <translation id="2152796271648108398">Тековна временска прогноза</translation>
@@ -726,6 +736,7 @@
 <translation id="315116470104423982">Мобилен интернет</translation>
 <translation id="3153444934357957346">Може да имате само до <ph name="MULTI_PROFILE_USER_LIMIT" /> сметки при многукратно најавување.</translation>
 <translation id="3154351730702813399">Администраторот на уредот може да ви го следи прелистувањето.</translation>
+<translation id="3157931365184549694">Обнови</translation>
 <translation id="316086887565479535">Неподдржани апликации во шаблон</translation>
 <translation id="3160929076476941240">2 ч.</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> го враќа вашиот <ph name="DEVICE_TYPE" /> на претходна верзија. Уредот ќе се ресетира и сите податоци ќе се избришат.</translation>
@@ -776,6 +787,7 @@
 <translation id="3313950410573257029">Проверете ја врската</translation>
 <translation id="3321628682574733415">Неточен родителски код</translation>
 <translation id="332827762492701193">Известувањата се скриени</translation>
+<translation id="3328489342742826322">Враќањето од бекап ќе ги избрише сите постојни апликации на Linux и податоците во папката со датотеки на Linux.</translation>
 <translation id="3333674550998107387">Прошири го известувањето за <ph name="NOTIFICATION_TITLE" /></translation>
 <translation id="3339826665088060472">Снимање на екранот, алатки за правење слики од екранот и снимање на екранот</translation>
 <translation id="3340978935015468852">поставки</translation>
@@ -835,6 +847,7 @@
         <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Дознајте повеќе за „Прецизност на локација“<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Полицата е автоматски скриена</translation>
+<translation id="3500417806337761827">Грешка при прикачување на споделувањето. Веќе се прикачени премногу SMB-споделувања.</translation>
 <translation id="3505066820268455558">Батеријата се полни</translation>
 <translation id="3509391053705095206">Не може да се најде телефонот. Проверете дали ви е вклучен Bluetooth на телефонот.</translation>
 <translation id="3510164367642747937">Нагласи го покажувачот на глувчето</translation>
@@ -960,6 +973,7 @@
 <translation id="3804737937830804242">Собери ја камерата</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 емоџи. Нема други резултати.}one{# емоџи. Нема други резултати.}other{# емоџија. Нема други резултати.}}</translation>
 <translation id="381202950560906753">Додајте друг</translation>
+<translation id="3819257035322786455">Бекап</translation>
 <translation id="3819261658055281761">Системот не успеа да го складира пристапниот токен на долгорочниот API за уредов.</translation>
 <translation id="3822403841174077928">Не можеше да се копира со форматирање</translation>
 <translation id="3824621460022590830">Токенот за регистрација на уредот е неважечки. Контактирајте со сопственикот или администраторот на уредот. Код за грешка: <ph name="ERROR_CODE" />.</translation>
@@ -1144,6 +1158,7 @@
 <translation id="4327147325944669226">Снимање игра</translation>
 <translation id="4329076911374908740">Максималниот број зачувани групи е достигнат.</translation>
 <translation id="4338109981321384717">Лупа</translation>
+<translation id="4340125850502689798">Неважечко корисничко име</translation>
 <translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, звукот е исклучен</translation>
 <translation id="4351244548802238354">Затвори дијалог</translation>
 <translation id="435527878592612277">Изберете ја вашата фотографија</translation>
@@ -1623,6 +1638,7 @@
 <translation id="5727460725221669831">Ако сте ја заборавиле лозинката или неодамна сте ја промениле лозинката за сметката на Google, обидете се да го вратите корисников.</translation>
 <translation id="5733630091161562207">Известување за добредојде</translation>
 <translation id="573413375004481890">Уредов не може да ги поддржува сите ваши екрани, па затоа исклучивме еден</translation>
+<translation id="5734697361979786483">Додајте споделување датотеки</translation>
 <translation id="5739548907438839901">Ослободен е простор на дискот од <ph name="SIZE" />.</translation>
 <translation id="574392208103952083">Медиум</translation>
 <translation id="5745612484876805746">„Ноќното светло“ се вклучува автоматски на зајдисонце</translation>
@@ -1711,6 +1727,7 @@
 <translation id="5983567367406220847">Точката на пристап е исклучена поради неактивност.</translation>
 <translation id="598407983968395253">Употреби го шаблонот</translation>
 <translation id="5984334442529819751">Грешка при инсталирањето на DLC (често треба да се рестартира, па одете во „Поставки\&gt;\&gt;За ChromeOS“ за повеќе информации).</translation>
+<translation id="5985458664595100876">Погрешен URL-формат. Поддржани формати се \\server\share и smb://server/share.</translation>
 <translation id="5986723678596105470">Придружете се со Google Meet</translation>
 <translation id="598882571027504733">За да го добиете ажурирањето, рестартирајте го Chromebook додека тастатурата е прикачена.</translation>
 <translation id="5990992855591814753">Бидете во тек со персонализираните плејлисти за „Режим за концентрација“. Добијте YouTube Music и YouTube, без реклами, со YouTube Premium во период од 3 месеци бесплатно. Важат „Условите“.</translation>
@@ -1761,6 +1778,7 @@
 <translation id="6074087755403037157">Бета-канал</translation>
 <translation id="6075098173600599596">Променете го користењето големи букви</translation>
 <translation id="6080689532560039067">Проверете го времето на вашиот систем</translation>
+<translation id="6091761513005122595">Споделувањето е успешно монтирано.</translation>
 <translation id="6091929401758362855">Плејлиста: <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="6093867385179428431">Оневозможено од администраторот</translation>
 <translation id="6095008505822982596">Брзина на говорот</translation>
@@ -1932,6 +1950,7 @@
 <translation id="6582034443359256692">Се пресметува нивото на полнење на батеријата.</translation>
 <translation id="6586685375736417639">Уредот не се полни</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
+<translation id="6596816719288285829">IP-адреса</translation>
 <translation id="6597017209724497268">Примероци</translation>
 <translation id="6597278316891651699">Камерата е поставена во долниот лев агол. Конфликт со површината на системот.</translation>
 <translation id="6605415194043280389">„Режимот за концентрација“ е вклучен</translation>
@@ -1951,6 +1970,7 @@
 <translation id="6637729079642709226">Сменете го времето</translation>
 <translation id="6641720045729354415">Вклучете/исклучете „Автоматски титлови“. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">Поништете го редоследот на подредувањето по име</translation>
+<translation id="6644513150317163574">Погрешен URL-формат. Серверот мора да е одреден како име на хост кога се користи SSO-проверка.</translation>
 <translation id="664793810957802384">Ставки во предложената група</translation>
 <translation id="6649018507441623493">Само момент…</translation>
 <translation id="6649641931981131786">Приспособете ја камерата за да бидете во средината на екранот.</translation>
@@ -2016,6 +2036,7 @@
 <translation id="6812232930908427253">Не можеше да се зачува работната површина. Премногу прозорци или картички.</translation>
 <translation id="6818242057446442178">Назад за еден збор</translation>
 <translation id="6819327813400217281">Камерата е поставена во долниот лев агол</translation>
+<translation id="6820079682647046800">Автентикацијата на Kerberos не успеа</translation>
 <translation id="6820676911989879663">Направете пауза!</translation>
 <translation id="6827049576281411231">Затворете ја таблата со настани</translation>
 <translation id="682971198310367122">„Политика за приватност“ на Google</translation>
@@ -2046,6 +2067,7 @@
 <translation id="6919251195245069855">Не можевме да ја препознаеме вашата паметна картичка. Обидете се повторно.</translation>
 <translation id="692135145298539227">избриши</translation>
 <translation id="6921427376813842559">Ажурирајте го уредот</translation>
+<translation id="6923633482430812883">Грешка при прикачување на споделувањето. Проверете дали серверот на датотеки со кој се поврзувате поддржува SMBv2 или понова верзија.</translation>
 <translation id="6929081673585394903">Прикажи ги контролите</translation>
 <translation id="6931576957638141829">Зачувај во</translation>
 <translation id="6935286146439255109">Недостасува фиока за хартија</translation>
@@ -2054,6 +2076,7 @@
 <translation id="6945221475159498467">Избери</translation>
 <translation id="6945922087561257829">Вашиот телефон користи мобилна мрежа. Проверете дали телефонот и Chromebook се на истата Wi-Fi мрежа, па обидете се повторно. <ph name="LEARN_MORE" /></translation>
 <translation id="6950627417367801484">Врати ги апликациите</translation>
+<translation id="6960133692707095572">Отворете без билет</translation>
 <translation id="6960565108681981554">Не е активирана. Контактирајте со вашиот оператор.</translation>
 <translation id="696103774840402661">Сите датотеки и локални податоци за сите корисници на овој <ph name="DEVICE_TYPE" /> трајно се избришани.</translation>
 <translation id="6961121602502368900">Стишувањето на телефонот не е достапно на работен профил</translation>
@@ -2093,6 +2116,7 @@
 <translation id="7061457967428964661">Преглед на камерата, притиснете Control + копчињата за стрелки за да го преместите прегледот во друг агол</translation>
 <translation id="7064351585062927183">Следниов/ва <ph name="DAY_OF_WEEK" /></translation>
 <translation id="7064734931812204395">Се конфигурира контејнерот за Linux. Ова може да потрае до 30 минути.</translation>
+<translation id="706626672220389329">Грешка при монтирање на споделувањето. Наведеното споделување е веќе монтирано.</translation>
 <translation id="7066646422045619941">Вашиот администратор ја оневозможил оваа мрежа</translation>
 <translation id="7067196344162293536">Автоматско ротирање</translation>
 <translation id="7076293881109082629">Пријавување</translation>
@@ -2479,6 +2503,7 @@
 <translation id="8168435359814927499">Содржина</translation>
 <translation id="8169177848833352618">За жал, машинава не ги исполнува условите за инсталирање Bruschetta. Кодот за грешка е <ph name="ERROR" />.</translation>
 <translation id="8172370561760918656">Избрана е рачката горе лево, користете ги копчињата со стрелки за да ја преместувате</translation>
+<translation id="8177196903785554304">Детали за мрежата</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="81817143961839203">Вметнувањето слика не успеа</translation>
 <translation id="8182105986296479640">Апликацијата не одговара</translation>
@@ -2513,6 +2538,7 @@
 <translation id="8262312463845990408">Вклучете/исклучете ја репродукцијата</translation>
 <translation id="8266751606569906450">Мора да има најмалку <ph name="MINIMUM" /> знаци</translation>
 <translation id="8268302343625273732">Погледнете ги сите задачи во Google Classroom</translation>
+<translation id="827488840488530039">Страницата што се обидувате да ја отворите не можеше да ги потврди вашите билети за Kerberos</translation>
 <translation id="8277261673056602147">Нагласете текст на екранот</translation>
 <translation id="8281886186245836920">Прескокни</translation>
 <translation id="8282784978194352587">Браво!</translation>
@@ -2567,6 +2593,7 @@
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8458259704995116343">Стартувањето на VM не успеа.</translation>
 <translation id="84613761564611563">Го побаравме корисничкиот интерфејс за конфигурација на мрежата, ве молиме почекајте…</translation>
+<translation id="8461914792118322307">Прокси</translation>
 <translation id="8462305545768648477">Затворете ја функцијата „Изберете за говор“</translation>
 <translation id="8463001014623882202">Овластувањето не успеа</translation>
 <translation id="8466665972451889002">Прикажи ги ставките во <ph name="GROUP_NAME" /></translation>
@@ -2629,6 +2656,7 @@
 <translation id="8647931990447795414">За да додадете лице, внесете го кодот за пристап на родители од Family Link</translation>
 <translation id="8649597172973390955">Полицата е секогаш прикажана</translation>
 <translation id="8657066291275741003">мали букви</translation>
+<translation id="8662671328352114214">Придружување на мрежа <ph name="TYPE" /></translation>
 <translation id="8662921061190671299">Не можеше да се додаде во „Календар“</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Притиснете Enter за да снимите делумна слика од екранот</translation>
@@ -2675,6 +2703,7 @@
 <translation id="8760172428247796445">Вашиот уред <ph name="DEVICE_TYPE" /> ќе се заклучи сега.
         <ph name="DOMAIN" /> бара паметната картичка да ви остане вметната.</translation>
 <translation id="8763883995157866248">Поставете го уредот во режим на спиење</translation>
+<translation id="8774379074441005279">Потврдете го враќањето</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, инсталирана апликација, блокирана</translation>
 <translation id="8782565991310229362">Откажано е стартувањето на апликацијата Киоск.</translation>
 <translation id="8784626084144195648">Биниран просек</translation>
@@ -2691,6 +2720,7 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Поставки за методите за внесување</translation>
 <translation id="8819728065740986820">„Адаптивното полнење“ е вклучено</translation>
+<translation id="8821045908425223359">Конфигурирајте IP-адреса автоматски</translation>
 <translation id="882204272221080310">Ажурирајте го фирмверот за дополнителна безбедност.</translation>
 <translation id="8822104519413696986">Ова е игра со допир</translation>
 <translation id="8825863694328519386">Повлечете одлево за да се вратите назад</translation>
@@ -2750,6 +2780,7 @@
 <translation id="8980862970816311842">Преместувајте икона за апликација внатре/надвор од папка во мрежа со апликации</translation>
 <translation id="8982906748181120328">Видливост во близина</translation>
 <translation id="8983038754672563810">HSPA</translation>
+<translation id="8986362086234534611">Заборави</translation>
 <translation id="8990809378771970590">Се користи <ph name="IME_NAME" /></translation>
 <translation id="8991648557324317894">Притиснете Fn + „Брзо вметнување“ или Shift за да откажете.</translation>
 <translation id="899350903320462459">Отклучете го уредот како <ph name="LOGIN_ID" /> за да се изврши дејството од известувањето</translation>
@@ -2762,6 +2793,7 @@
 <translation id="9013037634206938463">Потребни се <ph name="INSTALL_SIZE" /> слободен простор за инсталирање на Linux. За да го зголемите слободниот простор, избришете датотеки од уредот.</translation>
 <translation id="901668144954885282">Направете бекап на Google Drive</translation>
 <translation id="9017320285115481645">Внесете го кодот за пристап на родители на Family Link.</translation>
+<translation id="9024158959543687197">Грешка при монтирање на споделувањето. Проверете ја URL-адресата на споделување датотеки и обидете се повторно.</translation>
 <translation id="9024331582947483881">цел екран</translation>
 <translation id="9026852570893462412">Овој процес можеби ќе потрае неколку минути. Се презема виртуелната машина.</translation>
 <translation id="9029736946581028033">Уредот ќе се исклучи наскоро</translation>

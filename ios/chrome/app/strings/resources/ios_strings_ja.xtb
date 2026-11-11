@@ -852,7 +852,7 @@
 <translation id="3631443864840848029">このサイトの現在のパスワードを保存していることをご確認ください。</translation>
 <translation id="3641456520301071208">サイトが位置情報を要求できるようにする</translation>
 <translation id="3642060527569456384">タブグループは自動的に保存され、すべてのデバイスで更新されます。</translation>
-<translation id="3643338347976071250">{count,plural, =1{{count} 件のパスワードがこのデバイスのみに保存されます。他のデバイスで使用するには、Google アカウント（{email}）に保存してください。}other{{count} 件のパスワードがこのデバイスのみに保存されます。他のデバイスで使用するには、Google アカウント（{email}）に保存してください。}}</translation>
+<translation id="3643338347976071250">{count,plural, =1{{count} 件のパスワードがこのデバイスのみに保存されています。他のデバイスで使用するには、Google アカウント（{email}）に保存してください。}other{{count} 件のパスワードがこのデバイスのみに保存されています。他のデバイスで使用するには、Google アカウント（{email}）に保存してください。}}</translation>
 <translation id="3657176844107584515"><ph name="EMAIL" />、Google メンバーシップ。</translation>
 <translation id="3659297405161482746">お支払い方法が見つかりませんでした</translation>
 <translation id="3662966164093827811">{count,plural, =1{1 件選択しました}other{# 件選択しました}}</translation>
@@ -867,7 +867,7 @@
 <translation id="3695446226812920698">詳細</translation>
 <translation id="3700134753671613714">ログインすると、お使いのどのデバイスでも同じブックマークを利用できるようになります。</translation>
 <translation id="3701167022068948696">今すぐ修正</translation>
-<translation id="3708944822379815019">{COUNT,plural, =1{{COUNT} 件のパスワードがこのデバイスのみに保存されます。他のデバイスで使用するには、Google アカウント（{EMAIL}）に保存してください。}other{{COUNT} 件のパスワードがこのデバイスのみに保存されます。他のデバイスで使用するには、Google アカウント（{EMAIL}）に保存してください。}}</translation>
+<translation id="3708944822379815019">{COUNT,plural, =1{{COUNT} 件のパスワードがこのデバイスのみに保存されています。他のデバイスで使用するには、Google アカウント（{EMAIL}）に保存してください。}other{{COUNT} 件のパスワードがこのデバイスのみに保存されています。他のデバイスで使用するには、Google アカウント（{EMAIL}）に保存してください。}}</translation>
 <translation id="3709621342136814217">フォントやテキストサイズなどをここで選択します</translation>
 <translation id="371230970611282515">危険なイベントの発生を予測して警告します。</translation>
 <translation id="372115889256123713">キャッシュされたファイル</translation>
@@ -1020,7 +1020,7 @@
 <translation id="4183350924949589798">セキュリティを強化しますか？</translation>
 <translation id="4184063163998877398">{count,plural, =1{脆弱なパスワード: {count} 件}other{脆弱なパスワード: {count} 件}}</translation>
 <translation id="4196758674971560031">作成したタブグループはタブグループ セクションに保存され、お使いのすべてのデバイスに反映されます。</translation>
-<translation id="4197456013861852807">{count,plural, =1{{count} 件のアイテムがこのデバイスのみに保存されます。他のデバイスで使用するには、Google アカウント（{email}）に保存してください。}other{{count} 件のアイテムがこのデバイスのみに保存されます。他のデバイスで使用するには、Google アカウント（{email}）に保存してください。}}</translation>
+<translation id="4197456013861852807">{count,plural, =1{{count} 件のアイテムがこのデバイスのみに保存されています。他のデバイスで使用するには、Google アカウント（{email}）に保存してください。}other{{count} 件のアイテムがこのデバイスのみに保存されています。他のデバイスで使用するには、Google アカウント（{email}）に保存してください。}}</translation>
 <translation id="4207873326995387292">ブラウザ情報</translation>
 <translation id="421070604241073551">オンにすると、データが Google アカウントに保存されます。オフにすると、データはこのデバイスのみに保存されます。</translation>
 <translation id="4224534474590365556">アクティブでない 99 個以上のタブを閉じますか？</translation>
@@ -1087,7 +1087,7 @@
 <translation id="4404790787924017676">トラッキングしている商品の値下げアラートが表示されます</translation>
 <translation id="4405320213589929829">ウェブページ上の住所を使用してローカル情報や経路を確認できます。</translation>
 <translation id="441218095371040430">キーボードを使用</translation>
-<translation id="4415276339145661267">Google アカウントの管理</translation>
+<translation id="4415276339145661267">Google アカウントを管理</translation>
 <translation id="4416582610654027550">有効な URL を入力してください</translation>
 <translation id="4420409367264901497">ブックマークを編集</translation>
 <translation id="4425365312778464779">このアカウントは管理対象です</translation>
@@ -2004,7 +2004,7 @@
 <translation id="7173114856073700355">設定を開く</translation>
 <translation id="7173721738069475737">{count,plural, =1{ブックマークを保存しました}other{{count} 件のブックマークを保存しました}}</translation>
 <translation id="7176183551031110427">縮小</translation>
-<translation id="7186568385131859684">Google サービス全体で閲覧履歴を他のデータと関連付けて使用する方法を管理する</translation>
+<translation id="7186568385131859684">Google サービス全体で閲覧履歴を他のデータと関連付けて使用する方法を管理します</translation>
 <translation id="719133302483559673">あなたの興味や好みに関する情報を管理します。</translation>
 <translation id="7191382490098297347">カメラロールの画像</translation>
 <translation id="7203150201908454328">展開表示中</translation>
@@ -2608,6 +2608,7 @@ Level Up はいつでも再開できます。</translation>
 <translation id="8976382372951310360">ヘルプ</translation>
 <translation id="8976414606286374109">カードは Google アカウントに保存されます。</translation>
 <translation id="8981454092730389528">Google アクティビティ管理</translation>
+<translation id="8987736167266086032">中断したところから再開する</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />、固定されたサイト</translation>
 <translation id="8989779557457435460">デフォルトで現在のタブを共有</translation>
 <translation id="8990960056509724223">組織のポリシーにより、ファイルを保存できませんでした</translation>

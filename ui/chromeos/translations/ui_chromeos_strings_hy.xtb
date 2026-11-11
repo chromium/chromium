@@ -558,7 +558,6 @@
 <translation id="5305688511332277257">Տեղադրված չկա</translation>
 <translation id="5317780077021120954">Պահել</translation>
 <translation id="5318819489018851358">Հասանելի դարձնել Լինուքսին</translation>
-<translation id="5330145655348521461">Այս ֆայլերը բացված են այլ աշխատասեղանի վրա: Դիտելու համար տեղափոխվեք <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />):</translation>
 <translation id="5330512191124428349">Ստանալ տեղեկություններ</translation>
 <translation id="535792325654997756">Կատուներով մարդ</translation>
 <translation id="5358764674931277">Կադրերի արագությունը</translation>
@@ -699,7 +698,6 @@
 <translation id="636254897931573416">Տիրույթի վերջածանցի հետ համընկնման սխալ արժեք</translation>
 <translation id="6364301859968397756">Կազմակերպության տարածքը լցված է</translation>
 <translation id="6367976544441405720">Միկրոավտոբուս</translation>
-<translation id="637062427944097960">Այս ֆայլը բացված է այլ աշխատասեղանի վրա: Այն դիտելու համար տեղափոխվեք <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />):</translation>
 <translation id="6394388407447716302">Միայն կարդալու</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> տարր</translation>
 <translation id="6407769893376380348"><ph name="FILE_NAME" /> ֆայլը չհաջողվեց տեղափոխել, քանի որ այն գաղտնագրված է։</translation>

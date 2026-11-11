@@ -2035,6 +2035,7 @@ Da biste nastavili sa računara, pređite na <ph name="OTHER_EMAIL" />. Dobiće
 <translation id="728025568708172005">Pokaži mi</translation>
 <translation id="7280980607183752256">Ne možete da uvezete ovaj fajl</translation>
 <translation id="7282197670900591579">Limun-žuta tema</translation>
+<translation id="7283937415134849498">Da bi vam pružao prilagođenu pomoć, Gemini deli neke od vaših podataka (kao što su delovi četova, lokacija i druge relevantne informacije) sa drugim Google uslugama, kao što su Mape i Letovi. Te usluge mogu da koriste te podatke za poboljšanje, čak i ako kasnije izbrišete Gemini istoriju. Saznajte više u <ph name="BEGIN_LINK" />centru za privatnost Gemini aplikacija<ph name="END_LINK" />.</translation>
 <translation id="7293429513719260019">Izaberite jezik</translation>
 <translation id="72961285530871072">Time ćete trajno izbrisati napredak u programu Level Up i podaci o korišćenju funkcija za Level Up više se neće slati Google-u za vaš profil.
 
@@ -2607,6 +2608,7 @@ Možete ponovo da ga pokrenete u bilo kom trenutku.</translation>
 <translation id="8976382372951310360">Pomoć</translation>
 <translation id="8976414606286374109">Kartice se čuvaju na Google nalogu.</translation>
 <translation id="8981454092730389528">Google kontrole aktivnosti</translation>
+<translation id="8987736167266086032">Nastavite tamo gde ste stali</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, zakačen sajt</translation>
 <translation id="8989779557457435460">Podrazumevano deli aktuelnu karticu</translation>
 <translation id="8990960056509724223">Čuvanje fajla nije moguće zbog smernica organizacije</translation>
@@ -2648,6 +2650,7 @@ Možete ponovo da ga pokrenete u bilo kom trenutku.</translation>
 <translation id="91023216973987714">Načini plaćanja</translation>
 <translation id="9106655997975673326">Sa telefona <ph name="SOURCE_DEVICE" /></translation>
 <translation id="9107664647686727385">Traže ugrožene lozinke</translation>
+<translation id="9115035712231910133">Priložena je slika {title}</translation>
 <translation id="9119764377203471454">Dodavanje priloga nije uspelo</translation>
 <translation id="9124387962554796433">Google može da koristi istoriju za personalizaciju Pretrage i drugih Google usluga.</translation>
 <translation id="9124978074365039456">Kupujte, prevodite i identifikujte ono što vidite pomoću kamere i foto-galerije</translation>

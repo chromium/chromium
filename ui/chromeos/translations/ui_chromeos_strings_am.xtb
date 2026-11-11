@@ -558,7 +558,6 @@
 <translation id="5305688511332277257">ምንም አልተጫነም</translation>
 <translation id="5317780077021120954">አስቀምጥ</translation>
 <translation id="5318819489018851358">ለLinux አጋራ</translation>
-<translation id="5330145655348521461">እነዚህ ፋይሎች በተለየ ዴስክቶፕ ላይ ተከፍተዋል። ለማየት ወደ <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) ይውሰዱት።</translation>
 <translation id="5330512191124428349">መረጃ ያግኙ</translation>
 <translation id="535792325654997756">ድመቶች ያሉት ሰው</translation>
 <translation id="5358764674931277">የክፈፍ ፍጥነት</translation>
@@ -699,7 +698,6 @@
 <translation id="636254897931573416">ልክ ያልሆነ ጎራ ድኅረ ቅጥያ ዝምድና እሴት</translation>
 <translation id="6364301859968397756">የድርጅት ማከማቻ ሞልቷል</translation>
 <translation id="6367976544441405720">ቫን</translation>
-<translation id="637062427944097960">ይህ ፋይል በሌላ ዴስክቶፕ ላይ ተከፍቷል። እሱን ለማየት ወደ <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) ይውሰዱት።</translation>
 <translation id="6394388407447716302">ተነባቢ-ብቻ</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> ንጥሎች</translation>
 <translation id="6407769893376380348"><ph name="FILE_NAME" /> ስለተመሰጠረ ሊንቀሳቀስ አልቻለም።</translation>

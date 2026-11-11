@@ -3783,6 +3783,13 @@ Se la policy <ph name="NTPCARDSVISIBLE" /> è disattivata, la scheda di Outlook 
 <translation id="3284094172359247914">Controlla l'utilizzo dell'API WebUSB</translation>
 <translation id="3285231260918855067">Opacità contorno del testo della filigrana, da 0 (trasparente) a 100 (opaco).</translation>
 <translation id="3286159327013237833">Attiva i clic automatici nella schermata di accesso</translation>
+<translation id="3286515980166695377">Questa policy è stato ritirata nella versione M153 e non ha più alcun effetto a partire dalla versione M159. Le firme ad hoc per le applicazioni native create durante l'installazione di un'applicazione web progressiva (PWA) sono ora attivate in modo permanente su <ph name="MAC_OS_NAME" />. In questo modo, ogni applicazione installata ha un'identità univoca per i componenti di sistema di <ph name="MAC_OS_NAME" />.
+
+Se la policy viene attivata o se non viene configurata, è possibile utilizzare le firme ad hoc per l'applicazione nativa creata durante l'installazione di un'applicazione web progressiva (PWA). In questo modo, ogni applicazione installata ha un'identità univoca per i componenti di sistema di <ph name="MAC_OS_NAME" />.
+
+Se la policy viene disattivata, tutte le applicazioni native create durante l'installazione di applicazioni web progressive (PWA) avranno la stessa identità. Questo può interferire con la funzionalità di <ph name="MAC_OS_NAME" />.
+
+Disattiva la policy solo se utilizzi una soluzione di sicurezza degli endpoint che blocca le applicazioni con una firma ad hoc.</translation>
 <translation id="3288595667065905535">Canale di rilascio</translation>
 <translation id="3294430356898755483">La configurazione della policy consente agli amministratori di impostare un elenco di stampanti per i loro utenti. La selezione della stampante viene effettuata la prima volta che gli utenti provano a stampare.
 
@@ -5645,6 +5652,13 @@ Se imposti un valore superiore a questo limite, verrà utilizzato 256 (99 in <ph
 
 Tieni presente che i limiti applicati sono influenzati da <ph name="ALLOW_SOCKET_POOL_SIZE_RANDOMIZATION_FOR_PROXIES_POLICY_NAME" />.</translation>
 <translation id="4528981768990874684">Disattiva la funzionalità <ph name="IP_PROTECTION_NAME" />.</translation>
+<translation id="4529292353296224032">Se la policy viene impostata su Attivata, gli screenshot acquisiti con scorciatoie da tastiera
+o API di estensioni non sono consentiti. Se la policy viene impostata su Disattivata o se non viene configurata, gli screenshot sono consentiti.
+
+Nelle versioni di <ph name="PRODUCT_NAME" /> dalla 155 alla 158, l'attivazione di questa policy può anche impedire alle estensioni di collegare il debugger tramite 'chrome.debugger.attach()', ad esempio quando la policy <ph name="CHROME_VARIATIONS_POLICY_NAME" /> disattiva tutte le varianti.
+
+Tieni presente che su <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> e <ph name="LINUX_OS_NAME" />,
+questa impostazione non blocca gli screenshot acquisiti tramite il sistema operativo o applicazioni di terze parti.</translation>
 <translation id="453031441196755904">Questa norma è obsoleta.</translation>
 <translation id="4531088355818260318">Questa policy consente di definire un elenco di regole per inserire intestazioni HTTP personalizzate nelle richieste web che corrispondono a pattern URL specifici. Gli header configurati da questa policy hanno la precedenza su quelli originariamente inclusi nella richiesta, così come su eventuali modifiche tentate da utenti o estensioni.
 
@@ -5807,6 +5821,21 @@ Questa policy non ha effetto se <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_F
       Se è impostata su false, l'acquisizione di pacchetti di rete non è disponibile sul dispositivo.</translation>
 <translation id="4599810650416623373">Blocca le ottimizzazioni di JavaScript su questi siti</translation>
 <translation id="4600786265870346112">Attivazione del puntatore grande</translation>
+<translation id="460264931744856609">L'impostazione della policy permette di controllare le impostazioni di gestione delle estensioni per <ph name="PRODUCT_NAME" />, incluse quelle controllate da policy esistenti relative alle estensioni.
+
+Questa policy consente di mappare un ID estensione o un URL di aggiornamento soltanto alla relativa impostazione specifica. È possibile impostare una configurazione predefinita per l'ID speciale <ph name="DEFAULT_SCOPE" />, che verrà applicata a tutte le estensioni senza una configurazione personalizzata in questa policy.
+
+Questa policy può fare l'override della configurazione per singola estensione delle policy legacy.
+
+Tieni presente che qualsiasi impostazione dell'estensione per ID da <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />, <ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />, <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" /> o <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> erediterà solo 'installation_mode' e 'update_url' dalle impostazioni predefinite di <ph name="DEFAULT_SCOPE" />. Non erediterà altre proprietà. Con un URL di aggiornamento, la configurazione verrà applicata alle estensioni con l'esatto URL di aggiornamento indicato nel file manifest dell'estensione (http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy). Se il flag 'override_update_url' viene impostato su true, l'estensione verrà installata e aggiornata usando l'URL di aggiornamento ("update") specificato nella policy <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> o nel campo 'update_url' di questa policy. Il flag 'override_update_url' viene ignorato se il valore 'update_url' è un URL del Chrome Web Store.
+
+Nelle versioni di <ph name="PRODUCT_NAME" /> dalla 155 alla 158, l'applicazione di 'runtime_blocked_hosts' a un'estensione con l'autorizzazione 'debugger' può disattivare completamente 'chrome.debugger.attach()' su tutte le destinazioni, ad esempio quando la policy <ph name="CHROME_VARIATIONS_POLICY_NAME" /> disattiva tutte le varianti.
+
+Sulle istanze <ph name="MS_WIN_NAME" />, l'installazione forzata di app ed estensioni esterne a Chrome Web Store è consentita solo se l'istanza è collegata a un dominio <ph name="MS_AD_NAME" />, associata a <ph name="MS_AAD_NAME" /> o registrata in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Sulle istanze di <ph name="MAC_OS_NAME" /> è possibile forzare l'installazione di app ed estensioni che non fanno parte di Chrome Web Store soltanto se l'istanza è gestita tramite MDM, aggiunta a un dominio tramite MCX o registrata in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Nota: questa policy si applica solo alle piattaforme che supportano le estensioni.</translation>
 <translation id="4602988345256038309">Consenti le connessioni di assistenza da remoto a questo computer</translation>
 <translation id="4605677392792989397">La configurazione della policy consente di impostare un elenco di URL di accesso aziendale (solo protocolli HTTP e HTTPS). Il servizio di protezione tramite password acquisisce gli hash con salt delle password in questi URL e li utilizza per il rilevamento del riutilizzo delle password. Per consentire a <ph name="PRODUCT_NAME" /> di acquisire correttamente gli hash con salt della password, assicurati che le pagine di accesso seguano queste linee guida (https://www.chromium.org/developers/design-documents/create-amazing-password-forms).
 

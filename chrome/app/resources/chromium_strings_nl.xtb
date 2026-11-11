@@ -5,7 +5,6 @@
 <translation id="1029669172902658969">Opnieuw opstarten om &amp;Chromium OS te updaten</translation>
 <translation id="1040916596585577953">Chromium raadt je aan deze extensie te checken</translation>
 <translation id="1042552502243217427">Als een site vraagt om links op de sitepagina privé vooraf te laden, gebruikt Chromium de servers van Google. Je identiteit wordt dan verborgen voor de vooraf geladen site, maar Google leert welke sites vooraf worden geladen.</translation>
-<translation id="1051793555070215510">Help ons Incognito te verbeteren door deze enquête van 1 minuut in te vullen.</translation>
 <translation id="1065672644894730302">Je voorkeuren kunnen niet worden gelezen.
 
 Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren worden niet opgeslagen.</translation>
@@ -31,18 +30,15 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="1262876892872089030">Terwijl dit tabblad inactief was, is er geheugen vrijgemaakt om Chromium snel te houden. Je kunt ervoor kiezen deze site altijd uit te sluiten van inactiviteit.</translation>
 <translation id="1265577313130862557">Chromium heeft deze download geblokkeerd, omdat het bestand gevaarlijk is</translation>
 <translation id="126567311906253476">Als je met <ph name="USER_EMAIL" /> inlogt bij Google-services zoals Gmail of YouTube, kun je met hetzelfde account automatisch inloggen bij Chromium</translation>
-<translation id="1287534462498555020">Download Chromium op je telefoon</translation>
 <translation id="1290883685122687410">Configuratiefout: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">Je nieuwe Chromium-profiel instellen</translation>
 <translation id="132092532143527429">Probeer het met Gemini in Chromium</translation>
 <translation id="1324107359134968521">Chromium heeft bluetooth-toegang nodig om bluetooth-apparaten te verkennen. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1329040302064168406">Log in bij Chromium op je telefoon</translation>
 <translation id="1330562121671411446">Taal herkennen</translation>
-<translation id="1342274909142618978">Gegevens ook verwijderen uit Chromium (<ph name="URL" />)</translation>
 <translation id="1344429655882689538">{COUNT,plural, =1{Voor Geavanceerde beveiliging moet je Chromium herstarten om een update toe te passen. Er is een incognito- of geïsoleerd venster geopend. Het wordt niet opnieuw geopend na de herstart.}other{Voor Geavanceerde beveiliging moet je Chromium herstarten om een update toe te passen. Er zijn # incognito- en geïsoleerde vensters geopend in verschillende profielen. Ze worden niet opnieuw geopend na de herstart.}}</translation>
 <translation id="1345251407431278948">Vastgezet. Je krijgt weer toegang tot Zoeken met afbeelding via de nieuwe knop op de werkbalk.</translation>
 <translation id="1383876407941801731">Zoeken</translation>
-<translation id="1388276868779258475">Gebruik de Chromium-app om onderweg te blijven browsen</translation>
 <translation id="141901961143729572">Geef je mening</translation>
 <translation id="1465192221147974788">Als je je venster wilt delen, sta je schermopname voor Chromium toe in Systeeminstellingen.</translation>
 <translation id="1478370723027452770">Hulp bij Chrome for Testing</translation>
@@ -56,7 +52,6 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="1574377791422810894">Veiligheidstools van Chromium</translation>
 <translation id="1594928384848033697">Chromium wil je Wachtwoordmanager-gegevens verwijderen. Typ je Windows-wachtwoord om dit toe te staan.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Je beheerder vereist dat je Chromium opnieuw start om een update uit te voeren.}=1{Je beheerder vereist dat je Chromium opnieuw start om een update uit te voeren. Je incognitovenster kan niet opnieuw worden geopend.}other{Je beheerder vereist dat je Chromium opnieuw start om een update uit te voeren. Je # incognitovensters kunnen niet opnieuw worden geopend.}}</translation>
-<translation id="1623563412065267963">Krijg het beste van Google met de Chromium-app op je telefoon</translation>
 <translation id="1625909126243026060">Neem belangrijke privacy- en beveiligingsopties in Chromium door</translation>
 <translation id="1640672724030957280">Bezig met downloaden...</translation>
 <translation id="1648201623125974721">Nieuw icoon, dezelfde snelkoppeling: klik om vragen te stellen terwijl je browst met Contextuele taken.</translation>
@@ -70,7 +65,6 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="1745121272106313518">Chromium wordt over <ph name="REMAINING_TIME" /> opnieuw opgestart</translation>
 <translation id="1749104137266986751">Als HTTPS niet beschikbaar is, gebruikt Chromium een niet-beveiligde verbinding zonder je te waarschuwen</translation>
 <translation id="1774152462503052664">Chromium laten uitvoeren op de achtergrond</translation>
-<translation id="1779356040007214683">Om Chromium veiliger te maken, hebben we een aantal extensies uitgezet die niet worden vermeld in de <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> en mogelijk zonder je medeweten zijn geïnstalleerd.</translation>
 <translation id="1793486931176048546">Klik op <ph name="BEGIN_BOLD" />Ja<ph name="END_BOLD" /> in de Windows-melding om Chromium vast te zetten op je taakbalk voor snelle toegang.</translation>
 <translation id="1808667845054772817">Chromium opnieuw installeren</translation>
 <translation id="1820835682567584003">Chromium probeert het volgende te doen: <ph name="AUTHENTICATION_PURPOSE" /></translation>
@@ -83,7 +77,6 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="1862852878885210965">Zoeken met afbeelding</translation>
 <translation id="1863837059069884561"><ph name="EXISTING_USER" /> is al ingelogd. Als je je browsegegevens gescheiden wilt houden, log je in Chromium in op je eigen profiel bij als <ph name="USER_EMAIL_ADDRESS" />. Je krijgt ook onder andere je bookmarks van <ph name="DEVICE" />.</translation>
 <translation id="1880677175115548835">Tekst selecteren</translation>
-<translation id="1881322772814446296">Je logt in op een beheerd account waarmee de eigenaar van dat account beheer krijgt over je Chromium-profiel. Je Chromium-gegevens zoals je apps, bookmarks, geschiedenis, wachtwoorden en andere instellingen worden permanent gekoppeld aan <ph name="USER_NAME" />. Je kunt deze gegevens verwijderen via het Google Accounts Dashboard, maar je kunt deze gegevens niet koppelen aan een ander account. Je kunt een nieuw profiel maken om je bestaande Chromium-gegevens apart te houden. <ph name="LEARN_MORE" /></translation>
 <translation id="1896836275755235458">Chromium spaart de batterij door achtergrondactiviteit en visuele effecten te beperken, zoals vloeiend scrollen en videoframesnelheden. <ph name="BEGIN_LINK" />Meer informatie over Energiebesparing<ph name="END_LINK" /></translation>
 <translation id="1900969832270057921">Chromium Updater-service</translation>
 <translation id="1911763535808217981">Als je dit uitzet, kun je inloggen bij Google-sites zoals Gmail zonder in te loggen bij Chromium</translation>
@@ -91,7 +84,6 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="1933341829955786215">Je organisatie, <ph name="MANAGER" />, vereist dat je inlogt bij Chromium</translation>
 <translation id="193439633299369377">Chromium OS moet opnieuw worden gestart om de update uit te voeren.</translation>
 <translation id="1951406923938785464">Chromium heeft deze download geblokkeerd, omdat het bestandstype niet vaak wordt gedownload en misschien gevaarlijk is</translation>
-<translation id="1953553007165777902">Downloaden... Nog <ph name="MINUTE" /> minuten</translation>
 <translation id="1966382378801805537">Chromium kan de standaardbrowser niet bepalen of instellen</translation>
 <translation id="197326043290947695">Browse slimmer met Zoeken met afbeelding</translation>
 <translation id="1990262977744080398">Meer informatie over waarom Chromium bepaalde bestanden blokkeert, wordt geopend in een nieuw tabblad</translation>
@@ -106,7 +98,6 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="208726765006323911">De volgende keer dat je Chromium iOS opent, zie je een prompt om <ph name="FEATURE_NAME" /> te proberen.</translation>
 <translation id="2099452623287920103">Je wachtwoorden en andere Chromium-gegevens die je hebt opgeslagen in je Google-account, worden verwijderd van dit apparaat. Log opnieuw in om ze weer te gebruiken in Chromium.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Je organisatie verwijdert browsegegevens automatisch als Chromium 1 minuut niet wordt gebruikt. Dit kunnen onder andere de geschiedenis, gegevens voor automatisch invullen en downloads zijn. Je tabbladen blijven geopend.}other{Je organisatie verwijdert browsegegevens automatisch als Chromium # minuten niet wordt gebruikt. Dit kunnen onder andere de geschiedenis, gegevens voor automatisch invullen en downloads zijn. Je tabbladen blijven geopend.}}</translation>
-<translation id="2125838419757773031">Selecteer een schermgedeelte om te zoeken</translation>
 <translation id="2126108037660393668">De verificatie van het gedownloade bestand is mislukt.</translation>
 <translation id="2135919691573380097">Deze site melden</translation>
 <translation id="2137162749895930932">Scherm voor vertalen sluiten</translation>
@@ -118,13 +109,11 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="2185166961232948079">Chromium - Inloggen bij netwerk - <ph name="PAGE_TITLE" /></translation>
 <translation id="2190166659037789668">Fout bij updaten: <ph name="UPDATE_CHECK_ERROR" />.</translation>
 <translation id="2199210295479376551">Account verwijderen uit Chromium</translation>
-<translation id="2201788217099588893">Gebruik de Chromium-app om de beste shoppingtools onderweg te gebruiken</translation>
 <translation id="2209877494277346829">Chromium isoleren van andere apps</translation>
 <translation id="2210502920229141283">Blijf onderweg beter beveiligd met de uitgebreide versie van Safe Browsing op Chromium voor iOS</translation>
 <translation id="2210682093923538346">Gevaarlijke site. Chromium heeft meldingen verwijderd.</translation>
 <translation id="2236949375853147973">Mijn activiteit</translation>
 <translation id="2238130810669087193">Log in bij Chromium om onder andere je adressen te gebruiken op al je apparaten. Dit adres wordt opgeslagen in je Google-account nadat je bent ingelogd.</translation>
-<translation id="2241627712206172106">Als je een computer deelt, kunnen vrienden en familie afzonderlijk surfen en Chromium configureren zoals zij dat willen.</translation>
 <translation id="22571759390241347">Vaardigheden in Chromium</translation>
 <translation id="2283803047247799269">Dit tabblad doorzoeken met Zoeken met afbeelding</translation>
 <translation id="2287771843518581140">{NUM_TABS,plural, =1{Chromium raadt aan het tabblad dat je browser vertraagt te onderbreken}other{Chromium raadt aan de tabbladen die je browser vertragen te onderbreken}}</translation>
@@ -150,11 +139,9 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="2513154137948333830">Opnieuw opstarten vereist: <ph name="INSTALL_SUCCESS" /></translation>
 <translation id="2542968102051442371">Tekst selecteren met Zoeken met afbeelding</translation>
 <translation id="2554739539410784893">Chromium probeert bestaande wachtwoorden te vervangen. Typ je Windows-wachtwoord om dit toe te staan.</translation>
-<translation id="2560420686485554789">Chromium heeft toegang tot de opslag nodig om bestanden te downloaden</translation>
 <translation id="2572494885440352020">Chromium Helper</translation>
 <translation id="2575822587468774919">Selecteer iets om te zoeken met Zoeken met afbeelding</translation>
 <translation id="2576118232315942160">Log in bij Chromium om onder andere je wachtwoorden te gebruiken op al je apparaten</translation>
-<translation id="2587622539943955767">Scan de QR-code met je telefoon om Chromium te downloaden en log in op je Google-account.</translation>
 <translation id="2587885422541096572">om te zoeken met Chromium.</translation>
 <translation id="2592940277904433508">Chromium blijven gebruiken</translation>
 <translation id="259935314519650377">Kan het gedownloade installatieprogramma niet opslaan in het cachegeheugen. Fout: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
@@ -164,11 +151,9 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="2637732208198500597">{COUNT,plural, =0{Voor Geavanceerde beveiliging moet je Chromium herstarten om een update toe te passen}=1{Voor Geavanceerde beveiliging moet je Chromium herstarten om een update toe te passen. Je incognitovenster kan niet opnieuw worden geopend.}other{Voor Geavanceerde beveiliging moet je Chromium herstarten om een update toe te passen. Je # incognitovensters kunnen niet opnieuw worden geopend.}}</translation>
 <translation id="263863604136125912">Chromium starten</translation>
 <translation id="2648074677641340862">Er is tijdens de installatie een fout opgetreden in het besturingssysteem. Download Chromium opnieuw.</translation>
-<translation id="2661879430930417727">Als je een apparaat deelt, kunnen vrienden en familie afzonderlijk surfen en Chromium instellen zoals zij dat willen.</translation>
 <translation id="2676569452213089702">Makkelijke toegang om Gemini te gebruiken in Chromium op je apparaat, zelfs als Chromium is geminimaliseerd.</translation>
 <translation id="2711502716910134313">Chromium-tabblad</translation>
 <translation id="2718390899429598676">Je gegevens worden voor extra beveiliging door Chromium gecodeerd.</translation>
-<translation id="2721354645805494590">Log uit om je Google-account uit Chromium te verwijderen</translation>
 <translation id="2722636413143664436">Log in bij Chromium om onder andere je wachtwoorden en bookmarks te gebruiken op al je apparaten</translation>
 <translation id="2738871930057338499">Kan geen verbinding maken met internet. HTTP 403 Verboden. Check je proxyconfiguratie.</translation>
 <translation id="2753623023919742414">Klik om te zoeken</translation>
@@ -178,7 +163,6 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="2803971713792056305">Je Chromium</translation>
 <translation id="2816462166102338036">Deze video doorzoeken met Zoeken met afbeelding</translation>
 <translation id="2819844767470613567">Waarschuwing: Chromium kan niet voorkomen dat extensies je browsergeschiedenis vastleggen. Als je deze extensie in de geïsoleerde modus wilt uitzetten, verwijder je het vinkje bij deze optie.</translation>
-<translation id="282591729717417030">Ontdek producten met je camera en volg prijsdalingen als je onderweg bent met Chromium op iOS.</translation>
 <translation id="2841525013647267359">Vertalen uit het</translation>
 <translation id="2846251086934905009">Installatiefout: Het installatieprogramma is niet afgerond. De installatie is afgebroken.</translation>
 <translation id="2847479871509788944">Verwijderen uit Chromium…</translation>
@@ -207,16 +191,13 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="3068187312562070417">Andere Chromium-profielen</translation>
 <translation id="3068290154869370196">Extensies zijn add-ons waarmee je Chromium kunt aanpassen. Van georganiseerd blijven tot dagelijkse taken vereenvoudigen: met extensies maak je Chromium helemaal eigen.</translation>
 <translation id="3068515742935458733">Help ons Chromium te verbeteren door crashrapporten en <ph name="UMA_LINK" /> naar Google te verzenden</translation>
-<translation id="3071024987058544609">Gebruik de Chromium-app om overal te profiteren van de beveiliging van Google</translation>
 <translation id="3079753320517721795">{NUM_DEVICES,plural, =0{Een of meer Chromium-extensies hebben toegang gekregen tot 1 USB-apparaat}=1{Een of meer Chromium-extensies hebben toegang tot 1 USB-apparaat}other{Een of meer Chromium-extensies hebben toegang tot # USB-apparaten}}</translation>
 <translation id="3090734884397229414">Log in bij Chromium om onder andere je leeslijst van <ph name="DEVICE" /> te gebruiken</translation>
 <translation id="3095811995836568724">Chromium-geschiedenis</translation>
 <translation id="3103660991484857065">Het installatieprogramma kan het archief niet uitpakken. Download Chromium opnieuw.</translation>
 <translation id="310459126943037700">Kan taak/taken niet beëindigen.</translation>
-<translation id="3104828284009500087">Iets op de pagina zoeken</translation>
 <translation id="3126784891977756556">Houd je wachtwoorden, bookmarks en geschiedenis perfect gesynchroniseerd op al je apparaten. Krijg makkelijk toegang tot de functies die je kent en gebruikt door je standaardbrowser te updaten naar Chromium.</translation>
 <translation id="3130323860337406239">Chromium gebruikt je microfoon.</translation>
-<translation id="3130333203120345554">Nieuwe zoekopdracht</translation>
 <translation id="3137969841538672700">Sleep om te zoeken</translation>
 <translation id="3144188012276422546">Dit tabblad gebruikt extra resources. Sta toe dat Chromium het inactief maakt om de prestaties te verbeteren.</translation>
 <translation id="3149163023759831301">Als je je scherm wilt delen, sta je schermopname voor Chromium toe in Systeeminstellingen</translation>
@@ -225,19 +206,16 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="3179665906251668410">Link openen in een Chromium-inco&amp;gnitovenster</translation>
 <translation id="3185330573522821672">Je nieuwe Chromium-profiel aanpassen</translation>
 <translation id="3189205223539394158">Je kunt blijven chatten met de AI-modus zonder van tabblad te wisselen. Log in bij Chromium om aan de slag te gaan. Je kunt ook onder andere je wachtwoorden op al je apparaten gebruiken.</translation>
-<translation id="3224847870593914902">Als je je Google-account uit Chromium wilt verwijderen, log je uit bij Chromium via de pagina Instellingen</translation>
 <translation id="3234316605225071811">Chromium kan je later vragen of je opgeslagen informatie wilt gebruiken om formulieren automatisch voor je in te vullen</translation>
 <translation id="3258596308407688501">Chrome kan niet lezen van en schrijven naar de eigen gegevensdirectory :
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
-<translation id="3263249950597659484">Neem je favoriete AI-tools van Google overal mee naartoe met Chromium op iOS.</translation>
 <translation id="3264761466044851269">Log in bij Chromium om onder andere je extensies van <ph name="DEVICE" /> te gebruiken</translation>
 <translation id="326944442937875564">{COUNT,plural, =1{Er is een nieuwe update voor Chromium beschikbaar die wordt uitgevoerd zodra je het programma opnieuw start. Je geïsoleerde venster wordt niet opnieuw geopend.}other{Er is een nieuwe update voor Chromium beschikbaar die wordt uitgevoerd zodra je het programma opnieuw start. Je # geïsoleerde vensters worden niet opnieuw geopend.}}</translation>
 <translation id="3286538390144397061">Nu herstarten</translation>
 <translation id="328888136576916638">Google API-sleutels ontbreken. Sommige functies van Chromium worden uitgezet.</translation>
 <translation id="3296368748942286671">Achtergrondapps actief houden als Chromium is gesloten</translation>
 <translation id="3313189106987092621">Chromium waarschuwt je voordat een site wordt geladen via een niet-beveiligde verbinding</translation>
-<translation id="3316771292331273802">Je wordt uitgelogd van de meeste sites als je alle Chromium-vensters sluit, behalve van je Google-account als je bent ingelogd bij Chromium. Als je wilt dat sites je onthouden, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3352986031709923790">rechterbovenhoek van zoekgebied: rechts <ph name="RIGHT" />%, boven <ph name="TOP" />%</translation>
 <translation id="3366305173356742781">Chromium-gegevens in je account</translation>
 <translation id="3375770072980084583">Gebruik je wachtwoorden met Chromium op je telefoon</translation>
@@ -254,11 +232,9 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="3522404737534491619">Als je je venster wilt delen, sta je schermopname voor Chromium toe in Systeeminstellingen</translation>
 <translation id="3530103706039034513"><ph name="EXISTING_USER" /> is al ingelogd.  Als je je browsegegevens gescheiden wilt houden, log je in Chromium in op je eigen profiel bij als <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="3531741627422851418">QR-code om de Chromium-browser te downloaden op mobiele apparaten</translation>
-<translation id="354621070532799440">Herinnering: de beste beveiligingsfuncties van Google in je broekzak</translation>
 <translation id="3561853857681580870">Als je je scherm wilt delen, sta je schermopname voor Chromium toe in Systeeminstellingen.</translation>
 <translation id="3597003331831379823">Kan configuratie met rechten op hoger niveau niet uitvoeren. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">Inloggen bij Chromium</translation>
-<translation id="3639635944603682591">De browsegegevens van deze persoon worden verwijderd van dit apparaat. Als je de gegevens wilt herstellen, log je in bij Chromium als <ph name="USER_EMAIL" />.</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{Er is een nieuwe update voor Chromium beschikbaar die wordt uitgevoerd zodra je het programma opnieuw start.}=1{Er is een nieuwe update voor Chromium beschikbaar die wordt uitgevoerd zodra je het programma opnieuw start. Je incognitovenster kan niet opnieuw worden geopend.}other{Er is een nieuwe update voor Chromium beschikbaar die wordt uitgevoerd zodra je het programma opnieuw start. Je # incognitovensters kunnen niet opnieuw worden geopend.}}</translation>
 <translation id="3667616615096815454">Kan niet installeren. De app is niet bekend bij de server.</translation>
 <translation id="3675854891107786059">Gebruik je <ph name="BEGIN_LINK" />eigen wachtwoordzin<ph name="END_LINK" /> om alle Chromium-gegevens in je Google-account te versleutelen. Betaalmethoden en adressen van Google Pay worden niet versleuteld. De browsegeschiedenis in Chromium wordt niet gesynchroniseerd.</translation>
@@ -272,22 +248,16 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="3802055581630249637">Chromium laadt vooraf de pagina's die je waarschijnlijk gaat bezoeken, zodat de pagina's sneller laden als je ze bezoekt.</translation>
 <translation id="3810973564298564668">Beheren</translation>
 <translation id="3823384748599722168">Als je je opgeslagen wachtwoorden wilt gebruiken, volg je de QR-code, download je Chromium voor iOS en log je in op je Google-account</translation>
-<translation id="3846683726093018685">**Samenvatten:** Beschrijf in één zin van maximaal 30 woorden het belangrijkste onderwerp en doel van de content in het screenshot.
-
-          **Vragen voorstellen:** Genereer een lijst met 3 tot 5 prikkelende vragen die een gebruiker kan stellen om het screenshot beter te begrijpen. Deze vragen moeten minstens één vraag bevatten die specifiek over een visueel object, het ontwerp of de plaatsing ervan gaat.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
 <translation id="386243222263310720">Log in bij Chromium om onder andere je bookmarks op al je apparaten te gebruiken</translation>
 <translation id="3864888736839865780">{COUNT,plural, =1{Je beheerder vraagt je Chromium opnieuw te starten om deze update uit te voeren. Je geïsoleerde venster wordt niet opnieuw geopend.}other{Je beheerder vraagt je Chromium opnieuw te starten om deze update uit te voeren. Je # geïsoleerde vensters worden niet opnieuw geopend.}}</translation>
 <translation id="3885770153807205175">Taalkiezer</translation>
 <translation id="388648406173476553">Pas Chromium aan en beheer de instellingen. Je aandacht is vereist. Klik voor meer informatie.</translation>
-<translation id="3889543394854987837">Klik op je naam om Chromium te openen en begin met surfen.</translation>
 <translation id="3892148308691398805">Tekst kopiëren</translation>
-<translation id="390528597099634151"><ph name="EXISTING_USER" /> is al ingelogd bij dit Chromium-profiel. Als je je browsegegevens gescheiden wilt houden, kan Chromium een eigen profiel voor je maken.</translation>
 <translation id="3909353120217047026">Deze extensie schendt het beleid van de Chrome Web Store en is mogelijk onveilig. Verwijder de extensie van Chromium zodat deze je gegevens (waaronder je persoonlijke informatie) niet meer kan bekijken en wijzigen op sites die je bezoekt.</translation>
 <translation id="3941890832296813527">Installatiefout: De bestandsnaam van het installatieprogramma is ongeldig of wordt niet ondersteund.</translation>
 <translation id="3945058413678539331">Chromium probeert wachtwoorden te kopiëren. Geef je Windows-wachtwoord op om dit toe te staan.</translation>
 <translation id="3950481960271781644">Log in bij Chromium om onder andere je opgeslagen informatie op al je apparaten te gebruiken</translation>
-<translation id="3954172517175569325">De wachtwoorden, betaalmethoden en adressen die je hebt opgeslagen in je Google-account, worden verwijderd van dit apparaat. Log opnieuw in om ze weer te gebruiken in Chromium.</translation>
 <translation id="395904275706073188">Je kunt beschermde pagina's niet openen. Probeer een andere pagina.</translation>
 <translation id="3962647064319009959">Meer informatie over hoe Chromium je beschermt</translation>
 <translation id="3967822245660637423">Downloaden voltooid</translation>
@@ -301,7 +271,6 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="4023601594785368013">Oorspronkelijke taal: <ph name="LANGUAGE" /></translation>
 <translation id="4023845192681161785">Open links in Chromium vanuit elke app. Voor makkelijke toegang wordt Chromium vastgezet op je taakbalk.</translation>
 <translation id="4036079820698952681">Help Chromium beter te maken door de <ph name="BEGIN_LINK" />huidige instellingen<ph name="END_LINK" /> te melden</translation>
-<translation id="4050175100176540509">Er zijn belangrijke beveiligingsverbeteringen en nieuwe functies beschikbaar in de nieuwste versie.</translation>
 <translation id="4055805654398742145">W&amp;achtwoordmanager</translation>
 <translation id="4095980151185649725">{COUNT,plural, =1{Je organisatie sluit Chromium automatisch als deze 1 minuut niet wordt gebruikt. Browsegegevens worden verwijderd. Dit kunnen onder andere de geschiedenis, gegevens voor automatisch invullen en downloads zijn.}other{Je organisatie sluit Chromium automatisch als deze # minuten niet wordt gebruikt. Browsegegevens worden verwijderd. Dit kunnen onder andere de geschiedenis, gegevens voor automatisch invullen en downloads zijn.}}</translation>
 <translation id="4118474109249235144">Chromium-incognitomodus</translation>
@@ -317,7 +286,6 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="4217972271355023382">Als je online veiliger wilt blijven met de keuzes van je ouder, wissel je naar het Chromium-profiel waarop je al bent ingelogd als <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4222932583846282852">Annuleren…</translation>
 <translation id="4224210481850767180">De installatie is geannuleerd.</translation>
-<translation id="4230135487732243613">Wil je je Chromium-gegevens aan dit account koppelen?</translation>
 <translation id="4251772536351901305">Geeft je waarschuwingen over gevaarlijke sites, zelfs sites die Google niet eerder kende, door meer gegevens van sites te analyseren dan de standaardbeveiliging. Je kunt ervoor kiezen om waarschuwingen voor Chromium over te slaan.</translation>
 <translation id="4269093074552541569">Uitloggen bij Chromium</translation>
 <translation id="4271805377592243930">Hulp bij Chromium</translation>
@@ -373,7 +341,6 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="4786083865378785874">Als Gemini in Chromium open is, blijft het zijvenster open als je nieuwe tabbladen maakt</translation>
 <translation id="479167709087336770">Hiervoor wordt dezelfde spellingcontrole gebruikt als voor Google Zoeken. Tekst die je in de browser typt, wordt naar Google gestuurd. Je kunt dit altijd wijzigen in de instellingen.</translation>
 <translation id="4814736265800133385">Chromium gebruiken zonder account</translation>
-<translation id="4839733921943823254">Snelkoppeling vastzetten</translation>
 <translation id="4888717733111232871">Inkomende regel zodat Chromium mDNS-verkeer toestaat.</translation>
 <translation id="4893347770495441059">Opnieuw starten om &amp;Chromium te updaten</translation>
 <translation id="4918086044614829423">Accepteren</translation>
@@ -382,35 +349,26 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="4943838377383847465">Chromium bevindt zich in de achtergrondmodus.</translation>
 <translation id="494490797786467921">Klik om het inlogdialoogvenster van Chromium te sluiten</translation>
 <translation id="4950660488495335294">Met Chromium-profielen kun je alle Chromium-gegevens gescheiden houden. Maak profielen voor vrienden en familie of maak onderscheid tussen werk en privé.</translation>
-<translation id="4987820182225656817">Gasten kunnen Chromium gebruiken zonder iets achter te laten.</translation>
 <translation id="4992938037305302429">Je account in Chromium</translation>
-<translation id="4994636714258228724">Jezelf toevoegen aan Chromium</translation>
-<translation id="504699503110800016">Open het overloopmenu</translation>
-<translation id="5074496654342756568">Krijg toegang tot al je Google-favorieten met Chromium op je <ph name="DEVICE_TYPE" /></translation>
 <translation id="5123973130450702873">Chromium heeft rechten nodig om je handen te volgen</translation>
 <translation id="5141988424377517949">Je bent hier niet recent geweest. Chromium heeft <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> en <ph name="PERMISSION_3" /> verwijderd.</translation>
 <translation id="5171868502429358653">Inloggen bij Chromium</translation>
 <translation id="5174969993834422967">Meestal blokkeer je meldingen. Klik op het meldingsicoon in de rechterhoek van de locatiebalk om toe te staan dat deze site meldingen stuurt.</translation>
 <translation id="5174983315706567306">Er is onvoldoende schijfruimte.</translation>
 <translation id="5187123684706427865">Chromium-account moet opnieuw worden geverifieerd</translation>
-<translation id="5223510345050543907">Ga verder waar je gebleven was met Chromium op iOS.</translation>
 <translation id="5231355151045086930">Uitloggen bij Chromium</translation>
 <translation id="5234764350956374838">Sluiten</translation>
 <translation id="5249261924633168472">Link openen in een Chromium-inco&amp;gnitovenster</translation>
-<translation id="5276305953263010518">Download de Chromium-app om onderweg wachtwoorden op te slaan</translation>
 <translation id="5277894862589591112">Als je de wijzigingen wilt toepassen, start je Chromium opnieuw</translation>
-<translation id="5286907366254680517">Herkend</translation>
 <translation id="5289287148052354622">De Chromium-app downloaden</translation>
 <translation id="5294316920224716406">Als je browst in de incognitomodus, waarschuwt Chromium je voordat een site wordt geladen via een niet-beveiligde verbinding</translation>
 <translation id="5296581118566748922">Zoeken met Chromium</translation>
 <translation id="5313228254328109263">Interne Chromium Updater-service</translation>
 <translation id="5324450571874973775">Gebruik ze samen met andere Gemini-functies in Chromium</translation>
 <translation id="5346389065299425353">Verfijn je zoekopdracht door meerdere tabbladen, bestanden en tools toe te voegen</translation>
-<translation id="5348677704241861105">Krijg een snel overzicht van dit document en stel vragen met Gemini in Chromium</translation>
 <translation id="5352264705793813212">Chromium heeft een aantal veiligheidsaanbevelingen gevonden die je moet controleren</translation>
 <translation id="5352361688875342522">Andere Chromium-profielen</translation>
 <translation id="535243042947607642">ChromiumOS kan Chromium-gegevens niet opslaan in je Google-account omdat de inloggegevens voor je account zijn verouderd</translation>
-<translation id="5358375970380395591">Je logt in op een beheerd account waarmee de eigenaar van dat account beheer krijgt over je Chromium-profiel. Je Chromium-gegevens zoals je apps, bookmarks, geschiedenis, wachtwoorden en andere instellingen worden permanent gekoppeld aan <ph name="USER_NAME" />. Je kunt deze gegevens verwijderen via het Google Accounts Dashboard, maar je kunt deze gegevens niet koppelen aan een ander account.<ph name="LEARN_MORE" /></translation>
 <translation id="5368118228313795342">Extra code: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5377622451696208284">Neem Chromium op in Web- en app-activiteit om personalisatie te krijgen</translation>
 <translation id="5382964351116519680">Zoeken met Chromium openen</translation>
@@ -427,10 +385,8 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="5475924890392386523">Chromium heeft deze download geblokkeerd, omdat het bestand schadelijk kan zijn voor je persoonlijke en socialmedia-accounts</translation>
 <translation id="549669000822060376">Wacht terwijl Chromium de nieuwste systeemupdates installeert.</translation>
 <translation id="5496810170689441661">Chromium probeert wachtwoorden te bewerken. Geef je Windows-wachtwoord op om dit toe te staan.</translation>
-<translation id="549975168243349205">Gebruik je favoriete apps, zoals Google Drive en YouTube, als je onderweg bent naadloos met Chromium.</translation>
 <translation id="5524890928877629608">linkerbovenhoek van zoekgebied: links <ph name="LEFT" />%, boven <ph name="TOP" />%</translation>
 <translation id="5527463683072221100">Pdf's openen in Chromium</translation>
-<translation id="5536164441519929134">Stel vragen<ph name="LINE_BREAK" />over dit tabblad</translation>
 <translation id="555970465369471303">Om veiligheidsredenen zet Chromium JavaScript-optimalisatie uit als je een site voor het eerst bezoekt.
 
 Als deze pagina niet werkt zoals verwacht, kun je optimalisatie toestaan.</translation>
@@ -440,19 +396,15 @@ Als deze pagina niet werkt zoals verwacht, kun je optimalisatie toestaan.</trans
 <translation id="5580770360767802657">Chromium standaard gebruiken en vastzetten</translation>
 <translation id="5596063723521813107">{COUNT,plural, =1{Je beheerder vereist dat je Chromium opnieuw start om een update uit te voeren. Je geïsoleerde venster wordt niet opnieuw geopend.}other{Je beheerder vereist dat je Chromium opnieuw start om een update uit te voeren. Je # geïsoleerde vensters worden niet opnieuw geopend.}}</translation>
 <translation id="5596627076506792578">Meer opties</translation>
-<translation id="5605834417512968703">Selecteer iets om te zoeken met Zoeken met afbeelding of druk op Escape om Zoeken met afbeelding te sluiten</translation>
 <translation id="5614149501995591823">Er staat een <ph name="IMPORTANT_UPDATE" /> klaar. Je kunt nu opnieuw opstarten of instellen dat de update voor Chromium wordt doorgevoerd als je scherm <ph name="IDLE_DURATION" /> aanstaat en niet wordt gebruikt.</translation>
-<translation id="5618818588972826921">Selecteer tekst of een afbeelding om te zoeken met Zoeken met afbeelding of druk op Escape om Zoeken met afbeelding te sluiten</translation>
 <translation id="5623402015214259806">{0,plural, =0{Er is een Chromium-update beschikbaar}=1{Er is een Chromium-update beschikbaar}other{Er is al # dagen een Chromium-update beschikbaar}}</translation>
 <translation id="5643865575100044307">Sitegegevens altijd verwijderen van je apparaat als je Chromium sluit</translation>
 <translation id="5653831366781983928">Chromium nu opnieuw opstarten</translation>
-<translation id="565409517765894456">Als je toekomstige Chromium-updates wilt krijgen, heb je Windows 10 versie 1809 of hoger nodig. Deze computer gebruikt een oudere versie van Windows 10.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Chromium bekijken in deze taal</translation>
 <translation id="569897634095159764">Kan geen verbinding maken met internet. Proxyserver vereist verificatie.</translation>
 <translation id="5768371961535086509">Chromium maakt geheugen van inactieve tabbladen vrij. Zo krijgen actieve tabbladen en andere apps meer computerbronnen en blijft Chromium snel. Je inactieve tabbladen worden automatisch weer actief als je ernaar terugkeert. <ph name="BEGIN_LINK" />Meer informatie over Geheugenbesparing<ph name="END_LINK" /></translation>
 <translation id="5775198138441669627">Als je je wachtwoordzin bent vergeten of deze instelling wilt wijzigen, moet je de Chromium-gegevens in je account <ph name="SETTINGS_LINK" /></translation>
-<translation id="5800158606660203929">Pas Chromium aan en beheer de instellingen. Stel Chromium in als je standaardbrowser.</translation>
 <translation id="5802618941556161431">Houd je wachtwoorden, bookmarks en geschiedenis perfect gesynchroniseerd op al je apparaten door Chromium in te stellen als je standaardbrowser.</translation>
 <translation id="5809516625706423866">Kan geen verbinding maken met internet. HTTP 401 Niet geautoriseerd. Check je proxyconfiguratie.</translation>
 <translation id="5817952762723416573">Versnelt sites met de V8-engine van Chromium, maar maakt Chromium iets minder goed bestand tegen aanvallen. Deze instelling staat uit.</translation>
@@ -472,12 +424,9 @@ Als deze pagina niet werkt zoals verwacht, kun je optimalisatie toestaan.</trans
 <translation id="5953657885167112863">Chromium personaliseren</translation>
 <translation id="5960071705175224773">Je instellingen zijn gewijzigd door een onbekende app</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{Je organisatie sluit Chromium automatisch als deze 1 minuut niet wordt gebruikt.}other{Je organisatie sluit Chromium automatisch als deze # minuten niet wordt gebruikt.}}</translation>
-<translation id="5987687638152509985">Chromium updaten om de synchronisatie te starten</translation>
 <translation id="5990360079535151574">Via de knop Contextuele taken op de werkbalk kun je Contextuele taken opnieuw openen om vragen te stellen terwijl je browst</translation>
-<translation id="6003112304606738118">Downloaden... Nog <ph name="HOURS" /> uur</translation>
 <translation id="6009821354356307391">Stel een vervolgvraag</translation>
 <translation id="6040143037577758943">Sluiten</translation>
-<translation id="6044357424127037044">Haal meer uit online winkelen door de Chromium-app te gebruiken op je <ph name="DEVICE_TYPE" /></translation>
 <translation id="6058380562449900225">Ter bescherming van je gegevens kun je Chromium de rechten laten verwijderen voor sites die je niet recent hebt bezocht. Hiermee worden meldingen niet gestopt.</translation>
 <translation id="6063093106622310249">&amp;Openen in Chromium</translation>
 <translation id="6069027071882229820">Kopiëren als afbeelding</translation>
@@ -494,7 +443,6 @@ Als deze pagina niet werkt zoals verwacht, kun je optimalisatie toestaan.</trans
 <translation id="6165508094623778733">Meer informatie</translation>
 <translation id="6173308241973263798">De Chromium-gegevens in je account wissen</translation>
 <translation id="6174920971222007286">Dit bestand kan gevaarlijk zijn<ph name="LINE_BREAK" />Chromium kan deze download voor je checken als je het wachtwoord verstrekt. Informatie over het bestand wordt naar Google Safe Browsing gestuurd, maar de content en het wachtwoord van het bestand blijven op je apparaat staan.</translation>
-<translation id="6177442314419606057">Zoeken in Chrome</translation>
 <translation id="6182736845697986886">De installatie is mislukt vanwege een interne fout met de updateserver.</translation>
 <translation id="6183079672144801177">Zorg dat je bent ingelogd bij Chromium op je <ph name="TARGET_DEVICE_NAME" /> en probeer opnieuw te sturen.</translation>
 <translation id="6192070012454216182">Zoek en stel vragen vanaf elke locatie, zelfs als Chromium is geminimaliseerd. Hiermee kan Chromium op de achtergrond worden uitgevoerd.</translation>
@@ -502,11 +450,9 @@ Als deze pagina niet werkt zoals verwacht, kun je optimalisatie toestaan.</trans
 <translation id="6212496753309875659">Deze computer beschikt al over een recentere versie van Chromium. Als de software niet werkt, moet je Chromium verwijderen en het opnieuw proberen.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium wordt nu opnieuw gestart}=1{Chromium wordt over één seconde opnieuw gestart}other{Chromium wordt over # seconden opnieuw gestart}}</translation>
 <translation id="6232046770428574552">Chromium krijgt een update als je scherm niet wordt gebruikt</translation>
-<translation id="6241367896540709610">Chromium heeft toegang tot de opslag nodig om bestanden te downloaden</translation>
 <translation id="6245734527075554892">Checkt URL's aan de hand van een lijst met onveilige sites die is opgeslagen in Chromium</translation>
 <translation id="6248213926982192922">Chromium als standaardbrowser instellen</translation>
 <translation id="6248988683584659830">Zoek in de instellingen</translation>
-<translation id="6261803579884938625">Gebruik de beste beveiligingsfuncties van Google onderweg met de Chromium-app op je telefoon</translation>
 <translation id="6268381023930128611">Uitloggen bij Chromium?</translation>
 <translation id="6270547683008298381">Deze tabbladen gebruiken extra resources. Laat Chromium ze inactief maken om de prestaties te verbeteren.</translation>
 <translation id="6281746429495226318">Je Chromium-profiel aanpassen</translation>
@@ -515,13 +461,11 @@ Als deze pagina niet werkt zoals verwacht, kun je optimalisatie toestaan.</trans
 <translation id="6295779123002464101"><ph name="FILE_NAME" /> kan gevaarlijk zijn en is daarom door Chromium geblokkeerd.</translation>
 <translation id="6309712487085796862">Chromium gebruikt je camera.</translation>
 <translation id="6333502561965082103">Er wordt een andere bewerking in Chromium uitgevoerd. Probeer het later opnieuw.</translation>
-<translation id="6334986366598267305">Het is nu gemakkelijker om Chromium met je Google-account en op gedeelde computers te gebruiken.</translation>
 <translation id="6347002662287820329">Krijg makkelijk toegang tot je de functies die je kent, gebruikt en vertrouwt door Chromium in te stellen als je standaardbrowser.</translation>
 <translation id="6347933965114150440">Chromium-snelkoppeling</translation>
 <translation id="6366160072964553914">Chromium heeft deze download geblokkeerd, omdat het bestand niet vaak wordt gedownload en misschien gevaarlijk is</translation>
 <translation id="6373523479360886564">Weet je zeker dat je Chromium wilt verwijderen?</translation>
 <translation id="6375219077595103062">Voeg een snelkoppeling naar Wachtwoordmanager toe</translation>
-<translation id="6388799252195623474">help me hiermee</translation>
 <translation id="6390800440335263989">Als je wilt doorgaan, log je in bij Chromium als <ph name="EMAIL" />. Zo weet je zeker dat het beleid van je organisatie wordt toegepast.</translation>
 <translation id="6400112897226594999">Chromium-logo in een computerscherm.</translation>
 <translation id="6403826409255603130">Chromium is een webbrowser die webpagina's en applicaties bliksemsnel uitvoert. Chromium is snel, stabiel en eenvoudig in gebruik. Surf veiliger op internet met de in Chromium ingebouwde beveiliging tegen malware en phishing.</translation>
@@ -536,23 +480,19 @@ Als deze pagina niet werkt zoals verwacht, kun je optimalisatie toestaan.</trans
 <translation id="6460614424172581323">De volgende keer dat je Chromium op je <ph name="DEVICE_TYPE" /> opent, zie je een prompt om tabbladgroepen te gebruiken.</translation>
 <translation id="6466344609055215035">Account verwijderen uit Chromium</translation>
 <translation id="6475912303565314141">Hiermee wordt ook gecontroleerd welke pagina wordt getoond wanneer je Chromium start.</translation>
-<translation id="648319183876919572">De uitgebreide versie van Safe Browsing doet meer om je te beschermen tegen gevaarlijke websites en downloads</translation>
 <translation id="6510925080656968729">Chromium verwijderen</translation>
 <translation id="651535675648445253">Snelkoppelingen worden geopend in Chromium</translation>
 <translation id="6539122709674868420">Je organisatie sluit Chromium als deze <ph name="TIMEOUT_DURATION" /> niet wordt gebruikt. Browsegegevens zijn verwijderd. Dit kunnen onder andere de geschiedenis, gegevens voor automatisch invullen en downloads zijn.</translation>
-<translation id="6542839706527980775">Elk profiel heeft eigen Chromium-informatie, zoals bookmarks, geschiedenis en wachtwoorden</translation>
 <translation id="6556755379298048869">Zoeken met een sneltoets.</translation>
 <translation id="6563921047760808519">Meer informatie over <ph name="BEGIN_LINK" />hoe Chromium je gegevens privé houdt<ph name="END_LINK" /></translation>
 <translation id="6564039629497156115">Wijzigingen in deze instelling worden toegepast zodra Chromium opnieuw wordt gestart.</translation>
 <translation id="6567032987737689854">Je kunt je extensies beheren door in het hoofdmenu van Chromium te klikken op Extensies.</translation>
 <translation id="656935081669708576">Je kunt schakelen om wachtwoorden van een ander Chromium-profiel te bekijken</translation>
-<translation id="6569556444379005948">Gebruik de Chromium-app om de beste AI-tools onderweg te gebruiken</translation>
 <translation id="6570579332384693436">Chromium verzendt de tekst die je in tekstvelden typt naar Google om spelfouten te corrigeren</translation>
 <translation id="6598877126913850652">Ga naar instellingen voor Chromium-meldingen</translation>
 <translation id="6600016381025017075">Zoek naar iets op deze pagina</translation>
 <translation id="6613594504749178791">Je wijzigingen worden toegepast wanneer je Chromium opnieuw start.</translation>
 <translation id="6637908313088374648">Chromium wordt nu gestart als Windows wordt opgestart, zodat je meteen kunt beginnen met browsen. Je kunt dit uitzetten via de instellingen.</translation>
-<translation id="6648212540664651655">Ga verder waar je gebleven was: Chromium heeft je tabbladen uit je vorige sessie hersteld. Je kunt dit uitzetten in</translation>
 <translation id="665732753414869868">Chromium heeft camerarechten nodig om een 3D-kaart van je omgeving te maken</translation>
 <translation id="6669284030132180248">Als je je bookmarks ook opslaat in je Google-account, kun je productprijzen in Chromium bijhouden en een melding krijgen als de prijs daalt</translation>
 <translation id="6676384891291319759">Verbinding maken met internet</translation>
@@ -569,11 +509,9 @@ Sommige functies zijn mogelijk niet beschikbaar. Geef een andere profieldirector
 <translation id="674891594898436429">Actieve zoekopdracht in dit tabblad sluiten</translation>
 <translation id="6751374565094704799">Versnelt sites met de V8-engine van Chromium, maar maakt Chromium iets minder goed bestand tegen aanvallen. Deze instelling staat aan.</translation>
 <translation id="6754665438209053659">{count,plural, =1{Sommige van je Chromium-gegevens zijn nog niet opgeslagen in je Google-account. Wacht een paar minuten voordat je uitlogt. Als je nu uitlogt, worden deze gegevens (1 item) verwijderd.}other{Sommige van je Chromium-gegevens zijn nog niet opgeslagen in je Google-account. Wacht een paar minuten voordat je uitlogt. Als je nu uitlogt, worden deze gegevens ({count} items) verwijderd.}}</translation>
-<translation id="67706546131546258">Chromium raadt aan dit bestand te scannen omdat het misschien gevaarlijk is.</translation>
 <translation id="6779406956731413166">Chromium OS wordt mogelijk gemaakt door aanvullende <ph name="BEGIN_LINK_CROS_OSS" />opensource-software<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6804256634866838775">Actieve zoekopdracht sluiten</translation>
 <translation id="6831043979455480757">Vertalen</translation>
-<translation id="6847869444787758381">Chromium laat het je weten als je wachtwoorden mogelijk niet veilig meer zijn</translation>
 <translation id="684888714667046800">Kan geen verbinding maken met internet. Als je een firewall gebruikt, zorg je dat <ph name="PRODUCT_EXE_NAME" /> op de toelatingslijst staat.</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6859580922007887573">Druk op Tab om door te gaan</translation>
@@ -596,13 +534,11 @@ Sommige functies zijn mogelijk niet beschikbaar. Geef een andere profieldirector
             • Chromium-snelkoppelingen worden gereset
             <ph name="LINE_BREAKS" />
             Dit heeft geen gevolgen voor bookmarks, geschiedenis en opgeslagen wachtwoorden.</translation>
-<translation id="6930607614725241390">Zoeken in zijvenster</translation>
 <translation id="6948031725951063910">Je hebt de limiet van Chromium van <ph name="BOOKMARK_LIMIT" /> bookmarks bereikt. Sommige van je bookmarks zijn daarom nog niet opgeslagen in je Google-account.
 
 Je kunt pas nieuwe bookmarks opslaan in je account als je er een paar hebt verwijderd. Als je nu uitlogt, worden niet-opgeslagen bookmarks verwijderd.</translation>
 <translation id="6964305034639999644">Link openen in een Chromium-inco&amp;gnitovenster</translation>
 <translation id="6965382102122355670">OK</translation>
-<translation id="6985329841647292029">Voorwaarden van Chromium OS</translation>
 <translation id="7003299027384820442">Voer je wachtwoordzin in om Chromium-gegevens in je account <ph name="ACCOUNT_EMAIL" /> te gebruiken en op te slaan</translation>
 <translation id="7011190694940573312">De installatie is mislukt omdat deze versie van het besturingssysteem niet wordt ondersteund.</translation>
 <translation id="7024536598735240744">Fout bij uitpakken: <ph name="UNPACK_ERROR" />.</translation>
@@ -611,8 +547,6 @@ Je kunt pas nieuwe bookmarks opslaan in je account als je er een paar hebt verwi
 <translation id="7047386856539490735">Zijn deze resultaten nuttig?</translation>
 <translation id="705851970750939768">Chromium updaten</translation>
 <translation id="7067091210845072982">Als een afbeelding geen nuttige beschrijving bevat, probeert Chromium je er een te geven. Afbeeldingen worden naar Google verzonden om beschrijvingen te maken.</translation>
-<translation id="7074836723476134809">Profiteer van de kracht van AI door de Chromium-app te gebruiken op je <ph name="DEVICE_TYPE" /></translation>
-<translation id="7134687062119989071">Neem onder andere je wachtwoorden en tabbladen overal mee naartoe met de Chromium-app op je telefoon</translation>
 <translation id="7141270731789036260">Chrome for Testing aanpassen</translation>
 <translation id="7147227333672430807">Je kunt Chromium gebruiken als je op links in berichten, documenten en andere apps klikt</translation>
 <translation id="7163519456498498587"><ph name="EXTENSION_NAME" /> verwijderen uit Chromium</translation>
@@ -638,7 +572,6 @@ Je kunt pas nieuwe bookmarks opslaan in je account als je er een paar hebt verwi
 
 Chromium kan je instellingen niet herstellen.</translation>
 <translation id="7324051657739063017">Je kunt contextuele taken opnieuw openen om vragen te stellen terwijl je browst</translation>
-<translation id="734373864078049451">Hier vind je internet, bookmarks en andere Chromium-instellingen.</translation>
 <translation id="7347827960336370838">Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtwoordzin wordt niet gestuurd naar of opgeslagen door Google. Als je je wachtwoordzin bent vergeten of deze instelling wilt wijzigen, moet je <ph name="BEGIN_LINK" />de Chromium-gegevens in je account verwijderen<ph name="END_LINK" />.</translation>
 <translation id="7349591376906416160">Je systeembeheerder heeft Chromium geconfigureerd om <ph name="ALTERNATIVE_BROWSER_NAME" /> te openen voor toegang tot <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7352651011704765696">Er is iets misgegaan</translation>
@@ -659,14 +592,12 @@ Chromium kan je instellingen niet herstellen.</translation>
 <translation id="7461356015007898716">Als je toekomstige Chromium-updates wilt krijgen, heb je Windows 10 of hoger nodig. Deze computer gebruikt Windows 7.</translation>
 <translation id="7467949745582939695">Chromium opnieuw starten?</translation>
 <translation id="7483335560992089831">Kan niet dezelfde Chromium-versie installeren, omdat deze versie nu actief is. Sluit Chromium en probeer het opnieuw.</translation>
-<translation id="7510190804000607802">Herinnering: het beste van Google in je broekzak</translation>
 <translation id="751935028865900641">Sites werken waarschijnlijk zoals verwacht. Je wordt uitgelogd van de meeste sites als je alle Chromium-vensters sluit, behalve van je Google-account als je bent ingelogd bij Chromium.</translation>
 <translation id="753534427205733210">{0,plural, =1{Chromium wordt over één minuut opnieuw gestart}other{Chromium wordt over # minuten opnieuw gestart}}</translation>
 <translation id="7565444033145385702">Ter bescherming van je gegevens kun je Chromium de rechten laten verwijderen voor sites die je niet recent hebt bezocht.</translation>
 <translation id="7583104404158659071">Start Chromium automatisch om meteen te browsen.</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" />-installatieprogramma</translation>
 <translation id="761356813943268536">Chromium gebruikt je camera en microfoon.</translation>
-<translation id="7617377681829253106">Chromium is nu nog beter</translation>
 <translation id="7622753900276619808">Er zijn nu meer functies beschikbaar voor je in Chromium</translation>
 <translation id="7624307931717240213">We gebruiken informatie om deze service te verbeteren. Bekijk het Privacybeleid en de Servicevoorwaarden.</translation>
 <translation id="7649070708921625228">Hulp</translation>
@@ -695,30 +626,24 @@ Chromium kan je instellingen niet herstellen.</translation>
 <translation id="7853661403199074278">Pas Chromium aan om de browser een nieuwe look te geven</translation>
 <translation id="7859018312476869945">Als je in de adresbalk of het zoekvak typt, stuurt Chromium wat je typt naar je standaard zoekmachine om betere suggesties te krijgen. Dit staat uit in de incognitomodus.</translation>
 <translation id="7867198900892795913">Chromium kan niet worden geüpdatet naar de nieuwste versie, dus je loopt nieuwe functies en beveiligingsoplossingen mis.</translation>
-<translation id="7872446069773932638">Downloaden... Nog <ph name="SECONDS" /> seconden</translation>
 <translation id="7873537467422636035">Als je je wachtwoordzin bent vergeten of deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Chromium-gegevens in je account<ph name="END_LINK" />.</translation>
 <translation id="7874369989024033742">Gemini snel openen in Chromium wanneer je het nodig hebt</translation>
-<translation id="7888981273428720788">Chromium instellen als je standaardbrowser</translation>
 <translation id="7934340546140346950">Chromium upgradet niet-beveiligde verbindingen automatisch naar HTTPS als dat mogelijk is</translation>
 <translation id="7937630085815544518">Je bent ingelogd bij Chromium als <ph name="USER_EMAIL_ADDRESS" />. Gebruik hetzelfde account om opnieuw in te loggen.</translation>
 <translation id="7944602660083060118"><ph name="EXISTING_USER" /> is al ingelogd. Als je je browsegegevens gescheiden wilt houden, log je in Chromium in op je eigen profiel bij als <ph name="USER_EMAIL_ADDRESS" />. Je kunt ook onder andere je bookmarks op al je apparaten gebruiken.</translation>
 <translation id="7975919845073681630">Dit is een tweede installatie van Chromium en kan niet als standaardbrowser worden ingesteld.</translation>
 <translation id="7997934263947464652">Extensies, apps en thema's van onbekende bronnen kunnen schadelijk zijn voor je apparaat. Chromium raadt je aan ze alleen te installeren vanuit de <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />.</translation>
-<translation id="8000759043835159571">Krijg het beste van Google met de Chromium-app op je <ph name="DEVICE_TYPE" /></translation>
 <translation id="8004582292198964060">Browser</translation>
-<translation id="8010081455002666927">Automatisch herkennen</translation>
 <translation id="8013436988911883588">Zodra Chromium toegang heeft, kunnen websites je om toegang vragen.</translation>
 <translation id="8031714377769448844">Zet Chromium vast op je taakbalk om er op elk moment snel toegang toe te hebben</translation>
 <translation id="80471789339884597">Bedankt voor het installeren. Je moet alle browsers opnieuw opstarten voordat je <ph name="BUNDLE_NAME" /> kunt gebruiken.</translation>
 <translation id="8054112667659782652">Snelkoppeling voor Zoeken met afbeelding altijd tonen</translation>
-<translation id="8069447462453318634">Selecteer Vastzetten op werkbalk</translation>
 <translation id="8077498902115777962">Chromium niet uitvoeren op de achtergrond voor apps</translation>
 <translation id="80790299200510644">Zoeken met afbeelding</translation>
 <translation id="8086881907087796310">De installatie is mislukt omdat je computer niet voldoet aan de minimale hardwarevereisten.</translation>
 <translation id="8096472344908884505"><ph name="PAGE_TITLE" /> - Google Chrome for Testing</translation>
 <translation id="8105840573057009683">Chromium heeft locatierechten nodig voor deze site</translation>
 <translation id="8107060931443639922">De volgende keer dat je Chromium op je <ph name="DEVICE_TYPE" /> opent, zie je een prompt om meldingen voor prijzen volgen aan te zetten.</translation>
-<translation id="8117908349476699973">Krijg meldingen over prijsdalingen voor items waarin je geïnteresseerd bent met de Chromium-app op je telefoon</translation>
 <translation id="8118331347066725040">Stuur feedback voor zoeken met Lens</translation>
 <translation id="8130609355518033382">Chromium personaliseren</translation>
 <translation id="8133124826068723441">Chromium OS kan je gegevens niet synchroniseren, omdat synchronisatie niet beschikbaar is voor je domein.</translation>
@@ -749,7 +674,6 @@ Chromium kan je instellingen niet herstellen.</translation>
 <translation id="8359544530202147897">Update Chromium om de Chromium-gegevens in je Google-account <ph name="ACCOUNT_EMAIL" /> te blijven gebruiken</translation>
 <translation id="8360718212975266891">Als je toekomstige Chromium-updates wilt krijgen, heb je Windows 10 of hoger nodig. Deze computer gebruikt Windows 8.</translation>
 <translation id="8362914115861174987">Vertalen naar het</translation>
-<translation id="8367705492654390392">Vraag iets</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Alle rechten voorbehouden.</translation>
 <translation id="8372327902843331129">Log in bij Chromium om onder andere je wachtwoorden te gebruiken op al je apparaten. Dit wachtwoord wordt opgeslagen in je Google-account nadat je bent ingelogd.</translation>
 <translation id="837460953767177950">Start Chromium daarna opnieuw op.</translation>
@@ -760,14 +684,12 @@ Chromium kan je instellingen niet herstellen.</translation>
 <translation id="8438543370129609977">Als je Zoeken met afbeelding gebruikt, worden de paginatitel, URL en content, waaronder pdf's, naar de server gestuurd. <ph name="LEARN_MORE" /></translation>
 <translation id="8447525028100794994">Meer informatie over zoeken met Afbeeldingen zoeken in Chromium</translation>
 <translation id="8453117565092476964">Het archief van het installatieprogramma is beschadigd of ongeldig. Download Chromium opnieuw.</translation>
-<translation id="8463672209299734063">Optioneel: Help de functies en prestaties van Chromium OS te verbeteren door automatisch diagnostische en gebruiksgegevens naar Google te sturen.</translation>
 <translation id="8471947159125090285">Laat verifiëren dat jij het bent om Chromium-gegevens te gebruiken en op te slaan in je Google-account</translation>
 <translation id="8482493977473846331">Toont prompts om in te loggen bij Chromium</translation>
 <translation id="8493179195440786826">Chromium is verouderd</translation>
 <translation id="850264194101621529">Bedankt dat je Chromium hebt gekozen als je standaardbrowser.</translation>
 <translation id="8522801943730206384">Chromium kan je wachtwoorden checken als je deze hebt opgeslagen</translation>
 <translation id="8525579356836940628">Installatie gestopt</translation>
-<translation id="8545729292258443488">Neem je wachtwoorden, tabbladen en meer overal mee naartoe met de Chromium-app op je <ph name="DEVICE_TYPE" /></translation>
 <translation id="8555465886620020932">Servicefout: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556055872671007529">Sommige Chromium-functies en -extensies hebben snelkoppelingen. Je kunt deze weer aanzetten.</translation>
 <translation id="8556420416730706394">Je kunt Zoeken met afbeelding vastzetten voor snelle toegang. Klik op de knop Vastzetten bovenaan het zijvenster.</translation>
@@ -780,7 +702,6 @@ Chromium kan je instellingen niet herstellen.</translation>
 <translation id="8676101123715131330">Overal zoeken met Chromium</translation>
 <translation id="8697124171261953979">Hiermee wordt ook gecontroleerd welke pagina wordt getoond wanneer je Chromium start of vanuit de omnibox zoekt.</translation>
 <translation id="8702213505203810093">Als je dit tabblad naar een ander apparaat wilt sturen, log je daar in bij Chromium</translation>
-<translation id="8704119203788522458">Personaliseer jouw Chromium</translation>
 <translation id="8712637175834984815">Begrepen</translation>
 <translation id="8719993436687031146">Inloggen bij Chromium?</translation>
 <translation id="8747073452963259673">linkerbovenhoek van zoekgebied: links <ph name="LEFT" />%, onder <ph name="BOTTOM" />%</translation>
@@ -811,18 +732,15 @@ Chromium kan je instellingen niet herstellen.</translation>
             Dit heeft geen gevolgen voor bookmarks, geschiedenis en opgeslagen wachtwoorden.</translation>
 <translation id="8966875421152977384">Chromium-sitesnelkoppelingen tonen</translation>
 <translation id="897581876605952338">Chromium Enterprise-logo</translation>
-<translation id="8980139959902937527">Neem de beveiliging van Google overal mee naartoe met de Chromium-app op je <ph name="DEVICE_TYPE" /></translation>
 <translation id="8981150672034878610">Kan Chromium niet starten omdat er iets is misgegaan bij het openen van je profiel. Start Chromium opnieuw op.</translation>
 <translation id="8981886272598860786">om te zoeken met Chromium of aan te passen in <ph name="BEGIN_LINK" />Instellingen<ph name="END_LINK" /></translation>
 <translation id="8988036198400390003">Chromium-profielen beheren</translation>
 <translation id="8993855408334954620">Gebruik je toetsenbord om te navigeren tussen Gemini in Chromium en je geopende tabblad.</translation>
 <translation id="9018218886431812662">De installatie is voltooid</translation>
-<translation id="9019929317751753759">We hebben de volgende extensie uitgezet die niet wordt vermeld in de <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> en mogelijk zonder je medeweten is toegevoegd. We doen dit om Chromium veiliger te maken.</translation>
 <translation id="9022552996538154597">Inloggen bij Chromium</translation>
 <translation id="9035791714111278917">Zoeken met Chromium tonen in de Mac-menubalk en sneltoets aanzetten</translation>
 <translation id="904366664621834601">Chromium heeft deze download geblokkeerd, omdat het archiefbestand andere bestanden bevat die misschien malware verbergen</translation>
 <translation id="9053882453960391422">Houd je wachtwoorden, bookmarks en geschiedenis perfect gesynchroniseerd op al je apparaten. Krijg makkelijk toegang tot de functies die je kent en gebruikt door je standaardbrowser te updaten naar Chromium. Chromium wordt vastgezet op je taakbalk voor snelle toegang.</translation>
-<translation id="9056398481763999048">Gebruik de beste AI-tools van Google met de Chromium-app op je telefoon</translation>
 <translation id="9057625473949801035">Log in bij Chromium om onder andere je wachtwoorden van <ph name="DEVICE" /> te gebruiken</translation>
 <translation id="9062666675513499497">Inloggen bij Chromium als je inlogt bij andere Google-services</translation>
 <translation id="9078733879136747090">Chromium is automatisch gesloten</translation>
@@ -833,7 +751,6 @@ Chromium kan je instellingen niet herstellen.</translation>
 <translation id="91086099826398415">Link openen op een nieuw Chromium-&amp;tabblad</translation>
 <translation id="911206726377975832">Ook browsegegevens wissen?</translation>
 <translation id="9118146721060781133">De knop Contextuele taken op de werkbalk heeft een nieuw icoon. Klik erop om vragen te stellen terwijl je browst met Contextuele taken.</translation>
-<translation id="9134482777260927479">Huiswerkbegeleiding</translation>
 <translation id="9148058034647219655">Sluiten</translation>
 <translation id="9155105544013854680">Ga verder waar je gebleven was: Chromium kan je tabbladen herstellen elke keer dat je opnieuw opstart. Als je dit wilt aanzetten, ga je naar</translation>
 <translation id="9158494823179993217">Je systeembeheerder heeft geconfigureerd dat Chromium een alternatieve browser opent voor toegang tot <ph name="TARGET_URL_HOSTNAME" />.</translation>
@@ -841,7 +758,6 @@ Chromium kan je instellingen niet herstellen.</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="924957577793602335">Personaliseer Chromium</translation>
 <translation id="93478295209880648">Chromium werkt mogelijk niet naar behoren omdat dit niet langer wordt ondersteund op Windows XP en Windows Vista</translation>
-<translation id="945098430667185067">Profiteer onderweg van de beste beveiligingsfuncties van Google met Chromium.</translation>
 <translation id="945522503751344254">Feedback sturen</translation>
 <translation id="965162752251293939">Wie gebruikt Chromium?</translation>
 <translation id="967427899662692980">Gebruik het hoogste beveiligingsniveau van Chromium</translation>

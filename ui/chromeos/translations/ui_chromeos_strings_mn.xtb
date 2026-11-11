@@ -556,7 +556,6 @@
 <translation id="5305688511332277257">Юу ч суугдаагүй байна.</translation>
 <translation id="5317780077021120954">Хадгалах</translation>
 <translation id="5318819489018851358">Linux-р хуваалцах</translation>
-<translation id="5330145655348521461">Эдгээр файлууд өөр компьютер дээр нээгдсэн байна. Нээхийн тулд <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) рүү шилжүүл.</translation>
 <translation id="5330512191124428349">Мэдээлэл авах</translation>
 <translation id="535792325654997756">Мууртай хүн</translation>
 <translation id="5358764674931277">Фреймийн хурд</translation>
@@ -697,7 +696,6 @@
 <translation id="636254897931573416">Домэйн дагаврын тохирлын утга буруу байна</translation>
 <translation id="6364301859968397756">Байгууллагын хадгалах сан дүүрсэн</translation>
 <translation id="6367976544441405720">Битүү ачааны машин</translation>
-<translation id="637062427944097960">Энэ файл нь өөр десктоп дээр нээгдсэн байна. Үүнийг харахын тулд <ph name="USER_NAME" /> ( <ph name="MAIL_ADDRESS" /> ) руу шилжинэ үү.</translation>
 <translation id="6394388407447716302">Зєвхєн унших</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> зүйл</translation>
 <translation id="6407769893376380348"><ph name="FILE_NAME" />-г шифрлэсэн тул үүнийг зөөж чадсангүй.</translation>

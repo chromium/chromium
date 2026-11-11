@@ -12053,6 +12053,12 @@ Chứng chỉ cần được mã hoá base64.</translation>
 
 Nếu bạn đặt chính sách này, tính năng báo cáo dữ liệu đo từ xa của trang web đối với các URL có trong danh sách cho phép sẽ được kiểm soát. Còn nếu bạn không đặt chính sách này, dữ liệu đo từ xa của trang web sẽ không được báo cáo.
 Để biết thông tin chi tiết về các mẫu URL hợp lệ, vui lòng truy cập vào https://chromeenterprise.google/policies/url-patterns/. Chính sách này chỉ cho phép các giao thức URL thuộc loại HTTP và HTTPS.</translation>
+<translation id="8392016343898518010">Chính sách này không được dùng nữa và không có hiệu lực kể từ M159 vì tính năng Nội dung đề xuất đã bị loại bỏ.
+
+Trước M159, tính năng này bật tuỳ chọn đề xuất nội dung mới để khám phá, bao gồm cả ứng dụng, trang web và nhiều nội dung khác.
+Nếu bạn đặt chính sách này thành True (Đúng), tuỳ chọn đề xuất nội dung mới để khám phá sẽ được bật.
+Nếu bạn đặt chính sách này thành False (Sai), tuỳ chọn đề xuất nội dung mới để khám phá sẽ bị tắt.
+Nếu bạn không đặt chính sách này, tuỳ chọn đề xuất nội dung mới để khám phá sẽ bị tắt đối với người dùng được quản lý và được bật đối với những người dùng khác.</translation>
 <translation id="8392478748777481636">Chính sách này không còn được dùng nữa và không được hỗ trợ, vui lòng dùng chính sách "<ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" />".</translation>
 <translation id="8393850527597048037">Chỉ trên nền tảng</translation>
 <translation id="8395350646076131800">Thời gian chờ ở trạng thái rảnh trên màn hình khoá trên trình bảo vệ màn hình của người dùng.</translation>

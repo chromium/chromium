@@ -558,7 +558,6 @@
 <translation id="5305688511332277257">कुनै स्थापित छैन</translation>
 <translation id="5317780077021120954">बचत गर्नुहोस्</translation>
 <translation id="5318819489018851358">Linux मार्फत सेयर गर्नुहोस्</translation>
-<translation id="5330145655348521461">यी फाइलहरू एउटा फरक डेस्कटपमा खुलेका थिए। यसलाई हेर्नको लागि <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) मा लैजानुहोस्।</translation>
 <translation id="5330512191124428349">जानकारी प्राप्त गर्नुहोस्</translation>
 <translation id="535792325654997756">बिरालो बोकिरहेका व्यक्ति</translation>
 <translation id="5358764674931277">फ्रेम रेट</translation>
@@ -699,7 +698,6 @@
 <translation id="636254897931573416">डोमेन सफिक्ससँग मिल्दोजुल्दो मान अवैध छ</translation>
 <translation id="6364301859968397756">सङ्गठनको भण्डारण भरिएको छ</translation>
 <translation id="6367976544441405720">भ्यान</translation>
-<translation id="637062427944097960">यो फाइल अर्को डेस्कटपमा खोलियो। यसलाई हेर्नको लागि <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) सार्नुहोस्।</translation>
 <translation id="6394388407447716302">रिड गर्न मात्र मिल्छ</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> वस्तुहरू</translation>
 <translation id="6407769893376380348"><ph name="FILE_NAME" /> इन्क्रिप्ट गरिएकाले यसलाई सार्न सकिएन।</translation>

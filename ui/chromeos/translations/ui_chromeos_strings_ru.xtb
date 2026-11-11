@@ -558,7 +558,6 @@
 <translation id="5305688511332277257">Не установлено</translation>
 <translation id="5317780077021120954">Сохранить</translation>
 <translation id="5318819489018851358">Предоставить доступ Linux</translation>
-<translation id="5330145655348521461">Эти файлы открыты на другом рабочем столе. Чтобы увидеть их, переключитесь на профиль пользователя <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
 <translation id="5330512191124428349">Сведения о файле</translation>
 <translation id="535792325654997756">Человек с кошками</translation>
 <translation id="5358764674931277">Частота кадров</translation>
@@ -699,7 +698,6 @@
 <translation id="636254897931573416">Недопустимое значение совпадения с доменным суффиксом</translation>
 <translation id="6364301859968397756">Хранилище организации заполнено</translation>
 <translation id="6367976544441405720">Грузовик</translation>
-<translation id="637062427944097960">Этот файл открыт на другом рабочем столе. Чтобы увидеть его, переключитесь на профиль пользователя <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
 <translation id="6394388407447716302">Только чтение</translation>
 <translation id="6395575651121294044">Объектов: <ph name="NUMBER_OF_FILES" /></translation>
 <translation id="6407769893376380348">Не удалось переместить файл "<ph name="FILE_NAME" />", так как он зашифрован.</translation>

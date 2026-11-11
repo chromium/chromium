@@ -20,6 +20,7 @@
 <translation id="1056898198331236512">သတိပေးချက်</translation>
 <translation id="1058009965971887428">အကြံပြုချက် သတင်းပို့ရန်</translation>
 <translation id="1059120031266247284">သင်နှင့် မျှဝေထားသည်</translation>
+<translation id="1060570945511946595">တိုကင်များ စီမံရန်</translation>
 <translation id="1060847216467038176">ဖယ်ရှားရန်ခလုတ်ဖြင့် <ph name="ITEM_LABEL" /></translation>
 <translation id="1062407476771304334">အစားထိုးရန်</translation>
 <translation id="1065931689816135472"><ph name="BEGIN_PARAGRAPH1" />Google Drive သို့ အရန်သိမ်းပါ။ သင်၏ ဒေတာများကို အလွယ်တကူ ပြန်ယူပါ (သို့) စက်ပစ္စည်းကို အချိန်မရွေး ပြောင်းပါ။ သင်၏ မိတ္တူတွင် အက်ပ်ဒေတာ ပါဝင်သည်။<ph name="END_PARAGRAPH1" />
@@ -280,6 +281,7 @@
 <translation id="1757132445735080748">Linux စနစ်ထည့်သွင်းမှု အပြီးသတ်ရန် ChromeOS Flex ကို အပ်ဒိတ်လုပ်ပြီး ထပ်စမ်းကြည့်နိုင်သည်။</translation>
 <translation id="1757857692711134412">နေဝင်ချိန်အထိ ပိတ်ရန်</translation>
 <translation id="1763084151787818322">အခြားလုပ်ဆောင်ချက်များ</translation>
+<translation id="1767043563165955993">Android အက်ပ်များနှင့် သုံးရန်</translation>
 <translation id="1768138163688567246">‘ဖန်သားပြင်တွင် ရှာရန်’ ကို ပိတ်ရန်</translation>
 <translation id="1768366657309696705">‘<ph name="LAUNCHER_KEY_NAME" /> + အစက်’ လက်ကွက်ဖြတ်လမ်းကို ပြောင်းထားသည်။ ‘ထည့်သွင်းရန်’ ကီးသုံးလိုပါက <ph name="LAUNCHER_KEY_NAME" /> ကီး + Shift + ‘နောက်ပြန်ခလုတ်’ နှိပ်ပါ။</translation>
 <translation id="1770726142253415363">အတန်း <ph name="ROW_NUMBER" />၊ ကော်လံ <ph name="COLUMN_NUMBER" /> သို့ ရွှေ့ထားသည်။</translation>
@@ -304,6 +306,7 @@
 <translation id="1838895407229022812">'ညအလင်းရောင်' ပိတ်ထားသည်။</translation>
 <translation id="1840920496749066704">°C</translation>
 <translation id="1841616161104323629">ပျောက်ဆုံးနေသည့် စက်ပစ္စည်းမှတ်တမ်း။</translation>
+<translation id="184273675144259287">သင်၏ Linux အက်ပ်နှင့် ဖိုင်များကို ယခင်အရန်သိမ်းထားသည်နှင့် အစားထိုးရန်</translation>
 <translation id="1854180393107901205">ကက်စ်လုပ်နေခြင်း ရပ်မည်</translation>
 <translation id="1862077610023398675">ထိန်းချုပ်မှုများ ဖျောက်ရန်</translation>
 <translation id="1862380676329487333">အပ်ဒိတ်လုပ်ပြီး ထွက်ရန်</translation>
@@ -333,6 +336,7 @@
 <translation id="1946615340060705561">လွှတ်ရန် “c” ကို နှိပ်ပါ</translation>
 <translation id="1948405482892809935">အသုံးပြုသူနောက်တစ်ဦးသို့ ပြောင်းရန်</translation>
 <translation id="1954252331066828794">ဖန်သားပြင်ရိုက်ကူးခြင်း ပြီးပြီ</translation>
+<translation id="1954813140452229842">မျှဝေဖိုင်တွဲကို တင်ရာတွင် အမှားအယွင်းရှိသည်။ အထောက်အထားများကို စစ်ဆေးပြီး ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="1956087014741188812">မောက်စ်ကီးများ ခဏရပ်ရန်</translation>
 <translation id="1957958912175573503">သင်၏ ဘာသာစကားကို သတ်မှတ်ရန်</translation>
 <translation id="1961239773406905488">ကင်မရာအစမ်းကြည့်ရှုခြင်း ဖျောက်ထားသည်</translation>
@@ -352,6 +356,11 @@
 <translation id="1998100899771863792">လက်ရှိမျက်နှာပြင်နေရာ</translation>
 <translation id="2001444736072756133">သင့် <ph name="CATEGORY" />၊ ဖိုင်၊ အက်ပ်နှင့် အခြားအရာများကို ရှာပါ။</translation>
 <translation id="2011174342667534258">SDK ဗားရှင်း-</translation>
+<translation id="2017770349934140286">Google Play နှင့် Google Play မှ ဒေါင်းလုဒ်လုပ်ထားသော အက်ပ်များကို ဤ Chromebook မှ ဖျက်လိုက်မည်။
+    <ph name="LINE_BREAKS1" />
+    ရုပ်ရှင်၊ TV ရှိုး၊ သီချင်း၊ စာအုပ်များအပြင် အခြားအက်ပ်များမှ ဝယ်ယူမှုများကဲ့သို့ Google Play မှတစ်ဆင့် သင်ဝယ်ယူထားသော အကြောင်းအရာများကိုလည်း ဖျက်ပါမည်။
+    <ph name="LINE_BREAKS2" />
+    ၎င်းသည် အခြားစက်ပေါ်ရှိ အက်ပ်များ (သို့) အကြောင်းအရာများကို သက်ရောက်မှုမရှိပါ။</translation>
 <translation id="2017998995161831444">‘စူးစမ်းလေ့လာခြင်းအက်ပ်’ တွင် “အကူအညီ” ကို ဖွင့်ရန်</translation>
 <translation id="2021864487439853900">ဖွင့်ရန် နှိပ်ပါ</translation>
 <translation id="2023167225947895179">ပင်နံပါတ်သည် ခန့်မှန်းရလွယ်ပါသည်</translation>
@@ -381,6 +390,7 @@
 <translation id="212862741129535676">ကြိမ်နှုန်းအခြေအနေ နေထိုင်မှု ရာခိုင်နှုန်း</translation>
 <translation id="2132302418721800944">စခရင်အပြည့် ရိုက်ကူးရန်</translation>
 <translation id="2135456203358955318">နေရာချထားသည့် မှန်ဘီလူး</translation>
+<translation id="2148219725039824548">မျှဝေဖိုင်တွဲကို တင်ရာတွင် အမှားအယွင်းရှိသည်။ သတ်မှတ်ထားသည့် မျှဝေဖိုင်တွဲကို ကွန်ရက်ပေါ်တွင် မတွေ့ပါ။</translation>
 <translation id="2148716181193084225">ယနေ့</translation>
 <translation id="2149229036084364364">ယခင်တစ်ပုဒ်သို့ ပြန်သွားရန်</translation>
 <translation id="2152796271648108398">လက်ရှိရာသီဥတု</translation>
@@ -726,6 +736,7 @@
 <translation id="315116470104423982">မိုဘိုင်း ဒေတာ</translation>
 <translation id="3153444934357957346">အကောင့်တစ်ခုထက်ပိုဝင်ခြင်းစနစ်တွင် အကောင့် <ph name="MULTI_PROFILE_USER_LIMIT" /> ခု အထိသာ အများဆုံးထားနိုင်ပါသည်။</translation>
 <translation id="3154351730702813399">စက်ပစ္စည်းစီမံခန့်ခွဲသူသည် သင့်အင်တာနက် အသုံးပြုမှုများကို စောင့်ကြည့်နိုင်ပါသည်။</translation>
+<translation id="3157931365184549694">ပြန်လည်ဖေါ်ထုတ်ရန်</translation>
 <translation id="316086887565479535">နမူနာ ပုံစံအတွင်း ထောက်ပံ့ပေးမထားသော အက်ပ်များ</translation>
 <translation id="3160929076476941240">၂ နာရီ</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> က သင့် <ph name="DEVICE_TYPE" /> ကို နောက်ပြန်ဆုတ်နေသည်။ စက်ပြင်ဆင်သတ်မှတ်မည်ဖြစ်ပြီး ဒေတာအားလုံးကို ဖျက်ပါမည်။</translation>
@@ -776,6 +787,7 @@
 <translation id="3313950410573257029">ချိတ်ဆက်မှုကို စစ်ဆေးရန်</translation>
 <translation id="3321628682574733415">မိဘသုံးခွင့်ကုဒ် မှားနေသည်</translation>
 <translation id="332827762492701193">အကြောင်းကြားချက်များကို ဝှက်ထားသည်</translation>
+<translation id="3328489342742826322">အရန်သိမ်းဆည်းမှု‌မှနေ၍ ပြန်ယူခြင်းဖြင့် လက်ရှိ Linux အက်ပ်များနှင့် သင်၏ Linux ဖိုင်တွဲရှိ ဒေတာများကို ဖျက်လိုက်ပါမည်။</translation>
 <translation id="3333674550998107387"><ph name="NOTIFICATION_TITLE" /> အကြောင်းကြားချက် ပိုပြပါ</translation>
 <translation id="3339826665088060472">ဖန်သားပြင်ဓာတ်ပုံနှင့် ဖန်သားပြင်ရိုက်ကူးခြင်းများအတွက် ဖန်သားပြင် ပုံဖမ်းတူးလ်များ</translation>
 <translation id="3340978935015468852">ဆက်တင်များ</translation>
@@ -835,6 +847,7 @@
         <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />တည်နေရာတိကျမှန်ကန်မှုအကြောင်း ပိုလေ့လာရန်<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />၊ <ph name="CONNECTION_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">စင်ကို အလိုလိုဖျောက်ထားသည်</translation>
+<translation id="3500417806337761827">မျှဝေမှုကို တပ်ဆင်ခြင်းအမှားရှိသည်။ SMB မျှဝေမှုများစွာကို တပ်ဆင်ထားသည်။</translation>
 <translation id="3505066820268455558">ဘက်ထရီ အားသွင်းနေသည်</translation>
 <translation id="3509391053705095206">သင့်ဖုန်းကို ရှာမတွေ့ပါ။ သင့်ဖုန်း၏ ဘလူးတုသ်ကို ဖွင့်ထားပါ။</translation>
 <translation id="3510164367642747937">မောက်စ်ကာဆာကို ထင်သာမြင်သာဖြစ်အောင်ပြုလုပ်ရန်</translation>
@@ -959,6 +972,7 @@
 <translation id="3804737937830804242">ကင်မရာခလုတ် လျှော့ပြရန်</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{အီမိုဂျီ ၁ ခု။ အခြားရလဒ် မရှိပါ။}other{အီမိုဂျီ # ခု။ အခြားရလဒ် မရှိပါ။}}</translation>
 <translation id="381202950560906753">နောက်တစ်ခု ထည့်ရန်</translation>
+<translation id="3819257035322786455">အရန်သိမ်းခြင်း</translation>
 <translation id="3819261658055281761">စနစ်သည် ဤစက်ပစ္စည်းအတွက် ကာလကြာရှည် API အသုံးပြုခွင့်တိုကင်နံပါတ်ကို သိမ်းဆည်း၍မရပါ။</translation>
 <translation id="3822403841174077928">ဖော်မက်လုပ်ခြင်းဖြင့် မိတ္တူကူး၍မရလိုက်ပါ</translation>
 <translation id="3824621460022590830">စက်စာရင်းသွင်းရန် တိုကင်နံပါတ် မမှန်ကန်ပါ။ သင့်စက်ပိုင်ရှင် သို့မဟုတ် စီမံခန့်ခွဲသူထံ ဆက်သွယ်ပါ။ အမှားကုဒ် - <ph name="ERROR_CODE" />။</translation>
@@ -1142,6 +1156,7 @@
 <translation id="4327147325944669226">ဂိမ်း မှတ်တမ်းတင်ရန်</translation>
 <translation id="4329076911374908740">ရောက်ရှိခဲ့သည့် သိမ်းထားသောအုပ်စု အများဆုံးအရေအတွက်။</translation>
 <translation id="4338109981321384717">မှန်ဘီလူး</translation>
+<translation id="4340125850502689798">အသုံးပြုသူအမည် မမှန်ပါ</translation>
 <translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />၊ အသံပိတ်ထားသည်</translation>
 <translation id="4351244548802238354">ဒိုင်ယာလော့ ပိတ်ရန်</translation>
 <translation id="435527878592612277">သင့်ဓာတ်ပုံ ရွေးရန်</translation>
@@ -1621,6 +1636,7 @@
 <translation id="5727460725221669831">သင့်စကားဝှက်မေ့သွားပါက (သို့) သင့် Google Account စကားဝှက်ကို မကြာသေးမီက ပြောင်းထားပါက ဤအသုံးပြုသူကို ပြန်လည်ရယူကြည့်ပါ။</translation>
 <translation id="5733630091161562207">ကြိုဆိုရေး အကြောင်းကြားချက်</translation>
 <translation id="573413375004481890">ဤစက်သည် သင့်ဖန်သားပြင်ပြသမှုများအားလုံးကို မပံ့ပိုးသည့်အတွက် တစ်ခုကို ချိတ်ဆက်မှုဖြုတ်လိုက်ပါပြီ</translation>
+<translation id="5734697361979786483">ဖိုင်မျှဝေမှုကို ထည့်ရန်</translation>
 <translation id="5739548907438839901">ဒစ်ခ်နေရာ <ph name="SIZE" /> ကို ရှင်းလိုက်သည်။</translation>
 <translation id="574392208103952083">အလယ်အလတ်</translation>
 <translation id="5745612484876805746">နေဝင်ချိန်တွင် 'ညအလင်းရောင်' အလိုအလျောက် ပွင့်လာပါမည်</translation>
@@ -1709,6 +1725,7 @@
 <translation id="5983567367406220847">အသုံးပြုမှုမရှိသဖြင့် ဟော့စပေါ့ကို ပိတ်လိုက်သည်။</translation>
 <translation id="598407983968395253">နမူနာပုံစံ သုံးရန်</translation>
 <translation id="5984334442529819751">DLC ထည့်သွင်းရာ၌ အမှားအယွင်း (မကြာခဏ ပြန်လည်စတင်ရန် လိုအပ်သည်။ ဆက်တင်များ\&gt;\&gt;ChromeOS အကြောင်း ပိုမိုသိရှိရန်ကို ကြည့်ပါ)။</translation>
+<translation id="5985458664595100876">URL ပုံစံ မမှန်ကန်ပါ။ အသုံးပြု၍ရနိုင်သော ပုံစံများမှာ \\server\share နှင့် smb://server/share တို့ဖြစ်သည်။</translation>
 <translation id="5986723678596105470">Google Meet ဖြင့် တက်ရောက်နိုင်သည်</translation>
 <translation id="598882571027504733">အပ်ဒိတ်ရယူနိုင်ရန်အတွက် ကီးဘုတ်ကို ချိတ်ဆက်ထားပြီး Chromebook ကို ပြန်လည်စတင်ပါ။</translation>
 <translation id="5990992855591814753">ပုဂ္ဂိုလ်ရေးသီးသန့်ပြုလုပ်ထားသော အာရုံစိုက်ပလေးလစ်များဖြင့် အလုပ်ပြီးအောင်လုပ်လိုက်ပါ။ ကြော်ငြာမဲ့ YouTube Music နှင့် YouTube ကို YouTube Premium ဖြင့် ၃ လ အခမဲ့ရယူပါ။ စည်းမျဉ်းများ ရှိသည်။</translation>
@@ -1758,6 +1775,7 @@
 <translation id="6074087755403037157">စမ်းသပ်ချန်နယ်</translation>
 <translation id="6075098173600599596">စာလုံးအကြီးအသေး ပြောင်းရန်</translation>
 <translation id="6080689532560039067">သင့် စနစ် အချိန်ကို စစ်ကြည့်ရန်</translation>
+<translation id="6091761513005122595">မျှဝေပြီးပါပြီ။</translation>
 <translation id="6091929401758362855">ပလေးလစ်- <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="6093867385179428431">စီမံခန့်ခွဲသူက ပိတ်ထားသည်</translation>
 <translation id="6095008505822982596">စကားပြောနှုန်း</translation>
@@ -1929,6 +1947,7 @@
 <translation id="6582034443359256692">ဘက်ထရီအားသွင်းမှုအဆင့်ကို တွက်ချက်နေသည်။</translation>
 <translation id="6586685375736417639">စက်ကို အားသွင်း၍မရပါ</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />၊ <ph name="SECONDARY_TEXT" /></translation>
+<translation id="6596816719288285829">IP လိပ်စာ</translation>
 <translation id="6597017209724497268">နမူနာများ</translation>
 <translation id="6597278316891651699">ကင်မရာကို အောက်ဘယ်ဘက်ထောင့်သို့ ကပ်ထားသည်။ စနစ်မျက်နှာပြင်နှင့် ငြိနေသည်။</translation>
 <translation id="6605415194043280389">အထူးပြသမှု ဖွင့်ထားသည်</translation>
@@ -1948,6 +1967,7 @@
 <translation id="6637729079642709226">အချိန်ပြောင်းခြင်း</translation>
 <translation id="6641720045729354415">'တိုက်ရိုက်စာတန်း' ကို ပြောင်းပါ။ <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">အမည်ဖြင့် အစီအစဉ်တကျစီစဉ်မှုကို နောက်ပြန်ရန်</translation>
+<translation id="6644513150317163574">URL ဖော်မက် မမှန်ကန်ပါ။ SSO အထောက်အထားစိစစ်ခြင်းကို အသုံးပြုသည့်အခါ ဆာဗာကို ဆာဗာပင်ရင်းအဖြစ် သတ်မှတ်ရပါမည်။</translation>
 <translation id="664793810957802384">အကြံပြုထားသောအုပ်စုရှိ အရာများ</translation>
 <translation id="6649018507441623493">ခေတ္တစောင့်ပါ...</translation>
 <translation id="6649641931981131786">မျက်နှာပြင်ဗဟိုတွင် သင့်ကိုထားရန် ကင်မရာကို ချိန်ညှိပါ။</translation>
@@ -2013,6 +2033,7 @@
 <translation id="6812232930908427253">မျက်နှာပြင်ကို မသိမ်းနိုင်ပါ။ ဝင်ဒိုး (သို့) တဘ် များလွန်းနေသည်။</translation>
 <translation id="6818242057446442178">စာလုံးအလိုက် နောက်ပြန်သွားရန်</translation>
 <translation id="6819327813400217281">ကင်မရာကို အောက်ဘယ်ဘက်ထောင့်သို့ ကပ်ထားသည်</translation>
+<translation id="6820079682647046800">Kerberos အထောက်အထားစိစစ်၍ မရပါ</translation>
 <translation id="6820676911989879663">ခဏနားပါ။</translation>
 <translation id="6827049576281411231">အစီအစဉ် အကန့်ကို ပိတ်ရန်</translation>
 <translation id="682971198310367122">Google ကိုယ်ရေးအချက်အလက်လုံခြုံမှုဆိုင်ရာ မူဝါဒ</translation>
@@ -2043,6 +2064,7 @@
 <translation id="6919251195245069855">သင့်အဆင့်မြင့်ကတ်ကို ဖတ်၍မရပါ။ ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="692135145298539227">ဖျက်ရန်</translation>
 <translation id="6921427376813842559">စက်ကို အပ်ဒိတ်လုပ်ပါ</translation>
+<translation id="6923633482430812883">တပ်ဆင်မျှဝေရာတွင် အမှားဖြစ်သွားသည်။ သင်ချိတ်ဆက်နေသော ဖိုင်ဆာဗာက SMBv2 သို့မဟုတ် ၎င်းနောက်ပိုင်းကို ပံ့ပိုးခြင်း ရှိ၊ မရှိ စစ်ဆေးပါ။</translation>
 <translation id="6929081673585394903">ထိန်းချုပ်မှုများ ပြပါ</translation>
 <translation id="6931576957638141829">သိမ်းမည့်နေရာ</translation>
 <translation id="6935286146439255109">စာရွက်ဗန်း မရှိပါ</translation>
@@ -2051,6 +2073,7 @@
 <translation id="6945221475159498467">ရွေးရန်</translation>
 <translation id="6945922087561257829">သင့်ဖုန်းသည် မိုဘိုင်းကွန်ရက် သုံးနေသည်။ သင့်ဖုန်းနှင့် Chromebook သည် Wi-Fi ကွန်ရက်တစ်ခုတည်းတွင်ရှိကြောင်း သေချာစေပြီး ထပ်စမ်းကြည့်ပါ။ <ph name="LEARN_MORE" /></translation>
 <translation id="6950627417367801484">အက်ပ်များကို ပြန်ယူရန်</translation>
+<translation id="6960133692707095572">တိုကင်မပါဘဲ ဝင်ကြည့်ရန်</translation>
 <translation id="6960565108681981554">ဖွင့်မထားပါ။ သင်၏ မိုဘိုင်းဖုန်းကုမ္ပဏီကို ဆက်သွယ်ပါ။</translation>
 <translation id="696103774840402661">ဤ <ph name="DEVICE_TYPE" /> ပေါ်ရှိ အသုံးပြုသူအားလုံးအတွက် ဖိုင်နှင့် စက်တွင်းဒေတာအားလုံးကို အပြီးဖျက်ပါမည်။</translation>
 <translation id="6961121602502368900">အလုပ်ပရိုဖိုင်တွင် ဖုန်းအသံတိတ်ခြင်း မရနိုင်ပါ</translation>
@@ -2090,6 +2113,7 @@
 <translation id="7061457967428964661">ကင်မရာ အစမ်းကြည့်မှု၊ control + မြားခလုတ်များနှိပ်၍ အစမ်းကြည့်မှုကို အခြားထောင့်များသို့ ရွှေ့ပါ</translation>
 <translation id="7064351585062927183">လာမည့် <ph name="DAY_OF_WEEK" /></translation>
 <translation id="7064734931812204395">Linux ထည့်သည့်စနစ်ကို စီစဉ်သတ်မှတ်နေသည်။ ၎င်းက မိနစ် ၃၀ အထိ ကြာနိုင်သည်။</translation>
+<translation id="706626672220389329">မျှဝေဖိုင်တွဲကို တင်ရာတွင် အမှားအယွင်းရှိသည်။ သတ်မှတ်ထားသည့် မျှဝေဖိုင်ကို တင်ပြီးဖြစ်သည်။</translation>
 <translation id="7066646422045619941">ဤကွန်ယက်ကို သင့်စီမံခန့်ခွဲသူမှ ပိတ်ခဲ့သည်။</translation>
 <translation id="7067196344162293536">အော်တိုလှည့်ရန်</translation>
 <translation id="7076293881109082629">အကောင့်ထံဝင်ရောက်နေသည်</translation>
@@ -2476,6 +2500,7 @@
 <translation id="8168435359814927499">ပါဝင်သောအကြောင်းအရာ</translation>
 <translation id="8169177848833352618">ဤစက်ပစ္စည်းသည် Bruschetta ထည့်သွင်းရန်အတွက် သတ်မှတ်ချက်များနှင့် မကိုက်ညီပါ။ အမှားကုဒ်မှာ <ph name="ERROR" /> ဖြစ်သည်။</translation>
 <translation id="8172370561760918656">ရွေးထားသည့် ဘယ်ထိပ်ဖိဆွဲအထိန်း၊ ရွှေ့ရန် မြားခလုတ်များ သုံးပါ</translation>
+<translation id="8177196903785554304">ကွန်ရက် အသေးစိတ်</translation>
 <translation id="8179976553408161302">အင်တာ</translation>
 <translation id="81817143961839203">ပုံထည့်၍ မရလိုက်ပါ</translation>
 <translation id="8182105986296479640">အပလီကေးရှင်း တုံ့ပြန်မှုမရှိခြင်း။</translation>
@@ -2510,6 +2535,7 @@
 <translation id="8262312463845990408">ဖွင့်ရန် ခလုတ်</translation>
 <translation id="8266751606569906450">စာလုံးရေ <ph name="MINIMUM" /> လုံး အနည်းဆုံးရှိရမည်</translation>
 <translation id="8268302343625273732">Google Classroom တွင် အတန်းစာအားလုံး ကြည့်ရန်</translation>
+<translation id="827488840488530039">သင်ဝင်ကြည့်ရန် ကြိုးစားနေသည့် စာမျက်နှာက သင့် Kerberos တိုကင်ကို အတည်ပြု၍မရပါ</translation>
 <translation id="8277261673056602147">သင့်ဖန်သားပြင်ပေါ်ရှိ စာသားကို မြင်သာအောင်လုပ်ရန်</translation>
 <translation id="8281886186245836920">ကျော်ရန်</translation>
 <translation id="8282784978194352587">အောင်မြင်သွားပါပြီ။</translation>
@@ -2564,6 +2590,7 @@
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8458259704995116343">VM စတင်၍ မရလိုက်ပါ။</translation>
 <translation id="84613761564611563">ကွန်ရက် ပြင်ဆင်သတ်မှတ်ရန် UI ကို တောင်းဆိုထားပါသည်။ ခေတ္တစောင့်ပါ...</translation>
+<translation id="8461914792118322307">ပရောက်စီ</translation>
 <translation id="8462305545768648477">'စကားပြော ရွေးရန်' ကို ပိတ်ရန်</translation>
 <translation id="8463001014623882202">ခွင့်ပြုချက်ပေး၍ မရပါ</translation>
 <translation id="8466665972451889002"><ph name="GROUP_NAME" /> ရှိ အရာများပြပါ</translation>
@@ -2626,6 +2653,7 @@
 <translation id="8647931990447795414">လူတစ်ဦးထည့်ရန် သင်၏ Family Link မိဘသုံးကုဒ်ထည့်ပါ</translation>
 <translation id="8649597172973390955">စင်ကို အမြဲတမ်း ပြထားပါသည်</translation>
 <translation id="8657066291275741003">စာလုံးအသေး</translation>
+<translation id="8662671328352114214"><ph name="TYPE" /> ကွန်ရက်သို့ ချိတ်ခြင်း</translation>
 <translation id="8662921061190671299">ပြက္ခဒိန်တွင် ထည့်၍မရလိုက်ပါ</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">ဖန်သားပြင်ပုံ တစ်စိတ်တစ်ပိုင်းကို ရိုက်ကူးရန် Enter နှိပ်ပါ</translation>
@@ -2672,6 +2700,7 @@
 <translation id="8760172428247796445">သင်၏ <ph name="DEVICE_TYPE" /> ကို ယခု လော့ခ်ချလိုက်ပါမည်။
         သင့်စမတ်ကတ်ကို ထည့်သွင်းထားရန် <ph name="DOMAIN" /> က သတ်မှတ်ထားသည်။</translation>
 <translation id="8763883995157866248">စက်ကို အိပ်စက်မုဒ်တွင် ထားရန်</translation>
+<translation id="8774379074441005279">ပြန်ယူခြင်းကို အတည်ပြုခြင်း</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />၊ ထည့်သွင်းထားသည့် အက်ပ်၊ ပိတ်ထားသည်</translation>
 <translation id="8782565991310229362">Kiosk အပလီကေးရှင်း စတင်မှု ပယ်ဖျက်လိုက်ပါသည်။</translation>
 <translation id="8784626084144195648">ပျမ်းမျှ အမှိုက်ပုံး</translation>
@@ -2688,6 +2717,7 @@
 <translation id="8814190375133053267">ကြိုးမဲ့</translation>
 <translation id="881757059229893486">လက်ကွက် ဆက်တင်များ</translation>
 <translation id="8819728065740986820">အလိုက်သင့်အားသွင်းခြင်းကို ဖွင့်ထားသည်</translation>
+<translation id="8821045908425223359">အိုင်ပီလိပ်စာကို အလိုအလျောက် သတ်မှတ်ရန်</translation>
 <translation id="882204272221080310">လုံခြုံရေးပိုမိုကောင်းမွန်စေရန် firmware ကို အပ်ဒိတ်လုပ်ပါ</translation>
 <translation id="8822104519413696986">ဤဂိမ်းသည် တို့ထိဂိမ်းဖြစ်သည်</translation>
 <translation id="8825863694328519386">နောက်သို့ပြန်သွားရန် ဘယ်ဘက်မှ ပွတ်ဆွဲပါ</translation>
@@ -2748,6 +2778,7 @@
 <translation id="8980862970816311842">အက်ပ်ဇယားတွင် အက်ပ်သင်္ကေတကို ဖိုင်တွဲတစ်ခု၏ အတွင်း/အပြင်သို့ ရွှေ့ရန်</translation>
 <translation id="8982906748181120328">အနီးတစ်ဝိုက် မြင်နိုင်မှု</translation>
 <translation id="8983038754672563810">HSPA</translation>
+<translation id="8986362086234534611">မေ့ပစ်လိုက်ပါ</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> ကို အသုံးပြုနေသည်</translation>
 <translation id="8991648557324317894">ပယ်ဖျက်ရန် fn + ‘အမြန်ထည့်’ (သို့) Shift နှိပ်ပါ။</translation>
 <translation id="899350903320462459">အကြောင်းကြားခြင်း လုပ်ဆောင်ရန်အတွက် <ph name="LOGIN_ID" /> အဖြစ် စက်ပစ္စည်းကို လော့ခ်ဖွင့်ပါ</translation>
@@ -2760,6 +2791,7 @@
 <translation id="9013037634206938463">Linux ထည့်သွင်းရန် နေရာလွတ် <ph name="INSTALL_SIZE" /> လိုအပ်သည်။ နေရာလွတ်ပိုရရန် သင့်စက်မှ ဖိုင်များကို ဖျက်ပါ။</translation>
 <translation id="901668144954885282">Google Drive သို့ အရန်သိမ်းရန်</translation>
 <translation id="9017320285115481645">Family Link မိဘသုံးကုဒ် ထည့်ပါ။</translation>
+<translation id="9024158959543687197">မျှဝေဖိုင်တွဲကို တင်ရာတွင် အမှားအယွင်းရှိသည်။ ဖိုင်မျှဝေမှု URL ကို စစ်ပြီး ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="9024331582947483881">မျက်နှာပြင်အပြည့်</translation>
 <translation id="9026852570893462412">ဤလုပ်ဆောင်ချက်သည် မိနစ်အနည်းငယ်ကြာနိုင်ပါသည်။ ပကတိအသွင်စက်ကို ဒေါင်းလုဒ်လုပ်နေသည်။</translation>
 <translation id="9029736946581028033">စက်သည် မကြာမီ အားကုန်တော့မည်</translation>

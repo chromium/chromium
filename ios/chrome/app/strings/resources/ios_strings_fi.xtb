@@ -2035,6 +2035,7 @@ Jos haluat jatkaa tietokoneella, vaihda tiliksi <ph name="OTHER_EMAIL" />. Saat 
 <translation id="728025568708172005">Esittele paikkaa</translation>
 <translation id="7280980607183752256">Tiedostoa ei voi tuoda</translation>
 <translation id="7282197670900591579">Sitruunankeltainen teema</translation>
+<translation id="7283937415134849498">Gemini jakaa osan datastasi (esim. osia keskusteluista, sijainnin ja muita relevantteja tietoja) muille Googlen palveluille, kuten Mapsille ja Lennoille, jotta voit saada räätälöityä apua. Palvelut voivat käyttää tietoja toimintansa parantamiseen, vaikka poistaisit Gemini-historian. Lue lisää <ph name="BEGIN_LINK" />Gemini-sovellusten Yksityisyys- ja tietosuojakeskuksesta<ph name="END_LINK" />.</translation>
 <translation id="7293429513719260019">Valitse kieli</translation>
 <translation id="72961285530871072">Tämä poistaa Level Up ‑edistymisesi pysyvästi, eikä ominaisuuksien käyttödataa enää lähetetä Googlelle profiiliasi varten.
 
@@ -2607,6 +2608,7 @@ Voit aloittaa uudelleen milloin tahansa.</translation>
 <translation id="8976382372951310360">Ohje</translation>
 <translation id="8976414606286374109">Kortit tallennetaan Google-tilillesi.</translation>
 <translation id="8981454092730389528">Googlen toimintojen hallinta</translation>
+<translation id="8987736167266086032">Jatka siitä, mihin jäit</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, kiinnitetty sivusto</translation>
 <translation id="8989779557457435460">Jaa nykyinen välilehti oletuksena</translation>
 <translation id="8990960056509724223">Tiedostoa ei voitu tallentaa organisaation käytäntöjen vuoksi</translation>

@@ -20,6 +20,7 @@
 <translation id="1056898198331236512">警告</translation>
 <translation id="1058009965971887428">提交反馈</translation>
 <translation id="1059120031266247284">与您分享</translation>
+<translation id="1060570945511946595">管理票据</translation>
 <translation id="1060847216467038176"><ph name="ITEM_LABEL" />（带有“移除”按钮）</translation>
 <translation id="1062407476771304334">替换</translation>
 <translation id="1065931689816135472"><ph name="BEGIN_PARAGRAPH1" />备份到 Google 云端硬盘。您随时可以轻松地恢复数据或更换设备。备份内容包含应用数据。<ph name="END_PARAGRAPH1" />
@@ -280,6 +281,7 @@
 <translation id="1757132445735080748">若要完成 Linux 安装，请更新 ChromeOS Flex 并重试。</translation>
 <translation id="1757857692711134412">保持关闭状态，直到日落</translation>
 <translation id="1763084151787818322">其他操作</translation>
+<translation id="1767043563165955993">使用此账号登录 Android 应用</translation>
 <translation id="1768138163688567246">关闭“搜索我的屏幕”</translation>
 <translation id="1768366657309696705">键盘快捷键“<ph name="LAUNCHER_KEY_NAME" /> + 句点键”已更改。若要使用 Insert 键，请按<ph name="LAUNCHER_KEY_NAME" />键 + Shift + 退格键。</translation>
 <translation id="1770726142253415363">已移至第 <ph name="ROW_NUMBER" /> 行与第 <ph name="COLUMN_NUMBER" /> 列的相交处。</translation>
@@ -304,6 +306,7 @@
 <translation id="1838895407229022812">当前已关闭夜间光效。</translation>
 <translation id="1840920496749066704">°C</translation>
 <translation id="1841616161104323629">找不到设备记录。</translation>
+<translation id="184273675144259287">以先前的备份替换您的 Linux 应用和文件</translation>
 <translation id="1854180393107901205">停止投放</translation>
 <translation id="1862077610023398675">隐藏控件</translation>
 <translation id="1862380676329487333">更新并退出</translation>
@@ -333,6 +336,7 @@
 <translation id="1946615340060705561">按“c”键即可释放</translation>
 <translation id="1948405482892809935">切换到下一个用户</translation>
 <translation id="1954252331066828794">已完成屏幕录制</translation>
+<translation id="1954813140452229842">装载共享资源时出错。请检查您的凭据，然后重试。</translation>
 <translation id="1956087014741188812">暂停使用鼠标键</translation>
 <translation id="1957958912175573503">设置语言</translation>
 <translation id="1961239773406905488">已隐藏相机预览画面</translation>
@@ -352,6 +356,11 @@
 <translation id="1998100899771863792">当前桌面</translation>
 <translation id="2001444736072756133">搜索您的<ph name="CATEGORY" />、文件、应用等内容。</translation>
 <translation id="2011174342667534258">SDK 版本：</translation>
+<translation id="2017770349934140286">Google Play 以及您从 Google Play 下载的应用将从此 Chromebook 中删除。
+    <ph name="LINE_BREAKS1" />
+    您通过 Google Play 购买的内容（例如电影、电视节目、音乐、图书）以及通过其他应用购买的内容可能也会被删除。
+    <ph name="LINE_BREAKS2" />
+    这不会影响其他设备上的应用或内容。</translation>
 <translation id="2017998995161831444">在“探索”应用内打开“帮助”</translation>
 <translation id="2021864487439853900">点击即可解锁</translation>
 <translation id="2023167225947895179">该 PIN 码可能很容易被猜到</translation>
@@ -381,6 +390,7 @@
 <translation id="212862741129535676">频率状态占用率</translation>
 <translation id="2132302418721800944">录制整个屏幕</translation>
 <translation id="2135456203358955318">停靠的放大镜</translation>
+<translation id="2148219725039824548">装载共享资源时出错。在网络上找不到所指定的共享资源。</translation>
 <translation id="2148716181193084225">今天</translation>
 <translation id="2149229036084364364">切换到上一曲</translation>
 <translation id="2152796271648108398">当前天气</translation>
@@ -726,6 +736,7 @@
 <translation id="315116470104423982">移动数据</translation>
 <translation id="3153444934357957346">使用多账号登录时，一次最多只能登入 <ph name="MULTI_PROFILE_USER_LIMIT" /> 个账号。</translation>
 <translation id="3154351730702813399">此设备的管理员可能会监控您的浏览活动。</translation>
+<translation id="3157931365184549694">恢复</translation>
 <translation id="316086887565479535">此模板含有不支持的应用</translation>
 <translation id="3160929076476941240">2 小时</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> 正在回滚您的 <ph name="DEVICE_TYPE" />。您的设备将会重置，并且所有数据都会被删除。</translation>
@@ -776,6 +787,7 @@
 <translation id="3313950410573257029">检查连接状况</translation>
 <translation id="3321628682574733415">家长访问代码不正确</translation>
 <translation id="332827762492701193">已隐藏通知</translation>
+<translation id="3328489342742826322">使用备份进行恢复会致使系统删除您“Linux 文件”文件夹中的现有 Linux 应用和数据。</translation>
 <translation id="3333674550998107387">展开“<ph name="NOTIFICATION_TITLE" />”通知</translation>
 <translation id="3339826665088060472">截屏工具栏，包含各种截屏和录屏工具</translation>
 <translation id="3340978935015468852">设置</translation>
@@ -835,6 +847,7 @@
         <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />详细了解“位置信息精确度”<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />，<ph name="CONNECTION_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">任务栏已自动隐藏</translation>
+<translation id="3500417806337761827">装载文件共享时出错。已装载太多 SMB 文件共享。</translation>
 <translation id="3505066820268455558">电池正在充电</translation>
 <translation id="3509391053705095206">找不到您的手机。请确保手机已开启蓝牙功能。</translation>
 <translation id="3510164367642747937">突出显示鼠标光标</translation>
@@ -959,6 +972,7 @@
 <translation id="3804737937830804242">收起相机</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 个表情符号。没有其他结果。}other{# 个表情符号。没有其他结果。}}</translation>
 <translation id="381202950560906753">添加其他指纹</translation>
+<translation id="3819257035322786455">备份</translation>
 <translation id="3819261658055281761">系统未能为此设备存储长期的 API 访问令牌。</translation>
 <translation id="3822403841174077928">无法复制带格式的文本</translation>
 <translation id="3824621460022590830">设备注册令牌无效。请与设备所有者或管理员联系。错误代码：<ph name="ERROR_CODE" />。</translation>
@@ -1141,6 +1155,7 @@
 <translation id="4327147325944669226">录制游戏</translation>
 <translation id="4329076911374908740">已达到可保存分组的数量上限。</translation>
 <translation id="4338109981321384717">放大镜</translation>
+<translation id="4340125850502689798">用户名无效</translation>
 <translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />，已设为静音</translation>
 <translation id="4351244548802238354">关闭对话框</translation>
 <translation id="435527878592612277">选择您的照片</translation>
@@ -1619,6 +1634,7 @@
 <translation id="5727460725221669831">如果您忘记了密码，或最近更改过自己的 Google 账号密码，请尝试让此用户恢复登录。</translation>
 <translation id="5733630091161562207">欢迎通知</translation>
 <translation id="573413375004481890">此设备无法支持您的所有显示屏，因此断开了与其中一个显示屏的连接</translation>
+<translation id="5734697361979786483">添加文件共享</translation>
 <translation id="5739548907438839901">已释放 <ph name="SIZE" /> 的磁盘可用空间。</translation>
 <translation id="574392208103952083">中等</translation>
 <translation id="5745612484876805746">夜间光效会于日落时自动开启</translation>
@@ -1707,6 +1723,7 @@
 <translation id="5983567367406220847">由于闲置过久，热点已关闭。</translation>
 <translation id="598407983968395253">使用模板</translation>
 <translation id="5984334442529819751">安装 DLC 时出错（通常需要重新启动，请依次查看“设置”\&gt;\&gt;“关于 ChromeOS”了解详情）。</translation>
+<translation id="5985458664595100876">网址格式无效。支持的格式为 \\server\share 和 smb://server/share。</translation>
 <translation id="5986723678596105470">通过 Google Meet 加入</translation>
 <translation id="598882571027504733">要想获取此项更新，请在已连接该键盘的情况下重新启动您的 Chromebook。</translation>
 <translation id="5990992855591814753">使用个性化专注播放列表保持专注。免费试用 YouTube Premium 3 个月，畅享无广告干扰的 YouTube Music 和 YouTube。须遵守相关条款。</translation>
@@ -1756,6 +1773,7 @@
 <translation id="6074087755403037157">Beta 渠道</translation>
 <translation id="6075098173600599596">更改大小写</translation>
 <translation id="6080689532560039067">检查系统时间</translation>
+<translation id="6091761513005122595">已成功装载共享资源。</translation>
 <translation id="6091929401758362855">播放列表：<ph name="PLAYLIST_TITLE" /></translation>
 <translation id="6093867385179428431">已被管理员停用</translation>
 <translation id="6095008505822982596">语速</translation>
@@ -1927,6 +1945,7 @@
 <translation id="6582034443359256692">正在计算电池充电电量。</translation>
 <translation id="6586685375736417639">无法为设备充电</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />，<ph name="SECONDARY_TEXT" /></translation>
+<translation id="6596816719288285829">IP 地址</translation>
 <translation id="6597017209724497268">个样本的平均值</translation>
 <translation id="6597278316891651699">相机已对准左下角。与系统界面冲突。</translation>
 <translation id="6605415194043280389">专注模式已开启</translation>
@@ -1946,6 +1965,7 @@
 <translation id="6637729079642709226">更改时间</translation>
 <translation id="6641720045729354415">开启/关闭“实时字幕”功能。<ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">撤消按名称排序</translation>
+<translation id="6644513150317163574">网址格式无效。使用 SSO 身份验证时，必须将服务器指定为主机名。</translation>
 <translation id="664793810957802384">建议分组中的内容</translation>
 <translation id="6649018507441623493">请稍候…</translation>
 <translation id="6649641931981131786">调整摄像头，使自己位于屏幕中央。</translation>
@@ -2011,6 +2031,7 @@
 <translation id="6812232930908427253">无法保存桌面。窗口或标签页过多。</translation>
 <translation id="6818242057446442178">后退一个字词</translation>
 <translation id="6819327813400217281">相机已对准左下角</translation>
+<translation id="6820079682647046800">Kerberos 身份验证失败</translation>
 <translation id="6820676911989879663">休息一下！</translation>
 <translation id="6827049576281411231">关闭事件面板</translation>
 <translation id="682971198310367122">Google 隐私权政策</translation>
@@ -2041,6 +2062,7 @@
 <translation id="6919251195245069855">无法识别您的智能卡，请重试。</translation>
 <translation id="692135145298539227">删除</translation>
 <translation id="6921427376813842559">更新设备</translation>
+<translation id="6923633482430812883">装载共享时出错。请检查您要连接的文件服务器是否支持 SMBv2 或更高版本。</translation>
 <translation id="6929081673585394903">显示控件</translation>
 <translation id="6931576957638141829">保存到</translation>
 <translation id="6935286146439255109">找不到送纸盘</translation>
@@ -2049,6 +2071,7 @@
 <translation id="6945221475159498467">选择</translation>
 <translation id="6945922087561257829">手机使用的是移动网络。请确保您的手机和 Chromebook 已连接到同一 Wi-Fi 网络，然后重试。<ph name="LEARN_MORE" /></translation>
 <translation id="6950627417367801484">还原应用</translation>
+<translation id="6960133692707095572">无票据访问</translation>
 <translation id="6960565108681981554">未激活。请联系您的运营商。</translation>
 <translation id="696103774840402661">这部 <ph name="DEVICE_TYPE" /> 上所有用户的全部文件和本地数据都已被永久删除。</translation>
 <translation id="6961121602502368900">工作资料不支持“将手机设为静音”功能</translation>
@@ -2088,6 +2111,7 @@
 <translation id="7061457967428964661">相机预览画面，按 Ctrl + 箭头键即可让预览画面显示一个不同的角落</translation>
 <translation id="7064351585062927183">这个<ph name="DAY_OF_WEEK" /></translation>
 <translation id="7064734931812204395">正在配置 Linux 容器。此过程最多可能需要 30 分钟的时间。</translation>
+<translation id="706626672220389329">装载共享资源时出错。所指定的共享资源此前就已装载完毕。</translation>
 <translation id="7066646422045619941">您的管理员已禁用此网络。</translation>
 <translation id="7067196344162293536">自动旋转</translation>
 <translation id="7076293881109082629">正在登录</translation>
@@ -2474,6 +2498,7 @@
 <translation id="8168435359814927499">内容</translation>
 <translation id="8169177848833352618">很抱歉，此机器不符合安装 Bruschetta 的要求。错误代码为 <ph name="ERROR" />。</translation>
 <translation id="8172370561760918656">已选择左上角手柄，使用箭头键即可移动</translation>
+<translation id="8177196903785554304">网络详细信息</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="81817143961839203">插入图片失败</translation>
 <translation id="8182105986296479640">应用无响应。</translation>
@@ -2508,6 +2533,7 @@
 <translation id="8262312463845990408">播放/暂停切换按钮</translation>
 <translation id="8266751606569906450">必须至少包含 <ph name="MINIMUM" /> 个字符</translation>
 <translation id="8268302343625273732">查看 Google 课堂中的所有作业</translation>
+<translation id="827488840488530039">您正在尝试访问的网页无法验证您的 Kerberos 票据</translation>
 <translation id="8277261673056602147">突出显示屏幕上的文字</translation>
 <translation id="8281886186245836920">跳过</translation>
 <translation id="8282784978194352587">您做到了！</translation>
@@ -2562,6 +2588,7 @@
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8458259704995116343">未能启动虚拟机。</translation>
 <translation id="84613761564611563">正在显示请求的网络配置界面，请稍候…</translation>
+<translation id="8461914792118322307">代理</translation>
 <translation id="8462305545768648477">关闭“随选朗读”功能</translation>
 <translation id="8463001014623882202">授权失败</translation>
 <translation id="8466665972451889002">显示“<ph name="GROUP_NAME" />”中的内容</translation>
@@ -2624,6 +2651,7 @@
 <translation id="8647931990447795414">若要添加人员，请输入您的 Family Link 家长访问码</translation>
 <translation id="8649597172973390955">一律显示任务栏</translation>
 <translation id="8657066291275741003">小写</translation>
+<translation id="8662671328352114214">加入<ph name="TYPE" />网络</translation>
 <translation id="8662921061190671299">无法添加到日历</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">按 Enter 键即可截取局部屏幕</translation>
@@ -2670,6 +2698,7 @@
 <translation id="8760172428247796445"><ph name="DEVICE_TYPE" /> 将立即锁定。
         <ph name="DOMAIN" /> 要求智能卡保持插入状态。</translation>
 <translation id="8763883995157866248">将设备设为睡眠模式</translation>
+<translation id="8774379074441005279">确认恢复</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />，已安装的应用，已禁用</translation>
 <translation id="8782565991310229362">已取消启动自助服务终端应用。</translation>
 <translation id="8784626084144195648">按区段计算的平均值</translation>
@@ -2686,6 +2715,7 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">输入法设置</translation>
 <translation id="8819728065740986820">已开启“自动调节充电”功能</translation>
+<translation id="8821045908425223359">自动配置 IP 地址</translation>
 <translation id="882204272221080310">更新固件以提高安全性。</translation>
 <translation id="8822104519413696986">这是一款触摸游戏</translation>
 <translation id="8825863694328519386">从左侧向右滑动手指即可返回</translation>
@@ -2745,6 +2775,7 @@
 <translation id="8980862970816311842">将某个应用图标移入或移出应用网格内的文件夹</translation>
 <translation id="8982906748181120328">“附近分享”的高可见度模式</translation>
 <translation id="8983038754672563810">HSPA</translation>
+<translation id="8986362086234534611">不保存</translation>
 <translation id="8990809378771970590">目前使用的是“<ph name="IME_NAME" />”</translation>
 <translation id="8991648557324317894">按 fn + 快捷插入键或 shift 键可取消。</translation>
 <translation id="899350903320462459">以 <ph name="LOGIN_ID" /> 身份解锁设备即可执行通知操作</translation>
@@ -2757,6 +2788,7 @@
 <translation id="9013037634206938463">安装 Linux 需要 <ph name="INSTALL_SIZE" /> 的可用空间。如需增加可用空间，请从您的设备中删除文件。</translation>
 <translation id="901668144954885282">备份到 Google 云端硬盘</translation>
 <translation id="9017320285115481645">输入 Family Link 家长访问码。</translation>
+<translation id="9024158959543687197">装载共享资源时出错。请检查文件共享网址，然后重试。</translation>
 <translation id="9024331582947483881">全屏</translation>
 <translation id="9026852570893462412">此过程可能需要几分钟的时间。正在下载虚拟机。</translation>
 <translation id="9029736946581028033">设备很快就会关机</translation>

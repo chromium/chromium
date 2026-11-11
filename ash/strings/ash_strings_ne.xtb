@@ -20,6 +20,7 @@
 <translation id="1056898198331236512">चेतावनी</translation>
 <translation id="1058009965971887428">प्रतिक्रियाका बारेमा रिपोर्ट गर्नुहोस्</translation>
 <translation id="1059120031266247284">तपाईंसँग सेयर गरिएको</translation>
+<translation id="1060570945511946595">टिकटहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="1060847216467038176"><ph name="ITEM_LABEL" /> र यसलाई हटाउन क्लिक गर्नु पर्ने बटन</translation>
 <translation id="1062407476771304334">बदल्नुहोस्</translation>
 <translation id="1065931689816135472"><ph name="BEGIN_PARAGRAPH1" />Google Drive मा ब्याकअप गर्नुहोस्। जुनसुकै बेला आफ्नो डेटा सजिलै रिस्टोर गर्नुहोस् वा डिभाइस बदल्नुहोस्। तपाईंको ब्याकअपमा एपसम्बन्धी डेटा समावेश हुन्छ।<ph name="END_PARAGRAPH1" />
@@ -280,6 +281,7 @@
 <translation id="1757132445735080748">तपाईं Linux सेटअप गर्ने कार्य पूरा गर्न चाहनुहुन्छ भने ChromeOS Flex अपडेट गर्नुहोस् र फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="1757857692711134412">सूर्यास्त नहुँदासम्म अफ रहने छ</translation>
 <translation id="1763084151787818322">अन्य कारबाहीहरू</translation>
+<translation id="1767043563165955993">Android एप चलाउन प्रयोग गर्नुहोस्</translation>
 <translation id="1768138163688567246">"मेरो स्क्रिनमा खोज्नुहोस्" मोड बन्द गर्नुहोस्</translation>
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + पिरियड किबोर्ड सर्टकट परिवर्तन गरिएको छ। Insert की प्रयोग गर्न <ph name="LAUNCHER_KEY_NAME" /> की + Shift + Backspace थिच्नुहोस्।</translation>
 <translation id="1770726142253415363">यो एप सारेर रो <ph name="ROW_NUMBER" />, कलम <ph name="COLUMN_NUMBER" /> मा लगिएको छ।</translation>
@@ -304,6 +306,7 @@
 <translation id="1838895407229022812">रात्रि प्रकाश अफ छ।</translation>
 <translation id="1840920496749066704">°C</translation>
 <translation id="1841616161104323629">फेला नपरेको यन्त्रको रेकर्ड।</translation>
+<translation id="184273675144259287">अघिल्लो ब्याकअपबाट आफ्ना Linux सम्बन्धी एप र फाइलहरू प्रतिस्थापन गर्नुहोस्</translation>
 <translation id="1854180393107901205">Cast गर्न रोक्नुहोस्</translation>
 <translation id="1862077610023398675">सेटिङ लुकाउनुहोस्</translation>
 <translation id="1862380676329487333">अपडेट गर्नुहोस् अनि साइन आउट गर्नुहोस्</translation>
@@ -333,6 +336,7 @@
 <translation id="1946615340060705561">माउसको बटन छाड्न “c” की थिच्नुहोस्</translation>
 <translation id="1948405482892809935">अर्को प्रयोगकर्ताका रूपमा साइन इन गर्नुहोस्</translation>
 <translation id="1954252331066828794">स्क्रिन रेकर्डिङ गरियो</translation>
+<translation id="1954813140452229842">आदान प्रदान माउन्ट गर्ने क्रममा त्रुटि भयो। कृपया आफ्ना प्रमाणहरूको जाँच गरी फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="1956087014741188812">माउस की सुविधा पज गर्नुहोस्</translation>
 <translation id="1957958912175573503">आफ्नो भाषा सेट गर्नुहोस्</translation>
 <translation id="1961239773406905488">क्यामेरामा फोटोको प्रिभ्यू लुकाइएको छ</translation>
@@ -352,6 +356,11 @@
 <translation id="1998100899771863792">हालको डेस्क</translation>
 <translation id="2001444736072756133">आफ्ना <ph name="CATEGORY" />, फाइल, एप र अन्य कुराहरू खोज्नुहोस्।</translation>
 <translation id="2011174342667534258">SDK को संस्करण:</translation>
+<translation id="2017770349934140286">Google Play तथा तपाईंले Google Play बाट डाउनलोड गरेका एपहरू यो Chromebook बाट मेटाइने छन्।
+    <ph name="LINE_BREAKS1" />
+    तपाईंले Google Play का साथै अन्य एपहरूबाट खरिद गर्नुभएका सामग्री जस्तै चलचित्र, TV सो, सङ्गीत र पुस्तकहरू जस्ता सामग्री पनि मेटाइन सक्छन्।
+    <ph name="LINE_BREAKS2" />
+    यस कार्यले अन्य डिभाइसहरूमा रहेका एप वा सामग्रीमा असर पार्दैन।</translation>
 <translation id="2017998995161831444">एक्स्प्लोर एपमा "मद्दत" खोल्नुहोस्</translation>
 <translation id="2021864487439853900">अनलक गर्न क्लिक गर्नुहोस्</translation>
 <translation id="2023167225947895179">PIN को अनुमान लगाउन सजिलो हुन सक्छ</translation>
@@ -381,6 +390,7 @@
 <translation id="212862741129535676">फ्रिक्वेन्सी राज्य अधिकार प्रतिशत</translation>
 <translation id="2132302418721800944">फुल स्क्रिनको भिडियो रेकर्ड गर्नुहोस्</translation>
 <translation id="2135456203358955318">डक गरिएको म्याग्निफायर</translation>
+<translation id="2148219725039824548">आदान प्रदान माउन्ट गर्ने क्रममा त्रुटि भयो। तोकिएको आदान प्रदान नेटवर्कमा फेला परेन।</translation>
 <translation id="2148716181193084225">आज</translation>
 <translation id="2149229036084364364">अघिल्लो ट्रयाक प्ले गर्नुहोस्</translation>
 <translation id="2152796271648108398">हालको मौसम</translation>
@@ -726,6 +736,7 @@
 <translation id="315116470104423982">मोबाइल डाटा</translation>
 <translation id="3153444934357957346">तपाईंसँग बहुविध साइन-इनमा <ph name="MULTI_PROFILE_USER_LIMIT" /> सम्म खाताहरू मात्रै हुन सक्छ।</translation>
 <translation id="3154351730702813399">यन्त्रको प्रशासकले तपाईंको ब्राउजिङ सम्बन्धी गतिविधिको अनुगमन गर्न सक्छ।</translation>
+<translation id="3157931365184549694">पुन: भण्डारण</translation>
 <translation id="316086887565479535">टेम्प्लेटमा प्रयोग गर्न नमिल्ने एपहरू छन्</translation>
 <translation id="3160929076476941240">२ घण्टा</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> तपाईंको <ph name="DEVICE_TYPE" /> मा अघिल्लो संस्करण रिस्टोर गर्दै छ। तपाईंको डिभाइस रिसेट हुने छ र डिभाइसमा भएका सबै डेटा मेटाइने छ।</translation>
@@ -776,6 +787,7 @@
 <translation id="3313950410573257029">इन्टरनेट जाँच्नुहोस्</translation>
 <translation id="3321628682574733415">अभिभावकको कोड गलत छ</translation>
 <translation id="332827762492701193">सूचनाहरू लुकाइएका छन्</translation>
+<translation id="3328489342742826322">कुनै ब्याकअपबाट पुनर्स्थापना गर्नुले विद्यमान Linux एपहरू र तपाईंको Linux फाइलहरूको फोल्डरमा रहेको डेटा मेट्ने छ।</translation>
 <translation id="3333674550998107387"><ph name="NOTIFICATION_TITLE" /> सूचना एक्स्पान्ड गर्नुहोस्</translation>
 <translation id="3339826665088060472">स्क्रिन क्याप्चर अर्थात् स्क्रिनसट र स्क्रिन रेकर्डिङ गर्ने टुल</translation>
 <translation id="3340978935015468852">सेटिङहरू</translation>
@@ -835,6 +847,7 @@
         <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />लोकेसनको सटीकताका बारेमा थप जान्नुहोस्<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">सेल्फ स्वतः लुक्ने छ</translation>
+<translation id="3500417806337761827">सेयर माउन्ट गर्ने क्रममा त्रुटि भयो। अहिले थुप्रै SMB सेयरहरू माउन्ट गरिएका छन्।</translation>
 <translation id="3505066820268455558">ब्याट्री चार्ज हुँदै छ</translation>
 <translation id="3509391053705095206">तपाईंको फोन भेट्टाउन सकिएन। आफ्नो फोनको ब्लुटुथ अन गरिएको छ भन्ने कुरा सुनिश्चित गर्नुहोस्।</translation>
 <translation id="3510164367642747937">माउसको कर्सरलाई हाइलाइट</translation>
@@ -959,6 +972,7 @@
 <translation id="3804737937830804242">क्यामेरा कोल्याप्स गर्नुहोस्</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{एउटा इमोजी। अन्य कुनै पनि परिणाम छैन।}other{# वटा इमोजी। अन्य कुनै पनि परिणाम छैन।}}</translation>
 <translation id="381202950560906753">अर्को थप्नुहोस्</translation>
+<translation id="3819257035322786455">ब्याकअप गर्नुहोस्</translation>
 <translation id="3819261658055281761">प्रणालीले यो डिभाइसको दीर्घकालीन API पहुँच टोकन भण्डारण गर्न सकेन।</translation>
 <translation id="3822403841174077928">फर्म्याटिङसहित कपी गर्न सकिएन</translation>
 <translation id="3824621460022590830">यन्त्र दर्ता गर्न प्रयोग गरिने टोकन अवैध छ। कृपया आफ्नो डिभाइसका मालिक वा एड्मिनसँग सम्पर्क गर्नुहोस्। त्रुटिको कोड: <ph name="ERROR_CODE" />।</translation>
@@ -1142,6 +1156,7 @@
 <translation id="4327147325944669226">गेम रेकर्ड गर्नुहोस्</translation>
 <translation id="4329076911374908740">योभन्दा बढी समूह सेभ गर्न सकिँदैन।</translation>
 <translation id="4338109981321384717">म्याग्निफाइङ्ग ग्लास</translation>
+<translation id="4340125850502689798">युजरनेम अवैध छ</translation>
 <translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, म्युट गरिएको</translation>
 <translation id="4351244548802238354">सम्बाद बन्द गर्नुहोस्</translation>
 <translation id="435527878592612277">आफ्नो तस्बिर चयन गर्नुहोस्</translation>
@@ -1621,6 +1636,7 @@
 <translation id="5727460725221669831">तपाईंले आफ्नो पासवर्ड बिर्सनुभयो वा आफ्नो Google खाताको पासवर्ड बदल्नुभयो भने यो प्रयोगकर्ता खाता रिकभर गरी हेर्नुहोस्।</translation>
 <translation id="5733630091161562207">"स्वागत छ" डायलग भएको नोटिफिकेसन</translation>
 <translation id="573413375004481890">यो डिभाइसले तपाईंको कुनै पनि डिस्प्ले समर्थन गर्न सकेन, त्यसैले एउटाको जडान डिस्कनेक्ट गरियो</translation>
+<translation id="5734697361979786483">फाइल आदान प्रदान गर्ने सुविधा थप्नुहोस्</translation>
 <translation id="5739548907438839901">डिस्कमा <ph name="SIZE" /> ठाउँ खाली गरिएको छ।</translation>
 <translation id="574392208103952083">मध्यम</translation>
 <translation id="5745612484876805746">रात्रि प्रकाश सूर्यास्तको बेला स्वतः सक्रिय हुन्छ</translation>
@@ -1709,6 +1725,7 @@
 <translation id="5983567367406220847">कुनै पनि क्रियाकलाप नगरिएको हुनाले हटस्पट अफ गरिएको छ।</translation>
 <translation id="598407983968395253">टेम्प्लेट प्रयोग गर्नुहोस्</translation>
 <translation id="5984334442529819751">DLC इन्स्टल गर्ने क्रममा त्रुटि भयो (डिभाइस धेरैजसो रिबुट गर्नु पर्ने हुन्छ, "सेटिङ\&gt;\&gt;ChromeOS का बारेमा जानकारी" मा गई थप जानकारी प्राप्त गर्नुहोस्)।</translation>
+<translation id="5985458664595100876">URL ढाँचा अमान्य छ। समर्थन गरिएका ढाँचाहरू \\server\share र smb://server/share हुन्।</translation>
 <translation id="5986723678596105470">Google Meet मार्फत सामेल हुनुहोस्</translation>
 <translation id="598882571027504733">अद्यावधिक प्राप्त गर्न, उक्त किबोर्ड जोडिएकै अवस्थामा आफ्नो Chromebook पुनः सुरु गर्नुहोस्।</translation>
 <translation id="5990992855591814753">पर्सनलाइज गरिएका फोकस प्लेलिस्टहरू सुनेर ध्यान केन्द्रित गर्नुहोस्। YouTube Premium को ३ महिने निःशुल्क ट्रायल सदस्यता लिनुहोस् र विज्ञापनरहित YouTube Music तथा YouTube प्राप्त गर्नुहोस्। सर्तहरू लागू हुन्छन्।</translation>
@@ -1758,6 +1775,7 @@
 <translation id="6074087755403037157">बिटा च्यानल</translation>
 <translation id="6075098173600599596">क्यापिटलाइजेसन बदल्नुहोस्</translation>
 <translation id="6080689532560039067">तपाईंको प्रणाली समय जाँच्नुहोस्</translation>
+<translation id="6091761513005122595">आदान प्रदान माउन्ट गर्ने कार्य सफलतापूर्वक सम्पन्न भयो।</translation>
 <translation id="6091929401758362855">प्लेलिस्ट: <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="6093867385179428431">एड्मिनले अफ गर्नुभएको छ</translation>
 <translation id="6095008505822982596">स्पिचको गति</translation>
@@ -1929,6 +1947,7 @@
 <translation id="6582034443359256692">ब्याट्रीको चार्जको स्तर निकालिँदै छ।</translation>
 <translation id="6586685375736417639">डिभाइस चार्ज गर्न मिल्दैन</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
+<translation id="6596816719288285829">IP ​​ठेगाना</translation>
 <translation id="6597017209724497268">नमूनाहरू</translation>
 <translation id="6597278316891651699">क्यामेरा पुछारको बायाँ कुनामा स्न्याप गरियो। सिस्टमको सतहसँग बाझियो।</translation>
 <translation id="6605415194043280389">फोकस मोड अन छ</translation>
@@ -1948,6 +1967,7 @@
 <translation id="6637729079642709226">समय परिवर्तन गर्नुहोस्</translation>
 <translation id="6641720045729354415">लाइभ क्याप्सन टगल गरी अन वा अफ गर्नुहोस्। <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">नामअनुसार क्रमबद्ध गर्ने कार्य अन्डू गर्नुहोस्</translation>
+<translation id="6644513150317163574">URL को अमान्य ढाँचा। SSO प्रमाणीकरण प्रयोग गरिएका बेला सर्भर अनिवार्य रूपमा होस्टका रूपमा तोकिनु पर्छ।</translation>
 <translation id="664793810957802384">सुझाइएको समूहमा रहेका सामग्रीहरू</translation>
 <translation id="6649018507441623493">एकै सेकेन्ड...</translation>
 <translation id="6649641931981131786">आफूलाई स्क्रिनको केन्द्र भागमा पार्न क्यामेरा मिलाउनुहोस्।</translation>
@@ -2013,6 +2033,7 @@
 <translation id="6812232930908427253">डेस्क सेभ गर्न सकिएन। अत्यन्त धेरै विन्डो वा ट्याबहरू सेभ गरिएका छन्।</translation>
 <translation id="6818242057446442178">कर्सरलाई एक शब्द पछाडि लैजानुहोस्</translation>
 <translation id="6819327813400217281">क्यामेरा पुछारको बायाँ कुनामा स्न्याप गरियो</translation>
+<translation id="6820079682647046800">Kerberos प्रमाणीकरण गर्न सकिएन</translation>
 <translation id="6820676911989879663">विश्राम लिनुहोस्!</translation>
 <translation id="6827049576281411231">इभेन्ट प्यानल बन्द गर्नुहोस्</translation>
 <translation id="682971198310367122">Google को गोपनीयता नीति</translation>
@@ -2043,6 +2064,7 @@
 <translation id="6919251195245069855">तपाईंको स्मार्ट कार्ड पहिचान गर्न सकिएन। फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="692135145298539227">मेटाउनुहोस्</translation>
 <translation id="6921427376813842559">डिभाइस अपडेट गर्नुहोस्</translation>
+<translation id="6923633482430812883">आदान प्रदान माउन्ट गर्ने क्रममा त्रुटि भयो। आफूले जडान गर्न खोजिरहेको फाइल सर्भरले SMBv2 वा सोभन्दा नवीनतम संस्करण समर्थन गर्छ भन्ने कुरा जाँच गर्नुहोस्।</translation>
 <translation id="6929081673585394903">सेटिङ देखाउनुहोस्</translation>
 <translation id="6931576957638141829">यसमा सेभ गर्नुहोस्</translation>
 <translation id="6935286146439255109">कागज राख्ने एउटा ट्रे छैन</translation>
@@ -2051,6 +2073,7 @@
 <translation id="6945221475159498467">चयन गर्नुहोस्</translation>
 <translation id="6945922087561257829">तपाईंको फोनमा मोबाइल नेटवर्क प्रयोग गरिराखिएको छ। तपाईंको फोन र Chromebook एउटै Wi-Fi नेटवर्कमा कनेक्ट गरिएका छन् भन्ने कुरा सुनिश्चित गर्नुहोस्। <ph name="LEARN_MORE" /></translation>
 <translation id="6950627417367801484">एपहरू पुनर्स्थापित गर्नुहोस्</translation>
+<translation id="6960133692707095572">टिकटविनै हेर्नुहोस्</translation>
 <translation id="6960565108681981554">सक्रिय गरिएको छैन। आफ्नो सेवा प्रदायकमा सम्पर्क गर्नुहोस्।</translation>
 <translation id="696103774840402661">यो <ph name="DEVICE_TYPE" /> का सबै प्रयोगकर्ताका सबै फाइल तथा स्थानीय डेटा सदाका लागि मेटाइएका छन्।</translation>
 <translation id="6961121602502368900">वर्क प्रोफाइल प्रयोग गरिएका बेला फोन साइलेन्ट बनाउने सुविधा उपलब्ध हुँदैन</translation>
@@ -2090,6 +2113,7 @@
 <translation id="7061457967428964661">क्यामेराको प्रिभ्यू, यो प्रिभ्यू सारेर कुनै अर्को कुनामा लैजान कन्ट्रोल + एरो कीहरू थिच्नुहोस्</translation>
 <translation id="7064351585062927183">आउँदो <ph name="DAY_OF_WEEK" /></translation>
 <translation id="7064734931812204395">Linux कन्टेनर कन्फिगर गरिँदै। यो प्रक्रिया पूरा हुन ३० मिनेटसम्म लाग्न सक्छ।</translation>
+<translation id="706626672220389329">आदान प्रदान माउन्ट गर्ने क्रममा त्रुटि भयो। तोकिएको आदान प्रदान पहिले नै माउन्ट गरिसकिएको छ।</translation>
 <translation id="7066646422045619941">यस नेटवर्कलाई तपाईंको एडमिनद्वारा असक्षम गरिएको छ।</translation>
 <translation id="7067196344162293536">स्वतः घुमाउनुहोस्</translation>
 <translation id="7076293881109082629">साइनइन गर्दै</translation>
@@ -2476,6 +2500,7 @@
 <translation id="8168435359814927499">सामग्री</translation>
 <translation id="8169177848833352618">दुर्भाग्यवश, यो मेसिनले Bruschetta इन्स्टल गर्ने मापदण्डहरू पूरा गरेको छैन। यो त्रुटिको कोड <ph name="ERROR" /> हो।</translation>
 <translation id="8172370561760918656">सिरानको बायाँतिर भएको ह्यान्डल चयन गरिएको छ, सार्न एरो कीहरू प्रयोग गर्नुहोस्</translation>
+<translation id="8177196903785554304">नेटवर्कको विवरणहरू</translation>
 <translation id="8179976553408161302">प्रविष्टि गर्नुहोस्</translation>
 <translation id="81817143961839203">फोटो हाल्न सकिएन</translation>
 <translation id="8182105986296479640">एपले प्रतिक्रिया जनाइरहेको छैन।</translation>
@@ -2510,6 +2535,7 @@
 <translation id="8262312463845990408">प्लेब्याक टगल गर्नुहोस्</translation>
 <translation id="8266751606569906450">कम्तीमा <ph name="MINIMUM" /> वर्णको हुनु पर्छ</translation>
 <translation id="8268302343625273732">Google Classroom का सबै असाइनमेन्टहरू हेर्नुहोस्</translation>
+<translation id="827488840488530039">तपाईंले हेर्न खोज्नुभएको पेजले तपाईंको Kerberos टिकट पुष्टि गर्न सकेन</translation>
 <translation id="8277261673056602147">स्क्रिनमा देखाइएको टेक्स्ट हाइलाइट गर्नुहोस्</translation>
 <translation id="8281886186245836920">स्किप गर्नुहोस्</translation>
 <translation id="8282784978194352587">तपाईंहरूले गरेर देखाउनुभयो!</translation>
@@ -2564,6 +2590,7 @@
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8458259704995116343">VM सुरु गर्न सकिएन।</translation>
 <translation id="84613761564611563">नेटवर्क कन्फिगर गर्ने UI को अनुरोध गरियो, कृपया कुर्नुहोस्...</translation>
+<translation id="8461914792118322307">प्रोक्सी</translation>
 <translation id="8462305545768648477">'सेलेक्ट टु स्पिक' बन्द गर्नुहोस्</translation>
 <translation id="8463001014623882202">अनुमति दिइएको छैन</translation>
 <translation id="8466665972451889002"><ph name="GROUP_NAME" /> मा भएका सामग्री देखाउनुहोस्</translation>
@@ -2626,6 +2653,7 @@
 <translation id="8647931990447795414">कुनै व्यक्ति थप्न Family Link बाट प्राप्त अभिभावकको एक्सेस कोड हाल्नुहोस्</translation>
 <translation id="8649597172973390955">सेल्फ सधैँ देखिने छ</translation>
 <translation id="8657066291275741003">लोअरकेस</translation>
+<translation id="8662671328352114214"><ph name="TYPE" /> नेटवर्कमा सामेल हुनुहोस्</translation>
 <translation id="8662921061190671299">पात्रोमा हाल्न सकिएन</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">आंशिक स्क्रिनसट खिच्न इन्टर थिच्नुहोस्</translation>
@@ -2672,6 +2700,7 @@
 <translation id="8760172428247796445">तपाईंको <ph name="DEVICE_TYPE" /> अब लक गरिने छ।
         <ph name="DOMAIN" /> को नीतिअनुसार तपाईंले आफ्नो स्मार्ट कार्ड हालिराख्नु पर्ने हुन्छ।</translation>
 <translation id="8763883995157866248">डिभाइस स्लिप मोडमा राख्नुहोस्</translation>
+<translation id="8774379074441005279">रिस्टोर गर्ने कार्य पुष्टि गर्नुहोस्</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, इन्स्टल गरिएको एप, रोक लगाइएको</translation>
 <translation id="8782565991310229362">कियस्क एप्लिकेसन लन्च रद्द गरियो।</translation>
 <translation id="8784626084144195648">भाँडोको औसत</translation>
@@ -2688,6 +2717,7 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">इनपुट विधिसम्बन्धी सेटिङ</translation>
 <translation id="8819728065740986820">एड्याप्टिभ चार्जिङ अन छ</translation>
+<translation id="8821045908425223359">IP एड्रेस स्वतः कन्फिगर गर्नुहोस्</translation>
 <translation id="882204272221080310">थप सुरक्षाका खातिर फर्मवेयर अपडेट गर्नुहोस्।</translation>
 <translation id="8822104519413696986">यो टच गरेर खेलिने गेम हो</translation>
 <translation id="8825863694328519386">पछि फर्कन दायाँबाट स्वाइप गर्नुहोस्</translation>
@@ -2747,6 +2777,7 @@
 <translation id="8980862970816311842">एप ग्रिडमा कुनै एपको आइकन फोल्डर भित्र/बाहिर सार्नुहोस्</translation>
 <translation id="8982906748181120328">नजिकैका यन्त्रमा फेला पर्ने</translation>
 <translation id="8983038754672563810">HSPA</translation>
+<translation id="8986362086234534611">हटाउनुहोस्</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> प्रयोग गरिँदै</translation>
 <translation id="8991648557324317894">रद्द गर्न fn + क्विक इन्सर्ट वा सिफ्ट थिच्नुहोस्।</translation>
 <translation id="899350903320462459">नोटिफिकेसनसम्बन्धी कारबाही गर्न डिभाइसलाई <ph name="LOGIN_ID" /> का रूपमा अनलक गर्नुहोस्</translation>
@@ -2759,6 +2790,7 @@
 <translation id="9013037634206938463">Linux प्रयोग गर्न कम्तीमा पनि <ph name="INSTALL_SIZE" /> खाली ठाउँ आवश्यक पर्छ। थप ठाउँ खाली गर्न आफ्नो यन्त्रमा भएका फाइलहरू मेटाउनुहोस्।</translation>
 <translation id="901668144954885282">Google ड्राइभमा ब्याकअप गर्नुहोस्</translation>
 <translation id="9017320285115481645">Family Link बाट प्राप्त अभिभावकको एक्सेस कोड हाल्नुहोस्।</translation>
+<translation id="9024158959543687197">आदान प्रदान माउन्ट गर्ने क्रममा त्रुटि भयो। फाइल आदान प्रदान गर्ने URL को जाँच गरी फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="9024331582947483881">फुल स्क्रिन</translation>
 <translation id="9026852570893462412">यो प्रक्रियामा केही मिनेट लाग्न सक्छ। भर्चुअल मेसिन डाउनलोड गर्दै।</translation>
 <translation id="9029736946581028033">डिभाइस चाँडै नै पावर डाउन हुने छ</translation>

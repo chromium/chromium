@@ -553,7 +553,6 @@
 <translation id="5305688511332277257">未安装任何证书</translation>
 <translation id="5317780077021120954">保存</translation>
 <translation id="5318819489018851358">与 Linux 共享</translation>
-<translation id="5330145655348521461">这些文件已在其他桌面打开。请转至<ph name="USER_NAME" />(<ph name="MAIL_ADDRESS" />)查看这些文件。</translation>
 <translation id="5330512191124428349">获取信息</translation>
 <translation id="535792325654997756">一个人和几只猫</translation>
 <translation id="5358764674931277">帧速率</translation>
@@ -694,7 +693,6 @@
 <translation id="636254897931573416">域名后缀的匹配值无效</translation>
 <translation id="6364301859968397756">贵组织的存储空间已用尽</translation>
 <translation id="6367976544441405720">客货车</translation>
-<translation id="637062427944097960">此文件已在其他桌面打开。请转至<ph name="USER_NAME" />(<ph name="MAIL_ADDRESS" />)查看此文件。</translation>
 <translation id="6394388407447716302">只读</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> 项内容</translation>
 <translation id="6407769893376380348"><ph name="FILE_NAME" /> 经过加密，因此无法移动。</translation>

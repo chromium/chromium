@@ -5,7 +5,6 @@
 <translation id="1029669172902658969">Relancer et mettre à jour &amp;Chromium OS</translation>
 <translation id="1040916596585577953">Chromium vous recommande d'examiner cette extension</translation>
 <translation id="1042552502243217427">Lorsqu'un site demande à précharger en mode privé des liens sur sa page, Chromium utilise les serveurs Google. Le site préchargé ignore votre identité, mais Google sait quels sites sont préchargés.</translation>
-<translation id="1051793555070215510">Aidez-nous à améliorer la navigation privée en répondant à cette enquête d'une minute.</translation>
 <translation id="1065672644894730302">Impossible de lire vos préférences.
 Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifications apportées à vos préférences ne seront pas enregistrées.</translation>
 <translation id="1083934481477628225">Ton parent a désactivé "Autorisations des sites, applications et extensions" pour Chromium</translation>
@@ -30,18 +29,15 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="1262876892872089030">Lorsque cet onglet était inactif, de la mémoire a été libérée pour préserver la rapidité de Chromium. Si vous le souhaitez, vous pouvez exclure définitivement ce site de la liste des sites inactifs.</translation>
 <translation id="1265577313130862557">Chromium a bloqué ce téléchargement, car le fichier est dangereux</translation>
 <translation id="126567311906253476">Lorsque vous vous connectez à des services Google comme Gmail ou YouTube avec <ph name="USER_EMAIL" />, vous pouvez vous connecter automatiquement à Chromium avec ce même compte</translation>
-<translation id="1287534462498555020">Téléchargez Chromium sur votre téléphone</translation>
 <translation id="1290883685122687410">Erreur de configuration : <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">Configurer votre nouveau profil Chromium</translation>
 <translation id="132092532143527429">Essayer avec Gemini dans Chromium</translation>
 <translation id="1324107359134968521">Chromium a besoin d'accéder au Bluetooth pour explorer les appareils Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1329040302064168406">Connectez-vous à Chromium sur votre téléphone</translation>
 <translation id="1330562121671411446">Détecter la langue</translation>
-<translation id="1342274909142618978">Supprimer également les données de Chromium (<ph name="URL" />) ?</translation>
 <translation id="1344429655882689538">{COUNT,plural, =1{La Protection Avancée nécessite que vous relanciez Chromium pour appliquer une mise à jour. Une fenêtre de navigation privée ou isolée est ouverte. Elle ne sera pas rouverte après le redémarrage.}one{La Protection Avancée nécessite que vous relanciez Chromium pour appliquer une mise à jour. # fenêtre de navigation privée ou isolée est ouverte sur l'ensemble des profils. Elle ne sera pas rouverte après le redémarrage.}other{La Protection Avancée nécessite que vous relanciez Chromium pour appliquer une mise à jour. # fenêtres de navigation privée et isolées sont ouvertes sur l'ensemble des profils. Elles ne seront pas rouvertes après le redémarrage.}}</translation>
 <translation id="1345251407431278948">Recherche dans des images épinglée ! Vous pouvez de nouveau y accéder à l'aide du nouveau bouton de la barre d'outils.</translation>
 <translation id="1383876407941801731">Rechercher</translation>
-<translation id="1388276868779258475">Utilisez l'appli Chromium pour continuer à naviguer où que vous soyez</translation>
 <translation id="141901961143729572">Donnez-nous votre avis</translation>
 <translation id="1465192221147974788">Pour partager votre fenêtre, autorisez l'enregistrement d'écran pour Chromium dans les réglages système.</translation>
 <translation id="1478370723027452770">Obtenir de l'aide concernant Chrome for Testing</translation>
@@ -55,7 +51,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="1574377791422810894">Outils de sécurité de Chromium</translation>
 <translation id="1594928384848033697">Chromium souhaite supprimer les données du Gestionnaire de mots de passe. Saisissez votre mot de passe Windows pour autoriser l'opération.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{À la demande de votre administrateur, vous devez relancer Chromium pour installer une mise à jour}=1{À la demande de votre administrateur, vous devez relancer Chromium pour installer une mise à jour. Sachez que la fenêtre de navigation privée ne sera pas rouverte.}one{À la demande de votre administrateur, vous devez relancer Chromium pour installer une mise à jour. Sachez que la fenêtre de navigation privée (#) ne sera pas rouverte.}other{À la demande de votre administrateur, vous devez relancer Chromium pour installer une mise à jour. Sachez que les # fenêtres de navigation privée ne seront pas rouvertes.}}</translation>
-<translation id="1623563412065267963">Profitez du meilleur de Google avec l'appli Chromium sur votre téléphone</translation>
 <translation id="1625909126243026060">Passez en revue les principaux paramètres de confidentialité et de sécurité dans Chromium</translation>
 <translation id="1640672724030957280">Téléchargement en cours…</translation>
 <translation id="1648201623125974721">Nouvelle icône, même raccourci : cliquez pour poser des questions pendant que vous naviguez avec les tâches contextuelles.</translation>
@@ -69,7 +64,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="1745121272106313518">Chromium va redémarrer dans <ph name="REMAINING_TIME" /></translation>
 <translation id="1749104137266986751">Lorsque HTTPS n'est pas disponible, Chromium utilise une connexion non sécurisée sans vous avertir</translation>
 <translation id="1774152462503052664">Laisser Chromium s'exécuter en arrière-plan</translation>
-<translation id="1779356040007214683">Afin de rendre Chrome plus sûr, nous avons désactivé certaines extensions qui ne sont pas répertoriées sur le <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> et qui ont pu être ajoutées à votre insu.</translation>
 <translation id="1793486931176048546">Cliquez sur <ph name="BEGIN_BOLD" />Oui<ph name="END_BOLD" /> dans la notification Windows pour épingler Chromium à la barre des tâches et y accéder rapidement.</translation>
 <translation id="1808667845054772817">Réinstaller Chromium</translation>
 <translation id="1820835682567584003">Chromium tente <ph name="AUTHENTICATION_PURPOSE" /></translation>
@@ -82,7 +76,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="1862852878885210965">Rechercher avec la recherche dans des images</translation>
 <translation id="1863837059069884561"><ph name="EXISTING_USER" /> est déjà connecté. Pour séparer votre navigation, connectez-vous à Chromium dans votre propre profil en tant que <ph name="USER_EMAIL_ADDRESS" />. Vous pourrez aussi accéder à vos favoris et à d'autres données de <ph name="DEVICE" />.</translation>
 <translation id="1880677175115548835">Sélectionner du texte</translation>
-<translation id="1881322772814446296">Vous vous connectez avec un compte géré et donnez le contrôle de votre profil Chromium à son administrateur. Vos données Chromium, telles que les applications, les favoris, l'historique, les mots de passe et les autres paramètres, vont être définitivement associées à <ph name="USER_NAME" />. Vous pouvez supprimer ces données via le tableau de bord des comptes Google, mais vous ne pouvez pas les associer à un autre compte. Vous pouvez éventuellement créer un nouveau profil pour maintenir vos données Chromium séparées. <ph name="LEARN_MORE" /></translation>
 <translation id="1896836275755235458">Chromium préserve l'autonomie de la batterie en limitant l'activité et les effets visuels en arrière-plan, comme le défilement fluide et la fréquence d'images vidéo. <ph name="BEGIN_LINK" />En savoir plus sur l'économiseur d'énergie<ph name="END_LINK" /></translation>
 <translation id="1900969832270057921">Service de mise à jour Chromium</translation>
 <translation id="1911763535808217981">Désactiver cette option vous permet de vous connecter à des sites Google tels que Gmail sans vous connecter à Chromium</translation>
@@ -90,7 +83,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="1933341829955786215">Votre organisation (<ph name="MANAGER" />) exige que vous vous connectiez à Chromium</translation>
 <translation id="193439633299369377">Redémarrez Chromium OS pour appliquer la mise à jour.</translation>
 <translation id="1951406923938785464">Chromium a bloqué ce téléchargement, car ce type de fichier n'est pas souvent téléchargé et peut être dangereux</translation>
-<translation id="1953553007165777902">Téléchargement… <ph name="MINUTE" /> minute(s) restante(s)</translation>
 <translation id="1966382378801805537">Impossible d'identifier ou de définir le navigateur par défaut avec Chromium</translation>
 <translation id="197326043290947695">Naviguez malin avec la rech. dans images</translation>
 <translation id="1990262977744080398">Découvrir pourquoi Chromium bloque certains fichiers, s'ouvre dans un nouvel onglet</translation>
@@ -105,7 +97,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="208726765006323911">La prochaine fois que vous ouvrirez Chromium iOS, une invite vous proposera d'essayer <ph name="FEATURE_NAME" />.</translation>
 <translation id="2099452623287920103">Vos mots de passe et d'autres données Chromium enregistrés dans votre compte Google seront supprimés de cet appareil. Pour les utiliser de nouveau dans Chromium, reconnectez-vous.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Votre organisation supprime automatiquement les données de navigation lorsque Chromium n'est pas utilisé pendant 1 minute. Il peut s'agir de l'historique, de la saisie automatique et des téléchargements. Vos onglets resteront ouverts.}one{Votre organisation supprime automatiquement les données de navigation quand Chromium n'est pas utilisé pendant # minute. Il peut s'agir de l'historique, de la saisie automatique et des téléchargements. Vos onglets resteront ouverts.}other{Votre organisation supprime automatiquement les données de navigation quand Chromium n'est pas utilisé pendant # minutes. Il peut s'agir de l'historique, de la saisie automatique et des téléchargements. Vos onglets resteront ouverts.}}</translation>
-<translation id="2125838419757773031">Sélectionner une zone de l'écran pour lancer une recherche</translation>
 <translation id="2126108037660393668">Échec de validation du fichier téléchargé.</translation>
 <translation id="2135919691573380097">Signaler ce site</translation>
 <translation id="2137162749895930932">Fermer l'écran de traduction</translation>
@@ -117,13 +108,11 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="2185166961232948079">Chromium - Connexion au réseau - <ph name="PAGE_TITLE" /></translation>
 <translation id="2190166659037789668">Erreur lors de la recherche de mises à jour : <ph name="UPDATE_CHECK_ERROR" />.</translation>
 <translation id="2199210295479376551">Retirer le compte de Chromium</translation>
-<translation id="2201788217099588893">Utilisez l'appli Chromium pour profiter des meilleurs outils d'achat où que vous soyez</translation>
 <translation id="2209877494277346829">Isoler Chromium des autres applis</translation>
 <translation id="2210502920229141283">Pour vous protéger où que vous soyez, utilisez la navigation sécurisée avec protection renforcée de Chromium pour iOS</translation>
 <translation id="2210682093923538346">Site dangereux. Chromium a supprimé l'autorisation de notification.</translation>
 <translation id="2236949375853147973">Mon activité</translation>
 <translation id="2238130810669087193">Pour accéder à vos adresses et plus encore sur tous vos appareils, connectez-vous à Chromium. Cette adresse sera enregistrée dans votre compte Google une fois que vous vous serez connecté.</translation>
-<translation id="2241627712206172106">Si vous partagez un ordinateur avec vos proches, ceux-ci peuvent configurer Chromium comme bon leur semble et naviguer sur le Web à leur manière.</translation>
 <translation id="22571759390241347">Compétences dans Chromium</translation>
 <translation id="2283803047247799269">Rechercher dans cet onglet avec la recherche dans des images</translation>
 <translation id="2287771843518581140">{NUM_TABS,plural, =1{Chromium recommande de suspendre l'onglet qui ralentit votre navigateur}one{Chromium recommande de suspendre l'onglet qui ralentit votre navigateur}other{Chromium recommande de suspendre les onglets qui ralentissent votre navigateur}}</translation>
@@ -149,11 +138,9 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="2513154137948333830">Redémarrage requis : <ph name="INSTALL_SUCCESS" /></translation>
 <translation id="2542968102051442371">Sélectionnez du texte avec la recherche dans des images</translation>
 <translation id="2554739539410784893">Chromium tente de remplacer les mots de passe existants. Saisissez votre mot de passe Windows pour autoriser l'opération.</translation>
-<translation id="2560420686485554789">Pour télécharger des fichiers, Chromium a besoin d'accéder à l'espace de stockage</translation>
 <translation id="2572494885440352020">Chromium Helper</translation>
 <translation id="2575822587468774919">Sélectionnez un élément dans lequel effectuer une recherche avec la recherche dans des images</translation>
 <translation id="2576118232315942160">Pour accéder à vos mots de passe et plus encore sur tous vos appareils, connectez-vous à Chromium</translation>
-<translation id="2587622539943955767">Scannez le QR code avec votre téléphone pour télécharger Chromium et vous connecter à votre compte Google.</translation>
 <translation id="2587885422541096572">pour rechercher avec Chromium.</translation>
 <translation id="2592940277904433508">Continuer à utiliser Chromium</translation>
 <translation id="259935314519650377">Échec de la mise en cache du programme d'installation téléchargé. Erreur : <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
@@ -163,11 +150,9 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="2637732208198500597">{COUNT,plural, =0{La Protection Avancée nécessite que vous relanciez Chromium pour appliquer une mise à jour}=1{La Protection Avancée nécessite que vous relanciez Chromium pour appliquer une mise à jour. La fenêtre de navigation privée ne se rouvrira pas.}one{La Protection Avancée nécessite que vous relanciez Chromium pour appliquer une mise à jour. # fenêtre de navigation privée ne se rouvrira pas.}other{La Protection Avancée nécessite que vous relanciez Chromium pour appliquer une mise à jour. Les # fenêtres de navigation privée ne se rouvriront pas.}}</translation>
 <translation id="263863604136125912">Démarrer Chromium</translation>
 <translation id="2648074677641340862">Une erreur du système d'exploitation s'est produite pendant l'installation. Veuillez télécharger Chromium à nouveau.</translation>
-<translation id="2661879430930417727">Si vous partagez un appareil avec vos proches, ceux-ci peuvent configurer Chromium selon leurs préférences et naviguer sur le Web de façon indépendante.</translation>
 <translation id="2676569452213089702">Accédez facilement à Gemini dans Chromium partout sur votre appareil, même si Chromium est réduit.</translation>
 <translation id="2711502716910134313">Onglet Chromium</translation>
 <translation id="2718390899429598676">Pour plus de sécurité, vos données seront chiffrées dans Chromium.</translation>
-<translation id="2721354645805494590">Pour supprimer votre compte Google de Chromium, déconnectez-vous</translation>
 <translation id="2722636413143664436">Pour accéder à vos mots de passe, vos favoris et plus sur tous vos appareils, connectez-vous à Chromium</translation>
 <translation id="2738871930057338499">Impossible de se connecter à Internet : erreur HTTP 403 (accès interdit). Veuillez vérifier la configuration de votre proxy.</translation>
 <translation id="2753623023919742414">Cliquer pour rechercher</translation>
@@ -177,7 +162,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="2803971713792056305">Votre Chromium</translation>
 <translation id="2816462166102338036">Rechercher dans cette vidéo avec la recherche dans des images</translation>
 <translation id="2819844767470613567">Avertissement : Chromium ne peut pas empêcher les extensions d'enregistrer votre historique de navigation. Pour désactiver cette extension en mode isolé, désélectionnez cette option.</translation>
-<translation id="282591729717417030">Découvrez des produits avec votre appareil photo, suivez les baisses de prix et plus encore où que vous soyez grâce à Chromium sur iOS.</translation>
 <translation id="2841525013647267359">Traduire depuis</translation>
 <translation id="2846251086934905009">Erreur d'installation : le processus du programme d'installation ne s'est pas terminé. L'installation a été annulée.</translation>
 <translation id="2847479871509788944">Supprimer de Chromium</translation>
@@ -206,16 +190,13 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="3068187312562070417">Autres profils Chromium</translation>
 <translation id="3068290154869370196">Les extensions sont des modules complémentaires qui vous permettent de personnaliser Chromium, que ce soit pour vous organiser ou pour simplifier vos tâches quotidiennes.</translation>
 <translation id="3068515742935458733">Aidez-nous à améliorer Chromium en nous envoyant des rapports d'erreur et des <ph name="UMA_LINK" />.</translation>
-<translation id="3071024987058544609">Utilisez l'appli Chromium pour profiter de la sécurité de Google où que vous soyez</translation>
 <translation id="3079753320517721795">{NUM_DEVICES,plural, =0{Une ou plusieurs extensions Chromium ont accédé à 1 appareil USB}=1{Une ou plusieurs extensions Chromium accèdent à 1 appareil USB}one{Une ou plusieurs extensions Chromium accèdent à # appareil USB}other{Une ou plusieurs extensions Chromium accèdent à # appareils USB}}</translation>
 <translation id="3090734884397229414">Pour accéder à votre liste de lecture et plus encore depuis <ph name="DEVICE" />, connectez-vous à Chromium</translation>
 <translation id="3095811995836568724">Historique Chromium</translation>
 <translation id="3103660991484857065">Échec de la décompression de l'archive par le programme d'installation. Veuillez télécharger Chromium à nouveau.</translation>
 <translation id="310459126943037700">Échec de l'arrêt de la ou des tâches.</translation>
-<translation id="3104828284009500087">Recherchez ce que vous voulez sur la page</translation>
 <translation id="3126784891977756556">Synchronisez parfaitement vos mots de passe, vos favoris et votre historique sur tous vos appareils. Accédez facilement aux fonctionnalités que vous connaissez et appréciez en définissant Chromium comme navigateur par défaut.</translation>
 <translation id="3130323860337406239">Votre micro est en cours d'utilisation dans Chromium.</translation>
-<translation id="3130333203120345554">Nouvelle recherche</translation>
 <translation id="3137969841538672700">Faire glisser pour rechercher</translation>
 <translation id="3144188012276422546">Cet onglet utilise des ressources supplémentaires. Pour améliorer les performances, autorisez Chromium à le désactiver.</translation>
 <translation id="3149163023759831301">Pour partager votre écran, autorisez l'enregistrement d'écran pour Chromium dans les réglages système</translation>
@@ -224,19 +205,16 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="3179665906251668410">Ouvrir le lien dans la fenêtre de navi&amp;gation privée Chromium</translation>
 <translation id="3185330573522821672">Personnalisez votre nouveau profil Chromium</translation>
 <translation id="3189205223539394158">Vous pouvez continuer à discuter en Mode IA sans changer d'onglet. Pour commencer, connectez-vous à Chromium. Vous pourrez également accéder à vos mots de passe et à d'autres données sur tous vos appareils.</translation>
-<translation id="3224847870593914902">Pour supprimer votre compte Google de Chromium, déconnectez-vous de Chromium sur la page de paramètres</translation>
 <translation id="3234316605225071811">Plus tard, Chromium pourra vous demander si vous souhaitez utiliser les informations enregistrées pour remplir automatiquement des formulaires</translation>
 <translation id="3258596308407688501">Chromium ne peut ni lire, ni écrire dans son répertoire de données :
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
-<translation id="3263249950597659484">Emportez vos outils d'IA de Google préférés partout avec Chromium sur iOS.</translation>
 <translation id="3264761466044851269">Pour accéder à vos extensions et plus encore depuis <ph name="DEVICE" />, connectez-vous à Chromium</translation>
 <translation id="326944442937875564">{COUNT,plural, =1{Une nouvelle mise à jour de Chromium est disponible et sera appliquée dès que vous relancerez le navigateur. Votre fenêtre isolée ne sera pas rouverte.}one{Une nouvelle mise à jour de Chromium est disponible et sera appliquée dès que vous relancerez le navigateur. # fenêtre isolée ne sera pas rouverte.}other{Une nouvelle mise à jour de Chromium est disponible et sera appliquée dès que vous relancerez le navigateur. # fenêtres isolées ne seront pas rouvertes.}}</translation>
 <translation id="3286538390144397061">Redémarrer maintenant</translation>
 <translation id="328888136576916638">Les clés API Google sont manquantes. Certaines fonctionnalités de Chromium vont être désactivées.</translation>
 <translation id="3296368748942286671">Poursuivre l'exécution des applications en arrière-plan après la fermeture de Chromium</translation>
 <translation id="3313189106987092621">Chromium vous avertit avant de charger un site à l'aide d'une connexion non sécurisée</translation>
-<translation id="3316771292331273802">Lorsque vous fermerez toutes les fenêtres Chromium, vous serez déconnecté de la plupart des sites, à l'exception de votre compte Google si vous êtes connecté à Chromium. Pour autoriser les sites à se souvenir de vous, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3352986031709923790">angle supérieur droit de la zone de recherche : <ph name="RIGHT" /> % droite, <ph name="TOP" /> % haut</translation>
 <translation id="3366305173356742781">Données Chromium de votre compte</translation>
 <translation id="3375770072980084583">Utilisez vos mots de passe avec Chromium sur votre téléphone</translation>
@@ -253,11 +231,9 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="3522404737534491619">Pour partager votre fenêtre, autorisez l'enregistrement d'écran pour Chromium dans les réglages système</translation>
 <translation id="3530103706039034513"><ph name="EXISTING_USER" /> est déjà connecté.  Pour séparer votre navigation, connectez-vous à Chromium dans votre propre profil en tant que <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="3531741627422851418">QR code pour télécharger le navigateur Chromium sur des appareils mobiles</translation>
-<translation id="354621070532799440">Rappel : Les meilleures fonctionnalités de sécurité de Google dans votre poche</translation>
 <translation id="3561853857681580870">Pour partager votre écran, autorisez l'enregistrement d'écran pour Chromium dans les réglages système.</translation>
 <translation id="3597003331831379823">Échec de l'exécution de la configuration avec des droits élevés. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">Connectez-vous à Chromium</translation>
-<translation id="3639635944603682591">Les données de navigation de cet utilisateur vont être supprimées de cet appareil. Pour les récupérer, connectez-vous à Chromium en tant que <ph name="USER_EMAIL" />.</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{Une nouvelle mise à jour de Chromium est disponible. Elle sera installée dès que vous relancerez le navigateur.}=1{Une nouvelle mise à jour de Chromium est disponible. Elle sera installée dès que vous relancerez le navigateur. Sachez que la fenêtre de navigation privée ne sera pas rouverte.}one{Une nouvelle mise à jour de Chromium est disponible. Elle sera installée dès que vous relancerez le navigateur. Sachez que la fenêtre de navigation privée (#) ne sera pas rouverte.}other{Une nouvelle mise à jour de Chromium est disponible. Elle sera installée dès que vous relancerez le navigateur. Sachez que les # fenêtres de navigation privée ne seront pas rouvertes.}}</translation>
 <translation id="3667616615096815454">Installation impossible. Le serveur ne reconnaît pas l'appli.</translation>
 <translation id="3675854891107786059">Utiliser votre <ph name="BEGIN_LINK" />propre phrase secrète<ph name="END_LINK" /> pour chiffrer toutes les données Chromium de votre compte Google. Les adresses et les modes de paiement Google Pay ne seront pas chiffrés. L'historique de navigation de Chromium ne sera pas synchronisé.</translation>
@@ -271,22 +247,16 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="3802055581630249637">Chromium précharge des pages susceptibles de vous intéresser afin qu'elles se chargent plus rapidement lorsque vous les consultez</translation>
 <translation id="3810973564298564668">Gérer</translation>
 <translation id="3823384748599722168">Pour utiliser vos mots de passe enregistrés, scannez le QR code, téléchargez Chromium pour iOS et connectez-vous à votre compte Google</translation>
-<translation id="3846683726093018685">**Résume :** En une seule phrase de moins de 30 mots, décris le sujet principal et l'objectif du contenu de la capture d'écran.
-
-          **Suggère des questions** : génère une liste à puces de trois à cinq questions qui poussent à la réflexion et qu'un utilisateur pourrait poser pour mieux comprendre la capture d'écran. Ces questions doivent inclure au moins une question portant spécifiquement sur un objet visuel, sa conception ou son emplacement.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> – Chromium</translation>
 <translation id="386243222263310720">Pour accéder à vos favoris et plus encore sur tous vos appareils, connectez-vous à Chromium</translation>
 <translation id="3864888736839865780">{COUNT,plural, =1{Votre administrateur vous demande de relancer Chromium pour installer cette mise à jour. Votre fenêtre isolée ne sera pas rouverte.}one{Votre administrateur vous demande de relancer Chromium pour installer cette mise à jour. # fenêtre isolée ne sera pas rouverte.}other{Votre administrateur vous demande de relancer Chromium pour installer cette mise à jour. # fenêtres isolées ne seront pas rouvertes.}}</translation>
 <translation id="3885770153807205175">Outil de sélection de langue</translation>
 <translation id="388648406173476553">Personnalisez et contrôlez Chromium. Une action de votre part est requise. Cliquez pour en savoir plus.</translation>
-<translation id="3889543394854987837">Cliquez sur votre nom pour ouvrir Chromium et commencer à naviguer.</translation>
 <translation id="3892148308691398805">Copier le texte</translation>
-<translation id="390528597099634151">L'utilisateur <ph name="EXISTING_USER" /> est déjà connecté à ce profil Chromium. Chromium peut vous créer un profil de navigation individuel.</translation>
 <translation id="3909353120217047026">Cette extension ne respecte pas les règles du Chrome Web Store et peut présenter des risques. Supprimez-la de Chromium pour qu'elle ne puisse plus voir ni modifier vos données (y compris vos informations personnelles) sur les sites que vous consultez.</translation>
 <translation id="3941890832296813527">Erreur d'installation : le nom de fichier du programme d'installation est incorrect ou non compatible.</translation>
 <translation id="3945058413678539331">Chromium tente de copier les mots de passe. Saisissez votre mot de passe Windows pour autoriser cette opération.</translation>
 <translation id="3950481960271781644">Pour accéder à vos informations enregistrées et plus encore sur tous vos appareils, connectez-vous à Chromium</translation>
-<translation id="3954172517175569325">Les mots de passe, modes de paiement et adresses que vous avez enregistrés dans votre compte Google seront supprimés de cet appareil. Pour les utiliser de nouveau dans Chromium, reconnectez-vous.</translation>
 <translation id="395904275706073188">Impossible de lire les pages protégées. Essayez une autre page.</translation>
 <translation id="3962647064319009959">Découvrir comment Chromium vous protège</translation>
 <translation id="3967822245660637423">Téléchargement terminé</translation>
@@ -300,7 +270,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="4023601594785368013">Langue d'origine : <ph name="LANGUAGE" /></translation>
 <translation id="4023845192681161785">Ouvrez les liens dans Chromium depuis n'importe quelle appli. Chromium est épinglé à la barre des tâches pour un accès plus simple.</translation>
 <translation id="4036079820698952681">Aidez-nous à améliorer Chromium en nous signalant vos <ph name="BEGIN_LINK" />paramètres actuels<ph name="END_LINK" /></translation>
-<translation id="4050175100176540509">La dernière version propose d'importantes améliorations de la sécurité ainsi que de nouvelles fonctionnalités.</translation>
 <translation id="4055805654398742145">Gestionnaire de mots de p&amp;asse</translation>
 <translation id="4095980151185649725">{COUNT,plural, =1{Votre organisation ferme automatiquement Chromium lorsqu'il n'est pas utilisé pendant 1 minute. Les données de navigation sont supprimées. Il peut s'agir de l'historique, de la saisie automatique et des téléchargements.}one{Votre organisation ferme automatiquement Chromium lorsqu'il n'est pas utilisé pendant # minute. Les données de navigation sont supprimées. Il peut s'agir de l'historique, de la saisie automatique et des téléchargements.}other{Votre organisation ferme automatiquement Chromium lorsqu'il n'est pas utilisé pendant # minutes. Les données de navigation sont supprimées. Il peut s'agir de l'historique, de la saisie automatique et des téléchargements.}}</translation>
 <translation id="4118474109249235144">Navigation privée dans Chromium</translation>
@@ -316,7 +285,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="4217972271355023382">Pour te protéger en ligne avec les choix de ton parent, passe au profil Chromium sur lequel tu es déjà connecté en tant que <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4222932583846282852">Annulation…</translation>
 <translation id="4224210481850767180">L'installation a été annulée.</translation>
-<translation id="4230135487732243613">Associer vos données Chromium à ce compte ?</translation>
 <translation id="4251772536351901305">Vous avertit en cas de sites dangereux, y compris ceux dont Google n'avait pas connaissance, en analysant plus de données provenant des sites que la protection standard. Vous pouvez ignorer les avertissements de Chromium.</translation>
 <translation id="4269093074552541569">Se déconnecter de Chromium</translation>
 <translation id="4271805377592243930">Obtenir de l'aide avec Chromium</translation>
@@ -372,7 +340,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="4786083865378785874">Si Gemini dans Chromium est ouvert, le panneau latéral reste ouvert lorsque vous créez des onglets</translation>
 <translation id="479167709087336770">Le correcteur orthographique utilisé est le même que celui employé dans la recherche Google. Le texte que vous saisissez dans le navigateur est envoyé à Google. Vous pouvez toujours modifier ce comportement dans les paramètres.</translation>
 <translation id="4814736265800133385">Utiliser Chromium sans compte</translation>
-<translation id="4839733921943823254">Épingler le raccourci</translation>
 <translation id="4888717733111232871">Règle de trafic entrant pour Chromium autorisant le trafic mDNS</translation>
 <translation id="4893347770495441059">Relancer et mettre à jour &amp;Chromium</translation>
 <translation id="4918086044614829423">Accepter</translation>
@@ -381,35 +348,26 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="4943838377383847465">Chromium est exécuté en mode arrière-plan</translation>
 <translation id="494490797786467921">Cliquer pour fermer la boîte de dialogue de connexion Chromium</translation>
 <translation id="4950660488495335294">Utilisez les profils Chromium pour dissocier toutes vos données Chromium. Créez des profils pour vos amis et votre famille, ou créez un profil pour travailler et un autre pour vous divertir.</translation>
-<translation id="4987820182225656817">Les invités peuvent utiliser Chromium sans laisser aucune trace.</translation>
 <translation id="4992938037305302429">Votre compte dans Chromium</translation>
-<translation id="4994636714258228724">Ajouter un utilisateur à Chromium</translation>
-<translation id="504699503110800016">Ouvrez le menu à développer</translation>
-<translation id="5074496654342756568">Accédez à tous vos services Google préférés avec Chromium sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="5123973130450702873">Chromium a besoin de l'autorisation de suivre vos mains</translation>
 <translation id="5141988424377517949">Vous n'avez pas consulté le site récemment. Chromium a supprimé "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" et "<ph name="PERMISSION_3" />".</translation>
 <translation id="5171868502429358653">Connectez-vous à Chromium</translation>
 <translation id="5174969993834422967">Vous bloquez généralement les notifications. Pour autoriser ce site à vous en envoyer, cliquez sur l'icône de notification dans l'angle droit de la barre d'adresse.</translation>
 <translation id="5174983315706567306">Espace disque insuffisant.</translation>
 <translation id="5187123684706427865">Le compte Chromium nécessite une réauthentification</translation>
-<translation id="5223510345050543907">Reprenez là où vous en étiez avec Chromium sur iOS.</translation>
 <translation id="5231355151045086930">Se déconnecter de Chromium</translation>
 <translation id="5234764350956374838">Ignorer</translation>
 <translation id="5249261924633168472">Ouvrir le lien dans la fenêtre de navi&amp;gation privée Chromium</translation>
-<translation id="5276305953263010518">Téléchargez l'appli Chromium pour enregistrer des mots de passe où que vous soyez</translation>
 <translation id="5277894862589591112">Pour appliquer vos modifications, relancez Chromium</translation>
-<translation id="5286907366254680517">Détecté</translation>
 <translation id="5289287148052354622">Télécharger l'appli Chromium</translation>
 <translation id="5294316920224716406">Lorsque vous naviguez en mode navigation privée, Chromium vous avertit avant de charger un site à l'aide d'une connexion non sécurisée</translation>
 <translation id="5296581118566748922">Rechercher avec Chromium</translation>
 <translation id="5313228254328109263">Service interne de mise à jour Chromium</translation>
 <translation id="5324450571874973775">Utilisez-les avec d'autres fonctionnalités Gemini dans Chromium</translation>
 <translation id="5346389065299425353">Approfondissez votre recherche en ajoutant plusieurs onglets, fichiers et outils</translation>
-<translation id="5348677704241861105">Consultez un aperçu rapide de ce document et posez des questions avec Gemini dans Chromium</translation>
 <translation id="5352264705793813212">Chromium a identifié des recommandations de sécurité à examiner</translation>
 <translation id="5352361688875342522">Autres profils Chromium</translation>
 <translation id="535243042947607642">ChromiumOS n'a pas pu enregistrer les données Chromium dans votre compte Google, car les informations de connexion de votre compte ne sont plus à jour</translation>
-<translation id="5358375970380395591">Vous vous connectez avec un compte géré et donnez le contrôle de votre profil Chromium à son administrateur. Vos données Chromium, telles que les applications, les favoris, l'historique, les mots de passe et les autres paramètres, vont être définitivement associées à <ph name="USER_NAME" />. Vous pouvez supprimer ces données via le tableau de bord des comptes Google, mais vous ne pouvez pas les associer à un autre compte. <ph name="LEARN_MORE" /></translation>
 <translation id="5368118228313795342">Code supplémentaire : <ph name="EXTRA_CODE" />.</translation>
 <translation id="5377622451696208284">Pour bénéficier de la personnalisation, ajoutez Chromium à l'activité sur le Web et les applications</translation>
 <translation id="5382964351116519680">Ouvrir Rechercher avec Chromium</translation>
@@ -426,10 +384,8 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="5475924890392386523">Chromium a bloqué ce téléchargement, car le fichier peut compromettre vos comptes personnels et de réseaux sociaux</translation>
 <translation id="549669000822060376">Veuillez patienter pendant que Chromium installe les dernières mises à jour du système.</translation>
 <translation id="5496810170689441661">Chromium tente de modifier les mots de passe. Saisissez votre mot de passe Windows pour autoriser cette opération.</translation>
-<translation id="549975168243349205">Travaillez de manière fluide avec vos applis préférées, comme Google Drive et YouTube, où que vous soyez grâce à Chromium.</translation>
 <translation id="5524890928877629608">angle supérieur gauche de la zone de recherche : <ph name="LEFT" /> % gauche, <ph name="TOP" /> % haut</translation>
 <translation id="5527463683072221100">Ouvrir les PDF dans Chromium</translation>
-<translation id="5536164441519929134">Posez une question<ph name="LINE_BREAK" />concernant cet onglet</translation>
 <translation id="555970465369471303">Pour des raisons de sécurité, Chromium désactive l'optimisation JavaScript lorsque vous consultez un site pour la première fois.
 
 Si cette page ne fonctionne pas comme prévu, essayez d'autoriser l'optimisation.</translation>
@@ -439,19 +395,15 @@ Si cette page ne fonctionne pas comme prévu, essayez d'autoriser l'optimisation
 <translation id="5580770360767802657">Utilisez Chromium par défaut et épinglez-le</translation>
 <translation id="5596063723521813107">{COUNT,plural, =1{Votre administrateur exige que vous relanciez Chromium pour installer une mise à jour. Votre fenêtre isolée ne sera pas rouverte.}one{Votre administrateur exige que vous relanciez Chromium pour installer une mise à jour. # fenêtre isolée ne sera pas rouverte.}other{Votre administrateur exige que vous relanciez Chromium pour installer une mise à jour. # fenêtres isolées ne seront pas rouvertes.}}</translation>
 <translation id="5596627076506792578">Plus d'options</translation>
-<translation id="5605834417512968703">Sélectionnez un objet dans lequel effectuer une recherche à l'aide de la recherche dans des images ou appuyez sur Échap pour quitter cette fonctionnalité</translation>
 <translation id="5614149501995591823">Une <ph name="IMPORTANT_UPDATE" /> est prête. Vous pouvez relancer Chromium maintenant ou le configurer pour qu'il se mette à jour la prochaine fois que votre écran restera allumé et inutilisé pendant <ph name="IDLE_DURATION" />.</translation>
-<translation id="5618818588972826921">Sélectionnez le texte ou l'image à rechercher, ou appuyez sur Échap pour quitter la recherche dans une image</translation>
 <translation id="5623402015214259806">{0,plural, =0{Une mise à jour de Chromium est disponible}=1{Une mise à jour de Chromium est disponible}one{Une mise à jour de Chromium est disponible depuis # jour}other{Une mise à jour de Chromium est disponible depuis # jours}}</translation>
 <translation id="5643865575100044307">Toujours supprimer les données des sites de votre appareil lorsque vous fermez Chromium</translation>
 <translation id="5653831366781983928">Veuillez redémarrer Chromium maintenant</translation>
-<translation id="565409517765894456">Pour recevoir les futures mises à jour de Chromium, vous devez disposer de Windows 10 version 1809 ou d'une version ultérieure. Cet ordinateur utilise une ancienne version de Windows 10.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Afficher Chromium dans cette langue</translation>
 <translation id="569897634095159764">Impossible de se connecter à Internet. Le serveur proxy exige que vous vous authentifiiez.</translation>
 <translation id="5768371961535086509">Chromium libère de la mémoire dans les onglets inactifs. Ainsi, les onglets actifs et d'autres applis peuvent utiliser davantage de ressources, et Chromium reste rapide. Vos onglets inactifs redeviennent actifs lorsque vous les consultez. <ph name="BEGIN_LINK" />En savoir plus sur l'économiseur de mémoire<ph name="END_LINK" /></translation>
 <translation id="5775198138441669627">Si vous avez oublié votre phrase secrète ou si vous souhaitez modifier ce paramètre, <ph name="SETTINGS_LINK" /> les données Chromium de votre compte</translation>
-<translation id="5800158606660203929">Personnaliser et contrôler Chromium. Définir Chromium comme navigateur par défaut.</translation>
 <translation id="5802618941556161431">Synchronisez parfaitement vos mots de passe, vos favoris et votre historique sur tous vos appareils en définissant Chromium comme navigateur par défaut.</translation>
 <translation id="5809516625706423866">Impossible de se connecter à Internet : erreur HTTP 401 (accès non autorisé). Veuillez vérifier la configuration de votre proxy.</translation>
 <translation id="5817952762723416573">Accélère les sites avec le moteur V8 de Chromium, mais rend Chromium légèrement moins résistant aux attaques. Ce paramètre est désactivé.</translation>
@@ -471,12 +423,9 @@ Si cette page ne fonctionne pas comme prévu, essayez d'autoriser l'optimisation
 <translation id="5953657885167112863">Personnalisez Chromium</translation>
 <translation id="5960071705175224773">Vos paramètres ont été modifiés par une appli inconnue</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{Votre organisation ferme automatiquement Chromium lorsqu'il n'est pas utilisé pendant 1 minute.}one{Votre organisation ferme automatiquement Chromium lorsqu'il n'est pas utilisé pendant # minute.}other{Votre organisation ferme automatiquement Chromium lorsqu'il n'est pas utilisé pendant # minutes.}}</translation>
-<translation id="5987687638152509985">Mettre à jour Chromium pour lancer la synchronisation</translation>
 <translation id="5990360079535151574">Vous pouvez rouvrir les tâches contextuelles à partir du bouton "Tâches contextuelles" de la barre d'outils pour poser des questions pendant que vous naviguez</translation>
-<translation id="6003112304606738118">Téléchargement… <ph name="HOURS" /> heure(s) restante(s)</translation>
 <translation id="6009821354356307391">Posez une question complémentaire</translation>
 <translation id="6040143037577758943">Fermer</translation>
-<translation id="6044357424127037044">Faites vos achats en ligne en toute simplicité avec l'appli Chromium sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="6058380562449900225">Pour protéger vos données, autorisez Chromium à supprimer les autorisations des sites que vous n'avez pas consultés récemment. Ne bloque pas les notifications.</translation>
 <translation id="6063093106622310249">&amp;Ouvrir dans Chromium</translation>
 <translation id="6069027071882229820">Copier en tant qu'image</translation>
@@ -493,7 +442,6 @@ Si cette page ne fonctionne pas comme prévu, essayez d'autoriser l'optimisation
 <translation id="6165508094623778733">En savoir plus</translation>
 <translation id="6173308241973263798">Effacer les données Chromium de votre compte</translation>
 <translation id="6174920971222007286">Ce fichier est peut-être dangereux<ph name="LINE_BREAK" />Si vous fournissez le mot de passe, Chromium peut vérifier ce téléchargement. Des infos sur le fichier sont envoyées à la navigation sécurisée Google, mais son contenu et le mot de passe restent sur votre appareil.</translation>
-<translation id="6177442314419606057">Effectuer une recherche dans Chrome</translation>
 <translation id="6182736845697986886">Échec de l'installation en raison d'une erreur interne du serveur de mise à jour.</translation>
 <translation id="6183079672144801177">Vérifiez si vous êtes bien connecté à Chromium sur votre <ph name="TARGET_DEVICE_NAME" />, puis procédez de nouveau à l'envoi.</translation>
 <translation id="6192070012454216182">Recherchez des informations et posez des questions depuis n'importe où, même si Chromium est réduit. Permet à Chromium de s'exécuter en arrière-plan.</translation>
@@ -501,11 +449,9 @@ Si cette page ne fonctionne pas comme prévu, essayez d'autoriser l'optimisation
 <translation id="6212496753309875659">Cet ordinateur dispose déjà d'une version plus récente de Chromium. Si le logiciel ne fonctionne pas, veuillez le désinstaller, puis réessayer.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium va être relancé maintenant}=1{Chromium va être relancé dans 1 seconde}one{Chromium va être relancé dans # seconde}other{Chromium va être relancé dans # secondes}}</translation>
 <translation id="6232046770428574552">Chromium se mettra à jour quand l'écran ne sera pas utilisé</translation>
-<translation id="6241367896540709610">Pour télécharger des fichiers, Chromium a besoin de l'autorisation d'accéder à l'espace de stockage</translation>
 <translation id="6245734527075554892">Les URL sont vérifiées d'après une liste de sites dangereux stockée dans Chromium</translation>
 <translation id="6248213926982192922">Définir Chromium en tant que navigateur par défaut</translation>
 <translation id="6248988683584659830">Rechercher dans les paramètres</translation>
-<translation id="6261803579884938625">Profitez des meilleures fonctionnalités de sécurité de Google où que vous soyez avec l'appli Chromium sur votre téléphone</translation>
 <translation id="6268381023930128611">Se déconnecter de Chromium ?</translation>
 <translation id="6270547683008298381">Ces onglets utilisent des ressources supplémentaires. Pour améliorer les performances, autorisez Chromium à les désactiver.</translation>
 <translation id="6281746429495226318">Personnaliser votre profil Chromium</translation>
@@ -514,13 +460,11 @@ Si cette page ne fonctionne pas comme prévu, essayez d'autoriser l'optimisation
 <translation id="6295779123002464101">Chromium a bloqué <ph name="FILE_NAME" />, car ce fichier peut être dangereux.</translation>
 <translation id="6309712487085796862">Votre webcam est en cours d'utilisation dans Chromium.</translation>
 <translation id="6333502561965082103">Une autre opération est en cours dans Chromium. Veuillez réessayer plus tard.</translation>
-<translation id="6334986366598267305">Il est désormais plus facile d'utiliser Chromium avec votre compte Google et sur des ordinateurs partagés.</translation>
 <translation id="6347002662287820329">Accédez facilement aux fonctionnalités que vous connaissez, appréciez et auxquelles vous faites confiance en définissant Chromium comme navigateur par défaut.</translation>
 <translation id="6347933965114150440">Raccourci Chromium</translation>
 <translation id="6366160072964553914">Chromium a bloqué ce téléchargement, car le fichier n'est pas souvent téléchargé et peut être dangereux</translation>
 <translation id="6373523479360886564">Voulez-vous vraiment désinstaller Chromium ?</translation>
 <translation id="6375219077595103062">Ajouter un raccourci vers le Gestionnaire de mots de passe</translation>
-<translation id="6388799252195623474">aide-moi avec ça</translation>
 <translation id="6390800440335263989">Pour continuer, connectez-vous à Chromium en tant que <ph name="EMAIL" />. Cela permet de vérifier que vous avez bien les règles de votre organisation.</translation>
 <translation id="6400112897226594999">Logo Chromium sur un écran d'ordinateur.</translation>
 <translation id="6403826409255603130">Chromium est un navigateur Web qui exécute les pages Web et les applications à une vitesse fulgurante. Il est rapide, stable et simple d'utilisation. Naviguez sur le Web en toute sécurité tout en bénéficiant de la protection offerte par Chromium contre les logiciels malveillants et de phishing.</translation>
@@ -535,23 +479,19 @@ Si cette page ne fonctionne pas comme prévu, essayez d'autoriser l'optimisation
 <translation id="6460614424172581323">La prochaine fois que vous ouvrirez Chromium sur votre <ph name="DEVICE_TYPE" />, une invite vous proposera d'utiliser les groupes d'onglets.</translation>
 <translation id="6466344609055215035">Retirer le compte de Chromium</translation>
 <translation id="6475912303565314141">Elle contrôle également la page qui s'affiche au démarrage de Chromium.</translation>
-<translation id="648319183876919572">La navigation sécurisée avec protection renforcée vous protège davantage contre les sites Web et les téléchargements malveillants</translation>
 <translation id="6510925080656968729">Désinstaller Chromium</translation>
 <translation id="651535675648445253">Les raccourcis s'ouvrent dans Chromium</translation>
 <translation id="6539122709674868420">Votre organisation ferme Chromium lorsqu'il n'est pas utilisé pendant <ph name="TIMEOUT_DURATION" />. Les données de navigation ont été supprimées. Il peut s'agir de l'historique, de la saisie automatique et des téléchargements.</translation>
-<translation id="6542839706527980775">Chaque profil possède ses propres informations Chromium, comme des favoris, un historique, des mots de passe, etc.</translation>
 <translation id="6556755379298048869">Recherchez avec un raccourci clavier.</translation>
 <translation id="6563921047760808519">Découvrez <ph name="BEGIN_LINK" />comment Chromium protège la confidentialité de vos données<ph name="END_LINK" /></translation>
 <translation id="6564039629497156115">Les modifications apportées à ce paramètre seront appliquées quand Chromium redémarrera.</translation>
 <translation id="6567032987737689854">Pour gérer vos extensions, cliquez sur "Extensions" dans le menu principal de Chromium.</translation>
 <translation id="656935081669708576">Vous pouvez changer de profil pour voir les mots de passe d'un autre profil Chromium</translation>
-<translation id="6569556444379005948">Utilisez l'appli Chromium pour emporter les meilleurs outils d'IA partout avec vous</translation>
 <translation id="6570579332384693436">Pour corriger les fautes d'orthographe, Chromium envoie à Google le texte que vous saisissez dans les champs</translation>
 <translation id="6598877126913850652">Accéder aux paramètres de notification Chromium</translation>
 <translation id="6600016381025017075">Recherchez ce que vous voulez sur cette page</translation>
 <translation id="6613594504749178791">Vos modifications seront prises en compte au prochain redémarrage de Chromium.</translation>
 <translation id="6637908313088374648">Chromium se lance désormais au démarrage de Windows pour que vous puissiez commencer à naviguer instantanément. Vous pouvez désactiver cette option dans les paramètres.</translation>
-<translation id="6648212540664651655">Reprenez là où vous en étiez : Chromium a restauré les onglets de votre dernière session. Vous pouvez désactiver cette option dans les</translation>
 <translation id="665732753414869868">Pour créer un plan 3D de votre environnement, Chromium a besoin de l'autorisation d'accéder à la caméra</translation>
 <translation id="6669284030132180248">Si vous enregistrez également vos favoris dans votre compte Google, vous pouvez suivre le prix de produits dans Chromium et être averti lorsqu'ils baissent.</translation>
 <translation id="6676384891291319759">Accéder à Internet</translation>
@@ -568,11 +508,9 @@ Certaines fonctionnalités seront peut-être indisponibles. Veuillez spécifier 
 <translation id="674891594898436429">Fermer la recherche active dans cet onglet</translation>
 <translation id="6751374565094704799">Accélère les sites avec le moteur V8 de Chromium, mais rend Chromium légèrement moins résistant aux attaques. Ce paramètre est activé.</translation>
 <translation id="6754665438209053659">{count,plural, =1{Certaines de vos données Chromium n'ont pas encore été enregistrées dans votre compte Google. Patientez quelques minutes avant de vous déconnecter. Si vous vous déconnectez maintenant, ces données (1 élément) seront supprimées.}one{Certaines de vos données Chromium n'ont pas encore été enregistrées dans votre compte Google. Patientez quelques minutes avant de vous déconnecter. Si vous vous déconnectez maintenant, ces données ({count} élément) seront supprimées.}other{Certaines de vos données Chromium n'ont pas encore été enregistrées dans votre compte Google. Patientez quelques minutes avant de vous déconnecter. Si vous vous déconnectez maintenant, ces données ({count} éléments) seront supprimées.}}</translation>
-<translation id="67706546131546258">Chromium recommande d'analyser ce fichier, car il est peut-être dangereux.</translation>
 <translation id="6779406956731413166">Chromium OS fonctionne grâce à d'autres <ph name="BEGIN_LINK_CROS_OSS" />logiciels Open Source<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6804256634866838775">Fermer la recherche active</translation>
 <translation id="6831043979455480757">Traduire</translation>
-<translation id="6847869444787758381">Chromium vous indique si vos mots de passe ont été piratés</translation>
 <translation id="684888714667046800">Impossible de se connecter à Internet. Si vous utilisez un pare-feu, assurez-vous que <ph name="PRODUCT_EXE_NAME" /> figure dans la liste d'autorisation.</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6859580922007887573">Appuyez pour continuer</translation>
@@ -595,13 +533,11 @@ Certaines fonctionnalités seront peut-être indisponibles. Veuillez spécifier 
             • Les raccourcis Chromium seront réinitialisés
             <ph name="LINE_BREAKS" />
             Les favoris, l'historique et les mots de passe enregistrés ne seront pas affectés.</translation>
-<translation id="6930607614725241390">Rechercher dans le panneau latéral</translation>
 <translation id="6948031725951063910">Vous avez atteint la limite de <ph name="BOOKMARK_LIMIT" /> favoris de Chromium. Par conséquent, certains de vos favoris n'ont pas encore été enregistrés dans votre compte Google.
 
 Vous ne pourrez pas enregistrer de nouveaux favoris dans votre compte tant que vous n'en aurez pas supprimé. Si vous vous déconnectez maintenant, les favoris non enregistrés seront supprimés.</translation>
 <translation id="6964305034639999644">Ouvrir le lien dans la fenêtre de navi&amp;gation privée Chromium</translation>
 <translation id="6965382102122355670">OK</translation>
-<translation id="6985329841647292029">Conditions d'utilisation de Chromium OS</translation>
 <translation id="7003299027384820442">Saisissez votre phrase secrète pour utiliser et enregistrer des données Chromium dans votre compte <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="7011190694940573312">L'installation a échoué, car cette version du système d'exploitation n'est pas compatible.</translation>
 <translation id="7024536598735240744">Erreur de décompression : <ph name="UNPACK_ERROR" />.</translation>
@@ -610,8 +546,6 @@ Vous ne pourrez pas enregistrer de nouveaux favoris dans votre compte tant que v
 <translation id="7047386856539490735">Ces résultats sont-ils utiles ?</translation>
 <translation id="705851970750939768">Mettre à jour Chromium</translation>
 <translation id="7067091210845072982">Si une image n'est pas accompagnée d'une description utile, Chromium essaiera de vous en proposer une. Pour nous permettre de créer des descriptions, les images sont envoyées à Google.</translation>
-<translation id="7074836723476134809">Profitez pleinement de la puissance de l'IA lorsque vous utilisez l'appli Chromium sur votre <ph name="DEVICE_TYPE" /></translation>
-<translation id="7134687062119989071">Accédez à vos mots de passe, vos onglets et plus, même en déplacement, avec l'appli Chromium sur votre téléphone</translation>
 <translation id="7141270731789036260">Personnaliser Chrome for Testing</translation>
 <translation id="7147227333672430807">Vous pouvez utiliser Chromium chaque fois que vous cliquez sur des liens dans des messages, des documents et d'autres applis</translation>
 <translation id="7163519456498498587">Retirer <ph name="EXTENSION_NAME" /> de Chromium</translation>
@@ -637,7 +571,6 @@ Vous ne pourrez pas enregistrer de nouveaux favoris dans votre compte tant que v
 
 Chromium ne peut pas récupérer vos paramètres.</translation>
 <translation id="7324051657739063017">Vous pouvez rouvrir les tâches contextuelles pour poser des questions pendant que vous naviguez</translation>
-<translation id="734373864078049451">Votre contenu Web, vos favoris et toutes vos données Chromium sont conservés ici.</translation>
 <translation id="7347827960336370838">Seule une personne connaissant votre phrase secrète peut lire vos données chiffrées. Google ne reçoit pas ni n'enregistre votre phrase secrète. Si vous l'avez oubliée ou si vous souhaitez modifier ce paramètre, vous devrez <ph name="BEGIN_LINK" />supprimez les données Chromium de votre compte<ph name="END_LINK" />.</translation>
 <translation id="7349591376906416160">Votre administrateur système a configuré Chromium de sorte que <ph name="ALTERNATIVE_BROWSER_NAME" /> s'ouvre pour accéder à <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7352651011704765696">Un problème est survenu</translation>
@@ -658,14 +591,12 @@ Chromium ne peut pas récupérer vos paramètres.</translation>
 <translation id="7461356015007898716">Pour recevoir les futures mises à jour de Chromium, vous devez disposer de Windows 10 ou d'une version ultérieure. Cet ordinateur utilise Windows 7.</translation>
 <translation id="7467949745582939695">Relancer Chromium ?</translation>
 <translation id="7483335560992089831">Impossible d'installer la même version de Chromium que celle qui est en cours d'exécution. Veuillez fermer Chromium, puis réessayer.</translation>
-<translation id="7510190804000607802">Rappel : Le meilleur de Google dans votre poche</translation>
 <translation id="751935028865900641">Les sites fonctionneront probablement comme prévu. Lorsque vous fermerez toutes les fenêtres Chromium, vous serez déconnecté de la plupart des sites, à l'exception de votre compte Google si vous êtes connecté à Chromium.</translation>
 <translation id="753534427205733210">{0,plural, =1{Chromium va être relancé dans 1 minute}one{Chromium va être relancé dans # minute}other{Chromium va être relancé dans # minutes}}</translation>
 <translation id="7565444033145385702">Pour protéger vos données, autorisez Chromium à supprimer les autorisations des sites que vous n'avez pas consultés récemment.</translation>
 <translation id="7583104404158659071">Lancez Chromium automatiquement pour commencer à naviguer instantanément.</translation>
 <translation id="7583399374488819119">Programme d'installation de <ph name="COMPANY_NAME" /></translation>
 <translation id="761356813943268536">Votre webcam et votre micro sont en cours d'utilisation dans Chromium.</translation>
-<translation id="7617377681829253106">Chromium s'est amélioré</translation>
 <translation id="7622753900276619808">Vous disposez désormais de plus de fonctionnalités dans Chromium</translation>
 <translation id="7624307931717240213">Nous utilisons ces informations pour améliorer ce service. Consultez les règles de confidentialité et Conditions d'utilisation.</translation>
 <translation id="7649070708921625228">Aide</translation>
@@ -694,30 +625,24 @@ Chromium ne peut pas récupérer vos paramètres.</translation>
 <translation id="7853661403199074278">Personnalisez Chromium pour lui donner une nouvelle apparence</translation>
 <translation id="7859018312476869945">Lorsque vous saisissez du texte dans la barre d'adresse ou le champ de recherche, Chromium envoie le contenu saisi à votre moteur de recherche par défaut pour obtenir de meilleures suggestions. Ce paramètre est désactivé en navigation privée.</translation>
 <translation id="7867198900892795913">Échec de l'installation de la dernière version de Chromium. Vous ne disposez donc pas des nouvelles fonctionnalités, ni des correctifs de sécurité.</translation>
-<translation id="7872446069773932638">Téléchargement… <ph name="SECONDS" /> seconde(s) restante(s)</translation>
 <translation id="7873537467422636035">Si vous avez oublié votre phrase secrète ou si vous souhaitez modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chromium de votre compte<ph name="END_LINK" />.</translation>
 <translation id="7874369989024033742">Ouvrez rapidement Gemini dans Chromium quand vous en avez besoin</translation>
-<translation id="7888981273428720788">Définir Chromium comme navigateur par défaut</translation>
 <translation id="7934340546140346950">Chromium convertit automatiquement les connexions non sécurisées en HTTPS lorsque c'est possible</translation>
 <translation id="7937630085815544518">Vous étiez connecté à Chromium en tant que <ph name="USER_EMAIL_ADDRESS" />. Veuillez utiliser le même compte pour vous reconnecter.</translation>
 <translation id="7944602660083060118"><ph name="EXISTING_USER" /> est déjà connecté. Pour séparer votre navigation, connectez-vous à Chromium dans votre propre profil en tant que <ph name="USER_EMAIL_ADDRESS" />. Vous pourrez aussi accéder à vos favoris et à d'autres données sur tous vos appareils.</translation>
 <translation id="7975919845073681630">Ceci est une installation secondaire de Chromium. Vous ne pouvez pas le définir comme navigateur par défaut.</translation>
 <translation id="7997934263947464652">Les extensions, les applications et les thèmes provenant de sources inconnues risquent d'endommager votre appareil. Chromium recommande de les installer uniquement à partir du <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
-<translation id="8000759043835159571">Profitez du meilleur de Google avec l'appli Chromium sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="8004582292198964060">Navigateur</translation>
-<translation id="8010081455002666927">Détection automatique</translation>
 <translation id="8013436988911883588">Une fois l'accès à une ressource accordé à Chromium, les sites Web sont également en mesure de vous demander l'accès.</translation>
 <translation id="8031714377769448844">Épinglez Chromium à la barre des tâches pour y accéder rapidement à tout moment</translation>
 <translation id="80471789339884597">Merci d'avoir installé notre produit. Vous devez redémarrer tous vos navigateurs avant d'utiliser <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8054112667659782652">Toujours afficher le raccourci de recherche dans des images</translation>
-<translation id="8069447462453318634">Sélectionnez "Épingler à la barre d'outils"</translation>
 <translation id="8077498902115777962">Désactiver l'exécution de Chromium en arrière-plan pour les applis</translation>
 <translation id="80790299200510644">Recherche dans des images</translation>
 <translation id="8086881907087796310">L'installation a échoué, car votre ordinateur ne dispose pas de la configuration matérielle minimale requise.</translation>
 <translation id="8096472344908884505"><ph name="PAGE_TITLE" /> – Google Chrome for Testing</translation>
 <translation id="8105840573057009683">Chromium a besoin de l'autorisation d'accéder à votre position pour ce site</translation>
 <translation id="8107060931443639922">La prochaine fois que vous ouvrirez Chromium sur votre <ph name="DEVICE_TYPE" />, une invite vous proposera d'activer les alertes de suivi des prix.</translation>
-<translation id="8117908349476699973">Recevez des alertes en cas de baisse de prix sur les articles qui vous intéressent avec l'appli Chromium sur votre téléphone</translation>
 <translation id="8118331347066725040">Envoyer des commentaires sur la recherche avec Lens</translation>
 <translation id="8130609355518033382">Personnaliser Chromium</translation>
 <translation id="8133124826068723441">Impossible de synchroniser vos données dans Chromium OS, car la synchronisation n'est pas disponible pour votre domaine.</translation>
@@ -748,7 +673,6 @@ Chromium ne peut pas récupérer vos paramètres.</translation>
 <translation id="8359544530202147897">Mettez Chromium à jour pour continuer à utiliser les données Chromium dans votre compte Google <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8360718212975266891">Pour recevoir les futures mises à jour de Chromium, vous devez disposer de Windows 10 ou d'une version ultérieure. Cet ordinateur utilise Windows 8.</translation>
 <translation id="8362914115861174987">Langue cible</translation>
-<translation id="8367705492654390392">Posez une question</translation>
 <translation id="8370517070665726704">© <ph name="YEAR" /> Google LLC. Tous droits réservés.</translation>
 <translation id="8372327902843331129">Pour accéder à vos mots de passe et plus encore sur tous vos appareils, connectez-vous à Chromium. Ce mot de passe sera enregistré dans votre compte Google une fois que vous vous serez connecté.</translation>
 <translation id="837460953767177950">Vous devrez ensuite redémarrer Chromium.</translation>
@@ -759,14 +683,12 @@ Chromium ne peut pas récupérer vos paramètres.</translation>
 <translation id="8438543370129609977">Lorsque vous utilisez la recherche dans des images, le titre, l'URL et le contenu de la page, y compris les PDF, sont envoyés au serveur. <ph name="LEARN_MORE" /></translation>
 <translation id="8447525028100794994">En savoir plus sur la recherche d'images dans Chromium</translation>
 <translation id="8453117565092476964">L'archive du programme d'installation est corrompue ou n'est pas valide. Veuillez télécharger Chromium à nouveau.</translation>
-<translation id="8463672209299734063">Facultatif : contribuez à améliorer les fonctionnalités et les performances de Chromium OS en envoyant automatiquement des données de diagnostic et d'utilisation à Google.</translation>
 <translation id="8471947159125090285">Pour utiliser et enregistrer des données Chromium dans votre compte Google, confirmez votre identité</translation>
 <translation id="8482493977473846331">Affiche des invites de connexion à Chromium</translation>
 <translation id="8493179195440786826">Version de Chromium obsolète</translation>
 <translation id="850264194101621529">Merci d'avoir choisi Chromium comme navigateur par défaut.</translation>
 <translation id="8522801943730206384">Chromium ne peut vérifier vos mots de passe que si vous les enregistrez</translation>
 <translation id="8525579356836940628">Installation interrompue</translation>
-<translation id="8545729292258443488">Accédez à vos mots de passe, vos onglets et bien plus où que vous soyez grâce à l'appli Chromium sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="8555465886620020932">Erreur du service : <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556055872671007529">Certaines fonctionnalités et extensions Chromium sont accompagnées de raccourcis. Vous pouvez choisir de les réactiver.</translation>
 <translation id="8556420416730706394">Vous pouvez épingler la recherche dans des images pour y accéder facilement. Pour cela, cliquez sur le bouton "Épingler" en haut du panneau latéral.</translation>
@@ -779,7 +701,6 @@ Chromium ne peut pas récupérer vos paramètres.</translation>
 <translation id="8676101123715131330">Effectuez des recherches dans Chromium depuis n'importe où</translation>
 <translation id="8697124171261953979">Elle contrôle également la page qui s'affiche au démarrage de Chromium ou lorsque vous effectuez une recherche dans l'omnibox.</translation>
 <translation id="8702213505203810093">Pour envoyer cet onglet à un autre appareil, connectez-vous à Chromium sur celui-ci</translation>
-<translation id="8704119203788522458">Voici votre Chromium</translation>
 <translation id="8712637175834984815">OK</translation>
 <translation id="8719993436687031146">Se connecter à Chromium ?</translation>
 <translation id="8747073452963259673">angle inférieur gauche de la zone de recherche : <ph name="LEFT" /> % gauche, <ph name="BOTTOM" /> % bas</translation>
@@ -810,18 +731,15 @@ Chromium ne peut pas récupérer vos paramètres.</translation>
            Les favoris, l'historique et les mots de passe enregistrés ne seront pas affectés.</translation>
 <translation id="8966875421152977384">Afficher les raccourcis de sites Chromium</translation>
 <translation id="897581876605952338">Logo Chromium Enterprise</translation>
-<translation id="8980139959902937527">Profitez de la sécurité de Google où que vous soyez avec l'appli Chromium sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="8981150672034878610">Impossible de démarrer Chromium, car un problème est survenu lors de l'ouverture de votre profil. Essayez de redémarrer Chromium.</translation>
 <translation id="8981886272598860786">pour rechercher avec Chromium ou personnaliser dans <ph name="BEGIN_LINK" />Paramètres<ph name="END_LINK" /></translation>
 <translation id="8988036198400390003">Gérer les profils Chromium</translation>
 <translation id="8993855408334954620">Utilisez votre clavier pour naviguer entre Gemini dans Chromium et votre onglet ouvert.</translation>
 <translation id="9018218886431812662">Installation terminée</translation>
-<translation id="9019929317751753759">Afin de rendre Chromium plus sûr, nous avons désactivé l'extension suivante qui n'est pas répertoriée sur le <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> et qui a pu être ajoutée à votre insu.</translation>
 <translation id="9022552996538154597">Se connecter à Chromium</translation>
 <translation id="9035791714111278917">Afficher la recherche avec Chromium dans la barre de menu Mac et activer le raccourci clavier</translation>
 <translation id="904366664621834601">Chromium a bloqué ce téléchargement, car le fichier d'archive contient d'autres fichiers susceptibles de dissimuler un logiciel malveillant</translation>
 <translation id="9053882453960391422">Synchronisez parfaitement vos mots de passe, vos favoris et votre historique sur tous vos appareils. Accédez facilement aux fonctionnalités que vous connaissez et appréciez en définissant Chromium comme navigateur par défaut. Chromium sera épinglé à la barre des tâches pour un accès rapide.</translation>
-<translation id="9056398481763999048">Utilisez les meilleurs outils IA de Google avec l'appli Chromium sur votre téléphone</translation>
 <translation id="9057625473949801035">Pour accéder à vos mots de passe et plus encore depuis <ph name="DEVICE" />, connectez-vous à Chromium</translation>
 <translation id="9062666675513499497">Se connecter à Chromium lorsque vous vous connectez aux autres services Google</translation>
 <translation id="9078733879136747090">Chromium a été fermé automatiquement</translation>
@@ -832,7 +750,6 @@ Chromium ne peut pas récupérer vos paramètres.</translation>
 <translation id="91086099826398415">Ouvrir le lien dans un nouvel ongle&amp;t Chromium</translation>
 <translation id="911206726377975832">Supprimer également vos données de navigation ?</translation>
 <translation id="9118146721060781133">Le bouton "Tâches contextuelles" de la barre d'outils a une nouvelle icône. Cliquez dessus pour poser des questions pendant que vous naviguez avec les tâches contextuelles.</translation>
-<translation id="9134482777260927479">Aide aux devoirs</translation>
 <translation id="9148058034647219655">Quitter</translation>
 <translation id="9155105544013854680">Reprenez là où vous en étiez : Chromium peut restaurer vos onglets à chaque redémarrage. Pour activer cette option, accédez aux</translation>
 <translation id="9158494823179993217">Votre administrateur système a configuré Chromium pour que <ph name="TARGET_URL_HOSTNAME" /> s'ouvre dans un autre navigateur.</translation>
@@ -840,7 +757,6 @@ Chromium ne peut pas récupérer vos paramètres.</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="924957577793602335">Personnaliser Chromium</translation>
 <translation id="93478295209880648">Chromium risque de ne pas fonctionner correctement, car la compatibilité n'est plus assurée sur Windows XP et Windows Vista</translation>
-<translation id="945098430667185067">Profitez des meilleures fonctionnalités de sécurité de Google où que vous soyez grâce à Chromium.</translation>
 <translation id="945522503751344254">Envoyer un commentaire</translation>
 <translation id="965162752251293939">Qui utilise Chromium ?</translation>
 <translation id="967427899662692980">Renforcer la sécurité de Chromium</translation>

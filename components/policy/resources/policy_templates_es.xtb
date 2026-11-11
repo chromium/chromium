@@ -3730,6 +3730,13 @@ Si se inhabilita <ph name="NTPCARDSVISIBLE" />, no se mostrará la tarjeta de Ou
 <translation id="3284094172359247914">Controlar el uso de la API WebUSB</translation>
 <translation id="3285231260918855067">Opacidad del contorno del texto de la marca de agua, de 0 (transparente) a 100 (opaco).</translation>
 <translation id="3286159327013237833">Habilitar el clic automático en la pantalla de inicio de sesión</translation>
+<translation id="3286515980166695377">Esta política se declaró obsoleta en la versión M153 y no se aplica desde la versión M159. Las firmas ad hoc para las aplicaciones nativas creadas al instalar una aplicación web progresiva (PWA) ahora están habilitadas de forma permanente en <ph name="MAC_OS_NAME" />. De esta forma, cada aplicación instalada tiene una identidad única para los componentes del sistema de <ph name="MAC_OS_NAME" />.
+
+Si se habilita esta política o no se define, se permitirá que se usen firmas ad hoc para la aplicación nativa que se crea al instalar una aplicación web progresiva (PWA). De esta forma, cada aplicación instalada tiene una identidad única para los componentes del sistema de <ph name="MAC_OS_NAME" />.
+
+Si se inhabilita esta política, todas las aplicaciones nativas creadas al instalar aplicaciones web progresivas tendrán la misma identidad. Esto puede interferir con la funcionalidad de <ph name="MAC_OS_NAME" />.
+
+Por ello, esta política solo debe inhabilitarse si usas una solución de seguridad de endpoints que bloquee las aplicaciones con una firma ad hoc.</translation>
 <translation id="3288595667065905535">Canal de lanzamiento</translation>
 <translation id="3294430356898755483">Si se le asigna un valor a esta política, los administradores podrán establecer una lista de impresoras para los usuarios. La impresora se selecciona la primera vez que los usuarios intentan imprimir.
 
@@ -5589,6 +5596,11 @@ Si defines un valor superior al predeterminado (128), lo haces bajo tu propia re
 
 Ten en cuenta que los límites implementados se ven afectados por <ph name="ALLOW_SOCKET_POOL_SIZE_RANDOMIZATION_FOR_PROXIES_POLICY_NAME" />.</translation>
 <translation id="4528981768990874684">Inhabilita la función <ph name="IP_PROTECTION_NAME" />.</translation>
+<translation id="4529292353296224032">Si se habilita esta política, no se permitirá hacer capturas de pantalla mediante combinaciones de teclas ni APIs de extensión. Si se inhabilita esta política o no se establece, se permitirán las capturas de pantalla.
+
+En las versiones 155 a 158 de <ph name="PRODUCT_NAME" />, si se habilita esta política, también se puede impedir que las extensiones adjunten el depurador mediante "chrome.debugger.attach()"; por ejemplo, cuando la política <ph name="CHROME_VARIATIONS_POLICY_NAME" /> inhabilita todas las variantes.
+
+Ten en cuenta que, en <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> y <ph name="LINUX_OS_NAME" />, esta política no impedirá que se hagan capturas de pantalla mediante aplicaciones del sistema operativo o de terceros.</translation>
 <translation id="453031441196755904">Esta política está obsoleta.</translation>
 <translation id="4531088355818260318">Esta política permite definir una lista de reglas para inyectar encabezados HTTP personalizados en las solicitudes web que coincidan con patrones de URL específicos. Los encabezados definidos por esta política tienen prioridad sobre los que estaban presentes inicialmente en la solicitud, así como sobre las modificaciones que intenten hacer los usuarios o las extensiones.
 
@@ -5760,6 +5772,21 @@ Esta política no tendrá efecto si <ph name="PROVISION_MANAGED_CLIENT_CERTIFICA
       Si se le asigna el valor false, las capturas de paquetes de red no estarán disponibles en el dispositivo.</translation>
 <translation id="4599810650416623373">Bloquear optimizaciones de JavaScript en estos sitios</translation>
 <translation id="4600786265870346112">Habilitar cursor grande</translation>
+<translation id="460264931744856609">Si se define esta política, se controlarán los ajustes de gestión de extensiones de <ph name="PRODUCT_NAME" />, incluidos los que ya estén controlados por otras políticas de extensiones.
+
+Esta política asociará un ID de extensión o una URL de actualización únicamente a su configuración específica. Se puede definir una configuración predeterminada para el ID especial <ph name="DEFAULT_SCOPE" />, que se aplicará a todas las extensiones para las que no se haya definido una configuración personalizada en esta política.
+
+Esta política puede anular los ajustes por extensión de las políticas antiguas.
+
+Ten en cuenta que cualquier ajuste por ID de extensión de <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />, <ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />, <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" /> o <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> solo heredará "installation_mode" y "update_url" de los valores predeterminados de <ph name="DEFAULT_SCOPE" />. No heredará ninguna otra propiedad. Si se usa una URL de actualización, la configuración se aplicará a las extensiones que incluyan la misma URL de actualización en su archivo de manifiesto (http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy). Si a la marca "override_update_url" se le asigna el valor true, la extensión se instalará y se actualizará mediante la URL de actualización que se especifique en la política <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> o en el campo "update_url" de esta política. Se ignorará la marca "override_update_url" si el valor de "update_url" es una URL de Chrome Web Store.
+
+En las versiones 155 a 158 de <ph name="PRODUCT_NAME" />, si se aplica "runtime_blocked_hosts" a una extensión que tiene el permiso "debugger", se puede inhabilitar por completo "chrome.debugger.attach()" en todos los destinos; por ejemplo, cuando la política <ph name="CHROME_VARIATIONS_POLICY_NAME" /> inhabilita todas las variantes.
+
+En las instancias de <ph name="MS_WIN_NAME" />, las aplicaciones y extensiones que no estén alojadas en Chrome Web Store solo se podrán instalar de manera forzada si la instancia está vinculada a un dominio de <ph name="MS_AD_NAME" /> o a <ph name="MS_AAD_NAME" />, o si se ha registrado en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+En las instancias de <ph name="MAC_OS_NAME" />, las aplicaciones y extensiones externas a Chrome Web Store solo se podrán instalar de manera forzada si la instancia se gestiona mediante MDM, está vinculada a un dominio a través de MCX o se ha registrado en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Nota: Esta política solo se aplica a las plataformas compatibles con extensiones.</translation>
 <translation id="4602988345256038309">Permitir conexiones de asistencia remota a este equipo</translation>
 <translation id="4605677392792989397">Si se define esta política, se configurará la lista de las URLs de acceso empresarial (únicamente con protocolos HTTP y HTTPS). El servicio de protección de contraseñas capturará los hashes con salt de las contraseñas en estas URL y las usará para detectar si la contraseña se reutiliza. Para que <ph name="PRODUCT_NAME" /> capture correctamente los hashes con salt de las contraseñas, tus páginas de inicio de sesión deben seguir las directrices incluidas en https://www.chromium.org/developers/design-documents/create-amazing-password-forms.
 

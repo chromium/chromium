@@ -2035,6 +2035,7 @@ Da biste nastavili s računala, prebacite se na <ph name="OTHER_EMAIL" />. Dohva
 <translation id="728025568708172005">Pokaži mi</translation>
 <translation id="7280980607183752256">Ta se datoteka ne može uvesti</translation>
 <translation id="7282197670900591579">Tema boje limuna</translation>
+<translation id="7283937415134849498">Da bi vam pružio prilagođenu pomoć, Gemini dijeli neke vaše podatke (kao što su dijelovi vaših razgovora, lokacija i drugi relevantni podaci) s drugim Googleovim uslugama, kao što su Karte i Letovi. Te usluge mogu upotrebljavati te podatke kako bi se poboljšale, čak i ako kasnije izbrišete svoju povijest na Geminiju. Saznajte više u <ph name="BEGIN_LINK" />centru za privatnost u Gemini aplikacijama<ph name="END_LINK" />.</translation>
 <translation id="7293429513719260019">Odaberite jezik</translation>
 <translation id="72961285530871072">Time će se trajno izbrisati vaš napredak u Level Upu, a podaci o upotrebi značajki za Level Up više se neće slati Googleu za vaš profil.
 
@@ -2607,6 +2608,7 @@ Možete ponovno pokrenuti bilo kada.</translation>
 <translation id="8976382372951310360">Pomoć</translation>
 <translation id="8976414606286374109">Kartice se spremaju na vaš Google račun.</translation>
 <translation id="8981454092730389528">Google kontrole aktivnosti</translation>
+<translation id="8987736167266086032">Nastavite tamo gdje ste stali</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, prikvačena web-lokacija</translation>
 <translation id="8989779557457435460">Dijeli trenutačnu karticu prema zadanim postavkama</translation>
 <translation id="8990960056509724223">Spremanje datoteke nije uspjelo zbog pravila vaše organizacije</translation>

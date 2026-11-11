@@ -2035,6 +2035,7 @@ Ha a számítógépén szeretné folytatni, váltson a következőre: <ph name="
 <translation id="728025568708172005">Körbevezetés</translation>
 <translation id="7280980607183752256">Ez a fájl nem importálható</translation>
 <translation id="7282197670900591579">Citromsárga téma</translation>
+<translation id="7283937415134849498">Ahhoz, hogy személyre szabott segítséget nyújthasson, a Gemini megosztja az Ön egyes adatait (például a csevegések bizonyos részeit, a helyadatokat és más releváns információkat) más Google-szolgáltatásokkal, például a Térképpel és a Járatkeresővel. Ezek a szolgáltatások felhasználhatják ezeket az adatokat a továbbfejlesztéshez, még akkor is, ha Ön később törli a Gemini-előzményeit. További információ a <ph name="BEGIN_LINK" />Gemini-appok adatvédelmi központjában<ph name="END_LINK" /> található.</translation>
 <translation id="7293429513719260019">Nyelv kiválasztása</translation>
 <translation id="72961285530871072">Ezzel véglegesen törli a Level Up-előrehaladását, és a Level Up funkcióhasználati adatait a továbbiakban nem küldi el a rendszer a Google-nak az Ön profiljához.
 
@@ -2607,6 +2608,7 @@ Bármikor újraindíthatja.</translation>
 <translation id="8976382372951310360">Súgó</translation>
 <translation id="8976414606286374109">A kártyákat a rendszer az Ön Google-fiókjába menti.</translation>
 <translation id="8981454092730389528">Google Tevékenységvezérlők</translation>
+<translation id="8987736167266086032">Ott folytathatja, ahol abbahagyta</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, kitűzött webhely</translation>
 <translation id="8989779557457435460">Az aktuális lap megosztása alapértelmezés szerint</translation>
 <translation id="8990960056509724223">Nem sikerült menteni a fájlt a szervezeti házirendek miatt</translation>

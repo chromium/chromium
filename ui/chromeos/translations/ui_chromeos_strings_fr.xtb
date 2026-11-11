@@ -558,7 +558,6 @@
 <translation id="5305688511332277257">Aucun certificat installé</translation>
 <translation id="5317780077021120954">Enregistrer</translation>
 <translation id="5318819489018851358">Partager avec Linux</translation>
-<translation id="5330145655348521461">Ces fichiers sont ouverts sur un autre bureau. Utilisez le compte de <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) pour les afficher.</translation>
 <translation id="5330512191124428349">Lire les informations</translation>
 <translation id="535792325654997756">Personne avec des chats</translation>
 <translation id="5358764674931277">Fréquence d'images</translation>
@@ -699,7 +698,6 @@
 <translation id="636254897931573416">Valeur non valide pour la correspondance du suffixe de domaine</translation>
 <translation id="6364301859968397756">Espace de stockage de l'organisation saturé</translation>
 <translation id="6367976544441405720">Van</translation>
-<translation id="637062427944097960">Ce fichier est ouvert sur un autre bureau. Utilisez le compte de <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) pour l'afficher.</translation>
 <translation id="6394388407447716302">Lecture seule</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> éléments</translation>
 <translation id="6407769893376380348">Impossible de déplacer <ph name="FILE_NAME" />, car ce fichier est chiffré.</translation>

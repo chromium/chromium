@@ -20,6 +20,7 @@
 <translation id="1056898198331236512">Упозорење</translation>
 <translation id="1058009965971887428">Пошаљи повратне информације</translation>
 <translation id="1059120031266247284">Дељено са вама</translation>
+<translation id="1060570945511946595">Управљај картама</translation>
 <translation id="1060847216467038176"><ph name="ITEM_LABEL" /> са дугметом за уклањање</translation>
 <translation id="1062407476771304334">Замени</translation>
 <translation id="1065931689816135472"><ph name="BEGIN_PARAGRAPH1" />Правите резервне копије на Google диску. Лако вратите податке или пређите на други уређај у било ком тренутку. Резервна копија обухвата податке апликација.<ph name="END_PARAGRAPH1" />
@@ -280,6 +281,7 @@
 <translation id="1757132445735080748">Да бисте завршили подешавање Linux-а, ажурирајте Chrome OS Flex и пробајте поново.</translation>
 <translation id="1757857692711134412">Искључено до сумрака</translation>
 <translation id="1763084151787818322">Друге радње</translation>
+<translation id="1767043563165955993">Користи са Android апликацијама</translation>
 <translation id="1768138163688567246">Затворите претрагу екрана</translation>
 <translation id="1768366657309696705">Тастерска пречица <ph name="LAUNCHER_KEY_NAME" /> + тачка је промењена. Да бисте користили тастер за уметање, притисните тастер <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
 <translation id="1770726142253415363">Премештено је у <ph name="ROW_NUMBER" />. ред, <ph name="COLUMN_NUMBER" />. колона.</translation>
@@ -304,6 +306,7 @@
 <translation id="1838895407229022812">Ноћно светло је искључено.</translation>
 <translation id="1840920496749066704">°C</translation>
 <translation id="1841616161104323629">Недостаје евиденција уређаја.</translation>
+<translation id="184273675144259287">Замените Linux апликације и датотеке претходном резервном копијом</translation>
 <translation id="1854180393107901205">Заустави пребацивање</translation>
 <translation id="1862077610023398675">Сакриј контроле</translation>
 <translation id="1862380676329487333">Ажурирај и одјави ме</translation>
@@ -333,6 +336,7 @@
 <translation id="1946615340060705561">Притисните „c“ да бисте отпустили</translation>
 <translation id="1948405482892809935">Пређи на следећег корисника</translation>
 <translation id="1954252331066828794">Снимање екрана је довршено</translation>
+<translation id="1954813140452229842">Грешка при учитавању дељене датотеке. Проверите акредитиве и пробајте поново.</translation>
 <translation id="1956087014741188812">Паузирајте коришћење тастера миша</translation>
 <translation id="1957958912175573503">Подесите језик</translation>
 <translation id="1961239773406905488">Преглед камере је сакривен</translation>
@@ -352,6 +356,10 @@
 <translation id="1998100899771863792">Актуелна радна површина</translation>
 <translation id="2001444736072756133">Претражујте категорију <ph name="CATEGORY" />, фајлове, апликације и друго.</translation>
 <translation id="2011174342667534258">Верзија пакета за развој софтвера:</translation>
+<translation id="2017770349934140286">Google Play и апликације које сте преузели са Google Play-а ће бити избрисани са овог Chromebook-а.
+    <ph name="LINE_BREAKS1" />
+    Може да буде избрисан и садржај који сте купили преко Google Play-а, попут филмова, ТВ емисија, музике, књига и других куповина.
+    <ph name="LINE_BREAKS2" />То не утиче на апликације нити садржај на другим уређајима.</translation>
 <translation id="2017998995161831444">Отворите Помоћ у апликацији Истражите</translation>
 <translation id="2021864487439853900">Кликните да бисте откључали</translation>
 <translation id="2023167225947895179">Овај PIN може лако да се погоди</translation>
@@ -381,6 +389,7 @@
 <translation id="212862741129535676">Проценат заузетости стања фреквенције</translation>
 <translation id="2132302418721800944">Сними цео екран</translation>
 <translation id="2135456203358955318">Монтирана лупа екрана</translation>
+<translation id="2148219725039824548">Грешка при учитавању дељене датотеке. Наведена дељена датотека није пронађена на мрежи.</translation>
 <translation id="2148716181193084225">Данас</translation>
 <translation id="2149229036084364364">Иди на претходну песму</translation>
 <translation id="2152796271648108398">Актуелно време</translation>
@@ -726,6 +735,7 @@
 <translation id="315116470104423982">Мобилни подаци</translation>
 <translation id="3153444934357957346">Можете да имате највише <ph name="MULTI_PROFILE_USER_LIMIT" /> налога за вишеструко пријављивање.</translation>
 <translation id="3154351730702813399">Администратор уређаја може да прати активности прегледања.</translation>
+<translation id="3157931365184549694">Поново отвори</translation>
 <translation id="316086887565479535">Неподржане апликације у шаблону</translation>
 <translation id="3160929076476941240">2 с</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> враћа <ph name="DEVICE_TYPE" /> на претходну верзију. Уређај ће се ресетовати и сви подаци ће бити избрисани.</translation>
@@ -776,6 +786,7 @@
 <translation id="3313950410573257029">Провери везу</translation>
 <translation id="3321628682574733415">Нетачан кôд родитеља</translation>
 <translation id="332827762492701193">Обавештења су сакривена</translation>
+<translation id="3328489342742826322">Враћањем из резервне копије избрисаће се постојеће Linux апликације и подаци у директоријуму са Linux датотекама.</translation>
 <translation id="3333674550998107387">Прошири обавештење <ph name="NOTIFICATION_TITLE" /></translation>
 <translation id="3339826665088060472">Снимање екрана, алатке за прављење снимака и видеа екрана</translation>
 <translation id="3340978935015468852">подешавања</translation>
@@ -835,6 +846,7 @@
         <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Сазнајте више о прецизности локације<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, јачина сигнала <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Полица је аутоматски сакривена</translation>
+<translation id="3500417806337761827">Грешка при инсталацији дељене ставке. Превише SMB дељених ставки је већ инсталирано.</translation>
 <translation id="3505066820268455558">Батерија се пуни</translation>
 <translation id="3509391053705095206">Проналажење телефона није успело. Проверите да ли је Bluetooth на телефону укључен.</translation>
 <translation id="3510164367642747937">Истакни курсор миша</translation>
@@ -959,6 +971,7 @@
 <translation id="3804737937830804242">Скупите камеру</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 емоџи. Нема других резултата.}one{# емоџи. Нема других резултата.}few{# емоџија. Нема других резултата.}other{# емоџија. Нема других резултата.}}</translation>
 <translation id="381202950560906753">Додај други</translation>
+<translation id="3819257035322786455">Резервна копија</translation>
 <translation id="3819261658055281761">Систем није успео да сачува ознаку дугорочног приступа API-ју за овај уређај.</translation>
 <translation id="3822403841174077928">Копирање са форматирањем није успело</translation>
 <translation id="3824621460022590830">Токен за регистрацију уређаја је неважећи. Обратите се власнику уређаја или администратору. Кôд грешке: <ph name="ERROR_CODE" />.</translation>
@@ -1145,6 +1158,7 @@
 <translation id="4327147325944669226">Снимите игру</translation>
 <translation id="4329076911374908740">Достигнут је максималан број сачуваних група.</translation>
 <translation id="4338109981321384717">Лупа</translation>
+<translation id="4340125850502689798">Неважеће корисничко име</translation>
 <translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, звук је искључен</translation>
 <translation id="4351244548802238354">Затвори дијалог</translation>
 <translation id="435527878592612277">Изаберите слику</translation>
@@ -1624,6 +1638,7 @@
 <translation id="5727460725221669831">Ако сте недавно заборавили лозинку или променили лозинку за Google налог, пробајте да вратите приступ свом корисничком налогу.</translation>
 <translation id="5733630091161562207">Обавештење о добродошлици</translation>
 <translation id="573413375004481890">Овај уређај не може да подржава све ваше екране, па је веза са једним од њих прекинута</translation>
+<translation id="5734697361979786483">Додај дељење датотека</translation>
 <translation id="5739548907438839901">Ослобођено је <ph name="SIZE" /> простора на диску.</translation>
 <translation id="574392208103952083">Средња</translation>
 <translation id="5745612484876805746">Ноћно светло се аутоматски укључује када сунце зађе</translation>
@@ -1712,6 +1727,7 @@
 <translation id="5983567367406220847">Hотспот је искључен због неактивности.</translation>
 <translation id="598407983968395253">Користи шаблон</translation>
 <translation id="5984334442529819751">Грешка при инсталирању садржаја за преузимање (често је потребно рестартовање, више информација потражите у одељку Подешавања\&gt;\&gt;О ChromeOS-у).</translation>
+<translation id="5985458664595100876">Неважећи формат URL-а. Подржани формати су \\server\share и smb://server/share.</translation>
 <translation id="5986723678596105470">Уђи помоћу Google Meet-а</translation>
 <translation id="598882571027504733">Да бисте преузели ажурирање, рестартујте Chromebook са прикљученом тастастуром.</translation>
 <translation id="5990992855591814753">Останите на правом путу уз персонализоване фокусиране плејлисте. Набавите YouTube Music и YouTube без огласа уз 3 месеца YouTube Premium-а без накнаде. Важе услови.</translation>
@@ -1763,6 +1779,7 @@
 <translation id="6074087755403037157">Бета канал</translation>
 <translation id="6075098173600599596">Промени употребу великих слова</translation>
 <translation id="6080689532560039067">Проверите системско време</translation>
+<translation id="6091761513005122595">Дељена датотека је учитана.</translation>
 <translation id="6091929401758362855">Плејлиста: <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="6093867385179428431">Администратор је онемогућио</translation>
 <translation id="6095008505822982596">Брзина говора</translation>
@@ -1934,6 +1951,7 @@
 <translation id="6582034443359256692">Израчунава се ниво напуњености батерије.</translation>
 <translation id="6586685375736417639">Уређај не може да се пуни</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
+<translation id="6596816719288285829">IP адреса</translation>
 <translation id="6597017209724497268">Узорци</translation>
 <translation id="6597278316891651699">Камера је уклопљена у доњи леви угао. Неусаглашеност са површином система.</translation>
 <translation id="6605415194043280389">Фокус је укључен</translation>
@@ -1953,6 +1971,7 @@
 <translation id="6637729079642709226">Промените време</translation>
 <translation id="6641720045729354415">Укључите или искључите титл уживо. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">Опозовите редослед сортирања према називу</translation>
+<translation id="6644513150317163574">Неважећи формат URL-а. Сервер мора да буде наведен као име хоста када се користи SSO потврда идентитета.</translation>
 <translation id="664793810957802384">Ставке у предложеној групи</translation>
 <translation id="6649018507441623493">Само тренутак…</translation>
 <translation id="6649641931981131786">Подесите камеру да бисте поставили себе у центар екрана.</translation>
@@ -2018,6 +2037,7 @@
 <translation id="6812232930908427253">Чување радне површине није успело. Има превише прозора или картица.</translation>
 <translation id="6818242057446442178">Реч уназад</translation>
 <translation id="6819327813400217281">Камера је уклопљена у доњи леви угао</translation>
+<translation id="6820079682647046800">Kerberos потврда идентитета није успела</translation>
 <translation id="6820676911989879663">Направите паузу!</translation>
 <translation id="6827049576281411231">Затворите окно догађаја</translation>
 <translation id="682971198310367122">Google политика приватности</translation>
@@ -2048,6 +2068,7 @@
 <translation id="6919251195245069855">Нисмо успели да препознамо паметну картицу. Пробајте поново.</translation>
 <translation id="692135145298539227">избриши</translation>
 <translation id="6921427376813842559">Ажурирајте уређај</translation>
+<translation id="6923633482430812883">Грешка при учитавању дељене датотеке. Проверите да ли сервер датотека са којим се повезујете подржава SMBv2 или новију верзију.</translation>
 <translation id="6929081673585394903">Покажи контроле</translation>
 <translation id="6931576957638141829">Сачувајте у</translation>
 <translation id="6935286146439255109">Недостаје посуда за папир</translation>
@@ -2056,6 +2077,7 @@
 <translation id="6945221475159498467">Изабери</translation>
 <translation id="6945922087561257829">Телефон користи мобилну мрежу. Уверите се да су телефон и Chromebook на истој WiFi мрежи, па пробајте поново. <ph name="LEARN_MORE" /></translation>
 <translation id="6950627417367801484">Врати апликације</translation>
+<translation id="6960133692707095572">Посети без тикета</translation>
 <translation id="6960565108681981554">Није активирано. Обратите се мобилном оператеру.</translation>
 <translation id="696103774840402661">Сви фајлови и локални подаци за све кориснике на овом уређају (<ph name="DEVICE_TYPE" />) трајно су избрисани.</translation>
 <translation id="6961121602502368900">Искључивање звука телефона није доступно на пословном профилу</translation>
@@ -2095,6 +2117,7 @@
 <translation id="7061457967428964661">Преглед камере, притисните control + тастере са стрелицама да бисте преместили преглед у други угао</translation>
 <translation id="7064351585062927183">Следећег/следеће: <ph name="DAY_OF_WEEK" /></translation>
 <translation id="7064734931812204395">Конфигурише се Linux контејнер. Ово може да потраје до 30 минута.</translation>
+<translation id="706626672220389329">Грешка при учитавању дељене датотеке. Наведена дељена датотека је већ учитана.</translation>
 <translation id="7066646422045619941">Ову мрежу је онемогућио администратор.</translation>
 <translation id="7067196344162293536">Аутоматски ротирај</translation>
 <translation id="7076293881109082629">Пријављивање</translation>
@@ -2482,6 +2505,7 @@
 <translation id="8168435359814927499">Садржај</translation>
 <translation id="8169177848833352618">Нажалост, ова машина не испуњава услове за инсталирање Bruschetta-е. Кôд грешке је <ph name="ERROR" />.</translation>
 <translation id="8172370561760918656">Изабрали сте горњи леви маркер, користите тастере са стрелицама за померање</translation>
+<translation id="8177196903785554304">Детаљи о мрежи</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="81817143961839203">Уметање слике није успело</translation>
 <translation id="8182105986296479640">Апликација не реагује.</translation>
@@ -2516,6 +2540,7 @@
 <translation id="8262312463845990408">Укључите/искључите репродукцију</translation>
 <translation id="8266751606569906450">Минимални број знакова: <ph name="MINIMUM" /></translation>
 <translation id="8268302343625273732">Погледајте све задатке у Google учионици</translation>
+<translation id="827488840488530039">Страница коју покушавате да посетите није успела да верификује Kerberos тикете</translation>
 <translation id="8277261673056602147">Истакните текст на екрану</translation>
 <translation id="8281886186245836920">Прескочи</translation>
 <translation id="8282784978194352587">Успели сте!</translation>
@@ -2570,6 +2595,7 @@
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8458259704995116343">Покретање виртуелне машине није успело.</translation>
 <translation id="84613761564611563">Затражен је кориснички интерфејс за конфигурисање мреже, сачекајте...</translation>
+<translation id="8461914792118322307">Прокси</translation>
 <translation id="8462305545768648477">Затворите Изаберите за говор</translation>
 <translation id="8463001014623882202">Овлашћење није успело</translation>
 <translation id="8466665972451889002">Прикажите ставке у: <ph name="GROUP_NAME" /></translation>
@@ -2632,6 +2658,7 @@
 <translation id="8647931990447795414">Да бисте додали особу, унесите приступни кôд родитеља за Family Link</translation>
 <translation id="8649597172973390955">Полица се увек приказује</translation>
 <translation id="8657066291275741003">мала слова</translation>
+<translation id="8662671328352114214">Придружите се <ph name="TYPE" /> мрежи</translation>
 <translation id="8662921061190671299">Додавање у Календар није успело</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, јачина сигнала <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Притисните Enter да бисте направили делимичан снимак екрана</translation>
@@ -2678,6 +2705,7 @@
 <translation id="8760172428247796445"><ph name="DEVICE_TYPE" /> ће се сада закључати.
         <ph name="DOMAIN" /> захтева да паметна картица остане уметнута.</translation>
 <translation id="8763883995157866248">Пребаци уређај у режим спавања</translation>
+<translation id="8774379074441005279">Потврдите враћање</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, инсталирана апликација, блокирана</translation>
 <translation id="8782565991310229362">Покретање киоск апликације је отказано.</translation>
 <translation id="8784626084144195648">Просек агрегације</translation>
@@ -2694,6 +2722,7 @@
 <translation id="8814190375133053267">WiFi</translation>
 <translation id="881757059229893486">Подешавања метода уноса</translation>
 <translation id="8819728065740986820">Адаптивно пуњење је укључено</translation>
+<translation id="8821045908425223359">Аутоматски конфигуриши IP адресу</translation>
 <translation id="882204272221080310">Ажурирајте фирмвер ради веће безбедности.</translation>
 <translation id="8822104519413696986">Ово је игра са контролама на додир</translation>
 <translation id="8825863694328519386">Превуците са леве стране да бисте се вратили</translation>
@@ -2753,6 +2782,7 @@
 <translation id="8980862970816311842">Преместите икону апликације у фолдер у мрежи апликација или из њега</translation>
 <translation id="8982906748181120328">Видљиво у близини</translation>
 <translation id="8983038754672563810">HSPA</translation>
+<translation id="8986362086234534611">Заборави</translation>
 <translation id="8990809378771970590">Користи се <ph name="IME_NAME" /></translation>
 <translation id="8991648557324317894">Притисните fn + тастер за брзо уметање или Shift да бисте отказали.</translation>
 <translation id="899350903320462459">Откључајте уређај помоћу ИД-а пријављивања <ph name="LOGIN_ID" /> да бисте добили обавештење</translation>
@@ -2765,6 +2795,7 @@
 <translation id="9013037634206938463">Треба вам <ph name="INSTALL_SIZE" /> слободног простора да бисте инсталирали Linux. Да бисте ослободили простор, избришите датотеке са уређаја.</translation>
 <translation id="901668144954885282">Правите резервне копије на Google диску</translation>
 <translation id="9017320285115481645">Унесите приступни кôд родитеља за Family Link.</translation>
+<translation id="9024158959543687197">Грешка при учитавању дељене датотеке. Проверите URL дељења датотека и пробајте поново.</translation>
 <translation id="9024331582947483881">цео екран</translation>
 <translation id="9026852570893462412">Ово може да потраје пар минута. Преузима се виртуелна машина.</translation>
 <translation id="9029736946581028033">Уређај ће се ускоро искључити</translation>

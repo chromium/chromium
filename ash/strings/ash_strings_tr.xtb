@@ -20,6 +20,7 @@
 <translation id="1056898198331236512">Uyarı</translation>
 <translation id="1058009965971887428">Geri bildirim gönder</translation>
 <translation id="1059120031266247284">Sizinle paylaşılanlar</translation>
+<translation id="1060570945511946595">Biletleri yönetin</translation>
 <translation id="1060847216467038176">Kaldır düğmesi içeren <ph name="ITEM_LABEL" /></translation>
 <translation id="1062407476771304334">Değiştir</translation>
 <translation id="1065931689816135472"><ph name="BEGIN_PARAGRAPH1" />Verilerinizi Google Drive'a yedekleyin. Verilerinizi istediğiniz zaman kolayca geri yükleyin veya cihazlar arasında geçiş yapın. Yedeklemeniz, uygulama verilerini içerir.<ph name="END_PARAGRAPH1" />
@@ -280,6 +281,7 @@
 <translation id="1757132445735080748">Linux kurulumunu tamamlamak için ChromeOS Flex'i güncelleyip tekrar deneyin.</translation>
 <translation id="1757857692711134412">Gün batımına kadar kapalı</translation>
 <translation id="1763084151787818322">Diğer işlemler</translation>
+<translation id="1767043563165955993">Android uygulamalarıyla kullan</translation>
 <translation id="1768138163688567246">Ekranımı ara özelliğini kapat</translation>
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + Nokta klavye kısayolu değişti. Insert tuşunu kullanmak için <ph name="LAUNCHER_KEY_NAME" /> tuşu + Üst Karakter + Geri Tuşu'na basın.</translation>
 <translation id="1770726142253415363"><ph name="ROW_NUMBER" />. satır, <ph name="COLUMN_NUMBER" />. sütuna taşındı.</translation>
@@ -304,6 +306,7 @@
 <translation id="1838895407229022812">Gece Işığı kapalı.</translation>
 <translation id="1840920496749066704">°C</translation>
 <translation id="1841616161104323629">Eksik cihaz kaydı.</translation>
+<translation id="184273675144259287">Linux uygulamalarınızı ve dosyalarınızı önceki bir yedek ile değiştirme</translation>
 <translation id="1854180393107901205">Yayını durdur</translation>
 <translation id="1862077610023398675">Kontrolleri gizle</translation>
 <translation id="1862380676329487333">Güncelle ve oturumu kapat</translation>
@@ -333,6 +336,7 @@
 <translation id="1946615340060705561">Bırakmak için "c" tuşuna basın</translation>
 <translation id="1948405482892809935">Sonraki kullanıcıya geçin</translation>
 <translation id="1954252331066828794">Ekran kaydı tamamlandı</translation>
+<translation id="1954813140452229842">Paylaşım eklenirken hata oluştu. Lütfen kimlik bilgilerinizi kontrol edin ve tekrar deneyin.</translation>
 <translation id="1956087014741188812">Fare tuşlarını duraklat</translation>
 <translation id="1957958912175573503">Dilinizi ayarlayın</translation>
 <translation id="1961239773406905488">Kamera önizlemesi gizlendi</translation>
@@ -352,6 +356,11 @@
 <translation id="1998100899771863792">Geçerli masaüstü</translation>
 <translation id="2001444736072756133"><ph name="CATEGORY" />, dosyalar, uygulamalar genelinde ve daha fazla yerde arama yapın.</translation>
 <translation id="2011174342667534258">SDK Sürümü:</translation>
+<translation id="2017770349934140286">Google Play ve Google Play'den indirdiğiniz uygulamalar bu Chromebook'tan silinir.
+    <ph name="LINE_BREAKS1" />
+    Filmler, TV programları, müzik, kitaplar gibi Google Play'den satın aldığınız içeriklerin yanı sıra diğer uygulamalardan satın aldığınız öğeler de silinebilir.
+    <ph name="LINE_BREAKS2" />
+    Bu işlem, diğer cihazlardaki uygulamaları veya içerikleri etkilemez.</translation>
 <translation id="2017998995161831444">Keşfet uygulamasında "Yardım"ı açar</translation>
 <translation id="2021864487439853900">Kilidi açmak için tıklayın</translation>
 <translation id="2023167225947895179">PIN kolayca tahmin edilebilir</translation>
@@ -381,6 +390,7 @@
 <translation id="212862741129535676">Frekans Durumu Kullanma Yüzdesi</translation>
 <translation id="2132302418721800944">Tam ekran kaydet</translation>
 <translation id="2135456203358955318">Yerleştirilmiş büyüteç</translation>
+<translation id="2148219725039824548">Paylaşım eklenirken hata oluştu. Belirtilen paylaşım ağda bulunamadı.</translation>
 <translation id="2148716181193084225">Bugün</translation>
 <translation id="2149229036084364364">Önceki parçaya gidin</translation>
 <translation id="2152796271648108398">Şu anki hava durumu</translation>
@@ -726,6 +736,7 @@ Aksi takdirde yerleşik dokunmatik alan <ph name="TIMEOUT_SECONDS" /> sonra yeni
 <translation id="315116470104423982">Mobil veriler</translation>
 <translation id="3153444934357957346">Çoklu oturum açmada en fazla <ph name="MULTI_PROFILE_USER_LIMIT" /> hesabınız olabilir.</translation>
 <translation id="3154351730702813399">Cihaz yöneticisi göz atma etkinliğinizi izleyebilir.</translation>
+<translation id="3157931365184549694">Geri yükle</translation>
 <translation id="316086887565479535">Şablonda desteklenmeyen uygulamalar var</translation>
 <translation id="3160929076476941240">2 sa.</translation>
 <translation id="316356270129335934"><ph name="MANAGER" />, <ph name="DEVICE_TYPE" /> cihazınızı geri çekiyor. Cihazınız sıfırlanacak ve tüm veriler silinecek.</translation>
@@ -776,6 +787,7 @@ Aksi takdirde yerleşik dokunmatik alan <ph name="TIMEOUT_SECONDS" /> sonra yeni
 <translation id="3313950410573257029">Bağlantıyı kontrol et</translation>
 <translation id="3321628682574733415">Ebeveyn kodu yanlış</translation>
 <translation id="332827762492701193">Bildirimler gizlendi.</translation>
+<translation id="3328489342742826322">Yedekten yapılan geri yükleme işlemi, Linux dosyalarınızın bulunduğu klasördeki mevcut Linux uygulamalarının ve verilerinin silinmesine neden olacaktır.</translation>
 <translation id="3333674550998107387"><ph name="NOTIFICATION_TITLE" /> bildirimini genişlet</translation>
 <translation id="3339826665088060472">Ekran görüntüsü, ekranının görüntüsünü ve kaydını almaya yarayan araçlar</translation>
 <translation id="3340978935015468852">ayarlar</translation>
@@ -835,6 +847,7 @@ Aksi takdirde yerleşik dokunmatik alan <ph name="TIMEOUT_SECONDS" /> sonra yeni
         <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Konum Doğruluğu hakkında daha fazla bilgi<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" /> Sinyal Gücü</translation>
 <translation id="348799646910989694">Raf otomatik olarak gizlenecek</translation>
+<translation id="3500417806337761827">Paylaşım eklenirken hata oluştu. Halihazırda eklenmiş çok fazla SMB paylaşımı var.</translation>
 <translation id="3505066820268455558">Pil Şarj Oluyor</translation>
 <translation id="3509391053705095206">Telefonunuz bulunamıyor. Telefonunuzun Bluetooth'unun açık olduğundan emin olun.</translation>
 <translation id="3510164367642747937">Fare imlecini vurgula</translation>
@@ -959,6 +972,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="3804737937830804242">Kamerayı daralt</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 emoji. Başka sonuç yok.}other{# emoji. Başka sonuç yok.}}</translation>
 <translation id="381202950560906753">Başka ekle</translation>
+<translation id="3819257035322786455">Yedekleme</translation>
 <translation id="3819261658055281761">Sistem bu cihaza ait uzun vadeli API erişim jetonunu kaydedemedi.</translation>
 <translation id="3822403841174077928">Biçimlendirme kopyalanamadı</translation>
 <translation id="3824621460022590830">Cihaz kaydı jetonu geçersiz. Lütfen cihaz sahibiyle ya da yöneticisiyle iletişime geçin. Hata kodu: <ph name="ERROR_CODE" />.</translation>
@@ -1142,6 +1156,7 @@ Pil ömrünü uzatmak için bazı özellik sınırlandırıldı.</translation>
 <translation id="4327147325944669226">Oyunu kaydedin</translation>
 <translation id="4329076911374908740">Kaydedilebilecek maksimum grup sayısına ulaşıldı.</translation>
 <translation id="4338109981321384717">Büyüteç</translation>
+<translation id="4340125850502689798">Geçersiz kullanıcı adı</translation>
 <translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, ses kapalı</translation>
 <translation id="4351244548802238354">İletişim kutusunu kapat</translation>
 <translation id="435527878592612277">Fotoğrafınızı seçin</translation>
@@ -1621,6 +1636,7 @@ Bağlı cihaz yok.</translation>
 <translation id="5727460725221669831">Şifrenizi unuttuysanız veya Google Hesabınızın şifresini yakın zamanda değiştirdiyseniz bu kullanıcıyı kurtarmayı deneyin.</translation>
 <translation id="5733630091161562207">Karşılama bildirimi</translation>
 <translation id="573413375004481890">Bu cihaz tüm ekranlarınızı destekleyemediği için bir tanesinin bağlantısı kesildi</translation>
+<translation id="5734697361979786483">Dosya paylaşımı ekle</translation>
 <translation id="5739548907438839901"><ph name="SIZE" /> disk alanı açıldı.</translation>
 <translation id="574392208103952083">Orta</translation>
 <translation id="5745612484876805746">Gece Işığı güneş battığında otomatik olarak açılır</translation>
@@ -1709,6 +1725,7 @@ Bağlı cihaz yok.</translation>
 <translation id="5983567367406220847">Herhangi bir etkinlik olmadığı için hotspot kapatıldı.</translation>
 <translation id="598407983968395253">Şablonu kullan</translation>
 <translation id="5984334442529819751">DLC yüklenirken hata oluştu (Çoğu zaman yeniden başlatma gerekir. Daha fazla bilgi için Ayarlar\&gt;\&gt;ChromeOS hakkında bölümüne bakın).</translation>
+<translation id="5985458664595100876">Geçersiz URL biçimi. \\sunucu\paylaşım ve smb://sunucu/paylaşım biçimleri desteklenir.</translation>
 <translation id="5986723678596105470">Google Meet ile katılın</translation>
 <translation id="598882571027504733">Güncellemeyi almak için Chromebook'unuzu klavye takılıyken yeniden başlatın.</translation>
 <translation id="5990992855591814753">Kişiselleştirilmiş odaklanma listeleriyle zamanınızı yönetin. 3 ay boyunca ücretsiz YouTube Premium ile YouTube Music ve YouTube'u reklamsız kullanın. Şartlar geçerlidir.</translation>
@@ -1758,6 +1775,7 @@ Bağlı cihaz yok.</translation>
 <translation id="6074087755403037157">Beta Kanalı</translation>
 <translation id="6075098173600599596">Büyük harf kullanımını değiştir</translation>
 <translation id="6080689532560039067">Sistem saatinizi kontrol edin</translation>
+<translation id="6091761513005122595">Paylaşım başarıyla eklendi.</translation>
 <translation id="6091929401758362855">Oynatma listesi: <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="6093867385179428431">Yönetici devre dışı bıraktı</translation>
 <translation id="6095008505822982596">Konuşma hızı</translation>
@@ -1929,6 +1947,7 @@ Yeni yüklenmiş</translation>
 <translation id="6582034443359256692">Pil şarj seviyesi hesaplanıyor.</translation>
 <translation id="6586685375736417639">Cihaz şarj edilemiyor</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
+<translation id="6596816719288285829">IP Adresi</translation>
 <translation id="6597017209724497268">Örnek Sayısı</translation>
 <translation id="6597278316891651699">Kamera sol alt köşeye tutturuldu. Sistem yüzeyi ile çakışıyor.</translation>
 <translation id="6605415194043280389">Odaklanma açık</translation>
@@ -1948,6 +1967,7 @@ Yeni yüklenmiş</translation>
 <translation id="6637729079642709226">Saati değiştir</translation>
 <translation id="6641720045729354415">Canlı Altyazı'yı açın/kapatın. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">Ada göre sıralama ölçütünü geri al</translation>
+<translation id="6644513150317163574">Geçersiz URL biçimi. TOA kimlik doğrulama kullanılırken ana makine adı olarak sunucu belirtilmelidir.</translation>
 <translation id="664793810957802384">Önerilen gruptaki öğeler</translation>
 <translation id="6649018507441623493">Bir saniye...</translation>
 <translation id="6649641931981131786">Kamerayı, kendinizi ekranın ortasına yerleştirecek şekilde ayarlayın.</translation>
@@ -2013,6 +2033,7 @@ Yeni yüklenmiş</translation>
 <translation id="6812232930908427253">Masa kaydedilemedi. Çok fazla pencere veya sekme var.</translation>
 <translation id="6818242057446442178">Kelime bazında geri git</translation>
 <translation id="6819327813400217281">Kamera sol alt köşeye tutturuldu</translation>
+<translation id="6820079682647046800">Kerberos kimlik doğrulaması başarısız oldu</translation>
 <translation id="6820676911989879663">Mola verin!</translation>
 <translation id="6827049576281411231">Etkinlik panelini kapatın</translation>
 <translation id="682971198310367122">Google gizlilik politikası</translation>
@@ -2043,6 +2064,7 @@ Yeni yüklenmiş</translation>
 <translation id="6919251195245069855">Akıllı kartınız tanınamadı. Tekrar deneyin.</translation>
 <translation id="692135145298539227">sil</translation>
 <translation id="6921427376813842559">Cihazı güncelleyin</translation>
+<translation id="6923633482430812883">Paylaşım eklenirken hata oluştu. Lütfen bağlandığınız dosya sunucusunun SMBv2 veya sonraki sürümünü desteklediğinden emin olun.</translation>
 <translation id="6929081673585394903">Kontrolleri göster</translation>
 <translation id="6931576957638141829">Kaydetme yeri</translation>
 <translation id="6935286146439255109">Kağıt tepsisi yok</translation>
@@ -2051,6 +2073,7 @@ Yeni yüklenmiş</translation>
 <translation id="6945221475159498467">Seç</translation>
 <translation id="6945922087561257829">Telefonunuz bir mobil ağ kullanıyor. Telefonunuz ile Chromebook'unuzun aynı kablosuz ağda olduğundan emin olup tekrar deneyin. <ph name="LEARN_MORE" /></translation>
 <translation id="6950627417367801484">Uygulamaları geri yükle</translation>
+<translation id="6960133692707095572">Bilet olmadan ziyaret et</translation>
 <translation id="6960565108681981554">Etkin değil. Operatörünüzle iletişime geçin.</translation>
 <translation id="696103774840402661">Bu <ph name="DEVICE_TYPE" /> üzerindeki tüm kullanıcıların dosyaları ve yerel verileri kalıcı olarak silindi.</translation>
 <translation id="6961121602502368900">Telefonu sessize alma özelliği, iş profilinde kullanılamaz</translation>
@@ -2090,6 +2113,7 @@ Yeni yüklenmiş</translation>
 <translation id="7061457967428964661">Kamera önizlemesi: Önizlemeyi farklı bir köşeye taşımak için control + ok tuşlarına basın</translation>
 <translation id="7064351585062927183">Önümüzdeki <ph name="DAY_OF_WEEK" /></translation>
 <translation id="7064734931812204395">Linux kapsayıcı yapılandırılıyor. Bu işlem 30 kadar dakika sürebilir.</translation>
+<translation id="706626672220389329">Paylaşım eklenirken hata oluştu. Belirtilen paylaşım zaten eklenmiş.</translation>
 <translation id="7066646422045619941">Bu ağ, yöneticiniz tarafından devre dışı bırakıldı.</translation>
 <translation id="7067196344162293536">Otomatik döndür</translation>
 <translation id="7076293881109082629">Oturum açılıyor</translation>
@@ -2476,6 +2500,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="8168435359814927499">İçerik</translation>
 <translation id="8169177848833352618">Maalesef bu makine Bruschetta'yı yükleme koşullarını karşılamıyor. Hata kodu <ph name="ERROR" />.</translation>
 <translation id="8172370561760918656">Sol üst tutma yeri seçildi, taşımak için ok tuşlarını kullanın</translation>
+<translation id="8177196903785554304">Ağ Ayrıntıları</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="81817143961839203">Resim eklenemedi</translation>
 <translation id="8182105986296479640">Uygulama yanıt vermiyor.</translation>
@@ -2510,6 +2535,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="8262312463845990408">Çal/duraklat</translation>
 <translation id="8266751606569906450">En az <ph name="MINIMUM" /> karakter olmalı</translation>
 <translation id="8268302343625273732">Google Classroom'daki tüm ödevleri göster</translation>
+<translation id="827488840488530039">Ziyaret etmeye çalıştığınız sayfa Kerberos biletlerinizi doğrulayamadı</translation>
 <translation id="8277261673056602147">Ekrandaki metni vurgula</translation>
 <translation id="8281886186245836920">Atla</translation>
 <translation id="8282784978194352587">Başardınız!</translation>
@@ -2564,6 +2590,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8458259704995116343">Sanal makine başlatılamadı.</translation>
 <translation id="84613761564611563">Ağ yapılandırma kullanıcı arayüzü istendi, lütfen bekleyin...</translation>
+<translation id="8461914792118322307">Proxy</translation>
 <translation id="8462305545768648477">Seç ve Dinle özelliğini kapat</translation>
 <translation id="8463001014623882202">Onay Alınamadı</translation>
 <translation id="8466665972451889002"><ph name="GROUP_NAME" /> içindeki öğeleri göster</translation>
@@ -2626,6 +2653,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="8647931990447795414">Kullanıcı eklemek için Family Link ebeveyn erişim kodunuzu girin</translation>
 <translation id="8649597172973390955">Raf her zaman gösteriliyor</translation>
 <translation id="8657066291275741003">tümü küçük harf</translation>
+<translation id="8662671328352114214"><ph name="TYPE" /> ağına katılın</translation>
 <translation id="8662921061190671299">Takvim'e eklenemedi</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" /> Sinyal Gücü</translation>
 <translation id="8664282223139913403">Kısmi ekran görüntüsü almak için enter tuşuna basın</translation>
@@ -2672,6 +2700,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="8760172428247796445"><ph name="DEVICE_TYPE" /> cihazınız şimdi kilitlenecek.
         <ph name="DOMAIN" />, akıllı kartınızın takılı kalmasını gerektiriyor.</translation>
 <translation id="8763883995157866248">Cihazı uyku moduna geçirin</translation>
+<translation id="8774379074441005279">Geri Yüklemeyi Onaylayın</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, Yüklü Uygulama, Engellendi</translation>
 <translation id="8782565991310229362">Kiosk uygulaması başlatma iptal edildi.</translation>
 <translation id="8784626084144195648">Gruplu Ortalama</translation>
@@ -2688,6 +2717,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="8814190375133053267">Kablosuz Ağ</translation>
 <translation id="881757059229893486">Giriş Yöntemi Ayarları</translation>
 <translation id="8819728065740986820">Uyarlanabilir Şarj açık</translation>
+<translation id="8821045908425223359">IP adresini otomatik olarak yapılandır</translation>
 <translation id="882204272221080310">Daha fazla güvenlik için donanım yazılımını güncelle.</translation>
 <translation id="8822104519413696986">Bu dokunmatik bir oyundur</translation>
 <translation id="8825863694328519386">Geri gitmek için soldan kaydırın</translation>
@@ -2747,6 +2777,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="8980862970816311842">Uygulama tablosunda uygulama simgesini klasörün içine/dışına taşıyın</translation>
 <translation id="8982906748181120328">Yakındakiler görünürlüğü</translation>
 <translation id="8983038754672563810">HSPA</translation>
+<translation id="8986362086234534611">Unut</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> kullanılıyor</translation>
 <translation id="8991648557324317894">İptal etmek için fn + Hızlı Yapıştır tuşlarına ya da üst karakter tuşuna basın.</translation>
 <translation id="899350903320462459">Bildirim işlemi gerçekleştirmek için <ph name="LOGIN_ID" /> olarak cihazın kilidini açın</translation>
@@ -2759,6 +2790,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="9013037634206938463">Linux'u yüklemek için <ph name="INSTALL_SIZE" /> boş alan olması gerekir. Boş alanı artırmak için cihazdan bazı dosyaları silin.</translation>
 <translation id="901668144954885282">Google Drive'a yedekle</translation>
 <translation id="9017320285115481645">Family Link ebeveyn erişim kodunu girin.</translation>
+<translation id="9024158959543687197">Paylaşım eklenirken hata oluştu. Dosya paylaşım URL'sini kontrol edin ve tekrar deneyin.</translation>
 <translation id="9024331582947483881">tam ekran</translation>
 <translation id="9026852570893462412">Bu işlem birkaç dakika sürebilir. Sanal makine indiriliyor.</translation>
 <translation id="9029736946581028033">Cihaz yakında kapanacak</translation>

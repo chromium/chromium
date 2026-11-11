@@ -20,6 +20,7 @@
 <translation id="1056898198331236512">Ескерту</translation>
 <translation id="1058009965971887428">Пікір жіберу</translation>
 <translation id="1059120031266247284">Сізге берілді</translation>
+<translation id="1060570945511946595">Билеттерді басқару</translation>
 <translation id="1060847216467038176">Өшіру түймесі бар <ph name="ITEM_LABEL" /></translation>
 <translation id="1062407476771304334">Ауыстыру</translation>
 <translation id="1065931689816135472"><ph name="BEGIN_PARAGRAPH1" />Google Drive жадына сақтық көшірме жасаңыз. Деректерді қалпына келтіруге немесе құрылғыны кез келген уақытта ауыстыруға болады. Сақтық көшірмеге қолданба деректері кіреді.<ph name="END_PARAGRAPH1" />
@@ -280,6 +281,7 @@
 <translation id="1757132445735080748">Linux жүйесін реттеуді аяқтау үшін ChromeOS Flex операциялық жүйесін жаңартып, әрекетті қайталаңыз.</translation>
 <translation id="1757857692711134412">Күн батқанға дейін өшірулі</translation>
 <translation id="1763084151787818322">Басқа әрекеттер</translation>
+<translation id="1767043563165955993">Android қолданбаларымен пайдалану</translation>
 <translation id="1768138163688567246">"Экранда іздеу" режимін жабу</translation>
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + нүкте пернелер тіркесімінің функциясы өзгерді. Insert пернесінің әрекетін орындау үшін <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace пернелер тіркесімін басыңыз.</translation>
 <translation id="1770726142253415363"><ph name="ROW_NUMBER" />-жолға, <ph name="COLUMN_NUMBER" />-бағанға жылжытылды.</translation>
@@ -304,6 +306,7 @@
 <translation id="1838895407229022812">"Түнгі жарық" функциясы өшірулі.</translation>
 <translation id="1840920496749066704">°C</translation>
 <translation id="1841616161104323629">Құрылғы жазбасы жоқ.</translation>
+<translation id="184273675144259287">Linux қолданбалары мен файлдарын алдыңғы сақтық көшірмемен ауыстыру</translation>
 <translation id="1854180393107901205">Трансляцияны тоқтату</translation>
 <translation id="1862077610023398675">Басқару элементтерін жасыру</translation>
 <translation id="1862380676329487333">Жаңарту және шығу</translation>
@@ -333,6 +336,7 @@
 <translation id="1946615340060705561">Жіберу үшін "c" пернесін басыңыз.</translation>
 <translation id="1948405482892809935">Келесі пайдаланушыға ауысу</translation>
 <translation id="1954252331066828794">Экранды жазу аяқталды.</translation>
+<translation id="1954813140452229842">Ортақ файлды орнату кезінде қате шықты. Тіркелу деректерін тексеріп, қайталап көріңіз.</translation>
 <translation id="1956087014741188812">Тінтуір пернелерінің жұмысын кідірту</translation>
 <translation id="1957958912175573503">Тіліңізді орнатыңыз</translation>
 <translation id="1961239773406905488">Камераның алғы көрінісі жасырылды</translation>
@@ -352,6 +356,11 @@
 <translation id="1998100899771863792">Қазіргі жұмыс үстелі</translation>
 <translation id="2001444736072756133"><ph name="CATEGORY" />, файлдар, қолданбалар және т. б. іздеңіз.</translation>
 <translation id="2011174342667534258">SDK нұсқасы:</translation>
+<translation id="2017770349934140286">Google Play және одан жүктеп алынған қолданбалар бұл Chromebook-тан жойылады.
+    <ph name="LINE_BREAKS1" />
+    Google Play-ден сатып алынған фильмдер, телешоулар, музыка, кітаптар сияқты контент, сондай-ақ басқа қолданбалардан сатып алынған нәрселер де жойылуы мүмкін.
+    <ph name="LINE_BREAKS2" />
+    Бұл жағдай басқа құрылғылардағы қолданбаларға немесе контентке әсер етпейді.</translation>
 <translation id="2017998995161831444">Explore қолданбасында "Анықтама" бөлімін ашу</translation>
 <translation id="2021864487439853900">Құлыпты ашу үшін басыңыз</translation>
 <translation id="2023167225947895179">PIN коды табуға оңай болуы мүмкін</translation>
@@ -381,6 +390,7 @@
 <translation id="212862741129535676">Жиілік күйінің қамтылу пайыздық мөлшерлемесі</translation>
 <translation id="2132302418721800944">Толық экранды жазу</translation>
 <translation id="2135456203358955318">Бекітілген ұлғайтқыш</translation>
+<translation id="2148219725039824548">Ортақ файлды бөлісу кезінде қате шықты. Көрсетілген ортақ файл желіден табылмады.</translation>
 <translation id="2148716181193084225">Бүгін</translation>
 <translation id="2149229036084364364">Алдыңғы саундтрекке өту</translation>
 <translation id="2152796271648108398">Қазіргі ауа райы</translation>
@@ -726,6 +736,7 @@
 <translation id="315116470104423982">Мобильді деректер</translation>
 <translation id="3153444934357957346">Бірнеше аккаунтқа кіру мүмкіндігінде <ph name="MULTI_PROFILE_USER_LIMIT" /> аккаунтқа ғана рұқсат етілген.</translation>
 <translation id="3154351730702813399">Құрылғы әкімшісі интернетті шолуыңызға қатысты ақпаратты көре алады.</translation>
+<translation id="3157931365184549694">Қалпына келтіру</translation>
 <translation id="316086887565479535">Үлгіде қолдау көрсетілмейтін қолданбалар бар</translation>
 <translation id="3160929076476941240">2 сағ</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> <ph name="DEVICE_TYPE" /> құрылғыңызды алдыңғы нұсқаға қайтарады. Құрылғы бастапқы күйге қайтарылады және барлық дерек жойылады.</translation>
@@ -776,6 +787,7 @@
 <translation id="3313950410573257029">Байланысты тексеру</translation>
 <translation id="3321628682574733415">Ата-ана коды дұрыс емес</translation>
 <translation id="332827762492701193">Хабарландырулар жасырулы</translation>
+<translation id="3328489342742826322">Сақтық көшірмеден қалпына келтірсеңіз, Linux қолданбалары және Linux файлдары орналасқан қалтадағы деректер жойылады.</translation>
 <translation id="3333674550998107387"><ph name="NOTIFICATION_TITLE" /> хабарландыруын жаю</translation>
 <translation id="3339826665088060472">Скриншот, скриншоттар түсіруге және экран жазуға арналған құралдар</translation>
 <translation id="3340978935015468852">параметрлер</translation>
@@ -835,6 +847,7 @@
         <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Локация дәлдігі туралы толық ақпарат<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, сигнал күші: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Сөре автоматты түрде жасырылған.</translation>
+<translation id="3500417806337761827">Бөлісу кезінде қате шықты. Тым көп SMB бөлісілген.</translation>
 <translation id="3505066820268455558">Батарея зарядталуда</translation>
 <translation id="3509391053705095206">Телефон табылмады. Онда Bluetooth қосылып тұрғанына көз жеткізіңіз.</translation>
 <translation id="3510164367642747937">Тінтуір курсорын ерекшелеу</translation>
@@ -959,6 +972,7 @@
 <translation id="3804737937830804242">Өлшемді өзгерту түймесін жасыру</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 эмоджи. Басқа нәтиже жоқ.}other{# эмоджи. Басқа нәтиже жоқ.}}</translation>
 <translation id="381202950560906753">Тағы біреуін қосу</translation>
+<translation id="3819257035322786455">Сақтық көшірме жасау</translation>
 <translation id="3819261658055281761">Жүйе бұл құрылғыға арналған ұзақ мерзімдік API кіру таңбалауышын сақтай алмады.</translation>
 <translation id="3822403841174077928">Форматтаумен көшіру мүмкін болмады.</translation>
 <translation id="3824621460022590830">Құрылғыны тіркеу токені жарамсыз. Құрылғының иесіне немесе әкімшісіне хабарласыңыз. Қате коды: <ph name="ERROR_CODE" />.</translation>
@@ -1142,6 +1156,7 @@
 <translation id="4327147325944669226">Ойынды жазу</translation>
 <translation id="4329076911374908740">Сақталған топтардың максималды санына жетті.</translation>
 <translation id="4338109981321384717">Ұлғайтқыш шыны</translation>
+<translation id="4340125850502689798">Пайдаланушы аты дұрыс емес.</translation>
 <translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, дыбысы өшірілген</translation>
 <translation id="4351244548802238354">Диалогтік терезені жабу</translation>
 <translation id="435527878592612277">Суретті таңдаңыз</translation>
@@ -1621,6 +1636,7 @@
 <translation id="5727460725221669831">Құпия сөзіңізді ұмытып қалсаңыз немесе Google аккаунты құпия сөзін жақында өзгертсеңіз, осы пайдаланушыны қалпына келтіріп көріңіз.</translation>
 <translation id="5733630091161562207">Сәлемдесу хабарландыруы</translation>
 <translation id="573413375004481890">Бұл құрылғы барлық дисплейлерді бірдей қолдамайтындықтан, бір дисплей ажыратылды.</translation>
+<translation id="5734697361979786483">Файл бөлісу функциясын қосу</translation>
 <translation id="5739548907438839901"><ph name="SIZE" /> диск жады босатылды.</translation>
 <translation id="574392208103952083">Орташа</translation>
 <translation id="5745612484876805746">Күн батқанда, Night Light режимі автоматты түрде іске қосылады</translation>
@@ -1709,6 +1725,7 @@
 <translation id="5983567367406220847">Әрекетсіздікке байланысты хотспот өшірілді.</translation>
 <translation id="598407983968395253">Үлгіні қолдану</translation>
 <translation id="5984334442529819751">DLC орнату кезінде қате пайда болды. Әдетте өшіріп қосу қажет. Қосымша ақпарат алу үшін "Параметрлер\&gt;\&gt;ChromeOS туралы ақпарат" бөлімін тексеріңіз.</translation>
+<translation id="5985458664595100876">URL сілтемесінің форматы дұрыс емес. Олар \\server\share және smb://server/share форматында болуы керек.</translation>
 <translation id="5986723678596105470">Google Meet-пен қосылу</translation>
 <translation id="598882571027504733">Жаңартылған нұсқаны алу үшін, пернетақта жалғанған күйі Chromebook ноутбугын қайта қосыңыз.</translation>
 <translation id="5990992855591814753">Зейін қоюға арналған жекелендірілген ойнату тізімдерімен тренділерден қалыспаңыз. YouTube Premium-ді 3 ай тегін пайдаланып, YouTube Music пен YouTube-ті жарнамасыз тамашалаңыз. Шарттары бар.</translation>
@@ -1758,6 +1775,7 @@
 <translation id="6074087755403037157">Бета нұсқасы</translation>
 <translation id="6075098173600599596">Бас әріптерді өзгерту</translation>
 <translation id="6080689532560039067">Жүйе уақытын тексеру</translation>
+<translation id="6091761513005122595">Ортақ файл орнатылды.</translation>
 <translation id="6091929401758362855">Ойнату тізімі: <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="6093867385179428431">Әкімші өшірген</translation>
 <translation id="6095008505822982596">Сөйлеу жылдамдығы</translation>
@@ -1929,6 +1947,7 @@
 <translation id="6582034443359256692">Батареяның зарядталу деңгейі есептеліп жатыр.</translation>
 <translation id="6586685375736417639">Құрылғыны зарядтау мүмкін емес</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
+<translation id="6596816719288285829">IP мекенжайы</translation>
 <translation id="6597017209724497268">Үлгілер</translation>
 <translation id="6597278316891651699">Камера төменгі сол жақ бұрышқа ауыстырылды. Жүйе платформасына қатысты қарама-қайшылық туындады.</translation>
 <translation id="6605415194043280389">Зейін қою режимі қосулы</translation>
@@ -1948,6 +1967,7 @@
 <translation id="6637729079642709226">Уақытты өзгерту</translation>
 <translation id="6641720045729354415">Автоматты субтитр функциясын қосу/өшіру. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">Ат бойынша сұрыптау ретін қайтару</translation>
+<translation id="6644513150317163574">URL форматы жарамсыз. SSO аутентификациясы қолданылған кезде, сервер хост ретінде көрсетіледі.</translation>
 <translation id="664793810957802384">Ұсынылған топтағы элементтер</translation>
 <translation id="6649018507441623493">Сәл күте тұрыңыз...</translation>
 <translation id="6649641931981131786">Камераны реттеп, сізді экранның ортасына орналастырады.</translation>
@@ -2013,6 +2033,7 @@
 <translation id="6812232930908427253">Жұмыс үстелі сақталмады. Терезе мен қойынды тым көп.</translation>
 <translation id="6818242057446442178">Бір сөзге артқа жылжу</translation>
 <translation id="6819327813400217281">Камера төменгі сол жақ бұрышқа ауыстырылды.</translation>
+<translation id="6820079682647046800">Kerberos аутентификациясы сәтсіз болды</translation>
 <translation id="6820676911989879663">Үзіліс жасаңыз!</translation>
 <translation id="6827049576281411231">Іс-шара панелін жабу</translation>
 <translation id="682971198310367122">Google құпиялық саясаты</translation>
@@ -2043,6 +2064,7 @@
 <translation id="6919251195245069855">Смарт карта анықталмады. Қайталап көріңіз.</translation>
 <translation id="692135145298539227">жой</translation>
 <translation id="6921427376813842559">Құрылғыны жаңартыңыз</translation>
+<translation id="6923633482430812883">Қате шықты. Сіз жалғанып жатқан файл сервері SMBv2 немесе кейінгі нұсқасын қолдайтынын тексеріңіз.</translation>
 <translation id="6929081673585394903">Басқару элементтерін көрсету</translation>
 <translation id="6931576957638141829">Сақтау орны</translation>
 <translation id="6935286146439255109">Қағаз науасы жоқ</translation>
@@ -2051,6 +2073,7 @@
 <translation id="6945221475159498467">Таңдау</translation>
 <translation id="6945922087561257829">Телефоныңыз мобильдік желіні пайдаланып жатыр. Телефоныңыз бен Chromebook бір Wi-Fi желісінде екеніне көз жеткізіп, әрекетті қайталаңыз. <ph name="LEARN_MORE" /></translation>
 <translation id="6950627417367801484">Қолданбаларды қалпына келтіру</translation>
+<translation id="6960133692707095572">Билетсіз көру</translation>
 <translation id="6960565108681981554">Іске қосылмаған. Операторға хабарласыңыз.</translation>
 <translation id="696103774840402661"><ph name="DEVICE_TYPE" /> құрылғысындағы барлық пайдаланушының файлдары мен жергілікті деректері біржола жойылды.</translation>
 <translation id="6961121602502368900">Жұмыс профилінде дыбыссыз телефон функциясы қолжетімді емес.</translation>
@@ -2090,6 +2113,7 @@
 <translation id="7061457967428964661">Камераның алғы көрінісі. Алғы көріністі басқа бұрышқа жылжыту үшін Ctrl + бағыт пернелерін басыңыз.</translation>
 <translation id="7064351585062927183">Осы алдағы <ph name="DAY_OF_WEEK" /></translation>
 <translation id="7064734931812204395">Linux контейнері конфигурацияланып жатыр. Оған 30 минуттай уақыт кетуі мүмкін.</translation>
+<translation id="706626672220389329">Ортақ файлды орнату кезінде қате шықты. Көрсетілген ортақ файл орнатылып қойған.</translation>
 <translation id="7066646422045619941">Бұл желіні әкімшіңіз өшірген.</translation>
 <translation id="7067196344162293536">Автоматты бұру</translation>
 <translation id="7076293881109082629">Кіру</translation>
@@ -2476,6 +2500,7 @@
 <translation id="8168435359814927499">Контент</translation>
 <translation id="8169177848833352618">Өкінішке қарай, бұл құрылғы Bruschetta орнату талаптарына жауап бермейді. Қате коды – <ph name="ERROR" />.</translation>
 <translation id="8172370561760918656">Жоғарғы сол жақ маркер таңдалды, жылжыту үшін бағыт пернелерін пайдаланыңыз.</translation>
+<translation id="8177196903785554304">Желі мәліметтері</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="81817143961839203">Сурет енгізілмеді</translation>
 <translation id="8182105986296479640">Қолданба жауап бермейді.</translation>
@@ -2510,6 +2535,7 @@
 <translation id="8262312463845990408">Ойнату/кідірту</translation>
 <translation id="8266751606569906450">Кемінде <ph name="MINIMUM" /> таңба болуы керек.</translation>
 <translation id="8268302343625273732">Google Classroom-дағы барлық тапсырманы көру</translation>
+<translation id="827488840488530039">Сіз кіргіңіз келетін бет Kerberos билеттеріңізді растай алмады</translation>
 <translation id="8277261673056602147">Экрандағы мәтінді ерекшелеу</translation>
 <translation id="8281886186245836920">Өткізіп жіберу</translation>
 <translation id="8282784978194352587">Жарайсыз!</translation>
@@ -2564,6 +2590,7 @@
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8458259704995116343">Виртуалды құрылғыны іске қосу мүмкін болмады.</translation>
 <translation id="84613761564611563">Желіні конфигурациялау интерфейсін алу сұралды, күте тұрыңыз…</translation>
+<translation id="8461914792118322307">Прокси-сервер</translation>
 <translation id="8462305545768648477">Select-to-Speak функциясын жабу</translation>
 <translation id="8463001014623882202">Авторизация жасалмады</translation>
 <translation id="8466665972451889002"><ph name="GROUP_NAME" /> тобындағы элементтерді көрсету</translation>
@@ -2626,6 +2653,7 @@
 <translation id="8647931990447795414">Пайдаланушыны қосу үшін Family Link ата-ананың рұқсат кодын енгізіңіз</translation>
 <translation id="8649597172973390955">Сөре әрдайым көрсетіліп тұрады.</translation>
 <translation id="8657066291275741003">кіші әріп</translation>
+<translation id="8662671328352114214"><ph name="TYPE" /> желісіне қосылу</translation>
 <translation id="8662921061190671299">Күнтізбеге қосу мүмкін болмады.</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, сигнал күші: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Жартылай скриншот түсіру үшін "Enter" пернесін басыңыз</translation>
@@ -2672,6 +2700,7 @@
 <translation id="8760172428247796445"><ph name="DEVICE_TYPE" /> құрылғыңыз қазір құлыпталады.
         <ph name="DOMAIN" /> домені үшін смарт карта салынып тұруы керек.</translation>
 <translation id="8763883995157866248">Құрылғыны ұйқы режиміне қою</translation>
+<translation id="8774379074441005279">Қалпына келтіруді растау</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, қолданба орнатылған, блокталған</translation>
 <translation id="8782565991310229362">Киоск қолданбасын іске қосудан бас тартылды.</translation>
 <translation id="8784626084144195648">Топтастырылған орташа мән</translation>
@@ -2688,6 +2717,7 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Енгізу әдістерінің параметрлері</translation>
 <translation id="8819728065740986820">Бейімдеп зарядтау функциясы қосулы</translation>
+<translation id="8821045908425223359">IP мекенжайын автоматты түрде конфигурациялау</translation>
 <translation id="882204272221080310">Қауіпсіздікті күшейту үшін микробағдарламаны жаңартыңыз.</translation>
 <translation id="8822104519413696986">Бұл ойында сенсорлық экран қолданылады</translation>
 <translation id="8825863694328519386">Артқа оралу үшін солдан оңға қарай сырғытыңыз.</translation>
@@ -2747,6 +2777,7 @@
 <translation id="8980862970816311842">Қолданба белгішесін қолданба торында қалтаға кіргізу/қалтадан шығару</translation>
 <translation id="8982906748181120328">Nearby көрсетілуі</translation>
 <translation id="8983038754672563810">HSPA</translation>
+<translation id="8986362086234534611">Ұмыту</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> пайдалану</translation>
 <translation id="8991648557324317894">Бас тарту үшін Fn + жылдам енгізу немесе Shift пернелерін басыңыз.</translation>
 <translation id="899350903320462459">Хабарландыруда ұсынылған әрекетті орындау үшін <ph name="LOGIN_ID" /> арқылы құрылғының құлпын ашыңыз</translation>
@@ -2759,6 +2790,7 @@
 <translation id="9013037634206938463">Linux жүйесін орнату үшін <ph name="INSTALL_SIZE" /> бос орын қажет. Орын босату үшін құрылғыдан файлдарды жойыңыз.</translation>
 <translation id="901668144954885282">Google Drive-та сақтық көшірме жасау</translation>
 <translation id="9017320285115481645">Family Link ата-ананың рұқсат кодын енгізіңіз.</translation>
+<translation id="9024158959543687197">Ортақ файлды орнату кезінде қате шықты. Ортақ қалтаның URL сілтемесін тексеріп, қайта орнатып көріңіз.</translation>
 <translation id="9024331582947483881">толық экран</translation>
 <translation id="9026852570893462412">Бұл процесс бірнеше минутқа созылуы мүмкін. Виртуалдық құрылғы жүктелуде.</translation>
 <translation id="9029736946581028033">Құрылғы сәлден соң өшеді</translation>

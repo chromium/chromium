@@ -7,16 +7,13 @@
 <translation id="1026101648481255140">Jatka asennusta</translation>
 <translation id="102763973188675173">Muokkaa ja hallinnoi Google Chromea. Päivitys on saatavilla.</translation>
 <translation id="1028061813283459617">Jos haluat poistaa selausdatan vain tältä laitteelta mutta säilyttää sen Google-tililläsi, <ph name="BEGIN_LINK" />kirjaudu ulos Chromesta<ph name="END_LINK" />.</translation>
-<translation id="1028770388543831319">Chrome-sovelluksella saat Googlen parhaat turvaominaisuudet puhelimella mukaan minne menetkin</translation>
 <translation id="1036348656032585052">Poista käytöstä</translation>
 <translation id="1042270987544905725">Sulje Chromen kirjautumisikkuna klikkaamalla</translation>
-<translation id="1051793555070215510">Auta meitä parantamaan Incognitoa vastaamalla tähän minuutin kestävään kyselyyn.</translation>
 <translation id="1055295352198814912">Näytä Gemini in Chrome Macin valikkopalkissa ja laita pikanäppäin päälle</translation>
 <translation id="1059838145689930908">Jos haluat käyttää tätä laajennusta käyttäjänä <ph name="USER_EMAIL_ADDRESS" />, kirjaudu sisään Chromeen.</translation>
 <translation id="1065672644894730302">Asetuksiasi ei voi lukea. Kaikkia toimintoja ei voi välttämättä käyttää eikä asetuksiin tehtäviä muutoksia tallenneta.</translation>
 <translation id="1086486568852410168">Hae Google Lensilla</translation>
 <translation id="1088300314857992706"><ph name="USER_EMAIL_ADDRESS" /> käytti aiemmin Chromea</translation>
-<translation id="110877069173485804">Tämä on oma Chromesi</translation>
 <translation id="1125124144982679672">Kuka käyttää Chromea?</translation>
 <translation id="1142745911746664600">Chromen päivitys epäonnistui</translation>
 <translation id="1148360048981192980">Kun seuraavan kerran avaat Chromen laitteella (<ph name="DEVICE_TYPE" />), näet kehotteen käyttää Google Salasanoja.</translation>
@@ -75,7 +72,6 @@
             • nollaa Chromen pikakuvakkeet.
             <ph name="LINE_BREAKS" />
             Tämä ei vaikuta kirjanmerkkeihin, historiaan eikä tallennettuihin salasanoihin.</translation>
-<translation id="1619887657840448962">Paransimme Chromen turvallisuutta poistamalla käytöstä sovelluksia, joita <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ei tarjoa ja jotka on voitu lisätä ilman lupaasi.</translation>
 <translation id="1628000112320670027">Ohjeita Chromen käyttöön</translation>
 <translation id="1632241302126471515">Hae Chrome Canarylla</translation>
 <translation id="1640672724030957280">Ladataan...</translation>
@@ -98,7 +94,6 @@
 <translation id="1838374766361614909">Tyhjennä haku</translation>
 <translation id="1843347690926158494">Hae tältä välilehdeltä Google Lensilla</translation>
 <translation id="1849248141818021764">Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä Googlelle eikä Google tallenna sitä. Jos unohdat tunnuslauseen tai haluat muuttaa asetusta, sinun on <ph name="BEGIN_LINK" />poistettava tilin Chrome-data<ph name="END_LINK" />.</translation>
-<translation id="1856809424654973980">Jatka selaamista missä tahansa Chrome-sovelluksella</translation>
 <translation id="1867503717113754604">Kirjaudu Chromeen Google-tilillä, jotta voit käyttää <ph name="START_GLIC_STYLING" />Geminiä<ph name="END_GLIC_STYLING" /></translation>
 <translation id="1873233029667955273">Google Chrome ei ole oletusselain.</translation>
 <translation id="1874309113135274312">Google Chromen betaversio (saapuva mDNS)</translation>
@@ -107,23 +102,16 @@
 <translation id="1880677175115548835">Valitse tekstiä</translation>
 <translation id="1896602904211344018">Lataa Chrome-sovellus</translation>
 <translation id="1919130412786645364">Salli Chrome-kirjautuminen</translation>
-<translation id="1925069572871307609">Jotta saat tulevia Google Chromen päivityksiä, sinulla on oltava Windows 10:n versio 1809 tai uudempi. Tällä tietokoneella on vanhempi Windows 10 ‑versio.</translation>
-<translation id="1953553007165777902">Ladataan… <ph name="MINUTE" /> minuuttia jäljellä</translation>
-<translation id="1975400514743766362">Chrome-sovelluksella saat Googlen turvallisuuden mukaan minne tahansa laitteellasi (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="1979600810166324878">Pysy turvassa liikkeellä ollessasi iOS:n Chromen Parannetun selaussuojan avulla</translation>
 <translation id="2001586581944147178">Pyri estämään avaamiesi sivustojen näkyminen henkilöille, joilla on pääsy internetliikenteeseesi. Chrome käyttää turvallista yhteyttä sivuston IP-osoitteen etsimiseen DNS:stä (Domain Name System)</translation>
-<translation id="2005658457661191636">Lataa Chrome-sovellus, niin voi hyödyntää parhaat työkalut missä tahansa</translation>
-<translation id="2018528049276128029">Jokainen profiili sisältää omat Chrome-tietonsa, esim. kirjanmerkit, historian ja salasanat</translation>
 <translation id="2018879682492276940">Asennus epäonnistui. Yritä uudelleen.</translation>
 <translation id="2024959665595762054">Chrome-datan käyttö ja tallennus Google-tilillä edellyttää, että vahvistat henkilöllisyytesi</translation>
 <translation id="2034233344106846793">Chrome päivittää suojaamattomat yhteydet HTTPS:ään automaattisesti, jos mahdollista</translation>
 <translation id="2039417478970545937">Asetukset.</translation>
-<translation id="2040220733769034247">Skannaa QR-koodi puhelimella, niin voit ladata Chromen ja kirjautua Google-tilillesi.</translation>
 <translation id="2044908892530830113">Näytä "Hae Chromella" Macin valikkopalkissa ja laita pikanäppäimet päälle</translation>
 <translation id="2050189601866423230">Voit kiinnittää Google Haun tekoälytilan, jotta voit esittää kysymyksiä selailun aikana</translation>
 <translation id="2060311596979880693">Valmista! Voit nyt helposti esittää kysymyksiä selaamisen aikana Google Haussa Chromessa</translation>
 <translation id="2091012649849228750">Jotta saat tulevia Google Chromen päivityksiä, sinulla on oltava Windows 10 tai uudempi. Tietokoneen käyttöjärjestelmä on Windows 8.</translation>
-<translation id="2094648590148273905">ChromeOS Flexin ehdot</translation>
 <translation id="2094919256425865063">Suljetaanko Chrome silti?</translation>
 <translation id="2096213354152647998">Sivustot, joilla et ole käynyt viime aikoina. Chrome poisti tämän luvan: <ph name="PERMISSION" />.</translation>
 <translation id="2106831557840787829">Toinen <ph name="BEGIN_LINK_CROS_OSS" />avoimen lähdekoodin ohjelmisto<ph name="END_LINK_CROS_OSS" /> tukee ChromeOS Flexiä, kuten myös <ph name="BEGIN_LINK_LINUX_OSS" />Linux-kehitysympäristöä<ph name="END_LINK_LINUX_OSS" />.</translation>
@@ -132,7 +120,6 @@
 <translation id="2120620239521071941"><ph name="ITEMS_COUNT" /> kohdetta poistetaan pysyvästi tältä laitteelta. Jos haluat palauttaa tiedot myöhemmin, kirjaudu Chromeen käyttäjänä <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Päivitä &amp;Chrome käynnistämällä se uudelleen</translation>
 <translation id="2123055963409958220">Auta parantamaan Chromea ilmoittamalla <ph name="BEGIN_LINK" />nykyiset asetukset<ph name="END_LINK" />.</translation>
-<translation id="2125838419757773031">Valitse näytön alue, jota haluat hakea</translation>
 <translation id="2126108037660393668">Ladattua tiedostoa ei voitu vahvistaa.</translation>
 <translation id="2128411189117340671">Ylläpidä Chrome-profiileja</translation>
 <translation id="2137162749895930932">Sulje käännösnäyttö</translation>
@@ -144,7 +131,6 @@
 <translation id="2174917724755363426">Asennus ei ole valmis. Haluatko varmasti perua sen?</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2190166659037789668">Virhe päivityksiä tarkistettaessa: <ph name="UPDATE_CHECK_ERROR" />.</translation>
-<translation id="2216543877350048334">Jos haluat poistaa Google-tilin Chromesta, kirjaudu ulos</translation>
 <translation id="2236949375853147973">Oma toiminta</translation>
 <translation id="22791603784558743">Sulje Gemini in Chrome Dev</translation>
 <translation id="2283228908180457226">Uusi kuvake, sama pikakuvake: Klikkaa esittääksesi kysymyksiä selaamisen aikana Google Haun sivupaneelissa.</translation>
@@ -172,14 +158,12 @@
 <translation id="2563121210305478421">Käynnistetäänkö Chrome uudelleen?</translation>
 <translation id="2569974318947988067">Chrome yrittää päivittää siirtymiset HTTPS:ään</translation>
 <translation id="2571392474191184472">Organisaatiosi ylläpitää Chromea</translation>
-<translation id="2574930892358684005"><ph name="EXISTING_USER" /> on jo kirjautunut tähän Chrome-profiiliin. Chrome voi luoda sinulle oman profiilin, jotta selaamisesi pysyy erillään.</translation>
 <translation id="2575799939951057838">Turvallisuussyistä Chrome laittaa JavaScript-optimoinnin pois päältä, kun käyt sivustolla ensimmäistä kertaa.
 
 Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</translation>
 <translation id="2580411288591421699">Ei voi asentaa samaa Google Chromen versiota, joka tällä hetkellä on käytössä. Sulje Google Chrome ja yritä uudelleen.</translation>
 <translation id="2586406160782125153">Selaustiedot poistetaan tältä laitteelta. Jos haluat palauttaa tiedot myöhemmin, kirjaudu Chromeen käyttäjänä <ph name="USER_EMAIL" />.</translation>
 <translation id="259935314519650377">Ladatun asennusohjelman siirtäminen välimuistiin epäonnistui. Virhe: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
-<translation id="2608461706055011366">Nopea yleiskatsaus dokumentista ja mahdollisuus esittää kysymyksiä Gemini in Chromella</translation>
 <translation id="2620436844016719705">Järjestelmä</translation>
 <translation id="263447411082773721">Pidä salasanat, kirjanmerkit ja historia synkronoituina kaikilla laitteilla. Päivitä oletusselaimeksi Chrome, niin saat tutut ominaisuudet helposti käyttöösi. Chrome kiinnitetään tehtäväpalkkiin, jotta voit käyttää sitä nopeasti.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
@@ -191,7 +175,6 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="2674238339205910678">ChromeOS Flex ei voinut tallentaa Chrome-dataa Google-tilillesi, koska tilin kirjautumistiedot ovat vanhentuneet</translation>
 <translation id="2681444469812712297">Avaa <ph name="URL" /> Google Chromessa uudella välilehdellä.</translation>
 <translation id="2699790011615497488">Avaa Gemini in Chrome Beta</translation>
-<translation id="2712141162840347885">Valitse, mitä haluat hakea Google Lensilla, tai poistu Google Lensista painamalla Escape</translation>
 <translation id="2738871930057338499">Internetyhteyden muodostaminen ei onnistu. HTTP 403 (kielletty). Tarkista välityspalvelimen asetukset.</translation>
 <translation id="2742320827292110288">Varoitus: Google Chrome ei voi estää laajennuksia tallentamasta selaushistoriaasi. Voit poistaa tämän laajennuksen käytöstä incognito-tilassa poistamalla tämän valinnan.</translation>
 <translation id="2747021967398957654">{count,plural, =1{Osaa Chrome-datastasi ei ole vielä tallennettu Google-tilillesi. Odota muutama minuutti ennen uloskirjautumista. Jos kirjaudut ulos nyt, tämä data (1 kohde) poistetaan.}other{Osaa Chrome-datastasi ei ole vielä tallennettu Google-tilillesi. Odota muutama minuutti ennen uloskirjautumista. Jos kirjaudut ulos nyt, tämä data ({count} kohde) poistetaan.}}</translation>
@@ -219,12 +202,10 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="2945997411976714835">Asennusvirhe: Asennusprosessin aloittaminen ei onnistunut.</translation>
 <translation id="2959224682348913614"><ph name="EXISTING_USER" /> on jo kirjautunut sisään. Jos haluat pitää selaamisen erillään, kirjaudu Chromeen omalla profiilillasi käyttämällä tiliä <ph name="USER_EMAIL_ADDRESS" />. Voit myös käyttää salasanojasi ja muita tietoja laitteelta (<ph name="DEVICE" />).</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – Kirjautuminen verkkoon – Chrome</translation>
-<translation id="2970681950995291301">Jos haluat poistaa Google-tilisi Chromesta, kirjaudu ulos Chromesta Asetukset-sivun kautta</translation>
 <translation id="2976869732253036751">Saat puhelimeen hintaseurantailmoituksia Chromen avulla</translation>
 <translation id="2991167882679440829">Salasanat ja muu Chrome-data on tallennettu Google-tilillesi, ja ne poistetaan tältä laitteelta. Jos haluat käyttää niitä uudelleen Chromessa, kirjaudu takaisin sisään.</translation>
 <translation id="2994465299455873643">Tarjoaa salauspalveluita ja turvallisen tavan palauttaa <ph name="BROWSER_NAME" />, jos se vanhenee. Jos tämä palvelu on poistettu käytöstä, <ph name="BROWSER_NAME" /> saattaa menettää pääsyn salattuun dataan, eikä <ph name="BROWSER_NAME" /> välttämättä pysty palauttamaan itseään.</translation>
 <translation id="3003694935412297923">Kaikki tehtävät</translation>
-<translation id="3018957014024118866">Poista data myös Chromesta (<ph name="URL" />)</translation>
 <translation id="3019382870990049182">Päivitä &amp;ChromeOS Flex käynnistämällä se uudelleen</translation>
 <translation id="3034219227076811559">Google Haku Chromessa</translation>
 <translation id="3037190258341683404">Voit kiinnittää Google Haun Chromessa esittääksesi kysymyksiä selaamisen aikana</translation>
@@ -236,18 +217,15 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="3047590466164881923">Sulje palautteen valintaikkuna</translation>
 <translation id="306179102415443347">Käytä Google Salasanoja nopeasti pikakuvakkeen avulla. Voit siirtää pikakuvakkeen tietokoneen aloitusnäytölle tai sovelluksien käynnistysohjelmaan.</translation>
 <translation id="3065168410429928842">Chrome-välilehti</translation>
-<translation id="3073571714401714450">Gemini in Chrome Dev päälle/pois</translation>
 <translation id="3080151273017101988">Jätä taustaohjelmat käyntiin, kun Google Chrome suljetaan</translation>
 <translation id="308397506772922478">Jos unohdit tunnuslauseen tai haluat muuttaa asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-data<ph name="END_LINK" /></translation>
 <translation id="3089427491314610412"><ph name="EXISTING_USER" /> on jo kirjautunut sisään. Jos haluat pitää selaamisen erillään, kirjaudu Chromeen omalla profiilillasi käyttämällä tiliä <ph name="USER_EMAIL_ADDRESS" />. Saat myös tallennetut tiedot ja muuta sisältöä laitteelta (<ph name="DEVICE" />).</translation>
 <translation id="3100998948628680988">Nimeä Chrome-profiilisi</translation>
 <translation id="310459126943037700">Tehtävien lopettaminen epäonnistui.</translation>
-<translation id="3104828284009500087">Hae mitä tahansa sivulla näkyvää</translation>
 <translation id="3112458742631356345">Chrome on estänyt tämän latauksen, koska tiedostoa ei ladata usein, ja se saattaa olla haitallinen</translation>
 <translation id="3119573284443908657">Chrome on estänyt tämän latauksen, koska arkistotiedosto sisältää muita tiedostoja, jotka voivat piilottaa haittaohjelmia</translation>
 <translation id="3124332159330678621">Tee Chromesta näköisesi muokkaamalla selaimen tyyliä</translation>
 <translation id="3125851611828811913">Hae ja kysy kysymyksiä mistä tahansa, vaikka Chrome olisi pienennettynä. Sallii Chromen toimia taustalla.</translation>
-<translation id="3130333203120345554">Uusi haku</translation>
 <translation id="3135560418014806498">Lisää Chrome-profiili</translation>
 <translation id="3137969841538672700">Hae vetämällä</translation>
 <translation id="3140883423282498090">Muutokset tulevat voimaan, kun käynnistät Google Chromen seuraavan kerran.</translation>
@@ -259,7 +237,6 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="3222857603094643834">Hae mitä tahansa tältä sivulta Google Lensilla</translation>
 <translation id="3226612997184048185">Jos tallennat kirjanmerkit myös Google-tilillesi, voit seurata tuotteiden hintoja Chromessa ja saada ilmoituksen, kun hinta laskee</translation>
 <translation id="3242123554343253302">Lisää Chrome-profiili</translation>
-<translation id="3242486428260808857">Saat enemmän irti verkkoshoppailusta, kun käytät Chrome-sovellusta laitteellasi (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="3245429137663807393">Jos jaat myös Chromen käyttöraportteja, avaamasi URL-osoitteet näkyvät niissä</translation>
 <translation id="3249558306861350254">Klikkaa Windowsin asetuksista <ph name="BEGIN_BOLD" />Aseta oletukseksi<ph name="END_BOLD" />.</translation>
 <translation id="3258706751219502154">Kirjaudu Chromeen, niin voit käyttää esimerkiksi kirjanmerkkejä tältä laitteelta: <ph name="DEVICE" /></translation>
@@ -270,7 +247,6 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="3294686910656423119">Käyttötilastot ja virheraportit</translation>
 <translation id="3327226547491422998">Chrome voi kysyä myöhemmin, haluatko käyttää tallennettuja tietoja lomakkeiden automaattiseen täyttöön</translation>
 <translation id="3352986031709923790">hakualueen oikea yläkulma: oikea <ph name="RIGHT" /> %, ylä <ph name="TOP" /> %</translation>
-<translation id="3360895254066713204">Chrome Helper</translation>
 <translation id="3373752068427117404">Joissakin Chromen ominaisuuksissa ja laajennuksissa on pikanäppäimiä. Voit halutessasi laittaa ne takaisin päälle.</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome käynnistetään uudelleen nyt}=1{Chrome käynnistetään uudelleen 1 sekunnin kuluttua}other{Chrome käynnistetään uudelleen # sekunnin kuluttua.}}</translation>
 <translation id="3380249972812870825">Avaa Gemini in Chrome painamalla <ph name="GLOBAL_HOTKEY" /></translation>
@@ -279,12 +255,8 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="3438681572027105609">Kirjaudu sisään Chromeen, niin voit käyttää salasanojasi ja muita tietoja kaikilla laitteillasi</translation>
 <translation id="3450887623636316740">Tämä tiedosto voi olla vaarallinen<ph name="LINE_BREAK" />Chrome voi tarkistaa latauksen puolestasi, jos annat salasanan. Tiedoston tiedot lähetetään Googlen selaussuojalle, mutta tiedoston sisältö ja salasana pysyvät laitteellasi.</translation>
 <translation id="3451115285585441894">Lisätään Chromeen...</translation>
-<translation id="345171907106878721">Lisää itsesi Chromeen</translation>
-<translation id="3453763134178591239">Chrome-käyttöjärjestelmän käyttöehdot</translation>
-<translation id="3475778264501649775">Chrome-sovelluksella voit käyttää esimerkiksi salasanoja ja välilehtiä puhelimella missä tahansa</translation>
 <translation id="353676578689292511">{COUNT,plural, =1{Järjestelmänvalvoja pyytää Chromen uudelleenkäynnistystä, jotta tämä päivitys voidaan ottaa käyttöön. Eristettyä selainikkunaa ei avata uudelleen.}other{Järjestelmänvalvoja pyytää Chromen uudelleenkäynnistystä, jotta tämä päivitys voidaan ottaa käyttöön. # eristettyä ikkunaa ei avata uudelleen.}}</translation>
 <translation id="3539955434060988644">Avaa linkki Chromen inco&amp;gnito-ikkunassa</translation>
-<translation id="354621070532799440">Muistutus: Googlen parhaat turvaominaisuudet taskussasi</translation>
 <translation id="3547866758548131919">Klikkaa Tee yhteenveto ‑painiketta, niin voit jakaa dokumentin Gemini in Chromelle, saada nopean yleiskatsauksen ja esittää jatkokysymyksiä</translation>
 <translation id="3576528680708590453">Järjestelmänvalvojasi on määrittänyt Chromen käynnistämään vaihtoehtoisen selaimen, kun <ph name="TARGET_URL_HOSTNAME" /> avataan.</translation>
 <translation id="3582972582564653026">Voit synkronoida Chromen ja tehdä siitä yksilöllisemmän kaikilla laitteilla.</translation>
@@ -295,7 +267,6 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="3598673391539778844">Näytä Gemini in Chrome ilmaisinalueella</translation>
 <translation id="3616622400661108683">Kysy Chromen ulkopuolisesta sisällöstä, kuten muista sovelluksista tai tiedostoista</translation>
 <translation id="3622716124581627104">Tunnista asioita tai paikkoja ja kopioi tai käännä tekstiä. Kun käytät Google Lensia, sivusta lähetetään kuvakaappaus Googlelle. <ph name="LEARN_MORE" /></translation>
-<translation id="3622797965165704966">Nyt voit helpommin käyttää Chromea Google-tililläsi ja jaetuilla tietokoneilla.</translation>
 <translation id="3628103251823745322"><ph name="EXISTING_USER" /> on jo kirjautunut sisään. Jos haluat pitää selaamisen erillään, kirjaudu Chromeen omalla profiilillasi käyttämällä tiliä <ph name="USER_EMAIL_ADDRESS" />. Voit myös käyttää tallennettuja tietoja ja muuta kaikilla laitteillasi.</translation>
 <translation id="3635073343384702370">Chrome voi tarkistaa salasanasi, kun tallennat niitä</translation>
 <translation id="3635447126111966800">{COUNT,plural, =1{Chromen päivitys on valmis. Voit käyttää uusinta versiota heti, kun käynnistät sovelluksen uudelleen. Sen jälkeen nykyiset välilehdet avautuvat uudelleen. Eristettyä selainikkunaa ei avata uudelleen.}other{Chromen päivitys on valmis. Voit käyttää uusinta versiota heti, kun käynnistät sovelluksen uudelleen. Sen jälkeen nykyiset välilehdet avautuvat uudelleen. # eristettyä ikkunaa ei avata uudelleen.}}</translation>
@@ -319,16 +290,12 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="383455301564000773">Päivitätkö Windows 11:een? Lataa Chrome OneDriveen, jotta pääset vauhtiin heti ensimmäisestä päivästä lähtien.</translation>
 <translation id="383928141529488001">Google Chrome tarvitsee pääsyn Bluetoothiin etsiäkseen
  Bluetooth-laitteita. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
-<translation id="3846683726093018685">**Tee yhteenveto:** Kuvaile kuvakaappauksen sisällön ensisijaista aihetta ja tarkoitusta yhdellä alle 30 sanan lauseella.
-
-          **Ehdota kysymyksiä:** Luo ranskalaisilla viivoilla lista, jossa on 3–5 ajatuksia herättävää kysymystä kuvakaappauksen ymmärtämisen tueksi. Ainakin yhden kysymyksen tulee koskea nimenomaan visuaalista kohdetta, sen asettelua tai sijoittelua.</translation>
 <translation id="386202838227397562">Sulje kaikki Chrome-ikkunat ja yritä uudelleen.</translation>
 <translation id="3869083394918739976">Voit jatkaa keskustelua tekoälytilassa vaihtamatta välilehteä. Aloita kirjautumalla Chromeen. Voit myös käyttää salasanojasi ja muita tietoja kaikilla laitteillasi.</translation>
 <translation id="3873044882194371212">Avaa linkki Chromen inco&amp;gnito-ikkunassa</translation>
 <translation id="3885770153807205175">Kielivalitsin</translation>
 <translation id="3889417619312448367">Poista Google Chromen asennus</translation>
 <translation id="3892148308691398805">Kopioi teksti</translation>
-<translation id="3893650521827656233">Chromen avulla saat Googlen parhaat turvaominaisuudet käyttöösi missä tahansa.</translation>
 <translation id="3941890832296813527">Asennusvirhe: Asennusohjelman tiedostonimi on virheellinen, tai sitä ei tueta.</translation>
 <translation id="395904275706073188">Suojattuja sivuja ei voi lukea. Kokeile toista sivua.</translation>
 <translation id="3965532487635448963">Näytä Gemini in Chrome ilmaisinalueella ja laita pikanäppäin päälle</translation>
@@ -343,13 +310,11 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="4023601594785368013">Alkuperäinen kieli: <ph name="LANGUAGE" /></translation>
 <translation id="4034249157893816477">Sisäänrakennettu Chromeen, jotta voit luoda, tallentaa ja täyttää vahvoja salasanoja automaattisesti. Lisää pikakuvake, niin pääset siihen helposti.</translation>
 <translation id="4035053306113201399">Chrome-käyttöjärjestelmä täytyy käynnistää uudelleen, jotta päivitys voidaan ottaa käyttöön.</translation>
-<translation id="4050175100176540509">Uusimmassa versiossa on käytettävissä tärkeitä turvallisuusparannuksia ja uusia ominaisuuksia.</translation>
 <translation id="4053720452172726777">Google Chromen muokkaaminen ja hallinta</translation>
 <translation id="408393047846373801">Kirjaudu Chromeen, niin voit käyttää salasanojasi ja muita tietoja kaikilla laitteillasi. Tämä salasana tallennetaan Google-tilillesi kirjautumisen jälkeen.</translation>
 <translation id="4102173024714616627">Laajennukset ovat lisäosia, joiden avulla voit muokata Chromea. Laajennusten avulla voit pitää asiat järjestyksessä, yksinkertaistaa päivittäisiä tehtäviä ja muokata Chromea mieleiseksesi.</translation>
 <translation id="4110895483821904099">Luo uusi Chrome-profiili</translation>
 <translation id="4111566860456076004">Chrome ei voi vahvistaa, mistä tämä laajennus on peräisin, ja se saattaa olla vaarallinen. Poista se Chromesta, jotta se ei enää voi nähdä tai muuttaa dataasi (mukaan lukien henkilökohtaisia tietoja) avatuilla sivustoilla.</translation>
-<translation id="4147555960264124640">Olet kirjautumassa sisään hallinnoidulla tilillä ja antamassa tilin järjestelmänvalvojalle oikeuden hallita Google Chrome -profiiliasi. Chrome-tietosi, kuten sovelluksesi, kirjanmerkkisi, historiasi, salasanasi ja muut asetuksesi, yhdistetään pysyvästi käyttäjätiliin <ph name="USER_NAME" />. Voit poistaa nämä tiedot Google-tilien Hallintapaneelissa, mutta et voi liittää tietoja toiseen tiliin. <ph name="LEARN_MORE" /></translation>
 <translation id="4148957013307229264">Asennetaan...</translation>
 <translation id="4149882025268051530">Asennusohjelma ei pystynyt purkamaan arkistotiedostoa. Lataa Google Chrome uudelleen.</translation>
 <translation id="415112847282352845">Kirjaudu sisään Chromeen, niin voit käyttää osoitteita ja muita tietoja kaikilla laitteillasi Tämä osoite tallennetaan Google-tilillesi kirjautumisen jälkeen.</translation>
@@ -361,9 +326,6 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="4224210481850767180">Asennus on peruutettu.</translation>
 <translation id="4242034826641750751">Chrome tarvitsee kameran ja mikrofonin luvan tällä sivustolla</translation>
 <translation id="424864128008805179">Kirjaudutaanko ulos Chromesta?</translation>
-<translation id="4251615635259297716">Linkitetäänkö Chrome-tiedot tähän tiliin?</translation>
-<translation id="4252262470181310206">Chromen avulla käytät suosikkisovelluksiasi, kuten Google Drivea ja YouTubea, vaivatta missä tahansa.</translation>
-<translation id="4266456958461406346">Avaa Lisää-valikko <ph name="THREE_DOTS_ICON" /></translation>
 <translation id="4275788652681621337">Sulje sivupaneeli</translation>
 <translation id="4280647692742956593">Lataa Chrome puhelimelle, niin voit avata tai luoda uusia välilehtiryhmiä missä tahansa.</translation>
 <translation id="4281844954008187215">Käyttöehdot</translation>
@@ -397,8 +359,6 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="4600710005438004015">Chromea ei voitu päivittää uusimpaan versioon, joten sinulta puuttuu joitakin uusia ominaisuuksia ja tietoturvakorjauksia.</translation>
 <translation id="4608435347866444037">Hae tätä kuvaa Google Lensilla</translation>
 <translation id="4624065194742029982">Chromen incognito-tila</translation>
-<translation id="4627412468266359539">Valinnainen: Auta parantamaan ChromeOS Flexin ominaisuuksia ja suorituskykyä lähettämällä diagnostiikka- ja käyttödataa automaattisesti Googlelle.</translation>
-<translation id="4633000520311261472">Paransimme Chromen turvallisuutta poistamalla käytöstä sovelluksia, joita ei löydy kohteesta <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ja jotka on voitu lisätä ilman lupaasi.</translation>
 <translation id="4680828127924988555">Peru asennus</translation>
 <translation id="4720851490453439956">Google sisäinen päivityspalvelu</translation>
 <translation id="4724676981607797757">Asennus epäonnistui, koska protokollaa ei tueta.</translation>
@@ -414,7 +374,6 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="4803313124144656665">Sulje Google Haku Chromessa</translation>
 <translation id="4828579605166583682">Google Chrome yrittää korvata nykyiset salasanat. Salli tämä kirjoittamalla Windows-salasanasi.</translation>
 <translation id="4836321460899997044">Chrome-profiili</translation>
-<translation id="4839733921943823254">Kiinnitä pikanäppäin</translation>
 <translation id="4842397268809523050">ChromeOS Flex ei voinut synkronoida dataa, koska synkronointi ei ole käytettävissä verkkotunnuksessasi.</translation>
 <translation id="4851866215237571846"><ph name="EXISTING_USER" /> on jo kirjautunut sisään.  Jos haluat pitää selaamisen erillään, kirjaudu Chromeen omalla profiilillasi käyttämällä tiliä <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="4855026984605187434">Jos haluat jakaa näytön, salli Chromen näytön tallennus järjestelmäasetuksista.</translation>
@@ -433,7 +392,6 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="4970761609246024540">Tervetuloa Chrome-profiileihin</translation>
 <translation id="4970880042055371251">Chrome-käyttöjärjestelmän versio</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
-<translation id="5000497292978544380">Google Haun tekoälytila</translation>
 <translation id="5003967926796347400">Valitse "Google Salasanat"</translation>
 <translation id="5043786843026425788">Lue lisää Google Lensilla hakemisesta Chromessa</translation>
 <translation id="504867494566807945">Avaa minkä tahansa sovelluksen linkit Chromessa. Lisäksi se kiinnitetään tehtäväpalkkiin, jotta pääset siihen helposti.</translation>
@@ -441,7 +399,6 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="5105120510934353742">Sinulla on oltava macOS 13 tai uudempi, jotta saat tulevia Google Chromen päivityksiä. Tällä tietokoneella on macOS 12.</translation>
 <translation id="5114340746415930644">Lisää tunnuslause, jotta voit käyttää ja tallentaa Chrome-dataa tililläsi: <ph name="USER_EMAIL" /></translation>
 <translation id="5120334927898581447">Kirjaudu Chromeen, kun kirjaudut muihin Googlen palveluihin</translation>
-<translation id="5121592697493894155">Google Haku sivupaneelissa</translation>
 <translation id="5126049312684316860">Chrome esilataa enemmän sivuja, joilla todennäköisesti käyt, jotta ne latautuisivat avatessa nopeammin</translation>
 <translation id="5127558335897923940">Pidä Chrome Dock-palkissa, niin voit käyttää sitä nopeasti milloin tahansa</translation>
 <translation id="5132929315877954718">Löydät hienoja sovelluksia, pelejä ja teemoja Google Chromelle.</translation>
@@ -456,27 +413,20 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="5179933070463113976">Jos haluat käyttää Gemini in Chromea, sinun on oltava kirjautuneena Chromeen Google-tililläsi</translation>
 <translation id="5190467473654176081">Tee Chromesta näköisesi muokkaamalla selaimen tyyliä</translation>
 <translation id="5201744974236816379">Chrome-päivitys</translation>
-<translation id="521447420733633466">Jos käytät jaettua laitetta, kaverisi ja perheenjäsenesi voivat selata verkkoa erillään ja räätälöidä Chromesta juuri itselleen sopivan</translation>
 <translation id="5234764350956374838">Hylkää</translation>
 <translation id="5239627039202700673">Käytä Chromea aina, kun klikkaat viesteissä, dokumenteissa ja muissa sovelluksissa olevia linkkejä</translation>
 <translation id="524751727772074981">Kysy mitä tahansa Gemini in Chromella</translation>
 <translation id="5247617065091903691">Voit kiinnittää Google Haun sivupaneelin esittääksesi kysymyksiä selaamisen aikana</translation>
-<translation id="5251420635869119124">Vierailijat voivat käyttää Chromea jälkiä jättämättä.</translation>
 <translation id="5271833978500241046">Käytä niitä yhdessä muiden Gemini in Chromen ominaisuuksien kanssa</translation>
-<translation id="5286907366254680517">Tunnistettu</translation>
 <translation id="5320351714793324716">Jos sallit evästeet, Chrome voi käyttää niitä esilataamisen aikana</translation>
 <translation id="5321325624576443340">Google Lens ei ole käytettävissä. Yritä myöhemmin uudelleen.</translation>
 <translation id="5334309298019785904">Chrome-käyttöjärjestelmä ei voinut synkronoida dataa, koska synkronointi ei ole käytettävissä verkkotunnuksessasi.</translation>
-<translation id="5334487786912937552">Chrome tarvitsee tallennustilan pääsyoikeudet tiedostojen lataamiseen</translation>
-<translation id="5337648990166757586">Valinnainen: Auta parantamaan Chrome-käyttöjärjestelmän ominaisuuksia ja suorituskykyä lähettämällä diagnostiikka- ja käyttödataa Googlelle automaattisesti.</translation>
 <translation id="5346389065299425353">Tarkenna hakua lisäämällä useita välilehtiä, tiedostoja ja työkaluja</translation>
 <translation id="5353252989841766347">Vie salasanat Chromesta</translation>
 <translation id="5368118228313795342">Lisäkoodi: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">Määrittää myös Chromen ja omnibox-hakujen aloitussivun.</translation>
 <translation id="5394833366792865639">Jaa Chrome-välilehti</translation>
-<translation id="5402307365844630024">Gemini in Chrome Beta päälle/pois</translation>
 <translation id="5414664742659847155">Eristä Chrome muista sovelluksista</translation>
-<translation id="541844421954567481">Chrome-sovelluksella voit käyttää esimerkiksi salasanoja ja välilehtiä missä tahansa laitteellasi (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="5430073640787465221">Asetustiedostosi on virheellinen. Google Chrome ei voi palauttaa asetuksiasi.</translation>
 <translation id="5465210843490471889">Valitse Chrome-profiili, jota haluat käyttää <ph name="START_GLIC_STYLING" />Geminin<ph name="END_GLIC_STYLING" /> kanssa</translation>
 <translation id="547202872422499512">Chrome käynnistyy nyt Windowsin käynnistyessä, joten voit aloittaa selaamisen heti. Voit poistaa tämän käytöstä asetuksissa.</translation>
@@ -493,7 +443,6 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="5602351063754773347">Chrome suosittelee poistamaan sen. <ph name="BEGIN_LINK" />Lue lisää tuetuista laajennuksista<ph name="END_LINK" /></translation>
 <translation id="5610759359710387751">Muokkaa Chromea</translation>
 <translation id="5649156266046089790">Kun käytät Chrome-profiileja, voit pitää kaiken Chrome-sisällön erillään. Luo profiileja kavereita ja perhettä varten tai tee ero työn ja hauskanpidon välille.</translation>
-<translation id="5655063652337498476">Löydä tuotteita kameralla, seuraa hinnanlaskuja ja paljon muuta Chromen iOS-versiossa.</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> voi olla vaarallinen, joten Chrome on estänyt sen.</translation>
 <translation id="566568153320186256">Chrome säästää akkua rajoittamalla taustatoimintaa ja visuaalisia tehosteita, esim. sujuvaa vierittämistä ja videon kuvanopeutta. <ph name="BEGIN_LINK" />Lue lisää Virransäästöstä<ph name="END_LINK" /></translation>
 <translation id="567202749201779594">Poista Chrome-data tililtäsi</translation>
@@ -506,33 +455,26 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="5717779012650642443">{COUNT,plural, =1{Lisäsuojaus edellyttää Chromen uudelleenkäynnistystä, jotta päivitys voidaan ottaa käyttöön. Eristettyä selainikkunaa ei avata uudelleen.}other{Lisäsuojaus edellyttää Chromen uudelleenkäynnistystä, jotta päivitys voidaan ottaa käyttöön. # eristettyä ikkunaa ei avata uudelleen.}}</translation>
 <translation id="5719246646468301581">Google Chromen ja ChromeOS:n lisäkäyttöehdot</translation>
 <translation id="5736850870166430177">Jos sivusto yrittää varastaa salasanaasi tai jos lataat haitallisen tiedoston, Chrome voi myös lähettää Selaussuojan tarkistettavaksi URL-osoitteita, mukaan lukien osia sivujen sisällöstä</translation>
-<translation id="5742003800414899269">Lataa Chrome-sovellus ja käytä parhaita tekoälytyökaluja missä tahansa</translation>
 <translation id="5756509061973259733">Tämän tilin Chrome-profiili on jo tällä laitteella</translation>
-<translation id="5759947850379142561">Valitse teksti tai kuva, jota haluat hakea Google Lensilla, tai poistu Google Lensista painamalla Escape</translation>
 <translation id="5779427581965287859">Valitse Chrome oletusselaimeksi ja kiinnitä se tehtäväpalkkiin</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
 <translation id="5804318322022881572">Chromen käynnistäminen epäonnistui. Yritä uudelleen.</translation>
 <translation id="5809516625706423866">Internetyhteyden muodostaminen ei onnistu. HTTP 401 (ei lupaa). Tarkista välityspalvelimen asetukset.</translation>
 <translation id="5824893331272123205">Paneelin lataaminen epäonnistui, yritä uudelleen</translation>
 <translation id="5825922397106002626">Poista <ph name="EXTENSION_NAME" /> Chromesta</translation>
-<translation id="5858486459377137936">Sinut kirjataan ulos useimmilta sivustoilta, kun suljet kaikki Chrome-ikkunat. Tämä ei kuitenkaan koske Google-tiliäsi, jos olet kirjautuneena Chromeen. <ph name="SETTINGS_LINK" />, jotta sivustot muistavat sinut.</translation>
 <translation id="5860491529813859533">Ota käyttöön</translation>
 <translation id="586971344380992563"><ph name="BEGIN_LINK" />Chrome varoittaa sinua<ph name="END_LINK" /> vaarallisista sivustoista ja latauksista</translation>
 <translation id="5894164573378901688">Jos haluat käyttää Gemini in Chromea, kirjaudu sisään toisella Google-tilillä</translation>
 <translation id="5895138241574237353">Käynnistä uudelleen</translation>
-<translation id="5899008323405946573">Chrome-sovelluksella voit käyttää Googlen parhaita tekoälytyökaluja puhelimella</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – Kirjautuminen verkkoon</translation>
 <translation id="5924017743176219022">Muodostetaan internetyhteyttä…</translation>
-<translation id="5940385492829620908">Tämä on verkkosi, kirjanmerkkiesi ja muun Chrome-sisältösi koti.</translation>
 <translation id="5941711191222866238">Pienennä</translation>
 <translation id="5941830788786076944">Tee Google Chromesta oletusselain</translation>
 <translation id="5944731887996253728">Chrome päivittyy, kun näyttö ei ole käytössä</translation>
 <translation id="5947104538377036631">Chrome-pikanäppäin</translation>
 <translation id="5960071705175224773">Tuntematon sovellus on muuttanut asetuksiasi</translation>
 <translation id="5980111191913430208">Jos laajennukset, sovellukset ja teemat ovat tuntemattomista lähteistä, ne voivat vahingoittaa laitetta. Chrome suosittelee niiden asentamista vain täältä: <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
-<translation id="6003112304606738118">Ladataan… <ph name="HOURS" /> tuntia jäljellä</translation>
 <translation id="6004427865367382148">{COUNT,plural, =1{Järjestelmänvalvoja vaatii Chromen uudelleenkäynnistystä, jotta päivitys voidaan ottaa käyttöön. Incognito- tai eristetty selainikkuna on auki. Sitä ei avata uudelleenkäynnistyksen jälkeen.}other{Järjestelmänvalvoja vaatii Chromen uudelleenkäynnistystä, jotta päivitys voidaan ottaa käyttöön. Profiileissa on auki # incognito- ja eristettyä selainikkunaa. Niitä ei avata uudelleen uudelleenkäynnistyksen jälkeen.}}</translation>
-<translation id="6008161919456049856">Google-tilille tallennetut salasanat, maksutavat ja osoitteet poistetaan tältä laitteelta. Jos haluat käyttää niitä uudelleen Chromessa, kirjaudu takaisin sisään.</translation>
 <translation id="6009821354356307391">Esitä lisäkysymys</translation>
 <translation id="6014316319780893079"><ph name="BEGIN_LINK" />Chromen työkaluilla<ph name="END_LINK" /> voit selata turvallisesti ja pitää ohjat omissa käsissäsi</translation>
 <translation id="6018578474045062808">Kokeile Google Lensia Chromen avulla puhelimella</translation>
@@ -547,10 +489,8 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="6071642418303142778">Kirjaudu Chromeen, niin voit käyttää esimerkiksi salasanoja tältä laitteelta: <ph name="DEVICE" /></translation>
 <translation id="6075300983329039771">Organisaatiosi (<ph name="MANAGER" />) edellyttää, että kirjaudut Chromeen</translation>
 <translation id="6077365059401096066">Kirjaudu Chromeen, niin voit käyttää esimerkiksi lukulistaa tältä laitteelta: <ph name="DEVICE" /></translation>
-<translation id="6113794647360055231">Chrome on nyt entistä parempi</translation>
 <translation id="6116004140911290070">Ota taidot käyttöön Chromessa</translation>
 <translation id="6116252277240876590">Chromen valikot, asetukset, ilmoitukset ja muu teksti näytetään tällä kielellä</translation>
-<translation id="6117557075995890082">Chrome-sovelluksella saat Googlen turvallisuuden missä oletkin</translation>
 <translation id="6127237283587442951">Chromen käyttäminen oletuksena ja kiinnittäminen</translation>
 <translation id="6134085236017727171">Jos haluat käyttää mikrofonia, anna Chromelle pääsyoikeus <ph name="BEGIN_LINK" />järjestelmäasetuksista<ph name="END_LINK" /></translation>
 <translation id="6135456723633883042">Nämä välilehdet käyttävät ylimääräisiä resursseja. Jos haluat parantaa suorituskykyä, anna Chromen tehdä niistä ei-aktiivisia.</translation>
@@ -571,7 +511,6 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="6248988683584659830">Hae asetuksista</translation>
 <translation id="6251759518630934363">Varoittaa vaarallisista sivustoista, myös niistä, joista Google ei ole tiennyt aiemmin, analysoimalla enemmän dataa sivustoilta kuin perustason suojaus. Voit ohittaa Chromen varoitukset.</translation>
 <translation id="6277547788421725101">Vanhempasi on laittanut Chromen "Sivustojen, sovellusten ja laajennusten käyttöluvat" pois päältä</translation>
-<translation id="627882678981830918">Yksilöi Chromea ja muuta sen asetuksia. Valitse Chrome oletusselaimeksi.</translation>
 <translation id="6288580400488258237">Valitse Google Chrome oletusselaimeksi ja kiinnitä se tehtäväpalkkiin</translation>
 <translation id="6291089322031436445">Chromen kehittäjäversion sovellukset</translation>
 <translation id="6291549208091401781">Google Chrome on jo asennettuna kaikille tietokoneen käyttäjille.</translation>
@@ -587,7 +526,6 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="6357670763064300993">Gemini Enterprise Chromessa</translation>
 <translation id="6360449101159168105">Kun tämä välilehti ei ollut aktiivinen, muistia vapautettiin Chromen pitämiseksi nopeana. Voit halutessasi valita, että tämä sivusto ei ole koskaan ei-aktiivinen.</translation>
 <translation id="6362984640667950211"><ph name="EXISTING_USER" /> on jo kirjautunut sisään. Jos haluat pitää selaamisen erillään, kirjaudu Chromeen omalla profiilillasi käyttämällä tiliä <ph name="USER_EMAIL_ADDRESS" />. Voit myös käyttää esimerkiksi lukulistaa kaikilla laitteillasi.</translation>
-<translation id="6388799252195623474">näytä ohjeet</translation>
 <translation id="6401458660421980302">Jos haluat lähettää tämän välilehden toiselle laitteelle, kirjaudu Chromeen sieltä</translation>
 <translation id="6412673304250309937">Tarkistaa URL-osoitteet Chromeen tallennetun vaarallisten sivustojen luettelon avulla. Jos sivusto yrittää varastaa salasanaasi tai jos lataat haitallisen tiedoston, Chrome voi myös lähettää Selaussuojan tarkistettavaksi URL-osoitteita, mukaan lukien osia sivujen sisällöstä.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Organisaatiosi sulkee Chromen automaattisesti, kun sitä ei ole käytetty 1 minuuttiin. Selausdata poistetaan. Tämä voi sisältää historian, automaattisen täytön ja lataukset.}other{Organisaatiosi sulkee Chromen automaattisesti, kun sitä ei ole käytetty # minuuttiin. Selausdata poistetaan. Tämä voi sisältää historian, automaattisen täytön ja lataukset.}}</translation>
@@ -600,7 +538,6 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="6448835208126432197">Voit valita osan näytöstä Gemini in Chromessa pikanäppäimellä.</translation>
 <translation id="6473905796280459355">Siirry Tietoja Chromesta ‐sivulle</translation>
 <translation id="6481963882741794338">Linkitä Chrome ja muita Googlen palveluja esimerkiksi personointia varten</translation>
-<translation id="648319183876919572">Parannettu selaussuoja suojaa sinua entistä paremmin vaarallisilta sivustoilta ja latauksilta</translation>
 <translation id="6489302989675808168">Päällä • Chrome ei voi vahvistaa, mistä tämä laajennus on peräisin</translation>
 <translation id="6491330562720922580">QR-koodi, jolla voi ladata Chrome-selaimen mobiililaitteelle</translation>
 <translation id="6493527311031785448">Google Chrome yrittää seuraavaa: <ph name="AUTHENTICATION_PURPOSE" /></translation>
@@ -617,7 +554,6 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="659498884637196217">Googlen Salasanojen ylläpidossa tällä laitteella</translation>
 <translation id="6612152958212564387">Et lähetä käyttötilastoja ja virheraportteja Googlelle. <ph name="BEGIN_LINK" />Muokkaa<ph name="END_LINK" /></translation>
 <translation id="6613949864921837107">Pidä salasanat, kirjanmerkit ja historia synkronoituina kaikilla laitteilla asettamalla Chrome oletusselaimeksi.</translation>
-<translation id="6631524303639368205">Jatka siitä, mihin jäit: Chrome palautti välilehdet edellisestä istunnosta. Voit laittaa asetuksen pois päältä täältä:</translation>
 <translation id="6632012506031284914">hakeaksesi Chromella.</translation>
 <translation id="6632473616050862500">Toinen <ph name="BEGIN_LINK_CROS_OSS" />avoimen lähdekoodin ohjelmisto<ph name="END_LINK_CROS_OSS" /> tukee ChromeOS Flexiä.</translation>
 <translation id="6634299872736643004">Asetukseen tehdyt muutokset tulevat voimaan, kun Chrome käynnistetään uudelleen.</translation>
@@ -629,7 +565,6 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="6706525880530967390">{count,plural, =1{Chromen on vahvistettava henkilöllisyytesi, ennen kuin tiettyä dataa voidaan tallentaa Google-tilillesi ja käyttää kaikilla laitteillasi. Jos kirjaudut ulos nyt, tämä data (1 kohde) poistetaan.}other{Chromen on vahvistettava henkilöllisyytesi, ennen kuin tiettyä dataa voidaan tallentaa Google-tilillesi ja käyttää kaikilla laitteillasi. Jos kirjaudut ulos nyt, tämä data ({count} kohde) poistetaan.}}</translation>
 <translation id="6712881677154121168">Latausvirhe: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Chromen nopeuttaminen</translation>
-<translation id="6723445727540769832">Chrome-sovelluksella voit hyödyntää Googlen parhaita ominaisuuksia puhelimella</translation>
 <translation id="6734827584173583205">Sivustot, joilla et ole käynyt viime aikoina. Chrome poisti nämä luvat: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ja <ph name="COUNT" /> muuta.</translation>
 <translation id="6735387454586646204">ChromeOS Flexin järjestelmä</translation>
 <translation id="674891594898436429">Hylkää aktiivinen haku tällä välilehdellä</translation>
@@ -648,14 +583,12 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="6881299373831449287">Päivitetään Chromea</translation>
 <translation id="6885412569789873916">Chromen betaversion sovellukset</translation>
 <translation id="6893363893008038481">Poista tili Chromesta</translation>
-<translation id="689368324615299626">Chrome-sovelluksella voit hyödyntää Googlen parhaita ominaisuuksia laitteellasi (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="6896758677409633944">Kopioi</translation>
 <translation id="6908182077349113099">Pidä salasanat, kirjanmerkit ja historia synkronoituina kaikilla laitteilla. Päivitä oletusselaimeksi Chrome, niin saat tutut ominaisuudet helposti käyttöösi.</translation>
 <translation id="6926772305569367352">Yläpalkin "Google-haku Chromessa" ‐painikkeella on uusi kuvake. Klikkaa sitä esittääksesi kysymyksiä selaamisen aikana Google Haussa Chromessa.</translation>
 <translation id="6930294499209825">Pitää Google-ohjelmiston ajan tasalla. Jos palvelu on poistettu käytöstä tai lopetettu, Google-ohjelmistoa ei pidetä ajan tasalla. Tämä tarkoittaa, että mahdollisia tietoturvahaavoittuvuuksia ei voida korjata ja ominaisuudet eivät välttämättä toimi. Tämän palvelun asennus poistetaan automaattisesti, kun sitä ei käytä mikään Google-ohjelmisto.</translation>
 <translation id="6933858244219479645">ChromeOS</translation>
 <translation id="6938166777909186039">Jotta saat tulevia Google Chromen päivityksiä, sinulla on oltava Windows 10 tai uudempi. Tietokoneen käyttöjärjestelmä on Windows 8.1.</translation>
-<translation id="6943584222992551122">Käyttäjän selaustiedot poistetaan tältä laitteelta. Jos haluat palauttaa tiedot myöhemmin, kirjaudu Chromeen käyttäjänä <ph name="USER_EMAIL" />.</translation>
 <translation id="6962628299694876291"><ph name="EXISTING_USER" /> on jo kirjautunut sisään. Jos haluat pitää selaamisen erillään, kirjaudu Chromeen omalla profiilillasi käyttämällä tiliä <ph name="USER_EMAIL_ADDRESS" />. Voit myös käyttää salasanojasi ja muita tietoja kaikilla laitteillasi.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6967962315388095737">Google Chromen betaversion saapuvien yhteyksien sääntö, joka sallii mDNS-liikenteen.</translation>
@@ -674,7 +607,6 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="7071827361006050863">Selausdata poistetaan pian Chromesta</translation>
 <translation id="7085332316435785646">Valitse, käytetäänkö Chrome-historiaa personoituun kokemukseen Google-palveluissa</translation>
 <translation id="7088681679121566888">Chrome on ajan tasalla</translation>
-<translation id="708972073591616506">Ota Googlen tekoälytyökalut iOS:n Chromella mukaan minne menetkin.</translation>
 <translation id="7096221564931416126">Valitse teksti tai kuva, jota haluat hakea Google Lensilla</translation>
 <translation id="7098166902387133879">Google Chrome käyttää mikrofoniasi.</translation>
 <translation id="7099479769133613710">Päivitä &amp;Chrome-käyttöjärjestelmä käynnistämällä se uudelleen</translation>
@@ -683,7 +615,6 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="7140653346177713799">{COUNT,plural, =0{Uusi Chrome-päivitys on saatavilla, ja se otetaan käyttöön uudelleenkäynnistyksen jälkeen.}=1{Uusi Chrome-päivitys on saatavilla, ja se otetaan käyttöön uudelleenkäynnistyksen jälkeen. Incognito-ikkunaasi ei avata uudelleen.}other{Uusi Chrome-päivitys on saatavilla, ja se otetaan käyttöön uudelleenkäynnistyksen jälkeen. # incognito-ikkunaasi ei avata uudelleen.}}</translation>
 <translation id="7161904924553537242">Tervetuloa Google Chromeen</translation>
 <translation id="7193885263065350793">Kun Chrome on ollut käyttämättömänä <ph name="TIMEOUT_DURATION" />, organisaatiosi sulkee sen.</translation>
-<translation id="7242029209006116544">Olet kirjautumassa sisään hallinnoidulla tilillä ja antamassa tilin järjestelmänvalvojalle oikeuden hallita Google Chrome -profiiliasi. Chrome-tietosi, kuten sovelluksesi, kirjanmerkkisi, historiasi, salasanasi ja muut asetuksesi, yhdistetään pysyvästi käyttäjätiliin <ph name="USER_NAME" />. Voit poistaa nämä tiedot Google-tilien Hallintapaneelissa, mutta et voi liittää tietoja toiseen tiliin. Voit myös halutessasi luoda uuden profiilin, jos haluat pitää aiemmat Chrome-tietosi erillään. <ph name="LEARN_MORE" /></translation>
 <translation id="7274402351400635015">Voit käyttää Chromea aina, kun klikkaat linkkejä viesteissä, dokumenteissa tai muissa sovelluksissa. Se myös kiinnitetään tehtäväpalkkiin.</translation>
 <translation id="7285616922384953075"><ph name="MANAGER" /> ylläpitää Chromea</translation>
 <translation id="7285990705317078173">Lataa Chrome puhelimelle, niin voit seurata hintoja ja saada ilmoituksia, kun hinta laskee millä tahansa sivustolla</translation>
@@ -693,7 +624,6 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="7299899569525778554">Hae tietokoneelta</translation>
 <translation id="7302361266603927550">Osaa Chrome-datastasi ei ole vielä tallennettu Google-tilillesi. Odota muutama minuutti ennen uloskirjautumista. Jos kirjaudut ulos nyt, tämä data poistetaan.</translation>
 <translation id="7306401458628386911">Aloita selaaminen heti: Chrome voi nyt käynnistyä Windowsin käynnistyksen yhteydessä.</translation>
-<translation id="7308322188646931570">Chrome tarvitsee tallennustilan käyttöoikeuden tiedostojen lataamiseen.</translation>
 <translation id="7352651011704765696">Tapahtui jokin virhe</translation>
 <translation id="7371412052245999753">Suojaa Chromen muistia muilta tietokoneen sovelluksilta.</translation>
 <translation id="7374061268215476070">Voit avata Google Haun sivupaneelin uudelleen esittääksesi kysymyksiä selaamisen aikana</translation>
@@ -714,7 +644,6 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="7481213027396403996">Ota Chromen tehokkain suojaus käyttöön</translation>
 <translation id="749228101751499733">Kun olet kirjautunut sisään, voit käyttää esimerkiksi Google-tilin salasanoja Chromessa. <ph name="SHORTCUT" /> voi muuttaa Googlen palvelujen asetuksiasi.</translation>
 <translation id="7496017508659652909">Chrome esilataa sivuja, mikä nopeuttaa selaamista ja hakemista. <ph name="BEGIN_LINK" />Lue lisää sivujen esilatauksesta<ph name="END_LINK" /></translation>
-<translation id="7510190804000607802">Muistutus: Googlen parhaat ominaisuudet taskussasi</translation>
 <translation id="7514258452813684157">Googlen päivityspalvelu</translation>
 <translation id="7515191208480168435">Kiinnitä Google Lens, niin voit käyttää sitä helposti</translation>
 <translation id="7535429826459677826">Google Chromen kehittäjäversio</translation>
@@ -726,7 +655,6 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="7596160425942761210">Voit käyttää Chromea aina, kun klikkaat linkkejä viesteissä, dokumenteissa tai muissa sovelluksissa</translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7627609214560473136">Datasi suojaamiseksi salli Chromen poistaa luvat sivustoilta, joilla et ole käynyt viime aikoina.</translation>
-<translation id="7629695634924605473">Chrome ilmoittaa sinulle, jos salasanasi ovat vaarantuneet</translation>
 <translation id="7629898584100520089">Taidot ja muut tekoälyinnovaatiot tallennetaan Google-tilillesi ja niitä hallinnoidaan erillään Chromen synkronoinnista</translation>
 <translation id="7641148173327520642">Järjestelmänvalvojasi on määrittänyt Chromen avaamaan osoitteen <ph name="TARGET_URL_HOSTNAME" /> selaimella <ph name="ALTERNATIVE_BROWSER_NAME" />.</translation>
 <translation id="7649070708921625228">Ohje</translation>
@@ -745,7 +673,6 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="7747138024166251722">Asennusohjelma ei pystynyt luomaan väliaikaista hakemistoa. Tarkista, että käytettävissä on riittävästi levytilaa ja että sinulla on oikeus asentaa ohjelmia.</translation>
 <translation id="7748969056734910029">Sivustot, joilla et ole käynyt viime aikoina. Chrome poisti nämä luvat: <ph name="PERMISSION_1" /> ja <ph name="PERMISSION_2" />.</translation>
 <translation id="7759944311003584891">Hae Chromella</translation>
-<translation id="7761834446675418963">Avaa Chrome klikkaamalla nimeäsi ja aloita selaaminen.</translation>
 <translation id="7777080907402804672">Jos kuvalla ei ole hyödyllistä kuvausta, Chrome yrittää luoda sellaisen. Kuvat lähetetään Googlelle kuvausten luomista varten. Voit milloin tahansa poistaa tämän käytöstä asetuksissa.</translation>
 <translation id="778331955594035129">Chrome tarvitsee sijaintiluvan tällä sivustolla</translation>
 <translation id="7787950393032327779">Profiili näyttäisi olevan toisen Google Chrome -prosessin (<ph name="PROCESS_ID" />) käytössä toisella tietokoneella (<ph name="HOST_NAME" />). Chrome on lukinnut profiilin, jotta se ei vioitu. Jos olet varma, että mikään toinen prosessi ei käytä tätä profiilia, voit poistaa profiilin lukituksen ja käynnistää Chromen uudelleen.</translation>
@@ -763,9 +690,7 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="7849037457735762883">Jatka siitä, mihin jäit: Chrome voi palauttaa välilehdet aina, kun käynnistät sen uudelleen. Voit laittaa asetuksen päälle täältä:</translation>
 <translation id="7868731902994556427"><ph name="EXISTING_USER" /> on jo kirjautunut sisään. Jos haluat pitää selaamisen erillään, kirjaudu Chromeen omalla profiilillasi käyttämällä tiliä <ph name="USER_EMAIL_ADDRESS" />. Voit myös käyttää laajennuksia ja muita tietoja laitteelta: <ph name="DEVICE" />.</translation>
 <translation id="7869620795354551924">Jos haluat käyttää tallennettuja salasanoja, seuraa QR-koodia, lataa Chrome iOS:lle ja kirjaudu sisään Google-tilille</translation>
-<translation id="7872446069773932638">Ladataan… <ph name="SECONDS" /> sekuntia jäljellä</translation>
 <translation id="7886087451482920026">Valitse tekstiä Google Lensilla</translation>
-<translation id="7890208801193284374">Jos käytät jaettua tietokonetta, kaverisi ja perheenjäsenesi voivat selata verkkoa omista profiileistaan käsin ja muokata Chromesta juuri itselleen sopivan.</translation>
 <translation id="7896673875602241923">Joku on jo kirjautunut tällä tietokoneella Chromeen käyttäjätilillä <ph name="ACCOUNT_EMAIL_LAST" />. Luo uusi Chrome-käyttäjä, jos haluat pitää tiedot erillään.</translation>
 <translation id="7904213866086517086">Avaa Google Haku uudelleen sivupaneelissa</translation>
 <translation id="7904985524660297937">Kokeile Geminiä Google Chromessa</translation>
@@ -775,23 +700,18 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="7951272445806340501">ChromeOS Flex täytyy käynnistää uudelleen, jotta päivitys voidaan ottaa käyttöön.</translation>
 <translation id="7959172989483770734">Ylläpidä Chrome-profiileja</translation>
 <translation id="7962410387636238736">Tämän tietokoneen Google Chromea ei enää päivitetä, koska Windows XP:tä ja Windows Vistaa ei enää tueta.</translation>
-<translation id="7988335136512059384">Chrome-sovelluksella saat ilmoituksia sinua kiinnostavien tuotteiden hinnanlaskuista puhelimella</translation>
 <translation id="8004582292198964060">Selain</translation>
 <translation id="8005666035647241369">Googlen Salasanojen ylläpitoon tällä laitteella</translation>
 <translation id="8008534537613507642">Asenna Chrome uudelleen</translation>
 <translation id="8009904340233602924">Käytä Chromea ilman tiliä</translation>
-<translation id="8010081455002666927">Automaattinen tunnistus</translation>
 <translation id="8013993649590906847">Jos kuvalla ei ole hyödyllistä kuvausta, Chrome yrittää luoda sellaisen. Kuvat lähetetään Googlelle kuvausten luomista varten.</translation>
 <translation id="8019103195866286235">Kehittäjä on perunut laajennuksen julkaisun, joten se voi olla vaarallinen. Poista se Chromesta, jotta se ei enää voi nähdä tai muuttaa dataasi sivustoilla, joilla vierailet, mukaan lukien henkilökohtaisia tietojasi.</translation>
-<translation id="8038678618803403071">Käytä kaikkia Googlen suosikkeja Chromen kautta laitteellasi (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="8040768861829554732">Laajennus pyytää sinua kirjautumaan Chromeen</translation>
-<translation id="8041795619940733262">Kysy Googlelta<ph name="LINE_BREAK" />tästä välilehdestä</translation>
 <translation id="80471789339884597">Kiitos asennuksesta. Kaikki selaimet pitää käynnistää uudelleen ennen kuin <ph name="BUNDLE_NAME" /> otetaan käyttöön.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8064965390968184078">1. Klikkaa <ph name="BUTTON_LABEL" /> alta
 2. Klikkaa Windowsin asetuksista <ph name="BUTTON_2" />
 3. Klikkaa Windowsin ilmoituksesta <ph name="BUTTON_3" />, niin voit kiinnittää Chromen tehtäväpalkkiin nopeaa käyttöä varten</translation>
-<translation id="8069447462453318634">Valitse "Kiinnitä työkalupalkkiin"</translation>
 <translation id="8074398340364918139">Etsi tiettyä Chromen ominaisuutta tai laajennusta kirjoittamalla sen pikakomento osoitepalkkiin ja painamalla valitsemaasi näppäintä</translation>
 <translation id="8077579734294125741">Muut Chrome-profiilit</translation>
 <translation id="8086881907087796310">Asennus epäonnistui, koska tietokoneesi ei täytä laitteiston vähimmäisvaatimuksia.</translation>
@@ -803,11 +723,9 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="8129812357326543296">Tietoja &amp;Google Chromesta</translation>
 <translation id="813913629614996137">Alustetaan…</translation>
 <translation id="8162006532256575008">Käytä Chromea ilman tiliä</translation>
-<translation id="8172231188687329735">Lataa Chrome-sovellus, niin voit tallentaa salasanoja missä tahansa</translation>
 <translation id="8177472873527554730">Sisältöä ei löydy sivulta</translation>
 <translation id="818985547157682832">Yläpalkin "Google Haun tekoälytila" ‑painikkeella on uusi kuvake. Klikkaa sitä esittääksesi kysymyksiä selaamisen aikana Google Haun tekoälytilassa.</translation>
 <translation id="8196526165798579689">Hae Chrome Devillä</translation>
-<translation id="8203105157044679380">Google Haun paneeli</translation>
 <translation id="8221491193165283816">Estät yleensä ilmoitukset. Voit antaa tälle sivustolle luvan lähettää ilmoituksia klikkaamalla tätä.</translation>
 <translation id="8227493674161801700">Hae Chrome Betalla</translation>
 <translation id="8233224921566021881">Chrome tarvitsee pääsyn paikalliseen verkkoon, jotta se voi löytää ja käyttää lähellä olevia laitteita</translation>
@@ -826,13 +744,10 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="835927394551949760">Kysy Googlelta</translation>
 <translation id="8362914115861174987">Käännä kielelle</translation>
 <translation id="8366770919198174997">Rajoittaa suorituskykyä, mutta tekee Chromesta suojatumman hyökkäyksiä vastaan</translation>
-<translation id="8367705492654390392">Kysy mitä tahansa</translation>
 <translation id="8367950957770994118">Avaa Gemini in Chrome nopeasti aina tarvittaessa</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Kaikki oikeudet pidätetään.</translation>
 <translation id="8370748943308169953">QR-koodi, jolla voit kirjautua Chromeen nimellä <ph name="USER_NAME" /></translation>
 <translation id="8374507495134902558"><ph name="IMPORTANT_UPDATE" /> on valmis. Voit käynnistää Chromen uudelleen nyt tai asettaa sen päivittymään, kun näyttö on seuraavan kerran päällä ja käyttämättä <ph name="IDLE_DURATION" />.</translation>
-<translation id="8376752431516546391">Google Haun sivupaneeli</translation>
-<translation id="8377158135256176353">Gemini in Chrome Canary päälle/pois</translation>
 <translation id="8380754585531979907">Siirry Gemini in Chromen ja avoimen välilehden välillä näppäimistöllä.</translation>
 <translation id="8387459386171870978">Jatka Chromen käyttöä</translation>
 <translation id="8394720698884623075">Tarkistaa URL-osoitteet Chromeen tallennetun vaarallisten sivustojen listan avulla</translation>
@@ -845,7 +760,6 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="842852285618875960">Olet saavuttanut Google Chromen <ph name="BOOKMARK_LIMIT" /> kirjanmerkin rajan, joten kaikkia kirjanmerkkejäsi ei ole vielä tallennettu Google-tilillesi.
 
 Uusia kirjanmerkkejä ei voi tallentaa tilillesi, ennen kuin poistat joitakin. Jos kirjaudut ulos nyt, tallentamattomat kirjanmerkit poistetaan.</translation>
-<translation id="8458117863387545390">Lataa Chrome puhelimelle</translation>
 <translation id="8467931559764188481">Hylkää aktiivinen Google-haku</translation>
 <translation id="848851325211467878">Kirjautuneena käyttäjänä <ph name="USER_NAME" />, <ph name="USER_EMAIL" />, Google-jäsenyys. Avaa tilivalikko</translation>
 <translation id="8496177819998570653">Google S&amp;alasanat</translation>
@@ -899,10 +813,8 @@ Uusia kirjanmerkkejä ei voi tallentaa tilillesi, ennen kuin poistat joitakin. J
 <translation id="8865415417596392024">Tilisi Chrome-data</translation>
 <translation id="8897637834206928776">Uusi kuvake, sama pikakuvake: Klikkaa esittääksesi kysymyksiä selaamisen aikana Google Haun sivupaneelissa.</translation>
 <translation id="8914504000324227558">Käynnistä Chrome uudelleen</translation>
-<translation id="8920304659326707347">Jatka Chromen käyttöä iOS-versiolla siitä, mihin jäit.</translation>
 <translation id="8922998289262614701">Poista tämän sovelluksen data Chromesta</translation>
 <translation id="8925636929359899517">Käytämme tietoja palvelun parantamiseen. Katso <ph name="BEGIN_LINK1" />tietosuojakäytäntö<ph name="END_LINK1" /> ja <ph name="BEGIN_LINK2" />käyttöehdot<ph name="END_LINK2" />.</translation>
-<translation id="8936233353620149764">Gemini in Chrome päälle/pois</translation>
 <translation id="8944232836376404813">Tämä
           <ph name="LINE_BREAKS" />
             • nollaa aloitussivun, uusi välilehti ‑sivun, hakukoneen ja kiinnitetyt välilehdet
@@ -927,14 +839,10 @@ Uusia kirjanmerkkejä ei voi tallentaa tilillesi, ennen kuin poistat joitakin. J
 <translation id="9090566250983691233">Lue lisää siitä, miksi Chrome estää joitakin tiedostoja</translation>
 <translation id="9106236359747881194">Valitse haettavaa tekstiä</translation>
 <translation id="911206726377975832">Poistetaanko myös selailutiedot?</translation>
-<translation id="9134482777260927479">Kotitehtäväapu</translation>
 <translation id="9138603949443464873">Ota muutokset käyttöön käynnistämällä Chrome uudelleen</translation>
 <translation id="9148058034647219655">Poistu</translation>
-<translation id="9150331942025550505">Hyödynnä tekoälyä, kun käytät Chrome-sovellusta laitteellasi (<ph name="DEVICE_TYPE" />)</translation>
-<translation id="919706545465235479">Aloita synkronointi päivittämällä Chrome.</translation>
 <translation id="922152298093051471">Yksilöi Chromea</translation>
 <translation id="93760716455950538">Käynnistä ChromeOS Flex uudelleen</translation>
-<translation id="943390475793766444">Chrome suosittelee tiedoston skannaamista, koska se voi olla vaarallinen.</translation>
 <translation id="945522503751344254">Lähetä palautetta</translation>
 <translation id="973195869036269770">ChromeOS ei voinut tallentaa Chrome-dataa Google-tilillesi, koska tilin kirjautumistiedot ovat vanhentuneet</translation>
 <translation id="983803489796659991">Asennus epäonnistui, koska päivityspalvelimella ei ole tiivistedataa sovelluksesta.</translation>

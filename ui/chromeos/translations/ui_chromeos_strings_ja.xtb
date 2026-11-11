@@ -558,7 +558,6 @@
 <translation id="5305688511332277257">インストールされていません</translation>
 <translation id="5317780077021120954">保存</translation>
 <translation id="5318819489018851358">Linux と共有</translation>
-<translation id="5330145655348521461">これらのファイルは別のデスクトップで開かれます。表示するには <ph name="USER_NAME" />（<ph name="MAIL_ADDRESS" />）に移動してください。</translation>
 <translation id="5330512191124428349">情報を見る</translation>
 <translation id="535792325654997756">猫と一緒にいる人</translation>
 <translation id="5358764674931277">フレームレート</translation>
@@ -699,7 +698,6 @@
 <translation id="636254897931573416">無効なドメイン サフィックス マッチの値</translation>
 <translation id="6364301859968397756">組織のストレージの空き容量がなくなりました</translation>
 <translation id="6367976544441405720">ワゴン車</translation>
-<translation id="637062427944097960">このファイルは別のデスクトップで開かれます。表示するには <ph name="USER_NAME" />（<ph name="MAIL_ADDRESS" />）に移動してください。</translation>
 <translation id="6394388407447716302">読み取り専用</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> 個のアイテム</translation>
 <translation id="6407769893376380348">暗号化されているため、<ph name="FILE_NAME" /> を移動できませんでした。</translation>

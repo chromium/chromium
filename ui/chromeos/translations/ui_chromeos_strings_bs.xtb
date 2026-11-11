@@ -558,7 +558,6 @@
 <translation id="5305688511332277257">Nema instaliranih</translation>
 <translation id="5317780077021120954">Sačuvaj</translation>
 <translation id="5318819489018851358">Dijeli s Linuxom</translation>
-<translation id="5330145655348521461">Ovi fajlovi su otvoreni na drugoj radnoj površini. Prebacite se na korisnika <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) da ih vidite.</translation>
 <translation id="5330512191124428349">Preuzmite informacije</translation>
 <translation id="535792325654997756">Osoba s mačkama</translation>
 <translation id="5358764674931277">Broj slika u sekundi</translation>
@@ -699,7 +698,6 @@
 <translation id="636254897931573416">Nevažeća vrijednost podudaranja sufiksa domene</translation>
 <translation id="6364301859968397756">Pohrana organizacije je puna</translation>
 <translation id="6367976544441405720">Kombi</translation>
-<translation id="637062427944097960">Ovaj fajl se otvorio na drugoj radnoj površini. Prebacite na korisnika <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) da ga vidite.</translation>
 <translation id="6394388407447716302">Samo za čitanje</translation>
 <translation id="6395575651121294044">Broj stavki: <ph name="NUMBER_OF_FILES" /></translation>
 <translation id="6407769893376380348">Premještanje fajla <ph name="FILE_NAME" /> nije uspjelo jer je šifriran.</translation>
