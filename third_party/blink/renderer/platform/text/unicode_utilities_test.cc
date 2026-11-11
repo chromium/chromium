@@ -118,14 +118,14 @@ TEST(UnicodeUtilitiesTest, ContainsKanaLetters) {
   StringBuilder non_kana_string;
   for (UChar character = 0; character < 0x3041; ++character)
     non_kana_string.Append(character);
-  EXPECT_FALSE(ContainsKanaLetters(non_kana_string.ToString()));
+  EXPECT_FALSE(ContainsKanaLetters(non_kana_string));
 
   // Hiragana letters.
   for (UChar character = 0x3041; character <= 0x3096; ++character) {
     StringBuilder str;
     str.Append(non_kana_string);
     str.Append(character);
-    EXPECT_TRUE(ContainsKanaLetters(str.ToString()));
+    EXPECT_TRUE(ContainsKanaLetters(str));
   }
 
   // Katakana letters.
@@ -133,7 +133,7 @@ TEST(UnicodeUtilitiesTest, ContainsKanaLetters) {
     StringBuilder str;
     str.Append(non_kana_string);
     str.Append(character);
-    EXPECT_TRUE(ContainsKanaLetters(str.ToString()));
+    EXPECT_TRUE(ContainsKanaLetters(str));
   }
 }
 

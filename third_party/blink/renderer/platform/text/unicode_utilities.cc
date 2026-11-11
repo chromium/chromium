@@ -150,6 +150,8 @@ bool ContainsOnlySeparatorsOrEmpty(const String& pattern) {
 // We refer to the above technique as the "kana workaround". The next few
 // functions are helper functinos for the kana workaround.
 
+// If we switch the argument type from UChar to UChar32, we need to update
+// ContainsKanaLetters() implementation too.
 bool IsKanaLetter(UChar character) {
   // Hiragana letters.
   if (character >= 0x3041 && character <= 0x3096)
@@ -301,17 +303,22 @@ static inline bool IsCombiningVoicedSoundMark(UChar character) {
   return false;
 }
 
-bool ContainsKanaLetters(const String& pattern) {
-  const wtf_size_t length = pattern.length();
-  for (wtf_size_t i = 0; i < length; ++i) {
-    if (IsKanaLetter(pattern[i]))
+bool ContainsKanaLetters(const StringView& pattern) {
+  // No Kana letters in Latin-1.
+  if (pattern.Is8Bit()) {
+    return false;
+  }
+  // IsKanaLetter() doesn't support non-BMP code points.
+  for (UChar character : pattern.Span16()) {
+    if (IsKanaLetter(character)) {
       return true;
+    }
   }
   return false;
 }
 
 bool ContainsKanaLetters(std::u16string_view pattern) {
-  return ContainsKanaLetters(String(pattern));
+  return ContainsKanaLetters(StringView(base::span(pattern)));
 }
 
 Vector<UChar> NormalizeCharactersIntoNfc(base::span<const UChar> characters) {

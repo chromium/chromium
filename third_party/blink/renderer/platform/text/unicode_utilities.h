@@ -37,7 +37,7 @@ namespace blink {
 PLATFORM_EXPORT bool IsSeparator(UChar32);
 PLATFORM_EXPORT bool ContainsOnlySeparatorsOrEmpty(const String&);
 PLATFORM_EXPORT bool IsKanaLetter(UChar character);
-PLATFORM_EXPORT bool ContainsKanaLetters(const String&);
+PLATFORM_EXPORT bool ContainsKanaLetters(const StringView&);
 PLATFORM_EXPORT Vector<UChar> NormalizeCharactersIntoNfc(
     base::span<const UChar> characters);
 PLATFORM_EXPORT void FoldQuoteMarksAndSoftHyphens(base::span<UChar> data);

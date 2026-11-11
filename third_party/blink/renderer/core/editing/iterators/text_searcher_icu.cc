@@ -180,7 +180,7 @@ void TextSearcherIcu::SetPattern(const StringView& pattern,
   SetCaseSensitivity(!options.IsCaseInsensitive());
   SetPattern(pattern.Span16());
   SetAllowOverlapMatches(options.AllowOverlapMatches());
-  if (ContainsKanaLetters(pattern.ToString())) {
+  if (ContainsKanaLetters(pattern)) {
     normalized_search_text_ = NormalizeCharactersIntoNfc(pattern.Span16());
   }
 }
