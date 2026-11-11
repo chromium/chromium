@@ -10,8 +10,8 @@
 
 #include "base/check.h"
 #include "base/containers/map_util.h"
-#include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_entry.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
+#include "components/autofill/core/browser/webdata/personal_context/personal_context_entity_metadata_sync_util.h"
 
 namespace autofill {
 

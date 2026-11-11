@@ -19,7 +19,7 @@
 #include "base/observer_list_types.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
-#include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_entry.h"
+#include "components/autofill/core/browser/webdata/personal_context/personal_context_entity_metadata_sync_util.h"
 #include "components/sync/model/data_type_store.h"
 #include "components/sync/model/data_type_sync_bridge.h"
 #include "components/sync/protocol/autofill_entity_suppression_specifics.pb.h"

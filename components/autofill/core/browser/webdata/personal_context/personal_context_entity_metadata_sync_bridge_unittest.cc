@@ -15,7 +15,6 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/uuid.h"
-#include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_entry.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/personal_context_metrics.h"
