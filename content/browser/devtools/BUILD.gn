@@ -57,6 +57,19 @@ if (enable_devtools_frontend) {
   }
 }
 
+if (bundle_chrome_bidi_mapper) {
+  import("//ui/webui/resources/tools/minify_js.gni")
+
+  minify_js("minify_bidimapper") {
+    deps = [ "//third_party/chromium-bidi/src:mapper_bundle" ]
+    input_dir = get_label_info("//third_party/chromium-bidi/src:mapper_bundle",
+                               "target_gen_dir")
+    in_folder = "$input_dir"
+    in_files = [ "mapperTab.js" ]
+    out_folder = "$target_gen_dir/bidimapper/minified"
+  }
+}
+
 # Here we concatenate the viz_debugger.pdl and native_profiling.pdl
 # into our browser protocol. This technique is nearly identical to what is
 # done for cros_protocol.pdl in chrome/browser/devtools
