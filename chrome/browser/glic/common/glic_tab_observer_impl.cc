@@ -147,13 +147,13 @@ void GlicTabObserverImpl::TabGroupedStateChanged(
     TabStripModel* tab_strip_model,
     std::optional<tab_groups::TabGroupId> old_group,
     std::optional<tab_groups::TabGroupId> new_group,
-    tabs::TabInterface* tab,
-    int index) {
-  if (old_group != new_group) {
+    tabs::TabHandle tab) {
+  tabs::TabInterface* tab_interface = tab.Get();
+  if (tab_interface && old_group != new_group) {
     if (new_group.has_value()) {
-      callback_.Run(TabGroupingChangedEvent{tab, /*is_added=*/true});
+      callback_.Run(TabGroupingChangedEvent{tab_interface, /*is_added=*/true});
     } else {
-      callback_.Run(TabGroupingChangedEvent{tab, /*is_added=*/false});
+      callback_.Run(TabGroupingChangedEvent{tab_interface, /*is_added=*/false});
     }
   }
 }

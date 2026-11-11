@@ -1069,13 +1069,12 @@ class TabStripModel {
   // split related observations within the group.
   void NotifyTabGroupAttached(tabs::TabGroupTabCollection* group_collection);
 
-  // Notify observers that the tab at `index` is added to the group with id
-  // `new_group` or removed from a group with id `old_group`.
+  // Notify observers that `tab` is added to the group with id `new_group` or
+  // removed from a group with id `old_group`.
   void NotifyTabGroupedStateChanged(
       std::optional<tab_groups::TabGroupId> old_group,
       std::optional<tab_groups::TabGroupId> new_group,
-      tabs::TabInterface* tab,
-      int index);
+      tabs::TabHandle tab);
 
   // Notify observers that split with `split_id` has been created.
   void NotifySplitTabCreated(
@@ -1402,10 +1401,9 @@ class TabStripModel {
                            int destination_index,
                            const std::optional<tab_groups::TabGroupId> group);
 
-  // Sends group notifications for a tab at `index` based on its initial_group
-  // and `final_group` and updates the `group_model_`.
+  // Sends group notifications for `tab` based on its `initial_group` and
+  // `new_group` and updates the `group_model_`.
   void TabGroupStateChanged(
-      int index,
       tabs::TabInterface* tab,
       const std::optional<tab_groups::TabGroupId> initial_group,
       const std::optional<tab_groups::TabGroupId> new_group);

@@ -287,9 +287,10 @@ void SessionServiceBrowserHelper::TabGroupedStateChanged(
     TabStripModel* tab_strip_model,
     std::optional<tab_groups::TabGroupId> old_group,
     std::optional<tab_groups::TabGroupId> new_group,
-    tabs::TabInterface* tab,
-    int index) {
-  UpdateTabGroupSessionDataForTab(tab, new_group);
+    tabs::TabHandle tab) {
+  if (tabs::TabInterface* tab_interface = tab.Get()) {
+    UpdateTabGroupSessionDataForTab(tab_interface, new_group);
+  }
 }
 
 void SessionServiceBrowserHelper::OnSplitTabChanged(

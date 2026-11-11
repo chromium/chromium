@@ -102,8 +102,7 @@ void LocalTabGroupListener::UpdateVisualDataFromLocal(
 
 void LocalTabGroupListener::AddTabFromLocal(
     tabs::TabInterface* local_tab,
-    const TabStripModel* tab_strip_model,
-    int index) {
+    const TabStripModel* tab_strip_model) {
   if (paused_) {
     return;
   }

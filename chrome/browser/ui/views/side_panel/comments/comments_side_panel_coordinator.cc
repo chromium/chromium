@@ -80,14 +80,15 @@ void CommentsSidePanelCoordinator::TabGroupedStateChanged(
     TabStripModel* tab_strip_model,
     std::optional<tab_groups::TabGroupId> old_group,
     std::optional<tab_groups::TabGroupId> new_group,
-    tabs::TabInterface* tab,
-    int index) {
+    tabs::TabHandle tab) {
+  tabs::TabInterface* tab_interface = tab.Get();
   // Only handle group changes to the active tab.
-  if (!tab->IsActivated() || old_group == new_group) {
+  if (!tab_interface || !tab_interface->IsActivated() ||
+      old_group == new_group) {
     return;
   }
 
-  UpdateVisuals(tab);
+  UpdateVisuals(tab_interface);
 }
 
 void CommentsSidePanelCoordinator::OnTabGroupUpdated(

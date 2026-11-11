@@ -723,9 +723,8 @@ void BrowserTabStripController::TabGroupedStateChanged(
     TabStripModel* tab_strip_model,
     std::optional<tab_groups::TabGroupId> old_group,
     std::optional<tab_groups::TabGroupId> new_group,
-    tabs::TabInterface* tab,
-    int index) {
-  tabstrip_->AddTabToGroup(new_group, tab->GetHandle());
+    tabs::TabHandle tab) {
+  tabstrip_->AddTabToGroup(new_group, tab);
 
   if (old_group.has_value()) {
     tabstrip_->OnGroupContentsChanged(old_group.value());
@@ -735,7 +734,7 @@ void BrowserTabStripController::TabGroupedStateChanged(
     tabstrip_->OnGroupContentsChanged(new_group.value());
   }
 
-  UpdateTabFocusFreezing(tab->GetHandle());
+  UpdateTabFocusFreezing(tab);
 }
 
 void BrowserTabStripController::OnSplitTabChanged(

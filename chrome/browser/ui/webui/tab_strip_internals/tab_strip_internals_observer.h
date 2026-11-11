@@ -56,8 +56,7 @@ class TabStripInternalsObserver : public BrowserCollectionObserver,
   void TabGroupedStateChanged(TabStripModel* tab_strip_model,
                               std::optional<tab_groups::TabGroupId> old_group,
                               std::optional<tab_groups::TabGroupId> new_group,
-                              tabs::TabInterface* tab,
-                              int index) override;
+                              tabs::TabHandle tab) override;
 
   // TabRestoreServiceObserver methods.
   void TabRestoreServiceChanged(sessions::TabRestoreService* service) override;

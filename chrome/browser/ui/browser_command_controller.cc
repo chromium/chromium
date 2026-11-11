@@ -1725,8 +1725,7 @@ void BrowserCommandController::TabGroupedStateChanged(
     TabStripModel* tab_strip_model,
     std::optional<tab_groups::TabGroupId> old_group,
     std::optional<tab_groups::TabGroupId> new_group,
-    tabs::TabInterface* tab,
-    int index) {
+    tabs::TabHandle tab) {
   UpdateCommandsForTabStripStateChanged();
 }
 

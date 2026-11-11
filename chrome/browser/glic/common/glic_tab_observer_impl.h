@@ -39,8 +39,7 @@ class GlicTabObserverImpl : public GlicTabObserver,
   void TabGroupedStateChanged(TabStripModel* tab_strip_model,
                               std::optional<tab_groups::TabGroupId> old_group,
                               std::optional<tab_groups::TabGroupId> new_group,
-                              tabs::TabInterface* tab,
-                              int index) override;
+                              tabs::TabHandle tab) override;
 
  private:
   TabCreationType DetermineTabCreationType(tabs::TabInterface* new_tab);

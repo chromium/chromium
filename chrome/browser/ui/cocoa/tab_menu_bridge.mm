@@ -342,8 +342,7 @@ void TabMenuBridge::TabGroupedStateChanged(
     TabStripModel* tab_strip_model,
     std::optional<tab_groups::TabGroupId> old_group,
     std::optional<tab_groups::TabGroupId> new_group,
-    tabs::TabInterface* tab,
-    int index) {
+    tabs::TabHandle tab) {
   CHECK(tab_strip_model, base::NotFatalUntil::M162);
   CHECK_EQ(tab_strip_model, model_, base::NotFatalUntil::M162);
 

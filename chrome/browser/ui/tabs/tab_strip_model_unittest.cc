@@ -349,8 +349,7 @@ class MockTabStripModelObserver : public TabStripModelObserver {
   void TabGroupedStateChanged(TabStripModel* tab_strip_model,
                               std::optional<tab_groups::TabGroupId> old_group,
                               std::optional<tab_groups::TabGroupId> new_group,
-                              tabs::TabInterface* tab,
-                              int index) override {
+                              tabs::TabHandle tab) override {
     if (old_group.has_value()) {
       group_updates_[old_group.value()].contents_update_count++;
     }
@@ -2660,7 +2659,7 @@ TEST_F(TabStripModelTest, CloseOtherTabsInGroupIndices) {
    public:
     struct Call {
       int tab_id;
-      int index;
+      tabs::TabHandle handle;
       std::optional<tab_groups::TabGroupId> old_group;
       std::optional<tab_groups::TabGroupId> new_group;
     };
@@ -2669,14 +2668,16 @@ TEST_F(TabStripModelTest, CloseOtherTabsInGroupIndices) {
     void TabGroupedStateChanged(TabStripModel* tab_strip_model,
                                 std::optional<tab_groups::TabGroupId> old_group,
                                 std::optional<tab_groups::TabGroupId> new_group,
-                                tabs::TabInterface* tab,
-                                int index) override {
-      calls.push_back({GetID(tab->GetContents()), index, old_group, new_group});
+                                tabs::TabHandle tab) override {
+      calls.push_back(
+          {GetID(tab.Get()->GetContents()), tab, old_group, new_group});
     }
   };
 
   // Create 3 tabs.
   PrepareTabs(tabstrip(), 3);
+  const tabs::TabHandle t0_handle = tabstrip()->GetTabAtIndex(0)->GetHandle();
+  const tabs::TabHandle t2_handle = tabstrip()->GetTabAtIndex(2)->GetHandle();
 
   // Group all 3 tabs.
   tab_groups::TabGroupId group = tabstrip()->AddToNewGroup({0, 1, 2});
@@ -2694,18 +2695,15 @@ TEST_F(TabStripModelTest, CloseOtherTabsInGroupIndices) {
                                         TabStripModel::CommandCloseOtherTabs);
 
   // We expect T0 (id 0) and T2 (id 2) to be removed from the group.
-  // The observer should be notified with their indices BEFORE removals started.
-  // T0 was at index 0.
-  // T2 was at index 2.
   ASSERT_EQ(2u, observer.calls.size());
 
   EXPECT_EQ(0, observer.calls[0].tab_id);
-  EXPECT_EQ(0, observer.calls[0].index);
+  EXPECT_EQ(t0_handle, observer.calls[0].handle);
   EXPECT_EQ(group, observer.calls[0].old_group);
   EXPECT_EQ(std::nullopt, observer.calls[0].new_group);
 
   EXPECT_EQ(2, observer.calls[1].tab_id);
-  EXPECT_EQ(2, observer.calls[1].index);
+  EXPECT_EQ(t2_handle, observer.calls[1].handle);
   EXPECT_EQ(group, observer.calls[1].old_group);
   EXPECT_EQ(std::nullopt, observer.calls[1].new_group);
 

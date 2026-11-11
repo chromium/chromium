@@ -559,14 +559,13 @@ class TabStripModelObserver {
   // Invoked when the audio state of a tab changes.
   virtual void OnTabAudioChanged(tabs::TabInterface* tab);
 
-  // Called when the tab at `index` is added to the group with id `new_group` or
-  // removed from a group with id `old_group`.
+  // Called when `tab` is added to the group with id `new_group` or removed
+  // from a group with id `old_group`.
   virtual void TabGroupedStateChanged(
       TabStripModel* tab_strip_model,
       std::optional<tab_groups::TabGroupId> old_group,
       std::optional<tab_groups::TabGroupId> new_group,
-      tabs::TabInterface* tab,
-      int index);
+      tabs::TabHandle tab);
 
   // `change` is a change in the Tab Group model or metadata. These
   // changes may cause repainting of some Tab Group UI. They are

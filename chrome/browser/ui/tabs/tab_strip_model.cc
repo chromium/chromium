@@ -2873,10 +2873,9 @@ void TabStripModel::NotifyTabGroupAttached(
 void TabStripModel::NotifyTabGroupedStateChanged(
     std::optional<tab_groups::TabGroupId> old_group,
     std::optional<tab_groups::TabGroupId> new_group,
-    tabs::TabInterface* tab,
-    int index) {
+    tabs::TabHandle tab) {
   for (auto& observer : observers_) {
-    observer.TabGroupedStateChanged(this, old_group, new_group, tab, index);
+    observer.TabGroupedStateChanged(this, old_group, new_group, tab);
   }
 }
 
@@ -2941,7 +2940,7 @@ void TabStripModel::NotifySplitTabDetached(
   // Send possible group notification of removal of grouped tabs.
   if (group_model_ && previous_group_state) {
     for (auto [tab, index] : tabs_in_split) {
-      TabGroupStateChanged(index, tab, previous_group_state, std::nullopt);
+      TabGroupStateChanged(tab, previous_group_state, std::nullopt);
     }
   }
 
@@ -2961,7 +2960,7 @@ void TabStripModel::NotifySplitTabAttached(
 
   if (group_model_ && group_id.has_value()) {
     for (auto [tab, i] : tabs_in_split) {
-      TabGroupStateChanged(i, tab, std::nullopt, group_id);
+      TabGroupStateChanged(tab, std::nullopt, group_id);
     }
   }
 
@@ -5489,7 +5488,7 @@ void TabStripModel::InsertTabAtIndexImpl(
   OnChange(change, selection);
 
   if (group_model_ && group.has_value()) {
-    TabGroupStateChanged(index, tab_ptr, std::nullopt, group);
+    TabGroupStateChanged(tab_ptr, std::nullopt, group);
   }
 }
 
@@ -5554,8 +5553,7 @@ std::unique_ptr<tabs::TabModel> TabStripModel::RemoveTabFromIndexImpl(
   }
 
   if (group_model_ && old_group) {
-    TabGroupStateChanged(index_before_any_removals, tab_to_remove, old_group,
-                         std::nullopt);
+    TabGroupStateChanged(tab_to_remove, old_group, std::nullopt);
   }
 
   return old_data;
@@ -5635,7 +5633,7 @@ void TabStripModel::MoveTabToIndexImpl(
 
   if (group_model_) {
     if (initial_group != tab->GetGroup()) {
-      TabGroupStateChanged(final_index, tab, initial_group, tab->GetGroup());
+      TabGroupStateChanged(tab, initial_group, tab->GetGroup());
     } else if (initial_group.has_value()) {
       TabGroup* const tab_group =
           group_model_->GetTabGroup(initial_group.value());
@@ -5679,7 +5677,6 @@ void TabStripModel::MoveTabsToIndexImpl(
 }
 
 void TabStripModel::TabGroupStateChanged(
-    int index,
     tabs::TabInterface* tab,
     const std::optional<tab_groups::TabGroupId> initial_group,
     const std::optional<tab_groups::TabGroupId> new_group) {
@@ -5691,12 +5688,14 @@ void TabStripModel::TabGroupStateChanged(
     return;
   }
 
+  const tabs::TabHandle tab_handle = tab->GetHandle();
+
   if (initial_group.has_value()) {
     TabGroup* tab_group = group_model_->GetTabGroup(initial_group.value());
     tab_group->RemoveTab();
 
     // Send the observation
-    NotifyTabGroupedStateChanged(initial_group, std::nullopt, tab, index);
+    NotifyTabGroupedStateChanged(initial_group, std::nullopt, tab_handle);
 
     // If the group model must be deleted, then do that at this point.
     if (tab_group->IsEmpty()) {
@@ -5734,7 +5733,7 @@ void TabStripModel::TabGroupStateChanged(
     NotifyTabGroupCreated(new_group.value());
   }
 
-  NotifyTabGroupedStateChanged(std::nullopt, new_group, tab, index);
+  NotifyTabGroupedStateChanged(std::nullopt, new_group, tab_handle);
 
   // TODO(398256328): Look into replacing the empty visual change with
   // providing the right initial value or migrating clients to working with
@@ -6076,8 +6075,7 @@ void TabStripModel::MoveTabsWithNotifications(
 
     if (group_model_) {
       if (notification.intial_group != tab->GetGroup()) {
-        TabGroupStateChanged(final_index, tab, notification.intial_group,
-                             tab->GetGroup());
+        TabGroupStateChanged(tab, notification.intial_group, tab->GetGroup());
       } else if (notification.intial_group.has_value()) {
         TabGroup* const tab_group =
             group_model_->GetTabGroup(notification.intial_group.value());
