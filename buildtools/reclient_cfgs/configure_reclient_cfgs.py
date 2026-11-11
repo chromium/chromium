@@ -5,7 +5,6 @@
 """This script is used to fetch reclient cfgs."""
 
 import argparse
-import glob
 import logging
 import os
 import posixpath
@@ -159,17 +158,30 @@ def main():
     if not args.rewrapper_cfg_project:
         rbe_project = RbeProjectFromInstance(args.rbe_instance)
 
+    # Remove obsolete configs from existing checkouts.
+    for cfg in ["python", "reproxy.cfg", "win-cross"]:
+        cfgpath = os.path.join(THIS_DIR, cfg)
+        if os.path.isdir(cfgpath):
+
+            def onerror(func, cfgpath, exc_info):
+                os.chmod(cfgpath, 0o644)
+                func(cfgpath)
+
+            shutil.rmtree(cfgpath, onerror=onerror)
+        elif os.path.exists(cfgpath):
+            os.chmod(cfgpath, 0o644)
+            os.remove(cfgpath)
+
     if args.skip_remoteexec_cfg_fetch:
         # remove stale reclient cfgs
-        for cfg in ["chromium-browser-clang", "python", "win-cross"]:
-            cfgpath = os.path.join(THIS_DIR, cfg)
-            if os.path.exists(cfgpath):
+        cfgpath = os.path.join(THIS_DIR, "chromium-browser-clang")
+        if os.path.exists(cfgpath):
 
-                def onerror(func, cfgpath, exc_info):
-                    os.chmod(cfgpath, 0o644)
-                    func(cfgpath)
+            def onerror(func, cfgpath, exc_info):
+                os.chmod(cfgpath, 0o644)
+                func(cfgpath)
 
-                shutil.rmtree(cfgpath, onerror=onerror)
+            shutil.rmtree(cfgpath, onerror=onerror)
         return 0
 
     logging.info("fetch reclient_cfgs for RBE project %s..." % rbe_project)
@@ -178,7 +190,6 @@ def main():
 
     tool_revisions = {
         "chromium-browser-clang": ClangRevision(),
-        "python": "3.10",
     }
     for toolchain in tool_revisions:
         revision = tool_revisions[toolchain]
@@ -202,22 +213,6 @@ def main():
         except CipdError as e:
             logging.error(e)
             return 1
-        win_cross_cfg_dir = "win-cross"
-        wcedir = os.path.join(THIS_DIR, win_cross_cfg_dir, toolchain)
-        if not os.path.exists(wcedir):
-            os.makedirs(wcedir, mode=0o755)
-        if os.path.exists(os.path.join(toolchain_root, win_cross_cfg_dir)):
-            # copy in win-cross/toolchain
-            # as windows may not use symlinks.
-            for cfg in glob.glob(
-                os.path.join(toolchain_root, win_cross_cfg_dir, "*.cfg")
-            ):
-                fname = os.path.join(wcedir, os.path.basename(cfg))
-                if os.path.exists(fname):
-                    os.chmod(fname, 0o777)
-                    os.remove(fname)
-                logging.info("Copy from %s to %s..." % (cfg, fname))
-                shutil.copy(cfg, fname)
     return 0
 
 

@@ -278,7 +278,6 @@
       "chrome_pgo_phase": 0,
       "is_chrome_branded": true,
       "is_official_build": true,
-      "reclient_cfg_dir": "//buildtools/reclient_cfgs/win-cross",
       "symbol_level": 1,
       "target_cpu": "arm64",
       "use_remoteexec": true
@@ -289,7 +288,6 @@
       "chrome_pgo_phase": 0,
       "is_chrome_branded": true,
       "is_official_build": true,
-      "reclient_cfg_dir": "//buildtools/reclient_cfgs/win-cross",
       "symbol_level": 1,
       "use_remoteexec": true
     }

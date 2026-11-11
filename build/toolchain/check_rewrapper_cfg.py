@@ -30,16 +30,6 @@ and re-run `gclient sync`.
 
 See http://go/chrome-linux-build#setup-remote-execution
 for more details."""
-    elif sys.platform == 'linux':
-        return """
-To build with gn arg 'use_remoteexec=true' as a googler on a non corp machine
-see http://go/chrome-linux-build#setup-remote-execution for setup instructions.
-
-To build with gn arg 'use_remoteexec=true' as a non-googler set the appropriate
-`reclient_cfg_dir` value in args.gn.
-See
-https://chromium.googlesource.com/chromium/src/+/main/docs/linux/build_instructions.md#use-remote-execution
-for more details."""
     else:
         return (
             """
@@ -61,7 +51,7 @@ def main():
         )
         return 1
 
-    # Check path to reclient_cc_cfg_file.
+    # Check path to reclient cc cfg file.
     if os.path.isfile(sys.argv[1]):
         return 0
 
