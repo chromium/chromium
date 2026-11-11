@@ -1445,9 +1445,7 @@ void WindowPerformance::AddElementTiming(PerformanceElementTiming* entry) {
   if (HasObserverFor(PerformanceEntry::kElement)) {
     NotifyObserversOfEntry(*entry);
   }
-  if (!IsElementTimingBufferFull()) {
-    AddToElementTimingBuffer(*entry);
-  }
+  AddToElementTimingBuffer(*entry);
 }
 
 void WindowPerformance::AddContainerTiming(PerformanceContainerTiming* entry) {
