@@ -3,7 +3,7 @@ Short Name: roboto-classic
 URL: https://github.com/googlefonts/roboto-classic
 Version: N/A
 Date: 2026-10-13
-Update Mechanism: Manual
+Update Mechanism: Static (https://crbug.com/584037521)
 License: OFL-1.1
 License File: OFL.txt
 Security Critical: no
