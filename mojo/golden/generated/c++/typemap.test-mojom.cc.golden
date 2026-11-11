@@ -187,14 +187,12 @@ void IFaceWithTypemapProxy::Echo(
       ((kAllowInterrupt) ? 0 : mojo::Message::kFlagNoInterrupt) |
       ((is_urgent) ? mojo::Message::kFlagIsUrgent : 0);
 
-  const size_t estimated_payload_size =
-    0;
   STACK_UNINITIALIZED mojo::Message message(
-      std::to_underlying(messages::IFaceWithTypemap::kEcho), kFlags, estimated_payload_size);
-  mojo::internal::MessageFragment<
-      ::golden::internal::IFaceWithTypemap_Echo_Params_Data> params(
-          message);
-  params.Allocate();
+      std::to_underlying(messages::IFaceWithTypemap::kEcho), kFlags,
+      {sizeof(::golden::internal::IFaceWithTypemap_Echo_Params_Data), 0});
+  mojo::internal::MessageFragment<::golden::internal::IFaceWithTypemap_Echo_Params_Data> params(
+      message);
+  params.ClaimInitialPayload();
   mojo::internal::MessageFragment<
       typename decltype(params->param)::BaseType> param_fragment(
           params.message());
@@ -286,14 +284,12 @@ void IFaceWithTypemap_Echo_ProxyToResponder::Run(
    });
 #endif
 
-  const size_t estimated_payload_size =
-    0;
   STACK_UNINITIALIZED mojo::Message message(
-      std::to_underlying(messages::IFaceWithTypemap::kEcho), proxy->response_flags(), estimated_payload_size);
-  mojo::internal::MessageFragment<
-      ::golden::internal::IFaceWithTypemap_Echo_ResponseParams_Data> params(
-          message);
-  params.Allocate();
+      std::to_underlying(messages::IFaceWithTypemap::kEcho), proxy->response_flags(),
+      {sizeof(::golden::internal::IFaceWithTypemap_Echo_ResponseParams_Data), 0});
+  mojo::internal::MessageFragment<::golden::internal::IFaceWithTypemap_Echo_ResponseParams_Data> params(
+      message);
+  params.ClaimInitialPayload();
   mojo::internal::MessageFragment<
       typename decltype(params->out)::BaseType> out_fragment(
           params.message());

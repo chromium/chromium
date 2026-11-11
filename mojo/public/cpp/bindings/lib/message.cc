@@ -332,20 +332,24 @@ Message::Message(uint32_t name,
 Message::Message(uint32_t name,
                  uint32_t flags,
                  MojoCreateMessageFlags create_message_flags,
-                 size_t estimated_payload_size)
+                 size_t estimated_payload_size,
+                 internal::StructHeader payload_header)
     : Message(name,
               flags,
-              0,
+              payload_header.num_bytes,
               0,
               create_message_flags,
               nullptr,
-              estimated_payload_size) {}
+              estimated_payload_size) {
+  size_t index = payload_buffer_.Allocate(payload_header.num_bytes);
+  DCHECK_EQ(index, sizeof(internal::MessageHeaderV3));
+  *payload_buffer_.Get<internal::StructHeader>(index) = payload_header;
+}
 
-Message::Message(uint32_t name, uint32_t flags, size_t estimated_payload_size)
-    : Message(name,
-              flags,
-              MOJO_CREATE_MESSAGE_FLAG_NONE,
-              estimated_payload_size) {}
+Message::Message(uint32_t name,
+                 uint32_t flags,
+                 internal::StructHeader payload_header)
+    : Message(name, flags, MOJO_CREATE_MESSAGE_FLAG_NONE, 0, payload_header) {}
 
 Message::Message(ScopedMessageHandle handle,
                  const internal::MessageHeaderV1& header)

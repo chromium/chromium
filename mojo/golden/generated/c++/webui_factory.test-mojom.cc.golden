@@ -111,14 +111,9 @@ void PageProxy::OnSomethingHappened(
       ((kAllowInterrupt) ? 0 : mojo::Message::kFlagNoInterrupt) |
       ((is_urgent) ? mojo::Message::kFlagIsUrgent : 0);
 
-  const size_t estimated_payload_size =
-    0;
   STACK_UNINITIALIZED mojo::Message message(
-      std::to_underlying(messages::Page::kOnSomethingHappened), kFlags, estimated_payload_size);
-  mojo::internal::MessageFragment<
-      ::golden::internal::Page_OnSomethingHappened_Params_Data> params(
-          message);
-  params.Allocate();
+      std::to_underlying(messages::Page::kOnSomethingHappened), kFlags,
+      {sizeof(::golden::internal::Page_OnSomethingHappened_Params_Data), 0});
 
 #if defined(ENABLE_IPC_FUZZER)
   message.set_interface_name(Page::Name_);
@@ -248,14 +243,9 @@ void PageHandlerProxy::DoSomething(
       ((kAllowInterrupt) ? 0 : mojo::Message::kFlagNoInterrupt) |
       ((is_urgent) ? mojo::Message::kFlagIsUrgent : 0);
 
-  const size_t estimated_payload_size =
-    0;
   STACK_UNINITIALIZED mojo::Message message(
-      std::to_underlying(messages::PageHandler::kDoSomething), kFlags, estimated_payload_size);
-  mojo::internal::MessageFragment<
-      ::golden::internal::PageHandler_DoSomething_Params_Data> params(
-          message);
-  params.Allocate();
+      std::to_underlying(messages::PageHandler::kDoSomething), kFlags,
+      {sizeof(::golden::internal::PageHandler_DoSomething_Params_Data), 0});
 
 #if defined(ENABLE_IPC_FUZZER)
   message.set_interface_name(PageHandler::Name_);
@@ -395,14 +385,12 @@ void WebUiPageHandlerFactoryProxy::CreatePageHandler(
       ((kAllowInterrupt) ? 0 : mojo::Message::kFlagNoInterrupt) |
       ((is_urgent) ? mojo::Message::kFlagIsUrgent : 0);
 
-  const size_t estimated_payload_size =
-    0;
   STACK_UNINITIALIZED mojo::Message message(
-      std::to_underlying(messages::WebUiPageHandlerFactory::kCreatePageHandler), kFlags, estimated_payload_size);
-  mojo::internal::MessageFragment<
-      ::golden::internal::WebUiPageHandlerFactory_CreatePageHandler_Params_Data> params(
-          message);
-  params.Allocate();
+      std::to_underlying(messages::WebUiPageHandlerFactory::kCreatePageHandler), kFlags,
+      {sizeof(::golden::internal::WebUiPageHandlerFactory_CreatePageHandler_Params_Data), 0});
+  mojo::internal::MessageFragment<::golden::internal::WebUiPageHandlerFactory_CreatePageHandler_Params_Data> params(
+      message);
+  params.ClaimInitialPayload();
 
   
   mojo::internal::Serialize<mojo::InterfacePtrDataView<::golden::PageInterfaceBase>>(

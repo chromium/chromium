@@ -46,6 +46,13 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) MessageFragmentBase {
   void SetPointer(size_t offset_in_parent,
                   const MessageFragmentBase& child_fragment);
 
+  // Claims the initial parameter struct pre-allocated at the start of
+  // `message_`'s payload by `Message(..., StructHeader)`.
+  void ClaimInitialPayload() {
+    DCHECK(is_null());
+    index_ = sizeof(MessageHeaderV3);
+  }
+
   void ClaimOffset(const MessageFragmentBase& parent, size_t offset_in_parent) {
     DCHECK(!parent.is_null());
     index_ = parent.index_ + offset_in_parent;

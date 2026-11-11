@@ -16,8 +16,9 @@
     - method parameters/response parameters: the input is a list of
       arguments. #}
 {%- macro serialize(struct, struct_display_name, input_field_pattern, fragment,
-        send_validation_compiler_setting, input_may_be_temp=False) -%}
-  {{fragment}}.Allocate();
+        send_validation_compiler_setting, input_may_be_temp=False,
+        already_allocated=False) -%}
+  {{fragment}}.{{'ClaimInitialPayload' if already_allocated else 'Allocate'}}();
 {%- for pf in struct.packed.packed_fields_in_ordinal_order %}
 
 {%-   if pf|is_nullable_value_kind_packed_field %}

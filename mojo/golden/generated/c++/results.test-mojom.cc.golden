@@ -398,14 +398,12 @@ void ResultInterfaceProxy::Method(
       ((kAllowInterrupt) ? 0 : mojo::Message::kFlagNoInterrupt) |
       ((is_urgent) ? mojo::Message::kFlagIsUrgent : 0);
 
-  const size_t estimated_payload_size =
-    0;
   STACK_UNINITIALIZED mojo::Message message(
-      std::to_underlying(messages::ResultInterface::kMethod), kFlags, estimated_payload_size);
-  mojo::internal::MessageFragment<
-      ::golden::internal::ResultInterface_Method_Params_Data> params(
-          message);
-  params.Allocate();
+      std::to_underlying(messages::ResultInterface::kMethod), kFlags,
+      {sizeof(::golden::internal::ResultInterface_Method_Params_Data), 0});
+  mojo::internal::MessageFragment<::golden::internal::ResultInterface_Method_Params_Data> params(
+      message);
+  params.ClaimInitialPayload();
 
   params->a = in_a;
 
@@ -448,14 +446,12 @@ base::expected<
       ((kAllowInterrupt) ? 0 : mojo::Message::kFlagNoInterrupt) |
       ((is_urgent) ? mojo::Message::kFlagIsUrgent : 0);
 
-  const size_t estimated_payload_size =
-    0;
   STACK_UNINITIALIZED mojo::Message message(
-      std::to_underlying(messages::ResultInterface::kSyncMethod), kFlags, estimated_payload_size);
-  mojo::internal::MessageFragment<
-      ::golden::internal::ResultInterface_SyncMethod_Params_Data> params(
-          message);
-  params.Allocate();
+      std::to_underlying(messages::ResultInterface::kSyncMethod), kFlags,
+      {sizeof(::golden::internal::ResultInterface_SyncMethod_Params_Data), 0});
+  mojo::internal::MessageFragment<::golden::internal::ResultInterface_SyncMethod_Params_Data> params(
+      message);
+  params.ClaimInitialPayload();
 
   params->a = param_a;
 
@@ -506,14 +502,12 @@ void ResultInterfaceProxy::SyncMethod(
       ((kAllowInterrupt) ? 0 : mojo::Message::kFlagNoInterrupt) |
       ((is_urgent) ? mojo::Message::kFlagIsUrgent : 0);
 
-  const size_t estimated_payload_size =
-    0;
   STACK_UNINITIALIZED mojo::Message message(
-      std::to_underlying(messages::ResultInterface::kSyncMethod), kFlags, estimated_payload_size);
-  mojo::internal::MessageFragment<
-      ::golden::internal::ResultInterface_SyncMethod_Params_Data> params(
-          message);
-  params.Allocate();
+      std::to_underlying(messages::ResultInterface::kSyncMethod), kFlags,
+      {sizeof(::golden::internal::ResultInterface_SyncMethod_Params_Data), 0});
+  mojo::internal::MessageFragment<::golden::internal::ResultInterface_SyncMethod_Params_Data> params(
+      message);
+  params.ClaimInitialPayload();
 
   params->a = in_a;
 
@@ -603,14 +597,12 @@ void ResultInterface_Method_ProxyToResponder::Run(
    });
 #endif
 
-  const size_t estimated_payload_size =
-    0;
   STACK_UNINITIALIZED mojo::Message message(
-      std::to_underlying(messages::ResultInterface::kMethod), proxy->response_flags(), estimated_payload_size);
-  mojo::internal::MessageFragment<
-      ::golden::internal::ResultInterface_Method_ResponseParams_Data> params(
-          message);
-  params.Allocate();
+      std::to_underlying(messages::ResultInterface::kMethod), proxy->response_flags(),
+      {sizeof(::golden::internal::ResultInterface_Method_ResponseParams_Data), 0});
+  mojo::internal::MessageFragment<::golden::internal::ResultInterface_Method_ResponseParams_Data> params(
+      message);
+  params.ClaimInitialPayload();
   mojo::internal::MessageFragment<decltype(params->result)>
       result_fragment(params.message());
   result_fragment.ClaimOffset(params, 8);
@@ -711,14 +703,12 @@ void ResultInterface_SyncMethod_ProxyToResponder::Run(
    });
 #endif
 
-  const size_t estimated_payload_size =
-    0;
   STACK_UNINITIALIZED mojo::Message message(
-      std::to_underlying(messages::ResultInterface::kSyncMethod), proxy->response_flags(), estimated_payload_size);
-  mojo::internal::MessageFragment<
-      ::golden::internal::ResultInterface_SyncMethod_ResponseParams_Data> params(
-          message);
-  params.Allocate();
+      std::to_underlying(messages::ResultInterface::kSyncMethod), proxy->response_flags(),
+      {sizeof(::golden::internal::ResultInterface_SyncMethod_ResponseParams_Data), 0});
+  mojo::internal::MessageFragment<::golden::internal::ResultInterface_SyncMethod_ResponseParams_Data> params(
+      message);
+  params.ClaimInitialPayload();
   mojo::internal::MessageFragment<decltype(params->result)>
       result_fragment(params.message());
   result_fragment.ClaimOffset(params, 8);
