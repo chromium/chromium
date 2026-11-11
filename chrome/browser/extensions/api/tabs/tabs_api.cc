@@ -86,7 +86,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/unload_controller.h"
 #include "chrome/browser/ui/waap/initial_webui_window_metrics_manager.h"
-#include "chrome/browser/ui/waap/waap_utils.h"
+#include "chrome/browser/ui/waap/waap_utils.h"  // nogncheck
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "components/split_tabs/split_tab_visual_data.h"
 #include "components/webapps/isolated_web_apps/scheme.h"

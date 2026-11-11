@@ -2,104 +2,105 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-assert(!is_android)
+if (!is_android) {
+  static_library("waap") {
+    sources = [
+      "waap_ui_metrics_recorder.cc",
+      "waap_ui_metrics_recorder.h",
+      "waap_ui_metrics_service.cc",
+      "waap_ui_metrics_service.h",
+      "waap_ui_metrics_service_factory.cc",
+      "waap_ui_metrics_service_factory.h",
+    ]
+    deps = [
+      ":waap_utils",
+      "//base",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/sessions",
+      "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/common:constants",
+      "//components/keyed_service/core",
+      "//components/startup_metric_utils",
+      "//content/public/browser",
+      "//ui/base/unowned_user_data",
+      "//ui/views",
+    ]
+  }
 
-static_library("waap") {
-  sources = [
-    "waap_ui_metrics_recorder.cc",
-    "waap_ui_metrics_recorder.h",
-    "waap_ui_metrics_service.cc",
-    "waap_ui_metrics_service.h",
-    "waap_ui_metrics_service_factory.cc",
-    "waap_ui_metrics_service_factory.h",
-  ]
-  deps = [
-    ":waap_utils",
-    "//base",
-    "//chrome/browser/profiles:profile",
-    "//chrome/browser/sessions",
-    "//chrome/browser/ui:ui_features",
-    "//chrome/browser/ui/browser_window",
-    "//chrome/common:constants",
-    "//components/keyed_service/core",
-    "//components/startup_metric_utils",
-    "//content/public/browser",
-    "//ui/base/unowned_user_data",
-    "//ui/views",
-  ]
-}
+  source_set("manager") {
+    public = [
+      "initial_web_ui_manager.h",
+      "initial_webui_profile_service.h",
+      "initial_webui_profile_service_factory.h",
+    ]
+    sources = [
+      "initial_web_ui_manager.cc",
+      "initial_webui_profile_service.cc",
+      "initial_webui_profile_service_factory.cc",
+    ]
+    public_deps = [
+      "//chrome/browser/ui/webui/top_chrome",
+      "//chrome/browser/ui/webui/webui_toolbar",
+      "//ui/color",
+    ]
+    deps = [
+      ":waap_utils",
+      ":window_metrics_manager",
+      "//base",
+      "//chrome/app:generated_resources",
+      "//chrome/browser/lifetime",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui:browser_manager_service",
+      "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/views/toolbar",
+      "//chrome/browser/ui/webui:webui_util",
+      "//chrome/common:chrome_features",
+      "//chrome/common:constants",
+      "//components/prefs",
+      "//content/public/browser",
+      "//ui/base",
+      "//ui/base/unowned_user_data",
+      "//ui/views",
+    ]
+  }
 
-source_set("manager") {
-  public = [
-    "initial_web_ui_manager.h",
-    "initial_webui_profile_service.h",
-    "initial_webui_profile_service_factory.h",
-  ]
-  sources = [
-    "initial_web_ui_manager.cc",
-    "initial_webui_profile_service.cc",
-    "initial_webui_profile_service_factory.cc",
-  ]
-  public_deps = [
-    "//chrome/browser/ui/webui/top_chrome",
-    "//chrome/browser/ui/webui/webui_toolbar",
-    "//ui/color",
-  ]
-  deps = [
-    ":waap_utils",
-    ":window_metrics_manager",
-    "//base",
-    "//chrome/browser/lifetime",
-    "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui:browser_manager_service",
-    "//chrome/browser/ui:ui_features",
-    "//chrome/browser/ui/browser_window",
-    "//chrome/browser/ui/views/toolbar",
-    "//chrome/browser/ui/webui:webui_util",
-    "//chrome/common:chrome_features",
-    "//chrome/common:constants",
-    "//components/prefs",
-    "//content/public/browser",
-    "//ui/base",
-    "//ui/base/unowned_user_data",
-    "//ui/views",
-  ]
-}
+  source_set("window_creation") {
+    public = [ "window_creation.h" ]
+    sources = [ "window_creation.cc" ]
+    public_deps = [
+      ":waap_utils",
+      "//chrome/browser/ui/browser_window:create_browser_window",
+    ]
+    deps = [
+      ":window_metrics_manager",
+      "//base",
+    ]
+  }
 
-source_set("window_creation") {
-  public = [ "window_creation.h" ]
-  sources = [ "window_creation.cc" ]
-  public_deps = [
-    ":waap_utils",
-    "//chrome/browser/ui/browser_window:create_browser_window",
-  ]
-  deps = [
-    ":window_metrics_manager",
-    "//base",
-  ]
-}
-
-source_set("window_metrics_manager") {
-  sources = [
-    "initial_webui_metrics_dispatcher.cc",
-    "initial_webui_metrics_dispatcher.h",
-    "initial_webui_window_metrics_manager.cc",
-    "initial_webui_window_metrics_manager.h",
-  ]
-  public_deps = [
-    ":waap_utils",
-    "//base",
-    "//content/public/browser",
-    "//ui/base/unowned_user_data",
-  ]
-  deps = [
-    ":waap",
-    "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui:ui_features",
-    "//chrome/browser/ui/browser_window",
-    "//chrome/browser/ui/webui:webui_util",
-    "//third_party/blink/public/common",
-  ]
+  source_set("window_metrics_manager") {
+    sources = [
+      "initial_webui_metrics_dispatcher.cc",
+      "initial_webui_metrics_dispatcher.h",
+      "initial_webui_window_metrics_manager.cc",
+      "initial_webui_window_metrics_manager.h",
+    ]
+    public_deps = [
+      ":waap_utils",
+      "//base",
+      "//content/public/browser",
+      "//ui/base/unowned_user_data",
+    ]
+    deps = [
+      ":waap",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/webui:webui_util",
+      "//third_party/blink/public/common",
+    ]
+  }
 }
 
 source_set("waap_utils") {
@@ -113,123 +114,142 @@ source_set("waap_utils") {
     "//chrome/browser/page_load_metrics",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/task_manager",
-    "//chrome/browser/themes",
     "//chrome/browser/ui/prefs",
-    "//chrome/browser/ui/webui/top_chrome",
     "//chrome/common",
     "//chrome/common:chrome_features",
     "//components/performance_manager",
     "//components/ukm/content",
     "//content/public/browser",
     "//content/public/common",
-    "//ui/color",
-    "//ui/native_theme",
-    "//ui/views/controls/webview",
+    "//skia",
     "//url",
   ]
+  if (is_android) {
+    deps += [ "//chrome/browser/flags:flags_android" ]
+  } else {
+    deps += [
+      "//chrome/browser/themes",
+      "//chrome/browser/ui/webui/top_chrome",
+      "//ui/base",
+      "//ui/color",
+      "//ui/native_theme",
+      "//ui/views/controls/webview",
+    ]
+  }
 }
 
-source_set("browser_tests") {
-  testonly = true
-  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-  sources = [
-    "initial_webui_browsertest.cc",
-    "window_creation_browsertest.cc",
-  ]
-  deps = [
-    ":manager",
-    ":waap",
-    ":waap_utils",
-    ":window_creation",
-    ":window_metrics_manager",
-    "//base",
-    "//base/test:test_support",
-    "//chrome/browser/extensions",
-    "//chrome/browser/page_load_metrics",
-    "//chrome/browser/prefs",
-    "//chrome/browser/prefs:util",
-    "//chrome/browser/profiles:profile",
-    "//chrome/browser/profiles:profile_test_util",
-    "//chrome/browser/sessions",
-    "//chrome/browser/ui:browser_command_controller",
-    "//chrome/browser/ui:browser_commands",
-    "//chrome/browser/ui:browser_window_header",
-    "//chrome/browser/ui/browser_window",
-    "//chrome/browser/ui/browser_window:create_browser_window",
-    "//chrome/browser/ui/startup",
-    "//chrome/browser/ui/tabs/organizer",
-    "//chrome/browser/ui/views/frame:toolbar_button_provider",
-    "//chrome/browser/ui/webui:webui_util",
-    "//chrome/browser/ui/webui/webui_toolbar",
-    "//chrome/browser/ui/webui/webui_toolbar:test_support",
-    "//chrome/browser/ui/webui/webui_toolbar/adapters:impl",
-    "//chrome/common:chrome_features",
-    "//chrome/common:constants",
-    "//chrome/test:test_support",
-    "//chrome/test/base:profile_lifecycle_test_utils",
-    "//components/keep_alive_registry",
-    "//components/metrics:content",
-    "//components/metrics/mapping",
-    "//components/metrics/mapping:metrics_name_mapping_proto",
-    "//components/prefs",
-    "//components/startup_metric_utils",
-    "//components/ukm:test_support",
-    "//content/public/browser",
-    "//content/public/common",
-    "//content/test:test_support",
-    "//extensions/browser:test_support",
-    "//extensions/common",
-    "//services/metrics/public/cpp:metrics_cpp",
-    "//testing/gmock",
-    "//testing/gtest",
-    "//third_party/blink/public/common",
-    "//ui/base",
-    "//url",
-  ]
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [
+      "initial_webui_browsertest.cc",
+      "window_creation_browsertest.cc",
+    ]
+    deps = [
+      ":manager",
+      ":waap",
+      ":waap_utils",
+      ":window_creation",
+      ":window_metrics_manager",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser/extensions",
+      "//chrome/browser/page_load_metrics",
+      "//chrome/browser/prefs",
+      "//chrome/browser/prefs:util",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/profiles:profile_test_util",
+      "//chrome/browser/sessions",
+      "//chrome/browser/ui:browser_command_controller",
+      "//chrome/browser/ui:browser_commands",
+      "//chrome/browser/ui:browser_window_header",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/browser_window:create_browser_window",
+      "//chrome/browser/ui/startup",
+      "//chrome/browser/ui/tabs/organizer",
+      "//chrome/browser/ui/views/frame:toolbar_button_provider",
+      "//chrome/browser/ui/webui:webui_util",
+      "//chrome/browser/ui/webui/webui_toolbar",
+      "//chrome/browser/ui/webui/webui_toolbar:test_support",
+      "//chrome/browser/ui/webui/webui_toolbar/adapters:impl",
+      "//chrome/common:chrome_features",
+      "//chrome/common:constants",
+      "//chrome/test:test_support",
+      "//chrome/test/base:profile_lifecycle_test_utils",
+      "//components/keep_alive_registry",
+      "//components/metrics:content",
+      "//components/metrics/mapping",
+      "//components/metrics/mapping:metrics_name_mapping_proto",
+      "//components/prefs",
+      "//components/startup_metric_utils",
+      "//components/ukm:test_support",
+      "//content/public/browser",
+      "//content/public/common",
+      "//content/test:test_support",
+      "//extensions/browser:test_support",
+      "//extensions/common",
+      "//services/metrics/public/cpp:metrics_cpp",
+      "//testing/gmock",
+      "//testing/gtest",
+      "//third_party/blink/public/common",
+      "//ui/base",
+      "//url",
+    ]
+  }
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "initial_web_ui_manager_unittest.cc",
-    "initial_webui_metrics_dispatcher_unittest.cc",
-    "initial_webui_profile_service_unittest.cc",
-    "initial_webui_window_metrics_manager_unittest.cc",
-    "waap_ui_metrics_recorder_unittest.cc",
-    "waap_ui_metrics_service_unittest.cc",
-    "waap_utils_unittest.cc",
-  ]
+  sources = [ "waap_utils_unittest.cc" ]
   deps = [
-    ":manager",
-    ":waap",
     ":waap_utils",
-    ":window_metrics_manager",
     "//base/test:test_support",
-    "//chrome/browser/lifetime",
+    "//chrome/app:generated_resources",
     "//chrome/browser/task_manager",
-    "//chrome/browser/ui:browser_manager_service",
-    "//chrome/browser/ui:ui_features",
-    "//chrome/browser/ui/browser_window",
-    "//chrome/browser/ui/browser_window/test:test_support",
     "//chrome/browser/ui/prefs",
-    "//chrome/browser/ui/webui/top_chrome",
     "//chrome/common",
-    "//chrome/common:constants",
-    "//chrome/test:test_support",
+    "//chrome/common:chrome_features",
     "//chrome/test/base:chrome_render_view_host_test_harness",
     "//components/performance_manager",
     "//components/performance_manager/test_support:test_support_common",
-    "//components/prefs",
-    "//components/startup_metric_utils",
     "//content/public/browser",
     "//content/public/common",
-    "//content/test:test_support",
-    "//testing/gmock",
     "//testing/gtest",
-    "//third_party/blink/public/common",
-    "//ui/base:test_support",
-    "//ui/events",
-    "//ui/events:test_support",
-    "//ui/views",
+    "//url",
   ]
+  if (is_android) {
+    deps += [ "//chrome/browser/flags:flags_android" ]
+  } else {
+    sources += [
+      "initial_web_ui_manager_unittest.cc",
+      "initial_webui_metrics_dispatcher_unittest.cc",
+      "initial_webui_profile_service_unittest.cc",
+      "initial_webui_window_metrics_manager_unittest.cc",
+      "waap_ui_metrics_recorder_unittest.cc",
+      "waap_ui_metrics_service_unittest.cc",
+    ]
+    deps += [
+      ":manager",
+      ":waap",
+      ":window_metrics_manager",
+      "//chrome/browser/lifetime",
+      "//chrome/browser/ui:browser_manager_service",
+      "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/browser_window/test:test_support",
+      "//chrome/browser/ui/webui/top_chrome",
+      "//chrome/test:test_support",
+      "//components/prefs",
+      "//components/startup_metric_utils",
+      "//content/test:test_support",
+      "//skia",
+      "//testing/gmock",
+      "//third_party/blink/public/common",
+      "//ui/base:test_support",
+      "//ui/color",
+      "//ui/events",
+      "//ui/events:test_support",
+      "//ui/views",
+    ]
+  }
 }

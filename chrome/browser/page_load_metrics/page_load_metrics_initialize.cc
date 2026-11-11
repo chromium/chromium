@@ -56,7 +56,6 @@
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
-#include "chrome/browser/ui/waap/waap_utils.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
 #include "components/page_load_metrics/browser/features.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
@@ -97,7 +96,7 @@
 #include "chrome/browser/page_load_metrics/observers/non_tab_webui_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/top_chrome_webui_metrics_observer.h"
 #include "chrome/browser/ui/read_anything/read_anything_soft_navigation_observer.h"
-#include "chrome/browser/ui/waap/waap_utils.h"
+#include "chrome/browser/ui/waap/waap_utils.h"  // nogncheck
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
 // The //chrome/browser/ui/webui/top_chrome dep is in the !is_android block of
 // BUILD.gn, but that target now also exists on desktop-android, and gn check

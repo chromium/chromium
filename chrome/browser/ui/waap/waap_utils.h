@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "url/gurl.h"
 
 class Profile;
@@ -93,20 +94,21 @@ enum class InitialWebUISurfaceSyncResult {
 // LINT.ThenChange(//tools/metrics/histograms/metadata/ui/enums.xml:InitialWebUISurfaceSyncResult)
 
 // Returns true if the given URL or SecurityPrincipal is for the initial WebUI.
-// This is only relevant on non-Android platforms.
 bool IsForInitialWebUI(const GURL& url);
 bool IsForInitialWebUI(const content::SecurityPrincipal& principal);
 
 class PrewarmHelper {
  public:
-  // Configures the WebContents used for the initial WebUI (e.g. page load
-  // metrics, background color, zoom gestures, and color provider source).
-  // `profile` is the profile of the window showing `web_contents`. When
-  // `web_contents` is in TopChromeWebUIProfile, `profile` is first set as its
-  // user profile.
+  // Configures the WebContents used for a non-tab WebUI (e.g. page type, page
+  // load metrics, task manager tag, background color, and zoom gestures).
+  // `profile` is the profile of the window showing `web_contents`. On
+  // non-Android platforms, when `web_contents` is in TopChromeWebUIProfile,
+  // `profile` is first set as its user profile.
   static void ConfigureWebUIContents(content::WebContents* web_contents,
-                                     Profile* profile);
+                                     Profile* profile,
+                                     int task_manager_string_id);
 
+#if !BUILDFLAG(IS_ANDROID)
   // Returns the color provider key that `ConfigureWebUIContents()` gives the
   // WebContents, which the WebUI keeps until it is attached to a window.
   static ui::ColorProviderKey GetColorProviderKey(Profile* profile);
@@ -116,9 +118,12 @@ class PrewarmHelper {
   // ConfigureWebUIContents.
   // If `pre_navigate` is true, starts loading the toolbar URL; otherwise, only
   // initializes the renderer process.
+  // TODO(crbug.com/581783426): Enable on Android for the tab strip new tab
+  // button, once TopChromeWebUIProfile is supported there.
   static std::unique_ptr<content::WebContents> PrewarmWebUIContents(
       Profile* profile,
       bool pre_navigate);
+#endif  // !BUILDFLAG(IS_ANDROID)
 };
 
 }  // namespace waap

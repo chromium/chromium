@@ -817,9 +817,11 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20261109",
+                    "name": "Enabled_20261110",
                     "enable_features": [
-                        "AndroidNewTabButtonTabstripWebUI"
+                        "AndroidNewTabButtonTabstripWebUI",
+                        "InitialWebUI",
+                        "WebUIToolbarFrameEvictionOptOut"
                     ]
                 }
             ]

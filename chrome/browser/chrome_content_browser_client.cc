@@ -220,6 +220,7 @@
 #include "chrome/browser/ui/startup/url_util.h"
 #include "chrome/browser/ui/tab_contents/chrome_web_contents_view_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/waap/waap_utils.h"
 #include "chrome/browser/ui/webid/identity_dialog_controller.h"
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
 #include "chrome/browser/ui/webui/internal_debug_pages_disabled/internal_debug_pages_disabled_ui.h"
@@ -595,7 +596,6 @@
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
-#include "chrome/browser/ui/waap/waap_utils.h"
 #include "chrome/browser/ui/webui/chrome_content_browser_client_webui_part.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_user_profile.h"
 #include "chrome/browser/ui/webui/util/webui_util_desktop.h"
@@ -4722,17 +4722,8 @@ void ChromeContentBrowserClient::OverrideWebPreferences(
   Profile* profile = GetProfileForWebPreferences(web_contents);
   PrefService* prefs = profile->GetPrefs();
 
-// Fill font preferences. These are not registered on Android unless we're built
-// with extensions (the chrome.fontSettings API can change these).
-// - http://crbug.com/40337093, http://crbug.com/41304476.
-#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
-  bool is_initial_webui = false;
-#if !BUILDFLAG(IS_ANDROID)
-  is_initial_webui =
+  const bool is_initial_webui =
       waap::IsForInitialWebUI(main_frame_site.GetSecurityPrincipal());
-#endif
-  // Enabling the FontFamilyCache needs some KeyedService that might not be
-  // available for some irregular profiles, like the System Profile.
   if (is_initial_webui) {
     // Initial WebUI uses the browser UI font from text_defaults.css and
     // layout_constants_v0.css rather than user web-content font preferences.
@@ -4746,7 +4737,16 @@ void ChromeContentBrowserClient::OverrideWebPreferences(
     web_prefs->cursive_font_family_map.clear();
     web_prefs->fantasy_font_family_map.clear();
     web_prefs->math_font_family_map.clear();
-  } else if (!AreKeyedServicesDisabledForProfileByDefault(profile)) {
+  }
+
+// Fill font preferences. These are not registered on Android unless we're built
+// with extensions (the chrome.fontSettings API can change these).
+// - http://crbug.com/40337093, http://crbug.com/41304476.
+#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+  // Enabling the FontFamilyCache needs some KeyedService that might not be
+  // available for some irregular profiles, like the System Profile.
+  if (!is_initial_webui &&
+      !AreKeyedServicesDisabledForProfileByDefault(profile)) {
     FontFamilyCache::FillFontFamilyMap(profile,
                                        prefs::kWebKitStandardFontFamilyMap,
                                        &web_prefs->standard_font_family_map);

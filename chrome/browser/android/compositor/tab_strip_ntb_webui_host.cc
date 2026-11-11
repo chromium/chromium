@@ -12,13 +12,14 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
-#include "chrome/browser/page_load_metrics/page_load_metrics_initialize.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/android_tab_model_impl/android_tab_strip_api_injector.h"
+#include "chrome/browser/ui/waap/waap_utils.h"
 #include "chrome/browser/ui/webui/tabstrip_ntb/tabstrip_ntb_ui.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/browser_apis/tab_strip/tab_strip_service.h"
 #include "components/browser_apis/tab_strip/tab_strip_service_impl.h"
 #include "components/sessions/core/session_id.h"
@@ -96,9 +97,8 @@ TabStripNtbWebUiHost::TabStripNtbWebUiHost(
   web_contents_ = CreateWebContents(profile, url);
   web_contents_->SetOwnerLocationForDebug(FROM_HERE);
   web_contents_->SetDelegate(this);
-  // The page only paints the button; the tab strip behind must show through.
-  web_contents_->SetPageBaseBackgroundColor(SK_ColorTRANSPARENT);
-  InitializePageLoadMetricsForWebContents(web_contents_.get());
+  waap::PrewarmHelper::ConfigureWebUIContents(web_contents_.get(), profile,
+                                              IDS_ACCNAME_NEWTAB);
   Observe(web_contents_.get());
   if (content::RenderFrameHost* main_frame =
           web_contents_->GetPrimaryMainFrame()) {

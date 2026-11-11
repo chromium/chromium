@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/waap/waap_utils.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/grit/generated_resources.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
@@ -77,8 +78,8 @@ InitialWebUIManager* InitialWebUIManager::From(
 void InitialWebUIManager::ConfigureToolbarWebContents(
     content::WebContents* web_contents,
     BrowserWindowInterface* browser) {
-  waap::PrewarmHelper::ConfigureWebUIContents(web_contents,
-                                              browser->GetProfile());
+  waap::PrewarmHelper::ConfigureWebUIContents(
+      web_contents, browser->GetProfile(), IDS_TASK_MANAGER_WEBUI_TOOLBAR);
   // Ensure the browser window interface is associated with the WebContents
   // before the WebUI acts on it.
   webui::SetBrowserWindowInterface(web_contents, browser);
