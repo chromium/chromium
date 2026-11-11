@@ -18,6 +18,7 @@
 #include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -393,6 +394,7 @@ TEST_F(DeviceCommandQueryGeolocationJobTest, CommandFailsForUnmanagedDevice) {
 }
 
 TEST_F(DeviceCommandQueryGeolocationJobTest, GetLocationSuccess) {
+  base::HistogramTester histogram_tester;
   const double latitude = 51.0;
   const double longitude = -0.1;
   const double accuracy = 1200.4;
@@ -423,6 +425,9 @@ TEST_F(DeviceCommandQueryGeolocationJobTest, GetLocationSuccess) {
                   ->GetTestingLocalState()
                   ->GetBoolean(
                       ash::prefs::kDeviceCommandQueryGeolocationReported));
+  histogram_tester.ExpectUniqueSample(
+      "SimpleGeolocation.Provider.ClientId",
+      ash::SystemLocationProvider::ClientId::kQueryGeolocationCommand, 1);
 }
 
 TEST_F(DeviceCommandQueryGeolocationJobTest, GetLocationTimeout) {

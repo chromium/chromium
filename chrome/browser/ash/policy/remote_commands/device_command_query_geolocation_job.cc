@@ -198,7 +198,7 @@ void DeviceCommandQueryGeolocationJob::RunImplInternal(
       /*send_cell_towers=*/true,
       base::BindOnce(&DeviceCommandQueryGeolocationJob::OnLocationResponse,
                      weak_factory_.GetWeakPtr(), std::move(result_callback)),
-      ash::SystemLocationProvider::ClientId::kGeolocationController);
+      ash::SystemLocationProvider::ClientId::kQueryGeolocationCommand);
 }
 
 void DeviceCommandQueryGeolocationJob::OnLocationResponse(
