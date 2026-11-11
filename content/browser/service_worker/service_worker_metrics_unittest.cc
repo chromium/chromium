@@ -54,9 +54,6 @@ TEST(ServiceWorkerMetricsTest, EmbeddedWorkerStartTiming) {
   histogram_tester.ExpectTimeBucketCount(
       "ServiceWorker.StartTiming.StartToReceivedStartWorker",
       times.remote_start_worker_received - times.local_start, 1);
-  histogram_tester.ExpectTimeBucketCount(
-      "ServiceWorker.StartTiming.SentStartWorkerToReceivedStartWorker",
-      times.remote_start_worker_received - times.local_start_worker_sent, 1);
 
   // ScriptEvaluationStart milestone.
   histogram_tester.ExpectTimeBucketCount(
@@ -71,15 +68,6 @@ TEST(ServiceWorkerMetricsTest, EmbeddedWorkerStartTiming) {
   histogram_tester.ExpectTimeBucketCount(
       "ServiceWorker.StartTiming.StartToScriptEvaluationEnd",
       times.remote_script_evaluation_end - times.local_start, 1);
-  histogram_tester.ExpectTimeBucketCount(
-      "ServiceWorker.StartTiming.ScriptEvaluationStartToScriptEvaluationEnd",
-      times.remote_script_evaluation_end - times.remote_script_evaluation_start,
-      1);
-
-  // End milestone.
-  histogram_tester.ExpectTimeBucketCount(
-      "ServiceWorker.StartTiming.ScriptEvaluationEndToEnd",
-      times.local_end - times.remote_script_evaluation_end, 1);
 
   // Clock consistency.
   histogram_tester.ExpectUniqueSample(
@@ -161,8 +149,7 @@ TEST(ServiceWorkerMetricsTest,
   histogram_tester.ExpectTotalCount("ServiceWorker.StartTiming.Duration", 0);
   // Just test one arbitrarily chosen breakdown metric.
   histogram_tester.ExpectTotalCount(
-      "ServiceWorker.StartTiming.ScriptEvaluationStartToScriptEvaluationEnd",
-      0);
+      "ServiceWorker.StartTiming.StartToScriptEvaluationEnd", 0);
 
   // Clock consistency.
   histogram_tester.ExpectUniqueSample(

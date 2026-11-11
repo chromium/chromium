@@ -437,9 +437,6 @@ void ServiceWorkerMetrics::RecordStartWorkerTiming(const StartTimes& times,
   DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
       "ServiceWorker.StartTiming.StartToReceivedStartWorker",
       times.remote_start_worker_received - times.local_start);
-  DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
-      "ServiceWorker.StartTiming.SentStartWorkerToReceivedStartWorker",
-      times.remote_start_worker_received - times.local_start_worker_sent);
 
   // ScriptEvaluationStart milestone.
   DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
@@ -454,15 +451,6 @@ void ServiceWorkerMetrics::RecordStartWorkerTiming(const StartTimes& times,
   DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
       "ServiceWorker.StartTiming.StartToScriptEvaluationEnd",
       times.remote_script_evaluation_end - times.local_start);
-  DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
-      "ServiceWorker.StartTiming.ScriptEvaluationStartToScriptEvaluationEnd",
-      times.remote_script_evaluation_end -
-          times.remote_script_evaluation_start);
-
-  // End milestone.
-  DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
-      "ServiceWorker.StartTiming.ScriptEvaluationEndToEnd",
-      times.local_end - times.remote_script_evaluation_end);
 }
 
 void ServiceWorkerMetrics::RecordStartWorkerTimingClockConsistency(
