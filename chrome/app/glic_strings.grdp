@@ -721,6 +721,22 @@
   <message name="IDS_GLIC_HOTKEY_G" desc="G key text" translateable="false" formatter_data="android_java">
     G
   </message>
+  <!-- Drive Picker tab labels -->
+  <message name="IDS_GLIC_DRIVE_PICKER_RECENT_TAB_LABEL" desc="Label for the Recent tab in the Google Drive file picker opened from Gemini in Chrome.">
+    Recent
+  </message>
+  <message name="IDS_GLIC_DRIVE_PICKER_MY_DRIVE_TAB_LABEL" desc="Label for the My Drive tab in the Google Drive file picker opened from Gemini in Chrome.">
+    My Drive
+  </message>
+  <message name="IDS_GLIC_DRIVE_PICKER_SHARED_DRIVES_TAB_LABEL" desc="Label for the Shared drives tab in the Google Drive file picker opened from Gemini in Chrome. Shown between the My Drive and Shared with me tabs for accounts that have shared drives; not visible in the screenshot.">
+    Shared drives
+  </message>
+  <message name="IDS_GLIC_DRIVE_PICKER_SHARED_WITH_ME_TAB_LABEL" desc="Label for the Shared with me tab in the Google Drive file picker opened from Gemini in Chrome.">
+    Shared with me
+  </message>
+  <message name="IDS_GLIC_DRIVE_PICKER_STARRED_TAB_LABEL" desc="Label for the Starred tab in the Google Drive file picker opened from Gemini in Chrome.">
+    Starred
+  </message>
   <if expr="is_android">
     <message name="IDS_GLIC_FRE_DIALOG_TITLE" desc="Headline of the dialog that asks the user to turn on Gemini in Chrome the first time they open it." formatter_data="android_java">
       Ask anything, right where you are, with Gemini in Chrome
