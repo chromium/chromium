@@ -4,13 +4,16 @@
 
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
+#include "chrome/browser/ui/lens/test_lens_overlay_query_controller.h"
 #include "chrome/browser/ui/lens/test_lens_search_controller.h"
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/test/base/testing_profile.h"
@@ -18,6 +21,8 @@
 #include "components/lens/lens_overlay_permission_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/mock_tab_interface.h"
+#include "components/variations/variations.mojom.h"
+#include "components/variations/variations_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
@@ -32,17 +37,45 @@ using ::testing::ReturnRef;
 
 namespace lens {
 
+namespace {
+
+class FakeVariationsClient : public variations::VariationsClient {
+ public:
+  bool IsOffTheRecord() const override { return false; }
+
+  variations::mojom::VariationsHeadersPtr GetVariationsHeaders()
+      const override {
+    base::flat_map<variations::mojom::GoogleWebVisibility, std::string>
+        headers = {
+            {variations::mojom::GoogleWebVisibility::FIRST_PARTY, "123xyz"}};
+    return variations::mojom::VariationsHeaders::New(headers);
+  }
+};
+
+}  // namespace
+
 class LensSearchControllerTest : public testing::Test {
  public:
   LensSearchControllerTest() = default;
   ~LensSearchControllerTest() override = default;
 
   void SetUp() override {
-    feature_list_.InitWithFeatures(
-        {lens::features::kLensOverlayNonBlockingPrivacyNotice,
-         lens::features::kLensOverlayNonBlockingPrivacyNoticeForImageSearch},
-        {});
-    profile_ = std::make_unique<TestingProfile>();
+    feature_list_.InitWithFeaturesAndParameters(
+        {{lens::features::kLensOverlay,
+          {{"enable-gen204-semantic-event", "false"}}},
+         {lens::features::kLensOverlayLatencyOptimizations,
+          {{"enable-cluster-info-optimization", "true"}}},
+         {lens::features::kLensOverlayContextualSearchbox,
+          {{"characters-per-page-heuristic", "50"}}},
+         {lens::features::kLensOverlayNonBlockingPrivacyNotice, {}},
+         {lens::features::kLensOverlayNonBlockingPrivacyNoticeForImageSearch,
+          {}}},
+        {lens::features::kLensSidePanelUnification});
+    TestingProfile::Builder profile_builder;
+    profile_builder.AddTestingFactory(
+        TemplateURLServiceFactory::GetInstance(),
+        base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor));
+    profile_ = profile_builder.Build();
     web_contents_ = content::WebContentsTester::CreateTestWebContents(
         profile_.get(), content::SiteInstance::Create(profile_.get()));
 
@@ -50,6 +83,8 @@ class LensSearchControllerTest : public testing::Test {
         std::make_unique<MockBrowserWindowInterface>();
     ON_CALL(*mock_browser_window_interface_, GetUnownedUserDataHost())
         .WillByDefault(ReturnRef(user_data_host_));
+    ON_CALL(*mock_browser_window_interface_, GetProfile())
+        .WillByDefault(Return(profile_.get()));
     ON_CALL(mock_tab_interface_, GetUnownedUserDataHost())
         .WillByDefault(ReturnRef(user_data_host_));
     ON_CALL(mock_tab_interface_, GetBrowserWindowInterface())
@@ -68,8 +103,8 @@ class LensSearchControllerTest : public testing::Test {
     auto* identity_manager =
         IdentityManagerFactory::GetForProfile(profile_.get());
     auto* sync_service = SyncServiceFactory::GetForProfile(profile_.get());
-    controller_->Initialize(nullptr, identity_manager, profile_->GetPrefs(),
-                            sync_service, theme_service);
+    controller_->Initialize(&fake_variations_client_, identity_manager,
+                            profile_->GetPrefs(), sync_service, theme_service);
   }
 
   void TearDown() override {
@@ -86,6 +121,7 @@ class LensSearchControllerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   content::RenderViewHostTestEnabler rvh_test_enabler_;
   base::test::ScopedFeatureList feature_list_;
+  FakeVariationsClient fake_variations_client_;
   ui::UnownedUserDataHost user_data_host_;
   tabs::MockTabInterface mock_tab_interface_;
   std::unique_ptr<MockBrowserWindowInterface> mock_browser_window_interface_;
@@ -167,6 +203,99 @@ TEST_F(LensSearchControllerTest, OpenLensOverlay_NotifiesWillOpenCallbacks) {
   controller_->OpenLensOverlay(lens::LensOverlayInvocationSource::kToolbar);
   EXPECT_EQ(call_count, 1);
   EXPECT_FALSE(controller_->IsOff());
+}
+
+TEST_F(LensSearchControllerTest,
+       PrimaryPageChanged_ResetsQueryControllerPageContentData) {
+  profile_->GetPrefs()->SetBoolean(
+      lens::prefs::kLensSharingPageScreenshotEnabled, false);
+  profile_->GetPrefs()->SetBoolean(lens::prefs::kLensSharingPageContentEnabled,
+                                   false);
+
+  content::WebContentsTester::For(web_contents_.get())
+      ->NavigateAndCommit(GURL("https://example.com/document.pdf"));
+
+  controller_->OpenLensOverlay(lens::LensOverlayInvocationSource::kAppMenu);
+  ASSERT_FALSE(controller_->IsOff());
+
+  auto* query_controller = static_cast<TestLensOverlayQueryController*>(
+      controller_->lens_overlay_query_controller());
+  ASSERT_TRUE(query_controller);
+
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(10, 10);
+  bitmap.eraseColor(SK_ColorGREEN);
+  std::vector<lens::PageContent> page_contents = {
+      lens::PageContent({1, 2, 3, 4}, lens::MimeType::kPdf)};
+  query_controller->StartQueryFlow(
+      bitmap, bitmap, GURL("https://example.com/document.pdf"), "Document", {},
+      page_contents, lens::MimeType::kPdf, /*pdf_current_page=*/0,
+      /*ui_scale_factor=*/1.0f, base::TimeTicks::Now());
+
+  std::vector<std::u16string> partial_content = {
+      u"this is a page with enough content to make it substantial",
+      u"this is a second page substantial enough content"};
+  query_controller->SendPartialPageContentRequest(partial_content);
+  EXPECT_EQ(query_controller->num_partial_page_content_requests_sent(), 0);
+
+  // Navigating the primary page triggers CancelInFlightContextualization(),
+  // which should reset the pending page content data on the query controller.
+  content::WebContentsTester::For(web_contents_.get())
+      ->NavigateAndCommit(GURL("https://other.example/page.html"));
+  page_contents.clear();
+  page_contents.shrink_to_fit();
+  partial_content.clear();
+  partial_content.shrink_to_fit();
+
+  query_controller->GrantPermissionForSession();
+  query_controller->MaybeRestartQueryFlow();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return query_controller->num_full_image_requests_sent() == 1; }));
+
+  EXPECT_EQ(query_controller->num_page_content_update_requests_sent(), 0);
+  EXPECT_EQ(query_controller->num_partial_page_content_requests_sent(), 0);
+}
+
+TEST_F(LensSearchControllerTest,
+       DeferredPageContentRequests_SentWhenPageDoesNotNavigate) {
+  profile_->GetPrefs()->SetBoolean(
+      lens::prefs::kLensSharingPageScreenshotEnabled, false);
+  profile_->GetPrefs()->SetBoolean(lens::prefs::kLensSharingPageContentEnabled,
+                                   false);
+
+  content::WebContentsTester::For(web_contents_.get())
+      ->NavigateAndCommit(GURL("https://example.com/document.pdf"));
+
+  controller_->OpenLensOverlay(lens::LensOverlayInvocationSource::kAppMenu);
+  ASSERT_FALSE(controller_->IsOff());
+
+  auto* query_controller = static_cast<TestLensOverlayQueryController*>(
+      controller_->lens_overlay_query_controller());
+  ASSERT_TRUE(query_controller);
+
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(10, 10);
+  bitmap.eraseColor(SK_ColorGREEN);
+  std::vector<lens::PageContent> page_contents = {
+      lens::PageContent({1, 2, 3, 4}, lens::MimeType::kPdf)};
+  query_controller->StartQueryFlow(
+      bitmap, bitmap, GURL("https://example.com/document.pdf"), "Document", {},
+      page_contents, lens::MimeType::kPdf, /*pdf_current_page=*/0,
+      /*ui_scale_factor=*/1.0f, base::TimeTicks::Now());
+
+  std::vector<std::u16string> partial_content = {
+      u"this is a page with enough content to make it substantial",
+      u"this is a second page substantial enough content"};
+  query_controller->SendPartialPageContentRequest(partial_content);
+  EXPECT_EQ(query_controller->num_partial_page_content_requests_sent(), 0);
+
+  query_controller->GrantPermissionForSession();
+  query_controller->MaybeRestartQueryFlow();
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return query_controller->num_full_image_requests_sent() == 1 &&
+           query_controller->num_page_content_update_requests_sent() == 1 &&
+           query_controller->num_partial_page_content_requests_sent() == 1;
+  }));
 }
 
 }  // namespace lens

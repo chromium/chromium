@@ -871,18 +871,17 @@ class LensOverlayQueryController : public lens::LensUploadChunker::Delegate {
 
   const raw_ptr<Profile> profile_;
 
-  // The data of the content the user is viewing. Owned by
-  // LensOverlayController. Will be empty if no data to the underlying page
-  // could be provided.
-  base::raw_span<const PageContent> underlying_page_contents_;
+  // The data of the content the user is viewing. Will be empty if no data to
+  // the underlying page could be provided.
+  std::vector<PageContent> underlying_page_contents_;
 
   // The primary content type the underlying_page_contents_ is associated with.
   // This MimeType is used for generating the request type and vit param.
   lens::MimeType primary_content_type_;
 
-  // A span of text that represents a part of the content held in underlying
-  // content bytes.
-  base::raw_span<const std::u16string> partial_content_;
+  // Text that represents a part of the content held in underlying content
+  // bytes.
+  std::vector<std::u16string> partial_content_;
 
   // Whether or not the parent interaction query has been sent. This should
   // always be the first interaction in a query flow.
