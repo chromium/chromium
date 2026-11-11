@@ -17,6 +17,7 @@ import org.chromium.chrome.browser.actor.ActorTask;
 import org.chromium.chrome.browser.actor.ActorTaskId;
 import org.chromium.chrome.browser.actor.ActorTaskState;
 import org.chromium.chrome.browser.actor.ActorUtils;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.glic.GlicInstanceHelper;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -194,6 +195,21 @@ public class ActorControlStateTracker
             mActiveTaskTitle = "";
             mTrackedTaskId = null;
         }
+    }
+
+    @Override
+    public void onTaskStepProgressUpdated(@ActorTaskId int taskId, String stepProgress) {
+        if (!ChromeFeatureList.sActorStepProgressNotification.isEnabled()) {
+            return;
+        }
+        // A step arriving outside a running state must not re-run the WAITING auto-expand.
+        if (mTrackedTaskId == null
+                || mTrackedTaskId != taskId
+                || mLatestTaskState == null
+                || !ActorUtils.isRunningState(mLatestTaskState)) {
+            return;
+        }
+        updateState();
     }
 
     /** Called when the GLIC instance changes. */

@@ -24,6 +24,7 @@ import androidx.core.content.ContextCompat;
 import com.google.android.material.button.MaterialButton;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.context_sharing.R;
 import org.chromium.ui.widget.ChromeImageButton;
 
@@ -80,6 +81,15 @@ class TabBottomSheetPeekView extends RelativeLayout {
      */
     public void setTitleTextAppearance(@StyleRes int resId) {
         mTitleView.setTextAppearance(getContext(), resId);
+    }
+
+    /**
+     * Sets the description text for the current step.
+     *
+     * @param text The string describing the active step.
+     */
+    public void setDescriptionText(@Nullable String text) {
+        mDescriptionView.setText(text);
     }
 
     /**

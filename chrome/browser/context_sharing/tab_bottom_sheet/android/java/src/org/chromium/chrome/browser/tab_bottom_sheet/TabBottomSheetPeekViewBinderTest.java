@@ -87,6 +87,16 @@ public class TabBottomSheetPeekViewBinderTest {
         int descRes = android.R.string.ok;
         mModel.set(TabBottomSheetPeekProperties.DESCRIPTION_TEXT_ID, descRes);
         assertEquals(mActivity.getString(descRes), mView.getStepDescriptionForTesting());
+
+        mModel.set(TabBottomSheetPeekProperties.DESCRIPTION_TEXT, TEST_STRING);
+        assertEquals(TEST_STRING, mView.getStepDescriptionForTesting());
+
+        int cancelRes = android.R.string.cancel;
+        mModel.set(TabBottomSheetPeekProperties.DESCRIPTION_TEXT_ID, cancelRes);
+        assertEquals(TEST_STRING, mView.getStepDescriptionForTesting());
+
+        mModel.set(TabBottomSheetPeekProperties.DESCRIPTION_TEXT, null);
+        assertEquals(mActivity.getString(cancelRes), mView.getStepDescriptionForTesting());
     }
 
     @Test

@@ -29,6 +29,10 @@ public class TabBottomSheetPeekProperties {
     public static final WritableIntPropertyKey TITLE_TEXT_APPEARANCE_ID =
             new WritableIntPropertyKey();
 
+    /** Optional description text. When non-empty, it is shown instead of DESCRIPTION_TEXT_ID. */
+    public static final WritableObjectPropertyKey<@Nullable String> DESCRIPTION_TEXT =
+            new WritableObjectPropertyKey<>();
+
     public static final WritableIntPropertyKey DESCRIPTION_TEXT_ID = new WritableIntPropertyKey();
 
     public static final WritableIntPropertyKey DESCRIPTION_VISIBILITY =
@@ -71,6 +75,7 @@ public class TabBottomSheetPeekProperties {
         PEEK_ICON_ID,
         TITLE_TEXT,
         TITLE_TEXT_APPEARANCE_ID,
+        DESCRIPTION_TEXT,
         DESCRIPTION_TEXT_ID,
         DESCRIPTION_VISIBILITY,
         ACTION_BUTTON_TEXT_ID,

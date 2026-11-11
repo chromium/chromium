@@ -9,8 +9,10 @@ import android.text.TextUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.actor.ActorTask;
 import org.chromium.chrome.browser.actor.ActorTaskState;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.glic.GlicMetrics;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_bottom_sheet.CoBrowseComponentProvider.TabSelectionDelegate;
@@ -85,9 +87,18 @@ public class ActorControlCoordinator implements PeekViewManager, ActorControlSta
                     break;
                 case ActorTaskState.ACTING:
                 case ActorTaskState.REFLECTING:
-                    setPeekViewContent(activeTaskTitle, PeekViewUiState.ACTING);
-                    mHasAutoExpanded = false;
-                    break;
+                    {
+                        ActorTask activeTask =
+                                mStateTracker.getActiveTaskAssociatedWithCurrentConversation();
+                        String stepProgress = null;
+                        if (activeTask != null
+                                && ChromeFeatureList.sActorStepProgressNotification.isEnabled()) {
+                            stepProgress = activeTask.getCurrentActionName();
+                        }
+                        setPeekViewContent(activeTaskTitle, PeekViewUiState.ACTING, stepProgress);
+                        mHasAutoExpanded = false;
+                        break;
+                    }
                 case ActorTaskState.PAUSED_BY_USER:
                     setPeekViewContent(activeTaskTitle, PeekViewUiState.PAUSED);
                     mHasAutoExpanded = false;
@@ -123,8 +134,13 @@ public class ActorControlCoordinator implements PeekViewManager, ActorControlSta
     }
 
     private void setPeekViewContent(String title, PeekViewUiState state) {
+        setPeekViewContent(title, state, /* stepProgress= */ null);
+    }
+
+    private void setPeekViewContent(
+            String title, PeekViewUiState state, @Nullable String stepProgress) {
         mPeekViewUiState = state;
-        mMediator.setContent(title, state);
+        mMediator.setContent(title, state, stepProgress);
     }
 
     private void clearPeekViewContent() {

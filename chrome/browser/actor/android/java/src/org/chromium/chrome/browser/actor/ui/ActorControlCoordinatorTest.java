@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.actor.ui;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.clearInvocations;
@@ -31,6 +32,7 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.actor.ActorKeyedService;
@@ -54,7 +56,7 @@ import java.util.Set;
 
 /** Tests for {@link ActorControlCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures(ChromeFeatureList.GLIC)
+@EnableFeatures({ChromeFeatureList.GLIC, ChromeFeatureList.ACTOR_STEP_PROGRESS_NOTIFICATION})
 public class ActorControlCoordinatorTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -74,6 +76,7 @@ public class ActorControlCoordinatorTest {
     @Mock private Tab mTab;
     @Mock private ActorTask mActorTask;
     @Mock private TabSelectionDelegate mTabSelectionDelegate;
+    @Mock private ActorControlStateTracker.Observer mStateObserver;
 
     private Activity mActivity;
     private ActorControlStateTracker mStateTracker;
@@ -127,6 +130,7 @@ public class ActorControlCoordinatorTest {
     private void expectValidActorTask() {
         when(mActorTask.getId()).thenReturn(TASK_ID);
         when(mActorTask.getTitle()).thenReturn(TASK_TITLE);
+        when(mActorTask.getCurrentActionName()).thenReturn("");
         when(mTab.getId()).thenReturn(TAB_ID);
         when(mActorTask.getLastActedTabs()).thenReturn(Collections.singleton(TAB_ID));
         when(mActorKeyedService.getTask(TASK_ID)).thenReturn(mActorTask);
@@ -210,7 +214,10 @@ public class ActorControlCoordinatorTest {
 
         String expectedDesc =
                 ActorControlMediator.calculateContentDescription(
-                        mActivity, TASK_TITLE, PeekViewUiState.ACTING);
+                        mActivity,
+                        TASK_TITLE,
+                        PeekViewUiState.ACTING,
+                        /* customDescription= */ null);
         mMediator.setContent(TASK_TITLE, PeekViewUiState.ACTING);
 
         assertEquals(TASK_TITLE, mModel.get(TabBottomSheetPeekProperties.TITLE_TEXT));
@@ -228,7 +235,10 @@ public class ActorControlCoordinatorTest {
 
         String expectedDesc =
                 ActorControlMediator.calculateContentDescription(
-                        mActivity, TASK_TITLE, PeekViewUiState.PAUSED);
+                        mActivity,
+                        TASK_TITLE,
+                        PeekViewUiState.PAUSED,
+                        /* customDescription= */ null);
         mMediator.setContent(TASK_TITLE, PeekViewUiState.PAUSED);
 
         assertEquals(TASK_TITLE, mModel.get(TabBottomSheetPeekProperties.TITLE_TEXT));
@@ -246,7 +256,10 @@ public class ActorControlCoordinatorTest {
 
         String expectedDesc =
                 ActorControlMediator.calculateContentDescription(
-                        mActivity, TASK_TITLE, PeekViewUiState.WAITING);
+                        mActivity,
+                        TASK_TITLE,
+                        PeekViewUiState.WAITING,
+                        /* customDescription= */ null);
         mMediator.setContent(TASK_TITLE, PeekViewUiState.WAITING);
 
         assertEquals(TASK_TITLE, mModel.get(TabBottomSheetPeekProperties.TITLE_TEXT));
@@ -264,7 +277,10 @@ public class ActorControlCoordinatorTest {
 
         String expectedDesc =
                 ActorControlMediator.calculateContentDescription(
-                        mActivity, TASK_TITLE, PeekViewUiState.DEFAULT);
+                        mActivity,
+                        TASK_TITLE,
+                        PeekViewUiState.DEFAULT,
+                        /* customDescription= */ null);
         mMediator.setContent(TASK_TITLE, PeekViewUiState.DEFAULT);
 
         assertEquals(TASK_TITLE, mModel.get(TabBottomSheetPeekProperties.TITLE_TEXT));
@@ -276,30 +292,36 @@ public class ActorControlCoordinatorTest {
 
     @Test
     public void testCalculateContentDescription() {
-        // Case 1: Both title and description exist
+        // Both title and description exist
         assertEquals(
                 mActivity.getString(
                         R.string.peek_state_accessible_label, "Ask Gemini, Needs your attention"),
                 ActorControlMediator.calculateContentDescription(
-                        mActivity, "Ask Gemini", PeekViewUiState.WAITING));
+                        mActivity,
+                        "Ask Gemini",
+                        PeekViewUiState.WAITING,
+                        /* customDescription= */ null));
 
-        // Case 2: Title only (Description visibility GONE / empty)
+        // Title only (Description visibility GONE / empty)
         assertEquals(
                 mActivity.getString(R.string.peek_state_accessible_label, "Ask Gemini"),
                 ActorControlMediator.calculateContentDescription(
-                        mActivity, "Ask Gemini", PeekViewUiState.DEFAULT));
+                        mActivity,
+                        "Ask Gemini",
+                        PeekViewUiState.DEFAULT,
+                        /* customDescription= */ null));
 
-        // Case 3: Description only (Title empty)
+        // Description only (Title empty)
         assertEquals(
                 mActivity.getString(R.string.peek_state_accessible_label, "Needs your attention"),
                 ActorControlMediator.calculateContentDescription(
-                        mActivity, "", PeekViewUiState.WAITING));
+                        mActivity, "", PeekViewUiState.WAITING, /* customDescription= */ null));
 
-        // Case 4: Neither exist
+        // Neither exist
         assertEquals(
                 null,
                 ActorControlMediator.calculateContentDescription(
-                        mActivity, "", PeekViewUiState.DEFAULT));
+                        mActivity, "", PeekViewUiState.DEFAULT, /* customDescription= */ null));
     }
 
     @Test
@@ -974,5 +996,120 @@ public class ActorControlCoordinatorTest {
         mTabSupplier.set(tab3);
         assertEquals("Task 1", mModel.get(TabBottomSheetPeekProperties.TITLE_TEXT));
         assertEquals(PeekViewUiState.ACTING, mCoordinator.getPeekViewUiStateForTesting());
+    }
+
+    @Test
+    public void testOnTaskStepProgressUpdated_acting_updatesDescriptionAndAccessibility() {
+        setUpForOnTaskStateChanged();
+        mStateTracker.onTaskStateChanged(TASK_ID, ActorTaskState.ACTING);
+        assertNull(mModel.get(TabBottomSheetPeekProperties.DESCRIPTION_TEXT));
+
+        String stepProgress = "Clicking checkout button";
+        when(mActorTask.getCurrentActionName()).thenReturn(stepProgress);
+        mStateTracker.onTaskStepProgressUpdated(TASK_ID, stepProgress);
+
+        assertEquals(stepProgress, mModel.get(TabBottomSheetPeekProperties.DESCRIPTION_TEXT));
+        assertEquals(
+                R.string.peek_state_acting,
+                mModel.get(TabBottomSheetPeekProperties.DESCRIPTION_TEXT_ID));
+        assertEquals(
+                mActivity.getString(
+                        R.string.peek_state_accessible_label, TASK_TITLE + ", " + stepProgress),
+                mModel.get(TabBottomSheetPeekProperties.CONTENT_DESCRIPTION_A11Y).get(mActivity));
+
+        when(mActorTask.getCurrentActionName()).thenReturn("");
+        mStateTracker.onTaskStepProgressUpdated(TASK_ID, "");
+
+        assertNull(mModel.get(TabBottomSheetPeekProperties.DESCRIPTION_TEXT));
+        assertEquals(
+                mActivity.getString(
+                        R.string.peek_state_accessible_label,
+                        TASK_TITLE + ", " + mActivity.getString(R.string.peek_state_acting)),
+                mModel.get(TabBottomSheetPeekProperties.CONTENT_DESCRIPTION_A11Y).get(mActivity));
+    }
+
+    @Test
+    public void testOnTaskStateChanged_reflecting_keepsStepProgress() {
+        setUpForOnTaskStateChanged();
+        mStateTracker.onTaskStateChanged(TASK_ID, ActorTaskState.ACTING);
+        String stepProgress = "Clicking checkout button";
+        when(mActorTask.getCurrentActionName()).thenReturn(stepProgress);
+        mStateTracker.onTaskStepProgressUpdated(TASK_ID, stepProgress);
+
+        mStateTracker.onTaskStateChanged(TASK_ID, ActorTaskState.REFLECTING);
+
+        assertEquals(stepProgress, mModel.get(TabBottomSheetPeekProperties.DESCRIPTION_TEXT));
+        assertEquals(PeekViewUiState.ACTING, mCoordinator.getPeekViewUiStateForTesting());
+    }
+
+    @Test
+    public void testOnTaskStateChanged_showsStepOnlyInRunningStates() {
+        setUpForOnTaskStateChanged();
+        mStateTracker.onTaskStateChanged(TASK_ID, ActorTaskState.ACTING);
+        when(mActorTask.getCurrentActionName()).thenReturn("Filling shipping address");
+        mStateTracker.onTaskStepProgressUpdated(TASK_ID, "Filling shipping address");
+        assertEquals(
+                "Filling shipping address",
+                mModel.get(TabBottomSheetPeekProperties.DESCRIPTION_TEXT));
+
+        mStateTracker.onTaskStateChanged(TASK_ID, ActorTaskState.PAUSED_BY_USER);
+        assertNull(mModel.get(TabBottomSheetPeekProperties.DESCRIPTION_TEXT));
+        assertEquals(
+                R.string.peek_state_paused,
+                mModel.get(TabBottomSheetPeekProperties.DESCRIPTION_TEXT_ID));
+
+        // Native keeps the last step across a pause, so resuming shows it again.
+        mStateTracker.onTaskStateChanged(TASK_ID, ActorTaskState.ACTING);
+        assertEquals(
+                "Filling shipping address",
+                mModel.get(TabBottomSheetPeekProperties.DESCRIPTION_TEXT));
+
+        mStateTracker.onTaskStateChanged(TASK_ID, ActorTaskState.FINISHED);
+        assertNull(mModel.get(TabBottomSheetPeekProperties.DESCRIPTION_TEXT));
+        assertEquals(
+                R.string.peek_state_waiting,
+                mModel.get(TabBottomSheetPeekProperties.DESCRIPTION_TEXT_ID));
+    }
+
+    @Test
+    public void testOnTaskStepProgressUpdated_ignoresUnassociatedTask() {
+        setUpForOnTaskStateChanged();
+        mStateTracker.onTaskStateChanged(TASK_ID, ActorTaskState.ACTING);
+        mStateTracker.addObserver(mStateObserver);
+        clearInvocations(mStateObserver);
+
+        mStateTracker.onTaskStepProgressUpdated(999, "Background task step");
+
+        verify(mStateObserver, never()).onStateChanged();
+    }
+
+    @Test
+    public void testOnTaskStepProgressUpdated_waitingOnUser_doesNotNotifyObservers() {
+        setUpForOnTaskStateChanged();
+        mStateTracker.onTaskStateChanged(TASK_ID, ActorTaskState.WAITING_ON_USER);
+        mStateTracker.addObserver(mStateObserver);
+        clearInvocations(mStateObserver);
+
+        mStateTracker.onTaskStepProgressUpdated(TASK_ID, "Searching flights");
+
+        verify(mStateObserver, never()).onStateChanged();
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.ACTOR_STEP_PROGRESS_NOTIFICATION)
+    public void testOnTaskStepProgressUpdated_featureDisabled_showsNoStep() {
+        setUpForOnTaskStateChanged();
+        when(mActorTask.getCurrentActionName()).thenReturn("Clicking checkout button");
+        mStateTracker.onTaskStateChanged(TASK_ID, ActorTaskState.ACTING);
+        mStateTracker.addObserver(mStateObserver);
+        clearInvocations(mStateObserver);
+
+        mStateTracker.onTaskStepProgressUpdated(TASK_ID, "Clicking checkout button");
+
+        verify(mStateObserver, never()).onStateChanged();
+        assertNull(mModel.get(TabBottomSheetPeekProperties.DESCRIPTION_TEXT));
+        assertEquals(
+                R.string.peek_state_acting,
+                mModel.get(TabBottomSheetPeekProperties.DESCRIPTION_TEXT_ID));
     }
 }

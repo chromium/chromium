@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tab_bottom_sheet;
 
+import android.text.TextUtils;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -28,8 +30,15 @@ class TabBottomSheetPeekViewBinder {
         } else if (TabBottomSheetPeekProperties.TITLE_TEXT_APPEARANCE_ID == propertyKey) {
             view.setTitleTextAppearance(
                     model.get(TabBottomSheetPeekProperties.TITLE_TEXT_APPEARANCE_ID));
-        } else if (TabBottomSheetPeekProperties.DESCRIPTION_TEXT_ID == propertyKey) {
-            view.setDescriptionText(model.get(TabBottomSheetPeekProperties.DESCRIPTION_TEXT_ID));
+        } else if (TabBottomSheetPeekProperties.DESCRIPTION_TEXT == propertyKey
+                || TabBottomSheetPeekProperties.DESCRIPTION_TEXT_ID == propertyKey) {
+            String descriptionText = model.get(TabBottomSheetPeekProperties.DESCRIPTION_TEXT);
+            if (!TextUtils.isEmpty(descriptionText)) {
+                view.setDescriptionText(descriptionText);
+            } else {
+                view.setDescriptionText(
+                        model.get(TabBottomSheetPeekProperties.DESCRIPTION_TEXT_ID));
+            }
         } else if (TabBottomSheetPeekProperties.DESCRIPTION_VISIBILITY == propertyKey) {
             view.setDescriptionVisibility(
                     model.get(TabBottomSheetPeekProperties.DESCRIPTION_VISIBILITY));

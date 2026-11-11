@@ -33,12 +33,26 @@ public class ActorControlMediator {
      * @param state The PeekViewUiState containing the desired UI properties.
      */
     void setContent(String title, PeekViewUiState state) {
+        setContent(title, state, /* stepProgress= */ null);
+    }
+
+    /**
+     * Sets the content and state of the actor control view, with optional custom step progress
+     * text.
+     *
+     * @param title The title of the actor control view.
+     * @param state The PeekViewUiState containing the desired UI properties.
+     * @param stepProgress Optional step progress description when the task is running.
+     */
+    void setContent(String title, PeekViewUiState state, @Nullable String stepProgress) {
+        String customDescription = !TextUtils.isEmpty(stepProgress) ? stepProgress : null;
         mModel.set(TabBottomSheetPeekProperties.PEEK_ICON_ID, state.peekIconResId);
         mModel.set(TabBottomSheetPeekProperties.TITLE_TEXT, title);
         mModel.set(
                 TabBottomSheetPeekProperties.TITLE_TEXT_APPEARANCE_ID,
                 state.getTitleTextAppearanceResId());
         mModel.set(TabBottomSheetPeekProperties.DESCRIPTION_TEXT_ID, state.descriptionResId);
+        mModel.set(TabBottomSheetPeekProperties.DESCRIPTION_TEXT, customDescription);
         mModel.set(
                 TabBottomSheetPeekProperties.DESCRIPTION_VISIBILITY,
                 state.getDescriptionVisibility());
@@ -58,27 +72,35 @@ public class ActorControlMediator {
                 state.buttonContentDescriptionResId);
         mModel.set(
                 TabBottomSheetPeekProperties.CONTENT_DESCRIPTION_A11Y,
-                buildContentDescriptionCallback(title, state));
+                buildContentDescriptionCallback(title, state, customDescription));
     }
 
     @Nullable ContentDescriptionCallback buildContentDescriptionCallback(
-            String title, PeekViewUiState state) {
+            String title, PeekViewUiState state, @Nullable String customDescription) {
         return (PeekViewUiState.DEFAULT.equals(state) && TextUtils.isEmpty(title))
                 ? null
-                : context -> calculateContentDescription(context, title, state);
+                : context -> calculateContentDescription(context, title, state, customDescription);
     }
 
     @VisibleForTesting
     static @Nullable String calculateContentDescription(
-            Context context, String title, PeekViewUiState state) {
+            Context context,
+            String title,
+            PeekViewUiState state,
+            @Nullable String customDescription) {
         StringBuilder sb = new StringBuilder();
         if (!TextUtils.isEmpty(title)) {
             sb.append(title.trim());
         }
-        String desc =
-                state.descriptionResId != Resources.ID_NULL
-                        ? context.getString(state.descriptionResId)
-                        : "";
+        String desc;
+        if (!TextUtils.isEmpty(customDescription)) {
+            desc = customDescription;
+        } else {
+            desc =
+                    state.descriptionResId != Resources.ID_NULL
+                            ? context.getString(state.descriptionResId)
+                            : "";
+        }
         if (state.getDescriptionVisibility() == View.VISIBLE && !TextUtils.isEmpty(desc)) {
             if (sb.length() > 0) {
                 sb.append(", ");
