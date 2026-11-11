@@ -13,8 +13,8 @@ class TransportService;
 }  // namespace stream_transport
 
 // Handler for incoming initial SharingMessages for BrowserActuator service.
-// Processes initial opt-in or trigger actuation messages to set up a
-// TransportChannel and TransportSession.
+// Processes `StartSession` control commands and initial `DeviceOptInRequest`
+// payloads to set up a `TransportChannel` and `TransportSession`.
 class BrowserActuatorMessageHandler : public SharingMessageHandler {
  public:
   // `transport_service` must be non-null and must outlive this handler
