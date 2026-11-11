@@ -100,6 +100,7 @@ bool WebrtcVideoEncoderAV1::InitializeCodec(const webrtc::DesktopSize& size) {
     return false;
   }
   DCHECK_NE(codec->name, nullptr);
+  last_init_target_bitrate_kbps_ = config_.rc_target_bitrate;
 
   if (use_active_map_) {
     active_map_data_.Initialize(size);
@@ -334,11 +335,12 @@ void WebrtcVideoEncoderAV1::UpdateConfig(const FrameParams& params) {
 
   if (params.bitrate_kbps >= 0) {
     bitrate_filter_.SetBandwidthEstimateKbps(params.bitrate_kbps);
-    if (config_.rc_target_bitrate !=
-        static_cast<unsigned int>(bitrate_filter_.GetTargetBitrateKbps())) {
-      config_.rc_target_bitrate = bitrate_filter_.GetTargetBitrateKbps();
-      changed = true;
-    }
+  }
+  const unsigned int target_bitrate =
+      static_cast<unsigned int>(bitrate_filter_.GetTargetBitrateKbps());
+  if (config_.rc_target_bitrate != target_bitrate) {
+    config_.rc_target_bitrate = target_bitrate;
+    changed = true;
   }
 
   if (params.vpx_min_quantizer >= 0 &&
@@ -355,7 +357,7 @@ void WebrtcVideoEncoderAV1::UpdateConfig(const FrameParams& params) {
     changed = true;
   }
 
-  if (!changed) {
+  if (!changed || !codec_) {
     return;
   }
 
@@ -389,13 +391,20 @@ void WebrtcVideoEncoderAV1::Encode(std::unique_ptr<webrtc::DesktopFrame> frame,
   // Create or reconfigure the codec to match the size of |frame|.
   if (!codec_ || !frame_size.equals(previous_frame_size)) {
     image_.reset();
-    if (!InitializeCodec(frame_size)) {
-      std::move(done).Run(EncodeResult::UNKNOWN_ERROR, nullptr);
-      return;
-    }
+    codec_.reset();
   }
 
+  // Populate target bitrate and quantizer bounds in |config_| before
+  // InitializeCodec() so aom_codec_enc_init() initializes its rate-control
+  // buffer level with the actual target bitrate rather than the 1000 kbps
+  // default (EncoderBitrateFilter::kDefaultMinimumBitrateKbps), since
+  // av1_change_config() only clamps buffer_level down and never scales it up.
   UpdateConfig(params);
+
+  if (!codec_ && !InitializeCodec(frame_size)) {
+    std::move(done).Run(EncodeResult::UNKNOWN_ERROR, nullptr);
+    return;
+  }
 
   // Transfer the frame data to the image buffer for encoding.
   // TODO(joedow): Look into using aom_img_wrap instead of our own buffer.

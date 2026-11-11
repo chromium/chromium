@@ -84,11 +84,13 @@ source_set("unit_tests") {
   sources = [
     "encoder_bitrate_filter_unittest.cc",
     "utils_unittest.cc",
+    "webrtc_video_encoder_av1_unittest.cc",
   ]
 
   deps = [
     ":encoder",
     "//base",
+    "//base/test:test_support",
     "//remoting/base:codec_utils",
     "//testing/gtest",
     "//third_party/libyuv",

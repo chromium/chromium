@@ -42,6 +42,10 @@ class WebrtcVideoEncoderAV1 : public WebrtcVideoEncoder {
               const FrameParams& params,
               EncodeCallback done) override;
 
+  unsigned int last_init_target_bitrate_kbps_for_testing() const {
+    return last_init_target_bitrate_kbps_;
+  }
+
  private:
   void ConfigureCodecParams();
   bool InitializeCodec(const webrtc::DesktopSize& size);
@@ -54,6 +58,7 @@ class WebrtcVideoEncoderAV1 : public WebrtcVideoEncoder {
   scoped_aom_codec codec_;
 
   aom_codec_enc_cfg_t config_ = {};
+  unsigned int last_init_target_bitrate_kbps_ = 0;
 
   using scoped_aom_image = std::unique_ptr<aom_image_t, void (*)(aom_image_t*)>;
   scoped_aom_image image_;
