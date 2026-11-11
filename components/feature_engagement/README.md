@@ -581,6 +581,46 @@ in `EnterprisePolicyBypassAllowlist.java` (`ALLOWLISTED_FEATURES`).
 [UserEducation.BypassPolicyCheck]=<justification and link to approval>
 ```
 
+## Android Cooldown Groups
+
+On Android, `TrackerImpl` also rate limits promotions per *cooldown group*,
+on top of the per-feature configuration above. Every `UiFormat` maps to a
+cooldown group (or null) in `TrackerImpl` (the interruptive group or the blue
+bubble group), and a new `UiFormat` must be mapped before it can land.
+When a promotion shows, it contributes to its format's group cooldown, and
+other promotions in that group are held back until the cooldown ends.
+
+Each group is gated by the `UserEducationFramework` flag together with the
+group's own flag: `TrackerFactory` hands `TrackerImpl` a supplier per group
+that only returns true when both flags are on, and `TrackerImpl` skips both
+the cooldown checks and the cooldown contribution for a format whose group
+is disabled.
+
+### Cooldown Exemptions
+
+Promotions cannot opt out of a cooldown group at the call site;
+`FeatureProperties` only carries the `UiFormat`. Exemptions are defined
+centrally in `CooldownBypassAllowlist.java`, which holds two lists that
+`TrackerImpl` consults:
+
+*   `ALLOWLISTED_FEATURES`: features exempt from being *blocked* by their
+    format's cooldown group. They still contribute to the group when shown.
+*   `DO_NOT_BLOCK_COOLDOWN_GROUP_FEATURES`: features exempt from
+    *contributing* to their format's cooldown group when shown.
+
+*   **Eligibility**: As with the
+    [enterprise policy](#enterprise-policy-promotionsenabled), exemptions are
+    the exception and are decided case-by-case with User Education leadership.
+*   **Approval**: The presubmit in `components/feature_engagement` enforces that
+    adding a feature to either list, or removing either check
+    (`isAllowedToBypassCooldownGroup`, `isAllowedToSkipBlockingCooldownGroup`)
+    from `TrackerImpl`, must be approved by a User Education (Java) policy
+    owner and the CL description must contain the following tag:
+
+```
+[UserEducation.BypassCooldownCheck]=<justification and link to approval>
+```
+
 ## Configuration Format
 
 Each In-Product Help feature must have its own feature configuration
