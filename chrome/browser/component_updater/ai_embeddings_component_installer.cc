@@ -234,19 +234,24 @@ bool IsAIEmbeddingsModelAllowed(const PrefService* local_state) {
                      kDisallowed;
 }
 
+void PurgeAIEmbeddingsComponent(ComponentUpdateService* cus,
+                                PrefService& local_state) {
+  local_state.SetBoolean(optimization_guide::model_execution::prefs::
+                             localstate::kEmbeddingApiModelDownloadEligible,
+                         false);
+  // Unregistering also uninstalls. If the component isn't registered right
+  // now, delete any files left on disk.
+  if (!cus || !cus->UnregisterComponent(GetAIEmbeddingsComponentId())) {
+    base::MakeRefCounted<ComponentInstaller>(
+        std::make_unique<AIEmbeddingsComponentInstallerPolicy>())
+        ->Uninstall();
+  }
+}
+
 void ManageAIEmbeddingsComponentRegistration(ComponentUpdateService* cus,
                                              PrefService* local_state) {
   if (!IsAIEmbeddingsModelAllowed(local_state)) {
-    local_state->SetBoolean(optimization_guide::model_execution::prefs::
-                                localstate::kEmbeddingApiModelDownloadEligible,
-                            false);
-    // Unregistering also uninstalls. If the component isn't registered right
-    // now, delete any files left on disk.
-    if (!cus || !cus->UnregisterComponent(GetAIEmbeddingsComponentId())) {
-      base::MakeRefCounted<ComponentInstaller>(
-          std::make_unique<AIEmbeddingsComponentInstallerPolicy>())
-          ->Uninstall();
-    }
+    PurgeAIEmbeddingsComponent(cus, *local_state);
   } else if (local_state->GetBoolean(
                  optimization_guide::model_execution::prefs::localstate::
                      kEmbeddingApiModelDownloadEligible)) {

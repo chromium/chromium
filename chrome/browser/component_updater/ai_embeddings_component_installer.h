@@ -39,6 +39,12 @@ void RegisterAIEmbeddingsComponent(
 // embeddings model to be installed and used.
 bool IsAIEmbeddingsModelAllowed(const PrefService* local_state);
 
+// Unregisters the AI embeddings component, which also deletes its files, or,
+// if it isn't registered, deletes any files left on disk, and clears the
+// download-eligibility pref.
+void PurgeAIEmbeddingsComponent(ComponentUpdateService* cus,
+                                PrefService& local_state);
+
 // Manages registration/deletion of the AI Embeddings component based on policy
 // and eligibility. When the model is not allowed, the component is
 // unregistered (if registered) and its files are deleted. When it is allowed

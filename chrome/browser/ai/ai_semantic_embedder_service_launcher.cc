@@ -153,9 +153,9 @@ void AISemanticEmbedderServiceLauncher::OnModelAccessPrefsChanged() {
   // TODO(crbug.com/579902011): On Windows, deleting the files fails while the
   // embeddings process still has them mapped, and the next startup with the
   // setting off is what removes them. Retry once the process disconnects.
-  component_updater::ManageAIEmbeddingsComponentRegistration(
+  component_updater::PurgeAIEmbeddingsComponent(
       g_browser_process ? g_browser_process->component_updater() : nullptr,
-      local_state);
+      *local_state);
 
   // Drop the loaded model. This disconnects the embedder remote, so in-flight
   // requests fail, and makes IsModelAvailable() false, so queued jobs and
@@ -234,8 +234,8 @@ void AISemanticEmbedderServiceLauncher::OnComponentRegistrationCompleted(
   if (!local_state ||
       !component_updater::IsAIEmbeddingsModelAllowed(local_state)) {
     if (local_state) {
-      component_updater::ManageAIEmbeddingsComponentRegistration(
-          g_browser_process->component_updater(), local_state);
+      component_updater::PurgeAIEmbeddingsComponent(
+          g_browser_process->component_updater(), *local_state);
     }
     FlushCallbacks();
     return;
