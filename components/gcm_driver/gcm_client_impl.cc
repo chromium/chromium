@@ -415,6 +415,13 @@ void GCMClientImpl::AddInstanceIDData(const std::string& app_id,
                                       const std::string& instance_id,
                                       const std::string& extra_data) {
   DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
+  // `InstanceIDImpl` re-sends the Instance ID before every token operation;
+  // skip unchanged entries to avoid a synchronous LevelDB write on startup.
+  auto iter = instance_id_data_.find(app_id);
+  if (iter != instance_id_data_.end() && iter->second.first == instance_id &&
+      iter->second.second == extra_data) {
+    return;
+  }
   instance_id_data_[app_id] = std::make_pair(instance_id, extra_data);
   // TODO(crbug.com/40109289): If this call fails, we likely leak a registration
   // (the one stored in instance_id_data_ would be used for a registration but

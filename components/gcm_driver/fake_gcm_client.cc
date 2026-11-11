@@ -134,6 +134,7 @@ void FakeGCMClient::Register(
   InstanceIDTokenInfo* instance_id_token_info =
       InstanceIDTokenInfo::FromRegistrationInfo(registration_info.get());
   if (instance_id_token_info) {
+    CHECK(instance_id_data_.contains(registration_info->app_id));
     registration_id =
         GenerateInstanceIDToken(instance_id_token_info->authorized_entity,
                                 instance_id_token_info->scope);
@@ -154,6 +155,9 @@ bool FakeGCMClient::ValidateRegistration(
 void FakeGCMClient::Unregister(
     scoped_refptr<RegistrationInfo> registration_info) {
   DCHECK(io_thread_->RunsTasksInCurrentSequence());
+  if (InstanceIDTokenInfo::FromRegistrationInfo(registration_info.get())) {
+    CHECK(instance_id_data_.contains(registration_info->app_id));
+  }
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,

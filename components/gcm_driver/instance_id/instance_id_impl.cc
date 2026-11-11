@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/base64.h"
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
@@ -158,6 +159,10 @@ void InstanceIDImpl::DoDeleteToken(const std::string& authorized_entity,
     return;
   }
 
+  // `GCMClient::Unregister()` requires the Instance ID to be registered even
+  // if no token was ever obtained.
+  AddInstanceIDData();
+
   Handler()->DeleteToken(
       app_id(), authorized_entity, scope,
       base::BindOnce(&InstanceIDImpl::OnDeleteTokenCompleted,
@@ -176,6 +181,10 @@ void InstanceIDImpl::DoDeleteID(DeleteIDCallback callback) {
     std::move(callback).Run(InstanceID::SUCCESS);
     return;
   }
+
+  // `GCMClient::Unregister()` requires the Instance ID to be registered even
+  // if no token was ever obtained.
+  AddInstanceIDData();
 
   Handler()->DeleteAllTokensForApp(
       app_id(),
@@ -224,33 +233,38 @@ void InstanceIDImpl::GetInstanceIDDataCompleted(
 }
 
 void InstanceIDImpl::EnsureIDGenerated() {
-  if (!id_.empty())
-    return;
+  if (id_.empty()) {
+    // Now produce the ID in the following steps:
 
-  // Now produce the ID in the following steps:
+    // 1) Generates the random number in 8 bytes which is required by the
+    //    server. We don't want to be strictly cryptographically secure. The
+    //    server might reject the ID if there is a conflict or problem.
+    uint8_t bytes[kInstanceIDByteLength];
+    crypto::RandBytes(bytes);
 
-  // 1) Generates the random number in 8 bytes which is required by the server.
-  //    We don't want to be strictly cryptographically secure. The server might
-  //    reject the ID if there is a conflict or problem.
-  uint8_t bytes[kInstanceIDByteLength];
-  crypto::RandBytes(bytes);
+    // 2) Transforms the first 4 bits to 0x7. Note that this is required by the
+    //    server.
+    bytes[0] &= 0x0f;
+    bytes[0] |= 0x70;
 
-  // 2) Transforms the first 4 bits to 0x7. Note that this is required by the
-  //    server.
-  bytes[0] &= 0x0f;
-  bytes[0] |= 0x70;
+    // 3) Encode the value in Android-compatible base64 scheme:
+    //    * URL safe: '/' replaced by '_' and '+' replaced by '-'.
+    //    * No padding: any trailing '=' will be removed.
+    id_ = base::Base64Encode(bytes);
+    std::replace(id_.begin(), id_.end(), '+', '-');
+    std::replace(id_.begin(), id_.end(), '/', '_');
+    std::erase(id_, '=');
 
-  // 3) Encode the value in Android-compatible base64 scheme:
-  //    * URL safe: '/' replaced by '_' and '+' replaced by '-'.
-  //    * No padding: any trailing '=' will be removed.
-  id_ = base::Base64Encode(bytes);
-  std::replace(id_.begin(), id_.end(), '+', '-');
-  std::replace(id_.begin(), id_.end(), '/', '_');
-  std::erase(id_, '=');
+    creation_time_ = base::Time::Now();
+  }
 
-  creation_time_ = base::Time::Now();
+  AddInstanceIDData();
+}
 
-  // Save to the persistent store.
+void InstanceIDImpl::AddInstanceIDData() {
+  CHECK(!id_.empty());
+  // Re-send unconditionally in case an earlier `AddInstanceIDData()` call was
+  // dropped while `GCMDriver` could not start (e.g., had no app handlers).
   Handler()->AddInstanceIDData(
       app_id(), id_, base::NumberToString(creation_time_.ToInternalValue()));
 }

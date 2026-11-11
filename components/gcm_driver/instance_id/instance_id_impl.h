@@ -52,6 +52,10 @@ class InstanceIDImpl : public InstanceID {
  private:
   void EnsureIDGenerated();
 
+  // Forwards `id_` and `creation_time_` to `GCMDriver` (and persists them to
+  // `GCMStore` once `GCMClient` is ready). `id_` must already be generated.
+  void AddInstanceIDData();
+
   void OnGetTokenCompleted(GetTokenCallback callback,
                            const std::string& token,
                            gcm::GCMClient::Result result);
