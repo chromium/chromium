@@ -202,29 +202,29 @@ class MockSafeBrowsingUrlChecker : public SafeBrowsingUrlCheckerImpl {
       base::WeakPtr<HashRealTimeService> hash_realtime_service_on_ui,
       hash_realtime_utils::HashRealTimeSelection hash_realtime_selection,
       bool is_async_check)
-      : SafeBrowsingUrlCheckerImpl(
-            headers,
-            load_flags,
-            has_user_gesture,
-            url_checker_delegate,
-            web_contents_getter,
-            /*weak_web_state=*/nullptr,
-            render_process_id,
-            render_frame_token,
-            frame_tree_node_id.value(),
-            navigation_id,
-            url_real_time_lookup_enabled,
-            can_check_db,
-            can_check_high_confidence_allowlist,
-            url_lookup_service_metric_suffix,
-            ui_task_runner,
-            url_lookup_service_on_ui,
-            hash_realtime_service_on_ui,
-            hash_realtime_selection,
-            is_async_check,
-            SessionID::InvalidValue(),
-            /*referring_app_info=*/std::nullopt,
-            /*v5_get_hash_protocol_manager=*/nullptr) {}
+      : SafeBrowsingUrlCheckerImpl(headers,
+                                   load_flags,
+                                   has_user_gesture,
+                                   url_checker_delegate,
+                                   web_contents_getter,
+                                   /*weak_web_state=*/nullptr,
+                                   render_process_id,
+                                   render_frame_token,
+                                   frame_tree_node_id.value(),
+                                   navigation_id,
+                                   url_real_time_lookup_enabled,
+                                   can_check_db,
+                                   can_check_high_confidence_allowlist,
+                                   url_lookup_service_metric_suffix,
+                                   ui_task_runner,
+                                   url_lookup_service_on_ui,
+                                   hash_realtime_service_on_ui,
+                                   hash_realtime_selection,
+                                   is_async_check,
+                                   SessionID::InvalidValue(),
+                                   /*referring_app_info=*/std::nullopt,
+                                   /*v5_get_hash_protocol_manager=*/nullptr,
+                                   /*profile_mode_suffix=*/"Regular") {}
 
   // Returns the CallbackInfo that was previously added in |AddCallbackInfo|.
   // It will crash if |AddCallbackInfo| was not called.
@@ -340,7 +340,8 @@ class SBBrowserUrlLoaderThrottleTestBase : public ::testing::Test {
             : hash_realtime_utils::HashRealTimeSelection::kNone,
         async_check_tracker_ ? async_check_tracker_->GetWeakPtr() : nullptr,
         /*referring_app_info=*/std::nullopt,
-        /*v5_get_hash_protocol_manager=*/nullptr);
+        /*v5_get_hash_protocol_manager=*/nullptr,
+        /*profile_mode_suffix=*/"Regular");
 
     url_checker_delegate_ = base::MakeRefCounted<MockUrlCheckerDelegate>();
     throttle_delegate_ = std::make_unique<MockThrottleDelegate>();
@@ -1397,7 +1398,8 @@ TEST_F(SBBrowserUrlLoaderThrottleAsyncCheckTest,
             /*hash_realtime_service=*/nullptr, hash_realtime_selection,
             async_check_enabled ? async_check_tracker_->GetWeakPtr() : nullptr,
             /*referring_app_info=*/std::nullopt,
-            /*v5_get_hash_protocol_manager=*/nullptr);
+            /*v5_get_hash_protocol_manager=*/nullptr,
+            /*profile_mode_suffix=*/"Regular");
         bool defer = false;
         network::ResourceRequest request;
         request.url = GURL("https://example.com/");

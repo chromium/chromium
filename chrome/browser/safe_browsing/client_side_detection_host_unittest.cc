@@ -4288,7 +4288,8 @@ class ClientSideDetectionRTLookupResponseForceRequestTest
         /*tab_id=*/SessionID::InvalidValue(),
         /*referring_app_info=*/std::nullopt,
         /*v5_get_hash_protocol_manager=*/nullptr,
-        /*prioritize_navigation_callbacks=*/false);
+        /*prioritize_navigation_callbacks=*/false,
+        /*profile_mode_suffix=*/"Regular");
     tracker->TransferUrlChecker(std::move(checker));
     // all_checks_completed must be set to true to notify
     // ClientSideDetectionHost.

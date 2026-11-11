@@ -155,7 +155,8 @@ SafeBrowsingUrlCheckerImpl::SafeBrowsingUrlCheckerImpl(
     bool is_async_check,
     SessionID tab_id,
     std::optional<internal::ReferringAppInfo> referring_app_info,
-    base::WeakPtr<V5GetHashProtocolManager> v5_get_hash_protocol_manager)
+    base::WeakPtr<V5GetHashProtocolManager> v5_get_hash_protocol_manager,
+    std::string profile_mode_suffix)
     : headers_(headers),
       load_flags_(load_flags),
       has_user_gesture_(has_user_gesture),
@@ -178,7 +179,8 @@ SafeBrowsingUrlCheckerImpl::SafeBrowsingUrlCheckerImpl(
       is_async_check_(is_async_check),
       tab_id_(tab_id),
       referring_app_info_(referring_app_info),
-      v5_get_hash_protocol_manager_(v5_get_hash_protocol_manager) {
+      v5_get_hash_protocol_manager_(v5_get_hash_protocol_manager),
+      profile_mode_suffix_(std::move(profile_mode_suffix)) {
   DCHECK(url_real_time_lookup_enabled_ || can_check_db_);
 }
 
@@ -536,6 +538,7 @@ SafeBrowsingUrlCheckerImpl::KickOffLookupMechanism(const GURL& url) {
   lookup_mechanism_runner_ =
       std::make_unique<SafeBrowsingLookupMechanismRunner>(
           std::move(lookup_mechanism), GetPerformedCheckSuffix(performed_check),
+          profile_mode_suffix_,
           base::BindOnce(
               &SafeBrowsingUrlCheckerImpl::OnUrlResultAndMaybeDeleteSelf,
               weak_factory_.GetWeakPtr(), performed_check));

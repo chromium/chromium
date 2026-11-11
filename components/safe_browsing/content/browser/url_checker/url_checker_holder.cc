@@ -70,7 +70,8 @@ UrlCheckerHolder::UrlCheckerHolder(
     std::optional<internal::ReferringAppInfo> referring_app_info,
     base::WeakPtr<safe_browsing::V5GetHashProtocolManager>
         v5_get_hash_protocol_manager,
-    bool prioritize_navigation_callbacks)
+    bool prioritize_navigation_callbacks,
+    std::string profile_mode_suffix)
     : delegate_getter_(std::move(delegate_getter)),
       frame_tree_node_id_(frame_tree_node_id),
       navigation_id_(navigation_id),
@@ -87,7 +88,8 @@ UrlCheckerHolder::UrlCheckerHolder(
       tab_id_(tab_id),
       referring_app_info_(referring_app_info),
       v5_get_hash_protocol_manager_(v5_get_hash_protocol_manager),
-      prioritize_navigation_callbacks_(prioritize_navigation_callbacks) {}
+      prioritize_navigation_callbacks_(prioritize_navigation_callbacks),
+      profile_mode_suffix_(std::move(profile_mode_suffix)) {}
 
 UrlCheckerHolder::~UrlCheckerHolder() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -115,7 +117,7 @@ void UrlCheckerHolder::Start(const StartParams& params) {
                 : content::BrowserTaskTraits{}),
         url_lookup_service_, hash_realtime_service_, hash_realtime_selection_,
         is_async_check_, tab_id_, referring_app_info_,
-        v5_get_hash_protocol_manager_);
+        v5_get_hash_protocol_manager_, profile_mode_suffix_);
   }
 
   CheckUrl(params.url, params.method);

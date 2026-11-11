@@ -88,7 +88,8 @@ class UrlCheckerHolder final {
       SessionID tab_id,
       std::optional<internal::ReferringAppInfo> referring_app_info,
       base::WeakPtr<V5GetHashProtocolManager> v5_get_hash_protocol_manager,
-      bool prioritize_navigation_callbacks);
+      bool prioritize_navigation_callbacks,
+      std::string profile_mode_suffix);
 
   ~UrlCheckerHolder();
 
@@ -155,6 +156,10 @@ class UrlCheckerHolder final {
   // Whether callbacks for this checker should run on the high-priority
   // `kNavigationNetworkResponse` UI task runner.
   bool prioritize_navigation_callbacks_ = false;
+  // Suffix indicating the profile mode (e.g., "Regular", "Incognito", or
+  // "Guest") for logging profile-mode-specific check result metrics. Must not
+  // be empty.
+  std::string profile_mode_suffix_;
   base::WeakPtrFactory<UrlCheckerHolder> weak_factory_{this};
 };
 

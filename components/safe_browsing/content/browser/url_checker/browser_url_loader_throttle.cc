@@ -116,13 +116,15 @@ std::unique_ptr<BrowserURLLoaderThrottle> BrowserURLLoaderThrottle::Create(
     base::WeakPtr<AsyncCheckTracker> async_check_tracker,
     std::optional<internal::ReferringAppInfo> referring_app_info,
     base::WeakPtr<safe_browsing::V5GetHashProtocolManager>
-        v5_get_hash_protocol_manager) {
+        v5_get_hash_protocol_manager,
+    std::string profile_mode_suffix) {
   return base::WrapUnique<BrowserURLLoaderThrottle>(
       new BrowserURLLoaderThrottle(
           std::move(delegate_getter), web_contents_getter, frame_tree_node_id,
           navigation_id, url_lookup_service, hash_realtime_service,
           hash_realtime_selection, async_check_tracker,
-          std::move(referring_app_info), v5_get_hash_protocol_manager));
+          std::move(referring_app_info), v5_get_hash_protocol_manager,
+          std::move(profile_mode_suffix)));
 }
 
 BrowserURLLoaderThrottle::BrowserURLLoaderThrottle(
@@ -136,7 +138,8 @@ BrowserURLLoaderThrottle::BrowserURLLoaderThrottle(
     base::WeakPtr<AsyncCheckTracker> async_check_tracker,
     std::optional<internal::ReferringAppInfo> referring_app_info,
     base::WeakPtr<safe_browsing::V5GetHashProtocolManager>
-        v5_get_hash_protocol_manager)
+        v5_get_hash_protocol_manager,
+    std::string profile_mode_suffix)
     : async_check_tracker_(async_check_tracker),
       url_lookup_service_(url_lookup_service),
       hash_realtime_service_(hash_realtime_service),
@@ -146,7 +149,8 @@ BrowserURLLoaderThrottle::BrowserURLLoaderThrottle(
       delegate_getter_(delegate_getter),
       web_contents_getter_(web_contents_getter),
       referring_app_info_(referring_app_info),
-      v5_get_hash_protocol_manager_(v5_get_hash_protocol_manager) {
+      v5_get_hash_protocol_manager_(v5_get_hash_protocol_manager),
+      profile_mode_suffix_(std::move(profile_mode_suffix)) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Decide whether to do real time URL lookups or not.
@@ -257,7 +261,7 @@ void BrowserURLLoaderThrottle::WillStartRequest(
         /*tab_id=*/SessionID::InvalidValue(), referring_app_info_,
         v5_get_hash_protocol_manager_,
         /*prioritize_navigation_callbacks=*/
-        can_prioritize_navigation_callbacks);
+        can_prioritize_navigation_callbacks, profile_mode_suffix_);
     async_sb_checker_ = std::make_unique<UrlCheckerHolder>(
         delegate_getter_, frame_tree_node_id_, navigation_id_,
         web_contents_getter_,
@@ -269,7 +273,7 @@ void BrowserURLLoaderThrottle::WillStartRequest(
         url_lookup_service_, hash_realtime_service_, hash_realtime_selection_,
         /*is_async_check=*/true, tab_id_, referring_app_info_,
         v5_get_hash_protocol_manager_,
-        /*prioritize_navigation_callbacks=*/false);
+        /*prioritize_navigation_callbacks=*/false, profile_mode_suffix_);
     if (on_sync_sb_checker_created_callback_for_testing_) {
       std::move(on_sync_sb_checker_created_callback_for_testing_).Run();
     }
@@ -289,7 +293,8 @@ void BrowserURLLoaderThrottle::WillStartRequest(
         /*is_async_check=*/false, tab_id_, referring_app_info_,
         v5_get_hash_protocol_manager_,
         /*prioritize_navigation_callbacks=*/
-        can_prioritize_navigation_callbacks && !is_real_time_lookup_enabled);
+        can_prioritize_navigation_callbacks && !is_real_time_lookup_enabled,
+        profile_mode_suffix_);
     if (on_sync_sb_checker_created_callback_for_testing_) {
       std::move(on_sync_sb_checker_created_callback_for_testing_).Run();
     }

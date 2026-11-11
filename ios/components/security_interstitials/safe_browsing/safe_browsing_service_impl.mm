@@ -45,6 +45,11 @@ inline constexpr std::string_view kClientName = "googlechrome";
 inline constexpr std::string_view kClientName = "chromium";
 #endif
 
+std::string GetProfileModeSuffix(web::WebState* web_state) {
+  return web_state->GetBrowserState()->IsOffTheRecord() ? "Incognito"
+                                                        : "Regular";
+}
+
 }  // namespace
 
 SafeBrowsingServiceImpl::SafeBrowsingServiceImpl() {
@@ -216,7 +221,8 @@ SafeBrowsingServiceImpl::CreateUrlChecker(
       /*is_async_check=*/false,
       /*tab_id=*/SessionID::InvalidValue(), /*referring_app_info=*/std::nullopt,
       v5_get_hash_protocol_manager ? v5_get_hash_protocol_manager->GetWeakPtr()
-                                   : nullptr);
+                                   : nullptr,
+      GetProfileModeSuffix(web_state));
 }
 
 std::unique_ptr<safe_browsing::SafeBrowsingUrlCheckerImpl>
@@ -281,7 +287,8 @@ SafeBrowsingServiceImpl::CreateAsyncChecker(
       /*is_async_check=*/true,
       /*tab_id=*/SessionID::InvalidValue(), /*referring_app_info=*/std::nullopt,
       v5_get_hash_protocol_manager ? v5_get_hash_protocol_manager->GetWeakPtr()
-                                   : nullptr);
+                                   : nullptr,
+      GetProfileModeSuffix(web_state));
 }
 
 std::unique_ptr<safe_browsing::SafeBrowsingUrlCheckerImpl>
@@ -317,7 +324,8 @@ SafeBrowsingServiceImpl::CreateSyncChecker(
       /*is_async_check=*/false,
       /*tab_id=*/SessionID::InvalidValue(), /*referring_app_info=*/std::nullopt,
       v5_get_hash_protocol_manager ? v5_get_hash_protocol_manager->GetWeakPtr()
-                                   : nullptr);
+                                   : nullptr,
+      GetProfileModeSuffix(web_state));
 }
 
 // Checks if async check should be created.
