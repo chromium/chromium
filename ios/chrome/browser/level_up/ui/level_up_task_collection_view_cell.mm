@@ -180,6 +180,7 @@ const CGFloat kLayoutSpacing = 16.0;
   _titleLabel = [[UILabel alloc] init];
   _titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
   _titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
+  _titleLabel.accessibilityTraits |= UIAccessibilityTraitHeader;
 
   UIFont* subheadFont =
       [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];

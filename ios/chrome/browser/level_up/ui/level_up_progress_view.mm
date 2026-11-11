@@ -160,6 +160,7 @@ const CGFloat kCompletionRowSpacing = 16.0;
   headerLabel.font = [UIFont systemFontOfSize:kHeaderFontSize
                                        weight:UIFontWeightRegular];
   headerLabel.text = l10n_util::GetNSString(IDS_IOS_LEVEL_UP_HEADER_TITLE);
+  headerLabel.accessibilityTraits |= UIAccessibilityTraitHeader;
 
   _levelLabel = [[UILabel alloc] init];
   _levelLabel.translatesAutoresizingMaskIntoConstraints = NO;
