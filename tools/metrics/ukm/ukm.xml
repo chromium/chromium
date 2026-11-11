@@ -23577,27 +23577,11 @@ be describing additional metrics about the same event.
     <summary>
       Whether any familiarity heuristics would trigger on the site.
     </summary>
-    <aggregation>
-      <history>
-        <index fields="profile.country"/>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="OnHighConfidenceAllowlist" enum="Boolean">
     <summary>
       Whether the site is on the safe browsing high confidence allowlist.
     </summary>
-    <aggregation>
-      <history>
-        <index fields="profile.country"/>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="SiteEngagementScore">
     <summary>
