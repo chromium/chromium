@@ -935,8 +935,7 @@ void FeatureInfo::InitializeFeatures(uint32_t complete_fbo_for_workarounds) {
   bool has_ext_texture_storage =
       gfx::HasExtension(extensions, "GL_EXT_texture_storage");
   bool has_texture_storage =
-      !workarounds_.disable_texture_storage &&
-      (has_ext_texture_storage || gl_version_info_->is_es3);
+      has_ext_texture_storage || gl_version_info_->is_es3;
 
   bool enable_texture_storage = has_texture_storage;
 
@@ -1959,8 +1958,6 @@ void FeatureInfo::InitializeFloatAndHalfFloatFeatures(
 }
 
 bool FeatureInfo::IsES3Capable() const {
-  if (workarounds_.disable_texture_storage)
-    return false;
   if (gl_version_info_)
     return gl_version_info_->IsAtLeastGLES(3, 0);
   return false;

@@ -114,8 +114,7 @@ TEST_F(TextureStorageTest, CorrectPixels) {
 
   glTexStorage2DEXT(GL_TEXTURE_2D, 1, GL_RGBA8_OES, 2, 2);
 
-  // Mesa drivers crash without rebinding to FBO. It's why
-  // DISABLE_TEXTURE_STORAGE workaround is introduced. crbug.com/521904
+  // Old Mesa drivers crash without rebinding to FBO. crbug.com/521904
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
                          tex_, 0);
 
@@ -231,8 +230,7 @@ TEST_F(TextureStorageTest, LuminanceEmulation) {
     return;
 
   glTexStorage2DEXT(GL_TEXTURE_2D, 1, GL_RGBA8_OES, 2, 2);
-  // Mesa drivers crash without rebinding to FBO. It's why
-  // DISABLE_TEXTURE_STORAGE workaround is introduced. crbug.com/521904
+  // Old Mesa drivers crash without rebinding to FBO. crbug.com/521904
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
                          tex_, 0);
   ASSERT_TRUE(glGetError() == GL_NONE);
@@ -265,8 +263,7 @@ TEST_F(TextureStorageTest, AlphaEmulation) {
     return;
 
   glTexStorage2DEXT(GL_TEXTURE_2D, 1, GL_RGBA8_OES, 2, 2);
-  // Mesa drivers crash without rebinding to FBO. It's why
-  // DISABLE_TEXTURE_STORAGE workaround is introduced. crbug.com/521904
+  // Old Mesa drivers crash without rebinding to FBO. crbug.com/521904
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
                          tex_, 0);
   ASSERT_TRUE(glGetError() == GL_NONE);
@@ -299,8 +296,7 @@ TEST_F(TextureStorageTest, LuminanceAlphaEmulation) {
     return;
 
   glTexStorage2DEXT(GL_TEXTURE_2D, 1, GL_RGBA8_OES, 2, 2);
-  // Mesa drivers crash without rebinding to FBO. It's why
-  // DISABLE_TEXTURE_STORAGE workaround is introduced. crbug.com/521904
+  // Old Mesa drivers crash without rebinding to FBO. crbug.com/521904
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
                          tex_, 0);
   ASSERT_TRUE(glGetError() == GL_NONE);

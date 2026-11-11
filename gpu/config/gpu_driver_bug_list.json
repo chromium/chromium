@@ -332,22 +332,6 @@
       ]
     },
     {
-      "id": 131,
-      "description": "Linux Mesa drivers crash on glTexSubImage2D() to texture storage bound to FBO",
-      "cr_bugs": [521904],
-      "os": {
-        "type": "linux"
-      },
-      "driver_vendor": "Mesa",
-      "driver_version": {
-        "op": "<",
-        "value": "10.6"
-      },
-      "features": [
-        "disable_texture_storage"
-      ]
-    },
-    {
       "id": 132,
       "description": "On Intel GPUs MSAA performance is not acceptable for GPU rasterization",
       "cr_bugs": [527565, 1298585],

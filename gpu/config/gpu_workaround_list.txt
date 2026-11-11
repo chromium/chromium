@@ -56,7 +56,6 @@ disable_rgb_to_yuv_conversion
 disable_sharing_nv12_from_d3d11_to_d3d12
 disable_software_to_accelerated_canvas_upgrade
 disable_svc_encoding
-disable_texture_storage
 disable_timestamp_queries
 disable_vaapi
 disable_video_overlay_if_moving
