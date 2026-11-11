@@ -43,6 +43,7 @@
 
 - (void)show {
   NSPoint location = [view_.window mouseLocationOutsideOfEventStream];
+  location = [view_ convertPoint:location fromView:nil];
   NSRect rect = NSMakeRect(location.x, location.y, 1.0, 1.0);
   [picker_ showRelativeToRect:rect ofView:view_ preferredEdge:NSMinYEdge];
 }
