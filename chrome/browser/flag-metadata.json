@@ -5783,7 +5783,7 @@
       "bbetini@google.com",
       "//chrome/browser/glic/OWNERS"
     ],
-    "expiry_milestone": 160
+    "expiry_milestone": 170
   },
   {
     "name": "glic-background-actuation-tab-group-sync",
