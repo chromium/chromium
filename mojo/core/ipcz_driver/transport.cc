@@ -32,6 +32,9 @@
 #include "third_party/ipcz/include/ipcz/ipcz.h"
 
 #if BUILDFLAG(IS_WIN)
+#include <windows.h>
+
+#include "base/win/security_util.h"
 #include "base/win/win_util.h"
 #include "mojo/public/cpp/platform/platform_handle_security_util_win.h"
 #endif
@@ -227,6 +230,21 @@ std::optional<PlatformHandle> DecodeHandle(HandleData data,
     return std::nullopt;
   }
   return PlatformHandle(base::win::ScopedHandle(local_dupe));
+}
+
+// Returns true if `handle` is a named pipe end and is the only open handle to
+// its underlying kernel file object, in any process.
+//
+// On Windows, I/O completion port association is a property of the file
+// object rather than of any one handle to it. A Channel registers its handle
+// with this process's I/O completion port, so it must only adopt pipe ends on
+// which nothing outside this process can start I/O. Once ours is the only
+// handle, no less privileged process can obtain another: opening a pipe by
+// name creates a new file object, and duplicating a handle out of this process
+// requires PROCESS_DUP_HANDLE access to it.
+bool IsExclusivelyOwnedPipe(HANDLE handle) {
+  return base::win::GetObjectHandleCount(handle) == 1u &&
+         ::GetNamedPipeInfo(handle, nullptr, nullptr, nullptr, nullptr);
 }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -709,6 +727,17 @@ scoped_refptr<Transport> Transport::Deserialize(
     // Do not accept broker connections from untrusted transports.
     return nullptr;
   }
+
+#if BUILDFLAG(IS_WIN)
+  // A less privileged peer must hand over its pipe end outright. If it kept
+  // another handle to the same pipe end, it could keep generating completion
+  // packets for the Channel which adopts it. Transferring a handle closes the
+  // sender's copy, so the handle we now hold must be the only one.
+  if (!is_source_at_least_as_privileged &&
+      !IsExclusivelyOwnedPipe(handles[0].GetHandle().get())) {
+    return nullptr;
+  }
+#endif
 
   // A peer may choose the new transport's remote process, by attaching a
   // process handle or by claiming the process is its own. Honor either only if

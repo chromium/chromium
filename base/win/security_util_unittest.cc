@@ -323,5 +323,23 @@ TEST(SecurityUtilTest, GetGrantedAccess) {
   EXPECT_EQ(GetGrantedAccess(handle.get()), DWORD{MUTEX_ALL_ACCESS});
 }
 
+TEST(SecurityUtilTest, GetObjectHandleCount) {
+  EXPECT_FALSE(GetObjectHandleCount(nullptr));
+  ScopedHandle event(::CreateEvent(nullptr, TRUE, FALSE, nullptr));
+  ASSERT_TRUE(event.is_valid());
+  EXPECT_EQ(GetObjectHandleCount(event.get()), ULONG{1});
+
+  HANDLE duplicate = nullptr;
+  ASSERT_TRUE(::DuplicateHandle(::GetCurrentProcess(), event.get(),
+                                ::GetCurrentProcess(), &duplicate, 0, FALSE,
+                                DUPLICATE_SAME_ACCESS));
+  ScopedHandle scoped_duplicate(duplicate);
+  EXPECT_EQ(GetObjectHandleCount(event.get()), ULONG{2});
+  EXPECT_EQ(GetObjectHandleCount(scoped_duplicate.get()), ULONG{2});
+
+  scoped_duplicate.Close();
+  EXPECT_EQ(GetObjectHandleCount(event.get()), ULONG{1});
+}
+
 }  // namespace win
 }  // namespace base

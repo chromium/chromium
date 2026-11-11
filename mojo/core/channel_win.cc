@@ -11,6 +11,7 @@
 #include <algorithm>
 #include <limits>
 #include <memory>
+#include <optional>
 #include <tuple>
 
 #include "base/compiler_specific.h"
@@ -265,31 +266,47 @@ class ChannelWin : public Channel,
 
   // base::MessageLoop::IOHandler:
   void OnIOCompleted(base::MessagePumpForIO::IOContext* context,
-                     DWORD bytes_transfered,
-                     DWORD error) override {
-    if (error != ERROR_SUCCESS) {
-      if (context == &write_context_) {
-        {
-          base::AutoLock lock(write_lock_);
-          reject_writes_ = true;
-        }
-        OnWriteError(Error::kDisconnected);
-      } else {
-        OnError(Error::kDisconnected);
-      }
-    } else if (context == &read_context_) {
-      OnReadDone(static_cast<size_t>(bytes_transfered));
-    } else {
-      CHECK(context == &write_context_);
-      OnWriteDone(static_cast<size_t>(bytes_transfered));
+                     DWORD /*bytes_transfered*/,
+                     DWORD /*error*/) override {
+    // I/O completion port association belongs to the underlying file object
+    // rather than to `handle_`, so a packet delivered here does not necessarily
+    // correspond to an operation started by this Channel. OnReadDone() and
+    // OnWriteDone() act only on an outstanding operation of ours which the
+    // kernel has completed, and take its result from our own OVERLAPPED rather
+    // than from the packet.
+    if (context == &read_context_) {
+      OnReadDone();
+    } else if (context == &write_context_) {
+      OnWriteDone();
     }
-    Release();
   }
 
-  void OnReadDone(size_t bytes_read) {
-    DCHECK(is_read_pending_);
-    is_read_pending_ = false;
+  // Returns the number of bytes transferred by the operation most recently
+  // started with `context`, which the kernel must have completed, or nullopt if
+  // that operation failed.
+  std::optional<size_t> GetCompletedBytes(
+      base::MessagePumpForIO::IOContext& context) {
+    if (!handle_.is_valid()) {
+      // ShutDownOnIOThread() has cancelled every outstanding operation.
+      return std::nullopt;
+    }
+    DWORD bytes_transferred = 0;
+    if (!::GetOverlappedResult(handle_.get(), context.GetOverlapped(),
+                               &bytes_transferred, /*bWait=*/FALSE)) {
+      return std::nullopt;
+    }
+    return bytes_transferred;
+  }
 
+  void OnReadDone() {
+    if (!pending_read_ ||
+        !HasOverlappedIoCompleted(read_context_.GetOverlapped())) {
+      return;
+    }
+    scoped_refptr<ChannelWin> keep_alive = std::move(pending_read_);
+
+    // A failed read is handled like the end of the stream.
+    const size_t bytes_read = GetCompletedBytes(read_context_).value_or(0);
     if (bytes_read > 0) {
       size_t next_read_size = 0;
       if (OnReadComplete(bytes_read, &next_read_size)) {
@@ -302,23 +319,23 @@ class ChannelWin : public Channel,
     }
   }
 
-  void OnWriteDone(size_t bytes_written) {
-    if (bytes_written == 0) {
-      return;
-    }
-
+  void OnWriteDone() {
+    scoped_refptr<ChannelWin> keep_alive;
     bool write_error = false;
     {
       base::AutoLock lock(write_lock_);
-
-      DCHECK(is_write_pending_);
-      is_write_pending_ = false;
+      if (!pending_write_ ||
+          !HasOverlappedIoCompleted(write_context_.GetOverlapped())) {
+        return;
+      }
+      keep_alive = std::move(pending_write_);
       DCHECK(!outgoing_messages_.IsEmpty());
 
       Channel::MessagePtr message = outgoing_messages_.TakeFirst();
 
       // Overlapped WriteFile() to a pipe should always fully complete.
-      if (message->data_num_bytes() != bytes_written) {
+      std::optional<size_t> bytes_written = GetCompletedBytes(write_context_);
+      if (!bytes_written || message->data_num_bytes() != *bytes_written) {
         reject_writes_ = write_error = true;
       } else if (!WriteNextNoLock()) {
         reject_writes_ = write_error = true;
@@ -330,7 +347,7 @@ class ChannelWin : public Channel,
   }
 
   void ReadMore(size_t next_read_size_hint) {
-    DCHECK(!is_read_pending_);
+    DCHECK(!pending_read_);
 
     size_t buffer_capacity = next_read_size_hint;
     char* buffer = GetReadBuffer(&buffer_capacity);
@@ -346,8 +363,7 @@ class ChannelWin : public Channel,
         ::ReadFile(handle_.get(), buffer, static_cast<DWORD>(buffer_capacity),
                    NULL, read_context_.GetOverlapped());
     if (ok || GetLastError() == ERROR_IO_PENDING) {
-      is_read_pending_ = true;
-      AddRef();
+      pending_read_ = this;
     } else {
       OnError(Error::kDisconnected);
     }
@@ -377,8 +393,7 @@ class ChannelWin : public Channel,
                         static_cast<DWORD>(message->data_num_bytes()), NULL,
                         write_context_.GetOverlapped());
     if (ok || GetLastError() == ERROR_IO_PENDING) {
-      is_write_pending_ = true;
-      AddRef();
+      pending_write_ = this;
       return true;
     }
     return false;
@@ -402,7 +417,7 @@ class ChannelWin : public Channel,
       // If we can't write because the pipe is disconnected then continue
       // reading to fetch any in-flight messages, relying on end-of-stream to
       // signal the actual disconnection.
-      if (is_read_pending_) {
+      if (pending_read_) {
         return;
       }
     }
@@ -421,7 +436,8 @@ class ChannelWin : public Channel,
   const scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
 
   base::MessagePumpForIO::IOContext read_context_;
-  bool is_read_pending_ = false;
+  // A reference to this Channel, held while a read is outstanding.
+  scoped_refptr<ChannelWin> pending_read_;
 
   // Protects all fields potentially accessed on multiple threads via Write().
   base::Lock write_lock_;
@@ -429,7 +445,8 @@ class ChannelWin : public Channel,
   ChannelWinMessageQueue outgoing_messages_;
   bool delay_writes_ = true;
   bool reject_writes_ = false;
-  bool is_write_pending_ = false;
+  // A reference to this Channel, held while a write is outstanding.
+  scoped_refptr<ChannelWin> pending_write_;
 
   bool leak_handle_ = false;
 };
