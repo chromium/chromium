@@ -7,11 +7,15 @@
 #include <bitset>
 #include <cstddef>
 #include <memory>
+#include <utility>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/threading/thread_restrictions.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/permissions_policy/document_policy.h"
@@ -75,6 +79,8 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/loader/testing/test_resource_fetcher_properties.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/scheduler/public/worker_scheduler.h"
+#include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
@@ -282,12 +288,30 @@ class DedicatedWorkerObjectProxyForTest final
     DedicatedWorkerObjectProxy::DidEvaluateTopLevelScript(success, result);
   }
 
+  void SetDidTerminateWorkerThreadEvent(base::WaitableEvent* event) {
+    did_terminate_worker_thread_event_ = event;
+  }
+
+  void DidTerminateWorkerThread() override {
+    // Copy `event` first: once the base class has posted
+    // `WorkerThreadTerminated()`, `this` may be destroyed at any time.
+    base::WaitableEvent* event = did_terminate_worker_thread_event_;
+    DedicatedWorkerObjectProxy::DidTerminateWorkerThread();
+    if (event) {
+      event->Signal();
+    }
+  }
+
  private:
   std::bitset<static_cast<size_t>(WebFeature::kMaxValue) + 1>
       reported_features_;
   std::bitset<static_cast<size_t>(WebDXFeature::kMaxValue) + 1>
       reported_webdx_features_;
-  base::RunLoop did_evaluate_top_level_script_;
+  // Allow nestable tasks so `WaitUntilDidEvaluateTopLevelScript()` also works
+  // when starting a nested worker inside a task on a parent `WorkerThread`.
+  base::RunLoop did_evaluate_top_level_script_{
+      base::RunLoop::Type::kNestableTasksAllowed};
+  raw_ptr<base::WaitableEvent> did_terminate_worker_thread_event_ = nullptr;
 };
 
 class DedicatedWorkerMessagingProxyForTest
@@ -322,13 +346,18 @@ class DedicatedWorkerMessagingProxyForTest
   CreateGlobalScopeCreationParamsForTest() {
     scoped_refptr<const SecurityOrigin> security_origin =
         SecurityOrigin::Create(script_url_);
+    std::unique_ptr<WorkerSettings> worker_settings =
+        GetExecutionContext()->IsWindow()
+            ? std::make_unique<WorkerSettings>(
+                  To<LocalDOMWindow>(GetExecutionContext())
+                      ->GetFrame()
+                      ->GetSettings())
+            : WorkerSettings::Copy(To<WorkerGlobalScope>(GetExecutionContext())
+                                       ->GetWorkerSettings());
     return GlobalScopeCreationParams::CreateForWorkerForTesting(
         security_origin.get(), script_url_,
         GetExecutionContext()->GetExecutionContextToken(),
-        std::make_unique<WorkerSettings>(
-            To<LocalDOMWindow>(GetExecutionContext())
-                ->GetFrame()
-                ->GetSettings()));
+        std::move(worker_settings));
   }
 
   // Starts a worker at `script_url` (which may be a local scheme such as blob:)
@@ -367,6 +396,23 @@ class DedicatedWorkerMessagingProxyForTest
     return static_cast<DedicatedWorkerThreadForTest*>(GetWorkerThread());
   }
 
+  DedicatedWorkerObjectProxyForTest& GetDedicatedWorkerObjectProxy() {
+    return static_cast<DedicatedWorkerObjectProxyForTest&>(WorkerObjectProxy());
+  }
+
+  void SetWorkerThreadTerminatedEvent(base::WaitableEvent* event) {
+    worker_thread_terminated_event_ = event;
+  }
+
+  void WorkerThreadTerminated() override {
+    // Copy `event` first: the base class may destroy `this`.
+    base::WaitableEvent* event = worker_thread_terminated_event_;
+    DedicatedWorkerMessagingProxy::WorkerThreadTerminated();
+    if (event) {
+      event->Signal();
+    }
+  }
+
   void Trace(Visitor* visitor) const override {
     DedicatedWorkerMessagingProxy::Trace(visitor);
   }
@@ -380,6 +426,7 @@ class DedicatedWorkerMessagingProxyForTest
   }
 
   KURL script_url_;
+  raw_ptr<base::WaitableEvent> worker_thread_terminated_event_ = nullptr;
 };
 
 class FakeWebDedicatedWorkerHostFactoryClient
@@ -1640,6 +1687,186 @@ TEST_F(DedicatedWorkerTest,
   ASSERT_EQ(events.size(), 2u);
   ExpectUnsanitizedErrorEvent(events[0]);
   ExpectSanitizedErrorEvent(events[1], script_state);
+}
+
+namespace {
+
+// Pauses the scheduler of `worker_thread` until its global scope is destroyed.
+class ScopedWorkerSchedulerPause final
+    : public GarbageCollected<ScopedWorkerSchedulerPause>,
+      public ExecutionContextLifecycleObserver {
+ public:
+  explicit ScopedWorkerSchedulerPause(WorkerThread* worker_thread)
+      : ExecutionContextLifecycleObserver(worker_thread->GlobalScope()),
+        pause_handle_(worker_thread->GetScheduler()->Pause()) {}
+
+  void ContextDestroyed() override { pause_handle_.reset(); }
+
+ private:
+  std::unique_ptr<scheduler::WorkerScheduler::PauseHandle> pause_handle_;
+};
+
+// Keeps objects on a worker's heap alive until the worker shuts down, without
+// creating references to them from the main thread.
+class WorkerHeapObjectRetainer final
+    : public GarbageCollected<WorkerHeapObjectRetainer>,
+      public Supplement<ExecutionContext> {
+ public:
+  static constexpr const char kSupplementName[] = "WorkerHeapObjectRetainer";
+
+  static WorkerHeapObjectRetainer& From(ExecutionContext& context) {
+    auto* retainer =
+        Supplement<ExecutionContext>::From<WorkerHeapObjectRetainer>(context);
+    if (!retainer) {
+      retainer = MakeGarbageCollected<WorkerHeapObjectRetainer>(context);
+      ProvideTo(context, retainer);
+    }
+    return *retainer;
+  }
+
+  explicit WorkerHeapObjectRetainer(ExecutionContext& context)
+      : Supplement<ExecutionContext>(context) {}
+
+  void Retain(DedicatedWorker* worker) { workers_.push_back(worker); }
+  void Retain(ScopedWorkerSchedulerPause* pause) { pauses_.push_back(pause); }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(workers_);
+    visitor->Trace(pauses_);
+    Supplement<ExecutionContext>::Trace(visitor);
+  }
+
+ private:
+  HeapVector<Member<DedicatedWorker>> workers_;
+  HeapVector<Member<ScopedWorkerSchedulerPause>> pauses_;
+};
+
+// Starts a nested worker from `parent_context`, which must be a worker global
+// scope. `did_terminate_event` is signaled when the nested worker thread has
+// shut down, and `terminated_event` when the parent has been notified of that.
+DedicatedWorker* StartNestedWorker(ExecutionContext* parent_context,
+                                   base::WaitableEvent* did_terminate_event,
+                                   base::WaitableEvent* terminated_event) {
+  DedicatedWorkerMessagingProxyForTest* proxy = nullptr;
+  auto* nested_worker = MakeGarbageCollected<DedicatedWorker>(
+      parent_context, KURL("http://fake.url/nested.js"),
+      WorkerOptions::Create(), [&](DedicatedWorker* worker) {
+        proxy = MakeGarbageCollected<DedicatedWorkerMessagingProxyForTest>(
+            parent_context, worker);
+        return proxy;
+      });
+  nested_worker->UpdateStateIfNeeded();
+  nested_worker->EmulateStartForTesting();
+  proxy->SetWorkerThreadTerminatedEvent(terminated_event);
+  proxy->GetDedicatedWorkerObjectProxy().SetDidTerminateWorkerThreadEvent(
+      did_terminate_event);
+  proxy->StartWorker(/*source_code=*/"");
+  proxy->GetDedicatedWorkerObjectProxy().WaitUntilDidEvaluateTopLevelScript();
+  WorkerHeapObjectRetainer::From(*parent_context).Retain(nested_worker);
+  return nested_worker;
+}
+
+}  // namespace
+
+// Regression test for https://crbug.com/570135707: a parent worker must finish
+// shutting down when a nested worker terminates just after the parent was asked
+// to terminate. The parent's shutdown task is queued first, so it shuts down
+// the parent's task queues before the nested worker's termination notice gets
+// to run there.
+TEST_F(DedicatedWorkerTest, NestedWorkerTerminatesWhileParentShutsDown) {
+  StartWorker();
+  WaitUntilWorkerIsRunning();
+
+  base::WaitableEvent nested_started;
+  base::WaitableEvent parent_termination_requested;
+  base::WaitableEvent nested_did_terminate;
+  base::WaitableEvent nested_terminated;
+
+  // Post directly instead of using `RunOnWorkerThread()`, which blocks the main
+  // thread until the task finishes. This task waits for the main thread to
+  // call `Terminate()`.
+  PostCrossThreadTask(
+      *GetWorkerThread()->GetTaskRunner(TaskType::kInternalTest), FROM_HERE,
+      CrossThreadBindOnce(
+          [](DedicatedWorkerThreadForTest* parent_thread,
+             base::WaitableEvent* nested_started,
+             base::WaitableEvent* parent_termination_requested,
+             base::WaitableEvent* nested_did_terminate,
+             base::WaitableEvent* nested_terminated) {
+            DedicatedWorker* nested_worker =
+                StartNestedWorker(parent_thread->GlobalScope(),
+                                  nested_did_terminate, nested_terminated);
+            nested_started->Signal();
+
+            // Once the parent's shutdown task is queued behind this one,
+            // terminate the nested worker and wait until it has posted its
+            // termination notice to the parent.
+            base::ScopedAllowBaseSyncPrimitivesForTesting allow_wait;
+            parent_termination_requested->Wait();
+            nested_worker->terminate();
+            nested_did_terminate->Wait();
+          },
+          CrossThreadUnretained(GetWorkerThread()),
+          CrossThreadUnretained(&nested_started),
+          CrossThreadUnretained(&parent_termination_requested),
+          CrossThreadUnretained(&nested_did_terminate),
+          CrossThreadUnretained(&nested_terminated)));
+
+  {
+    base::ScopedAllowBaseSyncPrimitivesForTesting allow_wait;
+    nested_started.Wait();
+  }
+  GetWorkerThread()->Terminate();
+  parent_termination_requested.Signal();
+
+  GetWorkerThread()->WaitForShutdownForTesting();
+  EXPECT_TRUE(nested_terminated.IsSignaled());
+  EXPECT_EQ(WorkerThread::ExitCode::kGracefullyTerminated,
+            GetWorkerThread()->GetExitCodeForTesting());
+}
+
+// Regression test for https://crbug.com/570135707: if a nested worker
+// terminates while its parent worker is paused, the parent must not be notified
+// while it stays paused, but must still be notified (and finish shutting down)
+// if it is terminated while paused.
+TEST_F(DedicatedWorkerTest, NestedWorkerTerminatesWhileParentPaused) {
+  StartWorker();
+  WaitUntilWorkerIsRunning();
+
+  base::WaitableEvent nested_did_terminate;
+  base::WaitableEvent nested_terminated;
+
+  RunOnWorkerThread(CrossThreadBindOnce(
+      [](DedicatedWorkerThreadForTest* parent_thread,
+         base::WaitableEvent* nested_did_terminate,
+         base::WaitableEvent* nested_terminated,
+         ExecutionContext* execution_context) {
+        DedicatedWorker* nested_worker = StartNestedWorker(
+            execution_context, nested_did_terminate, nested_terminated);
+        WorkerHeapObjectRetainer::From(*execution_context)
+            .Retain(MakeGarbageCollected<ScopedWorkerSchedulerPause>(
+                parent_thread));
+        nested_worker->terminate();
+      },
+      CrossThreadUnretained(GetWorkerThread()),
+      CrossThreadUnretained(&nested_did_terminate),
+      CrossThreadUnretained(&nested_terminated)));
+
+  {
+    base::ScopedAllowBaseSyncPrimitivesForTesting allow_wait;
+    nested_did_terminate.Wait();
+  }
+
+  // Round-trip an unpausable task through the parent, which would give the
+  // termination notice a chance to run if it ignored the pause.
+  RunOnWorkerThread(CrossThreadBindOnce([](ExecutionContext*) {}));
+  EXPECT_FALSE(nested_terminated.IsSignaled());
+
+  GetWorkerThread()->Terminate();
+  GetWorkerThread()->WaitForShutdownForTesting();
+  EXPECT_TRUE(nested_terminated.IsSignaled());
+  EXPECT_EQ(WorkerThread::ExitCode::kGracefullyTerminated,
+            GetWorkerThread()->GetExitCodeForTesting());
 }
 
 }  // namespace blink

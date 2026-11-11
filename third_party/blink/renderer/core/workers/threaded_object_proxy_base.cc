@@ -95,10 +95,12 @@ void ThreadedObjectProxyBase::DidTerminateWorkerThread() {
     return;
   }
 
-  // This will terminate the MessagingProxy.
-  PostCrossThreadTask(
-      *GetParentExecutionContextTaskRunners()->Get(TaskType::kInternalDefault),
-      FROM_HERE,
+  // This will terminate the MessagingProxy. The parent thread must not miss
+  // `WorkerThreadTerminated()`: a parent worker waits for it before finishing
+  // its own shutdown. Use a cleanup task so it still runs if the parent's task
+  // queue is shut down first (e.g., by `WorkerScheduler::Dispose()`).
+  GetParentExecutionContextTaskRunners()->PostCrossThreadCleanupTask(
+      TaskType::kInternalDefault, FROM_HERE,
       CrossThreadBindOnce(&ThreadedMessagingProxyBase::WorkerThreadTerminated,
                           MessagingProxyWeakPtr()));
 }
