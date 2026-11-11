@@ -84,10 +84,6 @@ tast.secagentd.NetworkEvents.relaxed_udp@chromeos-betty-cfi-thin-lto-chrome
 # b/488388275
 tast.health.RunCameraFrameAnalysisRoutine
 
-# b/568738156
-# TODO(b/568738156): Re-enable tast.arc.Print.vm_t.
-tast.arc.Print.vm_t
-
 # b/572833952
 # TODO(b/572833952): Re-enable tast.camera.CCAUISmoke.fake_hal and
 # tast.camera.CCAUISmoke.vivid.
