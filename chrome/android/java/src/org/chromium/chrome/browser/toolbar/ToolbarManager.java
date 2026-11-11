@@ -8,7 +8,6 @@ import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS;
 
-import android.app.Activity;
 import android.content.ComponentCallbacks;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -1123,13 +1122,9 @@ public class ToolbarManager
         }
 
         NavigationPopup.HistoryDelegate historyDelegate =
-                (tab) -> {
-                    WindowAndroid windowAndroidFromTab = tab.getWindowAndroid();
-                    assumeNonNull(windowAndroidFromTab);
-                    Activity activityFromTab = windowAndroidFromTab.getActivity().get();
-                    assert activityFromTab != null;
-                    HistoryManagerUtils.showHistoryManager(activityFromTab, tab, tab.getProfile());
-                };
+                (tab) ->
+                        HistoryManagerUtils.showHistoryManager(
+                                tab.getWindowAndroid(), tab, tab.getProfile());
 
         View homeButton = controlContainer.findViewById(R.id.home_button);
         if (homeButton != null) {

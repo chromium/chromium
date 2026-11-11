@@ -401,7 +401,7 @@ public class NativePageFactory {
                             mSnackbarManagerSupplier.get(),
                             () ->
                                     HistoryManagerUtils.showHistoryManager(
-                                            mActivity, tab, tab.getProfile()),
+                                            mWindowAndroid, tab, tab.getProfile()),
                             mRecentlyClosedEntriesManager);
 
             NativePageHost host =

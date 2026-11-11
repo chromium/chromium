@@ -3190,7 +3190,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                 NewTabPageUma.recordAction(NewTabPageUma.ACTION_OPENED_HISTORY_MANAGER);
             }
             RecordUserAction.record("MobileMenuHistory");
-            HistoryManagerUtils.showHistoryManager(this, currentTab, currentProfile);
+            HistoryManagerUtils.showHistoryManager(getWindowAndroid(), currentTab, currentProfile);
             return true;
         }
 

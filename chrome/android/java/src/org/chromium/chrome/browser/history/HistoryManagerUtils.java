@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.url_constants.UrlConstantResolverFactory;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.base.WindowAndroid;
 
 /** Utility methods for the browsing history manager. */
 @NullMarked
@@ -30,12 +31,15 @@ public class HistoryManagerUtils {
     /**
      * Opens the browsing history manager.
      *
-     * @param activity The {@link Activity} that owns the {@link HistoryManager}.
-     * @param tab The {@link Tab} to used to display the native page version of the {@link
-     *     HistoryManager}.
+     * @param windowAndroid The {@link WindowAndroid} hosting the {@link HistoryManager}.
+     * @param tab The {@link Tab} to display the native page version, or null.
      * @param profile The currently visible {@link Profile}.
      */
-    public static void showHistoryManager(Activity activity, @Nullable Tab tab, Profile profile) {
+    public static void showHistoryManager(
+            @Nullable WindowAndroid windowAndroid, @Nullable Tab tab, Profile profile) {
+        if (windowAndroid == null) return;
+        Activity activity = windowAndroid.getActivity().get();
+        if (activity == null) return;
         Context appContext = ContextUtils.getApplicationContext();
         boolean isDesktopWebUiHistory = HistoryFeatures.isAndroidDesktopWebUiHistoryEnabled();
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity) || isDesktopWebUiHistory) {

@@ -3359,7 +3359,9 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                                 // Ensure the profile flips to the regular one when showing the
                                 // history page.
                                 HistoryManagerUtils.showHistoryManager(
-                                        this, getActivityTab(), provider.getOriginalProfile()));
+                                        getWindowAndroid(),
+                                        getActivityTab(),
+                                        provider.getOriginalProfile()));
     }
 
     private boolean maybeLaunchDraggedTabOrGroupInWindow(Intent intent) {

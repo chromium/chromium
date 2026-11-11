@@ -339,7 +339,9 @@ public class NavigationPopupTest {
                         mActivityTestRule.getActivity().getActivityTabProvider(),
                         (tab) ->
                                 HistoryManagerUtils.showHistoryManager(
-                                        mActivityTestRule.getActivity(), tab, profile));
+                                        mActivityTestRule.getActivity().getWindowAndroid(),
+                                        tab,
+                                        profile));
         popup.show(
                 mActivityTestRule.getActivity().getToolbarManager().getToolbarLayoutForTesting());
         return popup;

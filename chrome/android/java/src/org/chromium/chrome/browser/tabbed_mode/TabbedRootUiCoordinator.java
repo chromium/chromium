@@ -1272,10 +1272,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         mNavigationSheet.setDelegate(
                 new TabbedSheetDelegate(
                         tab,
-                        aTab -> {
-                            HistoryManagerUtils.showHistoryManager(
-                                    mActivity, aTab, aTab.getProfile());
-                        },
+                        aTab ->
+                                HistoryManagerUtils.showHistoryManager(
+                                        mWindowAndroid, aTab, aTab.getProfile()),
                         mActivity.getResources().getString(R.string.show_full_history)));
         if (!mNavigationSheet.startAndExpand(/* forward= */ false, /* animate= */ true)) {
             mNavigationSheet = null;
