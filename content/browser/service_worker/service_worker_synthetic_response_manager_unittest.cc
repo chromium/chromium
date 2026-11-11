@@ -109,6 +109,12 @@ class ServiceWorkerSyntheticResponseManagerTest : public testing::Test {
     manager->MaybeSetResponseHead(response_head);
   }
 
+  void CallOnReceiveResponse(ServiceWorkerSyntheticResponseManager* manager,
+                             network::mojom::URLResponseHeadPtr response_head,
+                             mojo::ScopedDataPipeConsumerHandle body = {}) {
+    manager->OnReceiveResponse(std::move(response_head), std::move(body));
+  }
+
  protected:
   BrowserTaskEnvironment task_environment_;
   std::unique_ptr<EmbeddedWorkerTestHelper> helper_;
@@ -278,6 +284,68 @@ TEST_F(ServiceWorkerSyntheticResponseManagerTest,
   ASSERT_TRUE(received_response);
   EXPECT_EQ(received_response->response_source,
             network::mojom::FetchResponseSource::kNetwork);
+}
+
+// Verifies that on a header mismatch during `OnReceiveResponse`, the stored
+// header remains cleared when `refresh_header_on_mismatch` is disabled, is
+// immediately updated when enabled and the new response still opts in, and
+// stays cleared when the new response drops opt-in.
+TEST_F(ServiceWorkerSyntheticResponseManagerTest,
+       HeaderMismatchRefreshesStoredHeaderWhenEnabled) {
+  auto make_head = [](std::string_view csp, bool opt_in) {
+    auto head = network::mojom::URLResponseHead::New();
+    head->headers =
+        base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
+    if (opt_in) {
+      head->headers->AddHeader("Service-Worker-Synthetic-Response", "?1");
+    }
+    head->headers->AddHeader("Content-Security-Policy", csp);
+    return head;
+  };
+
+  auto run_mismatch = [&](network::mojom::URLResponseHeadPtr network_head) {
+    ServiceWorkerSyntheticResponseManager manager(version_);
+    InitializeWriteBufferManager(&manager);
+    auto stream_callback = std::make_unique<MockServiceWorkerStreamCallback>();
+    SetStreamCallback(&manager, stream_callback->GetRemote());
+    CallOnReceiveResponse(&manager, std::move(network_head));
+    stream_callback->Wait();
+  };
+
+  // 1. Default parameter (`refresh_header_on_mismatch` = false) drops the
+  // stored header even if the mismatched response still opts in. Scope
+  // `kServiceWorkerSyntheticResponse` with default parameters so the
+  // `off_main_thread=network_service` testing config override does not bypass
+  // browser-side mismatch handling.
+  {
+    base::test::ScopedFeatureList default_feature_list(
+        blink::features::kServiceWorkerSyntheticResponse);
+    version_->SetResponseHeadForSyntheticResponse(
+        make_head("default-src 'none'", /*opt_in=*/true));
+    run_mismatch(make_head("default-src 'self'", /*opt_in=*/true));
+    EXPECT_FALSE(version_->GetResponseHeadForSyntheticResponse());
+  }
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      blink::features::kServiceWorkerSyntheticResponse,
+      {{blink::features::kServiceWorkerSyntheticResponseRefreshHeaderOnMismatch
+            .name,
+        "true"}});
+
+  // 2. When enabled, a mismatched response that still opts in replaces the
+  // stored header immediately.
+  version_->SetResponseHeadForSyntheticResponse(
+      make_head("default-src 'none'", /*opt_in=*/true));
+  run_mismatch(make_head("default-src 'self'", /*opt_in=*/true));
+  ASSERT_TRUE(version_->GetResponseHeadForSyntheticResponse());
+  EXPECT_TRUE(
+      version_->GetResponseHeadForSyntheticResponse()->headers->HasHeaderValue(
+          "Content-Security-Policy", "default-src 'self'"));
+
+  // 3. A mismatched response without opt-in leaves the stored header cleared.
+  run_mismatch(make_head("default-src 'none'", /*opt_in=*/false));
+  EXPECT_FALSE(version_->GetResponseHeadForSyntheticResponse());
 }
 
 }  // namespace content

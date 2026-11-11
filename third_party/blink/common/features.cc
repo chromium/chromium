@@ -2187,6 +2187,17 @@ BASE_FEATURE_PARAM(bool,
                    "use_cache_storage",
                    false);
 
+// If true, a mismatched network response header that still opts in to the
+// synthetic response is stored again right away instead of only being dropped.
+// Only browser-side processing modes can do this; in the `network_service`
+// mode the network service replaces mismatched headers before the browser sees
+// them, so the cached header is dropped as before.
+BASE_FEATURE_PARAM(bool,
+                   kServiceWorkerSyntheticResponseRefreshHeaderOnMismatch,
+                   &kServiceWorkerSyntheticResponse,
+                   "refresh_header_on_mismatch",
+                   false);
+
 // If enabled, force renderer process foregrounded from CommitNavigation to
 // DOMContentLoad (crbug/351953350).
 BASE_FEATURE(

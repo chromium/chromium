@@ -2275,9 +2275,10 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records whether the response headers are successfully stored to the memory.
 
-    This is recorded in navigation, when the browser receives the response from
-    the network, and there is no stored header locally yet for the synthetic
-    response.
+    This is recorded in navigation when the browser receives the response from
+    the network and evaluates storing headers for synthetic response (either
+    when no header is stored locally yet, or when refreshing a mismatched stored
+    header under `refresh_header_on_mismatch`).
   </summary>
 </histogram>
 

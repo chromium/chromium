@@ -516,14 +516,19 @@ void ServiceWorkerSyntheticResponseManager::OnReceiveResponse(
           TransferResponseBody(std::move(body),
                                write_buffer_manager_->ReleaseProducerHandle());
         } else {
-          // Clear the stored header when it's inconsistent with the header from
-          // the network so that the next navigation won't get the header
-          // mismatch and reloading consistently.
-          //
-          // TODO(crbug.com/352578800): Consider setting the response header
-          // here rather than resetting it in order to improve the synthetic
-          // response coverage. Revisit this after collecting coverage data.
+          // Drop the stale header so the next navigation does not hit the same
+          // mismatch and reload again. Under `refresh_header_on_mismatch`,
+          // store the network header right away when it still opts in: the
+          // meta-refresh reload below carries reload load flags and bypasses
+          // ServiceWorker, so this cannot loop, and the next normal navigation
+          // reuses the fresh header instead of paying a cold navigation to
+          // re-populate it.
           version_->ResetResponseHeadForSyntheticResponse();
+          if (blink::features::
+                  kServiceWorkerSyntheticResponseRefreshHeaderOnMismatch
+                      .Get()) {
+            MaybeSetResponseHead(*response_head);
+          }
           NotifyReloading(write_buffer_manager_->ReleaseProducerHandle());
           RecordReloadReason(
               SyntheticResponseReloadReason::kHeaderInconsistent);
