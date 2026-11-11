@@ -340,9 +340,20 @@ suite('NewTabPageComposeboxTest', () => {
         const suggestionActivity =
             testProxy.element.shadowRoot.querySelector('#suggestionActivity');
         assertTrue(!!suggestionActivity);
+        assertEquals(
+            suggestionActivity,
+            testProxy.element.$.composebox.lastElementChild);
         const localizedLink =
             suggestionActivity.querySelector('localized-link');
         assertTrue(!!localizedLink);
+        const enterEvent = new KeyboardEvent('keydown', {
+          key: 'Enter',
+          bubbles: true,
+          cancelable: true,
+          composed: true,
+        });
+        localizedLink.dispatchEvent(enterEvent);
+        assertFalse(enterEvent.defaultPrevented);
 
         const testUrl = 'about:blank?activity';
         const anchor = document.createElement('a');

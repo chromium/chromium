@@ -67,13 +67,13 @@ export function getHtml(this: NtpComposeboxElement) {
       </ntp-error-scrim>`
     : ''}
     <div id="composebox" part="composebox" ?inert="${!!this.errorMessage}"
-        @keydown="${this.onKeydown}"
         @dragenter="${this.dragAndDropHandler.handleDragEnter}"
         @dragover="${this.dragAndDropHandler.handleDragOver}"
         @dragleave="${this.dragAndDropHandler.handleDragLeave}"
         @drop="${this.dragAndDropHandler.handleDrop}"
         @paste="${this.onPaste}">
-      <div id="inputContainer" part="input-container">
+      <div id="inputContainer" part="input-container"
+          @keydown="${this.onKeydown}">
         <cr-composebox-input id="composeboxInput"
             class="${this.hasTabs() ? 'has-tabs' : ''}"
             exportparts="text-container, icon-container, mirror, input, smart-compose, cancel, action-icon, cancel-icon"
@@ -181,6 +181,14 @@ export function getHtml(this: NtpComposeboxElement) {
           </cr-composebox-dropdown>
         </div>
       </div>
+      ${this.shouldShowSuggestionActivityLink() ? html`
+      <div id="suggestionActivity">
+        <localized-link
+          .localizedString="${this.i18nAdvanced('suggestionActivityLink')}"
+          @link-clicked="${this.onLinkClicked}">
+        </localized-link>
+      </div>
+      ` : ''}
     </div>
   ${this.shouldShowVoiceSearch() ? html`
     <cr-composebox-voice-search id="voiceSearch"
@@ -199,14 +207,6 @@ export function getHtml(this: NtpComposeboxElement) {
         exportparts="voice-close-button, voice-details-link, voice-stop-button, voice-submit-button">
     </cr-composebox-voice-search>
   ` : ''}
-  ${this.shouldShowSuggestionActivityLink() ? html`
-    <div id="suggestionActivity">
-      <localized-link
-        .localizedString="${this.i18nAdvanced('suggestionActivityLink')}"
-        @link-clicked="${this.onLinkClicked}">
-      </localized-link>
-    </div>
-  `: ''}
   <!--_html_template_end_-->`;
   // clang-format on
 }
