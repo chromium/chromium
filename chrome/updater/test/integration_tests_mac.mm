@@ -482,15 +482,15 @@ void SetPlatformPolicies(const base::DictValue& values) {
       }
     }
     all_policies[base::SysUTF8ToNSString(app_id)] = app_policies;
-
-    NSURL* const managed_preferences_url =
-        base::apple::FilePathToNSURL(GetManagedPreferencesPath());
-    ASSERT_TRUE([[NSDictionary dictionaryWithObject:all_policies
-                                             forKey:@"updatePolicies"]
-        writeToURL:managed_preferences_url
-             error:nil])
-        << "Failed to write " << managed_preferences_url;
   }
+
+  NSURL* const managed_preferences_url =
+      base::apple::FilePathToNSURL(GetManagedPreferencesPath());
+  ASSERT_TRUE([[NSDictionary dictionaryWithObject:all_policies
+                                           forKey:@"updatePolicies"]
+      writeToURL:managed_preferences_url
+           error:nil])
+      << "Failed to write " << managed_preferences_url;
   ASSERT_TRUE(CFPreferencesSynchronize(domain, kCFPreferencesAnyUser,
                                        kCFPreferencesCurrentHost));
   FlushPreferencesCache();
