@@ -93,6 +93,8 @@ source_set("test_support") {
     "content_autofill_driver_factory_test_api.cc",
     "content_autofill_driver_factory_test_api.h",
     "content_autofill_driver_test_api.h",
+    "integrators/custom_form_controls/mock_custom_form_control_agent.cc",
+    "integrators/custom_form_controls/mock_custom_form_control_agent.h",
     "test_autofill_client_injector.cc",
     "test_autofill_client_injector.h",
     "test_autofill_driver_injector.cc",
@@ -116,6 +118,7 @@ source_set("test_support") {
     "//components/credential_management:browser",
     "//content/public/browser",
     "//content/test:test_support",
+    "//testing/gmock",
   ]
 
   deps = [

@@ -7,19 +7,18 @@
 #include <memory>
 #include <string>
 #include <string_view>
-#include <utility>
 #include <vector>
 
-#include "base/check_deref.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
-#include "base/memory/raw_ref.h"
+#include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/run_until.h"
+#include "components/autofill/content/browser/integrators/custom_form_controls/mock_custom_form_control_agent.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
@@ -29,9 +28,6 @@
 #include "components/autofill/core/common/autofill_test_util.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/test_renderer_host.h"
-#include "mojo/public/cpp/bindings/associated_receiver_set.h"
-#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
-#include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -41,51 +37,12 @@
 namespace autofill {
 namespace {
 
+using ::base::test::RunClosure;
+using ::base::test::RunOnceCallback;
+using ::testing::DoAll;
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
-using ::testing::Pair;
-
-// Fakes the renderer's agent of a frame: records the scripts loaded into it.
-class FakeCustomFormControlAgent : public mojom::CustomFormControlAgent {
- public:
-  // Binds `rfh`'s requests for the agent to this while this exists.
-  explicit FakeCustomFormControlAgent(content::RenderFrameHost* rfh)
-      : rfh_(CHECK_DEREF(rfh)) {
-    rfh_->GetRemoteAssociatedInterfaces()->OverrideBinderForTesting(
-        mojom::CustomFormControlAgent::Name_,
-        base::BindRepeating(&FakeCustomFormControlAgent::Bind,
-                            base::Unretained(this)));
-  }
-  ~FakeCustomFormControlAgent() override {
-    rfh_->GetRemoteAssociatedInterfaces()->OverrideBinderForTesting(
-        mojom::CustomFormControlAgent::Name_, base::NullCallback());
-  }
-
-  // The documents and scripts of the `LoadUnsafeScript()` calls, in call order.
-  const std::vector<std::pair<blink::DocumentToken, std::string>>&
-  loaded_scripts() const {
-    return loaded_scripts_;
-  }
-
-  // mojom::CustomFormControlAgent:
-  void LoadUnsafeScript(const blink::DocumentToken& document,
-                        const std::string& script,
-                        LoadUnsafeScriptCallback callback) override {
-    loaded_scripts_.emplace_back(document, script);
-    std::move(callback).Run(/*success=*/true);
-  }
-
- private:
-  void Bind(mojo::ScopedInterfaceEndpointHandle handle) {
-    receivers_.Add(
-        this, mojo::PendingAssociatedReceiver<mojom::CustomFormControlAgent>(
-                  std::move(handle)));
-  }
-
-  const raw_ref<content::RenderFrameHost> rfh_;
-  mojo::AssociatedReceiverSet<mojom::CustomFormControlAgent> receivers_;
-  std::vector<std::pair<blink::DocumentToken, std::string>> loaded_scripts_;
-};
+using ::testing::NiceMock;
 
 class CustomFormControlScriptRunnerTest
     : public content::RenderViewHostTestHarness {
@@ -137,6 +94,15 @@ class CustomFormControlScriptRunnerTest
     return *autofill_manager_injector_[main_rfh()];
   }
 
+  // Binds the main frame's requests for the agent to `agent_` and returns it.
+  MockCustomFormControlAgent& BindAgent() {
+    main_rfh()->GetRemoteAssociatedInterfaces()->OverrideBinderForTesting(
+        mojom::CustomFormControlAgent::Name_,
+        base::BindRepeating(&MockCustomFormControlAgent::BindPendingReceiver,
+                            base::Unretained(&agent_)));
+    return agent_;
+  }
+
   const std::vector<std::string>& found_scripts() const {
     return found_scripts_;
   }
@@ -151,6 +117,7 @@ class CustomFormControlScriptRunnerTest
   CustomFormControlScriptIndex index_;
   std::unique_ptr<CustomFormControlScriptRunner> runner_;
   std::vector<std::string> found_scripts_;
+  NiceMock<MockCustomFormControlAgent> agent_;
 };
 
 // Tests that the script for the frame's URL is found when forms are seen.
@@ -198,13 +165,14 @@ TEST_F(CustomFormControlScriptRunnerTest, LooksUpAgainAfterReset) {
 TEST_F(CustomFormControlScriptRunnerTest, LoadsScriptIntoRenderer) {
   ASSERT_TRUE(InitializeIndex("example.com", "example script"));
   NavigateAndCommit(GURL("https://example.com/checkout"));
-  FakeCustomFormControlAgent agent(main_rfh());
+  MockCustomFormControlAgent& agent = BindAgent();
+  base::RunLoop run_loop;
+  EXPECT_CALL(agent, LoadUnsafeScript(main_rfh()->GetDocumentToken(),
+                                      "example script", testing::_))
+      .WillOnce(
+          DoAll(RunClosure(run_loop.QuitClosure()), RunOnceCallback<2>(true)));
   SeeForms();
-  ASSERT_TRUE(
-      base::test::RunUntil([&] { return !agent.loaded_scripts().empty(); }));
-  EXPECT_THAT(
-      agent.loaded_scripts(),
-      ElementsAre(Pair(main_rfh()->GetDocumentToken(), "example script")));
+  run_loop.Run();
 }
 
 // Tests that no script is found for URLs without one.
