@@ -16,6 +16,7 @@ import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -48,6 +49,8 @@ import org.chromium.url.Origin;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
@@ -68,11 +71,23 @@ public class ChromeSiteSettingsDelegateTest {
             ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     ChromeSiteSettingsDelegate mSiteSettingsDelegate;
+    private final List<BrowsingDataModel> mBrowsingDataModelsForCleanup = new ArrayList<>();
 
     @Before
     public void setUp() throws Exception {
         mActivityTestRule.startOnBlankPage();
         clearBrowsingData(BrowsingDataType.SITE_DATA, TimePeriod.LAST_HOUR);
+    }
+
+    @After
+    public void tearDown() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    for (BrowsingDataModel model : mBrowsingDataModelsForCleanup) {
+                        model.releaseModel();
+                    }
+                    mBrowsingDataModelsForCleanup.clear();
+                });
     }
 
     // Tests that a fallback favicon is generated when a real one isn't found locally.
@@ -221,6 +236,7 @@ public class ChromeSiteSettingsDelegateTest {
                                     ProfileManager.getLastUsedRegularProfile());
                     mSiteSettingsDelegate.getBrowsingDataModel(
                             model -> {
+                                mBrowsingDataModelsForCleanup.add(model);
                                 browsingDataModel[0] = model;
                                 helper.notifyCalled();
                             });

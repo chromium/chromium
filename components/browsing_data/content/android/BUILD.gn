@@ -16,6 +16,7 @@ static_library("android") {
     "//components/browsing_data/content",
     "//components/permissions",
     "//content/public/browser",
+    "//third_party/jni_zero",
   ]
 }
 

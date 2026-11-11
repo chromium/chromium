@@ -5,6 +5,8 @@
 #include "components/browsing_data/content/android/browsing_data_model_android.h"
 
 #include <cstddef>
+#include <memory>
+#include <utility>
 
 #include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
@@ -15,6 +17,7 @@
 #include "components/permissions/permissions_client.h"
 #include "content/public/browser/android/browser_context_handle.h"
 #include "content/public/browser/browser_context.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/browsing_data/content/android/jni_headers/BrowsingDataModel_jni.h"
@@ -24,15 +27,29 @@ using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
 
-BrowsingDataModelAndroid::BrowsingDataModelAndroid(
+BrowsingDataModelShared::BrowsingDataModelShared(
     std::unique_ptr<BrowsingDataModel> model)
     : browsing_data_model_(std::move(model)) {}
 
-BrowsingDataModelAndroid::~BrowsingDataModelAndroid() {
+BrowsingDataModelShared::~BrowsingDataModelShared() {
   base::ScopedUmaHistogramTimer histogram_timer(
       "Android.BrowsingDataModel.ModelDestructionTime");
   browsing_data_model_.reset();
 }
+
+// static
+ScopedJavaLocalRef<jobject> BrowsingDataModelAndroid::CreateJavaObject(
+    JNIEnv* env,
+    scoped_refptr<BrowsingDataModelShared> shared) {
+  return Java_BrowsingDataModel_create(
+      env, jni_zero::MakeUnique<BrowsingDataModelAndroid>(std::move(shared)));
+}
+
+BrowsingDataModelAndroid::BrowsingDataModelAndroid(
+    scoped_refptr<BrowsingDataModelShared> shared)
+    : shared_(std::move(shared)) {}
+
+BrowsingDataModelAndroid::~BrowsingDataModelAndroid() = default;
 
 ScopedJavaLocalRef<jobject> BrowsingDataModelAndroid::GetBrowsingDataInfo(
     JNIEnv* env,
@@ -41,7 +58,7 @@ ScopedJavaLocalRef<jobject> BrowsingDataModelAndroid::GetBrowsingDataInfo(
     bool fetch_important) {
   std::map<url::Origin, std::pair<uint64_t, uint64_t>> origin_to_data_map;
 
-  for (const auto& [owner, key, details] : *browsing_data_model_) {
+  for (const auto& [owner, key, details] : *shared_->model()) {
     const auto origin = BrowsingDataModel::GetOriginForDataKey(key.get());
     origin_to_data_map[origin].first += details->cookie_count;
     origin_to_data_map[origin].second += details->storage_size;
@@ -73,13 +90,10 @@ ScopedJavaLocalRef<jobject> BrowsingDataModelAndroid::GetBrowsingDataInfo(
 }
 
 void BrowsingDataModelAndroid::RemoveBrowsingData(
+    JNIEnv* env,
     const std::string& host,
     base::OnceClosure&& java_callback) {
-  browsing_data_model_->RemoveBrowsingData(host, std::move(java_callback));
-}
-
-void BrowsingDataModelAndroid::ReleaseModel() {
-  Release();
+  shared_->model()->RemoveBrowsingData(host, std::move(java_callback));
 }
 
 DEFINE_JNI(BrowsingDataModel)

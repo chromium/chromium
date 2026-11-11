@@ -11,7 +11,7 @@ const void* const kBrowsingDataModelAndroidKey = &kBrowsingDataModelAndroidKey;
 }  // namespace
 
 BrowsingDataModelAndroidHolder::BrowsingDataModelAndroidHolder(
-    BrowsingDataModelAndroid* model) {
+    BrowsingDataModelShared* model) {
   CHECK(model != nullptr);
   model_weak_ptr_ = model->GetWeakPtr();
 }

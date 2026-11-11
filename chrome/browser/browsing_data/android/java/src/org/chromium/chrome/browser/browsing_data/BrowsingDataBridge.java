@@ -231,8 +231,8 @@ public final class BrowsingDataBridge {
 
     @CalledByNative
     private static void onBrowsingDataModelBuilt(
-            Callback<BrowsingDataModel> callback, long nativeBrowsingDataModel) {
-        callback.onResult(new BrowsingDataModel(nativeBrowsingDataModel));
+            Callback<BrowsingDataModel> callback, BrowsingDataModel model) {
+        callback.onResult(model);
     }
 
     @NativeMethods

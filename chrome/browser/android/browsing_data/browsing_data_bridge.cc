@@ -89,11 +89,11 @@ class PendingCallbacksHolder : public base::SupportsUserData::Data {
 
 void OnBrowsingDataModelBuiltForAll(Profile* profile,
                                     std::unique_ptr<BrowsingDataModel> model) {
-  scoped_refptr<BrowsingDataModelAndroid> model_android =
-      base::MakeRefCounted<BrowsingDataModelAndroid>(std::move(model));
+  scoped_refptr<BrowsingDataModelShared> shared_model =
+      base::MakeRefCounted<BrowsingDataModelShared>(std::move(model));
   profile->SetUserData(
       BrowsingDataModelAndroidHolder::UserDataKey(),
-      std::make_unique<BrowsingDataModelAndroidHolder>(model_android.get()));
+      std::make_unique<BrowsingDataModelAndroidHolder>(shared_model.get()));
 
   JNIEnv* env = AttachCurrentThread();
   auto* pending_callbacks_holder = static_cast<PendingCallbacksHolder*>(
@@ -101,11 +101,9 @@ void OnBrowsingDataModelBuiltForAll(Profile* profile,
   CHECK(pending_callbacks_holder);
 
   for (const auto& callback : pending_callbacks_holder->callbacks()) {
-    // The Java object will hold a reference that should be released by calling
-    // releaseModel().
-    model_android->AddRef();
     Java_BrowsingDataBridge_onBrowsingDataModelBuilt(
-        env, callback, reinterpret_cast<intptr_t>(model_android.get()));
+        env, callback,
+        BrowsingDataModelAndroid::CreateJavaObject(env, shared_model));
   }
 
   profile->RemoveUserData(PendingCallbacksHolder::UserDataKey());
@@ -322,12 +320,11 @@ static void JNI_BrowsingDataBridge_BuildBrowsingDataModelFromDisk(
   auto* holder = static_cast<BrowsingDataModelAndroidHolder*>(
       profile->GetUserData(BrowsingDataModelAndroidHolder::UserDataKey()));
   if (holder) {
-    if (holder->model()) {
-      // The Java object will hold a reference that should be released by
-      // calling releaseModel().
-      holder->model()->AddRef();
+    if (BrowsingDataModelShared* shared_model = holder->model()) {
       Java_BrowsingDataBridge_onBrowsingDataModelBuilt(
-          env, java_callback, reinterpret_cast<intptr_t>(holder->model()));
+          env, java_callback,
+          BrowsingDataModelAndroid::CreateJavaObject(
+              env, base::WrapRefCounted(shared_model)));
       return;
     }
     // If the holder exists but the model is null that means the model has

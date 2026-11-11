@@ -5,10 +5,14 @@
 package org.chromium.components.browsing_data.content;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.url.Origin;
 
@@ -17,18 +21,20 @@ import java.util.Map;
 
 @NullMarked
 public class BrowsingDataModel {
+    @JniType("::BrowsingDataModelAndroid")
+    interface NativeBrowsingDataModelAndroid extends JniTypeToken {}
 
-    // A pointer to the C++ object for this model.
-    private long mNativeBrowsingDataModel;
+    private @Nullable JniUniquePtr<NativeBrowsingDataModelAndroid> mNativeBrowsingDataModel;
 
-    /**
-     * Creates a `BrowsingDataModel` object.
-     *
-     * @param nativeBrowsingDataModel The reference to the C++ android model object.
-     */
-    public BrowsingDataModel(long nativeBrowsingDataModel) {
-        assert nativeBrowsingDataModel != 0;
+    private BrowsingDataModel(
+            JniUniquePtr<NativeBrowsingDataModelAndroid> nativeBrowsingDataModel) {
         mNativeBrowsingDataModel = nativeBrowsingDataModel;
+    }
+
+    @CalledByNative
+    static BrowsingDataModel create(
+            JniUniquePtr<NativeBrowsingDataModelAndroid> nativeBrowsingDataModel) {
+        return new BrowsingDataModel(nativeBrowsingDataModel);
     }
 
     /**
@@ -38,7 +44,7 @@ public class BrowsingDataModel {
      */
     public Map<Origin, BrowsingDataInfo> getBrowsingDataInfo(
             BrowserContextHandle browserContext, boolean fetchImportant) {
-        assert mNativeBrowsingDataModel != 0;
+        assert mNativeBrowsingDataModel != null;
         Map<Origin, BrowsingDataInfo> map = new HashMap<>();
         return BrowsingDataModelJni.get()
                 .getBrowsingDataInfo(mNativeBrowsingDataModel, browserContext, map, fetchImportant);
@@ -51,14 +57,14 @@ public class BrowsingDataModel {
      * @param completed Completion callback to be called when removal is completed.
      */
     public void removeBrowsingData(String host, Runnable completed) {
-        assert mNativeBrowsingDataModel != 0;
+        assert mNativeBrowsingDataModel != null;
         BrowsingDataModelJni.get().removeBrowsingData(mNativeBrowsingDataModel, host, completed);
     }
 
     public void releaseModel() {
-        assert mNativeBrowsingDataModel != 0;
-        BrowsingDataModelJni.get().releaseModel(mNativeBrowsingDataModel);
-        mNativeBrowsingDataModel = 0;
+        assert mNativeBrowsingDataModel != null;
+        mNativeBrowsingDataModel.destroy();
+        mNativeBrowsingDataModel = null;
     }
 
     @CalledByNative
@@ -74,16 +80,14 @@ public class BrowsingDataModel {
     @NativeMethods
     interface Natives {
         Map<Origin, BrowsingDataInfo> getBrowsingDataInfo(
-                long nativeBrowsingDataModelAndroid,
+                JniPtr<NativeBrowsingDataModelAndroid> self,
                 BrowserContextHandle browserContext,
                 Map<Origin, BrowsingDataInfo> map,
                 boolean fetchImportant);
 
         void removeBrowsingData(
-                long nativeBrowsingDataModelAndroid,
+                JniPtr<NativeBrowsingDataModelAndroid> self,
                 @JniType("std::string") String host,
                 @JniType("base::OnceClosure") Runnable completed);
-
-        void releaseModel(long nativeBrowsingDataModelAndroid);
     }
 }

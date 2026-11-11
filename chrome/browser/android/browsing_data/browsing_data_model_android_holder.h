@@ -9,11 +9,10 @@
 #include "components/browsing_data/content/android/browsing_data_model_android.h"
 
 // Holder class to store a non-owning weak reference to a
-// BrowsingDataModelAndroid in Profile user data.
+// BrowsingDataModelShared in Profile user data.
 class BrowsingDataModelAndroidHolder : public base::SupportsUserData::Data {
  public:
-  // Constructor now takes a raw pointer to the model.
-  explicit BrowsingDataModelAndroidHolder(BrowsingDataModelAndroid* model);
+  explicit BrowsingDataModelAndroidHolder(BrowsingDataModelShared* model);
   ~BrowsingDataModelAndroidHolder() override;
 
   BrowsingDataModelAndroidHolder(const BrowsingDataModelAndroidHolder&) =
@@ -21,13 +20,12 @@ class BrowsingDataModelAndroidHolder : public base::SupportsUserData::Data {
   BrowsingDataModelAndroidHolder& operator=(
       const BrowsingDataModelAndroidHolder&) = delete;
 
-  // Returns a WeakPtr to the model.
-  BrowsingDataModelAndroid* model() const { return model_weak_ptr_.get(); }
+  BrowsingDataModelShared* model() const { return model_weak_ptr_.get(); }
 
   static const void* UserDataKey();
 
  private:
-  base::WeakPtr<BrowsingDataModelAndroid> model_weak_ptr_;
+  base::WeakPtr<BrowsingDataModelShared> model_weak_ptr_;
 };
 
 #endif  // CHROME_BROWSER_ANDROID_BROWSING_DATA_BROWSING_DATA_MODEL_ANDROID_HOLDER_H_
