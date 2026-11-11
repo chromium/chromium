@@ -28,6 +28,7 @@
 
 #include "third_party/blink/renderer/platform/fonts/font_fallback_list.h"
 
+#include "base/logging.h"
 #include "base/timer/elapsed_timer.h"
 #include "third_party/blink/renderer/platform/font_family_names.h"
 #include "third_party/blink/renderer/platform/fonts/alternate_font_family.h"
@@ -39,8 +40,10 @@
 #include "third_party/blink/renderer/platform/fonts/font_performance.h"
 #include "third_party/blink/renderer/platform/fonts/segmented_font_data.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_shaper.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
+#include "third_party/skia/include/core/SkTypeface.h"
 
 namespace blink {
 
@@ -102,6 +105,20 @@ const SimpleFontData* FontFallbackList::DeterminePrimarySimpleFontDataCore(
       const SimpleFontData* last_resort_fallback =
           font_cache.GetLastResortFallbackFont(font_description);
       DCHECK(last_resort_fallback);
+      if (!last_resort_fallback &&
+          RuntimeEnabledFeatures::FontNonNullPrimaryFontEnabled()) {
+        LOG(ERROR) << "Last resort fallback font is not available: family="
+                   << font_description.Family().FamilyName()
+                   << ", generic=" << font_description.GenericFamily()
+                   << ", size=" << font_description.EffectiveFontSize();
+        last_resort_fallback = font_cache.FontDataFromFontPlatformData(
+            MakeGarbageCollected<FontPlatformData>(
+                SkTypeface::MakeEmpty(), std::string(),
+                font_description.EffectiveFontSize(),
+                /*synthetic_bold=*/false, /*synthetic_italic=*/false,
+                font_description.TextRendering(), ResolvedFontFeatures(),
+                font_description.Orientation()));
+      }
       return last_resort_fallback;
     }
 

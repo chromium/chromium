@@ -3454,6 +3454,11 @@
       status: "stable",
     },
     {
+      // https://crbug.com/40083285
+      name: "FontNonNullPrimaryFont",
+      status: "stable",
+    },
+    {
       // Kill switch for https://crbug.com/489865845.
       name: "FontPrewarmerShutdownFallback",
       status: "stable",
