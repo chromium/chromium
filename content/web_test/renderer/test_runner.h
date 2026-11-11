@@ -203,7 +203,9 @@ class TestRunner {
   bool ClearReferrer() const;
   bool IsWebPlatformTestsMode() const;
   void SetIsWebPlatformTestsMode(WebFrameTestProxy& source);
-  bool animation_requires_raster() const { return animation_requires_raster_; }
+  bool animation_requires_raster() const {
+    return test_params_.animation_requires_raster;
+  }
   void SetAnimationRequiresRaster(bool do_raster);
 
   // Add |frame| to the set of loading frames.
@@ -331,6 +333,31 @@ class TestRunner {
     TrackedDictionary states_;
 
     raw_ptr<TestRunner> controller_;
+  };
+
+  struct TestParams {
+    // If true, the test runner will output a base64 encoded WAVE file.
+    bool dump_as_audio = false;
+
+    // If true, the test runner will produce a dump of the back forward list as
+    // well.
+    bool dump_back_forward_list = false;
+
+    // True if rasterization should be performed during tests that examine
+    // fling-style animations. This includes middle-click auto-scroll behaviors.
+    // This does not include most "ordinary" animations, such as CSS animations.
+    bool animation_requires_raster = false;
+
+    // The scale factor to apply to printed content.
+    float print_scale_factor = 1.0;
+
+    // If set, pretend that the specified default page size when printing (see
+    // `SetPrintingSize()`) is also the size of the imaginary paper, so that any
+    // CSS @page size that overrides the default page size will be centered on
+    // paper, and scaled down to fit if required. This is the default behavior
+    // when printing to an actual printer (as opposed to generating a PDF) in
+    // Chrome.
+    bool should_center_and_shrink_to_fit_paper = false;
   };
 
   // If the main test window's main frame is hosted in this renderer process,
@@ -487,9 +514,11 @@ class TestRunner {
   void SetPrintingMargin(int size, WebFrameTestProxy& source);
   void SetSafePrintableInset(int inset, WebFrameTestProxy& source);
   void SetShouldCenterAndShrinkToFitPaper(bool b) {
-    should_center_and_shrink_to_fit_paper_ = b;
+    test_params_.should_center_and_shrink_to_fit_paper = b;
   }
-  void SetPrintingScaleFactor(float factor) { printing_scale_factor_ = factor; }
+  void SetPrintingScaleFactor(float factor) {
+    test_params_.print_scale_factor = factor;
+  }
 
   void SetShouldStayOnPageAfterHandlingBeforeUnload(bool value,
                                                     WebFrameTestProxy& source);
@@ -549,31 +578,7 @@ class TestRunner {
   // Flags controlling what content gets dumped as a layout text result.
   WebTestRuntimeFlags web_test_runtime_flags_;
 
-  // If true, the test runner will output a base64 encoded WAVE file.
-  bool dump_as_audio_;
-
-  // If true, the test runner will produce a dump of the back forward list as
-  // well.
-  bool dump_back_forward_list_;
-
-  // If true, pixel dump will be produced as a series of 1px-tall, view-wide
-  // individual paints over the height of the view.
-  bool test_repaint_;
-
-  // If true and test_repaint_ is true as well, pixel dump will be produced as
-  // a series of 1px-wide, view-tall paints across the width of the view.
-  bool sweep_horizontally_;
-
-  // If set, pretend that the specified default page size when printing (see
-  // `SetPrintingSize()`) is also the size of the imaginary paper, so that any
-  // CSS @page size that overrides the default page size will be centered on
-  // paper, and scaled down to fit if required. This is the default behavior
-  // when printing to an actual printer (as opposed to generating a PDF) in
-  // Chrome.
-  bool should_center_and_shrink_to_fit_paper_ = false;
-
-  // The scale factor to apply to printed content.
-  float printing_scale_factor_ = 1.0;
+  TestParams test_params_;
 
   std::set<std::string> http_headers_to_clear_;
   bool clear_referrer_ = false;
@@ -610,11 +615,6 @@ class TestRunner {
 
   // Captured drag image.
   SkBitmap drag_image_;
-
-  // True if rasterization should be performed during tests that examine
-  // fling-style animations. This includes middle-click auto-scroll behaviors.
-  // This does not include most "ordinary" animations, such as CSS animations.
-  bool animation_requires_raster_ = false;
 
   // An effective connection type settable by web tests.
   blink::WebEffectiveConnectionType effective_connection_type_ =

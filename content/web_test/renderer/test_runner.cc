@@ -2808,17 +2808,13 @@ void TestRunner::Reset() {
   setlocale(LC_ALL, "");
   setlocale(LC_NUMERIC, "C");
 
-  dump_as_audio_ = false;
-  audio_data_.clear();
-  dump_back_forward_list_ = false;
-  test_repaint_ = false;
-  sweep_horizontally_ = false;
-  animation_requires_raster_ = false;
   main_frame_loaded_ = false;
   frame_will_start_load_ = false;
   did_notify_done_ = false;
   requested_printing_resources_ = false;
   waiting_for_printing_resources_ = false;
+
+  test_params_ = TestParams();
 
   http_headers_to_clear_.clear();
   clear_referrer_ = false;
@@ -2912,7 +2908,7 @@ void TestRunner::SetShouldGeneratePixelResults(bool value,
 }
 
 bool TestRunner::ShouldDumpAsAudio() const {
-  return dump_as_audio_;
+  return test_params_.dump_as_audio;
 }
 
 const std::vector<uint8_t>& TestRunner::GetAudioData() const {
@@ -3062,9 +3058,9 @@ SkBitmap TestRunner::PrintFrameToBitmap(blink::WebLocalFrame* frame) {
   gfx::RectF printable_area(page_size);
   printable_area.Inset(GetSafePrintableInset(frame));
   print_params.printable_area_in_css_pixels = printable_area;
-  print_params.scale_factor = printing_scale_factor_;
+  print_params.scale_factor = test_params_.print_scale_factor;
   print_params.print_scaling_option =
-      should_center_and_shrink_to_fit_paper_
+      test_params_.should_center_and_shrink_to_fit_paper
           ? printing::mojom::PrintScalingOption::kCenterShrinkToFitPaper
           : printing::mojom::PrintScalingOption::kSourceSize;
 
@@ -3178,7 +3174,7 @@ bool TestRunner::ShouldDumpIconChanges() const {
 }
 
 bool TestRunner::ShouldDumpBackForwardList() const {
-  return dump_back_forward_list_;
+  return test_params_.dump_back_forward_list;
 }
 
 bool TestRunner::ShouldWaitUntilExternalURLLoad() const {
@@ -3756,7 +3752,7 @@ void TestRunner::DumpIconChanges(WebFrameTestProxy& source) {
 void TestRunner::SetAudioData(const gin::ArrayBufferView& view) {
   base::span<const uint8_t> src = view.span();
   audio_data_.assign(src.begin(), src.end());
-  dump_as_audio_ = true;
+  test_params_.dump_as_audio = true;
 }
 
 void TestRunner::DumpFrameLoadCallbacks(WebFrameTestProxy& source) {
@@ -3797,7 +3793,7 @@ void TestRunner::DumpPermissionClientCallbacks(WebFrameTestProxy& source) {
 }
 
 void TestRunner::DumpBackForwardList() {
-  dump_back_forward_list_ = true;
+  test_params_.dump_back_forward_list = true;
 }
 
 void TestRunner::DumpSelectionRect(WebFrameTestProxy& source) {
@@ -3962,7 +3958,7 @@ void TestRunner::FocusWindow(RenderFrame* main_frame, bool focus) {
 }
 
 void TestRunner::SetAnimationRequiresRaster(bool do_raster) {
-  animation_requires_raster_ = do_raster;
+  test_params_.animation_requires_raster = do_raster;
 }
 
 void TestRunner::OnWebTestRuntimeFlagsChanged(WebFrameTestProxy& source) {
