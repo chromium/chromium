@@ -3736,6 +3736,68 @@ class BannedTypeCheckTest(unittest.TestCase):
                 all('third_party/ok/file.cc' not in r.message
                     for r in results))
 
+    def testBannedIcuLocaleGetDefault(self):
+        input_api = MockInputApi()
+        input_api.files = [
+            MockFile(
+                'some/cpp/problematic/file.cc',
+                [
+                    'const icu::Locale& locale = icu::Locale::getDefault();',
+                    'auto language = Locale::getDefault().getLanguage();',
+                ],
+            ),
+            MockFile(
+                'third_party/blink/problematic/file.cc',
+                ['icu::Locale locale = icu::Locale::getDefault();'],
+            ),
+            MockFile(
+                'third_party/problematic/file.cc',
+                ['icu::Locale locale = icu::Locale::getDefault();'],
+            ),
+            MockFile(
+                'some/cpp/ok/file.cc',
+                [
+                    'base::i18n::LanguageTag locale = '
+                    'base::i18n::GetDefaultIcuLocale();',
+                    '// icu::Locale::getDefault() in a comment is fine.',
+                ],
+            ),
+            MockFile(
+                'base/i18n/ok/file.cc',
+                ['icu::Locale locale = icu::Locale::getDefault();'],
+            ),
+            MockFile(
+                'base/i18n/icubridge/default_icu_locale_unittest.cc',
+                ['icu::Locale::getDefault().getName();'],
+            ),
+        ]
+
+        results = PRESUBMIT.CheckNoBannedPatterns(input_api, MockOutputApi())
+
+        self.assertEqual(4, len(results))
+        self.assertIn('some/cpp/problematic/file.cc:1', results[0].message)
+        self.assertIn('some/cpp/problematic/file.cc:2', results[1].message)
+        self.assertIn(
+            'third_party/blink/problematic/file.cc', results[2].message
+        )
+        self.assertIn('third_party/problematic/file.cc', results[3].message)
+        for result in results:
+            self.assertIn(
+                'base/i18n/icubridge/default_icu_locale.h', result.message
+            )
+        self.assertTrue(
+            all('some/cpp/ok/file.cc' not in r.message for r in results)
+        )
+        self.assertTrue(
+            all('base/i18n/ok/file.cc' not in r.message for r in results)
+        )
+        self.assertTrue(
+            all(
+                'default_icu_locale_unittest.cc' not in r.message
+                for r in results
+            )
+        )
+
     def testBannedIosObjcFunctions(self):
         input_api = MockInputApi()
         input_api.files = [

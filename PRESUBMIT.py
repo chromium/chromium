@@ -2143,6 +2143,21 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
         ],
     ),
     BanRule(
+        r'/\bLocale::getDefault\b',
+        (
+            'icu::Locale::getDefault() should not be used outside of',
+            'base/i18n. Use base::i18n::GetDefaultIcuLocale() from',
+            'base/i18n/icubridge/default_icu_locale.h instead, which',
+            'returns the default ICU locale as a base::i18n::LanguageTag.',
+            'If an icu::Locale is required, convert the LanguageTag with',
+            'base::i18n::IcuLocaleConverter::GetInstance().FromLanguageTag()',
+            '(see base/i18n/icu4c_tag_converter.h).',
+        ),
+        True,
+        # base/i18n owns the default ICU locale and keeps ICU in sync with it.
+        [r'^base/i18n/'],
+    ),
+    BanRule(
         r'CrossThreadPersistent<',
         (
             'Do not use blink::CrossThreadPersistent, but '
