@@ -6,24 +6,50 @@
 
 #include <algorithm>
 #include <iostream>
+#include <optional>
 #include <string>
 #include <string_view>
+#include <vector>
 
+#include "base/check.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/files/important_file_writer.h"
+#include "base/json/json_reader.h"
+#include "base/json/json_writer.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/values.h"
 #include "remoting/host/linux/host_type_environment.h"
+#include "remoting/host/linux/secure_file_reader.h"
 
 namespace remoting {
 namespace {
 
 constexpr char kSingleProcessUnitPrefix[] = "chrome-remote-desktop@";
 
+// Printed when stopping an active single-process host unit.
+constexpr char kSingleProcessUnitStopWarning[] =
+    " Unsaved work in its desktop session will be lost.";
+
+// The key of the host type name in the host type record.
+constexpr char kHostTypeRecordKey[] = "hostType";
+
+// The host type record is much smaller than this.
+constexpr size_t kMaxHostTypeRecordSizeBytes = 4 * 1024;
+
 std::string GetSingleProcessUnit(std::string_view local_user_name) {
   return base::StrCat({kSingleProcessUnitPrefix, local_user_name, ".service"});
+}
+
+// Returns the error message for an invalid host type record at `path`.
+// `reason` describes what is wrong with it.
+std::string InvalidHostTypeRecordError(const base::FilePath& path,
+                                       std::string_view reason) {
+  return base::StrCat({"The host type record '", path.value(), "' is invalid. ",
+                       reason, "\nFix or delete the file, then try again."});
 }
 
 // Renames the session routing config file at `path` to `<path>.bak`,
@@ -85,7 +111,26 @@ bool StopSingleProcessUnit(const HostTypeContext& context) {
     return true;
   }
   return StopUnit(*context.env, GetSingleProcessUnit(context.local_user_name),
-                  " Unsaved work in its desktop session will be lost.");
+                  kSingleProcessUnitStopWarning);
+}
+
+// Stops and disables the single-process host units of all users that are
+// enabled or active. Returns false on failure, including if the units can't
+// be listed.
+bool StopAllSingleProcessUnits(HostTypeEnvironment& env) {
+  std::string pattern = GetSingleProcessUnit("*");
+  std::optional<std::vector<std::string>> units =
+      env.ListEnabledOrActiveUnits(pattern);
+  if (!units.has_value()) {
+    std::cerr << "Failed to list the units matching " << pattern << ".\n";
+    return false;
+  }
+  for (const std::string& unit : *units) {
+    if (!StopUnit(env, unit, kSingleProcessUnitStopWarning)) {
+      return false;
+    }
+  }
+  return true;
 }
 
 // Stops and disables the multi-process host unit if it is enabled or active.
@@ -106,9 +151,8 @@ class SingleProcessHostType : public HostType {
   std::string_view description() const override;
   bool is_multi_process() const override;
   bool requires_local_user() const override;
-  bool IsCurrent(const HostTypeEnvironment& env,
-                 std::string_view local_user_name) const override;
-  bool HasPerUserUnits(const HostTypeEnvironment& env) const override;
+  bool ValidateStartHostHookContext(
+      const HostTypeContext& context) const override;
 
  protected:
   bool StartHostUnit(const HostTypeContext& context) const override;
@@ -122,25 +166,16 @@ class MultiProcessHostType : public HostType {
  public:
   ~MultiProcessHostType() override;
   bool is_multi_process() const override;
-  bool IsCurrent(const HostTypeEnvironment& env,
-                 std::string_view local_user_name) const override;
 
  protected:
   bool StartHostUnit(const HostTypeContext& context) const override;
   bool StopHostUnit(const HostTypeContext& context) const override;
 
-  // Returns whether the state of the system (e.g. the session routing config
-  // file) matches this host type, assuming that a multi-process host is
-  // running and that no multi-process host type earlier in the detection
-  // order matched. Performs blocking operations.
-  virtual bool MatchesState(const HostTypeEnvironment& env,
-                            std::string_view local_user_name) const = 0;
-
-  // HostType implementation. Stops and disables the single-process host unit
-  // of the local user if it is enabled or active, e.g. after the
-  // single-process host was stopped without its stop hook, since both host
-  // units can't be used at the same time. Subclasses that override
-  // SetUpState() must call this first.
+  // HostType implementation. Stops and disables the single-process host units
+  // of all users that are enabled or active, e.g. after the single-process
+  // host was stopped without its stop hook, since both host units can't be
+  // used at the same time. Subclasses that override SetUpState() must call
+  // this first.
   bool SetUpState(const HostTypeContext& context) const override;
 
   // HostType implementation. Subclasses that override CleanUpState() must
@@ -158,8 +193,6 @@ class GdmManagedHostType : public MultiProcessHostType {
   bool requires_local_user() const override;
 
  protected:
-  bool MatchesState(const HostTypeEnvironment& env,
-                    std::string_view local_user_name) const override;
   bool SetUpState(const HostTypeContext& context) const override;
 };
 
@@ -184,24 +217,26 @@ bool SingleProcessHostType::requires_local_user() const {
   return true;
 }
 
-bool SingleProcessHostType::IsCurrent(const HostTypeEnvironment& env,
-                                      std::string_view local_user_name) const {
-  return !local_user_name.empty() &&
-         env.IsUnitActive(GetSingleProcessUnit(local_user_name));
-}
-
-bool SingleProcessHostType::HasPerUserUnits(
-    const HostTypeEnvironment& env) const {
-  // Matches the host unit of any user.
-  return env.HasEnabledOrActiveUnits(
-      base::StrCat({kSingleProcessUnitPrefix, "*.service"}));
+bool SingleProcessHostType::ValidateStartHostHookContext(
+    const HostTypeContext& context) const {
+  if (context.local_user_name.empty()) {
+    std::cerr << "Cannot start the single-process host, since the local user "
+                 "is unknown.\n";
+    return false;
+  }
+  if (!IsUserNameSafeForUnitName(context.local_user_name)) {
+    std::cerr << "Cannot start the single-process host, since the username '"
+              << context.local_user_name << "' is not supported.\n";
+    return false;
+  }
+  return true;
 }
 
 bool SingleProcessHostType::StartHostUnit(
     const HostTypeContext& context) const {
   if (context.local_user_name.empty()) {
-    std::cerr << "Cannot start the single-process host because the local "
-                 "user is unknown.\n";
+    std::cerr << "Cannot start the single-process host, since the local user "
+                 "is unknown.\n";
     return false;
   }
   return StartUnit(*context.env, GetSingleProcessUnit(context.local_user_name));
@@ -223,12 +258,6 @@ bool MultiProcessHostType::is_multi_process() const {
   return true;
 }
 
-bool MultiProcessHostType::IsCurrent(const HostTypeEnvironment& env,
-                                     std::string_view local_user_name) const {
-  return env.IsUnitActive(kMultiProcessHostUnit) &&
-         MatchesState(env, local_user_name);
-}
-
 bool MultiProcessHostType::StartHostUnit(const HostTypeContext& context) const {
   return StartUnit(*context.env, kMultiProcessHostUnit);
 }
@@ -238,7 +267,9 @@ bool MultiProcessHostType::StopHostUnit(const HostTypeContext& context) const {
 }
 
 bool MultiProcessHostType::SetUpState(const HostTypeContext& context) const {
-  return StopSingleProcessUnit(context);
+  // All users' units are stopped, so that the local user isn't needed, e.g.
+  // after a single-process host was set up for a different user.
+  return StopAllSingleProcessUnits(*context.env);
 }
 
 bool MultiProcessHostType::CleanUpState(const HostTypeContext& context) const {
@@ -263,15 +294,6 @@ std::string_view GdmManagedHostType::description() const {
 
 bool GdmManagedHostType::requires_local_user() const {
   return false;
-}
-
-bool GdmManagedHostType::MatchesState(const HostTypeEnvironment& env,
-                                      std::string_view local_user_name) const {
-  // Last in the detection order, so it matches any running multi-process host
-  // that no other host type matched.
-  // TODO(crbug.com/493980875): Only match if the session routing config file
-  // doesn't exist once a host type that matches it exists.
-  return true;
 }
 
 bool GdmManagedHostType::SetUpState(const HostTypeContext& context) const {
@@ -340,23 +362,126 @@ void HostType::PrintHostTypeHelp() {
 }
 
 // static
-const HostType* HostType::DetectCurrent(const HostTypeEnvironment& env,
-                                        std::string_view local_user_name) {
-  // A host type is only checked if no host type before it matched.
-  static const HostType* const kHostTypesInDetectionOrder[] = {
-      &GetSingleProcessHostType(),
-      &GetGdmManagedHostType(),
-  };
-  for (const HostType* type : kHostTypesInDetectionOrder) {
-    if (type->IsCurrent(env, local_user_name)) {
-      return type;
-    }
+base::expected<const HostType*, std::string> HostType::GetConfigured(
+    const HostTypeEnvironment& env,
+    std::string_view local_user_name) {
+  base::FilePath path = env.GetHostTypeRecordPath();
+  // The record decides which host type root sets up, so it must only be
+  // writable by root.
+  auto content = ReadSecureFile(path, env.GetExpectedOwnerUid(),
+                                kMaxHostTypeRecordSizeBytes);
+  if (!content.has_value()) {
+    return base::unexpected(InvalidHostTypeRecordError(
+        path, base::StrCat({"Failed to read it securely: ",
+                            content.error().ToString()})));
   }
+  if (!content->has_value()) {
+    return base::ok(GetFallbackConfigured(env, local_user_name));
+  }
+  std::optional<base::Value> json =
+      base::JSONReader::Read(**content, base::JSON_PARSE_RFC);
+  if (!json.has_value() || !json->is_dict()) {
+    return base::unexpected(
+        InvalidHostTypeRecordError(path, "It is not a JSON dictionary."));
+  }
+  const std::string* name = json->GetDict().FindString(kHostTypeRecordKey);
+  if (!name) {
+    return base::unexpected(InvalidHostTypeRecordError(
+        path, base::StrCat(
+                  {"It has no string \"", kHostTypeRecordKey, "\" field."})));
+  }
+  const HostType* host_type = Find(*name);
+  if (!host_type) {
+    return base::unexpected(InvalidHostTypeRecordError(
+        path, base::StrCat({"Unknown host type '", *name, "'."})));
+  }
+  return base::ok(host_type);
+}
+
+// static
+const HostType* HostType::GetFallbackConfigured(
+    const HostTypeEnvironment& env,
+    std::string_view local_user_name) {
+  // TODO(crbug.com/493980875): Return the host type that uses the session
+  // routing config file if it exists, once there is one.
+  const HostType& multi_process_host_type = GetGdmManagedHostType();
+  bool has_multi_process_config = env.MultiProcessConfigExists();
+
+  // 1. The multi-process host config exists and the multi-process host unit
+  //    is enabled.
+  if (has_multi_process_config && env.IsUnitEnabled(kMultiProcessHostUnit)) {
+    return &multi_process_host_type;
+  }
+
+  // 2. The single-process host unit of `local_user_name` is enabled. It stays
+  //    enabled when the single-process host is stopped or deleted, and takes
+  //    precedence over a multi-process host config that is left over from
+  //    `migrate-host --keep-config`.
+  if (IsUserNameSafeForUnitName(local_user_name) &&
+      env.IsUnitEnabled(GetSingleProcessUnit(local_user_name))) {
+    return &GetSingleProcessHostType();
+  }
+
+  // 3. Neither host unit is enabled. If the multi-process host config exists,
+  //    this is a stopped multi-process host: DaemonController::Stop() disables
+  //    the host unit and keeps the host config.
+  if (has_multi_process_config) {
+    return &multi_process_host_type;
+  }
+
   return nullptr;
 }
 
-bool HostType::HasPerUserUnits(const HostTypeEnvironment& env) const {
-  return false;
+bool HostType::ValidateStartHostHookContext(
+    const HostTypeContext& context) const {
+  return true;
+}
+
+bool HostType::WriteHostTypeRecord(const HostTypeEnvironment& env) const {
+  base::FilePath path = env.GetHostTypeRecordPath();
+  base::FilePath directory = path.DirName();
+  // The directory is also where the multi-process host config is written,
+  // which sets the same mode.
+  if (!base::PathExists(directory)) {
+    base::File::Error error;
+    if (!base::CreateDirectoryAndGetError(directory, &error)) {
+      std::cerr << "Failed to create " << directory << ": "
+                << base::File::ErrorToString(error) << "\n";
+      return false;
+    }
+    if (!base::SetPosixFilePermissions(directory, 0755)) {
+      std::cerr << "Failed to set the permissions of " << directory << ".\n";
+      return false;
+    }
+  }
+  // Never write a record that GetConfigured() would refuse to read.
+  auto directory_check =
+      CheckSecureDirectory(directory, env.GetExpectedOwnerUid());
+  if (!directory_check.has_value()) {
+    std::cerr << "Not writing the host type record " << path << ": "
+              << directory_check.error() << "\n";
+    return false;
+  }
+
+  base::DictValue dict;
+  dict.Set(kHostTypeRecordKey, name());
+  std::optional<std::string> json = base::WriteJson(dict);
+  CHECK(json.has_value());
+  // WriteFileAtomically() writes to a temporary file created with mode 0600 in
+  // the same directory, then renames it over `path` (replacing rather than
+  // following any symlink there). Operating on paths here and in
+  // SetPosixFilePermissions() (which follows symlinks) is fine since the
+  // directory has just been verified to be only writable by its owner.
+  if (!base::ImportantFileWriter::WriteFileAtomically(path, *json)) {
+    std::cerr << "Failed to write the host type record " << path << ".\n";
+    return false;
+  }
+  // Readable by everyone, e.g. by the native messaging host.
+  if (!base::SetPosixFilePermissions(path, 0644)) {
+    std::cerr << "Failed to set the permissions of " << path << ".\n";
+    return false;
+  }
+  return true;
 }
 
 bool HostType::SetUpAndStartHost(const HostTypeContext& context,
@@ -373,7 +498,9 @@ bool HostType::SetUpAndStartHost(const HostTypeContext& context,
 }
 
 bool HostType::RunStartHostHook(const HostTypeContext& context) const {
-  return SetUpState(context) && StartHostUnit(context);
+  return ValidateStartHostHookContext(context) &&
+         WriteHostTypeRecord(*context.env) && SetUpState(context) &&
+         StartHostUnit(context);
 }
 
 bool HostType::RunStopHostHook(const HostTypeContext& context) const {
@@ -405,8 +532,8 @@ bool IsUserNameSafeForUnitName(std::string_view user_name) {
 }
 
 base::expected<void, std::string> CheckLocalUserForHostTypeSetup(
-    const HostTypeEnvironment& env,
     const HostType& target_host_type,
+    const HostType* current_host_type,
     std::string_view local_user_name) {
   if (!local_user_name.empty()) {
     if (!IsUserNameSafeForUnitName(local_user_name)) {
@@ -420,12 +547,10 @@ base::expected<void, std::string> CheckLocalUserForHostTypeSetup(
         base::StrCat({"A local user is required, since the ",
                       target_host_type.name(), " host type needs one."}));
   }
-  for (const auto& [name, host_type] : HostType::GetHostTypes()) {
-    if (host_type->HasPerUserUnits(env)) {
-      return base::unexpected(
-          "A local user is required, since a per-user Chrome Remote Desktop "
-          "unit is enabled or active.");
-    }
+  if (current_host_type && !current_host_type->is_multi_process()) {
+    return base::unexpected(base::StrCat(
+        {"A local user is required, since the configured ",
+         current_host_type->name(), " host belongs to a local user."}));
   }
   return base::ok();
 }

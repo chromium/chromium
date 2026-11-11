@@ -200,7 +200,23 @@ source_set("host_types") {
     "host_types.h",
   ]
   public_deps = [ "//base" ]
-  deps = [ ":session_routing_config" ]
+  deps = [
+    ":secure_file_reader",
+    ":session_routing_config",
+    "//remoting/base:os_utils",
+  ]
+}
+
+source_set("host_types_test_util") {
+  testonly = true
+  sources = [
+    "host_types_test_util.cc",
+    "host_types_test_util.h",
+  ]
+  public_deps = [
+    ":host_types",
+    "//base",
+  ]
 }
 
 source_set("secure_file_reader") {
@@ -554,6 +570,7 @@ source_set("unit_tests") {
 
   deps = [
     ":host_types",
+    ":host_types_test_util",
     ":platform_impls",
     ":secure_file_reader",
     ":session_routing_config",

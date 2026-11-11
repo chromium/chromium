@@ -6,16 +6,20 @@
 
 #include <algorithm>
 #include <initializer_list>
+#include <optional>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/process/launch.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "remoting/base/file_path_util_linux.h"
 #include "remoting/host/linux/session_routing_config.h"
 
 namespace remoting {
@@ -23,6 +27,13 @@ namespace {
 
 // The full path is used, since this runs as root.
 constexpr char kSystemctlPath[] = "/usr/bin/systemctl";
+
+// In the multi-process host config directory.
+constexpr char kHostTypeRecordFileName[] = "host_type.json";
+
+// See kDefaultHostConfigFile, which is not used to avoid depending on
+// //remoting/host.
+constexpr char kMultiProcessConfigFileName[] = "host.json";
 
 // Runs `systemctl` with `args`. Returns true if it exits with 0. Logs the
 // output on failure if `log_failure` is true.
@@ -55,8 +66,11 @@ class HostTypeEnvironmentImpl : public HostTypeEnvironment {
   bool IsUnitEnabled(const std::string& unit) const override;
   bool EnableAndStartUnit(const std::string& unit) override;
   bool DisableAndStopUnit(const std::string& unit) override;
-  bool HasEnabledOrActiveUnits(std::string_view unit_pattern) const override;
+  std::optional<std::vector<std::string>> ListEnabledOrActiveUnits(
+      std::string_view unit_pattern) const override;
   base::FilePath GetSessionRoutingConfigPath() const override;
+  base::FilePath GetHostTypeRecordPath() const override;
+  bool MultiProcessConfigExists() const override;
   uid_t GetExpectedOwnerUid() const override;
 };
 
@@ -93,7 +107,8 @@ bool HostTypeEnvironmentImpl::DisableAndStopUnit(const std::string& unit) {
   return RunSystemctl({"disable", "--now", unit}, /*log_failure=*/true);
 }
 
-bool HostTypeEnvironmentImpl::HasEnabledOrActiveUnits(
+std::optional<std::vector<std::string>>
+HostTypeEnvironmentImpl::ListEnabledOrActiveUnits(
     std::string_view unit_pattern) const {
   // An enabled unit is loaded, since a target wants it, so listing all loaded
   // units that match the pattern finds the enabled units too. The list may
@@ -109,8 +124,9 @@ bool HostTypeEnvironmentImpl::HasEnabledOrActiveUnits(
   if (!base::GetAppOutput(command_line, &output)) {
     LOG(ERROR) << "Failed to run `" << command_line.GetCommandLineString()
                << "`";
-    return true;
+    return std::nullopt;
   }
+  std::vector<std::string> units;
   for (std::string_view line : base::SplitStringPiece(
            output, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
     std::vector<std::string> fields =
@@ -118,14 +134,23 @@ bool HostTypeEnvironmentImpl::HasEnabledOrActiveUnits(
                           base::SPLIT_WANT_NONEMPTY);
     if (!fields.empty() &&
         (IsUnitEnabled(fields[0]) || IsUnitActive(fields[0]))) {
-      return true;
+      units.push_back(std::move(fields[0]));
     }
   }
-  return false;
+  return units;
 }
 
 base::FilePath HostTypeEnvironmentImpl::GetSessionRoutingConfigPath() const {
   return SessionRoutingConfig::GetDefaultConfigFilePath();
+}
+
+base::FilePath HostTypeEnvironmentImpl::GetHostTypeRecordPath() const {
+  return GetMultiProcessHostGlobalConfigDir().Append(kHostTypeRecordFileName);
+}
+
+bool HostTypeEnvironmentImpl::MultiProcessConfigExists() const {
+  return base::PathExists(
+      GetMultiProcessHostGlobalConfigDir().Append(kMultiProcessConfigFileName));
 }
 
 uid_t HostTypeEnvironmentImpl::GetExpectedOwnerUid() const {
