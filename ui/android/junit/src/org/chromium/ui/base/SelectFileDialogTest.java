@@ -51,6 +51,7 @@ import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowMimeTypeMap;
 import org.robolectric.shadows.ShadowPackageManager;
+import org.robolectric.util.ReflectionHelpers;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
@@ -1820,6 +1821,25 @@ public class SelectFileDialogTest {
                 new Intent(
                         Intent.ACTION_VIEW,
                         Uri.parse("content://com.android.this_is_not_a_real_extension/xyz")));
+    }
+
+    @Test
+    @EnableFeatures({UiAndroidFeatures.CHECK_INTENT_CALLER_PERMISSION})
+    @Config(sdk = Build.VERSION_CODES.VANILLA_ICE_CREAM)
+    public void testIntentPermissionSecurityPatchCheck() {
+        String originalPatch = Build.VERSION.SECURITY_PATCH;
+        try {
+            TestSelectFileDialog selectFileDialog = new TestSelectFileDialog(null);
+            Uri uri = Uri.parse("content://com.android.this_is_not_a_real_extension/xyz");
+
+            ReflectionHelpers.setStaticField(Build.VERSION.class, "SECURITY_PATCH", "2026-12-01");
+            assertTrue(selectFileDialog.doesCallerHavePermissionForUri(uri));
+
+            ReflectionHelpers.setStaticField(Build.VERSION.class, "SECURITY_PATCH", "2027-01-01");
+            assertFalse(selectFileDialog.doesCallerHavePermissionForUri(uri));
+        } finally {
+            ReflectionHelpers.setStaticField(Build.VERSION.class, "SECURITY_PATCH", originalPatch);
+        }
     }
 
     @Test

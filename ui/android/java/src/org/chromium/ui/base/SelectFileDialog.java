@@ -62,6 +62,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -88,6 +89,10 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
 
     // Duration before temporary camera file is cleaned up, in milliseconds.
     private static final long DURATION_BEFORE_FILE_CLEAN_UP_IN_MILLIS = TimeUnit.HOURS.toMillis(1);
+
+    // Minimum security patch level containing the Android framework fix for b/281539662 on
+    // Android 15 through 17.1.
+    private static final LocalDate MIN_SECURITY_PATCH_DATE = LocalDate.of(2027, 1, 1);
 
     // A list of some of the more popular image extensions. Not meant to be
     // exhaustive, but should cover the vast majority of image types.
@@ -1770,10 +1775,17 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
     public boolean doesCallerHavePermissionForUri(Uri uri) {
         assert ThreadUtils.runningOnUiThread();
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM
-                || !UiAndroidFeatureMap.isEnabled(
-                        UiAndroidFeatures.CHECK_INTENT_CALLER_PERMISSION)) {
+        if (!UiAndroidFeatureMap.isEnabled(UiAndroidFeatures.CHECK_INTENT_CALLER_PERMISSION)
+                || Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM) {
             return true;
+        }
+        if ((Build.VERSION.SDK_INT < Build.VERSION_CODES.BAKLAVA
+                        || Build.VERSION.SDK_INT_FULL < Build.VERSION_CODES_FULL.CINNAMON_BUN_2)
+                && !hasSecurityPatch(MIN_SECURITY_PATCH_DATE)) {
+            return true;
+        }
+        if (mWindowAndroid == null) {
+            return false;
         }
         Activity activity = mWindowAndroid.getActivity().get();
         if (activity == null) {
@@ -1787,6 +1799,20 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
             Log.w(TAG, "Failed to check caller's permission.", e);
         }
         return false;
+    }
+
+    private static boolean hasSecurityPatch(LocalDate targetPatchDate) {
+        String securityPatchDate = Build.VERSION.SECURITY_PATCH;
+        if (TextUtils.isEmpty(securityPatchDate)) {
+            return false;
+        }
+        try {
+            LocalDate devicePatchDate = LocalDate.parse(securityPatchDate);
+            return !devicePatchDate.isBefore(targetPatchDate);
+        } catch (RuntimeException e) {
+            Log.w(TAG, "Failed to parse security patch date.", e);
+            return false;
+        }
     }
 
     @CalledByNative
