@@ -161,6 +161,35 @@ TEST(FeaturesTest,
   EXPECT_FALSE(IsContextualTasksEphemeralEntryPointEnabled());
 }
 
+TEST(FeaturesTest,
+     IsEphemeralPinningVisibleWhenPermanentlyPinnedEnabled_FeatureDisabled) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndDisableFeature(
+      kEphemeralPinningVisibleWhenPermanentlyPinned);
+  EXPECT_FALSE(IsEphemeralPinningVisibleWhenPermanentlyPinnedEnabled());
+}
+
+TEST(FeaturesTest,
+     IsEphemeralPinningVisibleWhenPermanentlyPinnedEnabled_FeatureEnabled) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitWithFeatures(
+      {kEphemeralPinningVisibleWhenPermanentlyPinned},
+      {kContextualTasksEphemeralPinButtonRefactor});
+  EXPECT_TRUE(IsEphemeralPinningVisibleWhenPermanentlyPinnedEnabled());
+}
+
+// The two-button mode is unsupported under the ephemeral pin button refactor.
+TEST(FeaturesTest,
+     IsEphemeralPinningVisibleWhenPermanentlyPinnedEnabled_PinButtonRefactor) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitWithFeatures(
+      {kEphemeralPinningVisibleWhenPermanentlyPinned, kContextualTasksPinningV2,
+       kContextualTasksEphemeralPinButtonRefactor},
+      {});
+  ASSERT_TRUE(IsContextualTasksEphemeralPinButtonRefactorEnabled());
+  EXPECT_FALSE(IsEphemeralPinningVisibleWhenPermanentlyPinnedEnabled());
+}
+
 TEST(FeaturesTest, GetEphemeralButtonContextMenuOption_FeatureDisabled) {
   base::test::ScopedFeatureList scoped_features;
   scoped_features.InitAndDisableFeature(

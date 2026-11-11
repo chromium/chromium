@@ -441,8 +441,8 @@ bool ContextualTasksEphemeralButtonController::ShouldShowEphemeralButton() {
 
   const bool is_pinned = contextual_tasks::GetEffectivePinState(
       browser_window_interface_->GetProfile());
-  if (!base::FeatureList::IsEnabled(
-          contextual_tasks::kEphemeralPinningVisibleWhenPermanentlyPinned) &&
+  if (!contextual_tasks::
+          IsEphemeralPinningVisibleWhenPermanentlyPinnedEnabled() &&
       is_pinned) {
     return false;
   }

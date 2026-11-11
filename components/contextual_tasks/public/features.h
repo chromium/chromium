@@ -667,6 +667,14 @@ extern bool IsContextualTasksPinningV2Enabled();
 // ContextualTasksButton.
 extern bool IsContextualTasksEphemeralPinButtonRefactorEnabled();
 
+// Returns whether the ephemeral toolbar button should stay visible alongside
+// the permanently pinned button
+// (`kEphemeralPinningVisibleWhenPermanentlyPinned`). Always false under the
+// ephemeral pin button refactor: there, the ephemeral and permanent buttons are
+// the same toolbar action, which can only be shown once, so the two-button mode
+// is unsupported.
+extern bool IsEphemeralPinningVisibleWhenPermanentlyPinnedEnabled();
+
 // Returns whether an ephemeral toolbar entry point for Contextual Tasks is
 // active, either the legacy `toolbar-ephemeral-branded` entry point param or
 // the ephemeral pin button refactor. Use this instead of comparing
