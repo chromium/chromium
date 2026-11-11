@@ -1147,6 +1147,17 @@ void ContextualTasksUIBase::CreateNewThread() {
                  : ui_service->GetDefaultAiPageUrl();
   url = ui_service->AddRequiredSidePanelUrlChanges(url, target_contents);
 
+  // Keep the entry point attribution of the current thread, matching the
+  // legacy WebUI new thread handler.
+  const GURL& current_url = target_contents->GetLastCommittedURL();
+  for (const char* key : {"source", "aep"}) {
+    std::string value;
+    if (net::GetValueForKeyInQuery(current_url, key, &value) &&
+        !value.empty()) {
+      url = net::AppendOrReplaceQueryParameter(url, key, value);
+    }
+  }
+
   content::NavigationController::LoadURLParams params(url);
   params.transition_type = ui::PAGE_TRANSITION_AUTO_TOPLEVEL;
   target_contents->GetController().LoadURLWithParams(params);

@@ -4143,6 +4143,105 @@ TEST_F(ContextualTasksUiTest, CreateNewThread_Success_NoTaskId) {
   EXPECT_EQ(active_web_contents->GetVisibleURL(), expected_url);
 }
 
+TEST_F(ContextualTasksUiTest,
+       CreateNewThread_CopiesSourceAndAepFromCurrentUrl) {
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  TestContextualTasksUIBase controller(&web_ui);
+
+  testing::NiceMock<MockContextualTasksPanelController> mock_panel_controller;
+  controller.set_panel_controller(&mock_panel_controller);
+
+  std::unique_ptr<content::WebContents> active_web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
+  content::WebContentsTester::For(active_web_contents.get())
+      ->NavigateAndCommit(GURL(
+          "https://www.google.com/search?udm=50&q=lens&source=chrome.crn.tbic"
+          "&aep=48"));
+  EXPECT_CALL(mock_panel_controller, GetActiveWebContents())
+      .WillRepeatedly(Return(active_web_contents.get()));
+  EXPECT_CALL(mock_panel_controller, GetCurrentTask())
+      .WillRepeatedly(Return(std::nullopt));
+
+  // The current URL's values replace the default ones.
+  EXPECT_CALL(*service_for_nav_, GetDefaultAiPageUrl())
+      .WillOnce(Return(GURL("https://www.google.com/search?udm=50&aep=26")));
+
+  controller.CreateNewThread();
+
+  const GURL& new_url = active_web_contents->GetVisibleURL();
+  std::string value;
+  ASSERT_TRUE(net::GetValueForKeyInQuery(new_url, "source", &value));
+  EXPECT_EQ(value, "chrome.crn.tbic");
+  ASSERT_TRUE(net::GetValueForKeyInQuery(new_url, "aep", &value));
+  EXPECT_EQ(value, "48");
+  EXPECT_FALSE(net::GetValueForKeyInQuery(new_url, "q", &value));
+}
+
+TEST_F(ContextualTasksUiTest,
+       CreateNewThread_NoSourceOrAepInCurrentUrl_UrlUnchanged) {
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  TestContextualTasksUIBase controller(&web_ui);
+
+  testing::NiceMock<MockContextualTasksPanelController> mock_panel_controller;
+  controller.set_panel_controller(&mock_panel_controller);
+
+  std::unique_ptr<content::WebContents> active_web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
+  content::WebContentsTester::For(active_web_contents.get())
+      ->NavigateAndCommit(GURL("https://www.google.com/search?udm=50&q=test"));
+  EXPECT_CALL(mock_panel_controller, GetActiveWebContents())
+      .WillRepeatedly(Return(active_web_contents.get()));
+  EXPECT_CALL(mock_panel_controller, GetCurrentTask())
+      .WillRepeatedly(Return(std::nullopt));
+
+  GURL raw_url("https://www.google.com/search?udm=50");
+  EXPECT_CALL(*service_for_nav_, GetDefaultAiPageUrl())
+      .WillOnce(Return(raw_url));
+
+  controller.CreateNewThread();
+
+  EXPECT_EQ(active_web_contents->GetVisibleURL(),
+            ContextualTasksUiService::AddRequiredSidePanelUrlChanges(
+                raw_url, active_web_contents.get()));
+}
+
+TEST_F(ContextualTasksUiTest, CreateNewThread_SecondClick_KeepsSourceAndAep) {
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  TestContextualTasksUIBase controller(&web_ui);
+
+  testing::NiceMock<MockContextualTasksPanelController> mock_panel_controller;
+  controller.set_panel_controller(&mock_panel_controller);
+
+  std::unique_ptr<content::WebContents> active_web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
+  content::WebContentsTester::For(active_web_contents.get())
+      ->NavigateAndCommit(GURL(
+          "https://www.google.com/search?udm=50&q=lens&source=chrome.crn.tbic"
+          "&aep=48"));
+  EXPECT_CALL(mock_panel_controller, GetActiveWebContents())
+      .WillRepeatedly(Return(active_web_contents.get()));
+  EXPECT_CALL(mock_panel_controller, GetCurrentTask())
+      .WillRepeatedly(Return(std::nullopt));
+  EXPECT_CALL(*service_for_nav_, GetDefaultAiPageUrl())
+      .Times(2)
+      .WillRepeatedly(Return(GURL("https://www.google.com/search?udm=50")));
+
+  controller.CreateNewThread();
+  content::WebContentsTester::For(active_web_contents.get())
+      ->NavigateAndCommit(active_web_contents->GetVisibleURL());
+  controller.CreateNewThread();
+
+  const GURL& new_url = active_web_contents->GetVisibleURL();
+  std::string value;
+  ASSERT_TRUE(net::GetValueForKeyInQuery(new_url, "source", &value));
+  EXPECT_EQ(value, "chrome.crn.tbic");
+  ASSERT_TRUE(net::GetValueForKeyInQuery(new_url, "aep", &value));
+  EXPECT_EQ(value, "48");
+}
+
 TEST_F(ContextualTasksUiTest, CreateNewThread_LegacyUI_ClearsThreadTitle) {
   testing::NiceMock<MockContextualTasksPanelController> mock_panel_controller;
   std::unique_ptr<content::WebContents> active_web_contents =
