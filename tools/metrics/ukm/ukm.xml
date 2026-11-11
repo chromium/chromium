@@ -24903,13 +24903,6 @@ be describing additional metrics about the same event.
       latency caused by dispatching beforeunloads to remote frames from the
       browser.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="BeforeUnloadQueueingDuration">
     <summary>
@@ -24921,13 +24914,6 @@ be describing additional metrics about the same event.
       initiated navigations this metric will only be filled in if we dispatched
       beforeunloads from the browser to remote frames which we had to wait on.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="BeforeUnloadToCommit.CrossProcess">
     <summary>
@@ -24938,13 +24924,6 @@ be describing additional metrics about the same event.
       the renderer process. For cross-process navigations this represents the
       total amount of time the navigation is blocked since it was initiated.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="BeforeUnloadToCommit.SameProcess">
     <summary>
@@ -24955,13 +24934,6 @@ be describing additional metrics about the same event.
       same-process navigations this represents the total amount of time the
       navigation is blocked since it was initiated.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="UnloadDuration">
     <summary>
@@ -24985,13 +24957,6 @@ be describing additional metrics about the same event.
       events. Only records for same-process navigations since unload handlers
       are run in a different process for cross-process navigations.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
 </event>
 
