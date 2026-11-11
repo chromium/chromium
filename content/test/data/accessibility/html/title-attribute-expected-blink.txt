@@ -13,3 +13,20 @@ rootWebArea
 ++++++genericContainer description='Description' descriptionFrom=title
 ++++++++staticText name='Names are prohibited on generic'
 ++++++++++inlineTextBox name='Names are prohibited on generic'
+++++++genericContainer
+++++++++genericContainer description='kbd title' descriptionFrom=title
+++++++++++staticText name='Ctrl'
+++++++++++++inlineTextBox name='Ctrl'
+++++++genericContainer
+++++++++code description='code title' descriptionFrom=title
+++++++++++staticText name='code()'
+++++++++++++inlineTextBox name='code()'
+++++++genericContainer description='application title' descriptionFrom=title
+++++++++staticText name='unknown element'
+++++++++++inlineTextBox name='unknown element'
+++++++layoutTable
+++++++++genericContainer description='tbody title' descriptionFrom=title
+++++++++++layoutTableRow
+++++++++++++layoutTableCell name='layout table cell'
+++++++++++++++staticText name='layout table cell'
+++++++++++++++++inlineTextBox name='layout table cell'

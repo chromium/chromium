@@ -3,5 +3,18 @@
 <div role="group" aria-label="Has a name" title="Moved to description">def</div>
 <!-- Redundant title text is not used -->
 <div role="group" title="Redundant">Redundant</div>
-<!-- The title attribute is mapped to description if the role prohibits a name -->
+<!-- title maps to the description (not the name) when the role prohibits naming; see AXObject::IsNameProhibited() in ax_object.cc (called from AXNodeObject::TextAlternative() in ax_node_object.cc), crbug.com/350528330, w3c/html-aam#552. -->
 <div title="Description">Names are prohibited on generic</div>
+<!-- Text-level elements with name-prohibited roles (generic, code, ...) -->
+<div><kbd title="kbd title">Ctrl</kbd></div>
+<div><code title="code title">code()</code></div>
+<!-- An unknown element maps to generic -->
+<application title="application title">unknown element</application>
+<!-- A tbody in a layout table maps to generic, not rowgroup -->
+<table>
+  <tbody title="tbody title">
+    <tr>
+      <td>layout table cell</td>
+    </tr>
+  </tbody>
+</table>
