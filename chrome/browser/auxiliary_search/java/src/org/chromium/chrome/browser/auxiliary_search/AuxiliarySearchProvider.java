@@ -147,6 +147,8 @@ public class AuxiliarySearchProvider {
      * Saves metadata to a file.
      *
      * @param metadataFile The file to write.
+     * @param version The {@link MetaDataVersion} written to the file header, which determines the
+     *     serialization format of the entries.
      * @param entries A list of data to save.
      * @param startIndex The index of the first entry to save.
      * @param entryCountToSave The count of entries to save to the file. This is the count of the

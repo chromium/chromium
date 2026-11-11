@@ -90,6 +90,8 @@ public class AuxiliarySearchBridge {
      * This method will return a list of Custom Tabs URLs.
      *
      * @param url The current URL of the Custom Tab.
+     * @param timestamp The begin time, in milliseconds since the Unix epoch, for fetching Custom
+     *     Tabs.
      * @param callback {@link Callback} to pass back the list of {@link AuxiliarySearchDataEntry}s.
      */
     public void getCustomTabs(
