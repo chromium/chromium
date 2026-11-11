@@ -22,6 +22,7 @@ BlurredBackgroundShield::BlurredBackgroundShield(
       color_(color),
       blur_sigma_(blur_sigma),
       add_layer_to_region_(add_layer_to_region) {
+  background_layer_.SetName("BlurredBackgroundShield");
   host_observation_.Observe(host_);
 
   if (add_layer_to_region_) {

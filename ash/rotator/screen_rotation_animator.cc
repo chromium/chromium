@@ -368,6 +368,7 @@ std::unique_ptr<ui::LayerTreeOwner> ScreenRotationAnimator::CopyLayerTree(
       GetScreenRotationContainer(root_window_)->layer()->size();
   std::unique_ptr<ui::LayerWithExternalTexture> copy_layer =
       CreateLayerFromCopyOutputResult(std::move(result), layer_size);
+  copy_layer->SetName("ScreenRotationAnimator:Copy");
   copy_layer->SetFillsBoundsOpaquely(false);
   DCHECK_EQ(copy_layer->size(),
             GetScreenRotationContainer(root_window_)->layer()->size());

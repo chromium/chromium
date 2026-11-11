@@ -206,6 +206,7 @@ class ButtonOptionsMenu::ShadowLayer : public ui::LayerTextured,
   explicit ShadowLayer(ButtonOptionsMenu* owner) : owner_(owner) {
     // TODO(b/331837116): Check the shadow distance and blur again after the
     // system shadow is adjusted to keep them consistent.
+    SetName("ButtonOptionsMenu:ShadowLayer");
     SetFillsBoundsOpaquely(false);
     set_delegate(this);
   }

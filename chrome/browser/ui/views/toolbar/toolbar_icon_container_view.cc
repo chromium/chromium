@@ -32,6 +32,7 @@
 
 ToolbarIconContainerView::RoundRectBorder::RoundRectBorder(views::View* parent)
     : parent_(parent) {
+  layer_.SetName("ToolbarIconContainerView:RoundRectBorder");
   layer_.set_delegate(this);
   layer_.SetFillsBoundsOpaquely(false);
   layer_.AsTextured()->SetFillsBoundsCompletely(false);

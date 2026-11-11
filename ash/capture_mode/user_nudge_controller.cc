@@ -69,8 +69,10 @@ UserNudgeController::UserNudgeController(CaptureModeSession* session,
   const SkColor ring_color =
       DarkLightModeControllerImpl::Get()->IsDarkModeEnabled() ? SK_ColorWHITE
                                                               : SK_ColorBLACK;
+  base_ring_.SetName("UserNudgeController:BaseRing");
   base_ring_.SetColor(SkColor4f::FromColor(ring_color));
   base_ring_.SetOpacity(0);
+  ripple_ring_.SetName("UserNudgeController:RippleRing");
   ripple_ring_.SetColor(SkColor4f::FromColor(ring_color));
   ripple_ring_.SetOpacity(0);
 

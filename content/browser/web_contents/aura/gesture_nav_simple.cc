@@ -208,9 +208,11 @@ Affordance::Affordance(GestureNavSimple* owner,
                         : vector_icons::kForwardArrowOldIcon);
   }
 
+  root_layer_.SetName("GestureNavSimple:AffordanceRoot");
   root_layer_.SetBounds(content_bounds);
   root_layer_.SetMasksToBounds(true);
 
+  painted_layer_.SetName("GestureNavSimple:AffordancePainted");
   painted_layer_.SetFillsBoundsOpaquely(false);
   int x = mode_ == OVERSCROLL_EAST
               ? (-kMaxRippleBurstRadius - kBackgroundRadius)

@@ -1326,6 +1326,7 @@ void TabletModeController::OnLayerCopyed(
   // Stack the screenshot under |top_window|, to fully occlude all windows
   // except |top_window| for the duration of the enter tablet mode animation.
   screenshot_layer_ = std::move(copy_layer);
+  screenshot_layer_->SetName("TabletModeController:Screenshot");
   top_window->parent()->layer()->Add(screenshot_layer_.get());
   screenshot_layer_->SetBounds(top_window->GetRootWindow()->bounds());
   top_window->parent()->layer()->StackBelow(screenshot_layer_.get(),
