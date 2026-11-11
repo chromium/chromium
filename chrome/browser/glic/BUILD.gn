@@ -1162,6 +1162,7 @@ source_set("browser_tests") {
     "host/glic_start_benchmark_browsertest.cc",
     "host/glic_web_client_manager_browsertest.cc",
     "host/glic_web_contents_warming_pool_browsertest.cc",
+    "host/glic_web_drag_and_drop_browsertest.cc",
     "service/glic_activity_manager_browsertest.cc",
     "service/glic_instance_coordinator_browsertest.cc",
     "service/glic_instance_helper_browsertest.cc",
@@ -1273,10 +1274,7 @@ source_set("browser_tests") {
     ]
 
     if (enterprise_cloud_content_analysis) {
-      sources += [
-        "host/glic_drag_and_drop_policy_browsertest.cc",
-        "host/glic_web_drag_and_drop_browsertest.cc",
-      ]
+      sources += [ "host/glic_drag_and_drop_policy_browsertest.cc" ]
     }
     deps += [
       ":glic",

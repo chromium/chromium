@@ -17,9 +17,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/unguessable_token.h"
+#include "build/android_buildflags.h"
 #include "build/build_config.h"
-#include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
-#include "chrome/browser/enterprise/connectors/test/fake_content_analysis_delegate.h"
 #include "chrome/browser/glic/host/glic_drag_and_drop_util.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/features.h"
@@ -30,9 +29,11 @@
 #include "chrome/browser/glic/service/metrics/metrics_types.h"
 #include "chrome/browser/glic/test_support/glic_api_test.h"
 #include "chrome/browser/glic/test_support/glic_drag_and_drop_test_base.h"
+#include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/glic/test_support/scoped_page_context_eligibility.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/drag_and_drop_test_utils.h"
 #include "components/glic/glic_pref_names.h"
 #include "content/public/browser/render_frame_host.h"
@@ -43,13 +44,17 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
-#include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "ui/base/dragdrop/os_exchange_data.h"
+#endif
 
 namespace glic {
 namespace {
 
+#if !BUILDFLAG(IS_ANDROID)
 class GlicWebDragAndDropBrowserTest : public GlicDragAndDropTestBase,
                                       public testing::WithParamInterface<bool> {
  public:
@@ -73,15 +78,6 @@ class GlicWebDragAndDropBrowserTest : public GlicDragAndDropTestBase,
 IN_PROC_BROWSER_TEST_P(GlicWebDragAndDropBrowserTest,
                        MAYBE_testWebToGlicDragMaterialization) {
   base::HistogramTester histogram_tester;
-  enterprise_connectors::ContentAnalysisDelegate::SetFactoryForTesting(
-      base::BindRepeating(
-          &enterprise_connectors::test::FakeContentAnalysisDelegate::Create,
-          base::DoNothing(),
-          base::BindRepeating([](const std::string&, const base::FilePath&) {
-            return enterprise_connectors::test::FakeContentAnalysisDelegate::
-                SuccessfulResponse({"dlp"});
-          }),
-          "fake-dm-token"));
 
   // 1. Open GLIC and prepare the guest.
   ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * glic_instance,
@@ -118,7 +114,7 @@ IN_PROC_BROWSER_TEST_P(GlicWebDragAndDropBrowserTest,
   waiter.SuppressPassingStartDragFurther();
 
   // 5. Simulate a real drag starting in the source tab.
-  SimulateMouseDragFromImage(source_wc);
+  ASSERT_NO_FATAL_FAILURE(SimulateMouseDragFromImage(source_wc));
 
   // 6. Wait for the entire drag-and-drop sequence to finish.
   waiter.WaitUntilDragStart();
@@ -153,15 +149,6 @@ IN_PROC_BROWSER_TEST_P(GlicWebDragAndDropBrowserTest,
 IN_PROC_BROWSER_TEST_P(GlicWebDragAndDropBrowserTest,
                        MAYBE_testWebToGlicDragMaterializationFromDetached) {
   base::HistogramTester histogram_tester;
-  enterprise_connectors::ContentAnalysisDelegate::SetFactoryForTesting(
-      base::BindRepeating(
-          &enterprise_connectors::test::FakeContentAnalysisDelegate::Create,
-          base::DoNothing(),
-          base::BindRepeating([](const std::string&, const base::FilePath&) {
-            return enterprise_connectors::test::FakeContentAnalysisDelegate::
-                SuccessfulResponse({"dlp"});
-          }),
-          "fake-dm-token"));
 
   // 1. Open GLIC and detach it into a separate OS window.
   ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * glic_instance,
@@ -198,7 +185,7 @@ IN_PROC_BROWSER_TEST_P(GlicWebDragAndDropBrowserTest,
   waiter.SuppressPassingStartDragFurther();
 
   // 5. Simulate a real drag starting in the source tab.
-  SimulateMouseDragFromImage(source_wc);
+  ASSERT_NO_FATAL_FAILURE(SimulateMouseDragFromImage(source_wc));
 
   // 6. Wait for the entire drag-and-drop sequence to finish.
   waiter.WaitUntilDragStart();
@@ -290,8 +277,8 @@ IN_PROC_BROWSER_TEST_P(GlicWebDragAndDropBrowserTest,
 
   // Also verify that if StartDragAndDropInvoke is reached directly with a
   // hyperlink DropData (empty `file_contents`), it rejects the payload with
-  // `kUnsupportedContentType` and never records `Glic.InvokeResult.WebDragDrop`
-  // (`kClipboardMissingMetadata`).
+  // `kUnsupportedContentType` and never records
+  // `Glic.InvokeResult2.WebDragDrop` (`kClipboardMissingMetadata`).
   content::DropData hyperlink_drop_data;
   hyperlink_drop_data.text = u"Wikipedia hyperlink";
   hyperlink_drop_data.url_infos.emplace_back(
@@ -301,20 +288,20 @@ IN_PROC_BROWSER_TEST_P(GlicWebDragAndDropBrowserTest,
 
   ContinueJsTest();
 
-  histogram_tester.ExpectTotalCount("Glic.InvokeResult.WebDragDrop", 0);
+  histogram_tester.ExpectTotalCount("Glic.InvokeResult2.WebDragDrop", 0);
   histogram_tester.ExpectUniqueSample("Glic.DragAndDrop.ContentType",
                                       GlicDragAndDropContentType::kUrl, 1);
   histogram_tester.ExpectUniqueSample(
       "Glic.DragAndDrop.ValidationResult2",
       GlicDragAndDropValidationResult::kUnsupportedContentType, 1);
 }
-
 INSTANTIATE_TEST_SUITE_P(All,
                          GlicWebDragAndDropBrowserTest,
                          testing::Bool(),
                          [](const testing::TestParamInfo<bool>& info) {
                            return info.param ? "NoWebview" : "Webview";
                          });
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 class GlicDragEligibilityBrowserTest : public GlicBrowserTest {
  public:
@@ -421,6 +408,22 @@ IN_PROC_BROWSER_TEST_F(GlicDragEligibilityBrowserTest,
                static_cast<int>(GlicInvokeResult::kSuccess)) == 1;
   }));
   EXPECT_TRUE(GetCapturedBlockedNotices(glic_guest).empty());
+
+  // `GlicDragEligibilityMonitor::TakeDragSourceInfo` consumes the entry on the
+  // first lookup, so replaying the same `drag_id` must fail closed. Re-query
+  // `webui_contents()` in case `GlicNoWebviewContentsManager` swapped out the
+  // loading overlay during `RunUntil`.
+  glic_webui = glic_instance->host().webui_contents();
+  ASSERT_TRUE(glic_webui);
+  glic::StartDragAndDropInvoke(glic_webui, drop_data);
+  histogram_tester.ExpectBucketCount(
+      "Glic.DragAndDrop.ValidationResult2",
+      GlicDragAndDropValidationResult::kUnknownDragSource, 1);
+  histogram_tester.ExpectTotalCount("Glic.DragAndDrop.ValidationResult2", 2);
+  histogram_tester.ExpectTotalCount("Glic.InvokeResult2.WebDragDrop", 1);
+  ExpectSingleBlockedDropNotice(
+      glic_guest,
+      mojom::DataTransferActionsBlockedReason::kUnsupportedOrExpiredSource);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicDragEligibilityBrowserTest,
@@ -566,6 +569,9 @@ IN_PROC_BROWSER_TEST_F(GlicDragEligibilityBrowserTest,
       mojom::DataTransferActionsBlockedReason::kUnsupportedOrExpiredSource);
 }
 
+// Mobile Android does not support programmatically creating separate browser
+// window tasks with an OTR profile via `CreateBrowserWindow`.
+#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
 IN_PROC_BROWSER_TEST_F(GlicDragEligibilityBrowserTest, BlockDragCrossProfile) {
   base::HistogramTester histogram_tester;
   const GURL url = embedded_test_server()->GetURL(
@@ -577,13 +583,16 @@ IN_PROC_BROWSER_TEST_F(GlicDragEligibilityBrowserTest, BlockDragCrossProfile) {
       InstallBlockedNoticesRecorder(glic_instance);
   ASSERT_TRUE(glic_guest);
 
+  Profile* incognito_profile =
+      GetProfile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   BrowserWindowInterface* incognito_browser =
-      InProcessBrowserTest::CreateIncognitoBrowser();
+      glic::CreateBrowserWindow(incognito_profile);
+  ASSERT_TRUE(incognito_browser);
+  ASSERT_TRUE(incognito_browser->GetProfile()->IsOffTheRecord());
   tabs::TabInterface* incognito_tab =
-      incognito_browser->tab_strip_model()->GetActiveTab();
+      CreateAndActivateTab(incognito_browser, url);
   ASSERT_TRUE(incognito_tab);
   content::WebContents* incognito_contents = incognito_tab->GetContents();
-  ASSERT_TRUE(content::NavigateToURL(incognito_contents, url));
 
   content::DropData drop_data;
   drop_data.file_contents = {1, 2, 3, 4};
@@ -603,6 +612,7 @@ IN_PROC_BROWSER_TEST_F(GlicDragEligibilityBrowserTest, BlockDragCrossProfile) {
   ExpectSingleBlockedDropNotice(
       glic_guest, mojom::DataTransferActionsBlockedReason::kCrossProfile);
 }
+#endif  // !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(GlicDragEligibilityDisabledBrowserTest,
                        BlockDragWhenFeatureDisabled) {
