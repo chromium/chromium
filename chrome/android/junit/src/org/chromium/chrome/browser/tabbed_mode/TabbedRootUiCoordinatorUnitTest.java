@@ -77,6 +77,7 @@ import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarHostManager;
 import org.chromium.chrome.browser.ui.edge_to_edge.TopInsetProvider;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController.StatusBarColorProvider;
+import org.chromium.components.browser_ui.adaptive_ui.AdaptiveUiController;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.loading.LoadingFullscreenCoordinator;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
@@ -89,6 +90,7 @@ import org.chromium.ui.edge_to_edge.EdgeToEdgeManager;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
+import java.lang.ref.WeakReference;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -388,6 +390,26 @@ public class TabbedRootUiCoordinatorUnitTest {
         when(linkTab.getLaunchType()).thenReturn(TabLaunchType.FROM_LINK);
         assertEquals(
                 ActionType.CLOSE_TAB, mCoordinator.getBackActionTypeForNonNavigableTab(linkTab));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_ADAPTIVE_UI_TRANSITIONS)
+    public void testAdaptiveUiController_attachedWhileAlive() {
+        when(mWindowAndroid.getContext()).thenReturn(new WeakReference<>(mActivity));
+        mCoordinator.onPreInflationStartup();
+        assertNotNull(AdaptiveUiController.from(mWindowAndroid));
+
+        mCoordinator.onDestroy();
+        assertNull(AdaptiveUiController.from(mWindowAndroid));
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.ANDROID_ADAPTIVE_UI_TRANSITIONS)
+    public void testAdaptiveUiController_absentWhenFlagDisabled() {
+        mCoordinator.onPreInflationStartup();
+        assertNull(AdaptiveUiController.from(mWindowAndroid));
+
+        mCoordinator.onDestroy();
     }
 
     private TabbedRootUiCoordinator createCoordinator(

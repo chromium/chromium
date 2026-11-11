@@ -226,6 +226,7 @@ import org.chromium.components.browser_ui.accessibility.PageZoomBarCoordinatorDe
 import org.chromium.components.browser_ui.accessibility.PageZoomManager;
 import org.chromium.components.browser_ui.accessibility.PageZoomManagerDelegate;
 import org.chromium.components.browser_ui.accessibility.ZoomEventsObserver;
+import org.chromium.components.browser_ui.adaptive_ui.AdaptiveUiControllerImpl;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFactory;
@@ -382,6 +383,7 @@ public class RootUiCoordinator
     private @Nullable ModalDialogManagerObserver mModalDialogManagerObserver;
 
     private @Nullable BottomSheetManager mBottomSheetManager;
+    private @Nullable AdaptiveUiControllerImpl mAdaptiveUiController;
     private final SettableMonotonicObservableSupplier<ManagedBottomSheetController>
             mBottomSheetControllerSupplier = ObservableSuppliers.createMonotonic();
     private final ToolbarActionModeCallback mActionModeControllerCallback;
@@ -1080,6 +1082,12 @@ public class RootUiCoordinator
         }
 
         if (mBottomSheetManager != null) mBottomSheetManager.onDestroy();
+
+        // Closes any adaptive UI entries while the bottom sheet and dialog manager still exist.
+        if (mAdaptiveUiController != null) {
+            mAdaptiveUiController.destroy();
+            mAdaptiveUiController = null;
+        }
 
         ManagedBottomSheetController bottomSheetController = getBottomSheetController();
         if (bottomSheetController != null) {
@@ -2612,6 +2620,15 @@ public class RootUiCoordinator
         BottomSheetControllerFactory.setExceptionReporter(
                 ChromePureJavaExceptionReporter::reportJavaException);
         BottomSheetControllerFactory.attach(mWindowAndroid, getBottomSheetController());
+
+        if (ChromeFeatureList.sAndroidAdaptiveUiTransitions.isEnabled()) {
+            // One per window; attaches itself so AdaptiveUiController.from(mWindowAndroid) works.
+            mAdaptiveUiController =
+                    new AdaptiveUiControllerImpl(
+                            mWindowAndroid,
+                            mModalDialogManagerSupplier.get(),
+                            bottomSheetController);
+        }
 
         mBottomSheetManager =
                 new BottomSheetManager(

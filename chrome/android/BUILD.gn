@@ -630,6 +630,7 @@ if (_is_default_toolchain) {
       "//components/bookmarks/common/android:bookmarks_java",
       "//components/browser_ui/accessibility/android:lib_java",
       "//components/browser_ui/accessibility/android:page_zoom_utils_java",
+      "//components/browser_ui/adaptive_ui/android:java",
       "//components/browser_ui/banners/android:java",
       "//components/browser_ui/bottomsheet/android:factory_java",
       "//components/browser_ui/bottomsheet/android:java",

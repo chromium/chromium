@@ -1393,6 +1393,7 @@ if (is_android) {
       "//chrome/browser/ui/side_ui/public:java",
       "//chrome/browser/ui/vertical_tabs:java",
       "//components/browser_ui/accessibility/android:page_zoom_utils_java",
+      "//components/browser_ui/adaptive_ui/android:java",
       "//components/supervised_user/android:content_filters_observer_bridge_java",
       "//extensions/buildflags:buildflags_java",
       "//ui/accessibility:keyboard_focus_java",
