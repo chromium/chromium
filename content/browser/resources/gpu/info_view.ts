@@ -451,7 +451,7 @@ export class InfoViewElement extends CustomElement {
     assert(downloadButton);
     downloadButton.onclick = (() => {
       const text = this.getSelectionText(true);
-      const blob = new Blob([text], {type: 'text/text'});
+      const blob = new Blob([text], {type: 'text/plain'});
       const filename = `about-gpu-${
           new Date().toISOString().replace(/[^a-z0-9-]/ig, '-')}.txt`;
       saveData(blob, filename);
