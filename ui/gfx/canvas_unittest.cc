@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <array>
+#include <cmath>
 #include <limits>
 #include <string>
 
@@ -14,11 +15,15 @@
 #include "build/build_config.h"
 #include "skia/ext/font_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/text_elider.h"
 
 namespace gfx {
@@ -207,6 +212,35 @@ TEST_F(CanvasTest, StringWidthCacheIdMutationResilience) {
   // Clean up cache for other tests.
   cache.Clear();
   EXPECT_EQ(cache.size(), 0U);
+}
+
+TEST_F(CanvasTest, DrawImageIntClampsFilteredEdges) {
+  // Draw an image whose left/top halves are pure green and right/bottom halves
+  // are pure blue, scaled at a fractional scale with bilinear filtering.
+  // Clamping prevents right/bottom edge samples from wrapping around to the
+  // green opposite edges.
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(32, 32);
+  for (int y = 0; y < 32; ++y) {
+    for (int x = 0; x < 32; ++x) {
+      SkColor color = (x == 0 || y == 0) ? SK_ColorGREEN : SK_ColorBLUE;
+      *bitmap.getAddr32(x, y) = SkPreMultiplyColor(color);
+    }
+  }
+  ImageSkia image = ImageSkia::CreateFromBitmap(bitmap, 2.0f);
+
+  for (float scale : {1.75023f, 1.8f, 1.9f}) {
+    Canvas canvas(Size(20, 20), scale, /*is_opaque=*/false);
+    canvas.DrawImageInt(image, 0, 0, 16, 16, 0, 0, 16, 16, /*filter=*/true);
+
+    SkBitmap result = canvas.GetBitmap();
+    const int last_px = static_cast<int>(std::round(16.0f * scale)) - 1;
+    const int mid_px = last_px / 2;
+    EXPECT_EQ(0u, SkColorGetG(result.getColor(last_px, mid_px)))
+        << "Right edge wrapped green at scale " << scale;
+    EXPECT_EQ(0u, SkColorGetG(result.getColor(mid_px, last_px)))
+        << "Bottom edge wrapped green at scale " << scale;
+  }
 }
 
 }  // namespace gfx

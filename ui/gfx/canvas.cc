@@ -599,7 +599,7 @@ void Canvas::DrawImageIntHelper(const ImageSkiaRep& image_rep,
   flags.setFilterQuality(filter ? cc::PaintFlags::FilterQuality::kLow
                                 : cc::PaintFlags::FilterQuality::kNone);
   flags.setShader(CreateImageRepShaderForScale(
-      image_rep, SkTileMode::kRepeat, SkTileMode::kRepeat, shader_scale,
+      image_rep, SkTileMode::kClamp, SkTileMode::kClamp, shader_scale,
       remove_image_scale ? image_rep.scale() : 1.f));
 
   // The rect will be filled by the bitmap.
