@@ -1177,6 +1177,11 @@ inline constexpr char kIOSPasswordAutoSubmissionName[] =
 inline constexpr char kIOSPasswordAutoSubmissionDescription[] =
     "Enables automatic submission of password forms when filling credentials.";
 
+inline constexpr char kIOSPasswordManagerSortAndFilterName[] =
+    "Password Manager Sort and Filter";
+inline constexpr char kIOSPasswordManagerSortAndFilterDescription[] =
+    "Enables sorting and credential filter chips in the Password Manager UI.";
+
 inline constexpr char kIOSProactivePasswordGenerationBottomSheetName[] =
     "IOS Proactive Password Generation Bottom Sheet";
 inline constexpr char kIOSProactivePasswordGenerationBottomSheetDescription[] =

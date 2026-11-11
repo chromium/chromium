@@ -16,6 +16,9 @@ namespace password_manager::features {
 // without a passcode set.
 BASE_DECLARE_FEATURE(kIOSEnablePasscodeSettings);
 
+// Enables credential sorting and filter chips in the iOS Password Manager UI.
+BASE_DECLARE_FEATURE(kIOSPasswordManagerSortAndFilter);
+
 // Enable a fix to mitigate an issue where child coordinators on the password
 // checkup UI (e.g. the password issues UI) are double started. Enabled by
 // default, act as a kill switch.
@@ -23,6 +26,9 @@ BASE_DECLARE_FEATURE(kPasswordCheckupUIDoubleStartMitigation);
 
 // Helper function returning the status of `kIOSEnablePasscodeSettings`.
 bool IsPasscodeSettingsEnabled();
+
+// Helper function returning the status of `kIOSPasswordManagerSortAndFilter`.
+bool IsPasswordManagerSortAndFilterEnabled();
 
 }  // namespace password_manager::features
 

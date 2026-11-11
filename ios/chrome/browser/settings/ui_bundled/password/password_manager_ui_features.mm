@@ -10,11 +10,18 @@ namespace password_manager::features {
 
 BASE_FEATURE(kIOSEnablePasscodeSettings, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kIOSPasswordManagerSortAndFilter,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kPasswordCheckupUIDoubleStartMitigation,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsPasscodeSettingsEnabled() {
   return base::FeatureList::IsEnabled(kIOSEnablePasscodeSettings);
+}
+
+bool IsPasswordManagerSortAndFilterEnabled() {
+  return base::FeatureList::IsEnabled(kIOSPasswordManagerSortAndFilter);
 }
 
 }  // namespace password_manager::features

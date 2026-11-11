@@ -3125,6 +3125,12 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kIOSSupportMediaCapturePoliciesName,
      flag_descriptions::kIOSSupportMediaCapturePoliciesDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kIOSSupportMediaCapturePolicies)},
+    {"ios-password-manager-sort-and-filter",
+     flag_descriptions::kIOSPasswordManagerSortAndFilterName,
+     flag_descriptions::kIOSPasswordManagerSortAndFilterDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         password_manager::features::kIOSPasswordManagerSortAndFilter)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
