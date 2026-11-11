@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import '//resources/cr_elements/cr_icon/cr_icon.js';
+import './icons.js';
 
 import {skColorToRgba} from '//resources/js/color_utils.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';

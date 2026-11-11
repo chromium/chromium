@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// <if expr="_google_chrome">
-import './internal/icons.js';
-// </if>
-
 import './toolbar_chip_button.js';
 import '/shared/icon_from_table.js';
 
