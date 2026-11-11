@@ -42,6 +42,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
@@ -691,6 +692,84 @@ public class ImeAdapterImplTest {
 
         // Subsequent updateState for TextInputType.NONE does not restart input.
         updateTextInputState(adapter, TextInputType.NONE, /* nodeId= */ 0);
+        verify(mInputMethodManagerWrapper, never()).restartInput(any());
+    }
+
+    private void updateTextInputStateWithVisibility(
+            ImeAdapterImpl adapter,
+            @TextInputType int textInputType,
+            int nodeId,
+            boolean showIfNeeded,
+            boolean alwaysHide) {
+        adapter.updateState(
+                /* textInputType= */ textInputType,
+                /* textInputFlags= */ 0,
+                /* textInputMode= */ 0,
+                /* textInputAction= */ 0,
+                /* showIfNeeded= */ showIfNeeded,
+                /* alwaysHide= */ alwaysHide,
+                /* text= */ "",
+                /* selectionStart= */ 0,
+                /* selectionEnd= */ 0,
+                /* compositionStart= */ -1,
+                /* compositionEnd= */ -1,
+                /* replyToRequest= */ false,
+                /* lastVkVisibilityRequest= */ 0,
+                /* vkPolicy= */ 0,
+                /* nodeId= */ nodeId,
+                /* imeTextSpans= */ null);
+    }
+
+    @Test
+    @EnableFeatures(ContentInternalFeatures.ANDROID_RESTART_INPUT_AFTER_HIDDEN_STATE_UPDATE)
+    public void testRestartInputDeferredWhileKeyboardIsAlwaysHidden() {
+        ImeAdapterImpl adapter = new ImeAdapterImpl(mWebContentsImpl);
+        adapter.setInputMethodManagerWrapper(mInputMethodManagerWrapper);
+        adapter.onConnectedToRenderProcess();
+
+        // Focus a text field and show the keyboard.
+        updateTextInputStateWithVisibility(
+                adapter, TextInputType.TEXT, /* nodeId= */ 1, true, /* alwaysHide= */ false);
+        verify(mInputMethodManagerWrapper).restartInput(mContainerView);
+        reset(mInputMethodManagerWrapper);
+
+        // Focus a password field while the keyboard is suppressed, e.g. while autofill intends to
+        // show a bottom sheet. Input must not be restarted while the keyboard is hidden.
+        updateTextInputStateWithVisibility(
+                adapter, TextInputType.PASSWORD, /* nodeId= */ 2, true, /* alwaysHide= */ true);
+        verify(mInputMethodManagerWrapper, never()).restartInput(any());
+        verify(mInputMethodManagerWrapper, never()).showSoftInput(any(), anyInt(), any());
+
+        // Once suppression ends, the IME must get the password field's EditorInfo before the
+        // keyboard is shown.
+        updateTextInputStateWithVisibility(
+                adapter, TextInputType.PASSWORD, /* nodeId= */ 2, true, /* alwaysHide= */ false);
+        InOrder inOrder = Mockito.inOrder(mInputMethodManagerWrapper);
+        inOrder.verify(mInputMethodManagerWrapper).restartInput(mContainerView);
+        inOrder.verify(mInputMethodManagerWrapper).showSoftInput(eq(mContainerView), eq(0), any());
+        reset(mInputMethodManagerWrapper);
+
+        // The deferred restart happens only once.
+        updateTextInputStateWithVisibility(
+                adapter, TextInputType.PASSWORD, /* nodeId= */ 2, true, /* alwaysHide= */ false);
+        verify(mInputMethodManagerWrapper, never()).restartInput(any());
+    }
+
+    @Test
+    @DisableFeatures(ContentInternalFeatures.ANDROID_RESTART_INPUT_AFTER_HIDDEN_STATE_UPDATE)
+    public void testRestartInputNotDeferredWhenFeatureDisabled() {
+        ImeAdapterImpl adapter = new ImeAdapterImpl(mWebContentsImpl);
+        adapter.setInputMethodManagerWrapper(mInputMethodManagerWrapper);
+        adapter.onConnectedToRenderProcess();
+
+        updateTextInputStateWithVisibility(
+                adapter, TextInputType.TEXT, /* nodeId= */ 1, true, /* alwaysHide= */ false);
+        reset(mInputMethodManagerWrapper);
+
+        updateTextInputStateWithVisibility(
+                adapter, TextInputType.PASSWORD, /* nodeId= */ 2, true, /* alwaysHide= */ true);
+        updateTextInputStateWithVisibility(
+                adapter, TextInputType.PASSWORD, /* nodeId= */ 2, true, /* alwaysHide= */ false);
         verify(mInputMethodManagerWrapper, never()).restartInput(any());
     }
 

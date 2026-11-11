@@ -26,6 +26,9 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kAllowKeyDownInKeyPressListeners);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kAncestorThrottleEvaluateRedirectSource);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kAndroidDesktopStyleScrollbars);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kAndroidDownloadableFontsMatching);
+#if BUILDFLAG(IS_ANDROID)
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kAndroidRestartInputAfterHiddenStateUpdate);
+#endif  // BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_WIN)
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kArabicIndicDigitInput);
 #endif

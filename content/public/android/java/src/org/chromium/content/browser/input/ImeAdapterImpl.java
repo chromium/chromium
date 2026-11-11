@@ -198,6 +198,9 @@ public class ImeAdapterImpl
     private int mLastCompositionStart;
     private int mLastCompositionEnd;
     private boolean mRestartInputOnNextStateUpdate;
+    // True if a restartInput() was skipped while the keyboard was hidden, so the IME still has the
+    // EditorInfo of a previously focused field.
+    private boolean mPendingRestartInput;
     // Do not access directly, use getStylusWritingImeCallback() instead.
     private @Nullable StylusWritingImeCallback mStylusWritingImeCallback;
     private final SparseArray<OngoingGesture> mOngoingGestures = new SparseArray<>();
@@ -840,9 +843,17 @@ public class ImeAdapterImpl
                 }
             } else {
                 if (hide || alwaysHide) {
+                    // Don't restart input while hidden, since the IME may react to the new
+                    // EditorInfo (e.g. by switching keyboards). Restart before the next show.
+                    if (needsRestart
+                            && ContentFeatureMap.isEnabled(
+                                    ContentInternalFeatures
+                                            .ANDROID_RESTART_INPUT_AFTER_HIDDEN_STATE_UPDATE)) {
+                        mPendingRestartInput = true;
+                    }
                     hideKeyboard();
                 } else {
-                    if (needsRestart) restartInput();
+                    if (needsRestart || mPendingRestartInput) restartInput();
                     if (showIfNeeded && focusedNodeAllowsSoftKeyboard()) {
                         // There is no API for us to get notified of user's dismissal of keyboard.
                         // Therefore, we should try to show keyboard even when text input type
@@ -1272,6 +1283,7 @@ public class ImeAdapterImpl
     /** Restart input (finish composition and change EditorInfo, such as input type). */
     void restartInput() {
         if (!isValid()) return;
+        mPendingRestartInput = false;
         // This will eventually cause input method manager to call View#onCreateInputConnection().
         mInputMethodManagerWrapper.restartInput(getContainerView());
         if (mInputConnection != null) mInputConnection.onRestartInputOnUiThread();
