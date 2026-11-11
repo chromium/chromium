@@ -23,6 +23,7 @@ import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.build.annotations.Contract;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
@@ -44,6 +45,7 @@ import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.commerce.core.ShoppingService;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -1063,22 +1065,44 @@ public class BookmarkUtils {
         ResettersForTesting.register(() -> sReadingListSupportedForTesting = null);
     }
 
-    /** Returns the number of non-folder bookmarks in the given list of bookmark IDs. */
-    public static int getNonFolderBookmarkCount(BookmarkModel bookmarkModel, List<BookmarkId> ids) {
+    /** Returns whether the given bookmark item is a javascript: bookmarklet. */
+    @Contract("null -> false")
+    public static boolean isJavascriptBookmark(@Nullable BookmarkItem item) {
+        return item != null
+                && !item.isFolder()
+                && !GURL.isEmptyOrInvalid(item.getUrl())
+                && UrlConstants.JAVASCRIPT_SCHEME.equals(item.getUrl().getScheme());
+    }
+
+    /** Returns whether the given bookmark item can be opened in a new tab, window, or group. */
+    @Contract("null -> false")
+    public static boolean canOpenBookmarkInNewTab(@Nullable BookmarkItem item) {
+        return item != null
+                && !item.isFolder()
+                && !GURL.isEmptyOrInvalid(item.getUrl())
+                && !isJavascriptBookmark(item);
+    }
+
+    /** Returns the number of bookmarks that can be opened in a new tab in the given list of IDs. */
+    public static int getOpenableInNewTabBookmarkCount(
+            BookmarkModel bookmarkModel, List<BookmarkId> ids) {
         int count = 0;
         for (BookmarkId id : ids) {
             BookmarkItem item = bookmarkModel.getBookmarkById(id);
-            if (item != null && !item.isFolder()) {
+            if (canOpenBookmarkInNewTab(item)) {
                 count++;
             }
         }
         return count;
     }
 
-    /** Returns the number of non-folder bookmarks that are direct children of the given folder. */
-    public static int getChildNonFolderBookmarkCountForFolder(
+    /**
+     * Returns the number of bookmarks that can be opened in a new tab that are direct children of
+     * the given folder.
+     */
+    public static int getChildOpenableInNewTabBookmarkCountForFolder(
             BookmarkModel bookmarkModel, BookmarkId folderId) {
-        return getNonFolderBookmarkCount(bookmarkModel, bookmarkModel.getChildIds(folderId));
+        return getOpenableInNewTabBookmarkCount(bookmarkModel, bookmarkModel.getChildIds(folderId));
     }
 
     /**

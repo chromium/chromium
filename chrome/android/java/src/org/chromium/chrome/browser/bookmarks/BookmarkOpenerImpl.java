@@ -33,7 +33,6 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.PageTransition;
 
@@ -76,7 +75,7 @@ public class BookmarkOpenerImpl implements BookmarkOpener {
         if (id == null) return false;
         BookmarkItem item = assumeNonNull(mBookmarkModelSupplier.get()).getBookmarkById(id);
         if (item == null || item.isFolder()) return false;
-        if (isJavascriptBookmark(item)) {
+        if (BookmarkUtils.isJavascriptBookmark(item)) {
             return openJavascriptBookmarkInCurrentTab(item, incognito);
         }
         maybeMarkReadingListItemAsRead(item);
@@ -102,10 +101,6 @@ public class BookmarkOpenerImpl implements BookmarkOpener {
         currentTab.loadUrl(
                 new LoadUrlParams(item.getUrl().getSpec(), PageTransition.AUTO_BOOKMARK));
         return true;
-    }
-
-    private static boolean isJavascriptBookmark(BookmarkItem item) {
-        return UrlConstants.JAVASCRIPT_SCHEME.equals(item.getUrl().getScheme());
     }
 
     @Override
@@ -183,7 +178,7 @@ public class BookmarkOpenerImpl implements BookmarkOpener {
         for (BookmarkId id : bookmarkIds) {
             BookmarkItem item = bookmarkModel.getBookmarkById(id);
             // Bookmarklets require an active page context and cannot open in new tabs or windows.
-            if (item == null || item.isFolder() || isJavascriptBookmark(item)) {
+            if (!BookmarkUtils.canOpenBookmarkInNewTab(item)) {
                 continue;
             }
             maybeMarkReadingListItemAsRead(item);

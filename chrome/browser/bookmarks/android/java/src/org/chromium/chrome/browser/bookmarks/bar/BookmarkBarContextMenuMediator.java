@@ -101,7 +101,7 @@ class BookmarkBarContextMenuMediator {
         if (item.isFolder()) {
             addFolderOpenOptions(listItems, id, bookmarkModel, isIncognito, item.getTitle());
         } else {
-            addBookmarkOpenOptions(listItems, id, isIncognito);
+            addBookmarkOpenOptions(listItems, item, isIncognito);
         }
 
         listItems.add(BasicListMenu.buildMenuDivider(isIncognito));
@@ -145,7 +145,7 @@ class BookmarkBarContextMenuMediator {
             BookmarkModel model,
             boolean isIncognito,
             @Nullable String folderTitle) {
-        int count = BookmarkUtils.getChildNonFolderBookmarkCountForFolder(model, folderId);
+        int count = BookmarkUtils.getChildOpenableInNewTabBookmarkCountForFolder(model, folderId);
         boolean enabled = count > 0;
 
         listItems.add(
@@ -197,7 +197,7 @@ class BookmarkBarContextMenuMediator {
             BookmarkModel model,
             boolean isIncognito,
             @Nullable String folderTitle) {
-        int count = BookmarkUtils.getNonFolderBookmarkCount(model, ids);
+        int count = BookmarkUtils.getOpenableInNewTabBookmarkCount(model, ids);
         boolean enabled = count > 0;
 
         listItems.add(
@@ -251,27 +251,30 @@ class BookmarkBarContextMenuMediator {
     }
 
     /** Adds options for opening a single bookmark item. */
-    private void addBookmarkOpenOptions(ModelList listItems, BookmarkId id, boolean isIncognito) {
+    private void addBookmarkOpenOptions(
+            ModelList listItems, BookmarkItem item, boolean isIncognito) {
+        BookmarkId id = item.getId();
+        boolean enabled = BookmarkUtils.canOpenBookmarkInNewTab(item);
         listItems.add(
                 buildContextMenuItem(
                         mContext.getString(R.string.contextmenu_open_in_new_tab),
                         /* iconResId= */ 0,
                         isIncognito,
-                        /* enabled= */ true,
+                        enabled,
                         v -> openInNewTab(id)));
         listItems.add(
                 buildContextMenuItem(
                         mContext.getString(R.string.contextmenu_open_in_new_window),
                         /* iconResId= */ 0,
                         isIncognito,
-                        /* enabled= */ true,
+                        enabled,
                         v -> openInNewWindow(id)));
         listItems.add(
                 buildContextMenuItem(
                         mContext.getString(R.string.contextmenu_open_in_incognito_window),
                         /* iconResId= */ 0,
                         isIncognito,
-                        /* enabled= */ true,
+                        enabled,
                         v -> openInIncognitoWindow(id)));
     }
 

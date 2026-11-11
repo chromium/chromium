@@ -946,6 +946,51 @@ public class BookmarkUtilsTest {
     }
 
     @Test
+    public void testJavascriptAndOpenableInNewTabHelpers() {
+        assertFalse(BookmarkUtils.isJavascriptBookmark(/* item= */ null));
+        assertFalse(BookmarkUtils.canOpenBookmarkInNewTab(/* item= */ null));
+
+        BookmarkId folderId =
+                mBookmarkModel.addFolder(
+                        mBookmarkModel.getMobileFolderId(), /* index= */ 0, "Folder");
+        BookmarkItem folderItem = mBookmarkModel.getBookmarkById(folderId);
+        assertFalse(BookmarkUtils.isJavascriptBookmark(folderItem));
+        assertFalse(BookmarkUtils.canOpenBookmarkInNewTab(folderItem));
+
+        BookmarkId emptyUrlId =
+                mBookmarkModel.addBookmark(folderId, /* index= */ 0, "Empty", GURL.emptyGURL());
+        BookmarkId invalidUrlId =
+                mBookmarkModel.addBookmark(
+                        folderId, /* index= */ 1, "Invalid", JUnitTestGURLs.INVALID_URL);
+        BookmarkId jsId =
+                mBookmarkModel.addBookmark(
+                        folderId, /* index= */ 2, "JS", new GURL("JavaScript:alert(1)"));
+        BookmarkId httpsId =
+                mBookmarkModel.addBookmark(
+                        folderId, /* index= */ 3, "HTTPS", JUnitTestGURLs.EXAMPLE_URL);
+
+        assertFalse(BookmarkUtils.isJavascriptBookmark(mBookmarkModel.getBookmarkById(emptyUrlId)));
+        assertFalse(
+                BookmarkUtils.canOpenBookmarkInNewTab(mBookmarkModel.getBookmarkById(emptyUrlId)));
+        assertFalse(
+                BookmarkUtils.isJavascriptBookmark(mBookmarkModel.getBookmarkById(invalidUrlId)));
+        assertFalse(
+                BookmarkUtils.canOpenBookmarkInNewTab(
+                        mBookmarkModel.getBookmarkById(invalidUrlId)));
+
+        assertTrue(BookmarkUtils.isJavascriptBookmark(mBookmarkModel.getBookmarkById(jsId)));
+        assertFalse(BookmarkUtils.canOpenBookmarkInNewTab(mBookmarkModel.getBookmarkById(jsId)));
+
+        assertFalse(BookmarkUtils.isJavascriptBookmark(mBookmarkModel.getBookmarkById(httpsId)));
+        assertTrue(BookmarkUtils.canOpenBookmarkInNewTab(mBookmarkModel.getBookmarkById(httpsId)));
+
+        assertEquals(
+                1,
+                BookmarkUtils.getChildOpenableInNewTabBookmarkCountForFolder(
+                        mBookmarkModel, folderId));
+    }
+
+    @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT)
     public void testGetImageIconSize_desktopLayoutEnabled() {
         Resources res = mActivity.getResources();
