@@ -98,3 +98,31 @@ TEST_F(ChromePluginServiceFilterTest, AuthorizePlugin) {
       /*exit_code=*/0);
   EXPECT_FALSE(filter_->CanLoadPlugin(render_process_id, path));
 }
+
+TEST_F(ChromePluginServiceFilterTest, AuthorizePluginHostDestroyed) {
+  const int render_process_id = process()->GetDeprecatedID();
+  const base::FilePath path(ChromeContentClient::kPDFExtensionPluginPath);
+  RenderProcessHostObserverAddedWaiter waiter(filter_);
+
+  // Initially the plugin shouldn't be authorized.
+  EXPECT_FALSE(filter_->CanLoadPlugin(render_process_id, path));
+
+  filter_->AuthorizePlugin(render_process_id, path);
+  EXPECT_TRUE(filter_->CanLoadPlugin(render_process_id, path));
+
+  // Simulate the process exiting before `filter_` adds itself as an observer
+  // on the UI thread.
+  process()->SimulateRenderProcessExit(
+      base::TerminationStatus::TERMINATION_STATUS_NORMAL_TERMINATION,
+      /*exit_code=*/0);
+
+  // Wait for `filter_` to add itself as an observer to the RenderProcessHost
+  // on the UI thread.
+  waiter.Wait();
+
+  // Destroying the WebContents cleans up the already-exited RenderProcessHost,
+  // which dispatches `RenderProcessHostDestroyed` without a second
+  // `RenderProcessExited`.
+  DeleteContents();
+  EXPECT_FALSE(filter_->CanLoadPlugin(render_process_id, path));
+}
