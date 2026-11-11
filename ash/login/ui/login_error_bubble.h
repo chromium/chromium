@@ -39,7 +39,7 @@ class ASH_EXPORT LoginErrorBubble : public LoginBaseBubbleView {
   void SetTextContent(const std::u16string& message);
 
  private:
-  raw_ptr<views::View, DanglingUntriaged> content_ = nullptr;
+  raw_ptr<views::View> content_ = nullptr;
   raw_ptr<views::ImageView> alert_icon_ = nullptr;
 
   std::u16string message_;
