@@ -200,6 +200,7 @@
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/connection_change_observer_client.mojom.h"
+#include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "services/network/public/mojom/device_bound_sessions.mojom.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/link_header.mojom.h"
@@ -231,6 +232,7 @@
 #include "third_party/blink/public/common/security/address_space_feature.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
 #include "third_party/blink/public/mojom/loader/mixed_content.mojom.h"
@@ -8745,16 +8747,35 @@ NavigationRequest::CheckCSPEmbeddedEnforcement() {
   base::UmaHistogramEnumeration(
       "Navigation.CSPEmbeddedEnforcement.Outcome",
       NavigationCSPEmbeddedEnforcementOutcome::kBlock);
-  AddDeferredConsoleMessage(
-      blink::mojom::ConsoleMessageLevel::kError,
-      base::StringPrintf(
-          "Refused to display '%s' in a frame. The embedder requires it to "
-          "enforce the following Content Security Policy: '%s'. However, the "
-          "frame neither accepts that policy using the Allow-CSP-From header "
-          "nor delivers a Content Security Policy which is at least as strong "
-          "as that one.",
-          sanitized_blocked_url.c_str(),
-          required_csp_->header->header_value.c_str()));
+  if (base::FeatureList::IsEnabled(
+          network::features::kCSPEmbeddedEnforcementTrustedTypes) &&
+      required_csp_->trusted_types) {
+    AddDeferredConsoleMessage(
+        blink::mojom::ConsoleMessageLevel::kError,
+        base::StringPrintf(
+            "Refused to display '%s' in a frame. The embedder requires the "
+            "following Content Security Policy: '%s'. The frame neither "
+            "accepts "
+            "that policy using the Allow-CSP-From header nor passes the "
+            "browser's embedded policy checks. For 'trusted-types', these "
+            "checks "
+            "require an exact match of normalized configurations; even a more "
+            "restrictive configuration can be rejected.",
+            sanitized_blocked_url.c_str(),
+            required_csp_->header->header_value.c_str()));
+  } else {
+    AddDeferredConsoleMessage(
+        blink::mojom::ConsoleMessageLevel::kError,
+        base::StringPrintf(
+            "Refused to display '%s' in a frame. The embedder requires it to "
+            "enforce the following Content Security Policy: '%s'. However, the "
+            "frame neither accepts that policy using the Allow-CSP-From header "
+            "nor delivers a Content Security Policy which is at least as "
+            "strong "
+            "as that one.",
+            sanitized_blocked_url.c_str(),
+            required_csp_->header->header_value.c_str()));
+  }
 
   return CSPEmbeddedEnforcementResult::BLOCK_RESPONSE;
 }
