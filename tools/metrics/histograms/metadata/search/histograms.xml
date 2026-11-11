@@ -2175,6 +2175,21 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
   </summary>
 </histogram>
 
+<histogram name="Search.Session.ProviderState" enum="Boolean"
+    expires_after="2027-05-02">
+  <owner>musalmaan@chromium.org</owner>
+  <owner>yeroshkin@chromium.org</owner>
+  <owner>chrome-desktop-ui-waterloo@google.com</owner>
+  <summary>
+    Records the session state configuration when the session service finishes
+    initializing during profile startup. This tracks whether the active session
+    provider state is present in the startup report evaluation.
+
+    Recorded once per profile at startup after the configuration list is loaded
+    and evaluated.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

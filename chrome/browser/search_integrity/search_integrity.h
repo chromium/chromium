@@ -79,6 +79,7 @@ struct SearchIntegrityReport {
   bool is_default_set_by_policy_in_low_trust = false;
   bool is_default_set_by_policy_without_matching_policy = false;
   bool custom_populated_default = false;
+  bool session_provider_state = false;
   SearchDuplicateKeyword duplicate_keyword_status =
       SearchDuplicateKeyword::kNoDuplicates;
 };

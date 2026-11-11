@@ -30,6 +30,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace search_integrity {
 
@@ -64,8 +65,9 @@ class SearchIntegrityTest : public testing::Test {
     return search_integrity_->CheckDuplicateKeywordReport();
   }
 
-  void TriggerAllowlistInitialized() {
-    search_integrity_->OnAllowlistInitialized({});
+  void TriggerAllowlistInitialized(
+      absl::flat_hash_set<std::string> allowed_urls = {}) {
+    search_integrity_->OnAllowlistInitialized(std::move(allowed_urls));
   }
 
   TemplateURL* AddSearchEngineWithKeyword(const std::u16string& keyword,
@@ -737,6 +739,84 @@ TEST_F(SearchIntegrityTest, Histograms_CustomPopulatedDefault) {
 
   histogram_tester.ExpectUniqueSample("Search.Integrity.CustomPopulatedDefault",
                                       true, 1);
+}
+
+TEST_F(SearchIntegrityTest, CheckSessionProviderState_True_NoOverridesPref) {
+  base::HistogramTester histogram_tester;
+  TemplateURL* turl = AddSearchEngine(u"Custom with ID", "http://custom-id.com",
+                                      /*created_by_policy=*/false,
+                                      /*prepopulate_id=*/123);
+  SetDefaultSearchProvider(turl);
+
+  TriggerAllowlistInitialized();
+
+  SearchIntegrityReport report = CheckSearchEnginesReport();
+  EXPECT_TRUE(report.session_provider_state);
+  histogram_tester.ExpectUniqueSample("Search.Session.ProviderState", true, 1);
+}
+
+TEST_F(SearchIntegrityTest, CheckSessionProviderState_False_WithOverridesPref) {
+  test_util_->profile()->GetTestingPrefService()->SetList(
+      prefs::kSearchProviderOverrides, base::ListValue());
+
+  base::HistogramTester histogram_tester;
+  TemplateURL* turl = AddSearchEngine(u"Custom with ID", "http://custom-id.com",
+                                      /*created_by_policy=*/false,
+                                      /*prepopulate_id=*/123);
+  SetDefaultSearchProvider(turl);
+
+  TriggerAllowlistInitialized();
+
+  SearchIntegrityReport report = CheckSearchEnginesReport();
+  EXPECT_FALSE(report.session_provider_state);
+  histogram_tester.ExpectUniqueSample("Search.Session.ProviderState", false, 1);
+}
+
+TEST_F(SearchIntegrityTest, CheckSessionProviderState_False_ZeroPrepopulateId) {
+  base::HistogramTester histogram_tester;
+  TemplateURL* turl = AddSearchEngine(u"Custom Engine", "http://custom.com",
+                                      /*created_by_policy=*/false,
+                                      /*prepopulate_id=*/0);
+  SetDefaultSearchProvider(turl);
+
+  TriggerAllowlistInitialized();
+
+  SearchIntegrityReport report = CheckSearchEnginesReport();
+  EXPECT_FALSE(report.session_provider_state);
+  histogram_tester.ExpectUniqueSample("Search.Session.ProviderState", false, 1);
+}
+
+TEST_F(SearchIntegrityTest, CheckSessionProviderState_False_UrlInAllowlist) {
+  base::HistogramTester histogram_tester;
+  TemplateURL* turl =
+      AddSearchEngine(u"Allowed Engine", "https://allowed.com/search?q=%s",
+                      /*created_by_policy=*/false,
+                      /*prepopulate_id=*/123);
+  SetDefaultSearchProvider(turl);
+
+  TriggerAllowlistInitialized({"https://allowed.com/search?q=%s"});
+
+  SearchIntegrityReport report = CheckSearchEnginesReport();
+  EXPECT_FALSE(report.session_provider_state);
+  histogram_tester.ExpectUniqueSample("Search.Session.ProviderState", false, 1);
+}
+
+TEST_F(SearchIntegrityTest, CheckSessionProviderState_NotRecorded_Enterprise) {
+  policy::ScopedManagementServiceOverrideForTesting profile_management(
+      policy::ManagementServiceFactory::GetForProfile(test_util_->profile()),
+      policy::EnterpriseManagementAuthority::CLOUD);
+
+  base::HistogramTester histogram_tester;
+  TemplateURL* turl = AddSearchEngine(u"Custom with ID", "http://custom-id.com",
+                                      /*created_by_policy=*/false,
+                                      /*prepopulate_id=*/123);
+  SetDefaultSearchProvider(turl);
+
+  TriggerAllowlistInitialized();
+
+  SearchIntegrityReport report = CheckSearchEnginesReport();
+  EXPECT_TRUE(report.session_provider_state);
+  histogram_tester.ExpectTotalCount("Search.Session.ProviderState", 0);
 }
 
 TEST_F(SearchIntegrityTest,
