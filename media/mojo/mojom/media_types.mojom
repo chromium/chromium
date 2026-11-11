@@ -718,6 +718,7 @@ enum DemuxerType {
   kFrameInjectingDemuxer = 5,
   kStreamProviderDemuxer = 6,
   kManifestDemuxer = 7,
+  kSymphoniaDemuxer = 8,
 };
 
 // See media::CreateCdmStatus

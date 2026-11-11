@@ -518,6 +518,8 @@ struct EnumTraits<media::mojom::DemuxerType, ::media::DemuxerType> {
         return media::mojom::DemuxerType::kStreamProviderDemuxer;
       case ::media::DemuxerType::kManifestDemuxer:
         return media::mojom::DemuxerType::kManifestDemuxer;
+      case ::media::DemuxerType::kSymphoniaDemuxer:
+        return media::mojom::DemuxerType::kSymphoniaDemuxer;
     }
 
     NOTREACHED();
@@ -541,6 +543,8 @@ struct EnumTraits<media::mojom::DemuxerType, ::media::DemuxerType> {
         return ::media::DemuxerType::kStreamProviderDemuxer;
       case media::mojom::DemuxerType::kManifestDemuxer:
         return ::media::DemuxerType::kManifestDemuxer;
+      case media::mojom::DemuxerType::kSymphoniaDemuxer:
+        return ::media::DemuxerType::kSymphoniaDemuxer;
     }
 
     NOTREACHED();

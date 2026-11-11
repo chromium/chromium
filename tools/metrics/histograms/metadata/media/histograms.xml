@@ -8020,6 +8020,7 @@ chromium-metrics-reviews@google.com.
     <variant name="ChunkDemuxer" summary="ChunkDemuxer (MSE)"/>
     <variant name="FFmpegDemuxer" summary="FFmpegDemuxer"/>
     <variant name="ManifestDemuxer" summary="ManifestDemuxer (HLS)"/>
+    <variant name="SymphoniaDemuxer" summary="SymphoniaDemuxer"/>
     <variant name="UnknownDemuxer" summary="All other demuxer types."/>
   </token>
 </histogram>

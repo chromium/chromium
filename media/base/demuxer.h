@@ -37,6 +37,7 @@ enum class DemuxerType {
   kFrameInjectingDemuxer = 5,
   kStreamProviderDemuxer = 6,
   kManifestDemuxer = 7,
+  kSymphoniaDemuxer = 8,
 };
 
 class MEDIA_EXPORT DemuxerHost {

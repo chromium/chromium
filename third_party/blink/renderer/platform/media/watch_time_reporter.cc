@@ -668,6 +668,7 @@ WatchTimeReporter::CreateBaseComponent() {
     case media::DemuxerType::kFFmpegDemuxer:
     case media::DemuxerType::kFrameInjectingDemuxer:
     case media::DemuxerType::kStreamProviderDemuxer:
+    case media::DemuxerType::kSymphoniaDemuxer:
       keys_to_finalize.emplace_back(NORMAL_KEY(Src));
       break;
     case media::DemuxerType::kManifestDemuxer:

@@ -47,6 +47,8 @@ std::string GetDemuxerNameStringForTrackChangeMetrics(DemuxerType type) {
       return "ChunkDemuxer";
     case DemuxerType::kManifestDemuxer:
       return "ManifestDemuxer";
+    case DemuxerType::kSymphoniaDemuxer:
+      return "SymphoniaDemuxer";
     default:
       return "UnknownDemuxer";
   }
