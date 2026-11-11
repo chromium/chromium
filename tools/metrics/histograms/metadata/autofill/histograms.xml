@@ -5774,6 +5774,20 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram
+    name="Autofill.Funnel.FillAfterSuggestion.OneTimePassword.GmailEligibleClients"
+    enum="BooleanAutofillFillAfterSuggestion" expires_after="2027-11-08">
+  <owner>trangm@google.com</owner>
+  <owner>src/components/one_time_tokens/OWNERS</owner>
+  <summary>
+    Like Autofill.Funnel.FillAfterSuggestion.OneTimePassword, but recorded only
+    for users who are eligible for Gmail OTPs: Gmail OTP suggestions are
+    enabled, the user opted into them, and the user is signed in with a Gmail
+    account. Not recorded in Incognito. Eligibility does not guarantee that the
+    user gets Gmail OTPs, e.g. their Gmail settings may still block them.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.Funnel.FillAfterSuggestion.{FormType}"
     enum="BooleanAutofillFillAfterSuggestion" expires_after="2027-12-12">
   <owner>battre@chromium.org</owner>
@@ -5793,6 +5807,22 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     is not recorded.
   </summary>
   <token key="FormType" variants="AutofillFormType.Fillable"/>
+</histogram>
+
+<histogram
+    name="Autofill.Funnel.InteractionAfterParsedAsType.OneTimePassword.GmailEligibleClients"
+    enum="BooleanAutofillInteractionAfterParsedAsType"
+    expires_after="2027-11-08">
+  <owner>trangm@google.com</owner>
+  <owner>src/components/one_time_tokens/OWNERS</owner>
+  <summary>
+    Like Autofill.Funnel.InteractionAfterParsedAsType.OneTimePassword, but
+    recorded only for users who are eligible for Gmail OTPs: Gmail OTP
+    suggestions are enabled, the user opted into them, and the user is signed in
+    with a Gmail account. Not recorded in Incognito. Eligibility does not
+    guarantee that the user gets Gmail OTPs, e.g. their Gmail settings may still
+    block them.
+  </summary>
 </histogram>
 
 <histogram name="Autofill.Funnel.InteractionAfterParsedAsType.{FormType}"
@@ -5855,6 +5885,20 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <token key="FormType" variants="AutofillFormType.Fillable"/>
 </histogram>
 
+<histogram
+    name="Autofill.Funnel.SubmissionAfterFill.OneTimePassword.GmailEligibleClients"
+    enum="BooleanAutofillSubmissionAfterFill" expires_after="2027-11-08">
+  <owner>trangm@google.com</owner>
+  <owner>src/components/one_time_tokens/OWNERS</owner>
+  <summary>
+    Like Autofill.Funnel.SubmissionAfterFill.OneTimePassword, but recorded only
+    for users who are eligible for Gmail OTPs: Gmail OTP suggestions are
+    enabled, the user opted into them, and the user is signed in with a Gmail
+    account. Not recorded in Incognito. Eligibility does not guarantee that the
+    user gets Gmail OTPs, e.g. their Gmail settings may still block them.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.Funnel.SubmissionAfterFill.{FormType}"
     enum="BooleanAutofillSubmissionAfterFill" expires_after="2027-12-12">
   <owner>battre@chromium.org</owner>
@@ -5866,6 +5910,21 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     forms that the user filled via Autofill. {FormType}
   </summary>
   <token key="FormType" variants="AutofillFormType.Fillable"/>
+</histogram>
+
+<histogram
+    name="Autofill.Funnel.SuggestionAfterInteraction.OneTimePassword.GmailEligibleClients"
+    enum="BooleanAutofillSuggestionAfterInteraction" expires_after="2027-11-08">
+  <owner>trangm@google.com</owner>
+  <owner>src/components/one_time_tokens/OWNERS</owner>
+  <summary>
+    Like Autofill.Funnel.SuggestionAfterInteraction.OneTimePassword, but
+    recorded only for users who are eligible for Gmail OTPs: Gmail OTP
+    suggestions are enabled, the user opted into them, and the user is signed in
+    with a Gmail account. Not recorded in Incognito. Eligibility does not
+    guarantee that the user gets Gmail OTPs, e.g. their Gmail settings may still
+    block them.
+  </summary>
 </histogram>
 
 <histogram name="Autofill.Funnel.SuggestionAfterInteraction.{FormType}"
@@ -6535,6 +6594,21 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <token key="Profile" variants="ProfileIndex"/>
 </histogram>
 
+<histogram
+    name="Autofill.KeyMetrics.FormSubmission.Autofilled.OneTimePassword.GmailEligibleClients"
+    enum="BooleanAutofillSubmission" expires_after="2027-11-08">
+  <owner>trangm@google.com</owner>
+  <owner>src/components/one_time_tokens/OWNERS</owner>
+  <summary>
+    Like Autofill.KeyMetrics.FormSubmission.Autofilled.OneTimePassword, but
+    recorded only for users who are eligible for Gmail OTPs: Gmail OTP
+    suggestions are enabled, the user opted into them, and the user is signed in
+    with a Gmail account. Not recorded in Incognito. Eligibility does not
+    guarantee that the user gets Gmail OTPs, e.g. their Gmail settings may still
+    block them.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.KeyMetrics.FormSubmission.Autofilled.{FormType}"
     enum="BooleanAutofillSubmission" expires_after="2027-12-12">
   <owner>battre@chromium.org</owner>
@@ -6549,6 +6623,21 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     navigation or due to removal from the DOM). {FormType}
   </summary>
   <token key="FormType" variants="AutofillFormType.Fillable"/>
+</histogram>
+
+<histogram
+    name="Autofill.KeyMetrics.FormSubmission.NotAutofilled.OneTimePassword.GmailEligibleClients"
+    enum="BooleanAutofillSubmission" expires_after="2027-11-08">
+  <owner>trangm@google.com</owner>
+  <owner>src/components/one_time_tokens/OWNERS</owner>
+  <summary>
+    Like Autofill.KeyMetrics.FormSubmission.NotAutofilled.OneTimePassword, but
+    recorded only for users who are eligible for Gmail OTPs: Gmail OTP
+    suggestions are enabled, the user opted into them, and the user is signed in
+    with a Gmail account. Not recorded in Incognito. Eligibility does not
+    guarantee that the user gets Gmail OTPs, e.g. their Gmail settings may still
+    block them.
+  </summary>
 </histogram>
 
 <histogram name="Autofill.KeyMetrics.FormSubmission.NotAutofilled.{FormType}"

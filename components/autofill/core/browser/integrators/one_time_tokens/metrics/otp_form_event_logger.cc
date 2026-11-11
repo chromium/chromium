@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/strcat.h"
@@ -107,6 +108,41 @@ DenseSet<FormTypeNameForLogging> OtpFormEventLogger::GetFormTypesForLogging(
   return GetOneTimePasswordTypesForLogging(form, ac_unrecognized_behavior);
 }
 
+void OtpFormEventLogger::RecordInteractionAfterParsedAsType(
+    LogBuffer& logs) const {
+  FormEventLoggerBase::RecordInteractionAfterParsedAsType(logs);
+  RecordGmailHistogram("Autofill.Funnel.InteractionAfterParsedAsType.",
+                       has_logged_interacted_);
+}
+
+void OtpFormEventLogger::RecordSuggestionAfterInteraction(
+    LogBuffer& logs) const {
+  FormEventLoggerBase::RecordSuggestionAfterInteraction(logs);
+  RecordGmailHistogram("Autofill.Funnel.SuggestionAfterInteraction.",
+                       has_logged_suggestions_shown_);
+}
+
+void OtpFormEventLogger::RecordFillAfterSuggestion(LogBuffer& logs) const {
+  FormEventLoggerBase::RecordFillAfterSuggestion(logs);
+  RecordGmailHistogram("Autofill.Funnel.FillAfterSuggestion.",
+                       has_logged_form_filling_suggestion_filled_);
+}
+
+void OtpFormEventLogger::RecordSubmissionAfterFill(LogBuffer& logs) const {
+  FormEventLoggerBase::RecordSubmissionAfterFill(logs);
+  RecordGmailHistogram("Autofill.Funnel.SubmissionAfterFill.",
+                       has_logged_will_submit_);
+}
+
+void OtpFormEventLogger::RecordFormSubmission(LogBuffer& logs) const {
+  FormEventLoggerBase::RecordFormSubmission(logs);
+  RecordGmailHistogram(
+      has_logged_form_filling_suggestion_filled_
+          ? "Autofill.KeyMetrics.FormSubmission.Autofilled."
+          : "Autofill.KeyMetrics.FormSubmission.NotAutofilled.",
+      has_logged_will_submit_);
+}
+
 void OtpFormEventLogger::RecordFillingReadiness(LogBuffer& logs) const {
   FormEventLoggerBase::RecordFillingReadiness(logs);
   RecordGmailKeyMetric("FillingReadiness", HasLoggedDataToFillAvailable());
@@ -151,6 +187,16 @@ void OtpFormEventLogger::RecordGmailKeyMetric(std::string_view metric,
   profile_metrics_service->UmaHistogramBoolean(
       base::StrCat({"Autofill.KeyMetrics.", metric,
                     ".OneTimePassword.GmailEligibleClients"}),
+      value);
+}
+
+void OtpFormEventLogger::RecordGmailHistogram(std::string_view histogram_prefix,
+                                              bool value) const {
+  if (!is_eligible_for_gmail_otps_) {
+    return;
+  }
+  base::UmaHistogramBoolean(
+      base::StrCat({histogram_prefix, "OneTimePassword.GmailEligibleClients"}),
       value);
 }
 

@@ -58,8 +58,14 @@ class OtpFormEventLogger : public FormEventLoggerBase {
       const FormStructure& form,
       AutocompleteUnrecognizedBehavior ac_unrecognized_behavior) const override;
 
-  // Also record the key metrics as `OneTimePassword.GmailEligibleClients` for
-  // users who are eligible for Gmail OTPs.
+  // Also record the funnel and key metrics as
+  // `OneTimePassword.GmailEligibleClients` for users who are eligible for Gmail
+  // OTPs.
+  void RecordInteractionAfterParsedAsType(LogBuffer& logs) const override;
+  void RecordSuggestionAfterInteraction(LogBuffer& logs) const override;
+  void RecordFillAfterSuggestion(LogBuffer& logs) const override;
+  void RecordSubmissionAfterFill(LogBuffer& logs) const override;
+  void RecordFormSubmission(LogBuffer& logs) const override;
   void RecordFillingReadiness(LogBuffer& logs) const override;
   void RecordFillingAcceptance(LogBuffer& logs) const override;
   void RecordFillingCorrectness(LogBuffer& logs) const override;
@@ -76,6 +82,13 @@ class OtpFormEventLogger : public FormEventLoggerBase {
   // `Autofill.KeyMetrics.{metric}.OneTimePassword.GmailEligibleClients` if the
   // user is eligible for Gmail OTPs.
   void RecordGmailKeyMetric(std::string_view metric, bool value) const;
+
+  // Records `{histogram_prefix}OneTimePassword.GmailEligibleClients` if the
+  // user is eligible for Gmail OTPs. Unlike `RecordGmailKeyMetric()`, it is not
+  // recorded per profile, like the base class's funnel and form submission
+  // metrics.
+  void RecordGmailHistogram(std::string_view histogram_prefix,
+                            bool value) const;
 
   // Tracks the number of OTPs that have been made available for filling during
   // the lifetime of a form.
