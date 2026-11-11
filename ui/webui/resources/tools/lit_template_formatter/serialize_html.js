@@ -305,7 +305,7 @@ function formatAttributeWithPlaceholders(attr, attrIndentStr, placeholderMap) {
  * Resolves placeholders in a text node and wraps lines to respect the
  * 80-character line limit.
  *
- * @param {string} text The text node value (with '<' and '>' escaped).
+ * @param {string} text The text node value.
  * @param {number} depth The current nesting depth.
  * @param {Map<string, Object>} placeholderMap Map of placeholders to code.
  * @return {string} The resolved text node string.
@@ -447,10 +447,7 @@ export function serializeNode(
   }
 
   if (node.nodeName === '#text') {
-    // Re-escape '<' and '>' which parse5 unescapes into raw characters when
-    // parsing HTML text nodes.
-    const text = node.value.replaceAll('<', '&lt;').replaceAll('>', '&gt;');
-    return formatTextWithPlaceholders(text, depth, placeholderMap);
+    return formatTextWithPlaceholders(node.value, depth, placeholderMap);
   }
 
   if (node.nodeName === '#comment') {

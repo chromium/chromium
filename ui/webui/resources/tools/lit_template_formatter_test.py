@@ -172,6 +172,9 @@ class LitTemplateFormatterTest(unittest.TestCase):
   def testEscapedCharacters(self):
     self._run_test("test_escaped_characters.html.ts")
 
+  def testHtmlEntities(self):
+    self._run_test("test_html_entities.html.ts")
+
   def testDryRunModeFormatted(self):
     filename = "test_basic_expressions.html.ts"
     expected_path = os.path.join(

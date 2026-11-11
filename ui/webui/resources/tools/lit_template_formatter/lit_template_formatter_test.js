@@ -291,4 +291,26 @@ suite('lit_template_formatter', () => {
 </div>`;
     assert.strictEqual(mixedTextSerialized, expectedMixedText);
   });
+
+  test('preserveHtmlEntities', () => {
+    const entityTemplate = `
+      <div>
+        <!-- Comment with &amp; and &nbsp; -->
+        <span>&nbsp;</span>
+        <span>A &amp; B &lt;tag&gt; a > b &harr; &#9888; &#x200B;</span>
+        <div title="Foo &quot;bar&quot; &amp; &nbsp;"></div>
+      </div>
+    `;
+    const entityMap = new Map();
+    const entityAst = prepareHtmlAst(entityTemplate, entityMap);
+    const entitySerialized = serializeHtmlAst(entityAst, entityMap, false);
+    const expectedEntities = `
+<div>
+  <!-- Comment with &amp; and &nbsp; -->
+  <span>&nbsp;</span>
+  <span>A &amp; B &lt;tag&gt; a > b &harr; &#9888; &#x200B;</span>
+  <div title="Foo &quot;bar&quot; &amp; &nbsp;"></div>
+</div>`;
+    assert.strictEqual(entitySerialized, expectedEntities);
+  });
 });

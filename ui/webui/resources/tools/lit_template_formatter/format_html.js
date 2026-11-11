@@ -8,6 +8,9 @@ import {parseFragment} from '../../../../../third_party/node/node_modules/parse5
 
 import {EXPR_PREFIX, FALSE_TEMPLATE_PREFIX, FORMAT_OFF_PREFIX, getChildDepthForNode, getDepthForNode, getIndentationPrefix, INDENT_SIZE, PROP_PREFIX, RESTRICTED_TAGS, TEMPLATE_PREFIX, TRAILING_NEWLINE_REGEX, VOID_ELEMENTS} from './html_utils.js';
 
+const COMMENT_OR_ENTITY_REGEX =
+    /(<!--[\s\S]*?-->)|(&(?:#\d+|#x[0-9a-fA-F]+|[a-zA-Z][a-zA-Z0-9]*);)/g;
+
 /**
  * Adds the correct newline and indentation before a child node.
  * @param {Array<Object>} children The array of children nodes to push to or
@@ -274,6 +277,14 @@ function preprocessHtml(html, placeholderMap) {
     placeholderMap.set(placeholder, {code: match});
     return `<${FORMAT_OFF_PREFIX} id="${placeholder}"></${FORMAT_OFF_PREFIX}>`;
   });
+
+  // Escape the leading '&' of HTML character references outside comments so
+  // parse5 decodes '&amp;' back to '&' and preserves entities as written (e.g.
+  // '&nbsp;', '&amp;', '&quot;', '&#9888;', '&#x200B;') in both text nodes and
+  // attribute values.
+  substitutedHtml = substitutedHtml.replace(
+      COMMENT_OR_ENTITY_REGEX,
+      (match, comment, entity) => comment ? match : `&amp;${entity.slice(1)}`);
 
   // Remove invalid closing tags for void elements (e.g. </img>) along with any
   // preceding newline and indentation when on their own line, so parse5 does
