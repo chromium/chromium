@@ -185,6 +185,11 @@ public class VerticalTabsSideUiCoordinator
         return view != null && view.hasFocus();
     }
 
+    /** Toggles the collapse state of the vertical tab rail. */
+    public void toggleCollapseState() {
+        mCollapseController.toggleCollapseState();
+    }
+
     /**
      * Opens the context menu for the currently keyboard-focused tab or group header in Vertical
      * Tabs.

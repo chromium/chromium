@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.task_manager.TaskManager;
+import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.device.gamepad.GamepadList;
@@ -149,6 +150,7 @@ public class KeyboardShortcuts {
         // KeyboardShortcutsSemanticMeaning.ZOOM_OUT_LEGACY,
         KeyboardShortcutsSemanticMeaning.FOCUS_APP_MENU_BUTTON,
         KeyboardShortcutsSemanticMeaning.OPEN_FILE,
+        KeyboardShortcutsSemanticMeaning.TOGGLE_VERTICAL_TABS_COLLAPSE,
         KeyboardShortcutsSemanticMeaning.MAX_VALUE
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -269,8 +271,11 @@ public class KeyboardShortcuts {
         // Open file shortcut.
         int OPEN_FILE = 68;
 
+        // Toggle vertical tabs collapse state.
+        int TOGGLE_VERTICAL_TABS_COLLAPSE = 69;
+
         // Max value.
-        int MAX_VALUE = 68;
+        int MAX_VALUE = 69;
     }
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/accessibility/enums.xml:KeyboardShortcutsSemanticMeaning, //tools/metrics/histograms/metadata/accessibility/histograms.xml:KeyboardShortcutsSemanticMeaning)
@@ -509,6 +514,9 @@ public class KeyboardShortcuts {
                     new KeyCombo(
                             KeyEvent.KEYCODE_A, (KeyEvent.META_ALT_ON | KeyEvent.META_SHIFT_ON)),
                 });
+        new KeyboardShortcutDefinition(
+                KeyboardShortcutsSemanticMeaning.TOGGLE_VERTICAL_TABS_COLLAPSE,
+                new KeyCombo(KeyEvent.KEYCODE_L, KeyEvent.META_CTRL_ON | KeyEvent.META_SHIFT_ON));
 
         // Navigation shortcuts (keyboard_shortcut_tab_navigation_group_header).
         new KeyboardShortcutDefinition(
@@ -1026,6 +1034,15 @@ public class KeyboardShortcuts {
                     KeyEvent.KEYCODE_B,
                     (KeyEvent.META_CTRL_ON | KeyEvent.META_SHIFT_ON));
         }
+        if (VerticalTabUtils.isVerticalTabsEnabled(context)) {
+            addShortcut(
+                    context,
+                    shortcutGroupsById,
+                    R.string.keyboard_shortcut_tab_group_header,
+                    R.string.keyboard_shortcut_toggle_vertical_tabs_collapse,
+                    KeyEvent.KEYCODE_L,
+                    (KeyEvent.META_CTRL_ON | KeyEvent.META_SHIFT_ON));
+        }
         if (FeedbackPolicyManager.getInstance().isUserFeedbackAllowed()) {
             addShortcut(
                     context,
@@ -1380,6 +1397,9 @@ public class KeyboardShortcuts {
                 case KeyboardShortcutsSemanticMeaning.TOGGLE_MULTISELECT:
                     return menuOrKeyboardActionController.onMenuOrKeyboardAction(
                             R.id.toggle_tab_strip_multiselect, /* fromMenu= */ false);
+                case KeyboardShortcutsSemanticMeaning.TOGGLE_VERTICAL_TABS_COLLAPSE:
+                    return menuOrKeyboardActionController.onMenuOrKeyboardAction(
+                            R.id.toggle_vertical_tabs_collapse, /* fromMenu= */ false);
             }
         }
         // LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/shortcuts/BrowserCommandDelegate.java:BrowserCommandDelegateCommands)

@@ -740,6 +740,17 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
     }
 
     @Test
+    public void testToggleCollapseState_DelegatesToCollapseController() {
+        assertEquals(RailCollapseState.EXPANDED, mCoordinator.getRailCollapseStateForTesting());
+
+        mCoordinator.toggleCollapseState();
+        assertEquals(RailCollapseState.COLLAPSED, mCoordinator.getRailCollapseStateForTesting());
+
+        mCoordinator.toggleCollapseState();
+        assertEquals(RailCollapseState.EXPANDED, mCoordinator.getRailCollapseStateForTesting());
+    }
+
+    @Test
     public void testContainsKeyboardFocus() {
         assertFalse(mCoordinator.containsKeyboardFocus());
 
