@@ -2,6 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# The transport (see README.md). Nothing in //components/stream_transport may
+# depend on //components/browser_actuator; DEPS and :isolation_check enforce
+# that.
+
 # Wire-format-agnostic seams of the transport: the consumer-facing
 # MessageStreamClient interface and the StreamConnectionDelegate resume/auth
 # policy seam. Concrete transports live in subdirectories.
@@ -26,13 +30,10 @@ source_set("metrics_utils") {
 
   public_deps = [
     "//base",
-    "//components/browser_actuator/public/transport",
+    "//components/stream_transport/public",
   ]
 
-  visibility = [
-    "//components/browser_actuator/internal/transport/*",
-    "//components/stream_transport/internal/*",
-  ]
+  visibility = [ "//components/stream_transport/internal/*" ]
 }
 
 # Features and params of the transport.
@@ -51,21 +52,209 @@ source_set("features") {
   ]
 }
 
+source_set("probe_payload") {
+  visibility = [ ":*" ]
+
+  sources = [
+    "probe_payload.cc",
+    "probe_payload.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/stream_transport/internal/proto",
+  ]
+}
+
+source_set("session_stream_recorder") {
+  visibility = [
+    ":*",
+    "//chrome/browser/browser_actuator/internals:*",
+    "//chrome/browser/sharing/browser_actuator:unit_tests",
+    "//components/browser_actuator/internal/transport:*",
+  ]
+
+  sources = [
+    "session_stream_recorder.cc",
+    "session_stream_recorder.h",
+    "transport_message_observer.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/sharing_message/proto",
+    "//components/stream_transport/internal/proto",
+    "//components/stream_transport/public",
+    "//components/stream_transport/public:payload_type_mapping",
+  ]
+
+  deps = [
+    ":metrics_utils",
+    "//components/sharing_message/proto:actuator_downstream_message_extras",
+    "//components/stream_transport/internal/proto:transport_messages_extras",
+    "//third_party/protobuf:protobuf_lite",
+  ]
+}
+
+# The channel, sessions and registries that route payloads between the stream
+# and feature handlers.
+source_set("channel") {
+  visibility = [ ":*" ]
+
+  sources = [
+    "control_transport_handler.cc",
+    "control_transport_handler.h",
+    "downstream_message_sequencer.cc",
+    "downstream_message_sequencer.h",
+    "probe_transport_handler.cc",
+    "probe_transport_handler.h",
+    "transport_channel_impl.cc",
+    "transport_channel_impl.h",
+    "transport_handler_factory_registry_impl.cc",
+    "transport_handler_factory_registry_impl.h",
+    "transport_session_impl.cc",
+    "transport_session_impl.h",
+    "transport_session_registry_impl.cc",
+    "transport_session_registry_impl.h",
+  ]
+
+  public_deps = [
+    ":session_stream_recorder",
+    ":transport",
+    "//components/sharing_message/proto",
+    "//components/stream_transport/public",
+    "//components/stream_transport/public:payload_type_mapping",
+  ]
+
+  deps = [
+    ":features",
+    ":metrics_utils",
+    ":probe_payload",
+    "//base",
+    "//components/stream_transport/internal/proto",
+    "//components/stream_transport/internal/upstream_message_client",
+  ]
+}
+
+# TransportServiceImpl: assembles the stream client, upstream client and channel
+# for one profile. Only the embedder's KeyedService factory constructs it.
+source_set("service") {
+  visibility = [
+    ":*",
+    "//chrome/browser/browser_actuator/transport:*",
+    "//chrome/browser/stream_transport:*",
+    "//components/browser_actuator/internal/transport:*",
+  ]
+
+  sources = [
+    "transport_service_impl.cc",
+    "transport_service_impl.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/signin/public/identity_manager",
+    "//components/stream_transport/public:service",
+    "//url",
+  ]
+
+  deps = [
+    ":channel",
+    ":features",
+    ":session_stream_recorder",
+    ":transport",
+    "//components/signin/public/base",
+    "//components/stream_transport/internal/oauth",
+    "//components/stream_transport/internal/proto_stream_client",
+    "//components/stream_transport/internal/proto_stream_client:rust_stream_framer",
+    "//components/stream_transport/internal/upstream_message_client",
+    "//components/stream_transport/public",
+    "//net",
+    "//services/network/public/cpp",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "control_transport_handler_unittest.cc",
+    "downstream_message_sequencer_unittest.cc",
+    "probe_payload_unittest.cc",
+    "probe_transport_handler_unittest.cc",
     "resume_body_connection_delegate_unittest.cc",
+    "session_stream_recorder_unittest.cc",
     "stream_connection_delegate_unittest.cc",
+    "transport_channel_impl_unittest.cc",
+    "transport_handler_factory_registry_impl_unittest.cc",
+    "transport_handler_unittest.cc",
+    "transport_service_impl_unittest.cc",
+    "transport_service_integration_unittest.cc",
+    "transport_session_impl_unittest.cc",
+    "transport_session_registry_impl_unittest.cc",
   ]
 
   deps = [
+    ":channel",
+    ":features",
+    ":metrics_utils",
+    ":probe_payload",
+    ":service",
+    ":session_stream_recorder",
     ":transport",
+    "test_support",
     "//base",
     "//base/test:test_support",
+    "//components/sharing_message/proto",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager:test_support",
+    "//components/stream_transport/internal/proto",
+    "//components/stream_transport/internal/proto_stream_client",
+    "//components/stream_transport/internal/upstream_message_client",
+    "//components/stream_transport/public",
+    "//components/stream_transport/public:payload_type_mapping",
+    "//components/stream_transport/test_support",
+    "//net",
+    "//net/traffic_annotation:test_support",
+    "//services/network:test_support",
     "//services/network/public/cpp",
+    "//testing/gmock",
     "//testing/gtest",
+    "//url",
   ]
 
   visibility = [ "//components/stream_transport:unit_tests" ]
+}
+
+# Fails `gn gen` if a transport target starts depending on
+# //components/browser_actuator. Depended on by
+# //components/stream_transport:unit_tests so that it is always checked.
+group("isolation_check") {
+  testonly = true
+
+  deps = [
+    ":channel",
+    ":features",
+    ":metrics_utils",
+    ":probe_payload",
+    ":service",
+    ":session_stream_recorder",
+    ":transport",
+    "oauth",
+    "proto",
+    "proto:transport_messages_extras",
+    "proto_stream_client",
+    "proto_stream_client:rust_stream_framer",
+    "test_support",
+    "upstream_message_client",
+    "//components/stream_transport/public",
+    "//components/stream_transport/public:payload_type_mapping",
+    "//components/stream_transport/public:service",
+    "//components/stream_transport/test_support",
+  ]
+
+  assert_no_deps = [
+    "//components/browser_actuator:*",
+    "//components/browser_actuator/*",
+  ]
 }

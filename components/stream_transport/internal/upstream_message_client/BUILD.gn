@@ -10,7 +10,7 @@ source_set("upstream_message_client") {
 
   public_deps = [
     "//base",
-    "//components/browser_actuator/public/transport",
+    "//components/stream_transport/public",
     "//net",
     "//services/network/public/cpp",
     "//url",
@@ -36,11 +36,11 @@ source_set("unit_tests") {
     ":upstream_message_client",
     "//base",
     "//base/test:test_support",
-    "//components/browser_actuator/public/transport",
     "//components/signin/public/identity_manager:test_support",
     "//components/stream_transport/internal:features",
     "//components/stream_transport/internal/proto",
     "//components/stream_transport/internal/proto:task_ingress_proto",
+    "//components/stream_transport/public",
     "//net",
     "//net/traffic_annotation:test_support",
     "//services/network:test_support",

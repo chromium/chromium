@@ -13,7 +13,7 @@
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
-#include "components/browser_actuator/public/transport/common.h"
+#include "components/stream_transport/public/common.h"
 
 namespace browser_actuator::transport {
 
@@ -37,7 +37,7 @@ inline std::string_view PayloadTypeToMetricSuffix(PayloadType payload_type) {
   NOTREACHED();
 }
 // LINT.ThenChange(
-//     //components/browser_actuator/public/transport/common.h:PayloadType,
+//     //components/stream_transport/public/common.h:PayloadType,
 //     //tools/metrics/histograms/metadata/browser_actuator/histograms.xml:BrowserActuatorTransportPayloadType
 // )
 

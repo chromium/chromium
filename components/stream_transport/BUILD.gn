@@ -6,10 +6,12 @@ group("unit_tests") {
   testonly = true
 
   deps = [
+    "//components/stream_transport/internal:isolation_check",
     "//components/stream_transport/internal:unit_tests",
     "//components/stream_transport/internal/oauth:unit_tests",
     "//components/stream_transport/internal/proto_stream_client:stream_body_parser_unittests",
     "//components/stream_transport/internal/proto_stream_client:unit_tests",
     "//components/stream_transport/internal/upstream_message_client:unit_tests",
+    "//components/stream_transport/public:unit_tests",
   ]
 }

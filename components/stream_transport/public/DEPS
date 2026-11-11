@@ -1,0 +1,6 @@
+include_rules = [
+  # The transport must not depend on //components/browser_actuator, so that
+  # other features can use it on its own.
+  "-components/browser_actuator",
+  "+components/stream_transport/public",
+]

@@ -1,0 +1,177 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/stream_transport/internal/transport_session_registry_impl.h"
+
+#include <string>
+#include <utility>
+#include <vector>
+
+#include "base/check.h"
+#include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
+#include "components/stream_transport/internal/features.h"
+#include "components/stream_transport/internal/metrics_utils.h"
+#include "components/stream_transport/internal/transport_session_impl.h"
+
+namespace browser_actuator::transport {
+namespace {
+
+size_t GetMaxConcurrentSessionsLimit() {
+  const int l = kMaxTransportSessions.Get();
+  return l > 0 ? static_cast<size_t>(l) : 0;
+}
+
+}  // namespace
+
+TransportSessionRegistryImpl::TransportSessionRegistryImpl(
+    base::WeakPtr<TransportChannel> channel,
+    TransportSessionImpl::DownstreamMessageCallback on_downstream_message)
+    : TransportSessionRegistryImpl(std::move(channel),
+                                   GetMaxConcurrentSessionsLimit(),
+                                   std::move(on_downstream_message)) {}
+
+TransportSessionRegistryImpl::TransportSessionRegistryImpl(
+    base::WeakPtr<TransportChannel> channel,
+    size_t max_concurrent_sessions,
+    TransportSessionImpl::DownstreamMessageCallback on_downstream_message)
+    : channel_(std::move(channel)),
+      max_concurrent_sessions_(max_concurrent_sessions),
+      on_downstream_message_(std::move(on_downstream_message)) {
+  DCHECK(channel_);
+}
+
+TransportSessionRegistryImpl::~TransportSessionRegistryImpl() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+TransportSession* TransportSessionRegistryImpl::GetSession(
+    std::string_view session_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return GetSessionImpl(session_id);
+}
+
+void TransportSessionRegistryImpl::AddObserver(Observer* observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  observers_.AddObserver(observer);
+}
+
+void TransportSessionRegistryImpl::RemoveObserver(Observer* observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  observers_.RemoveObserver(observer);
+}
+
+std::vector<TransportSessionImpl*>
+TransportSessionRegistryImpl::GetAllSessionImpls() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::vector<TransportSessionImpl*> active_sessions;
+  active_sessions.reserve(sessions_.size());
+  for (const auto& [_, session] : sessions_) {
+    active_sessions.push_back(session.get());
+  }
+  return active_sessions;
+}
+
+TransportSessionImpl* TransportSessionRegistryImpl::GetSessionImpl(
+    std::string_view session_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto it = sessions_.find(session_id);
+  if (it != sessions_.end()) {
+    return it->second.get();
+  }
+  return nullptr;
+}
+
+void TransportSessionRegistryImpl::DestroySession(std::string_view session_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto it = sessions_.find(session_id);
+  if (it != sessions_.end()) {
+    std::string removed_session_id = it->first;
+    sessions_.erase(it);
+    for (auto& observer : observers_) {
+      observer.OnSessionRemoved(removed_session_id);
+    }
+  }
+}
+
+void TransportSessionRegistryImpl::EvictIdleSessions() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  const base::TimeDelta idle_timeout = kTransportSessionIdleTimeout.Get();
+  if (!idle_timeout.is_positive()) {
+    return;
+  }
+  const base::TimeTicks now = base::TimeTicks::Now();
+  std::vector<std::string> expired_ids;
+  for (const auto& [id, session] : sessions_) {
+    if (now - session->last_activity_time() >= idle_timeout) {
+      expired_ids.push_back(id);
+    }
+  }
+  // Erase all expired sessions before notifying observers so that
+  // `TransportChannelImpl::OnSessionRemoved()` observes the post-eviction
+  // active session set rather than reconnecting the stream with still-expired
+  // sessions in `WatchSessionsRequest`.
+  for (const std::string& id : expired_ids) {
+    sessions_.erase(id);
+  }
+  for (const std::string& id : expired_ids) {
+    for (auto& observer : observers_) {
+      observer.OnSessionRemoved(id);
+    }
+  }
+}
+
+TransportSessionImpl* TransportSessionRegistryImpl::CreateSession(
+    std::string_view session_id,
+    InitIngressSource ingress_source) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (session_id.empty() || session_id.size() > kMaxSessionIdLength) {
+    DLOG(WARNING) << "Rejecting CreateSession with invalid session_id length ("
+                  << session_id.size() << ")";
+    return nullptr;
+  }
+  EvictIdleSessions();
+  if (GetSessionImpl(session_id)) {
+    DVLOG(1) << "Ignoring CreateSession for already-active session: "
+             << session_id;
+    return nullptr;
+  }
+  base::UmaHistogramExactLinear(
+      "Browser.Actuator.Transport.SessionRegistry.ExistingSessionsCount",
+      static_cast<int>(sessions_.size()),
+      /*exclusive_max=*/20);
+  const bool limit_reached = sessions_.size() >= max_concurrent_sessions_;
+  base::UmaHistogramBoolean(
+      "Browser.Actuator.Transport.SessionRegistry.SessionLimitReached",
+      limit_reached);
+  if (limit_reached) {
+    DLOG(WARNING) << "Max concurrent sessions limit ("
+                  << max_concurrent_sessions_
+                  << ") reached. Rejecting new session.";
+    return nullptr;
+  }
+  RecordInitIngressSource(ingress_source);
+  std::unique_ptr<TransportSessionImpl> session =
+      std::make_unique<TransportSessionImpl>(session_id, channel_,
+                                             on_downstream_message_);
+  TransportSessionImpl* session_ptr = session.get();
+  sessions_.emplace(std::string(session_id), std::move(session));
+  for (auto& observer : observers_) {
+    observer.OnSessionRegistered(session_ptr);
+  }
+  return session_ptr;
+}
+
+void TransportSessionRegistryImpl::Clear() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  sessions_.clear();
+}
+
+base::WeakPtr<TransportSessionRegistryImpl>
+TransportSessionRegistryImpl::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
+}  // namespace browser_actuator::transport

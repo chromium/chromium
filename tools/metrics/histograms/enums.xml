@@ -1403,7 +1403,7 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="3" label="LocalChromeIngest"/>
 </enum>
 
-<!-- LINT.ThenChange(//components/browser_actuator/public/transport/common.h:InitIngressSource) -->
+<!-- LINT.ThenChange(//components/stream_transport/public/common.h:InitIngressSource) -->
 
 <!-- LINT.IfChange(BrowserProfileType) -->
 

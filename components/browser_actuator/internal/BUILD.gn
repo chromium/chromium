@@ -26,7 +26,6 @@ source_set("unit_tests") {
   deps = [
     ":internal",
     "//base",
-    "//components/browser_actuator/internal/transport:unit_tests",
     "//testing/gtest",
   ]
 

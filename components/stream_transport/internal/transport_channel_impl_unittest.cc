@@ -1,0 +1,1370 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/stream_transport/internal/transport_channel_impl.h"
+
+#include <cstddef>
+#include <cstdint>
+#include <map>
+#include <memory>
+#include <optional>
+#include <string>
+#include <string_view>
+#include <utility>
+#include <vector>
+
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/scoped_observation.h"
+#include "base/test/bind.h"
+#include "base/test/run_until.h"
+#include "base/test/task_environment.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/stream_transport/internal/control_transport_handler.h"
+#include "components/stream_transport/internal/downstream_message_sequencer.h"
+#include "components/stream_transport/internal/message_stream_client.h"
+#include "components/stream_transport/internal/proto/transport_messages.pb.h"
+#include "components/stream_transport/internal/stream_connection_delegate.h"
+#include "components/stream_transport/internal/test_support/wait_for.h"
+#include "components/stream_transport/internal/transport_message_observer.h"
+#include "components/stream_transport/internal/transport_session_impl.h"
+#include "components/stream_transport/internal/transport_session_registry_impl.h"
+#include "components/stream_transport/internal/upstream_message_client/upstream_message_client.h"
+#include "components/stream_transport/public/common.h"
+#include "components/stream_transport/public/payload_type_mapping.h"
+#include "components/stream_transport/public/transport_handler.h"
+#include "components/stream_transport/public/transport_handler_factory.h"
+#include "components/stream_transport/public/transport_handler_factory_registry.h"
+#include "components/stream_transport/test_support/mock_transport_handler.h"
+#include "components/stream_transport/test_support/mock_transport_handler_factory.h"
+#include "net/http/http_request_headers.h"
+#include "net/http/http_status_code.h"
+#include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
+#include "services/network/test/test_utils.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
+
+namespace browser_actuator::transport {
+namespace {
+
+constexpr char kTestSendSessionMessageEndpoint[] =
+    "https://transport.test/v1:sendSessionMessage";
+
+using ::testing::AllOf;
+using ::testing::Property;
+using ::testing::UnorderedElementsAre;
+
+// Minimal MessageStreamClient that lets the test push downstream messages
+// straight to the channel's observer.
+class FakeMessageStreamClient : public MessageStreamClient {
+ public:
+  FakeMessageStreamClient() = default;
+
+  void Connect() override {
+    is_connected_ = true;
+    connect_count_++;
+  }
+  void Disconnect() override {
+    is_connected_ = false;
+    disconnect_count_++;
+    disconnected_called_ = true;
+  }
+  bool IsConnected() const override { return is_connected_; }
+  void AddObserver(Observer* observer) override { observer_ = observer; }
+  void RemoveObserver(Observer* observer) override {
+    if (observer_ == observer) {
+      observer_ = nullptr;
+    }
+  }
+
+  void set_connected(bool connected) { is_connected_ = connected; }
+  int connect_count() const { return connect_count_; }
+  int disconnect_count() const { return disconnect_count_; }
+
+  void Dispatch(const std::string& message) {
+    ASSERT_TRUE(observer_);
+    observer_->OnStreamMessage(message);
+  }
+
+  bool disconnected_called() const { return disconnected_called_; }
+
+  base::WeakPtr<FakeMessageStreamClient> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
+ private:
+  bool disconnected_called_ = false;
+  raw_ptr<Observer> observer_ = nullptr;
+  bool is_connected_ = false;
+  int connect_count_ = 0;
+  int disconnect_count_ = 0;
+
+  base::WeakPtrFactory<FakeMessageStreamClient> weak_factory_{this};
+};
+
+class FakeTransportHandler : public TransportHandler {
+ public:
+  explicit FakeTransportHandler(
+      base::RepeatingCallback<void(std::string_view)> on_message_cb)
+      : on_message_cb_(std::move(on_message_cb)) {}
+  ~FakeTransportHandler() override = default;
+
+  void OnMessage(PayloadType payload_type,
+                 std::string_view serialized_payload) override {
+    on_message_cb_.Run(serialized_payload);
+  }
+
+ private:
+  base::RepeatingCallback<void(std::string_view)> on_message_cb_;
+};
+
+class FakeTransportHandlerFactory : public TransportHandlerFactory {
+ public:
+  FakeTransportHandlerFactory(
+      const std::vector<PayloadType>& supported_types,
+      base::RepeatingCallback<std::unique_ptr<TransportHandler>(
+          TransportSession*)> on_new_session_cb,
+      FactoryId factory_id = FactoryId::kUnset)
+      : supported_types_(supported_types),
+        on_new_session_cb_(std::move(on_new_session_cb)),
+        factory_id_(factory_id) {}
+  ~FakeTransportHandlerFactory() override = default;
+
+  FactoryId GetFactoryId() const override { return factory_id_; }
+
+  std::vector<PayloadType> GetSupportedPayloadTypes() const override {
+    return supported_types_;
+  }
+
+  std::unique_ptr<TransportHandler> OnNewSession(
+      TransportSession* session) override {
+    return on_new_session_cb_.Run(session);
+  }
+
+ private:
+  const std::vector<PayloadType> supported_types_;
+  base::RepeatingCallback<std::unique_ptr<TransportHandler>(TransportSession*)>
+      on_new_session_cb_;
+  const FactoryId factory_id_;
+};
+
+std::string SerializedDownstream(std::string_view session_id, int64_t seq) {
+  WatchSessionsResponse response;
+  ActuatorDownstreamMessage* message =
+      response.mutable_actuator_downstream_message();
+  message->set_session_id(session_id);
+  message->set_sequence_number(seq);
+  return response.SerializeAsString();
+}
+
+class TransportChannelImplTestBase : public testing::Test {
+ protected:
+  explicit TransportChannelImplTestBase(
+      base::test::TaskEnvironment::TimeSource time_source)
+      : task_environment_(time_source),
+        identity_test_env_(&test_url_loader_factory_) {
+    test_shared_url_loader_factory_ =
+        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+            &test_url_loader_factory_);
+
+    identity_test_env_.MakePrimaryAccountAvailable(
+        "test@gmail.com", signin::ConsentLevel::kSignin);
+    identity_test_env_.SetAutomaticIssueOfAccessTokens(true);
+
+    auto client = std::make_unique<FakeMessageStreamClient>();
+    fake_client_ = client->GetWeakPtr();
+    channel_ = std::make_unique<TransportChannelImpl>(
+        std::make_unique<UpstreamMessageClient>(
+            test_shared_url_loader_factory_,
+            identity_test_env_.identity_manager(),
+            GURL(kTestSendSessionMessageEndpoint),
+            TRAFFIC_ANNOTATION_FOR_TESTS),
+        base::BindOnce(
+            [](std::unique_ptr<FakeMessageStreamClient> owned_client,
+               std::unique_ptr<StreamConnectionDelegate>)
+                -> std::unique_ptr<MessageStreamClient> {
+              // The resume delegate isn't exercised here; the test drives the
+              // body builder directly.
+              return std::move(owned_client);
+            },
+            std::move(client)));
+  }
+
+  WatchSessionsRequest ResumeBody() {
+    WatchSessionsRequest request;
+    EXPECT_TRUE(request.ParseFromString(
+        channel_->BuildWatchSessionsRequestBodyForTesting()));
+    return request;
+  }
+
+  TransportSessionRegistryImpl* GetSessionRegistryImpl() {
+    return static_cast<TransportSessionRegistryImpl*>(
+        channel_->GetSessionRegistry());
+  }
+
+  base::test::TaskEnvironment task_environment_;
+  network::TestURLLoaderFactory test_url_loader_factory_;
+  signin::IdentityTestEnvironment identity_test_env_;
+  scoped_refptr<network::SharedURLLoaderFactory>
+      test_shared_url_loader_factory_;
+  std::unique_ptr<TransportChannelImpl> channel_;
+  base::WeakPtr<FakeMessageStreamClient> fake_client_;
+};
+
+class TransportChannelImplTest : public TransportChannelImplTestBase {
+ protected:
+  TransportChannelImplTest()
+      : TransportChannelImplTestBase(
+            base::test::TaskEnvironment::TimeSource::DEFAULT) {}
+};
+
+class TransportChannelImplTestWithMockTime
+    : public TransportChannelImplTestBase {
+ protected:
+  TransportChannelImplTestWithMockTime()
+      : TransportChannelImplTestBase(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+};
+
+TEST_F(TransportChannelImplTest, RecordsPerSessionResumePositions) {
+  GetSessionRegistryImpl()->CreateSession("s1",
+                                          InitIngressSource::kUnspecified);
+  GetSessionRegistryImpl()->CreateSession("s2",
+                                          InitIngressSource::kUnspecified);
+  fake_client_->Dispatch(SerializedDownstream("s1", 1));
+  fake_client_->Dispatch(SerializedDownstream("s1", 2));
+  fake_client_->Dispatch(SerializedDownstream("s2", 1));
+
+  const WatchSessionsRequest body = ResumeBody();
+  EXPECT_FALSE(body.request_id().empty());
+  EXPECT_THAT(
+      body.sessions(),
+      UnorderedElementsAre(
+          AllOf(Property(&WatchSessionsRequest::Session::session_id, "s1"),
+                Property(
+                    &WatchSessionsRequest::Session::last_seen_sequence_number,
+                    2)),
+          AllOf(Property(&WatchSessionsRequest::Session::session_id, "s2"),
+                Property(
+                    &WatchSessionsRequest::Session::last_seen_sequence_number,
+                    1))));
+}
+
+TEST_F(TransportChannelImplTest, AdvanceIsMonotonicAndIgnoresNonPositive) {
+  GetSessionRegistryImpl()->CreateSession("s1",
+                                          InitIngressSource::kUnspecified);
+  fake_client_->Dispatch(SerializedDownstream("s1", 0));  // Initial FCM wake.
+  WatchSessionsRequest body = ResumeBody();
+  ASSERT_EQ(body.sessions_size(), 1);
+  EXPECT_EQ(body.sessions(0).session_id(), "s1");
+  EXPECT_EQ(body.sessions(0).last_seen_sequence_number(), 0);
+
+  fake_client_->Dispatch(SerializedDownstream("s1", 1));
+  fake_client_->Dispatch(SerializedDownstream("s1", 2));
+  fake_client_->Dispatch(SerializedDownstream("s1", 1));   // Duplicate.
+  fake_client_->Dispatch(SerializedDownstream("s1", 0));   // Late wake retry.
+  fake_client_->Dispatch(SerializedDownstream("s1", -1));  // Invalid.
+  fake_client_->Dispatch(SerializedDownstream("s1", 4));   // Gap (3 missing).
+  EXPECT_EQ(fake_client_->disconnect_count(), 0);
+
+  body = ResumeBody();
+  ASSERT_EQ(body.sessions_size(), 1);
+  EXPECT_EQ(body.sessions(0).session_id(), "s1");
+  EXPECT_EQ(body.sessions(0).last_seen_sequence_number(), 2);
+
+  // Filling the gap advances the resume position across buffered messages.
+  fake_client_->Dispatch(SerializedDownstream("s1", 3));
+  body = ResumeBody();
+  ASSERT_EQ(body.sessions_size(), 1);
+  EXPECT_EQ(body.sessions(0).session_id(), "s1");
+  EXPECT_EQ(body.sessions(0).last_seen_sequence_number(), 4);
+}
+
+TEST_F(TransportChannelImplTest,
+       SessionWithoutResumePositionIsIncludedInWatchRequest) {
+  GetSessionRegistryImpl()->CreateSession("s1",
+                                          InitIngressSource::kUnspecified);
+
+  const WatchSessionsRequest body = ResumeBody();
+  ASSERT_EQ(body.sessions_size(), 1);
+  EXPECT_EQ(body.sessions(0).session_id(), "s1");
+  EXPECT_EQ(body.sessions(0).last_seen_sequence_number(), 0);
+}
+
+TEST_F(TransportChannelImplTest, ConnectsWhenNewSessionRegisteredAndConnected) {
+  fake_client_->set_connected(true);
+
+  GetSessionRegistryImpl()->CreateSession("s1",
+                                          InitIngressSource::kUnspecified);
+
+  EXPECT_EQ(fake_client_->disconnect_count(), 1);
+  EXPECT_EQ(fake_client_->connect_count(), 1);
+}
+
+TEST_F(TransportChannelImplTest,
+       DoesNotReconnectWhenExistingSessionRegistered) {
+  fake_client_->set_connected(true);
+  GetSessionRegistryImpl()->CreateSession("s1",
+                                          InitIngressSource::kUnspecified);
+
+  GetSessionRegistryImpl()->CreateSession("s1",
+                                          InitIngressSource::kUnspecified);
+
+  EXPECT_EQ(fake_client_->disconnect_count(), 1);
+  EXPECT_EQ(fake_client_->connect_count(), 1);
+}
+
+TEST_F(TransportChannelImplTest,
+       ConnectsWhenNewSessionRegisteredAndDisconnected) {
+  fake_client_->set_connected(false);
+
+  GetSessionRegistryImpl()->CreateSession("s1",
+                                          InitIngressSource::kUnspecified);
+
+  EXPECT_EQ(fake_client_->disconnect_count(), 0);
+  EXPECT_EQ(fake_client_->connect_count(), 1);
+}
+
+struct TestPayload {
+  ActuatorDownstreamPayloadType type;
+  std::string value;
+  std::string type_url;
+};
+
+std::string SerializedDownstreamMessage(
+    std::string_view session_id,
+    int64_t seq,
+    const std::vector<TestPayload>& payloads) {
+  WatchSessionsResponse response;
+  ActuatorDownstreamMessage* message =
+      response.mutable_actuator_downstream_message();
+  message->set_session_id(std::string(session_id));
+  message->set_sequence_number(seq);
+
+  for (const auto& payload : payloads) {
+    auto* typed = message->add_typed_payloads();
+    typed->set_payload_type(payload.type);
+    typed->mutable_proto_payload()->set_value(payload.value.data(),
+                                              payload.value.size());
+    if (!payload.type_url.empty()) {
+      typed->mutable_proto_payload()->set_type_url(payload.type_url);
+    } else if (std::optional<PayloadType> mapped =
+                   FromDownstreamProtoPayloadType(payload.type)) {
+      typed->mutable_proto_payload()->set_type_url(
+          std::string(ExpectedTypeUrl(*mapped)));
+    }
+  }
+
+  return response.SerializeAsString();
+}
+
+TEST_F(TransportChannelImplTest, RoutesPayloadTypeToHandler) {
+  ControlCommand command;
+
+  bool message_handled = false;
+  FakeTransportHandlerFactory factory(
+      {PayloadType::kControl},
+      base::BindLambdaForTesting(
+          [&](TransportSession*) -> std::unique_ptr<TransportHandler> {
+            return std::make_unique<FakeTransportHandler>(
+                base::BindLambdaForTesting(
+                    [&](std::string_view) { message_handled = true; }));
+          }));
+  channel_->GetHandlerFactoryRegistry()->RegisterFactory(&factory);
+
+  GetSessionRegistryImpl()->CreateSession("s1",
+                                          InitIngressSource::kUnspecified);
+  fake_client_->Dispatch(SerializedDownstreamMessage(
+      "s1", 1,
+      {{ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND,
+        command.SerializeAsString()}}));
+
+  EXPECT_TRUE(message_handled);
+}
+
+// Regression test for crbug.com/560176806.
+TEST_F(TransportChannelImplTest, RoutesExperimentalTriggeringToHandler) {
+  std::string handled_payload;
+  bool message_handled = false;
+  FakeTransportHandlerFactory factory(
+      {PayloadType::kExperimentalTriggering},
+      base::BindLambdaForTesting(
+          [&](TransportSession*) -> std::unique_ptr<TransportHandler> {
+            return std::make_unique<FakeTransportHandler>(
+                base::BindLambdaForTesting([&](std::string_view payload) {
+                  message_handled = true;
+                  handled_payload = std::string(payload);
+                }));
+          }));
+  channel_->GetHandlerFactoryRegistry()->RegisterFactory(&factory);
+
+  GetSessionRegistryImpl()->CreateSession("s1",
+                                          InitIngressSource::kUnspecified);
+  fake_client_->Dispatch(SerializedDownstreamMessage(
+      "s1", 1,
+      {{ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_EXPERIMENTAL_TRIGGERING,
+        "triggering-bytes",
+        std::string(ExpectedTypeUrl(PayloadType::kExperimentalTriggering))}}));
+
+  EXPECT_TRUE(message_handled);
+  EXPECT_EQ(handled_payload, "triggering-bytes");
+}
+
+TEST_F(TransportChannelImplTest, SessionDestructionMidLoop) {
+  TransportSessionRegistryImpl* registry =
+      static_cast<TransportSessionRegistryImpl*>(
+          channel_->GetSessionRegistry());
+  registry->CreateSession("s1", InitIngressSource::kUnspecified);
+
+  ControlCommand command;
+
+  bool first_message_handled = false;
+  FakeTransportHandlerFactory factory(
+      {PayloadType::kControl},
+      base::BindLambdaForTesting(
+          [&](TransportSession*) -> std::unique_ptr<TransportHandler> {
+            return std::make_unique<CallbackTransportHandler>(base::BindOnce(
+                [](TransportSessionRegistryImpl* r, bool* handled) {
+                  *handled = true;
+                  r->DestroySession("s1");
+                },
+                registry, &first_message_handled));
+          }));
+  channel_->GetHandlerFactoryRegistry()->RegisterFactory(&factory);
+
+  fake_client_->Dispatch(SerializedDownstreamMessage(
+      "s1", 1,
+      {{ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND,
+        command.SerializeAsString()},
+       {ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND,
+        command.SerializeAsString()}}));
+
+  EXPECT_TRUE(first_message_handled);
+  EXPECT_EQ(registry->GetSession("s1"), nullptr);
+}
+
+TEST_F(TransportChannelImplTest, ControlHandlerFactoryRegisteredByDefault) {
+  std::vector<TransportHandlerFactory*> factories =
+      channel_->GetHandlerFactoryRegistry()->GetFactories(
+          PayloadType::kControl);
+  ASSERT_EQ(factories.size(), 1u);
+  EXPECT_EQ(factories[0]->GetFactoryId(), FactoryId::kControl);
+}
+
+TEST_F(TransportChannelImplTest, ControlCommandCloseSessionDestroysSession) {
+  TransportSessionRegistryImpl* registry =
+      static_cast<TransportSessionRegistryImpl*>(
+          channel_->GetSessionRegistry());
+  ASSERT_NE(registry->CreateSession("s1", InitIngressSource::kUnspecified),
+            nullptr);
+
+  ControlCommand command;
+  command.mutable_close_session();
+
+  fake_client_->Dispatch(SerializedDownstreamMessage(
+      "s1", 1,
+      {{ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND,
+        command.SerializeAsString()}}));
+
+  // The session was created, processed the CloseSession command, and was
+  // destroyed.
+  EXPECT_EQ(registry->GetSession("s1"), nullptr);
+}
+
+TEST_F(TransportChannelImplTest, ControlCommandCloseChannelDisconnectsStream) {
+  GetSessionRegistryImpl()->CreateSession("s1",
+                                          InitIngressSource::kUnspecified);
+  EXPECT_FALSE(fake_client_->disconnected_called());
+
+  ControlCommand command;
+  command.mutable_close_channel();
+
+  fake_client_->Dispatch(SerializedDownstreamMessage(
+      "s1", 1,
+      {{ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND,
+        command.SerializeAsString()}}));
+
+  // The CloseChannel command triggers Disconnect on the stream client.
+  EXPECT_TRUE(fake_client_->disconnected_called());
+}
+
+TEST_F(TransportChannelImplTest, PassesSequenceNumberToSession) {
+  TransportSessionRegistryImpl* registry =
+      static_cast<TransportSessionRegistryImpl*>(
+          channel_->GetSessionRegistry());
+  registry->CreateSession("s1", InitIngressSource::kUnspecified);
+
+  fake_client_->Dispatch(SerializedDownstreamMessage(
+      "s1", 1,
+      {{ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_UNSPECIFIED, "payload_data"}}));
+
+  TransportSessionImpl* session = registry->GetSessionImpl("s1");
+  ASSERT_NE(session, nullptr);
+  EXPECT_EQ(session->last_seen_sequence_number(), 1);
+}
+
+TEST_F(TransportChannelImplTest, IgnoresDownstreamMessageForUnknownSession) {
+  fake_client_->Dispatch(SerializedDownstream("unknown_session", 1));
+  EXPECT_EQ(channel_->GetSessionRegistry()->GetSession("unknown_session"),
+            nullptr);
+  EXPECT_EQ(fake_client_->connect_count(), 0);
+}
+
+TEST_F(TransportChannelImplTest, UnknownPayloadTypesAreIgnored) {
+  bool factory_called = false;
+  FakeTransportHandlerFactory factory(
+      {PayloadType::kUnspecified},
+      base::BindLambdaForTesting(
+          [&](TransportSession*) -> std::unique_ptr<TransportHandler> {
+            factory_called = true;
+            return nullptr;
+          }));
+  channel_->GetHandlerFactoryRegistry()->RegisterFactory(&factory);
+
+  ActuatorDownstreamPayloadType unknown_type =
+      static_cast<ActuatorDownstreamPayloadType>(999);
+
+  GetSessionRegistryImpl()->CreateSession("s1",
+                                          InitIngressSource::kUnspecified);
+  fake_client_->Dispatch(
+      SerializedDownstreamMessage("s1", 1, {{unknown_type, "some_data"}}));
+
+  EXPECT_FALSE(factory_called);
+  TransportSessionRegistry* registry = channel_->GetSessionRegistry();
+  EXPECT_NE(registry->GetSession("s1"), nullptr);
+}
+
+TEST_F(TransportChannelImplTest,
+       DownstreamConnectionStateReturnsDisconnectedByDefault) {
+  EXPECT_EQ(channel_->downstream_connection_state(),
+            DownstreamConnectionState::kDisconnected);
+}
+
+TEST_F(TransportChannelImplTest,
+       OnSessionRegisteredUpdatesDownstreamConnectionStateToConnecting) {
+  channel_->OnSessionRegistered(nullptr);
+
+  EXPECT_EQ(channel_->downstream_connection_state(),
+            DownstreamConnectionState::kConnecting);
+}
+
+TEST_F(
+    TransportChannelImplTest,
+    OnStreamConnectionStateChangeUpdatesDownstreamConnectionStateToConnected) {
+  channel_->OnStreamConnectionStateChange(/*connected=*/true);
+
+  EXPECT_EQ(channel_->downstream_connection_state(),
+            DownstreamConnectionState::kConnected);
+}
+
+TEST_F(
+    TransportChannelImplTest,
+    OnStreamConnectionStateChangeUpdatesDownstreamConnectionStateToDisconnected) {
+  channel_->OnStreamConnectionStateChange(/*connected=*/true);
+
+  channel_->OnStreamConnectionStateChange(/*connected=*/false);
+
+  EXPECT_EQ(channel_->downstream_connection_state(),
+            DownstreamConnectionState::kDisconnected);
+}
+
+TEST_F(TransportChannelImplTest,
+       OnStreamStatusUpdatesDownstreamConnectionStateToDisconnected) {
+  channel_->OnStreamConnectionStateChange(/*connected=*/true);
+
+  channel_->OnStreamStatus("status");
+
+  EXPECT_EQ(channel_->downstream_connection_state(),
+            DownstreamConnectionState::kDisconnected);
+}
+TEST_F(TransportChannelImplTest, SendUpstreamMessage) {
+  GetSessionRegistryImpl()->CreateSession("s1",
+                                          InitIngressSource::kUnspecified);
+  fake_client_->Dispatch(SerializedDownstream("s1", 1));
+
+  ControlCommand command;
+  command.mutable_close_channel();
+  channel_->SendUpstreamMessage("s1", PayloadType::kControl, command, 1);
+
+  ASSERT_TRUE(
+      WaitFor([&]() { return test_url_loader_factory_.NumPending() == 1; }));
+  const network::TestURLLoaderFactory::PendingRequest* pending =
+      test_url_loader_factory_.GetPendingRequest(0);
+  ASSERT_NE(pending, nullptr);
+
+  EXPECT_EQ(pending->request.url, GURL(kTestSendSessionMessageEndpoint));
+  EXPECT_EQ(pending->request.method, "POST");
+
+  std::optional<std::string> content_type =
+      pending->request.headers.GetHeader(net::HttpRequestHeaders::kContentType);
+  ASSERT_TRUE(content_type.has_value());
+  EXPECT_EQ(*content_type, "application/x-protobuf");
+
+  std::string upload_body = network::GetUploadData(pending->request);
+  SendSessionMessageRequest request;
+  ASSERT_TRUE(request.ParseFromString(upload_body));
+  EXPECT_FALSE(request.request_id().empty());
+
+  const ActuatorUpstreamMessage& upstream = request.actuator_upstream_message();
+  EXPECT_EQ(upstream.session_id(), "s1");
+  EXPECT_EQ(upstream.client_sequence_number(), 1);
+  EXPECT_TRUE(upstream.has_responding_to_sequence_number());
+  EXPECT_EQ(upstream.responding_to_sequence_number(), 1);
+
+  ASSERT_EQ(upstream.typed_payloads_size(), 1);
+  EXPECT_EQ(upstream.typed_payloads(0).payload_type(),
+            ACTUATOR_UPSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
+  EXPECT_EQ(upstream.typed_payloads(0).proto_payload().value(),
+            command.SerializeAsString());
+  EXPECT_EQ(upstream.typed_payloads(0).proto_payload().type_url(),
+            "type.googleapis.com/browser_actuator.ControlCommand");
+
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      pending->request.url.spec(), /*content=*/"", net::HTTP_OK);
+
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+}
+
+TEST_F(TransportChannelImplTest,
+       SendUnsolicitedUpstreamMessageOmitsRespondingToSequenceNumber) {
+  // Even after the session has seen downstream sequence_number = 1, an
+  // unsolicited upstream message (`responding_to_sequence_number = nullopt`)
+  // must not implicitly populate `responding_to_sequence_number`.
+  GetSessionRegistryImpl()->CreateSession("s1",
+                                          InitIngressSource::kUnspecified);
+  fake_client_->Dispatch(SerializedDownstream("s1", 1));
+
+  ControlCommand command;
+  command.mutable_close_channel();
+  channel_->SendUpstreamMessage("s1", PayloadType::kControl, command,
+                                std::nullopt);
+
+  ASSERT_TRUE(
+      WaitFor([&]() { return test_url_loader_factory_.NumPending() == 1; }));
+  const network::TestURLLoaderFactory::PendingRequest* pending =
+      test_url_loader_factory_.GetPendingRequest(0);
+  ASSERT_NE(pending, nullptr);
+
+  SendSessionMessageRequest request;
+  ASSERT_TRUE(
+      request.ParseFromString(network::GetUploadData(pending->request)));
+  const ActuatorUpstreamMessage& upstream = request.actuator_upstream_message();
+  EXPECT_EQ(upstream.session_id(), "s1");
+  EXPECT_EQ(upstream.client_sequence_number(), 1);
+  EXPECT_FALSE(upstream.has_responding_to_sequence_number());
+
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      pending->request.url.spec(), /*content=*/"", net::HTTP_OK);
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+}
+
+TEST_F(TransportChannelImplTest, SendMultipleUpstreamMessagesConcurrently) {
+  GetSessionRegistryImpl()->CreateSession("s1",
+                                          InitIngressSource::kUnspecified);
+  fake_client_->Dispatch(SerializedDownstream("s1", 1));
+  fake_client_->Dispatch(SerializedDownstream("s1", 5));
+
+  ControlCommand command1;
+  command1.mutable_close_channel();
+  ControlCommand command2;
+  command2.mutable_close_session();
+
+  channel_->SendUpstreamMessage("s1", PayloadType::kControl, command1, 1);
+  channel_->SendUpstreamMessage("s1", PayloadType::kControl, command2, 5);
+
+  ASSERT_TRUE(
+      WaitFor([&]() { return test_url_loader_factory_.NumPending() == 2; }));
+
+  const network::TestURLLoaderFactory::PendingRequest* pending1 =
+      test_url_loader_factory_.GetPendingRequest(0);
+  const network::TestURLLoaderFactory::PendingRequest* pending2 =
+      test_url_loader_factory_.GetPendingRequest(1);
+
+  ASSERT_NE(pending1, nullptr);
+  ASSERT_NE(pending2, nullptr);
+
+  SendSessionMessageRequest request1;
+  ASSERT_TRUE(
+      request1.ParseFromString(network::GetUploadData(pending1->request)));
+  const ActuatorUpstreamMessage& upstream1 =
+      request1.actuator_upstream_message();
+  EXPECT_EQ(upstream1.client_sequence_number(), 1);
+  EXPECT_EQ(upstream1.responding_to_sequence_number(), 1);
+  EXPECT_EQ(upstream1.typed_payloads(0).proto_payload().value(),
+            command1.SerializeAsString());
+
+  SendSessionMessageRequest request2;
+  ASSERT_TRUE(
+      request2.ParseFromString(network::GetUploadData(pending2->request)));
+  const ActuatorUpstreamMessage& upstream2 =
+      request2.actuator_upstream_message();
+  EXPECT_EQ(upstream2.client_sequence_number(), 2);
+  EXPECT_EQ(upstream2.responding_to_sequence_number(), 5);
+  EXPECT_EQ(upstream2.typed_payloads(0).proto_payload().value(),
+            command2.SerializeAsString());
+
+  std::string request_url = pending1->request.url.spec();
+
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      request_url, /*content=*/"", net::HTTP_OK);
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 1);
+
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      request_url, /*content=*/"", net::HTTP_OK);
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+}
+
+TEST_F(TransportChannelImplTest, SendUpstreamMessagesAcrossMultipleSessions) {
+  GetSessionRegistryImpl()->CreateSession("s1",
+                                          InitIngressSource::kUnspecified);
+  GetSessionRegistryImpl()->CreateSession("s2",
+                                          InitIngressSource::kUnspecified);
+  fake_client_->Dispatch(SerializedDownstream("s1", 1));
+  fake_client_->Dispatch(SerializedDownstream("s2", 1));
+  fake_client_->Dispatch(SerializedDownstream("s2", 2));
+
+  ControlCommand command_s1;
+  command_s1.mutable_close_channel();
+  ControlCommand command_s2;
+  command_s2.mutable_close_session();
+
+  channel_->SendUpstreamMessage("s1", PayloadType::kControl, command_s1, 1);
+  channel_->SendUpstreamMessage("s2", PayloadType::kControl, command_s2, 2);
+
+  ASSERT_TRUE(
+      WaitFor([&]() { return test_url_loader_factory_.NumPending() == 2; }));
+
+  const network::TestURLLoaderFactory::PendingRequest* pending1 =
+      test_url_loader_factory_.GetPendingRequest(0);
+  const network::TestURLLoaderFactory::PendingRequest* pending2 =
+      test_url_loader_factory_.GetPendingRequest(1);
+
+  ASSERT_NE(pending1, nullptr);
+  ASSERT_NE(pending2, nullptr);
+
+  SendSessionMessageRequest request1;
+  ASSERT_TRUE(
+      request1.ParseFromString(network::GetUploadData(pending1->request)));
+  const ActuatorUpstreamMessage& upstream1 =
+      request1.actuator_upstream_message();
+  EXPECT_EQ(upstream1.session_id(), "s1");
+  EXPECT_EQ(upstream1.client_sequence_number(), 1);
+  EXPECT_EQ(upstream1.responding_to_sequence_number(), 1);
+
+  SendSessionMessageRequest request2;
+  ASSERT_TRUE(
+      request2.ParseFromString(network::GetUploadData(pending2->request)));
+  const ActuatorUpstreamMessage& upstream2 =
+      request2.actuator_upstream_message();
+  EXPECT_EQ(upstream2.session_id(), "s2");
+  EXPECT_EQ(upstream2.client_sequence_number(), 1);
+  EXPECT_EQ(upstream2.responding_to_sequence_number(), 2);
+
+  std::string request_url = pending1->request.url.spec();
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      request_url, /*content=*/"", net::HTTP_OK);
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      request_url, /*content=*/"", net::HTTP_OK);
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+}
+
+TEST_F(TransportChannelImplTest,
+       StartSessionDownstreamTriggersStartSessionAckUpstream) {
+  GetSessionRegistryImpl()->CreateSession("session_start_test",
+                                          InitIngressSource::kUnspecified);
+  WatchSessionsResponse response;
+  ActuatorDownstreamMessage* downstream =
+      response.mutable_actuator_downstream_message();
+  downstream->set_session_id("session_start_test");
+  downstream->set_sequence_number(1);
+
+  ControlCommand command;
+  command.mutable_start_session();
+
+  auto* typed_payload = downstream->add_typed_payloads();
+  typed_payload->set_payload_type(
+      ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
+  typed_payload->mutable_proto_payload()->set_type_url(
+      std::string(ExpectedTypeUrl(PayloadType::kControl)));
+  typed_payload->mutable_proto_payload()->set_value(
+      command.SerializeAsString());
+
+  fake_client_->Dispatch(response.SerializeAsString());
+
+  ASSERT_TRUE(
+      WaitFor([&]() { return test_url_loader_factory_.NumPending() == 1; }));
+
+  const network::TestURLLoaderFactory::PendingRequest* pending =
+      test_url_loader_factory_.GetPendingRequest(0);
+  ASSERT_NE(pending, nullptr);
+
+  std::string upload_body = network::GetUploadData(pending->request);
+  SendSessionMessageRequest request;
+  ASSERT_TRUE(request.ParseFromString(upload_body));
+
+  const ActuatorUpstreamMessage& upstream = request.actuator_upstream_message();
+  EXPECT_EQ(upstream.session_id(), "session_start_test");
+  EXPECT_EQ(upstream.client_sequence_number(), 1);
+  EXPECT_EQ(upstream.responding_to_sequence_number(), 1);
+
+  ASSERT_EQ(upstream.typed_payloads_size(), 1);
+  EXPECT_EQ(upstream.typed_payloads(0).payload_type(),
+            ACTUATOR_UPSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
+
+  ControlCommand command_ack;
+  command_ack.mutable_start_session_ack();
+  EXPECT_EQ(upstream.typed_payloads(0).proto_payload().value(),
+            command_ack.SerializeAsString());
+  EXPECT_EQ(upstream.typed_payloads(0).proto_payload().type_url(),
+            "type.googleapis.com/browser_actuator.ControlCommand");
+}
+
+TEST_F(TransportChannelImplTest,
+       StartSessionWakeWithZeroSequenceNumberSendsSingleStartSessionAck) {
+  GetSessionRegistryImpl()->CreateSession("session_wake_test",
+                                          InitIngressSource::kUnspecified);
+  WatchSessionsResponse response;
+  ActuatorDownstreamMessage* downstream =
+      response.mutable_actuator_downstream_message();
+  downstream->set_session_id("session_wake_test");
+  downstream->set_sequence_number(0);
+
+  ControlCommand command;
+  command.mutable_start_session();
+
+  auto* typed_payload = downstream->add_typed_payloads();
+  typed_payload->set_payload_type(
+      ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
+  typed_payload->mutable_proto_payload()->set_type_url(
+      std::string(ExpectedTypeUrl(PayloadType::kControl)));
+  typed_payload->mutable_proto_payload()->set_value(
+      command.SerializeAsString());
+
+  // First wake (sequence 0) triggers StartSessionAck with
+  // `responding_to_sequence_number == 0` while leaving the session's
+  // `last_seen_sequence_number` unset in `WatchSessionsRequest`.
+  fake_client_->Dispatch(response.SerializeAsString());
+
+  ASSERT_TRUE(
+      WaitFor([&]() { return test_url_loader_factory_.NumPending() == 1; }));
+
+  const network::TestURLLoaderFactory::PendingRequest* pending =
+      test_url_loader_factory_.GetPendingRequest(0);
+  ASSERT_NE(pending, nullptr);
+
+  SendSessionMessageRequest request;
+  ASSERT_TRUE(
+      request.ParseFromString(network::GetUploadData(pending->request)));
+  const ActuatorUpstreamMessage& upstream = request.actuator_upstream_message();
+  EXPECT_EQ(upstream.session_id(), "session_wake_test");
+  EXPECT_EQ(upstream.client_sequence_number(), 1);
+  EXPECT_TRUE(upstream.has_responding_to_sequence_number());
+  EXPECT_EQ(upstream.responding_to_sequence_number(), 0);
+
+  const WatchSessionsRequest watch_body = ResumeBody();
+  ASSERT_EQ(watch_body.sessions_size(), 1);
+  EXPECT_EQ(watch_body.sessions(0).session_id(), "session_wake_test");
+  EXPECT_EQ(watch_body.sessions(0).last_seen_sequence_number(), 0);
+
+  // Duplicate wake (sequence 0) is dropped without sending a second
+  // StartSessionAck.
+  fake_client_->Dispatch(response.SerializeAsString());
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 1);
+}
+
+TEST_F(TransportChannelImplTestWithMockTime, SendUpstreamMessageHTTPError) {
+  GetSessionRegistryImpl()->CreateSession("s1",
+                                          InitIngressSource::kUnspecified);
+  fake_client_->Dispatch(SerializedDownstream("s1", 1));
+  ControlCommand command;
+  command.mutable_close_channel();
+  channel_->SendUpstreamMessage("s1", PayloadType::kControl, command, 1);
+
+  for (int i = 0; i < 4; ++i) {
+    ASSERT_TRUE(
+        WaitFor([&]() { return test_url_loader_factory_.NumPending() == 1; }));
+    const network::TestURLLoaderFactory::PendingRequest* pending =
+        test_url_loader_factory_.GetPendingRequest(0);
+    ASSERT_NE(pending, nullptr);
+    test_url_loader_factory_.SimulateResponseForPendingRequest(
+        pending->request.url.spec(), /*content=*/"",
+        net::HTTP_INTERNAL_SERVER_ERROR);
+  }
+
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+}
+
+class RecordingMessageObserver : public TransportMessageObserver {
+ public:
+  void OnDownstreamMessage(std::string_view session_id,
+                           const ActuatorDownstreamMessage& message,
+                           DownstreamDeliveryStatus status) override {
+    received_downstream.emplace_back(std::string(session_id), message);
+    received_downstream_status.push_back(status);
+  }
+
+  void OnUpstreamMessage(std::string_view session_id,
+                         const ActuatorUpstreamMessage& message,
+                         int http_response_code) override {
+    received.emplace_back(std::string(session_id), message);
+    received_http_response_codes.push_back(http_response_code);
+  }
+
+  std::vector<std::pair<std::string, ActuatorDownstreamMessage>>
+      received_downstream;
+  std::vector<DownstreamDeliveryStatus> received_downstream_status;
+  std::vector<std::pair<std::string, ActuatorUpstreamMessage>> received;
+  std::vector<int> received_http_response_codes;
+};
+
+TEST_F(TransportChannelImplTest,
+       NotifiesObserversOnDownstreamMessageWithByteIdenticalEnvelope) {
+  RecordingMessageObserver observer;
+  base::ScopedObservation<TransportChannelImpl, TransportMessageObserver>
+      observation(&observer);
+  observation.Observe(channel_.get());
+
+  GetSessionRegistryImpl()->CreateSession("s1",
+                                          InitIngressSource::kUnspecified);
+
+  WatchSessionsResponse response;
+  ASSERT_TRUE(response.ParseFromString(SerializedDownstream("s1", 1)));
+  fake_client_->Dispatch(SerializedDownstream("s1", 1));
+
+  ASSERT_EQ(observer.received_downstream.size(), 1u);
+  EXPECT_EQ(observer.received_downstream[0].first, "s1");
+  EXPECT_EQ(observer.received_downstream[0].second.SerializeAsString(),
+            response.actuator_downstream_message().SerializeAsString());
+  ASSERT_EQ(observer.received_downstream_status.size(), 1u);
+  EXPECT_EQ(observer.received_downstream_status[0],
+            DownstreamDeliveryStatus::kSuccess);
+  EXPECT_TRUE(observer.received.empty());
+
+  // A duplicate is dropped by the session before dispatch and not reported.
+  fake_client_->Dispatch(SerializedDownstream("s1", 1));
+  EXPECT_EQ(observer.received_downstream.size(), 1u);
+  EXPECT_EQ(observer.received_downstream_status.size(), 1u);
+}
+
+TEST_F(TransportChannelImplTest,
+       NotifiesObserversOnUpstreamMessageWithByteIdenticalEnvelope) {
+  RecordingMessageObserver observer;
+  base::ScopedObservation<TransportChannelImpl, TransportMessageObserver>
+      observation(&observer);
+  observation.Observe(channel_.get());
+
+  GetSessionRegistryImpl()->CreateSession("s1",
+                                          InitIngressSource::kUnspecified);
+  fake_client_->Dispatch(SerializedDownstream("s1", 1));
+
+  ControlCommand command;
+  command.mutable_close_channel();
+  channel_->SendUpstreamMessage("s1", PayloadType::kControl, command, 7);
+
+  ASSERT_EQ(observer.received.size(), 1u);
+  EXPECT_EQ(observer.received[0].first, "s1");
+  const ActuatorUpstreamMessage& observed = observer.received[0].second;
+  EXPECT_EQ(observed.session_id(), "s1");
+  EXPECT_EQ(observed.client_sequence_number(), 1);
+  EXPECT_EQ(observed.responding_to_sequence_number(), 7);
+  ASSERT_EQ(observed.typed_payloads_size(), 1);
+  EXPECT_EQ(observed.typed_payloads(0).payload_type(),
+            ACTUATOR_UPSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
+  EXPECT_EQ(observed.typed_payloads(0).proto_payload().value(),
+            command.SerializeAsString());
+
+  ASSERT_TRUE(
+      WaitFor([&]() { return test_url_loader_factory_.NumPending() == 1; }));
+  const network::TestURLLoaderFactory::PendingRequest* pending =
+      test_url_loader_factory_.GetPendingRequest(0);
+  ASSERT_NE(pending, nullptr);
+
+  SendSessionMessageRequest request;
+  ASSERT_TRUE(
+      request.ParseFromString(network::GetUploadData(pending->request)));
+  EXPECT_EQ(request.actuator_upstream_message().SerializeAsString(),
+            observed.SerializeAsString());
+  ASSERT_EQ(observer.received_http_response_codes.size(), 1u);
+  EXPECT_EQ(observer.received_http_response_codes[0], 0);
+}
+
+TEST_F(TransportChannelImplTest, AddAndRemoveMessageObserver) {
+  RecordingMessageObserver observer1;
+  RecordingMessageObserver observer2;
+  base::ScopedObservation<TransportChannelImpl, TransportMessageObserver>
+      observation1(&observer1);
+  base::ScopedObservation<TransportChannelImpl, TransportMessageObserver>
+      observation2(&observer2);
+  observation1.Observe(channel_.get());
+  observation2.Observe(channel_.get());
+
+  GetSessionRegistryImpl()->CreateSession("s1",
+                                          InitIngressSource::kUnspecified);
+  fake_client_->Dispatch(SerializedDownstream("s1", 1));
+
+  ControlCommand command;
+  command.mutable_close_channel();
+  channel_->SendUpstreamMessage("s1", PayloadType::kControl, command, 1);
+
+  EXPECT_EQ(observer1.received.size(), 1u);
+  EXPECT_EQ(observer2.received.size(), 1u);
+
+  observation1.Reset();
+
+  channel_->SendUpstreamMessage("s1", PayloadType::kControl, command, 1);
+
+  EXPECT_EQ(observer1.received.size(), 1u);
+  ASSERT_EQ(observer2.received.size(), 2u);
+  EXPECT_EQ(observer2.received[1].second.client_sequence_number(), 2);
+}
+
+TEST_F(TransportChannelImplTest,
+       DoesNotNotifyObserversWhenSessionDoesNotExist) {
+  RecordingMessageObserver observer;
+  base::ScopedObservation<TransportChannelImpl, TransportMessageObserver>
+      observation(&observer);
+  observation.Observe(channel_.get());
+
+  ControlCommand command;
+  command.mutable_close_channel();
+  channel_->SendUpstreamMessage("unknown_session", PayloadType::kControl,
+                                command, std::nullopt);
+
+  EXPECT_TRUE(observer.received.empty());
+}
+
+TEST_F(TransportChannelImplTest,
+       BufferFullTriggersStreamReconnectAndReplaysMissingGap) {
+  RecordingMessageObserver observer;
+  base::ScopedObservation<TransportChannelImpl, TransportMessageObserver>
+      observation(&observer);
+  observation.Observe(channel_.get());
+
+  // Create the session (triggering initial connect) and dispatch sequence 1 to
+  // advance `last_seen_sequence_number` to 1.
+  GetSessionRegistryImpl()->CreateSession("s1",
+                                          InitIngressSource::kUnspecified);
+  fake_client_->Dispatch(SerializedDownstream("s1", 1));
+  EXPECT_EQ(fake_client_->connect_count(), 1);
+  EXPECT_EQ(fake_client_->disconnect_count(), 0);
+  ASSERT_EQ(observer.received_downstream.size(), 1u);
+  EXPECT_EQ(observer.received_downstream_status[0],
+            DownstreamDeliveryStatus::kSuccess);
+
+  // Fill the reorder buffer with sequences 3..18 while sequence 2 is missing.
+  for (size_t i = 0;
+       i < DownstreamMessageSequencer::kDefaultMaxBufferedMessages; ++i) {
+    fake_client_->Dispatch(
+        SerializedDownstream("s1", static_cast<int64_t>(i + 3)));
+  }
+  EXPECT_EQ(fake_client_->connect_count(), 1);
+  EXPECT_EQ(fake_client_->disconnect_count(), 0);
+  {
+    WatchSessionsRequest body = ResumeBody();
+    ASSERT_EQ(body.sessions_size(), 1);
+    EXPECT_EQ(body.sessions(0).last_seen_sequence_number(), 1);
+  }
+  // Sequences 3..18 are buffered, so they have not yet been delivered or
+  // notified.
+  EXPECT_EQ(observer.received_downstream.size(), 1u);
+
+  // One more out-of-order message overflows the buffer and triggers a stream
+  // reconnect so the server replays from `last_seen_sequence_number == 1`.
+  // The dropped message is notified to observers with kFailure.
+  const int64_t overflow_seq = static_cast<int64_t>(
+      DownstreamMessageSequencer::kDefaultMaxBufferedMessages + 3);
+  fake_client_->Dispatch(SerializedDownstream("s1", overflow_seq));
+  EXPECT_EQ(fake_client_->disconnect_count(), 1);
+  EXPECT_EQ(fake_client_->connect_count(), 2);
+  {
+    WatchSessionsRequest body = ResumeBody();
+    ASSERT_EQ(body.sessions_size(), 1);
+    EXPECT_EQ(body.sessions(0).last_seen_sequence_number(), 1);
+  }
+  ASSERT_EQ(observer.received_downstream.size(), 2u);
+  EXPECT_EQ(observer.received_downstream[1].second.sequence_number(),
+            overflow_seq);
+  EXPECT_EQ(observer.received_downstream_status[1],
+            DownstreamDeliveryStatus::kFailure);
+
+  // When the server replays missing sequence 2, the retained buffered messages
+  // (3..18) drain contiguously with kSuccess.
+  fake_client_->Dispatch(SerializedDownstream("s1", 2));
+  {
+    WatchSessionsRequest body = ResumeBody();
+    ASSERT_EQ(body.sessions_size(), 1);
+    EXPECT_EQ(body.sessions(0).last_seen_sequence_number(),
+              static_cast<int64_t>(
+                  DownstreamMessageSequencer::kDefaultMaxBufferedMessages + 2));
+  }
+  // Initial 1 + dropped overflow 1 + replayed sequence 2 + buffered 16 = 19
+  EXPECT_EQ(observer.received_downstream.size(), 19u);
+  EXPECT_EQ(observer.received_downstream_status[2],
+            DownstreamDeliveryStatus::kSuccess);
+}
+
+TEST_F(TransportChannelImplTest,
+       RepeatedBufferFullErrorsSendsCloseSessionAndDestroysSession) {
+  RecordingMessageObserver observer;
+  base::ScopedObservation<TransportChannelImpl, TransportMessageObserver>
+      observation(&observer);
+  observation.Observe(channel_.get());
+
+  TransportSessionRegistryImpl* registry = GetSessionRegistryImpl();
+  registry->CreateSession("s1", InitIngressSource::kUnspecified);
+  fake_client_->Dispatch(SerializedDownstream("s1", 1));
+  ASSERT_NE(registry->GetSession("s1"), nullptr);
+
+  // Fill the reorder buffer with sequences 3..18 while sequence 2 is missing.
+  for (size_t i = 0;
+       i < DownstreamMessageSequencer::kDefaultMaxBufferedMessages; ++i) {
+    fake_client_->Dispatch(
+        SerializedDownstream("s1", static_cast<int64_t>(i + 3)));
+  }
+
+  const int64_t first_overflow_seq = static_cast<int64_t>(
+      DownstreamMessageSequencer::kDefaultMaxBufferedMessages + 3);
+  for (size_t i = 0;
+       i + 1 < TransportSessionImpl::kMaxConsecutiveBufferFullErrors; ++i) {
+    fake_client_->Dispatch(SerializedDownstream(
+        "s1", first_overflow_seq + static_cast<int64_t>(i)));
+    EXPECT_NE(registry->GetSession("s1"), nullptr);
+    EXPECT_TRUE(observer.received.empty());
+  }
+
+  // Delivering missing sequence 2 drains sequences 2..18 and resets the
+  // consecutive buffer-full error counter to 0.
+  fake_client_->Dispatch(SerializedDownstream("s1", 2));
+  EXPECT_NE(registry->GetSession("s1"), nullptr);
+  EXPECT_TRUE(observer.received.empty());
+
+  // Fill the reorder buffer again behind missing `first_overflow_seq` (19).
+  for (size_t i = 0;
+       i < DownstreamMessageSequencer::kDefaultMaxBufferedMessages; ++i) {
+    fake_client_->Dispatch(SerializedDownstream(
+        "s1", first_overflow_seq + 1 + static_cast<int64_t>(i)));
+  }
+
+  // Because the counter was reset when the previous gap drained, fewer than
+  // `kMaxConsecutiveBufferFullErrors` new overflows do not tear down the
+  // session.
+  const int64_t second_overflow_seq =
+      first_overflow_seq + 1 +
+      static_cast<int64_t>(
+          DownstreamMessageSequencer::kDefaultMaxBufferedMessages);
+  for (size_t i = 0;
+       i + 1 < TransportSessionImpl::kMaxConsecutiveBufferFullErrors; ++i) {
+    fake_client_->Dispatch(SerializedDownstream(
+        "s1", second_overflow_seq + static_cast<int64_t>(i)));
+    EXPECT_NE(registry->GetSession("s1"), nullptr);
+    EXPECT_TRUE(observer.received.empty());
+  }
+
+  // Reaching `kMaxConsecutiveBufferFullErrors` without draining the gap sends
+  // `ControlCommand::CloseSession` and destroys the session instead of looping
+  // `ReconnectStream()` indefinitely.
+  fake_client_->Dispatch(SerializedDownstream(
+      "s1",
+      second_overflow_seq +
+          static_cast<int64_t>(
+              TransportSessionImpl::kMaxConsecutiveBufferFullErrors - 1)));
+  EXPECT_EQ(registry->GetSession("s1"), nullptr);
+  ASSERT_EQ(observer.received.size(), 1u);
+  EXPECT_EQ(observer.received[0].first, "s1");
+  ASSERT_EQ(observer.received[0].second.typed_payloads_size(), 1);
+
+  ControlCommand command;
+  ASSERT_TRUE(command.ParseFromString(
+      observer.received[0].second.typed_payloads(0).proto_payload().value()));
+  EXPECT_TRUE(command.has_close_session());
+}
+
+TEST_F(TransportChannelImplTest,
+       RepeatedInvalidSequenceNumbersSendsCloseSessionAndDestroysSession) {
+  RecordingMessageObserver observer;
+  base::ScopedObservation<TransportChannelImpl, TransportMessageObserver>
+      observation(&observer);
+  observation.Observe(channel_.get());
+
+  TransportSessionRegistryImpl* registry =
+      static_cast<TransportSessionRegistryImpl*>(
+          channel_->GetSessionRegistry());
+
+  // Establish session "s1" at sequence 1.
+  registry->CreateSession("s1", InitIngressSource::kUnspecified);
+  fake_client_->Dispatch(SerializedDownstream("s1", 1));
+  ASSERT_NE(registry->GetSession("s1"), nullptr);
+
+  // Sending fewer than `kMaxConsecutiveInvalidSequenceNumbers` invalid
+  // messages logs a warning and drops them without tearing down the session.
+  for (size_t i = 0;
+       i + 1 < TransportSessionImpl::kMaxConsecutiveInvalidSequenceNumbers;
+       ++i) {
+    fake_client_->Dispatch(SerializedDownstream("s1", -1));
+    EXPECT_NE(registry->GetSession("s1"), nullptr);
+    EXPECT_TRUE(observer.received.empty());
+  }
+
+  // A valid message resets the consecutive invalid sequence counter.
+  fake_client_->Dispatch(SerializedDownstream("s1", 2));
+  EXPECT_NE(registry->GetSession("s1"), nullptr);
+  EXPECT_TRUE(observer.received.empty());
+
+  // Reaching `kMaxConsecutiveInvalidSequenceNumbers` consecutive invalid
+  // sequence numbers sends an upstream `ControlCommand::CloseSession` and
+  // destroys the local session.
+  for (size_t i = 0;
+       i < TransportSessionImpl::kMaxConsecutiveInvalidSequenceNumbers; ++i) {
+    fake_client_->Dispatch(SerializedDownstream("s1", -1));
+  }
+
+  EXPECT_EQ(registry->GetSession("s1"), nullptr);
+  ASSERT_EQ(observer.received.size(), 1u);
+  EXPECT_EQ(observer.received[0].first, "s1");
+  const ActuatorUpstreamMessage& upstream = observer.received[0].second;
+  EXPECT_EQ(upstream.session_id(), "s1");
+  EXPECT_EQ(upstream.client_sequence_number(), 1);
+  EXPECT_FALSE(upstream.has_responding_to_sequence_number());
+  ASSERT_EQ(upstream.typed_payloads_size(), 1);
+  EXPECT_EQ(upstream.typed_payloads(0).payload_type(),
+            ACTUATOR_UPSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
+
+  ControlCommand command;
+  ASSERT_TRUE(command.ParseFromString(
+      upstream.typed_payloads(0).proto_payload().value()));
+  EXPECT_TRUE(command.has_close_session());
+}
+
+class DestructionTrackingHandler : public TransportHandler {
+ public:
+  explicit DestructionTrackingHandler(bool* destroyed)
+      : destroyed_(destroyed) {}
+  ~DestructionTrackingHandler() override { *destroyed_ = true; }
+
+  void OnMessage(PayloadType payload_type,
+                 std::string_view serialized_payload) override {}
+
+ private:
+  raw_ptr<bool> destroyed_;
+};
+
+TEST_F(TransportChannelImplTest,
+       UnregisterFactoryDestroysActiveSessionHandlers) {
+  bool handler_destroyed = false;
+  FakeTransportHandlerFactory factory(
+      {PayloadType::kExperimentalTriggering},
+      base::BindLambdaForTesting(
+          [&](TransportSession*) -> std::unique_ptr<TransportHandler> {
+            return std::make_unique<DestructionTrackingHandler>(
+                &handler_destroyed);
+          }),
+      FactoryId::kExperimentalTriggering);
+  channel_->GetHandlerFactoryRegistry()->RegisterFactory(&factory);
+
+  GetSessionRegistryImpl()->CreateSession("s1",
+                                          InitIngressSource::kUnspecified);
+  fake_client_->Dispatch(SerializedDownstreamMessage(
+      "s1", 1,
+      {{ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_EXPERIMENTAL_TRIGGERING,
+        "triggering-bytes",
+        std::string(ExpectedTypeUrl(PayloadType::kExperimentalTriggering))}}));
+
+  EXPECT_FALSE(handler_destroyed);
+
+  channel_->GetHandlerFactoryRegistry()->UnregisterFactory(&factory);
+
+  EXPECT_TRUE(handler_destroyed);
+}
+
+TEST_F(TransportChannelImplTest,
+       SessionCloseSendsUpstreamCloseSessionAndDisconnectsWhenLastSession) {
+  RecordingMessageObserver observer;
+  base::ScopedObservation<TransportChannelImpl, TransportMessageObserver>
+      observation(&observer);
+  observation.Observe(channel_.get());
+
+  GetSessionRegistryImpl()->CreateSession("s1",
+                                          InitIngressSource::kUnspecified);
+  fake_client_->Dispatch(SerializedDownstream("s1", 1));
+  EXPECT_EQ(fake_client_->connect_count(), 1);
+  EXPECT_EQ(fake_client_->disconnect_count(), 0);
+
+  TransportSession* session = channel_->GetSessionRegistry()->GetSession("s1");
+  ASSERT_NE(session, nullptr);
+  session->Close();
+
+  EXPECT_EQ(channel_->GetSessionRegistry()->GetSession("s1"), nullptr);
+  EXPECT_EQ(fake_client_->disconnect_count(), 1);
+  EXPECT_EQ(fake_client_->connect_count(), 1);
+  EXPECT_EQ(channel_->downstream_connection_state(),
+            DownstreamConnectionState::kDisconnected);
+
+  ASSERT_EQ(observer.received.size(), 1u);
+  const ActuatorUpstreamMessage& upstream = observer.received[0].second;
+  EXPECT_EQ(upstream.session_id(), "s1");
+  EXPECT_EQ(upstream.client_sequence_number(), 1);
+  EXPECT_FALSE(upstream.has_responding_to_sequence_number());
+  ASSERT_EQ(upstream.typed_payloads_size(), 1);
+  EXPECT_EQ(upstream.typed_payloads(0).payload_type(),
+            ACTUATOR_UPSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
+  ControlCommand command;
+  ASSERT_TRUE(command.ParseFromString(
+      upstream.typed_payloads(0).proto_payload().value()));
+  EXPECT_TRUE(command.has_close_session());
+
+  // A subsequent downstream CloseSession (or late message) for "s1" must not
+  // resurrect the closed session or reconnect the stream.
+  ControlCommand downstream_close;
+  downstream_close.mutable_close_session();
+  fake_client_->Dispatch(SerializedDownstreamMessage(
+      "s1", 2,
+      {{ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND,
+        downstream_close.SerializeAsString()}}));
+  fake_client_->Dispatch(SerializedDownstream("s1", 3));
+
+  EXPECT_EQ(channel_->GetSessionRegistry()->GetSession("s1"), nullptr);
+  EXPECT_EQ(fake_client_->connect_count(), 1);
+  EXPECT_EQ(fake_client_->disconnect_count(), 1);
+}
+
+TEST_F(TransportChannelImplTest,
+       SessionRemovalReconnectsStreamWhenOtherSessionsRemainActive) {
+  GetSessionRegistryImpl()->CreateSession("s1",
+                                          InitIngressSource::kUnspecified);
+  GetSessionRegistryImpl()->CreateSession("s2",
+                                          InitIngressSource::kUnspecified);
+  fake_client_->Dispatch(SerializedDownstream("s1", 1));
+  fake_client_->Dispatch(SerializedDownstream("s2", 1));
+  EXPECT_EQ(fake_client_->connect_count(), 2);
+  EXPECT_EQ(fake_client_->disconnect_count(), 1);
+
+  TransportSession* s1 = channel_->GetSessionRegistry()->GetSession("s1");
+  ASSERT_NE(s1, nullptr);
+  s1->Close();
+
+  // Because "s2" is still active, the stream reconnects watching only "s2".
+  EXPECT_EQ(fake_client_->disconnect_count(), 2);
+  EXPECT_EQ(fake_client_->connect_count(), 3);
+  WatchSessionsRequest body = ResumeBody();
+  ASSERT_EQ(body.sessions_size(), 1);
+  EXPECT_EQ(body.sessions(0).session_id(), "s2");
+
+  // Closing the last remaining session ("s2") disconnects the stream without
+  // reconnecting.
+  TransportSession* s2 = channel_->GetSessionRegistry()->GetSession("s2");
+  ASSERT_NE(s2, nullptr);
+  s2->Close();
+  EXPECT_EQ(fake_client_->disconnect_count(), 3);
+  EXPECT_EQ(fake_client_->connect_count(), 3);
+  EXPECT_EQ(channel_->downstream_connection_state(),
+            DownstreamConnectionState::kDisconnected);
+}
+
+}  // namespace
+}  // namespace browser_actuator::transport

@@ -5,39 +5,7 @@
 #ifndef COMPONENTS_BROWSER_ACTUATOR_TEST_SUPPORT_TRANSPORT_MOCK_TRANSPORT_HANDLER_H_
 #define COMPONENTS_BROWSER_ACTUATOR_TEST_SUPPORT_TRANSPORT_MOCK_TRANSPORT_HANDLER_H_
 
-#include <string_view>
-
-#include "base/functional/callback.h"
-#include "components/browser_actuator/public/transport/transport_handler.h"
-#include "testing/gmock/include/gmock/gmock.h"
-
-namespace browser_actuator::transport {
-
-class MockTransportHandler : public TransportHandler {
- public:
-  explicit MockTransportHandler(TransportSession* session = nullptr);
-  ~MockTransportHandler() override;
-
-  using TransportHandler::SendUpstreamMessage;
-
-  MOCK_METHOD(void,
-              OnMessage,
-              (PayloadType payload_type, std::string_view serialized_payload),
-              (override));
-};
-
-class CallbackTransportHandler : public TransportHandler {
- public:
-  explicit CallbackTransportHandler(base::OnceClosure on_message_cb);
-  ~CallbackTransportHandler() override;
-
-  void OnMessage(PayloadType payload_type,
-                 std::string_view serialized_payload) override;
-
- private:
-  base::OnceClosure on_message_cb_;
-};
-
-}  // namespace browser_actuator::transport
+// Forwarding header until callers move to //components/stream_transport.
+#include "components/stream_transport/test_support/mock_transport_handler.h"
 
 #endif  // COMPONENTS_BROWSER_ACTUATOR_TEST_SUPPORT_TRANSPORT_MOCK_TRANSPORT_HANDLER_H_

@@ -45,7 +45,7 @@ chromium-metrics-reviews@google.com.
   </variant>
 </variants>
 
-<!-- LINT.ThenChange(//components/browser_actuator/public/transport/common.h:PayloadType, //components/stream_transport/internal/metrics_utils.h:PayloadTypeToMetricSuffix) -->
+<!-- LINT.ThenChange(//components/stream_transport/public/common.h:PayloadType, //components/stream_transport/internal/metrics_utils.h:PayloadTypeToMetricSuffix) -->
 
 <histogram name="Browser.Actuator.Transport.Downstream.PayloadDropped"
     enum="BrowserActuatorPayloadDropReason" expires_after="2027-09-01">
