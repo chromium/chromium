@@ -15,6 +15,8 @@
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
+#include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
@@ -748,62 +750,93 @@ IN_PROC_BROWSER_TEST_F(TabUnderlineViewBrowserTest,
   EXPECT_EQ(tester_attached->animation_started_count(), 1);
 }
 
-// A show request that arrives while the underline view is not attached to a
-// widget must be deferred (not call `Show()`, which would hit
-// `DumpWithoutCrashing()`), and the underline should show once it is attached
-// again.
+// A show request that arrives while a tab is detached from a window widget
+// must be deferred (not call `Show()`, which would hit
+// `DumpWithoutCrashing()`), and the underline should show once the tab is
+// attached to a window again.
 IN_PROC_BROWSER_TEST_F(TabUnderlineViewBrowserTest,
                        ShowRequestWhileDetachedIsDeferred) {
-  auto* underline = GetUnderlineOfActiveTab();
-  TesterImpl* tester = static_cast<TesterImpl*>(underline->tester());
-  ASSERT_FALSE(underline->IsShowing());
+  // Create a second tab so the browser remains open when detaching a tab.
+  CreateUserInitiatedTab(Title2());
+  ASSERT_EQ(GetTabListInterface()->GetTabCount(), 2);
 
-  // Detach the underline from the widget.
-  views::View* parent = underline->parent();
-  std::unique_ptr<TabUnderlineView> detached =
-      parent->RemoveChildViewT(underline);
-  ASSERT_FALSE(underline->CanShow());
+  // Detach the second tab from the browser window's tab strip.
+  std::unique_ptr<tabs::TabModel> detached_tab =
+      browser()->tab_strip_model()->DetachTabAtForInsertion(1);
+  ASSERT_TRUE(detached_tab);
+  tabs::TabHandle handle = detached_tab->GetHandle();
+  ASSERT_EQ(GetTabListInterface()->GetTabCount(), 1);
 
-  // Opening Glic pins the active tab by default, which requests the underline
-  // to show while it is detached.
+  // Open Glic and pin the detached tab. The show request must be deferred
+  // because the tab is not attached to any window/widget.
   base::HistogramTester histogram_tester;
-  ASSERT_OK(OpenGlicForActiveTab());
-  ASSERT_TRUE(service()->active_instance_sharing_manager().IsTabPinned(
-      GetTabListInterface()->GetActiveTab()->GetHandle()));
-  EXPECT_FALSE(underline->IsShowing());
-  EXPECT_EQ(tester->animation_started_count(), 0);
+  ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
+  ASSERT_OK(WaitForGlicClient(instance));
+  instance->GetSharingManagerInternal().PinTabs({handle});
+  EXPECT_TRUE(instance->GetSharingManagerInternal().IsTabPinned(handle));
   histogram_tester.ExpectTotalCount("Stability.DumpWithoutCrashingStatus", 0);
 
-  // Re-attaching shows the underline exactly once.
-  parent->AddChildView(std::move(detached));
+  // Re-attaching the detached tab into the browser window shows the underline
+  // exactly once.
+  browser()->tab_strip_model()->InsertDetachedTabAt(1, std::move(detached_tab),
+                                                    AddTabTypes::ADD_NONE);
+  ASSERT_EQ(GetTabListInterface()->GetTabCount(), 2);
+
+  auto* underline = GetUnderlineOfTab(browser(), 1);
+  ASSERT_TRUE(underline);
+  auto* tester = static_cast<TesterImpl*>(underline->tester());
+  tester->WaitForAnimationStart();
   EXPECT_TRUE(underline->IsShowing());
   EXPECT_EQ(tester->animation_started_count(), 1);
   histogram_tester.ExpectTotalCount("Stability.DumpWithoutCrashingStatus", 0);
 }
 
-// When a showing underline is removed from its widget, it stops drawing on
-// that widget's compositor, and restarts on the new compositor when it is
-// attached to a widget again.
+// When a showing underline's tab is moved from its window to another window,
+// it stops drawing on that window widget's compositor, and restarts on the
+// new window's compositor.
 IN_PROC_BROWSER_TEST_F(TabUnderlineViewBrowserTest,
                        ReattachWhileShowingRestartsUnderline) {
-  ASSERT_OK(OpenGlicForActiveTab());
-  auto* underline = GetUnderlineOfActiveTab();
-  TesterImpl* tester = static_cast<TesterImpl*>(underline->tester());
-  // The active tab is pinned by default, so its underline shows.
-  tester->WaitForAnimationStart();
-  ASSERT_TRUE(underline->IsShowing());
+  BrowserWindowInterface* browser1 = GetBrowser();
+  // Add a second tab to `browser1` so moving a tab doesn't close `browser1`.
+  CreateUserInitiatedTab(Title1());
+  ASSERT_EQ(GetTabListInterface()->GetTabCount(), 2);
 
-  views::View* parent = underline->parent();
-  std::unique_ptr<TabUnderlineView> detached =
-      parent->RemoveChildViewT(underline);
-  EXPECT_FALSE(underline->IsShowing());
+  BrowserWindowInterface* browser2 = CreateAdditionalBrowserWindow();
+  auto* tab_list2 = TabListInterface::From(browser2);
+  NavigateTab(*tab_list2->GetTab(0), Title2());
+  ASSERT_OK(ActivateWindow(browser1));
 
-  const int starts_before = tester->animation_started_count();
-  parent->AddChildView(std::move(detached));
-  EXPECT_TRUE(underline->IsShowing());
-  EXPECT_EQ(tester->animation_started_count(), starts_before + 1);
-  EXPECT_EQ(underline->layer()->GetCompositor(),
-            underline->GetWidget()->GetCompositor());
+  tabs::TabHandle handle = GetTabListInterface()->GetTab(0)->GetHandle();
+
+  ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
+  ASSERT_OK(WaitForGlicClient(instance));
+  instance->GetSharingManagerInternal().PinTabs({handle});
+
+  auto* underline1 = GetUnderlineOfTab(browser1, 0);
+  ASSERT_TRUE(underline1);
+  auto* tester1 = static_cast<TesterImpl*>(underline1->tester());
+  tester1->WaitForAnimationStart();
+  ASSERT_TRUE(underline1->IsShowing());
+
+  auto* compositor1 = BrowserView::GetBrowserViewForBrowser(browser1)
+                          ->GetWidget()
+                          ->GetCompositor();
+  auto* compositor2 = BrowserView::GetBrowserViewForBrowser(browser2)
+                          ->GetWidget()
+                          ->GetCompositor();
+  EXPECT_EQ(underline1->layer()->GetCompositor(), compositor1);
+
+  // Move the showing tab from `browser1` to `browser2`.
+  GetTabListInterface()->MoveTabToWindow(handle, browser2->GetSessionID(), 1);
+  ASSERT_EQ(tab_list2->GetTabCount(), 2);
+
+  // The tab's underline restarts drawing on `browser2`'s compositor.
+  auto* underline2 = GetUnderlineOfTab(browser2, 1);
+  ASSERT_TRUE(underline2);
+  auto* tester2 = static_cast<TesterImpl*>(underline2->tester());
+  tester2->WaitForAnimationStart();
+  EXPECT_TRUE(underline2->IsShowing());
+  EXPECT_EQ(underline2->layer()->GetCompositor(), compositor2);
 }
 
 }  // namespace glic

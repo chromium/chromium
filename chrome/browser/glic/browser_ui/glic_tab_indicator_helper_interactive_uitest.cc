@@ -19,8 +19,10 @@
 #include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
+#include "chrome/browser/ui/views/tabs/common/tab_view.h"
+#include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab/tab_close_button.h"
-#include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/tabs/public/tab_alert.h"
@@ -32,6 +34,7 @@
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/interaction/polling_view_observer.h"
+#include "ui/views/view_utils.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -264,10 +267,22 @@ IN_PROC_BROWSER_TEST_P(GlicTabIndicatorHelperMultiInstanceUiTest,
       OpenGlicInInteractionMode(GlicWindowMode::kAttached),
       ClickMockGlicContextAccessButtonIfLiveMode(),
       WaitForState(kTab2AlertState, ExpectedAlertState()),
-      NameViewRelative(kTabStripElementId, kTabCloseButton,
-                       [](TabStrip* tab_strip) {
-                         return tab_strip->tab_at(1)->close_button().get();
-                       }),
+      NameViewRelative(
+          kBrowserViewElementId, kTabCloseButton,
+          [this](BrowserView* browser_view) -> views::View* {
+            tabs::TabInterface* tab =
+                browser()->tab_strip_model()->GetTabAtIndex(1);
+            views::View* tab_anchor =
+                browser_view->tab_strip_view()->GetTabAnchorView(
+                    tab->GetHandle());
+            if (auto* old_tab = views::AsViewClass<Tab>(tab_anchor)) {
+              return old_tab->close_button().get();
+            }
+            if (auto* tab_view = views::AsViewClass<TabView>(tab_anchor)) {
+              return tab_view->close_button_for_testing();
+            }
+            return nullptr;
+          }),
       PressButton(kTabCloseButton),
       // Tab 1 had no instance opened on it in this test sequence.
       WaitForState(kTab1AlertState, std::nullopt));

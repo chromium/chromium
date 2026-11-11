@@ -342,6 +342,7 @@ if (!is_android) {
       "//chrome/browser/ui/views/frame",
       "//chrome/browser/ui/views/frame:browser_view_header",
       "//chrome/browser/ui/views/tabs:tab_strip",
+      "//chrome/browser/ui/views/tabs/common",
       "//chrome/browser/ui/views/tabs/glic",
       "//chrome/browser/ui/views/tabs/tab",
       "//chrome/common:chrome_features",
