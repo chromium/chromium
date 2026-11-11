@@ -10,6 +10,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/values.h"
 #include "components/prefs/prefs_export.h"
 
@@ -49,10 +50,10 @@ class COMPONENTS_PREFS_EXPORT PrefValueMap {
   // Swaps the contents of two maps.
   void Swap(PrefValueMap* other);
 
-  iterator begin();
-  iterator end();
-  const_iterator begin() const;
-  const_iterator end() const;
+  iterator begin() LIFETIME_BOUND;
+  iterator end() LIFETIME_BOUND;
+  const_iterator begin() const LIFETIME_BOUND;
+  const_iterator end() const LIFETIME_BOUND;
   bool empty() const;
 
   // Gets a boolean value for `key` and stores it in `value`. Returns true if

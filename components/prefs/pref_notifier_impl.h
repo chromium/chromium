@@ -71,7 +71,9 @@ class COMPONENTS_PREFS_EXPORT PrefNotifierImpl : public PrefNotifier {
   using PrefObserverMap = absl::node_hash_map<std::string, PrefObserverList>;
   using PrefInitObserverList = std::list<base::OnceCallback<void(bool)>>;
 
-  const PrefObserverMap* pref_observers() const { return &pref_observers_; }
+  const PrefObserverMap* pref_observers() const LIFETIME_BOUND {
+    return &pref_observers_;
+  }
 
  private:
   // For the given pref_name, fire any observer of the pref. Virtual so it can

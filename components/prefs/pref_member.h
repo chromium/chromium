@@ -28,6 +28,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
@@ -134,7 +135,7 @@ class COMPONENTS_PREFS_EXPORT PrefMemberBase : public PrefObserver {
   // it hasn't been loaded yet.
   void VerifyPref() const;
 
-  const std::string& pref_name() const { return pref_name_; }
+  const std::string& pref_name() const LIFETIME_BOUND { return pref_name_; }
 
   virtual Internal* internal() const = 0;
 
@@ -262,9 +263,7 @@ class PrefMember : public subtle::PrefMemberBase {
   }
 
   // Returns the pref name.
-  const std::string& GetPrefName() const {
-    return pref_name();
-  }
+  const std::string& GetPrefName() const LIFETIME_BOUND { return pref_name(); }
 
  private:
   class Internal : public subtle::PrefMemberBase::Internal {

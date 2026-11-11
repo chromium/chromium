@@ -8,6 +8,7 @@
 #include <memory>
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/observer_list.h"
 #include "base/values.h"
 #include "components/prefs/pref_store.h"
@@ -40,8 +41,8 @@ class COMPONENTS_PREFS_EXPORT DefaultPrefStore : public PrefStore {
   // if a value has already been set; otherwise call SetDefaultValue().
   void ReplaceDefaultValue(std::string_view key, base::Value value);
 
-  const_iterator begin() const;
-  const_iterator end() const;
+  const_iterator begin() const LIFETIME_BOUND;
+  const_iterator end() const LIFETIME_BOUND;
 
  private:
   ~DefaultPrefStore() override;

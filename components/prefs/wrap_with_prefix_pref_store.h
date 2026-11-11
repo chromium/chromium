@@ -9,6 +9,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/observer_list.h"
 #include "components/prefs/persistent_pref_store.h"
 
@@ -80,7 +81,8 @@ class COMPONENTS_PREFS_EXPORT WrapWithPrefixPrefStore
 
  private:
   std::string AddDottedPrefix(std::string_view path) const;
-  std::string_view RemoveDottedPrefix(std::string_view path) const;
+  std::string_view RemoveDottedPrefix(
+      std::string_view path LIFETIME_BOUND) const;
   bool HasDottedPrefix(std::string_view path) const;
 
   scoped_refptr<PersistentPrefStore> target_pref_store_;

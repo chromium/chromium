@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/function_ref.h"
@@ -78,7 +79,8 @@ std::vector<Suggestion> GetCreditCardFooterSuggestionsForTest(
 class CreditCardSuggestionGenerator : public SuggestionGenerator {
  public:
   explicit CreditCardSuggestionGenerator(
-      base::span<const std::string> four_digit_combinations_in_dom,
+      base::span<const std::string> four_digit_combinations_in_dom
+          LIFETIME_BOUND,
       payments::AmountExtractionManager* amount_extraction_manager,
       payments::BnplManager* bnpl_manager,
       autofill_metrics::CreditCardFormEventLogger*

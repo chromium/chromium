@@ -11,6 +11,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/sequence_checker.h"
@@ -41,7 +42,7 @@ class COMPONENTS_PREFS_EXPORT ScopedUserPrefUpdateBase {
   virtual ~ScopedUserPrefUpdateBase();
 
   // Sets `value_` to `service_`->GetMutableUserPref and returns it.
-  base::Value* GetValueOfType(base::Value::Type type);
+  base::Value* GetValueOfType(base::Value::Type type) LIFETIME_BOUND;
 
  private:
   // If `value_` is not null, triggers a notification of PrefObservers and
@@ -91,12 +92,14 @@ class COMPONENTS_PREFS_EXPORT ScopedDictPrefUpdate
   // Calling Get() will result in an update notification automatically
   // being triggered at destruction time.
   //
-  // The ownership of the return value remains with the user pref store.
-  base::DictValue& Get();
+  // The ownership of the return value remains with the user pref store, but the
+  // returned mutable reference must not be used after this ScopedDictPrefUpdate
+  // is destroyed (when the update notification is fired).
+  base::DictValue& Get() LIFETIME_BOUND;
 
-  base::DictValue& operator*() { return Get(); }
+  base::DictValue& operator*() LIFETIME_BOUND { return Get(); }
 
-  base::DictValue* operator->() { return &Get(); }
+  base::DictValue* operator->() LIFETIME_BOUND { return &Get(); }
 };
 
 // Class to support modifications to base::ListValues while guaranteeing
@@ -128,12 +131,14 @@ class COMPONENTS_PREFS_EXPORT ScopedListPrefUpdate
   // Calling Get() will result in an update notification automatically
   // being triggered at destruction time.
   //
-  // The ownership of the return value remains with the user pref store.
-  base::ListValue& Get();
+  // The ownership of the return value remains with the user pref store, but the
+  // returned mutable reference must not be used after this ScopedListPrefUpdate
+  // is destroyed (when the update notification is fired).
+  base::ListValue& Get() LIFETIME_BOUND;
 
-  base::ListValue& operator*() { return Get(); }
+  base::ListValue& operator*() LIFETIME_BOUND { return Get(); }
 
-  base::ListValue* operator->() { return &Get(); }
+  base::ListValue* operator->() LIFETIME_BOUND { return &Get(); }
 };
 
 #endif  // COMPONENTS_PREFS_SCOPED_USER_PREF_UPDATE_H_

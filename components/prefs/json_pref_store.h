@@ -93,7 +93,7 @@ class COMPONENTS_PREFS_EXPORT JsonPrefStore final
   bool ReadOnly() const override;
   PrefReadError GetReadError() const override;
   bool HasReadErrorDelegate() const override;
-  PrefFilter* GetFilter() override;
+  PrefFilter* GetFilter() LIFETIME_BOUND override;
   // Note this method may be asynchronous if this instance has a |pref_filter_|
   // in which case it will return PREF_READ_ERROR_ASYNCHRONOUS_TASK_INCOMPLETE.
   // See details in pref_filter.h.
@@ -128,7 +128,7 @@ class COMPONENTS_PREFS_EXPORT JsonPrefStore final
   }
 
 #if defined(UNIT_TEST)
-  base::ImportantFileWriter& get_writer() { return writer_; }
+  base::ImportantFileWriter& get_writer() LIFETIME_BOUND { return writer_; }
 #endif
 
  private:

@@ -105,7 +105,7 @@ class COMPONENTS_PREFS_EXPORT PrefService {
 
     // Returns the name of the Preference (i.e., the key, e.g.,
     // browser.window_placement).
-    const std::string& name() const { return name_; }
+    const std::string& name() const LIFETIME_BOUND { return name_; }
 
     // Returns the registered type of the preference.
     base::Value::Type GetType() const { return type_; }

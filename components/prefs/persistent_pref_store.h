@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PREFS_PERSISTENT_PREF_STORE_H_
 #define COMPONENTS_PREFS_PERSISTENT_PREF_STORE_H_
 
+#include "base/compiler_specific.h"
 #include "base/functional/callback.h"
 #include "components/prefs/pref_filter.h"
 #include "components/prefs/prefs_export.h"
@@ -91,7 +92,7 @@ class COMPONENTS_PREFS_EXPORT PersistentPrefStore : public WriteablePrefStore {
   virtual bool HasReadErrorDelegate() const = 0;
 
   // Returns this store's filter, or nullptr if it has none.
-  virtual PrefFilter* GetFilter();
+  virtual PrefFilter* GetFilter() LIFETIME_BOUND;
 
   // Returns the default store filter used by SegregatedPrefStore.
   // Returns nullptr by default.
