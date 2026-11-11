@@ -1626,7 +1626,7 @@ TEST_F(LabelTest, MAYBE_ChecksSubpixelRenderingOntoOpaqueSurface) {
   // TODO(crbug.com/40725997): The EXPECT_CHECK_DEATH needs
   // !BUILDFLAG(IS_CHROMEOS).
 #if !BUILDFLAG(IS_CHROMEOS)
-  EXPECT_CHECK_DEATH(label->OnPaint(&canvas), base::NotFatalUntil::M163);
+  EXPECT_DCHECK_DEATH(label->OnPaint(&canvas));
 #endif
 
   // We should not DCHECK if the check is skipped.

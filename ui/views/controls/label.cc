@@ -1006,7 +1006,9 @@ void Label::PaintText(gfx::Canvas* canvas) {
     if (view->layer()) {
       // If we aren't painted to an opaque background, we must paint to an
       // opaque layer.
-      CHECK(view->layer()->fills_bounds_opaquely(), base::NotFatalUntil::M163);
+      // TODO(crbug.com/583905992): CHECK-exclusion: Convert to a CHECK once we
+      // are confident it won't be triggered.
+      DCHECK(view->layer()->fills_bounds_opaquely());
       break;
     }
   }
