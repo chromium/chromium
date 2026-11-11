@@ -16,6 +16,7 @@ import {isRTL} from '//resources/js/util.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
+import {BlockSelectionHighlighter} from '../content/block_selection_highlighter.js';
 import type {ContentBrowserProxy} from '../content/content_browser_proxy.js';
 import {ContentBrowserProxyImpl} from '../content/content_browser_proxy.js';
 import {ContentController, ContentType} from '../content/content_controller.js';
@@ -173,6 +174,8 @@ export class AppElement extends AppElementBase implements SpeechListener,
       AudioBrowserProxyImpl.getInstance();
   private selectionController_: SelectionController =
       SelectionController.getInstance();
+  private blockSelectionHighlighter_: BlockSelectionHighlighter =
+      BlockSelectionHighlighter.getInstance();
   private lineFocusController_: LineFocusController =
       LineFocusController.getInstance();
   // Animation frame handle for scheduling text block extraction after DOM
@@ -400,6 +403,8 @@ export class AppElement extends AppElementBase implements SpeechListener,
     // Remove all children from container. Use `replaceChildren` rather than
     // setting `innerHTML = ''` in order to remove all listeners, too.
     this.$.container.replaceChildren();
+    // The highlighted blocks, if any, were just removed.
+    this.blockSelectionHighlighter_.clear();
     const newRoot = this.contentController_.updateContent();
     if (newRoot) {
       this.$.container.appendChild(newRoot);
@@ -602,6 +607,9 @@ export class AppElement extends AppElementBase implements SpeechListener,
     // Clear the selection so we don't keep trying to play from the same
     // selection every time they press play.
     this.getSelection()?.removeAllRanges();
+    // Selection changes are ignored while Read Aloud is playing, so clear the
+    // selected blocks' highlight here too.
+    this.blockSelectionHighlighter_.clear();
   }
 
   onWordBoundary(segments: Segment[]): void {

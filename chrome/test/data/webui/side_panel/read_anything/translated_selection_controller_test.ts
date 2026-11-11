@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {BLOCK_HIGHLIGHT_SHOWN_CLASS, BLOCK_SELECTION_HIGHLIGHT_NAME} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {NodeStore, SelectionController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertDeepEquals, assertEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {setupTestEnvironment} from './common.js';
 import type {TestContentBrowserProxy} from './test_content_browser_proxy.js';
@@ -132,6 +133,30 @@ suite('SelectionController with translated PDF', () => {
     }
   }
 
+  function assertHighlightedRange(
+      startContainer: Node, startOffset: number, endContainer: Node,
+      endOffset: number) {
+    const highlight = CSS.highlights.get(BLOCK_SELECTION_HIGHLIGHT_NAME);
+    assertTrue(!!highlight);
+    const ranges = Array.from(highlight);
+    assertEquals(1, ranges.length);
+    const range = ranges[0]!;
+    assertEquals(startContainer, range.startContainer);
+    assertEquals(startOffset, range.startOffset);
+    assertEquals(endContainer, range.endContainer);
+    assertEquals(endOffset, range.endOffset);
+    // The regular selection is made transparent while the blocks are
+    // highlighted.
+    assertTrue(
+        contentContainer.classList.contains(BLOCK_HIGHLIGHT_SHOWN_CLASS));
+  }
+
+  function assertNoHighlight() {
+    assertFalse(CSS.highlights.has(BLOCK_SELECTION_HIGHLIGHT_NAME));
+    assertFalse(
+        contentContainer.classList.contains(BLOCK_HIGHLIGHT_SHOWN_CLASS));
+  }
+
   setup(() => {
     const result = setupTestEnvironment();
     contentBrowserProxy = result.contentBrowserProxy;
@@ -142,6 +167,7 @@ suite('SelectionController with translated PDF', () => {
     visualBrowserProxy.pdf = true;
     contentBrowserProxy.translatePdfEnabled = true;
     contentBrowserProxy.contentTranslated = true;
+    CSS.highlights.clear();
 
     firstTextInBlock1 =
         createTextInBlock('Bonjour ', firstTextInBlock1AxId, block1AxId);
@@ -168,6 +194,10 @@ suite('SelectionController with translated PDF', () => {
     assertTrue(!!shadowSelection);
     shadowSelection.removeAllRanges();
     selection = shadowSelection;
+  });
+
+  teardown(() => {
+    CSS.highlights.clear();
   });
 
   suite('onSelectionChange', () => {
@@ -521,6 +551,129 @@ suite('SelectionController with translated PDF', () => {
           selection, contentContainer);
 
       assertSelection(firstTextInBlock1, 2, firstTextInBlock1, 5);
+    });
+  });
+
+  suite('block highlight', () => {
+    test('highlights the block with the selection', () => {
+      const translatedTextInBlock1 = translate(block1, 'Hello world.');
+
+      selectInReadingMode(translatedTextInBlock1, 3, translatedTextInBlock1, 8);
+
+      assertHighlightedRange(contentContainer, 0, contentContainer, 1);
+      // The selection itself isn't changed.
+      assertSelection(translatedTextInBlock1, 3, translatedTextInBlock1, 8);
+    });
+
+    test('highlights the blocks across a backward selection', () => {
+      const translatedTextInBlock1 = translate(block1, 'Hello world.');
+      const translatedTextInBlock2 = translate(block2, 'Goodbye my friends.');
+
+      selectInReadingMode(translatedTextInBlock2, 4, translatedTextInBlock1, 6);
+
+      assertHighlightedRange(contentContainer, 0, contentContainer, 2);
+    });
+
+    test('updates the highlight when the selection changes blocks', () => {
+      const translatedTextInBlock1 = translate(block1, 'Hello world.');
+      const translatedTextInBlock2 = translate(block2, 'Goodbye my friends.');
+      selectInReadingMode(translatedTextInBlock1, 3, translatedTextInBlock1, 8);
+
+      selectInReadingMode(translatedTextInBlock2, 2, translatedTextInBlock2, 6);
+
+      assertHighlightedRange(contentContainer, 1, contentContainer, 2);
+    });
+
+    test('highlights blocks that the main panel already selects', () => {
+      const translatedTextInBlock1 = translate(block1, 'Hello world.');
+      selectInMainPanel(
+          firstTextInBlock1AxId, 0, secondTextInBlock1AxId,
+          secondTextInBlock1.length);
+
+      selectInReadingMode(translatedTextInBlock1, 3, translatedTextInBlock1, 8);
+
+      assertEquals(0, contentBrowserProxy.getCallCount('onSelectionChange'));
+      assertHighlightedRange(contentContainer, 0, contentContainer, 1);
+    });
+
+    test('keeps the highlight when the selection is not sent', () => {
+      const translatedTextInBlock1 = translate(block1, 'Hello world.');
+      const translatedTextInBlock2 = translate(block2, 'Goodbye my friends.');
+      selectInReadingMode(translatedTextInBlock1, 3, translatedTextInBlock1, 8);
+      assertHighlightedRange(contentContainer, 0, contentContainer, 1);
+
+      // A selection change without user activation isn't sent, e.g. one caused
+      // by the translate script, so the main panel still selects block 1.
+      contentBrowserProxy.transientUserActivation = false;
+      selectInReadingMode(translatedTextInBlock2, 2, translatedTextInBlock2, 6);
+
+      assertEquals(1, contentBrowserProxy.getCallCount('onSelectionChange'));
+      assertHighlightedRange(contentContainer, 0, contentContainer, 1);
+    });
+
+    test('highlights the main panel selection without user activation', () => {
+      const translatedTextInBlock1 = translate(block1, 'Hello world.');
+      selectInMainPanel(
+          firstTextInBlock1AxId, 0, secondTextInBlock1AxId,
+          secondTextInBlock1.length);
+      contentBrowserProxy.transientUserActivation = false;
+
+      selectInReadingMode(translatedTextInBlock1, 3, translatedTextInBlock1, 8);
+
+      assertHighlightedRange(contentContainer, 0, contentContainer, 1);
+    });
+
+    test('clears the highlight when the selection collapses', () => {
+      const translatedTextInBlock1 = translate(block1, 'Hello world.');
+      selectInReadingMode(translatedTextInBlock1, 3, translatedTextInBlock1, 8);
+
+      selection.collapse(translatedTextInBlock1, 3);
+      selectionController.onSelectionChange(selection, contentContainer);
+
+      assertNoHighlight();
+    });
+
+    test('clears the highlight if no text is selected', () => {
+      const translatedTextInBlock1 = translate(block1, 'Hello world.');
+      translate(block2, 'Goodbye my friends.');
+      const whitespace = document.createTextNode('\n');
+      contentContainer.insertBefore(whitespace, block2);
+      selectInReadingMode(translatedTextInBlock1, 3, translatedTextInBlock1, 8);
+
+      selectInReadingMode(whitespace, 0, whitespace, 1);
+
+      assertNoHighlight();
+    });
+
+    test('clears the highlight when the main panel selection is drawn', () => {
+      const translatedTextInBlock1 = translate(block1, 'Hello world.');
+      translate(block2, 'Goodbye my friends.');
+      selectInReadingMode(translatedTextInBlock1, 3, translatedTextInBlock1, 8);
+
+      selectInMainPanel(firstTextInBlock2AxId, 1, firstTextInBlock2AxId, 4);
+      selectionController.updateSelection(selection, contentContainer);
+
+      assertNoHighlight();
+      assertSelectedBlocks(block2);
+    });
+
+    test('clears the highlight when the translation state changes', () => {
+      const translatedTextInBlock1 = translate(block1, 'Hello world.');
+      selectInReadingMode(translatedTextInBlock1, 3, translatedTextInBlock1, 8);
+
+      contentBrowserProxy.contentTranslated = false;
+      selectionController.onTranslationStateChanged(
+          selection, contentContainer);
+
+      assertNoHighlight();
+    });
+
+    test('does not highlight if not translated', () => {
+      contentBrowserProxy.contentTranslated = false;
+
+      selectInReadingMode(firstTextInBlock1, 2, firstTextInBlock1, 5);
+
+      assertNoHighlight();
     });
   });
 });

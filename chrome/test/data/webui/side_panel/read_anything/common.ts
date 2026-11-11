@@ -4,7 +4,7 @@
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrLazyRenderLitElement} from '//resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {AudioBrowserProxyImpl, BrowserProxy, ContentBrowserProxyImpl, ContentController, LineFocusController, MetricsBrowserProxyImpl, NodeStore, playFromSelectionTimeout, ReadAloudHighlighter, ReadAloudNode, ReadAloudNodeStore, ReadAnythingLogger, SelectionController, setInstance, SpeechBrowserProxyImpl, SpeechController, TextSegmenter, ToolbarEvent, VisualBrowserProxyImpl, VoiceLanguageController, VoiceNotificationManager, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {AudioBrowserProxyImpl, BlockSelectionHighlighter, BrowserProxy, ContentBrowserProxyImpl, ContentController, LineFocusController, MetricsBrowserProxyImpl, NodeStore, playFromSelectionTimeout, ReadAloudHighlighter, ReadAloudNode, ReadAloudNodeStore, ReadAnythingLogger, SelectionController, setInstance, SpeechBrowserProxyImpl, SpeechController, TextSegmenter, ToolbarEvent, VisualBrowserProxyImpl, VoiceLanguageController, VoiceNotificationManager, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {Segment} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertStringContains, assertStringExcludes, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
@@ -20,6 +20,7 @@ import {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
 
 export interface TestSetupResult {
   audioBrowserProxy: TestAudioBrowserProxy;
+  blockSelectionHighlighter: BlockSelectionHighlighter;
   browserProxy: TestColorUpdaterBrowserProxy;
   contentBrowserProxy: TestContentBrowserProxy;
   contentController: ContentController;
@@ -95,6 +96,8 @@ export function setupTestEnvironment(flags?: AppTestFlags): TestSetupResult {
   setInstance(flags?.useRealReadAloudModel ? null : readAloudModel);
   const nodeStore = new NodeStore();
   NodeStore.setInstance(nodeStore);
+  const blockSelectionHighlighter = new BlockSelectionHighlighter();
+  BlockSelectionHighlighter.setInstance(blockSelectionHighlighter);
   const readAloudNodeStore = new ReadAloudNodeStore();
   ReadAloudNodeStore.setInstance(readAloudNodeStore);
   const notificationManager = new VoiceNotificationManager();
@@ -126,6 +129,7 @@ export function setupTestEnvironment(flags?: AppTestFlags): TestSetupResult {
 
   return {
     audioBrowserProxy,
+    blockSelectionHighlighter,
     browserProxy,
     contentBrowserProxy,
     contentController,

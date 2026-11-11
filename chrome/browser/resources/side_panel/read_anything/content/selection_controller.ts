@@ -4,6 +4,7 @@
 import {isBlockTrackingEnabled, isDistilledByReadability} from '../shared/common.js';
 import {getNearestTextBoundaryPoint, getTextNodeOffsets, isBackwardSelection} from '../shared/dom_queries.js';
 
+import {BlockSelectionHighlighter} from './block_selection_highlighter.js';
 import type {ContentBrowserProxy} from './content_browser_proxy.js';
 import {ContentBrowserProxyImpl} from './content_browser_proxy.js';
 import {NodeStore} from './node_store.js';
@@ -21,6 +22,8 @@ export class SelectionController {
   private contentBrowserProxy_: ContentBrowserProxy =
       ContentBrowserProxyImpl.getInstance();
   private nodeStore_: NodeStore = NodeStore.getInstance();
+  private blockSelectionHighlighter_: BlockSelectionHighlighter =
+      BlockSelectionHighlighter.getInstance();
   private translatedSelectionMapper_: TranslatedSelectionMapper =
       new TranslatedSelectionMapper();
   private scrollingOnSelection_: boolean = false;
@@ -34,6 +37,10 @@ export class SelectionController {
          selection.anchorOffset !== selection.focusOffset);
   }
 
+  // TODO(crbug.com/583941942): When blocks are highlighted for a translated
+  // PDF, start from the beginning of the first highlighted block (see
+  // BlockSelectionHighlighter), so Read Aloud reads the whole highlighted
+  // block.
   getCurrentSelectionStart(): ContentPosition|null {
     const selection = this.currentSelection_;
     if (!selection || !selection.anchorNode || !selection.focusNode) {
@@ -78,6 +85,7 @@ export class SelectionController {
     if ((selection === null) || !selection.anchorNode || !selection.focusNode ||
         selection.isCollapsed) {
       // The selection was collapsed by clicking inside the selection.
+      this.blockSelectionHighlighter_.clear();
       this.contentBrowserProxy_.onCollapseSelection();
       return;
     }
@@ -195,6 +203,9 @@ export class SelectionController {
     if (!selectionToUpdate) {
       return;
     }
+    // The highlighted blocks are replaced by the main panel selection drawn
+    // below.
+    this.blockSelectionHighlighter_.clear();
 
     const startNodeId = this.contentBrowserProxy_.getStartNodeId();
     const endNodeId = this.contentBrowserProxy_.getEndNodeId();
@@ -245,6 +256,7 @@ export class SelectionController {
   // original language. Redraws the main panel's selection here, so that it's
   // drawn one block at a time if and only if the content is translated.
   onTranslationStateChanged(selection: Selection|null, contentContainer: Node) {
+    this.blockSelectionHighlighter_.clear();
     if (!this.isBlockModeSupported_()) {
       return;
     }
@@ -277,14 +289,8 @@ export class SelectionController {
       // No text in a block is selected, e.g. only whitespace or images are
       // selected, so treat this like a selection that doesn't map to the
       // main panel's text.
+      this.blockSelectionHighlighter_.clear();
       this.contentBrowserProxy_.onCollapseSelection();
-      return;
-    }
-
-    // The same blocks are sent on every selection change while the user
-    // drags within them. ReadAnythingAppController::OnSelectionChange() drops
-    // the repeats.
-    if (this.isMainPanelSelection_(axSelection)) {
       return;
     }
 
@@ -292,7 +298,28 @@ export class SelectionController {
     // activation, e.g. those caused by translation rewriting the selected
     // text. Don't send those, since a send that's never echoed back by the
     // main panel stops the next main panel selection from being drawn here.
-    if (!this.contentBrowserProxy_.hasTransientUserActivation()) {
+    // The main panel's selection doesn't change then, so neither do the
+    // highlighted blocks that show it.
+    const isMainPanelSelection = this.isMainPanelSelection_(axSelection);
+    if (!isMainPanelSelection &&
+        !this.contentBrowserProxy_.hasTransientUserActivation()) {
+      return;
+    }
+
+    // Highlight the whole blocks that contain the selection, even if the
+    // selection isn't sent below because the main panel already selects
+    // these blocks. The same blocks are sent on every selection change while
+    // the user drags within them.
+    // ReadAnythingAppController::OnSelectionChange() drops the repeats.
+    const blocks = this.translatedSelectionMapper_.getReadingModeSelection(
+        axSelection, contentContainer);
+    if (blocks) {
+      this.blockSelectionHighlighter_.highlight(blocks, contentContainer);
+    } else {
+      this.blockSelectionHighlighter_.clear();
+    }
+
+    if (isMainPanelSelection) {
       return;
     }
 
@@ -319,7 +346,8 @@ export class SelectionController {
       selection.removeAllRanges();
       return;
     }
-    // The selection is forward, so its anchor is the start of the range.
+    // getReadingModeSelection() always returns a forward selection, so its
+    // anchor is the start of the range.
     const range = new Range();
     range.setStart(blockSelection.anchorNode, blockSelection.anchorOffset);
     range.setEnd(blockSelection.focusNode, blockSelection.focusOffset);

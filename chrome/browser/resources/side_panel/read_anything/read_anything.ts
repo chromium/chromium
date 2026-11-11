@@ -31,6 +31,7 @@ export type {ContentPosition, ReadingModeSelection, SelectionWithIds} from './co
 export {ContentPositionSource, EventForwarder, LineFocusMovement, LineFocusStyle, LineFocusType, SettingsOption, ToolbarEvent} from './content/read_anything_types.js';
 export {removeExtraneousElementsFrom} from './content/readability_content_processing.js';
 export {ReadabilityImageClassifier} from './content/readability_image_classifier.js';
+export {BLOCK_HIGHLIGHT_SHOWN_CLASS, BLOCK_SELECTION_HIGHLIGHT_NAME, BlockSelectionHighlighter} from './content/block_selection_highlighter.js';
 export {SelectionController} from './content/selection_controller.js';
 export {TranslatedSelectionMapper} from './content/translated_selection_mapper.js';
 export type {AppearanceMenuElement} from './menus/appearance_menu.js';

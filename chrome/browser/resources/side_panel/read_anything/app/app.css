@@ -243,12 +243,36 @@
   color: var(--selection-text-color);
 }
 
+/* The whole blocks synced to the main panel when translated text is selected.
+ * Styled like the selection, so that the blocks look selected. They're only
+ * shown in the side panel, where the main panel is shown next to reading mode,
+ * and not in immersive mode (.full-page), where the regular selection is shown
+ * instead. See BLOCK_SELECTION_HIGHLIGHT_NAME in
+ * block_selection_highlighter.ts. */
+#appFlexParent:not(.full-page) ::highlight(read-anything-block-selection) {
+  background: var(--selection-color);
+  color: var(--selection-text-color);
+}
+
+/* While the blocks are highlighted, the selection would be painted on top of
+ * them, so make it transparent to show only the highlighted blocks. See
+ * BLOCK_HIGHLIGHT_SHOWN_CLASS in block_selection_highlighter.ts. */
+#appFlexParent:not(.full-page) .block-highlight-shown::selection,
+#appFlexParent:not(.full-page) .block-highlight-shown ::selection {
+  background: transparent;
+}
+
 #appFlexParent .current-read-highlight {
   background-color: var(--current-highlight-bg-color);
 }
 
 @media (forced-colors: active) {
   #appFlexParent .current-read-highlight {
+    background-color: Highlight;
+    color: HighlightText;
+  }
+
+  #appFlexParent:not(.full-page) ::highlight(read-anything-block-selection) {
     background-color: Highlight;
     color: HighlightText;
   }

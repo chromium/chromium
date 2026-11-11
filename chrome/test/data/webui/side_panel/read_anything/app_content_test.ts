@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import type {AppElement, ContentController, NodeStore, SpeechController, SpEmptyStateElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {AppStyleUpdater, ContentType, ReadabilityImageClassifier, ReadAloudNode, ToolbarEvent, TranslationState} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import type {AppElement, BlockSelectionHighlighter, ContentController, NodeStore, SpeechController, SpEmptyStateElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {AppStyleUpdater, BLOCK_HIGHLIGHT_SHOWN_CLASS, BLOCK_SELECTION_HIGHLIGHT_NAME, ContentType, ReadabilityImageClassifier, ReadAloudNode, ToolbarEvent, TranslationState} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertGT, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished, whenCheck} from 'chrome-untrusted://webui-test/test_util.js';
 
@@ -15,6 +15,7 @@ import type {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
 
 suite('AppContent', () => {
   let app: AppElement;
+  let blockSelectionHighlighter: BlockSelectionHighlighter;
   let contentBrowserProxy: TestContentBrowserProxy;
   let contentController: ContentController;
   let emptyState: SpEmptyStateElement;
@@ -26,6 +27,7 @@ suite('AppContent', () => {
   setup(async () => {
     const result = await setupAppTestEnvironment();
     app = result.app;
+    blockSelectionHighlighter = result.blockSelectionHighlighter;
     contentBrowserProxy = result.contentBrowserProxy;
     contentController = result.contentController;
     speechController = result.speechController;
@@ -35,7 +37,36 @@ suite('AppContent', () => {
     emptyState =
         app.shadowRoot.querySelector<SpEmptyStateElement>('sp-empty-state')!;
     setupBasicSpeech(result.speech);
+    CSS.highlights.clear();
   });
+
+  teardown(() => {
+    CSS.highlights.clear();
+  });
+
+  // Highlights a block in the content the way SelectionController does when
+  // translated text is selected.
+  function highlightBlock() {
+    contentBrowserProxy.translatePdfEnabled = true;
+    const block = document.createElement('p');
+    block.textContent = 'You think you know me';
+    app.$.container.appendChild(block);
+    blockSelectionHighlighter.highlight(
+        {
+          anchorNode: app.$.container,
+          anchorOffset: 0,
+          focusNode: app.$.container,
+          focusOffset: 1,
+        },
+        app.$.container);
+    assertTrue(CSS.highlights.has(BLOCK_SELECTION_HIGHLIGHT_NAME));
+  }
+
+  function assertNoBlockHighlight() {
+    assertFalse(CSS.highlights.has(BLOCK_SELECTION_HIGHLIGHT_NAME));
+    assertFalse(
+        app.$.container.classList.contains(BLOCK_HIGHLIGHT_SHOWN_CLASS));
+  }
 
   test('connected callback shows spinner', () => {
     const spinner = 'throbber';
@@ -227,6 +258,15 @@ suite('AppContent', () => {
       await microtasksFinished();
 
       assertEquals('', app.$.container.innerHTML);
+    });
+
+    test('clears the block highlight', async () => {
+      highlightBlock();
+
+      app.updateContent();
+      await microtasksFinished();
+
+      assertNoBlockHighlight();
     });
 
     test('shows new content', async () => {
@@ -711,6 +751,14 @@ suite('AppContent', () => {
     app.onPlayingFromSelection();
 
     assertEquals('', selection.toString());
+  });
+
+  test('playing from selection clears the block highlight', () => {
+    highlightBlock();
+
+    app.onPlayingFromSelection();
+
+    assertNoBlockHighlight();
   });
 
   test('on selection resets plays from new selection', async () => {
