@@ -55,6 +55,8 @@ public class MediaLauncherActivity extends Activity {
                         mimeType,
                         /* allowExternalAppHandlers= */ false,
                         allowShareAction,
+                        // Opened from another app, outside any incognito session.
+                        /* isIncognito= */ false,
                         this);
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         intent.putExtra(

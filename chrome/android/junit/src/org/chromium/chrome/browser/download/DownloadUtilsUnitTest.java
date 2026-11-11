@@ -49,6 +49,8 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
+import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.download.DownloadMetrics.DownloadOpenTarget;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.OtrProfileId;
@@ -493,21 +495,55 @@ public class DownloadUtilsUnitTest {
 
     @Test
     @Feature({"Download"})
-    public void testOpenItemInChrome_IncognitoPdf_OpensIncognitoTab() {
+    @EnableFeatures({ChromeFeatureList.OPEN_DOWNLOAD_IN_NEW_TAB})
+    public void testOpenItemInChrome_Incognito_OpensIncognitoTab() {
+        when(mMockDownloadManagerService.isDownloadOpenableInBrowser(any(), anyBoolean()))
+                .thenReturn(true);
+
+        // Both the PDF path and the media / web new-tab path open an incognito tab.
+        for (String mimeType : new String[] {TEST_MIME_TYPE, "image/png"}) {
+            DownloadUtils.resetLastOpenFileForTesting();
+            assertTrue(
+                    mimeType,
+                    DownloadUtils.openItemInChrome(
+                            createCompletedDownload(mimeType),
+                            mContext,
+                            OtrProfileId.getPrimaryOtrProfileId(),
+                            DownloadOpenSource.DOWNLOAD_TRAY));
+            Intent startedIntent =
+                    Shadows.shadowOf(RuntimeEnvironment.getApplication()).getNextStartedActivity();
+            assertNotNull(mimeType, startedIntent);
+            assertTrue(
+                    mimeType,
+                    startedIntent.getBooleanExtra(
+                            IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, /* defaultValue= */ false));
+        }
+    }
+
+    @Test
+    @Feature({"Download"})
+    @DisableFeatures({ChromeFeatureList.OPEN_DOWNLOAD_IN_NEW_TAB})
+    public void testOpenItemInChrome_Incognito_CustomTabFallbackStaysRegular() {
         when(mMockDownloadManagerService.isDownloadOpenableInBrowser(any(), anyBoolean()))
                 .thenReturn(true);
 
         assertTrue(
                 DownloadUtils.openItemInChrome(
-                        createCompletedDownload(TEST_MIME_TYPE),
+                        createCompletedDownload("image/png"),
                         mContext,
                         OtrProfileId.getPrimaryOtrProfileId(),
                         DownloadOpenSource.DOWNLOAD_TRAY));
 
+        // Without the new-tab path, media opens in the Custom Tab media viewer, which deliberately
+        // stays a regular Custom Tab; see MediaViewerUtils#getMediaViewerIntent.
         Intent startedIntent =
                 Shadows.shadowOf(RuntimeEnvironment.getApplication()).getNextStartedActivity();
         assertNotNull(startedIntent);
-        assertTrue(
+        assertEquals(
+                CustomTabsUiType.MEDIA_VIEWER,
+                startedIntent.getIntExtra(
+                        CustomTabIntentDataProvider.EXTRA_UI_TYPE, CustomTabsUiType.DEFAULT));
+        assertFalse(
                 startedIntent.getBooleanExtra(
                         IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, /* defaultValue= */ false));
     }
@@ -531,13 +567,6 @@ public class DownloadUtilsUnitTest {
         offlinePage.id = LegacyHelpers.buildLegacyContentId(/* isOfflinePage= */ true, TEST_GUID);
         assertFalse(
                 DownloadUtils.openItemInChrome(offlinePage, mContext, TEST_OTR_PROFILE_ID, source));
-        // An incognito image, which Chrome would open in a regular tab.
-        assertFalse(
-                DownloadUtils.openItemInChrome(
-                        createCompletedDownload("image/png"),
-                        mContext,
-                        OtrProfileId.getPrimaryOtrProfileId(),
-                        source));
         // No file.
         OfflineItem noFile = createCompletedDownload("image/png");
         noFile.filePath = null;

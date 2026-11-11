@@ -27,6 +27,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
@@ -72,6 +73,7 @@ public class MediaViewerUtilsTest {
                         "image/png",
                         /* allowExternalAppHandlers= */ false,
                         /* allowShareAction= */ true,
+                        /* isIncognito= */ false,
                         mCustomTabActivityTestRule.getActivity());
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
         Assert.assertFalse(ColorUtils.inNightMode(mCustomTabActivityTestRule.getActivity()));
@@ -95,6 +97,7 @@ public class MediaViewerUtilsTest {
                         "image/png",
                         /* allowExternalAppHandlers= */ false,
                         /* allowShareAction= */ true,
+                        /* isIncognito= */ false,
                         mCustomTabActivityTestRule.getActivity());
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
         Assert.assertTrue(ColorUtils.inNightMode(mCustomTabActivityTestRule.getActivity()));
@@ -112,6 +115,7 @@ public class MediaViewerUtilsTest {
                         "image/png",
                         /* allowExternalAppHandlers= */ false,
                         /* allowShareAction= */ false,
+                        /* isIncognito= */ false,
                         InstrumentationRegistry.getInstrumentation().getContext());
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
 
@@ -142,10 +146,13 @@ public class MediaViewerUtilsTest {
                         "image/png",
                         /* allowExternalAppHandlers= */ false,
                         /* allowShareAction= */ true,
+                        /* isIncognito= */ false,
                         InstrumentationRegistry.getInstrumentation().getContext());
         Assert.assertEquals(
                 ChromeLauncherActivity.class.getName(), intent.getComponent().getClassName());
         Assert.assertTrue(intent.getBooleanExtra(Browser.EXTRA_CREATE_NEW_TAB, false));
+        Assert.assertFalse(
+                intent.getBooleanExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, true));
         Assert.assertFalse(intent.hasExtra(CustomTabIntentDataProvider.EXTRA_UI_TYPE));
         Assert.assertEquals(
                 0,
@@ -167,6 +174,7 @@ public class MediaViewerUtilsTest {
                         "image/png",
                         /* allowExternalAppHandlers= */ false,
                         /* allowShareAction= */ true,
+                        /* isIncognito= */ false,
                         InstrumentationRegistry.getInstrumentation().getContext());
         Assert.assertEquals(
                 ChromeLauncherActivity.class.getName(), intent.getComponent().getClassName());

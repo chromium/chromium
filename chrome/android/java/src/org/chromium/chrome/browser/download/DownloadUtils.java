@@ -436,8 +436,8 @@ public class DownloadUtils {
     /**
      * Opens a completed download in a new Chrome tab if Chrome can display its format (e.g. PDFs,
      * images or web pages), even when another app is the default for it. Unlike {@link #openItem},
-     * which prefers the default app on desktop, opens nothing otherwise. Incognito downloads only
-     * open here if Chrome can open them in an incognito tab.
+     * which prefers the default app on desktop, opens nothing otherwise. Incognito downloads open
+     * in an incognito tab.
      *
      * @param offlineItem The completed download to open.
      * @param context The context used to open the download.
@@ -454,14 +454,11 @@ public class DownloadUtils {
         ContentId id = offlineItem.id;
         String filePath = offlineItem.filePath;
         if (id == null || filePath == null || !LegacyHelpers.isLegacyDownload(id)) return false;
-        boolean isIncognito = OtrProfileId.isOffTheRecord(otrProfileId);
-        // Only PDFs open in an incognito tab; other formats would open in a regular one, so leave
-        // incognito downloads of those to the default app (as desktop does for e.g. images).
-        if (isIncognito && !MimeTypeUtils.PDF_MIME_TYPE.equalsIgnoreCase(offlineItem.mimeType)) {
+        DownloadManagerService service = DownloadManagerService.getDownloadManagerService();
+        if (!service.isDownloadOpenableInBrowser(
+                offlineItem.mimeType, OtrProfileId.isOffTheRecord(otrProfileId))) {
             return false;
         }
-        DownloadManagerService service = DownloadManagerService.getDownloadManagerService();
-        if (!service.isDownloadOpenableInBrowser(offlineItem.mimeType, isIncognito)) return false;
         DownloadOpenRequest req =
                 DownloadOpenRequest.builder(context, filePath)
                         .mimeType(offlineItem.mimeType)
@@ -701,7 +698,8 @@ public class DownloadUtils {
                         /* contentUri= */ contentUri,
                         normalizedMimeType,
                         /* allowExternalAppHandlers= */ !isAutomotive && !isAutomotiveProjected,
-                        !isAutomotive,
+                        /* allowShareAction= */ !isAutomotive,
+                        OtrProfileId.isOffTheRecord(req.mOtrProfileId),
                         req.mContext);
         if (intent != null) {
             try {

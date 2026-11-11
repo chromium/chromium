@@ -576,12 +576,13 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
             boolean isSupportedMimeType,
             @Nullable String originalUrl,
             @Nullable String referrer,
-            @Nullable String mimeType) {
+            @Nullable String mimeType,
+            boolean isIncognito) {
         assert !ThreadUtils.runningOnUiThread();
         if (downloadId == DownloadConstants.INVALID_DOWNLOAD_ID) {
             if (!ContentUriUtils.isContentUri(filePath)) return null;
             return getLaunchIntentFromDownloadUri(
-                    filePath, isSupportedMimeType, originalUrl, referrer, mimeType);
+                    filePath, isSupportedMimeType, originalUrl, referrer, mimeType, isIncognito);
         }
 
         DownloadManagerBridge.DownloadQueryResult queryResult =
@@ -596,7 +597,13 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
 
         Uri fileUri = filePath == null ? contentUri : Uri.fromFile(new File(filePath));
         return createLaunchIntent(
-                fileUri, contentUri, mimeType, isSupportedMimeType, originalUrl, referrer);
+                fileUri,
+                contentUri,
+                mimeType,
+                isSupportedMimeType,
+                originalUrl,
+                referrer,
+                isIncognito);
     }
 
     /**
@@ -608,6 +615,7 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
      * @param originalUrl The original url of the downloaded file
      * @param referrer Referrer of the downloaded file.
      * @param mimeType MIME type of the downloaded file.
+     * @param isIncognito Whether the download belongs to an incognito profile.
      * @return the intent to launch for the given download item.
      */
     private static @Nullable Intent getLaunchIntentFromDownloadUri(
@@ -615,7 +623,8 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
             boolean isSupportedMimeType,
             @Nullable String originalUrl,
             @Nullable String referrer,
-            @Nullable String mimeType) {
+            @Nullable String mimeType,
+            boolean isIncognito) {
         assert !ThreadUtils.runningOnUiThread();
         assert ContentUriUtils.isContentUri(contentUri);
 
@@ -631,7 +640,8 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
                 cursor.close();
             }
         }
-        return createLaunchIntent(uri, uri, mimeType, isSupportedMimeType, originalUrl, referrer);
+        return createLaunchIntent(
+                uri, uri, mimeType, isSupportedMimeType, originalUrl, referrer, isIncognito);
     }
 
     /**
@@ -643,6 +653,7 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
      * @param isSupportedMimeType Whether the MIME type is supported by browser.
      * @param originalUrl The original url of the downloaded file
      * @param referrer Referrer of the downloaded file.
+     * @param isIncognito Whether the download belongs to an incognito profile.
      * @return the intent to launch for the given download item.
      */
     private static Intent createLaunchIntent(
@@ -651,7 +662,8 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
             @Nullable String mimeType,
             boolean isSupportedMimeType,
             @Nullable String originalUrl,
-            @Nullable String referrer) {
+            @Nullable String referrer,
+            boolean isIncognito) {
         if (isSupportedMimeType) {
             // Sharing for media files is disabled on automotive.
             boolean isAutomotive = DeviceInfo.isAutomotive();
@@ -664,6 +676,7 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
                     mimeType,
                     /* allowExternalAppHandlers= */ !isAutomotive,
                     /* allowShareAction= */ !isAutomotive,
+                    isIncognito,
                     ContextUtils.getApplicationContext());
         }
         return MediaViewerUtils.createViewIntentForUri(contentUri, mimeType, originalUrl, referrer);
@@ -685,7 +698,9 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
                         isSupportedMimeType,
                         null,
                         null,
-                        download.getDownloadInfo().getMimeType());
+                        download.getDownloadInfo().getMimeType(),
+                        // Only resolvability is checked; the profile doesn't affect it.
+                        /* isIncognito= */ false);
         return (intent == null) ? false : ExternalNavigationHandler.resolveIntent(intent, true);
     }
 
@@ -737,7 +752,13 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
             @Override
             public @Nullable Intent doInBackground() {
                 return getLaunchIntentForDownload(
-                        filePath, downloadId, isSupportedMimeType, originalUrl, referrer, mimeType);
+                        filePath,
+                        downloadId,
+                        isSupportedMimeType,
+                        originalUrl,
+                        referrer,
+                        mimeType,
+                        OtrProfileId.isOffTheRecord(otrProfileId));
             }
 
             @Override
