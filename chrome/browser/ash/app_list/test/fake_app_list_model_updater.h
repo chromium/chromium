@@ -98,11 +98,6 @@ class FakeAppListModelUpdater : public AppListModelUpdater {
   size_t update_image_count_ = 0;
   size_t expected_update_image_count_ = 0;
   base::OnceClosure icon_updated_callback_;
-
-  void FindOrCreateOemFolder(
-      const std::string& oem_folder_name,
-      const syncer::StringOrdinal& preferred_oem_position);
-  syncer::StringOrdinal GetOemFolderPos();
 };
 
 #endif  // CHROME_BROWSER_ASH_APP_LIST_TEST_FAKE_APP_LIST_MODEL_UPDATER_H_

@@ -56,8 +56,6 @@ class ChromeAppListItem {
   static void OverrideAppListControllerDelegateForTesting(
       AppListControllerDelegate* controller);
 
-  static gfx::ImageSkia CreateDisabledIcon(const gfx::ImageSkia& icon);
-
   const std::string& id() const { return metadata_->id; }
   const std::string& promise_package_id() const {
     return metadata_->promise_package_id;

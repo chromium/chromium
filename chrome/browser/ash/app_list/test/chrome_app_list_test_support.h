@@ -7,7 +7,6 @@
 
 class AppListClientImpl;
 class AppListModelUpdater;
-class Profile;
 
 namespace test {
 
@@ -17,9 +16,6 @@ AppListModelUpdater* GetModelUpdater(AppListClientImpl* client);
 
 // Gets a client to control AppList or get its status.
 AppListClientImpl* GetAppListClient();
-
-// Creates a second profile in a nested run loop for testing the app list.
-Profile* CreateSecondProfileAsync();
 
 // Creates |n| app items with dummy data and adds to the current app-list
 // client. New app items are appended to the end of the app list.

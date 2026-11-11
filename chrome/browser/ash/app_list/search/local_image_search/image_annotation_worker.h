@@ -108,8 +108,6 @@ class ImageAnnotationWorker {
   // For testing. File name annotator.
   void RunFakeImageAnnotator(ImageInfo image_info);
 
-  void EnsureOcrAnnotatorIsConnected();
-
   // Initializes the `file_watcher_` and does initial data checks.
   void OnDlcInstalled();
 

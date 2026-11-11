@@ -174,8 +174,6 @@ class SearchController {
 
   void OnBurnInPeriodElapsed();
 
-  void OnResultsChangedWithType(ResultType result_type);
-
   // The query associated with the most recent search.
   std::u16string last_query_;
 

@@ -97,10 +97,6 @@ class AppListModelUpdater {
   virtual void SetSearchResultMetadata(
       const std::string& id,
       std::unique_ptr<ash::SearchResultMetadata> metadata) {}
-  virtual void SetSearchResultIcon(const std::string& id,
-                                   const gfx::ImageSkia& icon) {}
-  virtual void SetSearchResultBadgeIcon(const std::string& id,
-                                        const gfx::ImageSkia& badge_icon) {}
   virtual void ActivateChromeItem(const std::string& id, int event_flags) {}
   virtual void LoadAppIcon(const std::string& id) {}
   virtual void UpdateProgress(const std::string& id, float progress) {}
@@ -122,7 +118,6 @@ class AppListModelUpdater {
       app_list::AppListSyncableService::SyncItem* sync_item,
       bool update_name,
       bool update_folder) {}
-  virtual void NotifyProcessSyncChangesFinished() {}
 
   using GetMenuModelCallback =
       base::OnceCallback<void(std::unique_ptr<ui::SimpleMenuModel>)>;
