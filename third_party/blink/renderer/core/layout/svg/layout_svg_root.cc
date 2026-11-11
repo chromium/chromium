@@ -553,28 +553,15 @@ bool LayoutSVGRoot::RespectsCSSOverflow() const {
 
 OverflowClipAxes LayoutSVGRoot::ComputeOverflowClipAxes() const {
   NOT_DESTROYED();
-
   // svg document roots are always clipped. When the svg is stand-alone
-  // (isDocumentElement() == true) the viewport clipping should always be
+  // (IsDocumentElement() == true) the viewport clipping should always be
   // applied, noting that the window scrollbars should be hidden if
   // overflow=hidden.
-  if (IsDocumentElement())
-    return kOverflowClipBothAxis;
-
-  // Use the default code-path which computes overflow based on `overflow`,
-  // `overflow-clip-margin` and paint containment if all these properties are
-  // respected on svg elements similar to other replaced elements.
-  if (RespectsCSSOverflow())
-    return LayoutReplaced::ComputeOverflowClipAxes();
-
-  // the outermost svg is clipped if auto.
-  if (Style().OverflowX() == EOverflow::kHidden ||
-      Style().OverflowX() == EOverflow::kAuto ||
-      Style().OverflowX() == EOverflow::kScroll ||
-      Style().OverflowX() == EOverflow::kClip) {
+  if (IsDocumentElement()) {
     return kOverflowClipBothAxis;
   }
-
+  // For non-document roots use the default code-path which computes overflow
+  // based on `overflow`, `overflow-clip-margin` and paint containment.
   return LayoutReplaced::ComputeOverflowClipAxes();
 }
 
