@@ -91,7 +91,7 @@ SyncedTabDelegateAndroid::ReadPlaceholderTabSnapshotIfItShouldSync(
   Profile* profile = tab_model->GetProfile();
 
   return WebContentsStateSyncedTabDelegate::Create(
-      profile, tab_android_data_provider_, std::move(web_contents_byte_buffer));
+      profile, tab_android_data_provider_, web_contents_byte_buffer.get());
 }
 
 void SyncedTabDelegateAndroid::SetWebContents(

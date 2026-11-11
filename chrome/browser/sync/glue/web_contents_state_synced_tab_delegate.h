@@ -29,10 +29,17 @@ class WebContentsStateSyncedTabDelegate : public TabContentsSyncedTabDelegate {
 
   ~WebContentsStateSyncedTabDelegate() override;
 
+  // Creates a `WebContentsStateSyncedTabDelegate` with a renderless
+  // `WebContents` restored synchronously from `web_contents_byte_buffer`, or
+  // returns `nullptr` if restoration fails (including when
+  // `web_contents_byte_buffer` is null). `profile` and
+  // `tab_android_data_provider` must be non-null and outlive the returned
+  // delegate (`tab_android_data_provider` is retained).
+  // `web_contents_byte_buffer` is not retained beyond this call.
   static std::unique_ptr<WebContentsStateSyncedTabDelegate> Create(
       Profile* profile,
       TabAndroidDataProvider* tab_android_data_provider,
-      std::unique_ptr<WebContentsStateByteBuffer> web_contents_byte_buffer);
+      const WebContentsStateByteBuffer* web_contents_byte_buffer);
 
   // SyncedTabDelegate android specific overrides:
   SessionID GetWindowId() const override;
@@ -49,10 +56,9 @@ class WebContentsStateSyncedTabDelegate : public TabContentsSyncedTabDelegate {
   WebContentsStateSyncedTabDelegate(
       Profile* profile,
       TabAndroidDataProvider* tab_android_data_provider,
-      std::unique_ptr<WebContentsStateByteBuffer> web_contents_byte_buffer);
+      const WebContentsStateByteBuffer* web_contents_byte_buffer);
 
   raw_ptr<TabAndroidDataProvider> tab_android_data_provider_;
-  std::unique_ptr<WebContentsStateByteBuffer> web_contents_buffer_;
   std::unique_ptr<content::WebContents> web_contents_;
 };
 
