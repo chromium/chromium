@@ -183,6 +183,10 @@ class WaylandDataDragControllerTest : public WaylandDragDropTest {
     return connection_->data_device_manager()->GetDevice();
   }
 
+  WaylandDataOffer* data_offer() const {
+    return drag_controller()->data_offer_.get();
+  }
+
   MockDropHandler* drop_handler() { return drop_handler_.get(); }
 
   WaylandConnection* connection() { return connection_.get(); }
@@ -1019,6 +1023,100 @@ TEST_P(WaylandDataDragControllerTest,
     bubble->PrepareForShutdown();
     bubble.reset();
     SendDndEnter(window(), gfx::Point(20, 20));
+
+    EXPECT_CALL(drag_finished_callback_, Run(DragOperation::kNone)).Times(1);
+    SendDndCancelled();
+  }));
+  RunMouseDragWithSampleData(window_.get(), DragDropTypes::DRAG_COPY);
+}
+
+// Regression test for https://crbug.com/584191899: when the entered bubble is
+// destroyed on the client before `wl_data_device.leave` is processed,
+// `OnDragLeave()` must still reset `data_offer_` so the subsequent
+// `wl_data_device.enter` on `window_` does not fail `CHECK(!data_offer_)`.
+TEST_P(WaylandDataDragControllerTest,
+       StartDragWithPointerFocusOnBubble_BubbleDestroyedBeforeLeave) {
+  MockPlatformWindowDelegate bubble_delegate;
+  auto bubble = CreateTestWindow(PlatformWindowType::kBubble, gfx::Size(80, 80),
+                                 &bubble_delegate, window_->GetWidget());
+  FocusAndPressLeftPointerButton(bubble.get(), &bubble_delegate);
+
+  ScheduleTestTask(base::BindLambdaForTesting([&]() {
+    WaylandTestBase::SyncDisplay();
+    ASSERT_EQ(bubble.get(), drag_controller()->entered_window());
+    ASSERT_TRUE(data_offer());
+
+    bubble->PrepareForShutdown();
+    bubble.reset();
+    EXPECT_FALSE(drag_controller()->entered_window());
+
+    SendDndLeave();
+    EXPECT_FALSE(data_offer());
+
+    SendDndEnter(window(), gfx::Point(20, 20));
+    EXPECT_EQ(window(), drag_controller()->entered_window());
+    EXPECT_TRUE(data_offer());
+    SendDndAction(WL_DATA_DEVICE_MANAGER_DND_ACTION_COPY);
+
+    EXPECT_CALL(drag_finished_callback_, Run(DragOperation::kCopy)).Times(1);
+    SendDndDropPerformed();
+    SendDndFinished();
+  }));
+  RunMouseDragWithSampleData(window_.get(), DragDropTypes::DRAG_COPY);
+}
+
+// Regression test for https://crbug.com/584191899: if a compositor sends a new
+// `wl_data_device.data_offer` + `wl_data_device.enter` for the underlying
+// window without a preceding `wl_data_device.leave` after the entered bubble is
+// destroyed, `OnDragOffer()` replaces the stale offer cleanly.
+TEST_P(WaylandDataDragControllerTest,
+       StartDragWithPointerFocusOnBubble_BubbleDestroyedEnterWithoutLeave) {
+  MockPlatformWindowDelegate bubble_delegate;
+  auto bubble = CreateTestWindow(PlatformWindowType::kBubble, gfx::Size(80, 80),
+                                 &bubble_delegate, window_->GetWidget());
+  FocusAndPressLeftPointerButton(bubble.get(), &bubble_delegate);
+
+  ScheduleTestTask(base::BindLambdaForTesting([&]() {
+    WaylandTestBase::SyncDisplay();
+    ASSERT_EQ(bubble.get(), drag_controller()->entered_window());
+    ASSERT_TRUE(data_offer());
+
+    bubble->PrepareForShutdown();
+    bubble.reset();
+    EXPECT_FALSE(drag_controller()->entered_window());
+
+    SendDndEnter(window(), gfx::Point(20, 20));
+    EXPECT_EQ(window(), drag_controller()->entered_window());
+    EXPECT_TRUE(data_offer());
+
+    EXPECT_CALL(drag_finished_callback_, Run(DragOperation::kNone)).Times(1);
+    SendDndCancelled();
+  }));
+  RunMouseDragWithSampleData(window_.get(), DragDropTypes::DRAG_COPY);
+}
+
+// Regression test for https://crbug.com/584191899: if `wl_data_device.drop`
+// arrives after the entered surface has already been destroyed on the client,
+// `OnDragDrop()` must still destroy `data_offer_`.
+TEST_P(WaylandDataDragControllerTest, DestroyEnteredSurfaceBeforeDrop) {
+  MockPlatformWindowDelegate bubble_delegate;
+  auto bubble = CreateTestWindow(PlatformWindowType::kBubble, gfx::Size(80, 80),
+                                 &bubble_delegate, window_->GetWidget());
+  FocusAndPressLeftPointerButton(bubble.get(), &bubble_delegate);
+
+  ScheduleTestTask(base::BindLambdaForTesting([&]() {
+    WaylandTestBase::SyncDisplay();
+    ASSERT_EQ(bubble.get(), drag_controller()->entered_window());
+    ASSERT_TRUE(data_offer());
+
+    bubble->PrepareForShutdown();
+    bubble.reset();
+    EXPECT_FALSE(drag_controller()->entered_window());
+
+    PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+      server->data_device_manager()->data_device()->OnDrop();
+    });
+    EXPECT_FALSE(data_offer());
 
     EXPECT_CALL(drag_finished_callback_, Run(DragOperation::kNone)).Times(1);
     SendDndCancelled();

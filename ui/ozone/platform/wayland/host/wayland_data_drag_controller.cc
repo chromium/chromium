@@ -457,6 +457,15 @@ void WaylandDataDragController::DrawIconInternal() {
 void WaylandDataDragController::OnDragOffer(
     std::unique_ptr<WaylandDataOffer> offer) {
   AbortPendingDropIfNeeded();
+  // If the previously entered `window_` was destroyed without a preceding
+  // `wl_data_device.leave`, drop the stale offer before accepting the new one.
+  // `OnWindowRemoved()` intentionally defers destroying `data_offer_` because
+  // it runs before `~WaylandSurface()` sends `wl_surface.destroy`, and some
+  // compositors (e.g. wlroots, Weston) treat destroying an active offer as
+  // cancelling the drag source.
+  if (!window_) {
+    data_offer_.reset();
+  }
   CHECK(!data_offer_, base::NotFatalUntil::M163);
   VLOG(1) << __FUNCTION__;
   data_offer_ = std::move(offer);
