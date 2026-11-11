@@ -81,7 +81,10 @@ export class LeftHandSideElement extends CrLitElement {
 
   static override get properties() {
     return {
-      enableThreadsRailHybrid_: {type: Boolean},
+      enableThreadsRailHybrid_: {
+        type: Boolean,
+        reflect: true,
+      },
       expandedLhsUrl_: {type: String},
       expandedWidth_: {type: Number},
       hasPreloaded_: {type: Boolean},
@@ -93,7 +96,10 @@ export class LeftHandSideElement extends CrLitElement {
         type: Boolean,
         reflect: true,
       },
-      isExpandedReady_: {type: Boolean},
+      isExpandedReady_: {
+        type: Boolean,
+        reflect: true,
+      },
       threadsRailPreloadDebounceMs_: {type: Number},
     };
   }

@@ -11,7 +11,7 @@ export function getHtml(this: LeftHandSideElement) {
   return html`<!--_html_template_start_-->
   ${this.enableThreadsRailHybrid_
       ? html`<cr-threads-rail id="folded"
-                 ?hidden="${this.isExpandedReady_ && this.isExpanded_}"
+                 ?inert="${this.isExpandedReady_ && this.isExpanded_}"
                  @expand-rail="${this.onExpandRail_}"
                  @click="${this.onFoldedClick_}"
                  @pointerenter="${this.onFoldedPointerenter_}"
@@ -28,8 +28,8 @@ export function getHtml(this: LeftHandSideElement) {
                        ? `width: ${this.expandedWidth_}px;`
                        : ''}"
             src="${this.expandedLhsUrl_}"
-            ?hidden="${!this.isExpandedReady_ ||
-                       (this.enableThreadsRailHybrid_ && !this.isExpanded_)}">
+            ?hidden="${!this.isExpandedReady_}"
+            ?inert="${this.enableThreadsRailHybrid_ && !this.isExpanded_}">
         </ntp-iframe>`
       : ''}
   <!--_html_template_end_-->`;
