@@ -6,6 +6,7 @@
 
 #import <Cocoa/Cocoa.h>
 #include <CoreGraphics/CoreGraphics.h>
+#include <unistd.h>
 
 #include <algorithm>
 #include <cmath>
@@ -21,10 +22,13 @@
 #include "base/apple/scoped_cftyperef.h"
 #include "base/auto_reset.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/i18n/rtl.h"
+#include "base/location.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/task/sequenced_task_runner.h"
 #include "remoting/base/string_resources.h"
 #include "remoting/host/client_session_control.h"
 #include "remoting/host/host_window.h"
@@ -54,12 +58,20 @@ constexpr CGFloat kGoogleBlueRed = 26.0 / 255.0;
 constexpr CGFloat kGoogleBlueGreen = 115.0 / 255.0;
 constexpr CGFloat kGoogleBlueBlue = 232.0 / 255.0;
 
-// Layout constants (in Cocoa points) for the privacy overlay backdrop content.
+// Layout constants (in Cocoa points) for the privacy overlay backdrop and
+// floating Disconnect button window.
 constexpr CGFloat kIconSize = 64.0;
 constexpr CGFloat kTitleFontSize = 21.0;
 constexpr CGFloat kBodyFontSize = 14.0;
 constexpr CGFloat kVerticalSpacing = 16.0;
+constexpr CGFloat kButtonTopOffset = 72.0;
 constexpr CGFloat kMaxTextWidthRatio = 0.8;
+
+constexpr CGFloat kButtonCornerRadius = 14.0;
+constexpr CGFloat kButtonBorderWidth = 2.0;
+constexpr CGFloat kButtonMargin = 12.0;
+constexpr CGFloat kMinButtonWidth = 100.0;
+constexpr CGFloat kMinButtonHeight = 24.0;
 
 remoting::PrivacyOverlayMac::ScreenFramesProvider&
 GetScreenFramesProviderStorage() {
@@ -138,6 +150,47 @@ bool ApplyCaptureExclusion(NSWindow* window) {
     return false;
   }
   return ApplyCaptureExclusionForSize(window, window.frame.size);
+}
+
+bool IsUserInputEventType(NSEventType type) {
+  switch (type) {
+    case NSEventTypeLeftMouseDown:
+    case NSEventTypeLeftMouseUp:
+    case NSEventTypeRightMouseDown:
+    case NSEventTypeRightMouseUp:
+    case NSEventTypeMouseMoved:
+    case NSEventTypeLeftMouseDragged:
+    case NSEventTypeRightMouseDragged:
+    case NSEventTypeOtherMouseDown:
+    case NSEventTypeOtherMouseUp:
+    case NSEventTypeOtherMouseDragged:
+    case NSEventTypeScrollWheel:
+    case NSEventTypeKeyDown:
+    case NSEventTypeKeyUp:
+      return true;
+    // `NSEventTypeFlagsChanged` is intentionally excluded (consistent with
+    // `LocalKeyboardInputMonitorMac`, crbug.com/578661739): modifier-flag
+    // transitions cannot activate `_disconnectButton`, and WindowServer
+    // synthesizes `FlagsChanged` notifications during application switches.
+    default:
+      return false;
+  }
+}
+
+bool IsRemoteInjectedEvent(NSEvent* event) {
+  if (!event || !IsUserInputEventType(event.type)) {
+    return false;
+  }
+  CGEventRef cg_event = event.CGEvent;
+  if (!cg_event) {
+    return false;
+  }
+  // Events synthesized by `InputInjectorMac` originate from the current CRD
+  // host process (`kCGEventSourceUnixProcessID == getpid()`), whereas physical
+  // hardware events have `pid == 0` (matching `LocalMouseInputMonitorMac`).
+  int64_t source_pid =
+      CGEventGetIntegerValueField(cg_event, kCGEventSourceUnixProcessID);
+  return source_pid == static_cast<int64_t>(getpid());
 }
 
 NSImage* LoadOverlayIcon() {
@@ -451,6 +504,173 @@ BackdropContentLayout ComputeBackdropContentLayout(NSRect bounds,
 
 @end
 
+@implementation PrivacyOverlayButtonView {
+  std::optional<bool> _highContrastOverrideForTesting;
+}
+
+- (void)setHighContrastOverrideForTesting:(std::optional<bool>)highContrast {
+  if (_highContrastOverrideForTesting == highContrast) {
+    return;
+  }
+  _highContrastOverrideForTesting = highContrast;
+  self.needsDisplay = YES;
+}
+
+- (BOOL)shouldUseHighContrastColors {
+  if (_highContrastOverrideForTesting.has_value()) {
+    return *_highContrastOverrideForTesting;
+  }
+  return NSWorkspace.sharedWorkspace.accessibilityDisplayShouldIncreaseContrast;
+}
+
+- (void)drawRect:(NSRect)dirtyRect {
+  NSRect insetBounds = NSInsetRect(self.bounds, kButtonBorderWidth / 2.0,
+                                   kButtonBorderWidth / 2.0);
+  if (NSWidth(insetBounds) <= 0.0 || NSHeight(insetBounds) <= 0.0) {
+    return;
+  }
+
+  const BOOL highContrast = [self shouldUseHighContrastColors];
+  NSColor* backgroundColor = highContrast
+                                 ? NSColor.windowBackgroundColor
+                                 : [NSColor colorWithSRGBRed:kGoogleBlueRed
+                                                       green:kGoogleBlueGreen
+                                                        blue:kGoogleBlueBlue
+                                                       alpha:1.0];
+  NSColor* borderColor = highContrast ? NSColor.textColor : NSColor.whiteColor;
+
+  NSBezierPath* path =
+      [NSBezierPath bezierPathWithRoundedRect:insetBounds
+                                      xRadius:kButtonCornerRadius
+                                      yRadius:kButtonCornerRadius];
+  [backgroundColor setFill];
+  [path fill];
+  path.lineWidth = kButtonBorderWidth;
+  [borderColor setStroke];
+  [path stroke];
+}
+
+@end
+
+@implementation PrivacyOverlayButtonWindow {
+  base::RepeatingClosure _onDisconnect;
+}
+
+@synthesize disconnectButton = _disconnectButton;
+@synthesize buttonView = _buttonView;
+
+- (instancetype)initWithTitle:(NSString*)buttonTitle
+                  windowTitle:(NSString*)windowTitle
+                        isRTL:(BOOL)isRTL
+                 onDisconnect:(base::RepeatingClosure)onDisconnect {
+  NSRect initialFrame = NSMakeRect(0, 0, kMinButtonWidth + kButtonMargin * 2.0,
+                                   kMinButtonHeight + kButtonMargin * 2.0);
+  self = [super initWithContentRect:initialFrame
+                          styleMask:NSWindowStyleMaskBorderless |
+                                    NSWindowStyleMaskNonactivatingPanel
+                            backing:NSBackingStoreBuffered
+                              defer:NO];
+  if (self) {
+    _onDisconnect = std::move(onDisconnect);
+    self.releasedWhenClosed = NO;
+    self.hidesOnDeactivate = NO;
+    self.canHide = NO;
+    self.movable = NO;
+    self.backgroundColor = NSColor.clearColor;
+    self.opaque = NO;
+    self.hasShadow = NO;
+    self.level = NSScreenSaverWindowLevel + 1;
+    self.collectionBehavior = NSWindowCollectionBehaviorCanJoinAllSpaces |
+                              NSWindowCollectionBehaviorFullScreenAuxiliary |
+                              NSWindowCollectionBehaviorStationary |
+                              NSWindowCollectionBehaviorIgnoresCycle;
+    self.sharingType = NSWindowSharingNone;
+    self.title = windowTitle ?: @"";
+
+    _buttonView = [[PrivacyOverlayButtonView alloc] initWithFrame:initialFrame];
+    _buttonView.userInterfaceLayoutDirection =
+        isRTL ? NSUserInterfaceLayoutDirectionRightToLeft
+              : NSUserInterfaceLayoutDirectionLeftToRight;
+    self.contentView = _buttonView;
+
+    _disconnectButton = [[NSButton alloc]
+        initWithFrame:NSMakeRect(kButtonMargin, kButtonMargin, kMinButtonWidth,
+                                 kMinButtonHeight)];
+    _disconnectButton.buttonType = NSButtonTypeMomentaryPushIn;
+    _disconnectButton.bezelStyle = NSBezelStyleFlexiblePush;
+    _disconnectButton.font = [NSFont systemFontOfSize:kBodyFontSize];
+    _disconnectButton.title = buttonTitle ?: @"";
+    _disconnectButton.accessibilityLabel = buttonTitle ?: @"";
+    _disconnectButton.userInterfaceLayoutDirection =
+        isRTL ? NSUserInterfaceLayoutDirectionRightToLeft
+              : NSUserInterfaceLayoutDirectionLeftToRight;
+    _disconnectButton.target = self;
+    _disconnectButton.action = @selector(onDisconnectClicked:);
+    [_disconnectButton sizeToFit];
+
+    NSRect buttonFrame = _disconnectButton.frame;
+    CGFloat buttonWidth =
+        std::max(kMinButtonWidth, std::ceil(NSWidth(buttonFrame)));
+    CGFloat buttonHeight =
+        std::max(kMinButtonHeight, std::ceil(NSHeight(buttonFrame)));
+    CGFloat windowWidth = buttonWidth + kButtonMargin * 2.0;
+    CGFloat windowHeight = buttonHeight + kButtonMargin * 2.0;
+
+    [self setFrame:NSMakeRect(0, 0, windowWidth, windowHeight) display:NO];
+    _buttonView.frame = NSMakeRect(0, 0, windowWidth, windowHeight);
+    _disconnectButton.frame =
+        NSMakeRect(kButtonMargin, kButtonMargin, buttonWidth, buttonHeight);
+    [_buttonView addSubview:_disconnectButton];
+
+    if (!ApplyCaptureExclusion(self)) {
+      [self orderOut:nil];
+      [self close];
+      return nil;
+    }
+  }
+  return self;
+}
+
+- (NSRect)constrainFrameRect:(NSRect)frameRect toScreen:(NSScreen*)screen {
+  return frameRect;
+}
+
+- (BOOL)canBecomeKeyWindow {
+  return NO;
+}
+
+- (BOOL)canBecomeMainWindow {
+  return NO;
+}
+
+- (void)sendEvent:(NSEvent*)event {
+  // Defense-in-depth: ignore mouse/key events synthesized by the CRD host
+  // process (`InputInjectorMac`) if local and remote inputs race while the
+  // Disconnect button window is visible.
+  if (IsRemoteInjectedEvent(event)) {
+    return;
+  }
+  [super sendEvent:event];
+}
+
+- (void)onDisconnectClicked:(id)sender {
+  // Remote-injected mouse and key `NSEvent`s are filtered upstream in
+  // `-sendEvent:`. Do not inspect `NSApp.currentEvent` here: AppKit retains
+  // the last dequeued `NSEvent` across runloop turns, which would falsely
+  // block local VoiceOver (`AXPress`) / `performClick:` activations if the most
+  // recent app event happened to be remote-injected.
+  if (base::RepeatingClosure on_disconnect = std::exchange(_onDisconnect, {})) {
+    // Defer teardown to the next sequence turn so `PrivacyOverlayButtonWindow`
+    // and `_disconnectButton` remain alive (and enabled while
+    // `accessibilityPerformPress` / `performClick:` unwinds) until AppKit
+    // finishes dispatching the button action.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(on_disconnect));
+  }
+}
+
+@end
+
 namespace remoting {
 
 PrivacyOverlayMac::PrivacyOverlayMac(
@@ -492,6 +712,11 @@ PrivacyOverlayMac::SetCaptureExclusionApplierForTesting(
       &GetCaptureExclusionApplierStorage(), std::move(applier));
 }
 
+// static
+bool PrivacyOverlayMac::IsRemoteInjectedEventForTesting(NSEvent* event) {
+  return IsRemoteInjectedEvent(event);
+}
+
 bool PrivacyOverlayMac::BeginOverlay() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -502,6 +727,12 @@ bool PrivacyOverlayMac::BeginOverlay() {
   product_name_text_ = l10n_util::GetNSString(IDS_PRODUCT_NAME);
   if (product_name_text_.length == 0) {
     LOG(ERROR) << "Failed to load IDS_PRODUCT_NAME for Privacy Overlay";
+    return false;
+  }
+
+  button_text_ = l10n_util::GetNSString(IDS_STOP_SHARING_BUTTON);
+  if (button_text_.length == 0) {
+    LOG(ERROR) << "Failed to load IDS_STOP_SHARING_BUTTON for Privacy Overlay";
     return false;
   }
 
@@ -533,6 +764,20 @@ bool PrivacyOverlayMac::BeginOverlay() {
     return false;
   }
 
+  button_window_ = [[PrivacyOverlayButtonWindow alloc]
+      initWithTitle:button_text_
+        windowTitle:product_name_text_
+              isRTL:is_rtl_
+       onDisconnect:base::BindRepeating(
+                        &PrivacyOverlayMac::OnDisconnectButtonClicked,
+                        weak_factory_.GetWeakPtr())];
+  if (!button_window_) {
+    return false;
+  }
+
+  PositionDisconnectButton();
+  DeactivateDisconnectButton();
+
   NSAccessibilityPostNotificationWithUserInfo(
       NSApp, NSAccessibilityAnnouncementRequestedNotification, @{
         NSAccessibilityAnnouncementKey : sharing_with_text_,
@@ -557,6 +802,14 @@ void PrivacyOverlayMac::EndOverlay() {
     [window close];
   }
   [backdrop_windows_ removeAllObjects];
+
+  if (button_window_) {
+    is_button_hidden_ = true;
+    PrivacyOverlayButtonWindow* button_window =
+        std::exchange(button_window_, nil);
+    [button_window orderOut:nil];
+    [button_window close];
+  }
 }
 
 bool PrivacyOverlayMac::UpdateBackdrops() {
@@ -622,6 +875,97 @@ bool PrivacyOverlayMac::UpdateBackdrops() {
   }
 
   return true;
+}
+
+void PrivacyOverlayMac::PositionDisconnectButton() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!button_window_) {
+    return;
+  }
+
+  const std::vector<NSRect> screen_frames = GetScreenFrames();
+  DCHECK(!screen_frames.empty());
+  if (screen_frames.empty()) {
+    return;
+  }
+
+  const NSRect& screen_frame = screen_frames.front();
+  CGFloat screen_width = NSWidth(screen_frame);
+  CGFloat screen_height = NSHeight(screen_frame);
+  NSRect button_frame = button_window_.frame;
+  CGFloat button_width = NSWidth(button_frame);
+  CGFloat button_height = NSHeight(button_frame);
+
+  CGFloat min_flipped_button_top = (screen_height / 2.0) + kButtonTopOffset;
+  if (PrivacyOverlayBackdropWindow* backdrop_window =
+          backdrop_windows_.firstObject) {
+    PrivacyOverlayBackdropView* backdrop_view =
+        base::apple::ObjCCastStrict<PrivacyOverlayBackdropView>(
+            backdrop_window.contentView);
+    NSRect sharing_rect = [backdrop_view
+        sharingTextRectForBounds:NSMakeRect(0, 0, screen_width, screen_height)];
+    min_flipped_button_top = std::max(min_flipped_button_top,
+                                      NSMaxY(sharing_rect) + kVerticalSpacing);
+  }
+
+  CGFloat max_flipped_button_top = std::max<CGFloat>(
+      kVerticalSpacing, screen_height - button_height - kVerticalSpacing);
+  CGFloat flipped_button_top =
+      std::min(min_flipped_button_top, max_flipped_button_top);
+
+  CGFloat cocoa_x =
+      std::round(NSMinX(screen_frame) + (screen_width - button_width) / 2.0);
+  CGFloat cocoa_y =
+      std::round(NSMaxY(screen_frame) - flipped_button_top - button_height);
+  [button_window_ setFrameOrigin:NSMakePoint(cocoa_x, cocoa_y)];
+}
+
+void PrivacyOverlayMac::ActivateDisconnectButton() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!button_window_) {
+    return;
+  }
+
+  const NSPoint old_origin = button_window_.frame.origin;
+  PositionDisconnectButton();
+  if (!is_button_hidden_ &&
+      NSEqualPoints(old_origin, button_window_.frame.origin)) {
+    return;
+  }
+
+  if (!ApplyCaptureExclusion(button_window_)) {
+    LOG(ERROR)
+        << "Failed to apply capture exclusion when activating Disconnect "
+        << "button";
+    EndOverlay();
+    DisconnectSession(
+        "Failed to apply capture exclusion to Disconnect button.");
+    return;
+  }
+  is_button_hidden_ = false;
+  button_window_.ignoresMouseEvents = NO;
+  button_window_.alphaValue = 1.0;
+  [button_window_ orderFrontRegardless];
+  NSAccessibilityPostNotification(button_window_.disconnectButton,
+                                  NSAccessibilityLayoutChangedNotification);
+}
+
+void PrivacyOverlayMac::DeactivateDisconnectButton() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!button_window_) {
+    return;
+  }
+
+  is_button_hidden_ = true;
+  button_window_.ignoresMouseEvents = YES;
+  button_window_.alphaValue = 0.0;
+  [button_window_ orderOut:nil];
+}
+
+void PrivacyOverlayMac::OnDisconnectButtonClicked() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  EndOverlay();
+  DisconnectSession();
 }
 
 // static

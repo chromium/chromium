@@ -5,9 +5,12 @@
 #import "remoting/host/privacy_overlay_mac.h"
 
 #import <Cocoa/Cocoa.h>
+#include <CoreGraphics/CoreGraphics.h>
+#include <unistd.h>
 
 #include <algorithm>
 #include <cmath>
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>
@@ -15,6 +18,7 @@
 #include <vector>
 
 #include "base/apple/foundation_util.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "base/auto_reset.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/weak_ptr.h"
@@ -225,10 +229,15 @@ TEST_F(PrivacyOverlayMacTest,
 TEST_F(PrivacyOverlayMacTest,
        DestroyingOverlayClosesBackdropWindowsWithoutDisconnectingSession) {
   StartOverlay();
+  overlay_->ActivateDisconnectButtonForTesting();
 
   NSArray<PrivacyOverlayBackdropWindow*>* backdrops =
       [overlay_->backdrop_windows_for_testing() copy];
+  PrivacyOverlayButtonWindow* button_window =
+      overlay_->button_window_for_testing();
   ASSERT_GT(backdrops.count, 0u);
+  ASSERT_NE(button_window, nil);
+  EXPECT_TRUE(button_window.isVisible);
   for (PrivacyOverlayBackdropWindow* window in backdrops) {
     EXPECT_TRUE(window.isVisible);
   }
@@ -239,6 +248,7 @@ TEST_F(PrivacyOverlayMacTest,
   for (PrivacyOverlayBackdropWindow* window in backdrops) {
     EXPECT_FALSE(window.isVisible);
   }
+  EXPECT_FALSE(button_window.isVisible);
 }
 
 TEST_F(PrivacyOverlayMacTest, PaintsGoogleBlueBackdropBackgroundByDefault) {
@@ -299,6 +309,7 @@ TEST_F(PrivacyOverlayMacTest, DisconnectsSessionWhenNoDisplaysFound) {
   StartOverlay();
 
   EXPECT_EQ(overlay_->backdrop_windows_for_testing().count, 0u);
+  EXPECT_TRUE(overlay_->is_button_hidden_for_testing());
 }
 
 TEST_F(PrivacyOverlayMacTest,
@@ -325,6 +336,7 @@ TEST_F(PrivacyOverlayMacTest,
 
   EXPECT_EQ(call_count, 2);
   EXPECT_EQ(overlay_->backdrop_windows_for_testing().count, 0u);
+  EXPECT_TRUE(overlay_->is_button_hidden_for_testing());
 }
 
 TEST_F(PrivacyOverlayMacTest,
@@ -666,6 +678,314 @@ TEST_F(PrivacyOverlayMacTest, TruncatesOverlongClientEmailWithEllipsis) {
   NSRect rect_at_offset = [view sharingTextRectForBounds:offset_short_bounds];
   EXPECT_TRUE(
       NSEqualRects(rect_at_offset, NSOffsetRect(rect_at_zero, 120.0, 240.0)));
+}
+
+TEST_F(PrivacyOverlayMacTest,
+       CreatesButtonWindowHiddenAndClickThroughInitially) {
+  StartOverlay();
+
+  PrivacyOverlayButtonWindow* button_window =
+      overlay_->button_window_for_testing();
+  ASSERT_NE(button_window, nil);
+  EXPECT_TRUE(overlay_->is_button_hidden_for_testing());
+  EXPECT_FALSE(button_window.isVisible);
+  EXPECT_TRUE(button_window.ignoresMouseEvents);
+  EXPECT_DOUBLE_EQ(button_window.alphaValue, 0.0);
+  EXPECT_EQ(button_window.styleMask,
+            NSWindowStyleMaskBorderless | NSWindowStyleMaskNonactivatingPanel);
+  EXPECT_FALSE(button_window.hidesOnDeactivate);
+  EXPECT_FALSE(button_window.canHide);
+  EXPECT_FALSE(button_window.isMovable);
+  EXPECT_EQ(button_window.level, NSScreenSaverWindowLevel + 1);
+  EXPECT_EQ(button_window.sharingType, NSWindowSharingNone);
+  EXPECT_FALSE(button_window.canBecomeKeyWindow);
+  EXPECT_FALSE(button_window.canBecomeMainWindow);
+  NSRect unconstrained_rect = NSMakeRect(-50.0, -50.0, 400.0, 100.0);
+  EXPECT_TRUE(NSEqualRects(
+      [button_window constrainFrameRect:unconstrained_rect
+                               toScreen:NSScreen.screens.firstObject],
+      unconstrained_rect));
+  ASSERT_NE(button_window.disconnectButton, nil);
+  EXPECT_GT(button_window.disconnectButton.title.length, 0u);
+  EXPECT_GT(button_window.disconnectButton.accessibilityLabel.length, 0u);
+  EXPECT_DOUBLE_EQ(NSWidth(button_window.frame),
+                   NSWidth(button_window.disconnectButton.frame) + 24.0);
+  EXPECT_DOUBLE_EQ(NSHeight(button_window.frame),
+                   NSHeight(button_window.disconnectButton.frame) + 24.0);
+}
+
+TEST_F(PrivacyOverlayMacTest,
+       PaintsGoogleBlueAndHighContrastButtonWindowBackgrounds) {
+  StartOverlay();
+
+  PrivacyOverlayButtonWindow* button_window =
+      overlay_->button_window_for_testing();
+  ASSERT_NE(button_window, nil);
+  PrivacyOverlayButtonView* button_view = button_window.buttonView;
+  ASSERT_NE(button_view, nil);
+
+  NSRect bounds = button_view.bounds;
+  ASSERT_GT(NSWidth(bounds), 24.0);
+  ASSERT_GT(NSHeight(bounds), 24.0);
+
+  [button_view setHighContrastOverrideForTesting:false];
+  NSBitmapImageRep* blue_rep =
+      [button_view bitmapImageRepForCachingDisplayInRect:bounds];
+  ASSERT_NE(blue_rep, nil);
+  [button_view cacheDisplayInRect:bounds toBitmapImageRep:blue_rep];
+  CGFloat scale_x = static_cast<CGFloat>(blue_rep.pixelsWide) / NSWidth(bounds);
+  NSInteger sample_x = std::max<NSInteger>(3, std::lround(6.0 * scale_x));
+  NSInteger sample_y = blue_rep.pixelsHigh / 2;
+
+  ExpectBitmapPixelNearColor(blue_rep, sample_x, sample_y, GoogleBlueColor());
+
+  [button_view setHighContrastOverrideForTesting:true];
+  NSBitmapImageRep* hc_rep =
+      [button_view bitmapImageRepForCachingDisplayInRect:bounds];
+  ASSERT_NE(hc_rep, nil);
+  [button_view cacheDisplayInRect:bounds toBitmapImageRep:hc_rep];
+  ExpectBitmapPixelNearColor(hc_rep, sample_x, sample_y,
+                             NSColor.windowBackgroundColor);
+}
+
+TEST_F(PrivacyOverlayMacTest,
+       LocalClickOnDisconnectButtonDisconnectsSessionAndClosesWindows) {
+  StartOverlay();
+  overlay_->ActivateDisconnectButtonForTesting();
+
+  PrivacyOverlayButtonWindow* button_window =
+      overlay_->button_window_for_testing();
+  ASSERT_NE(button_window, nil);
+
+  EXPECT_CALL(client_session_control_,
+              DisconnectSession(protocol::ErrorCode::OK, _, _))
+      .Times(1);
+  [button_window.disconnectButton performClick:nil];
+  task_environment_.RunUntilIdle();
+
+  EXPECT_EQ(overlay_->button_window_for_testing(), nil);
+  EXPECT_EQ(overlay_->backdrop_windows_for_testing().count, 0u);
+  EXPECT_TRUE(overlay_->is_button_hidden_for_testing());
+}
+
+TEST_F(PrivacyOverlayMacTest,
+       IgnoresRemoteInjectedMouseEventOnDisconnectButton) {
+  StartOverlay();
+  overlay_->ActivateDisconnectButtonForTesting();
+
+  PrivacyOverlayButtonWindow* button_window =
+      overlay_->button_window_for_testing();
+  ASSERT_NE(button_window, nil);
+
+  // `CGEventCreateMouseEvent` and `CGEventCreateKeyboardEvent` stamp
+  // `kCGEventSourceUnixProcessID` with `getpid()`, matching events synthesized
+  // by `InputInjectorMac`.
+  CGFloat primary_height = NSHeight(NSScreen.screens.firstObject.frame);
+  NSRect button_screen_rect =
+      [button_window convertRectToScreen:button_window.disconnectButton.frame];
+  CGPoint quartz_click_point = CGPointMake(
+      NSMidX(button_screen_rect), primary_height - NSMidY(button_screen_rect));
+  base::apple::ScopedCFTypeRef<CGEventRef> cg_down(CGEventCreateMouseEvent(
+      nullptr, kCGEventLeftMouseDown, quartz_click_point, kCGMouseButtonLeft));
+  ASSERT_TRUE(cg_down);
+  ASSERT_EQ(
+      CGEventGetIntegerValueField(cg_down.get(), kCGEventSourceUnixProcessID),
+      static_cast<int64_t>(getpid()));
+
+  NSEvent* injected_mouse_down = [NSEvent eventWithCGEvent:cg_down.get()];
+  ASSERT_NE(injected_mouse_down, nil);
+  EXPECT_TRUE(
+      PrivacyOverlayMac::IsRemoteInjectedEventForTesting(injected_mouse_down));
+
+  // Negative control: clearing `kCGEventSourceUnixProcessID` to `0` on a
+  // separate `CGEventRef` (matching physical hardware events) must not be
+  // classified as remote-injected.
+  base::apple::ScopedCFTypeRef<CGEventRef> cg_local_down(
+      CGEventCreateMouseEvent(nullptr, kCGEventLeftMouseDown,
+                              quartz_click_point, kCGMouseButtonLeft));
+  ASSERT_TRUE(cg_local_down);
+  CGEventSetIntegerValueField(cg_local_down.get(), kCGEventSourceUnixProcessID,
+                              0);
+  NSEvent* local_mouse_down = [NSEvent eventWithCGEvent:cg_local_down.get()];
+  ASSERT_NE(local_mouse_down, nil);
+  ASSERT_EQ(CGEventGetIntegerValueField(local_mouse_down.CGEvent,
+                                        kCGEventSourceUnixProcessID),
+            0);
+  EXPECT_FALSE(
+      PrivacyOverlayMac::IsRemoteInjectedEventForTesting(local_mouse_down));
+
+  // Keyboard positive (`getpid()`) and negative (`0`) controls.
+  base::apple::ScopedCFTypeRef<CGEventRef> cg_key(
+      CGEventCreateKeyboardEvent(nullptr, /*virtualKey=*/0, /*keyDown=*/true));
+  ASSERT_TRUE(cg_key);
+  NSEvent* injected_key_down = [NSEvent eventWithCGEvent:cg_key.get()];
+  ASSERT_NE(injected_key_down, nil);
+  EXPECT_TRUE(
+      PrivacyOverlayMac::IsRemoteInjectedEventForTesting(injected_key_down));
+  CGEventSetIntegerValueField(cg_key.get(), kCGEventSourceUnixProcessID, 0);
+  NSEvent* local_key_down = [NSEvent eventWithCGEvent:cg_key.get()];
+  ASSERT_NE(local_key_down, nil);
+  EXPECT_FALSE(
+      PrivacyOverlayMac::IsRemoteInjectedEventForTesting(local_key_down));
+
+  // `NSEventTypeFlagsChanged` must not be filtered even when stamped with
+  // `getpid()` (crbug.com/578661739).
+  base::apple::ScopedCFTypeRef<CGEventRef> cg_flags(
+      CGEventCreateKeyboardEvent(nullptr, /*virtualKey=*/56, /*keyDown=*/true));
+  ASSERT_TRUE(cg_flags);
+  CGEventSetType(cg_flags.get(), kCGEventFlagsChanged);
+  CGEventSetFlags(cg_flags.get(), kCGEventFlagMaskShift);
+  NSEvent* flags_changed = [NSEvent eventWithCGEvent:cg_flags.get()];
+  ASSERT_NE(flags_changed, nil);
+  EXPECT_EQ(flags_changed.type, NSEventTypeFlagsChanged);
+  EXPECT_FALSE(
+      PrivacyOverlayMac::IsRemoteInjectedEventForTesting(flags_changed));
+
+  // Non-input AppKit housekeeping events and `nil` must never be filtered.
+  NSEvent* app_defined =
+      [NSEvent otherEventWithType:NSEventTypeApplicationDefined
+                         location:NSZeroPoint
+                    modifierFlags:0
+                        timestamp:0
+                     windowNumber:button_window.windowNumber
+                          context:nil
+                          subtype:0
+                            data1:0
+                            data2:0];
+  EXPECT_FALSE(PrivacyOverlayMac::IsRemoteInjectedEventForTesting(app_defined));
+  NSEvent* mouse_entered =
+      [NSEvent enterExitEventWithType:NSEventTypeMouseEntered
+                             location:NSZeroPoint
+                        modifierFlags:0
+                            timestamp:0
+                         windowNumber:button_window.windowNumber
+                              context:nil
+                          eventNumber:0
+                       trackingNumber:0
+                             userData:nullptr];
+  EXPECT_FALSE(
+      PrivacyOverlayMac::IsRemoteInjectedEventForTesting(mouse_entered));
+  EXPECT_FALSE(PrivacyOverlayMac::IsRemoteInjectedEventForTesting(nil));
+
+  EXPECT_CALL(client_session_control_, DisconnectSession(_, _, _)).Times(0);
+  [button_window sendEvent:injected_mouse_down];
+  task_environment_.RunUntilIdle();
+  testing::Mock::VerifyAndClearExpectations(&client_session_control_);
+
+  EXPECT_NE(overlay_->button_window_for_testing(), nil);
+  EXPECT_GT(overlay_->backdrop_windows_for_testing().count, 0u);
+
+  // Local assistive technology (`AXPress` -> `accessibilityPerformPress`) must
+  // still disconnect cleanly after a remote-injected event was dropped.
+  EXPECT_CALL(client_session_control_,
+              DisconnectSession(protocol::ErrorCode::OK, _, _))
+      .Times(1);
+  [button_window.disconnectButton accessibilityPerformPress];
+  task_environment_.RunUntilIdle();
+
+  EXPECT_EQ(overlay_->button_window_for_testing(), nil);
+  EXPECT_EQ(overlay_->backdrop_windows_for_testing().count, 0u);
+}
+
+TEST_F(PrivacyOverlayMacTest,
+       DisconnectsSessionWhenButtonWindowInitialCaptureExclusionFails) {
+  NSMutableArray<PrivacyOverlayBackdropWindow*>* created_backdrops =
+      [[NSMutableArray alloc] init];
+  int button_applier_calls = 0;
+  auto reset_applier = PrivacyOverlayMac::SetCaptureExclusionApplierForTesting(
+      base::BindLambdaForTesting([created_backdrops, &button_applier_calls](
+                                     NSWindow* window, NSSize /*size*/) {
+        if ([window isKindOfClass:[PrivacyOverlayBackdropWindow class]]) {
+          [created_backdrops
+              addObject:base::apple::ObjCCastStrict<
+                            PrivacyOverlayBackdropWindow>(window)];
+          return true;
+        }
+        if ([window isKindOfClass:[PrivacyOverlayButtonWindow class]]) {
+          ++button_applier_calls;
+          return false;
+        }
+        return true;
+      }));
+
+  EXPECT_CALL(client_session_control_,
+              DisconnectSession(protocol::ErrorCode::OK, _, _))
+      .Times(1);
+  StartOverlay();
+
+  EXPECT_GT(created_backdrops.count, 0u);
+  for (PrivacyOverlayBackdropWindow* backdrop in created_backdrops) {
+    EXPECT_FALSE(backdrop.isVisible);
+  }
+  EXPECT_EQ(button_applier_calls, 1);
+  EXPECT_EQ(overlay_->backdrop_windows_for_testing().count, 0u);
+  EXPECT_EQ(overlay_->button_window_for_testing(), nil);
+  EXPECT_TRUE(overlay_->is_button_hidden_for_testing());
+}
+
+TEST_F(PrivacyOverlayMacTest,
+       DisconnectsSessionWhenActivateButtonCaptureExclusionFails) {
+  StartOverlay();
+
+  NSArray<PrivacyOverlayBackdropWindow*>* backdrops =
+      [overlay_->backdrop_windows_for_testing() copy];
+  PrivacyOverlayButtonWindow* button_window =
+      overlay_->button_window_for_testing();
+  ASSERT_GT(backdrops.count, 0u);
+  ASSERT_NE(button_window, nil);
+  ASSERT_FALSE(button_window.isVisible);
+
+  auto reset_applier = PrivacyOverlayMac::SetCaptureExclusionApplierForTesting(
+      base::BindLambdaForTesting(
+          [](NSWindow* /*window*/, NSSize /*size*/) { return false; }));
+
+  EXPECT_CALL(client_session_control_,
+              DisconnectSession(protocol::ErrorCode::OK, _, _))
+      .Times(1);
+  overlay_->ActivateDisconnectButtonForTesting();
+
+  EXPECT_FALSE(button_window.isVisible);
+  for (PrivacyOverlayBackdropWindow* backdrop in backdrops) {
+    EXPECT_FALSE(backdrop.isVisible);
+  }
+  EXPECT_EQ(overlay_->backdrop_windows_for_testing().count, 0u);
+  EXPECT_EQ(overlay_->button_window_for_testing(), nil);
+  EXPECT_TRUE(overlay_->is_button_hidden_for_testing());
+}
+
+TEST_F(PrivacyOverlayMacTest,
+       ActivateDisconnectButtonSkipsRedundantWorkWhenAlreadyVisible) {
+  std::vector<NSRect> frames = {NSMakeRect(0.0, 0.0, 1440.0, 900.0)};
+  auto reset_screens = PrivacyOverlayMac::SetScreenFramesProviderForTesting(
+      base::BindLambdaForTesting([&frames]() { return frames; }));
+
+  int button_exclusion_calls = 0;
+  auto reset_applier = PrivacyOverlayMac::SetCaptureExclusionApplierForTesting(
+      base::BindLambdaForTesting(
+          [&button_exclusion_calls](NSWindow* window, NSSize /*size*/) {
+            if ([window isKindOfClass:[PrivacyOverlayButtonWindow class]]) {
+              ++button_exclusion_calls;
+            }
+            return true;
+          }));
+
+  StartOverlay();
+  ASSERT_EQ(button_exclusion_calls, 1);
+
+  // First activation transitions `is_button_hidden_` from true to false and
+  // refreshes capture exclusion.
+  overlay_->ActivateDisconnectButtonForTesting();
+  EXPECT_FALSE(overlay_->is_button_hidden_for_testing());
+  EXPECT_EQ(button_exclusion_calls, 2);
+
+  // Repeated activation while already visible at the same origin is a no-op.
+  overlay_->ActivateDisconnectButtonForTesting();
+  EXPECT_EQ(button_exclusion_calls, 2);
+
+  // Changing the target origin refreshes capture exclusion even while visible.
+  frames = {NSMakeRect(200.0, 100.0, 1440.0, 900.0)};
+  overlay_->ActivateDisconnectButtonForTesting();
+  EXPECT_EQ(button_exclusion_calls, 3);
 }
 
 }  // namespace
