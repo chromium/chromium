@@ -28,6 +28,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -121,6 +122,7 @@ public class CommerceBottomSheetContentRenderTest {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
+    @DisabledTest(message = "https://crbug.com/583026681")
     public void testSingleContent() throws IOException {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -133,6 +135,7 @@ public class CommerceBottomSheetContentRenderTest {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
+    @DisabledTest(message = "https://crbug.com/583026681")
     public void testMultipleContents() throws IOException {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
