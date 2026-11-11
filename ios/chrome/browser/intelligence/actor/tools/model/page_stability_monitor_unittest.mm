@@ -235,10 +235,13 @@ TEST_F(PageStabilityMonitorTest, DelegateLogsToAggregatedJournal) {
       page_content_annotations::PageStabilityMonitorStartDelayEvent{
           .delay = base::Seconds(1)});
 
-  // There should be a kInstant event logged inside the track.
+  // There should be a kInstant event logged inside the track of the pending
+  // async entry.
   ASSERT_EQ(observer.entries().size(), 2u);
   EXPECT_EQ(observer.entries()[1]->type, mojom::JournalEntryType::kInstant);
   EXPECT_EQ(observer.entries()[1]->event, "MonitorStartDelay");
+  EXPECT_EQ(observer.entries()[1]->track_uuid,
+            observer.entries()[0]->track_uuid);
 
   // WillMoveToState to another state should log kEnd for StartMonitoring and
   // kBegin for Timeout.

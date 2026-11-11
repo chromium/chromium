@@ -40,6 +40,10 @@ class IOSPageStabilityMonitorDelegate : public PageStabilityMonitorDelegate {
  private:
   base::WeakPtr<AggregatedJournal> journal_;
   std::unique_ptr<AggregatedJournal::PendingAsyncEntry> async_journal_entry_;
+  // The dynamic track UUID allocated for `async_journal_entry_`. Instant
+  // events logged while the async entry is pending are emitted on this track
+  // so they are nested inside the async entry.
+  uint64_t async_journal_track_uuid_ = 0;
 };
 
 }  // namespace actor

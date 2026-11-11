@@ -59,9 +59,10 @@ void IOSPageStabilityMonitorDelegate::LogEvent(
     case mojom::JournalEntryType::kBegin:
       // Reset existing entry first to preserve begin/end ordering.
       async_journal_entry_.reset();
+      async_journal_track_uuid_ = journal_->AllocateDynamicTrackUUID();
       async_journal_entry_ = journal_->CreatePendingAsyncEntry(
-          /*url=*/GURL(), task_id(), journal_->AllocateDynamicTrackUUID(),
-          event_name, std::move(details));
+          /*url=*/GURL(), task_id(), async_journal_track_uuid_, event_name,
+          std::move(details));
       break;
     case mojom::JournalEntryType::kEnd:
       if (async_journal_entry_) {
@@ -70,9 +71,15 @@ void IOSPageStabilityMonitorDelegate::LogEvent(
       }
       break;
     case mojom::JournalEntryType::kInstant:
-      // TODO(crbug.com/531873110): if async_journal_entry_ is set, we should
-      // log to the pending entry instead of creating a new one.
-      journal_->Log(/*url=*/GURL(), task_id(), event_name, std::move(details));
+      if (async_journal_entry_) {
+        // Log on the same track as the pending async entry so the instant
+        // event is nested inside it, matching the Desktop behavior.
+        journal_->Log(/*url=*/GURL(), task_id(), async_journal_track_uuid_,
+                      event_name, std::move(details));
+      } else {
+        journal_->Log(/*url=*/GURL(), task_id(), event_name,
+                      std::move(details));
+      }
       break;
   }
 }
