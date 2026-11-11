@@ -5,7 +5,6 @@
 -All/MultiContentsViewTabDragEntrypointsUiParamTest.DragAndDropDisabledForChromePage/*
 -All/MultiContentsViewTabDragEntrypointsUiParamTest.ShowAndHideDropTarget/*
 -SidePanelBookmarksTest.ShoppingList
--TabDragging/DetachToBrowserTabDragControllerTest.DragToSeparateWindowDuringDragEnd/*
 
 # TODO(https://crbug.com/547746068): Flaky on linux-arm64-rel-fyi.
 -All/TabStripCollectionControllerInteractiveUiTest.TabOpenedWhileUsingTabContextMenu/*

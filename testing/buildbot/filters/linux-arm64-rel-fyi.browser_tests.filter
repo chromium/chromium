@@ -5,16 +5,13 @@
 -BoundSessionCookieRefreshServiceImplBrowserTest.CookieRotationOnStartup
 -BrowserInstantControllerTest.DefaultSearchProviderChanged
 -BrowserTest.ClosingBackgroundSameProcessTabRestoresFocusToActiveWebContents
--ChromeRenderProcessHostTest.ProcessPerTab
 -CrComponentsComposeboxTest.ContextualActionMenu*
 -CrElementsTest.CrLazyList
 -GlicApiTest.testPinTabsStatePersistWhenClosePanelAndReopen/Default
 -GlicKeyedServiceSyncBrowserTest.PrefChangesTriggerSyncRefresh
 -IsolatedWebAppLinkCapturingFromAppWindowBrowserTest.ShiftClickOpensNewAppWindow/NavigateExisting
 -PasswordChangeUIControllerBrowserTest.PageIsInteractableWhileToastIsShowing
--PlatformAppBrowserTest.TouchpadPinchSyntheticWheelEvents
 -ReadAnythingMochaTest.LineFocusMoveMode*
--ReadAnythingMochaTest.RectCalculations*
 -SocketApiTest.SocketTCPExtension
 
 # TODO(https://crbug.com/574935783): Flaky on linux-arm64-rel-fyi.
