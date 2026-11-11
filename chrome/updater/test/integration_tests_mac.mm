@@ -479,6 +479,10 @@ void SetPlatformPolicies(const base::DictValue& values) {
         app_policies[key] = [NSNumber numberWithInt:value.GetInt()];
       } else if (value.is_bool()) {
         app_policies[key] = [NSNumber numberWithInt:value.GetBool()];
+      } else {
+        ADD_FAILURE() << "Unsupported type "
+                      << base::Value::GetTypeName(value.type())
+                      << " for policy " << name << " of app " << app_id;
       }
     }
     all_policies[base::SysUTF8ToNSString(app_id)] = app_policies;
@@ -486,11 +490,13 @@ void SetPlatformPolicies(const base::DictValue& values) {
 
   NSURL* const managed_preferences_url =
       base::apple::FilePathToNSURL(GetManagedPreferencesPath());
+  NSError* error = nil;
   ASSERT_TRUE([[NSDictionary dictionaryWithObject:all_policies
                                            forKey:@"updatePolicies"]
       writeToURL:managed_preferences_url
-           error:nil])
-      << "Failed to write " << managed_preferences_url;
+           error:&error])
+      << "Failed to write " << managed_preferences_url << ": "
+      << base::SysNSStringToUTF8(error.localizedDescription);
   ASSERT_TRUE(CFPreferencesSynchronize(domain, kCFPreferencesAnyUser,
                                        kCFPreferencesCurrentHost));
   FlushPreferencesCache();
