@@ -12,6 +12,7 @@ DEFINE_USER_DATA(DownloadToolbarUIController);
 #include <string>
 
 #include "base/functional/bind.h"
+#include "base/i18n/rtl.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -29,6 +30,7 @@ DEFINE_USER_DATA(DownloadToolbarUIController);
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
+#include "chrome/browser/ui/bubble_anchor_util.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
@@ -96,6 +98,20 @@ gfx::Insets GetSecurityViewMargin() {
   return gfx::Insets::VH(ChromeLayoutProvider::Get()->GetDistanceMetric(
                              views::DISTANCE_RELATED_CONTROL_VERTICAL),
                          0);
+}
+
+// Returns the rect to anchor the bubble to when the download button is not
+// drawn, e.g. in --app windows, which have no toolbar: the top trailing corner
+// of the contents area.
+gfx::Rect GetNoToolbarAnchorRect(BrowserView* browser_view) {
+  const gfx::Rect contents_bounds =
+      browser_view->contents_container()->GetBoundsInScreen();
+  // The TOP_RIGHT arrow is mirrored to TOP_LEFT in RTL.
+  const int x =
+      base::i18n::IsRTL()
+          ? contents_bounds.x() + bubble_anchor_util::kNoToolbarLeftOffset
+          : contents_bounds.right() - bubble_anchor_util::kNoToolbarLeftOffset;
+  return gfx::Rect(x, contents_bounds.y(), 0, 0);
 }
 
 }  // namespace
@@ -644,10 +660,21 @@ void DownloadToolbarUIController::OnBubbleAnchorAssembled(
           ImmersiveModeController::ANIMATE_REVEAL_YES);
     }
   }
+  // The download button is not drawn when the window has no toolbar (e.g.
+  // --app windows). Anchoring to it would place the bubble at the window's
+  // origin, extending past the window's leading edge, so anchor to the top
+  // trailing corner of the contents area instead.
+  views::View* const anchor_view = anchor.value().GetIfView();
+  const bool use_no_toolbar_anchor = anchor_view && !anchor_view->IsDrawn();
   auto bubble_delegate = std::make_unique<views::BubbleDialogDelegate>(
-      anchor.value(), views::BubbleBorder::TOP_RIGHT,
-      views::BubbleBorder::DIALOG_SHADOW,
+      use_no_toolbar_anchor ? views::BubbleAnchor() : anchor.value(),
+      views::BubbleBorder::TOP_RIGHT, views::BubbleBorder::DIALOG_SHADOW,
       /*autosize=*/true);
+  if (use_no_toolbar_anchor) {
+    bubble_delegate->set_parent_window(
+        browser_view_->GetWidget()->GetNativeView());
+    bubble_delegate->SetAnchorRect(GetNoToolbarAnchorRect(browser_view_));
+  }
   bubble_delegate->SetOwnedByWidget(
       views::WidgetDelegate::OwnedByWidgetPassKey());
   bubble_delegate->SetTitle(

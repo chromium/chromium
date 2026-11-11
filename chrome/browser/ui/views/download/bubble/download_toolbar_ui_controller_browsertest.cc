@@ -35,6 +35,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/base/mojom/window_open_disposition.mojom-shared.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/image_view.h"
 
 // This tests the download button view in the toolbar.
@@ -284,6 +285,35 @@ IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
   controller(browser())->OpenPrimaryDialog();
   EXPECT_EQ(controller(browser())->bubble_contents_for_testing()->VisiblePage(),
             DownloadBubbleContentsView::Page::kPrimary);
+}
+
+// In windows without a toolbar (e.g. --app windows), the bubble should be shown
+// inside the window rather than anchored to the hidden download button.
+IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
+                       BubbleInsideWindowWithoutToolbar) {
+  BrowserWindowInterface* const app_browser =
+      CreateBrowserForApp("test_app", browser()->GetProfile());
+  BrowserView* const browser_view =
+      BrowserView::GetBrowserViewForBrowser(app_browser);
+  ASSERT_FALSE(browser_view->IsToolbarVisible());
+
+  ui_test_utils::DownloadURL(
+      app_browser, chrome_test_utils::GetTestUrl(
+                       base::FilePath().AppendASCII("downloads"),
+                       base::FilePath().AppendASCII("a_zip_file.zip")));
+  controller(app_browser)->ShowDetails();
+  DownloadBubbleContentsView* const bubble_contents =
+      controller(app_browser)->bubble_contents_for_testing();
+  ASSERT_TRUE(bubble_contents);
+
+  const gfx::Rect bubble_bounds =
+      bubble_contents->GetWidget()->GetWindowBoundsInScreen();
+  const gfx::Rect contents_bounds =
+      browser_view->contents_container()->GetBoundsInScreen();
+  EXPECT_GE(bubble_bounds.x(), contents_bounds.x());
+  EXPECT_TRUE(contents_bounds.Contains(bubble_bounds.CenterPoint()))
+      << "bubble: " << bubble_bounds.ToString()
+      << ", contents: " << contents_bounds.ToString();
 }
 
 IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
