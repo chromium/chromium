@@ -255,6 +255,7 @@ source_set("impl") {
       "//chrome/browser/feedback",
       "//chrome/browser/profiles:profile_manager",
       "//chrome/browser/profiles:profile_util",
+      "//chrome/browser/ui:browser_actions",
       "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui:chrome_pages",
       "//chrome/browser/ui:singleton_tabs",
@@ -278,6 +279,7 @@ source_set("impl") {
       "//components/desktop_to_mobile_promos",
       "//components/tabs:public",
       "//extensions/browser",
+      "//ui/actions",
     ]
   }
 
@@ -383,6 +385,7 @@ source_set("unit_tests") {
   } else {
     sources += [
       "address_editor_controller_unittest.cc",
+      "autofill_bubble_controller_base_unittest.cc",
       "autofill_field_promo_controller_impl_unittest.cc",
       "autofill_popup_controller_impl_unittest.cc",
       "bubble_manager_impl_unittest.cc",
@@ -393,6 +396,7 @@ source_set("unit_tests") {
     ]
     deps += [
       "//chrome/browser/glic/test_support",
+      "//chrome/browser/ui:browser_actions",
       "//chrome/browser/ui/actions:actions_headers",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/hats:test_support",
@@ -400,6 +404,7 @@ source_set("unit_tests") {
       "//chrome/browser/ui/user_education",
       "//chrome/test/user_education:impl",
       "//components/tabs:test_support",
+      "//ui/actions",
       "//ui/base/unowned_user_data",
     ]
   }

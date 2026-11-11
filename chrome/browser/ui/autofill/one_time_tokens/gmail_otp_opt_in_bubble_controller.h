@@ -5,14 +5,12 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_ONE_TIME_TOKENS_GMAIL_OTP_OPT_IN_BUBBLE_CONTROLLER_H_
 #define CHROME_BROWSER_UI_AUTOFILL_ONE_TIME_TOKENS_GMAIL_OTP_OPT_IN_BUBBLE_CONTROLLER_H_
 
-#include <optional>
 #include <string>
 
 #include "base/check_deref.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
-#include "ui/actions/action_id.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 namespace content {
@@ -82,7 +80,6 @@ class GmailOtpOptInBubbleController : public AutofillBubbleControllerBase {
  protected:
   // AutofillBubbleControllerBase:
   void DoShowBubble() override;
-  std::optional<actions::ActionId> GetActionIdForPageAction() override;
 
  private:
   ui::ScopedUnownedUserData<GmailOtpOptInBubbleController>

@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/autofill/one_time_tokens/gmail_otp_opt_in_bubble_controller.h"
 
 #include <memory>
-#include <optional>
 #include <utility>
 
 #include "base/check_deref.h"
@@ -21,7 +20,6 @@
 #include "components/autofill/core/browser/integrators/one_time_tokens/gmail_otp_opt_in_result.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
-#include "ui/actions/action_id.h"
 #include "ui/views/bubble/bubble_anchor.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
@@ -68,7 +66,10 @@ DEFINE_USER_DATA(GmailOtpOptInBubbleController);
 
 GmailOtpOptInBubbleController::GmailOtpOptInBubbleController(
     tabs::TabInterface* tab)
-    : AutofillBubbleControllerBase(tab),
+    : AutofillBubbleControllerBase(
+          tab,
+          PageActionConfig{.action_id = kActionGmailOtpOptIn,
+                           .should_manage_visibility = true}),
       scoped_unowned_user_data_(CHECK_DEREF(tab).GetUnownedUserDataHost(),
                                 *this),
       bubble_view_factory_(
@@ -158,11 +159,6 @@ void GmailOtpOptInBubbleController::DoShowBubble() {
           bubble_view_factory_.Run(web_contents(), this)) {
     SetBubbleView(*bubble);
   }
-}
-
-std::optional<actions::ActionId>
-GmailOtpOptInBubbleController::GetActionIdForPageAction() {
-  return kActionGmailOtpOptIn;
 }
 
 }  // namespace autofill

@@ -6,6 +6,7 @@
 
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
 #include "chrome/browser/ui/autofill/bubble_manager.h"
@@ -14,9 +15,11 @@
 #include "components/tabs/public/tab_interface.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
+#include "ui/actions/actions.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace autofill {
@@ -26,9 +29,28 @@ AutofillBubbleControllerBase::AutofillBubbleControllerBase(
     : content::WebContentsObserver(web_contents) {}
 
 AutofillBubbleControllerBase::AutofillBubbleControllerBase(
+    content::WebContents* web_contents,
+    PageActionConfig page_action_config)
+    : content::WebContentsObserver(web_contents),
+      page_action_config_(page_action_config) {}
+
+AutofillBubbleControllerBase::AutofillBubbleControllerBase(
     tabs::TabInterface* tab_interface)
+    : AutofillBubbleControllerBase(tab_interface, std::nullopt) {}
+
+AutofillBubbleControllerBase::AutofillBubbleControllerBase(
+    tabs::TabInterface* tab_interface,
+    PageActionConfig page_action_config)
+    : AutofillBubbleControllerBase(
+          tab_interface,
+          std::optional<PageActionConfig>(page_action_config)) {}
+
+AutofillBubbleControllerBase::AutofillBubbleControllerBase(
+    tabs::TabInterface* tab_interface,
+    std::optional<PageActionConfig> page_action_config)
     : content::WebContentsObserver(CHECK_DEREF(tab_interface).GetContents()),
       tab_interface_(tab_interface),
+      page_action_config_(page_action_config),
       will_discard_contents_subscription_(
           tab_interface_->RegisterWillDiscardContents(base::BindRepeating(
               &AutofillBubbleControllerBase::WillDiscardContents,
@@ -36,6 +58,7 @@ AutofillBubbleControllerBase::AutofillBubbleControllerBase(
 
 AutofillBubbleControllerBase::~AutofillBubbleControllerBase() {
   if (IsShowingBubble()) {
+    SetActionItemIsShowingBubble(false);
     bubble_view_->Hide();
     bubble_view_ = nullptr;
   }
@@ -59,11 +82,15 @@ bool AutofillBubbleControllerBase::ShouldReshowOnTabVisible() const {
 
 std::optional<actions::ActionId>
 AutofillBubbleControllerBase::GetActionIdForPageAction() {
+  if (page_action_config_ && page_action_config_->should_manage_visibility) {
+    return page_action_config_->action_id;
+  }
   return std::nullopt;
 }
 
 void AutofillBubbleControllerBase::WebContentsDestroyed() {
   if (IsShowingBubble()) {
+    SetActionItemIsShowingBubble(false);
     bubble_view_->Hide();
     bubble_view_ = nullptr;
   }
@@ -174,6 +201,7 @@ void AutofillBubbleControllerBase::QueueOrShowBubble(bool force_show) {
 void AutofillBubbleControllerBase::SetBubbleView(
     AutofillBubbleBase& bubble_view) {
   bubble_view_ = &bubble_view;
+  SetActionItemIsShowingBubble(true);
 }
 
 void AutofillBubbleControllerBase::ResetBubbleViewAndInformBubbleManager() {
@@ -185,6 +213,7 @@ void AutofillBubbleControllerBase::ResetBubbleViewAndInformBubbleManager() {
 
 #if !BUILDFLAG(IS_ANDROID)
   if (was_showing) {
+    SetActionItemIsShowingBubble(false);
     if (BubbleManager* const manager =
             BubbleManager::GetForTab(GetTabInterface())) {
       manager->OnBubbleHiddenByController(*this,
@@ -197,6 +226,9 @@ void AutofillBubbleControllerBase::ResetBubbleViewAndInformBubbleManager() {
 tabs::TabInterface* AutofillBubbleControllerBase::GetTabInterface() {
   if (tab_interface_) {
     return tab_interface_.get();
+  }
+  if (!web_contents()) {
+    return nullptr;
   }
   return tabs::TabInterface::MaybeGetFromContents(web_contents());
 }
@@ -230,6 +262,38 @@ void AutofillBubbleControllerBase::WillDiscardContents(
     content::WebContents* old_contents,
     content::WebContents* new_contents) {
   Observe(new_contents);
+}
+
+void AutofillBubbleControllerBase::SetActionItemIsShowingBubble(bool showing) {
+#if !BUILDFLAG(IS_ANDROID)
+  if (!page_action_config_ ||
+      !page_action_config_->should_sync_bubble_showing_state) {
+    return;
+  }
+  tabs::TabInterface* const tab = GetTabInterface();
+  if (!tab) {
+    return;
+  }
+  // `BubbleManagerImpl` hides active bubbles synchronously on
+  // `WillDeactivate`, which `TabStripModel` fires before detaching a tab from
+  // its model (`TabModel::OnRemovedFromModel()`), so `browser_window` still
+  // points to the window where the bubble was shown.
+  BrowserWindowInterface* const browser_window =
+      tab->GetBrowserWindowInterface();
+  if (!browser_window) {
+    return;
+  }
+  BrowserActions* const browser_actions = BrowserActions::From(browser_window);
+  if (!browser_actions || !browser_actions->root_action_item()) {
+    return;
+  }
+  if (actions::ActionItem* const action_item =
+          actions::ActionManager::Get().FindAction(
+              page_action_config_->action_id,
+              browser_actions->root_action_item())) {
+    action_item->SetIsShowingBubble(showing);
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace autofill
