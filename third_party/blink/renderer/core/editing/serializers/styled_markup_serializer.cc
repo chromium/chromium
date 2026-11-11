@@ -89,6 +89,22 @@ bool HandleSelectionBoundary<EditingInFlatTreeStrategy>(const Node& node) {
   return root && root->IsUserAgent();
 }
 
+// Returns true if something in `node` is selected: `past_end` is not inside
+// `node`, or some rendered content of `node` comes before `past_end`.
+template <typename Strategy>
+bool HasSelectedContent(const Node& node, const Node* past_end) {
+  if (!past_end || !Strategy::IsDescendantOf(*past_end, node)) {
+    return true;
+  }
+  for (const Node* n = Strategy::Next(node); n && n != past_end;
+       n = Strategy::Next(*n)) {
+    if (n->GetLayoutObject() && !Strategy::IsDescendantOf(*past_end, *n)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 }  // namespace
 
 template <typename... ElementTypes>
@@ -474,6 +490,16 @@ Node* StyledMarkupTraverser<Strategy>::Traverse(Node* start_node,
         // Don't write out empty block containers that aren't fully selected
         // unless the block container only contains br element or is a part of
         // table.
+        continue;
+      }
+      if (RuntimeEnabledFeatures::
+              SkipSerializingUnselectedTablePartElementsEnabled() &&
+          IsTablePartElement(n) &&
+          !HasSelectedContent<Strategy>(*n, past_end)) {
+        // Don't write out a table part that has nothing selected in it. This
+        // happens when the selection ends at the end of a table row, and the
+        // visible end moves to the start of the next row.
+        next = past_end;
         continue;
       }
       bool should_skip_unselectable_node = false;

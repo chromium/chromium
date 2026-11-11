@@ -6382,6 +6382,12 @@
       status: "stable",
     },
     {
+      // Kill switch for https://crbug.com/583144621: skips serializing table
+      // part elements when they don't actually contain any selected content.
+      name: "SkipSerializingUnselectedTablePartElements",
+      status: "stable",
+    },
+    {
       // crbug.com/517761566
       name: "SkipStaleUndoStepsInIdleSpellCheck",
       status: "stable",
