@@ -106,7 +106,9 @@ gfx::Insets CalculateTopPadding(int font_list_height) {
   // text and everything else to stop aligning correctly, so we account for it
   // by shrinking the top padding by 1.
   if (font_list_height != 15) {
-    CHECK_EQ(16, font_list_height, base::NotFatalUntil::M163);
+    // TODO(crbug.com/584035231): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK_EQ(16, font_list_height);
     return kTextViewPaddingDefault - gfx::Insets::TLBR(1, 0, 0, 0);
   }
 #endif
