@@ -6,9 +6,14 @@ package org.chromium.components.media_router;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
+import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * A wrapper around a FlingingController that allows the native code to use it
@@ -17,8 +22,11 @@ import org.chromium.build.annotations.NullMarked;
 @JNINamespace("media_router")
 @NullMarked
 public class FlingingControllerBridge implements MediaStatusObserver {
+    @JniType("::media_router::FlingingControllerBridge")
+    public interface NativeFlingingControllerBridge extends JniTypeToken {}
+
     private final FlingingController mFlingingController;
-    private long mNativeFlingingControllerBridge;
+    private @Nullable JniRawPtr<NativeFlingingControllerBridge> mNativeFlingingControllerBridge;
 
     public FlingingControllerBridge(FlingingController flingingController) {
         mFlingingController = flingingController;
@@ -57,14 +65,18 @@ public class FlingingControllerBridge implements MediaStatusObserver {
     // MediaStatusObserver implementation.
     @Override
     public void onMediaStatusUpdate(MediaStatusBridge status) {
-        if (mNativeFlingingControllerBridge != 0) {
+        if (mNativeFlingingControllerBridge != null) {
             FlingingControllerBridgeJni.get()
                     .onMediaStatusUpdated(mNativeFlingingControllerBridge, status);
         }
     }
 
     @CalledByNative
-    public void addNativeFlingingController(long nativeFlingingControllerBridge) {
+    public void addNativeFlingingController(
+            JniRawPtr<NativeFlingingControllerBridge> nativeFlingingControllerBridge) {
+        if (mNativeFlingingControllerBridge != null) {
+            mNativeFlingingControllerBridge.release();
+        }
         mNativeFlingingControllerBridge = nativeFlingingControllerBridge;
         mFlingingController.setMediaStatusObserver(this);
     }
@@ -72,11 +84,15 @@ public class FlingingControllerBridge implements MediaStatusObserver {
     @CalledByNative
     public void clearNativeFlingingController() {
         mFlingingController.clearMediaStatusObserver();
-        mNativeFlingingControllerBridge = 0;
+        if (mNativeFlingingControllerBridge != null) {
+            mNativeFlingingControllerBridge.release();
+            mNativeFlingingControllerBridge = null;
+        }
     }
 
     @NativeMethods
     interface Natives {
-        void onMediaStatusUpdated(long nativeFlingingControllerBridge, MediaStatusBridge status);
+        void onMediaStatusUpdated(
+                JniPtr<NativeFlingingControllerBridge> self, MediaStatusBridge status);
     }
 }
