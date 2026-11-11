@@ -349,6 +349,22 @@ class GlicActorTaskLifecycleGmailOtpEnabledBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// Explicitly disables Gmail OTP so the tests below don't depend on the
+// feature's default state (e.g. it may be enabled by the field trial testing
+// config).
+class GlicActorTaskLifecycleGmailOtpDisabledBrowserTest
+    : public GlicActorTaskLifecycleFunctionalBrowserTest {
+ public:
+  GlicActorTaskLifecycleGmailOtpDisabledBrowserTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kGlicActorAutofillOneTimePassword);
+  }
+  ~GlicActorTaskLifecycleGmailOtpDisabledBrowserTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 IN_PROC_BROWSER_TEST_F(GlicActorTaskLifecycleFunctionalBrowserTest,
                        testPauseAndResumeCreatedTask) {
   TestFuture<ActorTask::State> task_completion_state;
@@ -718,7 +734,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskLifecycleGmailOtpEnabledBrowserTest,
       task_id.value(), glic::mojom::ActorTaskStopReason::kTaskComplete);
 }
 
-IN_PROC_BROWSER_TEST_F(GlicActorTaskLifecycleFunctionalBrowserTest,
+IN_PROC_BROWSER_TEST_F(GlicActorTaskLifecycleGmailOtpDisabledBrowserTest,
                        testGmailOtpOptInDialogFeatureDisabled) {
   GlicInstanceImpl* instance = GetInstanceImpl();
   ASSERT_TRUE(instance);
@@ -835,7 +851,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskLifecycleGmailOtpEnabledBrowserTest,
       task_id.value(), glic::mojom::ActorTaskStopReason::kTaskComplete);
 }
 
-IN_PROC_BROWSER_TEST_F(GlicActorTaskLifecycleFunctionalBrowserTest,
+IN_PROC_BROWSER_TEST_F(GlicActorTaskLifecycleGmailOtpDisabledBrowserTest,
                        testGmailOtpConfirmationDialogFeatureDisabled) {
   GlicInstanceImpl* instance = GetInstanceImpl();
   ASSERT_TRUE(instance);
