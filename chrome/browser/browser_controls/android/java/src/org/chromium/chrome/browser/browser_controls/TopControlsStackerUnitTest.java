@@ -1745,4 +1745,80 @@ public class TopControlsStackerUnitTest {
         mTopControlsStacker.notifyDidFinishNavigationInPrimaryMainFrame();
         histogramWatcher.assertExpected();
     }
+
+    @Test
+    public void testRequestLayerUpdateSync_ReentrancyGuardCoalescesViaPost() {
+        final int[] reentrantCalls = new int[1];
+        TestLayer reentrantLayer =
+                new TestLayer(
+                        "TOOLBAR",
+                        TopControlType.TOOLBAR,
+                        TopControlVisibility.VISIBLE,
+                        ScrollBehavior.DEFAULT_SCROLLABLE,
+                        /* contributesToTotalHeight= */ true,
+                        100) {
+                    @Override
+                    public void onBrowserControlsOffsetUpdate(
+                            int layerYOffset, boolean reachRestingPosition) {
+                        super.onBrowserControlsOffsetUpdate(layerYOffset, reachRestingPosition);
+                        if (reentrantCalls[0] == 0) {
+                            reentrantCalls[0]++;
+                            mTopControlsStacker.requestLayerUpdateSync(true);
+                        }
+                    }
+                };
+        mTopControlsStacker.addControl(reentrantLayer);
+        reset(mBrowserControlsSizer);
+        doReturn(true).when(mBrowserControlsSizer).offsetOverridden();
+
+        mTopControlsStacker.requestLayerUpdateSync(false);
+        verify(mBrowserControlsSizer, times(1)).setTopControlsHeight(100, 0);
+
+        RobolectricUtil.runAllBackgroundAndUi();
+        verify(mBrowserControlsSizer, times(2)).setTopControlsHeight(100, 0);
+    }
+
+    @Test
+    public void testMidScrollTransitionToNeverScrollable_DoesNotLeaveControlsStuckHidden() {
+        TestLayer topScalp =
+                new TestLayer(
+                        "TOP_SCALP",
+                        TopControlType.TOP_SCALP,
+                        TopControlVisibility.VISIBLE,
+                        ScrollBehavior.DEFAULT_SCROLLABLE,
+                        /* contributesToTotalHeight= */ true,
+                        24);
+        TestLayer toolbar = TestLayer.toolbarLayer();
+        mTopControlsStacker.addControl(topScalp);
+        mTopControlsStacker.addControl(toolbar);
+
+        var simulator = new TestBrowserControlsOffsetHelper(0, 0);
+        mTopControlsStacker.requestLayerUpdateSync(false);
+        assertControlsHeight(124, 0);
+
+        // Scroll mid-way so both scrollable layers are partially scrolled off.
+        simulator.scrollBy(-60);
+        topScalp.assertOffset(-24);
+        toolbar.assertOffset(-36);
+
+        // Transition TOP_SCALP to NEVER_SCROLLABLE mid-scroll (e.g. StatusIndicator visible).
+        mTopControlsStacker.removeControl(topScalp);
+        TestLayer opaqueTopScalp = TestLayer.topScalpLayer();
+        mTopControlsStacker.addControl(opaqueTopScalp);
+        mTopControlsStacker.requestLayerUpdateSync(true);
+
+        assertControlsHeight(124, 24);
+        // Settle offsets at resting shown state (topOffset = 0, minHeightOffset = 24).
+        mTopControlsStacker.onControlsOffsetChanged(
+                /* topOffset= */ 0,
+                /* topControlsMinHeightOffset= */ 24,
+                /* topControlsMinHeightChanged= */ true,
+                /* bottomOffset= */ 0,
+                /* bottomControlsMinHeightOffset= */ 0,
+                /* bottomControlsMinHeightChanged= */ false,
+                /* requestNewFrame= */ true,
+                /* isVisibilityForced= */ false);
+        opaqueTopScalp.assertOffset(0).assertAtResting(true);
+        toolbar.assertOffset(24).assertAtResting(true);
+    }
 }

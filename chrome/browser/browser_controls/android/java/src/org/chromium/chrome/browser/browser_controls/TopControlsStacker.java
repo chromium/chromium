@@ -176,6 +176,7 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
     private boolean mHasAnimationLayer;
 
     private @Nullable PendingRequest mPendingRequest;
+    private boolean mIsUpdatingLayers;
 
     /**
      * Constructs the top controls stacker, which is used to calculate heights and offsets for any
@@ -297,24 +298,33 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
 
     @VisibleForTesting
     void updateLayersInternally(boolean animate, boolean shouldUpdateOffsets) {
-        recalculateHeights();
-        recalculateLayerRestingOffsets();
-        prepForAnimation(animate);
-        updateTopControlsHeight(animate);
-
-        // When reposition happening when browser controls is overriding offsets, we need to
-        // reposition immediately. Also reposition immediately when not animating so all layers
-        // assume their resting offsets without waiting for animation frames.
-        // TODO(crbug.com/559323059): Avoid repositioning immediately in favor of allowing
-        // animations for VT->HT transitions.
-        if (shouldUpdateOffsets || !animate) {
-            repositionLayers(
-                    mBrowserControlsSizer.getTopControlOffset(),
-                    mBrowserControlsSizer.getTopControlsMinHeightOffset(),
-                    isBrowserControlsVisibilityForced());
+        if (mIsUpdatingLayers) {
+            requestLayerUpdatePost(animate);
+            return;
         }
+        mIsUpdatingLayers = true;
+        try {
+            recalculateHeights();
+            recalculateLayerRestingOffsets();
+            prepForAnimation(animate);
+            updateTopControlsHeight(animate);
 
-        // Add more implementations here when necessary (e.g. offset calculation)
+            // When reposition happening when browser controls is overriding offsets, we need to
+            // reposition immediately. Also reposition immediately when not animating so all layers
+            // assume their resting offsets without waiting for animation frames.
+            // TODO(crbug.com/559323059): Avoid repositioning immediately in favor of allowing
+            // animations for VT->HT transitions.
+            if (shouldUpdateOffsets || !animate) {
+                repositionLayers(
+                        mBrowserControlsSizer.getTopControlOffset(),
+                        mBrowserControlsSizer.getTopControlsMinHeightOffset(),
+                        isBrowserControlsVisibilityForced());
+            }
+
+            // Add more implementations here when necessary (e.g. offset calculation)
+        } finally {
+            mIsUpdatingLayers = false;
+        }
     }
 
     /**
