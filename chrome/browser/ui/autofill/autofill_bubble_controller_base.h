@@ -54,9 +54,6 @@ class AutofillBubbleControllerBase : public BubbleControllerBase,
     bool should_sync_bubble_showing_state = false;
   };
 
-  // TODO(crbug.com/582209796): Remove once all subclasses pass
-  // `PageActionConfig`.
-  explicit AutofillBubbleControllerBase(content::WebContents* web_contents);
   AutofillBubbleControllerBase(content::WebContents* web_contents,
                                PageActionConfig page_action_config);
   AutofillBubbleControllerBase(tabs::TabInterface* tab_interface,
@@ -117,11 +114,6 @@ class AutofillBubbleControllerBase : public BubbleControllerBase,
 
   bool IsBubbleManagerEnabled();
 
-  // Deprecated: pass `PageActionConfig` to the constructor instead.
-  // TODO(crbug.com/582209796): Remove once all subclasses pass
-  // `PageActionConfig`.
-  virtual std::optional<actions::ActionId> GetActionIdForPageAction();
-
   // Subclasses should implement this method to actually show the bubble and
   // potentially log metrics.
   virtual void DoShowBubble() = 0;
@@ -170,9 +162,7 @@ class AutofillBubbleControllerBase : public BubbleControllerBase,
   // Non-null when constructed with `tabs::TabInterface*`.
   const raw_ptr<tabs::TabInterface> tab_interface_ = nullptr;
 
-  // TODO(crbug.com/582209796): Drop `std::optional` once the 1-argument
-  // constructor is removed.
-  const std::optional<PageActionConfig> page_action_config_;
+  const PageActionConfig page_action_config_;
 
   base::CallbackListSubscription will_discard_contents_subscription_;
 

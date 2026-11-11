@@ -25,10 +25,6 @@
 namespace autofill {
 
 AutofillBubbleControllerBase::AutofillBubbleControllerBase(
-    content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {}
-
-AutofillBubbleControllerBase::AutofillBubbleControllerBase(
     content::WebContents* web_contents,
     PageActionConfig page_action_config)
     : content::WebContentsObserver(web_contents),
@@ -69,14 +65,6 @@ bool AutofillBubbleControllerBase::ShouldReshowOnTabVisible() const {
   return false;
 }
 
-std::optional<actions::ActionId>
-AutofillBubbleControllerBase::GetActionIdForPageAction() {
-  if (page_action_config_ && page_action_config_->should_manage_visibility) {
-    return page_action_config_->action_id;
-  }
-  return std::nullopt;
-}
-
 void AutofillBubbleControllerBase::WebContentsDestroyed() {
   if (IsShowingBubble()) {
     SetActionItemIsShowingBubble(false);
@@ -97,10 +85,10 @@ AutofillBubbleControllerBase::GetPageActionTooltipText() {
 void AutofillBubbleControllerBase::UpdatePageActionIcon() {
   // Page action icons do not exist for Android.
 #if !BUILDFLAG(IS_ANDROID)
-  std::optional<actions::ActionId> action_id = GetActionIdForPageAction();
-  if (!action_id.has_value()) {
+  if (!page_action_config_.should_manage_visibility) {
     return;
   }
+  const actions::ActionId action_id = page_action_config_.action_id;
 
   tabs::TabInterface* const tab_interface = GetTabInterface();
   if (!tab_interface) {
@@ -116,15 +104,16 @@ void AutofillBubbleControllerBase::UpdatePageActionIcon() {
   }
 
   if (ShouldShowPageAction()) {
-    if (auto tooltip_text = GetPageActionTooltipText()) {
-      page_action_controller->OverrideText(*action_id, *tooltip_text);
-      page_action_controller->OverrideTooltip(*action_id, *tooltip_text);
+    if (const std::optional<std::u16string> tooltip_text =
+            GetPageActionTooltipText()) {
+      page_action_controller->OverrideText(action_id, *tooltip_text);
+      page_action_controller->OverrideTooltip(action_id, *tooltip_text);
     }
-    page_action_controller->Show(*action_id);
+    page_action_controller->Show(action_id);
   } else {
-    page_action_controller->Hide(*action_id);
-    page_action_controller->ClearOverrideText(*action_id);
-    page_action_controller->ClearOverrideTooltip(*action_id);
+    page_action_controller->Hide(action_id);
+    page_action_controller->ClearOverrideText(action_id);
+    page_action_controller->ClearOverrideTooltip(action_id);
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
@@ -255,8 +244,7 @@ void AutofillBubbleControllerBase::WillDiscardContents(
 
 void AutofillBubbleControllerBase::SetActionItemIsShowingBubble(bool showing) {
 #if !BUILDFLAG(IS_ANDROID)
-  if (!page_action_config_ ||
-      !page_action_config_->should_sync_bubble_showing_state) {
+  if (!page_action_config_.should_sync_bubble_showing_state) {
     return;
   }
   tabs::TabInterface* const tab = GetTabInterface();
@@ -278,7 +266,7 @@ void AutofillBubbleControllerBase::SetActionItemIsShowingBubble(bool showing) {
   }
   if (actions::ActionItem* const action_item =
           actions::ActionManager::Get().FindAction(
-              page_action_config_->action_id,
+              page_action_config_.action_id,
               browser_actions->root_action_item())) {
     action_item->SetIsShowingBubble(showing);
   }
