@@ -91,6 +91,14 @@ void WaitForEnterpriseOnboardingScreen() {
              @"Enterprise onboarding didn't appear.");
 }
 
+void WaitForEnterpriseOnboardingScreenToDisappear() {
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:
+          ManagedProfileCreationScreenMatcher()
+                                     timeout:base::test::ios::
+                                                 kWaitForActionTimeout];
+}
+
 void ConfirmEnterpriseOnboardingScreen() {
   WaitForEnterpriseOnboardingScreen();
   // On compact screens, `scrollToEndMandatory` displays a "Read More" button
@@ -112,6 +120,17 @@ void ConfirmEnterpriseOnboardingScreen() {
   if (!error) {
     [[EarlGrey selectElementWithMatcher:readMoreButton]
         performAction:grey_tap()];
+    ConditionBlock readMoreDisappearedCondition = ^{
+      NSError* conditionError = nil;
+      [[EarlGrey selectElementWithMatcher:readMoreButton]
+          assertWithMatcher:grey_notVisible()
+                      error:&conditionError];
+      return conditionError == nil;
+    };
+    GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
+                   base::test::ios::kWaitForActionTimeout,
+                   readMoreDisappearedCondition),
+               @"Read More button did not disappear after scrolling.");
   }
   [[EarlGrey selectElementWithMatcher:primaryButton] performAction:grey_tap()];
 }

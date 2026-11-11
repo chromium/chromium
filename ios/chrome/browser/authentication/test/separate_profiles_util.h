@@ -31,6 +31,9 @@ void SignoutFromAccountMenu();
 // Waits for the enterprise onboarding screen to become sufficiently visible.
 void WaitForEnterpriseOnboardingScreen();
 
+// Waits for the enterprise onboarding screen to disappear.
+void WaitForEnterpriseOnboardingScreenToDisappear();
+
 // Confirms the enterprise onboarding screen by tapping the primary button,
 // scrolling to the bottom first if needed (required when `scrollToEndMandatory`
 // is active on compact screens).

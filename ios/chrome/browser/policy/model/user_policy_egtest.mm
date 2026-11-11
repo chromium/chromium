@@ -35,6 +35,7 @@
 #import "components/policy/test_support/test_server_helpers.h"
 #import "components/strings/grit/components_strings.h"
 #import "google_apis/gaia/gaia_switches.h"
+#import "ios/chrome/browser/authentication/test/separate_profiles_util.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/authentication/test/signin_matchers.h"
@@ -377,12 +378,6 @@ id<GREYMatcher> DeclineManagementButtonMatcher() {
                     grey_sufficientlyVisible(), nil);
 }
 
-// Returns a matcher for the managed profile creation screen.
-id<GREYMatcher> ManagedProfileCreationScreenMatcher() {
-  return grey_accessibilityID(
-      kManagedProfileCreationScreenAccessibilityIdentifier);
-}
-
 }  // namespace
 
 // Test suite for User Policy.
@@ -594,8 +589,7 @@ id<GREYMatcher> ManagedProfileCreationScreenMatcher() {
   // Disable egtest synchronization to avoid infinite spinner loop.
   ScopedSynchronizationDisabler disabler;
 
-  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
-                      ManagedProfileCreationScreenMatcher()];
+  WaitForEnterpriseOnboardingScreen();
 
   // Verify the management disclosure UI.
   [ChromeEarlGrey waitForMatcher:ManagedProfileCreationTitleMatcher()];
@@ -608,15 +602,10 @@ id<GREYMatcher> ManagedProfileCreationScreenMatcher() {
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Complete the sign-in flow by completing the confirmation dialog.
-  id<GREYMatcher> acceptButton = [ChromeMatchersAppInterface
-      buttonWithAccessibilityLabelID:
-          IDS_IOS_ENTERPRISE_PROFILE_CREATION_CONTINUE];
-  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:acceptButton];
-  [[EarlGrey selectElementWithMatcher:acceptButton] performAction:grey_tap()];
+  ConfirmEnterpriseOnboardingScreen();
 
   // Verify that the confirmation dialog was dismissed.
-  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
-                      ManagedProfileCreationScreenMatcher()];
+  WaitForEnterpriseOnboardingScreenToDisappear();
 
   // Verify that the flow was successful by validating that the account is
   // signed in after accepting from the confirmation dialog.
@@ -636,8 +625,7 @@ id<GREYMatcher> ManagedProfileCreationScreenMatcher() {
   // Disable egtest synchronization to avoid infinite spinner loop.
   ScopedSynchronizationDisabler disabler;
 
-  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
-                      ManagedProfileCreationScreenMatcher()];
+  WaitForEnterpriseOnboardingScreen();
 
   // Cancel the sign-in flow by tapping on the cancel button.
   [ChromeEarlGrey waitForMatcher:DeclineManagementButtonMatcher()];
@@ -645,8 +633,7 @@ id<GREYMatcher> ManagedProfileCreationScreenMatcher() {
       performAction:grey_tap()];
 
   // Verify that the confirmation dialog was dismissed.
-  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
-                      ManagedProfileCreationScreenMatcher()];
+  WaitForEnterpriseOnboardingScreenToDisappear();
 
   // Verify that no sign-in error alert action is shown.
   [ChromeEarlGrey
@@ -690,6 +677,9 @@ id<GREYMatcher> ManagedProfileCreationScreenMatcher() {
       tapSettingsMenuButton:chrome_test_util::SettingsSignInRowMatcher()];
 
   // Proceed with sign-in.
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          chrome_test_util::ConsistencySigninPrimaryButtonMatcher()];
   [[EarlGrey selectElementWithMatcher:
                  chrome_test_util::ConsistencySigninPrimaryButtonMatcher()]
       performAction:grey_tap()];
