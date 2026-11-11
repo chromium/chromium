@@ -22,7 +22,6 @@ class LocaleTemplateUrlLoader : public ProfileObserver {
   LocaleTemplateUrlLoader(const std::string& locale,
                           TemplateURLService* service,
                           Profile* profile);
-  void Destroy();
   bool LoadTemplateUrls();
   void RemoveTemplateUrls();
   void OverrideDefaultSearchProvider();

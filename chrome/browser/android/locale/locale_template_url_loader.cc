@@ -13,15 +13,16 @@
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/util.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/locale/jni_headers/LocaleTemplateUrlLoader_jni.h"
 
-static int64_t JNI_LocaleTemplateUrlLoader_Init(const std::string& locale,
-                                                Profile* profile) {
-  return reinterpret_cast<intptr_t>(new LocaleTemplateUrlLoader(
-      locale, TemplateURLServiceFactory::GetForProfile(profile), profile));
+static jni_zero::JniUniquePtr<LocaleTemplateUrlLoader>
+JNI_LocaleTemplateUrlLoader_Init(const std::string& locale, Profile* profile) {
+  return jni_zero::MakeUnique<LocaleTemplateUrlLoader>(
+      locale, TemplateURLServiceFactory::GetForProfile(profile), profile);
 }
 
 LocaleTemplateUrlLoader::LocaleTemplateUrlLoader(const std::string& locale,
@@ -29,10 +30,6 @@ LocaleTemplateUrlLoader::LocaleTemplateUrlLoader(const std::string& locale,
                                                  Profile* profile)
     : locale_(locale), template_url_service_(service) {
   profile_observation_.Observe(profile);
-}
-
-void LocaleTemplateUrlLoader::Destroy() {
-  delete this;
 }
 
 void LocaleTemplateUrlLoader::OnProfileWillBeDestroyed(Profile* profile) {
