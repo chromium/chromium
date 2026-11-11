@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PASSWORD_MANAGER_REMOTE_ACTOR_REMOTE_ACTOR_CREDENTIAL_SHARING_SERVICE_IMPL_H_
-#define CHROME_BROWSER_PASSWORD_MANAGER_REMOTE_ACTOR_REMOTE_ACTOR_CREDENTIAL_SHARING_SERVICE_IMPL_H_
+#ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_REMOTE_ACTOR_REMOTE_ACTOR_CREDENTIAL_SHARING_SERVICE_IMPL_H_
+#define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_REMOTE_ACTOR_REMOTE_ACTOR_CREDENTIAL_SHARING_SERVICE_IMPL_H_
 
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/password_manager/remote_actor/remote_actor_credential_sharing_service.h"
+#include "components/password_manager/core/browser/remote_actor/remote_actor_credential_sharing_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace signin {
@@ -58,8 +58,9 @@ class RemoteActorCredentialSharingServiceImpl
   //   is run with `false`.
   // - If the Passbox upload succeeds but the subsequent APS grant fails, the
   //   callback is run with `false`. We do not attempt to clean up or delete the
-  //   credential from Passbox in this case; instead, we rely on the credential's
-  //   Time-To-Live (TTL) to automatically expire and delete it from Passbox.
+  //   credential from Passbox in this case; instead, we rely on the
+  //   credential's Time-To-Live (TTL) to automatically expire and delete it
+  //   from Passbox.
   void SharePassword(const ShareParameters& params,
                      SharePasswordCallback callback) override;
 
@@ -80,4 +81,4 @@ class RemoteActorCredentialSharingServiceImpl
 
 }  // namespace password_manager
 
-#endif  // CHROME_BROWSER_PASSWORD_MANAGER_REMOTE_ACTOR_REMOTE_ACTOR_CREDENTIAL_SHARING_SERVICE_IMPL_H_
+#endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_REMOTE_ACTOR_REMOTE_ACTOR_CREDENTIAL_SHARING_SERVICE_IMPL_H_

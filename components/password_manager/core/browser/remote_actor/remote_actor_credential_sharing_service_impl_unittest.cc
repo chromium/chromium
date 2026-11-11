@@ -2,21 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/password_manager/remote_actor/remote_actor_credential_sharing_service_impl.h"
+#include "components/password_manager/core/browser/remote_actor/remote_actor_credential_sharing_service_impl.h"
 
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/password_manager/remote_actor/remote_actor_credential_sharing_service_factory.h"
-#include "chrome/test/base/testing_profile.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
-#include "content/public/test/browser_task_environment.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -26,28 +21,6 @@
 #include "url/gurl.h"
 
 namespace password_manager {
-
-TEST(RemoteActorCredentialSharingServiceTest, FactoryCreatesInstance) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kRemoteActorCredentialSharing);
-
-  content::BrowserTaskEnvironment task_environment;
-  TestingProfile profile;
-  RemoteActorCredentialSharingService* service =
-      RemoteActorCredentialSharingServiceFactory::GetForProfile(&profile);
-  EXPECT_NE(service, nullptr);
-}
-
-TEST(RemoteActorCredentialSharingServiceTest, FactoryReturnsNullForIncognito) {
-  content::BrowserTaskEnvironment task_environment;
-  TestingProfile profile;
-  Profile* incognito_profile =
-      profile.GetPrimaryOTRProfile(/*create_if_needed=*/true);
-  RemoteActorCredentialSharingService* service =
-      RemoteActorCredentialSharingServiceFactory::GetForProfile(
-          incognito_profile);
-  EXPECT_EQ(service, nullptr);
-}
 
 class RemoteActorCredentialSharingServiceImplTest : public testing::Test {
  public:
@@ -289,12 +262,11 @@ TEST_P(RemoteActorCredentialSharingServiceImplInvalidParamsTest,
 INSTANTIATE_TEST_SUITE_P(
     ,
     RemoteActorCredentialSharingServiceImplInvalidParamsTest,
-    testing::Values(InvalidParamsTestCase{"EmptyTaskId", "12345",
-                                          "https://nike.com", ""},
-                    InvalidParamsTestCase{"EmptyWebOrigin", "12345", "",
-                                          "task_id_123"},
-                    InvalidParamsTestCase{"EmptyGaiaId", "", "https://nike.com",
-                                          "task_id_123"}),
+    testing::Values(
+        InvalidParamsTestCase{"EmptyTaskId", "12345", "https://nike.com", ""},
+        InvalidParamsTestCase{"EmptyWebOrigin", "12345", "", "task_id_123"},
+        InvalidParamsTestCase{"EmptyGaiaId", "", "https://nike.com",
+                              "task_id_123"}),
     [](const testing::TestParamInfo<InvalidParamsTestCase>& info) {
       return info.param.test_name;
     });

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/password_manager/remote_actor/remote_actor_credential_permission_client.h"
+#include "components/password_manager/core/browser/remote_actor/remote_actor_credential_permission_client.h"
 
 #include <memory>
 #include <string>
@@ -15,7 +15,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
-#include "chrome/browser/password_manager/remote_actor/remote_actor_switches.h"
+#include "components/password_manager/core/browser/remote_actor/remote_actor_switches.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
