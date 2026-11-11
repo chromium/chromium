@@ -4,37 +4,63 @@
 
 #include "chrome/updater/update_service_impl_impl.h"
 
+#include <memory>
 #include <optional>
 #include <string>
+#include <utility>
+#include <vector>
 
 #include "base/barrier_closure.h"
+#include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/json/json_reader.h"
+#include "base/json/json_writer.h"
+#include "base/location.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
+#include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "chrome/updater/activity.h"
+#include "base/values.h"
+#include "base/version.h"
+#include "build/build_config.h"
+#include "chrome/updater/branded_constants.h"
 #include "chrome/updater/configurator.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/external_constants.h"
 #include "chrome/updater/external_constants_builder.h"
+#include "chrome/updater/external_constants_default.h"
+#include "chrome/updater/external_constants_override.h"
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/policy/service.h"
 #include "chrome/updater/prefs.h"
+#include "chrome/updater/prefs_impl.h"
 #include "chrome/updater/registration_data.h"
 #include "chrome/updater/remove_uninstalled_apps_task.h"
 #include "chrome/updater/test/test_scope.h"
 #include "chrome/updater/update_service.h"
+#include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/util.h"
+#include "components/crx_file/crx_verifier.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/update_client/activity_data_service.h"
+#include "components/update_client/crx_cache.h"
+#include "components/update_client/network.h"
+#include "components/update_client/update_client.h"
 #include "components/update_client/update_client_errors.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "chrome/updater/util/win_util.h"
@@ -43,6 +69,121 @@
 #endif  // BUILDFLAG(IS_WIN)
 
 namespace updater::internal {
+namespace {
+
+// Answers every POST with `response_body` and reports each request body to
+// `on_post_request`. Downloads are not supported.
+class FakeUpdateCheckFetcher : public update_client::NetworkFetcher {
+ public:
+  FakeUpdateCheckFetcher(
+      std::string response_body,
+      base::RepeatingCallback<void(const std::string&)> on_post_request)
+      : response_body_(std::move(response_body)),
+        on_post_request_(std::move(on_post_request)) {}
+  ~FakeUpdateCheckFetcher() override = default;
+
+  void PostRequest(
+      const GURL& url,
+      const std::string& post_data,
+      const std::string& content_type,
+      const base::flat_map<std::string, std::string>& post_additional_headers,
+      ResponseStartedCallback response_started_callback,
+      ProgressCallback progress_callback,
+      PostRequestCompleteCallback post_request_complete_callback) override {
+    on_post_request_.Run(post_data);
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](std::string response_body,
+               ResponseStartedCallback response_started_callback,
+               PostRequestCompleteCallback post_request_complete_callback) {
+              response_started_callback.Run(
+                  /*response_code=*/200,
+                  /*content_length=*/response_body.size());
+              std::move(post_request_complete_callback)
+                  .Run(std::move(response_body), /*net_error=*/0,
+                       /*header_etag=*/"", /*header_x_cup_server_proof=*/"",
+                       /*header_set_cookie=*/"",
+                       /*xheader_retry_after_sec=*/-1);
+            },
+            response_body_, std::move(response_started_callback),
+            std::move(post_request_complete_callback)));
+  }
+
+  base::OnceClosure DownloadToFile(
+      const GURL& url,
+      const base::FilePath& file_path,
+      ResponseStartedCallback response_started_callback,
+      ProgressCallback progress_callback,
+      DownloadToFileCompleteCallback download_to_file_complete_callback)
+      override {
+    NOTREACHED() << "Unexpected download of " << url;
+  }
+
+ private:
+  const std::string response_body_;
+  base::RepeatingCallback<void(const std::string&)> on_post_request_;
+};
+
+// Creates `FakeUpdateCheckFetcher` instances that share `response_body` and
+// `on_post_request`.
+class FakeUpdateCheckFetcherFactory
+    : public update_client::NetworkFetcherFactory {
+ public:
+  FakeUpdateCheckFetcherFactory(
+      std::string response_body,
+      base::RepeatingCallback<void(const std::string&)> on_post_request)
+      : response_body_(std::move(response_body)),
+        on_post_request_(std::move(on_post_request)) {}
+
+  std::unique_ptr<update_client::NetworkFetcher> Create() const override {
+    return std::make_unique<FakeUpdateCheckFetcher>(response_body_,
+                                                    on_post_request_);
+  }
+
+ protected:
+  ~FakeUpdateCheckFetcherFactory() override = default;
+
+ private:
+  const std::string response_body_;
+  base::RepeatingCallback<void(const std::string&)> on_post_request_;
+};
+
+// A `Configurator` that uses `network_fetcher_factory`, a CRX cache at
+// `crx_cache_path`, and an unmetered connection.
+class UpdateAllTestConfigurator : public Configurator {
+ public:
+  UpdateAllTestConfigurator(scoped_refptr<UpdaterPrefs> prefs,
+                            scoped_refptr<ExternalConstants> external_constants,
+                            UpdaterScope scope,
+                            scoped_refptr<update_client::NetworkFetcherFactory>
+                                network_fetcher_factory,
+                            const base::FilePath& crx_cache_path)
+      : Configurator(std::move(prefs), std::move(external_constants), scope),
+        network_fetcher_factory_(std::move(network_fetcher_factory)),
+        crx_cache_(
+            base::MakeRefCounted<update_client::CrxCache>(crx_cache_path)) {}
+
+  scoped_refptr<update_client::NetworkFetcherFactory> GetNetworkFetcherFactory()
+      override {
+    return network_fetcher_factory_;
+  }
+
+  scoped_refptr<update_client::CrxCache> GetCrxCache() const override {
+    return crx_cache_;
+  }
+
+  bool IsConnectionMetered() const override { return false; }
+
+ protected:
+  ~UpdateAllTestConfigurator() override = default;
+
+ private:
+  scoped_refptr<update_client::NetworkFetcherFactory> network_fetcher_factory_;
+  scoped_refptr<update_client::CrxCache> crx_cache_;
+};
+
+}  // namespace
 
 TEST(UpdateServiceImplTest, TestToResult) {
   EXPECT_EQ(ToResult(update_client::Error::NONE),
@@ -110,6 +251,100 @@ TEST(UpdateServiceImplTest, TestGetComponentsInOrder) {
   EXPECT_EQ(crxs[1]->app_id, "id2");
   EXPECT_EQ(crxs[2]->app_id, "id3");
   EXPECT_EQ(crxs[3]->app_id, "id4");
+}
+
+TEST(UpdateServiceImplTest, UpdateAllShufflesApps) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::test::TaskEnvironment task_environment;
+
+  // `UpdateAll` requires the updater itself to be registered.
+  std::vector<std::string> registered_apps = {kUpdaterAppId};
+  for (int i = 1; i <= 9; ++i) {
+    registered_apps.push_back(absl::StrFormat("app%d", i));
+  }
+
+  base::ListValue response_apps;
+  for (const std::string& app_id : registered_apps) {
+    response_apps.Append(
+        base::DictValue()
+            .Set("appid", app_id)
+            .Set("status", "ok")
+            .Set("updatecheck", base::DictValue().Set("status", "noupdate")));
+  }
+  std::string response_json;
+  ASSERT_TRUE(base::JSONWriter::Write(
+      base::DictValue().Set("response",
+                            base::DictValue()
+                                .Set("protocol", "4.0")
+                                .Set("apps", std::move(response_apps))),
+      &response_json));
+  const std::string response_body = base::StrCat({")]}'\n", response_json});
+
+  std::vector<std::string> captured_requests;
+  auto pref = std::make_unique<TestingPrefServiceSimple>();
+  update_client::RegisterPrefs(pref->registry());
+  RegisterPersistedDataPrefs(pref->registry());
+
+  base::DictValue overrides;
+  overrides.Set(kDevOverrideKeyUseCUP, false);
+  overrides.Set(kDevOverrideKeyUrl, "https://localhost/update");
+
+  auto configurator = base::MakeRefCounted<UpdateAllTestConfigurator>(
+      base::MakeRefCounted<UpdaterPrefsImpl>(temp_dir.GetPath(),
+                                             /*lock=*/nullptr, std::move(pref)),
+      base::MakeRefCounted<ExternalConstantsOverrider>(
+          std::move(overrides), CreateDefaultExternalConstants()),
+      GetUpdaterScopeForTesting(),
+      base::MakeRefCounted<FakeUpdateCheckFetcherFactory>(
+          response_body,
+          base::BindLambdaForTesting([&](const std::string& post_data) {
+            captured_requests.push_back(post_data);
+          })),
+      temp_dir.GetPath().Append(FILE_PATH_LITERAL("crx_cache")));
+
+  scoped_refptr<PersistedData> persisted_data =
+      configurator->GetUpdaterPersistedData();
+  for (const std::string& app_id : registered_apps) {
+    RegistrationRequest registration;
+    registration.app_id = app_id;
+    registration.version = "1.0.0.0";
+    persisted_data->RegisterApp(registration);
+  }
+  const std::vector<std::string> persisted_app_ids =
+      persisted_data->GetAppIds();
+  ASSERT_EQ(persisted_app_ids.size(), 10u);
+
+  auto service = base::MakeRefCounted<UpdateServiceImplImpl>(configurator);
+  base::RunLoop loop;
+  UpdateService::Result update_result = UpdateService::Result::kServiceFailed;
+  service->UpdateAll(base::DoNothing(), base::BindLambdaForTesting(
+                                            [&](UpdateService::Result result) {
+                                              update_result = result;
+                                              loop.Quit();
+                                            }));
+  loop.Run();
+  EXPECT_EQ(update_result, UpdateService::Result::kSuccess);
+  ASSERT_EQ(captured_requests.size(), 1u);
+
+  std::optional<base::Value> doc = base::JSONReader::Read(
+      captured_requests[0], base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  ASSERT_TRUE(doc);
+  const base::ListValue* sent_apps =
+      doc->GetDict().FindListByDottedPath("request.apps");
+  ASSERT_TRUE(sent_apps);
+  std::vector<std::string> sent_app_ids;
+  for (const base::Value& app : *sent_apps) {
+    const std::string* app_id = app.GetDict().FindString("appid");
+    ASSERT_TRUE(app_id);
+    sent_app_ids.push_back(*app_id);
+  }
+  EXPECT_THAT(sent_app_ids,
+              ::testing::UnorderedElementsAreArray(persisted_app_ids));
+
+  // A shuffle of 10 apps keeps the original order with probability
+  // 1/10! (about 1 in 3.6 million).
+  EXPECT_NE(sent_app_ids, persisted_app_ids);
 }
 
 class UpdateServiceImplInstallTrackingTest : public ::testing::Test {

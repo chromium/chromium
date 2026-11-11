@@ -31,6 +31,7 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
+#include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -1161,11 +1162,17 @@ void UpdateServiceImplImpl::UpdateAll(
   VLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  auto app_ids = config_->GetUpdaterPersistedData()->GetAppIds();
+  std::vector<std::string> app_ids =
+      config_->GetUpdaterPersistedData()->GetAppIds();
 
   CHECK(std::ranges::contains(
       app_ids, base::ToLowerASCII(kUpdaterAppId),
       static_cast<std::string (*)(std::string_view)>(&base::ToLowerASCII)));
+
+  // Apps are checked and installed in this order, so randomize it to keep an
+  // app that fails, hangs, or runs out of time from always delaying the apps
+  // after it.
+  base::RandomShuffle(app_ids.begin(), app_ids.end());
 
   constexpr Priority kPriority = Priority::kBackground;
 
