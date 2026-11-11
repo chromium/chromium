@@ -9,6 +9,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/app/actor_request.h"
 #import "ios/chrome/app/startup/app_startup_utils.h"
 #import "ios/chrome/browser/app_switcher/metrics/app_switcher_metrics.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
@@ -81,11 +82,22 @@ AppSwitcherParamsRequestStatus AppSwitcherParamsAvailability(
 
   // An array of blocks to execute once the `applicationMode` is available.
   NSMutableArray<AppSwitcherParamsRequestBlock>* _pendingBlocks;
+
+  std::optional<RemoteActorRequest> _remoteActorRequest;
 }
 
 @synthesize inputURLs = _inputURLs;
 @synthesize postOpeningAction = _postOpeningAction;
 @synthesize textQuery = _textQuery;
+
+- (const std::optional<RemoteActorRequest>&)remoteActorRequest {
+  return _remoteActorRequest;
+}
+
+- (void)setRemoteActorRequest:
+    (const std::optional<RemoteActorRequest>&)request {
+  _remoteActorRequest = request;
+}
 
 - (const GURL&)externalURL {
   return _externalURL;
@@ -224,6 +236,10 @@ AppSwitcherParamsRequestStatus AppSwitcherParamsAvailability(
     case START_GEMINI_AI_SUMMARIZATION:
       [description appendString:@", should launch Gemini AI summarization"];
       break;
+    case REMOTE_ACTOR_CREDENTIAL_SHARING:
+      [description
+          appendString:@", should launch remote actor credential sharing"];
+      break;
     default:
       break;
   }
@@ -248,6 +264,7 @@ AppSwitcherParamsRequestStatus AppSwitcherParamsAvailability(
     case CREDENTIAL_EXCHANGE_IMPORT:
     case TRIGGER_GEMINI_PROMO:
     case START_GEMINI_AI_SUMMARIZATION:
+    case REMOTE_ACTOR_CREDENTIAL_SHARING:
       return YES;
 
       // Lens action are valid on empty URLs, in addition to

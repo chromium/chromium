@@ -6,8 +6,11 @@
 
 #import <Foundation/Foundation.h>
 
+#import <optional>
+
 #import "base/command_line.h"
 #import "base/strings/stringprintf.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/password_manager/core/browser/manage_passwords_referrer.h"
@@ -15,10 +18,13 @@
 #import "ios/chrome/app/app_startup_parameters.h"
 #import "ios/chrome/app/startup/app_launch_metrics.h"
 #import "ios/chrome/app/startup/app_startup_utils.h"
+#import "ios/chrome/app/startup/remote_actor_startup_test_util.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/default_browser/model/utils_test_support.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/browser/passwords/model/remote_actor/remote_actor_constants.h"
+#import "ios/chrome/browser/passwords/model/remote_actor/test/scoped_keychain_access_group_override.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
@@ -39,7 +45,7 @@ void CheckLaunchSourceForURL(first_run::ExternalLaunch expectedSource,
   EXPECT_EQ(expectedSource, [params launchSource]);
 }
 
-// Test fixture for testing ChromeAppStartupParameters with the legacy startup
+// Test fixture for testing `ChromeAppStartupParameters` with the legacy startup
 // flow.
 class AppStartupParametersTest : public PlatformTest {
  protected:
@@ -51,11 +57,14 @@ class AppStartupParametersTest : public PlatformTest {
 
   ~AppStartupParametersTest() override {
     ResetEnableNewStartupFlowEnabledForTesting();
+    CleanupRemoteActorTestData();
     [app_group::GetCommonGroupUserDefaults()
         removeObjectForKey:app_group::kChromeCapabilitiesPreference];
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
+  ScopedRemoteActorKeychainAccessGroupOverrideForTesting keychain_override_{
+      nil};
 };
 
 // Tests that parsing an empty URL returns nil.
@@ -923,6 +932,129 @@ TEST_F(AppStartupParametersTest,
   scoped_feature_list.InitWithFeatures(
       {}, {kPageActionMenu, kAppSwitcherAISummarization});
   EXPECT_FALSE(IsAppSwitcherAISummarizationTestingExternalURLEnabled());
+}
+
+// Tests that a valid Remote Actor URL successfully parses when the feature flag
+// is enabled.
+TEST_F(AppStartupParametersTest, RemoteActorURL_Success) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      password_manager::features::kRemoteActorCredentialSharing);
+
+  RemoteActorTestData test_data = CreateRemoteActorTestData(@"chromium");
+
+  ChromeAppStartupParameters* params = [ChromeAppStartupParameters
+      startupParametersWithURL:test_data.url
+             sourceApplication:@"com.google.gemini"
+               applicationMode:ApplicationModeForTabOpening::UNDETERMINED
+          forceApplicationMode:NO];
+
+  ASSERT_TRUE(params);
+  EXPECT_TRUE([params externalURL].is_empty());
+  EXPECT_EQ(REMOTE_ACTOR_CREDENTIAL_SHARING, [params postOpeningAction]);
+  ASSERT_TRUE(params.remoteActorRequest.has_value());
+  EXPECT_EQ(test_data.expectation.payload, params.remoteActorRequest->payload);
+  EXPECT_EQ(test_data.expectation.nonce, params.remoteActorRequest->nonce);
+  EXPECT_EQ(test_data.expectation.request.gaia_id(),
+            params.remoteActorRequest->request.gaia_id());
+  EXPECT_EQ(test_data.expectation.request.domain(),
+            params.remoteActorRequest->request.domain());
+  EXPECT_EQ(test_data.expectation.request.task_id(),
+            params.remoteActorRequest->request.task_id());
+}
+
+// Tests that a Remote Actor URL with a different scheme is also recognized when
+// the feature flag is enabled.
+TEST_F(AppStartupParametersTest, RemoteActorURL_DifferentScheme) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      password_manager::features::kRemoteActorCredentialSharing);
+
+  RemoteActorTestData test_data = CreateRemoteActorTestData(@"foo");
+
+  ChromeAppStartupParameters* params = [ChromeAppStartupParameters
+      startupParametersWithURL:test_data.url
+             sourceApplication:@"com.google.gemini"
+               applicationMode:ApplicationModeForTabOpening::UNDETERMINED
+          forceApplicationMode:NO];
+
+  ASSERT_TRUE(params);
+  EXPECT_TRUE([params externalURL].is_empty());
+  EXPECT_EQ(REMOTE_ACTOR_CREDENTIAL_SHARING, [params postOpeningAction]);
+  ASSERT_TRUE(params.remoteActorRequest.has_value());
+  EXPECT_EQ(test_data.expectation.request.gaia_id(),
+            params.remoteActorRequest->request.gaia_id());
+}
+
+// Tests that Remote Actor URLs are ignored when the feature flag is disabled.
+TEST_F(AppStartupParametersTest, RemoteActorURL_FeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      password_manager::features::kRemoteActorCredentialSharing);
+
+  NSString* url_string = [NSString
+      stringWithFormat:@"chromium://%@?%@=dummy_payload&%@=dummy_nonce",
+                       kRemoteActorURLHost, kRemoteActorPayloadQueryParam,
+                       kRemoteActorNonceQueryParam];
+  NSURL* url = [NSURL URLWithString:url_string];
+
+  ChromeAppStartupParameters* params = [ChromeAppStartupParameters
+      startupParametersWithURL:url
+             sourceApplication:@"com.google.gemini"
+               applicationMode:ApplicationModeForTabOpening::UNDETERMINED
+          forceApplicationMode:NO];
+
+  EXPECT_EQ(nil, params);
+}
+
+// Tests that Remote Actor URLs with missing payload or nonce return nil.
+TEST_F(AppStartupParametersTest, RemoteActorURL_MissingPayloadOrNonce) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      password_manager::features::kRemoteActorCredentialSharing);
+
+  NSString* missing_nonce_string = [NSString
+      stringWithFormat:@"chromium://%@?%@=some_payload", kRemoteActorURLHost,
+                       kRemoteActorPayloadQueryParam];
+  NSURL* missing_nonce_url = [NSURL URLWithString:missing_nonce_string];
+  ChromeAppStartupParameters* params1 = [ChromeAppStartupParameters
+      startupParametersWithURL:missing_nonce_url
+             sourceApplication:@"com.google.gemini"
+               applicationMode:ApplicationModeForTabOpening::UNDETERMINED
+          forceApplicationMode:NO];
+  EXPECT_EQ(nil, params1);
+
+  NSString* missing_payload_string = [NSString
+      stringWithFormat:@"chromium://%@?%@=some_nonce", kRemoteActorURLHost,
+                       kRemoteActorNonceQueryParam];
+  NSURL* missing_payload_url = [NSURL URLWithString:missing_payload_string];
+  ChromeAppStartupParameters* params2 = [ChromeAppStartupParameters
+      startupParametersWithURL:missing_payload_url
+             sourceApplication:@"com.google.gemini"
+               applicationMode:ApplicationModeForTabOpening::UNDETERMINED
+          forceApplicationMode:NO];
+  EXPECT_EQ(nil, params2);
+}
+
+// Tests that Remote Actor URLs with invalid or un-decryptable payload return
+// nil.
+TEST_F(AppStartupParametersTest, RemoteActorURL_InvalidPayload) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      password_manager::features::kRemoteActorCredentialSharing);
+
+  NSString* url_string = [NSString
+      stringWithFormat:@"chromium://%@?%@=invalid_payload&%@=invalid_nonce",
+                       kRemoteActorURLHost, kRemoteActorPayloadQueryParam,
+                       kRemoteActorNonceQueryParam];
+  NSURL* url = [NSURL URLWithString:url_string];
+  ChromeAppStartupParameters* params = [ChromeAppStartupParameters
+      startupParametersWithURL:url
+             sourceApplication:@"com.google.gemini"
+               applicationMode:ApplicationModeForTabOpening::UNDETERMINED
+          forceApplicationMode:NO];
+
+  EXPECT_EQ(nil, params);
 }
 
 // Tests that `SaveFieldTrialValuesForGroupApp()` sets

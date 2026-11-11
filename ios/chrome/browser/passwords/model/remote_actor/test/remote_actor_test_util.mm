@@ -15,7 +15,7 @@
 #import "crypto/random.h"
 
 std::optional<std::pair<std::string, std::string>>
-CreateEncryptedRemoteActorPayloadForTesting(  // IN-TEST
+CreateEncryptedRemoteActorPayloadForTesting(
     const remote_actor::proto::RemoteActorPasswordUploadRequest& request,
     base::span<const uint8_t> key) {
   if (key.size() != crypto::aead::KeySizeFor(crypto::aead::AES_256_GCM)) {
@@ -42,10 +42,9 @@ CreateEncryptedRemoteActorPayloadForTesting(  // IN-TEST
   return std::make_pair(base64_payload, base64_nonce);
 }
 
-bool DeleteRemoteActorSharedSymmetricKeyForTesting(  // IN-TEST
-    NSString* access_group,
-    NSString* account,
-    NSString* service) {
+bool DeleteRemoteActorSharedSymmetricKeyForTesting(NSString* access_group,
+                                                   NSString* account,
+                                                   NSString* service) {
   NSMutableDictionary* query = [@{
     (__bridge id)kSecClass : (__bridge id)kSecClassGenericPassword,
     (__bridge id)kSecAttrAccount : account,
@@ -60,13 +59,11 @@ bool DeleteRemoteActorSharedSymmetricKeyForTesting(  // IN-TEST
   return status == errSecSuccess || status == errSecItemNotFound;
 }
 
-bool SetRemoteActorSharedSymmetricKeyForTesting(  // IN-TEST
-    base::span<const uint8_t> key,
-    NSString* access_group,
-    NSString* account,
-    NSString* service) {
-  DeleteRemoteActorSharedSymmetricKeyForTesting(  // IN-TEST
-      access_group, account, service);
+bool SetRemoteActorSharedSymmetricKeyForTesting(base::span<const uint8_t> key,
+                                                NSString* access_group,
+                                                NSString* account,
+                                                NSString* service) {
+  DeleteRemoteActorSharedSymmetricKeyForTesting(access_group, account, service);
 
   NSMutableDictionary* attributes = [@{
     (__bridge id)kSecClass : (__bridge id)kSecClassGenericPassword,

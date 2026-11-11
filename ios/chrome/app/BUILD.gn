@@ -59,6 +59,7 @@ source_set("app") {
   ]
 
   deps = [
+    ":actor_request",
     "//base",
     "//ios/chrome/app/startup:utils",
     "//ios/chrome/browser/app_switcher/metrics",
@@ -73,6 +74,11 @@ source_set("app") {
   ]
 
   frameworks = [ "Foundation.framework" ]
+}
+
+source_set("actor_request") {
+  sources = [ "actor_request.h" ]
+  public_deps = [ "//ios/chrome/browser/passwords/model/remote_actor/proto" ]
 }
 
 source_set("tasks_handling_header") {
@@ -146,6 +152,7 @@ source_set("tasks_handling") {
     "//ios/chrome/browser/intents/model:user_activity_browser_agent",
     "//ios/chrome/browser/intents/model:user_activity_compatibility_util",
     "//ios/chrome/browser/lens/ui_bundled:lens_entrypoint",
+    "//ios/chrome/browser/passwords/model/remote_actor",
     "//ios/chrome/browser/policy/model:policy_util",
     "//ios/chrome/browser/reading_list/model",
     "//ios/chrome/browser/search_engines/model",

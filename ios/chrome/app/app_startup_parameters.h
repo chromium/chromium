@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import <optional>
 #import <vector>
 
 #import "ios/chrome/browser/app_switcher/model/app_switcher_params_request_status.h"
@@ -54,6 +55,7 @@ enum TabOpeningPostOpeningAction {
   TRIGGER_GEMINI_PROMO,
   SHOW_GOOGLE_ONE_SCREEN,
   START_GEMINI_AI_SUMMARIZATION,
+  REMOTE_ACTOR_CREDENTIAL_SHARING,
 };
 
 // Type of the block invoked when an App Switcher parameters request completes.
@@ -63,6 +65,7 @@ using AppSwitcherParamsRequestBlock =
 using AppModeRequestBlock = AppSwitcherParamsRequestBlock;
 
 class GURL;
+struct RemoteActorRequest;
 
 // This class stores all the parameters relevant to the app startup in case
 // of launch from another app.
@@ -121,6 +124,10 @@ class GURL;
 // The hashed GAIA ID of the user identity requested by the triggering entry
 // point (e.g., App Switcher AI Summarization).
 @property(nonatomic, readwrite, copy) NSString* appSwitcherHashedUserID;
+// The Remote Actor request, or `std::nullopt` if decryption failed or has not
+// yet been performed.
+@property(nonatomic, assign)
+    const std::optional<RemoteActorRequest>& remoteActorRequest;
 
 - (instancetype)init NS_UNAVAILABLE;
 
