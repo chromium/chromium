@@ -1066,10 +1066,12 @@ void AXEventGenerator::OnAtomicUpdateFinished(
       continue;
     }
 
-    // Do not fire MENU_POPUP_START merely because a menu is created. Repeated
-    // attempts have caused screen readers to enter menu mode while focus
-    // remains elsewhere, breaking web app navigation. See crbug.com/1305443,
-    // crbug.com/1327427, crbug.com/1327443, and crbug.com/549903216.
+    // This catches menus inserted already visible; menus shown later are
+    // handled when their ignored state changes.
+    if (!root_changed && change.node->GetRole() == ax::mojom::Role::kMenu &&
+        !change.node->IsIgnored()) {
+      AddEvent(change.node, Event::MENU_POPUP_START);
+    }
 
     if (change.node->GetBoolAttribute(ax::mojom::BoolAttribute::kSelected) &&
         (change.type == SUBTREE_CREATED || change.type == NODE_CREATED)) {
