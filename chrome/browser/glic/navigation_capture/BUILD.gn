@@ -78,6 +78,7 @@ if (!is_android) {
       "//chrome/test/base:ui_test_utils",
       "//components/keyed_service/content",
       "//components/prefs",
+      "//components/tabs:public",
       "//content/public/browser",
       "//content/test:test_support",
       "//extensions/common",

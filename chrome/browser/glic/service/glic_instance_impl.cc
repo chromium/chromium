@@ -14,6 +14,7 @@
 #include "base/logging.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
+#include "base/strings/string_split.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/named_trigger.h"
@@ -85,8 +86,10 @@
 #include "content/public/browser/web_contents_delegate.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "net/base/url_util.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "url/url_constants.h"
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
@@ -161,7 +164,54 @@ GetSaasUsageReportingController(Profile* profile) {
   return nullptr;
 #endif
 }
+
+constexpr char kPromotionPagePath[] = "/chrome/ai-innovations/gemini-in-chrome";
+constexpr char kSourceParam[] = "source";
+constexpr char kZssSource[] = "zss";
 }  // namespace
+
+// static
+bool GlicInstanceImpl::IsTutorialMarketingUrl(
+    const GURL& url,
+    const GlicProviderSpec& provider_spec) {
+  if (!provider_spec.RequiresGeminiAccountEligibility() || !url.is_valid() ||
+      !url.SchemeIsHTTPOrHTTPS()) {
+    return false;
+  }
+  std::string source;
+  if (!net::GetValueForKeyInQuery(url, kSourceParam, &source) ||
+      source != kZssSource) {
+    return false;
+  }
+  std::string_view path = url.path();
+  if (path.ends_with('/')) {
+    path.remove_suffix(1);
+  }
+  if (url.SchemeIs(url::kHttpsScheme) && url.host() == "www.google.com" &&
+      path == kPromotionPagePath) {
+    return true;
+  }
+  std::string allowlist_str =
+      provider_spec.GetMarketingAutoOpenFeatureParams().allowlisted_urls;
+  for (std::string_view piece :
+       base::SplitStringPiece(allowlist_str, ",", base::TRIM_WHITESPACE,
+                              base::SPLIT_WANT_NONEMPTY)) {
+    GURL allowed(piece);
+    if (!allowed.is_valid() || !allowed.SchemeIsHTTPOrHTTPS()) {
+      continue;
+    }
+    std::string_view allowed_path = allowed.path();
+    if (allowed_path.ends_with('/')) {
+      allowed_path.remove_suffix(1);
+    }
+    if (url.scheme() == allowed.scheme() && url.host() == allowed.host() &&
+        url.EffectiveIntPort() == allowed.EffectiveIntPort() &&
+        path == allowed_path) {
+      return true;
+    }
+  }
+  return false;
+}
 
 void GlicInstanceImpl::MaybeDaisyChainToTab(tabs::TabInterface* source_tab,
                                             tabs::TabInterface* target_tab,
@@ -753,7 +803,10 @@ void GlicInstanceImpl::CreateTab(
     source_tab = GetTabFromEmbedderKey(active_embedder_key_.value());
   }
 
-  bool is_onboarding = !GlicEnabling::HasConsentedForProfile(profile_);
+  const bool is_tutorial_marketing_url =
+      IsTutorialMarketingUrl(url, service_->provider_spec());
+  const bool is_onboarding = !GlicEnabling::HasConsentedForProfile(profile_) &&
+                             !is_tutorial_marketing_url;
 
   base::AutoReset<bool> auto_reset(&is_creating_tab_from_glic_panel_link_click_,
                                    true);
@@ -791,7 +844,7 @@ void GlicInstanceImpl::CreateTab(
   } else {
     SidePanelShowOptions side_panel_options{*created_tab};
     side_panel_options.suppress_opening_animation = true;
-    side_panel_options.prefer_peek = true;
+    side_panel_options.prefer_peek = !is_tutorial_marketing_url;
     side_panel_options.pin_on_bind = pin_on_bind;
     auto show_options = ShowOptions{side_panel_options};
     show_options.invocation_source =

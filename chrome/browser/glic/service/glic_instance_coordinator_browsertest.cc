@@ -31,6 +31,7 @@
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
+#include "chrome/browser/glic/public/provider_features.h"
 #include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
 #include "chrome/browser/glic/service/glic_instance_helper.h"
 #include "chrome/browser/glic/service/glic_instance_impl.h"
@@ -70,6 +71,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/memory_coordinator_browsertest_util.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "printing/buildflags/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
@@ -493,6 +495,89 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
 
     ActivateTab(tab3);
     EXPECT_OK(WaitForEmbedderActivationOrPeek(instance, tab3));
+  }
+}
+
+class GlicInstanceCoordinatorTutorialMarketingBrowserTest
+    : public GlicInstanceCoordinatorBrowserTest {
+ public:
+  GlicInstanceCoordinatorTutorialMarketingBrowserTest() {
+    marketing_server_.ServeFilesFromSourceDirectory("chrome/test/data");
+  }
+
+  void SetUp() override {
+    ASSERT_TRUE(marketing_server_.InitializeAndListen());
+    marketing_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kGlicMarketingAutoOpen,
+        {{features::kGlicMarketingAutoOpenAllowlistedUrlsParam,
+          marketing_server_.GetURL("/title1.html").spec()}});
+    GlicInstanceCoordinatorBrowserTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    marketing_server_.StartAcceptingConnections();
+    GlicInstanceCoordinatorBrowserTest::SetUpOnMainThread();
+  }
+
+ protected:
+  net::test_server::EmbeddedTestServer marketing_server_;
+
+ private:
+  base::test::ScopedFeatureList marketing_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    GlicInstanceCoordinatorTutorialMarketingBrowserTest,
+    WebClientLinkClickDaisyChainingDuringOnboardingForTutorialUrl) {
+  SetFRECompletion(GetProfile(), prefs::FreStatus::kIncomplete);
+  ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
+
+  // Case 1: Non-tutorial URL during onboarding is suppressed from daisy
+  // chaining and opened in the background.
+  {
+    GlicTestTabAddedWaiter waiter(GetProfile());
+    instance->CreateTab(GetSimpleTestUrl(),
+                        /*open_in_background=*/false,
+                        /*window_id=*/std::nullopt, base::DoNothing());
+    tabs::TabInterface* tab = waiter.Wait();
+    EXPECT_EQ(nullptr, GetInstanceForTab(tab));
+    EXPECT_NE(GetTabListInterface()->GetActiveTab(), tab);
+    ASSERT_TRUE(content::WaitForLoadStop(tab->GetContents()));
+  }
+
+  // Case 2: Marketing URL without ?source=zss during onboarding is
+  // suppressed from daisy chaining and opened in the background.
+  {
+    GURL marketing_url_without_zss = marketing_server_.GetURL("/title1.html");
+    GlicTestTabAddedWaiter waiter(GetProfile());
+    instance->CreateTab(marketing_url_without_zss,
+                        /*open_in_background=*/false,
+                        /*window_id=*/std::nullopt, base::DoNothing());
+    tabs::TabInterface* tab = waiter.Wait();
+    EXPECT_EQ(nullptr, GetInstanceForTab(tab));
+    EXPECT_NE(GetTabListInterface()->GetActiveTab(), tab);
+    ASSERT_TRUE(content::WaitForLoadStop(tab->GetContents()));
+  }
+
+  // Case 3: Allowlisted marketing URL with ?source=zss bypasses onboarding
+  // suppression and remains bound to the daisy-chained instance after commit.
+  {
+    GetProfile()->GetPrefs()->SetInteger(prefs::kGlicMarketingAutoOpenCount, 0);
+    GURL allowlisted_url = marketing_server_.GetURL("/title1.html?source=zss");
+    GlicTestTabAddedWaiter waiter(GetProfile());
+    instance->CreateTab(allowlisted_url,
+                        /*open_in_background=*/false,
+                        /*window_id=*/std::nullopt, base::DoNothing());
+    tabs::TabInterface* tab = waiter.Wait();
+
+    ASSERT_TRUE(content::WaitForLoadStop(tab->GetContents()));
+    EXPECT_EQ(instance, GetInstanceForTab(tab));
+    EXPECT_EQ(0, GetProfile()->GetPrefs()->GetInteger(
+                     prefs::kGlicMarketingAutoOpenCount));
+    EXPECT_OK(
+        WaitForSidePanelState(tab, GlicSidePanelCoordinator::State::kShown));
+    EXPECT_OK(WaitForActiveEmbedderToMatchTab(instance, tab));
+    EXPECT_EQ(GetTabListInterface()->GetActiveTab(), tab);
   }
 }
 

@@ -15,9 +15,10 @@
 #include "chrome/browser/glic/test_support/scoped_glic_provider_override.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
 namespace glic {
@@ -127,6 +128,24 @@ IN_PROC_BROWSER_TEST_F(GlicMarketingPageTabHelperGeminiEnterpriseBrowserTest,
   EXPECT_TRUE(CreateAndActivateTab(allowed_url));
 
   EXPECT_FALSE(GetInstanceImpl());
+  EXPECT_EQ(0, prefs->GetInteger(prefs::kGlicMarketingAutoOpenCount));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicMarketingPageTabHelperBrowserTest,
+                       DoesNotHandleNavigationWhenTabAlreadyHasInstance) {
+  tabs::TabInterface* tab =
+      CreateAndActivateTab(marketing_server_.GetURL("/title2.html"));
+  ASSERT_TRUE(tab);
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * initial_instance,
+                       OpenGlicForActiveTab());
+
+  PrefService* prefs = GetProfile()->GetPrefs();
+  EXPECT_EQ(0, prefs->GetInteger(prefs::kGlicMarketingAutoOpenCount));
+
+  GURL allowed_url = marketing_server_.GetURL("/title1.html?source=zss");
+  ASSERT_TRUE(content::NavigateToURL(tab->GetContents(), allowed_url));
+
+  EXPECT_EQ(initial_instance, GetInstanceImpl());
   EXPECT_EQ(0, prefs->GetInteger(prefs::kGlicMarketingAutoOpenCount));
 }
 

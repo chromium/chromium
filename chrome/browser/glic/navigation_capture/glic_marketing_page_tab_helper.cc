@@ -121,7 +121,7 @@ void GlicMarketingPageTabHelper::DidFinishNavigation(
     tabs::TabInterface* tab =
         tabs::TabInterface::MaybeGetFromContents(web_contents);
 
-    if (!tab) {
+    if (!tab || glic_service->GetInstanceForTab(tab)) {
       return;
     }
 

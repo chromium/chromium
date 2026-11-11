@@ -62,6 +62,7 @@ class GlicExperimentalTriggeringManager;
 class GlicGeminiEnterpriseManager;
 class GlicInstanceObserver;
 class GlicMetrics;
+class GlicProviderSpec;
 class GlicSkillsManagerImpl;
 class GlicUiEmbedder;
 class GlicWebContentsManager;
@@ -340,6 +341,11 @@ class GlicInstanceImpl : public GlicInstance,
   void WebUiStateChanged(mojom::WebUiState state) override;
   void ClientLoadErrorOccurred(ClientLoadErrorReason reason) override;
   void ContextAccessIndicatorChanged(bool enabled) override;
+
+  // Returns true if `url` is a tutorial or marketing URL eligible to bypass
+  // onboarding suppression and auto-peek during daisy chaining.
+  static bool IsTutorialMarketingUrl(const GURL& url,
+                                     const GlicProviderSpec& provider_spec);
 
   // Test support.
 #if !BUILDFLAG(IS_ANDROID)

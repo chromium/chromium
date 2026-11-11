@@ -979,6 +979,7 @@ source_set("unit_tests") {
     "public/glic_provider_latch_unittest.cc",
     "public/glic_provider_metrics_unittest.cc",
     "selection/selection_context_unittest.cc",
+    "service/glic_instance_impl_unittest.cc",
     "service/glic_invoke_handler_unittest.cc",
     "service/glic_invoke_preparation_unittest.cc",
     "service/glic_invoke_task_unittest.cc",
@@ -1042,6 +1043,7 @@ source_set("unit_tests") {
     "//pdf:buildflags",
     "//testing/gmock",
     "//testing/gtest",
+    "//url",
   ]
   if (!is_android) {
     sources += [
