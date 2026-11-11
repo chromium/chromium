@@ -93,8 +93,7 @@ class DISPLAY_EXPORT CADisplayLinkMac : public DisplayLinkMac {
  public:
   // Create a CADisplayLinkMac for the specified display.
   static scoped_refptr<DisplayLinkMac> GetForDisplay(
-      CGDirectDisplayID display_id,
-      bool in_gpu_process);
+      CGDirectDisplayID display_id);
 
   // DisplayLinkMac implementation
   std::unique_ptr<VSyncCallbackMac> RegisterCallback(

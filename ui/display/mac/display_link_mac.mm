@@ -71,8 +71,7 @@ scoped_refptr<DisplayLinkMac> DisplayLinkMac::GetForDisplay(
   scoped_refptr<DisplayLinkMac> display_link;
   // CADisplayLink is available only for MacOS 14.0+.
   if (SupportsCADisplayLinkInGPU()) {
-    display_link = CADisplayLinkMac::GetForDisplay(display_id,
-                                                   /*in_gpu_process=*/true);
+    display_link = CADisplayLinkMac::GetForDisplay(display_id);
     if (!display_link) {
       return CVDisplayLinkMac::GetForDisplay(display_id);
     }

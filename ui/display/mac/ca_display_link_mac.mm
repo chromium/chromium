@@ -194,8 +194,7 @@ void CADisplayLinkMac::TryRecordDisplayLinkCreation(
 
 // static
 scoped_refptr<DisplayLinkMac> CADisplayLinkMac::GetForDisplay(
-    CGDirectDisplayID display_id,
-    bool in_gpu_process) {
+    CGDirectDisplayID display_id) {
   if (@available(macos 14.0, *)) {
     TRACE_EVENT("gpu", "CADisplayLinkMac::GetForDisplay");
 
