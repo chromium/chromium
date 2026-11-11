@@ -29,6 +29,12 @@ void ConvertDesktopFrameRectToYuv(const webrtc::DesktopFrame& frame,
                                   base::span<uint8_t> v_data,
                                   int v_stride);
 
+// Widens each rectangle in `region` horizontally to SIMD row-alignment
+// boundaries via `GetRowAlignedRect()` (clipped to `frame_width`) and coalesces
+// any resulting overlaps into a non-overlapping `DesktopRegion`.
+webrtc::DesktopRegion GetRowAlignedRegion(const webrtc::DesktopRegion& region,
+                                          int frame_width);
+
 // Converts each rectangle in `region` (aligned horizontally to SIMD row
 // boundaries via `GetRowAlignedRect()`) from an ARGB `frame` into I420 or I444
 // YUV planes. Because `GetRowAlignedRect()` only aligns `left` and `right`,

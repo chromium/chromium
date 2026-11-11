@@ -58,6 +58,21 @@ void ConvertDesktopFrameRectToYuv(const webrtc::DesktopFrame& frame,
   }
 }
 
+webrtc::DesktopRegion GetRowAlignedRegion(const webrtc::DesktopRegion& region,
+                                          int frame_width) {
+  // `region` contains non-overlapping rects, but widening the `left` and
+  // `right` X-coordinates of each rect via `GetRowAlignedRect()` can cause
+  // nearby rects with different `[top, bottom)` Y-ranges to partially overlap
+  // (forming L- or T-shapes). Inserting them into a new `DesktopRegion` splits
+  // and merges any overlaps into disjoint rects whose `left` and `right`
+  // X-coordinates remain SIMD-aligned.
+  webrtc::DesktopRegion aligned_region;
+  for (webrtc::DesktopRegion::Iterator r(region); !r.IsAtEnd(); r.Advance()) {
+    aligned_region.AddRect(GetRowAlignedRect(r.rect(), frame_width));
+  }
+  return aligned_region;
+}
+
 void ConvertDesktopFrameRegionToYuv(const webrtc::DesktopFrame& frame,
                                     const webrtc::DesktopRegion& region,
                                     bool is_i444,
@@ -67,11 +82,12 @@ void ConvertDesktopFrameRegionToYuv(const webrtc::DesktopFrame& frame,
                                     int u_stride,
                                     base::span<uint8_t> v_data,
                                     int v_stride) {
-  const int frame_width = frame.size().width();
-  for (webrtc::DesktopRegion::Iterator r(region); !r.IsAtEnd(); r.Advance()) {
-    webrtc::DesktopRect rect = GetRowAlignedRect(r.rect(), frame_width);
-    ConvertDesktopFrameRectToYuv(frame, rect, is_i444, y_data, y_stride, u_data,
-                                 u_stride, v_data, v_stride);
+  const webrtc::DesktopRegion aligned_region =
+      GetRowAlignedRegion(region, frame.size().width());
+  for (webrtc::DesktopRegion::Iterator r(aligned_region); !r.IsAtEnd();
+       r.Advance()) {
+    ConvertDesktopFrameRectToYuv(frame, r.rect(), is_i444, y_data, y_stride,
+                                 u_data, u_stride, v_data, v_stride);
   }
 }
 

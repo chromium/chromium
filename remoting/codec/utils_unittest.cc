@@ -257,4 +257,79 @@ TEST(CodecUtilsTest, ConvertDesktopFrameRegionToYuv_RowAlignmentAndClipping) {
   }
 }
 
+TEST(CodecUtilsTest, GetRowAlignedRegion_CoalescesOverlappingWidenedRects) {
+  const int align = GetSimdMemoryAlignment();
+  ASSERT_GE(align, 16);
+  const int width = align * 2;
+
+  // The two input rects (`x:[2, 6), y:[4, 12)` and `x:[10, 14), y:[6, 14)`)
+  // are disjoint, but once `GetRowAlignedRect()` widens both X-ranges to
+  // `[0, align)`, they overlap on rows `y:[6, 12)` and coalesce into a single
+  // `MakeLTRB(0, 4, align, 14)` rectangle.
+  webrtc::DesktopRegion region;
+  region.AddRect(webrtc::DesktopRect::MakeLTRB(2, 4, 6, 12));
+  region.AddRect(webrtc::DesktopRect::MakeLTRB(10, 6, 14, 14));
+
+  const webrtc::DesktopRegion aligned_region =
+      GetRowAlignedRegion(region, width);
+  EXPECT_TRUE(aligned_region.Equals(
+      webrtc::DesktopRegion(webrtc::DesktopRect::MakeLTRB(0, 4, align, 14))));
+
+  std::vector<webrtc::DesktopRect> rects;
+  for (webrtc::DesktopRegion::Iterator r(aligned_region); !r.IsAtEnd();
+       r.Advance()) {
+    rects.push_back(r.rect());
+  }
+  ASSERT_EQ(rects.size(), 1u);
+  EXPECT_TRUE(rects[0].equals(webrtc::DesktopRect::MakeLTRB(0, 4, align, 14)));
+
+  // Adding `MakeLTRB(align + 2, 4, align + 6, 14)` in the next SIMD block
+  // widens to `MakeLTRB(align, 4, align + 8, 14)` when clipped to `align + 8`,
+  // abutting `MakeLTRB(0, 4, align, 14)` horizontally and coalescing into
+  // `MakeLTRB(0, 4, align + 8, 14)`.
+  region.AddRect(webrtc::DesktopRect::MakeLTRB(align + 2, 4, align + 6, 14));
+  EXPECT_TRUE(GetRowAlignedRegion(region, align + 8)
+                  .Equals(webrtc::DesktopRegion(
+                      webrtc::DesktopRect::MakeLTRB(0, 4, align + 8, 14))));
+}
+
+TEST(
+    CodecUtilsTest,
+    ConvertDesktopFrameRegionToYuv_OverlappingAlignedRectsProduceCorrectOutput) {
+  const int align = GetSimdMemoryAlignment();
+  ASSERT_GE(align, 16);
+  const int width = align * 2;
+  constexpr int kHeight = 16;
+  const int y_stride = width;
+  const int uv_stride = width / 2;
+
+  webrtc::BasicDesktopFrame frame(webrtc::DesktopSize(width, kHeight));
+  FillPatternFrame(frame);
+
+  // `MakeLTRB(2, 4, 6, 12)` and `MakeLTRB(10, 6, 14, 14)` are initially
+  // disjoint and overlap on `x:[0, align), y:[6, 12)` once
+  // `GetRowAlignedRect()` widens both X-ranges to `[0, align)`.
+  webrtc::DesktopRegion region;
+  region.AddRect(webrtc::DesktopRect::MakeLTRB(2, 4, 6, 12));
+  region.AddRect(webrtc::DesktopRect::MakeLTRB(10, 6, 14, 14));
+
+  std::vector<uint8_t> actual_y(y_stride * kHeight, kSentinel);
+  std::vector<uint8_t> actual_u(uv_stride * (kHeight / 2), kSentinel);
+  std::vector<uint8_t> actual_v(uv_stride * (kHeight / 2), kSentinel);
+  ConvertDesktopFrameRegionToYuv(frame, region, /*is_i444=*/false, actual_y,
+                                 y_stride, actual_u, uv_stride, actual_v,
+                                 uv_stride);
+
+  std::vector<uint8_t> expected_y(y_stride * kHeight, kSentinel);
+  std::vector<uint8_t> expected_u(uv_stride * (kHeight / 2), kSentinel);
+  std::vector<uint8_t> expected_v(uv_stride * (kHeight / 2), kSentinel);
+  ConvertDesktopFrameRectToYuv(
+      frame, webrtc::DesktopRect::MakeLTRB(0, 4, align, 14), /*is_i444=*/false,
+      expected_y, y_stride, expected_u, uv_stride, expected_v, uv_stride);
+
+  EXPECT_EQ(actual_y, expected_y);
+  EXPECT_EQ(actual_u, expected_u);
+  EXPECT_EQ(actual_v, expected_v);
+}
+
 }  // namespace remoting
