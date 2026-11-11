@@ -400,63 +400,58 @@ const SimpleFontData* FontCache::PlatformFallbackFontForCharacter(
   const ArabicCascadeMode arabic_cascade_mode =
       GetArabicCascadeMode(font_description, character);
 
-  std::optional<CharacterFallbackKey> key;
-
   // For ideographic codepoints (Unicode property [:Ideographic=Yes:]), share a
   // single cache entry (character == 0) verified via unicharToGlyph(). For
   // non-ideographic codepoints, include the exact codepoint and fallback
   // priority in the key so repeated fallback lookups of the same character do
   // not re-invoke CoreText cascade and typeface creation while avoiding any
   // cross-character context sensitivity.
-  if (RuntimeEnabledFeatures::MacCharacterFallbackCacheEnabled()) {
-    // U+3006 (IDEOGRAPHIC CLOSING MARK) is the lowest Unicode codepoint with
-    // [:Ideographic=Yes:].
-    const bool is_ideographic =
-        character >= 0x3006 && unicode::IsIdeographic(character);
-    const UChar32 key_char = is_ideographic ? 0 : character;
-    uint8_t key_flags;
-    if (RuntimeEnabledFeatures::MacFontFallbackPreferContentLocaleEnabled()) {
-      constexpr uint8_t kFallbackPriorityMask = 0x0F;
-      constexpr uint8_t kSyntheticBoldFlag = 1 << 4;
-      constexpr uint8_t kSyntheticItalicFlag = 1 << 5;
-      constexpr uint8_t kArabicCascadeShift = 6;
-      static_assert(static_cast<uint8_t>(FontFallbackPriority::kMaxEnumValue) <=
-                    kFallbackPriorityMask);
-      static_assert(static_cast<uint8_t>(ArabicCascadeMode::kMaxValue) <=
-                    (0xFFu >> kArabicCascadeShift));
-      key_flags = static_cast<uint8_t>(
-          (platform_data.synthetic_bold_ ? kSyntheticBoldFlag : 0) |
-          (platform_data.synthetic_italic_ ? kSyntheticItalicFlag : 0) |
-          (static_cast<uint8_t>(arabic_cascade_mode) << kArabicCascadeShift) |
-          (is_ideographic ? 0
-                          : (static_cast<uint8_t>(fallback_priority) &
-                             kFallbackPriorityMask)));
-    } else {
-      constexpr uint8_t kFallbackPriorityMask = 0x1F;
-      constexpr uint8_t kSyntheticBoldFlag = 1 << 5;
-      constexpr uint8_t kSyntheticItalicFlag = 1 << 6;
-      constexpr uint8_t kNastaliqFlag = 1 << 7;
-      static_assert(static_cast<uint8_t>(FontFallbackPriority::kMaxEnumValue) <=
-                    kFallbackPriorityMask);
-      const bool is_nastaliq =
-          !is_ideographic &&
-          font_description.GetScriptForFont() == USCRIPT_ARABIC_NASTALIQ &&
-          RuntimeEnabledFeatures::NastaliqScriptEnabled();
-      key_flags = static_cast<uint8_t>(
-          (platform_data.synthetic_bold_ ? kSyntheticBoldFlag : 0) |
-          (platform_data.synthetic_italic_ ? kSyntheticItalicFlag : 0) |
-          (is_nastaliq ? kNastaliqFlag : 0) |
-          (is_ideographic ? 0
-                          : (static_cast<uint8_t>(fallback_priority) &
-                             kFallbackPriorityMask)));
-    }
-    key = CharacterFallbackKey::Make(
-        platform_data.CtFont(), font_description.Weight().RawValue(),
-        font_description.Style().RawValue(),
-        static_cast<uint8_t>(font_description.Orientation()),
-        font_description.EffectiveFontSize(), key_char, key_flags);
+  // U+3006 (IDEOGRAPHIC CLOSING MARK) is the lowest Unicode codepoint with
+  // [:Ideographic=Yes:].
+  const bool is_ideographic =
+      character >= 0x3006 && unicode::IsIdeographic(character);
+  const UChar32 key_char = is_ideographic ? 0 : character;
+  uint8_t key_flags;
+  if (RuntimeEnabledFeatures::MacFontFallbackPreferContentLocaleEnabled()) {
+    constexpr uint8_t kFallbackPriorityMask = 0x0F;
+    constexpr uint8_t kSyntheticBoldFlag = 1 << 4;
+    constexpr uint8_t kSyntheticItalicFlag = 1 << 5;
+    constexpr uint8_t kArabicCascadeShift = 6;
+    static_assert(static_cast<uint8_t>(FontFallbackPriority::kMaxEnumValue) <=
+                  kFallbackPriorityMask);
+    static_assert(static_cast<uint8_t>(ArabicCascadeMode::kMaxValue) <=
+                  (0xFFu >> kArabicCascadeShift));
+    key_flags = static_cast<uint8_t>(
+        (platform_data.synthetic_bold_ ? kSyntheticBoldFlag : 0) |
+        (platform_data.synthetic_italic_ ? kSyntheticItalicFlag : 0) |
+        (static_cast<uint8_t>(arabic_cascade_mode) << kArabicCascadeShift) |
+        (is_ideographic ? 0
+                        : (static_cast<uint8_t>(fallback_priority) &
+                           kFallbackPriorityMask)));
+  } else {
+    constexpr uint8_t kFallbackPriorityMask = 0x1F;
+    constexpr uint8_t kSyntheticBoldFlag = 1 << 5;
+    constexpr uint8_t kSyntheticItalicFlag = 1 << 6;
+    constexpr uint8_t kNastaliqFlag = 1 << 7;
+    static_assert(static_cast<uint8_t>(FontFallbackPriority::kMaxEnumValue) <=
+                  kFallbackPriorityMask);
+    const bool is_nastaliq =
+        !is_ideographic &&
+        font_description.GetScriptForFont() == USCRIPT_ARABIC_NASTALIQ &&
+        RuntimeEnabledFeatures::NastaliqScriptEnabled();
+    key_flags = static_cast<uint8_t>(
+        (platform_data.synthetic_bold_ ? kSyntheticBoldFlag : 0) |
+        (platform_data.synthetic_italic_ ? kSyntheticItalicFlag : 0) |
+        (is_nastaliq ? kNastaliqFlag : 0) |
+        (is_ideographic ? 0
+                        : (static_cast<uint8_t>(fallback_priority) &
+                           kFallbackPriorityMask)));
   }
-
+  const std::optional<CharacterFallbackKey> key = CharacterFallbackKey::Make(
+      platform_data.CtFont(), font_description.Weight().RawValue(),
+      font_description.Style().RawValue(),
+      static_cast<uint8_t>(font_description.Orientation()),
+      font_description.EffectiveFontSize(), key_char, key_flags);
   if (key) {
     CharacterFallbackCache::iterator found =
         character_fallback_cache_.find(*key);

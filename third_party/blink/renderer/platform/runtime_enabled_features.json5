@@ -4336,10 +4336,6 @@
       status: "stable",
     },
     {
-      name: "MacCharacterFallbackCache",
-      status: "stable",
-    },
-    {
       name: "MacDisableCtrlHomeEnd",
       status: "stable",
     },
