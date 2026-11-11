@@ -54,14 +54,8 @@ public interface ActorForegroundServiceController {
      *
      * @param newNotificationId The ID for the new notification.
      * @param newNotification The notification to display.
-     * @param oldNotificationId The ID of the previous notification, or -1 if none.
-     * @param killOldNotification Whether to remove the old notification.
      */
-    void startOrUpdateForegroundService(
-            int newNotificationId,
-            Notification newNotification,
-            int oldNotificationId,
-            boolean killOldNotification);
+    void startOrUpdateForegroundService(int newNotificationId, Notification newNotification);
 
     /** Proxies the stopActorForegroundService call to the bound service. */
     void stopActorForegroundService(int flags);

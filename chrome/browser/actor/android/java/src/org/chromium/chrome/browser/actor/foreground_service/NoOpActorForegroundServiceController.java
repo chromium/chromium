@@ -41,10 +41,7 @@ public class NoOpActorForegroundServiceController implements ActorForegroundServ
 
     @Override
     public void startOrUpdateForegroundService(
-            int newNotificationId,
-            Notification newNotification,
-            int oldNotificationId,
-            boolean killOldNotification) {}
+            int newNotificationId, Notification newNotification) {}
 
     @Override
     public void stopActorForegroundService(int flags) {}

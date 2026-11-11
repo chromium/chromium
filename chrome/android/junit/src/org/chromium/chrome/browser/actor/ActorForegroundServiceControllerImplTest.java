@@ -136,17 +136,9 @@ public class ActorForegroundServiceControllerImplTest {
         mController.startAndBindService(() -> {});
         mController.getServiceConnectionForTesting().onServiceConnected(null, mBinder);
 
-        mController.startOrUpdateForegroundService(
-                /* newNotificationId= */ 1,
-                mNotification,
-                /* oldNotificationId= */ 2,
-                /* killOldNotification= */ true);
+        mController.startOrUpdateForegroundService(/* newNotificationId= */ 1, mNotification);
         verify(mServiceImpl)
-                .startOrUpdateForegroundService(
-                        /* newNotificationId= */ 1,
-                        mNotification,
-                        /* oldNotificationId= */ 2,
-                        /* killOldNotification= */ true);
+                .startOrUpdateForegroundService(/* newNotificationId= */ 1, mNotification);
 
         mController.stopActorForegroundService(/* flags= */ ServiceCompat.STOP_FOREGROUND_REMOVE);
         verify(mServiceImpl)

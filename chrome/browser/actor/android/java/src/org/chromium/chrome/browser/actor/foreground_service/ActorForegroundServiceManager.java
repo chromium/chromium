@@ -519,19 +519,13 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
             return;
         }
 
-        boolean killOldNotification =
-                mPinnedNotificationId != INVALID_NOTIFICATION_ID
-                        && mPinnedNotificationId != notificationId;
         int unpinnedNotificationId =
-                killOldNotification ? mPinnedNotificationId : INVALID_NOTIFICATION_ID;
+                mPinnedNotificationId != notificationId
+                        ? mPinnedNotificationId
+                        : INVALID_NOTIFICATION_ID;
 
         try {
-            getServiceController()
-                    .startOrUpdateForegroundService(
-                            notificationId,
-                            notification,
-                            mPinnedNotificationId,
-                            killOldNotification);
+            getServiceController().startOrUpdateForegroundService(notificationId, notification);
         } catch (IllegalStateException e) {
             Log.e(TAG, "Failed to start or update foreground service.", e);
             cancelOptInNotification();

@@ -104,35 +104,23 @@ public class ActorForegroundServiceTest {
     public void testStartOrUpdateForegroundService() {
         List<Integer> expectedMethodCalls;
 
-        // Test the case where there is no other pinned notification and the service starts.
-        mForegroundService.startOrUpdateForegroundService(
-                NOTIFICATION_ID_1, mNotification, -1, false);
+        // Test starting the foreground service with an initial notification.
+        mForegroundService.startOrUpdateForegroundService(NOTIFICATION_ID_1, mNotification);
         expectedMethodCalls = Arrays.asList(MockActorForegroundService.MethodID.START_FOREGROUND);
         assertEquals(expectedMethodCalls, mForegroundService.mMethodCalls);
 
         mForegroundService.clearStoredState();
 
-        // Test the case where there is another pinned notification and the service needs to start.
-        mForegroundService.startOrUpdateForegroundService(
-                NOTIFICATION_ID_2, mNotification, NOTIFICATION_ID_1, false);
-        expectedMethodCalls = Arrays.asList(MockActorForegroundService.MethodID.START_FOREGROUND);
-        assertEquals(expectedMethodCalls, mForegroundService.mMethodCalls);
-        assertEquals(-1, mForegroundService.mStopForegroundFlags);
-
-        mForegroundService.clearStoredState();
-
-        // Test the case where there is another pinned notification but we are killing it.
-        mForegroundService.startOrUpdateForegroundService(
-                NOTIFICATION_ID_2, mNotification, NOTIFICATION_ID_1, true);
+        // Test updating the foreground service with a different notification ID.
+        mForegroundService.startOrUpdateForegroundService(NOTIFICATION_ID_2, mNotification);
         expectedMethodCalls = Arrays.asList(MockActorForegroundService.MethodID.START_FOREGROUND);
         assertEquals(expectedMethodCalls, mForegroundService.mMethodCalls);
         assertEquals(-1, mForegroundService.mStopForegroundFlags);
 
         mForegroundService.clearStoredState();
 
-        // Test the case where the notification id is the same.
-        mForegroundService.startOrUpdateForegroundService(
-                NOTIFICATION_ID_1, mNotification, NOTIFICATION_ID_1, true);
+        // Test updating the foreground service when the notification ID is unchanged.
+        mForegroundService.startOrUpdateForegroundService(NOTIFICATION_ID_2, mNotification);
         expectedMethodCalls = Arrays.asList(MockActorForegroundService.MethodID.START_FOREGROUND);
         assertEquals(expectedMethodCalls, mForegroundService.mMethodCalls);
     }

@@ -70,8 +70,8 @@ public class ActorForegroundServiceImplTest {
                                 ActorForegroundServiceUmaHelper.ForegroundLifecycle.STOPPED)
                         .build();
 
-        mServiceImpl.startOrUpdateForegroundService(1, mNotification, -1, false);
-        mServiceImpl.startOrUpdateForegroundService(1, mNotification, 1, false);
+        mServiceImpl.startOrUpdateForegroundService(1, mNotification);
+        mServiceImpl.startOrUpdateForegroundService(1, mNotification);
         mServiceImpl.stopActorForegroundService(ServiceCompat.STOP_FOREGROUND_REMOVE);
 
         watcher.assertExpected();
@@ -82,8 +82,8 @@ public class ActorForegroundServiceImplTest {
         ActorForegroundServiceImpl spyService = spy(mServiceImpl);
         Notification notification2 = new Notification();
 
-        spyService.startOrUpdateForegroundService(1, mNotification, -1, false);
-        spyService.startOrUpdateForegroundService(2, notification2, 1, true);
+        spyService.startOrUpdateForegroundService(1, mNotification);
+        spyService.startOrUpdateForegroundService(2, notification2);
 
         verify(spyService).startForegroundInternal(1, mNotification);
         verify(spyService).startForegroundInternal(2, notification2);

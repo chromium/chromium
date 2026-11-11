@@ -10,7 +10,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
@@ -208,7 +207,7 @@ public class ActorForegroundServiceManagerIntegrationTest {
                             return null;
                         })
                 .when(mServiceController)
-                .startOrUpdateForegroundService(anyInt(), any(), anyInt(), anyBoolean());
+                .startOrUpdateForegroundService(anyInt(), any());
         lenient()
                 .doAnswer(
                         invocation -> {

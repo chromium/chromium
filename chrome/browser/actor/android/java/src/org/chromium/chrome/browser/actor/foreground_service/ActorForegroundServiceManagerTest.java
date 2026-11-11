@@ -160,9 +160,7 @@ public class ActorForegroundServiceManagerTest {
         // Process the post in startAndBindService
         ShadowLooper.idleMainLooper();
 
-        verify(mServiceController)
-                .startOrUpdateForegroundService(
-                        anyInt(), eq(mNotification), anyInt(), anyBoolean());
+        verify(mServiceController).startOrUpdateForegroundService(anyInt(), eq(mNotification));
     }
 
     @Test
@@ -219,8 +217,7 @@ public class ActorForegroundServiceManagerTest {
 
         // Verify that startOrUpdateForegroundService was called to update the notification
         verify(mServiceController, atLeastOnce())
-                .startOrUpdateForegroundService(
-                        anyInt(), eq(mNotification), anyInt(), anyBoolean());
+                .startOrUpdateForegroundService(anyInt(), eq(mNotification));
     }
 
     @Test
@@ -247,8 +244,7 @@ public class ActorForegroundServiceManagerTest {
         ShadowLooper.idleMainLooper();
 
         // First call should trigger startOrUpdateForegroundService
-        verify(mServiceController)
-                .startOrUpdateForegroundService(eq(1), eq(mNotification), anyInt(), anyBoolean());
+        verify(mServiceController).startOrUpdateForegroundService(eq(1), eq(mNotification));
 
         clearInvocations(mServiceController);
         when(mServiceController.isConnected()).thenReturn(true);
@@ -256,8 +252,7 @@ public class ActorForegroundServiceManagerTest {
         // Second call with same notification should NOT trigger startOrUpdateForegroundService
         mManager.onTaskStateChanged(1, ActorTaskState.ACTING);
         ShadowLooper.idleMainLooper();
-        verify(mServiceController, never())
-                .startOrUpdateForegroundService(anyInt(), any(), anyInt(), anyBoolean());
+        verify(mServiceController, never()).startOrUpdateForegroundService(anyInt(), any());
     }
 
     @Test
@@ -283,8 +278,7 @@ public class ActorForegroundServiceManagerTest {
         mManager.maybeStopServiceNow();
 
         verify(mServiceController)
-                .startOrUpdateForegroundService(
-                        eq(activeTaskId), eq(notification2), eq(demotedTaskId), eq(true));
+                .startOrUpdateForegroundService(eq(activeTaskId), eq(notification2));
         assertTrue(
                 "Service should remain bound while another task is active.",
                 mManager.isServiceBoundForTesting());
@@ -319,8 +313,7 @@ public class ActorForegroundServiceManagerTest {
         mManager.maybeStopServiceNow();
 
         verify(mServiceController)
-                .startOrUpdateForegroundService(
-                        eq(pendingTaskId), eq(notification2), eq(demotedTaskId), eq(true));
+                .startOrUpdateForegroundService(eq(pendingTaskId), eq(notification2));
         assertTrue(
                 "Service should remain bound until the last notification is demoted.",
                 mManager.isServiceBoundForTesting());
@@ -347,8 +340,7 @@ public class ActorForegroundServiceManagerTest {
         ShadowLooper.idleMainLooper();
 
         verify(mServiceController)
-                .startOrUpdateForegroundService(
-                        eq(activeTaskId), eq(notification2), eq(completedTaskId), eq(true));
+                .startOrUpdateForegroundService(eq(activeTaskId), eq(notification2));
         verify(mNotificationService).repostNotification(completedTaskId, /* isWarning= */ false);
     }
 
@@ -382,8 +374,7 @@ public class ActorForegroundServiceManagerTest {
         // Initial state
         mManager.onTaskStateChanged(1, ActorTaskState.ACTING);
         ShadowLooper.idleMainLooper();
-        verify(mServiceController)
-                .startOrUpdateForegroundService(eq(1), eq(mNotification), anyInt(), anyBoolean());
+        verify(mServiceController).startOrUpdateForegroundService(eq(1), eq(mNotification));
 
         // Update to another task
         reset(mServiceController);
@@ -400,8 +391,7 @@ public class ActorForegroundServiceManagerTest {
         ShadowLooper.idleMainLooper();
 
         // Should update to task 2's notification
-        verify(mServiceController)
-                .startOrUpdateForegroundService(eq(2), eq(notification2), eq(1), eq(true));
+        verify(mServiceController).startOrUpdateForegroundService(eq(2), eq(notification2));
     }
 
     @Test
@@ -412,8 +402,7 @@ public class ActorForegroundServiceManagerTest {
         mManager.onTaskStateChanged(1, ActorTaskState.ACTING);
         ShadowLooper.idleMainLooper();
 
-        verify(mServiceController)
-                .startOrUpdateForegroundService(eq(1), eq(mNotification), anyInt(), anyBoolean());
+        verify(mServiceController).startOrUpdateForegroundService(eq(1), eq(mNotification));
 
         clearInvocations(mServiceController);
         when(mServiceController.isConnected()).thenReturn(true);
@@ -423,8 +412,7 @@ public class ActorForegroundServiceManagerTest {
         ShadowLooper.idleMainLooper();
 
         // Should skip updating foreground service when notification state doesn't change.
-        verify(mServiceController, never())
-                .startOrUpdateForegroundService(anyInt(), any(), anyInt(), anyBoolean());
+        verify(mServiceController, never()).startOrUpdateForegroundService(anyInt(), any());
     }
 
     @Test
@@ -766,10 +754,7 @@ public class ActorForegroundServiceManagerTest {
         verify(mServiceController).startAndBindService(any());
         verify(mServiceController)
                 .startOrUpdateForegroundService(
-                        eq(ActorNotificationFactory.TASK_STARTS_SOON_NOTIFICATION_ID),
-                        any(),
-                        anyInt(),
-                        anyBoolean());
+                        eq(ActorNotificationFactory.TASK_STARTS_SOON_NOTIFICATION_ID), any());
     }
 
     @Test
@@ -777,12 +762,10 @@ public class ActorForegroundServiceManagerTest {
         mManager.setKeyedServiceForTesting(mKeyedService);
         when(mKeyedService.getActiveTasksCount()).thenReturn(0);
 
-        // 1. Pending task starts service
         mManager.onPendingTaskCountChanged(1);
         ShadowLooper.idleMainLooper();
         assertTrue(mManager.isServiceBoundForTesting());
 
-        // 2. Task transitions to active (pending -> 0, active -> 1)
         when(mKeyedService.getActiveTasksCount()).thenReturn(1);
         when(mTask.isCompleted()).thenReturn(false);
         mManager.onPendingTaskCountChanged(0);
@@ -790,12 +773,7 @@ public class ActorForegroundServiceManagerTest {
         ShadowLooper.idleMainLooper();
 
         assertTrue(mManager.isServiceBoundForTesting());
-        verify(mServiceController)
-                .startOrUpdateForegroundService(
-                        eq(1),
-                        eq(mNotification),
-                        eq(ActorNotificationFactory.TASK_STARTS_SOON_NOTIFICATION_ID),
-                        eq(true));
+        verify(mServiceController).startOrUpdateForegroundService(eq(1), eq(mNotification));
         verify(mNotificationService, never())
                 .onNotificationUnpinned(ActorNotificationFactory.TASK_STARTS_SOON_NOTIFICATION_ID);
     }
@@ -871,10 +849,7 @@ public class ActorForegroundServiceManagerTest {
 
         verify(mServiceController, times(1))
                 .startOrUpdateForegroundService(
-                        eq(ActorNotificationFactory.TASK_STARTS_SOON_NOTIFICATION_ID),
-                        any(),
-                        anyInt(),
-                        anyBoolean());
+                        eq(ActorNotificationFactory.TASK_STARTS_SOON_NOTIFICATION_ID), any());
 
         // Incrementing pending count while placeholder is already pinned should not re-trigger
         // startOrUpdateForegroundService for the placeholder notification.
@@ -883,10 +858,7 @@ public class ActorForegroundServiceManagerTest {
 
         verify(mServiceController, times(1))
                 .startOrUpdateForegroundService(
-                        eq(ActorNotificationFactory.TASK_STARTS_SOON_NOTIFICATION_ID),
-                        any(),
-                        anyInt(),
-                        anyBoolean());
+                        eq(ActorNotificationFactory.TASK_STARTS_SOON_NOTIFICATION_ID), any());
     }
 
     @Test
@@ -908,10 +880,7 @@ public class ActorForegroundServiceManagerTest {
         // is removed with the foreground state and reposted.
         verify(mServiceController)
                 .startOrUpdateForegroundService(
-                        eq(ActorNotificationFactory.TASK_STARTS_SOON_NOTIFICATION_ID),
-                        any(),
-                        eq(taskId),
-                        eq(true));
+                        eq(ActorNotificationFactory.TASK_STARTS_SOON_NOTIFICATION_ID), any());
         verify(mNotificationService).repostNotification(taskId, /* isWarning= */ false);
     }
 
@@ -929,10 +898,7 @@ public class ActorForegroundServiceManagerTest {
                 mManager.isServiceBoundForTesting());
         verify(mServiceController)
                 .startOrUpdateForegroundService(
-                        eq(ActorNotificationFactory.TASK_STARTS_SOON_NOTIFICATION_ID),
-                        any(),
-                        anyInt(),
-                        anyBoolean());
+                        eq(ActorNotificationFactory.TASK_STARTS_SOON_NOTIFICATION_ID), any());
 
         // The manager has no timeout of its own. The service stays bound for the whole window
         // that ActorKeyedService waits for the FCM message.
@@ -979,10 +945,7 @@ public class ActorForegroundServiceManagerTest {
                     ArgumentCaptor.forClass(Notification.class);
             verify(mServiceController)
                     .startOrUpdateForegroundService(
-                            eq(OPT_IN_NOTIFICATION_ID),
-                            notificationCaptor.capture(),
-                            eq(ActorForegroundServiceManager.INVALID_NOTIFICATION_ID),
-                            eq(false));
+                            eq(OPT_IN_NOTIFICATION_ID), notificationCaptor.capture());
             assertEquals(
                     ContextUtils.getApplicationContext()
                             .getString(R.string.glic_experimental_opt_in_notification_title),
@@ -1015,10 +978,7 @@ public class ActorForegroundServiceManagerTest {
         assertTrue(mManager.hasOptInNotification());
         verify(mServiceController)
                 .startOrUpdateForegroundService(
-                        eq(OPT_IN_NOTIFICATION_ID),
-                        any(Notification.class),
-                        eq(ActorForegroundServiceManager.INVALID_NOTIFICATION_ID),
-                        eq(false));
+                        eq(OPT_IN_NOTIFICATION_ID), any(Notification.class));
 
         when(mKeyedService.getActiveTasksCount()).thenReturn(1);
         mManager.onTaskStateChanged(1, ActorTaskState.ACTING);
@@ -1026,9 +986,7 @@ public class ActorForegroundServiceManagerTest {
 
         assertFalse(mManager.hasOptInNotification());
         verify(mCancelCallback, times(1)).run();
-        verify(mServiceController)
-                .startOrUpdateForegroundService(
-                        eq(1), eq(mNotification), eq(OPT_IN_NOTIFICATION_ID), eq(true));
+        verify(mServiceController).startOrUpdateForegroundService(eq(1), eq(mNotification));
         verify(mNotificationService, never()).onNotificationUnpinned(OPT_IN_NOTIFICATION_ID);
         verify(mNotificationService, never())
                 .repostNotification(eq(OPT_IN_NOTIFICATION_ID), anyBoolean());
@@ -1042,8 +1000,7 @@ public class ActorForegroundServiceManagerTest {
 
         assertFalse(mManager.isServiceBoundForTesting());
         verify(mServiceController, never())
-                .startOrUpdateForegroundService(
-                        eq(OPT_IN_NOTIFICATION_ID), any(), anyInt(), anyBoolean());
+                .startOrUpdateForegroundService(eq(OPT_IN_NOTIFICATION_ID), any());
         verify(mServiceController).stopActorForegroundService(ServiceCompat.STOP_FOREGROUND_REMOVE);
         verify(mServiceController).unbindService();
     }
@@ -1065,9 +1022,7 @@ public class ActorForegroundServiceManagerTest {
         ShadowLooper.idleMainLooper();
 
         assertTrue(mManager.isServiceBoundForTesting());
-        verify(mServiceController)
-                .startOrUpdateForegroundService(
-                        eq(1), eq(mNotification), eq(OPT_IN_NOTIFICATION_ID), eq(true));
+        verify(mServiceController).startOrUpdateForegroundService(eq(1), eq(mNotification));
         verify(mNotificationService, never()).onNotificationUnpinned(OPT_IN_NOTIFICATION_ID);
         verify(mNotificationService, never())
                 .repostNotification(eq(OPT_IN_NOTIFICATION_ID), anyBoolean());
@@ -1092,10 +1047,7 @@ public class ActorForegroundServiceManagerTest {
 
             verify(mServiceController)
                     .startOrUpdateForegroundService(
-                            eq(OPT_IN_NOTIFICATION_ID),
-                            any(Notification.class),
-                            eq(ActorForegroundServiceManager.INVALID_NOTIFICATION_ID),
-                            eq(false));
+                            eq(OPT_IN_NOTIFICATION_ID), any(Notification.class));
 
             realManager.unpinOptInNotification();
             ShadowLooper.idleMainLooper();
@@ -1121,8 +1073,7 @@ public class ActorForegroundServiceManagerTest {
         assertFalse(mManager.hasOptInNotification());
         assertFalse(mManager.isServiceBoundForTesting());
         verify(mCancelCallback, times(1)).run();
-        verify(mServiceController, never())
-                .startOrUpdateForegroundService(anyInt(), any(), anyInt(), anyBoolean());
+        verify(mServiceController, never()).startOrUpdateForegroundService(anyInt(), any());
     }
 
     @Test
@@ -1132,8 +1083,7 @@ public class ActorForegroundServiceManagerTest {
         when(mKeyedService.getActiveTasksCount()).thenReturn(0);
         doThrow(new IllegalStateException("ForegroundServiceStartNotAllowedException"))
                 .when(mServiceController)
-                .startOrUpdateForegroundService(
-                        eq(OPT_IN_NOTIFICATION_ID), any(), anyInt(), anyBoolean());
+                .startOrUpdateForegroundService(eq(OPT_IN_NOTIFICATION_ID), any());
 
         mManager.pinOptInNotification(mCancelCallback);
         ShadowLooper.idleMainLooper();
@@ -1322,8 +1272,7 @@ public class ActorForegroundServiceManagerTest {
 
         assertFalse(mManager.isServiceBoundForTesting());
         verify(mServiceController, never())
-                .startOrUpdateForegroundService(
-                        eq(OPT_IN_NOTIFICATION_ID), any(), anyInt(), anyBoolean());
+                .startOrUpdateForegroundService(eq(OPT_IN_NOTIFICATION_ID), any());
     }
 
     @Test

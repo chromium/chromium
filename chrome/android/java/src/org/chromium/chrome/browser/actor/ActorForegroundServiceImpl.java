@@ -52,17 +52,9 @@ public class ActorForegroundServiceImpl extends SplitCompatService.Impl {
      *
      * @param newNotificationId The ID for the new notification.
      * @param newNotification The notification to display.
-     * @param oldNotificationId Unused.
-     * @param killOldNotification Unused.
      */
     public void startOrUpdateForegroundService(
-            int newNotificationId,
-            Notification newNotification,
-            int oldNotificationId,
-            boolean killOldNotification) {
-        // TODO(crbug.com/578059672): Remove the unused oldNotificationId and killOldNotification
-        // parameters once the M158 merges are done.
-
+            int newNotificationId, Notification newNotification) {
         // Calling stopForeground() before a notification ID swap would reset the background start
         // allowance, making startForeground() throw while Chrome is backgrounded.
         if (!mIsForeground) {
