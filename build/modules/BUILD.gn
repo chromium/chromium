@@ -183,8 +183,6 @@ if (use_unified_system_module) {
       # TODO(crbug.com/581023696): remove these
       "--append-module=std.cmath:export std_core.limits",
       "--append-module=std.optional:export std.utility.move\nexport std_core.utility_core.declval",
-      "--append-module=std.new:export std_core.cstddef.max_align_t\nexport std_core.cstddef.size_t",
-      "--append-module=std.memory.allocator:export std_core.cstddef.max_align_t",
     ]
     if (root_include_dir != "") {
       args += [

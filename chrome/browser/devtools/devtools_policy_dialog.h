@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_DEVTOOLS_DEVTOOLS_POLICY_DIALOG_H_
 #define CHROME_BROWSER_DEVTOOLS_DEVTOOLS_POLICY_DIALOG_H_
 
-#include <stddef.h>
-
 #include <map>
 #include <memory>
 

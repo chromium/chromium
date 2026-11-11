@@ -5,8 +5,6 @@
 #ifndef UI_BASE_NINE_IMAGE_PAINTER_FACTORY_H_
 #define UI_BASE_NINE_IMAGE_PAINTER_FACTORY_H_
 
-#include <stddef.h>
-
 #include <array>
 #include <memory>
 

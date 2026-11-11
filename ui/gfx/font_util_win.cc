@@ -8,10 +8,6 @@
 
 #include <wrl/client.h>
 
-#include <algorithm>
-#include <limits>
-#include <mutex>
-
 #include "base/files/file_path.h"
 #include "third_party/skia/include/core/SkSurfaceProps.h"
 #include "third_party/skia/include/core/SkTypes.h"

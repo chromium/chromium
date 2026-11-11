@@ -5,8 +5,6 @@
 #ifndef BASE_NUMERICS_BASIC_OPS_IMPL_H_
 #define BASE_NUMERICS_BASIC_OPS_IMPL_H_
 
-#include <stddef.h>
-
 #include <algorithm>
 #include <array>
 #include <bit>

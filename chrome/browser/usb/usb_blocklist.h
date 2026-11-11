@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_USB_USB_BLOCKLIST_H_
 #define CHROME_BROWSER_USB_USB_BLOCKLIST_H_
 
-#include <stddef.h>
 #include <stdint.h>
 
 #include <vector>
