@@ -146,6 +146,7 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kThirdPartyCacheStorage,
           WebFeature::kOverlayPopup,
           WebFeature::kOverlayPopupAd,
+          WebFeature::kOverlayPrestitialAd,
           WebFeature::kTrustTokenXhr,
           WebFeature::kTrustTokenFetch,
           WebFeature::kTrustTokenIframe,
