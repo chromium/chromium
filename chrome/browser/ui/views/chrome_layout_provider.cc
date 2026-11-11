@@ -298,6 +298,11 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
       return 1;
     case DISTANCE_ACTION_APP_MENU_MAX_WIDTH:
       return 800;
+    case DISTANCE_ACTION_APP_MENU_DYNAMIC_SUBMENU_MAX_WIDTH:
+      return 480;
+    case DISTANCE_ACTION_APP_MENU_NESTED_DYNAMIC_SUBMENU_MAX_WIDTH:
+      // Matches the legacy bookmark menu's maximum width.
+      return 400;
   }
   NOTREACHED();
 }

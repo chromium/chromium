@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/views/app_menu/app_menu_zoom_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "ui/actions/actions.h"
+#include "ui/base/class_property.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
@@ -59,6 +60,9 @@
 #include "ui/views/widget/widget.h"
 
 namespace {
+
+// If non-zero, overrides the maximum width of a menu item's submenu.
+DEFINE_UI_CLASS_PROPERTY_KEY(int, kSubmenuMaxWidthKey, 0)
 
 bool ShouldRoundBottomCorners(size_t index,
                               const actions::ActionListVector& items) {
@@ -595,6 +599,9 @@ int ActionAppMenu::GetMaxWidthForMenu(views::MenuItemView* menu) {
   if (menu == root_ && menu_width_lock_) {
     return menu->GetSubmenu()->GetScrollViewContainer()->width();
   }
+  if (const int submenu_max_width = menu->GetProperty(kSubmenuMaxWidthKey)) {
+    return submenu_max_width;
+  }
   return ChromeLayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_ACTION_APP_MENU_MAX_WIDTH);
 }
@@ -939,6 +946,20 @@ views::MenuItemView* ActionAppMenu::AppendMenuItem(
   if (display_type == AppMenuActionItem::DisplayType::kNotification) {
     has_notification_header_ = true;
     menu_item->SetIsPinned(true);
+  }
+
+  // Dynamic submenus and their nested submenus list user/web content (e.g.
+  // page titles), so cap their width to elide long titles instead of widening
+  // the submenus. Top-level dynamic submenus also have static rows (e.g. "Show
+  // bookmarks in side panel"), so they get a wider cap than nested submenus.
+  if (has_submenu && (base_action_item->HasPopulateChildActionsCallback() ||
+                      parent_menu_item->GetProperty(kSubmenuMaxWidthKey))) {
+    menu_item->SetProperty(
+        kSubmenuMaxWidthKey,
+        ChromeLayoutProvider::Get()->GetDistanceMetric(
+            parent_menu_item == root_
+                ? DISTANCE_ACTION_APP_MENU_DYNAMIC_SUBMENU_MAX_WIDTH
+                : DISTANCE_ACTION_APP_MENU_NESTED_DYNAMIC_SUBMENU_MAX_WIDTH));
   }
 
   action_view_controller_.CreateActionViewRelationship(
