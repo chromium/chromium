@@ -33,6 +33,8 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "ui/ozone/public/ozone_platform.h"
 #if BUILDFLAG(USE_DBUS)
+#include "chrome/browser/media/webrtc/camera_portal_focus_notifier_linux.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "components/dbus/thread_linux/dbus_thread_linux.h"
 #endif  // BUILDFLAG(USE_DBUS)
 #endif  // BUILDFLAG(IS_LINUX)
@@ -140,6 +142,11 @@ void ChromeBrowserMainPartsLinux::PostBrowserStart() {
         std::make_unique<DbusMemoryPressureEvaluatorLinux>(
             monitor->CreateVoter()));
   }
+#if BUILDFLAG(IS_LINUX)
+  camera_portal_focus_notifier_ =
+      CameraPortalFocusNotifierLinux::CreateIfEnabled(
+          GlobalBrowserCollection::GetInstance());
+#endif
   ChromeBrowserMainPartsPosix::PostBrowserStart();
 }
 #endif  // BUILDFLAG(USE_DBUS) && !BUILDFLAG(IS_CHROMEOS)
@@ -149,6 +156,9 @@ void ChromeBrowserMainPartsLinux::PostDestroyThreads() {
   // No-op; per PostBrowserStart() comment, this is done elsewhere.
 #else
 #if BUILDFLAG(USE_DBUS)
+#if BUILDFLAG(IS_LINUX)
+  camera_portal_focus_notifier_.reset();
+#endif
   session_end_listener_.reset();
 #endif
   bluez::BluezDBusManager::Shutdown();

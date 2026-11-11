@@ -303,6 +303,21 @@ source_set("webrtc") {
     deps += [ "//components/remote_cocoa/browser" ]
   }
 
+  if (is_linux && use_dbus) {
+    sources += [
+      "camera_portal_focus_notifier_linux.cc",
+      "camera_portal_focus_notifier_linux.h",
+    ]
+    public_deps += [
+      "//chrome/browser/ui/browser_window",
+      "//ui/views",
+    ]
+    deps += [
+      "//media/capture:capture_switches",
+      "//ui/base",
+    ]
+  }
+
   if (is_linux && use_ozone) {
     sources += [ "window_icon_util_ozone.cc" ]
     deps += [ "//ui/ozone" ]
@@ -569,6 +584,25 @@ source_set("unit_tests") {
       "//chromeos/ash/components/system",
       "//components/account_id",
     ]
+  }
+
+  if (is_linux && use_dbus) {
+    sources += [ "camera_portal_focus_notifier_linux_unittest.cc" ]
+    deps += [
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/browser_window/test:test_support",
+      "//chrome/test/views",
+      "//media/capture:capture_switches",
+      "//testing/gmock",
+      "//ui/base",
+      "//ui/base/mojom:ui_base_types",
+      "//ui/gfx/geometry",
+      "//ui/views",
+    ]
+    if (rtc_use_pipewire) {
+      configs +=
+          [ "//third_party/webrtc/modules/desktop_capture:pipewire_config" ]
+    }
   }
 
   # These media/webrtc unit tests are desktop-only (!is_android);

@@ -5,6 +5,8 @@
 #ifndef MEDIA_CAPTURE_VIDEO_LINUX_VIDEO_CAPTURE_DEVICE_FACTORY_WEBRTC_H_
 #define MEDIA_CAPTURE_VIDEO_LINUX_VIDEO_CAPTURE_DEVICE_FACTORY_WEBRTC_H_
 
+#include <vector>
+
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/config/linux/dbus/buildflags.h"
@@ -54,6 +56,15 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryWebRtc
   // the GetDevicesInfo() callback.
   bool IsAvailable();
 
+  // True after the Camera portal client was denied access, until the next
+  // GetDevicesInfo() call retries the portal. GNOME Shell refuses the request
+  // while no window of the app is focused, e.g. at startup, and that looks
+  // like a denial. A retry after an actual denial gets the stored answer
+  // without a dialog. There is one retry per denial from the portal client.
+  bool IsPortalRetryPending() const {
+    return portal_retry_ == PortalRetry::kPending;
+  }
+
   static webrtc::VideoType WebRtcVideoTypeFromChromiumPixelFormat(
       VideoPixelFormat pixel_format);
   static VideoPixelFormat WebRtcVideoTypeToChromiumPixelFormat(
@@ -80,9 +91,9 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryWebRtc
   void OnCameraPortalResult(dbus_xdg::CameraPortalResult result);
 #endif
 
-  // Collect the camera devices and call the GetDevicesInfo() callback.
+  // Collect the camera devices and call pending GetDevicesInfo() callbacks.
   void FinishGetDevicesInfo();
-  GetDevicesInfoCallback callback_;
+  std::vector<GetDevicesInfoCallback> callbacks_;
 
   std::unique_ptr<webrtc::VideoCaptureOptions> options_;
   webrtc::VideoCaptureOptions::Status status_{
@@ -93,6 +104,18 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryWebRtc
 #if BUILDFLAG(USE_DBUS)
   std::unique_ptr<dbus_xdg::CameraPortal> camera_portal_;
 #endif
+
+  // The single Camera portal retry after a denial (see
+  // IsPortalRetryPending()).
+  enum class PortalRetry {
+    // No denial so far.
+    kUnused,
+    // The portal client was denied; the next GetDevicesInfo() retries.
+    kPending,
+    // The retry has started, so a further denial is final.
+    kUsed,
+  };
+  PortalRetry portal_retry_ = PortalRetry::kUnused;
 
   base::WeakPtrFactory<VideoCaptureDeviceFactoryWebRtc> weak_ptr_factory_{this};
 };

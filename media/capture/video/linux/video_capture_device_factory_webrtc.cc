@@ -4,6 +4,8 @@
 
 #include "media/capture/video/linux/video_capture_device_factory_webrtc.h"
 
+#include <utility>
+
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -97,15 +99,26 @@ void VideoCaptureDeviceFactoryWebRtc::FinishGetDevicesInfo() {
     }
   }
 
-  origin_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback_), devices_info));
+  for (auto& callback : std::exchange(callbacks_, {})) {
+    origin_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), devices_info));
+  }
 }
 
 void VideoCaptureDeviceFactoryWebRtc::GetDevicesInfo(
     GetDevicesInfoCallback callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
   origin_task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
-  callback_ = std::move(callback);
+  const bool init_in_flight = !callbacks_.empty();
+  callbacks_.push_back(std::move(callback));
+  if (init_in_flight) {
+    return;
+  }
+
+  if (portal_retry_ == PortalRetry::kPending) {
+    portal_retry_ = PortalRetry::kUsed;
+    status_ = webrtc::VideoCaptureOptions::Status::UNINITIALIZED;
+  }
 
   if (status_ != webrtc::VideoCaptureOptions::Status::UNINITIALIZED) {
     FinishGetDevicesInfo();
@@ -151,6 +164,11 @@ void VideoCaptureDeviceFactoryWebRtc::OnCameraPortalResult(
     return;
   }
   if (result.error() == dbus_xdg::CameraPortalError::kDenied) {
+    // The denial may come from GNOME Shell refusing the dialog while no window
+    // is focused, so allow one retry (see IsPortalRetryPending()).
+    if (portal_retry_ == PortalRetry::kUnused) {
+      portal_retry_ = PortalRetry::kPending;
+    }
     OnInitialized(webrtc::VideoCaptureOptions::Status::DENIED);
     return;
   }

@@ -43,6 +43,7 @@ class FakeV4L2Factory : public VideoCaptureDeviceFactory {
   }
 
   void GetDevicesInfo(GetDevicesInfoCallback callback) override {
+    ++get_devices_info_count_;
     std::vector<VideoCaptureDeviceInfo> devices_info;
     devices_info.emplace_back(
         VideoCaptureDeviceDescriptor("V4L2 camera", kV4L2DeviceId, "",
@@ -50,6 +51,11 @@ class FakeV4L2Factory : public VideoCaptureDeviceFactory {
                                      VideoCaptureControlSupport()));
     std::move(callback).Run(std::move(devices_info));
   }
+
+  int get_devices_info_count() const { return get_devices_info_count_; }
+
+ private:
+  int get_devices_info_count_ = 0;
 };
 
 // Finishes PipeWire and Camera portal initialization with a fixed status and
@@ -127,9 +133,15 @@ class FakeCameraPortalFactory : public VideoCaptureDeviceFactoryWebRtc {
   const std::optional<int>& pipewire_fd() const { return pipewire_fd_; }
   // The fd that the fake portal returned.
   int portal_fd() const { return portal_fd_; }
+  // How often the Camera portal was opened.
+  int portal_open_count() const { return portal_open_count_; }
+  void set_error(std::optional<dbus_xdg::CameraPortalError> error) {
+    error_ = error;
+  }
 
  protected:
   void OpenCameraPortal(dbus_xdg::CameraPortalCallback callback) override {
+    ++portal_open_count_;
     dbus_xdg::CameraPortalResult result =
         base::unexpected(dbus_xdg::CameraPortalError::kFailed);
     if (error_) {
@@ -153,14 +165,15 @@ class FakeCameraPortalFactory : public VideoCaptureDeviceFactoryWebRtc {
   }
 
  private:
-  const std::optional<dbus_xdg::CameraPortalError> error_;
+  std::optional<dbus_xdg::CameraPortalError> error_;
   std::optional<int> pipewire_fd_;
   int portal_fd_ = -1;
+  int portal_open_count_ = 0;
 };
 
 class VideoCaptureDeviceFactoryWebRtcCameraPortalTest : public testing::Test {
  protected:
-  void GetDevicesInfo(VideoCaptureDeviceFactoryWebRtc& factory) {
+  void GetDevicesInfo(VideoCaptureDeviceFactory& factory) {
     base::RunLoop run_loop;
     factory.GetDevicesInfo(base::BindLambdaForTesting(
         [&](std::vector<VideoCaptureDeviceInfo> result) { run_loop.Quit(); }));
@@ -195,6 +208,84 @@ TEST_F(VideoCaptureDeviceFactoryWebRtcCameraPortalTest,
   GetDevicesInfo(factory);
   ASSERT_TRUE(factory.pipewire_fd());
   EXPECT_EQ(*factory.pipewire_fd(), -1);
+  EXPECT_FALSE(factory.IsPortalRetryPending());
+}
+
+// After a denial, the next enumeration opens the portal once more, e.g. after
+// GNOME Shell refused the dialog because no window was focused yet.
+TEST_F(VideoCaptureDeviceFactoryWebRtcCameraPortalTest,
+       DeniedRetriesPortalOnce) {
+  FakeCameraPortalFactory factory(dbus_xdg::CameraPortalError::kDenied);
+  GetDevicesInfo(factory);
+  EXPECT_EQ(factory.portal_open_count(), 1);
+  EXPECT_FALSE(factory.IsAvailable());
+  EXPECT_TRUE(factory.IsPortalRetryPending());
+
+  factory.set_error(std::nullopt);
+  GetDevicesInfo(factory);
+  EXPECT_EQ(factory.portal_open_count(), 2);
+  EXPECT_FALSE(factory.IsPortalRetryPending());
+  ASSERT_TRUE(factory.pipewire_fd());
+  EXPECT_EQ(*factory.pipewire_fd(), factory.portal_fd());
+}
+
+// A denial of the retry is final.
+TEST_F(VideoCaptureDeviceFactoryWebRtcCameraPortalTest,
+       DeniedRetryIsNotRepeated) {
+  FakeCameraPortalFactory factory(dbus_xdg::CameraPortalError::kDenied);
+  GetDevicesInfo(factory);
+  GetDevicesInfo(factory);
+  EXPECT_EQ(factory.portal_open_count(), 2);
+  EXPECT_FALSE(factory.IsPortalRetryPending());
+
+  GetDevicesInfo(factory);
+  EXPECT_EQ(factory.portal_open_count(), 2);
+  EXPECT_FALSE(factory.IsAvailable());
+}
+
+// The Linux factory asks the WebRTC factory again while a retry is pending,
+// and uses V4L2 when the retry is denied too.
+TEST_F(VideoCaptureDeviceFactoryWebRtcCameraPortalTest,
+       LinuxFactoryRetriesPortal) {
+  auto webrtc_factory = std::make_unique<FakeCameraPortalFactory>(
+      dbus_xdg::CameraPortalError::kDenied);
+  FakeCameraPortalFactory* webrtc_factory_ptr = webrtc_factory.get();
+  auto v4l2_factory = std::make_unique<FakeV4L2Factory>();
+  FakeV4L2Factory* v4l2_factory_ptr = v4l2_factory.get();
+  VideoCaptureDeviceFactoryLinux factory(std::move(v4l2_factory),
+                                         std::move(webrtc_factory));
+
+  GetDevicesInfo(factory);
+  EXPECT_EQ(webrtc_factory_ptr->portal_open_count(), 1);
+  EXPECT_EQ(v4l2_factory_ptr->get_devices_info_count(), 1);
+
+  GetDevicesInfo(factory);
+  EXPECT_EQ(webrtc_factory_ptr->portal_open_count(), 2);
+  EXPECT_EQ(v4l2_factory_ptr->get_devices_info_count(), 2);
+
+  GetDevicesInfo(factory);
+  EXPECT_EQ(webrtc_factory_ptr->portal_open_count(), 2);
+  EXPECT_EQ(v4l2_factory_ptr->get_devices_info_count(), 3);
+}
+
+// Concurrent GetDevicesInfo() calls during an in-flight portal request share
+// that request and both receive a callback.
+TEST_F(VideoCaptureDeviceFactoryWebRtcCameraPortalTest,
+       ConcurrentGetDevicesInfoQueuesCallbacks) {
+  FakeCameraPortalFactory factory(std::nullopt);
+  int callbacks_run = 0;
+  base::RunLoop run_loop;
+  auto on_done = [&](std::vector<VideoCaptureDeviceInfo>) {
+    if (++callbacks_run == 2) {
+      run_loop.Quit();
+    }
+  };
+  factory.GetDevicesInfo(base::BindLambdaForTesting(on_done));
+  factory.GetDevicesInfo(base::BindLambdaForTesting(on_done));
+  run_loop.Run();
+
+  EXPECT_EQ(callbacks_run, 2);
+  EXPECT_EQ(factory.portal_open_count(), 1);
 }
 #endif  // BUILDFLAG(USE_DBUS)
 

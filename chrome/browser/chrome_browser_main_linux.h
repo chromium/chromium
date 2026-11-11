@@ -23,6 +23,9 @@ class StackSamplingRecorder;
 #if BUILDFLAG(USE_DBUS) && !BUILDFLAG(IS_CHROMEOS)
 class SessionEndListenerLinux;
 #endif
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
+class CameraPortalFocusNotifierLinux;
+#endif
 
 class ChromeBrowserMainPartsLinux : public ChromeBrowserMainPartsPosix {
  public:
@@ -59,6 +62,9 @@ class ChromeBrowserMainPartsLinux : public ChromeBrowserMainPartsPosix {
 #endif
 #if BUILDFLAG(USE_DBUS) && !BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<SessionEndListenerLinux> session_end_listener_;
+#endif
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
+  std::unique_ptr<CameraPortalFocusNotifierLinux> camera_portal_focus_notifier_;
 #endif
 };
 

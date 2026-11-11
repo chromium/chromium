@@ -54,7 +54,8 @@ VideoCaptureErrorOrDevice VideoCaptureDeviceFactoryLinux::CreateDevice(
 void VideoCaptureDeviceFactoryLinux::GetDevicesInfo(
     GetDevicesInfoCallback callback) {
 #if defined(WEBRTC_USE_PIPEWIRE)
-  if (webrtc_factory_->IsAvailable()) {
+  if (webrtc_factory_->IsAvailable() ||
+      webrtc_factory_->IsPortalRetryPending()) {
     webrtc_factory_->GetDevicesInfo(
         base::BindOnce(&VideoCaptureDeviceFactoryLinux::OnGetDevicesInfo,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));

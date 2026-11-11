@@ -1924,6 +1924,7 @@ source_set("core") {
         "platform_util_linux.cc",
       ]
       deps += [
+        "//chrome/browser/ui/browser_window",
         "//chrome/common:chrome_features",
         "//components/dbus",
         "//components/memory_pressure",
