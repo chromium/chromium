@@ -4,10 +4,18 @@
 
 #include "chrome/browser/policy/browser_dm_token_storage_android.h"
 
+#include <memory>
+
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_command_line.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/android/cloud_management_shared_preferences.h"
+#include "chrome/browser/policy/chrome_browser_policy_connector.h"
+#include "components/enterprise/browser/controller/browser_dm_token_storage.h"
+#include "components/enterprise/browser/enterprise_switches.h"
 #include "components/policy/core/browser/browser_policy_connector_base.h"
 #include "components/policy/core/common/mock_policy_service.h"
 #include "components/policy/policy_constants.h"
@@ -27,6 +35,16 @@ namespace {
 
 constexpr char kDMToken[] = "fake-dm-token";
 constexpr char kEnrollmentToken[] = "fake-enrollment-token";
+
+// A `BrowserDMTokenStorage` backed by the real Android delegate, which reads
+// the enrollment token from the `PolicyService`, unlike the delegate of
+// `FakeBrowserDMTokenStorage`.
+class TestBrowserDMTokenStorage : public BrowserDMTokenStorage {
+ public:
+  TestBrowserDMTokenStorage() {
+    delegate_ = std::make_unique<BrowserDMTokenStorageAndroid>();
+  }
+};
 
 }  // namespace
 
@@ -70,6 +88,44 @@ TEST_F(BrowserDMTokenStorageAndroidTest, InitDMToken) {
 TEST_F(BrowserDMTokenStorageAndroidTest, InitEnrollmentErrorOption) {
   BrowserDMTokenStorageAndroid storage;
   EXPECT_FALSE(storage.InitEnrollmentErrorOption());
+}
+
+// On first launch, the storage is initialized before the `PolicyService` exists
+// and caches an empty enrollment token once it does, because the platform
+// policies carrying the token arrive later. `RefreshEnrollmentToken()` must
+// pick up the token.
+TEST_F(BrowserDMTokenStorageAndroidTest,
+       RefreshEnrollmentTokenAfterPlatformPoliciesArrive) {
+  // CBCM is disabled by default in non-branded builds.
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      ::switches::kEnableChromeBrowserCloudManagement);
+  TestBrowserDMTokenStorage storage;
+
+  // Initialize the storage before the `PolicyService` exists, as
+  // `ReadyToCreatePolicyManager()` does.
+  ASSERT_FALSE(
+      g_browser_process->browser_policy_connector()->HasPolicyService());
+  EXPECT_FALSE(storage.RetrieveClientId().empty());
+
+  // Once the `PolicyService` exists, the next retrieval reads the token again,
+  // as `ReadyToInit()` does. The platform policies haven't arrived yet.
+  MockPolicyService mock_policy_service;
+  BrowserPolicyConnectorBase::SetPolicyServiceForTesting(&mock_policy_service);
+  PolicyMap policy_map;
+  EXPECT_CALL(mock_policy_service, GetPolicies(_))
+      .WillRepeatedly(ReturnRef(policy_map));
+  EXPECT_THAT(storage.RetrieveEnrollmentToken(), IsEmpty());
+
+  policy_map.Set(key::kCloudManagementEnrollmentToken, POLICY_LEVEL_MANDATORY,
+                 POLICY_SCOPE_MACHINE, POLICY_SOURCE_PLATFORM,
+                 base::Value(kEnrollmentToken), nullptr);
+  // The cached value is returned until the enrollment token is refreshed.
+  EXPECT_THAT(storage.RetrieveEnrollmentToken(), IsEmpty());
+  storage.RefreshEnrollmentToken();
+  EXPECT_THAT(storage.RetrieveEnrollmentToken(), Eq(kEnrollmentToken));
+
+  BrowserPolicyConnectorBase::SetPolicyServiceForTesting(nullptr);
 }
 
 class TestStoreDMTokenDelegate {

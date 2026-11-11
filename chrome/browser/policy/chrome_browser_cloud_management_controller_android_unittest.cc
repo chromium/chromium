@@ -4,22 +4,29 @@
 
 #include "chrome/browser/policy/chrome_browser_cloud_management_controller_android.h"
 
+#include <string>
+
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/values.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #include "components/enterprise/browser/reporting/saas_usage/saas_usage_reporting_delegate_factory.h"
 #include "components/enterprise/client_certificates/core/certificate_provisioning_service.h"
 #include "components/enterprise/client_certificates/core/features.h"
 #include "components/policy/core/browser/browser_policy_connector_base.h"
 #include "components/policy/core/common/mock_policy_service.h"
+#include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::_;
+using ::testing::IsEmpty;
 using ::testing::ReturnRef;
 using ::testing::SaveArg;
 
@@ -161,6 +168,49 @@ TEST_F(ChromeBrowserCloudManagementControllerAndroidTest, DeferInitialization) {
   captured_observer->OnProviderUpdatePropagated(
       g_browser_process->browser_policy_connector()->GetPlatformProvider());
   EXPECT_TRUE(callback_invoked);
+}
+
+// `ReadyToInit()` checks for a DM token, which makes `BrowserDMTokenStorage`
+// cache the enrollment token available at that time. On first launch, the
+// platform policies carrying the token haven't arrived yet, so the cached
+// token is empty. The deferred initialization must not use that stale value
+// once the token becomes available.
+TEST_F(ChromeBrowserCloudManagementControllerAndroidTest,
+       DeferInitialization_RefreshesEnrollmentToken) {
+  constexpr char kEnrollmentToken[] = "enrollment-token";
+  PolicyMap policy_map;
+  EXPECT_CALL(mock_policy_service_, GetPolicies(_))
+      .WillRepeatedly(ReturnRef(policy_map));
+  PolicyService::ProviderUpdateObserver* captured_observer = nullptr;
+  EXPECT_CALL(mock_policy_service_, AddProviderUpdateObserver(_))
+      .WillOnce(SaveArg<0>(&captured_observer));
+
+  ChromeBrowserCloudManagementControllerAndroid delegate;
+  EXPECT_FALSE(delegate.ReadyToInit());
+  EXPECT_THAT(BrowserDMTokenStorage::Get()->RetrieveEnrollmentToken(),
+              IsEmpty());
+
+  bool callback_invoked = false;
+  std::string enrollment_token_on_init;
+  delegate.DeferInitialization(base::BindLambdaForTesting([&]() {
+    callback_invoked = true;
+    enrollment_token_on_init =
+        BrowserDMTokenStorage::Get()->RetrieveEnrollmentToken();
+  }));
+  ASSERT_NE(captured_observer, nullptr);
+
+  // The enrollment token arrives with the platform policies. In production,
+  // the storage reads it from the `PolicyService`; the fake storage doesn't, so
+  // set it on the fake as well.
+  policy_map.Set(key::kCloudManagementEnrollmentToken, POLICY_LEVEL_MANDATORY,
+                 POLICY_SCOPE_MACHINE, POLICY_SOURCE_PLATFORM,
+                 base::Value(kEnrollmentToken), nullptr);
+  storage_.SetEnrollmentToken(kEnrollmentToken);
+  captured_observer->OnProviderUpdatePropagated(
+      g_browser_process->browser_policy_connector()->GetPlatformProvider());
+
+  EXPECT_TRUE(callback_invoked);
+  EXPECT_EQ(kEnrollmentToken, enrollment_token_on_init);
 }
 
 TEST_F(ChromeBrowserCloudManagementControllerAndroidTest,
