@@ -465,16 +465,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Lens.ImageClassification.ClassificationTime.EarlyTerminatedMs"
-    units="ms" expires_after="2022-07-31">
-  <owner>yusuyoutube@google.com</owner>
-  <owner>benwgold@google.com</owner>
-  <summary>
-    Logged the time between the start of the Lens image classifcation call to
-    the early termination before the call completes. Only logged on Android.
-  </summary>
-</histogram>
-
 <histogram
     name="Lens.ImageClassification.ClassificationTime.SuccessOnQueryResultMs"
     units="ms" expires_after="2022-11-13">
