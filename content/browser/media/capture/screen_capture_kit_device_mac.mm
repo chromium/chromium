@@ -4,6 +4,7 @@
 
 #include "content/browser/media/capture/screen_capture_kit_device_mac.h"
 
+#import <AppKit/AppKit.h>
 #import <ScreenCaptureKit/ScreenCaptureKit.h>
 
 #include <optional>
@@ -158,21 +159,50 @@ NSArray<SCWindow*>* GetWindowsToExclude(
     : NSObject <SCStreamDelegate, SCStreamOutput>
 
 - (instancetype)initWithSampleCallback:(SampleCallback)sampleCallback
-                         errorCallback:(ErrorCallback)errorCallback;
+                         errorCallback:(ErrorCallback)errorCallback
+                    disconnectCallback:
+                        (base::RepeatingClosure)disconnectCallback;
 @end
 
 @implementation ScreenCaptureKitDeviceHelper {
   SampleCallback _sampleCallback;
   ErrorCallback _errorCallback;
+  base::RepeatingClosure _disconnectCallback;
 }
 
 - (instancetype)initWithSampleCallback:(SampleCallback)sampleCallback
-                         errorCallback:(ErrorCallback)errorCallback {
+                         errorCallback:(ErrorCallback)errorCallback
+                    disconnectCallback:
+                        (base::RepeatingClosure)disconnectCallback {
   if (self = [super init]) {
     _sampleCallback = sampleCallback;
     _errorCallback = errorCallback;
+    _disconnectCallback = std::move(disconnectCallback);
+
+    NSNotificationCenter* workspaceCenter =
+        [[NSWorkspace sharedWorkspace] notificationCenter];
+    [workspaceCenter addObserver:self
+                        selector:@selector(onSystemSleepOrTerminate:)
+                            name:NSWorkspaceScreensDidSleepNotification
+                          object:nil];
+    [[NSNotificationCenter defaultCenter]
+        addObserver:self
+           selector:@selector(onSystemSleepOrTerminate:)
+               name:NSApplicationWillTerminateNotification
+             object:nil];
   }
   return self;
+}
+
+- (void)dealloc {
+  [[[NSWorkspace sharedWorkspace] notificationCenter] removeObserver:self];
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)onSystemSleepOrTerminate:(NSNotification*)notification {
+  if (_disconnectCallback) {
+    _disconnectCallback.Run();
+  }
 }
 
 - (void)stream:(SCStream*)stream
@@ -283,9 +313,30 @@ class ScreenCaptureKitDeviceMac
         device_task_runner_,
         base::BindRepeating(&ScreenCaptureKitDeviceMac::OnStreamError,
                             weak_factory_.GetWeakPtr()));
+    // AppKit sends the sleep and terminate notifications on the main thread,
+    // which is normally `device_task_runner_`. In that case, run the handler
+    // in place so the stream stops before the notification returns. A posted
+    // task may never run once the app starts to terminate.
+    base::RepeatingClosure disconnect_callback = base::BindRepeating(
+        [](scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+           base::WeakPtr<ScreenCaptureKitDeviceMac> device) {
+          if (!task_runner->RunsTasksInCurrentSequence()) {
+            task_runner->PostTask(
+                FROM_HERE,
+                base::BindOnce(
+                    &ScreenCaptureKitDeviceMac::OnSystemSleepOrTerminate,
+                    device));
+            return;
+          }
+          if (device) {
+            device->OnSystemSleepOrTerminate();
+          }
+        },
+        device_task_runner_, weak_factory_.GetWeakPtr());
     helper_ = [[ScreenCaptureKitDeviceHelper alloc]
         initWithSampleCallback:sample_callback
-                 errorCallback:error_callback];
+                 errorCallback:error_callback
+            disconnectCallback:disconnect_callback];
     if (pip_screen_capture_coordinator_proxy_) {
       pip_screen_capture_coordinator_proxy_->AddObserver(this);
     }
@@ -296,6 +347,7 @@ class ScreenCaptureKitDeviceMac
   ~ScreenCaptureKitDeviceMac() override {
     CHECK(device_task_runner_->RunsTasksInCurrentSequence(),
           base::NotFatalUntil::M160);
+    OnStop();
     if (pip_screen_capture_coordinator_proxy_) {
       pip_screen_capture_coordinator_proxy_->RemoveObserver(this);
     }
@@ -566,6 +618,22 @@ class ScreenCaptureKitDeviceMac
       client()->OnError(media::VideoCaptureError::kScreenCaptureKitStreamError,
                         FROM_HERE, error_string);
     }
+  }
+  void OnSystemSleepOrTerminate() {
+    CHECK(device_task_runner_->RunsTasksInCurrentSequence(),
+          base::NotFatalUntil::M160);
+    // Check `client()` rather than `stream_`: `stream_` is still null while
+    // getShareableContent is in flight, and that callback must not start the
+    // stream after the display sleeps. OnStop() cancels it by invalidating
+    // weak pointers. A device that was already stopped never gets here,
+    // because OnStop() also invalidates the notification callback's pointer.
+    if (!client()) {
+      return;
+    }
+    OnStop();
+    client()->OnError(
+        media::VideoCaptureError::kScreenCaptureKitStreamError, FROM_HERE,
+        "Stream stopped due to display sleep or application termination");
   }
   void OnUpdateContentFilterCompleted(NSError* _Nullable error) {
     CHECK(device_task_runner_->RunsTasksInCurrentSequence(),

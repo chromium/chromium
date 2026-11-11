@@ -4,6 +4,7 @@
 
 #include "content/browser/media/capture/screen_capture_kit_device_mac.h"
 
+#import <AppKit/AppKit.h>
 #import <ScreenCaptureKit/ScreenCaptureKit.h>
 #import <objc/runtime.h>
 
@@ -11,6 +12,7 @@
 #include "base/apple/scoped_objc_class_swizzler.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
@@ -73,6 +75,7 @@ static id g_captured_stream = nil;
 @property(copy) void (^onStart)(void (^)(NSError*));
 @property(copy) void (^onStop)(void (^)(NSError*));
 @property(strong) id<SCStreamOutput> output;
+@property(assign) BOOL stopCalled;
 - (instancetype)initWithFilter:(SCContentFilter*)filter
                  configuration:(SCStreamConfiguration*)config
                       delegate:(id<SCStreamDelegate>)delegate;
@@ -82,6 +85,7 @@ static id g_captured_stream = nil;
 @synthesize onStart = _onStart;
 @synthesize onStop = _onStop;
 @synthesize output = _output;
+@synthesize stopCalled = _stopCalled;
 
 static void (^g_onCreate)(FakeSCStream*) = nil;
 
@@ -130,6 +134,7 @@ static void (^g_onCreate)(FakeSCStream*) = nil;
 
 - (void)stopCaptureWithCompletionHandler:
     (void (^)(NSError* error))completionHandler {
+  self.stopCalled = YES;
   if (self.onStop) {
     self.onStop(completionHandler);
   } else {
@@ -369,6 +374,140 @@ TEST_F(ScreenCaptureKitDeviceMacTest,
 
     media::VideoCaptureParams params;
     device_->AllocateAndStart(params, std::move(mock_client));
+  } else {
+    GTEST_SKIP();
+  }
+}
+
+TEST_F(ScreenCaptureKitDeviceMacTest, StopsCaptureOnScreensDidSleep) {
+  if (@available(macOS 13.2, *)) {
+    FakeSCRunningApplication* app =
+        [[FakeSCRunningApplication alloc] initWithProcessID:100
+                                            applicationName:@"Fake App"
+                                           bundleIdentifier:@"com.fake.app"];
+    FakeSCWindow* window =
+        [[FakeSCWindow alloc] initWithID:1
+                                   title:@"Fake Window"
+                       owningApplication:app
+                             windowLayer:0
+                                   frame:CGRectMake(0, 0, 100, 100)
+                                onScreen:YES];
+    SetupContent(@[ window ]);
+
+    DesktopMediaID source(DesktopMediaID::TYPE_WINDOW, 1);
+    InitDevice(source);
+
+    auto mock_client = CreateClient();
+    base::RunLoop error_loop;
+    EXPECT_CALL(
+        *mock_client,
+        OnError(media::VideoCaptureError::kScreenCaptureKitStreamError, _, _))
+        .WillOnce(base::test::RunClosure(error_loop.QuitClosure()));
+
+    ASSERT_NO_FATAL_FAILURE(StartDevice(std::move(mock_client)));
+
+    [[[NSWorkspace sharedWorkspace] notificationCenter]
+        postNotificationName:NSWorkspaceScreensDidSleepNotification
+                      object:nil];
+    error_loop.Run();
+
+    EXPECT_TRUE(((FakeSCStream*)g_captured_stream).stopCalled);
+    device_->StopAndDeAllocate();
+  } else {
+    GTEST_SKIP();
+  }
+}
+
+TEST_F(ScreenCaptureKitDeviceMacTest, StopsCaptureOnApplicationWillTerminate) {
+  if (@available(macOS 13.2, *)) {
+    FakeSCRunningApplication* app =
+        [[FakeSCRunningApplication alloc] initWithProcessID:100
+                                            applicationName:@"Fake App"
+                                           bundleIdentifier:@"com.fake.app"];
+    FakeSCWindow* window =
+        [[FakeSCWindow alloc] initWithID:1
+                                   title:@"Fake Window"
+                       owningApplication:app
+                             windowLayer:0
+                                   frame:CGRectMake(0, 0, 100, 100)
+                                onScreen:YES];
+    SetupContent(@[ window ]);
+
+    DesktopMediaID source(DesktopMediaID::TYPE_WINDOW, 1);
+    InitDevice(source);
+
+    auto mock_client = CreateClient();
+    base::RunLoop error_loop;
+    EXPECT_CALL(
+        *mock_client,
+        OnError(media::VideoCaptureError::kScreenCaptureKitStreamError, _, _))
+        .WillOnce(base::test::RunClosure(error_loop.QuitClosure()));
+
+    ASSERT_NO_FATAL_FAILURE(StartDevice(std::move(mock_client)));
+
+    [[NSNotificationCenter defaultCenter]
+        postNotificationName:NSApplicationWillTerminateNotification
+                      object:nil];
+    error_loop.Run();
+
+    EXPECT_TRUE(((FakeSCStream*)g_captured_stream).stopCalled);
+    device_->StopAndDeAllocate();
+  } else {
+    GTEST_SKIP();
+  }
+}
+
+TEST_F(ScreenCaptureKitDeviceMacTest,
+       ScreensDidSleepDuringShareableContentLookupDoesNotStartStream) {
+  if (@available(macOS 13.2, *)) {
+    FakeSCRunningApplication* app =
+        [[FakeSCRunningApplication alloc] initWithProcessID:100
+                                            applicationName:@"Fake App"
+                                           bundleIdentifier:@"com.fake.app"];
+    FakeSCWindow* window =
+        [[FakeSCWindow alloc] initWithID:1
+                                   title:@"Fake Window"
+                       owningApplication:app
+                             windowLayer:0
+                                   frame:CGRectMake(0, 0, 100, 100)
+                                onScreen:YES];
+    SetupContent(@[ window ]);
+
+    DesktopMediaID source(DesktopMediaID::TYPE_WINDOW, 1);
+    InitDevice(source);
+
+    [FakeSCStream setOnCreate:^(FakeSCStream* stream) {
+      g_captured_stream = stream;
+    }];
+
+    auto mock_client = CreateClient();
+    EXPECT_CALL(*mock_client, OnStarted()).Times(0);
+    EXPECT_CALL(
+        *mock_client,
+        OnError(media::VideoCaptureError::kScreenCaptureKitStreamError, _, _))
+        .Times(1);
+
+    media::VideoCaptureParams params;
+    params.requested_format = media::VideoCaptureFormat(
+        gfx::Size(100, 100), 30.0f, media::PIXEL_FORMAT_NV12);
+    // The shareable content result is posted back to the device task runner,
+    // so the lookup is still pending when AllocateAndStart() returns.
+    device_->AllocateAndStart(params, std::move(mock_client));
+
+    [[[NSWorkspace sharedWorkspace] notificationCenter]
+        postNotificationName:NSWorkspaceScreensDidSleepNotification
+                      object:nil];
+
+    // The lookup result was posted to this task runner before the quit task,
+    // so it has run (or been cancelled) by the time the loop quits.
+    base::RunLoop run_loop;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+
+    // The pending lookup must not create a stream after the display slept.
+    EXPECT_FALSE(g_captured_stream);
+    device_->StopAndDeAllocate();
   } else {
     GTEST_SKIP();
   }
