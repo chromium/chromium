@@ -6,6 +6,8 @@ source_set("remote_actor") {
   sources = [
     "ios_chrome_remote_actor_credential_sharing_service_factory.h",
     "ios_chrome_remote_actor_credential_sharing_service_factory.mm",
+    "remote_actor_callback_util.h",
+    "remote_actor_callback_util.mm",
     "remote_actor_constants.h",
     "remote_actor_constants.mm",
     "remote_actor_credential_sharing_delegate_bridge.h",
@@ -29,18 +31,21 @@ source_set("remote_actor") {
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/common/app_group",
+    "//net",
     "//services/network/public/cpp",
     "//url",
   ]
   frameworks = [
     "Foundation.framework",
     "Security.framework",
+    "UIKit.framework",
   ]
 }
 
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "remote_actor_callback_util_unittest.mm",
     "remote_actor_credential_sharing_delegate_bridge_unittest.mm",
     "remote_actor_payload_parser_unittest.mm",
   ]
@@ -54,10 +59,12 @@ source_set("unit_tests") {
     "//ios/chrome/browser/passwords/model/remote_actor/proto",
     "//ios/chrome/browser/passwords/model/remote_actor/test:test_support",
     "//testing/gtest",
+    "//third_party/ocmock",
     "//url",
   ]
   frameworks = [
     "Foundation.framework",
     "Security.framework",
+    "UIKit.framework",
   ]
 }
