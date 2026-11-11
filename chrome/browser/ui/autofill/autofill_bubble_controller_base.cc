@@ -35,19 +35,8 @@ AutofillBubbleControllerBase::AutofillBubbleControllerBase(
       page_action_config_(page_action_config) {}
 
 AutofillBubbleControllerBase::AutofillBubbleControllerBase(
-    tabs::TabInterface* tab_interface)
-    : AutofillBubbleControllerBase(tab_interface, std::nullopt) {}
-
-AutofillBubbleControllerBase::AutofillBubbleControllerBase(
     tabs::TabInterface* tab_interface,
     PageActionConfig page_action_config)
-    : AutofillBubbleControllerBase(
-          tab_interface,
-          std::optional<PageActionConfig>(page_action_config)) {}
-
-AutofillBubbleControllerBase::AutofillBubbleControllerBase(
-    tabs::TabInterface* tab_interface,
-    std::optional<PageActionConfig> page_action_config)
     : content::WebContentsObserver(CHECK_DEREF(tab_interface).GetContents()),
       tab_interface_(tab_interface),
       page_action_config_(page_action_config),

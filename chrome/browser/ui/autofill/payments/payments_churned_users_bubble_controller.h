@@ -73,7 +73,6 @@ class PaymentsChurnedUsersBubbleController
   void DoShowBubble() override;
 
 #if !BUILDFLAG(IS_ANDROID)
-  std::optional<actions::ActionId> GetActionIdForPageAction() override;
   bool ShouldShowPageAction() override;
 #endif  // !BUILDFLAG(IS_ANDROID)
 

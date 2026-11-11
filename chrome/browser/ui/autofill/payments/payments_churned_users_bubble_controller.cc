@@ -8,6 +8,7 @@
 
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
 #include "components/autofill/core/browser/payments/payments_churned_users_metrics.h"
@@ -15,8 +16,8 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/common/url_constants.h"
@@ -28,7 +29,10 @@ DEFINE_USER_DATA(PaymentsChurnedUsersBubbleController);
 
 PaymentsChurnedUsersBubbleController::PaymentsChurnedUsersBubbleController(
     tabs::TabInterface* tab_interface)
-    : AutofillBubbleControllerBase(tab_interface),
+    : AutofillBubbleControllerBase(
+          tab_interface,
+          PageActionConfig{.action_id = kActionShowPaymentsChurnedUsersBubble,
+                           .should_manage_visibility = true}),
       scoped_unowned_user_data_(
           CHECK_DEREF(tab_interface).GetUnownedUserDataHost(),
           *this) {}
@@ -205,11 +209,6 @@ void PaymentsChurnedUsersBubbleController::DoShowBubble() {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-std::optional<actions::ActionId>
-PaymentsChurnedUsersBubbleController::GetActionIdForPageAction() {
-  return kActionShowPaymentsChurnedUsersBubble;
-}
-
 bool PaymentsChurnedUsersBubbleController::ShouldShowPageAction() {
   return should_show_icon_;
 }

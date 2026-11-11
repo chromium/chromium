@@ -59,9 +59,6 @@ class AutofillBubbleControllerBase : public BubbleControllerBase,
   explicit AutofillBubbleControllerBase(content::WebContents* web_contents);
   AutofillBubbleControllerBase(content::WebContents* web_contents,
                                PageActionConfig page_action_config);
-  // TODO(crbug.com/582209796): Remove once all subclasses pass
-  // `PageActionConfig`.
-  explicit AutofillBubbleControllerBase(tabs::TabInterface* tab_interface);
   AutofillBubbleControllerBase(tabs::TabInterface* tab_interface,
                                PageActionConfig page_action_config);
   ~AutofillBubbleControllerBase() override;
@@ -165,10 +162,6 @@ class AutofillBubbleControllerBase : public BubbleControllerBase,
   bool bubble_hide_initiated_by_bubble_manager_ = false;
 
  private:
-  AutofillBubbleControllerBase(
-      tabs::TabInterface* tab_interface,
-      std::optional<PageActionConfig> page_action_config);
-
   void WillDiscardContents(tabs::TabInterface* tab,
                            content::WebContents* old_contents,
                            content::WebContents* new_contents);
@@ -178,7 +171,7 @@ class AutofillBubbleControllerBase : public BubbleControllerBase,
   const raw_ptr<tabs::TabInterface> tab_interface_ = nullptr;
 
   // TODO(crbug.com/582209796): Drop `std::optional` once the 1-argument
-  // constructors are removed.
+  // constructor is removed.
   const std::optional<PageActionConfig> page_action_config_;
 
   base::CallbackListSubscription will_discard_contents_subscription_;
