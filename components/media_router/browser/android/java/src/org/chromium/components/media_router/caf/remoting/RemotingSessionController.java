@@ -60,6 +60,8 @@ public class RemotingSessionController extends BaseSessionController {
     @Override
     public void onSessionStarted() {
         super.onSessionStarted();
+        // An adapter from an earlier session must not be able to control the new one.
+        releaseFlingingController();
         RemotingMediaSource source = (RemotingMediaSource) getSource();
         if (source != null) {
             mFlingingControllerAdapter = new FlingingControllerAdapter(this, source.getMediaUrl());
@@ -69,10 +71,28 @@ public class RemotingSessionController extends BaseSessionController {
     }
 
     @Override
+    public void onSessionEnded() {
+        releaseFlingingController();
+        super.onSessionEnded();
+    }
+
+    @Override
     protected void onStatusUpdated() {
-        assumeNonNull(mFlingingControllerAdapter);
-        mFlingingControllerAdapter.onStatusUpdated();
+        if (mFlingingControllerAdapter != null) {
+            mFlingingControllerAdapter.onStatusUpdated();
+        }
         super.onStatusUpdated();
+    }
+
+    /**
+     * Releases the current {@link FlingingControllerAdapter}, if any. The adapter may still be
+     * referenced by a browser-side FlingingRenderer, so it has to be made inert rather than just
+     * dropped.
+     */
+    private void releaseFlingingController() {
+        if (mFlingingControllerAdapter == null) return;
+        mFlingingControllerAdapter.release();
+        mFlingingControllerAdapter = null;
     }
 
     @Override

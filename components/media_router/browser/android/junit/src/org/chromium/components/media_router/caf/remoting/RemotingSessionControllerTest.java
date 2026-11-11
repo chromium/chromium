@@ -4,12 +4,25 @@
 
 package org.chromium.components.media_router.caf.remoting;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyDouble;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
+import com.google.android.gms.cast.MediaInfo;
 import com.google.android.gms.cast.framework.CastContext;
+import com.google.android.gms.cast.framework.CastSession;
+import com.google.android.gms.cast.framework.media.RemoteMediaClient;
+import com.google.android.gms.common.api.PendingResult;
 
 import org.junit.After;
 import org.junit.Before;
@@ -40,6 +53,10 @@ public class RemotingSessionControllerTest {
     private CreateRouteRequestInfo mRequestInfo;
     @Mock private CastContext mCastContext;
     @Mock private CafRemotingMediaRouteProvider mProvider;
+    @Mock private CastSession mOldCastSession;
+    @Mock private CastSession mNewCastSession;
+    @Mock private RemoteMediaClient mOldRemoteMediaClient;
+    @Mock private RemoteMediaClient mNewRemoteMediaClient;
 
     @Before
     public void setUp() {
@@ -47,9 +64,11 @@ public class RemotingSessionControllerTest {
         MediaRouterClient.setInstance(new TestMediaRouterClient());
         ShadowCastContext.setInstance(mCastContext);
         mController = new RemotingSessionController(mProvider);
+        RemotingMediaSource source = mock(RemotingMediaSource.class);
+        doReturn("https://example.com/video.mp4").when(source).getMediaUrl();
         mRequestInfo =
                 new CreateRouteRequestInfo(
-                        mock(RemotingMediaSource.class),
+                        source,
                         mock(MediaSink.class),
                         "presentation-id",
                         "origin",
@@ -58,6 +77,8 @@ public class RemotingSessionControllerTest {
                         1,
                         mMediaRouterHelper.getCastRoute());
         doReturn(mRequestInfo).when(mProvider).getPendingCreateRouteRequestInfo();
+        stubCastSession(mOldCastSession, mOldRemoteMediaClient);
+        stubCastSession(mNewCastSession, mNewRemoteMediaClient);
     }
 
     @After
@@ -77,5 +98,86 @@ public class RemotingSessionControllerTest {
         mController.updateMediaSource(source2);
         assertSame(mRequestInfo.getMediaSource(), source2);
         verify(mProvider).updateRouteMediaSource(mRequestInfo.routeId, source2.getSourceId());
+    }
+
+    @Test
+    public void testFlingingControllerReleasedWhenSessionEnds() {
+        FlingingControllerAdapter oldAdapter = startSession(mOldCastSession);
+
+        mController.onSessionEnded();
+        mController.detachFromCastSession();
+        assertNull(mController.getFlingingController());
+
+        FlingingControllerAdapter newAdapter = startSession(mNewCastSession);
+        assertNotSame(oldAdapter, newAdapter);
+
+        sendAllCommands(oldAdapter);
+        verifyNoMediaCommands(mNewRemoteMediaClient);
+
+        // The adapter of the current session still works.
+        newAdapter.pause();
+        verify(mNewRemoteMediaClient).pause();
+    }
+
+    @Test
+    public void testFlingingControllerReleasedWhenNewSessionStarts() {
+        FlingingControllerAdapter oldAdapter = startSession(mOldCastSession);
+
+        // A new session replaces the old one without onSessionEnded().
+        FlingingControllerAdapter newAdapter = startSession(mNewCastSession);
+        assertNotSame(oldAdapter, newAdapter);
+
+        sendAllCommands(oldAdapter);
+        verifyNoMediaCommands(mNewRemoteMediaClient);
+
+        newAdapter.pause();
+        verify(mNewRemoteMediaClient).pause();
+    }
+
+    @Test
+    public void testStatusUpdateAfterSessionEndedDoesNotCrash() {
+        startSession(mOldCastSession);
+        mController.onSessionEnded();
+        mController.onStatusUpdated();
+    }
+
+    private FlingingControllerAdapter startSession(CastSession session) {
+        mController.requestSessionLaunch();
+        mController.attachToCastSession(session);
+        mController.onSessionStarted();
+        FlingingControllerAdapter adapter = mController.getFlingingController();
+        assertNotNull(adapter);
+        clearInvocations(mOldRemoteMediaClient, mNewRemoteMediaClient);
+        return adapter;
+    }
+
+    private static void sendAllCommands(FlingingControllerAdapter adapter) {
+        adapter.load(/* position= */ 0, /* autoplay= */ true);
+        adapter.play();
+        adapter.pause();
+        adapter.seek(0);
+        adapter.setMute(true);
+        adapter.setVolume(0);
+    }
+
+    private static void verifyNoMediaCommands(RemoteMediaClient client) {
+        verify(client, never()).load(any(MediaInfo.class), anyBoolean(), anyLong());
+        verify(client, never()).play();
+        verify(client, never()).pause();
+        verify(client, never()).seek(anyLong());
+        verify(client, never()).setStreamMute(anyBoolean());
+        verify(client, never()).setStreamVolume(anyDouble());
+    }
+
+    @SuppressWarnings("unchecked")
+    private static void stubCastSession(CastSession session, RemoteMediaClient client) {
+        doReturn(true).when(session).isConnected();
+        doReturn(client).when(session).getRemoteMediaClient();
+        PendingResult<RemoteMediaClient.MediaChannelResult> result = mock(PendingResult.class);
+        doReturn(result).when(client).play();
+        doReturn(result).when(client).pause();
+        doReturn(result).when(client).seek(anyLong());
+        doReturn(result).when(client).setStreamMute(anyBoolean());
+        doReturn(result).when(client).setStreamVolume(anyDouble());
     }
 }

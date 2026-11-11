@@ -30,11 +30,28 @@ public class FlingingControllerAdapter implements FlingingController, MediaContr
     private @Nullable MediaStatusObserver mMediaStatusObserver;
     private boolean mLoaded;
     private boolean mHasEverReceivedValidMediaSession;
+    private boolean mReleased;
 
     FlingingControllerAdapter(RemotingSessionController sessionController, String mediaUrl) {
         mSessionController = sessionController;
         mMediaUrl = mediaUrl;
         mStreamPositionExtrapolator = new StreamPositionExtrapolator();
+    }
+
+    /**
+     * Permanently detaches this adapter from its session when the Cast session ends or is replaced.
+     * Subsequent media commands and status updates are ignored.
+     */
+    void release() {
+        mReleased = true;
+    }
+
+    /**
+     * Returns whether this adapter may send commands: it must not be released, and the session
+     * controller must be connected to a Cast session.
+     */
+    private boolean isActive() {
+        return !mReleased && mSessionController.isConnected();
     }
 
     /**
@@ -80,7 +97,7 @@ public class FlingingControllerAdapter implements FlingingController, MediaContr
 
     /** Starts loading the media URL, from the given position. */
     public void load(long position, boolean autoplay) {
-        if (!mSessionController.isConnected()) {
+        if (!isActive()) {
             return;
         }
         assumeNonNull(mSessionController.getRemoteMediaClient());
@@ -101,7 +118,7 @@ public class FlingingControllerAdapter implements FlingingController, MediaContr
 
     @Override
     public void play() {
-        if (!mSessionController.isConnected()) return;
+        if (!isActive()) return;
         assumeNonNull(mSessionController.getRemoteMediaClient());
 
         if (!mLoaded) {
@@ -117,7 +134,7 @@ public class FlingingControllerAdapter implements FlingingController, MediaContr
 
     @Override
     public void pause() {
-        if (!mSessionController.isConnected()) return;
+        if (!isActive()) return;
         assumeNonNull(mSessionController.getRemoteMediaClient());
         mSessionController
                 .getRemoteMediaClient()
@@ -127,7 +144,7 @@ public class FlingingControllerAdapter implements FlingingController, MediaContr
 
     @Override
     public void setMute(boolean mute) {
-        if (!mSessionController.isConnected()) return;
+        if (!isActive()) return;
         assumeNonNull(mSessionController.getRemoteMediaClient());
         mSessionController
                 .getRemoteMediaClient()
@@ -137,7 +154,7 @@ public class FlingingControllerAdapter implements FlingingController, MediaContr
 
     @Override
     public void setVolume(double volume) {
-        if (!mSessionController.isConnected()) return;
+        if (!isActive()) return;
         assumeNonNull(mSessionController.getRemoteMediaClient());
         mSessionController
                 .getRemoteMediaClient()
@@ -147,7 +164,7 @@ public class FlingingControllerAdapter implements FlingingController, MediaContr
 
     @Override
     public void seek(long position) {
-        if (!mSessionController.isConnected()) return;
+        if (!isActive()) return;
         assumeNonNull(mSessionController.getRemoteMediaClient());
 
         if (!mLoaded) {
@@ -167,7 +184,7 @@ public class FlingingControllerAdapter implements FlingingController, MediaContr
     ////////////////////////////////////////////
 
     public void onStatusUpdated() {
-        if (mMediaStatusObserver == null) return;
+        if (mReleased || mMediaStatusObserver == null) return;
 
         RemoteMediaClient remoteMediaClient = mSessionController.getRemoteMediaClient();
         assumeNonNull(remoteMediaClient);
