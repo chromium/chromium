@@ -9,7 +9,10 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.content.Context;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -21,13 +24,18 @@ import org.chromium.ui.base.WindowAndroid;
 // credentials on Android.
 @NullMarked
 public class AcknowledgeGroupedCredentialSheetBridge {
-    private long mNativeAcknowledgeGroupedCredentialSheetBridge;
+    @JniType("::AcknowledgeGroupedCredentialSheetBridge")
+    interface NativeAcknowledgeGroupedCredentialSheetBridge extends JniTypeToken {}
+
+    private @Nullable JniRawPtr<NativeAcknowledgeGroupedCredentialSheetBridge>
+            mNativeAcknowledgeGroupedCredentialSheetBridge;
     private final WindowAndroid mWindowAndroid;
     private @Nullable AcknowledgeGroupedCredentialSheetController mController;
 
     @CalledByNative
     public AcknowledgeGroupedCredentialSheetBridge(
-            long nativeAddUsernameDialogBridge, WindowAndroid windowAndroid) {
+            JniRawPtr<NativeAcknowledgeGroupedCredentialSheetBridge> nativeAddUsernameDialogBridge,
+            WindowAndroid windowAndroid) {
         mNativeAcknowledgeGroupedCredentialSheetBridge = nativeAddUsernameDialogBridge;
         mWindowAndroid = windowAndroid;
     }
@@ -49,23 +57,27 @@ public class AcknowledgeGroupedCredentialSheetBridge {
 
     @CalledByNative
     public void dismiss() {
-        if (mNativeAcknowledgeGroupedCredentialSheetBridge == 0) return;
+        if (mNativeAcknowledgeGroupedCredentialSheetBridge == null) return;
         assumeNonNull(mController);
         mController.dismiss();
-        mNativeAcknowledgeGroupedCredentialSheetBridge = 0;
+        if (mNativeAcknowledgeGroupedCredentialSheetBridge != null) {
+            mNativeAcknowledgeGroupedCredentialSheetBridge.release();
+            mNativeAcknowledgeGroupedCredentialSheetBridge = null;
+        }
     }
 
     public void onDismissed(@DismissReason int dismissReason) {
-        if (mNativeAcknowledgeGroupedCredentialSheetBridge == 0) return;
+        if (mNativeAcknowledgeGroupedCredentialSheetBridge == null) return;
         AcknowledgeGroupedCredentialSheetBridgeJni.get()
                 .onDismissed(mNativeAcknowledgeGroupedCredentialSheetBridge, dismissReason);
-        mNativeAcknowledgeGroupedCredentialSheetBridge = 0;
+        mNativeAcknowledgeGroupedCredentialSheetBridge.release();
+        mNativeAcknowledgeGroupedCredentialSheetBridge = null;
     }
 
     @NativeMethods
     interface Natives {
         void onDismissed(
-                long nativeAcknowledgeGroupedCredentialSheetBridge,
+                JniPtr<NativeAcknowledgeGroupedCredentialSheetBridge> self,
                 @DismissReason int dismissReason);
     }
 }

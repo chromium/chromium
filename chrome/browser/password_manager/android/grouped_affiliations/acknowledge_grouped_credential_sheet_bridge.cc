@@ -13,6 +13,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/metrics/histogram_functions.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/android/window_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -32,8 +33,8 @@ class JniDelegateImpl : public JniDelegate {
   void Create(const gfx::NativeWindow window_android,
               AcknowledgeGroupedCredentialSheetBridge* bridge) override {
     java_bridge_.Reset(AcknowledgeGroupedCredentialSheetBridgeJni::New(
-        base::android::AttachCurrentThread(),
-        reinterpret_cast<intptr_t>(bridge), window_android->GetJavaObject()));
+        base::android::AttachCurrentThread(), jni_zero::MakeRaw(bridge),
+        window_android->GetJavaObject()));
   }
 
   void Show(const std::string& current_hostname,

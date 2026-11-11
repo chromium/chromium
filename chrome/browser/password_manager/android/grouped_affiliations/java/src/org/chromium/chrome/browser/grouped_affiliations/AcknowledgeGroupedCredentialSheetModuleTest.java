@@ -11,6 +11,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import org.jni_zero.JniRawPtr;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -44,22 +45,28 @@ public class AcknowledgeGroupedCredentialSheetModuleTest {
     private final ArgumentCaptor<BottomSheetContent> mBottomSheetContentCaptor =
             ArgumentCaptor.forClass(BottomSheetContent.class);
     private static final long TEST_NATIVE_POINTER = 1;
+    private JniRawPtr<
+                    AcknowledgeGroupedCredentialSheetBridge
+                            .NativeAcknowledgeGroupedCredentialSheetBridge>
+            mTestNativePointer;
     private static final String CURRENT_DOMAIN = "current.com";
     private static final String CREDENTIAL_DOMAIN = "credential.com";
 
     @Before
     public void setUp() {
         AcknowledgeGroupedCredentialSheetBridgeJni.setInstanceForTesting(mBridgeJniMock);
+        mTestNativePointer = JniRawPtr.createForTesting(TEST_NATIVE_POINTER);
         mWindowAndroid =
                 new WindowAndroid(
                         ContextUtils.getApplicationContext(),
                         /* occlusionTrackingAllowed= */ false);
         setUpBottomSheetController();
-        mBridge = new AcknowledgeGroupedCredentialSheetBridge(TEST_NATIVE_POINTER, mWindowAndroid);
+        mBridge = new AcknowledgeGroupedCredentialSheetBridge(mTestNativePointer, mWindowAndroid);
     }
 
     @After
     public void tearDown() {
+        mTestNativePointer.release();
         BottomSheetControllerFactory.detach(mBottomSheetController);
         mWindowAndroid.destroy();
     }
@@ -85,7 +92,7 @@ public class AcknowledgeGroupedCredentialSheetModuleTest {
                 .getValue()
                 .onSheetClosed(BottomSheetController.StateChangeReason.SWIPE);
         verify(mBottomSheetController).removeObserver(mBottomSheetObserverCaptor.getValue());
-        verify(mBridgeJniMock).onDismissed(TEST_NATIVE_POINTER, DismissReason.IGNORE);
+        verify(mBridgeJniMock).onDismissed(mTestNativePointer, DismissReason.IGNORE);
     }
 
     @Test
@@ -109,7 +116,7 @@ public class AcknowledgeGroupedCredentialSheetModuleTest {
                 .getContentView()
                 .findViewById(R.id.confirmation_button)
                 .callOnClick();
-        verify(mBridgeJniMock).onDismissed(TEST_NATIVE_POINTER, DismissReason.ACCEPT);
+        verify(mBridgeJniMock).onDismissed(mTestNativePointer, DismissReason.ACCEPT);
         verify(mBottomSheetController).hideContent(mBottomSheetContentCaptor.getValue(), true);
     }
 
@@ -122,7 +129,7 @@ public class AcknowledgeGroupedCredentialSheetModuleTest {
                 .getContentView()
                 .findViewById(R.id.cancel_button)
                 .callOnClick();
-        verify(mBridgeJniMock).onDismissed(TEST_NATIVE_POINTER, DismissReason.BACK);
+        verify(mBridgeJniMock).onDismissed(mTestNativePointer, DismissReason.BACK);
         verify(mBottomSheetController).hideContent(mBottomSheetContentCaptor.getValue(), true);
     }
 }
