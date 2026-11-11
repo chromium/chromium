@@ -18978,21 +18978,6 @@
             ]
         }
     ],
-    "SyncThemesIos": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SyncThemesIos"
-                    ]
-                }
-            ]
-        }
-    ],
     "SyncTrustedVaultErrorMessageDuration": [
         {
             "platforms": [

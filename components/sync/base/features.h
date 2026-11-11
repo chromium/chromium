@@ -7,6 +7,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "build/build_config.h"
 
 namespace syncer {
 
@@ -36,8 +37,10 @@ BASE_DECLARE_FEATURE(kSyncGeminiThread);
 // Enables syncing of Encrypted Tab Context across devices.
 BASE_DECLARE_FEATURE(kSyncEncryptedTabContext);
 
+#if BUILDFLAG(IS_IOS)
 // Enables syncing of themes across iOS devices.
 BASE_DECLARE_FEATURE(kSyncThemesIos);
+#endif  // BUILDFLAG(IS_IOS)
 
 // Enables syncing of New Tab Page customization themes on Android.
 BASE_DECLARE_FEATURE(kNewTabPageCustomizationThemeSync);

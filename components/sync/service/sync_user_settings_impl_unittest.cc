@@ -222,9 +222,14 @@ TEST_F(SyncUserSettingsImplTest, DefaultSelectedTypesWhileSignedIn) {
 
   UserSelectableTypeSet expected_disabled_types = {};
 
-#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
-  // Themes is not supported on mobile.
+#if BUILDFLAG(IS_ANDROID)
+  // Themes is not supported on Android.
   expected_disabled_types.Put(UserSelectableType::kThemes);
+#elif BUILDFLAG(IS_IOS)
+  // Themes is only supported on iOS when kSyncThemesIos is enabled.
+  if (!base::FeatureList::IsEnabled(syncer::kSyncThemesIos)) {
+    expected_disabled_types.Put(UserSelectableType::kThemes);
+  }
 #endif
 #if !BUILDFLAG(IS_CHROMEOS)
   // History, Tabs and Saved Tab Groups are enabled by default on ChromeOS,

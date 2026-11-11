@@ -493,7 +493,7 @@ TEST_F(SyncPrefsTest, DefaultSelectedTypesForAccountInTransportMode) {
   // - `kCookies` on non-ChromeOS, where it is not supported.
   // - On Dice platforms, `kBookmarks`, `kReadingList` and `kExtensions` are
   // also listed as they are not enabled by default but require new sign.
-  const UserSelectableTypeSet expected_types = Difference(
+  UserSelectableTypeSet expected_types = Difference(
       UserSelectableTypeSet::All(), {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
                                         // kThemes is not supported on mobile.
@@ -510,22 +510,21 @@ TEST_F(SyncPrefsTest, DefaultSelectedTypesForAccountInTransportMode) {
                                         UserSelectableType::kCookies,
 #endif  // !BUILDFLAG(IS_CHROMEOS)
                                     });
+#if BUILDFLAG(IS_IOS)
+  // kThemes is supported on iOS when kSyncThemesIos is enabled.
+  if (base::FeatureList::IsEnabled(syncer::kSyncThemesIos)) {
+    expected_types.Put(UserSelectableType::kThemes);
+  }
+#endif  // BUILDFLAG(IS_IOS)
 
   EXPECT_THAT(sync_prefs_->GetSelectedTypesForAccount(gaia_id_),
               ContainerEq(expected_types));
-
-#if BUILDFLAG(IS_IOS)
-  if (base::FeatureList::IsEnabled(syncer::kSyncThemesIos)) {
-    EXPECT_TRUE(sync_prefs_->GetSelectedTypesForAccount(gaia_id_).Has(
-        UserSelectableType::kThemes));
-  }
-#endif
 
   // Simulate new sign-in
   SigninPrefs signin_prefs(pref_service_);
   signin_prefs.SetBookmarksExplicitBrowserSignin(gaia_id_, true);
   signin_prefs.SetExtensionsExplicitBrowserSignin(gaia_id_, true);
-  const UserSelectableTypeSet expected_types_new_signin = Difference(
+  UserSelectableTypeSet expected_types_new_signin = Difference(
       UserSelectableTypeSet::All(), {
 #if !BUILDFLAG(IS_CHROMEOS)
                                         UserSelectableType::kHistory,
@@ -538,6 +537,11 @@ TEST_F(SyncPrefsTest, DefaultSelectedTypesForAccountInTransportMode) {
                                         UserSelectableType::kThemes,
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
                                     });
+#if BUILDFLAG(IS_IOS)
+  if (base::FeatureList::IsEnabled(syncer::kSyncThemesIos)) {
+    expected_types_new_signin.Put(UserSelectableType::kThemes);
+  }
+#endif  // BUILDFLAG(IS_IOS)
 
   EXPECT_THAT(sync_prefs_->GetSelectedTypesForAccount(gaia_id_),
               ContainerEq(expected_types_new_signin));

@@ -43,6 +43,8 @@
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#import "services/network/test/test_url_loader_factory.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
@@ -68,6 +70,10 @@ class SigninUtilsTest : public PlatformTest {
     PlatformTest::SetUp();
     TestProfileIOS::Builder builder;
     builder.SetPrefService(CreatePrefService());
+    // Keep network requests (e.g. background image fetches) pending instead
+    // of hitting the real network stack.
+    builder.SetSharedURLLoaderFactory(
+        test_url_loader_factory_.GetSafeWeakWrapper());
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
@@ -129,6 +135,7 @@ class SigninUtilsTest : public PlatformTest {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   base::test::ScopedFeatureList feature_list_;
+  network::TestURLLoaderFactory test_url_loader_factory_;
   TestProfileManagerIOS profile_manager_;
   raw_ptr<TestProfileIOS> profile_ = nullptr;
   raw_ptr<feature_engagement::test::MockTracker> mock_tracker_ = nullptr;

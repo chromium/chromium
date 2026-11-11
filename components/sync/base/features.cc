@@ -5,6 +5,7 @@
 #include "components/sync/base/features.h"
 
 #include "base/feature_list.h"
+#include "build/build_config.h"
 
 namespace syncer {
 
@@ -21,7 +22,9 @@ BASE_FEATURE(kSyncGeminiThread, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSyncEncryptedTabContext, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSyncThemesIos, base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_IOS)
+BASE_FEATURE(kSyncThemesIos, base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_IOS)
 
 BASE_FEATURE(kNewTabPageCustomizationThemeSync,
              base::FEATURE_DISABLED_BY_DEFAULT);

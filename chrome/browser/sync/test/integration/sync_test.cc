@@ -1410,10 +1410,6 @@ syncer::DataTypeSet AllowedTypesInStandaloneTransportMode() {
     allowed_types.Put(syncer::GEMINI_THREAD);
   }
 
-  if (base::FeatureList::IsEnabled(syncer::kSyncThemesIos)) {
-    allowed_types.Put(syncer::THEMES_IOS);
-  }
-
   if (base::FeatureList::IsEnabled(syncer::kNewTabPageCustomizationThemeSync)) {
     allowed_types.Put(syncer::THEMES_ANDROID);
   }
