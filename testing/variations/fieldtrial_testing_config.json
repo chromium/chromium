@@ -7733,6 +7733,25 @@
             ]
         }
     ],
+    "EdgeToEdgeTopInset": [
+        {
+            "platforms": [
+                "android",
+                "android_desktop"
+            ],
+            "experiments": [
+                {
+                    "name": "RefactorOnly",
+                    "params": {
+                        "enable_top_edge_to_edge": "false"
+                    },
+                    "enable_features": [
+                        "EdgeToEdgeTopInset"
+                    ]
+                }
+            ]
+        }
+    ],
     "EdgeToEdgeUseBackupNavbarInsets": [
         {
             "platforms": [

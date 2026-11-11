@@ -1214,7 +1214,7 @@ public class ToolbarPositionControllerTest {
 
     @Test
     @Config(sdk = 30)
-    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET)
+    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET + ":enable_top_edge_to_edge/true")
     public void testTopInsetAdjustment_TopEdgeToEdge_SkipsToolbarPaddingForOptedInWebPage() {
         mActivityTabSupplier.set(mock(Tab.class));
         mEdgeToEdgeControllerSupplier.set(mEdgeToEdgeController);

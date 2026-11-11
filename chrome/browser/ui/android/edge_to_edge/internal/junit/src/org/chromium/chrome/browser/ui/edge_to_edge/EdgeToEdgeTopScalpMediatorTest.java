@@ -46,7 +46,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 // EdgeToEdgeUtils.isTopEdgeToEdgeEnabled() requires Android R+ (API 30).
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(sdk = Build.VERSION_CODES.R)
-@EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET)
+@EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET + ":enable_top_edge_to_edge/true")
 public class EdgeToEdgeTopScalpMediatorTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 

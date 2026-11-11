@@ -1267,7 +1267,10 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sEdgeToEdgeTablet =
             newCachedFlag(EDGE_TO_EDGE_TABLET, /* defaultValue= */ true);
     public static final CachedFlag sEdgeToEdgeTopInset =
-            newCachedFlag(EDGE_TO_EDGE_TOP_INSET, /* defaultValue= */ false);
+            newCachedFlag(
+                    EDGE_TO_EDGE_TOP_INSET,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sEdgeToEdgeUseBackupNavbarInsets =
             newCachedFlag(EDGE_TO_EDGE_USE_BACKUP_NAVBAR_INSETS, true);
     public static final CachedFlag sEnableAndroidSidePanel =
@@ -2367,8 +2370,13 @@ public abstract class ChromeFeatureList {
                     "e2e_backup_navbar_insets_oem_min_versions",
                     "");
 
+    // Default to false to match the RefactorOnly arm in fieldtrial_testing_config.json, since
+    // BooleanCachedFeatureParam does not have a separate defaultValueInTests parameter. Note that
+    // this means the plain "Enabled" option in chrome://flags/#edge-to-edge-top-inset (without
+    // parameters) only enables the refactor arm. Switch back to true when the testing config
+    // moves to the full top-inset arm.
     public static final BooleanCachedFeatureParam sEdgeToEdgeTopInsetEnableTopEdgeToEdge =
-            newBooleanCachedFeatureParam(EDGE_TO_EDGE_TOP_INSET, "enable_top_edge_to_edge", true);
+            newBooleanCachedFeatureParam(EDGE_TO_EDGE_TOP_INSET, "enable_top_edge_to_edge", false);
 
     public static final StringCachedFeatureParam sEdgeToEdgeUseBackupNavbarInsetsOemList =
             newStringCachedFeatureParam(

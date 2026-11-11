@@ -134,6 +134,7 @@ public class EdgeToEdgeControllerCreatorUnitTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET)
     public void gestureNav_initializesControllerWhenAppropriate() {
         mEdgeToEdgeControllerCreator.onApplyWindowInsets(
                 mView, GESTURE_NAV_MISSING_NAVBAR_WINDOW_INSETS);

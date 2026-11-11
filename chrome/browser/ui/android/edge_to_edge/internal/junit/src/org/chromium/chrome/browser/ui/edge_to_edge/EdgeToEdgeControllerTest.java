@@ -129,6 +129,8 @@ public class EdgeToEdgeControllerTest {
     private static final int EDGE_TO_EDGE_STATUS_TOKEN = 12345;
     private static final String EDGE_TO_EDGE_TOP_INSET_REFACTOR_ONLY =
             ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET + ":enable_top_edge_to_edge/false";
+    private static final String EDGE_TO_EDGE_TOP_INSET_WITH_TOP_E2E =
+            ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET + ":enable_top_edge_to_edge/true";
 
     private static final WindowInsetsCompat SYSTEM_BARS_WINDOW_INSETS =
             new WindowInsetsCompat.Builder()
@@ -1665,7 +1667,7 @@ public class EdgeToEdgeControllerTest {
     @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET)
     public void testIsTopEdgeToEdgeEnabled_Default() {
         assertTrue(EdgeToEdgeUtils.isEdgeToEdgeRefactorEnabled());
-        assertTrue(EdgeToEdgeUtils.isTopEdgeToEdgeEnabled());
+        assertFalse(EdgeToEdgeUtils.isTopEdgeToEdgeEnabled());
     }
 
     @Test
@@ -1676,7 +1678,7 @@ public class EdgeToEdgeControllerTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET + ":enable_top_edge_to_edge/true"})
+    @EnableFeatures({EDGE_TO_EDGE_TOP_INSET_WITH_TOP_E2E})
     public void testIsTopEdgeToEdgeEnabled_RefactorAndTopEdgeToEdge() {
         assertTrue(EdgeToEdgeUtils.isEdgeToEdgeRefactorEnabled());
         assertTrue(EdgeToEdgeUtils.isTopEdgeToEdgeEnabled());
@@ -1684,7 +1686,7 @@ public class EdgeToEdgeControllerTest {
 
     @Test
     @Config(sdk = VERSION_CODES.Q)
-    @EnableFeatures({ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET + ":enable_top_edge_to_edge/true"})
+    @EnableFeatures({EDGE_TO_EDGE_TOP_INSET_WITH_TOP_E2E})
     public void testIsTopEdgeToEdgeEnabled_BelowAndroidR() {
         assertFalse(EdgeToEdgeUtils.isEdgeToEdgeRefactorEnabled());
         assertFalse(EdgeToEdgeUtils.isTopEdgeToEdgeEnabled());
@@ -2190,7 +2192,7 @@ public class EdgeToEdgeControllerTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET)
+    @EnableFeatures(EDGE_TO_EDGE_TOP_INSET_WITH_TOP_E2E)
     public void testTopEdgeToEdge_AlwaysConsumesTopInsets() {
         Tab webTab =
                 createMockTab(
@@ -2209,7 +2211,7 @@ public class EdgeToEdgeControllerTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET)
+    @EnableFeatures(EDGE_TO_EDGE_TOP_INSET_WITH_TOP_E2E)
     public void testTopEdgeToEdge_WebPage_ViewportFitChanged() {
         when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
         when(mTab.isNativePage()).thenReturn(false);
@@ -2265,7 +2267,7 @@ public class EdgeToEdgeControllerTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET)
+    @EnableFeatures(EDGE_TO_EDGE_TOP_INSET_WITH_TOP_E2E)
     public void testTopEdgeToEdge_WebPage_AlwaysDrawWebEdgeToEdgeForTesting() {
         EdgeToEdgeUtils.setAlwaysDrawWebEdgeToEdgeForTesting(true);
         when(mTab.isNativePage()).thenReturn(false);
@@ -2287,7 +2289,7 @@ public class EdgeToEdgeControllerTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET)
+    @EnableFeatures(EDGE_TO_EDGE_TOP_INSET_WITH_TOP_E2E)
     public void testTopEdgeToEdge_WebPage_ThreeButtonNav_DrawsTopEdge() {
         EdgeToEdgeUtils.setHas3ButtonNavBarForTesting(true);
         when(mTab.isNativePage()).thenReturn(false);
@@ -2653,7 +2655,7 @@ public class EdgeToEdgeControllerTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET)
+    @EnableFeatures(EDGE_TO_EDGE_TOP_INSET_WITH_TOP_E2E)
     public void testTabShouldDrawFullTopEdgeToEdge_SwitchBetweenCustomNtpAndOptedInWebTab() {
         EdgeToEdgeUtils.setAlwaysDrawWebEdgeToEdgeForTesting(true);
         Tab customNtpTab =
