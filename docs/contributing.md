@@ -551,6 +551,13 @@ general rules of thumb can be helpful in navigating how to structure changes:
 
 ## Tips
 
+### Accountability of authors and reviewers in the age of agents
+
+Agentic tools make creating CLs and design docs much cheaper, shifting
+engineering costs onto scarce expert human reviewers. Please read our guidance
+on [author and reviewer accountability][accountability] for how to communicate
+candidly and balance responsibilities effectively.
+
 ### Review etiquette
 
 During the lifetime of a review, you may want to rebase your change onto a newer
@@ -647,6 +654,7 @@ formats.
     given commit diverged from main.
 
 [//]: # (the reference link section should be alphabetically sorted)
+[accountability]: accountability.md
 [becoming-a-committer]: https://www.chromium.org/getting-involved/become-a-committer/
 [checkout-and-build]: https://chromium.googlesource.com/chromium/src/+/main/docs/#checking-out-and-building
 [chrome-dd-review-process]: http://go/chrome-dd-review-process
