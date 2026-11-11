@@ -307,6 +307,7 @@ public class FullscreenTestUtils {
             final Tab tab, final boolean state, Activity activity) {
         // Status bars persist in fullscreen mode in automotive (see crrev.com/c/4569720) so system
         // UI flags are not set.
+        // TODO(crbug.com/584422076): Verify fullscreen state on automotive instead of skipping.
         if (DeviceInfo.isAutomotive()) {
             return true;
         }
@@ -324,6 +325,7 @@ public class FullscreenTestUtils {
             final Tab tab, final boolean state, Activity activity) {
         // Status bars persist in fullscreen mode in automotive (see crrev.com/c/4569720) so system
         // UI flags are not set.
+        // TODO(crbug.com/584422076): Verify fullscreen state on automotive instead of skipping.
         if (DeviceInfo.isAutomotive()) {
             return true;
         }
