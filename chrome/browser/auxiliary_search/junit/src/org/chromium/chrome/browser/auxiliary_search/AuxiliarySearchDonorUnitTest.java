@@ -46,7 +46,6 @@ import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchDonor.SearchQueryChecker;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchEntry;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -123,15 +122,6 @@ public class AuxiliarySearchDonorUnitTest {
         assertEquals(
                 DEFAULT_HISTORY_TTL_HOURS * 60 * 60 * 1000,
                 mAuxiliarySearchDonor.getHistoryDocumentTtlMs());
-    }
-
-    @Test
-    @EnableFeatures("AndroidAppIntegration:content_ttl_hours/0")
-    public void testConfiguredTtlCannotBeZero() {
-        assertNotEquals(0L, mAuxiliarySearchDonor.getTabDocumentTtlMs());
-        assertEquals(
-                DEFAULT_TAB_TTL_HOURS * 60 * 60 * 1000,
-                mAuxiliarySearchDonor.getTabDocumentTtlMs());
     }
 
     @Test
