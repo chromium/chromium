@@ -22,6 +22,7 @@
 #include "base/rand_util.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "build/build_config.h"
 #include "components/performance_manager/freezing/freezer.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "components/performance_manager/public/freezing/cannot_freeze_reason.h"
@@ -35,6 +36,12 @@
 #include "components/performance_manager/public/resource_attribution/queries.h"
 #include "content/public/browser/browsing_instance_id.h"
 #include "url/origin.h"
+
+#if BUILDFLAG(IS_WIN)
+namespace base {
+struct SystemMemoryInfo;
+}  // namespace base
+#endif
 
 namespace performance_manager {
 
@@ -93,7 +100,23 @@ class FreezingPolicy : public PageNodeObserver,
   void UpdateStateFromAvailableMemoryPercentForTesting(
       int available_memory_percent);
 
-  void StopMemoryCheckTimerForTesting() { memory_check_timer_.Stop(); }
+  void StopMemoryCheckTimerForTesting() {
+#if BUILDFLAG(IS_WIN)
+    memory_check_timer_disabled_for_testing_ = true;
+#endif
+    memory_check_timer_.Stop();
+  }
+
+  bool IsMemoryCheckTimerRunningForTesting() const {
+    return memory_check_timer_.IsRunning();
+  }
+
+#if BUILDFLAG(IS_WIN)
+  bool IsInfiniteTabFreezingActiveForTesting() const {
+    return infinite_tab_freezing_status_ !=
+           InfiniteTabFreezingStatus::kInactive;
+  }
+#endif
 
   // Invoked freezing on battery saver is enabled or disabled.
   void ToggleFreezingOnBatterySaverMode(bool is_enabled);
@@ -118,6 +141,11 @@ class FreezingPolicy : public PageNodeObserver,
   // Returns the Windows OS build number, or 0 on non-Windows platforms. Virtual
   // for testing.
   virtual uint32_t GetWindowsBuildVersion() const;
+
+#if BUILDFLAG(IS_WIN)
+  // Samples system memory. Virtual for testing.
+  virtual bool GetSystemMemoryInfo(base::SystemMemoryInfo* info);
+#endif
 
  private:
   FRIEND_TEST_ALL_PREFIXES(FreezingPolicyBatterySaverTest,
@@ -322,6 +350,8 @@ class FreezingPolicy : public PageNodeObserver,
   // criteria for using the low-RAM enter and exit memory thresholds.
   bool ShouldUseLowRamThresholds(base::ByteSize total_physical_memory) const;
 
+  void UpdateMemoryCheckTimer(bool has_pages);
+
   // Periodically invoked by `memory_check_timer_` to sample available physical
   // memory and update infinite-tab freezing state.
   void CheckAvailableMemory();
@@ -384,6 +414,9 @@ class FreezingPolicy : public PageNodeObserver,
 
   // Timer to periodically check system memory.
   base::RepeatingTimer memory_check_timer_;
+#if BUILDFLAG(IS_WIN)
+  bool memory_check_timer_disabled_for_testing_ = false;
+#endif
 
   // Current status of infinite-tabs freezing.
   InfiniteTabFreezingStatus infinite_tab_freezing_status_;

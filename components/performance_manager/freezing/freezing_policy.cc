@@ -271,17 +271,6 @@ FreezingPolicy::FreezingPolicy(
     resource_usage_query_observation_.Observe(&resource_usage_query_.value());
     resource_usage_query_->Start(kCPUMeasurementInterval);
   }
-#if BUILDFLAG(IS_WIN)
-  if (base::FeatureList::IsEnabled(
-          features::kInfiniteTabsFreezingOnMemoryPressure) ||
-      base::FeatureList::IsEnabled(
-          features::kDisablePeriodicUnfreezeOnCriticalMemoryPressure)) {
-    memory_check_timer_.Start(
-        FROM_HERE,
-        features::kInfiniteTabsFreezingOnMemoryPressureInterval.Get(), this,
-        &FreezingPolicy::CheckAvailableMemory);
-  }
-#endif
 }
 
 FreezingPolicy::~FreezingPolicy() = default;
@@ -580,9 +569,11 @@ void FreezingPolicy::OnPassedToGraph(Graph* graph) {
     opt_out_checker_->SetOptOutPolicyChangedCallback(base::BindRepeating(
         &FreezingPolicy::OnOptOutPolicyChanged, weak_factory_.GetWeakPtr()));
   }
+  UpdateMemoryCheckTimer(!graph->GetAllPageNodes().empty());
 }
 
 void FreezingPolicy::OnTakenFromGraph(Graph* graph) {
+  UpdateMemoryCheckTimer(/*has_pages=*/false);
   graph->GetNodeDataDescriberRegistry()->UnregisterDescriber(this);
   graph->RemoveFrameNodeObserver(this);
   graph->RemovePageNodeObserver(this);
@@ -630,9 +621,15 @@ void FreezingPolicy::OnPageNodeAdded(const PageNode* page_node) {
   // No need to update the frozen state, because the page doesn't have frames
   // yet and thus doesn't belong to any browsing instance.
   CHECK(page_node->GetMainFrameNodes().empty());
+  UpdateMemoryCheckTimer(/*has_pages=*/true);
 }
 
 void FreezingPolicy::OnBeforePageNodeRemoved(const PageNode* page_node) {
+  // The departing page is still in the graph during this notification.
+  if (page_node->GetGraph()->GetAllPageNodes().size() == 1) {
+    UpdateMemoryCheckTimer(/*has_pages=*/false);
+  }
+
   if (page_node->GetType() == PageType::kTab) {
     if (page_node->IsVisible()) {
       CHECK_GT(num_visible_tabs_, 0);
@@ -1480,6 +1477,12 @@ uint32_t FreezingPolicy::GetWindowsBuildVersion() const {
 #endif
 }
 
+#if BUILDFLAG(IS_WIN)
+bool FreezingPolicy::GetSystemMemoryInfo(base::SystemMemoryInfo* info) {
+  return base::GetSystemMemoryInfo(info);
+}
+#endif
+
 bool FreezingPolicy::ShouldUseLowRamThresholds(
     base::ByteSize total_physical_memory) const {
   if (!total_physical_memory.is_positive() ||
@@ -1495,10 +1498,35 @@ bool FreezingPolicy::ShouldUseLowRamThresholds(
   return true;
 }
 
+void FreezingPolicy::UpdateMemoryCheckTimer(bool has_pages) {
+#if BUILDFLAG(IS_WIN)
+  if (memory_check_timer_disabled_for_testing_) {
+    return;
+  }
+  if (!has_pages) {
+    memory_check_timer_.Stop();
+    return;
+  }
+  if (memory_check_timer_.IsRunning() ||
+      !(base::FeatureList::IsEnabled(
+            features::kInfiniteTabsFreezingOnMemoryPressure) ||
+        base::FeatureList::IsEnabled(
+            features::kDisablePeriodicUnfreezeOnCriticalMemoryPressure))) {
+    return;
+  }
+
+  // Refresh before a new page acquires frames and freezing eligibility.
+  CheckAvailableMemory();
+  memory_check_timer_.Start(
+      FROM_HERE, features::kInfiniteTabsFreezingOnMemoryPressureInterval.Get(),
+      this, &FreezingPolicy::CheckAvailableMemory);
+#endif  // BUILDFLAG(IS_WIN)
+}
+
 void FreezingPolicy::CheckAvailableMemory() {
 #if BUILDFLAG(IS_WIN)
   base::SystemMemoryInfo info;
-  if (!base::GetSystemMemoryInfo(&info)) {
+  if (!GetSystemMemoryInfo(&info)) {
     // Cannot get system memory info, do nothing.
     return;
   }

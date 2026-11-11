@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -16,12 +17,14 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/process/process_metrics.h"
 #include "base/rand_util.h"
 #include "base/test/power_monitor_test.h"
 #include "base/test/scoped_amount_of_physical_memory_override.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
+#include "build/build_config.h"
 #include "components/performance_manager/freezing/freezer.h"
 #include "components/performance_manager/graph/graph_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
@@ -287,6 +290,187 @@ class FreezingPolicyTest_BaseWithNoPage : public GraphTestHarness {
   raw_ptr<MockDiscarder> discarder_;
   raw_ptr<MockFreezingPolicy> policy_;
 };
+
+#if BUILDFLAG(IS_WIN)
+class FreezingPolicyMemoryCheckTimerTest
+    : public GraphTestHarness,
+      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
+ public:
+  FreezingPolicyMemoryCheckTimerTest()
+      : GraphTestHarness(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    feature_list_.InitWithFeatureStates(
+        {{features::kCPUMeasurementInFreezingPolicy, false},
+         {features::kMemoryMeasurementInFreezingPolicy, false},
+         {features::kInfiniteTabsFreezing, false},
+         {features::kInfiniteTabsFreezingOnMemoryPressure,
+          std::get<0>(GetParam())},
+         {features::kDisablePeriodicUnfreezeOnCriticalMemoryPressure,
+          std::get<1>(GetParam())}});
+  }
+
+  void OnGraphCreated(GraphImpl* graph) override {
+    graph->PassToGraph(std::make_unique<PageLiveStateDecorator>());
+    policy_ =
+        graph->PassToGraph(std::make_unique<MemorySamplingFreezingPolicy>());
+  }
+
+ protected:
+  class MemorySamplingFreezingPolicy : public FreezingPolicy {
+   public:
+    MemorySamplingFreezingPolicy()
+        : FreezingPolicy(std::make_unique<MockDiscarder>()) {}
+    ~MemorySamplingFreezingPolicy() override = default;
+
+    void SetAvailableMemory(base::ByteSize available_memory) {
+      available_memory_ = available_memory;
+    }
+
+    int sample_count() const { return sample_count_; }
+
+   private:
+    bool GetSystemMemoryInfo(base::SystemMemoryInfo* info) override {
+      ++sample_count_;
+      info->total = base::GiB(16);
+      info->avail_phys = available_memory_;
+      return true;
+    }
+
+    base::ByteSize available_memory_ = base::GiB(16);
+    int sample_count_ = 0;
+  };
+
+  bool ShouldCheckMemory() const {
+    return std::get<0>(GetParam()) || std::get<1>(GetParam());
+  }
+
+  raw_ptr<MemorySamplingFreezingPolicy> policy_ = nullptr;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_P(FreezingPolicyMemoryCheckTimerTest, TimerFollowsPageDemand) {
+  const int samples_per_poll = ShouldCheckMemory() ? 1 : 0;
+  EXPECT_FALSE(policy_->IsMemoryCheckTimerRunningForTesting());
+  task_env().FastForwardBy(
+      features::kInfiniteTabsFreezingOnMemoryPressureInterval.Get() * 2);
+  EXPECT_FALSE(policy_->IsMemoryCheckTimerRunningForTesting());
+  EXPECT_EQ(0, policy_->sample_count());
+
+  auto first_page = CreateNode<PageNodeImpl>();
+  EXPECT_EQ(ShouldCheckMemory(),
+            policy_->IsMemoryCheckTimerRunningForTesting());
+  EXPECT_EQ(samples_per_poll, policy_->sample_count());
+  auto second_page = CreateNode<PageNodeImpl>();
+  EXPECT_EQ(samples_per_poll, policy_->sample_count());
+  task_env().FastForwardBy(
+      features::kInfiniteTabsFreezingOnMemoryPressureInterval.Get());
+  EXPECT_EQ(2 * samples_per_poll, policy_->sample_count());
+  first_page.reset();
+  EXPECT_EQ(ShouldCheckMemory(),
+            policy_->IsMemoryCheckTimerRunningForTesting());
+  task_env().FastForwardBy(
+      features::kInfiniteTabsFreezingOnMemoryPressureInterval.Get());
+  EXPECT_EQ(3 * samples_per_poll, policy_->sample_count());
+  second_page.reset();
+  EXPECT_FALSE(policy_->IsMemoryCheckTimerRunningForTesting());
+  task_env().FastForwardBy(
+      features::kInfiniteTabsFreezingOnMemoryPressureInterval.Get() * 2);
+  EXPECT_EQ(3 * samples_per_poll, policy_->sample_count());
+
+  auto resumed_page = CreateNode<PageNodeImpl>();
+  EXPECT_EQ(ShouldCheckMemory(),
+            policy_->IsMemoryCheckTimerRunningForTesting());
+  EXPECT_EQ(4 * samples_per_poll, policy_->sample_count());
+  auto owned_policy = graph()->TakeFromGraphAs(policy_.get());
+  EXPECT_FALSE(policy_->IsMemoryCheckTimerRunningForTesting());
+  task_env().FastForwardBy(
+      features::kInfiniteTabsFreezingOnMemoryPressureInterval.Get() * 2);
+  EXPECT_EQ(4 * samples_per_poll, policy_->sample_count());
+  graph()->PassToGraph(std::move(owned_policy));
+  EXPECT_EQ(ShouldCheckMemory(),
+            policy_->IsMemoryCheckTimerRunningForTesting());
+  EXPECT_EQ(5 * samples_per_poll, policy_->sample_count());
+  resumed_page.reset();
+  EXPECT_FALSE(policy_->IsMemoryCheckTimerRunningForTesting());
+  task_env().FastForwardBy(
+      features::kInfiniteTabsFreezingOnMemoryPressureInterval.Get() * 2);
+  EXPECT_EQ(5 * samples_per_poll, policy_->sample_count());
+}
+
+TEST_P(FreezingPolicyMemoryCheckTimerTest,
+       SamplesUpdatePressureStateAcrossDemandChanges) {
+  policy_->UpdateStateFromAvailableMemoryPercentForTesting(0);
+  EXPECT_EQ(std::get<0>(GetParam()),
+            policy_->IsInfiniteTabFreezingActiveForTesting());
+
+  auto page = CreateNode<PageNodeImpl>();
+  EXPECT_FALSE(policy_->IsInfiniteTabFreezingActiveForTesting());
+
+  policy_->SetAvailableMemory(base::ByteSize(0));
+  task_env().FastForwardBy(
+      features::kInfiniteTabsFreezingOnMemoryPressureInterval.Get());
+  EXPECT_EQ(std::get<0>(GetParam()),
+            policy_->IsInfiniteTabFreezingActiveForTesting());
+  page.reset();
+  EXPECT_EQ(std::get<0>(GetParam()),
+            policy_->IsInfiniteTabFreezingActiveForTesting());
+
+  policy_->SetAvailableMemory(base::GiB(16));
+  auto resumed_page = CreateNode<PageNodeImpl>();
+  EXPECT_FALSE(policy_->IsInfiniteTabFreezingActiveForTesting());
+}
+
+TEST_P(FreezingPolicyMemoryCheckTimerTest, HysteresisSurvivesZeroPageInterval) {
+  const bool freeze_on_memory_pressure = std::get<0>(GetParam());
+  const base::TimeDelta interval =
+      features::kInfiniteTabsFreezingOnMemoryPressureInterval.Get();
+  auto page = CreateNode<PageNodeImpl>();
+  EXPECT_FALSE(policy_->IsInfiniteTabFreezingActiveForTesting());
+
+  policy_->SetAvailableMemory(base::GiB(1));
+  task_env().FastForwardBy(interval);
+  EXPECT_EQ(freeze_on_memory_pressure,
+            policy_->IsInfiniteTabFreezingActiveForTesting());
+
+  // 12.5% available memory is between the 10% enter and 15% exit thresholds.
+  policy_->SetAvailableMemory(base::GiB(2));
+  task_env().FastForwardBy(interval);
+  EXPECT_EQ(freeze_on_memory_pressure,
+            policy_->IsInfiniteTabFreezingActiveForTesting());
+
+  page.reset();
+  task_env().FastForwardBy(interval);
+  auto resumed_page = CreateNode<PageNodeImpl>();
+  EXPECT_EQ(freeze_on_memory_pressure,
+            policy_->IsInfiniteTabFreezingActiveForTesting());
+
+  policy_->SetAvailableMemory(base::GiB(3));
+  task_env().FastForwardBy(interval);
+  EXPECT_FALSE(policy_->IsInfiniteTabFreezingActiveForTesting());
+}
+
+TEST_P(FreezingPolicyMemoryCheckTimerTest,
+       TestingOverrideSurvivesPageDemandChanges) {
+  policy_->StopMemoryCheckTimerForTesting();
+  auto first_page = CreateNode<PageNodeImpl>();
+  EXPECT_FALSE(policy_->IsMemoryCheckTimerRunningForTesting());
+  first_page.reset();
+  auto resumed_page = CreateNode<PageNodeImpl>();
+  EXPECT_FALSE(policy_->IsMemoryCheckTimerRunningForTesting());
+  auto owned_policy = graph()->TakeFromGraphAs(policy_.get());
+  graph()->PassToGraph(std::move(owned_policy));
+  EXPECT_FALSE(policy_->IsMemoryCheckTimerRunningForTesting());
+  task_env().FastForwardBy(
+      features::kInfiniteTabsFreezingOnMemoryPressureInterval.Get() * 2);
+  EXPECT_EQ(0, policy_->sample_count());
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         FreezingPolicyMemoryCheckTimerTest,
+                         ::testing::Combine(::testing::Bool(),
+                                            ::testing::Bool()));
+#endif  // BUILDFLAG(IS_WIN)
 
 class FreezingPolicyTest : public FreezingPolicyTest_BaseWithNoPage {
  public:
