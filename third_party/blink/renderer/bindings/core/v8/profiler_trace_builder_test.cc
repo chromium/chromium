@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/bindings/core/v8/profiler_trace_builder.h"
 
 #include <cmath>
+#include <iterator>
+#include <optional>
 
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -49,6 +51,87 @@ TEST_F(ProfilerTraceBuilderTest, AddVMStateMarkerCrossOriginIsolated) {
   EXPECT_EQ(samples.size(), 1u);
   auto* sample = samples.at(0).Get();
   EXPECT_EQ(sample->marker(), V8ProfilerMarker::Enum::kGc);
+}
+
+TEST_F(ProfilerTraceBuilderTest, VMStateMarkerExposure) {
+  const struct {
+    v8::StateTag state;
+    std::optional<V8ProfilerMarker::Enum> marker;
+  } test_cases[] = {
+      {v8::JS, V8ProfilerMarker::Enum::kScript},
+      {v8::GC, V8ProfilerMarker::Enum::kGc},
+      {v8::PARSER, V8ProfilerMarker::Enum::kOther},
+      {v8::BYTECODE_COMPILER, V8ProfilerMarker::Enum::kOther},
+      {v8::COMPILER, V8ProfilerMarker::Enum::kOther},
+      {v8::OTHER, V8ProfilerMarker::Enum::kOther},
+      {v8::EXTERNAL, V8ProfilerMarker::Enum::kOther},
+      {v8::ATOMICS_WAIT, V8ProfilerMarker::Enum::kScript},
+      {v8::IDLE, std::nullopt},
+      {v8::LOGGING, std::nullopt},
+      {v8::IDLE_EXTERNAL, std::nullopt},
+  };
+
+  for (bool markers_enabled : {false, true}) {
+    ScopedExperimentalJSProfilerMarkersForTest enable_markers(markers_enabled);
+    for (bool is_cross_origin_isolated : {false, true}) {
+      V8TestingScope scope;
+      auto* builder = MakeGarbageCollected<ProfilerTraceBuilder>(
+          scope.GetScriptState(), base::TimeTicks::Now());
+      builder->is_cross_origin_isolated_ = is_cross_origin_isolated;
+
+      for (const auto& test_case : test_cases) {
+        SCOPED_TRACE(testing::Message()
+                     << "state=" << test_case.state
+                     << ", markers_enabled=" << markers_enabled
+                     << ", cross_origin_isolated=" << is_cross_origin_isolated);
+        builder->AddSample(nullptr, base::TimeTicks::Now(), test_case.state,
+                           v8::EmbedderStateTag::EMPTY);
+        const auto* sample = builder->GetTrace()->samples().back().Get();
+        bool expect_marker = markers_enabled && is_cross_origin_isolated &&
+                             test_case.marker.has_value();
+        ASSERT_EQ(sample->hasMarker(), expect_marker);
+        if (expect_marker) {
+          EXPECT_EQ(sample->marker(), *test_case.marker);
+        }
+      }
+      EXPECT_EQ(builder->GetTrace()->samples().size(), std::size(test_cases));
+    }
+  }
+
+  const struct {
+    BlinkState state;
+    V8ProfilerMarker::Enum marker;
+  } rendering_cases[] = {
+      {BlinkState::LAYOUT, V8ProfilerMarker::Enum::kLayout},
+      {BlinkState::STYLE, V8ProfilerMarker::Enum::kStyle},
+      {BlinkState::PAINT, V8ProfilerMarker::Enum::kPaint},
+  };
+  ScopedExperimentalJSProfilerMarkersForTest enable_markers(true);
+  for (const bool is_cross_origin_isolated : {false, true}) {
+    V8TestingScope scope;
+    auto* builder = MakeGarbageCollected<ProfilerTraceBuilder>(
+        scope.GetScriptState(), base::TimeTicks::Now());
+    builder->is_cross_origin_isolated_ = is_cross_origin_isolated;
+
+    for (const auto& test_case : rendering_cases) {
+      SCOPED_TRACE(testing::Message()
+                   << "rendering_marker=" << static_cast<int>(test_case.marker)
+                   << ", cross_origin_isolated=" << is_cross_origin_isolated);
+      builder->AddSample(nullptr, base::TimeTicks::Now(),
+                         v8::StateTag::EXTERNAL,
+                         static_cast<v8::EmbedderStateTag>(test_case.state));
+      const auto* sample = builder->GetTrace()->samples().back().Get();
+      const bool expect_marker =
+          is_cross_origin_isolated ||
+          test_case.marker != V8ProfilerMarker::Enum::kPaint;
+      ASSERT_EQ(sample->hasMarker(), expect_marker);
+      if (expect_marker) {
+        EXPECT_EQ(sample->marker(), test_case.marker);
+      }
+    }
+    EXPECT_EQ(builder->GetTrace()->samples().size(),
+              std::size(rendering_cases));
+  }
 }
 
 TEST_F(ProfilerTraceBuilderTest, AddEmbedderStateMarkerCrossOriginIsolated) {

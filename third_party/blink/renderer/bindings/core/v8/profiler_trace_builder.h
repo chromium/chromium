@@ -105,6 +105,17 @@ class CORE_EXPORT ProfilerTraceBuilder final
       case v8::JS:
       case v8::ATOMICS_WAIT:
         return V8ProfilerMarker(V8ProfilerMarker::Enum::kScript);
+      case v8::PARSER:
+      case v8::BYTECODE_COMPILER:
+      case v8::COMPILER:
+      case v8::OTHER:
+      case v8::EXTERNAL:
+        return V8ProfilerMarker(V8ProfilerMarker::Enum::kOther);
+      // V8 preserves LOGGING even when the sample's context is rejected.
+      case v8::LOGGING:
+      // V8 also uses idle states for samples rejected by the context filter.
+      case v8::IDLE:
+      case v8::IDLE_EXTERNAL:
       default:
         return std::optional<V8ProfilerMarker>();
     }
@@ -170,6 +181,7 @@ class CORE_EXPORT ProfilerTraceBuilder final
 
   FRIEND_TEST_ALL_PREFIXES(ProfilerTraceBuilderTest,
                            AddVMStateMarkerCrossOriginIsolated);
+  FRIEND_TEST_ALL_PREFIXES(ProfilerTraceBuilderTest, VMStateMarkerExposure);
   FRIEND_TEST_ALL_PREFIXES(ProfilerTraceBuilderTest,
                            AddEmbedderStateMarkerCrossOriginIsolated);
   FRIEND_TEST_ALL_PREFIXES(ProfilerTraceBuilderTest, AddVMStateMarker);
