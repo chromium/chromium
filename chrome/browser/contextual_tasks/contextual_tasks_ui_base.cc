@@ -66,9 +66,11 @@
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/common/composebox_features.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/primary_account_change_event.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
@@ -424,10 +426,20 @@ class ContextualTasksUIBase::CookieJarObserver
   }
 
   // signin::IdentityManager::Observer:
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event_details) override {
+    owner_->UpdateProfileIndicator();
+  }
   void OnAccountsInCookieUpdated(
       const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
       const GoogleServiceAuthError& error) override {
     owner_->UpdateProfileIndicator();
+  }
+  void OnExtendedAccountInfoUpdated(const AccountInfo& info) override {
+    MaybeUpdateProfileIndicatorForAccount(info);
+  }
+  void OnExtendedAccountInfoRemoved(const AccountInfo& info) override {
+    MaybeUpdateProfileIndicatorForAccount(info);
   }
   void OnIdentityManagerShutdown(
       signin::IdentityManager* identity_manager) override {
@@ -464,6 +476,21 @@ class ContextualTasksUIBase::CookieJarObserver
   }
 
  private:
+  void MaybeUpdateProfileIndicatorForAccount(const AccountInfo& info) {
+    signin::IdentityManager* identity_manager = observation_.GetSource();
+    if (!identity_manager ||
+        identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+      return;
+    }
+    signin::AccountsInCookieJarInfo cookie_jar =
+        identity_manager->GetAccountsInCookieJar();
+    if (cookie_jar.AreAccountsFresh() &&
+        std::ranges::contains(cookie_jar.GetAllAccounts(), info.GetGaiaId(),
+                              &gaia::ListedAccount::gaia_id)) {
+      owner_->UpdateProfileIndicator();
+    }
+  }
+
   void FetchOffTheRecordAccounts() {
     gaia_auth_fetcher_.reset();
     weak_ptr_factory_.InvalidateWeakPtrs();
