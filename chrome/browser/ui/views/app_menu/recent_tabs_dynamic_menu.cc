@@ -38,10 +38,16 @@
 #include "components/sync_sessions/session_sync_service.h"
 #include "ui/actions/actions.h"
 #include "ui/base/accelerators/menu_label_accelerator_util.h"
+#include "ui/base/class_property.h"
 #include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/color/color_id.h"
+#include "url/gurl.h"
+
+DEFINE_UI_CLASS_PROPERTY_TYPE(GURL*)
 
 namespace {
+
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(GURL, kRecentTabUrlKey)
 
 bool MayHaveMnemonics(const RecentTabItem& item) {
   if (item.type() == RecentTabItem::Type::kCommand) {
@@ -65,6 +71,12 @@ RecentTabsDynamicMenu::RecentTabsDynamicMenu(
 }
 
 RecentTabsDynamicMenu::~RecentTabsDynamicMenu() = default;
+
+// static
+const GURL* RecentTabsDynamicMenu::GetTabUrl(
+    const actions::BaseAction* action) {
+  return action ? action->GetProperty(kRecentTabUrlKey) : nullptr;
+}
 
 void RecentTabsDynamicMenu::BuildRecentTabsActions(
     actions::BaseAction* parent_item) {
@@ -262,6 +274,7 @@ void RecentTabsDynamicMenu::CreateRecentTabsAction(
 
       if (recent_tab.type() == RecentTabItem::Type::kTab &&
           !recent_tab.url().is_empty()) {
+        action_item->SetProperty(kRecentTabUrlKey, recent_tab.url());
         FetchFavicon(action_item.get()->GetActionItem(), recent_tab);
       }
     }

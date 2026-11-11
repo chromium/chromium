@@ -21,12 +21,14 @@
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/tabs/recent_tabs_builder.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_test_base.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_action_item.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_search_bar_view.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_search_item.h"
 #include "chrome/browser/ui/views/app_menu/bookmarks_dynamic_menu.h"
+#include "chrome/browser/ui/views/app_menu/recent_tabs_dynamic_menu.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_browser_process_death_test_mixin.h"
@@ -83,15 +85,25 @@ class AppMenuSearchControllerTest
         ->GetVisible();
   }
 
-  // `scope_` must be declared before `menu_root_` so that underlying delegate
-  // ActionItems outlive any IndirectActionItems stored in `menu_root_`.
+  // `scope_` and `recent_tabs_menu_` must be declared before `menu_root_` so
+  // that underlying delegate ActionItems and the recent tab actions bound to
+  // `recent_tabs_menu_` outlive the actions stored in `menu_root_`.
   std::unique_ptr<actions::ActionItem> scope_;
+  testing::NiceMock<MockBrowserWindowInterface> mock_window_;
+  testing::NiceMock<MockAppMenuDragAndDropHost> mock_host_;
+  RecentTabsDynamicMenu recent_tabs_menu_{&mock_window_, &mock_host_};
   std::unique_ptr<actions::ActionItem> menu_root_;
   std::unique_ptr<AppMenuSearchBarView> search_bar_;
   // A StrictMock, so tests fail on any delegate call they don't expect.
   testing::StrictMock<MockDelegate> delegate_;
   std::unique_ptr<AppMenuSearchController> controller_;
 };
+
+RecentTabItem MakeRecentTab(std::u16string title, std::string_view url) {
+  RecentTabItem tab(RecentTabItem::Type::kTab, std::move(title));
+  tab.set_url(GURL(url));
+  return tab;
+}
 
 TEST_F(AppMenuSearchControllerTest, InitializeSearchIndexOnlyOnce) {
   menu_root_->AddChild(actions::ActionItem::Builder()
@@ -375,8 +387,7 @@ TEST_F(AppMenuSearchControllerTest, ZoomSubmenuAndTooltips) {
   EXPECT_EQ(items[2]->GetActionItem()->GetActionId(), kActionFullscreen);
 }
 
-TEST_F(AppMenuSearchControllerTest,
-       GetSearchItemTypeForBookmarksAndRecentTabs) {
+TEST_F(AppMenuSearchControllerTest, GetSearchItemTypeForBookmarksAndTabGroups) {
   auto bookmarks_menu = actions::ActionItem::Builder()
                             .SetActionId(kActionBookmarksSubmenu)
                             .SetText(u"Bookmarks")
@@ -392,22 +403,6 @@ TEST_F(AppMenuSearchControllerTest,
 
   menu_root_->AddChild(std::move(bookmarks_menu));
 
-  auto recent_tabs_menu = actions::ActionItem::Builder()
-                              .SetActionId(kActionRecentTabsSubmenu)
-                              .SetText(u"History")
-                              .Build();
-
-  recent_tabs_menu->AddChild(
-      actions::ActionItem::Builder().SetText(u"Recently Closed Tab").Build());
-
-  auto remote_device =
-      actions::ActionItem::Builder().SetText(u"Edward's Android").Build();
-  remote_device->AddChild(
-      actions::ActionItem::Builder().SetText(u"Remote Article").Build());
-  recent_tabs_menu->AddChild(std::move(remote_device));
-
-  menu_root_->AddChild(std::move(recent_tabs_menu));
-
   auto tab_groups_menu = actions::ActionItem::Builder()
                              .SetActionId(kActionSavedTabGroupsSubmenu)
                              .SetText(u"Tab Groups")
@@ -421,7 +416,7 @@ TEST_F(AppMenuSearchControllerTest,
   controller_->InitializeSearchIndex();
 
   const auto& items = controller_->search_items_for_testing();
-  ASSERT_EQ(items.size(), 5u);
+  ASSERT_EQ(items.size(), 3u);
 
   EXPECT_EQ(items[0]->GetTitle(), u"Bookmark Manager");
   EXPECT_EQ(items[0]->GetType(), AppMenuSearchItem::Type::kBookmark);
@@ -431,17 +426,9 @@ TEST_F(AppMenuSearchControllerTest,
   EXPECT_EQ(items[1]->GetType(), AppMenuSearchItem::Type::kBookmark);
   EXPECT_EQ(items[1]->GetSecondaryText(), u"Work");
 
-  EXPECT_EQ(items[2]->GetTitle(), u"Recently Closed Tab");
-  EXPECT_EQ(items[2]->GetType(), AppMenuSearchItem::Type::kRecentTabs);
-  EXPECT_EQ(items[2]->GetSecondaryText(), u"History");
-
-  EXPECT_EQ(items[3]->GetTitle(), u"Remote Article");
-  EXPECT_EQ(items[3]->GetType(), AppMenuSearchItem::Type::kRecentTabs);
-  EXPECT_EQ(items[3]->GetSecondaryText(), u"Edward's Android");
-
-  EXPECT_EQ(items[4]->GetTitle(), u"Research Group");
-  EXPECT_EQ(items[4]->GetType(), AppMenuSearchItem::Type::kTabGroup);
-  EXPECT_TRUE(items[4]->GetSecondaryText().empty());
+  EXPECT_EQ(items[2]->GetTitle(), u"Research Group");
+  EXPECT_EQ(items[2]->GetType(), AppMenuSearchItem::Type::kTabGroup);
+  EXPECT_TRUE(items[2]->GetSecondaryText().empty());
 }
 
 TEST_F(AppMenuSearchControllerTest, StaticActionsAndTabGroups) {
@@ -542,12 +529,14 @@ TEST_F(AppMenuSearchControllerTest, SearchResultsCategorizationAndCapping) {
                               .SetActionId(kActionRecentTabsSubmenu)
                               .SetText(u"History")
                               .Build();
+  std::vector<RecentTabItem> recent_tabs;
   for (int i = 0; i < 4; ++i) {
-    recent_tabs_menu->AddChild(
-        actions::ActionItem::Builder()
-            .SetText(u"Recent Tab Item " + base::NumberToString16(i))
-            .Build());
+    recent_tabs.push_back(
+        MakeRecentTab(u"Recent Tab Item " + base::NumberToString16(i),
+                      "https://example.com/" + base::NumberToString(i)));
   }
+  recent_tabs_menu_.CreateRecentTabsActionForTesting(recent_tabs_menu.get(),
+                                                     recent_tabs);
   menu_root_->AddChild(std::move(recent_tabs_menu));
 
   controller_->InitializeSearchIndex();
@@ -591,8 +580,9 @@ TEST_F(AppMenuSearchControllerTest, SearchResultsTreeCategoryHeaders) {
                               .SetActionId(kActionRecentTabsSubmenu)
                               .SetText(u"History")
                               .Build();
-  recent_tabs_menu->AddChild(
-      actions::ActionItem::Builder().SetText(u"New Recent Tab").Build());
+  recent_tabs_menu_.CreateRecentTabsActionForTesting(
+      recent_tabs_menu.get(),
+      {MakeRecentTab(u"New Recent Tab", "https://example.com/")});
   menu_root_->AddChild(std::move(recent_tabs_menu));
 
   controller_->InitializeSearchIndex();
@@ -755,82 +745,65 @@ TEST_F(AppMenuSearchControllerTest, FlattenHierarchyRecentTabsSubmenu) {
                               .SetText(u"History")
                               .Build();
 
-  // 1. System action:
+  // Built-in command:
   recent_tabs_menu->AddChild(actions::ActionItem::Builder()
                                  .SetActionId(kActionShowHistory)
                                  .SetText(u"Open history page")
                                  .Build());
 
-  // 2. Section header (should be pruned):
-  recent_tabs_menu->AddChild(
-      AppMenuActionItem::CreateHeader(u"Recently closed"));
+  // Dynamic entries, as built by RecentTabsDynamicMenu: a section header, a
+  // single closed tab, a closed window (restore command, divider and its tabs)
+  // and a remote device with its tabs.
+  RecentTabItem window(RecentTabItem::Type::kWindow, u"3 tabs");
+  window.add_child(
+      RecentTabItem(RecentTabItem::Type::kCommand, u"Restore window"));
+  window.add_child(RecentTabItem(RecentTabItem::Type::kDivider, u""));
+  window.add_child(MakeRecentTab(u"Window Tab 1", "https://www.example.com/a"));
+  window.add_child(MakeRecentTab(u"Window Tab 2", "https://docs.google.com/b"));
 
-  // 3. Local single closed tab:
-  recent_tabs_menu->AddChild(
-      actions::ActionItem::Builder().SetText(u"GitHub").Build());
+  RecentTabItem device(RecentTabItem::Type::kDevice, u"Edward's Android");
+  device.add_child(MakeRecentTab(u"Phone Tab 1", "https://en.wikipedia.org/x"));
+  device.add_child(MakeRecentTab(u"Phone Tab 2", "https://youtube.com/y"));
 
-  // 4. Local multi-tab window container ("3 tabs"):
-  auto window_container =
-      actions::ActionItem::Builder().SetText(u"3 tabs").Build();
-  window_container->AddChild(
-      actions::ActionItem::Builder().SetText(u"Restore window").Build());
-  auto window_divider = actions::ActionItem::Builder().Build();
-  window_divider->SetProperty(AppMenuActionItem::kDisplayTypeKey,
-                              AppMenuActionItem::DisplayType::kDivider);
-  window_container->AddChild(std::move(window_divider));
-  window_container->AddChild(
-      actions::ActionItem::Builder().SetText(u"Window Tab 1").Build());
-  window_container->AddChild(
-      actions::ActionItem::Builder().SetText(u"Window Tab 2").Build());
-  recent_tabs_menu->AddChild(std::move(window_container));
-
-  // 5. Remote synced device container ("Edward's Android"):
-  auto device_container =
-      actions::ActionItem::Builder().SetText(u"Edward's Android").Build();
-  device_container->AddChild(
-      actions::ActionItem::Builder().SetText(u"Phone Tab 1").Build());
-  device_container->AddChild(
-      actions::ActionItem::Builder().SetText(u"Phone Tab 2").Build());
-  recent_tabs_menu->AddChild(std::move(device_container));
+  recent_tabs_menu_.CreateRecentTabsActionForTesting(
+      recent_tabs_menu.get(),
+      {RecentTabItem(RecentTabItem::Type::kHeader, u"Recently closed"),
+       MakeRecentTab(u"GitHub", "https://github.com/foo"), std::move(window),
+       std::move(device)});
 
   menu_root_->AddChild(std::move(recent_tabs_menu));
 
   controller_->InitializeSearchIndex();
 
   const auto& items = controller_->search_items_for_testing();
-  ASSERT_EQ(items.size(), 7u);
+  ASSERT_EQ(items.size(), 6u);
 
-  // System action:
+  // Built-in command:
   EXPECT_EQ(items[0]->GetTitle(), u"Open history page");
   EXPECT_EQ(items[0]->GetType(), AppMenuSearchItem::Type::kAction);
   EXPECT_EQ(items[0]->GetSecondaryText(), u"History");
 
-  // Local single tab:
+  // Tabs show their domain. "Restore window", the header and the divider are
+  // not indexed.
   EXPECT_EQ(items[1]->GetTitle(), u"GitHub");
   EXPECT_EQ(items[1]->GetType(), AppMenuSearchItem::Type::kRecentTabs);
-  EXPECT_EQ(items[1]->GetSecondaryText(), u"History");
+  EXPECT_EQ(items[1]->GetSecondaryText(), u"github.com");
 
-  // Local window tabs (divider skipped):
-  EXPECT_EQ(items[2]->GetTitle(), u"Restore window");
+  EXPECT_EQ(items[2]->GetTitle(), u"Window Tab 1");
   EXPECT_EQ(items[2]->GetType(), AppMenuSearchItem::Type::kRecentTabs);
-  EXPECT_EQ(items[2]->GetSecondaryText(), u"3 tabs");
+  EXPECT_EQ(items[2]->GetSecondaryText(), u"example.com");
 
-  EXPECT_EQ(items[3]->GetTitle(), u"Window Tab 1");
+  EXPECT_EQ(items[3]->GetTitle(), u"Window Tab 2");
   EXPECT_EQ(items[3]->GetType(), AppMenuSearchItem::Type::kRecentTabs);
-  EXPECT_EQ(items[3]->GetSecondaryText(), u"3 tabs");
+  EXPECT_EQ(items[3]->GetSecondaryText(), u"docs.google.com");
 
-  EXPECT_EQ(items[4]->GetTitle(), u"Window Tab 2");
+  EXPECT_EQ(items[4]->GetTitle(), u"Phone Tab 1");
   EXPECT_EQ(items[4]->GetType(), AppMenuSearchItem::Type::kRecentTabs);
-  EXPECT_EQ(items[4]->GetSecondaryText(), u"3 tabs");
+  EXPECT_EQ(items[4]->GetSecondaryText(), u"en.wikipedia.org");
 
-  // Remote device tabs (device name as secondary text):
-  EXPECT_EQ(items[5]->GetTitle(), u"Phone Tab 1");
+  EXPECT_EQ(items[5]->GetTitle(), u"Phone Tab 2");
   EXPECT_EQ(items[5]->GetType(), AppMenuSearchItem::Type::kRecentTabs);
-  EXPECT_EQ(items[5]->GetSecondaryText(), u"Edward's Android");
-
-  EXPECT_EQ(items[6]->GetTitle(), u"Phone Tab 2");
-  EXPECT_EQ(items[6]->GetType(), AppMenuSearchItem::Type::kRecentTabs);
-  EXPECT_EQ(items[6]->GetSecondaryText(), u"Edward's Android");
+  EXPECT_EQ(items[5]->GetSecondaryText(), u"youtube.com");
 }
 
 TEST_F(AppMenuSearchControllerTest, EmptySubmenusAreNotIndexed) {
@@ -1022,9 +995,10 @@ TEST_F(AppMenuSearchControllerTest, OtherDeviceTabsSubmenuIndexed) {
                                     .SetText(u"Other device tabs")
                                     .Build();
 
-  other_device_tabs_menu->AddChild(AppMenuActionItem::CreateHeader(u"Pixel 9"));
-  other_device_tabs_menu->AddChild(
-      actions::ActionItem::Builder().SetText(u"Synced Page").Build());
+  recent_tabs_menu_.CreateRecentTabsActionForTesting(
+      other_device_tabs_menu.get(),
+      {RecentTabItem(RecentTabItem::Type::kHeader, u"Pixel 9"),
+       MakeRecentTab(u"Synced Page", "https://example.org/page")});
 
   menu_root_->AddChild(std::move(other_device_tabs_menu));
 
@@ -1034,7 +1008,7 @@ TEST_F(AppMenuSearchControllerTest, OtherDeviceTabsSubmenuIndexed) {
   ASSERT_EQ(items.size(), 1u);
   EXPECT_EQ(items[0]->GetTitle(), u"Synced Page");
   EXPECT_EQ(items[0]->GetType(), AppMenuSearchItem::Type::kRecentTabs);
-  EXPECT_EQ(items[0]->GetSecondaryText(), u"Other device tabs");
+  EXPECT_EQ(items[0]->GetSecondaryText(), u"example.org");
 }
 
 TEST_F(AppMenuSearchControllerTest, BuildSearchResultsTreeHighlightRange) {

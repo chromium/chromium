@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/views/app_menu/app_menu_action_item.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_search_bar_view.h"
 #include "chrome/browser/ui/views/app_menu/bookmarks_dynamic_menu.h"
+#include "chrome/browser/ui/views/app_menu/recent_tabs_dynamic_menu.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/url_formatter/elide_url.h"
@@ -152,21 +153,6 @@ std::u16string ExtractItemTitle(actions::BaseAction* action) {
     return text;
   }
   return std::u16string(action->GetActionItem()->GetTooltipText());
-}
-
-// Extracts the secondary text for an item, formatting its URL domain if present
-// and falling back to the enclosing submenu `context`.
-std::u16string ExtractSecondaryText(actions::BaseAction* action,
-                                    AppMenuSearchItem::Type item_type,
-                                    std::u16string_view context) {
-  if (item_type == AppMenuSearchItem::Type::kBookmark) {
-    const GURL* url = BookmarksDynamicMenu::GetBookmarkUrl(action);
-    if (url && url->is_valid()) {
-      return url_formatter::
-          FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(*url);
-    }
-  }
-  return std::u16string(context);
 }
 
 }  // namespace
@@ -300,12 +286,32 @@ void AppMenuSearchController::FlattenHierarchyRecursive(
     return;
   }
 
-  if (!title.empty()) {
-    const AppMenuSearchItem::Type item_type =
-        GetSearchItemType(action->GetActionItem(), current_type);
-    AddSearchItem(action, item_type, title,
-                  ExtractSecondaryText(action, item_type, context));
+  if (title.empty()) {
+    return;
   }
+
+  const AppMenuSearchItem::Type item_type =
+      GetSearchItemType(action->GetActionItem(), current_type);
+
+  // Bookmarks and recent tabs show the domain of the page they open instead of
+  // where they live in the menu.
+  const GURL* url = nullptr;
+  if (item_type == AppMenuSearchItem::Type::kBookmark) {
+    url = BookmarksDynamicMenu::GetBookmarkUrl(action);
+  } else if (item_type == AppMenuSearchItem::Type::kRecentTabs) {
+    url = RecentTabsDynamicMenu::GetTabUrl(action);
+    // Only the tabs are searchable, not the commands that restore a whole
+    // window, group or split.
+    if (!url) {
+      return;
+    }
+  }
+
+  AddSearchItem(
+      action, item_type, title,
+      url ? url_formatter::
+                FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(*url)
+          : std::u16string(context));
 }
 
 void AppMenuSearchController::AddSearchItem(

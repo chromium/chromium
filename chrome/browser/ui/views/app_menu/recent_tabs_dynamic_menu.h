@@ -35,6 +35,10 @@ class RecentTabsDynamicMenu {
   void BuildRecentTabsActions(actions::BaseAction* parent_item);
   void BuildOtherDeviceTabsActions(actions::BaseAction* parent_item);
 
+  // Returns the URL of the tab `action` restores, or null if `action` is not a
+  // tab (e.g. a command that restores a whole window, group or split).
+  static const GURL* GetTabUrl(const actions::BaseAction* action);
+
   void CreateRecentTabsActionForTesting(
       actions::BaseAction* parent_item,
       const std::vector<RecentTabItem>& recent_tabs) {
