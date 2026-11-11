@@ -175,6 +175,7 @@ void SearchController::ClearSearch() {
   burn_in_controller_->Stop();
 
   ClearNonZeroStateResults(results_);
+  app_search_data_source_->SweepIconCache();
   last_query_.clear();
 
   search_engine_->StopQuery();
@@ -188,6 +189,7 @@ void SearchController::StartZeroState(base::OnceClosure on_done,
   // Clear all results - zero state search request is made when the app list
   // gets first shown, which would indicate that search is not currently active.
   results_.clear();
+  app_search_data_source_->SweepIconCache();
   burn_in_controller_->Stop();
 
   // Categories currently are not used by zero-state, but may be required for
@@ -239,6 +241,7 @@ void SearchController::AppListViewChanging(bool is_visible) {
   // On close.
   if (!is_visible) {
     search_engine_->StopZeroState();
+    app_search_data_source_->SweepIconCache();
   }
 }
 

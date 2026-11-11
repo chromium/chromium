@@ -282,6 +282,10 @@ void AppSearchDataSource::RefreshIfNeeded() {
   Refresh();
 }
 
+void AppSearchDataSource::SweepIconCache() {
+  icon_cache_.SweepReleasedIcons();
+}
+
 SearchProvider::Results AppSearchDataSource::GetRecommendations() {
   SearchProvider::Results recommendations;
   std::set<std::string> handled_results;

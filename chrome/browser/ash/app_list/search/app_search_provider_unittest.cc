@@ -208,7 +208,7 @@ TEST_F(AppSearchProviderTest, AppServiceIconCache) {
   EXPECT_EQ(2, stub_icon_loader.NumLoadIconFromIconKeyCalls());
 
   // The number of LoadIconFromIconKey calls should not change, when hiding the
-  // UI (i.e. calling ViewClosing).
+  // UI (i.e. calling ViewClosing), which sweeps released icons from the cache.
   CallViewClosing();
 
   EXPECT_NE("", GetSortedResultsString());
@@ -216,18 +216,27 @@ TEST_F(AppSearchProviderTest, AppServiceIconCache) {
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(2, stub_icon_loader.NumLoadIconFromIconKeyCalls());
 
-  // The icon has been added to the map, so issuing the same "pa" query should
-  // not call the wrapped stub_icon_loader.
+  // Hiding the UI swept the cache, so issuing "pa" again reloads both icons.
   RunQuery("pa");
-  EXPECT_EQ(2, stub_icon_loader.NumLoadIconFromIconKeyCalls());
+  EXPECT_EQ(4, stub_icon_loader.NumLoadIconFromIconKeyCalls());
+
+  // Issuing "pa" again during the same search session hits the cache.
+  RunQuery("pa");
+  EXPECT_EQ(4, stub_icon_loader.NumLoadIconFromIconKeyCalls());
 
   // Update the icon key to remove the app icon from cache.
   UpdateIconKey(*proxy, kPackagedApp2Id);
 
   // The icon has been removed from the cache, so issuing the same "pa" query
-  // should call the wrapped stub_icon_loader.
+  // should call the wrapped stub_icon_loader for the updated app only.
   RunQuery("pa");
-  EXPECT_EQ(3, stub_icon_loader.NumLoadIconFromIconKeyCalls());
+  EXPECT_EQ(5, stub_icon_loader.NumLoadIconFromIconKeyCalls());
+
+  // Clearing the search sweeps the cache, so issuing "pa" again reloads both
+  // icons.
+  ClearSearch();
+  RunQuery("pa");
+  EXPECT_EQ(7, stub_icon_loader.NumLoadIconFromIconKeyCalls());
 
   proxy->OverrideInnerIconLoaderForTesting(old_icon_loader);
 }

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_APP_LIST_SEARCH_APP_RESULT_H_
 #define CHROME_BROWSER_ASH_APP_LIST_SEARCH_APP_RESULT_H_
 
-#include <memory>
 #include <string>
 
 #include "ash/public/cpp/app_list/app_list_metrics.h"
@@ -56,18 +55,13 @@ class AppResult : public ChromeSearchResult, public AppContextMenuDelegate {
   ash::SearchResultType GetSearchResultType() const;
   void Launch(int event_flags, apps::LaunchSource launch_source);
 
-  void CallLoadIcon(bool chip, bool allow_placeholder_icon);
-  void OnLoadIcon(bool chip, apps::IconValuePtr icon_value);
+  void CallLoadIcon(bool allow_placeholder_icon);
+  void OnLoadIcon(apps::IconValuePtr icon_value);
 
   raw_ptr<Profile> profile_;
   const std::string app_id_;
   raw_ptr<AppListControllerDelegate> controller_;
   const raw_ptr<apps::IconLoader, DanglingUntriaged> icon_loader_;
-
-  // When non-nullptr, signifies that this object is using the most recent icon
-  // fetched from `icon_loader_`. When destroyed, informs `icon_loader_` that
-  // the last icon is no longer used.
-  std::unique_ptr<apps::IconLoader::Releaser> icon_loader_releaser_;
 
   apps::AppType app_type_;
 

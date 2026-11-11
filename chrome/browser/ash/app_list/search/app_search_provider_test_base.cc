@@ -86,6 +86,7 @@ std::string AppSearchProviderTestBase::RunZeroStateSearch() {
 
 void AppSearchProviderTestBase::ClearSearch() {
   search_controller_->ClearSearch();
+  data_source_->SweepIconCache();
 }
 
 std::string AppSearchProviderTestBase::GetSortedResultsString() {
@@ -163,6 +164,7 @@ void AppSearchProviderTestBase::AddExtension(const std::string& id,
 
 void AppSearchProviderTestBase::CallViewClosing() {
   app_search_->StopZeroState();
+  data_source_->SweepIconCache();
 }
 
 void AppSearchProviderTestBase::WaitTimeUpdated() {

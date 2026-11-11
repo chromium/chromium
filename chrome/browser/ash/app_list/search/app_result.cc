@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/app_list/search/app_result.h"
 
+#include <memory>
+
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
@@ -55,10 +57,11 @@ AppResult::AppResult(Profile* profile,
         }
       });
 
-  constexpr bool allow_placeholder_icon = true;
-  CallLoadIcon(false, allow_placeholder_icon);
-  if (is_recommendation) {
-    CallLoadIcon(true, allow_placeholder_icon);
+  // Zero-state recommendations (`DisplayType::kRecentApps`) render grid items
+  // from `AppListModel` in `RecentAppsView` and never use `SearchResult`'s
+  // icon, so only load icons for queried search results.
+  if (!is_recommendation) {
+    CallLoadIcon(/*allow_placeholder_icon=*/true);
   }
 
   SetMetricsType(GetSearchResultType());
@@ -172,36 +175,34 @@ void AppResult::Launch(int event_flags, apps::LaunchSource launch_source) {
       std::make_unique<apps::WindowInfo>(controller_->GetAppListDisplayId()));
 }
 
-void AppResult::CallLoadIcon(bool chip, bool allow_placeholder_icon) {
+void AppResult::CallLoadIcon(bool allow_placeholder_icon) {
   if (!icon_loader_) {
     return;
   }
 
-  // If `icon_loader_releaser_` is non-null, assigning to it will signal to
-  // `icon_loader_` that the previous icon is no longer being used, as a hint
-  // that it could be flushed from any caches.
-  icon_loader_releaser_ = icon_loader_->LoadIcon(
+  // The releaser is intentionally discarded so that this result does not keep
+  // the icon referenced in `icon_loader_`'s cache. Once delivered, the icon is
+  // held by this result's metadata, and the cached copy can be swept by
+  // `AppSearchDataSource::SweepIconCache()`. Note that if a sweep happens while
+  // the load is still in flight, the icon just loaded may be discarded from the
+  // cache (it is still delivered to this result) and reloaded by a later
+  // search.
+  icon_loader_->LoadIcon(
       app_id(), apps::IconType::kStandard, kAppIconDimension,
       allow_placeholder_icon,
-      base::BindOnce(&AppResult::OnLoadIcon, weak_ptr_factory_.GetWeakPtr(),
-                     chip));
+      base::BindOnce(&AppResult::OnLoadIcon, weak_ptr_factory_.GetWeakPtr()));
 }
 
-void AppResult::OnLoadIcon(bool chip, apps::IconValuePtr icon_value) {
+void AppResult::OnLoadIcon(apps::IconValuePtr icon_value) {
   if (!icon_value || icon_value->icon_type != apps::IconType::kStandard) {
     return;
   }
 
-  if (chip) {
-    SetChipIcon(icon_value->uncompressed);
-  } else {
-    SetIcon(IconInfo(ui::ImageModel::FromImageSkia(icon_value->uncompressed),
-                     kAppIconDimension));
-  }
+  SetIcon(IconInfo(ui::ImageModel::FromImageSkia(icon_value->uncompressed),
+                   kAppIconDimension));
 
   if (icon_value->is_placeholder_icon) {
-    constexpr bool allow_placeholder_icon = false;
-    CallLoadIcon(chip, allow_placeholder_icon);
+    CallLoadIcon(/*allow_placeholder_icon=*/false);
   }
 }
 

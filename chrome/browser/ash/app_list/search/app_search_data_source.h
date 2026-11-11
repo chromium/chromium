@@ -58,6 +58,9 @@ class AppSearchDataSource : public apps::AppRegistryCache::Observer {
   // Immediately update the app info cache if it's not fresh.
   void RefreshIfNeeded();
 
+  // Sweeps unreferenced icons from `icon_cache_`.
+  void SweepIconCache();
+
   // Returns app recommendations (zero-state search results).
   SearchProvider::Results GetRecommendations();
 
