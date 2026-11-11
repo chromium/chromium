@@ -268,6 +268,36 @@ export function setContent(
   return node;
 }
 
+// Stores a new <p> element in the NodeStore for each of the given ids.
+export function setDomNodes(axNodeIds: number[]): Node[] {
+  return axNodeIds.map(id => {
+    const element = document.createElement('p');
+    NodeStore.getInstance().setDomNode(element, id);
+    return element;
+  });
+}
+
+// Plays or pauses speech for a new <p> with the given text. If a model is
+// given, also sets the text as the current content.
+export function onPlayPauseToggle(
+    text: string, model?: TestReadAloudModelBrowserProxy): HTMLElement {
+  if (model) {
+    setContent(text, model);
+  }
+  const element = document.createElement('p');
+  element.textContent = text;
+  SpeechController.getInstance().onPlayPauseToggle(element);
+  return element;
+}
+
+// Returns the trimmed text of the speak call at `callIndex`, which must be
+// the latest call.
+export function getSpokenText(
+    speech: TestSpeechBrowserProxy, callIndex = 0): string {
+  assertEquals(callIndex + 1, speech.getCallCount('speak'));
+  return speech.getArgs('speak')[callIndex].text.trim();
+}
+
 function getInnerHtml(axNodeId: number): string {
   const node = NodeStore.getInstance().getDomNode(axNodeId);
   assertTrue(node instanceof Element);

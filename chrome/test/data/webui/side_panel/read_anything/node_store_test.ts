@@ -9,7 +9,7 @@ import {ESTIMATED_WORDS_PER_MS, getWordCount, MIN_MS_TO_READ, ReadAloudNode} fro
 import {assertDeepEquals, assertEquals, assertFalse, assertGT, assertNotEquals, assertNull, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 
-import {setupTestEnvironment, setWindowSize} from './common.js';
+import {setDomNodes, setupTestEnvironment, setWindowSize} from './common.js';
 import type {TestContentBrowserProxy} from './test_content_browser_proxy.js';
 import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import type {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
@@ -39,13 +39,6 @@ suite('NodeStore', () => {
 
   function areNodesAllHidden(axNodeIds: number[]): boolean {
     return nodeStore.areNodesAllHidden(getReadAloudNodes(axNodeIds));
-  }
-
-  function setDomNodes(axNodeIds: number[]) {
-    axNodeIds.forEach(id => {
-      const element = document.createElement('p');
-      nodeStore.setDomNode(element, id);
-    });
   }
 
   setup(() => {

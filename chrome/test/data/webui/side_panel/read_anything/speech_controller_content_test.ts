@@ -6,7 +6,7 @@ import {playFromSelectionTimeout, ReadAloudNode} from 'chrome-untrusted://read-a
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 
-import {createSpeechSynthesisVoice, setContent, setupAppTestEnvironment, stubAnimationFrame} from './common.js';
+import {createSpeechSynthesisVoice, onPlayPauseToggle, setContent, setDomNodes, setupAppTestEnvironment, stubAnimationFrame} from './common.js';
 import type {TestAudioBrowserProxy} from './test_audio_browser_proxy.js';
 import type {TestReadAloudModelBrowserProxy} from './test_read_aloud_browser_proxy.js';
 import type {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
@@ -26,28 +26,12 @@ suite('SpeechController', () => {
   let onPlayingFromSelection: boolean;
   let onWordBoundary: boolean;
 
-  function onPlayPauseToggle(text: string) {
-    const element = document.createElement('p');
-    element.textContent = text;
-    speechController.onPlayPauseToggle(element);
-  }
-
   // Wraps the content in a container element, like the app's content
   // container that's passed to onPlayPauseToggle().
   function setContentInContainer(text: string): HTMLElement {
     const container = document.createElement('div');
     container.appendChild(setContent(text, readAloudModel));
     return container;
-  }
-
-  function setDomNodes(axNodeIds: number[]): Node[] {
-    const nodes: Node[] = [];
-    axNodeIds.forEach(id => {
-      const element = document.createElement('p');
-      nodeStore.setDomNode(element, id);
-      nodes.push(element);
-    });
-    return nodes;
   }
 
   const speechListener = {
