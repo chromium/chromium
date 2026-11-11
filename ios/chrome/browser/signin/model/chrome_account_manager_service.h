@@ -21,6 +21,8 @@
 #import "ios/chrome/browser/signin/model/system_identity.h"
 
 class AccountInfo;
+class AuthenticationService;
+class ChromeAccountManagerServiceTest;
 class DeviceAccountsProviderImpl;
 class PrefService;
 @protocol RefreshAccessTokenError;
@@ -32,15 +34,29 @@ class PrefService;
 // out identities according to the `kRestrictAccountsToPatterns` policy, and all
 // returned or passed `SystemIdentity` and `AccountInfo` instances correspond to
 // accounts on the device that match `kRestrictAccountsToPatterns`.
+//
+// IMPORTANT: `signin::IdentityManager` is the source of truth for accounts in
+// Chrome (both in-profile and on-device). Feature and UI code outside
+// `//ios/chrome/browser/signin/model` must query and observe
+// `signin::IdentityManager` (using `AccountInfo`) instead of
+// `ChromeAccountManagerService`, and only use `ChromeAccountManagerService`
+// when converting a `GaiaId` or `AccountInfo` into an `id<SystemIdentity>`
+// (until `SystemIdentity` is replaced by `AccountInfo`, see
+// crbug.com/377467350).
 class ChromeAccountManagerService : public KeyedService,
                                     public AccountProfileMapper::Observer {
  public:
-  // Observer handling events related to the ChromeAccountManagerService.
+  // Observer handling events related to `ChromeAccountManagerService`.
   // Unless stated otherwise, `identity` always corresponds to an account on the
   // device that matches `kRestrictAccountsToPatterns`.
+  //
+  // Internal to `//ios/chrome/browser/signin/model` (e.g.
+  // `AuthenticationService` and `DeviceAccountsProviderImpl`). Do not add new
+  // observers or reintroduce an Objective-C observer bridge outside
+  // `signin/model`; observe `signin::IdentityManager` instead (via
+  // `signin::IdentityManager::Observer` or `IdentityManagerObserverBridge`).
   class Observer : public base::CheckedObserver {
    public:
-    Observer() = default;
     Observer(const Observer&) = delete;
     Observer& operator=(const Observer&) = delete;
     ~Observer() override {}
@@ -79,6 +95,14 @@ class ChromeAccountManagerService : public KeyedService,
     // their observers.
     virtual void OnChromeAccountManagerServiceShutdown(
         ChromeAccountManagerService* chrome_account_manager_service) {}
+
+   private:
+    // Only internal signin classes may observe `ChromeAccountManagerService`.
+    // Feature and UI code must observe `signin::IdentityManager` instead.
+    friend class AuthenticationService;
+    friend class DeviceAccountsProviderImpl;
+    friend class ChromeAccountManagerServiceTest;
+    Observer() = default;
   };
 
   // Initializes the service, getting identities corresponding to `profile_name`
@@ -125,7 +149,9 @@ class ChromeAccountManagerService : public KeyedService,
   // KeyedService implementation.
   void Shutdown() override;
 
-  // Adds and removes observers.
+  // Adds and removes observers. Reserved for internal signin plumbing in
+  // `//ios/chrome/browser/signin/model`; feature and UI code must observe
+  // `signin::IdentityManager` instead.
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 

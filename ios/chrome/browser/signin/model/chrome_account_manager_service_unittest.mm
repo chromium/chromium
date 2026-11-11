@@ -31,26 +31,6 @@ FakeSystemIdentity* bar1_identity =
 FakeSystemIdentity* bar2_identity =
     [FakeSystemIdentity identityWithEmail:@"bar2@gmail.com"];
 
-class ChromeAccountManagerServiceObserver
-    : public ChromeAccountManagerService::Observer {
- public:
-  void OnIdentitiesInProfileChanged() final {
-    on_identities_in_profile_changed_called_count += 1;
-  }
-  void OnIdentityInProfileUpdated(id<SystemIdentity> identity) final {
-    on_identity_in_profile_updated_called_count += 1;
-  }
-  void OnAccessTokenRefreshFailed(id<SystemIdentity> identity,
-                                  id<RefreshAccessTokenError> error,
-                                  const std::set<std::string>& scoopes) final {
-    on_access_token_refresh_failed_called_count += 1;
-  }
-
-  int on_identities_in_profile_changed_called_count = 0;
-  int on_identity_in_profile_updated_called_count = 0;
-  int on_access_token_refresh_failed_called_count = 0;
-};
-
 }  // namespace
 
 class ChromeAccountManagerServiceTest : public PlatformTest {
@@ -88,6 +68,26 @@ class ChromeAccountManagerServiceTest : public PlatformTest {
   }
 
  protected:
+  class ChromeAccountManagerServiceObserver
+      : public ChromeAccountManagerService::Observer {
+   public:
+    void OnIdentitiesInProfileChanged() final {
+      on_identities_in_profile_changed_called_count += 1;
+    }
+    void OnIdentityInProfileUpdated(id<SystemIdentity> identity) final {
+      on_identity_in_profile_updated_called_count += 1;
+    }
+    void OnAccessTokenRefreshFailed(id<SystemIdentity> identity,
+                                    id<RefreshAccessTokenError> error,
+                                    const std::set<std::string>& scopes) final {
+      on_access_token_refresh_failed_called_count += 1;
+    }
+
+    int on_identities_in_profile_changed_called_count = 0;
+    int on_identity_in_profile_updated_called_count = 0;
+    int on_access_token_refresh_failed_called_count = 0;
+  };
+
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   web::WebTaskEnvironment task_environment_;
   TestProfileManagerIOS profile_manager_;
