@@ -1006,36 +1006,52 @@ TEST_F(SRIMessageSignatureBaseTest, QueryComponent) {
 TEST_F(SRIMessageSignatureBaseTest, QueryParamComponent) {
   struct {
     std::string_view url;
+    std::string_view name;
     std::string_view query;
   } cases[] = {
-      {"https://url.test/?a", ""},
-      {"https://url.test/?a=b", "b"},
-      {"https://url.test/?a=b&c=d", "b"},
-      {"https://url.test/?a=/", "%2F"},
-      {"https://url.test/?a=%2F", "%2F"},
-      {"https://url.test/?a=ü", "%C3%BC"},
-      {"https://url.test/?a=percent encoded spaces",
+      {"https://url.test/?a", "a", ""},
+      {"https://url.test/?a=b", "a", "b"},
+      {"https://url.test/?a=b&c=d", "a", "b"},
+      {"https://url.test/?a=/", "a", "%2F"},
+      {"https://url.test/?a=%2F", "a", "%2F"},
+      {"https://url.test/?a=ü", "a", "%C3%BC"},
+      {"https://url.test/?a=percent encoded spaces", "a",
        "percent%20encoded%20spaces"},
-      {"https://url.test/?a=percent%20encoded%20spaces",
+      {"https://url.test/?a=percent%20encoded%20spaces", "a",
        "percent%20encoded%20spaces"},
-      {"https://url.test/?a=percent+encoded+spaces",
+      {"https://url.test/?a=percent+encoded+spaces", "a",
        "percent%20encoded%20spaces"},
+      // Examples from https://www.rfc-editor.org/rfc/rfc9421.html#section-2.2.8
+      {"https://url.test/?var=this%20is%20a%20big%0Amultiline%20value", "var",
+       "this%20is%20a%20big%0Amultiline%20value"},
+      {"https://url.test/?bar=with+plus+whitespace", "bar",
+       "with%20plus%20whitespace"},
+      {"https://url.test/?fa%C3%A7ade%22%3A%20=something",
+       "fa%C3%A7ade%22%3A%20", "something"},
+      {"https://url.test/?façade\": =something", "fa%C3%A7ade%22%3A%20",
+       "something"},
+      {"https://url.test/?a+b=c", "a%20b", "c"},
+      {"https://url.test/?a%22%5Cb=c", "a%22%5Cb", "c"},
+      {"https://url.test/?a\"\\b=c", "a%22%5Cb", "c"},
   };
   for (const auto& test : cases) {
     SCOPED_TRACE(test.url);
 
     // `name`, then `req`
     {
-      std::string input_header = base::StrCat(
-          {"signature=(\"unencoded-digest\";sf "
-           "\"@query-param\";name=\"a\";req);",
-           "keyid=\"", kPublicKey, "\";tag=\"ed25519-integrity\""});
+      std::string input_header =
+          base::StrCat({"signature=(\"unencoded-digest\";sf "
+                        "\"@query-param\";name=\"",
+                        test.name, "\";req);keyid=\"", kPublicKey,
+                        "\";tag=\"ed25519-integrity\""});
 
       std::stringstream expected_base;
       expected_base << "\"unencoded-digest\";sf: " << kValidDigestHeader << '\n'
-                    << "\"@query-param\";name=\"a\";req: " << test.query << '\n'
+                    << "\"@query-param\";name=\"" << test.name
+                    << "\";req: " << test.query << '\n'
                     << "\"@signature-params\": (\"unencoded-digest\";sf "
-                       "\"@query-param\";name=\"a\";req);"
+                       "\"@query-param\";name=\""
+                    << test.name << "\";req);"
                     << "keyid=\"" << kPublicKey
                     << "\";tag=\"ed25519-integrity\"";
 
@@ -1056,16 +1072,19 @@ TEST_F(SRIMessageSignatureBaseTest, QueryParamComponent) {
 
     // `req`, then `name`
     {
-      std::string input_header = base::StrCat(
-          {"signature=(\"unencoded-digest\";sf "
-           "\"@query-param\";req;name=\"a\");",
-           "keyid=\"", kPublicKey, "\";tag=\"ed25519-integrity\""});
+      std::string input_header =
+          base::StrCat({"signature=(\"unencoded-digest\";sf "
+                        "\"@query-param\";req;name=\"",
+                        test.name, "\");keyid=\"", kPublicKey,
+                        "\";tag=\"ed25519-integrity\""});
 
       std::stringstream expected_base;
       expected_base << "\"unencoded-digest\";sf: " << kValidDigestHeader << '\n'
-                    << "\"@query-param\";req;name=\"a\": " << test.query << '\n'
+                    << "\"@query-param\";req;name=\"" << test.name
+                    << "\": " << test.query << '\n'
                     << "\"@signature-params\": (\"unencoded-digest\";sf "
-                       "\"@query-param\";req;name=\"a\");"
+                       "\"@query-param\";req;name=\""
+                    << test.name << "\");"
                     << "keyid=\"" << kPublicKey
                     << "\";tag=\"ed25519-integrity\"";
 
@@ -1083,6 +1102,40 @@ TEST_F(SRIMessageSignatureBaseTest, QueryParamComponent) {
       EXPECT_EQ(expected_base.str(), result.value())
           << GURL(test.url).GetQuery();
     }
+  }
+
+  // Ensure that query parameter names containing characters that require
+  // escaping in Structured Field strings (`"` and `\`) are serialized
+  // identically in the component line and `@signature-params`. Note that
+  // because RFC 9421 § 2.2.8 percent-encodes query parameter keys before
+  // matching (tested above with `name="a%22%5Cb"`), an unencoded `name`
+  // containing raw `"` and `\` will not match `?a%22%5Cb=c` and therefore
+  // derives an empty component value.
+  {
+    std::string input_header =
+        base::StrCat({"signature=(\"unencoded-digest\";sf "
+                      "\"@query-param\";name=\"a\\\"\\\\b\";req);",
+                      "keyid=\"", kPublicKey, "\";tag=\"ed25519-integrity\""});
+
+    std::stringstream expected_base;
+    expected_base << "\"unencoded-digest\";sf: " << kValidDigestHeader << '\n'
+                  << "\"@query-param\";name=\"a\\\"\\\\b\";req: \n"
+                  << "\"@signature-params\": (\"unencoded-digest\";sf "
+                     "\"@query-param\";name=\"a\\\"\\\\b\";req);"
+                  << "keyid=\"" << kPublicKey << "\";tag=\"ed25519-integrity\"";
+
+    scoped_refptr<net::HttpResponseHeaders> headers =
+        ValidHeadersPlusInput(input_header.c_str());
+    mojom::SRIMessageSignaturesPtr parsed =
+        ParseSRIMessageSignaturesFromHeaders(*headers);
+    ASSERT_EQ(1u, parsed->signatures.size());
+    EXPECT_EQ(0u, parsed->issues.size());
+
+    request_ = CreateRequest(*context_, "https://url.test/?a%22%5Cb=c");
+    base::expected<std::string, mojom::SRIMessageSignatureError> result =
+        ConstructSignatureBase(parsed->signatures[0], request(), *headers);
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(expected_base.str(), result.value());
   }
 }
 

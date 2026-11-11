@@ -226,6 +226,15 @@ std::optional<std::string> SerializeByteSequence(std::string_view input) {
           net::structured_headers::ItemView::byte_sequence, input));
 }
 
+// Percent-decodes `input` (including replacing `+` with space) and re-encodes
+// all characters except RFC 3986 unreserved characters, per Step 1 and Step 2
+// of https://www.rfc-editor.org/rfc/rfc9421.html#name-query-parameters.
+std::string PercentEncodeQueryPiece(std::string_view input) {
+  return base::EscapeAllExceptUnreserved(base::UnescapeBinaryURLComponent(
+      input, base::UnescapeRule::NORMAL |
+                 base::UnescapeRule::REPLACE_PLUS_WITH_SPACE));
+}
+
 // net::StructuredHeaders doesn't expose the ability to serialize a parameter
 // list outside the context of a parameterized item. So, we'll do it ourselves
 // by serializing each individually as an Item.
@@ -254,10 +263,16 @@ std::string SerializeComponentParams(
   for (const ComponentParameterPtr& param : params) {
     param_list << ';';
     switch (param->type) {
-      case ParameterType::kName:
+      case ParameterType::kName: {
         DCHECK(param->value.has_value());
-        param_list << "name=\"" << *param->value << "\"";
+        std::optional<std::string> serialized_item =
+            net::structured_headers::SerializeItem(
+                net::structured_headers::ItemView(
+                    net::structured_headers::ItemView::string, *param->value));
+        DCHECK(serialized_item.has_value());
+        param_list << "name=" << serialized_item.value();
         break;
+      }
       case ParameterType::kRequest:
         param_list << "req";
         break;
@@ -350,6 +365,7 @@ std::string SerializeDerivedComponent(
     // https://www.rfc-editor.org/rfc/rfc9421.html#name-query
     return base::StrCat({"?", request_url.GetQuery()});
   } else if (component->name == "@query-param") {
+    // https://www.rfc-editor.org/rfc/rfc9421.html#name-query-parameters
     DCHECK(component->params.size() == 2u);
     auto name_it =
         std::find_if(component->params.begin(), component->params.end(),
@@ -357,10 +373,10 @@ std::string SerializeDerivedComponent(
                        return p->type == ParameterType::kName;
                      });
     DCHECK(name_it != component->params.end() && (*name_it)->value.has_value());
-    std::string param_value;
-    if (net::GetValueForKeyInQuery(request_url, *(*name_it)->value,
-                                   &param_value)) {
-      return base::EscapeAllExceptUnreserved(param_value);
+    for (net::QueryIterator it(request_url); !it.IsAtEnd(); it.Advance()) {
+      if (PercentEncodeQueryPiece(it.GetKey()) == *(*name_it)->value) {
+        return PercentEncodeQueryPiece(it.GetValue());
+      }
     }
     return std::string();
   } else if (component->name == "@method") {
