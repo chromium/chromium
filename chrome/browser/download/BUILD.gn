@@ -534,7 +534,12 @@ source_set("unit_tests") {
       "android/download_controller_unittest.cc",
       "android/download_manager_service_unittest.cc",
     ]
-    deps += [ "//chrome/browser/download/android:jni_headers" ]
+    deps += [
+      "//chrome/browser/download/android:jni_headers",
+      "//chrome/browser/ui/android/tab_model",
+      "//chrome/browser/ui/android/tab_model:test_support",
+      "//ui/android",
+    ]
   } else {
     sources += [
       "download_commands_unittest.cc",

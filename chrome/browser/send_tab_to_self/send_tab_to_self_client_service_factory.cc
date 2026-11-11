@@ -85,7 +85,7 @@ SendTabToSelfClientServiceFactory::BuildServiceInstanceForBrowserContext(
   SendTabToSelfModel* model = sync_service->GetSendTabToSelfModel();
   return std::make_unique<SendTabToSelfClientService>(
 #if BUILDFLAG(IS_ANDROID)
-      std::make_unique<AndroidNotificationHandler>(model)
+      std::make_unique<AndroidNotificationHandler>(profile, model)
 #else
       std::make_unique<SendTabToSelfReceivingUiHandler>(profile)
 #endif

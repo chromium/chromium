@@ -12,6 +12,7 @@
 #include "base/android/application_status_listener.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
@@ -27,6 +28,7 @@ class WebContents;
 }  // namespace content
 
 struct NavigateParams;
+class Profile;
 
 namespace send_tab_to_self {
 
@@ -42,8 +44,10 @@ class AndroidNotificationHandler : public ReceivingUiHandler,
                                    public SendTabToSelfModelObserver,
                                    public TabModelObserver {
  public:
-  explicit AndroidNotificationHandler(
-      SendTabToSelfModel* send_tab_to_self_model);
+  // Both `profile` and `send_tab_to_self_model` must be non-null and outlive
+  // `this`.
+  AndroidNotificationHandler(Profile* profile,
+                             SendTabToSelfModel* send_tab_to_self_model);
   ~AndroidNotificationHandler() override;
 
   // ReceivingUiHandler implementation.
@@ -100,6 +104,7 @@ class AndroidNotificationHandler : public ReceivingUiHandler,
                              content::WebContents& target_web_contents,
                              int tabstrip_index);
 
+  const raw_ref<Profile> profile_;
   const raw_ptr<SendTabToSelfModel> send_tab_to_self_model_;
 
   base::ScopedObservation<SendTabToSelfModel, SendTabToSelfModelObserver>

@@ -11,10 +11,13 @@
 #include "base/json/values_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/download/android/dangerous_download_dialog_bridge.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_test_helper.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/download/public/common/download_item.h"
@@ -24,10 +27,15 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/browser/download_item_utils.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_download_manager.h"
+#include "content/public/test/test_renderer_host.h"
+#include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/android/view_android.h"
+#include "ui/android/window_android.h"
 #include "url/gurl.h"
 
 using ::testing::_;
@@ -35,6 +43,21 @@ using ::testing::IsEmpty;
 using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::ReturnRefOfCopy;
+
+namespace {
+
+std::unique_ptr<TestTabModel> CreateRegisteredTestTabModel(
+    Profile* profile,
+    content::WebContents* web_contents,
+    bool is_active) {
+  auto tab_model = std::make_unique<TestTabModel>(profile);
+  tab_model->SetWebContentsList({web_contents});
+  tab_model->SetIsActiveModel(is_active);
+  TabModelList::AddTabModel(tab_model.get());
+  return tab_model;
+}
+
+}  // namespace
 
 class TestMockDownloadItem : public download::MockDownloadItem {
  public:
@@ -76,6 +99,11 @@ class DownloadControllerTest : public testing::Test {
 
   TestMockDownloadItem* item() { return &item_; }
   Profile* profile() { return &profile_; }
+
+  content::MockDownloadManager* download_manager() {
+    return static_cast<content::MockDownloadManager*>(
+        profile_.GetDownloadManager());
+  }
 
   DownloadController* controller() { return &controller_; }
 
@@ -194,6 +222,53 @@ TEST_F(DownloadControllerTest,
   EXPECT_CALL(*item(), IsDangerous()).WillRepeatedly(Return(true));
 
   EXPECT_TRUE(controller()->ShowDangerousDownloadDialog(item()));
+}
+
+TEST_F(DownloadControllerTest,
+       ShowDangerousDownloadDialog_IgnoresActiveTabModelFromOtherProfile) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(safe_browsing::kMaliciousApkDownloadCheck);
+
+  StubDownloadInfoGetters();
+  EXPECT_CALL(*item(), IsDangerous()).WillRepeatedly(Return(true));
+
+  content::RenderViewHostTestEnabler rvh_test_enabler;
+  TestingProfile other_profile;
+  std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting>
+      scoped_window = ui::WindowAndroid::CreateForTesting();
+
+  std::unique_ptr<content::WebContents> other_web_contents =
+      content::WebContentsTester::CreateTestWebContents(&other_profile,
+                                                        nullptr);
+  scoped_window->get()->AddChild(other_web_contents->GetNativeView());
+  ASSERT_NE(nullptr, other_web_contents->GetTopLevelNativeWindow());
+
+  std::unique_ptr<TestTabModel> other_tab_model =
+      CreateRegisteredTestTabModel(&other_profile, other_web_contents.get(),
+                                   /*is_active=*/true);
+  ASSERT_EQ(other_web_contents.get(), other_tab_model->GetActiveWebContents());
+
+  std::unique_ptr<content::WebContents> own_web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  scoped_window->get()->AddChild(own_web_contents->GetNativeView());
+  ASSERT_NE(nullptr, own_web_contents->GetTopLevelNativeWindow());
+
+  std::unique_ptr<TestTabModel> own_tab_model =
+      CreateRegisteredTestTabModel(profile(), own_web_contents.get(),
+                                   /*is_active=*/false);
+  ASSERT_EQ(own_web_contents.get(), own_tab_model->GetActiveWebContents());
+
+  EXPECT_FALSE(controller()->ShowDangerousDownloadDialog(item()));
+
+  base::test::TestFuture<void> remove_future;
+  EXPECT_CALL(*download_manager(), GetDownloadByGuid("test-guid"))
+      .WillOnce(Return(item()));
+  EXPECT_CALL(*item(), Remove())
+      .WillOnce(base::test::InvokeFuture(remove_future));
+
+  own_tab_model->SetIsActiveModel(true);
+  EXPECT_TRUE(controller()->ShowDangerousDownloadDialog(item()));
+  EXPECT_TRUE(remove_future.Wait());
 }
 
 TEST_F(DownloadControllerTest,

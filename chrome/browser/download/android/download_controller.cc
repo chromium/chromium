@@ -198,18 +198,26 @@ bool isEnterpriseBlockDownloadDangerType(
 }
 // LINT.ThenChange(//components/browser_ui/util/android/java/src/org/chromium/components/browser_ui/util/DownloadUtils.java:isBlockedSensitiveDownload)
 
-ui::WindowAndroid* GetCurrentWindow() {
-  // Iterate through all tab models to find the active one.
-  for (const TabModel* model : TabModelList::models()) {
+ui::WindowAndroid* GetCurrentWindow(const Profile* profile) {
+  if (!profile) {
+    return nullptr;
+  }
+  // Iterate through all tab models for the profile to find the active one.
+  ui::WindowAndroid* window = nullptr;
+  TabModelList::ForEach(profile, [&window](TabModel* model) {
     if (!model->IsActiveModel()) {
-      continue;
+      return true;
     }
     content::WebContents* active_web_contents = model->GetActiveWebContents();
     if (active_web_contents) {
-      return active_web_contents->GetTopLevelNativeWindow();
+      window = active_web_contents->GetTopLevelNativeWindow();
+      if (window) {
+        return false;
+      }
     }
-  }
-  return nullptr;
+    return true;
+  });
+  return window;
 }
 
 }  // namespace
@@ -580,7 +588,9 @@ bool DownloadController::ShowDangerousDownloadDialog(
 
   // Check the current active window first (or if the originating tab is
   // inactive).
-  ui::WindowAndroid* window_android = GetCurrentWindow();
+  ui::WindowAndroid* window_android =
+      GetCurrentWindow(Profile::FromBrowserContext(
+          content::DownloadItemUtils::GetBrowserContext(item)));
   if (!window_android) {
     window_android = GetWindowHelper(item, /*should_schedule_removal=*/false);
   }

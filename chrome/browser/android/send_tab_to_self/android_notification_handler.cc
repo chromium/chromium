@@ -11,6 +11,7 @@
 #include "base/android/application_status_listener.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+#include "base/check_deref.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/time/time.h"
@@ -58,7 +59,8 @@ bool IsTabModelViable(TabModel* tab_model) {
 // hidden during cold start or app foreground transitions, or when the tab
 // switcher is open) as long as Chrome is in the foreground, to prevent timing
 // races and support auto-opening in the tab switcher.
-content::WebContents* GetActiveWebContents(bool require_visible) {
+content::WebContents* GetActiveWebContents(const Profile& profile,
+                                           bool require_visible) {
   if (base::FeatureList::IsEnabled(kSendTabToSelfSupportAutoOpenInTabGrid)) {
     // Only auto-open if Chrome is in the foreground (has visible activities)
     // to avoid resource waste and ensure the user gets a notification if they
@@ -74,13 +76,14 @@ content::WebContents* GetActiveWebContents(bool require_visible) {
   // Priority 3: First tab of the active TabModel (fallback for delayed tab
   // initialization).
   // Priority 4: First tab of an inactive TabModel (last fallback).
+  content::WebContents* active_model_active_tab = nullptr;
   content::WebContents* inactive_model_active_tab = nullptr;
   content::WebContents* active_model_fallback_tab = nullptr;
   content::WebContents* inactive_model_fallback_tab = nullptr;
 
-  for (TabModel* model : TabModelList::models()) {
+  TabModelList::ForEach(&profile, [&](TabModel* model) {
     if (!IsTabModelViable(model) || model->GetTabCount() == 0) {
-      continue;
+      return true;
     }
 
     // Check if the model has a viable active tab.
@@ -89,13 +92,14 @@ content::WebContents* GetActiveWebContents(bool require_visible) {
                                                content::Visibility::VISIBLE)) {
       if (model->IsActiveModel()) {
         // Priority 1: Best target found. Return immediately.
-        return active_tab;
+        active_model_active_tab = active_tab;
+        return false;
       }
       if (!inactive_model_active_tab) {
         // Priority 2 candidate.
         inactive_model_active_tab = active_tab;
       }
-      continue;
+      return true;
     }
 
     // Fallback for delayed tab initialization where tabs are added to the model
@@ -104,7 +108,7 @@ content::WebContents* GetActiveWebContents(bool require_visible) {
     if (!fallback_tab ||
         (require_visible &&
          fallback_tab->GetVisibility() != content::Visibility::VISIBLE)) {
-      continue;
+      return true;
     }
 
     if (model->IsActiveModel()) {
@@ -116,6 +120,11 @@ content::WebContents* GetActiveWebContents(bool require_visible) {
       // Priority 4 candidate.
       inactive_model_fallback_tab = fallback_tab;
     }
+    return true;
+  });
+
+  if (active_model_active_tab) {
+    return active_model_active_tab;
   }
 
   // Return the highest-priority candidate found among lower tiers.
@@ -131,12 +140,20 @@ content::WebContents* GetActiveWebContents(bool require_visible) {
 }  // namespace
 
 AndroidNotificationHandler::AndroidNotificationHandler(
+    Profile* profile,
     SendTabToSelfModel* send_tab_to_self_model)
-    : send_tab_to_self_model_(send_tab_to_self_model) {
+    : profile_(CHECK_DEREF(profile)),
+      send_tab_to_self_model_(send_tab_to_self_model) {
   // Observe TabModelList to guarantee that CheckAndOpenPendingEntries runs
   // during cold start as soon as the initial browser window tab model is
   // attached.
-  TabModelList::AddObserver(this);
+  TabModelList::AddObserver(this, &profile_.get());
+  TabModelList::ForEach(&profile_.get(), [this](TabModel* model) {
+    if (IsTabModelViable(model) && model->GetTabCount() == 0) {
+      tab_model_observations_.AddObservation(model);
+    }
+    return true;
+  });
 
   // Observe ApplicationStatusListener to guarantee that
   // CheckAndOpenPendingEntries runs during warm start or when a notification
@@ -154,7 +171,7 @@ AndroidNotificationHandler::AndroidNotificationHandler(
 }
 
 AndroidNotificationHandler::~AndroidNotificationHandler() {
-  TabModelList::RemoveObserver(this);
+  TabModelList::RemoveObserver(this, &profile_.get());
 }
 
 void AndroidNotificationHandler::DisplayNewEntries(
@@ -164,9 +181,10 @@ void AndroidNotificationHandler::DisplayNewEntries(
   }
 
   // Called when new entries are received from sync.
-  content::WebContents* const target_web_contents = GetActiveWebContents(
-      /*require_visible=*/!base::FeatureList::IsEnabled(
-          kSendTabToSelfSupportAutoOpenInTabGrid));
+  content::WebContents* const target_web_contents =
+      GetActiveWebContents(profile_.get(),
+                           /*require_visible=*/!base::FeatureList::IsEnabled(
+                               kSendTabToSelfSupportAutoOpenInTabGrid));
   RecordAutoOpenedImmediately(target_web_contents != nullptr,
                               new_entries.size());
 
@@ -268,7 +286,7 @@ void AndroidNotificationHandler::CheckAndOpenPendingEntries() {
   // If an active browser window WebContents is available, auto-opens all unread
   // entries as new background tabs and dismisses their system notifications.
   content::WebContents* const target_web_contents =
-      GetActiveWebContents(/*require_visible=*/false);
+      GetActiveWebContents(profile_.get(), /*require_visible=*/false);
   if (!target_web_contents) {
     return;
   }

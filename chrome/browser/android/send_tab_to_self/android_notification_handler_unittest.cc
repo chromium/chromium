@@ -9,6 +9,8 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -28,10 +30,12 @@
 #include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/NotificationManager_jni.h"
 
 namespace send_tab_to_self {
@@ -100,8 +104,8 @@ class AndroidNotificationHandlerTest : public ChromeRenderViewHostTestHarness {
     tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
                                                          &mock_tab_interface_);
 
-    handler_ =
-        std::make_unique<NiceMock<MockAndroidNotificationHandler>>(model());
+    handler_ = std::make_unique<NiceMock<MockAndroidNotificationHandler>>(
+        profile(), model());
     model()->SetLocalCacheGuid(kDeviceId);
   }
 
@@ -695,7 +699,7 @@ TEST_F(AndroidNotificationHandlerTest,
       GURL(kExampleUrl), "Title", kDeviceId, page_context, NavigationHistory());
   const std::string guid = entry->GetGUID();
 
-  AndroidNotificationHandler handler(model());
+  AndroidNotificationHandler handler(profile(), model());
   handler.DisplayNewEntries({entry});
 
   // Verifying that hideNotification returns true confirms that
@@ -704,6 +708,35 @@ TEST_F(AndroidNotificationHandlerTest,
   // notification for `guid` in Java SharedPreferences.
   JNIEnv* env = base::android::AttachCurrentThread();
   EXPECT_TRUE(Java_NotificationManager_hideNotification(env, guid));
+}
+
+TEST_F(AndroidNotificationHandlerTest, IgnoresTabModelsFromOtherProfile) {
+  TestingProfile other_profile;
+  std::unique_ptr<content::WebContents> other_web_contents =
+      content::WebContentsTester::CreateTestWebContents(&other_profile,
+                                                        nullptr);
+  other_web_contents->WasShown();
+  TestTabModel other_tab_model(&other_profile);
+  other_tab_model.SetWebContentsList({other_web_contents.get()});
+  other_tab_model.SetIsActiveModel(true);
+
+  const SendTabToSelfEntry* entry =
+      model()->AddEntryRemotely({.url = GURL(kExampleUrl),
+                                 .title = "Title",
+                                 .target_device_cache_guid = kDeviceId});
+  const std::string guid = entry->GetGUID();
+
+  TabModelList::AddTabModel(&other_tab_model);
+  base::ScopedClosureRunner remove_other_tab_model(
+      base::BindOnce(&TabModelList::RemoveTabModel, &other_tab_model));
+  EXPECT_FALSE(model()->GetEntryByGUID(guid)->IsOpened());
+
+  EXPECT_CALL(*handler(), ShowNotification).Times(1);
+  EXPECT_CALL(*handler(), ShowMessageBanner).Times(0);
+
+  handler()->DisplayNewEntries({entry});
+
+  EXPECT_FALSE(model()->GetEntryByGUID(guid)->IsOpened());
 }
 
 }  // namespace
