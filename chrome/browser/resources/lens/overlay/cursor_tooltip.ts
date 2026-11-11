@@ -29,6 +29,9 @@ export interface CursorTooltipElement {
   };
 }
 
+// Minimum distance in pixels between the cursor tooltip and the viewport edge.
+const VIEWPORT_MARGIN_PX = 8;
+
 const CursorTooltipElementBase = I18nMixin(PolymerElement);
 
 /*
@@ -84,11 +87,11 @@ export class CursorTooltipElement extends CursorTooltipElementBase {
   // The queued tooltip message string.
   private queuedTooltipMessage: string;
 
-  // The queued tooltip offset pixels.
-  private queuedOffsetLeftPx = 0;
+  // The current tooltip horizontal offset pixels.
+  private offsetLeftPx = 0;
 
-  // The queued tooltip offset pixels.
-  private queuedOffsetTopPx = 0;
+  // The current tooltip vertical offset pixels.
+  private offsetTopPx = 0;
 
   // Whether or not to pause tooltip changes. If true, the tooltip changes
   // will be queued and applied when this becomes unset. This allows the
@@ -182,9 +185,31 @@ export class CursorTooltipElement extends CursorTooltipElementBase {
       // LINT.ThenChange(//chrome/browser/resources/lens/overlay/selection_overlay.ts:CursorOffsetValues)
     }
 
+    this.offsetLeftPx = offsetLeftPx;
+    this.offsetTopPx = offsetTopPx;
     this.style.setProperty('--offset-top', toPixels(offsetTopPx));
     this.style.setProperty('--offset-left', toPixels(offsetLeftPx));
     this.tooltipMessage = tooltipMessage;
+  }
+
+  updatePosition(clientX: number, clientY: number) {
+    const tooltipWidth = this.$.cursorTooltip.offsetWidth;
+    const tooltipHeight = this.$.cursorTooltip.offsetHeight;
+    const halfWidth = tooltipWidth / 2;
+    const marginPx = tooltipWidth > 0 ? VIEWPORT_MARGIN_PX : 0;
+
+    const minX = Math.min(
+        halfWidth - this.offsetLeftPx + marginPx, window.innerWidth / 2);
+    const maxX = Math.max(
+        window.innerWidth - halfWidth - this.offsetLeftPx - marginPx, minX);
+    const clampedX = Math.min(Math.max(clientX, minX), maxX);
+
+    const minY = marginPx - this.offsetTopPx;
+    const maxY = Math.max(
+        window.innerHeight - this.offsetTopPx - tooltipHeight - marginPx, minY);
+    const clampedY = Math.min(Math.max(clientY, minY), maxY);
+
+    this.style.transform = `translate3d(${clampedX}px, ${clampedY}px, 0)`;
   }
 
   private getHiddenCursorClass(): string {

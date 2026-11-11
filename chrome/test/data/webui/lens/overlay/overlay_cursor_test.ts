@@ -214,6 +214,48 @@ suite('OverlayCursor', () => {
     assertStringContains(tooltipEl.innerHTML, 'Click to exit');
   });
 
+  test('ExitScrimTooltipClampedToViewport', async () => {
+    await simulateEnterViewport();
+    const scrim = lensOverlayElement.$.backgroundScrim;
+    scrim.dispatchEvent(new PointerEvent('pointerenter'));
+
+    // Hover near the left edge (e.g. next to a left-aligned side panel).
+    scrim.dispatchEvent(new PointerEvent('pointermove', {
+      clientX: 2,
+      clientY: 100,
+      bubbles: true,
+      composed: true,
+    }));
+    await waitAfterNextRender(lensOverlayElement);
+    let rect = tooltipEl.getBoundingClientRect();
+    assertTrue(rect.left >= 0);
+    assertTrue(rect.right <= window.innerWidth);
+
+    // Hover near the right edge (e.g. next to a right-aligned side panel).
+    scrim.dispatchEvent(new PointerEvent('pointermove', {
+      clientX: window.innerWidth - 2,
+      clientY: 100,
+      bubbles: true,
+      composed: true,
+    }));
+    await waitAfterNextRender(lensOverlayElement);
+    rect = tooltipEl.getBoundingClientRect();
+    assertTrue(rect.left >= 0);
+    assertTrue(rect.right <= window.innerWidth);
+
+    // Hover near the bottom edge.
+    scrim.dispatchEvent(new PointerEvent('pointermove', {
+      clientX: 100,
+      clientY: window.innerHeight - 2,
+      bubbles: true,
+      composed: true,
+    }));
+    await waitAfterNextRender(lensOverlayElement);
+    rect = tooltipEl.getBoundingClientRect();
+    assertTrue(rect.top >= 0);
+    assertTrue(rect.bottom <= window.innerHeight);
+  });
+
   test('HideTooltip', async () => {
     await simulateEnterViewport();
 
