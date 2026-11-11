@@ -112,6 +112,13 @@ class OmniboxPopupPresenterBase
   std::unique_ptr<OmniboxPopupDeactivationBlocker> CreateDeactivationBlocker()
       override;
   void OnFileSelectionClosed() override;
+  // Called when a native file dialog opened from the popup's "+" menu is shown
+  // and closed, respectively. `file_selected` is whether the user selected
+  // files, which opens AI Mode with them. Unlike deactivation blockers, these
+  // are called regardless of `omnibox::kOmniboxKeepOpenOnFileSelection`.
+  // TODO(b/582886941): Merge deactivation blockers with these.
+  virtual void OnFileDialogOpened() {}
+  virtual void OnFileDialogClosed(bool file_selected) {}
   void NotifyEscapeKeyPressed() override {}
   bool has_active_blockers() const { return deactivation_blockers_count_ > 0; }
 

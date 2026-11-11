@@ -368,6 +368,7 @@ if (enable_webui_ntp && !is_android) {
       "//ui/events:test_support",
       "//ui/gfx/geometry",
       "//ui/shell_dialogs",
+      "//ui/shell_dialogs:test_support",
       "//ui/strings",
       "//ui/touch_selection",
       "//ui/views",

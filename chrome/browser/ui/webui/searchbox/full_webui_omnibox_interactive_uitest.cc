@@ -10,9 +10,14 @@
 #include "base/auto_reset.h"
 #include "base/base64.h"
 #include "base/callback_list.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
+#include "base/functional/callback_helpers.h"
 #include "base/i18n/base_i18n_switches.h"
 #include "base/i18n/rtl.h"
 #include "base/json/string_escape.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
@@ -75,12 +80,14 @@
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
+#include "chrome/browser/ui/views/location_bar/omnibox_popup_file_selector.h"
 #include "chrome/browser/ui/views/omnibox/full_webui_omnibox_frame.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_context_menu_mixin.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_aim_presenter.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_delegate.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_view_full_webui.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_webui.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_base_content.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
@@ -161,6 +168,7 @@
 #include "ui/base/emoji/emoji_panel_helper.h"
 #include "ui/base/interaction/state_observer.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
@@ -171,6 +179,8 @@
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/render_text.h"
 #include "ui/gfx/text_constants.h"
+#include "ui/shell_dialogs/fake_select_file_dialog.h"
+#include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/touch_selection/touch_editing_controller.h"
 #include "ui/views/bubble/bubble_border.h"
@@ -188,6 +198,7 @@
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_delegate.h"
 #include "ui/views/widget/widget_observer.h"
 
 #if defined(USE_AURA)
@@ -298,6 +309,7 @@ class ContextMenuClipboardTextObserver
 DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ContextMenuClipboardTextObserver,
                                     kContextMenuClipboardText);
 #endif  // !BUILDFLAG(IS_MAC)
+
 }  // namespace
 
 class FullWebUIOmniboxInteractiveTestBase
@@ -1310,7 +1322,12 @@ class FullWebUIOmniboxInteractiveTest
     std::vector<base::test::FeatureRef> enabled_features = {
         omnibox::internal::kWebUIOmniboxFullPopup};
     std::vector<base::test::FeatureRef> disabled_features = {
-        omnibox::internal::kWebUIOmniboxPopup};
+        omnibox::internal::kWebUIOmniboxPopup,
+        // The field trial testing config enables Omnibox Everywhere on macOS
+        // and Windows, which then creates a status tray icon after startup.
+        // On macOS that sometimes hangs in AppKit while a test is being set
+        // up, timing the test out. These tests don't need Omnibox Everywhere.
+        omnibox::kOmniboxEverywhere};
     if (IsWebUIToolbarEnabled()) {
       enabled_features.push_back(features::kInitialWebUI);
       enabled_features.push_back(features::kWebUIToolbar);
@@ -1321,6 +1338,18 @@ class FullWebUIOmniboxInteractiveTest
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
   ~FullWebUIOmniboxInteractiveTest() override = default;
+
+  void TearDownOnMainThread() override {
+    // Close any dialog a failed test left open before the browsers are closed,
+    // and stop faking file dialogs.
+    modal_dialog_widget_.reset();
+    modal_dialog_delegate_.reset();
+    file_dialog_stand_in_widget_.reset();
+    file_dialog_stand_in_delegate_.reset();
+    file_dialog_factory_ = nullptr;
+    ui::SelectFileDialog::SetFactory(nullptr);
+    FullWebUIOmniboxInteractiveTestBase::TearDownOnMainThread();
+  }
 
   bool IsWebUIToolbarEnabled() const { return GetParam(); }
 
@@ -1519,6 +1548,262 @@ class FullWebUIOmniboxInteractiveTest
             false, "CheckPopupWidgetInactive"));
   }
 
+  OmniboxPopupWebUIBaseContent* GetPopupWebUIContent() {
+    auto* popup_view = BrowserWindow::FromBrowser(browser())
+                           ->GetLocationBar()
+                           ->GetOmniboxPopupView();
+    auto* presenter = popup_view ? popup_view->presenter() : nullptr;
+    return presenter ? presenter->GetWebUIContent() : nullptr;
+  }
+
+  // Selects `[start, end)` in the WebUI input and waits for the WebUI to
+  // report the selection to the browser.
+  auto SelectWebUIInputRange(int start, int end) {
+    return Steps(
+        InAnyContext(ExecuteJsAt(kPopupWebView, kWebUIInput,
+                                 base::StringPrintf(R"(el => {
+               el.setSelectionRange(%d, %d);
+               document.dispatchEvent(new Event('selectionchange'));
+             })",
+                                                    start, end))),
+        PollUntil(
+            [this, start, end]() {
+              auto* popup_view = static_cast<OmniboxPopupViewFullWebUI*>(
+                  BrowserWindow::FromBrowser(browser())
+                      ->GetLocationBar()
+                      ->GetOmniboxPopupView());
+              const OmniboxPopupHandler* popup_handler =
+                  popup_view->popup_handler_for_testing();
+              return popup_handler && popup_handler->latest_selection() ==
+                                          gfx::Range(start, end);
+            },
+            "WaitForWebUIInputSelectionReported"));
+  }
+
+  // Makes `ui::SelectFileDialog` create fake dialogs.
+  void RegisterFakeFileDialogFactory() {
+    // Registering a factory destroys the previous one.
+    file_dialog_factory_ = nullptr;
+    file_dialog_factory_ = ui::FakeSelectFileDialog::RegisterFactory();
+    file_dialog_factory_->SetOpenCallback(base::DoNothing());
+  }
+
+  // Native file dialogs are faked in tests, so they show nothing, and the
+  // popup's presenter learns about them only through
+  // `OmniboxPopupPresenterBase::OnFileDialogOpened()` and
+  // `OnFileDialogClosed()`, as on Windows, Linux and ChromeOS. A real one
+  // takes activation from the browser window, so once one opens, this shows a
+  // bubble that takes activation in its place.
+  auto WaitForFileDialogAndShowStandIn() {
+    return Steps(PollUntil(
+                     [this]() {
+                       return file_dialog_factory_ &&
+                              file_dialog_factory_->GetLastDialog();
+                     },
+                     "WaitForFileDialogOpened"),
+                 Do([this]() {
+                   ShowTestBubble(file_dialog_stand_in_delegate_,
+                                  file_dialog_stand_in_widget_);
+                 }),
+                 PollUntil(
+                     [this]() {
+                       return file_dialog_stand_in_widget_ &&
+                              file_dialog_stand_in_widget_->IsActive();
+                     },
+                     "WaitForFileDialogStandInActive"));
+  }
+
+  OmniboxPopupFileSelector* GetFileSelector() {
+    return BrowserWindow::FromBrowser(browser())
+        ->GetLocationBar()
+        ->GetPresenterDelegate()
+        ->GetOmniboxPopupFileSelector();
+  }
+
+  // Opens a native file dialog the way the popup's "+" menu does.
+  auto OpenFileDialogFromPopupMenu() {
+    return Steps(Do([this]() {
+                   RegisterFakeFileDialogFactory();
+                   OmniboxPopupFileSelector* file_selector = GetFileSelector();
+                   ASSERT_TRUE(file_selector);
+                   ASSERT_TRUE(GetPopupWebUIContent());
+                   file_selector->OpenFileUploadDialog(
+                       GetPopupWebUIContent()->GetWebContents(),
+                       /*is_image=*/false,
+                       GetOmniboxControllerForTest()->edit_model(),
+                       /*image_encoding_options=*/std::nullopt,
+                       /*was_ai_mode_open=*/false);
+                 }),
+                 WaitForFileDialogAndShowStandIn());
+  }
+
+  // The platform reactivates the browser window when a dialog over it closes,
+  // which closing a stand-in for one does on some platforms (e.g. macOS) but
+  // not others (e.g. Linux without a window manager), so this reactivates it
+  // only if needed. Reactivating it unconditionally would take activation back
+  // from the popup, after refocusing the omnibox gave the popup activation.
+  auto ReactivateBrowserWindowAfterDialogCloses() {
+    return Steps(
+        Do([this]() {
+          if (!IsBrowserOrPopupActive(browser())) {
+            auto* browser_view =
+                BrowserView::GetBrowserViewForBrowser(browser());
+            ShowAndFocusWindow(browser_view->GetNativeWindow());
+            browser_view->Activate();
+          }
+        }),
+        PollUntil([this]() { return IsBrowserOrPopupActive(browser()); },
+                  "WaitForBrowserActive"));
+  }
+
+  // Shows a window-modal dialog over the browser window, which takes
+  // activation. Window-modal dialogs are reported to the popup's presenter
+  // through `WidgetObserver::OnWidgetWindowModalVisibilityChanged()`. On macOS
+  // this is shown as a sheet, like real native file dialogs there, whether
+  // opened from the popup's "+" menu or e.g. with Ctrl/Cmd+O, so this tests how
+  // the presenter handles those on macOS, which a faked native file dialog
+  // can't.
+  auto ShowWindowModalDialog() {
+    return Steps(
+        Do([this]() {
+          modal_dialog_delegate_ = std::make_unique<views::WidgetDelegate>();
+          modal_dialog_delegate_->SetModalType(ui::mojom::ModalType::kWindow);
+          modal_dialog_widget_ = std::make_unique<views::Widget>();
+          views::Widget::InitParams params(
+              views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+              views::Widget::InitParams::TYPE_WINDOW);
+          params.delegate = modal_dialog_delegate_.get();
+          params.parent = BrowserView::GetBrowserViewForBrowser(browser())
+                              ->GetWidget()
+                              ->GetNativeView();
+          params.bounds = gfx::Rect(100, 100, 300, 200);
+          modal_dialog_widget_->Init(std::move(params));
+          modal_dialog_widget_->Show();
+        }),
+        PollUntil([this]() { return modal_dialog_widget_->IsActive(); },
+                  "WaitForModalDialogActive"));
+  }
+
+  auto CloseWindowModalDialog() {
+    return Steps(Do([this]() {
+                   modal_dialog_widget_.reset();
+                   modal_dialog_delegate_.reset();
+                 }),
+                 ReactivateBrowserWindowAfterDialogCloses());
+  }
+
+  // When a native file dialog closes, the order in which the browser window is
+  // reactivated and the dialog's listener is told varies by platform.
+  enum class FileDialogCloseOrder {
+    // On macOS and Windows, the window is reactivated first. On macOS, AppKit
+    // reactivates the sheet's parent as the sheet closes, and the result
+    // reaches the listener afterwards. On Windows, the dialog posts its result
+    // back to the UI thread once it has closed.
+    kReactivateThenNotify,
+    // With GTK on Linux, the listener is told before the dialog is destroyed.
+    kNotifyThenReactivate,
+  };
+
+  // Closes the file dialog, selecting `file` if set, or canceling otherwise. A
+  // real one closing tells its listener and gives activation back to the
+  // browser window, in an order that depends on the platform. The faked one
+  // only tells its listener, so this also closes its stand-in, which gives
+  // activation back.
+  auto CloseFileDialog(std::optional<base::FilePath> file,
+                       FileDialogCloseOrder order =
+                           FileDialogCloseOrder::kReactivateThenNotify) {
+    auto notify_listener = Do([this, file]() {
+      ui::FakeSelectFileDialog* dialog = file_dialog_factory_->GetLastDialog();
+      ASSERT_TRUE(dialog);
+      if (file) {
+        dialog->CallMultiFilesSelected({*file});
+      } else {
+        dialog->CallFileSelectionCanceled();
+      }
+    });
+    auto reactivate = Steps(Do([this]() {
+                              file_dialog_stand_in_widget_->CloseNow();
+                              file_dialog_stand_in_widget_.reset();
+                              file_dialog_stand_in_delegate_.reset();
+                            }),
+                            ReactivateBrowserWindowAfterDialogCloses());
+    if (order == FileDialogCloseOrder::kReactivateThenNotify) {
+      return Steps(std::move(reactivate), std::move(notify_listener));
+    }
+    return Steps(std::move(notify_listener), std::move(reactivate));
+  }
+
+  auto CancelFileDialog(FileDialogCloseOrder order =
+                            FileDialogCloseOrder::kReactivateThenNotify) {
+    return CloseFileDialog(std::nullopt, order);
+  }
+
+  // Opens a native file dialog from the popup's "+" menu while editing, and
+  // checks that it closes the popup and that canceling it refocuses the omnibox
+  // with the draft and the caret position it had.
+  void TestFileDialogWithDraftClosesPopupAndRestoresDraft(
+      FileDialogCloseOrder order) {
+    RunTestSequence(
+        OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
+        InAnyContext(WaitForShow(OmniboxPopupPresenter::kRoundedResultsFrame)),
+        ClearWebUIText(), InputWebUIText("example text"),
+        WaitForOmniboxFocus(true), SelectWebUIInputRange(3, 3),
+        OpenFileDialogFromPopupMenu(), WaitForPopupDismissed(),
+        CheckPopupState(OmniboxPopupState::kNone),
+        CheckUserInputInProgress(true), CancelFileDialog(order),
+        WaitForOmniboxFocus(true), WaitForWebUIInputValue("example text"),
+        CheckWebUIInputSelection(3, 3));
+  }
+
+  // Opens a native file dialog from the popup's "+" menu and selects a file in
+  // it, and checks that the omnibox isn't refocused, which would reopen the
+  // popup before AI Mode opens with the file.
+  void TestSelectingFileDoesNotReopenPopup(FileDialogCloseOrder order) {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    base::ScopedTempDir temp_dir;
+    ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+    const base::FilePath file = temp_dir.GetPath().AppendASCII("file.txt");
+    ASSERT_TRUE(base::WriteFile(file, "text"));
+
+    // Reading the file may finish after a failed sequence returns, so the
+    // callback doesn't refer to the stack.
+    auto ai_mode_opened =
+        base::MakeRefCounted<base::RefCountedData<bool>>(false);
+    bool popup_reopened = false;
+    base::CallbackListSubscription popup_state_subscription;
+    RunTestSequence(
+        OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
+        WaitForOmniboxFocus(true), Do([&]() {
+          // Record that AI Mode opens rather than opening it.
+          GetFileSelector()->set_open_ai_mode_callback(base::BindRepeating(
+              [](scoped_refptr<base::RefCountedData<bool>> opened) {
+                opened->data = true;
+              },
+              ai_mode_opened));
+        }),
+        OpenFileDialogFromPopupMenu(), WaitForPopupDismissed(), Do([&]() {
+          popup_state_subscription =
+              GetOmniboxControllerForTest()
+                  ->popup_state_manager()
+                  ->AddPopupStateChangedCallback(base::BindLambdaForTesting(
+                      [&](OmniboxPopupState, OmniboxPopupState new_state) {
+                        popup_reopened |= new_state == OmniboxPopupState::kFull;
+                      }));
+        }),
+        CloseFileDialog(file, order),
+        PollUntil([&]() { return ai_mode_opened->data; },
+                  "WaitForAiModeOpened"),
+        // Let any refocus posted on activation run.
+        WaitForPopupTransitionLockout(),
+        CheckResult([&]() { return popup_reopened; }, false,
+                    "CheckPopupNotReopened"),
+        CheckPopupState(OmniboxPopupState::kNone), CheckEditModelFocus(false),
+        Do([this]() {
+          GetFileSelector()->set_open_ai_mode_callback(
+              base::RepeatingClosure());
+        }));
+  }
+
   // Presses Ctrl/Cmd+F and waits for the find bar to show with focus. The key
   // press goes to the popup, which holds activation while the omnibox is
   // focused, as a real one would. On macOS, the popup only redispatches an
@@ -1665,6 +1950,16 @@ class FullWebUIOmniboxInteractiveTest
   base::test::ScopedFeatureList feature_list_;
   bool browser_painted_as_inactive_ = false;
   base::CallbackListSubscription paint_as_active_subscription_;
+  // Owned by `ui::SelectFileDialog`, once registered.
+  raw_ptr<ui::FakeSelectFileDialog::Factory> file_dialog_factory_ = nullptr;
+  // The bubble standing in for a native file dialog. The delegate must outlive
+  // the widget, so it's declared first.
+  std::unique_ptr<views::BubbleDialogDelegate> file_dialog_stand_in_delegate_;
+  std::unique_ptr<views::Widget> file_dialog_stand_in_widget_;
+  // The dialog shown by `ShowWindowModalDialog()`. The delegate must outlive
+  // the widget, so it's declared first.
+  std::unique_ptr<views::WidgetDelegate> modal_dialog_delegate_;
+  std::unique_ptr<views::Widget> modal_dialog_widget_;
 };
 
 // Verifies that clicking a vertical tab, which is outside the top container,
@@ -3738,6 +4033,218 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
           false, "CheckPopupWidgetHiddenAndInactive"));
 }
 #endif  // !BUILDFLAG(IS_MAC)
+
+// Verifies that a native file dialog opened from the popup's "+" menu blurs the
+// omnibox and closes the popup while it's shown, and that closing it refocuses
+// the omnibox with all of its text still selected, as with the Views omnibox.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       FileDialogFromMenuRestoresFocusAndSelectAll) {
+  RunTestSequence(
+      OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
+      WaitForWebUIInputValue("chrome://version"), WaitForOmniboxFocus(true),
+      CheckWebUIInputSelection(0, 16), OpenFileDialogFromPopupMenu(),
+      // Without a draft, blurring the omnibox closes the popup.
+      WaitForPopupDismissed(), CancelFileDialog(), WaitForOmniboxFocus(true),
+      WaitForWebUIInputValue("chrome://version"),
+      CheckWebUIInputSelection(0, 16));
+}
+
+// Verifies that closing a native file dialog opened from the popup's "+" menu
+// refocuses the omnibox with the partial selection it had before.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       FileDialogFromMenuRestoresFocusAndPartialSelection) {
+  RunTestSequence(
+      OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
+      WaitForWebUIInputValue("chrome://version"), WaitForOmniboxFocus(true),
+      // Select "version".
+      SelectWebUIInputRange(9, 16), OpenFileDialogFromPopupMenu(),
+      WaitForPopupDismissed(), CancelFileDialog(), WaitForOmniboxFocus(true),
+      WaitForWebUIInputValue("chrome://version"),
+      CheckWebUIInputSelection(9, 16));
+}
+
+// Verifies that a native file dialog opened from the popup's "+" menu while
+// editing closes the popup, even though a draft would otherwise keep it open,
+// so that it can't be used while the dialog is open, as with the classic
+// omnibox. The draft is kept, and closing the dialog refocuses the omnibox
+// with the draft and the caret position it had.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       FileDialogFromMenuWithDraftClosesPopupAndRestoresDraft) {
+  TestFileDialogWithDraftClosesPopupAndRestoresDraft(
+      FileDialogCloseOrder::kReactivateThenNotify);
+}
+
+// Like the above, but the dialog's listener is told before the browser window
+// is reactivated, as with GTK on Linux.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       FileDialogFromMenuWithDraftNotifiedFirstRestoresDraft) {
+  TestFileDialogWithDraftClosesPopupAndRestoresDraft(
+      FileDialogCloseOrder::kNotifyThenReactivate);
+}
+
+// Verifies that any window-modal dialog over the browser window, e.g. the
+// native file dialog that Ctrl/Cmd+O opens as a sheet on macOS, closes the
+// popup while it's shown, even with a draft, and that closing it refocuses the
+// omnibox with the draft and the caret position it had.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       WindowModalDialogClosesPopupAndRestoresDraft) {
+  RunTestSequence(
+      OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
+      InAnyContext(WaitForShow(OmniboxPopupPresenter::kRoundedResultsFrame)),
+      ClearWebUIText(), InputWebUIText("example text"),
+      WaitForOmniboxFocus(true), SelectWebUIInputRange(3, 3),
+      ShowWindowModalDialog(), WaitForPopupDismissed(),
+      CheckPopupState(OmniboxPopupState::kNone), CheckUserInputInProgress(true),
+      CloseWindowModalDialog(), WaitForOmniboxFocus(true),
+      WaitForWebUIInputValue("example text"), CheckWebUIInputSelection(3, 3));
+}
+
+// Verifies that selecting a file in a native file dialog opened from the
+// popup's "+" menu doesn't refocus the omnibox once the dialog closes. That
+// would reopen the popup before AI Mode opens with the file.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       FileDialogFromMenuSelectingFileDoesNotReopenPopup) {
+  TestSelectingFileDoesNotReopenPopup(
+      FileDialogCloseOrder::kReactivateThenNotify);
+}
+
+// Like the above, but the dialog's listener is told before the browser window
+// is reactivated, as with GTK on Linux.
+IN_PROC_BROWSER_TEST_P(
+    FullWebUIOmniboxInteractiveTest,
+    FileDialogFromMenuSelectingFileNotifiedFirstDoesNotReopenPopup) {
+  TestSelectingFileDoesNotReopenPopup(
+      FileDialogCloseOrder::kNotifyThenReactivate);
+}
+
+// Verifies that a window-modal dialog shown while the page has focus leaves
+// the omnibox unfocused once it closes.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       WindowModalDialogWhilePageFocusedDoesNotFocusOmnibox) {
+  RunTestSequence(
+      OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
+      WaitForOmniboxFocus(true), ClickWebPageBody(kTab1),
+      WaitForPopupDismissed(), ShowWindowModalDialog(),
+      CloseWindowModalDialog(),
+      // Let any refocus posted on activation run.
+      WaitForPopupTransitionLockout(), CheckEditModelFocus(false),
+      CheckPopupState(OmniboxPopupState::kNone));
+}
+
+// Verifies that a window-modal dialog also closes a popup that a draft keeps
+// open while the page has focus, so that it can't be used while the dialog is
+// open, and that the popup reopens unfocused, with the draft, once the dialog
+// closes.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       WindowModalDialogClosesUnfocusedDraftPopupAndReopensIt) {
+  RunTestSequence(
+      OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
+      InputWebUIText("ffffff"), WaitForWebUIInputValue("ffffff"),
+      ClickWebPageBody(kTab1),
+      InAnyContext(WaitForShow(OmniboxPopupPresenter::kRoundedResultsFrame)),
+      WaitForVisibleOmniboxUnfocused(),
+      CheckPopupState(OmniboxPopupState::kFull),
+      UninstrumentWebContents(kPopupWebView), ShowWindowModalDialog(),
+      WaitForPopupDismissed(), CheckPopupState(OmniboxPopupState::kNone),
+      CheckUserInputInProgress(true), CloseWindowModalDialog(),
+      WaitForPopupState(OmniboxPopupState::kFull),
+      InAnyContext(
+          InstrumentNonTabWebView(kPopupWebView, GetActivePopupWebView())),
+      WaitForWebUIInputValue("ffffff"), WaitForVisibleOmniboxUnfocused());
+}
+
+// Like the above, but the omnibox was blurred by a bubble, which also held
+// activation when the dialog was shown. The browser window and the popup were
+// then already inactive, so the dialog taking activation doesn't deactivate
+// either.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       WindowModalDialogOverBubbleClosesUnfocusedDraftPopup) {
+  // The bubble delegate must outlive the bubble widget, so declare it first.
+  std::unique_ptr<views::BubbleDialogDelegate> bubble_delegate;
+  std::unique_ptr<views::Widget> bubble_widget;
+
+  RunTestSequence(
+      OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
+      InputWebUIText("ffffff"), WaitForWebUIInputValue("ffffff"),
+      Do([&]() { ShowTestBubble(bubble_delegate, bubble_widget); }),
+      PollUntil([&]() { return bubble_widget && bubble_widget->IsActive(); },
+                "WaitForBubbleActive"),
+      // The draft keeps the popup open while the bubble blurs the omnibox.
+      WaitForEditModelFocus(false), CheckPopupState(OmniboxPopupState::kFull),
+      UninstrumentWebContents(kPopupWebView), ShowWindowModalDialog(),
+      WaitForPopupDismissed(), CheckPopupState(OmniboxPopupState::kNone),
+      CheckUserInputInProgress(true), CloseWindowModalDialog(),
+      WaitForPopupState(OmniboxPopupState::kFull),
+      InAnyContext(
+          InstrumentNonTabWebView(kPopupWebView, GetActivePopupWebView())),
+      WaitForWebUIInputValue("ffffff"), WaitForVisibleOmniboxUnfocused());
+}
+
+// Verifies that if the active tab changes while a window-modal dialog is shown,
+// to a tab whose page has focus, closing the dialog doesn't focus the omnibox.
+IN_PROC_BROWSER_TEST_P(
+    FullWebUIOmniboxInteractiveTest,
+    TabSwitchWhileWindowModalDialogShownDoesNotFocusOmnibox) {
+  RunTestSequence(
+      OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
+      ClickWebPageBody(kTab1), WaitForPopupDismissed(),
+      UninstrumentWebContents(kPopupWebView),
+      AddInstrumentedTab(kTab2, GURL("chrome://version/")),
+      WaitForWebContentsReady(kTab2), FocusOmniboxAndWaitForPopupReady(),
+      ShowWindowModalDialog(), WaitForPopupDismissed(),
+      // Switch to the first tab, whose page has focus.
+      Do([this]() { browser()->tab_strip_model()->ActivateTabAt(1); }),
+      WaitForPopupTransitionLockout(), CloseWindowModalDialog(),
+      // Let any refocus posted on activation run.
+      WaitForPopupTransitionLockout(), CheckEditModelFocus(false),
+      CheckPopupState(OmniboxPopupState::kNone));
+}
+
+// Verifies that if a click unelided the URL, without starting an edit, before
+// a window-modal dialog was shown, closing the dialog refocuses the omnibox
+// with the full URL and the caret where it was, rather than with the elided
+// URL.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       WindowModalDialogRestoresCaretInUnelidedUrl) {
+  ASSERT_TRUE(embedded_https_test_server().Start());
+  const GURL url = embedded_https_test_server().GetURL("/title1.html");
+  const std::string full_url = url.spec();
+  // Steady-state display text strips the https:// scheme.
+  const std::string display_url = full_url.substr(strlen("https://"));
+  const size_t word_offset = display_url.find("title1");
+  ASSERT_NE(word_offset, std::string::npos);
+  const size_t click_offset = word_offset + 2;
+  // The caret's offset in the unelided URL.
+  const size_t caret_offset = full_url.find(display_url) + click_offset;
+
+  RunTestSequence(
+      WaitForBrowserActive(), AddInstrumentedTab(kTab1, url),
+      WaitForWebContentsReady(kTab1), WaitForPopupDismissed(),
+      ClickUnfocusedOmnibox(), WaitForPopupReady(),
+      WaitForWebUIInputValue(display_url),
+      // See `SecondClickMidWordOnElidedUrlUnelidesAndPlacesCaret`.
+      WaitForPopupToStopForwardingMouseEvents(),
+      ClickWebUIInputAtCharOffset(click_offset),
+      WaitForWebUIInputValue(full_url),
+      InAnyContext(CheckWebUIInputSelection(caret_offset, caret_offset)),
+      PollUntil(
+          [this, caret_offset]() {
+            auto* popup_view = static_cast<OmniboxPopupViewFullWebUI*>(
+                BrowserWindow::FromBrowser(browser())
+                    ->GetLocationBar()
+                    ->GetOmniboxPopupView());
+            const OmniboxPopupHandler* popup_handler =
+                popup_view->popup_handler_for_testing();
+            return popup_handler && popup_handler->show_full_url() &&
+                   popup_handler->latest_selection() ==
+                       gfx::Range(caret_offset, caret_offset);
+          },
+          "WaitForUnelidedCaretReported"),
+      ShowWindowModalDialog(), WaitForPopupDismissed(),
+      CloseWindowModalDialog(), WaitForOmniboxFocus(true),
+      WaitForWebUIInputValue(full_url),
+      InAnyContext(CheckWebUIInputSelection(caret_offset, caret_offset)));
+}
 
 #if BUILDFLAG(IS_MAC)
 // Verifies that a bubble taking activation while a tab switch's deferred focus

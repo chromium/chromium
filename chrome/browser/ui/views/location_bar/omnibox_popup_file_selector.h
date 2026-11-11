@@ -110,7 +110,8 @@ class OmniboxPopupFileSelector : public ui::SelectFileDialog::Listener {
   // file dialog.
   std::unique_ptr<OmniboxPopupDeactivationBlocker> deactivation_blocker_;
 
-  void NotifyFileSelectionClosed();
+  // `file_selected` is whether the user selected files rather than canceling.
+  void NotifyFileSelectionClosed(bool file_selected);
   void OpenAiMode();
 
   base::WeakPtrFactory<OmniboxPopupFileSelector> weak_factory_{this};
