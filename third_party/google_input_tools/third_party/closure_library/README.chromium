@@ -1,8 +1,9 @@
 Name: Closure Library
 URL: https://github.com/google/closure-library
-Version: v20230802
+Version: N/A
+Date: 2014-07-19
 Revision: 946a7d39d4ffe08676c755b21d901e71d9904a3b
-Update Mechanism: Manual
+Update Mechanism: Static (https://crbug.com/584094383)
 InfoURL: http://developers.google.com/closure/library
 License: Apache-2.0
 License File: LICENSE
@@ -19,5 +20,7 @@ Local Modifications:
 Only the files actually used by google-input-tools are kept. This includes
 a number of javaScript source files and a few python modules to scan
 sources for closure dependencies.  Adding missing shebang line on python files
-as required.
+as required. A subset of JS files (such as goog.fx) were updated to
+b9c061c97b2dbaa0f9c580d95f1f0bdb7e5c0a5b (2015-07-29) in c2b899864a99 while
+base.js and remaining files stayed at 946a7d39d4ff.
 
