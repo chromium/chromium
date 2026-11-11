@@ -61,63 +61,10 @@ public class WebViewResizingHelper {
     private static final int EPSILON_PX = 2;
 
     private final AnimationHandler mAnimationHandler = new AnimationHandler();
-
-    private final WindowInsetsAnimationListener mInsetAnimationListener =
-            new WindowInsetsAnimationListener() {
-                @Override
-                public void onPrepare(WindowInsetsAnimationCompat animation) {
-                    mPauseInsetUpdates = true;
-                }
-
-                @Override
-                public void onStart(
-                        WindowInsetsAnimationCompat animation,
-                        WindowInsetsAnimationCompat.BoundsCompat bounds) {}
-
-                @Override
-                public void onProgress(
-                        WindowInsetsCompat insets, List<WindowInsetsAnimationCompat> list) {}
-
-                @Override
-                public void onEnd(WindowInsetsAnimationCompat animation) {
-                    mPauseInsetUpdates = false;
-                    updateBounds();
-                }
-            };
-
-    private final ActivityStateObserver mActivityStateObserver =
-            new ActivityStateObserver() {
-                @Override
-                public void onActivityResumed() {
-                    updateBounds(/* ignoreCache= */ true);
-                }
-            };
-
-    private final WindowInsetObserver mWindowInsetObserver =
-            new WindowInsetObserver() {
-                @Override
-                public void onInsetChanged() {
-                    updateBounds();
-                }
-
-                @Override
-                public void onKeyboardInsetChanged(int inset) {
-                    updateBounds();
-                }
-            };
-
-    private final BottomSheetObserver mBottomSheetObserver =
-            new BottomSheetObserver() {
-                @Override
-                public void onSheetContentChanged(@Nullable BottomSheetContent newContent) {
-                    updateBounds();
-                }
-
-                @Override
-                public void onContainerBottomMarginChanged(@Px int bottomMargin) {
-                    updateBounds();
-                }
-            };
+    private final WindowInsetsAnimationListener mInsetAnimationListener;
+    private final ActivityStateObserver mActivityStateObserver;
+    private final WindowInsetObserver mWindowInsetObserver;
+    private final BottomSheetObserver mBottomSheetObserver;
 
     private final Context mContext;
     private final FrameLayout mResizingContainer;
@@ -190,6 +137,11 @@ public class WebViewResizingHelper {
                             }
                         });
         mResizingContainer.addOnLayoutChangeListener(mOnLayoutChangeListener);
+
+        mInsetAnimationListener = createInsetAnimationListener();
+        mActivityStateObserver = createActivityStateObserver();
+        mWindowInsetObserver = createWindowInsetObserver();
+        mBottomSheetObserver = createBottomSheetObserver();
 
         if (mInsetObserver != null) {
             mInsetObserver.addWindowInsetsAnimationListener(mInsetAnimationListener);
@@ -621,6 +573,67 @@ public class WebViewResizingHelper {
     private @Px int getKeyboardInsetPx() {
         if (mInsetObserver == null || mInsetObserver.isKeyboardInOverlayMode()) return 0;
         return mInsetObserver.getSupplierForKeyboardInset().get();
+    }
+
+    private WindowInsetsAnimationListener createInsetAnimationListener() {
+        return new WindowInsetsAnimationListener() {
+            @Override
+            public void onPrepare(WindowInsetsAnimationCompat animation) {
+                mPauseInsetUpdates = true;
+            }
+
+            @Override
+            public void onStart(
+                    WindowInsetsAnimationCompat animation,
+                    WindowInsetsAnimationCompat.BoundsCompat bounds) {}
+
+            @Override
+            public void onProgress(
+                    WindowInsetsCompat insets, List<WindowInsetsAnimationCompat> list) {}
+
+            @Override
+            public void onEnd(WindowInsetsAnimationCompat animation) {
+                mPauseInsetUpdates = false;
+                updateBounds();
+            }
+        };
+    }
+
+    private ActivityStateObserver createActivityStateObserver() {
+        return new ActivityStateObserver() {
+            @Override
+            public void onActivityResumed() {
+                updateBounds(/* ignoreCache= */ true);
+            }
+        };
+    }
+
+    private WindowInsetObserver createWindowInsetObserver() {
+        return new WindowInsetObserver() {
+            @Override
+            public void onInsetChanged() {
+                updateBounds();
+            }
+
+            @Override
+            public void onKeyboardInsetChanged(int inset) {
+                updateBounds();
+            }
+        };
+    }
+
+    private BottomSheetObserver createBottomSheetObserver() {
+        return new BottomSheetObserver() {
+            @Override
+            public void onSheetContentChanged(@Nullable BottomSheetContent newContent) {
+                updateBounds();
+            }
+
+            @Override
+            public void onContainerBottomMarginChanged(@Px int bottomMargin) {
+                updateBounds();
+            }
+        };
     }
 
     private static boolean isApproxEqual(int a, int b, int epsilon) {
