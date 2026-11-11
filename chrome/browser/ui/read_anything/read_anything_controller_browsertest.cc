@@ -93,6 +93,10 @@ class MockReadAnythingLifecycleObserver : public ReadAnythingLifecycleObserver {
                std::optional<base::TimeDelta>),
               (override));
   MOCK_METHOD(void, OnDestroyed, (), (override));
+  MOCK_METHOD(void,
+              OnPresentationTransitioned,
+              (ReadAnythingOpenTrigger),
+              (override));
   MOCK_METHOD(void, OnWillClose, (ReadAnythingCloseReason reason), (override));
 };
 
@@ -1813,6 +1817,156 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
       SidePanelEntryKey(SidePanelEntryId::kReadAnything)));
 }
 
+IN_PROC_BROWSER_TEST_F(
+    ReadAnythingControllerBrowserTest,
+    TogglePresentation_NotifiesPresentationTransitionedNotActivate) {
+  auto* service = static_cast<MockReadAnythingService*>(
+      ReadAnythingServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+          browser()->GetProfile(),
+          base::BindRepeating([](content::BrowserContext* /*context*/)
+                                  -> std::unique_ptr<KeyedService> {
+            return std::make_unique<MockReadAnythingService>();
+          })));
+  tabs::TabInterface* tab = browser()->GetTabStripModel()->GetActiveTab();
+  ASSERT_TRUE(tab);
+  auto* controller = ReadAnythingController::From(tab);
+  ASSERT_TRUE(controller);
+  testing::NiceMock<MockReadAnythingLifecycleObserver> observer;
+  controller->AddObserver(&observer);
+
+  // Open Immersive UI
+  base::RunLoop show_loop;
+  EXPECT_CALL(observer, Activate(true, testing::_, testing::_))
+      .WillOnce([&show_loop]() { show_loop.Quit(); });
+  EXPECT_CALL(*service, OnReadAnythingShown()).Times(1);
+  ShowImmersiveUI(controller, ReadAnythingOpenTrigger::kOmniboxChip);
+  show_loop.Run();
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return controller->has_shown_ui(); }));
+  testing::Mock::VerifyAndClearExpectations(&observer);
+  testing::Mock::VerifyAndClearExpectations(service);
+
+  // Switching presentations completes within TogglePresentation(), and moves
+  // the session instead of closing and reopening Reading Mode.
+  EXPECT_CALL(observer, Activate).Times(0);
+  EXPECT_CALL(
+      observer,
+      OnPresentationTransitioned(
+          ReadAnythingOpenTrigger::kReadAnythingTogglePresentationButton))
+      .Times(1);
+  EXPECT_CALL(*service, OnReadAnythingShown()).Times(0);
+  TogglePresentation(controller, /*is_user_initiated=*/true);
+  testing::Mock::VerifyAndClearExpectations(&observer);
+  testing::Mock::VerifyAndClearExpectations(service);
+  EXPECT_EQ(controller->GetPresentationState(),
+            ReadAnythingController::PresentationState::kInSidePanel);
+
+  // So does switching back to the immersive overlay.
+  EXPECT_CALL(observer, Activate).Times(0);
+  EXPECT_CALL(
+      observer,
+      OnPresentationTransitioned(
+          ReadAnythingOpenTrigger::kReadAnythingTogglePresentationButton))
+      .Times(1);
+  EXPECT_CALL(*service, OnReadAnythingShown()).Times(0);
+  TogglePresentation(controller, /*is_user_initiated=*/true);
+  testing::Mock::VerifyAndClearExpectations(&observer);
+  testing::Mock::VerifyAndClearExpectations(service);
+  EXPECT_EQ(controller->GetPresentationState(),
+            ReadAnythingController::PresentationState::kInImmersiveOverlay);
+
+  // Cleanup
+  controller->RemoveObserver(&observer);
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
+                       TogglePresentation_BeforeWebUIVisible_StartsNewSession) {
+  tabs::TabInterface* tab = browser()->GetTabStripModel()->GetActiveTab();
+  ASSERT_TRUE(tab);
+  auto* controller = ReadAnythingController::From(tab);
+  ASSERT_TRUE(controller);
+  testing::NiceMock<MockReadAnythingLifecycleObserver> observer;
+  controller->AddObserver(&observer);
+
+  // Hide the browser widget so the hosted WebContents stays non-visible even
+  // after WebUI JS signals it is ready to show.
+  BrowserView::GetBrowserViewForBrowser(browser())->GetWidget()->Hide();
+
+  base::RunLoop show_loop;
+  EXPECT_CALL(observer,
+              Activate(true, ReadAnythingOpenTrigger::kOmniboxChip, testing::_))
+      .WillOnce([&show_loop]() { show_loop.Quit(); });
+  ShowImmersiveUI(controller, ReadAnythingOpenTrigger::kOmniboxChip);
+  show_loop.Run();
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  ASSERT_FALSE(controller->has_shown_ui());
+  content::WebContents* original_contents = GetImmersiveWebContents();
+  ASSERT_TRUE(original_contents);
+
+  // Because the WebUI never became visible, TransferWebUiOwnership() marks it
+  // for recreation on close, so switching presentations ends the old session
+  // and starts a new one in the side panel.
+  EXPECT_CALL(observer, OnPresentationTransitioned).Times(0);
+  base::RunLoop recreate_loop;
+  {
+    testing::InSequence sequence;
+    EXPECT_CALL(observer,
+                Activate(false, testing::_, testing::Optional(testing::_)));
+    EXPECT_CALL(
+        observer,
+        Activate(true,
+                 ReadAnythingOpenTrigger::kReadAnythingTogglePresentationButton,
+                 std::optional<base::TimeDelta>()))
+        .WillOnce([&recreate_loop]() { recreate_loop.Quit(); });
+  }
+  TogglePresentation(controller, /*is_user_initiated=*/true);
+  recreate_loop.Run();
+
+  EXPECT_EQ(controller->GetPresentationState(),
+            ReadAnythingController::PresentationState::kInSidePanel);
+  EXPECT_NE(GetSidePanelWebContents(), original_contents);
+
+  controller->RemoveObserver(&observer);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ReadAnythingControllerBrowserTest,
+    ShowSidePanelUI_WhileImmersiveShown_TransitionsWithTrigger) {
+  tabs::TabInterface* tab = browser()->GetTabStripModel()->GetActiveTab();
+  ASSERT_TRUE(tab);
+  auto* controller = ReadAnythingController::From(tab);
+  ASSERT_TRUE(controller);
+  testing::NiceMock<MockReadAnythingLifecycleObserver> observer;
+  controller->AddObserver(&observer);
+
+  // Open Immersive UI
+  base::RunLoop show_loop;
+  EXPECT_CALL(observer, Activate(true, testing::_, testing::_))
+      .WillOnce([&show_loop]() { show_loop.Quit(); });
+  ShowImmersiveUI(controller, ReadAnythingOpenTrigger::kOmniboxChip);
+  show_loop.Run();
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return controller->has_shown_ui(); }));
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  // An entry point that opens the side panel moves the session there, and
+  // observers get its open trigger.
+  EXPECT_CALL(observer, Activate).Times(0);
+  base::RunLoop side_panel_loop;
+  EXPECT_CALL(observer,
+              OnPresentationTransitioned(ReadAnythingOpenTrigger::kAppMenu))
+      .WillOnce([&side_panel_loop]() { side_panel_loop.Quit(); });
+  ShowSidePanelUI(controller, SidePanelOpenTrigger::kAppMenu);
+  side_panel_loop.Run();
+  EXPECT_EQ(controller->GetPresentationState(),
+            ReadAnythingController::PresentationState::kInSidePanel);
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  // Cleanup
+  controller->RemoveObserver(&observer);
+}
+
 IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
                        ShowImmersiveUI_SetsMainPageAccessibility) {
   tabs::TabInterface* tab = browser()->GetTabStripModel()->GetActiveTab();
@@ -1975,6 +2129,8 @@ IN_PROC_BROWSER_TEST_F(
   ShowImmersiveUI(controller, ReadAnythingOpenTrigger::kOmniboxChip);
   AwaitAndAssertOverlayVisibility(/*visible=*/true);
   AssertOverlayVisibility(/*visible=*/true);
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return controller->has_shown_ui(); }));
 
   ShowSidePanelUI(controller, SidePanelOpenTrigger::kAppMenu);
 
@@ -1987,6 +2143,8 @@ IN_PROC_BROWSER_TEST_F(
 
   histogram_tester.ExpectTotalCount(
       "Accessibility.ReadAnything.ShownDurationMax1Day", 0);
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ReadAnything.HiddenBeforeShown", 0);
 
   side_panel_ui->Close();
   ASSERT_TRUE(base::test::RunUntil([&]() {
@@ -1996,6 +2154,8 @@ IN_PROC_BROWSER_TEST_F(
 
   histogram_tester.ExpectTotalCount(
       "Accessibility.ReadAnything.ShownDurationMax1Day", 1);
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.HiddenBeforeShown", false, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
@@ -2031,6 +2191,8 @@ IN_PROC_BROWSER_TEST_F(
     return side_panel_ui->IsSidePanelEntryShowing(
         SidePanelEntryKey(SidePanelEntryId::kReadAnything));
   }));
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return controller->has_shown_ui(); }));
   AssertOverlayVisibility(/*visible=*/false);
 
   ShowImmersiveUI(controller, ReadAnythingOpenTrigger::kAppMenu);

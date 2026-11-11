@@ -236,6 +236,36 @@ TEST_F(ReadAnythingIphControllerTest, ShowsAndAbortsPromos_AiPlaybackFlagOff) {
       ReadAnythingDistillationState::kDistillationEmpty);
 }
 
+TEST_F(ReadAnythingIphControllerTest,
+       OnPresentationTransitioned_ShowsPresentationPromo) {
+  // The hosts report when Reading Mode is shown and hidden.
+  ON_CALL(*mock_side_panel_ui_, Close).WillByDefault([this]() {
+    SetPresentationState(ReadAnythingPresentationState::kInactive);
+    controller_->OnEntryHidden();
+  });
+  ON_CALL(mock_immersive_observer_, OnShowImmersive)
+      .WillByDefault([this](ReadAnythingOpenTrigger trigger) {
+        SetPresentationState(
+            ReadAnythingPresentationState::kInImmersiveOverlay);
+        controller_->OnEntryShown(trigger);
+      });
+  ShowInSidePanel();
+  ExpectShow(feature_engagement::kIPHReadingModeKeyboardShortcutFeature);
+  controller_->OnEntryShown(ReadAnythingOpenTrigger::kOmniboxChip);
+  VerifyAndClearUserEducation();
+
+  // Moving Reading Mode to the immersive overlay keeps the session, and shows
+  // the immersive overlay's promos.
+  {
+    testing::InSequence sequence;
+    ExpectShow(feature_engagement::kIPHReadingModeKeyboardShortcutFeature);
+    ExpectShow(feature_engagement::kIPHReadingModePresentationModeFeature);
+  }
+  TogglePresentation(/*is_user_initiated=*/true);
+  ASSERT_EQ(controller_->GetPresentationState(),
+            ReadAnythingPresentationState::kInImmersiveOverlay);
+}
+
 TEST_F(ReadAnythingIphControllerAiPlaybackTest,
        ContentWhileInactive_TimerStartsOnlyOnceShown) {
   // Content while Reading Mode is inactive (its WebUI exists but isn't shown)
@@ -262,6 +292,13 @@ TEST_F(ReadAnythingIphControllerAiPlaybackTest,
     SetPresentationState(ReadAnythingPresentationState::kInactive);
     controller_->OnEntryHidden();
   });
+  ON_CALL(*mock_side_panel_ui_,
+          Show(SidePanelEntryId::kReadAnything, testing::_, testing::_))
+      .WillByDefault([this]() {
+        SetPresentationState(ReadAnythingPresentationState::kInSidePanel);
+        controller_->OnEntryShown(
+            ReadAnythingOpenTrigger::kReadAnythingTogglePresentationButton);
+      });
 
   ShowInImmersive();
   ExpectShow(feature_engagement::kIPHReadingModeLineFocusFeature);
@@ -273,12 +310,10 @@ TEST_F(ReadAnythingIphControllerAiPlaybackTest,
   VerifyAndClearUserEducation();
 
   FastForwardBy(base::Seconds(10));
+  ExpectShow(feature_engagement::kIPHReadingModeKeyboardShortcutFeature);
   TogglePresentation(/*is_user_initiated=*/true);
   ASSERT_EQ(controller_->GetPresentationState(),
             ReadAnythingPresentationState::kInSidePanel);
-  ExpectShow(feature_engagement::kIPHReadingModeKeyboardShortcutFeature);
-  controller_->OnEntryShown(
-      ReadAnythingOpenTrigger::kReadAnythingTogglePresentationButton);
   VerifyAndClearUserEducation();
 
   FastForwardBy(base::Seconds(19));

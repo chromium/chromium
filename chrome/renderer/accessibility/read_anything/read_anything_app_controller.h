@@ -179,6 +179,10 @@ class ReadAnythingAppController
       read_anything::mojom::ReadAnythingOpenTrigger open_trigger,
       read_anything::mojom::ReadAnythingPresentationState presentation_state)
       override;
+  void OnPresentationTransitioned(
+      read_anything::mojom::ReadAnythingOpenTrigger open_trigger,
+      read_anything::mojom::ReadAnythingPresentationState presentation_state)
+      override;
   void OnTabWillDetach() override;
   void OnTabMuteStateChange(bool muted) override;
   void UpdateContent(const std::string& title,
@@ -514,6 +518,11 @@ class ReadAnythingAppController
   // Applies the presentation state that a lifecycle message carries.
   void ApplyPresentationState(
       read_anything::mojom::ReadAnythingPresentationState presentation_state);
+
+  // Applies what the entry point that opened Reading Mode asks for, both when
+  // it's shown and when it moves to the other presentation.
+  void ApplyOpenTrigger(
+      read_anything::mojom::ReadAnythingOpenTrigger open_trigger);
 
   // Records the per-session metrics if Reading Mode is shown.
   void RecordSessionMetricsIfShown();

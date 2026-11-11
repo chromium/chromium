@@ -3501,7 +3501,9 @@ recorded in the same way, even if they fit the naming pattern. -->
   <summary>
     Records the length of time the user spends in Reading mode with line focus
     on. This is measured from when line focus is enabled to when the user
-    disables line focus, changes pages, or hides Reading mode.
+    disables line focus, changes pages, or hides Reading mode. Note: starting in
+    M160, switching between the side panel and full-page view no longer ends the
+    session.
   </summary>
 </histogram>
 
@@ -3511,7 +3513,8 @@ recorded in the same way, even if they fit the naming pattern. -->
   <owner>komo-eng@google.com</owner>
   <summary>
     Records the total distance moved with line focus in a session, either via
-    mouse movement or via scroll.
+    mouse movement or via scroll. Note: starting in M160, switching between the
+    side panel and full-page view no longer ends the session.
   </summary>
   <token key="Type">
     <variant name="Mouse" summary="total mouse movement"/>
@@ -3526,6 +3529,8 @@ recorded in the same way, even if they fit the naming pattern. -->
   <summary>
     Records the total number of lines highlighted or underlined with line focus
     in a session, either via keyboard arrow keys or with Read aloud speech.
+    Note: starting in M160, switching between the side panel and full-page view
+    no longer ends the session.
   </summary>
   <token key="Type">
     <variant name="Keyboard" summary="total line changes by keyboard"/>
@@ -3552,7 +3557,9 @@ recorded in the same way, even if they fit the naming pattern. -->
   <summary>
     Records whether audio playback successfully started within 5 seconds after
     the user selected the &quot;Listen to this page&quot; context menu item and
-    sustained continuous playback for at least 2 seconds.
+    sustained continuous playback for at least 2 seconds. Note: starting in
+    M160, switching between the side panel and full-page view no longer records
+    a pending request as failed.
   </summary>
 </histogram>
 
@@ -3636,7 +3643,10 @@ recorded in the same way, even if they fit the naming pattern. -->
   <summary>
     Measures the duration a user spent reading a {PageType} page in {ViewMode}
     view mode. Logged when the page is changed, or the panel is closed or
-    destroyed.
+    destroyed. Note: starting in M160, switching between the side panel and
+    full-page view modes while shown logs the elapsed duration for the previous
+    view mode and continues timing in the new view mode, instead of stopping
+    until the next distillation.
   </summary>
   <token key="PageType">
     <variant name="Pdf" summary="PDF"/>
@@ -3821,7 +3831,9 @@ recorded in the same way, even if they fit the naming pattern. -->
   <summary>
     Records which kind of voice the user is using to read aloud text in the Read
     Anything panel. This is recorded when speech stops, either from user action
-    or when speech completes, to avoid blocking speech.
+    or when speech completes, to avoid blocking speech. Note: starting in M160,
+    switching between the side panel and full-page view no longer stops speech
+    without recording this.
   </summary>
 </histogram>
 
@@ -3834,7 +3846,9 @@ recorded in the same way, even if they fit the naming pattern. -->
     mode from one langauge to another. This excludes automatic voice language
     changes done directly from reading mode. Note: starting in M160, a
     backgrounded side panel tab no longer records an extra sample (usually 0)
-    when it closes or navigates before Reading mode is shown again.
+    when it closes or navigates before Reading mode is shown again, and
+    switching between the side panel and full-page view no longer splits a
+    session into two samples.
   </summary>
 </histogram>
 
@@ -3856,7 +3870,8 @@ recorded in the same way, even if they fit the naming pattern. -->
     Records the count per session of the number of Read Aloud {Action} actions.
     Note: starting in M160, a backgrounded side panel tab no longer records an
     extra sample (usually 0) when it closes or navigates before Reading mode is
-    shown again.
+    shown again, and switching between the side panel and full-page view no
+    longer splits a session into two samples.
   </summary>
   <token key="Action">
     <variant name="NextButton" summary="next granularity"/>
@@ -3972,7 +3987,10 @@ recorded in the same way, even if they fit the naming pattern. -->
   <summary>
     Records the length of time of a speech playback session from play to pause
     or from play to speech stopped, either due to reaching the end of content or
-    an error. Recorded for a {PageType} in {ViewMode}.
+    an error. Recorded for a {PageType} in {ViewMode}. Note: starting in M160,
+    switching between the side panel and full-page view no longer stops speech
+    without recording this. A session that continues past a switch is recorded
+    for the view mode where it stops.
   </summary>
   <token key="PageType">
     <variant name="Pdf" summary="PDF document"/>
@@ -3997,11 +4015,16 @@ recorded in the same way, even if they fit the naming pattern. -->
                  speech stopped, either due to reaching the end of content or
                  an error. To not disrupt any active experiments, this metric
                  will remain, but in a few milestones the team will evaluate
-                 if the .PerPage variant can replace this entirely."/>
+                 if the .PerPage variant can replace this entirely. Note:
+                 starting in M160, switching between the side panel and
+                 full-page view no longer stops speech without recording
+                 this."/>
     <variant name=".PerPage"
         summary="cumulatively for a single page, from when content is loaded
                  until the page changes or the panel is closed. Only recorded
-                 if speech was played on the page."/>
+                 if speech was played on the page. Note: starting in M160, a
+                 switch between the side panel and full-page view no longer
+                 records it early, which left out the speech still playing."/>
   </token>
 </histogram>
 
@@ -4009,7 +4032,11 @@ recorded in the same way, even if they fit the naming pattern. -->
     enum="ReadAnythingSpeechStopSource" expires_after="2027-04-11">
   <owner>kristislee@google.com</owner>
   <owner>komo-eng@google.com</owner>
-  <summary>Records when speech stops and why.</summary>
+  <summary>
+    Records when speech stops and why. Note: starting in M160, switching between
+    the side panel and full-page view no longer stops speech without recording a
+    stop source.
+  </summary>
 </histogram>
 
 <histogram
@@ -4158,7 +4185,8 @@ recorded in the same way, even if they fit the naming pattern. -->
 
     Note: starting in M160, a backgrounded side panel tab no longer records an
     extra sample (usually 0) when it closes or navigates before Reading mode is
-    shown again.
+    shown again, and switching between the side panel and full-page view no
+    longer splits a session into two samples.
   </summary>
   <token key="Action">
     <variant name="Heard" summary="heard via Read aloud"/>
@@ -4204,7 +4232,9 @@ recorded in the same way, even if they fit the naming pattern. -->
                  the corresponding AXTree is distilled."/>
     <variant name="ReadAloud."
         summary="which language the user is using to read aloud text in the
-                 Read Anything panel."/>
+                 Read Anything panel. Note: starting in M160, switching
+                 between the side panel and full-page view no longer stops
+                 speech without recording this."/>
   </token>
 </histogram>
 

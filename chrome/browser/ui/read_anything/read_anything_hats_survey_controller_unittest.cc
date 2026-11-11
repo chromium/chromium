@@ -157,7 +157,7 @@ TEST_F(ReadAnythingHatsSurveyControllerUnitTest,
               LaunchDelayedSurveyForWebContents(_, _, _, _, _, _, _, _, _, _))
       .Times(0);
 
-  // Passing std::nullopt simulates a presentation transition or early close.
+  // Passing std::nullopt simulates closing before the UI was shown.
   survey_controller_->Activate(false, ReadAnythingOpenTrigger::kUnknown,
                                std::nullopt);
 

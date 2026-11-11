@@ -504,6 +504,12 @@ interface UntrustedPage {
   OnReadingModeShown(ReadAnythingOpenTrigger open_trigger,
                      ReadAnythingPresentationState presentation_state);
 
+  // Called when a shown Reading Mode session moves to the other presentation
+  // host without closing, carrying the trigger that initiated the switch.
+  // presentation_state is the host Reading Mode moved to.
+  OnPresentationTransitioned(ReadAnythingOpenTrigger open_trigger,
+                             ReadAnythingPresentationState presentation_state);
+
   // Notifies the WebUI whether the contents of the active tab are currently
   // translated (translate::LanguageState::IsPageTranslated()). Only sent when
   // translate::kEnableTranslatePdf is enabled.

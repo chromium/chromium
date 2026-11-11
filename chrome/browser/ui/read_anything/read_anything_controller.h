@@ -228,13 +228,6 @@ class ReadAnythingController : public tabs::ContentsObservingTabFeature {
   // for a notification that it is ready.
   bool has_shown_ui() const { return has_shown_ui_; }
 
-  // Returns whether Reading Mode is switching between the side panel and
-  // immersive presentations. True from the start of a switch until the new
-  // presentation is shown.
-  bool is_presentation_transitioning() const {
-    return is_presentation_transitioning_;
-  }
-
   void SetWebUIWrapperForTest(ReadAnythingContentsWrapper web_ui_wrapper);
 
   // Called by other host views of the Reading Mode WebUI to return ownership of
@@ -310,13 +303,18 @@ class ReadAnythingController : public tabs::ContentsObservingTabFeature {
 
   // Records OnEntryHidden metrics and returns the calculated session duration
   // if Reading Mode was successfully shown. Returns std::nullopt if the UI is
-  // closed before being successfully shown or hidden due to an in-progress
-  // presentation mode transition.
+  // closed before being successfully shown.
   std::optional<base::TimeDelta> RecordEntryHiddenMetrics();
 
   // Returns the SidePanelUI for the active tab if it can be shown.
   // Otherwise, returns nullptr.
   SidePanelUI* GetSidePanelUI();
+
+  // Returns whether switching between the side panel and the immersive overlay
+  // can keep the current session, instead of ending it and starting a new one.
+  // It can't if Reading Mode hasn't been shown yet, or if the WebUI will be
+  // recreated for the other host (e.g. after a soft navigation).
+  bool CanMoveSessionToOtherHost() const;
 
   raw_ptr<tabs::TabInterface> tab_ = nullptr;
   ui::ScopedUnownedUserData<ReadAnythingController> scoped_unowned_user_data_;
@@ -332,9 +330,11 @@ class ReadAnythingController : public tabs::ContentsObservingTabFeature {
   // Timestamp of when the Reading Mode overlay begins to be shown.
   base::TimeTicks entry_shown_timestamp_;
 
-  // Returns if we are in the process of switching the Reading Mode Overlay.
-  // Used to ensure we keep transitions between RM UI states ( Immersive -> SP
-  // and vice-versa) as part of the same RM session.
+  // Whether a presentation switch is moving the session to the other host
+  // (see CanMoveSessionToOtherHost()). It's set before the current host
+  // closes, and cleared when the other host shows Reading Mode or, if the side
+  // panel doesn't, by ShowSidePanelUI(). Either way, it's cleared before
+  // ShowImmersiveUI() or ShowSidePanelUI() returns.
   bool is_presentation_transitioning_ = false;
 
   // Stores the specific reason why this controller is closing the side panel

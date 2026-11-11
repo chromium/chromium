@@ -1595,21 +1595,7 @@ void ReadAnythingUntrustedPageHandler::Activate(
     std::optional<base::TimeDelta> completed_session_duration) {
   if (active) {
     last_open_trigger_ = open_trigger;
-    if (features::IsReadAnythingImprovedUiEnabled() &&
-        open_trigger == ReadAnythingOpenTrigger::kListenToThisPageContextMenu) {
-      if (listen_to_this_page_playback_state_ !=
-          ListenToThisPagePlaybackMetricState::kInactive) {
-        RecordListenToThisPagePlaybackMetric(/*successful_playback=*/false);
-      }
-      listen_to_this_page_playback_state_ =
-          ListenToThisPagePlaybackMetricState::kWaitingForAudioStart;
-      listen_to_this_page_playback_timer_.Start(
-          FROM_HERE, kListenToThisPagePlaybackStartupTimeout,
-          base::BindOnce(&ReadAnythingUntrustedPageHandler::
-                             RecordListenToThisPagePlaybackMetric,
-                         base::Unretained(this),
-                         /*successful_playback=*/false));
-    }
+    MaybeStartListenToThisPagePlaybackTimer(open_trigger);
     page_->OnReadingModeShown(
         static_cast<read_anything::mojom::ReadAnythingOpenTrigger>(
             open_trigger),
@@ -1655,6 +1641,40 @@ void ReadAnythingUntrustedPageHandler::OnReadingModeHiddenAckTimeout() {
   ack_timed_out_for_testing_ = true;
   CHECK(read_anything_controller_);
   read_anything_controller_->RecreateWebUIWrapper();
+}
+
+void ReadAnythingUntrustedPageHandler::OnPresentationTransitioned(
+    ReadAnythingOpenTrigger open_trigger) {
+  MaybeStartListenToThisPagePlaybackTimer(open_trigger);
+  page_->OnPresentationTransitioned(
+      open_trigger, read_anything_controller_->GetPresentationState());
+  // Sent after the page applied `open_trigger`, so that a PDF translation
+  // requested from the new presentation stays behind the loading screen.
+  if (distillation_state_ ==
+      read_anything::mojom::ReadAnythingDistillationState::
+          kDistillationWithContent) {
+    MaybeTriggerPendingPdfTranslation();
+  }
+}
+
+void ReadAnythingUntrustedPageHandler::MaybeStartListenToThisPagePlaybackTimer(
+    ReadAnythingOpenTrigger open_trigger) {
+  if (!features::IsReadAnythingImprovedUiEnabled() ||
+      open_trigger != ReadAnythingOpenTrigger::kListenToThisPageContextMenu) {
+    return;
+  }
+  if (listen_to_this_page_playback_state_ !=
+      ListenToThisPagePlaybackMetricState::kInactive) {
+    RecordListenToThisPagePlaybackMetric(/*successful_playback=*/false);
+  }
+  listen_to_this_page_playback_state_ =
+      ListenToThisPagePlaybackMetricState::kWaitingForAudioStart;
+  listen_to_this_page_playback_timer_.Start(
+      FROM_HERE, kListenToThisPagePlaybackStartupTimeout,
+      base::BindOnce(&ReadAnythingUntrustedPageHandler::
+                         RecordListenToThisPagePlaybackMetric,
+                     base::Unretained(this),
+                     /*successful_playback=*/false));
 }
 
 // This is used for same-document navigations (such as fragment navigations) in

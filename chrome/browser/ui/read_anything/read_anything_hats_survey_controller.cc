@@ -37,9 +37,9 @@ void ReadAnythingHatsSurveyController::Activate(
     return;
   }
 
-  // `completed_session_duration` is null during presentation transitions or if
-  // the UI was hidden before being shown. A valid session must be at least 10
-  // seconds to qualify for a survey.
+  // `completed_session_duration` is null if the UI was hidden before it was
+  // shown. A valid session must be at least 10 seconds to qualify for a
+  // survey.
   if (!completed_session_duration.has_value() ||
       completed_session_duration.value() < base::Seconds(10)) {
     return;

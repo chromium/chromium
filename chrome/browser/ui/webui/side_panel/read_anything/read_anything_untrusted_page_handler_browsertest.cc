@@ -181,6 +181,12 @@ class MockPage : public read_anything::mojom::UntrustedPage {
       OnReadingModeShown,
       (read_anything::mojom::ReadAnythingOpenTrigger open_trigger,
        read_anything::mojom::ReadAnythingPresentationState presentation_state));
+  MOCK_METHOD(
+      void,
+      OnPresentationTransitioned,
+      (read_anything::mojom::ReadAnythingOpenTrigger open_trigger,
+       read_anything::mojom::ReadAnythingPresentationState presentation_state),
+      (override));
   MOCK_METHOD(void,
               OnTranslationStateChanged,
               (bool is_translated),
@@ -3088,6 +3094,36 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     ReadAnythingUntrustedPageHandlerPendingPdfTranslationTest,
+    Transitioned_AlreadyDistilled_TriggersTranslation) {
+  translate::LanguageState* language_state = LoadPdfWithPendingTranslation();
+  ASSERT_TRUE(language_state);
+
+  // Reading Mode is shown, and its content distilled, before the translation
+  // is requested.
+  language_state->ClearPendingTranslationLanguages();
+  Activate(true);
+  handler_->OnDistillationStateChanged(
+      read_anything::mojom::ReadAnythingDistillationState::
+          kDistillationWithContent);
+  page_.receiver_.FlushForTesting();
+  language_state->SetPendingTranslationLanguages(
+      base::i18n::GetKnownLanguageTag("la"),
+      base::i18n::GetKnownLanguageTag("en"));
+
+  // Requesting it moves Reading Mode to the other presentation. The page gets
+  // the trigger, which keeps the content behind the loading screen, and the
+  // already distilled content is translated.
+  EXPECT_CALL(page_, OnPresentationTransitioned(
+                         ReadAnythingOpenTrigger::kPdfTranslation, _));
+  handler_->OnPresentationTransitioned(
+      ReadAnythingOpenTrigger::kPdfTranslation);
+  EXPECT_FALSE(language_state->pending_source_language().has_value());
+  EXPECT_FALSE(language_state->pending_target_language().has_value());
+  page_.receiver_.FlushForTesting();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ReadAnythingUntrustedPageHandlerPendingPdfTranslationTest,
     Shown_DistilledBeforePageChanged_WaitsForNewDistillation) {
   translate::LanguageState* language_state = LoadPdfWithPendingTranslation();
   ASSERT_TRUE(language_state);
@@ -3358,6 +3394,77 @@ IN_PROC_BROWSER_TEST_F(
   controller->TransferWebUiOwnership(
       std::move(web_ui),
       ReadAnythingController::PresentationState::kInSidePanel);
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
+                       OnPresentationTransitioned_SendsStateWithTrigger) {
+  handler_ = CreateHandler();
+  auto* controller =
+      ReadAnythingController::From(browser()->GetActiveTabInterface());
+  Activate(true);
+  page_.receiver_.FlushForTesting();
+  // The other host takes the WebUI when the session moves to it.
+  ReadAnythingContentsWrapper web_ui = controller->GetOrCreateWebUIWrapper(
+      ReadAnythingController::PresentationState::kInSidePanel);
+
+  // The session moves to the other presentation without being hidden or
+  // shown again.
+  EXPECT_CALL(page_, OnReadingModeHidden).Times(0);
+  EXPECT_CALL(page_, OnReadingModeShown).Times(0);
+  EXPECT_CALL(page_,
+              OnPresentationTransitioned(
+                  ReadAnythingOpenTrigger::kAppMenu,
+                  ReadAnythingController::PresentationState::kInSidePanel))
+      .Times(1);
+  handler_->OnPresentationTransitioned(ReadAnythingOpenTrigger::kAppMenu);
+  page_.receiver_.FlushForTesting();
+
+  controller->TransferWebUiOwnership(
+      std::move(web_ui),
+      ReadAnythingController::PresentationState::kInSidePanel);
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
+                       ListenToThisPage_Transitioned_WaitsForAudio) {
+  base::HistogramTester histogram_tester;
+  handler_ = CreateHandler();
+  SidePanelOpenTrigger trigger =
+      SidePanelOpenTrigger::kReadAnythingListenToThisPageContextMenu;
+  Activate(true, &trigger);
+
+  // Switching presentations before the audio starts keeps waiting for it.
+  handler_->OnPresentationTransitioned(
+      ReadAnythingOpenTrigger::kReadAnythingTogglePresentationButton);
+  handler_->OnReadAloudAudioStateChange(true);
+  handler_->RecordListenToThisPagePlaybackMetricForTesting(
+      /*successful_playback=*/true);
+
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.ListenToThisPage."
+      "AudioPlaybackStartedWithin5Seconds",
+      true, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ReadAnythingUntrustedPageHandlerTest,
+    OnDistillationStatus_AfterOmniboxOpenAndTransition_LogsResult) {
+  base::HistogramTester histogram_tester;
+  handler_ = CreateHandler();
+  SidePanelOpenTrigger trigger = SidePanelOpenTrigger::kReadAnythingOmniboxChip;
+  Activate(true, &trigger);
+
+  // Switching presentations keeps the omnibox open, so its result is still
+  // recorded.
+  handler_->OnPresentationTransitioned(
+      ReadAnythingOpenTrigger::kReadAnythingTogglePresentationButton);
+  handler_->OnDistillationStatus(
+      read_anything::mojom::DistillationStatus::kSuccess, 100);
+
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.DistillationStatusAfterOmnibox",
+      read_anything::mojom::DistillationStatus::kSuccess, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.WordsDistilledAfterOmnibox", 100, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(

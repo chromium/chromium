@@ -45,8 +45,14 @@ class ReadAnythingIphController : public ReadAnythingLifecycleObserver {
       read_anything::mojom::ReadAnythingOpenTrigger trigger,
       std::optional<base::TimeDelta> completed_session_duration) override;
   void OnDestroyed() override;
+  void OnPresentationTransitioned(
+      read_anything::mojom::ReadAnythingOpenTrigger trigger) override;
 
  private:
+  // Shows the promos for the presentation that Reading Mode is shown in, and
+  // starts the AI playback promo timer if there's content.
+  void MaybeShowPresentationPromos();
+
   void MaybeStartAiPlaybackIphTimer();
   void MaybeShowAiPlaybackIph();
 

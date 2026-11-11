@@ -22,15 +22,20 @@ class ReadAnythingLifecycleObserver : public base::CheckedObserver {
   //            populated when `active` is true).
   // `completed_session_duration`: The total duration that Reading Mode was
   //                              visible during the completed session (only
-  //                              populated when `active` is false, and not
-  //                              during in-progress presentation mode
-  //                              transitions or if closed before being
-  //                              successfully shown).
+  //                              populated when `active` is false, and not if
+  //                              closed before being successfully shown).
   virtual void Activate(
       bool active,
       read_anything::mojom::ReadAnythingOpenTrigger trigger,
       std::optional<base::TimeDelta> completed_session_duration) {}
   virtual void OnDestroyed() = 0;
+  // Called instead of Activate(false) and Activate(true) when a shown session
+  // moves to the other presentation, during the switch. A switch that can't
+  // move the session (see CanMoveSessionToOtherHost() in
+  // ReadAnythingController), or whose side panel doesn't open Reading Mode,
+  // sends Activate(false) instead, then Activate(true) if the other host opens.
+  virtual void OnPresentationTransitioned(
+      read_anything::mojom::ReadAnythingOpenTrigger trigger) {}
   virtual void OnWillClose(ReadAnythingCloseReason reason) {}
 };
 

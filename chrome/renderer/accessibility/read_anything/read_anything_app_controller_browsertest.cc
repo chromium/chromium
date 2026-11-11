@@ -630,6 +630,21 @@ TEST_F(ReadAnythingAppControllerTest,
 }
 
 TEST_F(ReadAnythingAppControllerTest,
+       OnPresentationTransitioned_WhileSpeaking_KeepsSpeaking) {
+  ExecuteJavaScriptForTests(kReadingModeWillCloseStopsSpeech);
+  controller().OnIsSpeechActiveChanged(true);
+
+  // Moving Reading Mode to the other presentation doesn't close it, so speech
+  // keeps playing.
+  controller().OnPresentationTransitioned(
+      read_anything::mojom::ReadAnythingOpenTrigger::
+          kReadAnythingTogglePresentationButton,
+      read_anything::mojom::ReadAnythingPresentationState::kInImmersiveOverlay);
+  EXPECT_TRUE(read_aloud_model().speech_playing());
+  EXPECT_TRUE(model().is_shown());
+}
+
+TEST_F(ReadAnythingAppControllerTest,
        OnReadingModeShown_ListenTrigger_ExecutesSetPlayOnOpen) {
   ExecuteJavaScriptForTests(
       "var setPlayOnOpenCalledCount = 0;"
@@ -640,6 +655,26 @@ TEST_F(ReadAnythingAppControllerTest,
       read_anything::mojom::ReadAnythingOpenTrigger::
           kListenToThisPageContextMenu,
       read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
+
+  int set_play_on_open_called_count = 0;
+  EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(
+      u"setPlayOnOpenCalledCount", &set_play_on_open_called_count));
+  EXPECT_EQ(1, set_play_on_open_called_count);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       OnPresentationTransitioned_ListenTrigger_ExecutesSetPlayOnOpen) {
+  ExecuteJavaScriptForTests(
+      "var setPlayOnOpenCalledCount = 0;"
+      "chrome.readingMode.setPlayOnOpen = () => { setPlayOnOpenCalledCount++; "
+      "};");
+
+  // A switch applies its open trigger like opening does, so a "Listen to
+  // this page" trigger plays on open.
+  controller().OnPresentationTransitioned(
+      read_anything::mojom::ReadAnythingOpenTrigger::
+          kListenToThisPageContextMenu,
+      read_anything::mojom::ReadAnythingPresentationState::kInImmersiveOverlay);
 
   int set_play_on_open_called_count = 0;
   EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(

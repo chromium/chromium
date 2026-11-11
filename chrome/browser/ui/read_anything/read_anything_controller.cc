@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/read_anything/read_anything_controller.h"
 
+#include <utility>
+
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/profiles/profile.h"
@@ -224,20 +226,24 @@ void ReadAnythingController::RemoveImmersiveActivationObserver(
 }
 
 void ReadAnythingController::OnEntryShown(ReadAnythingOpenTrigger trigger) {
-  observers_.Notify(&Observer::Activate, /*active=*/true, trigger,
-                    /*completed_session_duration=*/std::nullopt);
-  // At the moment, services are created for normal, guest, and incognito
-  // profiles but not unusual profile types. On the other hand,
-  // ReadAnythingController is created for all tabs. Thus we need a
-  // nullptr check.
-  if (auto* service = ReadAnythingService::Get(
-          tab_->GetBrowserWindowInterface()->GetProfile())) {
-    service->OnReadAnythingShown();
-  }
-
-  if (is_presentation_transitioning_) {
-    is_presentation_transitioning_ = false;
+  // A presentation switch keeps the session that's already open, so it skips
+  // Activate(true) and the work for opening Reading Mode.
+  const bool is_presentation_switch =
+      std::exchange(is_presentation_transitioning_, false);
+  if (is_presentation_switch) {
+    observers_.Notify(&Observer::OnPresentationTransitioned, trigger);
   } else {
+    observers_.Notify(&Observer::Activate, /*active=*/true, trigger,
+                      /*completed_session_duration=*/std::nullopt);
+
+    // Services exist for normal, guest and incognito profiles, but not for
+    // unusual profile types, while ReadAnythingController exists for every
+    // tab. So the service can be null.
+    if (auto* service = ReadAnythingService::Get(
+            tab_->GetBrowserWindowInterface()->GetProfile())) {
+      service->OnReadAnythingShown();
+    }
+
     // Log once per tab session.
     if (entry_shown_timestamp_.is_null() &&
         trigger != ReadAnythingOpenTrigger::kTabSwitch) {
@@ -268,6 +274,13 @@ void ReadAnythingController::OnEntryShown(ReadAnythingOpenTrigger trigger) {
 }
 
 void ReadAnythingController::OnEntryHidden() {
+  // If the host is closing so the other host can show the same session, skip
+  // RecordEntryHiddenMetrics() and Activate(false). The other host's
+  // OnEntryShown() notifies OnPresentationTransitioned() instead.
+  if (is_presentation_transitioning_) {
+    return;
+  }
+
   std::optional<base::TimeDelta> completed_session_duration =
       RecordEntryHiddenMetrics();
 
@@ -278,12 +291,6 @@ void ReadAnythingController::OnEntryHidden() {
 
 std::optional<base::TimeDelta>
 ReadAnythingController::RecordEntryHiddenMetrics() {
-  // If we are transitioning between UI modes (e.g., Side Panel to Immersive),
-  // don't record OnEntryHidden metrics.
-  if (is_presentation_transitioning_) {
-    return std::nullopt;
-  }
-
   // Record whether the UI was closed before it was successfully shown.
   const bool hidden_before_shown = entry_shown_timestamp_.is_null();
   base::UmaHistogramBoolean("Accessibility.ReadAnything.HiddenBeforeShown",
@@ -318,6 +325,17 @@ SidePanelUI* ReadAnythingController::GetSidePanelUI() {
   }
 
   return SidePanelUI::From(tab_->GetBrowserWindowInterface());
+}
+
+bool ReadAnythingController::CanMoveSessionToOtherHost() const {
+  if (entry_shown_timestamp_.is_null()) {
+    return false;
+  }
+  // The other host gets a new WebUI if RecreateWebUIWrapper() was called (e.g.
+  // after a soft navigation), or if this one never became visible (see
+  // TransferWebUiOwnership()). `ra_web_ui_observer_` is only null in unit
+  // tests, which don't create a WebUI.
+  return !should_recreate_web_ui_ && (has_shown_ui_ || !ra_web_ui_observer_);
 }
 
 // Lazily creates and returns the WebUIContentsWrapper for Reading Mode.
@@ -472,7 +490,7 @@ void ReadAnythingController::ShowImmersiveUI(ReadAnythingOpenTrigger trigger) {
   }
 
   if (GetPresentationState() == PresentationState::kInSidePanel) {
-    is_presentation_transitioning_ = true;
+    is_presentation_transitioning_ = CanMoveSessionToOtherHost();
     CloseSidePanelUI(ReadAnythingCloseReason::kToggledPresentation);
     // Ensure we got the web_ui_wrapper_ back from the Side Panel if one ever
     // existed.
@@ -488,7 +506,7 @@ void ReadAnythingController::ShowImmersiveUI(ReadAnythingOpenTrigger trigger) {
 
 void ReadAnythingController::ShowSidePanelUI(SidePanelOpenTrigger trigger) {
   if (GetPresentationState() == PresentationState::kInImmersiveOverlay) {
-    is_presentation_transitioning_ = true;
+    is_presentation_transitioning_ = CanMoveSessionToOtherHost();
     CloseImmersiveUI(ReadAnythingCloseReason::kToggledPresentation);
     // Ensure we got the web_ui_wrapper_ back from the immersive overlay if one
     // ever existed.
@@ -497,6 +515,15 @@ void ReadAnythingController::ShowSidePanelUI(SidePanelOpenTrigger trigger) {
 
   if (SidePanelUI* side_panel_ui = GetSidePanelUI()) {
     side_panel_ui->Show(SidePanelEntryId::kReadAnything, trigger);
+  }
+  // If the side panel shows Reading Mode, it calls OnEntryShown() before Show()
+  // returns, which clears is_presentation_transitioning_. If the flag is still
+  // set, the side panel didn't show it (e.g. the tab isn't active, or the side
+  // panel is still closing), so the overlay closed without ending the session.
+  // End it now.
+  if (is_presentation_transitioning_) {
+    is_presentation_transitioning_ = false;
+    OnEntryHidden();
   }
 }
 

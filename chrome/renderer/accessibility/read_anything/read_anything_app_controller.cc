@@ -2789,20 +2789,7 @@ void ReadAnythingAppController::OnReadingModeShown(
     StartLineFocusSession();
   }
 
-  if (open_trigger == read_anything::mojom::ReadAnythingOpenTrigger::
-                          kListenToThisPageContextMenu) {
-    ExecuteJavaScript("chrome.readingMode.setPlayOnOpen(true);");
-  }
-
-  // Reading mode is opened with this trigger right after a PDF translation is
-  // requested, and the translation is dispatched once the content is
-  // distilled. Keep the content behind the loading screen until it's
-  // translated so the user doesn't see the untranslated text first.
-  if (open_trigger ==
-          read_anything::mojom::ReadAnythingOpenTrigger::kPdfTranslation &&
-      IsTranslatePdfEnabled() && !model_.is_content_translated()) {
-    SetTranslationState(ReadAnythingAppModel::TranslationState::kAwaiting);
-  }
+  ApplyOpenTrigger(open_trigger);
 
   // Process the updates that arrived while hidden, after the open trigger
   // applied (e.g. to wait for a translation before drawing). When opening in
@@ -2837,6 +2824,44 @@ void ReadAnythingAppController::OnReadingModeShown(
 
   if (ax_tree_ready_for_current_active_tree_measured_) {
     MaybeLogAXTreeReady();
+  }
+}
+
+void ReadAnythingAppController::OnPresentationTransitioned(
+    read_anything::mojom::ReadAnythingOpenTrigger open_trigger,
+    read_anything::mojom::ReadAnythingPresentationState presentation_state) {
+  // The session continues in the other presentation, so record the page
+  // duration so far for the presentation it leaves, and keep timing for the
+  // new one. LogPageDuration() reads the presentation, so do this before
+  // applying the new one.
+  if (model_.page_start_time().has_value() &&
+      model_.active_presentation_state() != presentation_state) {
+    LogPageDuration();
+    model_.set_page_start_time(base::TimeTicks::Now());
+  }
+  ApplyPresentationState(presentation_state);
+  ApplyOpenTrigger(open_trigger);
+  // The overlay pauses updates while it has content and the side panel
+  // doesn't, so moving to the side panel processes the updates the overlay
+  // paused.
+  ProcessPendingUpdatesIfAllowed();
+}
+
+void ReadAnythingAppController::ApplyOpenTrigger(
+    read_anything::mojom::ReadAnythingOpenTrigger open_trigger) {
+  if (open_trigger == read_anything::mojom::ReadAnythingOpenTrigger::
+                          kListenToThisPageContextMenu) {
+    ExecuteJavaScript("chrome.readingMode.setPlayOnOpen(true);");
+  }
+
+  // Reading mode is opened with this trigger right after a PDF translation is
+  // requested, and the translation is dispatched once the content is
+  // distilled. Keep the content behind the loading screen until it's
+  // translated so the user doesn't see the untranslated text first.
+  if (open_trigger ==
+          read_anything::mojom::ReadAnythingOpenTrigger::kPdfTranslation &&
+      IsTranslatePdfEnabled() && !model_.is_content_translated()) {
+    SetTranslationState(ReadAnythingAppModel::TranslationState::kAwaiting);
   }
 }
 

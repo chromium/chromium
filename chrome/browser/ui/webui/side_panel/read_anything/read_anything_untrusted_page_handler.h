@@ -280,6 +280,8 @@ class ReadAnythingUntrustedPageHandler :
       bool active,
       ReadAnythingOpenTrigger open_trigger,
       std::optional<base::TimeDelta> completed_session_duration) override;
+  void OnPresentationTransitioned(
+      ReadAnythingOpenTrigger open_trigger) override;
 
   void OnTabWillDetach(tabs::TabInterface* tab,
                        tabs::TabInterface::DetachReason reason);
@@ -410,6 +412,11 @@ class ReadAnythingUntrustedPageHandler :
   // Called when reading_mode_hidden_ack_timer_ times out without hearing back
   // from the page_.
   void OnReadingModeHiddenAckTimeout();
+
+  // Starts waiting for Read Aloud to play if Reading Mode was opened from the
+  // "Listen to this page" context menu.
+  void MaybeStartListenToThisPagePlaybackTimer(
+      ReadAnythingOpenTrigger open_trigger);
 
   void OnGetVoicePackInfo(read_anything::mojom::VoicePackInfoPtr info);
 

@@ -125,13 +125,14 @@ void ReadAnythingIphController::Activate(
   }
 
   if (!active) {
-    // Keep the countdown running while switching presentations.
-    if (!read_anything_controller_->is_presentation_transitioning()) {
-      ai_playback_iph_timer_.Stop();
-    }
+    ai_playback_iph_timer_.Stop();
     return;
   }
 
+  MaybeShowPresentationPromos();
+}
+
+void ReadAnythingIphController::MaybeShowPresentationPromos() {
   auto* user_ed = GetUserEducation(read_anything_controller_);
   if (!user_ed) {
     return;
@@ -158,6 +159,15 @@ void ReadAnythingIphController::OnDestroyed() {
   read_anything_controller_observer_.Reset();
   ai_playback_iph_timer_.Stop();
   read_anything_controller_ = nullptr;
+}
+
+void ReadAnythingIphController::OnPresentationTransitioned(
+    read_anything::mojom::ReadAnythingOpenTrigger trigger) {
+  if (!read_anything_controller_) {
+    return;
+  }
+
+  MaybeShowPresentationPromos();
 }
 
 void ReadAnythingIphController::MaybeStartAiPlaybackIphTimer() {

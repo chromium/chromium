@@ -5,14 +5,18 @@
 #include "chrome/browser/ui/read_anything/read_anything_controller.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/time/time.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/read_anything/read_anything_enums.h"
 #include "chrome/browser/ui/read_anything/read_anything_immersive_activation_observer.h"
+#include "chrome/browser/ui/read_anything/read_anything_lifecycle_observer.h"
 #include "chrome/browser/ui/read_anything/read_anything_prefs.h"
+#include "chrome/browser/ui/read_anything/read_anything_service_factory.h"
 #include "chrome/browser/ui/side_panel/mock_side_panel_ui.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
@@ -40,12 +44,32 @@ class MockReadAnythingImmersiveActivationObserver
   MOCK_METHOD(void, OnCloseImmersive, (), (override));
 };
 
+class MockReadAnythingLifecycleObserver : public ReadAnythingLifecycleObserver {
+ public:
+  MOCK_METHOD(void,
+              Activate,
+              (bool active,
+               ReadAnythingOpenTrigger trigger,
+               std::optional<base::TimeDelta> completed_session_duration),
+              (override));
+  MOCK_METHOD(void, OnDestroyed, (), (override));
+  MOCK_METHOD(void,
+              OnPresentationTransitioned,
+              (ReadAnythingOpenTrigger),
+              (override));
+};
+
 }  // namespace
 
 class ReadAnythingControllerUnitTest : public ChromeRenderViewHostTestHarness {
  public:
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
+
+    // OnEntryShown() calls into ReadAnythingService, which loads extensions
+    // that aren't available in unit tests. Use a null service instead.
+    ReadAnythingServiceFactory::GetInstance()->SetTestingFactory(
+        profile(), BrowserContextKeyedServiceFactory::TestingFactory());
 
     mock_browser_window_interface_ =
         std::make_unique<testing::NiceMock<MockBrowserWindowInterface>>();
@@ -93,12 +117,14 @@ class ReadAnythingControllerUnitTest : public ChromeRenderViewHostTestHarness {
     });
 
     controller_->AddImmersiveActivationObserver(&mock_immersive_observer_);
+    controller_->AddObserver(&lifecycle_observer_);
   }
 
   void TearDown() override {
     if (controller_) {
       SetPresentationState(ReadAnythingPresentationState::kInactive);
       controller_->RemoveImmersiveActivationObserver(&mock_immersive_observer_);
+      controller_->RemoveObserver(&lifecycle_observer_);
     }
     controller_.reset();
     side_panel_registry_.reset();
@@ -126,6 +152,34 @@ class ReadAnythingControllerUnitTest : public ChromeRenderViewHostTestHarness {
     controller_->set_presentation_state(new_state);
   }
 
+  // Makes the hosts report to the controller when they show or hide Reading
+  // Mode, like the real hosts. These tests only show the side panel by
+  // switching presentations. Tests where a host fails to show override its
+  // mock afterwards.
+  void SimulateHostLifecycleEvents() {
+    ON_CALL(*mock_side_panel_ui_,
+            Show(SidePanelEntryId::kReadAnything, testing::_, testing::_))
+        .WillByDefault([this]() {
+          SetPresentationState(ReadAnythingPresentationState::kInSidePanel);
+          controller_->OnEntryShown(
+              ReadAnythingOpenTrigger::kReadAnythingTogglePresentationButton);
+        });
+    ON_CALL(*mock_side_panel_ui_, Close).WillByDefault([this]() {
+      SetPresentationState(ReadAnythingPresentationState::kInactive);
+      controller_->OnEntryHidden();
+    });
+    ON_CALL(mock_immersive_observer_, OnShowImmersive)
+        .WillByDefault([this](ReadAnythingOpenTrigger trigger) {
+          SetPresentationState(
+              ReadAnythingPresentationState::kInImmersiveOverlay);
+          controller_->OnEntryShown(trigger);
+        });
+    ON_CALL(mock_immersive_observer_, OnCloseImmersive).WillByDefault([this]() {
+      SetPresentationState(ReadAnythingPresentationState::kInactive);
+      controller_->OnEntryHidden();
+    });
+  }
+
   std::unique_ptr<testing::NiceMock<MockBrowserWindowInterface>>
       mock_browser_window_interface_;
   std::unique_ptr<BrowserWindowFeatures> browser_window_features_;
@@ -135,6 +189,7 @@ class ReadAnythingControllerUnitTest : public ChromeRenderViewHostTestHarness {
   std::unique_ptr<ReadAnythingController> controller_;
   testing::NiceMock<MockReadAnythingImmersiveActivationObserver>
       mock_immersive_observer_;
+  testing::NiceMock<MockReadAnythingLifecycleObserver> lifecycle_observer_;
 };
 
 TEST_F(ReadAnythingControllerUnitTest,
@@ -331,6 +386,148 @@ TEST_F(ReadAnythingControllerUnitTest,
   ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
   EXPECT_EQ(controller_->GetPresentationState(),
             ReadAnythingPresentationState::kInImmersiveOverlay);
+}
+
+TEST_F(ReadAnythingControllerUnitTest,
+       TogglePresentation_WhileShown_MovesSession) {
+  SimulateHostLifecycleEvents();
+  SetPresentationState(ReadAnythingPresentationState::kInSidePanel);
+  controller_->OnEntryShown(ReadAnythingOpenTrigger::kAppMenu);
+
+  // Switching presentations moves the session to the immersive overlay,
+  // without ending it and starting a new one.
+  EXPECT_CALL(lifecycle_observer_, Activate).Times(0);
+  EXPECT_CALL(
+      lifecycle_observer_,
+      OnPresentationTransitioned(
+          ReadAnythingOpenTrigger::kReadAnythingTogglePresentationButton))
+      .Times(1);
+  TogglePresentation(/*is_user_initiated=*/true);
+  EXPECT_EQ(controller_->GetPresentationState(),
+            ReadAnythingPresentationState::kInImmersiveOverlay);
+}
+
+TEST_F(ReadAnythingControllerUnitTest,
+       TogglePresentation_AfterSoftNavigation_StartsNewSession) {
+  SimulateHostLifecycleEvents();
+  SetPresentationState(ReadAnythingPresentationState::kInSidePanel);
+  controller_->OnEntryShown(ReadAnythingOpenTrigger::kAppMenu);
+
+  // A soft navigation recreates the WebUI the next time it's used, so
+  // switching presentations closes the side panel and opens a new session in
+  // the immersive overlay.
+  controller_->OnSoftNavigation();
+  EXPECT_CALL(lifecycle_observer_, OnPresentationTransitioned).Times(0);
+  {
+    testing::InSequence sequence;
+    EXPECT_CALL(lifecycle_observer_, Activate(false, testing::_, testing::_));
+    EXPECT_CALL(
+        lifecycle_observer_,
+        Activate(true,
+                 ReadAnythingOpenTrigger::kReadAnythingTogglePresentationButton,
+                 testing::_));
+  }
+  TogglePresentation(/*is_user_initiated=*/true);
+  EXPECT_EQ(controller_->GetPresentationState(),
+            ReadAnythingPresentationState::kInImmersiveOverlay);
+}
+
+TEST_F(ReadAnythingControllerUnitTest,
+       EmptyStateSwitch_WhenSidePanelUnavailable_EndsSession) {
+  SimulateHostLifecycleEvents();
+  ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
+
+  // The side panel only shows Reading Mode for the active tab (e.g. not for a
+  // split view's inactive tab), so switching to it because the content is empty
+  // closes Reading Mode instead.
+  ON_CALL(*mock_tab_, IsActivated()).WillByDefault(testing::Return(false));
+  EXPECT_CALL(lifecycle_observer_, OnPresentationTransitioned).Times(0);
+  EXPECT_CALL(lifecycle_observer_, Activate(false, testing::_, testing::_));
+  EXPECT_CALL(*mock_side_panel_ui_,
+              Show(SidePanelEntryId::kReadAnything, testing::_, testing::_))
+      .Times(0);
+  controller_->OnEmptyStateChanged(/*is_empty=*/true);
+  EXPECT_EQ(controller_->GetPresentationState(),
+            ReadAnythingPresentationState::kInactive);
+  testing::Mock::VerifyAndClearExpectations(&lifecycle_observer_);
+
+  // Opening Reading Mode again later starts a new session.
+  controller_->OnEmptyStateChanged(/*is_empty=*/false);
+  EXPECT_CALL(lifecycle_observer_, OnPresentationTransitioned).Times(0);
+  EXPECT_CALL(lifecycle_observer_,
+              Activate(true, ReadAnythingOpenTrigger::kAppMenu, testing::_));
+  ShowImmersiveUI(ReadAnythingOpenTrigger::kAppMenu);
+  EXPECT_EQ(controller_->GetPresentationState(),
+            ReadAnythingPresentationState::kInImmersiveOverlay);
+}
+
+TEST_F(ReadAnythingControllerUnitTest,
+       EmptyStateSwitch_WhileOverlayLoading_StartsNewSession) {
+  base::HistogramTester histogram_tester;
+  SimulateHostLifecycleEvents();
+  // The immersive overlay closes before it finishes loading, so it never calls
+  // OnEntryShown().
+  ON_CALL(mock_immersive_observer_, OnShowImmersive)
+      .WillByDefault([this](ReadAnythingOpenTrigger trigger) {
+        SetPresentationState(
+            ReadAnythingPresentationState::kInImmersiveOverlay);
+      });
+  ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
+
+  EXPECT_CALL(lifecycle_observer_, OnPresentationTransitioned).Times(0);
+  {
+    testing::InSequence sequence;
+    EXPECT_CALL(lifecycle_observer_, Activate(false, testing::_, testing::_));
+    EXPECT_CALL(
+        lifecycle_observer_,
+        Activate(true,
+                 ReadAnythingOpenTrigger::kReadAnythingTogglePresentationButton,
+                 testing::_));
+  }
+  controller_->OnEmptyStateChanged(/*is_empty=*/true);
+  EXPECT_EQ(controller_->GetPresentationState(),
+            ReadAnythingPresentationState::kInSidePanel);
+  testing::Mock::VerifyAndClearExpectations(&lifecycle_observer_);
+
+  // Closing the side panel records one shown session (for the side panel) and
+  // one early close (for the loading overlay).
+  EXPECT_CALL(lifecycle_observer_, Activate(false, testing::_, testing::_));
+  SetPresentationState(ReadAnythingPresentationState::kInactive);
+  controller_->OnEntryHidden();
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ReadAnything.ShownDurationMax1Day", 1);
+  histogram_tester.ExpectBucketCount(
+      "Accessibility.ReadAnything.HiddenBeforeShown", true, 1);
+  histogram_tester.ExpectBucketCount(
+      "Accessibility.ReadAnything.HiddenBeforeShown", false, 1);
+}
+
+TEST_F(ReadAnythingControllerUnitTest,
+       TogglePresentation_SidePanelDoesNotTakeWebUI_EndsSession) {
+  base::HistogramTester histogram_tester;
+  SimulateHostLifecycleEvents();
+  // The side panel doesn't open Reading Mode (e.g. it's still closing).
+  ON_CALL(*mock_side_panel_ui_,
+          Show(SidePanelEntryId::kReadAnything, testing::_, testing::_))
+      .WillByDefault([]() {});
+  ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
+
+  // The overlay's session ends instead of waiting for the side panel.
+  EXPECT_CALL(lifecycle_observer_, OnPresentationTransitioned).Times(0);
+  EXPECT_CALL(lifecycle_observer_,
+              Activate(false, testing::_, testing::Optional(testing::_)));
+  TogglePresentation(/*is_user_initiated=*/true);
+  EXPECT_EQ(controller_->GetPresentationState(),
+            ReadAnythingPresentationState::kInactive);
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ReadAnything.ShownDurationMax1Day", 1);
+  testing::Mock::VerifyAndClearExpectations(&lifecycle_observer_);
+
+  // Opening Reading Mode again starts a new session.
+  EXPECT_CALL(lifecycle_observer_, OnPresentationTransitioned).Times(0);
+  EXPECT_CALL(lifecycle_observer_,
+              Activate(true, ReadAnythingOpenTrigger::kAppMenu, testing::_));
+  ShowImmersiveUI(ReadAnythingOpenTrigger::kAppMenu);
 }
 
 #if BUILDFLAG(ENABLE_PDF)
