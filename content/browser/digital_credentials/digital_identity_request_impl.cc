@@ -160,21 +160,10 @@ bool CanRequestCredentialBypassInterstitialForOpenid4vpProtocolWithDCQL(
         path_ok = paths->size() == 1u;
       }
 
-      bool is_mdl_claim =
-          re2::RE2::FullMatch(*claim_name,
-                              re2::RE2(kMdocAgeOverDataElementRegex)) ||
-          *claim_name == kMdocAgeInYearsDataElement ||
-          *claim_name == kMdocAgeBirthYearDataElement ||
-          *claim_name == kMdocBirthDateDataElement;
-
-      if (is_mdl_claim) {
-        if ((is_mdl || is_sdjwt) && path_ok) {
-          claims.push_back(*claim_name);
-        } else {
-          claims.push_back("__invalid_context__");
-        }
-      } else {
+      if (path_ok) {
         claims.push_back(*claim_name);
+      } else {
+        claims.push_back("__invalid_context__");
       }
     }
     return claims;
