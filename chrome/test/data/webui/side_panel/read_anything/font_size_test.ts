@@ -222,4 +222,31 @@ suite('FontSize', () => {
     await clickDecrease();
     assertFalse(increaseButton.disabled);
   });
+
+  test('mouseover does not steal focus from focused button', async () => {
+    stubAnimationFrame();
+    menuButton!.click();
+    await microtasksFinished();
+
+    const decreaseButton = getButton<CrIconButtonElement>('font-size-decrease');
+    toolbar.fontSize = visualBrowserProxy.minFontSize + 1;
+    decreaseButton.focus();
+    assertEquals(
+        decreaseButton, toolbar.$.fontSizeMenu.shadowRoot.activeElement);
+
+    toolbar.$.fontSizeMenu.get().dispatchEvent(
+        new MouseEvent('mouseover', {bubbles: true, composed: true}));
+    assertEquals(
+        decreaseButton, toolbar.$.fontSizeMenu.shadowRoot.activeElement);
+
+    // Disable the focused button (which sets pointer-events: none and triggers
+    // hover recomputation on the underlying menu when under the cursor) and
+    // verify mouseover still does not steal focus.
+    await clickDecrease();
+    assertTrue(decreaseButton.disabled);
+    toolbar.$.fontSizeMenu.get().dispatchEvent(
+        new MouseEvent('mouseover', {bubbles: true, composed: true}));
+    assertEquals(
+        decreaseButton, toolbar.$.fontSizeMenu.shadowRoot.activeElement);
+  });
 });

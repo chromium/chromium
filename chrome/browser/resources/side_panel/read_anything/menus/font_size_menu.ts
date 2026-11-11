@@ -187,6 +187,16 @@ export class FontSizeMenuElement extends FontSizeMenuElementBase implements
     assert(elementToFocus, 'no element to focus');
     elementToFocus.focus();
   }
+
+  protected onMouseover_(e: Event) {
+    // Unlike other menus that render full-width .dropdown-item rows,
+    // font-size-menu renders horizontal cr-icon-button/cr-button controls and
+    // must keep focus on buttons even when they become disabled
+    // (crbug.com/441561417). Stop mouseover from reaching
+    // CrActionMenuElement.onMouseover_, which otherwise focuses its internal
+    // #wrapper whenever the target is not an enabled .dropdown-item.
+    e.stopImmediatePropagation();
+  }
 }
 
 declare global {

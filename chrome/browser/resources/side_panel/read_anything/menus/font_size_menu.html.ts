@@ -11,6 +11,7 @@ export function getHtml(this: FontSizeMenuElement) {
 <cr-lazy-render-lit id="lazyMenu"
     .template="${() => html`
       <cr-action-menu @keydown="${this.onKeydown_}"
+          @mouseover="${this.onMouseover_}"
           accessibility-label="$i18n{fontSizeTitle}"
           role-description="$i18n{menu}">
         <cr-icon-button class="font-size" role="menuitem"
