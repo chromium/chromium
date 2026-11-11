@@ -412,13 +412,13 @@ FakeSecurityDomainsServer::HandleJoinSecurityDomainsRequest(
     // Simulate generation of random epoch when security domain just created.
     DCHECK(state_.public_key_to_shared_keys.empty());
     state_.current_epoch = 100;
+  }
 
-    // Make sure that the shared key epoch is correct, even if the client sent
-    // an unknown constant key version for security domain creation.
-    for (auto& shared_key : shared_keys) {
-      if (shared_key.epoch() == kUnknownConstantKeyVersion) {
-        shared_key.set_epoch(state_.current_epoch);
-      }
+  // Make sure that the shared key epoch is correct, even if a client sent an
+  // unknown constant key version when pre-enrolling with the constant key.
+  for (auto& shared_key : shared_keys) {
+    if (shared_key.epoch() == kUnknownConstantKeyVersion) {
+      shared_key.set_epoch(state_.current_epoch);
     }
   }
 
