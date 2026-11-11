@@ -12,29 +12,36 @@
 
 namespace base {
 
-SingleThreadTaskExecutor::SingleThreadTaskExecutor(MessagePumpType type,
-                                                   bool is_main_thread)
+SingleThreadTaskExecutor::SingleThreadTaskExecutor(
+    MessagePumpType type,
+    bool is_main_thread,
+    sequence_manager::SequenceManager::PrioritySettings priority_settings)
     : SingleThreadTaskExecutor(type,
                                MessagePump::Create(type),
-                               is_main_thread) {
+                               is_main_thread,
+                               std::move(priority_settings)) {
   DCHECK_NE(type, MessagePumpType::CUSTOM);
 }
 
 SingleThreadTaskExecutor::SingleThreadTaskExecutor(
     std::unique_ptr<MessagePump> pump,
-    bool is_main_thread)
+    bool is_main_thread,
+    sequence_manager::SequenceManager::PrioritySettings priority_settings)
     : SingleThreadTaskExecutor(MessagePumpType::CUSTOM,
                                std::move(pump),
-                               is_main_thread) {}
+                               is_main_thread,
+                               std::move(priority_settings)) {}
 
 SingleThreadTaskExecutor::SingleThreadTaskExecutor(
     MessagePumpType type,
     std::unique_ptr<MessagePump> pump,
-    bool is_main_thread)
+    bool is_main_thread,
+    sequence_manager::SequenceManager::PrioritySettings priority_settings)
     : sequence_manager_(sequence_manager::CreateUnboundSequenceManager(
           sequence_manager::SequenceManager::Settings::Builder()
               .SetMessagePumpType(type)
               .SetIsMainThread(is_main_thread)
+              .SetPrioritySettings(std::move(priority_settings))
               .Build())),
       default_task_queue_(
           sequence_manager_->CreateTaskQueue(sequence_manager::TaskQueue::Spec(

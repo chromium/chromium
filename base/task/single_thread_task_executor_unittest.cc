@@ -25,6 +25,7 @@
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/current_thread.h"
+#include "base/task/sequence_manager/sequence_manager_impl.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_observer.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
@@ -2147,6 +2148,43 @@ TEST(SingleThreadTaskExecutorDestructionTest,
   SingleThreadTaskExecutor executor;
 
   PostTaskOnDestroy::PostTaskWithPostingDestructor(10);
+}
+
+TEST(SingleThreadTaskExecutorTest, CustomPrioritySettings) {
+  enum class CustomPriority : sequence_manager::TaskQueue::QueuePriority {
+    kHigh = 0,
+    kNormal = 1,
+    kLow = 2,
+    kPriorityCount = 3,
+  };
+  SingleThreadTaskExecutor executor(
+      MessagePumpType::DEFAULT, /*is_main_thread=*/false,
+      sequence_manager::SequenceManager::PrioritySettings(
+          CustomPriority::kPriorityCount, CustomPriority::kNormal));
+
+  struct TestCurrentThread : public CurrentThread {
+    using CurrentThread::GetCurrentSequenceManagerImpl;
+  };
+  auto* sequence_manager = TestCurrentThread::GetCurrentSequenceManagerImpl();
+  auto low_queue = sequence_manager->CreateTaskQueue(
+      sequence_manager::TaskQueue::Spec(
+          sequence_manager::QueueName::TEST_TQ));
+  low_queue->SetQueuePriority(CustomPriority::kLow);
+  auto high_queue = sequence_manager->CreateTaskQueue(
+      sequence_manager::TaskQueue::Spec(
+          sequence_manager::QueueName::TEST2_TQ));
+  high_queue->SetQueuePriority(CustomPriority::kHigh);
+
+  std::vector<int> order;
+  low_queue->task_runner()->PostTask(
+      FROM_HERE, BindLambdaForTesting([&] { order.push_back(3); }));
+  executor.task_runner()->PostTask(
+      FROM_HERE, BindLambdaForTesting([&] { order.push_back(2); }));
+  high_queue->task_runner()->PostTask(
+      FROM_HERE, BindLambdaForTesting([&] { order.push_back(1); }));
+
+  RunLoop().RunUntilIdle();
+  EXPECT_THAT(order, ::testing::ElementsAre(1, 2, 3));
 }
 
 }  // namespace base

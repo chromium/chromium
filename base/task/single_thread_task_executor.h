@@ -10,16 +10,13 @@
 #include "base/base_export.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/message_loop/message_pump_type.h"
+#include "base/task/sequence_manager/sequence_manager.h"
 #include "base/task/sequence_manager/task_queue.h"
 #include "base/task/single_thread_task_runner.h"
 
 namespace base {
 
 class MessagePump;
-
-namespace sequence_manager {
-class SequenceManager;
-}  // namespace sequence_manager
 
 // A simple single thread TaskExecutor intended for non-test usage. Tests should
 // generally use TaskEnvironment or BrowserTaskEnvironment instead.
@@ -28,12 +25,17 @@ class BASE_EXPORT SingleThreadTaskExecutor {
   // For MessagePumpType::CUSTOM use the constructor that takes a pump.
   explicit SingleThreadTaskExecutor(
       MessagePumpType type = MessagePumpType::DEFAULT,
-      bool is_main_thread = false);
+      bool is_main_thread = false,
+      sequence_manager::SequenceManager::PrioritySettings priority_settings =
+          sequence_manager::SequenceManager::PrioritySettings::CreateDefault());
 
   // Creates a SingleThreadTaskExecutor pumping from a custom |pump|.
   // The above constructor using MessagePumpType is generally preferred.
-  explicit SingleThreadTaskExecutor(std::unique_ptr<MessagePump> pump,
-                                    bool is_main_thread = false);
+  explicit SingleThreadTaskExecutor(
+      std::unique_ptr<MessagePump> pump,
+      bool is_main_thread = false,
+      sequence_manager::SequenceManager::PrioritySettings priority_settings =
+          sequence_manager::SequenceManager::PrioritySettings::CreateDefault());
 
   SingleThreadTaskExecutor(const SingleThreadTaskExecutor&) = delete;
   SingleThreadTaskExecutor& operator=(const SingleThreadTaskExecutor&) = delete;
@@ -54,9 +56,11 @@ class BASE_EXPORT SingleThreadTaskExecutor {
   void SetWorkBatchSize(int work_batch_size);
 
  private:
-  SingleThreadTaskExecutor(MessagePumpType type,
-                           std::unique_ptr<MessagePump> pump,
-                           bool is_main_thread);
+  SingleThreadTaskExecutor(
+      MessagePumpType type,
+      std::unique_ptr<MessagePump> pump,
+      bool is_main_thread,
+      sequence_manager::SequenceManager::PrioritySettings priority_settings);
 
   std::unique_ptr<sequence_manager::SequenceManager> sequence_manager_;
   sequence_manager::TaskQueue::Handle default_task_queue_;
