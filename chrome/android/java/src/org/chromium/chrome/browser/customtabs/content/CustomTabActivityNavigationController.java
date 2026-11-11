@@ -28,6 +28,7 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.NonNullObservableSupplier;
@@ -328,6 +329,9 @@ public class CustomTabActivityNavigationController
 
     /** Handles close button navigation. */
     public void navigateOnClose() {
+        if (ChromeFeatureList.sCctCloseLogging.isEnabled()) {
+            Log.i(TAG, "CCT close button clicked at %d", TimeUtils.uptimeMillis());
+        }
         mIsHandlingUserNavigation = true;
         mCloseButtonNavigator.navigateOnClose(this::finish);
         mIsHandlingUserNavigation = false;
@@ -471,6 +475,14 @@ public class CustomTabActivityNavigationController
         mIsFinishing = true;
         mFinishReason = reason;
 
+        if (ChromeFeatureList.sCctCloseLogging.isEnabled()) {
+            Log.i(
+                    TAG,
+                    "CCT CustomTabActivityNavigationController#finish (reason=%d) at %d",
+                    reason,
+                    TimeUtils.uptimeMillis());
+        }
+
         RecordHistogram.recordEnumeratedHistogram(
                 HISTOGRAM_FINISH_REASON, mFinishReason, FinishReason.NUM_TYPES);
 
@@ -513,6 +525,13 @@ public class CustomTabActivityNavigationController
 
     @Override
     public void onStopWithNative() {
+        if (ChromeFeatureList.sCctCloseLogging.isEnabled()) {
+            Log.i(
+                    TAG,
+                    "CCT #onStopWithNative (activity finishing: %d) at %d",
+                    mActivity.isFinishing(),
+                    TimeUtils.uptimeMillis());
+        }
         if (mIsFinishing) {
             mTabController.closeAndForgetTab();
         } else {

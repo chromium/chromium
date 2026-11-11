@@ -126,6 +126,7 @@ BASE_DECLARE_FEATURE(kBrowserControlsPersistsOnCvh);
 BASE_DECLARE_FEATURE(kCCTAlwaysOpenInBrowser);
 BASE_DECLARE_FEATURE(kCCTBlockTouchesDuringEnterAnimation);
 BASE_DECLARE_FEATURE(kCCTClientDataHeader);
+BASE_DECLARE_FEATURE(kCCTCloseLogging);
 BASE_DECLARE_FEATURE(kCCTDestroyTabWhenModelIsEmpty);
 BASE_DECLARE_FEATURE(kCCTDontOverrideIntentMimeType);
 BASE_DECLARE_FEATURE(kCCTEarlyInitPowerManager);

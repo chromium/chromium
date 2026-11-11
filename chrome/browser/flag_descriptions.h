@@ -6020,6 +6020,10 @@ inline constexpr char kCCTAlwaysOpenInBrowserName[] =
 inline constexpr char kCCTAlwaysOpenInBrowserDescription[] =
     "Enable setting to always open Custom Tabs in the Chrome browser.";
 
+inline constexpr char kCCTCloseLoggingName[] = "CCT Close Logging";
+inline constexpr char kCCTCloseLoggingDescription[] =
+    "Enables logging timestamps when a Custom Tab is closed.";
+
 inline constexpr char kCCTIncognitoAvailableToThirdPartyName[] =
     "Allow third party to open Custom Tabs Incognito mode";
 inline constexpr char kCCTIncognitoAvailableToThirdPartyDescription[] =

@@ -52,6 +52,7 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.SysUtils;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.TimeUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.ChainedTasks;
@@ -1706,6 +1707,13 @@ public class CustomTabsConnection {
         try {
             Bundle extra = getExtrasBundleForNavigationEventForSession(session);
             if (errorCode != null) extra.putInt("navigationEventErrorCode", errorCode);
+            if (ChromeFeatureList.sCctCloseLogging.isEnabled()
+                    && navigationEvent == CustomTabsCallback.TAB_HIDDEN) {
+                Log.i(
+                        TAG,
+                        "CustomTabsCallback notified of CCT closing (TAB_HIDDEN) at %d",
+                        TimeUtils.uptimeMillis());
+            }
             callback.onNavigationEvent(navigationEvent, extra);
         } catch (Exception e) {
             // Catching all exceptions is really bad, but we need it here,

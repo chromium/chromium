@@ -499,6 +499,7 @@ public abstract class ChromeFeatureList {
     public static final String CCT_BLOCK_TOUCHES_DURING_ENTER_ANIMATION =
             "CCTBlockTouchesDuringEnterAnimation";
     public static final String CCT_CLIENT_DATA_HEADER = "CCTClientDataHeader";
+    public static final String CCT_CLOSE_LOGGING = "CCTCloseLogging";
     public static final String CCT_DESTROY_TAB_WHEN_MODEL_IS_EMPTY =
             "CCTDestroyTabWhenModelIsEmpty";
     public static final String CCT_DONT_OVERRIDE_INTENT_MIME_TYPE = "CCTDontOverrideIntentMimeType";
@@ -1138,6 +1139,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sCctAutoTranslate = newCachedFlag(CCT_AUTO_TRANSLATE, true);
     public static final CachedFlag sCctBlockTouchesDuringEnterAnimation =
             newCachedFlag(CCT_BLOCK_TOUCHES_DURING_ENTER_ANIMATION, true);
+    public static final CachedFlag sCctCloseLogging = newCachedFlag(CCT_CLOSE_LOGGING, false);
     public static final CachedFlag sCctDestroyTabWhenModelIsEmpty =
             newCachedFlag(CCT_DESTROY_TAB_WHEN_MODEL_IS_EMPTY, true);
     public static final CachedFlag sCctEarlyInitPowerManager =
@@ -1597,6 +1599,7 @@ public abstract class ChromeFeatureList {
                     sCctAlwaysOpenInBrowser,
                     sCctAutoTranslate,
                     sCctBlockTouchesDuringEnterAnimation,
+                    sCctCloseLogging,
                     sCctDestroyTabWhenModelIsEmpty,
                     sCctEarlyInitPowerManager,
                     sCctFreInSameTask,

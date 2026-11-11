@@ -9007,6 +9007,7 @@ from previous Chrome versions.
   <int value="-1806173068" label="UseSharedImagesForPepperVideo:enabled"/>
   <int value="-1804896568" label="AndroidGrammarCheck:disabled"/>
   <int value="-1804758261" label="force-drive-disclaimer-accepted:enabled"/>
+  <int value="-1804612012" label="CCTCloseLogging:disabled"/>
   <int value="-1804485171" label="disable-fullscreen-tab-detaching"/>
   <int value="-1804411756" label="ClipboardSuggestionContentHidden:enabled"/>
   <int value="-1804027916"
@@ -16565,6 +16566,7 @@ from previous Chrome versions.
   <int value="438595159" label="TabSharingToolbarAndroid:enabled"/>
   <int value="439267320" label="ScreenTime:disabled"/>
   <int value="439442906" label="PrefetchActivationBeacon:disabled"/>
+  <int value="439453312" label="CCTCloseLogging:enabled"/>
   <int value="439533068" label="CCTToolbarRefactor:enabled"/>
   <int value="439544735" label="EnableProxyAuthenticationService:enabled"/>
   <int value="439858569" label="OmniboxForceAllowedToBeDefault:enabled"/>
