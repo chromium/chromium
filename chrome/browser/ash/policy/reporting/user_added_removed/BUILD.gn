@@ -17,10 +17,12 @@ static_library("user_added_removed") {
     "//chrome/browser/ash/policy/status_collector",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/policy/messaging_layer/proto:add_remove_user_event_proto",
+    "//chromeos/ash/components/policy/device_local_account",
     "//chromeos/ash/components/settings",
     "//components/reporting/client:report_queue_provider",
     "//components/reporting/proto:record_constants",
     "//components/user_manager",
+    "//google_apis",
   ]
 
   allow_circular_includes_from = [ "//chrome/browser/ash/policy/core" ]
@@ -37,10 +39,13 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser/ash/policy/status_collector",
     "//chrome/browser/ash/profiles",
+    "//chrome/browser/ash/settings",
+    "//chrome/browser/ash/settings:test_support",
     "//chrome/browser/policy/messaging_layer/proto:add_remove_user_event_proto",
     "//chrome/test:test_support",
     "//chrome/test/base:testing_browser_process",
     "//chromeos/ash/components/policy/device_local_account",
+    "//chromeos/ash/components/settings",
     "//chromeos/dbus/power",
     "//components/reporting/client:test_support",
     "//components/reporting/proto:record_constants",

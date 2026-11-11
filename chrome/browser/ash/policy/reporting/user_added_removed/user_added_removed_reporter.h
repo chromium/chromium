@@ -6,9 +6,11 @@
 #define CHROME_BROWSER_ASH_POLICY_REPORTING_USER_ADDED_REMOVED_USER_ADDED_REMOVED_REPORTER_H_
 
 #include <memory>
+#include <string>
 #include <string_view>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/policy/reporting/user_event_reporter_helper.h"
 #include "chrome/browser/ash/policy/status_collector/managed_session_service.h"
@@ -34,6 +36,15 @@ class UserAddedRemovedReporter
       base::flat_map<AccountId, bool> users_to_be_removed,
       policy::ManagedSessionService* managed_session_service);
 
+  // Returns whether the removal of the user identified by `account_id` is
+  // a target of the reporting. Guest, device local accounts and deprecated
+  // accounts (deprecated ARC kiosk accounts and legacy supervised users) are
+  // not.
+  // Note that this needs to work without looking up the User instance, because
+  // the User may be already gone when the removal is processed, e.g., the
+  // removal is processed on start up.
+  static bool IsReportableUserRemoval(const AccountId& account_id);
+
   UserAddedRemovedReporter(const UserAddedRemovedReporter& other) = delete;
   UserAddedRemovedReporter& operator=(const UserAddedRemovedReporter& other) =
       delete;
@@ -44,7 +55,11 @@ class UserAddedRemovedReporter
   // the reporter is created.
   void ProcessRemoveUserCache();
 
-  // Processes the removed user.
+  // Processes the removed user. `user_email` can be empty if the user's email
+  // should not be reported (e.g. unaffiliated user). The removal event is
+  // still reported in that case. Whether the reporting is enabled is checked
+  // when the event is actually reported, after the device settings become
+  // trusted.
   void ProcessRemovedUser(std::string_view user_email,
                           user_manager::UserRemovalReason reason);
 
@@ -64,6 +79,11 @@ class UserAddedRemovedReporter
       base::flat_map<AccountId, bool> users_to_be_removed,
       policy::ManagedSessionService* managed_session_service);
 
+  // Reports the removed user, if the reporting is enabled. If the device
+  // settings are not yet trusted, this waits for it.
+  void ReportRemovedUser(std::string user_email,
+                         user_manager::UserRemovalReason reason);
+
   std::unique_ptr<UserEventReporterHelper> helper_;
 
   // Maps a user's email to if they are affiliated. This is needed to determine
@@ -73,6 +93,8 @@ class UserAddedRemovedReporter
   base::ScopedObservation<policy::ManagedSessionService,
                           policy::ManagedSessionService::Observer>
       managed_session_observation_{this};
+
+  base::WeakPtrFactory<UserAddedRemovedReporter> weak_factory_{this};
 };
 }  // namespace reporting
 

@@ -48,7 +48,6 @@ namespace reporting {
 class MetricReportingManager;
 class OsUpdatesReporter;
 class UserAddedRemovedReporter;
-class UserEventReporterHelper;
 class UserSessionActivityReporter;
 }  // namespace reporting
 
@@ -282,8 +281,6 @@ class DeviceCloudPolicyManagerAsh : public CloudPolicyManager,
   base::flat_map<AccountId, bool> users_to_be_removed_;
 
   std::vector<RemovedUser> removed_users_;
-
-  std::unique_ptr<reporting::UserEventReporterHelper> helper_;
 
   base::ObserverList<Observer, true>::Unchecked observers_;
 

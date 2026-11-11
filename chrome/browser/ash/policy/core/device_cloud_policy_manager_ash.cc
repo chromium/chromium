@@ -106,9 +106,7 @@ DeviceCloudPolicyManagerAsh::DeviceCloudPolicyManagerAsh(
       state_keys_broker_(state_keys_broker),
       crd_delegate_(&crd_delegate),
       task_runner_(task_runner),
-      local_state_(nullptr),
-      helper_(std::make_unique<reporting::UserEventReporterHelper>(
-          reporting::Destination::UNDEFINED_DESTINATION)) {}
+      local_state_(nullptr) {}
 
 DeviceCloudPolicyManagerAsh::~DeviceCloudPolicyManagerAsh() = default;
 
@@ -321,14 +319,10 @@ void DeviceCloudPolicyManagerAsh::OnUserManagerWillBeDestroyed() {
 void DeviceCloudPolicyManagerAsh::OnUserToBeRemoved(
     const AccountId& account_id) {
   // This logic needs to be consistent with UserAddedRemovedReporter.
-  if (!helper_->ReportingEnabled(ash::kReportDeviceLoginLogout)) {
-    return;
-  }
-  const user_manager::User* user =
-      user_manager::UserManager::Get()->FindUser(account_id);
-  if (!user || user->IsKioskType() ||
-      user->GetType() == user_manager::UserType::kPublicAccount ||
-      user->GetType() == user_manager::UserType::kGuest) {
+  // Note: the reporting policy is checked when the reporter actually reports
+  // the event.
+  if (!reporting::UserAddedRemovedReporter::IsReportableUserRemoval(
+          account_id)) {
     return;
   }
 
@@ -348,11 +342,6 @@ void DeviceCloudPolicyManagerAsh::OnUserRemoved(
 
   bool is_affiliated_user = it->second;
   users_to_be_removed_.erase(it);
-
-  // Check the pref, after we update the tracking map.
-  if (!helper_->ReportingEnabled(ash::kReportDeviceLoginLogout)) {
-    return;
-  }
 
   // Unlike UserAddedRemovedReporter, instead of reporting, we cache
   // the removed user here.
