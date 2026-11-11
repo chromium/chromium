@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {TestRunner} from 'test_runner';
-import {ElementsTestRunner} from 'elements_test_runner';
-import {SourcesTestRunner} from 'sources_test_runner';
-
-import * as Common from 'devtools/core/common/common.js';
 import * as SDK from 'devtools/core/sdk/sdk.js';
 import * as Main from 'devtools/entrypoints/main/main.js';
+import * as UI from 'devtools/ui/legacy/legacy.js';
+import {ElementsTestRunner} from 'elements_test_runner';
+import {SourcesTestRunner} from 'sources_test_runner';
+import {TestRunner} from 'test_runner';
 
 (async function() {
   TestRunner.addResult(
@@ -103,7 +102,8 @@ import * as Main from 'devtools/entrypoints/main/main.js';
       }
     },
 
-    function testXHRBreakpoint(next) {
+    async function testXHRBreakpoint(next) {
+      await UI.Widget.Widget.allUpdatesComplete;
       SDK.DOMDebuggerModel.DOMDebuggerManager.instance().addXHRBreakpoint('foo', true);
       TestRunner.evaluateInPageWithTimeout('sendXHR(\'resources/foo?xhr\')');
       SourcesTestRunner.waitUntilPausedAndDumpStackAndResume(next);
