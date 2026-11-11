@@ -501,6 +501,13 @@ void BrowserActions::PopulateSynonyms() {
       {kActionClearBrowsingData, IDS_ACTION_SYNONYMS_CLEAR_BROWSING_DATA},
       {kActionOptions, IDS_ACTION_SYNONYMS_OPTIONS},
       {kActionExit, IDS_ACTION_SYNONYMS_EXIT},
+      {kActionNewIsolatedWindow, IDS_ACTION_SYNONYMS_NEW_INCOGNITO_WINDOW},
+      {kActionBookmarkBarSubmenuAlwaysShow,
+       IDS_ACTION_SYNONYMS_SHOW_BOOKMARK_BAR},
+      {kActionBookmarkBarSubmenuAlwaysHide,
+       IDS_ACTION_SYNONYMS_SHOW_BOOKMARK_BAR},
+      {kActionBookmarkBarSubmenuOnlyOnNtp,
+       IDS_ACTION_SYNONYMS_SHOW_BOOKMARK_BAR},
   });
 
   // TODO(crbug.com/581423314): Each entry costs a FindAction tree walk during

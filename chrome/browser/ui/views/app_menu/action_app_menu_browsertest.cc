@@ -49,6 +49,8 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
+#include "components/enterprise/isolated_mode/isolated_mode_features.h"
+#include "components/enterprise/isolated_mode/prefs.h"
 #include "components/sync/base/features.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/model/data_type_activation_request.h"
@@ -436,14 +438,17 @@ IN_PROC_BROWSER_TEST_P(ActionAppMenuSynonymSearchBrowserTest,
 INSTANTIATE_TEST_SUITE_P(
     All,
     ActionAppMenuSynonymSearchBrowserTest,
-    testing::Values(SynonymSearchCase{u"vault", kActionShowPasswordManager},
-                    SynonymSearchCase{u"wallet", kActionShowPaymentMethods},
-                    SynonymSearchCase{u"zip", kActionShowContactInfo},
-                    SynonymSearchCase{u"yesterday", kActionShowHistory},
-                    SynonymSearchCase{u"star", kActionBookmarkThisTab},
-                    SynonymSearchCase{u"locate", kActionFind},
-                    SynonymSearchCase{
-                        u"adblock", kActionExtensionsSubmenuManageExtensions}));
+    testing::Values(
+        SynonymSearchCase{u"vault", kActionShowPasswordManager},
+        SynonymSearchCase{u"wallet", kActionShowPaymentMethods},
+        SynonymSearchCase{u"zip", kActionShowContactInfo},
+        SynonymSearchCase{u"yesterday", kActionShowHistory},
+        SynonymSearchCase{u"star", kActionBookmarkThisTab},
+        SynonymSearchCase{u"locate", kActionFind},
+        SynonymSearchCase{u"adblock", kActionExtensionsSubmenuManageExtensions},
+        SynonymSearchCase{u"toolbar", kActionBookmarkBarSubmenuAlwaysShow},
+        SynonymSearchCase{u"open incognito window",
+                          kActionNewIncognitoWindow}));
 
 #if !BUILDFLAG(IS_CHROMEOS)
 // Profile-management and import actions are not shown in the app menu on
@@ -454,6 +459,41 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(SynonymSearchCase{u"friend", kActionOpenGuestProfile},
                     SynonymSearchCase{u"firefox", kActionImportSettings}));
 #endif
+
+class ActionAppMenuIsolatedModeSynonymSearchBrowserTest
+    : public ActionAppMenuWithSearchBrowserTest {
+ public:
+  ActionAppMenuIsolatedModeSynonymSearchBrowserTest() {
+    feature_list_.InitAndEnableFeature(
+        enterprise_isolated_mode::kEnableEnterpriseIsolatedMode);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ActionAppMenuIsolatedModeSynonymSearchBrowserTest,
+                       SearchMatchesIsolatedWindowSynonym) {
+  browser()->GetProfile()->GetPrefs()->SetInteger(
+      enterprise_isolated_mode::kEnterpriseIsolatedModeSettings,
+      static_cast<int>(
+          enterprise_isolated_mode::IsolatedModeSetting::kEnabled));
+
+  BrowserWindowInterface* isolated_browser =
+      CreateBrowser(browser()->GetProfile());
+  ASSERT_TRUE(isolated_browser);
+
+  auto* root_action_item =
+      BrowserActions::From(isolated_browser)->root_action_item();
+  actions::ActionItem* isolated_action =
+      actions::ActionManager::Get().FindAction(kActionNewIsolatedWindow,
+                                               root_action_item);
+  ASSERT_NE(isolated_action, nullptr) << "Isolated window action not found!";
+
+  const auto& synonyms = isolated_action->GetSynonyms();
+  EXPECT_TRUE(std::find(synonyms.begin(), synonyms.end(),
+                        u"open incognito window") != synonyms.end());
+}
 
 // Activating a zoom in/out search result zooms the active tab, keeps the menu
 // open, and updates that row's secondary title with the new zoom level.

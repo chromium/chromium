@@ -193,6 +193,7 @@ void SendTabToSelfDynamicMenu::BuildSendTabToSelfActions(
     devices.erase(devices.begin() + kMaxDevices, devices.end());
   }
 
+  const auto& synonyms = parent_item->GetActionItem()->GetSynonyms();
   for (const auto& device : devices) {
     std::u16string label = GetDeviceItemLabel(device);
     ui::ImageModel icon = ui::ImageModel::FromVectorIcon(
@@ -211,6 +212,8 @@ void SendTabToSelfDynamicMenu::BuildSendTabToSelfActions(
                 &SendTabToSelfDynamicMenu::ExecuteDeviceSelection,
                 weak_ptr_factory_.GetWeakPtr(), device.cache_guid,
                 device.device_name, device.form_factor))
+            .AddSynonyms(synonyms)
+
             .Build());
   }
 

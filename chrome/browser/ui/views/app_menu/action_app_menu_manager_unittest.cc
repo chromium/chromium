@@ -1050,12 +1050,26 @@ TEST_F(ActionAppMenuManagerTest,
           "My Phone", "guid1", syncer::DeviceInfo::FormFactor::kPhone,
           syncer::DeviceInfo::OsType::kAndroid, base::Time::Now(),
           /*has_high_precision_timestamp=*/false)});
+
+  // Set synonyms on the global parent container before children are populated
+  // during CreateMenuHierarchy().
+  actions::ActionManager::Get()
+      .FindAction(kActionSendTabToSelf, nullptr)
+      ->AddSynonyms({u"share", u"phone"});
+
   root->ResetActionList();
   menu_manager.CreateMenuHierarchy();
   stts_action = find_send_tab_to_self();
   ASSERT_NE(stts_action, nullptr);
+
   EXPECT_TRUE(stts_action->HasPopulateChildActionsCallback());
   ASSERT_EQ(stts_action->GetChildren().children().size(), 3u);
+
+  // Verify the device leaf item inherited the synonyms.
+  EXPECT_EQ(
+      stts_action->GetChildren().children()[0]->GetActionItem()->GetSynonyms(),
+      stts_action->GetActionItem()->GetSynonyms());
+
   EXPECT_EQ(
       stts_action->GetChildren().children()[2]->GetActionItem()->GetText(),
       l10n_util::GetStringUTF16(IDS_SEND_TAB_TO_SELF_MANAGE_DEVICES));

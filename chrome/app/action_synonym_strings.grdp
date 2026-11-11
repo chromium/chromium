@@ -147,7 +147,7 @@
   </message>
   <!-- kActionNewIncognitoWindow: "New Incognito window". -->
   <message name="IDS_ACTION_SYNONYMS_NEW_INCOGNITO_WINDOW" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'New Incognito window') that users might type in the Chrome menu search bar to find the 'New Incognito window' action, which opens a private browsing window that does not save history, cookies, or site data. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas.">
-    private, anonymous, stealth, secret, safety, tracking protection, cookies, clear, cache
+    private, anonymous, stealth, secret, safety, tracking protection, cookies, clear, cache, open incognito window
   </message>
   <!-- kActionShowLensOverlayFromAppMenu: "Search this tab with Google Lens". -->
   <message name="IDS_ACTION_SYNONYMS_SHOW_LENS_OVERLAY" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Search this tab with Google Lens') that users might type in the Chrome menu search bar to find the 'Search this tab with Google Lens' action, which lets the user visually search, translate, or copy text from anything on the current page. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas.">
