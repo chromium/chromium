@@ -5379,7 +5379,21 @@ targets.bundle(
             ],
         ),
         targets.bundle(
-            targets = "ios_screen_size_dependent_tests",
+            targets = targets.bundle(
+                targets = "ios_screen_size_dependent_tests",
+                per_test_modifications = {
+                    "components_unittests": targets.mixin(
+                        swarming = targets.swarming(
+                            shards = 2,
+                        ),
+                    ),
+                    "ios_chrome_unittests": targets.mixin(
+                        swarming = targets.swarming(
+                            shards = 2,
+                        ),
+                    ),
+                },
+            ),
             mixins = [
                 "ci_only",
                 "mac_26_vm_optional",
@@ -5392,7 +5406,21 @@ targets.bundle(
             ],
         ),
         targets.bundle(
-            targets = "ios_screen_size_dependent_tests",
+            targets = targets.bundle(
+                targets = "ios_screen_size_dependent_tests",
+                per_test_modifications = {
+                    "components_unittests": targets.mixin(
+                        swarming = targets.swarming(
+                            shards = 2,
+                        ),
+                    ),
+                    "ios_chrome_unittests": targets.mixin(
+                        swarming = targets.swarming(
+                            shards = 2,
+                        ),
+                    ),
+                },
+            ),
             mixins = [
                 "mac_26_vm_optional",
             ],
@@ -5491,7 +5519,21 @@ targets.bundle(
             ],
         ),
         targets.bundle(
-            targets = "ios_screen_size_dependent_tests",
+            targets = targets.bundle(
+                targets = "ios_screen_size_dependent_tests",
+                per_test_modifications = {
+                    "components_unittests": targets.mixin(
+                        swarming = targets.swarming(
+                            shards = 2,
+                        ),
+                    ),
+                    "ios_chrome_unittests": targets.mixin(
+                        swarming = targets.swarming(
+                            shards = 2,
+                        ),
+                    ),
+                },
+            ),
             mixins = [
                 "ci_only",
                 "mac_26_vm_optional",
@@ -5502,7 +5544,21 @@ targets.bundle(
             ],
         ),
         targets.bundle(
-            targets = "ios_screen_size_dependent_tests",
+            targets = targets.bundle(
+                targets = "ios_screen_size_dependent_tests",
+                per_test_modifications = {
+                    "components_unittests": targets.mixin(
+                        swarming = targets.swarming(
+                            shards = 2,
+                        ),
+                    ),
+                    "ios_chrome_unittests": targets.mixin(
+                        swarming = targets.swarming(
+                            shards = 2,
+                        ),
+                    ),
+                },
+            ),
             mixins = [
                 "mac_26_vm_optional",
             ],
