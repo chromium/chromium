@@ -823,34 +823,33 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Enterprise.CdpAttribution.ActorCollisionCount" units="actors"
+<histogram name="Enterprise.CdpAttribution.ActorCollisionCount2" units="actors"
     expires_after="2027-05-01">
   <owner>qiand@google.com</owner>
   <owner>cbe-cep-eng@google.com</owner>
   <summary>
-    Records the number of distinct external Chrome DevTools Protocol (CDP) actor
-    processes (active or within the post-detach retention window) reported when
-    building EventInitiatorInfo for an enterprise security event or real-time
-    URL lookup. Emitted once per lookup (not per tab or session) when at least
-    one external CDP actor is present (counts &gt;= 1; 0 is not emitted), so
-    tabs with frequent navigations or events emit multiple samples. Uses exact
-    linear buckets for 1 through 9 actors, with counts of 10 or more placed in
-    the overflow bucket.
+    Records the total number of distinct active Chrome DevTools Protocol (CDP)
+    actors (external CDP processes within the 30-second command attribution
+    window and active built-in DevTools UI) present on a tab when building
+    EventInitiatorInfo for an enterprise security event or real-time URL lookup.
+    Emitted once per attributed CDP lookup (counts &gt;= 1; 0 is not emitted),
+    so tabs with frequent navigations or events emit multiple samples. Uses
+    exact linear buckets for 1 through 9 actors, with counts of 10 or more
+    placed in the overflow bucket.
   </summary>
 </histogram>
 
-<histogram name="Enterprise.CdpAttribution.PostDetachEventDelay" units="ms"
+<histogram name="Enterprise.CdpAttribution.LastCommandEventDelay" units="ms"
     expires_after="2027-05-01">
   <owner>qiand@google.com</owner>
   <owner>cbe-cep-eng@google.com</owner>
   <summary>
     Records the time elapsed between when an external Chrome DevTools Protocol
-    (CDP) actor detached from a tab and when a subsequent enterprise security
-    event or real-time URL lookup was attributed to that actor during the
-    post-detach retention window. Emitted once per lookup for each detached
-    external actor still within the retention window (not once per tab or
-    session), so tabs with frequent navigations or events during the retention
-    window emit multiple samples.
+    (CDP) actor last handled a CDP command on a tab and when a subsequent
+    enterprise security event or real-time URL lookup was attributed to that
+    actor during the command attribution window. Emitted once per lookup for
+    each external actor within the attribution window (not once per tab or
+    session), so tabs with frequent navigations or events emit multiple samples.
   </summary>
 </histogram>
 
@@ -878,8 +877,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Enterprise.CdpAttribution.UploadSecurityEvent.BuildLatency"
-    units="ms" expires_after="2027-05-01">
+<histogram name="Enterprise.CdpAttribution.UploadSecurityEvent.BuildLatency2"
+    units="microseconds" expires_after="2027-05-01">
   <owner>qiand@google.com</owner>
   <owner>cbe-cep-eng@google.com</owner>
   <summary>
@@ -887,19 +886,22 @@ chromium-metrics-reviews@google.com.
     with Chrome DevTools Protocol (CDP) actor attribution when preparing an
     enterprise security event or real-time URL lookup request. Emitted once per
     attributed lookup.
+
+    This metric is reported only for clients with high-resolution clocks.
   </summary>
 </histogram>
 
-<histogram
-    name="Enterprise.CdpAttribution.UploadSecurityEvent.DeferredHoldTime"
-    units="ms" expires_after="2027-05-01">
+<histogram name="Enterprise.CdpAttribution.UploadSecurityEvent.Category"
+    enum="CdpSessionCategory" expires_after="2027-05-01">
   <owner>qiand@google.com</owner>
   <owner>cbe-cep-eng@google.com</owner>
   <summary>
-    Records the total duration a tab's Chrome DevTools Protocol (CDP) actor
-    attribution waited for an in-flight asynchronous OS process tree walk to
-    complete (including task queue time), or 0ms when satisfied immediately from
-    the Pipe or WebSocket process tree cache.
+    Records the primary Chrome DevTools Protocol (CDP) session category
+    (built-in DevTools UI, external Pipe, or external WebSocket) reported in
+    EventInitiatorInfo when preparing an enterprise security event or real-time
+    URL lookup request. When multiple external CDP actors are active on the tab,
+    records the category of the actor with the most recent handled command
+    (last_command_at). Emitted once per attributed lookup.
   </summary>
 </histogram>
 

@@ -54,12 +54,6 @@ namespace {
 using ::chrome::cros::reporting::proto::EventInitiatorInfo;
 using ::chrome::cros::reporting::proto::ExternalProcessInfo;
 
-void RecordDeferredHoldTime(base::TimeDelta duration) {
-  base::UmaHistogramCustomTimes(
-      "Enterprise.CdpAttribution.UploadSecurityEvent.DeferredHoldTime",
-      duration, base::Milliseconds(1), base::Milliseconds(1000), 50);
-}
-
 void RecordProcessTreeWalkLatency(base::TimeDelta duration) {
   base::UmaHistogramCustomTimes(
       "Enterprise.CdpAttribution.ProcessTreeWalk.Latency", duration,
@@ -231,21 +225,61 @@ std::optional<EventInitiatorInfo> CdpActorSessionTracker::GetEventInitiatorInfo(
   }
 
   const base::TimeTicks now = base::TimeTicks::Now();
-  base::UmaHistogramCustomTimes(
-      "Enterprise.CdpAttribution.UploadSecurityEvent.BuildLatency",
-      now - build_start, base::Milliseconds(1), base::Milliseconds(100), 50);
+  base::UmaHistogramCustomMicrosecondsTimes(
+      "Enterprise.CdpAttribution.UploadSecurityEvent.BuildLatency2",
+      now - build_start, base::Microseconds(1), base::Milliseconds(10), 50);
+
+  TabCdpActorTracker* tab_tracker =
+      TabCdpActorTracker::FromWebContents(web_contents);
+
+  SessionCategory category = SessionCategory::kIgnored;
+  if (info->has_browser_feature_info()) {
+    category = SessionCategory::kDevToolsUi;
+  } else if (info->has_external_process_info() && tab_tracker &&
+             !tab_tracker->buffer().external_actors().empty()) {
+    const auto most_recent_actor = std::ranges::max_element(
+        tab_tracker->buffer().external_actors(), {},
+        &CdpActorBuffer::ExternalActorEntry::last_command_at);
+    switch (most_recent_actor->transport_type) {
+      case ExternalProcessInfo::TRANSPORT_TYPE_PIPE:
+        category = SessionCategory::kExternalPipe;
+        break;
+      case ExternalProcessInfo::TRANSPORT_TYPE_WEBSOCKET:
+        category = SessionCategory::kExternalWebSocket;
+        break;
+      case ExternalProcessInfo::TRANSPORT_TYPE_UNSPECIFIED:
+      default:
+        break;
+    }
+  }
+  base::UmaHistogramEnumeration(
+      "Enterprise.CdpAttribution.UploadSecurityEvent.Category", category);
+
+  const size_t actor_count =
+      (info->has_external_process_info()
+           ? static_cast<size_t>(
+                 info->external_process_info().external_processes_size())
+           : 0u) +
+      (tab_tracker && tab_tracker->buffer().HasDevToolsUiActive() ? 1u : 0u);
+  base::UmaHistogramExactLinear(
+      "Enterprise.CdpAttribution.ActorCollisionCount2", actor_count,
+      /*exclusive_max=*/10);
 
   if (info->has_external_process_info()) {
-    base::UmaHistogramExactLinear(
-        "Enterprise.CdpAttribution.ActorCollisionCount",
-        info->external_process_info().external_processes_size(),
-        /*exclusive_max=*/10);
     const bool has_empty_tree = std::ranges::any_of(
         info->external_process_info().external_processes(),
         [](const auto& process) { return process.process_nodes().empty(); });
     base::UmaHistogramBoolean(
         "Enterprise.CdpAttribution.UploadSecurityEvent.HasEmptyProcessTree",
         has_empty_tree);
+    if (tab_tracker) {
+      for (const auto& entry : tab_tracker->buffer().external_actors()) {
+        base::UmaHistogramCustomTimes(
+            "Enterprise.CdpAttribution.LastCommandEventDelay",
+            now - entry.last_command_at, base::Milliseconds(1),
+            base::Seconds(60), 50);
+      }
+    }
   }
   return info;
 }
@@ -439,9 +473,6 @@ void CdpActorSessionTracker::RecordExternalSessionCommand(
   ProcessTreeCacheEntry& entry =
       is_websocket ? websocket_cache_[*tracked.remote_endpoint] : pipe_cache_;
   if (entry.cached_tree.has_value()) {
-    if (is_first_command) {
-      RecordDeferredHoldTime(base::TimeDelta());
-    }
     TabCdpActorTracker::GetOrCreateForWebContents(web_contents)
         ->buffer()
         .OnExternalActorCommandHandled(transport_type, tracked.remote_endpoint,
@@ -454,8 +485,7 @@ void CdpActorSessionTracker::RecordExternalSessionCommand(
       ->buffer()
       .OnExternalActorCommandHandled(transport_type, tracked.remote_endpoint);
   if (is_first_command) {
-    entry.waiting_tabs.emplace_back(web_contents->GetWeakPtr(),
-                                    base::TimeTicks::Now());
+    entry.waiting_tabs.push_back(web_contents->GetWeakPtr());
   }
   StartExtraction(tracked.remote_endpoint);
 }
@@ -531,10 +561,9 @@ void CdpActorSessionTracker::OnExtractionCompleted(
 
   entry->extraction_in_flight = false;
   entry->cached_tree = tree;
-  std::vector<WaitingTab> waiting_tabs = std::move(entry->waiting_tabs);
+  std::vector<base::WeakPtr<content::WebContents>> waiting_tabs =
+      std::move(entry->waiting_tabs);
   entry->waiting_tabs.clear();
-
-  const base::TimeTicks now = base::TimeTicks::Now();
 
   const SessionCategory expected_category =
       remote_endpoint.has_value() ? SessionCategory::kExternalWebSocket
@@ -560,9 +589,8 @@ void CdpActorSessionTracker::OnExtractionCompleted(
     }
   }
 
-  for (const auto& [weak_tab, deferred_since] : waiting_tabs) {
+  for (const auto& weak_tab : waiting_tabs) {
     if (content::WebContents* web_contents = weak_tab.get()) {
-      RecordDeferredHoldTime(now - deferred_since);
       if (updated_tabs.insert(web_contents).second) {
         if (auto* tab_tracker =
                 TabCdpActorTracker::FromWebContents(web_contents)) {
