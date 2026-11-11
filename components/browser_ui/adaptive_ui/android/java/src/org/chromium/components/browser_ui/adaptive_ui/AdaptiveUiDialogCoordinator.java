@@ -46,7 +46,9 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  */
 @NullMarked
 final class AdaptiveUiDialogCoordinator
-        implements ModalDialogProperties.Controller, ModalDialogManagerObserver {
+        implements AdaptiveUiControllerImpl.Presenter,
+                ModalDialogProperties.Controller,
+                ModalDialogManagerObserver {
     private final PropertyModel mModel;
     private final ModalDialogManager mModalDialogManager;
     private final Runnable mOnShown;
@@ -104,7 +106,8 @@ final class AdaptiveUiDialogCoordinator
     }
 
     /** Hands the dialog to the {@link ModalDialogManager}, which may queue it. */
-    void show() {
+    @Override
+    public void show() {
         if (mDestroyed) return;
         mModalDialogManager.addObserver(this);
         mModalDialogManager.showDialog(mDialogModel, getDialogType(mScope));
@@ -115,8 +118,10 @@ final class AdaptiveUiDialogCoordinator
      * before this returns.
      *
      * @param reason Why the entry is closed.
+     * @param animate Ignored: {@link ModalDialogManager} always dismisses synchronously.
      */
-    void hide(@DismissReason int reason) {
+    @Override
+    public void hide(@DismissReason int reason, boolean animate) {
         if (mDestroyed) return;
         setDismissReason(reason);
         // Synchronous for both showing and queued dialogs; onDismiss() reports the reason.
@@ -304,7 +309,7 @@ final class AdaptiveUiDialogCoordinator
     private void requestDismiss(@DismissReason int reason) {
         if (isDismissing()) return;
         mRequestedDismissReason = reason;
-        hide(reason);
+        hide(reason, /* animate= */ true);
     }
 
     // LINT.IfChange(DialogDismissReasonMapping)

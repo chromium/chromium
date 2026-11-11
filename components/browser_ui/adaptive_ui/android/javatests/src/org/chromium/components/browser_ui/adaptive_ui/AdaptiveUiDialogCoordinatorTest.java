@@ -1091,7 +1091,7 @@ public class AdaptiveUiDialogCoordinatorTest {
         AdaptiveUiDialogCoordinator coordinator = createCoordinator(newModelBuilder().build());
         coordinator.show();
 
-        coordinator.hide(DismissReason.NAVIGATION);
+        coordinator.hide(DismissReason.NAVIGATION, /* animate= */ true);
 
         verify(mModalDialogManager)
                 .dismissDialog(coordinator.getDialogModel(), DialogDismissalCause.NAVIGATE);
@@ -1105,7 +1105,7 @@ public class AdaptiveUiDialogCoordinatorTest {
         coordinator.show();
         coordinator.onDismiss(coordinator.getDialogModel(), DialogDismissalCause.TAB_SWITCHED);
 
-        coordinator.hide(DismissReason.CLOSE_BUTTON);
+        coordinator.hide(DismissReason.CLOSE_BUTTON, /* animate= */ true);
 
         verify(mModalDialogManager, never())
                 .dismissDialog(eq(coordinator.getDialogModel()), anyInt());

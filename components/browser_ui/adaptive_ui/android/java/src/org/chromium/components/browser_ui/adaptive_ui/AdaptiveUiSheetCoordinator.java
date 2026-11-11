@@ -43,7 +43,8 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  * The entry is dismissed once the {@link BottomSheetController} calls {@link #destroy()}.
  */
 @NullMarked
-final class AdaptiveUiSheetCoordinator implements BottomSheetContent {
+final class AdaptiveUiSheetCoordinator
+        implements AdaptiveUiControllerImpl.Presenter, BottomSheetContent {
     private final PropertyModel mModel;
     private final @AdaptiveUiScope int mScope;
     private final BottomSheetController mBottomSheetController;
@@ -166,7 +167,8 @@ final class AdaptiveUiSheetCoordinator implements BottomSheetContent {
     }
 
     /** Hands the sheet to the {@link BottomSheetController}, which may queue it. */
-    void show() {
+    @Override
+    public void show() {
         if (mDestroyed) return;
         mBottomSheetController.addObserver(mSheetObserver);
         mBottomSheetController.requestShowContent(this, /* animate= */ true);
@@ -178,7 +180,8 @@ final class AdaptiveUiSheetCoordinator implements BottomSheetContent {
      * @param reason Why the entry is closed.
      * @param animate Whether to animate. When false, {@code onDismissed} fires before this returns.
      */
-    void hide(@DismissReason int reason, boolean animate) {
+    @Override
+    public void hide(@DismissReason int reason, boolean animate) {
         if (mDestroyed) return;
         setDismissReason(reason);
         boolean isCurrent = mBottomSheetController.getCurrentSheetContent() == this;
