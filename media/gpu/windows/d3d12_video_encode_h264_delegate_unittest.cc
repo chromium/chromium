@@ -4,8 +4,10 @@
 
 #include "media/gpu/windows/d3d12_video_encode_h264_delegate.h"
 
+#include <algorithm>
 #include <array>
 #include <optional>
+#include <vector>
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
@@ -189,6 +191,10 @@ class D3D12VideoEncodeH264DelegateTest
           return S_OK;
         });
 
+    CreateEncoderDelegate();
+  }
+
+  void CreateEncoderDelegate() override {
     gpu::GpuDriverBugWorkarounds gpu_workarounds{};
     gpu_workarounds.disable_d3d12_h264_encoder_non_reference_frames = true;
     encoder_delegate_ = std::make_unique<D3D12VideoEncodeH264Delegate>(
@@ -644,6 +650,47 @@ TEST_F(D3D12VideoEncodeH264DelegateTest, EncodeWithManualReferenceControl) {
       input_frame, gfx::Rect(config.input_visible_size),
       gfx::ColorSpace::CreateSRGB(), bitstream_buffer, encode_opts);
   ASSERT_TRUE(result_or_error.has_value());
+}
+
+TEST_F(D3D12VideoEncodeH264DelegateTest, DisplayContentCapsQp) {
+  // The frames are far larger than the bitrate allows, so the rate controller
+  // raises the QP as far as it can.
+  constexpr size_t kFrameSize = 200000;
+  VideoEncodeAccelerator::Config config = GetDefaultH264Config();
+  config.bitrate = Bitrate::ConstantBitrate(100000u);
+  std::vector<base::TimeDelta> timestamps;
+  for (int i = 0; i < 30; ++i) {
+    timestamps.push_back(i * base::Seconds(1) / config.framerate);
+  }
+
+  // Camera content may use the full H.264 QP range.
+  config.content_type = VideoEncodeAccelerator::Config::ContentType::kCamera;
+  std::vector<int> camera_qps =
+      InitializeAndEncodeFrames(config, kFrameSize, timestamps);
+  ASSERT_EQ(camera_qps.size(), timestamps.size());
+  EXPECT_GT(std::ranges::max(camera_qps),
+            static_cast<int>(kH264DesktopSWBRCMaxQuantizer));
+
+  // Screen content is capped so that text stays readable.
+  CreateEncoderDelegate();
+  config.content_type = VideoEncodeAccelerator::Config::ContentType::kDisplay;
+  std::vector<int> display_qps =
+      InitializeAndEncodeFrames(config, kFrameSize, timestamps);
+  ASSERT_EQ(display_qps.size(), timestamps.size());
+  EXPECT_LE(std::ranges::max(display_qps),
+            static_cast<int>(kH264DesktopSWBRCMaxQuantizer));
+}
+
+TEST_F(D3D12VideoEncodeH264DelegateTest, RateControlUsesFrameTimestamps) {
+  // Static screen content can arrive at 1 fps while the encoder is configured
+  // for 30 fps. Each frame then has a 30 times larger bit budget, so the same
+  // frames must end up with a lower QP than when they arrive at 30 fps.
+  VideoEncodeAccelerator::Config config = GetDefaultH264Config();
+  config.bitrate = Bitrate::ConstantBitrate(1000000u);
+  config.content_type = VideoEncodeAccelerator::Config::ContentType::kDisplay;
+  auto [qp_at_1fps, qp_at_30fps] = GetLastQpAtIntervalAndAtConfigFramerate(
+      config, /*frame_size=*/20000, /*num_frames=*/30, base::Seconds(1));
+  EXPECT_LT(qp_at_1fps, qp_at_30fps);
 }
 
 }  // namespace media
