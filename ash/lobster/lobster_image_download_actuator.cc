@@ -4,7 +4,6 @@
 
 #include "ash/lobster/lobster_image_download_actuator.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/lobster/lobster_image_download_response.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -40,7 +39,6 @@ void LobsterImageDownloadActuator::WriteImageToPath(
       FROM_HERE,
       base::BindOnce(
           [](const base::FilePath& save_dir, const std::string& query,
-             uint32_t id,
              std::string_view image_bytes) -> LobsterImageDownloadResponse {
             std::string sanitized_file_name = query;
 
@@ -51,14 +49,10 @@ void LobsterImageDownloadActuator::WriteImageToPath(
                 sanitized_file_name.substr(0, kQueryCharLimit);
 
             base::FilePath saved_file_path =
-                base::FeatureList::IsEnabled(
-                    features::kLobsterFileNamingImprovement)
-                    ? base::GetUniquePathWithSuffixFormat(
-                          save_dir.Append(
-                              base::StringPrintf("%s.jpeg", trimmed_file_name)),
-                          "-%d")
-                    : save_dir.Append(base::StringPrintf(
-                          "%s-%d.jpeg", trimmed_file_name, id));
+                base::GetUniquePathWithSuffixFormat(
+                    save_dir.Append(
+                        base::StringPrintf("%s.jpeg", trimmed_file_name)),
+                    "-%d");
 
             if (saved_file_path == base::FilePath() ||
                 base::PathExists(saved_file_path)) {
@@ -73,7 +67,7 @@ void LobsterImageDownloadActuator::WriteImageToPath(
             LOG(ERROR) << "Unable to write file name " << saved_file_path;
             return {.download_path = saved_file_path, .success = false};
           },
-          save_dir, query, id, image_bytes),
+          save_dir, query, image_bytes),
       std::move(callback));
 }
 
