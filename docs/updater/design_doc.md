@@ -922,6 +922,30 @@ internal and active services.
 Service installation uses the `InstallServiceWorkItem` for installing and
 rolling back the service.
 
+### Mojo IPC Security
+On Windows, `UpdateService` and `UpdateServiceInternal` are also served over
+Mojo named pipes (`NamedMojoIpcServer`):
+
+*   **System scope**: On Windows 10 RS3+, the server listens first on an
+    admin-protected pipe under `\ProtectedPrefix\Administrators` with a DACL
+    that denies `FILE_CREATE_PIPE_INSTANCE` to non-admin authenticated users,
+    preventing pipe squatting while allowing non-admin clients to connect.
+    Callers below High integrity are marked untrusted
+    (`MOJO_SEND_INVITATION_FLAG_UNTRUSTED_PROCESS`) so Mojo rejects
+    pre-duplicated handle claims, and `UpdateService` routes non-trusted
+    connections to `UpdateServiceStubUntrusted` (which permits safe update
+    checks/updates while rejecting privileged operations such as
+    `RunInstaller`).
+*   **User scope**: Same-user and `>= Medium` integrity are enforced by the
+    kernel on pipe open: `NamedMojoServerEndpointConnectorWin` claims the first
+    pipe instance with `FILE_FLAG_FIRST_PIPE_INSTANCE` and verifies pipe
+    ownership, `NamedPlatformChannel`'s default DACL (`SY`/`BA`/`OW`) denies
+    other standard users, and Windows Mandatory Integrity Control (`No-Write-Up`
+    against `FILE_GENERIC_WRITE`) plus AppContainer `\LOCAL` namespace isolation
+    deny lower-integrity callers. `include_peer_process_info` is omitted so a
+    Medium-integrity server does not reject elevated (`BA`/`SY`) callers whose
+    processes it cannot open.
+
 ### Network
 On Windows, the updater uses WinHTTP to implement the network.
 

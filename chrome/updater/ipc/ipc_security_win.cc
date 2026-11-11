@@ -22,8 +22,8 @@ namespace updater {
 
 bool IsConnectionTrusted(
     const named_mojo_ipc_server::ConnectionInfo& connector) {
-  // IPC callers on Windows are authenticated via the DACL applied to the stub's
-  // named pipe (see `CreateServerEndpointOptions` below).
+  // User-scope callers are authenticated by the kernel on pipe open (see
+  // `CreateServerEndpointOptions` below).
   // TODO(crbug.com/456542123): Set to `true` for system after the client proxy
   // allows impersonation and the server stub gates method calls based on the
   // client's integrity levels.
@@ -78,9 +78,6 @@ named_mojo_ipc_server::EndpointOptions CreateServerEndpointOptions(
     // callers built after this change declare the server elevated instead and
     // send handles for this process to duplicate; see
     // `UpdateServiceProxyMojoImpl::OnConnected()`.
-    //
-    // A user install has no such boundary - server and callers run as the same
-    // user - so no caller is declared untrusted there.
     options.include_peer_process_info = true;
     options.send_invitation_flags_callback =
         base::BindRepeating(&SendInvitationFlagsForCaller);
@@ -97,6 +94,14 @@ named_mojo_ipc_server::EndpointOptions CreateServerEndpointOptions(
     options.security_descriptor = L"D:(A;;GA;;;SY)(A;;GA;;;BA)(A;;GRGW;;;AU)";
   }
 
+  // For user scope, the kernel enforces same-user and >= Medium integrity on
+  // pipe open: `NamedMojoServerEndpointConnectorWin` claims the pipe with
+  // `FILE_FLAG_FIRST_PIPE_INSTANCE` and verifies owner SID (blocking pipe
+  // squatting), `NamedPlatformChannel`'s default DACL (`SY`/`BA`/`OW`) blocks
+  // other standard users, and Mandatory Integrity Control (`No-Write-Up` vs.
+  // `FILE_GENERIC_WRITE`) plus AppContainer `LOCAL\` isolation block lower-IL
+  // processes. `include_peer_process_info` is omitted so a Medium-IL server
+  // does not drop elevated (`BA`/`SY`) callers it cannot `OpenProcess`.
   return options;
 }
 
