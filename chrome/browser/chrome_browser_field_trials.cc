@@ -396,4 +396,7 @@ void ChromeBrowserFieldTrials::EnableRuntimeMutableFeatures(
   feature_list->EnableRuntimeMutability(
       performance_manager::features::kPMWithheldFromViewVoter,
       base::DoNothing());
+  feature_list->EnableRuntimeMutability(
+      performance_manager::features::kPMSidePanelLoadingVoter,
+      base::DoNothing());
 }

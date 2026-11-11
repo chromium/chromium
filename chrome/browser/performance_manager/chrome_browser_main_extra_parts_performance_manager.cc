@@ -311,11 +311,8 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
     // Ensures the contents of a Side Panel loads at a high priority, even when
     // it is not visible.
     // TODO(crbug.com/549552319): Remove once kPMWithheldFromViewVoter ships.
-    if (base::FeatureList::IsEnabled(
-            performance_manager::features::kPMSidePanelLoadingVoter)) {
-      voting_system->AddPriorityVoter<
-          performance_manager::priority::SidePanelLoadingVoter>();
-    }
+    voting_system->AddPriorityVoter<
+        performance_manager::priority::SidePanelLoadingVoter>();
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
     // Keeps the renderer of a navigation-blocking extension service worker out

@@ -12,7 +12,8 @@ class WebContents;
 namespace performance_manager::priority {
 
 // Marks `web_contents` as the main contents of a Side Panel, which will ensure
-// that it loads at high priority, even if it is not visible.
+// that it loads at high priority, even if it is not visible. No-op when
+// `features::kPMSidePanelLoadingVoter` is disabled.
 void MarkAsSidePanel(content::WebContents* web_contents);
 
 }  // namespace performance_manager::priority

@@ -403,6 +403,7 @@ source_set("unit_tests") {
       "policies/transient_keep_alive_policy_unittest.cc",
       "policies/urgent_page_discarding_policy_unittest.cc",
       "priority/side_panel_loading_voter_unittest.cc",
+      "side_panel_loading_policy_unittest.cc",
       "user_tuning/battery_saver_mode_manager_unittest.cc",
       "user_tuning/cpu_health_tracker_unittest.cc",
       "user_tuning/performance_detection_manager_unittest.cc",
