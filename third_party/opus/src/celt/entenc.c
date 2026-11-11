@@ -285,7 +285,7 @@ void ec_enc_done(ec_enc *_this){
   }
   /*Clear any excess space and add any remaining extra bits to the last byte.*/
   if(!_this->error){
-    OPUS_CLEAR(_this->buf+_this->offs,
+    if (_this->buf) OPUS_CLEAR(_this->buf+_this->offs,
      _this->storage-_this->offs-_this->end_offs);
     if(used>0){
       /*If there's no range coder data at all, give up.*/

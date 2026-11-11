@@ -167,6 +167,9 @@ typedef struct OpusEncoder OpusEncoder;
   * @param[in] channels <tt>int</tt>: Number of channels.
   *                                   This must be 1 or 2.
   * @returns The size in bytes.
+  * @note Since this function does not take the application as input, it will overestimate
+  * the size required for OPUS_APPLICATION_RESTRICTED_SILK and OPUS_APPLICATION_RESTRICTED_CELT.
+  * That is generally not a problem, except when trying to know the size to use for a copy.
   */
 OPUS_EXPORT OPUS_WARN_UNUSED_RESULT int opus_encoder_get_size(int channels);
 
@@ -508,7 +511,7 @@ OPUS_EXPORT int opus_decoder_init(
   *  FEC cases, frame_size <b>must</b> be a multiple of 2.5 ms.
   * @param [in] decode_fec <tt>int</tt>: Flag (0 or 1) to request that any in-band forward error correction data be
   *  decoded. If no such data is available, the frame is decoded as if it were lost.
-  * @returns Number of decoded samples or @ref opus_errorcodes
+  * @returns Number of decoded samples per channel or @ref opus_errorcodes
   */
 OPUS_EXPORT OPUS_WARN_UNUSED_RESULT int opus_decode(
     OpusDecoder *st,
@@ -558,7 +561,7 @@ OPUS_EXPORT OPUS_WARN_UNUSED_RESULT int opus_decode24(
   *  FEC cases, frame_size <b>must</b> be a multiple of 2.5 ms.
   * @param [in] decode_fec <tt>int</tt>: Flag (0 or 1) to request that any in-band forward error correction data be
   *  decoded. If no such data is available the frame is decoded as if it were lost.
-  * @returns Number of decoded samples or @ref opus_errorcodes
+  * @returns Number of decoded samples per channel or @ref opus_errorcodes
   */
 OPUS_EXPORT OPUS_WARN_UNUSED_RESULT int opus_decode_float(
     OpusDecoder *st,
@@ -812,7 +815,7 @@ OPUS_EXPORT void opus_pcm_soft_clip(float *pcm, int frame_size, int channels, fl
   * framing overhead becomes negligible.
   *
   * The repacketizer currently only operates on elementary Opus
-  * streams. It will not manipualte multistream packets successfully, except in
+  * streams. It will not manipulate multistream packets successfully, except in
   * the degenerate case where they consist of data from a single stream.
   *
   * The repacketizing process starts with creating a repacketizer state, either

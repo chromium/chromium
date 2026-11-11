@@ -1,9 +1,9 @@
 upstream {
-  commit: "55513e81d8f606bd75d0ff773d2144e5f2a732f5"
+  version: "v1.6.1"
   artifacts {
     git {
       repository: "https://gitlab.xiph.org/xiph/opus"
-      commit: "55513e81d8f606bd75d0ff773d2144e5f2a732f5"
+      commit: "22244de5a79bd1d6d623c32e72bf1954b56235be"
     }
   }
 }
@@ -12,4 +12,16 @@ stages {
     patch { copybara {} }
   }
   publish { git {} }
+}
+latest {
+  generic {
+    format: "v${n0}.${n1}${n2}"
+    regex_groups { key: "n0" value: "[0-9]+" }
+    regex_groups { key: "n1" value: "[0-9]+" }
+    regex_groups { key: "n2" value: "(\\.[0-9]+)?" }
+  }
+  git {
+    repository: "https://gitlab.xiph.org/xiph/opus"
+    tags {}
+  }
 }

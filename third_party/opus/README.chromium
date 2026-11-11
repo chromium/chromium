@@ -1,7 +1,7 @@
 Name: opus
 URL: https://gitlab.xiph.org/xiph/opus
-Version: 55513e81
-Revision: 55513e81d8f606bd75d0ff773d2144e5f2a732f5
+Version: v1.6.1
+Revision: 22244de5a79bd1d6d623c32e72bf1954b56235be
 Update Mechanism: Manual
 License: Opus-Patent-BSD-3-Clause
 License File: src/COPYING
@@ -19,10 +19,6 @@ Local Modifications:
 The patches are in patches/; copy.bara.sky applies them in this order.
 patches/0001-no-assertion-messages.patch: Do not print celt_fatal()
   messages in official builds.
-patches/0002-plain-subtraction-outside-fuzzing.patch: Keep plain
-  subtraction in silk NSQ_del_dec outside fuzzing builds.
-patches/0003-nsq-ignore-wraparound.patch: Ignore a wraparound in
-  silk_noise_shape_quantizer(); backport of upstream 1c370855.
 patches/0004-avx2-rounding-shift-overflow.patch: Round like
   silk_RSHIFT_ROUND() in the AVX2 NSQ_del_dec, so it cannot overflow;
   upstream took the same change as 212d66c2.

@@ -61,7 +61,7 @@ void silk_find_pitch_lags_FLP(
     x_buf = x - psEnc->sCmn.ltp_mem_length;
 
     /******************************************/
-    /* Estimate LPC AR coeficients            */
+    /* Estimate LPC AR coefficients           */
     /******************************************/
 
     /* Calculate windowed signal */

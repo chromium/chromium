@@ -142,7 +142,7 @@ opus_int silk_control_audio_bandwidth(
     silk_EncControlStruct       *encControl                     /* I    Control structure                           */
 );
 
-/* Control SNR of redidual quantizer */
+/* Control SNR of residual quantizer */
 opus_int silk_control_SNR(
     silk_encoder_state          *psEncC,                        /* I/O  Pointer to Silk encoder state               */
     opus_int32                  TargetRate_bps                  /* I    Target max bitrate (bps)                    */

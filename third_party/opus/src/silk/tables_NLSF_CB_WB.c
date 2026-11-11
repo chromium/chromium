@@ -231,4 +231,3 @@ const silk_NLSF_CB_struct silk_NLSF_CB_WB =
     silk_NLSF_CB2_BITS_WB_Q5,
     silk_NLSF_DELTA_MIN_WB_Q15,
 };
-

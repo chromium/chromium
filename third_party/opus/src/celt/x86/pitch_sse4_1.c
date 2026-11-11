@@ -58,11 +58,11 @@ opus_val32 celt_inner_prod_sse4_1(const opus_val16 *x, const opus_val16 *y,
     acc2 = _mm_setzero_si128();
 
     for (i=0;i<dataSize16;i+=16) {
-        inVec1_76543210 = _mm_loadu_si128((__m128i *)(&x[i + 0]));
-        inVec2_76543210 = _mm_loadu_si128((__m128i *)(&y[i + 0]));
+        inVec1_76543210 = _mm_loadu_si128((__m128i *)(void*)(&x[i + 0]));
+        inVec2_76543210 = _mm_loadu_si128((__m128i *)(void*)(&y[i + 0]));
 
-        inVec1_FEDCBA98 = _mm_loadu_si128((__m128i *)(&x[i + 8]));
-        inVec2_FEDCBA98 = _mm_loadu_si128((__m128i *)(&y[i + 8]));
+        inVec1_FEDCBA98 = _mm_loadu_si128((__m128i *)(void*)(&x[i + 8]));
+        inVec2_FEDCBA98 = _mm_loadu_si128((__m128i *)(void*)(&y[i + 8]));
 
         inVec1_76543210 = _mm_madd_epi16(inVec1_76543210, inVec2_76543210);
         inVec1_FEDCBA98 = _mm_madd_epi16(inVec1_FEDCBA98, inVec2_FEDCBA98);
@@ -75,8 +75,8 @@ opus_val32 celt_inner_prod_sse4_1(const opus_val16 *x, const opus_val16 *y,
 
     if (N - i >= 8)
     {
-        inVec1_76543210 = _mm_loadu_si128((__m128i *)(&x[i + 0]));
-        inVec2_76543210 = _mm_loadu_si128((__m128i *)(&y[i + 0]));
+        inVec1_76543210 = _mm_loadu_si128((__m128i *)(void*)(&x[i + 0]));
+        inVec2_76543210 = _mm_loadu_si128((__m128i *)(void*)(&y[i + 0]));
 
         inVec1_76543210 = _mm_madd_epi16(inVec1_76543210, inVec2_76543210);
 
@@ -134,11 +134,11 @@ void xcorr_kernel_sse4_1(const opus_val16 * x, const opus_val16 * y, opus_val32 
 
     for (j=0;j<(len-7);j+=8)
     {
-        vecX = _mm_loadu_si128((__m128i *)(&x[j + 0]));
-        vecY0 = _mm_loadu_si128((__m128i *)(&y[j + 0]));
-        vecY1 = _mm_loadu_si128((__m128i *)(&y[j + 1]));
-        vecY2 = _mm_loadu_si128((__m128i *)(&y[j + 2]));
-        vecY3 = _mm_loadu_si128((__m128i *)(&y[j + 3]));
+        vecX = _mm_loadu_si128((__m128i *)(void*)(&x[j + 0]));
+        vecY0 = _mm_loadu_si128((__m128i *)(void*)(&y[j + 0]));
+        vecY1 = _mm_loadu_si128((__m128i *)(void*)(&y[j + 1]));
+        vecY2 = _mm_loadu_si128((__m128i *)(void*)(&y[j + 2]));
+        vecY3 = _mm_loadu_si128((__m128i *)(void*)(&y[j + 3]));
 
         sum0 = _mm_add_epi32(sum0, _mm_madd_epi16(vecX, vecY0));
         sum1 = _mm_add_epi32(sum1, _mm_madd_epi16(vecX, vecY1));
@@ -229,9 +229,9 @@ void xcorr_kernel_sse4_1(const opus_val16 * x, const opus_val16 * y, opus_val32 
         vecSum = _mm_add_epi32(vecSum, sum0);
     }
 
-    initSum = _mm_loadu_si128((__m128i *)(&sum[0]));
+    initSum = _mm_loadu_si128((__m128i *)(void*)(&sum[0]));
     initSum = _mm_add_epi32(initSum, vecSum);
-    _mm_storeu_si128((__m128i *)sum, initSum);
+    _mm_storeu_si128((__m128i *)(void*)sum, initSum);
 
 #ifdef OPUS_CHECK_ASM
     celt_assert(!memcmp(sum_c, sum, sizeof(sum_c)));

@@ -36,10 +36,6 @@
 #include "opus_types.h"
 #include "opus_projection.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 typedef struct MappingMatrix
 {
     int rows; /* number of channels outputted from matrix. */
@@ -157,9 +153,5 @@ extern const opus_int16 mapping_matrix_fourthoa_demixing_data[729];
 
 extern const MappingMatrix mapping_matrix_fifthoa_demixing;
 extern const opus_int16 mapping_matrix_fifthoa_demixing_data[1444];
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* MAPPING_MATRIX_H */

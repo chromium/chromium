@@ -42,7 +42,7 @@
 #include "x86/pitch_sse.h"
 #endif
 
-#if defined(MIPSr1_ASM)
+#if defined(FIXED_POINT) && defined(__mips)
 #include "mips/pitch_mipsr1.h"
 #endif
 
@@ -51,7 +51,7 @@
 #endif
 
 void pitch_downsample(celt_sig * OPUS_RESTRICT x[], opus_val16 * OPUS_RESTRICT x_lp,
-      int len, int C, int arch);
+      int len, int C, int factor, int arch);
 
 void pitch_search(const opus_val16 * OPUS_RESTRICT x_lp, opus_val16 * OPUS_RESTRICT y,
                   int len, int max_pitch, int *pitch, int arch);

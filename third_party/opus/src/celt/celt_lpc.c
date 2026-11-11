@@ -59,8 +59,15 @@ int          p
       for (i = 0; i < p; i++) {
          /* Sum up this iteration's reflection coefficient */
          opus_val32 rr = 0;
+#if defined (FIXED_POINT) && OPUS_FAST_INT64
+         opus_int64 acc = 0;
+         for (j = 0; j < i; j++)
+            acc += (opus_int64)(lpc[j]) * (opus_int64)(ac[i - j]);
+         rr = (opus_val32)SHR64(acc, 31);
+#else
          for (j = 0; j < i; j++)
             rr += MULT32_32_Q31(lpc[j],ac[i - j]);
+#endif
          rr += SHR32(ac[i + 1],6);
          r = -frac_div32(SHL32(rr,6), error);
          /*  Update LPC coefficients and total error */
@@ -312,15 +319,18 @@ int _celt_autocorr(
 #ifdef FIXED_POINT
    {
       opus_val32 ac0;
+      int ac0_shift = celt_ilog2(n + (n>>4));
       ac0 = 1+(n<<7);
-      if (n&1) ac0 += SHR32(MULT16_16(xptr[0],xptr[0]),9);
+      if (n&1) ac0 += SHR32(MULT16_16(xptr[0],xptr[0]),ac0_shift);
       for(i=(n&1);i<n;i+=2)
       {
-         ac0 += SHR32(MULT16_16(xptr[i],xptr[i]),9);
-         ac0 += SHR32(MULT16_16(xptr[i+1],xptr[i+1]),9);
+         ac0 += SHR32(MULT16_16(xptr[i],xptr[i]),ac0_shift);
+         ac0 += SHR32(MULT16_16(xptr[i+1],xptr[i+1]),ac0_shift);
       }
+      /* Consider the effect of rounding-to-nearest when scaling the signal. */
+      ac0 += SHR32(ac0,7);
 
-      shift = celt_ilog2(ac0)-30+10;
+      shift = celt_ilog2(ac0)-30+ac0_shift+1;
       shift = (shift)/2;
       if (shift>0)
       {

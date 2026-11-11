@@ -43,17 +43,22 @@
 #include "arch.h"
 #include "kiss_fft.h"
 
-#ifdef ENABLE_DEEP_PLC
-#include "lpcnet.h"
+#ifdef ENABLE_QEXT
+#define ARG_QEXT(arg) , arg
+#else
+#define ARG_QEXT(arg)
 #endif
 
-#ifdef __cplusplus
-extern "C" {
+
+#ifdef ENABLE_DEEP_PLC
+#include "lpcnet.h"
 #endif
 
 #define CELTEncoder OpusCustomEncoder
 #define CELTDecoder OpusCustomDecoder
 #define CELTMode OpusCustomMode
+
+#define QEXT_EXTENSION_ID 124
 
 #define LEAK_BANDS 19
 
@@ -78,13 +83,13 @@ typedef struct {
    int offset;
 } SILKInfo;
 
-#define __celt_check_mode_ptr_ptr(ptr) ((ptr) + ((ptr) - (const CELTMode**)(ptr)))
+#define celt_check_mode_ptr_ptr(ptr) ((ptr) + ((ptr) - (const CELTMode**)(ptr)))
 
-#define __celt_check_analysis_ptr(ptr) ((ptr) + ((ptr) - (const AnalysisInfo*)(ptr)))
+#define celt_check_analysis_ptr(ptr) ((ptr) + ((ptr) - (const AnalysisInfo*)(ptr)))
 
-#define __celt_check_silkinfo_ptr(ptr) ((ptr) + ((ptr) - (const SILKInfo*)(ptr)))
+#define celt_check_silkinfo_ptr(ptr) ((ptr) + ((ptr) - (const SILKInfo*)(ptr)))
 
-#define __celt_check_glog_ptr(ptr) ((ptr) + ((ptr) - (celt_glog*)(ptr)))
+#define celt_check_glog_ptr(ptr) ((ptr) + ((ptr) - (celt_glog*)(ptr)))
 
 /* Encoder/decoder Requests */
 
@@ -95,48 +100,57 @@ typedef struct {
     1=Short term interframe prediction allowed
     2=Long term prediction allowed
  */
-#define CELT_SET_PREDICTION(x) CELT_SET_PREDICTION_REQUEST, __opus_check_int(x)
+#define CELT_SET_PREDICTION(x) CELT_SET_PREDICTION_REQUEST, opus_check_int(x)
 
 #define CELT_SET_INPUT_CLIPPING_REQUEST    10004
-#define CELT_SET_INPUT_CLIPPING(x) CELT_SET_INPUT_CLIPPING_REQUEST, __opus_check_int(x)
+#define CELT_SET_INPUT_CLIPPING(x) CELT_SET_INPUT_CLIPPING_REQUEST, opus_check_int(x)
 
 #define CELT_GET_AND_CLEAR_ERROR_REQUEST   10007
-#define CELT_GET_AND_CLEAR_ERROR(x) CELT_GET_AND_CLEAR_ERROR_REQUEST, __opus_check_int_ptr(x)
+#define CELT_GET_AND_CLEAR_ERROR(x) CELT_GET_AND_CLEAR_ERROR_REQUEST, opus_check_int_ptr(x)
 
 #define CELT_SET_CHANNELS_REQUEST    10008
-#define CELT_SET_CHANNELS(x) CELT_SET_CHANNELS_REQUEST, __opus_check_int(x)
+#define CELT_SET_CHANNELS(x) CELT_SET_CHANNELS_REQUEST, opus_check_int(x)
 
 
 /* Internal */
 #define CELT_SET_START_BAND_REQUEST    10010
-#define CELT_SET_START_BAND(x) CELT_SET_START_BAND_REQUEST, __opus_check_int(x)
+#define CELT_SET_START_BAND(x) CELT_SET_START_BAND_REQUEST, opus_check_int(x)
 
 #define CELT_SET_END_BAND_REQUEST    10012
-#define CELT_SET_END_BAND(x) CELT_SET_END_BAND_REQUEST, __opus_check_int(x)
+#define CELT_SET_END_BAND(x) CELT_SET_END_BAND_REQUEST, opus_check_int(x)
 
 #define CELT_GET_MODE_REQUEST    10015
 /** Get the CELTMode used by an encoder or decoder */
-#define CELT_GET_MODE(x) CELT_GET_MODE_REQUEST, __celt_check_mode_ptr_ptr(x)
+#define CELT_GET_MODE(x) CELT_GET_MODE_REQUEST, celt_check_mode_ptr_ptr(x)
 
 #define CELT_SET_SIGNALLING_REQUEST    10016
-#define CELT_SET_SIGNALLING(x) CELT_SET_SIGNALLING_REQUEST, __opus_check_int(x)
+#define CELT_SET_SIGNALLING(x) CELT_SET_SIGNALLING_REQUEST, opus_check_int(x)
 
 #define CELT_SET_TONALITY_REQUEST    10018
-#define CELT_SET_TONALITY(x) CELT_SET_TONALITY_REQUEST, __opus_check_int(x)
+#define CELT_SET_TONALITY(x) CELT_SET_TONALITY_REQUEST, opus_check_int(x)
 #define CELT_SET_TONALITY_SLOPE_REQUEST    10020
-#define CELT_SET_TONALITY_SLOPE(x) CELT_SET_TONALITY_SLOPE_REQUEST, __opus_check_int(x)
+#define CELT_SET_TONALITY_SLOPE(x) CELT_SET_TONALITY_SLOPE_REQUEST, opus_check_int(x)
 
 #define CELT_SET_ANALYSIS_REQUEST    10022
-#define CELT_SET_ANALYSIS(x) CELT_SET_ANALYSIS_REQUEST, __celt_check_analysis_ptr(x)
+#define CELT_SET_ANALYSIS(x) CELT_SET_ANALYSIS_REQUEST, celt_check_analysis_ptr(x)
 
 #define OPUS_SET_LFE_REQUEST    10024
-#define OPUS_SET_LFE(x) OPUS_SET_LFE_REQUEST, __opus_check_int(x)
+#define OPUS_SET_LFE(x) OPUS_SET_LFE_REQUEST, opus_check_int(x)
 
 #define OPUS_SET_ENERGY_MASK_REQUEST    10026
-#define OPUS_SET_ENERGY_MASK(x) OPUS_SET_ENERGY_MASK_REQUEST, __celt_check_glog_ptr(x)
+#define OPUS_SET_ENERGY_MASK(x) OPUS_SET_ENERGY_MASK_REQUEST, celt_check_glog_ptr(x)
 
 #define CELT_SET_SILK_INFO_REQUEST    10028
-#define CELT_SET_SILK_INFO(x) CELT_SET_SILK_INFO_REQUEST, __celt_check_silkinfo_ptr(x)
+#define CELT_SET_SILK_INFO(x) CELT_SET_SILK_INFO_REQUEST, celt_check_silkinfo_ptr(x)
+
+
+static OPUS_INLINE opus_int32 bits_to_bitrate(opus_int32 bits, opus_int32 Fs, opus_int32 frame_size) {
+   return bits*(6*Fs/frame_size)/6;
+}
+
+static OPUS_INLINE opus_int32 bitrate_to_bits(opus_int32 bitrate, opus_int32 Fs, opus_int32 frame_size) {
+   return bitrate*6/(6*Fs/frame_size);
+}
 
 /* Encoder stuff */
 
@@ -161,6 +175,7 @@ int celt_decode_with_ec_dred(CELTDecoder * OPUS_RESTRICT st, const unsigned char
 #ifdef ENABLE_DEEP_PLC
       ,LPCNetPLCState *lpcnet
 #endif
+      ARG_QEXT(const unsigned char *qext_payload) ARG_QEXT(int qext_payload_len)
       );
 
 int celt_decode_with_ec(OpusCustomDecoder * OPUS_RESTRICT st, const unsigned char *data,
@@ -170,7 +185,7 @@ int celt_decode_with_ec(OpusCustomDecoder * OPUS_RESTRICT st, const unsigned cha
 #define celt_decoder_ctl opus_custom_decoder_ctl
 
 
-#ifdef CUSTOM_MODES
+#if defined(CUSTOM_MODES) || defined(ENABLE_OPUS_CUSTOM_API)
 #define OPUS_CUSTOM_NOSTATIC
 #else
 #define OPUS_CUSTOM_NOSTATIC static OPUS_INLINE
@@ -182,7 +197,7 @@ static const unsigned char spread_icdf[4] = {25, 23, 2, 0};
 
 static const unsigned char tapset_icdf[3]={2,1,0};
 
-#ifdef CUSTOM_MODES
+#if defined(CUSTOM_MODES) || defined(ENABLE_OPUS_CUSTOM_API)
 static const unsigned char toOpusTable[20] = {
       0xE0, 0xE8, 0xF0, 0xF8,
       0xC0, 0xC8, 0xD0, 0xD8,
@@ -245,11 +260,15 @@ void init_caps(const CELTMode *m,int *cap,int LM,int C);
 void deemphasis(celt_sig *in[], opus_res *pcm, int N, int C, int downsample, const opus_val16 *coef, celt_sig *mem, int accum);
 void celt_synthesis(const CELTMode *mode, celt_norm *X, celt_sig * out_syn[],
       celt_glog *oldBandE, int start, int effEnd, int C, int CC, int isTransient,
-      int LM, int downsample, int silence, int arch);
+      int LM, int downsample, int silence, int arch ARG_QEXT(const CELTMode *qext_mode) ARG_QEXT(const celt_glog *qext_bandLogE) ARG_QEXT(int qext_end));
 #endif
 
-#ifdef __cplusplus
-}
+#ifdef ENABLE_QEXT
+#define QEXT_SCALE(x) ((qext_scale)*(x))
+#define QEXT_SCALE2(x, qext_scale) ((qext_scale)*(x))
+#else
+#define QEXT_SCALE(x) (x)
+#define QEXT_SCALE2(x, qext_scale) (x)
 #endif
 
 #endif /* CELT_H */

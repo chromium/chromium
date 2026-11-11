@@ -42,10 +42,6 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <stdio.h>      /* file writing */
 #endif
 
-#ifdef  __cplusplus
-extern "C"
-{
-#endif
 
 #if SILK_TIC_TOC
 
@@ -259,9 +255,5 @@ extern int silk_debug_store_count;
 #define SILK_DEBUG_STORE_CLOSE_FILES
 
 #endif /* SILK_DEBUG */
-
-#ifdef  __cplusplus
-}
-#endif
 
 #endif /* SILK_DEBUG_H */

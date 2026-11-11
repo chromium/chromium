@@ -45,7 +45,7 @@ static OPUS_INLINE void debruijn2(int _k, unsigned char *_res)
 {
    unsigned char *p;
    unsigned char *t;
-   t=malloc(sizeof(unsigned char)*_k*2);
+   t=(unsigned char *)malloc(sizeof(unsigned char)*_k*2);
    memset(t,0,sizeof(unsigned char)*_k*2);
    p=&_res[_k*_k];
    deb2_impl(t,&p,_k,1,1);

@@ -669,4 +669,3 @@ const AnalysisDenseLayer layer2 = {
    layer2_weights,
    24, 2, 1
 };
-

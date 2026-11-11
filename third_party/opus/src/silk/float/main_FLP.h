@@ -36,10 +36,6 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "debug.h"
 #include "entenc.h"
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
 
 #define silk_encoder_state_Fxx      silk_encoder_state_FLP
 #define silk_encode_do_VAD_Fxx      silk_encode_do_VAD_FLP
@@ -282,9 +278,5 @@ void silk_NSQ_wrapper_FLP(
     opus_int8                       pulses[],                           /* O    Quantized pulse signal                      */
     const silk_float                x[]                                 /* I    Prefiltered input signal                    */
 );
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

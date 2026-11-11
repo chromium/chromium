@@ -58,12 +58,17 @@ static opus_int silk_QueryEncoder(                      /* O    Returns error co
 /****************************************/
 
 opus_int silk_Get_Encoder_Size(                         /* O    Returns error code                              */
-    opus_int                        *encSizeBytes       /* O    Number of bytes in SILK encoder state           */
+    opus_int                        *encSizeBytes,      /* O    Number of bytes in SILK encoder state           */
+    opus_int                         channels           /* I    Number of channels                              */
 )
 {
     opus_int ret = SILK_NO_ERROR;
 
     *encSizeBytes = sizeof( silk_encoder );
+    /* Skip second encoder state for mono. */
+    if ( channels == 1 ) {
+        *encSizeBytes -= sizeof( silk_encoder_state_Fxx );
+    }
 
     return ret;
 }
@@ -73,6 +78,7 @@ opus_int silk_Get_Encoder_Size(                         /* O    Returns error co
 /*************************/
 opus_int silk_InitEncoder(                              /* O    Returns error code                              */
     void                            *encState,          /* I/O  State                                           */
+    int                              channels,          /* I    Number of channels                              */
     int                              arch,              /* I    Run-time architecture                           */
     silk_EncControlStruct           *encStatus          /* O    Encoder Status                                  */
 )
@@ -82,9 +88,9 @@ opus_int silk_InitEncoder(                              /* O    Returns error co
 
     psEnc = (silk_encoder *)encState;
 
-    /* Reset encoder */
-    silk_memset( psEnc, 0, sizeof( silk_encoder ) );
-    for( n = 0; n < ENCODER_NUM_CHANNELS; n++ ) {
+    /* Reset encoder. Skip second encoder state for mono. */
+    silk_memset( psEnc, 0, sizeof( silk_encoder ) - (channels==1)*sizeof( silk_encoder_state_Fxx ) );
+    for( n = 0; n < channels; n++ ) {
         if( ret += silk_init_encoder( &psEnc->state_Fxx[ n ], arch ) ) {
             celt_assert( 0 );
         }
@@ -162,13 +168,16 @@ opus_int silk_Encode(                                   /* O    Returns error co
     opus_int transition, curr_block, tot_blocks;
     SAVE_STACK;
 
+    celt_assert( encControl->nChannelsAPI >= encControl->nChannelsInternal && encControl->nChannelsAPI >= psEnc->nChannelsInternal );
     if (encControl->reducedDependency)
     {
-       psEnc->state_Fxx[0].sCmn.first_frame_after_reset = 1;
-       psEnc->state_Fxx[1].sCmn.first_frame_after_reset = 1;
+       for( n = 0; n < encControl->nChannelsAPI; n++ ) {
+           psEnc->state_Fxx[ n ].sCmn.first_frame_after_reset = 1;
+       }
     }
-    psEnc->state_Fxx[ 0 ].sCmn.nFramesEncoded = psEnc->state_Fxx[ 1 ].sCmn.nFramesEncoded = 0;
-
+    for( n = 0; n < encControl->nChannelsAPI; n++ ) {
+        psEnc->state_Fxx[ n ].sCmn.nFramesEncoded = 0;
+    }
     /* Check values in encoder control structure */
     if( ( ret = check_control_input( encControl ) ) != 0 ) {
         celt_assert( 0 );
@@ -590,4 +599,3 @@ opus_int silk_Encode(                                   /* O    Returns error co
     RESTORE_STACK;
     return ret;
 }
-

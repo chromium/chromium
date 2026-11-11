@@ -56,11 +56,11 @@ opus_val32 celt_inner_prod_sse2(const opus_val16 *x, const opus_val16 *y,
 
     for (i=0;i<dataSize16;i+=16)
     {
-        inVec1_76543210 = _mm_loadu_si128((__m128i *)(&x[i + 0]));
-        inVec2_76543210 = _mm_loadu_si128((__m128i *)(&y[i + 0]));
+        inVec1_76543210 = _mm_loadu_si128((__m128i *)(void*)(&x[i + 0]));
+        inVec2_76543210 = _mm_loadu_si128((__m128i *)(void*)(&y[i + 0]));
 
-        inVec1_FEDCBA98 = _mm_loadu_si128((__m128i *)(&x[i + 8]));
-        inVec2_FEDCBA98 = _mm_loadu_si128((__m128i *)(&y[i + 8]));
+        inVec1_FEDCBA98 = _mm_loadu_si128((__m128i *)(void*)(&x[i + 8]));
+        inVec2_FEDCBA98 = _mm_loadu_si128((__m128i *)(void*)(&y[i + 8]));
 
         inVec1_76543210 = _mm_madd_epi16(inVec1_76543210, inVec2_76543210);
         inVec1_FEDCBA98 = _mm_madd_epi16(inVec1_FEDCBA98, inVec2_FEDCBA98);
@@ -73,8 +73,8 @@ opus_val32 celt_inner_prod_sse2(const opus_val16 *x, const opus_val16 *y,
 
     if (N - i >= 8)
     {
-        inVec1_76543210 = _mm_loadu_si128((__m128i *)(&x[i + 0]));
-        inVec2_76543210 = _mm_loadu_si128((__m128i *)(&y[i + 0]));
+        inVec1_76543210 = _mm_loadu_si128((__m128i *)(void*)(&x[i + 0]));
+        inVec2_76543210 = _mm_loadu_si128((__m128i *)(void*)(&y[i + 0]));
 
         inVec1_76543210 = _mm_madd_epi16(inVec1_76543210, inVec2_76543210);
 

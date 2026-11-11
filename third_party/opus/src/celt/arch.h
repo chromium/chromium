@@ -86,15 +86,15 @@ void celt_fatal(const char *str, const char *file, int line)
 #define celt_assert2(cond, message) {if (!(cond)) {CELT_FATAL("assertion failed: " #cond "\n" message);}}
 #define MUST_SUCCEED(call) celt_assert((call) == OPUS_OK)
 #else
-#define celt_assert(cond)
-#define celt_assert2(cond, message)
+#define celt_assert(cond) ((void)(cond))
+#define celt_assert2(cond, message) ((void)(cond))
 #define MUST_SUCCEED(call) do {if((call) != OPUS_OK) {RESTORE_STACK; return OPUS_INTERNAL_ERROR;} } while (0)
 #endif
 
 #if defined(ENABLE_ASSERTIONS)
 #define celt_sig_assert(cond) {if (!(cond)) {CELT_FATAL("signal assertion failed: " #cond);}}
 #else
-#define celt_sig_assert(cond)
+#define celt_sig_assert(cond) ((void)(cond))
 #endif
 
 #define IMUL32(a,b) ((a)*(b))
@@ -105,6 +105,8 @@ void celt_fatal(const char *str, const char *file, int line)
 #define MAX32(a,b) ((a) > (b) ? (a) : (b))   /**< Maximum 32-bit value.   */
 #define IMIN(a,b) ((a) < (b) ? (a) : (b))   /**< Minimum int value.   */
 #define IMAX(a,b) ((a) > (b) ? (a) : (b))   /**< Maximum int value.   */
+#define FMIN(a,b) ((a) < (b) ? (a) : (b))   /**< Minimum float value.   */
+#define FMAX(a,b) ((a) > (b) ? (a) : (b))   /**< Maximum float value.   */
 #define UADD32(a,b) ((a)+(b))
 #define USUB32(a,b) ((a)-(b))
 #define MAXG(a,b) MAX32(a, b)
@@ -121,7 +123,7 @@ void celt_fatal(const char *str, const char *file, int line)
 /* Set this if opus_int64 is a native type of the CPU. */
 /* Assume that all LP64 architectures have fast 64-bit types; also x86_64
    (which can be ILP32 for x32) and Win64 (which is LLP64). */
-#if defined(__x86_64__) || defined(__LP64__) || defined(_WIN64)
+#if defined(__x86_64__) || defined(__LP64__) || defined(_WIN64) || defined (__mips)
 #define OPUS_FAST_INT64 1
 #else
 #define OPUS_FAST_INT64 0
@@ -142,7 +144,7 @@ typedef opus_int32 opus_val32;
 typedef opus_int64 opus_val64;
 
 typedef opus_val32 celt_sig;
-typedef opus_val16 celt_norm;
+typedef opus_val32 celt_norm;
 typedef opus_val32 celt_ener;
 typedef opus_val32 celt_glog;
 
@@ -152,11 +154,11 @@ typedef opus_val32 opus_res;
 #define SIG2RES(a)      PSHR32(a, SIG_SHIFT-RES_SHIFT)
 #define RES2INT16(a)    SAT16(PSHR32(a, RES_SHIFT))
 #define RES2INT24(a)    (a)
-#define RES2FLOAT(a)    ((1.f/32768.f/256.)*(a))
+#define RES2FLOAT(a)    ((1.f/32768.f/256.f)*(a))
 #define INT16TORES(a)   SHL32(EXTEND32(a), RES_SHIFT)
 #define INT24TORES(a)   (a)
 #define ADD_RES(a, b)   ADD32(a, b)
-#define FLOAT2RES(a)    float2int(32768.f*256.f*(a))
+#define FLOAT2RES(a)    FLOAT2INT24(a)
 #define RES2SIG(a)      SHL32((a), SIG_SHIFT-RES_SHIFT)
 #define MULT16_RES_Q15(a,b) MULT16_32_Q15(a,b)
 #define MAX_ENCODING_DEPTH 24
@@ -177,14 +179,14 @@ typedef opus_val16 opus_res;
 #endif
 
 #define RES2VAL16(a)    RES2INT16(a)
-#define FLOAT2SIG(a)    float2int(((opus_int32)32768<<SIG_SHIFT)*(a))
 #define INT16TOSIG(a)   SHL32(EXTEND32(a), SIG_SHIFT)
 #define INT24TOSIG(a)   SHL32(a, SIG_SHIFT-8)
 
+#define NORM_SHIFT 24
 #ifdef ENABLE_QEXT
 typedef opus_val32 celt_coef;
 #define COEF_ONE Q31ONE
-#define MULT_COEF_32(a, b) MULT32_32_Q31(a,b)
+#define MULT_COEF_32(a, b) MULT32_32_P31(a,b)
 #define MAC_COEF_32_ARM(c, a, b) ADD32((c), MULT32_32_Q32(a,b))
 #define MULT_COEF(a, b) MULT32_32_Q31(a,b)
 #define MULT_COEF_TAPS(a, b) SHL32(MULT16_16(a,b), 1)
@@ -214,7 +216,7 @@ typedef opus_val16 celt_coef;
    so the limit should be about 2^31*sqrt(.5). */
 #define SIG_SAT (536870911)
 
-#define NORM_SCALING 16384
+#define NORM_SCALING (1<<NORM_SHIFT)
 
 #define DB_SHIFT 24
 
@@ -315,6 +317,8 @@ static OPUS_INLINE int celt_isnan(float x)
 #define PSHR32(a,shift) (a)
 #define VSHR32(a,shift) (a)
 
+#define SHR64(a,shift) (a)
+
 #define PSHR(a,shift)   (a)
 #define SHR(a,shift)    (a)
 #define SHL(a,shift)    (a)
@@ -332,6 +336,9 @@ static OPUS_INLINE int celt_isnan(float x)
 #define SUB32(a,b) ((a)-(b))
 #define ADD32_ovflw(a,b) ((a)+(b))
 #define SUB32_ovflw(a,b) ((a)-(b))
+#define SHL32_ovflw(a,shift) (a)
+#define PSHR32_ovflw(a,shift) (a)
+
 #define MULT16_16_16(a,b)     ((a)*(b))
 #define MULT16_16(a,b)     ((opus_val32)(a)*(opus_val32)(b))
 #define MAC16_16(c,a,b)     ((c)+(opus_val32)(a)*(opus_val32)(b))
@@ -339,7 +346,10 @@ static OPUS_INLINE int celt_isnan(float x)
 #define MULT16_32_Q15(a,b)     ((a)*(b))
 #define MULT16_32_Q16(a,b)     ((a)*(b))
 
+#define MULT32_32_Q16(a,b)     ((a)*(b))
 #define MULT32_32_Q31(a,b)     ((a)*(b))
+#define MULT32_32_P31(a,b)     ((a)*(b))
+#define MULT32_32_P31_ovflw(a,b) ((a)*(b))
 
 #define MAC16_32_Q15(c,a,b)     ((c)+(a)*(b))
 #define MAC16_32_Q16(c,a,b)     ((c)+(a)*(b))
@@ -367,7 +377,7 @@ static OPUS_INLINE int celt_isnan(float x)
 #define RES2INT24(a)    float2int(32768.f*256.f*(a))
 #define RES2FLOAT(a)    (a)
 #define INT16TORES(a)   ((a)*(1/CELT_SIG_SCALE))
-#define INT24TORES(a)   ((1.f/32768.f/256.)*(a))
+#define INT24TORES(a)   ((1.f/32768.f/256.f)*(a))
 #define ADD_RES(a, b)   ADD32(a, b)
 #define FLOAT2RES(a)    (a)
 #define RES2SIG(a)      (CELT_SIG_SCALE*(a))

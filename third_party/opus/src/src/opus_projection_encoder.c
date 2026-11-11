@@ -519,4 +519,3 @@ bad_arg:
   va_end(ap);
   return OPUS_BAD_ARG;
 }
-

@@ -4,6 +4,7 @@ include_rules = [
   "+fixed",
   "+mips",
   "+x86",
+  "+xtensa",
 ]
 
 # For our own unit tests.

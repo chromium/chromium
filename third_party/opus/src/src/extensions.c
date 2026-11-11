@@ -151,6 +151,74 @@ void opus_extension_iterator_set_frame_max(OpusExtensionIterator *iter,
    iter->frame_max = frame_max;
 }
 
+/* Return the next repeated extension.
+   The return value is non-zero if one is found, negative on error, or 0 if we
+    have finished repeating extensions. */
+static int opus_extension_iterator_next_repeat(OpusExtensionIterator *iter,
+ opus_extension_data *ext) {
+   opus_int32 header_size;
+   celt_assert(iter->repeat_frame > 0);
+   for (;iter->repeat_frame < iter->nb_frames; iter->repeat_frame++) {
+      while (iter->src_len > 0) {
+         const unsigned char *curr_data0;
+         int repeat_id_byte;
+         repeat_id_byte = *iter->src_data;
+         iter->src_len = skip_extension(&iter->src_data, iter->src_len,
+          &header_size);
+         /* We skipped this extension earlier, so it should not fail now. */
+         celt_assert(iter->src_len >= 0);
+         /* Don't repeat padding or frame separators with a 0 increment. */
+         if (repeat_id_byte <= 3) continue;
+         /* If the "Repeat These Extensions" extension had L == 0 and this
+             is the last repeated long extension, then force decoding the
+             payload with L = 0. */
+         if (iter->repeat_l == 0
+          && iter->repeat_frame + 1 >= iter->nb_frames
+          && iter->src_data == iter->last_long) {
+            repeat_id_byte &= ~1;
+         }
+         curr_data0 = iter->curr_data;
+         iter->curr_len = skip_extension_payload(&iter->curr_data,
+          iter->curr_len, &header_size, repeat_id_byte,
+          iter->trailing_short_len);
+         if (iter->curr_len < 0) {
+            return OPUS_INVALID_PACKET;
+         }
+         celt_assert(iter->curr_data - iter->data
+          == iter->len - iter->curr_len);
+         /* If we were asked to stop at frame_max, skip extensions for later
+             frames. */
+         if (iter->repeat_frame >= iter->frame_max) {
+            continue;
+         }
+         if (ext != NULL) {
+            ext->id = repeat_id_byte >> 1;
+            ext->frame = iter->repeat_frame;
+            ext->data = curr_data0 + header_size;
+            ext->len = iter->curr_data - curr_data0 - header_size;
+         }
+         return 1;
+      }
+      /* We finished repeating the extensions for this frame. */
+      iter->src_data = iter->repeat_data;
+      iter->src_len = iter->repeat_len;
+   }
+   /* We finished repeating extensions. */
+   iter->repeat_data = iter->curr_data;
+   iter->last_long = NULL;
+   /* If L == 0, advance the frame number to handle the case where we did
+       not consume all of the data with an L == 0 long extension. */
+   if (iter->repeat_l == 0) {
+      iter->curr_frame++;
+      /* Ignore additional padding if this was already the last frame. */
+      if (iter->curr_frame >= iter->nb_frames) {
+         iter->curr_len = 0;
+      }
+   }
+   iter->repeat_frame = 0;
+   return 0;
+}
+
 /* Return the next extension (excluding real padding, separators, and repeat
     indicators, but including the repeated extensions) in bitstream order.
    Due to the extension repetition mechanism, extensions are not necessarily
@@ -162,65 +230,10 @@ int opus_extension_iterator_next(OpusExtensionIterator *iter,
       return OPUS_INVALID_PACKET;
    }
    if (iter->repeat_frame > 0) {
+      int ret;
       /* We are in the process of repeating some extensions. */
-      for (;iter->repeat_frame < iter->nb_frames; iter->repeat_frame++) {
-         while (iter->src_len > 0) {
-            const unsigned char *curr_data0;
-            int repeat_id_byte;
-            repeat_id_byte = *iter->src_data;
-            iter->src_len = skip_extension(&iter->src_data, iter->src_len,
-             &header_size);
-            /* We skipped this extension earlier, so it should not fail now. */
-            celt_assert(iter->src_len >= 0);
-            /* Don't repeat padding or frame separators with a 0 increment. */
-            if (repeat_id_byte <= 3) continue;
-            /* If the "Repeat These Extensions" extension had L == 0 and this
-                is the last repeated long extension, then force decoding the
-                payload with L = 0. */
-            if (iter->repeat_l == 0
-             && iter->repeat_frame + 1 >= iter->nb_frames
-             && iter->src_data == iter->last_long) {
-               repeat_id_byte &= ~1;
-            }
-            curr_data0 = iter->curr_data;
-            iter->curr_len = skip_extension_payload(&iter->curr_data,
-             iter->curr_len, &header_size, repeat_id_byte,
-             iter->trailing_short_len);
-            if (iter->curr_len < 0) {
-               return OPUS_INVALID_PACKET;
-            }
-            celt_assert(iter->curr_data - iter->data
-             == iter->len - iter->curr_len);
-            /* If we were asked to stop at frame_max, skip extensions for later
-                frames. */
-            if (iter->repeat_frame >= iter->frame_max) {
-               continue;
-            }
-            if (ext != NULL) {
-               ext->id = repeat_id_byte >> 1;
-               ext->frame = iter->repeat_frame;
-               ext->data = curr_data0 + header_size;
-               ext->len = iter->curr_data - curr_data0 - header_size;
-            }
-            return 1;
-         }
-         /* We finished repeating the extensions for this frame. */
-         iter->src_data = iter->repeat_data;
-         iter->src_len = iter->repeat_len;
-      }
-      /* We finished repeating extensions. */
-      iter->repeat_data = iter->curr_data;
-      iter->last_long = NULL;
-      /* If L == 0, advance the frame number to handle the case where we did
-          not consume all of the data with an L == 0 long extension. */
-      if (iter->repeat_l == 0) {
-         iter->curr_frame++;
-         /* Ignore additional padding if this was already the last frame. */
-         if (iter->curr_frame >= iter->nb_frames) {
-            iter->curr_len = 0;
-         }
-      }
-      iter->repeat_frame = 0;
+      ret = opus_extension_iterator_next_repeat(iter, ext);
+      if (ret) return ret;
    }
    /* Checking this here allows opus_extension_iterator_set_frame_max() to be
        called at any point. */
@@ -263,12 +276,14 @@ int opus_extension_iterator_next(OpusExtensionIterator *iter,
          iter->trailing_short_len = 0;
       }
       else if (id == 2) {
+         int ret;
          iter->repeat_l = L;
          iter->repeat_frame = iter->curr_frame + 1;
          iter->repeat_len = curr_data0 - iter->repeat_data;
          iter->src_data = iter->repeat_data;
          iter->src_len = iter->repeat_len;
-         return opus_extension_iterator_next(iter, ext);
+         ret = opus_extension_iterator_next_repeat(iter, ext);
+         if (ret) return ret;
       }
       else if (id > 2) {
          /* Update the location of the last long extension.
@@ -486,11 +501,9 @@ opus_int32 opus_packet_extensions_generate(unsigned char *data, opus_int32 len,
    for (f=0;f<nb_frames;f++)
    {
       opus_int32 last_long_idx;
-      opus_int32 trailing_short_len;
       int repeat_count;
       repeat_count = 0;
       last_long_idx = -1;
-      trailing_short_len = 0;
       if (f + 1 < nb_frames)
       {
          for (i=frame_min_idx[f];i<frame_max_idx[f];i++)
@@ -520,11 +533,7 @@ opus_int32 opus_packet_extensions_generate(unsigned char *data, opus_int32 len,
                    instance, so we can modify its L flag. */
                if (extensions[i].id >= 32) {
                   last_long_idx = frame_repeat_idx[nb_frames-1];
-                  trailing_short_len = 0;
                }
-               /* Otherwise, keep track of how many payload bytes follow the
-                   last long extension. */
-               else trailing_short_len += extensions[i].len;
                /* Using the repeat mechanism almost always makes the
                    encoding smaller (or at least no larger).
                   However, there's one case where that might not be true: if
@@ -614,7 +623,7 @@ opus_int32 opus_packet_extensions_generate(unsigned char *data, opus_int32 len,
    }
    celt_assert(written == nb_extensions);
    /* If we need to pad, just prepend 0x01 bytes. Even better would be to fill the
-      end with zeros, but that requires checking that turning the last extesion into
+      end with zeros, but that requires checking that turning the last extension into
       an L=1 case still fits. */
    if (pad && pos < len)
    {

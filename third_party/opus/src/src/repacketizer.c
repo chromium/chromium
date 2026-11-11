@@ -264,7 +264,7 @@ opus_int32 opus_repacketizer_out_range_impl(OpusRepacketizer *rp, int begin, int
           all_extensions, ext_count, count, 0);
          if (ext_len < 0) return ext_len;
          if (!pad)
-            pad_amount = ext_len + ext_len/254 + 1;
+            pad_amount = ext_len + (ext_len ? (ext_len+253)/254 : 1);
       }
       if (pad_amount != 0)
       {
@@ -466,4 +466,3 @@ opus_int32 opus_multistream_packet_unpad(unsigned char *data, opus_int32 len, in
    }
    return dst_len;
 }
-

@@ -1,6 +1,7 @@
 /* Copyright (c) 2002-2008 Jean-Marc Valin
    Copyright (c) 2007-2008 CSIRO
    Copyright (c) 2007-2009 Xiph.Org Foundation
+   Copyright (c) 2024 Arm Limited
    Written by Jean-Marc Valin, and Yunho Huh */
 /**
    @file mathops.h
@@ -38,7 +39,12 @@
 #include "entcode.h"
 #include "os_support.h"
 
-#define PI 3.141592653f
+
+#if defined(OPUS_ARM_MAY_HAVE_NEON_INTR)
+#include "arm/mathops_arm.h"
+#endif
+
+#define PI 3.1415926535897931
 
 /* Multiplies two 16-bit fractional values. Bit-exactness of this macro is important */
 #define FRAC_MUL16(a,b) ((16384+((opus_int32)(opus_int16)(a)*(opus_int16)(b)))>>15)
@@ -91,7 +97,7 @@ static OPUS_INLINE opus_val32 celt_maxabs16(const opus_val16 *x, int len)
 }
 #endif
 
-#ifdef ENABLE_RES24
+#if defined(ENABLE_RES24) && defined(FIXED_POINT)
 static OPUS_INLINE opus_res celt_maxabs_res(const opus_res *x, int len)
 {
    int i;
@@ -130,12 +136,97 @@ static OPUS_INLINE opus_val32 celt_maxabs32(const opus_val32 *x, int len)
 #endif
 #endif
 
+#ifndef FIXED_POINT
+/* Calculates the arctangent of x using a Remez approximation of order 15,
+ * incorporating only odd-powered terms. */
+static OPUS_INLINE float celt_atan_norm(float x)
+{
+   #define ATAN2_2_OVER_PI 0.636619772367581f
+   float x_sq = x * x;
+
+   /* Polynomial coefficients approximated in the [0, 1] range.
+    * Lolremez command: lolremez --degree 6 --range "0:1"
+    *                   "(atan(sqrt(x))-sqrt(x))/(x*sqrt(x))" "1/(sqrt(x)*x)"
+    * Please note that ATAN2_COEFF_A01 is fixed to 1.0f. */
+   #define ATAN2_COEFF_A03 -3.3331659436225891113281250000e-01f
+   #define ATAN2_COEFF_A05 1.99627041816711425781250000000e-01f
+   #define ATAN2_COEFF_A07 -1.3976582884788513183593750000e-01f
+   #define ATAN2_COEFF_A09 9.79423448443412780761718750000e-02f
+   #define ATAN2_COEFF_A11 -5.7773590087890625000000000000e-02f
+   #define ATAN2_COEFF_A13 2.30401363223791122436523437500e-02f
+   #define ATAN2_COEFF_A15 -4.3554059229791164398193359375e-03f
+   return ATAN2_2_OVER_PI * (x + x * x_sq * (ATAN2_COEFF_A03
+                + x_sq * (ATAN2_COEFF_A05
+                + x_sq * (ATAN2_COEFF_A07
+                + x_sq * (ATAN2_COEFF_A09
+                + x_sq * (ATAN2_COEFF_A11
+                + x_sq * (ATAN2_COEFF_A13
+                + x_sq * (ATAN2_COEFF_A15))))))));
+}
+
+/* Calculates the arctangent of y/x, returning an approximate value in radians.
+ * Please refer to the linked wiki page (https://en.wikipedia.org/wiki/Atan2)
+ * to learn how atan2 results are computed. */
+static OPUS_INLINE float celt_atan2p_norm(float y, float x)
+{
+   celt_sig_assert(x>=0 && y>=0);
+
+   /* For very small values, we don't care about the answer. */
+   if ((x*x + y*y) < 1e-18f)
+   {
+      return 0;
+   }
+
+   if (y < x)
+   {
+      return celt_atan_norm(y / x);
+   } else {
+      return 1.f - celt_atan_norm(x / y);
+   }
+}
+#endif
+
+#if !defined(FIXED_POINT) || defined(ENABLE_QEXT)
+/* Computes estimated cosine values for (PI/2 * x) using only terms with even
+ * exponents. */
+static OPUS_INLINE float celt_cos_norm2(float x)
+{
+   float x_norm_sq;
+   int output_sign;
+   /* Restrict x to [-1, 3]. */
+   x -= 4*floor(.25*(x+1));
+   /* Negative sign for [1, 3]. */
+   output_sign = 1 - 2*(x>1);
+   /* Restrict to [-1, 1]. */
+   x -= 2*(x>1);
+
+   /* The cosine function, cos(x), has a Taylor series representation consisting
+    * exclusively of even-powered polynomial terms. */
+   x_norm_sq = x * x;
+
+   /* Polynomial coefficients approximated in the [0, 1] range using only terms
+    * with even exponents.
+    * Lolremez command: lolremez --degree 4 --range 0:1 "cos(sqrt(x)*pi*0.5)" */
+   #define COS_COEFF_A0 9.999999403953552246093750000000e-01f
+   #define COS_COEFF_A2 -1.233698248863220214843750000000000f
+   #define COS_COEFF_A4 2.536507546901702880859375000000e-01f
+   #define COS_COEFF_A6 -2.08106283098459243774414062500e-02f
+   #define COS_COEFF_A8 8.581906440667808055877685546875e-04f
+   return output_sign * (COS_COEFF_A0 + x_norm_sq * (COS_COEFF_A2 +
+                               x_norm_sq * (COS_COEFF_A4 +
+                               x_norm_sq * (COS_COEFF_A6 +
+                               x_norm_sq * (COS_COEFF_A8)))));
+}
+
+#endif
 
 #ifndef FIXED_POINT
 
 #define celt_sqrt(x) ((float)sqrt(x))
+#define celt_sqrt32(x) ((float)sqrt(x))
 #define celt_rsqrt(x) (1.f/celt_sqrt(x))
 #define celt_rsqrt_norm(x) (celt_rsqrt(x))
+#define celt_rsqrt_norm32(x) (celt_rsqrt(x))
 #define celt_cos_norm(x) ((float)cos((.5f*PI)*(x)))
 #define celt_rcp(x) (1.f/(x))
 #define celt_div(a,b) ((a)/(b))
@@ -259,6 +350,10 @@ static OPUS_INLINE float celt_exp2(float x)
 #define celt_exp2_db celt_exp2
 #define celt_log2_db celt_log2
 
+#define celt_sin(x) celt_cos_norm2((0.5f*PI) * (x) - 1.0f)
+#define celt_log(x) (celt_log2(x) * 0.6931471805599453f)
+#define celt_exp(x) (celt_exp2((x) * 1.4426950408889634f))
+
 #endif
 
 #ifdef FIXED_POINT
@@ -283,9 +378,15 @@ static OPUS_INLINE opus_int16 celt_zlog2(opus_val32 x)
 
 opus_val16 celt_rsqrt_norm(opus_val32 x);
 
+opus_val32 celt_rsqrt_norm32(opus_val32 x);
+
 opus_val32 celt_sqrt(opus_val32 x);
 
+opus_val32 celt_sqrt32(opus_val32 x);
+
 opus_val16 celt_cos_norm(opus_val32 x);
+
+opus_val32 celt_cos_norm32(opus_val32 x);
 
 /** Base-2 logarithm approximation (log2(x)). (Q14 input, Q10 output) */
 static OPUS_INLINE opus_val16 celt_log2(opus_val32 x)
@@ -433,11 +534,74 @@ static OPUS_INLINE opus_val32 celt_exp2_db(opus_val32 x)
 
 
 opus_val32 celt_rcp(opus_val32 x);
+opus_val32 celt_rcp_norm32(opus_val32 x);
 
 #define celt_div(a,b) MULT32_32_Q31((opus_val32)(a),celt_rcp(b))
 
 opus_val32 frac_div32_q29(opus_val32 a, opus_val32 b);
 opus_val32 frac_div32(opus_val32 a, opus_val32 b);
+
+/* Computes atan(x) multiplied by 2/PI. The input value (x) should be within the
+ * range of -1 to 1 and represented in Q30 format. The function will return the
+ * result in Q30 format. */
+static OPUS_INLINE opus_val32 celt_atan_norm(opus_val32 x)
+{
+   /* Approximation constants. */
+   static const opus_int32 ATAN_2_OVER_PI = 1367130551;   /* Q31 */
+   static const opus_int32 ATAN_COEFF_A03 = -715791936;   /* Q31 */
+   static const opus_int32 ATAN_COEFF_A05 = 857391616;    /* Q32 */
+   static const opus_int32 ATAN_COEFF_A07 = -1200579328;  /* Q33 */
+   static const opus_int32 ATAN_COEFF_A09 = 1682636672;   /* Q34 */
+   static const opus_int32 ATAN_COEFF_A11 = -1985085440;  /* Q35 */
+   static const opus_int32 ATAN_COEFF_A13 = 1583306112;   /* Q36 */
+   static const opus_int32 ATAN_COEFF_A15 = -598602432;   /* Q37 */
+   opus_int32 x_sq_q30;
+   opus_int32 x_q31;
+   opus_int32 tmp;
+   /* The expected x is in the range of [-1.0f, 1.0f] */
+   celt_sig_assert((x <= 1073741824) && (x >= -1073741824));
+
+   /* If x = 1.0f, returns 0.5f */
+   if (x == 1073741824)
+   {
+      return 536870912; /* 0.5f (Q30) */
+   }
+   /* If x = 1.0f, returns 0.5f */
+   if (x == -1073741824)
+   {
+      return -536870912; /* -0.5f (Q30) */
+   }
+   x_q31 = SHL32(x, 1);
+   x_sq_q30 = MULT32_32_Q31(x_q31, x);
+   /* Split evaluation in steps to avoid exploding macro expansion. */
+   tmp = MULT32_32_Q31(x_sq_q30, ATAN_COEFF_A15);
+   tmp = MULT32_32_Q31(x_sq_q30, ADD32(ATAN_COEFF_A13, tmp));
+   tmp = MULT32_32_Q31(x_sq_q30, ADD32(ATAN_COEFF_A11, tmp));
+   tmp = MULT32_32_Q31(x_sq_q30, ADD32(ATAN_COEFF_A09, tmp));
+   tmp = MULT32_32_Q31(x_sq_q30, ADD32(ATAN_COEFF_A07, tmp));
+   tmp = MULT32_32_Q31(x_sq_q30, ADD32(ATAN_COEFF_A05, tmp));
+   tmp = MULT32_32_Q31(x_sq_q30, ADD32(ATAN_COEFF_A03, tmp));
+   tmp = ADD32(x, MULT32_32_Q31(x_q31, tmp));
+   return MULT32_32_Q31(ATAN_2_OVER_PI, tmp);
+}
+
+/* Calculates the arctangent of y/x, multiplies the result by 2/pi, and returns
+ * the value in Q30 format. Both input values (x and y) must be within the range
+ * of 0 to 1 and represented in Q30 format. Inputs must be zero or greater, and
+ * at least one input must be non-zero. */
+static OPUS_INLINE opus_val32 celt_atan2p_norm(opus_val32 y, opus_val32 x)
+{
+   celt_sig_assert(x>=0 && y>=0);
+   if (y==0 && x==0) {
+      return 0;
+   } else if (y < x) {
+      return celt_atan_norm(SHR32(frac_div32(y, x), 1));
+   } else {
+      celt_sig_assert(y > 0);
+      return 1073741824 /* 1.0f Q30 */ -
+             celt_atan_norm(SHR32(frac_div32(x, y), 1));
+   }
+}
 
 #define M1 32767
 #define M2 -21
@@ -459,7 +623,9 @@ static OPUS_INLINE opus_val16 celt_atan01(opus_val16 x)
 /* atan2() approximation valid for positive input values */
 static OPUS_INLINE opus_val16 celt_atan2p(opus_val16 y, opus_val16 x)
 {
-   if (y < x)
+   if (x==0 && y==0) {
+      return 0;
+   } else if (y < x)
    {
       opus_val32 arg;
       arg = celt_div(SHL32(EXTEND32(y),15),x);
@@ -476,4 +642,21 @@ static OPUS_INLINE opus_val16 celt_atan2p(opus_val16 y, opus_val16 x)
 }
 
 #endif /* FIXED_POINT */
+
+#ifndef DISABLE_FLOAT_API
+
+void celt_float2int16_c(const float * OPUS_RESTRICT in, short * OPUS_RESTRICT out, int cnt);
+
+#ifndef OVERRIDE_FLOAT2INT16
+#define celt_float2int16(in, out, cnt, arch) ((void)(arch), celt_float2int16_c(in, out, cnt))
+#endif
+
+int opus_limit2_checkwithin1_c(float *samples, int cnt);
+
+#ifndef OVERRIDE_LIMIT2_CHECKWITHIN1
+#define opus_limit2_checkwithin1(samples, cnt, arch) ((void)(arch), opus_limit2_checkwithin1_c(samples, cnt))
+#endif
+
+#endif /* DISABLE_FLOAT_API */
+
 #endif /* MATHOPS_H */

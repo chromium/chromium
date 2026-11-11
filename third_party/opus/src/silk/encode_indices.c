@@ -140,7 +140,7 @@ void silk_encode_indices(
         }
         psEncC->ec_prevLagIndex = psIndices->lagIndex;
 
-        /* Countour index */
+        /* Contour index */
         silk_assert(   psIndices->contourIndex  >= 0 );
         silk_assert( ( psIndices->contourIndex < 34 && psEncC->fs_kHz  > 8 && psEncC->nb_subfr == 4 ) ||
                     ( psIndices->contourIndex < 11 && psEncC->fs_kHz == 8 && psEncC->nb_subfr == 4 ) ||

@@ -33,10 +33,6 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "define.h"
 #include "tables.h"
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
 
 /* Tables for stereo predictor coding */
 const opus_int16 silk_stereo_pred_quant_Q13[ STEREO_QUANT_TAB_SIZE ] = {
@@ -117,8 +113,3 @@ const opus_int32 silk_Transition_LP_A_Q28[ TRANSITION_INT_NUM ][ TRANSITION_NA ]
 {    185807084,   77959395  },
 {     35497197,   57401098  }
 };
-
-#ifdef __cplusplus
-}
-#endif
-

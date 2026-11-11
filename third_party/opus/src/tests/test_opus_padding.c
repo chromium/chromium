@@ -49,8 +49,8 @@ void test_overflow(void)
   int result;
   int error;
 
-  unsigned char *in = malloc(PACKETSIZE);
-  opus_int16 *out = malloc(FRAMESIZE*CHANNELS*sizeof(*out));
+  unsigned char *in = (unsigned char *)malloc(PACKETSIZE);
+  opus_int16 *out = (opus_int16 *)malloc(FRAMESIZE*CHANNELS*sizeof(*out));
 
   fprintf(stderr, "  Checking for padding overflow... ");
   if (!in || !out) {

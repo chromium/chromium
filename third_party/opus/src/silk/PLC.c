@@ -178,7 +178,7 @@ static OPUS_INLINE void silk_PLC_update(
         silk_memset( psPLC->LTPCoef_Q14, 0, LTP_ORDER * sizeof( opus_int16 ));
     }
 
-    /* Save LPC coeficients */
+    /* Save LPC coefficients */
     silk_memcpy( psPLC->prevLPC_Q12, psDecCtrl->PredCoef_Q12[ 1 ], psDec->LPC_order * sizeof( opus_int16 ) );
     psPLC->prevLTP_scale_Q14 = psDecCtrl->LTP_scale_Q14;
 
@@ -282,7 +282,7 @@ static OPUS_INLINE void silk_PLC_conceal(
     /* LPC concealment. Apply BWE to previous LPC */
     silk_bwexpander( psPLC->prevLPC_Q12, psDec->LPC_order, SILK_FIX_CONST( BWE_COEF, 16 ) );
 
-    /* Preload LPC coeficients to array on stack. Gives small performance gain */
+    /* Preload LPC coefficients to array on stack. Gives small performance gain */
     silk_memcpy( A_Q12, psPLC->prevLPC_Q12, psDec->LPC_order * sizeof( opus_int16 ) );
 
     /* First Lost frame */

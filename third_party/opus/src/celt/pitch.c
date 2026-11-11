@@ -138,7 +138,7 @@ static void celt_fir5(opus_val16 *x,
 
 
 void pitch_downsample(celt_sig * OPUS_RESTRICT x[], opus_val16 * OPUS_RESTRICT x_lp,
-      int len, int C, int arch)
+      int len, int C, int factor, int arch)
 {
    int i;
    opus_val32 ac[5];
@@ -146,12 +146,17 @@ void pitch_downsample(celt_sig * OPUS_RESTRICT x[], opus_val16 * OPUS_RESTRICT x
    opus_val16 lpc[4];
    opus_val16 lpc2[5];
    opus_val16 c1 = QCONST16(.8f,15);
+   int offset;
 #ifdef FIXED_POINT
    int shift;
-   opus_val32 maxabs = celt_maxabs32(x[0], len);
+   opus_val32 maxabs;
+#endif
+   offset = factor/2;
+#ifdef FIXED_POINT
+   maxabs = celt_maxabs32(x[0], len*factor);
    if (C==2)
    {
-      opus_val32 maxabs_1 = celt_maxabs32(x[1], len);
+      opus_val32 maxabs_1 = celt_maxabs32(x[1], len*factor);
       maxabs = MAX32(maxabs, maxabs_1);
    }
    if (maxabs<1)
@@ -161,28 +166,28 @@ void pitch_downsample(celt_sig * OPUS_RESTRICT x[], opus_val16 * OPUS_RESTRICT x
       shift=0;
    if (C==2)
       shift++;
-   for (i=1;i<len>>1;i++)
-      x_lp[i] = SHR32(x[0][(2*i-1)], shift+2) + SHR32(x[0][(2*i+1)], shift+2) + SHR32(x[0][2*i], shift+1);
-   x_lp[0] = SHR32(x[0][1], shift+2) + SHR32(x[0][0], shift+1);
+   for (i=1;i<len;i++)
+      x_lp[i] = SHR32(x[0][(factor*i-offset)], shift+2) + SHR32(x[0][(factor*i+offset)], shift+2) + SHR32(x[0][factor*i], shift+1);
+   x_lp[0] = SHR32(x[0][offset], shift+2) + SHR32(x[0][0], shift+1);
    if (C==2)
    {
-      for (i=1;i<len>>1;i++)
-         x_lp[i] += SHR32(x[1][(2*i-1)], shift+2) + SHR32(x[1][(2*i+1)], shift+2) + SHR32(x[1][2*i], shift+1);
-      x_lp[0] += SHR32(x[1][1], shift+2) + SHR32(x[1][0], shift+1);
+      for (i=1;i<len;i++)
+         x_lp[i] += SHR32(x[1][(factor*i-offset)], shift+2) + SHR32(x[1][(factor*i+offset)], shift+2) + SHR32(x[1][factor*i], shift+1);
+      x_lp[0] += SHR32(x[1][offset], shift+2) + SHR32(x[1][0], shift+1);
    }
 #else
-   for (i=1;i<len>>1;i++)
-      x_lp[i] = .25f*x[0][(2*i-1)] + .25f*x[0][(2*i+1)] + .5f*x[0][2*i];
-   x_lp[0] = .25f*x[0][1] + .5f*x[0][0];
+   for (i=1;i<len;i++)
+      x_lp[i] = .25f*x[0][(factor*i-offset)] + .25f*x[0][(factor*i+offset)] + .5f*x[0][factor*i];
+   x_lp[0] = .25f*x[0][offset] + .5f*x[0][0];
    if (C==2)
    {
-      for (i=1;i<len>>1;i++)
-         x_lp[i] += .25f*x[1][(2*i-1)] + .25f*x[1][(2*i+1)] + .5f*x[1][2*i];
-      x_lp[0] += .25f*x[1][1] + .5f*x[1][0];
+      for (i=1;i<len;i++)
+         x_lp[i] += .25f*x[1][(factor*i-offset)] + .25f*x[1][(factor*i+offset)] + .5f*x[1][factor*i];
+      x_lp[0] += .25f*x[1][offset] + .5f*x[1][0];
    }
 #endif
    _celt_autocorr(x_lp, ac, NULL, 0,
-                  4, len>>1, arch);
+                  4, len, arch);
 
    /* Noise floor -40 dB */
 #ifdef FIXED_POINT
@@ -213,7 +218,7 @@ void pitch_downsample(celt_sig * OPUS_RESTRICT x[], opus_val16 * OPUS_RESTRICT x
    lpc2[2] = lpc[2] + MULT16_16_Q15(c1,lpc[1]);
    lpc2[3] = lpc[3] + MULT16_16_Q15(c1,lpc[2]);
    lpc2[4] = MULT16_16_Q15(c1,lpc[3]);
-   celt_fir5(x_lp, lpc2, len>>1);
+   celt_fir5(x_lp, lpc2, len);
 }
 
 /* Pure C implementation. */
@@ -334,7 +339,7 @@ void pitch_search(const opus_val16 * OPUS_RESTRICT x_lp, opus_val16 * OPUS_RESTR
 #ifdef FIXED_POINT
    xmax = celt_maxabs16(x_lp4, len>>2);
    ymax = celt_maxabs16(y_lp4, lag>>2);
-   shift = celt_ilog2(MAX32(1, MAX32(xmax, ymax)))-11;
+   shift = celt_ilog2(MAX32(1, MAX32(xmax, ymax))) - 14 + celt_ilog2(len)/2;
    if (shift>0)
    {
       for (j=0;j<len>>2;j++)

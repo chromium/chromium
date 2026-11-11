@@ -129,4 +129,3 @@ void analysis_compute_gru(const AnalysisGRULayer *gru, float *state, const float
    for (i=0;i<N;i++)
       state[i] = h[i];
 }
-

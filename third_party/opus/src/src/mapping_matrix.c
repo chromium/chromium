@@ -178,7 +178,11 @@ void mapping_matrix_multiply_channel_in_short(
 #endif
     }
 #if defined(FIXED_POINT)
-    output[output_rows * i] = INT16TORES((tmp + 64) >> 7);
+#ifdef ENABLE_RES24
+    output[output_rows * i] = SHL32(tmp, RES_SHIFT-7);
+#else
+    output[output_rows * i] = SATURATE16((tmp + 64) >> 7);
+#endif
 #else
     output[output_rows * i] = (1/(32768.f*32768.f))*tmp;
 #endif

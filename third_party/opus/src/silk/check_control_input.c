@@ -46,6 +46,9 @@ opus_int check_control_input(
           ( encControl->API_sampleRate            != 24000 ) &&
           ( encControl->API_sampleRate            != 32000 ) &&
           ( encControl->API_sampleRate            != 44100 ) &&
+#ifdef ENABLE_QEXT
+          ( encControl->API_sampleRate            != 96000 ) &&
+#endif
           ( encControl->API_sampleRate            != 48000 ) ) ||
         ( ( encControl->desiredInternalSampleRate !=  8000 ) &&
           ( encControl->desiredInternalSampleRate != 12000 ) &&

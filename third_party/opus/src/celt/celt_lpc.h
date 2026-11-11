@@ -25,8 +25,8 @@
    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef PLC_H
-#define PLC_H
+#ifndef CELT_LPC_H
+#define CELT_LPC_H
 
 #include "arch.h"
 #include "cpu_support.h"
@@ -63,4 +63,4 @@ void celt_iir(const opus_val32 *x,
 int _celt_autocorr(const opus_val16 *x, opus_val32 *ac,
          const celt_coef *window, int overlap, int lag, int n, int arch);
 
-#endif /* PLC_H */
+#endif /* CELT_LPC_H */

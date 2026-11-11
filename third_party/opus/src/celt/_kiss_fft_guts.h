@@ -55,8 +55,8 @@
 #define SAMP_MIN -SAMP_MAX
 
 #ifdef ENABLE_QEXT
-#   define S_MUL(a,b) MULT32_32_Q31(b, a)
-#   define S_MUL2(a,b) MULT32_32_Q31(b, a)
+#   define S_MUL(a,b) MULT32_32_P31_ovflw(b, a)
+#   define S_MUL2(a,b) MULT32_32_P31_ovflw(b, a)
 #else
 #   define S_MUL(a,b) MULT16_32_Q15(b, a)
 #   define S_MUL2(a,b) MULT16_32_Q16(b, a)
@@ -102,7 +102,7 @@
 #if defined(OPUS_ARM_INLINE_EDSP)
 #include "arm/kiss_fft_armv5e.h"
 #endif
-#if defined(MIPSr1_ASM)
+#if defined(__mips)
 #include "mips/kiss_fft_mipsr1.h"
 #endif
 

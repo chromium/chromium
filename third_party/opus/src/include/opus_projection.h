@@ -69,7 +69,7 @@ extern "C" {
   *                                      of the demixing matrix.
   * @hideinitializer
   */
-#define OPUS_PROJECTION_GET_DEMIXING_MATRIX_GAIN(x) OPUS_PROJECTION_GET_DEMIXING_MATRIX_GAIN_REQUEST, __opus_check_int_ptr(x)
+#define OPUS_PROJECTION_GET_DEMIXING_MATRIX_GAIN(x) OPUS_PROJECTION_GET_DEMIXING_MATRIX_GAIN_REQUEST, opus_check_int_ptr(x)
 
 
 /** Gets the size in bytes of the demixing matrix from the encoder.
@@ -77,7 +77,7 @@ extern "C" {
   *                                      demixing matrix.
   * @hideinitializer
   */
-#define OPUS_PROJECTION_GET_DEMIXING_MATRIX_SIZE(x) OPUS_PROJECTION_GET_DEMIXING_MATRIX_SIZE_REQUEST, __opus_check_int_ptr(x)
+#define OPUS_PROJECTION_GET_DEMIXING_MATRIX_SIZE(x) OPUS_PROJECTION_GET_DEMIXING_MATRIX_SIZE_REQUEST, opus_check_int_ptr(x)
 
 
 /** Copies the demixing matrix to the supplied pointer location.
@@ -87,7 +87,7 @@ extern "C" {
   *                              pointer location.
   * @hideinitializer
   */
-#define OPUS_PROJECTION_GET_DEMIXING_MATRIX(x,y) OPUS_PROJECTION_GET_DEMIXING_MATRIX_REQUEST, x, __opus_check_int(y)
+#define OPUS_PROJECTION_GET_DEMIXING_MATRIX(x,y) OPUS_PROJECTION_GET_DEMIXING_MATRIX_REQUEST, x, opus_check_int(y)
 
 
 /**@}*/

@@ -98,6 +98,13 @@ static OPUS_INLINE opus_int32 float2int(float x) {return _mm_cvt_ss2si(_mm_set_s
 
                 return intgr ;
         }
+#elif defined(__aarch64__)
+
+        #include <arm_neon.h>
+        static OPUS_INLINE opus_int32 float2int(float flt)
+        {
+                return vcvtns_s32_f32(flt);
+        }
 
 #elif defined(HAVE_LRINTF) && defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
 
@@ -147,6 +154,23 @@ static OPUS_INLINE opus_int16 FLOAT2INT16(float x)
    x = MIN32(x, 32767);
    return (opus_int16)float2int(x);
 }
+
+static OPUS_INLINE opus_int32 FLOAT2INT24(float x)
+{
+   x = x*(CELT_SIG_SCALE*256.f);
+   x = MAX32(x, -16777216);
+   x = MIN32(x, 16777216);
+   return float2int(x);
+}
+#ifdef FIXED_POINT
+static OPUS_INLINE opus_int32 FLOAT2SIG(float x)
+{
+   x = x*((opus_int32)32768<<SIG_SHIFT);
+   x = MAX32(x, -(65536<<SIG_SHIFT));
+   x = MIN32(x, 65536<<SIG_SHIFT);
+   return float2int(x);
+}
+#endif
 #endif /* DISABLE_FLOAT_API */
 
 #endif /* FLOAT_CAST_H */

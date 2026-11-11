@@ -34,10 +34,6 @@
 #include "arch.h"
 #include "cpu_support.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #ifdef USE_SIMD
 # include <xmmintrin.h>
 # define kiss_fft_scalar __m128
@@ -209,9 +205,5 @@ extern void (*const OPUS_IFFT[OPUS_ARCHMASK+1])(const kiss_fft_state *cfg,
 
 #endif /* end if defined(OPUS_HAVE_RTCD) && (defined(HAVE_ARM_NE10)) */
 #endif /* end if !defined(OVERRIDE_OPUS_FFT) */
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

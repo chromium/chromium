@@ -1,4 +1,5 @@
 /* Copyright (c) 2011 Xiph.Org Foundation, Skype Limited
+   Copyright (c) 2024 Arm Limited
    Written by Jean-Marc Valin and Koen Vos */
 /*
    Redistribution and use in source and binary forms, with or without
@@ -30,23 +31,40 @@
 #endif
 
 #include "opus.h"
+#include "mathops.h"
 #include "opus_private.h"
 
 #ifndef DISABLE_FLOAT_API
-OPUS_EXPORT void opus_pcm_soft_clip(float *_x, int N, int C, float *declip_mem)
+
+void opus_pcm_soft_clip_impl(float *_x, int N, int C, float *declip_mem, int arch)
 {
    int c;
    int i;
    float *x;
+   int all_within_neg1pos1;
 
    if (C<1 || N<1 || !_x || !declip_mem) return;
 
-   /* First thing: saturate everything to +/- 2 which is the highest level our
-      non-linearity can handle. At the point where the signal reaches +/-2,
-      the derivative will be zero anyway, so this doesn't introduce any
-      discontinuity in the derivative. */
-   for (i=0;i<N*C;i++)
-      _x[i] = MAX16(-2.f, MIN16(2.f, _x[i]));
+   /* Clamp everything within the range [-2, +2] which is the domain of the soft
+      clipping non-linearity. Outside the defined range the derivative will be zero,
+      therefore there is no discontinuity introduced here. The implementation
+      might provide a hint if all input samples are within the [-1, +1] range.
+
+   `opus_limit2_checkwithin1()`:
+      - Clamps all samples within the valid range [-2, +2].
+      - Generic C implementation:
+         * Does not attempt early detection whether samples are within hinted range.
+         * Always returns 0.
+      - Architecture specific implementation:
+         * Uses SIMD instructions to efficiently detect if all samples are
+           within the hinted range [-1, +1].
+         * Returns 1 if no samples exceed the hinted range, 0 otherwise.
+
+   `all_within_neg1pos1`:
+      - Optimization hint to skip per-sample out-of-bound checks.
+        If true, the check can be skipped. */
+   all_within_neg1pos1 = opus_limit2_checkwithin1(_x, N*C, arch);
+
    for (c=0;c<C;c++)
    {
       float a;
@@ -72,10 +90,16 @@ OPUS_EXPORT void opus_pcm_soft_clip(float *_x, int N, int C, float *declip_mem)
          float maxval;
          int special=0;
          int peak_pos;
-         for (i=curr;i<N;i++)
+         /* Detection for early exit can be skipped if hinted by `all_within_neg1pos1` */
+         if (all_within_neg1pos1)
          {
-            if (x[i*C]>1 || x[i*C]<-1)
-               break;
+            i = N;
+         } else {
+            for (i=curr;i<N;i++)
+            {
+               if (x[i*C]>1 || x[i*C]<-1)
+                  break;
+            }
          }
          if (i==N)
          {
@@ -135,6 +159,12 @@ OPUS_EXPORT void opus_pcm_soft_clip(float *_x, int N, int C, float *declip_mem)
       declip_mem[c] = a;
    }
 }
+
+OPUS_EXPORT void opus_pcm_soft_clip(float *_x, int N, int C, float *declip_mem)
+{
+   opus_pcm_soft_clip_impl(_x, N, C, declip_mem, 0);
+}
+
 #endif
 
 int encode_size(int size, unsigned char *data)
@@ -205,6 +235,13 @@ int opus_packet_parse_impl(const unsigned char *data, opus_int32 len,
    opus_int32 last_size;
    opus_int32 pad = 0;
    const unsigned char *data0 = data;
+
+   /* Make sure we return NULL/0 on error. */
+   if (padding != NULL)
+   {
+      *padding = NULL;
+      *padding_len = 0;
+   }
 
    if (size==NULL || len<0)
       return OPUS_BAD_ARG;
@@ -359,4 +396,3 @@ int opus_packet_parse(const unsigned char *data, opus_int32 len,
    return opus_packet_parse_impl(data, len, 0, out_toc,
                                  frames, size, payload_offset, NULL, NULL, NULL);
 }
-

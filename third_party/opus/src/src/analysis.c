@@ -149,13 +149,15 @@ static opus_val32 silk_resampler_down2_hp(
         out32_hp  = ADD32( out32_hp, X );
         S[ 2 ] = ADD32( -in32, X );
 
-        hp_ener += out32_hp*(opus_val64)out32_hp;
+        /* len2 can be up to 480, so we shift by 8 to make it fit. */
+        hp_ener += SHR64(out32_hp*(opus_val64)out32_hp, 8);
         /* Add, convert back to int16 and store to output */
         out[ k ] = HALF32(out32);
     }
 #ifdef FIXED_POINT
-    /* len2 can be up to 480, so we shift by 8 more to make it fit. */
-    hp_ener = hp_ener >> (2*SIG_SHIFT + 8);
+    /* Fitting in 32 bits. */
+    hp_ener = hp_ener >> (2*SIG_SHIFT);
+    if (hp_ener > 2147483647) hp_ener = 2147483647;
 #endif
     return (opus_val32)hp_ener;
 }
@@ -176,6 +178,7 @@ static opus_val32 downmix_and_resample(downmix_func downmix, const void *_x, opu
       subframe = subframe*2/3;
       offset = offset*2/3;
    }
+   else if (Fs != 24000) celt_assert(0);
    ALLOC(tmp, subframe, opus_val32);
 
    downmix(_x, tmp, subframe, offset, c1, c2, C);

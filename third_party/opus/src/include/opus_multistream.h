@@ -44,8 +44,8 @@ extern "C" {
 /** Macros to trigger compilation errors when the wrong types are provided to a
   * CTL. */
 /**@{*/
-#define __opus_check_encstate_ptr(ptr) ((ptr) + ((ptr) - (OpusEncoder**)(ptr)))
-#define __opus_check_decstate_ptr(ptr) ((ptr) + ((ptr) - (OpusDecoder**)(ptr)))
+#define opus_check_encstate_ptr(ptr) ((ptr) + ((ptr) - (OpusEncoder**)(ptr)))
+#define opus_check_decstate_ptr(ptr) ((ptr) + ((ptr) - (OpusDecoder**)(ptr)))
 /**@}*/
 
 /** These are the actual encoder and decoder CTL ID numbers.
@@ -83,7 +83,7 @@ extern "C" {
   * @retval OPUS_BAD_ARG The index of the requested stream was out of range.
   * @hideinitializer
   */
-#define OPUS_MULTISTREAM_GET_ENCODER_STATE(x,y) OPUS_MULTISTREAM_GET_ENCODER_STATE_REQUEST, __opus_check_int(x), __opus_check_encstate_ptr(y)
+#define OPUS_MULTISTREAM_GET_ENCODER_STATE(x,y) OPUS_MULTISTREAM_GET_ENCODER_STATE_REQUEST, opus_check_int(x), opus_check_encstate_ptr(y)
 
 /** Gets the decoder state for an individual stream of a multistream decoder.
   * @param[in] x <tt>opus_int32</tt>: The index of the stream whose decoder you
@@ -96,7 +96,7 @@ extern "C" {
   * @retval OPUS_BAD_ARG The index of the requested stream was out of range.
   * @hideinitializer
   */
-#define OPUS_MULTISTREAM_GET_DECODER_STATE(x,y) OPUS_MULTISTREAM_GET_DECODER_STATE_REQUEST, __opus_check_int(x), __opus_check_decstate_ptr(y)
+#define OPUS_MULTISTREAM_GET_DECODER_STATE(x,y) OPUS_MULTISTREAM_GET_DECODER_STATE_REQUEST, opus_check_int(x), opus_check_decstate_ptr(y)
 
 /**@}*/
 

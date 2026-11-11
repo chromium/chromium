@@ -66,10 +66,10 @@ int test_decoder_code0(int no_fuzz)
 
    dec_final_range1=dec_final_range2=2;
 
-   packet=malloc(sizeof(unsigned char)*MAX_PACKET);
+   packet=(unsigned char *)malloc(sizeof(unsigned char)*MAX_PACKET);
    if(packet==NULL)test_failed();
 
-   outbuf_int=malloc(sizeof(short)*(MAX_FRAME_SAMP+16)*2);
+   outbuf_int=(short *)malloc(sizeof(short)*(MAX_FRAME_SAMP+16)*2);
    for(i=0;i<(MAX_FRAME_SAMP+16)*2;i++)outbuf_int[i]=32749;
    outbuf=&outbuf_int[8*2];
 

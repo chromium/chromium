@@ -32,25 +32,18 @@
 
 #ifdef FIXED_POINT
 
-#define S_MUL_ADD(a, b, c, d) (S_MUL(a,b)+S_MUL(c,d))
-#define S_MUL_SUB(a, b, c, d) (S_MUL(a,b)-S_MUL(c,d))
+#if __mips == 32 && defined (__mips_dsp)
 
-#undef S_MUL_ADD
 static inline int S_MUL_ADD(int a, int b, int c, int d) {
-    int m;
-    asm volatile("MULT $ac1, %0, %1" : : "r" ((int)a), "r" ((int)b));
-    asm volatile("madd $ac1, %0, %1" : : "r" ((int)c), "r" ((int)d));
-    asm volatile("EXTR.W %0,$ac1, %1" : "=r" (m): "i" (15));
-    return m;
+    long long acc = __builtin_mips_mult(a, b);
+    acc = __builtin_mips_madd(acc, c, d);
+    return __builtin_mips_extr_w(acc, 15);
 }
 
-#undef S_MUL_SUB
 static inline int S_MUL_SUB(int a, int b, int c, int d) {
-    int m;
-    asm volatile("MULT $ac1, %0, %1" : : "r" ((int)a), "r" ((int)b));
-    asm volatile("msub $ac1, %0, %1" : : "r" ((int)c), "r" ((int)d));
-    asm volatile("EXTR.W %0,$ac1, %1" : "=r" (m): "i" (15));
-    return m;
+    long long acc = __builtin_mips_mult(a, b);
+    acc = __builtin_mips_msub(acc, c, d);
+    return __builtin_mips_extr_w(acc, 15);
 }
 
 #undef C_MUL
@@ -58,13 +51,12 @@ static inline int S_MUL_SUB(int a, int b, int c, int d) {
 static inline kiss_fft_cpx C_MUL_fun(kiss_fft_cpx a, kiss_twiddle_cpx b) {
     kiss_fft_cpx m;
 
-    asm volatile("MULT $ac1, %0, %1" : : "r" ((int)a.r), "r" ((int)b.r));
-    asm volatile("msub $ac1, %0, %1" : : "r" ((int)a.i), "r" ((int)b.i));
-    asm volatile("EXTR.W %0,$ac1, %1" : "=r" (m.r): "i" (15));
-    asm volatile("MULT $ac1, %0, %1" : : "r" ((int)a.r), "r" ((int)b.i));
-    asm volatile("madd $ac1, %0, %1" : : "r" ((int)a.i), "r" ((int)b.r));
-    asm volatile("EXTR.W %0,$ac1, %1" : "=r" (m.i): "i" (15));
-
+    long long acc1 = __builtin_mips_mult((int)a.r, (int)b.r);
+    long long acc2 = __builtin_mips_mult((int)a.r, (int)b.i);
+    acc1 = __builtin_mips_msub(acc1, (int)a.i, (int)b.i);
+    acc2 = __builtin_mips_madd(acc2, (int)a.i, (int)b.r);
+    m.r = __builtin_mips_extr_w(acc1, 15);
+    m.i = __builtin_mips_extr_w(acc2, 15);
     return m;
 }
 #undef C_MULC
@@ -72,19 +64,75 @@ static inline kiss_fft_cpx C_MUL_fun(kiss_fft_cpx a, kiss_twiddle_cpx b) {
 static inline kiss_fft_cpx C_MULC_fun(kiss_fft_cpx a, kiss_twiddle_cpx b) {
     kiss_fft_cpx m;
 
-    asm volatile("MULT $ac1, %0, %1" : : "r" ((int)a.r), "r" ((int)b.r));
-    asm volatile("madd $ac1, %0, %1" : : "r" ((int)a.i), "r" ((int)b.i));
-    asm volatile("EXTR.W %0,$ac1, %1" : "=r" (m.r): "i" (15));
-    asm volatile("MULT $ac1, %0, %1" : : "r" ((int)a.i), "r" ((int)b.r));
-    asm volatile("msub $ac1, %0, %1" : : "r" ((int)a.r), "r" ((int)b.i));
-    asm volatile("EXTR.W %0,$ac1, %1" : "=r" (m.i): "i" (15));
+    long long acc1 = __builtin_mips_mult((int)a.r, (int)b.r);
+    long long acc2 = __builtin_mips_mult((int)a.i, (int)b.r);
+    acc1 = __builtin_mips_madd(acc1, (int)a.i, (int)b.i);
+    acc2 = __builtin_mips_msub(acc2, (int)a.r, (int)b.i);
+    m.r = __builtin_mips_extr_w(acc1, 15);
+    m.i = __builtin_mips_extr_w(acc2, 15);
+    return m;
+}
+
+#define OVERRIDE_kf_bfly5
+
+#elif __mips == 32 && defined(__mips_isa_rev) && __mips_isa_rev < 6
+
+static inline int S_MUL_ADD(int a, int b, int c, int d) {
+    long long acc;
+
+    asm volatile (
+            "mult %[a], %[b]  \n"
+            "madd %[c], %[d]  \n"
+        : [acc] "=x"(acc)
+        : [a] "r"(a), [b] "r"(b), [c] "r"(c), [d] "r"(d)
+        :
+    );
+    return (int)(acc >> 15);
+}
+
+static inline int S_MUL_SUB(int a, int b, int c, int d) {
+    long long acc;
+
+    asm volatile (
+            "mult %[a], %[b]  \n"
+            "msub %[c], %[d]  \n"
+        : [acc] "=x"(acc)
+        : [a] "r"(a), [b] "r"(b), [c] "r"(c), [d] "r"(d)
+        :
+    );
+    return (int)(acc >> 15);
+}
+
+#undef C_MUL
+#   define C_MUL(m,a,b) (m=C_MUL_fun(a,b))
+static inline kiss_fft_cpx C_MUL_fun(kiss_fft_cpx a, kiss_twiddle_cpx b) {
+    kiss_fft_cpx m;
+
+    m.r = S_MUL_SUB(a.r, b.r, a.i, b.i);
+    m.i = S_MUL_ADD(a.r, b.i, a.i, b.r);
 
     return m;
 }
 
-#endif /* FIXED_POINT */
+#undef C_MULC
+#   define C_MULC(m,a,b) (m=C_MULC_fun(a,b))
+static inline kiss_fft_cpx C_MULC_fun(kiss_fft_cpx a, kiss_twiddle_cpx b) {
+    kiss_fft_cpx m;
+
+    m.r = S_MUL_ADD(a.r, b.r, a.i, b.i);
+    m.i = S_MUL_SUB(a.i, b.r, a.r, b.i);
+
+    return m;
+}
 
 #define OVERRIDE_kf_bfly5
+
+#endif
+
+#endif /* FIXED_POINT */
+
+#if defined(OVERRIDE_kf_bfly5)
+
 static void kf_bfly5(
                      kiss_fft_cpx * Fout,
                      const size_t fstride,
@@ -163,5 +211,61 @@ static void kf_bfly5(
    }
 }
 
+#endif /* defined(OVERRIDE_kf_bfly5) */
+
+#define OVERRIDE_fft_downshift
+/* Just unroll tight loop, should be ok for any mips */
+static void fft_downshift(kiss_fft_cpx *x, int N, int *total, int step) {
+    int shift;
+    shift = IMIN(step, *total);
+    *total -= shift;
+    if (shift == 1) {
+        int i;
+        for (i = 0; i < N - 1; i += 2) {
+            x[i].r   = SHR32(x[i].r,   1);
+            x[i].i   = SHR32(x[i].i,   1);
+            x[i+1].r = SHR32(x[i+1].r, 1);
+            x[i+1].i = SHR32(x[i+1].i, 1);
+        }
+        if (N & 1) {
+            x[i].r = SHR32(x[i].r, 1);
+            x[i].i = SHR32(x[i].i, 1);
+        }
+    } else if (shift > 0) {
+        int i;
+        for (i = 0; i < N - 3; i += 4) {
+            x[i].r   = PSHR32(x[i].r,   shift);
+            x[i].i   = PSHR32(x[i].i,   shift);
+            x[i+1].r = PSHR32(x[i+1].r, shift);
+            x[i+1].i = PSHR32(x[i+1].i, shift);
+            x[i+2].r = PSHR32(x[i+2].r, shift);
+            x[i+2].i = PSHR32(x[i+2].i, shift);
+            x[i+3].r = PSHR32(x[i+3].r, shift);
+            x[i+3].i = PSHR32(x[i+3].i, shift);
+        }
+        switch (N & 3) {
+        case 3:
+            x[i].r   = PSHR32(x[i].r,   shift);
+            x[i].i   = PSHR32(x[i].i,   shift);
+            x[i+1].r = PSHR32(x[i+1].r, shift);
+            x[i+1].i = PSHR32(x[i+1].i, shift);
+            x[i+2].r = PSHR32(x[i+2].r, shift);
+            x[i+2].i = PSHR32(x[i+2].i, shift);
+            break;
+        case 2:
+            x[i].r   = PSHR32(x[i].r,   shift);
+            x[i].i   = PSHR32(x[i].i,   shift);
+            x[i+1].r = PSHR32(x[i+1].r, shift);
+            x[i+1].i = PSHR32(x[i+1].i, shift);
+            break;
+        case 1:
+            x[i].r   = PSHR32(x[i].r,   shift);
+            x[i].i   = PSHR32(x[i].i,   shift);
+            break;
+        case 0:
+            break;
+        }
+    }
+}
 
 #endif /* KISS_FFT_MIPSR1_H */

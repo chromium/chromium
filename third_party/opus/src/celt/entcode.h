@@ -82,7 +82,7 @@ struct ec_ctx{
      In the encoder: the low end of the current range.*/
    opus_uint32    val;
    /*In the decoder: the saved normalization factor from ec_decode().
-     In the encoder: the number of oustanding carry propagating symbols.*/
+     In the encoder: the number of outstanding carry propagating symbols.*/
    opus_uint32    ext;
    /*A buffered input/output symbol, awaiting carry propagation.*/
    int            rem;

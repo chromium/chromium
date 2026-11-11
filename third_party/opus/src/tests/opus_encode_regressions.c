@@ -36,6 +36,7 @@
 #include <math.h>
 #include <string.h>
 #include "opus_multistream.h"
+#include "opus_projection.h"
 #include "opus.h"
 #include "test_opus_common.h"
 
@@ -1021,6 +1022,260 @@ static int silk_gain_assert(void)
     return 0;
 }
 
+#ifndef DISABLE_FLOAT_API
+int analysis_overflow(void)
+{
+    OpusEncoder *enc;
+    int err;
+    unsigned char data[200];
+    int data_len;
+    static const float pcm[320*2] = { 1e9, 1e9 };
+
+    enc = opus_encoder_create(16000, 2, OPUS_APPLICATION_AUDIO, &err);
+    opus_encoder_ctl(enc, OPUS_SET_COMPLEXITY(10));
+    data_len = opus_encode_float(enc, pcm, 320, data, 200);
+    opus_test_assert(data_len > 0 && data_len <= 200);
+    opus_encoder_destroy(enc);
+    return 0;
+}
+
+int projection_overflow2(void)
+{
+    OpusProjectionEncoder *enc;
+    int err;
+    unsigned char data[480];
+    int data_len;
+    int streams;
+    int coupled_streams;
+    static const float pcm[30*9] =
+    {
+        2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34,
+        2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34,
+        2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34,
+        2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34,
+        2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34,
+        2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34,
+        2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34,
+        2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34,
+        2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34,
+        2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34,
+        2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34,
+        2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34,
+        2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34,
+        2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34,
+        2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34,
+        2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34,
+        2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34,
+        2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34,
+        2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34,
+        2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34,
+        2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34,
+        2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34,
+        2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34,
+        2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34,
+        2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34,
+        2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34,
+        2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34, 2e34,    0, -8e9
+    };
+
+    enc = opus_projection_ambisonics_encoder_create(12000, 9, 3, &streams,
+        &coupled_streams, OPUS_APPLICATION_RESTRICTED_LOWDELAY, &err);
+    data_len = opus_projection_encode_float(enc, pcm, 30, data, 480);
+    opus_test_assert(data_len > 0 && data_len <= 480);
+    opus_projection_encoder_destroy(enc);
+    return 0;
+}
+
+int projection_overflow3(void)
+{
+   OpusProjectionEncoder *enc;
+   int err;
+   int i;
+   int data_len;
+   int streams;
+   int coupled_streams;
+   float pcm[60*4];
+   unsigned char data[500];
+
+   enc = opus_projection_ambisonics_encoder_create(24000, 4, 3, &streams,
+       &coupled_streams, OPUS_APPLICATION_AUDIO, &err);
+
+   for (i = 0; i < 60*4; ++i)
+       pcm[i] = -1e38;
+   data_len = opus_projection_encode_float(enc, pcm, 60, data, 500);
+   opus_test_assert(data_len >= 5 && data_len <= 500);
+
+   for (i = 0; i < 60*4; ++i)
+       pcm[i] = 1e38;
+   data_len = opus_projection_encode_float(enc, pcm, 60, data, 500);
+   opus_test_assert(data_len >= 5 && data_len <= 500);
+
+   opus_projection_encoder_destroy(enc);
+   return 0;
+}
+#endif
+
+int projection_overflow(void)
+{
+    OpusProjectionEncoder *enc;
+    int err;
+    unsigned char data[10000];
+    int data_len;
+    int streams;
+    int coupled_streams;
+    static const short pcm[1920*36] =
+    {
+     -6426, -6426, -6426, -6426, -7962, 20498,  -245, -5637,  5969,
+      2571,  2595, 11786,-32768,  -246,   255,-20446, -2828, -2828,
+         0,-32453, 32659,-11334,-21846,-21846,-21846, 12000, 25563,
+     30307,-32583, -3829,-31489, -1025, 20969,  2839, 25406, 25443,
+     25421,  3921,-18169,-32768,     0,   203, -2289,    -1, 32767,
+     -8449, 16384, 16384, 20852,   222,  5952, 29760,  4096,   116,
+      4096,  2560,   736,  2872,  2781,  1802,-32758,-32640,-32640,
+    -32640,-32640,-32640,-32640,-32640,-32640,-32640,-32640,-32640,
+    -32640,-32640,-32640,-32640,-32640,-32640,-32640,-32640,-32640,
+    -32640,-32640,-32640,-32640,-32640,-32640,-32640,-32640,-32640,
+    -32640,-32640,-32640,-32640,-32640,-32640,-32640,-32640,-32640,
+    -32640,-32640,-32640,-32640,  8970,-22006, 12000, 31097, 31353,
+     31097, 31097, 31097, 31097, 31097, 31097, 31097, 31097, 31097,
+     31097, 31097, 31097, 31097, 31097, 31097, 31097, 31097, 31097,
+     31097, 31097, 31097, 31097, 31097, 31097, 31097, 31097, 31097,
+     31097,-29831, -2973,-21846,-21821,-21846, 12000,     0,   255,
+     29712,     0, 12340, -8181, 20482, -5365,  2570, 32519,  -514,
+    -17793,-21805,-18077,-22005, -9373,-21846, -8064,-21970,-21898,
+       -16,  -124, -5637,  5969, 24587, 24655, 26703, 18767, 20303,
+     20303, 20303, 20559, 20303, -5041,   176, -2896, -5873,    21
+    };
+
+    enc = opus_projection_ambisonics_encoder_create(96000, 36, 3, &streams,
+        &coupled_streams, OPUS_APPLICATION_AUDIO, &err);
+#ifndef ENABLE_QEXT
+    opus_test_assert(err == OPUS_BAD_ARG);
+    return 0;
+#endif
+    opus_projection_encoder_ctl(enc, OPUS_SET_QEXT(1));
+    data_len = opus_projection_encode(enc, pcm, 1920, data, 10000);
+    opus_test_assert(data_len > 0 && data_len <= 10000);
+    opus_projection_encoder_destroy(enc);
+    return 0;
+}
+
+
+#ifdef ENABLE_QEXT
+int projection_overflow4(void)
+{
+    OpusProjectionEncoder *enc;
+    int err;
+    unsigned char data[1000];
+    int data_len;
+    int streams;
+    int coupled_streams;
+    static const short pcm[480*36] =
+    {
+          5760, -3050,   -25,     1, -6144,-32583,-32640,-32641,-32640,
+        -32640,-30080,-32640,-32640,-32384,-32640,-32640,-32640,-32640,
+        -32640,-21984,-15446,-32640,-32640,-32513,-32640,-18048,  2944,
+        -26624,    -1, 32767,-15105, 12031,     0, 32639, -2593,    16,
+         -8182,  3858,  3855,  3855,  3855,  3855,  3855,     0,     0,
+          3855,  3855,  3855,  3855,   176, 32512,   176,  4608, 32732,
+            -1,  8704, -2896, -2828,   244, 15104,-27775,-18049,  2944,
+        -26624,    -1, -7937, -9426, 25443,-18058,  2944, 27648,   204,
+         -2289, -1025, 32767, -8449, 16384, 13312, 20852,   -34,    64,
+         29760,  4096,   116,  4096,  2560,   736,  2896,  2781, 25610,
+        -32717,  8970,-22006, 12000, 31097, 31097, 31157, 25465,  8291,
+        -21846,-21821, -6742, 12000,     0, 32767,  -514, 20320, 20320,
+         20328, 20297,-32640,-32640,-21075,-21111,-13139,-32640,-32640,
+        -32640,-32640,-32640,-32640,-32640,-32640,-32640,-32640,-27520,
+        -32640,-32640,-32640,-32640,-32640,-32640,-32640,-32640,-32640,
+        -32640,-32640,-32640,-32640,-32640,-32640,-32513,-32640,-18048
+    };
+
+    enc = opus_projection_ambisonics_encoder_create(96000, 36, 3, &streams,
+        &coupled_streams, OPUS_APPLICATION_AUDIO, &err);
+    opus_projection_encoder_ctl(enc, OPUS_SET_QEXT(1));
+    opus_projection_encoder_ctl(enc, OPUS_SET_BITRATE(256000));
+    data_len = opus_projection_encode(enc, pcm, 480, data, 1000);
+    opus_test_assert(data_len > 0 && data_len <= 1000);
+
+    opus_projection_encoder_destroy(enc);
+    return 0;
+}
+
+int qext_repacketize_fail(void)
+{
+    OpusEncoder *enc;
+    int err;
+    unsigned char data[9000];
+    int data_len;
+    static const short pcm[960] =
+        { -20454, -7680,-12281,  -250, -1809,-22758,-22784,-20480,     3 };
+
+    enc = opus_encoder_create(16000, 1, OPUS_APPLICATION_VOIP, &err);
+    opus_encoder_ctl(enc, OPUS_SET_VBR(0));
+    opus_encoder_ctl(enc, OPUS_SET_QEXT(1));
+    opus_encoder_ctl(enc, OPUS_SET_BITRATE(OPUS_BITRATE_MAX));
+    data_len = opus_encode(enc, pcm, 960, data, 9000);
+    /* returns OPUS_INTERNAL_ERROR (-3) */
+    opus_test_assert(data_len > 0 && data_len <= 9000);
+    opus_encoder_destroy(enc);
+    return 0;
+}
+
+int qext_stereo_overflow(void)
+{
+    OpusEncoder *enc;
+    int err;
+    unsigned char data[2000];
+    int data_len;
+    int i;
+    static short pcm[11520*2];
+
+    for (i = 0; i < 11520*2; ++i)
+        pcm[i] = 32767;
+    enc = opus_encoder_create(96000, 2, OPUS_APPLICATION_RESTRICTED_LOWDELAY, &err);
+    data_len = opus_encode(enc, pcm, 11520, data, 2000);
+    opus_test_assert(data_len > 0 && data_len <= 2000);
+    opus_encoder_destroy(enc);
+    return 0;
+}
+
+
+#ifdef ENABLE_DRED
+int qext_dred_combination(void)
+{
+    OpusMSEncoder *enc;
+    OpusEncoder *stream_enc;
+    int err;
+    unsigned char data[2560];
+    int data_len;
+    int streams;
+    int coupled_streams;
+    unsigned char mapping[5];
+    static const short pcm[320*5] =
+    {
+             0,     1, 15934,  -128,  -194,     0,     0,  1000,     0,
+        -22758, 15872,    16,     0,  1000,     0,-22758, 15872, -2304,
+         -2057, -2057, -2057, -2057, -2057, -2057, -2057
+    };
+
+    enc = opus_multistream_surround_encoder_create(16000, 5, 1, &streams,
+        &coupled_streams, mapping, OPUS_APPLICATION_VOIP, &err);
+    opus_multistream_encoder_ctl(enc, OPUS_SET_COMPLEXITY(3));
+    opus_multistream_encoder_ctl(enc, OPUS_SET_PACKET_LOSS_PERC(12));
+    opus_multistream_encoder_ctl(enc, OPUS_SET_QEXT(1));
+    opus_multistream_encoder_ctl(enc, OPUS_MULTISTREAM_GET_ENCODER_STATE(0, &stream_enc));
+    opus_encoder_ctl(stream_enc, OPUS_SET_DRED_DURATION(103));
+    opus_multistream_encoder_ctl(enc, OPUS_SET_BITRATE(755850));
+    data_len = opus_multistream_encode(enc, pcm, 320, data, 2560);
+    /* returns OPUS_BAD_ARG (-1) */
+    opus_test_assert(data_len > 0 && data_len <= 2560);
+    opus_multistream_encoder_destroy(enc);
+    return 0;
+}
+#endif
+#endif
+
+
 void regression_test(void)
 {
    fprintf(stderr, "Running simple tests for bugs that have been fixed previously\n");
@@ -1031,4 +1286,18 @@ void regression_test(void)
    ec_enc_shrink_assert();
    ec_enc_shrink_assert2();
    silk_gain_assert();
+#ifndef DISABLE_FLOAT_API
+   analysis_overflow();
+   projection_overflow2();
+   projection_overflow3();
+#endif
+   projection_overflow();
+#ifdef ENABLE_QEXT
+   projection_overflow4();
+   qext_repacketize_fail();
+   qext_stereo_overflow();
+#ifdef ENABLE_DRED
+   qext_dred_combination();
+#endif
+#endif
 }

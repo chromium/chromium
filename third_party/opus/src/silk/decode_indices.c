@@ -120,7 +120,7 @@ void silk_decode_indices(
         }
         psDec->ec_prevLagIndex = psDec->indices.lagIndex;
 
-        /* Get countour index */
+        /* Get contour index */
         psDec->indices.contourIndex = (opus_int8)ec_dec_icdf( psRangeDec, psDec->pitch_contour_iCDF, 8 );
 
         /********************/

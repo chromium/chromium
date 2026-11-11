@@ -96,4 +96,3 @@ static OPUS_INLINE void opus_free (void *ptr)
 #endif*/
 
 #endif /* OS_SUPPORT_H */
-

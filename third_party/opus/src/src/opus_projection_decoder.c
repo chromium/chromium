@@ -280,4 +280,3 @@ void opus_projection_decoder_destroy(OpusProjectionDecoder *st)
 {
   opus_free(st);
 }
-

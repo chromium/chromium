@@ -46,7 +46,7 @@
 #endif
 
 /* The guts header contains all the multiplication and addition macros that are defined for
-   complex numbers.  It also delares the kf_ internal functions.
+   complex numbers.  It also declares the kf_ internal functions.
 */
 
 static void kf_bfly2(
@@ -92,7 +92,7 @@ static void kf_bfly2(
          C_ADDTO( Fout[1] ,  t );
 
          t.r = Fout2[2].i;
-         t.i = -Fout2[2].r;
+         t.i = NEG32_ovflw(Fout2[2].r);
          C_SUB( Fout2[2] ,  Fout[2] , t );
          C_ADDTO( Fout[2] ,  t );
 
@@ -535,6 +535,7 @@ void opus_fft_free(const kiss_fft_state *cfg, int arch)
 #endif /* CUSTOM_MODES */
 
 #ifdef FIXED_POINT
+#ifndef OVERRIDE_fft_downshift
 static void fft_downshift(kiss_fft_cpx *x, int N, int *total, int step) {
    int shift;
    shift = IMIN(step, *total);
@@ -553,6 +554,7 @@ static void fft_downshift(kiss_fft_cpx *x, int N, int *total, int step) {
       }
    }
 }
+#endif /* OVERRIDE_fft_downshift */
 #else
 #define fft_downshift(x, N, total, step)
 #endif

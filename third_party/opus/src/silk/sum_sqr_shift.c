@@ -80,4 +80,3 @@ void silk_sum_sqr_shift(
     *shift  = shft;
     *energy = nrg;
 }
-

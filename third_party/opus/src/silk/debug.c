@@ -171,4 +171,3 @@ void silk_TimerSave(char *file_name)
 FILE *silk_debug_store_fp[ silk_NUM_STORES_MAX ];
 int silk_debug_store_count = 0;
 #endif /* SILK_DEBUG */
-

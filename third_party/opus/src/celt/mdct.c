@@ -53,7 +53,7 @@
 #include "mathops.h"
 #include "stack_alloc.h"
 
-#if defined(MIPSr1_ASM)
+#if defined(FIXED_POINT) && defined(__mips) && __mips == 32
 #include "mips/mdct_mipsr1.h"
 #endif
 
@@ -271,6 +271,9 @@ void clt_mdct_backward_c(const mdct_lookup *l, kiss_fft_scalar *in, kiss_fft_sca
    int i;
    int N, N2, N4;
    const kiss_twiddle_scalar *trig;
+#ifdef FIXED_POINT
+   int pre_shift, post_shift, fft_shift;
+#endif
    (void) arch;
 
    N = l->n;
@@ -283,6 +286,21 @@ void clt_mdct_backward_c(const mdct_lookup *l, kiss_fft_scalar *in, kiss_fft_sca
    N2 = N>>1;
    N4 = N>>2;
 
+#ifdef FIXED_POINT
+   {
+      opus_val32 sumval=N2;
+      opus_val32 maxval=0;
+      for (i=0;i<N2;i++) {
+         maxval = MAX32(maxval, ABS32(in[i*stride]));
+         sumval = ADD32_ovflw(sumval, ABS32(SHR32(in[i*stride],11)));
+      }
+      pre_shift = IMAX(0, 29-celt_zlog2(1+maxval));
+      /* Worst-case where all the energy goes to a single sample. */
+      post_shift = IMAX(0, 19-celt_ilog2(ABS32(sumval)));
+      post_shift = IMIN(post_shift, pre_shift);
+      fft_shift = pre_shift - post_shift;
+   }
+#endif
    /* Pre-rotate */
    {
       /* Temp pointers to make it really clear to the compiler what we're doing */
@@ -297,8 +315,8 @@ void clt_mdct_backward_c(const mdct_lookup *l, kiss_fft_scalar *in, kiss_fft_sca
          kiss_fft_scalar yr, yi;
          opus_val32 x1, x2;
          rev = *bitrev++;
-         x1 = SHL32(*xp1, IMDCT_HEADROOM);
-         x2 = SHL32(*xp2, IMDCT_HEADROOM);
+         x1 = SHL32_ovflw(*xp1, pre_shift);
+         x2 = SHL32_ovflw(*xp2, pre_shift);
          yr = ADD32_ovflw(S_MUL(x2, t[i]), S_MUL(x1, t[N4+i]));
          yi = SUB32_ovflw(S_MUL(x1, t[i]), S_MUL(x2, t[N4+i]));
          /* We swap real and imag because we use an FFT instead of an IFFT. */
@@ -310,7 +328,7 @@ void clt_mdct_backward_c(const mdct_lookup *l, kiss_fft_scalar *in, kiss_fft_sca
       }
    }
 
-   opus_fft_impl(l->kfft[shift], (kiss_fft_cpx*)(out+(overlap>>1)) ARG_FIXED(0));
+   opus_fft_impl(l->kfft[shift], (kiss_fft_cpx*)(out+(overlap>>1)) ARG_FIXED(fft_shift));
 
    /* Post-rotate and de-shuffle from both ends of the buffer at once to make
       it in-place. */
@@ -330,8 +348,8 @@ void clt_mdct_backward_c(const mdct_lookup *l, kiss_fft_scalar *in, kiss_fft_sca
          t0 = t[i];
          t1 = t[N4+i];
          /* We'd scale up by 2 here, but instead it's done when mixing the windows */
-         yr = PSHR32(ADD32_ovflw(S_MUL(re,t0), S_MUL(im,t1)), IMDCT_HEADROOM);
-         yi = PSHR32(SUB32_ovflw(S_MUL(re,t1), S_MUL(im,t0)), IMDCT_HEADROOM);
+         yr = PSHR32_ovflw(ADD32_ovflw(S_MUL(re,t0), S_MUL(im,t1)), post_shift);
+         yi = PSHR32_ovflw(SUB32_ovflw(S_MUL(re,t1), S_MUL(im,t0)), post_shift);
          /* We swap real and imag because we're using an FFT instead of an IFFT. */
          re = yp1[1];
          im = yp1[0];
@@ -341,8 +359,8 @@ void clt_mdct_backward_c(const mdct_lookup *l, kiss_fft_scalar *in, kiss_fft_sca
          t0 = t[(N4-i-1)];
          t1 = t[(N2-i-1)];
          /* We'd scale up by 2 here, but instead it's done when mixing the windows */
-         yr = PSHR32(ADD32_ovflw(S_MUL(re,t0), S_MUL(im,t1)), IMDCT_HEADROOM);
-         yi = PSHR32(SUB32_ovflw(S_MUL(re,t1), S_MUL(im,t0)), IMDCT_HEADROOM);
+         yr = PSHR32_ovflw(ADD32_ovflw(S_MUL(re,t0), S_MUL(im,t1)), post_shift);
+         yi = PSHR32_ovflw(SUB32_ovflw(S_MUL(re,t1), S_MUL(im,t0)), post_shift);
          yp1[0] = yr;
          yp0[1] = yi;
          yp0 += 2;

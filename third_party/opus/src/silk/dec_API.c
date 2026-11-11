@@ -36,6 +36,9 @@ POSSIBILITY OF SUCH DAMAGE.
 #ifdef ENABLE_OSCE
 #include "osce.h"
 #include "osce_structs.h"
+#ifdef ENABLE_OSCE_BWE
+#include "osce_features.h"
+#endif
 #endif
 
 /************************/
@@ -154,6 +157,9 @@ opus_int silk_Decode(                                   /* O    Returns error co
     silk_decoder_state *channel_state = psDec->channel_state;
     opus_int has_side;
     opus_int stereo_to_mono;
+#ifdef ENABLE_OSCE_BWE
+    VARDECL( opus_int16, resamp_buffer );
+#endif
     SAVE_STACK;
 
     celt_assert( decControl->nChannelsInternal == 1 || decControl->nChannelsInternal == 2 );
@@ -376,11 +382,45 @@ opus_int silk_Decode(                                   /* O    Returns error co
     ALLOC( samplesOut2_tmp, *nSamplesOut, opus_int16 );
     resample_out_ptr = samplesOut2_tmp;
 
+#ifdef ENABLE_OSCE_BWE
+    ALLOC(resamp_buffer, 3 * MAX_FRAME_LENGTH, opus_int16);
+#endif
+
     for( n = 0; n < silk_min( decControl->nChannelsAPI, decControl->nChannelsInternal ); n++ ) {
 
+#ifdef ENABLE_OSCE_BWE
+        /* Resample or extend decoded signal to API_sampleRate */
+        if (decControl->osce_extended_mode == OSCE_MODE_SILK_BBWE) {
+            silk_assert(decControl->API_sampleRate == 48000);
+
+            if (decControl->prev_osce_extended_mode != OSCE_MODE_SILK_BBWE) {
+                /* Reset the BWE state */
+                osce_bwe_reset( &channel_state[ n ].osce_bwe );
+            }
+
+            osce_bwe(&psDec->osce_model, &channel_state[ n ].osce_bwe,
+                resample_out_ptr, &samplesOut1_tmp[ n ][ 1 ], nSamplesOutDec, arch);
+
+            if (decControl->prev_osce_extended_mode == OSCE_MODE_SILK_ONLY ||
+                decControl->prev_osce_extended_mode == OSCE_MODE_HYBRID) {
+                    /* cross-fade with upsampled signal */
+                    silk_resampler( &channel_state[ n ].resampler_state, resamp_buffer, &samplesOut1_tmp[ n ][ 1 ], nSamplesOutDec );
+                    osce_bwe_cross_fade_10ms(resample_out_ptr, resamp_buffer, 480);
+            }
+        } else {
+            ret += silk_resampler( &channel_state[ n ].resampler_state, resample_out_ptr, &samplesOut1_tmp[ n ][ 1 ], nSamplesOutDec );
+            if (decControl->prev_osce_extended_mode == OSCE_MODE_SILK_BBWE && decControl->internalSampleRate == 16000) {
+                /* fade out if internal sample rate did not change */
+                osce_bwe(&psDec->osce_model, &channel_state[ n ].osce_bwe,
+                    resamp_buffer, &samplesOut1_tmp[ n ][ 1 ], nSamplesOutDec, arch);
+                /* cross-fade with upsampled signal */
+                osce_bwe_cross_fade_10ms(resample_out_ptr, resamp_buffer, 480);
+            }
+        }
+#else
         /* Resample decoded signal to API_sampleRate */
         ret += silk_resampler( &channel_state[ n ].resampler_state, resample_out_ptr, &samplesOut1_tmp[ n ][ 1 ], nSamplesOutDec );
-
+#endif
         /* Interleave if stereo output and stereo stream */
         if( decControl->nChannelsAPI == 2 ) {
             for( i = 0; i < *nSamplesOut; i++ ) {
@@ -392,6 +432,10 @@ opus_int silk_Decode(                                   /* O    Returns error co
             }
         }
     }
+
+#ifdef ENABLE_OSCE_BWE
+    decControl->prev_osce_extended_mode = decControl->osce_extended_mode;
+#endif
 
     /* Create two channel output from mono stream */
     if( decControl->nChannelsAPI == 2 && decControl->nChannelsInternal == 1 ) {

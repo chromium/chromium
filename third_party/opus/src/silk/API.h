@@ -38,11 +38,6 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "lpcnet_private.h"
 #endif
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-
 #define SILK_MAX_FRAMES_PER_PACKET  3
 
 /* Struct for TOC (Table of Contents) */
@@ -60,7 +55,8 @@ typedef struct {
 /* Get size in bytes of the Silk encoder state */
 /***********************************************/
 opus_int silk_Get_Encoder_Size(                         /* O    Returns error code                              */
-    opus_int                        *encSizeBytes       /* O    Number of bytes in SILK encoder state           */
+    opus_int                        *encSizeBytes,      /* O    Number of bytes in SILK encoder state           */
+    opus_int                         channels           /* I    Number of channels                              */
 );
 
 /*************************/
@@ -68,6 +64,7 @@ opus_int silk_Get_Encoder_Size(                         /* O    Returns error co
 /*************************/
 opus_int silk_InitEncoder(                              /* O    Returns error code                              */
     void                            *encState,          /* I/O  State                                           */
+    int                              channels,          /* I    Number of channels                              */
     int                              arch,              /* I    Run-time architecture                           */
     silk_EncControlStruct           *encStatus          /* O    Encoder Status                                  */
 );
@@ -149,8 +146,5 @@ opus_int silk_get_TOC(
 );
 #endif
 
-#ifdef __cplusplus
-}
-#endif
 
 #endif

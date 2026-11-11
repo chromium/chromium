@@ -74,7 +74,7 @@ static OPUS_INLINE void _silk_fatal(const char *str, const char *file, int line)
 }
 #  define silk_assert(COND) {if (!(COND)) {silk_fatal("assertion failed: " #COND);}}
 # else
-#  define silk_assert(COND)
+#  define silk_assert(COND) ((void)(COND))
 # endif
 #endif
 

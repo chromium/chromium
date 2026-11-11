@@ -32,10 +32,6 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "main.h"
 #include "structs.h"
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
 
 /********************************/
 /* Noise shaping analysis state */
@@ -96,7 +92,6 @@ typedef struct {
 /* Encoder Super Struct */
 /************************/
 typedef struct {
-    silk_encoder_state_FIX      state_Fxx[ ENCODER_NUM_CHANNELS ];
     stereo_enc_state            sStereo;
     opus_int32                  nBitsUsedLBRR;
     opus_int32                  nBitsExceeded;
@@ -106,11 +101,9 @@ typedef struct {
     opus_int                    timeSinceSwitchAllowed_ms;
     opus_int                    allowBandwidthSwitch;
     opus_int                    prev_decode_only_middle;
+    /* This needs to be last so we can skip the second state for mono. */
+    silk_encoder_state_FIX      state_Fxx[ ENCODER_NUM_CHANNELS ];
 } silk_encoder;
 
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

@@ -41,7 +41,7 @@
 extern "C" {
 #endif
 
-#ifdef CUSTOM_MODES
+#if defined(CUSTOM_MODES) || defined(ENABLE_OPUS_CUSTOM_API)
 # define OPUS_CUSTOM_EXPORT OPUS_EXPORT
 # define OPUS_CUSTOM_EXPORT_STATIC OPUS_EXPORT
 #else
@@ -141,7 +141,7 @@ OPUS_CUSTOM_EXPORT_STATIC OPUS_WARN_UNUSED_RESULT int opus_custom_encoder_get_si
     int channels
 ) OPUS_ARG_NONNULL(1);
 
-# ifdef CUSTOM_MODES
+#if defined(CUSTOM_MODES) || defined(ENABLE_OPUS_CUSTOM_API)
 /** Initializes a previously allocated encoder state
   * The memory pointed to by st must be the size returned by opus_custom_encoder_get_size.
   * This is intended for applications which use their own allocator instead of malloc.
