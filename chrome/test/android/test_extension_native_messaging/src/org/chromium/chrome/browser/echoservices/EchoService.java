@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.echoservices;
 
+import android.app.ActivityManager;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Bundle;
@@ -244,6 +245,17 @@ public class EchoService extends Service {
                                         k -> Collections.synchronizedList(new ArrayList<>()))
                                 .add(mCallback);
                     }
+                    return;
+                }
+
+                // Query the current process importance of this bound service's app.
+                if ("getProcessImportance".equalsIgnoreCase(input.optString("request"))) {
+                    ActivityManager.RunningAppProcessInfo processInfo =
+                            new ActivityManager.RunningAppProcessInfo();
+                    ActivityManager.getMyMemoryState(processInfo);
+                    JSONObject importanceReply = new JSONObject();
+                    importanceReply.put("importance", processInfo.importance);
+                    mCallback.onMessage(createPayload(importanceReply.toString()), new Bundle());
                     return;
                 }
 

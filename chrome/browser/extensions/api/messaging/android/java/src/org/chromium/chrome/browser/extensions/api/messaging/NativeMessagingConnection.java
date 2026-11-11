@@ -88,7 +88,11 @@ public class NativeMessagingConnection implements ServiceConnection {
         Intent intent = new Intent(ACTION_NATIVE_MESSAGING);
         intent.setPackage(mPackageName);
 
-        mIsBound = context.bindService(intent, this, Context.BIND_AUTO_CREATE);
+        // Pass BIND_NOT_FOREGROUND so a visible Chrome window does not elevate a background
+        // companion app to PROCESS_STATE_BOUND_TOP (IMPORTANCE_FOREGROUND).
+        mIsBound =
+                context.bindService(
+                        intent, this, Context.BIND_AUTO_CREATE | Context.BIND_NOT_FOREGROUND);
         if (mIsBound) {
             // Unbind if too much time passes between bindService returning true and
             // OnServiceConnected returning a `IBrowserNativeMessageService`.

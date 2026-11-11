@@ -54,6 +54,8 @@ public class NativeMessagingConnectionTest {
     private IBrowserNativeMessageService mFakeBrowserService;
 
     private static class TestContext extends ContextWrapper {
+        private @Nullable Intent mBindIntent;
+        private int mBindFlags;
         private ServiceConnection mServiceConnection;
 
         public TestContext(Context base) {
@@ -62,8 +64,18 @@ public class NativeMessagingConnectionTest {
 
         @Override
         public boolean bindService(Intent service, ServiceConnection conn, int flags) {
+            mBindIntent = service;
+            mBindFlags = flags;
             mServiceConnection = conn;
             return true;
+        }
+
+        public @Nullable Intent getBindIntent() {
+            return mBindIntent;
+        }
+
+        public int getBindFlags() {
+            return mBindFlags;
         }
 
         public void triggerServiceConnected(IBinder service) {
@@ -131,6 +143,25 @@ public class NativeMessagingConnectionTest {
     private static @Nullable String connectExtension(
             NativeMessagingConnection connection, String extensionId) {
         return connectExtension(connection, extensionId, /* isVerifiedExtension= */ true);
+    }
+
+    // Test that NativeMessagingConnection binds with ACTION_NATIVE_MESSAGING, the target package,
+    // and Context.BIND_AUTO_CREATE | Context.BIND_NOT_FOREGROUND so a visible Chrome window does
+    // not elevate a background companion app to IMPORTANCE_FOREGROUND.
+    @Test
+    public void testBindServiceIntentAndFlags() {
+        NativeMessagingConnection connection =
+                new NativeMessagingConnection(TARGET_PACKAGE, mObserver);
+        Assert.assertTrue(connection.isBound());
+
+        Intent bindIntent = mTestContext.getBindIntent();
+        Assert.assertNotNull(bindIntent);
+        Assert.assertEquals(
+                NativeMessagingConnection.ACTION_NATIVE_MESSAGING, bindIntent.getAction());
+        Assert.assertEquals(TARGET_PACKAGE, bindIntent.getPackage());
+        Assert.assertEquals(
+                Context.BIND_AUTO_CREATE | Context.BIND_NOT_FOREGROUND,
+                mTestContext.getBindFlags());
     }
 
     // Test that:

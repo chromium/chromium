@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
+#include <string>
+
+#include "base/android/application_status_listener.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
@@ -227,6 +231,79 @@ IN_PROC_BROWSER_TEST_F(NativeMessagingAndroidApiTest,
       unload_result,
       base::test::IsJson(base::StringPrintf(
           R"({"status": "unloaded", "extensionId": "%s"})", extension_id)));
+}
+
+// Regression test for crbug.com/579962584: binding to an external Android
+// NATIVE_MESSAGING service from a foreground Chrome window must not elevate the
+// target app's process to IMPORTANCE_FOREGROUND (PROCESS_STATE_BOUND_TOP).
+IN_PROC_BROWSER_TEST_F(NativeMessagingAndroidApiTest,
+                       BoundServiceNotElevatedToForeground) {
+  ASSERT_EQ(base::android::APPLICATION_STATE_HAS_RUNNING_ACTIVITIES,
+            base::android::ApplicationStatusListener::GetState());
+
+  constexpr char kManifest[] = R"(
+      {
+        "name": "ProcessImportanceCheckExtension",
+        "version": "1.0",
+        "manifest_version": 3,
+        "permissions": ["nativeMessaging"],
+        "background": {
+          "service_worker": "background.js"
+        }
+      })";
+
+  TestExtensionDir extension_dir;
+  extension_dir.WriteManifest(kManifest);
+  extension_dir.WriteFile(FILE_PATH_LITERAL("background.js"),
+                          "// Empty background script");
+  const Extension* extension = LoadExtension(extension_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  // Keep a persistent native messaging port open and query EchoService's
+  // RunningAppProcessInfo.importance while bound.
+  constexpr char kScript[] = R"(
+    let replied = false;
+    const port = chrome.runtime.connectNative(
+        'org.chromium.chrome.tests.support');
+    port.onMessage.addListener((response) => {
+      replied = true;
+      port.disconnect();
+      chrome.test.sendScriptResult(response);
+    });
+    port.onDisconnect.addListener(() => {
+      if (!replied) {
+        chrome.test.sendScriptResult({
+          error: chrome.runtime.lastError ?
+              chrome.runtime.lastError.message : 'Unexpected disconnect',
+        });
+      }
+    });
+    port.postMessage({request: 'getProcessImportance'});
+  )";
+
+  base::Value result = BackgroundScriptExecutor::ExecuteScript(
+      profile(), extension->id(), kScript,
+      BackgroundScriptExecutor::ResultCapture::kSendScriptResult);
+  ASSERT_TRUE(result.is_dict());
+  const std::string* error = result.GetDict().FindString("error");
+  ASSERT_EQ(nullptr, error) << *error;
+  std::optional<int> importance = result.GetDict().FindInt("importance");
+  ASSERT_TRUE(importance.has_value());
+
+  // ActivityManager.RunningAppProcessInfo.procStateToImportance() mappings:
+  // - IMPORTANCE_FOREGROUND = 100 (PROCESS_STATE_TOP / PROCESS_STATE_BOUND_TOP)
+  // - IMPORTANCE_VISIBLE = 200 (PROCESS_STATE_IMPORTANT_FOREGROUND /
+  //   PROCESS_STATE_IMPORTANT_BACKGROUND)
+  // - IMPORTANCE_PERCEPTIBLE = 230 (PROCESS_STATE_TRANSIENT_BACKGROUND)
+  // With Context.BIND_AUTO_CREATE | Context.BIND_NOT_FOREGROUND (without
+  // BIND_IMPORTANT_BACKGROUND), OomAdjuster clamps procState at
+  // PROCESS_STATE_TRANSIENT_BACKGROUND while raising oom_adj to
+  // VISIBLE_APP_ADJ, keeping the bound service alive above background/cached
+  // priority without elevating it to IMPORTANCE_FOREGROUND.
+  constexpr int kImportanceVisible = 200;
+  constexpr int kImportancePerceptible = 230;
+  EXPECT_GE(*importance, kImportanceVisible);
+  EXPECT_LE(*importance, kImportancePerceptible);
 }
 
 // An unpacked extension can send messages to the external Android app without
