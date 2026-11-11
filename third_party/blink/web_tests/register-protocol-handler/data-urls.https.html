@@ -8,6 +8,10 @@
 <script>
 setup({single_test: true});
 
+// The data: URL iframe below is a secure context (its parent is one), so
+// registerProtocolHandler() is exposed. Registration must still fail, since
+// the handler URL's scheme is not HTTP(S).
+// https://html.spec.whatwg.org/multipage/system-state.html#normalize-protocol-handler-parameters
 const frameSrc =
 `<html>
 <head>
@@ -18,7 +22,7 @@ try {
                                     'Test handler');
   window.parent.postMessage('rph succeeded', '*');
 } catch (e) {
-  window.parent.postMessage('rph failed: ' + e.message, '*');
+  window.parent.postMessage('rph failed: ' + e.name, '*');
 }
 <\/script>
 <\/head>
@@ -29,8 +33,7 @@ Test page
 `
 
 window.addEventListener('message', (msg) => {
-  assert_equals(msg.data,
-  'rph failed: navigator.registerProtocolHandler is not a function');
+  assert_equals(msg.data, 'rph failed: SecurityError');
   done();
 });
 

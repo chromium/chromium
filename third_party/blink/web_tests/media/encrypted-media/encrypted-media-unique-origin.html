@@ -16,6 +16,10 @@
                     var iframe = document.createElement('iframe');
                     iframe.onload = function() { resolve(iframe); };
                     iframe.sandbox = sandbox;
+                    // Delegate encrypted-media to the unique origin, so the
+                    // test exercises the unique-origin restriction rather than
+                    // permissions policy.
+                    iframe.allow = 'encrypted-media *';
                     iframe.src = src;
                     document.documentElement.appendChild(iframe);
                 });
@@ -32,14 +36,26 @@
 
             promise_test(function(test) {
                 // TODO(xhwang): Also check other EME APIs.
+                //
+                // The iframe is a secure context (as its parent is one), so
+                // requestMediaKeySystemAccess() is exposed. It must still be
+                // impossible to create MediaKeys from its unique origin.
                 var script = 'data:text/html,' +
                     '<script>' +
                     '    window.onmessage = function(e) {' +
-                    '        if (\'requestMediaKeySystemAccess\' in navigator) {' +
+                    '        navigator.requestMediaKeySystemAccess(\'org.w3.clearkey\', [{' +
+                    '            initDataTypes: [ \'keyids\' ],' +
+                    '            audioCapabilities: [' +
+                    '                { contentType: \'audio/mp4; codecs="mp4a.40.2"\' },' +
+                    '                { contentType: \'audio/webm; codecs="opus"\' }' +
+                    '            ]' +
+                    '        }]).then(function(access) {' +
+                    '            return access.createMediaKeys();' +
+                    '        }).then(function() {' +
                     '            window.parent.postMessage({result: \'available\'}, \'*\');' +
-                    '        } else { ' +
-                    '            window.parent.postMessage({result: \'unavailable\'}, \'*\');' +
-                    '        }' +
+                    '        }, function(err) {' +
+                    '            window.parent.postMessage({result: \'unavailable\', error: err.name}, \'*\');' +
+                    '        });' +
                     '    };' +
                     '<\/script>';
 
@@ -60,6 +76,7 @@
                     return wait_for_message();
                 }).then(function(message) {
                     assert_equals(message.result, 'unavailable');
+                    assert_equals(message.error, 'NotSupportedError');
                 });
             }, 'requestMediaKeySystemAccess() is not available on unique origin');
         </script>

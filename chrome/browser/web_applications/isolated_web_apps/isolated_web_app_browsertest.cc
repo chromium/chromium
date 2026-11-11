@@ -782,7 +782,10 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppApiAccessBrowserTest,
       EvalJs(iframe, "location.href"),
       Eq("data:text/html;base64,PCFET0NUWVBFIGh0bWw+PHA+ZGF0YTogVVJMPC9wPg=="));
   EXPECT_THAT(EvalJs(iframe, "window.origin"), Eq("null"));
-  EXPECT_THAT(EvalJs(iframe, "window.isSecureContext"), Eq(false));
+  // A data: URL iframe is a secure context iff its ancestors are, per
+  // https://html.spec.whatwg.org/C/#secure-context. It still must not get
+  // access to isolated-context-only APIs (checked below).
+  EXPECT_THAT(EvalJs(iframe, "window.isSecureContext"), Eq(true));
   EXPECT_THAT(EvalJs(iframe, "window.crossOriginIsolated"), Eq(false));
   EXPECT_THAT(EvalJs(iframe, "'TCPSocket' in window"), Eq(false));
   EXPECT_THAT(

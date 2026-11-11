@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] FileSystemDirectoryHandle must be defined for data URI iframes.
-  assert_true: Data URI iframes must define 'FileSystemDirectoryHandle'. expected true got false
-Harness: the test ran to completion.
-

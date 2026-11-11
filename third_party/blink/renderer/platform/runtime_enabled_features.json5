@@ -2396,6 +2396,14 @@
       name: "Database",
     },
     {
+      // Killswitch. When enabled, a data: URL document in a subframe is a
+      // secure context iff its ancestors are, per the HTML Standard's
+      // "secure context" algorithm. See
+      // https://html.spec.whatwg.org/C/#secure-context.
+      name: "DataUrlSubframeSecureContext",
+      status: "stable",
+    },
+    {
       // Killswitch for https://crbug.com/40622827
       name: "DateTimeFieldTypeWithoutSelection",
       status: "stable",

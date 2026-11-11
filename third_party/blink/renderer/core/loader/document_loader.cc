@@ -355,6 +355,25 @@ ConvertPermissionStatusHashMapToFlatMap(
   return flat_map;
 }
 
+// Returns true if any ancestor of `frame` is not potentially trustworthy,
+// stopping at secure-context roots. This mirrors
+// `LocalDOMWindow::HasInsecureContextInAncestors()`, which can't be used while
+// computing the origin of a new document because its window isn't set up yet.
+bool HasInsecureContextInAncestors(const LocalFrame& frame) {
+  for (const Frame* parent = frame.Tree().Parent(); parent;
+       parent = parent->Tree().Parent()) {
+    if (parent->GetSecurityContext()->IsSecureContextRoot()) {
+      return false;
+    }
+    if (!parent->GetSecurityContext()
+             ->GetSecurityOrigin()
+             ->IsPotentiallyTrustworthy()) {
+      return true;
+    }
+  }
+  return false;
+}
+
 }  // namespace
 
 struct SameSizeAsDocumentLoader
@@ -2587,8 +2606,8 @@ scoped_refptr<SecurityOrigin> DocumentLoader::CalculateOrigin(
       // We should only have a sandboxed, srcdoc frame without an owner
       // document if isolated-sandboxed-iframes is enabled. Only cases that
       // would normally inherit the origin need to be handled here, and a
-      // sandboxed about:blank document won't be moved out of process. Also,
-      // data: urls don't get secure contexts, so needn't be considered here.
+      // sandboxed about:blank document won't be moved out of process. data:
+      // URLs are handled separately below.
       CHECK(owner_document ||
             base::FeatureList::IsEnabled(features::kIsolateSandboxedIframes));
 
@@ -2652,6 +2671,28 @@ scoped_refptr<SecurityOrigin> DocumentLoader::CalculateOrigin(
   if (origin->IsOpaque()) {
     KURL url = url_.IsEmpty() ? BlankUrl() : url_;
     if (SecurityOrigin::Create(url)->IsPotentiallyTrustworthy()) {
+      origin->SetOpaqueOriginIsPotentiallyTrustworthy(true);
+    } else if (url.ProtocolIsData() && frame_->Tree().Parent() &&
+               !HasInsecureContextInAncestors(*frame_) &&
+               RuntimeEnabledFeatures::DataUrlSubframeSecureContextEnabled()) {
+      // data: URLs are "potentially trustworthy URLs" [1], but their origin is
+      // opaque. Per the HTML Standard's "secure context" algorithm [2], a data:
+      // document is a secure context iff its top-level document is one (and
+      // the top-level document is not itself a data: document).
+      //
+      // Only flag the origin when the ancestors are secure, since the flag is
+      // observable beyond this document: documents that alias this
+      // SecurityOrigin (e.g. the initial about:blank of a popup opened by this
+      // document, which has no ancestors to walk) must only be secure if this
+      // document is. This also lets same-process descendants walk past this
+      // document in `HasInsecureContextInAncestors()`.
+      //
+      // Frames without a parent (including fenced frame roots) are top-level,
+      // and must stay non-secure.
+      //
+      // [1]:
+      // https://w3c.github.io/webappsec-secure-contexts/#potentially-trustworthy-url
+      // [2]: https://html.spec.whatwg.org/C/#secure-context
       origin->SetOpaqueOriginIsPotentiallyTrustworthy(true);
     }
   }
