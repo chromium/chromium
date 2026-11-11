@@ -1443,7 +1443,8 @@ public class ContextMenuTest {
         // TODO(crbug.com/568761242): Remove the SDK check once the minimum SDK is Android R+.
         return addItemsIf(
                 VERSION.SDK_INT >= VERSION_CODES.R
-                        && PictureInPicture.isEnabled(mActivityTestRule.getActivity()),
+                        && ThreadUtils.runOnUiThreadBlocking(
+                                () -> PictureInPicture.isEnabled(mActivityTestRule.getActivity())),
                 baseItems,
                 new Integer[] {R.id.contextmenu_picture_in_picture});
     }

@@ -614,6 +614,7 @@ public class TabAlertIndicatorTest {
         // ActivityTabWebContentsDelegateAndroid#isPictureInPictureEnabled.
         // TODO(crbug.com/568761242): Remove the SDK check once the minimum SDK is Android R+.
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
-                && PictureInPicture.isEnabled(mActivityTestRule.getActivity());
+                && ThreadUtils.runOnUiThreadBlocking(
+                        () -> PictureInPicture.isEnabled(mActivityTestRule.getActivity()));
     }
 }

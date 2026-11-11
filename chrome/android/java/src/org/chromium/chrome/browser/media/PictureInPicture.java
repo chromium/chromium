@@ -5,11 +5,15 @@
 package org.chromium.chrome.browser.media;
 
 import android.app.AppOpsManager;
+import android.app.AppOpsManager.OnOpChangedListener;
 import android.content.Context;
 import android.content.pm.PackageManager;
 
+import org.chromium.base.ResettersForTesting;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 
 /**
@@ -18,6 +22,9 @@ import org.chromium.chrome.browser.util.BrowserUiUtils;
  */
 @NullMarked
 public abstract class PictureInPicture {
+    private static @Nullable Boolean sIsPictureInPictureEnabled;
+    private static @Nullable OnOpChangedListener sOnOpChangedListener;
+
     private PictureInPicture() {}
 
     /**
@@ -44,16 +51,43 @@ public abstract class PictureInPicture {
                 .hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)) {
             return false;
         }
+
+        ThreadUtils.assertOnUiThread();
+        if (sIsPictureInPictureEnabled != null) {
+            return sIsPictureInPictureEnabled;
+        }
+
         try (TraceEvent _ = TraceEvent.scoped("PictureInPicture::isEnabled")) {
+            Context appContext = context.getApplicationContext();
             final AppOpsManager appOpsManager =
-                    (AppOpsManager) context.getSystemService(Context.APP_OPS_SERVICE);
+                    (AppOpsManager) appContext.getSystemService(Context.APP_OPS_SERVICE);
             final int status =
                     appOpsManager.checkOpNoThrow(
                             AppOpsManager.OPSTR_PICTURE_IN_PICTURE,
-                            context.getApplicationInfo().uid,
-                            context.getPackageName());
+                            appContext.getApplicationInfo().uid,
+                            appContext.getPackageName());
 
-            return (status == AppOpsManager.MODE_ALLOWED);
+            boolean isEnabled = (status == AppOpsManager.MODE_ALLOWED);
+            sIsPictureInPictureEnabled = isEnabled;
+            if (sOnOpChangedListener == null) {
+                sOnOpChangedListener =
+                        (op, packageName) ->
+                                ThreadUtils.runOnUiThread(() -> sIsPictureInPictureEnabled = null);
+                appOpsManager.startWatchingMode(
+                        AppOpsManager.OPSTR_PICTURE_IN_PICTURE,
+                        appContext.getPackageName(),
+                        sOnOpChangedListener);
+                ResettersForTesting.register(
+                        () -> {
+                            sIsPictureInPictureEnabled = null;
+                            if (sOnOpChangedListener != null) {
+                                appOpsManager.stopWatchingMode(sOnOpChangedListener);
+                                sOnOpChangedListener = null;
+                            }
+                        });
+            }
+
+            return isEnabled;
         }
     }
 }
