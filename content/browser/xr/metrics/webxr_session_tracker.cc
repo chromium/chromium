@@ -19,8 +19,7 @@ WebXRSessionTracker::~WebXRSessionTracker() = default;
 
 void WebXRSessionTracker::ReportRequestedFeatures(
     const device::mojom::XRSessionOptions& session_options,
-    const std::unordered_set<device::mojom::XRSessionFeature>&
-        enabled_features) {
+    device::XRSessionFeatureSet enabled_features) {
   using device::mojom::XRSessionFeature;
   using device::mojom::XRSessionFeatureRequestStatus;
 
@@ -39,7 +38,7 @@ void WebXRSessionTracker::ReportRequestedFeatures(
 
   // Record required feature requests
   for (auto feature : session_options.required_features) {
-    DCHECK(enabled_features.find(feature) != enabled_features.end())
+    DCHECK(enabled_features.Has(feature))
         << ": could not find feature " << feature
         << " in the collection of required features!";
     SetFeatureRequest(feature, XRSessionFeatureRequestStatus::kRequired);
@@ -47,7 +46,7 @@ void WebXRSessionTracker::ReportRequestedFeatures(
 
   // Record optional feature requests
   for (auto feature : session_options.optional_features) {
-    bool enabled = enabled_features.find(feature) != enabled_features.end();
+    bool enabled = enabled_features.Has(feature);
     SetFeatureRequest(
         feature, enabled ? XRSessionFeatureRequestStatus::kOptionalAccepted
                          : XRSessionFeatureRequestStatus::kOptionalRejected);

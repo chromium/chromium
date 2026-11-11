@@ -7,10 +7,10 @@
 
 #include <memory>
 #include <unordered_map>
-#include <unordered_set>
 
 #include "content/common/content_export.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "device/vr/public/cpp/xr_session_feature_set.h"
 #include "device/vr/public/mojom/vr_service.mojom-forward.h"
 #include "device/vr/public/mojom/xr_device.mojom-forward.h"
 #include "device/vr/public/mojom/xr_session.mojom-forward.h"
@@ -42,8 +42,7 @@ class CONTENT_EXPORT SessionMetricsHelper
   // for the created session recorder.
   mojo::PendingRemote<device::mojom::XRSessionMetricsRecorder>
   StartInlineSession(const device::mojom::XRSessionOptions& session_options,
-                     const std::unordered_set<device::mojom::XRSessionFeature>&
-                         enabled_features,
+                     device::XRSessionFeatureSet enabled_features,
                      size_t session_id);
 
   // Records that inline session was stopped. Will record an UKM entry.
@@ -53,11 +52,9 @@ class CONTENT_EXPORT SessionMetricsHelper
   // |PendingRemote| for the created session recorder. Two immersive sessions
   // may not exist simultaneously.
   mojo::PendingRemote<device::mojom::XRSessionMetricsRecorder>
-  StartImmersiveSession(
-      const device::mojom::XRDeviceId& runtime_id,
-      const device::mojom::XRSessionOptions& session_options,
-      const std::unordered_set<device::mojom::XRSessionFeature>&
-          enabled_features);
+  StartImmersiveSession(const device::mojom::XRDeviceId& runtime_id,
+                        const device::mojom::XRSessionOptions& session_options,
+                        device::XRSessionFeatureSet enabled_features);
 
   // Records that an immersive session was stopped. Will record a UKM entry.
   void StopAndRecordImmersiveSession();

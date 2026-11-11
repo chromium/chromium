@@ -50,8 +50,7 @@ class SessionMetricsHelperData : public base::SupportsUserData::Data {
 void ReportInitialSessionData(
     WebXRSessionTracker* webxr_session_tracker,
     const device::mojom::XRSessionOptions& session_options,
-    const std::unordered_set<device::mojom::XRSessionFeature>&
-        enabled_features) {
+    device::XRSessionFeatureSet enabled_features) {
   CHECK(webxr_session_tracker, base::NotFatalUntil::M159);
 
   webxr_session_tracker->ukm_entry()->SetMode(
@@ -103,7 +102,7 @@ SessionMetricsHelper::~SessionMetricsHelper() {
 mojo::PendingRemote<device::mojom::XRSessionMetricsRecorder>
 SessionMetricsHelper::StartInlineSession(
     const device::mojom::XRSessionOptions& session_options,
-    const std::unordered_set<device::mojom::XRSessionFeature>& enabled_features,
+    device::XRSessionFeatureSet enabled_features,
     size_t session_id) {
   DVLOG(1) << __func__;
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M159);
@@ -148,8 +147,7 @@ mojo::PendingRemote<device::mojom::XRSessionMetricsRecorder>
 SessionMetricsHelper::StartImmersiveSession(
     const device::mojom::XRDeviceId& runtime_id,
     const device::mojom::XRSessionOptions& session_options,
-    const std::unordered_set<device::mojom::XRSessionFeature>&
-        enabled_features) {
+    device::XRSessionFeatureSet enabled_features) {
   DVLOG(1) << __func__;
   CHECK(!webxr_immersive_session_tracker_, base::NotFatalUntil::M159);
 

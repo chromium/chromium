@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_XR_SERVICE_VR_SERVICE_IMPL_H_
 
 #include <memory>
-#include <set>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -17,6 +16,7 @@
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/xr_install_helper.h"
+#include "device/vr/public/cpp/xr_session_feature_set.h"
 #include "device/vr/public/mojom/isolated_xr_service.mojom-forward.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "device/vr/public/mojom/xr_device.mojom.h"
@@ -94,8 +94,8 @@ class CONTENT_EXPORT VRServiceImpl : public device::mojom::VRService,
  private:
   struct SessionRequestData {
     device::mojom::VRService::RequestSessionCallback callback;
-    std::unordered_set<device::mojom::XRSessionFeature> required_features;
-    std::unordered_set<device::mojom::XRSessionFeature> optional_features;
+    device::XRSessionFeatureSet required_features;
+    device::XRSessionFeatureSet optional_features;
     device::mojom::XRSessionOptionsPtr options;
     device::mojom::XRDeviceId runtime_id;
 

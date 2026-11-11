@@ -83,13 +83,11 @@ std::vector<blink::PermissionType> GetRequiredPermissionsForMode(
 // |optional_features|. The order in the result does not matter as the
 // permissions API does not honor it.
 std::vector<blink::PermissionType> GetRequiredPermissionsForFeatures(
-    const std::unordered_set<device::mojom::XRSessionFeature>&
-        required_features,
-    const std::unordered_set<device::mojom::XRSessionFeature>&
-        optional_features) {
+    device::XRSessionFeatureSet required_features,
+    device::XRSessionFeatureSet optional_features) {
   std::vector<blink::PermissionType> permissions;
 
-  for (const auto& required_feature : required_features) {
+  for (device::mojom::XRSessionFeature required_feature : required_features) {
     auto feature_permission =
         content::XrPermissionResults::GetPermissionFor(required_feature);
     if (feature_permission &&
@@ -98,7 +96,7 @@ std::vector<blink::PermissionType> GetRequiredPermissionsForFeatures(
     }
   }
 
-  for (const auto& optional_feature : optional_features) {
+  for (device::mojom::XRSessionFeature optional_feature : optional_features) {
     auto feature_permission =
         content::XrPermissionResults::GetPermissionFor(optional_feature);
     if (feature_permission &&
@@ -110,23 +108,21 @@ std::vector<blink::PermissionType> GetRequiredPermissionsForFeatures(
   return permissions;
 }
 
-// TODO(crbug.com/40930146): Replace with std::ranges::set_difference
-std::unordered_set<device::mojom::XRSessionFeature> GetMissingRequiredFeatures(
-    const std::unordered_set<device::mojom::XRSessionFeature>& enabled_features,
-    const std::unordered_set<device::mojom::XRSessionFeature>&
-        required_features) {
+device::XRSessionFeatureSet GetMissingRequiredFeatures(
+    device::XRSessionFeatureSet enabled_features,
+    device::XRSessionFeatureSet required_features) {
   DVLOG(3) << __func__
            << ": enabled_features.size()=" << enabled_features.size();
 
-  std::unordered_set<device::mojom::XRSessionFeature> missing_required_features;
+  device::XRSessionFeatureSet missing_required_features;
 
-  for (const auto& required_feature : required_features) {
-    if (!enabled_features.contains(required_feature)) {
+  for (device::mojom::XRSessionFeature required_feature : required_features) {
+    if (!enabled_features.Has(required_feature)) {
       DVLOG(2) << __func__
                << ": one of the required features was not enabled on the "
                   "created session, feature: "
                << required_feature;
-      missing_required_features.insert(required_feature);
+      missing_required_features.Put(required_feature);
     }
   }
 
@@ -137,8 +133,7 @@ void RejectSession(device::mojom::VRService::RequestSessionCallback callback,
                    size_t trace_id,
                    device::mojom::RequestSessionError error,
                    const std::string& failure_reason_description,
-                   std::unordered_set<device::mojom::XRSessionFeature>*
-                       rejected_features = nullptr) {
+                   device::XRSessionFeatureSet* rejected_features = nullptr) {
   DVLOG(2) << __func__
            << ": failure reason description=" << failure_reason_description;
 
@@ -150,8 +145,8 @@ void RejectSession(device::mojom::VRService::RequestSessionCallback callback,
   session_rejected_record->failure_reason_description =
       failure_reason_description;
   if (rejected_features) {
-    session_rejected_record->rejected_features.assign(
-        rejected_features->begin(), rejected_features->end());
+    session_rejected_record->rejected_features =
+        base::ToVector(*rejected_features);
   }
 
   auto* runtime_manager_impl = static_cast<content::XRRuntimeManagerImpl*>(
@@ -174,12 +169,17 @@ VRServiceImpl::SessionRequestData::SessionRequestData(
     device::mojom::VRService::RequestSessionCallback callback,
     device::mojom::XRDeviceId runtime_id)
     : callback(std::move(callback)),
-      required_features(options->required_features.begin(),
-                        options->required_features.end()),
-      optional_features(options->optional_features.begin(),
-                        options->optional_features.end()),
       options(std::move(options)),
-      runtime_id(runtime_id) {}
+      runtime_id(runtime_id) {
+  for (device::mojom::XRSessionFeature feature :
+       this->options->required_features) {
+    required_features.Put(feature);
+  }
+  for (device::mojom::XRSessionFeature feature :
+       this->options->optional_features) {
+    optional_features.Put(feature);
+  }
+}
 
 VRServiceImpl::SessionRequestData::~SessionRequestData() {
   // In some cases, we may get dropped before the VRService pipe is closed. In
@@ -360,10 +360,12 @@ void VRServiceImpl::OnInlineSessionCreated(
            << " runtime_id=" << request.runtime_id;
 
   auto* session = session_result->session.get();
-  std::unordered_set<device::mojom::XRSessionFeature> enabled_features(
-      session->enabled_features.begin(), session->enabled_features.end());
+  device::XRSessionFeatureSet enabled_features;
+  for (device::mojom::XRSessionFeature feature : session->enabled_features) {
+    enabled_features.Put(feature);
+  }
 
-  auto missing_required_features =
+  device::XRSessionFeatureSet missing_required_features =
       GetMissingRequiredFeatures(enabled_features, request.required_features);
   if (!missing_required_features.empty()) {
     // UNKNOWN_FAILURE since a runtime should not return a session if there
@@ -407,10 +409,12 @@ void VRServiceImpl::OnImmersiveSessionCreated(
   }
 
   auto* session = session_result->session.get();
-  std::unordered_set<device::mojom::XRSessionFeature> enabled_features(
-      session->enabled_features.begin(), session->enabled_features.end());
+  device::XRSessionFeatureSet enabled_features;
+  for (device::mojom::XRSessionFeature feature : session->enabled_features) {
+    enabled_features.Put(feature);
+  }
 
-  auto missing_required_features =
+  device::XRSessionFeatureSet missing_required_features =
       GetMissingRequiredFeatures(enabled_features, request.required_features);
   if (!missing_required_features.empty()) {
     // UNKNOWN_FAILURE since a runtime should not return a session if there
@@ -428,7 +432,7 @@ void VRServiceImpl::OnImmersiveSessionCreated(
     return;
   }
 
-  if (enabled_features.contains(device::mojom::XRSessionFeature::DOM_OVERLAY)) {
+  if (enabled_features.Has(device::mojom::XRSessionFeature::DOM_OVERLAY)) {
     // Tell RenderFrameHostImpl that we're setting up the WebXR DOM Overlay,
     // it checks for this in EnterFullscreen via HasSeenRecentXrOverlaySetup().
     render_frame_host_->SetIsXrOverlaySetup();
@@ -740,13 +744,14 @@ void VRServiceImpl::OnPermissionResultsForFeatures(
 
   const XrPermissionResults permission_results(permissions, results);
 
-  std::unordered_set<device::mojom::XRSessionFeature> rejected_features;
-  for (auto& required_feature : request.required_features) {
+  device::XRSessionFeatureSet rejected_features;
+  for (device::mojom::XRSessionFeature required_feature :
+       request.required_features) {
     if (!permission_results.HasPermissionsFor(required_feature)) {
       DVLOG(1) << __func__ << ": required_feature=" << required_feature
                << " lacks neccessary permissions";
 
-      rejected_features.insert(required_feature);
+      rejected_features.Put(required_feature);
     }
   }
 
@@ -758,11 +763,12 @@ void VRServiceImpl::OnPermissionResultsForFeatures(
     return;
   }
 
-  std::unordered_set<device::mojom::XRSessionFeature> granted_optional_features;
+  device::XRSessionFeatureSet granted_optional_features;
 
-  for (auto& optional_feature : request.optional_features) {
+  for (device::mojom::XRSessionFeature optional_feature :
+       request.optional_features) {
     if (permission_results.HasPermissionsFor(optional_feature)) {
-      granted_optional_features.insert(optional_feature);
+      granted_optional_features.Put(optional_feature);
     } else {
       DVLOG(2) << __func__ << ": optional_feature=" << optional_feature
                << " lacks neccessary permissions";
@@ -771,7 +777,7 @@ void VRServiceImpl::OnPermissionResultsForFeatures(
 
   // Replace optional features on the request with the ones that have been
   // granted by the user:
-  std::swap(request.optional_features, granted_optional_features);
+  request.optional_features = granted_optional_features;
 
   // Re-check for another client instance after a potential user consent.
   if (runtime_manager_->IsOtherClientPresenting(this)) {
@@ -866,10 +872,10 @@ void VRServiceImpl::DoRequestSession(SessionRequestData request) {
   auto runtime_options = GetRuntimeOptions(request.options.get());
   // Make the resolved enabled features available to the runtime.
 
-  runtime_options->required_features.assign(request.required_features.begin(),
-                                            request.required_features.end());
-  runtime_options->optional_features.assign(request.optional_features.begin(),
-                                            request.optional_features.end());
+  runtime_options->required_features =
+      base::ToVector(request.required_features);
+  runtime_options->optional_features =
+      base::ToVector(request.optional_features);
 #if BUILDFLAG(IS_ANDROID)
   runtime_options->renderer_information =
       device::mojom::RendererInformation::New(

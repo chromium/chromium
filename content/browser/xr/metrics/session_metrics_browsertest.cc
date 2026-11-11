@@ -10,6 +10,7 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/shell/browser/shell.h"
+#include "device/vr/public/cpp/xr_session_feature_set.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "device/vr/public/mojom/xr_device.mojom.h"
 #include "device/vr/public/mojom/xr_session.mojom.h"
@@ -57,7 +58,7 @@ IN_PROC_BROWSER_TEST_F(SessionMetricsPrerenderingBrowserTest,
   SessionMetricsHelper* metrics_helper =
       SessionMetricsHelper::CreateForWebContents(web_contents());
   auto session_options = device::mojom::XRSessionOptions::New();
-  std::unordered_set<device::mojom::XRSessionFeature> enabled_features;
+  device::XRSessionFeatureSet enabled_features;
   metrics_helper->StartImmersiveSession(
       device::mojom::XRDeviceId::FAKE_DEVICE_ID, *(session_options),
       enabled_features);
