@@ -1962,6 +1962,57 @@ suite('SearchboxMixinTest', () => {
     assertEquals(0, textUpdatedEventCount);
   });
 
+  test(
+      'first mouse press after committing a composition freezes its results',
+      async () => {
+        const mockInput = element.getInputElement();
+        function commit() {
+          mockInput.inputElement.dispatchEvent(
+              new CompositionEvent('compositionend', {data: 'にほん'}));
+        }
+        function pressMouse() {
+          element.getDropdownElement().dispatchEvent(
+              new MouseEvent('mousedown', {bubbles: true, composed: true}));
+        }
+        mockInput.inputElement.value = 'にほん';
+        mockInput.inputElement.dispatchEvent(new InputEvent('input', {
+          inputType: 'insertCompositionText',
+          data: 'にほん',
+          isComposing: true,
+        }));
+
+        // Like the browser, commit the composition before dispatching the
+        // mouse press that ended it, e.g. on a match.
+        commit();
+        const queryId = element.activeQueryId;
+        pressMouse();
+        assertEquals(-1, element.activeQueryId);
+
+        // The results for the committed text don't replace the matches under
+        // the pointer.
+        element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+          queryId,
+          input: 'にほん',
+          matches: [createSearchMatchForTesting()],
+        }));
+        await microtasksFinished();
+        assertEquals(null, element.result);
+
+        // Later presses don't freeze them, e.g. once deleting a match
+        // unfroze them.
+        element.unfreezeActiveQueryId();
+        pressMouse();
+        assertEquals(queryId, element.activeQueryId);
+
+        // Neither do presses after a key press, e.g. Enter, which waits for
+        // the results.
+        commit();
+        const secondQueryId = element.activeQueryId;
+        mockInput.inputElement.dispatchEvent(createKeyboardEvent('Enter'));
+        pressMouse();
+        assertEquals(secondQueryId, element.activeQueryId);
+      });
+
   test('question mark keyword entry', async () => {
     testProxy.callbackRouterRemote.setAvailableKeywordModels(
         [{

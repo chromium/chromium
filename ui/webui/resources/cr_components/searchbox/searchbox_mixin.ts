@@ -175,6 +175,13 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
     // the current ones narrate the new selection. See
     // `onAutocompleteResultChanged()`.
     private narrateNextResultSelection_: boolean = false;
+    // The query for the text of an IME composition that was just committed,
+    // until the user presses a key or the mouse. The browser commits a
+    // composition before it dispatches the mouse press that ends it, e.g. on a
+    // match, so the results of that query could replace the match under the
+    // pointer before the click. The press freezes them instead, like key
+    // presses freeze results (see `onInputWrapperKeydown()`).
+    private compositionCommitQueryId_: number|null = null;
     private searchboxEventTracker_: EventTracker = new EventTracker();
     private callbackRouter_: PageCallbackRouter =
         SearchboxBrowserProxy.getInstance().callbackRouter;
@@ -209,6 +216,12 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
       // potentially erasing user changes like cursor position.
       this.searchboxEventTracker_.add(this, 'input-mousedown', () => {
         this.activeQueryId = -1;
+      });
+      this.searchboxEventTracker_.add(this, 'mousedown', () => {
+        if (this.activeQueryId === this.compositionCommitQueryId_) {
+          this.activeQueryId = -1;
+        }
+        this.compositionCommitQueryId_ = null;
       });
       this.searchboxEventTracker_.add(
           this.getInputElement(), 'searchbox-input-empty-changed',
@@ -622,6 +635,9 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
         this.queryAutocomplete(
             input, /*preventInlineAutocomplete=*/ e.detail.isComposing,
             /*isOnFocus=*/ false);
+        if (event instanceof CompositionEvent) {
+          this.compositionCommitQueryId_ = this.activeQueryId;
+        }
       }
     }
 
@@ -667,6 +683,7 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
       if (e.key !== 'Enter') {
         this.activeQueryId = -1;
       }
+      this.compositionCommitQueryId_ = null;
       const modifier =
           isMac ? e.metaKey && !e.ctrlKey : e.ctrlKey && !e.metaKey;
       if (modifier && e.key === 'z') {
