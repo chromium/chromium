@@ -18,6 +18,7 @@
 #include "base/check.h"
 #include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
+#include "base/pickle.h"
 #include "base/token.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/android/tab_group_android.h"
@@ -208,6 +209,7 @@ std::unique_ptr<StoragePackage> TabStoragePackagerAndroid::Package(
   Java_TabStoragePackager_fetchTabStorageMetadata(
       env, tab_android, reinterpret_cast<intptr_t>(&metadata));
 
+  std::unique_ptr<base::Pickle> pickle;
   if (metadata.has_pending_load_params) {
     if (metadata.web_contents_state_bytes.has_value() &&
         !metadata.web_contents_state_bytes->empty() &&
@@ -222,12 +224,13 @@ std::unique_ptr<StoragePackage> TabStoragePackagerAndroid::Package(
           WebContentsState::kInvalidBufferVersion);
     }
   } else if (content::WebContents* web_contents = tab_android->web_contents()) {
-    if (WebContentsState::WriteContentsState(
-            web_contents, tab_state.mutable_web_contents_state_bytes())) {
+    pickle = WebContentsState::WriteContentsStateAsPickle(web_contents);
+    if (pickle) {
+      // WriteContentsStateAsPickle() always produces version-2 state and
+      // TabStoragePackage attaches the bytes later.
       tab_state.set_web_contents_state_version(
           WebContentsState::kCurrentVersion);
     } else {
-      tab_state.clear_web_contents_state_bytes();
       tab_state.set_web_contents_state_version(
           WebContentsState::kInvalidBufferVersion);
     }
@@ -255,7 +258,8 @@ std::unique_ptr<StoragePackage> TabStoragePackagerAndroid::Package(
     tab_state.set_opener_app_id(*metadata.opener_app_id);
   }
 
-  return std::make_unique<TabStoragePackage>(std::move(tab_state));
+  return std::make_unique<TabStoragePackage>(std::move(tab_state),
+                                             std::move(pickle));
 }
 
 std::unique_ptr<Payload>

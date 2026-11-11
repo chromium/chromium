@@ -4,10 +4,12 @@
 
 #include "chrome/browser/tab/tab_storage_package.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
 
+#include "base/pickle.h"
 #include "chrome/browser/tab/protocol/tab_state.pb.h"
 #include "chrome/browser/tab/protocol/token.pb.h"
 #include "chrome/browser/tab/web_contents_state.h"
@@ -35,26 +37,7 @@ TEST(TabStoragePackageTest, SerializePayloadMatchesProto) {
   tab_group_id->set_high(0x1234ULL);
   tab_group_id->set_low(0x5678ULL);
 
-  TabStoragePackage package(std::move(tab_state));
-
-  EXPECT_EQ(package.tab_state().tab_id(), 42);
-  EXPECT_EQ(package.tab_state().parent_id(), 10);
-  EXPECT_EQ(package.tab_state().timestamp_millis(), 1234567890);
-  EXPECT_EQ(package.tab_state().url(), "https://example.com/test");
-  EXPECT_EQ(package.tab_state().theme_color(), 0x112233);
-  EXPECT_EQ(package.tab_state().launch_type_at_creation(), 2);
-  EXPECT_EQ(package.tab_state().user_agent(), 1);
-  EXPECT_EQ(package.tab_state().last_navigation_committed_timestamp_millis(),
-            1234567000);
-  EXPECT_TRUE(package.tab_state().tab_has_sensitive_content());
-  EXPECT_TRUE(package.tab_state().is_pinned());
-  EXPECT_EQ(package.tab_state().opener_app_id(), "com.example.app");
-  EXPECT_EQ(package.tab_state().web_contents_state_version(),
-            WebContentsState::kCurrentVersion);
-  EXPECT_EQ(package.tab_state().web_contents_state_bytes(),
-            "fake_serialized_bytes");
-  EXPECT_EQ(package.tab_state().tab_group_id().high(), 0x1234ULL);
-  EXPECT_EQ(package.tab_state().tab_group_id().low(), 0x5678ULL);
+  TabStoragePackage package(std::move(tab_state), nullptr);
 
   std::vector<uint8_t> payload = package.SerializePayload();
   ASSERT_FALSE(payload.empty());
@@ -82,15 +65,43 @@ TEST(TabStoragePackageTest, SerializePayloadMatchesProto) {
   EXPECT_EQ(deserialized.tab_group_id().low(), 0x5678ULL);
 }
 
+TEST(TabStoragePackageTest, SerializePayloadWithPickle) {
+  tabs_pb::TabState tab_state;
+  tab_state.set_tab_id(101);
+  tab_state.set_url("https://example.com/pickle");
+  tab_state.set_web_contents_state_version(WebContentsState::kCurrentVersion);
+
+  auto pickle = std::make_unique<base::Pickle>();
+  pickle->WriteString(std::string(200, 'x'));
+  const std::string expected_state_bytes(pickle->AsStringView());
+
+  TabStoragePackage package(std::move(tab_state), std::move(pickle));
+
+  std::vector<uint8_t> payload = package.SerializePayload();
+  ASSERT_FALSE(payload.empty());
+
+  tabs_pb::TabState deserialized;
+  ASSERT_TRUE(deserialized.ParseFromArray(payload.data(),
+                                          static_cast<int>(payload.size())));
+  EXPECT_EQ(deserialized.tab_id(), 101);
+  EXPECT_EQ(deserialized.url(), "https://example.com/pickle");
+  EXPECT_EQ(deserialized.web_contents_state_version(),
+            WebContentsState::kCurrentVersion);
+  EXPECT_EQ(deserialized.web_contents_state_bytes(), expected_state_bytes);
+
+  // The pickle has been moved into the proto; a second call must match.
+  EXPECT_EQ(package.SerializePayload(), payload);
+}
+
 TEST(TabStoragePackageTest, SerializeChildrenReturnsEmpty) {
   tabs_pb::TabState tab_state;
-  TabStoragePackage package(std::move(tab_state));
+  TabStoragePackage package(std::move(tab_state), nullptr);
   EXPECT_TRUE(package.SerializeChildren().empty());
 }
 
 TEST(TabStoragePackageTest, EmptyTabState) {
   tabs_pb::TabState tab_state;
-  TabStoragePackage package(std::move(tab_state));
+  TabStoragePackage package(std::move(tab_state), nullptr);
 
   std::vector<uint8_t> payload = package.SerializePayload();
   tabs_pb::TabState deserialized;
@@ -98,6 +109,7 @@ TEST(TabStoragePackageTest, EmptyTabState) {
                                           static_cast<int>(payload.size())));
   EXPECT_FALSE(deserialized.has_tab_id());
   EXPECT_FALSE(deserialized.has_url());
+  EXPECT_FALSE(deserialized.has_web_contents_state_bytes());
 }
 
 }  // namespace tabs

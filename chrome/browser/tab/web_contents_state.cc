@@ -80,11 +80,14 @@ bool ReadStateHeaderFromPickle(base::PickleIterator* iter,
          iter->ReadInt(&header->current_entry_index);
 }
 
-base::Pickle WriteSerializedNavigationsAsPickle(
+// Populates `pickle` in place. `base::Pickle` has no move constructor, so
+// wrapping a returned Pickle in std::optional or std::unique_ptr would
+// deep-copy it.
+void WriteSerializedNavigationsIntoPickle(
     bool is_off_the_record,
     const std::vector<sessions::SerializedNavigationEntry>& navigations,
-    int current_entry) {
-  base::Pickle pickle;
+    int current_entry,
+    base::Pickle& pickle) {
   WriteStateHeaderToPickle({.is_off_the_record = is_off_the_record,
                             .entry_count = static_cast<int>(navigations.size()),
                             .current_entry_index = current_entry},
@@ -99,7 +102,6 @@ base::Pickle WriteSerializedNavigationsAsPickle(
     pickle.WriteInt(tab_navigation_pickle.size());
     pickle.WriteBytes(tab_navigation_pickle.AsBytes());
   }
-  return pickle;
 }
 
 ScopedJavaLocalRef<jobject> WriteSerializedNavigationsAsByteBuffer(
@@ -107,8 +109,9 @@ ScopedJavaLocalRef<jobject> WriteSerializedNavigationsAsByteBuffer(
     bool is_off_the_record,
     const std::vector<sessions::SerializedNavigationEntry>& navigations,
     int current_entry) {
-  base::Pickle pickle = WriteSerializedNavigationsAsPickle(
-      is_off_the_record, navigations, current_entry);
+  base::Pickle pickle;
+  WriteSerializedNavigationsIntoPickle(is_off_the_record, navigations,
+                                       current_entry, pickle);
   ScopedJavaLocalRef<jobject> buffer =
       CreateByteBufferDirect(env, static_cast<int>(pickle.size()));
   if (buffer) {
@@ -145,34 +148,6 @@ ScopedJavaLocalRef<jobject> WriteNavigationsAsByteBuffer(
                                                 serialized, current_entry);
 }
 
-std::optional<base::Pickle> WriteContentsStateAsPickle(
-    content::WebContents* web_contents) {
-  if (!web_contents) {
-    return std::nullopt;
-  }
-
-  content::NavigationController& controller = web_contents->GetController();
-  const int entry_count = controller.GetEntryCount();
-  // Don't try to persist initial NavigationEntry, as it is not actually
-  // associated with any navigation and will just result in about:blank on
-  // session restore.
-  if (!controller.GetLastCommittedEntry() ||
-      controller.GetLastCommittedEntry()->IsInitialEntry()) {
-    return std::nullopt;
-  }
-
-  std::vector<content::NavigationEntry*> navigations(entry_count);
-  for (int i = 0; i < entry_count; ++i) {
-    navigations[i] = controller.GetEntryAtIndex(i);
-  }
-
-  std::vector<sessions::SerializedNavigationEntry> serialized =
-      SerializeNavigations(navigations);
-  return WriteSerializedNavigationsAsPickle(
-      web_contents->GetBrowserContext()->IsOffTheRecord(), serialized,
-      controller.GetLastCommittedEntryIndex());
-}
-
 std::unique_ptr<content::NavigationEntry> CreatePendingNavigationEntry(
     BrowserContext* browser_context,
     std::u16string&& title,
@@ -200,6 +175,35 @@ std::unique_ptr<content::NavigationEntry> CreatePendingNavigationEntry(
   return navigation_entry;
 }
 
+bool WriteContentsStateToPickle(content::WebContents* web_contents,
+                                base::Pickle& pickle) {
+  if (!web_contents) {
+    return false;
+  }
+
+  content::NavigationController& controller = web_contents->GetController();
+  // Don't try to persist initial NavigationEntry, as it is not actually
+  // associated with any navigation and will just result in about:blank on
+  // session restore.
+  if (!controller.GetLastCommittedEntry() ||
+      controller.GetLastCommittedEntry()->IsInitialEntry()) {
+    return false;
+  }
+
+  const int entry_count = controller.GetEntryCount();
+  std::vector<content::NavigationEntry*> navigations(entry_count);
+  for (int i = 0; i < entry_count; ++i) {
+    navigations[i] = controller.GetEntryAtIndex(i);
+  }
+
+  std::vector<sessions::SerializedNavigationEntry> serialized =
+      SerializeNavigations(navigations);
+  WriteSerializedNavigationsIntoPickle(
+      web_contents->GetBrowserContext()->IsOffTheRecord(), serialized,
+      controller.GetLastCommittedEntryIndex(), pickle);
+  return true;
+}
+
 }  // namespace
 
 WebContentsStateByteBuffer::WebContentsStateByteBuffer(
@@ -222,31 +226,29 @@ base::span<const uint8_t> WebContentsStateByteBuffer::GetBuffer() const {
 }
 
 // static
-bool WebContentsState::WriteContentsState(content::WebContents* web_contents,
-                                          std::string* output) {
-  CHECK(output);
-  std::optional<base::Pickle> pickle = WriteContentsStateAsPickle(web_contents);
-  if (!pickle.has_value()) {
-    return false;
+std::unique_ptr<base::Pickle> WebContentsState::WriteContentsStateAsPickle(
+    content::WebContents* web_contents) {
+  auto pickle = std::make_unique<base::Pickle>();
+  if (!WriteContentsStateToPickle(web_contents, *pickle)) {
+    return nullptr;
   }
-  output->assign(reinterpret_cast<const char*>(pickle->data()), pickle->size());
-  return true;
+  return pickle;
 }
 
 ScopedJavaLocalRef<jobject> WebContentsState::GetContentsStateAsByteBuffer(
     JNIEnv* env,
     content::WebContents* web_contents) {
-  std::optional<base::Pickle> pickle = WriteContentsStateAsPickle(web_contents);
-  if (!pickle.has_value()) {
+  base::Pickle pickle;
+  if (!WriteContentsStateToPickle(web_contents, pickle)) {
     return nullptr;
   }
 
   ScopedJavaLocalRef<jobject> buffer =
-      CreateByteBufferDirect(env, static_cast<int>(pickle->size()));
+      CreateByteBufferDirect(env, static_cast<int>(pickle.size()));
   if (buffer) {
     base::span<uint8_t> buffer_span =
         base::android::JavaByteBufferToMutableSpan(env, buffer);
-    buffer_span.copy_from(*pickle);
+    buffer_span.copy_from(pickle);
   }
   return buffer;
 }
@@ -480,7 +482,6 @@ base::Pickle WebContentsState::CreateSingleNavigationStateAsPickle(
     const GURL& url,
     content::Referrer referrer,
     url::Origin initiator_origin) {
-  base::Pickle pickle;
   std::unique_ptr<content::NavigationEntry> navigation_entry =
       content::NavigationController::CreateNavigationEntry(
           url, referrer, initiator_origin,
@@ -494,8 +495,10 @@ base::Pickle WebContentsState::CreateSingleNavigationStateAsPickle(
   std::vector<sessions::SerializedNavigationEntry> serialized =
       SerializeNavigations(base::span_from_ref(entry_ptr));
 
-  return WriteSerializedNavigationsAsPickle(browser_context->IsOffTheRecord(),
-                                            serialized, 0);
+  base::Pickle pickle;
+  WriteSerializedNavigationsIntoPickle(browser_context->IsOffTheRecord(),
+                                       serialized, 0, pickle);
+  return pickle;
 }
 
 ScopedJavaLocalRef<jobject> WebContentsState::AppendPendingNavigation(
