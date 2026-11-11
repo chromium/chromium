@@ -1884,7 +1884,7 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
       }
 
       LogicalRect grid_area;
-      const auto space = CreateConstraintSpaceForLayout(
+      const auto child_space = CreateConstraintSpaceForLayout(
           SubgriddedItemData(grid_item, &layout_data, container_writing_mode),
           subgrid_layout_subtree, &grid_area, unavailable_block_size,
           min_block_size_should_encompass_intrinsic_size, child_block_offset);
@@ -1915,7 +1915,7 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
           // inside balanced multicol, so we need to figure out how much more
           // fragmentainer space we'd need to fit more content.
           DisableLayoutSideEffectsScope disable_side_effects;
-          auto* result = grid_item.node.Layout(space, fragmentation);
+          auto* result = grid_item.node.Layout(child_space, fragmentation);
           PropagateSpaceShortage(result, fragmentainer_block_offset,
                                  fragmentainer_block_size, &container_builder_);
         }
@@ -1935,7 +1935,7 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
         continue;
       }
 
-      auto* result = grid_item.node.Layout(space, fragmentation);
+      auto* result = grid_item.node.Layout(child_space, fragmentation);
       DCHECK_EQ(result->Status(), LayoutResult::kSuccess);
       result_and_offsets.emplace_back(
           result,
@@ -1947,6 +1947,11 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
           container_writing_direction,
           To<PhysicalBoxFragment>(result->GetPhysicalFragment()));
       baseline_accumulator.Accumulate(grid_item, fragment, child_block_offset);
+
+      if (!constraint_space.HasBlockFragmentation()) {
+        // We're dealing with clipped overflow. No breaks should be inserted.
+        continue;
+      }
 
       // If the row has container separation we are able to push it into the
       // next fragmentainer. If it doesn't we, need to take the current

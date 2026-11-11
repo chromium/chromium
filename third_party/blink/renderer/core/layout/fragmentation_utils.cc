@@ -1130,6 +1130,7 @@ bool MovePastBreakpoint(const ConstraintSpace& space,
                         BoxFragmentBuilder* builder,
                         bool is_row_item,
                         ColumnBreakInfo* column_break_info) {
+  DCHECK(space.HasBlockFragmentation());
   if (layout_result.Status() != LayoutResult::kSuccess) {
     // Layout aborted - no fragment was produced. There's nothing to move
     // past. We need to break before.
@@ -1201,6 +1202,7 @@ bool MovePastBreakpoint(const ConstraintSpace& space,
                         BoxFragmentBuilder* builder,
                         bool is_row_item,
                         ColumnBreakInfo* column_break_info) {
+  DCHECK(space.HasBlockFragmentation());
   DCHECK_EQ(layout_result.Status(), LayoutResult::kSuccess);
 
   if (!space.HasKnownFragmentainerBlockSize()) {
