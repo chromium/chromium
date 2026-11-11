@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.reader_mode;
 
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
@@ -14,15 +13,15 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.reader_mode.TabDistillabilityProvider.DistillabilityObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
-import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageFinishedHelper;
 import org.chromium.content_public.browser.test.util.TestWebContentsObserver;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -31,13 +30,12 @@ import org.chromium.ui.base.DeviceFormFactor;
 import java.util.concurrent.TimeoutException;
 
 /** Tests for making sure the distillability service is communicating correctly. */
-// TODO(crbug.com/579933598): Manage EmbeddedTestServer lifecycle and investigate batching.
 @RunWith(ChromeJUnit4ClassRunner.class)
-@DoNotBatch(reason = "crbug.com/579933598: Starts an unmanaged EmbeddedTestServer")
+@Batch(Batch.PER_CLASS)
 public class DistillabilityServiceTest {
     @Rule
-    public FreshCtaTransitTestRule mActivityTestRule =
-            ChromeTransitTestRules.freshChromeTabbedActivityRule();
+    public AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     private static final String TEST_PAGE = "/chrome/test/data/reader_mode/simple_article.html";
 
@@ -52,9 +50,7 @@ public class DistillabilityServiceTest {
     @MediumTest
     @Restriction(DeviceFormFactor.PHONE)
     public void testServiceAliveAfterNativePage() throws TimeoutException {
-        EmbeddedTestServer testServer =
-                EmbeddedTestServer.createAndStartServer(
-                        ApplicationProvider.getApplicationContext());
+        EmbeddedTestServer testServer = mActivityTestRule.getTestServer();
 
         final CallbackHelper distillabilityCallbackHelper = new CallbackHelper();
 
