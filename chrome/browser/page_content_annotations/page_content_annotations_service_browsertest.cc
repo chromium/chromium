@@ -1147,7 +1147,7 @@ class FakeEmbedderMetadataProvider
   void NotifyObservers() {
     observer_list_.Notify(
         &passage_embeddings::EmbedderMetadataObserver::EmbedderMetadataUpdated,
-        passage_embeddings::EmbedderMetadata(1, 768));
+        passage_embeddings::EmbedderMetadata(1, 768, 512));
   }
 
  private:

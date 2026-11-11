@@ -163,7 +163,7 @@ class SchedulingEmbedder
 
   // Metadata about the embedder; Set when valid metadata is received from
   // `embedder_metadata_provider`.
-  EmbedderMetadata embedder_metadata_{0, 0};
+  EmbedderMetadata embedder_metadata_{0, 0, 0};
 
   // The maximum number of jobs to hold at once. Exceeding the cap
   // will cause job failures on last pending jobs to avoid very high memory use.

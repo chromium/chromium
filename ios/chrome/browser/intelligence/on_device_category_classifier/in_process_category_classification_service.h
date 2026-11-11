@@ -94,8 +94,10 @@ class InProcessCategoryClassificationService
   // Simulates passage embedder load completion for testing.
   void OnPassageEmbedderLoadedForTesting(int64_t model_version,
                                          size_t output_size,
+                                         uint32_t input_window_size,
                                          bool success) {
-    OnPassageEmbedderLoaded(model_version, output_size, success);
+    OnPassageEmbedderLoaded(model_version, output_size, input_window_size,
+                            success);
   }
 
   // Simulates embedder disconnect for testing.
@@ -131,6 +133,7 @@ class InProcessCategoryClassificationService
 
   void OnPassageEmbedderLoaded(int64_t model_version,
                                size_t output_size,
+                               uint32_t input_window_size,
                                bool success);
 
   void OnEmbedderDisconnect();

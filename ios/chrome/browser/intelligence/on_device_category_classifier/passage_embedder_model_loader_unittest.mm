@@ -99,7 +99,7 @@ TEST_F(PassageEmbedderModelLoaderTest, NotifyEmbedderMetadataAndReset) {
   TestEmbedderMetadataObserver observer;
   loader.AddObserver(&observer);
 
-  passage_embeddings::EmbedderMetadata metadata(123, 768, 0.5);
+  passage_embeddings::EmbedderMetadata metadata(123, 768, 512, 0.5);
   loader.NotifyEmbedderMetadata(metadata);
 
   EXPECT_TRUE(loader.IsModelLoaded());
@@ -107,6 +107,7 @@ TEST_F(PassageEmbedderModelLoaderTest, NotifyEmbedderMetadataAndReset) {
   ASSERT_TRUE(observer.last_metadata_.has_value());
   EXPECT_EQ(123, observer.last_metadata_->model_version);
   EXPECT_EQ(768u, observer.last_metadata_->output_size);
+  EXPECT_EQ(512u, observer.last_metadata_->input_window_size);
   EXPECT_EQ(0.5, observer.last_metadata_->search_score_threshold);
 
   loader.ResetMetadata();

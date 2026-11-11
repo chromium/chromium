@@ -2066,14 +2066,14 @@ TEST_F(ContextHubServiceEmbeddingsTest,
   // Receiving valid metadata backfills the missing embeddings.
   database_service_->EmbedderMetadataUpdated(
       passage_embeddings::EmbedderMetadata(
-          passage_embeddings::kEmbeddingsModelVersion, 3));
+          passage_embeddings::kEmbeddingsModelVersion, 3, 512));
   ASSERT_EQ(std::make_tuple(id, size_t{3}), store_embeddings_future_.Take());
 
   // Updating to a new model version wipes previous embeddings and recomputes
   // them.
   database_service_->EmbedderMetadataUpdated(
       passage_embeddings::EmbedderMetadata(
-          passage_embeddings::kEmbeddingsModelVersion + 1, 3));
+          passage_embeddings::kEmbeddingsModelVersion + 1, 3, 512));
   EXPECT_EQ(std::make_tuple(id, size_t{3}), store_embeddings_future_.Take());
 }
 

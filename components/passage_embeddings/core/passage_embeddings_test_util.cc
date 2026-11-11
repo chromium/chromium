@@ -11,7 +11,7 @@ namespace passage_embeddings {
 namespace {
 
 EmbedderMetadata GetValidEmbedderMetadata() {
-  return EmbedderMetadata(kEmbeddingsModelVersion, 3ul);
+  return EmbedderMetadata(kEmbeddingsModelVersion, 3ul, 512u);
 }
 
 }  // namespace

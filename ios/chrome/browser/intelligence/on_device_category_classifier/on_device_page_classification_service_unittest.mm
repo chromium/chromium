@@ -144,7 +144,7 @@ TEST_F(OnDevicePageClassificationServiceTest,
 
   EXPECT_FALSE(future.IsReady());
 
-  in_process_service_->OnPassageEmbedderLoadedForTesting(1, 768,
+  in_process_service_->OnPassageEmbedderLoadedForTesting(1, 768, 512,
                                                          /*success=*/true);
 
   EXPECT_TRUE(future.Get().has_value());

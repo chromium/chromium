@@ -263,12 +263,14 @@ void InProcessCategoryClassificationService::OnModelFilesOpened(
       std::move(embeddings_file), std::move(sp_file), window_size,
       base::BindOnce(
           &InProcessCategoryClassificationService::OnPassageEmbedderLoaded,
-          weak_ptr_factory_.GetWeakPtr(), model_version, output_size));
+          weak_ptr_factory_.GetWeakPtr(), model_version, output_size,
+          window_size));
 }
 
 void InProcessCategoryClassificationService::OnPassageEmbedderLoaded(
     int64_t model_version,
     size_t output_size,
+    uint32_t input_window_size,
     bool success) {
   if (!success) {
     model_loader_.ResetMetadata();
@@ -283,8 +285,8 @@ void InProcessCategoryClassificationService::OnPassageEmbedderLoaded(
   // Clear stale embeddings from any previous model version.
   in_memory_embeddings_cache_.Clear();
 
-  model_loader_.NotifyEmbedderMetadata(
-      passage_embeddings::EmbedderMetadata(model_version, output_size));
+  model_loader_.NotifyEmbedderMetadata(passage_embeddings::EmbedderMetadata(
+      model_version, output_size, input_window_size));
 
   std::vector<ClassificationRequestTracker::PendingClassification> queued =
       request_tracker_.DrainPending();

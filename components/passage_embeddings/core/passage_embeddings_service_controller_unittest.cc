@@ -235,6 +235,36 @@ TEST_F(PassageEmbeddingsServiceControllerTest, MAYBE_ReceivesValidModelInfo) {
                                        EmbeddingsModelInfoStatus::kValid, 1);
 }
 
+TEST_F(PassageEmbeddingsServiceControllerTest,
+       ReceivesModelInfoWithScoreThreshold) {
+  optimization_guide::proto::PassageEmbeddingsModelMetadata model_metadata;
+  model_metadata.set_input_window_size(256);
+  model_metadata.set_output_size(3);
+  model_metadata.set_score_threshold(0.5);
+  optimization_guide::ModelInfo model_info = GetTestModelInfo();
+  model_info.model_metadata = optimization_guide::AnyWrapProto(model_metadata);
+
+  EXPECT_TRUE(service_controller_->MaybeUpdateModelInfo(model_info));
+  EmbedderMetadata metadata = embedder_metadata_future()->Take();
+  EXPECT_TRUE(metadata.IsValid());
+  EXPECT_EQ(metadata.input_window_size, 256u);
+  EXPECT_EQ(metadata.search_score_threshold, 0.5);
+}
+
+TEST_F(PassageEmbeddingsServiceControllerTest,
+       ReceivesModelInfoWithoutInputWindowSize) {
+  optimization_guide::proto::PassageEmbeddingsModelMetadata model_metadata;
+  model_metadata.set_output_size(3);
+  optimization_guide::ModelInfo model_info = GetTestModelInfo();
+  model_info.model_metadata = optimization_guide::AnyWrapProto(model_metadata);
+
+  // The model is accepted, but its metadata is invalid without a window.
+  EXPECT_TRUE(service_controller_->MaybeUpdateModelInfo(model_info));
+  EmbedderMetadata metadata = embedder_metadata_future()->Take();
+  EXPECT_EQ(metadata.input_window_size, 0u);
+  EXPECT_FALSE(metadata.IsValid());
+}
+
 TEST_F(PassageEmbeddingsServiceControllerTest, ReceivesEmptyModelInfo) {
   EXPECT_FALSE(service_controller_->MaybeUpdateModelInfo({}));
   EXPECT_FALSE(embedder_metadata_future()->IsReady());

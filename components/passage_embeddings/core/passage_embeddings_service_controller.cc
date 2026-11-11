@@ -281,12 +281,11 @@ void PassageEmbeddingsServiceController::GetEmbeddings(
 EmbedderMetadata PassageEmbeddingsServiceController::GetEmbedderMetadata() {
   if (model_metadata_->score_threshold() > 0.0) {
     return EmbedderMetadata(model_version_, model_metadata_->output_size(),
-                            model_metadata_->score_threshold(),
-                            model_metadata_->input_window_size());
+                            model_metadata_->input_window_size(),
+                            model_metadata_->score_threshold());
   }
 
   return EmbedderMetadata(model_version_, model_metadata_->output_size(),
-                          /*search_score_threshold=*/std::nullopt,
                           model_metadata_->input_window_size());
 }
 

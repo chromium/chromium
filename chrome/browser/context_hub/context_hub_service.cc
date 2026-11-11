@@ -753,7 +753,7 @@ void ContextHubService::OnMemoryBankEmbeddingsVersionSet(bool success) {
   if (!success) {
     // Stored embeddings may still come from a previous model, so stop computing
     // new ones rather than mixing models. A later metadata update retries.
-    embedder_metadata_ = passage_embeddings::EmbedderMetadata(0, 0);
+    embedder_metadata_ = passage_embeddings::EmbedderMetadata(0, 0, 0);
     memory_bank_pending_annotation_update_ids_.clear();
     memory_bank_embedding_jobs_.clear();
     return;

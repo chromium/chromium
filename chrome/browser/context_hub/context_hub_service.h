@@ -598,7 +598,7 @@ class ContextHubService : public KeyedService,
   const raw_ptr<passage_embeddings::Embedder> embedder_;
 
   // Metadata of the embeddings model. Invalid until the model is available.
-  passage_embeddings::EmbedderMetadata embedder_metadata_{0, 0};
+  passage_embeddings::EmbedderMetadata embedder_metadata_{0, 0, 0};
 
   // Indicates if a First Party Auto Todos generation request is in flight.
   // Remains true while waiting for exponential backoff retries via

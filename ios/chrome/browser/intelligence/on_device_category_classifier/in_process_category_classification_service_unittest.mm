@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/intelligence/on_device_category_classifier/in_process_category_classification_service.h"
 
 #import <memory>
+#import <optional>
 #import <string>
 #import <vector>
 
@@ -18,6 +19,7 @@
 #import "base/test/test_future.h"
 #import "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
 #import "components/page_content_annotations/core/page_content_annotations_common.h"
+#import "components/passage_embeddings/core/passage_embeddings_types.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -33,6 +35,25 @@ class TestCategoryClassificationService
   using InProcessCategoryClassificationService::
       InProcessCategoryClassificationService;
   using InProcessCategoryClassificationService::OnGotEmbeddings;
+};
+
+// Records the last embedder metadata it receives.
+class TestEmbedderMetadataObserver
+    : public passage_embeddings::EmbedderMetadataObserver {
+ public:
+  // passage_embeddings::EmbedderMetadataObserver:
+  void EmbedderMetadataUpdated(
+      passage_embeddings::EmbedderMetadata metadata) override {
+    last_metadata_ = metadata;
+  }
+
+  const std::optional<passage_embeddings::EmbedderMetadata>& last_metadata()
+      const {
+    return last_metadata_;
+  }
+
+ private:
+  std::optional<passage_embeddings::EmbedderMetadata> last_metadata_;
 };
 
 passage_embeddings::mojom::PassageEmbeddingsResultPtr CreateNormalizedResult(
@@ -91,16 +112,35 @@ TEST_F(InProcessCategoryClassificationServiceTest,
 
   EXPECT_FALSE(future.IsReady());
 
-  service_->OnPassageEmbedderLoadedForTesting(1, 768, /*success=*/true);
+  service_->OnPassageEmbedderLoadedForTesting(1, 768, 512, /*success=*/true);
 
   ASSERT_TRUE(future.IsReady());
   EXPECT_TRUE(future.Get().empty());
 }
 
+// Tests that the embedder metadata sent to observers carries the input window
+// of the loaded model.
+TEST_F(InProcessCategoryClassificationServiceTest,
+       NotifiesEmbedderMetadataWithInputWindowSize) {
+  TestEmbedderMetadataObserver observer;
+  service_->AddObserver(&observer);
+
+  service_->OnPassageEmbedderLoadedForTesting(1, 768, 512, /*success=*/true);
+
+  ASSERT_TRUE(observer.last_metadata().has_value());
+  passage_embeddings::EmbedderMetadata metadata = *observer.last_metadata();
+  EXPECT_EQ(1, metadata.model_version);
+  EXPECT_EQ(768u, metadata.output_size);
+  EXPECT_EQ(512u, metadata.input_window_size);
+  EXPECT_TRUE(metadata.IsValid());
+
+  service_->RemoveObserver(&observer);
+}
+
 // Tests that when the passage embedder is null, ClassifyPageContext runs
 // pending callbacks with empty results instead of hanging.
 TEST_F(InProcessCategoryClassificationServiceTest, ClassifyWithNullEmbedder) {
-  service_->OnPassageEmbedderLoadedForTesting(1, 768, /*success=*/true);
+  service_->OnPassageEmbedderLoadedForTesting(1, 768, 512, /*success=*/true);
 
   base::test::TestFuture<const std::vector<page_content_annotations::Category>&>
       future;
@@ -137,7 +177,7 @@ TEST_F(InProcessCategoryClassificationServiceTest,
   EXPECT_FALSE(future2.IsReady());
 
   // Trigger model loaded so pending classifications are processed.
-  service_->OnPassageEmbedderLoadedForTesting(1, 768, /*success=*/true);
+  service_->OnPassageEmbedderLoadedForTesting(1, 768, 512, /*success=*/true);
 
   // Since embedder_wrapper_ was reset for testing, processing the queue
   // invokes all merged callbacks synchronously for the URL with the same
@@ -165,7 +205,7 @@ TEST_F(InProcessCategoryClassificationServiceTest, QueueingBeforeModelUpdate) {
   EXPECT_FALSE(future.IsReady());
 
   // Now trigger the model loaded callback.
-  service_->OnPassageEmbedderLoadedForTesting(1, 768, /*success=*/true);
+  service_->OnPassageEmbedderLoadedForTesting(1, 768, 512, /*success=*/true);
 
   // Since embedder_wrapper_ was reset to null, processing the queue
   // invokes the callback with empty results.
@@ -178,7 +218,7 @@ TEST_F(InProcessCategoryClassificationServiceTest, QueueingBeforeModelUpdate) {
 // matching desktop behavior.
 TEST_F(InProcessCategoryClassificationServiceTest,
        ClassifyMissingTitleOrInvalidUrl) {
-  service_->OnPassageEmbedderLoadedForTesting(1, 768, /*success=*/true);
+  service_->OnPassageEmbedderLoadedForTesting(1, 768, 512, /*success=*/true);
 
   {
     base::test::TestFuture<
@@ -235,7 +275,7 @@ TEST_F(InProcessCategoryClassificationServiceTest,
   EXPECT_FALSE(future2.IsReady());
 
   // Simulate model load failure.
-  service_->OnPassageEmbedderLoadedForTesting(1, 768, /*success=*/false);
+  service_->OnPassageEmbedderLoadedForTesting(1, 768, 512, /*success=*/false);
 
   ASSERT_TRUE(future1.IsReady());
   ASSERT_TRUE(future2.IsReady());
@@ -247,7 +287,7 @@ TEST_F(InProcessCategoryClassificationServiceTest,
 // and ClassifyPageContext uses them directly without re-embedding.
 TEST_F(InProcessCategoryClassificationServiceTest,
        InMemoryCacheStoresAndReusesEmbeddings) {
-  service_->OnPassageEmbedderLoadedForTesting(1, 768, /*success=*/true);
+  service_->OnPassageEmbedderLoadedForTesting(1, 768, 512, /*success=*/true);
 
   GURL url("https://example.com");
   std::vector<page_content_annotations::EmbeddingPassageType> passage_types = {
@@ -280,7 +320,7 @@ TEST_F(InProcessCategoryClassificationServiceTest,
 // Tests caching when only a TitleAndUrl embedding is returned (no passages).
 TEST_F(InProcessCategoryClassificationServiceTest,
        InMemoryCacheStoresTitleUrlOnlyEmbedding) {
-  service_->OnPassageEmbedderLoadedForTesting(1, 768, /*success=*/true);
+  service_->OnPassageEmbedderLoadedForTesting(1, 768, 512, /*success=*/true);
 
   GURL url("https://example.com");
   std::vector<page_content_annotations::EmbeddingPassageType> passage_types = {
@@ -370,7 +410,7 @@ TEST_F(InProcessCategoryClassificationServiceTest, CacheClearedOnModelReload) {
   EXPECT_TRUE(service_->HasCachedEmbeddings(url));
 
   // Loading a new model clears stale cached embeddings from the old version.
-  service_->OnPassageEmbedderLoadedForTesting(2, 768, /*success=*/true);
+  service_->OnPassageEmbedderLoadedForTesting(2, 768, 512, /*success=*/true);
   EXPECT_FALSE(service_->HasCachedEmbeddings(url));
 }
 

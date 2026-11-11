@@ -132,7 +132,7 @@ TEST_F(OnDeviceCategoryClassifierTest, SkipsIfEmbedderVersionMissing) {
 TEST_F(OnDeviceCategoryClassifierTest, ExecutesIfVersionsMatch) {
   base::HistogramTester histogram_tester;
   classifier_->EmbedderMetadataUpdated(passage_embeddings::EmbedderMetadata(
-      /*model_version=*/1, /*output_size=*/768));
+      /*model_version=*/1, /*output_size=*/768, /*input_window_size=*/512));
 
   // Update model with metadata.
   optimization_guide::proto::CategoryClassifierMetadata metadata;
@@ -179,7 +179,7 @@ TEST_F(OnDeviceCategoryClassifierTest, ExecutesIfVersionsMatch) {
 TEST_F(OnDeviceCategoryClassifierTest, NoTitleUrlEmbedding) {
   base::HistogramTester histogram_tester;
   classifier_->EmbedderMetadataUpdated(passage_embeddings::EmbedderMetadata(
-      /*model_version=*/1, /*output_size=*/768));
+      /*model_version=*/1, /*output_size=*/768, /*input_window_size=*/512));
 
   // Update model with metadata.
   optimization_guide::proto::CategoryClassifierMetadata metadata;
@@ -222,7 +222,7 @@ TEST_F(OnDeviceCategoryClassifierTest, NoTitleUrlEmbedding) {
 
 TEST_F(OnDeviceCategoryClassifierTest, SkipsIfVersionsMismatch) {
   classifier_->EmbedderMetadataUpdated(passage_embeddings::EmbedderMetadata(
-      /*model_version=*/2, /*output_size=*/768));
+      /*model_version=*/2, /*output_size=*/768, /*input_window_size=*/512));
 
   // Update model with metadata for version 1.
   optimization_guide::proto::CategoryClassifierMetadata metadata;
@@ -258,7 +258,7 @@ TEST_F(OnDeviceCategoryClassifierTest, SkipsIfVersionsMismatch) {
 
 TEST_F(OnDeviceCategoryClassifierTest, SkipsIfModelMetadataMissing) {
   classifier_->EmbedderMetadataUpdated(passage_embeddings::EmbedderMetadata(
-      /*model_version=*/1, /*output_size=*/768));
+      /*model_version=*/1, /*output_size=*/768, /*input_window_size=*/512));
 
   // Update model without metadata.
   optimization_guide::ModelInfo model_info = {
