@@ -24,6 +24,7 @@ import java.lang.annotation.RetentionPolicy;
     ChromeIsolatedWorldIds.ISOLATED_WORLD_ID_INDIGO,
     ChromeIsolatedWorldIds.ISOLATED_WORLD_ID_CHROME_INTERNAL,
     ChromeIsolatedWorldIds.ISOLATED_WORLD_ID_AUTOFILL_CUSTOM_FORM_CONTROLS,
+    ChromeIsolatedWorldIds.ISOLATED_WORLD_ID_ACTOR,
     ChromeIsolatedWorldIds.ISOLATED_WORLD_UNUSED_MAC,
     ChromeIsolatedWorldIds.ISOLATED_WORLD_ID_UNUSED_EXTENSIONS
 })
@@ -35,7 +36,8 @@ public @interface ChromeIsolatedWorldIds {
     int ISOLATED_WORLD_ID_CHROME_INTERNAL = IsolatedWorldIds.ISOLATED_WORLD_ID_CONTENT_END + 3;
     int ISOLATED_WORLD_ID_AUTOFILL_CUSTOM_FORM_CONTROLS =
             IsolatedWorldIds.ISOLATED_WORLD_ID_CONTENT_END + 4;
-    int ISOLATED_WORLD_UNUSED_MAC = IsolatedWorldIds.ISOLATED_WORLD_ID_CONTENT_END + 5;
-    int ISOLATED_WORLD_ID_UNUSED_EXTENSIONS = IsolatedWorldIds.ISOLATED_WORLD_ID_CONTENT_END + 6;
+    int ISOLATED_WORLD_ID_ACTOR = IsolatedWorldIds.ISOLATED_WORLD_ID_CONTENT_END + 5;
+    int ISOLATED_WORLD_UNUSED_MAC = IsolatedWorldIds.ISOLATED_WORLD_ID_CONTENT_END + 6;
+    int ISOLATED_WORLD_ID_UNUSED_EXTENSIONS = IsolatedWorldIds.ISOLATED_WORLD_ID_CONTENT_END + 7;
 }
 // LINT.ThenChange(//chrome/common/chrome_isolated_world_ids.h)

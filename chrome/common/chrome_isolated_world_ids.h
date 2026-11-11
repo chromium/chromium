@@ -22,6 +22,9 @@ enum ChromeIsolatedWorldIDs {
   // Isolated world ID for Autofill custom form control scripts.
   ISOLATED_WORLD_ID_AUTOFILL_CUSTOM_FORM_CONTROLS,
 
+  // Isolated world ID for Chrome Actor.
+  ISOLATED_WORLD_ID_ACTOR,
+
 #if BUILDFLAG(IS_MAC)
   // Isolated world ID for AppleScript.
   ISOLATED_WORLD_ID_APPLESCRIPT,
