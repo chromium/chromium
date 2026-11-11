@@ -4,6 +4,7 @@
 
 #include "components/trusted_vault/standalone_trusted_vault_client.h"
 
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>
@@ -56,6 +57,7 @@ using testing::_;
 using testing::ElementsAre;
 using testing::Eq;
 using testing::IsEmpty;
+using testing::Not;
 using testing::SizeIs;
 
 constexpr char kTestEmail[] = "test@gmail.com";
@@ -139,13 +141,17 @@ class StandaloneTrustedVaultClientTest : public testing::Test {
   }
 
   scoped_refptr<StandaloneTrustedVaultFrontend> CreateFrontend() {
+    return CreateFrontendForBaseDir(temp_dir_.GetPath());
+  }
+
+  scoped_refptr<StandaloneTrustedVaultFrontend> CreateFrontendForBaseDir(
+      const base::FilePath& base_dir) {
     return base::MakeRefCounted<StandaloneTrustedVaultFrontend>(
         os_crypt_async_.get(),
 #if BUILDFLAG(IS_MAC)
         kKeychainAccessGroupPrefix,
 #endif
-        /*base_dir=*/temp_dir_.GetPath(), identity_test_env_.identity_manager(),
-        url_loader_factory_);
+        base_dir, identity_test_env_.identity_manager(), url_loader_factory_);
   }
 
   std::unique_ptr<StandaloneTrustedVaultClient> CreateClient(
@@ -208,6 +214,21 @@ class StandaloneTrustedVaultClientTest : public testing::Test {
     base::test::TestFuture<int> future;
     client->GetLastKeyVersionForTesting(gaia_id, future.GetCallback());
     return future.Get();
+  }
+
+  bool CanEnroll(StandaloneTrustedVaultClient* client,
+                 const CoreAccountInfo& account) {
+    base::test::TestFuture<bool> future;
+    client->CanEnroll(account, future.GetCallback());
+    return future.Get();
+  }
+
+  std::pair<std::vector<uint8_t>, int> Enroll(
+      StandaloneTrustedVaultClient* client,
+      const CoreAccountInfo& account) {
+    base::test::TestFuture<const std::vector<uint8_t>&, int> future;
+    client->Enroll(account, future.GetCallback());
+    return {future.Get<0>(), future.Get<1>()};
   }
 
  protected:
@@ -543,6 +564,101 @@ TEST_F(StandaloneTrustedVaultClientTest,
   EXPECT_TRUE(MarkLocalKeysAsStale(migrated_client.get(), account_info));
   EXPECT_THAT(FetchKeys(migrated_client.get(), account_info),
               ElementsAre(kKey1, new_epoch_key));
+}
+
+TEST_F(StandaloneTrustedVaultClientTest, ShouldCheckCanEnrollEligibility) {
+  scoped_refptr<StandaloneTrustedVaultFrontend> frontend = CreateFrontend();
+  std::unique_ptr<StandaloneTrustedVaultClient> sync_client =
+      CreateClient(SecurityDomainId::kChromeSync, frontend);
+  std::unique_ptr<StandaloneTrustedVaultClient> passkeys_client =
+      CreateClient(SecurityDomainId::kPasskeys, frontend);
+  CoreAccountInfo account_info = MakeAccountAvailable(kTestEmail);
+  WaitForIdle(sync_client.get());
+  WaitForIdle(passkeys_client.get());
+
+  // Not eligible before a Gaia password public key is available on the server.
+  EXPECT_FALSE(CanEnroll(sync_client.get(), account_info));
+  EXPECT_FALSE(CanEnroll(passkeys_client.get(), account_info));
+
+  // Eligible for `kChromeSync` once a Gaia password key is available, while
+  // `kPasskeys` does not support enrollment yet.
+  fake_security_domains_server_->SetGaiaPasswordKeyPair(
+      SecureBoxKeyPair::GenerateRandom());
+  EXPECT_TRUE(CanEnroll(sync_client.get(), account_info));
+  EXPECT_FALSE(CanEnroll(passkeys_client.get(), account_info));
+}
+
+TEST_F(StandaloneTrustedVaultClientTest, ShouldEnroll) {
+  fake_security_domains_server_->SetGaiaPasswordKeyPair(
+      SecureBoxKeyPair::GenerateRandom());
+  CoreAccountInfo account_info = MakeAccountAvailable(kTestEmail);
+
+  std::unique_ptr<StandaloneTrustedVaultClient> client = CreateClient();
+  WaitForIdle(client.get());
+  ASSERT_TRUE(CanEnroll(client.get(), account_info));
+
+  MockTrustedVaultClientObserver observer;
+  base::ScopedObservation<TrustedVaultClient, TrustedVaultClient::Observer>
+      observation(&observer);
+  observation.Observe(client.get());
+  EXPECT_CALL(observer,
+              OnTrustedVaultKeysChanged(/*trigger=*/Eq(std::nullopt)));
+
+  const auto [rotated_key, rotated_key_version] =
+      Enroll(client.get(), account_info);
+  EXPECT_THAT(rotated_key, Not(IsEmpty()));
+  EXPECT_EQ(rotated_key_version,
+            fake_security_domains_server_->GetCurrentEpoch());
+  WaitForIdle(client.get());
+
+  // Default local recovery factors plus the newly registered Gaia password
+  // member should all hold `rotated_key`.
+  EXPECT_EQ(fake_security_domains_server_->GetMemberCount(),
+            kDefaultExpectedMemberCount + 1);
+  EXPECT_TRUE(fake_security_domains_server_->AllMembersHaveKey(rotated_key));
+  EXPECT_FALSE(fake_security_domains_server_->ReceivedInvalidRequest());
+
+  EXPECT_FALSE(CanEnroll(client.get(), account_info));
+  EXPECT_THAT(FetchKeys(client.get(), account_info), ElementsAre(rotated_key));
+}
+
+TEST_F(StandaloneTrustedVaultClientTest,
+       ShouldFollowKeyRotationOnSecondClientAfterEnroll) {
+  const base::FilePath second_client_dir =
+      temp_dir_.GetPath().AppendASCII("second_client");
+  ASSERT_TRUE(base::CreateDirectory(second_client_dir));
+  fake_security_domains_server_->SetGaiaPasswordKeyPair(
+      SecureBoxKeyPair::GenerateRandom());
+  CoreAccountInfo account_info = MakeAccountAvailable(kTestEmail);
+
+  std::unique_ptr<StandaloneTrustedVaultClient> first_client = CreateClient();
+  std::unique_ptr<StandaloneTrustedVaultClient> second_client =
+      CreateClient(SecurityDomainId::kChromeSync,
+                   CreateFrontendForBaseDir(second_client_dir));
+  WaitForIdle(first_client.get());
+  WaitForIdle(second_client.get());
+
+  const auto [rotated_key, rotated_key_version] =
+      Enroll(first_client.get(), account_info);
+  ASSERT_THAT(rotated_key, Not(IsEmpty()));
+  WaitForIdle(first_client.get());
+
+  // Simulate a client notifying the second device that its local keys are
+  // stale; `FetchKeys()` should download and unwrap `rotated_key`.
+  MockTrustedVaultClientObserver second_observer;
+  base::ScopedObservation<TrustedVaultClient, TrustedVaultClient::Observer>
+      observation(&second_observer);
+  observation.Observe(second_client.get());
+  EXPECT_CALL(second_observer,
+              OnTrustedVaultKeysChanged(/*trigger=*/Eq(std::nullopt)));
+
+  EXPECT_TRUE(MarkLocalKeysAsStale(second_client.get(), account_info));
+  EXPECT_THAT(FetchKeys(second_client.get(), account_info),
+              ElementsAre(rotated_key));
+  WaitForIdle(second_client.get());
+  EXPECT_EQ(GetLastKeyVersion(second_client.get(), account_info.gaia),
+            rotated_key_version);
+  EXPECT_FALSE(CanEnroll(second_client.get(), account_info));
 }
 
 }  // namespace

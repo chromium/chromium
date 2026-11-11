@@ -21,6 +21,8 @@
 
 namespace trusted_vault {
 
+class SecureBoxKeyPair;
+
 // Mimics behavior of the security domains server. This class is designed to be
 // used with EmbeddedTestServer via registration of HandleRequest() method.
 class FakeSecurityDomainsServer {
@@ -68,6 +70,12 @@ class FakeSecurityDomainsServer {
   void RequirePublicKeyToAvoidRecoverabilityDegraded(
       const std::vector<uint8_t>& public_key);
 
+  // Sets (or clears if null) the Gaia password encryption key pair returned by
+  // `GetCurrentGaiaPasswordEncryptionKeyData` and used to unwrap keys during
+  // key rotation.
+  void SetGaiaPasswordKeyPair(
+      std::unique_ptr<SecureBoxKeyPair> gaia_password_key_pair);
+
   int GetMemberCount() const;
   std::vector<std::vector<uint8_t>> GetAllTrustedVaultKeys() const;
   bool AllMembersHaveKey(const std::vector<uint8_t>& trusted_vault_key) const;
@@ -92,6 +100,13 @@ class FakeSecurityDomainsServer {
 
   std::unique_ptr<net::test_server::HttpResponse>
   HandleGetSecurityDomainRequest(
+      const net::test_server::HttpRequest& http_request);
+
+  std::unique_ptr<net::test_server::HttpResponse>
+  HandleDownloadGaiaPasswordPublicKeyRequest(
+      const net::test_server::HttpRequest& http_request);
+
+  std::unique_ptr<net::test_server::HttpResponse> HandleRotateSharedKeyRequest(
       const net::test_server::HttpRequest& http_request);
 
   class State {
@@ -126,6 +141,8 @@ class FakeSecurityDomainsServer {
     std::vector<std::vector<uint8_t>> trusted_vault_keys;
 
     std::string required_public_key_to_avoid_recoverability_degraded;
+
+    std::unique_ptr<SecureBoxKeyPair> gaia_password_key_pair;
   };
 
   // This class is used on main thread and on EmbeddedTestServer IO thread, data

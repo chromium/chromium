@@ -4,7 +4,13 @@
 
 #include "components/trusted_vault/test/fake_security_domains_server.h"
 
+#include <cstdint>
+#include <optional>
+#include <string_view>
+#include <utility>
+
 #include "base/base64url.h"
+#include "base/containers/map_util.h"
 #include "base/logging.h"
 #include "base/rand_util.h"
 #include "base/strings/string_util.h"
@@ -136,28 +142,73 @@ bool VerifySharedKeys(
   return true;
 }
 
-std::string GetPublicKeyFromGetSecurityDomainMemberRequestURL(
-    const GURL& request_url,
-    const GURL& server_url) {
-  const size_t start_pos =
-      server_url.spec().size() + std::strlen(kSecurityDomainMemberNamePrefix);
-  const size_t query_pos = request_url.spec().find('?');
-  size_t length = 0;
-  if (query_pos == std::string::npos) {
-    // Query part isn't presented.
-    length = std::string::npos;
-  } else {
-    length = query_pos - start_pos;
+std::string GetPublicKeyFromMemberName(std::string_view member_name) {
+  const std::optional<std::string_view> encoded_public_key =
+      base::RemovePrefix(member_name, kSecurityDomainMemberNamePrefix);
+  if (!encoded_public_key.has_value()) {
+    return std::string();
   }
-  const std::string encoded_public_key =
-      request_url.spec().substr(start_pos, length);
   std::string decoded_public_key;
-  if (!base::Base64UrlDecode(encoded_public_key,
+  if (!base::Base64UrlDecode(*encoded_public_key,
                              base::Base64UrlDecodePolicy::DISALLOW_PADDING,
                              &decoded_public_key)) {
     return std::string();
   }
   return decoded_public_key;
+}
+
+std::string GetPublicKeyFromGetSecurityDomainMemberRequestURL(
+    const GURL& request_url,
+    const GURL& server_url) {
+  const size_t start_pos = server_url.spec().size();
+  const size_t query_pos = request_url.spec().find('?');
+  const size_t length = query_pos == std::string::npos ? std::string::npos
+                                                       : query_pos - start_pos;
+  const std::string_view member_name =
+      std::string_view(request_url.spec()).substr(start_pos, length);
+  return GetPublicKeyFromMemberName(member_name);
+}
+
+// Unwraps the newly rotated shared key using `key_pair` and verifies both the
+// rotation proof against `previous_trusted_vault_key` and all member proofs.
+// Although the production server cannot unwrap keys, doing so when a key pair
+// is configured allows `FakeSecurityDomainsServer` to keep
+// `state_.trusted_vault_keys` populated for test inspection (e.g.
+// `AllMembersHaveKey()`) and subsequent member joins.
+std::optional<std::vector<uint8_t>> UnwrapAndVerifyRotatedKey(
+    const SecureBoxKeyPair& key_pair,
+    const std::vector<uint8_t>& previous_trusted_vault_key,
+    const std::string& rotation_proof,
+    const std::map<std::string,
+                   const trusted_vault_pb::RotatedSharedMemberKey*>&
+        rotated_keys_by_public_key) {
+  std::string unwrap_public_key;
+  AssignBytesToProtoString(key_pair.public_key().ExportToBytes(),
+                           &unwrap_public_key);
+  const trusted_vault_pb::RotatedSharedMemberKey* unwrap_member_key =
+      base::FindPtrOrNull(rotated_keys_by_public_key, unwrap_public_key);
+  if (!unwrap_member_key) {
+    return std::nullopt;
+  }
+  std::optional<std::vector<uint8_t>> new_trusted_vault_key =
+      DecryptTrustedVaultWrappedKey(
+          key_pair.private_key(),
+          ProtoStringToBytes(unwrap_member_key->wrapped_key()));
+  if (!new_trusted_vault_key.has_value() ||
+      !VerifyRotationProof(*new_trusted_vault_key, previous_trusted_vault_key,
+                           ProtoStringToBytes(rotation_proof))) {
+    return std::nullopt;
+  }
+  for (const auto& [public_key, rotated_key] : rotated_keys_by_public_key) {
+    std::unique_ptr<SecureBoxPublicKey> member_public_key =
+        SecureBoxPublicKey::CreateByImport(ProtoStringToBytes(public_key));
+    if (!member_public_key ||
+        !VerifyMemberProof(*member_public_key, *new_trusted_vault_key,
+                           ProtoStringToBytes(rotated_key->member_proof()))) {
+      return std::nullopt;
+    }
+  }
+  return new_trusted_vault_key;
 }
 
 }  // namespace
@@ -197,25 +248,33 @@ std::unique_ptr<net::test_server::HttpResponse>
 FakeSecurityDomainsServer::HandleRequest(
     const net::test_server::HttpRequest& http_request) {
   DVLOG(1) << "Received request";
-  if (!base::StartsWith(http_request.GetURL().spec(), server_url_.spec())) {
+  const GURL request_url = http_request.GetURL();
+  // Strip the trailing slash so root-level custom methods match too.
+  const std::string_view server_url_prefix =
+      base::TrimString(server_url_.spec(), "/", base::TRIM_TRAILING);
+  if (!base::StartsWith(request_url.spec(), server_url_prefix)) {
     // This request shouldn't be handled by security domains server.
     return nullptr;
   }
 
   std::unique_ptr<net::test_server::HttpResponse> response;
-  if (http_request.GetURL() ==
-      GetFullJoinSecurityDomainsURLForTesting(server_url_,
-                                              SecurityDomainId::kChromeSync)) {
+  if (request_url == GetFullJoinSecurityDomainsURLForTesting(
+                         server_url_, SecurityDomainId::kChromeSync)) {
     response = HandleJoinSecurityDomainsRequest(http_request);
-  } else if (http_request.GetURL() ==
-             GetFullGetSecurityDomainURLForTesting(
-                 server_url_, SecurityDomainId::kChromeSync)) {
+  } else if (request_url == GetFullGetSecurityDomainURLForTesting(
+                                server_url_, SecurityDomainId::kChromeSync)) {
     response = HandleGetSecurityDomainRequest(http_request);
+  } else if (request_url ==
+             GetFullDownloadGaiaPasswordPublicKeyURLForTesting(server_url_)) {
+    response = HandleDownloadGaiaPasswordPublicKeyRequest(http_request);
+  } else if (request_url == GetFullRotateSharedKeyURLForTesting(
+                                server_url_, SecurityDomainId::kChromeSync)) {
+    response = HandleRotateSharedKeyRequest(http_request);
   } else if (base::StartsWith(
-                 http_request.GetURL().spec(),
+                 request_url.spec(),
                  server_url_.spec() + kSecurityDomainMemberNamePrefix)) {
     std::string member_public_key =
-        GetPublicKeyFromGetSecurityDomainMemberRequestURL(http_request.GetURL(),
+        GetPublicKeyFromGetSecurityDomainMemberRequestURL(request_url,
                                                           server_url_);
     if (member_public_key.empty()) {
       response = HandleListSecurityDomainMembersRequest(http_request);
@@ -224,7 +283,7 @@ FakeSecurityDomainsServer::HandleRequest(
     }
   } else {
     base::AutoLock autolock(lock_);
-    DVLOG(1) << "Unknown request url: " << http_request.GetURL().spec();
+    DVLOG(1) << "Unknown request url: " << request_url.spec();
     state_.received_invalid_request = true;
     response = CreateErrorResponse(net::HTTP_NOT_FOUND);
   }
@@ -294,6 +353,12 @@ void FakeSecurityDomainsServer::RequirePublicKeyToAvoidRecoverabilityDegraded(
   base::AutoLock autolock(lock_);
   AssignBytesToProtoString(
       public_key, &state_.required_public_key_to_avoid_recoverability_degraded);
+}
+
+void FakeSecurityDomainsServer::SetGaiaPasswordKeyPair(
+    std::unique_ptr<SecureBoxKeyPair> gaia_password_key_pair) {
+  base::AutoLock autolock(lock_);
+  state_.gaia_password_key_pair = std::move(gaia_password_key_pair);
 }
 
 int FakeSecurityDomainsServer::GetMemberCount() const {
@@ -528,6 +593,142 @@ FakeSecurityDomainsServer::HandleGetSecurityDomainRequest(
   auto response = std::make_unique<net::test_server::BasicHttpResponse>();
   response->set_code(net::HTTP_OK);
   response->set_content(security_domain.SerializeAsString());
+  return response;
+}
+
+std::unique_ptr<net::test_server::HttpResponse>
+FakeSecurityDomainsServer::HandleDownloadGaiaPasswordPublicKeyRequest(
+    const net::test_server::HttpRequest& http_request) {
+  base::AutoLock autolock(lock_);
+  if (http_request.method != net::test_server::METHOD_GET) {
+    state_.received_invalid_request = true;
+    return CreateErrorResponse(net::HTTP_INTERNAL_SERVER_ERROR);
+  }
+
+  trusted_vault_pb::GetCurrentGaiaPasswordEncryptionKeyDataResponse response_pb;
+  if (state_.gaia_password_key_pair) {
+    AssignBytesToProtoString(
+        state_.gaia_password_key_pair->public_key().ExportToBytes(),
+        response_pb.mutable_current_gaia_password_encryption_key_data()
+            ->mutable_public_key());
+  }
+
+  auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+  response->set_code(net::HTTP_OK);
+  response->set_content(response_pb.SerializeAsString());
+  return response;
+}
+
+std::unique_ptr<net::test_server::HttpResponse>
+FakeSecurityDomainsServer::HandleRotateSharedKeyRequest(
+    const net::test_server::HttpRequest& http_request) {
+  base::AutoLock autolock(lock_);
+  // Invalid protocol requests use `HTTP_INTERNAL_SERVER_ERROR` rather than
+  // `HTTP_BAD_REQUEST`, because the client maps `HTTP_BAD_REQUEST` to
+  // `kMembershipMismatch` (and may retry rotation).
+  if (http_request.method != net::test_server::METHOD_POST) {
+    state_.received_invalid_request = true;
+    return CreateErrorResponse(net::HTTP_INTERNAL_SERVER_ERROR);
+  }
+
+  trusted_vault_pb::RotateSharedKeyRequest request_pb;
+  if (!request_pb.ParseFromString(http_request.content) ||
+      request_pb.security_domain() !=
+          GetSecurityDomainPath(SecurityDomainId::kChromeSync) ||
+      request_pb.rotation_proof().empty()) {
+    state_.received_invalid_request = true;
+    return CreateErrorResponse(net::HTTP_INTERNAL_SERVER_ERROR);
+  }
+
+  if (state_.public_key_to_shared_keys.empty()) {
+    return CreateErrorResponse(net::HTTP_NOT_FOUND);
+  }
+  // Stale base epoch indicates another client rotated the key first.
+  if (request_pb.base_epoch() != state_.current_epoch) {
+    return CreateErrorResponse(net::HTTP_CONFLICT);
+  }
+
+  // Decode each target member's public key and reject malformed or duplicate
+  // entries.
+  std::map<std::string, const trusted_vault_pb::RotatedSharedMemberKey*>
+      rotated_keys_by_public_key;
+  for (const trusted_vault_pb::RotatedSharedMemberKey& rotated_key :
+       request_pb.rotated_shared_member_keys()) {
+    const std::string decoded_public_key =
+        GetPublicKeyFromMemberName(rotated_key.security_domain_member());
+    if (decoded_public_key.empty() || rotated_key.wrapped_key().empty() ||
+        rotated_key.member_proof().empty() ||
+        !rotated_keys_by_public_key.emplace(decoded_public_key, &rotated_key)
+             .second) {
+      state_.received_invalid_request = true;
+      return CreateErrorResponse(net::HTTP_INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  // Rotated keys must cover the exact set of existing security domain members.
+  if (rotated_keys_by_public_key.size() !=
+      state_.public_key_to_shared_keys.size()) {
+    return CreateErrorResponse(net::HTTP_BAD_REQUEST);
+  }
+  for (const auto& [public_key, unused_shared_keys] :
+       state_.public_key_to_shared_keys) {
+    if (!rotated_keys_by_public_key.contains(public_key)) {
+      return CreateErrorResponse(net::HTTP_BAD_REQUEST);
+    }
+  }
+
+  // When a Gaia password key pair is configured and included in the rotation,
+  // unwrap the newly rotated key so `state_.trusted_vault_keys` stays
+  // populated for test inspection (e.g. `AllMembersHaveKey()`) and subsequent
+  // `JoinSecurityDomains` requests. A rotation may also happen before the Gaia
+  // password member has joined, in which case unwrapping is skipped.
+  if (state_.gaia_password_key_pair) {
+    std::string gaia_public_key;
+    AssignBytesToProtoString(
+        state_.gaia_password_key_pair->public_key().ExportToBytes(),
+        &gaia_public_key);
+    if (rotated_keys_by_public_key.contains(gaia_public_key)) {
+      // Verifying the rotation proof requires knowing the previous key.
+      if (state_.trusted_vault_keys.empty()) {
+        state_.received_invalid_request = true;
+        return CreateErrorResponse(net::HTTP_INTERNAL_SERVER_ERROR);
+      }
+      std::optional<std::vector<uint8_t>> new_trusted_vault_key =
+          UnwrapAndVerifyRotatedKey(
+              *state_.gaia_password_key_pair, state_.trusted_vault_keys.back(),
+              request_pb.rotation_proof(), rotated_keys_by_public_key);
+      // Unwrapping or cryptographic proof verification (rotation proof or
+      // member proofs) failed, indicating a malformed client rotation request.
+      if (!new_trusted_vault_key.has_value()) {
+        state_.received_invalid_request = true;
+        return CreateErrorResponse(net::HTTP_INTERNAL_SERVER_ERROR);
+      }
+      state_.trusted_vault_keys.push_back(*new_trusted_vault_key);
+    }
+  }
+
+  ++state_.current_epoch;
+  state_.constant_key_allowed = false;
+  for (const auto& [public_key, rotated_key] : rotated_keys_by_public_key) {
+    trusted_vault_pb::SharedMemberKey new_shared_key;
+    new_shared_key.set_epoch(state_.current_epoch);
+    new_shared_key.set_wrapped_key(rotated_key->wrapped_key());
+    new_shared_key.set_member_proof(rotated_key->member_proof());
+    state_.public_key_to_shared_keys[public_key].push_back(
+        std::move(new_shared_key));
+
+    trusted_vault_pb::RotationProof rotation_proof;
+    rotation_proof.set_new_epoch(state_.current_epoch);
+    rotation_proof.set_rotation_proof(request_pb.rotation_proof());
+    state_.public_key_to_rotation_proofs[public_key].push_back(
+        std::move(rotation_proof));
+  }
+
+  trusted_vault_pb::RotateSharedKeyResponse response_pb;
+  response_pb.set_new_epoch(state_.current_epoch);
+  auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+  response->set_code(net::HTTP_OK);
+  response->set_content(response_pb.SerializeAsString());
   return response;
 }
 
