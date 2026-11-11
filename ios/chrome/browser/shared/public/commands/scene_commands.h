@@ -21,6 +21,9 @@ namespace password_manager {
 enum class PasswordCheckReferrer;
 enum class WarningType;
 }  // namespace password_manager
+namespace remote_actor::proto {
+class RemoteActorPasswordUploadRequest;
+}  // namespace remote_actor::proto
 enum class SafariDataImportEntryPoint;
 namespace syncer {
 enum class TrustedVaultUserActionTriggerForUMA;
@@ -219,6 +222,10 @@ enum class TabGridOpeningMode {
 - (void)showGuidedTourWithCompletion:
     (void (^)(BOOL guidedTourStarted))completion;
 - (void)hideGuidedTour;
+
+// Shows the Remote Actor credential selection bottom sheet for `request`.
+- (void)showRemoteActorCredentialBottomSheetWithRequest:
+    (const remote_actor::proto::RemoteActorPasswordUploadRequest&)request;
 
 @end
 

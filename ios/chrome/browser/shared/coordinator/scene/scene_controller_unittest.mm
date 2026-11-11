@@ -16,6 +16,7 @@
 #import "components/variations/variations_ids_provider.h"
 #import "ios/chrome/app/actor_request.h"
 #import "ios/chrome/app/app_startup_parameters.h"
+#import "ios/chrome/app/application_delegate/tab_opening.h"
 #import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/profile/profile_state_test_utils.h"
@@ -86,6 +87,7 @@
 // -dismissModalsAndMaybeOpenSelectedTabInMode:withUrlLoadParams:dismissOmnibox:
 //  completion:.
 @property(nonatomic, readonly) ApplicationModeForTabOpening applicationMode;
+@property(nonatomic, assign) BOOL simulateTabOpening;
 @end
 
 @implementation InternalFakeSceneController
@@ -100,6 +102,12 @@
                                     dismissOmnibox:(BOOL)dismissOmnibox
                                         completion:(ProceduralBlock)completion {
   _applicationMode = targetMode;
+  if (self.simulateTabOpening) {
+    [super dismissModalsAndMaybeOpenSelectedTabInMode:targetMode
+                                    withUrlLoadParams:urlLoadParams
+                                       dismissOmnibox:dismissOmnibox
+                                           completion:completion];
+  }
 }
 @end
 
@@ -547,21 +555,150 @@ TEST_F(SceneControllerTest,
   action();
   EXPECT_OCMOCK_VERIFY(mock_application);
 
-  // When signed in with matching GAIA ID, preconditions succeed and no error
-  // callback URL is opened.
+  // When signed in with matching GAIA ID, preconditions succeed and the
+  // Remote Actor bottom sheet command is dispatched without opening an error
+  // callback URL.
   MakePrimaryAccountAvailable("user@example.com");
   CoreAccountInfo primary_account = GetIdentityManager()->GetPrimaryAccountInfo(
       signin::ConsentLevel::kSignin);
   actor_request.request.set_gaia_id(primary_account.gaia.ToString());
   startup_params.remoteActorRequest = actor_request;
 
+  [[[mock_scene_handler_ expect] ignoringNonObjectArgs]
+      showRemoteActorCredentialBottomSheetWithRequest:actor_request.request];
   OCMReject([mock_application openURL:[OCMArg any]
                               options:[OCMArg any]
                     completionHandler:[OCMArg any]]);
   action();
   EXPECT_OCMOCK_VERIFY(mock_application);
+  EXPECT_OCMOCK_VERIFY(mock_scene_handler_);
+
+  // When the scene handler / browser is unavailable, opens the callback URL
+  // with FAILED / UPLOAD_FAILED rather than silently returning.
+  [mock_application stopMocking];
+  mock_application = OCMClassMock([UIApplication class]);
+  OCMStub([mock_application sharedApplication]).andReturn(mock_application);
+  [browser_->GetCommandDispatcher()
+      stopDispatchingToTarget:mock_scene_handler_];
+  NSURL* expected_failed_url = [NSURL
+      URLWithString:[NSString stringWithFormat:
+                                  @"%s?task_id=task-123&status=FAILED&reason="
+                                  @"UPLOAD_FAILED",
+                                  kRemoteActorGeminiCallbackBaseURL]];
+  OCMExpect([mock_application openURL:expected_failed_url
+                              options:@{}
+                    completionHandler:[OCMArg any]]);
+  action();
+  EXPECT_OCMOCK_VERIFY(mock_application);
 
   [mock_application stopMocking];
+  FirstRun::RemoveSentinel();
+  FirstRun::ClearStateForTesting();
+}
+
+// Tests that `openSelectedTabInMode:withUrlLoadParams:completion:` caches
+// `remoteActorRequest` before `startupParameters` is cleared, consumes it once
+// when handling the action, and resets any cached request when a subsequent
+// tab opening has no `remoteActorRequest`.
+TEST_F(SceneControllerTest,
+       RemoteActorCredentialSharingConsumesAndResetsCachedRequest) {
+  scene_controller_.simulateTabOpening = YES;
+  id mock_scene_state = OCMPartialMock(scene_state_);
+  OCMStub([mock_scene_state activationLevel])
+      .andReturn(SceneActivationLevelForegroundActive);
+
+  base::File::Error file_error;
+  FirstRun::RemoveSentinel();
+  FirstRun::CreateSentinel(&file_error);
+  FirstRun::LoadSentinelInfo();
+  FirstRun::ClearStateForTesting();
+
+  MakePrimaryAccountAvailable("user@example.com");
+  CoreAccountInfo primary_account = GetIdentityManager()->GetPrimaryAccountInfo(
+      signin::ConsentLevel::kSignin);
+
+  AppStartupParameters* startup_params = [[AppStartupParameters alloc]
+       initWithExternalURL:GURL()
+               completeURL:GURL()
+           applicationMode:ApplicationModeForTabOpening::UNDETERMINED
+      forceApplicationMode:NO];
+  startup_params.postOpeningAction = REMOTE_ACTOR_CREDENTIAL_SHARING;
+  RemoteActorRequest actor_request;
+  actor_request.request.set_task_id("task-cached");
+  actor_request.request.set_gaia_id(primary_account.gaia.ToString());
+  actor_request.request.set_domain("https://example.com");
+  startup_params.remoteActorRequest = actor_request;
+  [connection_information_ setStartupParameters:startup_params];
+
+  // Clear `startupParameters` before the tab-opened completion runs so that
+  // `handleRemoteActorCredentialSharing` relies on the cached request.
+  id partial_scene_controller = OCMPartialMock(scene_controller_);
+  OCMStub(
+      [partial_scene_controller
+          completionBlockForTriggeringAction:REMOTE_ACTOR_CREDENTIAL_SHARING])
+      .andDo(^(NSInvocation* invocation) {
+        [connection_information_ setStartupParameters:nil];
+      })
+      .andForwardToRealObject();
+
+  OCMStub([partial_scene_controller
+      dismissModalDialogsWithCompletion:[OCMArg invokeBlock]
+                         dismissOmnibox:YES
+                          dismissGemini:YES]);
+
+  [[[mock_scene_handler_ expect] ignoringNonObjectArgs]
+      showRemoteActorCredentialBottomSheetWithRequest:actor_request.request];
+
+  [(id<TabOpening>)scene_controller_
+      dismissModalsAndMaybeOpenSelectedTabInMode:ApplicationModeForTabOpening::
+                                                     NORMAL
+                               withUrlLoadParams:UrlLoadParams::InNewTab(GURL())
+                                  dismissOmnibox:YES
+                                      completion:nil];
+  EXPECT_OCMOCK_VERIFY(mock_scene_handler_);
+
+  // The cached request was consumed, so triggering the action again is a
+  // no-op.
+  [[[mock_scene_handler_ reject] ignoringNonObjectArgs]
+      showRemoteActorCredentialBottomSheetWithRequest:actor_request.request];
+  ProceduralBlock action = [scene_controller_
+      completionBlockForTriggeringAction:REMOTE_ACTOR_CREDENTIAL_SHARING];
+  ASSERT_NE(action, nil);
+  action();
+  EXPECT_OCMOCK_VERIFY(mock_scene_handler_);
+
+  // Opening a tab without a `remoteActorRequest` clears any previously cached
+  // request.
+  AppStartupParameters* empty_params = [[AppStartupParameters alloc]
+       initWithExternalURL:GURL()
+               completeURL:GURL()
+           applicationMode:ApplicationModeForTabOpening::UNDETERMINED
+      forceApplicationMode:NO];
+  empty_params.remoteActorRequest = actor_request;
+  [connection_information_ setStartupParameters:empty_params];
+  [(id<TabOpening>)scene_controller_
+      dismissModalsAndMaybeOpenSelectedTabInMode:ApplicationModeForTabOpening::
+                                                     NORMAL
+                               withUrlLoadParams:UrlLoadParams::InNewTab(GURL())
+                                  dismissOmnibox:YES
+                                      completion:nil];
+
+  empty_params.remoteActorRequest = std::nullopt;
+  [connection_information_ setStartupParameters:empty_params];
+  [(id<TabOpening>)scene_controller_
+      dismissModalsAndMaybeOpenSelectedTabInMode:ApplicationModeForTabOpening::
+                                                     NORMAL
+                               withUrlLoadParams:UrlLoadParams::InNewTab(GURL())
+                                  dismissOmnibox:YES
+                                      completion:nil];
+
+  [[[mock_scene_handler_ reject] ignoringNonObjectArgs]
+      showRemoteActorCredentialBottomSheetWithRequest:actor_request.request];
+  action();
+  EXPECT_OCMOCK_VERIFY(mock_scene_handler_);
+  [partial_scene_controller stopMocking];
+  [mock_scene_state stopMocking];
+
   FirstRun::RemoveSentinel();
   FirstRun::ClearStateForTesting();
 }

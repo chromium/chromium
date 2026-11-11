@@ -9,6 +9,7 @@
 #import "base/run_loop.h"
 #import "base/test/task_environment.h"
 #import "base/time/time.h"
+#import "components/password_manager/core/browser/remote_actor/remote_actor_credential_sharing_result.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/identity_test_utils.h"
 #import "components/supervised_user/test_support/kids_chrome_management_test_utils.h"
@@ -16,6 +17,9 @@
 #import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/profile/profile_state_test_utils.h"
+#import "ios/chrome/browser/passwords/bottom_sheet/coordinator/remote_actor_credential_bottom_sheet_coordinator.h"
+#import "ios/chrome/browser/passwords/model/remote_actor/proto/remote_actor_password_upload_request.pb.h"
+#import "ios/chrome/browser/passwords/model/remote_actor/remote_actor_constants.h"
 #import "ios/chrome/browser/scene/ui/scene_view_controller.h"
 #import "ios/chrome/browser/scene/ui/scene_view_controller_delegate.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -34,8 +38,10 @@
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/identity_test_environment_browser_state_adaptor.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/chrome/test/scoped_key_window.h"
 #import "ios/public/provider/chrome/browser/user_feedback/user_feedback_data.h"
 #import "ios/public/provider/chrome/browser/user_feedback/user_feedback_sender.h"
+#import "ios/testing/scoped_block_swizzler.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #import "services/network/test/test_url_loader_factory.h"
@@ -322,6 +328,323 @@ TEST_F(SceneCoordinatorTest,
                           dismissGemini:NO];
   EXPECT_TRUE(completed);
   EXPECT_OCMOCK_VERIFY(mockGeminiHandler);
+}
+
+// Tests that `showRemoteActorCredentialBottomSheetWithRequest:` starts
+// `RemoteActorCredentialBottomSheetCoordinator` and opens the Gemini callback
+// URL with SUCCESS when the coordinator completes with `kSuccess`.
+TEST_F(SceneCoordinatorTest,
+       ShowRemoteActorCredentialBottomSheetSuccessCallback) {
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+  ScopedKeyWindow scoped_key_window;
+  scoped_key_window.Get().rootViewController = base_view_controller_;
+  ASSERT_NE(base_view_controller_.view.window, nil);
+
+  id mock_application = OCMClassMock([UIApplication class]);
+  OCMStub([mock_application sharedApplication]).andReturn(mock_application);
+
+  id partial_scene_coordinator = OCMPartialMock(coordinator_);
+  OCMStub([partial_scene_coordinator activeViewController])
+      .andReturn(base_view_controller_);
+
+  __block RemoteActorCredentialBottomSheetCoordinator* started_coordinator =
+      nil;
+  auto start_swizzler = std::make_unique<ScopedBlockSwizzler>(
+      [RemoteActorCredentialBottomSheetCoordinator class], @selector(start),
+      ^(RemoteActorCredentialBottomSheetCoordinator* self_coordinator) {
+        started_coordinator = self_coordinator;
+      });
+
+  remote_actor::proto::RemoteActorPasswordUploadRequest request;
+  request.set_task_id("task-123");
+  request.set_gaia_id("gaia-id");
+  request.set_domain("https://example.com");
+
+  [(id<SceneCommands>)coordinator_
+      showRemoteActorCredentialBottomSheetWithRequest:request];
+  ASSERT_NE(started_coordinator, nil);
+  EXPECT_EQ([coordinator_
+                valueForKey:@"_remoteActorCredentialBottomSheetCoordinator"],
+            started_coordinator);
+
+  RemoteActorCredentialBottomSheetCompletion completion =
+      [started_coordinator valueForKey:@"completion"];
+  ASSERT_NE(completion, nil);
+
+  NSURL* expected_url = [NSURL
+      URLWithString:[NSString
+                        stringWithFormat:@"%s?%s=task-123&%s=SUCCESS",
+                                         kRemoteActorGeminiCallbackBaseURL,
+                                         kRemoteActorTaskIdQueryParam,
+                                         kRemoteActorStatusQueryParam]];
+  OCMExpect([mock_application openURL:expected_url
+                              options:@{}
+                    completionHandler:[OCMArg any]]);
+  completion(password_manager::RemoteActorCredentialSharingResult::kSuccess);
+
+  EXPECT_EQ([coordinator_
+                valueForKey:@"_remoteActorCredentialBottomSheetCoordinator"],
+            nil);
+  EXPECT_OCMOCK_VERIFY(mock_application);
+
+  [partial_scene_coordinator stopMocking];
+  [mock_application stopMocking];
+}
+
+// Tests that `showRemoteActorCredentialBottomSheetWithRequest:` opens the
+// Gemini callback URL with CANCELLED when the coordinator completes with
+// `kUserCancelledDialog`.
+TEST_F(SceneCoordinatorTest,
+       ShowRemoteActorCredentialBottomSheetCancelledCallback) {
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+  ScopedKeyWindow scoped_key_window;
+  scoped_key_window.Get().rootViewController = base_view_controller_;
+  ASSERT_NE(base_view_controller_.view.window, nil);
+
+  id mock_application = OCMClassMock([UIApplication class]);
+  OCMStub([mock_application sharedApplication]).andReturn(mock_application);
+
+  id partial_scene_coordinator = OCMPartialMock(coordinator_);
+  OCMStub([partial_scene_coordinator activeViewController])
+      .andReturn(base_view_controller_);
+
+  __block RemoteActorCredentialBottomSheetCoordinator* started_coordinator =
+      nil;
+  auto start_swizzler = std::make_unique<ScopedBlockSwizzler>(
+      [RemoteActorCredentialBottomSheetCoordinator class], @selector(start),
+      ^(RemoteActorCredentialBottomSheetCoordinator* self_coordinator) {
+        started_coordinator = self_coordinator;
+      });
+
+  remote_actor::proto::RemoteActorPasswordUploadRequest request;
+  request.set_task_id("task-123");
+  request.set_gaia_id("gaia-id");
+  request.set_domain("https://example.com");
+
+  [(id<SceneCommands>)coordinator_
+      showRemoteActorCredentialBottomSheetWithRequest:request];
+  ASSERT_NE(started_coordinator, nil);
+
+  RemoteActorCredentialBottomSheetCompletion completion =
+      [started_coordinator valueForKey:@"completion"];
+  ASSERT_NE(completion, nil);
+
+  NSURL* expected_url = [NSURL
+      URLWithString:[NSString
+                        stringWithFormat:@"%s?%s=task-123&%s=CANCELLED",
+                                         kRemoteActorGeminiCallbackBaseURL,
+                                         kRemoteActorTaskIdQueryParam,
+                                         kRemoteActorStatusQueryParam]];
+  OCMExpect([mock_application openURL:expected_url
+                              options:@{}
+                    completionHandler:[OCMArg any]]);
+  completion(password_manager::RemoteActorCredentialSharingResult::
+                 kUserCancelledDialog);
+
+  EXPECT_EQ([coordinator_
+                valueForKey:@"_remoteActorCredentialBottomSheetCoordinator"],
+            nil);
+  EXPECT_OCMOCK_VERIFY(mock_application);
+
+  [partial_scene_coordinator stopMocking];
+  [mock_application stopMocking];
+}
+
+// Tests that `showRemoteActorCredentialBottomSheetWithRequest:` opens the
+// Gemini callback URL with FAILED / UPLOAD_FAILED when the coordinator
+// completes with an error result.
+TEST_F(SceneCoordinatorTest,
+       ShowRemoteActorCredentialBottomSheetFailureCallback) {
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+  ScopedKeyWindow scoped_key_window;
+  scoped_key_window.Get().rootViewController = base_view_controller_;
+  ASSERT_NE(base_view_controller_.view.window, nil);
+
+  id mock_application = OCMClassMock([UIApplication class]);
+  OCMStub([mock_application sharedApplication]).andReturn(mock_application);
+
+  id partial_scene_coordinator = OCMPartialMock(coordinator_);
+  OCMStub([partial_scene_coordinator activeViewController])
+      .andReturn(base_view_controller_);
+
+  __block RemoteActorCredentialBottomSheetCoordinator* started_coordinator =
+      nil;
+  auto start_swizzler = std::make_unique<ScopedBlockSwizzler>(
+      [RemoteActorCredentialBottomSheetCoordinator class], @selector(start),
+      ^(RemoteActorCredentialBottomSheetCoordinator* self_coordinator) {
+        started_coordinator = self_coordinator;
+      });
+
+  remote_actor::proto::RemoteActorPasswordUploadRequest request;
+  request.set_task_id("task-456");
+  request.set_gaia_id("gaia-id");
+  request.set_domain("https://example.com");
+
+  [(id<SceneCommands>)coordinator_
+      showRemoteActorCredentialBottomSheetWithRequest:request];
+  ASSERT_NE(started_coordinator, nil);
+
+  RemoteActorCredentialBottomSheetCompletion completion =
+      [started_coordinator valueForKey:@"completion"];
+  ASSERT_NE(completion, nil);
+
+  NSURL* expected_url = [NSURL
+      URLWithString:[NSString stringWithFormat:
+                                  @"%s?%s=task-456&%s=FAILED&%s=UPLOAD_FAILED",
+                                  kRemoteActorGeminiCallbackBaseURL,
+                                  kRemoteActorTaskIdQueryParam,
+                                  kRemoteActorStatusQueryParam,
+                                  kRemoteActorReasonQueryParam]];
+  OCMExpect([mock_application openURL:expected_url
+                              options:@{}
+                    completionHandler:[OCMArg any]]);
+  completion(
+      password_manager::RemoteActorCredentialSharingResult::kSharingFailed);
+
+  EXPECT_EQ([coordinator_
+                valueForKey:@"_remoteActorCredentialBottomSheetCoordinator"],
+            nil);
+  EXPECT_OCMOCK_VERIFY(mock_application);
+
+  [partial_scene_coordinator stopMocking];
+  [mock_application stopMocking];
+}
+
+// Tests that `showRemoteActorCredentialBottomSheetWithRequest:` sends a failure
+// callback via `OpenGeminiCallbackURL` when the bottom sheet cannot be
+// presented (e.g., missing/detached/busy base view controller or disconnected
+// scene).
+TEST_F(SceneCoordinatorTest,
+       ShowRemoteActorCredentialBottomSheetFailsWhenUnavailable) {
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+  ScopedKeyWindow scoped_key_window;
+
+  id mock_application = OCMClassMock([UIApplication class]);
+  OCMStub([mock_application sharedApplication]).andReturn(mock_application);
+
+  __block RemoteActorCredentialBottomSheetCoordinator* started_coordinator =
+      nil;
+  auto start_swizzler = std::make_unique<ScopedBlockSwizzler>(
+      [RemoteActorCredentialBottomSheetCoordinator class], @selector(start),
+      ^(RemoteActorCredentialBottomSheetCoordinator* self_coordinator) {
+        started_coordinator = self_coordinator;
+      });
+
+  remote_actor::proto::RemoteActorPasswordUploadRequest request;
+  request.set_task_id("task-unavailable");
+  request.set_gaia_id("gaia-id");
+  request.set_domain("https://example.com");
+
+  NSURL* expected_url = [NSURL
+      URLWithString:[NSString
+                        stringWithFormat:@"%s?%s=task-unavailable&%s=FAILED&%s="
+                                         @"UPLOAD_FAILED",
+                                         kRemoteActorGeminiCallbackBaseURL,
+                                         kRemoteActorTaskIdQueryParam,
+                                         kRemoteActorStatusQueryParam,
+                                         kRemoteActorReasonQueryParam]];
+
+  // Case 1: `activeViewController` is nil.
+  OCMExpect([mock_application openURL:expected_url
+                              options:@{}
+                    completionHandler:[OCMArg any]]);
+  [(id<SceneCommands>)coordinator_
+      showRemoteActorCredentialBottomSheetWithRequest:request];
+  EXPECT_EQ(started_coordinator, nil);
+  EXPECT_OCMOCK_VERIFY(mock_application);
+
+  // Case 2: `activeViewController` is not in a window hierarchy.
+  id partial_scene_coordinator = OCMPartialMock(coordinator_);
+  OCMStub([partial_scene_coordinator activeViewController])
+      .andReturn(base_view_controller_);
+  ASSERT_EQ(base_view_controller_.view.window, nil);
+  OCMExpect([mock_application openURL:expected_url
+                              options:@{}
+                    completionHandler:[OCMArg any]]);
+  [(id<SceneCommands>)coordinator_
+      showRemoteActorCredentialBottomSheetWithRequest:request];
+  EXPECT_EQ(started_coordinator, nil);
+  EXPECT_OCMOCK_VERIFY(mock_application);
+
+  // Case 3: `activeViewController` is already presenting another VC.
+  scoped_key_window.Get().rootViewController = base_view_controller_;
+  ASSERT_NE(base_view_controller_.view.window, nil);
+  id partial_vc = OCMPartialMock(base_view_controller_);
+  OCMStub([partial_vc presentedViewController])
+      .andReturn([[UIViewController alloc] init]);
+  OCMExpect([mock_application openURL:expected_url
+                              options:@{}
+                    completionHandler:[OCMArg any]]);
+  [(id<SceneCommands>)coordinator_
+      showRemoteActorCredentialBottomSheetWithRequest:request];
+  EXPECT_EQ(started_coordinator, nil);
+  EXPECT_OCMOCK_VERIFY(mock_application);
+  [partial_vc stopMocking];
+
+  // Case 4: Scene is disconnected.
+  scene_state_.activationLevel = SceneActivationLevelDisconnected;
+  OCMExpect([mock_application openURL:expected_url
+                              options:@{}
+                    completionHandler:[OCMArg any]]);
+  [(id<SceneCommands>)coordinator_
+      showRemoteActorCredentialBottomSheetWithRequest:request];
+  EXPECT_EQ(started_coordinator, nil);
+  EXPECT_OCMOCK_VERIFY(mock_application);
+
+  [partial_scene_coordinator stopMocking];
+  [mock_application stopMocking];
+}
+
+// Tests that stopping `SceneCoordinator` stops an active
+// `RemoteActorCredentialBottomSheetCoordinator` without opening the Gemini
+// callback URL.
+TEST_F(SceneCoordinatorTest,
+       StopStopsRemoteActorCredentialBottomSheetWithoutCallback) {
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+  ScopedKeyWindow scoped_key_window;
+  scoped_key_window.Get().rootViewController = base_view_controller_;
+  ASSERT_NE(base_view_controller_.view.window, nil);
+
+  id mock_application = OCMClassMock([UIApplication class]);
+  OCMStub([mock_application sharedApplication]).andReturn(mock_application);
+
+  id partial_scene_coordinator = OCMPartialMock(coordinator_);
+  OCMStub([partial_scene_coordinator activeViewController])
+      .andReturn(base_view_controller_);
+
+  __block RemoteActorCredentialBottomSheetCoordinator* started_coordinator =
+      nil;
+  auto start_swizzler = std::make_unique<ScopedBlockSwizzler>(
+      [RemoteActorCredentialBottomSheetCoordinator class], @selector(start),
+      ^(RemoteActorCredentialBottomSheetCoordinator* self_coordinator) {
+        started_coordinator = self_coordinator;
+      });
+
+  remote_actor::proto::RemoteActorPasswordUploadRequest request;
+  request.set_task_id("task-789");
+  request.set_gaia_id("gaia-id");
+  request.set_domain("https://example.com");
+
+  [(id<SceneCommands>)coordinator_
+      showRemoteActorCredentialBottomSheetWithRequest:request];
+  ASSERT_NE(started_coordinator, nil);
+  EXPECT_EQ([coordinator_
+                valueForKey:@"_remoteActorCredentialBottomSheetCoordinator"],
+            started_coordinator);
+
+  OCMReject([mock_application openURL:[OCMArg any]
+                              options:[OCMArg any]
+                    completionHandler:[OCMArg any]]);
+
+  [coordinator_ stop];
+
+  EXPECT_EQ([coordinator_
+                valueForKey:@"_remoteActorCredentialBottomSheetCoordinator"],
+            nil);
+  EXPECT_OCMOCK_VERIFY(mock_application);
+
+  [partial_scene_coordinator stopMocking];
+  [mock_application stopMocking];
 }
 
 }  // namespace

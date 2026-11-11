@@ -4,6 +4,9 @@
 
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 
+#import <optional>
+#import <utility>
+
 #import "base/check.h"
 #import "base/feature_list.h"
 #import "base/functional/callback_helpers.h"
@@ -91,6 +94,7 @@
 #import "ios/chrome/browser/menu/public/menu_histograms.h"
 #import "ios/chrome/browser/metrics/model/tab_usage_recorder_browser_agent.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/passwords/model/remote_actor/proto/remote_actor_password_upload_request.pb.h"
 #import "ios/chrome/browser/passwords/model/remote_actor/remote_actor_callback_util.h"
 #import "ios/chrome/browser/passwords/model/remote_actor/remote_actor_precondition_checker.h"
 #import "ios/chrome/browser/picture_in_picture/model/picture_in_picture_scene_agent.h"
@@ -350,6 +354,10 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
   // This is used to ensure that the image search is only triggered when the BVC
   // is active.
   NSData* _imageSearchData;
+  // A property to track a pending Remote Actor credential sharing request
+  // across tab switcher dismissal.
+  std::optional<remote_actor::proto::RemoteActorPasswordUploadRequest>
+      _remoteActorRequest;
   BOOL _handleExternalIntentsInProgress;
 }
 
@@ -970,7 +978,13 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
   WrangledBrowser* targetInterface = targetMode == ApplicationMode::NORMAL
                                          ? self.mainInterface
                                          : self.incognitoInterface;
-  _imageSearchData = [self.startupParameters imageSearchData];
+  AppStartupParameters* startupParameters = self.startupParameters;
+  _imageSearchData = [startupParameters imageSearchData];
+  if (startupParameters && startupParameters.remoteActorRequest) {
+    _remoteActorRequest = startupParameters.remoteActorRequest->request;
+  } else {
+    _remoteActorRequest.reset();
+  }
   ProceduralBlock startupCompletion =
       [self completionBlockForTriggeringAction:[self.startupParameters
                                                        postOpeningAction]];
@@ -2708,24 +2722,48 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
                                 completion:nil];
 }
 
+// Consumes and returns the pending Remote Actor request if one is available.
+- (std::optional<remote_actor::proto::RemoteActorPasswordUploadRequest>)
+    getPendingRemoteActorRequest {
+  if (_remoteActorRequest) {
+    return std::exchange(_remoteActorRequest, std::nullopt);
+  }
+  AppStartupParameters* startupParameters = self.startupParameters;
+  if (startupParameters && startupParameters.remoteActorRequest) {
+    return startupParameters.remoteActorRequest->request;
+  }
+  return std::nullopt;
+}
+
 // Handles a Remote Actor credential sharing request from an external app.
 - (void)handleRemoteActorCredentialSharing {
-  ASSIGN_OR_RETURN(const RemoteActorRequest& remoteActorRequest,
-                   self.startupParameters.remoteActorRequest, [] {});
+  ASSIGN_OR_RETURN(
+      remote_actor::proto::RemoteActorPasswordUploadRequest request,
+      [self getPendingRemoteActorRequest], [] {});
 
   base::expected<void, RemoteActorPreconditionError> preconditionResult =
       CheckRemoteActorPreconditions(self.currentInterface.profile,
-                                    remoteActorRequest.request.gaia_id());
+                                    request.gaia_id());
   if (!preconditionResult.has_value()) {
     RemoteActorPreconditionCallbackParams callbackParams =
         GetPreconditionFailureCallbackParams(preconditionResult.error());
-    OpenGeminiCallbackURL(remoteActorRequest.request.task_id(),
-                          callbackParams.status, callbackParams.reason,
-                          base::DoNothing());
+    OpenGeminiCallbackURL(request.task_id(), callbackParams.status,
+                          callbackParams.reason, base::DoNothing());
     return;
   }
 
-  // TODO(crbug.com/577152706): Wire up to RemoteActorCoordinator.
+  CommandDispatcher* dispatcher =
+      self.currentInterface.browser
+          ? self.currentInterface.browser->GetCommandDispatcher()
+          : nil;
+  if (![dispatcher dispatchingForProtocol:@protocol(SceneCommands)]) {
+    OpenGeminiCallbackURL(request.task_id(), RemoteActorCallbackStatus::kFailed,
+                          RemoteActorCallbackReason::kUploadFailed,
+                          base::DoNothing());
+    return;
+  }
+  [HandlerForProtocol(dispatcher, SceneCommands)
+      showRemoteActorCredentialBottomSheetWithRequest:request];
 }
 
 // Returns the condition to check in order to show the `IncognitoIntertitial`

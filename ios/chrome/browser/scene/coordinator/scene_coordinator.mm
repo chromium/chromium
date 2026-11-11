@@ -4,9 +4,11 @@
 
 #import "ios/chrome/browser/scene/coordinator/scene_coordinator.h"
 
+#import <string>
 #import <utility>
 
 #import "base/cancelable_callback.h"
+#import "base/functional/callback_helpers.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
@@ -17,6 +19,7 @@
 #import "components/autofill/core/browser/data_model/payments/credit_card.h"
 #import "components/autofill/core/browser/metrics/autofill_settings_metrics.h"
 #import "components/infobars/core/infobar_manager.h"
+#import "components/password_manager/core/browser/remote_actor/remote_actor_credential_sharing_result.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/account_capabilities.h"
@@ -72,6 +75,9 @@
 #import "ios/chrome/browser/mailto_handler/model/mailto_handler_service.h"
 #import "ios/chrome/browser/mailto_handler/model/mailto_handler_service_factory.h"
 #import "ios/chrome/browser/main/ui/browser_layout_view_controller.h"
+#import "ios/chrome/browser/passwords/bottom_sheet/coordinator/remote_actor_credential_bottom_sheet_coordinator.h"
+#import "ios/chrome/browser/passwords/model/remote_actor/proto/remote_actor_password_upload_request.pb.h"
+#import "ios/chrome/browser/passwords/model/remote_actor/remote_actor_callback_util.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/policy/model/policy_watcher_browser_agent.h"
 #import "ios/chrome/browser/policy/model/policy_watcher_browser_agent_observer_bridge.h"
@@ -257,6 +263,9 @@ inline LayoutStateScenePassKey PassKey() {
   AssistantAIMCoordinator* _assistantAIMCoordinator;
   // The coordinator for the Assistant Container.
   AssistantContainerCoordinator* _assistantContainerCoordinator;
+  // Coordinator for the Remote Actor credential bottom sheet.
+  RemoteActorCredentialBottomSheetCoordinator*
+      _remoteActorCredentialBottomSheetCoordinator;
   // Observer for PolicyWatcherBrowserAgent.
   std::unique_ptr<PolicyWatcherBrowserAgentObserverBridge>
       _policyWatcherObserverBridge;
@@ -393,6 +402,7 @@ inline LayoutStateScenePassKey PassKey() {
   [self stopHistoryCoordinator];
   [self stopYoutubeIncognitoCoordinator];
   [self stopIncognitoInterstitialCoordinator];
+  [self stopRemoteActorCredentialBottomSheetCoordinator];
   [_AIPrototypingCoordinator stop];
   _AIPrototypingCoordinator = nil;
   [self stopAssistantAIMCoordinator];
@@ -1776,6 +1786,38 @@ inline LayoutStateScenePassKey PassKey() {
                                         completion:nil];
 }
 
+- (void)showRemoteActorCredentialBottomSheetWithRequest:
+    (const remote_actor::proto::RemoteActorPasswordUploadRequest&)request {
+  [self stopRemoteActorCredentialBottomSheetCoordinator];
+
+  UIViewController* baseViewController = self.activeViewController;
+  if (self.sceneState.activationLevel == SceneActivationLevelDisconnected ||
+      !self.currentBrowser || !baseViewController ||
+      !baseViewController.view.window ||
+      baseViewController.presentedViewController ||
+      baseViewController.isBeingDismissed) {
+    OpenGeminiCallbackURL(request.task_id(), RemoteActorCallbackStatus::kFailed,
+                          RemoteActorCallbackReason::kUploadFailed,
+                          base::DoNothing());
+    return;
+  }
+
+  std::string taskID = request.task_id();
+  __weak __typeof(self) weakSelf = self;
+  RemoteActorCredentialBottomSheetCompletion completion =
+      ^(password_manager::RemoteActorCredentialSharingResult result) {
+        [weakSelf remoteActorCredentialBottomSheetDidFinishWithResult:result
+                                                               taskID:taskID];
+      };
+  _remoteActorCredentialBottomSheetCoordinator =
+      [[RemoteActorCredentialBottomSheetCoordinator alloc]
+          initWithBaseViewController:baseViewController
+                             browser:self.currentBrowser
+                             request:request
+                          completion:completion];
+  [_remoteActorCredentialBottomSheetCoordinator start];
+}
+
 #pragma mark - Properties
 
 - (id<SceneSignInCommands>)sceneSignInEndpoint {
@@ -2525,6 +2567,52 @@ inline LayoutStateScenePassKey PassKey() {
   _managedConfirmationScreenCoordinator.delegate = nil;
   [_managedConfirmationScreenCoordinator stop];
   _managedConfirmationScreenCoordinator = nil;
+}
+
+// Stops `_remoteActorCredentialBottomSheetCoordinator` without triggering a
+// callback URL when torn down externally.
+- (void)stopRemoteActorCredentialBottomSheetCoordinator {
+  RemoteActorCredentialBottomSheetCoordinator* coordinator =
+      _remoteActorCredentialBottomSheetCoordinator;
+  _remoteActorCredentialBottomSheetCoordinator = nil;
+  [coordinator stop];
+}
+
+// Handles completion of `_remoteActorCredentialBottomSheetCoordinator` and
+// reports the outcome back to Gemini.
+- (void)remoteActorCredentialBottomSheetDidFinishWithResult:
+            (password_manager::RemoteActorCredentialSharingResult)result
+                                                     taskID:
+                                                         (std::string)taskID {
+  if (!_remoteActorCredentialBottomSheetCoordinator) {
+    return;
+  }
+  [self stopRemoteActorCredentialBottomSheetCoordinator];
+
+  using password_manager::RemoteActorCredentialSharingResult;
+  RemoteActorCallbackStatus status;
+  std::optional<RemoteActorCallbackReason> reason;
+  switch (result) {
+    case RemoteActorCredentialSharingResult::kSuccess:
+      status = RemoteActorCallbackStatus::kSuccess;
+      break;
+    case RemoteActorCredentialSharingResult::kUserCancelledDialog:
+      status = RemoteActorCallbackStatus::kCancelled;
+      break;
+    case RemoteActorCredentialSharingResult::kOtherError:
+    case RemoteActorCredentialSharingResult::kUserIdentityOrSyncStateInvalid:
+    case RemoteActorCredentialSharingResult::kNoSyncOrAccountStorage:
+    case RemoteActorCredentialSharingResult::kNoPasswordsFound:
+    case RemoteActorCredentialSharingResult::kAuthenticatorFailed:
+    case RemoteActorCredentialSharingResult::kSharingServiceUnavailable:
+    case RemoteActorCredentialSharingResult::kSharingFailed:
+    case RemoteActorCredentialSharingResult::kRequestAlreadyInProgress:
+    case RemoteActorCredentialSharingResult::kBlockedByPolicy:
+      status = RemoteActorCallbackStatus::kFailed;
+      reason = RemoteActorCallbackReason::kUploadFailed;
+      break;
+  }
+  OpenGeminiCallbackURL(taskID, status, reason, base::DoNothing());
 }
 
 // Opens the price tracking notification settings view.
