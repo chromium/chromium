@@ -16,7 +16,7 @@
 - (void)didSelectCredentialAtIndex:(NSInteger)index;
 
 // Called when the user clicks the "Cancel" button or dismisses the bottom
-// sheet.
+// sheet, or goes back to the remote actor when there are no saved passwords.
 - (void)didCancel;
 
 @end

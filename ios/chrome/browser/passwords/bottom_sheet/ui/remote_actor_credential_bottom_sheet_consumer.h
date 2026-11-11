@@ -28,6 +28,10 @@
 // primary button is disabled and shows a spinner.
 - (void)setLoading:(BOOL)loading;
 
+// Shows that there are no saved passwords for the domain, leaving a single
+// button to go back to the remote actor.
+- (void)showNoSavedPasswords;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_PASSWORDS_BOTTOM_SHEET_UI_REMOTE_ACTOR_CREDENTIAL_BOTTOM_SHEET_CONSUMER_H_

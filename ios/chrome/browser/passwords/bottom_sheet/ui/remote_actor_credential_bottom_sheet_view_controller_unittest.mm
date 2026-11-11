@@ -152,6 +152,51 @@ class RemoteActorCredentialBottomSheetViewControllerTest : public PlatformTest {
         CellAtRow(row).contentConfiguration);
   }
 
+  // Expects the loaded view to show the no saved passwords state for the test
+  // domain.
+  void ExpectNoSavedPasswordsUI() {
+    UIView* view = view_controller_.view;
+    UILabel* title = chrome_test_util::FindViewById<UILabel>(
+        view, kConfirmationAlertTitleAccessibilityIdentifier);
+    EXPECT_NSEQ(l10n_util::GetNSStringF(
+                    IDS_IOS_REMOTE_ACTOR_NO_PASSWORD_DIALOG_TITLE, kTestDomain),
+                title.text);
+
+    UITextView* subtitle = SubtitleTextView(view);
+    ASSERT_TRUE(subtitle);
+    EXPECT_NSEQ(l10n_util::GetNSStringF(
+                    IDS_IOS_REMOTE_ACTOR_NO_PASSWORD_DIALOG_SUBTITLE,
+                    l10n_util::GetStringUTF16(IDS_REMOTE_ACTOR_GEMINI_NAME)),
+                subtitle.text);
+    __block bool has_link_styling = false;
+    [subtitle.attributedText
+        enumerateAttributesInRange:NSMakeRange(0,
+                                               subtitle.attributedText.length)
+                           options:0
+                        usingBlock:^(
+                            NSDictionary<NSAttributedStringKey, id>* attributes,
+                            NSRange range, BOOL* stop) {
+                          has_link_styling |=
+                              attributes[NSLinkAttributeName] != nil ||
+                              attributes[NSUnderlineStyleAttributeName] != nil;
+                        }];
+    EXPECT_FALSE(has_link_styling);
+
+    ChromeButton* primary_button = chrome_test_util::FindViewById<ChromeButton>(
+        view, kButtonStackPrimaryActionAccessibilityIdentifier);
+    ChromeButton* secondary_button =
+        chrome_test_util::FindViewById<ChromeButton>(
+            view, kButtonStackSecondaryActionAccessibilityIdentifier);
+    ASSERT_TRUE(primary_button);
+    EXPECT_NSEQ(l10n_util::GetNSStringF(
+                    IDS_IOS_REMOTE_ACTOR_NO_PASSWORD_DIALOG_BACK_BUTTON,
+                    l10n_util::GetStringUTF16(IDS_REMOTE_ACTOR_GEMINI_NAME)),
+                view_controller_.configuration.primaryActionString);
+    EXPECT_TRUE(primary_button.enabled);
+    EXPECT_EQ(ChromeButtonStylePrimary, primary_button.style);
+    EXPECT_TRUE(!secondary_button || secondary_button.hidden);
+  }
+
   id mutator_;
   id scene_handler_;
   RemoteActorCredentialBottomSheetViewController* view_controller_;
@@ -420,4 +465,33 @@ TEST_F(RemoteActorCredentialBottomSheetViewControllerTest, UsesLargeDetent) {
   EXPECT_NSEQ(expected_detents, presentation_controller.detents);
   EXPECT_NSEQ(UISheetPresentationControllerDetentIdentifierLarge,
               presentation_controller.selectedDetentIdentifier);
+}
+
+// Tests that the no saved passwords state shows its title, a subtitle without
+// a link, and a single button, when set after the view loads.
+TEST_F(RemoteActorCredentialBottomSheetViewControllerTest,
+       TestNoSavedPasswordsAfterViewLoaded) {
+  [view_controller_ setDomain:base::SysUTF16ToNSString(kTestDomain)];
+  [view_controller_ loadViewIfNeeded];
+  [view_controller_ showNoSavedPasswords];
+  ExpectNoSavedPasswordsUI();
+}
+
+// Tests that the no saved passwords UI is shown when the empty state is
+// triggered before the view is loaded.
+TEST_F(RemoteActorCredentialBottomSheetViewControllerTest,
+       TestNoSavedPasswordsBeforeViewLoaded) {
+  [view_controller_ setDomain:base::SysUTF16ToNSString(kTestDomain)];
+  [view_controller_ showNoSavedPasswords];
+  [view_controller_ loadViewIfNeeded];
+  ExpectNoSavedPasswordsUI();
+}
+
+// Tests that the primary action in the no saved passwords state notifies the
+// mutator of the cancellation.
+TEST_F(RemoteActorCredentialBottomSheetViewControllerTest,
+       TestNoSavedPasswordsPrimaryActionCancels) {
+  [view_controller_ showNoSavedPasswords];
+  OCMExpect([mutator_ didCancel]);
+  [view_controller_.actionHandler confirmationAlertPrimaryAction];
 }
