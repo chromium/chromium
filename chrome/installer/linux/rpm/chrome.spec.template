@@ -23,9 +23,10 @@ Autoreqprov     : No
 
 BuildRoot       : %{_tmppath}/%{name}-%{version}-root
 
-# The prefix is pretty important; RPM uses this to figure out
-# how to make a package relocatable
-prefix          : /opt
+# The package is intentionally not relocatable (no "Prefix:" tag): the
+# install scriptlets, the /usr/bin symlink, the desktop files and the
+# browser itself all refer to @@INSTALLDIR, so "rpm --prefix" would
+# produce a broken install. Without a prefix, rpm rejects --prefix.
 
 #------------------------------------------------------------------------------
 #   Description
@@ -82,7 +83,7 @@ rm -rf "$RPM_BUILD_ROOT"
 #%doc README
 
 # We cheat and just let RPM figure it out for us; everything we install
-# should go under this prefix anyways.
+# should go under this directory anyways.
 @@INSTALLDIR
 
 # Be explicit about the files we scatter throughout the system we don't
