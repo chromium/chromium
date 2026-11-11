@@ -464,6 +464,52 @@ TEST_F(EventsXTest, DisableKeyboard) {
   EXPECT_EQ(ui::EventType::kKeyPressed, ui::EventTypeFromXEvent(*xev));
 }
 
+// Verifies that key events from every master keyboard are processed when MPX
+// is used (e.g. after `xinput create-master`), and that key events from slave
+// keyboards are still ignored. https://crbug.com/573208179
+TEST_F(EventsXTest, MultipleMasterKeyboards) {
+  using DeviceId = x11::Input::DeviceId;
+  using DeviceType = x11::Input::DeviceType;
+  constexpr int kCorePointer = 2;
+  constexpr int kCoreKeyboard = 3;
+  constexpr int kCoreSlaveKeyboard = 6;
+  constexpr int kNewPointer = 16;
+  constexpr int kNewKeyboard = 17;
+  constexpr int kNewSlaveKeyboard = 19;
+  auto device = [](int id, DeviceType type, int attachment) {
+    x11::Input::XIDeviceInfo info;
+    info.deviceid = static_cast<DeviceId>(id);
+    info.type = type;
+    info.attachment = static_cast<DeviceId>(attachment);
+    info.enabled = true;
+    return info;
+  };
+  TouchFactory::GetInstance()->SetXI2DeviceListForTest({
+      device(kCorePointer, DeviceType::MasterPointer, kCoreKeyboard),
+      device(kCoreKeyboard, DeviceType::MasterKeyboard, kCorePointer),
+      device(kCoreSlaveKeyboard, DeviceType::SlaveKeyboard, kCoreKeyboard),
+      device(kNewPointer, DeviceType::MasterPointer, kNewKeyboard),
+      device(kNewKeyboard, DeviceType::MasterKeyboard, kNewPointer),
+      device(kNewSlaveKeyboard, DeviceType::SlaveKeyboard, kNewKeyboard),
+  });
+
+  ScopedXI2Event xev;
+  xev.InitGenericKeyEvent(kCoreKeyboard, kCoreSlaveKeyboard,
+                          EventType::kKeyPressed, VKEY_A, 0);
+  EXPECT_EQ(EventType::kKeyPressed, EventTypeFromXEvent(*xev));
+  xev.InitGenericKeyEvent(kNewKeyboard, kNewSlaveKeyboard,
+                          EventType::kKeyPressed, VKEY_A, 0);
+  EXPECT_EQ(EventType::kKeyPressed, EventTypeFromXEvent(*xev));
+
+  // Events reported by the slave devices themselves are duplicates.
+  xev.InitGenericKeyEvent(kCoreSlaveKeyboard, kCoreSlaveKeyboard,
+                          EventType::kKeyPressed, VKEY_A, 0);
+  EXPECT_EQ(EventType::kUnknown, EventTypeFromXEvent(*xev));
+  xev.InitGenericKeyEvent(kNewSlaveKeyboard, kNewSlaveKeyboard,
+                          EventType::kKeyPressed, VKEY_A, 0);
+  EXPECT_EQ(EventType::kUnknown, EventTypeFromXEvent(*xev));
+}
+
 // Verifies that the type of events from a disabled mouse is
 // EventType::kUnknown.
 TEST_F(EventsXTest, DisableMouse) {

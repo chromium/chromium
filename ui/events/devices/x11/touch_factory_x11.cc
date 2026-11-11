@@ -89,10 +89,17 @@ void TouchFactory::UpdateDeviceList(x11::Connection* connection) {
   touch_device_lookup_.clear();
   touch_device_list_.clear();
   touchscreen_ids_.clear();
+  master_keyboard_devices_.clear();
 
   if (!DeviceDataManagerX11::GetInstance()->IsXInput2Available())
     return;
 
+  UpdateDeviceListFromXI2(
+      DeviceListCacheX11::GetInstance()->GetXI2DeviceList(connection));
+}
+
+void TouchFactory::UpdateDeviceListFromXI2(
+    const std::vector<x11::Input::XIDeviceInfo>& xi_dev_list) {
   // Instead of asking X for the list of devices all the time, let's maintain a
   // list of pointer devices we care about.
   // It should not be necessary to select for slave devices. XInput2 provides
@@ -106,8 +113,6 @@ void TouchFactory::UpdateDeviceList(x11::Connection* connection) {
   // floating device is not connected to a master device. So it is necessary to
   // also select on the floating devices.
   pointer_device_lookup_.clear();
-  const XIDeviceList& xi_dev_list =
-      DeviceListCacheX11::GetInstance()->GetXI2DeviceList(connection);
   for (const auto& devinfo : xi_dev_list) {
     if (devinfo.type == x11::Input::DeviceType::FloatingSlave ||
         devinfo.type == x11::Input::DeviceType::MasterPointer ||
@@ -142,7 +147,10 @@ void TouchFactory::UpdateDeviceList(x11::Connection* connection) {
         pointer_device_lookup_.insert(devinfo.deviceid);
       }
     } else if (devinfo.type == x11::Input::DeviceType::MasterKeyboard) {
-      virtual_core_keyboard_device_ = devinfo.deviceid;
+      // With MPX (e.g. after `xinput create-master`), there can be several
+      // master keyboards, each with its own focus. Key events from all of
+      // them must be processed.
+      master_keyboard_devices_.insert(devinfo.deviceid);
     }
   }
 }
@@ -171,11 +179,12 @@ bool TouchFactory::ShouldProcessDeviceEvent(
            !is_from_slave_device;
   }
 
-  // Make sure only key-events from the virtual core keyboard are processed.
+  // Make sure only key-events from master keyboards are processed, so that
+  // events duplicated by slave keyboards are ignored.
   if (xiev.opcode == x11::Input::DeviceEvent::KeyPress ||
       xiev.opcode == x11::Input::DeviceEvent::KeyRelease) {
-    return !virtual_core_keyboard_device_.has_value() ||
-           *virtual_core_keyboard_device_ == xiev.deviceid;
+    return master_keyboard_devices_.empty() ||
+           master_keyboard_devices_.contains(xiev.deviceid);
   }
 
   return ShouldProcessEventForDevice(xiev.deviceid);
@@ -294,8 +303,18 @@ void TouchFactory::ResetForTest() {
   touch_device_lookup_.clear();
   touch_device_list_.clear();
   touchscreen_ids_.clear();
+  master_keyboard_devices_.clear();
   id_generator_.ResetForTest();
   SetTouchscreensEnabled(true);
+}
+
+void TouchFactory::SetXI2DeviceListForTest(
+    const std::vector<x11::Input::XIDeviceInfo>& xi_dev_list) {
+  touch_device_lookup_.clear();
+  touch_device_list_.clear();
+  touchscreen_ids_.clear();
+  master_keyboard_devices_.clear();
+  UpdateDeviceListFromXI2(xi_dev_list);
 }
 
 void TouchFactory::SetTouchDeviceForTest(const std::vector<int>& devices) {

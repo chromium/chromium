@@ -6,7 +6,6 @@
 #define UI_EVENTS_DEVICES_X11_TOUCH_FACTORY_X11_H_
 
 #include <map>
-#include <optional>
 #include <set>
 #include <utility>
 #include <vector>
@@ -94,6 +93,11 @@ class EVENTS_DEVICES_X11_EXPORT TouchFactory {
   // Resets the TouchFactory singleton.
   void ResetForTest();
 
+  // Updates the device lists from `xi_dev_list` instead of querying the X
+  // server. This function is only for test purpose.
+  void SetXI2DeviceListForTest(
+      const std::vector<x11::Input::XIDeviceInfo>& xi_dev_list);
+
   // Sets up the device id in the list |devices| as multi-touch capable
   // devices and enables touch events processing. This function is only
   // for test purpose, and it does not query from X server.
@@ -112,6 +116,9 @@ class EVENTS_DEVICES_X11_EXPORT TouchFactory {
   friend struct base::DefaultSingletonTraits<TouchFactory>;
 
   void CacheTouchscreenIds(x11::Input::DeviceId id);
+
+  void UpdateDeviceListFromXI2(
+      const std::vector<x11::Input::XIDeviceInfo>& xi_dev_list);
 
   bool ShouldProcessEventForDevice(x11::Input::DeviceId device_id) const;
 
@@ -143,8 +150,9 @@ class EVENTS_DEVICES_X11_EXPORT TouchFactory {
   // Touch screen <vid, pid>s.
   std::set<std::pair<int, int>> touchscreen_ids_;
 
-  // Device ID of the virtual core keyboard.
-  std::optional<x11::Input::DeviceId> virtual_core_keyboard_device_;
+  // Device IDs of the master keyboards. There is usually only the virtual
+  // core keyboard, but MPX allows creating more.
+  base::flat_set<x11::Input::DeviceId> master_keyboard_devices_;
 
   SequentialIDGenerator id_generator_;
 
