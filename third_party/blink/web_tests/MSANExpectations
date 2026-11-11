@@ -12,6 +12,10 @@ crbug.com/420198 [ Linux ] fast/js/regress/* [ Skip ]
 crbug.com/420198 [ Linux ] fast/css/fontface-arraybuffer.html [ Skip ]
 crbug.com/386451783 [ Linux ] external/wpt/wasm/core/simd/simd_f32x4_pmin_pmax.wast.js.html [ Skip ]
 crbug.com/386451783 [ Linux ] external/wpt/wasm/core/simd/simd_f64x2_pmin_pmax.wast.js.html [ Skip ]
+crbug.com/584454161 [ Linux ] external/wpt/encoding/encodeInto-tail-unmodified.any.html [ Skip ]
+crbug.com/584454161 [ Linux ] external/wpt/encoding/encodeInto-tail-unmodified.any.serviceworker.html [ Skip ]
+crbug.com/584454161 [ Linux ] external/wpt/encoding/encodeInto-tail-unmodified.any.sharedworker.html [ Skip ]
+crbug.com/584454161 [ Linux ] external/wpt/encoding/encodeInto-tail-unmodified.any.worker.html [ Skip ]
 
 
 # Deliberate infinite recursion. A JS exception is expected, but may crash with
