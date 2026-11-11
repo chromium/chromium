@@ -26,6 +26,7 @@
 #include "components/actor/core/journal_details_builder.h"
 #include "components/optimization_guide/core/feature_registry/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
+#include "components/optimization_guide/proto/features/wire/tool_declaration.pb.h"
 #include "components/ttc/app/public/conversation.h"
 #include "components/ttc/app/public/debug_sink.h"
 #include "components/ttc/app/public/server_journal_event.h"
@@ -419,13 +420,14 @@ void TtcMesClient::SendToolSetUpdate(const std::vector<ToolDefinition>& tools) {
   auto* update = frame.mutable_toolset_update();
   for (const ToolDefinition& tool_def : tools) {
     auto* proto_tool = update->add_active_tools();
-    proto_tool->set_name(tool_def.name);
-    proto_tool->set_description(tool_def.description);
+    auto* decl = proto_tool->mutable_tool_declaration();
+    decl->set_name(tool_def.name);
+    decl->set_description(tool_def.description);
     if (!tool_def.parameters_json_schema.empty()) {
       std::optional<std::string> params_json =
           base::WriteJson(tool_def.parameters_json_schema);
       CHECK(params_json);
-      proto_tool->set_parameters_json_schema(std::move(*params_json));
+      decl->set_parameters_json_schema(std::move(*params_json));
     }
     proto_tool->set_behavior(ToProtoBehavior(tool_def.behavior));
     proto_tool->set_verbalization(ToProtoVerbalization(tool_def.verbalization));
@@ -587,7 +589,7 @@ void TtcMesClient::ReportClientFrameToDebugSink(
     case Frame::kToolsetUpdate: {
       DebugSink::ToolsetUpdate update;
       for (const auto& tool : frame.toolset_update().active_tools()) {
-        update.tool_names.push_back(tool.name());
+        update.tool_names.push_back(tool.tool_declaration().name());
       }
       debug_sink_->OnClientFrame(std::move(update));
       break;
@@ -750,11 +752,12 @@ void TtcMesClient::LogClientFrame(
       const auto& update = frame.toolset_update();
       for (int i = 0; i < update.active_tools_size(); ++i) {
         const auto& tool = update.active_tools(i);
+        const auto& decl = tool.tool_declaration();
         const std::string prefix = base::StringPrintf("active_tools[%d].", i);
-        details.Add(base::StrCat({prefix, "name"}), tool.name())
-            .Add(base::StrCat({prefix, "description"}), tool.description())
+        details.Add(base::StrCat({prefix, "name"}), decl.name())
+            .Add(base::StrCat({prefix, "description"}), decl.description())
             .Add(base::StrCat({prefix, "parameters_json_schema"}),
-                 tool.parameters_json_schema())
+                 decl.parameters_json_schema())
             .Add(base::StrCat({prefix, "behavior"}),
                  EnumToString(tool.behavior(),
                               &optimization_guide::proto::

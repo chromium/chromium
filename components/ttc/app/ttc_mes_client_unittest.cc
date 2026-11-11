@@ -22,9 +22,11 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/optimization_guide/core/model_execution/test/mock_remote_model_executor.h"
 #include "components/optimization_guide/proto/features/streaming/ttc.pb.h"
+#include "components/optimization_guide/proto/features/wire/tool_declaration.pb.h"
 #include "components/ttc/app/public/debug_sink.h"
 #include "components/ttc/app/public/error_codes.h"
 #include "components/ttc/app/public/tool_types.h"
@@ -802,6 +804,35 @@ TEST_F(TtcMesClientTest, GetSessionIdTracksSessionStatusAndClose) {
 
   client().Close();
   EXPECT_EQ(client().GetSessionId(), std::nullopt);
+}
+
+TEST_F(TtcMesClientTest, SendToolSetUpdatePopulatesToolDeclaration) {
+  std::vector<ToolDefinition> tools(2);
+  tools[0].name = "open_url";
+  tools[0].description = "Opens a URL.";
+  tools[0].parameters_json_schema =
+      base::DictValue()
+          .Set("type", "object")
+          .Set("properties",
+               base::DictValue().Set("url",
+                                     base::DictValue().Set("type", "string")));
+  tools[1].name = "go_back";
+  tools[1].description = "Navigates back.";
+
+  client().SendToolSetUpdate(tools);
+
+  const auto& active_tools = last_sent_frame().toolset_update().active_tools();
+  ASSERT_EQ(active_tools.size(), 2);
+
+  EXPECT_EQ(active_tools[0].tool_declaration().name(), "open_url");
+  EXPECT_EQ(active_tools[0].tool_declaration().description(), "Opens a URL.");
+  EXPECT_EQ(active_tools[0].tool_declaration().parameters_json_schema(),
+            R"({"properties":{"url":{"type":"string"}},"type":"object"})");
+
+  EXPECT_EQ(active_tools[1].tool_declaration().name(), "go_back");
+  EXPECT_EQ(active_tools[1].tool_declaration().description(),
+            "Navigates back.");
+  EXPECT_FALSE(active_tools[1].tool_declaration().has_parameters_json_schema());
 }
 
 }  // namespace ttc
