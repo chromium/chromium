@@ -44,6 +44,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.ResettersForTesting;
@@ -60,6 +61,7 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarConstants;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarSceneLayer;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarSceneLayerJni;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils;
@@ -74,7 +76,9 @@ import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.metrics.UmaSessionStatsJni;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.share.send_tab_to_self.EntryPointDisplayReason;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBridge;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBridgeJni;
@@ -97,8 +101,10 @@ import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.policy.test.annotations.Policies.Add;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.components.search_engines.SearchEngineChoiceService;
 import org.chromium.components.signin.test.util.TestAccounts;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.variations.SyntheticTrialAnnotationMode;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
@@ -140,7 +146,6 @@ public class TabbedRootUiCoordinatorTest {
                     doReturn(false).when(mSearchEngineChoiceService).isDeviceChoiceDialogEligible();
                 });
 
-        BookmarkBarUtils.setBookmarkBarVisibleForTesting(true);
         TabbedRootUiCoordinator.setDisableTopControlsAnimationsForTesting(true);
         GlicEnabling.setEnabledForTesting(false);
     }
@@ -165,6 +170,27 @@ public class TabbedRootUiCoordinatorTest {
         GlicNavigationUtils.setLauncher(null);
     }
 
+    private static void registerBookmarkBarPrefsResetter() {
+        ResettersForTesting.register(
+                () -> {
+                    ContextUtils.getAppSharedPreferences()
+                            .edit()
+                            .remove(BookmarkBarConstants.BOOKMARK_BAR_SHOW_BOOKMARK_BAR)
+                            .remove(BookmarkBarConstants.BOOKMARK_BAR_BOOKMARK_BAR_VISIBILITY_STATE)
+                            .apply();
+                    ThreadUtils.runOnUiThreadBlocking(
+                            () -> {
+                                if (ProfileManager.isInitialized()) {
+                                    PrefService prefService =
+                                            UserPrefs.get(
+                                                    ProfileManager.getLastUsedRegularProfile());
+                                    prefService.clearPref(Pref.SHOW_BOOKMARK_BAR);
+                                    prefService.clearPref(Pref.BOOKMARK_BAR_VISIBILITY_STATE);
+                                }
+                            });
+                });
+    }
+
     @Test
     @MediumTest
     @Restriction({DeviceFormFactor.PHONE})
@@ -184,6 +210,8 @@ public class TabbedRootUiCoordinatorTest {
     @MediumTest
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void testTopControlsHeightWithBookmarkBarOnTablet() {
+        registerBookmarkBarPrefsResetter();
+        BookmarkBarUtils.setBookmarkBarVisibleForTesting(true);
         mPage = mActivityTestRule.startOnBlankPage();
         mTabbedRootUiCoordinator =
                 (TabbedRootUiCoordinator) mPage.getActivity().getRootUiCoordinatorForTesting();
@@ -733,9 +761,9 @@ public class TabbedRootUiCoordinatorTest {
     @Test
     @MediumTest
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // TODO(https://crbug.com/568497446): Re-enable.
     @EnableFeatures({ChromeFeatureList.BOOKMARKS_BAR_NTP})
     public void testBookmarkBarMenuAction_StateChanges() {
+        registerBookmarkBarPrefsResetter();
         mPage = mActivityTestRule.startOnBlankPage();
         mTabbedRootUiCoordinator =
                 (TabbedRootUiCoordinator) mPage.getActivity().getRootUiCoordinatorForTesting();
@@ -867,7 +895,6 @@ public class TabbedRootUiCoordinatorTest {
     @Test
     @MediumTest
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // TODO(https://crbug.com/568497446): Re-enable.
     @EnableFeatures({ChromeFeatureList.BOOKMARKS_BAR_NTP})
     public void testBookmarkBarMenuAction_IncompatibleActivity() {
         mPage = mActivityTestRule.startOnBlankPage();
@@ -913,6 +940,7 @@ public class TabbedRootUiCoordinatorTest {
     @DisableFeatures(ChromeFeatureList.BOOKMARKS_BAR_NTP)
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void testBookmarkBarToggleKeyboardShortcut_V1() {
+        registerBookmarkBarPrefsResetter();
         mPage = mActivityTestRule.startOnBlankPage();
         mTabbedRootUiCoordinator =
                 (TabbedRootUiCoordinator) mPage.getActivity().getRootUiCoordinatorForTesting();
@@ -952,8 +980,8 @@ public class TabbedRootUiCoordinatorTest {
     @MediumTest
     @EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_NTP)
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // TODO(https://crbug.com/568497446): Re-enable.
     public void testBookmarkBarToggleKeyboardShortcut_V2() {
+        registerBookmarkBarPrefsResetter();
         mPage = mActivityTestRule.startOnBlankPage();
         mTabbedRootUiCoordinator =
                 (TabbedRootUiCoordinator) mPage.getActivity().getRootUiCoordinatorForTesting();
@@ -1022,8 +1050,8 @@ public class TabbedRootUiCoordinatorTest {
     @MediumTest
     @EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_NTP)
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // TODO(https://crbug.com/568497446): Re-enable.
     public void testBookmarkBarVisibility_OnlyShowOnNtp() {
+        registerBookmarkBarPrefsResetter();
         mPage = mActivityTestRule.startOnBlankPage();
         mTabbedRootUiCoordinator =
                 (TabbedRootUiCoordinator) mPage.getActivity().getRootUiCoordinatorForTesting();

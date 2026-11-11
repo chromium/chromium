@@ -319,9 +319,30 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
         return waitForDeferredStartup(getActivity());
     }
 
+    /**
+     * On Android Desktop emulators, the ChromeLauncherActivity trampoline task's
+     * DesktopTasksTransitionHandler transition can abort after ChromeLauncherActivity finishes,
+     * returning focus to QuickstepLauncher and stopping ChromeTabbedActivity. Moves the task back
+     * to the front if it is not resumed.
+     *
+     * @return true if the activity is currently RESUMED, false otherwise.
+     */
+    private static boolean ensureActivityResumedOnDesktop(@Nullable ChromeActivity activity) {
+        if (!DeviceInfo.isDesktop() || activity == null) return true;
+        if (activity.isFinishing() || activity.isDestroyed()) return false;
+        @ActivityState int state = ApplicationStatus.getStateForActivity(activity);
+        if (state != ActivityState.RESUMED) {
+            ApiCompatibilityUtils.moveTaskToFront(activity, activity.getTaskId(), /* flags= */ 0);
+            return false;
+        }
+        return true;
+    }
+
     public static boolean waitForDeferredStartup(ChromeActivity activity) {
         CriteriaHelper.pollUiThread(
-                activity::deferredStartupPostedForTesting,
+                () ->
+                        ensureActivityResumedOnDesktop(activity)
+                                && activity.deferredStartupPostedForTesting(),
                 DEFERRED_STARTUP_TIMEOUT_MS,
                 CriteriaHelper.DEFAULT_POLLING_INTERVAL);
         // CriteriaHelper scales timeouts internally; waitForDeferredStartupCompleteForTesting does
@@ -620,19 +641,8 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
         final Coordinates coord = Coordinates.createFor(getWebContents());
         CriteriaHelper.pollUiThread(
                 () -> {
-                    // TODO(crbug.com/573354424): On Android Desktop emulators, the
-                    // ChromeLauncherActivity trampoline task's DesktopTasksTransitionHandler
-                    // transition can abort after ChromeLauncherActivity finishes, returning focus
-                    // to QuickstepLauncher and stopping ChromeTabbedActivity.
-                    if (DeviceInfo.isDesktop()) {
-                        T activity = getActivity();
-                        if (activity == null) return false;
-                        @ActivityState int state = ApplicationStatus.getStateForActivity(activity);
-                        if (state != ActivityState.RESUMED) {
-                            ApiCompatibilityUtils.moveTaskToFront(
-                                    activity, activity.getTaskId(), 0);
-                            return false;
-                        }
+                    if (!ensureActivityResumedOnDesktop(getActivity())) {
+                        return false;
                     }
                     return coord.frameInfoUpdated();
                 },
