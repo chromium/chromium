@@ -4,3 +4,14 @@ monorail: {
 buganizer_public: {
   component_id: 1457231
 }
+agentic_review: {
+  capability_groups: {
+    path_expression: ".*browsing_data/.*\\.(cc|h|mm)"
+    rules: "content/browser/browsing_data/knowledge_base/browsing-data-remover-content-vs-chrome-layer.md"
+    rules: "content/browser/browsing_data/knowledge_base/browsing-data-remover-datatype-selection.md"
+    rules: "content/browser/browsing_data/knowledge_base/browsing-data-remover-deletion-test-coverage.md"
+    rules: "content/browser/browsing_data/knowledge_base/browsing-data-remover-history-deletion-observation.md"
+    rules: "content/browser/browsing_data/knowledge_base/browsing-data-remover-origin-domain-filtering.md"
+    rules: "content/browser/browsing_data/knowledge_base/browsing-data-remover-time-range-filtering.md"
+  }
+}
