@@ -1759,10 +1759,14 @@ void RunRecoveryComponent(UpdaterScope scope,
 }
 
 void SetLastChecked(UpdaterScope updater_scope, base::Time time) {
-  base::MakeRefCounted<PersistedData>(
-      updater_scope, CreateGlobalPrefs(updater_scope)->GetPrefService(),
-      nullptr)
+  scoped_refptr<GlobalPrefs> global_prefs = CreateGlobalPrefs(updater_scope);
+  ASSERT_TRUE(global_prefs) << "Failed to acquire GlobalPrefs.";
+  base::MakeRefCounted<PersistedData>(updater_scope,
+                                      global_prefs->GetPrefService(), nullptr)
       ->SetLastChecked(time);
+  // Write the prefs before releasing the prefs lock, so that the next updater
+  // process reads the new value.
+  PrefsCommitPendingWrites(global_prefs->GetPrefService());
 }
 
 void ExpectLastChecked(UpdaterScope updater_scope) {
