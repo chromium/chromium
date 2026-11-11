@@ -21,6 +21,7 @@ import os
 import re
 import sys
 from typing import Any, Iterator, Optional, Sequence
+import uuid
 
 if sys.platform == 'win32':
   import winreg
@@ -32,6 +33,28 @@ EVENT_SOURCE_NAME = 'chromoting'
 OMAHA_APP_ID = '{b210701e-ffc4-49e3-932b-370728c72662}'
 LEGACY_MSI_UPGRADE_CODE = '{2b21f767-e157-4fa6-963c-55834c1433a6}'
 LEGACY_SAWBUCK_PROVIDER_GUID = '{2db51ca1-4fd8-4b88-b5a2-fb8606b66b02}'
+
+RDP_APP_ID = '{52e6fd1a-f16e-49c0-aacb-5436a915448b}'
+RDP_RUN_AS = r'NT AUTHORITY\LocalService'
+CHROMOTING_TYPELIB_ID = '{b6396c45-b0cc-456b-9f49-f12964ee6df4}'
+IRDP_DESKTOP_SESSION_ID = '{6a7699f0-ee43-43e7-aa30-a6738f9bd470}'
+# The RdpDesktopSession UUIDv5 salt is deliberately the IRdpDesktopSession IID
+# (keep in sync with `rdp_desktop_session_clsid` in //remoting/host/win/).
+RDP_DESKTOP_SESSION_SALT_GUID = IRDP_DESKTOP_SESSION_ID.strip('{}')
+IRDP_DESKTOP_SESSION_EVENT_HANDLER_ID = '{b59b96da-83cb-40ee-9b91-c377400fc3e3}'
+IDAEMON_CONTROL_ID = '{e051a481-6345-4ba1-bdb1-cf7929955268}'
+IDAEMON_CONTROL2_ID = '{655bd819-c08c-4b04-80c2-f160739ff6ef}'
+UNIVERSAL_MARSHALER_CLSID = '{00020424-0000-0000-c000-000000000046}'
+
+INTERFACE_PROXY_STUBS = (
+  (IDAEMON_CONTROL_ID, UNIVERSAL_MARSHALER_CLSID),
+  (IDAEMON_CONTROL2_ID, UNIVERSAL_MARSHALER_CLSID),
+  (IRDP_DESKTOP_SESSION_ID, IRDP_DESKTOP_SESSION_ID),
+  (
+    IRDP_DESKTOP_SESSION_EVENT_HANDLER_ID,
+    IRDP_DESKTOP_SESSION_EVENT_HANDLER_ID,
+  ),
+)
 
 HOST_CONFIG_FILENAME = 'host.json'
 UNPRIVILEGED_CONFIG_FILENAME = 'host_unprivileged.json'
@@ -156,6 +179,24 @@ class AuditReport:
   acl_invalid_count: int = 0
   issue_count: int = 0
   entries: list[InventoryEntry] = field(default_factory=list)
+
+
+@dataclass
+class _ComViewAudit:
+  found: list[str]
+  rdp_placeholder: Optional[InventoryEntry]
+  ps_roots: dict[str, InventoryEntry]
+  ps_entries: dict[str, InventoryEntry]
+  iface_entries: dict[str, InventoryEntry]
+
+
+def compute_rdp_desktop_session_clsid(version: str) -> str:
+  """Computes the version-salted UUIDv5 CLSID for RdpDesktopSession."""
+  return (
+    '{'
+    + str(uuid.uuid5(uuid.UUID(RDP_DESKTOP_SESSION_SALT_GUID), version))
+    + '}'
+  )
 
 
 def extract_executable_path(command_line: str) -> str:
@@ -497,6 +538,18 @@ class SystemProbe:
   def reg_list_values(self, subkey: str, view: int = 64) -> list[str]:
     raise NotImplementedError
 
+  def find_clsids_by_appid(self, app_id: str, view: int = 64) -> list[str]:
+    """Returns `SOFTWARE\\Classes\\CLSID` subkeys matching `app_id`."""
+    app_low = app_id.lower()
+    out: list[str] = []
+    for clsid in self.reg_list_subkeys(r'SOFTWARE\Classes\CLSID', view=view):
+      val = self.reg_get_value(
+        rf'SOFTWARE\Classes\CLSID\{clsid}', 'AppID', view=view
+      )
+      if isinstance(val, str) and val.lower() == app_low:
+        out.append(clsid)
+    return sorted(out, key=str.lower)
+
   def get_reg_sddl(self, subkey: str, view: int = 64) -> Optional[str]:
     return None
 
@@ -656,6 +709,36 @@ class WindowsSystemProbe(SystemProbe):
   def reg_list_values(self, subkey: str, view: int = 64) -> list[str]:
     return self._reg_enum(subkey, view, lambda k, i: winreg.EnumValue(k, i)[0])
 
+  def find_clsids_by_appid(self, app_id: str, view: int = 64) -> list[str]:
+    # `HKLM\SOFTWARE\Classes\CLSID` typically has thousands of subkeys per
+    # view; open the root handle once and open each child relative to it.
+    app_low = app_id.lower()
+    flag = winreg.KEY_WOW64_32KEY if view == 32 else winreg.KEY_WOW64_64KEY
+    out: list[str] = []
+    try:
+      with self._open_hklm(r'SOFTWARE\Classes\CLSID', view) as root:
+        idx = 0
+        while True:
+          try:
+            clsid = winreg.EnumKey(root, idx)
+          except OSError as exc:
+            if getattr(exc, 'winerror', None) == 259:  # ERROR_NO_MORE_ITEMS
+              break
+            raise
+          idx += 1
+          try:
+            with winreg.OpenKey(
+              root, clsid, 0, winreg.KEY_READ | flag
+            ) as child:
+              val = winreg.QueryValueEx(child, 'AppID')[0]
+              if isinstance(val, str) and val.lower() == app_low:
+                out.append(clsid)
+          except OSError:
+            pass
+    except FileNotFoundError:
+      pass
+    return sorted(out, key=str.lower)
+
   def get_reg_sddl(self, subkey: str, view: int = 64) -> Optional[str]:
     try:
       with self._open_hklm(subkey, view) as key:
@@ -808,6 +891,418 @@ def _audit_reg(
   return entry
 
 
+def _check_reg_subkey(
+  probe: SystemProbe,
+  entry: InventoryEntry,
+  subkey: str,
+  view: int,
+  label: str,
+  expected_val: Optional[str] = None,
+  required: bool = True,
+) -> Optional[str]:
+  """Validates a registry subkey's presence, default value, and SDDL."""
+  if not probe.reg_key_exists(subkey, view=view):
+    if required:
+      entry.issues.append(f'Missing {label} subkey')
+    return None
+  val = str(probe.reg_get_value(subkey, '', view=view) or '')
+  if expected_val is not None and val.lower() != expected_val.lower():
+    entry.issues.append(
+      f'Unexpected {label} {val!r} (expected {expected_val!r})'
+    )
+  if (sub_sddl := probe.get_reg_sddl(subkey, view=view)) is None:
+    if entry.acl_status == 'OK':
+      entry.acl_status = 'UNAVAILABLE'
+    entry.issues.append(f'{label} ACL: Security descriptor unavailable')
+  elif sub_viol := validate_sddl(sub_sddl, object_type='reg'):
+    entry.acl_status = 'INVALID'
+    entry.issues.extend(f'{label} ACL: {v}' for v in sub_viol)
+  return val
+
+
+def _is_expected_com_dir(
+  dir_path: str,
+  pf64: str,
+  pfx86: str,
+  specs: Sequence[BrandingSpec],
+  allow_64: bool,
+  allow_32: bool,
+) -> bool:
+  """Checks if `dir_path` matches a native 64-bit or versioned 32-bit dir."""
+  norm = dir_path.rstrip('\\/').lower()
+  if allow_64 and any(
+    norm == _join_win_path(pf64, s.rel_dir).lower() for s in specs
+  ):
+    return True
+  if allow_32:
+    for spec in specs:
+      prefix = _join_win_path(pfx86, spec.rel_dir).lower() + '\\'
+      if norm.startswith(prefix) and VERSION_DIR_RE.match(norm[len(prefix) :]):
+        return True
+  return False
+
+
+def _check_com_dll_identity(
+  entry: InventoryEntry,
+  pf64: str,
+  pfx86: str,
+  specs: Sequence[BrandingSpec],
+  allow_64: bool,
+  allow_32: bool,
+  label: str,
+) -> None:
+  """Verifies that a COM DLL entry points to `remoting_core.dll` in CRD dir."""
+  if not entry.present:
+    return
+  dll_dir, _, dll_name = entry.detail.strip().rpartition('\\')
+  if dll_name.lower() != 'remoting_core.dll' or not _is_expected_com_dir(
+    dll_dir, pf64, pfx86, specs, allow_64, allow_32
+  ):
+    entry.issues.append(f'Unexpected {label} binary: {entry.detail!r}')
+
+
+def _audit_com_appid(probe: SystemProbe, report: AuditReport) -> InventoryEntry:
+  """Audits `HKLM\\SOFTWARE\\Classes\\AppId\\{RDP_APP_ID}` and its COM SDDLs."""
+  app_id_subkey = rf'SOFTWARE\Classes\AppId\{RDP_APP_ID}'
+  # Human-readable `(Default)` description strings on AppId/CLSID are not used
+  # by COM activation and are intentionally not required here.
+  app_entry = _audit_reg(probe, report, app_id_subkey, 64, 'both')
+  if app_entry.present:
+    run_as = str(probe.reg_get_value(app_id_subkey, 'RunAs', view=64) or '')
+    app_entry.detail = f'RunAs={run_as!r}'
+    if run_as.lower() != RDP_RUN_AS.lower():
+      app_entry.issues.append(
+        f'Unexpected AppId RunAs {run_as!r} (expected {RDP_RUN_AS!r})'
+      )
+    for perm in ('AccessPermission', 'LaunchPermission'):
+      raw_sd = probe.reg_get_value(app_id_subkey, perm, view=64)
+      pentry = _add_item(
+        report,
+        'Registry',
+        rf'HKLM\{app_id_subkey}\{perm} [64-bit]',
+        'both',
+        raw_sd is not None,
+      )
+      if raw_sd is None:
+        pentry.issues.append(f'Missing {perm} binary value on AppId')
+      elif (com_sddl := probe.binary_sd_to_sddl(raw_sd)) is None:
+        pentry.acl_status = 'INVALID'
+        pentry.issues.append(f'Invalid binary SD in {perm}')
+      else:
+        pentry.acl_sddl = pentry.detail = com_sddl
+        if violations := validate_com_permissions_sddl(com_sddl):
+          pentry.acl_status = 'INVALID'
+          pentry.issues.extend(f'COM SD: {v}' for v in violations)
+        else:
+          pentry.acl_status = 'OK'
+  return app_entry
+
+
+def _audit_com_view(
+  probe: SystemProbe,
+  report: AuditReport,
+  view: int,
+  src: str,
+  salted: Sequence[str],
+  pf64: str,
+  pfx86: str,
+  specs: Sequence[BrandingSpec],
+) -> _ComViewAudit:
+  """Audits per-view redirected CLSID, ProxyStub, and Interface COM keys."""
+  found = [
+    c
+    for c in salted
+    if probe.reg_key_exists(rf'SOFTWARE\Classes\CLSID\{c}', view=view)
+  ]
+  checked = {c.lower() for c in found}
+  enum_error: Optional[str] = None
+  try:
+    by_appid = probe.find_clsids_by_appid(RDP_APP_ID, view=view)
+  except OSError as exc:
+    by_appid = []
+    enum_error = f'CLSID enumeration failed in {view}-bit view: {exc}'
+  for clsid in by_appid:
+    if clsid.lower() not in checked:
+      checked.add(clsid.lower())
+      found.append(clsid)
+
+  rdp_placeholder: Optional[InventoryEntry] = None
+  if not found:
+    loc = rf'HKLM\SOFTWARE\Classes\CLSID\<RdpDesktopSession> [{view}-bit]'
+    rdp_placeholder = _add_item(report, 'Registry', loc, src, False)
+    if enum_error is not None:
+      rdp_placeholder.issues.append(enum_error)
+  for idx, clsid in enumerate(sorted(found, key=str.lower)):
+    c_key = rf'SOFTWARE\Classes\CLSID\{clsid}'
+    c_root = _audit_reg(probe, report, c_key, view, src)
+    if idx == 0 and enum_error is not None:
+      c_root.issues.append(enum_error)
+    app_val = str(probe.reg_get_value(c_key, 'AppID', view=view) or '')
+    c_root.detail = f'AppID={app_val!r}'
+    if app_val.lower() != RDP_APP_ID.lower():
+      c_root.issues.append(
+        f'Mismatched CLSID AppID {app_val!r} (expected {RDP_APP_ID!r})'
+      )
+    ls_entry = _audit_reg(
+      probe,
+      report,
+      rf'{c_key}\LocalServer32',
+      view,
+      src,
+      path_value='',
+      is_command=True,
+    )
+    if not ls_entry.present:
+      c_root.issues.append(f'Missing LocalServer32 subkey under {c_key}')
+    else:
+      exe = extract_executable_path(ls_entry.detail)
+      exe_dir, _, exe_name = exe.rpartition('\\')
+      expected_cmd = f'"{exe}" --type=rdp_desktop_session'
+      if exe_name.lower() != 'remoting_curtain.exe' or not _is_expected_com_dir(
+        exe_dir,
+        pf64,
+        pfx86,
+        specs,
+        allow_64=(view == 64),
+        allow_32=(view == 32),
+      ):
+        ls_entry.issues.append(f'Unexpected LocalServer32 binary: {exe!r}')
+      elif ls_entry.detail.strip().lower() != expected_cmd.lower():
+        ls_entry.issues.append(
+          f'Unexpected LocalServer32 command line: {ls_entry.detail!r}'
+        )
+    _check_reg_subkey(
+      probe,
+      c_root,
+      rf'{c_key}\TypeLib',
+      view,
+      'CLSID TypeLib',
+      CHROMOTING_TYPELIB_ID,
+    )
+    if idx == 0 and len(found) > 1:
+      c_root.issues.append(
+        f'Multiple ({len(found)}) RdpDesktopSession CLSIDs in {view}-bit view'
+      )
+
+  ps_roots: dict[str, InventoryEntry] = {}
+  ps_entries: dict[str, InventoryEntry] = {}
+  for ps_id in (IRDP_DESKTOP_SESSION_ID, IRDP_DESKTOP_SESSION_EVENT_HANDLER_ID):
+    ps_key = rf'SOFTWARE\Classes\CLSID\{ps_id}'
+    ps_roots[ps_id] = _audit_reg(probe, report, ps_key, view, src)
+    inproc_key = rf'{ps_key}\InprocServer32'
+    pe = _audit_reg(probe, report, inproc_key, view, src, path_value='')
+    _check_com_dll_identity(
+      pe,
+      pf64,
+      pfx86,
+      specs,
+      allow_64=(view == 64),
+      allow_32=(view == 32),
+      label='InprocServer32',
+    )
+    # Neither `chromoting.wxs` nor `registry_work_items.cc` writes
+    # `ThreadingModel` on `InprocServer32` (or `Version` on
+    # `Interface\TypeLib`), so absence is expected; validate `ThreadingModel`
+    # equals `'Both'` if present.
+    if pe.present:
+      tm = probe.reg_get_value(inproc_key, 'ThreadingModel', view=view)
+      if tm is not None:
+        pe.detail = f'{pe.detail}, ThreadingModel={tm!r}'
+        if not isinstance(tm, str) or tm.lower() != 'both':
+          pe.issues.append(
+            f"Unexpected InprocServer32 ThreadingModel {tm!r} (expected 'Both')"
+          )
+    ps_entries[ps_id] = pe
+
+  iface_entries: dict[str, InventoryEntry] = {}
+  for iid, expected_ps in INTERFACE_PROXY_STUBS:
+    iface_subkey = rf'SOFTWARE\Classes\Interface\{iid}'
+    ie = _audit_reg(probe, report, iface_subkey, view, src)
+    iface_entries[iid] = ie
+    if ie.present:
+      ps_val = _check_reg_subkey(
+        probe,
+        ie,
+        rf'{iface_subkey}\ProxyStubClsid32',
+        view,
+        'ProxyStubClsid32',
+        expected_ps,
+      )
+      # Legacy 32-bit `chromoting.wxs` omits `TypeLib` under
+      # `Interface\{IRdpDesktopSession}`; `remoting_setup.exe` writes all 4.
+      tlb_required = view == 64 or iid != IRDP_DESKTOP_SESSION_ID
+      tlb_val = _check_reg_subkey(
+        probe,
+        ie,
+        rf'{iface_subkey}\TypeLib',
+        view,
+        'Interface TypeLib',
+        CHROMOTING_TYPELIB_ID,
+        required=tlb_required,
+      )
+      detail_parts = []
+      if ps_val is not None:
+        detail_parts.append(f'ProxyStubClsid32={ps_val!r}')
+      if tlb_val is not None:
+        detail_parts.append(f'TypeLib={tlb_val!r}')
+      ie.detail = ', '.join(detail_parts)
+  return _ComViewAudit(
+    found=found,
+    rdp_placeholder=rdp_placeholder,
+    ps_roots=ps_roots,
+    ps_entries=ps_entries,
+    iface_entries=iface_entries,
+  )
+
+
+def _audit_com_typelib(
+  probe: SystemProbe,
+  report: AuditReport,
+  pf64: str,
+  pfx86: str,
+  specs: Sequence[BrandingSpec],
+) -> tuple[InventoryEntry, InventoryEntry, InventoryEntry]:
+  """Audits shared `HKLM\\SOFTWARE\\Classes\\TypeLib\\{...}\\1.0` keys."""
+  tlb = rf'SOFTWARE\Classes\TypeLib\{CHROMOTING_TYPELIB_ID}\1.0'
+  tlb_root = _audit_reg(probe, report, tlb, 64, 'both')
+  if tlb_root.present:
+    flags_val = _check_reg_subkey(
+      probe, tlb_root, rf'{tlb}\FLAGS', 64, 'TypeLib FLAGS', '0'
+    )
+    helpdir_val = _check_reg_subkey(
+      probe, tlb_root, rf'{tlb}\HELPDIR', 64, 'TypeLib HELPDIR'
+    )
+    if helpdir_val is not None:
+      hdir = helpdir_val.strip()
+      if not hdir or not probe.path_exists(hdir) or not probe.is_dir(hdir):
+        tlb_root.issues.append(
+          f'TypeLib HELPDIR missing or not a directory: {helpdir_val!r}'
+        )
+      elif not _is_expected_com_dir(hdir, pf64, pfx86, specs, True, True):
+        tlb_root.issues.append(f'Unexpected TypeLib HELPDIR: {helpdir_val!r}')
+    tlb_root.detail = f'FLAGS={flags_val!r}, HELPDIR={helpdir_val!r}'
+  tlb_win32 = _audit_reg(
+    probe, report, rf'{tlb}\0\win32', 64, 'both', path_value=''
+  )
+  _check_com_dll_identity(
+    tlb_win32, pf64, pfx86, specs, True, True, 'TypeLib win32'
+  )
+  tlb_win64 = _audit_reg(
+    probe, report, rf'{tlb}\0\win64', 64, 'exe', path_value=''
+  )
+  _check_com_dll_identity(
+    tlb_win64, pf64, pfx86, specs, True, False, 'TypeLib win64'
+  )
+  return tlb_root, tlb_win32, tlb_win64
+
+
+def _cross_check_com_state(
+  app_entry: InventoryEntry,
+  com_views: dict[int, _ComViewAudit],
+  tlb_root: InventoryEntry,
+  tlb_win32: InventoryEntry,
+  tlb_win64: InventoryEntry,
+) -> None:
+  """Flags partial or orphaned COM state across shared and redirected keys.
+
+  Expected valid states (`CLSID` & `Interface` are WOW64-redirected; `AppId` &
+  `TypeLib` are shared across views):
+  - Clean machine: AppId absent, 64/32 views empty, TypeLib absent.
+  - Native 64-bit (`exe`): AppId + 64-bit CLSID/2 PS/4 Iface + TypeLib win32/64.
+  - Legacy 32-bit (`msi`): AppId + 32-bit CLSID/2 PS/4 Iface + TypeLib win32.
+  """
+  any_rdp_clsid = bool(com_views[64].found or com_views[32].found)
+  if app_entry.present and not any_rdp_clsid:
+    app_entry.issues.append(
+      'AppId is present without any registered RdpDesktopSession CLSID'
+    )
+  elif any_rdp_clsid and not app_entry.present:
+    app_entry.issues.append(
+      'Missing AppId for registered RdpDesktopSession CLSID'
+    )
+
+  for view in (64, 32):
+    vstate = com_views[view]
+    has_com_server_in_view = (
+      bool(vstate.found)
+      or any(r.present for r in vstate.ps_roots.values())
+      or any(pe.present for pe in vstate.ps_entries.values())
+    )
+    if has_com_server_in_view:
+      if not vstate.found and vstate.rdp_placeholder is not None:
+        vstate.rdp_placeholder.issues.append(
+          f'Missing RdpDesktopSession CLSID in {view}-bit view '
+          '(partial COM registration)'
+        )
+      for ps_id, pe in vstate.ps_entries.items():
+        if not vstate.ps_roots[ps_id].present:
+          vstate.ps_roots[ps_id].issues.append(
+            f'Missing ProxyStub CLSID in {view}-bit view '
+            '(partial COM registration)'
+          )
+        if not pe.present:
+          pe.issues.append(
+            f'Missing ProxyStub InprocServer32 in {view}-bit view '
+            '(partial COM registration)'
+          )
+      for ie in vstate.iface_entries.values():
+        if not ie.present:
+          ie.issues.append(
+            f'Missing COM Interface registration in {view}-bit view '
+            '(partial COM registration)'
+          )
+    else:
+      for ie in vstate.iface_entries.values():
+        if ie.present:
+          ie.issues.append(
+            f'Orphaned COM Interface registration in {view}-bit view '
+            'without COM server'
+          )
+
+  if com_views[64].found and not tlb_win64.present:
+    tlb_win64.issues.append(
+      'Missing TypeLib win64 registration for 64-bit COM server'
+    )
+  elif tlb_win64.present and not com_views[64].found:
+    tlb_win64.issues.append(
+      'Orphaned TypeLib win64 registration without 64-bit COM server'
+    )
+  if any_rdp_clsid and not tlb_win32.present:
+    tlb_win32.issues.append('Missing TypeLib win32 registration for COM server')
+  elif (
+    (tlb_root.present or tlb_win32.present or tlb_win64.present)
+    and not any_rdp_clsid
+    and not app_entry.present
+  ):
+    orphan_tlb = (
+      tlb_root
+      if tlb_root.present
+      else (tlb_win64 if tlb_win64.present else tlb_win32)
+    )
+    orphan_tlb.issues.append('Orphaned TypeLib registration without COM server')
+
+
+def _audit_com_registrations(
+  probe: SystemProbe,
+  report: AuditReport,
+  versions: Sequence[str],
+  pf64: str = r'C:\Program Files',
+  pfx86: str = r'C:\Program Files (x86)',
+  specs: Sequence[BrandingSpec] = (CHROME_BRANDING, CHROMIUM_BRANDING),
+) -> None:
+  """Audits COM AppId, CLSIDs, ProxyStubs, Interfaces, TypeLib, and parity."""
+  app_entry = _audit_com_appid(probe, report)
+  salted = [compute_rdp_desktop_session_clsid(v) for v in versions]
+  com_views = {
+    view: _audit_com_view(probe, report, view, src, salted, pf64, pfx86, specs)
+    for view, src in ((64, 'exe'), (32, 'msi'))
+  }
+  tlb_root, tlb_win32, tlb_win64 = _audit_com_typelib(
+    probe, report, pf64, pfx86, specs
+  )
+  _cross_check_com_state(app_entry, com_views, tlb_root, tlb_win32, tlb_win64)
+
+
 def audit_host_install(
   probe: SystemProbe,
   branding_filter: str = 'auto',
@@ -946,6 +1441,8 @@ def audit_host_install(
         entry.issues.append(f'Invalid or missing Omaha pv: {pv!r}')
       else:
         omaha_pvs[view] = pv
+        if pv not in versions:
+          versions.append(pv)
 
   # 2. Filesystem Install Directories & ProgramData Configuration.
   for spec in specs:
@@ -1134,24 +1631,37 @@ def audit_host_install(
       path_value='RemoteSecurityKeyPath',
     )
 
-  # Cross-check Omaha `pv` against installed Chrome host presence and 64-bit vs
-  # 32-bit view parity (`AddOmahaClientWorkItems` writes the same `pv` to both
-  # views; exact native version parity via salted COM CLSID is added with COM
-  # auditing).
+  # 5. COM Registrations (AppId + Binary SDs, CLSIDs, Interfaces, TypeLib).
+  _audit_com_registrations(probe, report, versions, pf64, pfx86, specs)
+
+  # Cross-check Omaha `pv` against installed filesystem/COM state and 64-bit vs
+  # 32-bit view parity so a stale or partial update `pv` is flagged.
   chrome_pf64 = _join_win_path(pf64, CHROME_BRANDING.rel_dir)
   chrome_pf64_has_payload = probe.is_dir(chrome_pf64) and any(
     name.lower() in EXPECTED_PAYLOAD_LOWER
     and not probe.is_dir(_join_win_path(chrome_pf64, name))
     for name in probe.list_dir(chrome_pf64)
   )
-  msi_32_pv_match = 32 in omaha_pvs and probe.is_dir(
-    _join_win_path(pfx86, CHROME_BRANDING.rel_dir, omaha_pvs[32])
+  msi_32_pv_match = (
+    32 in omaha_pvs
+    and probe.is_dir(
+      _join_win_path(pfx86, CHROME_BRANDING.rel_dir, omaha_pvs[32])
+    )
+    and probe.reg_key_exists(
+      rf'SOFTWARE\Classes\CLSID'
+      rf'\{compute_rdp_desktop_session_clsid(omaha_pvs[32])}',
+      view=32,
+    )
   )
   for view, pv in omaha_pvs.items():
+    salted_pv = compute_rdp_desktop_session_clsid(pv)
+    native_match = chrome_pf64_has_payload and probe.reg_key_exists(
+      rf'SOFTWARE\Classes\CLSID\{salted_pv}', view=64
+    )
     msi_match = view == 32 and msi_32_pv_match
-    if not (chrome_pf64_has_payload or msi_match):
+    if not (native_match or msi_match):
       omaha_entries[view].issues.append(
-        f'Omaha pv {pv!r} has no corresponding installed Chrome host'
+        f'Omaha pv {pv!r} does not match any installed host version'
       )
   if chrome_pf64_has_payload:
     if omaha_entries[64].present and not omaha_entries[32].present:
@@ -1177,7 +1687,7 @@ def audit_host_install(
         f'64-bit pv {omaha_pvs[64]!r}'
       )
 
-  # 5. Branding Keys (URL Forwarder, Pairing/Secrets, Logging) and Sawbuck.
+  # 6. Branding Keys (URL Forwarder, Pairing/Secrets, Logging) and Sawbuck.
   for spec in specs:
     _audit_reg(
       probe,

@@ -42,6 +42,7 @@ SERVICE_DEFAULT_SDDL = (
 VALID_COM_SDDL = (
   'O:BAG:BAD:(A;;CCDCSW;;;SY)(A;;CCDCSW;;;BA)(A;;CCDCSW;;;LS)S:(ML;;NX;;;ME)'
 )
+DEFAULT_NATIVE_VERSION = '146.0.7650.0'
 
 
 class FakeSystemProbe(audit_host_install.SystemProbe):
@@ -140,6 +141,13 @@ class FakeSystemProbe(audit_host_install.SystemProbe):
     self.reg_case.pop(key, None)
     self.reg_sddls.pop(key, None)
 
+  def remove_reg_value(
+    self, subkey: str, value_name: str, view: int = 64
+  ) -> None:
+    vals = self.reg.get((view, subkey.strip('\\').lower()))
+    if vals is not None:
+      vals.pop(value_name, None)
+
   def register_binary_sd(self, raw_bytes: bytes, sddl: str) -> bytes:
     self.binary_sds[raw_bytes] = sddl
     return raw_bytes
@@ -208,7 +216,7 @@ class FakeSystemProbe(audit_host_install.SystemProbe):
 
 
 def _populate_complete_native_install(
-  probe: FakeSystemProbe, version: str = '146.0.7650.0'
+  probe: FakeSystemProbe, version: str = DEFAULT_NATIVE_VERSION
 ) -> None:
   install_dir = r'C:\Program Files\Google\Chrome Remote Desktop'
   config_dir = r'C:\ProgramData\Google\Chrome Remote Desktop'
@@ -274,6 +282,61 @@ def _populate_complete_native_install(
     rf'{install_dir}\remote_security_key.exe',
     view=64,
   )
+
+  com_sd = probe.register_binary_sd(
+    b'\x01\x00\x04\x80' + b'\x00' * 16 + b'valid', VALID_COM_SDDL
+  )
+  app_id = rf'SOFTWARE\Classes\AppId\{audit_host_install.RDP_APP_ID}'
+  probe.set_reg_value(app_id, 'RunAs', audit_host_install.RDP_RUN_AS, view=64)
+  probe.set_reg_value(app_id, 'AccessPermission', com_sd, view=64)
+  probe.set_reg_value(app_id, 'LaunchPermission', com_sd, view=64)
+
+  tlb_id = audit_host_install.CHROMOTING_TYPELIB_ID
+  rdp_clsid = audit_host_install.compute_rdp_desktop_session_clsid(version)
+  probe.set_reg_value(
+    rf'SOFTWARE\Classes\CLSID\{rdp_clsid}',
+    'AppID',
+    audit_host_install.RDP_APP_ID,
+    view=64,
+  )
+  probe.set_reg_value(
+    rf'SOFTWARE\Classes\CLSID\{rdp_clsid}\LocalServer32',
+    '',
+    rf'"{install_dir}\remoting_curtain.exe" --type=rdp_desktop_session',
+    view=64,
+  )
+  probe.set_reg_value(
+    rf'SOFTWARE\Classes\CLSID\{rdp_clsid}\TypeLib', '', tlb_id, view=64
+  )
+
+  for ps in (
+    audit_host_install.IRDP_DESKTOP_SESSION_ID,
+    audit_host_install.IRDP_DESKTOP_SESSION_EVENT_HANDLER_ID,
+  ):
+    probe.set_reg_value(
+      rf'SOFTWARE\Classes\CLSID\{ps}\InprocServer32',
+      '',
+      rf'{install_dir}\remoting_core.dll',
+      view=64,
+    )
+  for iid, expected_ps in audit_host_install.INTERFACE_PROXY_STUBS:
+    probe.set_reg_value(
+      rf'SOFTWARE\Classes\Interface\{iid}\ProxyStubClsid32',
+      '',
+      expected_ps,
+      view=64,
+    )
+    probe.set_reg_value(
+      rf'SOFTWARE\Classes\Interface\{iid}\TypeLib', '', tlb_id, view=64
+    )
+
+  tlb = rf'SOFTWARE\Classes\TypeLib\{tlb_id}\1.0'
+  probe.set_reg_value(rf'{tlb}\FLAGS', '', '0', view=64)
+  probe.set_reg_value(rf'{tlb}\HELPDIR', '', install_dir, view=64)
+  for arch in ('win32', 'win64'):
+    probe.set_reg_value(
+      rf'{tlb}\0\{arch}', '', rf'{install_dir}\remoting_core.dll', view=64
+    )
 
   probe.set_reg_value(
     r'SOFTWARE\Classes\ChromeRemoteDesktopUrlForwarder\shell\open\command',
@@ -549,7 +612,13 @@ class AuditHostInstallTest(unittest.TestCase):
       report.issue_count, 0, msg=audit_host_install.format_report(report)
     )
     self.assertEqual(report.acl_invalid_count, 0)
-    self.assertEqual(report.acl_ok_count, 27)
+    # 43 OK ACLs = 4 filesystem/ProgramData (install_dir, config_dir, host.json,
+    # host_unprivileged.json) + 2 service (SCM + Services\chromoting) + 21
+    # non-COM registry (2 Omaha, 10 NMH, EventLog, SecurityKey, UrlForwarder
+    # cmd, RegisteredApplications, root + 4 branding subkeys) + 16 COM (AppId,
+    # AccessPermission, LaunchPermission, CLSID, LocalServer32, 2 ProxyStub
+    # CLSIDs, 2 InprocServer32s, 4 Interfaces, TypeLib 1.0, win32, win64).
+    self.assertEqual(report.acl_ok_count, 43)
     with mock.patch('sys.stdout', new_callable=io.StringIO):
       self.assertEqual(audit_host_install.main([], probe=probe), 0)
 
@@ -648,6 +717,27 @@ class AuditHostInstallTest(unittest.TestCase):
     self.assertIn(
       'CategoryMessageFile: Target file missing or invalid on disk', all_issues
     )
+
+  def test_com_appid_permissions_violations_detected(self) -> None:
+    probe = FakeSystemProbe()
+    _populate_complete_native_install(probe)
+    bad_com = probe.register_binary_sd(
+      b'\x01\x00\x04\x80' + b'\x00' * 16 + b'bad',
+      'O:BAG:BAD:(A;;0xb;;;SY)(A;;0xb;;;BA)(A;;0xb;;;WD)',
+    )
+    app_id = rf'SOFTWARE\Classes\AppId\{audit_host_install.RDP_APP_ID}'
+    probe.set_reg_value(app_id, 'AccessPermission', 'corrupted_str', view=64)
+    probe.set_reg_value(app_id, 'LaunchPermission', bad_com, view=64)
+    probe.set_reg_value(app_id, 'RunAs', 'Interactive User', view=64)
+
+    report = audit_host_install.audit_host_install(probe)
+    self.assertEqual(report.acl_invalid_count, 2)
+    all_issues = '\n'.join(i for e in report.entries for i in e.issues)
+    self.assertIn('Unexpected AppId RunAs', all_issues)
+    self.assertIn('Invalid binary SD in AccessPermission', all_issues)
+    self.assertIn('Unexpected COM trustee WD', all_issues)
+    self.assertIn('Missing COM permissions for LS', all_issues)
+    self.assertIn('Missing Medium IL no-execute-up label', all_issues)
 
   def test_dangling_targets_old_files_and_json_cli_output(self) -> None:
     probe = FakeSystemProbe()
@@ -790,7 +880,9 @@ class AuditHostInstallTest(unittest.TestCase):
     self.assertIn('Leftover runtime artifact: crashpad', chromium_issues)
     self.assertIn('Leftover runtime artifact: host.log', chromium_issues)
 
-  def test_ancestor_reparse_unquoted_cmd_and_unavailable_acl(self) -> None:
+  def test_ancestor_reparse_unquoted_cmd_clsid_appid_and_unavailable_acl(
+    self,
+  ) -> None:
     probe = FakeSystemProbe()
     _populate_complete_native_install(probe)
     probe.add_reparse_point(r'C:\ProgramData\Google')
@@ -798,6 +890,12 @@ class AuditHostInstallTest(unittest.TestCase):
     probe.service.binary_path = (
       r'C:\Program Files\Google\Chrome Remote Desktop\remoting_host.exe '
       r'--type=daemon'
+    )
+    rdp_clsid = audit_host_install.compute_rdp_desktop_session_clsid(
+      DEFAULT_NATIVE_VERSION
+    )
+    probe.set_reg_value(
+      rf'SOFTWARE\Classes\CLSID\{rdp_clsid}', 'AppID', '', view=64
     )
     probe.remove_file_sddl(
       r'C:\ProgramData\Google\Chrome Remote Desktop\host.json'
@@ -809,12 +907,95 @@ class AuditHostInstallTest(unittest.TestCase):
     self.assertIn('Unquoted command path with spaces', all_issues)
     self.assertNotIn('Target file missing', all_issues)
     self.assertIn("Unexpected service account: ''", all_issues)
+    self.assertIn('Mismatched CLSID AppID', all_issues)
     self.assertIn('Security descriptor unavailable', all_issues)
     with mock.patch('sys.stdout', new_callable=io.StringIO):
       self.assertEqual(audit_host_install.main([], probe=probe), 1)
 
+  def test_orphaned_multiple_clsids_missing_localserver32_and_proxystub(
+    self,
+  ) -> None:
+    probe = FakeSystemProbe()
+    _populate_complete_native_install(probe)
+
+    # Uppercase orphaned CLSID discovered via CLSID enumeration (also tests
+    # case-insensitive sorting against the lowercase salted CLSID).
+    orphan_clsid = '{FFFFFFFF-2222-3333-4444-555555555555}'
+    probe.set_reg_value(
+      rf'SOFTWARE\Classes\CLSID\{orphan_clsid}',
+      'AppID',
+      audit_host_install.RDP_APP_ID,
+      view=64,
+    )
+
+    # Missing AccessPermission binary SD on AppId attaches issue to `pentry`.
+    app_id = rf'SOFTWARE\Classes\AppId\{audit_host_install.RDP_APP_ID}'
+    probe.remove_reg_value(app_id, 'AccessPermission', view=64)
+
+    # Wrong ProxyStubClsid32 and Interface TypeLib targets, and bad TypeLib
+    # FLAGS/HELPDIR.
+    daemon_iid = audit_host_install.IDAEMON_CONTROL_ID
+    probe.set_reg_value(
+      rf'SOFTWARE\Classes\Interface\{daemon_iid}\ProxyStubClsid32',
+      '',
+      '{deadbeef-0000-0000-0000-000000000000}',
+      view=64,
+    )
+    probe.set_reg_value(
+      rf'SOFTWARE\Classes\Interface\{daemon_iid}\TypeLib',
+      '',
+      '{deadbeef-0000-0000-0000-000000000000}',
+      view=64,
+    )
+    tlb = (
+      rf'SOFTWARE\Classes\TypeLib\{audit_host_install.CHROMOTING_TYPELIB_ID}'
+      r'\1.0'
+    )
+    probe.set_reg_value(rf'{tlb}\FLAGS', '', '9', view=64)
+    probe.set_reg_value(rf'{tlb}\HELPDIR', '', r'C:\NoSuchDir', view=64)
+
+    report = audit_host_install.audit_host_install(probe)
+    issues_list = [i for e in report.entries for i in e.issues]
+    all_issues = '\n'.join(issues_list)
+    salted_clsid = audit_host_install.compute_rdp_desktop_session_clsid(
+      DEFAULT_NATIVE_VERSION
+    )
+    salted_entry = next(e for e in report.entries if salted_clsid in e.location)
+    self.assertIn(
+      'Multiple (2) RdpDesktopSession CLSIDs in 64-bit view',
+      '\n'.join(salted_entry.issues),
+    )
+    self.assertEqual(
+      sum(
+        1
+        for i in issues_list
+        if 'Multiple (2) RdpDesktopSession CLSIDs in 64-bit view' in i
+      ),
+      1,
+    )
+    self.assertIn(
+      r'Missing LocalServer32 subkey under SOFTWARE\Classes\CLSID'
+      rf'\{orphan_clsid}',
+      all_issues,
+    )
+    self.assertIn('Missing CLSID TypeLib subkey', all_issues)
+    access_entry = next(
+      e
+      for e in report.entries
+      if e.location.endswith(r'\AccessPermission [64-bit]')
+    )
+    self.assertFalse(access_entry.present)
+    self.assertIn(
+      'Missing AccessPermission binary value on AppId', access_entry.issues
+    )
+    self.assertIn('Unexpected ProxyStubClsid32', all_issues)
+    self.assertIn('Unexpected Interface TypeLib', all_issues)
+    self.assertIn('Unexpected TypeLib FLAGS', all_issues)
+    self.assertIn('TypeLib HELPDIR missing or not a directory', all_issues)
+
   def test_wow64_32bit_entries_and_omaha_pv_validation(self) -> None:
-    # 1. Valid 32-bit legacy MSI registry entries with matching 32-bit Omaha pv.
+    # 1. Valid 32-bit legacy MSI registry + COM entries with matching 32-bit
+    # Omaha `pv`.
     probe = FakeSystemProbe()
     msi_ver = '145.0.7600.0'
     msi_bin_dir = (
@@ -825,9 +1006,12 @@ class AuditHostInstallTest(unittest.TestCase):
       sddl=PROGRAM_FILES_SDDL,
     )
     probe.add_dir(msi_bin_dir, sddl=PROGRAM_FILES_SDDL)
-    probe.add_file(
-      rf'{msi_bin_dir}\remote_security_key.exe', sddl=LEAF_PAYLOAD_SDDL
-    )
+    for fname in (
+      'remoting_core.dll',
+      'remoting_curtain.exe',
+      'remote_security_key.exe',
+    ):
+      probe.add_file(rf'{msi_bin_dir}\{fname}', sddl=LEAF_PAYLOAD_SDDL)
 
     omaha = rf'SOFTWARE\Google\Update\Clients\{audit_host_install.OMAHA_APP_ID}'
     probe.set_reg_value(omaha, 'pv', msi_ver, view=32)
@@ -850,6 +1034,58 @@ class AuditHostInstallTest(unittest.TestCase):
       sddl=SECRETS_REG_SDDL,
     )
 
+    com_sd = probe.register_binary_sd(
+      b'\x01\x00\x04\x80' + b'\x00' * 16 + b'msi', VALID_COM_SDDL
+    )
+    app_id = rf'SOFTWARE\Classes\AppId\{audit_host_install.RDP_APP_ID}'
+    probe.set_reg_value(app_id, 'RunAs', audit_host_install.RDP_RUN_AS, view=64)
+    probe.set_reg_value(app_id, 'AccessPermission', com_sd, view=64)
+    probe.set_reg_value(app_id, 'LaunchPermission', com_sd, view=64)
+    msi_clsid = audit_host_install.compute_rdp_desktop_session_clsid(msi_ver)
+    probe.set_reg_value(
+      rf'SOFTWARE\Classes\CLSID\{msi_clsid}',
+      'AppID',
+      audit_host_install.RDP_APP_ID,
+      view=32,
+    )
+    probe.set_reg_value(
+      rf'SOFTWARE\Classes\CLSID\{msi_clsid}\LocalServer32',
+      '',
+      rf'"{msi_bin_dir}\remoting_curtain.exe" --type=rdp_desktop_session',
+      view=32,
+    )
+    tlb_id = audit_host_install.CHROMOTING_TYPELIB_ID
+    probe.set_reg_value(
+      rf'SOFTWARE\Classes\CLSID\{msi_clsid}\TypeLib', '', tlb_id, view=32
+    )
+    for ps in (
+      audit_host_install.IRDP_DESKTOP_SESSION_ID,
+      audit_host_install.IRDP_DESKTOP_SESSION_EVENT_HANDLER_ID,
+    ):
+      probe.set_reg_value(
+        rf'SOFTWARE\Classes\CLSID\{ps}\InprocServer32',
+        '',
+        rf'{msi_bin_dir}\remoting_core.dll',
+        view=32,
+      )
+    for iid, expected_ps in audit_host_install.INTERFACE_PROXY_STUBS:
+      probe.set_reg_value(
+        rf'SOFTWARE\Classes\Interface\{iid}\ProxyStubClsid32',
+        '',
+        expected_ps.upper(),
+        view=32,
+      )
+      if iid != audit_host_install.IRDP_DESKTOP_SESSION_ID:
+        probe.set_reg_value(
+          rf'SOFTWARE\Classes\Interface\{iid}\TypeLib', '', tlb_id, view=32
+        )
+    tlb = rf'SOFTWARE\Classes\TypeLib\{tlb_id}\1.0'
+    probe.set_reg_value(rf'{tlb}\FLAGS', '', '0', view=64)
+    probe.set_reg_value(rf'{tlb}\HELPDIR', '', msi_bin_dir + '\\', view=64)
+    probe.set_reg_value(
+      rf'{tlb}\0\win32', '', rf'{msi_bin_dir}\remoting_core.dll', view=64
+    )
+
     msi_report = audit_host_install.audit_host_install(probe)
     self.assertEqual(
       msi_report.issue_count,
@@ -859,40 +1095,306 @@ class AuditHostInstallTest(unittest.TestCase):
     present_32 = [
       e for e in msi_report.entries if e.present and '[32-bit]' in e.location
     ]
-    self.assertEqual(len(present_32), 5)
+    self.assertEqual(len(present_32), 15)
 
-    # 2. MSI layout: unmatched and malformed Omaha `pv` values are flagged.
+    # 2. MSI layout: unmatched 32-bit `pv`, matching versioned dir with missing
+    # 32-bit salted CLSID, and leftover `TypeLib\0\win64` without 64-bit server
+    # are all flagged.
     probe.set_reg_value(omaha, 'pv', '999.0.0.1', view=32)
-    report2 = audit_host_install.audit_host_install(probe)
-    issues2 = '\n'.join(i for e in report2.entries for i in e.issues)
+    msi_bad_pv = audit_host_install.audit_host_install(probe)
+    msi_bad_issues = '\n'.join(i for e in msi_bad_pv.entries for i in e.issues)
     self.assertIn(
-      "Omaha pv '999.0.0.1' has no corresponding installed Chrome host",
+      "Omaha pv '999.0.0.1' does not match any installed host version",
+      msi_bad_issues,
+    )
+
+    probe.set_reg_value(omaha, 'pv', msi_ver, view=32)
+    probe.remove_reg_key(rf'SOFTWARE\Classes\CLSID\{msi_clsid}', view=32)
+    probe.remove_reg_key(
+      rf'SOFTWARE\Classes\CLSID\{msi_clsid}\LocalServer32', view=32
+    )
+    probe.remove_reg_key(
+      rf'SOFTWARE\Classes\CLSID\{msi_clsid}\TypeLib', view=32
+    )
+    native_dll = (
+      r'C:\Program Files\Google\Chrome Remote Desktop\remoting_core.dll'
+    )
+    probe.add_file(native_dll, sddl=LEAF_PAYLOAD_SDDL)
+    probe.set_reg_value(rf'{tlb}\0\win64', '', native_dll, view=64)
+    msi_no_clsid = audit_host_install.audit_host_install(probe)
+    msi_no_clsid_issues = '\n'.join(
+      i for e in msi_no_clsid.entries for i in e.issues
+    )
+    self.assertIn(
+      f'Omaha pv {msi_ver!r} does not match any installed host version',
+      msi_no_clsid_issues,
+    )
+    self.assertIn(
+      'Orphaned TypeLib win64 registration without 64-bit COM server',
+      msi_no_clsid_issues,
+    )
+
+    # 3. Omaha `pv` contributing a version not otherwise discovered (no
+    # versioned dir, no `--version` flag, and CLSID `AppID` wiped so
+    # enumeration skips it), plus malformed, unmatched, and missing-mirror `pv`
+    # values flagged.
+    probe2 = FakeSystemProbe()
+    omaha_only_ver = '148.0.7800.0'
+    _populate_complete_native_install(probe2, version=omaha_only_ver)
+    salted_148 = audit_host_install.compute_rdp_desktop_session_clsid(
+      omaha_only_ver
+    )
+    probe2.set_reg_value(
+      rf'SOFTWARE\Classes\CLSID\{salted_148}', 'AppID', '', view=64
+    )
+    probe2.set_reg_value(omaha, 'pv', '999.0.0.1', view=32)
+
+    report2 = audit_host_install.audit_host_install(probe2)
+    issues2 = '\n'.join(i for e in report2.entries for i in e.issues)
+    self.assertIn('Mismatched CLSID AppID', issues2)
+    self.assertIn(
+      "Omaha pv '999.0.0.1' does not match any installed host version", issues2
+    )
+    self.assertIn(
+      "Omaha 32-bit pv '999.0.0.1' disagrees with 64-bit pv '148.0.7800.0'",
       issues2,
     )
 
-    probe.set_reg_value(omaha, 'pv', 'bad-version', view=64)
-    report3 = audit_host_install.audit_host_install(probe)
+    probe2.set_reg_value(omaha, 'pv', 'bad-version', view=64)
+    report3 = audit_host_install.audit_host_install(probe2)
     issues3 = '\n'.join(i for e in report3.entries for i in e.issues)
     self.assertIn("Invalid or missing Omaha pv: 'bad-version'", issues3)
 
-    # 3. Native layout: 64-bit vs 32-bit `pv` disagreement and missing mirror
-    # view are flagged.
-    probe_nat = FakeSystemProbe()
-    _populate_complete_native_install(probe_nat, version='146.0.7650.0')
-    probe_nat.set_reg_value(omaha, 'pv', '999.0.0.1', view=32)
-    nat_report = audit_host_install.audit_host_install(probe_nat)
-    nat_issues = '\n'.join(i for e in nat_report.entries for i in e.issues)
+    probe2.set_reg_value(omaha, 'pv', omaha_only_ver, view=64)
+    probe2.remove_reg_key(omaha, view=32)
+    report4 = audit_host_install.audit_host_install(probe2)
+    issues4 = '\n'.join(i for e in report4.entries for i in e.issues)
     self.assertIn(
-      "Omaha 32-bit pv '999.0.0.1' disagrees with 64-bit pv '146.0.7650.0'",
-      nat_issues,
+      'Missing 32-bit Omaha Client mirror for native Chrome host', issues4
     )
 
-    probe_nat.remove_reg_key(omaha, view=32)
-    nat_report2 = audit_host_install.audit_host_install(probe_nat)
-    nat_issues2 = '\n'.join(i for e in nat_report2.entries for i in e.issues)
-    self.assertIn(
-      'Missing 32-bit Omaha Client mirror for native Chrome host', nat_issues2
+  def test_partial_and_orphaned_com_states_flagged(self) -> None:
+    # 1. AppId without CLSID, orphaned Interfaces in both views without a COM
+    # server, and orphaned TypeLib without any COM server.
+    probe = FakeSystemProbe()
+    com_sd = probe.register_binary_sd(
+      b'\x01\x00\x04\x80' + b'\x00' * 16 + b'ok', VALID_COM_SDDL
     )
+    app_id = rf'SOFTWARE\Classes\AppId\{audit_host_install.RDP_APP_ID}'
+    probe.set_reg_value(app_id, 'RunAs', audit_host_install.RDP_RUN_AS, view=64)
+    probe.set_reg_value(app_id, 'AccessPermission', com_sd, view=64)
+    probe.set_reg_value(app_id, 'LaunchPermission', com_sd, view=64)
+    rdp_iid = audit_host_install.IRDP_DESKTOP_SESSION_ID
+    for view in (64, 32):
+      probe.set_reg_value(
+        rf'SOFTWARE\Classes\Interface\{rdp_iid}\ProxyStubClsid32',
+        '',
+        rdp_iid,
+        view=view,
+      )
+
+    report = audit_host_install.AuditReport()
+    audit_host_install._audit_com_registrations(probe, report, [])
+    all_issues = '\n'.join(i for e in report.entries for i in e.issues)
+    self.assertIn(
+      'AppId is present without any registered RdpDesktopSession CLSID',
+      all_issues,
+    )
+    self.assertIn(
+      'Orphaned COM Interface registration in 64-bit view without COM server',
+      all_issues,
+    )
+    self.assertIn(
+      'Orphaned COM Interface registration in 32-bit view without COM server',
+      all_issues,
+    )
+
+    # Orphaned TypeLib registration with neither AppId nor CLSID.
+    probe_tlb = FakeSystemProbe()
+    tlb = (
+      rf'SOFTWARE\Classes\TypeLib\{audit_host_install.CHROMOTING_TYPELIB_ID}'
+      r'\1.0'
+    )
+    probe_tlb.set_reg_value(rf'{tlb}\FLAGS', '', '0', view=64)
+    install_dir = r'C:\Program Files\Google\Chrome Remote Desktop'
+    probe_tlb.add_dir(install_dir, sddl=PROGRAM_FILES_SDDL)
+    probe_tlb.set_reg_value(rf'{tlb}\HELPDIR', '', install_dir, view=64)
+    tlb_report = audit_host_install.AuditReport()
+    audit_host_install._audit_com_registrations(probe_tlb, tlb_report, [])
+    tlb_issues = '\n'.join(i for e in tlb_report.entries for i in e.issues)
+    self.assertIn(
+      'Orphaned TypeLib registration without COM server', tlb_issues
+    )
+
+    # 2. Partial 64-bit COM server: missing AppId, missing ProxyStub, missing
+    # Interface, missing TypeLib win32 & win64, plus missing CLSID when only a
+    # ProxyStub exists in 32-bit view.
+    probe_part = FakeSystemProbe()
+    _populate_complete_native_install(probe_part)
+    probe_part.remove_reg_key(app_id, view=64)
+    probe_part.remove_reg_key(
+      rf'SOFTWARE\Classes\CLSID\{rdp_iid}\InprocServer32', view=64
+    )
+    daemon_iid = audit_host_install.IDAEMON_CONTROL_ID
+    probe_part.remove_reg_key(
+      rf'SOFTWARE\Classes\Interface\{daemon_iid}', view=64
+    )
+    probe_part.remove_reg_key(rf'{tlb}\0\win64', view=64)
+    probe_part.remove_reg_key(rf'{tlb}\0\win32', view=64)
+    msi_dll = (
+      r'C:\Program Files (x86)\Google\Chrome Remote Desktop\145.0.7600.0'
+      r'\remoting_core.dll'
+    )
+    probe_part.add_file(msi_dll, sddl=LEAF_PAYLOAD_SDDL)
+    probe_part.set_reg_value(
+      rf'SOFTWARE\Classes\CLSID\{rdp_iid}\InprocServer32',
+      '',
+      msi_dll,
+      view=32,
+    )
+    part_report = audit_host_install.audit_host_install(probe_part)
+    part_issues = '\n'.join(i for e in part_report.entries for i in e.issues)
+    self.assertIn(
+      'Missing AppId for registered RdpDesktopSession CLSID', part_issues
+    )
+    self.assertIn(
+      'Missing ProxyStub InprocServer32 in 64-bit view '
+      '(partial COM registration)',
+      part_issues,
+    )
+    self.assertIn(
+      'Missing COM Interface registration in 64-bit view '
+      '(partial COM registration)',
+      part_issues,
+    )
+    self.assertIn(
+      'Missing RdpDesktopSession CLSID in 32-bit view '
+      '(partial COM registration)',
+      part_issues,
+    )
+    self.assertIn(
+      'Missing TypeLib win64 registration for 64-bit COM server', part_issues
+    )
+    self.assertIn(
+      'Missing TypeLib win32 registration for COM server', part_issues
+    )
+
+  def test_com_target_identities_and_wow64_leftover_interfaces(self) -> None:
+    probe = FakeSystemProbe()
+    _populate_complete_native_install(probe)
+    install_dir = r'C:\Program Files\Google\Chrome Remote Desktop'
+    other_dir = r'C:\OtherApp'
+    probe.add_dir(other_dir, sddl=PROGRAM_FILES_SDDL)
+    probe.add_file(rf'{other_dir}\remoting_core.dll', sddl=LEAF_PAYLOAD_SDDL)
+
+    rdp_clsid = audit_host_install.compute_rdp_desktop_session_clsid(
+      DEFAULT_NATIVE_VERSION
+    )
+    ls_key = rf'SOFTWARE\Classes\CLSID\{rdp_clsid}\LocalServer32'
+    # Existing binary with wrong filename (`remoting_host.exe`).
+    probe.set_reg_value(
+      ls_key,
+      '',
+      rf'"{install_dir}\remoting_host.exe" --type=rdp_desktop_session',
+      view=64,
+    )
+    rdp_iid = audit_host_install.IRDP_DESKTOP_SESSION_ID
+    probe.set_reg_value(
+      rf'SOFTWARE\Classes\CLSID\{rdp_iid}\InprocServer32',
+      '',
+      rf'{other_dir}\remoting_core.dll',
+      view=64,
+    )
+    tlb = (
+      rf'SOFTWARE\Classes\TypeLib\{audit_host_install.CHROMOTING_TYPELIB_ID}'
+      r'\1.0'
+    )
+    probe.set_reg_value(rf'{tlb}\HELPDIR', '', other_dir, view=64)
+    probe.set_reg_value(
+      rf'{tlb}\0\win64', '', rf'{other_dir}\remoting_core.dll', view=64
+    )
+
+    # Leftover 32-bit Interface keys (`IDaemonControl` + `IRdpDesktopSession`)
+    # from a partial MSI uninstall alongside a healthy 64-bit native install.
+    tlb_id = audit_host_install.CHROMOTING_TYPELIB_ID
+    daemon_iid = audit_host_install.IDAEMON_CONTROL_ID
+    probe.set_reg_value(
+      rf'SOFTWARE\Classes\Interface\{daemon_iid}\ProxyStubClsid32',
+      '',
+      audit_host_install.UNIVERSAL_MARSHALER_CLSID,
+      view=32,
+    )
+    probe.set_reg_value(
+      rf'SOFTWARE\Classes\Interface\{daemon_iid}\TypeLib', '', tlb_id, view=32
+    )
+    probe.set_reg_value(
+      rf'SOFTWARE\Classes\Interface\{rdp_iid}\ProxyStubClsid32',
+      '',
+      rdp_iid,
+      view=32,
+    )
+
+    report = audit_host_install.audit_host_install(probe)
+    issues_list = [i for e in report.entries for i in e.issues]
+    all_issues = '\n'.join(issues_list)
+    self.assertIn('Unexpected LocalServer32 binary', all_issues)
+    self.assertIn('Unexpected InprocServer32 binary', all_issues)
+    self.assertIn('Unexpected TypeLib HELPDIR', all_issues)
+    self.assertIn('Unexpected TypeLib win64 binary', all_issues)
+    self.assertEqual(
+      sum(
+        1
+        for i in issues_list
+        if 'Orphaned COM Interface registration in 32-bit view' in i
+      ),
+      2,
+    )
+
+    # Correct binary (`remoting_curtain.exe`) with wrong command-line flags,
+    # ProxyStub root SDDL & ThreadingModel checks, Interface detail with missing
+    # ProxyStubClsid32, and CLSID enumeration OSError reporting.
+    probe.set_reg_value(
+      ls_key, '', rf'"{install_dir}\remoting_curtain.exe" --wrong-arg', view=64
+    )
+    probe.set_reg_key(
+      rf'SOFTWARE\Classes\CLSID\{rdp_iid}',
+      view=64,
+      sddl='O:BAG:BAD:(A;;KA;;;WD)',
+    )
+    probe.set_reg_value(
+      rf'SOFTWARE\Classes\CLSID\{rdp_iid}\InprocServer32',
+      'ThreadingModel',
+      'Apartment',
+      view=64,
+    )
+    ev_ps = audit_host_install.IRDP_DESKTOP_SESSION_EVENT_HANDLER_ID
+    probe.set_reg_value(
+      rf'SOFTWARE\Classes\CLSID\{ev_ps}\InprocServer32',
+      'ThreadingModel',
+      'Both',
+      view=64,
+    )
+    probe.remove_reg_key(
+      rf'SOFTWARE\Classes\Interface\{daemon_iid}\ProxyStubClsid32', view=32
+    )
+    with mock.patch.object(
+      probe, 'find_clsids_by_appid', side_effect=PermissionError('access')
+    ):
+      report2 = audit_host_install.audit_host_install(probe)
+    issues2 = '\n'.join(i for e in report2.entries for i in e.issues)
+    self.assertIn('Unexpected LocalServer32 command line', issues2)
+    self.assertIn(
+      "Unexpected InprocServer32 ThreadingModel 'Apartment'", issues2
+    )
+    self.assertNotIn("ThreadingModel 'Both'", issues2)
+    self.assertIn('Non-admin principal WD has write/control rights', issues2)
+    self.assertIn('CLSID enumeration failed in 64-bit view', issues2)
+    daemon_32 = next(
+      e
+      for e in report2.entries
+      if e.location == rf'HKLM\SOFTWARE\Classes\Interface\{daemon_iid} [32-bit]'
+    )
+    self.assertEqual(daemon_32.detail, f'TypeLib={tlb_id!r}')
 
 
 if __name__ == '__main__':
