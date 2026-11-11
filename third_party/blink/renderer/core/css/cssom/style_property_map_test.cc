@@ -104,11 +104,17 @@ TEST_F(StylePropertyMapTest, SetRuntimeEnabledKeyword) {
 
   {
     ScopedCSSGridLanesLayoutForTest feature(false);
+    EXPECT_FALSE(SetKeyword(GetDocument(), style_map, "display", "grid-lanes"));
+    EXPECT_FALSE(
+        SetKeyword(GetDocument(), style_map, "display", "inline-grid-lanes"));
     EXPECT_FALSE(SetKeyword(GetDocument(), style_map, "reading-flow",
                             "grid-lanes-track"));
   }
   {
     ScopedCSSGridLanesLayoutForTest feature(true);
+    EXPECT_TRUE(SetKeyword(GetDocument(), style_map, "display", "grid-lanes"));
+    EXPECT_TRUE(
+        SetKeyword(GetDocument(), style_map, "display", "inline-grid-lanes"));
     EXPECT_TRUE(SetKeyword(GetDocument(), style_map, "reading-flow",
                            "grid-lanes-track"));
   }

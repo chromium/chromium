@@ -3527,8 +3527,11 @@
         "table-row", "table-column-group", "table-column", "table-cell",
         "table-caption", "-webkit-box", "-webkit-inline-box", "flex",
         "inline-flex", "grid", "inline-grid", "contents", "flow-root", "none",
-        "flow", "math", "ruby", "ruby-text", "grid-lanes", "inline-grid-lanes"
+        "flow", "math", "ruby", "ruby-text"
       ],
+      runtime_enabled_keywords: {
+        CSSGridLanesLayout: ["grid-lanes", "inline-grid-lanes"],
+      },
       // `grid-lanes` and `inline-grid-lanes` are experimental keywords and
       // currently behind the CSSGridLanesLayout flag. Since they are not
       // fully supported yet, they are not being exposed to devtools.
