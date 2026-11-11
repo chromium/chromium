@@ -69,6 +69,10 @@ constexpr gfx::Size kDefaultSize(1024, 768);
 // once all the patches land.
 constexpr float kDefaultScale = 1.f;
 
+MATCHER(HasVSyncFlag, "") {
+  return arg.flags & gfx::PresentationFeedback::Flags::kVSync;
+}
+
 struct InputData {
   bool has_file = false;
   gfx::Size size;
@@ -989,9 +993,11 @@ TEST_P(WaylandBufferManagerTest, EnsureCorrectOrderOfCallbacks) {
               OnSubmission(kBufferId1, gfx::SwapResult::SWAP_ACK, _))
       .Times(1);
   // wp_presentation must not exist now. This means that the buffer
-  // manager must send synthetized presentation feedbacks.
+  // manager must send synthesized presentation feedbacks without kVSync.
   ASSERT_TRUE(!connection_->presentation());
-  EXPECT_CALL(mock_surface_gpu, OnPresentation(kBufferId1, _)).Times(1);
+  EXPECT_CALL(mock_surface_gpu,
+              OnPresentation(kBufferId1, ::testing::Not(HasVSyncFlag())))
+      .Times(1);
 
   CommitBuffer(widget, kBufferId1, kBufferId1,
                gfx::FrameData(delegate_.viz_seq()), bounds,
@@ -1013,7 +1019,9 @@ TEST_P(WaylandBufferManagerTest, EnsureCorrectOrderOfCallbacks) {
   EXPECT_CALL(mock_surface_gpu,
               OnSubmission(kBufferId2, gfx::SwapResult::SWAP_ACK, _))
       .Times(1);
-  EXPECT_CALL(mock_surface_gpu, OnPresentation(kBufferId2, _)).Times(1);
+  EXPECT_CALL(mock_surface_gpu,
+              OnPresentation(kBufferId2, ::testing::Not(HasVSyncFlag())))
+      .Times(1);
 
   PostToServerAndWait([id = surface_id_](wl::TestWaylandServerThread* server) {
     auto* mock_surface = server->GetObject<wl::MockSurface>(id);
@@ -1056,7 +1064,8 @@ TEST_P(WaylandBufferManagerTest, EnsureCorrectOrderOfCallbacks) {
   EXPECT_CALL(mock_surface_gpu,
               OnSubmission(kBufferId1, gfx::SwapResult::SWAP_ACK, _))
       .Times(1);
-  EXPECT_CALL(mock_surface_gpu, OnPresentation(kBufferId1, _)).Times(1);
+  EXPECT_CALL(mock_surface_gpu, OnPresentation(kBufferId1, HasVSyncFlag()))
+      .Times(1);
 
   PostToServerAndWait([id = surface_id_](wl::TestWaylandServerThread* server) {
     auto* mock_surface = server->GetObject<wl::MockSurface>(id);

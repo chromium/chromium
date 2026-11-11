@@ -411,6 +411,9 @@ void WaylandCanvasSurface::OnSubmission(uint32_t frame_id,
 void WaylandCanvasSurface::OnPresentation(
     uint32_t frame_id,
     const gfx::PresentationFeedback& feedback) {
+  if (!(feedback.flags & gfx::PresentationFeedback::Flags::kVSync)) {
+    return;
+  }
   last_timestamp_ = feedback.timestamp;
   last_interval_ = feedback.interval;
   is_hw_clock_ = feedback.flags & gfx::PresentationFeedback::Flags::kHWClock;

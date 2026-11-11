@@ -142,6 +142,10 @@ class WaylandFrameManagerTest : public WaylandTestSimple {
     return !frame_manager_->submitted_frames_.back()->submitted_buffers.empty();
   }
 
+  const std::optional<gfx::PresentationFeedback>& LastSubmittedFrameFeedback() {
+    return frame_manager_->submitted_frames_.back()->feedback;
+  }
+
   void SendFrameCallback() {
     PostToServerAndWait([id = window_->root_surface()->get_surface_id()](
                             wl::TestWaylandServerThread* server) {
@@ -354,6 +358,9 @@ TEST_F(WaylandFrameManagerTest,
   EXPECT_FALSE(LastSubmittedFrameHasFrameCallback());
   EXPECT_FALSE(LastSubmittedFrameHasSubmittedBuffers());
   EXPECT_TRUE(LastSubmittedFrameAcked());
+  ASSERT_TRUE(LastSubmittedFrameFeedback().has_value());
+  EXPECT_FALSE(LastSubmittedFrameFeedback()->flags &
+               gfx::PresentationFeedback::Flags::kVSync);
 }
 
 TEST_F(WaylandFrameManagerTest, UnblockFrames_OnTransitionToSwapWithoutCommit) {

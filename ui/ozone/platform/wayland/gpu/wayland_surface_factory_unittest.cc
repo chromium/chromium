@@ -36,11 +36,13 @@
 #include "ui/gfx/native_pixmap.h"
 #include "ui/gfx/overlay_plane_data.h"
 #include "ui/gfx/overlay_priority_hint.h"
+#include "ui/gfx/vsync_provider.h"
 #include "ui/gl/gl_utils.h"
 #include "ui/ozone/platform/wayland/gpu/gbm_pixmap_wayland.h"
 #include "ui/ozone/platform/wayland/gpu/gbm_surfaceless_wayland.h"
 #include "ui/ozone/platform/wayland/gpu/wayland_buffer_manager_gpu.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
+#include "ui/ozone/platform/wayland/host/wayland_frame_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_subsurface.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
@@ -1303,6 +1305,88 @@ TEST_P(WaylandSurfaceFactoryTest, CanvasBufferSwapAck3) {
     EXPECT_EQ(cbs_helper.GetLastCanvasSwapPixelSize(), bounds_px.size());
     EXPECT_EQ(cbs_helper.GetLastFinishedSwapId(), invalid_frame_swap_id2);
   }
+}
+
+// Verifies that WaylandCanvasSurface's VSyncProvider only updates its timebase
+// and interval from VSync-aligned presentation feedback, ignoring synthetic and
+// discarded feedback.
+TEST_P(WaylandSurfaceFactoryTest, CanvasVSyncProviderIgnoresNonVSyncFeedback) {
+  auto canvas = CreateCanvas(widget_);
+  ASSERT_TRUE(canvas);
+  auto vsync_provider = canvas->CreateVSyncProvider();
+  ASSERT_TRUE(vsync_provider);
+
+  const auto bounds_px = window_->GetBoundsInPixels();
+  canvas->ResizeCanvas(bounds_px.size(), 1.0f);
+
+  const uint32_t surface_id = window_->root_surface()->get_surface_id();
+
+  // Without wp_presentation, synthetic feedback is sent on submission. It is
+  // not VSync-aligned and must not populate VSyncProvider parameters.
+  ASSERT_FALSE(connection_->presentation());
+  ASSERT_TRUE(canvas->GetCanvas());
+  canvas->PresentCanvas(gfx::Rect(bounds_px.size()));
+  canvas->OnSwapBuffers(base::DoNothing(), gfx::FrameData());
+  task_environment_.FastForwardBy(
+      WaylandFrameManager::GetPresentationFlushTimerDurationForTesting());
+
+  PostToServerAndWait([surface_id](wl::TestWaylandServerThread* server) {
+    auto* mock_surface = server->GetObject<wl::MockSurface>(surface_id);
+    mock_surface->ReleaseBuffer(mock_surface->attached_buffer());
+    mock_surface->SendFrameCallback();
+  });
+  task_environment_.FastForwardBy(
+      WaylandFrameManager::GetPresentationFlushTimerDurationForTesting());
+
+  base::TimeTicks timebase;
+  base::TimeDelta interval;
+  EXPECT_FALSE(
+      vsync_provider->GetVSyncParametersIfAvailable(&timebase, &interval));
+
+  // Enable wp_presentation and verify that a discarded feedback is also
+  // ignored, while a real presented feedback updates the VSync parameters.
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    ASSERT_TRUE(server->EnsureAndGetWpPresentation());
+  });
+  ASSERT_TRUE(connection_->presentation());
+
+  ASSERT_TRUE(canvas->GetCanvas());
+  canvas->PresentCanvas(gfx::Rect(bounds_px.size()));
+  canvas->OnSwapBuffers(base::DoNothing(), gfx::FrameData());
+  task_environment_.FastForwardBy(
+      WaylandFrameManager::GetPresentationFlushTimerDurationForTesting());
+
+  PostToServerAndWait([surface_id](wl::TestWaylandServerThread* server) {
+    auto* mock_surface = server->GetObject<wl::MockSurface>(surface_id);
+    mock_surface->ReleaseBuffer(mock_surface->attached_buffer());
+    mock_surface->SendFrameCallback();
+    server->EnsureAndGetWpPresentation()->SendPresentationCallbackDiscarded(
+        /*last=*/false);
+  });
+  task_environment_.FastForwardBy(
+      WaylandFrameManager::GetPresentationFlushTimerDurationForTesting());
+
+  EXPECT_FALSE(
+      vsync_provider->GetVSyncParametersIfAvailable(&timebase, &interval));
+
+  ASSERT_TRUE(canvas->GetCanvas());
+  canvas->PresentCanvas(gfx::Rect(bounds_px.size()));
+  canvas->OnSwapBuffers(base::DoNothing(), gfx::FrameData());
+  task_environment_.FastForwardBy(
+      WaylandFrameManager::GetPresentationFlushTimerDurationForTesting());
+
+  PostToServerAndWait([surface_id](wl::TestWaylandServerThread* server) {
+    auto* mock_surface = server->GetObject<wl::MockSurface>(surface_id);
+    mock_surface->ReleaseBuffer(mock_surface->attached_buffer());
+    mock_surface->SendFrameCallback();
+    server->EnsureAndGetWpPresentation()->SendPresentationCallback();
+  });
+  task_environment_.FastForwardBy(
+      WaylandFrameManager::GetPresentationFlushTimerDurationForTesting());
+
+  EXPECT_TRUE(
+      vsync_provider->GetVSyncParametersIfAvailable(&timebase, &interval));
+  EXPECT_FALSE(timebase.is_null());
 }
 
 TEST_P(WaylandSurfaceFactoryTest, CreateSurfaceCheckGbm) {

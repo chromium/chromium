@@ -970,8 +970,8 @@ void WaylandFrameManager::MaybeProcessSubmittedFrames() {
 void WaylandFrameManager::SetFakeFeedback(WaylandFrame* frame) {
   CHECK(!frame->feedback.has_value() || frame->feedback->failed(),
         base::NotFatalUntil::M163);
-  frame->feedback = frame->feedback.value_or(gfx::PresentationFeedback(
-      base::TimeTicks::Now(), base::TimeDelta(), GetPresentationKindFlags(0)));
+  frame->feedback = frame->feedback.value_or(
+      gfx::PresentationFeedback(base::TimeTicks::Now(), base::TimeDelta(), 0));
 }
 
 void WaylandFrameManager::ProcessOldSubmittedFrame(WaylandFrame* frame) {
