@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
 #include "chrome/browser/ui/autofill/payments/omnibox_autofill_page_action_controller.h"
-#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
@@ -26,7 +25,6 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
-#include "ui/actions/actions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
@@ -55,7 +53,10 @@ DEFINE_USER_DATA(OmniboxAutofillBubbleController);
 
 OmniboxAutofillBubbleController::OmniboxAutofillBubbleController(
     tabs::TabInterface* tab_interface)
-    : AutofillBubbleControllerBase(tab_interface),
+    : AutofillBubbleControllerBase(
+          tab_interface,
+          PageActionConfig{.action_id = kActionAutofillPayment,
+                           .should_sync_bubble_showing_state = true}),
       scoped_unowned_user_data_(
           CHECK_DEREF(tab_interface).GetUnownedUserDataHost(),
           *this),
@@ -67,13 +68,7 @@ OmniboxAutofillBubbleController::OmniboxAutofillBubbleController(
                                  web_contents()->GetBrowserContext())
                                  ->payments_data_manager()) {}
 
-OmniboxAutofillBubbleController::~OmniboxAutofillBubbleController() {
-  if (IsShowingBubble()) {
-    if (actions::ActionItem* action_item = GetActionItem()) {
-      action_item->SetIsShowingBubble(false);
-    }
-  }
-}
+OmniboxAutofillBubbleController::~OmniboxAutofillBubbleController() = default;
 
 void OmniboxAutofillBubbleController::Initialize(
     std::vector<Suggestion> suggestions,
@@ -136,10 +131,6 @@ void OmniboxAutofillBubbleController::DoShowBubble() {
           browser_window->GetAutofillBubbleHandler()->ShowOmniboxAutofillBubble(
               web_contents(), this)) {
     SetBubbleView(*bubble_view);
-
-    if (actions::ActionItem* action_item = GetActionItem()) {
-      action_item->SetIsShowingBubble(true);
-    }
   }
 }
 
@@ -176,10 +167,6 @@ void OmniboxAutofillBubbleController::OnBubbleClosed(
     PaymentsUiClosedReason reason) {
   if (on_suggestions_hidden_callback_) {
     on_suggestions_hidden_callback_.Run(ToSuggestionHidingReason(reason));
-  }
-
-  if (actions::ActionItem* action_item = GetActionItem()) {
-    action_item->SetIsShowingBubble(false);
   }
 
   // When the bubble is closed without accepting a suggestion, collapse the
@@ -232,21 +219,6 @@ void OmniboxAutofillBubbleController::WillDiscardContents(
           OmniboxAutofillPageActionController::From(*GetTabInterface())) {
     page_action_controller->HideChip();
   }
-}
-
-actions::ActionItem* OmniboxAutofillBubbleController::GetActionItem() {
-  BrowserWindowInterface* browser_window =
-      GetTabInterface()->GetBrowserWindowInterface();
-  if (!browser_window) {
-    return nullptr;
-  }
-  actions::ActionItem* root_action_item =
-      BrowserActions::From(browser_window)->root_action_item();
-  if (!root_action_item) {
-    return nullptr;
-  }
-  return actions::ActionManager::Get().FindAction(kActionAutofillPayment,
-                                                  root_action_item);
 }
 
 }  // namespace autofill

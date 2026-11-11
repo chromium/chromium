@@ -14,10 +14,6 @@
 #include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
-namespace actions {
-class ActionItem;
-}
-
 namespace tabs {
 class TabInterface;
 }
@@ -84,7 +80,6 @@ class OmniboxAutofillBubbleController : public AutofillBubbleControllerBase {
   void WillDiscardContents(tabs::TabInterface* tab,
                            content::WebContents* old_contents,
                            content::WebContents* new_contents);
-  actions::ActionItem* GetActionItem();
 
   ui::ScopedUnownedUserData<OmniboxAutofillBubbleController>
       scoped_unowned_user_data_;
