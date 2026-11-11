@@ -1,0 +1,35 @@
+This is a testharness.js-based test.
+[FAIL] [required] gatherElements float32 2D input and int32 non-constant indices options.axis=1
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': gatherElements only supports constant indices."
+[FAIL] [required] gatherElements float32 3D input and int32 non-constant negative indices
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': gatherElements only supports constant indices."
+[FAIL] [required] gatherElements float32 2D input and int32 non-constant negative indices options.axis=1
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': gatherElements only supports constant indices."
+[FAIL] [required] gatherElements float32 2D input and int32 non-constant negative indices options.axis=0
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': gatherElements only supports constant indices."
+[FAIL] [required] gatherElements float32 1D input and int32 non-constant negative indices
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': gatherElements only supports constant indices."
+[FAIL] [required] gatherElements float32 3D input and int32 non-constant negative indices options.axis=1
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': gatherElements only supports constant indices."
+[FAIL] [required] gatherElements float32 4D input and int32 non-constant negative indices options.axis=0
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': gatherElements only supports constant indices."
+[FAIL] [required] gatherElements float32 5D input and int32 non-constant negative indices options.axis=2
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': gatherElements only supports constant indices."
+[FAIL] [required] gatherElements float16 3D input and int32 non-constant indices options.axis=0
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': gatherElements only supports constant indices."
+[FAIL] [required] gatherElements float16 3D input and int32 non-constant negative indices
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': gatherElements only supports constant indices."
+[FAIL] [required] gatherElements float16 2D input and int32 non-constant negative indices options.axis=1
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': gatherElements only supports constant indices."
+[FAIL] [required] gatherElements float16 2D input and int32 non-constant negative indices options.axis=0
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': gatherElements only supports constant indices."
+[FAIL] [required] gatherElements float16 1D input and int32 non-constant negative indices
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': gatherElements only supports constant indices."
+[FAIL] [required] gatherElements float16 3D input and int32 non-constant negative indices options.axis=1
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': gatherElements only supports constant indices."
+[FAIL] [required] gatherElements float16 4D input and int32 non-constant negative indices options.axis=0
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': gatherElements only supports constant indices."
+[FAIL] [required] gatherElements float16 5D input and int32 non-constant negative indices options.axis=2
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': gatherElements only supports constant indices."
+Harness: the test ran to completion.
+
