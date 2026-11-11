@@ -108,6 +108,14 @@ def _CheckRepoPackageVersionBump(input_api, output_api):
 def _CommonChecks(input_api, output_api):
     results = []
     results.extend(_CheckRepoPackageVersionBump(input_api, output_api))
+    results.extend(
+        input_api.canned_checks.RunUnitTestsInDirectory(
+            input_api,
+            output_api,
+            "rpm",
+            files_to_check=[r"^.+_unittest\.py$"],
+        )
+    )
     return results
 
 
