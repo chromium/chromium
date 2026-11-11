@@ -4,9 +4,7 @@
 
 import {AudioLevelsProcessor} from './audio_levels.js';
 import type {Bump} from './audio_simulation_utils.js';
-import {AMPLITUDE_DECAY_RATE, applySensitivityEasing, clamp, getAmbientSimulatedMotion, makeSimulatedAudioBump, MS_PER_FRAME, SPEECH_RECEIVED_BUMP_DURATION_MULT, SPEECH_RECEIVED_BUMP_DURATION_OFFSET, SPEECH_RECEIVED_BUMP_MAX_VOL_MULT, SPEECH_RECEIVED_BUMP_MAX_VOL_OFFSET, triggerSyllableBumps, updateBumpsAndGetSum} from './audio_simulation_utils.js';
-
-const SPEECH_RECEIVED_VOL_SPIKE: number = 0.4;
+import {clamp, getAmbientSimulatedMotion, makeSimulatedAudioBump, MS_PER_FRAME, RECORDING_WAVE_AMPLITUDE_DECAY_RATE, RECORDING_WAVE_SPEECH_BUMP_DURATION_MULT, RECORDING_WAVE_SPEECH_BUMP_DURATION_OFFSET, RECORDING_WAVE_SPEECH_BUMP_MAX_VOL_MULT, RECORDING_WAVE_SPEECH_BUMP_MAX_VOL_OFFSET, RECORDING_WAVE_SPEECH_RECEIVED_VOL_SPIKE, RECORDING_WAVE_SYLLABLE_BUMP_DURATION_MULT, RECORDING_WAVE_SYLLABLE_BUMP_DURATION_OFFSET, RECORDING_WAVE_SYLLABLE_BUMP_MAX_VOL_MULT, RECORDING_WAVE_SYLLABLE_BUMP_MAX_VOL_OFFSET, RECORDING_WAVE_TRANSCRIPT_MIN_SPIKE, RECORDING_WAVE_TRANSCRIPT_SPIKE_RANGE, triggerSyllableBumps, updateBumpsAndGetSum} from './audio_simulation_utils.js';
 
 export class AudioProcessorService {
   private audioContext: AudioContext|null = null;
@@ -16,15 +14,18 @@ export class AudioProcessorService {
   private mediaStream: MediaStream|null = null;
   private microphoneSource: MediaStreamAudioSourceNode|null = null;
 
+  // Simulation mode is currently only enabled on Android (via
+  // `ComposeboxVoiceSearchElement`), as opening a concurrent microphone stream
+  // conflicts with Android speech recognition.
   private simulate: boolean = false;
   private isListening: boolean = false;
   private startTimeMs: number = 0;
   private lastVolumeTimeMs: number = 0;
   private decayingAmplitude: number = 0;
+  private pendingSpikeAmplitude: number = 0;
   private activeSimulatedBumps: Bump[] = [];
   private receivedSpeech: boolean = false;
-  private lastWordCount: number = 0;
-  private firstSyllable: boolean = true;
+  private lastSyllableCount: number = 0;
 
   setSimulate(simulate: boolean): void {
     this.simulate = simulate;
@@ -37,9 +38,9 @@ export class AudioProcessorService {
       this.startTimeMs = performance.now();
       this.lastVolumeTimeMs = this.startTimeMs;
       this.decayingAmplitude = 0;
+      this.pendingSpikeAmplitude = 0;
       this.activeSimulatedBumps = [];
-      this.firstSyllable = true;
-      this.lastWordCount = 0;
+      this.lastSyllableCount = 0;
       this.receivedSpeech = false;
       return true;
     }
@@ -120,13 +121,20 @@ export class AudioProcessorService {
       this.lastVolumeTimeMs = now;
 
       if (elapsedFrames > 0) {
-        this.decayingAmplitude *= Math.pow(AMPLITUDE_DECAY_RATE, elapsedFrames);
+        this.decayingAmplitude *=
+            Math.pow(RECORDING_WAVE_AMPLITUDE_DECAY_RATE, elapsedFrames);
       }
-      // Attack: snap up immediately if new volume is louder.
-      this.decayingAmplitude = Math.max(this.decayingAmplitude, rawInputLevel);
+      // Attack: snap up immediately if new volume or an unsampled speech spike
+      // is louder, clamped to [0, 1] so overlapping bumps begin decaying
+      // immediately once they pass.
+      this.decayingAmplitude = clamp(
+          Math.max(
+              this.decayingAmplitude, rawInputLevel,
+              this.pendingSpikeAmplitude),
+          0, 1);
+      this.pendingSpikeAmplitude = 0;
 
-      const level = applySensitivityEasing(this.decayingAmplitude);
-      return clamp(level, 0, 1);
+      return this.decayingAmplitude;
     }
 
     if (!this.analyser || !this.levels) {
@@ -142,24 +150,21 @@ export class AudioProcessorService {
     if (!this.simulate || !this.isListening) {
       return;
     }
-    const trimmedTranscript = transcript.trim();
-    if (trimmedTranscript === '') {
-      this.lastWordCount = 0;
-      return;
+    const previousSyllableCount = this.lastSyllableCount;
+    this.lastSyllableCount = triggerSyllableBumps(
+        this.activeSimulatedBumps, transcript, previousSyllableCount,
+        this.getCurrentVirtualFrame(),
+        RECORDING_WAVE_SYLLABLE_BUMP_DURATION_MULT,
+        RECORDING_WAVE_SYLLABLE_BUMP_DURATION_OFFSET,
+        RECORDING_WAVE_SYLLABLE_BUMP_MAX_VOL_MULT,
+        RECORDING_WAVE_SYLLABLE_BUMP_MAX_VOL_OFFSET);
+
+    if (this.lastSyllableCount > previousSyllableCount) {
+      this.pendingSpikeAmplitude = Math.max(
+          this.pendingSpikeAmplitude,
+          RECORDING_WAVE_TRANSCRIPT_MIN_SPIKE +
+              Math.random() * RECORDING_WAVE_TRANSCRIPT_SPIKE_RANGE);
     }
-    const words = trimmedTranscript.split(/\s+/);
-    const currentWordCount = words.length;
-
-    if (currentWordCount <= this.lastWordCount) {
-      this.lastWordCount = currentWordCount;
-      return;
-    }
-
-    const newWordCount = currentWordCount - this.lastWordCount;
-    const newWords = words.slice(-newWordCount);
-    this.lastWordCount = currentWordCount;
-
-    this.triggerSyllableBumps(newWords);
   }
 
   updateReceivedSpeech(receivedSpeech: boolean): void {
@@ -170,23 +175,15 @@ export class AudioProcessorService {
       this.receivedSpeech = true;
       const currentVirtualFrame = this.getCurrentVirtualFrame();
       makeSimulatedAudioBump(
-          this.activeSimulatedBumps, SPEECH_RECEIVED_BUMP_DURATION_MULT,
-          SPEECH_RECEIVED_BUMP_DURATION_OFFSET, currentVirtualFrame,
-          SPEECH_RECEIVED_BUMP_MAX_VOL_MULT,
-          SPEECH_RECEIVED_BUMP_MAX_VOL_OFFSET);
-      this.decayingAmplitude = SPEECH_RECEIVED_VOL_SPIKE;
+          this.activeSimulatedBumps, RECORDING_WAVE_SPEECH_BUMP_DURATION_MULT,
+          RECORDING_WAVE_SPEECH_BUMP_DURATION_OFFSET, currentVirtualFrame,
+          RECORDING_WAVE_SPEECH_BUMP_MAX_VOL_MULT,
+          RECORDING_WAVE_SPEECH_BUMP_MAX_VOL_OFFSET);
+      this.pendingSpikeAmplitude = Math.max(
+          this.pendingSpikeAmplitude, RECORDING_WAVE_SPEECH_RECEIVED_VOL_SPIKE);
     } else if (!receivedSpeech) {
       this.receivedSpeech = false;
     }
-  }
-
-  // Delegated to `audio_simulation_utils.ts` for shared syllable bump logic.
-  private triggerSyllableBumps(words: string[]): void {
-    const currentVirtualFrame = this.getCurrentVirtualFrame();
-    const {firstSyllable} = triggerSyllableBumps(
-        this.activeSimulatedBumps, words, currentVirtualFrame,
-        this.firstSyllable);
-    this.firstSyllable = firstSyllable;
   }
 
   private getCurrentVirtualFrame(): number {
@@ -199,8 +196,9 @@ export class AudioProcessorService {
     if (this.simulate) {
       this.activeSimulatedBumps = [];
       this.decayingAmplitude = 0;
-      this.lastWordCount = 0;
-      this.firstSyllable = true;
+      this.pendingSpikeAmplitude = 0;
+      this.lastSyllableCount = 0;
+      this.receivedSpeech = false;
       return;
     }
     if (this.mediaStream) {

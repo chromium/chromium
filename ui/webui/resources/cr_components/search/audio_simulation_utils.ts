@@ -21,8 +21,10 @@ const VOWEL_GROUP_EXCEPTIONS = [
 export const MIN_FRAMES_PER_SYLLABLE: number = 6;
 export const MAX_FRAMES_PER_SYLLABLE: number = 8;
 
-// -12 frames = ~200ms compensation due to speech webkit latency.
-export const FRAME_LATENCY: number = -12;
+const MIN_BUMP_SEPARATION_FRAMES: number = 4;
+const SYLLABLE_BREATH_GAP_FRAMES: number = 2;
+const MAX_QUEUED_BUMP_LEAD_FRAMES: number = 120;
+
 export const CIRCLE_RAD: number = Math.PI * 2;
 export const MS_PER_FRAME: number = 16.67;
 export const AMPLITUDE_DECAY_RATE: number = 0.85;
@@ -38,6 +40,25 @@ export const SYLLABLE_BUMP_DURATION_MULT: number = 25;
 export const SYLLABLE_BUMP_DURATION_OFFSET: number = 15;
 export const SYLLABLE_BUMP_MAX_VOL_MULT: number = 0.12;
 export const SYLLABLE_BUMP_MAX_VOL_OFFSET: number = 0.08;
+
+// `<recording-wave>` simulation mode is currently only enabled on Android. It
+// samples `getVolume()` once every 120ms (~7.2 frames) and maps [0, 1] linearly
+// onto [8px, 36px] bar heights, so simulated bumps and envelope decay are
+// scaled for that sampling cadence and height range.
+export const RECORDING_WAVE_SPEECH_RECEIVED_VOL_SPIKE: number = 0.55;
+export const RECORDING_WAVE_TRANSCRIPT_MIN_SPIKE: number = 0.4;
+export const RECORDING_WAVE_TRANSCRIPT_SPIKE_RANGE: number = 0.25;
+export const RECORDING_WAVE_AMPLITUDE_DECAY_RATE: number = 0.9;
+
+export const RECORDING_WAVE_SPEECH_BUMP_DURATION_MULT: number = 12;
+export const RECORDING_WAVE_SPEECH_BUMP_DURATION_OFFSET: number = 24;
+export const RECORDING_WAVE_SPEECH_BUMP_MAX_VOL_MULT: number = 0.25;
+export const RECORDING_WAVE_SPEECH_BUMP_MAX_VOL_OFFSET: number = 0.45;
+
+export const RECORDING_WAVE_SYLLABLE_BUMP_DURATION_MULT: number = 10;
+export const RECORDING_WAVE_SYLLABLE_BUMP_DURATION_OFFSET: number = 14;
+export const RECORDING_WAVE_SYLLABLE_BUMP_MAX_VOL_MULT: number = 0.4;
+export const RECORDING_WAVE_SYLLABLE_BUMP_MAX_VOL_OFFSET: number = 0.45;
 
 export function clamp(value: number, minVal: number, maxVal: number): number {
   return Math.min(Math.max(value, minVal), maxVal);
@@ -169,41 +190,59 @@ export function makeSimulatedAudioBump(
 }
 
 export function triggerSyllableBumps(
-    bumps: Bump[], words: string[], currentVirtualFrame: number,
-    firstSyllable: boolean): {firstSyllable: boolean} {
-  /* Keeps every start time after this time (maintains order of time
-   * in activeSimulatedBumps_). Start in "future" to account for latency in
-   * speech recognition webkit.
-   */
-  let frameOffset = FRAME_LATENCY;
+    bumps: Bump[], transcript: string, previousSyllableCount: number,
+    currentVirtualFrame: number,
+    durationMultiplier: number = SYLLABLE_BUMP_DURATION_MULT,
+    durationOffset: number = SYLLABLE_BUMP_DURATION_OFFSET,
+    maxVolMultiplier: number = SYLLABLE_BUMP_MAX_VOL_MULT,
+    maxVolOffset: number = SYLLABLE_BUMP_MAX_VOL_OFFSET): number {
+  const trimmedTranscript = transcript.trim();
+  if (trimmedTranscript === '') {
+    return 0;
+  }
 
-  words.forEach(word => {
-    const syllableCount = countSyllablesHeuristic(word);
+  const words = trimmedTranscript.split(/\s+/);
+  const wordSyllables = words.map(countSyllablesHeuristic);
+  const currentSyllableCount =
+      wordSyllables.reduce((sum, count) => sum + count, 0);
+
+  if (currentSyllableCount <= previousSyllableCount) {
+    return currentSyllableCount;
+  }
+
+  let latestStartFrame = currentVirtualFrame - MIN_BUMP_SEPARATION_FRAMES;
+  for (const bump of bumps) {
+    if (bump.startTime > latestStartFrame) {
+      latestStartFrame = bump.startTime;
+    }
+  }
+  let nextStartFrame = Math.max(
+      currentVirtualFrame, latestStartFrame + MIN_BUMP_SEPARATION_FRAMES);
+  const maxStartFrame = currentVirtualFrame + MAX_QUEUED_BUMP_LEAD_FRAMES;
+
+  let syllableIndex = 0;
+  for (const syllableCount of wordSyllables) {
+    let addedBumpInWord = false;
     for (let i = 0; i < syllableCount; i++) {
-      /* If not first syllable; else, if first syllable already
-       * counted by change in speechReceived state, ignore
-       * to avoid double counting
-       */
-      if (!firstSyllable) {
+      if (syllableIndex >= previousSyllableCount &&
+          nextStartFrame <= maxStartFrame) {
         makeSimulatedAudioBump(
-            bumps, SYLLABLE_BUMP_DURATION_MULT, SYLLABLE_BUMP_DURATION_OFFSET,
-            currentVirtualFrame + frameOffset, SYLLABLE_BUMP_MAX_VOL_MULT,
-            SYLLABLE_BUMP_MAX_VOL_OFFSET);
-        /* At least min frames, up to slower end of
-         * average frames per syllable:
-         */
-        frameOffset += MIN_FRAMES_PER_SYLLABLE +
+            bumps, durationMultiplier, durationOffset, nextStartFrame,
+            maxVolMultiplier, maxVolOffset);
+        nextStartFrame += MIN_FRAMES_PER_SYLLABLE +
             ((MAX_FRAMES_PER_SYLLABLE - MIN_FRAMES_PER_SYLLABLE) *
              Math.random());
-      } else {
-        firstSyllable = false;
+        addedBumpInWord = true;
       }
+      syllableIndex++;
     }
+    if (addedBumpInWord) {
+      // Breath gap:
+      nextStartFrame += SYLLABLE_BREATH_GAP_FRAMES;
+    }
+  }
 
-    // Breath gap:
-    frameOffset += 2;
-  });
-  return {firstSyllable};
+  return currentSyllableCount;
 }
 
 /**
