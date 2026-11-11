@@ -12,8 +12,10 @@ import android.text.style.StyleSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.MarginLayoutParams;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.Px;
 import androidx.annotation.StringRes;
 import androidx.core.view.ViewCompat;
 
@@ -132,6 +134,15 @@ class GlicBottomSheetFreCoordinator {
                 mContext.getString(
                         R.string.glic_fre_bottom_sheet_body, mContext.getString(descriptionRes));
         mBodyView.setText(SpanApplier.applySpans(text, spans));
+    }
+
+    /** Sets the bottom inset, in px, to keep below the content. */
+    void setBottomInset(@Px int bottomInset) {
+        if (mDestroyed) return;
+        MarginLayoutParams params = (MarginLayoutParams) mContentContainer.getLayoutParams();
+        if (params.bottomMargin == bottomInset) return;
+        params.bottomMargin = bottomInset;
+        mContentContainer.setLayoutParams(params);
     }
 
     View getView() {

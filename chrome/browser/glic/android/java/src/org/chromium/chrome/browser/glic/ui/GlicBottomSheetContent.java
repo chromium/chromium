@@ -41,6 +41,7 @@ public class GlicBottomSheetContent extends TabBottomSheetContent {
     private @Nullable Runnable mDestroyCallback;
     private @Nullable GlicBottomSheetFreCoordinator mFreCoordinator;
     private @Nullable View mFreScrollView;
+    private @Px int mBottomSafeAreaInset;
 
     /**
      * Constructor.
@@ -96,6 +97,13 @@ public class GlicBottomSheetContent extends TabBottomSheetContent {
                         this::onBackPressed);
         mFreScrollView = mFreCoordinator.getView().findViewById(R.id.glic_fre_scroll_view);
         setWebUiHidden(true);
+        mFreCoordinator.setBottomInset(mBottomSafeAreaInset);
+    }
+
+    @Override
+    public void onBottomSafeAreaInsetChanged(@Px int bottomInset) {
+        mBottomSafeAreaInset = bottomInset;
+        if (mFreCoordinator != null) mFreCoordinator.setBottomInset(bottomInset);
     }
 
     private void onFreAccepted() {

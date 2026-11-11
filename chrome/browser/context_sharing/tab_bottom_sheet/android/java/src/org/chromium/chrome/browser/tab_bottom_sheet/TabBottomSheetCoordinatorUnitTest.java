@@ -19,6 +19,7 @@ import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -48,6 +49,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnit;
@@ -56,6 +58,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ActivityState;
+import org.chromium.base.Callback;
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.SupplierUtils;
@@ -1643,5 +1646,36 @@ public class TabBottomSheetCoordinatorUnitTest {
         BottomSheetObserver observer = mBottomSheetObserverArgumentCaptor.getValue();
         observer.onContainerBottomMarginChanged(88);
         verify(content).onBottomMarginChanged(88);
+    }
+
+    @Test
+    public void testBottomSafeAreaInsetObserverForwardsToContentAndClearsOnDestroy() {
+        WebViewResizingHelper helper = mock(WebViewResizingHelper.class);
+        when(mMockWebUi.getWebViewResizingHelper()).thenReturn(helper);
+        TabBottomSheetContent content = mock(TabBottomSheetContent.class);
+        doReturn(content)
+                .when(mMockContentProvider)
+                .createContent(
+                        any(View.class),
+                        anyFloat(),
+                        anyFloat(),
+                        anyInt(),
+                        anyInt(),
+                        anyInt(),
+                        any(Runnable.class));
+        when(mMockBottomSheetController.requestShowContent(any(BottomSheetContent.class), eq(true)))
+                .thenReturn(true);
+
+        mCoordinator.tryToShowBottomSheet(/* animate= */ true, /* startsExpanded= */ true);
+
+        ArgumentCaptor<Callback<Integer>> captor = captor();
+        verify(helper).setBottomSafeAreaInsetObserver(captor.capture());
+        captor.getValue().onResult(48);
+        verify(content).onBottomSafeAreaInsetChanged(48);
+
+        mCoordinator.destroy();
+        InOrder inOrder = inOrder(helper, content);
+        inOrder.verify(helper).setBottomSafeAreaInsetObserver(null);
+        inOrder.verify(content).destroy();
     }
 }

@@ -22,6 +22,7 @@ import androidx.annotation.Px;
 import androidx.core.view.WindowInsetsAnimationCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.context_sharing.R;
@@ -137,6 +138,8 @@ public class WebViewResizingHelper {
     private boolean mPlaceholderInitialized;
     private @Px int mLastPlaceholderHeight = -1;
     private @Px int mLastPlaceholderBottomInsetPx = -1;
+    private @Nullable Callback<Integer> mBottomSafeAreaInsetObserver;
+    private @Px int mLastObservedBottomInsetPx = -1;
     private @Nullable ThinWebView mThinWebView;
     private @Nullable WebContents mWebContents;
     private boolean mIsViewportSizeFixed;
@@ -255,6 +258,7 @@ public class WebViewResizingHelper {
         mLastPlaceholderHeight = -1;
         mLastPlaceholderBottomInsetPx = -1;
         mLastSafeAreaInsets.set(0, 0, 0, -1);
+        mBottomSafeAreaInsetObserver = null;
         resetInternal(/* reattachPlaceholder= */ false);
         mWebContents = null;
         if (mInsetObserver != null) {
@@ -319,6 +323,18 @@ public class WebViewResizingHelper {
         updateBounds();
     }
 
+    /**
+     * Sets the observer of the WebUI's bottom safe area inset, in px. In edge-to-edge bottom
+     * sheets, it is called now and when the inset changes. Pass null to clear.
+     */
+    void setBottomSafeAreaInsetObserver(@Nullable Callback<Integer> observer) {
+        mBottomSafeAreaInsetObserver = observer;
+        mLastObservedBottomInsetPx = -1;
+        if (observer == null || !isEdgeToEdgeEnabled() || mIsSidePanel) return;
+        mLastObservedBottomInsetPx = getBottomSafeAreaInsetPx();
+        observer.onResult(mLastObservedBottomInsetPx);
+    }
+
     private void updateSafeAreaInsets(boolean ignoreCache) {
         if (!isEdgeToEdgeEnabled() || mIsSidePanel) {
             return;
@@ -329,6 +345,11 @@ public class WebViewResizingHelper {
                 && (ignoreCache || mLastPlaceholderBottomInsetPx != bottomInsetPx)) {
             mLastPlaceholderBottomInsetPx = bottomInsetPx;
             mPlaceholderCoordinator.updateBottomInset(bottomInsetPx);
+        }
+        if (mBottomSafeAreaInsetObserver != null
+                && (ignoreCache || mLastObservedBottomInsetPx != bottomInsetPx)) {
+            mLastObservedBottomInsetPx = bottomInsetPx;
+            mBottomSafeAreaInsetObserver.onResult(bottomInsetPx);
         }
 
         if (mWebContents == null || mWebContents.isDestroyed()) {
