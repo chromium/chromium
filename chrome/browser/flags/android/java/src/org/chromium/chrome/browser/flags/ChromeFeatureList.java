@@ -485,6 +485,8 @@ public abstract class ChromeFeatureList {
     public static final String BROWSER_CONTROLS_PERSISTS_ON_CVH = "BrowserControlsPersistsOnCvh";
     public static final String BROWSER_CONTROLS_SCROLL_SNAP_ANIMATION =
             "BrowserControlsScrollSnapAnimation";
+    public static final String BROWSER_CONTROLS_SNAP_ON_HEIGHT_CHANGE =
+            "BrowserControlsSnapOnHeightChange";
     public static final String BROWSING_DATA_MODEL = "BrowsingDataModel";
     public static final String BROWSING_HISTORY_FILTER_BY_ACTOR = "BrowsingHistoryFilterByActor";
     public static final String BROWSING_HISTORY_FILTER_BY_DEVICE = "BrowsingHistoryFilterByDevice";
@@ -1814,6 +1816,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(BROWSER_CONTROLS_PERSISTS_ON_CVH, true);
     public static final MutableFlagWithSafeDefault sBrowserControlsScrollSnapAnimation =
             newMutableFlagWithSafeDefault(BROWSER_CONTROLS_SCROLL_SNAP_ANIMATION, false);
+    public static final MutableFlagWithSafeDefault sBrowserControlsSnapOnHeightChange =
+            newMutableFlagWithSafeDefault(BROWSER_CONTROLS_SNAP_ON_HEIGHT_CHANGE, true);
     public static final MutableFlagWithSafeDefault sBrowsingHistoryFilterByActor =
             newMutableFlagWithSafeDefault(BROWSING_HISTORY_FILTER_BY_ACTOR, false);
     public static final MutableFlagWithSafeDefault sBrowsingHistoryFilterByDomainV2 =

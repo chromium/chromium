@@ -123,6 +123,7 @@ BASE_DECLARE_FEATURE(kBrowserControlsEarlyResize);
 BASE_DECLARE_FEATURE(kBrowserControlsHidingToken);
 BASE_DECLARE_FEATURE(kBrowserControlsLockoutDuration);
 BASE_DECLARE_FEATURE(kBrowserControlsPersistsOnCvh);
+BASE_DECLARE_FEATURE(kBrowserControlsSnapOnHeightChange);
 BASE_DECLARE_FEATURE(kCCTAlwaysOpenInBrowser);
 BASE_DECLARE_FEATURE(kCCTBlockTouchesDuringEnterAnimation);
 BASE_DECLARE_FEATURE(kCCTClientDataHeader);

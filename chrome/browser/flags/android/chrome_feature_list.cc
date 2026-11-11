@@ -346,6 +346,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kBrowserControlsHidingToken,
     &kBrowserControlsLockoutDuration,
     &kBrowserControlsPersistsOnCvh,
+    &kBrowserControlsSnapOnHeightChange,
     &kCCTAlwaysOpenInBrowser,
     &kCCTBlockTouchesDuringEnterAnimation,
     &kCCTClientDataHeader,
@@ -800,6 +801,7 @@ BASE_FEATURE(kBrowserControlsEarlyResize, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kBrowserControlsHidingToken, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kBrowserControlsLockoutDuration, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kBrowserControlsPersistsOnCvh, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kBrowserControlsSnapOnHeightChange, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kCCTAlwaysOpenInBrowser, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kCCTBlockTouchesDuringEnterAnimation, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kCCTClientDataHeader, base::FEATURE_DISABLED_BY_DEFAULT);
