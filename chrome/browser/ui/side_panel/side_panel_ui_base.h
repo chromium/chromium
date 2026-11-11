@@ -67,6 +67,7 @@ class SidePanelUIBase : public SidePanelUI {
             bool suppress_animations) override;
   std::optional<SidePanelEntry::Id> GetCurrentEntryId() const override;
   int GetCurrentEntryDefaultContentWidth() const override;
+  bool CanShow() const override;
   bool IsSidePanelShowing() const override;
   bool IsSidePanelEntryShowing(
       const SidePanelEntry::Key& entry_key) const override;

@@ -89,6 +89,14 @@ class SidePanelUI {
   // manual width preference or the current entry's default width.
   virtual void ResetContentsWidthOverride() = 0;
 
+  // DEPRECATED: Do not add new callers. Returns whether the browser window
+  // currently has sufficient space to display the side panel (false on Desktop
+  // Android when the window is too narrow and side panel entries are
+  // deferred).
+  // TODO(b/485906031): Remove once narrow Android windows transition side
+  // panels to bottom sheets instead of deferring them.
+  virtual bool CanShow() const = 0;
+
   // Return whether any entry is being shown in the side panel.
   // Note: this returns false if `entry` is current loading but not actually
   // shown.

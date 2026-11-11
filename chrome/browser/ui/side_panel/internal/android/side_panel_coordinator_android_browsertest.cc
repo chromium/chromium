@@ -370,6 +370,19 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
+                       CanShow_ReflectsAvailableSpace) {
+  SidePanelUI* side_panel_ui = SidePanelUI::From(browser_);
+  ASSERT_NE(nullptr, side_panel_ui);
+  EXPECT_TRUE(side_panel_ui->CanShow());
+
+  coordinator_->SimulateAutoCloseConditionForTesting();
+  EXPECT_FALSE(side_panel_ui->CanShow());
+
+  coordinator_->SimulateAutoRestoreConditionForTesting();
+  EXPECT_TRUE(side_panel_ui->CanShow());
+}
+
+IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
                        Show_TriggersOnEntryShown) {
   // Arrange:
 

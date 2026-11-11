@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/side_panel/mock_side_panel_ui.h"
 
 MockSidePanelUI::MockSidePanelUI(ui::UnownedUserDataHost& host)
-    : scoped_unowned_user_data_(host, *this) {}
+    : scoped_unowned_user_data_(host, *this) {
+  ON_CALL(*this, CanShow).WillByDefault(testing::Return(true));
+}
 
 MockSidePanelUI::~MockSidePanelUI() = default;

@@ -78,6 +78,10 @@ int SidePanelUIBase::GetCurrentEntryDefaultContentWidth() const {
   return entry->GetDefaultContentWidth();
 }
 
+bool SidePanelUIBase::CanShow() const {
+  return true;
+}
+
 bool SidePanelUIBase::IsSidePanelShowing() const {
   return current_key().has_value();
 }

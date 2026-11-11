@@ -552,6 +552,11 @@ void SidePanelCoordinatorAndroid::ResetContentsWidthOverride() {
   // TODO(crbug.com/580036068): Implement.
 }
 
+bool SidePanelCoordinatorAndroid::CanShow() const {
+  return Java_SidePanelCoordinatorAndroidBridge_canShow(
+      AttachCurrentThread(), java_coordinator(), browser()->GetProfile());
+}
+
 void SidePanelCoordinatorAndroid::OnActiveTabChanged(
     content::WebContents* old_contents,
     content::WebContents* new_contents,
@@ -643,8 +648,7 @@ void SidePanelCoordinatorAndroid::Show(
 
   // Defer the show request if there is insufficient space to show the side
   // panel.
-  if (!Java_SidePanelCoordinatorAndroidBridge_canShow(
-          AttachCurrentThread(), java_coordinator(), browser()->GetProfile())) {
+  if (!CanShow()) {
     SPLOG("Show - insufficient space; defer showing the entry.");
     deferred_entry_tracker_.AddEntry(key, DeferredReason::kInsufficientSpace);
     entry->OnEntryShowDeferred();

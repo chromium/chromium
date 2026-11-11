@@ -70,6 +70,7 @@ class SidePanelCoordinatorAndroid : public SidePanelUIBase {
               SidePanelOpenTrigger open_trigger) override;
   void OverrideContentsWidth(int width) override;
   void ResetContentsWidthOverride() override;
+  bool CanShow() const override;
   void OnActiveTabChanged(content::WebContents* old_contents,
                           content::WebContents* new_contents,
                           bool tab_removed_for_deletion) override;
