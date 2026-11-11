@@ -373,7 +373,12 @@ const displayInfocard = (() => {
      *   the total size of the symbols in the artifact.
      */
     _updateBreakdownRow(row, stats, percentage) {
-      if (!stats?.size) {  // Subsumes |size| === 0.
+      const diffMode = state.getDiffMode();
+      // In diff mode, added and removed symbols can cancel each other out, so
+      // keep rows with a net size of 0 when they contain changes.
+      const hasDiffCounts =
+          diffMode && (stats?.added || stats?.removed || stats?.changed);
+      if (!stats?.size && !hasDiffCounts) {
         if (row.parentElement) {
           this._tableBody.removeChild(row);
         }
@@ -391,7 +396,6 @@ const displayInfocard = (() => {
       const sizeString = formatNumber(stats.size, 2, 2);
       const percentString = formatPercent(percentage, 2, 2);
 
-      const diffMode = state.getDiffMode();
       if (diffMode && stats.added !== undefined) {
         addedColumn.removeAttribute('hidden');
         removedColumn.removeAttribute('hidden');
@@ -458,7 +462,7 @@ const displayInfocard = (() => {
       for (const [type, stats] of statsEntries) {
         delete extraRows[type];
         const {color} = getIconStyle(type);
-        const percentage = stats.size / totalSize;
+        const percentage = totalSize ? stats.size / totalSize : 0;
         this._updateBreakdownRow(this._infoRows[type], stats, percentage);
 
         const arcLength = Math.abs(percentage) * 2 * Math.PI;
