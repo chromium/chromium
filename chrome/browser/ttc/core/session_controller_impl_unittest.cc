@@ -13,6 +13,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/power_monitor_test.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
@@ -117,6 +118,7 @@ class TtcSessionControllerImplTest : public testing::Test {
  protected:
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  base::test::ScopedPowerMonitorTestSource power_monitor_source_;
   TestingProfile profile_;
   base::test::ScopedFeatureList scoped_feature_list_;
   raw_ptr<TtcKeyedService> service_ = nullptr;
@@ -240,6 +242,25 @@ TEST_F(TtcSessionControllerImplTest, SessionTimesOutAfterInactivity) {
       .Times(1);
 
   task_environment_.FastForwardBy(base::Minutes(1) + base::Seconds(1));
+  EXPECT_FALSE(service_->is_session_active());
+}
+
+// Suspending the device ends the session, without the error toast an
+// inactivity timeout shows.
+TEST_F(TtcSessionControllerImplTest, SuspendEndsSessionWithoutError) {
+  service_->StartSession();
+  ASSERT_TRUE(service_->is_session_active());
+
+  testing::NiceMock<MockSessionControllerObserver> observer;
+  EXPECT_CALL(observer, OnError).Times(0);
+  EXPECT_CALL(observer,
+              OnSessionLifecycleChanged(SessionLifecycle::kInitializing))
+      .Times(1);
+  EXPECT_CALL(observer, OnSessionLifecycleChanged(SessionLifecycle::kFinished))
+      .Times(1);
+  service_->session_controller()->AddObserver(&observer);
+
+  power_monitor_source_.GenerateSuspendEvent();
   EXPECT_FALSE(service_->is_session_active());
 }
 

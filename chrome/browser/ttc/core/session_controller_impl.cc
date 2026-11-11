@@ -21,6 +21,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ttc/app/public/audio_controller.h"
 #include "chrome/browser/ttc/core/features.h"
+#include "chrome/browser/ttc/core/lock_or_suspend_detector.h"
 #include "chrome/browser/ttc/core/session_inactivity_detector.h"
 #include "chrome/browser/ttc/core/session_journal_impl.h"
 #include "chrome/browser/ttc/core/session_view.h"
@@ -87,6 +88,9 @@ SessionControllerImpl::SessionControllerImpl(
   inactivity_detector_ = std::make_unique<SessionInactivityDetector>(
       *this, base::BindRepeating(&SessionControllerImpl::OnInactivityTimeout,
                                  weak_ptr_factory_.GetWeakPtr()));
+  lock_or_suspend_detector_ = std::make_unique<LockOrSuspendDetector>(
+      base::BindRepeating(&SessionControllerImpl::OnLockedOrSuspended,
+                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 SessionControllerImpl::~SessionControllerImpl() {
@@ -404,6 +408,23 @@ void SessionControllerImpl::OnInactivityTimeout() {
           .Build());
 
   OnError(ErrorCode::kInactivityTimeout);
+}
+
+void SessionControllerImpl::OnLockedOrSuspended(
+    LockOrSuspendDetector::Reason reason) {
+  if (session_lifecycle_ == SessionLifecycle::kFinished) {
+    return;
+  }
+  // The user locked the screen or suspended the device, so there is no error
+  // to report.
+  GetJournal().Log(
+      "TtcSessionLockedOrSuspended",
+      actor::JournalDetailsBuilder()
+          .Add("reason", reason == LockOrSuspendDetector::Reason::kSuspend
+                             ? "suspend"
+                             : "screen_lock")
+          .Build());
+  EndSessionAsync();
 }
 
 }  // namespace ttc
