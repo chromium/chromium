@@ -533,8 +533,7 @@ class AutofillAgent : public content::RenderFrameObserver,
 
   // Runs the custom form control script of the current document, which the
   // browser loads through it. Only exists if custom form control scripts are
-  // enabled (see `EnableCustomFormControlScripts()`), until the frame is
-  // destroyed (see `OnDestruct()`).
+  // enabled (see `EnableCustomFormControlScripts()`).
   std::unique_ptr<CustomFormControlAgentImpl> custom_form_control_agent_;
 
   mojo::AssociatedRemote<mojom::AutofillDriver> autofill_driver_;

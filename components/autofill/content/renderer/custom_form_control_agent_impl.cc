@@ -29,6 +29,10 @@ CustomFormControlAgentImpl::CustomFormControlAgentImpl(
 
 CustomFormControlAgentImpl::~CustomFormControlAgentImpl() = default;
 
+void CustomFormControlAgentImpl::OnDestruct() {
+  receiver_.reset();
+}
+
 void CustomFormControlAgentImpl::LoadUnsafeScript(
     const blink::DocumentToken& document,
     const std::string& script,
@@ -37,8 +41,6 @@ void CustomFormControlAgentImpl::LoadUnsafeScript(
     std::move(callback).Run(false);
     return;
   }
-  // If the script detaches the frame, `this` may be destroyed during the call,
-  // so only the local `callback` is used afterwards (the reply is dropped).
   std::move(callback).Run(executor_.LoadScript(script));
 }
 

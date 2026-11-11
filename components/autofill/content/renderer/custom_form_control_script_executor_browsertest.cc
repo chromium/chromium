@@ -977,20 +977,6 @@ TEST_F(CustomFormControlScriptExecutorTest, CallsFailWhileWaiting) {
   EXPECT_EQ(Call("sync"), "sync");
 }
 
-// Tests that loading a script fails a call that waits for a promise of the
-// previous manager.
-TEST_F(CustomFormControlScriptExecutorTest, LoadScriptFailsPendingCall) {
-  ASSERT_TRUE(executor_->LoadScript(kAsyncScript));
-  CallResult never;
-  StartCall(MayReturnPromise(true), "never", never);
-  EXPECT_FALSE(never.done);
-  EXPECT_TRUE(executor_->LoadScript(kValidScript));
-  EXPECT_TRUE(never.done);
-  EXPECT_TRUE(never.had_isolate);
-  EXPECT_EQ(never.value, std::nullopt);
-  EXPECT_TRUE(executor_->has_manager());
-}
-
 // Tests that a call waiting for a promise fails when a new document is
 // committed, since the promise can no longer settle. The frame is still alive,
 // so the callback gets the isolate.
@@ -1005,9 +991,9 @@ TEST_F(CustomFormControlScriptExecutorTest, FailsPendingCallOnNavigation) {
   EXPECT_EQ(never.value, std::nullopt);
 }
 
-// Tests that destroying the executor while a call waits for a promise fails the
-// call, and that the promise settling afterwards is ignored.
-TEST_F(CustomFormControlScriptExecutorTest, DestroyedWhileWaiting) {
+// Tests that loading a script fails a call that waits for a promise of the
+// previous manager, and that the promise settling afterwards is ignored.
+TEST_F(CustomFormControlScriptExecutorTest, LoadScriptFailsPendingCall) {
   ASSERT_TRUE(executor_->LoadScript(R"(
     function createCustomFormControlManager() {
       return {
@@ -1022,11 +1008,13 @@ TEST_F(CustomFormControlScriptExecutorTest, DestroyedWhileWaiting) {
   )"));
   CallResult later;
   StartCall(MayReturnPromise(true), "later", later);
-  executor_.reset();
+  EXPECT_FALSE(later.done);
+  EXPECT_TRUE(executor_->LoadScript(kValidScript));
   EXPECT_TRUE(later.done);
-  EXPECT_FALSE(later.had_isolate);
+  EXPECT_TRUE(later.had_isolate);
   EXPECT_EQ(later.value, std::nullopt);
-  // The promise's reaction finds no executor.
+  EXPECT_TRUE(executor_->has_manager());
+  // The promise's reaction finds no waiting call.
   ASSERT_TRUE(base::test::RunUntil([&] {
     return EvaluateInIsolatedWorld("String(window.resolved === true)") ==
            "true";

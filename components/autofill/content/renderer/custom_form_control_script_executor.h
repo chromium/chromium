@@ -39,11 +39,9 @@ struct SelectOption;
 // script context is released, e.g. when a new document is committed or the
 // frame is detached.
 //
-// The executor is owned by its creator, not by the render frame. Once the frame
-// is destroyed, the executor keeps no manager and its methods fail; the creator
-// may destroy it then or later, even while `LoadScript()` runs a script (e.g.
-// if the script detached the frame), but not while a called method runs (see
-// `CallFunction()`).
+// Since the executed JavaScript may detach the frame, the executor must be
+// destroyed only after `content::RenderFrameObserver::OnDestruct()` has
+// fired (i.e., all observers have been notified).
 //
 // The isolated world has a restrictive Content Security Policy: scripts can
 // access the frame's DOM, but can't use `eval()`, load scripts or make network
@@ -70,9 +68,8 @@ class CustomFormControlScriptExecutor : public content::RenderFrameObserver {
   // false, and keeps no manager, if the script throws an exception, doesn't
   // declare `createCustomFormControlManager()`, or the function's result isn't
   // an object or is a function, array or promise (e.g. because the function is
-  // `async`). Also returns false if running the script detaches the frame; the
-  // executor may then already be destroyed when this returns. A call that
-  // awaits resolution of a promise of the previous manager fails first.
+  // `async`). A call that awaits resolution of a promise of the previous
+  // manager fails first.
   bool LoadScript(std::string_view script);
 
   // Returns whether a manager is loaded for the current document.
@@ -119,9 +116,9 @@ class CustomFormControlScriptExecutor : public content::RenderFrameObserver {
   // Runs with the isolate, the isolated world's context (which is entered) and
   // the value the method returned, so that the caller can convert the value to
   // C++ in that context. The context and the value are empty if the call
-  // failed. The isolate is then null if the frame is gone or the executor is
-  // being destroyed. The callback runs outside of the call's `v8::TryCatch`, so
-  // it must catch exceptions that converting the value throws.
+  // failed. The isolate is then null if the frame is gone. The callback runs
+  // outside of the call's `v8::TryCatch`, so it must catch exceptions that
+  // converting the value throws.
   using ResultCallback = base::OnceCallback<
       void(v8::Isolate*, v8::Local<v8::Context>, v8::MaybeLocal<v8::Value>)>;
 
@@ -149,7 +146,6 @@ class CustomFormControlScriptExecutor : public content::RenderFrameObserver {
   // - The world's script context is released. This happens, for example, when
   //   the script detaches the frame or a new document is committed.
   // - `LoadScript()` replaces the manager while the call waits for its promise.
-  // - The executor is destroyed while the call waits for its promise.
   //
   // About `callback`:
   // - It runs exactly once.
@@ -160,11 +156,6 @@ class CustomFormControlScriptExecutor : public content::RenderFrameObserver {
   // - It must not call `LoadScript()`. It may run while the world's script
   //   context is being released, and it can't tell. Running script then isn't
   //   allowed.
-  // - It may run while the executor is being destroyed. Then it must not access
-  //   the executor.
-  //
-  // The owner must not destroy the executor while the method runs. The owner
-  // may destroy the executor while the call waits for its promise.
   void CallFunction(MayReturnPromise may_return_promise,
                     std::string_view function_name,
                     std::vector<Argument> arguments,

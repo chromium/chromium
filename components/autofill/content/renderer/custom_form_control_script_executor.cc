@@ -106,8 +106,8 @@ bool IsManager(v8::Local<v8::Value> value) {
 // need a separate C++ allocation, which V8 doesn't free when it
 // garbage-collects the reaction (e.g. after the context is released). So the
 // map is static, outliving all executors, and executors erase their entry when
-// the call ends or when they are destroyed. A reaction for a call that ended
-// finds no entry and does nothing.
+// the call ends. A reaction for a call that ended finds no entry and does
+// nothing.
 //
 // Call ids come from `g_next_call_id`, which only increases, so an id is never
 // reused. The reactions get the id as a `Number`, which represents integers up
@@ -385,10 +385,7 @@ CustomFormControlScriptExecutor::CustomFormControlScriptExecutor(
 }
 
 CustomFormControlScriptExecutor::~CustomFormControlScriptExecutor() {
-  // The promise can no longer finish the call.
-  if (pending_call_) {
-    RunPendingCallback(nullptr, {}, {});
-  }
+  CHECK(!pending_call_);  // OnDestruct() runs the pending call.
 }
 
 bool CustomFormControlScriptExecutor::LoadScript(std::string_view script) {
@@ -670,8 +667,7 @@ void CustomFormControlScriptExecutor::RunPendingCallback(
     v8::Local<v8::Context> context,
     v8::MaybeLocal<v8::Value> value) {
   GetCallsAwaitingPromise().erase(pending_call_->id);
-  // Reset before running the callback, which may make another call or, unless
-  // this runs from the destructor, destroy this executor.
+  // Reset before running the callback, which may make another call.
   ResultCallback callback = std::move(pending_call_->callback);
   pending_call_.reset();
   std::move(callback).Run(isolate, context, value);

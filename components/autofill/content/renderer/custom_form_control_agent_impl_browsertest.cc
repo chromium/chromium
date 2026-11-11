@@ -36,18 +36,18 @@ constexpr int32_t kWorldId = content::ISOLATED_WORLD_ID_CONTENT_END + 1;
 
 using Remote = mojo::AssociatedRemote<mojom::CustomFormControlAgent>;
 
-// Destroys `agent` when the frame is destroyed, like `AutofillAgent` does.
-class DestroyAgentOnFrameDestruction : public content::RenderFrameObserver {
+// Calls `CustomFormControlAgentImpl::OnDestruct()` when the frame is destroyed,
+// like `AutofillAgent` does.
+class OnDestructNotifier : public content::RenderFrameObserver {
  public:
-  DestroyAgentOnFrameDestruction(
-      content::RenderFrame* render_frame,
-      std::unique_ptr<CustomFormControlAgentImpl>& agent)
+  OnDestructNotifier(content::RenderFrame* render_frame,
+                     CustomFormControlAgentImpl& agent)
       : content::RenderFrameObserver(render_frame), agent_(agent) {}
 
  private:
-  void OnDestruct() override { agent_->reset(); }
+  void OnDestruct() override { agent_->OnDestruct(); }
 
-  const raw_ref<std::unique_ptr<CustomFormControlAgentImpl>> agent_;
+  const raw_ref<CustomFormControlAgentImpl> agent_;
 };
 
 class CustomFormControlAgentImplTest : public content::RenderViewTest {
@@ -132,18 +132,15 @@ TEST_F(CustomFormControlAgentImplTest, RebindReplacesConnection) {
   EXPECT_TRUE(LoadUnsafeScript(second, GetDocumentToken(), kValidScript));
 }
 
-// Tests that the reply is dropped, without using the agent after it is
-// destroyed, if the script detaches its own frame and the owner destroys the
-// agent.
+// Tests that the reply is dropped if the script detaches its own frame.
 TEST_F(CustomFormControlAgentImplTest, DropsReplyIfScriptDetachesFrame) {
   LoadHTML("<iframe src='about:blank'></iframe>");
   blink::WebLocalFrame* child_frame =
       GetMainFrame()->FirstChild()->ToWebLocalFrame();
   content::RenderFrame* child = content::RenderFrame::FromWebFrame(child_frame);
   blink::AssociatedInterfaceRegistry child_registry;
-  auto child_agent = std::make_unique<CustomFormControlAgentImpl>(
-      child, kWorldId, child_registry);
-  DestroyAgentOnFrameDestruction owner(child, child_agent);
+  CustomFormControlAgentImpl child_agent(child, kWorldId, child_registry);
+  OnDestructNotifier owner(child, child_agent);
   Remote remote;
   ASSERT_TRUE(Bind(remote, child_registry));
 
@@ -156,7 +153,6 @@ TEST_F(CustomFormControlAgentImplTest, DropsReplyIfScriptDetachesFrame) {
                            loaded.GetCallback());
   ASSERT_TRUE(
       base::test::RunUntil([&remote] { return !remote.is_connected(); }));
-  EXPECT_FALSE(child_agent);
   EXPECT_FALSE(loaded.IsReady());
 }
 

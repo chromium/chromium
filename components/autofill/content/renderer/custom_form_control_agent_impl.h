@@ -30,15 +30,12 @@ namespace autofill {
 // current document into a `CustomFormControlScriptExecutor`, which is owned by
 // this `CustomFormControlAgentImpl`.
 //
-// The frame's `AutofillAgent` owns the `CustomFormControlAgentImpl`. The
-// `AutofillAgent` creates the `CustomFormControlAgentImpl` if custom form
-// control scripts are enabled and destroys it in `AutofillAgent::OnDestruct()`,
-// so the `CustomFormControlAgentImpl` never outlives the frame.
+// The frame's `AutofillAgent` owns the `CustomFormControlAgentImpl`.
 class CustomFormControlAgentImpl : public mojom::CustomFormControlAgent {
  public:
   // Runs scripts in the isolated world `world_id` of `render_frame` (see
   // `CustomFormControlScriptExecutor`), and registers the interface in
-  // `registry`, the frame's registry. `render_frame` must outlive this.
+  // `registry`, the frame's registry.
   CustomFormControlAgentImpl(content::RenderFrame* render_frame,
                              int32_t world_id,
                              blink::AssociatedInterfaceRegistry& registry);
@@ -46,6 +43,8 @@ class CustomFormControlAgentImpl : public mojom::CustomFormControlAgent {
   CustomFormControlAgentImpl& operator=(const CustomFormControlAgentImpl&) =
       delete;
   ~CustomFormControlAgentImpl() override;
+
+  void OnDestruct();
 
   CustomFormControlScriptExecutor& executor() { return executor_; }
 
