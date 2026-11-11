@@ -244,6 +244,8 @@ void HoldingSpaceTrayChildBubble::Reset() {
 
   for (HoldingSpaceItemViewsSection* section : sections_)
     section->Reset();
+
+  delegate_ = nullptr;
 }
 
 std::vector<HoldingSpaceItemView*>

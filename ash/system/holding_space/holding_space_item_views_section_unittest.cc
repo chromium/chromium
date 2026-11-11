@@ -91,10 +91,9 @@ class HoldingSpaceItemViewsSectionTest
     if (!tear_down_asynchronously_)
       widget_->CloseNow();
 
+    HoldingSpaceAshTestBase::TearDown();
     widget_.reset();
     view_delegate_.reset();
-
-    HoldingSpaceAshTestBase::TearDown();
   }
 
   std::vector<std::unique_ptr<HoldingSpaceItemViewsSection>> CreateSections(

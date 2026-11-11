@@ -59,7 +59,7 @@ class HoldingSpaceTrayChildBubbleTestBase : public HoldingSpaceAshTestBase {
   }
 
   void TearDown() override {
-    child_bubble_ = nullptr;
+    widget_->GetRootView()->RemoveChildViewT(child_bubble_.ExtractAsDangling());
     widget_.reset();
     view_delegate_.reset();
 
