@@ -111,6 +111,11 @@ inline constexpr char kFreShortcutReminderImpressionCount[] =
 inline constexpr char kScreenshotDisclosureAccepted[] =
     "omnibox_everywhere.screenshot_disclosure_accepted";
 
+// Boolean profile preference specifying whether the Omnibox Everywhere NTP
+// promo has been completed.
+inline constexpr char kNtpPromoCompleted[] =
+    "omnibox_everywhere.ntp_promo_completed";
+
 // Registers Local State preferences for Omnibox Everywhere.
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 

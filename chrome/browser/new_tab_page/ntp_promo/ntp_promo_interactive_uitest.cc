@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
 #include <sstream>
 #include <string>
 #include <string_view>
@@ -15,6 +16,7 @@
 #include "chrome/browser/new_tab_page/modules/modules_constants.h"
 #include "chrome/browser/new_tab_page/modules/modules_switches.h"
 #include "chrome/browser/new_tab_page/modules/test_support.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -36,6 +38,7 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/interaction/tracked_element_webcontents.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
+#include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/search/ntp_features.h"
 #include "components/user_education/common/ntp_promo/ntp_promo_controller.h"
@@ -58,6 +61,21 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/native_theme/mock_os_settings_provider.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
+#include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_controller.h"
+#include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_prefs.h"
+#include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_ui_manager.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
+#endif
+
+#if BUILDFLAG(IS_WIN)
+#include "base/base_paths_win.h"
+#include "base/files/scoped_temp_dir.h"
+#include "base/test/scoped_path_override.h"
+#endif
 
 namespace {
 
@@ -393,6 +411,65 @@ IN_PROC_BROWSER_TEST_F(NtpPromoUiTest,
 
   // TODO(https://crbug.com/433607240): Check model, histograms.
 }
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+class NtpOmniboxEverywherePromoUiTest : public NtpPromoUiTest {
+ public:
+  NtpOmniboxEverywherePromoUiTest() {
+    feature_list_.InitAndEnableFeature(omnibox::kOmniboxEverywhere);
+  }
+
+  void SetUp() override {
+#if BUILDFLAG(IS_WIN)
+    ASSERT_TRUE(temp_start_menu_dir_.CreateUniqueTempDir());
+    start_menu_override_.emplace(base::DIR_START_MENU,
+                                 temp_start_menu_dir_.GetPath());
+#endif
+    NtpPromoUiTest::SetUp();
+  }
+
+  void TearDownOnMainThread() override {
+    if (g_browser_process && g_browser_process->GetFeatures()) {
+      if (auto* controller = g_browser_process->GetFeatures()
+                                 ->omnibox_everywhere_controller()) {
+        controller->ShutdownForProfile(browser()->GetProfile());
+        controller->ExitBackgroundMode();
+      }
+    }
+    NtpPromoUiTest::TearDownOnMainThread();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+#if BUILDFLAG(IS_WIN)
+  base::ScopedTempDir temp_start_menu_dir_;
+  std::optional<base::ScopedPathOverride> start_menu_override_;
+#endif
+};
+
+IN_PROC_BROWSER_TEST_F(NtpOmniboxEverywherePromoUiTest,
+                       OmniboxEverywherePromoAppearsAndIsClickable) {
+  constexpr char kOmniboxEverywhereIconName[] = "search-spark-custom";
+  ClearRegisteredPromosExcept(kNtpOmniboxEverywherePromoId);
+  RunTestSequence(
+      InstrumentTab(kNtpElementId),
+      NavigateWebContents(kNtpElementId, GURL(kNtpURL)),
+      WaitForPromoVisible(kOmniboxEverywhereIconName), ClickPromo(),
+      InAnyContext(WaitForShow(omnibox_everywhere::OmniboxEverywhereUIManager::
+                                   kOmniboxEverywhereElementId)));
+}
+
+IN_PROC_BROWSER_TEST_F(NtpOmniboxEverywherePromoUiTest,
+                       OmniboxEverywherePromoHiddenWhenAlreadyUsed) {
+  ClearRegisteredPromosExcept(kNtpOmniboxEverywherePromoId);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
+      omnibox_everywhere::prefs::kNtpPromoCompleted, true);
+  RunTestSequence(InstrumentTab(kNtpElementId),
+                  NavigateWebContents(kNtpElementId, GURL(kNtpURL)),
+                  CheckShowMetrics(ShowNtpPromosResult::kNotShownNoPromos),
+                  EnsureNotPresent(kNtpElementId, kPathToPromo));
+}
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 // Regression test for crbug.com/485875459. With a second browser window open,
 // ensure that a second-window promo click opens the customization side panel

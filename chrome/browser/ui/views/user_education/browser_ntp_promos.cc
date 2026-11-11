@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/views/user_education/browser_ntp_promos.h"
 
 #include "base/functional/callback_helpers.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/background/ntp_custom_background_service.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
@@ -19,6 +21,10 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
+#include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_controller.h"
+#include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_prefs.h"
+#include "chrome/browser/ui/omnibox/omnibox_everywhere_service_factory.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/side_panel/side_panel_action_callback.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/user_education/impl/browser_user_education_context.h"
@@ -35,8 +41,10 @@
 #include "extensions/browser/extension_util.h"
 #include "extensions/common/extension_urls.h"
 #include "ui/actions/actions.h"
+#include "ui/base/base_window.h"
 #include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 using user_education::NtpPromoContent;
 using user_education::NtpPromoSpecification;
@@ -112,6 +120,48 @@ void InvokeCustomizationPromo(ContextPtr context) {
               .Build());
 }
 
+NtpPromoSpecification::Eligibility CheckOmniboxEverywherePromoEligibility(
+    ContextPtr context) {
+  if (!g_browser_process || !g_browser_process->GetFeatures() ||
+      !g_browser_process->GetFeatures()->omnibox_everywhere_controller()) {
+    return NtpPromoSpecification::Eligibility::kIneligible;
+  }
+  auto* profile = GetProfile(context);
+  if (!omnibox::IsOmniboxEverywhereEnabled(profile) ||
+      !omnibox::kOmniboxEverywhereNtpPromoParam.Get() ||
+      !OmniboxEverywhereServiceFactory::GetForProfile(profile) ||
+      !profile->GetPrefs() ||
+      !profile->GetPrefs()->FindPreference(
+          omnibox_everywhere::prefs::kNtpPromoCompleted)) {
+    return NtpPromoSpecification::Eligibility::kIneligible;
+  }
+  return profile->GetPrefs()->GetBoolean(
+             omnibox_everywhere::prefs::kNtpPromoCompleted)
+             ? NtpPromoSpecification::Eligibility::kCompleted
+             : NtpPromoSpecification::Eligibility::kEligible;
+}
+
+void InvokeOmniboxEverywherePromo(ContextPtr context) {
+  BrowserWindowInterface* bwi =
+      context->AsA<BrowserUserEducationContext>()->GetBrowser();
+  if (!bwi) {
+    return;
+  }
+  if (!g_browser_process || !g_browser_process->GetFeatures()) {
+    return;
+  }
+  auto* controller =
+      g_browser_process->GetFeatures()->omnibox_everywhere_controller();
+  if (!controller) {
+    return;
+  }
+  gfx::NativeWindow native_window = bwi->GetWindow()
+                                        ? bwi->GetWindow()->GetNativeWindow()
+                                        : gfx::NativeWindow();
+  controller->OnInvoke(omnibox_everywhere::InvocationSource::kNtpPromo,
+                       bwi->GetProfile(), native_window);
+}
+
 }  // namespace
 
 void MaybeRegisterNtpPromos(user_education::NtpPromoRegistry& registry) {
@@ -152,4 +202,19 @@ void MaybeRegisterNtpPromos(user_education::NtpPromoRegistry& registry) {
       user_education::Metadata(
           141, "cjgrant@google.com",
           "Promotes Chrome extensions on the New Tab Page")));
+
+  registry.AddPromo(NtpPromoSpecification(
+      kNtpOmniboxEverywherePromoId,
+      NtpPromoContent("search-spark-custom", IDS_NTP_OMNIBOX_EVERYWHERE_PROMO,
+                      IDS_NTP_OMNIBOX_EVERYWHERE_PROMO),
+      base::BindRepeating(&CheckOmniboxEverywherePromoEligibility),
+      /*show_callback=*/base::DoNothing(),
+      base::BindRepeating(&InvokeOmniboxEverywherePromo),
+      /*show_after=*/{},
+      user_education::Metadata(
+          155, "samiraarabgol@google.com, chrome-sis-eng@google.com",
+          "Promotes Omnibox Everywhere on the New Tab Page",
+          /*required_features=*/{&omnibox::kOmniboxEverywhere},
+          {user_education::Metadata::Platforms::kWindows,
+           user_education::Metadata::Platforms::kMac})));
 }

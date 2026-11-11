@@ -44,9 +44,16 @@
 
 namespace omnibox_everywhere {
 
-#if BUILDFLAG(IS_WIN)
 namespace {
 
+void MarkNtpPromoCompleted(Profile* profile) {
+  if (profile && profile->GetPrefs() &&
+      profile->GetPrefs()->FindPreference(prefs::kNtpPromoCompleted)) {
+    profile->GetPrefs()->SetBoolean(prefs::kNtpPromoCompleted, true);
+  }
+}
+
+#if BUILDFLAG(IS_WIN)
 void PinToTaskbarIfShortcutExists(base::OnceCallback<void(bool)> callback,
                                   bool shortcut_exists) {
   // The shell only allows pinning an AUMI that has a Start Menu shortcut.
@@ -59,9 +66,9 @@ void PinToTaskbarIfShortcutExists(base::OnceCallback<void(bool)> callback,
       browser_util::PinAppToTaskbarChannel::kOmniboxEverywhere,
       std::move(callback));
 }
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace
-#endif  // BUILDFLAG(IS_WIN)
 
 OmniboxEverywhereController::OmniboxEverywhereController(
     OmniboxEverywhereUIManager::ContentsWrapperFactory contents_wrapper_factory,
@@ -422,8 +429,13 @@ void OmniboxEverywhereController::OnInvoke(InvocationSource source,
 
   SetTargetProfile(profile);
   switch (source) {
+    // Mark the NTP promo completed when the user invokes Omnibox Everywhere
+    // directly via hotkey, status tray, or command line. Invocations from
+    // `kNtpPromo` leave this unset until the user actually navigates in
+    // `OmniboxEverywhereService::NavigateInBrowserWindow()`.
     case InvocationSource::kGlobalHotkey:
     case InvocationSource::kStatusTrayIcon:
+      MarkNtpPromoCompleted(profile);
       if (ui_manager_->profile() == profile) {
         const bool should_dismiss = prefs::IsEphemeralModelEnabled()
                                         ? ui_manager_->IsVisible()
@@ -434,8 +446,11 @@ void OmniboxEverywhereController::OnInvoke(InvocationSource source,
         }
       }
       break;
-    case InvocationSource::kProfilePicker:
     case InvocationSource::kCommandLine:
+      MarkNtpPromoCompleted(profile);
+      break;
+    case InvocationSource::kProfilePicker:
+    case InvocationSource::kNtpPromo:
       break;
   }
 

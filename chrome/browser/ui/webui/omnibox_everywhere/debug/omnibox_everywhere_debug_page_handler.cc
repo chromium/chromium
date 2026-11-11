@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_prefs.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/webui/user_education_internals/user_education_internals_page_handler_impl.h"
+#include "chrome/browser/user_education/ntp_promo_identifiers.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_ui.h"
@@ -29,6 +30,7 @@ void ResetProfilePromoData(Profile* profile) {
   handler.ClearFeaturePromoData(
       feature_engagement::kIPHOmniboxEverywhereLensPromoFeature.name,
       base::DoNothing());
+  handler.ClearNtpPromoData(kNtpOmniboxEverywherePromoId, base::DoNothing());
   handler.RemoveGracePeriods(base::DoNothing());
 }
 

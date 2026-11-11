@@ -30,6 +30,7 @@
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/prefs/pref_service.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -328,6 +329,14 @@ void OmniboxEverywhereService::NavigateInBrowserWindow(
     ui::PageTransition transition,
     base::OnceCallback<void(content::NavigationHandle&)>
         navigation_handle_callback) {
+  // Mark the NTP promo completed once a user (including one who opened Omnibox
+  // Everywhere from the NTP promo) actually navigates.
+  if (profile_ && profile_->GetPrefs() &&
+      profile_->GetPrefs()->FindPreference(
+          omnibox_everywhere::prefs::kNtpPromoCompleted)) {
+    profile_->GetPrefs()->SetBoolean(
+        omnibox_everywhere::prefs::kNtpPromoCompleted, true);
+  }
   NavigateParams params = bwi ? NavigateParams(bwi, url, transition)
                               : NavigateParams(profile_, url, transition);
   params.should_trigger_session_restore = false;

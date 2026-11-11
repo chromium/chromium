@@ -67,6 +67,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(kFreShortcutReminderDismissed, false);
   registry->RegisterIntegerPref(kFreShortcutReminderImpressionCount, 0);
   registry->RegisterBooleanPref(kScreenshotDisclosureAccepted, false);
+  registry->RegisterBooleanPref(kNtpPromoCompleted, false);
 }
 
 namespace {
@@ -277,6 +278,7 @@ void ResetProfilePrefs(Profile* profile) {
       kFreShortcutReminderDismissed,
       kFreShortcutReminderImpressionCount,
       kScreenshotDisclosureAccepted,
+      kNtpPromoCompleted,
   };
   for (std::string_view pref_name : kProfilePrefsToClear) {
     if (prefs->FindPreference(pref_name)) {

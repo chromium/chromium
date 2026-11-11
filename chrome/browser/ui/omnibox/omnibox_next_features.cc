@@ -186,6 +186,9 @@ const base::FeatureParam<bool> kOmniboxEverywhereSmallFontParam{
 // Controls showing titles under most visited tiles in OmniboxEverywhere.
 const base::FeatureParam<bool> kOmniboxEverywhereMostVisitedShowTitleParam{
     &kOmniboxEverywhere, "MostVisitedShowTitle", true};
+// Controls showing the New Tab Page promo for OmniboxEverywhere.
+const base::FeatureParam<bool> kOmniboxEverywhereNtpPromoParam{
+    &kOmniboxEverywhere, "NtpPromo", true};
 // Enables the WebUI for omnibox suggestions without modifying the popup UI.
 BASE_FEATURE(kWebUIOmniboxPopupDebug, DISABLED);
 // Enables side-by-side comparison omnibox suggestions in WebUI and Views.

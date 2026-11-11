@@ -80,6 +80,9 @@ source_set("impl") {
   public_deps = [ ":user_education" ]
 
   deps = [
+    "//chrome/app:generated_resources",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:global_features",
     "//chrome/browser/actor",
     "//chrome/browser/background/glic",
     "//chrome/browser/desktop_to_mobile_promos:utils",
@@ -111,6 +114,7 @@ source_set("impl") {
     "//chrome/browser/ui/location_bar",
     "//chrome/browser/ui/navigator",
     "//chrome/browser/ui/omnibox",
+    "//chrome/browser/ui/omnibox/omnibox_everywhere",
     "//chrome/browser/ui/page_action:icon_type",
     "//chrome/browser/ui/performance_controls",
     "//chrome/browser/ui/send_tab_to_self",
@@ -164,6 +168,7 @@ source_set("impl") {
     "//components/user_education/webui",
     "//content/public/browser",
     "//ui/base",
+    "//ui/gfx:native_ui_types",
     "//ui/views",
   ]
 
@@ -201,6 +206,7 @@ source_set("unit_tests") {
 
   deps = [
     ":user_education",
+    "//chrome/app:generated_resources",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/signin",
     "//chrome/browser/ui/browser_window",

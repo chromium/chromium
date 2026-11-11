@@ -9,6 +9,8 @@
 #include <vector>
 
 #include "base/strings/string_util.h"
+#include "chrome/browser/user_education/ntp_promo_identifiers.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/user_education/common/ntp_promo/ntp_promo_registry.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -47,4 +49,18 @@ TEST(BrowserNtpPromosTest, CheckMetadata) {
     }
   }
   EXPECT_FALSE(failed) << "\"New\" Badges missing metadata:" << oss.str();
+}
+
+TEST(BrowserNtpPromosTest, OmniboxEverywherePromoRegistered) {
+  user_education::NtpPromoRegistry registry;
+  MaybeRegisterNtpPromos(registry);
+
+  const auto* spec =
+      registry.GetNtpPromoSpecification(kNtpOmniboxEverywherePromoId);
+  ASSERT_NE(spec, nullptr);
+  EXPECT_EQ(spec->content().icon_name(), "search-spark-custom");
+  EXPECT_EQ(spec->content().body_text_string_id(),
+            IDS_NTP_OMNIBOX_EVERYWHERE_PROMO);
+  EXPECT_EQ(spec->content().action_button_text_string_id(),
+            IDS_NTP_OMNIBOX_EVERYWHERE_PROMO);
 }

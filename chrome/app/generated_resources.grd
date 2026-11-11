@@ -18803,6 +18803,16 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_NTP_EXTENSIONS_PROMO" desc="The text shown in the body of the New Tab Page extensions promotion">
         Add extensions to stay organized, simplify tasks, and enhance your browsing
       </message>
+      <if expr="is_macosx">
+        <message name="IDS_NTP_OMNIBOX_EVERYWHERE_PROMO" desc="The text shown in the body of the New Tab Page Omnibox Everywhere promotion on macOS.">
+          Search faster from anywhere on your Mac without opening a new tab
+        </message>
+      </if>
+      <if expr="not is_macosx">
+        <message name="IDS_NTP_OMNIBOX_EVERYWHERE_PROMO" desc="The text shown in the body of the New Tab Page Omnibox Everywhere promotion.">
+          Search faster from anywhere on your computer without opening a new tab
+        </message>
+      </if>
     </if>
 
     <!-- Save to Drive -->

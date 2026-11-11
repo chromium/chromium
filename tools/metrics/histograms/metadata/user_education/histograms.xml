@@ -95,6 +95,7 @@ chromium-metrics-reviews@google.com.
 <variants name="NtpPromoIdentifier">
   <variant name="Customization" summary="Customize Chrome promo"/>
   <variant name="Extensions" summary="Extensions promo"/>
+  <variant name="OmniboxEverywhere" summary="Omnibox Everywhere promo"/>
 </variants>
 
 <!-- LINT.ThenChange(//chrome/browser/user_education/ntp_promo_identifiers.h:NtpPromoIdentifiers) -->

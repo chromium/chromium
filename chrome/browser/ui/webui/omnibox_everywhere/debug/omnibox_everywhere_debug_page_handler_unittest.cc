@@ -81,6 +81,8 @@ TEST_F(OmniboxEverywhereDebugPageHandlerTest, ResetProfilePrefsClearsPrefs) {
       omnibox_everywhere::prefs::kOmniboxEverywhereShowShortcuts,
       std::to_underlying(
           omnibox_everywhere::prefs::ShowShortcutsPrefValue::kDisabled));
+  profile()->GetPrefs()->SetBoolean(
+      omnibox_everywhere::prefs::kNtpPromoCompleted, true);
 
   base::test::TestFuture<bool> future;
   handler_remote->ResetProfilePrefs(future.GetCallback());
@@ -90,6 +92,8 @@ TEST_F(OmniboxEverywhereDebugPageHandlerTest, ResetProfilePrefsClearsPrefs) {
                 omnibox_everywhere::prefs::kOmniboxEverywhereShowShortcuts),
             std::to_underlying(
                 omnibox_everywhere::prefs::ShowShortcutsPrefValue::kUnset));
+  EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(
+      omnibox_everywhere::prefs::kNtpPromoCompleted));
 }
 
 // Regression test for crbug.com/579037685: resetting profile preferences can

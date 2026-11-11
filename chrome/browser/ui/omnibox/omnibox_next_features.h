@@ -138,6 +138,8 @@ extern const base::FeatureParam<bool> kOmniboxEverywhereSmallFontParam;
 // Controls showing titles under most visited tiles in OmniboxEverywhere.
 extern const base::FeatureParam<bool>
     kOmniboxEverywhereMostVisitedShowTitleParam;
+// Controls showing the New Tab Page promo for OmniboxEverywhere.
+extern const base::FeatureParam<bool> kOmniboxEverywhereNtpPromoParam;
 // Whether or not to show a description in the context menu entrypoint, or just
 // the icon.
 // TODO (crbug.com/509939902): Remove this when finch experiment reference

@@ -1003,6 +1003,8 @@ const FeatureEntry::Choice kOmniboxLoomChoices[] = {
      switches::kEnableFeatures,
      "OmniboxEverywhere:DynamicSizing/true/DynamicSizingWidth/600/"
      "SmallFont/true,IPH_OmniboxEverywhereLensPromo"},
+    {"Enabled without NTP Promo", switches::kEnableFeatures,
+     "OmniboxEverywhere:NtpPromo/false,IPH_OmniboxEverywhereLensPromo"},
     {flags_ui::kGenericExperimentChoiceDisabled, switches::kDisableFeatures,
      "OmniboxEverywhere,IPH_OmniboxEverywhereLensPromo"},
 };

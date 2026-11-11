@@ -287,6 +287,7 @@ if (!is_android) {
       "//base",
       "//chrome/browser/autocomplete:aim_eligibility_service",
       "//chrome/browser/contextual_search",
+      "//chrome/browser/profiles:profile",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/side_panel",
       "//chrome/browser/ui/side_panel:side_panel_views_dependent",
@@ -297,9 +298,19 @@ if (!is_android) {
       "//chrome/test:test_support",
       "//components/contextual_search:test_support",
       "//components/omnibox/common:features",
+      "//components/prefs",
       "//content/test:test_support",
       "//testing/gtest",
       "//ui/base:test_support",
     ]
+
+    if (is_mac || is_win) {
+      deps += [
+        "//chrome/browser:browser_process",
+        "//chrome/browser:global_features",
+        "//chrome/browser/ui/omnibox",
+        "//chrome/browser/ui/omnibox/omnibox_everywhere",
+      ]
+    }
   }
 }

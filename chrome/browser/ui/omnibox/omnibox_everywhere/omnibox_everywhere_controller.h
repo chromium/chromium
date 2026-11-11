@@ -44,7 +44,9 @@ enum class InvocationSource {
   kProfilePicker = 2,
   // Triggered by command-line switch or OS shortcut.
   kCommandLine = 3,
-  kMaxValue = kCommandLine,
+  // Triggered from a New Tab Page promo.
+  kNtpPromo = 4,
+  kMaxValue = kNtpPromo,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:OmniboxEverywhereInvocationSource)
 
