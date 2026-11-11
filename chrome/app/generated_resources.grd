@@ -14604,6 +14604,12 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </if>
 
       <!-- TTC -->
+      <message name="IDS_TTC_CONFIRMATION_YES" meaning="Button label and spoken keyword for TTC voice confirmation" desc="Label of the button that approves an action proposed by the TTC voice assistant. Users can also say this word to approve, so it must be the single, common word people say to agree.">
+        Yes
+      </message>
+      <message name="IDS_TTC_CONFIRMATION_NO" meaning="Button label and spoken keyword for TTC voice confirmation" desc="Label of the button that denies an action proposed by the TTC voice assistant. Users can also say this word to deny, so it must be the single, common word people say to refuse.">
+        No
+      </message>
       <message name="IDS_TTC_ENTRYPOINT_LABEL" desc="Text label of the TTC menu item." translateable="false" formatter_data="android_java">
         TTC
       </message>
