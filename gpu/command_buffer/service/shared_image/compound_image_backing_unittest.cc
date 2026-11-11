@@ -300,16 +300,12 @@ class CompoundImageBackingTest : public testing::Test {
     backing->elements_[0].content_id_ = content_id;
   }
 
-  // Construct a CompoundImageBacking via the WrapExternalBacking constructor
-  // (private). This mirrors CompoundImageBacking::WrapExternalBacking exactly,
-  // minus the SharedImageFactory consultation.
+  // Constructs a single-element CompoundImageBacking around `backing`.
   std::unique_ptr<CompoundImageBacking> WrapExternal(
       std::unique_ptr<SharedImageBacking> backing,
       scoped_refptr<SharedImageFactoryRef> shared_image_factory = nullptr) {
-    backing->SetNotRefCounted();
-    return std::unique_ptr<CompoundImageBacking>(new CompoundImageBacking(
-        /*buffer_usage=*/std::nullopt, std::move(backing), copy_manager_,
-        std::move(shared_image_factory)));
+    return CompoundImageBacking::CreateSingleElement(
+        std::move(backing), copy_manager_, std::move(shared_image_factory));
   }
 
   // Creates a compound backing wired to `shared_image_factory`, which is what
@@ -881,6 +877,31 @@ TEST_F(CompoundImageBackingTest, Multiplanar) {
   }
 }
 
+// The compound and its representations must report the layer count of the
+// backing they wrap. The GLES2 passthrough decoder relies on it to clear every
+// layer of a texture array.
+TEST_F(CompoundImageBackingTest, PropagatesArrayLayers) {
+  constexpr uint32_t kArrayLayers = 4;
+  auto compound = WrapExternal(std::make_unique<TestImageBacking>(
+      Mailbox::Generate(),
+      SharedImageInfo(
+          viz::SinglePlaneFormat::kRGBA_8888, gfx::Size(10, 10),
+          gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+          {SHARED_IMAGE_USAGE_GLES2_READ, SHARED_IMAGE_USAGE_GLES2_WRITE},
+          "TestLabel", kArrayLayers),
+      kTestBackingSize));
+  ASSERT_TRUE(compound);
+  EXPECT_EQ(compound->array_layers(), kArrayLayers);
+
+  const Mailbox mailbox = compound->mailbox();
+  auto factory_rep =
+      manager_.Register(std::move(compound), &memory_type_tracker_);
+  auto gl_rep =
+      manager_.ProduceGLTexturePassthrough(mailbox, &memory_type_tracker_);
+  ASSERT_TRUE(gl_rep);
+  EXPECT_EQ(gl_rep->array_layers(), kArrayLayers);
+}
+
 TEST_F(CompoundImageBackingCopyToGpuMemoryBufferTest,
        DynamicAllocationSkiaStreamUsageByContextType) {
   // When SharedContextState uses GL (Ganesh on GL), dynamic allocation for
@@ -937,6 +958,40 @@ TEST_F(CompoundImageBackingCopyToGpuMemoryBufferTest,
                                             SHARED_IMAGE_USAGE_DISPLAY_READ |
                                             SHARED_IMAGE_USAGE_DISPLAY_WRITE);
   }
+}
+
+// A backing that the compound allocates itself must describe the same image as
+// the compound, including its layer count.
+TEST_F(CompoundImageBackingCopyToGpuMemoryBufferTest,
+       DynamicAllocationPropagatesArrayLayers) {
+  constexpr uint32_t kArrayLayers = 4;
+
+  // The initial element can't serve Skia, so ProduceSkia() has to dynamically
+  // allocate a second element.
+  auto owned_initial_backing =
+      std::make_unique<TestImageBackingWithUnsupportedStream>(
+          Mailbox::Generate(),
+          SharedImageInfo(
+              viz::SinglePlaneFormat::kRGBA_8888, gfx::Size(10, 10),
+              gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+              {SHARED_IMAGE_USAGE_GLES2_READ, SHARED_IMAGE_USAGE_GLES2_WRITE},
+              "TestLabel", kArrayLayers),
+          kTestBackingSize, SharedImageAccessStream::kSkia);
+  auto compound = WrapExternal(std::move(owned_initial_backing),
+                               GetDynamicAllocationFactoryRef());
+  auto* compound_backing = compound.get();
+  auto factory_rep =
+      manager_.Register(std::move(compound), &memory_type_tracker_);
+
+  auto skia_rep =
+      manager_.ProduceSkia(compound_backing->mailbox(), &memory_type_tracker_,
+                           nullptr, /*required_usages=*/{});
+  ASSERT_TRUE(skia_rep);
+
+  auto element_backings = GetAllElementBackings(compound_backing);
+  ASSERT_EQ(element_backings.size(), 2u);
+  EXPECT_EQ(element_backings[0]->array_layers(), kArrayLayers);
+  EXPECT_EQ(element_backings[1]->array_layers(), kArrayLayers);
 }
 
 TEST_F(CompoundImageBackingCopyToGpuMemoryBufferTest,

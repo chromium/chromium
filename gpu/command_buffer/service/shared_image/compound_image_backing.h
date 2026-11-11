@@ -155,12 +155,6 @@ class GPU_GLES2_EXPORT CompoundImageBacking
   using CreateBackingCallback =
       base::OnceCallback<void(std::unique_ptr<SharedImageBacking>&)>;
 
-  static bool IsValidSharedMemoryFormat(const gfx::Size& size,
-                                        viz::SharedImageFormat format);
-
-  // Remove the SCANOUT flag if |kAllowShmOverlays|.
-  static SharedImageUsageSet GetGpuSharedImageUsage(SharedImageUsageSet usage);
-
   // Creates a CompoundImageBacking that wraps or allocates the appropriate
   // underlying backing(s) provided by `shared_image_factory`.
   static std::unique_ptr<SharedImageBacking> Create(
@@ -346,10 +340,21 @@ class GPU_GLES2_EXPORT CompoundImageBacking
       gfx::GpuMemoryBufferHandle handle,
       std::optional<gfx::BufferUsage> buffer_usage = std::nullopt);
 
-  // Wraps a backing in a CompoundImageBacking.
-  static std::unique_ptr<SharedImageBacking> WrapExternalBacking(
-      SharedImageFactory* shared_image_factory,
-      std::unique_ptr<SharedImageBacking> backing);
+  static std::unique_ptr<SharedImageBacking> CreateSharedMemoryInternal(
+      const Mailbox& mailbox,
+      const SharedImageInfo& si_info,
+      gfx::GpuMemoryBufferHandle handle,
+      std::optional<gfx::BufferUsage> buffer_usage,
+      base::WeakPtr<SharedImageBackingFactory> gpu_backing_factory,
+      scoped_refptr<SharedImageCopyManager> copy_manager,
+      scoped_refptr<SharedImageFactoryRef> shared_image_factory);
+
+  // Creates a CompoundImageBacking with `backing` as its sole initial element.
+  // Returns nullptr if `backing` is null.
+  static std::unique_ptr<CompoundImageBacking> CreateSingleElement(
+      std::unique_ptr<SharedImageBacking> backing,
+      scoped_refptr<SharedImageCopyManager> copy_manager,
+      scoped_refptr<SharedImageFactoryRef> shared_image_factory = nullptr);
 
   // Creates a backing that contains a shared memory backing and GPU backing
   // provided by `gpu_backing_factory`.
@@ -382,17 +387,15 @@ class GPU_GLES2_EXPORT CompoundImageBacking
   CompoundImageBacking(
       const Mailbox& mailbox,
       const SharedImageInfo& si_info,
-      std::unique_ptr<SharedImageBacking> shm_backing,
+      ElementHolder initial_element,
+      scoped_refptr<SharedImageCopyManager> copy_manager,
       scoped_refptr<SharedImageFactoryRef> shared_image_factory,
-      base::WeakPtr<SharedImageBackingFactory> gpu_backing_factory,
-      scoped_refptr<SharedImageCopyManager> copy_manager,
-      std::optional<gfx::BufferUsage> buffer_usage = std::nullopt);
+      std::optional<gfx::BufferUsage> buffer_usage);
 
-  CompoundImageBacking(
-      std::optional<gfx::BufferUsage> buffer_usage,
-      std::unique_ptr<SharedImageBacking> backing,
-      scoped_refptr<SharedImageCopyManager> copy_manager,
-      scoped_refptr<SharedImageFactoryRef> shared_image_factory);
+  void AddLazyGpuElement(
+      base::WeakPtr<SharedImageBackingFactory> gpu_backing_factory,
+      SharedImageUsageSet gpu_usage,
+      std::string debug_label);
 
   base::trace_event::MemoryAllocatorDump* OnMemoryDump(
       const std::string& dump_name,
@@ -428,10 +431,6 @@ class GPU_GLES2_EXPORT CompoundImageBacking
   bool HasLatestContent(const ElementHolder& element) const
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
-  // Sets the element used for `stream` as having the latest content. If
-  // `write_access` is true then only that element has the latest content.
-  void SetLatestContent(SharedImageAccessStream stream, bool write_access);
-
   // Runs CreateSharedImage() on `factory` and stores the result in `backing`.
   // If successful this will update the estimated size of compound backing.
   // In multi-threading environment, caller should ensure that the
@@ -458,9 +457,6 @@ class GPU_GLES2_EXPORT CompoundImageBacking
   // usage and environment flags from the factory.
   static bool ComputeIsThreadSafe(SharedImageFactoryRef* factory_ref,
                                   SharedImageUsageSet usage);
-
-  // Helper to record GPU.SharedImage.BackingType UMA histogram.
-  static void RecordBackingTypeUMA(SharedImageBackingType backing_type);
 
   // This is required for CompoundImageBacking to be able to query an
   // appropriate SharedImageBackingFactory dynamically based on clients

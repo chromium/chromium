@@ -1222,11 +1222,8 @@ void D3DImageBackingFactoryTest::RunVideoEndAccessFenceTest(
   ASSERT_TRUE(backing);
 
   if (use_compound_backing) {
-    backing->SetNotRefCounted();
-    auto buffer_usage = backing->buffer_usage();
-    backing = std::unique_ptr<CompoundImageBacking>(new CompoundImageBacking(
-        std::move(buffer_usage), std::move(backing), copy_manager_,
-        /*shared_image_factory=*/nullptr));
+    backing = CompoundImageBacking::CreateSingleElement(std::move(backing),
+                                                        copy_manager_);
   }
 
   backing->SetCleared();
