@@ -9002,13 +9002,6 @@ be describing additional metrics about the same event.
       The duration (in milliseconds) for how long it took from the time the
       distillability result to be returned.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
 </event>
 
@@ -9025,13 +9018,6 @@ be describing additional metrics about the same event.
     <summary>
       The distillation result from the current page.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
 </event>
 
@@ -9069,13 +9055,6 @@ be describing additional metrics about the same event.
     <summary>
       Whether the current page is distillable.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
 </event>
 
