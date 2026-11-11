@@ -770,6 +770,20 @@ TEST_F(MenuItemViewLayoutTest, ContainerLayoutRespectsBackgroundPadding) {
             test_item()->GetLocalBounds().InsetsFrom(child_view->bounds()));
 }
 
+TEST_F(MenuItemViewLayoutTest, SecondaryTitleHeight) {
+  test_item()->SetTitle(u"Primary");
+
+  MenuItemView* two_line = root_menu()->AppendMenuItem(2, u"Primary");
+  two_line->SetSecondaryTitle(u"Secondary");
+  two_line->set_secondary_title_vertical_spacing(2);
+
+  PerformLayout();
+
+  const int font_h = MenuConfig::instance().font_list.GetHeight();
+  EXPECT_EQ(font_h, test_item()->GetLabelTextHeight());
+  EXPECT_EQ(font_h * 2 + 2, two_line->GetLabelTextHeight());
+}
+
 class MenuItemViewPaintUnitTest : public ViewsTestBase {
  public:
   MenuItemViewPaintUnitTest() = default;

@@ -28,6 +28,10 @@ const gfx::FontList* MenuDelegate::GetLabelFontList(int id) const {
   return nullptr;
 }
 
+const gfx::FontList* MenuDelegate::GetSecondaryLabelFontList(int id) const {
+  return nullptr;
+}
+
 std::optional<SkColor> MenuDelegate::GetLabelColor(int id) const {
   return std::nullopt;
 }

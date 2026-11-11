@@ -81,6 +81,7 @@ class ActionAppMenu : public views::MenuDelegate,
   void WillShowMenu(views::MenuItemView* menu) override;
   bool IsItemChecked(int id) const override;
   const gfx::FontList* GetLabelFontList(int id) const override;
+  const gfx::FontList* GetSecondaryLabelFontList(int id) const override;
   std::optional<SkColor> GetLabelColor(int id) const override;
   int GetMaxWidthForMenu(views::MenuItemView* menu) override;
   bool GetDropFormats(views::MenuItemView* menu,

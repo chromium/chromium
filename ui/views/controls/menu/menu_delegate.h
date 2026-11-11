@@ -71,6 +71,7 @@ class VIEWS_EXPORT MenuDelegate {
 
   // The font and color for the menu item label.
   virtual const gfx::FontList* GetLabelFontList(int id) const;
+  virtual const gfx::FontList* GetSecondaryLabelFontList(int id) const;
   virtual std::optional<SkColor> GetLabelColor(int id) const;
 
   // The tooltip shown for the menu item. This is invoked when the user

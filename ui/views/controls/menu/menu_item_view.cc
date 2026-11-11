@@ -694,6 +694,15 @@ void MenuItemView::SetSecondaryTitle(const std::u16string& secondary_title) {
   invalidate_dimensions();  // Triggers preferred size recalculation.
 }
 
+int MenuItemView::GetLabelTextHeight() const {
+  const int text_height = GetFontList().GetHeight();
+  if (secondary_title_.empty()) {
+    return text_height;
+  }
+  return text_height + secondary_title_vertical_spacing_ +
+         GetSecondaryFontList().GetHeight();
+}
+
 void MenuItemView::SetMinorText(const std::u16string& minor_text) {
   minor_text_ = minor_text;
   invalidate_dimensions();  // Triggers preferred size recalculation.
@@ -1244,6 +1253,16 @@ const gfx::FontList MenuItemView::GetFontList() const {
              : MenuConfig::instance().font_list;
 }
 
+const gfx::FontList MenuItemView::GetSecondaryFontList() const {
+  if (const MenuDelegate* delegate = GetDelegate()) {
+    if (const gfx::FontList* font_list =
+            delegate->GetSecondaryLabelFontList(GetCommand())) {
+      return *font_list;
+    }
+  }
+  return GetFontList();
+}
+
 const std::optional<SkColor> MenuItemView::GetMenuLabelColor() const {
   if (const MenuDelegate* delegate = GetDelegate()) {
     if (const auto& label_color = delegate->GetLabelColor(GetCommand())) {
@@ -1365,8 +1384,7 @@ void MenuItemView::OnPaintImpl(gfx::Canvas* canvas, PaintMode mode) {
   const int bottom_margin_val = padding.bottom() + GetBottomMargin();
   const int available_height = height() - top_margin_val - bottom_margin_val;
   const int text_height = font_list.GetHeight();
-  const int total_text_height =
-      secondary_title().empty() ? text_height : text_height * 2;
+  const int total_text_height = GetLabelTextHeight();
   const int top_margin =
       top_margin_val + (available_height - total_text_height) / 2;
 
@@ -1387,8 +1405,11 @@ void MenuItemView::OnPaintImpl(gfx::Canvas* canvas, PaintMode mode) {
 
   // The rest should be drawn with the minor foreground color.
   if (!secondary_title().empty()) {
-    text_bounds.set_y(text_bounds.y() + text_height);
-    canvas->DrawStringRectWithFlags(secondary_title(), font_list,
+    const gfx::FontList& secondary_font_list = GetSecondaryFontList();
+    text_bounds.set_y(text_bounds.y() + text_height +
+                      secondary_title_vertical_spacing_);
+    text_bounds.set_height(secondary_font_list.GetHeight());
+    canvas->DrawStringRectWithFlags(secondary_title(), secondary_font_list,
                                     colors.minor_fg_color, text_bounds, flags);
   }
 
@@ -1803,10 +1824,8 @@ MenuItemView::MenuItemDimensions MenuItemView::CalculateDimensions() const {
   }
 
   // Determine the height to use.
-  int label_text_height = secondary_title().empty() ? font_list.GetHeight()
-                                                    : font_list.GetHeight() * 2;
   dimensions.height =
-      std::max(dimensions.height, label_text_height + vertical_margins);
+      std::max(dimensions.height, GetLabelTextHeight() + vertical_margins);
 
   ApplyMinimumDimensions(&dimensions);
   // The background's padding is outside the row, so add it last.

@@ -346,6 +346,14 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
   void SetSecondaryTitle(const std::u16string& secondary_title);
   const std::u16string& secondary_title() const { return secondary_title_; }
 
+  void set_secondary_title_vertical_spacing(int spacing) {
+    secondary_title_vertical_spacing_ = spacing;
+    invalidate_dimensions();
+  }
+
+  // Returns the total height of the title and optional secondary title.
+  int GetLabelTextHeight() const;
+
   // Sets the minor text.
   void SetMinorText(const std::u16string& minor_text);
 
@@ -601,6 +609,7 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
 
   // Returns the font list and font color to use for menu text.
   const gfx::FontList GetFontList() const;
+  const gfx::FontList GetSecondaryFontList() const;
   const std::optional<SkColor> GetMenuLabelColor() const;
 
   // Ensures the submenu has an empty menu item iff it needs one, then updates
@@ -881,6 +890,7 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
   std::optional<ui::ColorId> submenu_arrow_color_id_;
   std::optional<int> top_margin_;
   std::optional<int> bottom_margin_;
+  int secondary_title_vertical_spacing_ = 0;
 
   base::CallbackListSubscription visible_changed_callback_;
   base::CallbackListSubscription enabled_changed_callback_;

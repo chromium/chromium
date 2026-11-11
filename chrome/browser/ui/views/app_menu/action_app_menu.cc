@@ -571,6 +571,14 @@ const gfx::FontList* ActionAppMenu::GetLabelFontList(int id) const {
                                                    views::style::STYLE_BODY_4);
 }
 
+const gfx::FontList* ActionAppMenu::GetSecondaryLabelFontList(int id) const {
+  if (!command_to_action_map_.contains(id)) {
+    return nullptr;
+  }
+  return &views::TypographyProvider::Get().GetFont(views::style::CONTEXT_LABEL,
+                                                   views::style::STYLE_BODY_5);
+}
+
 std::optional<SkColor> ActionAppMenu::GetLabelColor(int id) const {
   auto action_iterator = command_to_action_map_.find(id);
   if (action_iterator == command_to_action_map_.end() || !root_ ||
@@ -1023,11 +1031,9 @@ void ActionAppMenu::ConfigureMenuItem(views::MenuItemView* menu_item,
   int content_height =
       std::max(default_icon_size, menu_item->GetIconPreferredSize().height());
   if (!menu_item->secondary_title().empty()) {
-    // Two-line rows stack the title and secondary title in the label font.
-    if (const gfx::FontList* font_list =
-            GetLabelFontList(menu_item->GetCommand())) {
-      content_height = std::max(content_height, font_list->GetHeight() * 2);
-    }
+    menu_item->set_secondary_title_vertical_spacing(provider->GetDistanceMetric(
+        DISTANCE_ACTION_APP_MENU_SECONDARY_TITLE_VERTICAL_SPACING));
+    content_height = std::max(content_height, menu_item->GetLabelTextHeight());
   }
 
   const int vertical_padding = (target_item_height - content_height) / 2;

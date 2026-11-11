@@ -3263,9 +3263,16 @@ TEST_F(ActionAppMenuWithSearchTest, SearchResultsPreserveCheckableItems) {
   // The row carries a breadcrumb, so it is a two-line, kExpanded flat row.
   ASSERT_FALSE(always_show->secondary_title().empty());
   EXPECT_EQ(always_show->GetHighlightInsets(), gfx::Insets());
-  EXPECT_EQ(always_show->height(),
-            ChromeLayoutProvider::Get()->GetDistanceMetric(
-                DISTANCE_ACTION_APP_MENU_EXPANDED_ITEM_HEIGHT));
+  const int expected_margin =
+      (ChromeLayoutProvider::Get()->GetDistanceMetric(
+           DISTANCE_ACTION_APP_MENU_EXPANDED_ITEM_HEIGHT) -
+       always_show->GetLabelTextHeight()) /
+      2;
+  EXPECT_EQ(always_show->GetTopMargin(), expected_margin);
+  EXPECT_EQ(always_show->GetBottomMargin(), expected_margin);
+  EXPECT_EQ(menu.GetSecondaryLabelFontList(always_show->GetCommand()),
+            &views::TypographyProvider::Get().GetFont(
+                views::style::CONTEXT_LABEL, views::style::STYLE_BODY_5));
 
   views::MenuItemView* always_hide =
       root->GetMenuItemByID(kActionBookmarkBarSubmenuAlwaysHide);
