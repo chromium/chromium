@@ -70,7 +70,9 @@ void NavigationPredictorMetricsDocumentData::RecordAnchorData(
     // NavigationPredictor did not record any anchor data, don't log anything.
     return;
   }
-  CHECK(ukm_source_id == ukm_source_id_, base::NotFatalUntil::M161);
+  // TODO(crbug.com/584208376): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(ukm_source_id == ukm_source_id_);
   auto* ukm_recorder = ukm::UkmRecorder::Get();
 
   ukm::builders::NavigationPredictorPageLinkMetrics builder(
