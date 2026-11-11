@@ -872,6 +872,8 @@ TEST_F(GpuDataManagerImplPrivateTest, GpuStartsWithGpuDisabled) {
 
   ScopedGpuDataManagerImplPrivate manager;
   EXPECT_EQ(gpu::GpuMode::DISPLAY_COMPOSITOR, manager->GetGpuMode());
+  EXPECT_FALSE(manager->HardwareAccelerationEnabled());
+  EXPECT_TRUE(manager->IsGpuCompositingDisabled());
 }
 #endif  // !BUILDFLAG(IS_FUCHSIA)
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS) &&

@@ -4130,17 +4130,13 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
         renderer_cmd);
   }
 
-#if BUILDFLAG(IS_ANDROID)
-  if (browser_cmd.HasSwitch(switches::kDisableGpuCompositing)) {
-    renderer_cmd->AppendSwitch(switches::kDisableGpuCompositing);
-  }
-#elif !BUILDFLAG(IS_CHROMEOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
   // If gpu compositing is not being used, tell the renderer at startup. This
   // is inherently racey, as it may change while the renderer is being
   // launched, but the renderer will hear about the correct state eventually.
   // This optimizes the common case to avoid wasted work.
   if (GpuDataManagerImpl::GetInstance()->IsGpuCompositingDisabled())
-    renderer_cmd->AppendSwitch(switches::kDisableGpuCompositing);
+    renderer_cmd->AppendSwitch(switches::kDisableGpu);
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // Add kWaitForDebugger to let renderer process wait for a debugger.

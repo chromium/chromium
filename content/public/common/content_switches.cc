@@ -133,9 +133,6 @@ const char kDisableGestureRequirementForPresentation[] =
 // then the GPU process won't launch.
 const char kDisableGpu[]                    = "disable-gpu";
 
-// Prevent the compositor from using its GPU implementation.
-const char kDisableGpuCompositing[]         = "disable-gpu-compositing";
-
 // Disable proactive early init of GPU process.
 const char kDisableGpuEarlyInit[]           = "disable-gpu-early-init";
 

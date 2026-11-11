@@ -612,8 +612,9 @@ void RenderThreadImpl::Init() {
 #endif
   }
 
-  if (command_line.HasSwitch(switches::kDisableGpuCompositing))
+  if (command_line.HasSwitch(switches::kDisableGpu)) {
     is_gpu_compositing_disabled_ = true;
+  }
 
   // Note that under Linux, the media library will normally already have
   // been initialized by the Zygote before this instance became a Renderer.

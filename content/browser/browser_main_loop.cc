@@ -1485,7 +1485,6 @@ void BrowserMainLoop::PostCreateThreadsImpl() {
 #else
   establish_gpu_channel = true;
   if (parsed_command_line_->HasSwitch(switches::kDisableGpu) ||
-      parsed_command_line_->HasSwitch(switches::kDisableGpuCompositing) ||
       parsed_command_line_->HasSwitch(switches::kDisableGpuEarlyInit)) {
     establish_gpu_channel = always_uses_gpu = false;
   }

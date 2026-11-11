@@ -450,10 +450,6 @@ GpuDataManagerImplPrivate::GpuDataManagerImplPrivate(GpuDataManagerImpl* owner)
   EnableIntelShaderCache();
 #endif  // BUILDFLAG(IS_WIN)
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(switches::kDisableGpuCompositing)) {
-    SetGpuCompositingDisabled();
-  }
-
   if (command_line->HasSwitch(switches::kSingleProcess) ||
       command_line->HasSwitch(switches::kInProcessGPU)) {
     AppendGpuCommandLine(command_line, GPU_PROCESS_KIND_SANDBOXED);

@@ -1049,7 +1049,7 @@ IN_PROC_BROWSER_TEST_F(
 class NoGPUCaptureScreenshotTest : public CaptureScreenshotTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
     CaptureScreenshotTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitch(switches::kDisableGpuCompositing);
+    command_line->AppendSwitch(switches::kDisableGpu);
   }
 };
 

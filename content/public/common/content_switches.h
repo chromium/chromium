@@ -51,7 +51,6 @@ CONTENT_EXPORT extern const char kDisableWebGL2[];
 CONTENT_EXPORT extern const char kDisableFileSystem[];
 CONTENT_EXPORT extern const char kDisableGestureRequirementForPresentation[];
 CONTENT_EXPORT extern const char kDisableGpu[];
-CONTENT_EXPORT extern const char kDisableGpuCompositing[];
 CONTENT_EXPORT extern const char kDisableGpuEarlyInit[];
 CONTENT_EXPORT extern const char kDisableGpuMemoryBufferCompositorResources[];
 CONTENT_EXPORT extern const char kDisableGpuMemoryBufferVideoFrames[];
