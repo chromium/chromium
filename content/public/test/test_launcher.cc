@@ -63,6 +63,9 @@
 
 #if BUILDFLAG(IS_POSIX)
 #include "base/files/file_descriptor_watcher_posix.h"
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#include "base/test/launcher/test_launcher_fork_server.h"
+#endif
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -342,6 +345,16 @@ int LaunchTestsInternal(TestLauncherDelegate* launcher_delegate,
   g_launcher_delegate = launcher_delegate;
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  if (!command_line->HasSwitch(switches::kProcessType) &&
+      !command_line->HasSwitch(switches::kLaunchAsBrowser) &&
+      !command_line->HasSwitch(switches::kSingleProcessTests) &&
+      !command_line->HasSwitch(switches::kSingleProcess) &&
+      base::MaybeStartTestLauncherForkServer(&argc, &argv,
+                                             /*force_for_testing=*/false)) {
+    command_line = base::CommandLine::ForCurrentProcess();
+  }
+#endif
 #if BUILDFLAG(IS_ANDROID)
   // The ContentMainDelegate is set for browser tests on Android by the
   // browser test target and is not created by the |launcher_delegate|.

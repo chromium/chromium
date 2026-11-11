@@ -118,8 +118,14 @@ using testing::UnorderedElementsAreArray;
 namespace {
 static const char* kExampleHost = "example.com";
 static const char* kLocalHost = "localhost";
-static const base::Time kStartTime = base::Time::Now();
-static const base::Time kLastHourTime = kStartTime - base::Hours(1);
+
+// Use a function-local static so the start time is captured when the test runs
+// in the child process rather than during pre-main() static initialization in
+// the TestLauncher fork server.
+base::Time GetStartTime() {
+  static const base::Time kStartTime = base::Time::Now();
+  return kStartTime;
+}
 
 // This enum is used in the place of base::Time because using base::Time
 // as a test param causes problems on Fuchsia. See https://crbug.com/40219262
@@ -147,9 +153,9 @@ std::string ToString(TimeEnum delete_begin_time) {
 base::Time TimeEnumToTime(TimeEnum time) {
   switch (time) {
     case TimeEnum::kStart:
-      return kStartTime;
+      return GetStartTime();
     case TimeEnum::kLastHour:
-      return kLastHourTime;
+      return GetStartTime() - base::Hours(1);
     case TimeEnum::kMax:
       return base::Time::Max();
     default:
@@ -173,6 +179,7 @@ class BrowsingDataRemoverBrowserTest
     : public BrowsingDataRemoverBrowserTestBase {
  public:
   BrowsingDataRemoverBrowserTest() {
+    GetStartTime();
     std::vector<base::test::FeatureRef> enabled_features = {};
     std::vector<base::test::FeatureRef> disabled_features = {};
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
@@ -1391,7 +1398,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
   // still stored. The time of it's creation should be sometime before
   // this test starts. This license will be for a different origin, and so wont
   // affect HasDataForType, but it still exists.
-  LOG(INFO) << "MediaLicenseTimedDeletion starting @ " << kStartTime;
+  LOG(INFO) << "MediaLicenseTimedDeletion starting @ " << GetStartTime();
   EXPECT_EQ(1, GetSiteDataCount());
 
   GURL url =

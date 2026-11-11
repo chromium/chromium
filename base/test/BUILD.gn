@@ -447,6 +447,12 @@ static_library("test_support") {
       "launcher/unit_test_launcher.cc",
       "multiprocess_test.cc",
     ]
+    if (is_linux || is_chromeos) {
+      sources += [
+        "launcher/test_launcher_fork_server.cc",
+        "launcher/test_launcher_fork_server.h",
+      ]
+    }
   }
 
   sources += [

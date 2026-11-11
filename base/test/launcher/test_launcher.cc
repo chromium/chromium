@@ -7,6 +7,7 @@
 #include <stdio.h>
 
 #include <algorithm>
+#include <optional>
 #include <random>
 #include <ranges>
 #include <string_view>
@@ -70,6 +71,9 @@
 #include <fcntl.h>
 
 #include "base/files/file_descriptor_watcher_posix.h"
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#include "base/test/launcher/test_launcher_fork_server.h"
+#endif
 #endif
 
 #if BUILDFLAG(IS_APPLE)
@@ -285,6 +289,9 @@ void KillSpawnedTestProcesses() {
   // Keep the lock until exiting the process to prevent further processes
   // from being spawned.
   AutoLock lock(*GetLiveProcessesLock());
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  NotifyTestLauncherForkServerShutdown();
+#endif
 
   fprintf(stdout, "Sending SIGTERM to %zu child processes... ",
           GetLiveProcesses()->size());
@@ -423,6 +430,17 @@ int LaunchChildTestProcessWithOptions(const CommandLine& command_line,
 #if BUILDFLAG(IS_POSIX)
   // Make sure an option we rely on is present - see LaunchChildGTestProcess.
   DCHECK(options.new_process_group);
+#endif
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  if (CanUseTestLauncherForkServer(command_line, num_tests, delegate)) {
+    if (std::optional<int> exit_code = LaunchChildTestProcessViaForkServer(
+            command_line, options, timeout_per_test, delegate, was_timeout,
+            GetLiveProcessesLock(), GetLiveProcesses());
+        exit_code.has_value()) {
+      return *exit_code;
+    }
+  }
 #endif
 
   LaunchOptions new_options(options);
@@ -1126,6 +1144,9 @@ TestLauncher::TestLauncher(TestLauncherDelegate* launcher_delegate,
       print_test_stdio_(AUTO) {}
 
 TestLauncher::~TestLauncher() {
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  StopTestLauncherForkServer();
+#endif
   if (base::ThreadPoolInstance::Get()) {
     // Clear the ThreadPoolInstance entirely to make it clear to final cleanup
     // phases that they are happening in a single-threaded phase. Assertions in
@@ -1203,6 +1224,10 @@ bool TestLauncher::Run(CommandLine* command_line) {
   }
 
   MaybeSaveSummaryAsJSON(std::vector<std::string>());
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  StopTestLauncherForkServer();
+#endif
 
   return run_result;
 }

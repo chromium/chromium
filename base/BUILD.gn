@@ -4491,6 +4491,7 @@ test("base_unittests") {
       "files/scoped_file_linux_unittest.cc",
       "nix/mime_util_xdg_unittest.cc",
       "process/set_process_title_linux_unittest.cc",
+      "test/launcher/test_launcher_fork_server_unittest.cc",
       "version_info/nix/version_extra_utils_unittest.cc",
     ]
 
