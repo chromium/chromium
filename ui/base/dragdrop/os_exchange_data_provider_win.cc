@@ -389,11 +389,16 @@ std::optional<url::Origin> OSExchangeDataProviderWin::GetRendererTaintedOrigin()
   if (FAILED(source_object_->GetData(&format_etc, &medium))) {
     return std::nullopt;
   }
-  base::win::ScopedHGlobal<char*> data(medium.hGlobal);
-  if (data.size() == 0) {
-    return url::Origin();
+  url::Origin origin;
+  {
+    base::win::ScopedHGlobal<char*> data(medium.hGlobal);
+    if (data.size() > 0) {
+      origin =
+          url::Origin::Create(GURL(std::string_view(data.data(), data.size())));
+    }
   }
-  return url::Origin::Create(GURL(std::string_view(data.data(), data.size())));
+  ReleaseStgMedium(&medium);
+  return origin;
 }
 
 void OSExchangeDataProviderWin::MarkAsFromPrivileged() {
@@ -877,14 +882,16 @@ std::optional<base::Pickle> OSExchangeDataProviderWin::GetPickledData(
   STGMEDIUM medium;
   FORMATETC format_etc = format.ToFormatEtc();
   if (SUCCEEDED(source_object_->GetData(&format_etc, &medium))) {
+    std::optional<base::Pickle> pickle;
     if (medium.tymed & TYMED_HGLOBAL) {
       base::win::ScopedHGlobal<char*> c_data(medium.hGlobal);
       // TODO(crbug.com/582806614): CHECK-exclusion: Convert to a CHECK once we
       // are confident it won't be triggered.
       DCHECK_GT(c_data.size(), 0u);
-      return base::Pickle::WithData(base::as_bytes(base::span(c_data)));
+      pickle = base::Pickle::WithData(base::as_bytes(base::span(c_data)));
     }
     ReleaseStgMedium(&medium);
+    return pickle;
   }
   return std::nullopt;
 }

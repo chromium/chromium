@@ -6,9 +6,13 @@
 
 #include <objbase.h>
 
+#include <wrl/client.h>
+#include <wrl/implements.h>
+
 #include <algorithm>
 #include <memory>
 #include <optional>
+#include <string>
 #include <vector>
 
 #include "base/byte_size.h"
@@ -20,6 +24,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/pickle.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -36,6 +41,7 @@
 #include "ui/base/clipboard/file_info.h"
 #include "ui/base/dragdrop/os_exchange_data_provider_win.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace ui {
 
@@ -144,6 +150,55 @@ class RefCountMockStream : public IStream {
  private:
   ULONG ref_count_ = 0u;
   SEQUENCE_CHECKER(sequence_checker_);
+};
+
+// Returns the same HGLOBAL for every format. Each medium's `pUnkForRelease` is
+// a ref-counted stream, so ReleaseStgMedium() releases the stream instead of
+// freeing the HGLOBAL, and the ref count shows how many media are unreleased.
+class FakeHGlobalDataObject
+    : public Microsoft::WRL::RuntimeClass<
+          Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
+          IDataObject> {
+ public:
+  explicit FakeHGlobalDataObject(base::span<const uint8_t> data)
+      : hglobal_(::GlobalAlloc(GMEM_MOVEABLE, data.size())) {
+    base::win::ScopedHGlobal<uint8_t*> lock(hglobal_);
+    base::span(lock).copy_from(data);
+  }
+  ~FakeHGlobalDataObject() override { ::GlobalFree(hglobal_); }
+
+  // The number of media returned by GetData() that haven't been released.
+  ULONG outstanding_media() const { return releaser_.GetRefCount(); }
+
+  IFACEMETHODIMP GetData(FORMATETC*, STGMEDIUM* medium) override {
+    medium->tymed = TYMED_HGLOBAL;
+    medium->hGlobal = hglobal_;
+    medium->pUnkForRelease = &releaser_;
+    releaser_.AddRef();
+    return S_OK;
+  }
+  IFACEMETHODIMP QueryGetData(FORMATETC*) override { return S_OK; }
+  IFACEMETHODIMP GetDataHere(FORMATETC*, STGMEDIUM*) override {
+    return E_NOTIMPL;
+  }
+  IFACEMETHODIMP GetCanonicalFormatEtc(FORMATETC*, FORMATETC*) override {
+    return E_NOTIMPL;
+  }
+  IFACEMETHODIMP SetData(FORMATETC*, STGMEDIUM*, BOOL) override {
+    return E_NOTIMPL;
+  }
+  IFACEMETHODIMP EnumFormatEtc(DWORD, IEnumFORMATETC**) override {
+    return E_NOTIMPL;
+  }
+  IFACEMETHODIMP DAdvise(FORMATETC*, DWORD, IAdviseSink*, DWORD*) override {
+    return E_NOTIMPL;
+  }
+  IFACEMETHODIMP DUnadvise(DWORD) override { return E_NOTIMPL; }
+  IFACEMETHODIMP EnumDAdvise(IEnumSTATDATA**) override { return E_NOTIMPL; }
+
+ private:
+  HGLOBAL hglobal_;
+  RefCountMockStream releaser_;
 };
 
 }  // namespace
@@ -1571,6 +1626,47 @@ TEST_F(OSExchangeDataWinTest, ScopedFormatEtcLifecycle) {
   EXPECT_EQ(moved.format_etc.ptd, nullptr);
   EXPECT_EQ(moved_assigned.format_etc.ptd, moved_td_raw);
   EXPECT_EQ(moved_assigned.format_etc.ptd, moved_assigned.target_device.get());
+}
+
+// Regression test for crbug.com/564637477: GetPickledData() must release the
+// medium it gets from the source data object.
+TEST_F(OSExchangeDataWinTest, GetPickledDataReleasesMedium) {
+  base::Pickle pickle;
+  pickle.WriteString("payload");
+  auto source = Microsoft::WRL::Make<FakeHGlobalDataObject>(pickle.AsBytes());
+  OSExchangeDataProviderWin provider(source.Get());
+
+  std::optional<base::Pickle> result =
+      provider.GetPickledData(ClipboardFormatType::DataTransferCustomType());
+  ASSERT_TRUE(result.has_value());
+  base::PickleIterator iter(*result);
+  std::string value;
+  ASSERT_TRUE(iter.ReadString(&value));
+  EXPECT_EQ(value, "payload");
+  EXPECT_EQ(source->outstanding_media(), 0u);
+}
+
+// Verifies GetRendererTaintedOrigin() releases the medium it gets.
+TEST_F(OSExchangeDataWinTest, GetRendererTaintedOriginReleasesMedium) {
+  auto source = Microsoft::WRL::Make<FakeHGlobalDataObject>(
+      base::byte_span_from_cstring("https://example.com"));
+  OSExchangeDataProviderWin provider(source.Get());
+
+  EXPECT_EQ(provider.GetRendererTaintedOrigin(),
+            url::Origin::Create(GURL("https://example.com")));
+  EXPECT_EQ(source->outstanding_media(), 0u);
+}
+
+// Verifies empty taint data yields an opaque origin and is still released.
+TEST_F(OSExchangeDataWinTest, GetRendererTaintedOriginEmptyIsOpaque) {
+  auto source =
+      Microsoft::WRL::Make<FakeHGlobalDataObject>(base::span<const uint8_t>());
+  OSExchangeDataProviderWin provider(source.Get());
+
+  std::optional<url::Origin> origin = provider.GetRendererTaintedOrigin();
+  ASSERT_TRUE(origin.has_value());
+  EXPECT_TRUE(origin->opaque());
+  EXPECT_EQ(source->outstanding_media(), 0u);
 }
 
 }  // namespace ui
