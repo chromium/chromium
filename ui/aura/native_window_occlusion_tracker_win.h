@@ -92,11 +92,15 @@ class AURA_EXPORT NativeWindowOcclusionTrackerWin
   // the occlusion state of the tracked windows.
   class AURA_EXPORT WindowOcclusionCalculator {
    public:
+    using UpdateOcclusionStateCallback =
+        base::RepeatingCallback<void(const HwndToRootOcclusionStateMap&,
+                                     bool show_all_windows)>;
+
     // Creates WindowOcclusionCalculator instance. Must be called on UI thread.
     static void CreateInstance(
         scoped_refptr<base::SequencedTaskRunner> task_runner,
         scoped_refptr<base::SequencedTaskRunner> ui_thread_task_runner,
-        base::WeakPtr<NativeWindowOcclusionTrackerWin> tracker);
+        UpdateOcclusionStateCallback update_occlusion_state_callback);
 
     // Returns existing WindowOcclusionCalculator instance.
     static WindowOcclusionCalculator* GetInstance() { return instance_; }
@@ -121,17 +125,13 @@ class AURA_EXPORT NativeWindowOcclusionTrackerWin
     // Special handling for when the device is going to sleep or waking up.
     void HandleResumeSuspend();
 
-    // Schedules an occlusion calculation `update_occlusion_delay_` time in the
-    // future, if one isn't already scheduled.
-    void ScheduleOcclusionCalculationIfNeeded();
-
    private:
     friend class NativeWindowOcclusionTrackerTest;
 
     WindowOcclusionCalculator(
         scoped_refptr<base::SequencedTaskRunner> task_runner,
         scoped_refptr<base::SequencedTaskRunner> ui_thread_task_runner,
-        base::WeakPtr<NativeWindowOcclusionTrackerWin> tracker);
+        UpdateOcclusionStateCallback update_occlusion_state_callback);
     ~WindowOcclusionCalculator();
 
     // Registers event hooks, if not registered.
@@ -178,6 +178,10 @@ class AURA_EXPORT NativeWindowOcclusionTrackerWin
     // bounds.
     void HandleLocationChanged(HWND hwnd);
 
+    // Schedules an occlusion calculation `update_occlusion_delay_` time in the
+    // future, if one isn't already scheduled.
+    void ScheduleOcclusionCalculationIfNeeded();
+
     // Registers a global event hook (not per process) for the events in the
     // range from `event_min` to `event_max`, inclusive.
     void RegisterGlobalEventHook(UINT event_min, UINT event_max);
@@ -193,11 +197,7 @@ class AURA_EXPORT NativeWindowOcclusionTrackerWin
     // via calls to RegisterEventHook. These event hooks are disabled when all
     // tracked windows are minimized.
     void RegisterEventHooks();
-    // `minimize_end_event_hook_` will be cleared iff `clear_minimize_end_hook`
-    // is set. When clearing event hooks due to all native windows being
-    // minimized, we still want to listen for minimize ending to see if we
-    // should re-hook.
-    void UnregisterEventHooks(bool clear_minimize_end_hook = true);
+    void UnregisterEventHooks();
 
     // EnumWindows callback for occlusion calculation. Returns true to
     // continue enumeration, false otherwise. Currently, always returns
@@ -241,8 +241,8 @@ class AURA_EXPORT NativeWindowOcclusionTrackerWin
     // task is posted to this task runner.
     const scoped_refptr<base::SequencedTaskRunner> ui_thread_task_runner_;
 
-    // Tracker object to post messages back to on UI thread.
-    base::WeakPtr<NativeWindowOcclusionTrackerWin> tracker_;
+    // Callback used to update occlusion state on UI thread.
+    UpdateOcclusionStateCallback update_occlusion_state_callback_;
 
     // Map of root app window hwnds and their occlusion state. This contains
     // both visible and hidden windows.
@@ -253,7 +253,6 @@ class AURA_EXPORT NativeWindowOcclusionTrackerWin
     // RAW_PTR_EXCLUSION: HWINEVENTHOOK is an opaque Win32 handle (not a real
     // pointer, and never allocated by PartitionAlloc).
     RAW_PTR_EXCLUSION std::vector<HWINEVENTHOOK> global_event_hooks_;
-    RAW_PTR_EXCLUSION std::optional<HWINEVENTHOOK> minimize_end_event_hook_;
 
     // Map from process id to EVENT_OBJECT_LOCATIONCHANGE event hook.
     // RAW_PTR_EXCLUSION: HWINEVENTHOOK is an opaque Win32 handle (not a real
@@ -346,9 +345,6 @@ class AURA_EXPORT NativeWindowOcclusionTrackerWin
   // by the current session, it marks app windows as occluded.
   void OnSessionChange(WPARAM status_code, const bool* is_current_session);
 
-  // Called when minimize ends while the minimize end hook is set.
-  void OnMinimizeEnd(HWND hwnd);
-
   // This is called when the display is put to sleep. If the display is sleeping
   // it marks app windows as occluded.
   void OnDisplayStateChanged(bool display_on) override;
@@ -369,14 +365,10 @@ class AURA_EXPORT NativeWindowOcclusionTrackerWin
   // Map of HWND to root app windows. Maintained on the UI thread, and used
   // to send occlusion state notifications to Windows from
   // `root_window_hwnds_occlusion_state_`.
-  base::flat_map<HWND, base::flat_set<raw_ptr<Window, CtnExperimental>>>
-      hwnd_root_window_map_;
+  base::flat_map<HWND, raw_ptr<Window, CtnExperimental>> hwnd_root_window_map_;
 
-  // Map of root app window to the actual root HWNDs. These may not match the
-  // keys in `hwnd_root_window_map_` if Chromium is being embedded in a window
-  // hierarchy.
-  base::flat_map<raw_ptr<Window, CtnExperimental>, HWND>
-      hwnd_widget_to_app_root_map_;
+  // This is set by UpdateOcclusionState. It is currently only used by tests.
+  int num_visible_root_windows_ = 0;
 
   // Manages observation of Windows Session Change messages.
   ui::SessionChangeObserver session_change_observer_;
