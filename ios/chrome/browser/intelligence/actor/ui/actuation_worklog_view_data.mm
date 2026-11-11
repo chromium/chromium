@@ -374,3 +374,45 @@ constexpr NSUInteger kMaxColumnActionCount = 3;
 }
 
 @end
+
+@implementation ActuationWorklogEntry
+
+- (instancetype)initWithItem:(ActuationWorklogItem*)item
+                        chip:(ActuationWorklogChip*)chip {
+  CHECK(item);
+  self = [super init];
+  if (self) {
+    _item = item;
+    _chip = chip;
+  }
+  return self;
+}
+
+@end
+
+@implementation ActuationWorklogState
+
+- (instancetype)
+    initWithActuationActive:(BOOL)actuationActive
+              headerContent:(ActuationHeaderContentVariants*)headerContent
+                    entries:(NSArray<ActuationWorklogEntry*>*)entries
+               intervention:(ActuationInterventionData*)intervention
+                suggestions:(NSArray<ActorFormSuggestion*>*)suggestions
+           suggestionsEntry:(ActuationWorklogEntry*)suggestionsEntry {
+  CHECK(headerContent);
+  CHECK(entries);
+  CHECK_EQ(!suggestions, !suggestionsEntry);
+  CHECK(!suggestions || suggestions.count > 0);
+  self = [super init];
+  if (self) {
+    _actuationActive = actuationActive;
+    _headerContent = headerContent;
+    _entries = [entries copy];
+    _intervention = intervention;
+    _suggestions = [suggestions copy];
+    _suggestionsEntry = suggestionsEntry;
+  }
+  return self;
+}
+
+@end

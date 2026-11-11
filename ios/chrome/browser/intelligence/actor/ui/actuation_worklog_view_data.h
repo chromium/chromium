@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+@class ActorFormSuggestion;
+
 // Supported layout styles for the actuation worklog item.
 enum class ActuationWorklogItemStyle {
   // Simple style with a dot indicator on the left and a title.
@@ -316,6 +318,67 @@ typedef NS_ENUM(NSInteger, ActuationHeaderItemStyle) {
 
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)new NS_UNAVAILABLE;
+
+@end
+
+// View data object describing an entry of the actuation worklog. The same
+// instance is kept across states, so views can find what changed by pointer.
+@interface ActuationWorklogEntry : NSObject
+
+// Item displayed for the entry.
+@property(nonatomic, strong, readonly) ActuationWorklogItem* item;
+
+// Chip of the tool executed for the entry, if any.
+@property(nonatomic, strong, readonly) ActuationWorklogChip* chip;
+
+// Designated initializer.
+- (instancetype)initWithItem:(ActuationWorklogItem*)item
+                        chip:(ActuationWorklogChip*)chip
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
+
+@end
+
+// Immutable snapshot of the actuation worklog of a task, built once and
+// rendered by every UI observing the task.
+@interface ActuationWorklogState : NSObject
+
+// Whether actuation is actively executing.
+@property(nonatomic, assign, readonly, getter=isActuationActive)
+    BOOL actuationActive;
+
+// Header content to display in each display mode.
+@property(nonatomic, strong, readonly)
+    ActuationHeaderContentVariants* headerContent;
+
+// Entries of the worklog, in display order.
+@property(nonatomic, copy, readonly) NSArray<ActuationWorklogEntry*>* entries;
+
+// Pending intervention, if any.
+@property(nonatomic, strong, readonly) ActuationInterventionData* intervention;
+
+// Suggestions selectable for `suggestionsEntry`, if any.
+// TODO(crbug.com/584701116): Replace `ActorFormSuggestion` with a UI-layer
+// view data type so this header doesn't depend on `actor/tools/model/`.
+@property(nonatomic, copy, readonly) NSArray<ActorFormSuggestion*>* suggestions;
+
+// Entry for which `suggestions` are selectable. `nil` if `suggestions` is.
+@property(nonatomic, strong, readonly) ActuationWorklogEntry* suggestionsEntry;
+
+// Designated initializer. `headerContent` and `entries` must be set.
+// `suggestions` and `suggestionsEntry` must both be `nil` or both be set, and
+// `suggestions` must not be empty.
+- (instancetype)
+    initWithActuationActive:(BOOL)actuationActive
+              headerContent:(ActuationHeaderContentVariants*)headerContent
+                    entries:(NSArray<ActuationWorklogEntry*>*)entries
+               intervention:(ActuationInterventionData*)intervention
+                suggestions:(NSArray<ActorFormSuggestion*>*)suggestions
+           suggestionsEntry:(ActuationWorklogEntry*)suggestionsEntry
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
 
 @end
 
