@@ -3203,10 +3203,6 @@ ServiceWorkerVersion::DeduceStartWorkerFailureReason(
   return default_code;
 }
 
-net::Error ServiceWorkerVersion::GetMainScriptNetError() {
-  return net::Error(script_cache_map()->main_script_net_error());
-}
-
 void ServiceWorkerVersion::MarkIfStale() {
   if (!context_) {
     return;
