@@ -24,8 +24,10 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/clang_profiling_buildflags.h"
 #include "base/command_line.h"
 #include "base/containers/span.h"
+#include "base/dcheck_is_on.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
@@ -439,8 +441,36 @@ bool ForkServerSupportsLaunchOptions(const LaunchOptions& options,
 bool MaybeStartTestLauncherForkServer(int* argc,
                                       char*** argv,
                                       bool force_for_testing) {
-  // Disabled by default; will be enabled in a follow-up CL.
+  // Forked test processes inherit the launcher's post-`main()` memory image and
+  // never call `execve()`, so the fork server can only be used when
+  // pre-`main()` initialization does not spawn background threads or bind
+  // per-process state (such as PIDs or output files) that cannot be shared
+  // across forked children. Specifically, disable the fork server when:
+  // - `EXPENSIVE_TEST_LOGIC_IS_ON()` (CI and local debug builds, where
+  //   `enable_expensive_dchecks = true`): keeps CI exercising the standard
+  //   `fork()` + `execve()` launch path, matching other CQ-only test fast paths
+  //   such as `TerminateCurrentProcessImmediately()` in `LaunchTestsInternal`.
+  // - Sanitizers are enabled: sanitizer runtimes initialize allocator state,
+  //   per-process metadata, and background threads before `main()`, which is
+  //   not safe across `fork()` without `execve()`.
+  // - Non-coverage `CLANG_PROFILING` (PGO instrumentation) is enabled:
+  //   `CLANG_PROFILING` is set for both PGO and Clang code coverage builds. PGO
+  //   writes per-process `.profraw` files at exit using a filename pattern from
+  //   `LLVM_PROFILE_FILE` whose `%p` (PID) placeholder is expanded once before
+  //   `main()`; forked children would all inherit the launcher's filename and
+  //   overwrite the same file. By contrast, `USE_CLANG_COVERAGE` runs in
+  //   continuous mode, where LLVM `mmap()`s shared `.profraw` files and updates
+  //   counters in-place in memory rather than dumping per-PID files at exit
+  //   (see `base/test/clang_profiling.cc`), so forked children safely aggregate
+  //   coverage into the shared files.
+#if EXPENSIVE_TEST_LOGIC_IS_ON() || defined(ADDRESS_SANITIZER) || \
+    defined(LEAK_SANITIZER) || defined(MEMORY_SANITIZER) ||       \
+    defined(THREAD_SANITIZER) || defined(UNDEFINED_SANITIZER) ||  \
+    (BUILDFLAG(CLANG_PROFILING) && !BUILDFLAG(USE_CLANG_COVERAGE))
   constexpr bool kForkServerEnabled = false;
+#else
+  constexpr bool kForkServerEnabled = true;
+#endif
   if ((!kForkServerEnabled && !force_for_testing) || g_fork_server_fd >= 0) {
     return false;
   }
