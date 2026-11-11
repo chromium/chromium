@@ -90,7 +90,7 @@ BASE_FEATURE(kHideCursorWhileTyping, base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_MAC)
 BASE_FEATURE(kOnlyUseWindowResizeHelperOnResize,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Re-create the CAContext on window resize to try to better synchronize the
 // resize.
