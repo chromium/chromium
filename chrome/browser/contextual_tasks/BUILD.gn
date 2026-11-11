@@ -960,7 +960,6 @@ if (!is_android) {
     ]
     deps = [
       ":contextual_tasks",
-      "//chrome/app/vector_icons",
       "//components/omnibox/browser:vector_icons",
       "//components/strings:components_strings",
       "//components/tabs:public",
