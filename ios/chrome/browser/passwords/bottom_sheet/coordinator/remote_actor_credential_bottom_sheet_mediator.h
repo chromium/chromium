@@ -16,6 +16,10 @@ class PasswordStoreInterface;
 class RemoteActorCredentialSharingService;
 }  // namespace password_manager
 
+namespace remote_actor::proto {
+class RemoteActorPasswordUploadRequest;
+}  // namespace remote_actor::proto
+
 namespace signin {
 class IdentityManager;
 }  // namespace signin
@@ -51,15 +55,14 @@ class SyncService;
 @property(nonatomic, weak) id<RemoteActorCredentialBottomSheetMediatorDelegate>
     delegate;
 
-// Initializes the mediator for the remote actor request identified by
-// `domain`, `gaiaID` and `taskID`. `identityManager`, `syncService`,
-// `profilePasswordStore`, `accountPasswordStore`, `sharingService` and
-// `passwordManagerClient` are passed to
+// Initializes the mediator for the remote actor `request`. `identityManager`,
+// `syncService`, `profilePasswordStore`, `accountPasswordStore`,
+// `sharingService` and `passwordManagerClient` are passed to
 // `RemoteActorCredentialSharingController` to retrieve the credentials,
 // reauthenticate the user and share the chosen credential; `identityManager`,
 // `syncService`, `sharingService` and `passwordManagerClient` may be null when
 // unavailable, and the store matching the user's sync state must be non-null.
-// `faviconLoader` is used to load the favicon of `domain`.
+// `faviconLoader` is used to load the favicon of the requested domain.
 - (instancetype)
     initWithIdentityManager:(signin::IdentityManager*)identityManager
                 syncService:(syncer::SyncService*)syncService
@@ -73,9 +76,9 @@ class SyncService;
       passwordManagerClient:
           (password_manager::PasswordManagerClient*)passwordManagerClient
               faviconLoader:(FaviconLoader*)faviconLoader
-                     domain:(NSString*)domain
-                     gaiaID:(NSString*)gaiaID
-                     taskID:(NSString*)taskID NS_DESIGNATED_INITIALIZER;
+                    request:
+                        (remote_actor::proto::RemoteActorPasswordUploadRequest)
+                            request NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 

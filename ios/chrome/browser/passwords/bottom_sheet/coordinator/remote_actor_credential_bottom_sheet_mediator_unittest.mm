@@ -13,6 +13,7 @@
 #import "base/run_loop.h"
 #import "base/test/task_environment.h"
 #import "components/password_manager/core/browser/password_form.h"
+#import "ios/chrome/browser/passwords/model/remote_actor/proto/remote_actor_password_upload_request.pb.h"
 #import "ios/chrome/browser/passwords/model/remote_actor/remote_actor_credential_sharing_delegate_bridge.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -22,9 +23,6 @@
 
 namespace {
 
-NSString* const kTestDomain = @"instacart.com";
-NSString* const kTestGaiaID = @"gaia_id";
-NSString* const kTestTaskID = @"task_id";
 constexpr char kTestOrigin[] = "https://instacart.com";
 
 // Creates a test `PasswordForm`.
@@ -49,6 +47,13 @@ class RemoteActorCredentialBottomSheetMediatorTest : public PlatformTest {
     PlatformTest::SetUp();
     delegate_ = OCMStrictProtocolMock(
         @protocol(RemoteActorCredentialBottomSheetMediatorDelegate));
+    constexpr char kTestDomain[] = "instacart.com";
+    constexpr char kTestGaiaID[] = "gaia_id";
+    constexpr char kTestTaskID[] = "task_id";
+    remote_actor::proto::RemoteActorPasswordUploadRequest request;
+    request.set_gaia_id(kTestGaiaID);
+    request.set_domain(kTestDomain);
+    request.set_task_id(kTestTaskID);
     mediator_ = [[RemoteActorCredentialBottomSheetMediator alloc]
         initWithIdentityManager:nullptr
                     syncService:nullptr
@@ -57,9 +62,7 @@ class RemoteActorCredentialBottomSheetMediatorTest : public PlatformTest {
                  sharingService:nullptr
           passwordManagerClient:nullptr
                   faviconLoader:nullptr
-                         domain:kTestDomain
-                         gaiaID:kTestGaiaID
-                         taskID:kTestTaskID];
+                        request:request];
     mediator_.delegate = delegate_;
   }
 

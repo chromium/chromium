@@ -11,10 +11,10 @@
 #import "base/check.h"
 #import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
-#import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/remote_actor/remote_actor_credential_sharing_controller.h"
 #import "components/password_manager/core/browser/remote_actor/remote_actor_credential_sharing_result.h"
+#import "ios/chrome/browser/passwords/model/remote_actor/proto/remote_actor_password_upload_request.pb.h"
 #import "ios/chrome/browser/passwords/model/remote_actor/remote_actor_credential_sharing_delegate_bridge.h"
 #import "url/origin.h"
 
@@ -47,20 +47,14 @@ using password_manager::RemoteActorCredentialSharingResult;
   std::unique_ptr<password_manager::RemoteActorCredentialSharingController>
       _controller;
 
-  // Stored password forms matching `_domain`.
+  // Stored password forms matching the requested domain.
   std::vector<std::unique_ptr<password_manager::PasswordForm>> _credentials;
 
   // `FaviconLoader` used to load the favicon.
   raw_ptr<FaviconLoader> _faviconLoader;
 
-  // Domain for which credentials were requested.
-  NSString* _domain;
-
-  // GAIA ID of the requesting user.
-  NSString* _gaiaID;
-
-  // Task ID associated with the remote actor request.
-  NSString* _taskID;
+  // Remote actor request forwarded to the sharing controller on start.
+  remote_actor::proto::RemoteActorPasswordUploadRequest _request;
 }
 
 - (instancetype)
@@ -76,9 +70,9 @@ using password_manager::RemoteActorCredentialSharingResult;
       passwordManagerClient:
           (password_manager::PasswordManagerClient*)passwordManagerClient
               faviconLoader:(FaviconLoader*)faviconLoader
-                     domain:(NSString*)domain
-                     gaiaID:(NSString*)gaiaID
-                     taskID:(NSString*)taskID {
+                    request:
+                        (remote_actor::proto::RemoteActorPasswordUploadRequest)
+                            request {
   self = [super init];
   if (self) {
     _identityManager = identityManager;
@@ -88,9 +82,7 @@ using password_manager::RemoteActorCredentialSharingResult;
     _sharingService = sharingService;
     _passwordManagerClient = passwordManagerClient;
     _faviconLoader = faviconLoader;
-    _domain = [domain copy];
-    _gaiaID = [gaiaID copy];
-    _taskID = [taskID copy];
+    _request = std::move(request);
   }
   return self;
 }
@@ -107,8 +99,7 @@ using password_manager::RemoteActorCredentialSharingResult;
 
   __weak __typeof(self) weakSelf = self;
   _controller->Start(
-      base::SysNSStringToUTF8(_gaiaID), base::SysNSStringToUTF8(_domain),
-      base::SysNSStringToUTF8(_taskID),
+      _request.gaia_id(), _request.domain(), _request.task_id(),
       base::BindOnce(^(RemoteActorCredentialSharingResult result) {
         [weakSelf handleSharingResult:result];
       }));
@@ -126,6 +117,7 @@ using password_manager::RemoteActorCredentialSharingResult;
   _delegate = nil;
   _faviconLoader = nullptr;
   _credentials.clear();
+  _request.Clear();
 }
 
 #pragma mark - RemoteActorCredentialSharingDelegate
