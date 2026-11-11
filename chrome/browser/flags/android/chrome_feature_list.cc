@@ -624,7 +624,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &segmentation_platform::features::kSegmentationPlatformAndroidHomeModuleRankerV2,
     &segmentation_platform::features::kSegmentationPlatformEphemeralCardRanker,
     &send_tab_to_self::kSendTabToSelfDynamicShortcuts,
-    &send_tab_to_self::kSendTabToSelfGesture,
     &send_tab_to_self::kSendTabToSelfMultiTabShare,
     &send_tab_to_self::kSendTabToSelfOpenNativeApp,
     &send_tab_to_self::kSendTabToSelfSupportAutoOpenInTabGrid,

@@ -35,8 +35,7 @@ enum class ShareEntryPoint {
   kShareSheet = 5,
   // The context menu on a tab (in the tab strip or tab switcher).
   kTabMenu = 6,
-  // A physical gesture.
-  kGesture = 7,
+  // Deprecated: kGesture = 7,
   // A DirectShare target on the OS-level Share Sheet.
   kShareSheetDirectShare = 8,
   kMaxValue = kShareSheetDirectShare,

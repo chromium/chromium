@@ -595,7 +595,6 @@ chromium-metrics-reviews@google.com.
   <token key="ShareEntryPoint">
     <variant name="" summary="any entry point"/>
     <variant name=".ContentMenu" summary="the context menu on a WebContents"/>
-    <variant name=".Gesture" summary="a physical gesture"/>
     <variant name=".LinkMenu" summary="the context menu on a link"/>
     <variant name=".OmniboxMenu" summary="the context menu on the Omnibox"/>
     <variant name=".ShareMenu" summary="the Share menu in the 3-dot menu"/>

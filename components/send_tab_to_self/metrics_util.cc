@@ -125,8 +125,6 @@ std::string GetEntryPointSuffix(ShareEntryPoint entry_point) {
       return "ShareSheet";
     case ShareEntryPoint::kTabMenu:
       return "TabMenu";
-    case ShareEntryPoint::kGesture:
-      return "Gesture";
     case ShareEntryPoint::kShareSheetDirectShare:
       return "ShareSheetDirectShare";
   }

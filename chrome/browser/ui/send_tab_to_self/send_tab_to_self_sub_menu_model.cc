@@ -126,7 +126,6 @@ bool IsSubmenuEnabledForEntryPoint(ShareEntryPoint entry_point) {
     case ShareEntryPoint::kToolbarIcon:
     case ShareEntryPoint::kOmniboxMenu:
     case ShareEntryPoint::kShareSheet:
-    case ShareEntryPoint::kGesture:
     case ShareEntryPoint::kShareSheetDirectShare:
       return false;
   }

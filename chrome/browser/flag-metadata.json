@@ -8941,11 +8941,6 @@
     "expiry_milestone": 165
   },
   {
-    "name": "send-tab-to-self-gesture",
-    "owners": ["ankushkush@chromium.org", "chrome-sync-client-team+flags@google.com"],
-    "expiry_milestone": 160
-  },
-  {
     "name": "sensitive-content",
     "owners": ["jkeitel@google.com"],
     "expiry_milestone": 163

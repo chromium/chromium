@@ -46,10 +46,6 @@ BASE_DECLARE_FEATURE(kSendTabToSelfAnchorPromosToProfilePill);
 BASE_DECLARE_FEATURE(kSendTabToSelfMultiTabShare);
 
 #if BUILDFLAG(IS_ANDROID)
-// If this feature is enabled, physical double-tap gestures will be detected
-// and used to trigger sending tabs to self on Android devices.
-BASE_DECLARE_FEATURE(kSendTabToSelfGesture);
-
 // If this feature is enabled, a Sent Tab To Self notification will open
 // the appropriate native app if it is available.
 BASE_DECLARE_FEATURE(kSendTabToSelfOpenNativeApp);
