@@ -38,8 +38,6 @@ class BrowserHandler : public protocol::Browser::Backend {
       std::optional<protocol::Binary> image) override;
   protocol::Response ExecuteBrowserCommand(
       const protocol::Browser::BrowserCommandId& command_id) override;
-  protocol::Response AddPrivacySandboxEnrollmentOverride(
-      const std::string& in_url) override;
 
  private:
   base::flat_set<std::string> contexts_with_overridden_permissions_;

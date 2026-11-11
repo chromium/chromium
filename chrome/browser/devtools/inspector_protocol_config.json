@@ -18,7 +18,7 @@
             },
             {
                 "domain": "Browser",
-                "include": [ "getWindowForTarget", "getWindowBounds", "setWindowBounds", "setContentsSize", "close", "setDockTile", "executeBrowserCommand", "addPrivacySandboxEnrollmentOverride" ],
+                "include": [ "getWindowForTarget", "getWindowBounds", "setWindowBounds", "setContentsSize", "close", "setDockTile", "executeBrowserCommand"],
                 "include_events": []
             },
             {

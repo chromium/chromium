@@ -484,7 +484,6 @@ static_library("devtools") {
       "//components/media_router/common/mojom:media_router",
       "//components/origin_gating/core",
       "//components/payments/content",
-      "//components/privacy_sandbox/privacy_sandbox_attestations",
       "//components/private_verification_tokens/common:private_verification_tokens_database",
       "//components/security_state/content",
       "//components/subresource_filter/content/browser",
@@ -799,7 +798,6 @@ if (enable_devtools_frontend) {
         "//chrome/browser/flags:flags_android",
         "//chrome/browser/ui/android/tab_model:test_support",
         "//chrome/test/base:android_ui_test_utils",
-        "//components/privacy_sandbox/privacy_sandbox_attestations",
       ]
     }
 

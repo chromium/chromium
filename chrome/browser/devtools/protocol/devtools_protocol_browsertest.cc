@@ -36,7 +36,6 @@
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/devtools/protocol/devtools_protocol_test_support.h"
 #include "chrome/browser/preloading/preloading_prefs.h"
-#include "chrome/browser/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations_mixin.h"
 #include "chrome/browser/private_verification_tokens/private_verification_tokens_service.h"
 #include "chrome/browser/private_verification_tokens/private_verification_tokens_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -56,7 +55,6 @@
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
-#include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_token.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
@@ -2410,49 +2408,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderDataSaverProtocolTest,
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-class PrivacySandboxAttestationsOverrideTest
-    : public InProcessBrowserTestMixinHostSupport<DevToolsProtocolTest> {
- public:
-  PrivacySandboxAttestationsOverrideTest() = default;
-
- private:
-  privacy_sandbox::PrivacySandboxAttestationsMixin
-      privacy_sandbox_attestations_mixin_{&mixin_host_};
-};
-
-IN_PROC_BROWSER_TEST_F(PrivacySandboxAttestationsOverrideTest,
-                       PrivacySandboxEnrollmentOverride) {
-  Attach();
-
-  base::DictValue btm_params;
-  const std::string attestation_url = "https://google.com";
-  btm_params.Set("url", attestation_url);
-
-  SendCommand("Browser.addPrivacySandboxEnrollmentOverride",
-              std::move(btm_params));
-
-  EXPECT_TRUE(
-      privacy_sandbox::PrivacySandboxAttestations::GetInstance()->IsOverridden(
-          net::SchemefulSite(GURL(attestation_url))));
-}
-
-IN_PROC_BROWSER_TEST_F(PrivacySandboxAttestationsOverrideTest,
-                       PrivacySandboxEnrollmentOverrideInvalidUrl) {
-  Attach();
-
-  base::DictValue btm_params;
-  const std::string attestation_url = "this is a bad url";
-  btm_params.Set("url", attestation_url);
-
-  SendCommand("Browser.addPrivacySandboxEnrollmentOverride",
-              std::move(btm_params));
-
-  EXPECT_TRUE(error());
-  EXPECT_FALSE(
-      privacy_sandbox::PrivacySandboxAttestations::GetInstance()->IsOverridden(
-          net::SchemefulSite(GURL(attestation_url))));
-}
-
 class DevToolsProtocolTest_PrivateVerificationTokens
     : public DevToolsProtocolTest {
  public:

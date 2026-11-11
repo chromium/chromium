@@ -369,8 +369,3 @@ protocol::Response BrowserHandlerAndroid::ExecuteBrowserCommand(
     const protocol::Browser::BrowserCommandId& command_id) {
   return Response::MethodNotFound(kNotImplemented);
 }
-
-protocol::Response BrowserHandlerAndroid::AddPrivacySandboxEnrollmentOverride(
-    const std::string& in_url) {
-  return Response::MethodNotFound(kNotImplemented);
-}
