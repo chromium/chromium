@@ -21890,6 +21890,7 @@
                 {
                     "name": "Enabled",
                     "params": {
+                        "check_will_create_url_loader_factory": "true",
                         "update_missing_header_cache": "true"
                     },
                     "enable_features": [
