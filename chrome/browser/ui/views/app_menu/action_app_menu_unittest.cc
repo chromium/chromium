@@ -2865,6 +2865,16 @@ TEST_F(ActionAppMenuWithSearchTest, SearchQueryShowsOnlyResults) {
   EXPECT_EQ(result->height(), ChromeLayoutProvider::Get()->GetDistanceMetric(
                                   DISTANCE_ACTION_APP_MENU_MEDIUM_ITEM_HEIGHT));
 
+  // The matched text is highlighted and not treated as a mnemonic.
+  EXPECT_EQ(result->title(), u"Downloads");
+  EXPECT_EQ(result->highlight_range(), gfx::Range(0, 9));
+  EXPECT_FALSE(result->may_have_mnemonics());
+
+  // The title and highlight overrides are kept when the bound action changes.
+  downloads_action->SetText(u"Changed");
+  EXPECT_EQ(result->title(), u"Downloads");
+  EXPECT_EQ(result->highlight_range(), gfx::Range(0, 9));
+
   // Clicking a result runs its action.
   EXPECT_CALL(mock_action_invoked_,
               Call(kActionShowDownloadsPage, testing::_, testing::_))
@@ -2873,6 +2883,8 @@ TEST_F(ActionAppMenuWithSearchTest, SearchQueryShowsOnlyResults) {
 
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
   menu.CloseMenu();
+  EXPECT_FALSE(menu.IsShowing());
+  EXPECT_EQ(menu.search_controller_for_testing(), nullptr);
 }
 
 TEST_F(ActionAppMenuWithSearchTest, ZoomSearchResultPersistsMenu) {
@@ -3186,9 +3198,21 @@ TEST_F(ActionAppMenuWithSearchTest, SearchQueryWithoutMatchesShowsBackButton) {
   // A single "No results" row is the only scrollable row, and back is offered.
   EXPECT_EQ(search_row->parent(), search_row_parent);
   EXPECT_EQ(search_row_parent->GetIndexOf(search_row), search_row_index);
-  EXPECT_EQ(submenu->children().size(), 1u);
+  ASSERT_EQ(submenu->children().size(), 1u);
+  auto* const no_results_item =
+      views::AsViewClass<views::MenuItemView>(submenu->children()[0]);
+  ASSERT_NE(no_results_item, nullptr);
+  EXPECT_EQ(no_results_item->title(),
+            l10n_util::GetStringUTF16(IDS_SEARCH_NO_RESULTS));
+  EXPECT_FALSE(no_results_item->GetEnabled());
   EXPECT_TRUE(GetBackButton(search_bar)->GetVisible());
   EXPECT_FALSE(GetSearchIcon(search_bar)->GetVisible());
+
+  const views::Separator* separator = GetSeparator(search_bar);
+  ASSERT_NE(separator, nullptr);
+  EXPECT_EQ(no_results_item->GetBoundsInScreen().y() -
+                separator->GetBoundsInScreen().bottom(),
+            8);
 
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
   menu.CloseMenu();
@@ -5751,113 +5775,6 @@ TEST_F(ActionAppMenuTest, BookmarksDynamicMenuDragAndDrop) {
 
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
   menu.CloseMenu();
-}
-
-TEST_F(ActionAppMenuTest, AppMenuSearchQueryPopulatesResults) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(features::kChroMenuSearch,
-                                                  {{"query", "New Tab"}});
-
-  base::MockCallback<base::RepeatingClosure> on_menu_closed;
-  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
-
-  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
-  EXPECT_TRUE(menu.IsShowing());
-
-  AppMenuSearchBarView* search_bar = menu.search_bar_for_testing();
-  ASSERT_TRUE(search_bar);
-  EXPECT_EQ(search_bar->GetText(), u"New Tab");
-
-  views::MenuItemView* root = menu.root_menu_item_for_testing();
-  ASSERT_TRUE(root);
-
-  // Search results should be populated with New Tab.
-  views::MenuItemView* new_tab_item = root->GetMenuItemByID(kActionNewTab);
-  ASSERT_TRUE(new_tab_item);
-  EXPECT_EQ(new_tab_item->title(), u"New Tab");
-  EXPECT_EQ(new_tab_item->highlight_range(), gfx::Range(0, 7));
-  EXPECT_FALSE(new_tab_item->may_have_mnemonics());
-
-  // The title and highlight overrides are kept when the bound action changes.
-  actions::ActionItem* new_tab_action =
-      actions::ActionManager::Get().FindAction(
-          kActionNewTab, browser_actions_->root_action_item());
-  ASSERT_TRUE(new_tab_action);
-  new_tab_action->SetText(u"Changed");
-  EXPECT_EQ(new_tab_item->title(), u"New Tab");
-  EXPECT_EQ(new_tab_item->highlight_range(), gfx::Range(0, 7));
-
-  // Clicking/executing the search result item should invoke the action.
-  EXPECT_CALL(mock_action_invoked_, Call(kActionNewTab, testing::_, testing::_))
-      .Times(1);
-  menu.ExecuteCommand(new_tab_item->GetCommand(), ui::EF_NONE);
-
-  EXPECT_CALL(on_menu_closed, Run()).Times(1);
-  menu.CloseMenu();
-  EXPECT_FALSE(menu.IsShowing());
-  EXPECT_EQ(menu.search_controller_for_testing(), nullptr);
-}
-
-TEST_F(ActionAppMenuTest, AppMenuSearchQueryNoResults) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kChroMenuSearch, {{"query", "NonExistentQuery"}});
-
-  base::MockCallback<base::RepeatingClosure> on_menu_closed;
-  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
-
-  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
-  EXPECT_TRUE(menu.IsShowing());
-
-  AppMenuSearchBarView* search_bar = menu.search_bar_for_testing();
-  ASSERT_TRUE(search_bar);
-  EXPECT_EQ(search_bar->GetText(), u"NonExistentQuery");
-
-  views::MenuItemView* root = menu.root_menu_item_for_testing();
-  ASSERT_TRUE(root);
-
-  // Should have "No results found" disabled item.
-  EXPECT_EQ(root->GetSubmenu()->GetMenuItems().size(), 2u);
-  views::MenuItemView* no_results_item = root->GetSubmenu()->GetMenuItemAt(1);
-  EXPECT_EQ(no_results_item->title(),
-            l10n_util::GetStringUTF16(IDS_SEARCH_NO_RESULTS));
-  EXPECT_FALSE(no_results_item->GetEnabled());
-
-  const views::Separator* separator = GetSeparator(search_bar);
-  ASSERT_TRUE(separator);
-  EXPECT_EQ(no_results_item->GetBoundsInScreen().y() -
-                separator->GetBoundsInScreen().bottom(),
-            8);
-
-  EXPECT_CALL(on_menu_closed, Run()).Times(1);
-  menu.CloseMenu();
-  EXPECT_FALSE(menu.IsShowing());
-}
-
-TEST_F(ActionAppMenuTest, AppMenuSearchQueryShortQueryShowsNormalMenu) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(features::kChroMenuSearch,
-                                                  {{"query", "N"}});
-
-  base::MockCallback<base::RepeatingClosure> on_menu_closed;
-  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
-
-  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
-  EXPECT_TRUE(menu.IsShowing());
-
-  AppMenuSearchBarView* search_bar = menu.search_bar_for_testing();
-  ASSERT_TRUE(search_bar);
-  EXPECT_EQ(search_bar->GetText(), u"N");
-
-  views::MenuItemView* root = menu.root_menu_item_for_testing();
-  ASSERT_TRUE(root);
-
-  // The regular menu hierarchy should be present.
-  EXPECT_TRUE(root->GetMenuItemByID(kActionPasswordsAndAutofillSubmenu));
-
-  EXPECT_CALL(on_menu_closed, Run()).Times(1);
-  menu.CloseMenu();
-  EXPECT_FALSE(menu.IsShowing());
 }
 
 TEST_F(ActionAppMenuTest, RecentTabsByDateHistoryInSidePanel) {

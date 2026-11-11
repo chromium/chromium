@@ -506,20 +506,7 @@ IN_PROC_BROWSER_TEST_F(ActionAppMenuWithSearchBrowserTest,
   menu_control->CloseMenu();
 }
 
-class ActionAppMenuWithSearchQueryBrowserTest
-    : public ActionAppMenuBrowserTest {
- public:
-  ActionAppMenuWithSearchQueryBrowserTest() {
-    search_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kChroMenuSearch, {{"query", "extensions"}});
-  }
-  ~ActionAppMenuWithSearchQueryBrowserTest() override = default;
-
- private:
-  base::test::ScopedFeatureList search_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(ActionAppMenuWithSearchQueryBrowserTest,
+IN_PROC_BROWSER_TEST_F(ActionAppMenuWithSearchBrowserTest,
                        ShowActionAppMenuWithExtensionsSearchTwice) {
   AppMenuControl* menu_control = GetMenuControl();
   ASSERT_TRUE(menu_control);
@@ -527,29 +514,29 @@ IN_PROC_BROWSER_TEST_F(ActionAppMenuWithSearchQueryBrowserTest,
   EXPECT_FALSE(menu_control->IsMenuShowing());
   EXPECT_FALSE(menu_control->GetActionAppMenuForTesting());
 
-  menu_control->ShowMenuWithFlags(views::MenuRunner::NO_FLAGS);
-  EXPECT_TRUE(menu_control->IsMenuShowing());
-  ActionAppMenu* action_menu = menu_control->GetActionAppMenuForTesting();
-  ASSERT_TRUE(action_menu);
+  for (int i = 0; i < 2; ++i) {
+    SCOPED_TRACE(i);
+    menu_control->ShowMenuWithFlags(views::MenuRunner::NO_FLAGS);
+    ASSERT_TRUE(menu_control->IsMenuShowing());
+    ActionAppMenu* action_menu = menu_control->GetActionAppMenuForTesting();
+    ASSERT_TRUE(action_menu);
 
-  AppMenuSearchBarView* search_bar = action_menu->search_bar_for_testing();
-  ASSERT_TRUE(search_bar);
-  EXPECT_EQ(search_bar->GetText(), u"extensions");
+    AppMenuSearchBarView* search_bar = action_menu->search_bar_for_testing();
+    ASSERT_TRUE(search_bar);
+    EXPECT_TRUE(search_bar->GetText().empty());
+    views::MenuItemView* root = action_menu->root_menu_item_for_testing();
+    ASSERT_TRUE(root);
+    ASSERT_NE(root->GetMenuItemByID(kActionPrint), nullptr);
 
-  menu_control->CloseMenu();
-  EXPECT_FALSE(menu_control->IsMenuShowing());
+    search_bar->SetText(u"extensions");
 
-  menu_control->ShowMenuWithFlags(views::MenuRunner::NO_FLAGS);
-  EXPECT_TRUE(menu_control->IsMenuShowing());
-  action_menu = menu_control->GetActionAppMenuForTesting();
-  ASSERT_TRUE(action_menu);
+    EXPECT_NE(root->GetMenuItemByID(kActionExtensionsSubmenuManageExtensions),
+              nullptr);
+    EXPECT_EQ(root->GetMenuItemByID(kActionPrint), nullptr);
 
-  search_bar = action_menu->search_bar_for_testing();
-  ASSERT_TRUE(search_bar);
-  EXPECT_EQ(search_bar->GetText(), u"extensions");
-
-  menu_control->CloseMenu();
-  EXPECT_FALSE(menu_control->IsMenuShowing());
+    menu_control->CloseMenu();
+    EXPECT_FALSE(menu_control->IsMenuShowing());
+  }
 }
 
 class ActionAppMenuWithOtherDeviceTabsBrowserTest

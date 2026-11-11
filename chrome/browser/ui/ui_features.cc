@@ -143,11 +143,6 @@ BASE_FEATURE(kSettingsSearch2026, base::FEATURE_DISABLED_BY_DEFAULT);
 // kAppMenuGlowUp is also enabled, since the search bar is part of the
 // action-based app menu.
 BASE_FEATURE(kChroMenuSearch, base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE_PARAM(std::string,
-                   kChroMenuSearchQuery,
-                   &kChroMenuSearch,
-                   "query",
-                   "");
 // Enables the redesigned History page refresh features.
 BASE_FEATURE(kHistoryPageRefresh, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(double,

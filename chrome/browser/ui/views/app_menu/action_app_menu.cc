@@ -8,7 +8,6 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
@@ -16,7 +15,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/side_panel/side_panel_action_callback.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_manager.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_action_item.h"
@@ -308,17 +306,6 @@ void ActionAppMenu::RunMenu(views::Widget* parent,
       menu_height = root_->GetSubmenu()->GetPreferredSize({}).height();
     }
     metrics_.RecordMenuHeightPercentage(menu_height, screen_height);
-  }
-
-  // Temporary code to test search functionality while the key event routing
-  // design is aligned on. Prefills the search bar with the query from the
-  // `kChroMenuSearchQuery` feature param. Done once the menu is shown so the
-  // results go through the same path as a typed query.
-  if (search_bar_ && IsShowing()) {
-    const std::string query = features::kChroMenuSearchQuery.Get();
-    if (!query.empty()) {
-      search_bar_->SetText(base::UTF8ToUTF16(query));
-    }
   }
 }
 
