@@ -15,6 +15,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -1079,6 +1080,74 @@ TEST_F(NativeDesktopMediaListDelegatedTest, ClearSelectionNoOp) {
   model_->FocusList();
   WaitForCapturerTasks();
   EXPECT_EQ(1, capturer_->ensure_visible_call_count());
+}
+
+// A delegated source list that is only shown on request (e.g. by a button in
+// the picker) doesn't report the capturer's sources until a selection has been
+// made, since the PipeWire capturer always reports a placeholder source that
+// must not be auto-accepted.
+class NativeDesktopMediaListDelegatedOnRequestTest
+    : public ChromeViewsTestBase {
+ public:
+  NativeDesktopMediaListDelegatedOnRequestTest() {
+    auto capturer = std::make_unique<DelegatedFakeScreenCapturer>();
+    capturer->SetSourceList({{.id = kPlaceholderId}});
+    capturer_ = capturer.get();
+    model_ = std::make_unique<NativeDesktopMediaList>(
+        DesktopMediaList::Type::kScreen, std::move(capturer),
+        /*add_current_process_windows=*/false,
+        /*auto_show_delegated_source_list=*/false);
+    model_->SetUpdatePeriod(base::Milliseconds(20));
+  }
+
+  ~NativeDesktopMediaListDelegatedOnRequestTest() override = default;
+
+  void WaitForCapturerTasks() {
+    base::RunLoop run_loop;
+    model_->GetCapturerTaskRunnerForTesting()->PostTask(FROM_HERE,
+                                                        run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+ protected:
+  static constexpr webrtc::DesktopCapturer::SourceId kPlaceholderId = 7;
+
+  // Same order as in NativeDesktopMediaListDelegatedTest.
+  MockObserver observer_;
+  std::unique_ptr<NativeDesktopMediaList> model_;
+  raw_ptr<DelegatedFakeScreenCapturer> capturer_;
+};
+
+TEST_F(NativeDesktopMediaListDelegatedOnRequestTest, NoSourceBeforeSelection) {
+  EXPECT_CALL(observer_, OnSourceAdded(testing::_)).Times(0);
+  model_->StartUpdating(&observer_);
+  model_->FocusList();
+  // Let the worker's refresh reach the UI thread.
+  WaitForCapturerTasks();
+  base::RunLoop run_loop_ui;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop_ui.QuitClosure());
+  run_loop_ui.Run();
+
+  EXPECT_EQ(0, model_->GetSourceCount());
+  // The list isn't shown just because it got the focus.
+  EXPECT_EQ(0, capturer_->ensure_visible_call_count());
+  testing::Mock::VerifyAndClearExpectations(&observer_);
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(observer_, OnDelegatedSourceListSelection());
+  EXPECT_CALL(observer_, OnSourceAdded(0))
+      .WillOnce(QuitRunLoop(base::SingleThreadTaskRunner::GetCurrentDefault(),
+                            &run_loop));
+  EXPECT_CALL(observer_, OnSourceThumbnailChanged(0))
+      .Times(testing::AnyNumber());
+  // Select on the UI thread, where the PipeWire capturer reports portal
+  // results; the worker handles the selection on its own thread.
+  capturer_->SimulateSourceListSelection();
+  run_loop.Run();
+
+  ASSERT_EQ(1, model_->GetSourceCount());
+  EXPECT_EQ(kPlaceholderId, model_->GetSource(0).id.id);
 }
 
 #if BUILDFLAG(IS_MAC)

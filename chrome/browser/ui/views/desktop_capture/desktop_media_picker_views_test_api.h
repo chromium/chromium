@@ -54,7 +54,10 @@ class DesktopMediaPickerViewsTestApi {
   std::u16string GetOkButtonLabelText() const;
   bool IsOkButtonEnabled() const;
   bool IsAudioRecommendationVisible() const;
+  // The button of a DesktopMediaDelegatedSourceListView, which opens the
+  // system picker.
   std::u16string GetDelegatedButtonText() const;
+  void PressDelegatedButton();
 
   bool HasSourceAtIndex(size_t index) const;
   void FocusSourceAtIndex(size_t index, bool select = true);
@@ -72,6 +75,7 @@ class DesktopMediaPickerViewsTestApi {
 #endif
 
  private:
+  views::MdTextButton* GetDelegatedButton() const;
   const views::View* GetSourceAtIndex(size_t index) const;
   views::View* GetSourceAtIndex(size_t index);
   const views::TableView* GetTableView() const;

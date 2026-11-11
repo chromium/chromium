@@ -5,10 +5,12 @@
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_list_controller.h"
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/config/chromebox_for_meetings/buildflags.h"  // PLATFORM_CFM
+#include "chrome/browser/media/webrtc/desktop_media_picker.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_delegated_source_list_view.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_list_view.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_picker_views.h"
@@ -69,16 +71,13 @@ std::unique_ptr<views::View> DesktopMediaListController::CreateView(
     DesktopMediaList::Type type) {
   CHECK(!view_, base::NotFatalUntil::M162);
 
-#if BUILDFLAG(IS_MAC)
-  if (media_list_->IsSourceListDelegated()) {
-    CHECK(!view_, base::NotFatalUntil::M162);
+  if (UsesDelegatedSourceListView()) {
     auto view = std::make_unique<DesktopMediaDelegatedSourceListView>(
         weak_factory_.GetWeakPtr(), accessible_name, type);
     view_ = view.get();
     view_observations_.AddObservation(view_.get());
     return view;
   }
-#endif
 
   auto view = std::make_unique<DesktopMediaListView>(
       this, generic_style, single_style, accessible_name);
@@ -136,15 +135,14 @@ void DesktopMediaListController::StartUpdatingInternal() {
 }
 
 void DesktopMediaListController::OnAudioShareToggled(bool audio_shared) {
-#if BUILDFLAG(IS_MAC)
-  // For delegated source lists on macOS (such as SCContentSharingPicker), the
-  // action button to launch the system picker is drawn within the delegated
-  // list view itself. We propagate the audio-shared state to dynamically update
-  // this button's label in sync with the user's toggle choice.
-  if (view_ && media_list_->IsSourceListDelegated()) {
+  // For delegated source lists shown as a button (such as
+  // SCContentSharingPicker on macOS or the xdg-desktop-portal picker on Linux),
+  // the action button to launch the system picker is drawn within the delegated
+  // list view itself. Propagate the audio-shared state to update this button's
+  // label in sync with the user's toggle choice.
+  if (view_ && UsesDelegatedSourceListView()) {
     view_->SetAudioShared(audio_shared);
   }
-#endif
 }
 
 void DesktopMediaListController::FocusView() {
@@ -152,7 +150,14 @@ void DesktopMediaListController::FocusView() {
     view_->RequestFocus();
   }
 
-  if (media_list_->IsSourceListDelegated() && !is_updating_) {
+  // A PipeWire capturer opens the portal as soon as it is started, so when the
+  // portal is opened with a button, start updating only once it is pressed.
+  bool start_updating_on_focus = true;
+#if !BUILDFLAG(IS_MAC)
+  start_updating_on_focus = !UsesDelegatedSourceListView();
+#endif
+  if (media_list_->IsSourceListDelegated() && !is_updating_ &&
+      start_updating_on_focus) {
     StartUpdatingInternal();
   }
 
@@ -160,6 +165,9 @@ void DesktopMediaListController::FocusView() {
 }
 
 void DesktopMediaListController::ShowDelegatedList() {
+  if (!is_updating_) {
+    StartUpdatingInternal();
+  }
   media_list_->ShowDelegatedList();
   dialog_->GetWidget()->Hide();
 }
@@ -169,12 +177,9 @@ void DesktopMediaListController::HideView() {
 }
 
 bool DesktopMediaListController::SupportsReselectButton() const {
-#if BUILDFLAG(IS_MAC)
-  return false;
-#else
-  // Only DelegatedSourceLists support the notion of reslecting.
-  return media_list_->IsSourceListDelegated();
-#endif
+  // Only DelegatedSourceLists support the notion of reselecting, and only when
+  // their selection isn't accepted right away.
+  return media_list_->IsSourceListDelegated() && !UsesDelegatedSourceListView();
 }
 
 void DesktopMediaListController::SetCanReselect(bool can_reselect) {
@@ -345,6 +350,12 @@ void DesktopMediaListController::OnDelegatedSourceListSelection() {
 
 void DesktopMediaListController::OnDelegatedSourceListDismissed() {
   CHECK(media_list_->IsSourceListDelegated(), base::NotFatalUntil::M162);
+  if (UsesDelegatedSourceListView()) {
+    // The dialog was hidden when the system picker was shown, so the system
+    // picker being cancelled or failing cancels the whole request.
+    dialog_->Reject();
+    return;
+  }
   dialog_->OnDelegatedSourceListDismissed();
 }
 
@@ -353,15 +364,26 @@ void DesktopMediaListController::OnViewIsDeleting(views::View* view) {
   view_ = nullptr;
 }
 
+bool DesktopMediaListController::UsesDelegatedSourceListView() const {
+  if (!media_list_->IsSourceListDelegated()) {
+    return false;
+  }
+#if BUILDFLAG(IS_MAC)
+  return true;
+#else
+  return base::FeatureList::IsEnabled(kDesktopMediaPickerPortalButton);
+#endif
+}
+
 bool DesktopMediaListController::ShouldAutoAccept(
     const DesktopMediaList::Source& source) const {
-#if BUILDFLAG(IS_MAC)
-  if (media_list_->IsSourceListDelegated() &&
+  // The source of a delegated source list shown as a button only appears once
+  // the user has selected it in the system picker.
+  if (UsesDelegatedSourceListView() &&
       (media_list_->GetMediaListType() == DesktopMediaList::Type::kScreen ||
        media_list_->GetMediaListType() == DesktopMediaList::Type::kWindow)) {
     return true;
   }
-#endif
 
   if (media_list_->GetMediaListType() == DesktopMediaList::Type::kCurrentTab) {
     return auto_accept_this_tab_capture_;

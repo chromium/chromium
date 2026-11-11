@@ -125,7 +125,9 @@ void FakeDesktopMediaList::HideList() {
   is_focused_ = false;
 }
 
-void FakeDesktopMediaList::ShowDelegatedList() {}
+void FakeDesktopMediaList::ShowDelegatedList() {
+  ++show_delegated_list_count_;
+}
 
 void FakeDesktopMediaList::OnDelegatedSourceListSelection() {
   observer_->OnDelegatedSourceListSelection();

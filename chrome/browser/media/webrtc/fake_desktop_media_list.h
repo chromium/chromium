@@ -32,6 +32,8 @@ class FakeDesktopMediaList : public DesktopMediaList {
   void OnDelegatedSourceListDismissed();
 
   bool is_focused() const { return is_focused_; }
+  bool is_updating() const { return observer_ != nullptr; }
+  int show_delegated_list_count() const { return show_delegated_list_count_; }
   int clear_delegated_source_list_selection_count() const {
     return clear_delegated_source_list_selection_count_;
   }
@@ -61,6 +63,7 @@ class FakeDesktopMediaList : public DesktopMediaList {
   const bool is_source_list_delegated_;
   bool is_focused_ = false;
   int clear_delegated_source_list_selection_count_ = 0;
+  int show_delegated_list_count_ = 0;
 };
 
 #endif  // CHROME_BROWSER_MEDIA_WEBRTC_FAKE_DESKTOP_MEDIA_LIST_H_

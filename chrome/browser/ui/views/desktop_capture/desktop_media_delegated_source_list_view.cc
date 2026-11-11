@@ -125,19 +125,15 @@ void DesktopMediaDelegatedSourceListView::OnSourceRemoved(size_t index) {
   }
 }
 
+// The source's name, position and thumbnail aren't shown, but they may be
+// updated (e.g. the PipeWire capturer's thumbnail), so ignore those updates.
 void DesktopMediaDelegatedSourceListView::OnSourceMoved(size_t old_index,
-                                                        size_t new_index) {
-  NOTREACHED();
-}
+                                                        size_t new_index) {}
 
-void DesktopMediaDelegatedSourceListView::OnSourceNameChanged(size_t index) {
-  NOTREACHED();
-}
+void DesktopMediaDelegatedSourceListView::OnSourceNameChanged(size_t index) {}
 
 void DesktopMediaDelegatedSourceListView::OnSourceThumbnailChanged(
-    size_t index) {
-  NOTREACHED();
-}
+    size_t index) {}
 
 void DesktopMediaDelegatedSourceListView::OnSourcePreviewChanged(size_t index) {
   NOTREACHED();

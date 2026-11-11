@@ -6,10 +6,12 @@
 
 #include <algorithm>
 
+#include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/webrtc/current_tab_desktop_media_list.h"
 #include "chrome/browser/media/webrtc/desktop_capturer_wrapper.h"
+#include "chrome/browser/media/webrtc/desktop_media_picker.h"
 #include "chrome/browser/media/webrtc/native_desktop_media_list.h"
 #include "chrome/browser/media/webrtc/tab_desktop_media_list.h"
 #include "content/public/browser/desktop_capture.h"
@@ -25,6 +27,16 @@
 #if !BUILDFLAG(IS_ANDROID)
 namespace {
 #if !BUILDFLAG(IS_CHROMEOS)
+// Whether a delegated source list (the system picker) opens as soon as its
+// pane is selected, rather than when the user presses the pane's button.
+bool ShouldAutoShowDelegatedSourceList() {
+#if BUILDFLAG(IS_MAC)
+  return false;
+#else
+  return !base::FeatureList::IsEnabled(kDesktopMediaPickerPortalButton);
+#endif
+}
+
 std::unique_ptr<ThumbnailCapturer> MakeScreenCapturer(
     content::WebContents* web_contents) {
 #if BUILDFLAG(IS_MAC)
@@ -130,11 +142,8 @@ DesktopMediaPickerFactoryImpl::CreateMediaList(
         if (!capturer)
           continue;
 
-#if BUILDFLAG(IS_MAC)
-        const bool auto_show_delegated_source_list = false;
-#else
-        const bool auto_show_delegated_source_list = true;
-#endif  // BUILDFLAG(IS_MAC)
+        const bool auto_show_delegated_source_list =
+            ShouldAutoShowDelegatedSourceList();
         screen_list = std::make_unique<NativeDesktopMediaList>(
             DesktopMediaList::Type::kScreen, std::move(capturer),
             /*add_current_process_windows=*/false,
@@ -164,11 +173,8 @@ DesktopMediaPickerFactoryImpl::CreateMediaList(
         // windows ourselves.
         const bool add_current_process_windows =
             !content::desktop_capture::ShouldEnumerateCurrentProcessWindows();
-#if BUILDFLAG(IS_MAC)
-        const bool auto_show_delegated_source_list = false;
-#else
-        const bool auto_show_delegated_source_list = true;
-#endif  // BUILDFLAG(IS_MAC)
+        const bool auto_show_delegated_source_list =
+            ShouldAutoShowDelegatedSourceList();
         window_list = std::make_unique<NativeDesktopMediaList>(
             DesktopMediaList::Type::kWindow, std::move(capturer),
             add_current_process_windows, auto_show_delegated_source_list);

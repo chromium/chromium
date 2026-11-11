@@ -354,6 +354,12 @@ class NativeDesktopMediaList::Worker
   // on `task_runner_` thread.
   std::unique_ptr<RefreshThumbnailsState> refresh_thumbnails_state_;
 
+  // Used to hop OnSelection() to `task_runner_` when the delegated source list
+  // controller notifies on another thread (the PipeWire capturer dispatches
+  // portal results on the UI thread). WeakPtrs from it are created on that
+  // other thread, so they are kept apart from `weak_factory_`'s.
+  base::WeakPtrFactory<Worker> selection_weak_factory_{this};
+
   base::WeakPtrFactory<Worker> weak_factory_{this};
 };
 
@@ -399,6 +405,15 @@ void NativeDesktopMediaList::Worker::Refresh(bool update_thumbnails) {
   webrtc::DesktopCapturer::SourceList sources;
   if (!capturer_->GetSourceList(&sources)) {
     // Will pass empty results list to RefreshForVizFrameSinkWindows().
+    sources.clear();
+  }
+
+  // A delegated source list that is only shown on request has no meaningful
+  // sources until the user has made a selection in it (the PipeWire capturer
+  // always reports a placeholder), so don't report any before that. This
+  // keeps a placeholder from being auto-accepted.
+  if (is_source_list_delegated_ && !auto_show_delegated_source_list_ &&
+      !delegated_source_list_has_selection_) {
     sources.clear();
   }
 
@@ -747,6 +762,14 @@ void NativeDesktopMediaList::Worker::ShowDelegatedList() {
 }
 
 void NativeDesktopMediaList::Worker::OnSelection() {
+  // Keep `delegated_source_list_has_selection_` on `task_runner_`, where
+  // Refresh() reads it.
+  if (!task_runner_->BelongsToCurrentThread()) {
+    task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&Worker::OnSelection,
+                                  selection_weak_factory_.GetWeakPtr()));
+    return;
+  }
   VLOG(1) << "NDMLW::OnSelection";
   delegated_source_list_has_selection_ = true;
   content::GetUIThreadTaskRunner({})->PostTask(

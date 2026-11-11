@@ -188,20 +188,31 @@ bool DesktopMediaPickerViewsTestApi::IsAudioRecommendationVisible() const {
   return GetActivePane() && GetActivePane()->IsAudioRecommendationVisible();
 }
 
-std::u16string DesktopMediaPickerViewsTestApi::GetDelegatedButtonText() const {
-#if BUILDFLAG(IS_MAC)
+views::MdTextButton* DesktopMediaPickerViewsTestApi::GetDelegatedButton()
+    const {
   views::View* list_view = picker_->dialog_->GetSelectedController()->view_;
   if (!list_view) {
-    return std::u16string();
+    return nullptr;
   }
   for (views::View* child : list_view->children()) {
     if (child->GetClassName() == "MdTextButton") {
-      return std::u16string(
-          static_cast<views::MdTextButton*>(child)->GetText());
+      return static_cast<views::MdTextButton*>(child);
     }
   }
-#endif
-  return std::u16string();
+  return nullptr;
+}
+
+std::u16string DesktopMediaPickerViewsTestApi::GetDelegatedButtonText() const {
+  views::MdTextButton* button = GetDelegatedButton();
+  return button ? std::u16string(button->GetText()) : std::u16string();
+}
+
+void DesktopMediaPickerViewsTestApi::PressDelegatedButton() {
+  views::MdTextButton* button = GetDelegatedButton();
+  CHECK(button);
+  const ui::MouseEvent event(ui::EventType::kMousePressed, gfx::Point(),
+                             gfx::Point(), ui::EventTimeForNow(), 0, 0);
+  views::test::ButtonTestApi(button).NotifyClick(event);
 }
 
 const DesktopMediaPaneView* DesktopMediaPickerViewsTestApi::GetActivePane()

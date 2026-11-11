@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/types/expected.h"
 #include "build/android_buildflags.h"
+#include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/browser/media/webrtc/capture_policy_utils.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
@@ -33,6 +34,15 @@ class WebContents;
 
 #if BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kAndroidMediaPicker);
+#endif
+
+#if !BUILDFLAG(IS_MAC)
+// When enabled, the screen and window panes of the picker show a button that
+// opens a delegated source list (the xdg-desktop-portal picker for PipeWire
+// capture on Linux Wayland), and its selection is accepted right away, as on
+// macOS. When disabled, the delegated source list opens as soon as the pane is
+// selected, and its selection is previewed and confirmed in the picker.
+BASE_DECLARE_FEATURE(kDesktopMediaPickerPortalButton);
 #endif
 
 // Base class for desktop media picker UI. It's used by Desktop Media API, and

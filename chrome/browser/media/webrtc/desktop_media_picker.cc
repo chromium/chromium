@@ -9,6 +9,11 @@
 BASE_FEATURE(kAndroidMediaPicker, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+#if !BUILDFLAG(IS_MAC)
+BASE_FEATURE(kDesktopMediaPickerPortalButton,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 DesktopMediaPicker::Params::Params(RequestSource request_source)
     : request_source(request_source) {}
 DesktopMediaPicker::Params::Params()

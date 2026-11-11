@@ -163,6 +163,11 @@ class DesktopMediaListController : public DesktopMediaListObserver,
   // ViewObserver:
   void OnViewIsDeleting(views::View* view) override;
 
+  // Whether the media list is shown as a DesktopMediaDelegatedSourceListView: a
+  // button that opens the system picker, whose selection is accepted right
+  // away.
+  bool UsesDelegatedSourceListView() const;
+
   bool ShouldAutoAccept(const DesktopMediaList::Source& source) const;
   bool ShouldAutoReject(const DesktopMediaList::Source& source) const;
 

@@ -18,6 +18,7 @@
 #include "base/types/expected.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_features.h"
+#include "chrome/browser/media/webrtc/desktop_media_picker.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_controller.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_manager.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_utils.h"
@@ -1774,6 +1775,84 @@ TEST_F(DelegatedSourceListTest, ReselectTriggersShowDelegatedSourceList) {
                    ->clear_delegated_source_list_selection_count());
 }
 
+// Delegated source lists (such as the xdg-desktop-portal picker for PipeWire
+// capture) shown as a button that opens the system picker, as on macOS.
+class DelegatedSourceListButtonTest : public DelegatedSourceListTest {
+ public:
+  DelegatedSourceListButtonTest() {
+    feature_list_.InitAndEnableFeature(kDesktopMediaPickerPortalButton);
+  }
+
+  void SetUp() override {
+    DelegatedSourceListTest::SetUp();
+    SetSourceTypes(
+        {DesktopMediaList::Type::kWebContents},
+        {DesktopMediaList::Type::kScreen, DesktopMediaList::Type::kWindow});
+    CreatePickerViews(/*request_audio=*/false,
+                      /*screen_exclude_system_audio=*/true,
+                      blink::mojom::WindowAudioPreference::kExclude);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Selecting a delegated pane shows a button instead of starting the source
+// list, since starting a PipeWire capturer opens the portal.
+TEST_F(DelegatedSourceListButtonTest, ButtonStartsSourceList) {
+  test_api_.SelectTabForSourceType(DesktopMediaList::Type::kScreen);
+  EXPECT_EQ(test_api_.GetDelegatedButtonText(),
+            l10n_util::GetStringUTF16(
+                IDS_DESKTOP_MEDIA_PICKER_DELEGATED_SOURCE_LIST_SCREEN_BUTTON));
+  EXPECT_EQ(nullptr, test_api_.GetReselectButton());
+
+  FakeDesktopMediaList* screen_list =
+      media_lists_[DesktopMediaList::Type::kScreen];
+  EXPECT_FALSE(screen_list->is_updating());
+  EXPECT_EQ(0, screen_list->show_delegated_list_count());
+
+  test_api_.SelectTabForSourceType(DesktopMediaList::Type::kWindow);
+  EXPECT_EQ(test_api_.GetDelegatedButtonText(),
+            l10n_util::GetStringUTF16(
+                IDS_DESKTOP_MEDIA_PICKER_DELEGATED_SOURCE_LIST_WINDOW_BUTTON));
+  FakeDesktopMediaList* window_list =
+      media_lists_[DesktopMediaList::Type::kWindow];
+  EXPECT_FALSE(window_list->is_updating());
+
+  test_api_.PressDelegatedButton();
+  EXPECT_TRUE(window_list->is_updating());
+  EXPECT_EQ(1, window_list->show_delegated_list_count());
+  EXPECT_FALSE(screen_list->is_updating());
+  EXPECT_FALSE(has_picker_result());
+}
+
+// The source that appears once the user has selected it in the portal is
+// accepted right away.
+TEST_F(DelegatedSourceListButtonTest, SelectionIsAccepted) {
+  const DesktopMediaID kScreenId(
+      AsDesktopMediaIdType(DesktopMediaList::Type::kScreen), 10);
+  test_api_.SelectTabForSourceType(DesktopMediaList::Type::kScreen);
+  test_api_.PressDelegatedButton();
+  media_lists_[DesktopMediaList::Type::kScreen]
+      ->OnDelegatedSourceListSelection();
+  media_lists_[DesktopMediaList::Type::kScreen]->AddSourceByFullMediaID(
+      kScreenId);
+
+  EXPECT_EQ(kScreenId, WaitForPickerResult());
+}
+
+// Cancelling the portal cancels the request, since the picker was hidden when
+// the portal was shown.
+TEST_F(DelegatedSourceListButtonTest, DismissRejects) {
+  test_api_.SelectTabForSourceType(DesktopMediaList::Type::kScreen);
+  test_api_.PressDelegatedButton();
+  media_lists_[DesktopMediaList::Type::kScreen]
+      ->OnDelegatedSourceListDismissed();
+
+  EXPECT_EQ(
+      WaitForPickerResult(),
+      base::unexpected(MediaStreamRequestResult::PERMISSION_DENIED_BY_USER));
+}
 #endif  // BUILDFLAG(IS_MAC)
 }  // namespace views
 
