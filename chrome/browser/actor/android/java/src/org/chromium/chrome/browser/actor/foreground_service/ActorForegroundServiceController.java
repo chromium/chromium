@@ -36,18 +36,6 @@ import java.util.Set;
  */
 @NullMarked
 public interface ActorForegroundServiceController {
-    /** Starts the service. */
-    default void startService() {
-        startService("");
-    }
-
-    /**
-     * Starts the service.
-     *
-     * @param glicTriggerMessageId The GLIC trigger message ID associated with the request.
-     */
-    void startService(String glicTriggerMessageId);
-
     /**
      * Starts the service and binds to it.
      *
@@ -148,14 +136,6 @@ public interface ActorForegroundServiceController {
     default void provisionBackgroundTabForTask(
             Profile profile, int taskId, Callback<@Nullable Tab> callback) {
         callback.onResult(null);
-    }
-
-    /**
-     * Returns the placeholder tab ID associated with a given original tab ID if it's currently in a
-     * background session.
-     */
-    default @Nullable Integer getPlaceholderTabIdForTaskTab(int originalTabId) {
-        return null;
     }
 
     /**

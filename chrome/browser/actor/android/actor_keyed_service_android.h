@@ -52,8 +52,6 @@ class ActorKeyedServiceAndroid : public base::SupportsUserData::Data {
   void OnTaskStateChanged(ActorTask& task);
   void OnTaskStepProgressChanged(ActorTask& task,
                                  const std::string& step_progress);
-  void EnsureForegroundServiceStarted(
-      const std::string& glic_trigger_message_id);
   void OnMessageTriggerTaskStopped(const std::string& glic_trigger_message_id);
   void OnPendingTaskCountChanged(size_t pending_count);
   void OnPendingTaskAdded(const std::string& context_id);
@@ -62,7 +60,6 @@ class ActorKeyedServiceAndroid : public base::SupportsUserData::Data {
   raw_ptr<ActorKeyedService> service_;
   base::CallbackListSubscription task_state_subscription_;
   base::CallbackListSubscription task_step_progress_subscription_;
-  base::CallbackListSubscription ensure_fgs_started_subscription_;
   base::CallbackListSubscription message_trigger_task_stopped_subscription_;
   base::CallbackListSubscription pending_task_count_subscription_;
   base::CallbackListSubscription pending_task_added_subscription_;

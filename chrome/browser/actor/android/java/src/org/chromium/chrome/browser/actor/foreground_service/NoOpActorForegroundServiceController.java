@@ -29,9 +29,6 @@ public class NoOpActorForegroundServiceController implements ActorForegroundServ
     private NoOpActorForegroundServiceController() {}
 
     @Override
-    public void startService(String glicTriggerMessageId) {}
-
-    @Override
     public void startAndBindService(Runnable onConnected) {}
 
     @Override

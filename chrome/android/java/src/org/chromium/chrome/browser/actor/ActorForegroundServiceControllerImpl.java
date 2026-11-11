@@ -83,13 +83,6 @@ public class ActorForegroundServiceControllerImpl implements ActorForegroundServ
             };
 
     @Override
-    public void startService(String glicTriggerMessageId) {
-        ensureBackgroundActuationManagerCreated();
-        Context context = ContextUtils.getApplicationContext();
-        ActorForegroundServiceImpl.startActorForegroundService(context);
-    }
-
-    @Override
     public void startAndBindService(Runnable onConnected) {
         ensureBackgroundActuationManagerCreated();
         mOnConnectedRunnable = onConnected;

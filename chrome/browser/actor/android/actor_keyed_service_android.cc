@@ -82,11 +82,6 @@ ActorKeyedServiceAndroid::ActorKeyedServiceAndroid(ActorKeyedService* service)
           &ActorKeyedServiceAndroid::OnTaskStepProgressChanged,
           base::Unretained(this)));
 
-  ensure_fgs_started_subscription_ =
-      service_->AddForegroundServiceStartedCallback(base::BindRepeating(
-          &ActorKeyedServiceAndroid::EnsureForegroundServiceStarted,
-          base::Unretained(this)));
-
   message_trigger_task_stopped_subscription_ =
       service_->AddMessageTriggerTaskStoppedCallback(base::BindRepeating(
           &ActorKeyedServiceAndroid::OnMessageTriggerTaskStopped,
@@ -186,13 +181,6 @@ void ActorKeyedServiceAndroid::OnTaskStepProgressChanged(
   JNIEnv* env = AttachCurrentThread();
   Java_ActorKeyedService_onTaskStepProgressChanged(
       env, java_obj_, task.id().GetUnsafeValue(), step_progress);
-}
-
-void ActorKeyedServiceAndroid::EnsureForegroundServiceStarted(
-    const std::string& glic_trigger_message_id) {
-  JNIEnv* env = AttachCurrentThread();
-  Java_ActorKeyedService_ensureForegroundServiceStarted(
-      env, java_obj_, glic_trigger_message_id);
 }
 
 void ActorKeyedServiceAndroid::OnPendingTaskCountChanged(size_t pending_count) {

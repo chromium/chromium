@@ -145,12 +145,6 @@ public class ActorKeyedService {
         ActorForegroundServiceController.get().onMessageTriggerTaskStopped(glicTriggerMessageId);
     }
 
-    @CalledByNative
-    private void ensureForegroundServiceStarted(
-            @JniType("std::string") String glicTriggerMessageId) {
-        ActorForegroundServiceController.get().startService(glicTriggerMessageId);
-    }
-
     /**
      * Called when a tab (background or foreground) has been prepared and is ready for actuation.
      *
