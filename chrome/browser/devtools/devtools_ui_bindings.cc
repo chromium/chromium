@@ -1119,10 +1119,9 @@ void DevToolsUIBindings::OnAidaConversationRequest(
   // Set a maximum timeout value, individual features may send a shorter timeout
   // in the DevTools repo.
   base::TimeDelta timeout = base::Seconds(120);
-  auto response_handler_callback =
-      base::BindOnce(&DevToolsUIBindings::OnAidaConversationResponse,
-                     base::Unretained(this), std::move(callback), stream_id,
-                     request, delay, resource_request, base::TimeTicks::Now());
+  auto response_handler_callback = base::BindOnce(
+      &DevToolsUIBindings::OnAidaConversationResponse, base::Unretained(this),
+      std::move(callback), stream_id, request, delay, resource_request);
   NetworkResourceLoader::Create(
       stream_id, this, resource_request,
       AidaServiceHandler::TrafficAnnotation(), std::move(url_loader_factory),
@@ -1167,7 +1166,6 @@ void DevToolsUIBindings::OnAidaConversationResponse(
     base::TimeDelta delay,
     std::variant<network::ResourceRequest, std::string>
         resource_request_or_error,
-    base::TimeTicks start_time,
     const base::Value* response) {
   int response_code =
       response->is_dict()
@@ -1186,8 +1184,6 @@ void DevToolsUIBindings::OnAidaConversationResponse(
         std::move(callback), stream_id, request,
         NetworkResourceLoader::GetNextExponentialBackoffDelay(delay)));
   } else {
-    base::UmaHistogramTimes("DevTools.AidaResponseTime",
-                            base::TimeTicks::Now() - start_time);
     std::move(callback).Run(response);
   }
 }

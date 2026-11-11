@@ -453,7 +453,6 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
       base::TimeDelta delay,
       std::variant<network::ResourceRequest, std::string>
           resource_request_or_error,
-      base::TimeTicks start_time,
       const base::Value* response);
   void OnAidaRequest(const GURL& url,
                      const std::string& response_histogram_name,
