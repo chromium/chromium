@@ -404,6 +404,10 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   bool SendWindowFrameChangeToHost(
       std::optional<NSRect> pending_window_frame = std::nullopt);
 
+  // Returns whether a compositor frame for an in-progress or recently ended
+  // live-resize is currently pending application to the NSWindow.
+  bool HasPendingLiveResizeFrame() const;
+
  private:
   friend class views::test::BridgedNativeWidgetTestApi;
 

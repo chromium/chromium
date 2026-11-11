@@ -2357,6 +2357,10 @@ bool NativeWidgetNSWindowBridge::SendWindowFrameChangeToHost(
   return content_dip_size_changed;
 }
 
+bool NativeWidgetNSWindowBridge::HasPendingLiveResizeFrame() const {
+  return live_resize_.pending_window_frame.has_value();
+}
+
 void NativeWidgetNSWindowBridge::UpdateWindowDisplay() {
   if (fullscreen_controller_.IsInFullscreenTransition())
     return;

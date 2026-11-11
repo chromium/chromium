@@ -539,6 +539,36 @@ struct NSEdgeAndCornerThicknesses {
   return constrained;
 }
 
+// Returns whether AppKit's asynchronous frame adjustment callbacks (such as
+// _setFrameAfterMove: and
+// _setFrame:fromAdjustmentToScreen:anchorIfNeeded:animate:) should be
+// suppressed. This is needed in:
+// - Headless mode: positioning is not constrained to physical display bounds.
+// - Live resize (including async live resize): avoids AppKit's asynchronous
+//   move callbacks triggering recursive resize loops during dragging or while
+//   in-flight compositor frames are pending.
+// - Move loops: allows CocoaWindowMoveLoop to drive cross-display tab drags
+//   without stale AppKit callbacks overwriting the calculated position.
+- (BOOL)shouldSuppressAppKitFrameAdjustments {
+  if (self.isHeadless || [self inLiveResize]) {
+    return YES;
+  }
+
+  if (base::FeatureList::IsEnabled(features::kAsyncLiveResize) && _bridge &&
+      _bridge->HasPendingLiveResizeFrame()) {
+    return YES;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          remote_cocoa::features::
+              kSuppressAppKitFrameAdjustmentsDuringMoveLoop) &&
+      _bridge && _bridge->window_move_loop()) {
+    return YES;
+  }
+
+  return NO;
+}
+
 // AppKit calls constrainFrameRect:toScreen: to clamp window frames to screen
 // boundaries. When a window move loop is active, constrain the top edge to
 // respect the menu bar while avoiding AppKit's horizontal snapping across
@@ -566,20 +596,16 @@ struct NSEdgeAndCornerThicknesses {
 // AppKit's internal screen layout manager invokes
 // _setFrame:fromAdjustmentToScreen: and _setFrameAfterMove: asynchronously
 // during screen layout changes or display boundary transitions to adjust the
-// window origin. In headless mode or while CocoaWindowMoveLoop manually drives
-// window positioning during a tab drag, suppress these callbacks so that
-// headless window positioning is not constrained to physical display bounds
-// and stale AppKit callbacks do not overwrite the move loop's calculated
-// position.
+// window origin. In headless mode, during live resize, or while
+// CocoaWindowMoveLoop manually drives window positioning during a tab drag,
+// suppress these callbacks so that headless window positioning is not
+// constrained to physical display bounds and stale AppKit callbacks do not
+// overwrite the move or resize loop's calculated position.
 - (void)_setFrame:(NSRect)frameRect
     fromAdjustmentToScreen:(NSScreen*)screen
             anchorIfNeeded:(const CGPoint*)anchor
                    animate:(BOOL)animate {
-  if (self.isHeadless ||
-      (base::FeatureList::IsEnabled(
-           remote_cocoa::features::
-               kSuppressAppKitFrameAdjustmentsDuringMoveLoop) &&
-       _bridge && _bridge->window_move_loop())) {
+  if ([self shouldSuppressAppKitFrameAdjustments]) {
     return;
   }
   if (_inSetFrameFromAdjustment) {
@@ -595,11 +621,7 @@ struct NSEdgeAndCornerThicknesses {
 }
 
 - (void)_setFrameAfterMove:(NSRect)frameRect {
-  if (self.isHeadless ||
-      (base::FeatureList::IsEnabled(
-           remote_cocoa::features::
-               kSuppressAppKitFrameAdjustmentsDuringMoveLoop) &&
-       _bridge && _bridge->window_move_loop())) {
+  if ([self shouldSuppressAppKitFrameAdjustments]) {
     return;
   }
   if (_inSetFrameFromAdjustment) {
