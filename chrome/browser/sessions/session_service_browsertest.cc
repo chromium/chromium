@@ -30,6 +30,7 @@
 #include "components/sessions/core/command_storage_manager.h"
 #include "components/sessions/core/session_command.h"
 #include "components/sessions/core/session_id.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/test/browser_test.h"
 #include "url/url_constants.h"
 
@@ -272,4 +273,32 @@ IN_PROC_BROWSER_TEST_F(SessionServiceBrowserTest, EmptyWindowSaved) {
     }
   }
   EXPECT_TRUE(found);
+}
+
+IN_PROC_BROWSER_TEST_F(SessionServiceBrowserTest, NoRewriteOnSecondNavigation) {
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("data:text/html,first")));
+
+  service()->ResetFromCurrentBrowsers();
+  SessionServiceTestHelper helper(service());
+  EXPECT_TRUE(helper.command_storage_manager()->pending_reset());
+  helper.command_storage_manager()->Save();
+  EXPECT_FALSE(helper.command_storage_manager()->pending_reset());
+
+  content::WebContents* tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  std::pair<int, int> range;
+  sessions::SessionTabHelper* session_tab_helper =
+      sessions::SessionTabHelper::FromWebContents(tab);
+  ASSERT_TRUE(
+      helper.GetAvailableRange(session_tab_helper->session_id(), &range));
+  EXPECT_EQ(tab->GetController().GetLastCommittedEntryIndex(), range.second);
+
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("data:text/html,second")));
+  EXPECT_FALSE(helper.command_storage_manager()->pending_reset());
+
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("data:text/html,third")));
+  EXPECT_FALSE(helper.command_storage_manager()->pending_reset());
 }

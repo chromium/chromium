@@ -442,7 +442,9 @@ void SessionServiceBase::SetSelectedNavigationIndex(SessionID window_id,
   auto it = tab_to_available_range_.find(tab_id);
   if (it != tab_to_available_range_.end()) {
     std::pair<int, int>& range = it->second;
-    if (index < range.first || index > range.second) {
+    // The range is inclusive; second+1 is the entry being committed,
+    // and its UpdateTabNavigation comes right after.
+    if (index < range.first || index > range.second + 1) {
       // The new index is outside the range of what we've archived, schedule
       // a reset.
       ResetFromCurrentBrowsers();
@@ -537,7 +539,7 @@ base::Value SessionServiceBase::ToDebugValue() const {
         result.EnsureDict("tab_to_available_range")
             ->EnsureDict(base::NumberToString(id.id()));
     range_dict->Set("first", range.first);
-    range_dict->Set("second", range.first);
+    range_dict->Set("second", range.second);
   }
   result.Set("rebuild_on_next_save", rebuild_on_next_save_);
   for (const auto& [id, tab_index] : last_selected_tab_in_window_) {
@@ -626,7 +628,7 @@ void SessionServiceBase::BuildCommandsForTab(
   const int pending_index = tab->GetController().GetPendingEntryIndex();
   if (tab_to_available_range) {
     (*tab_to_available_range)[session_id] =
-        std::pair<int, int>(min_index, max_index);
+        std::pair<int, int>(min_index, max_index - 1);
   }
 
   command_storage_manager()->AppendRebuildCommand(
