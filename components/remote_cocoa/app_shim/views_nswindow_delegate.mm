@@ -180,10 +180,20 @@
   // when the new frame is ready.
   if (base::FeatureList::IsEnabled(features::kAsyncLiveResize) &&
       [_parent->ns_window() inLiveResize]) {
+    NSWindowLiveResizeEdges edge = [_parent->ns_window() liveResizeEdges];
+
+    // If the user is resizing the window interactively without directly
+    // manipulating the window itself, e.g., through native window tiling,
+    // `liveResizeEdges` will report that no edges are being live resized. In
+    // that case, simply accept the proposed size so as not to break resizing
+    // (see https://crbug.com/583338534).
+    if (edge == NSWindowLiveResizeEdgesNone) {
+      return size;
+    }
+
     NSRect newWindowFrame = windowFrame;
     newWindowFrame.size = size;
 
-    NSWindowLiveResizeEdges edge = [_parent->ns_window() liveResizeEdges];
     const CGFloat width_delta =
         newWindowFrame.size.width - windowFrame.size.width;
     const CGFloat height_delta =

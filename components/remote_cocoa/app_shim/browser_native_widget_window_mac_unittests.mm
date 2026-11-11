@@ -923,6 +923,54 @@ TEST(NativeWidgetMacNSWindowTest, AsyncLiveResizeOptionKeyCenterResize) {
                      NSMakeRect(79, 69, 441, 361), 0.5f);
 }
 
+// Tests that, when kAsyncLiveResize is enabled, a live resize with no
+// associated edges (e.g., resizing tiled windows via the native divider handle)
+// is accepted synchronously rather than being intercepted for asynchronous live
+// resize.
+TEST(NativeWidgetMacNSWindowTest, AsyncLiveResizeNoEdges) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kAsyncLiveResize);
+
+  display::ScopedNativeScreen screen;
+  @autoreleasepool {
+    TestLiveResizeNSWindow* window = [[TestLiveResizeNSWindow alloc]
+        initWithContentRect:ui::kWindowSizeDeterminedLater
+                  styleMask:NSWindowStyleMaskBorderless
+                    backing:NSBackingStoreBuffered
+                      defer:NO];
+
+    DummyNativeWidgetNSWindowHost dummy_host;
+    DummyNativeWidgetNSWindowHostHelper dummy_helper;
+    auto bridge = std::make_unique<remote_cocoa::NativeWidgetNSWindowBridge>(
+        13, &dummy_host, &dummy_helper, nullptr);
+    bridge->SetWindow(window);
+
+    const NSRect initial_frame = NSMakeRect(100, 100, 400, 300);
+    [window setFrame:initial_frame display:NO];
+
+    id<NSWindowDelegate> delegate = [window delegate];
+    ASSERT_TRUE(delegate);
+
+    window.mockInLiveResize = YES;
+    window.mockLiveResizeEdges = NSWindowLiveResizeEdgesNone;
+
+    const NSSize target_size = NSMakeSize(500, 400);
+    const NSSize returned_size = [delegate windowWillResize:window
+                                                     toSize:target_size];
+
+    // Synchronous resize should be accepted when there are no live resize
+    // edges.
+    EXPECT_TRUE(NSEqualSizes(returned_size, target_size));
+
+    // No asynchronous live resize frame change should be dispatched to the
+    // host.
+    EXPECT_EQ(dummy_host.last_window_bounds_in_screen_dips(),
+              gfx::ScreenRectFromNSRect(initial_frame));
+
+    [window close];
+  }
+}
+
 // Tests that, when kAsyncLiveResize is disabled, windowWillResize does not
 // intercept the resize even during live resize.
 TEST(NativeWidgetMacNSWindowTest, AsyncLiveResizeDisabled) {
