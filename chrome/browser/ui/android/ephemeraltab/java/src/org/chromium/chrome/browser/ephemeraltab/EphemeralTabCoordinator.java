@@ -184,6 +184,9 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
                 controller.showTaskAbortConfirmationDialog(
                         (confirmed) -> {
                             if (!confirmed) {
+                                if (additionalNavigationParams != null) {
+                                    additionalNavigationParams.destroy();
+                                }
                                 requestDeniedCallback.run();
                                 return;
                             }

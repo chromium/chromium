@@ -24,6 +24,7 @@ import org.chromium.components.thinwebview.internal.ThinWebViewContextMenuItemDe
 import org.chromium.content_public.browser.AdditionalNavigationParams;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.common.Referrer;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
@@ -47,30 +48,92 @@ class TabBottomSheetWebUiLinkOpener implements LinkOpener {
         }
     }
 
+    private LoadUrlParams createLoadUrlParams(
+            GURL url,
+            @Nullable Referrer referrer,
+            @Nullable AdditionalNavigationParams additionalNavigationParams,
+            boolean targetIsIncognito) {
+        LoadUrlParams loadUrlParams = new LoadUrlParams(url.getSpec());
+        // Only forward referrer and initiator navigation state when the source and destination
+        // share the same incognito state, avoiding leaks across the privacy boundary.
+        if (mWebContents != null
+                && !mWebContents.isDestroyed()
+                && mWebContents.isIncognito() == targetIsIncognito) {
+            loadUrlParams.setReferrer(referrer);
+            loadUrlParams.setAdditionalNavigationParams(additionalNavigationParams);
+        } else if (additionalNavigationParams != null) {
+            additionalNavigationParams.destroy();
+        }
+        return loadUrlParams;
+    }
+
     @Override
     public void openInNewTab(
-            GURL url, @Nullable AdditionalNavigationParams additionalNavigationParams) {
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setData(Uri.parse(url.getSpec()));
-        safeStartActivity(intent);
+            GURL url,
+            @Nullable Referrer referrer,
+            @Nullable AdditionalNavigationParams additionalNavigationParams) {
+        TabModelSelector selector = TabModelSelectorSupplier.getValueOrNullFrom(mWindowAndroid);
+        Tab currentTab = TabModelSelectorSupplier.getCurrentTabFrom(mWindowAndroid);
+        if (selector != null) {
+            LoadUrlParams loadUrlParams =
+                    createLoadUrlParams(
+                            url,
+                            referrer,
+                            additionalNavigationParams,
+                            /* targetIsIncognito= */ false);
+            Tab newTab =
+                    selector.openNewTab(
+                            loadUrlParams,
+                            TabLaunchType.FROM_LONGPRESS_FOREGROUND,
+                            currentTab != null && !currentTab.isIncognito() ? currentTab : null,
+                            /* incognito= */ false);
+            var remainingParams = loadUrlParams.getAdditionalNavigationParams();
+            if (newTab == null && remainingParams != null) {
+                remainingParams.destroy();
+            }
+        } else {
+            if (additionalNavigationParams != null) {
+                additionalNavigationParams.destroy();
+            }
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setData(Uri.parse(url.getSpec()));
+            if (referrer != null) {
+                intent.putExtra(Intent.EXTRA_REFERRER, Uri.parse(referrer.getUrl()));
+            }
+            safeStartActivity(intent);
+        }
     }
 
     @Override
     public void openInNewTabInGroup(
-            GURL url, @Nullable AdditionalNavigationParams additionalNavigationParams) {
+            GURL url,
+            @Nullable Referrer referrer,
+            @Nullable AdditionalNavigationParams additionalNavigationParams) {
         TabModelSelector selector = TabModelSelectorSupplier.getValueOrNullFrom(mWindowAndroid);
         Tab currentTab = TabModelSelectorSupplier.getCurrentTabFrom(mWindowAndroid);
         if (selector != null && currentTab != null) {
-            LoadUrlParams loadUrlParams = new LoadUrlParams(url.getSpec());
-            loadUrlParams.setAdditionalNavigationParams(additionalNavigationParams);
-            selector.openNewTab(
-                    loadUrlParams,
-                    TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP,
-                    currentTab,
-                    currentTab.isIncognito());
+            boolean isIncognito = currentTab.isIncognito();
+            LoadUrlParams loadUrlParams =
+                    createLoadUrlParams(url, referrer, additionalNavigationParams, isIncognito);
+            Tab newTab =
+                    selector.openNewTab(
+                            loadUrlParams,
+                            TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP,
+                            currentTab,
+                            isIncognito);
+            var remainingParams = loadUrlParams.getAdditionalNavigationParams();
+            if (newTab == null && remainingParams != null) {
+                remainingParams.destroy();
+            }
         } else {
+            if (additionalNavigationParams != null) {
+                additionalNavigationParams.destroy();
+            }
             Intent intent = new Intent(Intent.ACTION_VIEW);
             intent.setData(Uri.parse(url.getSpec()));
+            if (referrer != null) {
+                intent.putExtra(Intent.EXTRA_REFERRER, Uri.parse(referrer.getUrl()));
+            }
             intent.putExtra(
                     BrowserIntentUtils.EXTRA_TAB_LAUNCH_TYPE,
                     TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP);
@@ -88,11 +151,17 @@ class TabBottomSheetWebUiLinkOpener implements LinkOpener {
 
     @Override
     public void openInNewWindow(
-            GURL url, @Nullable AdditionalNavigationParams additionalNavigationParams) {
+            GURL url,
+            @Nullable Referrer referrer,
+            @Nullable AdditionalNavigationParams additionalNavigationParams) {
         Activity activity = mWindowAndroid.getActivity().get();
         if (activity != null) {
-            LoadUrlParams loadUrlParams = new LoadUrlParams(url.getSpec());
-            loadUrlParams.setAdditionalNavigationParams(additionalNavigationParams);
+            LoadUrlParams loadUrlParams =
+                    createLoadUrlParams(
+                            url,
+                            referrer,
+                            additionalNavigationParams,
+                            /* targetIsIncognito= */ false);
             MultiInstanceOrchestratorFactory.getInstance()
                     .openUrlInOtherWindow(
                             activity,
@@ -100,6 +169,8 @@ class TabBottomSheetWebUiLinkOpener implements LinkOpener {
                             Tab.INVALID_TAB_ID,
                             /* preferNew= */ true,
                             /* isIncognito= */ false);
+        } else if (additionalNavigationParams != null) {
+            additionalNavigationParams.destroy();
         }
     }
 

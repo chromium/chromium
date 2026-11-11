@@ -33,24 +33,39 @@ import java.util.function.BiConsumer;
 public class ThinWebViewContextMenuItemDelegate implements ContextMenuItemDelegate {
     public interface LinkOpener {
         void openInNewTab(
-                GURL url, @Nullable AdditionalNavigationParams additionalNavigationParams);
+                GURL url,
+                @Nullable Referrer referrer,
+                @Nullable AdditionalNavigationParams additionalNavigationParams);
 
         void openInNewTabInGroup(
-                GURL url, @Nullable AdditionalNavigationParams additionalNavigationParams);
+                GURL url,
+                @Nullable Referrer referrer,
+                @Nullable AdditionalNavigationParams additionalNavigationParams);
 
         void openInNewIncognitoTab(GURL url);
 
         void openInNewWindow(
-                GURL url, @Nullable AdditionalNavigationParams additionalNavigationParams);
+                GURL url,
+                @Nullable Referrer referrer,
+                @Nullable AdditionalNavigationParams additionalNavigationParams);
 
         void openInIncognitoWindow(GURL url);
 
         boolean isIncognitoSupported();
     }
 
+    /** Callback interface for opening a URL in an ephemeral tab. */
+    @FunctionalInterface
+    public interface EphemeralTabOpener {
+        void openInEphemeralTab(
+                GURL url,
+                String title,
+                @Nullable AdditionalNavigationParams additionalNavigationParams);
+    }
+
     private final WebContents mWebContents;
     private final @Nullable String mIntentTargetClassName;
-    private final @Nullable BiConsumer<GURL, String> mEphemeralTabOpener;
+    private final @Nullable EphemeralTabOpener mEphemeralTabOpener;
     private final @Nullable ThinWebViewPrintingController mPrintingController;
     private final @Nullable LinkOpener mLinkOpener;
     private final @Nullable BiConsumer<GURL, String> mReadLaterOpener;
@@ -77,7 +92,7 @@ public class ThinWebViewContextMenuItemDelegate implements ContextMenuItemDelega
     public ThinWebViewContextMenuItemDelegate(
             WebContents webContents,
             @Nullable String intentTargetClassName,
-            @Nullable BiConsumer<GURL, String> ephemeralTabOpener) {
+            @Nullable EphemeralTabOpener ephemeralTabOpener) {
         this(webContents, intentTargetClassName, ephemeralTabOpener, null, null);
     }
 
@@ -95,7 +110,7 @@ public class ThinWebViewContextMenuItemDelegate implements ContextMenuItemDelega
     public ThinWebViewContextMenuItemDelegate(
             WebContents webContents,
             @Nullable String intentTargetClassName,
-            @Nullable BiConsumer<GURL, String> ephemeralTabOpener,
+            @Nullable EphemeralTabOpener ephemeralTabOpener,
             @Nullable LinkOpener linkOpener,
             @Nullable BiConsumer<GURL, String> readLaterOpener) {
         mWebContents = webContents;
@@ -224,7 +239,14 @@ public class ThinWebViewContextMenuItemDelegate implements ContextMenuItemDelega
             GURL url,
             @Nullable Referrer referrer,
             @Nullable AdditionalNavigationParams additionalNavigationParams) {
+        if (mLinkOpener != null) {
+            mLinkOpener.openInNewTab(url, referrer, additionalNavigationParams);
+            return;
+        }
         // Note: additionalNavigationParams cannot be passed across external Intent boundaries.
+        if (additionalNavigationParams != null) {
+            additionalNavigationParams.destroy();
+        }
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.setData(Uri.parse(url.getSpec()));
@@ -239,13 +261,20 @@ public class ThinWebViewContextMenuItemDelegate implements ContextMenuItemDelega
             GURL url,
             String title,
             @Nullable AdditionalNavigationParams additionalNavigationParams) {
-        if (!supportsOpenInEphemeralTab()) return;
+        if (!supportsOpenInEphemeralTab()) {
+            if (additionalNavigationParams != null) {
+                additionalNavigationParams.destroy();
+            }
+            return;
+        }
 
-        // Note: additionalNavigationParams cannot be passed across external Intent boundaries or
-        // through mEphemeralTabOpener.
         if (mEphemeralTabOpener != null) {
-            mEphemeralTabOpener.accept(url, title);
+            mEphemeralTabOpener.openInEphemeralTab(url, title, additionalNavigationParams);
         } else {
+            // Note: additionalNavigationParams cannot be passed across external Intent boundaries.
+            if (additionalNavigationParams != null) {
+                additionalNavigationParams.destroy();
+            }
             Intent intent = new Intent(Intent.ACTION_VIEW);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.setData(Uri.parse(url.getSpec()));
@@ -324,7 +353,9 @@ public class ThinWebViewContextMenuItemDelegate implements ContextMenuItemDelega
             boolean navigateToTab,
             @Nullable AdditionalNavigationParams additionalNavigationParams) {
         if (mLinkOpener != null) {
-            mLinkOpener.openInNewTab(url, additionalNavigationParams);
+            mLinkOpener.openInNewTab(url, referrer, additionalNavigationParams);
+        } else if (additionalNavigationParams != null) {
+            additionalNavigationParams.destroy();
         }
     }
 
@@ -334,7 +365,9 @@ public class ThinWebViewContextMenuItemDelegate implements ContextMenuItemDelega
             @Nullable Referrer referrer,
             @Nullable AdditionalNavigationParams additionalNavigationParams) {
         if (mLinkOpener != null) {
-            mLinkOpener.openInNewTabInGroup(url, additionalNavigationParams);
+            mLinkOpener.openInNewTabInGroup(url, referrer, additionalNavigationParams);
+        } else if (additionalNavigationParams != null) {
+            additionalNavigationParams.destroy();
         }
     }
 
@@ -354,10 +387,15 @@ public class ThinWebViewContextMenuItemDelegate implements ContextMenuItemDelega
             @Nullable AdditionalNavigationParams additionalNavigationParams) {
         if (mLinkOpener != null) {
             if (isIncognito) {
+                if (additionalNavigationParams != null) {
+                    additionalNavigationParams.destroy();
+                }
                 mLinkOpener.openInIncognitoWindow(url);
             } else {
-                mLinkOpener.openInNewWindow(url, additionalNavigationParams);
+                mLinkOpener.openInNewWindow(url, referrer, additionalNavigationParams);
             }
+        } else if (additionalNavigationParams != null) {
+            additionalNavigationParams.destroy();
         }
     }
 

@@ -39,6 +39,7 @@ import org.chromium.components.thinwebview.ThinWebViewAttachParams;
 import org.chromium.components.thinwebview.ThinWebViewConstraints;
 import org.chromium.components.thinwebview.ThinWebViewFactory;
 import org.chromium.components.thinwebview.internal.ThinWebViewContextMenuItemDelegate;
+import org.chromium.components.thinwebview.internal.ThinWebViewContextMenuItemDelegate.EphemeralTabOpener;
 import org.chromium.content_public.browser.ActionModeCallbackHelper;
 import org.chromium.content_public.browser.ImeAdapter;
 import org.chromium.content_public.browser.SelectionPopupController;
@@ -69,7 +70,7 @@ public class TabBottomSheetWebUi {
     private final @ColorInt int mBackgroundColor;
     private final @TabBottomSheetClientType int mClientType;
     private final @CoBrowseContainerType int mContainerType;
-    private final @Nullable BiConsumer<GURL, String> mEphemeralTabOpener;
+    private final @Nullable EphemeralTabOpener mEphemeralTabOpener;
     private final @Nullable BiConsumer<GURL, String> mReadLaterOpener;
 
     private @Nullable ThinWebView mThinWebView;
@@ -112,7 +113,7 @@ public class TabBottomSheetWebUi {
             @ColorInt int placeholderElemColor,
             @TabBottomSheetClientType int clientType,
             @CoBrowseContainerType int containerType,
-            @Nullable BiConsumer<GURL, String> ephemeralTabOpener,
+            @Nullable EphemeralTabOpener ephemeralTabOpener,
             @Nullable BiConsumer<GURL, String> readLaterOpener,
             @Nullable CoBrowseComponentProvider componentProvider) {
         mContext = context;

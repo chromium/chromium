@@ -201,7 +201,11 @@ public interface ContextMenuItemDelegate {
     default void onOpenImageInNewTab(
             GURL url,
             @Nullable Referrer referrer,
-            @Nullable AdditionalNavigationParams additionalNavigationParams) {}
+            @Nullable AdditionalNavigationParams additionalNavigationParams) {
+        if (additionalNavigationParams != null) {
+            additionalNavigationParams.destroy();
+        }
+    }
 
     /**
      * Called when the {@code url} should be opened in an ephemeral page.
@@ -214,7 +218,11 @@ public interface ContextMenuItemDelegate {
     default void onOpenInEphemeralTab(
             GURL url,
             String title,
-            @Nullable AdditionalNavigationParams additionalNavigationParams) {}
+            @Nullable AdditionalNavigationParams additionalNavigationParams) {
+        if (additionalNavigationParams != null) {
+            additionalNavigationParams.destroy();
+        }
+    }
 
     /**
      * @return Whether opening a link in a new tab is supported.
@@ -265,7 +273,11 @@ public interface ContextMenuItemDelegate {
             GURL url,
             @Nullable Referrer referrer,
             boolean navigateToTab,
-            @Nullable AdditionalNavigationParams additionalNavigationParams) {}
+            @Nullable AdditionalNavigationParams additionalNavigationParams) {
+        if (additionalNavigationParams != null) {
+            additionalNavigationParams.destroy();
+        }
+    }
 
     /**
      * Called when {@code url} should be opened in a new page in the same group as the current page.
@@ -278,7 +290,11 @@ public interface ContextMenuItemDelegate {
     default void onOpenInNewTabInGroup(
             GURL url,
             @Nullable Referrer referrer,
-            @Nullable AdditionalNavigationParams additionalNavigationParams) {}
+            @Nullable AdditionalNavigationParams additionalNavigationParams) {
+        if (additionalNavigationParams != null) {
+            additionalNavigationParams.destroy();
+        }
+    }
 
     /**
      * Called when the {@code url} should be opened in a new incognito page.
@@ -302,7 +318,11 @@ public interface ContextMenuItemDelegate {
             @Nullable Referrer referrer,
             boolean isIncognito,
             boolean preferNew,
-            @Nullable AdditionalNavigationParams additionalNavigationParams) {}
+            @Nullable AdditionalNavigationParams additionalNavigationParams) {
+        if (additionalNavigationParams != null) {
+            additionalNavigationParams.destroy();
+        }
+    }
 
     /**
      * Opens a URL in an incognito window.
@@ -337,7 +357,11 @@ public interface ContextMenuItemDelegate {
     default void onOpenImageUrl(
             GURL url,
             @Nullable Referrer referrer,
-            @Nullable AdditionalNavigationParams additionalNavigationParams) {}
+            @Nullable AdditionalNavigationParams additionalNavigationParams) {
+        if (additionalNavigationParams != null) {
+            additionalNavigationParams.destroy();
+        }
+    }
 
     /**
      * Called when a link should be opened in the main Chrome browser.

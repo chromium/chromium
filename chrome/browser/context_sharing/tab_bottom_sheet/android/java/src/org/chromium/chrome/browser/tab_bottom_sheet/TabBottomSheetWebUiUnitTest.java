@@ -57,10 +57,13 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ephemeraltab.EphemeralTabCoordinator;
+import org.chromium.chrome.browser.ephemeraltab.EphemeralTabCoordinatorSupplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.intents.BrowserIntentUtils;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestrator;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -73,14 +76,20 @@ import org.chromium.components.thinwebview.ThinWebView;
 import org.chromium.components.thinwebview.ThinWebViewAttachParams;
 import org.chromium.components.thinwebview.ThinWebViewFactory;
 import org.chromium.components.thinwebview.internal.ThinWebViewContextMenuItemDelegate;
+import org.chromium.components.thinwebview.internal.ThinWebViewContextMenuItemDelegate.EphemeralTabOpener;
+import org.chromium.content_public.browser.AdditionalNavigationParams;
+import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.selection.SelectionDropdownMenuDelegate;
+import org.chromium.content_public.common.Referrer;
 import org.chromium.ui.base.EventForwarder;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.base.WindowAndroid.ActivityStateObserver;
 import org.chromium.url.GURL;
+import org.chromium.url.Origin;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -629,6 +638,19 @@ public class TabBottomSheetWebUiUnitTest {
         assertFalse(delegate.supportsSaveImage());
         assertFalse(delegate.supportsSearchByImage());
         assertFalse(delegate.supportsInspectElement());
+
+        GURL url = new GURL("https://example.com");
+        AdditionalNavigationParams newTabParams = mock(AdditionalNavigationParams.class);
+        delegate.onOpenInNewTab(url, null, false, newTabParams);
+        verify(newTabParams).destroy();
+
+        AdditionalNavigationParams ephemeralParams = mock(AdditionalNavigationParams.class);
+        delegate.onOpenInEphemeralTab(url, "Title", ephemeralParams);
+        verify(ephemeralParams).destroy();
+
+        AdditionalNavigationParams imageParams = mock(AdditionalNavigationParams.class);
+        delegate.onOpenImageInNewTab(url, null, imageParams);
+        verify(imageParams).destroy();
     }
 
     @Test
@@ -713,30 +735,96 @@ public class TabBottomSheetWebUiUnitTest {
         ContextMenuItemDelegate delegate = delegateCaptor.getValue();
 
         GURL url = new GURL("https://example.com");
+        Referrer referrer = new Referrer("https://referrer.example.com", 0);
 
-        // Test New Tab
-        delegate.onOpenInNewTab(url, null, false, null);
+        // Test New Tab fallback when TabModelSelector is unavailable: fires Intent and destroys
+        // AdditionalNavigationParams.
+        AdditionalNavigationParams fallbackNewTabParams = mock(AdditionalNavigationParams.class);
+        delegate.onOpenInNewTab(url, referrer, false, fallbackNewTabParams);
         Intent newTabIntent = shadowOf(mActivity).getNextStartedActivity();
         assertNotNull(newTabIntent);
         assertEquals(Intent.ACTION_VIEW, newTabIntent.getAction());
         assertEquals(url.getSpec(), newTabIntent.getData().toString());
+        verify(fallbackNewTabParams).destroy();
 
-        // Test New Tab in Group
+        // Test New Tab via TabModelSelector: forwards referrer and AdditionalNavigationParams
+        // without destroying them when tab creation succeeds.
         TabModelSelector mockSelector = mock(TabModelSelector.class);
         TabModelSelectorSupplier.setInstanceForTesting(mockSelector);
         Tab mockTab = mock(Tab.class);
+        Tab mockOpenedTab = mock(Tab.class);
         when(mockSelector.getCurrentTab()).thenReturn(mockTab);
         when(mockTab.isIncognito()).thenReturn(false);
+        when(mockSelector.openNewTab(any(), anyInt(), any(), Mockito.anyBoolean()))
+                .thenReturn(mockOpenedTab);
 
-        delegate.onOpenInNewTabInGroup(url, null, null);
+        AdditionalNavigationParams newTabParams = mock(AdditionalNavigationParams.class);
+        ArgumentCaptor<LoadUrlParams> loadUrlCaptor = captor();
+        delegate.onOpenInNewTab(url, referrer, false, newTabParams);
         verify(mockSelector)
                 .openNewTab(
-                        any(),
+                        loadUrlCaptor.capture(),
+                        eq(TabLaunchType.FROM_LONGPRESS_FOREGROUND),
+                        eq(mockTab),
+                        eq(false));
+        assertEquals(referrer, loadUrlCaptor.getValue().getReferrer());
+        assertEquals(newTabParams, loadUrlCaptor.getValue().getAdditionalNavigationParams());
+        verify(newTabParams, never()).destroy();
+        assertNull(shadowOf(mActivity).getNextStartedActivity());
+
+        // Test Open Image in New Tab routes through LinkOpener and preserves initiator params.
+        AdditionalNavigationParams imageParams = mock(AdditionalNavigationParams.class);
+        ArgumentCaptor<LoadUrlParams> imageLoadCaptor = captor();
+        GURL imageUrl = new GURL("https://example.com/img.png");
+        delegate.onOpenImageInNewTab(imageUrl, referrer, imageParams);
+        verify(mockSelector, times(2))
+                .openNewTab(
+                        imageLoadCaptor.capture(),
+                        eq(TabLaunchType.FROM_LONGPRESS_FOREGROUND),
+                        eq(mockTab),
+                        eq(false));
+        assertEquals(imageUrl.getSpec(), imageLoadCaptor.getValue().getUrl());
+        assertEquals(imageParams, imageLoadCaptor.getValue().getAdditionalNavigationParams());
+        verify(imageParams, never()).destroy();
+
+        // Test New Tab in Group (same non-OTR mode): forwards AdditionalNavigationParams.
+        AdditionalNavigationParams groupParams = mock(AdditionalNavigationParams.class);
+        ArgumentCaptor<LoadUrlParams> groupLoadCaptor = captor();
+        delegate.onOpenInNewTabInGroup(url, referrer, groupParams);
+        verify(mockSelector)
+                .openNewTab(
+                        groupLoadCaptor.capture(),
                         eq(TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP),
                         eq(mockTab),
                         eq(false));
+        assertEquals(groupParams, groupLoadCaptor.getValue().getAdditionalNavigationParams());
+        verify(groupParams, never()).destroy();
+
+        // Test New Tab in Group when currentTab is incognito: strips & destroys non-OTR initiator
+        // params so state does not cross the OTR boundary.
+        when(mockTab.isIncognito()).thenReturn(true);
+        AdditionalNavigationParams crossOtrParams = mock(AdditionalNavigationParams.class);
+        ArgumentCaptor<LoadUrlParams> crossOtrCaptor = captor();
+        delegate.onOpenInNewTabInGroup(url, referrer, crossOtrParams);
+        verify(mockSelector)
+                .openNewTab(
+                        crossOtrCaptor.capture(),
+                        eq(TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP),
+                        eq(mockTab),
+                        eq(true));
+        assertNull(crossOtrCaptor.getValue().getReferrer());
+        assertNull(crossOtrCaptor.getValue().getAdditionalNavigationParams());
+        verify(crossOtrParams).destroy();
+
         TabModelSelectorSupplier.setInstanceForTesting(null);
         assertNull(shadowOf(mActivity).getNextStartedActivity());
+
+        // Test New Tab in Group fallback when selector is null: destroys
+        // AdditionalNavigationParams.
+        AdditionalNavigationParams fallbackGroupParams = mock(AdditionalNavigationParams.class);
+        delegate.onOpenInNewTabInGroup(url, referrer, fallbackGroupParams);
+        assertNotNull(shadowOf(mActivity).getNextStartedActivity());
+        verify(fallbackGroupParams).destroy();
 
         // Test Incognito Tab
         delegate.onOpenInNewIncognitoTab(url);
@@ -749,17 +837,35 @@ public class TabBottomSheetWebUiUnitTest {
         MultiInstanceOrchestrator mockOrchestrator = mock(MultiInstanceOrchestrator.class);
         MultiInstanceOrchestratorFactory.setInstanceForTesting(mockOrchestrator);
 
-        // Test New Window
-        delegate.openInOtherWindow(url, null, false, true, null);
+        // Test New Window forwards AdditionalNavigationParams.
+        AdditionalNavigationParams windowParams = mock(AdditionalNavigationParams.class);
+        ArgumentCaptor<LoadUrlParams> windowLoadCaptor = captor();
+        delegate.openInOtherWindow(url, referrer, false, true, windowParams);
         verify(mockOrchestrator)
                 .openUrlInOtherWindow(
-                        eq(mActivity), any(), eq(Tab.INVALID_TAB_ID), eq(true), eq(false));
+                        eq(mActivity),
+                        windowLoadCaptor.capture(),
+                        eq(Tab.INVALID_TAB_ID),
+                        eq(true),
+                        eq(false));
+        assertEquals(windowParams, windowLoadCaptor.getValue().getAdditionalNavigationParams());
+        verify(windowParams, never()).destroy();
+
+        // Test openInOtherWindow with isIncognito=true destroys AdditionalNavigationParams.
+        AdditionalNavigationParams incognitoWindowParams = mock(AdditionalNavigationParams.class);
+        delegate.openInOtherWindow(url, referrer, true, false, incognitoWindowParams);
+        verify(incognitoWindowParams).destroy();
 
         // Test Incognito Window
         delegate.openInIncognitoWindow(url);
-        verify(mockOrchestrator)
+        verify(mockOrchestrator, times(2))
                 .openUrlInOtherWindow(
                         eq(mActivity), any(), eq(Tab.INVALID_TAB_ID), eq(false), eq(true));
+
+        // Test default unimplemented ContextMenuItemDelegate method destroys params.
+        AdditionalNavigationParams openImageParams = mock(AdditionalNavigationParams.class);
+        delegate.onOpenImageUrl(url, referrer, openImageParams);
+        verify(openImageParams).destroy();
 
         MultiInstanceOrchestratorFactory.setInstanceForTesting(null);
     }
@@ -846,8 +952,8 @@ public class TabBottomSheetWebUiUnitTest {
                                 org.chromium.chrome.browser.context_sharing.R.layout
                                         .tab_bottom_sheet,
                                 null);
-        @SuppressWarnings("unchecked")
-        BiConsumer<GURL, String> mockOpener = mock(BiConsumer.class);
+        ThinWebViewContextMenuItemDelegate.EphemeralTabOpener mockOpener =
+                mock(ThinWebViewContextMenuItemDelegate.EphemeralTabOpener.class);
 
         TabBottomSheetWebUi webUi =
                 new TestTabBottomSheetWebUi(
@@ -875,9 +981,84 @@ public class TabBottomSheetWebUiUnitTest {
 
         GURL testUrl = new GURL("https://example.com/image.jpg");
         String testTitle = "Test Image";
-        delegate.onOpenInEphemeralTab(testUrl, testTitle, /* additionalNavigationParams= */ null);
+        AdditionalNavigationParams ephemeralParams = mock(AdditionalNavigationParams.class);
+        delegate.onOpenInEphemeralTab(testUrl, testTitle, ephemeralParams);
 
-        verify(mockOpener).accept(eq(testUrl), eq(testTitle));
+        verify(mockOpener).openInEphemeralTab(eq(testUrl), eq(testTitle), eq(ephemeralParams));
+        verify(ephemeralParams, never()).destroy();
+    }
+
+    @Test
+    public void testCoBrowseViewFactory_OpenInEphemeralTab() {
+        UnownedUserDataHost userDataHost = new UnownedUserDataHost();
+        when(mWindowAndroid.getUnownedUserDataHost()).thenReturn(userDataHost);
+        Profile profile = mock(Profile.class);
+        when(profile.isOffTheRecord()).thenReturn(false);
+        var profileSupplier = ObservableSuppliers.createNonNull(profile);
+        CoBrowseViewFactory factory =
+                new CoBrowseViewFactory(
+                        mActivity,
+                        profileSupplier,
+                        mWindowAndroid,
+                        /* lifecycleDispatcher= */ null,
+                        /* snackbarManager= */ null,
+                        mContextMenuPopulatorFactory,
+                        mSelectionDropdownMenuDelegate,
+                        ObservableSuppliers.alwaysNull(),
+                        ObservableSuppliers.createMonotonic(),
+                        /* priceDropNotificationManager= */ null,
+                        /* bookmarkManagerOpener= */ null);
+
+        GURL url = new GURL("https://example.com");
+        String title = "Example";
+
+        // Missing coordinator destroys AdditionalNavigationParams.
+        AdditionalNavigationParams missingCoordParams = mock(AdditionalNavigationParams.class);
+        factory.openInEphemeralTab(url, title, missingCoordParams, mWebContents);
+        verify(missingCoordParams).destroy();
+
+        EphemeralTabCoordinator coordinator = mock(EphemeralTabCoordinator.class);
+        EphemeralTabCoordinatorSupplier.setInstanceForTesting(coordinator);
+        RenderFrameHost mainFrame = mock(RenderFrameHost.class);
+        Origin initiatorOrigin = Origin.createOpaqueOrigin();
+        when(mWebContents.getMainFrame()).thenReturn(mainFrame);
+        when(mainFrame.getLastCommittedOrigin()).thenReturn(initiatorOrigin);
+        when(mWebContents.isIncognito()).thenReturn(false);
+
+        // Matching non-OTR forwards initiator origin and AdditionalNavigationParams.
+        AdditionalNavigationParams sameOtrParams = mock(AdditionalNavigationParams.class);
+        factory.openInEphemeralTab(url, title, sameOtrParams, mWebContents);
+        verify(coordinator)
+                .requestOpenSheet(
+                        eq(url),
+                        eq(null),
+                        eq(title),
+                        eq(profile),
+                        eq(true),
+                        eq(true),
+                        eq(initiatorOrigin),
+                        eq(sameOtrParams),
+                        any());
+        verify(sameOtrParams, never()).destroy();
+
+        // Cross-OTR strips initiator origin and AdditionalNavigationParams and destroys params.
+        when(profile.isOffTheRecord()).thenReturn(true);
+        AdditionalNavigationParams crossOtrParams = mock(AdditionalNavigationParams.class);
+        factory.openInEphemeralTab(url, title, crossOtrParams, mWebContents);
+        verify(coordinator)
+                .requestOpenSheet(
+                        eq(url),
+                        eq(null),
+                        eq(title),
+                        eq(profile),
+                        eq(true),
+                        eq(true),
+                        eq(null),
+                        eq(null),
+                        any());
+        verify(crossOtrParams).destroy();
+
+        factory.destroy();
     }
 
     @Test
@@ -1122,7 +1303,7 @@ public class TabBottomSheetWebUiUnitTest {
                 int placeholderElemColor,
                 @TabBottomSheetClientType int clientType,
                 @CoBrowseContainerType int containerType,
-                @Nullable BiConsumer<GURL, String> ephemeralTabOpener,
+                @Nullable EphemeralTabOpener ephemeralTabOpener,
                 @Nullable BiConsumer<GURL, String> readLaterOpener,
                 ContentView contentView) {
             super(
@@ -1152,7 +1333,7 @@ public class TabBottomSheetWebUiUnitTest {
                 int placeholderElemColor,
                 @TabBottomSheetClientType int clientType,
                 @CoBrowseContainerType int containerType,
-                @Nullable BiConsumer<GURL, String> ephemeralTabOpener,
+                @Nullable EphemeralTabOpener ephemeralTabOpener,
                 @Nullable BiConsumer<GURL, String> readLaterOpener,
                 ContentView contentView) {
             this(
