@@ -25,11 +25,12 @@ public class BackgroundSession {
     public static class BackgroundTabData {
         private final Tab mTab;
         private @Nullable @TabId Integer mPlaceholderTabId;
-        private int mOriginalTabIndex = TabModel.INVALID_TAB_INDEX;
+        private final int mOriginalTabIndex;
         private @WindowId int mTabWindowId = TabWindowManager.INVALID_WINDOW_ID;
 
         public BackgroundTabData(Tab tab) {
             mTab = tab;
+            mOriginalTabIndex = TabModel.INVALID_TAB_INDEX;
         }
 
         public BackgroundTabData(
@@ -68,11 +69,6 @@ public class BackgroundSession {
         /** Returns the original index of the tab in the tab model before transition. */
         public int getOriginalTabIndex() {
             return mOriginalTabIndex;
-        }
-
-        /** Sets the original index of the tab in the tab model before transition. */
-        public void setOriginalTabIndex(int originalTabIndex) {
-            mOriginalTabIndex = originalTabIndex;
         }
 
         /** Returns the window ID associated with this tab. */
@@ -148,11 +144,6 @@ public class BackgroundSession {
      */
     public void addTabData(BackgroundTabData tabData) {
         mTabDataList.add(tabData);
-    }
-
-    /** Removes a tab data entry from this session. */
-    public void removeTabData(BackgroundTabData tabData) {
-        mTabDataList.remove(tabData);
     }
 
     /** Returns all offscreen tabs associated with this session. */

@@ -34,7 +34,6 @@ import org.chromium.chrome.browser.tab.TabStateAttributesRegistry;
 import org.chromium.chrome.browser.tab.TabStateExtractor;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -291,21 +290,6 @@ public class BackgroundTabPool
             removeTabObserver(tab.getTab());
         }
         notifyIfEmptied();
-    }
-
-    /**
-     * Asynchronously preloads tab states for a list of tab IDs.
-     *
-     * @param tabIds The list of {@link TabId}s to prefetch.
-     */
-    public void prefetchTabs(List<@TabId Integer> tabIds) {
-        checkNotDestroyed();
-        for (int i = 0; i < tabIds.size(); i++) {
-            @TabId int tabId = tabIds.get(i);
-            if (!mLiveEntries.containsKey(tabId)) {
-                mTabCache.preloadTab(getCacheKey(tabId));
-            }
-        }
     }
 
     /** Clears all live and cached tabs in the pool. */

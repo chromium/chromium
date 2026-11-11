@@ -53,7 +53,6 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 
 import java.nio.ByteBuffer;
 import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 
 /** Unit tests for {@link BackgroundTabPool}. */
@@ -603,9 +602,6 @@ public class BackgroundTabPoolTest {
         Tab createdTab = createMockTab(TAB_ID_1);
         when(mTabCreator.createFrozenTab(any(), eq(TAB_ID_1), eq(0))).thenReturn(createdTab);
 
-        secondPool.prefetchTabs(List.of(TAB_ID_1));
-        mExecutor.runAll();
-
         BackgroundPoolTab coldLoaded = secondPool.loadTabByPlaceholderId(PLACEHOLDER_ID);
         assertNotNull(coldLoaded);
         assertTrue(coldLoaded instanceof ColdBackgroundTab);
@@ -633,14 +629,12 @@ public class BackgroundTabPoolTest {
                         PLACEHOLDER_ID,
                         /* taskId= */ null,
                         /* originalTabIndex= */ TabModel.INVALID_TAB_INDEX);
-        List<@TabId Integer> tabIds = List.of(TAB_ID_1);
 
         assertThrows(AssertionError.class, () -> mPool.destroy());
         assertThrows(AssertionError.class, () -> mPool.getProfileToken());
         assertThrows(AssertionError.class, () -> mPool.addLiveTab(newLiveTab));
         assertThrows(AssertionError.class, () -> mPool.loadTabByPlaceholderId(PLACEHOLDER_ID));
         assertThrows(AssertionError.class, () -> mPool.loadTabByOriginalId(TAB_ID_1));
-        assertThrows(AssertionError.class, () -> mPool.prefetchTabs(tabIds));
         assertThrows(AssertionError.class, () -> mPool.isEmpty());
         assertThrows(AssertionError.class, () -> mPool.getLiveTabCount());
         assertThrows(AssertionError.class, () -> mPool.getLiveTab(TAB_ID_1));
@@ -655,38 +649,6 @@ public class BackgroundTabPoolTest {
         assertThrows(
                 AssertionError.class,
                 () -> mPool.onTabStateDirtinessChanged(tab, DirtinessState.DIRTY));
-    }
-
-    @Test
-    public void testPrefetchTabs() {
-        Tab tab1 = createMockTab(TAB_ID_1);
-        Tab tab2 = createMockTab(TAB_ID_2);
-        TabState tabState1 = createMockTabState();
-        TabState tabState2 = createMockTabState();
-        TabStateExtractor.setTabStateForTesting(TAB_ID_1, tabState1);
-        TabStateExtractor.setTabStateForTesting(TAB_ID_2, tabState2);
-
-        BackgroundTabPool firstPool = new BackgroundTabPool(PROFILE_TOKEN, mOnEmptyCallback);
-        firstPool.addLiveTab(
-                new LiveBackgroundTab(
-                        firstPool,
-                        tab1,
-                        PLACEHOLDER_ID,
-                        /* taskId= */ null,
-                        /* originalTabIndex= */ TabModel.INVALID_TAB_INDEX));
-        firstPool.addLiveTab(
-                new LiveBackgroundTab(
-                        firstPool,
-                        tab2,
-                        PLACEHOLDER_ID_2,
-                        /* taskId= */ null,
-                        /* originalTabIndex= */ TabModel.INVALID_TAB_INDEX));
-        mExecutor.runAll();
-        firstPool.destroy();
-
-        BackgroundTabPool secondPool = new BackgroundTabPool(PROFILE_TOKEN, mOnEmptyCallback);
-        secondPool.prefetchTabs(List.of(TAB_ID_1, TAB_ID_2));
-        mExecutor.runAll();
     }
 
     @Test
