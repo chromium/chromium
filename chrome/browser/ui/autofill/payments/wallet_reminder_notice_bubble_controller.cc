@@ -11,14 +11,12 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
 #include "chrome/browser/ui/autofill/payments/wallet_reminder_notice_page_action_controller.h"
-#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/autofill/core/browser/metrics/payments/wallet_reminder_notice_metrics.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
-#include "ui/actions/actions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
@@ -30,7 +28,10 @@ DEFINE_USER_DATA(WalletReminderNoticeBubbleController);
 
 WalletReminderNoticeBubbleController::WalletReminderNoticeBubbleController(
     tabs::TabInterface* tab_interface)
-    : AutofillBubbleControllerBase(tab_interface),
+    : AutofillBubbleControllerBase(
+          tab_interface,
+          PageActionConfig{.action_id = kActionWalletReminderNotice,
+                           .should_sync_bubble_showing_state = true}),
       scoped_unowned_user_data_(
           CHECK_DEREF(tab_interface).GetUnownedUserDataHost(),
           *this),
@@ -39,13 +40,8 @@ WalletReminderNoticeBubbleController::WalletReminderNoticeBubbleController(
               &WalletReminderNoticeBubbleController::WillDiscardContents,
               base::Unretained(this)))) {}
 
-WalletReminderNoticeBubbleController::~WalletReminderNoticeBubbleController() {
-  if (IsShowingBubble()) {
-    if (actions::ActionItem* action_item = GetActionItem()) {
-      action_item->SetIsShowingBubble(false);
-    }
-  }
-}
+WalletReminderNoticeBubbleController::~WalletReminderNoticeBubbleController() =
+    default;
 
 // static
 WalletReminderNoticeBubbleController*
@@ -116,9 +112,6 @@ void WalletReminderNoticeBubbleController::OnLinkClicked(const GURL& url) {
 }
 
 void WalletReminderNoticeBubbleController::OnBubbleClosed() {
-  if (actions::ActionItem* action_item = GetActionItem()) {
-    action_item->SetIsShowingBubble(false);
-  }
   if (!logged_accept_button_clicked_ && !logged_link_clicked_ &&
       !bubble_hide_initiated_by_bubble_manager_) {
     autofill_metrics::LogWalletReminderNoticeInteraction(
@@ -165,10 +158,6 @@ void WalletReminderNoticeBubbleController::DoShowBubble() {
     logged_accept_button_clicked_ = false;
     logged_link_clicked_ = false;
     SetBubbleView(*bubble_view);
-
-    if (actions::ActionItem* action_item = GetActionItem()) {
-      action_item->SetIsShowingBubble(true);
-    }
   }
 }
 
@@ -177,24 +166,6 @@ void WalletReminderNoticeBubbleController::WillDiscardContents(
     content::WebContents* old_contents,
     content::WebContents* new_contents) {
   OnBubbleDiscarded();
-}
-
-actions::ActionItem* WalletReminderNoticeBubbleController::GetActionItem() {
-  BrowserWindowInterface* browser_window =
-      GetTabInterface()->GetBrowserWindowInterface();
-  if (!browser_window) {
-    return nullptr;
-  }
-  BrowserActions* browser_actions = BrowserActions::From(browser_window);
-  if (!browser_actions) {
-    return nullptr;
-  }
-  actions::ActionItem* root_action_item = browser_actions->root_action_item();
-  if (!root_action_item) {
-    return nullptr;
-  }
-  return actions::ActionManager::Get().FindAction(kActionWalletReminderNotice,
-                                                  root_action_item);
 }
 
 }  // namespace autofill

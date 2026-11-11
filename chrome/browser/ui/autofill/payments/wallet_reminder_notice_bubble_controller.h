@@ -15,10 +15,6 @@
 
 class GURL;
 
-namespace actions {
-class ActionItem;
-}
-
 namespace tabs {
 class TabInterface;
 }
@@ -70,7 +66,6 @@ class WalletReminderNoticeBubbleController
   void WillDiscardContents(tabs::TabInterface* tab,
                            content::WebContents* old_contents,
                            content::WebContents* new_contents);
-  actions::ActionItem* GetActionItem();
 
   ui::ScopedUnownedUserData<WalletReminderNoticeBubbleController>
       scoped_unowned_user_data_;
