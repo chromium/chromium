@@ -36,6 +36,7 @@ include_rules = [
   "+ios/chrome/browser/menu/public",
   "+ios/chrome/browser/metrics/model",
   "+ios/chrome/browser/ntp/model",
+  "+ios/chrome/browser/passwords/model/remote_actor",
   "+ios/chrome/browser/picture_in_picture/model",
   "+ios/chrome/browser/policy/model",
   "+ios/chrome/browser/policy/ui_bundled",

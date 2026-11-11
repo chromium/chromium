@@ -14,6 +14,8 @@
 #import "components/sync/test/test_sync_service.h"
 #import "components/variations/scoped_variations_ids_provider.h"
 #import "components/variations/variations_ids_provider.h"
+#import "ios/chrome/app/actor_request.h"
+#import "ios/chrome/app/app_startup_parameters.h"
 #import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/profile/profile_state_test_utils.h"
@@ -22,6 +24,7 @@
 #import "ios/chrome/browser/favicon/model/favicon_service_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_service_factory.h"
+#import "ios/chrome/browser/first_run/model/first_run.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
@@ -32,6 +35,7 @@
 #import "ios/chrome/browser/main/ui_bundled/wrangled_browser.h"
 #import "ios/chrome/browser/menu/public/menu_action_type.h"
 #import "ios/chrome/browser/menu/public/menu_histograms.h"
+#import "ios/chrome/browser/passwords/model/remote_actor/remote_actor_constants.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_service_factory.h"
@@ -68,6 +72,7 @@
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 #import "ui/base/page_transition_types.h"
 
 @interface InternalFakeSceneController : SceneController
@@ -498,5 +503,66 @@ TEST_F(SceneControllerTest, RecordWindowCreationMenuActionHistogram) {
   histogram_tester.ExpectUniqueSample(
       GetActionsHistogramName(kMenuScenarioHistogramHistoryEntry),
       MenuActionType::OpenInNewWindow, 1);
+}
+
+// Tests that REMOTE_ACTOR_CREDENTIAL_SHARING opens the Gemini callback URL
+// when preconditions fail (e.g., signed out) and does not open it when they
+// pass.
+TEST_F(SceneControllerTest,
+       RemoteActorCredentialSharingOpensCallbackOnPreconditionFailure) {
+  base::File::Error file_error;
+  FirstRun::RemoveSentinel();
+  FirstRun::CreateSentinel(&file_error);
+  FirstRun::LoadSentinelInfo();
+  FirstRun::ClearStateForTesting();
+
+  AppStartupParameters* startup_params = [[AppStartupParameters alloc]
+       initWithExternalURL:GURL()
+               completeURL:GURL()
+           applicationMode:ApplicationModeForTabOpening::UNDETERMINED
+      forceApplicationMode:NO];
+  RemoteActorRequest actor_request;
+  actor_request.request.set_task_id("task-123");
+  actor_request.request.set_gaia_id("expected-gaia-id");
+  actor_request.request.set_domain("https://example.com");
+  startup_params.remoteActorRequest = actor_request;
+  [connection_information_ setStartupParameters:startup_params];
+
+  id mock_application = OCMClassMock([UIApplication class]);
+  OCMStub([mock_application sharedApplication]).andReturn(mock_application);
+
+  // When signed out, opens the callback URL with CANCELLED / NOT_SIGNED_IN.
+  NSURL* expected_callback_url = [NSURL
+      URLWithString:[NSString
+                        stringWithFormat:@"%s?task_id=task-123&status="
+                                         @"CANCELLED&reason=NOT_SIGNED_IN",
+                                         kRemoteActorGeminiCallbackBaseURL]];
+  OCMExpect([mock_application openURL:expected_callback_url
+                              options:@{}
+                    completionHandler:[OCMArg any]]);
+
+  ProceduralBlock action = [scene_controller_
+      completionBlockForTriggeringAction:REMOTE_ACTOR_CREDENTIAL_SHARING];
+  ASSERT_NE(action, nil);
+  action();
+  EXPECT_OCMOCK_VERIFY(mock_application);
+
+  // When signed in with matching GAIA ID, preconditions succeed and no error
+  // callback URL is opened.
+  MakePrimaryAccountAvailable("user@example.com");
+  CoreAccountInfo primary_account = GetIdentityManager()->GetPrimaryAccountInfo(
+      signin::ConsentLevel::kSignin);
+  actor_request.request.set_gaia_id(primary_account.gaia.ToString());
+  startup_params.remoteActorRequest = actor_request;
+
+  OCMReject([mock_application openURL:[OCMArg any]
+                              options:[OCMArg any]
+                    completionHandler:[OCMArg any]]);
+  action();
+  EXPECT_OCMOCK_VERIFY(mock_application);
+
+  [mock_application stopMocking];
+  FirstRun::RemoveSentinel();
+  FirstRun::ClearStateForTesting();
 }
 }  // namespace

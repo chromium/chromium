@@ -15,6 +15,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "base/trace_event/trace_event.h"
+#import "base/types/expected_macros.h"
 #import "components/breadcrumbs/core/breadcrumbs_status.h"
 #import "components/data_sharing/public/data_sharing_utils.h"
 #import "components/feature_engagement/public/event_constants.h"
@@ -31,6 +32,7 @@
 #import "components/version_info/version_info.h"
 #import "components/web_resource/web_resource_pref_names.h"
 #import "google_apis/gaia/gaia_id.h"
+#import "ios/chrome/app/actor_request.h"
 #import "ios/chrome/app/app_startup_parameters.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
@@ -89,6 +91,8 @@
 #import "ios/chrome/browser/menu/public/menu_histograms.h"
 #import "ios/chrome/browser/metrics/model/tab_usage_recorder_browser_agent.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/passwords/model/remote_actor/remote_actor_callback_util.h"
+#import "ios/chrome/browser/passwords/model/remote_actor/remote_actor_precondition_checker.h"
 #import "ios/chrome/browser/picture_in_picture/model/picture_in_picture_scene_agent.h"
 #import "ios/chrome/browser/policy/model/browser_management_service.h"
 #import "ios/chrome/browser/policy/model/browser_management_service_factory.h"
@@ -2706,6 +2710,21 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
 
 // Handles a Remote Actor credential sharing request from an external app.
 - (void)handleRemoteActorCredentialSharing {
+  ASSIGN_OR_RETURN(const RemoteActorRequest& remoteActorRequest,
+                   self.startupParameters.remoteActorRequest, [] {});
+
+  base::expected<void, RemoteActorPreconditionError> preconditionResult =
+      CheckRemoteActorPreconditions(self.currentInterface.profile,
+                                    remoteActorRequest.request.gaia_id());
+  if (!preconditionResult.has_value()) {
+    RemoteActorPreconditionCallbackParams callbackParams =
+        GetPreconditionFailureCallbackParams(preconditionResult.error());
+    OpenGeminiCallbackURL(remoteActorRequest.request.task_id(),
+                          callbackParams.status, callbackParams.reason,
+                          base::DoNothing());
+    return;
+  }
+
   // TODO(crbug.com/577152706): Wire up to RemoteActorCoordinator.
 }
 
