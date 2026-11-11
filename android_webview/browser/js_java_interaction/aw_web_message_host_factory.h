@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "components/js_injection/browser/web_message_host_factory.h"
 
 namespace js_injection {
@@ -33,7 +34,8 @@ class AwWebMessageHostFactory : public js_injection::WebMessageHostFactory {
   GetWebMessageListenerInfo(js_injection::JsCommunicationHost* host,
                             JNIEnv* env);
 
-  // js_injection::WebMessageConnection:
+  // js_injection::WebMessageHostFactory:
+  base::WeakPtr<js_injection::WebMessageHostFactory> GetWeakPtr() override;
   std::unique_ptr<js_injection::WebMessageHost> CreateHost(
       const std::string& top_level_origin_string,
       const std::string& origin_string,
@@ -44,6 +46,7 @@ class AwWebMessageHostFactory : public js_injection::WebMessageHostFactory {
   // The WebMessageListenerHost that was supplied to
   // AwContents::AddWebMessageListener().
   base::android::ScopedJavaGlobalRef<jobject> listener_;
+  base::WeakPtrFactory<AwWebMessageHostFactory> weak_factory_{this};
 };
 
 }  // namespace android_webview

@@ -22,6 +22,13 @@
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 
+namespace features {
+
+BASE_FEATURE(kWebMessageListenerRemoveEvictsBfCache,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+}  // namespace features
+
 namespace js_injection {
 namespace {
 
@@ -249,6 +256,13 @@ void JsCommunicationHost::RemoveWebMessageHostFactory(
     if ((*iterator)->name == js_object_name &&
         (*iterator)->world_id == world_identifier) {
       js_objects_.erase(iterator);
+      if (base::FeatureList::IsEnabled(
+              features::kWebMessageListenerRemoveEvictsBfCache)) {
+        web_contents()->GetController().GetBackForwardCache().Flush(
+            content::BackForwardCache::NotRestoredReason::
+                kWebViewMessageListenerInjected);
+        web_contents()->CancelAllPrerendering();
+      }
       ForEachRenderFrameHostWithinSameWebContents(
           web_contents()->GetPrimaryMainFrame(),
           [this](content::RenderFrameHost* render_frame_host) {
@@ -349,7 +363,7 @@ void JsCommunicationHost::NotifyFrameForWebMessageListener(
             render_frame_host,
             pending_remote.InitWithNewEndpointAndPassReceiver(),
             factory.InitWithNewEndpointAndPassRemote(),
-            js_object->factory.get(), js_object->allowed_origin_rules,
+            js_object->factory->GetWeakPtr(), js_object->allowed_origin_rules,
             js_object->name, js_object->world_id);
     js_objects.push_back(mojom::JsObject::New(
         js_object->name, std::move(pending_remote), std::move(factory),

@@ -88,6 +88,11 @@ AwWebMessageHostFactory::GetWebMessageListenerInfo(
   return ret;
 }
 
+base::WeakPtr<js_injection::WebMessageHostFactory>
+AwWebMessageHostFactory::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 std::unique_ptr<js_injection::WebMessageHost>
 AwWebMessageHostFactory::CreateHost(const std::string& top_level_origin_string,
                                     const std::string& origin_string,

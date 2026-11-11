@@ -180,7 +180,8 @@ public class AwBackForwardCacheTest extends AwParameterizedTest {
         return mActivityTestRule.executeJavaScriptAndWaitForResult(
                 mAwContents,
                 mContentsClient,
-                "JSON.stringify(performance.getEntriesByType('navigation')[0].notRestoredReasons);");
+                "JSON.stringify("
+                        + "performance.getEntriesByType('navigation')[0].notRestoredReasons);");
     }
 
     private String extractSimpleReasonString(String notRestoredReasons) throws Exception {
@@ -382,7 +383,7 @@ public class AwBackForwardCacheTest extends AwParameterizedTest {
         // Test adding javascript interface
         navigateForward();
         HistogramWatcher histogramWatcher =
-                getNotRestoredReasonsHistogramWatcher(/*kWebViewJavaScriptObjectChanged*/ 65);
+                getNotRestoredReasonsHistogramWatcher(/* kWebViewJavaScriptObjectChanged */ 65);
         Object testInjectedObject =
                 new Object() {
                     @JavascriptInterface
@@ -398,7 +399,7 @@ public class AwBackForwardCacheTest extends AwParameterizedTest {
 
         // Test removing javascript interface
         histogramWatcher =
-                getNotRestoredReasonsHistogramWatcher(/*kWebViewJavaScriptObjectChanged*/ 65);
+                getNotRestoredReasonsHistogramWatcher(/* kWebViewJavaScriptObjectChanged */ 65);
         navigateForward();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> mAwContents.removeJavascriptInterface("testInjectedObject"));
@@ -421,7 +422,7 @@ public class AwBackForwardCacheTest extends AwParameterizedTest {
         mActivityTestRule.loadUrlSync(
                 mAwContents, mContentsClient.getOnPageFinishedHelper(), mInitialUrl);
         HistogramWatcher histogramWatcher =
-                getNotRestoredReasonsHistogramWatcher(/*kWebViewMessageListenerInjected*/ 66);
+                getNotRestoredReasonsHistogramWatcher(/* kWebViewMessageListenerInjected */ 66);
         navigateForward();
         TestWebMessageListener listener = new TestWebMessageListener();
         TestWebMessageListener.addWebMessageListenerOnUiThread(
@@ -435,6 +436,52 @@ public class AwBackForwardCacheTest extends AwParameterizedTest {
         // Test BFCache can still work for future navigations
         navigateForwardAndBack();
         Assert.assertTrue(isPageShowPersisted());
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    public void testPageEvictedWhenRemovingWebMessageListener() throws Exception, Throwable {
+        mAwContents.getSettings().setBackForwardCacheEnabled(true);
+        TestWebMessageListener listener = new TestWebMessageListener();
+        TestWebMessageListener.addWebMessageListenerOnUiThread(
+                mAwContents, "awMessagePort", new String[] {"*"}, listener);
+        mActivityTestRule.loadUrlSync(
+                mAwContents, mContentsClient.getOnPageFinishedHelper(), mInitialUrl);
+        HistogramWatcher histogramWatcher =
+                getNotRestoredReasonsHistogramWatcher(/* kWebViewMessageListenerInjected */ 66);
+        navigateForward();
+        TestWebMessageListener.removeWebMessageListenerOnUiThread(mAwContents, "awMessagePort");
+        navigateBack();
+        String notRestoredReasons = getNotRestoredReasons();
+        Assert.assertTrue(notRestoredReasons.indexOf("reasons") >= 0);
+        Assert.assertFalse(isPageShowPersisted());
+        histogramWatcher.assertExpected();
+
+        // Test BFCache can still work for future navigations
+        navigateForwardAndBack();
+        Assert.assertTrue(isPageShowPersisted());
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    public void testRemoveWebMessageListenerWithBFCache_NoCrash() throws Exception, Throwable {
+        mAwContents.getSettings().setBackForwardCacheEnabled(true);
+        TestWebMessageListener listener = new TestWebMessageListener();
+        TestWebMessageListener.addWebMessageListenerOnUiThread(
+                mAwContents, "awMessagePort", new String[] {"*"}, listener);
+        mActivityTestRule.loadUrlSync(
+                mAwContents, mContentsClient.getOnPageFinishedHelper(), mInitialUrl);
+        navigateForward();
+        TestWebMessageListener.removeWebMessageListenerOnUiThread(mAwContents, "awMessagePort");
+        navigateBack();
+
+        // Posting a message after navigating back should not crash the browser.
+        mActivityTestRule.executeJavaScriptAndWaitForResult(
+                mAwContents,
+                mContentsClient,
+                "if (window.awMessagePort) { window.awMessagePort.postMessage('hello'); }");
     }
 
     // TODO(crbug.com/335767367): Consider calling onPageFinished for BFCache restores.
@@ -515,7 +562,7 @@ public class AwBackForwardCacheTest extends AwParameterizedTest {
         mActivityTestRule.loadUrlSync(
                 mAwContents, mContentsClient.getOnPageFinishedHelper(), mInitialUrl);
         HistogramWatcher histogramWatcher =
-                getNotRestoredReasonsHistogramWatcher(/*kCacheFlushed*/ 21);
+                getNotRestoredReasonsHistogramWatcher(/* kCacheFlushed */ 21);
         navigateForward();
         ThreadUtils.runOnUiThreadBlocking(() -> mAwContents.flushBackForwardCache());
         navigateBack();
@@ -531,7 +578,7 @@ public class AwBackForwardCacheTest extends AwParameterizedTest {
 
     private void verifyPageEvictedWithSettingsChange(Runnable r) throws Exception, Throwable {
         HistogramWatcher histogramWatcher =
-                getNotRestoredReasonsHistogramWatcher(/*kWebViewSettingsChanged*/ 64);
+                getNotRestoredReasonsHistogramWatcher(/* kWebViewSettingsChanged */ 64);
         navigateForward();
         r.run();
         // wait for the page finished callback to avoid interfering with the next forward
@@ -749,7 +796,8 @@ public class AwBackForwardCacheTest extends AwParameterizedTest {
         mActivityTestRule.loadUrlSync(
                 mAwContents, mContentsClient.getOnPageFinishedHelper(), mInitialUrl);
         HistogramWatcher histogramWatcher =
-                getNotRestoredReasonsHistogramWatcher(/*kWebViewSafeBrowsingAllowlistChanged*/ 67);
+                getNotRestoredReasonsHistogramWatcher(
+                        /* kWebViewSafeBrowsingAllowlistChanged */ 67);
         navigateForward();
         ArrayList<String> allowlist = new ArrayList<>();
         allowlist.add("google.com");
@@ -782,7 +830,7 @@ public class AwBackForwardCacheTest extends AwParameterizedTest {
                 mAwContents, mContentsClient.getOnPageFinishedHelper(), mInitialUrl);
         HistogramWatcher histogramWatcher =
                 getNotRestoredReasonsHistogramWatcher(
-                        /*kWebViewDocumentStartJavascriptChanged */ 68);
+                        /* kWebViewDocumentStartJavascriptChanged */ 68);
         navigateForward();
         ThreadUtils.runOnUiThreadBlocking(
                 () ->

@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "components/js_injection/common/enum.mojom-forward.h"
 #include "components/origin_matcher/origin_matcher.h"
@@ -19,6 +20,12 @@
 namespace content {
 class RenderFrameHost;
 }  // namespace content
+
+namespace features {
+
+BASE_DECLARE_FEATURE(kWebMessageListenerRemoveEvictsBfCache);
+
+}  // namespace features
 
 namespace js_injection {
 

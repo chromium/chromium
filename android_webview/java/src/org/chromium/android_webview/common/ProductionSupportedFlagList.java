@@ -1557,6 +1557,9 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 AwFeatures.WEBVIEW_WEB_GRAPHICS_SWITCH_ENABLED,
                 "Enables the WebSettings setWebGraphicsEnabled method."),
+        Flag.baseFeature(
+                "WebMessageListenerRemoveEvictsBfCache",
+                "Controls whether to flush BFCache on WebMessage listener removal."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };

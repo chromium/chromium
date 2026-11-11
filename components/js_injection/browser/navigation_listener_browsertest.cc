@@ -154,6 +154,9 @@ class FakeWebMessageHostFactory : public WebMessageHostFactory {
   ~FakeWebMessageHostFactory() override = default;
 
   // WebMessageHostFactory overrides:
+  base::WeakPtr<WebMessageHostFactory> GetWeakPtr() override {
+    return weak_factory_.GetWeakPtr();
+  }
   std::unique_ptr<WebMessageHost> CreateHost(
       const std::string& top_level_origin_string,
       const std::string& origin_string,
@@ -164,6 +167,7 @@ class FakeWebMessageHostFactory : public WebMessageHostFactory {
 
  private:
   raw_ptr<NavigationMessageListener> listener_;
+  base::WeakPtrFactory<FakeWebMessageHostFactory> weak_factory_{this};
 };
 
 class NavigationListenerBrowserTest : public content::ContentBrowserTest,

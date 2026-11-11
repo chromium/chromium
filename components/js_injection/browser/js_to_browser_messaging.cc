@@ -9,6 +9,7 @@
 #include <variant>
 
 #include "base/containers/flat_map.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/back_forward_cache/back_forward_cache_disable.h"
@@ -188,7 +189,7 @@ JsToBrowserMessaging::JsToBrowserMessaging(
     mojo::PendingAssociatedReceiver<mojom::JsToBrowserMessaging> receiver,
     mojo::PendingAssociatedRemote<mojom::BrowserToJsMessagingFactory>
         browser_to_js_factory,
-    WebMessageHostFactory* factory,
+    base::WeakPtr<WebMessageHostFactory> factory,
     const origin_matcher::OriginMatcher& origin_matcher,
     const std::u16string& name,
     int32_t world_id)
@@ -269,6 +270,17 @@ void JsToBrowserMessaging::PostMessage(
   reply_proxy_->EnsureBrowserToJsMessaging();
 
   if (!host_) {
+    if (!connection_factory_) {
+      // Keeping track of crash spike from https://crbug.com/583595753.
+      // We should not end up here when BFCache gets evicted on
+      // WebMessageListener removal, but I don't want to trigger a browser crash
+      // if there are other paths that could lead to this point, or if the
+      // `kWebMessageListenerRemoveEvictsBfCache` gets disabled via Finch.
+      // Long-term this can be replaced with NOTREACHED().
+      base::debug::DumpWithoutCrashing();
+      return;
+    }
+
     const std::string top_level_origin_string =
         GetOriginString(top_level_origin);
     const std::string origin_string = GetOriginString(source_origin);

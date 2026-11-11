@@ -8,6 +8,8 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/weak_ptr.h"
+
 namespace js_injection {
 
 class WebMessageHost;
@@ -20,6 +22,8 @@ class WebMessageReplyProxy;
 class WebMessageHostFactory {
  public:
   virtual ~WebMessageHostFactory() = default;
+
+  virtual base::WeakPtr<WebMessageHostFactory> GetWeakPtr() = 0;
 
   // Creates a WebMessageHost for the specified page. |proxy| is valid for
   // the life of the host and may be used to send messages back to the page.
