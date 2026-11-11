@@ -5,9 +5,7 @@
 #include "components/gcm_driver/instance_id/instance_id_profile_service.h"
 
 #include "base/check.h"
-#include "base/memory/ptr_util.h"
 #include "components/gcm_driver/gcm_driver.h"
-#include "components/gcm_driver/gcm_profile_service.h"
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
 
 namespace instance_id {
@@ -20,18 +18,6 @@ InstanceIDProfileService::InstanceIDProfileService(gcm::GCMDriver* driver,
 }
 
 InstanceIDProfileService::~InstanceIDProfileService() = default;
-
-// static
-std::unique_ptr<InstanceIDProfileService>
-InstanceIDProfileService::CreateForTests(
-    std::unique_ptr<InstanceIDDriver> instance_id_driver) {
-  return base::WrapUnique(
-      new InstanceIDProfileService(std::move(instance_id_driver)));
-}
-
-InstanceIDProfileService::InstanceIDProfileService(
-    std::unique_ptr<InstanceIDDriver> instance_id_driver)
-    : driver_(std::move(instance_id_driver)) {}
 
 void InstanceIDProfileService::Shutdown() {
   // Reset the `driver_` to ensure that any `raw_ptr`s stored by the driver are

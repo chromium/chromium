@@ -29,15 +29,8 @@ class InstanceIDProfileService : public KeyedService {
 
   InstanceIDDriver* driver() const { return driver_.get(); }
 
-  static std::unique_ptr<InstanceIDProfileService> CreateForTests(
-      std::unique_ptr<InstanceIDDriver> instance_id_driver);
-
  private:
   void Shutdown() override;
-
-  // Private constructor used for tests only.
-  explicit InstanceIDProfileService(
-      std::unique_ptr<InstanceIDDriver> instance_id_driver);
 
   std::unique_ptr<InstanceIDDriver> driver_;
 };

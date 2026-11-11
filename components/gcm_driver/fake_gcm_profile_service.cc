@@ -33,13 +33,6 @@ class FakeGCMProfileService::CustomFakeGCMDriver
 
   ~CustomFakeGCMDriver() override;
 
-  void OnRegisterFinished(const std::string& app_id,
-                          const std::string& registration_id,
-                          GCMClient::Result result);
-  void OnSendFinished(const std::string& app_id,
-                      const std::string& message_id,
-                      GCMClient::Result result);
-
   // GCMDriver overrides:
   void EncryptMessage(const std::string& app_id,
                       const std::string& authorized_entity,
@@ -116,7 +109,6 @@ void FakeGCMProfileService::CustomFakeGCMDriver::DoRegister(
     const std::vector<std::string>& sender_ids,
     const std::string& registration_id) {
   if (service_->collect_) {
-    service_->last_registered_app_id_ = app_id;
     service_->last_registered_sender_ids_ = sender_ids;
   }
   RegisterFinished(app_id, registration_id, GCMClient::SUCCESS);

@@ -128,10 +128,6 @@ struct RegistrationInfoComparer {
 using RegistrationInfoMap = std::
     map<scoped_refptr<RegistrationInfo>, std::string, RegistrationInfoComparer>;
 
-// Returns true if a GCM registration for |app_id| exists in |map|.
-bool ExistsGCMRegistrationInMap(const RegistrationInfoMap& map,
-                                const std::string& app_id);
-
 }  // namespace gcm
 
 #endif  // COMPONENTS_GCM_DRIVER_REGISTRATION_INFO_H_

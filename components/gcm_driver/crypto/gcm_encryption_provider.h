@@ -139,9 +139,7 @@ class GCMEncryptionProvider {
                              std::optional<crypto::keypair::PrivateKey> key,
                              const std::string& auth_secret);
 
-  void EncryptMessageWithKey(const std::string& app_id,
-                             const std::string& authorized_entity,
-                             const std::string& p256dh,
+  void EncryptMessageWithKey(const std::string& p256dh,
                              const std::string& auth_secret,
                              const std::string& message,
                              EncryptMessageCallback callback,

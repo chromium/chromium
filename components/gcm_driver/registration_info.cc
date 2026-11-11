@@ -275,12 +275,4 @@ bool RegistrationInfoComparer::operator()(
   return iid_a->scope < iid_b->scope;
 }
 
-bool ExistsGCMRegistrationInMap(const RegistrationInfoMap& map,
-                                const std::string& app_id) {
-  scoped_refptr<RegistrationInfo> gcm_registration =
-      base::MakeRefCounted<GCMRegistrationInfo>();
-  gcm_registration->app_id = app_id;
-  return map.find(gcm_registration) != map.end();
-}
-
 }  // namespace gcm

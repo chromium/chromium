@@ -58,7 +58,6 @@ enum MessageType {
 
 const int kMaxRegistrationRetries = 5;
 const int kMaxUnregistrationRetries = 5;
-const char kDeletedCountKey[] = "total_deleted";
 const char kMessageTypeDataMessage[] = "gcm";
 const char kMessageTypeDeletedMessagesKey[] = "deleted_messages";
 const char kMessageTypeKey[] = "message_type";
@@ -423,18 +422,15 @@ void GCMClientImpl::AddInstanceIDData(const std::string& app_id,
   gcm_store_->AddInstanceIDData(
       app_id, SerializeInstanceIDData(instance_id, extra_data),
       base::BindOnce(&GCMClientImpl::IgnoreWriteResultCallback,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     /*operation_suffix_for_uma=*/"AddInstanceIDData"));
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void GCMClientImpl::RemoveInstanceIDData(const std::string& app_id) {
   DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
   instance_id_data_.erase(app_id);
   gcm_store_->RemoveInstanceIDData(
-      app_id,
-      base::BindOnce(&GCMClientImpl::IgnoreWriteResultCallback,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     /*operation_suffix_for_uma=*/"RemoveInstanceIDData"));
+      app_id, base::BindOnce(&GCMClientImpl::IgnoreWriteResultCallback,
+                             weak_ptr_factory_.GetWeakPtr()));
 }
 
 void GCMClientImpl::GetInstanceIDData(const std::string& app_id,
@@ -569,9 +565,7 @@ void GCMClientImpl::UpdateRegistrationCallback(bool success) {
   DCHECK(success);
 }
 
-void GCMClientImpl::IgnoreWriteResultCallback(
-    const std::string& operation_suffix_for_uma,
-    bool success) {
+void GCMClientImpl::IgnoreWriteResultCallback(bool success) {
   // TODO(crbug.com/40691191): Implement proper error handling.
   // TODO(fgorski): Ignoring the write result for now to make sure
   // sync_intergration_tests are not broken.
@@ -944,10 +938,6 @@ void GCMClientImpl::OnUnregisterCompleted(
   pending_unregistration_requests_.erase(registration_info);
 }
 
-void GCMClientImpl::OnGCMStoreDestroyed(bool success) {
-  DLOG_IF(ERROR, !success) << "GCM store failed to be destroyed!";
-}
-
 void GCMClientImpl::Send(const std::string& app_id,
                          const std::string& receiver_id,
                          const OutgoingMessage& message) {
@@ -1145,11 +1135,10 @@ void GCMClientImpl::HandleIncomingMessage(const gcm::MCSMessage& message) {
 
   switch (message_type) {
     case DATA_MESSAGE:
-      HandleIncomingDataMessage(app_id, use_subtype, data_message_stanza,
-                                message_data);
+      HandleIncomingDataMessage(app_id, data_message_stanza, message_data);
       break;
     case DELETED_MESSAGES:
-      HandleIncomingDeletedMessages(app_id, data_message_stanza, message_data);
+      HandleIncomingDeletedMessages(app_id, data_message_stanza);
       break;
     case SEND_ERROR:
       HandleIncomingSendError(app_id, data_message_stanza, message_data);
@@ -1163,7 +1152,6 @@ void GCMClientImpl::HandleIncomingMessage(const gcm::MCSMessage& message) {
 
 void GCMClientImpl::HandleIncomingDataMessage(
     const std::string& app_id,
-    bool was_subtype,
     const mcs_proto::DataMessageStanza& data_message_stanza,
     MessageData& message_data) {
   recorder_.RecordDataMessageReceived(app_id, data_message_stanza.from(),
@@ -1184,16 +1172,7 @@ void GCMClientImpl::HandleIncomingDataMessage(
 
 void GCMClientImpl::HandleIncomingDeletedMessages(
     const std::string& app_id,
-    const mcs_proto::DataMessageStanza& data_message_stanza,
-    MessageData& message_data) {
-  int deleted_count = 0;
-  auto count_iter = message_data.find(kDeletedCountKey);
-  if (count_iter != message_data.end()) {
-    if (!base::StringToInt(count_iter->second, &deleted_count)) {
-      deleted_count = 0;
-    }
-  }
-
+    const mcs_proto::DataMessageStanza& data_message_stanza) {
   recorder_.RecordDataMessageReceived(app_id, data_message_stanza.from(),
                                       data_message_stanza.ByteSizeLong(),
                                       GCMStatsRecorder::DELETED_MESSAGES);

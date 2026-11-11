@@ -17,7 +17,6 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/fcm/crypto/fcm_decryption_result.h"
-#include "components/fcm/engine/chrome_build_info.h"
 #include "google_apis/gcm/base/encryptor.h"
 
 namespace gcm {
@@ -79,10 +78,7 @@ void FakeGCMClient::Initialize(
         get_socket_factory_callback,
     const scoped_refptr<network::SharedURLLoaderFactory>& url_loader_factory,
     network::NetworkConnectionTracker* network_connection_tracker,
-    std::unique_ptr<Encryptor> encryptor) {
-  product_category_for_subtypes_ =
-      chrome_build_info.product_category_for_subtypes;
-}
+    std::unique_ptr<Encryptor> encryptor) {}
 
 void FakeGCMClient::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);

@@ -1116,24 +1116,4 @@ void GCMDriverDesktop::OnActivityRecorded(
   }
 }
 
-bool GCMDriverDesktop::TokenTupleComparer::operator()(
-    const TokenTuple& a,
-    const TokenTuple& b) const {
-  if (std::get<0>(a) < std::get<0>(b)) {
-    return true;
-  }
-  if (std::get<0>(a) > std::get<0>(b)) {
-    return false;
-  }
-
-  if (std::get<1>(a) < std::get<1>(b)) {
-    return true;
-  }
-  if (std::get<1>(a) > std::get<1>(b)) {
-    return false;
-  }
-
-  return std::get<2>(a) < std::get<2>(b);
-}
-
 }  // namespace gcm

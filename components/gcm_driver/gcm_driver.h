@@ -249,7 +249,7 @@ class GCMDriver {
   // The InstanceIDHandler provides an implementation for the InstanceID system.
   virtual InstanceIDHandler* GetInstanceIDHandlerInternal() = 0;
   // Allows the InstanceID system to integrate with GCM encryption storage.
-  virtual GCMEncryptionProvider* GetEncryptionProviderInternal();
+  GCMEncryptionProvider* GetEncryptionProviderInternal();
 
  protected:
   // Ensures that the GCM service starts (if necessary conditions are met).

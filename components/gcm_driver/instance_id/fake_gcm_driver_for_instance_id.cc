@@ -67,11 +67,6 @@ FakeGCMDriverForInstanceID::FakeGCMDriverForInstanceID(
 
 FakeGCMDriverForInstanceID::~FakeGCMDriverForInstanceID() = default;
 
-base::WeakPtr<FakeGCMDriverForInstanceID>
-FakeGCMDriverForInstanceID::GetWeakPtr() {
-  return weak_ptr_factory_.GetWeakPtr();
-}
-
 gcm::InstanceIDHandler*
 FakeGCMDriverForInstanceID::GetInstanceIDHandlerInternal() {
   return this;
@@ -145,7 +140,7 @@ void FakeGCMDriverForInstanceID::GetToken(
   if (iter != tokens_.end()) {
     token = iter->second;
   } else {
-    token = GenerateTokenImpl(app_id, authorized_entity, scope);
+    token = GenerateTokenImpl();
     tokens_[key] = token;
 
     StoreTokensIfNeeded();
@@ -197,10 +192,7 @@ void FakeGCMDriverForInstanceID::DeleteToken(
       FROM_HERE, base::BindOnce(std::move(callback), gcm::GCMClient::SUCCESS));
 }
 
-std::string FakeGCMDriverForInstanceID::GenerateTokenImpl(
-    const std::string& app_id,
-    const std::string& authorized_entity,
-    const std::string& scope) {
+std::string FakeGCMDriverForInstanceID::GenerateTokenImpl() {
   return base::NumberToString(base::RandUint64());
 }
 

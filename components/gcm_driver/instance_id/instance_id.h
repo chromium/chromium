@@ -166,8 +166,6 @@ class InstanceID {
                                DeleteTokenCallback callback) = 0;
   virtual void DeleteIDImpl(DeleteIDCallback callback) = 0;
 
-  void NotifyTokenRefresh(bool update_id);
-
  private:
   void DidDelete(const std::string& authorized_entity,
                  base::OnceCallback<void(Result result)> callback,

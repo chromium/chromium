@@ -126,9 +126,6 @@ class GCMDriverDesktop : public GCMDriver, protected InstanceIDHandler {
   class IOWorker;
 
   typedef std::tuple<std::string, std::string, std::string> TokenTuple;
-  struct TokenTupleComparer {
-    bool operator()(const TokenTuple& a, const TokenTuple& b) const;
-  };
 
   void OnOsCryptReady(
       base::OnceCallback<void(scoped_refptr<os_crypt_async::Encryptor>)>
@@ -214,10 +211,8 @@ class GCMDriverDesktop : public GCMDriver, protected InstanceIDHandler {
       get_instance_id_data_callbacks_;
 
   // Callbacks for GetToken/DeleteToken.
-  std::map<TokenTuple, GetTokenCallback, TokenTupleComparer>
-      get_token_callbacks_;
-  std::map<TokenTuple, DeleteTokenCallback, TokenTupleComparer>
-      delete_token_callbacks_;
+  std::map<TokenTuple, GetTokenCallback> get_token_callbacks_;
+  std::map<TokenTuple, DeleteTokenCallback> delete_token_callbacks_;
 
   // Used to pass a weak pointer to the IO worker.
   base::WeakPtrFactory<GCMDriverDesktop> weak_ptr_factory_{this};

@@ -126,6 +126,14 @@ const char kMessageId[] = "0:12345%5678";
 
 const char kRegisterUrl[] = "https://android.clients.google.com/c2dm/register3";
 
+bool ExistsGCMRegistrationInMap(const RegistrationInfoMap& map,
+                                const std::string& app_id) {
+  scoped_refptr<RegistrationInfo> gcm_registration =
+      base::MakeRefCounted<GCMRegistrationInfo>();
+  gcm_registration->app_id = app_id;
+  return map.find(gcm_registration) != map.end();
+}
+
 // Helper for building arbitrary data messages.
 MCSMessage BuildDownstreamMessage(
     const std::string& project_id,

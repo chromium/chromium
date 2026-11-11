@@ -11,7 +11,6 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
-#include "base/memory/weak_ptr.h"
 #include "components/gcm_driver/fake_gcm_driver.h"
 
 namespace base {
@@ -47,8 +46,6 @@ class FakeGCMDriverForInstanceID : public gcm::FakeGCMDriver,
   // Returns true if the given `app_id` has the expected `token`.
   bool HasTokenForAppId(const std::string& app_id,
                         const std::string& token) const;
-
-  base::WeakPtr<FakeGCMDriverForInstanceID> GetWeakPtr();
 
   const std::string& last_gettoken_app_id() const {
     return last_gettoken_app_id_;
@@ -88,9 +85,7 @@ class FakeGCMDriverForInstanceID : public gcm::FakeGCMDriver,
   // across browser restarts in tests.
   void StoreTokensIfNeeded();
 
-  std::string GenerateTokenImpl(const std::string& app_id,
-                                const std::string& authorized_entity,
-                                const std::string& scope);
+  std::string GenerateTokenImpl();
 
   // Used to store FCM registration tokens across browser restarts in tests.
   const base::FilePath store_path_;
@@ -102,8 +97,6 @@ class FakeGCMDriverForInstanceID : public gcm::FakeGCMDriver,
   std::string last_deletetoken_app_id_;
 
   base::RepeatingClosure on_app_handler_added_callback_;
-
-  base::WeakPtrFactory<FakeGCMDriverForInstanceID> weak_ptr_factory_{this};
 };
 
 }  // namespace instance_id

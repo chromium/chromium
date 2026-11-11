@@ -272,8 +272,8 @@ void GCMEncryptionProvider::EncryptMessage(const std::string& app_id,
       app_id, authorized_entity,
       false /* fallback_to_empty_authorized_entity */,
       base::BindOnce(&GCMEncryptionProvider::EncryptMessageWithKey,
-                     weak_ptr_factory_.GetWeakPtr(), app_id, authorized_entity,
-                     p256dh, auth_secret, message, std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), p256dh, auth_secret,
+                     message, std::move(callback)));
 }
 
 void GCMEncryptionProvider::DidCreateEncryptionInfo(
@@ -351,8 +351,6 @@ void GCMEncryptionProvider::DecryptMessageWithKey(
 }
 
 void GCMEncryptionProvider::EncryptMessageWithKey(
-    const std::string& app_id,
-    const std::string& authorized_entity,
     const std::string& p256dh,
     const std::string& auth_secret,
     const std::string& message,

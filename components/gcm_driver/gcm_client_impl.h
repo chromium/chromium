@@ -140,16 +140,6 @@ class GCMClientImpl : public GCMClient,
   void OnDisconnected() override;
 
  private:
-  // Reasons for resetting the GCM Store.
-  // Note: this enum is recorded into a histogram. Do not change enum value
-  // or order.
-  enum ResetReason {
-    LOAD_FAILURE,      // GCM store failed to load, but the store exists.
-    CHECKIN_REJECTED,  // Checkin was rejected by server.
-
-    RESET_REASON_COUNT,
-  };
-
   // Collection of pending registration requests. Keys are RegistrationInfo
   // instance, while values are pending registration requests to obtain a
   // registration ID for requesting application.
@@ -227,8 +217,7 @@ class GCMClientImpl : public GCMClient,
   void UpdateRegistrationCallback(bool success);
 
   // Callback for store operation where result does not matter.
-  void IgnoreWriteResultCallback(const std::string& operation_suffix_for_uma,
-                                 bool success);
+  void IgnoreWriteResultCallback(bool success);
 
   // Callback for destroying the GCM store.
   void DestroyStoreCallback(bool success);
@@ -245,9 +234,6 @@ class GCMClientImpl : public GCMClient,
   void OnUnregisterCompleted(scoped_refptr<RegistrationInfo> registration_info,
                              UnregistrationRequest::Status status);
 
-  // Completes the GCM store destroy request.
-  void OnGCMStoreDestroyed(bool success);
-
   // Handles incoming data message and dispatches it to observers of this class.
   void HandleIncomingMessage(const gcm::MCSMessage& message);
 
@@ -255,16 +241,14 @@ class GCMClientImpl : public GCMClient,
   // details in |data_message_stanza| and |message_data|.
   void HandleIncomingDataMessage(
       const std::string& app_id,
-      bool was_subtype,
       const mcs_proto::DataMessageStanza& data_message_stanza,
       MessageData& message_data);
 
   // Fires OnMessagesDeleted event on observers of this class, based on the
-  // details in |data_message_stanza| and |message_data|.
+  // details in `data_message_stanza`.
   void HandleIncomingDeletedMessages(
       const std::string& app_id,
-      const mcs_proto::DataMessageStanza& data_message_stanza,
-      MessageData& message_data);
+      const mcs_proto::DataMessageStanza& data_message_stanza);
 
   // Fires OnMessageSendError event on observers of this class, based on the
   // details in |data_message_stanza| and |message_data|.

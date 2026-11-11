@@ -116,7 +116,6 @@ class FakeGCMClient : public GCMClient {
                         const SendErrorDetails& send_error_details);
 
   base::ObserverList<Observer, /*check_empty=*/true> observers_;
-  std::string product_category_for_subtypes_;
   bool started_;
   StartMode start_mode_;
   StartModeOverridding start_mode_overridding_;
