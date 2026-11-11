@@ -29,4 +29,22 @@ enum SettingId {
   kCustomizeFonts = 114,
   kPageZoom = 115,
   kSplitViewDragAndDrop = 116,
+
+  // Security section (400-499).
+  kSecurity = 400,
+  kSafeBrowsing = 401,
+  kAlwaysUseSecureConnections = 402,
+  kPasswordLeakDetection = 403,
+  kSecureDns = 404,
+  kSecureDnsProvider = 405,
+  kSecureDnsCustomProvider = 406,
+  kOpenChromeOsSecureDnsSettings = 407,
+  kJavascriptOptimization = 408,
+  kSecurityKeys = 409,
+  kSecurityKeysPin = 410,
+  kSecurityKeysSignInData = 411,
+  kSecurityKeysFingerprints = 412,
+  kSecurityKeysReset = 413,
+  kManageCertificates = 414,
+  kAdvancedProtectionProgram = 415,
 };
