@@ -30,6 +30,7 @@ using ::syncer::test::AddUnknownFieldToProto;
 using ::syncer::test::HasUnknownField;
 
 constexpr EntitySuppressionHash kTestHash(0x12345);
+constexpr EntityConfirmationHash kTestConfirmationHash(0x6789A);
 
 AttributeValueHash CreateTestHash(uint8_t fill_value) {
   std::array<uint8_t, crypto::hash::kSha256Size> hash;
@@ -125,6 +126,63 @@ TEST(PersonalContextEntityMetadataSyncUtilTest,
   EXPECT_FALSE(AreEntitySuppressionSpecificsValid(specifics));
 }
 
+// Tests that converting an `EntityConfirmationHash` to specifics and back
+// preserves all data, and does not populate suppression fields.
+TEST(PersonalContextEntityMetadataSyncUtilTest,
+     ConfirmationRoundTripConversion) {
+  const base::Time creation_time =
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(1234567890));
+
+  sync_pb::AutofillEntitySuppressionSpecifics specifics =
+      CreateSpecificsFromEntityConfirmationHash(
+          "test-guid-1234", kTestConfirmationHash, creation_time,
+          /*base_specifics=*/{});
+
+  EXPECT_EQ(specifics.guid(), "test-guid-1234");
+  EXPECT_EQ(specifics.creation_time_windows_epoch_micros(), 1234567890);
+  EXPECT_EQ(specifics.confirmation().hash(), kTestConfirmationHash.value());
+  EXPECT_FALSE(specifics.has_suppression());
+  EXPECT_FALSE(specifics.has_entity_suppression_hash());
+  EXPECT_FALSE(specifics.has_entity_suppression_key());
+  EXPECT_TRUE(AreEntityConfirmationSpecificsValid(specifics));
+  EXPECT_FALSE(AreEntitySuppressionSpecificsValid(specifics));
+  EXPECT_EQ(CreateEntityConfirmationHashFromSpecifics(specifics),
+            kTestConfirmationHash);
+  EXPECT_EQ(CreateEntitySuppressionHashFromSpecifics(specifics), std::nullopt);
+  EXPECT_EQ(MigrateLegacySuppressionSpecificsIfNeeded(specifics), std::nullopt);
+}
+
+// Tests that specifics with a `confirmation` submessage missing `hash` are
+// considered invalid.
+TEST(PersonalContextEntityMetadataSyncUtilTest,
+     InvalidSpecificsEmptyConfirmationSubmessage) {
+  sync_pb::AutofillEntitySuppressionSpecifics specifics;
+  specifics.set_guid("test-guid-1234");
+  specifics.mutable_confirmation();
+
+  EXPECT_FALSE(AreEntityConfirmationSpecificsValid(specifics));
+}
+
+// Tests that `EntityData` is correctly created directly from an
+// `EntityConfirmationHash`.
+TEST(PersonalContextEntityMetadataSyncUtilTest,
+     CreateEntityDataFromEntityConfirmationHash) {
+  std::unique_ptr<syncer::EntityData> entity_data =
+      CreateEntityDataFromEntityConfirmationHash(
+          "test-guid-1234", kTestConfirmationHash, base::Time::Now(),
+          /*base_specifics=*/{});
+
+  ASSERT_NE(entity_data, nullptr);
+  EXPECT_EQ(entity_data->name, "test-guid-1234");
+  EXPECT_TRUE(entity_data->specifics.has_autofill_entity_suppression());
+  EXPECT_EQ(entity_data->specifics.autofill_entity_suppression().guid(),
+            "test-guid-1234");
+  EXPECT_EQ(entity_data->specifics.autofill_entity_suppression()
+                .confirmation()
+                .hash(),
+            kTestConfirmationHash.value());
+}
+
 // Tests that `CreateSpecificsFromEntitySuppressionHash` preserves unknown
 // fields from `base_specifics`.
 TEST(PersonalContextEntityMetadataSyncUtilTest,
@@ -152,7 +210,7 @@ TEST(PersonalContextEntityMetadataSyncUtilTest, CreateEntityData) {
                                                /*base_specifics=*/{});
 
   std::unique_ptr<syncer::EntityData> entity_data =
-      CreateEntityDataFromEntitySuppressionSpecifics(specifics);
+      CreateEntityDataFromSpecifics(specifics);
 
   ASSERT_NE(entity_data, nullptr);
   EXPECT_EQ(entity_data->name, "test-guid-1234");
@@ -196,22 +254,36 @@ TEST(PersonalContextEntityMetadataSyncUtilTest, InvalidSpecificsMissingKey) {
 }
 
 // Tests that `TrimAutofillEntitySuppressionSpecificsDataForCaching` clears all
-// supported fields.
+// supported fields while preserving unknown fields on both suppression and
+// confirmation specifics.
 TEST(PersonalContextEntityMetadataSyncUtilTest,
      TrimAutofillEntitySuppressionSpecificsDataForCaching) {
-  sync_pb::AutofillEntitySuppressionSpecifics specifics =
+  sync_pb::AutofillEntitySuppressionSpecifics suppression_specifics =
       CreateSpecificsFromEntitySuppressionHash("test-guid-1234", kTestHash,
                                                base::Time::Now(),
                                                /*base_specifics=*/{});
-  specifics.mutable_suppression()->set_hash(kTestHash.value());
-  EXPECT_EQ(TrimAutofillEntitySuppressionSpecificsDataForCaching(specifics)
+  EXPECT_EQ(TrimAutofillEntitySuppressionSpecificsDataForCaching(
+                suppression_specifics)
                 .ByteSizeLong(),
             0u);
 
-  specifics.mutable_confirmation()->set_hash(kTestHash.value());
-  EXPECT_EQ(TrimAutofillEntitySuppressionSpecificsDataForCaching(specifics)
+  sync_pb::AutofillEntitySuppressionSpecifics confirmation_specifics =
+      CreateSpecificsFromEntityConfirmationHash(
+          "test-guid-1234", kTestConfirmationHash, base::Time::Now(),
+          /*base_specifics=*/{});
+  EXPECT_EQ(TrimAutofillEntitySuppressionSpecificsDataForCaching(
+                confirmation_specifics)
                 .ByteSizeLong(),
             0u);
+
+  AddUnknownFieldToProto(*confirmation_specifics.mutable_confirmation(),
+                         "unknown_confirmation_field");
+  sync_pb::AutofillEntitySuppressionSpecifics trimmed_confirmation =
+      TrimAutofillEntitySuppressionSpecificsDataForCaching(
+          confirmation_specifics);
+  EXPECT_FALSE(trimmed_confirmation.confirmation().has_hash());
+  EXPECT_THAT(trimmed_confirmation.confirmation(),
+              HasUnknownField("unknown_confirmation_field"));
 }
 
 // TODO(crbug.com/501036619): Remove once legacy entries are no longer

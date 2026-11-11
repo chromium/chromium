@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -57,13 +58,35 @@ std::unique_ptr<syncer::EntityData> CreateEntityDataFromEntitySuppressionHash(
     EntitySuppressionHash suppression_hash,
     base::Time creation_time,
     const sync_pb::AutofillEntitySuppressionSpecifics& base_specifics) {
-  return CreateEntityDataFromEntitySuppressionSpecifics(
-      CreateSpecificsFromEntitySuppressionHash(guid, suppression_hash,
-                                               creation_time, base_specifics));
+  return CreateEntityDataFromSpecifics(CreateSpecificsFromEntitySuppressionHash(
+      guid, suppression_hash, creation_time, base_specifics));
 }
 
-std::unique_ptr<syncer::EntityData>
-CreateEntityDataFromEntitySuppressionSpecifics(
+sync_pb::AutofillEntitySuppressionSpecifics
+CreateSpecificsFromEntityConfirmationHash(
+    std::string_view guid,
+    EntityConfirmationHash confirmation_hash,
+    base::Time creation_time,
+    const sync_pb::AutofillEntitySuppressionSpecifics& base_specifics) {
+  sync_pb::AutofillEntitySuppressionSpecifics specifics = base_specifics;
+  specifics.set_guid(guid);
+  specifics.set_creation_time_windows_epoch_micros(
+      creation_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
+  specifics.mutable_confirmation()->set_hash(confirmation_hash.value());
+  return specifics;
+}
+
+std::unique_ptr<syncer::EntityData> CreateEntityDataFromEntityConfirmationHash(
+    std::string_view guid,
+    EntityConfirmationHash confirmation_hash,
+    base::Time creation_time,
+    const sync_pb::AutofillEntitySuppressionSpecifics& base_specifics) {
+  return CreateEntityDataFromSpecifics(
+      CreateSpecificsFromEntityConfirmationHash(guid, confirmation_hash,
+                                                creation_time, base_specifics));
+}
+
+std::unique_ptr<syncer::EntityData> CreateEntityDataFromSpecifics(
     const sync_pb::AutofillEntitySuppressionSpecifics& specifics) {
   auto entity_data = std::make_unique<syncer::EntityData>();
   entity_data->name = specifics.guid();
@@ -81,7 +104,6 @@ bool AreEntitySuppressionSpecificsValid(
     case sync_pb::AutofillEntitySuppressionSpecifics::kSuppression:
       return specifics.suppression().has_hash();
     case sync_pb::AutofillEntitySuppressionSpecifics::kConfirmation:
-      // TODO(crbug.com/578879216): Support confirmation entries.
       return false;
     case sync_pb::AutofillEntitySuppressionSpecifics::METADATA_ENTRY_NOT_SET:
       break;
@@ -119,6 +141,12 @@ bool AreEntitySuppressionSpecificsValid(
   }
 
   return true;
+}
+
+bool AreEntityConfirmationSpecificsValid(
+    const sync_pb::AutofillEntitySuppressionSpecifics& specifics) {
+  return !specifics.guid().empty() && specifics.has_confirmation() &&
+         specifics.confirmation().has_hash();
 }
 
 std::optional<sync_pb::AutofillEntitySuppressionSpecifics>
@@ -181,6 +209,14 @@ std::optional<EntitySuppressionHash> CreateEntitySuppressionHashFromSpecifics(
       .attribute_hashes = base::flat_map<AttributeType, AttributeValueHash>(
           std::move(attribute_hashes)),
   });
+}
+
+std::optional<EntityConfirmationHash> CreateEntityConfirmationHashFromSpecifics(
+    const sync_pb::AutofillEntitySuppressionSpecifics& specifics) {
+  if (!AreEntityConfirmationSpecificsValid(specifics)) {
+    return std::nullopt;
+  }
+  return EntityConfirmationHash(specifics.confirmation().hash());
 }
 
 // LINT.IfChange(TrimAutofillEntitySuppressionSpecificsDataForCaching)

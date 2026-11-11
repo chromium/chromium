@@ -1119,8 +1119,7 @@ TEST_F(PersonalContextEntityMetadataSyncBridgeTest,
 
   syncer::EntityChangeList remote_changes;
   remote_changes.push_back(syncer::EntityChange::CreateAdd(
-      "guid1", std::move(*CreateEntityDataFromEntitySuppressionSpecifics(
-                   legacy_specifics))));
+      "guid1", std::move(*CreateEntityDataFromSpecifics(legacy_specifics))));
 
   EXPECT_CALL(mock_processor(), Put).Times(0);
   EXPECT_CALL(observer(), OnSuppressionsChanged());
@@ -1148,8 +1147,7 @@ TEST_F(PersonalContextEntityMetadataSyncBridgeTest,
 
   syncer::EntityChangeList add_changes;
   add_changes.push_back(syncer::EntityChange::CreateAdd(
-      "guid1", std::move(*CreateEntityDataFromEntitySuppressionSpecifics(
-                   legacy_specifics))));
+      "guid1", std::move(*CreateEntityDataFromSpecifics(legacy_specifics))));
 
   EXPECT_CALL(mock_processor(), Put).Times(0);
   EXPECT_CALL(observer(), OnSuppressionsChanged());
@@ -1274,8 +1272,7 @@ TEST_F(PersonalContextEntityMetadataSyncBridgeTest,
 
   syncer::EntityChangeList remote_changes;
   remote_changes.push_back(syncer::EntityChange::CreateAdd(
-      "guid1", std::move(*CreateEntityDataFromEntitySuppressionSpecifics(
-                   legacy_specifics))));
+      "guid1", std::move(*CreateEntityDataFromSpecifics(legacy_specifics))));
 
   EXPECT_CALL(mock_processor(), Put).Times(0);
   EXPECT_CALL(observer(), OnSuppressionsChanged());
@@ -1304,8 +1301,7 @@ TEST_F(PersonalContextEntityMetadataSyncBridgeTest,
 
   syncer::EntityChangeList remote_changes;
   remote_changes.push_back(syncer::EntityChange::CreateAdd(
-      "guid1", std::move(*CreateEntityDataFromEntitySuppressionSpecifics(
-                   legacy_specifics))));
+      "guid1", std::move(*CreateEntityDataFromSpecifics(legacy_specifics))));
 
   EXPECT_CALL(mock_processor(), Put).Times(0);
   EXPECT_CALL(observer(), OnSuppressionsChanged());

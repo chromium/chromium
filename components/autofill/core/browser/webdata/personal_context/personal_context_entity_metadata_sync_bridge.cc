@@ -365,10 +365,9 @@ void PersonalContextEntityMetadataSyncBridge::WriteEntryToStoreAndSync(
     syncer::DataTypeStore::WriteBatch& batch) {
   batch.WriteData(specifics.guid(),
                   EncryptSuppressionSpecifics(specifics, *encryptor_));
-  change_processor()->Put(
-      specifics.guid(),
-      CreateEntityDataFromEntitySuppressionSpecifics(specifics),
-      batch.GetMetadataChangeList());
+  change_processor()->Put(specifics.guid(),
+                          CreateEntityDataFromSpecifics(specifics),
+                          batch.GetMetadataChangeList());
 }
 
 void PersonalContextEntityMetadataSyncBridge::DeleteEntryFromStoreAndSync(
@@ -565,7 +564,7 @@ PersonalContextEntityMetadataSyncBridge::CreateSuppressionEntityData(
   if (metadata.legacy_key) {
     *specifics.mutable_entity_suppression_key() = *metadata.legacy_key;
   }
-  return CreateEntityDataFromEntitySuppressionSpecifics(specifics);
+  return CreateEntityDataFromSpecifics(specifics);
 }
 
 std::unique_ptr<syncer::MutableDataBatch>

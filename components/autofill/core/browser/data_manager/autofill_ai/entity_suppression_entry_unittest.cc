@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_entry.h"
 
+#include <optional>
 #include <vector>
 
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
@@ -159,6 +160,146 @@ TEST(EntitySuppressionEntryTest, GetEntitySuppressionHash_MultipleAttributes) {
   EXPECT_EQ(GetEntitySuppressionHash(passport), EntitySuppressionHash(0xBF075));
   EXPECT_EQ(GetEntitySuppressionHash(passport_with_swapped_values),
             EntitySuppressionHash(0xBF075));
+}
+
+// Tests that the confirmation hash covers the entity type and all non-empty
+// attribute type names and normalized value hashes. Since hashes are synced,
+// they must not change.
+TEST(EntitySuppressionEntryTest, GetEntityConfirmationHash) {
+  EntityInstance passport = test::GetPassportEntityInstance(
+      test::PassportEntityOptions{.name = u"Jane Doe",
+                                  .number = u"P123456",
+                                  .country = nullptr,
+                                  .expiry_date = nullptr,
+                                  .issue_date = nullptr});
+  EntityInstance drivers_license = test::GetDriversLicenseEntityInstance(
+      test::DriversLicenseOptions{.name = u"Jane Doe",
+                                  .region = nullptr,
+                                  .number = u"P123456",
+                                  .expiration_date = nullptr,
+                                  .issue_date = nullptr});
+
+  // The leading 20 bits of
+  // SHA-256("Passport" + "Name" + SHA-256("jane doe") + "Number" +
+  //         SHA-256("p123456")).
+  EXPECT_EQ(GetEntityConfirmationHash(passport),
+            EntityConfirmationHash(0x42C17));
+  // The leading 20 bits of
+  // SHA-256("Driver's license" + "Name" + SHA-256("jane doe") + "Number" +
+  //         SHA-256("p123456")).
+  EXPECT_EQ(GetEntityConfirmationHash(drivers_license),
+            EntityConfirmationHash(0x96FC6));
+}
+
+// Tests that empty and whitespace-only attributes are skipped when computing
+// the confirmation hash.
+TEST(EntitySuppressionEntryTest,
+     GetEntityConfirmationHash_SkipsEmptyAndWhitespaceOnlyAttributes) {
+  EntityInstance passport = test::GetPassportEntityInstance(
+      test::PassportEntityOptions{.name = u"Jane Doe",
+                                  .number = u"P123456",
+                                  .country = nullptr,
+                                  .expiry_date = nullptr,
+                                  .issue_date = nullptr});
+  EntityInstance passport_with_empty_attributes =
+      test::GetPassportEntityInstance(
+          test::PassportEntityOptions{.name = u"Jane Doe",
+                                      .number = u"P123456",
+                                      .country = u"",
+                                      .expiry_date = u"",
+                                      .issue_date = u"   "});
+
+  EXPECT_NE(GetEntityConfirmationHash(passport), std::nullopt);
+  EXPECT_EQ(GetEntityConfirmationHash(passport),
+            GetEntityConfirmationHash(passport_with_empty_attributes));
+}
+
+// Tests that `GetEntityConfirmationHash()` returns `std::nullopt` if all
+// attributes are empty or whitespace-only after normalization.
+TEST(EntitySuppressionEntryTest,
+     GetEntityConfirmationHash_AllAttributesEmptyOrWhitespaceReturnsNullopt) {
+  EntityInstance passport = test::GetPassportEntityInstance(
+      test::PassportEntityOptions{.name = u"",
+                                  .number = u"   ",
+                                  .country = u"\t\n",
+                                  .expiry_date = nullptr,
+                                  .issue_date = nullptr});
+
+  EXPECT_EQ(GetEntityConfirmationHash(passport), std::nullopt);
+}
+
+// Tests that confirmation hashing normalizes case and whitespace while still
+// distinguishing punctuation, diacritic, and word-boundary differences.
+TEST(EntitySuppressionEntryTest,
+     GetEntityConfirmationHash_NormalizesCaseAndWhitespaceOnly) {
+  EntityInstance base_passport = test::GetPassportEntityInstance(
+      test::PassportEntityOptions{.name = u"Jane Doe",
+                                  .number = u"P123456",
+                                  .country = nullptr,
+                                  .expiry_date = nullptr,
+                                  .issue_date = nullptr});
+  EntityInstance case_and_whitespace_variant = test::GetPassportEntityInstance(
+      test::PassportEntityOptions{.name = u"  JANE   DOE\t",
+                                  .number = u" p123456 ",
+                                  .country = nullptr,
+                                  .expiry_date = nullptr,
+                                  .issue_date = nullptr});
+  EntityInstance diacritic_variant = test::GetPassportEntityInstance(
+      test::PassportEntityOptions{.name = u"Jané Doe",
+                                  .number = u"P123456",
+                                  .country = nullptr,
+                                  .expiry_date = nullptr,
+                                  .issue_date = nullptr});
+  EntityInstance punctuation_variant = test::GetPassportEntityInstance(
+      test::PassportEntityOptions{.name = u"Jane Doe",
+                                  .number = u"P-123456",
+                                  .country = nullptr,
+                                  .expiry_date = nullptr,
+                                  .issue_date = nullptr});
+  EntityInstance missing_space_variant = test::GetPassportEntityInstance(
+      test::PassportEntityOptions{.name = u"JaneDoe",
+                                  .number = u"P123456",
+                                  .country = nullptr,
+                                  .expiry_date = nullptr,
+                                  .issue_date = nullptr});
+
+  EXPECT_EQ(GetEntityConfirmationHash(base_passport),
+            GetEntityConfirmationHash(case_and_whitespace_variant));
+  EXPECT_NE(GetEntityConfirmationHash(base_passport),
+            GetEntityConfirmationHash(diacritic_variant));
+  EXPECT_NE(GetEntityConfirmationHash(base_passport),
+            GetEntityConfirmationHash(punctuation_variant));
+  EXPECT_NE(GetEntityConfirmationHash(base_passport),
+            GetEntityConfirmationHash(missing_space_variant));
+}
+
+// Tests that changing or swapping any attribute value changes the confirmation
+// hash.
+TEST(EntitySuppressionEntryTest,
+     GetEntityConfirmationHash_DistinguishesAttributeTypesAndValues) {
+  EntityInstance passport = test::GetPassportEntityInstance(
+      test::PassportEntityOptions{.name = u"Jane Doe",
+                                  .number = u"P123456",
+                                  .country = nullptr,
+                                  .expiry_date = nullptr,
+                                  .issue_date = nullptr});
+  EntityInstance passport_with_swapped_values = test::GetPassportEntityInstance(
+      test::PassportEntityOptions{.name = u"P123456",
+                                  .number = u"Jane Doe",
+                                  .country = nullptr,
+                                  .expiry_date = nullptr,
+                                  .issue_date = nullptr});
+  EntityInstance passport_with_country = test::GetPassportEntityInstance(
+      test::PassportEntityOptions{.name = u"Jane Doe",
+                                  .number = u"P123456",
+                                  .country = u"Sweden",
+                                  .expiry_date = nullptr,
+                                  .issue_date = nullptr});
+
+  EXPECT_NE(GetEntityConfirmationHash(passport),
+            GetEntityConfirmationHash(passport_with_swapped_values));
+  EXPECT_NE(GetEntityConfirmationHash(passport),
+            GetEntityConfirmationHash(passport_with_country));
 }
 
 }  // namespace

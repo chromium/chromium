@@ -7,6 +7,7 @@
 
 #include <array>
 #include <cstdint>
+#include <optional>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -47,10 +48,20 @@ std::vector<EntitySuppressionEntry> GetEntitySuppressionEntries(
 using EntitySuppressionHash =
     base::StrongAlias<struct EntitySuppressionHashTag, uint32_t>;
 
+// The leading 20 bits of a SHA-256 hash of a confirmed `EntityInstance`.
+using EntityConfirmationHash =
+    base::StrongAlias<struct EntityConfirmationHashTag, uint32_t>;
+
 // Returns the hash of the entity type and the attribute value hashes of
 // `entry`.
 EntitySuppressionHash GetEntitySuppressionHash(
     const EntitySuppressionEntry& entry);
+
+// Returns the hash of the entity type and all non-empty attribute types and
+// normalized value hashes of `entity`, or `std::nullopt` if `entity` has no
+// non-empty attributes after normalization.
+std::optional<EntityConfirmationHash> GetEntityConfirmationHash(
+    const EntityInstance& entity);
 
 }  // namespace autofill
 
