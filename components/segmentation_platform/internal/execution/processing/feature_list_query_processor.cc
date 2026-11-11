@@ -75,10 +75,9 @@ void FeatureListQueryProcessor::ProcessFeatureList(
 
   // Grab the metadata for all the features, which will be processed one type at
   // a time, before executing the model.
-  std::map<Data::DataType, base::flat_map<QueryProcessor::FeatureIndex, Data>>
-      data_to_process;
-  QueryProcessor::FeatureIndex in_index = 0;
-  QueryProcessor::FeatureIndex out_index = 0;
+  std::map<Data::DataType, base::flat_map<FeatureIndex, Data>> data_to_process;
+  FeatureIndex in_index = 0;
+  FeatureIndex out_index = 0;
 
   if (process_option == ProcessOption::kInputsOnly ||
       process_option == ProcessOption::kInputsAndOutputs) {
@@ -135,8 +134,7 @@ void FeatureListQueryProcessor::ProcessFeatureList(
 
 void FeatureListQueryProcessor::CreateProcessors(
     FeatureProcessorState& feature_processor_state,
-    std::map<Data::DataType,
-             base::flat_map<QueryProcessor::FeatureIndex, Data>>&&
+    std::map<Data::DataType, base::flat_map<FeatureIndex, Data>>&&
         data_to_process) {
   // Initialize a processors for each type of input features.
   UkmDataManager* ukm_manager = storage_service_->ukm_data_manager();
@@ -207,7 +205,7 @@ void FeatureListQueryProcessor::OnFeatureBatchProcessed(
     std::unique_ptr<QueryProcessor> feature_processor,
     bool is_input,
     base::WeakPtr<FeatureProcessorState> feature_processor_state,
-    QueryProcessor::IndexedTensors result) {
+    IndexedTensors result) {
   // Check for error state.
   if (feature_processor_state->error()) {
     FinishProcessingAndCleanup(*feature_processor_state);

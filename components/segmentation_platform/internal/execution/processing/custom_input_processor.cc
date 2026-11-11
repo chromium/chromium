@@ -175,7 +175,7 @@ template void CustomInputProcessor::OnGotProcessedValue(
     bool success,
     Tensor current_value);
 
-QueryProcessor::Tensor CustomInputProcessor::ProcessSingleCustomInput(
+Tensor CustomInputProcessor::ProcessSingleCustomInput(
     const proto::CustomInput& custom_input,
     FeatureProcessorState& feature_processor_state) {
   std::vector<ProcessedValue> tensor_result;

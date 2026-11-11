@@ -18,12 +18,6 @@ class FeatureProcessorState;
 // inference data.
 class QueryProcessor {
  public:
-  // TODO(ssid): Remove these indirections and replace all uses with the global
-  // types.
-  using Tensor = segmentation_platform::processing::Tensor;
-  using IndexedTensors = segmentation_platform::processing::IndexedTensors;
-  using FeatureIndex = segmentation_platform::processing::FeatureIndex;
-
   using QueryProcessorCallback = base::OnceCallback<void(IndexedTensors)>;
 
   // Processes the data and return the tensor values in |callback|.

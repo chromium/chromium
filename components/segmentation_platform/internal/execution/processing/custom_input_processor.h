@@ -63,7 +63,7 @@ class CustomInputProcessor : public QueryProcessor {
 
   // Helper function for parsing a single sync custom input and insert the
   // result along with the corresponding feature index.
-  QueryProcessor::Tensor ProcessSingleCustomInput(
+  Tensor ProcessSingleCustomInput(
       const proto::CustomInput& custom_input,
       FeatureProcessorState& feature_processor_state);
 

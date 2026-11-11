@@ -51,9 +51,8 @@ class SqlFeatureProcessorTest : public testing::Test {
 
   void ExpectQueryResult(
       SqlFeatureProcessor::QueryList&& data,
-      const base::flat_map<SqlFeatureProcessor::FeatureIndex, CustomSqlQuery>&
-          processed_queries,
-      const SqlFeatureProcessor::IndexedTensors& result) {
+      const base::flat_map<FeatureIndex, CustomSqlQuery>& processed_queries,
+      const IndexedTensors& result) {
     // Initialize the sql feature processor.
     std::unique_ptr<SqlFeatureProcessor> processor =
         std::make_unique<SqlFeatureProcessor>(std::move(data), clock_.Now(),
@@ -61,13 +60,13 @@ class SqlFeatureProcessorTest : public testing::Test {
                                               ukm_database_.get());
 
     EXPECT_CALL(*ukm_database_, RunReadOnlyQueries)
-        .WillOnce([&processed_queries, &result](
-                      const base::flat_map<SqlFeatureProcessor::FeatureIndex,
-                                           CustomSqlQuery>& queries,
-                      MockUkmDatabase::QueryCallback callback) {
-          EXPECT_EQ(processed_queries, queries);
-          std::move(callback).Run(result);
-        });
+        .WillOnce(
+            [&processed_queries, &result](
+                const base::flat_map<FeatureIndex, CustomSqlQuery>& queries,
+                MockUkmDatabase::QueryCallback callback) {
+              EXPECT_EQ(processed_queries, queries);
+              std::move(callback).Run(result);
+            });
 
     // Process the sql query.
     base::RunLoop loop;
@@ -82,9 +81,9 @@ class SqlFeatureProcessorTest : public testing::Test {
   void OnProcessingFinishedCallback(
       base::RepeatingClosure closure,
       bool expected_error,
-      const SqlFeatureProcessor::IndexedTensors& expected_result,
+      const IndexedTensors& expected_result,
       base::WeakPtr<FeatureProcessorState> feature_processor_state,
-      SqlFeatureProcessor::IndexedTensors result) {
+      IndexedTensors result) {
     EXPECT_EQ(expected_error, feature_processor_state->error());
     EXPECT_EQ(expected_result, result);
     std::move(closure).Run();
@@ -105,13 +104,12 @@ TEST_F(SqlFeatureProcessorTest, EmptyBindValues) {
   data.emplace(0, CreateSqlFeature(kSqlQuery, {}));
 
   // Construct the expected processed bind values based on the given data.
-  base::flat_map<SqlFeatureProcessor::FeatureIndex, CustomSqlQuery>
-      processed_queries;
+  base::flat_map<FeatureIndex, CustomSqlQuery> processed_queries;
   processed_queries[0] = CustomSqlQuery(kSqlQuery, {});
 
   // Construct a result to be returned when the correct processed queries are
   // sent.
-  SqlFeatureProcessor::IndexedTensors result;
+  IndexedTensors result;
   result[0] = {ProcessedValue(1), ProcessedValue(2), ProcessedValue(3)};
 
   ExpectQueryResult(std::move(data), processed_queries, result);
@@ -134,8 +132,7 @@ TEST_F(SqlFeatureProcessorTest, SingleSqlFeatureWithBindValues) {
   data.emplace(0, CreateSqlFeature(kSqlQuery, {custom_input1, custom_input2}));
 
   // Construct the expected processed bind values based on the given data.
-  base::flat_map<SqlFeatureProcessor::FeatureIndex, CustomSqlQuery>
-      processed_queries;
+  base::flat_map<FeatureIndex, CustomSqlQuery> processed_queries;
   processed_queries[0] =
       CustomSqlQuery(kSqlQuery, {ProcessedValue(clock_.Now()),
                                  ProcessedValue(static_cast<float>(1)),
@@ -143,7 +140,7 @@ TEST_F(SqlFeatureProcessorTest, SingleSqlFeatureWithBindValues) {
 
   // Construct a result to be returned when the correct processed queries are
   // sent.
-  SqlFeatureProcessor::IndexedTensors result;
+  IndexedTensors result;
   result[0] = {ProcessedValue(1), ProcessedValue(2), ProcessedValue(3)};
 
   ExpectQueryResult(std::move(data), processed_queries, result);
@@ -164,8 +161,7 @@ TEST_F(SqlFeatureProcessorTest, MultipleSqlFeatures) {
   data.emplace(2, CreateSqlFeature(kSqlQueryWithBindValue, {custom_input1}));
 
   // Construct the expected processed bind values based on the given data.
-  base::flat_map<SqlFeatureProcessor::FeatureIndex, CustomSqlQuery>
-      processed_queries;
+  base::flat_map<FeatureIndex, CustomSqlQuery> processed_queries;
   processed_queries[0] =
       CustomSqlQuery(kSqlQueryWithBindValue, {ProcessedValue(clock_.Now())});
   processed_queries[1] = CustomSqlQuery(kSqlQuery, {});
@@ -174,7 +170,7 @@ TEST_F(SqlFeatureProcessorTest, MultipleSqlFeatures) {
 
   // Construct a result to be returned when the correct processed queries are
   // sent.
-  SqlFeatureProcessor::IndexedTensors result;
+  IndexedTensors result;
   result[0] = {ProcessedValue(1), ProcessedValue(2), ProcessedValue(3)};
 
   ExpectQueryResult(std::move(data), processed_queries, result);

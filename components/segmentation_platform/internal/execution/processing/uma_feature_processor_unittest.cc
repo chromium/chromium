@@ -27,7 +27,6 @@
 #include "components/segmentation_platform/internal/execution/processing/feature_aggregator_impl.h"
 #include "components/segmentation_platform/internal/execution/processing/feature_list_query_processor.h"
 #include "components/segmentation_platform/internal/execution/processing/feature_processor_state.h"
-#include "components/segmentation_platform/internal/execution/processing/query_processor.h"
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
 #include "components/segmentation_platform/internal/mock_ukm_data_manager.h"
 #include "components/segmentation_platform/internal/proto/signal.pb.h"
@@ -184,7 +183,7 @@ class UmaFeatureProcessorTest : public testing::Test,
       feature_list.InitAndDisableFeature(
           features::kSegmentationPlatformUmaFromSqlDb);
     }
-    base::flat_map<QueryProcessor::FeatureIndex, Data> uma_features;
+    base::flat_map<FeatureIndex, Data> uma_features;
     for (int i = 0; i < metadata.input_features_size(); ++i) {
       ASSERT_TRUE(metadata.input_features(i).has_uma_feature());
       uma_features.emplace(std::make_pair(i, metadata.input_features(i)));
@@ -201,19 +200,18 @@ class UmaFeatureProcessorTest : public testing::Test,
         base::Days(1), proto::SegmentId::CROSS_DEVICE_USER_SEGMENT, nullptr,
         base::DoNothing());
     uma_processor->Process(
-        *feature_state, base::BindOnce(
-                            [](const std::vector<float>& expected,
-                               base::OnceClosure quit_closure,
-                               QueryProcessor::IndexedTensors result) {
-                              ASSERT_EQ(expected.size(), result.size());
-                              for (unsigned i = 0; i < expected.size(); ++i) {
-                                ASSERT_EQ(result[i].size(), 1u);
-                                EXPECT_NEAR(result[i][0].float_val, expected[i],
-                                            0.001);
-                              }
-                              std::move(quit_closure).Run();
-                            },
-                            expected, wait_to_process.QuitClosure()));
+        *feature_state,
+        base::BindOnce(
+            [](const std::vector<float>& expected,
+               base::OnceClosure quit_closure, IndexedTensors result) {
+              ASSERT_EQ(expected.size(), result.size());
+              for (unsigned i = 0; i < expected.size(); ++i) {
+                ASSERT_EQ(result[i].size(), 1u);
+                EXPECT_NEAR(result[i][0].float_val, expected[i], 0.001);
+              }
+              std::move(quit_closure).Run();
+            },
+            expected, wait_to_process.QuitClosure()));
     wait_to_process.Run();
     EXPECT_FALSE(feature_state->error());
   }

@@ -69,8 +69,7 @@ class FeatureProcessorState {
                        Data::DataType type);
 
   // Temporarily store indexed tensor results.
-  void AppendIndexedTensors(const QueryProcessor::IndexedTensors& result,
-                            bool is_input);
+  void AppendIndexedTensors(const IndexedTensors& result, bool is_input);
 
   // Format tensors and run callback.
   void OnFinishProcessing();
@@ -89,7 +88,7 @@ class FeatureProcessorState {
 
  private:
   // Format all indexed tensor results into final ordered tensor vector.
-  std::vector<float> MergeTensors(const QueryProcessor::IndexedTensors& tensor);
+  std::vector<float> MergeTensors(const IndexedTensors& tensor);
 
   // ID generation for feature processor state.
   const FeatureProcessorStateId id_;
@@ -103,8 +102,8 @@ class FeatureProcessorState {
   std::deque<std::unique_ptr<QueryProcessor>> out_processors_;
 
   // Feature processing results.
-  QueryProcessor::IndexedTensors input_tensor_;
-  QueryProcessor::IndexedTensors output_tensor_;
+  IndexedTensors input_tensor_;
+  IndexedTensors output_tensor_;
   bool error_{false};
 
   // Callback to return feature processing results to model execution manager.

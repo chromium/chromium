@@ -99,8 +99,7 @@ class FeatureListQueryProcessor {
   // function.
   void CreateProcessors(
       FeatureProcessorState& feature_processor_state,
-      std::map<Data::DataType,
-               base::flat_map<QueryProcessor::FeatureIndex, Data>>&&
+      std::map<Data::DataType, base::flat_map<FeatureIndex, Data>>&&
           data_to_process);
 
   // Called by ProcessBatch to initialize the processing after input features
@@ -115,7 +114,7 @@ class FeatureListQueryProcessor {
       std::unique_ptr<QueryProcessor> feature_processor,
       bool is_input,
       base::WeakPtr<FeatureProcessorState> feature_processor_state,
-      QueryProcessor::IndexedTensors result);
+      IndexedTensors result);
 
   // Helper function to create an UmaProcessor.
   std::unique_ptr<UmaFeatureProcessor> GetUmaFeatureProcessor(
