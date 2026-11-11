@@ -132,15 +132,20 @@ public class PaymentRequestPaymentAppUiSkipPreloadTest {
     @MediumTest
     @Feature({"Payments"})
     public void testPayViaDelayedSlowBobPay() throws TimeoutException {
+        // buy() preloads a second PaymentRequest that is never shown and logs an
+        // OtherAborted record when torn down, racing with assertExpected().
         HistogramWatcher watcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "PaymentRequest.Events2",
-                        Event2.REQUEST_METHOD_OTHER
-                                | Event2.HAD_INITIAL_FORM_OF_PAYMENT
-                                | Event2.SKIPPED_SHOW
-                                | Event2.SELECTED_OTHER
-                                | Event2.PAY_CLICKED
-                                | Event2.COMPLETED);
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "PaymentRequest.Events2",
+                                Event2.REQUEST_METHOD_OTHER
+                                        | Event2.HAD_INITIAL_FORM_OF_PAYMENT
+                                        | Event2.SKIPPED_SHOW
+                                        | Event2.SELECTED_OTHER
+                                        | Event2.PAY_CLICKED
+                                        | Event2.COMPLETED)
+                        .allowExtraRecords("PaymentRequest.Events2")
+                        .build();
 
         mPaymentRequestTestRule.addPaymentAppFactory(
                 "https://bobpay.test",
@@ -158,15 +163,20 @@ public class PaymentRequestPaymentAppUiSkipPreloadTest {
     @MediumTest
     @Feature({"Payments"})
     public void testTwoPaymentsAppsWithTheSamePaymentMethodName() throws TimeoutException {
+        // buy() preloads a second PaymentRequest that is never shown and logs an
+        // OtherAborted record when torn down, racing with assertExpected().
         HistogramWatcher watcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "PaymentRequest.Events2",
-                        Event2.REQUEST_METHOD_OTHER
-                                | Event2.HAD_INITIAL_FORM_OF_PAYMENT
-                                | Event2.SHOWN
-                                | Event2.SELECTED_OTHER
-                                | Event2.PAY_CLICKED
-                                | Event2.COMPLETED);
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "PaymentRequest.Events2",
+                                Event2.REQUEST_METHOD_OTHER
+                                        | Event2.HAD_INITIAL_FORM_OF_PAYMENT
+                                        | Event2.SHOWN
+                                        | Event2.SELECTED_OTHER
+                                        | Event2.PAY_CLICKED
+                                        | Event2.COMPLETED)
+                        .allowExtraRecords("PaymentRequest.Events2")
+                        .build();
 
         mPaymentRequestTestRule.addPaymentAppFactory(
                 "https://bobpay.test",
