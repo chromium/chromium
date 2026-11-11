@@ -10,6 +10,7 @@
 #include "base/base64.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/task/thread_pool.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -406,6 +407,48 @@ TEST_F(SecurePaymentConfirmationAppFactoryTest,
                                      caller_origin, _, _, _));
 
   secure_payment_confirmation_app_factory_->Create(mock_delegate->GetWeakPtr());
+}
+
+// Test that if SecurePaymentConfirmationAppFactory is destroyed while
+// GetMatchingCredentials is pending, and the GetMatchingCredentials callback is
+// subsequently destroyed on a background thread, it does not crash or violate
+// WebContentsObserver sequence checks.
+TEST_F(SecurePaymentConfirmationAppFactoryTest,
+       DestroyedWhileGetMatchingCredentialsPending) {
+  auto method_data = mojom::PaymentMethodData::New();
+  method_data->supported_method = "secure-payment-confirmation";
+  method_data->secure_payment_confirmation =
+      CreateSecurePaymentConfirmationRequest();
+  url::Origin caller_origin = url::Origin::Create(GURL("https://site.example"));
+
+  std::unique_ptr<MockPaymentAppFactoryDelegate> mock_delegate =
+      CreateMockDelegate(std::move(method_data));
+  EXPECT_CALL(*mock_delegate, GetFrameSecurityOrigin())
+      .WillRepeatedly(ReturnRef(caller_origin));
+
+  SecurePaymentConfirmationCredentialFinder::
+      SecurePaymentConfirmationCredentialFinderCallback result_callback;
+  EXPECT_CALL(*mock_credential_finder_, GetMatchingCredentials)
+      .WillOnce(MoveArg<5>(&result_callback));
+
+  secure_payment_confirmation_app_factory_->Create(mock_delegate->GetWeakPtr());
+  ASSERT_TRUE(result_callback);
+
+  mock_credential_finder_ = nullptr;
+  secure_payment_confirmation_app_factory_.reset();
+
+  base::RunLoop run_loop;
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](SecurePaymentConfirmationCredentialFinder::
+                 SecurePaymentConfirmationCredentialFinderCallback callback,
+             base::OnceClosure quit_closure) {
+            callback.Reset();
+            std::move(quit_closure).Run();
+          },
+          std::move(result_callback), run_loop.QuitClosure()));
+  run_loop.Run();
 }
 
 // Test that the browser bound key is retrieved.

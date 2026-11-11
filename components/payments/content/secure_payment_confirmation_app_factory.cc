@@ -67,23 +67,6 @@ struct IconInfo {
   SkBitmap icon;
 };
 
-// Handles the download of a given IconInfo; copying the downloaded bitmap into
-// the IconInfo and notifying the BarrierClosure.
-void DidDownloadIcon(IconInfo* icon_info,
-                     base::OnceClosure done_closure,
-                     int request_id,
-                     int unused_http_status_code,
-                     const GURL& unused_image_url,
-                     const std::vector<SkBitmap>& bitmaps,
-                     const std::vector<gfx::Size>& unused_sizes) {
-  CHECK(icon_info);
-  bool has_icon = icon_info->request_id.has_value() &&
-                  icon_info->request_id.value() == request_id &&
-                  !bitmaps.empty();
-  icon_info->icon = has_icon ? bitmaps.front() : SkBitmap();
-  std::move(done_closure).Run();
-}
-
 // A helper that waits for the PaymentRequestSpec to be initialized and then
 // runs a callback.
 class SpecWaiter : public InitializationTask::Observer {
@@ -154,6 +137,29 @@ struct SecurePaymentConfirmationAppFactory::Request
   Request(const Request& other) = delete;
   Request& operator=(const Request& other) = delete;
 
+  // Handles the download of a given IconInfo; copying the downloaded bitmap
+  // into the IconInfo and notifying the BarrierClosure.
+  //
+  // `icon_info` must point into this Request. This is a member function so
+  // that binding it with a WeakPtr<Request> drops the callback rather than
+  // writing through a dangling `icon_info` if the Request dies.
+  void DidDownloadIcon(IconInfo* icon_info,
+                       base::OnceClosure done_closure,
+                       int request_id,
+                       int unused_http_status_code,
+                       const GURL& unused_image_url,
+                       const std::vector<SkBitmap>& bitmaps,
+                       const std::vector<gfx::Size>& unused_sizes) {
+    CHECK(icon_info == &payment_instrument_icon_info ||
+          std::ranges::contains(payment_entities_logos_infos, icon_info,
+                                [](const IconInfo& info) { return &info; }));
+    bool has_icon = icon_info->request_id.has_value() &&
+                    icon_info->request_id.value() == request_id &&
+                    !bitmaps.empty();
+    icon_info->icon = has_icon ? bitmaps.front() : SkBitmap();
+    std::move(done_closure).Run();
+  }
+
   // WebContentsObserver:
   void RenderFrameDeleted(
       content::RenderFrameHost* render_frame_host) override {
@@ -174,23 +180,30 @@ struct SecurePaymentConfirmationAppFactory::Request
   // If set, the factory will wait for the spec to be initialized before
   // finalizing the app creation.
   std::unique_ptr<SpecWaiter> spec_waiter;
+
+  base::WeakPtrFactory<Request> weak_ptr_factory{this};
 };
 
 void SecurePaymentConfirmationAppFactory::
     OnIsUserVerifyingPlatformAuthenticatorAvailable(
-        std::unique_ptr<Request> request,
+        base::WeakPtr<Request> weak_request,
         bool is_available) {
-  if (!request->delegate || !request->delegate->GetWebContents()) {
+  if (!weak_request) {
+    return;
+  }
+
+  if (!weak_request->delegate || !weak_request->delegate->GetWebContents()) {
     VLOG(1) << "SecurePaymentConfirmationAppFactory::"
                "OnIsUserVerifyingPlatformAuthenticatorAvailable: No delegate "
                "or webcontents";
+    request_.reset();
     return;
   }
 
   base::UmaHistogramBoolean(
       kUserVerifyingPlatformAuthenticatorAvailableHistogramName, is_available);
 
-  if (!request->authenticator ||
+  if (!weak_request->authenticator ||
       (!is_available && !base::FeatureList::IsEnabled(
                             ::features::kSecurePaymentConfirmationDebug))) {
     VLOG(1) << "SecurePaymentConfirmationAppFactory::"
@@ -200,20 +213,19 @@ void SecurePaymentConfirmationAppFactory::
     // Skip getting matching credential IDs since the authenticator is not
     // available.
     OnRetrievedCredentials(
-        std::move(request),
+        weak_request,
         std::vector<std::unique_ptr<SecurePaymentConfirmationCredential>>());
     return;
   }
 
-  auto* request_ptr = request.get();
   credential_finder_->GetMatchingCredentials(
-      request_ptr->mojo_request->credential_ids,
-      request_ptr->mojo_request->rp_id,
-      request_ptr->delegate->GetFrameSecurityOrigin(),
-      request_ptr->authenticator.get(), request_ptr->web_data_service,
+      weak_request->mojo_request->credential_ids,
+      weak_request->mojo_request->rp_id,
+      weak_request->delegate->GetFrameSecurityOrigin(),
+      weak_request->authenticator.get(), weak_request->web_data_service,
       base::BindOnce(
           &SecurePaymentConfirmationAppFactory::OnRetrievedCredentials,
-          weak_ptr_factory_.GetWeakPtr(), std::move(request)));
+          weak_ptr_factory_.GetWeakPtr(), weak_request));
 }
 
 SecurePaymentConfirmationAppFactory::SecurePaymentConfirmationAppFactory()
@@ -281,13 +293,14 @@ void SecurePaymentConfirmationAppFactory::Create(
         return;
       }
       auto* authenticator_pointer = authenticator.get();
+      request_ = std::make_unique<Request>(delegate, web_data_service,
+                                           std::move(spc_request),
+                                           std::move(authenticator));
       authenticator_pointer->IsUserVerifyingPlatformAuthenticatorAvailable(
           base::BindOnce(&SecurePaymentConfirmationAppFactory::
                              OnIsUserVerifyingPlatformAuthenticatorAvailable,
                          weak_ptr_factory_.GetWeakPtr(),
-                         std::make_unique<Request>(delegate, web_data_service,
-                                                   std::move(spc_request),
-                                                   std::move(authenticator))));
+                         request_->weak_ptr_factory.GetWeakPtr()));
       return;
     }
   }
@@ -307,14 +320,19 @@ void SecurePaymentConfirmationAppFactory::SetCredentialFinderForTesting(
 }
 
 void SecurePaymentConfirmationAppFactory::OnRetrievedCredentials(
-    std::unique_ptr<Request> request,
+    base::WeakPtr<Request> weak_request,
     std::optional<
         std::vector<std::unique_ptr<SecurePaymentConfirmationCredential>>>
         credentials) {
-  if (!request->delegate || !request->delegate->GetWebContents()) {
+  if (!weak_request) {
+    return;
+  }
+
+  if (!weak_request->delegate || !weak_request->delegate->GetWebContents()) {
     VLOG(1)
         << "SecurePaymentConfirmationAppFactory::OnRetrievedCredentials: No "
            "delegate or webcontents";
+    request_.reset();
     return;
   }
 
@@ -322,14 +340,15 @@ void SecurePaymentConfirmationAppFactory::OnRetrievedCredentials(
     VLOG(1)
         << "SecurePaymentConfirmationAppFactory::OnRetrievedCredentials: No "
            "credentials";
-    request->delegate->OnDoneCreatingPaymentApps();
+    std::unique_ptr<Request> scoped_request = std::move(request_);
+    scoped_request->delegate->OnDoneCreatingPaymentApps();
     return;
   }
 
   // Regardless of whether any credentials match, canMakePayment() and
   // hasEnrolledInstrument() should return true for SPC when a user-verifying
   // platform authenticator device is available.
-  request->delegate->SetCanMakePaymentEvenWithoutApps();
+  weak_request->delegate->SetCanMakePaymentEvenWithoutApps();
 
   // For the pilot phase, arbitrarily use the first matching credential.
   // TODO(crbug.com/40142088): Handle multiple credentials.
@@ -339,7 +358,7 @@ void SecurePaymentConfirmationAppFactory::OnRetrievedCredentials(
             << std::string(credentials->front()->credential_id.begin(),
                            credentials->front()->credential_id.end());
 
-    request->credential = std::move(credentials->front());
+    weak_request->credential = std::move(credentials->front());
   }
 
   // Download the icons for the payment instrument icon and the payment entity
@@ -350,18 +369,17 @@ void SecurePaymentConfirmationAppFactory::OnRetrievedCredentials(
   // Perform these downloads regardless of whether there is a matching
   // credential, so that the hosting server(s) cannot detect presence of the
   // credential on file.
-  auto* request_ptr = request.get();
-
-  request_ptr->payment_instrument_icon_info = {
-      .url = request_ptr->mojo_request->instrument->icon};
+  weak_request->payment_instrument_icon_info = {
+      .url = weak_request->mojo_request->instrument->icon};
   for (const mojom::PaymentEntityLogoPtr& logo :
-       request_ptr->mojo_request->payment_entities_logos) {
-    request_ptr->payment_entities_logos_infos.push_back({.url = logo->url});
+       weak_request->mojo_request->payment_entities_logos) {
+    weak_request->payment_entities_logos_infos.push_back({.url = logo->url});
   }
 
-  base::WeakPtr<PaymentRequestSpec> spec = request_ptr->delegate->GetSpec();
+  base::WeakPtr<PaymentRequestSpec> spec = weak_request->delegate->GetSpec();
   if (!spec) {
-    request->delegate->OnDoneCreatingPaymentApps();
+    std::unique_ptr<Request> scoped_request = std::move(request_);
+    scoped_request->delegate->OnDoneCreatingPaymentApps();
     return;
   }
 
@@ -369,50 +387,55 @@ void SecurePaymentConfirmationAppFactory::OnRetrievedCredentials(
   // * one payment instrument icon download, and
   // * one waiting for spec initialization, plus
   // * some number of payment entity logos.
-  const size_t num_tasks = 2 + request_ptr->payment_entities_logos_infos.size();
+  const size_t num_tasks =
+      2 + weak_request->payment_entities_logos_infos.size();
   auto barrier_closure = base::BarrierClosure(
       num_tasks,
       base::BindOnce(&SecurePaymentConfirmationAppFactory::DidDownloadAllIcons,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(request)));
+                     weak_ptr_factory_.GetWeakPtr(), weak_request));
 
-  request_ptr->spec_waiter =
+  weak_request->spec_waiter =
       std::make_unique<SpecWaiter>(spec, barrier_closure);
 
   gfx::Size preferred_size(kSecurePaymentConfirmationIconMaximumWidthPx,
                            kSecurePaymentConfirmationIconHeightPx);
 
-  request_ptr->payment_instrument_icon_info.request_id =
-      request_ptr->web_contents()->DownloadImageInFrame(
-          request_ptr->delegate->GetInitiatorRenderFrameHostId(),
-          request_ptr->payment_instrument_icon_info.url,  // source URL
-          false,                                          // is_favicon
+  weak_request->payment_instrument_icon_info.request_id =
+      weak_request->web_contents()->DownloadImageInFrame(
+          weak_request->delegate->GetInitiatorRenderFrameHostId(),
+          weak_request->payment_instrument_icon_info.url,  // source URL
+          false,                                           // is_favicon
           preferred_size,
           0,      // no max size
           false,  // normal cache policy (a.k.a. do not bypass cache)
-          base::BindOnce(&DidDownloadIcon,
-                         &request_ptr->payment_instrument_icon_info,
+          base::BindOnce(&Request::DidDownloadIcon, weak_request,
+                         &weak_request->payment_instrument_icon_info,
                          barrier_closure));
 
-  for (IconInfo& info : request_ptr->payment_entities_logos_infos) {
+  for (IconInfo& info : weak_request->payment_entities_logos_infos) {
     if (info.url.is_empty()) {
       // This IconInfo is a placeholder value. No download is necessary.
       barrier_closure.Run();
     } else {
-      info.request_id = request_ptr->web_contents()->DownloadImageInFrame(
-          request_ptr->delegate->GetInitiatorRenderFrameHostId(),
+      info.request_id = weak_request->web_contents()->DownloadImageInFrame(
+          weak_request->delegate->GetInitiatorRenderFrameHostId(),
           info.url,  // source URL
           false,     // is_favicon
           preferred_size,
           0,      // no max size
           false,  // normal cache policy (a.k.a. do not bypass cache)
-          base::BindOnce(&DidDownloadIcon, &info, barrier_closure));
+          base::BindOnce(&Request::DidDownloadIcon, weak_request, &info,
+                         barrier_closure));
     }
   }
 }
 
 void SecurePaymentConfirmationAppFactory::DidDownloadAllIcons(
-    std::unique_ptr<Request> request) {
-  DCHECK(request);
+    base::WeakPtr<Request> weak_request) {
+  if (!weak_request) {
+    return;
+  }
+  std::unique_ptr<Request> request = std::move(request_);
   if (!request->delegate || !request->web_contents())
     return;
 

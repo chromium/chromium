@@ -41,11 +41,11 @@ class SecurePaymentConfirmationAppFactory : public PaymentAppFactory {
   struct Request;
 
   void OnIsUserVerifyingPlatformAuthenticatorAvailable(
-      std::unique_ptr<Request> request,
+      base::WeakPtr<Request> weak_request,
       bool is_available);
 
   void OnRetrievedCredentials(
-      std::unique_ptr<Request> request,
+      base::WeakPtr<Request> weak_request,
       std::optional<
           std::vector<std::unique_ptr<SecurePaymentConfirmationCredential>>>
           credentials);
@@ -56,11 +56,13 @@ class SecurePaymentConfirmationAppFactory : public PaymentAppFactory {
 
   // Called once all icons are downloaded and their respective SkBitmaps have
   // been set into the Request.
-  void DidDownloadAllIcons(std::unique_ptr<Request> request);
+  void DidDownloadAllIcons(base::WeakPtr<Request> weak_request);
 
   scoped_refptr<BrowserBoundKeyStore> browser_bound_key_store_for_testing_;
 
   std::unique_ptr<SecurePaymentConfirmationCredentialFinder> credential_finder_;
+
+  std::unique_ptr<Request> request_;
 
   base::WeakPtrFactory<SecurePaymentConfirmationAppFactory> weak_ptr_factory_{
       this};
