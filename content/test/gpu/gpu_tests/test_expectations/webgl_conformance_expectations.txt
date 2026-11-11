@@ -526,8 +526,6 @@ crbug.com/354627705 [ mac amd-0x7340 angle-metal ] conformance/extensions/webgl-
 ## Apple M2 ##
 
 crbug.com/537387984 [ mac apple-angle-metal-renderer:-apple-m2 asan ] conformance/glsl/misc/shader-with-for-loop.html [ Slow ]
-crbug.com/527353878 [ mac apple-angle-metal-renderer:-apple-m2 asan ] conformance/extensions/khr-parallel-shader-compile.html [ RetryOnFailure ]
-crbug.com/564887537 [ mac apple-angle-metal-renderer:-apple-m2 asan ] WebglExtension_ANGLE_instanced_arrays [ RetryOnFailure ]
 
 ####################
 # Linux failures   #
@@ -663,7 +661,6 @@ crbug.com/541251909 [ linux amd display-server-wayland ] conformance/extensions/
 crbug.com/577119296 [ linux intel-0x4680 display-server-wayland angle-opengles ] WebglExtension_EXT_shader_texture_lod [ Failure ]
 crbug.com/577119296 [ linux intel-0x4680 display-server-wayland ] conformance/extensions/ext-sRGB.html [ Failure ]
 crbug.com/563391402 [ linux nvidia-0x2783 display-server-wayland ] WebglExtension_WEBGL_draw_buffers [ Failure ]
-crbug.com/563391402 [ linux nvidia-0x2783 display-server-wayland ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
 crbug.com/563391402 [ linux nvidia-0x2783 display-server-wayland ] conformance/glsl/bugs/vector-matrix-constructor-scalarization.html [ Failure ]
 crbug.com/563391402 [ linux nvidia-0x2783 display-server-wayland ] conformance/rendering/draw-arrays-out-of-bounds.html [ Failure ]
 
