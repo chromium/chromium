@@ -515,6 +515,15 @@ void TipsNotificationClient::MaybeLogDismissedNotification() {
 
 void TipsNotificationClient::OnGetDeliveredNotifications(
     NSArray<UNNotification*>* notifications) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Multiple foreground checks can enqueue overlapping callbacks before
+  // `kTipsNotificationsLastTriggered` is cleared.
+  const PrefService::Preference* last_triggered =
+      local_state_->FindPreference(kTipsNotificationsLastTriggered);
+  if (last_triggered->IsDefaultValue()) {
+    return;
+  }
+
   for (UNNotification* notification in notifications) {
     if ([notification.request.identifier isEqualToString:kTipsNotificationId]) {
       return;
@@ -524,8 +533,8 @@ void TipsNotificationClient::OnGetDeliveredNotifications(
   int dismiss_count =
       local_state_->GetInteger(kTipsNotificationsDismissCount) + 1;
   local_state_->SetInteger(kTipsNotificationsDismissCount, dismiss_count);
-  TipsNotificationType type = static_cast<TipsNotificationType>(
-      local_state_->GetInteger(kTipsNotificationsLastTriggered));
+  TipsNotificationType type =
+      static_cast<TipsNotificationType>(last_triggered->GetValue()->GetInt());
   const char* dismissed_histogram =
       CanSendReactivation() ? "IOS.Notifications.Tips.Proactive.Dismissed"
                             : "IOS.Notifications.Tips.Dismissed";

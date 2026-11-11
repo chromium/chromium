@@ -7,10 +7,12 @@
 #import <UserNotifications/UserNotifications.h>
 
 #import "base/functional/callback_helpers.h"
+#import "base/task/sequenced_task_runner.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/scoped_mock_clock_override.h"
 #import "base/test/simple_test_clock.h"
+#import "base/test/test_future.h"
 #import "base/threading/thread_restrictions.h"
 #import "base/values.h"
 #import "components/feature_engagement/public/event_constants.h"
@@ -877,4 +879,35 @@ TEST_F(TipsNotificationClientTest, ClearInvalidPendingNotification) {
   SimulateForegroundingApp();
 
   EXPECT_OCMOCK_VERIFY(mock_notification_center_);
+}
+
+// Tests that overlapping foreground checks only log a dismissed notification
+// once and do not crash after `kTipsNotificationsLastTriggered` is cleared.
+TEST_F(TipsNotificationClientTest, OverlappingDismissedNotificationChecks) {
+  SetSentNotifications(TipsNotificationsTypesOrder(false));
+  PrefService* local_state = GetApplicationContext()->GetLocalState();
+  local_state->SetInteger(kTipsNotificationsLastTriggered,
+                          static_cast<int>(TipsNotificationType::kWhatsNew));
+  StubGetPendingRequests(nil);
+  StubGetDeliveredNotifications(nil);
+  RejectAllNotificationRequests();
+
+  base::test::TestFuture<void> future_1;
+  base::test::TestFuture<void> future_2;
+  client_->OnSceneActiveForegroundBrowserReady(future_1.GetCallback());
+  client_->OnSceneActiveForegroundBrowserReady(future_2.GetCallback());
+  EXPECT_TRUE(future_1.Wait());
+  EXPECT_TRUE(future_2.Wait());
+
+  // Wait for both `OnGetDeliveredNotifications` tasks posted during
+  // `OnPendingRequestFound` to finish on the current sequence.
+  base::test::TestFuture<void> delivered_future;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, delivered_future.GetCallback());
+  EXPECT_TRUE(delivered_future.Wait());
+
+  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
+  histogram_tester_.ExpectUniqueSample("IOS.Notifications.Tips.Dismissed",
+                                       TipsNotificationType::kWhatsNew, 1);
+  EXPECT_EQ(local_state->GetInteger(kTipsNotificationsDismissCount), 1);
 }
