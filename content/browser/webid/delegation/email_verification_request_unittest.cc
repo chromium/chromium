@@ -1463,51 +1463,45 @@ INSTANTIATE_TEST_SUITE_P(
                       std::make_pair("iss= issuer.example.com", false),
                       std::make_pair("iss=issuer%2Eexample.com", false)));
 
-// Tests serve the issuer on an ephemeral port, so a port is allowed when
-// kFedCmPreservePortsForTesting is enabled, but nothing else is.
-TEST_F(EmailVerificationRequestTest, DnsRecordAllowsPortWhenPreservingPorts) {
+// `kFedCmPreservePortsForTesting` used to let the record name a port. It no
+// longer does: the identifier has to be a bare host name whether or not the
+// flag is on.
+TEST_F(EmailVerificationRequestTest, DnsRecordRejectsPortWhenPreservingPorts) {
   base::test::ScopedFeatureList feature_list(
       features::kFedCmPreservePortsForTesting);
   NavigateAndCommit(GURL("https://rp.example.com"));
 
-  for (const auto& [record, accepted] :
-       {std::make_pair("iss=issuer.example.com:8443", true),
-        std::make_pair("iss=issuer.example.com:8443/path", false),
-        std::make_pair("iss=user@issuer.example.com:8443", false),
-        std::make_pair("iss=Issuer.example.com:8443", false)}) {
-    SCOPED_TRACE(record);
-    auto mock_dns_request_ptr = std::make_unique<NiceMock<MockDnsRequest>>();
-    NiceMock<MockDnsRequest>* mock_dns_request = mock_dns_request_ptr.get();
-    auto mock_network_manager_ptr =
-        std::make_unique<NiceMock<MockEmailVerifierNetworkRequestManager>>();
-    NiceMock<MockEmailVerifierNetworkRequestManager>* mock_network_manager =
-        mock_network_manager_ptr.get();
-    EmailVerificationRequest email_verification_request(
-        std::move(mock_network_manager_ptr),
-        std::make_unique<NiceMock<MockIdpNetworkRequestManager>>(),
-        std::move(mock_dns_request_ptr),
-        static_cast<RenderFrameHostImpl&>(*main_rfh()));
+  auto mock_dns_request_ptr = std::make_unique<NiceMock<MockDnsRequest>>();
+  NiceMock<MockDnsRequest>* mock_dns_request = mock_dns_request_ptr.get();
+  auto mock_network_manager_ptr =
+      std::make_unique<NiceMock<MockEmailVerifierNetworkRequestManager>>();
+  NiceMock<MockEmailVerifierNetworkRequestManager>* mock_network_manager =
+      mock_network_manager_ptr.get();
+  EmailVerificationRequest email_verification_request(
+      std::move(mock_network_manager_ptr),
+      std::make_unique<NiceMock<MockIdpNetworkRequestManager>>(),
+      std::move(mock_dns_request_ptr),
+      static_cast<RenderFrameHostImpl&>(*main_rfh()));
 
-    EXPECT_CALL(*mock_dns_request, SendRequest(_, _))
-        .WillOnce(WithArgs<1>([&](DnsRequest::DnsRequestCallback callback) {
-          std::move(callback).Run(std::vector<std::string>{record});
-        }));
-    EXPECT_CALL(*mock_network_manager,
-                FetchWellKnown(GURL("https://issuer.example.com:8443"), _))
-        .Times(accepted ? 1 : 0);
+  EXPECT_CALL(*mock_dns_request,
+              SendRequest("_email-verification.example.com", _))
+      .WillOnce(WithArgs<1>([&](DnsRequest::DnsRequestCallback callback) {
+        std::move(callback).Run(
+            std::vector<std::string>{"iss=issuer.example.com:8443"});
+      }));
+  EXPECT_CALL(*mock_network_manager, FetchWellKnown).Times(0);
 
-    base::test::TestFuture<void> on_dns_resolved;
-    base::test::TestFuture<std::optional<EmailVerifier::Result>,
-                           blink::mojom::EmailVerificationRequestResult,
-                           base::TimeDelta>
-        future;
-    email_verification_request.CheckIfVerifiable("test@example.com",
-                                                 on_dns_resolved.GetCallback(),
-                                                 future.GetCallback());
+  base::test::TestFuture<void> on_dns_resolved;
+  base::test::TestFuture<std::optional<EmailVerifier::Result>,
+                         blink::mojom::EmailVerificationRequestResult,
+                         base::TimeDelta>
+      future;
+  email_verification_request.CheckIfVerifiable(
+      "test@example.com", on_dns_resolved.GetCallback(), future.GetCallback());
 
-    EXPECT_EQ(on_dns_resolved.IsReady(), accepted);
-    EXPECT_EQ(future.IsReady(), !accepted);
-  }
+  EXPECT_FALSE(on_dns_resolved.IsReady());
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_EQ(future.Get<1>(), EmailVerificationRequestResult::kDnsInvalidRecord);
 }
 
 TEST_F(EmailVerificationRequestTest, WellKnownHttpNotFound) {

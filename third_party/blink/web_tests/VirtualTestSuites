@@ -1114,7 +1114,7 @@
     ],
     "exclusive_tests": "ALL",
     "args": [
-      "--enable-features=EmailVerificationProtocol,FedCmPreservePortsForTesting",
+      "--enable-features=EmailVerificationProtocol",
       "--dns-txt-resolver-url-prefix=https://web-platform.test:8444/fedcm/support/delegation-dns.py?name="
     ],
     "expires": "Feb 1, 2027"

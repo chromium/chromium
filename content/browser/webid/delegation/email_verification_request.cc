@@ -22,7 +22,6 @@
 #include "content/browser/webid/delegation/evt_verifier.h"
 #include "content/browser/webid/delegation/jwt_signer.h"
 #include "content/browser/webid/delegation/sd_jwt.h"
-#include "content/browser/webid/flags.h"
 #include "content/browser/webid/mappers.h"
 #include "content/browser/webid/webid_utils.h"
 #include "content/public/browser/browser_context.h"
@@ -371,15 +370,10 @@ void EmailVerificationRequest::OnDnsRequestComplete(
   // Reject anything that is not exactly a canonical host, e.g. one with a
   // port, path, query, userinfo or uppercase letters, rather than letting GURL
   // normalize it into a different identifier.
-  // Tests serve the issuer on an ephemeral port, so a port is allowed there.
   const std::string issuer_spec = base::StrCat({"https://", iss});
   GURL issuer(issuer_spec);
   url::Origin issuer_origin = url::Origin::Create(issuer);
-  const bool is_valid_issuer = IsPreservePortsForTestingEnabled()
-                                   ? (!issuer_origin.opaque() &&
-                                      issuer_origin.Serialize() == issuer_spec)
-                                   : (issuer_origin.host() == iss);
-  if (!is_valid_issuer) {
+  if (issuer_origin.host() != iss) {
     CompleteIsVerifiableRequest(
         std::move(callback), std::nullopt,
         EmailVerificationRequestResult::kDnsInvalidRecord);
