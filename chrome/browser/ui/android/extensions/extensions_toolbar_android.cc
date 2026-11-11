@@ -4,12 +4,15 @@
 
 #include "chrome/browser/ui/android/extensions/extensions_toolbar_android.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <utility>
 
 #include "base/android/jni_string.h"
 #include "base/containers/span.h"
+#include "base/functional/bind.h"
 #include "base/notimplemented.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/extensions/extension_view_host.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
@@ -183,8 +186,12 @@ void ExtensionsToolbarAndroid::OnActionAdded(
 void ExtensionsToolbarAndroid::OnActionRemoved(
     const ToolbarActionsModel::ActionId& action_id) {
   icon_subscriptions_.erase(action_id);
-  Java_ExtensionsToolbarBridge_onActionRemoved(AttachCurrentThread(),
-                                               java_object_, action_id);
+  // Post UI removal asynchronously so closing popups (e.g. an inspected popup
+  // closing its DevTools window/tab) and updating Java models do not re-enter
+  // C++ `base::ObserverList` iterations on the current stack frame.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&ExtensionsToolbarAndroid::NotifyActionRemoved,
+                                weak_ptr_factory_.GetWeakPtr(), action_id));
 }
 
 void ExtensionsToolbarAndroid::OnActionUpdated(
@@ -194,8 +201,13 @@ void ExtensionsToolbarAndroid::OnActionUpdated(
 }
 
 void ExtensionsToolbarAndroid::OnPinnedActionsChanged() {
-  Java_ExtensionsToolbarBridge_onPinnedActionsChanged(AttachCurrentThread(),
-                                                      java_object_);
+  // Post asynchronously for the same reason as `OnActionRemoved()`: unpinning
+  // or removing an extension reconciles the Java toolbar list, which can close
+  // an active popup and trigger synchronous observer re-entrancy if run inline.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&ExtensionsToolbarAndroid::NotifyPinnedActionsChanged,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ExtensionsToolbarAndroid::OnActiveWebContentsChanged(
@@ -221,6 +233,9 @@ jni_zero::ScopedJavaLocalRef<jobject> ExtensionsToolbarAndroid::GetAction(
     content::WebContents* web_contents) {
   ToolbarActionViewModel* action =
       toolbar_view_model_->GetActionModelForId(action_id);
+  if (!action) {
+    return nullptr;
+  }
 
   auto hover_card_state = action->GetHoverCardState(web_contents);
   ExtensionActionViewModel::HoverCardUiState ui_state =
@@ -248,7 +263,9 @@ SkBitmap ExtensionsToolbarAndroid::GetIcon(
 
   ToolbarActionViewModel* action =
       toolbar_view_model_->GetActionModelForId(action_id);
-  CHECK(action, base::NotFatalUntil::M162);
+  if (!action) {
+    return SkBitmap();
+  }
   ui::ImageModel model = action->GetIcon(web_contents, size);
 
   if (model.IsEmpty() || !model.IsImage()) {
@@ -372,6 +389,9 @@ bool ExtensionsToolbarAndroid::OnRequestAccessButtonClicked(
 void ExtensionsToolbarAndroid::ExecuteUserAction(
     const ToolbarActionsModel::ActionId& action_id,
     ToolbarActionViewModel::InvocationSource source) {
+  if (!toolbar_view_model_->GetActionModelForId(action_id)) {
+    return;
+  }
   toolbar_view_model_->ExecuteUserAction(action_id, source);
 }
 
@@ -393,9 +413,24 @@ void ExtensionsToolbarAndroid::OnActionIconUpdated(
                                                java_object_, action_id);
 }
 
+void ExtensionsToolbarAndroid::NotifyActionRemoved(
+    const ToolbarActionsModel::ActionId& action_id) {
+  Java_ExtensionsToolbarBridge_onActionRemoved(AttachCurrentThread(),
+                                               java_object_, action_id);
+}
+
+void ExtensionsToolbarAndroid::NotifyPinnedActionsChanged() {
+  Java_ExtensionsToolbarBridge_onPinnedActionsChanged(AttachCurrentThread(),
+                                                      java_object_);
+}
+
 void ExtensionsToolbarAndroid::MovePinnedAction(
     const ToolbarActionsModel::ActionId& action_id,
     int target_index) {
+  if (!std::ranges::contains(toolbar_view_model_->GetPinnedActionIds(),
+                             action_id)) {
+    return;
+  }
   toolbar_view_model_->MovePinnedAction(action_id, target_index);
 }
 

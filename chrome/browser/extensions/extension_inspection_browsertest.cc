@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "chrome/browser/devtools/devtools_window.h"
+#include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_context_menu_model.h"
 #include "chrome/browser/extensions/extension_view.h"
@@ -24,6 +25,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/mojom/view_type.mojom.h"
 #include "extensions/test/test_extension_dir.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
 
@@ -146,7 +148,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionInspectionBrowserTest,
   std::optional<size_t> inspect_index = context_menu->GetIndexOfCommandId(
       ExtensionContextMenuModel::INSPECT_POPUP);
   ASSERT_TRUE(inspect_index.has_value());
-  EXPECT_TRUE(context_menu->IsEnabledAt(inspect_index.value()));
+  ASSERT_TRUE(context_menu->IsEnabledAt(inspect_index.value()));
 
   // Execute "Inspect popup" from the context menu.
   context_menu->ActivatedAt(inspect_index.value());
@@ -159,6 +161,85 @@ IN_PROC_BROWSER_TEST_F(ExtensionInspectionBrowserTest,
   DevToolsWindow* devtools_window =
       DevToolsWindow::GetInstanceForInspectedWebContents(popup_contents);
   ASSERT_TRUE(devtools_window);
+}
+
+// Tests that uninstalling an extension while its popup is being inspected does
+// not crash and cleanly closes both the popup host and the DevTools window.
+// Regression test for crbug.com/541264637.
+IN_PROC_BROWSER_TEST_F(ExtensionInspectionBrowserTest,
+                       UninstallExtensionWhileInspectingPopup) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Inspect Popup Uninstall Test Extension",
+           "version": "0.1",
+           "manifest_version": 3,
+           "action": { "default_popup": "popup.html" }
+         })";
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("popup.html"),
+                     "<html><body>Popup</body></html>");
+
+  scoped_refptr<const Extension> extension =
+      LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+  const ExtensionId extension_id = extension->id();
+
+  // Enable developer mode so "Inspect popup" option is enabled in context menu.
+  profile()->GetPrefs()->SetBoolean(prefs::kExtensionsUIDeveloperMode, true);
+
+  ExtensionHostTestHelper host_helper(profile(), extension_id);
+  host_helper.RestrictToType(mojom::ViewType::kExtensionPopup);
+
+  auto* container = ExtensionsContainer::From(*browser_window_interface());
+  ASSERT_TRUE(container);
+  {
+    ToolbarActionViewModel* action_model =
+        container->GetActionForId(extension_id);
+    ASSERT_TRUE(action_model);
+
+    ExtensionContextMenuModel* context_menu =
+        static_cast<ExtensionContextMenuModel*>(action_model->GetContextMenu(
+            ExtensionContextMenuModel::ContextMenuSource::kToolbarAction));
+    ASSERT_TRUE(context_menu);
+
+    std::optional<size_t> inspect_index = context_menu->GetIndexOfCommandId(
+        ExtensionContextMenuModel::INSPECT_POPUP);
+    ASSERT_TRUE(inspect_index.has_value());
+    ASSERT_TRUE(context_menu->IsEnabledAt(inspect_index.value()));
+
+    // Execute "Inspect popup" from the context menu.
+    context_menu->ActivatedAt(inspect_index.value());
+  }
+
+  ExtensionHost* popup_host = nullptr;
+  {
+    SCOPED_TRACE("Waiting for popup host to complete first load");
+    popup_host = host_helper.WaitForHostCompletedFirstLoad();
+  }
+  ASSERT_TRUE(popup_host);
+  content::WebContents* popup_contents = popup_host->host_contents();
+  ASSERT_TRUE(popup_contents);
+
+  DevToolsWindow* devtools_window =
+      DevToolsWindow::GetInstanceForInspectedWebContents(popup_contents);
+  ASSERT_TRUE(devtools_window);
+
+  content::WebContentsDestroyedWatcher popup_destroyed_watcher(popup_contents);
+  content::WebContentsDestroyedWatcher devtools_destroyed_watcher(
+      DevToolsWindowTesting::Get(devtools_window)->main_web_contents());
+
+  UninstallExtension(extension_id);
+
+  {
+    SCOPED_TRACE("Waiting for popup WebContents to be destroyed");
+    popup_destroyed_watcher.Wait();
+  }
+  {
+    SCOPED_TRACE("Waiting for DevTools WebContents to be destroyed");
+    devtools_destroyed_watcher.Wait();
+  }
+  EXPECT_EQ(nullptr, container->GetActionForId(extension_id));
 }
 
 }  // namespace extensions
