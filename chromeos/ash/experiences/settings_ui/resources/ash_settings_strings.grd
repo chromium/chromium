@@ -7357,6 +7357,134 @@ Press an assigned switch or key to remove assignment.
         You reverted to a previous version of ChromeOS. To get updates, wait until the next version is available.
       </message>
 
+      <!-- Branded OS Settings strings -->
+      <if expr="_google_chrome">
+        <then>
+          <if expr="reven">
+            <then>
+              <message name="IDS_SETTINGS_ABOUT_OS" desc="Menu title for the About ChromeOS Flex page.">
+                About ChromeOS Flex
+              </message>
+            </then>
+            <else>
+              <message name="IDS_SETTINGS_ABOUT_OS" desc="Menu title for the About ChromeOS page.">
+                About ChromeOS
+              </message>
+            </else>
+          </if>
+        </then>
+        <else>
+          <message name="IDS_SETTINGS_ABOUT_OS" desc="Menu title for the About ChromiumOS page.">
+            About ChromiumOS
+          </message>
+        </else>
+      </if>
+
+      <if expr="_google_chrome">
+        <then>
+          <message name="IDS_SETTINGS_ACCOUNT_MANAGER_DESCRIPTION_V2" desc="Description of the Account Manager Settings page. Shown just below the title of the page.">
+            You can manage your signed-in Google Accounts. Your Google Accounts are used for Chrome browser, Play Store, Gmail, and more. If you want to add an account for someone else, like a family member, add a new person to your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> instead. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+          </message>
+        </then>
+        <else>
+          <message name="IDS_SETTINGS_ACCOUNT_MANAGER_DESCRIPTION_V2" desc="Description of the Account Manager Settings page. Shown just below the title of the page.">
+            You can manage your signed-in Google Accounts. Your Google Accounts are used for Chromium browser, Play Store, Gmail, and more. If you want to add an account for someone else, like a family member, add a new person to your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> instead. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+          </message>
+        </else>
+      </if>
+
+      <if expr="_google_chrome">
+        <then>
+          <message name="IDS_SETTINGS_SYNC_DISCONNECT_TITLE" desc="The title of the dialog to stop syncing and sign out.">
+            Sign out of Chrome?
+          </message>
+        </then>
+        <else>
+          <message name="IDS_SETTINGS_SYNC_DISCONNECT_TITLE" desc="The title of the dialog to stop syncing and sign out.">
+            Sign out of Chromium?
+          </message>
+        </else>
+      </if>
+
+      <if expr="_google_chrome">
+        <then>
+          <if expr="reven">
+            <then>
+              <message name="IDS_PRODUCT_OS_NAME" desc="The ChromeOS Flex application name">
+                Google ChromeOS Flex
+              </message>
+            </then>
+            <else>
+              <message name="IDS_PRODUCT_OS_NAME" desc="The ChromeOS application name">
+                Google ChromeOS
+              </message>
+            </else>
+          </if>
+        </then>
+        <else>
+          <message name="IDS_PRODUCT_OS_NAME" desc="The ChromeOS application name">
+            ChromiumOS
+          </message>
+        </else>
+      </if>
+
+      <if expr="_google_chrome">
+        <then>
+          <if expr="reven">
+            <then>
+              <message name="IDS_ABOUT_CROS_VERSION_LICENSE" desc="Additional text displayed beneath the Chromium open source URLs for ChromeOS Flex.">
+                ChromeOS Flex is made possible by additional <ph name="BEGIN_LINK_CROS_OSS">&lt;a target="_blank" href="$1"&gt;</ph>open source software<ph name="END_LINK_CROS_OSS">&lt;/a&gt;</ph>.
+              </message>
+            </then>
+            <else>
+              <message name="IDS_ABOUT_CROS_VERSION_LICENSE" desc="Additional text displayed beneath the Chromium open source URLs for ChromeOS.">
+                ChromeOS is made possible by additional <ph name="BEGIN_LINK_CROS_OSS">&lt;a target="_blank" href="$1"&gt;</ph>open source software<ph name="END_LINK_CROS_OSS">&lt;/a&gt;</ph>.
+              </message>
+            </else>
+          </if>
+        </then>
+        <else>
+          <message name="IDS_ABOUT_CROS_VERSION_LICENSE" desc="Additional text displayed beneath the Chromium open source URLs for ChromeOS.">
+            ChromiumOS is made possible by additional <ph name="BEGIN_LINK_CROS_OSS">&lt;a target="_blank" href="$1"&gt;</ph>open source software<ph name="END_LINK_CROS_OSS">&lt;/a&gt;</ph>.
+          </message>
+        </else>
+      </if>
+
+      <if expr="_google_chrome">
+        <then>
+          <if expr="reven">
+            <then>
+              <message name="IDS_ABOUT_CROS_WITH_LINUX_VERSION_LICENSE" desc="Additional text displayed beneath the Chromium open source URLs for ChromeOS Flex when Crostini is installed.">
+                ChromeOS Flex is made possible by additional <ph name="BEGIN_LINK_CROS_OSS">&lt;a target="_blank" href="$1"&gt;</ph>open source software<ph name="END_LINK_CROS_OSS">&lt;/a&gt;</ph>, as is <ph name="BEGIN_LINK_LINUX_OSS">&lt;a target="_blank" href="$2"&gt;</ph>Linux development environment<ph name="END_LINK_LINUX_OSS">&lt;/a&gt;</ph>.
+              </message>
+            </then>
+            <else>
+              <message name="IDS_ABOUT_CROS_WITH_LINUX_VERSION_LICENSE" desc="Additional text displayed beneath the Chromium open source URLs for ChromeOS when Crostini is installed.">
+                ChromeOS is made possible by additional <ph name="BEGIN_LINK_CROS_OSS">&lt;a target="_blank" href="$1"&gt;</ph>open source software<ph name="END_LINK_CROS_OSS">&lt;/a&gt;</ph>, as is <ph name="BEGIN_LINK_LINUX_OSS">&lt;a target="_blank" href="$2"&gt;</ph>Linux development environment<ph name="END_LINK_LINUX_OSS">&lt;/a&gt;</ph>.
+              </message>
+            </else>
+          </if>
+        </then>
+        <else>
+          <message name="IDS_ABOUT_CROS_WITH_LINUX_VERSION_LICENSE" desc="Additional text displayed beneath the Chromium open source URLs for ChromeOS when Crostini is installed.">
+            ChromiumOS is made possible by additional <ph name="BEGIN_LINK_CROS_OSS">&lt;a target="_blank" href="$1"&gt;</ph>open source software<ph name="END_LINK_CROS_OSS">&lt;/a&gt;</ph>, as is <ph name="BEGIN_LINK_LINUX_OSS">&lt;a target="_blank" href="$2"&gt;</ph>Linux development environment<ph name="END_LINK_LINUX_OSS">&lt;/a&gt;</ph>.
+          </message>
+        </else>
+      </if>
+
+      <if expr="_google_chrome">
+        <then>
+          <message name="IDS_ABOUT_SAFETY_INFORMATION" desc="The safety label in the About box.">
+            Important use and safety information
+          </message>
+        </then>
+        <else>
+          <message name="IDS_ABOUT_SAFETY_INFORMATION" desc="The safety label in the About box." translateable="false">
+            Not used in Chromium. Placeholder to keep resource maps in sync.
+          </message>
+        </else>
+      </if>
+
       <part file="ash_settings_search_tag_strings.grdp" />
     </messages>
   </release>

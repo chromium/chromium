@@ -74,14 +74,6 @@
       </message>
     </else>
   </if>
-  <if expr="is_chromeos">
-    <message name="IDS_SETTINGS_ABOUT_OS" desc="Menu title for the About ChromiumOS page.">
-      About ChromiumOS
-    </message>
-    <message name="IDS_OS_SETTINGS_TAG_OS_VERSION" desc="Text for search result item which, when clicked, navigates the user to about ChromeOS settings, which gives information about the current ChromeOS version.">
-      ChromiumOS version
-    </message>
-  </if>
 
   <!-- Autofill Page -->
   <message name="IDS_SETTINGS_SIGNED_OUT_USER_LABEL" desc="Label which is shown at the top of the compromised password section if user is signed out.">
@@ -270,11 +262,6 @@
   <message name="IDS_SETTINGS_PEOPLE_ACCOUNT_AWARE_SIGNIN_ACCOUNT_ROW_TITLE" desc="The title of the avatar row shown to users who are signed in only to the web">
     Your Chromium
   </message>
-<if expr="is_chromeos">
-  <message name="IDS_SETTINGS_ACCOUNT_MANAGER_DESCRIPTION_V2" desc="Description of the Account Manager Settings page. Shown just below the title of the page.">
-    You can manage your signed-in Google Accounts. Your Google Accounts are used for Chromium browser, Play Store, Gmail, and more. If you want to add an account for someone else, like a family member, add a new person to your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> instead. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
-  </message>
-</if>
   <message name="IDS_SETTINGS_SIGNIN_CHROME_SIGNIN_OPTIONS_TITLE" desc="Title of the settings that controls whether a user gets signed in to Chromium when signing in to Google Services.">
     Sign in to Chromium when you sign in to other Google services
   </message>
@@ -288,9 +275,6 @@
   <!-- Sync Page / Account Settings Page -->
   <message name="IDS_SETTINGS_SYNC_DATA_ENCRYPTED_TEXT" desc="Text alerting the user that synced data is encrypted.">
     For added security, Chromium will encrypt your data.
-  </message>
-  <message name="IDS_SETTINGS_SYNC_DISCONNECT_TITLE" desc="The title of the dialog to stop syncing and sign out.">
-    Sign out of Chromium?
   </message>
   <message name="IDS_SETTINGS_SUGGEST_PREF_DESC" desc="The description of the checkbox to enable/disable sending omnibox input to the user's default search engine to get additional suggestions.">
     When you type in the address bar or search box, Chromium sends what you type to your default search engine to get better suggestions. This is off in Incognito.

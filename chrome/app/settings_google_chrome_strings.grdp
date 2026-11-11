@@ -62,24 +62,6 @@
       </message>
     </else>
   </if>
-  <if expr="is_chromeos">
-    <if expr="reven">
-      <message name="IDS_SETTINGS_ABOUT_OS" desc="Menu title for the About ChromeOS Flex page.">
-        About ChromeOS Flex
-      </message>
-      <message name="IDS_OS_SETTINGS_TAG_OS_VERSION" desc="Text for search result item which, when clicked, navigates the user to about ChromeOS Flex settings, which gives information about the current ChromeOS Flex version.">
-        ChromeOS Flex version
-      </message>
-    </if>
-    <if expr="not reven">
-      <message name="IDS_SETTINGS_ABOUT_OS" desc="Menu title for the About ChromeOS page.">
-        About ChromeOS
-      </message>
-      <message name="IDS_OS_SETTINGS_TAG_OS_VERSION" desc="Text for search result item which, when clicked, navigates the user to about ChromeOS settings, which gives information about the current ChromeOS version.">
-        ChromeOS version
-      </message>
-    </if>
-  </if>
 
   <!-- Autofill Page -->
   <message name="IDS_SETTINGS_SIGNED_OUT_USER_LABEL" desc="Label which is shown at the top of the compromised password section if user is signed out.">
@@ -260,11 +242,6 @@
   <message name="IDS_SETTINGS_PEOPLE_ACCOUNT_AWARE_SIGNIN_ACCOUNT_ROW_TITLE" desc="The title of the avatar row shown to users who are signed in only to the web">
     Your Chrome
   </message>
-<if expr="is_chromeos">
-  <message name="IDS_SETTINGS_ACCOUNT_MANAGER_DESCRIPTION_V2" desc="Description of the Account Manager Settings page. Shown just below the title of the page.">
-    You can manage your signed-in Google Accounts. Your Google Accounts are used for Chrome browser, Play Store, Gmail, and more. If you want to add an account for someone else, like a family member, add a new person to your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> instead. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
-  </message>
-</if>
   <message name="IDS_SETTINGS_SIGNIN_CHROME_SIGNIN_OPTIONS_TITLE" desc="Title of the settings that controls whether a user gets signed in to Chrome when signing in to Google Services.">
     Sign in to Chrome when you sign in to other Google services
   </message>
@@ -278,9 +255,6 @@
   <!-- Sync Page / Account Settings Page -->
   <message name="IDS_SETTINGS_SYNC_DATA_ENCRYPTED_TEXT" desc="Text alerting the user that synced data is encrypted.">
     For added security, Google Chrome will encrypt your data
-  </message>
-  <message name="IDS_SETTINGS_SYNC_DISCONNECT_TITLE" desc="The title of the dialog to stop syncing and sign out.">
-    Sign out of Chrome?
   </message>
   <message name="IDS_SETTINGS_SUGGEST_PREF_DESC" desc="The description of the 'Improve search suggestions' checkbox, which enables/disables sending omnibox input to the user's default search engine to get additional suggestions.">
     When you type in the address bar or search box, Chrome sends what you type to your default search engine to get better suggestions. This is off in Incognito.

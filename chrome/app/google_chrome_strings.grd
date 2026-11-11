@@ -327,17 +327,11 @@ chromium_strings.grd. -->
       </if>
       <if expr="is_chromeos">
         <if expr="reven">
-          <message name="IDS_PRODUCT_OS_NAME" desc="The ChromeOS Flex application name">
-            Google ChromeOS Flex
-          </message>
           <message name="IDS_SHORT_PRODUCT_OS_NAME" desc="The ChromeOS Flex application short name">
             ChromeOS Flex
           </message>
         </if>
         <if expr="not reven">
-          <message name="IDS_PRODUCT_OS_NAME" desc="The ChromeOS application name">
-            Google ChromeOS
-          </message>
           <message name="IDS_SHORT_PRODUCT_OS_NAME" desc="The ChromeOS application short name">
             ChromeOS
           </message>
@@ -500,27 +494,6 @@ New bookmarks can’t be saved in your account until you delete some. If you sig
       <message name="IDS_ABOUT_VERSION_COPYRIGHT" desc="Copyright information on the about pages">
         Copyright <ph name="YEAR">{0,date,y}<ex>2016</ex></ph> Google LLC. All rights reserved.
       </message>
-      <if expr="is_chromeos">
-        <if expr="reven">
-          <message name="IDS_ABOUT_CROS_VERSION_LICENSE" desc="Additional text displayed beneath the Chromium open source URLs for ChromeOS Flex.">
-            ChromeOS Flex is made possible by additional <ph name="BEGIN_LINK_CROS_OSS">&lt;a target="_blank" href="$1"&gt;</ph>open source software<ph name="END_LINK_CROS_OSS">&lt;/a&gt;</ph>.
-          </message>
-          <message name="IDS_ABOUT_CROS_WITH_LINUX_VERSION_LICENSE" desc="Additional text displayed beneath the Chromium open source URLs for ChromeOS Flex when Crostini is installed.">
-            ChromeOS Flex is made possible by additional <ph name="BEGIN_LINK_CROS_OSS">&lt;a target="_blank" href="$1"&gt;</ph>open source software<ph name="END_LINK_CROS_OSS">&lt;/a&gt;</ph>, as is <ph name="BEGIN_LINK_LINUX_OSS">&lt;a target="_blank" href="$2"&gt;</ph>Linux development environment<ph name="END_LINK_LINUX_OSS">&lt;/a&gt;</ph>.
-          </message>
-        </if>
-        <if expr="not reven">
-          <message name="IDS_ABOUT_CROS_VERSION_LICENSE" desc="Additional text displayed beneath the Chromium open source URLs for ChromeOS.">
-            ChromeOS is made possible by additional <ph name="BEGIN_LINK_CROS_OSS">&lt;a target="_blank" href="$1"&gt;</ph>open source software<ph name="END_LINK_CROS_OSS">&lt;/a&gt;</ph>.
-          </message>
-          <message name="IDS_ABOUT_CROS_WITH_LINUX_VERSION_LICENSE" desc="Additional text displayed beneath the Chromium open source URLs for ChromeOS when Crostini is installed.">
-            ChromeOS is made possible by additional <ph name="BEGIN_LINK_CROS_OSS">&lt;a target="_blank" href="$1"&gt;</ph>open source software<ph name="END_LINK_CROS_OSS">&lt;/a&gt;</ph>, as is <ph name="BEGIN_LINK_LINUX_OSS">&lt;a target="_blank" href="$2"&gt;</ph>Linux development environment<ph name="END_LINK_LINUX_OSS">&lt;/a&gt;</ph>.
-          </message>
-        </if>
-        <message name="IDS_ABOUT_SAFETY_INFORMATION" desc="The safety label in the About box.">
-          Important use and safety information
-        </message>
-      </if>
       <message name="IDS_ABOUT_TERMS_OF_SERVICE" desc="The terms of service label in the About box.">
         Terms of Service
       </message>

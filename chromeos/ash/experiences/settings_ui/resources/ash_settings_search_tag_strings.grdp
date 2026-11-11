@@ -1534,4 +1534,26 @@
   <message name="IDS_OS_SETTINGS_TAG_SYSTEM_PREFERENCES" desc="Text for search result item which, when clicked, navigates the user to the System preferences section.">
     System preferences
   </message>
+
+  <if expr="_google_chrome">
+    <then>
+      <if expr="reven">
+        <then>
+          <message name="IDS_OS_SETTINGS_TAG_OS_VERSION" desc="Text for search result item which, when clicked, navigates the user to about ChromeOS Flex settings, which gives information about the current ChromeOS Flex version.">
+            ChromeOS Flex version
+          </message>
+        </then>
+        <else>
+          <message name="IDS_OS_SETTINGS_TAG_OS_VERSION" desc="Text for search result item which, when clicked, navigates the user to about ChromeOS settings, which gives information about the current ChromeOS version.">
+            ChromeOS version
+          </message>
+        </else>
+      </if>
+    </then>
+    <else>
+      <message name="IDS_OS_SETTINGS_TAG_OS_VERSION" desc="Text for search result item which, when clicked, navigates the user to about ChromeOS settings, which gives information about the current ChromeOS version.">
+        ChromiumOS version
+      </message>
+    </else>
+  </if>
 </grit-part>
