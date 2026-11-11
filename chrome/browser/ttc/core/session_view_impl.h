@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/ttc/core/session_view.h"
 #include "chrome/browser/ttc/core/states.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
@@ -16,6 +17,7 @@
 
 namespace ttc {
 
+class MicPrivacyIndicator;
 class OverlayController;
 class SessionViewDelegate;
 
@@ -31,6 +33,7 @@ class SessionViewImpl : public SessionView, public TtcViewDelegate {
   // SessionController::Observer:
   void OnError(ErrorCode error) override;
   void OnUserAudioLevelUpdate(float audio_level) override;
+  void OnMicCaptureChanged(bool capturing) override;
 
   // TtcViewDelegate:
   void EndSessionAsync() override;
@@ -46,6 +49,10 @@ class SessionViewImpl : public SessionView, public TtcViewDelegate {
 
   // Owns the UI the session shows on top of the browser window.
   std::unique_ptr<OverlayController> overlay_controller_;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  std::unique_ptr<MicPrivacyIndicator> mic_privacy_indicator_;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 };
 
 }  // namespace ttc

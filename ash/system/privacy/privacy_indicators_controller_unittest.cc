@@ -173,6 +173,35 @@ TEST_P(PrivacyIndicatorsControllerTest, NotificationMetadata) {
   EXPECT_FALSE(GetPopupNotificationView(notification_id));
 }
 
+// With the video conference tray, only allowlisted apps such as TTC keep using
+// privacy indicators.
+TEST_P(PrivacyIndicatorsControllerTest,
+       VideoConferenceTrayLimitsNotificationsToAllowlistedApps) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kFeatureManagementVideoConference);
+  auto use_microphone = [](const std::string& app_id) {
+    PrivacyIndicatorsController::Get()->UpdatePrivacyIndicators(
+        app_id, u"test_app_name", /*is_camera_used=*/false,
+        /*is_microphone_used=*/true, base::MakeRefCounted<TestDelegate>(),
+        PrivacyIndicatorsSource::kApps);
+  };
+  auto* message_center = message_center::MessageCenter::Get();
+
+  use_microphone("test_app_id");
+  EXPECT_FALSE(message_center->FindNotificationById(
+      GetPrivacyIndicatorsNotificationId("test_app_id")));
+  ExpectPrivacyIndicatorsTrayItemVisible(/*visible=*/false,
+                                         /*camera_visible=*/false,
+                                         /*microphone_visible=*/false);
+
+  use_microphone(kTtcPrivacyIndicatorsAppId);
+  EXPECT_TRUE(message_center->FindNotificationById(
+      GetPrivacyIndicatorsNotificationId(kTtcPrivacyIndicatorsAppId)));
+  ExpectPrivacyIndicatorsTrayItemVisible(/*visible=*/true,
+                                         /*camera_visible=*/false,
+                                         /*microphone_visible=*/true);
+}
+
 TEST_P(PrivacyIndicatorsControllerTest, NotificationWithNoButton) {
   std::string app_id = "test_app_id";
   std::string notification_id = GetPrivacyIndicatorsNotificationId(app_id);

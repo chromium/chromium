@@ -65,6 +65,10 @@ enum class PrivacyIndicatorsSource {
   kMaxValue = kScreenCapture
 };
 
+// The app id TTC reports its microphone use under. Like Glic, it keeps using
+// privacy indicators when the video conference tray is enabled.
+inline constexpr char kTtcPrivacyIndicatorsAppId[] = "ttc";
+
 // Get the id of the privacy indicators notification associated with `app_id`.
 std::string ASH_EXPORT
 GetPrivacyIndicatorsNotificationId(const std::string& app_id);

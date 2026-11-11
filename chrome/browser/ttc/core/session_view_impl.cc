@@ -13,6 +13,10 @@
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ttc/core/mic_privacy_indicator_chromeos.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 namespace ttc {
 
 ToastId GetToastIdForError(ErrorCode error) {
@@ -43,6 +47,9 @@ SessionViewImpl::SessionViewImpl(SessionViewDelegate& delegate)
     : SessionView(delegate) {
   overlay_controller_ =
       std::make_unique<OverlayController>(*delegate.GetProfile(), *this);
+#if BUILDFLAG(IS_CHROMEOS)
+  mic_privacy_indicator_ = std::make_unique<MicPrivacyIndicator>();
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 SessionViewImpl::~SessionViewImpl() = default;
@@ -56,6 +63,12 @@ void SessionViewImpl::OnError(ErrorCode error) {
 
 void SessionViewImpl::OnUserAudioLevelUpdate(float audio_level) {
   audio_level_callbacks_.Notify(audio_level);
+}
+
+void SessionViewImpl::OnMicCaptureChanged(bool capturing) {
+#if BUILDFLAG(IS_CHROMEOS)
+  mic_privacy_indicator_->SetCapturing(capturing);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void SessionViewImpl::EndSessionAsync() {

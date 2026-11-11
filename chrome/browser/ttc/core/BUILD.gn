@@ -202,6 +202,17 @@ source_set("impl") {
     if (is_mac) {
       deps += [ "//chrome/browser/ui:fullscreen_util_mac" ]
     }
+    if (is_chromeos) {
+      sources += [
+        "mic_privacy_indicator_chromeos.cc",
+        "mic_privacy_indicator_chromeos.h",
+      ]
+      deps += [
+        "//ash",
+        "//chrome/app:generated_resources",
+        "//ui/base",
+      ]
+    }
   }
 }
 
@@ -425,5 +436,12 @@ if (!is_android) {
       "//ui/gfx/geometry",
       "//ui/views",
     ]
+    if (is_chromeos) {
+      deps += [
+        "//ash",
+        "//ash/constants",
+        "//ui/message_center",
+      ]
+    }
   }
 }

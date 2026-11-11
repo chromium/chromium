@@ -35,6 +35,13 @@
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_features.h"
+#include "ash/system/privacy/privacy_indicators_controller.h"
+#include "base/test/scoped_feature_list.h"
+#include "ui/message_center/message_center.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 namespace ttc {
 
 namespace {
@@ -325,6 +332,59 @@ IN_PROC_BROWSER_TEST_F(SessionViewImplBrowserTest, ToastShowsOnError) {
   );
   // clang-format on
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+// Runs with the video conference tray off and on: Ash hides privacy indicators
+// for most apps when the tray is on, but not for TTC.
+class SessionViewImplMicIndicatorBrowserTest
+    : public SessionViewImplBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  SessionViewImplMicIndicatorBrowserTest() {
+    feature_list_.InitWithFeatureState(
+        ash::features::kFeatureManagementVideoConference, GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SessionViewImplMicIndicatorBrowserTest,
+                         /*video_conference_tray=*/testing::Bool());
+
+// TTC opens the microphone itself, so it reports capture to the Ash privacy
+// indicator directly, and ending the session hides the indicator.
+IN_PROC_BROWSER_TEST_P(SessionViewImplMicIndicatorBrowserTest,
+                       MicCaptureShowsPrivacyIndicator) {
+  auto has_notification = []() {
+    return message_center::MessageCenter::Get()->FindNotificationById(
+               ash::GetPrivacyIndicatorsNotificationId(
+                   ash::kTtcPrivacyIndicatorsAppId)) != nullptr;
+  };
+  // The notification stays up briefly after capture stops, so the stop is
+  // checked on the controller's list of apps using the microphone.
+  auto is_ttc_using_mic = []() {
+    return ash::PrivacyIndicatorsController::Get()
+        ->apps_using_microphone()
+        .contains(ash::kTtcPrivacyIndicatorsAppId);
+  };
+  // clang-format off
+  RunTestSequence(
+      StartSession(),
+      CheckResult(has_notification, false),
+      Do([this]() { session_controller().OnMicCaptureChanged(true); }),
+      CheckResult(has_notification, true),
+      Do([this]() { session_controller().OnMicCaptureChanged(false); }),
+      CheckResult(is_ttc_using_mic, false),
+      Do([this]() { session_controller().OnMicCaptureChanged(true); }),
+      CheckResult(is_ttc_using_mic, true),
+      Do([this]() { ttc_service().EndSession(); }),
+      CheckResult(is_ttc_using_mic, false)
+  );
+  // clang-format on
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Opening a popup or app window does not move the voice plate away from the
 // normal browser window.

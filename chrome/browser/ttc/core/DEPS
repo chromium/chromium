@@ -6,3 +6,14 @@ include_rules = [
   "+components/ttc/app/public",
   "+components/ttc/features.h",
 ]
+
+specific_include_rules = {
+  # No ash/public API covers the microphone privacy indicator.
+  r"mic_privacy_indicator_chromeos\.cc": [
+    "+ash/system/privacy/privacy_indicators_controller.h",
+  ],
+  r"session_view_impl_browsertest\.cc": [
+    "+ash/system/privacy/privacy_indicators_controller.h",
+    "+ui/message_center/message_center.h",
+  ],
+}

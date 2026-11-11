@@ -38,7 +38,8 @@ inline constexpr char kChromeUIGlicURL[] = "chrome://glic/";
 
 bool ShouldUsePrivacyIndicators(std::string_view app_id) {
   // TODO: Check URL instead.
-  return !features::IsVideoConferenceEnabled() || app_id == kChromeUIGlicURL;
+  return !features::IsVideoConferenceEnabled() || app_id == kChromeUIGlicURL ||
+         app_id == kTtcPrivacyIndicatorsAppId;
 }
 
 // Create a notification with the customized metadata for privacy indicators.
