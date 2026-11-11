@@ -1913,6 +1913,10 @@ NavigationRequest::NavigationRequest(
         blink::kFencedFrameForcedSandboxFlags;
   }
 
+  if (common_params_->url.IsAboutSrcdoc()) {
+    commit_params_->srcdoc_value = frame_tree_node_->srcdoc_value();
+  }
+
   if (from_begin_navigation_) {
     // This is needed to commit data: and about: URLs in the same SiteInstance
     // as the initiator frame. Note that this may not necessarily match the
@@ -6047,7 +6051,7 @@ void NavigationRequest::OnStartChecksComplete(
   // Only initialize the ServiceWorkerMainResourceHandle if it can be created
   // for this frame.
   bool can_create_service_worker =
-      (frame_tree_node_->pending_frame_policy().sandbox_flags &
+      (commit_params_->frame_policy.sandbox_flags &
        network::mojom::WebSandboxFlags::kOrigin) !=
       network::mojom::WebSandboxFlags::kOrigin;
   if (can_create_service_worker) {
@@ -6851,7 +6855,7 @@ void NavigationRequest::InheritServiceWorkerControllerFromParentIfNeeded() {
     return;
   }
 
-  if ((frame_tree_node_->pending_frame_policy().sandbox_flags &
+  if ((commit_params_->frame_policy.sandbox_flags &
        network::mojom::WebSandboxFlags::kOrigin) ==
       network::mojom::WebSandboxFlags::kOrigin) {
     return;
