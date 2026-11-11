@@ -879,6 +879,8 @@ try_.orchestrator_builder(
         ],
     ),
     experiments = {
+        # go/rts-project-proposal
+        "chromium_rts.filter_file_analysis": 100,
         # crbug.com/40280175
         "chromium_checkout.expand_submodules": 100,
     },
