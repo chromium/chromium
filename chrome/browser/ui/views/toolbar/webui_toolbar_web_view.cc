@@ -1551,8 +1551,18 @@ void WebUIToolbarWebView::SetDidFirstNonEmptyPaintCallbackForTesting(
   did_first_non_empty_paint_callback_ = std::move(callback);
 }
 
-void WebUIToolbarWebView::SetTickClockForTesting(const base::TickClock* clock) {
+base::ScopedClosureRunner WebUIToolbarWebView::SetTickClockForTesting(
+    const base::TickClock* clock) {
+  CHECK(clock);
+  CHECK_EQ(clock_, base::DefaultTickClock::GetInstance());
   clock_ = clock;
+  return base::ScopedClosureRunner(base::BindOnce(
+      [](base::WeakPtr<WebUIToolbarWebView> self) {
+        if (self) {
+          self->clock_ = base::DefaultTickClock::GetInstance();
+        }
+      },
+      weak_ptr_factory_.GetWeakPtr()));
 }
 
 views::WebView* WebUIToolbarWebView::GetWebViewForTesting() {
@@ -1999,6 +2009,24 @@ void WebUIToolbarWebView::PostPushToolbarState() {
   // controls will complete their state changes before we do the actual push.
   // This way the eventual push updates all controls synchronously without
   // inter-element flicker.
+
+  // However, a steady stream of state updates must not be able to defer the
+  // push indefinitely. If a push is already pending and has been deferred for
+  // at least `kMaxStatePushDelay`, stop deferring it: leave the already-posted
+  // push in place rather than cancelling and re-posting it. It will push the
+  // latest state when it runs. The push still happens via PostTask(), rather
+  // than synchronously, because callers may rely on state pushes always
+  // happening via PostTask() to prevent sending inconsistent intermediate
+  // states.
+  static constexpr base::TimeDelta kMaxStatePushDelay = base::Milliseconds(100);
+  const base::TimeTicks now = clock_->NowTicks();
+  if (state_push_weak_ptr_factory_.HasWeakPtrs()) {
+    if (now - pending_state_push_start_time_ >= kMaxStatePushDelay) {
+      return;
+    }
+  } else {
+    pending_state_push_start_time_ = now;
+  }
 
   // We want to delay the actual monolithic state push until all controls
   // have had a chance to update their state. We do this by cancelling any
