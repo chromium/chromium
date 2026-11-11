@@ -139,13 +139,6 @@
 
 - (void)viewDidAppear:(BOOL)animated {
   [super viewDidAppear:animated];
-  // TODO(crbug.com/556733164): Remove once the
-  // `kActorToolsDisableInputDuringActuationParam` killswitch is no longer
-  // needed. `endEditing:YES` resigns first responder and prevents the keyboard
-  // from reappearing when actuation ends.
-  if (!ActorDisablesInputDuringActuation()) {
-    [self.view.window endEditing:YES];
-  }
 }
 
 - (void)viewWillTransitionToSize:(CGSize)size
