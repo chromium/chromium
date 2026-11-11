@@ -38,6 +38,7 @@ import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextPaint;
 import android.text.TextUtils;
+import android.text.method.MetaKeyKeyListener;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.InputDevice;
@@ -111,6 +112,9 @@ public class UrlBarUnitTest {
     private static final float FONT_HEIGHT_ACTUAL_TALL = 120f;
     private static final float FONT_HEIGHT_ACTUAL_SHORT = 80f;
     private static final float LINE_HEIGHT_ELEGANT_FACTOR = 1.6f;
+    private static final float TOUCH_START_X = 5f;
+    private static final float TOUCH_END_X = 40f;
+    private static final float TOUCH_Y = 5f;
 
     // Screen width is set to 100px, with a default density of 1px per dp, and we estimate 5dp per
     // char, so there will be 20 visible characters.
@@ -344,6 +348,32 @@ public class UrlBarUnitTest {
     private void focusUrlBar() {
         mUrlBar.setAllowFocus(true);
         mUrlBar.requestFocus();
+    }
+
+    private void setUpFocusedUrlBarWithText() {
+        focusUrlBar();
+        mUrlBar.setText(SHORT_DOMAIN);
+        measureAndLayoutUrlBar();
+        assertTrue(mUrlBar.isFocused());
+    }
+
+    /** Presses Shift through the key listener, which records it as meta state on the text. */
+    private void pressShift() {
+        mUrlBar.getKeyListener()
+                .onKeyDown(
+                        mUrlBar,
+                        mUrlBar.getText(),
+                        KeyEvent.KEYCODE_SHIFT_LEFT,
+                        new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_SHIFT_LEFT));
+        assertEquals(
+                1,
+                MetaKeyKeyListener.getMetaState(
+                        mUrlBar.getText(), MetaKeyKeyListener.META_SHIFT_ON));
+    }
+
+    private static MotionEvent obtainTouchEvent(int action, float x) {
+        return MotionEvent.obtain(
+                /* downTime= */ 0, /* eventTime= */ 0, action, x, TOUCH_Y, /* metaState= */ 0);
     }
 
     private void setUpCursorVisible() {
@@ -767,6 +797,35 @@ public class UrlBarUnitTest {
 
         verify(mUrlBarDelegate).onFocusByTouch();
         assertTrue(mUrlBar.isFocused());
+    }
+
+    @Test
+    public void onTouchEvent_shiftPressedMidGestureDoesNotCrash() {
+        setUpFocusedUrlBarWithText();
+
+        mUrlBar.onTouchEvent(obtainTouchEvent(MotionEvent.ACTION_DOWN, TOUCH_START_X));
+        pressShift();
+        mUrlBar.onTouchEvent(obtainTouchEvent(MotionEvent.ACTION_UP, TOUCH_END_X));
+
+        assertEquals(
+                0,
+                MetaKeyKeyListener.getMetaState(
+                        mUrlBar.getText(), MetaKeyKeyListener.META_SHIFT_ON));
+    }
+
+    @Test
+    public void onTouchEvent_shiftPressedMidDragDoesNotCrash() {
+        setUpFocusedUrlBarWithText();
+
+        mUrlBar.onTouchEvent(obtainTouchEvent(MotionEvent.ACTION_DOWN, TOUCH_START_X));
+        pressShift();
+        mUrlBar.onTouchEvent(obtainTouchEvent(MotionEvent.ACTION_MOVE, TOUCH_END_X));
+        mUrlBar.onTouchEvent(obtainTouchEvent(MotionEvent.ACTION_UP, TOUCH_END_X));
+
+        assertEquals(
+                0,
+                MetaKeyKeyListener.getMetaState(
+                        mUrlBar.getText(), MetaKeyKeyListener.META_SHIFT_ON));
     }
 
     @Test

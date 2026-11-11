@@ -18,6 +18,7 @@ import android.text.Layout;
 import android.text.Selection;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
+import android.text.method.MetaKeyKeyListener;
 import android.text.style.ReplacementSpan;
 import android.util.AttributeSet;
 import android.util.TypedValue;
@@ -858,6 +859,14 @@ public class UrlBar extends AutocompleteEditText {
             event.setAction(MotionEvent.ACTION_CANCEL);
         }
 
+        // Works around an Android bug (b/190156873): ArrowKeyMovementMethod extends a Shift+touch
+        // selection from a tap-down anchor that it never recorded (e.g. Shift was pressed
+        // mid-gesture, or TextView skipped ACTION_DOWN because it had no layout), which throws
+        // from Selection.setSelection(buffer, -1, ...). Dropping the Shift/selecting meta state
+        // before the event reaches TextView keeps the movement method off that path. The bug is
+        // present on every API level Chrome supports, from 29 through 37 (the newest release), so
+        // this cannot be gated on SDK_INT until an Android release has the fix.
+        MetaKeyKeyListener.resetMetaState(getText());
         return super.onTouchEvent(event);
     }
 
