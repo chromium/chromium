@@ -7,6 +7,7 @@
 
 #include <array>
 #include <optional>
+#include <variant>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -32,19 +33,28 @@ enum CALayerEdge : uint32_t {
   kLayerEdgeTop = 0x8,
 };
 
-// A single CoreAnimation hardware-accelerated CSS backdrop-filter operation.
-// Requires `CARendererLayerParams::opacity == 1.0f` because sibling backdrop
-// and content CALayers do not form an isolated group for non-unit opacity.
-struct GL_EXPORT CABackdropFilter {
-  friend bool operator==(const CABackdropFilter&,
-                         const CABackdropFilter&) = default;
-
+struct GL_EXPORT CABackdropBlurFilter {
   // Blur radius in RenderPass local space (scaled by `filters_scale`, before
   // `CARendererLayerParams::transform` is applied by TransformLayer).
   float blur_radius = 0.0f;
-  // Optional 4x5 row-major color matrix matching CAColorMatrix.
-  std::optional<std::array<float, 20>> color_matrix;
+
+  friend bool operator==(const CABackdropBlurFilter&,
+                         const CABackdropBlurFilter&) = default;
 };
+
+struct GL_EXPORT CABackdropColorFilter {
+  // Optional 4x5 row-major color matrix matching CAColorMatrix.
+  std::array<float, 20> color_matrix;
+
+  friend bool operator==(const CABackdropColorFilter&,
+                         const CABackdropColorFilter&) = default;
+};
+
+// A single CoreAnimation hardware-accelerated CSS backdrop-filter operation.
+// Requires `CARendererLayerParams::opacity == 1.0f` because sibling backdrop
+// and content CALayers do not form an isolated group for non-unit opacity.
+using CABackdropFilter =
+    std::variant<CABackdropBlurFilter, CABackdropColorFilter>;
 
 struct GL_EXPORT CARendererLayerParams {
   CARendererLayerParams(

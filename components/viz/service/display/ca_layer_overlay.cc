@@ -244,9 +244,8 @@ CALayerBackdropResult ExtractBackdropFilter(
           return CALayerBackdropResult::kUnsupportedBlurFilterChain;
         }
         has_blur = true;
-        ui::CABackdropFilter filter_params;
-        filter_params.blur_radius = amount * scale;
-        backdrop_filters.push_back(std::move(filter_params));
+        backdrop_filters.push_back(
+            ui::CABackdropBlurFilter{.blur_radius = amount * scale});
         break;
       }
       case cc::FilterOperation::SATURATE: {
@@ -296,9 +295,8 @@ CALayerBackdropResult ExtractBackdropFilter(
     std::array<float, 20> row_major;
     color_matrix.getRowMajor(row_major.data());
     if (row_major != kIdentityColorMatrix) {
-      ui::CABackdropFilter filter_params;
-      filter_params.color_matrix = row_major;
-      backdrop_filters.push_back(std::move(filter_params));
+      backdrop_filters.push_back(
+          ui::CABackdropColorFilter{.color_matrix = row_major});
     }
   }
 

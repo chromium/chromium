@@ -1477,16 +1477,21 @@ void CARendererLayerTree::ContentLayer::CommitBackdropFilterToCA(
     NSMutableArray* backdrop_filters =
         [NSMutableArray arrayWithCapacity:backdrop_filters_.size()];
     for (const auto& filter : backdrop_filters_) {
-      if (filter.blur_radius > 0.0f && std::isfinite(filter.blur_radius)) {
-        // `blur_radius` is in RenderPass local pixels. Convert it to points in
-        // the layer's local space. This relies on CoreAnimation scaling filter
-        // radii by the ancestor TransformLayer's transform.
-        [backdrop_filters addObject:CreateCABlurFilter(filter.blur_radius /
-                                                       tree()->scale_factor_)];
-      }
-      if (filter.color_matrix.has_value()) {
+      if (const auto* const blur_filter =
+              std::get_if<ui::CABackdropBlurFilter>(&filter)) {
+        if (blur_filter->blur_radius > 0.0f &&
+            std::isfinite(blur_filter->blur_radius)) {
+          // `blur_radius` is in RenderPass local pixels. Convert it to points
+          // in the layer's local space. This relies on CoreAnimation scaling
+          // filter radii by the ancestor TransformLayer's transform.
+          [backdrop_filters
+              addObject:CreateCABlurFilter(blur_filter->blur_radius /
+                                           tree()->scale_factor_)];
+        }
+      } else {
+        const auto& color_filter = std::get<ui::CABackdropColorFilter>(filter);
         [backdrop_filters
-            addObject:CreateCAColorMatrixFilter(*filter.color_matrix)];
+            addObject:CreateCAColorMatrixFilter(color_filter.color_matrix)];
       }
     }
     ca_layer_.filters = backdrop_filters;
