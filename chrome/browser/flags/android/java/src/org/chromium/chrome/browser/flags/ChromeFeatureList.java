@@ -1299,7 +1299,10 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sEnableXAxisActivityTransition =
             newCachedFlag(ENABLE_X_AXIS_ACTIVITY_TRANSITION, false);
     public static final CachedFlag sEnforceIncognitoIsolation =
-            newCachedFlag(ENFORCE_INCOGNITO_ISOLATION, /* defaultValue= */ false);
+            newCachedFlag(
+                    ENFORCE_INCOGNITO_ISOLATION,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sFixToolbarHairlineRegression =
             newCachedFlag(FIX_TOOLBAR_HAIRLINE_REGRESSION, /* defaultValue= */ true);
     public static final CachedFlag sForceTranslucentNotificationTrampoline =
