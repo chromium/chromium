@@ -44,6 +44,7 @@
 #include "services/webnn/public/cpp/supported_data_types.h"
 #include "services/webnn/public/cpp/webnn_types.h"
 #include "services/webnn/public/mojom/features.mojom-features.h"
+#include "services/webnn/public/mojom/webnn_compiler_context.mojom.h"
 #include "services/webnn/public/mojom/webnn_context.mojom.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
@@ -3170,6 +3171,7 @@ class WebNNGraphImplFuzzerBase : public testing::Test {
 
   mojo::Remote<mojom::WebNNContextProvider> provider_remote_;
   mojo::Remote<mojom::WebNNContext> context_;
+  mojo::Remote<mojom::WebNNCompilerContext> compiler_context_;
 };
 
 void WebNNGraphImplFuzzerBase::SetUp() {
@@ -3198,6 +3200,11 @@ void WebNNGraphImplFuzzerBase::SetUp() {
   if (create_context_result->is_success()) {
     context_.Bind(
         std::move(create_context_result->get_success()->context_remote));
+    if (create_context_result->get_success()
+            ->compiler_context_remote.is_valid()) {
+      compiler_context_.Bind(std::move(
+          create_context_result->get_success()->compiler_context_remote));
+    }
     context_properties_ =
         create_context_result->get_success()->context_properties;
 #if defined(ARCH_CPU_32_BITS)
@@ -3225,6 +3232,7 @@ void WebNNGraphImplFuzzerBase::SetUp() {
 
 void WebNNGraphImplFuzzerBase::TearDown() {
   // Give WebNNContext a chance to run disconnect.
+  compiler_context_.reset();
   context_.reset();
   GetGlobalFuzzEnvironment().GetWebNNTestEnvironment().RunUntilIdle();
 }
@@ -3232,7 +3240,11 @@ void WebNNGraphImplFuzzerBase::TearDown() {
 mojo::Remote<mojom::WebNNGraphBuilder>
 WebNNGraphImplFuzzerBase::BindNewGraphBuilderRemote() {
   mojo::Remote<mojom::WebNNGraphBuilder> remote;
-  context_->CreateGraphBuilder(remote.BindNewPipeAndPassReceiver());
+  if (compiler_context_.is_bound()) {
+    compiler_context_->CreateGraphBuilder(remote.BindNewPipeAndPassReceiver());
+  } else {
+    context_->CreateGraphBuilder(remote.BindNewPipeAndPassReceiver());
+  }
   return remote;
 }
 

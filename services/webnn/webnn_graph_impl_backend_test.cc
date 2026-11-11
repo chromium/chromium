@@ -11,6 +11,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_map.h"
+#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
@@ -24,6 +25,7 @@
 #include "services/webnn/buildflags.h"
 #include "services/webnn/public/cpp/webnn_types.h"
 #include "services/webnn/public/mojom/features.mojom-features.h"
+#include "services/webnn/public/mojom/webnn_compiler_context.mojom.h"
 #include "services/webnn/public/mojom/webnn_context.mojom.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
@@ -289,6 +291,9 @@ class WebNNGraphImplBackendTest : public testing::Test,
   mojo::Remote<mojom::WebNNGraphBuilder> BindNewGraphBuilderRemote();
 
   mojo::Remote<mojom::WebNNContext>& context() { return webnn_context_; }
+  mojo::Remote<mojom::WebNNCompilerContext>& compiler_context() {
+    return compiler_context_;
+  }
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -296,6 +301,7 @@ class WebNNGraphImplBackendTest : public testing::Test,
   WebNNTestEnvironment webnn_test_environment_;
   mojo::Remote<mojom::WebNNContextProvider> provider_remote_;
   mojo::Remote<mojom::WebNNContext> webnn_context_;
+  mojo::Remote<mojom::WebNNCompilerContext> compiler_context_;
 };
 
 void WebNNGraphImplBackendTest::SetUp() {
@@ -340,6 +346,9 @@ class WebNNGraphImplBackendTest : public testing::Test,
   mojo::Remote<mojom::WebNNGraphBuilder> BindNewGraphBuilderRemote();
 
   mojo::Remote<mojom::WebNNContext>& context() { return webnn_context_; }
+  mojo::Remote<mojom::WebNNCompilerContext>& compiler_context() {
+    return compiler_context_;
+  }
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -347,6 +356,7 @@ class WebNNGraphImplBackendTest : public testing::Test,
   WebNNTestEnvironment webnn_test_environment_;
   mojo::Remote<mojom::WebNNContextProvider> provider_remote_;
   mojo::Remote<mojom::WebNNContext> webnn_context_;
+  mojo::Remote<mojom::WebNNCompilerContext> compiler_context_;
 };
 
 void WebNNGraphImplBackendTest::SetUp() {
@@ -437,14 +447,31 @@ void WebNNGraphImplBackendTest::SetUpBase() {
   if (create_context_result->is_success()) {
     webnn_context_.Bind(
         std::move(create_context_result->get_success()->context_remote));
+    if (create_context_result->get_success()
+            ->compiler_context_remote.is_valid()) {
+      compiler_context_.Bind(std::move(
+          create_context_result->get_success()->compiler_context_remote));
+    }
   }
   EXPECT_FALSE(create_context_result->is_error())
       << create_context_result->get_error()->message;
   EXPECT_TRUE(webnn_context_.is_bound());
+#if BUILDFLAG(IS_MAC)
+  if (!IsIncognito() && base::mac::MacOSVersion() >= 14'04'00 &&
+      base::mac::GetCPUType() == base::mac::CPUType::kArm &&
+      base::FeatureList::IsEnabled(mojom::features::kWebNNCoreML)) {
+    EXPECT_THAT(webnn_test_environment_.GetContextBackendNames(),
+                testing::ElementsAre("CoreML"));
+    EXPECT_EQ(
+        compiler_context_.is_bound(),
+        base::FeatureList::IsEnabled(mojom::features::kWebNNCompilerProcess));
+  }
+#endif
 }
 
 void WebNNGraphImplBackendTest::TearDown() {
   // Give WebNNContext a chance to run disconnect.
+  compiler_context_.reset();
   webnn_context_.reset();
   webnn_test_environment_.RunUntilIdle();
 }
@@ -452,7 +479,11 @@ void WebNNGraphImplBackendTest::TearDown() {
 mojo::Remote<mojom::WebNNGraphBuilder>
 WebNNGraphImplBackendTest::BindNewGraphBuilderRemote() {
   mojo::Remote<mojom::WebNNGraphBuilder> remote;
-  webnn_context_->CreateGraphBuilder(remote.BindNewPipeAndPassReceiver());
+  if (compiler_context_.is_bound()) {
+    compiler_context_->CreateGraphBuilder(remote.BindNewPipeAndPassReceiver());
+  } else {
+    webnn_context_->CreateGraphBuilder(remote.BindNewPipeAndPassReceiver());
+  }
   return remote;
 }
 
@@ -3844,6 +3875,7 @@ TEST_P(WebNNGraphImplBackendTest, DestroyContextDuringBuild) {
                  result) { NOTREACHED(); }));
 
   // Destroy the context and wait for any pending tasks to complete.
+  compiler_context().reset();
   context().reset();
   webnn_test_environment_.RunUntilIdle();
 }
