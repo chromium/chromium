@@ -104,8 +104,9 @@ void ZygoteCommunication::ReinitializeLogging(
 
   base::AutoLock lock(control_lock_);
   EnsureLaunchFinishedLocked();
-  if (!SendMessage(pickle, &fds))
+  if (!SendMessage(pickle, &fds)) {
     DLOG(WARNING) << "Unable to reinitialize logging";
+  }
 }
 
 pid_t ZygoteCommunication::ForkRequest(
@@ -125,8 +126,9 @@ pid_t ZygoteCommunication::ForkRequest(
   pickle.WriteString(process_type);
   pickle.WriteInt(argv.size());
   for (std::vector<std::string>::const_iterator i = argv.begin();
-       i != argv.end(); ++i)
+       i != argv.end(); ++i) {
     pickle.WriteString(*i);
+  }
   std::unique_ptr<icu::TimeZone> timezone(icu::TimeZone::createDefault());
   icu::UnicodeString timezone_id;
   pickle.WriteString16(
@@ -157,8 +159,9 @@ pid_t ZygoteCommunication::ForkRequest(
   {
     base::AutoLock lock(control_lock_);
     EnsureLaunchFinishedLocked();
-    if (!SendMessage(pickle, &fds))
+    if (!SendMessage(pickle, &fds)) {
       return base::kNullProcessHandle;
+    }
     peer_sock.reset();
 
     {
@@ -182,8 +185,9 @@ pid_t ZygoteCommunication::ForkRequest(
       base::Pickle pid_pickle;
       pid_pickle.WriteInt(kZygoteCommandForkRealPID);
       pid_pickle.WriteInt(real_pid);
-      if (!SendMessage(pid_pickle, nullptr))
+      if (!SendMessage(pid_pickle, nullptr)) {
         return base::kNullProcessHandle;
+      }
     }
 
     // Read the reply, which pickles the PID and an optional UMA enumeration.
@@ -193,8 +197,9 @@ pid_t ZygoteCommunication::ForkRequest(
 
     base::PickleIterator iter = base::PickleIterator::WithData(
         UNSAFE_TODO(base::span(buf, base::checked_cast<size_t>(len))));
-    if (len <= 0 || !iter.ReadInt(&pid))
+    if (len <= 0 || !iter.ReadInt(&pid)) {
       return base::kNullProcessHandle;
+    }
 
     // If there is a nonempty UMA name string, then there is a UMA
     // enumeration to record.
@@ -217,8 +222,9 @@ pid_t ZygoteCommunication::ForkRequest(
       uma_histogram->Add(uma_sample);
     }
 
-    if (pid <= 0)
+    if (pid <= 0) {
       return base::kNullProcessHandle;
+    }
   }
 
   ZygoteChildBorn(pid);
@@ -231,8 +237,9 @@ void ZygoteCommunication::EnsureProcessTerminated(pid_t process) {
 
   pickle.WriteInt(kZygoteCommandReap);
   pickle.WriteInt(process);
-  if (!SendMessage(pickle, nullptr))
+  if (!SendMessage(pickle, nullptr)) {
     LOG(ERROR) << "Failed to send Reap message to zygote";
+  }
   ZygoteChildDied(process);
 }
 
@@ -258,8 +265,9 @@ void ZygoteCommunication::Init(ZygoteLaunchCallback launcher) {
   base::CommandLine cmd_line(chrome_path);
   cmd_line.AppendSwitchASCII(switches::kProcessType, switches::kZygoteProcess);
 
-  if (type_ == ZygoteType::kUnsandboxed)
+  if (type_ == ZygoteType::kUnsandboxed) {
     cmd_line.AppendSwitch(sandbox::policy::switches::kNoZygoteSandbox);
+  }
 
   const base::CommandLine& browser_command_line =
       *base::CommandLine::ForCurrentProcess();
@@ -290,8 +298,9 @@ void ZygoteCommunication::Init(ZygoteLaunchCallback launcher) {
   // simply queued in the socket until then.
   base::Pickle pickle;
   pickle.WriteInt(kZygoteCommandGetSandboxStatus);
-  if (!SendMessage(pickle, nullptr))
+  if (!SendMessage(pickle, nullptr)) {
     LOG(FATAL) << "Cannot communicate with zygote";
+  }
 
   init_ = true;
 }
@@ -317,18 +326,19 @@ base::TerminationStatus ZygoteCommunication::GetTerminationStatus(
     if (sent) {
       len = ReadReply(buf, sizeof(buf));
     } else {
+      // If SendMessage() failed there's a problem with the zygote, not the
+      // child whose status is being checked, so there's no informative status
+      // code to return. This will fall through to return the default
+      // TERMINATION_STATUS_NORMAL_TERMINATION, which isn't ideal, but
+      // SendMessage() failures are rare enough that it doesn't really matter.
       PLOG(ERROR) << "Failed to send GetTerminationStatus message to zygote";
-      // SendMessage() should very rarely fail, but if it does we return
-      // TERMINATION_STATUS_NORMAL_TERMINATION. If there are many dumps,
-      // investigate why SendMessage() is failing, and consider adding a
-      // TERMINATION_STATUS_UNKNOWN or similar.
-      base::debug::DumpWithoutCrashing();
     }
   }
 
   // Set this now to handle the error cases.
-  if (exit_code)
+  if (exit_code) {
     *exit_code = RESULT_CODE_NORMAL_EXIT;
+  }
   int status = base::TERMINATION_STATUS_NORMAL_TERMINATION;
 
   if (!sent) {
@@ -345,8 +355,9 @@ base::TerminationStatus ZygoteCommunication::GetTerminationStatus(
       LOG(WARNING)
           << "Error parsing GetTerminationStatus response from zygote.";
     } else {
-      if (exit_code)
+      if (exit_code) {
         *exit_code = tmp_exit_code;
+      }
       status = tmp_status;
     }
   }
