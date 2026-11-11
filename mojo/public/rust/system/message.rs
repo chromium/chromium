@@ -110,10 +110,10 @@ impl WritableMessage {
                 &mut self.message_handle,
                 message::AppendMessageDataFlags::empty(),
                 &bytes[total_bytes_written..],
-                handles,
+                // Regardless of bytes, the handles should only be written once,
+                // so leave an empty Vec behind for any subsequent iterations.
+                std::mem::take(&mut handles),
             )?;
-            // Regardless of bytes, the handles should only be written once.
-            handles = vec![];
 
             if total_bytes_written >= bytes.len() {
                 break;
@@ -177,7 +177,8 @@ impl ReadableWithHandlesMessage {
             &self.message_handle,
             Some(Vec::new().spare_capacity_mut()),
         ) {
-            // If the call succeeded, then no handles were attached, and we're done!
+            // If the call succeeded, then no handles were attached, and we're
+            // done!
             message::GetMessageDataStatus::Success { .. } => {
                 return Ok((vec![], self.into()));
             }
@@ -195,7 +196,8 @@ impl ReadableWithHandlesMessage {
 
         match message::MojoGetMessageData(&self.message_handle, Some(handles.spare_capacity_mut()))
         {
-            // If the call succeeded, then we successfully read the attached handles!
+            // If the call succeeded, then we successfully read the attached
+            // handles!
             message::GetMessageDataStatus::Success { num_handles_written, .. } => {
                 // SAFETY: `MojoGetMessageData` guarantees that the first
                 // `num_handles_written` elements of `handles`
@@ -222,7 +224,8 @@ impl ReadableWithHandlesMessage {
     /// - `Aborted`: if the message is in an unrecoverable State.
     pub fn read_bytes(&self) -> MojoResult<&[u8]> {
         match message::MojoGetMessageData(&self.message_handle, None) {
-            // If the call succeeded, then no handles were attached, and we're done!
+            // If the call succeeded, then no handles were attached, and we're
+            // done!
             message::GetMessageDataStatus::Success { bytes, .. } => {
                 return Ok(bytes);
             }
