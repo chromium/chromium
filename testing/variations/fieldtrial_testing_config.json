@@ -13241,7 +13241,7 @@
             ]
         }
     ],
-    "NewVoiceSearchUiInNtpRealbox": [
+    "NewVoiceSearchUiInNtpRealboxV2": [
         {
             "platforms": [
                 "android",
@@ -13252,7 +13252,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Arm4_Transcript_AutoEndpoint_20260923",
+                    "name": "Arm4_Transcript_AutoEndpoint_20261105",
                     "params": {
                         "VoiceSearchCoherenceRealboxAutoEndpoint": "true",
                         "VoiceSearchCoherenceRealboxHelperText": "true",
@@ -13263,9 +13263,7 @@
                     ]
                 }
             ]
-        }
-    ],
-    "NewVoiceSearchUiInNtpRealboxV2": [
+        },
         {
             "platforms": [
                 "chromeos",
