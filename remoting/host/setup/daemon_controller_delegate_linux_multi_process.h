@@ -6,16 +6,33 @@
 #define REMOTING_HOST_SETUP_DAEMON_CONTROLLER_DELEGATE_LINUX_MULTI_PROCESS_H_
 
 #include <memory>
+#include <string>
+#include <string_view>
 
+#include "base/memory/raw_ref.h"
 #include "remoting/host/setup/daemon_controller.h"
 
 namespace remoting {
+
+class HostType;
+class HostTypeEnvironment;
 
 // DaemonController::Delegate implementation for the multi-process Linux host.
 class DaemonControllerDelegateLinuxMultiProcess
     : public DaemonController::Delegate {
  public:
-  DaemonControllerDelegateLinuxMultiProcess();
+  // Creates a delegate for the multi-process `host_type`. SetConfigAndStart()
+  // validates the context (see HostType::ValidateStartHostHookContext())
+  // before writing the config, then runs the start hook of `host_type` (see
+  // HostType::RunStartHostHook()). Stop() stops and disables the
+  // multi-process host unit without changing the host type's state.
+  // `local_user_name` is as described in
+  // DaemonController::SetHostTypeForSetup(). `env` is used to query, start and
+  // stop systemd units.
+  DaemonControllerDelegateLinuxMultiProcess(
+      const HostType& host_type,
+      std::string_view local_user_name,
+      std::unique_ptr<HostTypeEnvironment> env);
 
   DaemonControllerDelegateLinuxMultiProcess(
       const DaemonControllerDelegateLinuxMultiProcess&) = delete;
@@ -46,6 +63,11 @@ class DaemonControllerDelegateLinuxMultiProcess
   DaemonController::UsageStatsConsent GetUsageStatsConsent() override;
   bool is_privileged() const override;
   bool is_multi_process() const override;
+
+ private:
+  raw_ref<const HostType> host_type_;
+  std::string local_user_name_;
+  std::unique_ptr<HostTypeEnvironment> env_;
 };
 
 }  // namespace remoting

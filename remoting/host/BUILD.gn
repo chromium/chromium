@@ -1057,13 +1057,18 @@ source_set("unit_tests") {
       "agent_integration_configurator_linux_unittest.cc",
       "disconnect_window_linux_unittest.cc",
       "pairing_registry_delegate_linux_unittest.cc",
+      "setup/daemon_controller_delegate_linux_multi_process_unittest.cc",
+      "setup/start_host_as_root_unittest.cc",
       "terminal_process_monitor_linux_unittest.cc",
     ]
     data = [ "$root_out_dir/remoting_locales/en-US.pak" ]
     deps += [
       "//components/dbus",
       "//remoting/host/installer/linux:unit_tests",
+      "//remoting/host/linux:host_types",
+      "//remoting/host/linux:host_types_test_util",
       "//remoting/host/linux:unit_tests",
+      "//remoting/host/setup:start_host_as_root",
       "//ui/gtk:gtk_config",
     ]
   }

@@ -6,22 +6,27 @@
 
 #include <unistd.h>
 
+#include <memory>
 #include <optional>
+#include <string>
+#include <string_view>
 #include <utility>
 
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/notimplemented.h"
 #include "base/process/launch.h"
-#include "base/strings/string_util.h"
 #include "base/values.h"
 #include "remoting/base/branding.h"
 #include "remoting/base/file_path_util_linux.h"
 #include "remoting/base/logging.h"
 #include "remoting/host/config_file_watcher.h"
 #include "remoting/host/host_config.h"
+#include "remoting/host/linux/host_type_environment.h"
+#include "remoting/host/linux/host_types.h"
 #include "remoting/host/setup/daemon_controller.h"
 
 namespace remoting {
@@ -29,18 +34,15 @@ namespace {
 
 // Runs a systemctl command with the given arguments. Returns true if the
 // command succeeded (i.e. exit code is 0), and false otherwise.
-bool RunSystemctlCommand(const base::CommandLine::StringVector& args,
-                         std::string* output = nullptr) {
+bool RunSystemctlCommand(const base::CommandLine::StringVector& args) {
   base::CommandLine command_line(base::FilePath("systemctl"));
   for (const auto& arg : args) {
     command_line.AppendArg(arg);
   }
-  std::string local_output;
-  bool result = base::GetAppOutputAndError(command_line, &local_output);
-  if (output) {
-    *output = local_output;
-  } else if (!result) {
-    LOG(ERROR) << "Failed to run systemctl command. Output: " << local_output;
+  std::string output;
+  bool result = base::GetAppOutputAndError(command_line, &output);
+  if (!result) {
+    LOG(ERROR) << "Failed to run systemctl command. Output: " << output;
   }
   return result;
 }
@@ -69,11 +71,11 @@ bool WriteConfigs(const base::DictValue& full_config) {
   }
 
   // The config dir needs to be readable and executable by everyone so that
-  // other users can read the unprivileged config.
+  // other users can read the unprivileged config. The directory isn't deleted
+  // on failure, since it also contains other files, e.g. the host type record.
   if (!base::SetPosixFilePermissions(config_dir, 0755)) {
     PLOG(ERROR) << "Failed to set permissions on config directory: "
                 << config_dir.value();
-    base::DeletePathRecursively(config_dir);
     return false;
   }
 
@@ -137,25 +139,32 @@ DaemonControllerDelegateLinuxMultiProcess::GetUnprivilegedConfigPath() {
 }
 
 DaemonControllerDelegateLinuxMultiProcess::
-    DaemonControllerDelegateLinuxMultiProcess() = default;
+    DaemonControllerDelegateLinuxMultiProcess(
+        const HostType& host_type,
+        std::string_view local_user_name,
+        std::unique_ptr<HostTypeEnvironment> env)
+    : host_type_(host_type),
+      local_user_name_(local_user_name),
+      env_(std::move(env)) {
+  CHECK(host_type.is_multi_process());
+  CHECK(env_);
+}
 
 DaemonControllerDelegateLinuxMultiProcess::
     ~DaemonControllerDelegateLinuxMultiProcess() = default;
 
 DaemonController::State DaemonControllerDelegateLinuxMultiProcess::GetState() {
   // Check if the multi-process host service is running.
-  std::string state;
-  if (RunSystemctlCommand({"is-active", "chrome-remote-desktop.service"},
-                          &state)) {
-    return DaemonController::STATE_STARTED;
-  }
-  base::TrimWhitespaceASCII(state, base::TRIM_ALL, &state);
+  std::string state = env_->GetUnitActiveState(kMultiProcessHostUnit);
   // See:
   // https://www.freedesktop.org/software/systemd/man/latest/systemctl.html
-  if (state == "inactive") {
+  if (state == "active" || state == "reloading" || state == "refreshing") {
+    // These are the states for which `systemctl is-active` succeeds.
+    return DaemonController::STATE_STARTED;
+  } else if (state == "inactive") {
     return DaemonController::STATE_STOPPED;
   } else if (state == "failed") {
-    LOG(ERROR) << "chrome-remote-desktop.service is in failed state.";
+    LOG(ERROR) << kMultiProcessHostUnit << " is in failed state.";
     return DaemonController::STATE_STOPPED;
   } else if (state == "activating") {
     return DaemonController::STATE_STARTING;
@@ -190,18 +199,30 @@ void DaemonControllerDelegateLinuxMultiProcess::SetConfigAndStart(
     return;
   }
 
+  // Checked before the config is written, so that e.g. an unsupported local
+  // user is reported before anything is changed.
+  HostTypeContext context(*env_, local_user_name_, IsCorpHostConfig(config));
+  if (!host_type_->ValidateStartHostHookContext(context)) {
+    LOG(ERROR) << "Cannot set up the " << host_type_->name() << " host.";
+    std::move(done).Run(DaemonController::RESULT_FAILED);
+    return;
+  }
+
+  // This also creates the config directory, which is where some host types
+  // write the session routing config file.
   if (!WriteConfigs(config)) {
     std::move(done).Run(DaemonController::RESULT_FAILED);
     return;
   }
 
-  if (RunSystemctlCommand(
-          {"enable", "--now", "chrome-remote-desktop.service"})) {
-    std::move(done).Run(DaemonController::RESULT_OK);
-  } else {
-    LOG(ERROR) << "Failed to enable and start chrome-remote-desktop.service";
+  // If a multi-process host config existed, HostStarterBase::StopOldHost()
+  // has already stopped the host service (see Stop()).
+  if (!host_type_->RunStartHostHook(context)) {
+    LOG(ERROR) << "Failed to start the " << host_type_->name() << " host.";
     std::move(done).Run(DaemonController::RESULT_FAILED);
+    return;
   }
+  std::move(done).Run(DaemonController::RESULT_OK);
 }
 
 void DaemonControllerDelegateLinuxMultiProcess::UpdateConfig(
@@ -237,8 +258,8 @@ void DaemonControllerDelegateLinuxMultiProcess::UpdateConfig(
   // SIGKILL instead of SIGTERM is used to ensure the daemon process is
   // terminated immediately without it attempting to shut down the sessions.
   if (!RunSystemctlCommand({"kill", "-s", "SIGKILL", "--kill-who=main",
-                            "chrome-remote-desktop.service"})) {
-    LOG(ERROR) << "Failed to restart chrome-remote-desktop.service";
+                            kMultiProcessHostUnit})) {
+    LOG(ERROR) << "Failed to restart " << kMultiProcessHostUnit;
     std::move(done).Run(DaemonController::RESULT_FAILED);
     return;
   }
@@ -253,13 +274,11 @@ void DaemonControllerDelegateLinuxMultiProcess::Stop(
     return;
   }
 
-  // Disable the service and stop the process immediately.
-  if (RunSystemctlCommand(
-          {"disable", "--now", "chrome-remote-desktop.service"})) {
-    std::move(done).Run(DaemonController::RESULT_OK);
-  } else {
-    std::move(done).Run(DaemonController::RESULT_FAILED);
-  }
+  // Only stops the host unit, which all multi-process host types share, so
+  // the host type's state is kept.
+  std::move(done).Run(env_->DisableAndStopUnit(kMultiProcessHostUnit)
+                          ? DaemonController::RESULT_OK
+                          : DaemonController::RESULT_FAILED);
 }
 
 DaemonController::UsageStatsConsent

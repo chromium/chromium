@@ -163,12 +163,22 @@ class DaemonController : public base::RefCountedThreadSafe<DaemonController> {
   };
 
 #if BUILDFLAG(IS_LINUX)
-  // Set the host type. If nullptr is passed (the default), the host type will
-  // be automatically determined by checking which host type is running. If none
-  // is running, HostType::GetDefaultHostType() will be used.
-  static void SetHostType(const HostType* type);
+  // Makes Create() use `type`, set up for `local_user_name` (may be empty, see
+  // CheckLocalUserForHostTypeSetup()), instead of the configured host type.
+  // Used by start-host and migrate-host, which may set up a host type that
+  // isn't configured yet. A multi-process delegate runs the start hook of
+  // `type` with `local_user_name` when it starts the host (see
+  // DaemonControllerDelegateLinuxMultiProcess).
+  static void SetHostTypeForSetup(const HostType& type,
+                                  std::string_view local_user_name = "");
 #endif
 
+  // Creates the DaemonController. On Linux, the delegate is for the host type
+  // set by SetHostTypeForSetup(), else the configured host type (see
+  // HostType::GetConfigured()), else the default host type. On Linux, unless
+  // SetHostTypeForSetup() was called, this performs blocking operations (see
+  // HostType::GetConfigured()), so it must be called on a sequence that allows
+  // blocking.
   static scoped_refptr<DaemonController> Create();
 
   explicit DaemonController(std::unique_ptr<Delegate> delegate);

@@ -153,6 +153,7 @@ class SingleProcessHostType : public HostType {
   bool requires_local_user() const override;
   bool ValidateStartHostHookContext(
       const HostTypeContext& context) const override;
+  bool NeedsStartHostHook(const HostTypeEnvironment& env) const override;
 
  protected:
   bool StartHostUnit(const HostTypeContext& context) const override;
@@ -230,6 +231,13 @@ bool SingleProcessHostType::ValidateStartHostHookContext(
     return false;
   }
   return true;
+}
+
+bool SingleProcessHostType::NeedsStartHostHook(
+    const HostTypeEnvironment& env) const {
+  // The start hook is only needed to stop leftover units (see SetUpState()).
+  return env.IsUnitEnabled(kMultiProcessHostUnit) ||
+         env.IsUnitActive(kMultiProcessHostUnit);
 }
 
 bool SingleProcessHostType::StartHostUnit(
@@ -484,16 +492,7 @@ bool HostType::WriteHostTypeRecord(const HostTypeEnvironment& env) const {
   return true;
 }
 
-bool HostType::SetUpAndStartHost(const HostTypeContext& context,
-                                 bool keep_existing_setup) const {
-  if (keep_existing_setup) {
-    std::cout << "Keeping the existing " << name() << " setup.\n";
-    return StartHostUnit(context);
-  }
-  if (!RunStartHostHook(context)) {
-    std::cerr << "Failed to start the " << name() << " host.\n";
-    return false;
-  }
+bool HostType::NeedsStartHostHook(const HostTypeEnvironment& env) const {
   return true;
 }
 

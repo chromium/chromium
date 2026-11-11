@@ -13,18 +13,22 @@
 
 #include <algorithm>
 #include <iostream>
+#include <memory>
 #include <string>
 #include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/process/launch.h"
 #include "base/strings/string_split.h"
+#include "remoting/host/linux/host_type_environment.h"
+#include "remoting/host/linux/host_types.h"
 
 namespace remoting {
 
@@ -33,6 +37,7 @@ namespace {
 constexpr std::string_view kUserNameSwitch = "user-name";
 constexpr std::string_view kCorpUserSwitch = "corp-user";
 constexpr std::string_view kCloudUserSwitch = "cloud-user";
+constexpr std::string_view kHostTypeSwitch = "host-type";
 
 bool ValidateCommandLine(const base::CommandLine& command_line) {
   bool has_username = command_line.HasSwitch(kUserNameSwitch);
@@ -60,13 +65,13 @@ bool ValidateCommandLine(const base::CommandLine& command_line) {
   return true;
 }
 
-std::string ExtractUsernameFromCommandLine(
+}  // namespace
+
+std::string GetLocalUserNameFromCommandLine(
     const base::CommandLine& command_line) {
   // The 'user-name' flag contains the local account to run the host as.
   // If '--user-name' is not provided, then we will try to extract it from
   // either '--cloud-user' or '--corp-user'.
-  // Note, it is expected that the switch contents have been validated via
-  // ValidateCommandLine() before calling this function.
   std::string user_name;
   if (command_line.HasSwitch(kUserNameSwitch)) {
     user_name = command_line.GetSwitchValueASCII(kUserNameSwitch);
@@ -82,22 +87,26 @@ std::string ExtractUsernameFromCommandLine(
     }
   } else if (command_line.HasSwitch(kCloudUserSwitch)) {
     std::string arg_value = command_line.GetSwitchValueASCII(kCloudUserSwitch);
-    user_name = base::SplitStringOnce(arg_value, '@')->first;
+    // ValidateCommandLine() rejects a `--cloud-user` that is not an email
+    // address.
+    auto parts = base::SplitStringOnce(arg_value, '@');
+    if (parts) {
+      user_name = std::string(parts->first);
+    }
   }
 
   return user_name;
 }
 
-}  // namespace
-
-int StartHostAsRoot() {
-  DCHECK(getuid() == 0);
+int StartHostAsRoot(const HostType& host_type) {
+  CHECK_EQ(getuid(), 0u);
+  CHECK(!host_type.is_multi_process());
 
   base::CommandLine& command_line = *base::CommandLine::ForCurrentProcess();
   if (!ValidateCommandLine(command_line)) {
     return 1;
   }
-  std::string user_name = ExtractUsernameFromCommandLine(command_line);
+  std::string user_name = GetLocalUserNameFromCommandLine(command_line);
   if (user_name.empty()) {
     std::cerr << "A username and/or email must be provided from one of the "
                  "following switches:\n"
@@ -136,6 +145,10 @@ int StartHostAsRoot() {
   int return_value = 1;
   command_line.RemoveSwitch(kUserNameSwitch);
   command_line.AppendSwitch("no-start");
+  // The child only registers the host as the user, and must use the host type
+  // chosen here rather than the configured one.
+  command_line.RemoveSwitch(kHostTypeSwitch);
+  command_line.AppendSwitchASCII(kHostTypeSwitch, host_type.name());
   std::vector<std::string> create_config_command_line{
       "/usr/bin/sudo",
       "-u",
@@ -158,16 +171,12 @@ int StartHostAsRoot() {
     return return_value;
   }
 
-  std::vector<std::string> start_service_command_line{
-      "systemctl", "enable", "--now",
-      std::string("chrome-remote-desktop@") + user_name};
-
-  return_value = 1;
-  auto start_service_process =
-      base::LaunchProcess(start_service_command_line, base::LaunchOptions());
-  if (!start_service_process.WaitForExit(&return_value) || return_value != 0) {
-    std::cerr << "Failed to enable host service.\n";
-    return return_value;
+  // `is_corp_host` is only used to set up multi-process host types.
+  std::unique_ptr<HostTypeEnvironment> env = HostTypeEnvironment::Create();
+  HostTypeContext context(*env, user_name, /*is_corp_host=*/false);
+  if (!host_type.RunStartHostHook(context)) {
+    std::cerr << "Failed to start the " << host_type.name() << " host.\n";
+    return 1;
   }
   std::cout << "Host service started successfully.\n";
   return 0;

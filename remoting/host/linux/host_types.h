@@ -114,24 +114,24 @@ class HostType {
   // operations.
   bool WriteHostTypeRecord(const HostTypeEnvironment& env) const;
 
-  // Starts the host of this host type. Called as root after the host config
-  // has been written. If `keep_existing_setup` is true, this host type is
-  // already set up (e.g. it is running, and the host is set up again with the
-  // same host type), so its state is kept, and only its host unit is started.
-  // Otherwise, its start hook is run (see RunStartHostHook()), which also stops
-  // leftover units of other host types. No other host type's stop hook is
-  // run, since switching the host type of a running host is left to
-  // migrate-host. Returns false on failure. Performs blocking operations.
-  bool SetUpAndStartHost(const HostTypeContext& context,
-                         bool keep_existing_setup) const;
+  // Returns whether start-host must run this host type's start hook, as root,
+  // to set it up, e.g. because the hook would stop leftover units of other
+  // host types. If not, start-host can set up the single-process host as the
+  // user; the host script then enables and starts the host unit, which still
+  // asks for root through polkit or sudo. Performs blocking operations. The
+  // default implementation returns true.
+  virtual bool NeedsStartHostHook(const HostTypeEnvironment& env) const;
 
   // Validates `context` (see ValidateStartHostHookContext()), records this
   // host type as the configured one (see WriteHostTypeRecord()), then sets up
   // the state of this host type and enables and starts its host unit. Called
   // as root when setting up this host type, after the host config has been
-  // written. The record is written before any state is changed, so if a later
-  // step fails, it still names this host type, and running the start hook
-  // again repairs the setup. Returns false on failure.
+  // written. It also stops leftover units of other host types, but doesn't run
+  // their stop hooks, since switching the host type of a running host is left
+  // to migrate-host. The record is written before any state is changed, so if
+  // a later step fails, it still names this host type. It may be run again on
+  // a host that is already set up with this host type, e.g. to repair it.
+  // Returns false on failure. Performs blocking operations.
   bool RunStartHostHook(const HostTypeContext& context) const;
 
   // Stops and disables the host unit of this host type, then cleans up its
@@ -143,8 +143,7 @@ class HostType {
 
  protected:
   // Enables and starts the host unit of this host type, without changing its
-  // state. See RunStartHostHook(). Also used directly by SetUpAndStartHost()
-  // when the existing setup is kept. Returns false on failure.
+  // state. See RunStartHostHook(). Returns false on failure.
   virtual bool StartHostUnit(const HostTypeContext& context) const = 0;
 
   // Stops and disables the host unit of this host type, without changing its

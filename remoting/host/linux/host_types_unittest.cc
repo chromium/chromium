@@ -668,19 +668,16 @@ TEST_F(HostTypeTest, GdmManagedStopHook_KeepsRoutingFileIfUnitFailsToStop) {
   EXPECT_FALSE(base::PathExists(backup_path_));
 }
 
-TEST_F(HostTypeTest, SetUpAndStartHost_SingleProcessKept_OnlyStartsHostUnit) {
-  // Would be stopped by the start hook of the single-process host type.
-  env_->SetUnitEnabled(kMultiProcessUnit);
-  WriteRoutingConfig("{}");
+TEST_F(HostTypeTest, SingleProcessStartHook_AlreadySetUp_OnlyStartsHostUnit) {
+  env_->SetUnitActive(kSingleProcessUnit);
+  env_->SetUnitEnabled(kSingleProcessUnit);
 
-  EXPECT_TRUE(single_process()->SetUpAndStartHost(
-      HostTypeContext(*env_, kUserName, /*is_corp_host=*/false),
-      /*keep_existing_setup=*/true));
+  EXPECT_TRUE(single_process()->RunStartHostHook(
+      HostTypeContext(*env_, kUserName, /*is_corp_host=*/false)));
 
   EXPECT_THAT(env_->unit_operations(),
               ElementsAre(base::StrCat({"enable ", kSingleProcessUnit})));
   EXPECT_TRUE(env_->IsUnitActive(kSingleProcessUnit));
-  EXPECT_EQ(ReadContent(routing_config_path_), "{}");
 }
 
 TEST_F(HostTypeTest, Hooks_OrderOfUnitAndStateMethods) {
@@ -710,97 +707,33 @@ TEST_F(HostTypeTest, Hooks_StopAtFirstFailure) {
                                "fake.SetUpState", "fake.StopHostUnit"));
 }
 
-TEST_F(HostTypeTest, SetUpAndStartHost_KeepExistingSetup_OnlyStartsHostUnit) {
-  std::vector<std::string> log;
-  FakeHostType type("fake", log);
-
-  EXPECT_TRUE(
-      type.SetUpAndStartHost(HostTypeContext(*env_, "", /*is_corp_host=*/false),
-                             /*keep_existing_setup=*/true));
-
-  EXPECT_THAT(log, ElementsAre("fake.StartHostUnit"));
-}
-
-TEST_F(HostTypeTest, SetUpAndStartHost_NewSetup_RunsStartHook) {
-  std::vector<std::string> log;
-  FakeHostType type("fake", log);
-
-  EXPECT_TRUE(
-      type.SetUpAndStartHost(HostTypeContext(*env_, "", /*is_corp_host=*/false),
-                             /*keep_existing_setup=*/false));
-
-  EXPECT_THAT(log, ElementsAre("fake.ValidateStartHostHookContext",
-                               "fake.SetUpState", "fake.StartHostUnit"));
-}
-
-TEST_F(HostTypeTest, SetUpAndStartHost_StartHookFails_ReturnsFalse) {
-  std::vector<std::string> log;
-  FakeHostType type("fake", log);
-  type.set_fail_method("StartHostUnit");
-
-  EXPECT_FALSE(
-      type.SetUpAndStartHost(HostTypeContext(*env_, "", /*is_corp_host=*/false),
-                             /*keep_existing_setup=*/false));
-
-  EXPECT_THAT(log, ElementsAre("fake.ValidateStartHostHookContext",
-                               "fake.SetUpState", "fake.StartHostUnit"));
-}
-
-TEST_F(HostTypeTest,
-       SetUpAndStartHost_KeepExistingSetup_StartFails_ReturnsFalse) {
-  std::vector<std::string> log;
-  FakeHostType type("fake", log);
-  type.set_fail_method("StartHostUnit");
-
-  EXPECT_FALSE(
-      type.SetUpAndStartHost(HostTypeContext(*env_, "", /*is_corp_host=*/false),
-                             /*keep_existing_setup=*/true));
-
-  EXPECT_THAT(log, ElementsAre("fake.StartHostUnit"));
-}
-
-TEST_F(HostTypeTest, SetUpAndStartHost_GdmManaged_StopsSingleProcessUnit) {
-  env_->SetUnitActive(kSingleProcessUnit);
-  env_->SetUnitEnabled(kSingleProcessUnit);
-  WriteRoutingConfig("{}");
-
-  EXPECT_TRUE(gdm_managed()->SetUpAndStartHost(
-      HostTypeContext(*env_, kUserName, /*is_corp_host=*/false),
-      /*keep_existing_setup=*/false));
-
-  EXPECT_THAT(env_->unit_operations(),
-              ElementsAre(base::StrCat({"disable ", kSingleProcessUnit}),
-                          base::StrCat({"enable ", kMultiProcessUnit})));
-  EXPECT_FALSE(base::PathExists(routing_config_path_));
-  EXPECT_EQ(ReadContent(backup_path_), "{}");
-}
-
-TEST_F(HostTypeTest, SetUpAndStartHost_SingleProcess_StopsMultiProcessUnit) {
+TEST_F(HostTypeTest, GdmManagedStartHook_AlreadySetUp_OnlyStartsHostUnit) {
   env_->SetUnitActive(kMultiProcessUnit);
   env_->SetUnitEnabled(kMultiProcessUnit);
-  WriteRoutingConfig("{}");
 
-  EXPECT_TRUE(single_process()->SetUpAndStartHost(
-      HostTypeContext(*env_, kUserName, /*is_corp_host=*/false),
-      /*keep_existing_setup=*/false));
-
-  EXPECT_THAT(env_->unit_operations(),
-              ElementsAre(base::StrCat({"disable ", kMultiProcessUnit}),
-                          base::StrCat({"enable ", kSingleProcessUnit})));
-  // The single-process host doesn't use the routing file.
-  EXPECT_EQ(ReadContent(routing_config_path_), "{}");
-}
-
-TEST_F(HostTypeTest, SetUpAndStartHost_GdmManagedKept_KeepsRoutingFile) {
-  WriteRoutingConfig("{}");
-
-  EXPECT_TRUE(gdm_managed()->SetUpAndStartHost(
-      HostTypeContext(*env_, "", /*is_corp_host=*/false),
-      /*keep_existing_setup=*/true));
+  EXPECT_TRUE(gdm_managed()->RunStartHostHook(
+      HostTypeContext(*env_, "", /*is_corp_host=*/false)));
 
   EXPECT_THAT(env_->unit_operations(),
               ElementsAre(base::StrCat({"enable ", kMultiProcessUnit})));
-  EXPECT_EQ(ReadContent(routing_config_path_), "{}");
+  EXPECT_FALSE(base::PathExists(routing_config_path_));
+}
+
+TEST_F(HostTypeTest, NeedsStartHostHook_SingleProcess) {
+  EXPECT_FALSE(single_process()->NeedsStartHostHook(*env_));
+
+  env_->SetUnitEnabled(kMultiProcessUnit);
+  EXPECT_TRUE(single_process()->NeedsStartHostHook(*env_));
+}
+
+TEST_F(HostTypeTest, NeedsStartHostHook_SingleProcess_MultiProcessUnitActive) {
+  env_->SetUnitActive(kMultiProcessUnit);
+
+  EXPECT_TRUE(single_process()->NeedsStartHostHook(*env_));
+}
+
+TEST_F(HostTypeTest, NeedsStartHostHook_MultiProcess) {
+  EXPECT_TRUE(gdm_managed()->NeedsStartHostHook(*env_));
 }
 
 TEST_F(HostTypeTest, IsUserNameSafeForUnitName) {
