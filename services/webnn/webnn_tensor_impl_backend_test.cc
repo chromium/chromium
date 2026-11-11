@@ -18,6 +18,7 @@
 #include "mojo/public/cpp/system/functions.h"
 #include "services/webnn/buildflags.h"
 #include "services/webnn/error.h"
+#include "services/webnn/public/cpp/in_renderer_tensor_handle.h"
 #include "services/webnn/public/cpp/ml_tensor_usage.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/mojom/features.mojom-features.h"
@@ -84,7 +85,7 @@ class WebNNTensorImplBackendTest : public testing::Test {
 
  protected:
   base::expected<CreateContextSuccess, webnn::mojom::Error::Code>
-  CreateWebNNContext();
+  CreateWebNNContext(mojom::Device device = mojom::Device::kGpu);
 
   base::test::ScopedFeatureList scoped_feature_list_;
   WebNNTestEnvironment webnn_test_environment_;
@@ -116,7 +117,7 @@ class WebNNTensorImplBackendTest : public testing::Test {
 
  protected:
   base::expected<CreateContextSuccess, webnn::mojom::Error::Code>
-  CreateWebNNContext();
+  CreateWebNNContext(mojom::Device device = mojom::Device::kGpu);
 
   base::test::ScopedFeatureList scoped_feature_list_;
   WebNNTestEnvironment webnn_test_environment_;
@@ -130,12 +131,11 @@ void WebNNTensorImplBackendTest::TearDown() {
 }
 
 base::expected<CreateContextSuccess, webnn::mojom::Error::Code>
-WebNNTensorImplBackendTest::CreateWebNNContext() {
+WebNNTensorImplBackendTest::CreateWebNNContext(mojom::Device device) {
   base::test::TestFuture<mojom::CreateContextResultPtr> create_context_future;
   webnn_provider_remote_->CreateWebNNContext(
       mojom::CreateContextOptions::New(
-          mojom::Device::kGpu,
-          mojom::CreateContextOptions::PowerPreference::kDefault),
+          device, mojom::CreateContextOptions::PowerPreference::kDefault),
       create_context_future.GetCallback());
   auto create_context_result = create_context_future.Take();
   if (create_context_result->is_success()) {
@@ -487,6 +487,87 @@ TEST_F(WebNNTensorImplBackendTest,
   EXPECT_EQ(bad_message_helper.GetLastBadMessage(),
             kBadMessageAsyncExportNotSupported);
 }
+
+#if BUILDFLAG(WEBNN_USE_TFLITE) || BUILDFLAG(WEBNN_USE_LITERT)
+// Verifies that when two `InRendererTensorHandle::BeginReadTensor` calls are
+// issued before a `WriteTensor`, completing the first read and allowing the
+// subsequent write to replace the tensor's underlying buffer does not
+// invalidate or overwrite the second in-flight read's buffer span before its
+// `read_complete` closure is run.
+TEST_F(WebNNTensorImplBackendTest, InRendererConcurrentReadsAndWriteTest) {
+#if BUILDFLAG(IS_WIN)
+  // Disable the GPU-process ONNX Runtime backend on Windows so context creation
+  // falls back to the in-renderer LiteRT backend that registers
+  // `InRendererTensorHandle`.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      webnn::mojom::features::kWebNNOnnxRuntime);
+#endif  // BUILDFLAG(IS_WIN)
+
+  BadMessageTestHelper bad_message_helper;
+
+  base::expected<CreateContextSuccess, webnn::mojom::Error::Code>
+      context_result = CreateWebNNContext(mojom::Device::kCpu);
+  if (!context_result.has_value() &&
+      context_result.error() == mojom::Error::Code::kNotSupportedError) {
+    GTEST_SKIP() << "WebNN not supported on this platform.";
+  }
+  ASSERT_TRUE(context_result.has_value());
+  mojo::Remote<mojom::WebNNContext> webnn_context_remote =
+      std::move(context_result.value().webnn_context_remote);
+  ASSERT_TRUE(webnn_context_remote.is_bound());
+
+  base::expected<CreateTensorSuccess, webnn::mojom::Error::Code> tensor_result =
+      CreateWebNNTensor(
+          webnn_context_remote,
+          mojom::TensorInfo::New(
+              OperandDescriptor::UnsafeCreateForTesting(
+                  OperandDataType::kUint8, std::array<uint32_t, 2>{2, 2}),
+              MLTensorUsage{MLTensorUsageFlags::kWrite,
+                            MLTensorUsageFlags::kRead}));
+  ASSERT_TRUE(tensor_result.has_value());
+
+  scoped_refptr<InRendererTensorHandle> handle =
+      InRendererTensorRegistry::Get(tensor_result->webnn_tensor_handle);
+  ASSERT_TRUE(handle);
+
+  const std::array<const uint8_t, 4> initial_data{0x11, 0x11, 0x11, 0x11};
+  const std::array<const uint8_t, 4> updated_data{0x22, 0x22, 0x22, 0x22};
+  handle->WriteTensor(initial_data);
+
+  base::test::TestFuture<base::span<const uint8_t>, base::OnceClosure>
+      read1_future;
+  base::test::TestFuture<base::span<const uint8_t>, base::OnceClosure>
+      read2_future;
+  handle->BeginReadTensor(read1_future.GetCallback());
+  handle->BeginReadTensor(read2_future.GetCallback());
+  handle->WriteTensor(updated_data);
+
+  auto [read1_span, read1_complete] = read1_future.Take();
+  EXPECT_EQ(read1_span, base::span(initial_data));
+  std::move(read1_complete).Run();
+
+  auto [read2_span, read2_complete] = read2_future.Take();
+
+  // Wait for a third read after `WriteTensor(updated_data)` to confirm the
+  // tensor's underlying buffer has already been replaced while `read2_span` is
+  // still held prior to running `read2_complete`.
+  base::test::TestFuture<base::span<const uint8_t>, base::OnceClosure>
+      read3_future;
+  handle->BeginReadTensor(read3_future.GetCallback());
+  auto [read3_span, read3_complete] = read3_future.Take();
+  EXPECT_EQ(read3_span, base::span(updated_data));
+  std::move(read3_complete).Run();
+
+  // `read2_span` must remain valid and still observe `initial_data` until
+  // `read2_complete` is run.
+  EXPECT_EQ(read2_span, base::span(initial_data));
+  std::move(read2_complete).Run();
+
+  webnn_context_remote.FlushForTesting();
+  EXPECT_FALSE(bad_message_helper.GetLastBadMessage().has_value());
+}
+#endif  // BUILDFLAG(WEBNN_USE_TFLITE) || BUILDFLAG(WEBNN_USE_LITERT)
 
 }  // namespace
 

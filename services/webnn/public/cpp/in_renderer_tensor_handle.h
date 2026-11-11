@@ -26,17 +26,17 @@ namespace webnn {
 // Deletion is deferred to `owning_task_runner` (via
 // `base::RefCountedDeleteOnSequence`) rather than using plain
 // `RefCountedThreadSafe`, because subclasses typically hold sequence-affine
-// resources (e.g. `QueueableResourceState`) that must never be destroyed off
+// resources (e.g. `base::WeakPtr`) that must never be destroyed off
 // their owning sequence, even though the last reference to this handle can be
 // dropped from Blink's main thread (e.g. during garbage collection).
 class COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) InRendererTensorHandle
     : public base::RefCountedDeleteOnSequence<InRendererTensorHandle> {
  public:
-  // Invoked on the caller's sequence once the tensor is locked for reading.
-  // `src` views backend-owned memory and is only valid until `read_complete`
-  // is run. The caller must copy out of it (ideally straight into its final
-  // destination) and then run `read_complete` exactly once, which unlocks the
-  // tensor for the next queued operation.
+  // Invoked on the caller's sequence once the tensor data has been read on the
+  // backend's owning sequence. `src` views a buffer kept alive by
+  // `read_complete` and is only valid until `read_complete` is run. The caller
+  // must copy out of `src` and then run `read_complete` (or let it be
+  // destroyed) to release the backing buffer.
   using ReadCallback =
       base::OnceCallback<void(base::span<const uint8_t> src,
                               base::OnceClosure read_complete)>;
@@ -46,8 +46,8 @@ class COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) InRendererTensorHandle
   virtual void WriteTensor(base::span<const uint8_t> src) = 0;
 
   // Schedules a read on the backend's owning task runner, then invokes
-  // `ready_to_copy` on the caller's sequence once the tensor is locked for
-  // reading. See `ReadCallback` above.
+  // `ready_to_copy` on the caller's sequence with a snapshot of the tensor's
+  // contents. See `ReadCallback` above.
   virtual void BeginReadTensor(ReadCallback ready_to_copy) = 0;
 
   // Destroys the backend tensor once all previously scheduled operations on

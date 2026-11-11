@@ -93,26 +93,6 @@ source_set("webnn_service_base") {
   defines = [ "IS_WEBNN_SERVICE_IMPL" ]
 }
 
-if (webnn_use_tflite || webnn_use_litert) {
-  source_set("webnn_service_resource_management") {
-    visibility = [ ":*" ]
-
-    sources = [
-      "queueable_resource_state.h",
-      "queueable_resource_state_base.cc",
-      "queueable_resource_state_base.h",
-      "resource_task.cc",
-      "resource_task.h",
-    ]
-
-    deps = [ "//base" ]
-
-    configs += [ "//build/config/compiler:prevent_unsafe_narrowing" ]
-
-    defines = [ "IS_WEBNN_SERVICE_IMPL" ]
-  }
-}
-
 component("webnn_service") {
   _configs = configs
   configs = []
@@ -260,10 +240,6 @@ component("webnn_service") {
       "webnn_compiler_service_impl.cc",
       "webnn_compiler_service_impl.h",
     ]
-  }
-
-  if (webnn_use_tflite || webnn_use_litert) {
-    deps += [ ":webnn_service_resource_management" ]
   }
 }
 

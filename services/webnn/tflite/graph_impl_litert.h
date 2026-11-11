@@ -12,6 +12,8 @@
 #include "base/files/file.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
+#include "base/thread_annotations.h"
 #include "base/types/expected.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -19,7 +21,6 @@
 #include "services/webnn/public/cpp/webnn_types.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-forward.h"
 #include "services/webnn/public/mojom/webnn_error.mojom-forward.h"
-#include "services/webnn/queueable_resource_state.h"
 #include "services/webnn/tflite/graph_builder_tflite.h"
 #include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_graph_impl.h"
@@ -51,12 +52,7 @@ class GraphImplLiteRt final : public WebNNGraphImpl {
 
   class ComputeResources;
   GraphImplLiteRt(ComputeResourceInfo compute_resource_info,
-                  std::vector<std::pair<std::string, tflite::TensorDescriptor>>
-                      input_name_to_descriptor,
-                  std::vector<std::pair<std::string, tflite::TensorDescriptor>>
-                      output_name_to_descriptor,
-                  scoped_refptr<QueueableResourceState<ComputeResources>>
-                      compute_resources_state,
+                  std::unique_ptr<ComputeResources> compute_resources,
                   WebNNContextImpl& context,
                   std::vector<mojom::Device> devices);
 
@@ -120,21 +116,17 @@ class GraphImplLiteRt final : public WebNNGraphImpl {
       base::expected<std::unique_ptr<ComputeResources>, mojom::ErrorPtr>
           result);
 
-  // Execute the compiled platform graph asynchronously. The inputs were
-  // validated in base class so we can use them to compute directly.
+  // Execute the compiled platform graph. The inputs were validated in base
+  // class so we can use them to compute directly.
   void DispatchImpl(
       base::flat_map<std::string, scoped_refptr<WebNNTensorImpl>> named_inputs,
       base::flat_map<std::string, scoped_refptr<WebNNTensorImpl>> named_outputs)
       override;
 
-  scoped_refptr<QueueableResourceState<ComputeResources>>
-      compute_resources_state_;
-  std::vector<std::pair<std::string, tflite::TensorDescriptor>>
-      input_name_to_descriptor_;
-  std::vector<std::pair<std::string, tflite::TensorDescriptor>>
-      output_name_to_descriptor_;
+  SEQUENCE_CHECKER(sequence_checker_);
 
-  base::WeakPtrFactory<GraphImplLiteRt> weak_factory_{this};
+  std::unique_ptr<ComputeResources> compute_resources_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
 }  // namespace litert
