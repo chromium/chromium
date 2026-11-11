@@ -2561,6 +2561,9 @@ StyleRuleMixin* CSSParserImpl::ConsumeMixinRule(CSSParserTokenStream& stream) {
     observer_->EndRuleBody(stream.LookAheadOffset());
   }
 
+  if (style_sheet_) {
+    style_sheet_->SetHasMixinRules();
+  }
   return MakeGarbageCollected<StyleRuleMixin>(name, std::move(*parameters),
                                               std::move(child_rules));
 }

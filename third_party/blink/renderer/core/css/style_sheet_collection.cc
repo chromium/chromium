@@ -216,6 +216,9 @@ void StyleSheetCollection::UpdateMixins(
   bool mixin_cache_revision_changed = false;
   for (auto& [css_sheet, rule_set] : pending_active_style_sheets_) {
     StyleSheetContents* contents = css_sheet->Contents();
+    if (!contents->HasMixinRules()) {
+      continue;
+    }
     const uint64_t revision = contents->MixinCacheRevision();
     auto old_revision = mixin_cache_revisions_.find(contents);
     mixin_cache_revision_changed |=

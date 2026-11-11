@@ -176,6 +176,10 @@ class StyleEngineTest : public PageTestBase {
     return GetStyleEngine().GetDocumentStyleSheetCollection();
   }
 
+  wtf_size_t MixinCacheRevisionCount() {
+    return GetDocumentStyleSheetCollection().mixin_cache_revisions_.size();
+  }
+
   // Returns the total size of the random() base value caches (element-shared
   // and element-dependent).
   wtf_size_t GetRandomBaseValueCacheSize() {
@@ -261,6 +265,71 @@ TEST_F(StyleEngineTest, UnrelatedStyleChangePreservesMixinMapIdentity) {
       )CSS");
   UpdateAllLifecyclePhases();
   EXPECT_NE(original_identifier, collection.Mixins().map_identifier);
+}
+
+TEST_F(StyleEngineTest, MixinFreeSheetsSkipMixinBookkeeping) {
+  ScopedCSSMixinsForTest scoped_css_mixins(true);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @media (min-width: 1px) {
+        @supports (display: block) {
+          #target { color: green; }
+        }
+      }
+    </style>
+    <style id="unrelated">#unused { color: red; }</style>
+    <div id="target"></div>
+  )HTML");
+  UpdateAllLifecyclePhases();
+
+  EXPECT_EQ(0u, MixinCacheRevisionCount());
+  EXPECT_FALSE(GetDocumentStyleSheetCollection().Mixins().HasMixins());
+
+  GetElementById("unrelated")->setTextContent("#unused { color: blue; }");
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(0u, MixinCacheRevisionCount());
+}
+
+TEST_F(StyleEngineTest, MixinCacheRevisionsExcludeMixinFreeSheets) {
+  ScopedCSSMixinsForTest scoped_css_mixins(true);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @mixin --mixin() {
+        @result { color: green; }
+      }
+    </style>
+    <style>#target { @apply --mixin; }</style>
+    <style>#unused { color: red; }</style>
+    <div id="target"></div>
+  )HTML");
+  UpdateAllLifecyclePhases();
+
+  EXPECT_EQ(1u, MixinCacheRevisionCount());
+  EXPECT_TRUE(GetDocumentStyleSheetCollection().Mixins().HasMixins());
+}
+
+TEST_F(StyleEngineTest, RemovingLastMixinClearsMixinBookkeeping) {
+  ScopedCSSMixinsForTest scoped_css_mixins(true);
+  SetBodyInnerHTML(R"HTML(
+    <style id="mixins">
+      @mixin --mixin() {
+        @result { color: green; }
+      }
+    </style>
+  )HTML");
+  UpdateAllLifecyclePhases();
+
+  EXPECT_EQ(1u, MixinCacheRevisionCount());
+  EXPECT_TRUE(GetDocumentStyleSheetCollection().Mixins().HasMixins());
+
+  GetElementById("mixins")->setTextContent("#unused { color: red; }");
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(0u, MixinCacheRevisionCount());
+  EXPECT_FALSE(GetDocumentStyleSheetCollection().Mixins().HasMixins());
+
+  GetElementById("mixins")->setTextContent("#unused { color: blue; }");
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(0u, MixinCacheRevisionCount());
 }
 
 TEST_F(StyleEngineTest, AnalyzedInject) {

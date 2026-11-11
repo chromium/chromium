@@ -123,6 +123,7 @@ class CORE_EXPORT StyleSheetCollection
 
  private:
   friend class StyleCascadeTest;
+  friend class StyleEngineTest;
   void AddPendingActiveStyleSheetForTest(CSSStyleSheet* sheet) {
     pending_active_style_sheets_.push_back(std::pair(sheet, nullptr));
   }

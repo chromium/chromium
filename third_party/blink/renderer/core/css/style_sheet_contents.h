@@ -255,6 +255,11 @@ class CORE_EXPORT StyleSheetContents final
   void SetHasMediaQueries();
   bool HasMediaQueries() const { return has_media_queries_; }
 
+  // Includes imported sheets and inactive conditional rules. Conservatively
+  // remains true when mixin rules are removed.
+  void SetHasMixinRules();
+  bool HasMixinRules() const { return has_mixin_rules_; }
+
   bool DidLoadErrorOccur() const { return did_load_error_occur_; }
 
   // NOTE: “medium” must be the same as is later used for EnsureRuleSet(),
@@ -319,6 +324,7 @@ class CORE_EXPORT StyleSheetContents final
   bool is_mutable_ : 1;
   bool has_font_face_rule_ : 1;
   bool has_media_queries_ : 1;
+  bool has_mixin_rules_ : 1;
   bool has_single_owner_document_ : 1;
   bool is_used_from_text_cache_ : 1;
   bool is_used_from_resource_cache_ : 1;
@@ -329,9 +335,8 @@ class CORE_EXPORT StyleSheetContents final
   HeapHashSet<WeakMember<CSSStyleSheet>> loading_clients_;
   HeapHashSet<WeakMember<CSSStyleSheet>> completed_clients_;
 
-  // Mixins extracted from this stylesheet. We cache this not because
-  // it is expensive to compute (it isn't), but to have better control
-  // over when we need to invalidate based on mixins changing.
+  // Mixins extracted from this stylesheet. Caching avoids repeated rule
+  // traversal and controls when we invalidate based on mixins changing.
   // Generally cleared whenever rule_set_ is; this isn't strictly
   // required (if this style sheet only exports mixins that it doesn't
   // use itself), but it simplifies things a bit as long as we don't
