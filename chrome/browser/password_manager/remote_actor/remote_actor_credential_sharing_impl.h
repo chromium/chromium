@@ -12,7 +12,6 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/types/expected.h"
 #include "chrome/common/password_manager/remote_actor_credential_sharing.mojom.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/remote_actor/remote_actor_credential_sharing_controller.h"
@@ -20,7 +19,6 @@
 #include "content/public/browser/document_user_data.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
-#include "url/origin.h"
 
 class Profile;
 
@@ -33,13 +31,18 @@ namespace device_reauth {
 class DeviceAuthenticator;
 }
 
+namespace url {
+class Origin;
+}  // namespace url
+
 namespace password_manager {
 
 class RemoteActorSelectionDialogController;
 
 class RemoteActorCredentialSharingImpl
     : public chrome::mojom::RemoteActorCredentialSharing,
-      public content::DocumentUserData<RemoteActorCredentialSharingImpl> {
+      public content::DocumentUserData<RemoteActorCredentialSharingImpl>,
+      public RemoteActorCredentialSharingController::Delegate {
  public:
   // Factory callback type used to create the credential selection dialog.
   using DialogFactory = base::RepeatingCallback<
@@ -79,27 +82,6 @@ class RemoteActorCredentialSharingImpl
   friend class content::DocumentUserData<RemoteActorCredentialSharingImpl>;
   DOCUMENT_USER_DATA_KEY_DECL();
 
-  using CredentialOrError =
-      base::expected<PasswordForm, RemoteActorCredentialSharingResult>;
-  using AuthResult = base::expected<void, RemoteActorCredentialSharingResult>;
-
-  struct PendingRequest {
-    // The GAIA ID of the user requesting authentication.
-    std::string gaia_id;
-    // The origin for which credentials are requested.
-    url::Origin origin;
-    // The ID of the remote actor task requesting credentials.
-    std::string task_id;
-    // The callback to return the result to the Mojo caller.
-    RequestAgentAuthenticationCallback callback;
-  };
-
-  // Called when all password store queries have completed.
-  void OnAllLoginsRetrieved(
-      RemoteActorCredentialSharingController::CredentialsOrError credentials);
-  void ProceedWithCredential(PasswordForm selected_form,
-                             AuthResult auth_result);
-
   // Validates Mojo request preconditions (e.g., primary main frame, user
   // gesture).
   bool ValidateRequestPreconditions(const std::string& gaia_id,
@@ -110,24 +92,19 @@ class RemoteActorCredentialSharingImpl
   // credential sharing.
   bool IsAllowedByPolicy(Profile* profile);
 
-  // Shows the credential selection dialog for `credentials` and `origin`.
+  // RemoteActorCredentialSharingController::Delegate:
   void ShowCredentialSelection(
       std::vector<std::unique_ptr<PasswordForm>> credentials,
       const url::Origin& origin,
-      base::OnceCallback<void(CredentialOrError)> callback);
-
-  // Re-authenticates the user before sharing a credential for `origin`, if
-  // required.
-  void AuthenticateIfNeeded(const url::Origin& origin,
-                            base::OnceCallback<void(AuthResult)> callback);
+      base::OnceCallback<void(CredentialOrError)> callback) override;
+  void AuthenticateIfNeeded(
+      const url::Origin& origin,
+      base::OnceCallback<void(AuthResult)> callback) override;
 
   // Callback triggered when the user selects a credential or cancels the
   // dialog.
   void OnDialogResult(base::OnceCallback<void(CredentialOrError)> callback,
                       std::optional<PasswordForm> selected_form);
-
-  // Called with the selected credential, or the error if none was selected.
-  void OnCredentialSelected(CredentialOrError selected_form);
 
   // Callback triggered when device re-authentication completes.
   void OnAuthenticationResult(base::OnceCallback<void(AuthResult)> callback,
@@ -135,7 +112,7 @@ class RemoteActorCredentialSharingImpl
 
   // Callback triggered when the sharing service completes the operation.
   void OnShareCompleted(RequestAgentAuthenticationCallback callback,
-                        bool success);
+                        RemoteActorCredentialSharingResult result);
 
   // Asynchronously posts a failure response to the Mojo callback.
   void RespondWithError(RequestAgentAuthenticationCallback callback);
@@ -145,7 +122,6 @@ class RemoteActorCredentialSharingImpl
 
   DialogFactory dialog_factory_;
 
-  std::optional<PendingRequest> pending_request_;
   std::unique_ptr<RemoteActorCredentialSharingController> controller_;
   std::unique_ptr<RemoteActorSelectionDialogController> dialog_controller_;
   std::unique_ptr<device_reauth::DeviceAuthenticator> device_authenticator_;
