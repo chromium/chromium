@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.tabmodel;
 import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.url.GURL;
@@ -57,7 +56,7 @@ public class NextTabSelectionUtil {
      *   <li>If closing a tab in a non-active model, return current tab of active model.
      *   <li>If the current tab is not closing, stay on the current tab.
      *   <li>If closing upon exit, return the most recent active tab.
-     *   <li>If hierarchical next tab policy is active, prefer the parent tab (if expanded).
+     *   <li>If hierarchical next tab policy is active, prefer the hierarchical next tab.
      *   <li>Prefer a non-closing tab in the same expanded tab group as the closing tab.
      *   <li>Fall back to finding the nearest expanded non-closing tab (or collapsed if no expanded
      *       tab exists).
@@ -99,24 +98,9 @@ public class NextTabSelectionUtil {
         // Select the hierarchical next tab if policy is active.
         if (closingTabs.size() == 1
                 && NextTabPolicy.HIERARCHICAL == model.getNextTabPolicySupplier().get()) {
-            if (ChromeFeatureList.sTabOpenerTracking.isEnabled()) {
-                Tab hierarchicalNextTab =
-                        model.getHierarchicalNextTab(closingTabs.get(0), closingTabs);
-                if (hierarchicalNextTab != null) {
-                    return hierarchicalNextTab;
-                }
-            } else {
-                Tab parentTab =
-                        findTabInAllTabModels(
-                                model,
-                                modelDelegate,
-                                closingTabs.get(0).getParentId(),
-                                model.getCount() <= 1);
-                if (parentTab != null
-                        && validNextTab(parentTab, closingTabs)
-                        && !isTabGroupCollapsed(model, parentTab)) {
-                    return parentTab;
-                }
+            Tab hierarchicalNextTab = model.getHierarchicalNextTab(closingTabs.get(0), closingTabs);
+            if (hierarchicalNextTab != null) {
+                return hierarchicalNextTab;
             }
         }
 
@@ -285,23 +269,5 @@ public class NextTabSelectionUtil {
         if (url == null) return false;
 
         return !UrlUtilities.isNtpUrl(url);
-    }
-
-    private static @Nullable Tab findTabInAllTabModels(
-            TabModel model,
-            @Nullable TabModelDelegate modelDelegate,
-            int tabId,
-            boolean includeOtherModels) {
-        if (tabId == Tab.INVALID_TAB_ID) return null;
-        if (modelDelegate != null) {
-            boolean isIncognito = model.isIncognitoBranded();
-            Tab tab = modelDelegate.getModel(isIncognito).getTabById(tabId);
-            if (tab != null) return tab;
-            if (includeOtherModels) {
-                return modelDelegate.getModel(!isIncognito).getTabById(tabId);
-            }
-            return null;
-        }
-        return model.getTabById(tabId);
     }
 }

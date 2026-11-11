@@ -9,7 +9,6 @@ import android.util.ArraySet;
 import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -35,16 +34,7 @@ import java.util.Set;
 /* package */ final class TabOpenerTrackerHelper implements TabModelObserver {
     private final Set<Integer> mRelatedTabIds = new ArraySet<>();
 
-    /**
-     * Returns a new {@link TabOpenerTrackerHelper} if the TabOpenerTracking feature is enabled, or
-     * {@code null} otherwise.
-     */
-    /* package */ static @Nullable TabOpenerTrackerHelper create() {
-        if (!ChromeFeatureList.sTabOpenerTracking.isEnabled()) return null;
-        return new TabOpenerTrackerHelper();
-    }
-
-    private TabOpenerTrackerHelper() {}
+    /* package */ TabOpenerTrackerHelper() {}
 
     // ============================================================================================
     // TabModelObserver Implementation

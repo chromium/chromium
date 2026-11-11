@@ -6695,11 +6695,6 @@ inline constexpr char kTabGroupContextMenuLiveTitleUpdateDescription[] =
     "Enables live updating of the tab group title on the tab strip as the user "
     "types in the context menu title editor.";
 
-inline constexpr char kTabOpenerTrackingName[] = "Tab Opener Tracking";
-inline constexpr char kTabOpenerTrackingDescription[] =
-    "Enables tracking opener and sibling relationships between tabs to select "
-    "hierarchical next tabs when closing tabs.";
-
 inline constexpr char kTabSearchForDesktopName[] = "Tab Search for Desktop";
 inline constexpr char kTabSearchForDesktopDescription[] =
     "Enable the Tab Search for Desktop feature.";

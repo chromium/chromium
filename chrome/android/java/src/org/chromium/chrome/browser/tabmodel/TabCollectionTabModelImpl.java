@@ -327,7 +327,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
     private final TabUngrouper mTabUngrouper;
     private final Supplier<ScopedStorageBatch> mBatchFactory;
     private @Nullable PendingTabClosureManager mPendingTabClosureManager;
-    private final @Nullable TabOpenerTrackerHelper mTabOpenerTrackerHelper;
+    private final TabOpenerTrackerHelper mTabOpenerTrackerHelper;
 
     private long mNativeTabCollectionTabModelImplPtr;
     private @Nullable JniRawPtr<TabStripCollection> mTabStripCollection;
@@ -389,10 +389,8 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
             mPendingTabClosureManager =
                     new PendingTabClosureManager(this, new PendingTabClosureDelegateImpl());
         }
-        mTabOpenerTrackerHelper = TabOpenerTrackerHelper.create();
-        if (mTabOpenerTrackerHelper != null) {
-            mTabModelObservers.addObserver(mTabOpenerTrackerHelper);
-        }
+        mTabOpenerTrackerHelper = new TabOpenerTrackerHelper();
+        mTabModelObservers.addObserver(mTabOpenerTrackerHelper);
 
         initializeNative(activityType, customTabProfileType, tabModelType);
     }
@@ -445,9 +443,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
                 mPendingTabClosureManager.destroy();
             }
         }
-        if (mTabOpenerTrackerHelper != null) {
-            removeObserver(mTabOpenerTrackerHelper);
-        }
+        removeObserver(mTabOpenerTrackerHelper);
 
         mTabIdToTabs.clear();
         mTabCountSupplier.set(0);
@@ -542,10 +538,8 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
     @Override
     public @Nullable Tab getHierarchicalNextTab(Tab closingTab, List<Tab> closingTabs) {
         assert mNextTabPolicySupplier.get() == NextTabPolicy.HIERARCHICAL;
-        return mTabOpenerTrackerHelper != null
-                ? mTabOpenerTrackerHelper.findHierarchicalNextTab(
-                        /* tabModel= */ this, closingTab, closingTabs)
-                : null;
+        return mTabOpenerTrackerHelper.findHierarchicalNextTab(
+                /* tabModel= */ this, closingTab, closingTabs);
     }
 
     @Override
