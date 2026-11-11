@@ -11,6 +11,7 @@ import android.view.View;
 
 import androidx.test.filters.MediumTest;
 
+import org.jni_zero.JniRawPtr;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -108,14 +109,20 @@ public class AutofillAiSaveUpdateEntityPromptRenderTest {
 
         mPromptController =
                 AutofillAiSaveUpdateEntityPromptController.create(
-                        NATIVE_AUTOFILL_AI_SAVE_UPDATE_ENTITY_PROMPT_CONTROLLER);
+                        JniRawPtr.createForTesting(
+                                NATIVE_AUTOFILL_AI_SAVE_UPDATE_ENTITY_PROMPT_CONTROLLER));
 
         AutofillAiSaveUpdateEntityPromptControllerJni.setInstanceForTesting(mPromptControllerJni);
     }
 
     @After
     public void tearDown() throws Exception {
-        runOnUiThreadBlocking(mPrompt::dismiss);
+        if (mPrompt != null) {
+            runOnUiThreadBlocking(mPrompt::dismiss);
+        }
+        if (mPromptController != null) {
+            mPromptController.onNativeDestroyed();
+        }
     }
 
     @AfterClass

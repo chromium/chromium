@@ -8,20 +8,29 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.autofill.autofill_ai.EntityInstance;
 
 /** JNI wrapper for C++ AutofillAiSaveUpdateEntityPromptController. */
 @JNINamespace("autofill")
 @NullMarked
 final class AutofillAiSaveUpdateEntityPromptController {
-    private long mNativeAutofillAiSaveUpdateEntityPromptController;
+    @JniType("::autofill::AutofillAiSaveUpdateEntityPromptController")
+    interface NativeAutofillAiSaveUpdateEntityPromptController extends JniTypeToken {}
+
+    private @Nullable JniRawPtr<NativeAutofillAiSaveUpdateEntityPromptController>
+            mNativeAutofillAiSaveUpdateEntityPromptController;
 
     private AutofillAiSaveUpdateEntityPromptController(
-            long nativeAutofillAiSaveUpdateEntityPromptController) {
+            JniRawPtr<NativeAutofillAiSaveUpdateEntityPromptController>
+                    nativeAutofillAiSaveUpdateEntityPromptController) {
         mNativeAutofillAiSaveUpdateEntityPromptController =
                 nativeAutofillAiSaveUpdateEntityPromptController;
     }
@@ -29,39 +38,44 @@ final class AutofillAiSaveUpdateEntityPromptController {
     @CalledByNative
     @VisibleForTesting
     static AutofillAiSaveUpdateEntityPromptController create(
-            long nativeAutofillAiSaveUpdateEntityPromptController) {
+            JniRawPtr<NativeAutofillAiSaveUpdateEntityPromptController>
+                    nativeAutofillAiSaveUpdateEntityPromptController) {
         return new AutofillAiSaveUpdateEntityPromptController(
                 nativeAutofillAiSaveUpdateEntityPromptController);
     }
 
     @CalledByNative
-    private void onNativeDestroyed() {
-        mNativeAutofillAiSaveUpdateEntityPromptController = 0;
+    @VisibleForTesting
+    void onNativeDestroyed() {
+        if (mNativeAutofillAiSaveUpdateEntityPromptController != null) {
+            mNativeAutofillAiSaveUpdateEntityPromptController.release();
+            mNativeAutofillAiSaveUpdateEntityPromptController = null;
+        }
     }
 
     public void onWalletLinkClicked() {
-        if (mNativeAutofillAiSaveUpdateEntityPromptController != 0) {
+        if (mNativeAutofillAiSaveUpdateEntityPromptController != null) {
             AutofillAiSaveUpdateEntityPromptControllerJni.get()
                     .onWalletLinkClicked(mNativeAutofillAiSaveUpdateEntityPromptController);
         }
     }
 
     public void onPromptDismissed() {
-        if (mNativeAutofillAiSaveUpdateEntityPromptController != 0) {
+        if (mNativeAutofillAiSaveUpdateEntityPromptController != null) {
             AutofillAiSaveUpdateEntityPromptControllerJni.get()
                     .onPromptDismissed(mNativeAutofillAiSaveUpdateEntityPromptController);
         }
     }
 
     public void onUserAccepted() {
-        if (mNativeAutofillAiSaveUpdateEntityPromptController != 0) {
+        if (mNativeAutofillAiSaveUpdateEntityPromptController != null) {
             AutofillAiSaveUpdateEntityPromptControllerJni.get()
                     .onUserAccepted(mNativeAutofillAiSaveUpdateEntityPromptController);
         }
     }
 
     public void onUserEdited(EntityInstance entityInstance) {
-        if (mNativeAutofillAiSaveUpdateEntityPromptController != 0) {
+        if (mNativeAutofillAiSaveUpdateEntityPromptController != null) {
             AutofillAiSaveUpdateEntityPromptControllerJni.get()
                     .onUserEdited(
                             mNativeAutofillAiSaveUpdateEntityPromptController, entityInstance);
@@ -69,7 +83,7 @@ final class AutofillAiSaveUpdateEntityPromptController {
     }
 
     public void onUserDeclined() {
-        if (mNativeAutofillAiSaveUpdateEntityPromptController != 0) {
+        if (mNativeAutofillAiSaveUpdateEntityPromptController != null) {
             AutofillAiSaveUpdateEntityPromptControllerJni.get()
                     .onUserDeclined(mNativeAutofillAiSaveUpdateEntityPromptController);
         }
@@ -77,16 +91,16 @@ final class AutofillAiSaveUpdateEntityPromptController {
 
     @NativeMethods
     interface Natives {
-        void onWalletLinkClicked(long nativeAutofillAiSaveUpdateEntityPromptController);
+        void onWalletLinkClicked(JniPtr<NativeAutofillAiSaveUpdateEntityPromptController> self);
 
-        void onPromptDismissed(long nativeAutofillAiSaveUpdateEntityPromptController);
+        void onPromptDismissed(JniPtr<NativeAutofillAiSaveUpdateEntityPromptController> self);
 
-        void onUserAccepted(long nativeAutofillAiSaveUpdateEntityPromptController);
+        void onUserAccepted(JniPtr<NativeAutofillAiSaveUpdateEntityPromptController> self);
 
         void onUserEdited(
-                long nativeAutofillAiSaveUpdateEntityPromptController,
+                JniPtr<NativeAutofillAiSaveUpdateEntityPromptController> self,
                 @JniType("autofill::EntityInstanceAndroid") EntityInstance entityInstance);
 
-        void onUserDeclined(long nativeAutofillAiSaveUpdateEntityPromptController);
+        void onUserDeclined(JniPtr<NativeAutofillAiSaveUpdateEntityPromptController> self);
     }
 }

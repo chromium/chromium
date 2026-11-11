@@ -33,6 +33,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/base/l10n/l10n_util.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -58,7 +59,7 @@ AutofillAiSaveUpdateEntityPromptController::
       prompt_result_callback_(std::move(prompt_result_callback)),
       java_object_(Java_AutofillAiSaveUpdateEntityPromptController_create(
           base::android::AttachCurrentThread(),
-          reinterpret_cast<intptr_t>(this))) {
+          jni_zero::MakeRaw(this))) {
   CHECK(prompt_view_);
   ui_context_.accepted_consent_string_ids = {
       IsWalletableEntity()
