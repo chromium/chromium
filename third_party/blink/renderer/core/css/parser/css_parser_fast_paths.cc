@@ -1134,214 +1134,23 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
     return false;
   }
 
-  // For range checks, enum ordering is defined by CSSValueKeywords.in.
+  // For most properties, we use css_properties.json5 to generate code that
+  // determines validity, to help keep runtime flag checks in sync between the
+  // parser and Typed OM. A few properties have specific exceptions we handle
+  // here.
   switch (property_id) {
-    case CSSPropertyID::kAlignmentBaseline:
-      return value_id == CSSValueID::kAuto ||
-             value_id == CSSValueID::kAlphabetic ||
-             value_id == CSSValueID::kBaseline ||
-             value_id == CSSValueID::kMiddle ||
-             value_id == CSSValueID::kHanging ||
-             (value_id >= CSSValueID::kBeforeEdge &&
-              value_id <= CSSValueID::kMathematical);
     case CSSPropertyID::kAll:
       return false;  // Only accepts css-wide keywords
-    case CSSPropertyID::kAnimationNavigationBehavior:
-      return value_id == CSSValueID::kAbrupt ||
-             value_id == CSSValueID::kContinuous;
-    case CSSPropertyID::kBaselineSource:
-      return value_id == CSSValueID::kAuto || value_id == CSSValueID::kFirst ||
-             value_id == CSSValueID::kLast;
-    case CSSPropertyID::kBorderCollapse:
-      return value_id == CSSValueID::kCollapse ||
-             value_id == CSSValueID::kSeparate;
-    case CSSPropertyID::kBorderTopStyle:
-    case CSSPropertyID::kBorderRightStyle:
-    case CSSPropertyID::kBorderBottomStyle:
-    case CSSPropertyID::kBorderLeftStyle:
-    case CSSPropertyID::kBorderBlockEndStyle:
-    case CSSPropertyID::kBorderBlockStartStyle:
-    case CSSPropertyID::kBorderInlineEndStyle:
-    case CSSPropertyID::kBorderInlineStartStyle:
-    case CSSPropertyID::kColumnRuleStyle:
-    case CSSPropertyID::kRowRuleStyle:
-      return IsBorderStyleValue(value_id);
-    case CSSPropertyID::kBoxSizing:
-      return value_id == CSSValueID::kBorderBox ||
-             value_id == CSSValueID::kContentBox;
-    case CSSPropertyID::kBufferedRendering:
-      return value_id == CSSValueID::kAuto ||
-             value_id == CSSValueID::kDynamic ||
-             value_id == CSSValueID::kStatic;
-    case CSSPropertyID::kCaptionSide:
-      return value_id == CSSValueID::kTop || value_id == CSSValueID::kBottom;
-    case CSSPropertyID::kCaretAnimation:
-      return value_id == CSSValueID::kAuto || value_id == CSSValueID::kManual;
-    case CSSPropertyID::kCaretShape:
-      return value_id == CSSValueID::kAuto || value_id == CSSValueID::kBlock ||
-             value_id == CSSValueID::kBar ||
-             value_id == CSSValueID::kUnderscore;
-    case CSSPropertyID::kClear:
-      return value_id == CSSValueID::kNone || value_id == CSSValueID::kLeft ||
-             value_id == CSSValueID::kRight || value_id == CSSValueID::kBoth ||
-             value_id == CSSValueID::kInlineStart ||
-             value_id == CSSValueID::kInlineEnd;
-    case CSSPropertyID::kClipRule:
-    case CSSPropertyID::kFillRule:
-      return value_id == CSSValueID::kNonzero ||
-             value_id == CSSValueID::kEvenodd;
-    case CSSPropertyID::kColorInterpolation:
-    case CSSPropertyID::kColorInterpolationFilters:
-      return value_id == CSSValueID::kAuto || value_id == CSSValueID::kSRGB ||
-             value_id == CSSValueID::kLinearrgb;
-    case CSSPropertyID::kColorRendering:
-      return value_id == CSSValueID::kAuto ||
-             value_id == CSSValueID::kOptimizespeed ||
-             value_id == CSSValueID::kOptimizequality;
-    case CSSPropertyID::kColumnRuleBreak:
-    case CSSPropertyID::kRowRuleBreak:
-      return value_id == CSSValueID::kNone ||
-             value_id == CSSValueID::kNormal ||
-             value_id == CSSValueID::kIntersection;
-    case CSSPropertyID::kColumnRuleVisibilityItems:
-    case CSSPropertyID::kRowRuleVisibilityItems:
-      return value_id == CSSValueID::kNormal || value_id == CSSValueID::kAll ||
-             value_id == CSSValueID::kAround ||
-             value_id == CSSValueID::kBetween;
-    case CSSPropertyID::kColumnSpan:
-      return value_id == CSSValueID::kAll || value_id == CSSValueID::kNone;
-    case CSSPropertyID::kContentVisibility:
-      return value_id == CSSValueID::kVisible ||
-             value_id == CSSValueID::kAuto || value_id == CSSValueID::kHidden;
-    case CSSPropertyID::kDirection:
-      return value_id == CSSValueID::kLtr || value_id == CSSValueID::kRtl;
-    case CSSPropertyID::kDominantBaseline:
-      return value_id == CSSValueID::kAuto ||
-             value_id == CSSValueID::kAlphabetic ||
-             value_id == CSSValueID::kMiddle ||
-             value_id == CSSValueID::kHanging ||
-             (value_id >= CSSValueID::kUseScript &&
-              value_id <= CSSValueID::kResetSize) ||
-             (value_id >= CSSValueID::kCentral &&
-              value_id <= CSSValueID::kMathematical);
-    case CSSPropertyID::kEmptyCells:
-      return value_id == CSSValueID::kShow || value_id == CSSValueID::kHide;
-    case CSSPropertyID::kFloat:
-      return value_id == CSSValueID::kLeft || value_id == CSSValueID::kRight ||
-             value_id == CSSValueID::kInlineStart ||
-             value_id == CSSValueID::kInlineEnd ||
-             value_id == CSSValueID::kNone;
-    case CSSPropertyID::kForcedColorAdjust:
-      return value_id == CSSValueID::kNone || value_id == CSSValueID::kAuto ||
-             value_id == CSSValueID::kPreserveParentColor;
-    case CSSPropertyID::kRuleOverlap:
-      return value_id == CSSValueID::kRowOverColumn ||
-             value_id == CSSValueID::kColumnOverRow;
-    case CSSPropertyID::kGridLanesPack:
-      return value_id == CSSValueID::kNormal || value_id == CSSValueID::kDense;
-    case CSSPropertyID::kImageAnimation:
-      return value_id == CSSValueID::kRunning ||
-             value_id == CSSValueID::kPaused ||
-             value_id == CSSValueID::kNormal ||
-             value_id == CSSValueID::kStopped;
-    case CSSPropertyID::kImageRendering:
-      return value_id == CSSValueID::kAuto ||
-             value_id == CSSValueID::kWebkitOptimizeContrast ||
-             value_id == CSSValueID::kPixelated ||
-             value_id == CSSValueID::kCrispEdges;
-    case CSSPropertyID::kInterpolateSize:
-      return value_id == CSSValueID::kNumericOnly ||
-             value_id == CSSValueID::kAllowKeywords;
-    case CSSPropertyID::kIsolation:
-      return value_id == CSSValueID::kAuto || value_id == CSSValueID::kIsolate;
-    case CSSPropertyID::kListStylePosition:
-      return value_id == CSSValueID::kInside ||
-             value_id == CSSValueID::kOutside;
-    case CSSPropertyID::kMaskType:
-      return value_id == CSSValueID::kLuminance ||
-             value_id == CSSValueID::kAlpha;
-    case CSSPropertyID::kMathShift:
-      return value_id == CSSValueID::kNormal ||
-             value_id == CSSValueID::kCompact;
-    case CSSPropertyID::kMathStyle:
-      return value_id == CSSValueID::kNormal ||
-             value_id == CSSValueID::kCompact;
-    case CSSPropertyID::kMaxContentSizing:
-      return value_id == CSSValueID::kAuto ||
-             value_id == CSSValueID::kShrinkToFit;
-    case CSSPropertyID::kObjectFit:
-      return value_id == CSSValueID::kFill ||
-             value_id == CSSValueID::kContain ||
-             value_id == CSSValueID::kCover || value_id == CSSValueID::kNone ||
-             value_id == CSSValueID::kScaleDown;
     case CSSPropertyID::kOutlineStyle:
       return value_id == CSSValueID::kAuto || value_id == CSSValueID::kNone ||
              (value_id >= CSSValueID::kInset &&
               value_id <= CSSValueID::kDouble);
-    case CSSPropertyID::kOverflowAnchor:
-      return value_id == CSSValueID::kVisible ||
-             value_id == CSSValueID::kNone || value_id == CSSValueID::kAuto;
-    case CSSPropertyID::kOverflowWrap:
-      return value_id == CSSValueID::kNormal ||
-             value_id == CSSValueID::kBreakWord ||
-             value_id == CSSValueID::kAnywhere;
     case CSSPropertyID::kOverflowBlock:
     case CSSPropertyID::kOverflowInline:
-    case CSSPropertyID::kOverflowX:
-    case CSSPropertyID::kOverflowY:
       return value_id == CSSValueID::kVisible ||
              value_id == CSSValueID::kHidden ||
              value_id == CSSValueID::kScroll || value_id == CSSValueID::kAuto ||
              value_id == CSSValueID::kOverlay || value_id == CSSValueID::kClip;
-    case CSSPropertyID::kBreakAfter:
-    case CSSPropertyID::kBreakBefore:
-      return value_id == CSSValueID::kAuto || value_id == CSSValueID::kAvoid ||
-             value_id == CSSValueID::kAvoidPage ||
-             value_id == CSSValueID::kPage || value_id == CSSValueID::kLeft ||
-             value_id == CSSValueID::kRight || value_id == CSSValueID::kRecto ||
-             value_id == CSSValueID::kVerso ||
-             value_id == CSSValueID::kAvoidColumn ||
-             value_id == CSSValueID::kColumn;
-    case CSSPropertyID::kBreakInside:
-      return value_id == CSSValueID::kAuto || value_id == CSSValueID::kAvoid ||
-             value_id == CSSValueID::kAvoidPage ||
-             value_id == CSSValueID::kAvoidColumn;
-    case CSSPropertyID::kPageMarginSafety:
-      return value_id == CSSValueID::kNone || value_id == CSSValueID::kClamp ||
-             value_id == CSSValueID::kAdd;
-    case CSSPropertyID::kPageOrientation:
-      return value_id == CSSValueID::kUpright ||
-             value_id == CSSValueID::kRotateLeft ||
-             value_id == CSSValueID::kRotateRight;
-    case CSSPropertyID::kPointerEvents:
-      return value_id == CSSValueID::kVisible ||
-             value_id == CSSValueID::kNone || value_id == CSSValueID::kAll ||
-             value_id == CSSValueID::kAuto ||
-             (value_id >= CSSValueID::kVisiblepainted &&
-              value_id <= CSSValueID::kBoundingBox);
-    case CSSPropertyID::kPosition:
-      return value_id == CSSValueID::kStatic ||
-             value_id == CSSValueID::kRelative ||
-             value_id == CSSValueID::kAbsolute ||
-             value_id == CSSValueID::kFixed || value_id == CSSValueID::kSticky;
-    case CSSPropertyID::kPositionTryOrder:
-      return value_id == CSSValueID::kNormal ||
-             value_id == CSSValueID::kMostWidth ||
-             value_id == CSSValueID::kMostHeight ||
-             value_id == CSSValueID::kMostBlockSize ||
-             value_id == CSSValueID::kMostInlineSize;
-    case CSSPropertyID::kReadingFlow:
-      return value_id == CSSValueID::kNormal ||
-             value_id == CSSValueID::kFlexVisual ||
-             value_id == CSSValueID::kFlexFlow ||
-             value_id == CSSValueID::kGridRows ||
-             value_id == CSSValueID::kGridColumns ||
-             value_id == CSSValueID::kGridOrder ||
-             value_id == CSSValueID::kSourceOrder ||
-             (RuntimeEnabledFeatures::CSSGridLanesLayoutEnabled() &&
-              (value_id == CSSValueID::kGridLanesFlow ||
-               value_id == CSSValueID::kGridLanesTrack ||
-               value_id == CSSValueID::kGridLanesOrder));
     case CSSPropertyID::kResize:
       return value_id == CSSValueID::kNone || value_id == CSSValueID::kBoth ||
              value_id == CSSValueID::kHorizontal ||
@@ -1351,33 +1160,6 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
              value_id == CSSValueID::kInternalTextareaAuto ||
              (RuntimeEnabledFeatures::CSSResizeAutoEnabled() &&
               value_id == CSSValueID::kAuto);
-    case CSSPropertyID::kScrollAxisLock:
-      return value_id == CSSValueID::kAuto || value_id == CSSValueID::kNone;
-    case CSSPropertyID::kScrollTargetGroup:
-      return value_id == CSSValueID::kNone || value_id == CSSValueID::kAuto;
-    case CSSPropertyID::kScrollBehavior:
-      return value_id == CSSValueID::kAuto || value_id == CSSValueID::kSmooth;
-    case CSSPropertyID::kScrollInitialTarget:
-      return value_id == CSSValueID::kNearest || value_id == CSSValueID::kNone;
-    case CSSPropertyID::kShapeRendering:
-      return value_id == CSSValueID::kAuto ||
-             value_id == CSSValueID::kOptimizespeed ||
-             value_id == CSSValueID::kCrispedges ||
-             value_id == CSSValueID::kGeometricprecision;
-    case CSSPropertyID::kSpeak:
-      return value_id == CSSValueID::kNone || value_id == CSSValueID::kNormal ||
-             value_id == CSSValueID::kSpellOut ||
-             value_id == CSSValueID::kDigits ||
-             value_id == CSSValueID::kLiteralPunctuation ||
-             value_id == CSSValueID::kNoPunctuation;
-    case CSSPropertyID::kStrokeLinejoin:
-      return value_id == CSSValueID::kMiter || value_id == CSSValueID::kRound ||
-             value_id == CSSValueID::kBevel;
-    case CSSPropertyID::kStrokeLinecap:
-      return value_id == CSSValueID::kButt || value_id == CSSValueID::kRound ||
-             value_id == CSSValueID::kSquare;
-    case CSSPropertyID::kTableLayout:
-      return value_id == CSSValueID::kAuto || value_id == CSSValueID::kFixed;
     case CSSPropertyID::kTextAlign:
       if (RuntimeEnabledFeatures::CSSTextAlignMatchParentEnabled()) {
         return (value_id >= CSSValueID::kWebkitAuto &&
@@ -1388,50 +1170,6 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
               value_id <= CSSValueID::kInternalCenter &&
               value_id != CSSValueID::kMatchParent) ||
              value_id == CSSValueID::kStart || value_id == CSSValueID::kEnd;
-    case CSSPropertyID::kTextAlignLast:
-      if (RuntimeEnabledFeatures::CSSTextAlignMatchParentEnabled()) {
-        return (value_id >= CSSValueID::kLeft &&
-                value_id <= CSSValueID::kMatchParent) ||
-               value_id == CSSValueID::kStart || value_id == CSSValueID::kEnd ||
-               value_id == CSSValueID::kAuto;
-      }
-      return (value_id >= CSSValueID::kLeft &&
-              value_id <= CSSValueID::kJustify) ||
-             value_id == CSSValueID::kStart || value_id == CSSValueID::kEnd ||
-             value_id == CSSValueID::kAuto;
-    case CSSPropertyID::kTextAnchor:
-      return value_id == CSSValueID::kStart ||
-             value_id == CSSValueID::kMiddle || value_id == CSSValueID::kEnd;
-    case CSSPropertyID::kTextCombineUpright:
-      return value_id == CSSValueID::kNone || value_id == CSSValueID::kAll;
-    case CSSPropertyID::kTextDecorationStyle:
-      return value_id == CSSValueID::kSolid ||
-             value_id == CSSValueID::kDouble ||
-             value_id == CSSValueID::kDotted ||
-             value_id == CSSValueID::kDashed || value_id == CSSValueID::kWavy;
-    case CSSPropertyID::kTextDecorationSkipInk:
-      return value_id == CSSValueID::kAuto || value_id == CSSValueID::kNone ||
-             (RuntimeEnabledFeatures::CSSTextDecorationSkipInkAllEnabled() &&
-              value_id == CSSValueID::kAll);
-    case CSSPropertyID::kTextOrientation:
-      return value_id == CSSValueID::kMixed ||
-             value_id == CSSValueID::kUpright ||
-             value_id == CSSValueID::kSideways ||
-             value_id == CSSValueID::kSidewaysRight;
-    case CSSPropertyID::kWebkitTextOrientation:
-      return value_id == CSSValueID::kSideways ||
-             value_id == CSSValueID::kSidewaysRight ||
-             value_id == CSSValueID::kVerticalRight ||
-             value_id == CSSValueID::kUpright;
-    case CSSPropertyID::kTextOverflow:
-      return value_id == CSSValueID::kClip || value_id == CSSValueID::kEllipsis;
-    case CSSPropertyID::kOverlay:
-      return value_id == CSSValueID::kNone || value_id == CSSValueID::kAuto;
-    case CSSPropertyID::kTextRendering:
-      return value_id == CSSValueID::kAuto ||
-             value_id == CSSValueID::kOptimizespeed ||
-             value_id == CSSValueID::kOptimizelegibility ||
-             value_id == CSSValueID::kGeometricprecision;
     case CSSPropertyID::kUnicodeBidi:
       return value_id == CSSValueID::kNormal ||
              value_id == CSSValueID::kEmbed ||
@@ -1442,19 +1180,6 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
              value_id == CSSValueID::kIsolate ||
              value_id == CSSValueID::kIsolateOverride ||
              value_id == CSSValueID::kPlaintext;
-    case CSSPropertyID::kVectorEffect:
-      return value_id == CSSValueID::kNone ||
-             value_id == CSSValueID::kNonScalingStroke;
-    case CSSPropertyID::kViewTransitionScope:
-      return value_id == CSSValueID::kNone || value_id == CSSValueID::kAll;
-    case CSSPropertyID::kVisibility:
-      return value_id == CSSValueID::kVisible ||
-             value_id == CSSValueID::kHidden ||
-             value_id == CSSValueID::kCollapse;
-    case CSSPropertyID::kAppRegion:
-      return (value_id >= CSSValueID::kDrag &&
-              value_id <= CSSValueID::kNoDrag) ||
-             value_id == CSSValueID::kNone;
     case CSSPropertyID::kWindowDrag:
       return value_id == CSSValueID::kNone || value_id == CSSValueID::kMove;
     case CSSPropertyID::kAppearance:
@@ -1477,52 +1202,11 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
                   NonStandardAppearanceValueSliderVerticalEnabled() &&
               value_id == CSSValueID::kSliderVertical) ||
              value_id == CSSValueID::kNone || value_id == CSSValueID::kAuto;
-    case CSSPropertyID::kBackfaceVisibility:
-      return value_id == CSSValueID::kVisible ||
-             value_id == CSSValueID::kHidden;
-    case CSSPropertyID::kMixBlendMode:
-      return value_id == CSSValueID::kNormal ||
-             value_id == CSSValueID::kMultiply ||
-             value_id == CSSValueID::kScreen ||
-             value_id == CSSValueID::kOverlay ||
-             value_id == CSSValueID::kDarken ||
-             value_id == CSSValueID::kLighten ||
-             value_id == CSSValueID::kColorDodge ||
-             value_id == CSSValueID::kColorBurn ||
-             value_id == CSSValueID::kHardLight ||
-             value_id == CSSValueID::kSoftLight ||
-             value_id == CSSValueID::kDifference ||
-             value_id == CSSValueID::kExclusion ||
-             value_id == CSSValueID::kHue ||
-             value_id == CSSValueID::kSaturation ||
-             value_id == CSSValueID::kColor ||
-             value_id == CSSValueID::kLuminosity ||
-             value_id == CSSValueID::kPlusLighter;
-    case CSSPropertyID::kWebkitBoxAlign:
-      return value_id == CSSValueID::kStretch ||
-             value_id == CSSValueID::kStart || value_id == CSSValueID::kEnd ||
-             value_id == CSSValueID::kCenter ||
-             value_id == CSSValueID::kBaseline;
-    case CSSPropertyID::kBoxDecorationBreak:
-    case CSSPropertyID::kWebkitBoxDecorationBreak:
-      return value_id == CSSValueID::kClone || value_id == CSSValueID::kSlice;
-    case CSSPropertyID::kWebkitBoxDirection:
-      return value_id == CSSValueID::kNormal ||
-             value_id == CSSValueID::kReverse;
     case CSSPropertyID::kWebkitBoxOrient:
       return value_id == CSSValueID::kHorizontal ||
              value_id == CSSValueID::kVertical ||
              value_id == CSSValueID::kInlineAxis ||
              value_id == CSSValueID::kBlockAxis;
-    case CSSPropertyID::kWebkitBoxPack:
-      return value_id == CSSValueID::kStart || value_id == CSSValueID::kEnd ||
-             value_id == CSSValueID::kCenter ||
-             value_id == CSSValueID::kJustify;
-    case CSSPropertyID::kColumnFill:
-      return value_id == CSSValueID::kAuto || value_id == CSSValueID::kBalance;
-    case CSSPropertyID::kColumnWrap:
-      return value_id == CSSValueID::kAuto || value_id == CSSValueID::kWrap ||
-             value_id == CSSValueID::kNowrap;
     case CSSPropertyID::kAlignContent:
       // FIXME: Per CSS alignment, this property should accept an optional
       // <overflow-position>. We should share this parsing code with
@@ -1550,19 +1234,6 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
              value_id == CSSValueID::kCenter ||
              value_id == CSSValueID::kBaseline ||
              value_id == CSSValueID::kStretch;
-    case CSSPropertyID::kFlexDirection:
-      return value_id == CSSValueID::kRow ||
-             value_id == CSSValueID::kRowReverse ||
-             value_id == CSSValueID::kColumn ||
-             value_id == CSSValueID::kColumnReverse;
-    case CSSPropertyID::kFieldSizing:
-      return value_id == CSSValueID::kFixed || value_id == CSSValueID::kContent;
-    case CSSPropertyID::kFrameSizing:
-      return value_id == CSSValueID::kAuto ||
-             value_id == CSSValueID::kContentWidth ||
-             value_id == CSSValueID::kContentHeight ||
-             value_id == CSSValueID::kContentInlineSize ||
-             value_id == CSSValueID::kContentBlockSize;
     case CSSPropertyID::kHyphens:
 #if BUILDFLAG(USE_MINIKIN_HYPHENATION) || BUILDFLAG(IS_APPLE)
       return value_id == CSSValueID::kAuto || value_id == CSSValueID::kNone ||
@@ -1579,98 +1250,11 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
              value_id == CSSValueID::kCenter ||
              value_id == CSSValueID::kSpaceBetween ||
              value_id == CSSValueID::kSpaceAround;
-    case CSSPropertyID::kFontKerning:
-      return value_id == CSSValueID::kAuto || value_id == CSSValueID::kNormal ||
-             value_id == CSSValueID::kNone;
-    case CSSPropertyID::kFontOpticalSizing:
-      return value_id == CSSValueID::kAuto || value_id == CSSValueID::kNone;
-    case CSSPropertyID::kFontSynthesisWeight:
-      return value_id == CSSValueID::kAuto || value_id == CSSValueID::kNone;
-    case CSSPropertyID::kFontSynthesisStyle:
-      return value_id == CSSValueID::kAuto || value_id == CSSValueID::kNone;
-    case CSSPropertyID::kFontSynthesisSmallCaps:
-      return value_id == CSSValueID::kAuto || value_id == CSSValueID::kNone;
-    case CSSPropertyID::kWebkitFontSmoothing:
-      return value_id == CSSValueID::kAuto || value_id == CSSValueID::kNone ||
-             value_id == CSSValueID::kAntialiased ||
-             value_id == CSSValueID::kSubpixelAntialiased;
-    case CSSPropertyID::kFontVariantPosition:
-      return value_id == CSSValueID::kNormal || value_id == CSSValueID::kSub ||
-             value_id == CSSValueID::kSuper;
-    case CSSPropertyID::kFontVariantEmoji:
-      return value_id == CSSValueID::kNormal || value_id == CSSValueID::kText ||
-             value_id == CSSValueID::kEmoji || value_id == CSSValueID::kUnicode;
     case CSSPropertyID::kLineBreak:
       return value_id == CSSValueID::kAuto || value_id == CSSValueID::kLoose ||
              value_id == CSSValueID::kNormal ||
              value_id == CSSValueID::kStrict ||
              value_id == CSSValueID::kAnywhere;
-    case CSSPropertyID::kWebkitLineBreak:
-      return value_id == CSSValueID::kAuto || value_id == CSSValueID::kLoose ||
-             value_id == CSSValueID::kNormal ||
-             value_id == CSSValueID::kStrict ||
-             value_id == CSSValueID::kAfterWhiteSpace;
-    case CSSPropertyID::kPrintColorAdjust:
-      return value_id == CSSValueID::kExact || value_id == CSSValueID::kEconomy;
-    case CSSPropertyID::kWebkitRtlOrdering:
-      return value_id == CSSValueID::kLogical ||
-             value_id == CSSValueID::kVisual;
-    case CSSPropertyID::kRubyAlign:
-      return value_id == CSSValueID::kSpaceAround ||
-             value_id == CSSValueID::kStart ||
-             value_id == CSSValueID::kCenter ||
-             value_id == CSSValueID::kSpaceBetween;
-    case CSSPropertyID::kWebkitRubyPosition:
-      return value_id == CSSValueID::kBefore || value_id == CSSValueID::kAfter;
-    case CSSPropertyID::kRubyPosition:
-      return value_id == CSSValueID::kOver || value_id == CSSValueID::kUnder;
-    case CSSPropertyID::kTextAutospace:
-      return value_id == CSSValueID::kNormal ||
-             value_id == CSSValueID::kNoAutospace;
-    case CSSPropertyID::kTextSpacingTrim:
-      return value_id == CSSValueID::kNormal ||
-             value_id == CSSValueID::kTrimStart ||
-             value_id == CSSValueID::kSpaceAll ||
-             value_id == CSSValueID::kSpaceFirst;
-    case CSSPropertyID::kWebkitTextCombine:
-      return value_id == CSSValueID::kNone ||
-             value_id == CSSValueID::kHorizontal;
-    case CSSPropertyID::kWebkitTextSecurity:
-      return value_id == CSSValueID::kDisc || value_id == CSSValueID::kCircle ||
-             value_id == CSSValueID::kSquare || value_id == CSSValueID::kNone;
-    case CSSPropertyID::kTextWrapMode:
-      return value_id == CSSValueID::kWrap || value_id == CSSValueID::kNowrap;
-    case CSSPropertyID::kTextWrapStyle:
-      return value_id == CSSValueID::kAuto ||
-             value_id == CSSValueID::kBalance ||
-             value_id == CSSValueID::kPretty || value_id == CSSValueID::kStable;
-    case CSSPropertyID::kTransformBox:
-      return value_id == CSSValueID::kContentBox ||
-             value_id == CSSValueID::kBorderBox ||
-             value_id == CSSValueID::kStrokeBox ||
-             value_id == CSSValueID::kFillBox ||
-             value_id == CSSValueID::kViewBox;
-    case CSSPropertyID::kTransformStyle:
-      return value_id == CSSValueID::kFlat ||
-             value_id == CSSValueID::kPreserve3d;
-    case CSSPropertyID::kWebkitUserDrag:
-      return value_id == CSSValueID::kAuto || value_id == CSSValueID::kNone ||
-             value_id == CSSValueID::kElement;
-    case CSSPropertyID::kWebkitUserModify:
-      return value_id == CSSValueID::kReadOnly ||
-             value_id == CSSValueID::kReadWrite ||
-             value_id == CSSValueID::kReadWritePlaintextOnly;
-    case CSSPropertyID::kUserSelect:
-      if (!RuntimeEnabledFeatures::CSSUserSelectContainEnabled()) {
-        return value_id == CSSValueID::kAuto || value_id == CSSValueID::kNone ||
-               value_id == CSSValueID::kText || value_id == CSSValueID::kAll;
-      }
-      return value_id == CSSValueID::kAuto || value_id == CSSValueID::kNone ||
-             value_id == CSSValueID::kText || value_id == CSSValueID::kAll ||
-             value_id == CSSValueID::kContain;
-    case CSSPropertyID::kWebkitWritingMode:
-      return value_id >= CSSValueID::kHorizontalTb &&
-             value_id <= CSSValueID::kVerticalLr;
     case CSSPropertyID::kWritingMode:
       return value_id == CSSValueID::kHorizontalTb ||
              value_id == CSSValueID::kVerticalRl ||
@@ -1680,174 +1264,43 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
              value_id == CSSValueID::kLrTb || value_id == CSSValueID::kRlTb ||
              value_id == CSSValueID::kTbRl || value_id == CSSValueID::kLr ||
              value_id == CSSValueID::kRl || value_id == CSSValueID::kTb;
-    case CSSPropertyID::kWhiteSpaceCollapse:
-      return value_id == CSSValueID::kCollapse ||
-             value_id == CSSValueID::kPreserve ||
-             value_id == CSSValueID::kPreserveBreaks ||
-             value_id == CSSValueID::kBreakSpaces;
-    case CSSPropertyID::kWordBreak:
-      return value_id == CSSValueID::kNormal ||
-             value_id == CSSValueID::kBreakAll ||
-             value_id == CSSValueID::kKeepAll ||
-             value_id == CSSValueID::kBreakWord ||
-             value_id == CSSValueID::kAutoPhrase;
-    case CSSPropertyID::kScrollbarWidth:
-      return value_id == CSSValueID::kAuto || value_id == CSSValueID::kThin ||
-             value_id == CSSValueID::kNone;
-    case CSSPropertyID::kScrollSnapStop:
-      return value_id == CSSValueID::kNormal ||
-             value_id == CSSValueID::kAlways ||
-             (value_id == CSSValueID::kBefore &&
-              RuntimeEnabledFeatures::CSSScrollSnapStopBeforeEnabled());
     case CSSPropertyID::kOverscrollBehaviorInline:
     case CSSPropertyID::kOverscrollBehaviorBlock:
-    case CSSPropertyID::kOverscrollBehaviorX:
-    case CSSPropertyID::kOverscrollBehaviorY:
       return value_id == CSSValueID::kAuto ||
              value_id == CSSValueID::kContain ||
              value_id == CSSValueID::kNone || value_id == CSSValueID::kChain;
-    case CSSPropertyID::kOriginTrialTestProperty:
-      return value_id == CSSValueID::kNormal || value_id == CSSValueID::kNone;
-    case CSSPropertyID::kTextBoxTrim:
-      return value_id == CSSValueID::kNone ||
-             value_id == CSSValueID::kTrimStart ||
-             value_id == CSSValueID::kTrimEnd ||
-             value_id == CSSValueID::kTrimBoth;
-    case CSSPropertyID::kInteractivity:
-      return value_id == CSSValueID::kAuto || value_id == CSSValueID::kInert;
-    case CSSPropertyID::kContinue:
-      return value_id == CSSValueID::kNormal ||
-             value_id == CSSValueID::kCollapse ||
-             value_id == CSSValueID::kWebkitLegacy;
-    case CSSPropertyID::kBlockEllipsis:
-      return value_id == CSSValueID::kEllipsis ||
-             value_id == CSSValueID::kNoEllipsis;
-    case CSSPropertyID::kOverscrollContainerType:
-      return value_id == CSSValueID::kNone || value_id == CSSValueID::kAuto ||
-             value_id == CSSValueID::kPush || value_id == CSSValueID::kOverlay;
-    case CSSPropertyID::kInternalOverscrollContainer:
-      return value_id == CSSValueID::kNone || value_id == CSSValueID::kAuto;
-    case CSSPropertyID::kInternalUnbounded:
-      return value_id == CSSValueID::kNone || value_id == CSSValueID::kActive;
     default:
-      NOTREACHED();
+      break;
   }
+  return IsValidCSSPropertyKeyword(property_id, value_id);
 }
 
-// NOTE: This list must match exactly those properties handled by
-// IsValidKeywordPropertyAndValue().
+// Additional fast-path properties that do not use field_template: "keyword" in
+// css_properties.json5.
 CSSBitset CSSParserFastPaths::handled_by_keyword_fast_paths_properties_{{
-    CSSPropertyID::kAlignmentBaseline,
     CSSPropertyID::kAll,
     CSSPropertyID::kAnimationNavigationBehavior,
     CSSPropertyID::kAppearance,
-    CSSPropertyID::kMixBlendMode,
-    CSSPropertyID::kIsolation,
-    CSSPropertyID::kBaselineSource,
-    CSSPropertyID::kBlockEllipsis,
-    CSSPropertyID::kBorderBottomStyle,
-    CSSPropertyID::kBorderCollapse,
-    CSSPropertyID::kBorderLeftStyle,
-    CSSPropertyID::kBorderRightStyle,
-    CSSPropertyID::kBorderTopStyle,
-    CSSPropertyID::kBoxDecorationBreak,
-    CSSPropertyID::kBoxSizing,
-    CSSPropertyID::kBufferedRendering,
-    CSSPropertyID::kCaptionSide,
-    CSSPropertyID::kCaretAnimation,
-    CSSPropertyID::kCaretShape,
-    CSSPropertyID::kClear,
     CSSPropertyID::kClipRule,
-    CSSPropertyID::kColorInterpolation,
-    CSSPropertyID::kColorInterpolationFilters,
-    CSSPropertyID::kColorRendering,
-    CSSPropertyID::kColumnRuleBreak,
-    CSSPropertyID::kColumnRuleVisibilityItems,
-    CSSPropertyID::kColumnSpan,
-    CSSPropertyID::kContentVisibility,
     CSSPropertyID::kContinue,
-    CSSPropertyID::kDirection,
-    CSSPropertyID::kDominantBaseline,
-    CSSPropertyID::kEmptyCells,
     CSSPropertyID::kFillRule,
-    CSSPropertyID::kFloat,
-    CSSPropertyID::kFieldSizing,
-    CSSPropertyID::kFrameSizing,
-    CSSPropertyID::kForcedColorAdjust,
-    CSSPropertyID::kRuleOverlap,
-    CSSPropertyID::kGridLanesPack,
-    CSSPropertyID::kHyphens,
-    CSSPropertyID::kImageAnimation,
-    CSSPropertyID::kImageRendering,
-    CSSPropertyID::kInterpolateSize,
-    CSSPropertyID::kListStylePosition,
-    CSSPropertyID::kMaskType,
-    CSSPropertyID::kMathShift,
-    CSSPropertyID::kMathStyle,
-    CSSPropertyID::kMaxContentSizing,
-    CSSPropertyID::kObjectFit,
-    CSSPropertyID::kOutlineStyle,
-    CSSPropertyID::kOverflowAnchor,
     CSSPropertyID::kOverflowBlock,
     CSSPropertyID::kOverflowInline,
-    CSSPropertyID::kOverflowWrap,
-    CSSPropertyID::kOverflowX,
-    CSSPropertyID::kOverflowY,
-    CSSPropertyID::kBreakAfter,
-    CSSPropertyID::kBreakBefore,
-    CSSPropertyID::kBreakInside,
-    CSSPropertyID::kPageMarginSafety,
     CSSPropertyID::kPageOrientation,
-    CSSPropertyID::kPointerEvents,
-    CSSPropertyID::kPosition,
-    CSSPropertyID::kPositionTryOrder,
-    CSSPropertyID::kReadingFlow,
-    CSSPropertyID::kResize,
-    CSSPropertyID::kRowRuleBreak,
-    CSSPropertyID::kRowRuleVisibilityItems,
-    CSSPropertyID::kScrollAxisLock,
-    CSSPropertyID::kScrollTargetGroup,
     CSSPropertyID::kScrollBehavior,
     CSSPropertyID::kOverscrollBehaviorInline,
     CSSPropertyID::kOverscrollBehaviorBlock,
-    CSSPropertyID::kOverscrollBehaviorX,
-    CSSPropertyID::kOverscrollBehaviorY,
-    CSSPropertyID::kRubyAlign,
-    CSSPropertyID::kShapeRendering,
-    CSSPropertyID::kSpeak,
     CSSPropertyID::kStrokeLinecap,
     CSSPropertyID::kStrokeLinejoin,
-    CSSPropertyID::kTableLayout,
-    CSSPropertyID::kTextAlign,
-    CSSPropertyID::kTextAlignLast,
-    CSSPropertyID::kTextAnchor,
-    CSSPropertyID::kTextAutospace,
-    CSSPropertyID::kTextCombineUpright,
-    CSSPropertyID::kTextDecorationStyle,
-    CSSPropertyID::kTextDecorationSkipInk,
-    CSSPropertyID::kTextOrientation,
     CSSPropertyID::kWebkitTextOrientation,
     CSSPropertyID::kTextRendering,
     CSSPropertyID::kTextSpacingTrim,
-    CSSPropertyID::kUnicodeBidi,
-    CSSPropertyID::kVectorEffect,
-    CSSPropertyID::kViewTransitionScope,
-    CSSPropertyID::kVisibility,
     CSSPropertyID::kAppRegion,
-    CSSPropertyID::kWindowDrag,
-    CSSPropertyID::kBackfaceVisibility,
     CSSPropertyID::kBorderBlockEndStyle,
     CSSPropertyID::kBorderBlockStartStyle,
     CSSPropertyID::kBorderInlineEndStyle,
     CSSPropertyID::kBorderInlineStartStyle,
-    CSSPropertyID::kWebkitBoxAlign,
     CSSPropertyID::kWebkitBoxDecorationBreak,
-    CSSPropertyID::kWebkitBoxDirection,
-    CSSPropertyID::kWebkitBoxOrient,
-    CSSPropertyID::kWebkitBoxPack,
-    CSSPropertyID::kColumnFill,
-    CSSPropertyID::kColumnWrap,
-    CSSPropertyID::kFlexDirection,
     CSSPropertyID::kFontKerning,
     CSSPropertyID::kFontOpticalSizing,
     CSSPropertyID::kFontSynthesisWeight,
@@ -1856,34 +1309,12 @@ CSSBitset CSSParserFastPaths::handled_by_keyword_fast_paths_properties_{{
     CSSPropertyID::kFontVariantEmoji,
     CSSPropertyID::kFontVariantPosition,
     CSSPropertyID::kWebkitFontSmoothing,
-    CSSPropertyID::kLineBreak,
     CSSPropertyID::kWebkitLineBreak,
-    CSSPropertyID::kPrintColorAdjust,
-    CSSPropertyID::kWebkitRtlOrdering,
     CSSPropertyID::kWebkitRubyPosition,
     CSSPropertyID::kWebkitTextCombine,
-    CSSPropertyID::kWebkitTextSecurity,
-    CSSPropertyID::kTextWrapMode,
-    CSSPropertyID::kTextWrapStyle,
-    CSSPropertyID::kTransformBox,
-    CSSPropertyID::kTransformStyle,
-    CSSPropertyID::kWebkitUserDrag,
-    CSSPropertyID::kWebkitUserModify,
-    CSSPropertyID::kUserSelect,
     CSSPropertyID::kWebkitWritingMode,
     CSSPropertyID::kWhiteSpaceCollapse,
-    CSSPropertyID::kWordBreak,
-    CSSPropertyID::kWritingMode,
-    CSSPropertyID::kScrollbarWidth,
     CSSPropertyID::kScrollSnapStop,
-    CSSPropertyID::kOriginTrialTestProperty,
-    CSSPropertyID::kOverlay,
-    CSSPropertyID::kTextBoxTrim,
-    CSSPropertyID::kScrollInitialTarget,
-    CSSPropertyID::kInteractivity,
-    CSSPropertyID::kOverscrollContainerType,
-    CSSPropertyID::kInternalOverscrollContainer,
-    CSSPropertyID::kInternalUnbounded,
 }};
 
 bool CSSParserFastPaths::IsValidSystemFont(CSSValueID value_id) {

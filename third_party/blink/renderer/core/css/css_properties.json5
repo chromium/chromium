@@ -275,8 +275,10 @@
         // Field is stored as an enum and has a initial/getter/setter/resetter.
         // If include_paths is empty, we would also generate the corresponding
         // enum definition in ComputedStyleConstants.h.
-        // "keyword" properties are required to be parsed in
-        // CSSParserFastPaths.
+        // Parsing for most "keyword" properties is generated
+        // by build/scripts/core/css/make_css_property_keywords.py
+        // using build/scripts/core/css/templates/css_property_keywords.cc.tmpl,
+        // but some exceptional cases are parsed in CSSParserFastPaths.
         // Use "keyword_custom" if a custom ParseSingleValue implementation is
         // necessary.
         "keyword",
@@ -469,9 +471,11 @@
         "Image"
       ],
     },
-    // If typedom_types include "Keyword", these keywords are the ones reified
-    // and accepted as CSSKeywordValue objects when set on StylePropertyMap.
-    // Defaults to the same as 'keywords'.
+    // If typedom_types include "Keyword", these keywords are the ones
+    // accepted as CSSKeywordValue objects when set on StylePropertyMap.
+    // Defaults to the same as 'keywords'. runtime_enabled_keywords are included
+    // in either case. This does not change the parser's keyword lookup or
+    // determine how parsed values are reified.
     typedom_keywords: {
     },
 
@@ -2046,6 +2050,7 @@
     {
       name: "-webkit-writing-mode",
       property_methods: ["CSSValueFromComputedStyleInternal"],
+      keywords: ["horizontal-tb", "vertical-rl", "vertical-lr"],
       inherited: true,
       type_name: "WritingMode",
       priority: 1,
@@ -5280,6 +5285,7 @@
     },
     {
       name: "page-orientation",
+      keywords: ["upright", "rotate-left", "rotate-right"],
       is_descriptor: true,
       field_template: "primitive",
       field_group: "*",
@@ -7095,6 +7101,7 @@
     {
       name: "app-region",
       property_methods: ["CSSValueFromComputedStyleInternal"],
+      keywords: ["drag", "no-drag", "none"],
       surrogate_for: "window-drag",
       devtools_keywords: ["none", "move", "no-drag"],
     },

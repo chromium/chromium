@@ -1,0 +1,46 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+{% from 'templates/macros.tmpl' import source_files_for_generated_file %}
+{{source_files_for_generated_file(template_file, input_files)}}
+
+#include "third_party/blink/renderer/core/css/css_property_keywords.h"
+
+#include "third_party/blink/renderer/core/css_value_keywords.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+
+namespace blink {
+
+const CSSBitset kKeywordFastPathProperties{ {
+  {% for property in properties if property.field_template == 'keyword' %}
+    CSSPropertyID::{{property.enum_key}},
+  {% endfor %}
+} };
+
+bool IsValidCSSPropertyKeyword(CSSPropertyID property_id, CSSValueID value_id) {
+  switch (property_id) {
+  {% for property in properties if property.keyword_ids %}
+    case CSSPropertyID::{{property.enum_key}}:
+      switch (value_id) {
+      {% for keyword_id in property.keyword_ids if keyword_id not in property.runtime_enabled_keyword_features %}
+        case CSSValueID::{{keyword_id}}:
+        {% if loop.last %}
+          return true;
+        {% endif %}
+      {% endfor %}
+      {% for keyword_id in property.keyword_ids if keyword_id in property.runtime_enabled_keyword_features %}
+        case CSSValueID::{{keyword_id}}:
+          return RuntimeEnabledFeatures::
+              {{property.runtime_enabled_keyword_features[keyword_id]}}Enabled();
+      {% endfor %}
+        default:
+          return false;
+      }
+  {% endfor %}
+    default:
+      return false;
+  }
+}
+
+}  // namespace blink

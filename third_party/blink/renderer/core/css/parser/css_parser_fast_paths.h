@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PARSER_CSS_PARSER_FAST_PATHS_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/css_property_keywords.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/properties/css_bitset.h"
@@ -41,7 +42,8 @@ class CORE_EXPORT CSSParserFastPaths {
   // NOTE: Properties handled here shouldn't be explicitly handled in
   // CSSPropertyParser, so if this returns true, the fast path is the only path.
   static bool IsHandledByKeywordFastPath(CSSPropertyID property_id) {
-    return handled_by_keyword_fast_paths_properties_.Has(property_id);
+    return kKeywordFastPathProperties.Has(property_id) ||
+           handled_by_keyword_fast_paths_properties_.Has(property_id);
   }
 
   static bool IsBorderStyleValue(CSSValueID);

@@ -32,34 +32,21 @@ class CSSOMTypesWriter(json5_generator.Writer):
             property_.typedom_types = types
 
             if property_.typedom_keywords:
-                keywords = property_.typedom_keywords
-            else:
-                keywords = property_.keywords
-            keywords = list(
-                dict.fromkeys(
-                    keywords
-                    + [
-                        keyword
-                        for feature_keywords in property_.runtime_enabled_keywords.values()
-                        for keyword in feature_keywords
-                    ]
-                )
-            )
-
-            # Generate CSSValueID values from keywords.
-            property_.keywordIDs = list(map(enum_key_for_css_keyword, keywords))
-            runtime_enabled_keywords = {
-                keyword: feature
-                for feature, feature_keywords in property_.runtime_enabled_keywords.items()
-                for keyword in feature_keywords
-            }
-            property_.runtime_enabled_keyword_features = {
-                enum_key_for_css_keyword(keyword): runtime_enabled_keywords[
-                    keyword
+                gated_keywords = {
+                    keyword: feature
+                    for feature, keywords in property_.runtime_enabled_keywords.items()
+                    for keyword in keywords
+                }
+                property_.typedom_keyword_ids = [
+                    enum_key_for_css_keyword(keyword)
+                    for keyword in dict.fromkeys(
+                        property_.typedom_keywords + list(gated_keywords)
+                    )
                 ]
-                for keyword in keywords
-                if keyword in runtime_enabled_keywords
-            }
+                property_.typedom_keyword_features = {
+                    enum_key_for_css_keyword(keyword): feature
+                    for keyword, feature in gated_keywords.items()
+                }
 
         self._outputs = {
             'cssom_types.cc': self.generate_types,

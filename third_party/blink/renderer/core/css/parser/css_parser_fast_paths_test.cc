@@ -189,6 +189,44 @@ TEST(CSSParserFastPathsTest, ParseReadingFlow) {
   }
 }
 
+TEST(CSSParserFastPathsTest, ParseRuntimeEnabledKeywords) {
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
+  const struct {
+    CSSPropertyID property;
+    const char* keyword;
+    const char* ordinary_keyword;
+  } cases[] = {
+      {CSSPropertyID::kTextAlign, "match-parent", "start"},
+      {CSSPropertyID::kTextAlignLast, "match-parent", "auto"},
+      {CSSPropertyID::kTextDecorationSkipInk, "all", "auto"},
+      {CSSPropertyID::kUserSelect, "contain", "text"},
+      {CSSPropertyID::kScrollSnapStop, "before", "normal"},
+      {CSSPropertyID::kResize, "auto", "both"},
+      {CSSPropertyID::kAppearance, "base", "none"},
+      {CSSPropertyID::kAppearance, "slider-vertical", "none"},
+  };
+  for (bool enabled : {false, true}) {
+    ScopedCSSTextAlignMatchParentForTest text_align(enabled);
+    ScopedCSSTextDecorationSkipInkAllForTest skip_ink(enabled);
+    ScopedCSSUserSelectContainForTest user_select(enabled);
+    ScopedCSSScrollSnapStopBeforeForTest scroll_snap_stop(enabled);
+    ScopedCSSResizeAutoForTest resize(enabled);
+    ScopedAppearanceBaseForTest appearance(enabled);
+    ScopedNonStandardAppearanceValueSliderVerticalForTest slider(enabled);
+    SCOPED_TRACE(enabled);
+    for (const auto& test : cases) {
+      SCOPED_TRACE(test.keyword);
+      EXPECT_EQ(enabled, !!CSSParserFastPaths::MaybeParseValue(
+                             test.property, test.keyword, context));
+      EXPECT_EQ(enabled, !!CSSParser::ParseSingleValue(test.property,
+                                                       test.keyword, context));
+      EXPECT_TRUE(CSSParserFastPaths::MaybeParseValue(
+          test.property, test.ordinary_keyword, context));
+    }
+  }
+}
+
 TEST(CSSParserFastPathsTest, ParseSimpleLength) {
   auto* context = MakeGarbageCollected<CSSParserContext>(
       kHTMLStandardMode, SecureContextMode::kInsecureContext);
