@@ -4,10 +4,10 @@
 
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 
-#include "chrome/browser/browser_actuator/transport/transport_service_factory.h"
 #include "chrome/browser/origin_gating/origin_gating_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/stream_transport/transport_service_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/browser/browser_context.h"
 

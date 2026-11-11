@@ -38,7 +38,6 @@ proto_extras("transport_messages_extras") {
   # group for this target depends on, so `:*` has to be allowed as well.
   visibility = [
     ":*",
-    "//components/browser_actuator/internal/transport:*",
     "//components/stream_transport/internal:*",
   ]
   sources = [

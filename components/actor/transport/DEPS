@@ -1,5 +1,5 @@
 include_rules = [
   "+components/actor/core",
-  "+components/browser_actuator/public",
   "+components/optimization_guide/proto",
+  "+components/stream_transport/public",
 ]

@@ -17,8 +17,8 @@
 #include "components/actor/core/task_id.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/actor/transport/proto/actuation_transport.pb.h"
-#include "components/browser_actuator/public/transport/common.h"
-#include "components/browser_actuator/public/transport/transport_session.h"
+#include "components/stream_transport/public/common.h"
+#include "components/stream_transport/public/transport_session.h"
 
 namespace actor {
 namespace {

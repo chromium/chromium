@@ -15,7 +15,7 @@
 #include "components/actor/core/task_id.h"
 #include "components/actor/transport/actuation_delegate.h"
 #include "components/actor/transport/proto/actuation_transport.pb.h"
-#include "components/browser_actuator/public/transport/transport_handler.h"
+#include "components/stream_transport/public/transport_handler.h"
 
 namespace browser_actuator::transport {
 class TransportSession;

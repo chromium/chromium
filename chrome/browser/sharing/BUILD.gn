@@ -39,7 +39,6 @@ source_set("impl") {
   deps = [
     ":sharing",
     "//chrome/browser/autofill",
-    "//chrome/browser/browser_actuator/transport",
     "//chrome/browser/gcm",
     "//chrome/browser/glic",
     "//chrome/browser/optimization_guide",
@@ -48,6 +47,7 @@ source_set("impl") {
     "//chrome/browser/sharing/one_time_tokens",
     "//chrome/browser/sharing/optimization_guide",
     "//chrome/browser/sharing/shared_clipboard",
+    "//chrome/browser/stream_transport",
     "//chrome/browser/sync",
     "//chrome/common:channel_info",
     "//components/browser_actuator/public",

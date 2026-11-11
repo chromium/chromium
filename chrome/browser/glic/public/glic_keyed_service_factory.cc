@@ -6,7 +6,6 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
-#include "chrome/browser/browser_actuator/transport/transport_service_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/public/glic_provider_latch_factory.h"
@@ -16,6 +15,7 @@
 #include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/stream_transport/transport_service_factory.h"
 #include "chrome/browser/subscription_eligibility/subscription_eligibility_service_factory.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"

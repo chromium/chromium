@@ -9,9 +9,9 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "components/browser_actuator/public/transport/common.h"
-#include "components/browser_actuator/public/transport/transport_handler.h"
-#include "components/browser_actuator/public/transport/transport_handler_factory.h"
+#include "components/stream_transport/public/common.h"
+#include "components/stream_transport/public/transport_handler.h"
+#include "components/stream_transport/public/transport_handler_factory.h"
 
 namespace browser_actuator::transport {
 class TransportSession;

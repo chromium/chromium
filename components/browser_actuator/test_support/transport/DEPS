@@ -1,4 +1,0 @@
-include_rules = [
-  "-components/browser_actuator",
-  "+components/stream_transport/test_support",
-]

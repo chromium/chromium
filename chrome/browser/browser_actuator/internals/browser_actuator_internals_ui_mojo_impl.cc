@@ -9,10 +9,10 @@
 #include <utility>
 #include <vector>
 
-#include "chrome/browser/browser_actuator/transport/transport_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/browser_actuator/internal/transport/session_stream_recorder.h"
-#include "components/browser_actuator/public/transport/transport_service.h"
+#include "chrome/browser/stream_transport/transport_service_factory.h"
+#include "components/stream_transport/internal/session_stream_recorder.h"
+#include "components/stream_transport/public/transport_service.h"
 
 namespace browser_actuator {
 

@@ -13,10 +13,10 @@ source_set("browser_actuator") {
   ]
 
   deps = [
-    "//components/browser_actuator/internal/transport/proto",
     "//components/browser_actuator/public:feature_list",
-    "//components/browser_actuator/public/transport:payload_type_mapping",
-    "//components/browser_actuator/public/transport:service",
+    "//components/stream_transport/internal/proto",
+    "//components/stream_transport/public:payload_type_mapping",
+    "//components/stream_transport/public:service",
   ]
 }
 
@@ -26,22 +26,22 @@ source_set("unit_tests") {
   deps = [
     ":browser_actuator",
     "//base/test:test_support",
-    "//chrome/browser/browser_actuator/transport",
     "//chrome/browser/signin",
+    "//chrome/browser/stream_transport",
     "//chrome/test:test_support",
-    "//components/browser_actuator/internal/transport:features",
-    "//components/browser_actuator/internal/transport:session_stream_recorder",
-    "//components/browser_actuator/internal/transport/proto",
-    "//components/browser_actuator/internal/transport/test_support",
     "//components/browser_actuator/public:feature_list",
-    "//components/browser_actuator/public/transport",
-    "//components/browser_actuator/public/transport:payload_type_mapping",
-    "//components/browser_actuator/public/transport:service",
-    "//components/browser_actuator/test_support/transport",
     "//components/gcm_driver/common",
     "//components/sharing_message:test_support",
     "//components/sharing_message/proto",
     "//components/signin/public/identity_manager",
+    "//components/stream_transport/internal:features",
+    "//components/stream_transport/internal:session_stream_recorder",
+    "//components/stream_transport/internal/proto",
+    "//components/stream_transport/internal/test_support",
+    "//components/stream_transport/public",
+    "//components/stream_transport/public:payload_type_mapping",
+    "//components/stream_transport/public:service",
+    "//components/stream_transport/test_support",
     "//components/sync_device_info:test_support",
     "//content/test:test_support",
     "//net",

@@ -6,7 +6,6 @@
 
 #include "base/feature_list.h"
 #include "build/build_config.h"
-#include "chrome/browser/browser_actuator/transport/transport_service_factory.h"
 #include "chrome/browser/glic/public/glic_feature.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/glic_provider_spec.h"
@@ -15,6 +14,7 @@
 #include "chrome/browser/sharing/glic_experimental_triggering/glic_experimental_triggering_message_handler.h"
 #include "chrome/browser/sharing/one_time_tokens/one_time_token_sharing_handler.h"
 #include "chrome/browser/sharing/optimization_guide/optimization_guide_message_handler.h"
+#include "chrome/browser/stream_transport/transport_service_factory.h"
 #include "components/browser_actuator/public/features.h"
 #include "components/one_time_tokens/core/browser/gmail_otp_backend.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"

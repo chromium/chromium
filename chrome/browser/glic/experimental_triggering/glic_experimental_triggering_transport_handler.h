@@ -12,9 +12,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_types.h"
-#include "components/browser_actuator/public/transport/common.h"
-#include "components/browser_actuator/public/transport/transport_handler.h"
-#include "components/browser_actuator/public/transport/transport_handler_factory.h"
+#include "components/stream_transport/public/common.h"
+#include "components/stream_transport/public/transport_handler.h"
+#include "components/stream_transport/public/transport_handler_factory.h"
 
 class Profile;
 

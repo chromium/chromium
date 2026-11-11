@@ -18,9 +18,9 @@
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/actor/transport/actuation_delegate.h"
 #include "components/actor/transport/proto/actuation_transport.pb.h"
-#include "components/browser_actuator/public/transport/common.h"
-#include "components/browser_actuator/public/transport/payload_type_mapping.h"
-#include "components/browser_actuator/public/transport/transport_session.h"
+#include "components/stream_transport/public/common.h"
+#include "components/stream_transport/public/payload_type_mapping.h"
+#include "components/stream_transport/public/transport_session.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace actor {

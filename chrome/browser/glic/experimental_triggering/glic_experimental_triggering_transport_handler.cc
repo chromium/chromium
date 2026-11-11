@@ -21,9 +21,9 @@
 #include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_metrics.h"
 #include "chrome/browser/glic/public/glic_provider_metrics.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/browser_actuator/public/transport/common.h"
-#include "components/browser_actuator/public/transport/transport_session.h"
 #include "components/sharing_message/proto/glic_experimental_triggering.pb.h"
+#include "components/stream_transport/public/common.h"
+#include "components/stream_transport/public/transport_session.h"
 
 namespace glic {
 
