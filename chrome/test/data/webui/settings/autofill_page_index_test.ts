@@ -84,6 +84,7 @@ suite('AutofillPageIndex', function() {
     loadTimeData.overrideValues({
       showSuggestionsFromGeminiSettings: true,
       shoppingIntegrationEnabled: true,
+      offersAndLoyaltyCardsSettingsEnabled: true,
     });
     resetRouterForTesting();
 
@@ -121,6 +122,10 @@ suite('AutofillPageIndex', function() {
     assertActiveView('passkeys');
     // </if>
 
+    Router.getInstance().navigateTo(routes.OFFERS_AND_LOYALTY_CARDS);
+    await microtasksFinished();
+    assertActiveView('offersAndLoyaltyCards');
+
     Router.getInstance().navigateTo(routes.SHOPPING);
     await microtasksFinished();
     assertActiveView('shopping');
@@ -148,6 +153,8 @@ suite('AutofillPageIndex', function() {
     await assertTitle(routes.PASSKEYS, 'managePasskeysTitle');
     // </if>
     await assertTitle(routes.TRAVEL, 'travelCardTitle');
+    await assertTitle(
+        routes.OFFERS_AND_LOYALTY_CARDS, 'offersAndLoyaltyCardsCardTitle');
     await assertTitle(routes.SHOPPING, 'shoppingCardTitle');
     await assertTitle(
         routes.SUGGESTIONS_FROM_GEMINI, 'autofillPersonalContextSettingsTitle');
@@ -185,12 +192,29 @@ suite('AutofillPageIndex', function() {
     assertFalse(!!subpage);
   });
 
+  test('OffersAndLoyaltyCardsRouteDisabled', async function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    loadTimeData.overrideValues({
+      offersAndLoyaltyCardsSettingsEnabled: false,
+    });
+    resetRouterForTesting();
+
+    index = document.createElement('settings-autofill-page-index');
+    document.body.appendChild(index);
+    await microtasksFinished();
+
+    assertEquals(undefined, routes.OFFERS_AND_LOYALTY_CARDS);
+    const subpage = index.$.viewManager.querySelector('#offersAndLoyaltyCards');
+    assertFalse(!!subpage);
+  });
+
   // Minimal (non-exhaustive) tests to ensure SearchableViewContainerMixin is
   // inherited correctly.
   test('Search', async function() {
     // Test that the child views are properly annotated.
     const childViewsId = [
       'payments',
+      'offersAndLoyaltyCards',
       'shopping',
       'suggestionsFromGemini',
     ];

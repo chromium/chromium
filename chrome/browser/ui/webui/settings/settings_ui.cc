@@ -472,6 +472,11 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
           base::FeatureList::IsEnabled(
               autofill::features::kAutofillAiWalletShopping));
 
+  html_source->AddBoolean(
+      "offersAndLoyaltyCardsSettingsEnabled",
+      base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableOffersAndLoyaltyCardsSettings));
+
   AddSettingsPageUIHandler(std::make_unique<AboutHandler>(profile));
   AddSettingsPageUIHandler(std::make_unique<ResetSettingsHandler>(profile));
 

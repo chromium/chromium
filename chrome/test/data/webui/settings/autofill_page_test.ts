@@ -74,6 +74,7 @@ suite('AutofillPage', function() {
       shouldShowPayOverTimeSettings: true,
       shoppingIntegrationEnabled: true,
       showSuggestionsFromGeminiSettings: true,
+      offersAndLoyaltyCardsSettingsEnabled: true,
     });
   });
 
@@ -123,6 +124,17 @@ suite('AutofillPage', function() {
     assertFalse(!!shoppingCard);
   });
 
+  test('OffersAndLoyaltyCardsCategoryHiddenWhenFlagDisabled', async function() {
+    await setupPage({
+      offersAndLoyaltyCardsSettingsEnabled: false,
+    });
+
+    const offersAndLoyaltyCardsCard =
+        autofillPage.shadowRoot.querySelector<HTMLElement>(
+            '#offersAndLoyaltyCardsManagerButton');
+    assertFalse(!!offersAndLoyaltyCardsCard);
+  });
+
   test('CardsRenderCorrectly', function() {
     const cards =
         autofillPage.shadowRoot.querySelectorAll('category-reference-card');
@@ -132,6 +144,7 @@ suite('AutofillPage', function() {
       loadTimeData.getString('contactInfoTitle'),
       loadTimeData.getString('identityDocsCardTitle'),
       loadTimeData.getString('travelCardTitle'),
+      loadTimeData.getString('offersAndLoyaltyCardsCardTitle'),
       loadTimeData.getString('shoppingCardTitle'),
     ];
 
@@ -185,6 +198,11 @@ suite('AutofillPage', function() {
      cardTitle: 'travelCardTitle',
      expectedRoute: '/travel',
      expectedCategory: YourSavedInfoDataCategory.TRAVEL,
+   },
+   {
+     cardTitle: 'offersAndLoyaltyCardsCardTitle',
+     expectedRoute: '/offersAndLoyaltyCards',
+     expectedCategory: YourSavedInfoDataCategory.OFFERS_AND_LOYALTY_CARDS,
    },
    {
      cardTitle: 'shoppingCardTitle',

@@ -6453,6 +6453,7 @@ Called by update_autofill_enums.py.-->
   <int value="3" label="Identity docs"/>
   <int value="4" label="Travel"/>
   <int value="5" label="Shopping"/>
+  <int value="6" label="Offers and loyalty cards"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/resources/settings/metrics_browser_proxy.ts:YourSavedInfoDataCategory, /chrome/android/java/src/org/chromium/chrome/browser/autofill/settings/AutofillAndPasswordsFragment.java:YourSavedInfoDataCategory, /ios/chrome/browser/settings/autofill/autofill_and_passwords/coordinator/autofill_and_passwords_coordinator.mm:YourSavedInfoDataCategory) -->

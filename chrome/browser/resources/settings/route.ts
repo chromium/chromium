@@ -269,6 +269,10 @@ function createRoutes(): SettingsRoutes {
     r.IDENTITY_DOCS =
         r.AUTOFILL.createChild('/identityDocs');
     r.TRAVEL = r.AUTOFILL.createChild('/travel');
+    if (loadTimeData.getBoolean('offersAndLoyaltyCardsSettingsEnabled')) {
+      r.OFFERS_AND_LOYALTY_CARDS =
+          r.AUTOFILL.createChild('/offersAndLoyaltyCards');
+    }
     if (loadTimeData.getBoolean('shoppingIntegrationEnabled')) {
       r.SHOPPING = r.AUTOFILL.createChild('/shopping');
     }

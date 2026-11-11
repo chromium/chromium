@@ -41,6 +41,14 @@ export function getHtml(this: SettingsAutofillPageElement) {
       .categoryId="${this.hierarchy_.travel.id}"
       .chips="${this.getVisibleChips_(this.hierarchy_.travel.chips)}">
   </category-reference-card>
+  ${this.isOffersAndLoyaltyCardsEnabled_ ? html`
+    <category-reference-card id="offersAndLoyaltyCardsManagerButton"
+        card-title="$i18n{offersAndLoyaltyCardsCardTitle}"
+        .categoryId="${this.hierarchy_.offersAndLoyaltyCards.id}"
+        .chips="${this.getVisibleChips_(
+            this.hierarchy_.offersAndLoyaltyCards.chips)}">
+    </category-reference-card>
+  ` : ''}
   ${this.isShoppingEnabled_ ? html`
     <category-reference-card id="shoppingManagerButton"
         card-title="$i18n{shoppingCardTitle}"

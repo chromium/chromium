@@ -36,6 +36,14 @@ export function getHtml(this: SettingsAutofillPageV2Element) {
       @click="${this.onTravelClick_}">
     <span slot="icon-label">${this.travelCount_}</span>
   </cr-link-row>
+  ${this.isOffersAndLoyaltyCardsEnabled_ ? html`
+    <cr-link-row id="offersAndLoyaltyCardsManagerButton"
+        label="$i18n{offersAndLoyaltyCardsCardTitle}"
+        sub-label="$i18n{offersAndLoyaltyCardsSublabel}"
+        start-icon="settings20:loyalty-programs"
+        @click="${this.onOffersAndLoyaltyCardsClick_}">
+    </cr-link-row>
+  ` : ''}
   ${this.isShoppingEnabled_ ? html`
     <cr-link-row id="shoppingManagerButton" label="$i18n{shoppingCardTitle}"
         start-icon="settings20:shopping-bag" @click="${this.onShoppingClick_}">

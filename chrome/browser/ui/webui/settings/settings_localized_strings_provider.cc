@@ -1710,7 +1710,6 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_RELATED_SERVICES_TITLE},
       {"passwordManagerSublabel",
        IDS_SETTINGS_YOUR_SAVED_INFO_PASSWORD_MANAGER_SUBLABEL},
-      {"paymentsSublabel", IDS_SETTINGS_YOUR_SAVED_INFO_PAYMENTS_SUBLABEL},
       {"contactInfoSublabel",
        IDS_SETTINGS_YOUR_SAVED_INFO_CONTACT_INFO_SUBLABEL},
       {"identityDocsSublabel",
@@ -1734,6 +1733,10 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       {"yourSavedInfoFlightReservationsChip",
        IDS_AUTOFILL_AI_FLIGHT_RESERVATIONS_TITLE},
       {"shoppingCardTitle", IDS_AUTOFILL_SHOPPING_TITLE},
+      {"offersAndLoyaltyCardsCardTitle",
+       IDS_AUTOFILL_OFFERS_AND_LOYALTY_CARDS_TITLE},
+      {"offersAndLoyaltyCardsSublabel",
+       IDS_SETTINGS_YOUR_SAVED_INFO_OFFERS_AND_LOYALTY_CARDS_SUBLABEL},
       {"yourSavedInfoOrdersChip", IDS_AUTOFILL_AI_ORDERS_TITLE},
       {"yourSavedInfoShipmentsChip", IDS_AUTOFILL_AI_SHIPMENTS_TITLE},
       {"shoppingOptInToggleLabel", IDS_AUTOFILL_SHOPPING_OPT_IN_TOGGLE_LABEL},
@@ -2065,6 +2068,14 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
   html_source->AddString("manageAddressesUrl",
                          autofill::payments::GetManageAddressesUrl().spec());
   html_source->AddString("manageCreditCardsLabel", GetManageCreditCardsLabel());
+  // When enabled, loyalty cards are managed in their own settings leaf, so the
+  // payments sublabel should not mention them.
+  html_source->AddLocalizedString(
+      "paymentsSublabel",
+      base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableOffersAndLoyaltyCardsSettings)
+          ? IDS_SETTINGS_YOUR_SAVED_INFO_PAYMENTS_SUBLABEL_WITHOUT_LOYALTY_CARDS
+          : IDS_SETTINGS_YOUR_SAVED_INFO_PAYMENTS_SUBLABEL);
   html_source->AddString("managePaymentMethodsUrl",
                          autofill::payments::GetManageInstrumentsUrl().spec());
   html_source->AddString("managePrivatePassesUrl",

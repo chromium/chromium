@@ -75,6 +75,7 @@ export class SettingsAutofillPageV2Element extends
       travelCount_: {type: Number},
       shoppingCount_: {type: Number},
       isShoppingEnabled_: {type: Boolean},
+      isOffersAndLoyaltyCardsEnabled_: {type: Boolean},
       showSuggestionsFromGeminiSettings_: {type: Boolean},
       spark_: {type: String},
     };
@@ -88,6 +89,8 @@ export class SettingsAutofillPageV2Element extends
   protected accessor shoppingCount_: number|undefined;
   protected accessor isShoppingEnabled_: boolean =
       loadTimeData.getBoolean('shoppingIntegrationEnabled');
+  protected accessor isOffersAndLoyaltyCardsEnabled_: boolean =
+      loadTimeData.getBoolean('offersAndLoyaltyCardsSettingsEnabled');
   protected accessor showSuggestionsFromGeminiSettings_: boolean =
       loadTimeData.getBoolean('showSuggestionsFromGeminiSettings');
   // <if expr="not _google_chrome">
@@ -253,6 +256,11 @@ export class SettingsAutofillPageV2Element extends
     if (routes.TRAVEL) {
       map.set(routes.TRAVEL.path, '#travelManagerButton');
     }
+    if (routes.OFFERS_AND_LOYALTY_CARDS) {
+      map.set(
+          routes.OFFERS_AND_LOYALTY_CARDS.path,
+          '#offersAndLoyaltyCardsManagerButton');
+    }
     if (routes.SHOPPING) {
       map.set(routes.SHOPPING.path, '#shoppingManagerButton');
     }
@@ -283,6 +291,9 @@ export class SettingsAutofillPageV2Element extends
         break;
       case 'travel':
         triggerId = 'travelManagerButton';
+        break;
+      case 'offersAndLoyaltyCards':
+        triggerId = 'offersAndLoyaltyCardsManagerButton';
         break;
       case 'shopping':
         triggerId = 'shoppingManagerButton';
@@ -332,6 +343,12 @@ export class SettingsAutofillPageV2Element extends
     this.metricsBrowserProxy_.recordYourSavedInfoCategoryClick(
         YourSavedInfoDataCategory.TRAVEL);
     Router.getInstance().navigateTo(routes.TRAVEL);
+  }
+
+  protected onOffersAndLoyaltyCardsClick_() {
+    this.metricsBrowserProxy_.recordYourSavedInfoCategoryClick(
+        YourSavedInfoDataCategory.OFFERS_AND_LOYALTY_CARDS);
+    Router.getInstance().navigateTo(routes.OFFERS_AND_LOYALTY_CARDS);
   }
 
   protected onShoppingClick_() {

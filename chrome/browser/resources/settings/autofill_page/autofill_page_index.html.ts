@@ -42,6 +42,13 @@ export function getHtml(this: SettingsAutofillPageIndexElement) {
       route-path="${this.routes_.TRAVEL.path}">
   </settings-travel-page>
 
+  ${this.isOffersAndLoyaltyCardsEnabled_ ? html`
+    <settings-offers-and-loyalty-cards-page slot="view"
+        id="offersAndLoyaltyCards" data-parent-view-id="parent"
+        route-path="${this.routes_.OFFERS_AND_LOYALTY_CARDS.path}">
+    </settings-offers-and-loyalty-cards-page>
+  ` : ''}
+
   ${this.isShoppingEnabled_ ? html`
     <settings-shopping-page slot="view" id="shopping"
         data-parent-view-id="parent" route-path="${this.routes_.SHOPPING.path}">

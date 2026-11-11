@@ -61,7 +61,8 @@ enum class YourSavedInfoDataCategory {
   kIdentityDocs = 3,
   kTravel = 4,
   kShopping = 5,
-  kMaxValue = kShopping,
+  kOffersAndLoyaltyCards = 6,
+  kMaxValue = kOffersAndLoyaltyCards,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:YourSavedInfoDataCategory)
 }  // namespace

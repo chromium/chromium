@@ -6,8 +6,8 @@ import 'chrome://settings/settings.js';
 
 import {AiEnterpriseFeaturePrefName, AutofillManagerImpl, EntityDataManagerProxyImpl, EntityTypeName, PaymentsManagerImpl} from 'chrome://settings/lazy_load.js';
 import type {CrLinkRowElement, SettingsAutofillPageV2Element} from 'chrome://settings/settings.js';
-import {loadTimeData, MetricsBrowserProxyImpl, ModelExecutionEnterprisePolicyValue, OpenWindowProxyImpl, PasswordManagerImpl, PrefsBrowserProxy, PrefService, resetRouterForTesting} from 'chrome://settings/settings.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {loadTimeData, MetricsBrowserProxyImpl, ModelExecutionEnterprisePolicyValue, OpenWindowProxyImpl, PasswordManagerImpl, PrefsBrowserProxy, PrefService, resetRouterForTesting, Router, YourSavedInfoDataCategory} from 'chrome://settings/settings.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -69,6 +69,7 @@ suite('AutofillPageV2', function() {
   let autofillManager: TestAutofillManager;
   let entityDataManager: TestEntityDataManagerProxy;
   let paymentsManager: TestPaymentsManager;
+  let metricsBrowserProxy: TestMetricsBrowserProxy;
 
   suiteSetup(function() {
     return setupPrefs();
@@ -82,7 +83,8 @@ suite('AutofillPageV2', function() {
     PasswordManagerImpl.setInstance(new TestPasswordManagerProxy());
     paymentsManager = new TestPaymentsManager();
     PaymentsManagerImpl.setInstance(paymentsManager);
-    MetricsBrowserProxyImpl.setInstance(new TestMetricsBrowserProxy());
+    metricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
     OpenWindowProxyImpl.setInstance(new TestOpenWindowProxy());
   }
 
@@ -174,5 +176,34 @@ suite('AutofillPageV2', function() {
     assertEquals('1', getRowCount('#identityManagerButton'));
     assertEquals('0', getRowCount('#travelManagerButton'));
     assertEquals('0', getRowCount('#shoppingManagerButton'));
+  });
+
+  test('OffersAndLoyaltyCardsRowHiddenWhenFlagDisabled', async function() {
+    await setupPage({offersAndLoyaltyCardsSettingsEnabled: false});
+    assertFalse(!!autofillPage.shadowRoot.querySelector(
+        '#offersAndLoyaltyCardsManagerButton'));
+  });
+
+  test('OffersAndLoyaltyCardsRowNavigates', async function() {
+    await setupPage({offersAndLoyaltyCardsSettingsEnabled: true});
+    const row = autofillPage.shadowRoot.querySelector<CrLinkRowElement>(
+        '#offersAndLoyaltyCardsManagerButton');
+    assertTrue(!!row);
+    assertEquals(
+        loadTimeData.getString('offersAndLoyaltyCardsCardTitle'), row.label);
+    assertEquals(
+        loadTimeData.getString('offersAndLoyaltyCardsSublabel'), row.subLabel);
+
+    row.click();
+
+    assertEquals(
+        '/offersAndLoyaltyCards', Router.getInstance().currentRoute.path);
+    const [category] = await metricsBrowserProxy.whenCalled(
+        'recordYourSavedInfoCategoryClick');
+    assertEquals(YourSavedInfoDataCategory.OFFERS_AND_LOYALTY_CARDS, category);
+    const action = await metricsBrowserProxy.whenCalled('recordAction');
+    assertEquals(
+        'Settings.YourSavedInfo.CategoryClick.OFFERS_AND_LOYALTY_CARDS',
+        action);
   });
 });

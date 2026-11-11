@@ -735,6 +735,9 @@
   <message name="IDS_AUTOFILL_SHOPPING_TITLE" desc="Title for the Your saved info settings sub page that allows user to manage their list of saved shopping items. Sentence-Cased." formatter_data="android_java" translateable="false">
     Shopping
   </message>
+  <message name="IDS_AUTOFILL_OFFERS_AND_LOYALTY_CARDS_TITLE" desc="Title for the Your saved info settings sub page that allows user to manage their saved offers and loyalty cards from Google Wallet. Sentence-Cased.">
+    Offers and loyalty cards
+  </message>
   <message name="IDS_AUTOFILL_TRAVEL_TITLE" desc="Title for the Your saved info settings sub page that allows user to manage their list of saved travel info. Sentence-Cased." formatter_data="android_java">
     Travel
   </message>

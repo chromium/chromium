@@ -592,6 +592,12 @@
     <message name="IDS_SETTINGS_YOUR_SAVED_INFO_PAYMENTS_SUBLABEL" desc="Sublabel for the Payments link row on the 'Your saved info' page.">
       Credit and debit cards, IBANs, and loyalty cards
     </message>
+    <message name="IDS_SETTINGS_YOUR_SAVED_INFO_PAYMENTS_SUBLABEL_WITHOUT_LOYALTY_CARDS" desc="Sublabel for the Payments link row on the 'Your saved info' page, shown when loyalty cards are managed on the separate 'Offers and loyalty cards' page.">
+      Credit and debit cards and IBANs
+    </message>
+    <message name="IDS_SETTINGS_YOUR_SAVED_INFO_OFFERS_AND_LOYALTY_CARDS_SUBLABEL" desc="Sublabel for the 'Offers and loyalty cards' link row on the 'Your saved info' page. The page lists the user's offers (such as promo codes) and loyalty cards saved in Google Wallet.">
+      Promo codes and loyalty cards
+    </message>
     <message name="IDS_SETTINGS_YOUR_SAVED_INFO_CONTACT_INFO_SUBLABEL" desc="Sublabel for the Contact info link row on the 'Your saved info' page.">
       Home, work, and more
     </message>

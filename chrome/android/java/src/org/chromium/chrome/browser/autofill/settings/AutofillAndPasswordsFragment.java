@@ -119,6 +119,7 @@ public class AutofillAndPasswordsFragment extends ChromeBaseSettingsFragment {
         YourSavedInfoDataCategory.IDENTITY_DOCS,
         YourSavedInfoDataCategory.TRAVEL,
         YourSavedInfoDataCategory.SHOPPING,
+        YourSavedInfoDataCategory.OFFERS_AND_LOYALTY_CARDS,
         YourSavedInfoDataCategory.COUNT
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -129,7 +130,8 @@ public class AutofillAndPasswordsFragment extends ChromeBaseSettingsFragment {
         int IDENTITY_DOCS = 3;
         int TRAVEL = 4;
         int SHOPPING = 5;
-        int COUNT = 6;
+        int OFFERS_AND_LOYALTY_CARDS = 6;
+        int COUNT = 7;
     }
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:YourSavedInfoDataCategory)

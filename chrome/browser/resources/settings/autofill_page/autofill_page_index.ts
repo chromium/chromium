@@ -55,6 +55,7 @@ export class SettingsAutofillPageIndexElement extends
       routes_: {type: Object},
       isSettingsRefresh2026Enabled_: {type: Boolean},
       isShoppingEnabled_: {type: Boolean},
+      isOffersAndLoyaltyCardsEnabled_: {type: Boolean},
       showSuggestionsFromGeminiSettings_: {type: Boolean},
     };
   }
@@ -64,6 +65,8 @@ export class SettingsAutofillPageIndexElement extends
       loadTimeData.getString('settingsRefresh2026') !== '';
   protected accessor isShoppingEnabled_: boolean =
       loadTimeData.getBoolean('shoppingIntegrationEnabled');
+  protected accessor isOffersAndLoyaltyCardsEnabled_: boolean =
+      loadTimeData.getBoolean('offersAndLoyaltyCardsSettingsEnabled');
   protected accessor showSuggestionsFromGeminiSettings_: boolean =
       loadTimeData.getBoolean('showSuggestionsFromGeminiSettings');
 
@@ -116,6 +119,11 @@ export class SettingsAutofillPageIndexElement extends
               'travel', 'no-animation', 'no-animation');
           SavedInfoHandlerImpl.getInstance().requestDataManagementSurvey(
               DataManagementSurvey.TRAVEL, isFromHomePage);
+          break;
+        case routes.OFFERS_AND_LOYALTY_CARDS:
+          assert(this.isOffersAndLoyaltyCardsEnabled_);
+          this.$.viewManager.switchView(
+              'offersAndLoyaltyCards', 'no-animation', 'no-animation');
           break;
         case routes.SHOPPING:
           assert(this.isShoppingEnabled_);

@@ -34446,6 +34446,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Settings.YourSavedInfo.CategoryClick.OFFERS_AND_LOYALTY_CARDS">
+  <owner>wilsonlow@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <description>
+    User clicks on the Offers and loyalty cards category link in the Your saved
+    info page.
+  </description>
+</action>
+
 <action name="Settings.YourSavedInfo.CategoryClick.PASSWORD_MANAGER">
   <owner>jsobiech@google.com</owner>
   <description>

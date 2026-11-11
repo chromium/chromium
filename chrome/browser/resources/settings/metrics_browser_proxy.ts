@@ -436,7 +436,8 @@ export enum YourSavedInfoDataCategory {
   IDENTITY_DOCS = 3,
   TRAVEL = 4,
   SHOPPING = 5,
-  COUNT = 6,
+  OFFERS_AND_LOYALTY_CARDS = 6,
+  COUNT = 7,
 }
 // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:YourSavedInfoDataCategory)
 
