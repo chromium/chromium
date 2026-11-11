@@ -150,17 +150,15 @@ Node::InsertionNotificationRequest HTMLOptGroupElement::InsertedInto(
     ContainerNode& insertion_point) {
   HTMLElement::InsertedInto(insertion_point);
 
-  owner_select_ = HTMLSelectElement::WalkAncestorsForRelatedParts(*this).select;
-  if (owner_select_) {
+  HTMLSelectElement* new_ancestor_select =
+      HTMLSelectElement::WalkAncestorsForRelatedParts(*this).select;
+  if (owner_select_ != new_ancestor_select) {
+    // When inserting, we can only gain an associated <select>
+    CHECK(!owner_select_);
+    owner_select_ = new_ancestor_select;
     owner_select_->OptGroupInsertedOrRemoved(*this);
   }
   UpdateGroupLabel();
-
-  if (HTMLSelectElement* select = OwnerSelectElement()) {
-    if (&insertion_point == select) {
-      select->OptGroupInsertedOrRemoved(*this);
-    }
-  }
   return kInsertionDone;
 }
 
