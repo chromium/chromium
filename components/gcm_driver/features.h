@@ -10,6 +10,11 @@
 
 namespace gcm::features {
 
+// Runs `GCMDriver` blocking storage tasks with `TaskPriority::USER_VISIBLE`
+// instead of `TaskPriority::BEST_EFFORT` so key-store and database loads are
+// not stalled behind `BEST_EFFORT` execution fences.
+BASE_DECLARE_FEATURE(kGCMBlockingTaskRunnerUserVisible);
+
 // Enables in-memory buffering of incoming push messages when no matching
 // AppHandler is currently registered (e.g. during browser initialization).
 BASE_DECLARE_FEATURE(kGCMMessageBuffering);

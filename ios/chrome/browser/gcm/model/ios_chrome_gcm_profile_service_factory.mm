@@ -7,6 +7,7 @@
 #import <utility>
 
 #import "base/check_is_test.h"
+#import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
 #import "base/memory/ref_counted.h"
@@ -14,6 +15,7 @@
 #import "base/task/sequenced_task_runner.h"
 #import "base/task/thread_pool.h"
 #import "build/branding_buildflags.h"
+#import "components/gcm_driver/features.h"
 #import "components/gcm_driver/gcm_client_factory.h"
 #import "components/gcm_driver/gcm_profile_service.h"
 #import "ios/chrome/app/tests_hook.h"
@@ -50,9 +52,14 @@ IOSChromeGCMProfileServiceFactory::BuildServiceInstanceFor(
     return test_gcm_service;
   }
 
+  const base::TaskPriority blocking_task_priority =
+      base::FeatureList::IsEnabled(
+          gcm::features::kGCMBlockingTaskRunnerUserVisible)
+          ? base::TaskPriority::USER_VISIBLE
+          : base::TaskPriority::BEST_EFFORT;
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner(
       base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+          {base::MayBlock(), blocking_task_priority,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN}));
   return std::make_unique<gcm::GCMProfileService>(
       profile.GetStatePath(),

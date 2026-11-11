@@ -16,6 +16,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
+#include "components/gcm_driver/features.h"
 #include "components/gcm_driver/gcm_profile_service.h"
 #include "components/offline_pages/buildflags/buildflags.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -159,9 +160,13 @@ GCMProfileServiceFactory::BuildServiceInstanceForBrowserContext(
     return testing_factory.Run(context);
   }
 
+  const base::TaskPriority blocking_task_priority =
+      base::FeatureList::IsEnabled(features::kGCMBlockingTaskRunnerUserVisible)
+          ? base::TaskPriority::USER_VISIBLE
+          : base::TaskPriority::BEST_EFFORT;
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner(
       base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+          {base::MayBlock(), blocking_task_priority,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN}));
   std::unique_ptr<GCMProfileService> service;
 #if BUILDFLAG(IS_ANDROID)

@@ -19,6 +19,9 @@ constexpr base::FeatureParam<int> kGCMMessageBufferingTTLSeconds{
 
 }  // namespace
 
+BASE_FEATURE(kGCMBlockingTaskRunnerUserVisible,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kGCMMessageBuffering, base::FEATURE_ENABLED_BY_DEFAULT);
 
 base::TimeDelta GetGCMMessageBufferingTTL() {
