@@ -1718,9 +1718,10 @@
     "owners": [
       "rainhard@google.com",
       "azamatmz@google.com",
+      "aisulu@google.com",
       "chrome-browser-privacy-team@google.com"
     ],
-    "expiry_milestone": 160
+    "expiry_milestone": 166
   },
   {
     "name": "browsing-history-filter-by-device",
@@ -1729,24 +1730,27 @@
       "aisulu@google.com",
       "chrome-browser-privacy-team@google.com"
     ],
-    "expiry_milestone": 160
+    "expiry_milestone": 166
   },
   {
     "name": "browsing-history-filter-by-domain",
     "owners": [
       "dullweber@chromium.org",
       "rainhard@google.com",
+      "aisulu@google.com",
       "chrome-browser-privacy-team@google.com"
     ],
-    "expiry_milestone": 160
+    "expiry_milestone": 166
   },
   {
     "name": "browsing-history-filter-by-time",
     "owners": [
       "zalmashni@google.com",
+      "rainhard@google.com",
+      "aisulu@google.com",
       "chrome-browser-privacy-team@google.com"
     ],
-    "expiry_milestone": 160
+    "expiry_milestone": 166
   },
   {
     "name": "browsing-history-similar-visits-grouping",
@@ -1755,7 +1759,7 @@
       "alimariam@google.com",
       "zalmashni@google.com",
       "chrome-browser-privacy-team@google.com"],
-    "expiry_milestone": 160
+    "expiry_milestone": 166
   },
   {
     "name": "built-in-ai-mtp",
