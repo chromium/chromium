@@ -12,7 +12,6 @@ static_library("schedqos") {
 
   deps = [
     "//base",
-    "//chrome/browser/ash/system",
     "//chromeos/ash/components/dbus/resourced",
     "//dbus",
   ]
