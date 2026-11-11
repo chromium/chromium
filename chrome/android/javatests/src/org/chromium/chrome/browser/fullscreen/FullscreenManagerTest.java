@@ -161,10 +161,7 @@ public class FullscreenManagerTest {
     @Test
     @MediumTest
     @Feature({"Fullscreen"})
-    @DisableFeatures({
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
-    })
+    @DisableFeatures(ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION)
     public void testTogglePersistentFullscreenLegacy() {
         WebPageStation page = mActivityTestRule.startOnUrl(LONG_HTML_TEST_PAGE);
 
@@ -183,10 +180,7 @@ public class FullscreenManagerTest {
     @Test
     @MediumTest
     @Feature({"Fullscreen"})
-    @EnableFeatures({
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
-    })
+    @EnableFeatures(ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION)
     public void testTogglePersistentFullscreen() {
         WebPageStation page = mActivityTestRule.startOnUrl(LONG_HTML_TEST_PAGE);
 
@@ -205,10 +199,7 @@ public class FullscreenManagerTest {
     @Test
     @MediumTest
     @Feature({"Fullscreen"})
-    @DisableFeatures({
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
-    })
+    @DisableFeatures(ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION)
     public void testBackPressExitPersistentFullscreen_backGestureRefactorLegacy() {
         testBackPressExitPersistentFullscreenInternal(false);
     }
@@ -216,10 +207,7 @@ public class FullscreenManagerTest {
     @Test
     @MediumTest
     @Feature({"Fullscreen"})
-    @EnableFeatures({
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
-    })
+    @EnableFeatures(ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION)
     public void testBackPressExitPersistentFullscreen_backGestureRefactor() {
         testBackPressExitPersistentFullscreenInternal(true);
     }
@@ -239,10 +227,7 @@ public class FullscreenManagerTest {
     @MediumTest
     @Feature({"Fullscreen"})
     @DisabledTest(message = "https://crbug.com/456056229")
-    @DisableFeatures({
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
-    })
+    @DisableFeatures(ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION)
     public void testDelayedPersistentFullscreenLegacy() {
         WebPageStation page = mActivityTestRule.startOnUrl(LONG_HTML_TEST_PAGE);
 
@@ -268,10 +253,7 @@ public class FullscreenManagerTest {
     @MediumTest
     @Feature({"Fullscreen"})
     @DisabledTest(message = "https://crbug.com/456056229")
-    @EnableFeatures({
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
-    })
+    @EnableFeatures(ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION)
     public void testDelayedPersistentFullscreen() {
         WebPageStation page = mActivityTestRule.startOnUrl(LONG_HTML_TEST_PAGE);
 
@@ -351,11 +333,8 @@ public class FullscreenManagerTest {
     @Test
     @LargeTest
     @Feature({"Fullscreen"})
-    @DisableFeatures({
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
-    })
-    public void testPersistentFullscreenChangingUiFlags() throws InterruptedException {
+    @DisableFeatures(ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION)
+    public void testPersistentFullscreenChangingUiFlagsLegacy() throws InterruptedException {
         WebPageStation page = mActivityTestRule.startOnUrl(LONG_HTML_TEST_PAGE);
 
         ChromeTabbedActivity activity = page.getActivity();
@@ -386,10 +365,7 @@ public class FullscreenManagerTest {
     @Test
     @LargeTest
     @Feature({"Fullscreen"})
-    @DisableFeatures({
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
-    })
+    @DisableFeatures(ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION)
     public void testFullscreenOptionsUpdatedCorrectlyLegacy() throws InterruptedException {
         WebPageStation page = mActivityTestRule.startOnUrl(LONG_HTML_TEST_PAGE);
 
@@ -434,10 +410,7 @@ public class FullscreenManagerTest {
     @Test
     @LargeTest
     @Feature({"Fullscreen"})
-    @EnableFeatures({
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
-    })
+    @EnableFeatures(ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION)
     public void testFullscreenOptionsUpdatedCorrectly() throws InterruptedException {
         WebPageStation page = mActivityTestRule.startOnUrl(LONG_HTML_TEST_PAGE);
 
@@ -484,7 +457,6 @@ public class FullscreenManagerTest {
     @Feature({"Fullscreen"})
     @DisableFeatures({
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE,
         // TODO(crbug.com/473893732): Update the test for lock top control or use restriction.
         ChromeFeatureList.LOCK_TOP_CONTROLS_ON_LARGE_TABLETS_V2,
         // TODO(crbug.com/489060623): Update the test for snap animation.
@@ -520,10 +492,7 @@ public class FullscreenManagerTest {
     @LargeTest
     @Feature({"Fullscreen"})
     @DisabledTest(message = "crbug.com/40670999")
-    @EnableFeatures({
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
-    })
+    @EnableFeatures(ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION)
     // TODO(crbug.com/489060623): Update the test for snap animation.
     @DisableFeatures(ChromeFeatureList.BROWSER_CONTROLS_SCROLL_SNAP_ANIMATION)
     public void testExitPersistentFullscreenAllowsManualFullscreen() {
@@ -557,7 +526,6 @@ public class FullscreenManagerTest {
     @Feature({"Fullscreen"})
     @DisableFeatures({
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE,
         // TODO(crbug.com/473893732): Update the test for lock top control or use restriction.
         ChromeFeatureList.LOCK_TOP_CONTROLS_ON_LARGE_TABLETS_V2,
         // TODO(crbug.com/489060623): Update the test for snap animation.
@@ -585,10 +553,7 @@ public class FullscreenManagerTest {
     @Test
     @LargeTest
     @Feature({"Fullscreen"})
-    @EnableFeatures({
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
-    })
+    @EnableFeatures(ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION)
     @DisableFeatures({
         // TODO(crbug.com/473893732): Update the test for lock top control or use restriction.
         ChromeFeatureList.LOCK_TOP_CONTROLS_ON_LARGE_TABLETS_V2,
@@ -619,7 +584,6 @@ public class FullscreenManagerTest {
     @DisabledTest(message = "crbug.com/485245305")
     @DisableFeatures({
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE,
         // TODO(crbug.com/473893732): Update the test for lock top control or use restriction.
         ChromeFeatureList.LOCK_TOP_CONTROLS_ON_LARGE_TABLETS_V2,
         // TODO(crbug.com/489060623): Update the test for snap animation.
@@ -670,10 +634,7 @@ public class FullscreenManagerTest {
 
     @Test
     @LargeTest
-    @EnableFeatures({
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
-    })
+    @EnableFeatures(ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION)
     @DisabledTest(message = "Flaky: crbug.com/475145490")
     // TODO(crbug.com/489060623): Update the test for snap animation.
     @DisableFeatures(ChromeFeatureList.BROWSER_CONTROLS_SCROLL_SNAP_ANIMATION)
@@ -725,7 +686,6 @@ public class FullscreenManagerTest {
     @Feature({"Fullscreen"})
     @DisableFeatures({
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE,
         // TODO(crbug.com/489060623): Update the test for snap animation.
         ChromeFeatureList.BROWSER_CONTROLS_SCROLL_SNAP_ANIMATION
     })
@@ -757,10 +717,7 @@ public class FullscreenManagerTest {
     @Test
     @LargeTest
     @Feature({"Fullscreen"})
-    @EnableFeatures({
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
-    })
+    @EnableFeatures(ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION)
     @DisabledTest(message = "https://crbug.com/373808956")
     // TODO(crbug.com/489060623): Update the test for snap animation.
     @DisableFeatures(ChromeFeatureList.BROWSER_CONTROLS_SCROLL_SNAP_ANIMATION)
@@ -793,7 +750,6 @@ public class FullscreenManagerTest {
     @Feature({"Fullscreen"})
     @DisableFeatures({
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE,
         // TODO(crbug.com/473893732): Update the test for lock top control or use restriction.
         ChromeFeatureList.LOCK_TOP_CONTROLS_ON_LARGE_TABLETS_V2,
         // TODO(crbug.com/489060623): Update the test for snap animation.
@@ -826,10 +782,7 @@ public class FullscreenManagerTest {
     @Test
     @LargeTest
     @Feature({"Fullscreen"})
-    @EnableFeatures({
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
-    })
+    @EnableFeatures(ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION)
     // TODO(crbug.com/473893732): Update the test for lock top control or use restriction.
     @DisableFeatures({
         // TODO(crbug.com/473893732): Update the test for lock top control or use restriction.
@@ -866,7 +819,6 @@ public class FullscreenManagerTest {
     @Feature({"Fullscreen"})
     @DisableFeatures({
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE,
         // TODO(crbug.com/473893732): Update the test for lock top control or use restriction.
         ChromeFeatureList.LOCK_TOP_CONTROLS_ON_LARGE_TABLETS_V2,
         // TODO(crbug.com/489060623): Update the test for snap animation.
@@ -900,10 +852,7 @@ public class FullscreenManagerTest {
     @Test
     @LargeTest
     @Feature({"Fullscreen"})
-    @EnableFeatures({
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
-    })
+    @EnableFeatures(ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION)
     // TODO(crbug.com/473893732): Update the test for lock top control or use restriction.
     @DisableFeatures({
         // TODO(crbug.com/473893732): Update the test for lock top control or use restriction.
@@ -939,10 +888,7 @@ public class FullscreenManagerTest {
     @Test
     @LargeTest
     @Feature({"Fullscreen"})
-    @DisableFeatures({
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
-    })
+    @DisableFeatures(ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION)
     public void testEnterPendingPersistentFullscreenLegacy() {
         FullscreenManagerTestUtils.disableBrowserOverrides();
         WebPageStation page = mActivityTestRule.startOnUrl(LONG_FULLSCREEN_API_HTML_TEST_PAGE);
@@ -965,10 +911,7 @@ public class FullscreenManagerTest {
     @Test
     @LargeTest
     @Feature({"Fullscreen"})
-    @EnableFeatures({
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
-    })
+    @EnableFeatures(ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION)
     public void testEnterPendingPersistentFullscreen() {
         FullscreenManagerTestUtils.disableBrowserOverrides();
         WebPageStation page = mActivityTestRule.startOnUrl(LONG_FULLSCREEN_API_HTML_TEST_PAGE);
@@ -993,7 +936,6 @@ public class FullscreenManagerTest {
     @Feature({"Fullscreen"})
     @DisableFeatures({
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE,
         // TODO(crbug.com/473893732): Update the test for lock top control or use restriction.
         ChromeFeatureList.LOCK_TOP_CONTROLS_ON_LARGE_TABLETS_V2,
         // TODO(crbug.com/489060623): Update the test for snap animation.
@@ -1034,10 +976,7 @@ public class FullscreenManagerTest {
     @Test
     @LargeTest
     @Feature({"Fullscreen"})
-    @EnableFeatures({
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
-    })
+    @EnableFeatures(ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION)
     // TODO(crbug.com/473893732): Update the test for lock top control or use restriction.
     @DisableFeatures({
         // TODO(crbug.com/473893732): Update the test for lock top control or use restriction.
@@ -1082,7 +1021,6 @@ public class FullscreenManagerTest {
     @Feature({"Fullscreen"})
     @DisableFeatures({
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE,
         // TODO(crbug.com/473893732): Update the test for lock top control or use restriction.
         ChromeFeatureList.LOCK_TOP_CONTROLS_ON_LARGE_TABLETS_V2,
         // TODO(crbug.com/489060623): Update the test for snap animation.
@@ -1147,10 +1085,7 @@ public class FullscreenManagerTest {
     @LargeTest
     @Feature({"Fullscreen"})
     @DisabledTest(message = "crbug.com/41468136")
-    @EnableFeatures({
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
-    })
+    @EnableFeatures(ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION)
     // TODO(crbug.com/489060623): Update the test for snap animation.
     @DisableFeatures(ChromeFeatureList.BROWSER_CONTROLS_SCROLL_SNAP_ANIMATION)
     public void testPersistentFullscreenWithOptions() {
@@ -1210,10 +1145,7 @@ public class FullscreenManagerTest {
     @Test
     @MediumTest
     @Feature({"Fullscreen"})
-    @DisableFeatures({
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
-    })
+    @DisableFeatures(ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION)
     @DisabledTest(message = "https://crbug.com/572586223")
     public void testFullscreenExitWithSelectionPopPresentLegacy() throws InterruptedException {
         WebPageStation page = mActivityTestRule.startOnUrl(FULLSCREEN_WITH_SELECTION_POPUP);
@@ -1263,10 +1195,7 @@ public class FullscreenManagerTest {
     @Test
     @MediumTest
     @Feature({"Fullscreen"})
-    @EnableFeatures({
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
-    })
+    @EnableFeatures(ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION)
     @DisabledTest(message = "https://crbug.com/568648439")
     public void testFullscreenExitWithSelectionPopPresent_BackGestureRefactor()
             throws InterruptedException {
@@ -1337,10 +1266,7 @@ public class FullscreenManagerTest {
     @Test
     @MediumTest
     @Feature({"Fullscreen"})
-    @DisableFeatures({
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
-    })
+    @DisableFeatures(ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION)
     public void testFullscreenPageHeightLegacy() throws Throwable {
         launchOnFullscreenMode(LONG_HTML_TEST_PAGE, false);
         Assert.assertTrue(getPersistentFullscreenMode());
@@ -1353,10 +1279,7 @@ public class FullscreenManagerTest {
     @Test
     @MediumTest
     @Feature({"Fullscreen"})
-    @EnableFeatures({
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
-    })
+    @EnableFeatures(ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION)
     public void testFullscreenPageHeight() throws Throwable {
         launchOnFullscreenMode(LONG_HTML_TEST_PAGE, true);
         Assert.assertTrue(getPersistentFullscreenMode());
