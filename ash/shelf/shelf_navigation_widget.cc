@@ -124,7 +124,7 @@ class AnimationObserverToHideView : public ui::ImplicitAnimationObserver {
   }
 
  private:
-  const raw_ptr<views::View, LeakedDanglingUntriaged> view_;
+  const raw_ptr<views::View> view_;
 };
 
 // Tracks the animation smoothness of a view's bounds animation using
