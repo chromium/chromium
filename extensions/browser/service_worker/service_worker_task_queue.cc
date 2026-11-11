@@ -648,8 +648,7 @@ void ServiceWorkerTaskQueue::RegisterServiceWorker(
       blink::StorageKey::CreateFirstParty(url::Origin::Create(option.scope)),
       option, content::GlobalRenderFrameHostId(),
       base::BindOnce(&ServiceWorkerTaskQueue::DidRegisterServiceWorker,
-                     weak_factory_.GetWeakPtr(), context_id, reason,
-                     base::Time::Now()));
+                     weak_factory_.GetWeakPtr(), context_id, reason));
 }
 
 void ServiceWorkerTaskQueue::DeactivateExtension(const Extension* extension) {
@@ -970,7 +969,6 @@ void ServiceWorkerTaskQueue::ClearRetryState(
 void ServiceWorkerTaskQueue::DidRegisterServiceWorker(
     const SequencedContextId& context_id,
     RegistrationReason reason,
-    base::Time start_time,
     blink::ServiceWorkerStatusCode status_code) {
   const bool success = IsWorkerRegistrationSuccess(status_code);
   base::UmaHistogramBoolean(
@@ -1082,8 +1080,6 @@ void ServiceWorkerTaskQueue::DidRegisterServiceWorker(
     }
     return;
   }
-  base::UmaHistogramTimes("Extensions.ServiceWorkerBackground.RegistrationTime",
-                          base::Time::Now() - start_time);
 
   worker_state->SetRegistrationState(RegistrationState::kRegistered);
   pending_storage_registrations_.insert_or_assign(

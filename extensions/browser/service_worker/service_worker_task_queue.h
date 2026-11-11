@@ -429,7 +429,6 @@ class ServiceWorkerTaskQueue
   // of an existing worker registration.
   void DidRegisterServiceWorker(const SequencedContextId& context_id,
                                 RegistrationReason reason,
-                                base::Time start_time,
                                 blink::ServiceWorkerStatusCode status);
   void DidUnregisterServiceWorker(
       const ExtensionId& extension_id,

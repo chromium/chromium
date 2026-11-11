@@ -4205,18 +4205,6 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
-<histogram name="Extensions.ServiceWorkerBackground.RegistrationTime"
-    units="ms" expires_after="2025-03-25">
-  <owner>jlulejian@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    The amount of time it takes to register a service worker background script
-    with the content service worker layer.
-
-    Measured in milliseconds from 1ms up to 10 seconds.
-  </summary>
-</histogram>
-
 <histogram name="Extensions.ServiceWorkerBackground.RegistrationWhenExpected"
     enum="Boolean" expires_after="2026-03-01">
   <owner>jlulejian@chromium.org</owner>
