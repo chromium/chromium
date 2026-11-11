@@ -505,4 +505,15 @@ TEST_F(AmbientSigninControllerTest, DismissalCountExpiresAfterThirtyDays) {
   CompleteRequestAndWait(model2.get());
 }
 
+TEST_F(AmbientSigninControllerTest, AmbientChipOnlySuppressesInitialBubble) {
+  auto model = CreatePasskeyModel(main_rfh());
+  model->ambient_chip_only = true;
+
+  controller()->Show(model.get());
+  prompt_factory_->WaitForPermissionBubble();
+  ASSERT_NE(current_ambient_request(), nullptr);
+  EXPECT_FALSE(current_ambient_request()->ShouldBubbleStartOpen());
+  CompleteRequestAndWait(model.get());
+}
+
 }  // namespace ambient_signin

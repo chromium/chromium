@@ -460,6 +460,9 @@ struct AuthenticatorRequestDialogModel
   // Whether the platform can check biometrics and has biometrics configured.
   std::optional<bool> platform_has_biometrics;
   UIPresentation ui_presentation = UIPresentation::kModal;
+  // Experimental: if true, an Ambient request shows only the omnibox chip. See
+  // `kWebAuthnAmbientChipOnlyTimeout`.
+  bool ambient_chip_only = false;
   // Stores the pre-calculated GPM UV method for `getAssertion`.
   // This is set by `ChromeAuthenticatorRequestDelegate` before `StartFlow` is
   // called on the controller. This is used for immediate mode requests.

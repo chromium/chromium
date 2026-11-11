@@ -1365,6 +1365,64 @@ IN_PROC_BROWSER_TEST_F(WebAuthnAmbientUITest, AmbientUIClosingBubbleKeepsChip) {
   EXPECT_EQ(result, "\"webauthn: OK\"");
 }
 
+// Tests that passing the experimental magic timeout value (31415 ms) launches
+// the Ambient UI in chip-only mode without automatically opening the bubble.
+IN_PROC_BROWSER_TEST_F(WebAuthnAmbientUITest,
+                       AmbientUIMagicTimeoutStartsChipOnly) {
+  static constexpr char kChipOnlyGetRequest[] = R"((() => {
+    navigator.credentials.get({
+      uiMode: 'passive',
+      mediation: 'conditional',
+      publicKey: {
+        challenge: new Uint8Array([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]),
+        timeout: 31415,
+        userVerification: 'discouraged',
+        allowCredentials: [],
+      }}).then(c => window.domAutomationController.send('webauthn: OK'),
+               e => window.domAutomationController.send('error ' + e));
+    })())";
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::DOMMessageQueue message_queue(web_contents);
+  permissions::PermissionRequestObserver permission_observer(web_contents);
+
+  content::ExecuteScriptAsync(web_contents, kChipOnlyGetRequest);
+  permission_observer.Wait();
+  ASSERT_TRUE(permission_observer.request_shown());
+
+  permissions::PermissionRequestManager* permission_request_manager =
+      permissions::PermissionRequestManager::FromWebContents(web_contents);
+  ASSERT_FALSE(permission_request_manager->Requests().empty());
+  auto* ambient_request =
+      static_cast<ambient_signin::AmbientLoginPermissionRequest*>(
+          permission_request_manager->Requests().front().get());
+  EXPECT_FALSE(ambient_request->ShouldBubbleStartOpen());
+
+  ChipController* chip_controller =
+      BrowserView::GetBrowserViewForBrowser(browser())
+          ->GetLocationBar()
+          ->GetChipController();
+  ASSERT_NE(chip_controller, nullptr);
+  EXPECT_TRUE(chip_controller->IsPermissionPromptChipVisible());
+  // `ChipController` opens the bubble in `OnExpandAnimationEnded()`, so wait
+  // for the expand animation to finish before verifying the bubble did not
+  // open.
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return !chip_controller->IsAnimating(); }));
+  EXPECT_FALSE(chip_controller->IsBubbleShowing());
+
+  // Clicking the chip opens the bubble.
+  chip_controller->chip()->ExecuteForTesting();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return chip_controller->IsBubbleShowing(); }));
+  permission_request_manager->Accept(std::monostate());
+
+  std::string result;
+  ASSERT_TRUE(message_queue.WaitForMessage(&result));
+  EXPECT_EQ(result, "\"webauthn: OK\"");
+}
+
 // Tests that the ambient UI bubble is shown and can be interacted with.
 IN_PROC_BROWSER_TEST_F(WebAuthnAmbientUITest, AmbientUIBubble) {
   // Inject TWO credentials to trigger prompt.

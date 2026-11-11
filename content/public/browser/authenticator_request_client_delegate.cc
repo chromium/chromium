@@ -42,6 +42,9 @@ void AuthenticatorRequestClientDelegate::SetRelyingPartyId(const std::string&) {
 void AuthenticatorRequestClientDelegate::SetUIPresentation(
     UIPresentation ui_presentation) {}
 
+void AuthenticatorRequestClientDelegate::SetAmbientChipOnly(
+    bool ambient_chip_only) {}
+
 bool AuthenticatorRequestClientDelegate::DoesBlockRequestOnFailure(
     InterestingFailureReason reason) {
   return false;

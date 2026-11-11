@@ -165,6 +165,11 @@ namespace {
 const char kImmediateTimeoutWhileWaitingForUi[] =
     "WebAuthentication.GetAssertion.Immediate.TimeoutWhileWaitingForUi";
 
+// Experimental magic timeout value that lets a relying party opt into
+// launching the Ambient UI in chip-only mode (without automatically opening
+// the bubble).
+constexpr base::TimeDelta kAmbientChipOnlyTimeout = base::Milliseconds(31415);
+
 WebAuthenticationDelegate* GetWebAuthenticationDelegate() {
   return GetContentClient()->browser()->GetWebAuthenticationDelegate();
 }
@@ -2022,6 +2027,10 @@ void AuthenticatorCommonImpl::ContinueGetAssertionAfterRpIdCheck(
     ui_presentation = UIPresentation::kModalImmediate;
   } else if (options->mediation == Mediation::AMBIENT) {
     ui_presentation = UIPresentation::kAmbient;
+    if (base::FeatureList::IsEnabled(device::kWebAuthnAmbientChipOnlyTimeout) &&
+        public_key_options->timeout == kAmbientChipOnlyTimeout) {
+      req_state_->request_delegate->SetAmbientChipOnly(true);
+    }
   }
   req_state_->request_delegate->SetUIPresentation(ui_presentation);
 

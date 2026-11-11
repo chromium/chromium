@@ -154,6 +154,11 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
   // Configures the type of UI to be shown for this request.
   virtual void SetUIPresentation(UIPresentation ui_presentation);
 
+  // Configures whether an Ambient request (`UIPresentation::kAmbient`) should
+  // initially show only the omnibox chip without automatically opening the
+  // bubble.
+  virtual void SetAmbientChipOnly(bool ambient_chip_only);
+
   // Called when the request fails for the given |reason|.
   //
   // Embedders may return true if they want AuthenticatorImpl to hold off from

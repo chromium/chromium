@@ -143,9 +143,10 @@ void AmbientSigninController::Show(AuthenticatorRequestDialogModel* model) {
   const std::optional<base::Time> last_dismissed =
       base::ValueToTime(site_dict.Find(kLastDismissedKey));
   const bool bubble_starts_open =
-      dismissal_count < kMaxDismissalsBeforeCooldown ||
-      !last_dismissed.has_value() ||
-      base::Time::Now() - *last_dismissed >= kCooldownDuration;
+      !model_->ambient_chip_only &&
+      (dismissal_count < kMaxDismissalsBeforeCooldown ||
+       !last_dismissed.has_value() ||
+       base::Time::Now() - *last_dismissed >= kCooldownDuration);
 
   auto* permission_controller =
       AmbientLoginPermissionController::GetOrCreateForPage(
