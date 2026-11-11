@@ -10,6 +10,8 @@ import android.widget.TextView;
 
 import androidx.test.filters.SmallTest;
 
+import org.jni_zero.JniRawPtr;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -46,6 +48,8 @@ public final class AutoTranslateSnackbarControllerJavaTest {
 
     @Mock AutoTranslateSnackbarController.Natives mMockJni;
 
+    private JniRawPtr<AutoTranslateSnackbarController.NativeAutoTranslateSnackbarController>
+            mNativePtr;
     private AutoTranslateSnackbarController mAutoTranslateSnackbarController;
     private SnackbarManager mSnackbarManager;
     private WebPageStation mPage;
@@ -56,11 +60,18 @@ public final class AutoTranslateSnackbarControllerJavaTest {
         mSnackbarManager = mPage.getActivity().getSnackbarManager();
         WeakReference<Activity> weakReference = new WeakReference<>(mPage.getActivity());
 
+        mNativePtr = JniRawPtr.createForTesting(NATIVE_SNACKBAR_VIEW);
         mAutoTranslateSnackbarController =
-                new AutoTranslateSnackbarController(
-                        weakReference, mSnackbarManager, NATIVE_SNACKBAR_VIEW);
+                new AutoTranslateSnackbarController(weakReference, mSnackbarManager, mNativePtr);
 
         AutoTranslateSnackbarControllerJni.setInstanceForTesting(mMockJni);
+    }
+
+    @After
+    public void tearDown() {
+        if (mAutoTranslateSnackbarController != null) {
+            dismissSnackbar();
+        }
     }
 
     @Test
@@ -121,7 +132,7 @@ public final class AutoTranslateSnackbarControllerJavaTest {
         showSnackbar("tl");
         clickSnackbarAction();
 
-        Mockito.verify(mMockJni).onUndoActionPressed(NATIVE_SNACKBAR_VIEW, "tl");
+        Mockito.verify(mMockJni).onUndoActionPressed(mNativePtr, "tl");
     }
 
     @Test
@@ -131,7 +142,7 @@ public final class AutoTranslateSnackbarControllerJavaTest {
 
         timeoutSnackbar();
 
-        Mockito.verify(mMockJni).onDismissNoAction(NATIVE_SNACKBAR_VIEW);
+        Mockito.verify(mMockJni).onDismissNoAction(mNativePtr);
     }
 
     private void showSnackbar(String targetLanguage) {

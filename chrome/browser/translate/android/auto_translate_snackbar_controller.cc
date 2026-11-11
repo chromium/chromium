@@ -15,6 +15,7 @@
 #include "components/translate/core/browser/translate_metrics_logger.h"
 #include "components/translate/core/common/translate_metrics.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 // Must come after headers that provide symbols used by @JniType.
 #include "chrome/browser/translate/android/jni_headers/AutoTranslateSnackbarController_jni.h"
@@ -38,8 +39,8 @@ class BridgeImpl : public AutoTranslateSnackbarController::Bridge {
     java_auto_translate_snackbar_controller_ =
         Java_AutoTranslateSnackbarController_create(
             env, web_contents,
-            reinterpret_cast<intptr_t>(native_auto_translate_snackbar));
-    return bool(java_auto_translate_snackbar_controller_);
+            jni_zero::MakeRaw(native_auto_translate_snackbar));
+    return static_cast<bool>(java_auto_translate_snackbar_controller_);
   }
 
   void ShowSnackbar(JNIEnv* env, std::string target_language) override {
@@ -56,7 +57,15 @@ class BridgeImpl : public AutoTranslateSnackbarController::Bridge {
     return bool(java_auto_translate_snackbar_controller_);
   }
 
-  void WasDismissed() override { is_showing_ = false; }
+  void WasDismissed() override {
+    is_showing_ = false;
+    if (java_auto_translate_snackbar_controller_) {
+      JNIEnv* env = jni_zero::AttachCurrentThread();
+      Java_AutoTranslateSnackbarController_clearNativePtr(
+          env, java_auto_translate_snackbar_controller_);
+      java_auto_translate_snackbar_controller_.Reset();
+    }
+  }
 
   bool IsSnackbarShowing() override { return is_showing_; }
 
@@ -66,16 +75,18 @@ class BridgeImpl : public AutoTranslateSnackbarController::Bridge {
     }
     Java_AutoTranslateSnackbarController_dismiss(
         env, java_auto_translate_snackbar_controller_);
-    is_showing_ = false;
+    WasDismissed();
   }
 
  private:
   jni_zero::ScopedJavaGlobalRef<jobject>
       java_auto_translate_snackbar_controller_;
-  bool is_showing_;
+  bool is_showing_ = false;
 };
 
-BridgeImpl::~BridgeImpl() = default;
+BridgeImpl::~BridgeImpl() {
+  WasDismissed();
+}
 
 }  // namespace
 
@@ -104,8 +115,12 @@ AutoTranslateSnackbarController::~AutoTranslateSnackbarController() {
 void AutoTranslateSnackbarController::ShowSnackbar(
     const std::string& target_language) {
   JNIEnv* env = jni_zero::AttachCurrentThread();
-  // If this is the first time ShowSnackbar has been called or the Java
-  // AutoTranslateSnackbar failed to be created last time, create it.
+  if (bridge_->IsSnackbarShowing()) {
+    bridge_->DismissSnackbar(env);
+  }
+  // If this is the first time ShowSnackbar has been called, a previous
+  // snackbar was dismissed, or the Java AutoTranslateSnackbar failed to be
+  // created last time, create it.
   if (!bridge_->CanShowSnackbar() &&
       !bridge_->CreateAutoTranslateSnackbarController(env, web_contents_,
                                                       this)) {

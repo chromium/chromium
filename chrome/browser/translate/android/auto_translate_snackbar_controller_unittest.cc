@@ -59,7 +59,7 @@ class TestBridge : public AutoTranslateSnackbarController::Bridge {
   MOCK_METHOD(bool, CanShowSnackbar, (), (override));
 
  private:
-  bool is_showing_;
+  bool is_showing_ = false;
   std::string target_language_;
   base::WeakPtrFactory<TestBridge> weak_ptr_factory_{this};
 };
@@ -231,6 +231,27 @@ TEST_F(AutoTranslateSnackbarControllerTest,
   // The Snackbar should now be showing since the controller was succefully
   // created.
   EXPECT_TRUE(auto_snackbar_controller_->IsShowing());
+}
+
+TEST_F(AutoTranslateSnackbarControllerTest,
+       ShowSnackbarWhileShowingDismissesPrevious) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  EXPECT_CALL(*bridge_, CanShowSnackbar())
+      .WillOnce(Return(true))
+      .WillOnce(Return(false));
+  EXPECT_CALL(*bridge_, DismissSnackbar(env))
+      .WillOnce([&](JNIEnv*) { bridge_->WasDismissed(); })
+      .WillOnce(Return());
+  EXPECT_CALL(*bridge_, CreateAutoTranslateSnackbarController(env, _, _))
+      .WillOnce(Return(true));
+
+  auto_snackbar_controller_->ShowSnackbar("tl");
+  EXPECT_TRUE(bridge_->IsSnackbarShowing());
+  EXPECT_EQ("tl", bridge_->GetTargetLanguage());
+
+  auto_snackbar_controller_->ShowSnackbar("es");
+  EXPECT_TRUE(bridge_->IsSnackbarShowing());
+  EXPECT_EQ("es", bridge_->GetTargetLanguage());
 }
 
 }  // namespace

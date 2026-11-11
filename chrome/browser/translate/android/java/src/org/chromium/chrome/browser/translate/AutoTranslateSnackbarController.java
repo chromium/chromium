@@ -15,7 +15,10 @@ import androidx.appcompat.content.res.AppCompatResources;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.LocaleUtils;
@@ -34,10 +37,14 @@ import java.util.Locale;
 @JNINamespace("translate")
 @NullMarked
 class AutoTranslateSnackbarController implements SnackbarManager.SnackbarController {
+    @JniType("::translate::AutoTranslateSnackbarController")
+    interface NativeAutoTranslateSnackbarController extends JniTypeToken {}
+
     private static final int AUTO_TRANSLATE_SNACKBAR_DURATION_MS = 4000;
 
     private final WeakReference<Activity> mActivity;
-    private final long mNativeAutoTranslateSnackbarController;
+    private @Nullable JniRawPtr<NativeAutoTranslateSnackbarController>
+            mNativeAutoTranslateSnackbarController;
     private final SnackbarManager mSnackbarManager;
 
     @VisibleForTesting
@@ -56,7 +63,8 @@ class AutoTranslateSnackbarController implements SnackbarManager.SnackbarControl
     AutoTranslateSnackbarController(
             WeakReference<Activity> activity,
             SnackbarManager snackbarManager,
-            long nativeAutoTranslateSnackbarController) {
+            JniRawPtr<NativeAutoTranslateSnackbarController>
+                    nativeAutoTranslateSnackbarController) {
         mActivity = activity;
         mSnackbarManager = snackbarManager;
         mNativeAutoTranslateSnackbarController = nativeAutoTranslateSnackbarController;
@@ -67,7 +75,7 @@ class AutoTranslateSnackbarController implements SnackbarManager.SnackbarControl
     @Override
     public void onAction(@Nullable Object actionData) {
         if (!(actionData instanceof TargetLanguageData)) return;
-        if (mNativeAutoTranslateSnackbarController == 0) return;
+        if (mNativeAutoTranslateSnackbarController == null) return;
 
         TargetLanguageData targetLanguageData = (TargetLanguageData) actionData;
 
@@ -75,14 +83,16 @@ class AutoTranslateSnackbarController implements SnackbarManager.SnackbarControl
                 .onUndoActionPressed(
                         mNativeAutoTranslateSnackbarController,
                         targetLanguageData.getTargetLanguage());
+        clearNativePtr();
     }
 
     // Called when the snackbar is dismissed by timeout or UI environment change.
     @Override
     public void onDismissNoAction(@Nullable Object actionData) {
-        if (mNativeAutoTranslateSnackbarController == 0) return;
+        if (mNativeAutoTranslateSnackbarController == null) return;
         AutoTranslateSnackbarControllerJni.get()
                 .onDismissNoAction(mNativeAutoTranslateSnackbarController);
+        clearNativePtr();
     }
 
     // Class methods called by native.
@@ -117,7 +127,16 @@ class AutoTranslateSnackbarController implements SnackbarManager.SnackbarControl
     @CalledByNative
     // Hide the Snackbar by calling the dismiss on the {@link SnackbarManager}
     public void dismiss() {
+        clearNativePtr();
         mSnackbarManager.dismissSnackbars(this);
+    }
+
+    @CalledByNative
+    void clearNativePtr() {
+        if (mNativeAutoTranslateSnackbarController != null) {
+            mNativeAutoTranslateSnackbarController.release();
+            mNativeAutoTranslateSnackbarController = null;
+        }
     }
 
     // Static methods called by native.
@@ -125,15 +144,25 @@ class AutoTranslateSnackbarController implements SnackbarManager.SnackbarControl
     @CalledByNative
     public static @Nullable AutoTranslateSnackbarController create(
             @JniType("content::WebContents*") WebContents webContents,
-            long nativeAutoTranslateSnackbarController) {
+            JniRawPtr<NativeAutoTranslateSnackbarController>
+                    nativeAutoTranslateSnackbarController) {
         WindowAndroid window = webContents.getTopLevelNativeWindow();
-        if (window == null) return null;
+        if (window == null) {
+            nativeAutoTranslateSnackbarController.release();
+            return null;
+        }
 
         WeakReference<Activity> activity = window.getActivity();
-        if (activity == null) return null;
+        if (activity == null) {
+            nativeAutoTranslateSnackbarController.release();
+            return null;
+        }
 
         SnackbarManager snackbarManager = SnackbarManagerProvider.from(window);
-        if (snackbarManager == null) return null;
+        if (snackbarManager == null) {
+            nativeAutoTranslateSnackbarController.release();
+            return null;
+        }
 
         return new AutoTranslateSnackbarController(
                 activity, snackbarManager, nativeAutoTranslateSnackbarController);
@@ -142,9 +171,9 @@ class AutoTranslateSnackbarController implements SnackbarManager.SnackbarControl
     @NativeMethods
     interface Natives {
         void onUndoActionPressed(
-                long nativeAutoTranslateSnackbarController,
+                JniPtr<NativeAutoTranslateSnackbarController> self,
                 @JniType("std::string") String targetLanguage);
 
-        void onDismissNoAction(long nativeAutoTranslateSnackbarController);
+        void onDismissNoAction(JniPtr<NativeAutoTranslateSnackbarController> self);
     }
 }

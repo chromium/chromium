@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.translate;
 
 import android.app.Activity;
 
+import org.jni_zero.JniRawPtr;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -43,7 +44,8 @@ public final class AutoTranslateSnackbarControllerTest {
     public void testCreateWithNullWindowAndroid() {
         Mockito.doReturn(null).when(mWebContents).getTopLevelNativeWindow();
         Assert.assertNull(
-                AutoTranslateSnackbarController.create(mWebContents, NATIVE_SNACKBAR_VIEW));
+                AutoTranslateSnackbarController.create(
+                        mWebContents, JniRawPtr.createForTesting(NATIVE_SNACKBAR_VIEW)));
     }
 
     @Test
@@ -51,7 +53,8 @@ public final class AutoTranslateSnackbarControllerTest {
         Mockito.doReturn(mWindowAndroid).when(mWebContents).getTopLevelNativeWindow();
         Mockito.doReturn(null).when(mWindowAndroid).getActivity();
         Assert.assertNull(
-                AutoTranslateSnackbarController.create(mWebContents, NATIVE_SNACKBAR_VIEW));
+                AutoTranslateSnackbarController.create(
+                        mWebContents, JniRawPtr.createForTesting(NATIVE_SNACKBAR_VIEW)));
     }
 
     @Test
@@ -62,6 +65,7 @@ public final class AutoTranslateSnackbarControllerTest {
         Mockito.doReturn(mWindowAndroid).when(mWebContents).getTopLevelNativeWindow();
         Mockito.doReturn(new UnownedUserDataHost()).when(mWindowAndroid).getUnownedUserDataHost();
         Assert.assertNull(
-                AutoTranslateSnackbarController.create(mWebContents, NATIVE_SNACKBAR_VIEW));
+                AutoTranslateSnackbarController.create(
+                        mWebContents, JniRawPtr.createForTesting(NATIVE_SNACKBAR_VIEW)));
     }
 }
