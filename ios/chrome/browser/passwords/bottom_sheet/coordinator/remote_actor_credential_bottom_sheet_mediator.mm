@@ -11,11 +11,21 @@
 #import "base/check.h"
 #import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/autofill/core/browser/suggestions/suggestion.h"
+#import "components/autofill/core/browser/suggestions/suggestion_type.h"
+#import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/password_manager/core/browser/password_form.h"
+#import "components/password_manager/core/browser/password_ui_utils.h"
 #import "components/password_manager/core/browser/remote_actor/remote_actor_credential_sharing_controller.h"
 #import "components/password_manager/core/browser/remote_actor/remote_actor_credential_sharing_result.h"
+#import "ios/chrome/browser/favicon/model/favicon_loader.h"
+#import "ios/chrome/browser/passwords/bottom_sheet/ui/remote_actor_credential_bottom_sheet_consumer.h"
 #import "ios/chrome/browser/passwords/model/remote_actor/proto/remote_actor_password_upload_request.pb.h"
 #import "ios/chrome/browser/passwords/model/remote_actor/remote_actor_credential_sharing_delegate_bridge.h"
+#import "ios/chrome/browser/passwords/password_suggestion/ui/password_suggestion_utils.h"
+#import "ios/chrome/common/ui/favicon/favicon_constants.h"
+#import "url/gurl.h"
 #import "url/origin.h"
 
 namespace {
@@ -47,8 +57,11 @@ using password_manager::RemoteActorCredentialSharingResult;
   std::unique_ptr<password_manager::RemoteActorCredentialSharingController>
       _controller;
 
-  // Stored password forms matching the requested domain.
+  // Stored password forms matching `_origin`.
   std::vector<std::unique_ptr<password_manager::PasswordForm>> _credentials;
+
+  // Origin for which credentials are being selected.
+  url::Origin _origin;
 
   // `FaviconLoader` used to load the favicon.
   raw_ptr<FaviconLoader> _faviconLoader;
@@ -114,10 +127,22 @@ using password_manager::RemoteActorCredentialSharingResult;
   _accountPasswordStore = nullptr;
   _sharingService = nullptr;
   _passwordManagerClient = nullptr;
+  _consumer = nil;
   _delegate = nil;
   _faviconLoader = nullptr;
   _credentials.clear();
+  _origin = url::Origin();
   _request.Clear();
+}
+
+#pragma mark - Properties
+
+- (void)setConsumer:(id<RemoteActorCredentialBottomSheetConsumer>)consumer {
+  if (_consumer == consumer) {
+    return;
+  }
+  _consumer = consumer;
+  [self pushStateToConsumer];
 }
 
 #pragma mark - RemoteActorCredentialSharingDelegate
@@ -130,19 +155,67 @@ using password_manager::RemoteActorCredentialSharingResult;
                                   callback:
                                       (RemoteActorCredentialSelectionCallback)
                                           callback {
-  // TODO(crbug.com/579011876): Pass `credentials` to the consumer and resolve
-  // `callback` from the mutator once the UI is added.
+  // TODO(crbug.com/579011876): Resolve `callback` from the mutator once added.
+  // The controller resolves the flow itself when no credentials are found.
+  CHECK(!credentials.empty());
+  _origin = origin;
   _credentials = std::move(credentials);
+  [self pushStateToConsumer];
   [self.delegate mediatorDidRequestPresentation:self];
 }
 
 #pragma mark - Private
+
+// Pushes the suggestions, domain and favicon to `_consumer`. The consumer may
+// be set before the credentials arrive asynchronously, so this is a no-op
+// until both are available.
+- (void)pushStateToConsumer {
+  if (!_consumer || _credentials.empty()) {
+    return;
+  }
+  NSMutableArray<FormSuggestion*>* suggestions =
+      [NSMutableArray arrayWithCapacity:_credentials.size()];
+  for (const auto& credential : _credentials) {
+    [suggestions
+        addObject:
+            [FormSuggestion
+                suggestionWithValue:base::SysUTF16ToNSString(
+                                        credential->username_value)
+                 displayDescription:nil
+                               icon:nil
+                               type:autofill::SuggestionType::kPasswordEntry
+                            payload:autofill::Suggestion::Payload()
+                     requiresReauth:YES]];
+  }
+  [_consumer setSuggestions:suggestions
+                  andDomain:base::SysUTF8ToNSString(
+                                password_manager::GetShownOrigin(_origin))];
+  [self fetchFavicon];
+}
 
 // Handles the final sharing `result` from the controller.
 - (void)handleSharingResult:(RemoteActorCredentialSharingResult)result {
   [self.delegate mediator:self
       didFinishWithSuccess:(result ==
                             RemoteActorCredentialSharingResult::kSuccess)];
+}
+
+// Fetches the favicon for `_origin` and forwards the attributes to the
+// consumer.
+- (void)fetchFavicon {
+  GURL faviconURL = _origin.GetURL();
+  if (!_faviconLoader || !faviconURL.is_valid()) {
+    [_consumer setFaviconAttributes:GetDefaultGlobeFaviconAttributes()];
+    return;
+  }
+
+  __weak id<RemoteActorCredentialBottomSheetConsumer> weakConsumer = _consumer;
+  _faviconLoader->FaviconForPageUrl(
+      faviconURL, kDesiredMediumFaviconSizePt, kMinFaviconSizePt,
+      /*fallback_to_google_server=*/false,
+      ^(FaviconAttributes* attributes, bool cached) {
+        [weakConsumer setFaviconAttributes:attributes];
+      });
 }
 
 @end

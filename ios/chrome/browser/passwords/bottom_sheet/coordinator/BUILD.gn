@@ -26,6 +26,7 @@ source_set("coordinator") {
   ]
   deps = [
     "//base",
+    "//components/autofill/core/browser",
     "//components/autofill/ios/browser",
     "//components/autofill/ios/form_util",
     "//components/feature_engagement/public",
@@ -119,6 +120,7 @@ source_set("unit_tests") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/autofill/model",
     "//ios/chrome/browser/favicon/model",
+    "//ios/chrome/browser/favicon/model:test_support",
     "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/passwords/bottom_sheet/ui",
     "//ios/chrome/browser/passwords/model",
@@ -135,6 +137,7 @@ source_set("unit_tests") {
     "//ios/web/public/test/fakes",
     "//testing/gtest",
     "//third_party/ocmock",
+    "//ui/base",
     "//url",
   ]
 }
