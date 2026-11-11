@@ -486,6 +486,87 @@ TEST_F(GlicEnablingTest, CountryMinorFilteringIndependentOfAdultFiltering) {
   EXPECT_FALSE(TestDelegate::GetCountryEnablementForMinorAccounts("ca", "ca"));
 }
 
+TEST_F(GlicEnablingTest, WebActuationDisclosureCountryVariant) {
+  {
+    base::test::ScopedFeatureList features;
+    features.InitAndDisableFeature(
+        features::kGlicWebActuationDisclosureCountryVariant);
+    delegate_.SetBothCountryCodes("gb");
+    EXPECT_FALSE(
+        CreateGlobalEnabling().ShouldUseWebActuationDisclosureCountryVariant());
+  }
+  {
+    // Default list (gb, au, nz).
+    base::test::ScopedFeatureList features;
+    features.InitAndEnableFeature(
+        features::kGlicWebActuationDisclosureCountryVariant);
+    delegate_.SetBothCountryCodes("gb");
+    EXPECT_TRUE(
+        CreateGlobalEnabling().ShouldUseWebActuationDisclosureCountryVariant());
+    delegate_.SetBothCountryCodes("AU");
+    EXPECT_TRUE(
+        CreateGlobalEnabling().ShouldUseWebActuationDisclosureCountryVariant());
+    delegate_.SetBothCountryCodes("nz");
+    EXPECT_TRUE(
+        CreateGlobalEnabling().ShouldUseWebActuationDisclosureCountryVariant());
+    delegate_.SetBothCountryCodes("us");
+    EXPECT_FALSE(
+        CreateGlobalEnabling().ShouldUseWebActuationDisclosureCountryVariant());
+  }
+  {
+    // List from the Finch param.
+    base::test::ScopedFeatureList features;
+    features.InitAndEnableFeatureWithParameters(
+        features::kGlicWebActuationDisclosureCountryVariant,
+        {{"enabled_countries", "ie"}});
+    delegate_.SetBothCountryCodes("ie");
+    EXPECT_TRUE(
+        CreateGlobalEnabling().ShouldUseWebActuationDisclosureCountryVariant());
+    delegate_.SetBothCountryCodes("gb");
+    EXPECT_FALSE(
+        CreateGlobalEnabling().ShouldUseWebActuationDisclosureCountryVariant());
+  }
+}
+
+TEST_F(GlicEnablingTest, WebActuationDisclosureCountryVariant_SessionCountry) {
+  {
+    base::test::ScopedFeatureList features;
+    features.InitWithFeatures(
+        {features::kGlicWebActuationDisclosureCountryVariant,
+         features::kGlicUseSessionCountryForFiltering},
+        {});
+    // Session country takes precedence over the permanent country.
+    delegate_.SetPermanentCountryCode("us");
+    delegate_.SetSessionCountryCode("gb");
+    EXPECT_TRUE(
+        CreateGlobalEnabling().ShouldUseWebActuationDisclosureCountryVariant());
+    delegate_.SetPermanentCountryCode("gb");
+    delegate_.SetSessionCountryCode("us");
+    EXPECT_FALSE(
+        CreateGlobalEnabling().ShouldUseWebActuationDisclosureCountryVariant());
+    // Falls back to the permanent country when the session country is unknown.
+    delegate_.SetPermanentCountryCode("gb");
+    delegate_.SetSessionCountryCode("");
+    EXPECT_TRUE(
+        CreateGlobalEnabling().ShouldUseWebActuationDisclosureCountryVariant());
+  }
+  {
+    // Only the permanent country is used when session filtering is disabled.
+    base::test::ScopedFeatureList features;
+    features.InitWithFeatures(
+        {features::kGlicWebActuationDisclosureCountryVariant},
+        {features::kGlicUseSessionCountryForFiltering});
+    delegate_.SetPermanentCountryCode("us");
+    delegate_.SetSessionCountryCode("gb");
+    EXPECT_FALSE(
+        CreateGlobalEnabling().ShouldUseWebActuationDisclosureCountryVariant());
+    delegate_.SetPermanentCountryCode("gb");
+    delegate_.SetSessionCountryCode("us");
+    EXPECT_TRUE(
+        CreateGlobalEnabling().ShouldUseWebActuationDisclosureCountryVariant());
+  }
+}
+
 base::flat_set<std::string> SplitCountryList(std::string_view country_list) {
   return base::flat_set<std::string>(base::SplitString(
       country_list, ", ", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY));

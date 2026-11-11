@@ -216,13 +216,31 @@ std::string GetVariationsSessionCountryCode() {
              : std::string();
 }
 
-// Returns whether `country_list` contains the permanent country, or the
-// session country when kGlicUseSessionCountryForFiltering is enabled.
-bool IsCountryInList(base::span<const std::string> country_list,
-                     std::string_view permanent_country_code,
-                     std::string_view session_country_code) {
+// Session country is only used when kGlicUseSessionCountryForFiltering is on.
+enum class CountryMatchStrategy {
+  // Either the permanent or session country matches (feature gating).
+  kAnyMatch,
+  // Session country if known, else permanent country (localized content).
+  kSessionPrecedence,
+};
+
+// Returns whether `country_list` contains the country chosen by `strategy`.
+bool IsCountryInList(
+    base::span<const std::string> country_list,
+    std::string_view permanent_country_code,
+    std::string_view session_country_code,
+    CountryMatchStrategy strategy = CountryMatchStrategy::kAnyMatch) {
   const bool use_session_country = base::FeatureList::IsEnabled(
       features::kGlicUseSessionCountryForFiltering);
+  if (strategy == CountryMatchStrategy::kSessionPrecedence) {
+    const std::string_view country =
+        use_session_country && !session_country_code.empty()
+            ? session_country_code
+            : permanent_country_code;
+    return std::ranges::any_of(country_list, [&](const std::string& c) {
+      return base::EqualsCaseInsensitiveASCII(c, country);
+    });
+  }
   return std::ranges::any_of(country_list, [&](const std::string& c) {
     return base::EqualsCaseInsensitiveASCII(c, permanent_country_code) ||
            (use_session_country &&
@@ -970,6 +988,21 @@ bool GlicGlobalEnabling::IsCountryEnabledForMinorAccounts() {
       last_checked_countries_for_minor_accounts_);
 }
 
+bool GlicGlobalEnabling::ShouldUseWebActuationDisclosureCountryVariant() const {
+  if (!base::FeatureList::IsEnabled(
+          features::kGlicWebActuationDisclosureCountryVariant)) {
+    return false;
+  }
+  const std::vector<std::string> enabled_countries =
+      GetFieldTrialParamAsSplitString(
+          features::kGlicWebActuationDisclosureCountryVariant,
+          "enabled_countries", "gb,au,nz");
+  return IsCountryInList(enabled_countries,
+                         delegate_->GetPermanentCountryCode(),
+                         delegate_->GetSessionCountryCode(),
+                         CountryMatchStrategy::kSessionPrecedence);
+}
+
 bool GlicGlobalEnabling::IsCountryEnabledImpl(
     CountryEvaluator evaluate,
     bool& is_enabled,
@@ -1371,6 +1404,13 @@ bool GlicEnabling::ShouldShowWebActuationToggle() const {
         subscription_service->GetAiSubscriptionTier());
   }
   return false;
+}
+
+// static
+bool GlicEnabling::ShouldUseWebActuationDisclosureCountryVariant() {
+  return g_browser_process->GetFeatures()
+      ->glic_global_enabling()
+      .ShouldUseWebActuationDisclosureCountryVariant();
 }
 
 bool GlicEnabling::ShouldShowGlicButton(Profile* profile) {

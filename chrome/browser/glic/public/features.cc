@@ -302,6 +302,9 @@ BASE_FEATURE(kGlicAndroidTablet, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicVoice, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kGlicWebActuationDisclosureCountryVariant,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kGlicExperimentalOptInDialogNonScrollable,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

@@ -69,6 +69,11 @@ bool JNI_GlicEnabling_IsDisabledByPolicy(JNIEnv* env, Profile* profile) {
   return GlicEnabling::EnablementForProfile(profile).DisallowedByAdmin();
 }
 
+bool JNI_GlicEnabling_ShouldUseWebActuationDisclosureCountryVariant(
+    JNIEnv* env) {
+  return GlicEnabling::ShouldUseWebActuationDisclosureCountryVariant();
+}
+
 bool JNI_GlicEnabling_IsProfileManaged(JNIEnv* env, Profile* profile) {
   policy::ManagementService* management_service =
       policy::ManagementServiceFactory::GetForProfile(profile);

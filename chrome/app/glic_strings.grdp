@@ -426,6 +426,12 @@
   <message name="IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE_CONSIDER_2_V2" desc="Second point in 'things to consider' column of the 'let Gemini browse for you' expands (WebUI version)">
     Use Gemini carefully and <ph name="BEGIN_LINK1">&lt;a href="$1" target="_blank" aria-label="$3" aria-description="$5"&gt;</ph>safely<ph name="LINK_END1">&lt;/a&gt;</ph>. You are responsible for Gemini's actions during a task, including mistakes and <ph name="BEGIN_LINK2">&lt;a href="$2" target="_blank" aria-label="$4" aria-description="$5"&gt;</ph>unexpected results<ph name="LINK_END2">&lt;/a&gt;</ph> like purchases.
   </message>
+  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE_CONSIDER_2_COUNTRY_VARIANT" desc="Variant of the second point in 'things to consider' column of the 'let Gemini browse for you' expands, shown instead of the default text in some countries" formatter_data="android_java">
+    Use Gemini carefully and <ph name="BEGIN_LINK1">&lt;a href="$1" target="_blank"&gt;</ph>safely<ph name="LINK_END1">&lt;/a&gt;</ph>. It can make mistakes and produce <ph name="BEGIN_LINK2">&lt;a href="$2" target="_blank"&gt;</ph>unexpected results<ph name="LINK_END2">&lt;/a&gt;</ph> like purchases.
+  </message>
+  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE_CONSIDER_2_V2_COUNTRY_VARIANT" desc="Variant of the second point in 'things to consider' column of the 'let Gemini browse for you' expands, shown instead of the default text in some countries (WebUI version)">
+    Use Gemini carefully and <ph name="BEGIN_LINK1">&lt;a href="$1" target="_blank" aria-label="$3" aria-description="$5"&gt;</ph>safely<ph name="LINK_END1">&lt;/a&gt;</ph>. It can make mistakes and produce <ph name="BEGIN_LINK2">&lt;a href="$2" target="_blank" aria-label="$4" aria-description="$5"&gt;</ph>unexpected results<ph name="LINK_END2">&lt;/a&gt;</ph> like purchases.
+  </message>
   <message name="IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE_CONSIDER_SAFELY_ARIA_LABEL" desc="Accessible label for the 'safely' link in the Gemini auto browse permissions considerations." is_accessibility_with_no_ui="true">
     Use Gemini safely
   </message>
