@@ -134,6 +134,7 @@ void ExtensionGCMAppHandler::OnExtensionUnloaded(
   // in OnExtensionUninstalled.
   if (reason != UnloadedExtensionReason::UNINSTALL) {
     RemoveAppHandler(extension->id());
+    RemoveInstanceID(extension->id());
   }
 }
 
