@@ -156,8 +156,6 @@ void PictureInPictureWindowManager::EnterPictureInPictureWithController(
     // Don't exit picture-in-picture synchronously since exiting in the middle
     // of opening leaves us in a bad state.
     ExitPictureInPictureSoon();
-    RecordPictureInPictureDisallowed(
-        PictureInPictureDisallowedType::kNewWindowClosed);
   }
 
   MaybeRecordPictureInPictureChanged(true);
@@ -663,8 +661,6 @@ void PictureInPictureWindowManager::CreateWindowInternal(
     // Don't exit picture-in-picture synchronously since exiting in the middle
     // of opening leaves us in a bad state.
     ExitPictureInPictureSoon();
-    RecordPictureInPictureDisallowed(
-        PictureInPictureDisallowedType::kNewWindowClosed);
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
@@ -860,8 +856,6 @@ void PictureInPictureWindowManager::OnScopedDisallowPictureInPictureCreated(
   number_of_existing_scoped_disallow_picture_in_pictures_++;
   if (pip_window_controller_) {
     ExitPictureInPicture();
-    RecordPictureInPictureDisallowed(
-        PictureInPictureDisallowedType::kExistingWindowClosed);
   }
 }
 
@@ -968,11 +962,6 @@ void PictureInPictureWindowManager::
         "Media.DocumentPictureInPicture.RequestedSizeToScreenRatio",
         recorded_percent);
   }
-}
-
-void PictureInPictureWindowManager::RecordPictureInPictureDisallowed(
-    PictureInPictureDisallowedType type) {
-  base::UmaHistogramEnumeration("Media.PictureInPicture.Disallowed", type);
 }
 
 void PictureInPictureWindowManager::RecordPictureInPictureTucked(

@@ -2374,15 +2374,6 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="Hide"/>
 </enum>
 
-<!-- LINT.IfChange(PictureInPictureDisallowedTypeEnum) -->
-
-<enum name="PictureInPictureDisallowedType">
-  <int value="0" label="Existing picture-in-picture window was closed"/>
-  <int value="1" label="New picture-in-picture window was closed"/>
-</enum>
-
-<!-- LINT.ThenChange(//chrome/browser/picture_in_picture/picture_in_picture_window_manager.h:PictureInPictureDisallowedType) -->
-
 <!-- LINT.IfChange(PictureInPictureSizeConstraintResult) -->
 
 <enum name="PictureInPictureSizeConstraintResult">
