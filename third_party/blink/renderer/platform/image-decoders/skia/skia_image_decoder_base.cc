@@ -46,6 +46,16 @@ ImageFrame::AlphaBlendSource ConvertAlphaBlendSource(
   NOTREACHED();
 }
 
+bool FrameHasAlpha(const SkCodec::FrameInfo& frame_info,
+                   const SkBitmap& bitmap) {
+  if (frame_info.fAlphaType != kOpaque_SkAlphaType) {
+    return true;
+  }
+  return frame_info.fRequiredFrame == SkCodec::kNoFrame &&
+         !gfx::SkIRectToRect(frame_info.fFrameRect)
+              .Contains(gfx::Rect(bitmap.width(), bitmap.height()));
+}
+
 }  // anonymous namespace
 
 SkiaImageDecoderBase::SkiaImageDecoderBase(
@@ -65,6 +75,11 @@ SkiaImageDecoderBase::SkiaImageDecoderBase(
       reading_offset_(reading_offset) {}
 
 SkiaImageDecoderBase::~SkiaImageDecoderBase() = default;
+
+gfx::Size SkiaImageDecoderBase::GetSizeFromSkCodec() const {
+  const SkISize size = codec_->dimensions();
+  return gfx::Size(size.width(), size.height());
+}
 
 void SkiaImageDecoderBase::OnSetData(scoped_refptr<SegmentReader> data) {
   if (!data) {
@@ -93,9 +108,9 @@ void SkiaImageDecoderBase::OnSetData(scoped_refptr<SegmentReader> data) {
         // OnCreateSkCodec needs to read enough of the image to create
         // SkEncodedInfo so now is an okay time to ask the `codec_` about 1) the
         // image size and 2) the color profile.
-        SkImageInfo image_info = codec_->getInfo();
-        if (!SetSize(static_cast<unsigned>(image_info.width()),
-                     static_cast<unsigned>(image_info.height()))) {
+        const gfx::Size image_size = GetSizeFromSkCodec();
+        if (!SetSize(static_cast<unsigned>(image_size.width()),
+                     static_cast<unsigned>(image_size.height()))) {
           codec_.reset();
           SetFailed();
           return;
@@ -379,7 +394,7 @@ void SkiaImageDecoderBase::Decode(wtf_size_t index) {
       DCHECK(frame_info_received);
 
       SkAlphaType alpha_type = kOpaque_SkAlphaType;
-      if (frame_info.fAlphaType != kOpaque_SkAlphaType) {
+      if (FrameHasAlpha(frame_info, frame.Bitmap())) {
         if (premultiply_alpha_) {
           alpha_type = kPremul_SkAlphaType;
         } else {
@@ -445,8 +460,7 @@ void SkiaImageDecoderBase::Decode(wtf_size_t index) {
         bool frame_info_received =
             codec_->getFrameInfo(current_frame_index, &frame_info);
         DCHECK(frame_info_received);
-        frame.SetHasAlpha(frame_info.fAlphaType !=
-                          SkAlphaType::kOpaque_SkAlphaType);
+        frame.SetHasAlpha(FrameHasAlpha(frame_info, frame.Bitmap()));
         frame.SetPixelsChanged(true);
         frame.SetStatus(ImageFrame::kFrameComplete);
         PostDecodeProcessing(current_frame_index);

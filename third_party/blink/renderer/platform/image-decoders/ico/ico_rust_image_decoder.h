@@ -27,6 +27,7 @@ class PLATFORM_EXPORT IcoRustImageDecoder final : public SkiaImageDecoderBase {
 
  protected:
   // SkiaImageDecoderBase:
+  gfx::Size GetSizeFromSkCodec() const override;
   std::unique_ptr<SkCodec> OnCreateSkCodec(std::unique_ptr<SkStream>,
                                            SkCodec::Result* result) override;
 };

@@ -8,6 +8,10 @@
 
 # Do not skip wpt_internal tests on blink_wpt_tests
 wpt_internal/*
+# Keep the C++ ICO intrinsic-size/layout regression with its Rust-enabled
+# wpt_internal base test in blink_wpt_tests during runner migration.
+# No content_shell-specific APIs are required.
+virtual/ico-cpp/wpt_internal/*
 virtual/digital-credentials-fake-ui/wpt_internal/*
 virtual/threaded/wpt_internal/*
 virtual/background-fetch-service-worker-allowed/wpt_internal/*

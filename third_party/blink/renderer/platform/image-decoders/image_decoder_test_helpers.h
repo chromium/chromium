@@ -41,6 +41,15 @@ scoped_refptr<SharedBuffer> ReadFileToSharedBuffer(StringView file_name);
 scoped_refptr<SharedBuffer> ReadFileToSharedBuffer(const char* dir,
                                                    const char* file_name);
 
+constexpr wtf_size_t kIcoHeaderSize = 6;
+constexpr wtf_size_t kIcoDirectoryEntrySize = 16;
+constexpr wtf_size_t kIcoImageCountOffset = 4;
+constexpr wtf_size_t kIcoEntryHeightOffset = 1;
+constexpr wtf_size_t kIcoEntryImageOffset = 12;
+
+uint32_t IcoImageDataOffset(base::span<const char> data,
+                            wtf_size_t image_index);
+
 uint32_t HashBitmap(const SkBitmap&);
 void CreateDecodingBaseline(DecoderCreator,
                             SharedBuffer*,

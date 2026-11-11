@@ -147,6 +147,7 @@ class PLATFORM_EXPORT ImageFrameGenerator final
                       Vector<SkISize> supported_sizes);
 
   friend class ImageFrameGeneratorTest;
+  friend class ImageDecoderWrapperTest;
   friend class DeferredImageDecoderTest;
   // For testing. |factory| will overwrite the default ImageDecoder creation
   // logic if |factory->create()| returns non-zero.

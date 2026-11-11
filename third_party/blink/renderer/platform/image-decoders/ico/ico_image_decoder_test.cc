@@ -9,9 +9,12 @@
 #include <memory>
 #include <string>
 #include <tuple>
+#include <utility>
 
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
+#include "base/numerics/byte_conversions.h"
+#include "base/numerics/safe_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/image-decoders/ico/ico_rust_image_decoder.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder_base_test.h"
@@ -233,6 +236,185 @@ TEST(ICOImageDecoderTests, CppFrameSizes) {
 TEST(ICOImageDecoderTests, RustFrameSizes) {
   std::unique_ptr<ImageDecoder> decoder = CreateRustICODecoder();
   ExpectFrameSizes(decoder.get());
+}
+
+TEST(ICOImageDecoderTests,
+     RustFrameZeroMatchesCanvasSizeWithMixedAspectEntries) {
+  // Two-entry ICO: entry 0 is a 4x2 opaque red RGB PNG (area 8, selected as
+  // frame 0) and entry 1 is a 1x4 opaque blue RGB PNG (area 4, frame 1).
+  // Skia's bounding canvas is 4x4, but the default representation is 4x2.
+  scoped_refptr<SharedBuffer> data =
+      ReadFileToSharedBuffer("/images/resources/rust-ico-mixed-aspect-4x2.ico");
+  std::unique_ptr<ImageDecoder> decoder = CreateRustICODecoder();
+  decoder->SetData(data.get(), true);
+
+  ASSERT_TRUE(decoder->IsSizeAvailable());
+  EXPECT_EQ(gfx::Size(4, 2), decoder->Size());
+  ASSERT_EQ(2u, decoder->FrameCount());
+  EXPECT_EQ(gfx::Size(4, 2), decoder->FrameSizeAtIndex(0));
+  EXPECT_EQ(gfx::Size(1, 4), decoder->FrameSizeAtIndex(1));
+
+  ImageFrame* frame0 = decoder->DecodeFrameBufferAtIndex(0);
+  ASSERT_TRUE(frame0);
+  EXPECT_EQ(ImageFrame::kFrameComplete, frame0->GetStatus());
+  EXPECT_FALSE(frame0->HasAlpha());
+  const SkBitmap& bitmap0 = frame0->Bitmap();
+  ASSERT_EQ(4, bitmap0.width());
+  ASSERT_EQ(2, bitmap0.height());
+  for (int y = 0; y < 2; ++y) {
+    for (int x = 0; x < 4; ++x) {
+      EXPECT_EQ(SK_ColorRED, bitmap0.getColor(x, y));
+    }
+  }
+
+  ImageFrame* frame1 = decoder->DecodeFrameBufferAtIndex(1);
+  ASSERT_TRUE(frame1);
+  EXPECT_EQ(ImageFrame::kFrameComplete, frame1->GetStatus());
+  EXPECT_FALSE(frame1->HasAlpha());
+  const SkBitmap& bitmap1 = frame1->Bitmap();
+  ASSERT_EQ(1, bitmap1.width());
+  ASSERT_EQ(4, bitmap1.height());
+  for (int y = 0; y < 4; ++y) {
+    EXPECT_EQ(SK_ColorBLUE, bitmap1.getColor(0, y));
+  }
+}
+
+TEST(ICOImageDecoderTests, RustFrameZeroMatchesCanvasSizeOnPartialData) {
+  const Vector<char> data = ReadFile("/images/resources/2entries.ico");
+  const uint32_t partial_size = IcoImageDataOffset(base::span(data), 1);
+  ASSERT_GT(data.size(), partial_size);
+
+  // Only the 16x16 entry is complete; the 32x32 entry is missing.
+  scoped_refptr<SharedBuffer> partial_data =
+      SharedBuffer::Create(base::span(data).first(partial_size));
+  std::unique_ptr<ImageDecoder> decoder = CreateRustICODecoder();
+  decoder->SetData(partial_data.get(), false);
+
+  ASSERT_TRUE(decoder->IsSizeAvailable());
+  EXPECT_EQ(gfx::Size(32, 32), decoder->Size());
+  ASSERT_EQ(1u, decoder->FrameCount());
+  EXPECT_EQ(gfx::Size(32, 32), decoder->FrameSizeAtIndex(0));
+
+  ImageFrame* frame0 = decoder->DecodeFrameBufferAtIndex(0);
+  ASSERT_TRUE(frame0);
+  EXPECT_EQ(ImageFrame::kFrameComplete, frame0->GetStatus());
+  EXPECT_TRUE(frame0->HasAlpha());
+  EXPECT_EQ(32, frame0->Bitmap().width());
+  EXPECT_EQ(32, frame0->Bitmap().height());
+  EXPECT_EQ(SK_AlphaOPAQUE, SkColorGetA(frame0->Bitmap().getColor(0, 0)));
+  EXPECT_EQ(SK_ColorTRANSPARENT, frame0->Bitmap().getColor(16, 0));
+  EXPECT_EQ(SK_ColorTRANSPARENT, frame0->Bitmap().getColor(0, 16));
+  EXPECT_EQ(SK_ColorTRANSPARENT, frame0->Bitmap().getColor(31, 31));
+}
+
+TEST(ICOImageDecoderTests, DefaultSizeUsesDirectoryOrderNotPayloadOrder) {
+  Vector<char> bytes =
+      ReadFile("/images/resources/rust-ico-mixed-aspect-256x64.ico");
+  auto entries = base::span(bytes).subspan(kIcoHeaderSize);
+  for (wtf_size_t index = 0; index < kIcoDirectoryEntrySize; ++index) {
+    std::swap(entries[index], entries[kIcoDirectoryEntrySize + index]);
+  }
+  auto buffer = SharedBuffer::Create(base::span(bytes));
+  auto cpp = CreateCppICODecoder();
+  auto rust = CreateRustICODecoder();
+  cpp->SetData(buffer.get(), true);
+  rust->SetData(buffer.get(), true);
+  ASSERT_TRUE(cpp->IsSizeAvailable());
+  ASSERT_TRUE(rust->IsSizeAvailable());
+  ASSERT_EQ(gfx::Size(64, 256), cpp->Size());
+  EXPECT_EQ(cpp->Size(), rust->Size());
+  EXPECT_EQ(cpp->FrameSizeAtIndex(1), rust->FrameSizeAtIndex(1));
+  ImageFrame* cpp_frame = cpp->DecodeFrameBufferAtIndex(0);
+  ImageFrame* rust_frame = rust->DecodeFrameBufferAtIndex(0);
+  ASSERT_TRUE(cpp_frame);
+  ASSERT_TRUE(rust_frame);
+  ASSERT_EQ(ImageFrame::kFrameComplete, cpp_frame->GetStatus());
+  ASSERT_EQ(ImageFrame::kFrameComplete, rust_frame->GetStatus());
+  ASSERT_EQ(cpp_frame->Bitmap().dimensions(),
+            rust_frame->Bitmap().dimensions());
+  for (int y = 0; y < 256; ++y) {
+    for (int x = 0; x < 64; ++x) {
+      EXPECT_EQ(cpp_frame->Bitmap().getColor(x, y),
+                rust_frame->Bitmap().getColor(x, y));
+    }
+  }
+}
+
+TEST(ICOImageDecoderTests, MissingDefaultRepresentationDoesNotPoisonLaterData) {
+  const Vector<char> file =
+      ReadFile("/images/resources/rust-ico-mixed-aspect-4x2.ico");
+  const auto source = base::as_byte_span(file);
+  const uint32_t first_offset = IcoImageDataOffset(base::span(file), 0);
+  const uint32_t second_offset = IcoImageDataOffset(base::span(file), 1);
+  const std::array<uint32_t, 2> offsets = {
+      first_offset + base::checked_cast<uint32_t>(file.size()) - second_offset,
+      first_offset};
+  Vector<uint8_t> bytes;
+  bytes.append_range(source.first(first_offset));
+  bytes.append_range(source.subspan(second_offset));
+  bytes.append_range(
+      source.subspan(first_offset, second_offset - first_offset));
+  for (wtf_size_t index = 0; index < offsets.size(); ++index) {
+    base::span(bytes)
+        .subspan(kIcoHeaderSize + index * kIcoDirectoryEntrySize +
+                     kIcoEntryImageOffset,
+                 sizeof(uint32_t))
+        .copy_from(base::U32ToLittleEndian(offsets[index]));
+  }
+  auto partial = SharedBuffer::Create(base::span(bytes).first(offsets[0]));
+  auto decoder = CreateRustICODecoder();
+  decoder->SetData(partial.get(), false);
+  EXPECT_FALSE(decoder->IsSizeAvailable());
+  EXPECT_FALSE(decoder->Failed());
+  auto complete = SharedBuffer::Create(base::span(bytes));
+  decoder->SetData(complete.get(), true);
+  ASSERT_TRUE(decoder->IsSizeAvailable());
+  EXPECT_EQ(gfx::Size(4, 2), decoder->Size());
+  ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
+  ASSERT_TRUE(frame);
+  EXPECT_EQ(ImageFrame::kFrameComplete, frame->GetStatus());
+  EXPECT_FALSE(decoder->Failed());
+}
+
+TEST(ICOImageDecoderTests, DefaultCursorHotSpotMatchesDirectorySelection) {
+  Vector<char> bytes =
+      ReadFile("/images/resources/rust-ico-mixed-aspect-256x64.ico");
+  constexpr wtf_size_t kFileTypeOffset = 2;
+  constexpr wtf_size_t kHotSpotXOffset = 4;
+  constexpr wtf_size_t kHotSpotYOffset = 6;
+  const auto cursor_type = base::U16ToLittleEndian(2);
+  base::as_writable_byte_span(bytes)
+      .subspan<kFileTypeOffset, sizeof(uint16_t)>()
+      .copy_from(cursor_type);
+  const std::array<gfx::Point, 2> hot_spots = {gfx::Point(1, 1),
+                                               gfx::Point(3, 7)};
+  for (wtf_size_t index = 0; index < hot_spots.size(); ++index) {
+    auto entry = base::as_writable_byte_span(bytes).subspan(
+        kIcoHeaderSize + index * kIcoDirectoryEntrySize,
+        kIcoDirectoryEntrySize);
+    entry.subspan<kHotSpotXOffset, sizeof(uint16_t)>().copy_from(
+        base::U16ToLittleEndian(hot_spots[index].x()));
+    entry.subspan<kHotSpotYOffset, sizeof(uint16_t)>().copy_from(
+        base::U16ToLittleEndian(hot_spots[index].y()));
+  }
+  auto entries = base::span(bytes).subspan(kIcoHeaderSize);
+  for (wtf_size_t index = 0; index < kIcoDirectoryEntrySize; ++index) {
+    std::swap(entries[index], entries[kIcoDirectoryEntrySize + index]);
+  }
+  auto buffer = SharedBuffer::Create(base::span(bytes));
+  auto cpp = CreateCppICODecoder();
+  auto rust = CreateRustICODecoder();
+  cpp->SetData(buffer.get(), true);
+  rust->SetData(buffer.get(), true);
+  ASSERT_TRUE(cpp->IsSizeAvailable());
+  ASSERT_TRUE(rust->IsSizeAvailable());
+  EXPECT_EQ(cpp->Size(), rust->Size());
+  gfx::Point cpp_hot_spot;
+  gfx::Point rust_hot_spot;
+  ASSERT_TRUE(cpp->HotSpot(cpp_hot_spot));
+  ASSERT_TRUE(rust->HotSpot(rust_hot_spot));
+  EXPECT_EQ(gfx::Point(3, 7), cpp_hot_spot);
+  EXPECT_EQ(cpp_hot_spot, rust_hot_spot);
 }
 
 // Returns true if every pixel in `bitmap` is fully opaque (alpha == 255),

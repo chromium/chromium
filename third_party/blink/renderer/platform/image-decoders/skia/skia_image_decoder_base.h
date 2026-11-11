@@ -59,6 +59,8 @@ class PLATFORM_EXPORT SkiaImageDecoderBase : public ImageDecoder {
   virtual SkCodec::Result OnIncrementalDecode(wtf_size_t);
 
   const SkCodec* codec() const { return codec_.get(); }
+  // Default decode dimensions can differ from a codec's all-frame bounds.
+  virtual gfx::Size GetSizeFromSkCodec() const;
 
  private:
   // ImageDecoder:

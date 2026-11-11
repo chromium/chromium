@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder_test_helpers.h"
 
 #include "base/compiler_specific.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -51,6 +52,21 @@ scoped_refptr<SharedBuffer> ReadFileToSharedBuffer(StringView file_name) {
 scoped_refptr<SharedBuffer> ReadFileToSharedBuffer(const char* dir,
                                                    const char* file_name) {
   return SharedBuffer::Create(ReadFile(dir, file_name));
+}
+
+uint32_t IcoImageDataOffset(base::span<const char> data,
+                            wtf_size_t image_index) {
+  const auto bytes = base::as_byte_span(data);
+  CHECK_GE(bytes.size(), kIcoHeaderSize);
+  CHECK_LT(image_index,
+           base::U16FromLittleEndian(
+               bytes.subspan<kIcoImageCountOffset, sizeof(uint16_t)>()));
+  const wtf_size_t field_offset = kIcoHeaderSize +
+                                  image_index * kIcoDirectoryEntrySize +
+                                  kIcoEntryImageOffset;
+  CHECK_LE(field_offset + sizeof(uint32_t), bytes.size());
+  return base::U32FromLittleEndian(
+      bytes.subspan(field_offset).first<sizeof(uint32_t)>());
 }
 
 uint32_t HashBitmap(const SkBitmap& bitmap) {

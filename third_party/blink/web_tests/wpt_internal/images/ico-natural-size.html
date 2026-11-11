@@ -1,0 +1,83 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>ICO intrinsic dimensions and automatic layout sizing</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<style>
+  .test-image {
+    display: block;
+    width: 80px;
+    height: auto;
+  }
+</style>
+<body>
+<script>
+const cases = [
+  {name: "mixed-aspect", width: 4, height: 2},
+  {name: "reported-thin", width: 256, height: 2},
+  {name: "reported-wide", width: 256, height: 64},
+  {name: "multi-resolution", width: 32, height: 32},
+  {name: "full-canvas", width: 256, height: 256},
+];
+
+function assertSize(image, testCase, phase) {
+  assert_equals(image.naturalWidth, testCase.width, `${phase}: naturalWidth`);
+  assert_equals(image.naturalHeight, testCase.height, `${phase}: naturalHeight`);
+  const rect = image.getBoundingClientRect();
+  assert_equals(rect.width, 80, `${phase}: CSS width`);
+  assert_equals(rect.height, 80 * testCase.height / testCase.width,
+                `${phase}: automatic CSS height`);
+}
+
+function createImage(t) {
+  const image = new Image();
+  image.className = "test-image";
+  document.body.append(image);
+  t.add_cleanup(() => image.remove());
+  return image;
+}
+
+for (const testCase of cases) {
+  promise_test(async t => {
+    const image = createImage(t);
+    const watcher = new EventWatcher(t, image, ["load", "error"]);
+    const loaded = watcher.wait_for("load");
+    image.src = `resources/ico-natural-size.py?image=${testCase.name}`;
+    await loaded;
+    assertSize(image, testCase, "after load");
+    await image.decode();
+    assertSize(image, testCase, "after decode");
+  }, `${testCase.name}: intrinsic size matches the largest directory entry`);
+}
+
+for (const testCase of [cases[0], cases[3]]) {
+  promise_test(async t => {
+    const image = createImage(t);
+    const key = token();
+    const releaseURL = `resources/ico-natural-size.py?action=release&token=${key}`;
+    let released = false;
+    const release = async () => {
+      if (!released) {
+        released = true;
+        const response = await fetch(releaseURL);
+        assert_true(response.ok, "The server released the ICO response");
+      }
+    };
+    t.add_cleanup(release);
+    const watcher = new EventWatcher(t, image, ["load", "error"]);
+    const loaded = watcher.wait_for("load");
+    image.src = `resources/ico-natural-size.py?image=${testCase.name}` +
+                `&stream=1&token=${key}`;
+    await t.step_wait(() => image.naturalWidth !== 0,
+                      "Intrinsic dimensions become available before load");
+    assert_false(image.complete, "The response is still incomplete");
+    assertSize(image, testCase, "during partial loading");
+    await release();
+    await loaded;
+    assertSize(image, testCase, "after complete input");
+    await image.decode();
+    assertSize(image, testCase, "after decode");
+  }, `${testCase.name}: intrinsic size stays stable during partial loading`);
+}
+</script>

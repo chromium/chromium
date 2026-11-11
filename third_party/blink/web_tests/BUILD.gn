@@ -112,6 +112,13 @@ group("wpt_tests") {
   data = [
     "VirtualTestSuites",
 
+    # Shared fixtures loaded by wpt_internal/images/ico-natural-size.html.
+    "images/resources/2entries.ico",
+    "images/resources/rust-ico-full-canvas.ico",
+    "images/resources/rust-ico-mixed-aspect-256x2.ico",
+    "images/resources/rust-ico-mixed-aspect-256x64.ico",
+    "images/resources/rust-ico-mixed-aspect-4x2.ico",
+
     # === List Test Cases folders here ===
     "external/",
     "wpt_internal/",

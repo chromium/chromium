@@ -2361,6 +2361,7 @@ source_set("blink_platform_unittests_sources") {
     "graphics/gpu/webgpu_native_test_support.h",
     "graphics/gpu/webgpu_shared_image_cache_test.cc",
     "graphics/graphics_context_test.cc",
+    "graphics/image_decoder_wrapper_test.cc",
     "graphics/paint/cull_rect_test.cc",
     "graphics/paint/display_item_raster_invalidator_test.cc",
     "graphics/paint/display_item_test.cc",

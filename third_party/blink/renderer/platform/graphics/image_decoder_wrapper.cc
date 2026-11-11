@@ -152,9 +152,12 @@ bool ImageDecoderWrapper::Decode(ImageDecoderFactory* factory,
   decoder->SetData(scoped_refptr<SegmentReader>(nullptr), false);
   decoder->ClearCacheExceptFrame(frame_index_);
 
+  // readPixels() can succeed after clipping, leaving the rest of the caller's
+  // destination uninitialized. Require an exact size match before copying.
   const bool has_decoded_frame =
       frame && frame->GetStatus() != ImageFrame::kFrameEmpty &&
-      !frame->Bitmap().isNull();
+      !frame->Bitmap().isNull() &&
+      frame->Bitmap().dimensions() == pixmap_.dimensions();
   if (!has_decoded_frame) {
     decode_failed_ = decoder->Failed();
     if (resume_decoding) {
@@ -173,9 +176,14 @@ bool ImageDecoderWrapper::Decode(ImageDecoderFactory* factory,
   DCHECK(!decode_to_external_memory ||
          scaled_size_bitmap.getPixels() == pixmap_.addr());
 
+  if (!decode_to_external_memory && !scaled_size_bitmap.readPixels(pixmap_)) {
+    if (resume_decoding) {
+      ImageDecodingStore::Instance().UnlockDecoder(generator_, client_id_,
+                                                   decoder);
+    }
+    return false;
+  }
   *has_alpha = !scaled_size_bitmap.isOpaque();
-  if (!decode_to_external_memory)
-    scaled_size_bitmap.readPixels(pixmap_);
 
   // Free as much memory as possible.  For single-frame images, we can
   // just delete the decoder entirely if they use the external allocator.

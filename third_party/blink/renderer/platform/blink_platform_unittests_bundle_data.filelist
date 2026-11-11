@@ -724,6 +724,10 @@
 ../../web_tests/images/resources/rgb-jpeg-red.jpg
 ../../web_tests/images/resources/rgb-jpeg-with-adobe-marker-only.jpg
 ../../web_tests/images/resources/rgb-png-with-cmyk-color-profile.png
+../../web_tests/images/resources/rust-ico-full-canvas.ico
+../../web_tests/images/resources/rust-ico-mixed-aspect-256x2.ico
+../../web_tests/images/resources/rust-ico-mixed-aspect-256x64.ico
+../../web_tests/images/resources/rust-ico-mixed-aspect-4x2.ico
 ../../web_tests/images/resources/short-app-extension-string.gif
 ../../web_tests/images/resources/size-failure.b186640109.webp
 ../../web_tests/images/resources/size-failure.gif

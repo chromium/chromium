@@ -57,6 +57,7 @@ class MockImageDecoderClient {
   // MockImageDecoder::size(). See the precise implementation of
   // MockImageDecoder::decodedSize() below.
   virtual gfx::Size DecodedSize() const { return gfx::Size(); }
+  virtual gfx::Size FrameSize(wtf_size_t index) const { return gfx::Size(); }
 
   void ForceFirstFrameToBeEmpty() { first_frame_forced_to_be_empty_ = true; }
 
@@ -134,9 +135,14 @@ class MockImageDecoder : public ImageDecoder {
   }
 
   void InitializeNewFrame(wtf_size_t index) override {
+    gfx::Size frame_size = client_->FrameSize(index);
+    if (frame_size.IsEmpty()) {
+      frame_size = Size();
+    }
     if (frame_buffer_cache_[index].AllocatePixelData(
-            Size().width(), Size().height(), ColorSpaceForSkImages()))
+            frame_size.width(), frame_size.height(), ColorSpaceForSkImages())) {
       frame_buffer_cache_[index].ZeroFillPixelData();
+    }
     frame_buffer_cache_[index].SetHasAlpha(false);
   }
 

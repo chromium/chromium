@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/image-decoders/ico/ico_rust_image_decoder.h"
 
+#include "base/check.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/skia/experimental/rust_ico/decoder/SkIcoRustDecoder.h"
 #include "third_party/skia/include/core/SkStream.h"
@@ -23,6 +24,10 @@ const AtomicString& IcoRustImageDecoder::MimeType() const {
 }
 
 gfx::Size IcoRustImageDecoder::FrameSizeAtIndex(wtf_size_t index) const {
+  if (!index) {
+    // Use the stable default representation for both layout and allocation.
+    return Size();
+  }
   const SkCodec* sk_codec = codec();
   SkCodec::FrameInfo frame_info;
   if (!sk_codec || !sk_codec->getFrameInfo(index, &frame_info)) {
@@ -33,12 +38,18 @@ gfx::Size IcoRustImageDecoder::FrameSizeAtIndex(wtf_size_t index) const {
 }
 
 bool IcoRustImageDecoder::HotSpot(gfx::Point& hot_spot) const {
-  SkIPoint sk_hot_spot;
-  if (!SkIcoRustDecoder::GetHotSpot(codec(), 0, &sk_hot_spot)) {
+  const auto info = SkIcoRustDecoder::GetDefaultImageInfo(codec());
+  if (!info || !info->hotSpot) {
     return false;
   }
-  hot_spot = gfx::Point(sk_hot_spot.x(), sk_hot_spot.y());
+  hot_spot = gfx::Point(info->hotSpot->x(), info->hotSpot->y());
   return true;
+}
+
+gfx::Size IcoRustImageDecoder::GetSizeFromSkCodec() const {
+  const auto info = SkIcoRustDecoder::GetDefaultImageInfo(codec());
+  CHECK(info);
+  return gfx::Size(info->dimensions.width(), info->dimensions.height());
 }
 
 std::unique_ptr<SkCodec> IcoRustImageDecoder::OnCreateSkCodec(
@@ -46,6 +57,15 @@ std::unique_ptr<SkCodec> IcoRustImageDecoder::OnCreateSkCodec(
     SkCodec::Result* result) {
   std::unique_ptr<SkCodec> codec =
       SkIcoRustDecoder::Decode(std::move(stream), result);
+  if (codec && !IsAllDataReceived()) {
+    const auto info = SkIcoRustDecoder::GetDefaultImageInfo(codec.get());
+    CHECK(info);
+    if (!info->hasCompatibleFrame) {
+      // Retry with more data rather than retaining an unusable snapshot.
+      *result = SkCodec::kIncompleteInput;
+      return nullptr;
+    }
+  }
   return codec;
 }
 
