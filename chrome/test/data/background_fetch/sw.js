@@ -37,8 +37,20 @@ self.addEventListener('message', e => {
 
 // Background Fetch event listeners.
 self.addEventListener('backgroundfetchsuccess', e => {
-  e.waitUntil(e.updateUI({title: 'New Fetched Title!'}).then(
-      () => postToWindowClients(e.type)));
+  e.waitUntil(e.updateUI({title: 'New Fetched Title!'}).then(async () => {
+    if (e.registration.id === 'check-response-type') {
+      const records = await e.registration.matchAll();
+      const response = await records[0].responseReady;
+      return postToWindowClients(response.type);
+    }
+    if (e.registration.id === 'check-secret-header') {
+      const records = await e.registration.matchAll();
+      const response = await records[0].responseReady;
+      const val = response.headers.get('X-Secret-Server-Header');
+      return postToWindowClients(val ? val : 'null');
+    }
+    return postToWindowClients(e.type);
+  }));
 });
 
 self.addEventListener('backgroundfetchfail', e => {

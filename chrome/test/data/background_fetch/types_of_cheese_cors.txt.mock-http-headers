@@ -4,3 +4,4 @@ Access-Control-Allow-Origin: *
 Access-Control-Allow-Methods: GET, OPTIONS, HEAD
 Access-Control-Allow-Headers: *
 Access-Control-Max-Age: 86400
+X-Secret-Server-Header: SuperSecret

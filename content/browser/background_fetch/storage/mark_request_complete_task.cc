@@ -25,6 +25,7 @@
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
 #include "third_party/blink/public/mojom/blob/serialized_blob.mojom.h"
 #include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
+#include "url/origin.h"
 
 namespace content {
 namespace background_fetch {
@@ -88,7 +89,13 @@ void MarkRequestCompleteTask::Start() {
 void MarkRequestCompleteTask::StoreResponse(base::OnceClosure done_closure) {
   response_ = blink::mojom::FetchAPIResponse::New();
   response_->url_list = request_info_->GetURLChain();
-  response_->response_type = network::mojom::FetchResponseType::kDefault;
+  if (!request_info_->GetURLChain().empty() &&
+      !url::Origin::Create(request_info_->GetURLChain().back())
+           .IsSameOriginWith(registration_id_.storage_key().origin())) {
+    response_->response_type = network::mojom::FetchResponseType::kCors;
+  } else {
+    response_->response_type = network::mojom::FetchResponseType::kDefault;
+  }
   response_->response_time = request_info_->GetResponseTime();
 
   if (request_info_->GetURLChain().empty()) {

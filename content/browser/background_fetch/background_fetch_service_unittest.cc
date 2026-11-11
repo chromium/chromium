@@ -726,7 +726,8 @@ TEST_F(BackgroundFetchServiceTest, FetchSuccessEventDispatch) {
 
     EXPECT_EQ(fetches[i]->response->url_list[0], fetches[i]->request->url);
     EXPECT_EQ(fetches[i]->response->response_type,
-              network::mojom::FetchResponseType::kDefault);
+              i == 2 ? network::mojom::FetchResponseType::kCors
+                     : network::mojom::FetchResponseType::kDefault);
 
     switch (i) {
       case 0:
