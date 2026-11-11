@@ -1516,13 +1516,7 @@ message AnySite {
 message RuleMetadata {
   // The set of resources that the agent may access when visiting/actuating
   // according to this rule. May be empty if no resources are accessible.
-  // NOTE: This field will be deprecated in favor of `accessible_resource` once
-  // Chrome fully supports the new field.
   repeated AgentResource accessible_resources = 1;
-
-  // The resource that the agent may access when visiting/actuating according to
-  // this rule. May be unset if no resource is accessible.
-  AgentResource accessible_resource = 3 [features = { field_presence: EXPLICIT }];
 
 
   // How the agent may interact with the page.
@@ -1629,6 +1623,8 @@ message RuleMetadata {
     // Allows executing JavaScript code in a document.
     CAPABILITY_EXECUTE_JS = 30;
   }
+
+  reserved 3;
 }
 
 // Next ID: 2
