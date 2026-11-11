@@ -12,13 +12,19 @@
 
 #import "base/check.h"
 #import "base/functional/callback_helpers.h"
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/task_environment.h"
 #import "base/test/test_future.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/password_manager/core/browser/password_form.h"
+#import "components/password_manager/core/browser/password_store/test_password_store.h"
 #import "components/password_manager/core/browser/remote_actor/remote_actor_credential_sharing_controller.h"
 #import "components/password_manager/core/browser/remote_actor/remote_actor_credential_sharing_result.h"
+#import "components/password_manager/core/browser/stub_password_manager_client.h"
+#import "components/signin/public/identity_manager/account_info.h"
+#import "components/signin/public/identity_manager/identity_test_environment.h"
+#import "components/sync/test/test_sync_service.h"
 #import "ios/chrome/browser/favicon/model/test_favicon_loader.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/ui/remote_actor_credential_bottom_sheet_consumer.h"
 #import "ios/chrome/browser/passwords/model/remote_actor/proto/remote_actor_password_upload_request.pb.h"
@@ -56,6 +62,16 @@ std::unique_ptr<password_manager::PasswordForm> CreateTestForm(
   return form;
 }
 
+// Optional dependencies of the mediator's sharing controller. Unset ones are
+// null, which makes the controller fail before querying any password store.
+struct MediatorDependencies {
+  std::string gaia_id = "gaia_id";
+  raw_ptr<signin::IdentityManager> identity_manager = nullptr;
+  raw_ptr<syncer::SyncService> sync_service = nullptr;
+  raw_ptr<password_manager::PasswordStoreInterface> account_store = nullptr;
+  raw_ptr<password_manager::PasswordManagerClient> client = nullptr;
+};
+
 }  // namespace
 
 // Tests for `RemoteActorCredentialBottomSheetMediator`.
@@ -68,36 +84,65 @@ class RemoteActorCredentialBottomSheetMediatorTest : public PlatformTest {
     delegate_ = OCMStrictProtocolMock(
         @protocol(RemoteActorCredentialBottomSheetMediatorDelegate));
     mediator_ = CreateMediator(kTestDomain);
+    account_store_->Init();
   }
 
   void TearDown() override {
     EXPECT_OCMOCK_VERIFY(consumer_);
     EXPECT_OCMOCK_VERIFY(delegate_);
     [mediator_ disconnect];
+    account_store_ = nullptr;
     PlatformTest::TearDown();
   }
 
-  // Returns a mediator for a request targeting `domain`.
+  // Returns a mediator for a request targeting `domain` built with
+  // `dependencies`.
   RemoteActorCredentialBottomSheetMediator* CreateMediator(
-      std::string_view domain) {
-    constexpr char kTestGaiaID[] = "gaia_id";
+      std::string_view domain,
+      const MediatorDependencies& dependencies = {}) {
     constexpr char kTestTaskID[] = "task_id";
     remote_actor::proto::RemoteActorPasswordUploadRequest request;
-    request.set_gaia_id(kTestGaiaID);
+    request.set_gaia_id(dependencies.gaia_id);
     request.set_domain(std::string(domain));
     request.set_task_id(kTestTaskID);
     RemoteActorCredentialBottomSheetMediator* mediator =
         [[RemoteActorCredentialBottomSheetMediator alloc]
-            initWithIdentityManager:nullptr
-                        syncService:nullptr
+            initWithIdentityManager:dependencies.identity_manager
+                        syncService:dependencies.sync_service
                profilePasswordStore:nullptr
-               accountPasswordStore:nullptr
+               accountPasswordStore:dependencies.account_store
                      sharingService:nullptr
-              passwordManagerClient:nullptr
+              passwordManagerClient:dependencies.client
                       faviconLoader:&favicon_loader_
                             request:request];
     mediator.delegate = delegate_;
     return mediator;
+  }
+
+  // Returns a mediator for a signed-in user with account storage active, whose
+  // sharing controller queries the empty account store and so finds no saved
+  // passwords.
+  RemoteActorCredentialBottomSheetMediator*
+  CreateMediatorWithSignedInSyncingUser() {
+    AccountInfo account = identity_test_env_.MakePrimaryAccountAvailable(
+        "user@gmail.com", signin::ConsentLevel::kSignin);
+    return CreateMediator(
+        kTestDomain, {.gaia_id = account.GetGaiaId().ToString(),
+                      .identity_manager = identity_test_env_.identity_manager(),
+                      .sync_service = &sync_service_,
+                      .account_store = account_store_.get(),
+                      .client = &password_manager_client_});
+  }
+
+  // Starts `mediator_` and waits until it shows the no saved passwords state.
+  void StartAndWaitForNoSavedPasswords() {
+    base::test::TestFuture<void> shown_future;
+    base::RepeatingClosure shown_callback = shown_future.GetRepeatingCallback();
+    OCMExpect([consumer_ showNoSavedPasswords]).andDo(^(NSInvocation*) {
+      shown_callback.Run();
+    });
+    [mediator_ start];
+    ASSERT_TRUE(shown_future.Wait());
   }
 
   // Returns `mediator_` as its privately adopted
@@ -121,6 +166,13 @@ class RemoteActorCredentialBottomSheetMediatorTest : public PlatformTest {
   }
 
   base::test::TaskEnvironment task_environment_;
+  signin::IdentityTestEnvironment identity_test_env_;
+  // Signed in with everything synced by default, so account storage is active.
+  syncer::TestSyncService sync_service_;
+  scoped_refptr<password_manager::TestPasswordStore> account_store_ =
+      base::MakeRefCounted<password_manager::TestPasswordStore>(
+          password_manager::IsAccountStore(true));
+  password_manager::StubPasswordManagerClient password_manager_client_;
   TestFaviconLoader favicon_loader_;
   id<RemoteActorCredentialBottomSheetConsumer> consumer_;
   id<RemoteActorCredentialBottomSheetMediatorDelegate> delegate_;
@@ -348,4 +400,22 @@ TEST_F(RemoteActorCredentialBottomSheetMediatorTest,
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(RemoteActorCredentialSharingResult::kUserCancelledDialog,
             result.error());
+}
+
+// Tests that finding no saved passwords shows the no saved passwords state
+// instead of finishing, and that leaving the sheet then reports
+// `kNoPasswordsFound`.
+TEST_F(RemoteActorCredentialBottomSheetMediatorTest,
+       TestNoPasswordsFoundShowsNoSavedPasswords) {
+  mediator_ = CreateMediatorWithSignedInSyncingUser();
+  OCMExpect([consumer_ setDomain:base::SysUTF8ToNSString(kTestDomain)]);
+  mediator_.consumer = consumer_;
+
+  ASSERT_NO_FATAL_FAILURE(StartAndWaitForNoSavedPasswords());
+  EXPECT_OCMOCK_VERIFY(delegate_);
+
+  OCMExpect([delegate_ mediator:mediator_
+            didFinishWithResult:RemoteActorCredentialSharingResult::
+                                    kNoPasswordsFound]);
+  [mediator_ didCancel];
 }

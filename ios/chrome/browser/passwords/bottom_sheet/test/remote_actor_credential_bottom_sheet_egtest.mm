@@ -15,6 +15,8 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_constants.h"
+#import "ios/chrome/common/ui/confirmation_alert/constants.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
@@ -79,6 +81,58 @@
   [[EarlGrey selectElementWithMatcher:cancelButtonMatcher]
       performAction:grey_tap()];
   [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:allowButtonMatcher];
+}
+
+// Verifies that navigating to a valid Remote Actor URL for a domain without
+// saved passwords displays the no saved passwords state with a single "Back to
+// Gemini" button, which dismisses the bottom sheet.
+- (void)testBottomSheetShowsNoSavedPasswords {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
+
+  NSString* URLString = [RemoteActorCredentialBottomSheetAppInterface
+      createValidRemoteActorURLForDomain:@"example.com"
+                                  gaiaID:fakeIdentity.gaiaId.ToNSString()];
+  GREYAssertNotNil(URLString, @"Failed to create valid Remote Actor URL.");
+
+  [ChromeEarlGrey sceneOpenURL:GURL(base::SysNSStringToUTF8(URLString))];
+
+  std::u16string actorName =
+      l10n_util::GetStringUTF16(IDS_REMOTE_ACTOR_GEMINI_NAME);
+  id<GREYMatcher> backToGeminiButtonMatcher = grey_allOf(
+      grey_accessibilityID(kButtonStackPrimaryActionAccessibilityIdentifier),
+      chrome_test_util::ButtonWithAccessibilityLabel(l10n_util::GetNSStringF(
+          IDS_IOS_REMOTE_ACTOR_NO_PASSWORD_DIALOG_BACK_BUTTON, actorName)),
+      grey_sufficientlyVisible(), nil);
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:backToGeminiButtonMatcher];
+
+  [[EarlGrey selectElementWithMatcher:
+                 grey_allOf(grey_accessibilityID(
+                                kConfirmationAlertTitleAccessibilityIdentifier),
+                            grey_accessibilityLabel(l10n_util::GetNSStringF(
+                                IDS_IOS_REMOTE_ACTOR_NO_PASSWORD_DIALOG_TITLE,
+                                u"example.com")),
+                            nil)] assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(
+              grey_accessibilityID(
+                  kConfirmationAlertSubtitleAccessibilityIdentifier),
+              grey_text(l10n_util::GetNSStringF(
+                  IDS_IOS_REMOTE_ACTOR_NO_PASSWORD_DIALOG_SUBTITLE, actorName)),
+              nil)] assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(grey_accessibilityID(
+                         kButtonStackSecondaryActionAccessibilityIdentifier),
+                     grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_nil()];
+
+  [[EarlGrey selectElementWithMatcher:backToGeminiButtonMatcher]
+      performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:backToGeminiButtonMatcher];
 }
 
 @end
