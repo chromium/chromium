@@ -24,6 +24,8 @@ source_set("remote_actor") {
     "remote_actor_request_helper.h",
     "remote_actor_switches.cc",
     "remote_actor_switches.h",
+    "remote_actor_utils.cc",
+    "remote_actor_utils.h",
   ]
 
   public_deps = [
@@ -63,6 +65,7 @@ source_set("unit_tests") {
     "remote_actor_credential_sharing_service_impl_unittest.cc",
     "remote_actor_credential_store_client_unittest.cc",
     "remote_actor_request_helper_unittest.cc",
+    "remote_actor_utils_unittest.cc",
   ]
   deps = [
     ":remote_actor",

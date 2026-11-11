@@ -15,7 +15,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
-#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -33,6 +32,7 @@
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/password_manager/core/browser/remote_actor/remote_actor_credential_sharing_service.h"
+#include "components/password_manager/core/browser/remote_actor/remote_actor_utils.h"
 #include "components/password_manager/core/browser/sync/password_proto_utils.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -73,22 +73,25 @@ RemoteActorCredentialSharingController::
   }
 }
 
-void RemoteActorCredentialSharingController::Start(std::string_view gaia_id,
-                                                   std::string_view domain,
-                                                   std::string_view task_id,
-                                                   ResultCallback callback) {
+void RemoteActorCredentialSharingController::Start(
+    std::string_view gaia_id,
+    std::string_view domain_or_origin,
+    std::string_view task_id,
+    ResultCallback callback) {
   CHECK(callback_.is_null());
   gaia_id_ = gaia_id;
-  origin_ = url::Origin::Create(GURL(base::StrCat({"https://", domain})));
   task_id_ = task_id;
   callback_ = std::move(callback);
 
-  if (!client_) {
+  std::optional<url::Origin> origin =
+      GetOriginFromDomainOrOrigin(domain_or_origin);
+  if (!client_ || !origin) {
     LogRemoteActorCredentialSharingResult(
         RemoteActorCredentialSharingResult::kOtherError);
     RespondWithError(RemoteActorCredentialSharingResult::kOtherError);
     return;
   }
+  origin_ = *std::move(origin);
 
   if (!VerifyUserIdentityAndSyncState(gaia_id)) {
     LogRemoteActorCredentialSharingResult(
@@ -98,7 +101,7 @@ void RemoteActorCredentialSharingController::Start(std::string_view gaia_id,
     return;
   }
 
-  QueryPasswordStores(domain);
+  QueryPasswordStores();
 }
 
 bool RemoteActorCredentialSharingController::IsActive() const {
@@ -169,8 +172,7 @@ bool RemoteActorCredentialSharingController::VerifyUserIdentityAndSyncState(
   return true;
 }
 
-void RemoteActorCredentialSharingController::QueryPasswordStores(
-    std::string_view domain) {
+void RemoteActorCredentialSharingController::QueryPasswordStores() {
   const bool is_password_sync_active =
       sync_service_ &&
       sync_util::IsSyncFeatureActiveIncludingPasswords(sync_service_);
@@ -201,9 +203,9 @@ void RemoteActorCredentialSharingController::QueryPasswordStores(
 
   expected_callbacks_ = stores.size();
 
+  const GURL url = origin_.GetURL();
   PasswordFormDigest digest(PasswordForm::Scheme::kHtml,
-                            base::StrCat({"https://", domain, "/"}),
-                            GURL(base::StrCat({"https://", domain})));
+                            password_manager_util::GetSignonRealm(url), url);
 
   for (PasswordStoreInterface* store : stores) {
     store->GetLogins(digest, weak_ptr_factory_.GetWeakPtr());

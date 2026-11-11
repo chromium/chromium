@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/passwords/bottom_sheet/coordinator/remote_actor_credential_bottom_sheet_mediator.h"
 
 #import <memory>
+#import <optional>
 #import <utility>
 #import <vector>
 
@@ -13,7 +14,6 @@
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/memory/raw_ptr.h"
-#import "base/strings/strcat.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/types/expected.h"
 #import "components/autofill/core/browser/suggestions/suggestion.h"
@@ -23,6 +23,7 @@
 #import "components/password_manager/core/browser/password_ui_utils.h"
 #import "components/password_manager/core/browser/remote_actor/remote_actor_credential_sharing_controller.h"
 #import "components/password_manager/core/browser/remote_actor/remote_actor_credential_sharing_result.h"
+#import "components/password_manager/core/browser/remote_actor/remote_actor_utils.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/ui/remote_actor_credential_bottom_sheet_consumer.h"
 #import "ios/chrome/browser/passwords/model/remote_actor/proto/remote_actor_password_upload_request.pb.h"
@@ -31,7 +32,6 @@
 #import "ios/chrome/common/ui/favicon/favicon_constants.h"
 #import "url/gurl.h"
 #import "url/origin.h"
-#import "url/url_constants.h"
 
 namespace {
 
@@ -205,16 +205,16 @@ using password_manager::RemoteActorCredentialSharingResult;
 
 #pragma mark - Private
 
-// Returns the requested domain formatted for display. `GetShownOrigin()` is
-// needed to handle look-alike domains, and it requires an origin, so the
-// `https://` scheme is prepended only to make origin construction work; it is
-// stripped before display. The origin is discarded immediately and is never
-// used for a programmatic security decision.
+// Returns the requested domain formatted for display, or an empty string if the
+// request does not hold a valid origin (the controller then rejects the
+// request). `GetShownOrigin()` is needed to handle look-alike domains.
 - (NSString*)shownDomain {
-  return base::SysUTF8ToNSString(
-      password_manager::GetShownOrigin(url::Origin::Create(
-          GURL(base::StrCat({url::kHttpsScheme, url::kStandardSchemeSeparator,
-                             _request.domain()})))));
+  std::optional<url::Origin> origin =
+      password_manager::GetOriginFromDomainOrOrigin(_request.domain());
+  if (!origin) {
+    return @"";
+  }
+  return base::SysUTF8ToNSString(password_manager::GetShownOrigin(*origin));
 }
 
 // Pushes the suggestions and favicon to `_consumer`. The consumer may be set

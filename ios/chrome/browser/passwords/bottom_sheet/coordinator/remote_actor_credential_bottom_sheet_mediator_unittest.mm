@@ -6,6 +6,7 @@
 
 #import <memory>
 #import <string>
+#import <string_view>
 #import <utility>
 #import <vector>
 
@@ -67,22 +68,7 @@ class RemoteActorCredentialBottomSheetMediatorTest : public PlatformTest {
         @protocol(RemoteActorCredentialBottomSheetConsumer));
     delegate_ = OCMStrictProtocolMock(
         @protocol(RemoteActorCredentialBottomSheetMediatorDelegate));
-    constexpr char kTestGaiaID[] = "gaia_id";
-    constexpr char kTestTaskID[] = "task_id";
-    remote_actor::proto::RemoteActorPasswordUploadRequest request;
-    request.set_gaia_id(kTestGaiaID);
-    request.set_domain(kTestDomain);
-    request.set_task_id(kTestTaskID);
-    mediator_ = [[RemoteActorCredentialBottomSheetMediator alloc]
-        initWithIdentityManager:nullptr
-                    syncService:nullptr
-           profilePasswordStore:nullptr
-           accountPasswordStore:nullptr
-                 sharingService:nullptr
-          passwordManagerClient:nullptr
-                  faviconLoader:&favicon_loader_
-                        request:request];
-    mediator_.delegate = delegate_;
+    mediator_ = CreateMediator(kTestDomain);
   }
 
   void TearDown() override {
@@ -90,6 +76,29 @@ class RemoteActorCredentialBottomSheetMediatorTest : public PlatformTest {
     EXPECT_OCMOCK_VERIFY(delegate_);
     [mediator_ disconnect];
     PlatformTest::TearDown();
+  }
+
+  // Returns a mediator for a request targeting `domain`.
+  RemoteActorCredentialBottomSheetMediator* CreateMediator(
+      std::string_view domain) {
+    constexpr char kTestGaiaID[] = "gaia_id";
+    constexpr char kTestTaskID[] = "task_id";
+    remote_actor::proto::RemoteActorPasswordUploadRequest request;
+    request.set_gaia_id(kTestGaiaID);
+    request.set_domain(std::string(domain));
+    request.set_task_id(kTestTaskID);
+    RemoteActorCredentialBottomSheetMediator* mediator =
+        [[RemoteActorCredentialBottomSheetMediator alloc]
+            initWithIdentityManager:nullptr
+                        syncService:nullptr
+               profilePasswordStore:nullptr
+               accountPasswordStore:nullptr
+                     sharingService:nullptr
+              passwordManagerClient:nullptr
+                      faviconLoader:&favicon_loader_
+                            request:request];
+    mediator.delegate = delegate_;
+    return mediator;
   }
 
   // Returns `mediator_` as its privately adopted
@@ -142,6 +151,38 @@ TEST_F(RemoteActorCredentialBottomSheetMediatorTest,
 TEST_F(RemoteActorCredentialBottomSheetMediatorTest,
        TestSetConsumerSendsDomain) {
   OCMExpect([consumer_ setDomain:base::SysUTF8ToNSString(kTestDomain)]);
+
+  mediator_.consumer = consumer_;
+}
+
+// Tests that a request holding a full origin shows the host only, without a
+// duplicated scheme.
+TEST_F(RemoteActorCredentialBottomSheetMediatorTest,
+       TestSetConsumerSendsHostForFullOrigin) {
+  [mediator_ disconnect];
+  mediator_ = CreateMediator(kTestOrigin);
+  OCMExpect([consumer_ setDomain:base::SysUTF8ToNSString(kTestDomain)]);
+
+  mediator_.consumer = consumer_;
+}
+
+// Tests that a request holding an HTTP origin with a non-default port shows
+// the port.
+TEST_F(RemoteActorCredentialBottomSheetMediatorTest,
+       TestSetConsumerSendsPortForHttpOrigin) {
+  [mediator_ disconnect];
+  mediator_ = CreateMediator("http://instacart.com:8080");
+  OCMExpect([consumer_ setDomain:@"instacart.com:8080"]);
+
+  mediator_.consumer = consumer_;
+}
+
+// Tests that a request that does not hold a valid origin shows an empty domain.
+TEST_F(RemoteActorCredentialBottomSheetMediatorTest,
+       TestSetConsumerSendsEmptyDomainForInvalidOrigin) {
+  [mediator_ disconnect];
+  mediator_ = CreateMediator("https://");
+  OCMExpect([consumer_ setDomain:@""]);
 
   mediator_.consumer = consumer_;
 }
