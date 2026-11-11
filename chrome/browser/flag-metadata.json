@@ -4959,7 +4959,7 @@
       "nicolasmacbeth@google.com",
       "bling-alchemy-eng@google.com"
     ],
-    "expiry_milestone": 160
+    "expiry_milestone": 166
   },
   {
     "name": "enterprise-proxy-error-handling",
@@ -5551,7 +5551,7 @@
   {
     "name": "gemini-binary-migration",
     "owners": [ "adamta@google.com", "bling-alchemy-eng@google.com" ],
-    "expiry_milestone": 160
+    "expiry_milestone": 166
   },
   {
     "name": "gemini-contextual-suggestions-cues",
@@ -5633,7 +5633,7 @@
   {
     "name": "gemini-unary-migration",
     "owners": [ "adamta@google.com", "bling-alchemy-eng@google.com" ],
-    "expiry_milestone": 160
+    "expiry_milestone": 166
   },
   {
     "name": "gemma4-for-built-in-ai",
@@ -8077,7 +8077,7 @@
   {
     "name": "page-action-menu-icon",
     "owners": [ "adamta@google.com", "bling-alchemy-eng@google.com" ],
-    "expiry_milestone": 160
+    "expiry_milestone": 166
   },
   {
     "name": "page-actions-elevated-toolbar",
@@ -8308,7 +8308,7 @@
   {
     "name": "persist-tab-context",
     "owners": [ "cloutierc@google.com", "nicolasmacbeth@google.com", "bling-alchemy-eng@google.com" ],
-    "expiry_milestone": 160
+    "expiry_milestone": 166
   },
   {
     "name": "persistent-widget-api",
@@ -9206,7 +9206,7 @@
   {
     "name": "smart-tab-grouping",
     "owners": [ "cloutierc@google.com", "nicolasmacbeth@google.com", "bling-alchemy-eng@google.com" ],
-    "expiry_milestone": 160
+    "expiry_milestone": 166
   },
   {
     "name": "smooth-scrolling",
