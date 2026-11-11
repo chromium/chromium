@@ -267,3 +267,21 @@ TEST_F(RemoteActorCredentialBottomSheetViewControllerTest, CellsShowFavicon) {
   ASSERT_TRUE(favicon_configuration);
   EXPECT_NSEQ(attributes, favicon_configuration.faviconAttributes);
 }
+
+// Tests that the bottom sheet uses the large detent, including after the
+// suggestions arrive.
+TEST_F(RemoteActorCredentialBottomSheetViewControllerTest, UsesLargeDetent) {
+  [view_controller_ loadViewIfNeeded];
+  UISheetPresentationController* presentation_controller =
+      view_controller_.sheetPresentationController;
+  NSArray<UISheetPresentationControllerDetent*>* expected_detents =
+      @[ [UISheetPresentationControllerDetent largeDetent] ];
+  EXPECT_NSEQ(expected_detents, presentation_controller.detents);
+  EXPECT_NSEQ(UISheetPresentationControllerDetentIdentifierLarge,
+              presentation_controller.selectedDetentIdentifier);
+
+  [view_controller_ setSuggestions:@[ PasswordSuggestion(@"user1") ]];
+  EXPECT_NSEQ(expected_detents, presentation_controller.detents);
+  EXPECT_NSEQ(UISheetPresentationControllerDetentIdentifierLarge,
+              presentation_controller.selectedDetentIdentifier);
+}

@@ -164,14 +164,29 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
                   "must implement this method.";
 }
 
+- (BOOL)shouldAlwaysUseLargeDetent {
+  return NO;
+}
+
+#pragma mark - BottomSheetViewController
+
+- (void)setUpBottomSheetDetents {
+  if ([self shouldAlwaysUseLargeDetent]) {
+    [self setUpLargeDetent];
+    return;
+  }
+  [super setUpBottomSheetDetents];
+}
+
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
   self.view.accessibilityViewIsModal = YES;
 
-  // If the table has too many rows for the initial state, we open bottom sheet
-  // minimized.
-  _tableViewIsMinimized = [self rowCount] > [self initialNumberOfVisibleCells];
+  // Open the bottom sheet minimized if the table has more rows than fit in the
+  // initial state, unless it always uses the large detent.
+  _tableViewIsMinimized = ![self shouldAlwaysUseLargeDetent] &&
+                          [self rowCount] > [self initialNumberOfVisibleCells];
 
   self.underTitleView = [self createUnderTitleView];
 
@@ -322,6 +337,13 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
     }
   }
 
+  if ([self shouldAlwaysUseLargeDetent]) {
+    _minimizedHeightConstraint.active = NO;
+    _heightConstraint.active = YES;
+    [self setUpLargeDetent];
+    return;
+  }
+
   // Update the custom detent with the correct initial height for the bottom
   // sheet. (Initial height is not calculated properly in -viewDidLoad, but we
   // need to setup the bottom sheet in that method so there is not a delay when
@@ -366,6 +388,16 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
   presentationController.selectedDetentIdentifier =
       useMinimizedState ? kCustomMinimizedDetentIdentifier
                         : kCustomDetentIdentifier;
+}
+
+// Sets the large detent as the bottom sheet's only detent.
+- (void)setUpLargeDetent {
+  UISheetPresentationController* presentationController =
+      self.sheetPresentationController;
+  presentationController.detents =
+      @[ [UISheetPresentationControllerDetent largeDetent] ];
+  presentationController.selectedDetentIdentifier =
+      UISheetPresentationControllerDetentIdentifierLarge;
 }
 
 // Returns whether the provided index path points to the last row of the table

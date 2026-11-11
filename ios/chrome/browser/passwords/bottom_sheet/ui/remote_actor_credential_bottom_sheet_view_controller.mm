@@ -253,6 +253,10 @@ ButtonStackConfiguration* SetUpButtonConfiguration() {
   return [cell systemLayoutSizeFittingSize:CGSizeMake(tableWidth, 1)].height;
 }
 
+- (BOOL)shouldAlwaysUseLargeDetent {
+  return YES;
+}
+
 #pragma mark - ConfirmationAlertViewController
 
 - (void)customizeSubtitle:(UITextView*)subtitle {
