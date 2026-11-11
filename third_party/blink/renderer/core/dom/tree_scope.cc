@@ -589,24 +589,15 @@ Element* TreeScope::FindAnchorWithName(const String& name) {
   // TODO(crbug.com/369219144): Should this be Traversal<HTMLAnchorElementBase>?
   for (HTMLAnchorElement& anchor :
        Traversal<HTMLAnchorElement>::StartsAfter(RootNode())) {
-    if (RootNode().GetDocument().InQuirksMode()) {
-      // Quirks mode: Try case-sensitive matching first to align with Firefox
-      // and Safari, but fall back to case-insensitive for legacy compat.
-      // Count usage to measure impact before removing fallback.
-      // See https://crbug.com/40829784
-      if (anchor.GetName() == name) {
-        UseCounter::Count(RootNode().GetDocument(),
-                          WebFeature::kAnchorCaseSensitiveMatch);
-        return &anchor;
-      } else if (DeprecatedEqualIgnoringCase(anchor.GetName(), name)) {
-        UseCounter::Count(RootNode().GetDocument(),
-                          WebFeature::kAnchorCaseInsensitiveMatch);
-        return &anchor;
-      }
-    } else {
-      // Strict mode, names need to match exactly.
-      if (anchor.GetName() == name)
-        return &anchor;
+    if (anchor.GetName() == name) {
+      return &anchor;
+    }
+    // When the flag is disabled, fall back to case-insensitive matching in
+    // quirks mode for legacy compat. See https://crbug.com/40829784.
+    if (!RuntimeEnabledFeatures::CaseSensitiveAnchorMatchingEnabled() &&
+        RootNode().GetDocument().InQuirksMode() &&
+        DeprecatedEqualIgnoringCase(anchor.GetName(), name)) {
+      return &anchor;
     }
   }
   return nullptr;

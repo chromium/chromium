@@ -5100,8 +5100,8 @@ enum WebFeature {
   kGetComputedStylePseudoElementWithoutColon = 5782,
   kGeolocationRequestPositionWithPotentiallyUpToDateWatchedCachedPosition =
       5783,
-  kAnchorCaseSensitiveMatch = 5784,
-  kAnchorCaseInsensitiveMatch = 5785,
+  kOBSOLETE_AnchorCaseSensitiveMatch = 5784,
+  kOBSOLETE_AnchorCaseInsensitiveMatch = 5785,
   kPrerenderActivationByFormSubmission = 5786,
   kLinkRelModulePreloadStyle = 5787,
   kAudioContextPlaybackStats = 5788,

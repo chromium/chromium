@@ -6592,8 +6592,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5782" label="GetComputedStylePseudoElementWithoutColon"/>
   <int value="5783"
       label="GeolocationRequestPositionWithPotentiallyUpToDateWatchedCachedPosition"/>
-  <int value="5784" label="AnchorCaseSensitiveMatch"/>
-  <int value="5785" label="AnchorCaseInsensitiveMatch"/>
+  <int value="5784" label="OBSOLETE_AnchorCaseSensitiveMatch"/>
+  <int value="5785" label="OBSOLETE_AnchorCaseInsensitiveMatch"/>
   <int value="5786" label="PrerenderActivationByFormSubmission"/>
   <int value="5787" label="LinkRelModulePreloadStyle"/>
   <int value="5788" label="AudioContextPlaybackStats"/>

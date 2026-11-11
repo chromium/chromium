@@ -1249,6 +1249,13 @@
       status: "stable",
     },
     {
+      // Makes anchor name matching case-sensitive in quirks mode.
+      // Ships in M160; the kill switch can be removed in M162.
+      // https://chromestatus.com/feature/5085237991309312
+      name: "CaseSensitiveAnchorMatching",
+      status: "stable",
+    },
+    {
       // Kill switch for changes to RenderFrameMetadataObserverImpl in connection with Engagement
       // Signals. See https://crrev.com/c/4544201 and https://crbug.com/1458640.
       name: "CCTNewRFMPushBehavior",
