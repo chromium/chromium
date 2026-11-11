@@ -87,6 +87,9 @@ class SessionController {
   // Sets the current lifecycle state of this session.
   virtual void SetSessionLifecycle(SessionLifecycle lifecycle) = 0;
 
+  // Sets the server-assigned session ID for this session.
+  virtual void SetSessionId(const std::string& session_id) = 0;
+
   // Runs a tool (using parameters provided in `tool_request`) and calls
   // `tool_response_callback` with the result (or an error).
   virtual void ProcessToolCall(const ToolRequest& tool_request,

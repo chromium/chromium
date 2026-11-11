@@ -5,16 +5,20 @@
 #include "chrome/browser/ttc/core/actor_task_holder.h"
 
 #include <optional>
+#include <string>
 
 #include "base/check.h"
+#include "base/strings/string_number_conversions.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
+#include "chrome/browser/critical_actions/critical_action_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ttc/core/session_controller_impl.h"
 #include "chrome/browser/ttc/core/session_journal_impl.h"
 #include "chrome/browser/ttc/core/ttc_actor_ui_state_manager.h"
 #include "chrome/browser/ttc/core/ttc_keyed_service.h"
 #include "components/actor/core/task_source_info.h"
+#include "components/critical_actions/core/browser/critical_action_service.h"
 
 namespace ttc {
 
@@ -59,17 +63,53 @@ actor::TaskId ActorTaskHolder::EnsureTaskCreated() {
   CHECK(ttc_service);
 
   task_id_ = actor_service->CreateTaskWithOptions(
-      actor::TaskSourceInfo(actor::TaskSourceInfo::Client::kTtc, "ttc"),
+      actor::TaskSourceInfo(actor::TaskSourceInfo::Client::kTtc, session_id_),
       ttc_service->enterprise_policy_checker(), /*options=*/nullptr,
       task_delegate_.GetWeakPtr(), &ttc_service->actor_ui_state_manager(),
       /*initial_invocation_source=*/std::nullopt,
       actor::ActorKeyedService::AllowedSchemes::kRequireHttpsOrHttpOrNtp);
+  CHECK(!task_id_.is_null());
+
+  const std::string task_id_str = base::NumberToString(task_id_.value());
+  session_task_ids_.push_back(task_id_str);
+  if (session_id_.has_value()) {
+    if (auto* critical_action_service =
+            critical_actions::CriticalActionFactory::GetForProfile(
+                GetProfile())) {
+      critical_action_service->SetCriticalActionsConversationId({task_id_str},
+                                                                *session_id_);
+    }
+  }
 
   if (is_replacement) {
     session_controller_->GetJournal().SetTaskId(task_id_);
   }
 
   return task_id_;
+}
+
+void ActorTaskHolder::SetSessionId(const std::string& session_id) {
+  if (session_id.empty()) {
+    return;
+  }
+  session_id_ = session_id;
+
+  actor::ActorKeyedService* actor_service =
+      actor::ActorKeyedService::Get(GetProfile());
+  CHECK(actor_service);
+  actor::ActorTask* task = actor_service->GetTask(task_id_);
+  if (!task) {
+    EnsureTaskCreated();
+  } else {
+    task->SetSourceId(session_id);
+  }
+
+  if (auto* critical_action_service =
+          critical_actions::CriticalActionFactory::GetForProfile(
+              GetProfile())) {
+    critical_action_service->SetCriticalActionsConversationId(session_task_ids_,
+                                                              session_id);
+  }
 }
 
 Profile* ActorTaskHolder::GetProfile() {

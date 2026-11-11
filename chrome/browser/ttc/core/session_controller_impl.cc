@@ -149,6 +149,10 @@ void SessionControllerImpl::SetSessionLifecycle(SessionLifecycle lifecycle) {
   }
 }
 
+void SessionControllerImpl::SetSessionId(const std::string& session_id) {
+  actor_task_holder_.SetSessionId(session_id);
+}
+
 Profile* SessionControllerImpl::GetProfile() {
   return service_->profile();
 }

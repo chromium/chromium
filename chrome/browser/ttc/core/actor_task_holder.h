@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_TTC_CORE_ACTOR_TASK_HOLDER_H_
 #define CHROME_BROWSER_TTC_CORE_ACTOR_TASK_HOLDER_H_
 
+#include <optional>
+#include <string>
+#include <vector>
+
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/ttc/core/ttc_actor_task_delegate.h"
 #include "components/actor/core/task_id.h"
@@ -27,6 +31,10 @@ class ActorTaskHolder {
   // Creates the actor task used to invoke tools, if one isn't already active.
   actor::TaskId EnsureTaskCreated();
 
+  // Associates `session_id` with the active actor task and any tasks created
+  // during this session.
+  void SetSessionId(const std::string& session_id);
+
   actor::TaskId task_id() const { return task_id_; }
 
  private:
@@ -43,6 +51,15 @@ class ActorTaskHolder {
   // tab it acted on (see EnsureTaskCreated()), in which case it's replaced by a
   // new one.
   actor::TaskId task_id_;
+
+  // The server session ID from the backend (SessionStatusResponse).
+  // nullopt until the backend connection completes. Immutable once set.
+  std::optional<std::string> session_id_;
+
+  // Task IDs created during this session.
+  // When tabs close, the actor task can be replaced. This tracks all task IDs
+  // for the session so CriticalActionService associates them with session_id_.
+  std::vector<std::string> session_task_ids_;
 };
 
 }  // namespace ttc

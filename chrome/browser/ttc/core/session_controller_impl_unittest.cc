@@ -11,12 +11,19 @@
 #include <string>
 #include <vector>
 
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/test/power_monitor_test.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_task.h"
+#include "chrome/browser/critical_actions/critical_action_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ttc/app/public/audio_controller.h"
 #include "chrome/browser/ttc/core/buildflags.h"
@@ -30,6 +37,7 @@
 #include "chrome/browser/ttc/core/ttc_keyed_service.h"
 #include "chrome/browser/ttc/core/ttc_keyed_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/critical_actions/core/browser/critical_action_service.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/ttc/app/public/conversation.h"
 #include "content/public/browser/browser_context.h"
@@ -585,6 +593,86 @@ TEST_F(TtcSessionControllerImplTest, MicSignalsReachObserversUntilFinished) {
   controller.RemoveObserver(&observer);
 }
 
+class MockCriticalActionService
+    : public critical_actions::CriticalActionService {
+ public:
+  explicit MockCriticalActionService(const base::FilePath& db_path)
+      : critical_actions::CriticalActionService(
+            db_path,
+            base::ThreadPool::CreateSequencedTaskRunner(
+                {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+                 base::TaskShutdownBehavior::BLOCK_SHUTDOWN})) {}
+  ~MockCriticalActionService() override = default;
+
+  MOCK_METHOD(void,
+              SetCriticalActionsConversationId,
+              (const std::vector<std::string>&, std::string_view),
+              (override));
+};
+
+TEST_F(TtcSessionControllerImplTest,
+       SetSessionIdUpdatesTaskAndPreservesAcrossReplacement) {
+  auto* mock_critical_action_service = static_cast<MockCriticalActionService*>(
+      critical_actions::CriticalActionFactory::GetInstance()
+          ->SetTestingFactoryAndUse(
+              &profile_,
+              base::BindRepeating([](content::BrowserContext* context)
+                                      -> std::unique_ptr<KeyedService> {
+                return std::make_unique<
+                    testing::NiceMock<MockCriticalActionService>>(
+                    context->GetPath().Append(
+                        FILE_PATH_LITERAL("TestCriticalActions.db")));
+              })));
+  ASSERT_NE(mock_critical_action_service, nullptr);
+
+  SessionControllerImpl controller(*service_);
+  actor::ActorKeyedService* actor_service =
+      actor::ActorKeyedService::Get(&profile_);
+  ASSERT_NE(actor_service, nullptr);
+
+  const actor::TaskId first_task_id = controller.GetActorTaskId();
+  ASSERT_FALSE(first_task_id.is_null());
+  const actor::ActorTask* first_task = actor_service->GetTask(first_task_id);
+  ASSERT_NE(first_task, nullptr);
+  EXPECT_EQ(first_task->source_info().type,
+            actor::TaskSourceInfo::Client::kTtc);
+  EXPECT_EQ(first_task->source_info().id, std::nullopt);
+
+  // Empty session ID is ignored.
+  EXPECT_CALL(*mock_critical_action_service,
+              SetCriticalActionsConversationId(testing::_, testing::_))
+      .Times(0);
+  controller.SetSessionId("");
+  EXPECT_EQ(first_task->source_info().id, std::nullopt);
+
+  // Setting a non-empty session ID updates the active ActorTask's source ID
+  // and associates the task ID in CriticalActionService.
+  EXPECT_CALL(
+      *mock_critical_action_service,
+      SetCriticalActionsConversationId(
+          testing::ElementsAre(base::NumberToString(first_task_id.value())),
+          std::string_view("server-session-456")))
+      .Times(1);
+  controller.SetSessionId("server-session-456");
+  EXPECT_EQ(first_task->source_info().id, "server-session-456");
+
+  // If the task is stopped externally and replaced, the replacement task
+  // inherits the session ID and registers with CriticalActionService.
+  actor_service->StopTask(first_task_id,
+                          actor::ActorTask::StoppedReason::kStoppedByUser);
+  EXPECT_CALL(*mock_critical_action_service,
+              SetCriticalActionsConversationId(
+                  testing::SizeIs(1), std::string_view("server-session-456")))
+      .Times(1);
+  controller.EnsureActorTaskCreated();
+  const actor::TaskId second_task_id = controller.GetActorTaskId();
+  EXPECT_NE(second_task_id, first_task_id);
+  const actor::ActorTask* second_task = actor_service->GetTask(second_task_id);
+  ASSERT_NE(second_task, nullptr);
+  EXPECT_EQ(second_task->source_info().type,
+            actor::TaskSourceInfo::Client::kTtc);
+  EXPECT_EQ(second_task->source_info().id, "server-session-456");
+}
 #if BUILDFLAG(IS_ANDROID)
 // Creates Android browser windows that register with GlobalBrowserCollection
 // the way ChromeAndroidTaskTracker does in production, and destroys them all on

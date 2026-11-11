@@ -69,6 +69,9 @@ class FakeSessionController : public SessionController {
       on_lifecycle_set_.Run(lifecycle);
     }
   }
+  void SetSessionId(const std::string& session_id) override {
+    session_id_ = session_id;
+  }
   void ProcessToolCall(const ToolRequest& tool_request,
                        ToolResponseCallback tool_response) override {
     last_request_.name = tool_request.name;
@@ -134,6 +137,7 @@ class FakeSessionController : public SessionController {
   const std::string& last_output_transcription() const {
     return last_output_transcription_;
   }
+  const std::optional<std::string>& session_id() const { return session_id_; }
 
   // Called whenever the lifecycle is set, once it's set.
   void set_on_lifecycle_set(
@@ -161,6 +165,7 @@ class FakeSessionController : public SessionController {
   int interrupted_count_ = 0;
   std::string last_input_transcription_;
   std::string last_output_transcription_;
+  std::optional<std::string> session_id_;
   std::vector<ToolDefinition> tools_;
   SessionLifecycle session_lifecycle_ = SessionLifecycle::kInitializing;
   base::RepeatingCallback<void(SessionLifecycle)> on_lifecycle_set_;

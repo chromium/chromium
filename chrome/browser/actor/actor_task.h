@@ -114,7 +114,8 @@ class ActorTask : public base::SupportsUserData {
   const TaskSourceInfo& source_info() const { return source_info_; }
 
   // Used for late registration/backfilling of the source-defined ID (e.g. Glic
-  // conversation ID) when it is not yet known at task creation time.
+  // conversation ID or TTC session ID) when it is not yet known at task
+  // creation time.
   void SetSourceId(std::string id) {
     CHECK(!id.empty(), base::NotFatalUntil::M161);
     CHECK(!source_info_.id.has_value() || source_info_.id == id,

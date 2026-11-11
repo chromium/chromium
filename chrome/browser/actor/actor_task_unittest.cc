@@ -307,6 +307,17 @@ TEST_F(ActorTaskTest, BasicGetters) {
   EXPECT_NE(task_->GetWeakPtr(), nullptr);
 }
 
+TEST_F(ActorTaskTest, SetSourceIdBackfillsSourceInfo) {
+  EXPECT_FALSE(task_->source_info().id.has_value());
+
+  task_->SetSourceId("initial-id");
+  EXPECT_EQ(task_->source_info().id, "initial-id");
+
+  // Idempotent backfill with the same ID succeeds.
+  task_->SetSourceId("initial-id");
+  EXPECT_EQ(task_->source_info().id, "initial-id");
+}
+
 TEST_F(ActorTaskTest, SetStepProgressSendsEveryUpdateToUi) {
   using UpdateTaskStepProgress = ui::UiEventDispatcher::UpdateTaskStepProgress;
   EXPECT_CALL(
