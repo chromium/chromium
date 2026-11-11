@@ -127,6 +127,11 @@ class SelectionOverlayController
                          ::selection::EntryPoint entry_point);
   void Close(CloseReason reason = CloseReason::kOther);
 
+  // Invokes Glic from a suggestion with `prompt` and any eligible selected
+  // regions, closing direct sessions. When `prompt` is empty, invokes Glic
+  // without auto-submitting a prompt.
+  void InvokeFromSuggestion(const std::string& prompt);
+
   // Starts loading the overlay WebUI while idle, so a following
   // `ShowWithSelection()` with the same options can show it without waiting
   // for the WebUI to boot.
@@ -279,8 +284,10 @@ class SelectionOverlayController
   // Lets the overlay submit prompts once it's initialized and the page context
   // is ready.
   void SendPageContextReceivedIfReady();
-  // Sends `prompt` to glic, with `regions` if there are any.
-  void InvokeWithPrompt(const std::string& prompt, CapturedRegions regions);
+  // Invokes glic with `prompt` and any eligible selected regions, closing
+  // direct sessions. When `prompt` is empty, invokes glic without
+  // auto-submitting a prompt.
+  void InvokeWithPrompt(const std::string& prompt);
 
   struct SelectedRegionData {
     explicit SelectedRegionData(selection::SelectedRegionPtr region);

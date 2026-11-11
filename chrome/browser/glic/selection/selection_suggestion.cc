@@ -6,10 +6,7 @@
 
 #include <utility>
 
-#include "chrome/browser/glic/host/glic.mojom.h"
-#include "chrome/browser/glic/public/glic_invoke_options.h"
-#include "chrome/browser/glic/public/glic_keyed_service.h"
-#include "chrome/browser/glic/public/glic_passkeys.h"
+#include "chrome/browser/glic/selection/selection_overlay_controller.h"
 #include "chrome/browser/selection/mojom/action.mojom.h"
 #include "components/optimization_guide/proto/features/smart_selection_suggestions.pb.h"
 #include "components/tabs/public/tab_interface.h"
@@ -34,21 +31,10 @@ const std::u16string& SelectionSuggestion::GetLabel() const {
 void SelectionSuggestion::OnSuggestionPresented() {}
 
 void SelectionSuggestion::OnSuggestionExecuted() {
-  if (!tab_->GetProfile()) {
-    return;
-  }
-  GlicKeyedService* service = GlicKeyedService::Get(tab_->GetProfile());
-  if (service) {
-    GlicInvokeOptions options(Target(*tab_),
-                              mojom::InvocationSource::kTextSelectionWidget);
-    if (!prompt_.empty()) {
-      options.prompts.push_back(prompt_);
-      service->InvokeWithAutoSubmit(
-          InvokeWithAutoSubmitPasskeyProvider::GetPassKey(),
-          std::move(options));
-    } else {
-      service->Invoke(std::move(options));
-    }
+  if (auto* controller =
+          SelectionOverlayController::FromTabWebContents(tab_->GetContents())) {
+    // Invoking Glic may synchronously close the overlay and destroy `this`.
+    controller->InvokeFromSuggestion(std::string(prompt_));
   }
 }
 

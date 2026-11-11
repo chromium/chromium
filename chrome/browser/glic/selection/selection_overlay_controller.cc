@@ -1287,6 +1287,11 @@ void SelectionOverlayController::SetLiveBlur(bool enabled) {
   SetLiveBlurImpl(enabled);
 }
 
+void SelectionOverlayController::InvokeFromSuggestion(
+    const std::string& prompt) {
+  InvokeWithPrompt(prompt);
+}
+
 void SelectionOverlayController::SubmitPrompt(const std::string& prompt) {
   if (!base::FeatureList::IsEnabled(features::kGlicSelectionOverlayPromptBox)) {
     return;
@@ -1300,14 +1305,10 @@ void SelectionOverlayController::SubmitPrompt(const std::string& prompt) {
         "Prompt submitted before the page context.");
     return;
   }
-  CapturedRegions regions;
-  if (ShouldSendRegionsWithPrompt()) {
-    regions = GetCapturedRegions();
+  if (session_->metrics_logger) {
+    session_->metrics_logger->RecordPromptSubmitted();
   }
-  InvokeWithPrompt(prompt, std::move(regions));
-  if (session_->owner == Session::Owner::kDirect) {
-    Close();
-  }
+  InvokeWithPrompt(prompt);
 }
 
 bool SelectionOverlayController::HasOnlyTextSelection() const {
@@ -1342,26 +1343,36 @@ void SelectionOverlayController::SendPageContextReceivedIfReady() {
   }
 }
 
-void SelectionOverlayController::InvokeWithPrompt(const std::string& prompt,
-                                                  CapturedRegions regions) {
+void SelectionOverlayController::InvokeWithPrompt(const std::string& prompt) {
   GlicKeyedService* service = GlicKeyedService::Get(tab_->GetProfile());
   if (!service) {
     return;
   }
-  if (session_->metrics_logger) {
-    session_->metrics_logger->RecordPromptSubmitted();
+  CapturedRegions regions;
+  if (ShouldSendRegionsWithPrompt() && IsPageContextReady()) {
+    regions = GetCapturedRegions();
   }
   GlicInvokeOptions options(glic::Target(*tab_),
                             mojom::InvocationSource::kTextSelectionWidget);
-  options.prompts.push_back(prompt);
   if (!regions.empty()) {
     options.additional_context = AdditionalTabContext(
         CreateRegionSelectionContext(*tab_, session_->tab_context.Clone(),
                                      std::move(regions)),
         content::GlobalRenderFrameHostId(), PolicyCheck::kNone);
   }
-  service->InvokeWithAutoSubmit(
-      InvokeWithAutoSubmitPasskeyProvider::GetPassKey(), std::move(options));
+  base::WeakPtr<SelectionOverlayController> weak_this =
+      weak_factory_.GetWeakPtr();
+  if (!prompt.empty()) {
+    options.prompts.push_back(prompt);
+    service->InvokeWithAutoSubmit(
+        InvokeWithAutoSubmitPasskeyProvider::GetPassKey(), std::move(options));
+  } else {
+    service->Invoke(std::move(options));
+  }
+  if (weak_this && state() != State::kOff &&
+      session_->owner == Session::Owner::kDirect) {
+    Close();
+  }
 }
 
 void SelectionOverlayController::GetSuggestedActions(
@@ -1640,9 +1651,14 @@ void SelectionOverlayController::ExecuteSuggestedAction(
       if (session_->metrics_logger) {
         session_->metrics_logger->RecordSuggestionAccepted(*matched_suggestion);
       }
-      matched_suggestion->Execute(mojo::GenericPendingAssociatedReceiver());
-      if (session_->owner == Session::Owner::kDirect) {
-        Close();
+      {
+        base::WeakPtr<SelectionOverlayController> weak_this =
+            weak_factory_.GetWeakPtr();
+        matched_suggestion->Execute(mojo::GenericPendingAssociatedReceiver());
+        if (weak_this && state() != State::kOff &&
+            session_->owner == Session::Owner::kDirect) {
+          Close();
+        }
       }
       return;
     case ::selection::mojom::Action::Tag::kInlineFulfillment:

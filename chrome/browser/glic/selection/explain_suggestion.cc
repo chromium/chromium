@@ -10,9 +10,6 @@
 
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/glic/host/glic.mojom.h"
-#include "chrome/browser/glic/public/glic_invoke_options.h"
-#include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/selection/selection_overlay_controller.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -150,21 +147,10 @@ void ExplainSuggestion::OpenTabForSearch(const std::string& query) {
 }
 
 void ExplainSuggestion::AskGemini() {
-  // Grab a weak pointer to `tab_` before `Invoke()`, which may synchronously
-  // close the overlay and destroy `this`.
-  base::WeakPtr<tabs::TabInterface> tab = tab_->GetWeakPtr();
-  GlicKeyedService* service = GlicKeyedService::Get(tab_->GetProfile());
-  CHECK(service);
-  // TODO(liuwilliam): Add the text.
-  service->Invoke(GlicInvokeOptions(
-      Target(*tab_), mojom::InvocationSource::kTextSelectionWidget));
-  if (!tab) {
-    return;
-  }
   if (auto* controller =
-          SelectionOverlayController::FromTabWebContents(tab->GetContents())) {
-    // Closing the overlay may destroy `this`.
-    controller->Close();
+          SelectionOverlayController::FromTabWebContents(tab_->GetContents())) {
+    // Invoking Glic may synchronously close the overlay and destroy `this`.
+    controller->InvokeFromSuggestion(/*prompt=*/"");
   }
 }
 
