@@ -6,6 +6,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "cc/layers/layer.h"
+#include "components/viz/test/test_context_provider.h"
 #include "media/base/video_frame.h"
 #include "media/gfx/paint_canvas_video_renderer.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -32,11 +33,14 @@
 #include "third_party/blink/renderer/core/testing/fake_local_frame_host.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/blob/testing/fake_blob_url_store.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
+#include "third_party/blink/renderer/platform/graphics/test/gpu_test_utils.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/ad_tagging_utils.h"
 #include "third_party/blink/renderer/platform/testing/empty_web_media_player.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -201,6 +205,28 @@ class SaveVideoFrameLocalFrameHost : public FakeLocalFrameHost {
   mojo::AssociatedReceiver<mojom::blink::BlobURLStore> blob_url_store_receiver_{
       &blob_url_store_};
 };
+
+class AcceleratedCompositingTestPlatform : public TestingPlatformSupport {
+ public:
+  bool IsGpuCompositingDisabled() const override { return false; }
+};
+
+class ScopedFakeGpuContext {
+ public:
+  ScopedFakeGpuContext() {
+    SharedGpuContext::Reset();
+    test_context_provider_ = viz::TestContextProvider::CreateRaster();
+    InitializeSharedGpuContext(test_context_provider_.get());
+  }
+
+  ~ScopedFakeGpuContext() { SharedGpuContext::Reset(); }
+
+ private:
+  scoped_refptr<viz::TestContextProvider> test_context_provider_;
+  ScopedTestingPlatformSupport<AcceleratedCompositingTestPlatform>
+      accelerated_compositing_scope_;
+};
+
 }  // namespace
 
 class HTMLVideoElementTest : public PaintTestConfigurations,
@@ -800,6 +826,44 @@ TEST_P(HTMLVideoElementTest, CreateStaticBitmapImage_Rotated_WYSIWYG) {
 
   ASSERT_TRUE(image);
   EXPECT_EQ(image->Size(), gfx::Size(270, 480));
+}
+
+TEST_P(HTMLVideoElementTest,
+       CreateStaticBitmapImage_CacheClearedOnMediaPlayerCleared) {
+  ScopedFakeGpuContext fake_gpu_context;
+  ASSERT_TRUE(SharedGpuContext::IsGpuCompositingEnabled());
+
+  video()->SetSrc(AtomicString("http://example.com/foo.mp4"));
+  test::RunPendingTasks();
+
+  gfx::Size size(128, 128);
+  auto frame = media::VideoFrame::CreateZeroInitializedFrame(
+      media::PIXEL_FORMAT_I420, size, gfx::Rect(size), size, base::TimeDelta());
+  MockMediaPlayer()->SetCurrentFrame(frame);
+
+  auto image1 = video()->CreateStaticBitmapImage();
+  ASSERT_TRUE(image1);
+  ASSERT_TRUE(image1->IsTextureBacked());
+  auto si1 = image1->GetSharedImage();
+  ASSERT_TRUE(si1);
+  image1.reset();
+
+  // A subsequent snapshot on the same player reuses the cached pool's
+  // SharedImage once the previous snapshot has been released.
+  auto image2 = video()->CreateStaticBitmapImage();
+  ASSERT_TRUE(image2);
+  ASSERT_TRUE(image2->IsTextureBacked());
+  EXPECT_EQ(image2->GetSharedImage(), si1);
+  image2.reset();
+
+  // Clearing the media player should reset the snapshot cache so a new
+  // SharedImage is allocated on the next snapshot.
+  ClearMediaPlayer();
+
+  auto image3 = video()->CreateStaticBitmapImage();
+  ASSERT_TRUE(image3);
+  ASSERT_TRUE(image3->IsTextureBacked());
+  EXPECT_NE(image3->GetSharedImage(), si1);
 }
 
 TEST_P(HTMLVideoElementTest, CanvasSubtreeChangeTriggersEvents) {

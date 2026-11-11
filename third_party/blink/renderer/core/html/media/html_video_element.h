@@ -271,7 +271,7 @@ class CORE_EXPORT HTMLVideoElement final
 
   void OnVisibilityRatioReport(double ratio);
 
-  void ResetCache(TimerBase*);
+  void ResetCache(TimerBase* = nullptr);
 
   // Returns the visual size of the video element in DIPs, taking into account
   // page zoom and CSS transforms.
