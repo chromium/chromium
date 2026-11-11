@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/test/values_test_util.h"
 #include "base/types/optional_util.h"
 #include "base/values.h"
 #include "chrome/test/chromedriver/chrome/chrome_impl.h"
@@ -44,6 +45,28 @@ class MockChrome : public StubChrome {
   // Using a StubWebView does not allow testing the functionality end-to-end,
   // more details in crbug.com/40579857
   StubWebView web_view_;
+};
+
+class WindowRectChrome : public StubChrome {
+ public:
+  Status SetWindowRect(const std::string& target_id,
+                       const base::DictValue& params) override {
+    EXPECT_EQ("target", target_id);
+    requests.push_back(params.Clone());
+    return Status(set_status);
+  }
+
+  Status GetWindowRect(const std::string& target_id,
+                       WindowRect* rect) override {
+    EXPECT_EQ("target", target_id);
+    ++get_count;
+    *rect = {10, 20, 800, 600};
+    return Status(kOk);
+  }
+
+  std::vector<base::DictValue> requests;
+  StatusCode set_status = kOk;
+  int get_count = 0;
 };
 
 typedef Status (*Command)(Session* session,
@@ -91,6 +114,100 @@ TEST(WindowCommandsTest, ExecuteFreeze) {
 TEST(WindowCommandsTest, ExecuteResume) {
   Status status = CallWindowCommand(ExecuteResume);
   ASSERT_EQ(kOk, status.code());
+}
+
+TEST(WindowCommandsTest, SetWindowRectForwardsIndependentComponents) {
+  const char* cases[][2] = {
+      {R"({"x": 10})", R"({"x": 10})"},
+      {R"({"y": 20})", R"({"y": 20})"},
+      {R"({"width": 700})", R"({"width": 700})"},
+      {R"({"height": 500})", R"({"height": 500})"},
+      {R"({"x": 10, "width": 700})", R"({"x": 10, "width": 700})"},
+      {R"({"y": 20, "width": 700})", R"({"y": 20, "width": 700})"},
+      {R"({"x": 10, "height": 500})", R"({"x": 10, "height": 500})"},
+      {R"({"y": 20, "height": 500})", R"({"y": 20, "height": 500})"},
+      {R"({"x": 10, "y": 20, "width": 700, "height": 500})",
+       R"({"x": 10, "y": 20, "width": 700, "height": 500})"},
+      {R"({"x": null, "y": 20, "width": 700, "height": null})",
+       R"({"y": 20, "width": 700})"},
+      {R"({"x": null, "y": null, "width": null, "height": null})", R"({})"},
+      {R"({})", R"({})"},
+      {R"({"x": 0, "y": 0, "width": 0, "height": 0})",
+       R"({"x": 0, "y": 0, "width": 0, "height": 0})"},
+      {R"({"x": -10.9, "y": 20.9, "width": 700.9, "height": 500.9})",
+       R"({"x": -10, "y": 20, "width": 700, "height": 500})"},
+      {R"({"x": -2147483648, "y": 2147483647,
+            "width": 2147483647, "height": 2147483647})",
+       R"({"x": -2147483648, "y": 2147483647,
+            "width": 2147483647, "height": 2147483647})"},
+  };
+  for (const auto& test : cases) {
+    SCOPED_TRACE(test[0]);
+    auto chrome = std::make_unique<WindowRectChrome>();
+    auto* chrome_ptr = chrome.get();
+    Session session("id", std::move(chrome));
+    session.window = "target";
+    std::unique_ptr<base::Value> value;
+    Timeout timeout;
+    ASSERT_EQ(kOk, ExecuteSetWindowRect(&session, nullptr,
+                                        base::test::ParseJsonDict(test[0]),
+                                        &value, &timeout)
+                       .code());
+    ASSERT_EQ(1u, chrome_ptr->requests.size());
+    EXPECT_EQ(base::test::ParseJsonDict(test[1]), chrome_ptr->requests[0]);
+    EXPECT_EQ(1, chrome_ptr->get_count);
+    ASSERT_TRUE(value);
+    // Return observed geometry, including any platform adjustment.
+    EXPECT_EQ(base::test::ParseJsonDict(
+                  R"({"x": 10, "y": 20, "width": 800, "height": 600})"),
+              value->GetDict());
+  }
+}
+
+TEST(WindowCommandsTest, SetWindowRectValidatesBeforeMutation) {
+  const char* invalid_values[] = {"true",       R"("10")",     "[]", "{}",
+                                  "2147483648", "-2147483649", "-1"};
+  for (const char* component : {"x", "y", "width", "height"}) {
+    for (const char* invalid_value : invalid_values) {
+      if (std::string(invalid_value) == "-1" &&
+          (std::string(component) == "x" || std::string(component) == "y")) {
+        continue;
+      }
+      SCOPED_TRACE(component);
+      SCOPED_TRACE(invalid_value);
+      auto chrome = std::make_unique<WindowRectChrome>();
+      auto* chrome_ptr = chrome.get();
+      Session session("id", std::move(chrome));
+      session.window = "target";
+      auto params = base::test::ParseJsonDict(
+          R"({"x": 10, "y": 20, "width": 700, "height": 500})");
+      params.Set(component, base::test::ParseJson(invalid_value));
+      std::unique_ptr<base::Value> value;
+      Timeout timeout;
+      EXPECT_EQ(kInvalidArgument, ExecuteSetWindowRect(&session, nullptr,
+                                                       params, &value, &timeout)
+                                      .code());
+      EXPECT_TRUE(chrome_ptr->requests.empty());
+      EXPECT_EQ(0, chrome_ptr->get_count);
+    }
+  }
+}
+
+TEST(WindowCommandsTest, SetWindowRectPropagatesMutationFailure) {
+  auto chrome = std::make_unique<WindowRectChrome>();
+  auto* chrome_ptr = chrome.get();
+  chrome_ptr->set_status = kUnsupportedOperation;
+  Session session("id", std::move(chrome));
+  session.window = "target";
+  std::unique_ptr<base::Value> value;
+  Timeout timeout;
+  EXPECT_EQ(kUnsupportedOperation,
+            ExecuteSetWindowRect(&session, nullptr,
+                                 base::DictValue().Set("width", 700), &value,
+                                 &timeout)
+                .code());
+  ASSERT_EQ(1u, chrome_ptr->requests.size());
+  EXPECT_EQ(0, chrome_ptr->get_count);
 }
 
 TEST(WindowCommandsTest, ExecuteSendCommandAndGetResult_NoCmd) {

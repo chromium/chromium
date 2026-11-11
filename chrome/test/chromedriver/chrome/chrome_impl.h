@@ -26,16 +26,6 @@ class WebView;
 class WebViewImpl;
 
 namespace internal {
-struct Position {
-  int left = 0;
-  int top = 0;
-};
-
-struct Size {
-  int width = 0;
-  int height = 0;
-};
-
 struct Window {
   int id;
   std::string state;
@@ -48,8 +38,10 @@ struct Window {
 struct WindowBounds {
   WindowBounds();
   ~WindowBounds();
-  std::optional<Position> position;
-  std::optional<Size> size;
+  std::optional<int> left;
+  std::optional<int> top;
+  std::optional<int> width;
+  std::optional<int> height;
   std::optional<std::string> state;
   base::DictValue ToDict() const;
   bool Matches(const Window& window) const;

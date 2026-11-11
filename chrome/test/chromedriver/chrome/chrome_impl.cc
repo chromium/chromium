@@ -44,13 +44,17 @@ WindowBounds::~WindowBounds() = default;
 
 base::DictValue WindowBounds::ToDict() const {
   base::DictValue dict;
-  if (position.has_value()) {
-    dict.Set("left", position->left);
-    dict.Set("top", position->top);
+  if (left.has_value()) {
+    dict.Set("left", *left);
   }
-  if (size.has_value()) {
-    dict.Set("width", size->width);
-    dict.Set("height", size->height);
+  if (top.has_value()) {
+    dict.Set("top", *top);
+  }
+  if (width.has_value()) {
+    dict.Set("width", *width);
+  }
+  if (height.has_value()) {
+    dict.Set("height", *height);
   }
   if (state.has_value()) {
     dict.Set("windowState", *state);
@@ -59,17 +63,10 @@ base::DictValue WindowBounds::ToDict() const {
 }
 
 bool WindowBounds::Matches(const Window& window) const {
-  bool ok = true;
-  if (position.has_value()) {
-    ok = position->left == window.left && position->top == window.top;
-  }
-  if (ok && size.has_value()) {
-    ok = size->width == window.width && size->height == window.height;
-  }
-  if (ok && state.has_value()) {
-    ok = *state == window.state;
-  }
-  return ok;
+  return (!left || *left == window.left) && (!top || *top == window.top) &&
+         (!width || *width == window.width) &&
+         (!height || *height == window.height) &&
+         (!state || *state == window.state);
 }
 
 }  // namespace internal
@@ -469,22 +466,15 @@ Status ChromeImpl::SetWindowRect(const std::string& target_id,
                                  const base::DictValue& params) {
   internal::Window window;
   Status status = GetWindow(target_id, window);
-  if (status.IsError())
+  if (status.IsError()) {
     return status;
+  }
 
-  // window position
   internal::WindowBounds bounds;
-  std::optional<int> x = params.FindInt("x");
-  std::optional<int> y = params.FindInt("y");
-  if (x.has_value() && y.has_value()) {
-    bounds.position = {*x, *y};
-  }
-  // window size
-  std::optional<int> width = params.FindInt("width");
-  std::optional<int> height = params.FindInt("height");
-  if (width.has_value() && height.has_value()) {
-    bounds.size = {*width, *height};
-  }
+  bounds.left = params.FindInt("x");
+  bounds.top = params.FindInt("y");
+  bounds.width = params.FindInt("width");
+  bounds.height = params.FindInt("height");
 
   return SetWindowBounds(window, target_id, bounds);
 }

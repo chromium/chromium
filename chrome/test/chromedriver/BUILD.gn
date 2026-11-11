@@ -553,6 +553,7 @@ test("chromedriver_unittests") {
     "chrome/browser_info_unittest.cc",
     "chrome/cast_tracker_unittest.cc",
     "chrome/chrome_finder_unittest.cc",
+    "chrome/chrome_impl_unittest.cc",
     "chrome/console_logger_unittest.cc",
     "chrome/device_manager_unittest.cc",
     "chrome/devtools_client_impl_unittest.cc",

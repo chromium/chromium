@@ -2871,15 +2871,17 @@ Status ExecuteSetWindowRect(Session* session,
       return Status(kInvalidArgument, "'height' out of range");
   }
 
-  // to pass to the set window rect command
   base::DictValue rect_params;
-  // only set position if both x and y are given
-  if (has_x && has_y) {
+  if (has_x) {
     rect_params.Set("x", static_cast<int>(x));
+  }
+  if (has_y) {
     rect_params.Set("y", static_cast<int>(y));
-  }  // only set size if both height and width are given
-  if (has_width && has_height) {
+  }
+  if (has_width) {
     rect_params.Set("width", static_cast<int>(width));
+  }
+  if (has_height) {
     rect_params.Set("height", static_cast<int>(height));
   }
   Status status = session->chrome->SetWindowRect(session->window, rect_params);

@@ -2032,7 +2032,7 @@ crbug.com/544117789 external/wpt/webdriver/tests/classic/perform_actions/pointer
 crbug.com/556296547 external/wpt/webdriver/tests/classic/perform_actions/pointer_touch_simultaneous.py [ Failure ]
 crbug.com/494337166 external/wpt/webdriver/tests/classic/release_actions/release.py [ Failure ]
 crbug.com/555895001 external/wpt/webdriver/tests/classic/release_actions/sequence.py [ Failure ]
-crbug.com/431592647 external/wpt/webdriver/tests/classic/set_window_rect/set.py [ Failure ]
+crbug.com/431592647 [ Android ] external/wpt/webdriver/tests/classic/set_window_rect/set.py [ Failure ]
 crbug.com/494337166 external/wpt/webdriver/tests/classic/switch_to_frame/switch.py [ Failure ]
 crbug.com/483173722 external/wpt/webdriver/tests/classic/take_element_screenshot/screenshot.py [ Failure ]
 crbug.com/443773822 external/wpt/webdriver/tests/classic/take_element_screenshot/scroll_into_view.py [ Failure ]
