@@ -5,17 +5,22 @@
 source_set("eg2_tests") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
-  sources = [ "credential_suggestion_bottom_sheet_egtest.mm" ]
+  sources = [
+    "credential_suggestion_bottom_sheet_egtest.mm",
+    "remote_actor_credential_bottom_sheet_egtest.mm",
+  ]
   deps = [
     ":eg_test_support+eg2",
     "//base:i18n",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/common:features",
+    "//components/password_manager/core/common/remote_actor:features",
     "//components/password_manager/ios:auto_submit_test_bundle_data",
     "//components/password_manager/ios:features",
     "//components/strings",
     "//components/webauthn/ios:features",
+    "//google_apis",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/authentication/test:eg_test_support+eg2",
     "//ios/chrome/browser/autofill/manual_fill/public",
@@ -31,10 +36,12 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/settings/ui_bundled/password:eg_test_support+eg2",
     "//ios/chrome/browser/settings/ui_bundled/password:password_constants",
     "//ios/chrome/browser/settings/ui_bundled/password/password_details:password_details_table_view_constants",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/bottom_sheet:bottom_sheet_util",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/signin/model:fake_system_identity",
     "//ios/chrome/browser/webauthn/test:eg_test_support+eg2",
+    "//ios/chrome/common/ui/button_stack:constants",
     "//ios/chrome/common/ui/confirmation_alert:constants",
     "//ios/chrome/common/ui/elements:form_input_accessory",
     "//ios/chrome/test:eg_test_support+eg2",
@@ -43,6 +50,7 @@ source_set("eg2_tests") {
     "//net",
     "//net:test_support",
     "//ui/base",
+    "//url",
   ]
   frameworks = [ "UIKit.framework" ]
 }
@@ -53,11 +61,17 @@ source_set("eg_app_support+eg2") {
   sources = [
     "credential_suggestion_bottom_sheet_app_interface.h",
     "credential_suggestion_bottom_sheet_app_interface.mm",
+    "remote_actor_credential_bottom_sheet_app_interface.h",
+    "remote_actor_credential_bottom_sheet_app_interface.mm",
   ]
   deps = [
     "//base",
     "//components/prefs",
+    "//crypto",
     "//ios/chrome/browser/autofill/model/bottom_sheet",
+    "//ios/chrome/browser/passwords/model/remote_actor",
+    "//ios/chrome/browser/passwords/model/remote_actor/proto",
+    "//ios/chrome/browser/passwords/model/remote_actor/test:test_support",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/test/app:test_support",
@@ -71,6 +85,8 @@ source_set("eg_test_support+eg2") {
   sources = [
     "credential_suggestion_bottom_sheet_app_interface.h",
     "credential_suggestion_bottom_sheet_app_interface_stub.mm",
+    "remote_actor_credential_bottom_sheet_app_interface.h",
+    "remote_actor_credential_bottom_sheet_app_interface_stub.mm",
   ]
   deps = [ "//ios/testing/earl_grey:eg_test_support+eg2" ]
 }
