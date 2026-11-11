@@ -5021,6 +5021,9 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
           =1 {Complete 1 task to level up}
           other {Complete {count} tasks to level up}}
       </message>
+      <message name="IDS_IOS_LEVEL_UP_TASK_COMPLETED_ACCESSIBILITY_VALUE" is_accessibility_with_no_ui="true" desc="Accessibility value read by VoiceOver for a Level Up task that has been completed. [iOS only]">
+        Completed
+      </message>
       <message name="IDS_IOS_LEVEL_UP_TASK_COMPLETED_AI_SEARCH" desc="Completion snackbar message for the AI Search task. [iOS only]">
         "Search with AI Mode" completed!
       </message>

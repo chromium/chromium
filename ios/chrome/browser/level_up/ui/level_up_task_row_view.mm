@@ -133,18 +133,19 @@ const NSTimeInterval kChevronAnimationDuration = 0.25;
       stringWithFormat:@"%@, %@", _titleLabel.text, _descriptionLabel.text];
 }
 
+- (NSString*)accessibilityValue {
+  return _task.completed
+             ? l10n_util::GetNSString(
+                   IDS_IOS_LEVEL_UP_TASK_COMPLETED_ACCESSIBILITY_VALUE)
+             : nil;
+}
+
 #pragma mark - Public
 
 - (void)configureWithTask:(LevelUpTask*)task showSeparator:(BOOL)showSeparator {
   self.backgroundColor = nil;
   _chevronView.transform = CGAffineTransformIdentity;
   _task = task;
-
-  if (task.completed) {
-    self.accessibilityTraits |= UIAccessibilityTraitSelected;
-  } else {
-    self.accessibilityTraits &= ~UIAccessibilityTraitSelected;
-  }
 
   [_iconView configureWithTask:task];
 
