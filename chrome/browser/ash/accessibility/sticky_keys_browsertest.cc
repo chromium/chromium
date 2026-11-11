@@ -33,6 +33,8 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/views/test/views_test_utils.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
 
@@ -147,10 +149,12 @@ IN_PROC_BROWSER_TEST_F(StickyKeysBrowserTest, OpenNewTabs) {
   utils_->WaitForNodeWithClassNameAndValue("OmniboxViewViews", "tt");
 }
 
-// Flaky. https://crbug.com/331433886.
-IN_PROC_BROWSER_TEST_F(StickyKeysBrowserTest, DISABLED_CtrlClickHomeButton) {
+IN_PROC_BROWSER_TEST_F(StickyKeysBrowserTest, CtrlClickHomeButton) {
   // Show home page button.
   browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kShowHomeButton, true);
+  // Showing the home button only schedules a layout.
+  views::test::RunScheduledLayout(views::Widget::GetWidgetForNativeWindow(
+      browser()->GetWindow()->GetNativeWindow()));
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   int tab_count = 1;
   EXPECT_EQ(tab_count, tab_strip_model->count());
