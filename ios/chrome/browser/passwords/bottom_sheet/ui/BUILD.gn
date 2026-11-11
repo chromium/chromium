@@ -24,6 +24,7 @@ source_set("ui") {
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/ios",
+    "//components/strings",
     "//components/webauthn/ios",
     "//components/webauthn/ios:features",
     "//ios/chrome/app/strings",
@@ -57,6 +58,7 @@ source_set("unit_tests") {
   sources = [
     "credential_suggestion_bottom_sheet_view_controller_unittest.mm",
     "passkey_creation_bottom_sheet_view_controller_unittest.mm",
+    "remote_actor_credential_bottom_sheet_view_controller_unittest.mm",
   ]
   deps = [
     ":ui",
@@ -64,6 +66,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/autofill/ios/browser",
     "//components/password_manager/core/browser/features:password_features",
+    "//components/strings",
     "//components/webauthn/ios",
     "//components/webauthn/ios:features",
     "//ios/chrome/app/strings",

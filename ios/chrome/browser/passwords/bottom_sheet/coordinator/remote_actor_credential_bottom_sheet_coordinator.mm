@@ -10,6 +10,7 @@
 #import "base/check.h"
 #import "base/memory/scoped_refptr.h"
 #import "components/password_manager/core/browser/password_store/password_store_interface.h"
+#import "components/password_manager/core/browser/remote_actor/remote_actor_credential_sharing_result.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/coordinator/remote_actor_credential_bottom_sheet_mediator.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/ui/remote_actor_credential_bottom_sheet_view_controller.h"
@@ -108,12 +109,14 @@
 
   _viewController =
       [[RemoteActorCredentialBottomSheetViewController alloc] init];
+  _viewController.mutator = _mediator;
   [self.baseViewController presentViewController:_viewController
                                         animated:YES
                                       completion:nil];
 }
 
 - (void)stop {
+  _viewController.mutator = nil;
   [_viewController.presentingViewController dismissViewControllerAnimated:YES
                                                                completion:nil];
   _viewController = nil;
@@ -123,34 +126,33 @@
 
   // Ensure the caller is always notified, even if the flow is torn down
   // before it finished.
-  [self runCompletionWithSuccess:NO];
+  [self runCompletionWithResult:password_manager::
+                                    RemoteActorCredentialSharingResult::
+                                        kUserCancelledDialog];
 
   [super stop];
 }
 
 #pragma mark - RemoteActorCredentialBottomSheetMediatorDelegate
 
-- (void)mediatorDidRequestPresentation:
-    (RemoteActorCredentialBottomSheetMediator*)mediator {
-  // TODO(crbug.com/579010739): Present the bottom sheet view controller.
-}
-
 - (void)mediator:(RemoteActorCredentialBottomSheetMediator*)mediator
-    didFinishWithSuccess:(BOOL)success {
+    didFinishWithResult:
+        (password_manager::RemoteActorCredentialSharingResult)result {
   // The owner is responsible for stopping the coordinator once notified.
-  [self runCompletionWithSuccess:success];
+  [self runCompletionWithResult:result];
 }
 
 #pragma mark - Private
 
-// Runs `_completion` with `success` if it hasn't already been run.
-- (void)runCompletionWithSuccess:(BOOL)success {
+// Runs `_completion` with `result` if it hasn't already been run.
+- (void)runCompletionWithResult:
+    (password_manager::RemoteActorCredentialSharingResult)result {
   if (!_completion) {
     return;
   }
   RemoteActorCredentialBottomSheetCompletion completion = _completion;
   _completion = nil;
-  completion(success);
+  completion(result);
 }
 
 @end

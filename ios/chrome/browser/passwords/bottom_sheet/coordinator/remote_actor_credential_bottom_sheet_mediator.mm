@@ -174,7 +174,6 @@ using password_manager::RemoteActorCredentialSharingResult;
   _credentialSelectedCallback = std::move(callback);
   _credentials = std::move(credentials);
   [self pushStateToConsumer];
-  [self.delegate mediatorDidRequestPresentation:self];
 }
 
 #pragma mark - RemoteActorCredentialBottomSheetMutator
@@ -196,7 +195,9 @@ using password_manager::RemoteActorCredentialSharingResult;
             RemoteActorCredentialSharingResult::kUserCancelledDialog));
     return;
   }
-  [self.delegate mediator:self didFinishWithSuccess:NO];
+  [self.delegate mediator:self
+      didFinishWithResult:RemoteActorCredentialSharingResult::
+                              kUserCancelledDialog];
 }
 
 #pragma mark - Private
@@ -230,9 +231,7 @@ using password_manager::RemoteActorCredentialSharingResult;
 
 // Handles the final sharing `result` from the controller.
 - (void)handleSharingResult:(RemoteActorCredentialSharingResult)result {
-  [self.delegate mediator:self
-      didFinishWithSuccess:(result ==
-                            RemoteActorCredentialSharingResult::kSuccess)];
+  [self.delegate mediator:self didFinishWithResult:result];
 }
 
 // Fetches the favicon for `_origin` and forwards the attributes to the
