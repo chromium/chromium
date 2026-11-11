@@ -52,8 +52,8 @@ class X509CertificateModel : public X509CertificateModelBase {
   struct RDNAttribute {
     std::string oid;
     std::string label;  // e.g., "Country", "Common Name"
-    std::string value;  // decoded string, or hex if it could not be decoded as
-                        // a string.
+    std::string value;  // decoded string (dotted decimal for RELATIVE-OID
+                        // values), or hex if it could not be decoded.
   };
 
   // Returns every AttributeTypeAndValue in the subject / issuer DN, preserving

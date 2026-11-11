@@ -201,7 +201,13 @@ std::vector<X509CertificateModel::RDNAttribute> ToOrderedAttributeList(
       entry.oid = OidToString(attr.type);
       entry.label = GetOidTextOrOid(attr.type);
       std::string value;
-      if (attr.ValueAsStringWithUnsafeOptions(kNameStringHandling, &value)) {
+      if (attr.value_tag == CBS_ASN1_RELATIVE_OID) {
+        value = net::x509_util::RelativeOidToString(attr.value);
+      } else if (!attr.ValueAsStringWithUnsafeOptions(kNameStringHandling,
+                                                      &value)) {
+        value.clear();
+      }
+      if (!value.empty()) {
         entry.value = std::move(value);
       } else {
         // Fallback to hex of the raw value bytes.

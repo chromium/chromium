@@ -16,6 +16,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
+#include "third_party/boringssl/src/include/openssl/nid.h"
 #include "third_party/boringssl/src/pki/parse_certificate.h"
 #include "third_party/boringssl/src/pki/signature_algorithm.h"
 
@@ -336,6 +337,74 @@ TEST_F(X509CertificateModelTest, SubjectEmptySequence) {
   EXPECT_EQ(OptionalStringOrError(NotPresent()), model.GetSubjectOrgName());
   EXPECT_EQ(OptionalStringOrError(NotPresent()), model.GetSubjectOrgUnitName());
   EXPECT_TRUE(model.GetSubjectAttributesInOrder().empty());
+}
+
+TEST_F(X509CertificateModelTest, RelativeOidNameValue) {
+  base::FilePath certs_dir = net::GetTestCertsDirectory();
+  std::unique_ptr<net::CertBuilder> builder =
+      net::CertBuilder::FromFile(certs_dir.AppendASCII("ok_cert.pem"), nullptr);
+  ASSERT_TRUE(builder);
+
+  // A draft-ietf-plants-merkle-tree-certs-07 MTC CA name, with trust anchor ID
+  // 32473.1.
+  // clang-format off
+  const uint8_t kName[] = {
+      0x30, 20,                             // SEQUENCE (20 bytes)
+      0x31, 18,                             //   SET (18 bytes)
+      0x30, 16,                             //     SEQUENCE (16 bytes)
+      0x06, 8, OBJ_ENC_rdna_trustAnchorID,  //       OBJECT IDENTIFIER (8 bytes)
+      0x0d, 4, 0x81, 0xfd, 0x59, 0x01,      //       RELATIVE-OID (4 bytes)
+  };
+  // clang-format on
+  builder->SetSubjectTLV(kName);
+  builder->SetIssuerTLV(kName);
+
+  X509CertificateModel model(bssl::UpRef(builder->GetCertBuffer()));
+  ASSERT_TRUE(model.is_valid());
+  EXPECT_EQ(OptionalStringOrError(NotPresent()), model.GetSubjectCommonName());
+
+  auto subject_attrs = model.GetSubjectAttributesInOrder();
+  ASSERT_EQ(1u, subject_attrs.size());
+  EXPECT_EQ("1.3.6.1.5.5.7.25.3", subject_attrs[0].oid);
+  EXPECT_EQ("32473.1", subject_attrs[0].value);
+
+  auto issuer_attrs = model.GetIssuerAttributesInOrder();
+  ASSERT_EQ(1u, issuer_attrs.size());
+  EXPECT_EQ("1.3.6.1.5.5.7.25.3", issuer_attrs[0].oid);
+  EXPECT_EQ("32473.1", issuer_attrs[0].value);
+}
+
+TEST_F(X509CertificateModelTest, InvalidRelativeOidNameValue) {
+  base::FilePath certs_dir = net::GetTestCertsDirectory();
+  std::unique_ptr<net::CertBuilder> builder =
+      net::CertBuilder::FromFile(certs_dir.AppendASCII("ok_cert.pem"), nullptr);
+  ASSERT_TRUE(builder);
+
+  // The RELATIVE-OID's final component is truncated: its last byte has the
+  // high bit set.
+  // clang-format off
+  const uint8_t kName[] = {
+      0x30, 18,                             // SEQUENCE (18 bytes)
+      0x31, 16,                             //   SET (16 bytes)
+      0x30, 14,                             //     SEQUENCE (14 bytes)
+      0x06, 8, OBJ_ENC_rdna_trustAnchorID,  //       OBJECT IDENTIFIER (8 bytes)
+      0x0d, 2, 0x81, 0xfd,                  //       RELATIVE-OID (2 bytes)
+  };
+  // clang-format on
+  builder->SetSubjectTLV(kName);
+  builder->SetIssuerTLV(kName);
+
+  X509CertificateModel model(bssl::UpRef(builder->GetCertBuffer()));
+  ASSERT_TRUE(model.is_valid());
+
+  // The value falls back to hex, as for other undecodable values.
+  auto subject_attrs = model.GetSubjectAttributesInOrder();
+  ASSERT_EQ(1u, subject_attrs.size());
+  EXPECT_EQ("81 FD", subject_attrs[0].value);
+
+  auto issuer_attrs = model.GetIssuerAttributesInOrder();
+  ASSERT_EQ(1u, issuer_attrs.size());
+  EXPECT_EQ("81 FD", issuer_attrs[0].value);
 }
 
 TEST_F(X509CertificateModelTest, SignatureParametersRawBytes) {
