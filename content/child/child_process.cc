@@ -11,6 +11,7 @@
 #include "base/message_loop/message_pump_type.h"
 #include "base/process/process_handle.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/sequence_manager/sequence_manager.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/hang_watcher.h"
 #include "base/threading/platform_thread_metrics.h"
@@ -147,7 +148,19 @@ ChildProcess::ChildProcess(base::ThreadType io_thread_type,
           base::PlatformThread::CurrentId()) ==
           std::string_view("network.CrUtilityMain")) {
     net::ConfigureSequenceManager(thread_options);
+  } else {
+    // Always create settings so that individual settings can be set below.
+    thread_options.sequence_manager_settings =
+        std::make_unique<base::sequence_manager::SequenceManagerSettings>(
+            base::sequence_manager::SequenceManager::Settings::Builder()
+                .SetMessagePumpType(thread_options.message_pump_type)
+                .Build());
   }
+
+  // Allow `RunOrPostTask()` to run tasks synchronously when the IO thread is
+  // idle (used to send channel-associated Mojo messages from other threads).
+  thread_options.sequence_manager_settings->settings
+      .can_run_tasks_synchronously = true;
 
   CHECK(io_thread_->StartWithOptions(std::move(thread_options)));
   io_thread_runner_ = io_thread_->task_runner();

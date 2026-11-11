@@ -25,6 +25,10 @@ BrowserIOThreadDelegate::BrowserIOThreadDelegate()
               .SetMessagePumpType(base::MessagePumpType::IO)
               .SetPrioritySettings(
                   internal::CreateBrowserTaskPrioritySettings())
+              // Allow `RunOrPostTask()` to run tasks synchronously when the IO
+              // thread is idle (used to send channel-associated Mojo messages
+              // from other threads).
+              .SetCanRunTasksSynchronously(true)
               .Build())),
       sequence_manager_(owned_sequence_manager_.get()) {
   Init();
