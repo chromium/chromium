@@ -3,3 +3,4 @@ per-file OmniboxTestUtils.java=file://components/omnibox/browser/android/OWNERS
 per-file BookmarkTestRule.java=file://chrome/android/java/src/org/chromium/chrome/browser/bookmarks/OWNERS
 per-file BookmarkTestUtil.java=file://chrome/android/java/src/org/chromium/chrome/browser/bookmarks/OWNERS
 per-file TabStripUtils.java=file://chrome/android/java/src/org/chromium/chrome/browser/compositor/overlays/strip/OWNERS
+per-file FullscreenTestUtils.java=file://chrome/browser/fullscreen/android/OWNERS
