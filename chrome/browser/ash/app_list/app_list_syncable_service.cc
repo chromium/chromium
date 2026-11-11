@@ -563,12 +563,13 @@ void AppListSyncableService::BuildModel() {
   AppListClientImpl* client = AppListClientImpl::GetInstance();
   AppListControllerDelegate* controller = client;
 
-  app_service_apps_builder_ =
-      std::make_unique<AppServiceAppModelBuilder>(controller);
+  CHECK(profile_, base::NotFatalUntil::M160);
+  app_service_apps_builder_ = std::make_unique<AppServiceAppModelBuilder>(
+      controller, &apps::AppServiceProxyFactory::GetForProfile(profile_)
+                       ->AppRegistryCache());
   app_service_promise_apps_builder_ =
       std::make_unique<AppServicePromiseAppModelBuilder>(controller);
 
-  CHECK(profile_, base::NotFatalUntil::M160);
   SyncStarted();
 
   app_service_apps_builder_->Initialize(this, profile_, model_updater_.get());

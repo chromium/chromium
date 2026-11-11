@@ -505,7 +505,10 @@ class ArcAppModelBuilderTest : public extensions::ExtensionServiceTestBase,
     model_updater_ = std::make_unique<FakeAppListModelUpdater>(
         /*profile=*/nullptr, /*reorder_delegate=*/nullptr);
     controller_ = std::make_unique<test::TestAppListControllerDelegate>();
-    builder_ = std::make_unique<AppServiceAppModelBuilder>(controller_.get());
+    builder_ = std::make_unique<AppServiceAppModelBuilder>(
+        controller_.get(),
+        &apps::AppServiceProxyFactory::GetForProfile(profile())
+             ->AppRegistryCache());
     scoped_callback_ = std::make_unique<
         AppServiceAppModelBuilder::ScopedAppPositionInitCallbackForTest>(
         builder_.get(), base::BindRepeating(&InitAppPosition));

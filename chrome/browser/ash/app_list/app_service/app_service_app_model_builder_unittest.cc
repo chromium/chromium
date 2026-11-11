@@ -226,7 +226,10 @@ class AppServiceAppModelBuilderTest : public AppListTestBase {
     model_updater_ = std::make_unique<FakeAppListModelUpdater>(
         /*profile=*/nullptr, /*reorder_delegate=*/nullptr);
     controller_ = std::make_unique<test::TestAppListControllerDelegate>();
-    builder_ = std::make_unique<AppServiceAppModelBuilder>(controller_.get());
+    builder_ = std::make_unique<AppServiceAppModelBuilder>(
+        controller_.get(),
+        &apps::AppServiceProxyFactory::GetForProfile(GetAppServiceProfile())
+             ->AppRegistryCache());
     scoped_callback_ = std::make_unique<
         AppServiceAppModelBuilder::ScopedAppPositionInitCallbackForTest>(
         builder_.get(), base::BindRepeating(&InitAppPosition));
@@ -396,7 +399,9 @@ TEST_F(ExtensionAppTest, HideWebStore) {
   // Web store should be present in the model.
   FakeAppListModelUpdater model_updater1(/*profile=*/nullptr,
                                          /*reorder_delegate=*/nullptr);
-  AppServiceAppModelBuilder builder1(controller_.get());
+  AppServiceAppModelBuilder builder1(
+      controller_.get(), &apps::AppServiceProxyFactory::GetForProfile(profile())
+                              ->AppRegistryCache());
   auto scoped_callback1 = std::make_unique<
       AppServiceAppModelBuilder::ScopedAppPositionInitCallbackForTest>(
       &builder1, base::BindRepeating(&InitAppPosition));
@@ -412,7 +417,9 @@ TEST_F(ExtensionAppTest, HideWebStore) {
   // Build a new model; web store should NOT be present.
   FakeAppListModelUpdater model_updater2(/*profile=*/nullptr,
                                          /*reorder_delegate=*/nullptr);
-  AppServiceAppModelBuilder builder2(controller_.get());
+  AppServiceAppModelBuilder builder2(
+      controller_.get(), &apps::AppServiceProxyFactory::GetForProfile(profile())
+                              ->AppRegistryCache());
   auto scoped_callback2 = std::make_unique<
       AppServiceAppModelBuilder::ScopedAppPositionInitCallbackForTest>(
       &builder2, base::BindRepeating(&InitAppPosition));

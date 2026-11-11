@@ -5,11 +5,11 @@
 #include "chrome/browser/ash/app_list/app_service/app_service_app_model_builder.h"
 
 #include "ash/public/cpp/app_list/app_list_types.h"
-#include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "base/check_deref.h"
 #include "chrome/browser/ash/app_list/app_service/app_service_app_item.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/app_update.h"
 #include "components/sync/protocol/app_list_specifics.pb.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -32,17 +32,17 @@ bool ShouldShowInLauncher(const apps::AppUpdate& update) {
 }  // namespace
 
 AppServiceAppModelBuilder::AppServiceAppModelBuilder(
-    AppListControllerDelegate* controller)
-    : AppListModelBuilder(controller, AppServiceAppItem::kItemType) {}
+    AppListControllerDelegate* controller,
+    apps::AppRegistryCache* app_registry_cache)
+    : AppListModelBuilder(controller, AppServiceAppItem::kItemType),
+      app_registry_cache_(CHECK_DEREF(app_registry_cache)) {}
 
 AppServiceAppModelBuilder::~AppServiceAppModelBuilder() = default;
 
 void AppServiceAppModelBuilder::BuildModel() {
-  apps::AppServiceProxy* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(profile());
-  proxy->AppRegistryCache().ForEachApp(
+  app_registry_cache_->ForEachApp(
       [this](const apps::AppUpdate& update) { OnAppUpdate(update); });
-  app_registry_cache_observer_.Observe(&proxy->AppRegistryCache());
+  app_registry_cache_observer_.Observe(&app_registry_cache_.get());
 }
 
 void AppServiceAppModelBuilder::OnAppUpdate(const apps::AppUpdate& update) {
