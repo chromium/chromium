@@ -1704,6 +1704,11 @@ bool QuotaManagerImpl::ResetUsageTracker() {
 }
 
 QuotaManagerImpl::~QuotaManagerImpl() {
+  // Close any open QuotaInternalsHandler receivers before destroying
+  // `usage_tracker_`, `database_callbacks_`, and `weak_factory_`, which may
+  // drop pending QuotaInternalsHandler Mojo response callbacks.
+  internals_handlers_receivers_.Clear();
+
   // Delete this now because otherwise it may call back into `this` after the
   // `sequence_checker_` has been destroyed.
   temporary_storage_evictor_.reset();
