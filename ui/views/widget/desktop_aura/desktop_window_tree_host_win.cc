@@ -877,7 +877,9 @@ DesktopWindowTreeHostWin::GetBoundsInAcceleratedWidgetPixelCoordinates() {
   }
   const gfx::Vector2d offset = client_bounds.origin() - window_bounds.origin();
   CHECK_GE(offset.x(), 0, base::NotFatalUntil::M163);
-  CHECK_GE(offset.y(), 0, base::NotFatalUntil::M163);
+  // TODO(crbug.com/582099959): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_GE(offset.y(), 0);
   return gfx::Rect(gfx::Point() + offset, client_bounds.size());
 }
 
