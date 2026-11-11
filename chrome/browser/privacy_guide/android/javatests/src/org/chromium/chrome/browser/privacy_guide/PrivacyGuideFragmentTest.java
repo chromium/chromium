@@ -54,7 +54,6 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -144,6 +143,8 @@ public class PrivacyGuideFragmentTest {
 
     private final Map<Integer, Integer> mTitleNames =
             Map.of(
+                    FragmentType.WELCOME,
+                    R.string.privacy_guide_welcome_title,
                     FragmentType.MSBB,
                     R.string.url_keyed_anonymized_data_title,
                     FragmentType.HISTORY_SYNC,
@@ -190,6 +191,19 @@ public class PrivacyGuideFragmentTest {
         onViewWaiting(withText(R.string.back)).perform(click());
         @FragmentType int previousCardType = getPreviousCardType(cardType);
         onViewWaiting(withText(mTitleNames.get(previousCardType)));
+        CriteriaHelper.pollUiThread(
+                () -> mPrivacyGuideTestRule.getFragment().isViewPagerIdleForTesting());
+    }
+
+    private void navigateBackFromCard(@FragmentType int cardType) {
+        int cardPosition = mAllFragments.indexOf(cardType);
+        assertTrue(cardPosition > 0);
+        pressBack();
+        @FragmentType int previousCardType = getPreviousCardType(cardType);
+        onViewWaiting(withText(mTitleNames.get(previousCardType)));
+        // FragmentStateAdapter defers transitioning the incoming fragment to RESUMED (which
+        // triggers MSBBFragment#onResume to refresh the switch state) until ViewPager2 reaches
+        // SCROLL_STATE_IDLE.
         CriteriaHelper.pollUiThread(
                 () -> mPrivacyGuideTestRule.getFragment().isViewPagerIdleForTesting());
     }
@@ -386,7 +400,6 @@ public class PrivacyGuideFragmentTest {
 
     @Test
     @LargeTest
-    @DisabledTest(message = "crbug.com/543408467")
     @Feature({"PrivacyGuide"})
     public void testBackwardNavAllActions() {
         setMSBBState(false);
@@ -397,30 +410,27 @@ public class PrivacyGuideFragmentTest {
         launchPrivacyGuide();
         goToCard(FragmentType.DONE);
 
-        pressBack();
-        onViewWaiting(withText(R.string.privacy_guide_cookies_header));
+        navigateBackFromCard(FragmentType.DONE);
         onViewWaiting(allOf(withId(R.id.block_third_party), isCompletelyDisplayed()));
         onInternalRadioButtonOfViewWithId(R.id.block_third_party).perform(click());
         onInternalRadioButtonOfViewWithId(R.id.block_third_party).check(matches(isChecked()));
 
-        pressBack();
-        onViewWaiting(withText(R.string.privacy_guide_safe_browsing_intro));
+        navigateBackFromCard(FragmentType.COOKIES);
         onViewWaiting(allOf(withId(R.id.enhanced_option), isCompletelyDisplayed()));
         onInternalRadioButtonOfViewWithId(R.id.enhanced_option).perform(click());
         onInternalRadioButtonOfViewWithId(R.id.enhanced_option).check(matches(isChecked()));
 
-        pressBack();
+        navigateBackFromCard(FragmentType.SAFE_BROWSING);
         onViewWaiting(allOf(withId(R.id.history_sync_switch), isCompletelyDisplayed()));
         onView(withId(R.id.history_sync_switch)).perform(click());
         onView(withId(R.id.history_sync_switch)).check(matches(isChecked()));
 
-        pressBack();
+        navigateBackFromCard(FragmentType.HISTORY_SYNC);
         onViewWaiting(allOf(withId(R.id.msbb_switch), isCompletelyDisplayed()));
         // msbb_switch is checked because history_sync_switch was checked above.
         onView(withId(R.id.msbb_switch)).check(matches(isChecked()));
 
-        pressBack();
-        onViewWaiting(withText(R.string.privacy_guide_fragment_title));
+        navigateBackFromCard(FragmentType.MSBB);
     }
 
     @Test
