@@ -42,6 +42,7 @@
 #include "media/mojo/mojom/renderer_extensions.mojom.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 
 #if BUILDFLAG(ENABLE_CDM_PROVISION_FETCHER)
 #include "content/browser/media/provision_fetcher_impl.h"
@@ -545,6 +546,18 @@ void MediaInterfaceProxy::CreateCdm(const media::CdmConfig& cdm_config,
                                     CreateCdmCallback create_cdm_cb) {
   CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M160);
   DVLOG(1) << __func__ << ": cdm_config=" << cdm_config;
+
+  // Enforce the `encrypted-media` Permissions Policy browser-side. All
+  // legitimate renderer paths to `CreateCdm()` are already gated on this
+  // feature in Blink (`requestMediaKeySystemAccess()` and
+  // `MediaCapabilities.decodingInfo()`).
+  if (!render_frame_host().IsFeatureEnabled(
+          network::mojom::PermissionsPolicyFeature::kEncryptedMedia)) {
+    receivers_.ReportBadMessage(
+        "CreateCdm() called from a frame where the encrypted-media "
+        "Permissions Policy is disabled.");
+    return;
+  }
 
   // Handle `use_hw_secure_codecs` cases first.
 #if BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)

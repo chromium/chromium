@@ -21,11 +21,14 @@
 #include "content/common/pseudonymization_salt.h"
 #include "content/public/browser/media_player_id.h"
 #include "content/public/common/cdm_info.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_renderer_host.h"
+#include "content/test/test_render_frame_host.h"
 #include "media/base/cdm_capability.h"
 #include "media/base/cdm_config.h"
 #include "media/base/media_switches.h"
+#include "media/media_buildflags.h"
 #include "media/mojo/mojom/content_decryption_module.mojom.h"
 #include "media/mojo/mojom/interface_factory.mojom.h"
 #include "media/mojo/mojom/media_log.mojom.h"
@@ -33,12 +36,16 @@
 #include "media/mojo/mojom/renderer_extensions.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "sandbox/policy/switches.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "media/base/win/mf_feature_checks.h"
+#include "sandbox/policy/switches.h"
 #endif
 
 namespace content {
@@ -88,8 +95,10 @@ class MediaInterfaceProxyTest : public RenderViewHostTestHarness {
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
     SetPseudonymizationSalt(12345);
+#if BUILDFLAG(IS_WIN)
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         sandbox::policy::switches::kNoSandbox);
+#endif
 
     // Register a hardware-secure CDM in CdmRegistry.
     CdmRegistryImpl::GetInstance()->RegisterCdm(CdmInfo(
@@ -112,12 +121,16 @@ class MediaInterfaceProxyTest : public RenderViewHostTestHarness {
   }
 #endif
 
-  mojo::Remote<media::mojom::InterfaceFactory> GetMediaInterfaceFactory() {
+  mojo::Remote<media::mojom::InterfaceFactory> GetMediaInterfaceFactoryForFrame(
+      RenderFrameHost* rfh) {
     mojo::Remote<media::mojom::InterfaceFactory> factory;
-    static_cast<RenderFrameHostImpl*>(main_rfh())
-        ->BindMediaInterfaceFactoryReceiver(
-            factory.BindNewPipeAndPassReceiver());
+    static_cast<RenderFrameHostImpl*>(rfh)->BindMediaInterfaceFactoryReceiver(
+        factory.BindNewPipeAndPassReceiver());
     return factory;
+  }
+
+  mojo::Remote<media::mojom::InterfaceFactory> GetMediaInterfaceFactory() {
+    return GetMediaInterfaceFactoryForFrame(main_rfh());
   }
 
   media::CdmConfig CreateHwSecureCdmConfig() {
@@ -138,6 +151,129 @@ class MediaInterfaceProxyOffTheRecordTest : public MediaInterfaceProxyTest {
     return browser_context;
   }
 };
+
+TEST_F(MediaInterfaceProxyTest,
+       CreateCdm_BlockedInCrossOriginSubframeWithoutPermissionsPolicy) {
+  NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("https://example.com"));
+  ASSERT_TRUE(main_rfh()->IsFeatureEnabled(
+      network::mojom::PermissionsPolicyFeature::kEncryptedMedia));
+
+  // `encrypted-media` defaults to `EnableForSelf`, so a cross-origin iframe
+  // without `allow="encrypted-media"` has the feature disabled.
+  RenderFrameHost* child_rfh =
+      RenderFrameHostTester::For(main_rfh())->AppendChild("subframe");
+  child_rfh = NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("https://cross-origin.example.com"), child_rfh);
+  ASSERT_FALSE(child_rfh->IsFeatureEnabled(
+      network::mojom::PermissionsPolicyFeature::kEncryptedMedia));
+
+  // Binding InterfaceFactory itself is allowed (used for non-EME playback).
+  auto factory = GetMediaInterfaceFactoryForFrame(child_rfh);
+  factory.FlushForTesting();
+  ASSERT_TRUE(factory.is_connected());
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  base::MockCallback<media::mojom::InterfaceFactory::CreateCdmCallback> mock_cb;
+  EXPECT_CALL(mock_cb, Run).Times(0);
+
+  media::CdmConfig config;
+  config.key_system = "org.chromium.unknown.keysystem";
+  factory->CreateCdm(config, mock_cb.Get());
+  factory.FlushForTesting();
+
+  EXPECT_TRUE(bad_message_observer.got_bad_message());
+  if (bad_message_observer.got_bad_message()) {
+    EXPECT_THAT(bad_message_observer.WaitForBadMessage(),
+                testing::HasSubstr("encrypted-media"));
+  }
+  EXPECT_FALSE(factory.is_connected());
+}
+
+TEST_F(MediaInterfaceProxyTest, CreateCdm_BlockedByExplicitPermissionsPolicy) {
+  NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("https://example.com"));
+
+  // Explicitly disable `encrypted-media` even for a same-origin subframe.
+  network::ParsedPermissionsPolicy permissions_policy;
+  permissions_policy.emplace_back(
+      network::mojom::PermissionsPolicyFeature::kEncryptedMedia);
+  RenderFrameHost* child_rfh =
+      static_cast<TestRenderFrameHost*>(main_rfh())
+          ->AppendChildWithPolicy("subframe", permissions_policy);
+  child_rfh = NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("https://example.com/sub"), child_rfh);
+  ASSERT_FALSE(child_rfh->IsFeatureEnabled(
+      network::mojom::PermissionsPolicyFeature::kEncryptedMedia));
+
+  auto factory = GetMediaInterfaceFactoryForFrame(child_rfh);
+  ASSERT_TRUE(factory.is_bound());
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  base::MockCallback<media::mojom::InterfaceFactory::CreateCdmCallback> mock_cb;
+  EXPECT_CALL(mock_cb, Run).Times(0);
+
+  media::CdmConfig config;
+  config.key_system = "org.chromium.unknown.keysystem";
+  factory->CreateCdm(config, mock_cb.Get());
+  factory.FlushForTesting();
+
+  EXPECT_TRUE(bad_message_observer.got_bad_message());
+  if (bad_message_observer.got_bad_message()) {
+    EXPECT_THAT(bad_message_observer.WaitForBadMessage(),
+                testing::HasSubstr("encrypted-media"));
+  }
+  EXPECT_FALSE(factory.is_connected());
+}
+
+#if BUILDFLAG(ENABLE_LIBRARY_CDMS)
+TEST_F(MediaInterfaceProxyTest, CreateCdm_AllowedWhenPermissionsPolicyEnabled) {
+  NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("https://example.com"));
+
+  // Grant `allow="encrypted-media *"` to a cross-origin subframe.
+  network::ParsedPermissionsPolicy permissions_policy;
+  permissions_policy.emplace_back(
+      network::mojom::PermissionsPolicyFeature::kEncryptedMedia,
+      /*allowed_origins=*/std::vector<network::OriginWithPossibleWildcards>(),
+      /*self_if_matches=*/std::nullopt,
+      /*matches_all_origins=*/true,
+      /*matches_opaque_src=*/false);
+  RenderFrameHost* child_rfh =
+      static_cast<TestRenderFrameHost*>(main_rfh())
+          ->AppendChildWithPolicy("subframe", permissions_policy);
+  child_rfh = NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("https://cross-origin.example.com"), child_rfh);
+  ASSERT_TRUE(child_rfh->IsFeatureEnabled(
+      network::mojom::PermissionsPolicyFeature::kEncryptedMedia));
+
+  auto factory = GetMediaInterfaceFactoryForFrame(child_rfh);
+  ASSERT_TRUE(factory.is_bound());
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  base::MockCallback<media::mojom::InterfaceFactory::CreateCdmCallback> mock_cb;
+  std::optional<media::CreateCdmStatus> created_status;
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_cb, Run(testing::_, testing::_, testing::_))
+      .WillOnce([&](mojo::PendingRemote<media::mojom::ContentDecryptionModule>,
+                    media::mojom::CdmContextPtr,
+                    media::CreateCdmStatus status) {
+        created_status = status;
+        run_loop.Quit();
+      });
+
+  media::CdmConfig config;
+  config.key_system = "org.chromium.unknown.keysystem";
+  factory->CreateCdm(config, mock_cb.Get());
+  run_loop.Run();
+
+  EXPECT_FALSE(bad_message_observer.got_bad_message());
+  EXPECT_TRUE(factory.is_connected());
+  ASSERT_TRUE(created_status.has_value());
+  EXPECT_EQ(created_status.value(),
+            media::CreateCdmStatus::kCdmFactoryCreationFailed);
+}
+#endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
 #if BUILDFLAG(IS_WIN)
 TEST_F(MediaInterfaceProxyOffTheRecordTest,
