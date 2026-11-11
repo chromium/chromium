@@ -554,7 +554,6 @@ third_party/microsoft_webauthn
 third_party/oak/chromium/proto
 third_party/ocmock/OCMock
 third_party/opus/src/celt/x86
-third_party/opus/src/doc
 third_party/ots
 third_party/ply
 third_party/polymer/v3_0/components-chromium/iron-a11y-announcer
