@@ -40,10 +40,9 @@ install_rpm_key() {
   # Make sure no older version of the key is installed because it appears
   # 'rpm --import' won't overwrite an existing key package.
   if [ -n "$KEY_PACKAGES" ]; then
-    # Note, if this is run during the package install, it will fail because rpm
-    # can't recursively run rpm, but it should work when run later as part of
-    # the installed cron job (and probably nothing needs the new keys before
-    # then).
+    # Note, this must not run during the package install, since rpm can't
+    # recursively run rpm, so it's only called from the installed cron job
+    # (and probably nothing needs the new keys before then).
     rpm -e --allmatches $KEY_PACKAGES >/dev/null 2>&1 || return
   fi
 
@@ -120,8 +119,11 @@ YUM_REPO_FILE="/etc/yum.repos.d/@@PACKAGE.repo"
 ZYPPER_REPO_FILE="/etc/zypp/repos.d/@@PACKAGE.repo"
 
 install_yum() {
-  install_rpm_key
-
+  # Don't import the signing key here: install_yum() runs from the package's
+  # %post scriptlet, where 'rpm --import' always fails because the running
+  # transaction holds the rpmdb lock (crbug.com/40246150). The cron job
+  # imports the key instead, and the package manager can also import it
+  # from the gpgkey URL in the repository file.
   if [ ! "$REPOCONFIG" ]; then
     return 0
   fi
