@@ -66,7 +66,7 @@ BASE_FEATURE(kMediaFoundationCameraUsageMonitoring,
 
 // Avoids activating capture devices when only the device list is required.
 BASE_FEATURE(kWinDeviceEnumerationWithoutActivation,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace features

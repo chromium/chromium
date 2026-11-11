@@ -34,6 +34,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "media/base/media_switches.h"
+#include "media/capture/capture_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -1356,6 +1357,15 @@ class FakeVideoCaptureDeviceFactoryWin : public VideoCaptureDeviceFactoryWin {
       device_source_native_formats_;
 };
 
+// Returns the expected ID of a device that is listed in MediaFoundation but
+// only reports supported formats in DirectShow.
+std::string GetDirectShowFallbackDeviceId() {
+  return base::SysWideToUTF8(
+      switches::IsWinDeviceEnumerationWithoutActivationEnabled()
+          ? kMFDeviceId5
+          : kDirectShowDeviceId5);
+}
+
 }  // namespace
 
 class VideoCaptureDeviceFactoryWinTest : public ::testing::Test {
@@ -1463,7 +1473,7 @@ TEST_P(VideoCaptureDeviceFactoryMFWinTest, GetDevicesInfo) {
   // formats in DirectShow are expected to get enumerated with
   // VideoCaptureApi::WIN_DIRECT_SHOW
   it = FindDeviceInRange(devices_info.begin(), devices_info.end(),
-                         base::SysWideToUTF8(kDirectShowDeviceId5));
+                         GetDirectShowFallbackDeviceId());
   ASSERT_NE(it, devices_info.end());
   EXPECT_EQ(it->descriptor.capture_api, VideoCaptureApi::WIN_DIRECT_SHOW);
   EXPECT_EQ(it->descriptor.display_name(),
@@ -1826,7 +1836,7 @@ TEST_P(VideoCaptureDeviceFactoryMFWinTest, GetDevicesInfo_IncludeIRCameras) {
   // formats in DirectShow are expected to get enumerated with
   // VideoCaptureApi::WIN_DIRECT_SHOW
   it = FindDeviceInRange(devices_info.begin(), devices_info.end(),
-                         base::SysWideToUTF8(kDirectShowDeviceId5));
+                         GetDirectShowFallbackDeviceId());
   ASSERT_NE(it, devices_info.end());
   EXPECT_EQ(it->descriptor.capture_api, VideoCaptureApi::WIN_DIRECT_SHOW);
   EXPECT_EQ(it->descriptor.display_name(),
