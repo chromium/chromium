@@ -4,11 +4,14 @@
 
 #import "ios/chrome/browser/passwords/bottom_sheet/ui/remote_actor_credential_bottom_sheet_view_controller.h"
 
+#import "base/strings/sys_string_conversions.h"
+#import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_ui_utils.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/ui/remote_actor_credential_bottom_sheet_mutator.h"
 #import "ios/chrome/browser/shared/ui/bottom_sheet/table_view_bottom_sheet_view_controller+subclassing.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
@@ -17,6 +20,10 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
+
+// Link delimiters expected by `ParseStringWithLinks()`.
+constexpr char16_t kBeginLinkTag[] = u"BEGIN_LINK";
+constexpr char16_t kEndLinkTag[] = u"END_LINK";
 
 // Point size of the icons displayed in the header badges.
 constexpr CGFloat kHeaderIconPointSize = 30.0;
@@ -94,6 +101,8 @@ ButtonStackConfiguration* SetUpButtonConfiguration() {
   configuration.primaryActionString =
       l10n_util::GetNSString(IDS_REMOTE_ACTOR_SHARING_DIALOG_ALLOW_BUTTON);
   configuration.secondaryActionString = l10n_util::GetNSString(IDS_CANCEL);
+  // Disabled until there are suggestions to share.
+  configuration.primaryActionEnabled = NO;
   return configuration;
 }
 
@@ -103,7 +112,16 @@ ButtonStackConfiguration* SetUpButtonConfiguration() {
     ConfirmationAlertActionHandler>
 @end
 
-@implementation RemoteActorCredentialBottomSheetViewController
+@implementation RemoteActorCredentialBottomSheetViewController {
+  // List of credential suggestions to display.
+  NSArray<FormSuggestion*>* _suggestions;
+
+  // Favicon attributes for the domain.
+  FaviconAttributes* _faviconAttributes;
+
+  // Range of the link in `subtitleString`.
+  NSRange _subtitleLinkRange;
+}
 
 - (instancetype)init {
   self = [super initWithConfiguration:SetUpButtonConfiguration()];
@@ -140,9 +158,35 @@ ButtonStackConfiguration* SetUpButtonConfiguration() {
   self.titleTextStyle = UIFontTextStyleLargeTitle;
   self.subtitleTextStyle = UIFontTextStyleSubheadline;
 
+  StringWithTags subtitle = ParseStringWithLinks(
+      l10n_util::GetNSStringF(IDS_REMOTE_ACTOR_SHARING_DIALOG_SUBTITLE,
+                              kBeginLinkTag, kEndLinkTag, u"Gemini"));
+  self.subtitleString = subtitle.string;
+  _subtitleLinkRange = subtitle.ranges[0];
+
   [super viewDidLoad];
 
   [self adjustTransactionsButtonHorizontalConstraints];
+}
+
+#pragma mark - RemoteActorCredentialBottomSheetConsumer
+
+- (void)setDomain:(NSString*)domain {
+  self.titleString =
+      l10n_util::GetNSStringF(IDS_REMOTE_ACTOR_SHARING_DIALOG_TITLE, u"Gemini",
+                              base::SysNSStringToUTF16(domain));
+}
+
+- (void)setSuggestions:(NSArray<FormSuggestion*>*)suggestions {
+  if (suggestions.count > 0) {
+    _suggestions = [suggestions copy];
+    self.configuration.primaryActionEnabled = YES;
+    [self reloadConfiguration];
+  }
+}
+
+- (void)setFaviconAttributes:(FaviconAttributes*)faviconAttributes {
+  _faviconAttributes = faviconAttributes;
 }
 
 #pragma mark - TableViewBottomSheetViewController
@@ -151,6 +195,22 @@ ButtonStackConfiguration* SetUpButtonConfiguration() {
   // TODO(crbug.com/579012416): Update `rowCount` to return the number of
   // credentials to display.
   return 0;
+}
+
+#pragma mark - ConfirmationAlertViewController
+
+- (void)customizeSubtitle:(UITextView*)subtitle {
+  [super customizeSubtitle:subtitle];
+  subtitle.selectable = YES;
+  // TODO(crbug.com/579384541): Handle taps on the subtitle link.
+  NSMutableAttributedString* newSubtitle = [[NSMutableAttributedString alloc]
+      initWithAttributedString:subtitle.attributedText];
+  NSDictionary* linkAttributes = @{
+    NSLinkAttributeName : @"",
+    NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle),
+  };
+  [newSubtitle addAttributes:linkAttributes range:_subtitleLinkRange];
+  subtitle.attributedText = newSubtitle;
 }
 
 @end

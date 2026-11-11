@@ -13,10 +13,12 @@
 // Consumer for the Remote Actor Credential Bottom Sheet.
 @protocol RemoteActorCredentialBottomSheetConsumer <NSObject>
 
-// Sends the list of suggestions to be presented to the user on the bottom sheet
-// for the requested domain.
-- (void)setSuggestions:(NSArray<FormSuggestion*>*)suggestions
-             andDomain:(NSString*)domain;
+// Sets the `domain` requesting the credentials.
+- (void)setDomain:(NSString*)domain;
+
+// Sends the list of suggestions to be presented to the user on the bottom
+// sheet.
+- (void)setSuggestions:(NSArray<FormSuggestion*>*)suggestions;
 
 // Sets the favicon `faviconAttributes` for the domain displayed in the bottom
 // sheet.
