@@ -1437,7 +1437,7 @@
                   'components/memory_system',
     },
     'hashprefix_realtime': {
-      'filepath': 'components/safe_browsing/core/browser/hashprefix_realtime/'
+      'filepath': 'safe_browsing/(.*/)?hashprefix_realtime/',
     },
     'headless': {
       'filepath': 'headless/'
@@ -2114,6 +2114,27 @@
     'safe_browsing': {
       'filepath': 'chrome/(browser|common|renderer)/safe_browsing/|'\
                   'components/safe_browsing/',
+    },
+    'safe_browsing_android': {
+      'filepath': 'components/safe_browsing/android/',
+    },
+    'safe_browsing_db': {
+      'filepath': 'safe_browsing/(.*/)?db/',
+    },
+    'safe_browsing_ping_manager': {
+      'filepath': 'safe_browsing/(.*/)?ping_manager/',
+    },
+    'safe_browsing_realtime': {
+      'filepath': 'safe_browsing/(.*/)?realtime/',
+    },
+    'safe_browsing_realtime_allowlist': {
+      'filepath': 'safe_browsing/(.*/)?real_time_url_checks_allowlist',
+    },
+    'safe_browsing_url_checker': {
+      'filepath': 'safe_browsing/(.*/)?url_checker/',
+    },
+    'safe_browsing_utils': {
+      'filepath': 'safe_browsing/(.*/)?utils/',
     },
     'sampling_profiler': {
       'filepath': 'base/profiler/'\
@@ -3378,6 +3399,13 @@
       'safe_browsing': ['nwokedi+watch@chromium.org',
                       'xinghuilu+watch@chromium.org',
                       'zackhan+watch@chromium.org'],
+    'safe_browsing_android': ['thefrog+watch@chromium.org'],
+    'safe_browsing_db': ['thefrog+watch@chromium.org'],
+    'safe_browsing_ping_manager': ['thefrog+watch@chromium.org'],
+    'safe_browsing_realtime': ['thefrog+watch@chromium.org'],
+    'safe_browsing_realtime_allowlist': ['thefrog+watch@chromium.org'],
+    'safe_browsing_url_checker': ['thefrog+watch@chromium.org'],
+    'safe_browsing_utils': ['thefrog+watch@chromium.org'],
     'sampling_profiler': ['thiabaud@google.com', 'spvm@chromium.org'],
     'screen_ai': ['rhalavati+watch@chromium.org'],
     'search_engine_choice_screen': ['chrome-regionalcapabilities+watch@google.com'],
