@@ -15,25 +15,19 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.chrome.browser.reader_mode.TabDistillabilityProvider.DistillabilityObserver;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
-import org.chromium.components.messages.MessageDispatcher;
-import org.chromium.components.messages.MessageDispatcherProvider;
-import org.chromium.components.messages.MessageIdentifier;
-import org.chromium.components.messages.MessageStateHandler;
-import org.chromium.components.messages.MessagesTestHelper;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageFinishedHelper;
 import org.chromium.content_public.browser.test.util.TestWebContentsObserver;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.DeviceFormFactor;
 
-import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 /** Tests for making sure the distillability service is communicating correctly. */
@@ -52,51 +46,54 @@ public class DistillabilityServiceTest {
         mActivityTestRule.startOnBlankPage();
     }
 
-    /** Make sure that Reader Mode appears after navigating from a native page. */
+    /** Make sure that distillability is determined after navigating from a native page. */
     @Test
     @Feature({"Distillability-Service"})
     @MediumTest
     @Restriction(DeviceFormFactor.PHONE)
-    @DisabledTest(message = "Flaky - crbug.com/40917393")
-    public void testServiceAliveAfterNativePage() throws TimeoutException, ExecutionException {
+    public void testServiceAliveAfterNativePage() throws TimeoutException {
         EmbeddedTestServer testServer =
                 EmbeddedTestServer.createAndStartServer(
                         ApplicationProvider.getApplicationContext());
 
-        final CallbackHelper readerShownCallbackHelper = new CallbackHelper();
+        final CallbackHelper distillabilityCallbackHelper = new CallbackHelper();
 
         TestWebContentsObserver observer =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> new TestWebContentsObserver(mActivityTestRule.getWebContents()));
         OnPageFinishedHelper finishHelper = observer.getOnPageFinishedHelper();
-
-        // Navigate to a native page.
-        int curCallCount = finishHelper.getCallCount();
-        mActivityTestRule.loadUrl("chrome://history/");
-        finishHelper.waitForCallback(curCallCount, 1);
-        verifyReaderModeMessageShown(readerShownCallbackHelper);
-        Assert.assertEquals(0, readerShownCallbackHelper.getCallCount());
-
-        // Navigate to a normal page.
-        curCallCount = readerShownCallbackHelper.getCallCount();
-        mActivityTestRule.loadUrl(testServer.getURL(TEST_PAGE));
-        verifyReaderModeMessageShown(readerShownCallbackHelper);
-        readerShownCallbackHelper.waitForCallback(curCallCount, 1);
-        Assert.assertEquals(1, readerShownCallbackHelper.getCallCount());
-    }
-
-    private void verifyReaderModeMessageShown(CallbackHelper readerShownCallbackHelper)
-            throws ExecutionException {
-        MessageDispatcher messageDispatcher =
+        TabDistillabilityProvider distillabilityProvider =
                 ThreadUtils.runOnUiThreadBlocking(
-                        () ->
-                                MessageDispatcherProvider.from(
-                                        mActivityTestRule.getActivity().getWindowAndroid()));
-        List<MessageStateHandler> messages =
-                MessagesTestHelper.getEnqueuedMessages(
-                        messageDispatcher, MessageIdentifier.READER_MODE);
-        if (messages.size() > 0 && MessagesTestHelper.getCurrentMessage(messages.get(0)) != null) {
-            readerShownCallbackHelper.notifyCalled();
+                        () -> TabDistillabilityProvider.get(mActivityTestRule.getActivityTab()));
+        Assert.assertNotNull(distillabilityProvider);
+        DistillabilityObserver distillabilityObserver =
+                (Tab tab, boolean isDistillable, boolean isLast, boolean isMobileOptimized) -> {
+                    if (isDistillable && isLast) {
+                        distillabilityCallbackHelper.notifyCalled();
+                    }
+                };
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> distillabilityProvider.addObserver(distillabilityObserver));
+
+        try {
+            // Navigate to a native page.
+            int curCallCount = finishHelper.getCallCount();
+            mActivityTestRule.loadUrl("chrome://history/");
+            finishHelper.waitForCallback(curCallCount, /* numberOfCallsToWaitFor= */ 1);
+            Assert.assertEquals(0, distillabilityCallbackHelper.getCallCount());
+
+            // Navigate to a normal page.
+            curCallCount = distillabilityCallbackHelper.getCallCount();
+            mActivityTestRule.loadUrl(testServer.getURL(TEST_PAGE));
+            distillabilityCallbackHelper.waitForCallback(
+                    curCallCount, /* numberOfCallsToWaitFor= */ 1);
+            Assert.assertEquals(1, distillabilityCallbackHelper.getCallCount());
+        } finally {
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        distillabilityProvider.removeObserver(distillabilityObserver);
+                        observer.observe(null);
+                    });
         }
     }
 }
