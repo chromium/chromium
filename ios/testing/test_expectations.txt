@@ -210,8 +210,8 @@ crbug.com/435327953 [ Simulator ] SharedTabGroupsTestCase/testAddNewTabFromAnoth
 crbug.com/440612088 SharedTabGroupsTestCase/testTapRecentActivityItems [ Pass Failure ]
 crbug.com/440612088 [ iPhone Simulator ] SharedTabGroupsTestCase/testTapRecentActivityItems [ Failure ]
 crbug.com/456719999 [ iOS26 iOS27 Simulator ] SharedTabGroupsTestCase/testActivitySummary [ Pass Failure ]
-crbug.com/470347303 [ iPad Device ] SharedTabGroupsTestCase/testActivityLabel [ Failure ]
-crbug.com/449204815 [ iPad Device ] SharedTabGroupsTestCase/testTabSwitcherBadge [ Failure ]
+crbug.com/470347303 [ iPad Device ] SharedTabGroupsTestCase/testActivityLabel [ Pass Failure Crash ]
+crbug.com/449204815 [ iPad Device ] SharedTabGroupsTestCase/testTabSwitcherBadge [ Pass Failure Crash ]
 crbug.com/454262963 SharedTabGroupsTestCase/testActivityIndicatorsOnToolbar [ Pass Failure ]
 crbug.com/450935810 [ Simulator ] SharedTabGroupsPanelTestCase/testSharedTabGroupsPanelDeleteSharedGroup [ Pass Failure ]
 crbug.com/482348307 [ iPad Simulator ] SharedTabGroupsPanelTestCase/testSharedTabGroupsPanelLeaveSharedGroup [ Pass Failure ]
@@ -264,7 +264,6 @@ crbug.com/509785308 InactiveTabsSettingsTestCase/testInactiveTabsPreferenceChang
 
 # Migrated from in-source test disable annotations: auth, web, passwords.
 crbug.com/440027809 [ iOS26 iOS27 Device ] ForcedSigninTestCase/testSigninScreenTransferToOtherWindow [ Pass Failure ]
-crbug.com/440027809 [ iOS26 iOS27 iPad Device ] ForcedSigninTestCase/testSigninScreenTransferToOtherWindow [ Failure ]
 # Fails to background the app from `backgroundApplication`.
 crbug.com/427699033 [ iOS26 iOS27 ] ForcedSigninTestCase/testSignInScreenOnIncognitoWithMultiWindows [ Pass Failure ]
 crbug.com/384874382 ForcedSigninTestCase/testSignInScreenOnTabSwitcherWithMultiWindows [ Pass Failure ]
@@ -455,7 +454,6 @@ crbug.com/561662655 SafeBrowsingTestCase/testEnterpriseWarningPageRefreshedThenB
 crbug.com/553554439 [ iPad Simulator ] ReadingListTestCase/testMarkMixedEntriesUnread [ Pass Failure ]
 
 # Gardening suppression 2026-09-18
-crbug.com/563223568 GeminiContainerTestCase/testOpenAndCloseGeminiTwice [ Failure ]
 crbug.com/563223568 GeminiContainerTestCase/testOpenSettingsFromToolbar [ Pass Failure ]
 crbug.com/493866369 [ Device ] SendTabToSelfCoordinatorTestCase/testShareTabViaDirectTargetAndVerifyErrorSnackbarOnNetworkFailure [ Pass Failure ]
 crbug.com/493866369 [ Device ] SendTabToSelfCoordinatorTestCase/testShareTabViaDirectTargetInShareSheetAndVerifySuccessSnackbar [ Pass Failure ]
@@ -604,3 +602,6 @@ crbug.com/583785828 GeminiFirstRunTestCase/testAcceptPromoAndConsent [ Skip ]
 crbug.com/583785828 GeminiFirstRunTestCase/testLightweightConvenienceFREAcceptConsent [ Skip ]
 crbug.com/583785828 GeminiFirstRunTestCase/testVisualRichFREAcceptConsent [ Skip ]
 crbug.com/583813595 [ iPhone ] PolicyTestCase/testEnterpriseBubbleInEnhancedSafeBrowsingPage [ Pass Failure ]
+
+# Gardening suppression 2026-11-11
+crbug.com/584669470 [ Release Device ] UserPolicyTestCase/testThatPoliciesAreLoadedFromStoreWhenSignedInAtStartup [ Pass Failure ]
