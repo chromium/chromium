@@ -14,6 +14,7 @@ void InvalidationFlags::Merge(const InvalidationFlags& other) {
   invalidates_slotted_ |= other.invalidates_slotted_;
   invalidates_parts_ |= other.invalidates_parts_;
   invalidates_tree_counting_ |= other.invalidates_tree_counting_;
+  invalidates_focused_ |= other.invalidates_focused_;
 }
 
 bool InvalidationFlags::operator==(const InvalidationFlags& other) const {
@@ -23,7 +24,8 @@ bool InvalidationFlags::operator==(const InvalidationFlags& other) const {
          whole_subtree_invalid_ == other.whole_subtree_invalid_ &&
          invalidates_slotted_ == other.invalidates_slotted_ &&
          invalidates_parts_ == other.invalidates_parts_ &&
-         invalidates_tree_counting_ == other.invalidates_tree_counting_;
+         invalidates_tree_counting_ == other.invalidates_tree_counting_ &&
+         invalidates_focused_ == other.invalidates_focused_;
 }
 
 }  // namespace blink

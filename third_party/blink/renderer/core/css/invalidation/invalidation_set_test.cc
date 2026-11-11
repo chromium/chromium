@@ -427,18 +427,12 @@ TEST(InvalidationSetTest, InvalidatesFocused) {
   EXPECT_FALSE(set->IsEmpty());
   EXPECT_EQ("{ F }", set->ToString());
 
+  // The feature is matched by StyleInvalidator, not by InvalidatesElement().
+  inner->Focus();
+  ASSERT_TRUE(inner->IsFocused());
   for (Element* element : {outer, inner, other}) {
     EXPECT_FALSE(set->InvalidatesElement(*element));
   }
-
-  inner->Focus();
-  ASSERT_TRUE(inner->IsFocused());
-  EXPECT_TRUE(set->InvalidatesElement(*inner));
-  EXPECT_FALSE(set->InvalidatesElement(*outer));
-  EXPECT_FALSE(set->InvalidatesElement(*other));
-
-  inner->blur();
-  EXPECT_FALSE(set->InvalidatesElement(*inner));
 }
 
 TEST(InvalidationSetTest, InvalidatesFocused_CombineAndEquality) {

@@ -38,6 +38,9 @@ class InvalidationFlags {
     invalidates_tree_counting_ = value;
   }
 
+  bool InvalidatesFocused() const { return invalidates_focused_; }
+  void SetInvalidatesFocused(bool value) { invalidates_focused_ = value; }
+
  private:
   // If true, all descendants which are custom pseudo-elements must be
   // invalidated.
@@ -56,6 +59,9 @@ class InvalidationFlags {
   // If true, elements whose style depends on tree-counting functions need to be
   // invalidated.
   bool invalidates_tree_counting_ : 1 = false;
+  // If true, the focused element needs to be invalidated. See
+  // InvalidationSet::InvalidatesFocusedElement().
+  bool invalidates_focused_ : 1 = false;
 };
 
 }  // namespace blink

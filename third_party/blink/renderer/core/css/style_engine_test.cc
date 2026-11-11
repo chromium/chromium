@@ -1610,6 +1610,126 @@ TEST_F(StyleEngineTest, FocusedInvalidationSetFeatureDisabled) {
                 GetCSSPropertyColor()));
 }
 
+// The "is focused" feature is matched outside of InvalidationSet::
+// InvalidatesElement(), so this covers each path StyleInvalidator takes to an
+// element: descendants, shadow trees for tree-boundary-crossing sets, slotted
+// elements, shadow hosts which match :focus, and matched siblings and their
+// descendants. Each rule sets a different non-inherited property, so the
+// checks are independent of the cascade and of inheritance.
+TEST_F(StyleEngineTest, FocusedInvalidationSetFeatureShadowDom) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      .a :focus { background-color: green }
+      .d ~ .e :focus { border-right-color: purple }
+    </style>
+    <div id=outer>
+      <div><div><div></div></div></div>
+      <div id=host>
+        <div id=slotted tabindex=0></div>
+      </div>
+    </div>
+    <div>
+      <div id=sibling></div>
+      <div class=e>
+        <div><div></div></div>
+        <div id=sibling_focusable tabindex=0></div>
+      </div>
+    </div>
+  )HTML");
+  Element* host = GetDocument().getElementById(AtomicString("host"));
+  ASSERT_TRUE(host);
+  ShadowRoot& shadow_root =
+      host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
+  shadow_root.SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      :host(.b) :focus { border-top-color: red }
+      .c :focus { border-bottom-color: blue }
+      .s ::slotted(:focus) { border-left-color: yellow }
+    </style>
+    <div id=wrapper>
+      <div><div><div></div></div></div>
+      <slot></slot>
+      <div id=inner tabindex=0></div>
+    </div>
+  )HTML");
+  GetDocument().GetPage()->GetFocusController().SetActive(true);
+  GetDocument().GetPage()->GetFocusController().SetFocused(true);
+  UpdateAllLifecyclePhases();
+
+  Element* outer = GetDocument().getElementById(AtomicString("outer"));
+  Element* slotted = GetDocument().getElementById(AtomicString("slotted"));
+  Element* sibling = GetDocument().getElementById(AtomicString("sibling"));
+  Element* sibling_focusable =
+      GetDocument().getElementById(AtomicString("sibling_focusable"));
+  Element* wrapper = shadow_root.getElementById(AtomicString("wrapper"));
+  Element* inner = shadow_root.getElementById(AtomicString("inner"));
+  ASSERT_TRUE(outer && slotted && sibling && sibling_focusable && wrapper &&
+              inner);
+
+  auto color_of = [](Element* element, const Longhand& property) {
+    return element->ComputedStyleRef().VisitedDependentColor(property);
+  };
+  const Color black = Color::FromRGB(0, 0, 0);
+
+  inner->Focus();
+  UpdateAllLifecyclePhases();
+  ASSERT_TRUE(inner->IsFocused());
+  // The author shadow host matches :focus along with the focused element.
+  ASSERT_TRUE(host->IsFocused());
+
+  // .a :focus can only match the host from the document scope, since #inner is
+  // in the shadow tree.
+  unsigned start_count = GetStyleEngine().StyleForElementCount();
+  outer->classList().Add(AtomicString("a"));
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(1u, GetStyleEngine().StyleForElementCount() - start_count);
+  EXPECT_EQ(Color::FromRGB(0, 128, 0),
+            color_of(host, GetCSSPropertyBackgroundColor()));
+  EXPECT_EQ(Color::kTransparent,
+            color_of(inner, GetCSSPropertyBackgroundColor()));
+
+  // :host(.b) :focus crosses the tree boundary and reaches #inner.
+  start_count = GetStyleEngine().StyleForElementCount();
+  host->classList().Add(AtomicString("b"));
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(1u, GetStyleEngine().StyleForElementCount() - start_count);
+  EXPECT_EQ(Color::FromRGB(255, 0, 0),
+            color_of(inner, GetCSSPropertyBorderTopColor()));
+
+  // .c :focus in the shadow tree.
+  start_count = GetStyleEngine().StyleForElementCount();
+  wrapper->classList().Add(AtomicString("c"));
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(1u, GetStyleEngine().StyleForElementCount() - start_count);
+  EXPECT_EQ(Color::FromRGB(0, 0, 255),
+            color_of(inner, GetCSSPropertyBorderBottomColor()));
+
+  // .s ::slotted(:focus) reaches the focused slotted element through the slot.
+  slotted->Focus();
+  UpdateAllLifecyclePhases();
+  ASSERT_TRUE(slotted->IsFocused());
+  EXPECT_EQ(black, color_of(slotted, GetCSSPropertyBorderLeftColor()));
+  start_count = GetStyleEngine().StyleForElementCount();
+  wrapper->classList().Add(AtomicString("s"));
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(1u, GetStyleEngine().StyleForElementCount() - start_count);
+  EXPECT_EQ(Color::FromRGB(255, 255, 0),
+            color_of(slotted, GetCSSPropertyBorderLeftColor()));
+
+  // .d ~ .e :focus: the focused descendant of the matched sibling.
+  sibling_focusable->Focus();
+  UpdateAllLifecyclePhases();
+  ASSERT_TRUE(sibling_focusable->IsFocused());
+  EXPECT_EQ(black,
+            color_of(sibling_focusable, GetCSSPropertyBorderRightColor()));
+  start_count = GetStyleEngine().StyleForElementCount();
+  sibling->classList().Add(AtomicString("d"));
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(1u, GetStyleEngine().StyleForElementCount() - start_count);
+  EXPECT_EQ(Color::FromRGB(128, 0, 128),
+            color_of(sibling_focusable, GetCSSPropertyBorderRightColor()));
+}
+
 TEST_F(StyleEngineTest, EmptyHttpEquivDefaultStyle) {
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
       "<style>div { color:pink }</style><div id=container></div>");

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/css/invalidation/style_invalidator.h"
 
+#include "third_party/blink/renderer/core/css/css_selector.h"
 #include "third_party/blink/renderer/core/css/invalidation/invalidation_set.h"
 #include "third_party/blink/renderer/core/css/invalidation/invalidation_tracing_flag.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
@@ -14,12 +15,38 @@
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/inspector/invalidation_set_to_selector_map.h"
+#include "third_party/blink/renderer/core/probe/core_probes.h"
 
 namespace blink {
 
 #define TRACE_STYLE_INVALIDATOR_INVALIDATION_IF_ENABLED(element, reason) \
   if (InvalidationTracingFlag::IsEnabled()) [[unlikely]]                 \
     TRACE_STYLE_INVALIDATOR_INVALIDATION(element, reason);
+
+namespace {
+
+// The "is focused" feature matches the focused element, or an element that
+// DevTools forces :focus / :focus-visible on.
+bool IsFocused(Element& element) {
+  if (element.IsFocused()) {
+    return true;
+  }
+  bool forced = false;
+  probe::ForcePseudoState(&element, CSSSelector::kPseudoFocus, &forced);
+  probe::ForcePseudoState(&element, CSSSelector::kPseudoFocusVisible, &forced);
+  return forced;
+}
+
+bool MatchesFocused(const InvalidationSet& invalidation_set, Element& element) {
+  if (!invalidation_set.InvalidatesFocused() || !IsFocused(element)) {
+    return false;
+  }
+  TRACE_STYLE_INVALIDATOR_INVALIDATION_SET(
+      element, kInvalidationSetMatchedFocused, invalidation_set);
+  return true;
+}
+
+}  // namespace
 
 void StyleInvalidator::Invalidate(Document& document, Element* root_element) {
   SiblingData sibling_data;
@@ -72,6 +99,9 @@ void StyleInvalidator::PushInvalidationSet(
   if (invalidation_set.InvalidatesParts()) {
     invalidation_flags_.SetInvalidatesParts(true);
   }
+  if (invalidation_set.InvalidatesFocused()) {
+    invalidation_flags_.SetInvalidatesFocused(true);
+  }
   invalidation_sets_.push_back(&invalidation_set);
 }
 
@@ -86,6 +116,26 @@ ALWAYS_INLINE bool StyleInvalidator::MatchesCurrentInvalidationSets(
   return false;
 }
 
+bool StyleInvalidator::MatchesCurrentInvalidationSetsAsFocused(
+    Element& element) const {
+  DCHECK(invalidation_flags_.InvalidatesFocused());
+
+  if (!IsFocused(element)) {
+    return false;
+  }
+  // The sets are only consulted to attribute the invalidation when tracing.
+  if (InvalidationTracingFlag::IsEnabled()) {
+    for (const auto* invalidation_set : invalidation_sets_) {
+      if (invalidation_set->InvalidatesFocused()) {
+        TRACE_STYLE_INVALIDATOR_INVALIDATION_SET(
+            element, kInvalidationSetMatchedFocused, *invalidation_set);
+        break;
+      }
+    }
+  }
+  return true;
+}
+
 bool StyleInvalidator::MatchesCurrentInvalidationSetsAsSlotted(
     Element& element) const {
   DCHECK(invalidation_flags_.InvalidatesSlotted());
@@ -94,7 +144,8 @@ bool StyleInvalidator::MatchesCurrentInvalidationSetsAsSlotted(
     if (!invalidation_set->InvalidatesSlotted()) {
       continue;
     }
-    if (invalidation_set->InvalidatesElement(element)) {
+    if (invalidation_set->InvalidatesElement(element) ||
+        MatchesFocused(*invalidation_set, element)) {
       return true;
     }
   }
@@ -132,7 +183,8 @@ bool StyleInvalidator::SiblingData::MatchCurrentInvalidationSets(
     const SiblingInvalidationSet& invalidation_set =
         *invalidation_entries_[index].invalidation_set_;
     ++index;
-    if (!invalidation_set.InvalidatesElement(element)) {
+    if (!invalidation_set.InvalidatesElement(element) &&
+        !MatchesFocused(invalidation_set, element)) {
       continue;
     }
 
@@ -208,6 +260,9 @@ ALWAYS_INLINE bool StyleInvalidator::CheckInvalidationSetsAgainstElement(
   // We need to call both because the sibling data may invalidate the whole
   // subtree at which point we can stop recursing.
   bool matches_current = MatchesCurrentInvalidationSets(element);
+  if (!matches_current && InvalidatesFocused()) {
+    matches_current = MatchesCurrentInvalidationSetsAsFocused(element);
+  }
   bool matches_sibling;
   if (!sibling_data.IsEmpty() &&
       sibling_data.MatchCurrentInvalidationSets(element, *this)) [[unlikely]] {
