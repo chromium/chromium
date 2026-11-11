@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingStart="@dimen/dialog_padding_sides"
+    android:paddingEnd="@dimen/dialog_padding_sides"
+    android:paddingTop="@dimen/card_padding"
+    android:paddingBottom="@dimen/card_padding">
+
+    <org.chromium.ui.widget.TextViewWithLeading
+        android:id="@+id/history_disclaimer_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:accessibilityHeading="true"
+        android:text="@string/incognito_history_bubble_primary_text"
+        android:textAppearance="@style/TextAppearance.TextLargeThick.Primary" />
+
+    <TextView
+        android:id="@+id/history_disclaimer_body"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dual_control_margin_between_items"
+        android:text="@string/incognito_history_bubble_secondary_text"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/card_padding"
+        android:gravity="end"
+        android:orientation="horizontal">
+
+        <org.chromium.ui.widget.ButtonCompat
+            android:id="@+id/history_disclaimer_close"
+            style="@style/FilledTonalButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/dual_control_margin_between_items"
+            android:text=
+            "@string/incognito_history_bubble_close_incognito_button_text" />
+
+        <org.chromium.ui.widget.ButtonCompat
+            android:id="@+id/history_disclaimer_got_it"
+            style="@style/FilledButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:focusedByDefault="true"
+            android:text=
+            "@string/incognito_history_bubble_cancel_button_text" />
+    </LinearLayout>
+</LinearLayout>
+

@@ -129,16 +129,21 @@ if (is_android) {
       "java/src/org/chromium/chrome/browser/history/FilterSheetProperties.java",
       "java/src/org/chromium/chrome/browser/history/FilterSheetViewBinder.java",
       "java/src/org/chromium/chrome/browser/history/HistoryTabHelper.java",
+      "java/src/org/chromium/chrome/browser/history/IncognitoHistoryDisclaimerCoordinator.java",
     ]
 
     deps = [
       ":java_resources",
       "//base:base_java",
+      "//chrome/app:java_strings_grd",
       "//chrome/browser/flags:java",
       "//chrome/browser/tab:java",
+      "//chrome/browser/tabmodel:java",
       "//components/browser_ui/bottomsheet/android:java",
       "//content/public/android:content_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+      "//third_party/androidx:androidx_core_core_java",
       "//third_party/androidx:androidx_recyclerview_recyclerview_java",
       "//third_party/jni_zero:jni_zero_java",
       "//ui/android:ui_full_java",
@@ -155,17 +160,27 @@ if (is_android) {
     sources = [
       "java/res/layout/filter_sheet_content.xml",
       "java/res/layout/filter_sheet_header.xml",
+      "java/res/layout/incognito_history_disclaimer_popup.xml",
+      "java/res/values/dimens.xml",
     ]
     deps = [
+      "//chrome/app:java_strings_grd",
       "//chrome/browser/ui/android/strings:ui_strings_grd",
+      "//components/browser_ui/styles/android:java_resources",
+      "//components/browser_ui/theme/android:java_resources",
       "//components/browser_ui/widget/android:java_resources",
+      "//ui/android:ui_java_resources",
     ]
   }
 
   robolectric_library("junit") {
     resources_package = "org.chromium.chrome.browser.history"
 
-    sources = [ "java/src/org/chromium/chrome/browser/history/FilterSheetCoordinatorTest.java" ]
+    sources = [
+      "java/src/org/chromium/chrome/browser/history/FilterSheetCoordinatorTest.java",
+      "java/src/org/chromium/chrome/browser/history/IncognitoHistoryDisclaimerCoordinatorAnchorUnitTest.java",
+      "java/src/org/chromium/chrome/browser/history/IncognitoHistoryDisclaimerCoordinatorUnitTest.java",
+    ]
 
     deps = [
       ":java",
@@ -173,6 +188,7 @@ if (is_android) {
       "//base:base_java",
       "//base:base_junit_test_support",
       "//chrome/android:chrome_app_java_resources",
+      "//chrome/browser/tabmodel:java",
       "//components/browser_ui/bottomsheet/android:java",
       "//components/browser_ui/theme/android:java_resources",
       "//third_party/androidx:androidx_test_core_java",
