@@ -571,7 +571,7 @@ vars = {
   'libcxx_revision':       'd816ed0274edb2f8ae2a514584476dfa7acfbca1',
 
   # GN CIPD package version.
-  'gn_version': 'git_revision:98fe95227d9fe45bf8efe3acdb48cf7181e9ba7a',
+  'gn_version': 'git_revision:74c32399b100531b22184bd6ac38c4b26bc86ca5',
 
   # ninja CIPD package.
   'ninja_package': 'infra/3pp/tools/ninja/',
