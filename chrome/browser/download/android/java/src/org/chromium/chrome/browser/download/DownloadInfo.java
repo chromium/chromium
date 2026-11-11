@@ -173,9 +173,7 @@ public final class DownloadInfo {
         return mProgress;
     }
 
-    /**
-     * @return Remaining download time in milliseconds or -1 if it is unknown.
-     */
+    /** Returns remaining download time in milliseconds or -1 if it is unknown. */
     public long getTimeRemainingInMillis() {
         return mTimeRemainingInMillis;
     }

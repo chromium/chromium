@@ -32,8 +32,9 @@ public final class DownloadLocationDialogMetrics {
     private DownloadLocationDialogMetrics() {}
 
     /**
-     * Records the user choice on the locaction suggestion spinner.
-     * @param isChosen The user choice, true if the user chooses the suggestion.
+     * Records the user choice on the location suggestion spinner.
+     *
+     * @param isSelected The user choice, true if the user chooses the suggestion.
      */
     public static void recordDownloadLocationSuggestionChoice(boolean isSelected) {
         RecordHistogram.recordBooleanHistogram(

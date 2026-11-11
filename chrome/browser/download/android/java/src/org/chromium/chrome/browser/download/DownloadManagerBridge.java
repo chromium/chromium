@@ -107,11 +107,10 @@ public class DownloadManagerBridge {
     }
 
     /**
-     * Sends the download request to Android download manager. If |notifyCompleted| is true,
-     * a notification will be sent to the user once download is complete and the downloaded
-     * content will be saved to the public directory on external storage. Otherwise, the
-     * download will be saved in the app directory and user will not get any notifications
-     * after download completion.
+     * Sends the download request to Android download manager. If {@code notifyCompleted} is true, a
+     * notification will be sent to the user once download is complete and the downloaded content
+     * will be saved to the public directory on external storage. Otherwise, the download will be
+     * saved in the app directory and user will not get any notifications after download completion.
      * This will be used by OMA downloads as we need Android DownloadManager to encrypt the content.
      *
      * @param request The download request params.
@@ -197,9 +196,7 @@ public class DownloadManagerBridge {
         return result;
     }
 
-    /**
-     * @return The android DownloadManager's download ID for the given download.
-     */
+    /** Returns the android DownloadManager's download ID for the given download. */
     public static long getDownloadIdForDownloadGuid(String downloadGuid) {
         return getSharedPreferences()
                 .getLong(downloadGuid, DownloadUtils.INVALID_SYSTEM_DOWNLOAD_ID);

@@ -192,15 +192,16 @@ public class DownloadDialogBridge implements DownloadLocationDialogController {
         onCancel();
     }
 
-    /**
-     * @return The stored download default directory.
-     */
+    /** Returns the stored download default directory. */
     public static String getDownloadDefaultDirectory(Profile profile) {
         return UserPrefs.get(profile.getOriginalProfile())
                 .getString(Pref.DOWNLOAD_DEFAULT_DIRECTORY);
     }
 
     /**
+     * Sets the download and save file default directory.
+     *
+     * @param profile The profile whose preference is updated.
      * @param directory New directory to set as the download default directory.
      */
     public static void setDownloadAndSaveFileDefaultDirectory(
@@ -210,15 +211,16 @@ public class DownloadDialogBridge implements DownloadLocationDialogController {
                         UserPrefs.get(profile.getOriginalProfile()), directory);
     }
 
-    /**
-     * @return The status of prompt for download pref, defined by {@link DownloadPromptStatus}.
-     */
+    /** Returns the status of prompt for download pref, defined by {@link DownloadPromptStatus}. */
     public static @DownloadPromptStatus int getPromptForDownloadAndroid(Profile profile) {
         return UserPrefs.get(profile.getOriginalProfile())
                 .getInteger(Pref.PROMPT_FOR_DOWNLOAD_ANDROID);
     }
 
     /**
+     * Sets the prompt for download preference status.
+     *
+     * @param profile The profile whose preference is updated.
      * @param status New status to update the prompt for download preference.
      */
     public static void setPromptForDownloadAndroid(
@@ -227,14 +229,15 @@ public class DownloadDialogBridge implements DownloadLocationDialogController {
                 .setInteger(Pref.PROMPT_FOR_DOWNLOAD_ANDROID, status);
     }
 
-    /**
-     * @return The value for {@link Pref#PROMPT_FOR_DOWNLOAD}.
-     */
+    /** Returns the value for {@link Pref#PROMPT_FOR_DOWNLOAD}. */
     public static boolean getPromptForDownload(Profile profile) {
         return UserPrefs.get(profile.getOriginalProfile()).getBoolean(Pref.PROMPT_FOR_DOWNLOAD);
     }
 
     /**
+     * Sets the value for {@link Pref#PROMPT_FOR_DOWNLOAD}.
+     *
+     * @param profile The profile whose preference is updated.
      * @param enabled New value to update {@link Pref#PROMPT_FOR_DOWNLOAD}.
      */
     public static void setPromptForDownload(Profile profile, boolean enabled) {
@@ -242,7 +245,7 @@ public class DownloadDialogBridge implements DownloadLocationDialogController {
     }
 
     /**
-     * @return whether to prompt the download location dialog is controlled by enterprise policy.
+     * Returns whether to prompt the download location dialog is controlled by enterprise policy.
      */
     public static boolean isLocationDialogManaged(Profile profile) {
         return UserPrefs.get(profile.getOriginalProfile())

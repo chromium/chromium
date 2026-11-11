@@ -274,9 +274,11 @@ public class DownloadFileProvider extends FileProvider {
     /**
      * Get file path based on URI. The file must live in default download directory or external
      * removable storage.
+     *
      * @param uri The content URI to parse.
+     * @param delegate Delegate that queries download directories.
      * @return The absolute path of the file or null if the file is not in known download directory
-     *         or null if the file doesn't exist.
+     *     or null if the file doesn't exist.
      */
     @VisibleForTesting
     public static @Nullable String getFilePathFromUri(

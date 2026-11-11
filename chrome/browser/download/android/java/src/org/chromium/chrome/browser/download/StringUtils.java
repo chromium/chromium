@@ -306,6 +306,8 @@ public final class StringUtils {
 
     /**
      * Creates a string that represents the number of files left to be downloaded.
+     *
+     * @param context Context to use.
      * @param progress Current download progress.
      * @return String representing the number of files left.
      */

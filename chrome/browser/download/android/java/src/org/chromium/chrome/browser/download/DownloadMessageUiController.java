@@ -30,13 +30,13 @@ import java.util.List;
 public interface DownloadMessageUiController extends OfflineContentProvider.Observer {
     /** A delegate to provide chrome layer dependencies. */
     interface Delegate {
-        /** @return The context used for obtaining resources. */
+        /** Returns the context used for obtaining resources. */
         @Nullable Context getContext();
 
-        /** @return The {@link MessageDispatcher} used for showing messages. */
+        /** Returns the {@link MessageDispatcher} used for showing messages. */
         @Nullable MessageDispatcher getMessageDispatcher();
 
-        /** @return The {@link ModalDialogManager} for showing download later dialog. */
+        /** Returns the {@link ModalDialogManager} for showing download later dialog. */
         @Nullable ModalDialogManager getModalDialogManager();
 
         /**
@@ -107,8 +107,6 @@ public interface DownloadMessageUiController extends OfflineContentProvider.Obse
     @Override
     void onItemUpdated(OfflineItem item, @Nullable UpdateDelta updateDelta);
 
-    /**
-     * @return Whether the UI is currently showing.
-     */
+    /** Returns whether the UI is currently showing. */
     boolean isShowing();
 }
