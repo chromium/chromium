@@ -29,7 +29,9 @@ class GridSizingTree;
 class SubgriddedItemData;
 enum class GridItemContributionType;
 struct GridItemData;
+struct GridLanesFragmentationItem;
 struct GridLanesGapGeometryState;
+struct GridLanesItemData;
 struct GridPlacementData;
 
 class CORE_EXPORT GridLanesLayoutAlgorithm
@@ -189,11 +191,47 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
       GridLanesGapGeometryState* out_gap_geometry_state = nullptr);
   // Lays out the items in `grid_lanes` for the current fragment.
   // `total_intrinsic_block_size` is the intrinsic block size of the complete,
-  // unfragmented container; it is updated if column items expand as a result of
-  // fragmentation.
+  // unfragmented container; it is updated if items or rows expand as a result
+  // of fragmentation.
   BreakStatus PlaceGridLanesItemsForFragmentation(
       GridLanesDataVector& grid_lanes,
       const GridLayoutSubtree& layout_subtree,
+      LayoutUnit* total_intrinsic_block_size);
+
+  // Returns one item's layout result and geometry, and records row break
+  // values.
+  GridLanesFragmentationItem LayoutItemForFragmentation(
+      const GridLanesItemData& grid_lanes_item,
+      const BlockBreakToken* item_break_token,
+      wtf_size_t grid_lane_idx,
+      LogicalOffset item_offset,
+      const EarlyBreak* item_early_break,
+      const GridLanesDataVector& grid_lanes,
+      const GridLayoutSubtree& layout_subtree,
+      Vector<EBreakBetween>& row_break_between);
+
+  struct Breakpoint {
+    Breakpoint(wtf_size_t row, LayoutUnit row_offset, bool is_forced_break)
+        : row(row), row_offset(row_offset), is_forced_break(is_forced_break) {}
+
+    wtf_size_t row;
+    LayoutUnit row_offset;
+    bool is_forced_break;
+  };
+
+  // Selects a whole-row break, or no breakpoint if fragmentation is disabled
+  // or all remaining rows can be placed.
+  std::optional<Breakpoint> FindRowBreakpoint(
+      const HeapVector<GridLanesFragmentationItem>& row_items,
+      const Vector<EBreakBetween>& row_break_between);
+
+  // Commits items before the selected row break and updates the
+  // continuation state and intrinsic size of the current fragment.
+  BreakStatus FinishRowFragmentation(
+      const HeapVector<GridLanesFragmentationItem>& row_items,
+      const Vector<EBreakBetween>& row_break_between,
+      GridLanesDataVector& grid_lanes,
+      LayoutUnit stitched_offset,
       LayoutUnit* total_intrinsic_block_size);
 
   void SetReadingFlowNodes(const GridItems& grid_items,

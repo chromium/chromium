@@ -183,16 +183,13 @@ GridLanesItemIterator::Entry GridLanesItemIterator::NextEntry() {
       if (child_token_idx_ == child_break_tokens.size()) {
         // We reached the last child break token. Prepare for the next unstarted
         // sibling, and forget the parent break token.
-        //
-        // TODO(almaher): Similar to flex, the iterator will need to stay in the
-        // current row here if the row itself broke before.
         if (!is_column_) {
           // All items in a row are started in the same (grid lanes) container
           // fragment, so a sibling of the current item without a break token
           // has already finished layout. Move on to the next row.
           //
-          // Note: Rows don't produce a layout result, so if the row broke
-          // before, the first item in the row will have broken before.
+          // A deferred row has a break-before token for every owning item, so
+          // all of its items have been visited here as well.
           break_token_ = nullptr;
           NextLane();
         } else if (!break_token_->HasSeenAllChildren()) {

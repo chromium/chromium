@@ -24,7 +24,8 @@ class BlockBreakToken;
 //
 // In the case of rows, every item in a lane is started in the same (grid lanes)
 // container fragment, so once the break tokens of a row have been handled the
-// iterator moves on to the next row.
+// iterator moves on to the next row. A deferred row emits a break-before token
+// for every owning item, so no separate row-break state is needed.
 //
 // In all cases, though child break tokens are processed first, in break token
 // order. The iterator then resumes unstarted items from those positions onward.
@@ -57,9 +58,6 @@ class CORE_EXPORT GridLanesItemIterator {
 
   // Returns the next grid lanes item which should be laid out, along with its
   // respective break token.
-  //
-  // TODO(almaher): Similar to flex, we will likely need the break before row
-  // state here for row containers.
   struct Entry;
   Entry NextEntry();
 

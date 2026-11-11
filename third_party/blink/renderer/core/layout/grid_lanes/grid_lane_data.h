@@ -121,7 +121,7 @@ struct GridLaneData {
   // Non-start spanner entries are owned by their start lane and do not affect
   // this state.
   bool has_unfinished_items = false;
-  // How far unstarted column items are pushed down by fragmentation.
+  // How far unstarted items (or row tracks) are pushed down by fragmentation.
   LayoutUnit item_offset_adjustment;
 
   HeapVector<Member<GridLanesItemData>> item_data;
