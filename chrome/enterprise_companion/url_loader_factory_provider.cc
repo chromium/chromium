@@ -115,7 +115,11 @@ class URLRequestContextGetter : public net::URLRequestContextGetter {
   }
 
  protected:
-  ~URLRequestContextGetter() override { cert_net_fetcher_->Shutdown(); }
+  ~URLRequestContextGetter() override {
+    if (cert_net_fetcher_) {
+      cert_net_fetcher_->Shutdown();
+    }
+  }
 
  private:
   scoped_refptr<base::SingleThreadTaskRunner> network_task_runner_;

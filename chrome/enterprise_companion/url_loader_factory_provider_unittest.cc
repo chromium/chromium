@@ -4,10 +4,16 @@
 
 #include "chrome/enterprise_companion/url_loader_factory_provider.h"
 
+#include "base/functional/callback_helpers.h"
+#include "base/location.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
+#include "base/threading/sequence_bound.h"
 #include "build/build_config.h"
 #include "chrome/enterprise_companion/ipc_support.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -45,6 +51,24 @@ TEST_F(URLLoaderFactoryProviderTest, StubDisconnectHandler) {
           /*event_logger_cookie_handler=*/{},
           remote.InitWithNewPipeAndPassReceiver(), run_loop.QuitClosure());
   remote.reset();
+  run_loop.Run();
+}
+
+// Destroys an in-process provider that never created a network context.
+TEST_F(URLLoaderFactoryProviderTest, DestroyWithoutNetworkContext) {
+  scoped_refptr<base::SingleThreadTaskRunner> net_thread_runner =
+      base::ThreadPool::CreateSingleThreadTaskRunner({base::MayBlock()});
+  base::SequenceBound<URLLoaderFactoryProvider> url_loader_factory_provider =
+      CreateInProcessUrlLoaderFactoryProvider(
+          net_thread_runner, /*event_logger_cookie_handler=*/{},
+          /*pending_receiver=*/{}, base::DoNothing());
+  url_loader_factory_provider.Reset();
+
+  // The provider is destroyed on `net_thread_runner`, so a reply to a task
+  // posted after `Reset()` runs after the destruction.
+  base::RunLoop run_loop;
+  net_thread_runner->PostTaskAndReply(FROM_HERE, base::DoNothing(),
+                                      run_loop.QuitClosure());
   run_loop.Run();
 }
 
