@@ -352,6 +352,10 @@ class CORE_EXPORT Performance : public EventTarget {
 
   void ResetTimeOriginForTesting(base::TimeTicks time_origin);
 
+  int GetDroppedEntriesForTypesForTesting(PerformanceEntryTypeMask types) {
+    return GetDroppedEntriesForTypes(types);
+  }
+
   void SetCrossOriginIsolatedCapabilityForTesting(bool is_isolated) {
     cross_origin_isolated_capability_ = is_isolated;
   }

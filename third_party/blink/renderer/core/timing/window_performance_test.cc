@@ -1928,6 +1928,26 @@ TEST_P(WindowPerformanceTest, ContainerTimingTraceEvent) {
   EXPECT_EQ(*identifier, "identifier");
 }
 
+TEST_P(WindowPerformanceTest, ContainerTimingDroppedEntriesCount) {
+  // Matches kDefaultContainerTimingBufferSize in performance.cc.
+  constexpr wtf_size_t kBufferSize = 150;
+  for (wtf_size_t i = 0; i <= kBufferSize; ++i) {
+    PerformanceContainerTiming* entry = PerformanceContainerTiming::Create(
+        gfx::Rect(10, 20, 30, 40), 1200, /*root_element=*/nullptr,
+        AtomicString("identifier"), /*last_painted_element=*/nullptr,
+        performance_->DomWindow());
+    entry->FinalizeEntry(DOMPaintTimingInfo{2000, 2000},
+                         performance_->NavigationId().web_exposed_id,
+                         /*first_render_time=*/1000);
+    performance_->AddContainerTiming(entry);
+  }
+  EXPECT_EQ(
+      kBufferSize,
+      performance_->getBufferedEntriesByType(AtomicString("container")).size());
+  EXPECT_EQ(1, performance_->GetDroppedEntriesForTypesForTesting(
+                   PerformanceEntry::kContainer));
+}
+
 TEST_P(WindowPerformanceTest, InteractionID) {
   ui::DomCode key_code = ui::DomCode::US_A;
   auto* keydown_event =

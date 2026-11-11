@@ -165,6 +165,7 @@ PerformanceEntry::EntryType kDroppableEntryTypes[] = {
     PerformanceEntry::kSoftNavigation,
     PerformanceEntry::kInteractionContentfulPaint,
     PerformanceEntry::kScroll,
+    PerformanceEntry::kContainer,
 };
 
 void SwapEntries(PerformanceEntryVector& entries,

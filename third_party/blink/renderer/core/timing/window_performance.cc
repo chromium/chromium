@@ -1463,9 +1463,7 @@ void WindowPerformance::AddContainerTiming(PerformanceContainerTiming* entry) {
   if (HasObserverFor(PerformanceEntry::kContainer)) {
     NotifyObserversOfContainerEntry(*entry);
   }
-  if (!IsContainerTimingBufferFull()) {
-    AddToContainerTimingBuffer(*entry);
-  }
+  AddToContainerTimingBuffer(*entry);
 }
 
 namespace {
