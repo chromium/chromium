@@ -893,7 +893,7 @@ suite('TabPickerTest', () => {
         'rgba(10, 10, 10, 0.08)',
         window.getComputedStyle(app.$.shareTabsTrigger).backgroundColor);
     assertEquals(
-        '#0b57d0',
+        '#336ef3',
         window.getComputedStyle(app)
             .getPropertyValue('--cr-focus-outline-color')
             .trim());
@@ -912,7 +912,7 @@ suite('TabPickerTest', () => {
         'rgba(230, 232, 240, 0.08)',
         window.getComputedStyle(app.$.shareTabsTrigger).backgroundColor);
     assertEquals(
-        '#a8c7fa',
+        '#336ef3',
         window.getComputedStyle(app)
             .getPropertyValue('--cr-focus-outline-color')
             .trim());
@@ -1173,6 +1173,9 @@ suite('TabPickerTest', () => {
         assertEquals(app.$.shareTabsTrigger, app.shadowRoot.activeElement);
         assertTrue(document.documentElement.classList.contains(
             'focus-outline-visible'));
+        assertEquals(
+            'rgba(0, 0, 0, 0)',
+            window.getComputedStyle(app.$.shareTabsTrigger).backgroundColor);
         if (document.hasFocus()) {
           assertEquals(
               'solid',
@@ -1299,6 +1302,9 @@ suite('TabPickerTest', () => {
         assertEquals(app.$.shareTabsTrigger, app.shadowRoot.activeElement);
         assertTrue(document.documentElement.classList.contains(
             'focus-outline-visible'));
+        assertEquals(
+            'rgba(0, 0, 0, 0)',
+            window.getComputedStyle(app.$.shareTabsTrigger).backgroundColor);
         if (document.hasFocus()) {
           assertEquals(
               'solid',
