@@ -6270,6 +6270,11 @@ inline constexpr char kEnableAndroidSidePanelManualResizingDescription[] =
     "When enabled, the Android side panel can be resized by dragging its "
     "inner edge.";
 
+inline constexpr char kEnableAndroidSplitViewName[] =
+    "Enable Android Split View";
+inline constexpr char kEnableAndroidSplitViewDescription[] =
+    "Enable viewing two tabs side by side or top and bottom on Android.";
+
 inline constexpr char kEnableSetShapeName[] =
     "Enable ChromeOS Isolated Web App setShape API";
 inline constexpr char kEnableSetShapeDescription[] =

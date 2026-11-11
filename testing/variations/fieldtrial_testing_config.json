@@ -7913,6 +7913,22 @@
             ]
         }
     ],
+    "EnableAndroidSplitView": [
+        {
+            "platforms": [
+                "android",
+                "android_desktop"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableAndroidSplitView"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableAppBackgroundRefresh": [
         {
             "platforms": [

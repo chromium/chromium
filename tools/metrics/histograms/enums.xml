@@ -10656,6 +10656,7 @@ from previous Chrome versions.
   <int value="-1317768255" label="PermissionStorageAccessAPI:enabled"/>
   <int value="-1316769004" label="CrossOriginOpenerPolicyReporting:disabled"/>
   <int value="-1316242662" label="AimUrlInterceptPassthrough:disabled"/>
+  <int value="-1316120270" label="EnableAndroidSplitView:disabled"/>
   <int value="-1315953775" label="SmartCardContextRelease:disabled"/>
   <int value="-1315894943" label="HappyEyeballsV3:enabled"/>
   <int value="-1315862295" label="GlicMITabContextMenu:disabled"/>
@@ -16122,6 +16123,7 @@ from previous Chrome versions.
   <int value="310992985" label="AdvancedPeripheralsSupport:enabled"/>
   <int value="311326992" label="Prerender2WarmUpCompositor:disabled"/>
   <int value="312112911" label="FilesWebDriveOffice:enabled"/>
+  <int value="312514290" label="EnableAndroidSplitView:enabled"/>
   <int value="313112736" label="HandwritingLegacyRecognitionAllLang:enabled"/>
   <int value="313253630" label="AutofillRefreshStyleAndroid:enabled"/>
   <int value="313303258" label="WebPaymentsModifiers:disabled"/>

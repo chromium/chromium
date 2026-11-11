@@ -12859,6 +12859,13 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+    {"enable-android-split-view",
+     flag_descriptions::kEnableAndroidSplitViewName,
+     flag_descriptions::kEnableAndroidSplitViewDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kEnableAndroidSplitView)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
     {"signin-level-up-button", flag_descriptions::kSigninLevelUpButtonName,
      flag_descriptions::kSigninLevelUpButtonDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(switches::kSigninLevelUpButton)},

@@ -629,6 +629,7 @@ public abstract class ChromeFeatureList {
     public static final String ENABLE_ANDROID_SIDE_PANEL_LOGS = "EnableAndroidSidePanelLogs";
     public static final String ENABLE_ANDROID_SIDE_PANEL_MANUAL_RESIZING =
             "EnableAndroidSidePanelManualResizing";
+    public static final String ENABLE_ANDROID_SPLIT_VIEW = "EnableAndroidSplitView";
     public static final String ENABLE_BROWSER_WINDOW_INTERFACE_FOR_CUSTOM_TAB_ACTIVITY =
             "EnableBrowserWindowInterfaceForCustomTabActivity";
     public static final String ENABLE_DISCOUNT_INFO_API = "EnableDiscountInfoApi";
@@ -1291,6 +1292,11 @@ public abstract class ChromeFeatureList {
             newCachedFlag(ENABLE_ANDROID_SIDE_PANEL_LOGS, false);
     public static final CachedFlag sEnableAndroidSidePanelManualResizing =
             newCachedFlag(ENABLE_ANDROID_SIDE_PANEL_MANUAL_RESIZING, false);
+    public static final CachedFlag sEnableAndroidSplitView =
+            newCachedFlag(
+                    ENABLE_ANDROID_SPLIT_VIEW,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sEnableBrowserWindowInterfaceForCustomTabActivity =
             newCachedFlag(
                     ENABLE_BROWSER_WINDOW_INTERFACE_FOR_CUSTOM_TAB_ACTIVITY,
@@ -1657,6 +1663,7 @@ public abstract class ChromeFeatureList {
                     sEnableAndroidSidePanelDevFeature,
                     sEnableAndroidSidePanelLogs,
                     sEnableAndroidSidePanelManualResizing,
+                    sEnableAndroidSplitView,
                     sEnableBrowserWindowInterfaceForCustomTabActivity,
                     sEnableFullscreenToAnyScreenAndroid,
                     sEnableXAxisActivityTransition,

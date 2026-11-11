@@ -3622,6 +3622,16 @@
     "expiry_milestone": 160
   },
   {
+    "name": "enable-android-split-view",
+    "owners": [
+      "aishwaryarj@google.com",
+      "linyuh@google.com",
+      "shuyng@google.com",
+      "skavuluru@google.com"
+    ],
+    "expiry_milestone": 176
+  },
+  {
     "name": "enable-android-window-occlusion",
     "owners": [
       "lizeb@chromium.org",
