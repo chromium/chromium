@@ -1890,6 +1890,33 @@ void RecordOrderedListLookaheadLines(
       kOrderedListLookaheadLinesHistogramMax);
 }
 
+// Returns whether `run_context` starts with a list marker indented past
+// `marker_x`, but not past the nesting limit, i.e. the first item of a sublist
+// under the marker's item. `ordered_kind` is the run's
+// `ClassifyOrderedMarker()` result.
+bool StartsIndentedSublist(const TextRunContext& run_context,
+                           const ListMarkerKind& ordered_kind,
+                           float marker_x) {
+  const float run_x = run_context.run->bounds.x();
+  if (run_x <= marker_x + kListIndentThreshold) {
+    return false;
+  }
+  ListMarkerForm form = ordered_kind.form;
+  if (form == ListMarkerForm::kNone) {
+    const std::string text = GetTrimmedText(run_context.chars);
+    form = ClassifyUnorderedMarker(text, kUnorderedListMarkers, run_context);
+    if (form == ListMarkerForm::kNone) {
+      form = ClassifyNestedOnlyMarker(text, run_context);
+    }
+  }
+  if (form == ListMarkerForm::kNone) {
+    return false;
+  }
+  const float max_nest =
+      kMaxListNestingIndentEm * GetListItemFontSize(run_context, form);
+  return run_x <= marker_x + max_nest;
+}
+
 // Returns whether the first line after the marker run at `marker_run_index`
 // that starts with an ordered marker of the same type continues
 // `marker_kind`'s numbering in the same column, within
@@ -1938,9 +1965,14 @@ bool IsOrderedListStartConfirmed(
     }
     // A paragraph gap right after the marker's line suggests a numbered
     // heading followed by body text (e.g. "1. Introduction").
-    if (lines_count == 0 && BreakParagraphByLineSpacing(
-                                GetTextRunContext(layout, i - 1),
-                                page_properties.paragraph_spacing_threshold)) {
+    //
+    // A sublist may follow a gap, though, e.g. "81. Notify the board of:"
+    // followed by indented bullets.
+    if (lines_count == 0 &&
+        BreakParagraphByLineSpacing(
+            GetTextRunContext(layout, i - 1),
+            page_properties.paragraph_spacing_threshold) &&
+        !StartsIndentedSublist(run_context, next_marker_kind, marker_x)) {
       return false;
     }
     // A heading-styled line ends the candidate list.

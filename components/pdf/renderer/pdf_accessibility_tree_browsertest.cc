@@ -8279,6 +8279,137 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicOrderedListGapAfterFirstLineNotList) {
                  "Body line one.Body line two.2.Methods");
 }
 
+TEST_F(PdfAccessibilityTreeTest, HeuristicOrderedListGapBeforeSublistIsList) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  // 1. Notify the board of:
+  //
+  //    • First reason
+  //    • Second reason
+  // 2. Next item
+  //
+  // The paragraph gap after "1." is followed by an indented sublist, so the
+  // later "2." still confirms an ol.
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"1.", "Notify the board of:", "•", "First reason", "•", "Second reason",
+       "2.", "Next item"},
+      {
+          gfx::RectF(30.0f, 20.0f, 10.0f, 12.0f),
+          gfx::RectF(45.0f, 20.0f, 120.0f, 12.0f),
+          gfx::RectF(50.0f, 54.0f, 4.0f, 4.0f),
+          gfx::RectF(65.0f, 50.0f, 80.0f, 12.0f),
+          gfx::RectF(50.0f, 67.0f, 4.0f, 4.0f),
+          gfx::RectF(65.0f, 63.0f, 80.0f, 12.0f),
+          gfx::RectF(30.0f, 76.0f, 10.0f, 12.0f),
+          gfx::RectF(45.0f, 76.0f, 80.0f, 12.0f),
+      });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  const ui::AXNode* list = page->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, list);
+  EXPECT_EQ("ol",
+            list->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag));
+  ASSERT_EQ(2u, list->GetChildCount());
+  const ui::AXNode* sublist = CheckListItemWithNestedList(
+      list->GetChildAtIndex(0u), "Notify the board of:", "1. ", "ul");
+  CheckUnorderedList(sublist, {"First reason", "Second reason"});
+  CheckListItem(list->GetChildAtIndex(1u), "Next item", "2. ");
+}
+
+TEST_F(PdfAccessibilityTreeTest,
+       HeuristicOrderedListGapBeforeSingleItemSublistIsList) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  // 1. Notify the board of:
+  //
+  //    • Only reason
+  // 2. Next item
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"1.", "Notify the board of:", "•", "Only reason", "2.", "Next item"},
+      {
+          gfx::RectF(30.0f, 20.0f, 10.0f, 12.0f),
+          gfx::RectF(45.0f, 20.0f, 120.0f, 12.0f),
+          gfx::RectF(50.0f, 54.0f, 4.0f, 4.0f),
+          gfx::RectF(65.0f, 50.0f, 80.0f, 12.0f),
+          gfx::RectF(30.0f, 63.0f, 10.0f, 12.0f),
+          gfx::RectF(45.0f, 63.0f, 80.0f, 12.0f),
+      });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  const ui::AXNode* list = page->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, list);
+  EXPECT_EQ("ol",
+            list->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag));
+  ASSERT_EQ(2u, list->GetChildCount());
+  const ui::AXNode* sublist = CheckListItemWithNestedList(
+      list->GetChildAtIndex(0u), "Notify the board of:", "1. ", "ul");
+  CheckUnorderedList(sublist, {"Only reason"});
+  CheckListItem(list->GetChildAtIndex(1u), "Next item", "2. ");
+}
+
+TEST_F(PdfAccessibilityTreeTest,
+       HeuristicOrderedListGapBeforeFarMarkerNotList) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  // The bullet after the gap is indented past the nesting limit, so it is not
+  // a sublist and "1." stays a numbered heading.
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"1.", "Introduction", "•", "Far reason", "2.", "Methods"},
+      {
+          gfx::RectF(30.0f, 20.0f, 10.0f, 12.0f),
+          gfx::RectF(45.0f, 20.0f, 80.0f, 12.0f),
+          gfx::RectF(200.0f, 54.0f, 4.0f, 4.0f),
+          gfx::RectF(215.0f, 50.0f, 80.0f, 12.0f),
+          gfx::RectF(30.0f, 63.0f, 10.0f, 12.0f),
+          gfx::RectF(45.0f, 63.0f, 80.0f, 12.0f),
+      });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(3u, page->GetChildCount());
+
+  CheckParagraph(page->GetChildAtIndex(0u), "1.Introduction");
+  CheckUnorderedList(page->GetChildAtIndex(1u), {"Far reason"});
+  CheckParagraph(page->GetChildAtIndex(2u), "2.Methods");
+}
+
+TEST_F(PdfAccessibilityTreeTest,
+       HeuristicOrderedListGapBeforeIndentedTextNotList) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  // The line after the gap is indented but has no list marker, so it is a
+  // first-line-indented paragraph under a numbered heading, not a sublist.
+  const ui::AXNode* page =
+      SetUpUniformHeuristicPage({"1.", "Introduction", "Indented body line.",
+                                 "Body line two.", "2.", "Methods"},
+                                {
+                                    gfx::RectF(30.0f, 20.0f, 10.0f, 12.0f),
+                                    gfx::RectF(45.0f, 20.0f, 80.0f, 12.0f),
+                                    gfx::RectF(50.0f, 50.0f, 130.0f, 12.0f),
+                                    gfx::RectF(30.0f, 63.0f, 150.0f, 12.0f),
+                                    gfx::RectF(30.0f, 76.0f, 10.0f, 12.0f),
+                                    gfx::RectF(45.0f, 76.0f, 80.0f, 12.0f),
+                                });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(2u, page->GetChildCount());
+
+  CheckParagraph(page->GetChildAtIndex(0u), "1.Introduction");
+  CheckParagraph(page->GetChildAtIndex(1u),
+                 "Indented body line.Body line two.2.Methods");
+}
+
 TEST_F(PdfAccessibilityTreeTest, HeuristicOrderedListStartsAboveOne) {
   base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList feature_list;
