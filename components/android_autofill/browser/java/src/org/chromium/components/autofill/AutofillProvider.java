@@ -867,6 +867,12 @@ public class AutofillProvider {
                 : 0;
     }
 
+    private int getBottomToolbarOffset() {
+        return mWebContents != null
+                ? RenderCoordinates.fromWebContents(mWebContents).getContentOffsetBottomPixInt()
+                : 0;
+    }
+
     private int[] getWebContentScreenLocation() {
         int[] location = new int[2];
         mContainerView.getLocationOnScreen(location);
@@ -882,21 +888,24 @@ public class AutofillProvider {
      */
     private Rect getContainerVisibleScreenBounds() {
         Rect rect = new Rect();
-        if (mContainerView.getGlobalVisibleRect(rect)) {
-            int[] windowLocation = new int[2];
-            mContainerView.getLocationInWindow(windowLocation);
-            int[] screenLocation = new int[2];
-            mContainerView.getLocationOnScreen(screenLocation);
-            int offsetX = screenLocation[0] - windowLocation[0];
-            int offsetY = screenLocation[1] - windowLocation[1];
-            // Translate the rect from window coordinates to screen coordinates.
-            rect.offset(offsetX, offsetY);
-            // In Chrome, the omnibox toolbar sits on top of `mContainerView`, obscuring the top
-            // content. We must add the toolbar offset to `rect.top` to exclude this obscured area
-            // from the visible bounds. We cannot use `getWebContentScreenLocation()` to translate
-            // the whole rect because that would incorrectly offset rect.bottom (which is not
-            // obscured by the top toolbar).
-            rect.top += getToolbarOffset();
+        if (!mContainerView.getGlobalVisibleRect(rect)) {
+            return new Rect();
+        }
+        int[] windowLocation = new int[2];
+        mContainerView.getLocationInWindow(windowLocation);
+        int[] screenLocation = new int[2];
+        mContainerView.getLocationOnScreen(screenLocation);
+        int offsetX = screenLocation[0] - windowLocation[0];
+        int offsetY = screenLocation[1] - windowLocation[1];
+        // Translate the rect from window coordinates to screen coordinates.
+        rect.offset(offsetX, offsetY);
+        // Browser controls (e.g. top/bottom omnibox toolbars in Chrome) sit on top of
+        // `mContainerView`, obscuring its top and/or bottom edges. Exclude both obscured areas
+        // from the visible bounds.
+        rect.top += getToolbarOffset();
+        rect.bottom -= getBottomToolbarOffset();
+        if (rect.isEmpty()) {
+            return new Rect();
         }
         return rect;
     }
@@ -905,20 +914,22 @@ public class AutofillProvider {
      * Clamps the given absolute bounds to the visible screen bounds of the container view.
      *
      * <p>Calculates the intersection of {@code absBounds} with the visible area of {@code
-     * mContainerView}. If the bounds are entirely outside the visible area, returns {@code null}.
+     * mContainerView}. If {@code absBounds} is empty or lies entirely outside the visible area,
+     * returns {@code null}.
      *
      * <p>This method returns new coordinates and does not mutate the input.
      *
      * @param absBounds the absolute bounds in screen coordinates to clamp.
-     * @return coordinates representing the clamped bounds, or {@code null} if the bounds do not
-     *     intersect with the container's visible area.
+     * @return coordinates representing the clamped bounds, or {@code null} if the bounds are empty
+     *     or do not intersect with the container's visible area.
      */
     private @Nullable Rect clampToVisibleBounds(Rect absBounds) {
-        Rect visibleBounds = getContainerVisibleScreenBounds();
         if (absBounds.isEmpty()) {
-            return visibleBounds.contains(absBounds.left, absBounds.top)
-                    ? new Rect(absBounds)
-                    : null;
+            return null;
+        }
+        Rect visibleBounds = getContainerVisibleScreenBounds();
+        if (visibleBounds.isEmpty()) {
+            return null;
         }
 
         Rect clampedBounds = new Rect(absBounds);

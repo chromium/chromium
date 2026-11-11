@@ -107,6 +107,7 @@ public class AutofillProviderTest {
 
     private static class TestContainerView extends FrameLayout {
         private Rect mVisibleRect = new Rect();
+        private boolean mIsVisible = true;
         private int mScreenX;
         private int mScreenY;
 
@@ -120,10 +121,14 @@ public class AutofillProviderTest {
             mScreenY = screenY;
         }
 
+        void setIsVisible(boolean isVisible) {
+            mIsVisible = isVisible;
+        }
+
         @Override
         public boolean getGlobalVisibleRect(Rect r, Point globalOffset) {
             r.set(mVisibleRect);
-            return true;
+            return mIsVisible;
         }
 
         @Override
@@ -219,6 +224,7 @@ public class AutofillProviderTest {
 
         RenderCoordinatesImpl.setInstanceForTesting(mRenderCoordinates);
         when(mRenderCoordinates.getContentOffsetYPixInt()).thenReturn(0);
+        when(mRenderCoordinates.getContentOffsetBottomPixInt()).thenReturn(0);
 
         AutofillProviderJni.setInstanceForTesting(mNativeMock);
     }
@@ -313,8 +319,8 @@ public class AutofillProviderTest {
                 /* focus= */ 1,
                 /* x= */ 0,
                 /* y= */ 0,
-                /* width= */ 0,
-                /* height= */ 0,
+                /* width= */ 50,
+                /* height= */ 20,
                 /* hasServerPrediction= */ false);
 
         assertTrue(formData.mFields.get(0).isAutofilled());
@@ -347,8 +353,8 @@ public class AutofillProviderTest {
                 /* focus= */ 0,
                 /* x= */ 0,
                 /* y= */ 0,
-                /* width= */ 0,
-                /* height= */ 0,
+                /* width= */ 50,
+                /* height= */ 20,
                 /* hasServerPrediction= */ false);
 
         SparseArray<AutofillValue> fillResult = new SparseArray<>(1);
@@ -394,8 +400,8 @@ public class AutofillProviderTest {
                 focus,
                 /* x= */ 0,
                 /* y= */ 0,
-                /* width= */ 0,
-                /* height= */ 0,
+                /* width= */ 50,
+                /* height= */ 20,
                 /* hasServerPrediction= */ false);
 
         // showAutofillDialog should be called so it has to hold the correct virtualId.
@@ -426,8 +432,8 @@ public class AutofillProviderTest {
                 focus,
                 /* x= */ 0,
                 /* y= */ 0,
-                /* width= */ 0,
-                /* height= */ 0,
+                /* width= */ 50,
+                /* height= */ 20,
                 /* hasServerPrediction= */ false);
 
         // shouldAutofillDialog returns false so we call notifyVirtualViewEntered as well and both
@@ -458,8 +464,8 @@ public class AutofillProviderTest {
                 focus,
                 /* x= */ 0,
                 /* y= */ 0,
-                /* width= */ 0,
-                /* height= */ 0,
+                /* width= */ 50,
+                /* height= */ 20,
                 /* hasServerPrediction= */ false);
 
         // shouldAutofillDialog returns false so we call notifyVirtualViewEntered as well and both
@@ -492,8 +498,8 @@ public class AutofillProviderTest {
                 focus,
                 /* x= */ 0,
                 /* y= */ 0,
-                /* width= */ 0,
-                /* height= */ 0,
+                /* width= */ 50,
+                /* height= */ 20,
                 /* hasServerPrediction= */ false);
 
         // showAutofillDialog shouldn't be called so this has to be 0.
@@ -510,8 +516,8 @@ public class AutofillProviderTest {
                 focus,
                 /* x= */ 0,
                 /* y= */ 0,
-                /* width= */ 0,
-                /* height= */ 0,
+                /* width= */ 50,
+                /* height= */ 20,
                 /* hasServerPrediction= */ false);
         assertEquals(0, mDialogVirtualId);
     }
@@ -537,8 +543,8 @@ public class AutofillProviderTest {
                 focus,
                 /* x= */ 0,
                 /* y= */ 0,
-                /* width= */ 0,
-                /* height= */ 0,
+                /* width= */ 50,
+                /* height= */ 20,
                 /* hasServerPrediction= */ false);
         assertEquals(0, mDialogVirtualId);
         assertEquals(FormData.toFieldVirtualId(sessionId, (short) focus), mFocusVirtualId);
@@ -561,8 +567,8 @@ public class AutofillProviderTest {
                 focus,
                 /* x= */ 0,
                 /* y= */ 0,
-                /* width= */ 0,
-                /* height= */ 0,
+                /* width= */ 50,
+                /* height= */ 20,
                 /* hasServerPrediction= */ false);
         assertEquals(0, mDialogVirtualId);
         assertEquals(FormData.toFieldVirtualId(sessionId, (short) focus), mFocusVirtualId);
@@ -695,6 +701,197 @@ public class AutofillProviderTest {
         // Bounds should be clamped.
         assertNotNull(mFocusBounds);
         assertEquals(new Rect(0, 40, 100, 60), mFocusBounds);
+    }
+
+    @Test
+    public void testSuppressEmptyBounds() {
+        setContainerScreenGeometry(new Rect(0, 0, 100, 100), 0, 0);
+        mFocusVirtualId = 0;
+        mFocusBounds = null;
+
+        FormFieldDataBuilder fieldBuilder = new FormFieldDataBuilder();
+        FormData formData =
+                new FormData(
+                        123,
+                        /* name= */ null,
+                        /* host= */ null,
+                        Collections.singletonList(fieldBuilder.build()));
+
+        // Off-screen fields collapsed to 0x0 points by TransformToRootCoordinates() must be
+        // suppressed even when the collapsed point lands on the top/left boundary or inside the
+        // container's visible bounds.
+        float[][] emptyPointInputs = {
+            {10f, 0f}, // Top edge: [20, 0, 20, 0]
+            {0f, 10f}, // Left edge: [0, 20, 0, 20]
+            {10f, 10f}, // Interior: [20, 20, 20, 20]
+        };
+
+        for (float[] point : emptyPointInputs) {
+            mAutofillProvider.startAutofillSession(
+                    formData,
+                    /* focus= */ 0,
+                    /* x= */ point[0],
+                    /* y= */ point[1],
+                    /* width= */ 0,
+                    /* height= */ 0,
+                    /* hasServerPrediction= */ false);
+            assertEquals(0, mFocusVirtualId);
+            assertNull(mFocusBounds);
+
+            mAutofillProvider.queryAutofillSuggestion();
+            verify(mAutofillManager, never()).requestAutofill(any(), anyInt(), any());
+        }
+    }
+
+    private FormData setUpBottomToolbarOffsetTest() {
+        setContainerScreenGeometry(new Rect(0, 0, 100, 100), 0, 0);
+        // Effective visible bounds: [0, 0, 100, 70].
+        when(mRenderCoordinates.getContentOffsetBottomPixInt()).thenReturn(30);
+        mFocusVirtualId = 0;
+        mFocusBounds = null;
+
+        FormFieldDataBuilder fieldBuilder = new FormFieldDataBuilder();
+        return new FormData(
+                123,
+                /* name= */ null,
+                /* host= */ null,
+                Collections.singletonList(fieldBuilder.build()));
+    }
+
+    @Test
+    public void testBottomToolbarOffset_suppressesFieldInsideBottomToolbar() {
+        FormData formData = setUpBottomToolbarOffsetTest();
+
+        // Field lies entirely inside the bottom toolbar region ([0, 70, 100, 100]).
+        mAutofillProvider.startAutofillSession(
+                formData,
+                /* focus= */ 0,
+                /* x= */ 0,
+                /* y= */ 35,
+                /* width= */ 50,
+                /* height= */ 15,
+                /* hasServerPrediction= */ false);
+
+        assertEquals(0, mFocusVirtualId);
+        assertNull(mFocusBounds);
+        mAutofillProvider.queryAutofillSuggestion();
+        verify(mAutofillManager, never()).requestAutofill(any(), anyInt(), any());
+    }
+
+    @Test
+    public void testBottomToolbarOffset_clampsPartiallyOverlappingField() {
+        FormData formData = setUpBottomToolbarOffsetTest();
+        int fieldVirtualId = FormData.toFieldVirtualId(123, (short) 0);
+
+        // Field partially overlaps the bottom toolbar ([0, 50, 100, 90]) -> clamped to
+        // [0, 50, 100, 70].
+        mAutofillProvider.startAutofillSession(
+                formData,
+                /* focus= */ 0,
+                /* x= */ 0,
+                /* y= */ 25,
+                /* width= */ 50,
+                /* height= */ 20,
+                /* hasServerPrediction= */ false);
+
+        assertEquals(fieldVirtualId, mFocusVirtualId);
+        assertEquals(new Rect(0, 50, 100, 70), mFocusBounds);
+        mAutofillProvider.queryAutofillSuggestion();
+        verify(mAutofillManager)
+                .requestAutofill(
+                        eq(mContainerView), eq(fieldVirtualId), eq(new Rect(0, 50, 100, 70)));
+    }
+
+    @Test
+    public void testBottomToolbarOffset_preservesFieldAboveBottomToolbar() {
+        FormData formData = setUpBottomToolbarOffsetTest();
+        int fieldVirtualId = FormData.toFieldVirtualId(123, (short) 0);
+
+        // Field lies completely above the bottom toolbar ([0, 20, 100, 60]) -> unchanged.
+        mAutofillProvider.startAutofillSession(
+                formData,
+                /* focus= */ 0,
+                /* x= */ 0,
+                /* y= */ 10,
+                /* width= */ 50,
+                /* height= */ 20,
+                /* hasServerPrediction= */ false);
+
+        assertEquals(fieldVirtualId, mFocusVirtualId);
+        assertEquals(new Rect(0, 20, 100, 60), mFocusBounds);
+        mAutofillProvider.queryAutofillSuggestion();
+        verify(mAutofillManager)
+                .requestAutofill(
+                        eq(mContainerView), eq(fieldVirtualId), eq(new Rect(0, 20, 100, 60)));
+    }
+
+    @Test
+    public void testSuppressNotificationWhenToolbarsObscureEntireContainer() {
+        setContainerScreenGeometry(new Rect(0, 0, 100, 100), 0, 0);
+        // Combined top (60) and bottom (50) browser controls exceed container height (100),
+        // producing an inverted [0, 60, 100, 50] rect before normalization to [0, 0, 0, 0].
+        when(mRenderCoordinates.getContentOffsetYPixInt()).thenReturn(60);
+        when(mRenderCoordinates.getContentOffsetBottomPixInt()).thenReturn(50);
+
+        mFocusVirtualId = 0;
+        mFocusBounds = null;
+
+        FormFieldDataBuilder fieldBuilder = new FormFieldDataBuilder();
+        FormData formData =
+                new FormData(
+                        123,
+                        /* name= */ null,
+                        /* host= */ null,
+                        Collections.singletonList(fieldBuilder.build()));
+
+        // Transforms to [-10, -10, 90, 90], which spans both [0, 0, 0, 0] and [0, 60, 100, 50] so
+        // Android's Rect.intersect() would falsely return true without the empty-bounds guards.
+        mAutofillProvider.startAutofillSession(
+                formData,
+                /* focus= */ 0,
+                /* x= */ -5,
+                /* y= */ -35,
+                /* width= */ 50,
+                /* height= */ 50,
+                /* hasServerPrediction= */ false);
+
+        assertEquals(0, mFocusVirtualId);
+        assertNull(mFocusBounds);
+        mAutofillProvider.queryAutofillSuggestion();
+        verify(mAutofillManager, never()).requestAutofill(any(), anyInt(), any());
+    }
+
+    @Test
+    public void testSuppressNotificationWhenContainerNotVisible() {
+        // Simulate View.getGlobalVisibleRect() mutating `rect` to non-empty dimensions before an
+        // ancestor clips/hides the container and returns false.
+        setContainerScreenGeometry(new Rect(0, 0, 100, 100), 0, 0);
+        mContainerView.setIsVisible(false);
+
+        mFocusVirtualId = 0;
+        mFocusBounds = null;
+
+        FormFieldDataBuilder fieldBuilder = new FormFieldDataBuilder();
+        FormData formData =
+                new FormData(
+                        123,
+                        /* name= */ null,
+                        /* host= */ null,
+                        Collections.singletonList(fieldBuilder.build()));
+
+        mAutofillProvider.startAutofillSession(
+                formData,
+                /* focus= */ 0,
+                /* x= */ 0,
+                /* y= */ 10,
+                /* width= */ 50,
+                /* height= */ 20,
+                /* hasServerPrediction= */ false);
+
+        assertEquals(0, mFocusVirtualId);
+        assertNull(mFocusBounds);
+        mAutofillProvider.queryAutofillSuggestion();
+        verify(mAutofillManager, never()).requestAutofill(any(), anyInt(), any());
     }
 
     @Test
