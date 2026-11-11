@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace actor {
 
@@ -29,6 +30,7 @@ content::WebContents* HeadlessWebContentsManager::Create() {
   std::unique_ptr<content::WebContents> contents =
       content::WebContents::Create(params);
   contents->SetDelegate(this);
+  contents->Resize(gfx::Rect(kViewportSize));
   return contents_.emplace_back(std::move(contents)).get();
 }
 

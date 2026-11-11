@@ -4,6 +4,8 @@
 
 #include "chrome/browser/actor/tab_observation_controller.h"
 
+#include <algorithm>
+
 #include "base/functional/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -12,6 +14,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_metrics.h"
+#include "chrome/browser/actor/actor_surface.h"
 #include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -30,6 +33,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -234,6 +238,89 @@ class TabObservationControllerWithoutScreenshotBrowserTest
  private:
   base::test::ScopedFeatureList screenshot_feature_list_;
 };
+
+// A headless page is observed under its surface ID, in a virtual window.
+IN_PROC_BROWSER_TEST_F(TabObservationControllerBrowserTest,
+                       ObserveHeadlessSurface) {
+  TaskId task_id = CreateTask();
+  ScopedHeadlessActorSurface headless =
+      actor_service()->CreateHeadlessActorSurface();
+  ActorSurface* headless_surface = headless.actor_surface_handle().Get();
+  ASSERT_TRUE(headless_surface);
+  ASSERT_TRUE(
+      content::NavigateToURL(headless_surface->GetWebContents(),
+                             embedded_test_server()->GetURL("/title1.html")));
+  {
+    base::test::TestFuture<mojom::ActionResultPtr> add_result;
+    actor_service()->GetTask(task_id)->AddActorSurface(
+        headless.actor_surface_handle(), /*stop_task_on_detach=*/true,
+        add_result.GetCallback());
+    ExpectOkResult(add_result);
+  }
+
+  base::test::TestFuture<TabObservationController*,
+                         std::unique_ptr<ObservationResult>>
+      future;
+  TabObservationController controller(
+      browser()->GetProfile(), task_id, base::TimeTicks::Now(),
+      /*skip_async_observation_information=*/false, {},
+      TabObservationStrategy(), future.GetCallback());
+  controller.Start();
+
+  auto [controller_ptr, result] = future.Take();
+  ASSERT_EQ(result->tab_observations.size(), 1u);
+  const int32_t headless_id = headless.actor_surface_handle().raw_value();
+  EXPECT_EQ(result->tab_observations[0].id(), headless_id);
+
+  auto window = std::ranges::find_if(
+      result->window_observations, [&](const auto& window_observation) {
+        return std::ranges::find(window_observation.tab_ids(), headless_id) !=
+               window_observation.tab_ids().end();
+      });
+  ASSERT_NE(window, result->window_observations.end());
+  EXPECT_EQ(window->id(), headless_id);
+  EXPECT_TRUE(window->active());
+  EXPECT_EQ(window->activated_tab_id(), headless_id);
+  EXPECT_THAT(window->tab_ids(), testing::ElementsAre(headless_id));
+}
+
+// Without screenshots, a headless page yields a complete observation with its
+// page content.
+IN_PROC_BROWSER_TEST_F(TabObservationControllerWithoutScreenshotBrowserTest,
+                       ObserveHeadlessSurfaceWithoutScreenshot) {
+  TaskId task_id = CreateTask();
+  ScopedHeadlessActorSurface headless =
+      actor_service()->CreateHeadlessActorSurface();
+  ActorSurface* headless_surface = headless.actor_surface_handle().Get();
+  ASSERT_TRUE(headless_surface);
+  ASSERT_TRUE(
+      content::NavigateToURL(headless_surface->GetWebContents(),
+                             embedded_test_server()->GetURL("/title1.html")));
+  {
+    base::test::TestFuture<mojom::ActionResultPtr> add_result;
+    actor_service()->GetTask(task_id)->AddActorSurface(
+        headless.actor_surface_handle(), /*stop_task_on_detach=*/true,
+        add_result.GetCallback());
+    ExpectOkResult(add_result);
+  }
+
+  base::test::TestFuture<TabObservationController*,
+                         std::unique_ptr<ObservationResult>>
+      future;
+  TabObservationController controller(
+      browser()->GetProfile(), task_id, base::TimeTicks::Now(),
+      /*skip_async_observation_information=*/false, {},
+      TabObservationStrategy(), future.GetCallback());
+  controller.Start();
+
+  auto [controller_ptr, result] = future.Take();
+  ASSERT_EQ(result->tab_observations.size(), 1u);
+  EXPECT_EQ(result->tab_observations[0].id(),
+            headless.actor_surface_handle().raw_value());
+  EXPECT_EQ(result->tab_observations[0].result(),
+            optimization_guide::proto::TabObservation::TAB_OBSERVATION_OK);
+  EXPECT_TRUE(result->tab_observations[0].has_annotated_page_content());
+}
 
 IN_PROC_BROWSER_TEST_F(TabObservationControllerWithoutScreenshotBrowserTest,
                        ObserveWithoutScreenshot) {

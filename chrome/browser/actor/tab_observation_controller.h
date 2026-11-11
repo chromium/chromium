@@ -100,6 +100,10 @@ class TabObservationController {
 #if BUILDFLAG(IS_ANDROID)
   void PopulateAndroidOffscreenWindowObservations(ActorTask* task);
 #endif
+  // Adds a virtual window observation for each headless page `task` last acted
+  // on.
+  void PopulateHeadlessWindowObservations(ActorTask* task);
+
   std::vector<ActorSurfaceHandle> PopulateTabObservations(ActorTask* task);
   void StartFetchingObservations(
       const std::vector<ActorSurfaceHandle>& tabs_to_fetch);
@@ -115,7 +119,7 @@ class TabObservationController {
   void OnAllObservationsDone();
 
   // Crash and retry handling.
-  bool ReloadCrashedTab(ActorSurface& crashed_tab);
+  bool ReloadCrashedSurface(ActorSurface& crashed_surface);
   void OnReloadDone(ActorSurfaceHandle actor_surface_handle,
                     ObservationDelayController::Result reload_result);
   void ScheduleRetry();

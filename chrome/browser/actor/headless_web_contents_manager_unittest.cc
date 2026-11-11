@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "build/build_config.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
@@ -54,6 +55,19 @@ class HeadlessWebContentsManagerTest : public testing::Test {
   MockObserver observer_;
   std::unique_ptr<HeadlessWebContentsManager> manager_;
 };
+
+// Android sizes a headless page through its view tree, not
+// `WebContents::Resize()`, so this only holds on desktop.
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(HeadlessWebContentsManagerTest, CreateSizesToViewport) {
+  content::WebContents* contents = manager_->Create();
+
+  EXPECT_EQ(contents->GetContainerBounds().size(),
+            HeadlessWebContentsManager::kViewportSize);
+
+  ExpectNotifiedWhileValid(contents);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(HeadlessWebContentsManagerTest, DestroyNotifiesThenDestroys) {
   content::WebContents* contents = manager_->Create();

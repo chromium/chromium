@@ -12,6 +12,7 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace content {
 class BrowserContext;
@@ -43,6 +44,9 @@ class HeadlessWebContentsManager : public content::WebContentsDelegate {
   HeadlessWebContentsManager& operator=(const HeadlessWebContentsManager&) =
       delete;
   ~HeadlessWebContentsManager() override;
+
+  // The viewport size of every headless `WebContents`.
+  static constexpr gfx::Size kViewportSize = {1280, 800};
 
   // Creates a headless WebContents owned by this manager. The returned pointer
   // stays valid until observers are notified of its destruction.

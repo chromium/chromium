@@ -48,12 +48,21 @@ BASE_FEATURE(kGlicRetryFailedObservations, base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<base::TimeDelta> kObservationRetryDelay{
     &kGlicRetryFailedObservations, "delay", base::Seconds(5)};
 
-ActorSurface* GetCrashedTab(actor::ActorTask& task) {
+// Returns the ID a page is observed under: a tab's tab ID, which window
+// observations and clients also use, or a headless page's surface ID, since it
+// has no tab.
+int32_t GetObservationId(ActorSurfaceHandle actor_surface_handle) {
+  const tabs::TabHandle tab_handle = actor_surface_handle.GetTabHandle();
+  return tab_handle != tabs::TabHandle::Null()
+             ? tab_handle.raw_value()
+             : actor_surface_handle.raw_value();
+}
+
+ActorSurface* GetCrashedSurface(actor::ActorTask& task) {
   for (ActorSurfaceHandle actor_surface_handle :
        task.GetLastActedActorSurfaces()) {
     ActorSurface* actor_surface = actor_surface_handle.Get();
-    // TODO(b/565820285): Handle headless surfaces once they're observed.
-    if (!actor_surface || !actor_surface->IsTab()) {
+    if (!actor_surface) {
       continue;
     }
 
@@ -146,9 +155,9 @@ void TabObservationController::StartImpl() {
 
   if (base::FeatureList::IsEnabled(kGlicReloadAfterPerformActionsCrash) &&
       !attempted_reload_after_crash_) {
-    if (ActorSurface* crashed_tab = GetCrashedTab(*task)) {
+    if (ActorSurface* crashed_surface = GetCrashedSurface(*task)) {
       attempted_reload_after_crash_ = true;
-      if (ReloadCrashedTab(*crashed_tab)) {
+      if (ReloadCrashedSurface(*crashed_surface)) {
         return;
       }
     }
@@ -226,6 +235,30 @@ void TabObservationController::PopulateWindowObservations(ActorTask* task) {
   // here.
   PopulateAndroidOffscreenWindowObservations(task);
 #endif
+  PopulateHeadlessWindowObservations(task);
+}
+
+void TabObservationController::PopulateHeadlessWindowObservations(
+    ActorTask* task) {
+  // Clients expect every observed page to be in a window, so report each
+  // headless page in a virtual window with the page's own ID. That ID is
+  // negative while `kUseTabHandleAsSurfaceHandle` is enabled, so it can't
+  // collide with a real window's ID.
+  for (const ActorSurfaceHandle& handle : task->GetLastActedActorSurfaces()) {
+    const ActorSurface* surface = handle.Get();
+    if (!surface || surface->IsTab()) {
+      continue;
+    }
+    const int32_t id = GetObservationId(handle);
+    optimization_guide::proto::WindowObservation window_observation;
+    window_observation.set_id(id);
+    // Mark the window active (most recently used) so actuation on the page
+    // continues.
+    window_observation.set_active(true);
+    window_observation.set_activated_tab_id(id);
+    window_observation.add_tab_ids(id);
+    result_->window_observations.push_back(std::move(window_observation));
+  }
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -277,16 +310,9 @@ TabObservationController::PopulateTabObservations(ActorTask* task) {
   const ActorTask::ActorSurfaceHandleSet last_acted_actor_surfaces =
       task->GetLastActedActorSurfaces();
   for (ActorSurfaceHandle actor_surface_handle : last_acted_actor_surfaces) {
-    // TODO(b/565820285): Decide how to handle headless surfaces here: observe
-    // them, or skip them until headless observation is supported.
-    tabs::TabHandle tab_handle = actor_surface_handle.GetTabHandle();
-    if (tab_handle == tabs::TabHandle::Null()) {
-      continue;
-    }
-
     ActorSurface* actor_surface = actor_surface_handle.Get();
     optimization_guide::proto::TabObservation tab_observation;
-    tab_observation.set_id(tab_handle.raw_value());
+    tab_observation.set_id(GetObservationId(actor_surface_handle));
 
     if (!actor_surface) {
       tab_observation.set_result(optimization_guide::proto::TabObservation::
@@ -349,7 +375,7 @@ void TabObservationController::StartFetchingObservations(
     // Find the observation we just added.
     optimization_guide::proto::TabObservation* observation = nullptr;
     for (auto& obs : result_->tab_observations) {
-      if (obs.id() == actor_surface_handle.GetTabHandle().raw_value()) {
+      if (obs.id() == GetObservationId(actor_surface_handle)) {
         observation = &obs;
         break;
       }
@@ -520,8 +546,9 @@ void TabObservationController::OnAllObservationsDone() {
   std::move(done_callback_).Run(this, std::move(result_));
 }
 
-bool TabObservationController::ReloadCrashedTab(ActorSurface& crashed_tab) {
-  content::WebContents* contents = crashed_tab.GetWebContents();
+bool TabObservationController::ReloadCrashedSurface(
+    ActorSurface& crashed_surface) {
+  content::WebContents* contents = crashed_surface.GetWebContents();
   if (!contents) {
     return false;
   }
@@ -531,10 +558,10 @@ bool TabObservationController::ReloadCrashedTab(ActorSurface& crashed_tab) {
       task_id_, actor_service->GetJournal());
 
   contents->GetController().Reload(content::ReloadType::NORMAL, true);
-  reload_observer_->Wait(
-      crashed_tab,
-      base::BindOnce(&TabObservationController::OnReloadDone,
-                     weak_ptr_factory_.GetWeakPtr(), crashed_tab.GetHandle()));
+  reload_observer_->Wait(crashed_surface,
+                         base::BindOnce(&TabObservationController::OnReloadDone,
+                                        weak_ptr_factory_.GetWeakPtr(),
+                                        crashed_surface.GetHandle()));
   return true;
 }
 
