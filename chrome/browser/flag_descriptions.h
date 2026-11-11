@@ -1871,6 +1871,10 @@ inline constexpr char kGlicActorAutofillSectionLabelDescription[] =
 inline constexpr char kGlicActorCursorName[] = "Glic actor cursor";
 inline constexpr char kGlicActorCursorDescription[] =
     "Enables the Glic actor cursor";
+inline constexpr char kGlicActorCursorChipName[] = "Glic actor cursor chip";
+inline constexpr char kGlicActorCursorChipDescription[] =
+    "Enables the task step progress text chip next to the Glic actor magic "
+    "cursor.";
 inline constexpr char kGlicActorEnableScriptToolsName[] =
     "Glic actor script tools";
 inline constexpr char kGlicActorEnableScriptToolsDescription[] =

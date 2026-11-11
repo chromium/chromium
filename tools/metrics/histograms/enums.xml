@@ -13528,6 +13528,7 @@ from previous Chrome versions.
   <int value="-463764673" label="TextHighlightFullLink:disabled"/>
   <int value="-463661468" label="FullscreenAlwaysShowTrafficLights:disabled"/>
   <int value="-463161052" label="TearOffWebAppTabOpensWebAppWindow:enabled"/>
+  <int value="-462886253" label="GlicActorUiMagicCursorChip:enabled"/>
   <int value="-462877654" label="FilesMaterializedViews:enabled"/>
   <int value="-462554210"
       label="OminboxUIExperimentUseGenericSearchEngineIcon:enabled"/>
@@ -19986,6 +19987,7 @@ from previous Chrome versions.
   <int value="1454375019" label="AutofillEnableGradientGoogleLogos:disabled"/>
   <int value="1454527518" label="ArcNativeBridgeExperiment:enabled"/>
   <int value="1454656852" label="ResponsiveToolbar:enabled"/>
+  <int value="1455200894" label="GlicActorUiMagicCursorChip:disabled"/>
   <int value="1455708250" label="AutofillEnableVerveCardSupport:disabled"/>
   <int value="1455753326" label="EnableNearbyBleV2GattServer:disabled"/>
   <int value="1455881930" label="V8VmFuture:enabled"/>

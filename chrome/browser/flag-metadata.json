@@ -5704,6 +5704,14 @@
     "expiry_milestone": 160
   },
   {
+    "name": "glic-actor-cursor-chip",
+    "owners": [
+      "rosiey@google.com",
+      "//chrome/browser/actor/OWNERS"
+    ],
+    "expiry_milestone": 165
+  },
+  {
     "name": "glic-actor-incremental-typing",
     "owners": [
       "yuhengh@google.com",
