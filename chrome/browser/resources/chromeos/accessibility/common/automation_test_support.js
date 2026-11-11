@@ -205,7 +205,7 @@ class AutomationTestSupport {
   async waitForNumTabsWithName(num, name) {
     const findParams = {
       role: 'tab',
-      attributes: {name, className: 'Tab'},
+      attributes: {name, className: /^(Tab|TabView)$/},
     };
     // This will not return until it finds at least num.
     const nodes = await this.findNumNodes_(findParams, num);

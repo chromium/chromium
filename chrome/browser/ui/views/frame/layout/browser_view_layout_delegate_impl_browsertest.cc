@@ -16,7 +16,7 @@
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout.h"
-#include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
@@ -171,8 +171,8 @@ IN_PROC_BROWSER_TEST_P(BrowserViewLayoutDelegateImplBrowsertest,
   RunTestSequence(
       WithView(kBrowserViewElementId,
                [&bounds](BrowserView* browser_view) {
-                 TabStrip* const tabstrip =
-                     browser_view->horizontal_tab_strip_for_testing();
+                 views::View* const tabstrip =
+                     browser_view->tab_strip_view()->GetTabStripView();
                  tabstrip->InvalidateLayout();
                  views::test::RunScheduledLayout(browser_view);
                  bounds = GetBoundsInWindow(tabstrip);
