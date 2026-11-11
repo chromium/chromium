@@ -7251,6 +7251,10 @@ void AXObjectCacheImpl::ComputeNodesOnLine(const LayoutObject* layout_object) {
   // detect unlikely (but theoretically possible), loops.
   constexpr int kMaxInlineCursorNextObjectCalls = 250000;
   int runs = 0;
+  // MoveToNextInlineLeafOnLine() continues from an object's last fragment, so
+  // processing an object again (e.g. on each line of a multi-line text) only
+  // repeats work and makes this quadratic. Process each object once.
+  HeapHashSet<Member<const LayoutObject>> processed_objects;
 
   do {
     InlineCursor line_cursor = cursor;
@@ -7270,6 +7274,11 @@ void AXObjectCacheImpl::ComputeNodesOnLine(const LayoutObject* layout_object) {
         break;
       }
       auto* line_object = line_cursor.Current().GetLayoutObject();
+      if (line_object && !processed_objects.insert(line_object).is_new_entry) {
+        // Everything from here was linked when `line_object` was first
+        // processed.
+        break;
+      }
       line_cursor.MoveToNextInlineLeafOnLine();
 
       if (!line_object) [[unlikely]] {

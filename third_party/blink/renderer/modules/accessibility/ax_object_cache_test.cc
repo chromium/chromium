@@ -1758,6 +1758,72 @@ TEST_F(AccessibilityTest, ComputeNodesOnLineWithNonIfcText) {
   cache.ComputeNodesOnLine(target->GetLayoutObject());
 }
 
+// Test to make sure that we don't reprocess a text object on every line it
+// spans, walking all of its remaining fragments and the rest of its last line
+// each time, which will cause quadratic growth in `ComputeNodesOnLine()`. The
+// repeated work counts toward the traversal limit, so it would also leave the
+// objects on the lines after the text unlinked.
+TEST_F(AccessibilityTest, ComputeNodesOnLineAfterLongMultilineText) {
+  constexpr int kLineCount = 2500;
+  constexpr int kTrailingSpanCount = 200;
+  StringBuilder html;
+  html.Append("<div style='white-space:pre'><span>");
+  for (int i = 0; i < kLineCount; ++i) {
+    html.Append("line\n");
+  }
+  html.Append("last</span>");
+  for (int i = 0; i < kTrailingSpanCount; ++i) {
+    html.Append("<span>x</span>");
+  }
+  html.Append("\n<span id='first'>first</span><span id='second'>second</span>");
+  html.Append("</div>");
+  SetBodyInnerHTML(html.ToString());
+
+  const LayoutObject* first =
+      GetElementById("first")->firstChild()->GetLayoutObject();
+  const LayoutObject* second =
+      GetElementById("second")->firstChild()->GetLayoutObject();
+  ASSERT_TRUE(first);
+  ASSERT_TRUE(second);
+
+  AXObjectCacheImpl& cache = GetAXObjectCache();
+  cache.ClearCachedNodesOnLine();
+  cache.ComputeNodesOnLine(first);
+  EXPECT_EQ(second, cache.CachedNextOnLine(first));
+  EXPECT_EQ(first, cache.CachedPreviousOnLine(second));
+}
+
+// Test that a text object spanning several lines is linked to the objects
+// before its first fragment and after its last fragment.
+TEST_F(AccessibilityTest, ComputeNodesOnLineWithMultilineText) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="white-space:pre"><span id="before">before</span><span
+        id="text">first
+second
+last</span><span id="after">after</span></div>
+  )HTML");
+
+  const LayoutObject* before =
+      GetElementById("before")->firstChild()->GetLayoutObject();
+  const LayoutObject* text =
+      GetElementById("text")->firstChild()->GetLayoutObject();
+  const LayoutObject* after =
+      GetElementById("after")->firstChild()->GetLayoutObject();
+  ASSERT_TRUE(before);
+  ASSERT_TRUE(text);
+  ASSERT_TRUE(after);
+
+  AXObjectCacheImpl& cache = GetAXObjectCache();
+  cache.ClearCachedNodesOnLine();
+  cache.ComputeNodesOnLine(text);
+  EXPECT_EQ(nullptr, cache.CachedPreviousOnLine(before));
+  EXPECT_EQ(text, cache.CachedNextOnLine(before));
+  EXPECT_EQ(before, cache.CachedPreviousOnLine(text));
+  EXPECT_EQ(after, cache.CachedNextOnLine(text));
+  EXPECT_EQ(text, cache.CachedPreviousOnLine(after));
+  EXPECT_EQ(nullptr, cache.CachedNextOnLine(after));
+}
+
 TEST_F(AccessibilityTest, IsRelevantSlotElement) {
   SetBodyInnerHTML(R"HTML(
     <select id="sel"><option>one</option></select>
