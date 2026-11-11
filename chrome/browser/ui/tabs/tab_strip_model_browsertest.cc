@@ -92,10 +92,7 @@ class TabStripModelPreventCloseTest : public PreventCloseTestBase,
       const TabStripModelPreventCloseTest&) = delete;
 
   // TabStripModelObserver:
-  MOCK_METHOD(void,
-              OnTabCloseCancelled,
-              (const tabs::TabInterface* tab),
-              (override));
+  MOCK_METHOD(void, OnTabCloseCancelled, (tabs::TabHandle tab), (override));
 
  protected:
   void ObserveBrowser(BrowserWindowInterface* browser) {

@@ -540,7 +540,7 @@ class TabStripModelObserver {
 
   // Called when a tab is attempted to be closed but the closure is not
   // permitted by the `TabStripModel::IsTabClosable` oracle.
-  virtual void OnTabCloseCancelled(const tabs::TabInterface* tab);
+  virtual void OnTabCloseCancelled(tabs::TabHandle tab);
 
   // The specified Tab changed in some way. `tab`
   // may be an entirely different object and the old value is no longer

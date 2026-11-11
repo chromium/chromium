@@ -4519,7 +4519,7 @@ void TabStripModel::CloseTabs(base::span<content::WebContents* const> items,
       filtered_items.push_back(contents);
     } else {
       for (auto& observer : observers_) {
-        observer.OnTabCloseCancelled(tab);
+        observer.OnTabCloseCancelled(tab->GetHandle());
       }
     }
   }
