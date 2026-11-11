@@ -333,6 +333,24 @@ IN_PROC_BROWSER_TEST_F(SessionViewImplBrowserTest, ToastShowsOnError) {
   // clang-format on
 }
 
+IN_PROC_BROWSER_TEST_F(SessionViewImplBrowserTest, ToastShowsOnSystemMicMuted) {
+  // clang-format off
+  RunTestSequence(
+      StartSession(),
+      Do([this]() {
+        session_controller().OnSystemMicMuteChanged(
+            /*muted=*/false, /*at_stream_start=*/false);
+      }),
+      EnsureNotPresent(toasts::ToastView::kToastViewId),
+      Do([this]() {
+        session_controller().OnSystemMicMuteChanged(
+            /*muted=*/true, /*at_stream_start=*/false);
+      }),
+      WaitForShow(toasts::ToastView::kToastViewId)
+  );
+  // clang-format on
+}
+
 #if BUILDFLAG(IS_CHROMEOS)
 // Runs with the video conference tray off and on: Ash hides privacy indicators
 // for most apps when the tray is on, but not for TTC.
@@ -381,6 +399,45 @@ IN_PROC_BROWSER_TEST_P(SessionViewImplMicIndicatorBrowserTest,
       CheckResult(is_ttc_using_mic, true),
       Do([this]() { ttc_service().EndSession(); }),
       CheckResult(is_ttc_using_mic, false)
+  );
+  // clang-format on
+}
+
+// Sets the video conference tray explicitly: the testing field trial config
+// enables it on bots.
+class SessionViewImplMutedAtStartBrowserTest
+    : public SessionViewImplBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  SessionViewImplMutedAtStartBrowserTest() {
+    feature_list_.InitWithFeatureState(
+        ash::features::kFeatureManagementVideoConference, GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SessionViewImplMutedAtStartBrowserTest,
+                         /*video_conference_tray=*/testing::Bool());
+
+// Without the video conference tray, ChromeOS notifies the user itself when a
+// stream opens muted, so there is no toast. With the tray, nothing else tells
+// the user, so the toast shows.
+IN_PROC_BROWSER_TEST_P(SessionViewImplMutedAtStartBrowserTest,
+                       ToastOnlyWithVideoConferenceTray) {
+  const bool video_conference_tray = GetParam();
+  // clang-format off
+  RunTestSequence(
+      StartSession(),
+      Do([this]() {
+        session_controller().OnSystemMicMuteChanged(
+            /*muted=*/true, /*at_stream_start=*/true);
+      }),
+      video_conference_tray
+          ? WaitForShow(toasts::ToastView::kToastViewId)
+          : EnsureNotPresent(toasts::ToastView::kToastViewId)
   );
   // clang-format on
 }

@@ -34,6 +34,7 @@ class SessionViewImpl : public SessionView, public TtcViewDelegate {
   void OnError(ErrorCode error) override;
   void OnUserAudioLevelUpdate(float audio_level) override;
   void OnMicCaptureChanged(bool capturing) override;
+  void OnSystemMicMuteChanged(bool muted, bool at_stream_start) override;
 
   // TtcViewDelegate:
   void EndSessionAsync() override;
@@ -43,6 +44,9 @@ class SessionViewImpl : public SessionView, public TtcViewDelegate {
  private:
   // SessionView:
   void OnUiStateChanged(UiState state) override;
+
+  // Shows `toast_id` in the window the session is in.
+  void ShowToast(ToastId toast_id);
 
   // The views that show the audio level subscribe to it here.
   base::RepeatingCallbackList<void(float)> audio_level_callbacks_;

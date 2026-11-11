@@ -87,7 +87,8 @@ enum class ToastId {
   kEnterpriseCopyFailClosed = 64,
   kTtcInactivityTimeout = 65,
   kGlic = 66,
-  kMaxValue = kGlic,
+  kTtcMicrophoneMuted = 67,
+  kMaxValue = kTtcMicrophoneMuted,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/toasts/enums.xml:ToastId)
 

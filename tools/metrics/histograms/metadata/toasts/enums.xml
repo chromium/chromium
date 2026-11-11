@@ -126,6 +126,7 @@ chromium-metrics-reviews@google.com.
   <int value="64" label="Enterprise copy fail-closed toast"/>
   <int value="65" label="TTC inactivity timeout"/>
   <int value="66" label="Glic toast"/>
+  <int value="67" label="TTC microphone muted"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/ui/toasts/api/toast_id.h:ToastId) -->

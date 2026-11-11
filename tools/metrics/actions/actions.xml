@@ -1116,6 +1116,7 @@ should be able to be added at any place in this file.
   <variant name=".Translate" summary="Translate"/>
   <variant name=".TtcGenericError" summary="TTC generic error"/>
   <variant name=".TtcInactivityTimeout" summary="TTC inactivity timeout"/>
+  <variant name=".TtcMicrophoneMuted" summary="TTC microphone muted"/>
   <variant name=".TtcNoMicrophoneError" summary="TTC no microphone error"/>
 </variants>
 

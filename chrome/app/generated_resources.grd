@@ -14610,6 +14610,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_TTC_INACTIVITY_TIMEOUT_TOAST" translateable="false" desc="Text shown in a toast notification when a TTC session terminates due to inactivity.">
         Listening stopped due to inactivity
       </message>
+      <message name="IDS_TTC_MIC_MUTED_TOAST" translateable="false" desc="Text shown in a toast notification when the system mutes the microphone during a TTC session, e.g. with a hardware switch.">
+        Your microphone is muted
+      </message>
       <message name="IDS_TTC_VOICE_PLATE_PROCESSING_ACCNAME" translateable="false" desc="Accessible status name for the TTC voice plate waveform while processing or connecting.">
         Processing
       </message>

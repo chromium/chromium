@@ -828,6 +828,16 @@ void ToastService::RegisterToasts() {
             .AddCloseButton()
             .AddGlobalScoped()
             .Build());
+    toast_registry_->RegisterToast(
+        ToastId::kTtcMicrophoneMuted,
+        ToastSpecification::Builder(
+            features::IsRoundedIconsEnabled()
+                ? vector_icons::kMicOffIcon
+                : vector_icons::kMicOffChromeRefreshOldIcon,
+            IDS_TTC_MIC_MUTED_TOAST)
+            .AddCloseButton()
+            .AddGlobalScoped()
+            .Build());
   }
 
   toast_registry_->RegisterToast(
