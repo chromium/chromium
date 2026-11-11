@@ -31,8 +31,10 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.v
 
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
@@ -76,6 +78,7 @@ import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.UiSwitches;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 import java.io.IOException;
 import java.util.List;
@@ -90,7 +93,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class TabGroupUiTest {
     @Rule
     public AutoResetCtaTransitTestRule mActivityTestRule =
-            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
+            ChromeTransitTestRules.autoResetCtaActivityRule();
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -133,12 +136,9 @@ public class TabGroupUiTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
-    @DisableIf.Build(supported_abis_includes = "x86")
-    @DisableIf.Build(supported_abis_includes = "x86_64", message = "crbug.com/578379424")
     public void testRenderStrip_Select5thTabIn10Tabs() throws IOException {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        AtomicReference<RecyclerView> recyclerViewReference = new AtomicReference<>();
-        TabUiTestHelper.addBlankTabs(cta, false, 9);
+        addBlankTabsAndSettle(cta, 9);
         enterTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 10);
         mergeAllNormalTabsToAGroup(cta);
@@ -148,16 +148,9 @@ public class TabGroupUiTest {
         clickFirstCardFromTabSwitcher(cta);
         clickNthTabInDialog(cta, 4);
 
-        waitForTabGroupStrip();
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    ViewGroup bottomToolbar = cta.findViewById(R.id.tab_group_ui_container);
-                    RecyclerView stripRecyclerView =
-                            bottomToolbar.findViewById(R.id.tab_list_recycler_view);
-                    recyclerViewReference.set(stripRecyclerView);
-                });
-        mRenderTestRule.render(recyclerViewReference.get(), "5th_tab_selected");
+        RecyclerView stripRecyclerView =
+                waitForTabGroupStripToSettle(cta, /* expectedCount= */ 10, /* selectedIndex= */ 4);
+        mRenderTestRule.render(stripRecyclerView, "5th_tab_selected");
     }
 
     @Test
@@ -166,8 +159,7 @@ public class TabGroupUiTest {
     @DisabledTest(message = "crbug.com/359640997")
     public void testRenderStrip_Select10thTabIn10Tabs() throws IOException {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        AtomicReference<RecyclerView> recyclerViewReference = new AtomicReference<>();
-        TabUiTestHelper.addBlankTabs(cta, false, 9);
+        addBlankTabsAndSettle(cta, 9);
         enterTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 10);
         mergeAllNormalTabsToAGroup(cta);
@@ -177,16 +169,9 @@ public class TabGroupUiTest {
         clickFirstCardFromTabSwitcher(cta);
         clickNthTabInDialog(cta, 9);
 
-        waitForTabGroupStrip();
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    ViewGroup bottomToolbar = cta.findViewById(R.id.tab_group_ui_container);
-                    RecyclerView stripRecyclerView =
-                            bottomToolbar.findViewById(R.id.tab_list_recycler_view);
-                    recyclerViewReference.set(stripRecyclerView);
-                });
-        mRenderTestRule.render(recyclerViewReference.get(), "10th_tab_selected");
+        RecyclerView stripRecyclerView =
+                waitForTabGroupStripToSettle(cta, /* expectedCount= */ 10, /* selectedIndex= */ 9);
+        mRenderTestRule.render(stripRecyclerView, "10th_tab_selected");
     }
 
     @Test
@@ -195,7 +180,7 @@ public class TabGroupUiTest {
     public void testRenderStrip_toggleNotificationBubble() throws IOException {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         AtomicReference<ViewGroup> controlsReference = new AtomicReference<>();
-        TabUiTestHelper.addBlankTabs(cta, false, 1);
+        addBlankTabsAndSettle(cta, 1);
         enterTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 2);
         mergeAllNormalTabsToAGroup(cta);
@@ -205,7 +190,7 @@ public class TabGroupUiTest {
         clickFirstCardFromTabSwitcher(cta);
         clickNthTabInDialog(cta, 1);
 
-        waitForTabGroupStrip();
+        waitForTabGroupStripToSettle(cta, /* expectedCount= */ 2, /* selectedIndex= */ 1);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -241,8 +226,7 @@ public class TabGroupUiTest {
     @Feature({"RenderTest"})
     public void testRenderStrip_AddTab() throws IOException {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        AtomicReference<RecyclerView> recyclerViewReference = new AtomicReference<>();
-        TabUiTestHelper.addBlankTabs(cta, false, 9);
+        addBlankTabsAndSettle(cta, 9);
         enterTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 10);
         mergeAllNormalTabsToAGroup(cta);
@@ -251,23 +235,16 @@ public class TabGroupUiTest {
         // Select the first tab in group and add one new tab to group.
         clickFirstCardFromTabSwitcher(cta);
         clickNthTabInDialog(cta, 0);
-        waitForTabGroupStrip();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    ViewGroup bottomToolbar = cta.findViewById(R.id.tab_group_ui_container);
-                    RecyclerView stripRecyclerView =
-                            bottomToolbar.findViewById(R.id.tab_list_recycler_view);
-                    recyclerViewReference.set(stripRecyclerView);
-                    // Disable animation to reduce flakiness.
-                    stripRecyclerView.setItemAnimator(null);
-                });
+        waitForTabGroupStripToSettle(cta, /* expectedCount= */ 10, /* selectedIndex= */ 0);
         onView(
                         allOf(
                                 withId(R.id.toolbar_new_tab_button),
                                 withParent(withId(R.id.main_content)),
                                 withEffectiveVisibility(VISIBLE)))
                 .perform(click());
-        mRenderTestRule.render(recyclerViewReference.get(), "11th_tab_selected");
+        RecyclerView stripRecyclerView =
+                waitForTabGroupStripToSettle(cta, /* expectedCount= */ 11, /* selectedIndex= */ 10);
+        mRenderTestRule.render(stripRecyclerView, "11th_tab_selected");
     }
 
     @Test
@@ -276,8 +253,7 @@ public class TabGroupUiTest {
     @DisableFeatures({ChromeFeatureList.DATA_SHARING, ChromeFeatureList.DATA_SHARING_JOIN_ONLY})
     public void testRenderStrip_BackgroundAddTab() throws IOException {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        AtomicReference<RecyclerView> recyclerViewReference = new AtomicReference<>();
-        TabUiTestHelper.addBlankTabs(cta, false, 2);
+        addBlankTabsAndSettle(cta, 2);
         enterTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 3);
         mergeAllNormalTabsToAGroup(cta);
@@ -286,6 +262,7 @@ public class TabGroupUiTest {
         // Select the first tab in group and add one new tab to group.
         clickFirstCardFromTabSwitcher(cta);
         clickNthTabInDialog(cta, 0);
+        waitForTabGroupStripToSettle(cta, /* expectedCount= */ 3, /* selectedIndex= */ 0);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Tab tab =
@@ -302,17 +279,9 @@ public class TabGroupUiTest {
                             tabModel.getTabAt(0),
                             /* notify= */ TabGroupMergeNotificationType.DONT_NOTIFY);
                 });
-        waitForTabGroupStrip();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    ViewGroup bottomToolbar = cta.findViewById(R.id.tab_group_ui_container);
-                    RecyclerView stripRecyclerView =
-                            bottomToolbar.findViewById(R.id.tab_list_recycler_view);
-                    recyclerViewReference.set(stripRecyclerView);
-                    // Disable animation to reduce flakiness.
-                    stripRecyclerView.setItemAnimator(null);
-                });
-        mRenderTestRule.render(recyclerViewReference.get(), "background_add_tab");
+        RecyclerView stripRecyclerView =
+                waitForTabGroupStripToSettle(cta, /* expectedCount= */ 4, /* selectedIndex= */ 0);
+        mRenderTestRule.render(stripRecyclerView, "background_add_tab");
     }
 
     @Test
@@ -320,8 +289,7 @@ public class TabGroupUiTest {
     @Feature({"RenderTest"})
     public void testRenderStrip_BackgroundAddTab_ResizeableView() throws IOException {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        AtomicReference<RecyclerView> recyclerViewReference = new AtomicReference<>();
-        TabUiTestHelper.addBlankTabs(cta, false, 2);
+        addBlankTabsAndSettle(cta, 2);
         enterTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 3);
         mergeAllNormalTabsToAGroup(cta);
@@ -330,6 +298,7 @@ public class TabGroupUiTest {
         // Select the first tab in group and add one new tab to group.
         clickFirstCardFromTabSwitcher(cta);
         clickNthTabInDialog(cta, 0);
+        waitForTabGroupStripToSettle(cta, /* expectedCount= */ 3, /* selectedIndex= */ 0);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Tab tab =
@@ -346,17 +315,9 @@ public class TabGroupUiTest {
                             tabModel.getTabAt(0),
                             /* notify= */ TabGroupMergeNotificationType.DONT_NOTIFY);
                 });
-        waitForTabGroupStrip();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    ViewGroup bottomToolbar = cta.findViewById(R.id.tab_group_ui_container);
-                    RecyclerView stripRecyclerView =
-                            bottomToolbar.findViewById(R.id.tab_list_recycler_view);
-                    recyclerViewReference.set(stripRecyclerView);
-                    // Disable animation to reduce flakiness.
-                    stripRecyclerView.setItemAnimator(null);
-                });
-        mRenderTestRule.render(recyclerViewReference.get(), "resizeable_background_add_tab");
+        RecyclerView stripRecyclerView =
+                waitForTabGroupStripToSettle(cta, /* expectedCount= */ 4, /* selectedIndex= */ 0);
+        mRenderTestRule.render(stripRecyclerView, "resizeable_background_add_tab");
     }
 
     @Test
@@ -449,6 +410,155 @@ public class TabGroupUiTest {
         // Scene overlay should remain visible.
         CriteriaHelper.pollUiThread(
                 () -> coordinator.getSceneLayerForTesting().isSceneOverlayTreeShowing());
+    }
+
+    private static void addBlankTabsAndSettle(ChromeTabbedActivity cta, int count) {
+        TabUiTestHelper.addBlankTabs(cta, /* incognito= */ false, count);
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Tab activeTab = cta.getActivityTab();
+                    if (activeTab == null || activeTab.isNativePage() || activeTab.isLoading()) {
+                        return false;
+                    }
+                    if (cta.getBrowserControlsManager().getBottomControlOffset() != 0
+                            || cta.getBrowserControlsManager().getTopControlOffset() != 0) {
+                        return false;
+                    }
+                    ViewGroup coordinator = cta.findViewById(R.id.coordinator);
+                    if (coordinator == null || coordinator.isLayoutRequested()) {
+                        return false;
+                    }
+                    View bottomAppBar = cta.findViewById(R.id.bottom_app_bar_container);
+                    if (bottomAppBar != null && bottomAppBar.isLayoutRequested()) {
+                        return false;
+                    }
+                    View tabSwitcherButton =
+                            bottomAppBar != null
+                                    ? bottomAppBar.findViewById(R.id.tab_switcher_button)
+                                    : cta.findViewById(R.id.tab_switcher_button);
+                    if (tabSwitcherButton == null) {
+                        return false;
+                    }
+                    return tabSwitcherButton.isShown() && !tabSwitcherButton.isLayoutRequested();
+                },
+                10000L,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+    }
+
+    private RecyclerView waitForTabGroupStripToSettle(
+            ChromeTabbedActivity cta, int expectedCount, int selectedIndex) {
+        waitForTabGroupStrip();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ViewGroup bottomToolbar = cta.findViewById(R.id.tab_group_ui_container);
+                    if (bottomToolbar != null) {
+                        RecyclerView stripRecyclerView =
+                                bottomToolbar.findViewById(R.id.tab_list_recycler_view);
+                        if (stripRecyclerView != null
+                                && stripRecyclerView.getItemAnimator() != null) {
+                            stripRecyclerView.getItemAnimator().endAnimations();
+                            stripRecyclerView.setItemAnimator(null);
+                        }
+                    }
+                });
+        AtomicReference<RecyclerView> recyclerViewReference = new AtomicReference<>();
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    if (cta.getLayoutManager().isLayoutVisible(LayoutType.HUB)) {
+                        return false;
+                    }
+                    ViewGroup bottomToolbar = cta.findViewById(R.id.tab_group_ui_container);
+                    if (bottomToolbar == null || bottomToolbar.isLayoutRequested()) {
+                        return false;
+                    }
+                    RecyclerView stripRecyclerView =
+                            bottomToolbar.findViewById(R.id.tab_list_recycler_view);
+                    if (stripRecyclerView == null) {
+                        return false;
+                    }
+                    if (stripRecyclerView.getAdapter() == null
+                            || stripRecyclerView.getAdapter().getItemCount() != expectedCount) {
+                        return false;
+                    }
+                    if (stripRecyclerView.isAnimating()
+                            || stripRecyclerView.isLayoutRequested()
+                            || stripRecyclerView.getScrollState()
+                                    != RecyclerView.SCROLL_STATE_IDLE) {
+                        return false;
+                    }
+                    LinearLayoutManager layoutManager =
+                            (LinearLayoutManager) stripRecyclerView.getLayoutManager();
+                    if (layoutManager == null) {
+                        return false;
+                    }
+                    int firstVisible = layoutManager.findFirstVisibleItemPosition();
+                    int lastVisible = layoutManager.findLastVisibleItemPosition();
+                    if (firstVisible == RecyclerView.NO_POSITION
+                            || lastVisible == RecyclerView.NO_POSITION) {
+                        return false;
+                    }
+                    if (firstVisible > selectedIndex || selectedIndex > lastVisible) {
+                        return false;
+                    }
+                    // TabGroupUiViewBinder centers the selected tab via scrollToPositionWithOffset
+                    // using Math.max(0, index - showingItemsCount / 2). If the strip is
+                    // scrollable and can scroll forward, wait until the strip has scrolled to
+                    // at least this centered offset rather than capturing the initial offset 0.
+                    int visibleCount = Math.max(0, lastVisible - firstVisible);
+                    int expectedFirst = Math.max(0, selectedIndex - visibleCount / 2);
+                    if (expectedFirst > 0
+                            && firstVisible < expectedFirst
+                            && stripRecyclerView.canScrollHorizontally(1)) {
+                        return false;
+                    }
+                    View firstChild = layoutManager.findViewByPosition(firstVisible);
+                    if (firstChild == null) {
+                        return false;
+                    }
+                    if (firstVisible == 0 || stripRecyclerView.canScrollHorizontally(1)) {
+                        if (firstChild.getLeft() != stripRecyclerView.getPaddingLeft()) {
+                            return false;
+                        }
+                    }
+                    RecyclerView.ViewHolder selectedHolder =
+                            stripRecyclerView.findViewHolderForAdapterPosition(selectedIndex);
+                    if (selectedHolder == null
+                            || !selectedHolder.itemView.isShown()
+                            || selectedHolder.itemView.isLayoutRequested()
+                            || selectedHolder.itemView.getForeground() == null) {
+                        return false;
+                    }
+                    if (selectedHolder instanceof SimpleRecyclerViewAdapter.ViewHolder selectedVh) {
+                        if (selectedVh.model == null
+                                || !Boolean.TRUE.equals(
+                                        selectedVh.model.get(TabProperties.IS_SELECTED))) {
+                            return false;
+                        }
+                    }
+                    for (int i = 0; i < stripRecyclerView.getChildCount(); i++) {
+                        View child = stripRecyclerView.getChildAt(i);
+                        if (child == null || child.isLayoutRequested() || child.getAlpha() < 1.0f) {
+                            return false;
+                        }
+                        RecyclerView.ViewHolder vh = stripRecyclerView.getChildViewHolder(child);
+                        if (vh instanceof SimpleRecyclerViewAdapter.ViewHolder simpleVh) {
+                            if (simpleVh.model == null
+                                    || !Boolean.TRUE.equals(
+                                            simpleVh.model.get(TabProperties.FAVICON_FETCHED))) {
+                                return false;
+                            }
+                        }
+                        ImageButton button = child.findViewById(R.id.tab_strip_item_button);
+                        if (button == null || button.getDrawable() == null) {
+                            return false;
+                        }
+                    }
+                    recyclerViewReference.set(stripRecyclerView);
+                    return true;
+                },
+                10000L,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+        return recyclerViewReference.get();
     }
 
     private void waitForTabGroupStrip() {
