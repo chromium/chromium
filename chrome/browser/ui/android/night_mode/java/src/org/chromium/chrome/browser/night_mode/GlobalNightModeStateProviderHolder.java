@@ -48,10 +48,10 @@ public class GlobalNightModeStateProviderHolder {
     }
 
     /**
-     * @return The {@link NightModeStateProvider} that maintains the night mode state for the entire
-     *         application. Note that UI widgets should use ColorUtils#inNightMode(Context) using
-     *         the activity context they are attached to, because the night mode state can be
-     *         overridden at the activity level.
+     * Returns the {@link NightModeStateProvider} that maintains the night mode state for the entire
+     * application. Note that UI widgets should use ColorUtils#inNightMode(Context) using the
+     * activity context they are attached to, because the night mode state can be overridden at the
+     * activity level.
      */
     public static NightModeStateProvider getInstance() {
         if (sInstance == null) {

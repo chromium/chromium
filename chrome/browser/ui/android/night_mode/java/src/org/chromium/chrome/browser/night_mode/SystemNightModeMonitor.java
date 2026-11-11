@@ -31,8 +31,8 @@ public class SystemNightModeMonitor {
     private boolean mSystemNightModeOn;
 
     /**
-     * @return The {@link SystemNightModeMonitor} that observes the system night mode state (i.e.
-     *     the night mode from the application).
+     * Returns the {@link SystemNightModeMonitor} that observes the system night mode state (i.e.
+     * the night mode from the application).
      */
     public static SystemNightModeMonitor getInstance() {
         ThreadUtils.assertOnUiThread();
@@ -52,7 +52,7 @@ public class SystemNightModeMonitor {
         calculateSystemNightMode();
     }
 
-    /** @return True if system night mode is on, and false otherwise. */
+    /** Returns whether system night mode is on. */
     public boolean isSystemNightModeOn() {
         return mSystemNightModeOn;
     }

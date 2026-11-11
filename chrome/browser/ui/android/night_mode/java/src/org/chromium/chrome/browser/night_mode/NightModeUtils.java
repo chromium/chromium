@@ -27,9 +27,7 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 public class NightModeUtils {
     private static @Nullable Boolean sNightModeSupportedForTest;
 
-    /**
-     * @return Whether night mode is supported.
-     */
+    /** Returns whether night mode is supported. */
     public static boolean isNightModeSupported() {
         if (sNightModeSupportedForTest != null) return sNightModeSupportedForTest;
         return true;
@@ -60,11 +58,13 @@ public class NightModeUtils {
     }
 
     /**
+     * Overrides UI night mode on the provided {@code config} if the {@code provider} requires it.
+     *
      * @param provider The {@link NightModeStateProvider} that provides the night mode state.
      * @param config The {@link Configuration} on which UI night mode should be overridden if
-     *               necessary.
+     *     necessary.
      * @return True if UI night mode is overridden on the provided {@code config}, and false
-     *         otherwise.
+     *     otherwise.
      */
     public static boolean applyOverridesForNightMode(
             NightModeStateProvider provider, Configuration config) {
@@ -84,6 +84,7 @@ public class NightModeUtils {
     /**
      * Wraps a {@link Context} into one having a resource configuration with the given night mode
      * setting.
+     *
      * @param context {@link Context} to wrap.
      * @param themeResId Theme resource to use with {@link ContextThemeWrapper}.
      * @param nightMode Whether to apply night mode.
@@ -104,10 +105,8 @@ public class NightModeUtils {
     }
 
     /**
-     * The current theme setting, reflecting either the user setting or the default if the user has
-     * not explicitly set a preference.
-     *
-     * @return The current theme setting. See {@link ThemeType}.
+     * Returns the current theme setting, reflecting either the user setting or the default if the
+     * user has not explicitly set a preference. See {@link ThemeType}.
      */
     @CalledByNative
     public static @ThemeType int getThemeSetting() {
