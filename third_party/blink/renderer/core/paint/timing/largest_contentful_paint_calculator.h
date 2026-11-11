@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_callbacks.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_record.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace gfx {
@@ -30,15 +31,22 @@ class PaintTimingDetector;
 CORE_EXPORT BASE_DECLARE_FEATURE(kLcpEntropyGatedOnCors);
 
 // `LargestContentfulPaintCalculator` is responsible for tracking the largest
-// image and the largest text paints, creating `LargestContentfulPaint` entries
-// when a new web-exposed candidate is found, and maintaining the data sent to
-// metrics.
+// image and the largest text paints and notifying its `Delegate` whenever a new
+// PerformanceEntry entry should be dispatched, as well as maintaintaining the
+// data sent to metrics.
 class CORE_EXPORT LargestContentfulPaintCalculator final
     : public GarbageCollected<LargestContentfulPaintCalculator> {
  public:
   class Delegate : public GarbageCollectedMixin {
    public:
     virtual ~Delegate() = default;
+
+    // Called when a PerformanceEntry for a new largest paint candidate should
+    // be emitted. The `Delegate` is responsible for emitting an entry of the
+    // appropriate type.
+    virtual void EmitLcpPerformanceEntry(
+        const DOMPaintTimingInfo& paint_timing_info,
+        LargestContentfulPaint* lcp_entry) = 0;
 
     // Called when the `LatestLcpDetails()` have changed. The `Delegate` is
     // responsible for pushing the updated metrics to UKM.
@@ -130,12 +138,30 @@ class CORE_EXPORT LargestContentfulPaintCalculator final
     return latest_lcp_details_;
   }
 
+  // Updates the metrics and web-exposed LCP candidates based on the
+  // `image_records` and `text_records` that were presented in the frame.
+  // Invokes `Delegate` methods if a new candidate is found.
+  void OnFramePresented(const HeapVector<Member<ImageRecord>>& image_records,
+                        const HeapVector<Member<TextRecord>>& text_records,
+                        const base::TimeTicks& presentation_timestamp,
+                        const DOMPaintTimingInfo& paint_timing_info,
+                        uint64_t navigation_id);
+
+  // Updates the metrics and web-exposed LCP candidates based on a single pair
+  // of image and text candidates, which represent the largest image and text
+  // elements presented in the frame. Invokes `Delegate` methods if a new
+  // candidate is found.
+  void OnFramePresented(LcpCandidates*,
+                        const base::TimeTicks& presentation_timestamp,
+                        const DOMPaintTimingInfo& paint_timing_info,
+                        uint64_t navigation_id);
+
   // Updates the metrics and web-exposed LCP candidates based on a single pair
   // of image and text candidates, which represent the largest eligible image
   // and text elements presented in the frame. Returns `PendingCandidateData`
   // containing the presentation callback for metrics and the newly created
   // `LargestContentfulPaint` entry (if any).
-  PendingCandidateData MaybeUpdateLargestContentfulPaint(LcpCandidates*);
+  PendingCandidateData UpdateLargestContentfulPaint(LcpCandidates*);
 
   // Flushes the pending largest text and largest image candidates to metrics
   // and invokes `Delegate::OnLcpMetricsForReportingChanged()`, if needed.
@@ -236,6 +262,11 @@ class CORE_EXPORT LargestContentfulPaintCalculator final
                                      base::TimeTicks presentation_time,
                                      unsigned candidate_index);
 
+  // Processes a list of LCP candidates, updating the `LcpCandidates` with the
+  // largest candidate.
+  template <IsDerivedFromPaintTimingRecord T>
+  void ProcessLcpCandidates(const HeapVector<Member<T>>&, LcpCandidates*);
+
   // Returns the size of the current LCP candidate for performance timeline,
   // which is either emitted or pending presentation time.
   uint64_t WebExposedCandidateSize() const {
@@ -245,7 +276,7 @@ class CORE_EXPORT LargestContentfulPaintCalculator final
   Member<WindowPerformance> window_performance_;
 
   // TODO(crbug.com/454082773): These values are updated at presentation time in
-  // `MaybeUpdateLargestContentfulPaint`. Change this to run at paint time.
+  // `UpdateLargestContentfulPaint`. Change this to run at paint time.
   uint64_t largest_painted_image_size_ = 0u;
   uint64_t largest_painted_text_size_ = 0u;
 

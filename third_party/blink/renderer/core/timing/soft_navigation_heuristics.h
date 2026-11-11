@@ -132,11 +132,6 @@ class CORE_EXPORT SoftNavigationHeuristics
     MaybeCommitNavigationOrEmitSoftNavigation(context);
   }
 
-  // Called by the `SoftNavigationContext` when its first contentful paint
-  // element has been presented. Emits a soft navigation entry if all criteria
-  // have been met.
-  void OnFirstContentfulPaint(SoftNavigationContext*);
-
   void OnContextDisposed(SoftNavigationContext*);
   void UpdateSoftFcpMetricsForContext(SoftNavigationContext*) const;
   void UpdateSoftLcpMetricsForContext(SoftNavigationContext*);
@@ -189,6 +184,14 @@ class CORE_EXPORT SoftNavigationHeuristics
   // paints, or it might have already been emitted, but we still want to
   // continue measuring paints for a while.
   Member<SoftNavigationContext> context_for_current_url_;
+
+  // `SoftNavigationContext`s that have met all of the soft nav criteria but
+  // haven't emitted the performance entry because they're waiting for
+  // presentation feedback for FCP. Tracking these ensures we always emit an
+  // entry when we update the navigation ID, which might not be the case if the
+  // URL changes and presentation feedback is delayed.
+  HeapHashSet<Member<SoftNavigationContext>>
+      contexts_waiting_for_paint_timestamp_;
 
   // Used to map DOM modifications to `SoftNavigationContext`s for paint
   // attribution. Only set when `IsPrePaintBasedAttributionEnabled()` is true.

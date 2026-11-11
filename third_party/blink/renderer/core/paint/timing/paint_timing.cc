@@ -517,8 +517,19 @@ void PaintTiming::FlushPaintTimingsOnFramePresentedCallback(
     if (data->id > id) {
       break;
     }
-    FlushPresentationCallbackData(*data, paint_timing_info,
-                                  raw_presentation_timestamp, navigation_id);
+    SetPaintTimingInfoForPaintTimingRecords(*data, paint_timing_info,
+                                            raw_presentation_timestamp);
+    for (auto& callback : data->client_callbacks) {
+      std::move(callback).Run(raw_presentation_timestamp, paint_timing_info,
+                              navigation_id);
+    }
+    if (data->ShouldNotifyClientsOnFramePresented()) {
+      ForEachClient([&](PaintTimingClient* client) {
+        client->OnFramePresented(data->image_records, data->text_records,
+                                 raw_presentation_timestamp, paint_timing_info,
+                                 data->navigation_id);
+      });
+    }
     pending_presentation_data_.pop_front();
   }
 
@@ -625,9 +636,19 @@ void PaintTiming::FlushPaintTimingsOnFramePresented(
   // ... report ICP given ...
   // ... report Container Timings given ...
   //
-  FlushPresentationCallbackData(data, *data.paint_timing_info,
-                                data.raw_presentation_timestamp,
-                                data.navigation_id);
+  SetPaintTimingInfoForPaintTimingRecords(data, *data.paint_timing_info,
+                                          data.raw_presentation_timestamp);
+  for (auto& callback : data.client_callbacks) {
+    std::move(callback).Run(data.raw_presentation_timestamp,
+                            *data.paint_timing_info, data.navigation_id);
+  }
+  if (data.ShouldNotifyClientsOnFramePresented()) {
+    ForEachClient([&](PaintTimingClient* client) {
+      client->OnFramePresented(data.image_records, data.text_records,
+                               data.raw_presentation_timestamp,
+                               *data.paint_timing_info, data.navigation_id);
+    });
+  }
 
   // 10.5 If frameTimingInfo is not null, then queue a long animation frame
   // entry given document, frameTimingInfo, and paintTimingInfo.
@@ -637,28 +658,29 @@ void PaintTiming::FlushPaintTimingsOnFramePresented(
   }
 }
 
-void PaintTiming::FlushPresentationCallbackData(
+void PaintTiming::SetPaintTimingInfoForPaintTimingRecords(
     PresentationCallbackData& data,
     const DOMPaintTimingInfo& paint_timing_info,
-    base::TimeTicks raw_presentation_timestamp,
-    uint64_t navigation_id) {
+    base::TimeTicks raw_presentation_timestamp) {
+  // Set paint time for the `ImageRecord`s if it hasn't been set. Note for first
+  // video frame with ReportFirstFrameTimeAsRenderTime enabled, this will
+  // already be set.
+  for (ImageRecord* record : data.image_records) {
+    if (!record->HasPaintTime()) {
+      record->SetPaintTime(raw_presentation_timestamp, paint_timing_info);
+    }
+  }
+
+  // Set the paint time for the `TextRecord`s, which should not already be set.
+  for (TextRecord* record : data.text_records) {
+    CHECK(!record->HasPaintTime());
+    record->SetPaintTime(raw_presentation_timestamp, paint_timing_info);
+  }
+
   // Resolve pending presentation timestamps.
   for (HeapTimeTicks* timestamp : data.pending_timestamps) {
     CHECK(timestamp->value.is_null());
     timestamp->value = raw_presentation_timestamp;
-  }
-
-  for (auto& callback : data.client_callbacks) {
-    std::move(callback).Run(raw_presentation_timestamp, paint_timing_info,
-                            navigation_id);
-  }
-
-  if (data.ShouldNotifyClientsOnFramePresented()) {
-    ForEachClient([&](PaintTimingClient* client) {
-      client->OnFramePresented(data.image_records, data.text_records,
-                               raw_presentation_timestamp, paint_timing_info,
-                               navigation_id);
-    });
   }
 }
 

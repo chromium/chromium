@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_TIMING_PAINT_TIMING_RECORD_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_TIMING_PAINT_TIMING_RECORD_H_
 
+#include <memory>
 #include <optional>
 #include <type_traits>
 
@@ -14,6 +15,7 @@
 #include "third_party/blink/renderer/core/paint/timing/effective_visual_size_result.h"
 #include "third_party/blink/renderer/core/paint/timing/lcp_objects.h"
 #include "third_party/blink/renderer/core/paint/timing/media_record_id.h"
+#include "third_party/blink/renderer/core/timing/performance_entry.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
@@ -59,6 +61,17 @@ class CORE_EXPORT PaintTimingRecord
 
   const gfx::RectF& RootVisualRect() const { return root_visual_rect_; }
 
+  bool HasPaintTime() const { return !paint_time_.is_null(); }
+  base::TimeTicks PaintTime() const { return paint_time_; }
+  void SetPaintTime(base::TimeTicks paint_time,
+                    const DOMPaintTimingInfo& info) {
+    paint_time_ = paint_time;
+    paint_timing_info_ = info;
+  }
+  const DOMPaintTimingInfo& PaintTimingInfo() const {
+    return paint_timing_info_;
+  }
+
   SoftNavigationContext* GetSoftNavigationContext() const {
     return soft_navigation_context_;
   }
@@ -101,6 +114,8 @@ class CORE_EXPORT PaintTimingRecord
   const WeakMember<LayoutObject> node_layout_object_;
   const gfx::RectF root_visual_rect_;
   bool is_needed_for_lcp_ = false;
+  base::TimeTicks paint_time_;
+  DOMPaintTimingInfo paint_timing_info_;
   Member<SoftNavigationContext> soft_navigation_context_;
   // LCP rect information, only populated when tracing is enabled.
   std::optional<LCPRectInfo> lcp_rect_info_;

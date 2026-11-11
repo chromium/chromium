@@ -4,9 +4,6 @@
 
 #include "third_party/blink/renderer/core/paint/timing/largest_contentful_paint_manager.h"
 
-#include <optional>
-#include <utility>
-
 #include "base/check.h"
 #include "cc/layers/heads_up_display_layer.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -22,40 +19,9 @@
 #include "third_party/blink/renderer/core/timing/largest_contentful_paint.h"
 #include "third_party/blink/renderer/core/timing/performance_timing_for_reporting.h"
 #include "third_party/blink/renderer/platform/graphics/paint/ignore_paint_timing_scope.h"
-#include "third_party/blink/renderer/platform/heap/persistent.h"
-#include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
-#include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
 #include "third_party/blink/renderer/platform/loader/fetch/media_timing.h"
-#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
-
-namespace {
-
-template <IsDerivedFromPaintTimingRecord T>
-void ProcessLcpCandidates(
-    const HeapVector<Member<T>>& records,
-    LargestContentfulPaintCalculator::LcpCandidates* candidates) {
-  for (const auto& record : records) {
-    // Filter out anything that wasn't a valid candidate for LCP but might have
-    // been valid for other PaintTiming clients.
-    if (!record->IsNeededForLargestContentfulPaint()) {
-      continue;
-    }
-    // Hard navigation LCP does not consider records whose node has been removed
-    // from the DOM.
-    //
-    // TODO(crbug.com/454082773): we should consider allowing these to be LCP
-    // candidates since they would have been shown to the user, and since it
-    // better matches the LCP spec.
-    if (record->WasNodeRemoved()) {
-      continue;
-    }
-    candidates->MaybeUpdateCandidate(record.Get());
-  }
-}
-
-}  // namespace
 
 LargestContentfulPaintManager::LargestContentfulPaintManager(
     LocalDOMWindow* window)
@@ -65,7 +31,29 @@ LargestContentfulPaintManager::LargestContentfulPaintManager(
               DOMWindowPerformance::performance(*window),
               this)) {}
 
+void LargestContentfulPaintManager::EmitLcpPerformanceEntry(
+    const DOMPaintTimingInfo& paint_timing_info,
+    LargestContentfulPaint* lcp_entry) {
+  // `largest_contentful_paint_calculator_` can be null if input arrived between
+  // paint and presentation time.
+  // TODO(crbug.com/454082773): These values should count towards LCP.
+  if (!largest_contentful_paint_calculator_) {
+    return;
+  }
+  WindowPerformance* performance =
+      DOMWindowPerformance::performance(*window_.Get());
+  lcp_entry->FinalizeEntry(paint_timing_info,
+                           performance->NavigationId().web_exposed_id);
+  performance->OnLargestContentfulPaintUpdated(lcp_entry);
+}
+
 void LargestContentfulPaintManager::OnLcpMetricsForReportingChanged() {
+  // `largest_contentful_paint_calculator_` can be null if input arrived between
+  // paint and presentation time.
+  // TODO(crbug.com/454082773): These values should count towards LCP.
+  if (!largest_contentful_paint_calculator_) {
+    return;
+  }
   const LargestContentfulPaintDetails& lcp_details =
       largest_contentful_paint_calculator_->LatestLcpDetails();
   DOMWindowPerformance::performance(*window_.Get())
@@ -85,8 +73,10 @@ void LargestContentfulPaintManager::OnLcpMetricsForReportingChanged() {
 
 void LargestContentfulPaintManager::OnInputOrScroll() {
   // `PaintTiming` is only expected to call this once.
-  CHECK(IsRecordingLcp());
-  is_recording_lcp_ = false;
+  CHECK(largest_contentful_paint_calculator_);
+
+  // Stop recording LCP.
+  largest_contentful_paint_calculator_ = nullptr;
 
   LocalFrame* frame = window_->GetFrame();
   CHECK(frame);
@@ -111,7 +101,11 @@ PaintTimingClient::Type LargestContentfulPaintManager::GetType() const {
 
 void LargestContentfulPaintManager::OnElementFirstContentfulPaint(
     ImageRecord* record) {
-  CHECK(IsRecordingLcp());
+  CHECK(largest_contentful_paint_calculator_);
+  if (!largest_contentful_paint_calculator_->IsEligibleForLcp(*record) ||
+      !largest_contentful_paint_calculator_->IsNewLargestCandidate(*record)) {
+    return;
+  }
   // Inform the `largest_contentful_paint_calculator_` so it can update the
   // largest pending image if needed.
   largest_contentful_paint_calculator_->OnImageFirstPaint(record);
@@ -120,10 +114,7 @@ void LargestContentfulPaintManager::OnElementFirstContentfulPaint(
 OptionalPaintTimingCallback LargestContentfulPaintManager::OnPaintFinished(
     const HeapVector<Member<ImageRecord>>& image_records,
     const HeapVector<Member<TextRecord>>& text_records) {
-  CHECK(IsRecordingLcp());
-  if (image_records.empty() && text_records.empty()) {
-    return std::nullopt;
-  }
+  CHECK(largest_contentful_paint_calculator_);
 
   LocalFrame* frame = window_->GetFrame();
   CHECK(frame);
@@ -155,89 +146,11 @@ OptionalPaintTimingCallback LargestContentfulPaintManager::OnPaintFinished(
   return std::nullopt;
 }
 
-void LargestContentfulPaintManager::OnFramePresented(
-    const HeapVector<Member<ImageRecord>>& image_records,
-    const HeapVector<Member<TextRecord>>& text_records,
-    const base::TimeTicks& presentation_timestamp,
-    const DOMPaintTimingInfo& paint_timing_info,
-    uint64_t navigation_id) {
-  if (!IsRecordingLcp()) {
-    return;
-  }
-
-  auto* candidates =
-      MakeGarbageCollected<LargestContentfulPaintCalculator::LcpCandidates>();
-  ProcessLcpCandidates(image_records, candidates);
-  ProcessLcpCandidates(text_records, candidates);
-
-  if (OptionalPaintTimingCallback callback =
-          MaybeUpdateLargestContentfulPaint(candidates)) {
-    std::move(*callback).Run(presentation_timestamp, paint_timing_info,
-                             navigation_id);
-  }
-}
-
-OptionalPaintTimingCallback
-LargestContentfulPaintManager::MaybeUpdateLargestContentfulPaint(
-    LargestContentfulPaintCalculator::LcpCandidates* candidates) {
-  LargestContentfulPaintCalculator::PendingCandidateData candidate_data =
-      largest_contentful_paint_calculator_->MaybeUpdateLargestContentfulPaint(
-          candidates);
-  if (!candidate_data.lcp_entry && !candidate_data.metrics_callback) {
-    return std::nullopt;
-  }
-
-  return blink::BindOnce(
-      &LargestContentfulPaintManager::FlushCandidateAndMetricsOnFramePresented,
-      WrapWeakPersistent(this), std::move(candidate_data.metrics_callback),
-      WrapPersistent(candidate_data.lcp_entry),
-      std::move(candidate_data.lcp_trace_data));
-}
-
-void LargestContentfulPaintManager::FlushCandidateAndMetricsOnFramePresented(
-    OptionalPaintTimingCallback metrics_callback,
-    LargestContentfulPaint* lcp_entry,
-    std::unique_ptr<TracedValue> trace_data,
-    const base::TimeTicks& presentation_timestamp,
-    const DOMPaintTimingInfo& paint_timing_info,
-    uint64_t navigation_id) {
-  // Input or scroll can arrive between paint and presentation time.
-  // TODO(crbug.com/454082773): Candidates presented before input should count
-  // towards LCP.
-  if (!IsRecordingLcp()) {
-    return;
-  }
-
-  if (metrics_callback) {
-    std::move(*metrics_callback)
-        .Run(presentation_timestamp, paint_timing_info, navigation_id);
-  }
-
-  // `lcp_entry` can be null if there is a `metrics_callback` if the largest
-  // text or image was updated, but that element was not larger than the current
-  // global LCP candidate.
-  if (!lcp_entry) {
-    return;
-  }
-
-  lcp_entry->FinalizeEntry(paint_timing_info, navigation_id);
-  DOMWindowPerformance::performance(*window_.Get())
-      ->OnLargestContentfulPaintUpdated(lcp_entry);
-
-  if (trace_data) {
-    TRACE_EVENT_MARK_WITH_TIMESTAMP2(
-        paint_timing::kWebExposedLcpTraceCategories,
-        "largestContentfulPaint::Candidate", presentation_timestamp, "data",
-        std::move(trace_data), "frame",
-        GetFrameIdForTracing(window_->GetFrame()));
-  }
-}
-
 void LargestContentfulPaintManager::OnImageRemoved(const LayoutObject& object,
                                                    const MediaTiming* timing) {
   // Notify the lcp calculator so it can clear the largest pending image, if
   // that was removed.
-  CHECK(IsRecordingLcp());
+  CHECK(largest_contentful_paint_calculator_);
   largest_contentful_paint_calculator_->OnImageRemoved(object, timing);
   // Also check if the `largest_ignored_image_` was removed. Compare
   // `LayoutObject`s as well since the `MediaTiming` can be shared.
@@ -248,8 +161,25 @@ void LargestContentfulPaintManager::OnImageRemoved(const LayoutObject& object,
   }
 }
 
+void LargestContentfulPaintManager::OnFramePresented(
+    const HeapVector<Member<ImageRecord>>& image_records,
+    const HeapVector<Member<TextRecord>>& text_records,
+    const base::TimeTicks& presentation_timestamp,
+    const DOMPaintTimingInfo& paint_timing_info,
+    uint64_t navigation_id) {
+  // `largest_contentful_paint_calculator_` can be null if input arrived between
+  // paint and presentation time.
+  // TODO(crbug.com/454082773): These values should count towards LCP.
+  if (!largest_contentful_paint_calculator_) {
+    return;
+  }
+  largest_contentful_paint_calculator_->OnFramePresented(
+      image_records, text_records, presentation_timestamp, paint_timing_info,
+      navigation_id);
+}
+
 TextRecord* LargestContentfulPaintManager::TakeLargestIgnoredText() {
-  CHECK(IsRecordingLcp());
+  CHECK(largest_contentful_paint_calculator_);
 
   TextRecord* record = GetLargestIgnoredTextIfNotRemoved();
   largest_ignored_text_ = {nullptr, nullptr};
@@ -257,7 +187,7 @@ TextRecord* LargestContentfulPaintManager::TakeLargestIgnoredText() {
 }
 
 ImageRecord* LargestContentfulPaintManager::TakeLargestIgnoredImage() {
-  CHECK(IsRecordingLcp());
+  CHECK(largest_contentful_paint_calculator_);
 
   ImageRecord* record = GetLargestIgnoredImageIfNotRemoved();
   if (record) {
@@ -286,7 +216,7 @@ ImageRecord* LargestContentfulPaintManager::GetLargestIgnoredImageIfNotRemoved()
 void LargestContentfulPaintManager::MaybeUpdateLargestIgnoredText(
     const LayoutObject& object,
     TextRecord* record) {
-  CHECK(IsRecordingLcp());
+  CHECK(largest_contentful_paint_calculator_);
 
   if (IgnorePaintTimingScope::IgnoreDepth() != 1 ||
       !IgnorePaintTimingScope::IsDocumentElementInvisible()) {
@@ -302,7 +232,7 @@ void LargestContentfulPaintManager::MaybeUpdateLargestIgnoredText(
 
 void LargestContentfulPaintManager::MaybeUpdateLargestIgnoredImage(
     ImageRecord* record) {
-  CHECK(IsRecordingLcp());
+  CHECK(largest_contentful_paint_calculator_);
 
   if (IgnorePaintTimingScope::IgnoreDepth() != 1 ||
       !IgnorePaintTimingScope::IsDocumentElementInvisible()) {

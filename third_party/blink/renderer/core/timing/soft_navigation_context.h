@@ -14,7 +14,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_navigation_type.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/paint/timing/largest_contentful_paint_calculator.h"
-#include "third_party/blink/renderer/core/paint/timing/lcp_objects.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_record.h"
 #include "third_party/blink/renderer/core/timing/performance_entry.h"
 #include "third_party/blink/renderer/core/timing/performance_event_timing.h"
@@ -50,6 +49,8 @@ class CORE_EXPORT SoftNavigationContext
                         PerformanceEventTiming* initial_event_timing);
 
   // LargestContentfulPaintCalculator::Delegate:
+  void EmitLcpPerformanceEntry(const DOMPaintTimingInfo& paint_timing_info,
+                               LargestContentfulPaint* lcp_entry) override;
   void OnLcpMetricsForReportingChanged() override;
   bool IsHardNavigation() const override { return false; }
   void Trace(Visitor* visitor) const override;
@@ -113,10 +114,15 @@ class CORE_EXPORT SoftNavigationContext
   bool HasUrl() const { return !initial_url_.empty(); }
 
   bool HasFirstContentfulPaint() const {
-    return !first_contentful_paint_.is_null();
+    return first_image_or_text_ && first_image_or_text_->HasPaintTime();
   }
   base::TimeTicks FirstContentfulPaint() const {
-    return first_contentful_paint_;
+    return first_image_or_text_ ? first_image_or_text_->PaintTime()
+                                : base::TimeTicks();
+  }
+  const DOMPaintTimingInfo& FirstContentfulPaintTimingInfo() const {
+    CHECK(HasFirstContentfulPaint());
+    return first_image_or_text_->PaintTimingInfo();
   }
 
   void AddModifiedNode(Node* node);
@@ -158,6 +164,16 @@ class CORE_EXPORT SoftNavigationContext
 
   // Emits the soft navigation performance entry. The context must not have been
   // previously emitted. `WasEmitted()` returns true after this is called.
+  //
+  // Note: There are a couple reasons why we might have an FCP but have not
+  // emitted an ICP, all of which should be fixed:
+  //  1. crbug.com/383568320: For <video>, we set the paint timestamp for the
+  //     first video frame outside of paint, but require BeginMainFrame +
+  //     presentation feedback to emit the ICP entry. The soft nav entry can be
+  //     emitted in this gap.
+  //  2. crbug.com/454082773: If the FCP element is detached from the DOM before
+  //     its presentation feedback is processed, we won't emit an ICP entry for
+  //     this.
   void EmitSoftNavigation();
   bool WasEmitted() const { return was_emitted_; }
 
@@ -179,32 +195,7 @@ class CORE_EXPORT SoftNavigationContext
   void AddPaintedArea(PaintTimingRecord*,
                       uint64_t painted_area_last_animation_frame);
 
-  // Updates the current ICP and LCP candidate info based on the given
-  // candidates computed for a single paint. Returns a callback to flush the
-  // candidate and metrics at presentation time, or std::nullopt if the
-  // candidate info didn't change.
-  OptionalPaintTimingCallback MaybeUpdateInteractionContentfulPaint(
-      LargestContentfulPaintCalculator::LcpCandidates*);
-
-  // Called when the new ICP entry's presentation time is resolved or metrics
-  // need to be updated. Invokes the `metrics_callback` and emits `icp_entry`
-  // and the corresponding trace data, if non-null.
-  void FlushCandidateAndMetricsOnFramePresented(
-      OptionalPaintTimingCallback metrics_callback,
-      InteractionContentfulPaint* icp_entry,
-      std::unique_ptr<TracedValue> trace_data,
-      const base::TimeTicks& presentation_timestamp,
-      const DOMPaintTimingInfo& paint_timing_info,
-      uint64_t navigation_id);
-
   void TraceOnPaintFinished(uint64_t new_painted_area);
-
-  // Process the image and text records painted in a given animation frame.
-  // Updates the `painted_area_` for (LCP) eligible records and returns the new
-  // painted area added in this frame.
-  uint64_t UpdatePaintedAreaOnPaintFinished(
-      const HeapVector<Member<ImageRecord>>&,
-      const HeapVector<Member<TextRecord>>&);
 
   static uint64_t last_context_id_;
 
@@ -219,9 +210,6 @@ class CORE_EXPORT SoftNavigationContext
   base::TimeTicks url_change_time_;
   base::TimeTicks soft_navigation_slicing_time_;
 
-  base::TimeTicks first_contentful_paint_;
-  DOMPaintTimingInfo first_contentful_paint_timing_info_;
-
   String initial_url_;
   base::UnguessableToken same_document_metrics_token_;
   V8NavigationType::Enum navigation_type_ = V8NavigationType::Enum::kPush;
@@ -229,6 +217,7 @@ class CORE_EXPORT SoftNavigationContext
   Member<LocalDOMWindow> window_;
   Member<LargestContentfulPaintCalculator> lcp_calculator_;
   Member<PerformanceEventTiming> initial_event_timing_;
+  Member<PaintTimingRecord> first_image_or_text_;
   Member<InteractionContentfulPaint> largest_icp_entry_;
 
   size_t num_modified_dom_nodes_ = 0;
