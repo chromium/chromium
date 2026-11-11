@@ -7,7 +7,6 @@ import("//build/compiled_action.gni")
 import("//build/config/chrome_build.gni")
 import("//build/config/features.gni")
 import("//build/config/python.gni")
-import("//components/optimization_guide/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/protobuf/proto_library.gni")
 import("//third_party/pyjson5/pyjson5.gni")
@@ -2261,6 +2260,7 @@ source_set("unit_tests") {
     "metrics/stored_profile_metrics_unittest.cc",
     "metrics/suggestions_list_metrics_unittest.cc",
     "ml_model/autofill_ai/autofill_ai_model_cache_impl_unittest.cc",
+    "ml_model/autofill_ai/autofill_ai_model_executor_impl_unittest.cc",
     "ml_model/field_classification_model_encoder_dictionary_unittest.cc",
     "ml_model/field_classification_model_encoder_unittest.cc",
     "ml_model/field_classification_model_executor_unittest.cc",
@@ -2454,11 +2454,6 @@ source_set("unit_tests") {
       "permissions/autofill_ai/autofill_ai_permission_util_unittest.cc",
       "permissions/autofill_policy_service_unittest.cc",
     ]
-  }
-
-  if (build_with_model_execution) {
-    sources +=
-        [ "ml_model/autofill_ai/autofill_ai_model_executor_impl_unittest.cc" ]
   }
 
   deps = [

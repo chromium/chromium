@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//components/optimization_guide/features.gni")
-
 static_library("browser") {
   sources = [
     "data_models/boarding_pass.cc",
@@ -75,6 +73,7 @@ source_set("unit_tests") {
   sources = [
     "data_models/boarding_pass_unittest.cc",
     "data_models/wallet_pass_unittest.cc",
+    "ingestion/walletable_pass_ingestion_controller_unittest.cc",
     "ingestion/walletable_pass_ingestion_utils_unittest.cc",
     "network/get_details_for_upsert_pass_request_unittest.cc",
     "network/get_unmasked_pass_request_unittest.cc",
@@ -83,9 +82,6 @@ source_set("unit_tests") {
     "network/wallet_http_client_impl_unittest.cc",
     "walletable_permission_utils_unittest.cc",
   ]
-  if (build_with_model_execution) {
-    sources += [ "ingestion/walletable_pass_ingestion_controller_unittest.cc" ]
-  }
   deps = [
     ":browser",
     ":test_support",

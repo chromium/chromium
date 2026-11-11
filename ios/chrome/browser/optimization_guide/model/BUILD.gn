@@ -2,14 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//components/optimization_guide/features.gni")
-
 source_set("model") {
   sources = [
     "chrome_profile_download_service_tracker.h",
     "chrome_profile_download_service_tracker.mm",
     "ios_chrome_hints_manager.h",
     "ios_chrome_hints_manager.mm",
+    "ios_model_execution_manager_delegate.h",
+    "ios_model_execution_manager_delegate.mm",
     "ios_model_quality_logs_uploader_service.h",
     "ios_model_quality_logs_uploader_service.mm",
     "optimization_guide_global_state.h",
@@ -24,13 +24,6 @@ source_set("model") {
     "tab_url_provider_impl.h",
     "tab_url_provider_impl.mm",
   ]
-
-  if (build_with_model_execution) {
-    sources += [
-      "ios_model_execution_manager_delegate.h",
-      "ios_model_execution_manager_delegate.mm",
-    ]
-  }
   deps = [
     "//base",
     "//components/application_locale_storage",
@@ -39,12 +32,12 @@ source_set("model") {
     "//components/leveldb_proto",
     "//components/metrics",
     "//components/metrics_services_manager",
-    "//components/optimization_guide:optimization_guide_buildflags",
     "//components/optimization_guide/core",
     "//components/optimization_guide/core:model_execution",
     "//components/optimization_guide/core:prediction",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/prefs",
+    "//components/private_ai",
     "//components/services/unzip:in_process",
     "//components/signin/public/identity_manager",
     "//components/variations",
@@ -53,6 +46,7 @@ source_set("model") {
     "//ios/chrome/browser/download/model/background_service",
     "//ios/chrome/browser/metrics/model:accessor",
     "//ios/chrome/browser/policy/model",
+    "//ios/chrome/browser/private_ai/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/paths",
@@ -66,13 +60,6 @@ source_set("model") {
     "//ios/web/public:web_state_observer",
     "//services/network/public/cpp",
   ]
-
-  if (build_with_model_execution) {
-    deps += [
-      "//components/private_ai",
-      "//ios/chrome/browser/private_ai/model",
-    ]
-  }
   frameworks = [ "UIKit.framework" ]
   public_deps = [
     ":download_client_header",

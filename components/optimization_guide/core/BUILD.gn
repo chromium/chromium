@@ -182,14 +182,33 @@ source_set("core_util") {
 }
 
 source_set("model_execution") {
-  # TODO: crbug.com/421262905 - Should not need these without model_execution
   sources = [
     "model_execution/component_download_observer.cc",
     "model_execution/component_download_observer.h",
+    "model_execution/model_execution_features.cc",
+    "model_execution/model_execution_features.h",
+    "model_execution/model_execution_features_controller.cc",
+    "model_execution/model_execution_features_controller.h",
+    "model_execution/model_execution_fetcher.cc",
+    "model_execution/model_execution_fetcher.h",
+    "model_execution/model_execution_fetcher_impl.cc",
+    "model_execution/model_execution_fetcher_impl.h",
+    "model_execution/model_execution_manager.cc",
+    "model_execution/model_execution_manager.h",
     "model_execution/optimization_guide_model_execution_error.cc",
     "model_execution/optimization_guide_model_execution_error.h",
+    "model_execution/private_ai_model_execution_fetcher.cc",
+    "model_execution/private_ai_model_execution_fetcher.h",
+    "model_execution/private_ai_utils.cc",
+    "model_execution/private_ai_utils.h",
+    "model_execution/remote_model_execution_common.cc",
+    "model_execution/remote_model_execution_common.h",
+    "model_execution/remote_model_execution_session_impl.cc",
+    "model_execution/remote_model_execution_session_impl.h",
     "model_execution/remote_model_executor.cc",
     "model_execution/remote_model_executor.h",
+    "model_execution/settings_enabled_observer.cc",
+    "model_execution/settings_enabled_observer.h",
     "model_quality/model_execution_logging_wrappers.h",
     "model_quality/model_quality_log_entry.cc",
     "model_quality/model_quality_log_entry.h",
@@ -212,54 +231,19 @@ source_set("model_execution") {
     "//components/optimization_guide/public/mojom",
     "//components/policy/core/common",
     "//components/prefs",
+    "//components/private_ai",
+    "//components/private_ai:proto",
+    "//components/signin/public/identity_manager",
+    "//components/streaming_client",
     "//components/update_client",
+    "//components/variations",
     "//components/variations/net",
+    "//components/version_info",
     "//google_apis",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
     "//services/on_device_model/public/mojom",
   ]
-  if (build_with_model_execution) {
-    sources += [
-      "model_execution/model_execution_features.cc",
-      "model_execution/model_execution_features.h",
-      "model_execution/model_execution_features_controller.cc",
-      "model_execution/model_execution_features_controller.h",
-      "model_execution/model_execution_fetcher.cc",
-      "model_execution/model_execution_fetcher.h",
-      "model_execution/model_execution_fetcher_impl.cc",
-      "model_execution/model_execution_fetcher_impl.h",
-      "model_execution/model_execution_manager.cc",
-      "model_execution/model_execution_manager.h",
-      "model_execution/remote_model_execution_common.cc",
-      "model_execution/remote_model_execution_common.h",
-      "model_execution/remote_model_execution_session_impl.cc",
-      "model_execution/remote_model_execution_session_impl.h",
-      "model_execution/settings_enabled_observer.cc",
-      "model_execution/settings_enabled_observer.h",
-    ]
-    deps += [
-      ":core_util",
-      "//components/optimization_guide/proto:optimization_guide_proto",
-      "//components/prefs",
-      "//components/signin/public/identity_manager",
-      "//components/streaming_client",
-      "//components/variations/net",
-      "//components/version_info",
-      "//services/network/public/cpp",
-    ]
-    sources += [
-      "model_execution/private_ai_model_execution_fetcher.cc",
-      "model_execution/private_ai_model_execution_fetcher.h",
-      "model_execution/private_ai_utils.cc",
-      "model_execution/private_ai_utils.h",
-    ]
-    deps += [
-      "//components/private_ai",
-      "//components/private_ai:proto",
-      "//components/variations",
-    ]
-  }
 }
 
 source_set("manifest_provider") {
@@ -618,6 +602,8 @@ static_library("delivery_test_support") {
 static_library("model_execution_test_support") {
   testonly = true
   sources = [
+    "model_execution/test/mock_remote_model_executor.cc",
+    "model_execution/test/mock_remote_model_executor.h",
     "model_quality/test_model_quality_logs_uploader_service.cc",
     "model_quality/test_model_quality_logs_uploader_service.h",
   ]
@@ -630,12 +616,6 @@ static_library("model_execution_test_support") {
     "//services/network/public/cpp",
     "//testing/gmock",
   ]
-  if (build_with_model_execution) {
-    sources += [
-      "model_execution/test/mock_remote_model_executor.cc",
-      "model_execution/test/mock_remote_model_executor.h",
-    ]
-  }
 }
 
 if (build_with_model_execution) {
@@ -805,6 +785,15 @@ source_set("delivery_unit_tests") {
 source_set("model_execution_unit_tests") {
   testonly = true
   sources = [
+    "model_execution/model_execution_features_controller_unittest.cc",
+    "model_execution/model_execution_features_unittest.cc",
+    "model_execution/model_execution_fetcher_impl_unittest.cc",
+    "model_execution/model_execution_manager_unittest.cc",
+    "model_execution/optimization_guide_model_execution_error_unittest.cc",
+    "model_execution/private_ai_model_execution_fetcher_unittest.cc",
+    "model_execution/remote_model_execution_common_unittest.cc",
+    "model_execution/remote_model_execution_session_impl_unittest.cc",
+    "model_quality/model_execution_logging_wrappers_unittest.cc",
     "model_quality/model_quality_log_entry_unittest.cc",
     "model_quality/model_quality_logs_uploader_service_unittest.cc",
     "model_quality/model_quality_util_unittest.cc",
@@ -822,34 +811,18 @@ source_set("model_execution_unit_tests") {
     "//components/policy/core/common",
     "//components/policy/core/common:test_support",
     "//components/prefs:test_support",
+    "//components/private_ai:proto",
+    "//components/private_ai:testing",
     "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager:test_support",
+    "//components/streaming_client",
+    "//components/sync_preferences:test_support",
     "//components/variations:test_support",
     "//services/network:network_service",
     "//services/network:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]
-
-  if (build_with_model_execution) {
-    sources += [
-      "model_execution/model_execution_features_controller_unittest.cc",
-      "model_execution/model_execution_features_unittest.cc",
-      "model_execution/model_execution_fetcher_impl_unittest.cc",
-      "model_execution/model_execution_manager_unittest.cc",
-      "model_execution/optimization_guide_model_execution_error_unittest.cc",
-      "model_execution/private_ai_model_execution_fetcher_unittest.cc",
-      "model_execution/remote_model_execution_common_unittest.cc",
-      "model_execution/remote_model_execution_session_impl_unittest.cc",
-      "model_quality/model_execution_logging_wrappers_unittest.cc",
-    ]
-    deps += [
-      "//components/private_ai:proto",
-      "//components/private_ai:testing",
-      "//components/signin/public/identity_manager:test_support",
-      "//components/streaming_client",
-      "//components/sync_preferences:test_support",
-    ]
-  }
 }
 
 # CfT bypasses On Device model installation throttling breaking most of the

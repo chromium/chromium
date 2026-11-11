@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//components/optimization_guide/features.gni")
-
 source_set("app") {
   sources = [ "ttc_backend.cc" ]
   public = [
@@ -48,20 +46,18 @@ source_set("test_support") {
 
 source_set("unit_tests") {
   testonly = true
-  if (build_with_model_execution) {
-    sources = [ "ttc_mes_client_unittest.cc" ]
-    deps = [
-      ":app",
-      ":impl",
-      ":test_support",
-      "//base/test:test_support",
-      "//components/actor/core",
-      "//components/optimization_guide/core:model_execution",
-      "//components/optimization_guide/core:test_support",
-      "//components/optimization_guide/proto:optimization_guide_proto",
-      "//components/ttc:features",
-      "//testing/gmock",
-      "//testing/gtest",
-    ]
-  }
+  sources = [ "ttc_mes_client_unittest.cc" ]
+  deps = [
+    ":app",
+    ":impl",
+    ":test_support",
+    "//base/test:test_support",
+    "//components/actor/core",
+    "//components/optimization_guide/core:model_execution",
+    "//components/optimization_guide/core:test_support",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/ttc:features",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
 }
