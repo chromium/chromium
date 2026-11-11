@@ -79,11 +79,18 @@ class PersonalContextEntityMetadataSyncBridge
   // no such records. Returns `true` if suppression status was modified.
   bool Unsuppress(const EntitySuppressionEntry& entry);
 
-  // Deletes metadata entries whose creation timestamp falls within the
-  // inclusive range `[delete_begin, delete_end]` from local storage and Sync,
-  // and notifies observers if any suppression record was removed. Returns
-  // `false` if no entries matched the time range. Returns `true` if any record
-  // was removed.
+  // Adds a confirmation `hash`, generates a GUID, encrypts and persists it,
+  // and notifies Sync. If this exceeds the maximum number of confirmations,
+  // the oldest ones are deleted. Returns `false` if Sync is not tracking
+  // metadata or `hash` was already confirmed. Returns `true` if confirmation
+  // status was modified.
+  bool Confirm(EntityConfirmationHash hash);
+
+  // Deletes suppression and confirmation records whose creation timestamp falls
+  // within the inclusive range `[delete_begin, delete_end]` from local storage
+  // and Sync, and notifies observers if any suppression record was removed.
+  // Returns `false` if no entries matched the time range. Returns `true` if any
+  // record was removed.
   bool ClearEntries(base::Time delete_begin, base::Time delete_end);
 
   // Returns the hashes of all currently active suppressions.
@@ -92,9 +99,16 @@ class PersonalContextEntityMetadataSyncBridge
   // Returns true if `entry` is currently suppressed.
   bool IsSuppressed(const EntitySuppressionEntry& entry) const;
 
-  // Returns the number of metadata records whose creation timestamp falls
-  // within the inclusive range `[begin, end]`. Null `begin`/`end` are treated
-  // as `base::Time::Min()`/`base::Time::Max()`, matching `ClearEntries()`.
+  // Returns the hashes of all currently active confirmations.
+  base::flat_set<EntityConfirmationHash> GetConfirmations() const;
+
+  // Returns true if `hash` is currently confirmed.
+  bool IsConfirmed(EntityConfirmationHash hash) const;
+
+  // Returns the number of suppression and confirmation records whose creation
+  // timestamp falls within the inclusive range `[begin, end]`. Null
+  // `begin`/`end` are treated as `base::Time::Min()`/`base::Time::Max()`,
+  // matching `ClearEntries()`.
   size_t CountEntriesCreatedBetween(base::Time begin, base::Time end) const;
 
   bool IsLoaded() const;
@@ -171,6 +185,13 @@ class PersonalContextEntityMetadataSyncBridge
       base::flat_map<Key, EntryMetadata>& metadata_map,
       syncer::DataTypeStore::WriteBatch& batch);
 
+  // Applies an incoming remote `specifics` entry and returns `true` if a new
+  // entry was added to `suppression_metadata_by_entry_`.
+  bool ApplyRemoteSpecifics(
+      const std::string& storage_key,
+      const sync_pb::AutofillEntitySuppressionSpecifics& specifics,
+      syncer::DataTypeStore::WriteBatch& batch);
+
   // Stages the encrypted write of `specifics` to local storage (via `batch`)
   // and notifies Sync (via `change_processor()`).
   void WriteEntryToStoreAndSync(
@@ -190,6 +211,15 @@ class PersonalContextEntityMetadataSyncBridge
   bool DeleteOldestEntriesAboveLimit(
       base::flat_map<Key, EntryMetadata>& metadata_map,
       size_t max_entries,
+      syncer::DataTypeStore::WriteBatch& batch);
+
+  struct EvictedEntriesResult {
+    bool deleted_suppressions = false;
+    bool deleted_confirmations = false;
+  };
+
+  // Enforces `kMaxSuppressions` and `kMaxConfirmations` on both metadata maps.
+  EvictedEntriesResult DeleteOldestEntriesAboveLimits(
       syncer::DataTypeStore::WriteBatch& batch);
 
   void OnStoreCreated(base::RepeatingClosure barrier,
@@ -238,6 +268,10 @@ class PersonalContextEntityMetadataSyncBridge
   // In-memory mapping from `EntitySuppressionHash` to its metadata.
   base::flat_map<EntitySuppressionHash, EntryMetadata>
       suppression_metadata_by_entry_;
+
+  // In-memory mapping from `EntityConfirmationHash` to its metadata.
+  base::flat_map<EntityConfirmationHash, EntryMetadata>
+      confirmation_metadata_by_entry_;
 
   base::WeakPtrFactory<PersonalContextEntityMetadataSyncBridge>
       weak_ptr_factory_{this};
