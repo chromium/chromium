@@ -4,12 +4,14 @@
 package org.chromium.chrome.browser.toolbar.top;
 
 import android.animation.ObjectAnimator;
+import android.view.View;
 
 import androidx.annotation.IntDef;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.ui.interpolators.Interpolators;
+import org.chromium.ui.util.ValueUtils;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -151,5 +153,16 @@ public class ToolbarUtils {
         objectAnimator.setInterpolator(Interpolators.FAST_OUT_LINEAR_IN_INTERPOLATOR);
         objectAnimator.setDuration(ICON_FADE_ANIMATION_DURATION_MS);
         return objectAnimator;
+    }
+
+    /**
+     * Applies or clears the disabled alpha on {@code view} to visually indicate an unfocused or
+     * dimmed state without changing view enablement.
+     */
+    public static void setViewDimmed(View view, boolean isDimmed) {
+        float disabledAlpha =
+                ValueUtils.getFloat(
+                        view.getResources(), org.chromium.ui.R.dimen.default_disabled_alpha);
+        view.setAlpha(isDimmed ? disabledAlpha : 1.0f);
     }
 }

@@ -17,6 +17,7 @@ import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider.IncognitoStateObserver;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.theme.ThemeColorProvider.TintObserver;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 
 import java.util.Collection;
 
@@ -51,10 +52,10 @@ public abstract class ToolbarChild
     }
 
     @Override
-    public void onTintChanged(
+    public abstract void onTintChanged(
             @Nullable ColorStateList tint,
             @Nullable ColorStateList activityFocusTint,
-            int brandedColorScheme) {}
+            @BrandedColorScheme int brandedColorScheme);
 
     @Override
     public void onIncognitoStateChanged(boolean isIncognito) {}

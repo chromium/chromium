@@ -519,6 +519,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/toolbar/reload_button/ReloadButtonMediatorTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/settings/AddressBarSettingsFragmentUnitTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/signin_button/SigninButtonCoordinatorUnitTest.java",
+    "java/src/org/chromium/chrome/browser/toolbar/signin_button/SigninButtonViewBinderTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/tips/BottomOmniboxTipsPromoHandlerUnitTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/OptionalBrowsingModeButtonControllerTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/PhoneCaptureStateTokenTest.java",

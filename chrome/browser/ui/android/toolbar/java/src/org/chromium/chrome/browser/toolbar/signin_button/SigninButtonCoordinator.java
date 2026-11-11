@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.toolbar.signin_button;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.view.View;
 import android.view.ViewStub;
 
@@ -23,6 +24,7 @@ import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.top.ToolbarChildButton;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.ui.base.ActivityResultTracker;
@@ -106,6 +108,14 @@ public class SigninButtonCoordinator extends ToolbarChildButton implements UrlFo
     public void onUrlFocusChange(boolean hasFocus) {
         mUrlHasFocus = hasFocus;
         updateButtonVisibility();
+    }
+
+    @Override
+    public void onTintChanged(
+            @Nullable ColorStateList tint,
+            @Nullable ColorStateList activityFocusTint,
+            @BrandedColorScheme int brandedColorScheme) {
+        mMediator.onTintChanged(tint, activityFocusTint, brandedColorScheme);
     }
 
     /**
@@ -222,6 +232,7 @@ public class SigninButtonCoordinator extends ToolbarChildButton implements UrlFo
     /** Call to tear down dependencies. */
     @Override
     public void destroy() {
+        super.destroy();
         if (mOmniboxStub != null) {
             mOmniboxStub.removeUrlFocusChangeListener(this);
         }

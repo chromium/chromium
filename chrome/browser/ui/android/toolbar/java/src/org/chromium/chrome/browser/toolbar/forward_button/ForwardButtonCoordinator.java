@@ -103,7 +103,6 @@ public class ForwardButtonCoordinator extends ToolbarChildButton {
             @Nullable ColorStateList tint,
             @Nullable ColorStateList activityFocusTint,
             int brandedColorScheme) {
-        super.onTintChanged(tint, activityFocusTint, brandedColorScheme);
         if (mImageButton != null) {
             ImageViewCompat.setImageTintList(mImageButton, activityFocusTint);
         }

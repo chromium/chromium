@@ -9,6 +9,7 @@ import android.view.View;
 import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.toolbar.top.ToolbarUtils;
 import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -30,6 +31,7 @@ final class SigninButtonViewBinder {
         } else if (SigninButtonProperties.AVATAR_TINT.equals(propertyKey)) {
             ImageViewCompat.setImageTintList(
                     view.getAvatarButton(), model.get(SigninButtonProperties.AVATAR_TINT));
+            updateAvatarDimming(model, view);
         } else if (SigninButtonProperties.ON_CLICK.equals(propertyKey)) {
             view.getAvatarButton().setOnClickListener(model.get(SigninButtonProperties.ON_CLICK));
             view.getSigninTextButton()
@@ -42,6 +44,16 @@ final class SigninButtonViewBinder {
             boolean isEnabled = model.get(SigninButtonProperties.IS_ENABLED);
             view.getAvatarButton().setEnabled(isEnabled);
             view.getSigninTextButton().setEnabled(isEnabled);
+            updateAvatarDimming(model, view);
         }
+    }
+
+    private static void updateAvatarDimming(PropertyModel model, SigninButtonView view) {
+        // Signed-out placeholders use AVATAR_TINT (which already applies unfocused disabled alpha),
+        // so only dim via view alpha for untinted signed-in avatars to avoid double-dimming.
+        boolean shouldDim =
+                model.get(SigninButtonProperties.AVATAR_TINT) == null
+                        && !model.get(SigninButtonProperties.IS_ENABLED);
+        ToolbarUtils.setViewDimmed(view.getAvatarButton(), shouldDim);
     }
 }

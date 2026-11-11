@@ -107,7 +107,6 @@ public class ReloadButtonCoordinator extends ToolbarChildButton {
             @Nullable ColorStateList tint,
             @Nullable ColorStateList activityFocusTint,
             int brandedColorScheme) {
-        super.onTintChanged(tint, activityFocusTint, brandedColorScheme);
         mMediator.onTintChanged(tint, activityFocusTint, brandedColorScheme);
     }
 

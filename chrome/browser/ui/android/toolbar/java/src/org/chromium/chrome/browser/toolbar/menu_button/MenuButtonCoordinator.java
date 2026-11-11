@@ -392,7 +392,6 @@ public class MenuButtonCoordinator extends ToolbarChildButton {
             @Nullable ColorStateList tint,
             @Nullable ColorStateList activityFocusTint,
             @BrandedColorScheme int brandedColorScheme) {
-        super.onTintChanged(tint, activityFocusTint, brandedColorScheme);
         if (mMediator == null) return;
         mMediator.onTintChanged(tint, activityFocusTint, brandedColorScheme);
     }

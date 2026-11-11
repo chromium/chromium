@@ -21,6 +21,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import android.app.Activity;
@@ -37,6 +38,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.RequiresRestart;
@@ -71,6 +73,7 @@ import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.test.util.GmsCoreVersionRestriction;
 import org.chromium.ui.test.util.ViewUtils;
+import org.chromium.ui.util.ValueUtils;
 
 /** Integration tests for {@link SigninButtonCoordinator}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -580,6 +583,50 @@ public class SigninButtonCoordinatorTest {
                 () -> {
                     mActivityTestRule.getActivity().onTopResumedActivityChanged(true);
                 });
+    }
+
+    @Test
+    @MediumTest
+    @Restriction({
+        DeviceFormFactor.DESKTOP_FREEFORM,
+        GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15
+    })
+    public void testSignedInAvatarDimsOnInactiveWindow() {
+        startActivityOnNtp();
+
+        AppHeaderUtils.setAppInDesktopWindowForTesting(true);
+        MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(true);
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
+        ViewUtils.waitForVisibleView(
+                allOf(
+                        withId(R.id.avatar_button),
+                        isDisplayed(),
+                        withContentDescription(mContentDescriptionWithNameAndEmail)));
+
+        ListMenuButton avatarButton =
+                mActivityTestRule.getActivity().findViewById(R.id.avatar_button);
+        assertNull(avatarButton.getImageTintList());
+        assertEquals(1.0f, avatarButton.getAlpha(), 0.01f);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // Trigger window focus change to false.
+                    mActivityTestRule.getActivity().onTopResumedActivityChanged(false);
+                });
+        CriteriaHelper.pollUiThread(() -> !avatarButton.isEnabled());
+        assertNull(avatarButton.getImageTintList());
+        float expectedDisabledAlpha =
+                ValueUtils.getFloat(
+                        avatarButton.getResources(),
+                        org.chromium.ui.R.dimen.default_disabled_alpha);
+        assertEquals(expectedDisabledAlpha, avatarButton.getAlpha(), 0.01f);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mActivityTestRule.getActivity().onTopResumedActivityChanged(true);
+                });
+        CriteriaHelper.pollUiThread(avatarButton::isEnabled);
+        assertEquals(1.0f, avatarButton.getAlpha(), 0.01f);
     }
 
     @Test

@@ -136,7 +136,6 @@ public class DownloadButtonCoordinator extends ToolbarChildButton {
             @Nullable ColorStateList tint,
             @Nullable ColorStateList activityFocusTint,
             @BrandedColorScheme int brandedColorScheme) {
-        super.onTintChanged(tint, activityFocusTint, brandedColorScheme);
         // Use activityFocusTint so the icon dims when Chrome loses window focus (e.g.
         // multi-window).
         if (mMediator != null && activityFocusTint != null) {

@@ -170,10 +170,9 @@ final class SigninButtonMediator
         mThemeColorProvider = themeColorProvider;
         mOnSigninTapped = onSigninTapped;
         mActivityFocusTint = mThemeColorProvider.getActivityFocusTint();
-        mThemeColorProvider.addTintObserver(this);
         mModel.set(
                 SigninButtonProperties.IS_ENABLED,
-                Objects.equals(mThemeColorProvider.getTint(), mActivityFocusTint));
+                hasActivityFocusTint(mThemeColorProvider.getTint(), mActivityFocusTint));
     }
 
     /**
@@ -231,8 +230,7 @@ final class SigninButtonMediator
             @Nullable ColorStateList tint,
             @Nullable ColorStateList activityFocusTint,
             @BrandedColorScheme int brandedColorScheme) {
-        // If activityFocusTint is different from tint, the toolbar thinks we are inactive.
-        boolean isWindowActive = Objects.equals(tint, activityFocusTint);
+        boolean isWindowActive = hasActivityFocusTint(tint, activityFocusTint);
         mModel.set(SigninButtonProperties.IS_ENABLED, isWindowActive);
 
         // The avatar icon tint needs to be manually set.
@@ -240,6 +238,11 @@ final class SigninButtonMediator
         if (mProfile != null && !mProfile.isOffTheRecord()) {
             updateButtonState();
         }
+    }
+
+    private static boolean hasActivityFocusTint(
+            @Nullable ColorStateList tint, @Nullable ColorStateList activityFocusTint) {
+        return activityFocusTint == null || Objects.equals(tint, activityFocusTint);
     }
 
     boolean hasSpaceToShow() {
@@ -529,7 +532,6 @@ final class SigninButtonMediator
     public void destroy() {
         setProfile(null);
         mProfileSupplier.removeObserver(mProfileSupplierObserver);
-        mThemeColorProvider.removeTintObserver(this);
     }
 
     // TODO(crbug.com/522145863): Remove when AI tier is launched.
