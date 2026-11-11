@@ -1051,10 +1051,7 @@ public abstract class ChromeFeatureList {
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ false);
     public static final CachedFlag sAndroidStartupImprovements =
-            newCachedFlag(
-                    ANDROID_STARTUP_IMPROVEMENTS,
-                    /* defaultValue= */ false,
-                    /* defaultValueInTests= */ true);
+            newCachedFlag(ANDROID_STARTUP_IMPROVEMENTS, /* defaultValue= */ true);
     public static final CachedFlag sAndroidTabDeclutterDedupeTabIdsKillSwitch =
             newCachedFlag(ANDROID_TAB_DECLUTTER_DEDUPE_TAB_IDS_KILL_SWITCH, true);
     public static final CachedFlag sAndroidTabPersistentStoreActiveTabPrefs =
