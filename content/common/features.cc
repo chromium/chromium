@@ -84,7 +84,12 @@ BASE_FEATURE_PARAM(base::TimeDelta,
 
 // Uses drag session IDs to prevent stale Aura drag callbacks and cleanup from
 // modifying a newer drag.
-BASE_FEATURE(kAuraDragDropSessionId, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAuraDragDropSessionId,
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
 
 // Synchronously continuing with navigation can lead to trying to start another
 // navigation synchronously while the first navigation is still being processed
