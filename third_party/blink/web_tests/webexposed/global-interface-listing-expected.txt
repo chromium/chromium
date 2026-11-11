@@ -10125,6 +10125,7 @@ interface SemanticEmbedder
     static method params
     attribute @@toStringTag
     getter embeddingSpace
+    getter maxInputTokens
     method constructor
     method destroy
     method embed

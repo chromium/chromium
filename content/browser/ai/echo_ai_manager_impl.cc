@@ -528,7 +528,9 @@ void EchoAIManagerImpl::ReturnAIClientCreationResult(
                               pending_remote.InitWithNewPipeAndPassReceiver());
   if constexpr (std::is_same_v<AIPendingRemote,
                                blink::mojom::AISemanticEmbedder>) {
-    client_remote->OnResult(std::move(pending_remote));
+    client_remote->OnResult(
+        std::move(pending_remote),
+        blink::mojom::AISemanticEmbedderInfo::New(kMaxContextSizeInTokens));
   } else {
     client_remote->OnResult(std::move(pending_remote), kMaxContextSizeInTokens);
   }

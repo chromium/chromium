@@ -173,6 +173,7 @@ class MockParamsAIManager
 class EmbedderTest : public testing::Test {
  public:
   static constexpr char kEmbeddingSpace[] = "embeddinggemma-300m";
+  static constexpr uint32_t kMaxInputTokens = 2048;
 
   SemanticEmbedder* CreateSemanticEmbedder(ScriptState* script_state) {
     mojo::PendingRemote<mojom::blink::AISemanticEmbedder> pending_remote;
@@ -185,7 +186,7 @@ class EmbedderTest : public testing::Test {
         script_state,
         ExecutionContext::From(script_state)
             ->GetTaskRunner(TaskType::kInternalDefault),
-        std::move(pending_remote), options);
+        std::move(pending_remote), options, kMaxInputTokens);
   }
 
   // params() talks to AIManager directly; the params tests bind a mock
@@ -268,6 +269,12 @@ TEST_F(EmbedderTest, EmbedSucceeds) {
   EXPECT_TRUE(mock_remote_->last_options());
   EXPECT_EQ(mock_remote_->last_options()->task_type,
             mojom::blink::AISemanticEmbedderTaskType::kClassification);
+}
+
+TEST_F(EmbedderTest, MaxInputTokensReportsInstanceInfo) {
+  V8TestingScope scope;
+  SemanticEmbedder* embedder = CreateSemanticEmbedder(scope.GetScriptState());
+  EXPECT_EQ(embedder->maxInputTokens(), kMaxInputTokens);
 }
 
 TEST_F(EmbedderTest, EmbedBatchSucceeds) {

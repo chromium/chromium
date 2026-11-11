@@ -6933,6 +6933,7 @@ Called by update_use_counter_feature_enum.py.-->
       label="BeforeUnloadDialogBlockedUnloadWithoutUserOrFormEdit"/>
   <int value="6094" label="WebAuthnAmbientUiGet"/>
   <int value="6095" label="V8MLGraph_Devices_AttributeGetter"/>
+  <int value="6096" label="SemanticEmbedder_MaxInputTokens"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

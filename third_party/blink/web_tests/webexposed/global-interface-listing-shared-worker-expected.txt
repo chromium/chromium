@@ -1931,6 +1931,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     static method params
 [Worker]     attribute @@toStringTag
 [Worker]     getter embeddingSpace
+[Worker]     getter maxInputTokens
 [Worker]     method constructor
 [Worker]     method destroy
 [Worker]     method embed

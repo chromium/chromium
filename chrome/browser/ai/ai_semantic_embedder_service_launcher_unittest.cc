@@ -206,6 +206,24 @@ TEST_F(AISemanticEmbedderServiceLauncherTest,
   EXPECT_FALSE(launcher.controller()->IsModelAvailable());
 }
 
+TEST_F(AISemanticEmbedderServiceLauncherTest,
+       InputWindowSizeFollowsLoadedModel) {
+  AISemanticEmbedderServiceLauncherForTest launcher;
+  optimization_guide::proto::PassageEmbeddingsModelMetadata metadata;
+  metadata.set_input_window_size(512);
+  optimization_guide::ModelInfo model_info = GetTestModelInfo();
+  model_info.model_metadata = optimization_guide::AnyWrapProto(metadata);
+  ASSERT_TRUE(launcher.controller()->MaybeUpdateModelInfo(model_info));
+  EXPECT_EQ(launcher.input_window_size(), 512u);
+
+  // A new model version brings its own window.
+  metadata.set_input_window_size(1024);
+  model_info.version = 2;
+  model_info.model_metadata = optimization_guide::AnyWrapProto(metadata);
+  ASSERT_TRUE(launcher.controller()->MaybeUpdateModelInfo(model_info));
+  EXPECT_EQ(launcher.input_window_size(), 1024u);
+}
+
 class AISemanticEmbedderServiceLauncherPurgeTest
     : public AISemanticEmbedderServiceLauncherTest {
  protected:

@@ -50,6 +50,12 @@ struct SemanticEmbedderResult {
   array<ContentEmbedding> embeddings;
 };
 
+// Facts about a created embedder that the page reads synchronously.
+struct AISemanticEmbedderInfo {
+  // The model metadata's input_window_size, including control tokens.
+  uint32 max_input_tokens;
+};
+
 // A semantic embedder.
 interface AISemanticEmbedder {
   // Embeds strings and returns an array of 1:1 mapped float arrays.

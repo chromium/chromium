@@ -98,8 +98,9 @@ class TestCreateSemanticEmbedderClient
   TestCreateSemanticEmbedderClient() = default;
   ~TestCreateSemanticEmbedderClient() override = default;
 
-  void OnResult(
-      mojo::PendingRemote<blink::mojom::AISemanticEmbedder> embedder) override {
+  void OnResult(mojo::PendingRemote<blink::mojom::AISemanticEmbedder> embedder,
+                blink::mojom::AISemanticEmbedderInfoPtr info) override {
+    info_ = std::move(info);
     future_.SetValue(std::move(embedder));
   }
 
@@ -122,6 +123,9 @@ class TestCreateSemanticEmbedderClient
     return error_future_;
   }
 
+  // The info delivered with `OnResult()`; null until then.
+  const blink::mojom::AISemanticEmbedderInfoPtr& info() const { return info_; }
+
  private:
   mojo::Receiver<blink::mojom::AIManagerCreateSemanticEmbedderClient> receiver_{
       this};
@@ -129,6 +133,7 @@ class TestCreateSemanticEmbedderClient
       future_;
   base::test::TestFuture<blink::mojom::AIManagerCreateClientError>
       error_future_;
+  blink::mojom::AISemanticEmbedderInfoPtr info_;
 };
 
 class MockDownloadObserver : public on_device_model::mojom::DownloadObserver {
@@ -1359,17 +1364,44 @@ TEST_F(AIManagerTest, CreateSemanticEmbedderWaitsForModel) {
   EXPECT_FALSE(client.future().IsReady());
 
   // Now provide the model.
+  optimization_guide::proto::PassageEmbeddingsModelMetadata metadata;
+  metadata.set_input_window_size(2048);
   service_launcher->controller()->MaybeUpdateModelInfo(
       optimization_guide::ModelInfo{
           .model_file_path = base::FilePath(FILE_PATH_LITERAL("embeddings")),
           .additional_files = {base::FilePath(FILE_PATH_LITERAL("sp"))},
           .version = 1,
-          .model_metadata = optimization_guide::AnyWrapProto(
-              optimization_guide::proto::PassageEmbeddingsModelMetadata()),
+          .model_metadata = optimization_guide::AnyWrapProto(metadata),
       });
 
-  // It should now be resolved.
+  // It should now be resolved, reporting the model's input window.
   EXPECT_TRUE(client.future().Wait());
+  ASSERT_TRUE(client.info());
+  EXPECT_EQ(client.info()->max_input_tokens, 2048u);
+}
+
+TEST_F(AIManagerTest, CreateSemanticEmbedderReportsInputWindow) {
+  // The model is already available: the direct creation path.
+  auto* service_launcher = AISemanticEmbedderServiceLauncher::Get();
+  optimization_guide::proto::PassageEmbeddingsModelMetadata metadata;
+  metadata.set_input_window_size(512);
+  service_launcher->controller()->MaybeUpdateModelInfo(
+      optimization_guide::ModelInfo{
+          .model_file_path = base::FilePath(FILE_PATH_LITERAL("embeddings")),
+          .additional_files = {base::FilePath(FILE_PATH_LITERAL("sp"))},
+          .version = 1,
+          .model_metadata = optimization_guide::AnyWrapProto(metadata),
+      });
+  ASSERT_TRUE(service_launcher->controller()->IsModelAvailable());
+
+  TestCreateSemanticEmbedderClient client;
+  ai_manager_->CreateSemanticEmbedder(client.BindNewPipeAndPassRemote(),
+                                      MakeSemanticEmbedderOptions(),
+                                      mojo::NullRemote());
+
+  EXPECT_TRUE(client.future().Wait());
+  ASSERT_TRUE(client.info());
+  EXPECT_EQ(client.info()->max_input_tokens, 512u);
 }
 
 TEST_F(AIManagerTest, CreateSemanticEmbedderDownloadProgress) {

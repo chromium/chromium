@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_AI_AI_SEMANTIC_EMBEDDER_SERVICE_LAUNCHER_H_
 #define CHROME_BROWSER_AI_AI_SEMANTIC_EMBEDDER_SERVICE_LAUNCHER_H_
 
+#include <cstdint>
 #include <memory>
 #include <vector>
 
@@ -47,6 +48,10 @@ class AISemanticEmbedderServiceLauncher
   passage_embeddings::PassageEmbeddingsServiceController* controller() {
     return &controller_;
   }
+
+  // Returns the input window of the loaded model, in tokens. Call only while
+  // `controller()->IsModelAvailable()` is true.
+  uint32_t input_window_size();
 
   void AddDownloadObserver(
       mojo::PendingRemote<on_device_model::mojom::DownloadObserver> monitor);
@@ -109,6 +114,11 @@ class AISemanticEmbedderServiceLauncher
   passage_embeddings::PassageEmbeddingsServiceController controller_{
       *this,
       /*execute_for_gemma=*/true};
+
+  // The input window of the last model `controller_` accepted, in tokens.
+  // Dropping the model doesn't clear it, so `input_window_size()` checks that a
+  // model is loaded.
+  uint32_t input_window_size_ = 0;
 
   void FlushCallbacks();
   void OnComponentRegistrationCompleted(bool registered);

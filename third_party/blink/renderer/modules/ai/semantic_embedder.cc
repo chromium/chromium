@@ -126,8 +126,9 @@ class CreateSemanticEmbedderClient
   }
 
   // mojom::blink::AIManagerCreateSemanticEmbedderClient:
-  void OnResult(mojo::PendingRemote<mojom::blink::AISemanticEmbedder>
-                    pending_remote) override {
+  void OnResult(
+      mojo::PendingRemote<mojom::blink::AISemanticEmbedder> pending_remote,
+      mojom::blink::AISemanticEmbedderInfoPtr info) override {
     if (!GetResolver()) {
       return;
     }
@@ -136,7 +137,8 @@ class CreateSemanticEmbedderClient
         return;
       }
       GetResolver()->Resolve(MakeGarbageCollected<SemanticEmbedder>(
-          GetScriptState(), task_runner_, std::move(pending_remote), options_));
+          GetScriptState(), task_runner_, std::move(pending_remote), options_,
+          info->max_input_tokens));
     } else {
       GetResolver()->RejectWithDOMException(
           DOMExceptionCode::kInvalidStateError,
@@ -295,11 +297,13 @@ SemanticEmbedder::SemanticEmbedder(
     ScriptState* script_state,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     mojo::PendingRemote<mojom::blink::AISemanticEmbedder> pending_remote,
-    SemanticEmbedderCreateOptions* options)
+    SemanticEmbedderCreateOptions* options,
+    uint32_t max_input_tokens)
     : ExecutionContextClient(ExecutionContext::From(script_state)),
       task_runner_(std::move(task_runner)),
       embedder_remote_(ExecutionContext::From(script_state)),
-      embedding_space_(options->embeddingSpace()) {
+      embedding_space_(options->embeddingSpace()),
+      max_input_tokens_(max_input_tokens) {
   embedder_remote_.Bind(std::move(pending_remote), task_runner_);
 }
 

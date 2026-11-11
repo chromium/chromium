@@ -37,7 +37,8 @@ class MODULES_EXPORT SemanticEmbedder final : public ScriptWrappable,
       ScriptState* script_state,
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       mojo::PendingRemote<mojom::blink::AISemanticEmbedder> pending_remote,
-      SemanticEmbedderCreateOptions* options);
+      SemanticEmbedderCreateOptions* options,
+      uint32_t max_input_tokens);
   ~SemanticEmbedder() override = default;
 
   void Trace(Visitor* visitor) const override;
@@ -66,6 +67,7 @@ class MODULES_EXPORT SemanticEmbedder final : public ScriptWrappable,
   void destroy(ScriptState* script_state, ExceptionState& exception_state);
 
   const String& embeddingSpace() const { return embedding_space_; }
+  uint32_t maxInputTokens() const { return max_input_tokens_; }
 
   // Asks the browser to drop the in-flight embed() call `request_id` (an id
   // handed out by embed()). Called when its AbortSignal fires.
@@ -81,6 +83,8 @@ class MODULES_EXPORT SemanticEmbedder final : public ScriptWrappable,
   HeapMojoRemote<mojom::blink::AISemanticEmbedder> embedder_remote_;
   // Always set; the value passed to create().
   const String embedding_space_;
+  // The input token limit, including control tokens the model adds.
+  const uint32_t max_input_tokens_;
   // Ids for embed() calls, unique per embedder.
   uint64_t next_request_id_ = 0;
   int in_flight_embed_requests_ = 0;

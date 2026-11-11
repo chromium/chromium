@@ -108,6 +108,10 @@ interface SemanticEmbedder {
   [MeasureAs=SemanticEmbedder_EmbeddingSpace]
   readonly attribute DOMString embeddingSpace;
 
+  // The input token limit, including control tokens the model adds.
+  [MeasureAs=SemanticEmbedder_MaxInputTokens]
+  readonly attribute unsigned long maxInputTokens;
+
   [
     MeasureAs=SemanticEmbedder_Destroy,
     CallWith=ScriptState,

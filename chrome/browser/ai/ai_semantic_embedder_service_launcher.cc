@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/no_destructor.h"
@@ -67,6 +68,11 @@ AISemanticEmbedderServiceLauncher::GetIfExists() {
 void AISemanticEmbedderServiceLauncher::SetForTesting(  // IN-TEST
     AISemanticEmbedderServiceLauncher* testing_instance) {
   testing_instance_ = testing_instance;
+}
+
+uint32_t AISemanticEmbedderServiceLauncher::input_window_size() {
+  CHECK(controller_.IsModelAvailable());
+  return input_window_size_;
 }
 
 void AISemanticEmbedderServiceLauncher::RecordSuccessfulUse() {
@@ -295,7 +301,9 @@ void AISemanticEmbedderServiceLauncher::OnEvent(
 }
 
 void AISemanticEmbedderServiceLauncher::EmbedderMetadataUpdated(
-    passage_embeddings::EmbedderMetadata /*metadata*/) {
+    passage_embeddings::EmbedderMetadata metadata) {
+  // Set it before `FlushCallbacks()`, because the callbacks read it.
+  input_window_size_ = metadata.input_window_size;
   crash_tracker_.ResetCrashCount();
   FlushCallbacks();
 }

@@ -137,7 +137,8 @@ interface AIManagerCreateProofreaderClient {
 interface AIManagerCreateSemanticEmbedderClient {
   // Called with a created embedder's mojo interface as a result for the
   // CreateSemanticEmbedder() method of the AIManager.
-  OnResult(pending_remote<blink.mojom.AISemanticEmbedder> embedder);
+  OnResult(pending_remote<blink.mojom.AISemanticEmbedder> embedder,
+           AISemanticEmbedderInfo info);
 
   // Called when the manager cannot create an AISemanticEmbedder.
   OnError(AIManagerCreateClientError error);

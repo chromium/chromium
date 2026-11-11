@@ -2040,7 +2040,9 @@ void AIManager::OnSemanticEmbedderModelReady(
       std::make_unique<AISemanticEmbedder>(
           context_bound_object_set_,
           pending_remote.InitWithNewPipeAndPassReceiver()));
-  client_remote->OnResult(std::move(pending_remote));
+  client_remote->OnResult(std::move(pending_remote),
+                          blink::mojom::AISemanticEmbedderInfo::New(
+                              service_launcher->input_window_size()));
 }
 
 void AIManager::GetSupportedEmbeddingSpaces(
