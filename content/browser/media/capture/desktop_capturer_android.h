@@ -9,9 +9,11 @@
 #include <optional>
 
 #include "base/android/scoped_java_ref.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/stack_allocated.h"
 #include "base/numerics/checked_math.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -25,6 +27,13 @@ namespace content {
 class DesktopCapturerAndroid;
 
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kDesktopCaptureAndroidFrameBufferReuse);
+
+// When enabled, frames received from Android are not copied immediately.
+// Instead, only the latest unconsumed frame is retained, and its pixels are
+// copied when `CaptureFrame()` is called. Superseded frames are released back
+// to Android without being copied. This avoids copying every frame at the
+// display refresh rate when the consumer captures at a lower frame rate.
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kDesktopCaptureAndroidLazyFrameCopy);
 
 class CONTENT_EXPORT DesktopCapturerAndroidJniInterface {
  public:
@@ -51,6 +60,14 @@ class CONTENT_EXPORT DesktopCapturerAndroidJniInterface {
 //
 // On Android, the desktop capturer thread is created with an Android message
 // pump, so we can keep everything on one thread.
+//
+// Android produces frames at up to the display refresh rate (e.g. 120 Hz),
+// whereas the consumer typically calls `CaptureFrame()` at a lower rate (e.g.
+// 30 Hz). With `kDesktopCaptureAndroidLazyFrameCopy`, only the latest frame
+// received from Android is held (without copying) until the next
+// `CaptureFrame()`, so that intermediate frames are never copied. Holding the
+// latest frame, rather than dropping frames that arrive too quickly, ensures
+// that the final frame before the screen becomes static is not lost.
 class CONTENT_EXPORT DesktopCapturerAndroid final
     : public webrtc::DesktopCapturer {
  public:
@@ -131,12 +148,52 @@ class CONTENT_EXPORT DesktopCapturerAndroid final
     base::CheckedNumeric<uint32_t> crop_bottom;
   };
 
+  // A frame received from Android that has not been copied yet.
+  struct PendingFrame {
+    PendingFrame(int64_t timestamp_ns, PlaneInfo plane);
+    ~PendingFrame();
+    PendingFrame(PendingFrame&& other);
+    PendingFrame& operator=(PendingFrame&& other);
+
+    PendingFrame(const PendingFrame&) = delete;
+    PendingFrame& operator=(const PendingFrame&) = delete;
+
+    int64_t timestamp_ns;
+    PlaneInfo plane;
+  };
+
   void Shutdown();
 
+  // The validated layout of an RGBA plane.
+  struct RgbaPlaneLayout {
+    STACK_ALLOCATED();
+
+   public:
+    // Size of the cropped frame.
+    webrtc::DesktopSize size;
+    // Pixel data starting at the top-left corner of the crop rectangle. Only
+    // valid until the plane's `release_cb` is run.
+    base::span<const uint8_t> pixels;
+  };
+
+  // CHECKs that `plane` describes a valid RGBA buffer, and returns its layout.
+  static RgbaPlaneLayout CheckRgbaPlane(JNIEnv* env, const PlaneInfo& plane);
+
+  // Copies the pixels of `plane` into `current_frame_` and releases `plane`.
   void ProcessRgbaFrame(int64_t timestamp_ns, PlaneInfo plane);
+
+  // Releases `pending_frame_` back to Android without copying it, if present.
+  void ReleasePendingFrame();
 
   raw_ptr<Callback> callback_ = nullptr;
   base::android::ScopedJavaGlobalRef<jobject> screen_capture_;
+
+  // The latest frame received from Android which has not been copied into
+  // `current_frame_` yet. Only used with `kDesktopCaptureAndroidLazyFrameCopy`.
+  // The underlying Java `Image` (and thus `plane.buf`) stays valid until
+  // `plane.release_cb` is run, which must happen before `screen_capture_` is
+  // destroyed.
+  std::optional<PendingFrame> pending_frame_;
 
   // TODO(crbug.com/563421987): Refactor DesktopCapturerAndroid to produce
   // media::VideoFrame directly instead of webrtc::DesktopFrame.

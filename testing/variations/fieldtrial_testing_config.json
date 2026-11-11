@@ -6809,6 +6809,21 @@
             ]
         }
     ],
+    "DesktopCaptureAndroidLazyFrameCopy": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DesktopCaptureAndroidLazyFrameCopy"
+                    ]
+                }
+            ]
+        }
+    ],
     "DesktopCapturePermissionCheckerPreMacos14_4": [
         {
             "platforms": [

@@ -4,6 +4,7 @@
 
 #include "content/browser/media/capture/desktop_capturer_android.h"
 
+#include <list>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -86,6 +87,12 @@ class MockDesktopCapturerAndroidJni
 class DesktopCapturerAndroidTest : public testing::Test,
                                    public webrtc::DesktopCapturer::Callback {
  public:
+  DesktopCapturerAndroidTest() {
+    // Lazy frame copy is disabled by default while it is rolled out. Tests
+    // cover the lazy path unless they explicitly disable it.
+    feature_list_.InitAndEnableFeature(kDesktopCaptureAndroidLazyFrameCopy);
+  }
+
   void SetUp() override {
     env_ = base::android::AttachCurrentThread();
     auto jni_interface = std::make_unique<MockDesktopCapturerAndroidJni>();
@@ -129,27 +136,65 @@ class DesktopCapturerAndroidTest : public testing::Test,
   }
 
  protected:
+  base::test::ScopedFeatureList feature_list_;
+
+  // Backing storage for a frame pushed to `capturer_`. The capturer may hold on
+  // to a frame until it is consumed by `CaptureFrame()`, so the buffer and the
+  // release flag must outlive the call to `OnRgbaFrameAvailable()`.
+  struct PushedFrame {
+    std::vector<uint8_t> buffer;
+    RunnableFlag release_flag;
+  };
+
   raw_ptr<JNIEnv> env_ = nullptr;
+  // Declared before `capturer_` so that pending frames released during the
+  // destruction of `capturer_` can still access their storage.
+  std::list<PushedFrame> pushed_frames_;
   std::unique_ptr<DesktopCapturerAndroid> capturer_;
 
-  void PushRgbaFrame(base::span<uint8_t> buffer, int64_t timestamp_ns) {
-    auto j_buf = CreateJavaByteBuffer(buffer);
-    RunnableFlag release_cb;
-    capturer_->OnRgbaFrameAvailable(env_, release_cb.GetJavaObject(),
-                                    timestamp_ns, j_buf, kBytesPerPixel,
-                                    kStride, 0, 0, kWidth, kHeight);
-    EXPECT_TRUE(release_cb.WasRun());
+  // Pushes a copy of `buffer` as a new frame. Returns the flag which is set
+  // when the capturer releases the frame back to Android.
+  const RunnableFlag& PushRgbaFrame(base::span<const uint8_t> buffer,
+                                    int64_t timestamp_ns) {
+    PushedFrame& pushed_frame = pushed_frames_.emplace_back();
+    pushed_frame.buffer.assign(buffer.begin(), buffer.end());
+    auto j_buf = CreateJavaByteBuffer(pushed_frame.buffer);
+    capturer_->OnRgbaFrameAvailable(
+        env_, pushed_frame.release_flag.GetJavaObject(), timestamp_ns, j_buf,
+        kBytesPerPixel, kStride, 0, 0, kWidth, kHeight);
+    return pushed_frame.release_flag;
   }
 
-  void PushRgbaFrame(base::span<uint8_t> buffer) {
-    PushRgbaFrame(buffer, kTimestampNs);
+  const RunnableFlag& PushRgbaFrame(base::span<const uint8_t> buffer) {
+    return PushRgbaFrame(buffer, kTimestampNs);
   }
 
-  void PushRgbaFrame() { PushRgbaFrameWithTimestampNs(kTimestampNs); }
+  const RunnableFlag& PushRgbaFrame() {
+    return PushRgbaFrameWithTimestampNs(kTimestampNs);
+  }
 
-  void PushRgbaFrameWithTimestampNs(int64_t timestamp_ns) {
-    std::vector<uint8_t> buffer(kFrameSize, 'A');
-    PushRgbaFrame(buffer, timestamp_ns);
+  const RunnableFlag& PushRgbaFrameWithTimestampNs(int64_t timestamp_ns) {
+    return PushRgbaFrameFilledWith('A', timestamp_ns);
+  }
+
+  const RunnableFlag& PushRgbaFrameFilledWith(uint8_t value,
+                                              int64_t timestamp_ns) {
+    std::vector<uint8_t> buffer(kFrameSize, value);
+    return PushRgbaFrame(buffer, timestamp_ns);
+  }
+
+  // Checks that every pixel of `frame` starts with `value`. This is used to
+  // identify which uniformly filled test frame was delivered; copy correctness
+  // (stride, crop, per-channel data) is covered by the RgbaFrame* tests.
+  void ExpectFrameFilledWith(const webrtc::DesktopFrame& frame, uint8_t value) {
+    ASSERT_EQ(frame.size().width(), kWidth);
+    ASSERT_EQ(frame.size().height(), kHeight);
+    for (int y = 0; y < kHeight; ++y) {
+      for (int x = 0; x < kWidth; ++x) {
+        EXPECT_EQ(*frame.GetFrameDataAtPos(webrtc::DesktopVector(x, y)), value)
+            << "at (" << x << ", " << y << ")";
+      }
+    }
   }
 
   void ExpectFrameWithCaptureTime(base::TimeDelta capture_time) {
@@ -211,10 +256,11 @@ TEST_F(DesktopCapturerAndroidTest, FrameArrivesThenOnStopReleasesFrame) {
   StartCapturer(/*start_success=*/true);
 
   // The release callback should be run even though the frame is never captured.
-  PushRgbaFrame();
+  const RunnableFlag& release_flag = PushRgbaFrame();
 
   // Stop the capturer before the frame is consumed.
   capturer_->OnStop(env_);
+  EXPECT_TRUE(release_flag.WasRun());
 
   // Subsequent captures should fail permanently.
   const auto& [result, frame] = CaptureFrame();
@@ -290,25 +336,24 @@ TEST_F(DesktopCapturerAndroidTest, DirtyRegionRestoredOnNewFrame) {
 TEST_F(DesktopCapturerAndroidTest, MultipleFramesArriveBeforeCapture) {
   StartCapturer(/*start_success=*/true);
 
-  std::vector<uint8_t> buffer_a(kFrameSize, 'A');
-  std::vector<uint8_t> buffer_b(kFrameSize, 'B');
+  const RunnableFlag& release_flag_a =
+      PushRgbaFrameFilledWith('A', kTimestampNs);
+  const RunnableFlag& release_flag_b =
+      PushRgbaFrameFilledWith('B', kTimestampNs + 1000);
 
-  PushRgbaFrame(buffer_a, kTimestampNs);
-  PushRgbaFrame(buffer_b, kTimestampNs + 1000);
+  // The superseded frame is released as soon as a newer frame arrives, while
+  // the latest frame is held until it is captured.
+  EXPECT_TRUE(release_flag_a.WasRun());
+  EXPECT_FALSE(release_flag_b.WasRun());
 
   // We should get the more recent frame back.
   const auto& [result, frame] = CaptureFrame();
   EXPECT_EQ(result, webrtc::DesktopCapturer::Result::SUCCESS);
   ASSERT_TRUE(frame);
-  EXPECT_EQ(frame->size().width(), kWidth);
-  ASSERT_EQ(frame->size().height(), kHeight);
-  ASSERT_EQ(frame->stride(), kStride);
+  EXPECT_TRUE(release_flag_b.WasRun());
 
   // Verify the data is from the second frame.
-  // SAFETY: No safe interface to DesktopFrame. Size must be equal to
-  // `buffer_b` if the stride and height are the same.
-  EXPECT_EQ(UNSAFE_BUFFERS(base::span(frame->data(), buffer_b.size())),
-            base::span(buffer_b));
+  ExpectFrameFilledWith(*frame, 'B');
 }
 
 TEST_F(DesktopCapturerAndroidTest, TimestampCalculation) {
@@ -369,9 +414,9 @@ TEST_F(DesktopCapturerAndroidTest, RgbaFrameWithStrideAndCrop) {
                                   kTimestampNs, j_buf, kBytesPerPixel, kStride,
                                   kCropRect.x(), kCropRect.y(),
                                   kCropRect.right(), kCropRect.bottom());
-  EXPECT_TRUE(release_cb.WasRun());
 
   const auto& [result, frame] = CaptureFrame();
+  EXPECT_TRUE(release_cb.WasRun());
   EXPECT_EQ(result, webrtc::DesktopCapturer::Result::SUCCESS);
   ASSERT_TRUE(frame);
   EXPECT_EQ(frame->size().width(), kCropRect.width());
@@ -474,9 +519,9 @@ TEST_F(DesktopCapturerAndroidTest, RgbaFramePreciseBufferBoundaryWithPadding) {
                                   kTimestampNs, j_buf, kBytesPerPixel, kStride,
                                   kCropRect.x(), kCropRect.y(),
                                   kCropRect.right(), kCropRect.bottom());
-  EXPECT_TRUE(release_cb.WasRun());
 
   auto [result, frame] = CaptureFrame();
+  EXPECT_TRUE(release_cb.WasRun());
   EXPECT_EQ(result, webrtc::DesktopCapturer::Result::SUCCESS);
   ASSERT_TRUE(frame);
   EXPECT_EQ(frame->size().width(), kCropRect.width());
@@ -613,6 +658,125 @@ TEST_F(DesktopCapturerAndroidTest, ZeroHertzWithFrameBufferReuse) {
   EXPECT_EQ(result3, webrtc::DesktopCapturer::Result::SUCCESS);
   ASSERT_TRUE(frame3);
   EXPECT_FALSE(frame3->updated_region().is_empty());
+}
+
+TEST_F(DesktopCapturerAndroidTest, LazyCopyHoldsFrameUntilCaptureFrame) {
+  StartCapturer(/*start_success=*/true);
+
+  const RunnableFlag& release_flag = PushRgbaFrameFilledWith('A', kTimestampNs);
+
+  // The frame is held, without being released, until it is captured.
+  EXPECT_FALSE(release_flag.WasRun());
+
+  const auto& [result, frame] = CaptureFrame();
+  EXPECT_EQ(result, webrtc::DesktopCapturer::Result::SUCCESS);
+  ASSERT_TRUE(frame);
+  EXPECT_TRUE(release_flag.WasRun());
+  ExpectFrameFilledWith(*frame, 'A');
+}
+
+TEST_F(DesktopCapturerAndroidTest,
+       LazyCopyReleasesSupersededFramesBeforeCapture) {
+  StartCapturer(/*start_success=*/true);
+
+  // Simulate frames arriving at the display refresh rate between two calls to
+  // `CaptureFrame()`.
+  const RunnableFlag& release_flag_a =
+      PushRgbaFrameFilledWith('A', kTimestampNs);
+  const RunnableFlag& release_flag_b =
+      PushRgbaFrameFilledWith('B', kTimestampNs + 1000);
+  const RunnableFlag& release_flag_c =
+      PushRgbaFrameFilledWith('C', kTimestampNs + 2000);
+
+  // Only the latest frame is held.
+  EXPECT_TRUE(release_flag_a.WasRun());
+  EXPECT_TRUE(release_flag_b.WasRun());
+  EXPECT_FALSE(release_flag_c.WasRun());
+
+  const auto& [result, frame] = CaptureFrame();
+  EXPECT_EQ(result, webrtc::DesktopCapturer::Result::SUCCESS);
+  ASSERT_TRUE(frame);
+  EXPECT_TRUE(release_flag_c.WasRun());
+  ExpectFrameFilledWith(*frame, 'C');
+}
+
+// Android stops producing frames once the screen becomes static. Verifies that
+// the last frame produced before that is delivered, rather than being dropped
+// for arriving too soon after the previous frame.
+TEST_F(DesktopCapturerAndroidTest, LazyCopyDeliversFinalFrameBeforeStatic) {
+  StartCapturer(/*start_success=*/true);
+
+  PushRgbaFrameFilledWith('A', kTimestampNs);
+  const auto& [result1, frame1] = CaptureFrame();
+  EXPECT_EQ(result1, webrtc::DesktopCapturer::Result::SUCCESS);
+  ASSERT_TRUE(frame1);
+  ExpectFrameFilledWith(*frame1, 'A');
+
+  // Two frames arrive in quick succession, then the screen becomes static.
+  PushRgbaFrameFilledWith('B', kTimestampNs + 1000);
+  PushRgbaFrameFilledWith('C', kTimestampNs + 2000);
+
+  const auto& [result2, frame2] = CaptureFrame();
+  EXPECT_EQ(result2, webrtc::DesktopCapturer::Result::SUCCESS);
+  ASSERT_TRUE(frame2);
+  EXPECT_FALSE(frame2->updated_region().is_empty());
+  ExpectFrameFilledWith(*frame2, 'C');
+
+  // No more frames arrive. The cached frame still holds the final content.
+  const auto& [result3, frame3] = CaptureFrame();
+  EXPECT_EQ(result3, webrtc::DesktopCapturer::Result::SUCCESS);
+  ASSERT_TRUE(frame3);
+  EXPECT_TRUE(frame3->updated_region().is_empty());
+  ExpectFrameFilledWith(*frame3, 'C');
+}
+
+TEST_F(DesktopCapturerAndroidTest, PendingFrameReleasedOnDestruction) {
+  StartCapturer(/*start_success=*/true);
+
+  const RunnableFlag& release_flag = PushRgbaFrame();
+
+  EXPECT_FALSE(release_flag.WasRun());
+
+  capturer_.reset();
+
+  EXPECT_TRUE(release_flag.WasRun());
+}
+
+TEST_F(DesktopCapturerAndroidTest, LazyCopyDisabledReleasesFrameImmediately) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kDesktopCaptureAndroidLazyFrameCopy);
+
+  StartCapturer(/*start_success=*/true);
+
+  const RunnableFlag& release_flag_a =
+      PushRgbaFrameFilledWith('A', kTimestampNs);
+  const RunnableFlag& release_flag_b =
+      PushRgbaFrameFilledWith('B', kTimestampNs + 1000);
+
+  // Each frame is copied and released as soon as it arrives.
+  EXPECT_TRUE(release_flag_a.WasRun());
+  EXPECT_TRUE(release_flag_b.WasRun());
+
+  // The most recent frame is delivered.
+  const auto& [result, frame] = CaptureFrame();
+  EXPECT_EQ(result, webrtc::DesktopCapturer::Result::SUCCESS);
+  ASSERT_TRUE(frame);
+  ExpectFrameFilledWith(*frame, 'B');
+}
+
+// `capture_time_ms` is the time between the frames that are actually copied,
+// based on the timestamps from Android. It does not include the time a frame
+// spends waiting to be consumed.
+TEST_F(DesktopCapturerAndroidTest, LazyCopyCaptureTimeBetweenConsumedFrames) {
+  StartCapturer(/*start_success=*/true);
+
+  PushRgbaFrameWithTimestampNs(100 * base::Time::kNanosecondsPerMillisecond);
+  ExpectFrameWithCaptureTime(base::Milliseconds(0));
+
+  // Two frames arrive before the next capture; only the latest is copied.
+  PushRgbaFrameWithTimestampNs(116 * base::Time::kNanosecondsPerMillisecond);
+  PushRgbaFrameWithTimestampNs(133 * base::Time::kNanosecondsPerMillisecond);
+  ExpectFrameWithCaptureTime(base::Milliseconds(33));
 }
 
 }  // namespace content

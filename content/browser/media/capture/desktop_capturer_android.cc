@@ -20,6 +20,9 @@ namespace content {
 BASE_FEATURE(kDesktopCaptureAndroidFrameBufferReuse,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kDesktopCaptureAndroidLazyFrameCopy,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 namespace {
 
 class DesktopCapturerAndroidJni : public DesktopCapturerAndroidJniInterface {
@@ -51,6 +54,18 @@ DesktopCapturerAndroid::PlaneInfo::PlaneInfo(PlaneInfo&& other) = default;
 DesktopCapturerAndroid::PlaneInfo& DesktopCapturerAndroid::PlaneInfo::operator=(
     PlaneInfo&& other) = default;
 
+DesktopCapturerAndroid::PendingFrame::PendingFrame(int64_t timestamp_ns,
+                                                   PlaneInfo plane)
+    : timestamp_ns(timestamp_ns), plane(std::move(plane)) {}
+
+DesktopCapturerAndroid::PendingFrame::~PendingFrame() = default;
+
+DesktopCapturerAndroid::PendingFrame::PendingFrame(PendingFrame&& other) =
+    default;
+
+DesktopCapturerAndroid::PendingFrame&
+DesktopCapturerAndroid::PendingFrame::operator=(PendingFrame&& other) = default;
+
 DesktopCapturerAndroid::DesktopCapturerAndroid(
     const webrtc::DesktopCaptureOptions& options)
     : DesktopCapturerAndroid(options,
@@ -65,6 +80,9 @@ DesktopCapturerAndroid::DesktopCapturerAndroid(
 
 DesktopCapturerAndroid::~DesktopCapturerAndroid() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Release the pending frame before destroying the Java side, which closes
+  // the underlying `ImageReader`.
+  ReleasePendingFrame();
   JNIEnv* env = base::android::AttachCurrentThread();
   jni_interface_->Destroy(env, screen_capture_);
 }
@@ -95,6 +113,16 @@ void DesktopCapturerAndroid::CaptureFrame() {
     callback_->OnCaptureResult(webrtc::DesktopCapturer::Result::ERROR_PERMANENT,
                                nullptr);
     return;
+  }
+
+  // Copy the latest frame received from Android, if any. Frames that arrived
+  // since the previous call and were superseded have already been released
+  // without being copied.
+  if (pending_frame_) {
+    PendingFrame pending_frame = std::move(*pending_frame_);
+    pending_frame_.reset();
+    ProcessRgbaFrame(pending_frame.timestamp_ns,
+                     std::move(pending_frame.plane));
   }
 
   if (!current_frame_) {
@@ -147,7 +175,29 @@ void DesktopCapturerAndroid::OnRgbaFrameAvailable(
   plane.crop_right = unchecked_crop_right;
   plane.crop_bottom = unchecked_crop_bottom;
 
-  ProcessRgbaFrame(timestamp_ns, std::move(plane));
+  // Don't process frames if we are no longer doing anything.
+  if (finishing_) {
+    jni_zero::RunRunnable(plane.release_cb);
+    return;
+  }
+
+  if (!base::FeatureList::IsEnabled(kDesktopCaptureAndroidLazyFrameCopy)) {
+    ReleasePendingFrame();
+    ProcessRgbaFrame(timestamp_ns, std::move(plane));
+    return;
+  }
+
+  // Validate the buffer as soon as it is received, since it may be copied
+  // much later, or released without being copied.
+  CheckRgbaPlane(env, plane);
+
+  // Only one frame is retained at a time, so release any frame which has not
+  // been consumed yet. This also keeps the number of `Image`s acquired from
+  // the `ImageReader` bounded.
+  ReleasePendingFrame();
+
+  // Defer the copy until the frame is actually consumed in `CaptureFrame()`.
+  pending_frame_.emplace(timestamp_ns, std::move(plane));
 }
 
 void DesktopCapturerAndroid::OnI420FrameAvailable(
@@ -180,30 +230,72 @@ void DesktopCapturerAndroid::Shutdown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!finishing_);
   finishing_ = true;
+  ReleasePendingFrame();
+}
+
+void DesktopCapturerAndroid::ReleasePendingFrame() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!pending_frame_) {
+    return;
+  }
+  // Reset `pending_frame_` before running the release callback, so that the
+  // callback cannot observe a stale pending frame.
+  PendingFrame pending_frame = std::move(*pending_frame_);
+  pending_frame_.reset();
+  jni_zero::RunRunnable(pending_frame.plane.release_cb);
+}
+
+// static
+DesktopCapturerAndroid::RgbaPlaneLayout DesktopCapturerAndroid::CheckRgbaPlane(
+    JNIEnv* env,
+    const PlaneInfo& plane) {
+  const auto width = plane.crop_right - plane.crop_left;
+  const auto height = plane.crop_bottom - plane.crop_top;
+  const webrtc::DesktopSize size(width.ValueOrDie<int32_t>(),
+                                 height.ValueOrDie<int32_t>());
+
+  const auto span = base::android::JavaByteBufferToSpan(env, plane.buf);
+  const auto offset =
+      plane.crop_top * plane.row_stride + plane.crop_left * plane.pixel_stride;
+
+  CHECK_EQ(
+      static_cast<int>(static_cast<uint32_t>(plane.pixel_stride.ValueOrDie())),
+      webrtc::DesktopFrame::kBytesPerPixel);
+  CHECK_LE(static_cast<uint32_t>((width * plane.pixel_stride).ValueOrDie()),
+           static_cast<uint32_t>(plane.row_stride.ValueOrDie()));
+  CHECK_LE(static_cast<uint32_t>(offset.ValueOrDie()), span.size_bytes());
+  // In the case that we have a crop rectangle, width will definitely be less
+  // than row_stride, so only look at the number of actual pixels for the last
+  // row. Also, even if there is no crop, it's conceptually possible for
+  // row_stride to be larger than width*pixel_stride but for the buffer not to
+  // be large enough to include the difference between row_stride and
+  // width*pixel_stride at the end.
+  CHECK_LE(static_cast<uint32_t>((offset + (height - 1) * plane.row_stride +
+                                  width * plane.pixel_stride)
+                                     .ValueOrDie()),
+           span.size_bytes());
+
+  return {size, span.subspan(static_cast<size_t>(offset.ValueOrDie()))};
 }
 
 void DesktopCapturerAndroid::ProcessRgbaFrame(int64_t timestamp_ns,
                                               PlaneInfo plane) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Don't process frames if we are no longer doing anything.
-  if (finishing_) {
-    jni_zero::RunRunnable(plane.release_cb);
-    return;
-  }
+  // Callers don't process frames once we are finishing, and any pending frame
+  // is released in Shutdown().
+  CHECK(!finishing_);
 
-  const auto width = plane.crop_right - plane.crop_left;
-  const auto height = plane.crop_bottom - plane.crop_top;
-  const webrtc::DesktopSize size(width.ValueOrDie<int32_t>(),
-                                 height.ValueOrDie<int32_t>());
+  JNIEnv* env = base::android::AttachCurrentThread();
+  const RgbaPlaneLayout layout = CheckRgbaPlane(env, plane);
+  const webrtc::DesktopSize& size = layout.size;
   // Reuse `current_frame_` in-place if the buffer is not currently shared and
   // its dimensions match. `DesktopCaptureDevice` synchronously processes and
   // releases the `DesktopFrame` inside `OnCaptureResult()`, so
   // `!current_frame_->IsShared()` is normally true on the next frame.
-  // Note: `DesktopCapturerAndroid` does not implement consumer-side frame
-  // capping or flow control; the consumer (`Callback`) is expected to discard
-  // shared frames ASAP to bound memory usage. If the callback retains the
-  // frame beyond `OnCaptureResult()` or the screen size changes, allocate a
-  // new buffer to avoid overwriting shared memory.
+  // Note: The consumer (`Callback`) is expected to discard shared frames ASAP
+  // to bound memory usage. If the callback retains the frame beyond
+  // `OnCaptureResult()` or the screen size changes, allocate a new buffer to
+  // avoid overwriting shared memory.
   if (!current_frame_ || !current_frame_->size().equals(size) ||
       current_frame_->IsShared() ||
       !base::FeatureList::IsEnabled(kDesktopCaptureAndroidFrameBufferReuse)) {
@@ -245,32 +337,10 @@ void DesktopCapturerAndroid::ProcessRgbaFrame(int64_t timestamp_ns,
   // There is no way to get an ICC profile on Android.
   current_frame->set_icc_profile({});
 
-  JNIEnv* env = base::android::AttachCurrentThread();
-  const auto span = base::android::JavaByteBufferToSpan(env, plane.buf);
-  const auto offset =
-      plane.crop_top * plane.row_stride + plane.crop_left * plane.pixel_stride;
-
-  CHECK_EQ(
-      static_cast<int>(static_cast<uint32_t>(plane.pixel_stride.ValueOrDie())),
-      webrtc::DesktopFrame::kBytesPerPixel);
-  CHECK_LE(static_cast<uint32_t>((width * plane.pixel_stride).ValueOrDie()),
-           static_cast<uint32_t>(plane.row_stride.ValueOrDie()));
-  CHECK_LE(static_cast<uint32_t>(offset.ValueOrDie()), span.size_bytes());
-  // In the case that we have a crop rectangle, width will definitely be less
-  // than row_stride, so only look at the number of actual pixels for the last
-  // row. Also, even if there is no crop, it's conceptually possible for
-  // row_stride to be larger than width*pixel_stride but for the buffer not to
-  // be large enough to include the difference between row_stride and
-  // width*pixel_stride at the end.
-  CHECK_LE(static_cast<uint32_t>((offset + (height - 1) * plane.row_stride +
-                                  width * plane.pixel_stride)
-                                     .ValueOrDie()),
-           span.size_bytes());
-
   // TODO(crbug.com/352187279): Extract to `SharedMemory` instead of copying if
   // possible.
   current_frame->CopyPixelsFrom(
-      span.get_at(offset.ValueOrDie()),
+      layout.pixels.data(),
       static_cast<uint32_t>(plane.row_stride.ValueOrDie()),
       webrtc::DesktopRect::MakeSize(size));
 

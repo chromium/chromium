@@ -63,6 +63,10 @@ class ImageHandler implements ImageReader.OnImageAvailableListener {
      * @param handler The handler on which to run callbacks.
      */
     ImageHandler(ScreenCapture.CaptureState captureState, Delegate delegate, Handler handler) {
+        // The native side holds the latest image until it is consumed by CaptureFrame(). If more
+        // than one new image is queued while that image is held (e.g. on high refresh rate
+        // displays, or when the capture thread is busy), `acquireLatestImage()` needs two
+        // additional slots to skip to the newest image.
         this(
                 captureState,
                 delegate,
@@ -71,7 +75,7 @@ class ImageHandler implements ImageReader.OnImageAvailableListener {
                         captureState.width,
                         captureState.height,
                         captureState.format,
-                        /* maxImages= */ 2));
+                        /* maxImages= */ 3));
     }
 
     @VisibleForTesting
