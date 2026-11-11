@@ -17,12 +17,10 @@
 #include "base/logging.h"
 #include "base/memory/page_size.h"
 #include "base/posix/eintr_wrapper.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
+#include "base/strings/string_tokenizer.h"
 #include "build/build_config.h"
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
-#include <inttypes.h>
-#endif
 
 namespace base::debug {
 
@@ -106,8 +104,8 @@ bool ParseProcMaps(std::string_view input,
 
   // This isn't async safe nor terribly efficient, but it doesn't need to be at
   // this point in time.
-  std::vector<std::string> lines =
-      SplitString(input, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  std::vector<std::string_view> lines = SplitStringPiece(
+      input, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
 
   if (lines.size() > 0) {
     // Due to splitting on '\n' the last line should be empty.
@@ -119,34 +117,81 @@ bool ParseProcMaps(std::string_view input,
     regions.reserve(lines.size());
   }
 
-  for (const auto& line : lines) {
-    MappedMemoryRegion region;
-    char permissions[5] = {};  // Ensure NUL-terminated string.
-    uint8_t dev_major = 0;
-    uint8_t dev_minor = 0;
-    long inode = 0;
-    size_t path_index = 0;
-
+  for (std::string_view line : lines) {
     // Sample format from man 5 proc:
     //
     // address           perms offset  dev   inode   pathname
     // 08048000-08056000 r-xp 00000000 03:0c 64593   /usr/sbin/gpm
-    //
-    // The final %n term captures the offset in the input string, which is used
-    // to determine the path name. It *does not* increment the return value.
-    // Refer to man 3 sscanf for details.
-    if (UNSAFE_TODO(
-            sscanf(line.c_str(),
-                   "%" SCNxPTR "-%" SCNxPTR " %4c %llx %hhx:%hhx %ld %zn",
-                   &region.start, &region.end, permissions, &region.offset,
-                   &dev_major, &dev_minor, &inode, &path_index)) < 7) {
-      DPLOG(WARNING) << "sscanf failed for line: " << line;
+
+    // Use StringViewTokenizer instead of SplitStringPiece to avoid per-line
+    // heap allocations.
+    base::StringViewTokenizer t(line, " ");
+
+    if (!t.GetNext()) {
+      DLOG(WARNING) << "Failed to find address range: " << line;
+      return false;
+    }
+    std::string_view address_range = t.token_piece();
+
+    if (!t.GetNext()) {
+      DLOG(WARNING) << "Failed to find permissions: " << line;
+      return false;
+    }
+    std::string_view permissions = t.token_piece();
+
+    if (!t.GetNext()) {
+      DLOG(WARNING) << "Failed to find offset: " << line;
+      return false;
+    }
+    std::string_view offset = t.token_piece();
+
+    if (!t.GetNext()) {
+      DLOG(WARNING) << "Failed to find device: " << line;
+      return false;
+    }
+    std::string_view dev = t.token_piece();
+
+    if (!t.GetNext()) {
+      DLOG(WARNING) << "Failed to find inode: " << line;
+      return false;
+    }
+    std::string_view inode = t.token_piece();
+
+    // The pathname starts at the first non-space character after the inode.
+    std::string_view path;
+    if (t.GetNext()) {
+      path = std::string_view(t.token_begin(), line.end());
+    }
+
+    std::optional<std::pair<std::string_view, std::string_view>> addresses =
+        SplitStringOnce(address_range, '-');
+    std::optional<std::pair<std::string_view, std::string_view>> dev_parts =
+        SplitStringOnce(dev, ':');
+    uint64_t start = 0;
+    uint64_t end = 0;
+    uint64_t parsed_offset = 0;
+    uint32_t dev_major = 0;
+    uint32_t dev_minor = 0;
+    int64_t parsed_inode = 0;
+    if (!addresses.has_value() ||
+        !HexStringToUInt64(addresses->first, &start) ||
+        !HexStringToUInt64(addresses->second, &end) ||
+        permissions.size() != 4 || !HexStringToUInt64(offset, &parsed_offset) ||
+        !dev_parts.has_value() ||
+        !HexStringToUInt(dev_parts->first, &dev_major) ||
+        !HexStringToUInt(dev_parts->second, &dev_minor) ||
+        !StringToInt64(inode, &parsed_inode)) {
+      DLOG(WARNING) << "Failed to parse line: " << line;
       return false;
     }
 
-    region.inode = inode;
-    region.dev_major = dev_major;
-    region.dev_minor = dev_minor;
+    MappedMemoryRegion region;
+    region.start = static_cast<uintptr_t>(start);
+    region.end = static_cast<uintptr_t>(end);
+    region.offset = parsed_offset;
+    region.dev_major = static_cast<uint8_t>(dev_major);
+    region.dev_minor = static_cast<uint8_t>(dev_minor);
+    region.inode = static_cast<long>(parsed_inode);
 
     region.permissions = 0;
 
@@ -177,7 +222,7 @@ bool ParseProcMaps(std::string_view input,
 
     // Pushing then assigning saves us a string copy.
     regions.push_back(region);
-    regions.back().path.assign(line, path_index);
+    regions.back().path.assign(path);
   }
 
   regions_out->swap(regions);
