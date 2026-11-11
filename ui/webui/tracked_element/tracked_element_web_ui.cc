@@ -223,9 +223,8 @@ void TrackedElementWebUI::SetRawVisible(bool visible, gfx::RectF bounds) {
 }
 
 void TrackedElementWebUI::UpdateEffectiveVisibility(bool bounds_changed) {
-  const bool visible =
-      raw_visible_ && handler_->is_subframe_unoccluded() &&
-      (handler_->is_web_contents_visible() || visibility_lock_count_ > 0);
+  const bool visible = raw_visible_ && (handler_->is_web_contents_visible() ||
+                                        visibility_lock_count_ > 0);
 
   if (visible == visible_) {
     if (visible && bounds_changed) {
