@@ -8707,3 +8707,7 @@ crbug.com/584121768 virtual/prefetch-cancel-unrelated-prefetch/external/wpt/spec
 
 # Gardener 2026-11-11
 crbug.com/581870108 virtual/composite-clip-path-animation/external/wpt/css/css-masking/clip-path/animations/clip-path-animation-set-currenttime-negative.html [ Failure Pass ]
+crbug.com/570220095 [ Mac ] external/wpt/css/css-contain/content-visibility/content-visibility-with-top-layer-005.html [ Failure Pass ]
+crbug.com/570216210 [ Mac ] external/wpt/css/css-overflow/scrollbar-gutter-propagation-007.html [ Failure Pass ]
+crbug.com/570225823 [ Mac ] external/wpt/css/css-overflow/scrollbar-gutter-rtl-001.html [ Failure Pass ]
+crbug.com/580335041 [ Mac ] external/wpt/resize-observer/scrollbars.html [ Failure Pass ]
