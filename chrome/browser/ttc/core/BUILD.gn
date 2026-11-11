@@ -103,6 +103,8 @@ source_set("impl") {
     "entrypoint_controller.cc",
     "eval_audio_controller.cc",
     "eval_audio_controller.h",
+    "hotl/hotl_transcript_matcher.cc",
+    "hotl/hotl_transcript_matcher.h",
     "lock_or_suspend_detector.cc",
     "lock_or_suspend_detector.h",
     "page_context.cc",
@@ -144,6 +146,7 @@ source_set("impl") {
   ]
   deps = [
     "//base",
+    "//base:i18n",
     "//chrome/browser/actor/tools/registry",
     "//chrome/browser/actor/ui",
     "//chrome/browser/critical_actions",
@@ -243,6 +246,7 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "hotl/hotl_transcript_matcher_unittest.cc",
     "lock_or_suspend_detector_unittest.cc",
     "page_context_util_unittest.cc",
     "pointer_tracker_unittest.cc",
