@@ -37,7 +37,7 @@
 #include "components/stream_transport/public/payload_type_mapping.h"
 #include "components/stream_transport/public/transport_session.h"
 
-namespace browser_actuator::transport {
+namespace stream_transport {
 
 SessionEventSnapshot::SessionEventSnapshot() = default;
 SessionEventSnapshot::SessionEventSnapshot(const SessionEventSnapshot&) =
@@ -67,19 +67,20 @@ base::Time ToWallTime(const SessionMetadata& metadata, base::TimeTicks ticks) {
 
 // LINT.IfChange(FromUpstreamProtoPayloadType)
 constexpr std::optional<PayloadType> FromUpstreamProtoPayloadType(
-    ActuatorUpstreamPayloadType proto_type) {
+    browser_actuator::ActuatorUpstreamPayloadType proto_type) {
   switch (proto_type) {
-    case ACTUATOR_UPSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND:
+    case browser_actuator::ACTUATOR_UPSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND:
       return PayloadType::kControl;
-    case ACTUATOR_UPSTREAM_PAYLOAD_TYPE_EXPERIMENTAL_TRIGGERING:
+    case browser_actuator::
+        ACTUATOR_UPSTREAM_PAYLOAD_TYPE_EXPERIMENTAL_TRIGGERING:
       return PayloadType::kExperimentalTriggering;
-    case ACTUATOR_UPSTREAM_PAYLOAD_TYPE_ACTUATION:
+    case browser_actuator::ACTUATOR_UPSTREAM_PAYLOAD_TYPE_ACTUATION:
       return PayloadType::kActuation;
-    case ACTUATOR_UPSTREAM_PAYLOAD_TYPE_TASK_INGRESS:
+    case browser_actuator::ACTUATOR_UPSTREAM_PAYLOAD_TYPE_TASK_INGRESS:
       return PayloadType::kTaskIngress;
-    case ACTUATOR_UPSTREAM_PAYLOAD_TYPE_PROBE:
+    case browser_actuator::ACTUATOR_UPSTREAM_PAYLOAD_TYPE_PROBE:
       return PayloadType::kProbe;
-    case ACTUATOR_UPSTREAM_PAYLOAD_TYPE_UNSPECIFIED:
+    case browser_actuator::ACTUATOR_UPSTREAM_PAYLOAD_TYPE_UNSPECIFIED:
     default:
       return std::nullopt;
   }
@@ -90,11 +91,13 @@ std::string_view PayloadTypeName(std::optional<PayloadType> type) {
   return type.has_value() ? PayloadTypeToMetricSuffix(*type) : "Unspecified";
 }
 
-std::string_view PayloadTypeName(ActuatorDownstreamPayloadType type) {
+std::string_view PayloadTypeName(
+    browser_actuator::ActuatorDownstreamPayloadType type) {
   return PayloadTypeName(FromDownstreamProtoPayloadType(type));
 }
 
-std::string_view PayloadTypeName(ActuatorUpstreamPayloadType type) {
+std::string_view PayloadTypeName(
+    browser_actuator::ActuatorUpstreamPayloadType type) {
   return PayloadTypeName(FromUpstreamProtoPayloadType(type));
 }
 
@@ -125,26 +128,26 @@ std::string FormatScrubbedProbePayload(std::string_view payload) {
 std::optional<std::string> TryScrubTransportProbePayload(
     std::string_view serialized_probe) {
   static constexpr size_t kMaxRecordedProbePayloadBytes = 128;
-  TransportProbe probe;
+  browser_actuator::TransportProbe probe;
   if (!probe.ParseFromString(serialized_probe)) {
     return std::nullopt;
   }
   switch (probe.payload_case()) {
-    case TransportProbe::kRequest:
+    case browser_actuator::TransportProbe::kRequest:
       if (probe.request().payload().size() > kMaxRecordedProbePayloadBytes) {
         probe.mutable_request()->set_payload(
             FormatScrubbedProbePayload(probe.request().payload()));
         return probe.SerializeAsString();
       }
       break;
-    case TransportProbe::kResponse:
+    case browser_actuator::TransportProbe::kResponse:
       if (probe.response().payload().size() > kMaxRecordedProbePayloadBytes) {
         probe.mutable_response()->set_payload(
             FormatScrubbedProbePayload(probe.response().payload()));
         return probe.SerializeAsString();
       }
       break;
-    case TransportProbe::PAYLOAD_NOT_SET:
+    case browser_actuator::TransportProbe::PAYLOAD_NOT_SET:
       break;
   }
   return std::nullopt;
@@ -175,11 +178,13 @@ void ScrubEnvelopeProbePayloads(EnvelopeProto& envelope,
   }
 }
 
-void ScrubLargeProbePayloads(ActuatorDownstreamMessage& message) {
+void ScrubLargeProbePayloads(
+    browser_actuator::ActuatorDownstreamMessage& message) {
   ScrubEnvelopeProbePayloads(message, &FromDownstreamProtoPayloadType);
 }
 
-void ScrubLargeProbePayloads(ActuatorUpstreamMessage& message) {
+void ScrubLargeProbePayloads(
+    browser_actuator::ActuatorUpstreamMessage& message) {
   ScrubEnvelopeProbePayloads(message, &FromUpstreamProtoPayloadType);
 }
 
@@ -216,14 +221,14 @@ base::DictValue SerializeEnvelopeWithDecodedPayloads(
       continue;
     }
     if (*payload_type == PayloadType::kControl) {
-      ControlCommand parsed_command;
+      browser_actuator::ControlCommand parsed_command;
       if (parsed_command.ParseFromString(
               typed_payload.proto_payload().value())) {
         payload_dict->Set("decoded_control_command",
                           browser_actuator::ToValue(parsed_command));
       }
     } else if (*payload_type == PayloadType::kProbe) {
-      TransportProbe parsed_probe;
+      browser_actuator::TransportProbe parsed_probe;
       if (parsed_probe.ParseFromString(typed_payload.proto_payload().value())) {
         payload_dict->Set("decoded_transport_probe",
                           browser_actuator::ToValue(parsed_probe));
@@ -234,13 +239,13 @@ base::DictValue SerializeEnvelopeWithDecodedPayloads(
 }
 
 base::DictValue SerializeMessageForDiagnostics(
-    const ActuatorDownstreamMessage& message) {
+    const browser_actuator::ActuatorDownstreamMessage& message) {
   return SerializeEnvelopeWithDecodedPayloads(message,
                                               &FromDownstreamProtoPayloadType);
 }
 
 base::DictValue SerializeMessageForDiagnostics(
-    const ActuatorUpstreamMessage& message) {
+    const browser_actuator::ActuatorUpstreamMessage& message) {
   return SerializeEnvelopeWithDecodedPayloads(message,
                                               &FromUpstreamProtoPayloadType);
 }
@@ -252,7 +257,8 @@ SessionEventSnapshot BuildEventSnapshot(
   SessionEventSnapshot event;
   event.timestamp = ToWallTime(metadata, entry.timestamp);
   event.is_downstream =
-      std::holds_alternative<ActuatorDownstreamMessage>(entry.message);
+      std::holds_alternative<browser_actuator::ActuatorDownstreamMessage>(
+          entry.message);
   event.http_response_code = entry.http_response_code;
   event.downstream_status = entry.downstream_status;
 
@@ -343,19 +349,19 @@ base::DictValue SessionMetadata::ToValue() const {
 
 void SessionStreamRecorder::Observer::OnDownstreamMessage(
     base::TimeTicks timestamp,
-    const ActuatorDownstreamMessage& message,
+    const browser_actuator::ActuatorDownstreamMessage& message,
     DownstreamDeliveryStatus status) {}
 
 void SessionStreamRecorder::Observer::OnUpstreamMessage(
     base::TimeTicks timestamp,
-    const ActuatorUpstreamMessage& message,
+    const browser_actuator::ActuatorUpstreamMessage& message,
     int http_response_code) {}
 
 base::DictValue SessionStreamRecorder::Entry::ToValue() const {
   base::DictValue dict;
   dict.Set("timestamp_ticks", timestamp.since_origin().InMicrosecondsF());
   if (const auto* downstream =
-          std::get_if<ActuatorDownstreamMessage>(&message)) {
+          std::get_if<browser_actuator::ActuatorDownstreamMessage>(&message)) {
     dict.Set("direction", "Downstream");
     dict.Set("message", SerializeMessageForDiagnostics(*downstream));
     switch (downstream_status) {
@@ -372,8 +378,9 @@ base::DictValue SessionStreamRecorder::Entry::ToValue() const {
     }
   } else {
     dict.Set("direction", "Upstream");
-    dict.Set("message", SerializeMessageForDiagnostics(
-                            std::get<ActuatorUpstreamMessage>(message)));
+    dict.Set("message",
+             SerializeMessageForDiagnostics(
+                 std::get<browser_actuator::ActuatorUpstreamMessage>(message)));
     dict.Set("http_response_code", http_response_code);
   }
   return dict;
@@ -395,12 +402,12 @@ SessionStreamRecorder::~SessionStreamRecorder() {
 }
 
 void SessionStreamRecorder::RecordDownstreamMessage(
-    ActuatorDownstreamMessage message,
+    browser_actuator::ActuatorDownstreamMessage message,
     DownstreamDeliveryStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ScrubLargeProbePayloads(message);
   metadata_.total_downstream_messages++;
-  for (ActuatorDownstreamTypedPayload& typed_payload :
+  for (browser_actuator::ActuatorDownstreamTypedPayload& typed_payload :
        *message.mutable_typed_payloads()) {
     if (typed_payload.has_proto_payload() &&
         typed_payload.proto_payload().type_url().empty()) {
@@ -421,7 +428,8 @@ void SessionStreamRecorder::RecordDownstreamMessage(
       .downstream_status = status,
   });
   const auto& recorded_message =
-      std::get<ActuatorDownstreamMessage>(entries_.back().message);
+      std::get<browser_actuator::ActuatorDownstreamMessage>(
+          entries_.back().message);
   for (auto& observer : observers_) {
     observer.OnDownstreamMessage(now, recorded_message, status);
   }
@@ -432,8 +440,10 @@ bool SessionStreamRecorder::UpdateUpstreamResponseCode(
     int http_response_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (Entry& entry : base::Reversed(entries_)) {
-    if (std::holds_alternative<ActuatorUpstreamMessage>(entry.message)) {
-      const auto& upstream = std::get<ActuatorUpstreamMessage>(entry.message);
+    if (std::holds_alternative<browser_actuator::ActuatorUpstreamMessage>(
+            entry.message)) {
+      const auto& upstream =
+          std::get<browser_actuator::ActuatorUpstreamMessage>(entry.message);
       if (upstream.client_sequence_number() == client_sequence_number &&
           entry.http_response_code == 0) {
         entry.http_response_code = http_response_code;
@@ -449,7 +459,7 @@ bool SessionStreamRecorder::UpdateUpstreamResponseCode(
 }
 
 void SessionStreamRecorder::RecordUpstreamMessage(
-    ActuatorUpstreamMessage message,
+    browser_actuator::ActuatorUpstreamMessage message,
     int http_response_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ScrubLargeProbePayloads(message);
@@ -464,7 +474,8 @@ void SessionStreamRecorder::RecordUpstreamMessage(
       .http_response_code = http_response_code,
   });
   const auto& recorded_message =
-      std::get<ActuatorUpstreamMessage>(entries_.back().message);
+      std::get<browser_actuator::ActuatorUpstreamMessage>(
+          entries_.back().message);
   for (auto& observer : observers_) {
     observer.OnUpstreamMessage(now, recorded_message, http_response_code);
   }
@@ -532,7 +543,7 @@ void SessionStreamRecorderFactory::OnSessionRemoved(
 
 void SessionStreamRecorderFactory::OnDownstreamMessage(
     std::string_view session_id,
-    const ActuatorDownstreamMessage& message,
+    const browser_actuator::ActuatorDownstreamMessage& message,
     DownstreamDeliveryStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (SessionStreamRecorder* recorder = FindActiveRecorder(session_id)) {
@@ -543,7 +554,7 @@ void SessionStreamRecorderFactory::OnDownstreamMessage(
 
 void SessionStreamRecorderFactory::OnUpstreamMessage(
     std::string_view session_id,
-    const ActuatorUpstreamMessage& message,
+    const browser_actuator::ActuatorUpstreamMessage& message,
     int http_response_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (http_response_code != 0) {
@@ -678,4 +689,4 @@ void SessionStreamRecorderFactory::Clear() {
   retained_recorders_.clear();
 }
 
-}  // namespace browser_actuator::transport
+}  // namespace stream_transport

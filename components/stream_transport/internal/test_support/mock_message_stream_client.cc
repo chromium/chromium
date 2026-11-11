@@ -4,7 +4,7 @@
 
 #include "components/stream_transport/internal/test_support/mock_message_stream_client.h"
 
-namespace browser_actuator::transport {
+namespace stream_transport {
 
 MockMessageStreamClient::MockMessageStreamClient() = default;
 MockMessageStreamClient::~MockMessageStreamClient() = default;
@@ -12,4 +12,4 @@ MockMessageStreamClient::~MockMessageStreamClient() = default;
 MockMessageStreamObserver::MockMessageStreamObserver() = default;
 MockMessageStreamObserver::~MockMessageStreamObserver() = default;
 
-}  // namespace browser_actuator::transport
+}  // namespace stream_transport

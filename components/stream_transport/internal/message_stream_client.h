@@ -9,7 +9,7 @@
 
 #include "base/observer_list_types.h"
 
-namespace browser_actuator::transport {
+namespace stream_transport {
 
 // A client of a server→client message stream: a long-lived connection
 // that delivers discrete, ordered messages — serialized protos, parsed by
@@ -61,6 +61,6 @@ class MessageStreamClient {
   virtual void RemoveObserver(Observer* observer) = 0;
 };
 
-}  // namespace browser_actuator::transport
+}  // namespace stream_transport
 
 #endif  // COMPONENTS_STREAM_TRANSPORT_INTERNAL_MESSAGE_STREAM_CLIENT_H_

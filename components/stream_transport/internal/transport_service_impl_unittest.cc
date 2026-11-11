@@ -25,7 +25,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-namespace browser_actuator::transport {
+namespace stream_transport {
 namespace {
 
 class TransportServiceImplTest : public testing::Test {
@@ -144,7 +144,7 @@ TEST_F(
             nullptr);
   EXPECT_EQ(recorder_factory->GetActiveRecordersCountForTesting(), 1u);
 
-  ControlCommand command;
+  browser_actuator::ControlCommand command;
   command.mutable_close_channel();
   service->GetChannel()->SendUpstreamMessage("s1", PayloadType::kControl,
                                              command, 1);
@@ -176,7 +176,7 @@ TEST_F(TransportServiceImplTest,
       service->GetStreamRecorderFactory();
   ASSERT_NE(recorder_factory, nullptr);
 
-  ControlCommand command;
+  browser_actuator::ControlCommand command;
   command.mutable_close_channel();
   service->GetChannel()->SendUpstreamMessage("session-before-signout",
                                              PayloadType::kControl, command, 1);
@@ -259,4 +259,4 @@ TEST_F(TransportServiceImplTest, ShutdownTearsDownChannelBeforeDestruction) {
 }
 
 }  // namespace
-}  // namespace browser_actuator::transport
+}  // namespace stream_transport

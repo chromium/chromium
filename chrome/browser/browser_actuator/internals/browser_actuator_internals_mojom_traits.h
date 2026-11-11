@@ -21,78 +21,75 @@ namespace mojo {
 
 template <>
 struct EnumTraits<browser_actuator_internals::mojom::DownstreamDeliveryStatus,
-                  browser_actuator::transport::DownstreamDeliveryStatus> {
+                  stream_transport::DownstreamDeliveryStatus> {
   static browser_actuator_internals::mojom::DownstreamDeliveryStatus ToMojom(
-      browser_actuator::transport::DownstreamDeliveryStatus input);
-  static std::optional<browser_actuator::transport::DownstreamDeliveryStatus>
-  FromMojom(browser_actuator_internals::mojom::DownstreamDeliveryStatus input);
+      stream_transport::DownstreamDeliveryStatus input);
+  static std::optional<stream_transport::DownstreamDeliveryStatus> FromMojom(
+      browser_actuator_internals::mojom::DownstreamDeliveryStatus input);
 };
 
 template <>
 struct StructTraits<browser_actuator_internals::mojom::RecordedEventDataView,
-                    browser_actuator::transport::SessionEventSnapshot> {
-  static base::Time timestamp(
-      const browser_actuator::transport::SessionEventSnapshot& e) {
+                    stream_transport::SessionEventSnapshot> {
+  static base::Time timestamp(const stream_transport::SessionEventSnapshot& e) {
     return e.timestamp;
   }
   static browser_actuator_internals::mojom::MessageDirection direction(
-      const browser_actuator::transport::SessionEventSnapshot& e);
+      const stream_transport::SessionEventSnapshot& e);
   static const std::vector<std::string>& payload_types(
-      const browser_actuator::transport::SessionEventSnapshot& e) {
+      const stream_transport::SessionEventSnapshot& e) {
     return e.payload_types;
   }
   static const std::string& message(
-      const browser_actuator::transport::SessionEventSnapshot& e) {
+      const stream_transport::SessionEventSnapshot& e) {
     return e.message;
   }
   static bool message_truncated(
-      const browser_actuator::transport::SessionEventSnapshot& e) {
+      const stream_transport::SessionEventSnapshot& e) {
     return e.message_truncated;
   }
   static int32_t http_response_code(
-      const browser_actuator::transport::SessionEventSnapshot& e) {
+      const stream_transport::SessionEventSnapshot& e) {
     return e.http_response_code;
   }
-  static browser_actuator::transport::DownstreamDeliveryStatus
-  downstream_status(
-      const browser_actuator::transport::SessionEventSnapshot& e) {
+  static stream_transport::DownstreamDeliveryStatus downstream_status(
+      const stream_transport::SessionEventSnapshot& e) {
     return e.downstream_status;
   }
 
   static bool Read(
       browser_actuator_internals::mojom::RecordedEventDataView data,
-      browser_actuator::transport::SessionEventSnapshot* out);
+      stream_transport::SessionEventSnapshot* out);
 };
 
 template <>
 struct StructTraits<browser_actuator_internals::mojom::SessionSummaryDataView,
-                    browser_actuator::transport::SessionSnapshot> {
+                    stream_transport::SessionSnapshot> {
   static const std::string& session_id(
-      const browser_actuator::transport::SessionSnapshot& s) {
+      const stream_transport::SessionSnapshot& s) {
     return s.session_id;
   }
   static base::Time start_wall_time(
-      const browser_actuator::transport::SessionSnapshot& s) {
+      const stream_transport::SessionSnapshot& s) {
     return s.start_wall_time;
   }
   static const std::optional<base::Time>& end_wall_time(
-      const browser_actuator::transport::SessionSnapshot& s) {
+      const stream_transport::SessionSnapshot& s) {
     return s.end_wall_time;
   }
   static uint32_t total_downstream_messages(
-      const browser_actuator::transport::SessionSnapshot& s);
+      const stream_transport::SessionSnapshot& s);
   static uint32_t total_upstream_messages(
-      const browser_actuator::transport::SessionSnapshot& s);
-  static const std::vector<browser_actuator::transport::SessionEventSnapshot>&
-  events(const browser_actuator::transport::SessionSnapshot& s) {
+      const stream_transport::SessionSnapshot& s);
+  static const std::vector<stream_transport::SessionEventSnapshot>& events(
+      const stream_transport::SessionSnapshot& s) {
     return s.events;
   }
-  static uint32_t total_events(
-      const browser_actuator::transport::SessionSnapshot& s);
+  static uint32_t total_events(const stream_transport::SessionSnapshot& s);
 
   static bool Read(
       browser_actuator_internals::mojom::SessionSummaryDataView data,
-      browser_actuator::transport::SessionSnapshot* out);
+      stream_transport::SessionSnapshot* out);
 };
 
 }  // namespace mojo

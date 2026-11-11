@@ -32,7 +32,7 @@ namespace browser_actuator {
 class ActuatorDownstreamTypedPayload;
 }  // namespace browser_actuator
 
-namespace browser_actuator::transport {
+namespace stream_transport {
 
 class TransportChannel;
 class TransportHandler;
@@ -62,9 +62,9 @@ class TransportSessionImpl : public TransportSession,
   // envelope on the stream path, and once per payload on the FCM wake-up path
   // (as a single-payload envelope with `sequence_number` 0). `session_id`
   // points into `message`. The callback must not keep either argument.
-  using DownstreamMessageCallback =
-      base::RepeatingCallback<void(std::string_view session_id,
-                                   const ActuatorDownstreamMessage& message)>;
+  using DownstreamMessageCallback = base::RepeatingCallback<void(
+      std::string_view session_id,
+      const browser_actuator::ActuatorDownstreamMessage& message)>;
 
   TransportSessionImpl(std::string_view session_id,
                        base::WeakPtr<TransportChannel> channel,
@@ -119,7 +119,7 @@ class TransportSessionImpl : public TransportSession,
   // Processes a downstream message from the server by ordering it through the
   // session's sequencer and routing ready payloads to registered handlers.
   base::expected<void, DownstreamMessageSequencer::Error>
-  ProcessDownstreamMessage(ActuatorDownstreamMessage message);
+  ProcessDownstreamMessage(browser_actuator::ActuatorDownstreamMessage message);
 
   // Last contiguous sequence number (>= 0) dispatched for the session, or -1
   // if no downstream message has been dispatched yet. Used for stream resume
@@ -166,7 +166,8 @@ class TransportSessionImpl : public TransportSession,
  private:
   // Processes a single downstream typed payload.
   // WARNING: may delete `this`, because a handler may destroy the session.
-  void ProcessTypedPayload(const ActuatorDownstreamTypedPayload& typed_payload);
+  void ProcessTypedPayload(
+      const browser_actuator::ActuatorDownstreamTypedPayload& typed_payload);
 
   // Resolves and instantiates the handlers registered for a given
   // `payload_type`. If the factories for this payload type have not been
@@ -222,6 +223,6 @@ class TransportSessionImpl : public TransportSession,
   base::WeakPtrFactory<TransportSessionImpl> weak_ptr_factory_{this};
 };
 
-}  // namespace browser_actuator::transport
+}  // namespace stream_transport
 
 #endif  // COMPONENTS_STREAM_TRANSPORT_INTERNAL_TRANSPORT_SESSION_IMPL_H_

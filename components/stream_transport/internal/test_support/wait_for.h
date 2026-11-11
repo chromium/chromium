@@ -7,7 +7,7 @@
 
 #include "base/functional/function_ref.h"
 
-namespace browser_actuator::transport {
+namespace stream_transport {
 
 // Runs the run loop until `condition` is true, re-evaluating it after
 // every main-thread task, and returns whether it became true (a large
@@ -21,6 +21,6 @@ namespace browser_actuator::transport {
 // once it can evaluate under MOCK_TIME.
 [[nodiscard]] bool WaitFor(base::FunctionRef<bool()> condition);
 
-}  // namespace browser_actuator::transport
+}  // namespace stream_transport
 
 #endif  // COMPONENTS_STREAM_TRANSPORT_INTERNAL_TEST_SUPPORT_WAIT_FOR_H_

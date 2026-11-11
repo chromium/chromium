@@ -28,7 +28,7 @@ class ActuatorDownstreamMessage;
 class TransportProbe;
 }  // namespace browser_actuator
 
-namespace browser_actuator::transport {
+namespace stream_transport {
 
 class ControlTransportHandlerFactory;
 class ProbeTransportHandlerFactory;
@@ -138,7 +138,7 @@ class TransportChannelImpl : public TransportChannel,
   // drop to every TransportMessageObserver.
   void NotifyDownstreamMessage(
       std::string_view session_id,
-      const ActuatorDownstreamMessage& message,
+      const browser_actuator::ActuatorDownstreamMessage& message,
       DownstreamDeliveryStatus status = DownstreamDeliveryStatus::kSuccess);
 
   // Forwards the completion HTTP response code for an upstream message to every
@@ -161,7 +161,7 @@ class TransportChannelImpl : public TransportChannel,
   // `responding_to_sequence_number` (used for immediate and delayed probes).
   base::expected<void, SendUpstreamMessageError> SendProbeReply(
       std::string_view session_id,
-      const TransportProbe& probe,
+      const browser_actuator::TransportProbe& probe,
       std::optional<int64_t> responding_to_sequence_number);
 
   SEQUENCE_CHECKER(sequence_checker_);
@@ -197,6 +197,6 @@ class TransportChannelImpl : public TransportChannel,
   base::WeakPtrFactory<TransportChannelImpl> weak_ptr_factory_{this};
 };
 
-}  // namespace browser_actuator::transport
+}  // namespace stream_transport
 
 #endif  // COMPONENTS_STREAM_TRANSPORT_INTERNAL_TRANSPORT_CHANNEL_IMPL_H_

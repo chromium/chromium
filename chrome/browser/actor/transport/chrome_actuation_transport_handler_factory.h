@@ -13,9 +13,9 @@
 #include "components/stream_transport/public/transport_handler.h"
 #include "components/stream_transport/public/transport_handler_factory.h"
 
-namespace browser_actuator::transport {
+namespace stream_transport {
 class TransportSession;
-}  // namespace browser_actuator::transport
+}  // namespace stream_transport
 
 namespace actor {
 
@@ -25,7 +25,7 @@ class ActorKeyedService;
 // Creates ActuationTransportHandler instances for remote actuation transport
 // sessions.
 class ChromeActuationTransportHandlerFactory
-    : public browser_actuator::transport::TransportHandlerFactory {
+    : public stream_transport::TransportHandlerFactory {
  public:
   explicit ChromeActuationTransportHandlerFactory(
       ActorKeyedService* actor_keyed_service);
@@ -35,12 +35,12 @@ class ChromeActuationTransportHandlerFactory
       const ChromeActuationTransportHandlerFactory&) = delete;
   ~ChromeActuationTransportHandlerFactory() override;
 
-  // browser_actuator::transport::TransportHandlerFactory:
-  browser_actuator::transport::FactoryId GetFactoryId() const override;
-  std::vector<browser_actuator::transport::PayloadType>
-  GetSupportedPayloadTypes() const override;
-  std::unique_ptr<browser_actuator::transport::TransportHandler> OnNewSession(
-      browser_actuator::transport::TransportSession* session) override;
+  // stream_transport::TransportHandlerFactory:
+  stream_transport::FactoryId GetFactoryId() const override;
+  std::vector<stream_transport::PayloadType> GetSupportedPayloadTypes()
+      const override;
+  std::unique_ptr<stream_transport::TransportHandler> OnNewSession(
+      stream_transport::TransportSession* session) override;
 
  private:
   // Owns `this`.

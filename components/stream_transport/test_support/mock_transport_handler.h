@@ -11,7 +11,7 @@
 #include "components/stream_transport/public/transport_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace browser_actuator::transport {
+namespace stream_transport {
 
 class MockTransportHandler : public TransportHandler {
  public:
@@ -38,6 +38,6 @@ class CallbackTransportHandler : public TransportHandler {
   base::OnceClosure on_message_cb_;
 };
 
-}  // namespace browser_actuator::transport
+}  // namespace stream_transport
 
 #endif  // COMPONENTS_STREAM_TRANSPORT_TEST_SUPPORT_MOCK_TRANSPORT_HANDLER_H_

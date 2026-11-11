@@ -10,7 +10,7 @@
 #include "base/functional/callback.h"
 #include "components/stream_transport/internal/stream_connection_delegate.h"
 
-namespace browser_actuator::transport {
+namespace stream_transport {
 
 // Provides the resume body for a (re)connect request. It holds no sequence
 // state of its own: a provider (granted by the channel) supplies the freshly
@@ -40,6 +40,6 @@ class ResumeBodyConnectionDelegate : public StreamConnectionDelegate {
   std::unique_ptr<StreamConnectionDelegate> inner_;
 };
 
-}  // namespace browser_actuator::transport
+}  // namespace stream_transport
 
 #endif  // COMPONENTS_STREAM_TRANSPORT_INTERNAL_RESUME_BODY_CONNECTION_DELEGATE_H_

@@ -23,7 +23,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace browser_actuator::transport {
+namespace stream_transport {
 namespace {
 
 // Any registered consumer with static scopes works for tests; a dedicated
@@ -354,4 +354,4 @@ TEST_F(OAuthStreamConnectionDelegateTest,
 }
 
 }  // namespace
-}  // namespace browser_actuator::transport
+}  // namespace stream_transport

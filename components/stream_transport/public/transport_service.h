@@ -10,7 +10,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/stream_transport/public/common.h"
 
-namespace browser_actuator::transport {
+namespace stream_transport {
 
 class SessionStreamRecorderFactory;
 class TransportChannel;
@@ -53,6 +53,6 @@ class TransportService : public KeyedService {
   TransportService();
 };
 
-}  // namespace browser_actuator::transport
+}  // namespace stream_transport
 
 #endif  // COMPONENTS_STREAM_TRANSPORT_PUBLIC_TRANSPORT_SERVICE_H_

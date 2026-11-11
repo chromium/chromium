@@ -15,7 +15,7 @@ chromium::import! {
     "//components/stream_transport/internal/proto_stream_client:stream_body_parser";
 }
 
-#[cxx::bridge(namespace = "browser_actuator::transport::stream_bridge")]
+#[cxx::bridge(namespace = "stream_transport::stream_bridge")]
 mod ffi {
     /// One completed StreamBody `message` field: a serialized response
     /// proto for the C++ side to parse with protobuf-lite.

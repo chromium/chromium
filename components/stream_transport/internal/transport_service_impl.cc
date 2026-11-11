@@ -29,7 +29,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
 
-namespace browser_actuator::transport {
+namespace stream_transport {
 
 namespace {
 
@@ -252,4 +252,4 @@ TransportSession* TransportServiceImpl::GetSession(
   return nullptr;
 }
 
-}  // namespace browser_actuator::transport
+}  // namespace stream_transport

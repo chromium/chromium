@@ -38,7 +38,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-namespace browser_actuator::transport {
+namespace stream_transport {
 namespace {
 
 using testing::ElementsAre;
@@ -1012,4 +1012,4 @@ TEST_F(ProtoStreamClientTest,
 }
 
 }  // namespace
-}  // namespace browser_actuator::transport
+}  // namespace stream_transport

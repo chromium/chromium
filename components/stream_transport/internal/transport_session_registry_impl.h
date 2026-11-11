@@ -20,7 +20,7 @@
 #include "components/stream_transport/internal/transport_session_impl.h"
 #include "components/stream_transport/public/transport_session_registry.h"
 
-namespace browser_actuator::transport {
+namespace stream_transport {
 
 class TransportChannel;
 
@@ -90,6 +90,6 @@ class TransportSessionRegistryImpl : public TransportSessionRegistry {
   base::WeakPtrFactory<TransportSessionRegistryImpl> weak_ptr_factory_{this};
 };
 
-}  // namespace browser_actuator::transport
+}  // namespace stream_transport
 
 #endif  // COMPONENTS_STREAM_TRANSPORT_INTERNAL_TRANSPORT_SESSION_REGISTRY_IMPL_H_

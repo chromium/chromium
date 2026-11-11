@@ -15,7 +15,7 @@ namespace network {
 struct ResourceRequest;
 }  // namespace network
 
-namespace browser_actuator::transport {
+namespace stream_transport {
 
 // An upload body to send with a connection request. When a delegate returns
 // one from GetConnectionRequestBody(), the client issues the request as a
@@ -85,6 +85,6 @@ class DefaultStreamConnectionDelegate : public StreamConnectionDelegate {
                       PrepareRequestCallback callback) override;
 };
 
-}  // namespace browser_actuator::transport
+}  // namespace stream_transport
 
 #endif  // COMPONENTS_STREAM_TRANSPORT_INTERNAL_STREAM_CONNECTION_DELEGATE_H_

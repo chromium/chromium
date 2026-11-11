@@ -29,7 +29,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-namespace browser_actuator::transport {
+namespace stream_transport {
 namespace {
 
 constexpr char kEndpoint[] = "https://example.com/v1/send";
@@ -67,14 +67,15 @@ TEST_F(BrowserActuatorUpstreamMessageClientTest, SendMessageSuccess) {
 
   test_url_loader_factory_.AddResponse(kEndpoint, "OK", net::HTTP_OK);
 
-  ControlCommand command;
+  browser_actuator::ControlCommand command;
   command.mutable_close_channel();
 
   base::test::TestFuture<bool, int> future;
-  ActuatorUpstreamMessage returned_upstream = client.SendUpstreamMessage(
-      "session_1", /*client_sequence_number=*/1,
-      /*responding_to_sequence_number=*/std::nullopt, PayloadType::kControl,
-      command, future.GetCallback());
+  browser_actuator::ActuatorUpstreamMessage returned_upstream =
+      client.SendUpstreamMessage("session_1", /*client_sequence_number=*/1,
+                                 /*responding_to_sequence_number=*/std::nullopt,
+                                 PayloadType::kControl, command,
+                                 future.GetCallback());
 
   EXPECT_TRUE(future.Get<0>());
   EXPECT_EQ(net::HTTP_OK, future.Get<1>());
@@ -85,7 +86,7 @@ TEST_F(BrowserActuatorUpstreamMessageClientTest, SendMessageSuccess) {
   EXPECT_EQ("POST", request.method);
   EXPECT_EQ(network::mojom::RedirectMode::kError, request.redirect_mode);
 
-  SendSessionMessageRequest request_proto;
+  browser_actuator::SendSessionMessageRequest request_proto;
   ASSERT_TRUE(request_proto.ParseFromString(network::GetUploadData(request)));
 
   const auto& upstream = request_proto.actuator_upstream_message();
@@ -97,7 +98,7 @@ TEST_F(BrowserActuatorUpstreamMessageClientTest, SendMessageSuccess) {
 
   ASSERT_EQ(1, upstream.typed_payloads_size());
   const auto& typed_payload = upstream.typed_payloads(0);
-  EXPECT_EQ(ACTUATOR_UPSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND,
+  EXPECT_EQ(browser_actuator::ACTUATOR_UPSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND,
             typed_payload.payload_type());
   EXPECT_EQ("type.googleapis.com/browser_actuator.ControlCommand",
             typed_payload.proto_payload().type_url());
@@ -121,7 +122,7 @@ TEST_F(BrowserActuatorUpstreamMessageClientTest,
 
   test_url_loader_factory_.AddResponse(kEndpoint, "OK", net::HTTP_OK);
 
-  ControlCommand command;
+  browser_actuator::ControlCommand command;
   command.mutable_close_channel();
 
   base::test::TestFuture<bool, int> future;
@@ -152,7 +153,7 @@ TEST_F(BrowserActuatorUpstreamMessageClientTest, SendMessageProbeSuccess) {
 
   test_url_loader_factory_.AddResponse(kEndpoint, "OK", net::HTTP_OK);
 
-  TransportProbe probe;
+  browser_actuator::TransportProbe probe;
   probe.mutable_response()->set_probe_id("probe_1");
 
   base::test::TestFuture<bool, int> future;
@@ -164,14 +165,15 @@ TEST_F(BrowserActuatorUpstreamMessageClientTest, SendMessageProbeSuccess) {
   EXPECT_EQ(net::HTTP_OK, future.Get<1>());
 
   ASSERT_EQ(1u, requests_.size());
-  SendSessionMessageRequest request_proto;
+  browser_actuator::SendSessionMessageRequest request_proto;
   ASSERT_TRUE(
       request_proto.ParseFromString(network::GetUploadData(requests_[0])));
 
   const auto& upstream = request_proto.actuator_upstream_message();
   ASSERT_EQ(1, upstream.typed_payloads_size());
   const auto& typed_payload = upstream.typed_payloads(0);
-  EXPECT_EQ(ACTUATOR_UPSTREAM_PAYLOAD_TYPE_PROBE, typed_payload.payload_type());
+  EXPECT_EQ(browser_actuator::ACTUATOR_UPSTREAM_PAYLOAD_TYPE_PROBE,
+            typed_payload.payload_type());
   EXPECT_EQ("type.googleapis.com/browser_actuator.TransportProbe",
             typed_payload.proto_payload().type_url());
   EXPECT_EQ(probe.SerializeAsString(), typed_payload.proto_payload().value());
@@ -208,16 +210,16 @@ TEST_F(BrowserActuatorUpstreamMessageClientTest,
   EXPECT_EQ(net::HTTP_OK, future.Get<1>());
 
   ASSERT_EQ(1u, requests_.size());
-  SendSessionMessageRequest request_proto;
+  browser_actuator::SendSessionMessageRequest request_proto;
   ASSERT_TRUE(
       request_proto.ParseFromString(network::GetUploadData(requests_[0])));
 
-  const ActuatorUpstreamMessage& upstream =
+  const browser_actuator::ActuatorUpstreamMessage& upstream =
       request_proto.actuator_upstream_message();
   ASSERT_EQ(1, upstream.typed_payloads_size());
-  const ActuatorUpstreamTypedPayload& typed_payload =
+  const browser_actuator::ActuatorUpstreamTypedPayload& typed_payload =
       upstream.typed_payloads(0);
-  EXPECT_EQ(ACTUATOR_UPSTREAM_PAYLOAD_TYPE_TASK_INGRESS,
+  EXPECT_EQ(browser_actuator::ACTUATOR_UPSTREAM_PAYLOAD_TYPE_TASK_INGRESS,
             typed_payload.payload_type());
   EXPECT_EQ("type.googleapis.com/browser_actuator.TaskIngressUpstreamPayload",
             typed_payload.proto_payload().type_url());
@@ -241,14 +243,15 @@ TEST_F(BrowserActuatorUpstreamMessageClientTest,
 
   test_url_loader_factory_.AddResponse(kEndpoint, "OK", net::HTTP_OK);
 
-  ControlCommand command;
+  browser_actuator::ControlCommand command;
   command.mutable_close_channel();
 
   base::test::TestFuture<bool, int> future;
-  ActuatorUpstreamMessage returned_upstream = client.SendUpstreamMessage(
-      "session_1", /*client_sequence_number=*/2,
-      /*responding_to_sequence_number=*/42, PayloadType::kControl, command,
-      future.GetCallback());
+  browser_actuator::ActuatorUpstreamMessage returned_upstream =
+      client.SendUpstreamMessage("session_1", /*client_sequence_number=*/2,
+                                 /*responding_to_sequence_number=*/42,
+                                 PayloadType::kControl, command,
+                                 future.GetCallback());
 
   EXPECT_TRUE(future.Get<0>());
   EXPECT_EQ(net::HTTP_OK, future.Get<1>());
@@ -256,7 +259,7 @@ TEST_F(BrowserActuatorUpstreamMessageClientTest,
   ASSERT_EQ(1u, requests_.size());
   const auto& request = requests_[0];
 
-  SendSessionMessageRequest request_proto;
+  browser_actuator::SendSessionMessageRequest request_proto;
   ASSERT_TRUE(request_proto.ParseFromString(network::GetUploadData(request)));
 
   const auto& upstream = request_proto.actuator_upstream_message();
@@ -285,7 +288,7 @@ TEST_F(BrowserActuatorUpstreamMessageClientTest, SendMessageHttpError) {
   test_url_loader_factory_.AddResponse(kEndpoint, "Error",
                                        net::HTTP_INTERNAL_SERVER_ERROR);
 
-  ControlCommand command;
+  browser_actuator::ControlCommand command;
   command.mutable_close_channel();
 
   base::test::TestFuture<bool, int> future;
@@ -314,7 +317,7 @@ TEST_F(BrowserActuatorUpstreamMessageClientTest,
       test_shared_loader_factory_, identity_test_env_.identity_manager(),
       GURL(kEndpoint), TRAFFIC_ANNOTATION_FOR_TESTS);
 
-  ControlCommand command;
+  browser_actuator::ControlCommand command;
   command.mutable_close_channel();
 
   base::test::TestFuture<bool, int> future;
@@ -351,7 +354,7 @@ TEST_F(BrowserActuatorUpstreamMessageClientTest,
                                GURL(kEndpoint), TRAFFIC_ANNOTATION_FOR_TESTS);
   EXPECT_EQ(0u, client.GetPendingRequestsCountForTesting());
 
-  ControlCommand command;
+  browser_actuator::ControlCommand command;
   command.mutable_close_channel();
 
   base::test::TestFuture<bool, int> first_future;
@@ -388,7 +391,7 @@ TEST_F(BrowserActuatorUpstreamMessageClientTest,
       test_shared_loader_factory_, identity_test_env_.identity_manager(),
       GURL("http://example.com/v1/send"), TRAFFIC_ANNOTATION_FOR_TESTS);
 
-  ControlCommand command;
+  browser_actuator::ControlCommand command;
   command.mutable_close_channel();
 
   base::test::TestFuture<bool, int> future;
@@ -413,7 +416,7 @@ TEST_F(BrowserActuatorUpstreamMessageClientTest,
                                identity_test_env_.identity_manager(),
                                GURL(kEndpoint), TRAFFIC_ANNOTATION_FOR_TESTS);
 
-  ControlCommand command;
+  browser_actuator::ControlCommand command;
   command.mutable_close_channel();
 
   base::test::TestFuture<bool, int> f1;
@@ -447,4 +450,4 @@ TEST_F(BrowserActuatorUpstreamMessageClientTest,
 }
 
 }  // namespace
-}  // namespace browser_actuator::transport
+}  // namespace stream_transport

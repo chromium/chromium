@@ -4,7 +4,7 @@
 
 #include "components/stream_transport/internal/features.h"
 
-namespace browser_actuator::transport {
+namespace stream_transport {
 
 BASE_FEATURE(kBrowserActuatorChannelEnabled, base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -47,4 +47,4 @@ BASE_FEATURE_PARAM(int,
                    &kBrowserActuatorProtoStreamTransport,
                    64);
 
-}  // namespace browser_actuator::transport
+}  // namespace stream_transport

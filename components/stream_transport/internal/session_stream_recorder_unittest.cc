@@ -29,7 +29,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace browser_actuator::transport {
+namespace stream_transport {
 namespace {
 
 class FakeTransportSession : public TransportSession {
@@ -54,17 +54,19 @@ class FakeTransportSession : public TransportSession {
 
 class TestObserver : public SessionStreamRecorder::Observer {
  public:
-  void OnDownstreamMessage(base::TimeTicks timestamp,
-                           const ActuatorDownstreamMessage& message,
-                           DownstreamDeliveryStatus status) override {
+  void OnDownstreamMessage(
+      base::TimeTicks timestamp,
+      const browser_actuator::ActuatorDownstreamMessage& message,
+      DownstreamDeliveryStatus status) override {
     downstream_count++;
     last_downstream_seq = message.sequence_number();
     last_downstream_status = status;
   }
 
-  void OnUpstreamMessage(base::TimeTicks timestamp,
-                         const ActuatorUpstreamMessage& message,
-                         int http_response_code) override {
+  void OnUpstreamMessage(
+      base::TimeTicks timestamp,
+      const browser_actuator::ActuatorUpstreamMessage& message,
+      int http_response_code) override {
     upstream_count++;
     last_upstream_seq = message.client_sequence_number();
     last_http_response_code = http_response_code;
@@ -95,7 +97,7 @@ TEST(SessionStreamRecorderTest, InitialState) {
 TEST(SessionStreamRecorderTest, RecordsDownstreamMessage) {
   SessionStreamRecorder recorder("session_123");
 
-  ActuatorDownstreamMessage downstream;
+  browser_actuator::ActuatorDownstreamMessage downstream;
   downstream.set_session_id("session_123");
   downstream.set_sequence_number(5);
 
@@ -108,15 +110,18 @@ TEST(SessionStreamRecorderTest, RecordsDownstreamMessage) {
 
   const auto& entry = recorder.entries().front();
   EXPECT_FALSE(entry.timestamp.is_null());
-  ASSERT_TRUE(std::holds_alternative<ActuatorDownstreamMessage>(entry.message));
-  EXPECT_EQ(
-      std::get<ActuatorDownstreamMessage>(entry.message).sequence_number(), 5);
+  ASSERT_TRUE(
+      std::holds_alternative<browser_actuator::ActuatorDownstreamMessage>(
+          entry.message));
+  EXPECT_EQ(std::get<browser_actuator::ActuatorDownstreamMessage>(entry.message)
+                .sequence_number(),
+            5);
 }
 
 TEST(SessionStreamRecorderTest, RecordsUpstreamMessage) {
   SessionStreamRecorder recorder("session_123");
 
-  ActuatorUpstreamMessage upstream;
+  browser_actuator::ActuatorUpstreamMessage upstream;
   upstream.set_session_id("session_123");
   upstream.set_client_sequence_number(10);
 
@@ -128,10 +133,11 @@ TEST(SessionStreamRecorderTest, RecordsUpstreamMessage) {
 
   const auto& entry = recorder.entries().front();
   EXPECT_FALSE(entry.timestamp.is_null());
-  ASSERT_TRUE(std::holds_alternative<ActuatorUpstreamMessage>(entry.message));
-  EXPECT_EQ(
-      std::get<ActuatorUpstreamMessage>(entry.message).client_sequence_number(),
-      10);
+  ASSERT_TRUE(std::holds_alternative<browser_actuator::ActuatorUpstreamMessage>(
+      entry.message));
+  EXPECT_EQ(std::get<browser_actuator::ActuatorUpstreamMessage>(entry.message)
+                .client_sequence_number(),
+            10);
   EXPECT_EQ(entry.http_response_code, 200);
 }
 
@@ -140,7 +146,7 @@ TEST(SessionStreamRecorderTest, UpdatesUpstreamMessageResponseCodeInPlace) {
   TestObserver observer;
   recorder.AddObserver(&observer);
 
-  ActuatorUpstreamMessage upstream;
+  browser_actuator::ActuatorUpstreamMessage upstream;
   upstream.set_session_id("session_123");
   upstream.set_client_sequence_number(10);
 
@@ -173,15 +179,15 @@ TEST(SessionStreamRecorderTest, UpdatesUpstreamMessageResponseCodeInPlace) {
 TEST(SessionStreamRecorderTest, PreservesChronologicalOrderAcrossDirections) {
   SessionStreamRecorder recorder("session_123");
 
-  ActuatorDownstreamMessage d1;
+  browser_actuator::ActuatorDownstreamMessage d1;
   d1.set_sequence_number(1);
   recorder.RecordDownstreamMessage(d1, DownstreamDeliveryStatus::kSuccess);
 
-  ActuatorUpstreamMessage u1;
+  browser_actuator::ActuatorUpstreamMessage u1;
   u1.set_client_sequence_number(2);
   recorder.RecordUpstreamMessage(u1, 200);
 
-  ActuatorDownstreamMessage d2;
+  browser_actuator::ActuatorDownstreamMessage d2;
   d2.set_sequence_number(3);
   recorder.RecordDownstreamMessage(d2, DownstreamDeliveryStatus::kSuccess);
 
@@ -189,21 +195,26 @@ TEST(SessionStreamRecorderTest, PreservesChronologicalOrderAcrossDirections) {
   ASSERT_EQ(entries.size(), 3u);
 
   ASSERT_TRUE(
-      std::holds_alternative<ActuatorDownstreamMessage>(entries[0].message));
+      std::holds_alternative<browser_actuator::ActuatorDownstreamMessage>(
+          entries[0].message));
   EXPECT_EQ(
-      std::get<ActuatorDownstreamMessage>(entries[0].message).sequence_number(),
+      std::get<browser_actuator::ActuatorDownstreamMessage>(entries[0].message)
+          .sequence_number(),
       1);
 
-  ASSERT_TRUE(
-      std::holds_alternative<ActuatorUpstreamMessage>(entries[1].message));
-  EXPECT_EQ(std::get<ActuatorUpstreamMessage>(entries[1].message)
-                .client_sequence_number(),
-            2);
+  ASSERT_TRUE(std::holds_alternative<browser_actuator::ActuatorUpstreamMessage>(
+      entries[1].message));
+  EXPECT_EQ(
+      std::get<browser_actuator::ActuatorUpstreamMessage>(entries[1].message)
+          .client_sequence_number(),
+      2);
 
   ASSERT_TRUE(
-      std::holds_alternative<ActuatorDownstreamMessage>(entries[2].message));
+      std::holds_alternative<browser_actuator::ActuatorDownstreamMessage>(
+          entries[2].message));
   EXPECT_EQ(
-      std::get<ActuatorDownstreamMessage>(entries[2].message).sequence_number(),
+      std::get<browser_actuator::ActuatorDownstreamMessage>(entries[2].message)
+          .sequence_number(),
       3);
 }
 
@@ -212,7 +223,7 @@ TEST(SessionStreamRecorderTest, NotifiesObservers) {
   TestObserver observer;
   recorder.AddObserver(&observer);
 
-  ActuatorDownstreamMessage d;
+  browser_actuator::ActuatorDownstreamMessage d;
   d.set_sequence_number(1);
   recorder.RecordDownstreamMessage(d, DownstreamDeliveryStatus::kSuccess);
 
@@ -221,7 +232,7 @@ TEST(SessionStreamRecorderTest, NotifiesObservers) {
   EXPECT_EQ(observer.last_downstream_status,
             DownstreamDeliveryStatus::kSuccess);
 
-  ActuatorUpstreamMessage u;
+  browser_actuator::ActuatorUpstreamMessage u;
   u.set_client_sequence_number(2);
   recorder.RecordUpstreamMessage(u, 200);
 
@@ -231,7 +242,7 @@ TEST(SessionStreamRecorderTest, NotifiesObservers) {
 
   recorder.RemoveObserver(&observer);
 
-  ActuatorDownstreamMessage d2;
+  browser_actuator::ActuatorDownstreamMessage d2;
   d2.set_sequence_number(3);
   recorder.RecordDownstreamMessage(d2, DownstreamDeliveryStatus::kSuccess);
 
@@ -243,11 +254,11 @@ TEST(SessionStreamRecorderTest, ObserverDefaultMethodsDoNothing) {
   DefaultObserver observer;
   recorder.AddObserver(&observer);
 
-  ActuatorDownstreamMessage downstream;
+  browser_actuator::ActuatorDownstreamMessage downstream;
   recorder.RecordDownstreamMessage(downstream,
                                    DownstreamDeliveryStatus::kSuccess);
 
-  ActuatorUpstreamMessage upstream;
+  browser_actuator::ActuatorUpstreamMessage upstream;
   recorder.RecordUpstreamMessage(upstream, 200);
 
   recorder.RemoveObserver(&observer);
@@ -296,17 +307,18 @@ TEST(SessionStreamRecorderFactoryTest, RecordsEnvelopesInArrivalOrder) {
   factory.OnSessionRegistered(&session);
 
   // A downstream envelope and the reply a handler sends while handling it.
-  ActuatorDownstreamMessage wake;
+  browser_actuator::ActuatorDownstreamMessage wake;
   wake.set_session_id("session_1");
   wake.set_sequence_number(0);
   wake.add_typed_payloads()->set_payload_type(
-      ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
+      browser_actuator::ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
   wake.add_typed_payloads()->set_payload_type(
-      ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_EXPERIMENTAL_TRIGGERING);
+      browser_actuator::
+          ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_EXPERIMENTAL_TRIGGERING);
   factory.OnDownstreamMessage("session_1", wake,
                               DownstreamDeliveryStatus::kSuccess);
 
-  ActuatorUpstreamMessage ack;
+  browser_actuator::ActuatorUpstreamMessage ack;
   ack.set_session_id("session_1");
   ack.set_client_sequence_number(1);
   ack.set_responding_to_sequence_number(0);
@@ -322,16 +334,19 @@ TEST(SessionStreamRecorderFactoryTest, RecordsEnvelopesInArrivalOrder) {
 
   // The whole envelope is kept, including its sequence number and every
   // typed payload.
-  ASSERT_TRUE(std::holds_alternative<ActuatorDownstreamMessage>(
-      recorder->entries()[0].message));
+  ASSERT_TRUE(
+      std::holds_alternative<browser_actuator::ActuatorDownstreamMessage>(
+          recorder->entries()[0].message));
   const auto& recorded_wake =
-      std::get<ActuatorDownstreamMessage>(recorder->entries()[0].message);
+      std::get<browser_actuator::ActuatorDownstreamMessage>(
+          recorder->entries()[0].message);
   EXPECT_EQ(recorded_wake.sequence_number(), 0);
   EXPECT_EQ(recorded_wake.typed_payloads_size(), 2);
 
-  ASSERT_TRUE(std::holds_alternative<ActuatorUpstreamMessage>(
+  ASSERT_TRUE(std::holds_alternative<browser_actuator::ActuatorUpstreamMessage>(
       recorder->entries()[1].message));
-  EXPECT_EQ(std::get<ActuatorUpstreamMessage>(recorder->entries()[1].message)
+  EXPECT_EQ(std::get<browser_actuator::ActuatorUpstreamMessage>(
+                recorder->entries()[1].message)
                 .responding_to_sequence_number(),
             0);
 }
@@ -341,7 +356,7 @@ TEST(SessionStreamRecorderFactoryTest,
   SessionStreamRecorderFactory factory;
   FakeTransportSession session("session_1");
 
-  ActuatorDownstreamMessage message;
+  browser_actuator::ActuatorDownstreamMessage message;
   message.set_session_id("session_1");
   factory.OnDownstreamMessage("session_1", message,
                               DownstreamDeliveryStatus::kSuccess);
@@ -365,7 +380,7 @@ TEST(SessionStreamRecorderFactoryTest,
   FakeTransportSession session("session_1");
 
   factory.OnSessionRegistered(&session);
-  ActuatorDownstreamMessage message;
+  browser_actuator::ActuatorDownstreamMessage message;
   message.set_session_id("session_1");
   factory.OnDownstreamMessage("session_1", message,
                               DownstreamDeliveryStatus::kSuccess);
@@ -435,26 +450,27 @@ TEST(SessionStreamRecorderFactoryTest, ExportAllSessionsAsJson) {
       factory.GetActiveRecorderForTesting(session2.GetSessionId());
   ASSERT_NE(r2, nullptr);
 
-  ActuatorDownstreamMessage d1;
+  browser_actuator::ActuatorDownstreamMessage d1;
   d1.set_session_id("session_1");
   d1.set_sequence_number(1);
   d1.add_typed_payloads()->set_payload_type(
-      ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
+      browser_actuator::ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
   r1->RecordDownstreamMessage(d1, DownstreamDeliveryStatus::kSuccess);
 
-  ActuatorUpstreamMessage u1;
+  browser_actuator::ActuatorUpstreamMessage u1;
   u1.set_session_id("session_1");
   u1.set_client_sequence_number(2);
   r1->RecordUpstreamMessage(u1, 200);
 
-  ActuatorDownstreamMessage d2;
+  browser_actuator::ActuatorDownstreamMessage d2;
   d2.set_session_id("session_2");
   d2.set_sequence_number(5);
   d2.add_typed_payloads()->set_payload_type(
-      ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_EXPERIMENTAL_TRIGGERING);
+      browser_actuator::
+          ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_EXPERIMENTAL_TRIGGERING);
   r2->RecordDownstreamMessage(d2, DownstreamDeliveryStatus::kSuccess);
 
-  ActuatorUpstreamMessage u2;
+  browser_actuator::ActuatorUpstreamMessage u2;
   u2.set_session_id("session_2");
   u2.set_client_sequence_number(10);
   u2.set_responding_to_sequence_number(5);
@@ -570,7 +586,7 @@ TEST(SessionStreamRecorderFactoryTest, RetainsRemovedSessionsForDump) {
   FakeTransportSession session("session_temp");
 
   factory.OnSessionRegistered(&session);
-  ActuatorDownstreamMessage downstream;
+  browser_actuator::ActuatorDownstreamMessage downstream;
   downstream.set_session_id("session_temp");
   downstream.set_sequence_number(42);
   factory.OnDownstreamMessage("session_temp", downstream,
@@ -607,17 +623,17 @@ TEST(SessionStreamRecorderTest,
      EntryToValueSerializesDownstreamStatusAsString) {
   SessionStreamRecorder recorder("session_123");
 
-  ActuatorDownstreamMessage d1;
+  browser_actuator::ActuatorDownstreamMessage d1;
   d1.set_session_id("session_123");
   d1.set_sequence_number(1);
   recorder.RecordDownstreamMessage(d1, DownstreamDeliveryStatus::kSuccess);
 
-  ActuatorDownstreamMessage d2;
+  browser_actuator::ActuatorDownstreamMessage d2;
   d2.set_session_id("session_123");
   d2.set_sequence_number(2);
   recorder.RecordDownstreamMessage(d2, DownstreamDeliveryStatus::kFailure);
 
-  ActuatorDownstreamMessage d3;
+  browser_actuator::ActuatorDownstreamMessage d3;
   d3.set_session_id("session_123");
   d3.set_sequence_number(3);
   recorder.RecordDownstreamMessage(d3, DownstreamDeliveryStatus::kUnknown);
@@ -644,20 +660,20 @@ TEST(SessionStreamRecorderFactoryTest, ExportIncludesAllProtoFields) {
       factory.GetActiveRecorderForTesting(session.GetSessionId());
   ASSERT_NE(recorder, nullptr);
 
-  ActuatorUpstreamMessage upstream;
+  browser_actuator::ActuatorUpstreamMessage upstream;
   upstream.set_session_id("session_1");
   auto* capabilities = upstream.mutable_capabilities();
   capabilities->set_chrome_major_version_number(140);
   capabilities->add_supported_features("feature_a");
   recorder->RecordUpstreamMessage(upstream, 200);
 
-  ActuatorDownstreamMessage downstream;
+  browser_actuator::ActuatorDownstreamMessage downstream;
   downstream.set_session_id("session_1");
   downstream.set_sequence_number(1);
   auto* typed_payload = downstream.add_typed_payloads();
   typed_payload->set_payload_type(
-      ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
-  ControlCommand command;
+      browser_actuator::ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
+  browser_actuator::ControlCommand command;
   command.mutable_close_session();
   std::string serialized_command = command.SerializeAsString();
   typed_payload->mutable_proto_payload()->set_type_url(
@@ -716,13 +732,13 @@ TEST(SessionStreamRecorderFactoryTest, RoutesUpstreamMessageBySessionId) {
       factory.GetActiveRecorderForTesting(session2.GetSessionId());
   ASSERT_NE(r2, nullptr);
 
-  ActuatorUpstreamMessage u2;
+  browser_actuator::ActuatorUpstreamMessage u2;
   u2.set_session_id("session_2");
   u2.set_client_sequence_number(11);
   factory.OnUpstreamMessage("session_2", u2, 0);
   factory.OnUpstreamMessage("session_2", u2, 200);
 
-  ActuatorUpstreamMessage u1;
+  browser_actuator::ActuatorUpstreamMessage u1;
   u1.set_session_id("session_1");
   u1.set_client_sequence_number(22);
   factory.OnUpstreamMessage("session_1", u1, 0);
@@ -730,17 +746,19 @@ TEST(SessionStreamRecorderFactoryTest, RoutesUpstreamMessageBySessionId) {
 
   EXPECT_EQ(r1->metadata().total_upstream_messages, 1u);
   ASSERT_EQ(r1->entries().size(), 1u);
-  ASSERT_TRUE(std::holds_alternative<ActuatorUpstreamMessage>(
+  ASSERT_TRUE(std::holds_alternative<browser_actuator::ActuatorUpstreamMessage>(
       r1->entries()[0].message));
-  EXPECT_EQ(std::get<ActuatorUpstreamMessage>(r1->entries()[0].message)
+  EXPECT_EQ(std::get<browser_actuator::ActuatorUpstreamMessage>(
+                r1->entries()[0].message)
                 .client_sequence_number(),
             22);
 
   EXPECT_EQ(r2->metadata().total_upstream_messages, 1u);
   ASSERT_EQ(r2->entries().size(), 1u);
-  ASSERT_TRUE(std::holds_alternative<ActuatorUpstreamMessage>(
+  ASSERT_TRUE(std::holds_alternative<browser_actuator::ActuatorUpstreamMessage>(
       r2->entries()[0].message));
-  EXPECT_EQ(std::get<ActuatorUpstreamMessage>(r2->entries()[0].message)
+  EXPECT_EQ(std::get<browser_actuator::ActuatorUpstreamMessage>(
+                r2->entries()[0].message)
                 .client_sequence_number(),
             11);
 }
@@ -750,7 +768,7 @@ TEST(SessionStreamRecorderFactoryTest,
   SessionStreamRecorderFactory factory;
   FakeTransportSession session1("session_1");
 
-  ActuatorUpstreamMessage u_unknown;
+  browser_actuator::ActuatorUpstreamMessage u_unknown;
   u_unknown.set_session_id("unknown_session");
   u_unknown.set_client_sequence_number(1);
   factory.OnUpstreamMessage("unknown_session", u_unknown, 0);
@@ -760,7 +778,7 @@ TEST(SessionStreamRecorderFactoryTest,
   factory.OnSessionRegistered(&session1);
   factory.OnSessionRemoved("session_1");
 
-  ActuatorUpstreamMessage u_closed;
+  browser_actuator::ActuatorUpstreamMessage u_closed;
   u_closed.set_session_id("session_1");
   u_closed.set_client_sequence_number(2);
   factory.OnUpstreamMessage("session_1", u_closed, 0);
@@ -828,7 +846,7 @@ TEST(SessionStreamRecorderFactoryTest, GetAllSessionsCapsEvents) {
   ASSERT_NE(recorder, nullptr);
 
   for (int i = 0; i < 10; ++i) {
-    ActuatorDownstreamMessage msg;
+    browser_actuator::ActuatorDownstreamMessage msg;
     msg.set_session_id("session_1");
     msg.set_sequence_number(i);
     recorder->RecordDownstreamMessage(std::move(msg),
@@ -851,7 +869,7 @@ TEST(SessionStreamRecorderFactoryTest, GetAllSessionsKeepsNewestEvents) {
   ASSERT_NE(recorder, nullptr);
 
   for (int i = 0; i < 10; ++i) {
-    ActuatorDownstreamMessage msg;
+    browser_actuator::ActuatorDownstreamMessage msg;
     msg.set_session_id("session_1");
     msg.set_sequence_number(i);
     recorder->RecordDownstreamMessage(std::move(msg),
@@ -883,11 +901,11 @@ TEST(SessionStreamRecorderFactoryTest, GetAllSessionsTruncatesLargeMessages) {
       factory.GetActiveRecorderForTesting(session.GetSessionId());
   ASSERT_NE(recorder, nullptr);
 
-  ActuatorDownstreamMessage msg;
+  browser_actuator::ActuatorDownstreamMessage msg;
   msg.set_session_id("session_1");
   auto* typed_payload = msg.add_typed_payloads();
   typed_payload->set_payload_type(
-      ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
+      browser_actuator::ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
   typed_payload->mutable_proto_payload()->set_value(std::string(500, 'x'));
   recorder->RecordDownstreamMessage(std::move(msg),
                                     DownstreamDeliveryStatus::kSuccess);
@@ -936,7 +954,7 @@ TEST(SessionStreamRecorderFactoryTest,
 
   task_environment.FastForwardBy(base::Seconds(5));
 
-  ActuatorDownstreamMessage msg;
+  browser_actuator::ActuatorDownstreamMessage msg;
   msg.set_session_id("session_1");
   recorder->RecordDownstreamMessage(std::move(msg),
                                     DownstreamDeliveryStatus::kSuccess);
@@ -963,38 +981,49 @@ TEST(SessionStreamRecorderFactoryTest, GetAllSessionsReportsPayloadTypes) {
       factory.GetActiveRecorderForTesting(session.GetSessionId());
   ASSERT_NE(recorder, nullptr);
 
-  ActuatorDownstreamMessage downstream;
+  browser_actuator::ActuatorDownstreamMessage downstream;
   downstream.set_session_id("session_1");
   auto* p1 = downstream.add_typed_payloads();
-  p1->set_payload_type(ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
+  p1->set_payload_type(
+      browser_actuator::ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
   auto* p2 = downstream.add_typed_payloads();
   p2->set_payload_type(
-      ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_EXPERIMENTAL_TRIGGERING);
+      browser_actuator::
+          ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_EXPERIMENTAL_TRIGGERING);
   auto* p3 = downstream.add_typed_payloads();
-  p3->set_payload_type(ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_ACTUATION);
+  p3->set_payload_type(
+      browser_actuator::ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_ACTUATION);
   auto* p4 = downstream.add_typed_payloads();
-  p4->set_payload_type(ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_TASK_INGRESS);
+  p4->set_payload_type(
+      browser_actuator::ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_TASK_INGRESS);
   auto* p5 = downstream.add_typed_payloads();
-  p5->set_payload_type(ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_PROBE);
+  p5->set_payload_type(
+      browser_actuator::ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_PROBE);
   auto* p6 = downstream.add_typed_payloads();
-  p6->set_payload_type(ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_UNSPECIFIED);
+  p6->set_payload_type(
+      browser_actuator::ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_UNSPECIFIED);
   recorder->RecordDownstreamMessage(std::move(downstream),
                                     DownstreamDeliveryStatus::kSuccess);
 
-  ActuatorUpstreamMessage upstream;
+  browser_actuator::ActuatorUpstreamMessage upstream;
   upstream.set_session_id("session_1");
   auto* up1 = upstream.add_typed_payloads();
-  up1->set_payload_type(ACTUATOR_UPSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
+  up1->set_payload_type(
+      browser_actuator::ACTUATOR_UPSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
   auto* up2 = upstream.add_typed_payloads();
-  up2->set_payload_type(ACTUATOR_UPSTREAM_PAYLOAD_TYPE_EXPERIMENTAL_TRIGGERING);
+  up2->set_payload_type(
+      browser_actuator::ACTUATOR_UPSTREAM_PAYLOAD_TYPE_EXPERIMENTAL_TRIGGERING);
   auto* up3 = upstream.add_typed_payloads();
-  up3->set_payload_type(ACTUATOR_UPSTREAM_PAYLOAD_TYPE_ACTUATION);
+  up3->set_payload_type(
+      browser_actuator::ACTUATOR_UPSTREAM_PAYLOAD_TYPE_ACTUATION);
   auto* up4 = upstream.add_typed_payloads();
-  up4->set_payload_type(ACTUATOR_UPSTREAM_PAYLOAD_TYPE_TASK_INGRESS);
+  up4->set_payload_type(
+      browser_actuator::ACTUATOR_UPSTREAM_PAYLOAD_TYPE_TASK_INGRESS);
   auto* up5 = upstream.add_typed_payloads();
-  up5->set_payload_type(ACTUATOR_UPSTREAM_PAYLOAD_TYPE_PROBE);
+  up5->set_payload_type(browser_actuator::ACTUATOR_UPSTREAM_PAYLOAD_TYPE_PROBE);
   auto* up6 = upstream.add_typed_payloads();
-  up6->set_payload_type(ACTUATOR_UPSTREAM_PAYLOAD_TYPE_UNSPECIFIED);
+  up6->set_payload_type(
+      browser_actuator::ACTUATOR_UPSTREAM_PAYLOAD_TYPE_UNSPECIFIED);
   recorder->RecordUpstreamMessage(std::move(upstream), 200);
 
   std::vector<SessionSnapshot> sessions =
@@ -1020,7 +1049,7 @@ TEST(SessionStreamRecorderFactoryTest, GetAllSessionsIncludesUpstreamEvents) {
   FakeTransportSession session("session_1");
   factory.OnSessionRegistered(&session);
 
-  ActuatorUpstreamMessage upstream;
+  browser_actuator::ActuatorUpstreamMessage upstream;
   upstream.set_session_id("session_1");
   upstream.set_client_sequence_number(42);
   factory.OnUpstreamMessage("session_1", upstream, 0);
@@ -1039,30 +1068,30 @@ TEST(SessionStreamRecorderTest,
      PopulatesMissingCanonicalTypeUrlOnDownstreamPayloads) {
   SessionStreamRecorder recorder("session_123");
 
-  ActuatorDownstreamMessage downstream;
+  browser_actuator::ActuatorDownstreamMessage downstream;
   downstream.set_session_id("session_123");
   downstream.set_sequence_number(7);
-  ActuatorDownstreamTypedPayload* control_payload =
+  browser_actuator::ActuatorDownstreamTypedPayload* control_payload =
       downstream.add_typed_payloads();
   control_payload->set_payload_type(
-      ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
+      browser_actuator::ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
   control_payload->mutable_proto_payload()->set_value("cmd");
-  ActuatorDownstreamTypedPayload* unspecified_payload =
+  browser_actuator::ActuatorDownstreamTypedPayload* unspecified_payload =
       downstream.add_typed_payloads();
   unspecified_payload->set_payload_type(
-      ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_UNSPECIFIED);
+      browser_actuator::ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_UNSPECIFIED);
   unspecified_payload->mutable_proto_payload()->set_value("unknown");
-  ActuatorDownstreamTypedPayload* missing_proto_payload =
+  browser_actuator::ActuatorDownstreamTypedPayload* missing_proto_payload =
       downstream.add_typed_payloads();
   missing_proto_payload->set_payload_type(
-      ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
+      browser_actuator::ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
 
   recorder.RecordDownstreamMessage(std::move(downstream),
                                    DownstreamDeliveryStatus::kSuccess);
 
   ASSERT_EQ(recorder.entries().size(), 1u);
-  const auto& recorded =
-      std::get<ActuatorDownstreamMessage>(recorder.entries()[0].message);
+  const auto& recorded = std::get<browser_actuator::ActuatorDownstreamMessage>(
+      recorder.entries()[0].message);
   ASSERT_EQ(recorded.typed_payloads_size(), 3);
   EXPECT_EQ(recorded.typed_payloads(0).proto_payload().type_url(),
             "type.googleapis.com/browser_actuator.ControlCommand");
@@ -1081,7 +1110,7 @@ TEST(SessionStreamRecorderTest,
 
   for (size_t i = 0; i < SessionStreamRecorder::kMaxEntriesPerSession + 10;
        ++i) {
-    ActuatorDownstreamMessage msg;
+    browser_actuator::ActuatorDownstreamMessage msg;
     msg.set_session_id("session_bounded");
     msg.set_sequence_number(static_cast<int64_t>(i + 1));
     recorder->RecordDownstreamMessage(std::move(msg),
@@ -1092,17 +1121,18 @@ TEST(SessionStreamRecorderTest,
             SessionStreamRecorder::kMaxEntriesPerSession + 10);
   ASSERT_EQ(recorder->entries().size(),
             SessionStreamRecorder::kMaxEntriesPerSession);
+  EXPECT_EQ(std::get<browser_actuator::ActuatorDownstreamMessage>(
+                recorder->entries().front().message)
+                .sequence_number(),
+            11);
   EXPECT_EQ(
-      std::get<ActuatorDownstreamMessage>(recorder->entries().front().message)
-          .sequence_number(),
-      11);
-  EXPECT_EQ(
-      std::get<ActuatorDownstreamMessage>(recorder->entries().back().message)
+      std::get<browser_actuator::ActuatorDownstreamMessage>(
+          recorder->entries().back().message)
           .sequence_number(),
       static_cast<int64_t>(SessionStreamRecorder::kMaxEntriesPerSession + 10));
 
   for (size_t i = 0; i < 5; ++i) {
-    ActuatorUpstreamMessage upstream;
+    browser_actuator::ActuatorUpstreamMessage upstream;
     upstream.set_session_id("session_bounded");
     upstream.set_client_sequence_number(static_cast<int64_t>(i + 1));
     recorder->RecordUpstreamMessage(std::move(upstream), 200);
@@ -1111,14 +1141,14 @@ TEST(SessionStreamRecorderTest,
   EXPECT_EQ(recorder->metadata().total_upstream_messages, 5u);
   ASSERT_EQ(recorder->entries().size(),
             SessionStreamRecorder::kMaxEntriesPerSession);
-  EXPECT_EQ(
-      std::get<ActuatorDownstreamMessage>(recorder->entries().front().message)
-          .sequence_number(),
-      16);
-  EXPECT_EQ(
-      std::get<ActuatorUpstreamMessage>(recorder->entries().back().message)
-          .client_sequence_number(),
-      5);
+  EXPECT_EQ(std::get<browser_actuator::ActuatorDownstreamMessage>(
+                recorder->entries().front().message)
+                .sequence_number(),
+            16);
+  EXPECT_EQ(std::get<browser_actuator::ActuatorUpstreamMessage>(
+                recorder->entries().back().message)
+                .client_sequence_number(),
+            5);
 
   std::vector<SessionSnapshot> sessions =
       factory.GetAllSessions(/*max_events=*/500, /*max_message_bytes=*/1024);
@@ -1142,13 +1172,14 @@ TEST(SessionStreamRecorderFactoryTest,
   ASSERT_NE(recorder, nullptr);
 
   struct PayloadSizeObserver : public SessionStreamRecorder::Observer {
-    void OnDownstreamMessage(base::TimeTicks /*timestamp*/,
-                             const ActuatorDownstreamMessage& msg,
-                             DownstreamDeliveryStatus /*status*/) override {
+    void OnDownstreamMessage(
+        base::TimeTicks /*timestamp*/,
+        const browser_actuator::ActuatorDownstreamMessage& msg,
+        DownstreamDeliveryStatus /*status*/) override {
       downstream_bytes = msg.typed_payloads(0).proto_payload().value().size();
     }
     void OnUpstreamMessage(base::TimeTicks /*timestamp*/,
-                           const ActuatorUpstreamMessage& msg,
+                           const browser_actuator::ActuatorUpstreamMessage& msg,
                            int /*http_response_code*/) override {
       upstream_bytes = msg.typed_payloads(0).proto_payload().value().size();
     }
@@ -1161,18 +1192,19 @@ TEST(SessionStreamRecorderFactoryTest,
   const ProbeResponseSpecInput specs[] = {
       {.payload_size_bytes = 1'000'000, .delay_ms = 100},
   };
-  base::expected<TransportProbe::ProbeRequest, std::string> probe_request =
-      BuildProbeRequest("mem-probe", 1'000'000, specs);
+  base::expected<browser_actuator::TransportProbe::ProbeRequest, std::string>
+      probe_request = BuildProbeRequest("mem-probe", 1'000'000, specs);
   ASSERT_TRUE(probe_request.has_value()) << probe_request.error();
-  TransportProbe downstream_probe;
+  browser_actuator::TransportProbe downstream_probe;
   *downstream_probe.mutable_request() = *std::move(probe_request);
 
-  ActuatorDownstreamMessage downstream;
+  browser_actuator::ActuatorDownstreamMessage downstream;
   downstream.set_session_id("session_probe");
   downstream.set_sequence_number(1);
-  ActuatorDownstreamTypedPayload* downstream_typed =
+  browser_actuator::ActuatorDownstreamTypedPayload* downstream_typed =
       downstream.add_typed_payloads();
-  downstream_typed->set_payload_type(ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_PROBE);
+  downstream_typed->set_payload_type(
+      browser_actuator::ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_PROBE);
   downstream_typed->mutable_proto_payload()->set_type_url(
       std::string(ExpectedTypeUrl(PayloadType::kProbe)));
   downstream_typed->mutable_proto_payload()->set_value(
@@ -1183,19 +1215,21 @@ TEST(SessionStreamRecorderFactoryTest,
   base::expected<std::string, std::string> response_payload =
       GenerateProbeResponsePayload("mem-probe", 0, 1, 1'000'000);
   ASSERT_TRUE(response_payload.has_value()) << response_payload.error();
-  TransportProbe upstream_probe;
-  TransportProbe::ProbeResponse* probe_response =
+  browser_actuator::TransportProbe upstream_probe;
+  browser_actuator::TransportProbe::ProbeResponse* probe_response =
       upstream_probe.mutable_response();
   probe_response->set_probe_id("mem-probe");
   probe_response->set_response_index(0);
   probe_response->set_total_responses(1);
   probe_response->set_payload(*std::move(response_payload));
 
-  ActuatorUpstreamMessage upstream;
+  browser_actuator::ActuatorUpstreamMessage upstream;
   upstream.set_session_id("session_probe");
   upstream.set_client_sequence_number(1);
-  ActuatorUpstreamTypedPayload* upstream_typed = upstream.add_typed_payloads();
-  upstream_typed->set_payload_type(ACTUATOR_UPSTREAM_PAYLOAD_TYPE_PROBE);
+  browser_actuator::ActuatorUpstreamTypedPayload* upstream_typed =
+      upstream.add_typed_payloads();
+  upstream_typed->set_payload_type(
+      browser_actuator::ACTUATOR_UPSTREAM_PAYLOAD_TYPE_PROBE);
   upstream_typed->mutable_proto_payload()->set_type_url(
       std::string(ExpectedTypeUrl(PayloadType::kProbe)));
   upstream_typed->mutable_proto_payload()->set_value(
@@ -1210,12 +1244,14 @@ TEST(SessionStreamRecorderFactoryTest,
   EXPECT_LT(observer.upstream_bytes, 256u);
   ASSERT_EQ(recorder->entries().size(), 2u);
   const std::string& recorded_down_value =
-      std::get<ActuatorDownstreamMessage>(recorder->entries()[0].message)
+      std::get<browser_actuator::ActuatorDownstreamMessage>(
+          recorder->entries()[0].message)
           .typed_payloads(0)
           .proto_payload()
           .value();
   const std::string& recorded_up_value =
-      std::get<ActuatorUpstreamMessage>(recorder->entries()[1].message)
+      std::get<browser_actuator::ActuatorUpstreamMessage>(
+          recorder->entries()[1].message)
           .typed_payloads(0)
           .proto_payload()
           .value();
@@ -1303,29 +1339,31 @@ TEST(SessionStreamRecorderFactoryTest,
       factory.GetActiveRecorderForTesting(session.GetSessionId());
   ASSERT_NE(recorder, nullptr);
 
-  ControlCommand start_command;
+  browser_actuator::ControlCommand start_command;
   start_command.mutable_start_session();
 
-  base::expected<TransportProbe::ProbeRequest, std::string> req =
-      BuildProbeRequest("p-42", /*request_payload_size_bytes=*/128);
+  base::expected<browser_actuator::TransportProbe::ProbeRequest, std::string>
+      req = BuildProbeRequest("p-42", /*request_payload_size_bytes=*/128);
   ASSERT_TRUE(req.has_value()) << req.error();
   const std::string expected_req_payload = req->payload();
   ASSERT_EQ(expected_req_payload.size(), 128u);
 
-  TransportProbe downstream_probe;
+  browser_actuator::TransportProbe downstream_probe;
   *downstream_probe.mutable_request() = *std::move(req);
-  ActuatorDownstreamMessage downstream;
+  browser_actuator::ActuatorDownstreamMessage downstream;
   downstream.set_session_id("session_small");
-  ActuatorDownstreamTypedPayload* down_control =
+  browser_actuator::ActuatorDownstreamTypedPayload* down_control =
       downstream.add_typed_payloads();
   down_control->set_payload_type(
-      ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
+      browser_actuator::ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
   down_control->mutable_proto_payload()->set_type_url(
       std::string(ExpectedTypeUrl(PayloadType::kControl)));
   down_control->mutable_proto_payload()->set_value(
       start_command.SerializeAsString());
-  ActuatorDownstreamTypedPayload* down_typed = downstream.add_typed_payloads();
-  down_typed->set_payload_type(ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_PROBE);
+  browser_actuator::ActuatorDownstreamTypedPayload* down_typed =
+      downstream.add_typed_payloads();
+  down_typed->set_payload_type(
+      browser_actuator::ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_PROBE);
   down_typed->mutable_proto_payload()->set_type_url(
       std::string(ExpectedTypeUrl(PayloadType::kProbe)));
   down_typed->mutable_proto_payload()->set_value(
@@ -1333,28 +1371,32 @@ TEST(SessionStreamRecorderFactoryTest,
   recorder->RecordDownstreamMessage(std::move(downstream),
                                     DownstreamDeliveryStatus::kSuccess);
 
-  ControlCommand ack_command;
+  browser_actuator::ControlCommand ack_command;
   ack_command.mutable_start_session_ack();
 
   base::expected<std::string, std::string> expected_resp_payload =
       GenerateProbeResponsePayload("p-42", 0, 2, 128);
   ASSERT_TRUE(expected_resp_payload.has_value())
       << expected_resp_payload.error();
-  TransportProbe upstream_probe;
+  browser_actuator::TransportProbe upstream_probe;
   upstream_probe.mutable_response()->set_probe_id("p-42");
   upstream_probe.mutable_response()->set_response_index(0);
   upstream_probe.mutable_response()->set_total_responses(2);
   upstream_probe.mutable_response()->set_payload(*expected_resp_payload);
-  ActuatorUpstreamMessage upstream;
+  browser_actuator::ActuatorUpstreamMessage upstream;
   upstream.set_session_id("session_small");
-  ActuatorUpstreamTypedPayload* up_control = upstream.add_typed_payloads();
-  up_control->set_payload_type(ACTUATOR_UPSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
+  browser_actuator::ActuatorUpstreamTypedPayload* up_control =
+      upstream.add_typed_payloads();
+  up_control->set_payload_type(
+      browser_actuator::ACTUATOR_UPSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
   up_control->mutable_proto_payload()->set_type_url(
       std::string(ExpectedTypeUrl(PayloadType::kControl)));
   up_control->mutable_proto_payload()->set_value(
       ack_command.SerializeAsString());
-  ActuatorUpstreamTypedPayload* up_typed = upstream.add_typed_payloads();
-  up_typed->set_payload_type(ACTUATOR_UPSTREAM_PAYLOAD_TYPE_PROBE);
+  browser_actuator::ActuatorUpstreamTypedPayload* up_typed =
+      upstream.add_typed_payloads();
+  up_typed->set_payload_type(
+      browser_actuator::ACTUATOR_UPSTREAM_PAYLOAD_TYPE_PROBE);
   up_typed->mutable_proto_payload()->set_value(
       upstream_probe.SerializeAsString());
   factory.OnUpstreamMessage("session_small", upstream, 0);
@@ -1400,17 +1442,19 @@ TEST(SessionStreamRecorderFactoryTest,
       factory.GetActiveRecorderForTesting(session.GetSessionId());
   ASSERT_NE(recorder, nullptr);
 
-  base::expected<TransportProbe::ProbeRequest, std::string> req =
-      BuildProbeRequest("p-42", /*request_payload_size_bytes=*/256);
+  base::expected<browser_actuator::TransportProbe::ProbeRequest, std::string>
+      req = BuildProbeRequest("p-42", /*request_payload_size_bytes=*/256);
   ASSERT_TRUE(req.has_value()) << req.error();
-  TransportProbe probe;
+  browser_actuator::TransportProbe probe;
   *probe.mutable_request() = *std::move(req);
   const std::string raw_serialized = probe.SerializeAsString();
 
-  ActuatorDownstreamMessage downstream;
+  browser_actuator::ActuatorDownstreamMessage downstream;
   downstream.set_session_id("session_mismatch");
-  ActuatorDownstreamTypedPayload* typed = downstream.add_typed_payloads();
-  typed->set_payload_type(ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_PROBE);
+  browser_actuator::ActuatorDownstreamTypedPayload* typed =
+      downstream.add_typed_payloads();
+  typed->set_payload_type(
+      browser_actuator::ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_PROBE);
   typed->mutable_proto_payload()->set_type_url(
       "type.googleapis.com/example.OtherMessage");
   typed->mutable_proto_payload()->set_value(raw_serialized);
@@ -1418,7 +1462,8 @@ TEST(SessionStreamRecorderFactoryTest,
                                     DownstreamDeliveryStatus::kSuccess);
 
   ASSERT_EQ(recorder->entries().size(), 1u);
-  EXPECT_EQ(std::get<ActuatorDownstreamMessage>(recorder->entries()[0].message)
+  EXPECT_EQ(std::get<browser_actuator::ActuatorDownstreamMessage>(
+                recorder->entries()[0].message)
                 .typed_payloads(0)
                 .proto_payload()
                 .value(),
@@ -1445,16 +1490,17 @@ TEST(SessionStreamRecorderFactoryTest,
   // varint tag) with a valid/empty `type_url` for both `kControl` and `kProbe`
   // record the raw entry while omitting `decoded_control_command` and
   // `decoded_transport_probe`.
-  ActuatorDownstreamMessage malformed;
+  browser_actuator::ActuatorDownstreamMessage malformed;
   malformed.set_session_id("session_mismatch");
-  ActuatorDownstreamTypedPayload* malformed_control =
+  browser_actuator::ActuatorDownstreamTypedPayload* malformed_control =
       malformed.add_typed_payloads();
   malformed_control->set_payload_type(
-      ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
+      browser_actuator::ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
   malformed_control->mutable_proto_payload()->set_value("\xff");
-  ActuatorDownstreamTypedPayload* malformed_probe =
+  browser_actuator::ActuatorDownstreamTypedPayload* malformed_probe =
       malformed.add_typed_payloads();
-  malformed_probe->set_payload_type(ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_PROBE);
+  malformed_probe->set_payload_type(
+      browser_actuator::ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_PROBE);
   malformed_probe->mutable_proto_payload()->set_value("\xff");
   recorder->RecordDownstreamMessage(std::move(malformed),
                                     DownstreamDeliveryStatus::kSuccess);
@@ -1496,38 +1542,43 @@ TEST(
       std::string(39, 'A') + "\xE2\x82\xAC" + std::string(100, 'B');
   ASSERT_EQ(utf8_payload.size(), 142u);
 
-  TransportProbe downstream_probe;
+  browser_actuator::TransportProbe downstream_probe;
   downstream_probe.mutable_request()->set_probe_id("utf8-probe");
   downstream_probe.mutable_request()->set_payload(utf8_payload);
-  ActuatorDownstreamMessage downstream;
+  browser_actuator::ActuatorDownstreamMessage downstream;
   downstream.set_session_id("session_utf8");
-  ActuatorDownstreamTypedPayload* down_typed = downstream.add_typed_payloads();
-  down_typed->set_payload_type(ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_PROBE);
+  browser_actuator::ActuatorDownstreamTypedPayload* down_typed =
+      downstream.add_typed_payloads();
+  down_typed->set_payload_type(
+      browser_actuator::ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_PROBE);
   down_typed->mutable_proto_payload()->set_value(
       downstream_probe.SerializeAsString());
   factory.OnDownstreamMessage("session_utf8", downstream,
                               DownstreamDeliveryStatus::kSuccess);
 
-  TransportProbe upstream_probe;
+  browser_actuator::TransportProbe upstream_probe;
   upstream_probe.mutable_response()->set_probe_id("utf8-probe");
   upstream_probe.mutable_response()->set_response_index(0);
   upstream_probe.mutable_response()->set_total_responses(1);
   upstream_probe.mutable_response()->set_payload(utf8_payload);
-  ActuatorUpstreamMessage upstream;
+  browser_actuator::ActuatorUpstreamMessage upstream;
   upstream.set_session_id("session_utf8");
-  ActuatorUpstreamTypedPayload* up_typed = upstream.add_typed_payloads();
-  up_typed->set_payload_type(ACTUATOR_UPSTREAM_PAYLOAD_TYPE_PROBE);
+  browser_actuator::ActuatorUpstreamTypedPayload* up_typed =
+      upstream.add_typed_payloads();
+  up_typed->set_payload_type(
+      browser_actuator::ACTUATOR_UPSTREAM_PAYLOAD_TYPE_PROBE);
   up_typed->mutable_proto_payload()->set_value(
       upstream_probe.SerializeAsString());
   factory.OnUpstreamMessage("session_utf8", upstream, 0);
 
   // Also record a malformed `TransportProbe` wire payload to verify invalid
   // protobuf bytes are left untouched without omitting the event.
-  ActuatorDownstreamMessage malformed;
+  browser_actuator::ActuatorDownstreamMessage malformed;
   malformed.set_session_id("session_utf8");
-  ActuatorDownstreamTypedPayload* malformed_typed =
+  browser_actuator::ActuatorDownstreamTypedPayload* malformed_typed =
       malformed.add_typed_payloads();
-  malformed_typed->set_payload_type(ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_PROBE);
+  malformed_typed->set_payload_type(
+      browser_actuator::ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_PROBE);
   malformed_typed->mutable_proto_payload()->set_value(
       std::string("\xFF\xFF\xFF", 3));
   factory.OnDownstreamMessage("session_utf8", malformed,
@@ -1589,4 +1640,4 @@ TEST(
 }
 
 }  // namespace
-}  // namespace browser_actuator::transport
+}  // namespace stream_transport

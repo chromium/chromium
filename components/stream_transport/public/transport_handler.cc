@@ -6,7 +6,7 @@
 
 #include "components/stream_transport/public/transport_session.h"
 
-namespace browser_actuator::transport {
+namespace stream_transport {
 
 TransportHandler::TransportHandler(TransportSession* session)
     : session_(session) {}
@@ -29,4 +29,4 @@ void TransportHandler::CloseSession() {
   }
 }
 
-}  // namespace browser_actuator::transport
+}  // namespace stream_transport

@@ -14,7 +14,7 @@
 #include "base/types/expected.h"
 #include "components/stream_transport/internal/proto/transport_messages.pb.h"
 
-namespace browser_actuator::transport {
+namespace stream_transport {
 
 // Deterministic ASCII payload generator for `TransportProbe.ProbeRequest`
 // (downstream) and `TransportProbe.ProbeResponse` (upstream) load-testing
@@ -86,7 +86,7 @@ struct ProbeResponseSpecInput {
 // and `kMaxProbeDelayMs`). Returns an error message on the first violated
 // bound.
 base::expected<void, std::string> ValidateProbeRequest(
-    const TransportProbe::ProbeRequest& request);
+    const browser_actuator::TransportProbe::ProbeRequest& request);
 
 // Generates the deterministic ASCII payload of exact byte length
 // `payload_size_bytes` for a `ProbeRequest` identified by `probe_id`.
@@ -116,10 +116,10 @@ base::expected<std::string, std::string> GenerateProbeResponsePayload(
 // Builds and validates a ready-to-send `TransportProbe::ProbeRequest` with a
 // deterministic request payload of `request_payload_size_bytes` and the
 // requested `response_specs`.
-base::expected<TransportProbe::ProbeRequest, std::string> BuildProbeRequest(
-    std::string_view probe_id,
-    int32_t request_payload_size_bytes = 0,
-    base::span<const ProbeResponseSpecInput> response_specs = {});
+base::expected<browser_actuator::TransportProbe::ProbeRequest, std::string>
+BuildProbeRequest(std::string_view probe_id,
+                  int32_t request_payload_size_bytes = 0,
+                  base::span<const ProbeResponseSpecInput> response_specs = {});
 
 // Returns true if `actual_payload` matches the deterministic request payload
 // expected for `(probe_id, expected_payload_size_bytes)`.
@@ -130,9 +130,10 @@ bool VerifyProbeRequestPayload(std::string_view probe_id,
 // Returns true if `response` carries a valid index, matching `probe_id` and
 // `total_responses`, and the exact deterministic payload requested by the
 // corresponding entry in `request.response_specs()`.
-bool VerifyProbeResponsePayload(const TransportProbe::ProbeRequest& request,
-                                const TransportProbe::ProbeResponse& response);
+bool VerifyProbeResponsePayload(
+    const browser_actuator::TransportProbe::ProbeRequest& request,
+    const browser_actuator::TransportProbe::ProbeResponse& response);
 
-}  // namespace browser_actuator::transport
+}  // namespace stream_transport
 
 #endif  // COMPONENTS_STREAM_TRANSPORT_INTERNAL_PROBE_PAYLOAD_H_

@@ -4,9 +4,9 @@
 
 #include "components/stream_transport/internal/test_support/mock_stream_framer.h"
 
-namespace browser_actuator::transport {
+namespace stream_transport {
 
 MockStreamFramer::MockStreamFramer() = default;
 MockStreamFramer::~MockStreamFramer() = default;
 
-}  // namespace browser_actuator::transport
+}  // namespace stream_transport

@@ -17,7 +17,7 @@
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/resource_request.h"
 
-namespace browser_actuator::transport {
+namespace stream_transport {
 
 namespace {
 
@@ -128,4 +128,4 @@ void OAuthStreamConnectionDelegate::OnTokenFetched(
   inner_->PrepareRequest(std::move(request), std::move(callback));
 }
 
-}  // namespace browser_actuator::transport
+}  // namespace stream_transport

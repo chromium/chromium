@@ -4,10 +4,10 @@
 
 #include "components/stream_transport/test_support/mock_transport_service.h"
 
-namespace browser_actuator::transport {
+namespace stream_transport {
 
 MockTransportService::MockTransportService() = default;
 
 MockTransportService::~MockTransportService() = default;
 
-}  // namespace browser_actuator::transport
+}  // namespace stream_transport

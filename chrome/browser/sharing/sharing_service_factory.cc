@@ -105,8 +105,7 @@ SharingServiceFactory::SharingServiceFactory()
   DependsOn(SharingMessageBridgeFactory::GetInstance());
   DependsOn(SendTabToSelfSyncServiceFactory::GetInstance());
   DependsOn(GmailOtpBackendFactory::GetInstance());
-  DependsOn(
-      browser_actuator::transport::TransportServiceFactory::GetInstance());
+  DependsOn(stream_transport::TransportServiceFactory::GetInstance());
   // The service reads the profile's Glic provider when it is built.
   DependsOn(glic::GlicProviderLatchFactory::GetInstance());
 }

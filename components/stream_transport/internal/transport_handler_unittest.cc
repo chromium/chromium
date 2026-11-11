@@ -13,7 +13,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace browser_actuator::transport {
+namespace stream_transport {
 namespace {
 
 class MockTransportSession : public TransportSession {
@@ -50,7 +50,7 @@ class TestTransportHandler : public TransportHandler {
 TEST(TransportHandlerTest, SendUpstreamMessageDelegatesToSession) {
   MockTransportSession session;
   TestTransportHandler handler(&session);
-  ControlCommand command;
+  browser_actuator::ControlCommand command;
   command.mutable_close_channel();
 
   EXPECT_CALL(session,
@@ -63,7 +63,7 @@ TEST(TransportHandlerTest, SendUpstreamMessageDelegatesToSession) {
 
 TEST(TransportHandlerTest, SendUpstreamMessageFailsWhenSessionNull) {
   TestTransportHandler handler(nullptr);
-  ControlCommand command;
+  browser_actuator::ControlCommand command;
   command.mutable_close_channel();
 
   auto result = handler.SendUpstreamMessage(PayloadType::kControl, command);
@@ -85,4 +85,4 @@ TEST(TransportHandlerTest, CloseSessionNoOpWhenSessionNull) {
 }
 
 }  // namespace
-}  // namespace browser_actuator::transport
+}  // namespace stream_transport

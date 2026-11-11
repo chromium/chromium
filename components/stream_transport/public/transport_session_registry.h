@@ -10,7 +10,7 @@
 #include "base/observer_list_types.h"
 #include "components/stream_transport/public/common.h"
 
-namespace browser_actuator::transport {
+namespace stream_transport {
 
 class TransportSession;
 
@@ -45,6 +45,6 @@ class TransportSessionRegistry {
   virtual void DestroySession(std::string_view session_id) = 0;
 };
 
-}  // namespace browser_actuator::transport
+}  // namespace stream_transport
 
 #endif  // COMPONENTS_STREAM_TRANSPORT_PUBLIC_TRANSPORT_SESSION_REGISTRY_H_

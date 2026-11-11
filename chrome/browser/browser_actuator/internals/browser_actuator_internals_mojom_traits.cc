@@ -12,10 +12,10 @@
 
 namespace mojo {
 
-using browser_actuator::transport::DownstreamDeliveryStatus;
-using browser_actuator::transport::SessionEventSnapshot;
-using browser_actuator::transport::SessionSnapshot;
 using browser_actuator_internals::mojom::MessageDirection;
+using stream_transport::DownstreamDeliveryStatus;
+using stream_transport::SessionEventSnapshot;
+using stream_transport::SessionSnapshot;
 
 // static
 browser_actuator_internals::mojom::DownstreamDeliveryStatus

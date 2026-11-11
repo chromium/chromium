@@ -22,7 +22,7 @@
 #include "components/stream_transport/public/transport_handler.h"
 #include "components/stream_transport/public/transport_handler_factory.h"
 
-namespace browser_actuator::transport {
+namespace stream_transport {
 
 class TransportSession;
 
@@ -48,7 +48,7 @@ class ProbeTransportHandler : public TransportHandler {
   using SendProbeReplyCallback =
       base::RepeatingCallback<base::expected<void, SendUpstreamMessageError>(
           std::string_view session_id,
-          const TransportProbe& probe,
+          const browser_actuator::TransportProbe& probe,
           std::optional<int64_t> responding_to_sequence_number)>;
 
   // `session` may be null; if non-null, it must outlive this
@@ -68,7 +68,8 @@ class ProbeTransportHandler : public TransportHandler {
                  std::string_view serialized_payload) override;
 
  private:
-  void HandleProbeRequest(const TransportProbe::ProbeRequest& request);
+  void HandleProbeRequest(
+      const browser_actuator::TransportProbe::ProbeRequest& request);
   void OnDelayedProbeTimerFired(
       std::string probe_id,
       int32_t response_index,
@@ -127,6 +128,6 @@ class ProbeTransportHandlerFactory : public TransportHandlerFactory {
       GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
-}  // namespace browser_actuator::transport
+}  // namespace stream_transport
 
 #endif  // COMPONENTS_STREAM_TRANSPORT_INTERNAL_PROBE_TRANSPORT_HANDLER_H_

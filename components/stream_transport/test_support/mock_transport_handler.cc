@@ -7,7 +7,7 @@
 #include <string_view>
 #include <utility>
 
-namespace browser_actuator::transport {
+namespace stream_transport {
 
 MockTransportHandler::MockTransportHandler(TransportSession* session)
     : TransportHandler(session) {}
@@ -29,4 +29,4 @@ void CallbackTransportHandler::OnMessage(PayloadType payload_type,
   }
 }
 
-}  // namespace browser_actuator::transport
+}  // namespace stream_transport

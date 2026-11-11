@@ -59,10 +59,10 @@
 namespace glic {
 namespace {
 
-using browser_actuator::transport::FactoryId;
-using browser_actuator::transport::PayloadType;
-using browser_actuator::transport::SendUpstreamMessageError;
-using browser_actuator::transport::TransportSession;
+using stream_transport::FactoryId;
+using stream_transport::PayloadType;
+using stream_transport::SendUpstreamMessageError;
+using stream_transport::TransportSession;
 
 class MockTransportSession : public TransportSession {
  public:
@@ -980,7 +980,7 @@ class GlicExperimentalTriggeringTransportRegistrationTest
 
   // Creates a profile latched to `provider` and returns the factories
   // registered for experimental triggering payloads on its transport channel.
-  std::vector<browser_actuator::transport::TransportHandlerFactory*>
+  std::vector<stream_transport::TransportHandlerFactory*>
   GetRegisteredFactories(GlicProvider provider) {
     ScopedGlicProviderOverride provider_override(provider);
     TestingProfile::TestingFactories testing_factories;
@@ -998,9 +998,8 @@ class GlicExperimentalTriggeringTransportRegistrationTest
     TestingProfile* profile = profile_manager_.CreateTestingProfile(
         "profile", std::move(testing_factories));
     EXPECT_TRUE(GlicKeyedService::Get(profile));
-    browser_actuator::transport::TransportService* transport_service =
-        browser_actuator::transport::TransportServiceFactory::GetForProfile(
-            profile);
+    stream_transport::TransportService* transport_service =
+        stream_transport::TransportServiceFactory::GetForProfile(profile);
     if (!transport_service || !transport_service->GetChannel()) {
       ADD_FAILURE() << "No BrowserActuator transport channel";
       return {};
@@ -1030,9 +1029,8 @@ TEST_F(GlicExperimentalTriggeringTransportRegistrationTest,
 // Pins `ExpectedTypeUrl` to the generated proto; this layer may include it.
 TEST(GlicExperimentalTriggeringTypeUrlTest, MatchesProtoTypeName) {
   EXPECT_EQ(
-      browser_actuator::transport::ExpectedTypeUrl(
-          PayloadType::kExperimentalTriggering),
-      base::StrCat({browser_actuator::transport::kTypeUrlPrefix,
+      stream_transport::ExpectedTypeUrl(PayloadType::kExperimentalTriggering),
+      base::StrCat({stream_transport::kTypeUrlPrefix,
                     components_sharing_message::GlicExperimentalTriggering()
                         .GetTypeName()}));
 }

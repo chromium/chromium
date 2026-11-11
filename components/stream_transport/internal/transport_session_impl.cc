@@ -29,13 +29,14 @@
 #include "components/stream_transport/public/transport_handler_factory_registry.h"
 #include "components/stream_transport/public/transport_session_registry.h"
 
-namespace browser_actuator::transport {
+namespace stream_transport {
 namespace {
 
 // `Any::Is<T>()` is unavailable for LITE_RUNTIME protos, so `type_url` is
 // compared by hand against `ExpectedTypeUrl(payload_type)`.
-bool HasExpectedTypeUrl(const ActuatorDownstreamTypedPayload& typed_payload,
-                        PayloadType payload_type) {
+bool HasExpectedTypeUrl(
+    const browser_actuator::ActuatorDownstreamTypedPayload& typed_payload,
+    PayloadType payload_type) {
   return typed_payload.proto_payload().type_url() ==
          ExpectedTypeUrl(payload_type);
 }
@@ -45,19 +46,22 @@ bool HasExpectedTypeUrl(const ActuatorDownstreamTypedPayload& typed_payload,
 // deserialization normally belongs to `TransportHandler` implementations,
 // `TransportSessionImpl` intentionally peeks at `ControlCommand` prior to
 // sequencing so that a missing earlier sequence number cannot stall teardown.
-bool HasTerminatingControlCommand(const ActuatorDownstreamMessage& message) {
+bool HasTerminatingControlCommand(
+    const browser_actuator::ActuatorDownstreamMessage& message) {
   for (const auto& typed_payload : message.typed_payloads()) {
     if (FromDownstreamProtoPayloadType(typed_payload.payload_type()) !=
             PayloadType::kControl ||
         !HasExpectedTypeUrl(typed_payload, PayloadType::kControl)) {
       continue;
     }
-    ControlCommand command;
+    browser_actuator::ControlCommand command;
     if (!command.ParseFromString(typed_payload.proto_payload().value())) {
       continue;
     }
-    if (command.command_case() == ControlCommand::kCloseSession ||
-        command.command_case() == ControlCommand::kCloseChannel) {
+    if (command.command_case() ==
+            browser_actuator::ControlCommand::kCloseSession ||
+        command.command_case() ==
+            browser_actuator::ControlCommand::kCloseChannel) {
       return true;
     }
   }
@@ -119,14 +123,14 @@ void TransportSessionImpl::OnMessage(PayloadType payload_type,
     // `BrowserActuatorMessageHandler` unpacks bundled FCM messages and calls
     // `OnMessage()` one payload at a time, so report each call to observers as
     // a single-payload envelope.
-    ActuatorDownstreamMessage envelope;
+    browser_actuator::ActuatorDownstreamMessage envelope;
     envelope.set_session_id(session_id_);
     envelope.set_sequence_number(0);
-    ActuatorDownstreamTypedPayload* typed_payload =
+    browser_actuator::ActuatorDownstreamTypedPayload* typed_payload =
         envelope.add_typed_payloads();
     if (payload_type == PayloadType::kUnspecified) {
       typed_payload->set_payload_type(
-          ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_UNSPECIFIED);
+          browser_actuator::ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_UNSPECIFIED);
     } else {
       typed_payload->set_payload_type(
           ToDownstreamProtoPayloadType(payload_type));
@@ -158,7 +162,7 @@ void TransportSessionImpl::Close() {
     return;
   }
   const std::string session_id = session_id_;
-  ControlCommand command;
+  browser_actuator::ControlCommand command;
   command.mutable_close_session();
   channel_->SendUpstreamMessage(session_id, PayloadType::kControl, command,
                                 /*responding_to_sequence_number=*/std::nullopt);
@@ -297,7 +301,7 @@ void TransportSessionImpl::OnRegistryDestroyed() {
 
 base::expected<void, DownstreamMessageSequencer::Error>
 TransportSessionImpl::ProcessDownstreamMessage(
-    ActuatorDownstreamMessage message) {
+    browser_actuator::ActuatorDownstreamMessage message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // TODO(crbug.com/563605505): Consider whether server heartbeat messages
   // should count as session activity.
@@ -308,7 +312,7 @@ TransportSessionImpl::ProcessDownstreamMessage(
       message.sequence_number() > sequencer_.last_seen_sequence_number() &&
       HasTerminatingControlCommand(message);
 
-  std::vector<ActuatorDownstreamMessage> deliverable;
+  std::vector<browser_actuator::ActuatorDownstreamMessage> deliverable;
   if (is_new_terminating_command) {
     consecutive_invalid_sequence_numbers_ = 0;
     consecutive_buffer_full_errors_ = 0;
@@ -317,13 +321,14 @@ TransportSessionImpl::ProcessDownstreamMessage(
     deliverable = sequencer_.Flush();
     auto it = std::upper_bound(
         deliverable.begin(), deliverable.end(), message.sequence_number(),
-        [](int64_t seq, const ActuatorDownstreamMessage& msg) {
+        [](int64_t seq,
+           const browser_actuator::ActuatorDownstreamMessage& msg) {
           return seq < msg.sequence_number();
         });
     deliverable.insert(it, std::move(message));
     sequencer_.AdvanceLastSeenTo(deliverable.back().sequence_number());
   } else {
-    base::expected<std::vector<ActuatorDownstreamMessage>,
+    base::expected<std::vector<browser_actuator::ActuatorDownstreamMessage>,
                    DownstreamMessageSequencer::Error>
         ready_messages = sequencer_.AddMessage(std::move(message));
     if (!ready_messages.has_value()) {
@@ -372,7 +377,7 @@ TransportSessionImpl::ProcessDownstreamMessage(
 }
 
 void TransportSessionImpl::ProcessTypedPayload(
-    const ActuatorDownstreamTypedPayload& typed_payload) {
+    const browser_actuator::ActuatorDownstreamTypedPayload& typed_payload) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::optional<PayloadType> payload_type =
@@ -407,4 +412,4 @@ void TransportSessionImpl::ProcessTypedPayload(
   }
 }
 
-}  // namespace browser_actuator::transport
+}  // namespace stream_transport

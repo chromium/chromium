@@ -10,7 +10,7 @@
 #include "components/stream_transport/internal/stream_framer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace browser_actuator::transport {
+namespace stream_transport {
 
 class MockStreamFramer : public StreamFramer {
  public:
@@ -20,6 +20,6 @@ class MockStreamFramer : public StreamFramer {
   MOCK_METHOD(FeedResult, Feed, (std::string_view), (override));
 };
 
-}  // namespace browser_actuator::transport
+}  // namespace stream_transport
 
 #endif  // COMPONENTS_STREAM_TRANSPORT_INTERNAL_TEST_SUPPORT_MOCK_STREAM_FRAMER_H_

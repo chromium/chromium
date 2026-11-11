@@ -17,7 +17,7 @@
 #include "base/types/expected.h"
 #include "components/sharing_message/proto/actuator_downstream_message.pb.h"
 
-namespace browser_actuator::transport {
+namespace stream_transport {
 
 // static
 bool DownstreamMessageSequencer::IsValidSequenceNumber(
@@ -34,9 +34,10 @@ DownstreamMessageSequencer::~DownstreamMessageSequencer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-base::expected<std::vector<ActuatorDownstreamMessage>,
+base::expected<std::vector<browser_actuator::ActuatorDownstreamMessage>,
                DownstreamMessageSequencer::Error>
-DownstreamMessageSequencer::AddMessage(ActuatorDownstreamMessage message) {
+DownstreamMessageSequencer::AddMessage(
+    browser_actuator::ActuatorDownstreamMessage message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const int64_t sequence_number = message.sequence_number();
   if (!IsValidSequenceNumber(sequence_number)) {
@@ -45,7 +46,7 @@ DownstreamMessageSequencer::AddMessage(ActuatorDownstreamMessage message) {
   if (sequence_number <= last_seen_sequence_number_) {
     DVLOG(1) << "Session '" << message.session_id()
              << "': dropping duplicate sequence number " << sequence_number;
-    return std::vector<ActuatorDownstreamMessage>();
+    return std::vector<browser_actuator::ActuatorDownstreamMessage>();
   }
 
   // Sequence 0 is optional, so sequence 1 may skip 0 when no messages have
@@ -55,7 +56,7 @@ DownstreamMessageSequencer::AddMessage(ActuatorDownstreamMessage message) {
     if (buffered_messages_.contains(sequence_number)) {
       DVLOG(1) << "Session '" << message.session_id()
                << "': dropping duplicate sequence number " << sequence_number;
-      return std::vector<ActuatorDownstreamMessage>();
+      return std::vector<browser_actuator::ActuatorDownstreamMessage>();
     }
     if (buffered_messages_.size() >= max_buffered_messages_) {
       // TODO(crbug.com/571122418): Record UMA for reorder buffer overflow.
@@ -66,10 +67,10 @@ DownstreamMessageSequencer::AddMessage(ActuatorDownstreamMessage message) {
       return base::unexpected(Error::kBufferFull);
     }
     buffered_messages_.emplace(sequence_number, std::move(message));
-    return std::vector<ActuatorDownstreamMessage>();
+    return std::vector<browser_actuator::ActuatorDownstreamMessage>();
   }
 
-  std::vector<ActuatorDownstreamMessage> deliverable;
+  std::vector<browser_actuator::ActuatorDownstreamMessage> deliverable;
   deliverable.reserve(1 + buffered_messages_.size());
   deliverable.push_back(std::move(message));
   last_seen_sequence_number_ = sequence_number;
@@ -90,7 +91,8 @@ DownstreamMessageSequencer::AddMessage(ActuatorDownstreamMessage message) {
   return deliverable;
 }
 
-std::vector<ActuatorDownstreamMessage> DownstreamMessageSequencer::Flush() {
+std::vector<browser_actuator::ActuatorDownstreamMessage>
+DownstreamMessageSequencer::Flush() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (buffered_messages_.empty()) {
     return {};
@@ -105,7 +107,7 @@ std::vector<ActuatorDownstreamMessage> DownstreamMessageSequencer::Flush() {
            << " buffered messages through sequence number " << last_flushed
            << " (skipping " << skipped_count << " missing)";
 
-  std::vector<ActuatorDownstreamMessage> flushed;
+  std::vector<browser_actuator::ActuatorDownstreamMessage> flushed;
   flushed.reserve(buffered_messages_.size());
   for (auto& [sequence_number, buffered_message] : buffered_messages_) {
     flushed.push_back(std::move(buffered_message));
@@ -123,4 +125,4 @@ void DownstreamMessageSequencer::AdvanceLastSeenTo(int64_t sequence_number) {
       std::max(last_seen_sequence_number_, sequence_number);
 }
 
-}  // namespace browser_actuator::transport
+}  // namespace stream_transport

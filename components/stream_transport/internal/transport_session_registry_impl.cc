@@ -16,7 +16,7 @@
 #include "components/stream_transport/internal/metrics_utils.h"
 #include "components/stream_transport/internal/transport_session_impl.h"
 
-namespace browser_actuator::transport {
+namespace stream_transport {
 namespace {
 
 size_t GetMaxConcurrentSessionsLimit() {
@@ -174,4 +174,4 @@ TransportSessionRegistryImpl::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-}  // namespace browser_actuator::transport
+}  // namespace stream_transport

@@ -50,7 +50,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-namespace browser_actuator::transport {
+namespace stream_transport {
 namespace {
 
 constexpr char kTestSendSessionMessageEndpoint[] =
@@ -155,8 +155,8 @@ class FakeTransportHandlerFactory : public TransportHandlerFactory {
 };
 
 std::string SerializedDownstream(std::string_view session_id, int64_t seq) {
-  WatchSessionsResponse response;
-  ActuatorDownstreamMessage* message =
+  browser_actuator::WatchSessionsResponse response;
+  browser_actuator::ActuatorDownstreamMessage* message =
       response.mutable_actuator_downstream_message();
   message->set_session_id(session_id);
   message->set_sequence_number(seq);
@@ -196,8 +196,8 @@ class TransportChannelImplTestBase : public testing::Test {
             std::move(client)));
   }
 
-  WatchSessionsRequest ResumeBody() {
-    WatchSessionsRequest request;
+  browser_actuator::WatchSessionsRequest ResumeBody() {
+    browser_actuator::WatchSessionsRequest request;
     EXPECT_TRUE(request.ParseFromString(
         channel_->BuildWatchSessionsRequestBodyForTesting()));
     return request;
@@ -241,26 +241,32 @@ TEST_F(TransportChannelImplTest, RecordsPerSessionResumePositions) {
   fake_client_->Dispatch(SerializedDownstream("s1", 2));
   fake_client_->Dispatch(SerializedDownstream("s2", 1));
 
-  const WatchSessionsRequest body = ResumeBody();
+  const browser_actuator::WatchSessionsRequest body = ResumeBody();
   EXPECT_FALSE(body.request_id().empty());
   EXPECT_THAT(
       body.sessions(),
       UnorderedElementsAre(
-          AllOf(Property(&WatchSessionsRequest::Session::session_id, "s1"),
-                Property(
-                    &WatchSessionsRequest::Session::last_seen_sequence_number,
-                    2)),
-          AllOf(Property(&WatchSessionsRequest::Session::session_id, "s2"),
-                Property(
-                    &WatchSessionsRequest::Session::last_seen_sequence_number,
-                    1))));
+          AllOf(
+              Property(
+                  &browser_actuator::WatchSessionsRequest::Session::session_id,
+                  "s1"),
+              Property(&browser_actuator::WatchSessionsRequest::Session::
+                           last_seen_sequence_number,
+                       2)),
+          AllOf(
+              Property(
+                  &browser_actuator::WatchSessionsRequest::Session::session_id,
+                  "s2"),
+              Property(&browser_actuator::WatchSessionsRequest::Session::
+                           last_seen_sequence_number,
+                       1))));
 }
 
 TEST_F(TransportChannelImplTest, AdvanceIsMonotonicAndIgnoresNonPositive) {
   GetSessionRegistryImpl()->CreateSession("s1",
                                           InitIngressSource::kUnspecified);
   fake_client_->Dispatch(SerializedDownstream("s1", 0));  // Initial FCM wake.
-  WatchSessionsRequest body = ResumeBody();
+  browser_actuator::WatchSessionsRequest body = ResumeBody();
   ASSERT_EQ(body.sessions_size(), 1);
   EXPECT_EQ(body.sessions(0).session_id(), "s1");
   EXPECT_EQ(body.sessions(0).last_seen_sequence_number(), 0);
@@ -291,7 +297,7 @@ TEST_F(TransportChannelImplTest,
   GetSessionRegistryImpl()->CreateSession("s1",
                                           InitIngressSource::kUnspecified);
 
-  const WatchSessionsRequest body = ResumeBody();
+  const browser_actuator::WatchSessionsRequest body = ResumeBody();
   ASSERT_EQ(body.sessions_size(), 1);
   EXPECT_EQ(body.sessions(0).session_id(), "s1");
   EXPECT_EQ(body.sessions(0).last_seen_sequence_number(), 0);
@@ -332,7 +338,7 @@ TEST_F(TransportChannelImplTest,
 }
 
 struct TestPayload {
-  ActuatorDownstreamPayloadType type;
+  browser_actuator::ActuatorDownstreamPayloadType type;
   std::string value;
   std::string type_url;
 };
@@ -341,8 +347,8 @@ std::string SerializedDownstreamMessage(
     std::string_view session_id,
     int64_t seq,
     const std::vector<TestPayload>& payloads) {
-  WatchSessionsResponse response;
-  ActuatorDownstreamMessage* message =
+  browser_actuator::WatchSessionsResponse response;
+  browser_actuator::ActuatorDownstreamMessage* message =
       response.mutable_actuator_downstream_message();
   message->set_session_id(std::string(session_id));
   message->set_sequence_number(seq);
@@ -365,7 +371,7 @@ std::string SerializedDownstreamMessage(
 }
 
 TEST_F(TransportChannelImplTest, RoutesPayloadTypeToHandler) {
-  ControlCommand command;
+  browser_actuator::ControlCommand command;
 
   bool message_handled = false;
   FakeTransportHandlerFactory factory(
@@ -382,7 +388,7 @@ TEST_F(TransportChannelImplTest, RoutesPayloadTypeToHandler) {
                                           InitIngressSource::kUnspecified);
   fake_client_->Dispatch(SerializedDownstreamMessage(
       "s1", 1,
-      {{ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND,
+      {{browser_actuator::ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND,
         command.SerializeAsString()}}));
 
   EXPECT_TRUE(message_handled);
@@ -408,7 +414,8 @@ TEST_F(TransportChannelImplTest, RoutesExperimentalTriggeringToHandler) {
                                           InitIngressSource::kUnspecified);
   fake_client_->Dispatch(SerializedDownstreamMessage(
       "s1", 1,
-      {{ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_EXPERIMENTAL_TRIGGERING,
+      {{browser_actuator::
+            ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_EXPERIMENTAL_TRIGGERING,
         "triggering-bytes",
         std::string(ExpectedTypeUrl(PayloadType::kExperimentalTriggering))}}));
 
@@ -422,7 +429,7 @@ TEST_F(TransportChannelImplTest, SessionDestructionMidLoop) {
           channel_->GetSessionRegistry());
   registry->CreateSession("s1", InitIngressSource::kUnspecified);
 
-  ControlCommand command;
+  browser_actuator::ControlCommand command;
 
   bool first_message_handled = false;
   FakeTransportHandlerFactory factory(
@@ -440,9 +447,9 @@ TEST_F(TransportChannelImplTest, SessionDestructionMidLoop) {
 
   fake_client_->Dispatch(SerializedDownstreamMessage(
       "s1", 1,
-      {{ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND,
+      {{browser_actuator::ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND,
         command.SerializeAsString()},
-       {ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND,
+       {browser_actuator::ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND,
         command.SerializeAsString()}}));
 
   EXPECT_TRUE(first_message_handled);
@@ -464,12 +471,12 @@ TEST_F(TransportChannelImplTest, ControlCommandCloseSessionDestroysSession) {
   ASSERT_NE(registry->CreateSession("s1", InitIngressSource::kUnspecified),
             nullptr);
 
-  ControlCommand command;
+  browser_actuator::ControlCommand command;
   command.mutable_close_session();
 
   fake_client_->Dispatch(SerializedDownstreamMessage(
       "s1", 1,
-      {{ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND,
+      {{browser_actuator::ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND,
         command.SerializeAsString()}}));
 
   // The session was created, processed the CloseSession command, and was
@@ -482,12 +489,12 @@ TEST_F(TransportChannelImplTest, ControlCommandCloseChannelDisconnectsStream) {
                                           InitIngressSource::kUnspecified);
   EXPECT_FALSE(fake_client_->disconnected_called());
 
-  ControlCommand command;
+  browser_actuator::ControlCommand command;
   command.mutable_close_channel();
 
   fake_client_->Dispatch(SerializedDownstreamMessage(
       "s1", 1,
-      {{ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND,
+      {{browser_actuator::ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND,
         command.SerializeAsString()}}));
 
   // The CloseChannel command triggers Disconnect on the stream client.
@@ -502,7 +509,8 @@ TEST_F(TransportChannelImplTest, PassesSequenceNumberToSession) {
 
   fake_client_->Dispatch(SerializedDownstreamMessage(
       "s1", 1,
-      {{ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_UNSPECIFIED, "payload_data"}}));
+      {{browser_actuator::ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_UNSPECIFIED,
+        "payload_data"}}));
 
   TransportSessionImpl* session = registry->GetSessionImpl("s1");
   ASSERT_NE(session, nullptr);
@@ -527,8 +535,8 @@ TEST_F(TransportChannelImplTest, UnknownPayloadTypesAreIgnored) {
           }));
   channel_->GetHandlerFactoryRegistry()->RegisterFactory(&factory);
 
-  ActuatorDownstreamPayloadType unknown_type =
-      static_cast<ActuatorDownstreamPayloadType>(999);
+  browser_actuator::ActuatorDownstreamPayloadType unknown_type =
+      static_cast<browser_actuator::ActuatorDownstreamPayloadType>(999);
 
   GetSessionRegistryImpl()->CreateSession("s1",
                                           InitIngressSource::kUnspecified);
@@ -588,7 +596,7 @@ TEST_F(TransportChannelImplTest, SendUpstreamMessage) {
                                           InitIngressSource::kUnspecified);
   fake_client_->Dispatch(SerializedDownstream("s1", 1));
 
-  ControlCommand command;
+  browser_actuator::ControlCommand command;
   command.mutable_close_channel();
   channel_->SendUpstreamMessage("s1", PayloadType::kControl, command, 1);
 
@@ -607,11 +615,12 @@ TEST_F(TransportChannelImplTest, SendUpstreamMessage) {
   EXPECT_EQ(*content_type, "application/x-protobuf");
 
   std::string upload_body = network::GetUploadData(pending->request);
-  SendSessionMessageRequest request;
+  browser_actuator::SendSessionMessageRequest request;
   ASSERT_TRUE(request.ParseFromString(upload_body));
   EXPECT_FALSE(request.request_id().empty());
 
-  const ActuatorUpstreamMessage& upstream = request.actuator_upstream_message();
+  const browser_actuator::ActuatorUpstreamMessage& upstream =
+      request.actuator_upstream_message();
   EXPECT_EQ(upstream.session_id(), "s1");
   EXPECT_EQ(upstream.client_sequence_number(), 1);
   EXPECT_TRUE(upstream.has_responding_to_sequence_number());
@@ -619,7 +628,7 @@ TEST_F(TransportChannelImplTest, SendUpstreamMessage) {
 
   ASSERT_EQ(upstream.typed_payloads_size(), 1);
   EXPECT_EQ(upstream.typed_payloads(0).payload_type(),
-            ACTUATOR_UPSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
+            browser_actuator::ACTUATOR_UPSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
   EXPECT_EQ(upstream.typed_payloads(0).proto_payload().value(),
             command.SerializeAsString());
   EXPECT_EQ(upstream.typed_payloads(0).proto_payload().type_url(),
@@ -640,7 +649,7 @@ TEST_F(TransportChannelImplTest,
                                           InitIngressSource::kUnspecified);
   fake_client_->Dispatch(SerializedDownstream("s1", 1));
 
-  ControlCommand command;
+  browser_actuator::ControlCommand command;
   command.mutable_close_channel();
   channel_->SendUpstreamMessage("s1", PayloadType::kControl, command,
                                 std::nullopt);
@@ -651,10 +660,11 @@ TEST_F(TransportChannelImplTest,
       test_url_loader_factory_.GetPendingRequest(0);
   ASSERT_NE(pending, nullptr);
 
-  SendSessionMessageRequest request;
+  browser_actuator::SendSessionMessageRequest request;
   ASSERT_TRUE(
       request.ParseFromString(network::GetUploadData(pending->request)));
-  const ActuatorUpstreamMessage& upstream = request.actuator_upstream_message();
+  const browser_actuator::ActuatorUpstreamMessage& upstream =
+      request.actuator_upstream_message();
   EXPECT_EQ(upstream.session_id(), "s1");
   EXPECT_EQ(upstream.client_sequence_number(), 1);
   EXPECT_FALSE(upstream.has_responding_to_sequence_number());
@@ -670,9 +680,9 @@ TEST_F(TransportChannelImplTest, SendMultipleUpstreamMessagesConcurrently) {
   fake_client_->Dispatch(SerializedDownstream("s1", 1));
   fake_client_->Dispatch(SerializedDownstream("s1", 5));
 
-  ControlCommand command1;
+  browser_actuator::ControlCommand command1;
   command1.mutable_close_channel();
-  ControlCommand command2;
+  browser_actuator::ControlCommand command2;
   command2.mutable_close_session();
 
   channel_->SendUpstreamMessage("s1", PayloadType::kControl, command1, 1);
@@ -689,20 +699,20 @@ TEST_F(TransportChannelImplTest, SendMultipleUpstreamMessagesConcurrently) {
   ASSERT_NE(pending1, nullptr);
   ASSERT_NE(pending2, nullptr);
 
-  SendSessionMessageRequest request1;
+  browser_actuator::SendSessionMessageRequest request1;
   ASSERT_TRUE(
       request1.ParseFromString(network::GetUploadData(pending1->request)));
-  const ActuatorUpstreamMessage& upstream1 =
+  const browser_actuator::ActuatorUpstreamMessage& upstream1 =
       request1.actuator_upstream_message();
   EXPECT_EQ(upstream1.client_sequence_number(), 1);
   EXPECT_EQ(upstream1.responding_to_sequence_number(), 1);
   EXPECT_EQ(upstream1.typed_payloads(0).proto_payload().value(),
             command1.SerializeAsString());
 
-  SendSessionMessageRequest request2;
+  browser_actuator::SendSessionMessageRequest request2;
   ASSERT_TRUE(
       request2.ParseFromString(network::GetUploadData(pending2->request)));
-  const ActuatorUpstreamMessage& upstream2 =
+  const browser_actuator::ActuatorUpstreamMessage& upstream2 =
       request2.actuator_upstream_message();
   EXPECT_EQ(upstream2.client_sequence_number(), 2);
   EXPECT_EQ(upstream2.responding_to_sequence_number(), 5);
@@ -729,9 +739,9 @@ TEST_F(TransportChannelImplTest, SendUpstreamMessagesAcrossMultipleSessions) {
   fake_client_->Dispatch(SerializedDownstream("s2", 1));
   fake_client_->Dispatch(SerializedDownstream("s2", 2));
 
-  ControlCommand command_s1;
+  browser_actuator::ControlCommand command_s1;
   command_s1.mutable_close_channel();
-  ControlCommand command_s2;
+  browser_actuator::ControlCommand command_s2;
   command_s2.mutable_close_session();
 
   channel_->SendUpstreamMessage("s1", PayloadType::kControl, command_s1, 1);
@@ -748,19 +758,19 @@ TEST_F(TransportChannelImplTest, SendUpstreamMessagesAcrossMultipleSessions) {
   ASSERT_NE(pending1, nullptr);
   ASSERT_NE(pending2, nullptr);
 
-  SendSessionMessageRequest request1;
+  browser_actuator::SendSessionMessageRequest request1;
   ASSERT_TRUE(
       request1.ParseFromString(network::GetUploadData(pending1->request)));
-  const ActuatorUpstreamMessage& upstream1 =
+  const browser_actuator::ActuatorUpstreamMessage& upstream1 =
       request1.actuator_upstream_message();
   EXPECT_EQ(upstream1.session_id(), "s1");
   EXPECT_EQ(upstream1.client_sequence_number(), 1);
   EXPECT_EQ(upstream1.responding_to_sequence_number(), 1);
 
-  SendSessionMessageRequest request2;
+  browser_actuator::SendSessionMessageRequest request2;
   ASSERT_TRUE(
       request2.ParseFromString(network::GetUploadData(pending2->request)));
-  const ActuatorUpstreamMessage& upstream2 =
+  const browser_actuator::ActuatorUpstreamMessage& upstream2 =
       request2.actuator_upstream_message();
   EXPECT_EQ(upstream2.session_id(), "s2");
   EXPECT_EQ(upstream2.client_sequence_number(), 1);
@@ -778,18 +788,18 @@ TEST_F(TransportChannelImplTest,
        StartSessionDownstreamTriggersStartSessionAckUpstream) {
   GetSessionRegistryImpl()->CreateSession("session_start_test",
                                           InitIngressSource::kUnspecified);
-  WatchSessionsResponse response;
-  ActuatorDownstreamMessage* downstream =
+  browser_actuator::WatchSessionsResponse response;
+  browser_actuator::ActuatorDownstreamMessage* downstream =
       response.mutable_actuator_downstream_message();
   downstream->set_session_id("session_start_test");
   downstream->set_sequence_number(1);
 
-  ControlCommand command;
+  browser_actuator::ControlCommand command;
   command.mutable_start_session();
 
   auto* typed_payload = downstream->add_typed_payloads();
   typed_payload->set_payload_type(
-      ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
+      browser_actuator::ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
   typed_payload->mutable_proto_payload()->set_type_url(
       std::string(ExpectedTypeUrl(PayloadType::kControl)));
   typed_payload->mutable_proto_payload()->set_value(
@@ -805,19 +815,20 @@ TEST_F(TransportChannelImplTest,
   ASSERT_NE(pending, nullptr);
 
   std::string upload_body = network::GetUploadData(pending->request);
-  SendSessionMessageRequest request;
+  browser_actuator::SendSessionMessageRequest request;
   ASSERT_TRUE(request.ParseFromString(upload_body));
 
-  const ActuatorUpstreamMessage& upstream = request.actuator_upstream_message();
+  const browser_actuator::ActuatorUpstreamMessage& upstream =
+      request.actuator_upstream_message();
   EXPECT_EQ(upstream.session_id(), "session_start_test");
   EXPECT_EQ(upstream.client_sequence_number(), 1);
   EXPECT_EQ(upstream.responding_to_sequence_number(), 1);
 
   ASSERT_EQ(upstream.typed_payloads_size(), 1);
   EXPECT_EQ(upstream.typed_payloads(0).payload_type(),
-            ACTUATOR_UPSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
+            browser_actuator::ACTUATOR_UPSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
 
-  ControlCommand command_ack;
+  browser_actuator::ControlCommand command_ack;
   command_ack.mutable_start_session_ack();
   EXPECT_EQ(upstream.typed_payloads(0).proto_payload().value(),
             command_ack.SerializeAsString());
@@ -829,18 +840,18 @@ TEST_F(TransportChannelImplTest,
        StartSessionWakeWithZeroSequenceNumberSendsSingleStartSessionAck) {
   GetSessionRegistryImpl()->CreateSession("session_wake_test",
                                           InitIngressSource::kUnspecified);
-  WatchSessionsResponse response;
-  ActuatorDownstreamMessage* downstream =
+  browser_actuator::WatchSessionsResponse response;
+  browser_actuator::ActuatorDownstreamMessage* downstream =
       response.mutable_actuator_downstream_message();
   downstream->set_session_id("session_wake_test");
   downstream->set_sequence_number(0);
 
-  ControlCommand command;
+  browser_actuator::ControlCommand command;
   command.mutable_start_session();
 
   auto* typed_payload = downstream->add_typed_payloads();
   typed_payload->set_payload_type(
-      ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
+      browser_actuator::ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
   typed_payload->mutable_proto_payload()->set_type_url(
       std::string(ExpectedTypeUrl(PayloadType::kControl)));
   typed_payload->mutable_proto_payload()->set_value(
@@ -858,16 +869,17 @@ TEST_F(TransportChannelImplTest,
       test_url_loader_factory_.GetPendingRequest(0);
   ASSERT_NE(pending, nullptr);
 
-  SendSessionMessageRequest request;
+  browser_actuator::SendSessionMessageRequest request;
   ASSERT_TRUE(
       request.ParseFromString(network::GetUploadData(pending->request)));
-  const ActuatorUpstreamMessage& upstream = request.actuator_upstream_message();
+  const browser_actuator::ActuatorUpstreamMessage& upstream =
+      request.actuator_upstream_message();
   EXPECT_EQ(upstream.session_id(), "session_wake_test");
   EXPECT_EQ(upstream.client_sequence_number(), 1);
   EXPECT_TRUE(upstream.has_responding_to_sequence_number());
   EXPECT_EQ(upstream.responding_to_sequence_number(), 0);
 
-  const WatchSessionsRequest watch_body = ResumeBody();
+  const browser_actuator::WatchSessionsRequest watch_body = ResumeBody();
   ASSERT_EQ(watch_body.sessions_size(), 1);
   EXPECT_EQ(watch_body.sessions(0).session_id(), "session_wake_test");
   EXPECT_EQ(watch_body.sessions(0).last_seen_sequence_number(), 0);
@@ -882,7 +894,7 @@ TEST_F(TransportChannelImplTestWithMockTime, SendUpstreamMessageHTTPError) {
   GetSessionRegistryImpl()->CreateSession("s1",
                                           InitIngressSource::kUnspecified);
   fake_client_->Dispatch(SerializedDownstream("s1", 1));
-  ControlCommand command;
+  browser_actuator::ControlCommand command;
   command.mutable_close_channel();
   channel_->SendUpstreamMessage("s1", PayloadType::kControl, command, 1);
 
@@ -902,24 +914,28 @@ TEST_F(TransportChannelImplTestWithMockTime, SendUpstreamMessageHTTPError) {
 
 class RecordingMessageObserver : public TransportMessageObserver {
  public:
-  void OnDownstreamMessage(std::string_view session_id,
-                           const ActuatorDownstreamMessage& message,
-                           DownstreamDeliveryStatus status) override {
+  void OnDownstreamMessage(
+      std::string_view session_id,
+      const browser_actuator::ActuatorDownstreamMessage& message,
+      DownstreamDeliveryStatus status) override {
     received_downstream.emplace_back(std::string(session_id), message);
     received_downstream_status.push_back(status);
   }
 
-  void OnUpstreamMessage(std::string_view session_id,
-                         const ActuatorUpstreamMessage& message,
-                         int http_response_code) override {
+  void OnUpstreamMessage(
+      std::string_view session_id,
+      const browser_actuator::ActuatorUpstreamMessage& message,
+      int http_response_code) override {
     received.emplace_back(std::string(session_id), message);
     received_http_response_codes.push_back(http_response_code);
   }
 
-  std::vector<std::pair<std::string, ActuatorDownstreamMessage>>
+  std::vector<
+      std::pair<std::string, browser_actuator::ActuatorDownstreamMessage>>
       received_downstream;
   std::vector<DownstreamDeliveryStatus> received_downstream_status;
-  std::vector<std::pair<std::string, ActuatorUpstreamMessage>> received;
+  std::vector<std::pair<std::string, browser_actuator::ActuatorUpstreamMessage>>
+      received;
   std::vector<int> received_http_response_codes;
 };
 
@@ -933,7 +949,7 @@ TEST_F(TransportChannelImplTest,
   GetSessionRegistryImpl()->CreateSession("s1",
                                           InitIngressSource::kUnspecified);
 
-  WatchSessionsResponse response;
+  browser_actuator::WatchSessionsResponse response;
   ASSERT_TRUE(response.ParseFromString(SerializedDownstream("s1", 1)));
   fake_client_->Dispatch(SerializedDownstream("s1", 1));
 
@@ -963,19 +979,20 @@ TEST_F(TransportChannelImplTest,
                                           InitIngressSource::kUnspecified);
   fake_client_->Dispatch(SerializedDownstream("s1", 1));
 
-  ControlCommand command;
+  browser_actuator::ControlCommand command;
   command.mutable_close_channel();
   channel_->SendUpstreamMessage("s1", PayloadType::kControl, command, 7);
 
   ASSERT_EQ(observer.received.size(), 1u);
   EXPECT_EQ(observer.received[0].first, "s1");
-  const ActuatorUpstreamMessage& observed = observer.received[0].second;
+  const browser_actuator::ActuatorUpstreamMessage& observed =
+      observer.received[0].second;
   EXPECT_EQ(observed.session_id(), "s1");
   EXPECT_EQ(observed.client_sequence_number(), 1);
   EXPECT_EQ(observed.responding_to_sequence_number(), 7);
   ASSERT_EQ(observed.typed_payloads_size(), 1);
   EXPECT_EQ(observed.typed_payloads(0).payload_type(),
-            ACTUATOR_UPSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
+            browser_actuator::ACTUATOR_UPSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
   EXPECT_EQ(observed.typed_payloads(0).proto_payload().value(),
             command.SerializeAsString());
 
@@ -985,7 +1002,7 @@ TEST_F(TransportChannelImplTest,
       test_url_loader_factory_.GetPendingRequest(0);
   ASSERT_NE(pending, nullptr);
 
-  SendSessionMessageRequest request;
+  browser_actuator::SendSessionMessageRequest request;
   ASSERT_TRUE(
       request.ParseFromString(network::GetUploadData(pending->request)));
   EXPECT_EQ(request.actuator_upstream_message().SerializeAsString(),
@@ -1008,7 +1025,7 @@ TEST_F(TransportChannelImplTest, AddAndRemoveMessageObserver) {
                                           InitIngressSource::kUnspecified);
   fake_client_->Dispatch(SerializedDownstream("s1", 1));
 
-  ControlCommand command;
+  browser_actuator::ControlCommand command;
   command.mutable_close_channel();
   channel_->SendUpstreamMessage("s1", PayloadType::kControl, command, 1);
 
@@ -1031,7 +1048,7 @@ TEST_F(TransportChannelImplTest,
       observation(&observer);
   observation.Observe(channel_.get());
 
-  ControlCommand command;
+  browser_actuator::ControlCommand command;
   command.mutable_close_channel();
   channel_->SendUpstreamMessage("unknown_session", PayloadType::kControl,
                                 command, std::nullopt);
@@ -1066,7 +1083,7 @@ TEST_F(TransportChannelImplTest,
   EXPECT_EQ(fake_client_->connect_count(), 1);
   EXPECT_EQ(fake_client_->disconnect_count(), 0);
   {
-    WatchSessionsRequest body = ResumeBody();
+    browser_actuator::WatchSessionsRequest body = ResumeBody();
     ASSERT_EQ(body.sessions_size(), 1);
     EXPECT_EQ(body.sessions(0).last_seen_sequence_number(), 1);
   }
@@ -1083,7 +1100,7 @@ TEST_F(TransportChannelImplTest,
   EXPECT_EQ(fake_client_->disconnect_count(), 1);
   EXPECT_EQ(fake_client_->connect_count(), 2);
   {
-    WatchSessionsRequest body = ResumeBody();
+    browser_actuator::WatchSessionsRequest body = ResumeBody();
     ASSERT_EQ(body.sessions_size(), 1);
     EXPECT_EQ(body.sessions(0).last_seen_sequence_number(), 1);
   }
@@ -1097,7 +1114,7 @@ TEST_F(TransportChannelImplTest,
   // (3..18) drain contiguously with kSuccess.
   fake_client_->Dispatch(SerializedDownstream("s1", 2));
   {
-    WatchSessionsRequest body = ResumeBody();
+    browser_actuator::WatchSessionsRequest body = ResumeBody();
     ASSERT_EQ(body.sessions_size(), 1);
     EXPECT_EQ(body.sessions(0).last_seen_sequence_number(),
               static_cast<int64_t>(
@@ -1179,7 +1196,7 @@ TEST_F(TransportChannelImplTest,
   EXPECT_EQ(observer.received[0].first, "s1");
   ASSERT_EQ(observer.received[0].second.typed_payloads_size(), 1);
 
-  ControlCommand command;
+  browser_actuator::ControlCommand command;
   ASSERT_TRUE(command.ParseFromString(
       observer.received[0].second.typed_payloads(0).proto_payload().value()));
   EXPECT_TRUE(command.has_close_session());
@@ -1227,15 +1244,16 @@ TEST_F(TransportChannelImplTest,
   EXPECT_EQ(registry->GetSession("s1"), nullptr);
   ASSERT_EQ(observer.received.size(), 1u);
   EXPECT_EQ(observer.received[0].first, "s1");
-  const ActuatorUpstreamMessage& upstream = observer.received[0].second;
+  const browser_actuator::ActuatorUpstreamMessage& upstream =
+      observer.received[0].second;
   EXPECT_EQ(upstream.session_id(), "s1");
   EXPECT_EQ(upstream.client_sequence_number(), 1);
   EXPECT_FALSE(upstream.has_responding_to_sequence_number());
   ASSERT_EQ(upstream.typed_payloads_size(), 1);
   EXPECT_EQ(upstream.typed_payloads(0).payload_type(),
-            ACTUATOR_UPSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
+            browser_actuator::ACTUATOR_UPSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
 
-  ControlCommand command;
+  browser_actuator::ControlCommand command;
   ASSERT_TRUE(command.ParseFromString(
       upstream.typed_payloads(0).proto_payload().value()));
   EXPECT_TRUE(command.has_close_session());
@@ -1271,7 +1289,8 @@ TEST_F(TransportChannelImplTest,
                                           InitIngressSource::kUnspecified);
   fake_client_->Dispatch(SerializedDownstreamMessage(
       "s1", 1,
-      {{ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_EXPERIMENTAL_TRIGGERING,
+      {{browser_actuator::
+            ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_EXPERIMENTAL_TRIGGERING,
         "triggering-bytes",
         std::string(ExpectedTypeUrl(PayloadType::kExperimentalTriggering))}}));
 
@@ -1306,25 +1325,26 @@ TEST_F(TransportChannelImplTest,
             DownstreamConnectionState::kDisconnected);
 
   ASSERT_EQ(observer.received.size(), 1u);
-  const ActuatorUpstreamMessage& upstream = observer.received[0].second;
+  const browser_actuator::ActuatorUpstreamMessage& upstream =
+      observer.received[0].second;
   EXPECT_EQ(upstream.session_id(), "s1");
   EXPECT_EQ(upstream.client_sequence_number(), 1);
   EXPECT_FALSE(upstream.has_responding_to_sequence_number());
   ASSERT_EQ(upstream.typed_payloads_size(), 1);
   EXPECT_EQ(upstream.typed_payloads(0).payload_type(),
-            ACTUATOR_UPSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
-  ControlCommand command;
+            browser_actuator::ACTUATOR_UPSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
+  browser_actuator::ControlCommand command;
   ASSERT_TRUE(command.ParseFromString(
       upstream.typed_payloads(0).proto_payload().value()));
   EXPECT_TRUE(command.has_close_session());
 
   // A subsequent downstream CloseSession (or late message) for "s1" must not
   // resurrect the closed session or reconnect the stream.
-  ControlCommand downstream_close;
+  browser_actuator::ControlCommand downstream_close;
   downstream_close.mutable_close_session();
   fake_client_->Dispatch(SerializedDownstreamMessage(
       "s1", 2,
-      {{ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND,
+      {{browser_actuator::ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND,
         downstream_close.SerializeAsString()}}));
   fake_client_->Dispatch(SerializedDownstream("s1", 3));
 
@@ -1351,7 +1371,7 @@ TEST_F(TransportChannelImplTest,
   // Because "s2" is still active, the stream reconnects watching only "s2".
   EXPECT_EQ(fake_client_->disconnect_count(), 2);
   EXPECT_EQ(fake_client_->connect_count(), 3);
-  WatchSessionsRequest body = ResumeBody();
+  browser_actuator::WatchSessionsRequest body = ResumeBody();
   ASSERT_EQ(body.sessions_size(), 1);
   EXPECT_EQ(body.sessions(0).session_id(), "s2");
 
@@ -1367,4 +1387,4 @@ TEST_F(TransportChannelImplTest,
 }
 
 }  // namespace
-}  // namespace browser_actuator::transport
+}  // namespace stream_transport

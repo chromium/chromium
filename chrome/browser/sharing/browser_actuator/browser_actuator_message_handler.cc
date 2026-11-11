@@ -24,10 +24,9 @@
 
 namespace {
 
-bool IsStartSessionCommand(
-    browser_actuator::transport::PayloadType payload_type,
-    std::string_view serialized_payload) {
-  if (payload_type != browser_actuator::transport::PayloadType::kControl) {
+bool IsStartSessionCommand(stream_transport::PayloadType payload_type,
+                           std::string_view serialized_payload) {
+  if (payload_type != stream_transport::PayloadType::kControl) {
     return false;
   }
   browser_actuator::ControlCommand command;
@@ -38,10 +37,9 @@ bool IsStartSessionCommand(
 }  // namespace
 
 BrowserActuatorMessageHandler::BrowserActuatorMessageHandler(
-    browser_actuator::transport::TransportService* transport_service)
-    : transport_service_(
-          raw_ref<browser_actuator::transport::TransportService>::from_ptr(
-              transport_service)) {}
+    stream_transport::TransportService* transport_service)
+    : transport_service_(raw_ref<stream_transport::TransportService>::from_ptr(
+          transport_service)) {}
 
 BrowserActuatorMessageHandler::~BrowserActuatorMessageHandler() = default;
 
@@ -62,14 +60,14 @@ void BrowserActuatorMessageHandler::OnMessage(
         break;
       }
       for (const auto& typed_payload : bundled_message.typed_payloads()) {
-        std::optional<browser_actuator::transport::PayloadType> payload_type =
-            browser_actuator::transport::FromDownstreamProtoPayloadType(
+        std::optional<stream_transport::PayloadType> payload_type =
+            stream_transport::FromDownstreamProtoPayloadType(
                 typed_payload.payload_type());
         if (!payload_type.has_value()) {
           continue;
         }
-        if (*payload_type == browser_actuator::transport::PayloadType::
-                                 kExperimentalTriggering &&
+        if (*payload_type ==
+                stream_transport::PayloadType::kExperimentalTriggering &&
             !base::FeatureList::IsEnabled(
                 browser_actuator::
                     kEnableBrowserActuatorForGlicExperimentalTriggering)) {
@@ -83,11 +81,10 @@ void BrowserActuatorMessageHandler::OnMessage(
         // duplicate StartSession wake-up arrives for an already-active session,
         // CreateSession() returns nullptr and we break to avoid re-dispatching
         // bundled initial payloads a second time.
-        browser_actuator::transport::TransportSession* session =
+        stream_transport::TransportSession* session =
             IsStartSessionCommand(*payload_type, payload_bytes)
                 ? transport_service_->CreateSession(
-                      session_id,
-                      browser_actuator::transport::InitIngressSource::kFcmPush)
+                      session_id, stream_transport::InitIngressSource::kFcmPush)
                 : transport_service_->GetSession(session_id);
         if (!session) {
           break;

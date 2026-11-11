@@ -40,7 +40,7 @@ namespace browser_actuator {
 class ActuatorUpstreamMessage;
 }  // namespace browser_actuator
 
-namespace browser_actuator::transport {
+namespace stream_transport {
 
 // Encapsulates the network logic to send upstream actuator messages to
 // OnePlatform via standard HTTPS POST requests (EndpointFetcher).
@@ -64,7 +64,7 @@ class UpstreamMessageClient {
   // request is rejected before network dispatch (e.g. untrustworthy endpoint or
   // pending-request cap reached), `callback` is invoked asynchronously with
   // `(false, -1)` and the assembled envelope is still returned.
-  virtual ActuatorUpstreamMessage SendUpstreamMessage(
+  virtual browser_actuator::ActuatorUpstreamMessage SendUpstreamMessage(
       std::string_view session_id,
       int64_t client_sequence_number,
       std::optional<int64_t> responding_to_sequence_number,
@@ -99,6 +99,6 @@ class UpstreamMessageClient {
   base::WeakPtrFactory<UpstreamMessageClient> weak_ptr_factory_{this};
 };
 
-}  // namespace browser_actuator::transport
+}  // namespace stream_transport
 
 #endif  // COMPONENTS_STREAM_TRANSPORT_INTERNAL_UPSTREAM_MESSAGE_CLIENT_UPSTREAM_MESSAGE_CLIENT_H_

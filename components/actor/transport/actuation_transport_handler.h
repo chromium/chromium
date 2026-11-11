@@ -17,27 +17,25 @@
 #include "components/actor/transport/proto/actuation_transport.pb.h"
 #include "components/stream_transport/public/transport_handler.h"
 
-namespace browser_actuator::transport {
+namespace stream_transport {
 class TransportSession;
-}  // namespace browser_actuator::transport
+}  // namespace stream_transport
 
 namespace actor {
 
 // Routes actuation commands from a transport session to an ActuationDelegate
 // and sends the results upstream.
-class ActuationTransportHandler
-    : public browser_actuator::transport::TransportHandler {
+class ActuationTransportHandler : public stream_transport::TransportHandler {
  public:
-  ActuationTransportHandler(
-      browser_actuator::transport::TransportSession* session,
-      std::unique_ptr<ActuationDelegate> delegate);
+  ActuationTransportHandler(stream_transport::TransportSession* session,
+                            std::unique_ptr<ActuationDelegate> delegate);
   ActuationTransportHandler(const ActuationTransportHandler&) = delete;
   ActuationTransportHandler& operator=(const ActuationTransportHandler&) =
       delete;
   ~ActuationTransportHandler() override;
 
-  // browser_actuator::transport::TransportHandler:
-  void OnMessage(browser_actuator::transport::PayloadType payload_type,
+  // stream_transport::TransportHandler:
+  void OnMessage(stream_transport::PayloadType payload_type,
                  std::string_view serialized_payload) override;
 
  private:

@@ -19,7 +19,7 @@ namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
 
-namespace browser_actuator::transport {
+namespace stream_transport {
 
 class SessionStreamRecorderFactory;
 class TransportChannelImpl;
@@ -96,6 +96,6 @@ class TransportServiceImpl : public TransportService,
       identity_manager_observation_{this};
 };
 
-}  // namespace browser_actuator::transport
+}  // namespace stream_transport
 
 #endif  // COMPONENTS_STREAM_TRANSPORT_INTERNAL_TRANSPORT_SERVICE_IMPL_H_

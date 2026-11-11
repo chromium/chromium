@@ -51,8 +51,7 @@ GlicKeyedServiceFactory::GlicKeyedServiceFactory()
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(GoogleGroupsManagerFactory::GetInstance());
   DependsOn(actor::ActorKeyedServiceFactory::GetInstance());
-  DependsOn(
-      browser_actuator::transport::TransportServiceFactory::GetInstance());
+  DependsOn(stream_transport::TransportServiceFactory::GetInstance());
   DependsOn(ContextualCueingServiceFactory::GetInstance());
   DependsOn(subscription_eligibility::SubscriptionEligibilityServiceFactory::
                 GetInstance());

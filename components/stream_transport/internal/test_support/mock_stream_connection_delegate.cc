@@ -4,9 +4,9 @@
 
 #include "components/stream_transport/internal/test_support/mock_stream_connection_delegate.h"
 
-namespace browser_actuator::transport {
+namespace stream_transport {
 
 MockStreamConnectionDelegate::MockStreamConnectionDelegate() = default;
 MockStreamConnectionDelegate::~MockStreamConnectionDelegate() = default;
 
-}  // namespace browser_actuator::transport
+}  // namespace stream_transport

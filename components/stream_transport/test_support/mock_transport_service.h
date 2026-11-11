@@ -10,7 +10,7 @@
 #include "components/stream_transport/public/transport_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace browser_actuator::transport {
+namespace stream_transport {
 
 class MockTransportService : public TransportService {
  public:
@@ -32,6 +32,6 @@ class MockTransportService : public TransportService {
               (override));
 };
 
-}  // namespace browser_actuator::transport
+}  // namespace stream_transport
 
 #endif  // COMPONENTS_STREAM_TRANSPORT_TEST_SUPPORT_MOCK_TRANSPORT_SERVICE_H_

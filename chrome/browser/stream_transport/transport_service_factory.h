@@ -20,7 +20,7 @@ class BrowserContext;
 
 class Profile;
 
-namespace browser_actuator::transport {
+namespace stream_transport {
 
 class TransportService;
 
@@ -58,6 +58,6 @@ class TransportServiceFactory : public ProfileKeyedServiceFactory {
       content::BrowserContext* context) const override;
 };
 
-}  // namespace browser_actuator::transport
+}  // namespace stream_transport
 
 #endif  // CHROME_BROWSER_STREAM_TRANSPORT_TRANSPORT_SERVICE_FACTORY_H_

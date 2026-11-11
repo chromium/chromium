@@ -9,7 +9,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
 
-namespace browser_actuator::transport {
+namespace stream_transport {
 
 // Features and params of the transport: kill switches and tuning knobs.
 // The endpoints are not here; the embedder passes them in through
@@ -46,6 +46,6 @@ BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kBrowserActuatorUpstreamTimeout);
 
 // Maximum number of concurrent in-flight upstream HTTP POST requests.
 BASE_DECLARE_FEATURE_PARAM(int, kMaxPendingUpstreamRequests);
-}  // namespace browser_actuator::transport
+}  // namespace stream_transport
 
 #endif  // COMPONENTS_STREAM_TRANSPORT_INTERNAL_FEATURES_H_

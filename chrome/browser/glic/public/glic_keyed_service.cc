@@ -270,9 +270,8 @@ GlicKeyedService::GlicKeyedService(
       base::FeatureList::IsEnabled(
           browser_actuator::
               kEnableBrowserActuatorForGlicExperimentalTriggering)) {
-    browser_actuator::transport::TransportService* transport_service =
-        browser_actuator::transport::TransportServiceFactory::GetForProfile(
-            profile_);
+    stream_transport::TransportService* transport_service =
+        stream_transport::TransportServiceFactory::GetForProfile(profile_);
     if (transport_service && transport_service->GetChannel()) {
       experimental_triggering_transport_handler_factory_ =
           std::make_unique<GlicExperimentalTriggeringTransportHandlerFactory>(
@@ -326,9 +325,8 @@ void GlicKeyedService::Shutdown() {
   cold_warming_scheduler_.Cancel();
   gemini_web_warming_scheduler_.Cancel();
   if (experimental_triggering_transport_handler_factory_) {
-    browser_actuator::transport::TransportService* transport_service =
-        browser_actuator::transport::TransportServiceFactory::GetForProfile(
-            profile_);
+    stream_transport::TransportService* transport_service =
+        stream_transport::TransportServiceFactory::GetForProfile(profile_);
     if (transport_service && transport_service->GetChannel()) {
       transport_service->GetChannel()
           ->GetHandlerFactoryRegistry()

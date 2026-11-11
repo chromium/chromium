@@ -50,7 +50,7 @@ using GlicExperimentalTriggering =
 GlicExperimentalTriggeringTransportHandler::
     GlicExperimentalTriggeringTransportHandler(
         Profile* profile,
-        browser_actuator::transport::TransportSession* session,
+        stream_transport::TransportSession* session,
         base::WeakPtr<GlicExperimentalTriggeringCoordinator> coordinator)
     : TransportHandler(session),
       profile_(profile),
@@ -63,7 +63,7 @@ GlicExperimentalTriggeringTransportHandler::
     ~GlicExperimentalTriggeringTransportHandler() = default;
 
 void GlicExperimentalTriggeringTransportHandler::OnMessage(
-    browser_actuator::transport::PayloadType payload_type,
+    stream_transport::PayloadType payload_type,
     std::string_view serialized_payload) {
   GlicExperimentalTriggering triggering;
   if (!triggering.ParseFromString(serialized_payload)) {
@@ -142,8 +142,7 @@ void GlicExperimentalTriggeringTransportHandler::SendResponse(
   // reference, so passing the const reference is safe during this synchronous
   // call.
   auto send_result = SendUpstreamMessage(
-      browser_actuator::transport::PayloadType::kExperimentalTriggering,
-      triggering);
+      stream_transport::PayloadType::kExperimentalTriggering, triggering);
   if (!send_result.has_value()) {
     DLOG(ERROR) << "Failed to send experimental triggering response: "
                 << static_cast<int>(send_result.error());
@@ -172,20 +171,20 @@ GlicExperimentalTriggeringTransportHandlerFactory::
 GlicExperimentalTriggeringTransportHandlerFactory::
     ~GlicExperimentalTriggeringTransportHandlerFactory() = default;
 
-browser_actuator::transport::FactoryId
+stream_transport::FactoryId
 GlicExperimentalTriggeringTransportHandlerFactory::GetFactoryId() const {
-  return browser_actuator::transport::FactoryId::kExperimentalTriggering;
+  return stream_transport::FactoryId::kExperimentalTriggering;
 }
 
-std::vector<browser_actuator::transport::PayloadType>
+std::vector<stream_transport::PayloadType>
 GlicExperimentalTriggeringTransportHandlerFactory::GetSupportedPayloadTypes()
     const {
-  return {browser_actuator::transport::PayloadType::kExperimentalTriggering};
+  return {stream_transport::PayloadType::kExperimentalTriggering};
 }
 
-std::unique_ptr<browser_actuator::transport::TransportHandler>
+std::unique_ptr<stream_transport::TransportHandler>
 GlicExperimentalTriggeringTransportHandlerFactory::OnNewSession(
-    browser_actuator::transport::TransportSession* session) {
+    stream_transport::TransportSession* session) {
   return std::make_unique<GlicExperimentalTriggeringTransportHandler>(
       profile_, session, coordinator_ ? coordinator_->GetWeakPtr() : nullptr);
 }

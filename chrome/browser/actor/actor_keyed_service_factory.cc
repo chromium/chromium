@@ -34,8 +34,7 @@ ActorKeyedServiceFactory::ActorKeyedServiceFactory(
                                  ProfileSelections::BuildForRegularProfile()) {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(origin_gating::OriginGatingServiceFactory::GetInstance());
-  DependsOn(
-      browser_actuator::transport::TransportServiceFactory::GetInstance());
+  DependsOn(stream_transport::TransportServiceFactory::GetInstance());
 }
 
 ActorKeyedServiceFactory::~ActorKeyedServiceFactory() = default;

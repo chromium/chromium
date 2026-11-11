@@ -13,7 +13,7 @@
 #include "components/stream_transport/public/transport_channel.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace browser_actuator::transport {
+namespace stream_transport {
 
 class MockTransportChannel : public TransportChannel {
  public:
@@ -39,6 +39,6 @@ class MockTransportChannel : public TransportChannel {
   base::WeakPtrFactory<MockTransportChannel> weak_ptr_factory_{this};
 };
 
-}  // namespace browser_actuator::transport
+}  // namespace stream_transport
 
 #endif  // COMPONENTS_STREAM_TRANSPORT_TEST_SUPPORT_MOCK_TRANSPORT_CHANNEL_H_

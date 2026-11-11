@@ -31,7 +31,7 @@
 #include "components/stream_transport/internal/transport_session_registry_impl.h"
 #include "components/stream_transport/internal/upstream_message_client/upstream_message_client.h"
 
-namespace browser_actuator::transport {
+namespace stream_transport {
 
 TransportChannelImpl::TransportChannelImpl(
     std::unique_ptr<UpstreamMessageClient> upstream_message_client,
@@ -44,7 +44,7 @@ TransportChannelImpl::TransportChannelImpl(
       base::BindRepeating(
           [](base::WeakPtr<TransportChannelImpl> self,
              std::string_view session_id,
-             const ActuatorDownstreamMessage& message) {
+             const browser_actuator::ActuatorDownstreamMessage& message) {
             if (self) {
               self->NotifyDownstreamMessage(session_id, message,
                                             DownstreamDeliveryStatus::kSuccess);
@@ -70,7 +70,8 @@ TransportChannelImpl::TransportChannelImpl(
           weak_ptr_factory_.GetWeakPtr()),
       base::BindRepeating(
           [](base::WeakPtr<TransportChannelImpl> self,
-             std::string_view session_id, const TransportProbe& probe,
+             std::string_view session_id,
+             const browser_actuator::TransportProbe& probe,
              std::optional<int64_t> responding_to_sequence_number)
               -> base::expected<void, SendUpstreamMessageError> {
             if (!self) {
@@ -188,7 +189,7 @@ void TransportChannelImpl::ReconnectStream() {
 void TransportChannelImpl::CloseAndDestroySession(std::string_view session_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const std::string owned_session_id(session_id);
-  ControlCommand command;
+  browser_actuator::ControlCommand command;
   command.mutable_close_session();
   SendUpstreamMessage(owned_session_id, PayloadType::kControl, command,
                       /*responding_to_sequence_number=*/std::nullopt);
@@ -199,13 +200,13 @@ void TransportChannelImpl::CloseAndDestroySession(std::string_view session_id) {
 // own resume position.
 void TransportChannelImpl::OnStreamMessage(const std::string& message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  WatchSessionsResponse response;
+  browser_actuator::WatchSessionsResponse response;
   if (!response.ParseFromString(message) ||
       !response.has_actuator_downstream_message()) {
     DLOG(WARNING) << "Failed to parse WatchSessionsResponse from stream";
     return;
   }
-  ActuatorDownstreamMessage* downstream =
+  browser_actuator::ActuatorDownstreamMessage* downstream =
       response.mutable_actuator_downstream_message();
   if (downstream->session_id().empty()) {
     DLOG(WARNING) << "Received ActuatorDownstreamMessage with empty session_id";
@@ -221,7 +222,7 @@ void TransportChannelImpl::OnStreamMessage(const std::string& message) {
   }
 
   const int64_t sequence_number = downstream->sequence_number();
-  std::optional<ActuatorDownstreamMessage> dropped_copy;
+  std::optional<browser_actuator::ActuatorDownstreamMessage> dropped_copy;
   if (!observers_.empty()) {
     dropped_copy = *downstream;
   }
@@ -311,7 +312,7 @@ void TransportChannelImpl::SendUpstreamMessage(
   };
   auto sync_state = base::MakeRefCounted<base::RefCountedData<SyncSendState>>();
 
-  ActuatorUpstreamMessage upstream =
+  browser_actuator::ActuatorUpstreamMessage upstream =
       upstream_message_client_->SendUpstreamMessage(
           session_id, client_sequence_number, validated_responding_to_seq,
           payload_type, message,
@@ -351,7 +352,7 @@ void TransportChannelImpl::SendUpstreamMessage(
 
 void TransportChannelImpl::NotifyDownstreamMessage(
     std::string_view session_id,
-    const ActuatorDownstreamMessage& message,
+    const browser_actuator::ActuatorDownstreamMessage& message,
     DownstreamDeliveryStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   observers_.Notify(&TransportMessageObserver::OnDownstreamMessage, session_id,
@@ -366,7 +367,7 @@ void TransportChannelImpl::NotifyUpstreamResponse(
   if (observers_.empty()) {
     return;
   }
-  ActuatorUpstreamMessage response_msg;
+  browser_actuator::ActuatorUpstreamMessage response_msg;
   response_msg.set_session_id(std::string(session_id));
   response_msg.set_client_sequence_number(client_sequence_number);
   observers_.Notify(&TransportMessageObserver::OnUpstreamMessage, session_id,
@@ -375,13 +376,14 @@ void TransportChannelImpl::NotifyUpstreamResponse(
 
 std::string TransportChannelImpl::BuildWatchSessionsRequestBody() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  WatchSessionsRequest request;
+  browser_actuator::WatchSessionsRequest request;
   // Fresh per attempt: each (re)connect is a distinct logical watch.
   request.set_request_id(base::Uuid::GenerateRandomV4().AsLowercaseString());
 
   for (TransportSessionImpl* session :
        session_registry_->GetAllSessionImpls()) {
-    WatchSessionsRequest::Session* data = request.add_sessions();
+    browser_actuator::WatchSessionsRequest::Session* data =
+        request.add_sessions();
     data->set_session_id(session->GetSessionId());
     if (session->last_seen_sequence_number() > 0) {
       data->set_last_seen_sequence_number(session->last_seen_sequence_number());
@@ -404,7 +406,7 @@ std::optional<int64_t> TransportChannelImpl::GetDispatchingSequenceNumber(
 base::expected<void, SendUpstreamMessageError>
 TransportChannelImpl::SendProbeReply(
     std::string_view session_id,
-    const TransportProbe& probe,
+    const browser_actuator::TransportProbe& probe,
     std::optional<int64_t> responding_to_sequence_number) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!session_registry_->GetSessionImpl(session_id)) {
@@ -415,4 +417,4 @@ TransportChannelImpl::SendProbeReply(
   return {};
 }
 
-}  // namespace browser_actuator::transport
+}  // namespace stream_transport

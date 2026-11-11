@@ -22,7 +22,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
-namespace browser_actuator::transport {
+namespace stream_transport {
 namespace {
 
 // Upper bound on `consecutive_failed_attempts_` and the `std::pow(2.0, ...)`
@@ -406,4 +406,4 @@ void ProtoStreamClient::SetConnected(bool connected) {
   }
 }
 
-}  // namespace browser_actuator::transport
+}  // namespace stream_transport

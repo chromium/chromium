@@ -18,7 +18,7 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "url/gurl.h"
 
-namespace browser_actuator::transport {
+namespace stream_transport {
 
 // Simulates a server-streaming protobuf endpoint (`StreamBody` framing) backed
 // by a `network::TestURLLoaderFactory`.
@@ -48,7 +48,7 @@ class FakeProtoStreamServer {
 
   // Encodes `message` into `StreamBody.message` (field 1, wire tag `0x0a`) and
   // writes the chunk to the active stream pipe.
-  void PushMessage(const ActuatorDownstreamMessage& message);
+  void PushMessage(const browser_actuator::ActuatorDownstreamMessage& message);
 
   // Encodes `noop_payload` into `StreamBody.noop` (field 15, wire tag `0x7a`)
   // and writes the chunk to the active stream pipe.
@@ -67,7 +67,7 @@ class FakeProtoStreamServer {
 
   int connection_count() const { return connection_count_; }
 
-  const WatchSessionsRequest& last_watch_request() const {
+  const browser_actuator::WatchSessionsRequest& last_watch_request() const {
     return last_watch_request_;
   }
 
@@ -83,12 +83,12 @@ class FakeProtoStreamServer {
 
   int connection_count_ = 0;
   network::ResourceRequest last_resource_request_;
-  WatchSessionsRequest last_watch_request_;
+  browser_actuator::WatchSessionsRequest last_watch_request_;
 
   mojo::Remote<network::mojom::URLLoaderClient> client_remote_;
   mojo::ScopedDataPipeProducerHandle producer_handle_;
 };
 
-}  // namespace browser_actuator::transport
+}  // namespace stream_transport
 
 #endif  // COMPONENTS_STREAM_TRANSPORT_INTERNAL_TEST_SUPPORT_FAKE_PROTO_STREAM_SERVER_H_

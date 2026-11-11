@@ -11,7 +11,7 @@
 #include "base/functional/bind.h"
 #include "components/stream_transport/internal/proto_stream_client/rust/stream_body_bridge.rs.h"
 
-namespace browser_actuator::transport {
+namespace stream_transport {
 
 struct RustStreamFramer::Impl {
   rust::Box<stream_bridge::StreamBodyParser> parser =
@@ -52,4 +52,4 @@ StreamFramer::FeedResult RustStreamFramer::Feed(std::string_view chunk) {
   return result;
 }
 
-}  // namespace browser_actuator::transport
+}  // namespace stream_transport

@@ -37,8 +37,7 @@ namespace {
 
 namespace proto = ::chrome::aix::autobrowse::proto;
 
-class FakeTransportSession
-    : public browser_actuator::transport::TransportSession {
+class FakeTransportSession : public stream_transport::TransportSession {
  public:
   explicit FakeTransportSession(std::string_view session_id)
       : session_id_(session_id) {}
@@ -46,8 +45,8 @@ class FakeTransportSession
 
   std::string_view GetSessionId() const override { return session_id_; }
 
-  base::expected<void, browser_actuator::transport::SendUpstreamMessageError>
-  SendUpstreamMessage(browser_actuator::transport::PayloadType payload_type,
+  base::expected<void, stream_transport::SendUpstreamMessageError>
+  SendUpstreamMessage(stream_transport::PayloadType payload_type,
                       const google::protobuf::MessageLite& message) override {
     sent_payload_types_.push_back(payload_type);
     proto::BrowserToServerPayload upstream;
@@ -56,13 +55,12 @@ class FakeTransportSession
     return {};
   }
 
-  void OnMessage(browser_actuator::transport::PayloadType payload_type,
+  void OnMessage(stream_transport::PayloadType payload_type,
                  std::string_view serialized_payload) override {}
 
   void Close() override {}
 
-  const std::vector<browser_actuator::transport::PayloadType>&
-  sent_payload_types() const {
+  const std::vector<stream_transport::PayloadType>& sent_payload_types() const {
     return sent_payload_types_;
   }
 
@@ -72,7 +70,7 @@ class FakeTransportSession
 
  private:
   std::string session_id_;
-  std::vector<browser_actuator::transport::PayloadType> sent_payload_types_;
+  std::vector<stream_transport::PayloadType> sent_payload_types_;
   std::vector<proto::BrowserToServerPayload> sent_messages_;
 };
 
@@ -110,17 +108,16 @@ class ChromeActuationTransportHandlerFactoryTest : public testing::Test {
 
 TEST_F(ChromeActuationTransportHandlerFactoryTest,
        ReportsActuationFactoryIdAndSupportedPayloadTypes) {
-  EXPECT_EQ(factory_->GetFactoryId(),
-            browser_actuator::transport::FactoryId::kActuation);
-  std::vector<browser_actuator::transport::PayloadType> expected_types = {
-      browser_actuator::transport::PayloadType::kActuation};
+  EXPECT_EQ(factory_->GetFactoryId(), stream_transport::FactoryId::kActuation);
+  std::vector<stream_transport::PayloadType> expected_types = {
+      stream_transport::PayloadType::kActuation};
   EXPECT_EQ(factory_->GetSupportedPayloadTypes(), expected_types);
 }
 
 TEST_F(ChromeActuationTransportHandlerFactoryTest,
        OnNewSessionCreatesHandlerThatRoutesStartTaskAndStopsOnDestruction) {
   FakeTransportSession session("session_factory_1");
-  std::unique_ptr<browser_actuator::transport::TransportHandler> handler =
+  std::unique_ptr<stream_transport::TransportHandler> handler =
       factory_->OnNewSession(&session);
   ASSERT_TRUE(handler);
 
@@ -129,12 +126,12 @@ TEST_F(ChromeActuationTransportHandlerFactoryTest,
   downstream.set_request_id("req_factory_start");
   downstream.mutable_start_task();
 
-  handler->OnMessage(browser_actuator::transport::PayloadType::kActuation,
+  handler->OnMessage(stream_transport::PayloadType::kActuation,
                      downstream.SerializeAsString());
 
   ASSERT_EQ(session.sent_messages().size(), 1u);
   EXPECT_EQ(session.sent_payload_types()[0],
-            browser_actuator::transport::PayloadType::kActuation);
+            stream_transport::PayloadType::kActuation);
   const auto& upstream = session.sent_messages()[0];
   EXPECT_EQ(upstream.task_id(), "server-task-1");
   EXPECT_EQ(upstream.request_id(), "req_factory_start");
@@ -157,41 +154,37 @@ TEST_F(ChromeActuationTransportHandlerFactoryTest,
 
 TEST_F(ChromeActuationTransportHandlerFactoryTest,
        RegisteredWithTransportServiceWhenEnabled) {
-  browser_actuator::transport::TransportService* transport_service =
-      browser_actuator::transport::TransportServiceFactory::GetForProfile(
-          profile_);
+  stream_transport::TransportService* transport_service =
+      stream_transport::TransportServiceFactory::GetForProfile(profile_);
   ASSERT_TRUE(transport_service);
   ASSERT_TRUE(transport_service->GetChannel());
-  browser_actuator::transport::TransportHandlerFactoryRegistry* registry =
+  stream_transport::TransportHandlerFactoryRegistry* registry =
       transport_service->GetChannel()->GetHandlerFactoryRegistry();
   ASSERT_TRUE(registry);
 
-  std::vector<browser_actuator::transport::TransportHandlerFactory*> factories =
-      registry->GetFactories(
-          browser_actuator::transport::PayloadType::kActuation);
+  std::vector<stream_transport::TransportHandlerFactory*> factories =
+      registry->GetFactories(stream_transport::PayloadType::kActuation);
   ASSERT_EQ(factories.size(), 1u);
   EXPECT_EQ(factories[0]->GetFactoryId(),
-            browser_actuator::transport::FactoryId::kActuation);
+            stream_transport::FactoryId::kActuation);
 
-  browser_actuator::transport::TransportSession* session =
+  stream_transport::TransportSession* session =
       transport_service->CreateSession(
           "enabled_session_1",
-          browser_actuator::transport::InitIngressSource::kUnspecified);
+          stream_transport::InitIngressSource::kUnspecified);
   ASSERT_TRUE(session);
   proto::ServerToBrowserPayload downstream;
   downstream.set_task_id("server-task-enabled");
   downstream.set_request_id("req_enabled_start");
   downstream.mutable_start_task();
-  session->OnMessage(browser_actuator::transport::PayloadType::kActuation,
+  session->OnMessage(stream_transport::PayloadType::kActuation,
                      downstream.SerializeAsString());
   EXPECT_EQ(actor_keyed_service_->GetActiveTasks().size(), 1u);
 
   actor_keyed_service_->Shutdown();
   EXPECT_TRUE(actor_keyed_service_->GetActiveTasks().empty());
-  EXPECT_TRUE(
-      registry
-          ->GetFactories(browser_actuator::transport::PayloadType::kActuation)
-          .empty());
+  EXPECT_TRUE(registry->GetFactories(stream_transport::PayloadType::kActuation)
+                  .empty());
 }
 
 }  // namespace

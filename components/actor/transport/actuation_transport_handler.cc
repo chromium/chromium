@@ -38,9 +38,9 @@ bool IsTaskStoppedResultCode(int32_t action_status_code) {
 }  // namespace
 
 ActuationTransportHandler::ActuationTransportHandler(
-    browser_actuator::transport::TransportSession* session,
+    stream_transport::TransportSession* session,
     std::unique_ptr<ActuationDelegate> delegate)
-    : browser_actuator::transport::TransportHandler(session),
+    : stream_transport::TransportHandler(session),
       delegate_(std::move(delegate)) {
   CHECK(session);
   CHECK(delegate_);
@@ -58,9 +58,9 @@ ActuationTransportHandler::~ActuationTransportHandler() {
 }
 
 void ActuationTransportHandler::OnMessage(
-    browser_actuator::transport::PayloadType payload_type,
+    stream_transport::PayloadType payload_type,
     std::string_view serialized_payload) {
-  if (payload_type != browser_actuator::transport::PayloadType::kActuation) {
+  if (payload_type != stream_transport::PayloadType::kActuation) {
     return;
   }
 
@@ -171,8 +171,8 @@ void ActuationTransportHandler::SendStartTaskResponse(
   upstream.set_task_id(external_task_id);
   upstream.set_request_id(request_id);
   *upstream.mutable_start_task() = std::move(response);
-  std::ignore = SendUpstreamMessage(
-      browser_actuator::transport::PayloadType::kActuation, upstream);
+  std::ignore =
+      SendUpstreamMessage(stream_transport::PayloadType::kActuation, upstream);
 }
 
 void ActuationTransportHandler::HandleStopTask(
@@ -215,8 +215,8 @@ void ActuationTransportHandler::OnStopTaskComplete(
   upstream.mutable_stop_task()->set_status(
       success ? proto::StopTaskResponse::STATUS_OK
               : proto::StopTaskResponse::STATUS_FAILED);
-  std::ignore = SendUpstreamMessage(
-      browser_actuator::transport::PayloadType::kActuation, upstream);
+  std::ignore =
+      SendUpstreamMessage(stream_transport::PayloadType::kActuation, upstream);
 }
 
 void ActuationTransportHandler::HandlePerformActions(
@@ -260,8 +260,8 @@ void ActuationTransportHandler::OnActComplete(
   upstream.set_task_id(task_id_str);
   upstream.set_request_id(request_id);
   *upstream.mutable_perform_actions() = std::move(response);
-  std::ignore = SendUpstreamMessage(
-      browser_actuator::transport::PayloadType::kActuation, upstream);
+  std::ignore =
+      SendUpstreamMessage(stream_transport::PayloadType::kActuation, upstream);
 }
 
 }  // namespace actor

@@ -18,7 +18,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace browser_actuator::transport {
+namespace stream_transport {
 namespace {
 
 class TestTransportSession : public TransportSession {
@@ -71,14 +71,16 @@ TEST(ControlTransportHandlerTest, OnMessageStartSessionSendsAck) {
   EXPECT_CALL(session, SendUpstreamMessage(PayloadType::kControl, testing::_))
       .WillOnce([&](PayloadType type, const google::protobuf::MessageLite& msg)
                     -> base::expected<void, SendUpstreamMessageError> {
-        EXPECT_EQ(msg.GetTypeName(),
-                  ControlCommand::default_instance().GetTypeName());
-        const auto* cmd = static_cast<const ControlCommand*>(&msg);
+        EXPECT_EQ(
+            msg.GetTypeName(),
+            browser_actuator::ControlCommand::default_instance().GetTypeName());
+        const auto* cmd =
+            static_cast<const browser_actuator::ControlCommand*>(&msg);
         EXPECT_TRUE(cmd->has_start_session_ack());
         return {};
       });
 
-  ControlCommand command;
+  browser_actuator::ControlCommand command;
   command.mutable_start_session();
 
   handler.OnMessage(PayloadType::kControl, command.SerializeAsString());
@@ -95,7 +97,7 @@ TEST(ControlTransportHandlerTest, OnMessageCloseChannel) {
       base::BindLambdaForTesting(
           [&](std::string_view) { close_session_called = true; }));
 
-  ControlCommand command;
+  browser_actuator::ControlCommand command;
   command.mutable_close_channel();
 
   handler.OnMessage(PayloadType::kControl, command.SerializeAsString());
@@ -116,7 +118,7 @@ TEST(ControlTransportHandlerTest, OnMessageCloseSession) {
         closed_session_id = session_id;
       }));
 
-  ControlCommand command;
+  browser_actuator::ControlCommand command;
   command.mutable_close_session();
 
   handler.OnMessage(PayloadType::kControl, command.SerializeAsString());
@@ -135,7 +137,7 @@ TEST(ControlTransportHandlerTest, OnMessageCloseSessionWithNullSessionNoops) {
       base::BindLambdaForTesting(
           [&](std::string_view) { close_session_called = true; }));
 
-  ControlCommand command;
+  browser_actuator::ControlCommand command;
   command.mutable_close_session();
 
   handler.OnMessage(PayloadType::kControl, command.SerializeAsString());
@@ -155,7 +157,8 @@ TEST(ControlTransportHandlerTest, OnMessageUnsetCommand) {
       base::BindLambdaForTesting(
           [&](std::string_view) { close_session_called = true; }));
 
-  ControlCommand command;  // empty, command_case() is COMMAND_NOT_SET
+  browser_actuator::ControlCommand
+      command;  // empty, command_case() is COMMAND_NOT_SET
 
   handler.OnMessage(PayloadType::kControl, command.SerializeAsString());
 
@@ -218,7 +221,7 @@ TEST(ControlTransportHandlerTest, FactoryOnNewSession) {
       factory.OnNewSession(&test_session);
   ASSERT_NE(handler, nullptr);
 
-  ControlCommand command;
+  browser_actuator::ControlCommand command;
   command.mutable_close_session();
 
   handler->OnMessage(PayloadType::kControl, command.SerializeAsString());
@@ -229,8 +232,9 @@ TEST(ControlTransportHandlerTest, FactoryOnNewSession) {
 // Pins `ExpectedTypeUrl` to the generated proto; this layer may include it.
 TEST(ControlTransportHandlerTest, ExpectedTypeUrlMatchesControlCommand) {
   EXPECT_EQ(ExpectedTypeUrl(PayloadType::kControl),
-            base::StrCat({kTypeUrlPrefix, ControlCommand().GetTypeName()}));
+            base::StrCat({kTypeUrlPrefix,
+                          browser_actuator::ControlCommand().GetTypeName()}));
 }
 
 }  // namespace
-}  // namespace browser_actuator::transport
+}  // namespace stream_transport

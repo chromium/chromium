@@ -15,7 +15,7 @@ namespace google::protobuf {
 class MessageLite;
 }  // namespace google::protobuf
 
-namespace browser_actuator::transport {
+namespace stream_transport {
 
 class TransportSession;
 
@@ -75,6 +75,6 @@ class TransportHandler {
   const raw_ptr<TransportSession> session_;
 };
 
-}  // namespace browser_actuator::transport
+}  // namespace stream_transport
 
 #endif  // COMPONENTS_STREAM_TRANSPORT_PUBLIC_TRANSPORT_HANDLER_H_

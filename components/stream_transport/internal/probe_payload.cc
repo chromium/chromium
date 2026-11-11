@@ -20,7 +20,7 @@
 #include "base/types/expected_macros.h"
 #include "components/stream_transport/internal/proto/transport_messages.pb.h"
 
-namespace browser_actuator::transport {
+namespace stream_transport {
 namespace {
 
 // 64-bit FNV-1a parameters from the IETF FNV specification
@@ -230,7 +230,7 @@ std::string BuildDeterministicPayload(std::string_view probe_id,
 }  // namespace
 
 base::expected<void, std::string> ValidateProbeRequest(
-    const TransportProbe::ProbeRequest& request) {
+    const browser_actuator::TransportProbe::ProbeRequest& request) {
   RETURN_IF_ERROR(ValidateMaxCount(request.probe_id().size(), kMaxProbeIdBytes,
                                    "ProbeRequest probe_id length"));
   RETURN_IF_ERROR(ValidateMaxCount(request.payload().size(),
@@ -243,7 +243,7 @@ base::expected<void, std::string> ValidateProbeRequest(
 
   int64_t total_response_bytes = 0;
   for (int i = 0; i < request.response_specs_size(); ++i) {
-    const TransportProbe::ProbeRequest::ResponseSpec& spec =
+    const browser_actuator::TransportProbe::ProbeRequest::ResponseSpec& spec =
         request.response_specs(i);
     RETURN_IF_ERROR(ValidateResponseSpecFieldBounds(i, "payload_size_bytes",
                                                     spec.payload_size_bytes(),
@@ -304,19 +304,19 @@ base::expected<std::string, std::string> GenerateProbeResponsePayload(
                                 prefix, payload_size_bytes));
 }
 
-base::expected<TransportProbe::ProbeRequest, std::string> BuildProbeRequest(
-    std::string_view probe_id,
-    int32_t request_payload_size_bytes,
-    base::span<const ProbeResponseSpecInput> response_specs) {
+base::expected<browser_actuator::TransportProbe::ProbeRequest, std::string>
+BuildProbeRequest(std::string_view probe_id,
+                  int32_t request_payload_size_bytes,
+                  base::span<const ProbeResponseSpecInput> response_specs) {
   ASSIGN_OR_RETURN(
       std::string payload,
       GenerateProbeRequestPayload(probe_id, request_payload_size_bytes));
 
-  TransportProbe::ProbeRequest request;
+  browser_actuator::TransportProbe::ProbeRequest request;
   request.set_probe_id(std::string(probe_id));
   request.set_payload(std::move(payload));
   for (const ProbeResponseSpecInput& spec_input : response_specs) {
-    TransportProbe::ProbeRequest::ResponseSpec* spec =
+    browser_actuator::TransportProbe::ProbeRequest::ResponseSpec* spec =
         request.add_response_specs();
     spec->set_payload_size_bytes(spec_input.payload_size_bytes);
     spec->set_delay_ms(spec_input.delay_ms);
@@ -339,8 +339,9 @@ bool VerifyProbeRequestPayload(std::string_view probe_id,
   return expected_payload.has_value() && *expected_payload == actual_payload;
 }
 
-bool VerifyProbeResponsePayload(const TransportProbe::ProbeRequest& request,
-                                const TransportProbe::ProbeResponse& response) {
+bool VerifyProbeResponsePayload(
+    const browser_actuator::TransportProbe::ProbeRequest& request,
+    const browser_actuator::TransportProbe::ProbeResponse& response) {
   if (response.probe_id() != request.probe_id()) {
     return false;
   }
@@ -365,4 +366,4 @@ bool VerifyProbeResponsePayload(const TransportProbe::ProbeRequest& request,
          *expected_payload == response.payload();
 }
 
-}  // namespace browser_actuator::transport
+}  // namespace stream_transport

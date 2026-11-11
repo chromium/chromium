@@ -25,7 +25,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace browser_actuator::transport {
+namespace stream_transport {
 namespace {
 
 class MockTransportSession : public TransportSession {
@@ -53,7 +53,7 @@ class MockTransportSession : public TransportSession {
 struct ProbeReplyCapture {
   struct CapturedProbeReply {
     std::string session_id;
-    TransportProbe probe;
+    browser_actuator::TransportProbe probe;
     std::optional<int64_t> responding_to_sequence_number;
   };
 
@@ -70,7 +70,8 @@ struct ProbeReplyCapture {
 
   ProbeTransportHandler::SendProbeReplyCallback MakeSendReplyCallback() {
     return base::BindLambdaForTesting(
-        [this](std::string_view session_id, const TransportProbe& probe,
+        [this](std::string_view session_id,
+               const browser_actuator::TransportProbe& probe,
                std::optional<int64_t> responding_to_sequence_number)
             -> base::expected<void, SendUpstreamMessageError> {
           replies.push_back(CapturedProbeReply{
@@ -112,12 +113,12 @@ TEST(ProbeTransportHandlerTest, FactoryOnNewSession) {
   const ProbeResponseSpecInput specs[] = {
       {.payload_size_bytes = 32, .delay_ms = 0},
   };
-  base::expected<TransportProbe::ProbeRequest, std::string> request =
-      BuildProbeRequest("factory-probe", /*request_payload_size_bytes=*/0,
-                        specs);
+  base::expected<browser_actuator::TransportProbe::ProbeRequest, std::string>
+      request = BuildProbeRequest("factory-probe",
+                                  /*request_payload_size_bytes=*/0, specs);
   ASSERT_TRUE(request.has_value());
 
-  TransportProbe probe;
+  browser_actuator::TransportProbe probe;
   *probe.mutable_request() = *std::move(request);
   handler->OnMessage(PayloadType::kProbe, probe.SerializeAsString());
 }
@@ -126,7 +127,8 @@ TEST(ProbeTransportHandlerTest, FactoryOnNewSession) {
 // LINT.IfChange(ExpectedTypeUrlMatchesTransportProbe)
 TEST(ProbeTransportHandlerTest, ExpectedTypeUrlMatchesTransportProbe) {
   EXPECT_EQ(ExpectedTypeUrl(PayloadType::kProbe),
-            base::StrCat({kTypeUrlPrefix, TransportProbe().GetTypeName()}));
+            base::StrCat({kTypeUrlPrefix,
+                          browser_actuator::TransportProbe().GetTypeName()}));
 }
 // LINT.ThenChange(//components/stream_transport/public/payload_type_mapping.h:ExpectedTypeUrl)
 
@@ -146,7 +148,7 @@ TEST(ProbeTransportHandlerTest, OnMessageUnsetPayloadIsIgnored) {
 
   EXPECT_CALL(session, SendUpstreamMessage(testing::_, testing::_)).Times(0);
 
-  TransportProbe empty_probe;
+  browser_actuator::TransportProbe empty_probe;
   handler.OnMessage(PayloadType::kProbe, empty_probe.SerializeAsString());
 }
 
@@ -156,7 +158,7 @@ TEST(ProbeTransportHandlerTest, OnMessageUnexpectedProbeResponseIsIgnored) {
 
   EXPECT_CALL(session, SendUpstreamMessage(testing::_, testing::_)).Times(0);
 
-  TransportProbe response_probe;
+  browser_actuator::TransportProbe response_probe;
   response_probe.mutable_response()->set_probe_id("p-1");
   handler.OnMessage(PayloadType::kProbe, response_probe.SerializeAsString());
 }
@@ -169,12 +171,12 @@ TEST(ProbeTransportHandlerTest, ProbeRequestWithNullSessionNoops) {
   const ProbeResponseSpecInput specs[] = {
       {.payload_size_bytes = 32, .delay_ms = 0},
   };
-  base::expected<TransportProbe::ProbeRequest, std::string> request =
-      BuildProbeRequest("null-session", /*request_payload_size_bytes=*/0,
-                        specs);
+  base::expected<browser_actuator::TransportProbe::ProbeRequest, std::string>
+      request = BuildProbeRequest("null-session",
+                                  /*request_payload_size_bytes=*/0, specs);
   ASSERT_TRUE(request.has_value());
 
-  TransportProbe probe;
+  browser_actuator::TransportProbe probe;
   *probe.mutable_request() = *std::move(request);
   handler.OnMessage(PayloadType::kProbe, probe.SerializeAsString());
   EXPECT_TRUE(capture.replies.empty());
@@ -186,12 +188,12 @@ TEST(ProbeTransportHandlerTest, ProbeRequestWithZeroSpecsActsAsOneWaySink) {
 
   EXPECT_CALL(session, SendUpstreamMessage(testing::_, testing::_)).Times(0);
 
-  base::expected<TransportProbe::ProbeRequest, std::string> request =
-      BuildProbeRequest("sink-1", /*request_payload_size_bytes=*/256,
-                        /*response_specs=*/{});
+  base::expected<browser_actuator::TransportProbe::ProbeRequest, std::string>
+      request = BuildProbeRequest("sink-1", /*request_payload_size_bytes=*/256,
+                                  /*response_specs=*/{});
   ASSERT_TRUE(request.has_value());
 
-  TransportProbe probe;
+  browser_actuator::TransportProbe probe;
   *probe.mutable_request() = *std::move(request);
   handler.OnMessage(PayloadType::kProbe, probe.SerializeAsString());
 }
@@ -206,25 +208,28 @@ TEST(ProbeTransportHandlerTest,
       {.payload_size_bytes = 16, .delay_ms = 0},
       {.payload_size_bytes = 64, .delay_ms = 0},
   };
-  base::expected<TransportProbe::ProbeRequest, std::string> request =
-      BuildProbeRequest("p-42", /*request_payload_size_bytes=*/64, specs);
+  base::expected<browser_actuator::TransportProbe::ProbeRequest, std::string>
+      request =
+          BuildProbeRequest("p-42", /*request_payload_size_bytes=*/64, specs);
   ASSERT_TRUE(request.has_value());
 
-  std::vector<TransportProbe::ProbeResponse> responses;
+  std::vector<browser_actuator::TransportProbe::ProbeResponse> responses;
   EXPECT_CALL(session, SendUpstreamMessage(PayloadType::kProbe, testing::_))
       .Times(3)
       .WillRepeatedly([&responses](PayloadType /*payload_type*/,
                                    const google::protobuf::MessageLite& msg)
                           -> base::expected<void, SendUpstreamMessageError> {
-        EXPECT_EQ(msg.GetTypeName(),
-                  TransportProbe::default_instance().GetTypeName());
-        const auto* probe_msg = static_cast<const TransportProbe*>(&msg);
+        EXPECT_EQ(
+            msg.GetTypeName(),
+            browser_actuator::TransportProbe::default_instance().GetTypeName());
+        const auto* probe_msg =
+            static_cast<const browser_actuator::TransportProbe*>(&msg);
         EXPECT_TRUE(probe_msg->has_response());
         responses.push_back(probe_msg->response());
         return {};
       });
 
-  TransportProbe probe;
+  browser_actuator::TransportProbe probe;
   *probe.mutable_request() = *request;
   handler.OnMessage(PayloadType::kProbe, probe.SerializeAsString());
 
@@ -252,12 +257,12 @@ TEST(
       {.payload_size_bytes = 128, .delay_ms = 250},
       {.payload_size_bytes = 32, .delay_ms = 50},
   };
-  base::expected<TransportProbe::ProbeRequest, std::string> request =
-      BuildProbeRequest("delayed-probe", /*request_payload_size_bytes=*/0,
-                        specs);
+  base::expected<browser_actuator::TransportProbe::ProbeRequest, std::string>
+      request = BuildProbeRequest("delayed-probe",
+                                  /*request_payload_size_bytes=*/0, specs);
   ASSERT_TRUE(request.has_value());
 
-  TransportProbe probe;
+  browser_actuator::TransportProbe probe;
   *probe.mutable_request() = *request;
 
   capture.dispatching_sequence_number = 17;
@@ -301,12 +306,12 @@ TEST(ProbeTransportHandlerTest,
   const ProbeResponseSpecInput specs[] = {
       {.payload_size_bytes = 1024, .delay_ms = 500},
   };
-  base::expected<TransportProbe::ProbeRequest, std::string> request =
-      BuildProbeRequest("cancel-probe", /*request_payload_size_bytes=*/0,
-                        specs);
+  base::expected<browser_actuator::TransportProbe::ProbeRequest, std::string>
+      request = BuildProbeRequest("cancel-probe",
+                                  /*request_payload_size_bytes=*/0, specs);
   ASSERT_TRUE(request.has_value());
 
-  TransportProbe probe;
+  browser_actuator::TransportProbe probe;
   *probe.mutable_request() = *std::move(request);
   handler->OnMessage(PayloadType::kProbe, probe.SerializeAsString());
   EXPECT_TRUE(capture.replies.empty());
@@ -333,11 +338,11 @@ TEST(
       {.payload_size_bytes = kMaxProbePayloadBytes, .delay_ms = 200},
       {.payload_size_bytes = kMaxProbePayloadBytes, .delay_ms = 200},
   };
-  base::expected<TransportProbe::ProbeRequest, std::string> first_request =
-      BuildProbeRequest("budget-bytes-1", /*request_payload_size_bytes=*/0,
-                        full_bytes_specs);
+  base::expected<browser_actuator::TransportProbe::ProbeRequest, std::string>
+      first_request = BuildProbeRequest(
+          "budget-bytes-1", /*request_payload_size_bytes=*/0, full_bytes_specs);
   ASSERT_TRUE(first_request.has_value());
-  TransportProbe first_probe;
+  browser_actuator::TransportProbe first_probe;
   *first_probe.mutable_request() = *first_request;
   handler.OnMessage(PayloadType::kProbe, first_probe.SerializeAsString());
   EXPECT_TRUE(capture.replies.empty());
@@ -349,11 +354,12 @@ TEST(
       {.payload_size_bytes = 64, .delay_ms = 0},
       {.payload_size_bytes = 1, .delay_ms = 50},
   };
-  base::expected<TransportProbe::ProbeRequest, std::string> over_bytes_request =
-      BuildProbeRequest("budget-bytes-over", /*request_payload_size_bytes=*/0,
-                        over_bytes_specs);
+  base::expected<browser_actuator::TransportProbe::ProbeRequest, std::string>
+      over_bytes_request =
+          BuildProbeRequest("budget-bytes-over",
+                            /*request_payload_size_bytes=*/0, over_bytes_specs);
   ASSERT_TRUE(over_bytes_request.has_value());
-  TransportProbe over_bytes_probe;
+  browser_actuator::TransportProbe over_bytes_probe;
   *over_bytes_probe.mutable_request() = *over_bytes_request;
   handler.OnMessage(PayloadType::kProbe, over_bytes_probe.SerializeAsString());
   EXPECT_TRUE(capture.replies.empty());
@@ -368,11 +374,11 @@ TEST(
   // verify a 17th overlapping delayed response is rejected atomically.
   std::vector<ProbeResponseSpecInput> max_count_specs(
       kMaxProbeResponses, {.payload_size_bytes = 0, .delay_ms = 100});
-  base::expected<TransportProbe::ProbeRequest, std::string> max_count_request =
-      BuildProbeRequest("budget-count-16", /*request_payload_size_bytes=*/0,
-                        max_count_specs);
+  base::expected<browser_actuator::TransportProbe::ProbeRequest, std::string>
+      max_count_request = BuildProbeRequest(
+          "budget-count-16", /*request_payload_size_bytes=*/0, max_count_specs);
   ASSERT_TRUE(max_count_request.has_value());
-  TransportProbe max_count_probe;
+  browser_actuator::TransportProbe max_count_probe;
   *max_count_probe.mutable_request() = *max_count_request;
   handler.OnMessage(PayloadType::kProbe, max_count_probe.SerializeAsString());
 
@@ -380,11 +386,12 @@ TEST(
       {.payload_size_bytes = 16, .delay_ms = 0},
       {.payload_size_bytes = 0, .delay_ms = 50},
   };
-  base::expected<TransportProbe::ProbeRequest, std::string> over_count_request =
-      BuildProbeRequest("budget-count-over", /*request_payload_size_bytes=*/0,
-                        extra_delayed_specs);
+  base::expected<browser_actuator::TransportProbe::ProbeRequest, std::string>
+      over_count_request = BuildProbeRequest("budget-count-over",
+                                             /*request_payload_size_bytes=*/0,
+                                             extra_delayed_specs);
   ASSERT_TRUE(over_count_request.has_value());
-  TransportProbe over_count_probe;
+  browser_actuator::TransportProbe over_count_probe;
   *over_count_probe.mutable_request() = *over_count_request;
   handler.OnMessage(PayloadType::kProbe, over_count_probe.SerializeAsString());
   EXPECT_TRUE(capture.replies.empty());
@@ -401,8 +408,9 @@ TEST(ProbeTransportHandlerTest, InvalidProbeRequestExceedingBoundsIsDropped) {
 
   // 1. Single response exceeding `kMaxProbePayloadBytes`.
   {
-    TransportProbe probe;
-    TransportProbe::ProbeRequest* req = probe.mutable_request();
+    browser_actuator::TransportProbe probe;
+    browser_actuator::TransportProbe::ProbeRequest* req =
+        probe.mutable_request();
     req->set_probe_id("oversize-single");
     req->add_response_specs()->set_payload_size_bytes(kMaxProbePayloadBytes +
                                                       1);
@@ -411,8 +419,9 @@ TEST(ProbeTransportHandlerTest, InvalidProbeRequestExceedingBoundsIsDropped) {
 
   // 2. Aggregate response bytes exceeding `kMaxTotalProbeResponseBytes`.
   {
-    TransportProbe probe;
-    TransportProbe::ProbeRequest* req = probe.mutable_request();
+    browser_actuator::TransportProbe probe;
+    browser_actuator::TransportProbe::ProbeRequest* req =
+        probe.mutable_request();
     req->set_probe_id("oversize-total");
     req->add_response_specs()->set_payload_size_bytes(kMaxProbePayloadBytes);
     req->add_response_specs()->set_payload_size_bytes(kMaxProbePayloadBytes);
@@ -422,10 +431,11 @@ TEST(ProbeTransportHandlerTest, InvalidProbeRequestExceedingBoundsIsDropped) {
 
   // 3. Delay exceeding `kMaxProbeDelayMs`.
   {
-    TransportProbe probe;
-    TransportProbe::ProbeRequest* req = probe.mutable_request();
+    browser_actuator::TransportProbe probe;
+    browser_actuator::TransportProbe::ProbeRequest* req =
+        probe.mutable_request();
     req->set_probe_id("oversize-delay");
-    TransportProbe::ProbeRequest::ResponseSpec* spec =
+    browser_actuator::TransportProbe::ProbeRequest::ResponseSpec* spec =
         req->add_response_specs();
     spec->set_payload_size_bytes(64);
     spec->set_delay_ms(kMaxProbeDelayMs + 1);
@@ -434,4 +444,4 @@ TEST(ProbeTransportHandlerTest, InvalidProbeRequestExceedingBoundsIsDropped) {
 }
 
 }  // namespace
-}  // namespace browser_actuator::transport
+}  // namespace stream_transport

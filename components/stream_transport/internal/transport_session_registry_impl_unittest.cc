@@ -20,7 +20,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace browser_actuator::transport {
+namespace stream_transport {
 namespace {
 
 TEST(TransportSessionRegistryImplTest, GetSession) {
@@ -574,4 +574,4 @@ TEST(TransportSessionRegistryImplTest, RejectsEmptyOrOversizedSessionId) {
 }
 
 }  // namespace
-}  // namespace browser_actuator::transport
+}  // namespace stream_transport

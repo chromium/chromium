@@ -12,7 +12,7 @@
 #include "components/stream_transport/internal/proto/transport_messages.pb.h"
 #include "components/stream_transport/public/transport_session.h"
 
-namespace browser_actuator::transport {
+namespace stream_transport {
 
 ControlTransportHandler::ControlTransportHandler(
     TransportSession* session,
@@ -29,28 +29,28 @@ ControlTransportHandler::~ControlTransportHandler() {
 void ControlTransportHandler::OnMessage(PayloadType payload_type,
                                         std::string_view serialized_payload) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  ControlCommand command;
+  browser_actuator::ControlCommand command;
   if (!command.ParseFromString(serialized_payload)) {
     DLOG(WARNING) << "Failed to parse ControlCommand payload";
     return;
   }
 
   switch (command.command_case()) {
-    case ControlCommand::kCloseChannel: {
+    case browser_actuator::ControlCommand::kCloseChannel: {
       if (close_channel_cb_) {
         close_channel_cb_.Run();
       }
       break;
     }
-    case ControlCommand::kCloseSession: {
+    case browser_actuator::ControlCommand::kCloseSession: {
       if (close_session_cb_ && session()) {
         std::string session_id(session()->GetSessionId());
         close_session_cb_.Run(session_id);
       }
       break;
     }
-    case ControlCommand::kStartSession: {
-      ControlCommand command_ack;
+    case browser_actuator::ControlCommand::kStartSession: {
+      browser_actuator::ControlCommand command_ack;
       command_ack.mutable_start_session_ack();
       auto result = SendUpstreamMessage(PayloadType::kControl, command_ack);
       if (!result.has_value()) {
@@ -59,8 +59,8 @@ void ControlTransportHandler::OnMessage(PayloadType payload_type,
       }
       break;
     }
-    case ControlCommand::kStartSessionAck:
-    case ControlCommand::COMMAND_NOT_SET:
+    case browser_actuator::ControlCommand::kStartSessionAck:
+    case browser_actuator::ControlCommand::COMMAND_NOT_SET:
       DLOG(WARNING) << "Received unexpected command case, skipping: "
                     << static_cast<int>(command.command_case());
       break;
@@ -95,4 +95,4 @@ std::unique_ptr<TransportHandler> ControlTransportHandlerFactory::OnNewSession(
                                                    close_session_cb_);
 }
 
-}  // namespace browser_actuator::transport
+}  // namespace stream_transport

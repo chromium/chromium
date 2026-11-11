@@ -26,8 +26,7 @@
 namespace actor {
 namespace {
 
-class FakeTransportSession
-    : public browser_actuator::transport::TransportSession {
+class FakeTransportSession : public stream_transport::TransportSession {
  public:
   explicit FakeTransportSession(std::string_view session_id)
       : session_id_(session_id) {}
@@ -35,8 +34,8 @@ class FakeTransportSession
 
   std::string_view GetSessionId() const override { return session_id_; }
 
-  base::expected<void, browser_actuator::transport::SendUpstreamMessageError>
-  SendUpstreamMessage(browser_actuator::transport::PayloadType payload_type,
+  base::expected<void, stream_transport::SendUpstreamMessageError>
+  SendUpstreamMessage(stream_transport::PayloadType payload_type,
                       const google::protobuf::MessageLite& message) override {
     sent_payload_types_.push_back(payload_type);
     proto::BrowserToServerPayload upstream;
@@ -45,13 +44,12 @@ class FakeTransportSession
     return {};
   }
 
-  void OnMessage(browser_actuator::transport::PayloadType payload_type,
+  void OnMessage(stream_transport::PayloadType payload_type,
                  std::string_view serialized_payload) override {}
 
   void Close() override {}
 
-  const std::vector<browser_actuator::transport::PayloadType>&
-  sent_payload_types() const {
+  const std::vector<stream_transport::PayloadType>& sent_payload_types() const {
     return sent_payload_types_;
   }
 
@@ -61,7 +59,7 @@ class FakeTransportSession
 
  private:
   std::string session_id_;
-  std::vector<browser_actuator::transport::PayloadType> sent_payload_types_;
+  std::vector<stream_transport::PayloadType> sent_payload_types_;
   std::vector<proto::BrowserToServerPayload> sent_messages_;
 };
 
@@ -153,7 +151,7 @@ class ActuationTransportHandlerTest : public testing::Test {
     proto::ServerToBrowserPayload start_msg;
     start_msg.set_task_id(std::string(external_task_id));
     start_msg.mutable_start_task();
-    handler_->OnMessage(browser_actuator::transport::PayloadType::kActuation,
+    handler_->OnMessage(stream_transport::PayloadType::kActuation,
                         start_msg.SerializeAsString());
     proto::StartTaskResponse response;
     response.set_status(proto::StartTaskResponse::STATUS_OK);
@@ -173,7 +171,7 @@ TEST_F(ActuationTransportHandlerTest,
   downstream.mutable_start_task()->set_task_title("Book flight");
   downstream.mutable_start_task()->add_target_surfaces()->set_tab_id(42);
 
-  handler_->OnMessage(browser_actuator::transport::PayloadType::kActuation,
+  handler_->OnMessage(stream_transport::PayloadType::kActuation,
                       downstream.SerializeAsString());
 
   ASSERT_TRUE(delegate_->last_start_request().has_value());
@@ -188,7 +186,7 @@ TEST_F(ActuationTransportHandlerTest,
 
   ASSERT_EQ(session_.sent_messages().size(), 1u);
   EXPECT_EQ(session_.sent_payload_types()[0],
-            browser_actuator::transport::PayloadType::kActuation);
+            stream_transport::PayloadType::kActuation);
   const auto& upstream = session_.sent_messages()[0];
   EXPECT_EQ(upstream.task_id(), "server-task-1");
   EXPECT_EQ(upstream.request_id(), "req_start_1");
@@ -204,7 +202,7 @@ TEST_F(ActuationTransportHandlerTest, StartTaskWithoutTaskIdIsRejected) {
   start_msg.set_request_id("req_start_no_id");
   start_msg.mutable_start_task()->set_task_title("Book flight");
 
-  handler_->OnMessage(browser_actuator::transport::PayloadType::kActuation,
+  handler_->OnMessage(stream_transport::PayloadType::kActuation,
                       start_msg.SerializeAsString());
 
   EXPECT_EQ(delegate_->start_task_call_count(), 0);
@@ -224,7 +222,7 @@ TEST_F(ActuationTransportHandlerTest,
   start_msg.set_request_id("req_start_1");
   start_msg.mutable_start_task()->set_task_title("Book flight");
 
-  handler_->OnMessage(browser_actuator::transport::PayloadType::kActuation,
+  handler_->OnMessage(stream_transport::PayloadType::kActuation,
                       start_msg.SerializeAsString());
 
   ASSERT_TRUE(delegate_->last_start_request().has_value());
@@ -244,7 +242,7 @@ TEST_F(ActuationTransportHandlerTest,
   act_msg.set_task_id("server-task-1");
   act_msg.set_request_id("req_act_1");
   act_msg.mutable_perform_actions()->add_actions()->mutable_wait();
-  handler_->OnMessage(browser_actuator::transport::PayloadType::kActuation,
+  handler_->OnMessage(stream_transport::PayloadType::kActuation,
                       act_msg.SerializeAsString());
 
   ASSERT_TRUE(delegate_->last_act_task_id().has_value());
@@ -265,7 +263,7 @@ TEST_F(ActuationTransportHandlerTest,
   stop_msg.set_request_id("req_stop_1");
   stop_msg.mutable_stop_task()->set_reason(
       proto::StopTaskRequest::TASK_COMPLETED);
-  handler_->OnMessage(browser_actuator::transport::PayloadType::kActuation,
+  handler_->OnMessage(stream_transport::PayloadType::kActuation,
                       stop_msg.SerializeAsString());
 
   ASSERT_TRUE(delegate_->last_stop_task_id().has_value());
@@ -287,7 +285,7 @@ TEST_F(ActuationTransportHandlerTest,
   duplicate_start.set_task_id("server-task-1");
   duplicate_start.set_request_id("req_start_dup");
   duplicate_start.mutable_start_task()->set_task_title("Duplicate task");
-  handler_->OnMessage(browser_actuator::transport::PayloadType::kActuation,
+  handler_->OnMessage(stream_transport::PayloadType::kActuation,
                       duplicate_start.SerializeAsString());
 
   EXPECT_EQ(delegate_->start_task_call_count(), 1);
@@ -304,7 +302,7 @@ TEST_F(ActuationTransportHandlerTest,
   act_msg.set_task_id("server-task-1");
   act_msg.set_request_id("req_act_after_dup");
   act_msg.mutable_perform_actions()->add_actions()->mutable_wait();
-  handler_->OnMessage(browser_actuator::transport::PayloadType::kActuation,
+  handler_->OnMessage(stream_transport::PayloadType::kActuation,
                       act_msg.SerializeAsString());
   ASSERT_TRUE(delegate_->last_act_task_id().has_value());
   EXPECT_EQ(*delegate_->last_act_task_id(), TaskId(7));
@@ -316,7 +314,7 @@ TEST_F(ActuationTransportHandlerTest,
   first_start.set_task_id("server-task-1");
   first_start.set_request_id("req_start_1");
   first_start.mutable_start_task();
-  handler_->OnMessage(browser_actuator::transport::PayloadType::kActuation,
+  handler_->OnMessage(stream_transport::PayloadType::kActuation,
                       first_start.SerializeAsString());
   EXPECT_EQ(delegate_->start_task_call_count(), 1);
   // The delegate has not replied yet, so nothing has been sent upstream.
@@ -326,7 +324,7 @@ TEST_F(ActuationTransportHandlerTest,
   duplicate_start.set_task_id("server-task-1");
   duplicate_start.set_request_id("req_start_dup");
   duplicate_start.mutable_start_task();
-  handler_->OnMessage(browser_actuator::transport::PayloadType::kActuation,
+  handler_->OnMessage(stream_transport::PayloadType::kActuation,
                       duplicate_start.SerializeAsString());
 
   EXPECT_EQ(delegate_->start_task_call_count(), 1);
@@ -348,7 +346,7 @@ TEST_F(ActuationTransportHandlerTest,
   act_msg.set_task_id("server-task-1");
   act_msg.set_request_id("req_act_1");
   act_msg.mutable_perform_actions()->add_actions()->mutable_wait();
-  handler_->OnMessage(browser_actuator::transport::PayloadType::kActuation,
+  handler_->OnMessage(stream_transport::PayloadType::kActuation,
                       act_msg.SerializeAsString());
   ASSERT_TRUE(delegate_->last_act_task_id().has_value());
   EXPECT_EQ(*delegate_->last_act_task_id(), TaskId(7));
@@ -359,7 +357,7 @@ TEST_F(ActuationTransportHandlerTest, TaskIdCanBeReusedAfterFailedStartTask) {
   start_msg.set_task_id("server-task-1");
   start_msg.set_request_id("req_start_1");
   start_msg.mutable_start_task();
-  handler_->OnMessage(browser_actuator::transport::PayloadType::kActuation,
+  handler_->OnMessage(stream_transport::PayloadType::kActuation,
                       start_msg.SerializeAsString());
   proto::StartTaskResponse failed_response;
   failed_response.set_status(
@@ -386,7 +384,7 @@ TEST_F(ActuationTransportHandlerTest,
   act_b.set_task_id("server-task-b");
   act_b.set_request_id("req_act_b");
   act_b.mutable_perform_actions()->add_actions()->mutable_wait();
-  handler_->OnMessage(browser_actuator::transport::PayloadType::kActuation,
+  handler_->OnMessage(stream_transport::PayloadType::kActuation,
                       act_b.SerializeAsString());
   ASSERT_TRUE(delegate_->last_act_task_id().has_value());
   EXPECT_EQ(*delegate_->last_act_task_id(), TaskId(20));
@@ -399,7 +397,7 @@ TEST_F(ActuationTransportHandlerTest,
   act_a.set_task_id("server-task-a");
   act_a.set_request_id("req_act_a");
   act_a.mutable_perform_actions()->add_actions()->mutable_wait();
-  handler_->OnMessage(browser_actuator::transport::PayloadType::kActuation,
+  handler_->OnMessage(stream_transport::PayloadType::kActuation,
                       act_a.SerializeAsString());
   ASSERT_TRUE(delegate_->last_act_task_id().has_value());
   EXPECT_EQ(*delegate_->last_act_task_id(), TaskId(10));
@@ -412,7 +410,7 @@ TEST_F(ActuationTransportHandlerTest,
   stop_a.set_task_id("server-task-a");
   stop_a.set_request_id("req_stop_a");
   stop_a.mutable_stop_task();
-  handler_->OnMessage(browser_actuator::transport::PayloadType::kActuation,
+  handler_->OnMessage(stream_transport::PayloadType::kActuation,
                       stop_a.SerializeAsString());
   ASSERT_TRUE(delegate_->last_stop_task_id().has_value());
   EXPECT_EQ(*delegate_->last_stop_task_id(), TaskId(10));
@@ -427,7 +425,7 @@ TEST_F(ActuationTransportHandlerTest,
   stop_msg.set_request_id("req_stop_1");
   stop_msg.mutable_stop_task()->set_reason(
       proto::StopTaskRequest::TASK_COMPLETED);
-  handler_->OnMessage(browser_actuator::transport::PayloadType::kActuation,
+  handler_->OnMessage(stream_transport::PayloadType::kActuation,
                       stop_msg.SerializeAsString());
   ASSERT_EQ(session_.sent_messages().size(), 2u);
   EXPECT_EQ(session_.sent_messages()[1].stop_task().status(),
@@ -437,7 +435,7 @@ TEST_F(ActuationTransportHandlerTest,
   act_msg.set_task_id("server-task-1");
   act_msg.set_request_id("req_act_after_stop");
   act_msg.mutable_perform_actions()->add_actions()->mutable_wait();
-  handler_->OnMessage(browser_actuator::transport::PayloadType::kActuation,
+  handler_->OnMessage(stream_transport::PayloadType::kActuation,
                       act_msg.SerializeAsString());
 
   EXPECT_FALSE(delegate_->last_act_task_id().has_value());
@@ -462,7 +460,7 @@ TEST_F(ActuationTransportHandlerTest,
   downstream.mutable_stop_task()->set_reason(
       proto::StopTaskRequest::USER_CANCELLED);
 
-  handler_->OnMessage(browser_actuator::transport::PayloadType::kActuation,
+  handler_->OnMessage(stream_transport::PayloadType::kActuation,
                       downstream.SerializeAsString());
 
   ASSERT_TRUE(delegate_->last_stop_task_id().has_value());
@@ -478,7 +476,7 @@ TEST_F(ActuationTransportHandlerTest,
   EXPECT_EQ(session_.sent_messages()[1].stop_task().status(),
             proto::StopTaskResponse::STATUS_OK);
 
-  handler_->OnMessage(browser_actuator::transport::PayloadType::kActuation,
+  handler_->OnMessage(stream_transport::PayloadType::kActuation,
                       downstream.SerializeAsString());
   EXPECT_EQ(delegate_->stopped_task_ids().size(), 1u);
   ASSERT_EQ(session_.sent_messages().size(), 3u);
@@ -496,7 +494,7 @@ TEST_F(ActuationTransportHandlerTest, StopTaskRejectsUnownedTask) {
   downstream.mutable_stop_task()->set_reason(
       proto::StopTaskRequest::TASK_COMPLETED);
 
-  handler_->OnMessage(browser_actuator::transport::PayloadType::kActuation,
+  handler_->OnMessage(stream_transport::PayloadType::kActuation,
                       downstream.SerializeAsString());
   EXPECT_FALSE(delegate_->last_stop_task_id().has_value());
   ASSERT_EQ(session_.sent_messages().size(), 1u);
@@ -508,7 +506,7 @@ TEST_F(ActuationTransportHandlerTest, StopTaskRejectsUnownedTask) {
 
   downstream.set_task_id("unknown-task");
   downstream.set_request_id("req_stop_unknown");
-  handler_->OnMessage(browser_actuator::transport::PayloadType::kActuation,
+  handler_->OnMessage(stream_transport::PayloadType::kActuation,
                       downstream.SerializeAsString());
   EXPECT_FALSE(delegate_->last_stop_task_id().has_value());
   ASSERT_EQ(session_.sent_messages().size(), 2u);
@@ -525,7 +523,7 @@ TEST_F(ActuationTransportHandlerTest,
   start_msg.set_task_id("server-task-1");
   start_msg.set_request_id("req_start_1");
   start_msg.mutable_start_task();
-  handler_->OnMessage(browser_actuator::transport::PayloadType::kActuation,
+  handler_->OnMessage(stream_transport::PayloadType::kActuation,
                       start_msg.SerializeAsString());
 
   proto::ServerToBrowserPayload stop_msg;
@@ -533,7 +531,7 @@ TEST_F(ActuationTransportHandlerTest,
   stop_msg.set_request_id("req_stop_1");
   stop_msg.mutable_stop_task()->set_reason(
       proto::StopTaskRequest::USER_CANCELLED);
-  handler_->OnMessage(browser_actuator::transport::PayloadType::kActuation,
+  handler_->OnMessage(stream_transport::PayloadType::kActuation,
                       stop_msg.SerializeAsString());
   // The stop is queued until the start completes.
   EXPECT_FALSE(delegate_->last_stop_task_id().has_value());
@@ -563,7 +561,7 @@ TEST_F(ActuationTransportHandlerTest,
   act_msg.set_task_id("server-task-1");
   act_msg.set_request_id("req_act_after_stop");
   act_msg.mutable_perform_actions()->add_actions()->mutable_wait();
-  handler_->OnMessage(browser_actuator::transport::PayloadType::kActuation,
+  handler_->OnMessage(stream_transport::PayloadType::kActuation,
                       act_msg.SerializeAsString());
   EXPECT_FALSE(delegate_->last_act_task_id().has_value());
   ASSERT_EQ(session_.sent_messages().size(), 3u);
@@ -577,14 +575,14 @@ TEST_F(ActuationTransportHandlerTest,
   start_msg.set_task_id("server-task-1");
   start_msg.set_request_id("req_start_1");
   start_msg.mutable_start_task();
-  handler_->OnMessage(browser_actuator::transport::PayloadType::kActuation,
+  handler_->OnMessage(stream_transport::PayloadType::kActuation,
                       start_msg.SerializeAsString());
 
   proto::ServerToBrowserPayload stop_msg;
   stop_msg.set_task_id("server-task-1");
   stop_msg.set_request_id("req_stop_1");
   stop_msg.mutable_stop_task();
-  handler_->OnMessage(browser_actuator::transport::PayloadType::kActuation,
+  handler_->OnMessage(stream_transport::PayloadType::kActuation,
                       stop_msg.SerializeAsString());
   EXPECT_TRUE(session_.sent_messages().empty());
 
@@ -611,19 +609,19 @@ TEST_F(ActuationTransportHandlerTest,
   start_msg.set_task_id("server-task-1");
   start_msg.set_request_id("req_start_1");
   start_msg.mutable_start_task();
-  handler_->OnMessage(browser_actuator::transport::PayloadType::kActuation,
+  handler_->OnMessage(stream_transport::PayloadType::kActuation,
                       start_msg.SerializeAsString());
 
   proto::ServerToBrowserPayload stop_msg;
   stop_msg.set_task_id("server-task-1");
   stop_msg.set_request_id("req_stop_1");
   stop_msg.mutable_stop_task();
-  handler_->OnMessage(browser_actuator::transport::PayloadType::kActuation,
+  handler_->OnMessage(stream_transport::PayloadType::kActuation,
                       stop_msg.SerializeAsString());
   EXPECT_TRUE(session_.sent_messages().empty());
 
   stop_msg.set_request_id("req_stop_2");
-  handler_->OnMessage(browser_actuator::transport::PayloadType::kActuation,
+  handler_->OnMessage(stream_transport::PayloadType::kActuation,
                       stop_msg.SerializeAsString());
   ASSERT_EQ(session_.sent_messages().size(), 1u);
   EXPECT_EQ(session_.sent_messages()[0].request_id(), "req_stop_2");
@@ -646,14 +644,14 @@ TEST_F(ActuationTransportHandlerTest, ActWhileStartIsPendingIsRejected) {
   start_msg.set_task_id("server-task-1");
   start_msg.set_request_id("req_start_1");
   start_msg.mutable_start_task();
-  handler_->OnMessage(browser_actuator::transport::PayloadType::kActuation,
+  handler_->OnMessage(stream_transport::PayloadType::kActuation,
                       start_msg.SerializeAsString());
 
   proto::ServerToBrowserPayload act_msg;
   act_msg.set_task_id("server-task-1");
   act_msg.set_request_id("req_act_1");
   act_msg.mutable_perform_actions()->add_actions()->mutable_wait();
-  handler_->OnMessage(browser_actuator::transport::PayloadType::kActuation,
+  handler_->OnMessage(stream_transport::PayloadType::kActuation,
                       act_msg.SerializeAsString());
 
   EXPECT_FALSE(delegate_->last_act_task_id().has_value());
@@ -673,7 +671,7 @@ TEST_F(ActuationTransportHandlerTest, ActWhileStartIsPendingIsRejected) {
   response.set_status(proto::StartTaskResponse::STATUS_OK);
   delegate_->TakeStartCallback().Run(TaskId(7), std::move(response));
   act_msg.set_request_id("req_act_2");
-  handler_->OnMessage(browser_actuator::transport::PayloadType::kActuation,
+  handler_->OnMessage(stream_transport::PayloadType::kActuation,
                       act_msg.SerializeAsString());
   ASSERT_TRUE(delegate_->last_act_task_id().has_value());
   EXPECT_EQ(*delegate_->last_act_task_id(), TaskId(7));
@@ -687,7 +685,7 @@ TEST_F(ActuationTransportHandlerTest, ActForwardsOwnedTaskAndSendsResponse) {
   downstream.set_request_id("req_act_1");
   downstream.mutable_perform_actions()->add_actions()->mutable_wait();
 
-  handler_->OnMessage(browser_actuator::transport::PayloadType::kActuation,
+  handler_->OnMessage(stream_transport::PayloadType::kActuation,
                       downstream.SerializeAsString());
 
   ASSERT_TRUE(delegate_->last_act_task_id().has_value());
@@ -719,7 +717,7 @@ TEST_F(ActuationTransportHandlerTest,
   downstream.set_task_id("7");
   downstream.set_request_id("req_act_task_went_away");
   downstream.mutable_perform_actions()->add_actions()->mutable_wait();
-  handler_->OnMessage(browser_actuator::transport::PayloadType::kActuation,
+  handler_->OnMessage(stream_transport::PayloadType::kActuation,
                       downstream.SerializeAsString());
 
   proto::PerformActionsResponse task_went_away_response;
@@ -735,13 +733,13 @@ TEST_F(ActuationTransportHandlerTest,
   stop_msg.set_task_id("7");
   stop_msg.set_request_id("req_stop_after_task_went_away");
   stop_msg.mutable_stop_task();
-  handler_->OnMessage(browser_actuator::transport::PayloadType::kActuation,
+  handler_->OnMessage(stream_transport::PayloadType::kActuation,
                       stop_msg.SerializeAsString());
   EXPECT_TRUE(delegate_->stopped_task_ids().empty());
 
   downstream.set_task_id("8");
   downstream.set_request_id("req_act_user_navigated_away");
-  handler_->OnMessage(browser_actuator::transport::PayloadType::kActuation,
+  handler_->OnMessage(stream_transport::PayloadType::kActuation,
                       downstream.SerializeAsString());
 
   proto::PerformActionsResponse user_navigated_away_response;
@@ -753,7 +751,7 @@ TEST_F(ActuationTransportHandlerTest,
 
   stop_msg.set_task_id("8");
   stop_msg.set_request_id("req_stop_after_user_navigated_away");
-  handler_->OnMessage(browser_actuator::transport::PayloadType::kActuation,
+  handler_->OnMessage(stream_transport::PayloadType::kActuation,
                       stop_msg.SerializeAsString());
   EXPECT_TRUE(delegate_->stopped_task_ids().empty());
 }
@@ -766,7 +764,7 @@ TEST_F(ActuationTransportHandlerTest,
   downstream.set_task_id("7");
   downstream.set_request_id("req_act_recoverable_fail");
   downstream.mutable_perform_actions()->add_actions()->mutable_wait();
-  handler_->OnMessage(browser_actuator::transport::PayloadType::kActuation,
+  handler_->OnMessage(stream_transport::PayloadType::kActuation,
                       downstream.SerializeAsString());
 
   proto::PerformActionsResponse action_failed_response;
@@ -780,7 +778,7 @@ TEST_F(ActuationTransportHandlerTest,
   // in `active_tasks_`, allowing subsequent `PerformActions` and `StopTask`
   // requests to reach `delegate_`.
   downstream.set_request_id("req_act_tab_went_away");
-  handler_->OnMessage(browser_actuator::transport::PayloadType::kActuation,
+  handler_->OnMessage(stream_transport::PayloadType::kActuation,
                       downstream.SerializeAsString());
   ASSERT_TRUE(delegate_->last_act_task_id().has_value());
   EXPECT_EQ(*delegate_->last_act_task_id(), TaskId(7));
@@ -796,7 +794,7 @@ TEST_F(ActuationTransportHandlerTest,
   stop_msg.set_task_id("7");
   stop_msg.set_request_id("req_stop_after_recoverable_fail");
   stop_msg.mutable_stop_task();
-  handler_->OnMessage(browser_actuator::transport::PayloadType::kActuation,
+  handler_->OnMessage(stream_transport::PayloadType::kActuation,
                       stop_msg.SerializeAsString());
   EXPECT_EQ(delegate_->stopped_task_ids(), std::vector<TaskId>{TaskId(7)});
 }
@@ -807,7 +805,7 @@ TEST_F(ActuationTransportHandlerTest, ActRejectsUnownedTask) {
   downstream.set_request_id("req_act_unowned");
   downstream.mutable_perform_actions();
 
-  handler_->OnMessage(browser_actuator::transport::PayloadType::kActuation,
+  handler_->OnMessage(stream_transport::PayloadType::kActuation,
                       downstream.SerializeAsString());
 
   EXPECT_FALSE(delegate_->last_act_task_id().has_value());
@@ -824,14 +822,13 @@ TEST_F(ActuationTransportHandlerTest, ActRejectsUnownedTask) {
 
 TEST_F(ActuationTransportHandlerTest,
        IgnoresInvalidPayloadOrNonActuationPayloadType) {
-  handler_->OnMessage(browser_actuator::transport::PayloadType::kControl,
-                      "invalid_bytes");
-  handler_->OnMessage(browser_actuator::transport::PayloadType::kActuation,
+  handler_->OnMessage(stream_transport::PayloadType::kControl, "invalid_bytes");
+  handler_->OnMessage(stream_transport::PayloadType::kActuation,
                       "\xFF\xFF\xFF\xFF");
 
   proto::ServerToBrowserPayload empty_command;
   empty_command.set_task_id("7");
-  handler_->OnMessage(browser_actuator::transport::PayloadType::kActuation,
+  handler_->OnMessage(stream_transport::PayloadType::kActuation,
                       empty_command.SerializeAsString());
 
   EXPECT_FALSE(delegate_->last_start_request().has_value());
@@ -868,7 +865,7 @@ TEST_F(ActuationTransportHandlerTest, StopsActiveSessionTasksOnDestruction) {
     proto::ServerToBrowserPayload start_msg;
     start_msg.set_task_id(std::string(external_task_id));
     start_msg.mutable_start_task();
-    handler->OnMessage(browser_actuator::transport::PayloadType::kActuation,
+    handler->OnMessage(stream_transport::PayloadType::kActuation,
                        start_msg.SerializeAsString());
   };
 
@@ -897,7 +894,7 @@ TEST_F(ActuationTransportHandlerTest, StopsActiveSessionTasksOnDestruction) {
   proto::ServerToBrowserPayload stop_msg;
   stop_msg.set_task_id("server-task-11");
   stop_msg.mutable_stop_task();
-  handler->OnMessage(browser_actuator::transport::PayloadType::kActuation,
+  handler->OnMessage(stream_transport::PayloadType::kActuation,
                      stop_msg.SerializeAsString());
   EXPECT_EQ(stopped_tasks, std::vector<TaskId>{TaskId(11)});
 
@@ -908,9 +905,9 @@ TEST_F(ActuationTransportHandlerTest, StopsActiveSessionTasksOnDestruction) {
 
 TEST_F(ActuationTransportHandlerTest,
        ExpectedTypeUrlMatchesServerToBrowserPayload) {
-  EXPECT_EQ(browser_actuator::transport::ExpectedTypeUrl(
-                browser_actuator::transport::PayloadType::kActuation),
-            base::StrCat({browser_actuator::transport::kTypeUrlPrefix,
+  EXPECT_EQ(stream_transport::ExpectedTypeUrl(
+                stream_transport::PayloadType::kActuation),
+            base::StrCat({stream_transport::kTypeUrlPrefix,
                           proto::ServerToBrowserPayload().GetTypeName()}));
 }
 

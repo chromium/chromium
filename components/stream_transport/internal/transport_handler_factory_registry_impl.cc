@@ -10,7 +10,7 @@
 #include "base/check.h"
 #include "components/stream_transport/public/transport_handler_factory.h"
 
-namespace browser_actuator::transport {
+namespace stream_transport {
 
 TransportHandlerFactoryRegistryImpl::TransportHandlerFactoryRegistryImpl() =
     default;
@@ -101,4 +101,4 @@ bool TransportHandlerFactoryRegistryImpl::IsEmpty() const {
   return factories_.empty();
 }
 
-}  // namespace browser_actuator::transport
+}  // namespace stream_transport

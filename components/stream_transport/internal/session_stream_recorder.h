@@ -31,7 +31,7 @@ namespace base {
 class DictValue;
 }  // namespace base
 
-namespace browser_actuator::transport {
+namespace stream_transport {
 
 class TransportSession;
 
@@ -114,7 +114,9 @@ class SessionStreamRecorder {
   // Stored entry pairing timestamp with canonical protobuf message.
   struct Entry {
     base::TimeTicks timestamp;
-    std::variant<ActuatorDownstreamMessage, ActuatorUpstreamMessage> message;
+    std::variant<browser_actuator::ActuatorDownstreamMessage,
+                 browser_actuator::ActuatorUpstreamMessage>
+        message;
     int http_response_code = 0;
     DownstreamDeliveryStatus downstream_status =
         DownstreamDeliveryStatus::kUnknown;
@@ -128,12 +130,14 @@ class SessionStreamRecorder {
   // Direct proto observer interface for real-time streaming.
   class Observer : public base::CheckedObserver {
    public:
-    virtual void OnDownstreamMessage(base::TimeTicks timestamp,
-                                     const ActuatorDownstreamMessage& message,
-                                     DownstreamDeliveryStatus status);
-    virtual void OnUpstreamMessage(base::TimeTicks timestamp,
-                                   const ActuatorUpstreamMessage& message,
-                                   int http_response_code);
+    virtual void OnDownstreamMessage(
+        base::TimeTicks timestamp,
+        const browser_actuator::ActuatorDownstreamMessage& message,
+        DownstreamDeliveryStatus status);
+    virtual void OnUpstreamMessage(
+        base::TimeTicks timestamp,
+        const browser_actuator::ActuatorUpstreamMessage& message,
+        int http_response_code);
   };
 
   explicit SessionStreamRecorder(std::string_view session_id);
@@ -143,14 +147,15 @@ class SessionStreamRecorder {
   SessionStreamRecorder& operator=(const SessionStreamRecorder&) = delete;
 
   // Direct recording methods:
-  void RecordDownstreamMessage(ActuatorDownstreamMessage message,
-                               DownstreamDeliveryStatus status);
+  void RecordDownstreamMessage(
+      browser_actuator::ActuatorDownstreamMessage message,
+      DownstreamDeliveryStatus status);
 
   // Records an upstream message. Operates in two phases: initially called with
   // `http_response_code = 0` when the message is dispatched to the transport
   // client, followed by an in-place update with the response status code upon
   // completion.
-  void RecordUpstreamMessage(ActuatorUpstreamMessage message,
+  void RecordUpstreamMessage(browser_actuator::ActuatorUpstreamMessage message,
                              int http_response_code);
 
   // Updates the HTTP response code of a previously recorded pending upstream
@@ -205,12 +210,14 @@ class SessionStreamRecorderFactory : public TransportSessionRegistry::Observer,
   void OnSessionRemoved(std::string_view session_id) override;
 
   // TransportMessageObserver implementation:
-  void OnDownstreamMessage(std::string_view session_id,
-                           const ActuatorDownstreamMessage& message,
-                           DownstreamDeliveryStatus status) override;
-  void OnUpstreamMessage(std::string_view session_id,
-                         const ActuatorUpstreamMessage& message,
-                         int http_response_code) override;
+  void OnDownstreamMessage(
+      std::string_view session_id,
+      const browser_actuator::ActuatorDownstreamMessage& message,
+      DownstreamDeliveryStatus status) override;
+  void OnUpstreamMessage(
+      std::string_view session_id,
+      const browser_actuator::ActuatorUpstreamMessage& message,
+      int http_response_code) override;
 
   // Exports all tracked sessions' metadata and history as a structured
   // dictionary.
@@ -274,6 +281,6 @@ class SessionStreamRecorderFactory : public TransportSessionRegistry::Observer,
       GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
-}  // namespace browser_actuator::transport
+}  // namespace stream_transport
 
 #endif  // COMPONENTS_STREAM_TRANSPORT_INTERNAL_SESSION_STREAM_RECORDER_H_

@@ -28,24 +28,26 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 
-namespace browser_actuator::transport {
+namespace stream_transport {
 
 namespace {
 
-ActuatorUpstreamPayloadType ToProtoPayloadType(PayloadType payload_type) {
+browser_actuator::ActuatorUpstreamPayloadType ToProtoPayloadType(
+    PayloadType payload_type) {
   switch (payload_type) {
     case PayloadType::kUnspecified:
       CHECK(false);
     case PayloadType::kControl:
-      return ACTUATOR_UPSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND;
+      return browser_actuator::ACTUATOR_UPSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND;
     case PayloadType::kExperimentalTriggering:
-      return ACTUATOR_UPSTREAM_PAYLOAD_TYPE_EXPERIMENTAL_TRIGGERING;
+      return browser_actuator::
+          ACTUATOR_UPSTREAM_PAYLOAD_TYPE_EXPERIMENTAL_TRIGGERING;
     case PayloadType::kActuation:
-      return ACTUATOR_UPSTREAM_PAYLOAD_TYPE_ACTUATION;
+      return browser_actuator::ACTUATOR_UPSTREAM_PAYLOAD_TYPE_ACTUATION;
     case PayloadType::kTaskIngress:
-      return ACTUATOR_UPSTREAM_PAYLOAD_TYPE_TASK_INGRESS;
+      return browser_actuator::ACTUATOR_UPSTREAM_PAYLOAD_TYPE_TASK_INGRESS;
     case PayloadType::kProbe:
-      return ACTUATOR_UPSTREAM_PAYLOAD_TYPE_PROBE;
+      return browser_actuator::ACTUATOR_UPSTREAM_PAYLOAD_TYPE_PROBE;
   }
   NOTREACHED();
 }
@@ -78,7 +80,8 @@ size_t UpstreamMessageClient::GetPendingRequestsCountForTesting() const {
   return pending_requests_.size();
 }
 
-ActuatorUpstreamMessage UpstreamMessageClient::SendUpstreamMessage(
+browser_actuator::ActuatorUpstreamMessage
+UpstreamMessageClient::SendUpstreamMessage(
     std::string_view session_id,
     int64_t client_sequence_number,
     std::optional<int64_t> responding_to_sequence_number,
@@ -87,10 +90,10 @@ ActuatorUpstreamMessage UpstreamMessageClient::SendUpstreamMessage(
     SendCompleteCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  SendSessionMessageRequest request;
+  browser_actuator::SendSessionMessageRequest request;
   request.set_request_id(base::Uuid::GenerateRandomV4().AsLowercaseString());
 
-  ActuatorUpstreamMessage* upstream =
+  browser_actuator::ActuatorUpstreamMessage* upstream =
       request.mutable_actuator_upstream_message();
   upstream->set_session_id(session_id);
   upstream->set_client_sequence_number(client_sequence_number);
@@ -99,7 +102,8 @@ ActuatorUpstreamMessage UpstreamMessageClient::SendUpstreamMessage(
   }
 
   // Pack payload into Any.
-  ActuatorUpstreamTypedPayload* typed_payload = upstream->add_typed_payloads();
+  browser_actuator::ActuatorUpstreamTypedPayload* typed_payload =
+      upstream->add_typed_payloads();
   google::protobuf::Any* any_proto = typed_payload->mutable_proto_payload();
   any_proto->set_type_url(
       base::StrCat({"type.googleapis.com/", message.GetTypeName()}));
@@ -170,4 +174,4 @@ void UpstreamMessageClient::OnMessageSent(
   std::move(callback).Run(success, response_code);
 }
 
-}  // namespace browser_actuator::transport
+}  // namespace stream_transport

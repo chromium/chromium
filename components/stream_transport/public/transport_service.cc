@@ -4,10 +4,10 @@
 
 #include "components/stream_transport/public/transport_service.h"
 
-namespace browser_actuator::transport {
+namespace stream_transport {
 
 TransportService::TransportService() = default;
 
 TransportService::~TransportService() = default;
 
-}  // namespace browser_actuator::transport
+}  // namespace stream_transport

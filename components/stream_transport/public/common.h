@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_STREAM_TRANSPORT_PUBLIC_COMMON_H_
 #define COMPONENTS_STREAM_TRANSPORT_PUBLIC_COMMON_H_
 
-namespace browser_actuator::transport {
+namespace stream_transport {
 
 // Identifies feature payload targets, matching the server
 // DownstreamMessage.PayloadType.
@@ -57,6 +57,6 @@ enum class InitIngressSource {
 };
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml:BrowserActuatorSessionInitIngressSource)
 
-}  // namespace browser_actuator::transport
+}  // namespace stream_transport
 
 #endif  // COMPONENTS_STREAM_TRANSPORT_PUBLIC_COMMON_H_

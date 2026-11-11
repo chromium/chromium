@@ -115,9 +115,8 @@ SharingHandlerRegistryImpl::SharingHandlerRegistryImpl(
   std::set<components_sharing_message::SharingMessage::PayloadCase>
       browser_actuator_payloads = GetBrowserActuatorPayloads();
   if (!browser_actuator_payloads.empty() && profile) {
-    if (browser_actuator::transport::TransportService* transport_service =
-            browser_actuator::transport::TransportServiceFactory::GetForProfile(
-                profile)) {
+    if (stream_transport::TransportService* transport_service =
+            stream_transport::TransportServiceFactory::GetForProfile(profile)) {
       AddSharingHandler(
           std::make_unique<BrowserActuatorMessageHandler>(transport_service),
           browser_actuator_payloads);

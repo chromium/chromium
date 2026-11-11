@@ -8,9 +8,9 @@
 #include "base/memory/raw_ref.h"
 #include "components/sharing_message/sharing_message_handler.h"
 
-namespace browser_actuator::transport {
+namespace stream_transport {
 class TransportService;
-}  // namespace browser_actuator::transport
+}  // namespace stream_transport
 
 // Handler for incoming initial SharingMessages for BrowserActuator service.
 // Processes initial opt-in or trigger actuation messages to set up a
@@ -21,7 +21,7 @@ class BrowserActuatorMessageHandler : public SharingMessageHandler {
   // (guaranteed by `SharingServiceFactory`'s dependency on
   // `TransportServiceFactory`).
   explicit BrowserActuatorMessageHandler(
-      browser_actuator::transport::TransportService* transport_service);
+      stream_transport::TransportService* transport_service);
   BrowserActuatorMessageHandler(const BrowserActuatorMessageHandler&) = delete;
   BrowserActuatorMessageHandler& operator=(
       const BrowserActuatorMessageHandler&) = delete;
@@ -32,8 +32,7 @@ class BrowserActuatorMessageHandler : public SharingMessageHandler {
                  DoneCallback done_callback) override;
 
  private:
-  const raw_ref<browser_actuator::transport::TransportService>
-      transport_service_;
+  const raw_ref<stream_transport::TransportService> transport_service_;
 };
 
 #endif  // CHROME_BROWSER_SHARING_BROWSER_ACTUATOR_BROWSER_ACTUATOR_MESSAGE_HANDLER_H_

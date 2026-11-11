@@ -4,7 +4,7 @@
 
 #include "components/stream_transport/test_support/mock_transport_channel.h"
 
-namespace browser_actuator::transport {
+namespace stream_transport {
 
 MockTransportChannel::MockTransportChannel() = default;
 MockTransportChannel::~MockTransportChannel() = default;
@@ -13,4 +13,4 @@ base::WeakPtr<MockTransportChannel> MockTransportChannel::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-}  // namespace browser_actuator::transport
+}  // namespace stream_transport

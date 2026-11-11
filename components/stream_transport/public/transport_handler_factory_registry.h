@@ -10,7 +10,7 @@
 #include "base/observer_list_types.h"
 #include "components/stream_transport/public/common.h"
 
-namespace browser_actuator::transport {
+namespace stream_transport {
 
 class TransportHandlerFactory;
 
@@ -48,6 +48,6 @@ class TransportHandlerFactoryRegistry {
       PayloadType payload_type) const = 0;
 };
 
-}  // namespace browser_actuator::transport
+}  // namespace stream_transport
 
 #endif  // COMPONENTS_STREAM_TRANSPORT_PUBLIC_TRANSPORT_HANDLER_FACTORY_REGISTRY_H_

@@ -15,7 +15,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace browser_actuator::transport {
+namespace stream_transport {
 namespace {
 
 using Error = DownstreamMessageSequencer::Error;
@@ -27,17 +27,18 @@ using ::testing::IsEmpty;
 
 constexpr char kSessionId[] = "session";
 
-ActuatorDownstreamMessage MakeMessage(int64_t sequence_number) {
-  ActuatorDownstreamMessage message;
+browser_actuator::ActuatorDownstreamMessage MakeMessage(
+    int64_t sequence_number) {
+  browser_actuator::ActuatorDownstreamMessage message;
   message.set_session_id(kSessionId);
   message.set_sequence_number(sequence_number);
   return message;
 }
 
 std::vector<int64_t> SequenceNumbers(
-    const std::vector<ActuatorDownstreamMessage>& messages) {
+    const std::vector<browser_actuator::ActuatorDownstreamMessage>& messages) {
   std::vector<int64_t> sequence_numbers;
-  for (const ActuatorDownstreamMessage& message : messages) {
+  for (const browser_actuator::ActuatorDownstreamMessage& message : messages) {
     sequence_numbers.push_back(message.sequence_number());
   }
   return sequence_numbers;
@@ -69,9 +70,9 @@ TEST(DownstreamMessageSequencerTest, DeliversInOrderMessages) {
 
 TEST(DownstreamMessageSequencerTest, PreservesMessageContents) {
   DownstreamMessageSequencer sequencer;
-  ActuatorDownstreamMessage message = MakeMessage(1);
+  browser_actuator::ActuatorDownstreamMessage message = MakeMessage(1);
   message.add_typed_payloads()->set_payload_type(
-      ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
+      browser_actuator::ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
 
   EXPECT_THAT(sequencer.AddMessage(message),
               ValueIs(ElementsAre(EqualsProto(message))));
@@ -147,9 +148,9 @@ TEST(DownstreamMessageSequencerTest, DropsDuplicateAtOrBelowCursor) {
 
 TEST(DownstreamMessageSequencerTest, DropsDuplicateBufferedMessage) {
   DownstreamMessageSequencer sequencer;
-  ActuatorDownstreamMessage first = MakeMessage(2);
+  browser_actuator::ActuatorDownstreamMessage first = MakeMessage(2);
   first.add_typed_payloads()->set_payload_type(
-      ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
+      browser_actuator::ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
   ASSERT_THAT(sequencer.AddMessage(first), ValueIs(IsEmpty()));
 
   // A retransmission of 2 does not replace the original.
@@ -297,9 +298,9 @@ TEST(DownstreamMessageSequencerTest, FlushSkipsGapsAndAdvancesCursor) {
   DownstreamMessageSequencer sequencer;
   EXPECT_THAT(AddAndGetDelivered(sequencer, 1), ValueIs(ElementsAre(1)));
 
-  ActuatorDownstreamMessage message_6 = MakeMessage(6);
+  browser_actuator::ActuatorDownstreamMessage message_6 = MakeMessage(6);
   message_6.add_typed_payloads()->set_payload_type(
-      ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
+      browser_actuator::ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
   ASSERT_THAT(sequencer.AddMessage(message_6), ValueIs(IsEmpty()));
   EXPECT_THAT(AddAndGetDelivered(sequencer, 3), ValueIs(IsEmpty()));
   EXPECT_THAT(AddAndGetDelivered(sequencer, 4), ValueIs(IsEmpty()));
@@ -346,4 +347,4 @@ TEST(DownstreamMessageSequencerTest, AdvanceLastSeenTo) {
 }
 
 }  // namespace
-}  // namespace browser_actuator::transport
+}  // namespace stream_transport

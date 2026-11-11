@@ -14,7 +14,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace browser_actuator::transport {
+namespace stream_transport {
 namespace {
 
 using ::base::test::ErrorIs;
@@ -142,7 +142,7 @@ TEST(ProbePayloadTest, BuildAndVerifyRoundTripSucceedsAndDetectsCorruption) {
       {.payload_size_bytes = 4096, .delay_ms = 25},
   };
   ASSERT_OK_AND_ASSIGN(
-      TransportProbe::ProbeRequest request,
+      browser_actuator::TransportProbe::ProbeRequest request,
       BuildProbeRequest("probe-rtt-1", /*request_payload_size_bytes=*/128,
                         specs));
 
@@ -151,7 +151,7 @@ TEST(ProbePayloadTest, BuildAndVerifyRoundTripSucceedsAndDetectsCorruption) {
   EXPECT_FALSE(VerifyProbeRequestPayload("probe-rtt-1", -1, request.payload()));
   EXPECT_FALSE(VerifyProbeRequestPayload("probe-rtt-1", 64, request.payload()));
 
-  TransportProbe::ProbeResponse response_0;
+  browser_actuator::TransportProbe::ProbeResponse response_0;
   response_0.set_probe_id("probe-rtt-1");
   response_0.set_response_index(0);
   response_0.set_total_responses(2);
@@ -160,7 +160,7 @@ TEST(ProbePayloadTest, BuildAndVerifyRoundTripSucceedsAndDetectsCorruption) {
 
   ASSERT_OK_AND_ASSIGN(const std::string payload_1,
                        GenerateProbeResponsePayload("probe-rtt-1", 1, 2, 4096));
-  TransportProbe::ProbeResponse response_1;
+  browser_actuator::TransportProbe::ProbeResponse response_1;
   response_1.set_probe_id("probe-rtt-1");
   response_1.set_response_index(1);
   response_1.set_total_responses(2);
@@ -173,23 +173,23 @@ TEST(ProbePayloadTest, BuildAndVerifyRoundTripSucceedsAndDetectsCorruption) {
   EXPECT_FALSE(VerifyProbeResponsePayload(request, response_1));
 
   response_1.set_payload(payload_1);
-  TransportProbe::ProbeResponse wrong_id = response_1;
+  browser_actuator::TransportProbe::ProbeResponse wrong_id = response_1;
   wrong_id.set_probe_id("other-id");
   EXPECT_FALSE(VerifyProbeResponsePayload(request, wrong_id));
 
-  TransportProbe::ProbeResponse wrong_total = response_1;
+  browser_actuator::TransportProbe::ProbeResponse wrong_total = response_1;
   wrong_total.set_total_responses(3);
   EXPECT_FALSE(VerifyProbeResponsePayload(request, wrong_total));
 
-  TransportProbe::ProbeResponse negative_index = response_1;
+  browser_actuator::TransportProbe::ProbeResponse negative_index = response_1;
   negative_index.set_response_index(-1);
   EXPECT_FALSE(VerifyProbeResponsePayload(request, negative_index));
 
-  TransportProbe::ProbeResponse out_of_range = response_1;
+  browser_actuator::TransportProbe::ProbeResponse out_of_range = response_1;
   out_of_range.set_response_index(2);
   EXPECT_FALSE(VerifyProbeResponsePayload(request, out_of_range));
 
-  TransportProbe::ProbeResponse truncated = response_1;
+  browser_actuator::TransportProbe::ProbeResponse truncated = response_1;
   truncated.mutable_payload()->pop_back();
   EXPECT_FALSE(VerifyProbeResponsePayload(request, truncated));
 }
@@ -226,14 +226,14 @@ TEST(ProbePayloadTest, GenerateProbePayloadRejectsOutOfBoundsInputs) {
 }
 
 TEST(ProbePayloadTest, ValidateProbeRequestEnforcesAllSafetyBounds) {
-  TransportProbe::ProbeRequest empty_valid;
+  browser_actuator::TransportProbe::ProbeRequest empty_valid;
   EXPECT_THAT(ValidateProbeRequest(empty_valid), HasValue());
 
-  TransportProbe::ProbeRequest oversized_id;
+  browser_actuator::TransportProbe::ProbeRequest oversized_id;
   oversized_id.set_probe_id(std::string(kMaxProbeIdBytes + 1, 'a'));
   EXPECT_THAT(ValidateProbeRequest(oversized_id), ErrorIs(Not(IsEmpty())));
 
-  TransportProbe::ProbeRequest oversized_payload;
+  browser_actuator::TransportProbe::ProbeRequest oversized_payload;
   oversized_payload.set_payload(
       std::string(static_cast<size_t>(kMaxProbePayloadBytes) + 1, 'A'));
   EXPECT_THAT(ValidateProbeRequest(oversized_payload), ErrorIs(Not(IsEmpty())));
@@ -245,7 +245,7 @@ TEST(ProbePayloadTest, ValidateProbeRequestEnforcesAllSafetyBounds) {
       {.payload_size_bytes = kMaxProbePayloadBytes + 1}};
   EXPECT_THAT(BuildProbeRequest("over", 0, over_spec), ErrorIs(Not(IsEmpty())));
 
-  TransportProbe::ProbeRequest too_many_specs;
+  browser_actuator::TransportProbe::ProbeRequest too_many_specs;
   for (int i = 0; i < kMaxProbeResponses + 1; ++i) {
     too_many_specs.add_response_specs()->set_payload_size_bytes(0);
   }
@@ -276,4 +276,4 @@ TEST(ProbePayloadTest, ValidateProbeRequestEnforcesAllSafetyBounds) {
 }
 
 }  // namespace
-}  // namespace browser_actuator::transport
+}  // namespace stream_transport

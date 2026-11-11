@@ -845,7 +845,7 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
 #endif
   browser_actuator::BrowserActuatorServiceFactory::GetInstance();
-  browser_actuator::transport::TransportServiceFactory::GetInstance();
+  stream_transport::TransportServiceFactory::GetInstance();
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   browser_switcher::BrowserSwitcherServiceFactory::GetInstance();
 #endif

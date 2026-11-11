@@ -15,7 +15,7 @@
 #include "base/types/expected.h"
 #include "components/sharing_message/proto/actuator_downstream_message.pb.h"
 
-namespace browser_actuator::transport {
+namespace stream_transport {
 
 // Orders the downstream messages of a single session by `sequence_number`.
 // In-band stream messages start at 1; `sequence_number == 0` is reserved for
@@ -66,12 +66,14 @@ class DownstreamMessageSequencer {
   // Returns the messages that are now deliverable, in order. Returns an empty
   // vector if `message` was buffered or dropped as a duplicate. On error,
   // `message` is discarded.
-  base::expected<std::vector<ActuatorDownstreamMessage>, Error> AddMessage(
-      ActuatorDownstreamMessage message);
+  base::expected<std::vector<browser_actuator::ActuatorDownstreamMessage>,
+                 Error>
+  AddMessage(browser_actuator::ActuatorDownstreamMessage message);
 
   // Returns all buffered messages in order, skipping any gaps. Empties the
   // buffer and advances the cursor to the last returned sequence number.
-  [[nodiscard]] std::vector<ActuatorDownstreamMessage> Flush();
+  [[nodiscard]] std::vector<browser_actuator::ActuatorDownstreamMessage>
+  Flush();
 
   // Advances `last_seen_sequence_number_` to at least `sequence_number` when a
   // terminating control command bypasses `AddMessage()`. `buffered_messages_`
@@ -99,10 +101,10 @@ class DownstreamMessageSequencer {
   const size_t max_buffered_messages_;
 
   // Keyed by sequence number; every key is > `next_expected_sequence_number()`.
-  base::flat_map<int64_t, ActuatorDownstreamMessage> buffered_messages_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  base::flat_map<int64_t, browser_actuator::ActuatorDownstreamMessage>
+      buffered_messages_ GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
-}  // namespace browser_actuator::transport
+}  // namespace stream_transport
 
 #endif  // COMPONENTS_STREAM_TRANSPORT_INTERNAL_DOWNSTREAM_MESSAGE_SEQUENCER_H_

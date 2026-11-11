@@ -18,9 +18,9 @@
 
 class Profile;
 
-namespace browser_actuator::transport {
+namespace stream_transport {
 class TransportSession;
-}  // namespace browser_actuator::transport
+}  // namespace stream_transport
 
 namespace glic {
 
@@ -29,11 +29,11 @@ class GlicExperimentalTriggeringCoordinator;
 // TransportHandler for handling GlicExperimentalTriggering messages and
 // coordinating requests over a BrowserActuator TransportSession.
 class GlicExperimentalTriggeringTransportHandler
-    : public browser_actuator::transport::TransportHandler {
+    : public stream_transport::TransportHandler {
  public:
   GlicExperimentalTriggeringTransportHandler(
       Profile* profile,
-      browser_actuator::transport::TransportSession* session,
+      stream_transport::TransportSession* session,
       base::WeakPtr<GlicExperimentalTriggeringCoordinator> coordinator);
   ~GlicExperimentalTriggeringTransportHandler() override;
 
@@ -42,8 +42,8 @@ class GlicExperimentalTriggeringTransportHandler
   GlicExperimentalTriggeringTransportHandler& operator=(
       const GlicExperimentalTriggeringTransportHandler&) = delete;
 
-  // browser_actuator::transport::TransportHandler implementation:
-  void OnMessage(browser_actuator::transport::PayloadType payload_type,
+  // stream_transport::TransportHandler implementation:
+  void OnMessage(stream_transport::PayloadType payload_type,
                  std::string_view serialized_payload) override;
 
  private:
@@ -56,7 +56,7 @@ class GlicExperimentalTriggeringTransportHandler
 };
 
 class GlicExperimentalTriggeringTransportHandlerFactory
-    : public browser_actuator::transport::TransportHandlerFactory {
+    : public stream_transport::TransportHandlerFactory {
  public:
   explicit GlicExperimentalTriggeringTransportHandlerFactory(Profile* profile);
   GlicExperimentalTriggeringTransportHandlerFactory(
@@ -69,12 +69,12 @@ class GlicExperimentalTriggeringTransportHandlerFactory
   GlicExperimentalTriggeringTransportHandlerFactory& operator=(
       const GlicExperimentalTriggeringTransportHandlerFactory&) = delete;
 
-  // browser_actuator::transport::TransportHandlerFactory implementation:
-  browser_actuator::transport::FactoryId GetFactoryId() const override;
-  std::vector<browser_actuator::transport::PayloadType>
-  GetSupportedPayloadTypes() const override;
-  std::unique_ptr<browser_actuator::transport::TransportHandler> OnNewSession(
-      browser_actuator::transport::TransportSession* session) override;
+  // stream_transport::TransportHandlerFactory implementation:
+  stream_transport::FactoryId GetFactoryId() const override;
+  std::vector<stream_transport::PayloadType> GetSupportedPayloadTypes()
+      const override;
+  std::unique_ptr<stream_transport::TransportHandler> OnNewSession(
+      stream_transport::TransportSession* session) override;
 
  private:
   const raw_ptr<Profile> profile_;

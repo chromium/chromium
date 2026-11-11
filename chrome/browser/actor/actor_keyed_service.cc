@@ -205,9 +205,8 @@ ActorKeyedService::ActorKeyedService(Profile* profile) : profile_(profile) {
   // TODO(crbug.com/572907956): Reconsider ownership of
   // ChromeActuationTransportHandlerFactory.
   if (base::FeatureList::IsEnabled(browser_actuator::kBrowserActuator)) {
-    browser_actuator::transport::TransportService* transport_service =
-        browser_actuator::transport::TransportServiceFactory::GetForProfile(
-            profile_);
+    stream_transport::TransportService* transport_service =
+        stream_transport::TransportServiceFactory::GetForProfile(profile_);
     if (transport_service && transport_service->GetChannel()) {
       actuation_transport_handler_factory_ =
           std::make_unique<ChromeActuationTransportHandlerFactory>(this);
@@ -382,9 +381,8 @@ void ActorKeyedService::Shutdown() {
   CHECK(active_tasks_.empty());
   pending_delete_tasks_.clear();
   if (actuation_transport_handler_factory_) {
-    browser_actuator::transport::TransportService* transport_service =
-        browser_actuator::transport::TransportServiceFactory::GetForProfile(
-            profile_);
+    stream_transport::TransportService* transport_service =
+        stream_transport::TransportServiceFactory::GetForProfile(profile_);
     if (transport_service && transport_service->GetChannel()) {
       transport_service->GetChannel()
           ->GetHandlerFactoryRegistry()

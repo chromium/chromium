@@ -13,7 +13,7 @@
 #include "components/sharing_message/proto/actuator_downstream_message.pb.h"
 #include "components/stream_transport/public/common.h"
 
-namespace browser_actuator::transport {
+namespace stream_transport {
 
 // Translation between the `ActuatorDownstreamPayloadType` wire enum and the
 // public `PayloadType` enum. This lives in public/ because chrome/browser
@@ -31,19 +31,20 @@ inline constexpr auto kRoutablePayloadTypes = std::to_array<PayloadType>(
      PayloadType::kActuation, PayloadType::kTaskIngress, PayloadType::kProbe});
 
 // Returns the wire enum used to tag a downstream payload of `payload_type`.
-inline ActuatorDownstreamPayloadType ToDownstreamProtoPayloadType(
-    PayloadType payload_type) {
+inline browser_actuator::ActuatorDownstreamPayloadType
+ToDownstreamProtoPayloadType(PayloadType payload_type) {
   switch (payload_type) {
     case PayloadType::kControl:
-      return ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND;
+      return browser_actuator::ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND;
     case PayloadType::kExperimentalTriggering:
-      return ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_EXPERIMENTAL_TRIGGERING;
+      return browser_actuator::
+          ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_EXPERIMENTAL_TRIGGERING;
     case PayloadType::kActuation:
-      return ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_ACTUATION;
+      return browser_actuator::ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_ACTUATION;
     case PayloadType::kTaskIngress:
-      return ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_TASK_INGRESS;
+      return browser_actuator::ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_TASK_INGRESS;
     case PayloadType::kProbe:
-      return ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_PROBE;
+      return browser_actuator::ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_PROBE;
     case PayloadType::kUnspecified:
       NOTREACHED();
   }
@@ -83,8 +84,9 @@ inline std::string_view ExpectedTypeUrl(PayloadType payload_type) {
 // is unspecified or not a value this client knows how to route. Callers must
 // treat `std::nullopt` as "drop and report", never as a silent no-op.
 inline std::optional<PayloadType> FromDownstreamProtoPayloadType(
-    ActuatorDownstreamPayloadType proto_type) {
-  if (proto_type == ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_UNSPECIFIED) {
+    browser_actuator::ActuatorDownstreamPayloadType proto_type) {
+  if (proto_type ==
+      browser_actuator::ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_UNSPECIFIED) {
     return std::nullopt;
   }
   for (PayloadType payload_type : kRoutablePayloadTypes) {
@@ -95,6 +97,6 @@ inline std::optional<PayloadType> FromDownstreamProtoPayloadType(
   return std::nullopt;
 }
 
-}  // namespace browser_actuator::transport
+}  // namespace stream_transport
 
 #endif  // COMPONENTS_STREAM_TRANSPORT_PUBLIC_PAYLOAD_TYPE_MAPPING_H_

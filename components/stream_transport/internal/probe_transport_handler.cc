@@ -26,7 +26,7 @@
 #include "components/stream_transport/public/common.h"
 #include "components/stream_transport/public/transport_session.h"
 
-namespace browser_actuator::transport {
+namespace stream_transport {
 
 ProbeTransportHandler::ProbeTransportHandler(
     TransportSession* session,
@@ -43,18 +43,18 @@ ProbeTransportHandler::~ProbeTransportHandler() {
 void ProbeTransportHandler::OnMessage(PayloadType payload_type,
                                       std::string_view serialized_payload) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  TransportProbe probe;
+  browser_actuator::TransportProbe probe;
   if (!probe.ParseFromString(serialized_payload)) {
     DLOG(WARNING) << "Failed to parse TransportProbe payload";
     return;
   }
 
   switch (probe.payload_case()) {
-    case TransportProbe::kRequest:
+    case browser_actuator::TransportProbe::kRequest:
       HandleProbeRequest(probe.request());
       break;
-    case TransportProbe::kResponse:
-    case TransportProbe::PAYLOAD_NOT_SET:
+    case browser_actuator::TransportProbe::kResponse:
+    case browser_actuator::TransportProbe::PAYLOAD_NOT_SET:
       DLOG(WARNING) << "Received unexpected TransportProbe payload case, "
                        "skipping: "
                     << static_cast<int>(probe.payload_case());
@@ -63,7 +63,7 @@ void ProbeTransportHandler::OnMessage(PayloadType payload_type,
 }
 
 void ProbeTransportHandler::HandleProbeRequest(
-    const TransportProbe::ProbeRequest& request) {
+    const browser_actuator::TransportProbe::ProbeRequest& request) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!session()) {
     return;
@@ -81,8 +81,8 @@ void ProbeTransportHandler::HandleProbeRequest(
 
   int32_t delayed_responses = 0;
   int64_t delayed_bytes = 0;
-  for (const TransportProbe::ProbeRequest::ResponseSpec& spec :
-       request.response_specs()) {
+  for (const browser_actuator::TransportProbe::ProbeRequest::ResponseSpec&
+           spec : request.response_specs()) {
     if (spec.delay_ms() > 0) {
       ++delayed_responses;
       delayed_bytes += spec.payload_size_bytes();
@@ -108,7 +108,7 @@ void ProbeTransportHandler::HandleProbeRequest(
     if (!weak_this) {
       return;
     }
-    const TransportProbe::ProbeRequest::ResponseSpec& spec =
+    const browser_actuator::TransportProbe::ProbeRequest::ResponseSpec& spec =
         request.response_specs(index);
     if (spec.delay_ms() <= 0) {
       SendProbeResponse(request.probe_id(), index, total_responses,
@@ -160,8 +160,8 @@ void ProbeTransportHandler::SendProbeResponse(
     return;
   }
 
-  TransportProbe response_probe;
-  TransportProbe::ProbeResponse* probe_response =
+  browser_actuator::TransportProbe response_probe;
+  browser_actuator::TransportProbe::ProbeResponse* probe_response =
       response_probe.mutable_response();
   probe_response->set_probe_id(std::move(probe_id));
   probe_response->set_response_index(response_index);
@@ -208,4 +208,4 @@ std::unique_ptr<TransportHandler> ProbeTransportHandlerFactory::OnNewSession(
       session, get_dispatching_sequence_cb_, send_probe_reply_cb_);
 }
 
-}  // namespace browser_actuator::transport
+}  // namespace stream_transport

@@ -22,7 +22,7 @@
 #include "third_party/protobuf/src/google/protobuf/io/coded_stream.h"
 #include "third_party/protobuf/src/google/protobuf/io/zero_copy_stream_impl_lite.h"
 
-namespace browser_actuator::transport {
+namespace stream_transport {
 namespace {
 
 // Protobuf length-delimited field helper: writes `tag` followed by the varint
@@ -112,9 +112,9 @@ void FakeProtoStreamServer::WaitForConnection() {
 }
 
 void FakeProtoStreamServer::PushMessage(
-    const ActuatorDownstreamMessage& message) {
+    const browser_actuator::ActuatorDownstreamMessage& message) {
   CHECK(producer_handle_.is_valid());
-  WatchSessionsResponse response;
+  browser_actuator::WatchSessionsResponse response;
   *response.mutable_actuator_downstream_message() = message;
   std::string serialized;
   CHECK(response.SerializeToString(&serialized));
@@ -157,4 +157,4 @@ void FakeProtoStreamServer::WriteRawBytes(std::string_view bytes) {
            MOJO_RESULT_OK);
 }
 
-}  // namespace browser_actuator::transport
+}  // namespace stream_transport

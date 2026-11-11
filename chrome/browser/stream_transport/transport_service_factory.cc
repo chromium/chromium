@@ -18,7 +18,7 @@
 #include "content/public/browser/browser_context.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-namespace browser_actuator::transport {
+namespace stream_transport {
 
 // static
 TransportService* TransportServiceFactory::GetForProfile(Profile* profile) {
@@ -47,15 +47,16 @@ TransportServiceFactory::BuildServiceInstanceForBrowserContext(
   // TODO(crbug.com/568448841): Browser actuation is the transport's only
   // client so far, so its feature gates the transport. Give the transport its
   // own feature once a second client arrives.
-  if (!base::FeatureList::IsEnabled(kBrowserActuator)) {
+  if (!base::FeatureList::IsEnabled(browser_actuator::kBrowserActuator)) {
     return nullptr;
   }
 
   TransportServiceConfig config;
-  config.watch_sessions_endpoint = GetWatchSessionsEndPoint();
-  config.send_session_message_endpoint = GetSendSessionMessageEndpoint();
+  config.watch_sessions_endpoint = browser_actuator::GetWatchSessionsEndPoint();
+  config.send_session_message_endpoint =
+      browser_actuator::GetSendSessionMessageEndpoint();
   config.record_sessions =
-      base::FeatureList::IsEnabled(kBrowserActuatorInternals);
+      base::FeatureList::IsEnabled(browser_actuator::kBrowserActuatorInternals);
 
   Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<TransportServiceImpl>(
@@ -63,4 +64,4 @@ TransportServiceFactory::BuildServiceInstanceForBrowserContext(
       IdentityManagerFactory::GetForProfile(profile), std::move(config));
 }
 
-}  // namespace browser_actuator::transport
+}  // namespace stream_transport

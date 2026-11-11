@@ -9,20 +9,21 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace browser_actuator::transport {
+namespace stream_transport {
 namespace {
 
 TEST(PayloadTypeMappingTest, MapsPayloadTypeToWireEnum) {
   EXPECT_EQ(ToDownstreamProtoPayloadType(PayloadType::kControl),
-            ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
+            browser_actuator::ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
   EXPECT_EQ(ToDownstreamProtoPayloadType(PayloadType::kExperimentalTriggering),
-            ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_EXPERIMENTAL_TRIGGERING);
+            browser_actuator::
+                ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_EXPERIMENTAL_TRIGGERING);
   EXPECT_EQ(ToDownstreamProtoPayloadType(PayloadType::kActuation),
-            ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_ACTUATION);
+            browser_actuator::ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_ACTUATION);
   EXPECT_EQ(ToDownstreamProtoPayloadType(PayloadType::kTaskIngress),
-            ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_TASK_INGRESS);
+            browser_actuator::ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_TASK_INGRESS);
   EXPECT_EQ(ToDownstreamProtoPayloadType(PayloadType::kProbe),
-            ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_PROBE);
+            browser_actuator::ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_PROBE);
 }
 
 TEST(PayloadTypeMappingTest, RoundTripsEveryRoutablePayloadType) {
@@ -34,35 +35,39 @@ TEST(PayloadTypeMappingTest, RoundTripsEveryRoutablePayloadType) {
 }
 
 TEST(PayloadTypeMappingTest, MapsWireEnumToPayloadType) {
+  EXPECT_EQ(
+      FromDownstreamProtoPayloadType(
+          browser_actuator::ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND),
+      PayloadType::kControl);
   EXPECT_EQ(FromDownstreamProtoPayloadType(
-                ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND),
-            PayloadType::kControl);
-  EXPECT_EQ(FromDownstreamProtoPayloadType(
-                ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_EXPERIMENTAL_TRIGGERING),
+                browser_actuator::
+                    ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_EXPERIMENTAL_TRIGGERING),
             PayloadType::kExperimentalTriggering);
   EXPECT_EQ(FromDownstreamProtoPayloadType(
-                ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_ACTUATION),
+                browser_actuator::ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_ACTUATION),
             PayloadType::kActuation);
-  EXPECT_EQ(FromDownstreamProtoPayloadType(
-                ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_TASK_INGRESS),
-            PayloadType::kTaskIngress);
   EXPECT_EQ(
-      FromDownstreamProtoPayloadType(ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_PROBE),
-      PayloadType::kProbe);
+      FromDownstreamProtoPayloadType(
+          browser_actuator::ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_TASK_INGRESS),
+      PayloadType::kTaskIngress);
+  EXPECT_EQ(FromDownstreamProtoPayloadType(
+                browser_actuator::ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_PROBE),
+            PayloadType::kProbe);
 }
 
 TEST(PayloadTypeMappingTest, RejectsUnspecifiedWireEnum) {
   EXPECT_EQ(FromDownstreamProtoPayloadType(
-                ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_UNSPECIFIED),
+                browser_actuator::ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_UNSPECIFIED),
             std::nullopt);
 }
 
 // A payload type added by a newer server must be reported as unroutable rather
 // than mapped onto an arbitrary existing type.
 TEST(PayloadTypeMappingTest, RejectsUnknownWireEnum) {
-  EXPECT_EQ(FromDownstreamProtoPayloadType(
-                static_cast<ActuatorDownstreamPayloadType>(999)),
-            std::nullopt);
+  EXPECT_EQ(
+      FromDownstreamProtoPayloadType(
+          static_cast<browser_actuator::ActuatorDownstreamPayloadType>(999)),
+      std::nullopt);
 }
 
 TEST(PayloadTypeMappingTest, ExpectedTypeUrlIsWellFormedForRoutableTypes) {
@@ -89,4 +94,4 @@ TEST(PayloadTypeMappingTest, ExpectedTypeUrlForTaskIngress) {
 }
 
 }  // namespace
-}  // namespace browser_actuator::transport
+}  // namespace stream_transport

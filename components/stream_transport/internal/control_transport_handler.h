@@ -17,7 +17,7 @@
 #include "components/stream_transport/public/transport_handler.h"
 #include "components/stream_transport/public/transport_handler_factory.h"
 
-namespace browser_actuator::transport {
+namespace stream_transport {
 
 // Implementation of TransportHandler specifically for processing channel and
 // session control commands (PayloadType::kControl).
@@ -73,6 +73,6 @@ class ControlTransportHandlerFactory : public TransportHandlerFactory {
       GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
-}  // namespace browser_actuator::transport
+}  // namespace stream_transport
 
 #endif  // COMPONENTS_STREAM_TRANSPORT_INTERNAL_CONTROL_TRANSPORT_HANDLER_H_
