@@ -14,12 +14,15 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/timer/elapsed_timer.h"
 #include "media/base/cdm_config.h"
 #include "media/base/cdm_context.h"
+#include "media/base/media_switches.h"
 #include "media/base/mock_filters.h"
 #include "media/base/test_helpers.h"
+#include "media/base/wall_clock_time_source.h"
 #include "media/cdm/clear_key_cdm_common.h"
 #include "media/cdm/default_cdm_factory.h"
 #include "media/gfx/video_overlay_factory.h"
@@ -475,6 +478,138 @@ TEST_F(MojoRendererTest, GetMediaTime_HighPlaybackRate) {
     task_environment_.FastForwardBy(kTimeUpdateInterval / kSamplesPerInterval);
     EXPECT_EQ(remote_media_time(), mojo_renderer_->GetMediaTime());
   }
+
+  Destroy();
+}
+
+// Regression test for crbug.com/583180909: MojoRenderer::GetMediaTime() should
+// coarsen interpolated media time to WallClockTimeSource::kCoarseResolution
+// (100 us) so it cannot be used as a high-resolution clock.
+TEST_F(MojoRendererTest, GetMediaTime_CoarsenedWhenPlaying) {
+  Initialize();
+
+  constexpr base::TimeDelta kTimeUpdateInterval = base::Milliseconds(125);
+  base::ElapsedTimer elapsed_timer;
+  EXPECT_CALL(*mock_renderer_, SetPlaybackRate(1.0));
+  EXPECT_CALL(*mock_renderer_, StartPlayingFrom(base::TimeDelta()));
+  EXPECT_CALL(*mock_renderer_, GetMediaTime()).WillRepeatedly([&]() {
+    return elapsed_timer.Elapsed();
+  });
+  mojo_renderer_->SetPlaybackRate(1.0);
+  mojo_renderer_->StartPlayingFrom(base::TimeDelta());
+
+  // Advance to the first periodic OnTimeUpdate so the upper bound is extended
+  // and client-side interpolation is active.
+  task_environment_.FastForwardBy(kTimeUpdateInterval);
+  EXPECT_EQ(kTimeUpdateInterval, mojo_renderer_->GetMediaTime());
+
+  // Sub-100us advances must remain floored to the 100us boundary.
+  task_environment_.FastForwardBy(base::Microseconds(1));
+  EXPECT_EQ(kTimeUpdateInterval, mojo_renderer_->GetMediaTime());
+
+  task_environment_.FastForwardBy(base::Microseconds(49));
+  EXPECT_EQ(kTimeUpdateInterval, mojo_renderer_->GetMediaTime());
+
+  task_environment_.FastForwardBy(base::Microseconds(49));
+  EXPECT_EQ(kTimeUpdateInterval, mojo_renderer_->GetMediaTime());
+
+  // Reaching +100us steps to the next coarse boundary.
+  task_environment_.FastForwardBy(base::Microseconds(1));
+  EXPECT_EQ(kTimeUpdateInterval + WallClockTimeSource::kCoarseResolution,
+            mojo_renderer_->GetMediaTime());
+
+  // +199us stays at +100us; +200us steps to +200us.
+  task_environment_.FastForwardBy(base::Microseconds(99));
+  EXPECT_EQ(kTimeUpdateInterval + WallClockTimeSource::kCoarseResolution,
+            mojo_renderer_->GetMediaTime());
+
+  task_environment_.FastForwardBy(base::Microseconds(1));
+  EXPECT_EQ(kTimeUpdateInterval + WallClockTimeSource::kCoarseResolution * 2,
+            mojo_renderer_->GetMediaTime());
+
+  // Flushing at an unaligned timestamp (+250us) keeps the reported time
+  // coarsened rather than leaking the exact stop timestamp.
+  task_environment_.FastForwardBy(base::Microseconds(50));
+  EXPECT_CALL(*mock_renderer_, OnFlush(_)).WillOnce(RunOnceClosure<0>());
+  Flush();
+  EXPECT_EQ(kTimeUpdateInterval + WallClockTimeSource::kCoarseResolution * 2,
+            mojo_renderer_->GetMediaTime());
+
+  Destroy();
+}
+
+TEST_F(MojoRendererTest, GetMediaTime_CoarseSeekOffset) {
+  Initialize();
+
+  // Seek / start playing from an unaligned timestamp (150 us).
+  constexpr base::TimeDelta kTimeUpdateInterval = base::Milliseconds(125);
+  constexpr base::TimeDelta kSeekTime = base::Microseconds(150);
+  base::TimeDelta remote_time = kSeekTime;
+  EXPECT_CALL(*mock_renderer_, SetPlaybackRate(1.0));
+  EXPECT_CALL(*mock_renderer_, StartPlayingFrom(kSeekTime));
+  EXPECT_CALL(*mock_renderer_, GetMediaTime()).WillRepeatedly([&]() {
+    return remote_time;
+  });
+  mojo_renderer_->SetPlaybackRate(1.0);
+  mojo_renderer_->StartPlayingFrom(kSeekTime);
+  task_environment_.FastForwardBy(base::TimeDelta());
+
+  // GetMediaTime() must not jump backwards below the StartPlayingFrom target.
+  EXPECT_EQ(kSeekTime, mojo_renderer_->GetMediaTime());
+
+  // Simulate startup buffering completing shortly before the first periodic
+  // OnTimeUpdate (remote_time advanced by 10 us to 160 us), extending
+  // upper_bound_ by 2 * kTimeUpdateInterval while still below the next 100 us
+  // coarse boundary (200 us).
+  remote_time = kSeekTime + base::Microseconds(10);
+  task_environment_.FastForwardBy(kTimeUpdateInterval);
+  EXPECT_EQ(kSeekTime, mojo_renderer_->GetMediaTime());
+
+  // Elapsed 30 us (media time 190 us): still clamped to kSeekTime (150 us).
+  task_environment_.FastForwardBy(base::Microseconds(30));
+  EXPECT_EQ(kSeekTime, mojo_renderer_->GetMediaTime());
+
+  // Elapsed 40 us (media time 200 us): reaches the next 100 us boundary.
+  task_environment_.FastForwardBy(base::Microseconds(10));
+  EXPECT_EQ(base::Microseconds(200), mojo_renderer_->GetMediaTime());
+
+  // Elapsed 139 us (media time 299 us): stays at 200 us.
+  task_environment_.FastForwardBy(base::Microseconds(99));
+  EXPECT_EQ(base::Microseconds(200), mojo_renderer_->GetMediaTime());
+
+  // Elapsed 140 us (media time 300 us): steps to 300 us.
+  task_environment_.FastForwardBy(base::Microseconds(1));
+  EXPECT_EQ(base::Microseconds(300), mojo_renderer_->GetMediaTime());
+
+  // Pausing at 350 us keeps the paused timestamp coarsened to 300 us.
+  task_environment_.FastForwardBy(base::Microseconds(50));
+  EXPECT_CALL(*mock_renderer_, SetPlaybackRate(0.0));
+  mojo_renderer_->SetPlaybackRate(0.0);
+  EXPECT_EQ(base::Microseconds(300), mojo_renderer_->GetMediaTime());
+
+  Destroy();
+}
+
+TEST_F(MojoRendererTest, GetMediaTime_CoarseKillSwitch) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kCoarseWallClockTimeSource);
+
+  Initialize();
+
+  constexpr base::TimeDelta kTimeUpdateInterval = base::Milliseconds(125);
+  base::ElapsedTimer elapsed_timer;
+  EXPECT_CALL(*mock_renderer_, SetPlaybackRate(1.0));
+  EXPECT_CALL(*mock_renderer_, StartPlayingFrom(base::TimeDelta()));
+  EXPECT_CALL(*mock_renderer_, GetMediaTime()).WillRepeatedly([&]() {
+    return elapsed_timer.Elapsed();
+  });
+  mojo_renderer_->SetPlaybackRate(1.0);
+  mojo_renderer_->StartPlayingFrom(base::TimeDelta());
+
+  task_environment_.FastForwardBy(kTimeUpdateInterval);
+  task_environment_.FastForwardBy(base::Microseconds(50));
+  EXPECT_EQ(kTimeUpdateInterval + base::Microseconds(50),
+            mojo_renderer_->GetMediaTime());
 
   Destroy();
 }

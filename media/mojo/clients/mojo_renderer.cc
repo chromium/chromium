@@ -4,8 +4,10 @@
 
 #include "media/mojo/clients/mojo_renderer.h"
 
+#include <algorithm>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -14,9 +16,11 @@
 #include "base/task/single_thread_task_runner.h"
 #include "media/base/cdm_context.h"
 #include "media/base/media_resource.h"
+#include "media/base/media_switches.h"
 #include "media/base/pipeline_status.h"
 #include "media/base/renderer_client.h"
 #include "media/base/video_renderer_sink.h"
+#include "media/base/wall_clock_time_source.h"
 #include "media/gfx/video_overlay_factory.h"
 #include "media/mojo/clients/mojo_demuxer_stream_impl.h"
 #include "media/mojo/common/media_type_converters.h"
@@ -177,6 +181,7 @@ void MojoRenderer::StartPlayingFrom(base::TimeDelta time) {
 
   {
     base::AutoLock auto_lock(lock_);
+    start_time_ = std::max(base::TimeDelta(), time);
     media_time_interpolator_.SetBounds(time, time, base::TimeTicks::Now());
     media_time_interpolator_.StartInterpolating();
   }
@@ -208,7 +213,13 @@ void MojoRenderer::SetVolume(float volume) {
 
 base::TimeDelta MojoRenderer::GetMediaTime() {
   base::AutoLock auto_lock(lock_);
-  return media_time_interpolator_.GetInterpolatedTime();
+  const base::TimeDelta current_time =
+      media_time_interpolator_.GetInterpolatedTime();
+  if (base::FeatureList::IsEnabled(kCoarseWallClockTimeSource)) {
+    return std::max(start_time_, current_time.FloorToMultiple(
+                                     WallClockTimeSource::kCoarseResolution));
+  }
+  return current_time;
 }
 
 void MojoRenderer::OnTracksChanged(DemuxerStream::Type track_type,

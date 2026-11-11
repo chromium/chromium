@@ -12,8 +12,11 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/thread_annotations.h"
 #include "base/time/default_tick_clock.h"
+#include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "media/base/demuxer_stream.h"
 #include "media/base/renderer.h"
@@ -157,9 +160,11 @@ class MojoRenderer : public Renderer, public mojom::RendererClient {
 
   float volume_ = 1.0f;
 
-  // Lock used to serialize access for |time_interpolator_|.
+  // Lock used to serialize access for `media_time_interpolator_` and
+  // `start_time_`.
   mutable base::Lock lock_;
-  media::TimeDeltaInterpolator media_time_interpolator_;
+  media::TimeDeltaInterpolator media_time_interpolator_ GUARDED_BY(lock_);
+  base::TimeDelta start_time_ GUARDED_BY(lock_);
 
   std::optional<PipelineStatistics> pending_stats_;
 };
