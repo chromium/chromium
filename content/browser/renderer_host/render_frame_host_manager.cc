@@ -5566,6 +5566,14 @@ void RenderFrameHostManager::CommitPending(
         render_widget_host_view_base->is_evicted();
   }
 
+  // Update the Surface Embed view before notifying observers of the swap.
+  if (render_frame_host_->IsInPrimaryMainFrame() &&
+      new_view->IsRenderWidgetHostViewChildFrame()) {
+    delegate_->NotifySwappedRWHVChildFrameFromRenderManager(
+        static_cast<RenderWidgetHostViewChildFrame*>(new_view),
+        allow_paint_holding);
+  }
+
   // Notify that we've swapped RenderFrameHosts. We do this before shutting down
   // the RFH so that we can clean up RendererResources related to the RFH first.
   delegate_->NotifySwappedFromRenderManager(old_render_frame_host.get(),
@@ -5679,9 +5687,6 @@ void RenderFrameHostManager::CommitPending(
     }
   }
 
-  bool is_child_view = static_cast<RenderWidgetHostViewBase*>(new_view)
-                           ->IsRenderWidgetHostViewChildFrame();
-
   // If this is a subframe or inner frame tree, it should have a
   // CrossProcessFrameConnector created already.  Use it to link the new RFH's
   // view to the proxy that belongs to the parent frame's SiteInstance. If this
@@ -5696,12 +5701,6 @@ void RenderFrameHostManager::CommitPending(
     proxy_to_parent_or_outer_delegate->SetChildRWHView(
         static_cast<RenderWidgetHostViewChildFrame*>(new_view),
         old_size ? &*old_size : nullptr, allow_paint_holding);
-  } else if (is_child_view) {
-    // Only use this mechanism when there is no proxy to parent or outer
-    // delegate. Otherwise we will partially duplicate SetChildRWHView work.
-    delegate_->NotifySwappedRWHVChildFrameFromRenderManager(
-        static_cast<RenderWidgetHostViewChildFrame*>(new_view),
-        allow_paint_holding);
   }
 
   UpdateViewVisibilityAfterCommit(/*was_same_render_frame_host=*/false);
