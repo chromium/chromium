@@ -20,6 +20,7 @@ import androidx.core.view.ViewCompat;
 import com.airbnb.lottie.LottieAnimationView;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.glic.R;
 import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -44,6 +45,7 @@ class GlicBottomSheetFreCoordinator {
     private final TextViewWithClickableSpans mBodyView;
     private final ButtonCompat mAcceptButton;
     private final ChromeImageButton mCloseButton;
+    private @Nullable GlicBottomSheetFreTransitionController mFadeOut;
     private boolean mAccepted;
     private boolean mDeclined;
     private boolean mDestroyed;
@@ -136,18 +138,27 @@ class GlicBottomSheetFreCoordinator {
         return mRootView;
     }
 
-    View getContentContainer() {
-        return mContentContainer;
-    }
-
-    View getSkeletonContainer() {
-        return mSkeletonContainer;
+    /** Fades the card out, then runs {@code onDone}. {@link #destroy()} cancels the fade. */
+    void fadeOut(Runnable onDone) {
+        if (mDestroyed || mFadeOut != null) return;
+        // TODO(b/578631452): Pass the WebUI load state or remove the skeleton path.
+        GlicBottomSheetFreTransitionController fadeOut =
+                new GlicBottomSheetFreTransitionController(
+                        mRootView,
+                        mContentContainer,
+                        mSkeletonContainer,
+                        /* isWebUiReady= */ true,
+                        /* isWebUiLoadError= */ false,
+                        (wasSkeletonShown, result) -> onDone.run());
+        mFadeOut = fadeOut;
+        fadeOut.onAccepted();
     }
 
     /** Removes the view and stops all callbacks. Safe to call more than once. */
     void destroy() {
         if (mDestroyed) return;
         mDestroyed = true;
+        if (mFadeOut != null) mFadeOut.destroy();
         mHeaderAnimation.cancelAnimation();
         ViewGroup parent = (ViewGroup) mRootView.getParent();
         if (parent != null) parent.removeView(mRootView);
