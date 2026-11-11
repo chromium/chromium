@@ -499,8 +499,9 @@ class UpdaterUtilApp : public App {
   void DoListUpdate(scoped_refptr<AppState> app_state);
   void DoUpdateApp(scoped_refptr<AppState> app_state);
 
-  scoped_refptr<UpdateService> service_proxy_;
+  // Must outlive `service_proxy_`, which owns IPC endpoints.
   ScopedIPCSupportWrapper ipc_support_;
+  scoped_refptr<UpdateService> service_proxy_;
 };
 
 void UpdaterUtilApp::PrintUsage(const std::string& error_message) {
