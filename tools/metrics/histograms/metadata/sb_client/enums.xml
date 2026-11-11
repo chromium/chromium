@@ -430,6 +430,20 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Has bypassed download warnings before"/>
 </enum>
 
+<!-- LINT.IfChange(SBClientPhishingBrowserCaptureResult) -->
+
+<enum name="SBClientPhishingBrowserCaptureResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="No RenderWidgetHostView"/>
+  <int value="2" label="Visible but no compositing surface to copy"/>
+  <int value="3" label="CopyFromSurface reported an error"/>
+  <int value="4" label="CopyFromSurface produced an empty bitmap"/>
+  <int value="5" label="CopyFromSurface timed out"/>
+  <int value="6" label="Superseded by a newer capture request"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/safe_browsing/content/browser/client_side_detection_host.h:BrowserCaptureResult) -->
+
 <!-- LINT.IfChange(SBClientPhishingCancelClassificationReason) -->
 
 <enum name="SBClientPhishingCancelClassificationReason">

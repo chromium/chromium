@@ -119,6 +119,10 @@ const base::FeatureParam<bool> kCSDClipboardCopyApiSuspiciousTokenFilter{
 
 BASE_FEATURE(kClientSideDetectionCopyFromSurface,
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kCsdCopyFromSurfaceTimeout,
+                   &kClientSideDetectionCopyFromSurface,
+                   base::Seconds(1));
 
 BASE_FEATURE(kClientSideDetectionCreditCardForm,
              base::FEATURE_DISABLED_BY_DEFAULT);

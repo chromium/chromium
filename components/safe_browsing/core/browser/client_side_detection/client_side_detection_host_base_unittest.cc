@@ -576,6 +576,9 @@ TEST_F(ClientSideDetectionHostBaseTest,
       request.population().finch_active_groups(),
       ::testing::Not(::testing::Contains(::testing::HasSubstr(
           "ClientSideDetectionKeyboardLockUniformPageDelay"))));
+  EXPECT_THAT(
+      request.population().finch_active_groups(),
+      ::testing::Contains("ClientSideDetectionCopyFromSurface.Control"));
 }
 
 TEST_F(ClientSideDetectionHostBaseTest, PhishingDetectionDoneMetricsAndCache) {

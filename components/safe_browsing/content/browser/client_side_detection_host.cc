@@ -10,6 +10,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
@@ -28,12 +29,15 @@
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/bind_post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/sequenced_task_runner_helpers.h"
 #include "base/task/thread_pool.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "base/types/expected.h"
 #include "base/uuid.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -92,6 +96,10 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/codec/png_codec.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/size_conversions.h"
+#include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -108,6 +116,11 @@ namespace {
 
 // How long to wait to run the user report callback.
 const int kUserReportCallbackTimer = 30;
+
+// Extra time the browser waits for `CopyFromSurface()` beyond the viz timeout
+// before giving up on a browser-side page capture.
+constexpr base::TimeDelta kCopyFromSurfaceTimeoutAllowance =
+    base::Milliseconds(500);
 
 bool HasDebugFeatureDirectory() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -727,7 +740,8 @@ ClientSideDetectionHost::ClientSideDetectionHost(
       tab_(tab),
       classification_request_(nullptr),
       delegate_(std::move(delegate)),
-      account_signed_in_callback_(account_signed_in_callback) {
+      account_signed_in_callback_(account_signed_in_callback),
+      visual_capturer_(std::make_unique<VisualCapturer>()) {
   DCHECK(tab);
   DCHECK(pref_service);
   // Note: the CSD service will be nullptr here in testing.
@@ -758,17 +772,251 @@ ClientSideDetectionHost::~ClientSideDetectionHost() {
 void ClientSideDetectionHost::CancelPendingRequests() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   weak_factory_.InvalidateWeakPtrs();
+  DropPendingCapture();
   CancelBrowserSideClassification();
   ClientSideDetectionHostBase::CancelPendingRequests();
 }
 
 void ClientSideDetectionHost::CaptureScreenshot(ScreenshotCallback callback) {
-  // TODO(crbug.com/454896977): Capture the composited surface via
-  // `RenderWidgetHostView::CopyFromSurface()` behind
-  // `kClientSideDetectionCopyFromSurface`.
-  std::move(callback).Run(gfx::Image());
+  // The base class only asks for a capture outside of classification when it
+  // needs one for image embedding.
+  RequestCapture(CapturePurpose::kImageEmbedding, std::move(callback));
 }
 
+void ClientSideDetectionHost::SetVisualCapturerForTesting(
+    std::unique_ptr<VisualCapturer> capturer) {
+  visual_capturer_ = std::move(capturer);
+}
+
+// --- VisualCapturer ----------------------------------------------------------
+
+bool ClientSideDetectionHost::VisualCapturer::IsSurfaceAvailableForCopy(
+    content::WebContents* web_contents) {
+  content::RenderWidgetHostView* view = web_contents->GetRenderWidgetHostView();
+  // A view without bounds has nothing to copy (and nothing to scale to).
+  return view && !view->GetViewBounds().IsEmpty() &&
+         view->IsSurfaceAvailableForCopy();
+}
+
+void ClientSideDetectionHost::VisualCapturer::CopyFromSurface(
+    content::WebContents* web_contents,
+    base::TimeDelta timeout,
+    CopyCallback callback) {
+  content::RenderWidgetHostView* view = web_contents->GetRenderWidgetHostView();
+  CHECK(view);
+
+  // Scale the capture to the view's size in DIPs, capped to
+  // `kMaxHighResScreenshotWidth` x `kMaxHighResScreenshotHeight` while
+  // preserving aspect ratio. This matches what the renderer-side extractor
+  // produces (the visual viewport in DIPs), keeps high-DPI captures small, and
+  // bounds readback size on ultrawide/maximized displays; viz does the scaling.
+  const gfx::Size view_size = view->GetViewBounds().size();
+  gfx::Size output_size = view_size;
+  if (output_size.width() > kMaxHighResScreenshotWidth ||
+      output_size.height() > kMaxHighResScreenshotHeight) {
+    const float scale = std::min(
+        static_cast<float>(kMaxHighResScreenshotWidth) / output_size.width(),
+        static_cast<float>(kMaxHighResScreenshotHeight) / output_size.height());
+    output_size = gfx::ScaleToFlooredSize(output_size, scale);
+    output_size.SetToMax(gfx::Size(1, 1));
+  }
+  gfx::Rect src_rect;
+#if BUILDFLAG(IS_ANDROID)
+  // The Android surface can extend below the web contents to make room for
+  // the browser controls. Crop to the content area, which starts at the
+  // origin and is specified in physical pixels on Android, so that the scaling
+  // stays uniform. See PageContextFetcher::GetTabScreenshot().
+  src_rect = gfx::Rect(
+      gfx::ScaleToRoundedSize(view_size, view->GetDeviceScaleFactor()));
+#endif
+  // The callback is not guaranteed to run on the calling sequence.
+  view->CopyFromSurface(
+      src_rect, output_size, timeout,
+      base::BindPostTaskToCurrentDefault(std::move(callback)));
+}
+
+// --- Browser-side classification ---------------------------------------------
+
+ClientSideDetectionHost::PendingCapture::PendingCapture(
+    int capture_id,
+    CapturePurpose purpose,
+    ScreenshotCallback callback)
+    : capture_id(capture_id), purpose(purpose), callback(std::move(callback)) {}
+ClientSideDetectionHost::PendingCapture::~PendingCapture() = default;
+
+void ClientSideDetectionHost::RequestCapture(CapturePurpose purpose,
+                                             ScreenshotCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (pending_capture_) {
+    // Classification and image embedding are serialized by the base class, and
+    // CancelPendingBrowserSideClassification() already handled any in-flight
+    // classification capture, so this is a newer request overtaking an
+    // image-embedding capture.
+    CHECK_EQ(pending_capture_->purpose, CapturePurpose::kImageEmbedding);
+    RecordCaptureResult(*pending_capture_, BrowserCaptureResult::kSuperseded);
+    ScreenshotCallback superseded_callback =
+        std::move(pending_capture_->callback);
+    pending_capture_.reset();
+    // Answer the superseded image-embedding capture without an image,
+    // asynchronously so that its flow completes after the new capture has been
+    // set up.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&ClientSideDetectionHost::RunSupersededCaptureCallback,
+                       weak_factory_.GetWeakPtr(),
+                       std::move(superseded_callback)));
+  }
+
+  pending_capture_.emplace(next_capture_id_++, purpose, std::move(callback));
+  pending_capture_->request_type = last_request_type();
+  pending_capture_->requested_at = tick_clock()->NowTicks();
+
+  if (!web_contents()->IsDocumentOnLoadCompletedInPrimaryMainFrame()) {
+    // Wait to be notified the main frame has loaded by
+    // DocumentOnLoadCompletedInPrimaryMainFrame().
+    pending_capture_->stage = CaptureStage::kWaitingForLoad;
+    return;
+  }
+  ScheduleSurfaceCopy();
+}
+
+void ClientSideDetectionHost::RunSupersededCaptureCallback(
+    ScreenshotCallback callback) {
+  std::move(callback).Run(gfx::Image());
+  if (is_classifying() || pending_capture_.has_value()) {
+    set_is_csd_running(true);
+  }
+}
+
+void ClientSideDetectionHost::ScheduleSurfaceCopy() {
+  CHECK(pending_capture_);
+  if (web_contents()->GetVisibility() != content::Visibility::VISIBLE) {
+    // Wait to be notified the tab is visible by OnVisibilityChanged(VISIBLE).
+    pending_capture_->stage = CaptureStage::kWaitingForVisibility;
+    return;
+  }
+  MaybeCopySurface();
+}
+
+void ClientSideDetectionHost::MaybeCopySurface() {
+  CHECK(pending_capture_);
+  // Hidden and occluded tabs do not produce frames to copy; resumed from
+  // OnVisibilityChanged().
+  if (web_contents()->GetVisibility() != content::Visibility::VISIBLE) {
+    pending_capture_->stage = CaptureStage::kWaitingForVisibility;
+    return;
+  }
+  if (!web_contents()->GetRenderWidgetHostView()) {
+    FinishCapture(BrowserCaptureResult::kViewMissing, gfx::Image());
+    return;
+  }
+  if (!visual_capturer_->IsSurfaceAvailableForCopy(web_contents())) {
+    FinishCapture(BrowserCaptureResult::kSurfaceUnavailable, gfx::Image());
+    return;
+  }
+
+  pending_capture_->stage = CaptureStage::kCopying;
+  pending_capture_->copy_started_at = tick_clock()->NowTicks();
+  const base::TimeDelta timeout = kCsdCopyFromSurfaceTimeout.Get();
+  // Watchdog in case the copy callback never runs. Started before
+  // `CopyFromSurface()` so that a synchronous test callback still finds
+  // `pending_capture_` intact and cancels the timer on completion.
+  pending_capture_->watchdog_timer.Start(
+      FROM_HERE, timeout + kCopyFromSurfaceTimeoutAllowance,
+      base::BindOnce(&ClientSideDetectionHost::OnCopyFromSurfaceTimeout,
+                     weak_factory_.GetWeakPtr()));
+  visual_capturer_->CopyFromSurface(
+      web_contents(), timeout,
+      base::BindOnce(&ClientSideDetectionHost::OnCopyFromSurfaceDone,
+                     weak_factory_.GetWeakPtr(), pending_capture_->capture_id));
+}
+
+void ClientSideDetectionHost::OnCopyFromSurfaceDone(
+    int capture_id,
+    const content::CopyFromSurfaceResult& result) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (!pending_capture_ || pending_capture_->capture_id != capture_id) {
+    return;
+  }
+  base::UmaHistogramTimes(
+      "SBClientPhishing.BrowserCaptureCopyDuration",
+      tick_clock()->NowTicks() - pending_capture_->copy_started_at);
+  if (!result.has_value()) {
+    base::UmaHistogramEnumeration(
+        "SBClientPhishing.BrowserCaptureCopyFromSurfaceError", result.error());
+    FinishCapture(BrowserCaptureResult::kCopyFailed, gfx::Image());
+    return;
+  }
+  // Android reports an unavailable surface as a successful, empty bitmap.
+  if (result->bitmap.drawsNothing()) {
+    FinishCapture(BrowserCaptureResult::kEmptyBitmap, gfx::Image());
+    return;
+  }
+  FinishCapture(BrowserCaptureResult::kSuccess,
+                gfx::Image::CreateFrom1xBitmap(result->bitmap));
+}
+
+void ClientSideDetectionHost::OnCopyFromSurfaceTimeout() {
+  FinishCapture(BrowserCaptureResult::kTimedOut, gfx::Image());
+}
+
+void ClientSideDetectionHost::FinishCapture(BrowserCaptureResult result,
+                                            const gfx::Image& image) {
+  CHECK(pending_capture_);
+  CHECK_EQ(result == BrowserCaptureResult::kSuccess, !image.IsEmpty());
+  RecordCaptureResult(*pending_capture_, result);
+  ScreenshotCallback callback = std::move(pending_capture_->callback);
+  pending_capture_.reset();
+  std::move(callback).Run(image);
+}
+
+void ClientSideDetectionHost::RecordCaptureResult(
+    const PendingCapture& capture,
+    BrowserCaptureResult result) const {
+  std::string_view request_type_name = GetRequestTypeName(capture.request_type);
+  base::UmaHistogramEnumeration("SBClientPhishing.BrowserCaptureResult",
+                                result);
+  base::UmaHistogramEnumeration(
+      base::StrCat(
+          {"SBClientPhishing.BrowserCaptureResult.", request_type_name}),
+      result);
+  base::UmaHistogramMediumTimes(
+      "SBClientPhishing.BrowserCaptureTotalDuration",
+      tick_clock()->NowTicks() - capture.requested_at);
+}
+
+void ClientSideDetectionHost::DropPendingCapture() {
+  pending_capture_.reset();
+}
+
+void ClientSideDetectionHost::DocumentOnLoadCompletedInPrimaryMainFrame() {
+  if (pending_capture_ &&
+      pending_capture_->stage == CaptureStage::kWaitingForLoad) {
+    ScheduleSurfaceCopy();
+  }
+}
+
+void ClientSideDetectionHost::OnVisibilityChanged(
+    content::Visibility visibility) {
+  if (pending_capture_ && visibility == content::Visibility::VISIBLE &&
+      pending_capture_->stage == CaptureStage::kWaitingForVisibility) {
+    ScheduleSurfaceCopy();
+  }
+}
+
+void ClientSideDetectionHost::PrimaryMainFrameRenderProcessGone(
+    base::TerminationStatus status) {
+  // There is nothing left to capture or warn about. Cancel any in-flight work
+  // and reset classification state so same-page triggers or tests do not see
+  // stale flags before the next PrimaryPageChanged().
+  MaybeRunUserReportCallback();
+  if (classification_request_.get()) {
+    classification_request_->Cancel();
+  }
+  CancelPendingRequests();
+  set_is_classifying(false);
+  set_is_csd_running(false);
+}
 void ClientSideDetectionHost::GetInnerText(HostInnerTextCallback callback) {
   delegate_->GetInnerText(std::move(callback));
 }
@@ -911,10 +1159,11 @@ void ClientSideDetectionHost::MaybeStartPreClassification(
     }
   }
 
-  // If there is a renderer classification or uniform-image retry check going on
-  // and the incoming request type is not higher, do not let that cancel pending
-  // classification.
-  if ((is_classifying() || is_uniform_image_retry_timer_running()) &&
+  // If there is a classification, page capture, or uniform-image retry check
+  // going on and the incoming request type is not higher, do not let that
+  // cancel the pending work.
+  if ((is_classifying() || pending_capture_.has_value() ||
+       is_uniform_image_retry_timer_running()) &&
       base::FeatureList::IsEnabled(kClientSideDetectionTierSystem) &&
       !NewRequestTypeTierHigher(request_type)) {
     base::UmaHistogramExactLinear(
@@ -1496,6 +1745,12 @@ void ClientSideDetectionHost::MaybeStartImageEmbedding(
     bool is_invalid_ip,
     PhishingDetectorResult result) {
   set_last_phishing_detector_result(result);
+  if (base::FeatureList::IsEnabled(kClientSideDetectionCopyFromSurface)) {
+    StartBrowserSideImageEmbedding(std::move(verdict),
+                                   did_match_high_confidence_allowlist,
+                                   is_invalid_ip, result);
+    return;
+  }
   visual_utils::CanExtractVisualFeaturesResult
       can_extract_visual_features_result = DetermineVisualFeaturesExtraction();
 

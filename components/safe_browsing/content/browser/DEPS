@@ -43,5 +43,5 @@ include_rules = [
   "+third_party/blink/public/mojom/site_engagement",
   "+ui/base",
   "+ui/display",
-  "+ui/gfx/codec/png_codec.h",
+  "+ui/gfx",
 ]

@@ -1422,6 +1422,11 @@ void ClientSideDetectionHostBase::
         "ClientSideDetectionLocalResourceCheckFix.Control");
   }
 
+  verdict->mutable_population()->add_finch_active_groups(
+      base::FeatureList::IsEnabled(kClientSideDetectionCopyFromSurface)
+          ? "ClientSideDetectionCopyFromSurface.Enabled"
+          : "ClientSideDetectionCopyFromSurface.Control");
+
   if (cache_manager_) {
     ChromeUserPopulation::PageLoadToken token =
         cache_manager_->GetPageLoadToken(current_url_);

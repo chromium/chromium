@@ -500,6 +500,63 @@ useful for Chirp alerts (go/crca-alerts). -->
   <token key="RequestType" variants="ClientSideDetectionRequestType"/>
 </histogram>
 
+<histogram name="SBClientPhishing.BrowserCaptureCopyDuration" units="ms"
+    expires_after="2027-04-15">
+  <owner>richche@google.com</owner>
+  <owner>nwokedi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Time RenderWidgetHostView::CopyFromSurface took to run its callback when
+    capturing the page for browser-side client-side phishing classification
+    (ClientSideDetectionCopyFromSurface). Recorded for every copy that completes
+    before the browser-side watchdog fires, whether or not it succeeded.
+  </summary>
+</histogram>
+
+<histogram name="SBClientPhishing.BrowserCaptureCopyFromSurfaceError"
+    enum="CopyFromSurfaceError" expires_after="2027-04-15">
+  <owner>richche@google.com</owner>
+  <owner>nwokedi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    The error RenderWidgetHostView::CopyFromSurface reported when capturing the
+    page for browser-side client-side phishing classification
+    (ClientSideDetectionCopyFromSurface) failed. Explains the
+    &quot;CopyFromSurface reported an error&quot; bucket of
+    SBClientPhishing.BrowserCaptureResult.
+  </summary>
+</histogram>
+
+<histogram name="SBClientPhishing.BrowserCaptureResult{RequestType}"
+    enum="SBClientPhishingBrowserCaptureResult" expires_after="2027-04-15">
+  <owner>richche@google.com</owner>
+  <owner>nwokedi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Outcome of capturing the page in the browser process for client-side
+    phishing classification or image embedding
+    (ClientSideDetectionCopyFromSurface), for a {RequestType} request. Recorded
+    once per capture request, when it completes or is superseded. Requests
+    dropped due to navigation, renderer crash, scorer update, or tab destruction
+    are not recorded.
+  </summary>
+  <token key="RequestType" variants="ClientSideDetectionRequestType"/>
+</histogram>
+
+<histogram name="SBClientPhishing.BrowserCaptureTotalDuration" units="ms"
+    expires_after="2027-04-15">
+  <owner>richche@google.com</owner>
+  <owner>nwokedi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Time from requesting a page capture for browser-side client-side phishing
+    classification (ClientSideDetectionCopyFromSurface) to its completion,
+    including any time spent waiting for the document to finish loading and for
+    the tab to become visible. Recorded whenever
+    SBClientPhishing.BrowserCaptureResult is.
+  </summary>
+</histogram>
+
 <histogram name="SBClientPhishing.BrowserReadyOnClassifierNotReady"
     enum="BooleanReady" expires_after="2027-04-04">
   <owner>nwokedi@chromium.org</owner>
@@ -778,7 +835,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SBClientPhishing.HasVisualFeaturesImage2" enum="BooleanExists"
-    expires_after="2027-01-13">
+    expires_after="2027-04-15">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

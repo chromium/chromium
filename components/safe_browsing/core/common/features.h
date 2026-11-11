@@ -95,6 +95,10 @@ extern const base::FeatureParam<bool> kCSDClipboardCopyApiSuspiciousTokenFilter;
 // When enabled, the browser process owns the `Scorer` instead of distributing
 // the phishing models to renderers.
 BASE_DECLARE_FEATURE(kClientSideDetectionCopyFromSurface);
+// Maximum time viz may take to produce the page capture before it is treated
+// as failed. Zero disables viz's timeout, leaving only the browser-side
+// watchdog (this value plus a fixed allowance).
+BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kCsdCopyFromSurfaceTimeout);
 
 // Enables sending a CSD ping on the detection of a credit card form.
 BASE_DECLARE_FEATURE(kClientSideDetectionCreditCardForm);
