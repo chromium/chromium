@@ -894,6 +894,18 @@ static struct CanReceiveTextEmphasisTestData {
     {uchar::kFullwidthCommercialAt, true},
 };
 
+// `HasLikelyScript` picks a fallback-hint character inside a shaping
+// cluster. A code point whose ICU script is `USCRIPT_UNKNOWN` (here
+// U+FE1A in the Vertical Forms block, unassigned in the Unicode version
+// ICU ships with) has no font coverage, so letting it win the hint
+// pulls its cluster neighbours into a font that has no glyphs for them.
+// crbug.com/583357775.
+TEST(CharacterTest, HasLikelyScriptIgnoresUnknownScript) {
+  EXPECT_FALSE(HasLikelyScript(0xFE1A));
+  EXPECT_TRUE(HasLikelyScript('A'));
+  EXPECT_FALSE(HasLikelyScript(' '));
+}
+
 class CanReceiveTextEmphasisTest
     : public testing::Test,
       public testing::WithParamInterface<CanReceiveTextEmphasisTestData> {};

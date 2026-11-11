@@ -312,7 +312,12 @@ bool HasLikelyScript(UChar32 character) {
       script = GetScriptBasedOnUnicodeBlock(character);
     }
   }
-  return script != USCRIPT_COMMON && script != USCRIPT_INHERITED;
+  // USCRIPT_UNKNOWN has no font coverage; treating it as "likely script"
+  // makes ChooseHintIndex pin font fallback to a code point like U+FE1A
+  // (unassigned in the Unicode version ICU ships with), which pulls its
+  // shaping cluster neighbours into a font that has no glyphs for them.
+  return script != USCRIPT_COMMON && script != USCRIPT_INHERITED &&
+         script != USCRIPT_UNKNOWN;
 }
 
 // There are a lot of characters in USCRIPT_COMMON that can be covered
