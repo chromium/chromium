@@ -18,11 +18,10 @@ owners:
 - sauski@google.com
 - file://chrome/browser/glic/OWNERS
 example_value: 1
-future_on:
-- ios
 supported_on:
 - chrome.*:150-
 - chrome_os:150-
+- ios:158-
 features:
   dynamic_refresh: true
   per_profile: true

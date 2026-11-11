@@ -21,6 +21,8 @@ enum class RemoteActorPreconditionError {
   kNotSignedIn,
   // The requested GAIA ID does not match the active profile's GAIA ID.
   kProfileMismatch,
+  // Enterprise policy blocks Remote Actor credential sharing.
+  kBlockedByPolicy,
 };
 
 // Callback status and reason reported to Gemini when a precondition fails.
@@ -29,8 +31,9 @@ struct RemoteActorPreconditionCallbackParams {
   RemoteActorCallbackReason reason;
 };
 
-// Validates that Chrome has completed FRE, `profile` is signed in, and the
-// active profile's primary GAIA ID matches `requested_gaia_id`.
+// Validates that Chrome has completed FRE, `profile` is signed in, the active
+// profile's primary GAIA ID matches `requested_gaia_id`, and enterprise policy
+// permits Remote Actor credential sharing.
 base::expected<void, RemoteActorPreconditionError>
 CheckRemoteActorPreconditions(ProfileIOS* profile,
                               std::string_view requested_gaia_id);
@@ -39,6 +42,7 @@ CheckRemoteActorPreconditions(ProfileIOS* profile,
 // `reason`:
 // - `kFirstRunIncomplete` / `kNotSignedIn` -> `kCancelled` / `kNotSignedIn`
 // - `kProfileMismatch` -> `kFailed` / `kProfileMismatch`
+// - `kBlockedByPolicy` -> `kFailed` / `kUploadFailed`
 RemoteActorPreconditionCallbackParams GetPreconditionFailureCallbackParams(
     RemoteActorPreconditionError error);
 

@@ -6,10 +6,14 @@
 
 #import "base/files/file.h"
 #import "base/memory/raw_ptr.h"
+#import "base/values.h"
 #import "components/signin/public/base/signin_metrics.h"
+#import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/first_run/model/first_run.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -63,7 +67,7 @@ class RemoteActorPreconditionCheckerTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;
-  raw_ptr<ProfileIOS> profile_;
+  raw_ptr<TestProfileIOS> profile_;
   raw_ptr<AuthenticationService> authentication_service_;
 };
 
@@ -137,6 +141,38 @@ TEST_F(RemoteActorPreconditionCheckerTest,
   AddAndSignInFakeIdentity();
 
   auto result = CheckRemoteActorPreconditions(profile_, "");
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), RemoteActorPreconditionError::kProfileMismatch);
+}
+
+// Tests that enterprise policy disallowing Remote Actor credential sharing
+// fails with kBlockedByPolicy and maps to FAILED / UPLOAD_FAILED.
+TEST_F(RemoteActorPreconditionCheckerTest,
+       FailsWithBlockedByPolicyWhenDisallowedByPolicy) {
+  FakeSystemIdentity* identity = AddAndSignInFakeIdentity();
+  profile_->GetTestingPrefService()->SetManagedPref(
+      prefs::kGeminiSparkSettings,
+      base::Value(static_cast<int>(gemini::SparkSettingsPolicy::kNotAllowed)));
+
+  auto result =
+      CheckRemoteActorPreconditions(profile_, identity.gaiaId.ToString());
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), RemoteActorPreconditionError::kBlockedByPolicy);
+
+  auto params = GetPreconditionFailureCallbackParams(result.error());
+  EXPECT_EQ(params.status, RemoteActorCallbackStatus::kFailed);
+  EXPECT_EQ(params.reason, RemoteActorCallbackReason::kUploadFailed);
+}
+
+// Tests that GAIA mismatch precedes enterprise policy checks when both fail.
+TEST_F(RemoteActorPreconditionCheckerTest,
+       ProfileMismatchPrecedesBlockedByPolicy) {
+  AddAndSignInFakeIdentity();
+  profile_->GetTestingPrefService()->SetManagedPref(
+      prefs::kGeminiSparkSettings,
+      base::Value(static_cast<int>(gemini::SparkSettingsPolicy::kNotAllowed)));
+
+  auto result = CheckRemoteActorPreconditions(profile_, "different_gaia_id");
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error(), RemoteActorPreconditionError::kProfileMismatch);
 }
