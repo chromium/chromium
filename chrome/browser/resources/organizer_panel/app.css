@@ -14,12 +14,6 @@
   user-select: none;
 }
 
-:host([vertical-tabs-enabled]) {
-  --organizer-divider-color:
-      var(--color-organizer-panel-divider,
-          var(--color-sys-on-header-divider, var(--cr-fallback-color-divider)));
-}
-
 #header {
   align-items: center;
   box-sizing: border-box;

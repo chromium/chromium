@@ -212,9 +212,9 @@ suite('OrganizerPanelAppTest', () => {
     assertEquals('test search', app.$.list.searchQuery);
   });
 
-  test('updates divider color when vertical tabs enabled', async () => {
-    app.style.setProperty('--color-sys-divider', 'rgb(10, 20, 30)');
+  test('uses organizer panel divider color', async () => {
     app.style.setProperty('--color-sys-on-header-divider', 'rgb(40, 50, 60)');
+    app.style.setProperty('--color-organizer-panel-divider', 'rgb(10, 20, 30)');
     await microtasksFinished();
 
     const divider =
@@ -229,6 +229,10 @@ suite('OrganizerPanelAppTest', () => {
 
     assertTrue(app.verticalTabsEnabled);
     assertTrue(app.hasAttribute('vertical-tabs-enabled'));
+    assertEquals('rgb(10, 20, 30)', getComputedStyle(divider).backgroundColor);
+
+    app.style.removeProperty('--color-organizer-panel-divider');
+    await microtasksFinished();
     assertEquals('rgb(40, 50, 60)', getComputedStyle(divider).backgroundColor);
 
     remotePage.onVerticalTabsEnabledChanged(false);
@@ -236,7 +240,7 @@ suite('OrganizerPanelAppTest', () => {
 
     assertFalse(app.verticalTabsEnabled);
     assertFalse(app.hasAttribute('vertical-tabs-enabled'));
-    assertEquals('rgb(10, 20, 30)', getComputedStyle(divider).backgroundColor);
+    assertEquals('rgb(40, 50, 60)', getComputedStyle(divider).backgroundColor);
   });
 
   test(

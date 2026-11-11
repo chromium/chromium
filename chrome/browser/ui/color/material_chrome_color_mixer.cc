@@ -493,7 +493,7 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorOrganizerPanelBackground] = {ui::kColorSysSurface2};
   mixer[kColorOrganizerPanelForeground] = {ui::kColorSysOnSurface};
   mixer[kColorOrganizerPanelForegroundSubtle] = {ui::kColorSysOnSurfaceSubtle};
-  mixer[kColorOrganizerPanelDivider] = {ui::kColorSysDivider};
+  mixer[kColorOrganizerPanelDivider] = {ui::kColorSysOnHeaderDivider};
 
   // Omnibox chip colors.
   mixer[kColorOmniboxChipInUseActivityIndicatorBackground] = {

@@ -15,9 +15,8 @@
 
 .divider {
   background-color: var(
-      --organizer-divider-color,
-      var(--color-organizer-panel-divider,
-          var(--color-sys-divider, var(--cr-fallback-color-divider))));
+      --color-organizer-panel-divider,
+      var(--color-sys-on-header-divider, var(--cr-fallback-color-divider)));
   display: none;
   height: 1px;
   margin: 8px;
