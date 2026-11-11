@@ -13,6 +13,8 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/run_until.h"
@@ -33,15 +35,15 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_autofill_driver_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
-#include "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
+#include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
 #include "components/autofill/core/common/form_data.h"
-#include "components/autofill/core/common/form_data_test_api.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/keyed_service/core/service_access_type.h"
@@ -79,8 +81,6 @@
 namespace autofill {
 namespace {
 
-using ::testing::ElementsAre;
-using ::testing::IsEmpty;
 using ::testing::NiceMock;
 using ::testing::Not;
 using ::testing::Pointee;
@@ -251,6 +251,12 @@ class BaseAutofillContextMenuManagerTest : public InProcessBrowserTest {
     }
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
         browser(), embedded_test_server()->GetURL("a.com", "/empty.html")));
+    if (web_contents() !=
+        browser()->GetTabStripModel()->GetActiveWebContents()) {
+      ASSERT_TRUE(content::NavigateToURL(
+          web_contents(),
+          embedded_test_server()->GetURL("a.com", "/empty.html")));
+    }
 
     CreateAutofillContextMenu(main_rfh());
     autofill_context_menu_manager()->set_params_for_testing(
@@ -286,10 +292,14 @@ class BaseAutofillContextMenuManagerTest : public InProcessBrowserTest {
     return autofill_client_injector_[web_contents()];
   }
 
-  MockAutofillDriver* driver() { return autofill_driver_injector_[main_rfh()]; }
+  MockAutofillDriver* driver(content::RenderFrameHost* rfh = nullptr) {
+    return autofill_driver_injector_[rfh ? rfh : main_rfh()];
+  }
 
-  BrowserAutofillManager& autofill_manager() {
-    return static_cast<BrowserAutofillManager&>(driver()->GetAutofillManager());
+  BrowserAutofillManager& autofill_manager(
+      content::RenderFrameHost* rfh = nullptr) {
+    return static_cast<BrowserAutofillManager&>(
+        driver(rfh)->GetAutofillManager());
   }
 
   ui::SimpleMenuModel* menu_model() const { return menu_model_.get(); }
@@ -308,84 +318,63 @@ class BaseAutofillContextMenuManagerTest : public InProcessBrowserTest {
             render_view_context_menu_.get(), menu_model_.get());
   }
 
-  // Sets the `form` and the `form.fields`'s `host_frame`. Since this test
-  // fixture has its own render frame host, which is used by the
-  // `autofill_context_menu_manager()`, this is necessary to identify the forms
-  // correctly by their global ids.
-  void SetHostFramesOfFormAndFields(FormData& form) {
-    LocalFrameToken frame_token =
-        LocalFrameToken(main_rfh()->GetFrameToken().value());
-    form.set_host_frame(frame_token);
-    for (FormFieldData& field : test_api(form).fields()) {
-      field.set_host_frame(frame_token);
-    }
-  }
-
-  // Makes the form identifiable by its global id and adds the `form` to the
-  // `driver()`'s manager.
-  void AttachForm(FormData& form) {
-    SetHostFramesOfFormAndFields(form);
-    TestAutofillManagerSingleEventWaiter wait_for_forms_seen(
-        autofill_manager(), &AutofillManager::Observer::OnAfterFormsSeen,
-        ElementsAre(form.global_id()), IsEmpty());
-    autofill_manager().OnFormsSeen(
-        /*updated_forms=*/{form},
-        /*removed_forms=*/{}, autofill::AutofillManagerTestApi::pass_key());
-    ASSERT_TRUE(std::move(wait_for_forms_seen).Wait());
-  }
-
-  // Creates a form with classifiable fields and registers it with the manager.
-  FormData CreateAndAttachClassifiedForm() {
-    FormData form = test::CreateTestAddressFormData();
-    AttachForm(form);
-    return form;
+  // Appends a `<form>` containing `fields_html` to the `rfh`'s DOM and
+  // waits for it to be parsed by `rfh`'s AutofillManager.
+  FormData CreateAndAttachForm(std::string_view fields_html,
+                               content::RenderFrameHost* rfh) {
+    std::string id =
+        base::StrCat({"form_", base::NumberToString(next_form_id_++)});
+    EXPECT_TRUE(content::ExecJs(
+        rfh,
+        base::StrCat({"document.body.insertAdjacentHTML('beforeend', `<form "
+                      "id=\"",
+                      id, "\" action=\"/submit.html\">", fields_html,
+                      "</form>`);"})));
+    const FormStructure* form_structure = WaitForMatchingForm(
+        &autofill_manager(rfh),
+        base::BindRepeating(
+            [](std::u16string_view id, const FormStructure& form) {
+              return form.id_attribute() == id;
+            },
+            base::UTF8ToUTF16(id)));
+    CHECK(form_structure);
+    return form_structure->ToFormData();
   }
 
   // Creates a form with unclassifiable fields and registers it with the
   // manager.
   FormData CreateAndAttachUnclassifiedForm() {
-    FormData form = test::CreateTestAddressFormData();
-    for (FormFieldData& field : test_api(form).fields()) {
-      field.set_label(u"unclassifiable");
-      field.set_name(u"unclassifiable");
-    }
-    AttachForm(form);
-    return form;
+    return CreateAndAttachForm(R"(<input type="text" name="unclassifiable">)",
+                               main_rfh());
   }
 
   // Creates a form with a password field and registers it with the
   // manager.
   FormData CreateAndAttachPasswordForm(bool is_webauthn = false) {
-    FormData form;
-    form.set_renderer_id(test::MakeFormRendererId());
-    form.set_name(u"MyForm");
-    form.set_url(main_rfh()->GetLastCommittedURL());
-    form.set_action(main_rfh()->GetLastCommittedURL().Resolve("/submit.html"));
-    form.set_fields({test::CreateTestFormField(
-        /*label=*/"Password", /*name=*/"password", /*value=*/"",
-        /*type=*/FormControlType::kInputPassword,
-        is_webauthn ? /*autocomplete=*/"webauthn" : "")});
     password_manager::PasswordFormManager::
         set_wait_for_server_predictions_for_filling(false);
-    AttachForm(form);
-    password_manager::PasswordManagerInterface* password_manager =
-        password_manager_driver()->GetPasswordManager();
-    password_manager->OnPasswordFormsParsed(password_manager_driver(), {form});
+    FormData form = CreateAndAttachForm(
+        is_webauthn
+            ? R"(<input type=password name=password autocomplete=webauthn>)"
+            : R"(<input type=password name=password>)",
+        main_rfh());
     // First parsing is done for filling case. Password forms are only parsed
     // when filling is enabled.
     if (password_manager_client()->IsFillingEnabled(
             url::Origin::Create(form.url()))) {
+      password_manager::PasswordManagerInterface* password_manager =
+          password_manager_driver()->GetPasswordManager();
       // Wait until `form` gets parsed.
       EXPECT_TRUE(base::test::RunUntil([&]() {
         return password_manager->GetPasswordFormCache()->GetPasswordForm(
             password_manager_driver(), form.renderer_id());
       }));
     }
-
     return form;
   }
 
  protected:
+  int next_form_id_ = 0;
   test::AutofillBrowserTestEnvironment autofill_test_environment_;
   TestAutofillClientInjector<TestContentAutofillClient>
       autofill_client_injector_;
@@ -888,14 +877,7 @@ class PasswordsFallbackWithGuestProfileTest : public PasswordsFallbackTestBase {
   }
 #else
   void SetUpOnMainThread() override {
-    host_resolver()->AddRule("*", "127.0.0.1");
     guest_browser_ = CreateGuestBrowser();
-    if (!embedded_test_server()->Started()) {
-      ASSERT_TRUE(embedded_test_server()->Start());
-    }
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        guest_browser_,
-        embedded_test_server()->GetURL("a.com", "/empty.html")));
     PasswordsFallbackTestBase::SetUpOnMainThread();
   }
 
