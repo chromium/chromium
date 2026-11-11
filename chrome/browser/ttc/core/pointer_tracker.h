@@ -29,6 +29,10 @@ class PointerTracker {
     base::TimeDelta history = base::Seconds(20);
     // Hard cap on the number of samples kept.
     size_t max_samples = 256;
+    // A move closer than this in time to the last kept sample is dropped, so
+    // that a 120 Hz pointer does not fill the history in two seconds. Presses
+    // are always kept.
+    base::TimeDelta min_sample_interval = base::Milliseconds(16);
     // Samples within this distance of a run's centroid belong to the run.
     float dwell_radius_dip = 12.0f;
     // A run must last at least this long to count as a dwell.
@@ -78,8 +82,9 @@ class PointerTracker {
   // strongest pointing gesture and always counts as a dwell (see
   // ResolveLocations()). A move to the same point as the last sample is
   // ignored, since it is not movement: Aura synthesizes such moves when content
-  // changes under a still pointer. Samples are expected in roughly increasing
-  // time order; a sample earlier than the last is treated as if it had the last
+  // changes under a still pointer. So is a move within `min_sample_interval`
+  // of the last kept sample. Samples are expected in roughly increasing time
+  // order; a sample earlier than the last is treated as if it had the last
   // sample's time.
   void RecordSample(base::TimeTicks time,
                     const gfx::PointF& point,

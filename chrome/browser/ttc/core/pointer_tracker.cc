@@ -37,10 +37,12 @@ void PointerTracker::RecordSample(base::TimeTicks time,
                                   const gfx::PointF& point,
                                   bool is_press) {
   if (!samples_.empty()) {
-    if (!is_press && point == samples_.back().point) {
+    time = std::max(time, samples_.back().time);
+    if (!is_press &&
+        (point == samples_.back().point ||
+         time - samples_.back().time < config_.min_sample_interval)) {
       return;
     }
-    time = std::max(time, samples_.back().time);
   }
   samples_.emplace_back(point, time, is_press);
   Prune(time);

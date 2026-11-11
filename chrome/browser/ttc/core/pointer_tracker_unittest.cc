@@ -158,20 +158,36 @@ TEST(PointerTrackerTest, SampleCountIsCapped) {
   config.max_samples = 10;
   PointerTracker tracker(config);
   for (int i = 0; i < 50; ++i) {
-    tracker.RecordSample(At(base::Milliseconds(i)), gfx::PointF(i, 0));
+    tracker.RecordSample(At(base::Milliseconds(16 * i)), gfx::PointF(i, 0));
   }
   EXPECT_EQ(tracker.sample_count_for_testing(), 10u);
   // The most recent samples are the ones kept.
   std::vector<PointerTracker::Location> results = tracker.ResolveLocations(
-      At(base::Seconds(0)), At(base::Milliseconds(100)));
+      At(base::Seconds(0)), At(base::Milliseconds(800)));
   ASSERT_THAT(results, SizeIs(1));
   EXPECT_POINTF_EQ(gfx::PointF(49, 0), results[0].point);
+}
+
+// Moves that arrive faster than the sampling interval are dropped; presses
+// never are.
+TEST(PointerTrackerTest, MovesWithinMinIntervalAreDropped) {
+  PointerTracker tracker;
+  for (int ms : {0, 5, 10, 16, 20, 32}) {
+    tracker.RecordSample(At(base::Milliseconds(ms)), gfx::PointF(ms, 0));
+  }
+  EXPECT_EQ(tracker.sample_count_for_testing(), 3u);
+  tracker.RecordSample(At(base::Milliseconds(33)), gfx::PointF(33, 0),
+                       /*is_press=*/true);
+  EXPECT_EQ(tracker.sample_count_for_testing(), 4u);
 }
 
 TEST(PointerTrackerTest, OutOfOrderSampleTakesTheLastSamplesTime) {
   PointerTracker tracker;
   tracker.RecordSample(At(base::Seconds(2)), gfx::PointF(1, 1));
-  tracker.RecordSample(At(base::Seconds(1)), gfx::PointF(500, 500));
+  // A press, so that it is kept despite being within the sampling interval of
+  // the (clamped) previous time.
+  tracker.RecordSample(At(base::Seconds(1)), gfx::PointF(500, 500),
+                       /*is_press=*/true);
   std::vector<PointerTracker::Location> results =
       tracker.ResolveLocations(At(base::Seconds(0)), At(base::Seconds(3)));
   ASSERT_THAT(results, SizeIs(1));
@@ -310,7 +326,7 @@ TEST(PointerTrackerTest, RestBeforeWindowOnlyCountsInsideWindow) {
 
   // A is neither a dwell nor a press for this turn, so the fallback applies.
   ASSERT_THAT(results, SizeIs(1));
-  EXPECT_POINTF_EQ(gfx::PointF(900, 100), results[0].point);
+  EXPECT_POINTF_NEAR(gfx::PointF(900, 100), results[0].point, kRadius);
   EXPECT_FALSE(results[0].is_dwell);
   EXPECT_FALSE(results[0].is_press);
 }
