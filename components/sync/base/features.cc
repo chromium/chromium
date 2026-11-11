@@ -32,7 +32,9 @@ BASE_FEATURE(kSyncNotebook, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSyncJourney, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSyncAutofillEntitySuppression, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_WITH_COUNTRY_RESTRICTIONS(kSyncAutofillEntitySuppression,
+                                       base::FEATURE_ENABLED_FOR_COUNTRIES,
+                                       "us");
 
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_IOS)
 BASE_FEATURE(kUnoPhase2FollowUp, base::FEATURE_ENABLED_BY_DEFAULT);

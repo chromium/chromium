@@ -11,6 +11,20 @@
 
 namespace autofill::test {
 
+namespace {
+
+void AddDefaultSourceReference(personal_context::proto::Entity& entity) {
+  personal_context::proto::GmailReference* gmail =
+      entity.add_source_references()->mutable_gmail();
+  gmail->mutable_message_urls()->set_desktop_web_url(
+      "https://mail.google.com/mail/#inbox/default");
+  gmail->mutable_message_urls()->set_mobile_web_url(
+      "https://mail.google.com/mail/mu/mp/#cv/Inbox/default");
+  gmail->set_subject("Default Test Source");
+}
+
+}  // namespace
+
 personal_context::proto::Entity CreatePassportProto(
     PassportEntityOptions options) {
   personal_context::proto::Entity entity;
@@ -32,6 +46,7 @@ personal_context::proto::Entity CreatePassportProto(
       p->mutable_expiration_date()->set_day(date.day);
     }
   }
+  AddDefaultSourceReference(entity);
   return entity;
 }
 
@@ -56,6 +71,7 @@ personal_context::proto::Entity CreateDriversLicenseProto(
       dl->mutable_expiration_date()->set_day(date.day);
     }
   }
+  AddDefaultSourceReference(entity);
   return entity;
 }
 
@@ -80,6 +96,7 @@ personal_context::proto::Entity CreateNationalIdProto(
       nid->mutable_expiration_date()->set_day(date.day);
     }
   }
+  AddDefaultSourceReference(entity);
   return entity;
 }
 
@@ -100,6 +117,7 @@ personal_context::proto::Entity CreateOrderProto(OrderOptions options) {
       o->mutable_order_date()->set_day(date.day);
     }
   }
+  AddDefaultSourceReference(entity);
   return entity;
 }
 
@@ -120,6 +138,7 @@ personal_context::proto::Entity CreateShipmentProto(ShipmentOptions options) {
       s->mutable_ship_date()->set_day(date.day);
     }
   }
+  AddDefaultSourceReference(entity);
   return entity;
 }
 
@@ -144,6 +163,7 @@ personal_context::proto::Entity CreateFlightReservationProto(
     f->mutable_departure_time()->set_month(exploded.month);
     f->mutable_departure_time()->set_day(exploded.day_of_month);
   }
+  AddDefaultSourceReference(entity);
   return entity;
 }
 
@@ -162,6 +182,7 @@ personal_context::proto::Entity CreateVehicleProto(VehicleOptions options) {
   if (options.model) {
     v->set_vehicle_model(base::UTF16ToUTF8(options.model));
   }
+  AddDefaultSourceReference(entity);
   return entity;
 }
 

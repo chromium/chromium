@@ -424,16 +424,18 @@ BASE_FEATURE(kAutofillAllowFillingModifiedInitialValues,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, the ambient autofill experience is enabled in Chrome.
-BASE_FEATURE(kAutofillAmbientAutofill, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_WITH_COUNTRY_RESTRICTIONS(kAutofillAmbientAutofill,
+                                       base::FEATURE_ENABLED_FOR_COUNTRIES,
+                                       "us");
 // A comma-separated list of EntityType string names (e.g. "Passport,Driver's
-// license,Vehicle") supported for Ambient Autofill. If empty, no entity types
-// are supported (unless enabled via `kAutofillAmbientAutofillPassport` or
-// `kAutofillAmbientAutofillDriversLicense`).
+// license,Vehicle") supported for Ambient Autofill, in addition to any types
+// enabled via `kAutofillAmbientAutofillPassport` or
+// `kAutofillAmbientAutofillDriversLicense`.
 BASE_FEATURE_PARAM(std::string,
                    kAutofillAmbientAutofillSupportedEntityTypes,
                    &kAutofillAmbientAutofill,
                    "ambient_autofill_supported_entity_types",
-                   "");
+                   "Vehicle,Flight Reservation,Order,Shipment");
 // The TTL for prefetched (masked/non-SPII) entities and presence signals.
 BASE_FEATURE_PARAM(base::TimeDelta,
                    kAutofillAmbientAutofillPrefetchedEntitiesAndSignalsCacheTTL,
@@ -449,8 +451,10 @@ BASE_FEATURE_PARAM(base::TimeDelta,
 
 // Controls whether Personal Context entities without attached sources are
 // filtered out during Ambient Autofill prefetch validation.
-BASE_FEATURE(kAutofillAmbientAutofillFilterEntitiesWithoutSource,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_WITH_COUNTRY_RESTRICTIONS(
+    kAutofillAmbientAutofillFilterEntitiesWithoutSource,
+    base::FEATURE_ENABLED_FOR_COUNTRIES,
+    "us");
 
 // Controls whether the spii cache is enabled for Ambient Autofill.
 BASE_FEATURE(kAutofillAmbientAutofillSpiiCache,
@@ -458,8 +462,9 @@ BASE_FEATURE(kAutofillAmbientAutofillSpiiCache,
 
 // Controls whether pContext suggestion suppression in Ambient Autofill is
 // enabled, including the UI to suppress suggestions.
-BASE_FEATURE(kAutofillAmbientAutofillSuppression,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_WITH_COUNTRY_RESTRICTIONS(kAutofillAmbientAutofillSuppression,
+                                       base::FEATURE_ENABLED_FOR_COUNTRIES,
+                                       "us");
 
 // If enabled, on Android desktop, the Autofill keyboard accessory will have a
 // new behavior and design.

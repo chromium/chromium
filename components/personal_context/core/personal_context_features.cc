@@ -10,11 +10,13 @@ namespace personal_context::features {
 
 BASE_FEATURE(kPersonalContext, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPersonalContextLogNonEligibilityUma,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_WITH_COUNTRY_RESTRICTIONS(kPersonalContextLogNonEligibilityUma,
+                                       base::FEATURE_ENABLED_FOR_COUNTRIES,
+                                       "us");
 
-BASE_FEATURE(kPersonalContextHandleEncryptedPayloads,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_WITH_COUNTRY_RESTRICTIONS(kPersonalContextHandleEncryptedPayloads,
+                                       base::FEATURE_ENABLED_FOR_COUNTRIES,
+                                       "us");
 
 BASE_FEATURE(kPersonalContextRequireSettingsToggleForEncryption,
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -172,7 +172,7 @@ DECLARE_FEATURE_WITH_MOBILE_COUNTRY_RESTRICTION(kAutofillAiWithDataSchema);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillAllowFillingModifiedInitialValues);
 COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kAutofillAmbientAutofill);
+BASE_DECLARE_FEATURE_WITH_COUNTRY_RESTRICTIONS(kAutofillAmbientAutofill);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE_PARAM(std::string,
                            kAutofillAmbientAutofillSupportedEntityTypes);
@@ -184,11 +184,13 @@ COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
                            kAutofillAmbientAutofillUnmaskedSpiiCacheTTL);
 COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kAutofillAmbientAutofillFilterEntitiesWithoutSource);
+BASE_DECLARE_FEATURE_WITH_COUNTRY_RESTRICTIONS(
+    kAutofillAmbientAutofillFilterEntitiesWithoutSource);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillAmbientAutofillSpiiCache);
 COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kAutofillAmbientAutofillSuppression);
+BASE_DECLARE_FEATURE_WITH_COUNTRY_RESTRICTIONS(
+    kAutofillAmbientAutofillSuppression);
 
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillAndroidDesktopKeyboardAccessoryRevamp);
