@@ -3652,36 +3652,6 @@ TEST_F(TabStripModelTest,
   EXPECT_EQ(std::nullopt, tabstrip()->GetTabGroupForTab(2));
 }
 
-// Ephemeral groups must never be persisted to session storage; regular and
-// promoted groups may be.
-TEST_F(TabStripModelTest, PersistableTabGroup) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {features::kTabGroupsFocusing, features::kNonGroupFocus}, {});
-
-  PrepareTabs(tabstrip(), 3);
-  tabstrip()->ForgetAllOpeners();
-  const tab_groups::TabGroupId regular_group = tabstrip()->AddToNewGroup({0});
-  const tab_groups::TabGroupId ephemeral_group =
-      tabstrip()->EnterFocusMode({1});
-
-  EXPECT_TRUE(tabstrip()->IsPersistableTabGroup(regular_group));
-  EXPECT_FALSE(tabstrip()->IsPersistableTabGroup(ephemeral_group));
-  // A group that is not in the model cannot be persisted.
-  EXPECT_FALSE(
-      tabstrip()->IsPersistableTabGroup(tab_groups::TabGroupId::GenerateNew()));
-  EXPECT_EQ(std::nullopt, tabstrip()->GetPersistableFocusedGroup());
-
-  EXPECT_EQ(regular_group, tabstrip()->GetPersistableTabGroupForTab(0));
-  EXPECT_EQ(std::nullopt, tabstrip()->GetPersistableTabGroupForTab(1));
-  EXPECT_EQ(std::nullopt, tabstrip()->GetPersistableTabGroupForTab(2));
-
-  tabstrip()->PromoteEphemeralTabGroup(ephemeral_group);
-  EXPECT_TRUE(tabstrip()->IsPersistableTabGroup(ephemeral_group));
-  EXPECT_EQ(ephemeral_group, tabstrip()->GetPersistableFocusedGroup());
-  EXPECT_EQ(ephemeral_group, tabstrip()->GetPersistableTabGroupForTab(1));
-}
-
 // OnTabGroupPromoted() is sent only when an ephemeral group is promoted, not
 // for ordinary group creation (which only sends OnTabGroupAdded()).
 TEST_F(TabStripModelTest, OnTabGroupPromotedOnlyForPromotion) {
@@ -9460,12 +9430,10 @@ TEST_F(TabStripModelTest, SingleTabStateHandleOverloads) {
   EXPECT_FALSE(tabstrip()->IsTabInForeground(tab2));
   tabstrip()->RemoveSplit(tab0.Get()->GetSplit().value());
 
-  // Collapsed and persistable group queries.
+  // Collapsed group query.
   EXPECT_FALSE(tabstrip()->IsTabCollapsed(tab1));
-  EXPECT_EQ(std::nullopt, tabstrip()->GetPersistableTabGroupForTab(tab1));
   const tab_groups::TabGroupId group_id =
       tabstrip()->AddToNewGroup({tabstrip()->GetIndexOfTab(tab1)});
-  EXPECT_EQ(group_id, tabstrip()->GetPersistableTabGroupForTab(tab1));
   tabstrip()->ChangeTabGroupVisuals(
       group_id, tab_groups::TabGroupVisualData(
                     u"Group", tab_groups::TabGroupColorId::kGrey,

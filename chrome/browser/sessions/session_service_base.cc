@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
+#include "chrome/browser/ui/sessions/session_tab_group_utils.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
@@ -739,7 +740,8 @@ void SessionServiceBase::BuildCommandsForBrowser(
 
     for (const tab_groups::TabGroupId& group_id :
          group_model->ListTabGroups()) {
-      if (!tab_strip->IsPersistableTabGroup(group_id)) {
+      if (!session_tab_group_utils::IsPersistableTabGroup(*tab_strip,
+                                                          group_id)) {
         continue;
       }
       const tab_groups::TabGroupVisualData* visual_data =
@@ -769,7 +771,7 @@ void SessionServiceBase::BuildCommandsForBrowser(
   if (base::FeatureList::IsEnabled(features::kTabGroupsFocusing) &&
       tab_strip->SupportsTabGroups()) {
     std::optional<tab_groups::TabGroupId> focused_group =
-        tab_strip->GetPersistableFocusedGroup();
+        session_tab_group_utils::GetPersistableFocusedGroup(*tab_strip);
     if (focused_group.has_value()) {
       command_storage_manager()->AppendRebuildCommand(
           sessions::CreateAddWindowExtraDataCommand(
@@ -798,7 +800,8 @@ void SessionServiceBase::BuildCommandsForBrowser(
     WebContents* tab = tab_interface->GetContents();
     CHECK(tab, base::NotFatalUntil::M163);
     const std::optional<tab_groups::TabGroupId> group_id =
-        tab_strip->GetPersistableTabGroupForTab(index);
+        session_tab_group_utils::GetPersistableTabGroupForTab(*tab_strip,
+                                                              index);
     const std::optional<split_tabs::SplitTabId> split_id =
         tab_strip->GetSplitForTab(index);
 

@@ -34,6 +34,7 @@
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
+#include "chrome/browser/ui/sessions/session_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -225,7 +226,8 @@ BrowserLiveTabContext::GetExtraDataForWindow() const {
 
   if (base::FeatureList::IsEnabled(features::kTabGroupsFocusing)) {
     if (std::optional<tab_groups::TabGroupId> focused_group =
-            tab_strip_model_->GetPersistableFocusedGroup()) {
+            session_tab_group_utils::GetPersistableFocusedGroup(
+                *tab_strip_model_)) {
       data[tabs::TabStripModelSelectionState::kFocusedTabGroupIdKey] =
           focused_group->ToString();
     }

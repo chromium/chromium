@@ -250,7 +250,7 @@ void MaybeActivateBrowserWindow(TabStripModelDelegate* delegate) {
 // Whether an ephemeral group exiting focus mode for `reason` may be kept
 // alive by `TabStripModel::TakeEphemeralGroupRemovalLock()`. False for exits
 // that are part of a structural mutation whose caller needs the group
-// dissolved first.
+// removed first.
 bool CanLockEphemeralGroupOnExit(
     std::optional<TabGroupFocusExitReason> reason) {
   if (!reason.has_value()) {
@@ -2447,32 +2447,6 @@ bool TabStripModel::IsEphemeralTabGroup(
              : false;
 }
 
-bool TabStripModel::IsPersistableTabGroup(
-    const tab_groups::TabGroupId& group_id) const {
-  return group_model_ && group_model_->ContainsTabGroup(group_id) &&
-         !group_model_->GetTabGroup(group_id)->is_ephemeral();
-}
-
-std::optional<tab_groups::TabGroupId>
-TabStripModel::GetPersistableTabGroupForTab(int index) const {
-  return ContainsIndex(index)
-             ? GetPersistableTabGroupForTab(GetTabAtIndex(index)->GetHandle())
-             : std::nullopt;
-}
-
-std::optional<tab_groups::TabGroupId>
-TabStripModel::GetPersistableTabGroupForTab(tabs::TabHandle tab) const {
-  const tabs::TabInterface* tab_ptr = tab.Get();
-  if (!tab_ptr ||
-      static_cast<const tabs::TabModel*>(tab_ptr)->owning_model() != this) {
-    return std::nullopt;
-  }
-  std::optional<tab_groups::TabGroupId> group_id = tab_ptr->GetGroup();
-  return (group_id.has_value() && IsPersistableTabGroup(*group_id))
-             ? group_id
-             : std::nullopt;
-}
-
 void TabStripModel::PromoteEphemeralTabGroup(
     const tab_groups::TabGroupId& group_id) {
   ReentrancyCheck reentrancy_check(&reentrancy_guard_);
@@ -2507,21 +2481,13 @@ std::optional<tab_groups::TabGroupId> TabStripModel::GetFocusedGroup() const {
   return selection_model_.focused_group();
 }
 
-std::optional<tab_groups::TabGroupId>
-TabStripModel::GetPersistableFocusedGroup() const {
-  std::optional<tab_groups::TabGroupId> group_id = GetFocusedGroup();
-  return (group_id.has_value() && IsPersistableTabGroup(*group_id))
-             ? group_id
-             : std::nullopt;
-}
-
 void TabStripModel::EnterFocusMode(const tab_groups::TabGroupId& group) {
   CHECK(base::FeatureList::IsEnabled(features::kTabGroupsFocusing));
 
   CHECK(group_model_);
   CHECK(group_model_->ContainsTabGroup(group));
   // An ephemeral group that is being kept alive for its exit may not be
-  // re-focused; it only exists to be dissolved.
+  // re-focused; it only exists to be removed.
   CHECK(locked_ephemeral_group_ != group);
 
   if (selection_model_.focused_group() == group) {
@@ -2585,7 +2551,7 @@ void TabStripModel::EnterFocusMode(const tab_groups::TabGroupId& group) {
                                tab_group->IsCustomized());
     }
 
-    MaybeDissolveEphemeralGroup(old_focused_group);
+    MaybeRemoveEphemeralGroup(old_focused_group);
   }
 }
 
@@ -2618,7 +2584,7 @@ void TabStripModel::ExitFocusMode(
   {
     // Observers may take the ephemeral group's removal lock during this
     // notification, except when the exit is part of a structural mutation
-    // whose caller needs the group dissolved before it continues.
+    // whose caller needs the group removed before it continues.
     base::AutoReset<std::optional<tab_groups::TabGroupId>> lockable(
         &lockable_ephemeral_group_,
         is_ephemeral && !closing_all_ && CanLockEphemeralGroupOnExit(reason)
@@ -2641,7 +2607,7 @@ void TabStripModel::ExitFocusMode(
     }
   }
 
-  MaybeDissolveEphemeralGroup(old_focused_group);
+  MaybeRemoveEphemeralGroup(old_focused_group);
 }
 
 base::ScopedClosureRunner TabStripModel::TakeEphemeralGroupRemovalLock(
@@ -2661,14 +2627,14 @@ void TabStripModel::ReleaseEphemeralGroupRemovalLock(
   CHECK(locked_ephemeral_group_ == group_id);
   locked_ephemeral_group_.reset();
   // Released during the `OnTabGroupFocusChanged()` notification; let
-  // `ExitFocusMode()` dissolve the group once the notification returns.
+  // `ExitFocusMode()` remove the group once the notification returns.
   if (lockable_ephemeral_group_ == group_id) {
     return;
   }
-  MaybeDissolveEphemeralGroup(group_id);
+  MaybeRemoveEphemeralGroup(group_id);
 }
 
-void TabStripModel::MaybeDissolveEphemeralGroup(
+void TabStripModel::MaybeRemoveEphemeralGroup(
     std::optional<tab_groups::TabGroupId> group_id) {
   if (closing_all_ || !group_id.has_value() ||
       locked_ephemeral_group_ == *group_id || GetFocusedGroup() == *group_id ||

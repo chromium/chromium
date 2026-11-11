@@ -3026,6 +3026,7 @@ test("unit_tests") {
       "//chrome/browser/ui/record_replay:unit_tests",
       "//chrome/browser/ui/search:unit_tests",
       "//chrome/browser/ui/send_tab_to_self:unit_tests",
+      "//chrome/browser/ui/sessions:unit_tests",
       "//chrome/browser/ui/tab_sharing:unit_tests",
       "//chrome/browser/ui/tabs:unit_tests",
       "//chrome/browser/ui/tabs/organizer:unit_tests",

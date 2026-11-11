@@ -92,6 +92,7 @@
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/sad_tab.h"
+#include "chrome/browser/ui/sessions/session_tab_group_utils.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/status_bubble.h"
@@ -889,7 +890,7 @@ void Browser::PersistFocusedTabGroup() {
   SessionService* service = SessionServiceFactory::GetForProfile(profile_);
   if (service) {
     std::optional<tab_groups::TabGroupId> focused_group =
-        tab_strip_model_->GetPersistableFocusedGroup();
+        session_tab_group_utils::GetPersistableFocusedGroup(*tab_strip_model_);
     service->AddWindowExtraData(
         session_id_, tabs::TabStripModelSelectionState::kFocusedTabGroupIdKey,
         focused_group.has_value() ? focused_group->ToString() : std::string());

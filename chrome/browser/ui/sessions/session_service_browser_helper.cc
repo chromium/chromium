@@ -15,6 +15,7 @@
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/tab_list/tab_removed_reason.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
+#include "chrome/browser/ui/sessions/session_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -33,7 +34,8 @@ void UpdateTabGroupSessionMetadata(Profile& profile,
                                    TabStripModel& tab_strip_model,
                                    SessionID session_id,
                                    const tab_groups::TabGroupId& group_id) {
-  if (!tab_strip_model.IsPersistableTabGroup(group_id)) {
+  if (!session_tab_group_utils::IsPersistableTabGroup(tab_strip_model,
+                                                      group_id)) {
     return;
   }
   SessionService* const session_service =
@@ -51,7 +53,8 @@ void UpdateTabGroupSessionMetadata(Profile& profile,
 void PromoteClosedTabsForGroup(Profile& profile,
                                TabStripModel& tab_strip_model,
                                const tab_groups::TabGroupId& group_id) {
-  if (!tab_strip_model.IsPersistableTabGroup(group_id)) {
+  if (!session_tab_group_utils::IsPersistableTabGroup(tab_strip_model,
+                                                      group_id)) {
     return;
   }
   sessions::TabRestoreService* const tab_restore_service =
@@ -358,7 +361,8 @@ void SessionServiceBrowserHelper::SyncHistoryWithTabs(int index) {
 
         session_service->SetTabGroup(
             session_id_, tab_id,
-            tab_strip_model_->GetPersistableTabGroupForTab(current_index));
+            session_tab_group_utils::GetPersistableTabGroupForTab(
+                *tab_strip_model_, current_index));
       }
     }
     current_index++;
@@ -371,7 +375,8 @@ void SessionServiceBrowserHelper::UpdateTabGroupSessionDataForTab(
   // See comment in `OnTabGroupChanged`.
   CHECK(!IsRelevantToAppSessionService(browser_type_),
         base::NotFatalUntil::M162);
-  if (group.has_value() && !tab_strip_model_->IsPersistableTabGroup(*group)) {
+  if (group.has_value() && !session_tab_group_utils::IsPersistableTabGroup(
+                               *tab_strip_model_, *group)) {
     group = std::nullopt;
   }
   SessionService* const session_service =
