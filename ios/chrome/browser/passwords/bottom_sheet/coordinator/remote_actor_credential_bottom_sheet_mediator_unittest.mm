@@ -14,8 +14,11 @@
 #import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/task_environment.h"
+#import "base/test/test_future.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/password_manager/core/browser/password_form.h"
+#import "components/password_manager/core/browser/remote_actor/remote_actor_credential_sharing_controller.h"
+#import "components/password_manager/core/browser/remote_actor/remote_actor_credential_sharing_result.h"
 #import "ios/chrome/browser/favicon/model/test_favicon_loader.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/ui/remote_actor_credential_bottom_sheet_consumer.h"
 #import "ios/chrome/browser/passwords/model/remote_actor/proto/remote_actor_password_upload_request.pb.h"
@@ -28,6 +31,10 @@
 #import "url/origin.h"
 
 namespace {
+
+using CredentialOrError = password_manager::
+    RemoteActorCredentialSharingController::Delegate::CredentialOrError;
+using password_manager::RemoteActorCredentialSharingResult;
 
 constexpr char kTestOrigin[] = "https://instacart.com";
 constexpr char kTestDomain[] = "instacart.com";
@@ -93,11 +100,24 @@ class RemoteActorCredentialBottomSheetMediatorTest : public PlatformTest {
     return static_cast<id<RemoteActorCredentialSharingDelegate>>(mediator_);
   }
 
+  // Forwards `credentials` to the mediator as if retrieved by the controller
+  // and records the selection result in `selection_future_`.
+  void ShowCredentialSelection(
+      std::vector<std::unique_ptr<password_manager::PasswordForm>>
+          credentials) {
+    [sharing_delegate()
+        showCredentialSelectionWithCredentials:std::move(credentials)
+                                        origin:url::Origin::Create(
+                                                   GURL(kTestOrigin))
+                                      callback:selection_future_.GetCallback()];
+  }
+
   base::test::TaskEnvironment task_environment_;
   TestFaviconLoader favicon_loader_;
   id<RemoteActorCredentialBottomSheetConsumer> consumer_;
   id<RemoteActorCredentialBottomSheetMediatorDelegate> delegate_;
   RemoteActorCredentialBottomSheetMediator* mediator_;
+  base::test::TestFuture<CredentialOrError> selection_future_;
 };
 
 // Tests that starting the mediator when required dependencies are unavailable
@@ -124,11 +144,9 @@ TEST_F(RemoteActorCredentialBottomSheetMediatorTest,
   credentials.push_back(CreateTestForm(kUsername1, kPassword1));
   credentials.push_back(CreateTestForm(kUsername2, kPassword2));
 
-  [sharing_delegate()
-      showCredentialSelectionWithCredentials:std::move(credentials)
-                                      origin:url::Origin::Create(
-                                                 GURL(kTestOrigin))
-                                    callback:base::DoNothing()];
+  ShowCredentialSelection(std::move(credentials));
+
+  EXPECT_FALSE(selection_future_.IsReady());
 
   OCMExpect([consumer_
       setSuggestions:[OCMArg checkWithBlock:^BOOL(
@@ -181,4 +199,64 @@ TEST_F(RemoteActorCredentialBottomSheetMediatorTest,
   OCMExpect([consumer_ setFaviconAttributes:[OCMArg isNotNil]]);
 
   mediator_.consumer = consumer_;
+}
+
+// Tests that selecting a credential by index returns the matching form to the
+// controller.
+TEST_F(RemoteActorCredentialBottomSheetMediatorTest,
+       TestDidSelectCredentialAtIndexReturnsCredential) {
+  OCMExpect([delegate_ mediatorDidRequestPresentation:mediator_]);
+  std::vector<std::unique_ptr<password_manager::PasswordForm>> credentials;
+  credentials.push_back(CreateTestForm(kUsername1, kPassword1));
+  credentials.push_back(CreateTestForm(kUsername2, kPassword2));
+  ShowCredentialSelection(std::move(credentials));
+
+  [mediator_ didSelectCredentialAtIndex:1];
+
+  const CredentialOrError& result = selection_future_.Get();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(kUsername2, result->username_value);
+  EXPECT_EQ(kPassword2, result->password_value);
+}
+
+// Tests that canceling returns `kUserCancelledDialog` to the controller.
+TEST_F(RemoteActorCredentialBottomSheetMediatorTest,
+       TestDidCancelReportsCancellation) {
+  OCMExpect([delegate_ mediatorDidRequestPresentation:mediator_]);
+  std::vector<std::unique_ptr<password_manager::PasswordForm>> credentials;
+  credentials.push_back(CreateTestForm(kUsername1, kPassword1));
+  ShowCredentialSelection(std::move(credentials));
+
+  [mediator_ didCancel];
+
+  const CredentialOrError& result = selection_future_.Get();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(RemoteActorCredentialSharingResult::kUserCancelledDialog,
+            result.error());
+}
+
+// Tests that canceling when no selection callback is pending notifies the
+// delegate that the flow finished unsuccessfully.
+TEST_F(RemoteActorCredentialBottomSheetMediatorTest,
+       TestDidCancelWithoutPendingCallbackNotifiesDelegate) {
+  OCMExpect([delegate_ mediator:mediator_ didFinishWithSuccess:NO]);
+
+  [mediator_ didCancel];
+}
+
+// Tests that disconnecting while a selection is pending resolves the callback
+// with `kUserCancelledDialog`.
+TEST_F(RemoteActorCredentialBottomSheetMediatorTest,
+       TestDisconnectReportsCancellation) {
+  OCMExpect([delegate_ mediatorDidRequestPresentation:mediator_]);
+  std::vector<std::unique_ptr<password_manager::PasswordForm>> credentials;
+  credentials.push_back(CreateTestForm(kUsername1, kPassword1));
+  ShowCredentialSelection(std::move(credentials));
+
+  [mediator_ disconnect];
+
+  const CredentialOrError& result = selection_future_.Get();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(RemoteActorCredentialSharingResult::kUserCancelledDialog,
+            result.error());
 }

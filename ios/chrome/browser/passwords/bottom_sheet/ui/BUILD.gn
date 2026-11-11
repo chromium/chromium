@@ -14,6 +14,7 @@ source_set("ui") {
     "passkey_creation_bottom_sheet_view_controller.h",
     "passkey_creation_bottom_sheet_view_controller.mm",
     "remote_actor_credential_bottom_sheet_consumer.h",
+    "remote_actor_credential_bottom_sheet_mutator.h",
     "remote_actor_credential_bottom_sheet_view_controller.h",
     "remote_actor_credential_bottom_sheet_view_controller.mm",
   ]
