@@ -182,6 +182,19 @@ void CheckRestrictedUrls(const Extension* extension,
       << name;
 }
 
+// Clears the process-wide user and default policy host restrictions in
+// `PermissionsData` for every context id this file uses.
+void ClearHostRestrictions() {
+  for (int context_id : {0, 7, 8}) {
+    PermissionsData::SetUserHostRestrictions(
+        context_id, /*user_blocked_hosts=*/URLPatternSet(),
+        /*user_allowed_hosts=*/URLPatternSet());
+    PermissionsData::SetDefaultPolicyHostRestrictions(
+        context_id, /*default_policy_blocked_hosts=*/URLPatternSet(),
+        /*default_policy_allowed_hosts=*/URLPatternSet());
+  }
+}
+
 }  // namespace
 
 // NOTE: These tests run in Chrome's unit_tests suite because they depend on
@@ -451,6 +464,10 @@ class ExtensionScriptAndCaptureVisibleTest : public testing::Test {
     // Ignore the policy delegate for this test.
     PermissionsData::SetPolicyDelegate(nullptr);
   }
+
+  void SetUp() override { ClearHostRestrictions(); }
+
+  void TearDown() override { ClearHostRestrictions(); }
 
   enum AccessType {
     DISALLOWED,
@@ -1621,6 +1638,7 @@ class CaptureVisiblePageTest : public testing::Test {
 
  private:
   void SetUp() override {
+    ClearHostRestrictions();
     all_urls_ = ExtensionBuilder("all urls")
                     .AddHostPermission("<all_urls>")
                     .SetID(std::string(32, 'a'))
@@ -1637,6 +1655,7 @@ class CaptureVisiblePageTest : public testing::Test {
   }
 
   void TearDown() override {
+    ClearHostRestrictions();
     all_urls_ = nullptr;
     active_tab_ = nullptr;
     page_capture_ = nullptr;
