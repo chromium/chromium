@@ -75,13 +75,11 @@ AutocorrectPreference GetVirtualKeyboardAutocorrectPref(
 bool SetPhysicalKeyboardAutocorrectAsEnabledByDefault(
     PrefService* pref_service,
     std::string_view engine_id) {
-  base::Value* result =
-      ScopedDictPrefUpdate(pref_service,
-                           ash::prefs::kLanguageInputMethodSpecificSettings)
-          ->SetByDottedPath(
-              base::StrCat(
-                  {engine_id, ".", kPkAutocorrectEnabledByDefaultPrefName}),
-              base::Value(true));
+  ScopedDictPrefUpdate update{pref_service,
+                              ash::prefs::kLanguageInputMethodSpecificSettings};
+  base::Value* result = update->SetByDottedPath(
+      base::StrCat({engine_id, ".", kPkAutocorrectEnabledByDefaultPrefName}),
+      base::Value(true));
   return result != nullptr;
 }
 
