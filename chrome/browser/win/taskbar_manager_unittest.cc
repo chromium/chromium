@@ -324,6 +324,37 @@ TEST_F(TaskbarManagerAppUserModelIdTest, DroppedFlowReleasesAppUserModelId) {
   EXPECT_TRUE(GetProcessAppUserModelId().empty());
 }
 
+// Shell COM objects used on the pin sequence (such as `CLSID_TaskbandPin` /
+// `IPinnedList3` and `IShellLink`) require a single-threaded apartment, so pin
+// flows must run in a COM STA.
+TEST_F(TaskbarManagerAppUserModelIdTest, FlowRunsInComSingleThreadedApartment) {
+  base::RunLoop run_loop;
+  // `RunLoop::QuitClosure()` checks that it is created on `run_loop`'s owning
+  // sequence (though invoking the returned closure is thread-safe).
+  base::OnceClosure quit = run_loop.QuitClosure();
+  APTTYPE apartment_type = APTTYPE_CURRENT;
+  APTTYPEQUALIFIER apartment_qualifier = APTTYPEQUALIFIER_NONE;
+  HRESULT hr = E_FAIL;
+
+  browser_util::internal::RunWithProcessAppUserModelId(
+      AppUserModelIdForFlow(0),
+      base::BindLambdaForTesting([&](base::ScopedClosureRunner release) {
+        hr = ::CoGetApartmentType(&apartment_type, &apartment_qualifier);
+        // `release.RunAndReset()` posts `ReleaseProcessAppUserModelId()` to the
+        // pin sequence (`GetCurrentDefault()`). Post `quit` after it on the
+        // same sequence so the AUMI is cleared before `run_loop.Run()` returns.
+        release.RunAndReset();
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, std::move(quit));
+      }));
+
+  run_loop.Run();
+
+  ASSERT_EQ(S_OK, hr);
+  EXPECT_EQ(APTTYPE_STA, apartment_type);
+  EXPECT_TRUE(GetProcessAppUserModelId().empty());
+}
+
 // The public entry points must tolerate overlapping requests: every request has
 // to complete. `ShouldOfferToPin()` is used rather than `PinAppToTaskbar()`
 // because it never reaches `RequestPinCurrentAppAsync()`, which would show a

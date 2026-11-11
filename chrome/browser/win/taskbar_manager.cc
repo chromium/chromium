@@ -21,6 +21,7 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/lazy_thread_pool_task_runner.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner_thread_mode.h"
 #include "base/task/task_traits.h"
 #include "base/win/com_init_util.h"
 #include "base/win/core_winrt_util.h"
@@ -79,9 +80,16 @@ constexpr std::array kChannels = {
 // This sequence also runs the `ITaskbarManager` eligibility getters, which
 // issue synchronous, blocking cross-process RPCs to the shell (explorer.exe)
 // and therefore must not run on the UI thread.
-base::LazyThreadPoolSequencedTaskRunner g_pin_task_runner =
-    LAZY_THREAD_POOL_SEQUENCED_TASK_RUNNER_INITIALIZER(
-        base::TaskTraits(base::MayBlock(), base::TaskPriority::USER_VISIBLE));
+//
+// While `ITaskbarManager` itself supports both STA and MTA
+// (`ThreadingModel=Both`), shell COM objects used for shortcut resolution
+// (`IShellLink`) and taskbar pinning (`CLSID_TaskbandPin` / `IPinnedList3`)
+// require a single-threaded apartment (`ThreadingModel=Apartment`), so this is
+// a COM STA thread rather than a plain thread pool sequence.
+base::LazyThreadPoolCOMSTATaskRunner g_pin_task_runner =
+    LAZY_COM_STA_TASK_RUNNER_INITIALIZER(
+        base::TaskTraits(base::MayBlock(), base::TaskPriority::USER_VISIBLE),
+        base::SingleThreadTaskRunnerThreadMode::SHARED);
 
 // A pin flow waiting for the process App User Model ID to become available.
 struct QueuedPinFlow {
