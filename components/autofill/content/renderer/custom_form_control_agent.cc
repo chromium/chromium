@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/content/renderer/custom_form_control_agent_impl.h"
+#include "components/autofill/content/renderer/custom_form_control_agent.h"
 
 #include <utility>
 
@@ -15,25 +15,24 @@
 
 namespace autofill {
 
-CustomFormControlAgentImpl::CustomFormControlAgentImpl(
+CustomFormControlAgent::CustomFormControlAgent(
     content::RenderFrame* render_frame,
     int32_t world_id,
     blink::AssociatedInterfaceRegistry& registry)
     : executor_(render_frame, world_id) {
   // The registry belongs to the frame. The weak pointer drops requests that
   // arrive after this is destroyed.
-  registry.AddInterface<mojom::CustomFormControlAgent>(
-      base::BindRepeating(&CustomFormControlAgentImpl::BindReceiver,
-                          weak_ptr_factory_.GetWeakPtr()));
+  registry.AddInterface<mojom::CustomFormControlAgent>(base::BindRepeating(
+      &CustomFormControlAgent::BindReceiver, weak_ptr_factory_.GetWeakPtr()));
 }
 
-CustomFormControlAgentImpl::~CustomFormControlAgentImpl() = default;
+CustomFormControlAgent::~CustomFormControlAgent() = default;
 
-void CustomFormControlAgentImpl::OnDestruct() {
+void CustomFormControlAgent::OnDestruct() {
   receiver_.reset();
 }
 
-void CustomFormControlAgentImpl::LoadUnsafeScript(
+void CustomFormControlAgent::LoadUnsafeScript(
     const blink::DocumentToken& document,
     const std::string& script,
     LoadUnsafeScriptCallback callback) {
@@ -44,7 +43,7 @@ void CustomFormControlAgentImpl::LoadUnsafeScript(
   std::move(callback).Run(executor_.LoadScript(script));
 }
 
-bool CustomFormControlAgentImpl::IsCurrentDocument(
+bool CustomFormControlAgent::IsCurrentDocument(
     const blink::DocumentToken& document) const {
   // The executor observes the frame, so this is null once the frame is
   // destroyed. Then calls fail, as they do in the executor.
@@ -53,7 +52,7 @@ bool CustomFormControlAgentImpl::IsCurrentDocument(
          render_frame->GetWebFrame()->GetDocument().Token() == document;
 }
 
-void CustomFormControlAgentImpl::BindReceiver(
+void CustomFormControlAgent::BindReceiver(
     mojo::PendingAssociatedReceiver<mojom::CustomFormControlAgent>
         pending_receiver) {
   receiver_.reset();

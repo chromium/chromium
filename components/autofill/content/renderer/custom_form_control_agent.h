@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CONTENT_RENDERER_CUSTOM_FORM_CONTROL_AGENT_IMPL_H_
-#define COMPONENTS_AUTOFILL_CONTENT_RENDERER_CUSTOM_FORM_CONTROL_AGENT_IMPL_H_
+#ifndef COMPONENTS_AUTOFILL_CONTENT_RENDERER_CUSTOM_FORM_CONTROL_AGENT_H_
+#define COMPONENTS_AUTOFILL_CONTENT_RENDERER_CUSTOM_FORM_CONTROL_AGENT_H_
 
 #include <cstdint>
 #include <string>
@@ -28,21 +28,20 @@ namespace autofill {
 // Implements `mojom::CustomFormControlAgent` for a frame. The browser calls
 // `LoadUnsafeScript()` to load the custom form control script of the frame's
 // current document into a `CustomFormControlScriptExecutor`, which is owned by
-// this `CustomFormControlAgentImpl`.
+// this `CustomFormControlAgent`.
 //
-// The frame's `AutofillAgent` owns the `CustomFormControlAgentImpl`.
-class CustomFormControlAgentImpl : public mojom::CustomFormControlAgent {
+// The frame's `AutofillAgent` owns the `CustomFormControlAgent`.
+class CustomFormControlAgent : public mojom::CustomFormControlAgent {
  public:
   // Runs scripts in the isolated world `world_id` of `render_frame` (see
   // `CustomFormControlScriptExecutor`), and registers the interface in
   // `registry`, the frame's registry.
-  CustomFormControlAgentImpl(content::RenderFrame* render_frame,
-                             int32_t world_id,
-                             blink::AssociatedInterfaceRegistry& registry);
-  CustomFormControlAgentImpl(const CustomFormControlAgentImpl&) = delete;
-  CustomFormControlAgentImpl& operator=(const CustomFormControlAgentImpl&) =
-      delete;
-  ~CustomFormControlAgentImpl() override;
+  CustomFormControlAgent(content::RenderFrame* render_frame,
+                         int32_t world_id,
+                         blink::AssociatedInterfaceRegistry& registry);
+  CustomFormControlAgent(const CustomFormControlAgent&) = delete;
+  CustomFormControlAgent& operator=(const CustomFormControlAgent&) = delete;
+  ~CustomFormControlAgent() override;
 
   void OnDestruct();
 
@@ -70,9 +69,9 @@ class CustomFormControlAgentImpl : public mojom::CustomFormControlAgent {
 
   mojo::AssociatedReceiver<mojom::CustomFormControlAgent> receiver_{this};
 
-  base::WeakPtrFactory<CustomFormControlAgentImpl> weak_ptr_factory_{this};
+  base::WeakPtrFactory<CustomFormControlAgent> weak_ptr_factory_{this};
 };
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CONTENT_RENDERER_CUSTOM_FORM_CONTROL_AGENT_IMPL_H_
+#endif  // COMPONENTS_AUTOFILL_CONTENT_RENDERER_CUSTOM_FORM_CONTROL_AGENT_H_

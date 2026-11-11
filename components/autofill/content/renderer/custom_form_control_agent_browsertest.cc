@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/content/renderer/custom_form_control_agent_impl.h"
+#include "components/autofill/content/renderer/custom_form_control_agent.h"
 
 #include <cstdint>
 #include <memory>
@@ -36,26 +36,26 @@ constexpr int32_t kWorldId = content::ISOLATED_WORLD_ID_CONTENT_END + 1;
 
 using Remote = mojo::AssociatedRemote<mojom::CustomFormControlAgent>;
 
-// Calls `CustomFormControlAgentImpl::OnDestruct()` when the frame is destroyed,
+// Calls `CustomFormControlAgent::OnDestruct()` when the frame is destroyed,
 // like `AutofillAgent` does.
 class OnDestructNotifier : public content::RenderFrameObserver {
  public:
   OnDestructNotifier(content::RenderFrame* render_frame,
-                     CustomFormControlAgentImpl& agent)
+                     CustomFormControlAgent& agent)
       : content::RenderFrameObserver(render_frame), agent_(agent) {}
 
  private:
   void OnDestruct() override { agent_->OnDestruct(); }
 
-  const raw_ref<CustomFormControlAgentImpl> agent_;
+  const raw_ref<CustomFormControlAgent> agent_;
 };
 
-class CustomFormControlAgentImplTest : public content::RenderViewTest {
+class CustomFormControlAgentTest : public content::RenderViewTest {
  protected:
   void SetUp() override {
     content::RenderViewTest::SetUp();
-    agent_ = std::make_unique<CustomFormControlAgentImpl>(GetMainRenderFrame(),
-                                                          kWorldId, registry_);
+    agent_ = std::make_unique<CustomFormControlAgent>(GetMainRenderFrame(),
+                                                      kWorldId, registry_);
   }
 
   void TearDown() override {
@@ -87,16 +87,16 @@ class CustomFormControlAgentImplTest : public content::RenderViewTest {
     return GetMainFrame()->GetDocument().Token();
   }
 
-  CustomFormControlAgentImpl& agent() { return *agent_; }
+  CustomFormControlAgent& agent() { return *agent_; }
 
  private:
   blink::AssociatedInterfaceRegistry registry_;
-  std::unique_ptr<CustomFormControlAgentImpl> agent_;
+  std::unique_ptr<CustomFormControlAgent> agent_;
 };
 
 // Tests that the browser can load scripts through the interface and learns
 // whether they loaded.
-TEST_F(CustomFormControlAgentImplTest, LoadsScripts) {
+TEST_F(CustomFormControlAgentTest, LoadsScripts) {
   Remote remote;
   ASSERT_TRUE(Bind(remote));
   EXPECT_TRUE(LoadUnsafeScript(remote, GetDocumentToken(), kValidScript));
@@ -109,7 +109,7 @@ TEST_F(CustomFormControlAgentImplTest, LoadsScripts) {
 
 // Tests that a script for a previous document, which the browser sent before
 // the frame committed a new one, isn't loaded.
-TEST_F(CustomFormControlAgentImplTest, IgnoresScriptForPreviousDocument) {
+TEST_F(CustomFormControlAgentTest, IgnoresScriptForPreviousDocument) {
   Remote remote;
   ASSERT_TRUE(Bind(remote));
   const blink::DocumentToken previous_document = GetDocumentToken();
@@ -123,7 +123,7 @@ TEST_F(CustomFormControlAgentImplTest, IgnoresScriptForPreviousDocument) {
 }
 
 // Tests that binding the interface again replaces the previous connection.
-TEST_F(CustomFormControlAgentImplTest, RebindReplacesConnection) {
+TEST_F(CustomFormControlAgentTest, RebindReplacesConnection) {
   Remote first;
   ASSERT_TRUE(Bind(first));
   Remote second;
@@ -133,13 +133,13 @@ TEST_F(CustomFormControlAgentImplTest, RebindReplacesConnection) {
 }
 
 // Tests that the reply is dropped if the script detaches its own frame.
-TEST_F(CustomFormControlAgentImplTest, DropsReplyIfScriptDetachesFrame) {
+TEST_F(CustomFormControlAgentTest, DropsReplyIfScriptDetachesFrame) {
   LoadHTML("<iframe src='about:blank'></iframe>");
   blink::WebLocalFrame* child_frame =
       GetMainFrame()->FirstChild()->ToWebLocalFrame();
   content::RenderFrame* child = content::RenderFrame::FromWebFrame(child_frame);
   blink::AssociatedInterfaceRegistry child_registry;
-  CustomFormControlAgentImpl child_agent(child, kWorldId, child_registry);
+  CustomFormControlAgent child_agent(child, kWorldId, child_registry);
   OnDestructNotifier owner(child, child_agent);
   Remote remote;
   ASSERT_TRUE(Bind(remote, child_registry));
