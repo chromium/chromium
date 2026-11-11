@@ -67,9 +67,6 @@ BASE_DECLARE_FEATURE(kBrowsingHistoryCollapsibleDayCards);
 COMPONENT_EXPORT(HISTORY_FEATURES)
 BASE_DECLARE_FEATURE(kBrowsingHistorySimilarVisitsGrouping);
 
-COMPONENT_EXPORT(HISTORY_FEATURES)
-BASE_DECLARE_FEATURE(kBrowsingHistoryImprovedHostnameSuffixMatching);
-
 // Do not check this feature directly; use
 // `IsBrowsingHistoryFilterByDeviceEnabled()` instead.
 COMPONENT_EXPORT(HISTORY_FEATURES)

@@ -3035,14 +3035,10 @@ void HistoryBackend::QueryHistoryText(const std::u16string& text_query,
                         query_parser::MatchingAlgorithm::DEFAULT));
 
     if (!options.hostname_suffix.empty()) {
-      const bool use_improved_matching = base::FeatureList::IsEnabled(
-          kBrowsingHistoryImprovedHostnameSuffixMatching);
       const std::string hostname_suffix =
-          use_improved_matching ? base::ToLowerASCII(options.hostname_suffix)
-                                : options.hostname_suffix;
+          base::ToLowerASCII(options.hostname_suffix);
       std::erase_if(text_matches, [&](const URLRow& row) {
-        return use_improved_matching ? !row.url().DomainIs(hostname_suffix)
-                                     : (row.url().GetHost() != hostname_suffix);
+        return !row.url().DomainIs(hostname_suffix);
       });
     }
   }
@@ -3115,16 +3111,9 @@ URLRows HistoryBackend::GetMatchesForHost(const std::string& hostname_suffix) {
 
   if (db_ && db_->InitURLEnumeratorForEverything(&iter)) {
     URLRow row;
-    const bool improved_suffix_matching = base::FeatureList::IsEnabled(
-        kBrowsingHistoryImprovedHostnameSuffixMatching);
-    const std::string target_host = improved_suffix_matching
-                                        ? base::ToLowerASCII(hostname_suffix)
-                                        : hostname_suffix;
+    const std::string target_host = base::ToLowerASCII(hostname_suffix);
     while (iter.GetNextURL(&row)) {
-      const bool matches_host = improved_suffix_matching
-                                    ? row.url().DomainIs(target_host)
-                                    : (row.url().GetHost() == target_host);
-      if (row.url().is_valid() && matches_host) {
+      if (row.url().is_valid() && row.url().DomainIs(target_host)) {
         results.push_back(std::move(row));
       }
     }

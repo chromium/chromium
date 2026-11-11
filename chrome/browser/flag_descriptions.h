@@ -374,14 +374,6 @@ inline constexpr char kBlockingFocusWithoutUserActivationDescription[] =
     "(element.focus(), window.focus(), autofocus) from iframes unless "
     "triggered by a user gesture.";
 
-inline constexpr char kBrowsingHistoryImprovedHostnameSuffixMatchingName[] =
-    "Browsing History Improved Hostname Suffix Matching";
-inline constexpr char
-    kBrowsingHistoryImprovedHostnameSuffixMatchingDescription[] =
-        "Improves hostname suffix matching for browsing history, so that "
-        "example.com matches example.com as well as subdomains like "
-        "www.example.com.";
-
 inline constexpr char kBrowsingHistoryFilterByActorName[] =
     "Filter Browsing History By Actor";
 inline constexpr char kBrowsingHistoryFilterByActorDescription[] =

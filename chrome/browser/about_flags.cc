@@ -13957,14 +13957,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(switches::kUnifyWaitForCookies)},
 #endif  // BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
 
-    {"browsing-history-improved-hostname-suffix-matching",
-     flag_descriptions::kBrowsingHistoryImprovedHostnameSuffixMatchingName,
-     flag_descriptions::
-         kBrowsingHistoryImprovedHostnameSuffixMatchingDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         history::kBrowsingHistoryImprovedHostnameSuffixMatching)},
-
     {"browsing-history-filter-by-device",
      flag_descriptions::kBrowsingHistoryFilterByDeviceName,
      flag_descriptions::kBrowsingHistoryFilterByDeviceDescription, kOsAll,

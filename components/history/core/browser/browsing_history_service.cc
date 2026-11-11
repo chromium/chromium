@@ -1144,21 +1144,14 @@ void BrowsingHistoryService::WebHistoryQueryComplete(
 
     state->remote_results.reserve(state->remote_results.size() +
                                   query_history_result->visits.size());
-    const bool improved_suffix_matching = base::FeatureList::IsEnabled(
-        kBrowsingHistoryImprovedHostnameSuffixMatching);
-    std::string hostname_suffix = state->original_options.hostname_suffix;
-    if (improved_suffix_matching) {
-      hostname_suffix = base::ToLowerASCII(hostname_suffix);
-    }
+    const std::string hostname_suffix =
+        base::ToLowerASCII(state->original_options.hostname_suffix);
     for (const WebHistoryService::QueryHistoryResult::Visit& visit :
          query_history_result->visits) {
       if (!hostname_suffix.empty()) {
         // Do post filtering to skip entries that do not have the correct
         // hostname.
-        const bool matches_host =
-            improved_suffix_matching ? visit.url.DomainIs(hostname_suffix)
-                                     : (visit.url.GetHost() == hostname_suffix);
-        if (!matches_host) {
+        if (!visit.url.DomainIs(hostname_suffix)) {
           continue;
         }
       }

@@ -540,33 +540,19 @@ void BrowsingHistoryHandler::SendHistoryQuery(
   options.duplicate_policy = history::QueryOptions::KEEP_ALL_DUPLICATES;
   options.include_actor_visits = include_actor_visits;
   options.include_user_visits = include_user_visits;
-  std::string text_query;
   const std::string kHostPrefix = "host:";
-
-  if (base::FeatureList::IsEnabled(
-          history::kBrowsingHistoryImprovedHostnameSuffixMatching)) {
-    // New logic: Tokenize, extract any "host:<domain>" token, rejoin remainder.
-    std::vector<std::string_view> tokens = base::SplitStringPiece(
-        query, " ", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-    std::vector<std::string_view> other_tokens;
-    for (std::string_view token : tokens) {
-      if (options.hostname_suffix.empty() && token.starts_with(kHostPrefix)) {
-        options.hostname_suffix =
-            std::string(token.substr(kHostPrefix.length()));
-      } else {
-        other_tokens.push_back(token);
-      }
-    }
-    text_query = base::JoinString(other_tokens, " ");
-  } else {
-    // Legacy logic: Only match "host:" at index 0; treat entire rest as host.
-    if (query.starts_with(kHostPrefix)) {
-      options.hostname_suffix = query.substr(kHostPrefix.length());
-      text_query.clear();
+  std::vector<std::string_view> tokens = base::SplitStringPiece(
+      query, " ", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  std::vector<std::string_view> other_tokens;
+  for (std::string_view token : tokens) {
+    if (options.hostname_suffix.empty() && token.starts_with(kHostPrefix)) {
+      options.hostname_suffix =
+          std::string(token.substr(kHostPrefix.length()));
     } else {
-      text_query = query;
+      other_tokens.push_back(token);
     }
   }
+  std::string text_query = base::JoinString(other_tokens, " ");
 
   query_hostname_suffix_ = options.hostname_suffix;
 

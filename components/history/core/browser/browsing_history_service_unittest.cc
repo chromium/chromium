@@ -677,46 +677,20 @@ TEST_F(BrowsingHistoryServiceTest, QueryHistoryHostOnlyRemoteSuffixMatching) {
   options.max_count = 0;
   options.hostname_suffix = "eight.com";
 
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(
-        kBrowsingHistoryImprovedHostnameSuffixMatching);
-
-    // With feature enabled, both sub.eight.com and eight.com match, and
-    // matching is case-insensitive.
-    EXPECT_THAT(QueryHistory(u"", options),
-                MatchesQueryResult(baseline_time_, /*reached_beginning*/ true,
-                                   std::vector<TestResult>{
-                                       {kSubdomainUrl, 2, kRemote},
-                                       {kUrl8, 1, kRemote},
-                                   }));
-    options.hostname_suffix = "EiGhT.cOm";
-    EXPECT_THAT(QueryHistory(u"", options),
-                MatchesQueryResult(baseline_time_, /*reached_beginning*/ true,
-                                   std::vector<TestResult>{
-                                       {kSubdomainUrl, 2, kRemote},
-                                       {kUrl8, 1, kRemote},
-                                   }));
-  }
-
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndDisableFeature(
-        kBrowsingHistoryImprovedHostnameSuffixMatching);
-
-    // With feature disabled, only exact host eight.com matches, and matching
-    // is case-sensitive.
-    options.hostname_suffix = "eight.com";
-    EXPECT_THAT(QueryHistory(u"", options),
-                MatchesQueryResult(baseline_time_, /*reached_beginning*/ true,
-                                   std::vector<TestResult>{
-                                       {kUrl8, 1, kRemote},
-                                   }));
-    options.hostname_suffix = "EiGhT.cOm";
-    EXPECT_THAT(QueryHistory(u"", options),
-                MatchesQueryResult(baseline_time_, /*reached_beginning*/ true,
-                                   std::vector<TestResult>{}));
-  }
+  // Both sub.eight.com and eight.com match, and matching is case-insensitive.
+  EXPECT_THAT(QueryHistory(u"", options),
+              MatchesQueryResult(baseline_time_, /*reached_beginning*/ true,
+                                 std::vector<TestResult>{
+                                     {kSubdomainUrl, 2, kRemote},
+                                     {kUrl8, 1, kRemote},
+                                 }));
+  options.hostname_suffix = "EiGhT.cOm";
+  EXPECT_THAT(QueryHistory(u"", options),
+              MatchesQueryResult(baseline_time_, /*reached_beginning*/ true,
+                                 std::vector<TestResult>{
+                                     {kSubdomainUrl, 2, kRemote},
+                                     {kUrl8, 1, kRemote},
+                                 }));
 }
 
 TEST_F(BrowsingHistoryServiceTest, QueryHistoryLocalPagingPartial) {

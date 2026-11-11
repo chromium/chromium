@@ -295,10 +295,6 @@ TEST_F(BrowsingHistoryHandlerTest, MisplacedHostnameSuffixParameter) {
 }
 
 TEST_F(BrowsingHistoryHandlerTest, HostnameSuffixParameterAndTextQuery) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      history::kBrowsingHistoryImprovedHostnameSuffixMatching);
-
   {
     std::u16string query = u"some-text";
     QueryOptions options;
@@ -318,34 +314,6 @@ TEST_F(BrowsingHistoryHandlerTest, HostnameSuffixParameterAndTextQuery) {
     auto results_mojom =
         RunQueryHistory("some-text host:example.com some-other-text");
     EXPECT_EQ("some-text some-other-text", results_mojom->info->term);
-  }
-}
-
-TEST_F(BrowsingHistoryHandlerTest,
-       HostnameSuffixParameterAndTextQueryImprovedMatchingDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      history::kBrowsingHistoryImprovedHostnameSuffixMatching);
-
-  {
-    // Legacy logic treats the entire rest of the string as the host.
-    std::u16string query = u"";
-    QueryOptions options;
-    options.hostname_suffix = "example.com some-text";
-    MockHistoryServiceCall(query, options);
-
-    auto results_mojom = RunQueryHistory("host:example.com some-text");
-    EXPECT_EQ("example.com some-text", results_mojom->info->term);
-  }
-
-  {
-    // If "host:" is not at index 0, legacy logic does not recognize it.
-    std::u16string query = u"some-text host:example.com";
-    QueryOptions options;
-    MockHistoryServiceCall(query, options);
-
-    auto results_mojom = RunQueryHistory("some-text host:example.com");
-    EXPECT_EQ("some-text host:example.com", results_mojom->info->term);
   }
 }
 
