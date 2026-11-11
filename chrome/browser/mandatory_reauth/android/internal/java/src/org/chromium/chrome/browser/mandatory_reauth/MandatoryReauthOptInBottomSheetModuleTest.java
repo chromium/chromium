@@ -20,6 +20,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import org.jni_zero.JniRawPtr;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -52,12 +54,16 @@ public class MandatoryReauthOptInBottomSheetModuleTest {
     @Mock private BottomSheetController mController;
     @Mock private MandatoryReauthOptInBottomSheetControllerBridge.Natives mControllerBridgeJniMock;
 
-    private static final long sPlaceholderNativePointer = 1;
+    private JniRawPtr<
+                    MandatoryReauthOptInBottomSheetControllerBridge
+                            .NativeMandatoryReauthBubbleControllerImpl>
+            mPlaceholderNativePointer;
 
     @Before
     public void setUp() {
         MandatoryReauthOptInBottomSheetControllerBridgeJni.setInstanceForTesting(
                 mControllerBridgeJniMock);
+        mPlaceholderNativePointer = JniRawPtr.createForTesting(1L);
         setUpBottomSheetController();
         mViewBridge =
                 new MandatoryReauthOptInBottomSheetViewBridge(
@@ -65,7 +71,12 @@ public class MandatoryReauthOptInBottomSheetModuleTest {
                                 Robolectric.buildActivity(Activity.class).get(),
                                 mController,
                                 new MandatoryReauthOptInBottomSheetControllerBridge(
-                                        sPlaceholderNativePointer)));
+                                        mPlaceholderNativePointer)));
+    }
+
+    @After
+    public void tearDown() {
+        mPlaceholderNativePointer.release();
     }
 
     private void setUpBottomSheetController() {
@@ -120,7 +131,7 @@ public class MandatoryReauthOptInBottomSheetModuleTest {
         // Verify that when the accept button is clicked, user acceptance is relayed via the
         // delegate.
         verify(mControllerBridgeJniMock)
-                .onClosed(sPlaceholderNativePointer, PaymentsUiClosedReason.ACCEPTED);
+                .onClosed(mPlaceholderNativePointer, PaymentsUiClosedReason.ACCEPTED);
     }
 
     @Test
@@ -137,7 +148,7 @@ public class MandatoryReauthOptInBottomSheetModuleTest {
         // Verify that when the cancel button is clicked, user cancellation is relayed via the
         // delegate.
         verify(mControllerBridgeJniMock)
-                .onClosed(sPlaceholderNativePointer, PaymentsUiClosedReason.CANCELLED);
+                .onClosed(mPlaceholderNativePointer, PaymentsUiClosedReason.CANCELLED);
     }
 
     @Test
@@ -150,7 +161,7 @@ public class MandatoryReauthOptInBottomSheetModuleTest {
         // Verify that when the bottom sheet is closed without explicit user selection, the close
         // event is relayed via the delegate.
         verify(mControllerBridgeJniMock)
-                .onClosed(sPlaceholderNativePointer, PaymentsUiClosedReason.CLOSED);
+                .onClosed(mPlaceholderNativePointer, PaymentsUiClosedReason.CLOSED);
     }
 
     @Test
@@ -163,7 +174,7 @@ public class MandatoryReauthOptInBottomSheetModuleTest {
         // Verify that when the bottom sheet is closed without user interaction, the close
         // event is relayed via the delegate.
         verify(mControllerBridgeJniMock)
-                .onClosed(sPlaceholderNativePointer, PaymentsUiClosedReason.NOT_INTERACTED);
+                .onClosed(mPlaceholderNativePointer, PaymentsUiClosedReason.NOT_INTERACTED);
     }
 
     private View getView(int viewId) {

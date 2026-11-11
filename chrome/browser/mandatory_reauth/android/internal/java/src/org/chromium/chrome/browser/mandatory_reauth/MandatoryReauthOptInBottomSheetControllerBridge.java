@@ -6,9 +6,14 @@ package org.chromium.chrome.browser.mandatory_reauth;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
+import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.autofill.PaymentsUiClosedReason;
 
 /** JNI wrapper for C++ MandatoryReauthBubbleController. Delegates calls from Java to native. */
@@ -16,23 +21,29 @@ import org.chromium.components.autofill.PaymentsUiClosedReason;
 @NullMarked
 class MandatoryReauthOptInBottomSheetControllerBridge
         implements MandatoryReauthOptInBottomSheetComponent.Delegate {
-    private long mNativeMandatoryReauthBubbleControllerImpl;
+    @JniType("::autofill::MandatoryReauthBubbleControllerImpl")
+    interface NativeMandatoryReauthBubbleControllerImpl extends JniTypeToken {}
+
+    private @Nullable JniRawPtr<NativeMandatoryReauthBubbleControllerImpl>
+            mNativeMandatoryReauthBubbleControllerImpl;
 
     MandatoryReauthOptInBottomSheetControllerBridge(
-            long nativeMandatoryReauthBubbleControllerImpl) {
+            JniRawPtr<NativeMandatoryReauthBubbleControllerImpl>
+                    nativeMandatoryReauthBubbleControllerImpl) {
         mNativeMandatoryReauthBubbleControllerImpl = nativeMandatoryReauthBubbleControllerImpl;
     }
 
     @CalledByNative
-    private static MandatoryReauthOptInBottomSheetControllerBridge create(
-            long nativeMandatoryReauthBubbleControllerImpl) {
+    static MandatoryReauthOptInBottomSheetControllerBridge create(
+            JniRawPtr<NativeMandatoryReauthBubbleControllerImpl>
+                    nativeMandatoryReauthBubbleControllerImpl) {
         return new MandatoryReauthOptInBottomSheetControllerBridge(
                 nativeMandatoryReauthBubbleControllerImpl);
     }
 
     @Override
     public void onClosed(@PaymentsUiClosedReason int closedReason) {
-        if (mNativeMandatoryReauthBubbleControllerImpl != 0) {
+        if (mNativeMandatoryReauthBubbleControllerImpl != null) {
             MandatoryReauthOptInBottomSheetControllerBridgeJni.get()
                     .onClosed(mNativeMandatoryReauthBubbleControllerImpl, closedReason);
         }
@@ -41,13 +52,16 @@ class MandatoryReauthOptInBottomSheetControllerBridge
     /** Marks the current instance as being freed. */
     @CalledByNative
     private void destroy() {
-        mNativeMandatoryReauthBubbleControllerImpl = 0;
+        if (mNativeMandatoryReauthBubbleControllerImpl != null) {
+            mNativeMandatoryReauthBubbleControllerImpl.release();
+            mNativeMandatoryReauthBubbleControllerImpl = null;
+        }
     }
 
     @NativeMethods
     interface Natives {
         void onClosed(
-                long nativeMandatoryReauthBubbleControllerImpl,
+                JniPtr<NativeMandatoryReauthBubbleControllerImpl> self,
                 @PaymentsUiClosedReason int closedReason);
     }
 }

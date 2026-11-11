@@ -14,6 +14,9 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
+#include "third_party/jni_zero/jni_zero.h"
+
+// Must come after all headers that specialize `FromJniType()` / `ToJniType()`.
 #include "chrome/browser/mandatory_reauth/android/internal/jni/MandatoryReauthOptInBottomSheetControllerBridge_jni.h"
 #else
 #include "chrome/browser/ui/actions/chrome_action_id.h"
@@ -314,8 +317,7 @@ MandatoryReauthBubbleControllerImpl::GetJavaControllerBridge() {
   if (!java_controller_bridge_) {
     java_controller_bridge_ =
         Java_MandatoryReauthOptInBottomSheetControllerBridge_create(
-            base::android::AttachCurrentThread(),
-            reinterpret_cast<intptr_t>(this));
+            base::android::AttachCurrentThread(), jni_zero::MakeRaw(this));
   }
   return base::android::ScopedJavaLocalRef<jobject>(java_controller_bridge_);
 }
