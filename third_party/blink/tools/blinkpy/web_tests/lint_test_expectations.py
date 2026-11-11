@@ -356,8 +356,16 @@ def check_virtual_test_suites(port):
     fs = host.filesystem
     web_tests_dir = port.web_tests_dir()
     virtual_suites = port.virtual_test_suites()
-    virtual_suites.sort(key=lambda s: s.full_prefix)
     max_suite_length = 48
+
+    failures = []
+    for prev_suite, next_suite in zip(virtual_suites[:-1], virtual_suites[1:]):
+        if prev_suite.prefix > next_suite.prefix:
+            failures.append(
+                f'VirtualTestSuites is not sorted by prefix: '
+                f'"{prev_suite.prefix}" should not precede '
+                f'"{next_suite.prefix}".'
+            )
 
     wpt_tests = set()
     for wpt_dir in port.wpt_dirs():
@@ -366,7 +374,6 @@ def check_virtual_test_suites(port):
             for url in port.wpt_manifest(wpt_dir).all_urls()
         )
 
-    failures = []
     for suite in virtual_suites:
         suite_comps = suite.full_prefix.split(port.TEST_PATH_SEPARATOR)
         prefix = suite_comps[1]

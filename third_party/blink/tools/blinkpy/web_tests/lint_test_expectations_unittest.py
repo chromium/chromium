@@ -528,18 +528,18 @@ class CheckVirtualSuiteTest(unittest.TestCase):
     def test_check_virtual_test_suites_readme(self):
         self.port.virtual_test_suites = lambda: [
             VirtualTestSuite(
-                prefix='foo',
-                platforms=['Linux', 'Mac', 'Win'],
-                owners=['testowner@chromium.org'],
-                bases=['test'],
-                args=['--foo'],
-            ),
-            VirtualTestSuite(
                 prefix='bar',
                 platforms=['Linux', 'Mac', 'Win'],
                 owners=['testowner@chromium.org'],
                 bases=['test'],
                 args=['--bar'],
+            ),
+            VirtualTestSuite(
+                prefix='foo',
+                platforms=['Linux', 'Mac', 'Win'],
+                owners=['testowner@chromium.org'],
+                bases=['test'],
+                args=['--foo'],
             ),
         ]
         fs = self.host.filesystem
@@ -718,6 +718,50 @@ class CheckVirtualSuiteTest(unittest.TestCase):
             res2[0], 'Virtual suite name "test" has no owner.'
         )
         self.assertEqual(len(res2), 1)
+
+    def test_check_virtual_test_suites_not_sorted(self):
+        self.host.filesystem.exists = lambda _: True
+        self.host.filesystem.isdir = lambda _: True
+        self.port.virtual_test_suites = lambda: [
+            VirtualTestSuite(
+                prefix='xyz',
+                platforms=['Linux', 'Mac', 'Win'],
+                owners=['testowner@chromium.org'],
+                bases=['test'],
+                args=['--arg'],
+            ),
+            VirtualTestSuite(
+                prefix='abc',
+                platforms=['Linux', 'Mac', 'Win'],
+                owners=['testowner@chromium.org'],
+                bases=['test'],
+                args=['--arg'],
+            ),
+        ]
+        res = lint_test_expectations.check_virtual_test_suites(self.port)
+        self.assertIn(
+            'VirtualTestSuites is not sorted by prefix: "xyz" should not precede "abc".',
+            res,
+        )
+
+        self.port.virtual_test_suites = lambda: [
+            VirtualTestSuite(
+                prefix='abc',
+                platforms=['Linux', 'Mac', 'Win'],
+                owners=['testowner@chromium.org'],
+                bases=['test'],
+                args=['--arg'],
+            ),
+            VirtualTestSuite(
+                prefix='xyz',
+                platforms=['Linux', 'Mac', 'Win'],
+                owners=['testowner@chromium.org'],
+                bases=['test'],
+                args=['--arg'],
+            ),
+        ]
+        res = lint_test_expectations.check_virtual_test_suites(self.port)
+        self.assertEqual(res, [])
 
 
 @patch.object(
