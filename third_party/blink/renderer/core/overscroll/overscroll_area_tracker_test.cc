@@ -2078,6 +2078,104 @@ TEST_F(OverscrollAreaTrackerPageTest, OpenOverscrollAreaLayoutDetach) {
   }
 }
 
+TEST_F(OverscrollAreaTrackerPageTest, TallOverscrollAreaSnapAndScroll) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      #container {
+        width: 200px;
+        height: 200px;
+      }
+      #menu {
+        width: 100px;
+        height: 600px;
+        right: 200px;
+        top: 0;
+      }
+      #sheet {
+        width: 200px;
+        height: 600px;
+        top: 200px;
+        left: 0;
+      }
+    </style>
+    <div id="container" overscrollcontainer>
+      <div id="menu" overscrollarea></div>
+      <div id="sheet" overscrollarea></div>
+      <div id="content"></div>
+    </div>
+    <button command="toggle-overscroll" commandfor="menu"></button>
+    <button command="toggle-overscroll" commandfor="sheet"></button>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* container = GetElementById("container");
+  Element* menu = GetElementById("menu");
+  Element* sheet = GetElementById("sheet");
+  ASSERT_TRUE(container);
+  ASSERT_TRUE(menu);
+  ASSERT_TRUE(sheet);
+
+  OverscrollAreaTracker* tracker = container->GetOverscrollAreaTracker();
+  ASSERT_TRUE(tracker);
+
+  // 1. Open the tall horizontal menu (100x600 positioned to the left of the
+  // 200x200 container). It should open horizontally to (-100, 0) and not
+  // scroll vertically or snap to the vertical middle (-100, 200).
+  tracker->OpenArea(menu);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(menu->MatchesOverscrollOpen());
+
+  PseudoElement* menu_parent =
+      menu->GetPseudoElement(kPseudoIdOverscrollAreaParent);
+  ASSERT_TRUE(menu_parent);
+  PaintLayerScrollableArea* menu_scrollable =
+      menu_parent->GetLayoutBox()->GetScrollableArea();
+  ASSERT_TRUE(menu_scrollable);
+  EXPECT_EQ(menu_scrollable->GetScrollOffset(), ScrollOffset(-100, 0));
+
+  // Scrolling vertically down and up inside the open tall menu should stay at
+  // the scrolled vertical offset without snapping back to the middle (y=200)
+  // or dismissing the menu (x=0).
+  menu_parent->scrollToForTesting(-100, 50);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(menu_scrollable->GetScrollOffset(), ScrollOffset(-100, 50));
+  EXPECT_TRUE(menu->MatchesOverscrollOpen());
+
+  menu_parent->scrollToForTesting(-100, 250);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(menu_scrollable->GetScrollOffset(), ScrollOffset(-100, 250));
+  EXPECT_TRUE(menu->MatchesOverscrollOpen());
+
+  // Simulate a directional upward scroll from y=200 by -50px.
+  std::unique_ptr<cc::SnapSelectionStrategy> up_strategy =
+      cc::SnapSelectionStrategy::CreateForDisplacement(
+          gfx::PointF(0, 200), gfx::Vector2dF(0, -50), false);
+  std::optional<gfx::PointF> snap_point =
+      menu_scrollable->GetSnapPositionAndSetTarget(*up_strategy);
+  ASSERT_TRUE(snap_point.has_value());
+  EXPECT_EQ(*snap_point, gfx::PointF(0, 150));
+
+  tracker->CloseArea(menu);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(menu->MatchesOverscrollOpen());
+
+  // 2. Open the tall vertical bottom sheet (200x600 positioned below the
+  // 200x200 container). It should open to (0, 200) where the top of the sheet
+  // meets the top of the container, not to the middle (0, 400) or bottom
+  // (0, 600).
+  tracker->OpenArea(sheet);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(sheet->MatchesOverscrollOpen());
+
+  PseudoElement* sheet_parent =
+      sheet->GetPseudoElement(kPseudoIdOverscrollAreaParent);
+  ASSERT_TRUE(sheet_parent);
+  PaintLayerScrollableArea* sheet_scrollable =
+      sheet_parent->GetLayoutBox()->GetScrollableArea();
+  ASSERT_TRUE(sheet_scrollable);
+  EXPECT_EQ(sheet_scrollable->GetScrollOffset(), ScrollOffset(0, 200));
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          OverscrollAreaTrackerPageTest,
                          ::testing::Values(0, 1, 2));

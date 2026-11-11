@@ -468,15 +468,26 @@ class CC_EXPORT SnapContainerData {
   // Returns all the info needed to snap at this area on the given axis,
   // including:
   // - The offset at which the snap area and the snap container meet the
-  //   requested alignment.
+  //   requested alignment (or a covering offset near `intended_position` if
+  //   the area covers the snapport on `axis`).
   // - The visible range within which the snap area is visible on the cross
   //   axis.
-  SnapSearchResult GetSnapSearchResult(SearchAxis axis,
-                                       const SnapAreaData& data) const;
+  SnapSearchResult GetSnapSearchResult(
+      SearchAxis axis,
+      const SnapAreaData& data,
+      float intended_position,
+      bool include_covering_at_intended = true) const;
 
   bool IsSnapportCoveredOnAxis(SearchAxis axis,
                                float current_offset,
                                const gfx::RectF& area_rect) const;
+
+  // Returns true if `area` snaps on `axis` and `scroll_offset` is either
+  // within `kSnappedToTolerance` of `area`'s aligned snap offset on `axis` or
+  // makes `area` cover the snapport on `axis`.
+  bool IsSnappedToAreaOnAxis(SearchAxis axis,
+                             const SnapAreaData& area,
+                             float scroll_offset) const;
 
   void UpdateSnapAreaForTesting(ElementId element_id,
                                 SnapAreaData snap_area_data);

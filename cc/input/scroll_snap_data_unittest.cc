@@ -1116,4 +1116,249 @@ TEST_F(ScrollSnapDataTest, SnapFlingLargeAreaExtremes) {
   EXPECT_EQ(400, range.end());
 }
 
+TEST_F(ScrollSnapDataTest, CoveringAreaWithCenterAlignmentDoesNotSnapToMiddle) {
+  SnapContainerData container(
+      ScrollSnapType(false, SnapAxis::kY, SnapStrictness::kMandatory),
+      gfx::RectF(0, 0, 200, 200), gfx::PointF(0, 400));
+  SnapAreaData area(ScrollSnapAlign(SnapAlignment::kCenter),
+                    gfx::RectF(0, 0, 200, 600), SnapStop::kNormal, false,
+                    ElementId(10));
+  container.AddSnapAreaData(area);
+
+  // Scrolling down from above the center (y=50) past the bottom boundary
+  // (y=400) with a direction strategy should snap to the bottom boundary
+  // (y=400), not to the center alignment point (y=200).
+  std::unique_ptr<SnapSelectionStrategy> down_strategy =
+      SnapSelectionStrategy::CreateForDirection(
+          gfx::PointF(0, 50), gfx::Vector2dF(0, 400),
+          false /* use_fractional_deltas */);
+  SnapPositionData result = container.FindSnapPosition(*down_strategy);
+  EXPECT_EQ(400, result.position.y());
+
+  // Scrolling up from below the center (y=350) past the top boundary (y=0)
+  // with a direction strategy should snap to the top boundary (y=0), not to
+  // the center alignment point (y=200).
+  std::unique_ptr<SnapSelectionStrategy> up_strategy =
+      SnapSelectionStrategy::CreateForDirection(
+          gfx::PointF(0, 350), gfx::Vector2dF(0, -400),
+          false /* use_fractional_deltas */);
+  result = container.FindSnapPosition(*up_strategy);
+  EXPECT_EQ(0, result.position.y());
+}
+
+TEST_F(ScrollSnapDataTest,
+       TallAreaInPairContainerDoesNotSnapToMiddleOrDismiss) {
+  // Simulate an overscroll area parent container (200x200) with:
+  // - initial_area at (200, 0, 200x200), center-aligned, snap-stop: always
+  // - tall_area at (0, 0, 200x300), center-aligned, snap-stop: normal
+  {
+    SnapContainerData container(
+        ScrollSnapType(false, SnapAxis::kPair, SnapStrictness::kMandatory),
+        gfx::RectF(0, 0, 200, 200), gfx::PointF(200, 100));
+    SnapAreaData initial_area(ScrollSnapAlign(SnapAlignment::kCenter),
+                              gfx::RectF(200, 0, 200, 200), SnapStop::kAlways,
+                              false, ElementId(10));
+    SnapAreaData tall_area(ScrollSnapAlign(SnapAlignment::kCenter),
+                           gfx::RectF(0, 0, 200, 300), SnapStop::kNormal, false,
+                           ElementId(20));
+    container.AddSnapAreaData(initial_area);
+    container.AddSnapAreaData(tall_area);
+
+    // 1. Opening the tall area via a horizontal scroll from (200, 0) to (0, 0)
+    // should preserve y=0 (covering [0, 100]) rather than snapping vertically
+    // to the middle of tall_area (y=50).
+    std::unique_ptr<SnapSelectionStrategy> open_strategy =
+        SnapSelectionStrategy::CreateForDisplacement(
+            gfx::PointF(200, 0), gfx::Vector2dF(-200, 0), false);
+    SnapPositionData result = container.FindSnapPosition(*open_strategy);
+    EXPECT_EQ(0, result.position.x());
+    EXPECT_EQ(0, result.position.y());
+    EXPECT_EQ(TargetSnapAreaElementIds(ElementId(20), ElementId(20)),
+              result.target_element_ids);
+
+    // 2. Scrolling down inside the tall area from (0, 0) by 20px should stay at
+    // (0, 20) as a covered position, not snap to the vertical middle (0, 50).
+    std::unique_ptr<SnapSelectionStrategy> scroll_down =
+        SnapSelectionStrategy::CreateForDisplacement(
+            gfx::PointF(0, 0), gfx::Vector2dF(0, 20), false);
+    result = container.FindSnapPosition(*scroll_down);
+    EXPECT_EQ(Type::kCovered, result.type);
+    EXPECT_EQ(0, result.position.x());
+    EXPECT_EQ(20, result.position.y());
+    EXPECT_EQ(TargetSnapAreaElementIds(ElementId(20), ElementId(20)),
+              result.target_element_ids);
+
+    // 3. Scrolling up inside the tall area from (0, 100) by -20px should stay
+    // at (0, 80) as a covered position, not snap to the vertical middle (0,
+    // 50).
+    std::unique_ptr<SnapSelectionStrategy> scroll_up_from_bottom =
+        SnapSelectionStrategy::CreateForDisplacement(
+            gfx::PointF(0, 100), gfx::Vector2dF(0, -20), false);
+    result = container.FindSnapPosition(*scroll_up_from_bottom);
+    EXPECT_EQ(Type::kCovered, result.type);
+    EXPECT_EQ(0, result.position.x());
+    EXPECT_EQ(80, result.position.y());
+    EXPECT_EQ(TargetSnapAreaElementIds(ElementId(20), ElementId(20)),
+              result.target_element_ids);
+
+    // 4. Scrolling up from the vertical middle (0, 50) by -20px should land at
+    // (0, 30) and remain on tall_area (x=0), not snap to initial_area (x=200)
+    // and dismiss the area.
+    std::unique_ptr<SnapSelectionStrategy> scroll_up_from_middle =
+        SnapSelectionStrategy::CreateForDisplacement(
+            gfx::PointF(0, 50), gfx::Vector2dF(0, -20), false);
+    result = container.FindSnapPosition(*scroll_up_from_middle);
+    EXPECT_EQ(Type::kCovered, result.type);
+    EXPECT_EQ(0, result.position.x());
+    EXPECT_EQ(30, result.position.y());
+    EXPECT_EQ(TargetSnapAreaElementIds(ElementId(20), ElementId(20)),
+              result.target_element_ids);
+
+    // 5. Scrolling up from (0, 50) past the top (delta -100) should clamp to
+    // the top of tall_area at (0, 0) and remain on tall_area (x=0), not select
+    // initial_area (x=200).
+    std::unique_ptr<SnapSelectionStrategy> scroll_up_to_top =
+        SnapSelectionStrategy::CreateForDisplacement(
+            gfx::PointF(0, 50), gfx::Vector2dF(0, -100), false);
+    result = container.FindSnapPosition(*scroll_up_to_top);
+    EXPECT_EQ(0, result.position.x());
+    EXPECT_EQ(0, result.position.y());
+    EXPECT_EQ(TargetSnapAreaElementIds(ElementId(20), ElementId(20)),
+              result.target_element_ids);
+  }
+
+  // Also test when tall_area is more than twice the container height (200x600).
+  {
+    SnapContainerData container(
+        ScrollSnapType(false, SnapAxis::kPair, SnapStrictness::kMandatory),
+        gfx::RectF(0, 0, 200, 200), gfx::PointF(200, 400));
+    SnapAreaData initial_area(ScrollSnapAlign(SnapAlignment::kCenter),
+                              gfx::RectF(200, 0, 200, 200), SnapStop::kAlways,
+                              false, ElementId(10));
+    SnapAreaData tall_area(ScrollSnapAlign(SnapAlignment::kCenter),
+                           gfx::RectF(0, 0, 200, 600), SnapStop::kNormal, false,
+                           ElementId(20));
+    container.AddSnapAreaData(initial_area);
+    container.AddSnapAreaData(tall_area);
+
+    // Scrolling up from (0, 250) by -100px should land at (0, 150) rather than
+    // dodging initial_area and snapping back to the middle (0, 200).
+    std::unique_ptr<SnapSelectionStrategy> scroll_up =
+        SnapSelectionStrategy::CreateForDisplacement(
+            gfx::PointF(0, 250), gfx::Vector2dF(0, -100), false);
+    SnapPositionData result = container.FindSnapPosition(*scroll_up);
+    EXPECT_EQ(Type::kCovered, result.type);
+    EXPECT_EQ(0, result.position.x());
+    EXPECT_EQ(150, result.position.y());
+    EXPECT_EQ(TargetSnapAreaElementIds(ElementId(20), ElementId(20)),
+              result.target_element_ids);
+
+    // Scrolling up from (0, 200) by -50px should land at (0, 150) rather than
+    // snapping to initial_area at (200, 0) and dismissing the area.
+    std::unique_ptr<SnapSelectionStrategy> scroll_up_from_middle =
+        SnapSelectionStrategy::CreateForDisplacement(
+            gfx::PointF(0, 200), gfx::Vector2dF(0, -50), false);
+    result = container.FindSnapPosition(*scroll_up_from_middle);
+    EXPECT_EQ(Type::kCovered, result.type);
+    EXPECT_EQ(0, result.position.x());
+    EXPECT_EQ(150, result.position.y());
+    EXPECT_EQ(TargetSnapAreaElementIds(ElementId(20), ElementId(20)),
+              result.target_element_ids);
+  }
+
+  // Also test when tall_area extends both above and below initial_area (e.g.
+  // initial_area at y=200 and tall_area covering y=[0, 400]), ensuring a
+  // directional upward scroll across y=200 does not snap to initial_area and
+  // dismiss the area.
+  {
+    SnapContainerData container(
+        ScrollSnapType(false, SnapAxis::kPair, SnapStrictness::kMandatory),
+        gfx::RectF(0, 0, 200, 200), gfx::PointF(200, 400));
+    SnapAreaData initial_area(ScrollSnapAlign(SnapAlignment::kCenter),
+                              gfx::RectF(200, 200, 200, 200), SnapStop::kAlways,
+                              false, ElementId(10));
+    SnapAreaData tall_area(ScrollSnapAlign(SnapAlignment::kCenter),
+                           gfx::RectF(0, 0, 200, 600), SnapStop::kNormal, false,
+                           ElementId(20));
+    container.AddSnapAreaData(initial_area);
+    container.AddSnapAreaData(tall_area);
+
+    std::unique_ptr<SnapSelectionStrategy> wheel_up =
+        SnapSelectionStrategy::CreateForDirection(
+            gfx::PointF(0, 250), gfx::Vector2dF(0, -100), false);
+    SnapPositionData result = container.FindSnapPosition(*wheel_up);
+    EXPECT_EQ(Type::kCovered, result.type);
+    EXPECT_EQ(0, result.position.x());
+    EXPECT_EQ(150, result.position.y());
+    EXPECT_EQ(TargetSnapAreaElementIds(ElementId(20), ElementId(20)),
+              result.target_element_ids);
+  }
+
+  // Also test when an area spans all 4 sides around initial_area (e.g.
+  // initial_area at (50, 50, 200x200) and spanning_area at (0, 0, 300x300)
+  // where dodging ranges are 50px < 200px snapport), ensuring a vertical
+  // scroll or programmatic open to (50, 0) preserves the centered x=50 offset
+  // instead of jumping horizontally to a corner.
+  {
+    SnapContainerData container(
+        ScrollSnapType(false, SnapAxis::kPair, SnapStrictness::kMandatory),
+        gfx::RectF(0, 0, 200, 200), gfx::PointF(100, 100));
+    SnapAreaData initial_area(ScrollSnapAlign(SnapAlignment::kCenter),
+                              gfx::RectF(50, 50, 200, 200), SnapStop::kAlways,
+                              false, ElementId(10));
+    SnapAreaData spanning_area(ScrollSnapAlign(SnapAlignment::kCenter),
+                               gfx::RectF(0, 0, 300, 300), SnapStop::kNormal,
+                               false, ElementId(20));
+    container.AddSnapAreaData(initial_area);
+    container.AddSnapAreaData(spanning_area);
+
+    std::unique_ptr<SnapSelectionStrategy> open_top =
+        SnapSelectionStrategy::CreateForEndPosition(gfx::PointF(50, 0), true,
+                                                    true);
+    SnapPositionData result = container.FindSnapPosition(*open_top);
+    EXPECT_EQ(50, result.position.x());
+    EXPECT_EQ(0, result.position.y());
+    EXPECT_EQ(TargetSnapAreaElementIds(ElementId(20), ElementId(20)),
+              result.target_element_ids);
+
+    std::unique_ptr<SnapSelectionStrategy> drag_top =
+        SnapSelectionStrategy::CreateForDisplacement(
+            gfx::PointF(50, 50), gfx::Vector2dF(0, -50), false);
+    result = container.FindSnapPosition(*drag_top);
+    EXPECT_EQ(50, result.position.x());
+    EXPECT_EQ(0, result.position.y());
+    EXPECT_EQ(TargetSnapAreaElementIds(ElementId(20), ElementId(20)),
+              result.target_element_ids);
+  }
+
+  // Ensure alternatives resolved under SnapAxis::kPair always produce identical
+  // x and y target element IDs.
+  {
+    SnapContainerData container(
+        ScrollSnapType(false, SnapAxis::kPair, SnapStrictness::kMandatory),
+        gfx::RectF(0, 0, 200, 200), gfx::PointF(2000, 2000));
+    SnapAreaData tie_a(ScrollSnapAlign(SnapAlignment::kStart),
+                       gfx::RectF(1000, 1000, 100, 100), SnapStop::kNormal,
+                       false, ElementId(10));
+    SnapAreaData other_y(ScrollSnapAlign(SnapAlignment::kStart),
+                         gfx::RectF(900, 1150, 100, 100), SnapStop::kNormal,
+                         false, ElementId(20));
+    SnapAreaData tie_b(ScrollSnapAlign(SnapAlignment::kStart),
+                       gfx::RectF(1000, 1150, 100, 100), SnapStop::kNormal,
+                       false, ElementId(30));
+    container.AddSnapAreaData(tie_a);
+    container.AddSnapAreaData(other_y);
+    container.AddSnapAreaData(tie_b);
+
+    std::unique_ptr<SnapSelectionStrategy> strategy =
+        SnapSelectionStrategy::CreateForEndPosition(gfx::PointF(1000, 1150),
+                                                    true, true);
+    SnapPositionData result = container.FindSnapPosition(*strategy);
+    EXPECT_EQ(1000, result.position.x());
+    EXPECT_EQ(1150, result.position.y());
+    EXPECT_EQ(TargetSnapAreaElementIds(ElementId(30), ElementId(30)),
+              result.target_element_ids);
+  }
+}
+
 }  // namespace cc

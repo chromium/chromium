@@ -374,22 +374,44 @@ void OverscrollAreaTracker::OpenArea(Element* overscroll_area) {
   const PhysicalSize box_size =
       overscroll_area_object->PhysicalContentBoxRect().size;
 
-  float min_x_offset = std::min(target_rect.x() - scroll_origin.x(), 0.f);
-  float min_y_offset = std::min(target_rect.y() - scroll_origin.y(), 0.f);
-  float max_x_offset = std::max(
-      target_rect.right() - box_size.width.ToFloat() - scroll_origin.x(), 0.f);
-  float max_y_offset = std::max(
-      target_rect.bottom() - box_size.height.ToFloat() - scroll_origin.y(),
-      0.f);
+  // `[min(start, end), max(start, end)]` is the range of scroll offsets that
+  // align `target_rect` with `box_size` (or cover `box_size` when `target_rect`
+  // is larger). Clamping 0 to this range yields the minimal scroll from the
+  // origin to open the area: 0 on the non-opening axis (even if the area
+  // overflows that axis) and the adjacent edge offset on the opening axis.
+  float start_x = target_rect.x() - scroll_origin.x();
+  float end_x =
+      target_rect.right() - box_size.width.ToFloat() - scroll_origin.x();
+  float start_y = target_rect.y() - scroll_origin.y();
+  float end_y =
+      target_rect.bottom() - box_size.height.ToFloat() - scroll_origin.y();
+
+  float open_x =
+      std::clamp(0.f, std::min(start_x, end_x), std::max(start_x, end_x));
+  float open_y =
+      std::clamp(0.f, std::min(start_y, end_y), std::max(start_y, end_y));
 
   ScrollOffset new_offset;
-  if (std::max(-min_x_offset, max_x_offset) >
-      std::max(-min_y_offset, max_y_offset)) {
-    new_offset.set_x(-min_x_offset >= max_x_offset ? min_x_offset
-                                                   : max_x_offset);
+  if (open_x != 0.f || open_y != 0.f) {
+    if (std::abs(open_x) > std::abs(open_y)) {
+      new_offset.set_x(open_x);
+    } else {
+      new_offset.set_y(open_y);
+    }
   } else {
-    new_offset.set_y(-min_y_offset >= max_y_offset ? min_y_offset
-                                                   : max_y_offset);
+    // Fallback when `target_rect` already surrounds the origin on both axes.
+    float min_x_offset = std::min(start_x, 0.f);
+    float min_y_offset = std::min(start_y, 0.f);
+    float max_x_offset = std::max(end_x, 0.f);
+    float max_y_offset = std::max(end_y, 0.f);
+    if (std::max(-min_x_offset, max_x_offset) >
+        std::max(-min_y_offset, max_y_offset)) {
+      new_offset.set_x(-min_x_offset >= max_x_offset ? min_x_offset
+                                                     : max_x_offset);
+    } else {
+      new_offset.set_y(-min_y_offset >= max_y_offset ? min_y_offset
+                                                     : max_y_offset);
+    }
   }
 
   ScrollTo(scrollable_area, new_offset);
