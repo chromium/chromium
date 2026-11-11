@@ -413,7 +413,11 @@ public class LocaleManagerDelegate {
 
     private LocaleTemplateUrlLoader getLocaleTemplateUrlLoader() {
         if (mLocaleTemplateUrlLoader == null) {
-            mLocaleTemplateUrlLoader = new LocaleTemplateUrlLoader(getSpecialLocaleId());
+            // TODO(crbug.com/344633755): Pass Profile instead of calling
+            // getLastUsedRegularProfile().
+            mLocaleTemplateUrlLoader =
+                    new LocaleTemplateUrlLoader(
+                            getSpecialLocaleId(), ProfileManager.getLastUsedRegularProfile());
         }
         return mLocaleTemplateUrlLoader;
     }

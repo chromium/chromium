@@ -27,16 +27,23 @@ public class LocaleTemplateUrlLoader {
     private boolean mAddedToService;
 
     /**
+     * @param localeId Country id of the locale. Should be 2 characters long.
+     * @deprecated Use {@link #LocaleTemplateUrlLoader(String, Profile)} instead.
+     */
+    @Deprecated
+    public LocaleTemplateUrlLoader(String localeId) {
+        this(localeId, ProfileManager.getLastUsedRegularProfile());
+    }
+
+    /**
      * Creates a {@link LocaleTemplateUrlLoader} that handles changes for the given locale.
      *
      * @param localeId Country id of the locale. Should be 2 characters long.
+     * @param profile Profile of the user.
      */
-    public LocaleTemplateUrlLoader(String localeId) {
+    public LocaleTemplateUrlLoader(String localeId, Profile profile) {
         assert localeId.length() == 2;
-        // TODO(b/344633755): Remove getLastUsedRegularProfile().
-        mNativeLocaleTemplateUrlLoader =
-                LocaleTemplateUrlLoaderJni.get()
-                        .init(localeId, ProfileManager.getLastUsedRegularProfile());
+        mNativeLocaleTemplateUrlLoader = LocaleTemplateUrlLoaderJni.get().init(localeId, profile);
     }
 
     /** This *must* be called after the {@link LocaleTemplateUrlLoader} is not used anymore. */
