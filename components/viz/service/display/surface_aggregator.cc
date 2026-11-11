@@ -15,6 +15,7 @@
 #include "base/check_op.h"
 #include "base/containers/adapters.h"
 #include "base/containers/map_util.h"
+#include "base/feature.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/numerics/ranges.h"
@@ -48,6 +49,7 @@
 #include "components/viz/service/surfaces/surface_client.h"
 #include "components/viz/service/surfaces/surface_manager.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -56,6 +58,9 @@
 #include "ui/gfx/overlay_transform_utils.h"
 
 namespace viz {
+
+// Kill switch for removing duplicate render passes.
+BASE_FEATURE(kRemoveDuplicateRenderPasses, base::FEATURE_ENABLED_BY_DEFAULT);
 
 struct MaskFilterInfoExt {
   MaskFilterInfoExt() = default;
@@ -1095,11 +1100,8 @@ void SurfaceAggregator::EmitSurfaceContent(
     quad_visible_rect.Intersect(quad_rect);
     auto remapped_pass_id = resolved_root_pass.remapped_id();
     if (quad_visible_rect.IsEmpty()) {
-      std::erase_if(*dest_pass_list_,
-                    [&remapped_pass_id](
-                        const std::unique_ptr<AggregatedRenderPass>& pass) {
-                      return pass->id == remapped_pass_id;
-                    });
+      CHECK_EQ(dest_pass_list_->back()->id, remapped_pass_id);
+      dest_pass_list_->pop_back();
     } else {
       auto* quad =
           dest_pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
@@ -1622,6 +1624,47 @@ void SurfaceAggregator::SetRenderPassDamageRect(
       copy_pass->damage_rect.Union(resolved_pass.aggregation().added_damage);
     }
   }
+}
+
+void SurfaceAggregator::RemoveDuplicateRenderPasses() {
+  if (!base::FeatureList::IsEnabled(kRemoveDuplicateRenderPasses)) {
+    return;
+  }
+
+  // Ideally SurfaceAggregator wouldn't produce the duplicate render pass,
+  // but a number of computations are done at the same time which are still
+  // required. A potential follow up here would be to separate the logic so
+  // those computations are done without producing the duplicate pass. This
+  // situation should be rare though.
+  absl::flat_hash_map<AggregatedRenderPassId, AggregatedRenderPass*>
+      first_render_passes;
+  std::erase_if(*dest_pass_list_,
+                [&](const std::unique_ptr<AggregatedRenderPass>& render_pass) {
+                  auto [it, inserted] = first_render_passes.try_emplace(
+                      render_pass->id, render_pass.get());
+                  if (inserted) {
+                    return false;
+                  }
+
+                  AggregatedRenderPass* first_pass = it->second;
+
+                  LOG(ERROR)
+                      << "Duplicate Render Pass id=" << first_pass->id.value();
+
+                  // Sanity check that the duplicate came from the same source.
+                  CHECK_EQ(first_pass->output_rect, render_pass->output_rect);
+
+                  // Sanity check the duplicate has no copy requests.
+                  CHECK(render_pass->copy_requests.empty());
+
+                  // The duplicate pass is drawn in a second location so it may
+                  // have different damage. Keep the union of damage.
+                  first_pass->damage_rect.Union(render_pass->damage_rect);
+                  first_pass->has_damage_from_contributing_content |=
+                      render_pass->has_damage_from_contributing_content;
+
+                  return true;
+                });
 }
 
 void SurfaceAggregator::ProcessAddedAndRemovedSurfaces() {
@@ -2235,6 +2278,8 @@ AggregatedFrame SurfaceAggregator::Aggregate(
     return {};
   }
 
+  RemoveDuplicateRenderPasses();
+
   // The root render pass damage might have been expanded by target_damage (the
   // area that might need to be recomposited on the target surface). We restrict
   // the damage_rect of the root render pass to the one caused by the source
@@ -2415,8 +2460,12 @@ void SurfaceAggregator::TransformAndStoreDelegatedInkMetadata(
     // specifies using last write wins to decide.
     base::TimeTicks stored_time = delegated_ink_metadata_->timestamp();
     base::TimeTicks new_time = metadata->timestamp();
-    if (new_time < stored_time)
+
+    // If a render pass is embedded multiple times the times will be equal and
+    // delegated ink metadata is added for the first embedding.
+    if (new_time <= stored_time) {
       return;
+    }
   }
 
   gfx::PointF point =

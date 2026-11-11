@@ -8928,6 +8928,119 @@ TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
   testing::Mock::VerifyAndClearExpectations(&aggregated_damage_callback);
 }
 
+// Verifies that when a surface with a non-merged render pass is embedded twice,
+// its render passes are not duplicated in the aggregated frame, while a nested
+// surface embedded inside the non-merged pass still contributes damage for both
+// embeddings without duplicating quads.
+TEST_P(SurfaceAggregatorValidSurfaceWithMergingPassesTest,
+       MultiplyEmbeddedSurfaceWithNestedSurface) {
+  MockAggregatedDamageCallback aggregated_damage_callback;
+  root_sink_->SetAggregatedDamageCallbackForTesting(
+      aggregated_damage_callback.GetCallback());
+
+  auto grandchild_sink = std::make_unique<CompositorFrameSinkSupport>(
+      nullptr, &manager_, kArbitraryFrameSinkId1, /*is_root=*/false);
+  TestSurfaceIdAllocator grandchild_surface_id(
+      grandchild_sink->frame_sink_id());
+  grandchild_sink->SubmitCompositorFrame(
+      grandchild_surface_id.local_surface_id(),
+      CompositorFrameBuilder()
+          .AddRenderPass(
+              RenderPassBuilder(CompositorRenderPassId{1}, kSurfaceSize)
+                  .AddSolidColorQuad(gfx::Rect(5, 5), SkColors::kGreen))
+          .Build());
+
+  // The child surface has two render passes so pass 1 is never merged into the
+  // root surface:
+  //  1) Pass 1 embeds the grandchild surface.
+  //  2) Pass 2 (child root) draws Pass 1.
+  TestSurfaceIdAllocator child_surface_id(child_sink_->frame_sink_id());
+  child_sink_->SubmitCompositorFrame(
+      child_surface_id.local_surface_id(),
+      CompositorFrameBuilder()
+          .AddRenderPass(
+              RenderPassBuilder(CompositorRenderPassId{1}, kSurfaceSize)
+                  .AddSurfaceQuad(
+                      gfx::Rect(kSurfaceSize),
+                      SurfaceRange(std::nullopt, grandchild_surface_id),
+                      {.allow_merge = AllowMerge()}))
+          .AddRenderPass(
+              RenderPassBuilder(CompositorRenderPassId{2}, kSurfaceSize)
+                  .AddRenderPassQuad(gfx::Rect(kSurfaceSize),
+                                     CompositorRenderPassId{1}))
+          .Build());
+
+  // The root surface embeds the child surface twice: once with identity
+  // transform, and once scaled by 2x and translated by (30, 50).
+  gfx::Transform second_embedding_transform = gfx::Transform::MakeScale(2.f);
+  second_embedding_transform.PostTranslate(30.f, 50.f);
+  root_sink_->SubmitCompositorFrame(
+      root_surface_id_.local_surface_id(),
+      CompositorFrameBuilder()
+          .AddRenderPass(
+              RenderPassBuilder(CompositorRenderPassId{1}, kSurfaceSize)
+                  .AddSurfaceQuad(gfx::Rect(kSurfaceSize),
+                                  SurfaceRange(std::nullopt, child_surface_id),
+                                  {.allow_merge = AllowMerge()})
+                  .SetQuadToTargetTransform(second_embedding_transform)
+                  .AddSurfaceQuad(gfx::Rect(kSurfaceSize),
+                                  SurfaceRange(std::nullopt, child_surface_id),
+                                  {.allow_merge = AllowMerge()}))
+          .Build());
+
+  EXPECT_CALL(
+      aggregated_damage_callback,
+      OnAggregatedDamage(root_surface_id_.local_surface_id(), kSurfaceSize,
+                         gfx::Rect(kSurfaceSize), next_display_time()));
+  auto aggregated_frame = AggregateFrame(root_surface_id_);
+  testing::Mock::VerifyAndClearExpectations(&aggregated_damage_callback);
+
+  // When AllowMerge() is true:
+  //  - grandchild root pass merges into child pass 1
+  //  - child root pass (pass 2) merges into root pass
+  //  -> 2 passes total (child pass 1 + root pass).
+  // When AllowMerge() is false:
+  //  - grandchild root pass, child pass 1, child pass 2, root pass
+  //  -> 4 passes total (none of the child/grandchild passes are duplicated).
+  const size_t expected_passes = AllowMerge() ? 2u : 4u;
+  ASSERT_EQ(expected_passes, aggregated_frame.render_pass_list.size());
+  // Child pass 1 should have exactly 1 quad (not duplicated on the second
+  // embedding of child_surface).
+  const size_t child_pass_1_index = AllowMerge() ? 0u : 1u;
+  EXPECT_EQ(
+      1u,
+      aggregated_frame.render_pass_list[child_pass_1_index]->quad_list.size());
+  EXPECT_EQ(1u, aggregated_frame.render_pass_list[child_pass_1_index]
+                    ->shared_quad_state_list.size());
+
+  // Now submit a new frame to the grandchild surface with damage (10,10 10x10).
+  grandchild_sink->SubmitCompositorFrame(
+      grandchild_surface_id.local_surface_id(),
+      CompositorFrameBuilder()
+          .AddRenderPass(
+              RenderPassBuilder(CompositorRenderPassId{1}, kSurfaceSize)
+                  .SetDamageRect(gfx::Rect(10, 10, 10, 10))
+                  .AddSolidColorQuad(gfx::Rect(5, 5), SkColors::kBlue))
+          .Build());
+
+  // Both embeddings of child_surface should propagate grandchild_surface's
+  // damage: (10,10 10x10) union (50,70 20x20) = (10,10 60x80).
+  const gfx::Rect expected_damage_rect(10, 10, 60, 80);
+  EXPECT_CALL(
+      aggregated_damage_callback,
+      OnAggregatedDamage(root_surface_id_.local_surface_id(), kSurfaceSize,
+                         expected_damage_rect, next_display_time()));
+  auto aggregated_frame_2 = AggregateFrame(root_surface_id_);
+  testing::Mock::VerifyAndClearExpectations(&aggregated_damage_callback);
+
+  ASSERT_EQ(expected_passes, aggregated_frame_2.render_pass_list.size());
+  EXPECT_EQ(1u, aggregated_frame_2.render_pass_list[child_pass_1_index]
+                    ->quad_list.size());
+  EXPECT_THAT(aggregated_frame_2.surface_damage_rect_list_,
+              testing::UnorderedElementsAre(gfx::Rect(50, 70, 20, 20),
+                                            gfx::Rect(10, 10, 10, 10)));
+}
+
 // Verifies that if a CompositorFrame contains a render pass id cycle then the
 // frame is rejected as invalid.
 TEST_F(SurfaceAggregatorValidSurfaceTest,

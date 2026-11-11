@@ -547,6 +547,77 @@ TEST_P(SurfaceAggregatorPixelTest, DrawAndEraseDelegatedInkTrail) {
                                  pixel_comparator));
 }
 
+// Exercises a surface with two render passes being embedded multiple times in
+// the root surface, causing the same render passes to be copied into the
+// AggregatedFrame multiple times and drawn more than once (write -> read ->
+// write -> read) during a single DrawFrame.
+TEST_P(SurfaceAggregatorPixelTest, DrawDuplicatedSurfaceRenderPasses) {
+  gfx::Rect viewport_rect(device_viewport_size_);
+  gfx::Rect child_root_rect(100, 100);
+  gfx::Rect child_pass_rect(80, 80);
+
+  auto child_support = std::make_unique<CompositorFrameSinkSupport>(
+      nullptr, &manager_, kArbitraryChildFrameSinkId, kIsChildRoot);
+  ParentLocalSurfaceIdAllocator child_allocator;
+  child_allocator.GenerateId();
+  LocalSurfaceId child_local_surface_id =
+      child_allocator.GetCurrentLocalSurfaceId();
+  SurfaceId child_surface_id(child_support->frame_sink_id(),
+                             child_local_surface_id);
+
+  root_allocator_.GenerateId();
+  LocalSurfaceId root_local_surface_id =
+      root_allocator_.GetCurrentLocalSurfaceId();
+  SurfaceId root_surface_id(support_->frame_sink_id(), root_local_surface_id);
+
+  {
+    CompositorRenderPassId child_non_root_id{1};
+    CompositorRenderPassId child_root_id{2};
+
+    auto child_frame =
+        CompositorFrameBuilder()
+            .AddRenderPass(
+                RenderPassBuilder(child_non_root_id, child_pass_rect)
+                    .AddSolidColorQuad(child_pass_rect, SkColors::kGreen))
+            .AddRenderPass(
+                RenderPassBuilder(child_root_id, child_root_rect)
+                    .AddRenderPassQuad(child_pass_rect, child_non_root_id)
+                    .SetQuadToTargetTranslation(10, 10)
+                    .AddSolidColorQuad(child_root_rect, SkColors::kMagenta))
+            .Build();
+    child_support->SubmitCompositorFrame(child_local_surface_id,
+                                         std::move(child_frame));
+  }
+
+  {
+    auto root_frame =
+        CompositorFrameBuilder()
+            .AddRenderPass(
+                RenderPassBuilder(CompositorRenderPassId{1}, viewport_rect)
+                    .AddSurfaceQuad(child_root_rect,
+                                    SurfaceRange(child_surface_id),
+                                    {.allow_merge = false})
+                    .AddSurfaceQuad(child_root_rect,
+                                    SurfaceRange(child_surface_id),
+                                    {.allow_merge = false})
+                    .SetQuadToTargetTranslation(100, 100)
+                    .AddSolidColorQuad(viewport_rect, SkColors::kYellow))
+            .Build();
+    support_->SubmitCompositorFrame(root_local_surface_id,
+                                    std::move(root_frame));
+  }
+
+  SurfaceAggregator aggregator(manager_.surface_manager(),
+                               resource_provider_.get(), false);
+  auto aggregated_frame = aggregator.Aggregate(
+      root_surface_id, GetNextDisplayTime(), gfx::OVERLAY_TRANSFORM_NONE);
+
+  EXPECT_TRUE(RunPixelTest(
+      &aggregated_frame.render_pass_list,
+      base::FilePath(FILE_PATH_LITERAL("multiple_surface_embedding.png")),
+      cc::AlphaDiscardingExactPixelComparator()));
+}
+
 }  // namespace
 }  // namespace viz
 
