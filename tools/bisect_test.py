@@ -607,7 +607,9 @@ class ReleaseBuildTest(BisectTestCase):
     self.assertEqual(
       build.get_rev_list(), ['127.0.6533.74', '127.0.6533.75', '127.0.6533.76']
     )
-    mock_GsutilList.assert_any_call('gs://chrome-unsigned/desktop-5c0tCh')
+    mock_GsutilList.assert_any_call(
+      '-d', 'gs://chrome-unsigned/desktop-5c0tCh/127.*', ignore_fail=True
+    )
     mock_GsutilList.assert_any_call(
       *[
         'gs://chrome-unsigned/desktop-5c0tCh/%s/linux64/chrome-linux64.zip' % x
@@ -1278,7 +1280,9 @@ class AndroidReleaseBuildTest(AndroidBuildTest):
     self.assertEqual(
       build.get_rev_list(), ['127.0.6533.76', '127.0.6533.78', '127.0.6533.79']
     )
-    mock_GsutilList.assert_any_call('gs://chrome-signed/android-B0urB0N')
+    mock_GsutilList.assert_any_call(
+      '-d', 'gs://chrome-signed/android-B0urB0N/127.*', ignore_fail=True
+    )
     mock_GsutilList.assert_any_call(
       *[
         'gs://chrome-signed/android-B0urB0N/%s/arm_64/MonochromeStable.apk' % x
@@ -1505,7 +1509,9 @@ class AndroidArm64HighReleaseBuildTest(AndroidBuildTest):
       build.get_rev_list(), ['129.0.6626.0', '129.0.6627.0', '129.0.6628.0']
     )
     print(mock_GsutilList.call_args_list)
-    mock_GsutilList.assert_any_call('gs://chrome-unsigned/android-B0urB0N')
+    mock_GsutilList.assert_any_call(
+      '-d', 'gs://chrome-unsigned/android-B0urB0N/129.*', ignore_fail=True
+    )
     mock_GsutilList.assert_any_call(
       *[
         (
@@ -1604,9 +1610,11 @@ class AndroidArm64HighReleaseBuildTest(AndroidBuildTest):
   @maybe_patch(
     'bisect-builds.GsutilList',
     side_effect=[
+      # Listings for M151 and M152.
+      ['gs://chrome-unsigned/android-B0urB0N/151.0.7922.175/'],
       [
         'gs://chrome-unsigned/android-B0urB0N/%s/' % x
-        for x in ['151.0.7922.175', '152.0.7977.7', '152.0.7977.84']
+        for x in ['152.0.7977.7', '152.0.7977.84']
       ],
       [
         'gs://chrome-unsigned/android-B0urB0N/151.0.7922.175/'
@@ -2047,7 +2055,9 @@ class IOSReleaseBuildTest(BisectTestCase):
     self.assertEqual(
       build.get_rev_list(), ['127.0.6533.76', '127.0.6533.77', '127.0.6533.78']
     )
-    mock_GsutilList.assert_any_call('gs://chrome-unsigned/ios-G1N')
+    mock_GsutilList.assert_any_call(
+      '-d', 'gs://chrome-unsigned/ios-G1N/127.*', ignore_fail=True
+    )
     mock_GsutilList.assert_any_call(
       *[
         'gs://chrome-unsigned/ios-G1N/%s/*/ios/*/canary.ipa' % x
@@ -2256,7 +2266,9 @@ class IOSSimulatorReleaseBuildTest(BisectTestCase):
     self.assertIsInstance(build, bisect_builds.IOSSimulatorReleaseBuild)
     self.assertEqual(build.get_rev_list(), ['128.0.6534.0', '128.0.6536.0'])
     mock_run.assert_called_once_with(['xcrun', 'simctl', 'boot', '321'])
-    mock_GsutilList.assert_any_call('gs://bling-archive')
+    mock_GsutilList.assert_any_call(
+      '-d', 'gs://bling-archive/128.*', ignore_fail=True
+    )
     mock_GsutilList.assert_any_call(
       *[
         'gs://bling-archive/%s/*/Chromium.tar.gz' % x
@@ -2817,7 +2829,9 @@ class AndroidDesktopReleaseBuildTest(AndroidBuildTest):
     )
     mock_GsutilList.assert_has_calls(
       [
-        call('gs://chrome-unsigned/android-B0urB0N'),
+        call(
+          '-d', 'gs://chrome-unsigned/android-B0urB0N/129.*', ignore_fail=True
+        ),
         call(
           'gs://chrome-unsigned/android-B0urB0N/129.0.6626.0/desktop-x86_64/TrichromeChromeGoogleDesktop64Stable.apks',
           'gs://chrome-unsigned/android-B0urB0N/129.0.6626.1/desktop-x86_64/TrichromeChromeGoogleDesktop64Stable.apks',

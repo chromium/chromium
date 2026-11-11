@@ -975,13 +975,23 @@ class ReleaseBuild(ArchiveBuild):
     return RELEASE_BASE_URL
 
   def _get_rev_list(self, min_rev=None, max_rev=None):
-    # Get all build numbers in the build bucket.
+    # Get all build numbers in the build bucket. Listing the whole bucket takes
+    # minutes, so only list the milestones in range (in parallel) when known.
+    bucket = self._get_release_bucket()
+    listings = [[bucket]]
+    if min_rev and max_rev:
+      milestones = range(min_rev.version[0], max_rev.version[0] + 1)
+      listings = [['-d', f'{bucket}/{m}.*'] for m in milestones]
     build_numbers = []
     revision_re = re.compile(r'(\d+\.\d\.\d{4}\.\d+)')
-    for path in GsutilList(self._get_release_bucket()):
-      match = revision_re.search(path)
-      if match:
-        build_numbers.append(ChromiumVersion(match[1]))
+    with concurrent.futures.ThreadPoolExecutor(16) as executor:
+      for paths in executor.map(
+        lambda urls: GsutilList(*urls, ignore_fail=True), listings
+      ):
+        for path in paths:
+          match = revision_re.search(path)
+          if match:
+            build_numbers.append(ChromiumVersion(match[1]))
     # Filter the versions between min_rev and max_rev.
     build_numbers = [
       x
