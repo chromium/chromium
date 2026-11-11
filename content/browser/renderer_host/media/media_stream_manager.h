@@ -709,6 +709,9 @@ class CONTENT_EXPORT MediaStreamManager
   void FinalizeRequestFailed(DeviceRequests::const_iterator request_it,
                              blink::mojom::MediaStreamRequestResult result);
   void FinalizeChangeDevice(const std::string& label, DeviceRequest* request);
+  void CloseOldStreamDevices(const std::string& label,
+                             DeviceRequest* request,
+                             bool stop_capture_handle_tracking);
   void FinalizeMediaAccessRequest(
       DeviceRequests::const_iterator request_it,
       const blink::mojom::StreamDevicesSet& stream_devices_set);

@@ -30,6 +30,7 @@
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "content/browser/media/media_devices_util.h"
+#include "content/browser/renderer_host/media/audio_input_device_manager.h"
 #include "content/browser/renderer_host/media/audio_output_authorization_handler.h"
 #include "content/browser/renderer_host/media/media_stream_ui_proxy.h"
 #include "content/browser/renderer_host/media/mock_video_capture_provider.h"
@@ -56,6 +57,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
+#include "third_party/blink/public/mojom/media/capture_handle_config.mojom.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "ui/gfx/native_ui_types.h"
 #include "url/gurl.h"
@@ -163,8 +165,9 @@ class MockAudioManager : public AudioManagerPlatform {
     DCHECK(device_names->empty());
 
     // AudioManagers add a default device when there is at least one real device
-    if (num_input_devices_ > 0)
+    if (num_input_devices_ > 0) {
       device_names->push_back(media::AudioDeviceName::CreateDefault());
+    }
 
     for (size_t i = 0; i < num_input_devices_; i++) {
       device_names->emplace_back(
@@ -180,8 +183,9 @@ class MockAudioManager : public AudioManagerPlatform {
     DCHECK(device_names->empty());
 
     // AudioManagers add a default device when there is at least one real device
-    if (num_output_devices_ > 0)
+    if (num_output_devices_ > 0) {
       device_names->push_back(media::AudioDeviceName::CreateDefault());
+    }
 
     for (size_t i = 0; i < num_output_devices_; i++) {
       device_names->emplace_back(
@@ -586,9 +590,10 @@ class MediaStreamManagerTest : public ::testing::Test {
         true /* request_video */);
     controls.video.stream_type =
         blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE;
-    if (app_requested_audio)
+    if (app_requested_audio) {
       controls.audio.stream_type =
           blink::mojom::MediaStreamType::DISPLAY_AUDIO_CAPTURE;
+    }
 
     const int requester_id = 1;
     const int page_request_id = 1;
@@ -821,6 +826,11 @@ class MediaStreamManagerTest : public ::testing::Test {
                                 blink::mojom::MediaStreamRequestResult::OK);
   }
 
+  static DesktopMediaID MakeTabMediaId(int id) {
+    return DesktopMediaID(DesktopMediaID::TYPE_WEB_CONTENTS, /*id=*/0,
+                          WebContentsMediaCaptureId(id, id));
+  }
+
   void SetupFakeUIForDisplayCapture(bool share_audio = true) {
     media_stream_manager_->UseFakeUIFactoryForTests(base::BindRepeating(
         [](bool share_audio) {
@@ -832,16 +842,41 @@ class MediaStreamManagerTest : public ::testing::Test {
         share_audio));
   }
 
-  std::string RequestDisplayCapture(bool request_audio,
-                                    blink::MediaStreamDevice* out_video_device,
-                                    blink::MediaStreamDevice* out_audio_device,
-                                    MediaStreamManager::DeviceStoppedCallback
-                                        stopped_cb = base::DoNothing()) {
+  void SetupFakeUIForTabCapture(const DesktopMediaID* current_tab,
+                                const bool* share_audio = nullptr) {
+    media_stream_manager_->UseFakeUIFactoryForTests(
+        base::BindLambdaForTesting([current_tab, share_audio]() {
+          const bool audio = !share_audio || *share_audio;
+          auto fake_ui = std::make_unique<FakeMediaStreamUIProxy>(
+              /*tests_use_fake_render_frame_hosts=*/true);
+          fake_ui->SetAudioShare(audio);
+          blink::MediaStreamDevices devices = {
+              blink::MediaStreamDevice(MediaStreamType::DISPLAY_VIDEO_CAPTURE,
+                                       current_tab->ToString(), "Tab Video")};
+          if (audio) {
+            devices.emplace_back(MediaStreamType::DISPLAY_AUDIO_CAPTURE,
+                                 current_tab->ToString(), "Tab Audio");
+          }
+          fake_ui->AddAvailableDevices(devices);
+          return std::unique_ptr<FakeMediaStreamUIProxy>(std::move(fake_ui));
+        }));
+  }
+
+  std::string RequestDisplayCapture(
+      bool request_audio,
+      blink::MediaStreamDevice* out_video_device,
+      blink::MediaStreamDevice* out_audio_device,
+      MediaStreamManager::DeviceStoppedCallback stopped_cb = base::DoNothing(),
+      MediaStreamManager::DeviceChangedCallback changed_cb =
+          base::DoNothing()) {
     blink::StreamControls controls(request_audio, true);
     controls.video.stream_type = MediaStreamType::DISPLAY_VIDEO_CAPTURE;
     if (request_audio) {
       controls.audio.stream_type = MediaStreamType::DISPLAY_AUDIO_CAPTURE;
     }
+
+    EXPECT_CALL(*media_observer_, OnMediaRequestStateChanged(_, _, _, _, _, _))
+        .Times(testing::AnyNumber());
 
     base::RunLoop run_loop;
     MediaStreamManager::GenerateStreamsCallback generate_stream_callback =
@@ -855,11 +890,70 @@ class MediaStreamManagerTest : public ::testing::Test {
         MediaDeviceSaltAndOrigin::Empty(), /*user_gesture=*/false,
         StreamSelectionInfo::NewSearchOnlyByDeviceId({}),
         std::move(generate_stream_callback), std::move(stopped_cb),
-        base::DoNothing(), base::DoNothing(), base::DoNothing(),
+        std::move(changed_cb), base::DoNothing(), base::DoNothing(),
         base::DoNothing(), base::DoNothing());
 
     run_loop.Run();
     return GetLatestLabel();
+  }
+
+  void ChangeSourceFromBrowser(const std::string& label,
+                               const DesktopMediaID& media_id) {
+    media_stream_manager_->ChangeMediaStreamSourceFromBrowser(
+        label, media_id, /*captured_surface_control_active=*/false);
+  }
+
+  // Initiates a browser source change to `new_tab` and runs until
+  // HandleChangeSourceRequestResponse() has placed the new devices in
+  // MEDIA_REQUEST_STATE_OPENING while the old devices remain in
+  // `old_stream_devices_set`.
+  void StartOpeningTabSourceChange(
+      const std::string& label,
+      const DesktopMediaID& new_tab,
+      base::UnguessableToken* out_new_video_session,
+      base::UnguessableToken* out_new_audio_session = nullptr) {
+    base::RunLoop run_loop;
+    base::RepeatingClosure quit_closure = run_loop.QuitClosure();
+    EXPECT_CALL(*media_observer_,
+                OnMediaRequestStateChanged(
+                    _, _, _, _, MediaStreamType::DISPLAY_VIDEO_CAPTURE,
+                    MEDIA_REQUEST_STATE_OPENING))
+        .Times(testing::AtLeast(1))
+        .WillOnce([quit_closure]() { quit_closure.Run(); })
+        .WillRepeatedly(testing::Return());
+
+    ChangeSourceFromBrowser(label, new_tab);
+    run_loop.Run();
+
+    for (const auto& dev :
+         media_stream_manager_->GetDevicesOpenedByRequest(label)) {
+      if (blink::IsVideoInputMediaType(dev.type) && out_new_video_session) {
+        *out_new_video_session = dev.session_id();
+      } else if (blink::IsAudioInputMediaType(dev.type) &&
+                 out_new_audio_session) {
+        *out_new_audio_session = dev.session_id();
+      }
+    }
+    EXPECT_FALSE(out_new_video_session->is_empty());
+    if (out_new_audio_session) {
+      EXPECT_FALSE(out_new_audio_session->is_empty());
+    }
+  }
+
+  bool IsVideoSessionOpen(const base::UnguessableToken& session_id) const {
+    media::VideoCaptureFormats formats;
+    return media_stream_manager_->video_capture_manager()
+        ->GetDeviceSupportedFormats(session_id, &formats);
+  }
+
+  bool IsAudioSessionOpen(const base::UnguessableToken& session_id) const {
+    return media_stream_manager_->audio_input_device_manager()
+               ->GetOpenedDeviceById(session_id) != nullptr;
+  }
+
+  bool HasRequestForSession(const base::UnguessableToken& session_id) const {
+    return media_stream_manager_->FindRequestBySessionId(
+               session_id, /*out_type=*/nullptr) != nullptr;
   }
 
   std::unique_ptr<MockAudioManager> audio_manager_;
@@ -1650,12 +1744,17 @@ TEST_F(MediaStreamManagerTest, DesktopCaptureDeviceChanged) {
 
   // |request_label| is cached in the |device.name| for testing purpose.
   std::string request_label = video_device.name;
-  media_stream_manager_->ChangeMediaStreamSourceFromBrowser(
-      request_label, DesktopMediaID(),
-      /*captured_surface_control_active=*/false);
+  const base::UnguessableToken old_session_id = video_device.session_id();
+  ASSERT_TRUE(IsVideoSessionOpen(old_session_id));
+
+  ChangeSourceFromBrowser(request_label, DesktopMediaID());
 
   // Wait to check callbacks before stopping the device.
   base::RunLoop().RunUntilIdle();
+  EXPECT_NE(old_session_id, video_device.session_id());
+  EXPECT_FALSE(IsVideoSessionOpen(old_session_id));
+  EXPECT_TRUE(IsVideoSessionOpen(video_device.session_id()));
+
   media_stream_manager_->StopStreamDevice(kRenderFrameHostId, requester_id,
                                           video_device.id,
                                           video_device.session_id());
@@ -1883,6 +1982,297 @@ TEST_F(MediaStreamManagerTest,
     return !media_stream_manager_->video_capture_manager()
                 ->GetDeviceSupportedFormats(session_id, &formats);
   }));
+}
+
+TEST_F(MediaStreamManagerTest,
+       DesktopCaptureChangeSourceClosesOldAudioAndVideoSessions) {
+  const DesktopMediaID tab_a = MakeTabMediaId(5);
+  const DesktopMediaID tab_b = MakeTabMediaId(6);
+  DesktopMediaID current_tab = tab_a;
+  SetupFakeUIForTabCapture(&current_tab);
+
+  blink::MediaStreamDevice video_device;
+  blink::MediaStreamDevice audio_device;
+  const std::string label = RequestDisplayCapture(
+      /*request_audio=*/true, &video_device, &audio_device,
+      /*stopped_cb=*/base::DoNothing(),
+      base::BindLambdaForTesting(
+          [&](const std::string&, const blink::MediaStreamDevice& old_device,
+              const blink::MediaStreamDevice& new_device) {
+            if (blink::IsAudioInputMediaType(old_device.type)) {
+              EXPECT_EQ(audio_device.session_id(), old_device.session_id());
+              audio_device = new_device;
+            } else if (blink::IsVideoInputMediaType(old_device.type)) {
+              EXPECT_EQ(video_device.session_id(), old_device.session_id());
+              video_device = new_device;
+            }
+          }));
+
+  const base::UnguessableToken old_video_session = video_device.session_id();
+  const base::UnguessableToken old_audio_session = audio_device.session_id();
+  ASSERT_TRUE(IsVideoSessionOpen(old_video_session));
+  ASSERT_TRUE(IsAudioSessionOpen(old_audio_session));
+
+  bool old_audio_closed = false;
+  media_stream_manager_->audio_input_device_manager()->SetSessionClosedCallback(
+      old_audio_session,
+      base::BindLambdaForTesting([&]() { old_audio_closed = true; }));
+
+  // Switch source to Tab B.
+  current_tab = tab_b;
+  ChangeSourceFromBrowser(label, tab_b);
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return old_video_session != video_device.session_id() &&
+           old_audio_session != audio_device.session_id() && old_audio_closed;
+  }));
+
+  // Old sessions are closed and disassociated; new sessions are open and valid.
+  EXPECT_FALSE(IsVideoSessionOpen(old_video_session));
+  EXPECT_FALSE(IsAudioSessionOpen(old_audio_session));
+  EXPECT_FALSE(HasRequestForSession(old_video_session));
+  EXPECT_FALSE(HasRequestForSession(old_audio_session));
+
+  EXPECT_TRUE(IsVideoSessionOpen(video_device.session_id()));
+  EXPECT_TRUE(IsAudioSessionOpen(audio_device.session_id()));
+  EXPECT_TRUE(HasRequestForSession(video_device.session_id()));
+  EXPECT_TRUE(HasRequestForSession(audio_device.session_id()));
+  EXPECT_TRUE(media_stream_manager_->ValidateVideoSession(
+      video_device.session_id(), kRenderFrameHostId));
+  EXPECT_TRUE(media_stream_manager_->ValidateAudioSession(
+      audio_device.session_id(), kRenderFrameHostId));
+
+  media_stream_manager_->CancelRequest(label);
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return !IsVideoSessionOpen(video_device.session_id()) &&
+           !IsAudioSessionOpen(audio_device.session_id());
+  }));
+}
+
+TEST_F(MediaStreamManagerTest,
+       DesktopCaptureChangeSourceAudioAndVideoToVideoOnlyAndConsecutiveSwitch) {
+  const DesktopMediaID tab_a = MakeTabMediaId(5);
+  const DesktopMediaID tab_b = MakeTabMediaId(6);
+  const DesktopMediaID tab_c = MakeTabMediaId(7);
+  DesktopMediaID current_tab = tab_a;
+  bool share_audio = true;
+  SetupFakeUIForTabCapture(&current_tab, &share_audio);
+
+  blink::MediaStreamDevice video_device;
+  blink::MediaStreamDevice audio_device;
+  bool audio_removed_notified = false;
+  const std::string label = RequestDisplayCapture(
+      /*request_audio=*/true, &video_device, &audio_device,
+      /*stopped_cb=*/base::DoNothing(),
+      base::BindLambdaForTesting(
+          [&](const std::string&, const blink::MediaStreamDevice& old_device,
+              const blink::MediaStreamDevice& new_device) {
+            if (blink::IsAudioInputMediaType(old_device.type)) {
+              EXPECT_EQ(MediaStreamType::NO_SERVICE, new_device.type);
+              audio_removed_notified = true;
+              audio_device = new_device;
+            } else if (blink::IsVideoInputMediaType(old_device.type)) {
+              video_device = new_device;
+            }
+          }));
+
+  const base::UnguessableToken tab_a_video_session = video_device.session_id();
+  const base::UnguessableToken tab_a_audio_session = audio_device.session_id();
+
+  // Switch 1: Tab A (audio+video) -> Tab B (video-only).
+  current_tab = tab_b;
+  share_audio = false;
+  ChangeSourceFromBrowser(label, tab_b);
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return audio_removed_notified &&
+           video_device.session_id() != tab_a_video_session;
+  }));
+
+  EXPECT_FALSE(IsVideoSessionOpen(tab_a_video_session));
+  EXPECT_FALSE(IsAudioSessionOpen(tab_a_audio_session));
+  EXPECT_FALSE(HasRequestForSession(tab_a_video_session));
+  EXPECT_FALSE(HasRequestForSession(tab_a_audio_session));
+
+  const base::UnguessableToken tab_b_video_session = video_device.session_id();
+  EXPECT_TRUE(IsVideoSessionOpen(tab_b_video_session));
+  blink::MediaStreamDevices opened_devices =
+      media_stream_manager_->GetDevicesOpenedByRequest(label);
+  ASSERT_EQ(1u, opened_devices.size());
+  EXPECT_EQ(MediaStreamType::DISPLAY_VIDEO_CAPTURE, opened_devices[0].type);
+
+  // Switch 2: Tab B (video-only) -> Tab C (video-only). Ensure no stale
+  // audio_device from Tab A is swapped back in and Tab B's video session is
+  // closed.
+  audio_removed_notified = false;
+  current_tab = tab_c;
+  ChangeSourceFromBrowser(label, tab_c);
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return video_device.session_id() != tab_b_video_session; }));
+
+  EXPECT_FALSE(audio_removed_notified);
+  EXPECT_FALSE(IsVideoSessionOpen(tab_b_video_session));
+  EXPECT_FALSE(HasRequestForSession(tab_b_video_session));
+  EXPECT_TRUE(IsVideoSessionOpen(video_device.session_id()));
+  opened_devices = media_stream_manager_->GetDevicesOpenedByRequest(label);
+  ASSERT_EQ(1u, opened_devices.size());
+  EXPECT_EQ(MediaStreamType::DISPLAY_VIDEO_CAPTURE, opened_devices[0].type);
+
+  media_stream_manager_->CancelRequest(label);
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return !IsVideoSessionOpen(video_device.session_id()); }));
+}
+
+TEST_F(MediaStreamManagerTest,
+       DesktopCaptureChangeSourceUncommittedVideoOnlyThenAudioAndVideo) {
+  const DesktopMediaID tab_a = MakeTabMediaId(5);
+  const DesktopMediaID tab_b = MakeTabMediaId(6);
+  const DesktopMediaID tab_c = MakeTabMediaId(7);
+  DesktopMediaID current_tab = tab_a;
+  bool share_audio = true;
+  SetupFakeUIForTabCapture(&current_tab, &share_audio);
+
+  blink::MediaStreamDevice video_device;
+  blink::MediaStreamDevice audio_device;
+  size_t audio_change_count = 0;
+  size_t video_change_count = 0;
+  const std::string label = RequestDisplayCapture(
+      /*request_audio=*/true, &video_device, &audio_device,
+      /*stopped_cb=*/base::DoNothing(),
+      base::BindLambdaForTesting(
+          [&](const std::string&, const blink::MediaStreamDevice& old_device,
+              const blink::MediaStreamDevice& new_device) {
+            if (blink::IsAudioInputMediaType(old_device.type)) {
+              EXPECT_EQ(audio_device.session_id(), old_device.session_id());
+              ++audio_change_count;
+              audio_device = new_device;
+            } else if (blink::IsVideoInputMediaType(old_device.type)) {
+              EXPECT_EQ(video_device.session_id(), old_device.session_id());
+              ++video_change_count;
+              video_device = new_device;
+            } else {
+              ADD_FAILURE()
+                  << "Unexpected old_device type: " << old_device.type;
+            }
+          }));
+
+  const base::UnguessableToken tab_a_video_session = video_device.session_id();
+  const base::UnguessableToken tab_a_audio_session = audio_device.session_id();
+
+  // 1. Start an uncommitted switch from Tab A (audio+video) to Tab B
+  // (video-only), pausing in MEDIA_REQUEST_STATE_OPENING before it commits.
+  base::UnguessableToken uncommitted_tab_b_video_session;
+  current_tab = tab_b;
+  share_audio = false;
+  StartOpeningTabSourceChange(label, tab_b, &uncommitted_tab_b_video_session);
+
+  // 2. Immediately supersede the uncommitted video-only switch with a switch to
+  // Tab C (audio+video). Audio sharing must still be preserved because Tab B
+  // never committed.
+  current_tab = tab_c;
+  share_audio = true;
+  ChangeSourceFromBrowser(label, tab_c);
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return video_device.session_id() != tab_a_video_session &&
+           audio_device.session_id() != tab_a_audio_session;
+  }));
+  // Flush tasks on the IO thread to ensure no trailing Opened() callback
+  // triggers a duplicate FinalizeChangeDevice().
+  base::RunLoop flush_io_loop;
+  GetIOThreadTaskRunner({})->PostTask(FROM_HERE, flush_io_loop.QuitClosure());
+  flush_io_loop.Run();
+
+  EXPECT_EQ(1u, video_change_count);
+  EXPECT_EQ(1u, audio_change_count);
+  EXPECT_EQ(MediaStreamType::DISPLAY_VIDEO_CAPTURE, video_device.type);
+  EXPECT_EQ(MediaStreamType::DISPLAY_AUDIO_CAPTURE, audio_device.type);
+  EXPECT_EQ(tab_c.ToString(), video_device.id);
+  EXPECT_EQ(tab_c.ToString(), audio_device.id);
+
+  EXPECT_FALSE(IsVideoSessionOpen(tab_a_video_session));
+  EXPECT_FALSE(IsAudioSessionOpen(tab_a_audio_session));
+  EXPECT_FALSE(IsVideoSessionOpen(uncommitted_tab_b_video_session));
+  EXPECT_TRUE(IsVideoSessionOpen(video_device.session_id()));
+  EXPECT_TRUE(IsAudioSessionOpen(audio_device.session_id()));
+
+  // 3. Once a video-only switch to Tab B actually commits, audio sharing is
+  // disabled and a subsequent switch to Tab A (even with share_audio=true)
+  // remains video-only.
+  const base::UnguessableToken tab_c_video_session = video_device.session_id();
+  const base::UnguessableToken tab_c_audio_session = audio_device.session_id();
+  current_tab = tab_b;
+  share_audio = false;
+  ChangeSourceFromBrowser(label, tab_b);
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return video_device.session_id() != tab_c_video_session &&
+           audio_device.type == MediaStreamType::NO_SERVICE;
+  }));
+  EXPECT_FALSE(IsVideoSessionOpen(tab_c_video_session));
+  EXPECT_FALSE(IsAudioSessionOpen(tab_c_audio_session));
+
+  const base::UnguessableToken tab_b_video_session = video_device.session_id();
+  current_tab = tab_a;
+  share_audio = true;
+  ChangeSourceFromBrowser(label, tab_a);
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return video_device.session_id() != tab_b_video_session; }));
+  EXPECT_EQ(2u, audio_change_count);
+  EXPECT_EQ(3u, video_change_count);
+  ASSERT_EQ(1u, media_stream_manager_->GetDevicesOpenedByRequest(label).size());
+
+  media_stream_manager_->CancelRequest(label);
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return !IsVideoSessionOpen(video_device.session_id()); }));
+}
+
+TEST_F(MediaStreamManagerTest, DesktopCaptureCancelDuringOpeningChangeSource) {
+  const DesktopMediaID tab_a = MakeTabMediaId(5);
+  const DesktopMediaID tab_b = MakeTabMediaId(6);
+  DesktopMediaID current_tab = tab_a;
+  SetupFakeUIForTabCapture(&current_tab);
+
+  blink::MediaStreamDevice video_device;
+  blink::MediaStreamDevice audio_device;
+  const std::string label = RequestDisplayCapture(/*request_audio=*/true,
+                                                  &video_device, &audio_device);
+  const base::UnguessableToken old_video_session = video_device.session_id();
+  const base::UnguessableToken old_audio_session = audio_device.session_id();
+
+  base::UnguessableToken new_video_session;
+  base::UnguessableToken new_audio_session;
+  current_tab = tab_b;
+  StartOpeningTabSourceChange(label, tab_b, &new_video_session,
+                              &new_audio_session);
+
+  // During MEDIA_REQUEST_STATE_OPENING, ValidateVideoSession and
+  // ValidateAudioSession must still associate the old session IDs in
+  // old_stream_devices_set with kRenderFrameHostId (and reject other frames).
+  const GlobalRenderFrameHostId kOtherRenderFrameHostId{99, 99};
+  EXPECT_TRUE(media_stream_manager_->ValidateVideoSession(old_video_session,
+                                                          kRenderFrameHostId));
+  EXPECT_FALSE(media_stream_manager_->ValidateVideoSession(
+      old_video_session, kOtherRenderFrameHostId));
+  EXPECT_TRUE(media_stream_manager_->ValidateAudioSession(old_audio_session,
+                                                          kRenderFrameHostId));
+  EXPECT_FALSE(media_stream_manager_->ValidateAudioSession(
+      old_audio_session, kOtherRenderFrameHostId));
+  EXPECT_TRUE(media_stream_manager_->ValidateVideoSession(new_video_session,
+                                                          kRenderFrameHostId));
+  EXPECT_FALSE(media_stream_manager_->ValidateVideoSession(
+      new_video_session, kOtherRenderFrameHostId));
+
+  bool old_audio_closed = false;
+  media_stream_manager_->audio_input_device_manager()->SetSessionClosedCallback(
+      old_audio_session,
+      base::BindLambdaForTesting([&]() { old_audio_closed = true; }));
+
+  // Cancel the request while the source switch is in
+  // MEDIA_REQUEST_STATE_OPENING. Both old and new sessions must be closed.
+  media_stream_manager_->CancelRequest(label);
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return old_audio_closed && !IsVideoSessionOpen(old_video_session) &&
+           !IsVideoSessionOpen(new_video_session);
+  }));
+  EXPECT_FALSE(IsAudioSessionOpen(old_audio_session));
+  EXPECT_FALSE(IsAudioSessionOpen(new_audio_session));
 }
 
 TEST_F(MediaStreamManagerTest, MultiCaptureOnMediaStreamUIWindowId) {
@@ -2205,6 +2595,104 @@ TEST_F(MediaStreamManagerTestWithWebContents,
                   .empty());
 }
 
+TEST_F(MediaStreamManagerTestWithWebContents,
+       ChangeSourceNotifiesCaptureHandleChange) {
+  auto make_tab_with_handle = [&](const std::u16string& handle) {
+    std::unique_ptr<TestWebContents> tab = CreateWebContents();
+    auto config = blink::mojom::CaptureHandleConfig::New();
+    config->all_origins_permitted = true;
+    config->capture_handle = handle;
+    tab->GetPrimaryPage().SetCaptureHandleConfig(std::move(config));
+
+    const GlobalRenderFrameHostId rfh_id =
+        tab->GetPrimaryMainFrame()->GetGlobalId();
+    const DesktopMediaID media_id(
+        DesktopMediaID::TYPE_WEB_CONTENTS, DesktopMediaID::kNullId,
+        WebContentsMediaCaptureId(rfh_id.child_id.GetUnsafeValue(),
+                                  rfh_id.frame_routing_id));
+    blink::MediaStreamDevice device(MediaStreamType::DISPLAY_VIDEO_CAPTURE,
+                                    media_id.ToString(), "Tab Video");
+    device.display_media_info = media::mojom::DisplayMediaInformation::New(
+        media::mojom::DisplayCaptureSurfaceType::BROWSER,
+        /*logical_surface=*/true, media::mojom::CursorCaptureType::NEVER,
+        media::mojom::CaptureHandle::New(url::Origin(), handle),
+        /*initial_zoom_level=*/100);
+    return std::make_tuple(std::move(tab), media_id, std::move(device));
+  };
+
+  auto [tab_a, tab_a_id, tab_a_device] = make_tab_with_handle(u"handle_a");
+  auto [tab_b, tab_b_id, tab_b_device] = make_tab_with_handle(u"handle_b");
+  auto [tab_c, tab_c_id, tab_c_device] = make_tab_with_handle(u"handle_c");
+
+  const blink::MediaStreamDevice* current_device = &tab_a_device;
+  media_stream_manager_->UseFakeUIFactoryForTests(
+      base::BindLambdaForTesting([&]() {
+        auto fake_ui = std::make_unique<FakeMediaStreamUIProxy>(
+            /*tests_use_fake_render_frame_hosts=*/true);
+        fake_ui->SetAudioShare(false);
+        fake_ui->AddAvailableDevices({*current_device});
+        return fake_ui;
+      }));
+
+  EXPECT_CALL(*media_observer_, OnMediaRequestStateChanged(_, _, _, _, _, _))
+      .Times(testing::AnyNumber());
+
+  std::vector<std::u16string> notified_handles;
+  blink::StreamControls controls(/*request_audio=*/false,
+                                 /*request_video=*/true);
+  controls.video.stream_type = MediaStreamType::DISPLAY_VIDEO_CAPTURE;
+
+  base::test::TestFuture<blink::mojom::MediaStreamRequestResult,
+                         const std::string&, blink::mojom::StreamDevicesSetPtr,
+                         bool>
+      streams_generated_future;
+  media_stream_manager_->GenerateStreams(
+      render_frame_host_id_, /*requester_id=*/0, /*page_request_id=*/0,
+      controls, MediaDeviceSaltAndOrigin::Empty(), /*user_gesture=*/false,
+      NewSearchBySessionId({}), streams_generated_future.GetCallback(),
+      /*device_stopped_callback=*/base::DoNothing(),
+      /*device_changed_callback=*/base::DoNothing(),
+      /*device_request_state_change_cb=*/base::DoNothing(),
+      /*device_capture_configuration_change_callback=*/base::DoNothing(),
+      /*device_capture_handle_change_callback=*/
+      base::BindLambdaForTesting([&](const std::string& label,
+                                     const blink::MediaStreamDevice& device) {
+        if (device.display_media_info &&
+            device.display_media_info->capture_handle) {
+          notified_handles.push_back(
+              device.display_media_info->capture_handle->capture_handle);
+        }
+      }),
+      /*zoom_level_change_callback=*/base::DoNothing());
+
+  auto [result, label, devices_set, pan_tilt_zoom_allowed] =
+      streams_generated_future.Take();
+  ASSERT_EQ(result, blink::mojom::MediaStreamRequestResult::OK);
+  EXPECT_TRUE(notified_handles.empty());
+
+  // 1. Switch from Tab A to Tab B; FinalizeChangeDevice() must preserve the
+  // existing CaptureHandleManager entry so the old->new transition fires.
+  current_device = &tab_b_device;
+  ChangeSourceFromBrowser(label, tab_b_id);
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return notified_handles.size() == 1u; }));
+  EXPECT_EQ(notified_handles[0], u"handle_b");
+
+  // 2. Start an uncommitted switch to Tab A (MEDIA_REQUEST_STATE_OPENING) and
+  // immediately supersede it with a switch to Tab C. Discarding the
+  // uncommitted device must not erase Tab B's CaptureHandleManager tracking.
+  base::UnguessableToken uncommitted_video_session;
+  current_device = &tab_a_device;
+  StartOpeningTabSourceChange(label, tab_a_id, &uncommitted_video_session);
+  current_device = &tab_c_device;
+  ChangeSourceFromBrowser(label, tab_c_id);
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return notified_handles.size() == 2u; }));
+  EXPECT_EQ(notified_handles[1], u"handle_c");
+
+  media_stream_manager_->CancelRequest(label);
+}
+
 class MediaStreamManagerTestForTransfers : public MediaStreamManagerTest {
  public:
   void CustomSetUp(const char* surface_type = "browser") {
@@ -2236,12 +2724,14 @@ class MediaStreamManagerTestForTransfers : public MediaStreamManagerTest {
     base::RunLoop run_loop;
 
     blink::StreamControls controls(request_audio, request_video);
-    if (request_audio)
+    if (request_audio) {
       controls.audio.stream_type =
           blink::mojom::MediaStreamType::DISPLAY_AUDIO_CAPTURE;
-    if (request_video)
+    }
+    if (request_video) {
       controls.video.stream_type =
           blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE;
+    }
 
     blink::MediaStreamDevice video_device;
     blink::MediaStreamDevice audio_device;
@@ -2743,6 +3233,101 @@ TEST_P(MediaStreamManagerCapturedSurfaceControlActionTest,
   // TODO(crbug.com/41485502): Use a dedicated error.
   EXPECT_EQ(result_, CapturedSurfaceControlResult::kUnknownError);
 }
+
+TEST_F(MediaStreamManagerTest,
+       ChangeSourceUpdatesCaptureTargetOnlyWhenCommitted) {
+  const DesktopMediaID tab_a = MakeTabMediaId(5);
+  const DesktopMediaID tab_b = MakeTabMediaId(6);
+  const DesktopMediaID tab_c = MakeTabMediaId(7);
+  DesktopMediaID current_tab = tab_a;
+  const bool share_audio = false;
+  SetupFakeUIForTabCapture(&current_tab, &share_audio);
+
+  raw_ptr<MockCapturedSurfaceController> mock_csc = nullptr;
+  WebContentsMediaCaptureId initial_captured_wc_id;
+  media_stream_manager_->SetCapturedSurfaceControllerFactoryForTesting(
+      base::BindLambdaForTesting(
+          [&](GlobalRenderFrameHostId gdm_rfhid,
+              WebContentsMediaCaptureId captured_wc_id,
+              base::RepeatingCallback<void(int)> zoom_level_callback) {
+            initial_captured_wc_id = captured_wc_id;
+            auto controller = std::make_unique<MockCapturedSurfaceController>(
+                gdm_rfhid, captured_wc_id);
+            mock_csc = controller.get();
+            return std::unique_ptr<CapturedSurfaceController>(
+                std::move(controller));
+          }));
+
+  blink::MediaStreamDevice video_device;
+  const std::string label = RequestDisplayCapture(
+      /*request_audio=*/false, &video_device, /*out_audio_device=*/nullptr,
+      /*stopped_cb=*/base::DoNothing(),
+      base::BindLambdaForTesting(
+          [&](const std::string&, const blink::MediaStreamDevice& old_device,
+              const blink::MediaStreamDevice& new_device) {
+            if (blink::IsVideoInputMediaType(old_device.type)) {
+              video_device = new_device;
+            }
+          }));
+
+  ASSERT_TRUE(mock_csc);
+  EXPECT_EQ(tab_a.web_contents_id, initial_captured_wc_id);
+  const base::UnguessableToken tab_a_video_session = video_device.session_id();
+
+  // 1. Start an uncommitted switch to Tab B (MEDIA_REQUEST_STATE_OPENING).
+  // UpdateCaptureTarget() must NOT be called before the switch commits.
+  EXPECT_CALL(*mock_csc, UpdateCaptureTarget(_)).Times(0);
+  base::UnguessableToken uncommitted_tab_b_video_session;
+  current_tab = tab_b;
+  StartOpeningTabSourceChange(label, tab_b, &uncommitted_tab_b_video_session);
+
+  // 2. Supersede the uncommitted switch with a picker-based switch that is
+  // cancelled by the user. Capture stays on Tab A and UpdateCaptureTarget()
+  // must still never have been called for Tab B.
+  {
+    base::test::ScopedCommandLine scoped_command_line;
+    scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+        switches::kUseFakeUIForMediaStream, "deny");
+    bool saw_pending_approval = false;
+    bool deny_completed = false;
+    base::RunLoop deny_loop;
+    EXPECT_CALL(*media_observer_,
+                OnMediaRequestStateChanged(
+                    _, _, _, _, MediaStreamType::DISPLAY_VIDEO_CAPTURE, _))
+        .WillRepeatedly([&](int, int, int, const GURL&, MediaStreamType,
+                            MediaRequestState state) {
+          if (state == MEDIA_REQUEST_STATE_PENDING_APPROVAL) {
+            saw_pending_approval = true;
+          } else if (saw_pending_approval && !deny_completed &&
+                     state == MEDIA_REQUEST_STATE_DONE) {
+            deny_completed = true;
+            deny_loop.Quit();
+          }
+        });
+    ChangeSourceFromBrowser(label, DesktopMediaID());
+    deny_loop.Run();
+    testing::Mock::VerifyAndClearExpectations(media_observer_.get());
+    EXPECT_CALL(*media_observer_, OnMediaRequestStateChanged(_, _, _, _, _, _))
+        .Times(testing::AnyNumber());
+  }
+  EXPECT_FALSE(IsVideoSessionOpen(uncommitted_tab_b_video_session));
+  EXPECT_TRUE(IsVideoSessionOpen(tab_a_video_session));
+  testing::Mock::VerifyAndClearExpectations(mock_csc);
+
+  // 3. Switch to Tab C and let it finish opening; UpdateCaptureTarget() must
+  // fire once FinalizeChangeDevice() commits Tab C.
+  EXPECT_CALL(*mock_csc, UpdateCaptureTarget(tab_c.web_contents_id)).Times(1);
+  current_tab = tab_c;
+  ChangeSourceFromBrowser(label, tab_c);
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return video_device.session_id() != tab_a_video_session; }));
+  testing::Mock::VerifyAndClearExpectations(mock_csc);
+
+  mock_csc = nullptr;
+  media_stream_manager_->CancelRequest(label);
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return !IsVideoSessionOpen(video_device.session_id()); }));
+}
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 TEST_F(MediaStreamManagerTest,
@@ -2897,9 +3482,6 @@ TEST_F(MediaStreamManagerTest, Aborted_VideoSessionAbortedStopsAudio) {
   blink::MediaStreamDevice audio_device;
   base::MockCallback<MediaStreamManager::DeviceStoppedCallback>
       stopped_callback;
-
-  EXPECT_CALL(*media_observer_, OnMediaRequestStateChanged(_, _, _, _, _, _))
-      .Times(testing::AnyNumber());
 
   std::string label =
       RequestDisplayCapture(/*request_audio=*/true, &video_device,
