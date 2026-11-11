@@ -73,6 +73,10 @@ class MockGlicInstance : public GlicInstance {
               SendAdditionalContext,
               (mojom::AdditionalContextPtr),
               (override));
+  MOCK_METHOD(void,
+              NotifyDataTransferActionsBlocked,
+              (mojom::DataTransferActionsBlockedNoticePtr),
+              (override));
   MOCK_METHOD(void, FocusIfActive, (), (override));
   MOCK_METHOD(bool, IsLiveMode, (), (const, override));
   MOCK_METHOD(void, NotifyActorTaskListRowClicked, (int32_t), (override));

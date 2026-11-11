@@ -5074,6 +5074,39 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testAdditionalContextClearedOnAbortedOpen) {
   ASSERT_FALSE(instance->host().IsPrimaryClientOpen());
 }
 
+IN_PROC_BROWSER_TEST_P(GlicApiTest, testDataTransferActionsBlockedNotices) {
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+
+  auto* instance = GetOnlyGlicInstance();
+  ASSERT_TRUE(instance);
+
+  instance->NotifyDataTransferActionsBlocked(
+      glic::mojom::DataTransferActionsBlockedNotice::New(
+          glic::mojom::DataTransferAction::kPaste,
+          glic::mojom::DataTransferActionsBlockedReason::
+              kIneligiblePageContext));
+  instance->NotifyDataTransferActionsBlocked(
+      glic::mojom::DataTransferActionsBlockedNotice::New(
+          glic::mojom::DataTransferAction::kPaste,
+          glic::mojom::DataTransferActionsBlockedReason::kCrossProfile));
+  instance->NotifyDataTransferActionsBlocked(
+      glic::mojom::DataTransferActionsBlockedNotice::New(
+          glic::mojom::DataTransferAction::kDrop,
+          glic::mojom::DataTransferActionsBlockedReason::
+              kUnsupportedOrExpiredSource));
+
+  ContinueJsTest();
+
+  instance->NotifyDataTransferActionsBlocked(
+      glic::mojom::DataTransferActionsBlockedNotice::New(
+          glic::mojom::DataTransferAction::kDrop,
+          glic::mojom::DataTransferActionsBlockedReason::
+              kIneligiblePageContext));
+
+  ContinueJsTest();
+}
+
 IN_PROC_BROWSER_TEST_P(GlicApiActorTest, testCancelActions) {
   ASSERT_OK(OpenGlicForActiveTab());
   ExecuteJsTest();

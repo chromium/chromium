@@ -1724,6 +1724,13 @@ class GlicWebClientHandler
     }
   }
 
+  void NotifyDataTransferActionsBlocked(
+      mojom::DataTransferActionsBlockedNoticePtr notice) override {
+    if (web_client_) {
+      web_client_->NotifyDataTransferActionsBlocked(std::move(notice));
+    }
+  }
+
   void NotifyActorTaskListRowClicked(int32_t task_id) override {
     if (web_client_) {
       web_client_->NotifyActorTaskListRowClicked(task_id);

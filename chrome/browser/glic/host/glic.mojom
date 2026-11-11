@@ -1932,6 +1932,41 @@ struct AdditionalContext {
 };
 
 // @generate glic_api
+// The user data-transfer action that attempted to send input into Glic.
+// Note: New actions may be added over time; callers switching on this enum
+// should handle unknown/default values gracefully.
+[Stable, Extensible]
+enum DataTransferAction {
+  [Default] kUnknown = 0,
+  kPaste = 1,
+  kDrop = 2,
+};
+
+// @generate glic_api
+// The reason a data-transfer action into Glic was blocked by product or context
+// eligibility checks.
+// Note: New reasons may be added over time; callers switching on this enum
+// should handle unknown/default values gracefully.
+[Stable, Extensible]
+enum DataTransferActionsBlockedReason {
+  [Default] kUnknown = 0,
+  // The source page's context is ineligible for sharing with Glic.
+  kIneligiblePageContext = 1,
+  // The source belongs to a different browser profile (e.g., Incognito).
+  kCrossProfile = 2,
+  // The source is not a supported tab or was invalidated before completion.
+  kUnsupportedOrExpiredSource = 3,
+};
+
+// @generate glic_api
+// Notice emitted when a data-transfer action into Glic is blocked by
+// eligibility checks.
+struct DataTransferActionsBlockedNotice {
+  DataTransferAction action;
+  DataTransferActionsBlockedReason reason;
+};
+
+// @generate glic_api
 // Types of updates that may be relayed back by the web client.
 [Stable, Extensible]
 enum ExperimentalTriggeringUpdateType {
@@ -2127,6 +2162,10 @@ interface WebClient {
 
   // Informs the client that the prefs-backed client data storage was cleared.
   NotifyClientStorageCleared();
+
+  // Informs the client that a paste or drop into Glic was blocked by product
+  // or context eligibility checks.
+  NotifyDataTransferActionsBlocked(DataTransferActionsBlockedNotice notice);
 };
 
 // @generate glic_api

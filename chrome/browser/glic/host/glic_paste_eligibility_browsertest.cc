@@ -2,10 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
+#include "base/test/simple_test_tick_clock.h"
 #include "base/test/test_future.h"
+#include "base/time/time.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/test_support/glic_api_test.h"
@@ -17,6 +21,7 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/clipboard.h"
@@ -34,6 +39,7 @@ namespace {
 class GlicPasteEligibilityBrowserTest : public GlicBrowserTest {
  public:
   GlicPasteEligibilityBrowserTest() {
+    SetGlicPagePath("/glic/test_client/index.html");
     ui::TestClipboard::CreateForCurrentThread();
   }
 
@@ -98,11 +104,36 @@ class GlicPasteEligibilityBrowserTest : public GlicBrowserTest {
 
   content::WebContents* GetReadyGuest() {
     EXPECT_OK(WaitForGlicClient());
+    EXPECT_OK(WaitUntilGuestIsShowing());
 
     content::WebContents* glic_guest =
         GetOnlyGlicInstance()->host().web_client_contents();
     EXPECT_TRUE(glic_guest != nullptr && IsGlicGuest(glic_guest));
     return glic_guest;
+  }
+
+  void InstallBlockedNoticesRecorder(content::WebContents* glic_guest) {
+    ASSERT_TRUE(content::ExecJs(glic_guest, R"(
+      (async () => {
+        window.__capturedBlockedNotices = [];
+        await window.client.getInitialized();
+        window.client.browser.getDataTransferActionsBlockedNotices().subscribe(
+            notice => window.__capturedBlockedNotices.push(notice));
+      })()
+    )"));
+  }
+
+  base::ListValue GetCapturedBlockedNotices(content::WebContents* glic_guest) {
+    return content::EvalJs(glic_guest, "window.__capturedBlockedNotices")
+        .TakeValue()
+        .TakeList();
+  }
+
+  bool WaitForBlockedNoticeCount(content::WebContents* glic_guest,
+                                 size_t expected_count) {
+    return base::test::RunUntil([&]() {
+      return GetCapturedBlockedNotices(glic_guest).size() == expected_count;
+    });
   }
 
  private:
@@ -497,6 +528,236 @@ IN_PROC_BROWSER_TEST_F(
     histogram_tester.ExpectUniqueSample(
         "Glic.Paste.FailedEligibilityReason.Web",
         0 /* kPageContextIneligible */, 1);
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(GlicPasteEligibilityBrowserTest,
+                       EmitsDataTransferActionsBlockedNoticesForBlockedPastes) {
+  base::SimpleTestTickClock test_clock;
+  test_clock.Advance(base::Minutes(10));
+  glic::SetBlockedPasteNoticeClockForTesting(&test_clock);
+  base::ScopedClosureRunner reset_clock(base::BindOnce(
+      []() { glic::SetBlockedPasteNoticeClockForTesting(nullptr); }));
+
+  const GURL eligible_url =
+      embedded_test_server()->GetURL("eligible.example.com", "/title1.html");
+  const GURL ineligible_url =
+      embedded_test_server()->GetURL("ineligible.example.com", "/title1.html");
+
+  tabs::TabInterface* active_tab = GetTabListInterface()->GetActiveTab();
+  ASSERT_TRUE(content::NavigateToURL(active_tab->GetContents(), eligible_url));
+
+  ASSERT_OK(OpenGlicForActiveTab());
+  content::WebContents* glic_guest = GetReadyGuest();
+  ASSERT_TRUE(glic_guest);
+  InstallBlockedNoticesRecorder(glic_guest);
+
+  // 1. Eligible web paste does not emit a blocked notice.
+  content::WebContents* source_contents = active_tab->GetContents();
+  content::ClipboardEndpoint eligible_source =
+      content::ClipboardEndpoint::ForFrame(
+          ui::DataTransferEndpoint(eligible_url),
+          base::BindLambdaForTesting([source_contents] {
+            return source_contents->GetBrowserContext();
+          }),
+          *source_contents->GetPrimaryMainFrame());
+  glic::OnBeforeClipboardCopy(eligible_source);
+  EXPECT_TRUE(
+      SyncCheckPasteEligibility(eligible_source, glic_guest).has_value());
+
+  // 2. OS paste does not emit a blocked notice.
+  content::ClipboardEndpoint os_source =
+      content::ClipboardEndpoint::ForOutsideChrome(
+          ui::DataTransferEndpoint(ineligible_url));
+  glic::OnBeforeClipboardCopy(os_source);
+  EXPECT_TRUE(SyncCheckPasteEligibility(os_source, glic_guest).has_value());
+  EXPECT_TRUE(GetCapturedBlockedNotices(glic_guest).empty());
+
+  // 3. Ineligible page context paste emits {action: PASTE, reason:
+  // INELIGIBLE_PAGE_CONTEXT}.
+  ASSERT_TRUE(
+      content::NavigateToURL(active_tab->GetContents(), ineligible_url));
+  content::ClipboardEndpoint ineligible_source =
+      content::ClipboardEndpoint::ForFrame(
+          ui::DataTransferEndpoint(ineligible_url),
+          base::BindLambdaForTesting([source_contents] {
+            return source_contents->GetBrowserContext();
+          }),
+          *source_contents->GetPrimaryMainFrame());
+  glic::OnBeforeClipboardCopy(ineligible_source);
+  EXPECT_FALSE(
+      SyncCheckPasteEligibility(ineligible_source, glic_guest).has_value());
+  ASSERT_TRUE(WaitForBlockedNoticeCount(glic_guest, 1u));
+
+  // 4. Non-tab WebContents paste emits {action: PASTE, reason:
+  // UNSUPPORTED_OR_EXPIRED_SOURCE}.
+  std::unique_ptr<content::WebContents> non_tab_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(GetProfile()));
+  content::ClipboardEndpoint non_tab_source =
+      content::ClipboardEndpoint::ForFrame(
+          ui::DataTransferEndpoint(eligible_url),
+          base::BindLambdaForTesting([&non_tab_contents] {
+            return non_tab_contents->GetBrowserContext();
+          }),
+          *non_tab_contents->GetPrimaryMainFrame());
+  glic::OnBeforeClipboardCopy(non_tab_source);
+  EXPECT_FALSE(
+      SyncCheckPasteEligibility(non_tab_source, glic_guest).has_value());
+  ASSERT_TRUE(WaitForBlockedNoticeCount(glic_guest, 2u));
+
+  // 5. Cross-profile paste emits {action: PASTE, reason: CROSS_PROFILE}.
+#if BUILDFLAG(IS_ANDROID)
+  std::unique_ptr<content::WebContents> incognito_contents =
+      content::WebContents::Create(content::WebContents::CreateParams(
+          GetProfile()->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
+  content::WebContents* cross_profile_contents = incognito_contents.get();
+#else
+  BrowserWindowInterface* incognito_browser =
+      InProcessBrowserTest::CreateIncognitoBrowser();
+  content::WebContents* cross_profile_contents =
+      incognito_browser->tab_strip_model()->GetActiveTab()->GetContents();
+#endif
+  ASSERT_TRUE(content::NavigateToURL(cross_profile_contents, eligible_url));
+  content::ClipboardEndpoint cross_profile_source =
+      content::ClipboardEndpoint::ForFrame(
+          ui::DataTransferEndpoint(eligible_url),
+          base::BindLambdaForTesting([cross_profile_contents] {
+            return cross_profile_contents->GetBrowserContext();
+          }),
+          *cross_profile_contents->GetPrimaryMainFrame());
+  glic::OnBeforeClipboardCopy(cross_profile_source);
+  EXPECT_FALSE(
+      SyncCheckPasteEligibility(cross_profile_source, glic_guest).has_value());
+  ASSERT_TRUE(WaitForBlockedNoticeCount(glic_guest, 3u));
+
+  base::ListValue notices = GetCapturedBlockedNotices(glic_guest);
+  ASSERT_EQ(notices.size(), 3u);
+  EXPECT_EQ(notices[0].GetDict().FindInt("action"),
+            static_cast<int>(mojom::DataTransferAction::kPaste));
+  EXPECT_EQ(
+      notices[0].GetDict().FindInt("reason"),
+      static_cast<int>(
+          mojom::DataTransferActionsBlockedReason::kIneligiblePageContext));
+  EXPECT_EQ(notices[1].GetDict().FindInt("action"),
+            static_cast<int>(mojom::DataTransferAction::kPaste));
+  EXPECT_EQ(notices[1].GetDict().FindInt("reason"),
+            static_cast<int>(mojom::DataTransferActionsBlockedReason::
+                                 kUnsupportedOrExpiredSource));
+  EXPECT_EQ(notices[2].GetDict().FindInt("action"),
+            static_cast<int>(mojom::DataTransferAction::kPaste));
+  EXPECT_EQ(
+      notices[2].GetDict().FindInt("reason"),
+      static_cast<int>(mojom::DataTransferActionsBlockedReason::kCrossProfile));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    GlicPasteEligibilityBrowserTest,
+    MultiFormatPasteCoalescesNoticeWithinBurstWindowAndReemitsAfterDelay) {
+  base::SimpleTestTickClock test_clock;
+  test_clock.SetNowTicks(base::TimeTicks::Now());
+  glic::SetBlockedPasteNoticeClockForTesting(&test_clock);
+  base::ScopedClosureRunner reset_clock(base::BindOnce(
+      []() { glic::SetBlockedPasteNoticeClockForTesting(nullptr); }));
+
+  const GURL ineligible_url =
+      embedded_test_server()->GetURL("ineligible.example.com", "/title1.html");
+  tabs::TabInterface* active_tab = GetTabListInterface()->GetActiveTab();
+  ASSERT_TRUE(
+      content::NavigateToURL(active_tab->GetContents(), ineligible_url));
+
+  ASSERT_OK(OpenGlicForActiveTab());
+  content::WebContents* source_contents = active_tab->GetContents();
+  content::WebContents* glic_guest = GetReadyGuest();
+  ASSERT_TRUE(glic_guest);
+  InstallBlockedNoticesRecorder(glic_guest);
+
+  // Copy rich HTML + plain text from the ineligible tab via Blink's real copy
+  // pipeline so the clipboard contains multiple formats under a single seqno.
+  ASSERT_TRUE(content::ExecJs(source_contents, R"(
+    document.body.innerHTML = '<b>blocked html</b> plain text';
+    window.getSelection().selectAllChildren(document.body);
+  )"));
+  source_contents->Copy();
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    auto* clipboard = ui::Clipboard::GetForCurrentThread();
+    return ui::clipboard_test_util::IsFormatAvailable(
+               clipboard, ui::ClipboardFormatType::HtmlType(),
+               ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr) &&
+           ui::clipboard_test_util::IsFormatAvailable(
+               clipboard, ui::ClipboardFormatType::PlainTextType(),
+               ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr);
+  }));
+
+  // Focus a rich-text contenteditable target in the Glic guest so a single
+  // renderer Paste() triggers multiple per-format ClipboardHost read RPCs
+  // (ReadHtml followed by ReadText fallback). When the guest is embedded in
+  // an outer WebUI WebContents (kGlicNoWebview disabled), first focus the
+  // <webview> and its internal <iframe> (SlimWebview on Android renders the
+  // guest <iframe> inside an open shadow root without delegating focus()) so
+  // the outer WebContents's focused frame tree points to the guest before
+  // focusing #paste_target inside the guest.
+  if (content::WebContents* outer_contents =
+          glic_guest->GetOuterWebContents()) {
+    outer_contents->Focus();
+    ASSERT_TRUE(content::ExecJs(outer_contents, R"(
+      const webview = document.getElementById('guestFrame');
+      if (webview) {
+        webview.focus();
+        webview.shadowRoot?.querySelector('iframe')?.focus();
+      }
+    )"));
+  }
+  ASSERT_TRUE(content::ExecJs(glic_guest, R"(
+    const target = document.createElement('div');
+    target.id = 'paste_target';
+    target.contentEditable = 'true';
+    document.body.appendChild(target);
+    target.focus();
+  )"));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return glic_guest->GetFocusedFrame() == glic_guest->GetPrimaryMainFrame();
+  }));
+
+  base::HistogramTester histogram_tester;
+  glic_guest->Paste();
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return histogram_tester.GetBucketCount(
+               "Glic.Paste.FailedEligibilityReason.Web",
+               0 /* kPageContextIneligible */) >= 2;
+  }));
+  ASSERT_TRUE(WaitForBlockedNoticeCount(glic_guest, 1u));
+  EXPECT_EQ("", content::EvalJs(
+                    glic_guest,
+                    "document.getElementById('paste_target').textContent"));
+  EXPECT_EQ(GetCapturedBlockedNotices(glic_guest).size(), 1u);
+
+  // After the 500ms burst window elapses, a second Paste() with the same
+  // clipboard sequence number emits a fresh notice. Advance the test clock
+  // deterministically without wall-clock sleeping.
+  test_clock.Advance(base::Milliseconds(550));
+
+  glic_guest->Paste();
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return histogram_tester.GetBucketCount(
+               "Glic.Paste.FailedEligibilityReason.Web",
+               0 /* kPageContextIneligible */) >= 4;
+  }));
+  ASSERT_TRUE(WaitForBlockedNoticeCount(glic_guest, 2u));
+  EXPECT_EQ("", content::EvalJs(
+                    glic_guest,
+                    "document.getElementById('paste_target').textContent"));
+
+  base::ListValue notices = GetCapturedBlockedNotices(glic_guest);
+  ASSERT_EQ(notices.size(), 2u);
+  for (const auto& entry : notices) {
+    EXPECT_EQ(entry.GetDict().FindInt("action"),
+              static_cast<int>(mojom::DataTransferAction::kPaste));
+    EXPECT_EQ(
+        entry.GetDict().FindInt("reason"),
+        static_cast<int>(
+            mojom::DataTransferActionsBlockedReason::kIneligiblePageContext));
   }
 }
 

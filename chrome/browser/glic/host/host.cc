@@ -845,6 +845,13 @@ void Host::NotifyAdditionalContext(mojom::AdditionalContextPtr context) {
   pending_additional_contexts_[context->source] = std::move(context);
 }
 
+void Host::NotifyDataTransferActionsBlocked(
+    mojom::DataTransferActionsBlockedNoticePtr notice) {
+  if (auto* client = GetPrimaryWebClient()) {
+    client->NotifyDataTransferActionsBlocked(std::move(notice));
+  }
+}
+
 content::RenderProcessHost* Host::GetWebClientRenderProcessHost() const {
   auto* guest_frame = GetGuestMainFrame();
   if (guest_frame) {

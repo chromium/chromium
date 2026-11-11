@@ -239,6 +239,8 @@ class GlicInstanceImpl : public GlicInstance,
 
   // GlicInstance:
   void SendAdditionalContext(mojom::AdditionalContextPtr context) override;
+  void NotifyDataTransferActionsBlocked(
+      mojom::DataTransferActionsBlockedNoticePtr notice) override;
   void FocusIfActive() override;
   void NotifyActorTaskListRowClicked(int32_t task_id) override;
   const InstanceId& id() const override;

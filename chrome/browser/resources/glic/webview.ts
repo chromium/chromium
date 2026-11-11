@@ -206,6 +206,7 @@ export class WebviewController {
 
   focus(): void {
     this.webview.focus();
+    this.webview.shadowRoot?.querySelector('iframe')?.focus();
   }
 
   destroy() {
@@ -256,7 +257,7 @@ export class WebviewController {
 
   private onLoadStop(): void {
     if (this.webview.checkVisibility()) {
-      this.webview.focus();
+      this.focus();
     }
   }
 

@@ -443,6 +443,29 @@ export enum AdditionalContextSource {
   EXPERIMENTAL_TRIGGERING = 5,
 }
 
+// The user data-transfer action that attempted to send input into Glic.
+// Note: New actions may be added over time; callers switching on this enum
+// should handle unknown/default values gracefully.
+export enum DataTransferAction {
+  UNKNOWN = 0,
+  PASTE = 1,
+  DROP = 2,
+}
+
+// The reason a data-transfer action into Glic was blocked by product or context
+// eligibility checks.
+// Note: New reasons may be added over time; callers switching on this enum
+// should handle unknown/default values gracefully.
+export enum DataTransferActionsBlockedReason {
+  UNKNOWN = 0,
+  // The source page's context is ineligible for sharing with Glic.
+  INELIGIBLE_PAGE_CONTEXT = 1,
+  // The source belongs to a different browser profile (e.g., Incognito).
+  CROSS_PROFILE = 2,
+  // The source is not a supported tab or was invalidated before completion.
+  UNSUPPORTED_OR_EXPIRED_SOURCE = 3,
+}
+
 // Types of updates that may be relayed back by the web client.
 export enum ExperimentalTriggeringUpdateType {
   // An unknown, non-terminal update type.
@@ -1318,6 +1341,13 @@ export declare interface AdditionalContext {
   frameUrl?: string;
   // The parts of the context.
   parts: AdditionalContextPart[];
+}
+
+// Notice emitted when a data-transfer action into Glic is blocked by
+// eligibility checks.
+export declare interface DataTransferActionsBlockedNotice {
+  action: DataTransferAction;
+  reason: DataTransferActionsBlockedReason;
 }
 
 // An update event sent to the browser by the web client.

@@ -407,6 +407,11 @@ class Host : public GlicSharingManagerProvider {
   // Informs the web client that additional context is available.
   void NotifyAdditionalContext(mojom::AdditionalContextPtr context);
 
+  // Informs the web client that a paste or drop into Glic was blocked by
+  // product or context eligibility checks.
+  void NotifyDataTransferActionsBlocked(
+      mojom::DataTransferActionsBlockedNoticePtr notice);
+
   // Returns the RenderProcessHost for the WebClient, or nullptr if none.
   content::RenderProcessHost* GetWebClientRenderProcessHost() const;
 

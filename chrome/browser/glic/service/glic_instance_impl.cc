@@ -938,6 +938,11 @@ void GlicInstanceImpl::SendAdditionalContext(
   host_.NotifyAdditionalContext(std::move(context));
 }
 
+void GlicInstanceImpl::NotifyDataTransferActionsBlocked(
+    mojom::DataTransferActionsBlockedNoticePtr notice) {
+  host_.NotifyDataTransferActionsBlocked(std::move(notice));
+}
+
 void GlicInstanceImpl::FocusIfActive() {
   if (!IsActive()) {
     return;
