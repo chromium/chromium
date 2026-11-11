@@ -9,9 +9,12 @@
 #include <limits>
 #include <memory>
 #include <string_view>
+#include <utility>
 #include <variant>
+#include <vector>
 
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
@@ -24,7 +27,6 @@
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard_constants.h"
-#include "ui/base/clipboard/clipboard_util.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 
@@ -203,6 +205,20 @@ void Clipboard::DestroyClipboardForCurrentThread() {
     clipboard_map->erase(it);
 }
 
+void Clipboard::ReadURLs(const std::optional<DataTransferEndpoint>& data_dst,
+                         ReadUrlsCallback callback) const {
+  ReadURL(data_dst,
+          base::BindOnce(
+              [](ReadUrlsCallback callback, ClipboardUrlInfo url_info) {
+                std::vector<ClipboardUrlInfo> url_infos;
+                if (url_info.url.is_valid()) {
+                  url_infos.push_back(std::move(url_info));
+                }
+                std::move(callback).Run(std::move(url_infos));
+              },
+              std::move(callback)));
+}
+
 base::Time Clipboard::GetLastModifiedTime() const {
   return base::Time();
 }
@@ -289,69 +305,68 @@ void Clipboard::DispatchPortableRepresentation(const ObjectMapParams& params) {
   // arguments to write are empty. Historically, `params` was passed as a vector
   // of byte vectors, and if any of the byte vectors were empty, this would
   // simply early return.
-  std::visit(
-      absl::Overload{
-          [&](const BitmapData& data) {
-            // Unlike many of the other types, this does not perform an empty
-            // check. Due to a historical quirk of how bitmaps were transferred
-            // between ScopedClipboardWriter and Clipboard, the empty check
-            // mentioned above would never be true for bitmaps.
-            WriteBitmap(data.bitmap);
-          },
-          [&](const HtmlData& data) {
-            if (data.markup.empty()) {
-              return;
-            }
+  std::visit(absl::Overload{
+                 [&](const BitmapData& data) {
+                   // Unlike many of the other types, this does not perform an
+                   // empty check. Due to a historical quirk of how bitmaps were
+                   // transferred between ScopedClipboardWriter and Clipboard,
+                   // the empty check mentioned above would never be true for
+                   // bitmaps.
+                   WriteBitmap(data.bitmap);
+                 },
+                 [&](const HtmlData& data) {
+                   if (data.markup.empty()) {
+                     return;
+                   }
 
-            WriteHTML(data.markup, data.source_url);
-          },
-          [&](const RtfData& data) {
-            if (data.data.empty()) {
-              return;
-            }
+                   WriteHTML(data.markup, data.source_url);
+                 },
+                 [&](const RtfData& data) {
+                   if (data.data.empty()) {
+                     return;
+                   }
 
-            WriteRTF(data.data);
-          },
-          [&](const UrlData& data) {
-            if (ui::clipboard_util::ShouldSkipBookmark(
-                    data.url_info.title, data.url_info.url.spec())) {
-              return;
-            }
+                   WriteRTF(data.data);
+                 },
+                 [&](const UrlData& data) {
+                   if (data.url_infos.empty()) {
+                     return;
+                   }
 
-            WriteURL(data.url_info);
-          },
-          [&](const TextData& data) {
-            if (data.data.empty()) {
-              return;
-            }
+                   WriteURLs(data.url_infos);
+                 },
+                 [&](const TextData& data) {
+                   if (data.data.empty()) {
+                     return;
+                   }
 
-            WriteText(data.data);
-          },
-          [&](const WebkitData& data) { WriteWebSmartPaste(); },
-          [&](const SvgData& data) {
-            if (data.markup.empty()) {
-              return;
-            }
+                   WriteText(data.data);
+                 },
+                 [&](const WebkitData& data) { WriteWebSmartPaste(); },
+                 [&](const SvgData& data) {
+                   if (data.markup.empty()) {
+                     return;
+                   }
 
-            WriteSvg(data.markup);
-          },
-          [&](const FilenamesData& data) {
-            if (data.text_uri_list.empty()) {
-              return;
-            }
+                   WriteSvg(data.markup);
+                 },
+                 [&](const FilenamesData& data) {
+                   if (data.text_uri_list.empty()) {
+                     return;
+                   }
 
-            WriteFilenames(ui::URIListToFileInfos(data.text_uri_list));
-          },
-          [&](const WebCustomFormatMapData& data) {
-            if (data.data.empty()) {
-              return;
-            }
+                   WriteFilenames(ui::URIListToFileInfos(data.text_uri_list));
+                 },
+                 [&](const WebCustomFormatMapData& data) {
+                   if (data.data.empty()) {
+                     return;
+                   }
 
-            WriteData(ClipboardFormatType::WebCustomFormatMap(),
-                      base::as_byte_span(data.data));
-          },
-      },
-      params.data);
+                   WriteData(ClipboardFormatType::WebCustomFormatMap(),
+                             base::as_byte_span(data.data));
+                 },
+             },
+             params.data);
 }
 
 void Clipboard::DispatchPortableRepresentation(const RawData& data) {

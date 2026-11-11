@@ -11,6 +11,7 @@
 
 #include "base/containers/flat_set.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
+#include "ui/base/clipboard/clipboard_url_info.h"
 #include "ui/base/clipboard/file_info.h"
 
 namespace ui {
@@ -67,6 +68,8 @@ void ReadBookmark(Clipboard* clipboard,
                   const DataTransferEndpoint* data_dst,
                   std::u16string* title,
                   std::string* url);
+std::vector<ClipboardUrlInfo> ReadURLs(Clipboard* clipboard,
+                                       const DataTransferEndpoint* data_dst);
 std::string ReadData(Clipboard* clipboard,
                      const ClipboardFormatType& format,
                      const DataTransferEndpoint* data_dst);

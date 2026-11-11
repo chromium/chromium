@@ -469,7 +469,10 @@ void ClipboardIOS::WriteFilenames(std::vector<ui::FileInfo> filenames) {
   [GetPasteboard() addItems:items];
 }
 
-void ClipboardIOS::WriteURL(const ClipboardUrlInfo& url_info) {
+void ClipboardIOS::WriteURLs(base::span<const ClipboardUrlInfo> url_infos) {
+  // TODO(crbug.com/563067141): Write all URLs. Only the first one is written
+  // for now.
+  const auto& url_info = url_infos.front();
   NSDictionary<NSString*, id>* bookmarkItem = @{
     ClipboardFormatType::UrlType().ToNSString() :
         base::SysUTF8ToNSString(url_info.url.spec()),

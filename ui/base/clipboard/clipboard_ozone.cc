@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/map_util.h"
 #include "base/containers/span.h"
@@ -771,15 +770,24 @@ void ClipboardOzone::WriteFilenames(std::vector<ui::FileInfo> filenames) {
   async_clipboard_ozone_->InsertData(std::move(data), {kMimeTypeUriList});
 }
 
-void ClipboardOzone::WriteURL(const ClipboardUrlInfo& url_info) {
-  // Writes a Mozilla url (UTF16: URL, newline, title)
-  std::u16string bookmark = base::StrCat(
-      {base::UTF8ToUTF16(url_info.url.spec()), u"\n", url_info.title});
+void ClipboardOzone::WriteURLs(base::span<const ClipboardUrlInfo> url_infos) {
+  // Writes Mozilla URLs (UTF16: alternating URL and title lines). Collapse
+  // line breaks in titles so they cannot split an entry across extra lines.
+  std::u16string bookmarks;
+  for (const auto& url_info : url_infos) {
+    if (!bookmarks.empty()) {
+      bookmarks += u"\n";
+    }
+    base::StrAppend(
+        &bookmarks,
+        {base::UTF8ToUTF16(url_info.url.spec()), u"\n",
+         base::CollapseWhitespace(url_info.title,
+                                  /*trim_sequences_with_line_breaks=*/false)});
+  }
 
-  std::vector<uint8_t> data(reinterpret_cast<const uint8_t*>(bookmark.data()),
-                            reinterpret_cast<const uint8_t*>(UNSAFE_TODO(
-                                bookmark.data() + bookmark.size())));
-  async_clipboard_ozone_->InsertData(std::move(data), {kMimeTypeMozillaUrl});
+  base::span<const uint8_t> bytes = base::as_byte_span(bookmarks);
+  async_clipboard_ozone_->InsertData(
+      std::vector<uint8_t>(bytes.begin(), bytes.end()), {kMimeTypeMozillaUrl});
 }
 
 void ClipboardOzone::WriteWebSmartPaste() {

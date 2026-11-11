@@ -12,6 +12,7 @@
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
+#include "ui/base/clipboard/clipboard_url_info.h"
 #include "ui/base/clipboard/file_info.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "url/gurl.h"
@@ -148,6 +149,13 @@ void ReadBookmark(Clipboard* clipboard,
   if (url) {
     *url = url_info.url.spec();
   }
+}
+
+std::vector<ClipboardUrlInfo> ReadURLs(Clipboard* clipboard,
+                                       const DataTransferEndpoint* data_dst) {
+  base::test::TestFuture<std::vector<ClipboardUrlInfo>> future;
+  clipboard->ReadURLs(base::OptionalFromPtr(data_dst), future.GetCallback());
+  return future.Take();
 }
 
 std::string ReadData(Clipboard* clipboard,

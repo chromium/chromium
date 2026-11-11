@@ -10,6 +10,9 @@
 namespace ui {
 
 struct ClipboardUrlInfo {
+  friend bool operator==(const ClipboardUrlInfo&,
+                         const ClipboardUrlInfo&) = default;
+
   GURL url;
   std::u16string title;
 };

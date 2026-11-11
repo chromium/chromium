@@ -318,6 +318,23 @@ void TestClipboard::ReadURL(const std::optional<DataTransferEndpoint>& data_dst,
   std::move(callback).Run(std::move(url_info));
 }
 
+void TestClipboard::ReadURLs(
+    const std::optional<DataTransferEndpoint>& data_dst,
+    ReadUrlsCallback callback) const {
+  const DataStore& store = GetDefaultStore();
+  if (!IsReadAllowed(store.data_src, base::OptionalToPtr(data_dst))) {
+    std::move(callback).Run({});
+    return;
+  }
+
+  if (!store.url_infos.empty()) {
+    std::move(callback).Run(store.url_infos);
+    return;
+  }
+
+  Clipboard::ReadURLs(data_dst, std::move(callback));
+}
+
 void TestClipboard::ReadData(
     const ClipboardFormatType& format,
     const std::optional<DataTransferEndpoint>& data_dst,
@@ -404,11 +421,13 @@ void TestClipboard::WriteFilenames(std::vector<ui::FileInfo> filenames) {
   GetDefaultStore().filenames = std::move(filenames);
 }
 
-void TestClipboard::WriteURL(const ClipboardUrlInfo& url_info) {
-  GetDefaultStore().data[ClipboardFormatType::UrlType()] = url_info.url.spec();
+void TestClipboard::WriteURLs(base::span<const ClipboardUrlInfo> url_infos) {
+  GetDefaultStore().data[ClipboardFormatType::UrlType()] =
+      url_infos.front().url.spec();
 #if !BUILDFLAG(IS_WIN)
-  GetDefaultStore().url_title = base::UTF16ToUTF8(url_info.title);
+  GetDefaultStore().url_title = base::UTF16ToUTF8(url_infos.front().title);
 #endif
+  GetDefaultStore().url_infos.assign(url_infos.begin(), url_infos.end());
 }
 
 void TestClipboard::WriteWebSmartPaste() {
@@ -455,6 +474,7 @@ TestClipboard::DataStore::DataStore(const DataStore& other) {
   png = other.png;
   filenames = other.filenames;
   data_src = other.data_src;
+  url_infos = other.url_infos;
 }
 
 TestClipboard::DataStore& TestClipboard::DataStore::operator=(
@@ -466,6 +486,7 @@ TestClipboard::DataStore& TestClipboard::DataStore::operator=(
   png = other.png;
   filenames = other.filenames;
   data_src = other.data_src;
+  url_infos = other.url_infos;
   return *this;
 }
 
@@ -478,6 +499,7 @@ void TestClipboard::DataStore::Clear() {
   png.clear();
   filenames.clear();
   data_src.reset();
+  url_infos.clear();
 }
 
 void TestClipboard::DataStore::SetDataSource(

@@ -600,7 +600,10 @@ void ClipboardMac::WriteFilenames(std::vector<ui::FileInfo> filenames) {
   clipboard_util::WriteFilesToPasteboard(GetPasteboard(), filenames);
 }
 
-void ClipboardMac::WriteURL(const ClipboardUrlInfo& url_info) {
+void ClipboardMac::WriteURLs(base::span<const ClipboardUrlInfo> url_infos) {
+  // TODO(crbug.com/563067141): Write all URLs. Only the first one is written
+  // for now.
+  const auto& url_info = url_infos.front();
   NSArray<NSPasteboardItem*>* items = clipboard_util::PasteboardItemsFromUrls(
       @[ base::SysUTF8ToNSString(url_info.url.spec()) ],
       @[ base::SysUTF16ToNSString(url_info.title) ]);

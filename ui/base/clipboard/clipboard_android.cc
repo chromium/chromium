@@ -986,7 +986,10 @@ void ClipboardAndroid::WriteFilenames(std::vector<ui::FileInfo> filenames) {
 
 // According to other platforms implementations, this really writes the
 // URL spec.
-void ClipboardAndroid::WriteURL(const ClipboardUrlInfo& url_info) {
+void ClipboardAndroid::WriteURLs(base::span<const ClipboardUrlInfo> url_infos) {
+  // TODO(crbug.com/563067141): Write all URLs. Only the first one is written
+  // for now.
+  const auto& url_info = url_infos.front();
   GetClipboardMap().Set(ClipboardFormatType::UrlType(), url_info.url.spec());
 }
 

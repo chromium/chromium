@@ -69,6 +69,8 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
   using ReadFilenamesCallback =
       base::OnceCallback<void(std::vector<ui::FileInfo> result)>;
   using ReadUrlCallback = base::OnceCallback<void(ClipboardUrlInfo url_info)>;
+  using ReadUrlsCallback =
+      base::OnceCallback<void(std::vector<ClipboardUrlInfo> url_infos)>;
   using ReadDataCallback = base::OnceCallback<void(std::string result)>;
   using ExtractCustomPlatformNamesCallback =
       base::OnceCallback<void(std::map<std::string, std::string>)>;
@@ -266,6 +268,11 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
   virtual void ReadURL(const std::optional<DataTransferEndpoint>& data_dst,
                        ReadUrlCallback callback) const = 0;
 
+  // Reads URLs from the clipboard, if available. The default implementation
+  // delegates to `ReadURL()` and returns at most one valid URL.
+  virtual void ReadURLs(const std::optional<DataTransferEndpoint>& data_dst,
+                        ReadUrlsCallback callback) const;
+
   // Reads data from the clipboard with the given format type. Stores result
   // as a byte vector.
   virtual void ReadData(const ClipboardFormatType& format,
@@ -325,7 +332,7 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
     std::string data;
   };
   struct UrlData {
-    ClipboardUrlInfo url_info;
+    std::vector<ClipboardUrlInfo> url_infos;  // Never empty.
   };
   struct TextData {
     std::string data;
@@ -440,7 +447,9 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
 
   virtual void WriteFilenames(std::vector<ui::FileInfo> filenames) = 0;
 
-  virtual void WriteURL(const ClipboardUrlInfo& url_info) = 0;
+  // Writes a non-empty list of links (URL and title) to the clipboard.
+  // Platforms that do not support lists yet write only the first one.
+  virtual void WriteURLs(base::span<const ClipboardUrlInfo> url_infos) = 0;
 
   virtual void WriteWebSmartPaste() = 0;
 

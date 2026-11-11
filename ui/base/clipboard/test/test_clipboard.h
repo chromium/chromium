@@ -14,11 +14,13 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/span.h"
 #include "base/time/time.h"
 #include "base/types/optional_ref.h"
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/clipboard_url_info.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 
 namespace ui {
@@ -85,6 +87,8 @@ class TestClipboard : public Clipboard {
                      ReadFilenamesCallback callback) const override;
   void ReadURL(const std::optional<DataTransferEndpoint>& data_dst,
                ReadUrlCallback callback) const override;
+  void ReadURLs(const std::optional<DataTransferEndpoint>& data_dst,
+                ReadUrlsCallback callback) const override;
   void ReadData(const ClipboardFormatType& format,
                 const std::optional<DataTransferEndpoint>& data_dst,
                 ReadDataCallback callback) const override;
@@ -106,7 +110,7 @@ class TestClipboard : public Clipboard {
   void WriteSvg(std::string_view markup) override;
   void WriteRTF(std::string_view rtf) override;
   void WriteFilenames(std::vector<ui::FileInfo> filenames) override;
-  void WriteURL(const ClipboardUrlInfo& url_info) override;
+  void WriteURLs(base::span<const ClipboardUrlInfo> url_infos) override;
   void WriteWebSmartPaste() override;
   void WriteBitmap(const SkBitmap& bitmap) override;
   void WriteData(const ClipboardFormatType& format,
@@ -131,6 +135,7 @@ class TestClipboard : public Clipboard {
     std::vector<uint8_t> png;
     std::vector<ui::FileInfo> filenames;
     std::optional<DataTransferEndpoint> data_src;
+    std::vector<ClipboardUrlInfo> url_infos;
   };
 
   // The non-const versions update the sequence number as a side effect.

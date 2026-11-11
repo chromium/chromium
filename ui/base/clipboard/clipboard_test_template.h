@@ -447,6 +447,32 @@ TYPED_TEST(ClipboardTest, BookmarkTest) {
 }
 #endif  // !BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_APPLE)
 
+TYPED_TEST(ClipboardTest, WriteURLsWithNoValidEntryIsNoOp) {
+  {
+    ScopedClipboardWriter clipboard_writer(ClipboardBuffer::kCopyPaste);
+    clipboard_writer.WriteText(u"keep");
+  }
+
+  {
+    ScopedClipboardWriter clipboard_writer(ClipboardBuffer::kCopyPaste);
+    clipboard_writer.WriteURLs({});
+  }
+  EXPECT_EQ(u"keep", clipboard_test_util::ReadText(&this->clipboard(),
+                                                   ClipboardBuffer::kCopyPaste,
+                                                   /*data_dst=*/nullptr));
+
+  {
+    ScopedClipboardWriter clipboard_writer(ClipboardBuffer::kCopyPaste);
+    clipboard_writer.WriteURLs({
+        {.url = GURL(), .title = u"e"},
+        {.url = GURL("http://["), .title = u"x"},
+    });
+  }
+  EXPECT_EQ(u"keep", clipboard_test_util::ReadText(&this->clipboard(),
+                                                   ClipboardBuffer::kCopyPaste,
+                                                   /*data_dst=*/nullptr));
+}
+
 TYPED_TEST(ClipboardTest, FilenamesTest) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::ScopedTempDir temp_dir;

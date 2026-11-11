@@ -1049,7 +1049,11 @@ void ClipboardNonBacked::WriteFilenames(std::vector<ui::FileInfo> filenames) {
   ClipboardDataBuilder::WriteFilenames(std::move(filenames));
 }
 
-void ClipboardNonBacked::WriteURL(const ClipboardUrlInfo& url_info) {
+void ClipboardNonBacked::WriteURLs(
+    base::span<const ClipboardUrlInfo> url_infos) {
+  // TODO(crbug.com/563067141): Write all URLs. Only the first one is written
+  // for now.
+  const auto& url_info = url_infos.front();
   ClipboardDataBuilder::WriteBookmark(base::UTF16ToUTF8(url_info.title),
                                       url_info.url.spec());
 }

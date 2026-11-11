@@ -1085,7 +1085,10 @@ void ClipboardWin::WriteFilenames(std::vector<ui::FileInfo> filenames) {
   WriteToClipboard(ClipboardFormatType::CFHDropType(), storage.hGlobal);
 }
 
-void ClipboardWin::WriteURL(const ClipboardUrlInfo& url_info) {
+void ClipboardWin::WriteURLs(base::span<const ClipboardUrlInfo> url_infos) {
+  // TODO(crbug.com/563067141): Write all URLs. Only the first one is written
+  // for now.
+  const auto& url_info = url_infos.front();
   // On Windows, CFSTR_INETURLW is expected to only contain the URL & not the
   // title separated by a newline.
   // https://docs.microsoft.com/en-us/windows/win32/shell/clipboard#cfstr_ineturl.

@@ -354,8 +354,8 @@ TEST_F(ClipboardRecentContentGenericTest, HasRecentContentFromClipboard_URL) {
   // clipboard as the url format being available.
   test_clipboard_->WriteText(url_text);
 #else
-  test_clipboard_->WriteURL(ui::ClipboardUrlInfo{
-      .url = GURL(url_text), .title = base::UTF8ToUTF16(title)});
+  test_clipboard_->WriteURLs(
+      {{.url = GURL(url_text), .title = base::UTF8ToUTF16(title)}});
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   test_clipboard_->SetLastModifiedTime(now - base::Seconds(10));
 

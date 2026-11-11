@@ -6,8 +6,11 @@
 
 #include <algorithm>
 #include <string>
+#include <utility>
+#include <vector>
 
 #include "base/containers/span.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
@@ -16,6 +19,8 @@
 #include "build/build_config.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/common/bookmark_features.h"
+#include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/clipboard_url_info.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 
 namespace bookmarks {
@@ -23,30 +28,23 @@ namespace bookmarks {
 namespace {
 
 #if !BUILDFLAG(IS_APPLE)
-std::unique_ptr<BookmarkNodeData> FromClipboardUrlReadResult(
-    std::unique_ptr<BookmarkNodeData> data,
-    std::u16string title,
-    GURL url) {
-  if (url.is_valid()) {
-    BookmarkNodeData::Element element;
-    element.is_url = true;
-    element.url = url;
-    element.title = title;
-
-    data->elements.clear();
-    data->elements.push_back(element);
-    return data;
-  }
-
-  return nullptr;
-}
-
-void OnReadUrlFromClipboardComplete(
+void OnReadUrlsFromClipboardComplete(
     base::OnceCallback<void(std::unique_ptr<BookmarkNodeData>)> callback,
     std::unique_ptr<BookmarkNodeData> data,
-    ui::ClipboardUrlInfo url_info) {
-  std::move(callback).Run(FromClipboardUrlReadResult(
-      std::move(data), url_info.title, url_info.url));
+    std::vector<ui::ClipboardUrlInfo> url_infos) {
+  data->elements.clear();
+  data->elements.reserve(url_infos.size());
+  for (auto& url_info : url_infos) {
+    if (!url_info.url.is_valid() || !url_info.url.SchemeIsHTTPOrHTTPS()) {
+      continue;
+    }
+    BookmarkNodeData::Element element;
+    element.is_url = true;
+    element.url = std::move(url_info.url);
+    element.title = std::move(url_info.title);
+    data->elements.push_back(std::move(element));
+  }
+  std::move(callback).Run(data->elements.empty() ? nullptr : std::move(data));
 }
 
 void OnReadDataFromClipboardComplete(
@@ -63,10 +61,10 @@ void OnReadDataFromClipboardComplete(
 
   // If `ReadFromPickle` failed, `data` might have `profile_path_` set (see
   // `BookmarkNodeData::ReadFromPickle`). We want to preserve it when falling
-  // back to `ReadURL`.
-  ui::Clipboard::GetForCurrentThread()->ReadURL(
+  // back to `ReadURLs`.
+  ui::Clipboard::GetForCurrentThread()->ReadURLs(
       /*data_dst=*/std::nullopt,
-      base::BindOnce(&OnReadUrlFromClipboardComplete, std::move(callback),
+      base::BindOnce(&OnReadUrlsFromClipboardComplete, std::move(callback),
                      std::move(data)));
 }
 #endif  // !BUILDFLAG(IS_APPLE)

@@ -9,7 +9,9 @@
 #include <string_view>
 #include <utility>
 #include <variant>
+#include <vector>
 
+#include "base/containers/to_vector.h"
 #include "base/json/json_writer.h"
 #include "base/pickle.h"
 #include "base/strings/escape.h"
@@ -135,21 +137,31 @@ void ScopedClipboardWriter::WriteFilenames(std::string uri_list) {
 }
 
 void ScopedClipboardWriter::WriteURL(const ClipboardUrlInfo& url_info) {
-  // GURL::spec() CHECKs on URLs that failed to canonicalize but have a
-  // non-empty spec_, so reject invalid URLs here before they reach any
-  // spec() call on this path (crbug.com/495504337). This also subsumes the
-  // empty-URL case from ShouldSkipBookmark below, since GURL::is_valid() is
-  // false for the empty URL.
-  if (!url_info.url.is_valid()) {
-    return;
-  }
-  const std::string url = url_info.url.spec();
-  if (ui::clipboard_util::ShouldSkipBookmark(url_info.title, url)) {
+  WriteURLs(base::span_from_ref(url_info));
+}
+
+void ScopedClipboardWriter::WriteURLs(
+    base::span<const ClipboardUrlInfo> url_infos) {
+  std::vector<ClipboardUrlInfo> valid_entries = base::ToVector(url_infos);
+  std::erase_if(valid_entries, [](const ClipboardUrlInfo& url_info) {
+    // GURL::spec() CHECKs on URLs that failed to canonicalize but have a
+    // non-empty spec_, so reject invalid URLs here before they reach any
+    // spec() call on this path (crbug.com/495504337). This also subsumes the
+    // empty-URL case from ShouldSkipBookmark below, since GURL::is_valid() is
+    // false for the empty URL.
+    if (!url_info.url.is_valid()) {
+      return true;
+    }
+    return ui::clipboard_util::ShouldSkipBookmark(url_info.title,
+                                                  url_info.url.spec());
+  });
+  if (valid_entries.empty()) {
     return;
   }
   RecordWrite(ClipboardFormatMetric::kUrl);
 
-  Clipboard::Data data = Clipboard::UrlData{.url_info = url_info};
+  Clipboard::Data data =
+      Clipboard::UrlData{.url_infos = std::move(valid_entries)};
   const size_t index = data.index();
   objects_[index] = Clipboard::ObjectMapParams(std::move(data));
 }

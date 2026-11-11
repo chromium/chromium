@@ -744,6 +744,34 @@ TEST_F(BookmarkNodeDataTest, ReadFromClipboard_FallbackPreservesProfilePath) {
   // If the profile path was preserved, this should be true.
   EXPECT_TRUE(read_data->IsFromProfilePath(GetProfilePath()));
 }
+
+TEST_F(BookmarkNodeDataTest, ReadFromClipboard_MultipleURLs) {
+  const std::vector<ui::ClipboardUrlInfo> urls = {
+      {.url = GURL("https://a.example.com/"), .title = u"Page A"},
+      {.url = GURL("file:///tmp/local"), .title = u"Local File"},
+      {.url = GURL("javascript:alert(1)"), .title = u"Script"},
+      {.url = GURL("http://b.example.com/"), .title = u"Page B"},
+  };
+  {
+    ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
+    scw.WriteURLs(urls);
+  }
+
+  base::test::TestFuture<std::unique_ptr<BookmarkNodeData>> future;
+  BookmarkNodeData::ReadFromClipboard(ui::ClipboardBuffer::kCopyPaste,
+                                      future.GetCallback());
+
+  std::unique_ptr<BookmarkNodeData> read_data = future.Take();
+  ASSERT_TRUE(read_data);
+  EXPECT_TRUE(read_data->is_valid());
+  ASSERT_EQ(2u, read_data->size());
+  EXPECT_TRUE(read_data->elements[0].is_url);
+  EXPECT_EQ(urls[0].url, read_data->elements[0].url);
+  EXPECT_EQ(urls[0].title, read_data->elements[0].title);
+  EXPECT_TRUE(read_data->elements[1].is_url);
+  EXPECT_EQ(urls[3].url, read_data->elements[1].url);
+  EXPECT_EQ(urls[3].title, read_data->elements[1].title);
+}
 #endif
 
 #if !BUILDFLAG(IS_APPLE)

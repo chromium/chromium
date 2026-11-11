@@ -10,6 +10,7 @@
 
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/span.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
@@ -70,6 +71,11 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ScopedClipboardWriter {
 
   // Adds a URL to the clipboard.
   void WriteURL(const ClipboardUrlInfo& url_info);
+
+  // Adds several links (URL and title) to the clipboard, in order. Use this
+  // instead of calling WriteURL() in a loop, which keeps only the last link.
+  // Invalid links are skipped, and no plain text is written.
+  void WriteURLs(base::span<const ClipboardUrlInfo> url_infos);
 
   // Adds an html hyperlink (<a href>) to the clipboard. |anchor_text| and
   // |url| will be escaped as needed.
