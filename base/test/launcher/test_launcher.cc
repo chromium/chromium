@@ -367,6 +367,38 @@ bool BotModeEnabled(const CommandLine* command_line) {
          env->HasVar("CHROMIUM_TEST_LAUNCHER_BOT_MODE");
 }
 
+#if BUILDFLAG(IS_LINUX)
+// Warns when tests run in parallel against a host X server instead of under
+// testing/xvfb.py (which exports XVFB_DISPLAY). Each X11 test process opens
+// several X connections, so many parallel jobs can exceed the host server's
+// client limit, and tests may also depend on window manager behavior that
+// differs from the openbox instance xvfb.py starts.
+void MaybeWarnAboutHostXServer(const CommandLine* command_line,
+                               size_t parallel_jobs) {
+  if (parallel_jobs <= 1 || BotModeEnabled(command_line)) {
+    return;
+  }
+  std::unique_ptr<Environment> env = Environment::Create();
+  if (!env->HasVar("DISPLAY") || env->HasVar("XVFB_DISPLAY")) {
+    return;
+  }
+  // Runs on Wayland (e.g. `testing/xvfb.py --use-weston`) don't use X.
+  const std::string platform =
+      command_line->GetSwitchValueASCII("ozone-platform");
+  if (!platform.empty() && platform != "x11") {
+    return;
+  }
+  fprintf(stderr,
+          "WARNING: Running %zu parallel jobs on DISPLAY without "
+          "testing/xvfb.py.\nTests that use X11 may fail by exhausting the "
+          "X server's client limit or\nby depending on window manager "
+          "behavior. Run tests with testing/xvfb.py, or\npass "
+          "--test-launcher-jobs to limit parallelism.\n",
+          parallel_jobs);
+  fflush(stderr);
+}
+#endif  // BUILDFLAG(IS_LINUX)
+
 // Returns command line command line after gtest-specific processing
 // and applying |wrapper|.
 CommandLine PrepareCommandLineForGTest(const CommandLine& command_line,
@@ -1693,6 +1725,9 @@ bool TestLauncher::Init(CommandLine* command_line) {
 
   fprintf(stdout, "Using %zu parallel jobs.\n", parallel_jobs_);
   fflush(stdout);
+#if BUILDFLAG(IS_LINUX)
+  MaybeWarnAboutHostXServer(command_line, parallel_jobs_);
+#endif
 
   CreateAndStartThreadPool(parallel_jobs_);
 
