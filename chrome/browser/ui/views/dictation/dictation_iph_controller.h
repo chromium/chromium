@@ -42,8 +42,8 @@ namespace dictation {
 // Tab-scoped controller for the dictation IPHs, which are anchored next to a
 // medium or large editable field:
 //  - The discovery IPH shows when the user focuses such a field with the mouse
-//    or keyboard. Users who have already completed dictation onboarding or have
-//    no microphone never see it.
+//    or keyboard. Users who have already completed dictation onboarding never
+//    see it.
 //  - The hotkey IPH shows when a dictation session invoked on the focused
 //    field ends, once the user has invoked dictation at least twice.
 //

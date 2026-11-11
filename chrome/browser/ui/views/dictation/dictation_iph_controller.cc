@@ -8,7 +8,6 @@
 #include "base/notreached.h"
 #include "chrome/browser/dictation/dictation_keyed_service.h"
 #include "chrome/browser/dictation/hotkey_manager.h"
-#include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/dictation/dictation_iph.h"
@@ -69,12 +68,6 @@ bool IsUserInitiatedFocus(blink::mojom::FocusType focus_type) {
   NOTREACHED();
 }
 
-bool HasMicrophone() {
-  return !MediaCaptureDevicesDispatcher::GetInstance()
-              ->GetAudioCaptureDevices()
-              .empty();
-}
-
 }  // namespace
 
 DictationIphController::DictationIphController(tabs::TabInterface& tab)
@@ -90,9 +83,6 @@ DictationIphController::DictationIphController(tabs::TabInterface& tab)
         dictation_service->AddSessionEndedCallback(base::BindRepeating(
             &DictationIphController::OnSessionEnded, base::Unretained(this)));
   }
-  // Start audio device enumeration early so the cached list is populated by the
-  // time the user focuses a field.
-  MediaCaptureDevicesDispatcher::GetInstance()->GetAudioCaptureDevices();
 }
 
 DictationIphController::~DictationIphController() = default;
@@ -207,9 +197,8 @@ void DictationIphController::MaybeShowPromo(int retries_left,
       break;
   }
 
-  // Users who already use dictation or have no microphone are not shown the
-  // IPH.
-  if (!can_start_promo || HasUsedDictation() || !HasMicrophone()) {
+  // Users who already use dictation don't need to discover it.
+  if (!can_start_promo || HasUsedDictation()) {
     return;
   }
 
