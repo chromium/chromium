@@ -311,8 +311,7 @@ void AppListToastView::SetIconSize(int icon_size) {
 
 void AppListToastView::AddIconBackground() {
   if (icon_) {
-    RemoveChildViewT(icon_.get());
-    icon_ = nullptr;
+    RemoveChildViewT(icon_.ExtractAsDangling());
   }
 
   has_icon_background_ = true;

@@ -164,7 +164,7 @@ class ASH_EXPORT AppListToastView : public views::View {
   raw_ptr<AppListViewDelegate> view_delegate_ = nullptr;
 
   // Toast icon view.
-  raw_ptr<views::ImageView, DanglingUntriaged> icon_ = nullptr;
+  raw_ptr<views::ImageView> icon_ = nullptr;
   // Label with the main text for the toast.
   raw_ptr<views::Label> title_label_ = nullptr;
   // Label with the subtext for the toast.
