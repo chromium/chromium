@@ -59,6 +59,7 @@ export interface HistoryListElement {
 
 declare global {
   interface HTMLElementEventMap {
+    'domain-filter-selected': CustomEvent<{domain: string}>;
     'history-checkbox-select': HistoryCheckboxSelectEvent;
     'open-menu': OpenMenuEvent;
     'remove-bookmark-stars': CustomEvent<string>;
@@ -552,6 +553,11 @@ export class HistoryListElement extends HistoryListElementBase {
 
 
     assert(this.$.sharedMenu.getIfExists());
+    if (this.isFilterByDomainEnabled_()) {
+      this.fire(
+          'domain-filter-selected',
+          {domain: this.actionMenuModel_!.item.domain});
+    }
     this.fire(
         'change-query', {search: 'host:' + this.actionMenuModel_!.item.domain});
     this.actionMenuModel_ = null;
@@ -566,6 +572,10 @@ export class HistoryListElement extends HistoryListElementBase {
         this.actionMenuModel_!.item.url);
     this.fire('remove-bookmark-stars', this.actionMenuModel_!.item.url);
     this.closeMenu_();
+  }
+
+  private isFilterByDomainEnabled_(): boolean {
+    return loadTimeData.getBoolean('isBrowsingHistoryFilterByDomainEnabled');
   }
 
   private isCriticalActionsEnabled_(): boolean {

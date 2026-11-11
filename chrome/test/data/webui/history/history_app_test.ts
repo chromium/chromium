@@ -308,6 +308,7 @@ suite('HistoryFilterChipsVisibility', function() {
     loadTimeData.overrideValues({
       isGlicWebActuationAvailable: false,
       isBrowsingHistoryFilterByDeviceEnabled: false,
+      isBrowsingHistoryFilterByDomainEnabled: false,
       isBrowsingHistoryFilterByTimePeriodEnabled: false,
     });
     browserProxy.handler.setResultFor(
@@ -326,6 +327,7 @@ suite('HistoryFilterChipsVisibility', function() {
     loadTimeData.overrideValues({
       isGlicWebActuationAvailable: true,
       isBrowsingHistoryFilterByDeviceEnabled: false,
+      isBrowsingHistoryFilterByDomainEnabled: false,
       isBrowsingHistoryFilterByTimePeriodEnabled: false,
     });
     // Re-create the element to pick up the new loadTimeData.
@@ -337,6 +339,7 @@ suite('HistoryFilterChipsVisibility', function() {
     loadTimeData.overrideValues({
       isGlicWebActuationAvailable: false,
       isBrowsingHistoryFilterByDeviceEnabled: true,
+      isBrowsingHistoryFilterByDomainEnabled: false,
       isBrowsingHistoryFilterByTimePeriodEnabled: false,
     });
     browserProxy.handler.setResultFor(
@@ -357,6 +360,7 @@ suite('HistoryFilterChipsVisibility', function() {
     loadTimeData.overrideValues({
       isGlicWebActuationAvailable: false,
       isBrowsingHistoryFilterByDeviceEnabled: true,
+      isBrowsingHistoryFilterByDomainEnabled: false,
       isBrowsingHistoryFilterByTimePeriodEnabled: false,
     });
     browserProxy.handler.setResultFor(
@@ -374,6 +378,7 @@ suite('HistoryFilterChipsVisibility', function() {
     loadTimeData.overrideValues({
       isGlicWebActuationAvailable: false,
       isBrowsingHistoryFilterByDeviceEnabled: false,
+      isBrowsingHistoryFilterByDomainEnabled: false,
       isBrowsingHistoryFilterByTimePeriodEnabled: true,
     });
     browserProxy.handler.setResultFor('getTimePeriodOptions', Promise.resolve({
@@ -395,6 +400,7 @@ suite('HistoryFilterChipsVisibility', function() {
     loadTimeData.overrideValues({
       isGlicWebActuationAvailable: false,
       isBrowsingHistoryFilterByDeviceEnabled: false,
+      isBrowsingHistoryFilterByDomainEnabled: false,
       isBrowsingHistoryFilterByTimePeriodEnabled: false,
     });
     browserProxy.handler.setResultFor('getTimePeriodOptions', Promise.resolve({
@@ -408,6 +414,45 @@ suite('HistoryFilterChipsVisibility', function() {
     await createPage();
     await browserProxy.handler.whenCalled('getTimePeriodOptions');
     await microtasksFinished();
+    assertFalse(isChildVisible(element, '#historyFilterChips'));
+  });
+
+  test('FilterChipsVisible_DomainFilterOnly', async () => {
+    loadTimeData.overrideValues({
+      isGlicWebActuationAvailable: false,
+      isBrowsingHistoryFilterByDeviceEnabled: false,
+      isBrowsingHistoryFilterByDomainEnabled: true,
+      isBrowsingHistoryFilterByTimePeriodEnabled: false,
+    });
+    await createPage();
+
+    // Ephemeral domain chip is hidden until a domain is selected.
+    assertFalse(isChildVisible(element, '#historyFilterChips'));
+
+    element.$.history.fire('domain-filter-selected', {domain: 'example.com'});
+    await microtasksFinished();
+
+    assertTrue(isChildVisible(element, '#historyFilterChips'));
+    const filterChips =
+        element.shadowRoot.querySelector<HistoryFilterChipsElement>(
+            '#historyFilterChips');
+    assertTrue(!!filterChips);
+    assertTrue(filterChips.showDomainFilter);
+    assertEquals('example.com', filterChips.domain);
+  });
+
+  test('FilterChipsNotVisible_DomainFilterDisabled', async () => {
+    loadTimeData.overrideValues({
+      isGlicWebActuationAvailable: false,
+      isBrowsingHistoryFilterByDeviceEnabled: false,
+      isBrowsingHistoryFilterByDomainEnabled: false,
+      isBrowsingHistoryFilterByTimePeriodEnabled: false,
+    });
+    await createPage();
+
+    element.$.history.fire('domain-filter-selected', {domain: 'example.com'});
+    await microtasksFinished();
+
     assertFalse(isChildVisible(element, '#historyFilterChips'));
   });
 

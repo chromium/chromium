@@ -183,6 +183,11 @@ IN_PROC_BROWSER_TEST_F(HistoryListTest,
   RunTestCase("MoreFromThisSiteSendsAndSetsCorrectData");
 }
 
+IN_PROC_BROWSER_TEST_F(HistoryListTest,
+                       MoreFromThisSiteFiresDomainFilterSelected) {
+  RunTestCase("MoreFromThisSiteFiresDomainFilterSelected");
+}
+
 IN_PROC_BROWSER_TEST_F(HistoryListTest, ChangingSearchDeselectsItems) {
   RunTestCase("ChangingSearchDeselectsItems");
 }

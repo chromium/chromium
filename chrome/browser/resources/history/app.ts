@@ -158,11 +158,13 @@ export class HistoryAppElement extends HistoryAppElementBase {
       tabsNames_: {type: Array},
       scrollTarget_: {type: Object},
       devices_: {type: Array},
+      domain_: {type: String},
       includeActorVisits_: {type: Boolean},
       includeUserVisits_: {type: Boolean},
       clientIds_: {type: Array},
       isGlicWebActuationAvailable_: {type: Boolean},
       isBrowsingHistoryFilterByDeviceEnabled_: {type: Boolean},
+      isBrowsingHistoryFilterByDomainEnabled_: {type: Boolean},
       isBrowsingHistoryFilterByTimePeriodEnabled_: {type: Boolean},
       timePeriodOptions_: {type: Array},
       selectedTimePeriodOptionId_: {type: Number},
@@ -229,6 +231,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
   ];
   protected accessor scrollTarget_: HTMLElement = document.body;
   protected accessor devices_: Device[] = [];
+  protected accessor domain_: string = '';
   protected accessor includeActorVisits_: boolean = true;
   protected accessor includeUserVisits_: boolean = true;
   protected accessor clientIds_: string[] = [];
@@ -236,6 +239,8 @@ export class HistoryAppElement extends HistoryAppElementBase {
       loadTimeData.getBoolean('isGlicWebActuationAvailable');
   private accessor isBrowsingHistoryFilterByDeviceEnabled_: boolean =
       loadTimeData.getBoolean('isBrowsingHistoryFilterByDeviceEnabled');
+  private accessor isBrowsingHistoryFilterByDomainEnabled_: boolean =
+      loadTimeData.getBoolean('isBrowsingHistoryFilterByDomainEnabled');
   private accessor isBrowsingHistoryFilterByTimePeriodEnabled_: boolean =
       loadTimeData.getBoolean('isBrowsingHistoryFilterByTimePeriodEnabled');
   protected accessor timePeriodOptions_: TimePeriodOption[] = [];
@@ -820,6 +825,10 @@ export class HistoryAppElement extends HistoryAppElementBase {
     this.historyClustersVisible_ = e.detail.value;
   }
 
+  protected onDomainFilterSelected_(e: CustomEvent<{domain: string}>) {
+    this.domain_ = e.detail.domain;
+  }
+
   protected onFilterChanged_(e: CustomEvent<{
     userVisits: boolean,
     actorVisits: boolean,
@@ -849,6 +858,10 @@ export class HistoryAppElement extends HistoryAppElementBase {
         this.devices_.length > 1;
   }
 
+  protected showDomainFilter_(): boolean {
+    return this.isBrowsingHistoryFilterByDomainEnabled_ && this.domain_ !== '';
+  }
+
   protected showTimePeriodFilter_(): boolean {
     return this.isBrowsingHistoryFilterByTimePeriodEnabled_ &&
         this.timePeriodOptions_.length > 0;
@@ -856,7 +869,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
 
   protected showFilterChips_(): boolean {
     return (this.showActorFilter_() || this.showDeviceFilter_() ||
-            this.showTimePeriodFilter_()) &&
+            this.showDomainFilter_() || this.showTimePeriodFilter_()) &&
         !this.getShowResultsByGroup_();
   }
 
