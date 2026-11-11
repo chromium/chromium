@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/autofill/payments/payments_view_factory.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
 
@@ -28,7 +29,12 @@ AutofillErrorDialogViewAndroid::AutofillErrorDialogViewAndroid(
     AutofillErrorDialogController* controller)
     : controller_(controller->GetWeakPtr()) {}
 
-AutofillErrorDialogViewAndroid::~AutofillErrorDialogViewAndroid() = default;
+AutofillErrorDialogViewAndroid::~AutofillErrorDialogViewAndroid() {
+  if (java_object_) {
+    Java_AutofillErrorDialogBridge_clearNativePtr(
+        base::android::AttachCurrentThread(), java_object_);
+  }
+}
 
 void AutofillErrorDialogViewAndroid::Dismiss() {
   JNIEnv* env = base::android::AttachCurrentThread();
@@ -55,7 +61,6 @@ void AutofillErrorDialogViewAndroid::OnDismissed() {
 }
 
 void AutofillErrorDialogViewAndroid::Show(content::WebContents* web_contents) {
-  JNIEnv* env = base::android::AttachCurrentThread();
   ui::ViewAndroid* view_android = web_contents->GetNativeView();
   CHECK(view_android, base::NotFatalUntil::M162);
   ui::WindowAndroid* window_android = view_android->GetWindowAndroid();
@@ -63,12 +68,13 @@ void AutofillErrorDialogViewAndroid::Show(content::WebContents* web_contents) {
     return;
   }
 
-  java_object_.Reset(Java_AutofillErrorDialogBridge_create(
-      env, reinterpret_cast<intptr_t>(this), window_android));
-
   if (!controller_) {
     return;
   }
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  java_object_.Reset(Java_AutofillErrorDialogBridge_create(
+      env, jni_zero::MakeRaw(this), window_android));
 
   Java_AutofillErrorDialogBridge_show(
       env, java_object_, controller_->GetTitle(), controller_->GetDescription(),
