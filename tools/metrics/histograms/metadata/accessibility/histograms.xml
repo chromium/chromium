@@ -3832,7 +3832,9 @@ recorded in the same way, even if they fit the naming pattern. -->
   <summary>
     Records how often the user changes the voice for reading aloud in reading
     mode from one langauge to another. This excludes automatic voice language
-    changes done directly from reading mode.
+    changes done directly from reading mode. Note: starting in M160, a
+    backgrounded side panel tab no longer records an extra sample (usually 0)
+    when it closes or navigates before Reading mode is shown again.
   </summary>
 </histogram>
 
@@ -3852,6 +3854,9 @@ recorded in the same way, even if they fit the naming pattern. -->
   <owner>komo-eng@google.com</owner>
   <summary>
     Records the count per session of the number of Read Aloud {Action} actions.
+    Note: starting in M160, a backgrounded side panel tab no longer records an
+    extra sample (usually 0) when it closes or navigates before Reading mode is
+    shown again.
   </summary>
   <token key="Action">
     <variant name="NextButton" summary="next granularity"/>
@@ -4030,8 +4035,13 @@ recorded in the same way, even if they fit the naming pattern. -->
     {Event}.
   </summary>
   <token key="Event">
-    <variant name="AXTreeReady"
-        summary="the AXTree is ready in the Read Anything App model"/>
+    <variant name="AXTreeReady2"
+        summary="the AXTree is ready in the Read Anything App model. Not
+                 recorded for trees whose accessibility updates were queued
+                 while update processing was paused (e.g. while Reading Mode
+                 wasn't shown), or that were ready before they became active,
+                 since those samples measure the wait. Replaced AXTreeReady
+                 in M160"/>
     <variant name="RenderedTextBlocks"
         summary="the WebUI finishes layout and renders the distilled text
                  content in the viewport"/>
@@ -4145,6 +4155,10 @@ recorded in the same way, even if they fit the naming pattern. -->
     the voice does not support word boundaries, especially for languages that
     don't separate words with whitespace. WordsSeen currently works only for
     languages that separate words with whitespace.
+
+    Note: starting in M160, a backgrounded side panel tab no longer records an
+    extra sample (usually 0) when it closes or navigates before Reading mode is
+    shown again.
   </summary>
   <token key="Action">
     <variant name="Heard" summary="heard via Read aloud"/>

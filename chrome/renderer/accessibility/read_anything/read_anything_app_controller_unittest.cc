@@ -54,7 +54,12 @@
 #include "v8/include/cppgc/allocation.h"
 #include "v8/include/v8-cppgc.h"
 
-namespace {}  // namespace
+namespace {
+
+constexpr char kAXTreeReadyHistogramName[] =
+    "Accessibility.ReadAnything.TimeFromActiveAXTreeIDChangedToAXTreeReady2";
+
+}  // namespace
 
 class MockAXTreeDistiller : public AXTreeDistiller {
  public:
@@ -256,7 +261,7 @@ class ReadAnythingAppControllerTest : public testing::Test {
     // Create a tree id.
     tree_id_ = ui::AXTreeID::CreateNewAXTreeID();
 
-    // Set presentation state to opened so distillation is not paused.
+    // Open Reading Mode so distillation isn't paused and metrics are recorded.
     controller_->OnReadingModeShown(
         read_anything::mojom::ReadAnythingOpenTrigger::kAppMenu,
         read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
@@ -347,19 +352,17 @@ class ReadAnythingAppControllerTest : public testing::Test {
 
   void LogSpeechStop(int source) { controller_->LogSpeechStop(source); }
   void ProcessModelUpdates() { controller_->ProcessModelUpdates(); }
-  bool IsControllerHidden() const { return controller_->IsHidden(); }
   bool IsPdfDrawDebouncerRunning() const {
     return controller_->pdf_draw_debouncer_->IsRunning();
+  }
+  bool IsPostUserEntryDrawTimerRunning() const {
+    return controller_->post_user_entry_draw_timer_->IsRunning();
   }
   bool IsNodePendingDeletion(ui::AXNodeID node_id) {
     return model().displayed_nodes_pending_deletion().contains(node_id);
   }
-  void RecordSessionMetricsIfShownOrRecentlyHidden(bool recently_hidden) {
-    controller_->RecordSessionMetricsIfShownOrRecentlyHidden(recently_hidden);
-    page_handler_.FlushForTesting();
-  }
-  void RecordScreen2xDistillationStatus(bool just_hidden = false) {
-    controller_->RecordScreen2xDistillationStatus(just_hidden);
+  void RecordScreen2xDistillationStatus() {
+    controller_->RecordScreen2xDistillationStatus();
     page_handler_.FlushForTesting();
   }
   void VerifyAndClearPageHandlerExpectations() {
@@ -376,17 +379,40 @@ class ReadAnythingAppControllerTest : public testing::Test {
   // Closes Reading Mode, then reopens it in `state`.
   void CloseAndReopen(
       read_anything::mojom::ReadAnythingPresentationState state) {
-    // Closing acks the hide. Allow that even in tests that cleared the
-    // expectations on `page_handler_`.
+    CloseReadingMode();
+    controller_->OnReadingModeShown(
+        read_anything::mojom::ReadAnythingOpenTrigger::
+            kReadAnythingTogglePresentationButton,
+        state);
+  }
+
+  // Closes Reading Mode. Closing acks the hide. Allow that even in tests that
+  // cleared the expectations on `page_handler_`.
+  void CloseReadingMode() {
     EXPECT_CALL(page_handler_, AckReadingModeHidden())
         .Times(testing::AnyNumber());
     controller_->OnReadingModeHidden(
         /*tab_active=*/true,
         read_anything::mojom::ReadAnythingPresentationState::kInactive);
+  }
+
+  // Switches to another tab. By default, Reading Mode is in the side panel,
+  // which keeps hosting it in the background tab. Like closing, this acks the
+  // hide.
+  void SwitchToAnotherTab(
+      read_anything::mojom::ReadAnythingPresentationState state =
+          read_anything::mojom::ReadAnythingPresentationState::kInSidePanel) {
+    EXPECT_CALL(page_handler_, AckReadingModeHidden())
+        .Times(testing::AnyNumber());
+    controller_->OnReadingModeHidden(/*tab_active=*/false, state);
+  }
+
+  // Returns to the tab, which shows Reading Mode in `state` again.
+  void ReturnToTab(
+      read_anything::mojom::ReadAnythingPresentationState state =
+          read_anything::mojom::ReadAnythingPresentationState::kInSidePanel) {
     controller_->OnReadingModeShown(
-        read_anything::mojom::ReadAnythingOpenTrigger::
-            kReadAnythingTogglePresentationButton,
-        state);
+        read_anything::mojom::ReadAnythingOpenTrigger::kTabSwitch, state);
   }
 
   void SendBatchUpdates() {
@@ -474,9 +500,14 @@ class ReadAnythingAppControllerTest : public testing::Test {
   }
 
   void SendUpdateWithNodes(std::vector<ui::AXNodeData> nodes) {
+    SendUpdateWithNodes(std::move(nodes), tree_id_);
+  }
+
+  void SendUpdateWithNodes(std::vector<ui::AXNodeData> nodes,
+                           const ui::AXTreeID& tree_id) {
     ui::AXTreeUpdate update;
-    test::SetUpdateTreeID(&update, tree_id_);
-    update.nodes = nodes;
+    test::SetUpdateTreeID(&update, tree_id);
+    update.nodes = std::move(nodes);
     AccessibilityEventReceived({std::move(update)});
   }
 
@@ -509,6 +540,21 @@ class ReadAnythingAppControllerTest : public testing::Test {
     OnAXTreeDistilled(tree_id_, node_ids);
   }
 
+  // Adds a tree with content without making it active. An optional `url` is
+  // set on the root, and optional `events` are sent with the update.
+  void AddTree(const ui::AXTreeID& tree_id,
+               const std::string& url = "",
+               const std::vector<ui::AXEvent>& events = {}) {
+    std::unique_ptr<ui::AXTreeUpdate> snapshot = test::CreateInitialUpdate();
+    test::SetUpdateTreeID(snapshot.get(), tree_id);
+    if (!url.empty()) {
+      snapshot->nodes[0].role = ax::mojom::Role::kRootWebArea;
+      snapshot->nodes[0].AddStringAttribute(ax::mojom::StringAttribute::kUrl,
+                                            url);
+    }
+    AccessibilityEventReceived({*snapshot}, events);
+  }
+
   void EnableReadAnythingTranslateEntryPoint() {
     scoped_feature_list_.Reset();
     scoped_feature_list_.InitAndEnableFeature(
@@ -519,6 +565,12 @@ class ReadAnythingAppControllerTest : public testing::Test {
     scoped_feature_list_.Reset();
     scoped_feature_list_.InitAndEnableFeature(
         features::kReadAnythingSendFeedback);
+  }
+
+  void EnableReadability() {
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kReadAnythingWithReadability);
   }
 
   void StartLineFocusSession() { controller_->StartLineFocusSession(); }
@@ -3675,19 +3727,7 @@ TEST_F(ReadAnythingAppControllerTest,
 TEST_F(ReadAnythingAppControllerTest,
        OnActiveAXTreeIDChanged_DoesNotStartLineFocusSessionIfHidden) {
   model().set_line_focus_enabled(true);
-  model().set_active_presentation_state(
-      read_anything::mojom::ReadAnythingPresentationState::kInactive);
-
-  auto const new_id = ui::AXTreeID::CreateNewAXTreeID();
-  controller().OnActiveAXTreeIDChanged(new_id, ukm::kInvalidSourceId, false);
-
-  EXPECT_FALSE(model().line_focus_session_start_time().has_value());
-}
-
-TEST_F(ReadAnythingAppControllerTest,
-       OnActiveAXTreeIDChanged_DoesNotStartLineFocusSessionIfWillHide) {
-  model().set_line_focus_enabled(true);
-  model().set_will_hide(true);
+  CloseReadingMode();
 
   auto const new_id = ui::AXTreeID::CreateNewAXTreeID();
   controller().OnActiveAXTreeIDChanged(new_id, ukm::kInvalidSourceId, false);
@@ -3828,10 +3868,16 @@ TEST_F(ReadAnythingAppControllerTest, Distill_SetsDistillationInProgress) {
 
 TEST_F(ReadAnythingAppControllerTest,
        ReadingModeHidden_UpdateProcessingPaused) {
-  // Hide reading mode
-  controller().OnReadingModeHidden(
-      /*tab_active=*/true,
-      read_anything::mojom::ReadAnythingPresentationState::kInactive);
+  // Switching tabs hides Reading Mode, while the side panel keeps hosting it.
+  SwitchToAnotherTab();
+  EXPECT_TRUE(controller().IsUpdateProcessingPaused());
+
+  // Returning to the tab shows it again.
+  ReturnToTab();
+  EXPECT_FALSE(controller().IsUpdateProcessingPaused());
+
+  // Closing hides it.
+  CloseReadingMode();
   EXPECT_TRUE(controller().IsUpdateProcessingPaused());
 }
 
@@ -4276,9 +4322,9 @@ TEST_F(ReadAnythingAppControllerScreen2xTest,
   ASSERT_TRUE(controller().IsUpdateProcessingPaused());
 
   // 2. Simulate a stale reading-mode selection count before closing IRM.
+  // Closing it before the distillation status delay ends logs the status.
   model().increment_selections_from_reading_mode();
   ASSERT_EQ(model().unprocessed_selections_from_reading_mode(), 1);
-  // Closing it before the distillation status delay ends logs the status.
   EXPECT_CALL(page_handler_, AckReadingModeHidden());
   EXPECT_CALL(
       page_handler_,
@@ -4626,11 +4672,10 @@ TEST_F(ReadAnythingAppControllerTest,
 
 TEST_F(ReadAnythingAppControllerTest,
        OnActiveAXTreeIDChanged_StartsDebouncerIfHidden) {
-  // Start in inactive state (hidden).
+  // Close Reading Mode.
   controller().OnReadingModeHidden(
       /*tab_active=*/true,
       read_anything::mojom::ReadAnythingPresentationState::kInactive);
-  EXPECT_TRUE(IsControllerHidden());
   EXPECT_CALL(page_handler_,
               OnDistillationStateChanged(
                   read_anything::mojom::ReadAnythingDistillationState::
@@ -4654,7 +4699,7 @@ TEST_F(ReadAnythingAppControllerTest,
 TEST_F(ReadAnythingAppControllerTest,
        OnPdfDebounceFinished_DoesNotDrawOrUpdateStateIfHidden) {
   // Reading Mode is shown (see SetUp()).
-  EXPECT_FALSE(IsControllerHidden());
+  ASSERT_TRUE(model().is_shown());
 
   static constexpr ui::AXNodeID kId = 4;
   ui::AXNodeData node;
@@ -4673,8 +4718,7 @@ TEST_F(ReadAnythingAppControllerTest,
   page_handler_.FlushForTesting();
   Mock::VerifyAndClearExpectations(&page_handler_);
 
-  // Deactivate (hide) the controller.
-  // Closing it while distilling logs the distillation status.
+  // Close Reading Mode while distilling, which logs the distillation status.
   EXPECT_CALL(page_handler_, AckReadingModeHidden());
   EXPECT_CALL(
       page_handler_,
@@ -4683,7 +4727,6 @@ TEST_F(ReadAnythingAppControllerTest,
   controller().OnReadingModeHidden(
       /*tab_active=*/true,
       read_anything::mojom::ReadAnythingPresentationState::kInactive);
-  EXPECT_TRUE(IsControllerHidden());
 
   // Distillation state should not be changed by OnPdfDebounceFinished if
   // hidden.
@@ -5705,9 +5748,8 @@ TEST_F(ReadAnythingAppControllerScreen2xTest,
   controller().OnDistilled(word_count);
   controller().OnActiveAXTreeIDChanged(id, ukm::kInvalidSourceId, false);
 
-  // Close Reading Mode (triggering recently_hidden=true) before the timer
-  // finishes
-  RecordSessionMetricsIfShownOrRecentlyHidden(true);
+  // Close Reading Mode before the timer finishes.
+  CloseReadingMode();
 }
 
 TEST_F(ReadAnythingAppControllerScreen2xTest, Draw_RecomputeDisplayNodes) {
@@ -5890,7 +5932,7 @@ TEST_F(ReadAnythingAppControllerTest,
   // The metric should not be logged yet because the active tree is not in the
   // model.
   histogram_tester.ExpectTotalCount(
-      "Accessibility.ReadAnything.TimeFromActiveAXTreeIDChangedToAXTreeReady",
+      "Accessibility.ReadAnything.TimeFromActiveAXTreeIDChangedToAXTreeReady2",
       0);
 
   // Send an update for a different tree.
@@ -5907,7 +5949,7 @@ TEST_F(ReadAnythingAppControllerTest,
 
   // Verify that the metric still not logged.
   histogram_tester.ExpectTotalCount(
-      "Accessibility.ReadAnything.TimeFromActiveAXTreeIDChangedToAXTreeReady",
+      "Accessibility.ReadAnything.TimeFromActiveAXTreeIDChangedToAXTreeReady2",
       0);
 
   // Update for the new active tree.
@@ -5923,8 +5965,116 @@ TEST_F(ReadAnythingAppControllerTest,
 
   // Verify that the metric is now logged.
   histogram_tester.ExpectTotalCount(
-      "Accessibility.ReadAnything.TimeFromActiveAXTreeIDChangedToAXTreeReady",
+      "Accessibility.ReadAnything.TimeFromActiveAXTreeIDChangedToAXTreeReady2",
       1);
+}
+
+TEST_F(ReadAnythingAppControllerTest, MaybeLogAXTreeReady_RecordedOnceShown) {
+  EnableReadability();
+  base::HistogramTester histogram_tester;
+
+  // Switch away from the tab. The side panel keeps hosting Reading Mode in the
+  // background tab.
+  SwitchToAnotherTab();
+
+  // As in production, the browser reports that Readability is distilling
+  // before the new tree, so its updates are applied while hidden.
+  controller().OnReadabilityDistillationStateChanged(
+      read_anything::mojom::ReadAnythingDistillationState::
+          kDistillationInProgress);
+  ui::AXTreeID new_tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  controller().OnActiveAXTreeIDChanged(new_tree_id, ukm::kInvalidSourceId,
+                                       /*is_pdf=*/false);
+  AddTree(new_tree_id);
+  histogram_tester.ExpectTotalCount(kAXTreeReadyHistogramName, 0);
+
+  // Returning much later records how long the tree took to be ready, not how
+  // long Reading Mode was hidden.
+  task_environment_.FastForwardBy(base::Minutes(20));
+  ReturnToTab();
+  histogram_tester.ExpectUniqueTimeSample(kAXTreeReadyHistogramName,
+                                          base::TimeDelta(), 1);
+}
+
+TEST_F(ReadAnythingAppControllerScreen2xTest,
+       MaybeLogAXTreeReady_QueuedWhileHidden_NotRecorded) {
+  base::HistogramTester histogram_tester;
+
+  // Switch away from the tab, which then navigates. The new tree's updates
+  // wait until Reading Mode is shown.
+  SwitchToAnotherTab();
+  ui::AXTreeID new_tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  controller().OnActiveAXTreeIDChanged(new_tree_id, ukm::kInvalidSourceId,
+                                       /*is_pdf=*/false);
+  AddTree(new_tree_id);
+
+  // Returning much later applies the updates. The time until the tree was
+  // ready would include how long Reading Mode was hidden, so it isn't
+  // recorded.
+  task_environment_.FastForwardBy(base::Minutes(20));
+  ReturnToTab();
+  histogram_tester.ExpectTotalCount(kAXTreeReadyHistogramName, 0);
+
+  // Nothing is distilling (the tree doesn't require a distillation without a
+  // load complete event), so the next update is applied, and it isn't
+  // recorded either.
+  ASSERT_FALSE(model().screen2x_distiller_running());
+  SendUpdateWithNodes({test::TextNode(2, u"Hello World")}, new_tree_id);
+  histogram_tester.ExpectTotalCount(kAXTreeReadyHistogramName, 0);
+}
+
+TEST_F(ReadAnythingAppControllerScreen2xTest,
+       MaybeLogAXTreeReady_TreeReadyBeforeActive_NotRecorded) {
+  base::HistogramTester histogram_tester;
+  EXPECT_CALL(*distiller_, Distill).Times(testing::AnyNumber());
+
+  // Close Reading Mode, then navigate. The new page's tree is ready before it
+  // becomes active, so there's no time from that change to measure.
+  CloseReadingMode();
+  ui::AXTreeID new_tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  AddTree(new_tree_id);
+  controller().OnActiveAXTreeIDChanged(new_tree_id, ukm::kInvalidSourceId,
+                                       /*is_pdf=*/false);
+
+  // Opening Reading Mode much later distills the tree. Once that finishes, the
+  // next update is applied, and it isn't recorded.
+  task_environment_.FastForwardBy(base::Minutes(20));
+  controller().OnReadingModeShown(
+      read_anything::mojom::ReadAnythingOpenTrigger::kAppMenu,
+      read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
+  OnAXTreeDistilled(new_tree_id, {1});
+  ASSERT_FALSE(model().screen2x_distiller_running());
+  SendUpdateWithNodes({test::TextNode(2, u"Hello World")}, new_tree_id);
+  histogram_tester.ExpectTotalCount(kAXTreeReadyHistogramName, 0);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       MaybeLogAXTreeReady_MeasuredWhileHidden_KeptWhenLaterUpdateQueued) {
+  EnableReadability();
+  base::HistogramTester histogram_tester;
+  EXPECT_CALL(*distiller_, Distill).Times(testing::AnyNumber());
+
+  // As in MaybeLogAXTreeReady_RecordedOnceShown, the background tab's new tree
+  // is ready, and measured, while hidden.
+  SwitchToAnotherTab();
+  controller().OnReadabilityDistillationStateChanged(
+      read_anything::mojom::ReadAnythingDistillationState::
+          kDistillationInProgress);
+  ui::AXTreeID new_tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  controller().OnActiveAXTreeIDChanged(new_tree_id, ukm::kInvalidSourceId,
+                                       /*is_pdf=*/false);
+  AddTree(new_tree_id);
+
+  // Readability finds no content, so the page falls back to Screen2x, and its
+  // next update waits until Reading Mode is shown.
+  controller().UpdateContent("", "");
+  SendUpdateWithNodes({test::TextNode(2, u"Hello")}, new_tree_id);
+
+  // Returning much later still records the earlier measurement.
+  task_environment_.FastForwardBy(base::Minutes(20));
+  ReturnToTab();
+  histogram_tester.ExpectUniqueTimeSample(kAXTreeReadyHistogramName,
+                                          base::TimeDelta(), 1);
 }
 
 TEST_F(ReadAnythingAppControllerReadabilityTest,
@@ -6343,9 +6493,9 @@ TEST_F(ReadAnythingAppControllerTest, LogPageDuration_NoStartTimeNoLog) {
       "Accessibility.ReadAnything.PageDuration.WebPageInFullPage", 0);
 }
 
-TEST_F(ReadAnythingAppControllerTest,
+TEST_F(ReadAnythingAppControllerScreen2xTest,
        Screen2xDistillationStatus_NotLoggedWhenHidden) {
-  // Set to inactive (hidden)
+  // Close Reading Mode.
   controller().OnReadingModeHidden(
       /*tab_active=*/true,
       read_anything::mojom::ReadAnythingPresentationState::kInactive);
@@ -6359,10 +6509,10 @@ TEST_F(ReadAnythingAppControllerTest,
 
   controller().OnDistilled(word_count);
   controller().OnActiveAXTreeIDChanged(id, ukm::kInvalidSourceId, false);
-  RecordScreen2xDistillationStatus(/*just_hidden=*/false);
+  task_environment_.FastForwardBy(base::Seconds(5));
 }
 
-TEST_F(ReadAnythingAppControllerTest,
+TEST_F(ReadAnythingAppControllerScreen2xTest,
        Screen2xDistillationStatus_DoesNotRelogOnReopenWithoutRedistillation) {
   // 1. Reading Mode is open (see SetUp()).
   auto const id = ui::AXTreeID::CreateNewAXTreeID();
@@ -6374,8 +6524,7 @@ TEST_F(ReadAnythingAppControllerTest,
 
   controller().OnDistilled(word_count);
   controller().OnActiveAXTreeIDChanged(id, ukm::kInvalidSourceId, false);
-  RecordScreen2xDistillationStatus(
-      /*just_hidden=*/false);  // First log happens here
+  RecordScreen2xDistillationStatus();  // First log happens here
 
   // 2. Close RM
   controller().OnReadingModeHidden(
@@ -6386,8 +6535,7 @@ TEST_F(ReadAnythingAppControllerTest,
   controller().OnReadingModeShown(
       read_anything::mojom::ReadAnythingOpenTrigger::kAppMenu,
       read_anything::mojom::ReadAnythingPresentationState::kInImmersiveOverlay);
-  RecordScreen2xDistillationStatus(
-      /*just_hidden=*/false);  // Nothing should log here
+  RecordScreen2xDistillationStatus();  // Nothing should log here
 }
 
 TEST_F(ReadAnythingAppControllerTest,
@@ -6418,10 +6566,10 @@ TEST_F(ReadAnythingAppControllerTest,
       .Times(1);
 
   controller().UpdateContent("Empty page", "");
-  RecordScreen2xDistillationStatus(/*just_hidden=*/false);
+  RecordScreen2xDistillationStatus();
 }
 
-TEST_F(ReadAnythingAppControllerTest,
+TEST_F(ReadAnythingAppControllerScreen2xTest,
        Screen2xDistillationStatus_LogsOnReopenOnNewPage) {
   // 1. Reading Mode is open on the first page (Page A, see SetUp()).
   auto const id1 = ui::AXTreeID::CreateNewAXTreeID();
@@ -6438,8 +6586,7 @@ TEST_F(ReadAnythingAppControllerTest,
 
   controller().OnDistilled(word_count1);
   controller().OnActiveAXTreeIDChanged(id1, ukm::kInvalidSourceId, false);
-  RecordScreen2xDistillationStatus(
-      /*just_hidden=*/false);  // First log happens here
+  RecordScreen2xDistillationStatus();  // First log happens here
   OnAXTreeDistilled(id1, {1});
   VerifyAndClearPageHandlerExpectations();
   Mock::VerifyAndClearExpectations(distiller_);
@@ -6464,19 +6611,18 @@ TEST_F(ReadAnythingAppControllerTest,
 
   controller().OnDistilled(word_count2);
   controller().OnActiveAXTreeIDChanged(id2, ukm::kInvalidSourceId, false);
-  RecordScreen2xDistillationStatus(
-      /*just_hidden=*/false);  // Should not log while hidden
+  RecordScreen2xDistillationStatus();  // Should not log while hidden
   VerifyAndClearPageHandlerExpectations();
 
-  // 4. Reopen RM in side panel
+  // 4. Reopen Reading Mode. Page B is distilled once Reading Mode is
+  // shown, and its status is recorded.
   EXPECT_CALL(page_handler_, OnDistillationStatus(testing::_, word_count2))
       .Times(1);
   ExpectDistill(1);
   controller().OnReadingModeShown(
       read_anything::mojom::ReadAnythingOpenTrigger::kAppMenu,
       read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
-  RecordScreen2xDistillationStatus(
-      /*just_hidden=*/false);  // Let the reopened status log
+  RecordScreen2xDistillationStatus();  // Let the reopened status log
 }
 
 TEST_F(ReadAnythingAppControllerTest,
@@ -6529,7 +6675,7 @@ TEST_F(ReadAnythingAppControllerTest,
   controller().UpdateContent("Better title", "Better content");
   VerifyAndClearPageHandlerExpectations();
 
-  // 5. Reopen RM (should log kSuccess once)
+  // 5. Reopen RM (should log kSuccess once, when shown)
   EXPECT_CALL(
       page_handler_,
       OnDistillationStatus(read_anything::mojom::DistillationStatus::kSuccess,
@@ -6544,6 +6690,149 @@ TEST_F(ReadAnythingAppControllerTest,
   EXPECT_CALL(page_handler_, OnDistillationStatus(testing::_, testing::_))
       .Times(0);
   controller().UpdateContent("Better title", "Better content");
+  page_handler_.FlushForTesting();
+}
+
+TEST_F(ReadAnythingAppControllerScreen2xTest,
+       DistillationStatus_NotRecordedIfHiddenBeforeShown) {
+  // Close Reading Mode.
+  CloseReadingMode();
+  base::HistogramTester histograms;
+  EXPECT_CALL(page_handler_, OnDistillationStatus(testing::_, testing::_))
+      .Times(0);
+
+  // A new page isn't distilled until Reading Mode is shown.
+  auto const id = ui::AXTreeID::CreateNewAXTreeID();
+  AddTree(id);
+  ExpectDistill(0);
+  controller().OnActiveAXTreeIDChanged(id, ukm::kInvalidSourceId, false);
+
+  // Reading Mode closes before it's shown.
+  CloseReadingMode();
+  task_environment_.FastForwardBy(base::Seconds(5));
+  page_handler_.FlushForTesting();
+
+  // The session wasn't shown, so its metrics aren't recorded either.
+  histograms.ExpectTotalCount(
+      ReadAnythingAppController::kWordsSeenHistogramName, 0);
+}
+
+TEST_F(ReadAnythingAppControllerScreen2xTest,
+       DistillationStatus_PageLoadedBeforeShown_DistilledWhenShown) {
+  // Switch to another tab. The side panel keeps hosting Reading Mode, but it
+  // isn't shown.
+  SwitchToAnotherTab();
+
+  // The background tab loads a new page, which isn't distilled yet.
+  auto const id = ui::AXTreeID::CreateNewAXTreeID();
+  controller().OnActiveAXTreeIDChanged(id, ukm::kInvalidSourceId, false);
+  ui::AXEvent load_complete;
+  load_complete.event_type = ax::mojom::Event::kLoadComplete;
+  EXPECT_CALL(page_handler_, OnDistillationStatus(testing::_, testing::_))
+      .Times(0);
+  ExpectDistill(0);
+  AddTree(id, /*url=*/"", {load_complete});
+  task_environment_.FastForwardBy(base::Seconds(5));
+  VerifyAndClearPageHandlerExpectations();
+  Mock::VerifyAndClearExpectations(distiller_);
+
+  // Returning to the tab distills the page, and its status is recorded 5
+  // seconds later.
+  EXPECT_CALL(page_handler_, OnDistillationStatus(testing::_, testing::_))
+      .Times(0);
+  ExpectDistill(1);
+  ReturnToTab();
+  OnAXTreeDistilled(id, {1});
+  VerifyAndClearPageHandlerExpectations();
+  EXPECT_CALL(
+      page_handler_,
+      OnDistillationStatus(read_anything::mojom::DistillationStatus::kSuccess,
+                           testing::_))
+      .Times(1);
+  task_environment_.FastForwardBy(base::Seconds(5));
+  page_handler_.FlushForTesting();
+}
+
+TEST_F(ReadAnythingAppControllerScreen2xTest,
+       DistillationStatus_ShownBeforePageLoaded_RecordsAfterDelay) {
+  // Close Reading Mode, then navigate to a new page.
+  CloseReadingMode();
+  auto const id = ui::AXTreeID::CreateNewAXTreeID();
+  controller().OnActiveAXTreeIDChanged(id, ukm::kInvalidSourceId,
+                                       /*is_pdf=*/false);
+
+  // The page's updates arrive, but it hasn't finished loading, so it isn't
+  // distilled when Reading Mode is shown.
+  ExpectDistill(0);
+  AddTree(id);
+  controller().OnReadingModeShown(
+      read_anything::mojom::ReadAnythingOpenTrigger::kAppMenu,
+      read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
+  Mock::VerifyAndClearExpectations(distiller_);
+
+  // Its status is still recorded 5 seconds after Reading Mode is shown.
+  EXPECT_CALL(
+      page_handler_,
+      OnDistillationStatus(
+          read_anything::mojom::DistillationStatus::kStillRunning, testing::_))
+      .Times(1);
+  task_environment_.FastForwardBy(base::Seconds(5));
+  page_handler_.FlushForTesting();
+}
+
+TEST_F(ReadAnythingAppControllerScreen2xTest,
+       DistillationStatus_TreeDestroyedWhileHidden_NotRecordedWhenShown) {
+  // Close Reading Mode, then navigate to a new page whose tree is destroyed
+  // before Reading Mode is shown again.
+  CloseReadingMode();
+  auto const id_a = ui::AXTreeID::CreateNewAXTreeID();
+  controller().OnActiveAXTreeIDChanged(id_a, ukm::kInvalidSourceId,
+                                       /*is_pdf=*/false);
+  controller().OnAXTreeDestroyed(id_a);
+  ASSERT_EQ(model().active_tree_id(), ui::AXTreeIDUnknown());
+
+  // Showing Reading Mode doesn't start a status delay for the destroyed tree.
+  controller().OnReadingModeShown(
+      read_anything::mojom::ReadAnythingOpenTrigger::kAppMenu,
+      read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
+  EXPECT_CALL(page_handler_, OnDistillationStatus(testing::_, testing::_))
+      .Times(0);
+  task_environment_.FastForwardBy(base::Seconds(6));
+  page_handler_.FlushForTesting();
+}
+
+TEST_F(ReadAnythingAppControllerScreen2xTest,
+       DistillationStatus_NavigatedWhileClosed_DelayStartsWhenShown) {
+  // Close Reading Mode.
+  CloseReadingMode();
+
+  // Navigate while Reading Mode is closed. Neither Screen2x nor the status
+  // delay starts while it's closed.
+  auto const id = ui::AXTreeID::CreateNewAXTreeID();
+  AddTree(id);
+  ExpectDistill(0);
+  controller().OnActiveAXTreeIDChanged(id, ukm::kInvalidSourceId, false);
+  EXPECT_CALL(page_handler_, OnDistillationStatus(testing::_, testing::_))
+      .Times(0);
+  task_environment_.FastForwardBy(base::Milliseconds(4500));
+  Mock::VerifyAndClearExpectations(distiller_);
+
+  // Reopening distills the page. Screen2x finishes a second later, and the
+  // status is sampled 5 seconds after reopening rather than after navigating.
+  ExpectDistill(1);
+  controller().OnReadingModeShown(
+      read_anything::mojom::ReadAnythingOpenTrigger::kAppMenu,
+      read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
+  task_environment_.FastForwardBy(base::Seconds(1));
+  VerifyAndClearPageHandlerExpectations();
+
+  EXPECT_CALL(
+      page_handler_,
+      OnDistillationStatus(read_anything::mojom::DistillationStatus::kSuccess,
+                           testing::_))
+      .Times(1);
+  OnAXTreeDistilled(id, {1});
+  task_environment_.FastForwardBy(base::Seconds(4));
   page_handler_.FlushForTesting();
 }
 
@@ -6580,25 +6869,275 @@ TEST_F(ReadAnythingAppControllerTest,
 }
 
 TEST_F(ReadAnythingAppControllerTest,
-       OnReadingModeShown_ResetsWillHideAndAllowsLogSpeechStop) {
+       DistillationStatus_BackgroundSidePanel_RecordedWhenShownAgain) {
+  EnableReadability();
+
+  // Switching tabs hides the side panel, which keeps hosting Reading Mode.
+  SwitchToAnotherTab();
+
+  // The background tab navigates and Readability distills the new page.
+  EXPECT_CALL(page_handler_, OnDistillationStatus(testing::_, testing::_))
+      .Times(0);
+  auto const id = ui::AXTreeID::CreateNewAXTreeID();
+  controller().OnActiveAXTreeIDChanged(id, ukm::kInvalidSourceId, false);
+  controller().UpdateContent("Title", "Content");
+  VerifyAndClearPageHandlerExpectations();
+
+  // Switching back to the tab shows Reading Mode again.
+  EXPECT_CALL(
+      page_handler_,
+      OnDistillationStatus(read_anything::mojom::DistillationStatus::kSuccess,
+                           testing::_))
+      .Times(1);
+  ReturnToTab();
+  page_handler_.FlushForTesting();
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       OnScroll_BackgroundSidePanelTab_DoesNotLog) {
+  base::HistogramTester histogram_tester;
+
+  // Switch to another tab. The side panel keeps hosting Reading Mode, but it
+  // isn't shown.
+  SwitchToAnotherTab();
+  model().OnScroll(/*on_selection=*/false, /*from_reading_mode=*/false);
+  histogram_tester.ExpectTotalCount("Accessibility.ReadAnything.ScrollEvent",
+                                    0);
+
+  // Scrolls are logged again once Reading Mode is shown.
+  ReturnToTab();
+  model().OnScroll(/*on_selection=*/false, /*from_reading_mode=*/false);
+  histogram_tester.ExpectTotalCount("Accessibility.ReadAnything.ScrollEvent",
+                                    1);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       LogEmptyState_BackgroundSidePanelTab_DoesNotLog) {
+  base::HistogramTester histogram_tester;
+
+  // Switch to another tab. The side panel keeps hosting Reading Mode, but it
+  // isn't shown.
+  SwitchToAnotherTab();
+  controller().LogEmptyState();
+  histogram_tester.ExpectTotalCount(
+      ReadAnythingAppModel::kEmptyStateHistogramName, 0);
+
+  // The empty state is logged again once Reading Mode is shown.
+  ReturnToTab();
+  controller().LogEmptyState();
+  histogram_tester.ExpectUniqueSample(
+      ReadAnythingAppModel::kEmptyStateHistogramName,
+      ReadAnythingAppModel::EmptyState::kShown, 1);
+}
+
+TEST_F(ReadAnythingAppControllerScreen2xTest,
+       DistillationStatus_HiddenNavigation_DoesNotFireForNextPage) {
+  // Close Reading Mode.
+  CloseReadingMode();
+  EXPECT_CALL(page_handler_, OnDistillationStatus(testing::_, testing::_))
+      .Times(0);
+
+  // Navigate to a Screen2x page A.
+  auto const id_a = ui::AXTreeID::CreateNewAXTreeID();
+  AddTree(id_a);
+  ExpectDistill(0);
+  controller().OnActiveAXTreeIDChanged(id_a, ukm::kInvalidSourceId, false);
+
+  // Navigate to a Readability page B before page A's delay passes.
+  ClearForcedDistillationMethod();
+  auto const id_b = ui::AXTreeID::CreateNewAXTreeID();
+  controller().OnActiveAXTreeIDChanged(id_b, ukm::kInvalidSourceId, false);
+  ASSERT_TRUE(model().is_readability_next_distillation_method());
+
+  // Page A's delay doesn't record a Screen2x status for page B.
+  controller().OnReadingModeShown(
+      read_anything::mojom::ReadAnythingOpenTrigger::kAppMenu,
+      read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
+  task_environment_.FastForwardBy(base::Seconds(5));
+  page_handler_.FlushForTesting();
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       PdfDebounceEndsWhileHidden_DistillsAgainWhenShown) {
+  // A PDF's distillation finishes while its draw is debounced.
+  EXPECT_CALL(*distiller_, Distill).Times(1);
+  controller().OnActiveAXTreeIDChanged(tree_id_, ukm::kInvalidSourceId,
+                                       /*is_pdf=*/true);
+  ASSERT_TRUE(IsPdfDrawDebouncerRunning());
+  OnAXTreeDistilled(tree_id_, {1});
+  Mock::VerifyAndClearExpectations(distiller_);
+
+  // Reading Mode is hidden before the debounce ends, so nothing is drawn.
+  SwitchToAnotherTab();
+  task_environment_.FastForwardBy(base::Milliseconds(500));
+  EXPECT_EQ(model().distillation_state(),
+            read_anything::mojom::ReadAnythingDistillationState::
+                kDistillationInProgress);
+
+  // Showing it again distills the PDF again, which draws its content.
+  EXPECT_CALL(*distiller_, Distill).Times(1);
+  ReturnToTab();
+  Mock::VerifyAndClearExpectations(distiller_);
+  OnAXTreeDistilled(tree_id_, {1});
+  EXPECT_EQ(model().distillation_state(),
+            read_anything::mojom::ReadAnythingDistillationState::
+                kDistillationWithContent);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       PdfNavigatedWhileHidden_DistillsWhenShownWithoutEmptyState) {
+  // An empty state is never drawn (it would move an immersive overlay to the
+  // side panel).
+  EXPECT_CALL(page_handler_,
+              OnDistillationStateChanged(
+                  read_anything::mojom::ReadAnythingDistillationState::
+                      kDistillationEmpty))
+      .Times(0);
+
+  // The background tab navigates to a PDF. Its updates wait until Reading Mode
+  // is shown, and its draw debounce ends while hidden.
+  SwitchToAnotherTab();
+  const ui::AXTreeID pdf_id = ui::AXTreeID::CreateNewAXTreeID();
+  EXPECT_CALL(*distiller_, Distill).Times(0);
+  controller().OnActiveAXTreeIDChanged(pdf_id, ukm::kInvalidSourceId,
+                                       /*is_pdf=*/true);
+  AddTree(pdf_id);
+  task_environment_.FastForwardBy(base::Milliseconds(500));
+  Mock::VerifyAndClearExpectations(distiller_);
+
+  // Showing Reading Mode distills the PDF.
+  EXPECT_CALL(*distiller_, Distill).Times(1);
+  ReturnToTab();
+  Mock::VerifyAndClearExpectations(distiller_);
+  OnAXTreeDistilled(pdf_id, {1});
+
+  // Applying the updates restarts the debounce, after which the content is
+  // drawn.
+  task_environment_.FastForwardBy(base::Milliseconds(500));
+  page_handler_.FlushForTesting();
+  EXPECT_EQ(model().distillation_state(),
+            read_anything::mojom::ReadAnythingDistillationState::
+                kDistillationWithContent);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       PdfNavigatedWhileHidden_NoUpdates_ShowsEmptyStateWhenShown) {
+  // Close Reading Mode, then navigate to a PDF whose updates don't arrive. Its
+  // draw debounce ends while hidden.
+  CloseReadingMode();
+  const ui::AXTreeID pdf_id = ui::AXTreeID::CreateNewAXTreeID();
+  controller().OnActiveAXTreeIDChanged(pdf_id, ukm::kInvalidSourceId,
+                                       /*is_pdf=*/true);
+  task_environment_.FastForwardBy(base::Seconds(1));
+  ASSERT_FALSE(IsPdfDrawDebouncerRunning());
+  // The PDF has no tree yet, so it isn't marked for distillation.
+  EXPECT_FALSE(model().requires_distillation());
+
+  // Showing Reading Mode restarts the debounce, as when a PDF is announced
+  // while shown, and then shows the empty state.
+  controller().OnReadingModeShown(
+      read_anything::mojom::ReadAnythingOpenTrigger::kAppMenu,
+      read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
+  EXPECT_TRUE(IsPdfDrawDebouncerRunning());
+  task_environment_.FastForwardBy(base::Seconds(1));
+  EXPECT_EQ(
+      read_anything::mojom::ReadAnythingDistillationState::kDistillationEmpty,
+      model().distillation_state());
+}
+
+TEST_F(ReadAnythingAppControllerScreen2xTest,
+       PostUserEntryRedraw_DueWhileHidden_RestartsWhenShown) {
+  // The user types on the page, which delays a redraw.
+  model().set_reset_draw_timer(true);
+  ProcessModelUpdates();
+  ASSERT_TRUE(IsPostUserEntryDrawTimerRunning());
+
+  // The user switches tabs before the redraw is due, so it waits for Reading
+  // Mode to be shown again.
+  SwitchToAnotherTab();
+  task_environment_.FastForwardBy(base::Seconds(2));
+  EXPECT_FALSE(IsPostUserEntryDrawTimerRunning());
+  EXPECT_TRUE(model().reset_draw_timer());
+
+  // Returning to the tab restarts the delay.
+  ReturnToTab();
+  EXPECT_TRUE(IsPostUserEntryDrawTimerRunning());
+  EXPECT_FALSE(model().reset_draw_timer());
+}
+
+TEST_F(ReadAnythingAppControllerScreen2xTest,
+       PostUserEntryRedraw_WaitingWhileHidden_CanceledByNewPage) {
+  // Switch to another tab.
+  SwitchToAnotherTab();
+
+  // A redraw after the user typed waits for Reading Mode to be shown.
+  model().set_reset_draw_timer(true);
+
+  // A new page cancels it, like a running redraw timer.
+  controller().OnActiveAXTreeIDChanged(ui::AXTreeID::CreateNewAXTreeID(),
+                                       ukm::kInvalidSourceId,
+                                       /*is_pdf=*/false);
+  EXPECT_FALSE(model().reset_draw_timer());
+}
+
+TEST_F(ReadAnythingAppControllerReadabilityTest,
+       UpdateContent_AfterRedrawDueWhileHidden_ClearsScreen2xWork) {
+  // Readability finds no content, so the page falls back to Screen2x. Then the
+  // user types on it, which delays a redraw.
+  Mock::VerifyAndClearExpectations(distiller_);
+  EXPECT_CALL(*distiller_, Distill).Times(1);
+  controller().UpdateContent("", "");
+  controller().OnAXTreeDistilled(tree_id_, {2});
+  model().set_reset_draw_timer(true);
+  ProcessModelUpdates();
+  ASSERT_TRUE(IsPostUserEntryDrawTimerRunning());
+
+  // The user switches tabs, and the redraw comes due while hidden.
+  SwitchToAnotherTab();
+  task_environment_.FastForwardBy(base::Seconds(2));
+  ASSERT_TRUE(model().reset_draw_timer());
+
+  // Readability's content replaces the pending Screen2x redraw.
+  controller().UpdateContent("Title", "<p>Content</p>");
+  EXPECT_FALSE(model().reset_draw_timer());
+  EXPECT_FALSE(IsPostUserEntryDrawTimerRunning());
+
+  // Returning to the tab processes the queued updates for Readability.
+  ReturnToTab();
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       SessionMetrics_SidePanelCloseThenTabDetach_RecordedOnce) {
+  base::HistogramTester histograms;
+
+  // Closing a tab with the side panel open closes the side panel first.
+  CloseReadingMode();
+  controller().OnTabWillDetach();
+
+  histograms.ExpectTotalCount(
+      ReadAnythingAppController::kWordsSeenHistogramName, 1);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       OnReadingModeShown_AllowsLogSpeechStopAfterHidden) {
   base::HistogramTester histogram_tester;
 
   EXPECT_CALL(page_handler_, AckReadingModeHidden()).Times(1);
   controller().OnReadingModeHidden(
       true, read_anything::mojom::ReadAnythingPresentationState::kInactive);
-  EXPECT_TRUE(model().will_hide());
+  EXPECT_FALSE(model().is_shown());
 
-  // While hidden/will_hide, LogSpeechStop should be suppressed.
+  // While hidden, LogSpeechStop should be suppressed.
   LogSpeechStop(
       static_cast<int>(ReadAloudAppModel::ReadAloudStopSource::kButton));
   EXPECT_EQ(0, histogram_tester.GetTotalSum(
                    ReadAloudAppModel::kSpeechStopSourceHistogramName));
 
-  // When Reading Mode is shown again, will_hide should be reset.
+  // Once Reading Mode is shown again, LogSpeechStop should log.
   controller().OnReadingModeShown(
       read_anything::mojom::ReadAnythingOpenTrigger::kOmniboxChip,
       read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
-  EXPECT_FALSE(model().will_hide());
+  EXPECT_TRUE(model().is_shown());
 
   // LogSpeechStop should now log properly.
   LogSpeechStop(
@@ -6663,11 +7202,11 @@ TEST_F(ReadAnythingAppControllerTest,
 }
 
 TEST_F(ReadAnythingAppControllerTest,
-       OnReadingModeShown_ResetsWillHideAfterTabWillDetach) {
+       OnReadingModeShown_AllowsLogSpeechStopAfterTabWillDetach) {
   base::HistogramTester histogram_tester;
 
   controller().OnTabWillDetach();
-  EXPECT_TRUE(model().will_hide());
+  EXPECT_FALSE(model().is_shown());
 
   LogSpeechStop(
       static_cast<int>(ReadAloudAppModel::ReadAloudStopSource::kButton));
@@ -6677,7 +7216,7 @@ TEST_F(ReadAnythingAppControllerTest,
   controller().OnReadingModeShown(
       read_anything::mojom::ReadAnythingOpenTrigger::kOmniboxChip,
       read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
-  EXPECT_FALSE(model().will_hide());
+  EXPECT_TRUE(model().is_shown());
 
   LogSpeechStop(
       static_cast<int>(ReadAloudAppModel::ReadAloudStopSource::kButton));
@@ -7064,19 +7603,6 @@ class ReadAnythingAppControllerDistillerRefactorTest
     AccessibilityEventReceived({*snapshot});
     controller().OnActiveAXTreeIDChanged(tree_id_, ukm::kInvalidSourceId,
                                          false);
-  }
-
-  // Adds a tree with content without making it active. An optional `url` is
-  // set on the root.
-  void AddTree(const ui::AXTreeID& tree_id, const std::string& url = "") {
-    std::unique_ptr<ui::AXTreeUpdate> snapshot = test::CreateInitialUpdate();
-    test::SetUpdateTreeID(snapshot.get(), tree_id);
-    if (!url.empty()) {
-      snapshot->nodes[0].role = ax::mojom::Role::kRootWebArea;
-      snapshot->nodes[0].AddStringAttribute(ax::mojom::StringAttribute::kUrl,
-                                            url);
-    }
-    AccessibilityEventReceived({*snapshot});
   }
 
   // Clears the fixture's forced Screen2x method so the controller uses its

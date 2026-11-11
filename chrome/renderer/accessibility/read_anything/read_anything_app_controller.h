@@ -515,11 +515,8 @@ class ReadAnythingAppController
   void ApplyPresentationState(
       read_anything::mojom::ReadAnythingPresentationState presentation_state);
 
-  // Helper method for recording all reading mode per-session metrics. If
-  // reading mode is hidden, this will no-op unless overridden with the
-  // recently_hidden parameter.
-  void RecordSessionMetricsIfShownOrRecentlyHidden(
-      bool recently_hidden = false);
+  // Records the per-session metrics if Reading Mode is shown.
+  void RecordSessionMetricsIfShown();
 
   // Records the number of selections that occurred for the active page. Called
   // when the active tree changes.
@@ -535,9 +532,13 @@ class ReadAnythingAppController
   // accurate for voices that don't support word boundaries.
   void RecordEstimatedWordsHeard();
 
-  void RecordScreen2xDistillationStatus(bool just_hidden);
+  void RecordScreen2xDistillationStatus();
   void RecordDistillationStatus(
       read_anything::mojom::DistillationStatus status);
+
+  // Starts the delay for recording the Screen2x distillation status, unless
+  // it's already running or the page's status was already recorded.
+  void MaybeStartDistillationStatusTimer();
 
   // Helpers for logging UmaHistograms based on times recorded in WebUI.
   void IncrementMetricCount(const std::string& metric);
@@ -558,6 +559,10 @@ class ReadAnythingAppController
 
   void OnUrlInformationSet();
 
+  // Called when the delayed redraw after the user types on the page is due
+  // (see post_user_entry_draw_timer_).
+  void OnPostUserEntryDrawTimerFired();
+
   void OnPdfDebounceFinished();
 
   // Returns whether the active PDF's distilled content can be reported as
@@ -575,8 +580,6 @@ class ReadAnythingAppController
   // This function is expected to be called just once. There would be a mismatch
   // between the training protos and the screenshot if it runs more than once.
   void DistillAndScreenshot();
-
-  bool IsHidden() const;
 
   // TODO(crbug.com/554114724): Remove `distiller_` once the
   // ReadAnythingDistiller refactoring is complete and enabled by default.
@@ -635,9 +638,10 @@ class ReadAnythingAppController
   // The time when the WebUI connects i.e. when onConnected is called.
   base::TimeTicks web_ui_connected_time_ms_;
 
-  // Flag to ensure the AXTree ready metric is logged only once per active
-  // tree change. Initially set as true to make sure that the variable reset is
-  // called before trying to log the metric.
+  // Whether the AXTree ready metric was recorded for the current active tree,
+  // or won't be because the tree's readiness can't be timed (see
+  // AccessibilityEventReceived() and OnActiveAXTreeIDChanged()). Initially
+  // true, so that nothing is recorded before the first active tree.
   bool ax_tree_ready_for_current_active_tree_recorded_ = true;
 
   // Flag to ensure the AXTree ready metric is measured only once per active

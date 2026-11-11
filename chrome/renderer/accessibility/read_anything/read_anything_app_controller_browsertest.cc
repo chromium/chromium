@@ -298,20 +298,11 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
   void Distill() { controller_->Distill(); }
   void LogSpeechStop(int source) { controller_->LogSpeechStop(source); }
   void ProcessModelUpdates() { controller_->ProcessModelUpdates(); }
-  bool IsControllerHidden() const { return controller_->IsHidden(); }
   bool IsPdfDrawDebouncerRunning() const {
     return controller_->pdf_draw_debouncer_->IsRunning();
   }
   bool IsNodePendingDeletion(ui::AXNodeID node_id) {
     return model().displayed_nodes_pending_deletion().contains(node_id);
-  }
-  void RecordSessionMetricsIfShownOrRecentlyHidden(bool recently_hidden) {
-    controller_->RecordSessionMetricsIfShownOrRecentlyHidden(recently_hidden);
-    page_handler_.FlushForTesting();
-  }
-  void RecordScreen2xDistillationStatus(bool just_hidden = false) {
-    controller_->RecordScreen2xDistillationStatus(just_hidden);
-    page_handler_.FlushForTesting();
   }
   void VerifyAndClearPageHandlerExpectations() {
     page_handler_.FlushForTesting();
@@ -610,6 +601,34 @@ TEST_F(ReadAnythingAppControllerReadabilityTest,
   EXPECT_EQ(axNodeOffset, 0);
 }
 
+// Like speech_controller.ts, stops speech when Reading Mode closes, which
+// synchronously reports that speech stopped.
+constexpr char kReadingModeWillCloseStopsSpeech[] =
+    "chrome.readingMode.readingModeWillClose = () => {"
+    "  chrome.readingMode.onIsSpeechActiveChanged(false);"
+    "};";
+
+TEST_F(ReadAnythingAppControllerTest,
+       OnReadingModeHidden_WhileSpeaking_DoesNotDistill) {
+  ExecuteJavaScriptForTests(kReadingModeWillCloseStopsSpeech);
+  // Screen2x distills the page, so an update can require a distillation.
+  model().set_next_distillation_method(
+      ReadAnythingAppModel::DistillationMethod::kScreen2x);
+
+  // An update that needs a distillation arrives while speech plays.
+  controller().OnIsSpeechActiveChanged(true);
+  model().set_requires_distillation(true);
+
+  // Closing Reading Mode stops speech after it's hidden, so it doesn't
+  // distill.
+  EXPECT_CALL(*distiller_, Distill).Times(0);
+  EXPECT_CALL(page_handler_, AckReadingModeHidden());
+  controller().OnReadingModeHidden(
+      /*tab_active=*/true,
+      read_anything::mojom::ReadAnythingPresentationState::kInactive);
+  EXPECT_FALSE(read_aloud_model().speech_playing());
+}
+
 TEST_F(ReadAnythingAppControllerTest,
        OnReadingModeShown_ListenTrigger_ExecutesSetPlayOnOpen) {
   ExecuteJavaScriptForTests(
@@ -665,14 +684,14 @@ TEST_F(
       read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
   EXPECT_TRUE(read_aloud_model().speech_playing());
   EXPECT_TRUE(read_aloud_model().audio_currently_playing());
-  EXPECT_FALSE(model().will_hide());
+  EXPECT_TRUE(model().is_shown());
 
   controller().OnReadingModeShown(
       read_anything::mojom::ReadAnythingOpenTrigger::kAppMenu,
       read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
   EXPECT_TRUE(read_aloud_model().speech_playing());
   EXPECT_TRUE(read_aloud_model().audio_currently_playing());
-  EXPECT_FALSE(model().will_hide());
+  EXPECT_TRUE(model().is_shown());
 
   int set_play_on_open_called_count = 0;
   EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(
@@ -687,7 +706,7 @@ TEST_F(
       read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
   EXPECT_TRUE(read_aloud_model().speech_playing());
   EXPECT_TRUE(read_aloud_model().audio_currently_playing());
-  EXPECT_FALSE(model().will_hide());
+  EXPECT_TRUE(model().is_shown());
   EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(
       u"setPlayOnOpenCalledCount", &set_play_on_open_called_count));
   EXPECT_EQ(1, set_play_on_open_called_count);
@@ -698,7 +717,7 @@ TEST_F(
       read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
   EXPECT_TRUE(read_aloud_model().speech_playing());
   EXPECT_TRUE(read_aloud_model().audio_currently_playing());
-  EXPECT_FALSE(model().will_hide());
+  EXPECT_TRUE(model().is_shown());
   EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(
       u"setPlayOnOpenCalledCount", &set_play_on_open_called_count));
   EXPECT_EQ(2, set_play_on_open_called_count);
@@ -729,14 +748,14 @@ TEST_F(
       read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
   EXPECT_FALSE(read_aloud_model().speech_playing());
   EXPECT_FALSE(read_aloud_model().audio_currently_playing());
-  EXPECT_FALSE(model().will_hide());
+  EXPECT_TRUE(model().is_shown());
 
   controller().OnReadingModeShown(
       read_anything::mojom::ReadAnythingOpenTrigger::kAppMenu,
       read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
   EXPECT_FALSE(read_aloud_model().speech_playing());
   EXPECT_FALSE(read_aloud_model().audio_currently_playing());
-  EXPECT_FALSE(model().will_hide());
+  EXPECT_TRUE(model().is_shown());
 
   int set_play_on_open_called_count = 0;
   EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(
@@ -751,7 +770,7 @@ TEST_F(
       read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
   EXPECT_FALSE(read_aloud_model().speech_playing());
   EXPECT_FALSE(read_aloud_model().audio_currently_playing());
-  EXPECT_FALSE(model().will_hide());
+  EXPECT_TRUE(model().is_shown());
   EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(
       u"setPlayOnOpenCalledCount", &set_play_on_open_called_count));
   EXPECT_EQ(1, set_play_on_open_called_count);
@@ -762,7 +781,7 @@ TEST_F(
       read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
   EXPECT_FALSE(read_aloud_model().speech_playing());
   EXPECT_FALSE(read_aloud_model().audio_currently_playing());
-  EXPECT_FALSE(model().will_hide());
+  EXPECT_TRUE(model().is_shown());
   EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(
       u"setPlayOnOpenCalledCount", &set_play_on_open_called_count));
   EXPECT_EQ(2, set_play_on_open_called_count);

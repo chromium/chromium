@@ -33,6 +33,9 @@ base::SequenceBound<DependencyParserModel>& GetDependencyParserModel_() {
 }  // namespace
 
 ReadAloudAppModel::ReadAloudAppModel() {
+  // TODO(crbug.com/580978096): Each SingleSampleMetric records its sample when
+  // it's destroyed, so destroying this model records a sample (usually 0) even
+  // if Reading Mode was never shown or its session was already recorded.
   ResetAndLogSingleSampleMetrics();
 }
 

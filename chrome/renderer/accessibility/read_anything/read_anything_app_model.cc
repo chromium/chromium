@@ -1128,8 +1128,10 @@ void ReadAnythingAppModel::SetDefaultDistillationMethod() {
 
 void ReadAnythingAppModel::OnScroll(bool on_selection,
                                     bool from_reading_mode) const {
-  // Scroll events shouldn't be logged when reading mode is inactive.
-  if (!is_active_presentation_state_opened()) {
+  // Don't log scroll events while reading mode isn't shown.
+  // TODO(crbug.com/580978096): Scrolls queued while Reading Mode is hidden are
+  // still recorded once it's shown.
+  if (!is_shown_) {
     return;
   }
   // Enum for logging how a scroll occurs.
@@ -1176,6 +1178,8 @@ void ReadAnythingAppModel::SetActiveTreeId(ui::AXTreeID active_tree_id) {
   // Otherwise, this can cause tree inconsistency issues if reading mode later
   // incorrectly receives updates from the old tree.
   if (active_tree_id_ != active_tree_id) {
+    // TODO(crbug.com/580978096): A navigation while Reading Mode is hidden
+    // still applies the old page's queued updates here.
     if (active_tree_id_ != ui::AXTreeIDUnknown() && ContainsActiveTree()) {
       UnserializePendingUpdates(active_tree_id_);
     }
