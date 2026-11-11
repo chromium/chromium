@@ -20,11 +20,6 @@ public final class OnDemandBackgroundTabCaptureConfig {
 
     private OnDemandBackgroundTabCaptureConfig() {}
 
-    /** Returns whether on-demand background tab context capture is enabled. */
-    public static boolean isOnDemandBackgroundTabContextCaptureEnabled() {
-        return ChromeFeatureList.sOnDemandBackgroundTabContextCapture.isEnabled();
-    }
-
     /** Returns whether background tab context capture optimization is enabled. */
     public static boolean isOptimizationEnabled() {
         return ChromeFeatureList.sOnDemandBackgroundTabContextCaptureOptimization.isEnabled();

@@ -15,7 +15,6 @@ import androidx.annotation.Px;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.utilities.OnDemandBackgroundTabCaptureConfig;
@@ -121,12 +120,9 @@ public class FuseboxTabUtils {
             TabModelSelector selector, Set<Integer> attachedIds) {
         if (selector == null) return List.of();
         boolean isOffTheRecord = selector.isOffTheRecordModelSelected();
-        boolean allowBackgroundCapture =
-                ChromeFeatureList.sOnDemandBackgroundTabContextCapture.isEnabled()
-                        && !isOffTheRecord;
-
         TabModel tabModel = selector.getModel(isOffTheRecord);
-        return collectEligibleTabs(tabModel, attachedIds, allowBackgroundCapture);
+        return collectEligibleTabs(
+                tabModel, attachedIds, /* allowBackgroundCapture= */ !isOffTheRecord);
     }
 
     private static List<Tab> collectEligibleTabs(

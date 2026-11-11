@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.chrome_item_picker;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -40,11 +39,8 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.page_content_annotations.PageContentExtractionService;
 import org.chromium.chrome.browser.page_content_annotations.PageContentExtractionServiceFactory;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -91,7 +87,6 @@ public class TabItemPickerCoordinatorUnitTest {
     @Mock private TabListEditorCoordinator.TabListEditorController mTabListEditorController;
     @Mock private TabModel mRegularTabModel;
     @Mock private PageContentExtractionService mPageContentExtractionService;
-    @Mock private WebContents mWebContents;
 
     @Mock private SelectionDelegate<TabListEditorItemSelectionId> mSelectionDelegateMock;
     @Captor private ArgumentCaptor<List<Tab>> mTabListCaptor;
@@ -228,79 +223,6 @@ public class TabItemPickerCoordinatorUnitTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE)
-    public void testOnCachedTabIdsRetrieved_filtersAndShowsTabs() {
-        // Mock the window manager to return a valid selector upon request
-        when(TabWindowManagerSingleton.getInstance()
-                        .requestSelectorWithoutActivity(anyInt(), any(Profile.class)))
-                .thenReturn(mTabModelSelector);
-
-        // 1. Setup tabs
-        GURL testUrl = JUnitTestGURLs.URL_1;
-        Tab tab1WithWebContents = Mockito.mock(Tab.class);
-        when(tab1WithWebContents.getId()).thenReturn(101);
-        when(tab1WithWebContents.getWebContents()).thenReturn(mWebContents);
-        when(mWebContents.isLoading()).thenReturn(false);
-        when(mWebContents.getRenderWidgetHostView())
-                .thenReturn(Mockito.mock(RenderWidgetHostView.class));
-        when(tab1WithWebContents.isInitialized()).thenReturn(true);
-        when(tab1WithWebContents.isFrozen()).thenReturn(false);
-        when(tab1WithWebContents.getUrl()).thenReturn(testUrl);
-
-        Tab tab2NoWebContentsCached = Mockito.mock(Tab.class);
-        when(tab2NoWebContentsCached.getId()).thenReturn(102);
-        when(tab2NoWebContentsCached.getWebContents()).thenReturn(null);
-        when(tab2NoWebContentsCached.isInitialized()).thenReturn(true);
-        when(tab2NoWebContentsCached.isFrozen()).thenReturn(false);
-        when(tab2NoWebContentsCached.getUrl()).thenReturn(testUrl);
-
-        Tab tab3NoWebContentsNotCached = Mockito.mock(Tab.class);
-        when(tab3NoWebContentsNotCached.getId()).thenReturn(103);
-        when(tab3NoWebContentsNotCached.getWebContents()).thenReturn(null);
-        when(tab3NoWebContentsNotCached.isInitialized()).thenReturn(true);
-        when(tab3NoWebContentsNotCached.isFrozen()).thenReturn(false);
-        when(tab3NoWebContentsNotCached.getUrl()).thenReturn(testUrl);
-
-        List<Tab> allTabs =
-                Arrays.asList(
-                        tab1WithWebContents, tab2NoWebContentsCached, tab3NoWebContentsNotCached);
-        // Mocking TabModel to return the list of tabs
-        when(mRegularTabModel.getCount()).thenReturn(allTabs.size());
-        when(mRegularTabModel.getTabAt(0)).thenReturn(tab1WithWebContents);
-        when(mRegularTabModel.getTabAt(1)).thenReturn(tab2NoWebContentsCached);
-        when(mRegularTabModel.getTabAt(2)).thenReturn(tab3NoWebContentsNotCached);
-        when(mRegularTabModel.iterator()).thenReturn(allTabs.iterator());
-
-        // When getAllCachedTabIds is called, immediately call the callback with our test data.
-        doAnswer(
-                        invocation -> {
-                            Callback<long[]> callback = invocation.getArgument(0);
-                            callback.onResult(new long[] {102L});
-                            return null;
-                        })
-                .when(mPageContentExtractionService)
-                .getAllCachedTabIds(any());
-
-        // 2. Trigger the whole flow
-        mItemPickerCoordinator.showTabItemPicker(mCallback);
-        mProfileSupplierImpl.set(mProfile);
-        shadowOf(Looper.getMainLooper()).idle();
-
-        // 3. Verify the correct tabs are passed to the editor
-        verify(mTabListEditorController).show(mTabListCaptor.capture(), any(), any());
-        List<Tab> shownTabs = mTabListCaptor.getValue();
-
-        assertEquals("Should show 2 tabs", 2, shownTabs.size());
-        assertTrue("Should contain tab with WebContents", shownTabs.contains(tab1WithWebContents));
-        assertTrue(
-                "Should contain cached tab without WebContents",
-                shownTabs.contains(tab2NoWebContentsCached));
-        assertFalse(
-                "Should not contain non-cached tab without WebContents",
-                shownTabs.contains(tab3NoWebContentsNotCached));
-    }
-
-    @Test
     public void testOnCachedTabIdsRetrieved_RecordsHistograms() {
         when(TabWindowManagerSingleton.getInstance()
                         .requestSelectorWithoutActivity(anyInt(), any(Profile.class)))
@@ -349,8 +271,7 @@ public class TabItemPickerCoordinatorUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE)
-    public void testOnCachedTabIdsRetrieved_BackgroundTabsIncludedWithFlag() {
+    public void testOnCachedTabIdsRetrieved_BackgroundTabsIncluded() {
         when(TabWindowManagerSingleton.getInstance()
                         .requestSelectorWithoutActivity(anyInt(), any(Profile.class)))
                 .thenReturn(mTabModelSelector);
@@ -360,7 +281,7 @@ public class TabItemPickerCoordinatorUnitTest {
         Tab tabActive = mockTabActiveState(1, true);
         // Cached tab (should be included)
         Tab tabCached = mockTabActiveState(2, false);
-        // Background tab (neither active nor cached, should be included due to flag)
+        // Background tab (neither active nor cached, should be included)
         Tab tabBackground = mockTabActiveState(3, false);
 
         List<Tab> allTabs = Arrays.asList(tabActive, tabCached, tabBackground);

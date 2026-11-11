@@ -57,9 +57,7 @@ void TabContextCaptureRequest::Start() {
   if (ShouldSkipDelayForActiveTab() ||
       web_contents()->IsDocumentOnLoadCompletedInPrimaryMainFrame() ||
       IsBackgroundTabDomContentLoaded() ||
-      web_contents()->GetContentsMimeType() == pdf::kPDFMimeType ||
-      !base::FeatureList::IsEnabled(
-          chrome::android::kOnDemandBackgroundTabContextCapture)) {
+      web_contents()->GetContentsMimeType() == pdf::kPDFMimeType) {
     TriggerCapture();
   } else {
     base::TimeDelta fallback_delay = base::Seconds(30);

@@ -58,10 +58,6 @@ class TabContextCaptureRequestTest : public testing::Test {
   ~TabContextCaptureRequestTest() override = default;
 
   void SetUp() override {
-    // Default to enabled.
-    scoped_feature_list_.InitAndEnableFeature(
-        chrome::android::kOnDemandBackgroundTabContextCapture);
-
     // This WebContents isn't actually loaded.
     web_contents_ = web_contents_factory_.CreateWebContents(&profile_);
   }
@@ -95,12 +91,9 @@ class TabContextCaptureRequestTest : public testing::Test {
 
   void EnableOptimizationWithParams(const base::FieldTrialParams& params) {
     scoped_feature_list_.Reset();
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/
-        {{chrome::android::kOnDemandBackgroundTabContextCapture, {}},
-         {chrome::android::kOnDemandBackgroundTabContextCaptureOptimization,
-          params}},
-        /*disabled_features=*/{});
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        chrome::android::kOnDemandBackgroundTabContextCaptureOptimization,
+        params);
   }
 
   void ExpectSingleCapture() {
@@ -191,33 +184,8 @@ TEST_F(TabContextCaptureRequestTest, CallbackRunGenericWhenDestroyed) {
   run_loop.Run();
 }
 
-TEST_F(TabContextCaptureRequestTest, CaptureTriggeredImmediately) {
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitAndDisableFeature(
-      chrome::android::kOnDemandBackgroundTabContextCapture);
-
-  base::RunLoop run_loop;
-  CreateTabContextCaptureRequest(base::BindLambdaForTesting(
-      [&](std::unique_ptr<lens::ContextualInputData> data) {
-        run_loop.Quit();
-      }));
-
-  EXPECT_CALL(*mock_controller_, GetPageContext(_))
-      .Times(1)
-      .WillOnce([](auto callback) {
-        std::move(callback).Run(std::make_unique<lens::ContextualInputData>());
-      });
-
-  // Simulate immediate capture.
-  request_->Start();
-
-  run_loop.Run();
-}
-
 TEST_F(TabContextCaptureRequestTest, CallbackNotRunSynchronouslyFromStart) {
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitAndDisableFeature(
-      chrome::android::kOnDemandBackgroundTabContextCapture);
+  EnableOptimizationWithParams({{"skip_delay_for_active_tab", "true"}});
 
   base::RunLoop run_loop;
   CreateTabContextCaptureRequest(base::BindLambdaForTesting(
@@ -225,6 +193,7 @@ TEST_F(TabContextCaptureRequestTest, CallbackNotRunSynchronouslyFromStart) {
         EXPECT_EQ(data, nullptr);
         run_loop.Quit();
       }));
+  EXPECT_CALL(*mock_tab_interface_, IsActivated()).WillRepeatedly(Return(true));
   EXPECT_CALL(*mock_controller_, GetPageContext(_)).WillOnce([](auto callback) {
     std::move(callback).Run(nullptr);
   });
@@ -238,11 +207,8 @@ TEST_F(TabContextCaptureRequestTest, CallbackNotRunSynchronouslyFromStart) {
 TEST_F(TabContextCaptureRequestTest,
        CaptureTriggeredAfterTimeoutWithOptimization) {
   scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeatures(
-      /*enabled_features=*/
-      {chrome::android::kOnDemandBackgroundTabContextCapture,
-       chrome::android::kOnDemandBackgroundTabContextCaptureOptimization},
-      /*disabled_features=*/{});
+  scoped_feature_list_.InitAndEnableFeature(
+      chrome::android::kOnDemandBackgroundTabContextCaptureOptimization);
 
   base::RunLoop run_loop;
   CreateTabContextCaptureRequest(base::BindLambdaForTesting(
@@ -268,12 +234,9 @@ TEST_F(TabContextCaptureRequestTest,
 TEST_F(TabContextCaptureRequestTest,
        CaptureTriggeredAfterCustomFallbackTimeout) {
   scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeaturesAndParameters(
-      /*enabled_features=*/
-      {{chrome::android::kOnDemandBackgroundTabContextCapture, {}},
-       {chrome::android::kOnDemandBackgroundTabContextCaptureOptimization,
-        {{"initial_fallback_delay_seconds", "15"}}}},
-      /*disabled_features=*/{});
+  scoped_feature_list_.InitAndEnableFeatureWithParameters(
+      chrome::android::kOnDemandBackgroundTabContextCaptureOptimization,
+      {{"initial_fallback_delay_seconds", "15"}});
 
   base::RunLoop run_loop;
   CreateTabContextCaptureRequest(base::BindLambdaForTesting(
@@ -296,11 +259,8 @@ TEST_F(TabContextCaptureRequestTest,
 
 TEST_F(TabContextCaptureRequestTest, CaptureAbortedWhenOverallTimeoutExpires) {
   scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeatures(
-      /*enabled_features=*/
-      {chrome::android::kOnDemandBackgroundTabContextCapture,
-       chrome::android::kOnDemandBackgroundTabContextCaptureOptimization},
-      /*disabled_features=*/{});
+  scoped_feature_list_.InitAndEnableFeature(
+      chrome::android::kOnDemandBackgroundTabContextCaptureOptimization);
 
   base::RunLoop run_loop;
   CreateTabContextCaptureRequest(base::BindLambdaForTesting(
@@ -329,12 +289,9 @@ TEST_F(TabContextCaptureRequestTest, CaptureAbortedWhenOverallTimeoutExpires) {
 TEST_F(TabContextCaptureRequestTest,
        CaptureAbortedWhenCustomOverallTimeoutExpires) {
   scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeaturesAndParameters(
-      /*enabled_features=*/
-      {{chrome::android::kOnDemandBackgroundTabContextCapture, {}},
-       {chrome::android::kOnDemandBackgroundTabContextCaptureOptimization,
-        {{"overall_timeout_seconds", "20"}}}},
-      /*disabled_features=*/{});
+  scoped_feature_list_.InitAndEnableFeatureWithParameters(
+      chrome::android::kOnDemandBackgroundTabContextCaptureOptimization,
+      {{"overall_timeout_seconds", "20"}});
 
   base::RunLoop run_loop;
   CreateTabContextCaptureRequest(base::BindLambdaForTesting(
@@ -358,12 +315,9 @@ TEST_F(TabContextCaptureRequestTest,
 TEST_F(TabContextCaptureRequestTest,
        SkipDelayForActiveTabTriggersImmediatelyWithoutLoad) {
   scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeaturesAndParameters(
-      /*enabled_features=*/
-      {{chrome::android::kOnDemandBackgroundTabContextCapture, {}},
-       {chrome::android::kOnDemandBackgroundTabContextCaptureOptimization,
-        {{"skip_delay_for_active_tab", "true"}}}},
-      /*disabled_features=*/{});
+  scoped_feature_list_.InitAndEnableFeatureWithParameters(
+      chrome::android::kOnDemandBackgroundTabContextCaptureOptimization,
+      {{"skip_delay_for_active_tab", "true"}});
 
   base::RunLoop run_loop;
   CreateTabContextCaptureRequest(base::BindLambdaForTesting(
@@ -385,12 +339,9 @@ TEST_F(TabContextCaptureRequestTest,
 TEST_F(TabContextCaptureRequestTest,
        SkipDelayForActiveTabDoesNotSleepOnLoadCompleted) {
   scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeaturesAndParameters(
-      /*enabled_features=*/
-      {{chrome::android::kOnDemandBackgroundTabContextCapture, {}},
-       {chrome::android::kOnDemandBackgroundTabContextCaptureOptimization,
-        {{"skip_delay_for_active_tab", "true"}}}},
-      /*disabled_features=*/{});
+  scoped_feature_list_.InitAndEnableFeatureWithParameters(
+      chrome::android::kOnDemandBackgroundTabContextCaptureOptimization,
+      {{"skip_delay_for_active_tab", "true"}});
 
   base::RunLoop run_loop;
   CreateTabContextCaptureRequest(base::BindLambdaForTesting(
@@ -411,12 +362,9 @@ TEST_F(TabContextCaptureRequestTest,
 TEST_F(TabContextCaptureRequestTest,
        SkipDelayForActiveTabDoesNotTriggerCaptureTwiceOnLoadCompleted) {
   scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeaturesAndParameters(
-      /*enabled_features=*/
-      {{chrome::android::kOnDemandBackgroundTabContextCapture, {}},
-       {chrome::android::kOnDemandBackgroundTabContextCaptureOptimization,
-        {{"skip_delay_for_active_tab", "true"}}}},
-      /*disabled_features=*/{});
+  scoped_feature_list_.InitAndEnableFeatureWithParameters(
+      chrome::android::kOnDemandBackgroundTabContextCaptureOptimization,
+      {{"skip_delay_for_active_tab", "true"}});
 
   base::RunLoop run_loop;
   CreateTabContextCaptureRequest(base::BindLambdaForTesting(

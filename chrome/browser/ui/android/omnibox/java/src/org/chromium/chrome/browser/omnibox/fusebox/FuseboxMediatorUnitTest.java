@@ -3856,7 +3856,6 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE)
     public void onAddRecentTab_inactiveTab_queuesLoadViaTabLoadingService() {
         OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ true);
         recreateMediator();
@@ -3872,7 +3871,6 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     @EnableFeatures({
-        ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE,
         ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE_OPTIMIZATION
                 + ":cancel_load_on_deselection/true"
     })

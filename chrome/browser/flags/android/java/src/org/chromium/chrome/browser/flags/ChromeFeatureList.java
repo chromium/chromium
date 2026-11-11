@@ -752,8 +752,6 @@ public abstract class ChromeFeatureList {
     public static final String OMNIBOX_CACHE_SUGGESTION_RESOURCES =
             "OmniboxCacheSuggestionResources";
     public static final String ONE_STEP_AIM_ACCESS = "OneStepAimAccess";
-    public static final String ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE =
-            "OnDemandBackgroundTabContextCapture";
     public static final String ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE_OPTIMIZATION =
             "OnDemandBackgroundTabContextCaptureOptimization";
     public static final String ON_STARTUP_SETTINGS_UI = "OnStartupSettingsUi";
@@ -1864,8 +1862,6 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(LONG_SCREENSHOTS_NUM_VIEWPORTS, false);
     public static final MutableFlagWithSafeDefault sMediaCaptureNotificationRefreshMediaTypes =
             newMutableFlagWithSafeDefault(MEDIA_CAPTURE_NOTIFICATION_REFRESH_MEDIA_TYPES, true);
-    public static final MutableFlagWithSafeDefault sOnDemandBackgroundTabContextCapture =
-            newMutableFlagWithSafeDefault(ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE, true);
     public static final MutableFlagWithSafeDefault
             sOnDemandBackgroundTabContextCaptureOptimization =
                     newMutableFlagWithSafeDefault(

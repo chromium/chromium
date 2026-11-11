@@ -285,8 +285,7 @@ public class TabItemPickerCoordinator {
         // We cannot load background tabs in headless mode since the tabs are not attached to an
         // activity and thus cannot be loaded.
         boolean allowBackgroundTabContextCapture =
-                OnDemandBackgroundTabCaptureConfig.isOnDemandBackgroundTabContextCaptureEnabled()
-                        && tabModel.getTabModelType() == TabModelType.STANDARD;
+                tabModel.getTabModelType() == TabModelType.STANDARD;
         for (Tab tab : tabModel) {
             // TODO(crbug.com/458152854): Allow reloading of tabs.
             boolean isActive = FuseboxTabUtils.isTabActive(tab);
@@ -504,11 +503,6 @@ public class TabItemPickerCoordinator {
             mSelectedItemsCount = selectedItems.size();
             boolean hasSelectionChanged = !Objects.equals(mInitialSelectedTabIds, selectedItems);
             mEnableDoneButtonSupplier.set(hasSelectionChanged);
-
-            if (!OnDemandBackgroundTabCaptureConfig
-                    .isOnDemandBackgroundTabContextCaptureEnabled()) {
-                return;
-            }
 
             if (OnDemandBackgroundTabCaptureConfig.isCancelLoadOnDeselectionEnabled()) {
                 Set<Integer> selectedTabIds = new ArraySet<>();

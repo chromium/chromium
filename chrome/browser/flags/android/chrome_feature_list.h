@@ -259,7 +259,6 @@ BASE_DECLARE_FEATURE(kNtpAuroraV2);
 BASE_DECLARE_FEATURE(kNtpVision);
 BASE_DECLARE_FEATURE(kOctoberTestUXR);
 BASE_DECLARE_FEATURE(kOmahaMinSdkVersionAndroid);
-BASE_DECLARE_FEATURE(kOnDemandBackgroundTabContextCapture);
 BASE_DECLARE_FEATURE(kOnDemandBackgroundTabContextCaptureOptimization);
 BASE_DECLARE_FEATURE(kOnStartupSettingsUi);
 BASE_DECLARE_FEATURE(kOnStartupWindowPolicy);

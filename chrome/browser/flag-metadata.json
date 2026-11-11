@@ -7874,11 +7874,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "on-demand-background-tab-context-capture",
-    "owners": [ "ckitagawa@chromium.org", "clank-tab-dev@google.com" ],
-    "expiry_milestone": 160
-  },
-  {
     "name": "on-demand-background-tab-context-capture-optimization",
     "owners": [ "madhavpruthi@google.com", "clank-tab-dev@google.com" ],
     "expiry_milestone": 170
