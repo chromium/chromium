@@ -224,7 +224,7 @@ int MultiTabLoadingPageLoadMetricsObserver::NumberOfTabsWithInflightLoad(
     content::NavigationHandle* navigation_handle) {
   content::WebContents* this_contents = navigation_handle->GetWebContents();
   int num_loading = 0;
-  for (const TabModel* model : TabModelList::models()) {
+  TabModelList::ForEachAll([this_contents, &num_loading](TabModel* model) {
     // Note: |this_contents| may not appear in |model|.
     for (int i = 0; i < model->GetTabCount(); ++i) {
       content::WebContents* other_contents = model->GetWebContentsAt(i);
@@ -233,16 +233,18 @@ int MultiTabLoadingPageLoadMetricsObserver::NumberOfTabsWithInflightLoad(
         num_loading++;
       }
     }
-  }
+    return true;
+  });
   return num_loading;
 }
 
 int MultiTabLoadingPageLoadMetricsObserver::NumberOfTabs(
     content::NavigationHandle* navigation_handle) {
   int num_of_tabs = 0;
-  for (const TabModel* model : TabModelList::models()) {
+  TabModelList::ForEachAll([&num_of_tabs](TabModel* model) {
     num_of_tabs += model->GetTabCount();
-  }
+    return true;
+  });
   return num_of_tabs;
 }
 

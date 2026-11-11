@@ -35,13 +35,14 @@ namespace {
 std::vector<std::vector<content::WebContents*>> GetAllWebContents() {
   std::vector<std::vector<content::WebContents*>> all_web_contents;
 #if BUILDFLAG(IS_ANDROID)
-  for (const TabModel* model : TabModelList::models()) {
+  TabModelList::ForEachAll([&all_web_contents](TabModel* model) {
     std::vector<content::WebContents*> web_contents_for_tab_strip;
     for (int i = 0; i < model->GetTabCount(); ++i) {
       web_contents_for_tab_strip.push_back(model->GetWebContentsAt(i));
     }
-    all_web_contents.push_back(web_contents_for_tab_strip);
-  }
+    all_web_contents.push_back(std::move(web_contents_for_tab_strip));
+    return true;
+  });
 #else   // BUILDFLAG(IS_ANDROID)
   ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
       [&all_web_contents](BrowserWindowInterface* browser) {
