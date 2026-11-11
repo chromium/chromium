@@ -2421,6 +2421,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                                     () -> getFullscreenManager().getPersistentFullscreenMode(),
                                     supportsTabbedBrowserCommands(),
                                     this::getTabModelSelector,
+                                    getModalDialogManagerSupplier(),
                                     /* menuOrKeyboardActionController= */ this));
         }
 

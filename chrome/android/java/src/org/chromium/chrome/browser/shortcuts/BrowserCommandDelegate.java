@@ -20,6 +20,8 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
@@ -34,6 +36,7 @@ public class BrowserCommandDelegate {
     private final BooleanSupplier mIsFullscreenSupplier;
     private final boolean mTabbedBrowserCommandsSupported;
     private final Supplier<@Nullable TabModelSelector> mTabModelSelectorSupplier;
+    private final Supplier<@Nullable ModalDialogManager> mModalDialogManagerSupplier;
     private final MenuOrKeyboardActionController mMenuOrKeyboardActionController;
 
     /**
@@ -46,6 +49,7 @@ public class BrowserCommandDelegate {
      *     true for ChromeTabbedActivity). Commands operating on the active tab itself (e.g. FIND)
      *     are supported regardless.
      * @param tabModelSelectorSupplier Supplies the window's {@link TabModelSelector}.
+     * @param modalDialogManagerSupplier Supplies the window's {@link ModalDialogManager}.
      * @param menuOrKeyboardActionController Controller that executes {@code R.id.*} actions.
      */
     public BrowserCommandDelegate(
@@ -53,11 +57,13 @@ public class BrowserCommandDelegate {
             BooleanSupplier isFullscreenSupplier,
             boolean tabbedBrowserCommandsSupported,
             Supplier<@Nullable TabModelSelector> tabModelSelectorSupplier,
+            Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
             MenuOrKeyboardActionController menuOrKeyboardActionController) {
         mIsCurrentTabVisibleSupplier = isCurrentTabVisibleSupplier;
         mIsFullscreenSupplier = isFullscreenSupplier;
         mTabbedBrowserCommandsSupported = tabbedBrowserCommandsSupported;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
+        mModalDialogManagerSupplier = modalDialogManagerSupplier;
         mMenuOrKeyboardActionController = menuOrKeyboardActionController;
     }
 
@@ -101,16 +107,29 @@ public class BrowserCommandDelegate {
      * @return {@code true} if the command is enabled and can be executed.
      */
     boolean isCommandEnabled(int commandId) {
+        ModalDialogManager modalDialogManager = mModalDialogManagerSupplier.get();
+        boolean isShowingTabModalDialog = false;
+        if (modalDialogManager != null && modalDialogManager.isShowing()) {
+            if (modalDialogManager.getCurrentType() == ModalDialogType.APP) {
+                return false;
+            }
+            isShowingTabModalDialog = modalDialogManager.getCurrentType() == ModalDialogType.TAB;
+        }
+
         boolean isCurrentTabVisible = mIsCurrentTabVisibleSupplier.getAsBoolean();
 
         // LINT.IfChange(BrowserCommandDelegateCommands)
         switch (commandId) {
             case ChromeCommandIds.EXIT:
             case ChromeCommandIds.CLOSE_FIND_OR_STOP:
-            case ChromeCommandIds.SHOW_APP_MENU:
             case ChromeCommandIds.CLOSE_WINDOW:
             case ChromeCommandIds.TASK_MANAGER_SHORTCUT:
                 return true;
+
+            case ChromeCommandIds.SHOW_APP_MENU:
+                // ChromeTabModalPresenter disables the 3-dot menu button while a tab-modal dialog
+                // is showing.
+                return !isShowingTabModalDialog;
 
             case ChromeCommandIds.FEEDBACK:
                 return FeedbackPolicyManager.getInstance().isUserFeedbackAllowed();
@@ -165,6 +184,15 @@ public class BrowserCommandDelegate {
                         && mTabbedBrowserCommandsSupported
                         && ChromeFeatureList.sAndroidKeyboardShortcutOpenFile.isEnabled();
 
+            case ChromeCommandIds.PRINT:
+            case ChromeCommandIds.FIND:
+            case ChromeCommandIds.FIND_NEXT:
+            case ChromeCommandIds.FIND_PREVIOUS:
+            case ChromeCommandIds.FOCUS_MENU_BAR:
+                // Tab-modal dialogs obscure the active tab (blocking print and find-in-page,
+                // matching Desktop BrowserCommandController) and disable the 3-dot menu button.
+                return isCurrentTabVisible && !isShowingTabModalDialog;
+
             case ChromeCommandIds.BACK:
             case ChromeCommandIds.FORWARD:
             case ChromeCommandIds.RELOAD:
@@ -173,16 +201,11 @@ public class BrowserCommandDelegate {
             case ChromeCommandIds.BOOKMARK_THIS_TAB:
             case ChromeCommandIds.HOME:
             case ChromeCommandIds.VIEW_SOURCE:
-            case ChromeCommandIds.PRINT:
             case ChromeCommandIds.SAVE_PAGE:
-            case ChromeCommandIds.FIND:
-            case ChromeCommandIds.FIND_NEXT:
-            case ChromeCommandIds.FIND_PREVIOUS:
             case ChromeCommandIds.ZOOM_PLUS:
             case ChromeCommandIds.ZOOM_NORMAL:
             case ChromeCommandIds.ZOOM_MINUS:
             case ChromeCommandIds.FOCUS_TOOLBAR:
-            case ChromeCommandIds.FOCUS_MENU_BAR:
             case ChromeCommandIds.DEV_TOOLS:
             case ChromeCommandIds.DEV_TOOLS_CONSOLE:
             case ChromeCommandIds.DEV_TOOLS_INSPECT:

@@ -11,9 +11,14 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import android.view.View;
+
+import androidx.activity.ComponentDialog;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -23,8 +28,10 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeCommandIds;
 import org.chromium.chrome.browser.feedback.FeedbackPolicyManager;
@@ -36,10 +43,26 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
+import org.chromium.ui.modaldialog.DialogDismissalCause;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
+import org.chromium.ui.modaldialog.ModalDialogProperties;
+import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for {@link BrowserCommandDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class BrowserCommandDelegateUnitTest {
+    private static class NoOpPresenter extends ModalDialogManager.Presenter {
+        @Override
+        protected void addDialogView(
+                PropertyModel model,
+                @Nullable Callback<ComponentDialog> onDialogCreatedCallback,
+                @Nullable Callback<View> onDialogShownCallback) {}
+
+        @Override
+        protected void removeDialogView(@Nullable PropertyModel model) {}
+    }
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private MenuOrKeyboardActionController mController;
@@ -48,8 +71,11 @@ public class BrowserCommandDelegateUnitTest {
     @Mock private Profile mProfile;
     @Mock private IncognitoUtils.Natives mIncognitoUtilsJniMock;
     @Mock private FeedbackPolicyManager mFeedbackPolicyManager;
+    @Mock private ModalDialogProperties.Controller mDialogController;
 
     private boolean mIsCurrentTabVisible = true;
+    private ModalDialogManager mModalDialogManager;
+    private PropertyModel mDialogModel;
     private BrowserCommandDelegate mTabbedDelegate;
     private BrowserCommandDelegate mCustomTabDelegate;
 
@@ -64,12 +90,20 @@ public class BrowserCommandDelegateUnitTest {
         FeedbackPolicyManager.setInstanceForTesting(mFeedbackPolicyManager);
         when(mFeedbackPolicyManager.isUserFeedbackAllowed()).thenReturn(true);
 
+        mModalDialogManager = new ModalDialogManager(new NoOpPresenter(), ModalDialogType.APP);
+        mModalDialogManager.registerPresenter(new NoOpPresenter(), ModalDialogType.TAB);
+        mDialogModel =
+                new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
+                        .with(ModalDialogProperties.CONTROLLER, mDialogController)
+                        .build();
+
         mTabbedDelegate =
                 new BrowserCommandDelegate(
                         () -> mIsCurrentTabVisible,
                         /* isFullscreenSupplier= */ () -> false,
                         /* tabbedBrowserCommandsSupported= */ true,
                         () -> mTabModelSelector,
+                        () -> mModalDialogManager,
                         mController);
         mCustomTabDelegate =
                 new BrowserCommandDelegate(
@@ -77,6 +111,7 @@ public class BrowserCommandDelegateUnitTest {
                         /* isFullscreenSupplier= */ () -> false,
                         /* tabbedBrowserCommandsSupported= */ false,
                         () -> mTabModelSelector,
+                        () -> mModalDialogManager,
                         mController);
     }
 
@@ -164,5 +199,43 @@ public class BrowserCommandDelegateUnitTest {
 
         when(mController.onMenuOrKeyboardAction(eq(R.id.esc_key), eq(false))).thenReturn(false);
         assertFalse(mTabbedDelegate.executeCommand(ChromeCommandIds.CLOSE_FIND_OR_STOP));
+    }
+
+    @Test
+    public void testAppModalDialog_DisablesAllCommandsAndRestoresOnDismiss() {
+        mModalDialogManager.showDialog(mDialogModel, ModalDialogType.APP);
+        assertFalse(mTabbedDelegate.isCommandEnabled(ChromeCommandIds.CLOSE_FIND_OR_STOP));
+        assertFalse(mTabbedDelegate.executeCommand(ChromeCommandIds.NEW_TAB));
+        verify(mController, never()).onMenuOrKeyboardAction(anyInt(), anyBoolean());
+
+        mModalDialogManager.dismissAllDialogs(DialogDismissalCause.UNKNOWN);
+        assertTrue(mTabbedDelegate.isCommandEnabled(ChromeCommandIds.CLOSE_FIND_OR_STOP));
+        assertTrue(mTabbedDelegate.isCommandEnabled(ChromeCommandIds.NEW_TAB));
+    }
+
+    @Test
+    public void testTabModalDialog_BlocksMenuFindAndPrint_KeepsOtherCommands() {
+        mModalDialogManager.showDialog(mDialogModel, ModalDialogType.TAB);
+        for (int blockedCommand :
+                new int[] {
+                    ChromeCommandIds.FIND,
+                    ChromeCommandIds.FIND_NEXT,
+                    ChromeCommandIds.FIND_PREVIOUS,
+                    ChromeCommandIds.PRINT,
+                    ChromeCommandIds.SHOW_APP_MENU,
+                    ChromeCommandIds.FOCUS_MENU_BAR
+                }) {
+            assertFalse(mTabbedDelegate.isCommandEnabled(blockedCommand));
+        }
+        assertTrue(mTabbedDelegate.isCommandEnabled(ChromeCommandIds.CLOSE_FIND_OR_STOP));
+        assertTrue(mTabbedDelegate.isCommandEnabled(ChromeCommandIds.NEW_TAB));
+        assertTrue(mTabbedDelegate.isCommandEnabled(ChromeCommandIds.FOCUS_LOCATION));
+        assertTrue(mTabbedDelegate.isCommandEnabled(ChromeCommandIds.SAVE_PAGE));
+
+        // After dismissal, ModalDialogManager.getCurrentType() retains ModalDialogType.TAB;
+        // verify isShowing() is checked first so blocked commands re-enable.
+        mModalDialogManager.dismissAllDialogs(DialogDismissalCause.UNKNOWN);
+        assertTrue(mTabbedDelegate.isCommandEnabled(ChromeCommandIds.SHOW_APP_MENU));
+        assertTrue(mTabbedDelegate.isCommandEnabled(ChromeCommandIds.FIND));
     }
 }
