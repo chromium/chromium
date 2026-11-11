@@ -57,6 +57,7 @@ source_set("webauthn") {
       "gpm_browser_authenticator.h",
       "gpm_enclave_controller.h",
       "gpm_enclave_transaction.h",
+      "gpm_pin_availability.h",
       "gpm_pin_crypto.h",
       "immediate_request_rate_limiter_factory.h",
       "local_authentication_token.h",

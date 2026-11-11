@@ -273,7 +273,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="The PIN is unset."/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/webauthn/enclave_manager_interface.h:GpmPinAvailability) -->
+<!-- LINT.ThenChange(//chrome/browser/webauthn/gpm_pin_availability.h:GpmPinAvailability) -->
 
 <!-- LINT.IfChange(ICloudRecoveryAccountStateUsage) -->
 

@@ -10,6 +10,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/webauthn/gpm_pin_availability.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -24,24 +25,7 @@ class EnclaveManagerInterface : public KeyedService {
   // that they were passed to returns.)
   using Callback = base::OnceCallback<void(bool)>;
 
-  // LINT.IfChange(GpmPinAvailability)
-  //
-  // An enum that expresses whether a GPM PIN is set on an account.
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  enum class GpmPinAvailability {
-    // The PIN is set but not usable (there are 0 remaining attempts for
-    // entering the pin).
-    kGpmPinSetButNotUsable = 0,
-    // The PIN is set and usable (there are > 0 remaining attempts for entering
-    // the pin).
-    kGpmPinSetAndUsable = 1,
-    // The PIN is unset.
-    kGpmPinUnset = 2,
-    kMaxValue = kGpmPinUnset,
-  };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/webauthn/enums.xml:GpmPinAvailability)
-
+  using GpmPinAvailability = webauthn::GpmPinAvailability;
   using GpmPinAvailabilityCallback =
       base::OnceCallback<void(GpmPinAvailability)>;
 
