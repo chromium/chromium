@@ -4770,10 +4770,6 @@ inline constexpr char kSyncEncryptedTabContextName[] =
 inline constexpr char kSyncEncryptedTabContextDescription[] =
     "Enables syncing of Encrypted Tab Context across devices.";
 
-inline constexpr char kSyncGeminiThreadsName[] = "Sync Gemini Threads";
-inline constexpr char kSyncGeminiThreadsDescription[] =
-    "Acquire Gemini Threads via sync.";
-
 inline constexpr char kSyncJourneyName[] = "Sync journeys";
 inline constexpr char kSyncJourneyDescription[] =
     "Enables syncing history journeys.";

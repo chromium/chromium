@@ -9394,16 +9394,6 @@
     "expiry_milestone": 170
   },
   {
-    "name": "sync-gemini-threads",
-    "owners": [
-      "chazzy@chromium.org",
-      "davidjm@google.com",
-      "chrome-shopping-eng@google.com",
-      "top-chrome-desktop-ui@google.com"
-    ],
-    "expiry_milestone": 155
-  },
-  {
     "name": "sync-journey",
     "owners": [ "saeideid@google.com", "hempjudith@google.com" ],
     "expiry_milestone": 170
