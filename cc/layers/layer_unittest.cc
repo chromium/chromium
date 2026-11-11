@@ -156,6 +156,7 @@ class FakeLayerTreeHost : public LayerTreeHost {
     for (auto layer_id :
          pending_commit_state()->layer_ids_that_should_push_properties) {
       LayerById(layer_id)->ClearChangedPushPropertiesForTesting();
+      LayerById(layer_id)->ClearSubtreePropertyChangedForTesting();
     }
     pending_commit_state()->layer_ids_that_should_push_properties.clear();
   }
@@ -704,11 +705,16 @@ TEST_F(LayerTest, ReorderChildren) {
   EXPECT_EQ(child1, parent->children()[1]);
   EXPECT_EQ(child2, parent->children()[2]);
 
+  EXPECT_FALSE(
+      layer_tree_host_->GetPendingCommitState()
+          ->layer_ids_that_should_push_properties.contains(parent->id()));
   for (const auto& child : parent->children()) {
-    EXPECT_FALSE(
+    EXPECT_TRUE(
         layer_tree_host_->GetPendingCommitState()
             ->layer_ids_that_should_push_properties.contains(child->id()));
     EXPECT_TRUE(child->subtree_property_changed());
+    SimulateCommitForLayer(child.get());
+    EXPECT_FALSE(child->subtree_property_changed());
   }
 }
 

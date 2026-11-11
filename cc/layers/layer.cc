@@ -378,11 +378,9 @@ void Layer::ReorderChildren(LayerList* new_children_order) {
 #endif
   inputs.children = std::move(*new_children_order);
 
-  // We do not need to call SetSubtreePropertyChanged for each child here
-  // since SetSubtreePropertyChanged includes SetNeedsPushProperties, but this
-  // change is not included in properties pushing.
-  for (const auto& child : inputs.children)
-    child->subtree_property_changed_.Write(*child) = true;
+  for (const auto& child : inputs.children) {
+    child->SetSubtreePropertyChanged();
+  }
 
   SetNeedsFullTreeSync();
 }
