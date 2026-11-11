@@ -338,6 +338,11 @@ class EVENTS_DEVICES_X11_EXPORT DeviceDataManagerX11
                                   double min_value,
                                   double max_value);
 
+  void UpdateDeviceListFromLists(
+      x11::Connection* connection,
+      const std::vector<x11::Input::DeviceInfo>& dev_list,
+      const std::vector<x11::Input::XIDeviceInfo>& info_list);
+
   // Updates a device based on a Valuator class info.
   DataType UpdateValuatorClassDevice(
       const x11::Input::DeviceClass::Valuator& valuator_class_info,
