@@ -318,7 +318,9 @@ suite('Operations', function() {
     assertEquals(getTestUrl('/download-file'), event.request.url);
   });
 
-  test('Zoom', async function() {
+  // TODO(crbug.com/576703700): Flaky on Android; setZoom(1.5) sometimes reads
+  // back 1.0.
+  test.skip('Zoom', async function() {
     const zoomChangePromise =
         eventToPromise<ZoomChangeEvent>('zoomchange', webview);
     webview.setZoom(1.5);
