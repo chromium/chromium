@@ -410,8 +410,7 @@ void MainThreadDebugger::QuerySelectorCallback(
   auto* container_node = DynamicTo<ContainerNode>(SecondArgumentAsNode(info));
   if (!container_node)
     return;
-  ScriptState* script_state =
-      ScriptState::ForRelevantRealm(info.GetIsolate(), info.This());
+  ScriptState* script_state = ScriptState::ForCurrentRealm(info);
   v8::TryCatch try_catch(info.GetIsolate());
   Element* element = container_node->QuerySelector(
       AtomicString(selector), PassThroughException(info.GetIsolate()));
@@ -440,8 +439,7 @@ void MainThreadDebugger::QuerySelectorAllCallback(
   auto* container_node = DynamicTo<ContainerNode>(SecondArgumentAsNode(info));
   if (!container_node)
     return;
-  ScriptState* script_state =
-      ScriptState::ForRelevantRealm(info.GetIsolate(), info.This());
+  ScriptState* script_state = ScriptState::ForCurrentRealm(info);
   v8::TryCatch try_catch(info.GetIsolate());
   // ToV8(elementList) doesn't work here, since we need a proper Array instance,
   // not NodeList.
@@ -484,8 +482,7 @@ void MainThreadDebugger::XpathSelectorCallback(
   if (!node || !node->IsContainerNode())
     return;
 
-  ScriptState* script_state =
-      ScriptState::ForRelevantRealm(isolate, info.This());
+  ScriptState* script_state = ScriptState::ForCurrentRealm(info);
   v8::TryCatch try_catch(isolate);
   XPathResult* result = XPathEvaluator::Create()->evaluate(
       nullptr, selector, node, nullptr, XPathResult::kAnyType, ScriptValue(),
