@@ -3829,12 +3829,12 @@
   {
     "name": "enable-cross-device-pref-tracker",
     "owners": [ "bwwilliams@google.com", "jhimawan@google.com", "scottyoder@google.com", "treib@google.com" ],
-    "expiry_milestone": 160
+    "expiry_milestone": 180
   },
   {
     "name": "enable-cross-device-theme-tracker",
     "owners": [ "bwwilliams@google.com", "hiramahmood@google.com", "jhimawan@google.com", "scottyoder@google.com", "treib@google.com" ],
-    "expiry_milestone": 160
+    "expiry_milestone": 180
   },
   {
     "name": "enable-d3d12-video-encoder",
