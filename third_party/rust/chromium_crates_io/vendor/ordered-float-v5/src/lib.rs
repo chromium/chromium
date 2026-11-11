@@ -92,6 +92,7 @@ pub use impl_rand::{UniformNotNan, UniformOrdered};
 #[derive(Default, Clone, Copy)]
 #[cfg_attr(feature = "facet", derive(Facet))]
 #[cfg_attr(feature = "facet", facet(transparent))]
+#[repr(transparent)]
 pub struct OrderedFloat<T>(pub T);
 
 #[cfg(feature = "derive-visitor")]
