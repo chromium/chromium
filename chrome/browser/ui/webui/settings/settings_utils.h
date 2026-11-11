@@ -26,6 +26,12 @@ namespace settings_utils {
 // property of the whole session and includes managed guest sessions.
 bool IsGuest(const Profile* profile);
 
+// Returns whether Settings shows the Security keys subpage, including its
+// bio enrollment controls. On Windows, when device::kWebAuthUseNativeWinApi is
+// enabled and the native WebAuthn API is available, Windows handles security
+// keys instead.
+bool IsSecurityKeysSubpageEnabled();
+
 // Invoke UI for network proxy settings.
 void ShowNetworkProxySettings(content::WebContents* web_contents);
 

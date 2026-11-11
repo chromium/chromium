@@ -773,6 +773,10 @@ if (!is_android) {
       deps += [ "//chrome/browser/smart_card" ]
     }
 
+    if (is_win) {
+      deps += [ "//device/fido" ]
+    }
+
     if (is_chromeos) {
       deps += [
         "//ash/constants",

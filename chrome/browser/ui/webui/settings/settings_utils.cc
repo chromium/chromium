@@ -23,6 +23,12 @@
 #include "components/user_manager/user_manager.h"
 #endif
 
+#if BUILDFLAG(IS_WIN)
+#include "base/feature_list.h"
+#include "device/fido/public/features.h"
+#include "device/fido/win/webauthn_api.h"
+#endif
+
 namespace settings_utils {
 
 bool IsGuest(const Profile* profile) {
@@ -36,6 +42,16 @@ bool IsGuest(const Profile* profile) {
 #else
   return profile->IsGuestSession();
 #endif
+}
+
+bool IsSecurityKeysSubpageEnabled() {
+#if BUILDFLAG(IS_WIN)
+  if (base::FeatureList::IsEnabled(device::kWebAuthUseNativeWinApi) &&
+      device::WinWebAuthnApi::GetDefault()->IsAvailable()) {
+    return false;
+  }
+#endif
+  return true;
 }
 
 bool FixupAndValidateStartupPage(const std::string& url_string,

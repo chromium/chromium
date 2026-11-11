@@ -16,6 +16,13 @@
 #include "components/user_manager/user_manager.h"
 #endif
 
+#if BUILDFLAG(IS_WIN)
+#include "base/test/scoped_feature_list.h"
+#include "device/fido/public/features.h"
+#include "device/fido/win/fake_webauthn_api.h"
+#include "device/fido/win/webauthn_api.h"
+#endif
+
 namespace settings_utils {
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -49,6 +56,39 @@ TEST(SettingsUtilsTest, IsGuest) {
 
   profile.SetGuestSession(true);
   EXPECT_TRUE(IsGuest(&profile));
+}
+#endif
+
+#if BUILDFLAG(IS_WIN)
+// The native Windows WebAuthn UI replaces the subpage when that API is
+// available and enabled.
+TEST(SettingsUtilsTest, IsSecurityKeysSubpageEnabled) {
+  base::test::ScopedFeatureList feature_list{device::kWebAuthUseNativeWinApi};
+  device::FakeWinWebAuthnApi fake_api;
+  device::WinWebAuthnApi::ScopedOverride api_override(&fake_api);
+
+  fake_api.set_available(/*available=*/false);
+  EXPECT_TRUE(IsSecurityKeysSubpageEnabled());
+
+  fake_api.set_available(/*available=*/true);
+  EXPECT_FALSE(IsSecurityKeysSubpageEnabled());
+}
+
+TEST(SettingsUtilsTest, IsSecurityKeysSubpageEnabledWithoutNativeWinApi) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(device::kWebAuthUseNativeWinApi);
+  device::FakeWinWebAuthnApi fake_api;
+  device::WinWebAuthnApi::ScopedOverride api_override(&fake_api);
+
+  fake_api.set_available(/*available=*/false);
+  EXPECT_TRUE(IsSecurityKeysSubpageEnabled());
+
+  fake_api.set_available(/*available=*/true);
+  EXPECT_TRUE(IsSecurityKeysSubpageEnabled());
+}
+#else
+TEST(SettingsUtilsTest, IsSecurityKeysSubpageEnabled) {
+  EXPECT_TRUE(IsSecurityKeysSubpageEnabled());
 }
 #endif
 

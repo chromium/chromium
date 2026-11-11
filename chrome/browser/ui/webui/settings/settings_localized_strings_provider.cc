@@ -167,8 +167,6 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/startup/startup_features.h"
-#include "device/fido/public/features.h"
-#include "device/fido/win/webauthn_api.h"
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_LINUX)
@@ -4564,16 +4562,12 @@ void AddSecurityKeysStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_SECURITY_KEYS_SAME_PIN_AS_CURRENT},
   };
   html_source->AddLocalizedStrings(kSecurityKeysStrings);
-  bool win_native_api_available = false;
-#if BUILDFLAG(IS_WIN)
-  win_native_api_available =
-      base::FeatureList::IsEnabled(device::kWebAuthUseNativeWinApi) &&
-      device::WinWebAuthnApi::GetDefault()->IsAvailable();
-#endif
+  const bool security_keys_subpage_enabled =
+      settings_utils::IsSecurityKeysSubpageEnabled();
   html_source->AddBoolean("enableSecurityKeysSubpage",
-                          !win_native_api_available);
+                          security_keys_subpage_enabled);
   html_source->AddBoolean("enableSecurityKeysBioEnrollment",
-                          !win_native_api_available);
+                          security_keys_subpage_enabled);
 }
 
 void AddShortcutInputStrings(content::WebUIDataSource* html_source) {
