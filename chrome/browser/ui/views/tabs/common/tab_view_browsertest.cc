@@ -653,7 +653,7 @@ IN_PROC_BROWSER_TEST_P(TabViewTest, LogsTabCloseMetrics) {
   base::UserActionTester user_action_tester;
 
   AppendTab();
-  TabCollectionNode* tab_node = unpinned_collection_node()->GetNodeForHandle(
+  TabCollectionNode* tab_node = root_node()->GetNodeForHandle(
       tab_strip_model()->GetActiveTab()->GetHandle());
   TabCloseButton* close_button =
       views::AsViewClass<TabView>(tab_node->view())->close_button_for_testing();
@@ -673,7 +673,7 @@ IN_PROC_BROWSER_TEST_P(TabViewTest, LogsTabCloseMetrics_AudioIndicator) {
       ->SetCurrentlyAudibleForTesting();
   tab_strip_model()->ActivateTabAt(0);
 
-  TabCollectionNode* tab_node = unpinned_collection_node()->GetNodeForHandle(
+  TabCollectionNode* tab_node = root_node()->GetNodeForHandle(
       tab_strip_model()->GetActiveTab()->GetHandle());
   TabCloseButton* close_button =
       views::AsViewClass<TabView>(tab_node->view())->close_button_for_testing();
@@ -705,7 +705,7 @@ IN_PROC_BROWSER_TEST_P(TabViewTest, LogsTabCloseMetrics_RecordingIndicator) {
       /*screen_capture_ids=*/{}, content::MediaStreamUI::StateChangeCallback());
   tab_strip_model()->ActivateTabAt(0);
 
-  TabCollectionNode* tab_node = unpinned_collection_node()->GetNodeForHandle(
+  TabCollectionNode* tab_node = root_node()->GetNodeForHandle(
       tab_strip_model()->GetActiveTab()->GetHandle());
   TabCloseButton* close_button =
       views::AsViewClass<TabView>(tab_node->view())->close_button_for_testing();
@@ -721,10 +721,8 @@ IN_PROC_BROWSER_TEST_P(TabViewTest, LogsTabCloseMetrics_SplitView) {
   base::UserActionTester user_action_tester;
 
   AppendSplitTab();
-  TabCollectionNode* tab_node =
-      unpinned_collection_node()
-          ->GetChildNodeOfType(TabCollectionNode::Type::SPLIT)
-          ->GetNodeForHandle(tab_strip_model()->GetActiveTab()->GetHandle());
+  TabCollectionNode* tab_node = root_node()->GetNodeForHandle(
+      tab_strip_model()->GetActiveTab()->GetHandle());
   TabCloseButton* close_button =
       views::AsViewClass<TabView>(tab_node->view())->close_button_for_testing();
   WaitForLayout(tab_node->view());
@@ -738,12 +736,10 @@ IN_PROC_BROWSER_TEST_P(TabViewTest, LogsTabCloseMetrics_SplitView) {
   user_action_tester.ResetCounts();
 
   AppendSplitTab();
-  tab_node = unpinned_collection_node()
-                 ->GetChildNodeOfType(TabCollectionNode::Type::SPLIT)
-                 ->GetNodeForHandle(
-                     tab_strip_model()
-                         ->GetTabAtIndex(tab_strip_model()->active_index() + 1)
-                         ->GetHandle());
+  tab_node = root_node()->GetNodeForHandle(
+      tab_strip_model()
+          ->GetTabAtIndex(tab_strip_model()->active_index() + 1)
+          ->GetHandle());
   close_button =
       views::AsViewClass<TabView>(tab_node->view())->close_button_for_testing();
   WaitForLayout(tab_node->view());
@@ -769,9 +765,9 @@ IN_PROC_BROWSER_TEST_P(TabViewTest,
   SplitTabView* split_tab_view =
       views::AsViewClass<SplitTabView>(split_tab_node->view());
   TabView* tab_1_view = views::AsViewClass<TabView>(
-      split_tab_node->GetNodeForHandle(tab_1->GetHandle())->view());
+      root_node()->GetNodeForHandle(tab_1->GetHandle())->view());
   TabView* tab_2_view = views::AsViewClass<TabView>(
-      split_tab_node->GetNodeForHandle(tab_2->GetHandle())->view());
+      root_node()->GetNodeForHandle(tab_2->GetHandle())->view());
   views::View* expected_anchor_1 =
       GetParam() == TabStripOrientation::kVertical
           ? static_cast<views::View*>(split_tab_view)
@@ -806,17 +802,13 @@ IN_PROC_BROWSER_TEST_P(TabViewTest,
   tabs::TabInterface* tab_2 = tab_strip_model()->GetTabAtIndex(2);
 
   TabView* tab_0_target = AsViewClass<TabView>(
-      unpinned_collection_node()->GetNodeForHandle(tab_0->GetHandle())->view());
-
-  TabCollectionNode* split_tab_node =
-      unpinned_collection_node()->GetChildNodeOfType(
-          TabCollectionNode::Type::SPLIT);
+      root_node()->GetNodeForHandle(tab_0->GetHandle())->view());
 
   TabView* tab_1_target = AsViewClass<TabView>(
-      split_tab_node->GetNodeForHandle(tab_1->GetHandle())->view());
+      root_node()->GetNodeForHandle(tab_1->GetHandle())->view());
 
   TabView* tab_2_target = AsViewClass<TabView>(
-      split_tab_node->GetNodeForHandle(tab_2->GetHandle())->view());
+      root_node()->GetNodeForHandle(tab_2->GetHandle())->view());
 
   // Show hover card for each tab and then check that we set the
   // target tab is set correctly.
@@ -1314,10 +1306,7 @@ IN_PROC_BROWSER_TEST_P(TabViewDataSharingEnabledTest, LogsTabSwitchMetrics) {
 
   // Get the view for the initial tab that is in a group.
   tabs::TabInterface* tab = tab_strip_model()->GetTabAtIndex(0);
-  TabCollectionNode* tab_node =
-      unpinned_collection_node()
-          ->GetChildNodeOfType(TabCollectionNode::Type::GROUP)
-          ->GetNodeForHandle(tab->GetHandle());
+  TabCollectionNode* tab_node = root_node()->GetNodeForHandle(tab->GetHandle());
   views::View* tab_view = tab_node->view();
   ASSERT_TRUE(views::IsViewClass<TabView>(tab_view));
 

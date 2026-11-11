@@ -28,6 +28,7 @@
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/view_targeter_delegate.h"
 
+class RootTabCollectionNode;
 class TabCollectionNode;
 class TabStripModel;
 class TabLinkDropHandler;
@@ -47,7 +48,7 @@ class TabDragHandler : public TabDragContext,
  public:
   explicit TabDragHandler(
       TabStripModel& tab_strip_model,
-      TabCollectionNode& root_node,
+      RootTabCollectionNode& root_node,
       TabStripRegionView& tab_strip_region_view,
       base::RepeatingCallback<gfx::Rect()> get_draggable_bounds_callback);
   ~TabDragHandler() override;
@@ -210,7 +211,7 @@ class TabDragHandler : public TabDragContext,
   void InvalidateContainerLayouts();
 
   const raw_ref<TabStripModel> tab_strip_model_;
-  const raw_ref<TabCollectionNode> root_node_;
+  const raw_ref<RootTabCollectionNode> root_node_;
   const raw_ref<TabStripRegionView> tab_strip_region_view_;
   const base::RepeatingCallback<gfx::Rect()> get_draggable_bounds_callback_;
 

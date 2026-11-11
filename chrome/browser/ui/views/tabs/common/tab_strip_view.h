@@ -17,6 +17,7 @@
 
 class HorizontalTabStripOverflowIndicatorView;
 class PrefService;
+class RootTabCollectionNode;
 class TabCollectionNode;
 class PinnedTabContainerView;
 class UnpinnedTabContainerView;
@@ -41,7 +42,7 @@ class TabStripView final : public views::View,
   METADATA_HEADER(TabStripView, views::View)
 
  public:
-  explicit TabStripView(TabCollectionNode* collection_node);
+  explicit TabStripView(RootTabCollectionNode* collection_node);
   TabStripView(const TabStripView&) = delete;
   TabStripView& operator=(const TabStripView&) = delete;
   ~TabStripView() override;
@@ -181,7 +182,7 @@ class TabStripView final : public views::View,
 
   PrefChangeRegistrar pref_change_registrar_;
   const TabStripOrientation orientation_;
-  raw_ptr<TabCollectionNode> collection_node_ = nullptr;
+  raw_ptr<RootTabCollectionNode> collection_node_ = nullptr;
   raw_ptr<views::ScrollView> pinned_tabs_scroll_view_ = nullptr;
   raw_ptr<PinnedTabContainerView> pinned_tabs_container_view_ = nullptr;
   raw_ptr<HorizontalTabStripOverflowIndicatorView>

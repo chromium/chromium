@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/views/tabs/common/root_tab_collection_node.h"
 
+#include <utility>
+
+#include "base/functional/bind.h"
 #include "base/stl_util.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -52,7 +55,11 @@ RootTabCollectionNode::~RootTabCollectionNode() = default;
 void RootTabCollectionNode::Init() {
   tab_strip_model_->Root()->AddObserver(this);
   tab_strip_model_->SetTabStripUI(this);
-  add_node_view_to_parent_.Run(Initialize());
+  std::unique_ptr<views::View> view = Initialize();
+  // Index the tree before its views join the view hierarchy, which looks nodes
+  // up through this root as views are added (see AddNewChild()).
+  RegisterSubtree(this);
+  add_node_view_to_parent_.Run(std::move(view));
   UpdateAccessibleTabIndices();
 }
 
@@ -62,6 +69,28 @@ void RootTabCollectionNode::Reset() {
   Deinitialize();
   views::View* view = std::exchange(node_view_, nullptr);
   remove_node_view_from_parent_.Run(view);
+}
+
+void RootTabCollectionNode::Deinitialize() {
+  // The nodes are about to be destroyed; drop the index first so that it never
+  // holds a dangling pointer.
+  handle_to_node_map_.clear();
+  TabCollectionNode::Deinitialize();
+}
+
+TabCollectionNode* RootTabCollectionNode::GetNodeForHandle(
+    const tabs::TabCollectionNodeHandle& handle) {
+  return const_cast<TabCollectionNode*>(
+      std::as_const(*this).GetNodeForHandle(handle));
+}
+
+const TabCollectionNode* RootTabCollectionNode::GetNodeForHandle(
+    const tabs::TabCollectionNodeHandle& handle) const {
+  // The index is filled in Init() and dropped in Deinitialize(); nothing looks
+  // nodes up outside that window.
+  CHECK(!handle_to_node_map_.empty());
+  const auto it = handle_to_node_map_.find(handle);
+  return it != handle_to_node_map_.end() ? it->second.get() : nullptr;
 }
 
 base::CallbackListSubscription
@@ -94,6 +123,24 @@ RootTabCollectionNode::RegisterOnActiveTabChangedCallback(
   return on_active_tab_changed_callback_list_.Add(std::move(callback));
 }
 
+void RootTabCollectionNode::RegisterSubtree(TabCollectionNode* node) {
+  const bool inserted =
+      handle_to_node_map_.try_emplace(node->GetHandle(), node).second;
+  // Two live nodes never share a handle.
+  CHECK(inserted);
+  for (const auto& child : node->children()) {
+    RegisterSubtree(child.get());
+  }
+}
+
+void RootTabCollectionNode::UnregisterSubtree(TabCollectionNode* node) {
+  for (const auto& child : node->children()) {
+    UnregisterSubtree(child.get());
+  }
+  const size_t erased = handle_to_node_map_.erase(node->GetHandle());
+  CHECK_EQ(erased, 1u);
+}
+
 void RootTabCollectionNode::OnChildrenAdded(
     const tabs::TabCollection::Position& position,
     const tabs::TabCollectionNodes& handles,
@@ -103,7 +150,9 @@ void RootTabCollectionNode::OnChildrenAdded(
     tabs::ConstChildPtr child = GetNodeFromHandle(handle);
     GetNodeForHandle(position.parent_handle)
         ->AddNewChild(GetPassKey(), child, position.index,
-                      /*perform_initialization=*/insert_from_detached);
+                      /*perform_initialization=*/insert_from_detached,
+                      base::BindOnce(&RootTabCollectionNode::RegisterSubtree,
+                                     base::Unretained(this)));
   }
   UpdateAccessibleTabIndices();
   on_children_added_callback_list_.Notify(handles);
@@ -119,9 +168,12 @@ void RootTabCollectionNode::OnChildrenRemoved(
 
   auto animate_layout = GetController()->ScopedAnimateLayout();
   for (auto& handle : handles) {
-    TabCollectionNode* child_node = parent_node->GetNodeForHandle(handle);
+    TabCollectionNode* child_node = GetNodeForHandle(handle);
     if (child_node) {
       on_child_will_be_removed_callback_list_.Notify(child_node);
+      // RemoveChild() destroys the node and its subtree; drop them from the
+      // index first so that no lookup can return a dying node.
+      UnregisterSubtree(child_node);
     }
     parent_node->RemoveChild(GetPassKey(), handle,
                              /*perform_deinitialization=*/false);
@@ -144,10 +196,8 @@ void RootTabCollectionNode::OnChildMoved(
   TabCollectionNode* pinned_node = GetChildNodeOfType(Type::PINNED);
   CHECK(pinned_node);
 
-  const bool src_pinned =
-      pinned_node->GetNodeForHandle(src_parent_node->GetHandle()) != nullptr;
-  const bool dst_pinned =
-      pinned_node->GetNodeForHandle(dst_parent_node->GetHandle()) != nullptr;
+  const bool src_pinned = pinned_node->Contains(src_parent_node->GetHandle());
+  const bool dst_pinned = pinned_node->Contains(dst_parent_node->GetHandle());
 
   bool pin_state_changed = src_pinned != dst_pinned;
 
@@ -156,11 +206,17 @@ void RootTabCollectionNode::OnChildMoved(
   if (pin_state_changed) {
     // Pin state change is treated as a remove and add instead of an attach and
     // detach since we have separate concurrent animations in each container.
+    // The index follows: the old node leaves it, the new one enters it.
+    TabCollectionNode* moved_node = GetNodeForHandle(moved_node_handle);
+    CHECK(moved_node);
+    UnregisterSubtree(moved_node);
     src_parent_node->RemoveChild(GetPassKey(), moved_node_handle,
                                  /*perform_deinitialization=*/false);
     dst_parent_node->AddNewChild(
         GetPassKey(), GetNodeFromHandle(moved_node_handle), to_position.index,
-        /*perform_initialization=*/true);
+        /*perform_initialization=*/true,
+        base::BindOnce(&RootTabCollectionNode::RegisterSubtree,
+                       base::Unretained(this)));
   } else if (src_parent_node == dst_parent_node) {
     // Moves within the same container treated as a reorder of views e.g. within
     // unpinned or group containers.

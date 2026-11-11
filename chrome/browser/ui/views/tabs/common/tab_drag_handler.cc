@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
+#include "chrome/browser/ui/views/tabs/common/root_tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/common/split_tab_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_collection_animating_layout_manager.h"
 #include "chrome/browser/ui/views/tabs/common/tab_collection_node.h"
@@ -137,7 +138,7 @@ int GetInsertionIndexForNode(const TabCollectionNode& node,
 
 TabDragHandler::TabDragHandler(
     TabStripModel& tab_strip_model,
-    TabCollectionNode& root_node,
+    RootTabCollectionNode& root_node,
     TabStripRegionView& tab_strip_region_view,
     base::RepeatingCallback<gfx::Rect()> get_draggable_bounds_callback)
     : tab_strip_model_(tab_strip_model),

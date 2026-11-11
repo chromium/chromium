@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/frame_separator.h"
 #include "chrome/browser/ui/views/tabs/common/pinned_tab_container_view.h"
+#include "chrome/browser/ui/views/tabs/common/root_tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/common/tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_strip_collection_controller.h"
@@ -221,7 +222,7 @@ class TabStripView::TargetViewsTracker : public views::ViewObserver {
       observations_{this};
 };
 
-TabStripView::TabStripView(TabCollectionNode* collection_node)
+TabStripView::TabStripView(RootTabCollectionNode* collection_node)
     : orientation_(collection_node->orientation()),
       collection_node_(collection_node),
       are_separators_hidden_(ShouldHideSeparators()),
@@ -457,8 +458,7 @@ void TabStripView::OnChildMoved(TabCollectionNode* moved_node) {
               moved_node->GetNodeData());
       is_active_tab = (tab == active_tab);
     } else if (moved_node->type() == TabCollectionNode::Type::SPLIT) {
-      is_active_tab =
-          (moved_node->GetNodeForHandle(active_tab->GetHandle()) != nullptr);
+      is_active_tab = moved_node->Contains(active_tab->GetHandle());
     }
   }
 
