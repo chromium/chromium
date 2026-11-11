@@ -99,6 +99,18 @@ struct GridLanesItemData : public GarbageCollected<GridLanesItemData> {
 struct GridLaneData {
   DISALLOW_NEW();
 
+  GridLaneData() = default;
+
+  // Use copy-assignment to emit a barrier for the nested HeapVector.
+  GridLaneData(const GridLaneData& other)
+      : has_unfinished_items(other.has_unfinished_items),
+        item_offset_adjustment(other.item_offset_adjustment) {
+    item_data = other.item_data;
+  }
+  GridLaneData(GridLaneData&&) = default;
+  GridLaneData& operator=(const GridLaneData&) = default;
+  GridLaneData& operator=(GridLaneData&&) = default;
+
   void AddItem(GridLanesItemData* item) {
     item_data.push_back(std::move(item));
   }

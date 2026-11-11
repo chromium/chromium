@@ -3390,6 +3390,28 @@ TEST_F(GridLanesLayoutAlgorithmTest, PopulateGridLanesBreakTokenData) {
   EXPECT_TRUE(grid_lanes[0].item_data[1]->is_item_start);
 }
 
+TEST_F(GridLanesLayoutAlgorithmTest, CopiesGridLanesData) {
+  GridLanesDataVector source(2);
+  source[0].has_unfinished_items = true;
+  source[0].item_offset_adjustment = LayoutUnit(10);
+  source[0].item_data.push_back(nullptr);
+  source[0].item_data.push_back(nullptr);
+  source[1].item_data.push_back(nullptr);
+
+  GridLanesDataVector copy = source;
+
+  ASSERT_EQ(copy.size(), source.size());
+  EXPECT_TRUE(copy[0].has_unfinished_items);
+  EXPECT_EQ(copy[0].item_offset_adjustment, LayoutUnit(10));
+  ASSERT_EQ(copy[0].item_data.size(), 2u);
+  ASSERT_EQ(copy[1].item_data.size(), 1u);
+  EXPECT_NE(copy[0].item_data.data(), source[0].item_data.data());
+  EXPECT_NE(copy[1].item_data.data(), source[1].item_data.data());
+
+  source[0].item_data.clear();
+  EXPECT_EQ(copy[0].item_data.size(), 2u);
+}
+
 TEST_F(GridLanesLayoutAlgorithmTest, SharePlacementDataAcrossFragments) {
   SetBodyInnerHTML(R"HTML(
     <div id="grid-lanes" style="display: grid-lanes; height: 200px;
