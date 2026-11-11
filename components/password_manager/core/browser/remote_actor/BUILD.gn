@@ -11,6 +11,10 @@ source_set("remote_actor") {
   sources = [
     "remote_actor_credential_permission_client.cc",
     "remote_actor_credential_permission_client.h",
+    "remote_actor_credential_sharing_controller.cc",
+    "remote_actor_credential_sharing_controller.h",
+    "remote_actor_credential_sharing_result.cc",
+    "remote_actor_credential_sharing_result.h",
     "remote_actor_credential_sharing_service.h",
     "remote_actor_credential_sharing_service_impl.cc",
     "remote_actor_credential_sharing_service_impl.h",
@@ -25,6 +29,7 @@ source_set("remote_actor") {
   public_deps = [
     "//base",
     "//components/keyed_service/core",
+    "//components/password_manager/core/browser",
     "//components/password_manager/core/browser/sync",
     "//components/signin/public/base",
     "//components/sync/base",
@@ -36,9 +41,11 @@ source_set("remote_actor") {
 
   deps = [
     "//components/password_manager/core/browser:metrics_util",
+    "//components/password_manager/core/browser/features:utils",
     "//components/password_manager/core/browser/remote_actor/protos",
     "//components/password_manager/core/common:features",
     "//components/signin/public/identity_manager",
+    "//components/sync/service",
     "//google_apis",
     "//google_apis/common",
   ]
@@ -48,6 +55,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "remote_actor_credential_permission_client_unittest.cc",
+    "remote_actor_credential_sharing_controller_unittest.cc",
     "remote_actor_credential_sharing_service_impl_unittest.cc",
     "remote_actor_credential_store_client_unittest.cc",
     "remote_actor_request_helper_unittest.cc",
@@ -55,17 +63,25 @@ source_set("unit_tests") {
   deps = [
     ":remote_actor",
     "//base/test:test_support",
+    "//components/affiliations/core/browser:test_support",
+    "//components/password_manager/core/browser:password_form",
+    "//components/password_manager/core/browser:password_string",
+    "//components/password_manager/core/browser/affiliation:test_support",
+    "//components/password_manager/core/browser/password_store:test_support",
     "//components/password_manager/core/browser/remote_actor/protos",
     "//components/password_manager/core/browser/sync",
     "//components/password_manager/core/common:features",
     "//components/signin/public/identity_manager:test_support",
+    "//components/sync:test_support",
     "//components/sync/base",
     "//components/sync/protocol",
+    "//components/sync/service",
     "//google_apis",
     "//google_apis/common",
     "//net",
     "//services/network:test_support",
     "//services/network/public/cpp",
+    "//testing/gmock",
     "//testing/gtest",
     "//url",
   ]
