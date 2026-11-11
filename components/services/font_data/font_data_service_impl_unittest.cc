@@ -6,8 +6,12 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 #include <utility>
 
+#include "base/files/file_util.h"
+#include "base/files/memory_mapped_file.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
@@ -31,6 +35,8 @@ namespace {
 
 class TestFontDataService : public FontDataServiceImpl {
  public:
+  using FontDataServiceImpl::OpenFontFile;
+
   TestFontDataService() = default;
   ~TestFontDataService() override = default;
   TestFontDataService(const TestFontDataService&) = delete;
@@ -101,6 +107,22 @@ mojom::TypefaceStylePtr CreateTypefaceStyle(int weight,
   style->width = width;
   style->slant = slant;
   return style;
+}
+
+TEST_F(FontDataServiceImplUnitTest, OpenFontFileAllowsRename) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  const auto font_path = temp_dir.GetPath().AppendASCII("font.ttf");
+  ASSERT_TRUE(base::WriteFile(font_path, "font data"));
+  auto file = impl_.OpenFontFile(font_path);
+  ASSERT_TRUE(file.IsValid());
+  base::MemoryMappedFile mapping;
+  ASSERT_TRUE(
+      mapping.Initialize(std::move(file), base::MemoryMappedFile::READ_ONLY));
+  EXPECT_TRUE(
+      base::Move(font_path, temp_dir.GetPath().AppendASCII("renamed.ttf")));
+  EXPECT_EQ("font data",
+            std::string(mapping.bytes().begin(), mapping.bytes().end()));
 }
 
 #if BUILDFLAG(IS_WIN)

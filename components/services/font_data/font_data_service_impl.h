@@ -107,6 +107,10 @@ class FontDataServiceImpl : public mojom::FontDataService {
                       MatchLocalFontCallback callback) override;
 
  protected:
+  // Opens a font file read-only, allowing deletion but denying write sharing
+  // on Windows.
+  static base::File OpenFontFile(const base::FilePath& path);
+
   // Returns a file handle based on the SkTypeface. The file handle may be empty
   // if there is no file associated with the typeface or if the typeface is
   // null. This is a helper method that can be overridden for testing purposes.

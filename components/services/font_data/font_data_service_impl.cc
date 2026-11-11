@@ -122,6 +122,12 @@ void FontDataServiceImpl::BindReceiver(
   receivers_.Add(this, std::move(receiver));
 }
 
+base::File FontDataServiceImpl::OpenFontFile(const base::FilePath& path) {
+  return base::File(path, base::File::FLAG_OPEN | base::File::FLAG_READ |
+                              base::File::FLAG_WIN_EXCLUSIVE_WRITE |
+                              base::File::FLAG_WIN_SHARE_DELETE);
+}
+
 std::tuple<base::File, uint64_t> FontDataServiceImpl::GetFileHandle(
     SkTypeface& typeface) {
   SkString font_path;
@@ -137,9 +143,7 @@ std::tuple<base::File, uint64_t> FontDataServiceImpl::GetFileHandle(
       "Chrome.FontDataService.FileHandlePathReferencesParent",
       font_file_path.ReferencesParent());
 
-  auto font_file =
-      base::File(font_file_path, base::File::FLAG_OPEN | base::File::FLAG_READ |
-                                     base::File::FLAG_WIN_EXCLUSIVE_WRITE);
+  auto font_file = OpenFontFile(font_file_path);
 #if BUILDFLAG(IS_WIN)
   if (!font_file.IsValid()) {
     base::UmaHistogramSparse("Chrome.FontDataService.WinLastError",
@@ -573,9 +577,7 @@ void FontDataServiceImpl::MatchLocalFont(const std::string& font_unique_name,
         "Chrome.FontDataService.MatchLocalFont.FilterSuccess",
         match.has_value());
     if (match) {
-      base::File font_file(match->file_path,
-                           base::File::FLAG_OPEN | base::File::FLAG_READ |
-                               base::File::FLAG_WIN_EXCLUSIVE_WRITE);
+      base::File font_file = OpenFontFile(match->file_path);
 #if BUILDFLAG(IS_WIN)
       if (!font_file.IsValid()) {
         base::UmaHistogramSparse("Chrome.FontDataService.WinLastError",
