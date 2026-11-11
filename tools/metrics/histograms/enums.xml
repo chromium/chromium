@@ -1383,28 +1383,6 @@ uploading your change for review.  These are checked by presubmit scripts.
 
 <!-- LINT.ThenChange(//components/browser_ui/bottomsheet/android/java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheetController.java:StateChangeReason) -->
 
-<!-- LINT.IfChange(BrowserActuatorPayloadDropReason) -->
-
-<enum name="BrowserActuatorPayloadDropReason">
-  <int value="0" label="Unspecified or unknown payload type"/>
-  <int value="1" label="Any.type_url did not match the payload type"/>
-  <int value="2" label="No handler factory registered for the payload type"/>
-  <int value="3" label="Dispatch to the handler failed"/>
-</enum>
-
-<!-- LINT.ThenChange(//components/stream_transport/internal/metrics_utils.h:DownstreamPayloadDropReason) -->
-
-<!-- LINT.IfChange(BrowserActuatorSessionInitIngressSource) -->
-
-<enum name="BrowserActuatorSessionInitIngressSource">
-  <int value="0" label="Unspecified"/>
-  <int value="1" label="FcmPush"/>
-  <int value="2" label="WatchSessionsStream"/>
-  <int value="3" label="LocalChromeIngest"/>
-</enum>
-
-<!-- LINT.ThenChange(//components/stream_transport/public/common.h:InitIngressSource) -->
-
 <!-- LINT.IfChange(BrowserProfileType) -->
 
 <enum name="BrowserProfileType">

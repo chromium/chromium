@@ -477,7 +477,7 @@ TEST_F(BrowserActuatorFcmIntegrationTest,
       upstream_msg.typed_payloads(0).proto_payload().value()));
   EXPECT_TRUE(ack_cmd.has_start_session_ack());
   histogram_tester.ExpectUniqueSample(
-      "Browser.Actuator.Transport.InitIngressSource",
+      "StreamTransport.InitIngressSource",
       stream_transport::InitIngressSource::kFcmPush, 1);
 
   stream_transport::TransportService* service =

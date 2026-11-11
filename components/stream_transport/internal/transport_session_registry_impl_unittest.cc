@@ -157,7 +157,7 @@ TEST(TransportSessionRegistryImplTest, EnforcesMaxConcurrentSessions) {
 }
 
 // Verifies that
-// `Browser.Actuator.Transport.SessionRegistry.ExistingSessionsCount` records
+// `StreamTransport.SessionRegistry.ExistingSessionsCount` records
 // the number of currently active transport sessions immediately prior to
 // attempting to create a new session.
 TEST(TransportSessionRegistryImplTest,
@@ -168,23 +168,23 @@ TEST(TransportSessionRegistryImplTest,
                                         /*max_concurrent_sessions=*/2);
 
   histogram_tester.ExpectTotalCount(
-      "Browser.Actuator.Transport.SessionRegistry.ExistingSessionsCount", 0);
+      "StreamTransport.SessionRegistry.ExistingSessionsCount", 0);
 
   // 1st session creation: registry has 0 existing sessions.
   registry.CreateSession("session_1", InitIngressSource::kUnspecified);
   histogram_tester.ExpectUniqueSample(
-      "Browser.Actuator.Transport.SessionRegistry.ExistingSessionsCount",
+      "StreamTransport.SessionRegistry.ExistingSessionsCount",
       /*sample=*/0,
       /*expected_count=*/1);
 
   // 2nd session creation: registry has 1 existing session.
   registry.CreateSession("session_2", InitIngressSource::kUnspecified);
   histogram_tester.ExpectBucketCount(
-      "Browser.Actuator.Transport.SessionRegistry.ExistingSessionsCount",
+      "StreamTransport.SessionRegistry.ExistingSessionsCount",
       /*sample=*/1,
       /*expected_count=*/1);
   histogram_tester.ExpectTotalCount(
-      "Browser.Actuator.Transport.SessionRegistry.ExistingSessionsCount", 2);
+      "StreamTransport.SessionRegistry.ExistingSessionsCount", 2);
 }
 
 // Verifies that attempting to create a new session when the registry has
@@ -207,15 +207,15 @@ TEST(TransportSessionRegistryImplTest,
       registry.CreateSession("session_3", InitIngressSource::kUnspecified),
       nullptr);
   histogram_tester.ExpectBucketCount(
-      "Browser.Actuator.Transport.SessionRegistry.ExistingSessionsCount",
+      "StreamTransport.SessionRegistry.ExistingSessionsCount",
       /*sample=*/2,
       /*expected_count=*/1);
   histogram_tester.ExpectTotalCount(
-      "Browser.Actuator.Transport.SessionRegistry.ExistingSessionsCount", 3);
+      "StreamTransport.SessionRegistry.ExistingSessionsCount", 3);
 }
 
 // Verifies that
-// `Browser.Actuator.Transport.SessionRegistry.SessionLimitReached` records
+// `StreamTransport.SessionRegistry.SessionLimitReached` records
 // `false` when a new session is created within the allowed limit, and `true`
 // when the session request is rejected because the maximum limit is reached.
 TEST(TransportSessionRegistryImplTest,
@@ -226,18 +226,18 @@ TEST(TransportSessionRegistryImplTest,
                                         /*max_concurrent_sessions=*/2);
 
   histogram_tester.ExpectTotalCount(
-      "Browser.Actuator.Transport.SessionRegistry.SessionLimitReached", 0);
+      "StreamTransport.SessionRegistry.SessionLimitReached", 0);
 
   // 1st and 2nd session creations succeed (limit not reached -> false).
   registry.CreateSession("session_1", InitIngressSource::kUnspecified);
   histogram_tester.ExpectBucketCount(
-      "Browser.Actuator.Transport.SessionRegistry.SessionLimitReached",
+      "StreamTransport.SessionRegistry.SessionLimitReached",
       /*sample=*/false,
       /*expected_count=*/1);
 
   registry.CreateSession("session_2", InitIngressSource::kUnspecified);
   histogram_tester.ExpectBucketCount(
-      "Browser.Actuator.Transport.SessionRegistry.SessionLimitReached",
+      "StreamTransport.SessionRegistry.SessionLimitReached",
       /*sample=*/false,
       /*expected_count=*/2);
 
@@ -246,11 +246,11 @@ TEST(TransportSessionRegistryImplTest,
       registry.CreateSession("session_3", InitIngressSource::kUnspecified),
       nullptr);
   histogram_tester.ExpectBucketCount(
-      "Browser.Actuator.Transport.SessionRegistry.SessionLimitReached",
+      "StreamTransport.SessionRegistry.SessionLimitReached",
       /*sample=*/true,
       /*expected_count=*/1);
   histogram_tester.ExpectTotalCount(
-      "Browser.Actuator.Transport.SessionRegistry.SessionLimitReached", 3);
+      "StreamTransport.SessionRegistry.SessionLimitReached", 3);
 }
 
 // Verifies that looking up an existing session or attempting to create a
@@ -266,9 +266,9 @@ TEST(TransportSessionRegistryImplTest,
   // Create initial session.
   registry.CreateSession("session_1", InitIngressSource::kUnspecified);
   histogram_tester.ExpectTotalCount(
-      "Browser.Actuator.Transport.SessionRegistry.ExistingSessionsCount", 1);
+      "StreamTransport.SessionRegistry.ExistingSessionsCount", 1);
   histogram_tester.ExpectTotalCount(
-      "Browser.Actuator.Transport.SessionRegistry.SessionLimitReached", 1);
+      "StreamTransport.SessionRegistry.SessionLimitReached", 1);
 
   // Attempting to create the existing session again or retrieving it should not
   // record new histogram samples.
@@ -280,9 +280,9 @@ TEST(TransportSessionRegistryImplTest,
   EXPECT_EQ(session1->GetSessionId(), "session_1");
 
   histogram_tester.ExpectTotalCount(
-      "Browser.Actuator.Transport.SessionRegistry.ExistingSessionsCount", 1);
+      "StreamTransport.SessionRegistry.ExistingSessionsCount", 1);
   histogram_tester.ExpectTotalCount(
-      "Browser.Actuator.Transport.SessionRegistry.SessionLimitReached", 1);
+      "StreamTransport.SessionRegistry.SessionLimitReached", 1);
 }
 
 // Verifies that after an active session is destroyed to free capacity, creating
@@ -311,16 +311,16 @@ TEST(TransportSessionRegistryImplTest,
   EXPECT_EQ(session3->GetSessionId(), "session_3");
 
   histogram_tester.ExpectBucketCount(
-      "Browser.Actuator.Transport.SessionRegistry.ExistingSessionsCount",
+      "StreamTransport.SessionRegistry.ExistingSessionsCount",
       /*sample=*/1,
       /*expected_count=*/2);
   histogram_tester.ExpectBucketCount(
-      "Browser.Actuator.Transport.SessionRegistry.SessionLimitReached",
+      "StreamTransport.SessionRegistry.SessionLimitReached",
       /*sample=*/false,
       /*expected_count=*/3);
 }
 
-// Verifies that `Browser.Actuator.Transport.InitIngressSource` records the
+// Verifies that `StreamTransport.InitIngressSource` records the
 // provided `InitIngressSource` once for each newly created session.
 TEST(TransportSessionRegistryImplTest,
      InitIngressSourceHistogram_RecordedOnSessionCreation) {
@@ -329,8 +329,7 @@ TEST(TransportSessionRegistryImplTest,
   TransportSessionRegistryImpl registry(channel.GetWeakPtr(),
                                         /*max_concurrent_sessions=*/10);
 
-  histogram_tester.ExpectTotalCount(
-      "Browser.Actuator.Transport.InitIngressSource", 0);
+  histogram_tester.ExpectTotalCount("StreamTransport.InitIngressSource", 0);
 
   ASSERT_NE(registry.CreateSession("session_fcm", InitIngressSource::kFcmPush),
             nullptr);
@@ -344,25 +343,21 @@ TEST(TransportSessionRegistryImplTest,
                                    InitIngressSource::kUnspecified),
             nullptr);
 
-  histogram_tester.ExpectBucketCount(
-      "Browser.Actuator.Transport.InitIngressSource",
-      InitIngressSource::kFcmPush, 1);
-  histogram_tester.ExpectBucketCount(
-      "Browser.Actuator.Transport.InitIngressSource",
-      InitIngressSource::kWatchSessionsStream, 1);
-  histogram_tester.ExpectBucketCount(
-      "Browser.Actuator.Transport.InitIngressSource",
-      InitIngressSource::kLocalChromeIngest, 1);
-  histogram_tester.ExpectBucketCount(
-      "Browser.Actuator.Transport.InitIngressSource",
-      InitIngressSource::kUnspecified, 1);
-  histogram_tester.ExpectTotalCount(
-      "Browser.Actuator.Transport.InitIngressSource", 4);
+  histogram_tester.ExpectBucketCount("StreamTransport.InitIngressSource",
+                                     InitIngressSource::kFcmPush, 1);
+  histogram_tester.ExpectBucketCount("StreamTransport.InitIngressSource",
+                                     InitIngressSource::kWatchSessionsStream,
+                                     1);
+  histogram_tester.ExpectBucketCount("StreamTransport.InitIngressSource",
+                                     InitIngressSource::kLocalChromeIngest, 1);
+  histogram_tester.ExpectBucketCount("StreamTransport.InitIngressSource",
+                                     InitIngressSource::kUnspecified, 1);
+  histogram_tester.ExpectTotalCount("StreamTransport.InitIngressSource", 4);
 }
 
 // Verifies that a duplicate `CreateSession()` or a `GetSession()` lookup for an
 // already-active session does not record to
-// `Browser.Actuator.Transport.InitIngressSource`.
+// `StreamTransport.InitIngressSource`.
 TEST(TransportSessionRegistryImplTest,
      InitIngressSourceHistogram_NotRecordedWhenSessionAlreadyActive) {
   base::HistogramTester histogram_tester;
@@ -372,20 +367,18 @@ TEST(TransportSessionRegistryImplTest,
   TransportSessionImpl* session =
       registry.CreateSession("session_1", InitIngressSource::kFcmPush);
   ASSERT_NE(session, nullptr);
-  histogram_tester.ExpectUniqueSample(
-      "Browser.Actuator.Transport.InitIngressSource",
-      InitIngressSource::kFcmPush, 1);
+  histogram_tester.ExpectUniqueSample("StreamTransport.InitIngressSource",
+                                      InitIngressSource::kFcmPush, 1);
 
   EXPECT_EQ(registry.CreateSession("session_1",
                                    InitIngressSource::kWatchSessionsStream),
             nullptr);
   EXPECT_EQ(registry.GetSession("session_1"), session);
-  histogram_tester.ExpectUniqueSample(
-      "Browser.Actuator.Transport.InitIngressSource",
-      InitIngressSource::kFcmPush, 1);
+  histogram_tester.ExpectUniqueSample("StreamTransport.InitIngressSource",
+                                      InitIngressSource::kFcmPush, 1);
 }
 
-// Verifies that `Browser.Actuator.Transport.InitIngressSource` is not recorded
+// Verifies that `StreamTransport.InitIngressSource` is not recorded
 // when session creation fails because the concurrent session limit is reached.
 TEST(TransportSessionRegistryImplTest,
      InitIngressSourceHistogram_NotRecordedWhenSessionLimitExceeded) {
@@ -399,9 +392,8 @@ TEST(TransportSessionRegistryImplTest,
   EXPECT_EQ(registry.CreateSession("session_2",
                                    InitIngressSource::kWatchSessionsStream),
             nullptr);
-  histogram_tester.ExpectUniqueSample(
-      "Browser.Actuator.Transport.InitIngressSource",
-      InitIngressSource::kFcmPush, 1);
+  histogram_tester.ExpectUniqueSample("StreamTransport.InitIngressSource",
+                                      InitIngressSource::kFcmPush, 1);
 }
 
 namespace {

@@ -139,13 +139,12 @@ TransportSessionImpl* TransportSessionRegistryImpl::CreateSession(
     return nullptr;
   }
   base::UmaHistogramExactLinear(
-      "Browser.Actuator.Transport.SessionRegistry.ExistingSessionsCount",
+      "StreamTransport.SessionRegistry.ExistingSessionsCount",
       static_cast<int>(sessions_.size()),
       /*exclusive_max=*/20);
   const bool limit_reached = sessions_.size() >= max_concurrent_sessions_;
   base::UmaHistogramBoolean(
-      "Browser.Actuator.Transport.SessionRegistry.SessionLimitReached",
-      limit_reached);
+      "StreamTransport.SessionRegistry.SessionLimitReached", limit_reached);
   if (limit_reached) {
     DLOG(WARNING) << "Max concurrent sessions limit ("
                   << max_concurrent_sessions_

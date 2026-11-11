@@ -160,8 +160,7 @@ TEST_F(OAuthStreamConnectionDelegateTest, RecordsTokenFetchLatencyOnSuccess) {
   ASSERT_TRUE(future.Take());
 
   histogram_tester.ExpectUniqueTimeSample(
-      "Browser.Actuator.Transport.OAuth.TokenFetchLatency",
-      base::Milliseconds(250), 1);
+      "StreamTransport.OAuth.TokenFetchLatency", base::Milliseconds(250), 1);
 }
 
 TEST_F(OAuthStreamConnectionDelegateTest,
@@ -174,8 +173,8 @@ TEST_F(OAuthStreamConnectionDelegateTest,
                            future.GetCallback());
   EXPECT_FALSE(future.Take());
 
-  histogram_tester.ExpectTotalCount(
-      "Browser.Actuator.Transport.OAuth.TokenFetchLatency", 0);
+  histogram_tester.ExpectTotalCount("StreamTransport.OAuth.TokenFetchLatency",
+                                    0);
 }
 
 TEST_F(OAuthStreamConnectionDelegateTest,
@@ -192,8 +191,8 @@ TEST_F(OAuthStreamConnectionDelegateTest,
       GoogleServiceAuthError::FromServiceError(""));
   EXPECT_FALSE(future.Take());
 
-  histogram_tester.ExpectTotalCount(
-      "Browser.Actuator.Transport.OAuth.TokenFetchLatency", 0);
+  histogram_tester.ExpectTotalCount("StreamTransport.OAuth.TokenFetchLatency",
+                                    0);
 }
 
 TEST_F(OAuthStreamConnectionDelegateTest, RetriesOnceOn401ThenFails) {

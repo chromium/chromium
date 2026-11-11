@@ -105,12 +105,12 @@ TEST_F(BrowserActuatorUpstreamMessageClientTest, SendMessageSuccess) {
   EXPECT_EQ(command.SerializeAsString(), typed_payload.proto_payload().value());
 
   histogram_tester.ExpectUniqueSample(
-      "Browser.Actuator.Transport.Upstream.PayloadSize.Control",
-      command.ByteSizeLong(), 1);
+      "StreamTransport.Upstream.PayloadSize.Control", command.ByteSizeLong(),
+      1);
   histogram_tester.ExpectTotalCount(
-      "Browser.Actuator.Transport.Upstream.UploadLatency.Control", 1);
-  histogram_tester.ExpectUniqueSample(
-      "Browser.Actuator.Transport.Upstream.HttpStatus", net::HTTP_OK, 1);
+      "StreamTransport.Upstream.UploadLatency.Control", 1);
+  histogram_tester.ExpectUniqueSample("StreamTransport.Upstream.HttpStatus",
+                                      net::HTTP_OK, 1);
 }
 
 TEST_F(BrowserActuatorUpstreamMessageClientTest,
@@ -135,14 +135,14 @@ TEST_F(BrowserActuatorUpstreamMessageClientTest,
   EXPECT_EQ(net::HTTP_OK, future.Get<1>());
 
   histogram_tester.ExpectUniqueSample(
-      "Browser.Actuator.Transport.Upstream.PayloadSize.ExperimentalTriggering",
+      "StreamTransport.Upstream.PayloadSize.ExperimentalTriggering",
       command.ByteSizeLong(), 1);
   histogram_tester.ExpectTotalCount(
-      "Browser.Actuator.Transport.Upstream.UploadLatency."
+      "StreamTransport.Upstream.UploadLatency."
       "ExperimentalTriggering",
       1);
-  histogram_tester.ExpectUniqueSample(
-      "Browser.Actuator.Transport.Upstream.HttpStatus", net::HTTP_OK, 1);
+  histogram_tester.ExpectUniqueSample("StreamTransport.Upstream.HttpStatus",
+                                      net::HTTP_OK, 1);
 }
 
 TEST_F(BrowserActuatorUpstreamMessageClientTest, SendMessageProbeSuccess) {
@@ -179,12 +179,11 @@ TEST_F(BrowserActuatorUpstreamMessageClientTest, SendMessageProbeSuccess) {
   EXPECT_EQ(probe.SerializeAsString(), typed_payload.proto_payload().value());
 
   histogram_tester.ExpectUniqueSample(
-      "Browser.Actuator.Transport.Upstream.PayloadSize.Probe",
-      probe.ByteSizeLong(), 1);
+      "StreamTransport.Upstream.PayloadSize.Probe", probe.ByteSizeLong(), 1);
   histogram_tester.ExpectTotalCount(
-      "Browser.Actuator.Transport.Upstream.UploadLatency.Probe", 1);
-  histogram_tester.ExpectUniqueSample(
-      "Browser.Actuator.Transport.Upstream.HttpStatus", net::HTTP_OK, 1);
+      "StreamTransport.Upstream.UploadLatency.Probe", 1);
+  histogram_tester.ExpectUniqueSample("StreamTransport.Upstream.HttpStatus",
+                                      net::HTTP_OK, 1);
 }
 
 TEST_F(BrowserActuatorUpstreamMessageClientTest,
@@ -226,12 +225,12 @@ TEST_F(BrowserActuatorUpstreamMessageClientTest,
   EXPECT_EQ(payload.SerializeAsString(), typed_payload.proto_payload().value());
 
   histogram_tester.ExpectUniqueSample(
-      "Browser.Actuator.Transport.Upstream.PayloadSize.TaskIngress",
+      "StreamTransport.Upstream.PayloadSize.TaskIngress",
       payload.ByteSizeLong(), 1);
   histogram_tester.ExpectTotalCount(
-      "Browser.Actuator.Transport.Upstream.UploadLatency.TaskIngress", 1);
-  histogram_tester.ExpectUniqueSample(
-      "Browser.Actuator.Transport.Upstream.HttpStatus", net::HTTP_OK, 1);
+      "StreamTransport.Upstream.UploadLatency.TaskIngress", 1);
+  histogram_tester.ExpectUniqueSample("StreamTransport.Upstream.HttpStatus",
+                                      net::HTTP_OK, 1);
 }
 
 TEST_F(BrowserActuatorUpstreamMessageClientTest,
@@ -271,12 +270,12 @@ TEST_F(BrowserActuatorUpstreamMessageClientTest,
             upstream.SerializeAsString());
 
   histogram_tester.ExpectUniqueSample(
-      "Browser.Actuator.Transport.Upstream.PayloadSize.Control",
-      command.ByteSizeLong(), 1);
+      "StreamTransport.Upstream.PayloadSize.Control", command.ByteSizeLong(),
+      1);
   histogram_tester.ExpectTotalCount(
-      "Browser.Actuator.Transport.Upstream.UploadLatency.Control", 1);
-  histogram_tester.ExpectUniqueSample(
-      "Browser.Actuator.Transport.Upstream.HttpStatus", net::HTTP_OK, 1);
+      "StreamTransport.Upstream.UploadLatency.Control", 1);
+  histogram_tester.ExpectUniqueSample("StreamTransport.Upstream.HttpStatus",
+                                      net::HTTP_OK, 1);
 }
 
 TEST_F(BrowserActuatorUpstreamMessageClientTest, SendMessageHttpError) {
@@ -301,13 +300,12 @@ TEST_F(BrowserActuatorUpstreamMessageClientTest, SendMessageHttpError) {
   EXPECT_EQ(net::HTTP_INTERNAL_SERVER_ERROR, future.Get<1>());
 
   histogram_tester.ExpectUniqueSample(
-      "Browser.Actuator.Transport.Upstream.PayloadSize.Control",
-      command.ByteSizeLong(), 1);
+      "StreamTransport.Upstream.PayloadSize.Control", command.ByteSizeLong(),
+      1);
   histogram_tester.ExpectTotalCount(
-      "Browser.Actuator.Transport.Upstream.UploadLatency.Control", 1);
-  histogram_tester.ExpectUniqueSample(
-      "Browser.Actuator.Transport.Upstream.HttpStatus",
-      net::HTTP_INTERNAL_SERVER_ERROR, 1);
+      "StreamTransport.Upstream.UploadLatency.Control", 1);
+  histogram_tester.ExpectUniqueSample("StreamTransport.Upstream.HttpStatus",
+                                      net::HTTP_INTERNAL_SERVER_ERROR, 1);
 }
 
 TEST_F(BrowserActuatorUpstreamMessageClientTest,
@@ -331,8 +329,8 @@ TEST_F(BrowserActuatorUpstreamMessageClientTest,
 
   // Payload size should be logged immediately upon sending.
   histogram_tester.ExpectUniqueSample(
-      "Browser.Actuator.Transport.Upstream.PayloadSize.Control",
-      command.ByteSizeLong(), 1);
+      "StreamTransport.Upstream.PayloadSize.Control", command.ByteSizeLong(),
+      1);
 
   // Destroying the client while the network request is pending cancels cleanly.
   client.reset();
@@ -341,9 +339,8 @@ TEST_F(BrowserActuatorUpstreamMessageClientTest,
 
   // Latency and HttpStatus should not be logged for cancelled/aborted requests.
   histogram_tester.ExpectTotalCount(
-      "Browser.Actuator.Transport.Upstream.UploadLatency.Control", 0);
-  histogram_tester.ExpectTotalCount(
-      "Browser.Actuator.Transport.Upstream.HttpStatus", 0);
+      "StreamTransport.Upstream.UploadLatency.Control", 0);
+  histogram_tester.ExpectTotalCount("StreamTransport.Upstream.HttpStatus", 0);
 }
 
 TEST_F(BrowserActuatorUpstreamMessageClientTest,
@@ -380,9 +377,8 @@ TEST_F(BrowserActuatorUpstreamMessageClientTest,
 
   // Latency and HttpStatus should not be logged for cancelled requests.
   histogram_tester.ExpectTotalCount(
-      "Browser.Actuator.Transport.Upstream.UploadLatency.Control", 0);
-  histogram_tester.ExpectTotalCount(
-      "Browser.Actuator.Transport.Upstream.HttpStatus", 0);
+      "StreamTransport.Upstream.UploadLatency.Control", 0);
+  histogram_tester.ExpectTotalCount("StreamTransport.Upstream.HttpStatus", 0);
 }
 
 TEST_F(BrowserActuatorUpstreamMessageClientTest,

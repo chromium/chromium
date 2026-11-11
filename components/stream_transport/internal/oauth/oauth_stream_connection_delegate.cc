@@ -118,7 +118,7 @@ void OAuthStreamConnectionDelegate::OnTokenFetched(
   }
   // Only successful fetches are recorded: Mode::kImmediate failures (e.g. no
   // primary account) complete near-instantly and would skew the distribution.
-  base::UmaHistogramTimes("Browser.Actuator.Transport.OAuth.TokenFetchLatency",
+  base::UmaHistogramTimes("StreamTransport.OAuth.TokenFetchLatency",
                           base::TimeTicks::Now() - start_time);
   last_token_account_id_ = std::move(account_id);
   last_access_token_ = access_token_info.token;

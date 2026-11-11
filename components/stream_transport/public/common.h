@@ -24,7 +24,7 @@ enum class PayloadType {
 //     //components/stream_transport/internal/metrics_utils.h:PayloadTypeToMetricSuffix,
 //     //components/stream_transport/internal/session_stream_recorder.cc:FromUpstreamProtoPayloadType,
 //     //components/stream_transport/public/payload_type_mapping.h:RoutablePayloadTypes,
-//     //tools/metrics/histograms/metadata/browser_actuator/histograms.xml:BrowserActuatorTransportPayloadType
+//     //tools/metrics/histograms/metadata/stream_transport/histograms.xml:StreamTransportPayloadType
 // )
 
 // Identifies the feature factory instance, to ensure we do not re-register
@@ -55,7 +55,7 @@ enum class InitIngressSource {
   kLocalChromeIngest = 3,
   kMaxValue = kLocalChromeIngest,
 };
-// LINT.ThenChange(//tools/metrics/histograms/enums.xml:BrowserActuatorSessionInitIngressSource)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/stream_transport/enums.xml:StreamTransportSessionInitIngressSource)
 
 }  // namespace stream_transport
 

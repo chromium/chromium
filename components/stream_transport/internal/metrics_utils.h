@@ -38,7 +38,7 @@ inline std::string_view PayloadTypeToMetricSuffix(PayloadType payload_type) {
 }
 // LINT.ThenChange(
 //     //components/stream_transport/public/common.h:PayloadType,
-//     //tools/metrics/histograms/metadata/browser_actuator/histograms.xml:BrowserActuatorTransportPayloadType
+//     //tools/metrics/histograms/metadata/stream_transport/histograms.xml:StreamTransportPayloadType
 // )
 
 // Why a downstream typed payload was discarded before handler delivery.
@@ -57,15 +57,15 @@ enum class DownstreamPayloadDropReason {
   kDispatchFailed = 3,
   kMaxValue = kDispatchFailed,
 };
-// LINT.ThenChange(//tools/metrics/histograms/enums.xml:BrowserActuatorPayloadDropReason)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/stream_transport/enums.xml:StreamTransportPayloadDropReason)
 
 inline void RecordDownstreamPayloadDropped(DownstreamPayloadDropReason reason) {
-  base::UmaHistogramEnumeration(
-      "Browser.Actuator.Transport.Downstream.PayloadDropped", reason);
+  base::UmaHistogramEnumeration("StreamTransport.Downstream.PayloadDropped",
+                                reason);
 }
 
 inline void RecordInitIngressSource(InitIngressSource ingress_source) {
-  base::UmaHistogramEnumeration("Browser.Actuator.Transport.InitIngressSource",
+  base::UmaHistogramEnumeration("StreamTransport.InitIngressSource",
                                 ingress_source);
 }
 
@@ -85,20 +85,20 @@ class UpstreamRequestLog {
 
   void RecordPayloadSize(size_t size_bytes) const {
     base::UmaHistogramCounts10M(
-        base::StrCat({"Browser.Actuator.Transport.Upstream.PayloadSize.",
-                      histogram_suffix_}),
+        base::StrCat(
+            {"StreamTransport.Upstream.PayloadSize.", histogram_suffix_}),
         size_bytes);
   }
 
   void RecordResponse(std::optional<int> http_status_code) const {
     base::TimeDelta latency = base::TimeTicks::Now() - start_time_;
     base::UmaHistogramMediumTimes(
-        base::StrCat({"Browser.Actuator.Transport.Upstream.UploadLatency.",
-                      histogram_suffix_}),
+        base::StrCat(
+            {"StreamTransport.Upstream.UploadLatency.", histogram_suffix_}),
         latency);
 
     if (http_status_code.has_value()) {
-      base::UmaHistogramSparse("Browser.Actuator.Transport.Upstream.HttpStatus",
+      base::UmaHistogramSparse("StreamTransport.Upstream.HttpStatus",
                                *http_status_code);
     }
   }

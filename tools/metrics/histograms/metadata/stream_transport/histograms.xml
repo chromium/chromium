@@ -1,0 +1,168 @@
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of stream_transport
+histograms along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<!-- LINT.IfChange(StreamTransportPayloadType) -->
+
+<variants name="StreamTransportPayloadType">
+  <variant name="Actuation" summary="Actuation transport messages">
+    <owner>src/components/actor/OWNERS</owner>
+  </variant>
+  <variant name="Control" summary="Control/acknowledgement command messages">
+    <owner>src/components/stream_transport/OWNERS</owner>
+  </variant>
+  <variant name="ExperimentalTriggering"
+      summary="Experimental triggering messages">
+    <owner>qinmin@chromium.org</owner>
+    <owner>src/chrome/browser/glic/OWNERS</owner>
+  </variant>
+  <variant name="Probe" summary="Synthetic transport probe messages">
+    <owner>src/components/stream_transport/OWNERS</owner>
+  </variant>
+  <variant name="TaskIngress" summary="Task ingress messages">
+    <owner>wenyufu@chromium.org</owner>
+    <owner>src/components/browser_actuator/OWNERS</owner>
+  </variant>
+</variants>
+
+<!-- LINT.ThenChange(//components/stream_transport/public/common.h:PayloadType, //components/stream_transport/internal/metrics_utils.h:PayloadTypeToMetricSuffix) -->
+
+<histogram name="StreamTransport.Downstream.PayloadDropped"
+    enum="StreamTransportPayloadDropReason" expires_after="2027-09-01">
+  <owner>wenyufu@chromium.org</owner>
+  <owner>anushamuley@google.com</owner>
+  <owner>src/components/stream_transport/OWNERS</owner>
+  <summary>
+    Records the reason a downstream typed payload was discarded without being
+    delivered to a handler. Recorded once per dropped payload in
+    TransportSessionImpl::ProcessTypedPayload, so a single downstream message
+    carrying several payloads may emit several samples. Not recorded for
+    payloads that are delivered successfully, nor for whole messages rejected on
+    sequence number before payload processing begins. Not broken down by payload
+    type, because the most important bucket is the one where the payload type
+    itself is unrecognized.
+  </summary>
+</histogram>
+
+<histogram name="StreamTransport.InitIngressSource"
+    enum="StreamTransportSessionInitIngressSource" expires_after="2027-10-01">
+  <owner>bryansong@google.com</owner>
+  <owner>anushamuley@google.com</owner>
+  <owner>wenyufu@chromium.org</owner>
+  <owner>src/components/stream_transport/OWNERS</owner>
+  <summary>
+    Records which downstream ingress channel triggered the creation of a new
+    transport session. Recorded once per newly created session in
+    TransportSessionRegistryImpl::CreateSession, on all platforms except iOS.
+    Not recorded when retrieving an already-existing session or when session
+    creation is rejected due to reaching the maximum concurrent sessions limit.
+  </summary>
+</histogram>
+
+<histogram name="StreamTransport.OAuth.TokenFetchLatency" units="ms"
+    expires_after="2027-10-01">
+  <owner>bryansong@google.com</owner>
+  <owner>anushamuley@google.com</owner>
+  <owner>wenyufu@chromium.org</owner>
+  <owner>src/components/stream_transport/OWNERS</owner>
+  <summary>
+    Records the time taken to acquire an OAuth2 access token from
+    IdentityManager for the stream transport connection, measured from
+    OAuthStreamConnectionDelegate::PrepareRequest to the token fetch callback.
+    Isolates Gaia token acquisition latency from network round-trip time.
+    Recorded once per successful token fetch; not recorded when the fetch fails
+    (e.g. no primary account or an auth error) or is cancelled.
+  </summary>
+</histogram>
+
+<histogram name="StreamTransport.SessionRegistry.ExistingSessionsCount"
+    units="sessions" expires_after="2027-08-01">
+  <owner>andylky@google.com</owner>
+  <owner>wenyufu@chromium.org</owner>
+  <owner>anushamuley@google.com</owner>
+  <owner>src/components/stream_transport/OWNERS</owner>
+  <summary>
+    Records the number of active transport sessions in
+    TransportSessionRegistryImpl when a request is made for a session ID that is
+    not currently in the registry. Recorded using exact linear bucketing with an
+    exclusive maximum of 20: active session counts from 0 to 19 are bucketed
+    precisely, and counts of 20 or more are grouped into the overflow bucket 20.
+  </summary>
+</histogram>
+
+<histogram name="StreamTransport.SessionRegistry.SessionLimitReached"
+    enum="BooleanRejected" expires_after="2027-08-01">
+  <owner>andylky@google.com</owner>
+  <owner>wenyufu@chromium.org</owner>
+  <owner>anushamuley@google.com</owner>
+  <owner>src/components/stream_transport/OWNERS</owner>
+  <summary>
+    Records whether a request to create a transport session in
+    TransportSessionRegistryImpl was rejected because the maximum concurrent
+    active transport sessions limit was reached. Recorded only when a request is
+    made for a session ID that is not currently in the registry (false = session
+    created, true = limit reached).
+  </summary>
+</histogram>
+
+<histogram name="StreamTransport.Upstream.HttpStatus" enum="HttpResponseCode"
+    expires_after="2027-09-01">
+  <owner>anushamuley@google.com</owner>
+  <owner>src/components/stream_transport/OWNERS</owner>
+  <summary>
+    Records the HTTP response status codes returned by the upstream endpoint
+    fetcher for POST upload requests. Recorded when an HTTP response is received
+    from the server.
+  </summary>
+</histogram>
+
+<histogram name="StreamTransport.Upstream.PayloadSize.{PayloadType}"
+    units="bytes" expires_after="2027-09-01">
+  <owner>anushamuley@google.com</owner>
+  <owner>wenyufu@chromium.org</owner>
+  <owner>src/components/stream_transport/OWNERS</owner>
+  <summary>
+    Records the serialized payload size in bytes of outgoing messages of the
+    specified {PayloadType}. Recorded immediately before the message is
+    serialized and dispatched via HTTP POST to the upstream endpoint.
+  </summary>
+  <token key="PayloadType" variants="StreamTransportPayloadType"/>
+</histogram>
+
+<histogram name="StreamTransport.Upstream.UploadLatency.{PayloadType}"
+    units="ms" expires_after="2027-09-01">
+  <owner>anushamuley@google.com</owner>
+  <owner>wenyufu@chromium.org</owner>
+  <owner>src/components/stream_transport/OWNERS</owner>
+  <summary>
+    Records round-trip latency (from SendUpstreamMessage invocation to network
+    POST response callback) for messages of the specified {PayloadType}.
+    Recorded when the upstream network response is received (or fails). Not
+    recorded for aborted or cancelled requests.
+  </summary>
+  <token key="PayloadType" variants="StreamTransportPayloadType"/>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>
