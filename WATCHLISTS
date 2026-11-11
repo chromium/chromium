@@ -1145,6 +1145,13 @@
     'dbus': {
       'filepath': 'dbus/',
     },
+    'default_browser': {
+      'filepath': 'chrome/browser/default_browser/'\
+                  '|chrome/browser/resources/default_browser/'\
+                  '|chrome/browser/ui/startup/default_browser_prompt/'\
+                  '|chrome/browser/ui/webui/default_browser/'\
+                  '|chrome/test/data/webui/default_browser/'
+    },
     'desktop_composebox': {
       'filepath': '^chrome/browser/resources/new_tab_page/composebox/|'\
                   '^chrome/browser/ui/webui/searchbox/composebox_handler.cc|'\
@@ -1162,6 +1169,14 @@
                   'chrome/browser/ui/views/user_education/|'\
                   'chrome/browser/ui/webui/user_education_internals/|'\
                   'chrome/browser/ui/webui/whats_new/',
+    },
+    'desktop_infobars': {
+      'filepath': 'chrome/browser/infobars/'\
+                  '|chrome/browser/resources/infobar_internals/'\
+                  '|chrome/browser/ui/infobars/'\
+                  '|chrome/browser/ui/views/infobars/'\
+                  '|chrome/browser/ui/webui/infobar_internals/'\
+                  '|components/infobars/'
     },
     'desktop_omnibox': {
       'filepath': '^chrome/browser/ash/app_list/search/omnibox/|'\
@@ -1484,6 +1499,9 @@
       'filepath': 'chrome/browser/extensions/bookmark_app'\
       '|chrome/browser/webapps/installable/'
                   '|components/webapps/browser/installable/',
+    },
+    'installer_downloader': {
+      'filepath': 'chrome/browser/win/installer_downloader/',
     },
     'installer_linux': {
       'filepath': 'chrome/installer/linux/',
@@ -1899,6 +1917,10 @@
     },
     'ozone_fuchsia': {
       'filepath': 'ui/ozone/platform/flatland/',
+    },
+    'page_actions': {
+      'filepath': 'chrome/browser/ui/page_action/'\
+                  '|chrome/browser/ui/views/page_action/'
     },
     'page_content_extraction': {
       'filepath': 'components/optimization_guide/content/browser/page_content_|' \
@@ -2485,6 +2507,9 @@
                   '|chrome/browser/web_applications'\
                   '|chrome/browser/ui/web_applications',
     },
+    'web_dialogs': {
+      'filepath': 'chrome/browser/ui/views/web_dialogs/',
+    },
     'web_package': {
       'filepath': 'components/web_package/'\
                   '|content/browser/loader/prefetch_url_loader'\
@@ -3035,6 +3060,7 @@
                    'pnevase@microsoft.com'],
     'data_decoder': ['mbarowsky+watch-data-decoder@chromium.org'],
     'dbus': ['hashimoto+watch@chromium.org'],
+    'default_browser': ['koretadaniel+watch@chromium.org'],
     'desktop_composebox': ['ananyaseelam+watch@google.com',
                            'niharm+watch@google.com',
                            'omnibox-dev+watch@chromium.org',
@@ -3042,6 +3068,7 @@
                            'pauladedeji+watch@google.com'],
     'desktop_in_product_help': ['dfried+watch@chromium.org',
                                 'estalin+watch@chromium.org'],
+    'desktop_infobars': ['koretadaniel+watch@chromium.org'],
     'desktop_omnibox': ['jdonnelly+watch@chromium.org',
                         'omnibox-dev+watch@chromium.org',
                         'orinj+watch@chromium.org',
@@ -3145,6 +3172,7 @@
     'input_devices': ['spang+watch@chromium.org'],
     'installable': ['dmurph+watching-installable@chromium.org',
                     'webappwatch@microsoft.com'],
+    'installer_downloader': ['koretadaniel+watch@chromium.org'],
     'installer_linux': ['kubo@igalia.com'],
     'installer_win': ['grt+watch@chromium.org',
                       'wfh+watch@chromium.org'],
@@ -3284,6 +3312,7 @@
                       'fuchsia-reviews@chromium.org',
                       'rjkroege@chromium.org',
                       'spang+watch@chromium.org'],
+    'page_actions': ['koretadaniel+watch@chromium.org'],
     'page_content_extraction': ['liu+watch-apc@chromium.org'],
     'page_info' : ['permissions-reviews@chromium.org'],
     'page_load_metrics' : ['bmcquade+watch@chromium.org',
@@ -3501,6 +3530,7 @@
                          'phillis+watch@chromium.org',
                          'webappwatch@microsoft.com',
                          'zelin+watch-web_applications@chromium.org'],
+    'web_dialogs': ['koretadaniel+watch@chromium.org'],
     'web_package': ['hayato+watch@chromium.org',
                     'twifkak+watch@chromium.org'],
     'web_share': ['mgiuca+watch@chromium.org'],
