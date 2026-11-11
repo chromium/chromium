@@ -93,6 +93,10 @@ export class SkillsWebviewBridge {
   private handshakeIntervalId_: number|null = null;
   private timeoutId_: number|null = null;
   private isConnected_: boolean = false;
+  // Whether the webview started loading a new top-level document that hasn't
+  // committed yet. The webview doesn't fire loadstart for same-document
+  // navigations, such as route changes in the guest.
+  private isLoadingNewDocument_: boolean = false;
   private eventTracker_: EventTracker = new EventTracker();
   private delegate_: SkillsWebviewBridgeDelegate;
   private handshakeStartTime_: number|null = null;
@@ -109,6 +113,12 @@ export class SkillsWebviewBridge {
     this.delegate_ = delegate;
 
     this.eventTracker_.add(
+        this.webview_, 'loadstart',
+        (e: Event) => this.onLoadStart(e as chrome.webviewTag.LoadStartEvent));
+    this.eventTracker_.add(
+        this.webview_, 'loadabort',
+        (e: Event) => this.onLoadAbort(e as chrome.webviewTag.LoadAbortEvent));
+    this.eventTracker_.add(
         this.webview_, 'loadcommit',
         (e: Event) =>
             this.onLoadCommit(e as chrome.webviewTag.LoadCommitEvent));
@@ -117,9 +127,31 @@ export class SkillsWebviewBridge {
         window, 'message', (e: MessageEvent) => this.onMessage(e));
   }
 
+  private onLoadStart(e: chrome.webviewTag.LoadStartEvent) {
+    // mailto: links fire loadstart but neither commit nor abort, and leave the
+    // current document in place, so only track web loads.
+    const protocol = URL.parse(e.url)?.protocol;
+    if (e.isTopLevel && (protocol === 'https:' || protocol === 'http:')) {
+      this.isLoadingNewDocument_ = true;
+    }
+  }
+
+  private onLoadAbort(e: chrome.webviewTag.LoadAbortEvent) {
+    if (e.isTopLevel) {
+      this.isLoadingNewDocument_ = false;
+    }
+  }
+
   private onLoadCommit(e: chrome.webviewTag.LoadCommitEvent) {
     if (!e.isTopLevel) {
       return;
+    }
+
+    // A new document, such as the one Back or Forward loads, can't message the
+    // host until it gets its own handshake.
+    if (this.isLoadingNewDocument_) {
+      this.isLoadingNewDocument_ = false;
+      this.isConnected_ = false;
     }
 
     const urlObj = URL.parse(e.url);
@@ -141,7 +173,7 @@ export class SkillsWebviewBridge {
   }
 
   private urlRequiresHandshake(url: URL): boolean {
-    // If we are already connected we don't need a new handshake.
+    // Route changes within a connected document don't need a new handshake.
     if (this.isConnected_) {
       return false;
     }
