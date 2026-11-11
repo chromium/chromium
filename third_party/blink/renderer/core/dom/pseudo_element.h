@@ -151,8 +151,8 @@ class CORE_EXPORT PseudoElement : public Element {
     const ComputedStyle* original_style_{nullptr};
   };
 
-  PseudoId pseudo_id_;
   const AtomicString pseudo_argument_;
+  PseudoId pseudo_id_;
   bool is_generated_name_ = false;
 };
 

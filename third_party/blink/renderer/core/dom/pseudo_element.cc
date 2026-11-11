@@ -360,8 +360,8 @@ PseudoElement::PseudoElement(Element* parent,
     : Element(PseudoElementTagName(ResolvePseudoIdAlias(pseudo_id)),
               &parent->GetDocument(),
               kCreateElement),
-      pseudo_id_(pseudo_id),
-      pseudo_argument_(pseudo_argument) {
+      pseudo_argument_(pseudo_argument),
+      pseudo_id_(pseudo_id) {
   DCHECK_NE(pseudo_id, kPseudoIdNone);
   parent->GetTreeScope().AdoptIfNeeded(*this);
   SetParentNode(parent);
