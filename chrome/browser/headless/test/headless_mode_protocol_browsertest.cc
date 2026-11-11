@@ -535,6 +535,9 @@ HEADLESS_MODE_PROTOCOL_TEST(NormalWindowHasOpener,
 HEADLESS_MODE_PROTOCOL_TEST(GetBrowserContexts,
                             "shared/get-browser-contexts.js")
 
+HEADLESS_MODE_PROTOCOL_TEST(InteractionMediaFeatures,
+                            "shared/interaction-media-features.js")
+
 class HeadlessModeProtocolBrowserTestWithDownload
     : public HeadlessModeProtocolBrowserTest {
  public:

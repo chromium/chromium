@@ -15,6 +15,9 @@
 #include "ui/aura/window.h"
 #include "ui/display/screen.h"
 #include "ui/events/devices/device_data_manager.h"
+#include "ui/events/devices/device_hotplug_event_observer.h"
+#include "ui/events/devices/input_device.h"
+#include "ui/events/platform/platform_event_source.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_ui_types.h"
 
@@ -30,6 +33,16 @@ void HeadlessPlatformDelegate::Initialize(
 void HeadlessPlatformDelegate::Start() {
   DCHECK(aura::Env::GetInstance());
   ui::DeviceDataManager::CreateInstance();
+  // Ensure headless reports a fine pointer so that interaction media features
+  // match other desktop platforms.
+  ui::DeviceHotplugEventObserver* observer =
+      ui::DeviceDataManager::GetInstance();
+  observer->OnMouseDevicesUpdated({ui::InputDevice(
+      1, ui::InputDeviceType::INPUT_DEVICE_INTERNAL, "Headless Mouse")});
+  observer->OnDeviceListsComplete();
+  // This suppresses mousemove events from WindowEventDispatcher, which
+  // matches Mac and Windows behavior.
+  ui::PlatformEventSource::SetIgnoreNativePlatformEvents(true);
 }
 
 void HeadlessPlatformDelegate::InitializeWebContents(

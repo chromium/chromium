@@ -96,6 +96,10 @@ if (!is_android) {
       "//chrome/browser:main_extra_parts",
       "//components/headless/clipboard",
     ]
+
+    if (is_linux) {
+      deps += [ "//ui/events/devices" ]
+    }
   }
 
   source_set("browser_tests") {
