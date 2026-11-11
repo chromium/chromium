@@ -48,6 +48,7 @@ suite('AllBuilds', function() {
     loadTimeData.overrideValues({
       aboutObsoleteNowOrSoon: false,
       aboutObsoleteEndOfTheLine: false,
+      settingsRefresh2026: '',
     });
 
     lifetimeBrowserProxy = new TestLifetimeBrowserProxy();
@@ -322,6 +323,77 @@ suite('AllBuilds', function() {
   // </if>
 
   // </if>
+
+  test('ProductRow_SettingsRefresh2026', async function() {
+    // When the flag is disabled, row 1 contains the product title and logo,
+    // and row 2 contains the icon container, all in a single main section.
+    assertTrue(!!page.shadowRoot.querySelector('.product-title'));
+    // <if expr="not is_chromeos">
+    assertTrue(!!page.shadowRoot.querySelector('.icon-container'));
+    // </if>
+    const productLogo = page.shadowRoot.querySelector('#productLogo');
+    assertTrue(!!productLogo);
+    assertEquals(
+        page.shadowRoot.querySelector('.product-title')!.parentElement,
+        productLogo.parentElement);
+    const initialSections =
+        page.shadowRoot.querySelectorAll('settings-section');
+    assertEquals(2, initialSections.length);
+    assertTrue(initialSections[0]!.contains(productLogo));
+    assertTrue(
+        initialSections[0]!.contains(page.shadowRoot.querySelector('#help')));
+
+    // When the flag is enabled, row 1 is removed and row 2 contains the logo
+    // followed by the update text, without a separate icon container, in its
+    // own section separate from the action rows below it.
+    loadTimeData.overrideValues({
+      settingsRefresh2026: 'settings-refresh-2026',
+    });
+    await initNewPage();
+
+    assertFalse(!!page.shadowRoot.querySelector('.product-title'));
+    // <if expr="not is_chromeos">
+    assertFalse(!!page.shadowRoot.querySelector('.icon-container'));
+    // </if>
+    const refreshProductLogo =
+        page.shadowRoot.querySelector<HTMLElement>('#productLogo');
+    assertTrue(!!refreshProductLogo);
+    const versionEl = page.shadowRoot.querySelector('.secondary');
+    assertTrue(!!versionEl);
+    const row = refreshProductLogo.parentElement!;
+    assertEquals(row, versionEl.closest('.cr-row'));
+    assertTrue(row.classList.contains('first'));
+    assertTrue(row.classList.contains('two-line'));
+
+    const refreshSections =
+        page.shadowRoot.querySelectorAll('settings-section');
+    assertEquals(3, refreshSections.length);
+    assertTrue(refreshSections[0]!.contains(refreshProductLogo));
+    assertFalse(
+        refreshSections[0]!.contains(page.shadowRoot.querySelector('#help')));
+    assertTrue(
+        refreshSections[1]!.contains(page.shadowRoot.querySelector('#help')));
+
+    // <if expr="not is_chromeos">
+    const refreshThrobber =
+        page.shadowRoot.querySelector<HTMLImageElement>('#throbber');
+    assertTrue(!!refreshThrobber);
+    assertFalse(refreshProductLogo.hidden);
+    assertTrue(refreshThrobber.hidden);
+
+    // When an update is in progress, the logo is replaced by the spinner.
+    fireStatusChanged(UpdateStatus.UPDATING);
+    await microtasksFinished();
+    assertTrue(refreshProductLogo.hidden);
+    assertFalse(refreshThrobber.hidden);
+
+    // When update finishes, the logo is visible again and spinner is hidden.
+    fireStatusChanged(UpdateStatus.UPDATED);
+    await microtasksFinished();
+    assertFalse(refreshProductLogo.hidden);
+    assertTrue(refreshThrobber.hidden);
+    // </if>
+  });
 
   test('GetHelp', function() {
     assertTrue(!!page.shadowRoot.querySelector('#help'));

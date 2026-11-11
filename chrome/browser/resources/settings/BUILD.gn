@@ -133,6 +133,7 @@ build_webui("build") {
     "site_settings/all_sites_icons.html.ts",
     "a11y_page/a11y_page_index.html.ts",
     "a11y_page/a11y_page_index.ts",
+    "about_page/about_page_action_rows.html.ts",
     "about_page/about_page_browser_proxy.ts",
     "about_page/about_page.html.ts",
     "about_page/about_page.ts",

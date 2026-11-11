@@ -22,17 +22,40 @@
 }
 
 :host-context([settings-refresh-2026]) {
-  .info-section {
-    margin-bottom: 8px;
-  }
-
-  #footerProductTitle {
+  .heading {
     color: var(--cr-primary-text-color);
     font-family: 'Google Sans', Roboto, sans-serif;
     font-size: 16px;
     font-weight: 500;
     line-height: 24px;
+  }
+
+  .info-section {
+    margin-bottom: 8px;
+  }
+
+  .secondary {
+    font-size: 12px;
+  }
+
+  #footerProductTitle {
     margin-bottom: 16px;
+  }
+
+  #productLogo,
+  #throbber {
+    margin-inline-end: 24px;
+  }
+
+  #productLogo {
+    height: 40px;
+    width: 40px;
+  }
+
+  #throbber {
+    height: 28px;
+    padding: 6px;
+    width: 28px;
   }
 }
 
