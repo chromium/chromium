@@ -466,8 +466,6 @@ class WebUIToolbarWebView
   void FlushPendingToolbarStateForTesting();
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(WebUIToolbarWebViewBrowserTest,
-                           StatePushNotDeferredMoreThan100ms);
   FRIEND_TEST_ALL_PREFIXES(WebUIToolbarWebViewPixelBrowserTest,
                            CheckReloadButtonColor);
   FRIEND_TEST_ALL_PREFIXES(WebUIToolbarWebViewPixelBrowserTest,
@@ -755,11 +753,6 @@ class WebUIToolbarWebView
   uint32_t crash_count_ = 0;
 
   base::TimeTicks last_crash_time_;
-
-  // When the currently pending state push (if any) was first posted by
-  // PostPushToolbarState(). Used to bound how long repeated state updates can
-  // keep deferring the push. Only meaningful while a push is pending.
-  base::TimeTicks pending_state_push_start_time_;
 
   base::CallbackListSubscription touch_ui_subscription_;
   base::CallbackListSubscription paint_as_active_subscription_;
