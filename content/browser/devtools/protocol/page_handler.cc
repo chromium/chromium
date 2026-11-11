@@ -2915,6 +2915,15 @@ void PageHandler::IsPrerenderingAllowed(bool& is_allowed) {
 
 void PageHandler::ReadyToCommitNavigation(
     NavigationRequest* navigation_request) {
+  // A pending reload targets this handler's frame, so only navigations of that
+  // frame may consume or cancel it. In particular, a subframe reload must not
+  // consume the pending script.
+  if (!host_ ||
+      navigation_request->frame_tree_node() !=
+          host_->GetOutermostMainFrameOrEmbedder()->frame_tree_node()) {
+    return;
+  }
+
   if (navigation_request->GetReloadType() == ReloadType::NONE) {
     // Disregard pending reload if the navigation being committed is not a
     // reload.

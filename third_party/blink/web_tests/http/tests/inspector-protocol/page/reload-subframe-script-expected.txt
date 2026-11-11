@@ -1,0 +1,11 @@
+Tests that Page.reload applies scriptToEvaluateOnLoad to the reload of the main frame only.
+
+--- Subframe navigates while reload is in flight ---
+window.__injected: /pageA
+
+--- Subframe reloads while reload is in flight ---
+window.__injected: /pageB
+
+--- Reload is canceled after a subframe reload ---
+window.__injected: undefined
+
