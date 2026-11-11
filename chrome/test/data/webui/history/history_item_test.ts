@@ -108,6 +108,7 @@ suite('<history-item> unit test', function() {
 // <if expr="is_android">
 suite('<history-item> android test', function() {
   let startItem: HistoryItemElement;
+  let middleItem: HistoryItemElement;
   let nextItem: HistoryItemElement;
   let dir: string;
 
@@ -124,6 +125,9 @@ suite('<history-item> android test', function() {
     startItem.item = TEST_HISTORY_RESULTS[0]!;
     startItem.toggleAttribute('is-card-start', true);
     document.body.appendChild(startItem);
+    middleItem = document.createElement('history-item');
+    middleItem.item = TEST_HISTORY_RESULTS[2]!;
+    document.body.appendChild(middleItem);
     nextItem = document.createElement('history-item');
     nextItem.item = TEST_HISTORY_RESULTS[1]!;
     nextItem.toggleAttribute('is-card-end', true);
@@ -182,10 +186,75 @@ suite('<history-item> android test', function() {
         .join(' ');
   }
 
+  function radiusOf(
+      item: HistoryItemElement, selector: string, property: string): number {
+    const element = item.shadowRoot.querySelector(selector);
+    assertTrue(!!element, selector);
+    return Number.parseFloat(String(element.computedStyleMap().get(property)));
+  }
+
   test('HoverLayerFollowsCardCorners', function() {
-    for (const item of [startItem, nextItem]) {
+    for (const item of [startItem, middleItem, nextItem]) {
       assertEquals(
           corners(item, '#background'), corners(item, '#item-container'));
+    }
+    const outerRadius =
+        radiusOf(startItem, '#background', 'border-top-left-radius');
+    const innerRadius =
+        radiusOf(middleItem, '#background', 'border-top-left-radius');
+    assertTrue(innerRadius > 0, `inner radius: ${innerRadius}`);
+    assertTrue(
+        innerRadius < outerRadius,
+        `inner: ${innerRadius}, outer: ${outerRadius}`);
+  });
+
+  test('RowTilesAreSeparated', function() {
+    const rows = [startItem, middleItem, nextItem];
+    for (let i = 1; i < rows.length; i++) {
+      const gap = rectOf(rows[i]!, '#background').top -
+          rectOf(rows[i - 1]!, '#background').bottom;
+      assertTrue(gap > 0, `gap above row ${i}: ${gap}`);
+    }
+  });
+
+  test('LongDateHeaderStaysInHeader', async function() {
+    startItem.style.width = '320px';
+    startItem.item = {
+      ...TEST_HISTORY_RESULTS[0]!,
+      dateRelativeDay: 'Today - Wednesday, November 4, 2026 '.repeat(3),
+    };
+    await microtasksFinished();
+    const header = startItem.shadowRoot.querySelector('#date-accessed');
+    assertTrue(!!header);
+    for (const direction of ['ltr', 'rtl']) {
+      document.documentElement.dir = direction;
+      const headerRect = header.getBoundingClientRect();
+      const style = header.computedStyleMap();
+      const contentLeft = headerRect.left +
+          Number.parseFloat(String(style.get('padding-left')));
+      const contentRight = headerRect.right -
+          Number.parseFloat(String(style.get('padding-right')));
+      const headingRect = rectOf(startItem, '[role=heading]');
+      assertTrue(headingRect.left >= contentLeft - 0.05, direction);
+      assertTrue(headingRect.right <= contentRight + 0.05, direction);
+    }
+  });
+
+  test('DateHeaderAlignsWithFirstTile', async function() {
+    loadTimeData.overrideValues(
+        {isBrowsingHistoryCollapsibleDayCardsEnabled: false});
+    const staticHeaderItem = document.createElement('history-item');
+    staticHeaderItem.item = TEST_HISTORY_RESULTS[0]!;
+    staticHeaderItem.toggleAttribute('is-card-start', true);
+    document.body.appendChild(staticHeaderItem);
+    await microtasksFinished();
+    for (const item of [startItem, staticHeaderItem]) {
+      const header = rectOf(item, '#date-accessed');
+      const heading = rectOf(item, '[role=heading]');
+      const offset =
+          (heading.top + heading.bottom) / 2 - (header.top + header.bottom) / 2;
+      assertTrue(Math.abs(offset) <= 0.5, `heading offset: ${offset}`);
+      assertPx(header.bottom, rectOf(item, '#background').top);
     }
   });
 

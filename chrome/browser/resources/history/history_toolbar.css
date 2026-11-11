@@ -12,6 +12,10 @@
 :host {
   display: flex;
   position: relative;
+<if expr="is_android">
+  /* Resolves the cqi units in the cr-toolbar rule. */
+  container-type: inline-size;
+</if>
 }
 
 /* General toolbar layout. */
@@ -22,9 +26,13 @@ cr-toolbar {
   --cr-toolbar-field-margin: var(--side-bar-width);
   flex: 1;
 <if expr="is_android">
+  /* Matches the card column, which shrinks beside the side bar. */
+  --cluster-max-width: min(var(--card-max-width),
+      100cqi - var(--side-bar-width) - 2 * var(--card-padding-side));
   /* Search field 6px side padding sits outside --cr-toolbar-field-width. */
-  --cr-toolbar-field-width: calc(var(--card-max-width) - 12px);
+  --cr-toolbar-field-width: calc(var(--cluster-max-width) - 12px);
   --cr-toolbar-header-font-weight: 400;
+  --cr-toolbar-height: 72px;
   --cr-toolbar-search-field-background:
       var(--color-history-page-search-field-background);
 </if>
@@ -41,13 +49,25 @@ cr-toolbar-selection-overlay {
   --cr-toolbar-field-margin: var(--side-bar-width);
 <if expr="is_android">
   --cr-toolbar-selection-overlay-padding: var(--card-padding-side);
+  --cr-toolbar-selection-overlay-slot-gap: 8px;
   background: var(--color-history-page-selection-toolbar-background);
   border-bottom: none;
-  font-size: 14px;
+  font-size: 18px;
   font-weight: 500;
-  line-height: 20px;
+  line-height: 24px;
 </if>
 }
+
+<if expr="is_android">
+cr-toolbar:not([narrow])::part(search-field) {
+  height: 48px;
+}
+
+cr-toolbar-selection-overlay cr-button {
+  --cr-button-border: none;
+  font-size: 14px;
+}
+</if>
 
 cr-toolbar-selection-overlay[show] {
   opacity: 1;

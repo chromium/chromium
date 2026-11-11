@@ -25,12 +25,9 @@
   padding: 8px 0;
 </if>
 <if expr="is_android">
-  /* Holds the card surface so the device header sits on the page. */
-  background-color: var(--cr-card-background-color);
-  border-radius: var(--cr-card-border-radius);
-  /* Leave room for row focus rings outside rounded corners. */
-  overflow: clip;
-  overflow-clip-margin: 2px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 </if>
 }
 
@@ -79,8 +76,9 @@
   min-height: var(--item-height);
 </if>
 <if expr="is_android">
-  min-height: 48px;
-  padding: 0 16px;
+  background-color: var(--cr-card-background-color);
+  border-radius: calc(var(--cr-card-border-radius) / 4);
+  padding: 12px 16px;
 </if>
 }
 
@@ -139,9 +137,14 @@
   --cr-icon-button-margin-end: 0;
 }
 
-.item-container + .item-container {
-  border-top: 1px solid var(--color-history-page-separator,
-      var(--cr-separator-color));
+.item-container:nth-child(1 of .item-container) {
+  border-start-end-radius: var(--cr-card-border-radius);
+  border-start-start-radius: var(--cr-card-border-radius);
+}
+
+.item-container:last-child {
+  border-end-end-radius: var(--cr-card-border-radius);
+  border-end-start-radius: var(--cr-card-border-radius);
 }
 
 .website-title {

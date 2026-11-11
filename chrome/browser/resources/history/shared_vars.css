@@ -16,7 +16,12 @@ html {
   --interactive-color: var(--google-blue-500);
   --item-height: 36px;
   --separator-color: rgba(0, 0, 0, 0.08);
+<if expr="not is_android">
   --side-bar-width: 256px;
+</if>
+<if expr="is_android">
+  --side-bar-width: 284px;
+</if>
   --sidebar-footer-text-color: var(--google-grey-700);
   --toolbar-height: 56px;
 <if expr="not is_android">
@@ -25,7 +30,7 @@ html {
   --card-padding-side: 24px;
 </if>
 <if expr="is_android">
-  --card-max-width: 600px;
+  --card-max-width: 800px;
   --card-min-width: 0;
   /* Needs a unit because it is used in calc(). */
   --card-padding-side: 0px;
@@ -59,12 +64,6 @@ html[webui-refresh-2026] {
   html {
     --card-padding-side: 16px;
     --cr-card-border-radius: 16px;
-  }
-}
-
-@media (min-width: 1440px) {
-  html {
-    --card-max-width: 840px;
   }
 }
 

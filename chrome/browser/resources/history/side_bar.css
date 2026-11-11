@@ -118,9 +118,11 @@ cr-icon {
   --cr-nav-menu-item-icon-color-selected:
       var(--color-sys-on-secondary-container,
           var(--cr-fallback-color-on-secondary-container));
+  --iron-icon-height: 24px;
+  --iron-icon-width: 24px;
   border-radius: 100px;
   line-height: 20px;
-  margin-inline: 12px;
+  margin-inline: 16px;
   min-height: 56px;
   /* A narrower end padding leaves labels more room before they wrap. */
   padding-inline: 16px 8px;

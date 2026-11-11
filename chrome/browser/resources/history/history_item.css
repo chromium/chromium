@@ -54,8 +54,8 @@
   display: none;
 <if expr="is_android">
   font-weight: 500;
-  height: 48px;
-  padding-block: 8px 16px;
+  height: 56px;
+  padding-block: 16px;
 </if>
 }
 
@@ -93,6 +93,7 @@
   padding-inline-start: var(--item-container-padding-start);
   pointer-events: auto;
 <if expr="is_android">
+  border-radius: calc(var(--cr-card-border-radius) / 4);
   padding-block: 12px;
 </if>
 }
@@ -281,11 +282,16 @@
 }
 
 #bookmark-star {
-  --cr-icon-button-fill-color: var(--interactive-color);
-  --cr-icon-button-icon-size: 16px;
   --cr-icon-button-margin-start: 12px;
   --cr-icon-button-size: 32px;
+<if expr="not is_android">
+  --cr-icon-button-fill-color: var(--interactive-color);
+  --cr-icon-button-icon-size: 16px;
+</if>
 <if expr="is_android">
+  --cr-icon-button-fill-color:
+      var(--color-history-page-bookmark-star, var(--interactive-color));
+  --cr-icon-button-icon-size: 24px;
   --cr-icon-button-margin-end: 8px;
 </if>
 }
@@ -438,7 +444,7 @@
 :host([is-card-start]) #background-clip {
   clip: auto;
 <if expr="is_android">
-  top: 48px;
+  top: 56px;
 </if>
 }
 
@@ -453,15 +459,29 @@
 }
 
 :host(:not([is-card-start])) #background {
+<if expr="not is_android">
   top: -5px; /* Draw the box shadow up the full edge of the background. */
+</if>
+<if expr="is_android">
+  border-radius: calc(var(--cr-card-border-radius) / 4);
+  top: 2px;
+</if>
 }
 
 :host([is-card-start]) #background {
   border-radius: var(--cr-card-border-radius) var(--cr-card-border-radius) 0 0;
+<if expr="is_android">
+  border-end-end-radius: calc(var(--cr-card-border-radius) / 4);
+  border-end-start-radius: calc(var(--cr-card-border-radius) / 4);
+</if>
 }
 
 :host([is-card-end]) #background {
   border-radius: 0 0 var(--cr-card-border-radius) var(--cr-card-border-radius);
+<if expr="is_android">
+  border-start-end-radius: calc(var(--cr-card-border-radius) / 4);
+  border-start-start-radius: calc(var(--cr-card-border-radius) / 4);
+</if>
 }
 
 :host([is-card-start][is-card-end]) #background {
@@ -483,10 +503,19 @@ cr-checkbox::part(label-container) {
 }
 
 <if expr="is_android">
-/* 2px page-colored row divider; fallback preserves row height pre-load. */
-:host(:not([is-card-start])) #date-accessed + [role=row] {
-  border-top: 2px solid var(--color-sys-surface-container,
-      var(--md-background-color));
+/* Separates row tiles. #background starts below this border. */
+:host(:not([is-card-start])) #card-collapse > [role=row] {
+  border-top: 2px solid transparent;
+}
+
+[role=rowheader] {
+  min-width: 0;
+  overflow: hidden;
+}
+
+[role=heading] {
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 @media (hover: hover) {

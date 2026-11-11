@@ -104,14 +104,22 @@ suite('history-toolbar', function() {
 
 // <if expr="is_android">
 suite('history-toolbar-android', function() {
+  const sideBarWidth = 256;
+  const cardPadding = 16;
+
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     BrowserProxyImpl.setInstance(new TestHistoryBrowserProxy());
+    document.documentElement.style.setProperty(
+        '--side-bar-width', `${sideBarWidth}px`);
+    document.documentElement.style.setProperty(
+        '--card-padding-side', `${cardPadding}px`);
   });
 
   teardown(function() {
     document.documentElement.style.removeProperty('--card-max-width');
     document.documentElement.style.removeProperty('--card-padding-side');
+    document.documentElement.style.removeProperty('--side-bar-width');
   });
 
   // Creates a toolbar in wide mode, independent of the test window size.
@@ -128,13 +136,9 @@ suite('history-toolbar-android', function() {
   }
 
   test('SearchFieldAndOverlayMatchCards', async function() {
-    const sideBarWidth = 256;
     const cardWidth = 300;
-    const cardPadding = 16;
     document.documentElement.style.setProperty(
         '--card-max-width', `${cardWidth}px`);
-    document.documentElement.style.setProperty(
-        '--card-padding-side', `${cardPadding}px`);
     const toolbar = await createToolbar();
     const toolbarRect = toolbar.getBoundingClientRect();
     const cardLeft =
@@ -146,6 +150,9 @@ suite('history-toolbar-android', function() {
     const overlay =
         toolbar.shadowRoot.querySelector('cr-toolbar-selection-overlay');
     assertTrue(!!overlay);
+    assertPx(
+        toolbar.$.mainToolbar.getBoundingClientRect().height,
+        overlay.getBoundingClientRect().height);
     const content =
         overlay.shadowRoot.querySelector<HTMLElement>('#overlay-content');
     assertTrue(!!content);
@@ -154,6 +161,38 @@ suite('history-toolbar-android', function() {
     assertPx(
         cardLeft + cardWidth + cardPadding,
         contentRect.right - toolbarRect.left);
+  });
+
+  test('SearchFieldShrinksWithCardColumn', async function() {
+    document.documentElement.style.setProperty('--card-max-width', '600px');
+    const toolbar = await createToolbar();
+    // Leave less room beside the side bar than the cards' max width.
+    toolbar.style.width = `${sideBarWidth + 400}px`;
+    await microtasksFinished();
+    const toolbarRect = toolbar.getBoundingClientRect();
+    const fieldRect = toolbar.searchField.getBoundingClientRect();
+    assertPx(sideBarWidth + cardPadding, fieldRect.left - toolbarRect.left);
+    assertPx(
+        toolbarRect.width - cardPadding, fieldRect.right - toolbarRect.left);
+  });
+
+  test('SearchFieldIsCenteredInToolbar', async function() {
+    const toolbar = await createToolbar();
+    const toolbarRect = toolbar.$.mainToolbar.getBoundingClientRect();
+    const wideFieldRect = toolbar.searchField.getBoundingClientRect();
+    assertPx(
+        toolbarRect.top + toolbarRect.height / 2,
+        wideFieldRect.top + wideFieldRect.height / 2);
+
+    toolbar.$.mainToolbar.narrow = true;
+    await microtasksFinished();
+    const narrowFieldRect = toolbar.searchField.getBoundingClientRect();
+    assertPx(
+        toolbarRect.top + toolbarRect.height / 2,
+        narrowFieldRect.top + narrowFieldRect.height / 2);
+    assertTrue(
+        narrowFieldRect.height < wideFieldRect.height,
+        `narrow: ${narrowFieldRect.height}, wide: ${wideFieldRect.height}`);
   });
 });
 // </if>

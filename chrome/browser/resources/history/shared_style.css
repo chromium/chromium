@@ -38,7 +38,7 @@ a {
   box-sizing: border-box;
   font-size: 18px;
   font-weight: 400;
-  min-height: 48px;
+  min-height: 56px;
   padding: 0 16px;
 </if>
 }
@@ -63,10 +63,10 @@ a {
 <if expr="is_android">
   color: var(--color-sys-on-surface-variant, var(--cr-secondary-text-color));
   flex-direction: column;
-  font-size: 14px;
+  font-size: 18px;
   font-weight: 400;
   gap: 32px;
-  line-height: 20px;
+  line-height: 24px;
 </if>
 }
 
@@ -114,15 +114,23 @@ a {
 }
 
 <if expr="is_android">
-/* Set directly on cr-action-menu because its :host rule redefines this var. */
+/* Set --cr-menu-background-color on cr-action-menu because its :host rule
+ * redefines it. */
 cr-action-menu {
   --cr-menu-background-color: var(--color-history-page-menu-background,
       var(--color-menu-background, var(--cr-fallback-color-surface)));
+  --cr-menu-border-radius: 16px;
+}
+
+cr-action-menu .dropdown-item {
+  font-size: 14px;
+  line-height: 20px;
+  padding-inline: 16px;
 }
 
 #noResultsIllustration {
   flex: none;
-  height: 64px;
-  width: 64px;
+  height: 104px;
+  width: 104px;
 }
 </if>

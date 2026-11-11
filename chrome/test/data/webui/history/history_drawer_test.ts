@@ -56,4 +56,28 @@ suite('drawer-test', function() {
 
     assertEquals('syncedTabs', drawerSideBar.$.menu.selected);
   });
+
+  test('DrawerFitsSideBar', async function() {
+    app.setHasDrawerForTesting(true);
+    await microtasksFinished();
+    app.$.toolbar.$.mainToolbar.shadowRoot
+        .querySelector<HTMLElement>('#menuButton')!.click();
+    await microtasksFinished();
+    const drawer = app.$.drawer.getIfExists();
+    assertTrue(!!drawer);
+    const sideBar =
+        app.shadowRoot.querySelector<HistorySideBarElement>('#drawer-side-bar');
+    assertTrue(!!sideBar);
+    const dialogRect = drawer.$.dialog.getBoundingClientRect();
+    const items = sideBar.shadowRoot.querySelectorAll('.cr-nav-menu-item');
+    assertTrue(items.length > 0);
+    for (const element of [sideBar, ...items]) {
+      const rect = element.getBoundingClientRect();
+      assertTrue(
+          rect.left >= dialogRect.left - 0.5 &&
+              rect.right <= dialogRect.right + 0.5,
+          `${element.id}: [${rect.left}, ${rect.right}] outside ` +
+              `[${dialogRect.left}, ${dialogRect.right}]`);
+    }
+  });
 });

@@ -82,5 +82,6 @@
 cr-drawer {
   --cr-drawer-background-color: var(--color-sys-surface-container,
       var(--md-background-color));
+  --cr-drawer-width: var(--side-bar-width);
 }
 </if>

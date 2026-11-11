@@ -554,6 +554,21 @@ suite('<history-synced-device-manager>', function() {
   });
 
   // <if expr="is_android">
+  test('SyncedTabRowsAreSeparated', async () => {
+    setForeignSessions([createSession('Nexus 6', [
+      createWindow(['http://test.com', 'http://www.gmail.com', 'http://a.com']),
+    ])]);
+    await microtasksFinished();
+    const rows =
+        getCards(element)[0]!.shadowRoot.querySelectorAll('.item-container');
+    assertEquals(3, rows.length);
+    for (let i = 1; i < rows.length; i++) {
+      const gap = rows[i]!.getBoundingClientRect().top -
+          rows[i - 1]!.getBoundingClientRect().bottom;
+      assertTrue(gap > 0, `gap above row ${i}: ${gap}`);
+    }
+  });
+
   test('EmptyStateIllustrationAndroid', async () => {
     assertNoSyncedTabsMessageShown(element, 'loading');
     assertEquals(null, element.$.noSyncedTabs.querySelector('svg'));
