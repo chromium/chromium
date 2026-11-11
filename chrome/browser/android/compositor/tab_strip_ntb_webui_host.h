@@ -55,6 +55,10 @@ class TabStripNtbWebUiHost
   // TabStripService. Must be called at most once, with a TabModel belonging to
   // the same Profile passed at construction.
   void SetTabModel(TabModel* tab_model);
+  // Starts loading the WebUI. It should be called once the WebContents is
+  // attached to its WindowAndroid, so that the first load uses the window's
+  // ColorProvider.
+  void StartLoad();
   void Resize(int32_t width_px, int32_t height_px);
   void SetButtonVisible(bool visible);
   // Returns the hosted WebContents. It stays owned by this object.
@@ -89,7 +93,6 @@ class TabStripNtbWebUiHost
   void OnTabModelRemoved(TabModel* tab_model) override;
 
  private:
-  void LoadWebUi();
   void Reset();
 
   // The TabModel the service operates on. Null until SetTabModel() is called

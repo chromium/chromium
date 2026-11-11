@@ -17,9 +17,11 @@
 #include "chrome/browser/profiles/profile_destroyer.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_test_helper.h"
 #include "chrome/browser/ui/webui/tabstrip_ntb/tabstrip_ntb_ui.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/test/mock_render_process_host.h"
@@ -128,6 +130,47 @@ TEST_F(TabStripNtbWebUiHostTest,
   EXPECT_EQ(nullptr, host.GetWebContents());
   EXPECT_EQ(nullptr, host.GetLayer());
   EXPECT_FALSE(profile()->HasPrimaryOTRProfile());
+
+  // Starting the load after the WebContents is gone is a safe no-op.
+  host.StartLoad();
+}
+
+// Counts the navigations started in a WebContents.
+class NavigationStartCounter : public content::WebContentsObserver {
+ public:
+  explicit NavigationStartCounter(content::WebContents* web_contents)
+      : content::WebContentsObserver(web_contents) {}
+
+  int count() const { return count_; }
+
+  // content::WebContentsObserver:
+  void DidStartNavigation(
+      content::NavigationHandle* navigation_handle) override {
+    ++count_;
+  }
+
+ private:
+  int count_ = 0;
+};
+
+TEST_F(TabStripNtbWebUiHostTest, DoesNotLoadUntilStartLoad) {
+  base::test::ScopedFeatureList feature_list(
+      chrome::android::kAndroidNewTabButtonTabstripWebUI);
+  TabStripNtbWebUiHost host(profile(), base::TimeTicks(),
+                            /*java_coordinator=*/nullptr);
+  content::WebContents* web_contents = host.GetWebContents();
+  ASSERT_NE(nullptr, web_contents);
+  NavigationStartCounter counter(web_contents);
+
+  // Construction alone must not navigate, so that the WebContents can be
+  // attached to its WindowAndroid first.
+  EXPECT_EQ(0, counter.count());
+  EXPECT_TRUE(web_contents->GetVisibleURL().is_empty());
+
+  host.StartLoad();
+  EXPECT_EQ(1, counter.count());
+  EXPECT_EQ(GURL(chrome::kChromeUITabStripNtbURL),
+            web_contents->GetVisibleURL());
 }
 
 TEST_F(TabStripNtbWebUiHostTest, RecordsActivityCreationToFirstPaintOnce) {
@@ -155,6 +198,7 @@ TEST_F(TabStripNtbWebUiHostTest, RecreatesRendererWhenKilled) {
       chrome::android::kAndroidNewTabButtonTabstripWebUI);
   TabStripNtbWebUiHost host(profile(), base::TimeTicks(),
                             /*java_coordinator=*/nullptr);
+  host.StartLoad();
   content::WebContents* web_contents = host.GetWebContents();
   ASSERT_NE(nullptr, web_contents);
   ASSERT_TRUE(web_contents->GetPrimaryMainFrame()->IsRenderFrameLive());
@@ -193,6 +237,7 @@ TEST_F(TabStripNtbWebUiHostTest, RateLimitsRepeatedRendererCrashes) {
       chrome::android::kAndroidNewTabButtonTabstripWebUI);
   TabStripNtbWebUiHost host(profile(), base::TimeTicks(),
                             /*java_coordinator=*/nullptr);
+  host.StartLoad();
   content::WebContents* web_contents = host.GetWebContents();
   ASSERT_NE(nullptr, web_contents);
   ASSERT_TRUE(web_contents->GetPrimaryMainFrame()->IsRenderFrameLive());

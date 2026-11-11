@@ -154,9 +154,9 @@ public class NtbWebUiCoordinator
             mWindowAndroid = windowAndroid;
             mProfile = profile;
 
-            // Native creates and owns the WebContents, and starts navigating it to the WebUI. The
-            // navigation commits asynchronously, so the view and the window attached below are in
-            // place before the page is created.
+            // Native creates and owns the WebContents. The WebUI is loaded below, once the
+            // WebContents is attached to the window, so that the first load uses the window's
+            // ColorProvider.
             mNativePtr = NtbWebUiCoordinatorJni.get().init(this, profile, activityCreationUptimeMs);
             if (mNativePtr == null) {
                 mInputView = null;
@@ -191,6 +191,9 @@ public class NtbWebUiCoordinator
             mWidthPx = defaultSizePx;
             mHeightPx = defaultSizePx;
             NtbWebUiCoordinatorJni.get().resize(mNativePtr, defaultSizePx, defaultSizePx);
+
+            // Load the WebUI now that the WebContents is attached to the window and sized.
+            NtbWebUiCoordinatorJni.get().startLoad(mNativePtr);
         }
     }
 
@@ -342,6 +345,8 @@ public class NtbWebUiCoordinator
                 long activityCreationUptimeMs);
 
         void setTabModel(JniPtr<NativeTabStripNtbWebUiHost> host, int sessionId);
+
+        void startLoad(JniPtr<NativeTabStripNtbWebUiHost> self);
 
         @JniType("content::WebContents*")
         WebContents getWebContents(JniPtr<NativeTabStripNtbWebUiHost> self);

@@ -104,8 +104,6 @@ TabStripNtbWebUiHost::TabStripNtbWebUiHost(
           web_contents_->GetPrimaryMainFrame()) {
     input_event_observation_.Observe(main_frame->GetRenderWidgetHost());
   }
-
-  LoadWebUi();
 }
 
 TabStripNtbWebUiHost::~TabStripNtbWebUiHost() {
@@ -148,7 +146,7 @@ void TabStripNtbWebUiHost::OnTabModelRemoved(TabModel* tab_model) {
   Reset();
 }
 
-void TabStripNtbWebUiHost::LoadWebUi() {
+void TabStripNtbWebUiHost::StartLoad() {
   if (!web_contents_) {
     return;
   }
@@ -233,7 +231,7 @@ void TabStripNtbWebUiHost::PrimaryMainFrameRenderProcessGone(
     crash_count_ = 0;
   }
   last_crash_time_ = now;
-  base::OnceCallback callback = base::BindOnce(&TabStripNtbWebUiHost::LoadWebUi,
+  base::OnceCallback callback = base::BindOnce(&TabStripNtbWebUiHost::StartLoad,
                                                weak_ptr_factory_.GetWeakPtr());
   if (++crash_count_ <= kMaxCrashRecoveryTimes) {
     // PostTask avoids re-entering RenderProcessHostImpl::ProcessDied().

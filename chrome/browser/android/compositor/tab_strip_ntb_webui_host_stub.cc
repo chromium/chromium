@@ -17,6 +17,7 @@ namespace android {
 
 class TabStripNtbWebUiHost {
  public:
+  void StartLoad() { NOTREACHED(); }
   content::WebContents* GetWebContents() { NOTREACHED(); }
   void Resize(int32_t width_px, int32_t height_px) { NOTREACHED(); }
   void SetButtonVisible(bool visible) { NOTREACHED(); }

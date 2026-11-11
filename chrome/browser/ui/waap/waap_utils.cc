@@ -174,12 +174,13 @@ void PrewarmHelper::ConfigureWebUIContents(content::WebContents* web_contents,
 #if !BUILDFLAG(IS_ANDROID)
   // Set up the color provider source so that early navigation during background
   // prewarming (before a views::Widget exists) can resolve theme color
-  // properties. Skipped on Android, where the caller synchronously attaches a
-  // WindowAndroid right after creating the WebContents (via
-  // WebContents.setDelegates), which overwrites the ColorProviderSource and
-  // would otherwise recompute ColorProvider maps and WebPreferences twice on
-  // startup.
-  // TODO(crbug.com/581783426): Enable for Android.
+  // properties. Skipped on Android, where the NTB starts loading only after
+  // NtbWebUiCoordinator attaches the WindowAndroid (the real
+  // ColorProviderSource), so a temporary source would only cause an extra
+  // ColorProvider and WebPreferences recomputation.
+  // TODO(crbug.com/581783426): Enable for Android if the NTB WebContents is
+  // prewarmed before a window exists (e.g. PrewarmWebUIContents with
+  // TopChromeWebUIProfile), with an Android ColorProviderKey source.
   auto source = std::make_unique<PrewarmColorProviderSource>(
       GetColorProviderKey(profile));
   web_contents->SetColorProviderSource(source.get());

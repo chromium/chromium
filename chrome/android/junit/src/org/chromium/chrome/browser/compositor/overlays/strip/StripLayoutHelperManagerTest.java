@@ -1596,6 +1596,11 @@ public class StripLayoutHelperManagerTest {
         ProfileManager.setLastUsedProfileForTesting(mProfile);
         verify(mNtbWebUiCoordinatorJniMock).init(any(), eq(mProfile), eq(123L));
         verify(mNtbWebUiCoordinatorJniMock, never()).setTabModel(any(), anyInt());
+        // The prewarmed WebUI starts loading only once the WebContents is attached to the window.
+        InOrder loadOrder = Mockito.inOrder(mNtbWebUiCoordinatorJniMock, mWebContents);
+        loadOrder.verify(mNtbWebUiCoordinatorJniMock).init(any(), eq(mProfile), eq(123L));
+        loadOrder.verify(mWebContents).setDelegates(any(), any(), any(), any(), any());
+        loadOrder.verify(mNtbWebUiCoordinatorJniMock).startLoad(mNtbWebUiNativePtr);
         assertEquals(0, mControlContainer.getChildCount());
 
         initializeTest();
