@@ -9,6 +9,19 @@ import("//third_party/jni_zero/jni_zero.gni")
 # This file contains public Java interface and factory targets for all Android
 # builds.
 
+android_library("browser_window_interface_java") {
+  sources = [ "java/src/org/chromium/chrome/browser/ui/browser_window/NativeBrowserWindowInterface.java" ]
+  deps = [
+    "//build/android:build_java",
+    "//third_party/jni_zero:jni_zero_java",
+  ]
+  srcjar_deps = [ ":browser_window_interface_jni" ]
+}
+
+generate_jni("browser_window_interface_jni") {
+  sources = [ "java/src/org/chromium/chrome/browser/ui/browser_window/NativeBrowserWindowInterface.java" ]
+}
+
 # Public Java interfaces
 android_library("java") {
   sources = [
@@ -21,6 +34,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTaskTrackerObserver.java",
   ]
   deps = [
+    ":browser_window_interface_java",
     "//base:base_java",
     "//build/android:build_java",
     "//chrome/browser/profiles/android:java",
