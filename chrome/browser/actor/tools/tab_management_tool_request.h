@@ -59,6 +59,7 @@ class ActivateTabToolRequest : public TabToolRequest {
                               ToolDelegate& tool_delegate) const override;
   void Apply(ToolRequestVisitorFunctor& f) const override;
   std::string_view Name() const override;
+  bool ActsOnWebContents() const override;
 };
 
 // Closes the specified tab to the foreground.
@@ -79,6 +80,7 @@ class CloseTabToolRequest : public TabToolRequest {
                               ToolDelegate& tool_delegate) const override;
   void Apply(ToolRequestVisitorFunctor& f) const override;
   std::string_view Name() const override;
+  bool ActsOnWebContents() const override;
 };
 
 }  // namespace actor

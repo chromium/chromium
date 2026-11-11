@@ -34,6 +34,7 @@ class HistoryBackToolRequest : public TabToolRequest {
   CreateToolResult CreateTool(TaskId task_id,
                               ToolDelegate& tool_delegate) const override;
   std::string_view Name() const override;
+  bool ActsOnWebContents() const override;
   bool RequiresUrlCheckInCurrentTab() const override;
 };
 
@@ -57,6 +58,7 @@ class HistoryForwardToolRequest : public TabToolRequest {
   CreateToolResult CreateTool(TaskId task_id,
                               ToolDelegate& tool_delegate) const override;
   std::string_view Name() const override;
+  bool ActsOnWebContents() const override;
   bool RequiresUrlCheckInCurrentTab() const override;
 };
 
@@ -81,6 +83,7 @@ class ReloadPageToolRequest : public TabToolRequest {
   CreateToolResult CreateTool(TaskId task_id,
                               ToolDelegate& tool_delegate) const override;
   std::string_view Name() const override;
+  bool ActsOnWebContents() const override;
   bool RequiresUrlCheckInCurrentTab() const override;
 
  private:

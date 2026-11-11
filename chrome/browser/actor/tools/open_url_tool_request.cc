@@ -101,6 +101,10 @@ std::string_view OpenUrlToolRequest::Name() const {
   return kName;
 }
 
+bool OpenUrlToolRequest::ActsOnWebContents() const {
+  return false;
+}
+
 std::optional<url::Origin> OpenUrlToolRequest::AssociatedOriginGrant() const {
   // The navigation to `url_` runs as a follow-up `NavigateToolRequest`, which
   // doesn't get its implicit grant applied, so grant the origin up front.

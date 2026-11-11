@@ -61,6 +61,13 @@ class ToolRequest {
   // a null handle.
   virtual ActorSurfaceHandle GetActorSurfaceHandle() const;
 
+  // Returns true if this tool interacts with a WebContents.
+  //
+  // Defaults to true. Override to return false if the tool does not use a
+  // WebContents, or can run on a crashed tab (such as navigation or reload
+  // tools).
+  virtual bool ActsOnWebContents() const;
+
   // Returns true if this tool takes action within the page of the current tab
   // and thus requires checking the current tab's URL for safety checks.
   // Typically, most tab scoped tools will return true here but, for example, a

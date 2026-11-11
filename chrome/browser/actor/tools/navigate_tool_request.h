@@ -48,6 +48,7 @@ class NavigateToolRequest : public ToolRequest {
   CreateToolResult CreateTool(TaskId task_id,
                               ToolDelegate& tool_delegate) const override;
   std::string_view Name() const override;
+  bool ActsOnWebContents() const override;
   ActorSurfaceHandle GetActorSurfaceHandle() const override;
   GURL GetURLForJournal() const override;
 

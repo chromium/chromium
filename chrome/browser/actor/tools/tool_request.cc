@@ -59,6 +59,13 @@ std::string ToolRequest::JournalEvent() const {
   return std::string(Name());
 }
 
+// Defaults to true because most tools interact with a WebContents.
+// Override to return false if the tool does not use a WebContents,
+// or can run on a crashed tab.
+bool ToolRequest::ActsOnWebContents() const {
+  return true;
+}
+
 bool ToolRequest::RequiresUrlCheckInCurrentTab() const {
   // By default, tab scoped tools require current tab URL checks but individual
   // tools can override this.

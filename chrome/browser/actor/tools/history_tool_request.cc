@@ -20,7 +20,6 @@
 
 namespace actor {
 
-
 namespace {
 
 // Default description for the `go_back` tool.
@@ -84,6 +83,10 @@ std::string_view HistoryBackToolRequest::Name() const {
   return kName;
 }
 
+bool HistoryBackToolRequest::ActsOnWebContents() const {
+  return false;
+}
+
 bool HistoryBackToolRequest::RequiresUrlCheckInCurrentTab() const {
   // A history tool is tab scoped but navigates *away* from the current URL --
   // the destination URL is checked in HistoryTool::Validate().
@@ -116,6 +119,10 @@ void HistoryForwardToolRequest::Apply(ToolRequestVisitorFunctor& f) const {
 
 std::string_view HistoryForwardToolRequest::Name() const {
   return kName;
+}
+
+bool HistoryForwardToolRequest::ActsOnWebContents() const {
+  return false;
 }
 
 bool HistoryForwardToolRequest::RequiresUrlCheckInCurrentTab() const {
@@ -153,6 +160,10 @@ void ReloadPageToolRequest::Apply(ToolRequestVisitorFunctor& f) const {
 
 std::string_view ReloadPageToolRequest::Name() const {
   return kName;
+}
+
+bool ReloadPageToolRequest::ActsOnWebContents() const {
+  return false;
 }
 
 bool ReloadPageToolRequest::RequiresUrlCheckInCurrentTab() const {

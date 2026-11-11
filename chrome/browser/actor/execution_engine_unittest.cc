@@ -29,6 +29,7 @@
 #include "chrome/browser/actor/site_policy.h"
 #include "chrome/browser/actor/tools/click_tool_request.h"
 #include "chrome/browser/actor/tools/fake_tool_request.h"
+#include "chrome/browser/actor/tools/history_tool_request.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/tools/wait_tool.h"
 #include "chrome/browser/actor/ui/event_dispatcher.h"
@@ -54,6 +55,7 @@
 #include "components/page_content_annotations/content/mojom/page_stability.mojom.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/test/mock_navigation_handle.h"
+#include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/navigation_simulator.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "net/http/http_response_headers.h"
@@ -458,6 +460,51 @@ TEST_F(ExecutionEngineTest, MAYBE_ActFailsWhenTabDestroyed) {
   ExpectErrorResult(result, mojom::ActionResultCode::kTabWentAway);
   histograms_.ExpectUniqueSample(kActionResultHistogram,
                                  mojom::ActionResultCode::kTabWentAway, 1);
+}
+
+// TODO(crbug.com/480230075): Crashing on Android.
+#if BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
+#define MAYBE_ActFailsWithRendererCrashedWhenToolActsOnWebContents \
+  DISABLED_ActFailsWithRendererCrashedWhenToolActsOnWebContents
+#define MAYBE_ActDoesNotFailWithRendererCrashedWhenToolDoesNotActOnWebContents \
+  DISABLED_ActDoesNotFailWithRendererCrashedWhenToolDoesNotActOnWebContents
+#else
+#define MAYBE_ActFailsWithRendererCrashedWhenToolActsOnWebContents \
+  ActFailsWithRendererCrashedWhenToolActsOnWebContents
+#define MAYBE_ActDoesNotFailWithRendererCrashedWhenToolDoesNotActOnWebContents \
+  ActDoesNotFailWithRendererCrashedWhenToolDoesNotActOnWebContents
+#endif
+TEST_F(ExecutionEngineTest,
+       MAYBE_ActFailsWithRendererCrashedWhenToolActsOnWebContents) {
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("http://localhost/"));
+  process()->SimulateCrash();
+  ASSERT_TRUE(web_contents()->IsCrashed());
+
+  ActResultFuture result;
+  std::unique_ptr<ToolRequest> action =
+      MakeClickCallback(kFakeContentNodeId).Run();
+  task_->Act(ToRequestList(action), result.GetCallback());
+  ExpectErrorResult(result, mojom::ActionResultCode::kRendererCrashed);
+}
+
+TEST_F(ExecutionEngineTest,
+       MAYBE_ActDoesNotFailWithRendererCrashedWhenToolDoesNotActOnWebContents) {
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("http://localhost/"));
+  process()->SimulateCrash();
+  ASSERT_TRUE(web_contents()->IsCrashed());
+
+  ActResultFuture result;
+  std::unique_ptr<ToolRequest> action = std::make_unique<ReloadPageToolRequest>(
+      ActorSurfaceHandle::From(GetTab()->GetHandle()));
+  task_->Act(ToRequestList(action), result.GetCallback());
+  const auto& action_results = result.Get();
+  ASSERT_FALSE(action_results.empty());
+  for (const auto& action_result : action_results) {
+    EXPECT_NE(action_result.result->code,
+              mojom::ActionResultCode::kRendererCrashed);
+  }
 }
 
 // TODO(crbug.com/480230075): Crashing on Android.

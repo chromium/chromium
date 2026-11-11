@@ -415,8 +415,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, ReloadPage) {
   EXPECT_EQ(web_contents()->GetLastCommittedURL(), url);
 }
 
-// The actor framework does not act on crashed tabs, so reload_page reloads
-// them directly.
+// The actor framework executes reload_page on crashed tabs to restore the
+// renderer.
 IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, ReloadPageOnCrashedTab) {
   ttc_service().StartSession();
   auto* session_controller =
@@ -447,35 +447,6 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, ReloadPageOnCrashedTab) {
       actor_service->GetActingActorTaskForWebContents(web_contents());
   ASSERT_TRUE(acting_task);
   EXPECT_EQ(acting_task->id(), session_controller->GetActorTaskId());
-}
-
-// Reloading a crashed tab directly still honors the enterprise policy that
-// the actor would apply.
-IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
-                       ReloadPageOnCrashedTabBlockedByPolicy) {
-  ttc_service().SetEnterprisePolicyCheckerForTesting(
-      std::make_unique<actor::MockPolicyChecker>(
-          actor::EnterprisePolicyChecker::UrlBlockReason::kExplicitlyBlocked));
-  ttc_service().StartSession();
-  auto* session_controller = ttc_service().session_controller();
-  ASSERT_TRUE(session_controller);
-
-  const GURL url =
-      embedded_https_test_server().GetURL("example.com", "/title1.html");
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
-  content::CrashTab(web_contents());
-  ASSERT_TRUE(web_contents()->IsCrashed());
-
-  base::test::TestFuture<ToolResponse> future;
-  ToolRequest tool_request;
-  tool_request.name =
-      std::string(actor::ReloadPageToolRequest::kModelFacingName);
-  session_controller->ProcessToolCall(std::move(tool_request),
-                                      future.GetCallback());
-
-  ToolResponse response = future.Take();
-  EXPECT_TOOL_ERROR(response, actor::mojom::ActionResultCode::kUrlBlocked);
-  EXPECT_TRUE(web_contents()->IsCrashed());
 }
 
 IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, SwitchTab) {

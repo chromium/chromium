@@ -1527,7 +1527,7 @@ void ExecutionEngine::KickOffNextAction() {
       base::FeatureList::IsEnabled(kActorReloadCrashedTabBeforeAct)) {
     content::WebContents* contents = actor_surface->GetWebContents();
     CHECK(contents);
-    if (contents->IsCrashed()) {
+    if (contents->IsCrashed() && GetNextAction().ActsOnWebContents()) {
       GetJournal().Log(
           contents->GetLastCommittedURL(), task_->id(),
           "ExecutionEngine::KickOffNextAction",

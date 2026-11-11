@@ -108,6 +108,10 @@ std::string_view NavigateToolRequest::Name() const {
   return kName;
 }
 
+bool NavigateToolRequest::ActsOnWebContents() const {
+  return false;
+}
+
 ActorSurfaceHandle NavigateToolRequest::GetActorSurfaceHandle() const {
   return actor_surface_handle_;
 }

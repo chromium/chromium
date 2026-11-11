@@ -47,6 +47,7 @@ class OpenUrlToolRequest : public TabToolRequest {
 
   // ToolRequest:
   bool RequiresUrlCheckInCurrentTab() const override;
+  bool ActsOnWebContents() const override;
   CreateToolResult CreateTool(TaskId task_id,
                               ToolDelegate& tool_delegate) const override;
   void Apply(ToolRequestVisitorFunctor& f) const override;

@@ -112,6 +112,10 @@ std::string_view ActivateTabToolRequest::Name() const {
   return kName;
 }
 
+bool ActivateTabToolRequest::ActsOnWebContents() const {
+  return false;
+}
+
 CloseTabToolRequest::CloseTabToolRequest(
     ActorSurfaceHandle actor_surface_handle)
     : TabToolRequest(actor_surface_handle) {}
@@ -146,6 +150,10 @@ void CloseTabToolRequest::Apply(ToolRequestVisitorFunctor& f) const {
 
 std::string_view CloseTabToolRequest::Name() const {
   return kName;
+}
+
+bool CloseTabToolRequest::ActsOnWebContents() const {
+  return false;
 }
 
 }  // namespace actor

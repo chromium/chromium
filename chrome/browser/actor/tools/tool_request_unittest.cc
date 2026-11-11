@@ -25,6 +25,7 @@
 #include "chrome/browser/actor/tools/move_mouse_tool_request.h"
 #include "chrome/browser/actor/tools/navigate_tool_request.h"
 #include "chrome/browser/actor/tools/one_time_token/attempt_otp_filling_tool_request.h"
+#include "chrome/browser/actor/tools/open_url_tool_request.h"
 #include "chrome/browser/actor/tools/page_tool_request.h"
 #include "chrome/browser/actor/tools/password_manager/attempt_login/attempt_login_tool_request.h"
 #include "chrome/browser/actor/tools/password_manager/change_password/change_password_tool_request.h"
@@ -34,6 +35,7 @@
 #include "chrome/browser/actor/tools/scroll_tool_request.h"
 #include "chrome/browser/actor/tools/select_tool_request.h"
 #include "chrome/browser/actor/tools/site_based_search_tool_request.h"
+#include "chrome/browser/actor/tools/tab_management_tool_request.h"
 #include "chrome/browser/actor/tools/tool.h"
 #include "chrome/browser/actor/tools/translate_page_tool_request.h"
 #include "chrome/browser/actor/tools/type_tool_request.h"
@@ -227,6 +229,40 @@ TEST_F(ToolRequestTest, NavigateRequestInNewTabAllowsNullSurface) {
   EXPECT_TRUE(request.GetActorSurfaceHandle().is_null());
   EXPECT_TRUE(request.GetActorSurfaceForValidation().is_null());
   EXPECT_FALSE(request.RequiresUrlCheckInCurrentTab());
+}
+
+TEST_F(ToolRequestTest, ActsOnWebContents) {
+  TestToolRequest base_request;
+  EXPECT_TRUE(base_request.ActsOnWebContents());
+
+  const PageTarget target(gfx::Point(1, 2));
+  ClickToolRequest click_request(actor_surface_handle_, target,
+                                 mojom::ClickType::kLeft,
+                                 mojom::ClickCount::kSingle);
+  EXPECT_TRUE(click_request.ActsOnWebContents());
+
+  std::vector<std::unique_ptr<ToolRequest>> non_web_contents_tools;
+  non_web_contents_tools.push_back(
+      std::make_unique<ReloadPageToolRequest>(actor_surface_handle_));
+  non_web_contents_tools.push_back(
+      std::make_unique<HistoryBackToolRequest>(actor_surface_handle_));
+  non_web_contents_tools.push_back(
+      std::make_unique<HistoryForwardToolRequest>(actor_surface_handle_));
+  non_web_contents_tools.push_back(std::make_unique<NavigateToolRequest>(
+      actor_surface_handle_, GURL("https://example.com")));
+  non_web_contents_tools.push_back(std::make_unique<OpenUrlToolRequest>(
+      actor_surface_handle_, GURL("https://example.com"),
+      /*open_in_new_tab=*/false));
+#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
+  non_web_contents_tools.push_back(
+      std::make_unique<ActivateTabToolRequest>(actor_surface_handle_));
+  non_web_contents_tools.push_back(
+      std::make_unique<CloseTabToolRequest>(actor_surface_handle_));
+#endif
+
+  for (const auto& tool : non_web_contents_tools) {
+    EXPECT_FALSE(tool->ActsOnWebContents()) << tool->Name();
+  }
 }
 
 }  // namespace
