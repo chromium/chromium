@@ -42,11 +42,19 @@ struct StructTraits<ax::mojom::AXActionDataDataView, ui::AXActionData> {
   static int32_t anchor_offset(const ui::AXActionData& a) {
     return a.anchor_offset;
   }
+  static std::optional<ax::mojom::OffsetType> anchor_offset_type(
+      const ui::AXActionData& a) {
+    return a.anchor_offset_type;
+  }
   static int32_t focus_node_id(const ui::AXActionData& a) {
     return a.focus_node_id;
   }
   static int32_t focus_offset(const ui::AXActionData& a) {
     return a.focus_offset;
+  }
+  static std::optional<ax::mojom::OffsetType> focus_offset_type(
+      const ui::AXActionData& a) {
+    return a.focus_offset_type;
   }
   static int32_t custom_action_id(const ui::AXActionData& a) {
     return a.custom_action_id;

@@ -61,14 +61,20 @@ struct AX_BASE_EXPORT AXActionData {
   int request_id = -1;
 
   // For an action that creates a selection, the selection anchor and focus
-  // (see ax_tree_data.h for definitions).
+  // (see ax_tree_data.h for definitions). `anchor_offset_type` and
+  // `focus_offset_type` specify whether each offset is a child index (a tree
+  // position) or a character offset (a text position); when unset, the sender
+  // didn't specify them and consumers infer them from the anchor and focus
+  // nodes respectively.
   int anchor_node_id = -1;
   // To clear the selection, use an anchor_offset and focus_offset of
   // and set the the anchor_node_id and focus_node_id to the target_node_id.
   int anchor_offset = ax::mojom::kNoSelectionOffset;
+  std::optional<ax::mojom::OffsetType> anchor_offset_type;
 
   int focus_node_id = -1;
   int focus_offset = ax::mojom::kNoSelectionOffset;
+  std::optional<ax::mojom::OffsetType> focus_offset_type;
 
   // Start index of the text which should be queried for.
   int32_t start_index = -1;

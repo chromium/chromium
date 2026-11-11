@@ -40,8 +40,14 @@ bool StructTraits<ax::mojom::AXActionDataDataView, ui::AXActionData>::Read(
   out->request_id = data.request_id();
   out->anchor_node_id = data.anchor_node_id();
   out->anchor_offset = data.anchor_offset();
+  if (!data.ReadAnchorOffsetType(&out->anchor_offset_type)) {
+    return false;
+  }
   out->focus_node_id = data.focus_node_id();
   out->focus_offset = data.focus_offset();
+  if (!data.ReadFocusOffsetType(&out->focus_offset_type)) {
+    return false;
+  }
   out->custom_action_id = data.custom_action_id();
   out->horizontal_scroll_alignment = data.horizontal_scroll_alignment();
   out->vertical_scroll_alignment = data.vertical_scroll_alignment();

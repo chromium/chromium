@@ -26,8 +26,10 @@ TEST(AXActionDataMojomTraitsTest, RoundTrip) {
   input.request_id = 3;
   input.anchor_node_id = 4;
   input.anchor_offset = 5;
+  input.anchor_offset_type = ax::mojom::OffsetType::kChild;
   input.focus_node_id = 6;
   input.focus_offset = 7;
+  input.focus_offset_type = ax::mojom::OffsetType::kText;
   input.custom_action_id = 8;
   input.target_rect = gfx::Rect(9, 10, 11, 12);
   input.target_point = gfx::Point(13, 14);
@@ -56,8 +58,10 @@ TEST(AXActionDataMojomTraitsTest, RoundTrip) {
   EXPECT_EQ(output.request_id, 3);
   EXPECT_EQ(output.anchor_node_id, 4);
   EXPECT_EQ(output.anchor_offset, 5);
+  EXPECT_EQ(output.anchor_offset_type, ax::mojom::OffsetType::kChild);
   EXPECT_EQ(output.focus_node_id, 6);
   EXPECT_EQ(output.focus_offset, 7);
+  EXPECT_EQ(output.focus_offset_type, ax::mojom::OffsetType::kText);
   EXPECT_EQ(output.custom_action_id, 8);
   EXPECT_EQ(output.target_rect, gfx::Rect(9, 10, 11, 12));
   EXPECT_EQ(output.target_point, gfx::Point(13, 14));
@@ -80,6 +84,12 @@ TEST(AXActionDataMojomTraitsTest, RoundTrip) {
   input.target_rect = std::nullopt;
   EXPECT_TRUE(SerializeAndDeserialize<ax::mojom::AXActionData>(input, output));
   EXPECT_EQ(output.target_rect, std::nullopt);
+
+  input.anchor_offset_type = std::nullopt;
+  input.focus_offset_type = std::nullopt;
+  EXPECT_TRUE(SerializeAndDeserialize<ax::mojom::AXActionData>(input, output));
+  EXPECT_EQ(output.anchor_offset_type, std::nullopt);
+  EXPECT_EQ(output.focus_offset_type, std::nullopt);
 }
 
 TEST(AXActionDataMojomTraitsTest, IntListAttributes) {

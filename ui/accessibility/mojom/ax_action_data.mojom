@@ -20,8 +20,10 @@ struct AXActionData {
   int32 request_id;
   int32 anchor_node_id;
   int32 anchor_offset;
+  ax.mojom.OffsetType? anchor_offset_type;
   int32 focus_node_id;
   int32 focus_offset;
+  ax.mojom.OffsetType? focus_offset_type;
   int32 custom_action_id;
   gfx.mojom.Rect? target_rect;
   gfx.mojom.Point target_point;
