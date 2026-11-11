@@ -75,4 +75,5 @@ grit("resources") {
     "//chromeos/ash/components/language_packs/public/mojom:mojom_js",
     "//chromeos/ash/components/mantis/mojom:mojom_js",
   ]
+  public_deps = [ "//ui/base:webui_resource_path" ]
 }

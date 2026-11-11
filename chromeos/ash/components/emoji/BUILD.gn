@@ -730,6 +730,7 @@ grit("resources") {
     "grit/emoji_map.h",
     "emoji.pak",
   ]
+  public_deps = [ "//ui/base:webui_resource_path" ]
 }
 
 source_set("emoji") {
