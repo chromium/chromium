@@ -5,7 +5,7 @@
 import 'chrome://settings/settings.js';
 
 import type {Route, SettingsMainElement} from 'chrome://settings/settings.js';
-import {loadTimeData, pageVisibility, resetPageVisibilityForTesting, resetRouterForTesting, Router, routes, setSearchManagerForTesting} from 'chrome://settings/settings.js';
+import {loadTimeData, pageVisibility, PrefService, PrefValues, resetPageVisibilityForTesting, resetRouterForTesting, Router, routes, setSearchManagerForTesting} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -197,5 +197,51 @@ suite('SettingsMain', function() {
     createSettingsMain({showResetProfileBanner: true});
     assertTrue(!!settingsMain.shadowRoot.querySelector(
         'settings-reset-profile-banner'));
+  });
+
+  test('KeepsVisitedPluginsConnectedInDom', async function() {
+    createSettingsMain({settingsRefresh2026: ''});
+    await settingsMain.whenViewSwitchingDone();
+
+    // Unvisited plugins should not be rendered initially.
+    assertEquals(
+        null,
+        settingsMain.shadowRoot.querySelector('settings-on-startup-page'));
+    assertEquals(
+        null, settingsMain.shadowRoot.querySelector('settings-reset-page'));
+
+    // Visit On Startup and select "Continue where you left off".
+    Router.getInstance().navigateTo(routes.ON_STARTUP);
+    await settingsMain.whenViewSwitchingDone();
+    const onStartupPage =
+        settingsMain.shadowRoot.querySelector('settings-on-startup-page');
+    assertTrue(!!onStartupPage);
+
+    const prefService = PrefService.getInstance();
+    await prefService.whenInitialized();
+    await prefService.setPrefValue(
+        'session.restore_on_startup', PrefValues.CONTINUE);
+    await microtasksFinished();
+    const radioGroup =
+        onStartupPage.shadowRoot.querySelector('settings-radio-group');
+    assertTrue(!!radioGroup);
+    assertEquals(String(PrefValues.CONTINUE), radioGroup.selected);
+
+    // Navigate to Reset and verify On Startup stays connected and observes
+    // preference resets while inactive.
+    Router.getInstance().navigateTo(routes.RESET);
+    await settingsMain.whenViewSwitchingDone();
+    assertTrue(onStartupPage.isConnected);
+    assertEquals(
+        onStartupPage,
+        settingsMain.shadowRoot.querySelector('settings-on-startup-page'));
+
+    await prefService.setPrefValue(
+        'session.restore_on_startup', PrefValues.OPEN_NEW_TAB);
+    await microtasksFinished();
+
+    Router.getInstance().navigateTo(routes.ON_STARTUP);
+    await settingsMain.whenViewSwitchingDone();
+    assertEquals(String(PrefValues.OPEN_NEW_TAB), radioGroup.selected);
   });
 });
