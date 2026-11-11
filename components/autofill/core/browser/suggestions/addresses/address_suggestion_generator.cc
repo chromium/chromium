@@ -78,9 +78,6 @@
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_formatter.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-#endif
-
 namespace autofill {
 
 namespace {
@@ -651,6 +648,9 @@ MaybeFetchAddressOnTypingSuggestionData(
     const AddressDataManager& address_data_manager,
     const FormFieldData& trigger_field,
     const AutofillField* trigger_autofill_field) {
+  if constexpr (BUILDFLAG(IS_IOS)) {
+    return {};
+  }
   if (!trigger_field.should_autocomplete() ||
       !base::FeatureList::IsEnabled(
           features::kAutofillAddressSuggestionsOnTyping)) {

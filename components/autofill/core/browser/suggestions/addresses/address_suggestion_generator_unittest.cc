@@ -176,6 +176,7 @@ class AddressSuggestionGeneratorTest : public testing::Test {
   syncer::TestSyncService sync_service_;
 };
 
+#if !BUILDFLAG(IS_IOS)
 // Tests that `SuggestionType::AddressEntryOnTyping` suggestions are returned
 // when the triggering field contents matches profile data.
 TEST_F(AddressSuggestionGeneratorTest,
@@ -426,6 +427,15 @@ TEST_F(AddressSuggestionGeneratorTest,
     EXPECT_TRUE(suggestions.empty());
   }
 }
+#else
+// Tests that `SuggestionType::kAddressEntryOnTyping` suggestions are not
+// returned on iOS.
+TEST_F(AddressSuggestionGeneratorTest,
+       GetSuggestionsOnTypingForProfile_NotReturnedOnIos) {
+  AddProfileWithValues({{NAME_FULL, u"Sundar pichai"}}, /*use_count=*/1);
+  EXPECT_THAT(GetSuggestionsOnTypingWithPrefix(u"Sund"), IsEmpty());
+}
+#endif  // !BUILDFLAG(IS_IOS)
 
 // Tests that special characters will be used while prefix matching the user's
 // field input with the available emails to suggest.

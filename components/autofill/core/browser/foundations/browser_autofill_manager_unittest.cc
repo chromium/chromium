@@ -7237,6 +7237,7 @@ TEST_F(BrowserAutofillManagerTest, FillAddressForm_CollectObservations) {
       }));
 }
 
+#if !BUILDFLAG(IS_IOS)
 TEST_F(BrowserAutofillManagerTest,
        AddressSuggestionOnTyping_ShownWhenNoOtherSuggestionExists) {
   base::test::ScopedFeatureList scoped_feature_list{
@@ -7279,6 +7280,7 @@ TEST_F(BrowserAutofillManagerTest,
               EqualsSuggestion(SuggestionType::kAddressEntryOnTyping,
                                address_home_line1));
 }
+#endif  // !BUILDFLAG(IS_IOS)
 
 // Tests that the form signatures of import-worthy forms submitted shortly after
 // another (within a 5 minutes time window) are set accordingly in their form
