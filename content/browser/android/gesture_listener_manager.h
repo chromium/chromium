@@ -57,8 +57,8 @@ class CONTENT_EXPORT GestureListenerManager
   void DidStopFlinging();
   bool FilterInputEvent(const blink::WebInputEvent& event);
 
-  // All sizes and offsets are in CSS pixels (except |top_show_pix|)
-  // as cached by the renderer.
+  // All sizes and offsets are in CSS pixels (except |top_shown_pix| and
+  // |bottom_shown_pix|) as cached by the renderer.
   void UpdateScrollInfo(const gfx::PointF& scroll_offset,
                         float page_scale_factor,
                         const float min_page_scale,
@@ -67,7 +67,8 @@ class CONTENT_EXPORT GestureListenerManager
                         const gfx::SizeF& viewport,
                         const float content_offset,
                         const float top_shown_pix,
-                        bool top_changed);
+                        const float bottom_shown_pix,
+                        bool controls_changed);
   void UpdateOnTouchDown();
   void UpdateOnTouchUp();
   void OnRootScrollOffsetChanged(const gfx::PointF& root_scroll_offset);

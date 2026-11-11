@@ -638,6 +638,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
     float top_content_offset = 0.f;
     float top_min_height_offset = 0.f;
     float bottom_translate = 0.f;
+    float bottom_content_offset = 0.f;
     float bottom_min_height_offset = 0.f;
   };
   ClampedBrowserControls ClampBrowserControls(

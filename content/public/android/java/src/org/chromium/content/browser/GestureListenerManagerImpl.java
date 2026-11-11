@@ -451,9 +451,9 @@ public class GestureListenerManagerImpl
         return false;
     }
 
-    @SuppressWarnings("unused")
     @CalledByNative
-    private void updateScrollInfo(
+    @VisibleForTesting
+    void updateScrollInfo(
             float scrollOffsetX,
             float scrollOffsetY,
             float pageScaleFactor,
@@ -464,7 +464,8 @@ public class GestureListenerManagerImpl
             float viewportWidth,
             float viewportHeight,
             float topBarShownPix,
-            boolean topBarChanged) {
+            float bottomBarShownPix,
+            boolean controlsChanged) {
         TraceEvent.begin("GestureListenerManagerImpl:updateScrollInfo");
         RenderCoordinatesImpl rc = mWebContents.getRenderCoordinates();
 
@@ -499,9 +500,10 @@ public class GestureListenerManagerImpl
                 viewportHeight,
                 minPageScaleFactor,
                 maxPageScaleFactor,
-                topBarShownPix);
+                topBarShownPix,
+                bottomBarShownPix);
 
-        if (!scrollChanged && topBarChanged) {
+        if (!scrollChanged && controlsChanged) {
             updateOnScrollChanged(verticalScrollOffset(), verticalScrollExtent());
         }
         if (scaleLimitsChanged) updateOnScaleLimitsChanged(minPageScaleFactor, maxPageScaleFactor);

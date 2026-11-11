@@ -287,8 +287,8 @@ bool GestureListenerManager::FilterInputEvent(const WebInputEvent& event) {
       gesture.PositionInWidget().y() * dip_scale);
 }
 
-// All positions and sizes (except |top_shown_pix|) are in CSS pixels.
-// Note that viewport_width/height is a best effort based.
+// All positions and sizes (except |top_shown_pix| and |bottom_shown_pix|) are
+// in CSS pixels. Note that viewport_width/height is a best effort based.
 void GestureListenerManager::UpdateScrollInfo(const gfx::PointF& scroll_offset,
                                               float page_scale_factor,
                                               const float min_page_scale,
@@ -297,7 +297,8 @@ void GestureListenerManager::UpdateScrollInfo(const gfx::PointF& scroll_offset,
                                               const gfx::SizeF& viewport,
                                               const float content_offset,
                                               const float top_shown_pix,
-                                              bool top_changed) {
+                                              const float bottom_shown_pix,
+                                              bool controls_changed) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = GetJavaObject(env);
   if (obj.is_null())
@@ -307,7 +308,8 @@ void GestureListenerManager::UpdateScrollInfo(const gfx::PointF& scroll_offset,
   Java_GestureListenerManagerImpl_updateScrollInfo(
       env, obj, scroll_offset.x(), scroll_offset.y(), page_scale_factor,
       min_page_scale, max_page_scale, content.width(), content.height(),
-      viewport.width(), viewport.height(), top_shown_pix, top_changed);
+      viewport.width(), viewport.height(), top_shown_pix, bottom_shown_pix,
+      controls_changed);
 }
 
 void GestureListenerManager::UpdateOnTouchDown() {

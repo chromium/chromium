@@ -56,6 +56,7 @@ public class GestureListenerManagerImplUnitTest {
     private final ViewGroup mViewGroup = new FrameLayout(ContextUtils.getApplicationContext());
 
     private GestureListenerManagerImpl mGestureManager;
+    private RenderCoordinatesImpl mRenderCoordinates;
 
     @Before
     public void setup() {
@@ -141,12 +142,32 @@ public class GestureListenerManagerImplUnitTest {
                 ON_SCROLL_END, mGestureManager.getRootScrollOffsetUpdateFrequencyForTesting());
     }
 
+    @Test
+    public void updateScrollInfoUpdatesTopAndBottomControlsOffsets() {
+        mGestureManager.updateScrollInfo(
+                /* scrollOffsetX= */ 0f,
+                /* scrollOffsetY= */ 0f,
+                /* pageScaleFactor= */ 1f,
+                /* minPageScaleFactor= */ 0.5f,
+                /* maxPageScaleFactor= */ 2f,
+                /* contentWidth= */ 500f,
+                /* contentHeight= */ 1000f,
+                /* viewportWidth= */ 500f,
+                /* viewportHeight= */ 800f,
+                /* topBarShownPix= */ 56.9f,
+                /* bottomBarShownPix= */ 95.8f,
+                /* controlsChanged= */ true);
+
+        Assert.assertEquals(56, mRenderCoordinates.getContentOffsetYPixInt());
+        Assert.assertEquals(95, mRenderCoordinates.getContentOffsetBottomPixInt());
+    }
+
     private void setupMockWebContents() {
         ViewAndroidDelegate viewAndroidDelegate =
                 ViewAndroidDelegate.createBasicDelegate(mViewGroup);
-        RenderCoordinatesImpl renderCoordinates = new RenderCoordinatesImpl();
+        mRenderCoordinates = new RenderCoordinatesImpl();
         doReturn(viewAndroidDelegate).when(mWebContents).getViewAndroidDelegate();
-        doReturn(renderCoordinates).when(mWebContents).getRenderCoordinates();
+        doReturn(mRenderCoordinates).when(mWebContents).getRenderCoordinates();
 
         // Setup UserData involved in the scrolling process.
         doAnswer(

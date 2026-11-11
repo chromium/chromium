@@ -834,15 +834,20 @@ TEST_F(RenderWidgetHostViewAndroidTest, ClampBrowserControls) {
   EXPECT_FLOAT_EQ(75.f, clamped.top_content_offset);
   EXPECT_FLOAT_EQ(20.f, clamped.top_min_height_offset);
   EXPECT_FLOAT_EQ(60.f, clamped.bottom_translate);
+  EXPECT_FLOAT_EQ(20.f, clamped.bottom_content_offset);
   EXPECT_FLOAT_EQ(10.f, clamped.bottom_min_height_offset);
 
   // A zero height with the controls fully shown must not report a zero content
   // offset: the controls are still drawn at full height.
   metadata.top_controls_height = 0.f;
   metadata.top_controls_shown_ratio = 1.f;
+  metadata.bottom_controls_height = 0.f;
+  metadata.bottom_controls_shown_ratio = 1.f;
   clamped = ClampBrowserControls(metadata);
   EXPECT_FLOAT_EQ(0.f, clamped.top_translate);
   EXPECT_FLOAT_EQ(150.f, clamped.top_content_offset);
+  EXPECT_FLOAT_EQ(0.f, clamped.bottom_translate);
+  EXPECT_FLOAT_EQ(80.f, clamped.bottom_content_offset);
 
   // Oversized values are bounded by the browser's heights.
   metadata.top_controls_height = 4294967296.f;
@@ -856,6 +861,7 @@ TEST_F(RenderWidgetHostViewAndroidTest, ClampBrowserControls) {
   EXPECT_FLOAT_EQ(0.f, clamped.top_content_offset);
   EXPECT_FLOAT_EQ(150.f, clamped.top_min_height_offset);
   EXPECT_FLOAT_EQ(80.f, clamped.bottom_translate);
+  EXPECT_FLOAT_EQ(0.f, clamped.bottom_content_offset);
   EXPECT_FLOAT_EQ(80.f, clamped.bottom_min_height_offset);
 }
 

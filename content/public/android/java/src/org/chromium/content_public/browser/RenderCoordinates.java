@@ -60,7 +60,15 @@ public interface RenderCoordinates {
     /**
      * @return The Physical on-screen Y offset amount below the browser controls.
      */
+    // TODO(crbug.com/582350727): Rename to getContentOffsetTopPixInt() for symmetry with
+    // getContentOffsetBottomPixInt().
     int getContentOffsetYPixInt();
+
+    /**
+     * @return Physical on-screen height of the bottom browser controls currently shown (approx,
+     *     integer).
+     */
+    int getContentOffsetBottomPixInt();
 
     /**
      * @return Current page scale factor (approx, integer).
