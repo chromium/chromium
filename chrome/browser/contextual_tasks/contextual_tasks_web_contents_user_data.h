@@ -43,6 +43,7 @@ struct TabInfo;
 }  // namespace contextual_search
 
 namespace content {
+class Page;
 class RenderFrameHost;
 }  // namespace content
 
@@ -418,6 +419,17 @@ class ContextualTasksWebContentsUserData
       SessionID tab_id,
       const GURL& tab_url,
       std::string_view tab_title);
+#if !BUILDFLAG(IS_ANDROID)
+  tabs::TabInterface* GetActiveBrowserTab();
+  void SyncVisualSelectionCacheWithModel();
+  void CacheVisualSelectionState();
+  void InvalidateVisualSelectionState();
+  void ClearVisualSelectionState();
+  bool IsVisualSelectionInvalidated();
+  std::optional<contextual_search::FileInfo> FindLensFileInfo(
+      contextual_search::ContextualSearchSessionHandle& session_handle,
+      std::optional<base::UnguessableToken> candidate_token) const;
+#endif
   void DispatchSerializedSearchMessage(
       const std::vector<uint8_t>& message_bytes);
   PageSearchState& GetPrimaryPageSearchState();
@@ -460,6 +472,18 @@ class ContextualTasksWebContentsUserData
   base::CallbackListSubscription tab_context_subscription_;
   base::WeakPtr<contextual_search::ContextualSearchContextController>
       observed_controller_;
+
+#if !BUILDFLAG(IS_ANDROID)
+  uint64_t cached_lens_crop_sequence_ = 0;
+  std::optional<base::UnguessableToken> visual_selection_overlay_token_;
+  std::optional<contextual_search::FileInfo> visual_selection_file_info_;
+  std::optional<SessionID> visual_selection_tab_session_id_;
+  std::optional<GURL> visual_selection_tab_url_;
+  std::optional<std::string> visual_selection_tab_title_;
+  base::WeakPtr<content::Page> visual_selection_source_page_;
+  bool has_visual_selection_source_page_ = false;
+  bool visual_selection_invalidated_ = false;
+#endif
 
   // A pending task associated with this web contents.
   std::optional<base::Uuid> pending_task_id_;

@@ -4142,6 +4142,106 @@ TEST_F(
       .WillByDefault(testing::Return(nullptr));
   webui::SetBrowserWindowInterface(web_contents_, nullptr);
 }
+
+TEST_F(
+    ContextualTasksWebContentsUserDataTest,
+    CachedVisualSelection_InvalidatedOnTabCloseOrUrlChangeAndClearedOnRemoveLensCrop) {
+  std::vector<contextual_search::FileInfo> uploaded_files;
+  auto session_handle = std::make_unique<testing::NiceMock<
+      contextual_search::MockContextualSearchSessionHandle>>();
+  auto* mock_handle = session_handle.get();
+  ON_CALL(*mock_handle, search_session_id())
+      .WillByDefault(testing::Return("visual_selection_session"));
+  ON_CALL(*mock_handle, GetUploadedContextFileInfos())
+      .WillByDefault(testing::ReturnPointee(&uploaded_files));
+
+  ContextualSearchWebContentsHelper::GetOrCreateForWebContents(web_contents_)
+      ->SetTaskSession(std::nullopt, std::move(session_handle), nullptr);
+
+  auto* user_data =
+      ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
+          web_contents_);
+  ASSERT_NE(user_data, nullptr);
+
+  const SessionID tab_session_id = SessionID::FromSerializedValue(99);
+  const GURL initial_url("https://example.com/page1");
+  const base::UnguessableToken token1 = base::UnguessableToken::Create();
+
+  contextual_search::FileInfo file_info1;
+  file_info1.file_token = token1;
+  file_info1.tab_session_id = tab_session_id;
+  file_info1.tab_url = initial_url;
+  file_info1.tab_title = "Page 1";
+  file_info1.is_implicit_upload = true;
+  lens::LensOverlayRequestId req_id1;
+  req_id1.set_uuid(101);
+  file_info1.request_id = req_id1;
+  file_info1.upload_status =
+      contextual_search::ContextUploadStatus::kUploadSuccessful;
+  file_info1.input_data = std::make_unique<lens::ContextualInputData>();
+  file_info1.input_data->upload_type =
+      lens::LensOverlayContextualInputUploadType::
+          CONTEXTUAL_INPUT_UPLOAD_TYPE_CONTEXTUAL_SEARCHBOX_INITIAL_QUERY;
+  uploaded_files.push_back(std::move(file_info1));
+
+  user_data->OnLensThumbnailCreated("data:image/png;base64,crop");
+  uploaded_files.clear();
+  EXPECT_EQ(token1, user_data->GetLensOverlayToken());
+
+  user_data->OnBrowserTabClosedOrNavigated(tab_session_id, initial_url,
+                                           std::string("Page 1"));
+  EXPECT_EQ(token1, user_data->GetLensOverlayToken());
+
+  user_data->OnBrowserTabClosedOrNavigated(
+      tab_session_id, GURL("https://example.com/page2"), std::string("Page 2"));
+  EXPECT_EQ(std::nullopt, user_data->GetLensOverlayToken());
+
+  const base::UnguessableToken token2 = base::UnguessableToken::Create();
+  contextual_search::FileInfo file_info2;
+  file_info2.file_token = token2;
+  file_info2.tab_session_id = tab_session_id;
+  file_info2.tab_url = initial_url;
+  file_info2.is_implicit_upload = true;
+  lens::LensOverlayRequestId req_id2;
+  req_id2.set_uuid(102);
+  file_info2.request_id = req_id2;
+  file_info2.upload_status =
+      contextual_search::ContextUploadStatus::kUploadSuccessful;
+  file_info2.input_data = std::make_unique<lens::ContextualInputData>();
+  file_info2.input_data->upload_type =
+      lens::LensOverlayContextualInputUploadType::
+          CONTEXTUAL_INPUT_UPLOAD_TYPE_CONTEXTUAL_SEARCHBOX_INITIAL_QUERY;
+  uploaded_files.push_back(std::move(file_info2));
+
+  user_data->OnLensThumbnailCreated("data:image/png;base64,crop");
+  uploaded_files.clear();
+  EXPECT_EQ(token2, user_data->GetLensOverlayToken());
+
+  user_data->OnBrowserTabClosedOrNavigated(tab_session_id, std::nullopt,
+                                           std::nullopt);
+  EXPECT_EQ(std::nullopt, user_data->GetLensOverlayToken());
+
+  uploaded_files.clear();
+  contextual_search::FileInfo file_info3;
+  const base::UnguessableToken token3 = base::UnguessableToken::Create();
+  file_info3.file_token = token3;
+  file_info3.is_implicit_upload = true;
+  lens::LensOverlayRequestId req_id3;
+  req_id3.set_uuid(103);
+  file_info3.request_id = req_id3;
+  file_info3.upload_status =
+      contextual_search::ContextUploadStatus::kUploadSuccessful;
+  file_info3.input_data = std::make_unique<lens::ContextualInputData>();
+  file_info3.input_data->upload_type =
+      lens::LensOverlayContextualInputUploadType::
+          CONTEXTUAL_INPUT_UPLOAD_TYPE_CONTEXTUAL_SEARCHBOX_INITIAL_QUERY;
+  uploaded_files.push_back(std::move(file_info3));
+
+  user_data->OnLensThumbnailCreated("data:image/png;base64,crop");
+  EXPECT_EQ(token3, user_data->GetLensOverlayToken());
+  user_data->RemoveLensCrop();
+  EXPECT_EQ(std::nullopt, user_data->GetLensOverlayToken());
+}
 #endif
 
 }  // namespace contextual_tasks
