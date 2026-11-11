@@ -1,3 +1,4 @@
-This directory contains tests with --enable-blink-features=OmitSubframeDetachmentEventsOnRemoval.
-It tests the behavior where subframe detachment (e.g. removing <iframe> or <object> from the DOM)
-does not fire pagehide, visibilitychange, or unload events in the detached subframes.
+This directory contains tests with --disable-blink-features=OmitSubframeDetachmentEventsOnRemoval.
+It maintains tests for the legacy behavior of firing pagehide, visibilitychange, and unload events
+when a subframe is removed from the DOM, with the intention to remove or update the expectations
+for these tests when the behavior change becomes stable.

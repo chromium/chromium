@@ -4847,8 +4847,10 @@
     {
       // iframes send pagehide/unload/visibilitychange when removed.
       // This not spec-compliant, but might have web-compat consequences.
-      // This flag omits firing those events on element removal.
+      // This flag omits firing those events on element removal when the
+      // subframe shares an agent with the document the node is removed from.
       name: "OmitSubframeDetachmentEventsOnRemoval",
+      status: "test",
     },
     {
       name: "OnDeviceWebSpeechAvailable",

@@ -135,5 +135,209 @@ promise_test(async (t) => {
       'Navigation of a subframe should still dispatch unload / pagehide');
   iframe.remove();
 }, 'Navigating an <iframe> still fires navigation/unload events');
+
+promise_test(async (t) => {
+  const container = document.getElementById('container');
+  const outerEvents = [];
+  const innerEvents = [];
+
+  const outerIframe = document.createElement('iframe');
+  outerIframe.srcdoc = '<p>outer</p>';
+  await new Promise((resolve) => {
+    outerIframe.onload = () => {
+      outerIframe.onload = null;
+      const outerWin = outerIframe.contentWindow;
+      const outerDoc = outerIframe.contentDocument;
+      outerWin.addEventListener('pagehide', () => outerEvents.push('pagehide'));
+      outerWin.addEventListener('unload', () => outerEvents.push('unload'));
+      outerDoc.addEventListener('visibilitychange', () => outerEvents.push('visibilitychange'));
+
+      const innerIframe = outerDoc.createElement('iframe');
+      innerIframe.srcdoc = '<p>inner</p>';
+      innerIframe.onload = () => {
+        innerIframe.onload = null;
+        const innerWin = innerIframe.contentWindow;
+        const innerDoc = innerIframe.contentDocument;
+        innerWin.addEventListener('pagehide', () => innerEvents.push('pagehide'));
+        innerWin.addEventListener('unload', () => innerEvents.push('unload'));
+        innerDoc.addEventListener('visibilitychange', () => innerEvents.push('visibilitychange'));
+        resolve();
+      };
+      outerDoc.body.appendChild(innerIframe);
+    };
+    container.appendChild(outerIframe);
+  });
+
+  await new Promise((resolve) => {
+    outerIframe.onload = resolve;
+    outerIframe.srcdoc = '<p>outer navigated</p>';
+  });
+
+  assert_array_equals(outerEvents, ['pagehide', 'visibilitychange', 'unload'],
+      'Navigating outer iframe should fire events on outer iframe');
+  assert_array_equals(innerEvents, ['pagehide', 'visibilitychange', 'unload'],
+      'Navigating outer iframe should still fire events on nested same-origin inner iframe');
+  outerIframe.remove();
+}, 'Navigating an ancestor <iframe> still fires detachment events on nested subframes');
+
+promise_test(async (t) => {
+  const container = document.getElementById('container');
+  const events = [];
+  const onMessage = (e) => {
+    if (e.data && e.data.case === 'data-opaque') {
+      events.push(e.data.type);
+    }
+  };
+  window.addEventListener('message', onMessage);
+  t.add_cleanup(() => window.removeEventListener('message', onMessage));
+
+  const html = `<script>
+    window.addEventListener('pagehide', () => parent.postMessage({ case: 'data-opaque', type: 'pagehide' }, '*'));
+    document.addEventListener('visibilitychange', () => parent.postMessage({ case: 'data-opaque', type: 'visibilitychange' }, '*'));
+    window.addEventListener('unload', () => parent.postMessage({ case: 'data-opaque', type: 'unload' }, '*'));
+    window.addEventListener('load', () => parent.postMessage({ case: 'data-opaque-ready' }, '*'));
+  <\/script>`;
+  const iframe = document.createElement('iframe');
+  iframe.src = 'data:text/html;charset=utf-8,' + encodeURIComponent(html);
+
+  await new Promise((resolve) => {
+    const onReady = (e) => {
+      if (e.data && e.data.case === 'data-opaque-ready') {
+        window.removeEventListener('message', onReady);
+        resolve();
+      }
+    };
+    window.addEventListener('message', onReady);
+    container.appendChild(iframe);
+  });
+
+  iframe.remove();
+  await new Promise((resolve) => t.step_timeout(resolve, 0));
+  assert_array_equals(events, ['pagehide', 'visibilitychange', 'unload'],
+      'Opaque-origin data: iframe should still fire detachment events');
+}, 'Detaching an opaque-origin <iframe> that cannot script parent still fires events');
+
+promise_test(async (t) => {
+  const container = document.getElementById('container');
+  const events = [];
+  const { port1, port2 } = new MessageChannel();
+
+  const iframe = document.createElement('iframe');
+  iframe.sandbox = 'allow-scripts';
+  iframe.srcdoc = `<script>
+    window.addEventListener('message', (e) => {
+      const port = e.ports[0];
+      window.addEventListener('pagehide', () => port.postMessage('pagehide'));
+      document.addEventListener('visibilitychange', () => port.postMessage('visibilitychange'));
+      window.addEventListener('unload', () => port.postMessage('unload'));
+      port.postMessage('ready');
+    });
+  <\/script>`;
+
+  await new Promise((resolve) => {
+    const onMessage = (e) => {
+      events.push(e.data);
+      if (events.length === 3) {
+        resolve();
+      }
+    };
+    port1.onmessage = (e) => {
+      if (e.data === 'ready') {
+        port1.onmessage = onMessage;
+        iframe.remove();
+      }
+    };
+    iframe.onload = () => {
+      iframe.onload = null;
+      iframe.contentWindow.postMessage('init', '*', [port2]);
+    };
+    container.appendChild(iframe);
+  });
+
+  assert_array_equals(events, ['pagehide', 'visibilitychange', 'unload'],
+      'Sandboxed iframe without allow-same-origin should still fire detachment events');
+}, 'Detaching a sandboxed <iframe> without allow-same-origin still fires events');
+
+promise_test(async (t) => {
+  const container = document.getElementById('container');
+  const iframe = document.createElement('iframe');
+  iframe.sandbox = 'allow-scripts allow-same-origin';
+  iframe.srcdoc = '<p>same-origin sandbox</p>';
+  const events = [];
+  await new Promise((resolve) => {
+    iframe.onload = () => {
+      iframe.onload = null;
+      iframe.contentWindow.addEventListener('pagehide', () => events.push('pagehide'));
+      iframe.contentDocument.addEventListener('visibilitychange', () => events.push('visibilitychange'));
+      iframe.contentWindow.addEventListener('unload', () => events.push('unload'));
+      resolve();
+    };
+    container.appendChild(iframe);
+  });
+
+  iframe.remove();
+  assert_array_equals(events, [],
+      'Sandboxed iframe with allow-same-origin should omit detachment events');
+}, 'Detaching a sandboxed <iframe> with allow-same-origin omits events');
+
+promise_test(async (t) => {
+  const container = document.getElementById('container');
+  const middleEvents = [];
+  const innerEvents = [];
+
+  const innerBlob = new Blob([`<script>
+    window.addEventListener('pagehide', () => top.__recordSandwichInner('pagehide'));
+    document.addEventListener('visibilitychange', () => top.__recordSandwichInner('visibilitychange'));
+    window.addEventListener('unload', () => top.__recordSandwichInner('unload'));
+    window.addEventListener('load', () => top.postMessage({ case: 'sandwich-ready' }, '*'));
+  <\/script>`], { type: 'text/html' });
+  const innerBlobUrl = URL.createObjectURL(innerBlob);
+  t.add_cleanup(() => URL.revokeObjectURL(innerBlobUrl));
+
+  window.__recordSandwichInner = (type) => innerEvents.push(type);
+  t.add_cleanup(() => { delete window.__recordSandwichInner; });
+
+  const onMessage = (e) => {
+    if (e.data && e.data.case === 'sandwich-middle') {
+      middleEvents.push(e.data.type);
+    }
+  };
+  window.addEventListener('message', onMessage);
+  t.add_cleanup(() => window.removeEventListener('message', onMessage));
+
+  const middleHtml = `<script>
+    window.addEventListener('pagehide', () => parent.postMessage({ case: 'sandwich-middle', type: 'pagehide' }, '*'));
+    document.addEventListener('visibilitychange', () => parent.postMessage({ case: 'sandwich-middle', type: 'visibilitychange' }, '*'));
+    window.addEventListener('unload', () => parent.postMessage({ case: 'sandwich-middle', type: 'unload' }, '*'));
+    document.addEventListener('DOMContentLoaded', () => {
+      const inner = document.createElement('iframe');
+      document.body.appendChild(inner);
+      parent.postMessage({ case: 'sandwich-middle-ready' }, '*');
+    });
+  <\/script><body></body>`;
+
+  const middleIframe = document.createElement('iframe');
+  middleIframe.src = 'data:text/html;charset=utf-8,' + encodeURIComponent(middleHtml);
+
+  await new Promise((resolve) => {
+    const onReady = (e) => {
+      if (e.data && e.data.case === 'sandwich-middle-ready') {
+        middleIframe.contentWindow[0].location = innerBlobUrl;
+      } else if (e.data && e.data.case === 'sandwich-ready') {
+        window.removeEventListener('message', onReady);
+        resolve();
+      }
+    };
+    window.addEventListener('message', onReady);
+    container.appendChild(middleIframe);
+  });
+
+  middleIframe.remove();
+  await new Promise((resolve) => t.step_timeout(resolve, 0));
+  assert_array_equals(middleEvents, ['pagehide', 'visibilitychange', 'unload'],
+      'Opaque middle iframe should still fire detachment events');
+  assert_array_equals(innerEvents, [],
+      'Same-origin inner iframe inside opaque middle iframe should omit detachment events');
+}, 'Detaching A1 -> B (opaque) -> A2 (same-origin as A1) sandwich');
 </script>
 </body>

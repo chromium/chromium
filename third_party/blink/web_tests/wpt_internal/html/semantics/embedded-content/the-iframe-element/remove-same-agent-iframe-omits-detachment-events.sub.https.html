@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Removing a same-site cross-origin iframe in the same agent omits pagehide/visibilitychange/unload</title>
+<link rel="help" href="https://crbug.com/550626700">
+<link rel="help" href="https://github.com/whatwg/html/issues/10194">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+// This page opts out of origin-keyed agent clusters (see the .headers file), so
+// a same-site cross-origin iframe that also opts out ends up in the very same
+// (site-keyed) agent. Chromium omits the synchronous detachment events for such
+// iframes, since they are the only ones that could observe them synchronously.
+//
+// Note that the origin used for the site-keyed child must not have been loaded
+// in this browsing context group before, as its first agent cluster keying is
+// sticky.
+
+const reports = [];
+window.addEventListener('message', e => reports.push(e.data));
+
+const kResources = new URL('resources/', location.href).pathname;
+const kSameSiteCrossOrigin = 'https://{{host}}:{{ports[https][1]}}';
+
+async function loadReporter(t, origin, page, id) {
+  const iframe = document.createElement('iframe');
+  iframe.src = `${origin}${kResources}${page}?id=${id}`;
+  document.body.appendChild(iframe);
+  t.add_cleanup(() => iframe.remove());
+  await new Promise(resolve => {
+    const onMessage = e => {
+      if (e.data.id === id && e.data.type === 'load') {
+        window.removeEventListener('message', onMessage);
+        resolve();
+      }
+    };
+    window.addEventListener('message', onMessage);
+  });
+  return iframe;
+}
+
+function eventsFor(id) {
+  return reports.filter(r => r.id === id && r.type !== 'load')
+                .map(r => r.type);
+}
+
+promise_test(async t => {
+  assert_false(window.originAgentCluster,
+      'This page must be in a site-keyed agent cluster');
+
+  const iframe = await loadReporter(
+      t, kSameSiteCrossOrigin, 'detachment-events-reporter-site-keyed.html',
+      'same-agent');
+  const loadReport = reports.find(r => r.id === 'same-agent');
+  assert_false(loadReport.originAgentCluster,
+      'Child must be in a site-keyed agent cluster');
+
+  iframe.remove();
+  await new Promise(resolve => t.step_timeout(resolve, 0));
+  assert_array_equals(eventsFor('same-agent'), [],
+      'Same-site cross-origin child in the same agent should omit events');
+}, 'Removing a same-site cross-origin iframe in the same agent omits events');
+
+promise_test(async t => {
+  const iframe = await loadReporter(
+      t, location.origin, 'detachment-events-reporter.html', 'same-origin');
+  iframe.remove();
+  await new Promise(resolve => t.step_timeout(resolve, 0));
+  assert_array_equals(eventsFor('same-origin'), [],
+      'Same-origin child should omit events');
+}, 'Removing a same-origin iframe omits events');
+</script>
+</body>

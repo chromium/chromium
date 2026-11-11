@@ -4,11 +4,66 @@
 
 #include "third_party/blink/renderer/core/dom/child_frame_disconnector.h"
 
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
 namespace blink {
+
+ChildFrameDisconnector* ChildFrameDisconnector::last_ = nullptr;
+
+namespace {
+
+// Returns whether `document` and `removing_document` share an agent
+// (https://html.spec.whatwg.org/C#similar-origin-window-agent), i.e. whether
+// they could run script and observe each other synchronously. Unlike
+// SecurityOrigin::CanAccess(), the agent boundary cannot be widened by setting
+// document.domain from within a pagehide/unload handler.
+bool InSameAgent(const Document& document, const Document& removing_document) {
+  if (&document.GetAgent() != &removing_document.GetAgent()) {
+    return false;
+  }
+  // Blink lets about:blank/srcdoc documents inherit their owner's Agent even
+  // when sandboxing gives them an opaque origin (see crbug.com/1183935). Per
+  // spec, an opaque origin is its own site and thus has its own agent, so only
+  // treat such documents as same-agent when they have the very same origin.
+  const ExecutionContext* context = document.GetExecutionContext();
+  const ExecutionContext* removing_context =
+      removing_document.GetExecutionContext();
+  if (!context || !removing_context) {
+    return false;
+  }
+  const SecurityOrigin* origin = context->GetSecurityOrigin();
+  return !origin->IsOpaque() ||
+         origin->IsSameOriginWith(removing_context->GetSecurityOrigin());
+}
+
+}  // namespace
+
+bool ChildFrameDisconnector::ShouldFireUnloadEvents(const Document& document) {
+  if (!RuntimeEnabledFeatures::OmitSubframeDetachmentEventsOnRemovalEnabled()) {
+    return true;
+  }
+  // Only omit the events when the document being detached shares an agent
+  // with the document whose DOM node is being removed: those are the only
+  // documents that could observe (or re-enter the removing DOM from) a
+  // synchronously dispatched pagehide/unload handler. Documents in other
+  // agents are unaffected, as for them the events are not observably
+  // synchronous anyway.
+  for (ChildFrameDisconnector* disconnector = last_; disconnector;
+       disconnector = disconnector->previous_) {
+    if (disconnector->disconnect_reason_ == kDisconnectSelf &&
+        InSameAgent(document, disconnector->Root().GetDocument())) {
+      return false;
+    }
+  }
+  return true;
+}
 
 #if DCHECK_IS_ON()
 static unsigned CheckConnectedSubframeCountIsConsistent(Node&);

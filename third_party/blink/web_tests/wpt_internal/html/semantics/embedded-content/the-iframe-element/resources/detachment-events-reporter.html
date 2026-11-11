@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Reports subframe detachment events to the parent</title>
+<script>
+// Reports pagehide/visibilitychange/unload to the parent, along with the
+// value of the `id` query parameter and whether this document is in an
+// origin-keyed agent cluster.
+const id = new URLSearchParams(location.search).get('id');
+const report = (type) => parent.postMessage(
+    {id, type, originAgentCluster: window.originAgentCluster}, '*');
+window.addEventListener('pagehide', () => report('pagehide'));
+document.addEventListener('visibilitychange', () => report('visibilitychange'));
+window.addEventListener('unload', () => report('unload'));
+window.addEventListener('load', () => report('load'));
+</script>

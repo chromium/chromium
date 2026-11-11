@@ -50,6 +50,7 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 
 using testing::ElementsAre;
 using testing::WhenSorted;
@@ -974,15 +975,24 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
                      "parent.document.querySelector('iframe').remove();");
 
   // 4) Wait for pagehide handler.
-  std::vector<std::string> messages(2);
-  EXPECT_TRUE(dom_message_queue.WaitForMessage(&messages[0]));
-  EXPECT_TRUE(dom_message_queue.WaitForMessage(&messages[1]));
-  std::string unused;
-  EXPECT_FALSE(dom_message_queue.PopMessage(&unused));
+  if (base::FeatureList::IsEnabled(
+          blink::features::kOmitSubframeDetachmentEventsOnRemoval)) {
+    std::string message;
+    EXPECT_TRUE(dom_message_queue.WaitForMessage(&message));
+    EXPECT_EQ("\"B\"", message);
+    std::string unused;
+    EXPECT_FALSE(dom_message_queue.PopMessage(&unused));
+  } else {
+    std::vector<std::string> messages(2);
+    EXPECT_TRUE(dom_message_queue.WaitForMessage(&messages[0]));
+    EXPECT_TRUE(dom_message_queue.WaitForMessage(&messages[1]));
+    std::string unused;
+    EXPECT_FALSE(dom_message_queue.PopMessage(&unused));
 
-  std::sort(messages.begin(), messages.end());
-  EXPECT_EQ("\"A2\"", messages[0]);
-  EXPECT_EQ("\"B\"", messages[1]);
+    std::sort(messages.begin(), messages.end());
+    EXPECT_EQ("\"A2\"", messages[0]);
+    EXPECT_EQ("\"B\"", messages[1]);
+  }
 
   // Make sure the process is deleted at some point.
   shutdown_B.Wait();
@@ -1332,7 +1342,12 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
     document.querySelector('iframe').remove();
   )"));
   delete_A1.WaitUntilDeleted();
-  EXPECT_EQ("A2 message", EvalJs(A1, "received_message"));
+  if (base::FeatureList::IsEnabled(
+          blink::features::kOmitSubframeDetachmentEventsOnRemoval)) {
+    EXPECT_EQ("nothing received", EvalJs(A1, "received_message"));
+  } else {
+    EXPECT_EQ("A2 message", EvalJs(A1, "received_message"));
+  }
 }
 
 // Related to issue https://crbug.com/950625.

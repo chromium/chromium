@@ -145,6 +145,7 @@
 #include "third_party/blink/renderer/core/dom/attr.h"
 #include "third_party/blink/renderer/core/dom/beforeunload_event_listener.h"
 #include "third_party/blink/renderer/core/dom/cdata_section.h"
+#include "third_party/blink/renderer/core/dom/child_frame_disconnector.h"
 #include "third_party/blink/renderer/core/dom/column_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/comment.h"
 #include "third_party/blink/renderer/core/dom/document_data.h"
@@ -4761,9 +4762,8 @@ void Document::DispatchUnloadEvents(
   if (auto* input = DynamicTo<HTMLInputElement>(current_focused_element))
     input->EndEditing();
 
-  if (!will_commit_new_document_in_this_frame && GetFrame() &&
-      !GetFrame()->IsMainFrame() &&
-      RuntimeEnabledFeatures::OmitSubframeDetachmentEventsOnRemovalEnabled()) {
+  if (!will_commit_new_document_in_this_frame &&
+      !ChildFrameDisconnector::ShouldFireUnloadEvents(*this)) {
     load_event_progress_ = kUnloadEventHandled;
     return;
   }

@@ -2296,19 +2296,56 @@
       "Win"
     ],
     "bases": [
+      "editing/execCommand/insertHTML-aborted.html",
+      "external/wpt/dom/nodes/insertion-removing-steps/insertion-removing-steps-iframe.window.js",
+      "external/wpt/html/semantics/scripting-1/the-template-element/template-for/template-for-invokes-pagehide-with-end.html",
+      "external/wpt/html/semantics/scripting-1/the-template-element/template-for/template-for-invokes-pagehide-without-end.html",
+      "external/wpt/html/semantics/scripting-1/the-template-element/template-for/template-for-pagehide-dynamic-markup-insertion.html",
       "external/wpt/html/syntax/parsing/adoption-agency-reparenting-pagehide.tentative.html",
+      "external/wpt/page-visibility/iframe-unload.html",
+      "external/wpt/page-visibility/onvisibilitychange.html",
+      "fast/dom/defaultView-on-detached-document.html",
+      "fast/events/page-visibility-iframe-unload.html",
       "fast/frames/detached-shadow-frame.html",
       "fast/frames/frame-unload-crash2.html",
+      "fast/frames/modifications-in-subtree-unload.html",
       "fast/frames/out-of-document-iframe-has-child-frame.html",
       "fast/frames/reattach-in-unload.html",
+      "fast/frames/reparent-in-unload-contentdocument.html",
       "fast/frames/set-iframe-src-in-pagehide-crash.html",
-      "fast/frames/subframe-detachment-events-on-removal.html"
+      "fast/frames/unload-reparent-sibling-frame.html",
+      "fast/parser/scriptexec-during-parserInsertBefore.html",
+      "fast/parser/xml-iframe-document-open.html",
+      "http/tests/navigation/image-load-in-subframe-pagehide-handler.html",
+      "http/tests/xmlhttprequest/frame-load-cancelled-abort.html",
+      "http/tests/xmlhttprequest/frame-pagehide-abort-crash.html"
     ],
     "exclusive_tests": [
-      "fast/frames/subframe-detachment-events-on-removal.html"
+      "editing/execCommand/insertHTML-aborted.html",
+      "external/wpt/html/semantics/scripting-1/the-template-element/template-for/template-for-invokes-pagehide-with-end.html",
+      "external/wpt/html/semantics/scripting-1/the-template-element/template-for/template-for-invokes-pagehide-without-end.html",
+      "external/wpt/html/semantics/scripting-1/the-template-element/template-for/template-for-pagehide-dynamic-markup-insertion.html",
+      "external/wpt/html/syntax/parsing/adoption-agency-reparenting-pagehide.tentative.html",
+      "external/wpt/page-visibility/iframe-unload.html",
+      "external/wpt/page-visibility/onvisibilitychange.html",
+      "fast/dom/defaultView-on-detached-document.html",
+      "fast/events/page-visibility-iframe-unload.html",
+      "fast/frames/detached-shadow-frame.html",
+      "fast/frames/frame-unload-crash2.html",
+      "fast/frames/modifications-in-subtree-unload.html",
+      "fast/frames/out-of-document-iframe-has-child-frame.html",
+      "fast/frames/reattach-in-unload.html",
+      "fast/frames/reparent-in-unload-contentdocument.html",
+      "fast/frames/set-iframe-src-in-pagehide-crash.html",
+      "fast/frames/unload-reparent-sibling-frame.html",
+      "fast/parser/scriptexec-during-parserInsertBefore.html",
+      "fast/parser/xml-iframe-document-open.html",
+      "http/tests/navigation/image-load-in-subframe-pagehide-handler.html",
+      "http/tests/xmlhttprequest/frame-load-cancelled-abort.html",
+      "http/tests/xmlhttprequest/frame-pagehide-abort-crash.html"
     ],
     "args": [
-      "--enable-blink-features=OmitSubframeDetachmentEventsOnRemoval"
+      "--disable-blink-features=OmitSubframeDetachmentEventsOnRemoval"
     ],
     "owners": [
       "nrosenthal@chromium.org"

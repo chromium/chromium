@@ -11,6 +11,7 @@
 
 namespace blink {
 
+class Document;
 class HTMLFrameOwnerElement;
 class Node;
 
@@ -23,9 +24,19 @@ class ChildFrameDisconnector {
 
   explicit ChildFrameDisconnector(Node& root,
                                   DisconnectReason disconnect_reason)
-      : root_(&root), disconnect_reason_(disconnect_reason) {}
+      : root_(&root), disconnect_reason_(disconnect_reason), previous_(last_) {
+    last_ = this;
+  }
+  ~ChildFrameDisconnector() { last_ = previous_; }
 
   void Disconnect(DisconnectPolicy = kRootAndDescendants);
+
+  // Returns whether `document`, which is being detached, should dispatch
+  // pagehide/visibilitychange/unload. When
+  // OmitSubframeDetachmentEventsOnRemoval is enabled, these are omitted if the
+  // detachment is caused by a DOM node removal in a document that shares an
+  // agent with `document`.
+  static bool ShouldFireUnloadEvents(const Document&);
 
  private:
   void CollectFrameOwners(Node&);
@@ -35,6 +46,8 @@ class ChildFrameDisconnector {
   HeapVector<Member<HTMLFrameOwnerElement>, 10> frame_owners_;
   Node* root_;
   DisconnectReason disconnect_reason_;
+  ChildFrameDisconnector* previous_;
+  static ChildFrameDisconnector* last_;
 };
 
 }  // namespace blink
