@@ -1365,7 +1365,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sMaliciousApkDownloadCheck =
             newCachedFlag(
                     MALICIOUS_APK_DOWNLOAD_CHECK,
-                    /* defaultValue= */ false,
+                    /* defaultValue= */ true,
                     /* defaultValueInTests= */ true);
     public static final CachedFlag sMigrateManagementToWebUIOnMobile =
             newCachedFlag(

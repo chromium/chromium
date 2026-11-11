@@ -450,7 +450,7 @@ BASE_FEATURE(kLocalListsUseSBv5,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kMaliciousApkDownloadCheck, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kMaliciousApkDownloadCheck, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(bool,
                    kMaliciousApkDownloadCheckTelemetryOnly,
                    &kMaliciousApkDownloadCheck,

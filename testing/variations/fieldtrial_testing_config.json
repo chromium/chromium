@@ -12695,23 +12695,6 @@
             ]
         }
     ],
-    "MaliciousApkDownloadCheck": [
-        {
-            "platforms": [
-                "android",
-                "android_desktop"
-            ],
-            "experiments": [
-                {
-                    "//0": "This config is the intended feature to launch.",
-                    "name": "Enabled",
-                    "enable_features": [
-                        "MaliciousApkDownloadCheck"
-                    ]
-                }
-            ]
-        }
-    ],
     "MapsNativePreviewLinkifiedAddress": [
         {
             "platforms": [
