@@ -39,6 +39,8 @@
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/vector2d.h"
+#include "ui/gfx/geometry/vector2d_conversions.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/ozone/common/features.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/host/dump_util.h"
@@ -129,8 +131,15 @@ class WaylandWindowDragController::XdgToplevelDrag {
     auto* toplevel = window->xdg_toplevel()->wl_object();
 
     // xdg-toplevel-drag protocol expects the passed in offset to be relative to
-    // the surface's geometry, i.e: no client-side decoration insets included.
-    auto toplevel_offset = offset - window->GetWindowGeometryOffsetInDIP();
+    // the surface's geometry, i.e: no client-side decoration insets included,
+    // in Wayland DIP. `offset` is in UI DIP, i.e. scaled by `ui_scale`, so it
+    // must be converted before subtracting the window geometry origin. Use the
+    // latched state, since that is what the window geometry was last sent from.
+    const auto& state = window->latched_state();
+    const gfx::Vector2d toplevel_offset =
+        gfx::ToRoundedVector2d(
+            gfx::ScaleVector2d(gfx::Vector2dF(offset), state.ui_scale)) -
+        window->GetWindowGeometryOriginInWaylandDIP(state).OffsetFromOrigin();
     xdg_toplevel_drag_v1_attach(drag_.get(), toplevel, toplevel_offset.x(),
                                 toplevel_offset.y());
     connection_->Flush();

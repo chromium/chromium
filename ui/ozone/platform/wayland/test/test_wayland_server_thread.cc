@@ -162,6 +162,10 @@ bool TestWaylandServerThread::Start() {
       !org_kde_kwin_appmenu_manager_.Initialize(display_.get())) {
     return false;
   }
+  if (config_.supports_xdg_toplevel_drag &&
+      !xdg_toplevel_drag_manager_v1_.Initialize(display_.get())) {
+    return false;
+  }
 
   client_ = wl_client_create(display_.get(), server_fd.release());
   if (!client_)

@@ -25,8 +25,10 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/events/types/event_type.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/ozone/platform/wayland/host/wayland_cursor_position.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_device.h"
@@ -43,6 +45,7 @@
 #include "ui/ozone/platform/wayland/test/mock_pointer.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
 #include "ui/ozone/platform/wayland/test/mock_wayland_platform_window_delegate.h"
+#include "ui/ozone/platform/wayland/test/mock_xdg_toplevel_drag.h"
 #include "ui/ozone/platform/wayland/test/scoped_wl_array.h"
 #include "ui/ozone/platform/wayland/test/test_data_device.h"
 #include "ui/ozone/platform/wayland/test/test_data_device_manager.h"
@@ -59,6 +62,7 @@
 
 using testing::_;
 using testing::Mock;
+using testing::Return;
 using testing::Values;
 
 namespace ui {
@@ -2055,5 +2059,56 @@ TEST_P(WaylandWindowDragControllerTest, TabletPenDragDropWhileProximityOut) {
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          WaylandWindowDragControllerTest,
                          Values(wl::ServerConfig{}));
+
+// Runs window drag tests with the xdg-toplevel-drag-v1 protocol available.
+using WaylandWindowDragControllerXdgToplevelDragTest =
+    WaylandWindowDragControllerTest;
+
+// Verifies that the offset passed to xdg_toplevel_drag_v1.attach is converted
+// from UI DIP to Wayland DIP, and made relative to the window geometry, when
+// ui_scale != 1. Otherwise, the dragged window is offset from the cursor, eg:
+// with GNOME's "Large Text" accessibility setting.
+TEST_P(WaylandWindowDragControllerXdgToplevelDragTest, UiScale_AttachOffset) {
+  ASSERT_TRUE(connection_->toplevel_drag_manager_v1());
+  ASSERT_TRUE(connection_->IsUiScaleEnabled());
+
+  connection_->window_manager()->SetFontScale(1.25f);
+  WaylandTestBase::SyncDisplay();
+  // Latch the new state, as when its frame comes back, since the attach offset
+  // must be relative to the window geometry last sent to the compositor.
+  window_->OnSequencePoint(delegate_.viz_seq());
+  ASSERT_EQ(1.25f, window_->latched_state().ui_scale);
+
+  constexpr gfx::Insets kInsets(10);
+  ON_CALL(delegate_, CalculateInsetsInDIP(_)).WillByDefault(Return(kInsets));
+
+  SendPointerEnter(window_.get(), &delegate_);
+  SendPointerPress(window_.get(), &delegate_, BTN_LEFT);
+  EXPECT_TRUE(drag_controller()->StartDragSession(
+      window_->AsWaylandToplevelWindow(), DragEventSource::kMouse));
+  EXPECT_EQ(State::kAttached, drag_controller_state());
+
+  auto* move_loop_handler = GetWmMoveLoopHandler(*window_);
+  ASSERT_TRUE(move_loop_handler);
+  ScheduleTestTask(base::BindLambdaForTesting([&]() {
+    // The offset is 100,20 in UI DIP, ie: 125,25 in Wayland DIP, and the window
+    // geometry origin is round(10 * 1.25) = 13 in Wayland DIP.
+    PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+      auto* drag = server->xdg_toplevel_drag_manager_v1()->drag();
+      ASSERT_TRUE(drag);
+      EXPECT_EQ(gfx::Vector2d(112, 12), drag->attached_offset());
+    });
+    move_loop_handler->EndMoveLoop();
+    SendDndCancelled();
+  }));
+
+  EXPECT_FALSE(move_loop_handler->RunMoveLoop(gfx::Vector2d(100, 20)));
+  EXPECT_EQ(State::kIdle, drag_controller_state());
+}
+
+INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
+                         WaylandWindowDragControllerXdgToplevelDragTest,
+                         Values(wl::ServerConfig{
+                             .supports_xdg_toplevel_drag = true}));
 
 }  // namespace ui

@@ -22,6 +22,7 @@
 #include "ui/ozone/platform/wayland/test/mock_xdg_activation_v1.h"
 #include "ui/ozone/platform/wayland/test/mock_xdg_foreign_v2.h"
 #include "ui/ozone/platform/wayland/test/mock_xdg_shell.h"
+#include "ui/ozone/platform/wayland/test/mock_xdg_toplevel_drag.h"
 #include "ui/ozone/platform/wayland/test/mock_xdg_toplevel_icon.h"
 #include "ui/ozone/platform/wayland/test/mock_zwp_linux_dmabuf.h"
 #include "ui/ozone/platform/wayland/test/test_alpha_compositing.h"
@@ -70,6 +71,8 @@ struct ServerConfig {
   // Whether to advertise the KWin-specific org_kde_kwin_appmenu_manager
   // global, which identifies the compositor as KWin.
   bool supports_kde_appmenu = false;
+  // Whether to advertise the xdg_toplevel_drag_manager_v1 global.
+  bool supports_xdg_toplevel_drag = false;
 };
 
 class TestWaylandServerThread;
@@ -164,6 +167,9 @@ class TestWaylandServerThread : public base::Thread,
 
   MockXdgExporterV2* xdg_exporter_v2() { return &xdg_exporter_v2_; }
 
+  MockXdgToplevelDragManagerV1* xdg_toplevel_drag_manager_v1() {
+    return &xdg_toplevel_drag_manager_v1_;
+  }
   MockXdgToplevelIconManagerV1* xdg_toplevel_icon_manager_v1() {
     return &xdg_toplevel_icon_manager_v1_;
   }
@@ -231,6 +237,7 @@ class TestWaylandServerThread : public base::Thread,
   TestWpPointerGestures wp_pointer_gestures_;
   MockXdgActivationV1 xdg_activation_v1_;
   MockXdgExporterV2 xdg_exporter_v2_;
+  MockXdgToplevelDragManagerV1 xdg_toplevel_drag_manager_v1_;
   MockXdgToplevelIconManagerV1 xdg_toplevel_icon_manager_v1_;
   TestWpColorManager wp_color_manager_;
   TestOrgKdeKwinAppmenuManager org_kde_kwin_appmenu_manager_;
