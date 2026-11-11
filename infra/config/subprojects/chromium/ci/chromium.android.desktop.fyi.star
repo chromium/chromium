@@ -16,6 +16,12 @@ load("//lib/siso.star", "siso")
 ci.defaults.set(
     executable = ci_constants.DEFAULT_EXECUTABLE,
     builder_group = "chromium.android.desktop.fyi",
+    builder_config_settings = builder_config.ci_settings(
+        retry_failed_shards = True,
+        # Android emulator tasks often flake during emulator start-up, which
+        # leads to the whole shard being marked as invalid.
+        retry_invalid_shards = True,
+    ),
     pool = ci_constants.DEFAULT_POOL,
     os = os.LINUX_DEFAULT,
     contact_team_email = "clank-engprod@google.com",

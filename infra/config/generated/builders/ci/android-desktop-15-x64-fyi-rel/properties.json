@@ -51,6 +51,8 @@
           "group": "tryserver.chromium.android"
         }
       ],
+      "retry_failed_shards": true,
+      "retry_invalid_shards": true,
       "targets_spec_directory": "infra/config/generated/builders/ci/android-desktop-15-x64-fyi-rel/targets"
     }
   },
