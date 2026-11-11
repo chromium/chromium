@@ -22,6 +22,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/webui/resources/js/tracked_element/tracked_element.mojom.h"
@@ -131,6 +132,7 @@ class TrackedElementHandler
   std::vector<std::string> GetIdentifiers();
   ui::ElementContext context() { return context_; }
   content::RenderFrameHost* render_frame_host() const;
+  bool is_subframe_unoccluded() const { return occluded_subframes_.empty(); }
 
   // Flushes the C++ -> WebUI mojo pipe.
   void FlushManagerRemoteForTesting();
@@ -185,6 +187,7 @@ class TrackedElementHandler
 
   // content::WebContentsObserver:
   void OnVisibilityChanged(content::Visibility new_visibility) override;
+  void RenderFrameDeleted(content::RenderFrameHost* rfh) override;
   void OnRemoteSubframeViewportIntersectionStateChanged(
       content::RenderFrameHost* rfh,
       const blink::mojom::ViewportIntersectionState&
@@ -223,6 +226,7 @@ class TrackedElementHandler
   MapType<std::string, SecondaryIdentifierMapType> elements_;
 
   bool is_web_contents_visible_ = false;
+  absl::flat_hash_set<content::GlobalRenderFrameHostId> occluded_subframes_;
   base::WeakPtr<user_education::HelpBubbleHandlerBase> help_bubble_handler_;
 #if !BUILDFLAG(IS_ANDROID)
   // Caches the host WebView once located (or set in tests). Marked mutable so

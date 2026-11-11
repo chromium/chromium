@@ -341,6 +341,68 @@ suite('ContextLibraryTest', () => {
       });
 
   test(
+      'Enables and disconnects subframe occlusion IntersectionObserver',
+      async () => {
+        app.remove();
+
+        const OriginalIntersectionObserver = window.IntersectionObserver;
+        interface RecordedObserver {
+          options: IntersectionObserverInit&
+              {trackVisibility?: boolean, delay?: number}|undefined;
+          observedElements: Element[];
+          disconnected: boolean;
+        }
+        const recordedObservers: RecordedObserver[] = [];
+
+        class MockIntersectionObserver extends OriginalIntersectionObserver {
+          private record_: RecordedObserver;
+
+          constructor(
+              callback: IntersectionObserverCallback,
+              options?: IntersectionObserverInit) {
+            super(callback, options);
+            this.record_ = {
+              options,
+              observedElements: [],
+              disconnected: false,
+            };
+            recordedObservers.push(this.record_);
+          }
+
+          override observe(target: Element) {
+            this.record_.observedElements.push(target);
+            super.observe(target);
+          }
+
+          override disconnect() {
+            this.record_.disconnected = true;
+            super.disconnect();
+          }
+        }
+
+        window.IntersectionObserver = MockIntersectionObserver;
+        try {
+          document.body.appendChild(app);
+          await microtasksFinished();
+
+          const occlusionObserver = recordedObservers.find(
+              observer => observer.options?.trackVisibility === true);
+          assertTrue(!!occlusionObserver);
+          assertEquals(null, occlusionObserver.options?.root);
+          assertEquals(100, occlusionObserver.options?.delay);
+          assertEquals(1, occlusionObserver.observedElements.length);
+          assertEquals(
+              document.documentElement, occlusionObserver.observedElements[0]);
+          assertFalse(occlusionObserver.disconnected);
+
+          app.remove();
+          assertTrue(occlusionObserver.disconnected);
+        } finally {
+          window.IntersectionObserver = OriginalIntersectionObserver;
+        }
+      });
+
+  test(
       'Forwards wait-for-tab-load and refreshes favicon on same-tab navigation',
       async () => {
         const liveFaviconDataUrl = 'data:image/png;base64,' +

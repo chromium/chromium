@@ -250,6 +250,7 @@ build_webui("build") {
   ts_definitions = [
     "//tools/typescript/definitions/chrome_histograms.d.ts",
     "//tools/typescript/definitions/metrics_private.d.ts",
+    "//tools/typescript/definitions/pending.d.ts",
   ]
   mojo_files_deps = [ ":rewrite_mojo_imports" ]
   mojo_files = [

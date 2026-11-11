@@ -65,6 +65,7 @@ export class ContextLibraryElement extends CrLitElement {
 
   private isTrackingFaviconGroup_: boolean = false;
   private resizeObserver_: ResizeObserver|null = null;
+  private subframeOcclusionObserver_: IntersectionObserver|null = null;
   private listenerIds_: number[] = [];
 
   override connectedCallback() {
@@ -74,6 +75,25 @@ export class ContextLibraryElement extends CrLitElement {
       window.requestResize?.();
     });
     this.resizeObserver_.observe(this);
+
+    if (document.documentElement) {
+      // Enable Blink cross-frame occlusion tracking
+      // (`SetNeedsOcclusionTracking`) on this Contextual Tasks subframe so
+      // parent-frame overlays report `FrameOcclusionState::kPossiblyOccluded`
+      // to `TrackedElementHandler` (crbug.com/581078696).
+      try {
+        const occlusionInit: IntersectionObserverInit = {
+          root: null,
+          trackVisibility: true,
+          delay: 100,
+        };
+        this.subframeOcclusionObserver_ =
+            new IntersectionObserver(() => {}, occlusionInit);
+        this.subframeOcclusionObserver_.observe(document.documentElement);
+      } catch {
+        this.subframeOcclusionObserver_ = null;
+      }
+    }
 
     const callbackRouter =
         ExtensionBrowserProxyImpl.getInstance().callbackRouter;
@@ -95,6 +115,8 @@ export class ContextLibraryElement extends CrLitElement {
     }
     this.resizeObserver_?.disconnect();
     this.resizeObserver_ = null;
+    this.subframeOcclusionObserver_?.disconnect();
+    this.subframeOcclusionObserver_ = null;
     const callbackRouter =
         ExtensionBrowserProxyImpl.getInstance().callbackRouter;
     for (const id of this.listenerIds_) {
