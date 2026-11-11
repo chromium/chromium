@@ -103,7 +103,9 @@ export class ToolbarAppElement extends AppElementBase {
       isGlicButtonEnabled_: {type: Boolean},
       isAvatarButtonEnabled_: {type: Boolean},
       isPerformanceInterventionButtonEnabled_: {type: Boolean},
+      // <if expr="is_win or is_macosx or is_linux">
       isMediaButtonEnabled_: {type: Boolean},
+      // </if>
       isInitialized_: {type: Boolean},
       hasReceivedToolbarState_: {type: Boolean},
       webUIToolbarFullyEnabled_: {type: Boolean},
@@ -141,13 +143,15 @@ export class ToolbarAppElement extends AppElementBase {
           ToolbarStateKey.CAN_SHOW_AVATAR_FOR_PROFILE);
   protected accessor isPerformanceInterventionButtonEnabled_: boolean =
       loadTimeData.getBoolean('enablePerformanceInterventionButton');
+  // <if expr="is_win or is_macosx or is_linux">
   protected accessor isMediaButtonEnabled_: boolean =
       loadTimeData.getBoolean('enableMediaButton');
+  // </if>
   /**
    * Tracks whether the element has received its first toolbar state
    * update from the browser and completed its initial visual render.
    */
-  protected accessor isInitialized_: boolean =
+  private accessor isInitialized_: boolean =
       !this.initialState_.getBoolean(
           ToolbarStateKey.INITIAL_WEBUI_SURFACE_SYNC_ENABLED) ||
       this.initialState_.hasKey(ToolbarStateKey.IS_NAVIGATION_LOADING);
@@ -309,7 +313,7 @@ export class ToolbarAppElement extends AppElementBase {
     return this.browserProxy_;
   }
 
-  protected readonly initialBootSnapshot_: {
+  readonly initialBootSnapshotForTesting: {
     backButtonEnabled: boolean,
     forwardButtonEnabled: boolean,
     isNavigationLoading: boolean,
@@ -322,7 +326,7 @@ export class ToolbarAppElement extends AppElementBase {
         this.initialState_.hasKey(ToolbarStateKey.IS_NAVIGATION_LOADING) &&
         this.initialState_.hasKey(ToolbarStateKey.BACK_BUTTON_ENABLED) &&
         this.initialState_.hasKey(ToolbarStateKey.FORWARD_BUTTON_ENABLED);
-    this.initialBootSnapshot_ = Object.freeze({
+    this.initialBootSnapshotForTesting = Object.freeze({
       backButtonEnabled:
           this.initialState_.getBoolean(ToolbarStateKey.BACK_BUTTON_ENABLED),
       forwardButtonEnabled:
@@ -492,7 +496,10 @@ export class ToolbarAppElement extends AppElementBase {
         this.isBatterySaverButtonEnabled_ ||
         this.isPerformanceInterventionButtonEnabled_ ||
         this.isGlicButtonEnabled_ || this.isAvatarButtonEnabled_ ||
-        this.isMediaButtonEnabled_ || this.isAppMenuButtonEnabled_;
+        // <if expr="is_win or is_macosx or is_linux">
+        this.isMediaButtonEnabled_ ||
+        // </if>
+        this.isAppMenuButtonEnabled_;
   }
 
   private async initializePage_(sessionId: number) {

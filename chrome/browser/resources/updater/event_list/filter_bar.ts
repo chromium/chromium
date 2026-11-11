@@ -88,7 +88,7 @@ export class FilterBarElement extends CrLitElement {
   accessor filterSettings: FilterSettings = createDefaultFilterSettings();
   protected accessor filterOrder: FilterCategory[] = [];
   protected accessor filterMenuState: FilterMenuState = 'closed';
-  protected accessor menuHost: 'chip'|'input' = 'input';
+  private accessor menuHost: 'chip'|'input' = 'input';
   protected accessor webuiRoundedIconsEnabled_: boolean =
       loadTimeData.getBoolean('webuiRoundedIconsEnabled');
 

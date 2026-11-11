@@ -52,7 +52,7 @@ export class IndigoImageReplacementAppElement extends CrLitElement {
   protected accessor imageSrc_: string = '';
   protected accessor objectFit_: ObjectFit = 'contain';
   protected accessor showWatermark_: boolean = false;
-  protected accessor watermarkEnabledString: string = 'false';
+  private accessor watermarkEnabledString: string = 'false';
 
   private invocationId_: number|undefined;
   private isGenerating_: boolean = false;

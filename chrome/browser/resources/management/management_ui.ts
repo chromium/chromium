@@ -25,8 +25,12 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import type {Application, BrowserReportingResponse, Extension, ManagementBrowserProxy, ThreatProtectionInfo} from './management_browser_proxy.js';
-import { ManagementBrowserProxyImpl, ReportingType} from './management_browser_proxy.js';
+import type {Application, Extension, ManagementBrowserProxy, ThreatProtectionInfo} from './management_browser_proxy.js';
+import {ManagementBrowserProxyImpl} from './management_browser_proxy.js';
+// <if expr="not is_chromeos">
+import type {BrowserReportingResponse} from './management_browser_proxy.js';
+import {ReportingType} from './management_browser_proxy.js';
+// </if>
 // <if expr="is_chromeos">
 import type {DeviceReportingResponse} from './management_browser_proxy.js';
 import { DeviceReportingType} from './management_browser_proxy.js';
@@ -35,10 +39,12 @@ import {getCss} from './management_ui.css.js';
 import {getHtml} from './management_ui.html.js';
 // clang-format on
 
+// <if expr="not is_chromeos">
 interface BrowserReportingData {
   messageIds: string[];
   icon?: string;
 }
+// </if>
 
 const ManagementUiElementBase =
     WebUiListenerMixinLit(I18nMixinLit(CrLitElement));
@@ -68,6 +74,7 @@ export class ManagementUiElement extends ManagementUiElementBase {
        */
       applicationReportingSubtitle_: {type: String},
 
+      // <if expr="not is_chromeos">
       /**
        * List of messages related to browser reporting.
        */
@@ -77,6 +84,7 @@ export class ManagementUiElement extends ManagementUiElementBase {
        * List of messages related to profile reporting.
        */
       profileReportingInfo_: {type: Array},
+      // </if>
 
       /**
        * List of messages related to extension reporting.
@@ -138,8 +146,10 @@ export class ManagementUiElement extends ManagementUiElementBase {
   }
 
   protected accessor applications_: Application[]|null = null;
+  // <if expr="not is_chromeos">
   protected accessor browserReportingInfo_: BrowserReportingData[]|null = null;
   protected accessor profileReportingInfo_: BrowserReportingData[]|null = null;
+  // </if>
   protected accessor extensions_: Extension[]|null = null;
   protected accessor managedWebsites_: string[]|null = null;
   protected accessor managedWebsitesSubtitle_: string = '';
@@ -179,7 +189,9 @@ export class ManagementUiElement extends ManagementUiElementBase {
 
     document.documentElement.classList.remove('loading');
     this.updateManagedFields_();
+    // <if expr="not is_chromeos">
     this.initReportingInfo_();
+    // </if>
     this.getThreatProtectionInfo_();
 
     // <if expr="not is_android">
@@ -191,6 +203,7 @@ export class ManagementUiElement extends ManagementUiElementBase {
     }
     // </if>
 
+    // <if expr="not is_chromeos">
     this.addWebUiListener(
         'browser-reporting-info-updated',
         (reportingInfo: BrowserReportingResponse[]) =>
@@ -200,6 +213,7 @@ export class ManagementUiElement extends ManagementUiElementBase {
         'profile-reporting-info-updated',
         (reportingInfo: BrowserReportingResponse[]) =>
             this.onProfileReportingInfoReceived_(reportingInfo));
+    // </if>
 
     this.addWebUiListener('managed_data_changed', () => {
       this.updateManagedFields_();
@@ -223,6 +237,7 @@ export class ManagementUiElement extends ManagementUiElementBase {
     // </if>
   }
 
+  // <if expr="not is_chromeos">
   private initReportingInfo_() {
     this.browserProxy_.initBrowserReportingInfo().then(
         reportingInfo => this.onBrowserReportingInfoReceived_(reportingInfo));
@@ -266,6 +281,8 @@ export class ManagementUiElement extends ManagementUiElementBase {
                             messageIds: [info.messageId],
                           }));
   }
+  // </if>
+
   private getExtensions_() {
     this.browserProxy_.getExtensions().then(extensions => {
       this.extensions_ = extensions;
@@ -432,6 +449,7 @@ export class ManagementUiElement extends ManagementUiElementBase {
   }
   // </if>
 
+  // <if expr="not is_chromeos">
   /**
    * @return Whether there are browser reporting info to show.
    */
@@ -446,28 +464,6 @@ export class ManagementUiElement extends ManagementUiElementBase {
   protected showProfileReportingInfo_(): boolean {
     return !!this.profileReportingInfo_ &&
         this.profileReportingInfo_.length > 0;
-  }
-
-
-  /**
-   * @return Whether there are extension reporting info to show.
-   */
-  protected showExtensionReportingInfo_(): boolean {
-    return !!this.extensions_ && this.extensions_.length > 0;
-  }
-
-  /**
-   * @return Whether there are application reporting info to show.
-   */
-  protected showApplicationReportingInfo_(): boolean {
-    return !!this.applications_ && this.applications_.length > 0;
-  }
-
-  /**
-   * @return Whether there is managed websites info to show.
-   */
-  protected showManagedWebsitesInfo_(): boolean {
-    return !!this.managedWebsites_ && this.managedWebsites_.length > 0;
   }
 
   /**
@@ -500,6 +496,28 @@ export class ManagementUiElement extends ManagementUiElementBase {
       default:
         return 'cr:security';
     }
+  }
+  // </if>
+
+  /**
+   * @return Whether there are extension reporting info to show.
+   */
+  protected showExtensionReportingInfo_(): boolean {
+    return !!this.extensions_ && this.extensions_.length > 0;
+  }
+
+  /**
+   * @return Whether there are application reporting info to show.
+   */
+  protected showApplicationReportingInfo_(): boolean {
+    return !!this.applications_ && this.applications_.length > 0;
+  }
+
+  /**
+   * @return Whether there is managed websites info to show.
+   */
+  protected showManagedWebsitesInfo_(): boolean {
+    return !!this.managedWebsites_ && this.managedWebsites_.length > 0;
   }
 
   // <if expr="not is_android">

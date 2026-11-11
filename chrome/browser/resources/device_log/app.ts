@@ -84,8 +84,8 @@ export class DeviceLogAppElement extends CrLitElement {
   protected accessor filteredLogs_: LogEntry[] = [];
   protected accessor logFileInfo_: boolean = false;
   protected accessor logTimeDetail_: boolean = false;
-  protected accessor logs_: LogEntry[] = [];
-  protected accessor selectedLogLevel_: LogLevel = LogLevel.DEBUG;
+  private accessor logs_: LogEntry[] = [];
+  private accessor selectedLogLevel_: LogLevel = LogLevel.DEBUG;
 
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
 

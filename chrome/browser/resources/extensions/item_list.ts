@@ -116,7 +116,7 @@ export class ExtensionsItemListElement extends ExtensionsItemListElementBase {
       chrome.developerPrivate.ExtensionInfo[] = [];
   protected accessor filteredApps_: chrome.developerPrivate.ExtensionInfo[] =
       [];
-  protected accessor computedFilter_: Filter|null = null;
+  private accessor computedFilter_: Filter|null = null;
   protected accessor maxColumns_: number = 3;
   protected accessor unsafeExtensions_:
       chrome.developerPrivate.ExtensionInfo[] = [];

@@ -38,7 +38,7 @@ export class SelectionOverlayAppElement extends CrLitElement {
 
   private browserProxy_: BrowserProxy = browserProxyFactory.getInstance();
   // The screenshot of the viewport, received from the browser.
-  protected screenshot_: BitmapMappedFromTrustedProcess|null = null;
+  private screenshot_: BitmapMappedFromTrustedProcess|null = null;
   // Listener ids for events from the browser side.
   private listenerIds: number[] = [];
 
@@ -56,6 +56,10 @@ export class SelectionOverlayAppElement extends CrLitElement {
     this.listenerIds.forEach(
         id => assert(this.browserProxy_.callbackRouter.removeListener(id)));
     this.listenerIds = [];
+  }
+
+  getScreenshotForTesting(): BitmapMappedFromTrustedProcess|null {
+    return this.screenshot_;
   }
 
   protected onCloseClick_() {

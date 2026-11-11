@@ -47,7 +47,7 @@ export class FeatureShowcaseStepperElement extends
    * Whether to force a static checkmark in place of the animation - either for
    * testing or for a11y reasons when forced colors mode is active.
    */
-  protected accessor useStaticCheck_: boolean =
+  private accessor useStaticCheck_: boolean =
       loadTimeData.getBoolean('disableAnimations') ||
       this.forcedColorsQuery_.matches;
 
@@ -55,7 +55,7 @@ export class FeatureShowcaseStepperElement extends
    * Steps are completed in order, so every index at or below this one is done.
    * These steps render a static checkmark.
    */
-  protected accessor completedAnimationIndex_: number = -1;
+  private accessor completedAnimationIndex_: number = -1;
 
   override connectedCallback() {
     super.connectedCallback();

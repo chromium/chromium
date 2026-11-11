@@ -179,7 +179,7 @@ export class ExtensionsItemElement extends ExtensionsItemElementBase {
       createDummyExtensionInfo();
   private accessor firstInspectView_: chrome.developerPrivate.ExtensionView|
       undefined;
-  protected accessor enableToggleTooltipPosition_ = TooltipPosition.LEFT;
+  private accessor enableToggleTooltipPosition_ = TooltipPosition.LEFT;
   protected accessor webuiRoundedIconsEnabled_: boolean =
       loadTimeData.getBoolean('webuiRoundedIconsEnabled');
 

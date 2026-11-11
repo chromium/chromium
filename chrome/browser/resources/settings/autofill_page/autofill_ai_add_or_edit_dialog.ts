@@ -175,7 +175,7 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
       loadTimeData.getBoolean('enableAutofillAiWalletPrivatePasses');
   private accessor isWalletPassBranding2026Enabled_: boolean =
       loadTimeData.getBoolean('isAutofillAiWalletPassBranding2026Enabled');
-  protected accessor autofillEnableGradientGoogleLogos_: boolean =
+  private accessor autofillEnableGradientGoogleLogos_: boolean =
       loadTimeData.getBoolean('autofillEnableGradientGoogleLogos');
   protected accessor saveInProgress_: boolean = false;
 

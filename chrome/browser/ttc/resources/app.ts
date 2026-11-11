@@ -188,14 +188,14 @@ export class AppElement extends CrLitElement {
   }
 
   protected accessor initializationState = InitializationState.UNINITIALIZED;
-  protected accessor state = State.LISTENING;
+  private accessor state = State.LISTENING;
   protected accessor mockButtons: MockAudioButton[] = [];
   protected accessor sequences: Sequence[] = [];
-  protected accessor inputTranscription: string = '';
-  protected accessor outputTranscription: string = '';
-  protected accessor inputCaptionsVisible: boolean = true;
-  protected accessor outputCaptionsVisible: boolean = true;
-  protected accessor activeType: 'input'|'output' = 'output';
+  private accessor inputTranscription: string = '';
+  private accessor outputTranscription: string = '';
+  private accessor inputCaptionsVisible: boolean = true;
+  private accessor outputCaptionsVisible: boolean = true;
+  private accessor activeType: 'input'|'output' = 'output';
   protected accessor speakingBlobUrl: string = '';
   protected accessor listeningBlobUrl: string = '';
   protected accessor usePersona: boolean = false;

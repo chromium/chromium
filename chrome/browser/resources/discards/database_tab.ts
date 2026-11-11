@@ -221,7 +221,7 @@ export class DatabaseTabElement extends DatabaseTabElementBase {
     };
   }
 
-  protected accessor rows_: SiteDataEntry[]|null = null;
+  private accessor rows_: SiteDataEntry[]|null = null;
   protected accessor size_:
       SiteDataDatabaseSize = {numRows: -1n, onDiskSizeKb: -1n};
   protected accessor newOrigin_: string = '';

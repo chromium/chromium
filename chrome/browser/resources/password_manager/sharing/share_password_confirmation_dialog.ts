@@ -77,7 +77,7 @@ export class SharePasswordConfirmationDialogElement extends
   accessor passwordName: string = '';
   accessor iconUrl: string = '';
   accessor recipients: chrome.passwordsPrivate.RecipientInfo[] = [];
-  protected accessor dialogStage_: ConfirmationDialogStage =
+  private accessor dialogStage_: ConfirmationDialogStage =
       ConfirmationDialogStage.LOADING;
   private passwordManager_: PasswordManagerProxy =
       PasswordManagerImpl.getInstance();

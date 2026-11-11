@@ -645,7 +645,7 @@ class WebUIToolbarViewsInteractiveUiTest
       step = CheckJsResultAt(
           WebUIToolbarId(), WebUIReloadButtonDeepQuery(),
           content::JsReplace(
-              R"(el => el.modeSwitchIntervalMs_ = $1)",
+              R"(el => el.modeSwitchIntervalMs = $1)",
               static_cast<int>(mode_switch_interval.InMilliseconds())),
           static_cast<int>(mode_switch_interval.InMilliseconds()));
     } else {

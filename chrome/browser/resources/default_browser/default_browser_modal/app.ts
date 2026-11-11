@@ -81,7 +81,7 @@ export class DefaultBrowserModalAppElement extends CrLitElement {
   accessor useSettingsIllustration: boolean =
       loadTimeData.getBoolean('useSettingsIllustration');
 
-  protected accessor hasAccepted_: boolean = false;
+  private accessor hasAccepted_: boolean = false;
   private isStickyModal_: boolean = loadTimeData.getBoolean('isStickyModal');
 
   private isModal_: boolean = loadTimeData.getBoolean('isModal');

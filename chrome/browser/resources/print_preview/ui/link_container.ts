@@ -53,7 +53,9 @@ export class PrintPreviewLinkContainerElement extends CrLitElement {
 
       systemDialogLinkDisabled_: {type: Boolean},
       openingSystemDialog_: {type: Boolean},
+      // <if expr="is_macosx">
       openingInPreview_: {type: Boolean},
+      // </if>
     };
   }
 
@@ -63,7 +65,9 @@ export class PrintPreviewLinkContainerElement extends CrLitElement {
   protected accessor shouldShowSystemDialogLink_: boolean = false;
   protected accessor systemDialogLinkDisabled_: boolean = false;
   protected accessor openingSystemDialog_: boolean = false;
+  // <if expr="is_macosx">
   protected accessor openingInPreview_: boolean = false;
+  // </if>
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);

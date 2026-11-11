@@ -129,19 +129,19 @@ export class MemoryTabElement extends MemoryTabElementBase {
   // Whether polling for new memory dumps is paused.
   protected accessor isPaused_: boolean = false;
   // The list of process rows displayed in the table.
-  protected accessor processes_: ProcessDisplayRow[] = [];
+  private accessor processes_: ProcessDisplayRow[] = [];
   // Formatted timestamp of the last successful data refresh.
   protected accessor lastUpdated_: string = '';
   // Maximum private memory footprint (in KiB) across active processes,
   // used as the global reference scale for sparklines and magnitude bars.
   protected accessor maxPrivateFootprintKb_: number = 1;
   // Set of process IDs whose metric breakdown sections are expanded.
-  protected accessor expandedPids_: Set<number> = new Set();
+  private accessor expandedPids_: Set<number> = new Set();
   // Set of expanded section keys in the format `${pid}:${sectionId}`.
-  protected accessor expandedSections_: Set<string> = new Set();
+  private accessor expandedSections_: Set<string> = new Set();
   // Set of expanded metric keys in the format
   // `${pid}:${sectionId}:${metricId}`.
-  protected accessor expandedMetrics_: Set<string> = new Set();
+  private accessor expandedMetrics_: Set<string> = new Set();
 
   // Remote interface for querying memory dump data from the browser process.
   private discardsDetailsProvider_: DetailsProviderRemote;

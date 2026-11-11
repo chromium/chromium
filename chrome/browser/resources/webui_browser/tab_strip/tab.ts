@@ -60,9 +60,9 @@ export class TabElement extends CrLitElement {
     url: '',
   };
 
-  protected accessor dragInProgress = false;
+  accessor dragInProgress = false;
   protected accessor active = false;
-  protected accessor inactiveFrame = false;
+  accessor inactiveFrame = false;
 
   private readonly tabStripUiController_: TabStripUIControllerRemote;
 

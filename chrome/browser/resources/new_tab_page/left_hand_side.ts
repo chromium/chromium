@@ -113,7 +113,7 @@ export class LeftHandSideElement extends CrLitElement {
   protected accessor hasPreloaded_: boolean = false;
   protected accessor isExpanded_: boolean = false;
   protected accessor isExpandedReady_: boolean = false;
-  protected accessor threadsRailPreloadDebounceMs_: number =
+  private accessor threadsRailPreloadDebounceMs_: number =
       loadTimeData.valueExists('threadsRailPreloadDebounceMs') ?
       loadTimeData.getInteger('threadsRailPreloadDebounceMs') :
       100;

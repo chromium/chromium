@@ -91,7 +91,7 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
   // Used for CSS styling.
   protected accessor inSearchMode_: boolean = false;
   protected accessor spinnerActive_: boolean = false;
-  protected accessor bypassPromptItemId_: string = '';
+  private accessor bypassPromptItemId_: string = '';
   // <if expr="_google_chrome">
   private accessor firstDangerousItemId_: string = '';
   private accessor esbDownloadRowPromo_: boolean =

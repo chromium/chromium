@@ -57,7 +57,7 @@ export class FeatureShowcaseAppElement extends CrLitElement {
   accessor activeStepIndex: number = 0;
   accessor steps: string[] = [];
   protected accessor areButtonsDisabled_: boolean = false;
-  protected accessor isDarkMode_: boolean = false;
+  private accessor isDarkMode_: boolean = false;
   private matchMedia_: MediaQueryList;
   private darkModeListener_: (e: MediaQueryListEvent) => void;
 

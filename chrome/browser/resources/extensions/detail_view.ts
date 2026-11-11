@@ -128,7 +128,7 @@ export class ExtensionsDetailViewElement extends
   protected accessor sortedViews_: chrome.developerPrivate.ExtensionView[] = [];
   protected accessor webuiRoundedIconsEnabled_: boolean =
       loadTimeData.getBoolean('webuiRoundedIconsEnabled');
-  protected accessor isolatedModeEnabled_: boolean =
+  private accessor isolatedModeEnabled_: boolean =
       loadTimeData.getBoolean('isolatedModeEnabled');
 
   override willUpdate(changedProperties: PropertyValues<this>) {

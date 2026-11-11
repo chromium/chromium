@@ -59,7 +59,7 @@ export class ThreadsRailElement extends ThreadsRailElementBase {
     };
   }
 
-  protected accessor config_: LhsRailConfig =
+  private accessor config_: LhsRailConfig =
       loadTimeData.getValue('lhsRailConfig');
 
   protected getItems_(): LhsRailItem[] {

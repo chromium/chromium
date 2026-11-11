@@ -277,15 +277,17 @@ void AssertToolbarSyncState(content::WebContents* web_contents,
                             bool expected_initialized_sync,
                             bool expected_snapshot_back_enabled,
                             bool expected_back_enabled) {
-  EXPECT_EQ(expected_initialized_sync,
-            content::EvalJs(web_contents,
-                            "document.querySelector('toolbar-app')?."
-                            "initialBootSnapshot_.initializedSync === true")
-                .ExtractBool());
+  EXPECT_EQ(
+      expected_initialized_sync,
+      content::EvalJs(web_contents,
+                      "document.querySelector('toolbar-app')?."
+                      "initialBootSnapshotForTesting.initializedSync === true")
+          .ExtractBool());
   EXPECT_EQ(expected_snapshot_back_enabled,
-            content::EvalJs(web_contents,
-                            "document.querySelector('toolbar-app')?."
-                            "initialBootSnapshot_.backButtonEnabled === true")
+            content::EvalJs(
+                web_contents,
+                "document.querySelector('toolbar-app')?."
+                "initialBootSnapshotForTesting.backButtonEnabled === true")
                 .ExtractBool());
   EXPECT_EQ(
       expected_back_enabled,
@@ -6107,10 +6109,10 @@ INSTANTIATE_TEST_SUITE_P(
 // By registering `SyncOnlyWebUIToolbarControllerFactory`, all tests within this
 // fixture operate under strict asynchronous Mojo quarantine where
 // `ToolbarUIService` is severed via `BindInterface()`. This ensures that
-// verified initial boot snapshots inside `initialBootSnapshot_` and live DOM
-// properties originated strictly via synchronous startup transport across
-// `loadTimeData` or `SetWebUIProperty` without requiring asynchronous message
-// loop recovery.
+// verified initial boot snapshots inside `initialBootSnapshotForTesting` and
+// live DOM properties originated strictly via synchronous startup transport
+// across `loadTimeData` or `SetWebUIProperty` without requiring asynchronous
+// message loop recovery.
 class WebUIToolbarSynchronousStartupBrowserTest
     : public WebUIToolbarWebViewBrowserTest {
  public:

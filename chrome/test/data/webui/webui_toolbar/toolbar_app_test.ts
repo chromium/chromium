@@ -270,7 +270,7 @@ suite('ToolbarAppTest', () => {
     assertEquals(9, startTrackingCalls.length);
 
     // Verify initial boot snapshot captures the correct values
-    const snapshot = (app as any).initialBootSnapshot_;
+    const snapshot = app.initialBootSnapshotForTesting;
     assertTrue(snapshot.initializedSync);
     assertFalse(snapshot.isNavigationLoading);
     assertTrue(snapshot.backButtonEnabled);

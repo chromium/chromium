@@ -67,8 +67,8 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
     };
   }
 
-  protected accessor loading_: boolean = true;
-  protected accessor verifyingAccount_: boolean = false;
+  private accessor loading_: boolean = true;
+  private accessor verifyingAccount_: boolean = false;
   private accessor authenticator_: Authenticator|null = null;
 
   /** Whether the login UI is loaded for signing in primary account. */

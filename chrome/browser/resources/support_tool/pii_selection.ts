@@ -50,7 +50,7 @@ export class PiiSelectionElement extends PiiSelectionElementBase {
     };
   }
 
-  protected accessor selectAll_: boolean = true;
+  private accessor selectAll_: boolean = true;
   protected accessor detectedPiiItems_: PiiDataItem[] = [];
   protected accessor selectedRadioButton_: PiiRadioButtons =
       PiiRadioButtons.INCLUDE_ALL;

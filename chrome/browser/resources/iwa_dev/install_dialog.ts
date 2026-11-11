@@ -58,7 +58,7 @@ export class IwaDevInstallDialogElement extends CrLitElement {
   protected accessor selectedTab_: TabIndex = TabIndex.DEV_PROXY;
   protected accessor isInstalling_: boolean = false;
   protected accessor installationError_: string = '';
-  protected accessor isCurrentTabValid_: boolean = false;
+  private accessor isCurrentTabValid_: boolean = false;
   protected accessor isOpened_: boolean = false;
 
   showDialog() {

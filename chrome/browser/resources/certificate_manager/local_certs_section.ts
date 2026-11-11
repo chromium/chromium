@@ -70,8 +70,7 @@ export class LocalCertsSectionElement extends CrLitElement {
 
   protected accessor numPolicyCertsString_: string = '';
   protected accessor numUserCertsString_: string = '';
-  protected accessor certManagementMetadata_: CertManagementMetadata|null =
-      null;
+  private accessor certManagementMetadata_: CertManagementMetadata|null = null;
   // <if expr="not is_chromeos">
   protected accessor numSystemCertsString_: string = '';
   // </if>

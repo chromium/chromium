@@ -41,15 +41,15 @@ export class IndigoInternalsAppElement extends CrLitElement {
     };
   }
 
-  protected accessor localEligibility_: LocalEligibility|null = null;
-  protected accessor optimizationGuideStatus_: OptimizationGuideStatus|null =
+  private accessor localEligibility_: LocalEligibility|null = null;
+  private accessor optimizationGuideStatus_: OptimizationGuideStatus|null =
       null;
   protected accessor combinedEligibility_: CombinedEligibility|null = null;
   protected accessor lastUpdated_: string = '';
   protected accessor loadedPrompts_: IndigoPrompt[] = [];
   protected accessor currentPromptKey_: string = '';
   protected accessor overridePrompt_: string = '';
-  protected accessor integrationEnabled_: boolean = false;
+  private accessor integrationEnabled_: boolean = false;
   protected accessor skillId_: string = '';
   protected accessor skillName_: string = '';
   private listenerIds_: number[] = [];

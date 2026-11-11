@@ -1204,7 +1204,7 @@ IN_PROC_BROWSER_TEST_F(GlicSmartSuggestionContextMenuBrowserTest,
         const app = document.querySelector('selection-overlay-app');
         const overlay =
             app?.shadowRoot?.querySelector('glic-selection-overlay');
-        return !!app?.screenshot_ && !!overlay &&
+        return !!app?.getScreenshotForTesting() && !!overlay &&
                !overlay.hideHandles && !overlay.skipIntroAnimation;
       })();
     )")
@@ -1252,7 +1252,7 @@ IN_PROC_BROWSER_TEST_F(GlicSmartSuggestionContextMenuBrowserTest,
         const app = document.querySelector('selection-overlay-app');
         const overlay =
             app?.shadowRoot?.querySelector('glic-selection-overlay');
-        return !!app?.screenshot_ && !!overlay &&
+        return !!app?.getScreenshotForTesting() && !!overlay &&
                overlay.hideHandles && overlay.skipIntroAnimation;
       })();
     )")
@@ -1304,7 +1304,7 @@ IN_PROC_BROWSER_TEST_F(GlicSmartSuggestionContextMenuBrowserTest,
         const overlay =
             app?.shadowRoot?.querySelector('glic-selection-overlay');
         const sel = overlay?.activeSelection;
-        if (!app?.screenshot_ || !overlay || !sel) {
+        if (!app?.getScreenshotForTesting() || !overlay || !sel) {
           return false;
         }
         const expectedLeft = 20 / $1;
@@ -1553,7 +1553,7 @@ IN_PROC_BROWSER_TEST_F(GlicSmartSuggestionContextMenuBrowserTest,
         const overlay =
             app?.shadowRoot?.querySelector('glic-selection-overlay');
         const sel = overlay?.activeSelection;
-        if (!app?.screenshot_ || !overlay || !sel) {
+        if (!app?.getScreenshotForTesting() || !overlay || !sel) {
           return false;
         }
         const expectedLeft = 20 / $1;
@@ -1612,7 +1612,7 @@ IN_PROC_BROWSER_TEST_F(GlicSmartSuggestionContextMenuBrowserTest,
         const overlay =
             app?.shadowRoot?.querySelector('glic-selection-overlay');
         const sel = overlay?.activeSelection;
-        if (!app?.screenshot_ || !overlay || !sel) {
+        if (!app?.getScreenshotForTesting() || !overlay || !sel) {
           return false;
         }
         const expectedLeft = 20 / $1;

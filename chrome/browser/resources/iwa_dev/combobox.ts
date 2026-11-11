@@ -68,9 +68,9 @@ export class IwaDevComboboxElement extends CrLitElement {
   accessor options: ComboboxOption[] = [];
   accessor matchStrategy: ComboboxMatchStrategy = 'prefix';
 
-  protected accessor showSuggestions_: boolean = false;
+  private accessor showSuggestions_: boolean = false;
   protected accessor highlightedIndex_: number = -1;
-  protected accessor filterQuery_: string = '';
+  private accessor filterQuery_: string = '';
   private wasDropdownOpen_: boolean = false;
 
   // Exposes the underlying <input> element, matching cr-input.

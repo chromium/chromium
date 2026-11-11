@@ -39,10 +39,10 @@ export class WebAppInternalsAppElement extends CrLitElement {
     };
   }
 
-  protected accessor rawDebugData_: string = '';
-  protected accessor debugInfoJson_: string = '';
-  protected accessor parsedDebugData_: DebugData|null = null;
-  protected accessor query_: string = '';
+  private accessor rawDebugData_: string = '';
+  private accessor debugInfoJson_: string = '';
+  private accessor parsedDebugData_: DebugData|null = null;
+  private accessor query_: string = '';
   protected accessor isIwaPolicyInstallEnabled_: boolean =
       loadTimeData.getBoolean('isIwaPolicyInstallEnabled');
 

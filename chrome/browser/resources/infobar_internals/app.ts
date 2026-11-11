@@ -57,7 +57,7 @@ export class InfobarInternalsAppElement extends CrLitElement {
     };
   }
 
-  protected accessor infobars: InfoBarEntry[] = [];
+  private accessor infobars: InfoBarEntry[] = [];
   protected accessor searchQuery: string = '';
   protected accessor selectedTypes: InfoBarType[] = [];
   protected accessor toastMessage: string = '';

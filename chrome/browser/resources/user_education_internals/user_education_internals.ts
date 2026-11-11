@@ -28,7 +28,9 @@ import type {CrMenuSelectorElement} from 'chrome://resources/cr_elements/cr_menu
 import type {CrPageSelectorElement} from 'chrome://resources/cr_elements/cr_page_selector/cr_page_selector.js';
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {assertNotReached} from 'chrome://resources/js/assert.js';
+// <if expr="not is_chromeos">
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+// </if>
 import {TrackedElementManager} from 'chrome://resources/js/tracked_element/tracked_element_manager.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -188,18 +190,20 @@ export class UserEducationInternalsElement extends
         value: false,
       },
 
+      // <if expr="not is_chromeos">
       /**
        * The current version used to request the What's New page.
        */
       whatsNewVersionToRequest_: {
         type: Number,
       },
+      currentChromeVersion_: {type: Number},
+      // </if>
       whatsNewModules_: {type: Array},
       whatsNewEditions_: {type: Array},
       ntpPromos_: {type: Array},
       ntpPromoPreferences_: {type: Array},
       sessionData_: {type: Array},
-      currentChromeVersion_: {type: Number},
       initialized_: {type: Boolean},
     };
   }
@@ -219,10 +223,12 @@ export class UserEducationInternalsElement extends
   protected accessor narrow_: boolean = false;
   protected accessor sessionExpanded_: boolean = false;
   protected accessor sessionData_: FeaturePromoDemoPageData[] = [];
+  // <if expr="not is_chromeos">
   protected accessor whatsNewVersionToRequest_: number =
       loadTimeData.getInteger('whatsNewVersionToRequest');
   protected accessor currentChromeVersion_: number =
       loadTimeData.getInteger('currentChromeVersion');
+  // </if>
   protected accessor initialized_ = false;
 
   private handler_: UserEducationInternalsPageHandlerInterface;

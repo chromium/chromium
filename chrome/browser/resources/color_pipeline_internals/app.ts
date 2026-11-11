@@ -60,7 +60,7 @@ export class ColorPipelineInternalsAppElement extends CrLitElement {
   }
 
   protected accessor currentColor_: string = '';
-  protected accessor filter_: string = '';
+  private accessor filter_: string = '';
   protected accessor narrow_: boolean = false;
   protected accessor sections_: ThemeSection[] = ALL_SECTIONS;
   protected accessor red_: string = '';

@@ -157,7 +157,7 @@ export class DiscardsTabElement extends DiscardsTabElementBase {
     };
   }
 
-  protected accessor tabInfos_: TabDiscardsInfo[] = [];
+  private accessor tabInfos_: TabDiscardsInfo[] = [];
   protected accessor isPerformanceInterventionDemoModeEnabled_: boolean =
       loadTimeData.getBoolean('isPerformanceInterventionDemoModeEnabled');
 

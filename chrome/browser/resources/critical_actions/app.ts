@@ -39,7 +39,7 @@ export class CriticalActionsAppElement extends CrLitElement {
   }
 
   protected accessor entries_: CriticalActionItem[] = [];
-  protected accessor totalEntries_: number = 0;
+  private accessor totalEntries_: number = 0;
   protected accessor pageIndex_: number = 0;
   protected accessor pageSize_: number = 25;
   protected accessor searchQuery_: string = '';

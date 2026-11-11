@@ -44,7 +44,7 @@ export class ErrorMessageElement extends ErrorMessageElementBase {
     };
   }
 
-  protected accessor messageCode: ErrorMessage = ErrorMessage.NO_ERROR;
+  private accessor messageCode: ErrorMessage = ErrorMessage.NO_ERROR;
 
   private static readonly ADD_RESULT_MESSAGE_CODES:
       Array<[ErrorMessage, AddSinkResultCode[]]> = [

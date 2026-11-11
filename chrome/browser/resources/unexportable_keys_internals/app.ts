@@ -66,8 +66,8 @@ export class UnexportableKeysInternalsAppElement extends CrLitElement {
   ];
 
   protected accessor unexportableKeysInfo_: UnexportableKeyInfo[] = [];
-  protected accessor sortColumn_: SortKey = 'creationTime';
-  protected accessor sortReverse_: boolean = true;
+  private accessor sortColumn_: SortKey = 'creationTime';
+  private accessor sortReverse_: boolean = true;
 
   private browserProxy_ = browserProxyFactory.getInstance();
 

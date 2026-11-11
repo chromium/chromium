@@ -122,10 +122,10 @@ export class ReloadButtonElement extends ReloadButtonElementBase {
   // of the stop icon, and left clicks on the icon will be ignored. Once the
   // timer expires or the load completes, the timer will stop and the updated
   // icon will be displayed, and clicks will be respected again.
-  protected doubleClickReloadIconTimer_: TimerHelper = new TimerHelper();
+  private doubleClickReloadIconTimer_: TimerHelper = new TimerHelper();
 
   // This is exposed so tests can modify it.
-  protected modeSwitchIntervalMs_: number = 1350;
+  modeSwitchIntervalMs: number = 1350;
 
   // Timer started when the mouse is over the stop icon, and loading stops for
   // any reason other than the user clicking the stop icon. During this time,
@@ -305,7 +305,7 @@ export class ReloadButtonElement extends ReloadButtonElementBase {
           this.disableStopIconTimer_.setTimeout(() => {
             // This will conveniently delete `disableStopIconTimer_`.
             this.updateState_(/*force=*/ true);
-          }, this.modeSwitchIntervalMs_);
+          }, this.modeSwitchIntervalMs);
           return;
         }
       }

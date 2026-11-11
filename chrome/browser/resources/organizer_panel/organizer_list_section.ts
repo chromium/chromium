@@ -89,12 +89,12 @@ export class OrganizerListSectionElement extends CrLitElement implements
   protected accessor prefersReducedMotion_: boolean = false;
   protected accessor showAll_: boolean = false;
   accessor searchQuery: string = '';
-  protected accessor filteredItems_:
+  private accessor filteredItems_:
       Array<HighlightableOrganizerListSectionItem<unknown>> = [];
   // This is the search query that `filteredItems_` currently matches. This
   // ensures that we don't show the full list of elements until after the search
   // has been applied and the list of items has been filtered.
-  protected accessor filteredSearchQuery_: string = '';
+  private accessor filteredSearchQuery_: string = '';
   override accessor hidden: boolean = false;
 
   private searchOptions_:
