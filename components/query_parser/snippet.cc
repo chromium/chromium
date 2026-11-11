@@ -10,6 +10,8 @@
 #include <memory>
 
 #include "base/check.h"
+#include "base/i18n/icu4c_tag_converter.h"
+#include "base/i18n/icubridge/default_icu_locale.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -183,8 +185,10 @@ void Snippet::ComputeSnippet(const MatchPositions& match_positions,
   // Locale does not matter because there's no per-locale customization
   // for character iterator.
   std::unique_ptr<icu::BreakIterator> bi(
-      icu::BreakIterator::createCharacterInstance(icu::Locale::getDefault(),
-                                                  status));
+      icu::BreakIterator::createCharacterInstance(
+          base::i18n::IcuLocaleConverter::GetInstance().FromLanguageTag(
+              base::i18n::GetDefaultIcuLocale()),
+          status));
   bi->setText(document_utext, status);
   DCHECK(U_SUCCESS(status));
 

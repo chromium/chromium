@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "base/i18n/icu4c_tag_converter.h"
+#include "base/i18n/icubridge/default_icu_locale.h"
 #include "base/i18n/string_compare.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -39,7 +41,9 @@ std::unique_ptr<icu::Collator> GetCollatorForLocale(const icu::Locale& locale) {
 }
 
 CaseInsensitiveCompare::CaseInsensitiveCompare()
-    : CaseInsensitiveCompare(icu::Locale::getDefault()) {}
+    : CaseInsensitiveCompare(
+          base::i18n::IcuLocaleConverter::GetInstance().FromLanguageTag(
+              base::i18n::GetDefaultIcuLocale())) {}
 
 CaseInsensitiveCompare::CaseInsensitiveCompare(const icu::Locale& locale)
     : collator_(GetCollatorForLocale(locale)) {

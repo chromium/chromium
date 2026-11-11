@@ -6,6 +6,8 @@
 
 #include <string>
 
+#include "base/i18n/icu4c_tag_converter.h"
+#include "base/i18n/icubridge/default_icu_locale.h"
 #include "base/i18n/number_formatting.h"
 #include "base/i18n/time_formatting.h"
 #include "base/i18n/unicodestring.h"
@@ -26,8 +28,9 @@ const icu::MeasureFormat& GetMeasureFormat() {
   static const base::NoDestructor<icu::MeasureFormat> measure_format([] {
     UErrorCode status = U_ZERO_ERROR;
     icu::MeasureFormat measure_format(
-        icu::Locale::getDefault(), UMeasureFormatWidth::UMEASFMT_WIDTH_NUMERIC,
-        status);
+        base::i18n::IcuLocaleConverter::GetInstance().FromLanguageTag(
+            base::i18n::GetDefaultIcuLocale()),
+        UMeasureFormatWidth::UMEASFMT_WIDTH_NUMERIC, status);
     CHECK(U_SUCCESS(status));
     return measure_format;
   }());

@@ -6,6 +6,8 @@
 
 #include "base/check_is_test.h"
 #include "base/command_line.h"
+#include "base/i18n/icu4c_tag_converter.h"
+#include "base/i18n/icubridge/default_icu_locale.h"
 #include "base/time/time.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -29,8 +31,10 @@ base::TimeDelta GetMaxVisitAge() {
 // Helper function to create and configure an icu::Collator.
 std::unique_ptr<icu::Collator> CreateCollator() {
   UErrorCode error_code = U_ZERO_ERROR;
-  std::unique_ptr<icu::Collator> collator(
-      icu::Collator::createInstance(icu::Locale::getDefault(), error_code));
+  std::unique_ptr<icu::Collator> collator(icu::Collator::createInstance(
+      base::i18n::IcuLocaleConverter::GetInstance().FromLanguageTag(
+          base::i18n::GetDefaultIcuLocale()),
+      error_code));
   if (!U_SUCCESS(error_code)) {
     collator.reset();
   }
