@@ -79,6 +79,23 @@ void SafeBrowsingLookupMechanism::LogHashDatabaseFallbackResult(
       base::StrCat({"SafeBrowsing.", metric_variation,
                     ".HashDatabaseFallbackThreatType.", suffix});
   base::UmaHistogramEnumeration(histogram_name, threat_type);
+  if (did_match_available_high_confidence_allowlist_) {
+    base::UmaHistogramEnumeration(
+        base::StrCat({"SafeBrowsing.", metric_variation,
+                      ".HighConfidenceAllowlistMatchThreatType"}),
+        threat_type);
+  }
+}
+
+void SafeBrowsingLookupMechanism::RecordHighConfidenceAllowlistMatch(
+    bool did_match_allowlist,
+    const std::optional<SafeBrowsingDatabaseManager::
+                            HighConfidenceAllowlistCheckLoggingDetails>&
+        logging_details) {
+  did_match_available_high_confidence_allowlist_ =
+      did_match_allowlist && (!logging_details.has_value() ||
+                              (logging_details->were_all_stores_available &&
+                               !logging_details->was_allowlist_size_too_small));
 }
 
 }  // namespace safe_browsing

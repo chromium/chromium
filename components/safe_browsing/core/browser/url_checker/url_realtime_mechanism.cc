@@ -153,6 +153,7 @@ void UrlRealTimeMechanism::OnCheckUrlForHighConfidenceAllowlist(
         SafeBrowsingDatabaseManager::HighConfidenceAllowlistCheckLoggingDetails>
         logging_details) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  RecordHighConfidenceAllowlistMatch(did_match_allowlist, logging_details);
   RecordLocalMatchResult(did_match_allowlist, std::move(logging_details),
                          url_lookup_service_metric_suffix_);
 

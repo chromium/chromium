@@ -4719,6 +4719,25 @@ failing to fetch the updates which puts users' security at risk. -->
 </histogram>
 
 <histogram
+    name="SafeBrowsing.{CheckType}.HighConfidenceAllowlistMatchThreatType"
+    enum="SBThreatType" expires_after="2027-02-11">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs the final threat type when a {CheckType} lookup matches an available
+    high-confidence allowlist and falls back to a local hash-prefix database
+    lookup. Only logged when the URL matched the high-confidence allowlist and
+    the allowlist was not unavailable due to store state (i.e. all stores were
+    available and the allowlist store was not too small). Not logged if the
+    check times out.
+  </summary>
+  <token key="CheckType">
+    <variant name="HPRT" summary="hash-prefix real-time"/>
+    <variant name="RT" summary="URL real-time"/>
+  </token>
+</histogram>
+
+<histogram
     name="SafeBrowsing.{CloudOrLocal}DeepScan.{Connector}.BytesPerSeconds"
     units="bytes" expires_after="2027-04-11">
   <owner>domfc@chromium.org</owner>

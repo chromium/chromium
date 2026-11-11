@@ -867,6 +867,11 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_UrlRealTimeEnabledAllowlistMatch) {
       "SafeBrowsing.RT.HashDatabaseFallbackThreatType.AllowlistMatch",
       /*sample=*/SB_THREAT_TYPE_URL_PHISHING,
       /*expected_bucket_count=*/1);
+  histogram_tester_.ExpectUniqueSample(
+      /*name=*/
+      "SafeBrowsing.RT.HighConfidenceAllowlistMatchThreatType",
+      /*sample=*/SB_THREAT_TYPE_URL_PHISHING,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_UrlRealTimeEnabledSafeUrl) {
@@ -1723,6 +1728,10 @@ TEST_F(SafeBrowsingUrlCheckerTest,
       "SafeBrowsing.HPRT.HashDatabaseFallbackThreatType.AllowlistMatch",
       /*sample=*/SB_THREAT_TYPE_SAFE,
       /*expected_bucket_count=*/1);
+  histogram_tester_.ExpectUniqueSample(
+      /*name=*/"SafeBrowsing.HPRT.HighConfidenceAllowlistMatchThreatType",
+      /*sample=*/SB_THREAT_TYPE_SAFE,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(SafeBrowsingUrlCheckerTest,
@@ -1760,6 +1769,11 @@ TEST_F(SafeBrowsingUrlCheckerTest,
   histogram_tester_.ExpectUniqueSample(
       /*name=*/
       "SafeBrowsing.HPRT.HashDatabaseFallbackThreatType.AllowlistMatch",
+      /*sample=*/SB_THREAT_TYPE_URL_PHISHING,
+      /*expected_bucket_count=*/1);
+  histogram_tester_.ExpectUniqueSample(
+      /*name=*/
+      "SafeBrowsing.HPRT.HighConfidenceAllowlistMatchThreatType",
       /*sample=*/SB_THREAT_TYPE_URL_PHISHING,
       /*expected_bucket_count=*/1);
 }
@@ -2438,89 +2452,121 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_AllowlistCheckLoggingDetails) {
         logging_details;
     std::optional<bool> expected_all_stores_available_log;
     std::optional<bool> expected_allowlist_size_too_small_log;
+    bool expected_allowlist_match_threat_type_logged_on_match;
   } test_cases[] = {
       {"https://example.test/no_logging_details", std::nullopt, std::nullopt,
-       std::nullopt},
+       std::nullopt, true},
       {"https://example.test/stores_available__allowlist_too_small",
        SafeBrowsingDatabaseManager::HighConfidenceAllowlistCheckLoggingDetails(
            true, true),
-       true, true},
+       true, true, false},
       {"https://example.test/stores_available__allowlist_not_too_small",
        SafeBrowsingDatabaseManager::HighConfidenceAllowlistCheckLoggingDetails(
            true, false),
-       true, false},
+       true, false, true},
       {"https://example.test/stores_unavailable__allowlist_too_small",
        SafeBrowsingDatabaseManager::HighConfidenceAllowlistCheckLoggingDetails(
            false, true),
-       false, true},
+       false, true, false},
       {"https://example.test/stores_unavailable__allowlist_not_too_small",
        SafeBrowsingDatabaseManager::HighConfidenceAllowlistCheckLoggingDetails(
            false, false),
-       false, false}};
+       false, false, false}};
 
   for (const auto& test_case : test_cases) {
-    GURL url(test_case.url);
-    database_manager_->SetAllowlistLookupDetailsForUrl(
-        url, /*match=*/false, test_case.logging_details);
+    for (bool match : {false, true}) {
+      GURL url(test_case.url);
+      database_manager_->SetAllowlistLookupDetailsForUrl(
+          url, match, test_case.logging_details);
+      database_manager_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_SAFE,
+                                             /*delayed_callback=*/false);
 
-    // Check URT logging.
-    {
-      url_lookup_service_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_SAFE,
-                                               /*should_complete_lookup=*/true);
-      base::HistogramTester urt_histogram_tester;
-      WaitableNativeCheckUrlCallback urt_callback;
-      urt_safe_browsing_url_checker->CheckUrl(url, "GET", urt_callback.Get());
-      urt_callback.Wait();
-      if (test_case.expected_all_stores_available_log.has_value()) {
-        urt_histogram_tester.ExpectUniqueSample(
-            "SafeBrowsing.RT.AllStoresAvailable",
-            /*sample=*/test_case.expected_all_stores_available_log.value(),
-            /*expected_bucket_count=*/1);
-      } else {
-        urt_histogram_tester.ExpectTotalCount(
-            /*name=*/"SafeBrowsing.RT.AllStoresAvailable",
-            /*expected_count=*/0);
+      // Check URT logging.
+      {
+        url_lookup_service_->SetThreatTypeForUrl(
+            url, SB_THREAT_TYPE_SAFE,
+            /*should_complete_lookup=*/true);
+        base::HistogramTester urt_histogram_tester;
+        WaitableNativeCheckUrlCallback urt_callback;
+        urt_safe_browsing_url_checker->CheckUrl(url, "GET", urt_callback.Get());
+        urt_callback.Wait();
+        if (test_case.expected_all_stores_available_log.has_value()) {
+          urt_histogram_tester.ExpectUniqueSample(
+              "SafeBrowsing.RT.AllStoresAvailable",
+              /*sample=*/test_case.expected_all_stores_available_log.value(),
+              /*expected_bucket_count=*/1);
+        } else {
+          urt_histogram_tester.ExpectTotalCount(
+              /*name=*/"SafeBrowsing.RT.AllStoresAvailable",
+              /*expected_count=*/0);
+        }
+        if (test_case.expected_allowlist_size_too_small_log.has_value()) {
+          urt_histogram_tester.ExpectUniqueSample(
+              "SafeBrowsing.RT.AllowlistSizeTooSmall",
+              /*sample=*/
+              test_case.expected_allowlist_size_too_small_log.value(),
+              /*expected_bucket_count=*/1);
+        } else {
+          urt_histogram_tester.ExpectTotalCount(
+              /*name=*/"SafeBrowsing.RT.AllowlistSizeTooSmall",
+              /*expected_count=*/0);
+        }
+        if (match &&
+            test_case.expected_allowlist_match_threat_type_logged_on_match) {
+          urt_histogram_tester.ExpectUniqueSample(
+              "SafeBrowsing.RT.HighConfidenceAllowlistMatchThreatType",
+              /*sample=*/SB_THREAT_TYPE_SAFE,
+              /*expected_bucket_count=*/1);
+        } else {
+          urt_histogram_tester.ExpectTotalCount(
+              /*name=*/"SafeBrowsing.RT.HighConfidenceAllowlistMatchThreatType",
+              /*expected_count=*/0);
+        }
       }
-      if (test_case.expected_allowlist_size_too_small_log.has_value()) {
-        urt_histogram_tester.ExpectUniqueSample(
-            "SafeBrowsing.RT.AllowlistSizeTooSmall",
-            /*sample=*/test_case.expected_allowlist_size_too_small_log.value(),
-            /*expected_bucket_count=*/1);
-      } else {
-        urt_histogram_tester.ExpectTotalCount(
-            /*name=*/"SafeBrowsing.RT.AllowlistSizeTooSmall",
-            /*expected_count=*/0);
-      }
-    }
 
-    // Check HPRT logging.
-    {
-      hash_realtime_service_->SetThreatTypeForUrl(
-          url, SB_THREAT_TYPE_SAFE,
-          /*should_fail_lookup=*/false, /*should_delay_lookup=*/false);
-      base::HistogramTester hprt_histogram_tester;
-      WaitableNativeCheckUrlCallback hprt_callback;
-      hprt_safe_browsing_url_checker->CheckUrl(url, "GET", hprt_callback.Get());
-      hprt_callback.Wait();
-      if (test_case.expected_all_stores_available_log.has_value()) {
-        hprt_histogram_tester.ExpectUniqueSample(
-            "SafeBrowsing.HPRT.AllStoresAvailable",
-            /*sample=*/test_case.expected_all_stores_available_log.value(),
-            /*expected_bucket_count=*/1);
-      } else {
-        hprt_histogram_tester.ExpectTotalCount(
-            /*name=*/"SafeBrowsing.HPRT.AllStoresAvailable",
-            /*expected_count=*/0);
-      }
-      if (test_case.expected_allowlist_size_too_small_log.has_value()) {
-        hprt_histogram_tester.ExpectUniqueSample(
-            "SafeBrowsing.HPRT.AllowlistSizeTooSmall",
-            /*sample=*/test_case.expected_allowlist_size_too_small_log.value(),
-            /*expected_bucket_count=*/1);
-      } else {
-        hprt_histogram_tester.ExpectTotalCount(
-            /*name=*/"SafeBrowsing.HPRT.AllowlistSizeTooSmall",
-            /*expected_count=*/0);
+      // Check HPRT logging.
+      {
+        hash_realtime_service_->SetThreatTypeForUrl(
+            url, SB_THREAT_TYPE_SAFE,
+            /*should_fail_lookup=*/false, /*should_delay_lookup=*/false);
+        base::HistogramTester hprt_histogram_tester;
+        WaitableNativeCheckUrlCallback hprt_callback;
+        hprt_safe_browsing_url_checker->CheckUrl(url, "GET",
+                                                 hprt_callback.Get());
+        hprt_callback.Wait();
+        if (test_case.expected_all_stores_available_log.has_value()) {
+          hprt_histogram_tester.ExpectUniqueSample(
+              "SafeBrowsing.HPRT.AllStoresAvailable",
+              /*sample=*/test_case.expected_all_stores_available_log.value(),
+              /*expected_bucket_count=*/1);
+        } else {
+          hprt_histogram_tester.ExpectTotalCount(
+              /*name=*/"SafeBrowsing.HPRT.AllStoresAvailable",
+              /*expected_count=*/0);
+        }
+        if (test_case.expected_allowlist_size_too_small_log.has_value()) {
+          hprt_histogram_tester.ExpectUniqueSample(
+              "SafeBrowsing.HPRT.AllowlistSizeTooSmall",
+              /*sample=*/
+              test_case.expected_allowlist_size_too_small_log.value(),
+              /*expected_bucket_count=*/1);
+        } else {
+          hprt_histogram_tester.ExpectTotalCount(
+              /*name=*/"SafeBrowsing.HPRT.AllowlistSizeTooSmall",
+              /*expected_count=*/0);
+        }
+        if (match &&
+            test_case.expected_allowlist_match_threat_type_logged_on_match) {
+          hprt_histogram_tester.ExpectUniqueSample(
+              "SafeBrowsing.HPRT.HighConfidenceAllowlistMatchThreatType",
+              /*sample=*/SB_THREAT_TYPE_SAFE,
+              /*expected_bucket_count=*/1);
+        } else {
+          hprt_histogram_tester.ExpectTotalCount(
+              /*name=*/
+              "SafeBrowsing.HPRT.HighConfidenceAllowlistMatchThreatType",
+              /*expected_count=*/0);
+        }
       }
     }
   }

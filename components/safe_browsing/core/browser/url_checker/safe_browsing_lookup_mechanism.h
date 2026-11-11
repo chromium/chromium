@@ -83,12 +83,27 @@ class SafeBrowsingLookupMechanism {
   // on |complete_check_callback_|.
   void CompleteCheck(std::unique_ptr<CompleteCheckResult> result);
 
-  // Logs the |threat_type| triggered by falling back to
-  // hash database mechanism. |metric_variation| should be either "HPRT" or
-  // "RT".
+  // Logs the |threat_type| triggered by falling back to the hash database
+  // mechanism, as well as the high-confidence allowlist match threat type if
+  // |did_match_available_high_confidence_allowlist_| is true.
+  // |metric_variation| should be either "HPRT" or "RT".
   void LogHashDatabaseFallbackResult(const std::string& metric_variation,
                                      HashDatabaseFallbackTrigger trigger,
                                      SBThreatType threat_type);
+
+  // Records whether the high-confidence allowlist check resulted in a match
+  // against an available allowlist (i.e. not simply because stores were
+  // unavailable or the allowlist store was too small). |did_match_allowlist| is
+  // true if the allowlist check reported a match (which also occurs when stores
+  // are unavailable or too small). |logging_details| contains details about the
+  // store state when the check ran, or std::nullopt in production on platforms
+  // where store state details are not reported (such as Android) or when the
+  // allowlist check is skipped.
+  void RecordHighConfidenceAllowlistMatch(
+      bool did_match_allowlist,
+      const std::optional<SafeBrowsingDatabaseManager::
+                              HighConfidenceAllowlistCheckLoggingDetails>&
+          logging_details);
 
   // The URL to run the lookup for.
   GURL url_;
@@ -109,6 +124,10 @@ class SafeBrowsingLookupMechanism {
   // The callback that will eventually be called when the check completes,
   // unless it completes synchronously.
   CompleteCheckResultCallback complete_check_callback_;
+
+  // True if the URL matched the high-confidence allowlist and it wasn't simply
+  // because the stores were unavailable or the allowlist store was too small.
+  bool did_match_available_high_confidence_allowlist_ = false;
 
 #if DCHECK_IS_ON()
   // Used only to validate that StartCheck is called only once.

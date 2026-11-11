@@ -50,6 +50,7 @@ void HashRealTimeMechanism::OnCheckUrlForHighConfidenceAllowlist(
         SafeBrowsingDatabaseManager::HighConfidenceAllowlistCheckLoggingDetails>
         logging_details) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  RecordHighConfidenceAllowlistMatch(did_match_allowlist, logging_details);
 
   base::UmaHistogramEnumeration(
       "SafeBrowsing.HPRT.LocalMatch.Result",
