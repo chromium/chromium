@@ -229,6 +229,27 @@ ButtonStackConfiguration* SetUpButtonConfiguration() {
   }
 }
 
+#pragma mark - ButtonStackConsumer
+
+- (void)setLoading:(BOOL)loading {
+  self.configuration.primaryButtonStyle =
+      loading ? ChromeButtonStylePrimary : ChromeButtonStyleTertiary;
+  [super setLoading:loading];
+  [self reloadConfiguration];
+
+  // The spinner replaces the button title, so VoiceOver needs a label.
+  self.primaryActionButton.accessibilityLabel =
+      loading ? l10n_util::GetNSString(
+                    IDS_IOS_PASSWORD_SHARING_STATUS_PROGRESS_TITLE)
+              : nil;
+}
+
+- (void)reloadConfiguration {
+  [super reloadConfiguration];
+  // Keep the cancel button enabled while the selected credential is shared.
+  self.secondaryActionButton.enabled = YES;
+}
+
 #pragma mark - UITableViewDataSource
 
 - (NSInteger)tableView:(UITableView*)tableView
