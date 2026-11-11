@@ -35,6 +35,10 @@ TestServer::TestServer() {
 }
 
 TestServer::~TestServer() {
+  // Stop the server first: `HandleRequest` runs on the server's IO thread and
+  // must not run while the expectations are checked below, or after the
+  // members it uses are destroyed.
+  test_server_handle_ = {};
   for (const auto& request_matcher_group : request_matcher_groups_) {
     // Forces `request_matcher` to log to help debugging, unless the
     // matcher matches the empty request.
