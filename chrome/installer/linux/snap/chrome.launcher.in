@@ -92,14 +92,6 @@ export CHROME_VERSION_EXTRA="@@channel"
 # As a result, it creates desktop files with an appropriate Exec= line.
 export CHROME_WRAPPER="/snap/bin/$SNAP_INSTANCE_NAME"
 
-# Configuration for the "man" binary, which is invoked when the browser is
-# called with the "-h" (or "--help") argument
-# (see https://launchpad.net/bugs/1848083).
-export MAN_TEST_DISABLE_SYSTEM_CONFIG=1
-export MANPATH="$SNAP"
-export GROFF_FONT_PATH="$SNAP/usr/share/groff/current/font"
-export GROFF_TMAC_PATH="$SNAP/usr/share/groff/current/tmac"
-
 # Use GTK3. Ref: https://launchpad.net/bugs/2106312
 # Ref: https://launchpad.net/bugs/2106342
 CHROME_FLAGS=(--gtk-version=3 "${PASSWORD_STORE_FLAGS[@]}")

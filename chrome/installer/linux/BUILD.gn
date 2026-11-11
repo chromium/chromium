@@ -696,9 +696,17 @@ template("linux_package") {
           assert(false, "Snap package not configured for this architecture.")
         }
 
+        snap_runtime_dir = "snap/runtime/linux-${snap_arch}"
+        assert(path_exists("$snap_runtime_dir/manifest.json"),
+               "Missing snap runtime ($snap_runtime_dir). Set " +
+                   "\"checkout_snap_runtime\": True in .gclient custom_vars " +
+                   "and re-run \"gclient sync\".")
+
         inputs = packaging_files + [
+                   "$snap_runtime_dir/manifest.json",
+                   "snap/build.py",
                    "snap/chrome.launcher.in",
-                   "snap/snapcraft.yaml.in",
+                   "snap/snap.yaml.in",
                  ]
         outputs = [ "$root_out_dir/${package}-${channel}_${chrome_version_full}_${snap_arch}.snap" ]
 
@@ -715,6 +723,8 @@ template("linux_package") {
           rebase_path(root_out_dir, root_build_dir),
           "-t",
           target_os,
+          "--runtime-dir",
+          rebase_path(snap_runtime_dir, root_build_dir),
           "--use-static-angle=$use_static_angle",
         ]
         if (is_official_build) {

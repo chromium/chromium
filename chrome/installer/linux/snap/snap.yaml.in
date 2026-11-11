@@ -1,0 +1,151 @@
+# Based on Canonical's Chromium snap:
+# https://git.launchpad.net/~chromium-team/chromium-browser/+git/snap-from-source/tree/snapcraft.yaml?h=stable
+#
+# Portions Copyright 2018-2021 Canonical Ltd., licensed under the 3-Clause BSD
+# License:
+# https://git.launchpad.net/~chromium-team/chromium-browser/+git/snap-from-source/tree/LICENSE?h=stable
+#
+# Template for meta/snap.yaml, with the plugs, environment, hooks, layout and
+# command-chain entries from snapcraft's gnome extension expanded in place.
+
+name: @@SNAPNAME
+version: '@@version'
+summary: @@SHORTDESC
+description: |
+  @@FULLDESC
+confinement: strict
+base: core26
+assumes:
+  - command-chain
+  - snapd2.43
+  # >=2.55 needed for the cups interface
+  - snapd2.55
+architectures:
+  - @@arch
+grade: stable
+
+# Applies to all apps and hooks.
+environment:
+  GTK_USE_PORTAL: '1'
+  LD_LIBRARY_PATH: ${SNAP_LIBRARY_PATH}${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}:$SNAP/usr/lib:$SNAP/usr/lib/@@deb_arch_triplet
+  PATH: $SNAP/usr/sbin:$SNAP/usr/bin:$SNAP/sbin:$SNAP/bin:$PATH
+  SNAP_DESKTOP_RUNTIME: $SNAP/gnome-platform
+
+apps:
+  @@SNAPNAME:
+    command: bin/chrome.launcher
+    command-chain:
+      - snap/command-chain/gpu-2604-wrapper
+      - snap/command-chain/desktop-launch
+    environment:
+      ALSA_CONFIG_PATH: $SNAP/gnome-platform/usr/share/alsa/alsa.conf
+      CHROME_CONFIG_HOME: $SNAP_USER_COMMON
+      CHROME_DESKTOP: @@SNAPNAME.desktop
+      QT_PLUGIN_PATH: $SNAP/usr/lib/@@deb_arch_triplet/qt6/plugins
+    plugs:
+      - audio-playback
+      - audio-record
+      # for Web Bluetooth (https://launchpad.net/bugs/1887201)
+      - bluez
+      - camera
+      - cups
+      - desktop
+      - desktop-legacy
+      - hardware-observe
+      - hidraw
+      - home
+      - joystick
+      - kerberos-tickets
+      - mount-observe
+      - network
+      - network-manager
+      - opengl
+      - password-manager-service
+      - pcscd
+      # for WebUSB (https://launchpad.net/bugs/1780678)
+      - raw-usb
+      - removable-media
+      - screen-inhibit-control
+      - serial-port
+      - system-packages-doc
+      - timezone-control
+      - u2f-devices
+      # required for xdg-open to work
+      - unity7
+      - upower-observe
+      - wayland
+      - x11
+    slots:
+      - mpris
+
+plugs:
+  browser-sandbox:
+    interface: browser-support
+    allow-sandbox: true
+  # Triggers automatic installation of the cups snap via "default-provider: cups".
+  install-cups-runtime-dependency:
+    interface: content
+    content: foo
+    default-provider: cups
+    target: $SNAP_DATA/foo
+  # Allows importing an existing profile on first launch (see chrome.launcher).
+  @@snap_config_plug:
+    interface: personal-files
+    read:
+      - $HOME/.config/@@snap_config_dir
+  # Allow installing web app launchers and icons into the real home, where the
+  # desktop environment finds them. The plug names match Canonical's Chromium
+  # snap.
+  dot-local-share-applications:
+    interface: personal-files
+    write:
+      - $HOME/.local/share/applications
+  dot-local-share-icons:
+    interface: personal-files
+    write:
+      - $HOME/.local/share/icons
+  desktop:
+    mount-host-font-cache: false
+  gnome-core26:
+    interface: content
+    target: $SNAP/gnome-platform
+    default-provider: gnome-core26
+  gpu-2604:
+    interface: content
+    target: $SNAP/gpu-2604
+    default-provider: mesa-2604
+  gtk-3-themes:
+    interface: content
+    target: $SNAP/data-dir/themes
+    default-provider: gtk-common-themes
+  icon-themes:
+    interface: content
+    target: $SNAP/data-dir/icons
+    default-provider: gtk-common-themes
+  sound-themes:
+    interface: content
+    target: $SNAP/data-dir/sounds
+    default-provider: gtk-common-themes
+
+hooks:
+  configure:
+    command-chain:
+      - snap/command-chain/hooks-configure-fonts
+    plugs:
+      - desktop
+
+layout:
+  /usr/lib/@@deb_arch_triplet/opensc-pkcs11.so:
+    bind-file: $SNAP/usr/lib/@@deb_arch_triplet/opensc-pkcs11.so
+  /usr/share/alsa:
+    bind: $SNAP/usr/share/alsa
+  /usr/lib/@@deb_arch_triplet/webkit2gtk-4.1:
+    bind: $SNAP/gnome-platform/usr/lib/@@deb_arch_triplet/webkit2gtk-4.1
+  /usr/lib/@@deb_arch_triplet/libproxy:
+    bind: $SNAP/gnome-platform/usr/lib/@@deb_arch_triplet/libproxy
+  /usr/share/xml/iso-codes:
+    bind: $SNAP/gnome-platform/usr/share/xml/iso-codes
+  /usr/lib/@@deb_arch_triplet/webkitgtk-6.0:
+    bind: $SNAP/gnome-platform/usr/lib/@@deb_arch_triplet/webkitgtk-6.0
+  /usr/libexec/glycin-loaders:
+    bind: $SNAP/gnome-platform/usr/libexec/glycin-loaders
