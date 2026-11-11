@@ -1581,7 +1581,6 @@ void WebMediaPlayerImpl::Paint(cc::PaintCanvas* canvas,
   scoped_refptr<media::VideoFrame> video_frame =
       GetCurrentFrameFromCompositor();
   last_frame_request_time_ = tick_clock_->NowTicks();
-  video_frame_readback_count_++;
   pipeline_controller_->OnExternalVideoFrameRequest();
 
   media::PaintCanvasVideoRenderer::PaintParams paint_params;
@@ -1597,7 +1596,6 @@ void WebMediaPlayerImpl::Paint(cc::PaintCanvas* canvas,
 scoped_refptr<media::VideoFrame>
 WebMediaPlayerImpl::GetCurrentFrameThenUpdate() {
   last_frame_request_time_ = tick_clock_->NowTicks();
-  video_frame_readback_count_++;
   pipeline_controller_->OnExternalVideoFrameRequest();
   return GetCurrentFrameFromCompositor();
 }
@@ -4170,14 +4168,6 @@ void WebMediaPlayerImpl::ReportSessionUMAs() const {
   else
     uma_name += ".Clear";
   base::UmaHistogramCounts1M(uma_name, DroppedFrameCount());
-
-  if (!is_encrypted_) {
-    // Report the `Media.FrameReadBackCount.{RendererType}` UMA.
-    constexpr char kFrameReadBackUmaPrefix[] = "Media.FrameReadBackCount.";
-    uma_name = kFrameReadBackUmaPrefix;
-    uma_name += GetRendererName(renderer_type_);
-    base::UmaHistogramCounts10M(uma_name, video_frame_readback_count_);
-  }
 
   if (cdm_config_) {
     // Report the `Media.EME.{KeySystem}.{Robustness}.WaitingForKey` UMA.

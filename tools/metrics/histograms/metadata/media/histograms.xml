@@ -5163,19 +5163,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.FrameReadBackCount.{RendererType}" units="frames"
-    expires_after="2024-12-08">
-  <owner>dalecurtis@chromium.org</owner>
-  <owner>frankli@microsoft.com</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Monitors the number of video frames being read back from a {RendererType}.
-    It is the count of video frames being read back from an HTML5 video when it
-    is unloaded.
-  </summary>
-  <token key="RendererType" variants="RendererType"/>
-</histogram>
-
 <histogram name="Media.FullscreenVideoPictureInPicture.Android.Duration"
     units="ms" expires_after="2027-03-15">
   <owner>philyan@google.com</owner>

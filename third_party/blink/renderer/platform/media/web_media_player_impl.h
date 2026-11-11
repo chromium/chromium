@@ -1137,9 +1137,6 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   // background optimizations from being applied when capturing is active.
   base::TimeTicks last_frame_request_time_;
 
-  // Count the number of times a video frame is being readback.
-  unsigned video_frame_readback_count_ = 0;
-
 #if BUILDFLAG(IS_WIN)
   // The media time when a hardware context reset occurs. Used to prevent having
   // an infinite loop of the same error.
