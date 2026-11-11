@@ -6382,6 +6382,23 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram
+    name="Autofill.KeyMetrics.FillingAcceptance.OneTimePassword.GmailEligibleClients{Profile}"
+    enum="BooleanAutofillFillingAcceptance" expires_after="2027-11-08">
+  <owner>trangm@google.com</owner>
+  <owner>src/components/one_time_tokens/OWNERS</owner>
+  <summary>
+    Like Autofill.KeyMetrics.FillingAcceptance.OneTimePassword, but recorded
+    only for users who are eligible for Gmail OTPs: Gmail OTP suggestions are
+    enabled, the user opted into them, and the user is signed in with a Gmail
+    account. Not recorded in Incognito. Eligibility does not guarantee that the
+    user gets Gmail OTPs, e.g. their Gmail settings may still block them.
+
+    {Profile}
+  </summary>
+  <token key="Profile" variants="ProfileIndex"/>
+</histogram>
+
 <histogram name="Autofill.KeyMetrics.FillingAcceptance.{FormType}{Profile}"
     enum="BooleanAutofillFillingAcceptance" expires_after="2027-12-12">
   <owner>battre@chromium.org</owner>
@@ -6395,6 +6412,23 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     {Profile}
   </summary>
   <token key="FormType" variants="AutofillFormType.Fillable"/>
+  <token key="Profile" variants="ProfileIndex"/>
+</histogram>
+
+<histogram
+    name="Autofill.KeyMetrics.FillingAssistance.OneTimePassword.GmailEligibleClients{Profile}"
+    enum="BooleanAutofillFillingAssistance" expires_after="2027-11-08">
+  <owner>trangm@google.com</owner>
+  <owner>src/components/one_time_tokens/OWNERS</owner>
+  <summary>
+    Like Autofill.KeyMetrics.FillingAssistance.OneTimePassword, but recorded
+    only for users who are eligible for Gmail OTPs: Gmail OTP suggestions are
+    enabled, the user opted into them, and the user is signed in with a Gmail
+    account. Not recorded in Incognito. Eligibility does not guarantee that the
+    user gets Gmail OTPs, e.g. their Gmail settings may still block them.
+
+    {Profile}
+  </summary>
   <token key="Profile" variants="ProfileIndex"/>
 </histogram>
 
@@ -6414,6 +6448,23 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     {Profile}
   </summary>
   <token key="FormType" variants="AutofillFormType.Fillable"/>
+  <token key="Profile" variants="ProfileIndex"/>
+</histogram>
+
+<histogram
+    name="Autofill.KeyMetrics.FillingCorrectness.OneTimePassword.GmailEligibleClients{Profile}"
+    enum="BooleanAutofillFillingCorrectness" expires_after="2027-11-08">
+  <owner>trangm@google.com</owner>
+  <owner>src/components/one_time_tokens/OWNERS</owner>
+  <summary>
+    Like Autofill.KeyMetrics.FillingCorrectness.OneTimePassword, but recorded
+    only for users who are eligible for Gmail OTPs: Gmail OTP suggestions are
+    enabled, the user opted into them, and the user is signed in with a Gmail
+    account. Not recorded in Incognito. Eligibility does not guarantee that the
+    user gets Gmail OTPs, e.g. their Gmail settings may still block them.
+
+    {Profile}
+  </summary>
   <token key="Profile" variants="ProfileIndex"/>
 </histogram>
 
@@ -6447,6 +6498,23 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     <variant name="2" summary="2"/>
     <variant name="3" summary="3"/>
   </token>
+</histogram>
+
+<histogram
+    name="Autofill.KeyMetrics.FillingReadiness.OneTimePassword.GmailEligibleClients{Profile}"
+    enum="BooleanAutofillFillingReadiness" expires_after="2027-11-08">
+  <owner>trangm@google.com</owner>
+  <owner>src/components/one_time_tokens/OWNERS</owner>
+  <summary>
+    Like Autofill.KeyMetrics.FillingReadiness.OneTimePassword, but recorded only
+    for users who are eligible for Gmail OTPs: Gmail OTP suggestions are
+    enabled, the user opted into them, and the user is signed in with a Gmail
+    account. Not recorded in Incognito. Eligibility does not guarantee that the
+    user gets Gmail OTPs, e.g. their Gmail settings may still block them.
+
+    {Profile}
+  </summary>
+  <token key="Profile" variants="ProfileIndex"/>
 </histogram>
 
 <histogram name="Autofill.KeyMetrics.FillingReadiness.{FormType}{Profile}"

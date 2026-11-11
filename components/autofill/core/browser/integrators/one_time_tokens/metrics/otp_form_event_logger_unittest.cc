@@ -2,9 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
+#include <string>
+#include <utility>
+
 #include "base/base64.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/crowdsourcing/mock_autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
@@ -13,10 +19,14 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
 #include "components/autofill/core/browser/metrics/ukm_metrics_test_util.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
+#include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/signatures.h"
+#include "components/one_time_tokens/core/browser/fake_gmail_otp_backend.h"
 #include "components/one_time_tokens/core/browser/fake_sms_otp_service.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -32,6 +42,9 @@ using test::VerifySingleSubmissionKeyMetricExpectations;
 using ::testing::_;
 using ::testing::Each;
 using ::testing::Return;
+using ::testing::TestParamInfo;
+using ::testing::Values;
+using ::testing::WithParamInterface;
 
 class OtpFormEventLoggerIntegrationTest
     : public autofill_metrics::AutofillMetricsBaseTest,
@@ -105,6 +118,17 @@ class OtpFormEventLoggerIntegrationTest
 
   FormData CreateOtpForm() {
     return test::GetFormData({.fields = {{.role = ONE_TIME_CODE}}});
+  }
+
+  // Creates an OTP form and lets Autofill see and parse it.
+  FormData SeeParsedOtpForm() {
+    FormData otp_form = CreateOtpForm();
+    SetupMockedServerPredictionResponse(
+        CreateMockedServerResponseString(otp_form),
+        CalculateFormSignature(otp_form));
+    SeeForm(otp_form);
+    test_api(autofill_manager()).OnFormsParsed({otp_form});
+    return otp_form;
   }
 
   static std::string CreateMockedServerResponseString(const FormData form) {
@@ -576,6 +600,175 @@ TEST_F(OtpFormEventLoggerIntegrationTest, OtpAcceptedAndCorrected) {
   }
 #endif
 }
+
+// Sets the state of Gmail OTP suggestions. Inherited before
+// OtpFormEventLoggerIntegrationTest so that the feature list outlives the
+// TaskEnvironment's threads, which read features when they start on Android.
+class WithGmailOtpSuggestionsFeature {
+ protected:
+  explicit WithGmailOtpSuggestionsFeature(bool enabled) {
+    feature_list_.InitWithFeatureState(
+        features::kAutofillShowGmailOtpSuggestions, enabled);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Fixture in which the user is eligible for Gmail OTPs: Gmail OTP suggestions
+// are enabled, a Gmail OTP backend exists, the user opted into Gmail OTPs, and
+// the user is signed in with a Gmail account.
+class OtpFormEventLoggerGmailTest : public WithGmailOtpSuggestionsFeature,
+                                    public OtpFormEventLoggerIntegrationTest {
+ protected:
+  // `primary_account_email` is the account the user is signed in with, or
+  // nullopt if signed out.
+  explicit OtpFormEventLoggerGmailTest(
+      bool gmail_otp_suggestions_enabled = true,
+      std::optional<std::string> primary_account_email = "user@gmail.com")
+      : WithGmailOtpSuggestionsFeature(gmail_otp_suggestions_enabled),
+        primary_account_email_(std::move(primary_account_email)) {}
+
+  void InitAutofillClient() override {
+    OtpFormEventLoggerIntegrationTest::InitAutofillClient();
+    autofill_client().set_gmail_otp_backend(
+        std::make_unique<one_time_tokens::FakeGmailOtpBackend>());
+    prefs::SetAutofillGmailOtpFillingEnabled(autofill_client().GetPrefs(),
+                                             true);
+    if (primary_account_email_) {
+      autofill_client().identity_test_environment().MakePrimaryAccountAvailable(
+          *primary_account_email_, signin::ConsentLevel::kSignin);
+    }
+  }
+
+  // Simulates an OTP that is available, shown, filled, and submitted.
+  void FillAndSubmitOtp(const FormData& otp_form) {
+    autofill_manager().GetOtpFormEventLogger().OnOtpAvailable();
+    autofill_manager().OnAskForValuesToFillTest(
+        otp_form, otp_form.fields().front().global_id());
+    DidShowAutofillSuggestions(otp_form, /*field_index=*/0,
+                               SuggestionType::kGmailOneTimePasswordEntry);
+    OtpFillData fill_data = {
+        {otp_form.fields().front().global_id(), u"123456"}};
+    autofill_manager().FillOrPreviewForm(
+        mojom::ActionPersistence::kFill, otp_form.global_id(),
+        otp_form.fields().front().global_id(), FillingProduct::kOneTimePassword,
+        &fill_data, AutofillTriggerSource::kPopup,
+        /*require_user_confirmation=*/false, /*blocked_fields=*/{});
+    SubmitForm(otp_form);
+    DeleteDriverToCommitMetrics();
+  }
+
+ private:
+  const std::optional<std::string> primary_account_email_;
+};
+
+// Tests that the key metrics are also recorded as
+// `OneTimePassword.GmailEligibleClients` for users who are eligible for Gmail
+// OTPs.
+TEST_F(OtpFormEventLoggerGmailTest, RecordsGmailKeyMetrics) {
+  base::HistogramTester histogram_tester;
+  FormData otp_form = SeeParsedOtpForm();
+  FillAndSubmitOtp(otp_form);
+
+  VerifySingleSubmissionKeyMetricExpectations(
+      histogram_tester, "OneTimePassword.GmailEligibleClients",
+      {.readiness = true,
+       .acceptance = true,
+       .assistance = true,
+       .correctness = true});
+}
+
+// Reasons why a user is not eligible for Gmail OTPs.
+enum class GmailOtpIneligibility {
+  kNotOptedIn,
+  // E.g. if the user opted in on another device.
+  kGmailOtpSuggestionsDisabled,
+  // E.g. in Incognito, which has no Gmail OTP backend.
+  kNoGmailOtpBackend,
+  kSignedOut,
+  kNonGmailAccount,
+};
+
+// Returns the account the user is signed in with for `ineligibility`, or
+// nullopt if signed out. Avoids signing out in the test body, which
+// `signin::ClearPrimaryAccount()` doesn't support on ChromeOS.
+std::optional<std::string> GetPrimaryAccountEmail(
+    GmailOtpIneligibility ineligibility) {
+  switch (ineligibility) {
+    case GmailOtpIneligibility::kSignedOut:
+      return std::nullopt;
+    case GmailOtpIneligibility::kNonGmailAccount:
+      return "user@example.com";
+    case GmailOtpIneligibility::kNotOptedIn:
+    case GmailOtpIneligibility::kGmailOtpSuggestionsDisabled:
+    case GmailOtpIneligibility::kNoGmailOtpBackend:
+      return "user@gmail.com";
+  }
+  NOTREACHED();
+}
+
+class OtpFormEventLoggerGmailIneligibleTest
+    : public OtpFormEventLoggerGmailTest,
+      public WithParamInterface<GmailOtpIneligibility> {
+ protected:
+  OtpFormEventLoggerGmailIneligibleTest()
+      : OtpFormEventLoggerGmailTest(
+            /*gmail_otp_suggestions_enabled=*/GetParam() !=
+                GmailOtpIneligibility::kGmailOtpSuggestionsDisabled,
+            GetPrimaryAccountEmail(GetParam())) {}
+};
+
+// Tests that no Gmail key metrics are recorded for users who are not eligible
+// for Gmail OTPs.
+TEST_P(OtpFormEventLoggerGmailIneligibleTest, NoGmailKeyMetrics) {
+  switch (GetParam()) {
+    case GmailOtpIneligibility::kNotOptedIn:
+      prefs::SetAutofillGmailOtpFillingEnabled(autofill_client().GetPrefs(),
+                                               false);
+      break;
+    case GmailOtpIneligibility::kNoGmailOtpBackend:
+      autofill_client().set_gmail_otp_backend(nullptr);
+      break;
+    case GmailOtpIneligibility::kGmailOtpSuggestionsDisabled:
+    case GmailOtpIneligibility::kSignedOut:
+    case GmailOtpIneligibility::kNonGmailAccount:
+      // Set up by the fixture.
+      break;
+  }
+  base::HistogramTester histogram_tester;
+  FormData otp_form = SeeParsedOtpForm();
+  FillAndSubmitOtp(otp_form);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.KeyMetrics.FillingReadiness.OneTimePassword", true, 1);
+  VerifySingleSubmissionKeyMetricExpectations(
+      histogram_tester, "OneTimePassword.GmailEligibleClients", {});
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    OtpFormEventLoggerGmailIneligibleTest,
+    Values(GmailOtpIneligibility::kNotOptedIn,
+           GmailOtpIneligibility::kGmailOtpSuggestionsDisabled,
+           GmailOtpIneligibility::kNoGmailOtpBackend,
+           GmailOtpIneligibility::kSignedOut,
+           GmailOtpIneligibility::kNonGmailAccount),
+    [](const TestParamInfo<GmailOtpIneligibility>& info) {
+      switch (info.param) {
+        case GmailOtpIneligibility::kNotOptedIn:
+          return "NotOptedIn";
+        case GmailOtpIneligibility::kGmailOtpSuggestionsDisabled:
+          return "GmailOtpSuggestionsDisabled";
+        case GmailOtpIneligibility::kNoGmailOtpBackend:
+          return "NoGmailOtpBackend";
+        case GmailOtpIneligibility::kSignedOut:
+          return "SignedOut";
+        case GmailOtpIneligibility::kNonGmailAccount:
+          return "NonGmailAccount";
+      }
+      NOTREACHED();
+    });
 
 }  // namespace
 }  // namespace autofill
