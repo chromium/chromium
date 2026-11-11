@@ -174,6 +174,7 @@ class PLATFORM_EXPORT ShapeResult : public GarbageCollected<ShapeResult> {
   bool HasLigatures() const;
   wtf_size_t NumGlyphs() const;
   bool HasFallbackFonts(const SimpleFontData* primary_font) const;
+  bool HasNotDefGlyph() const;
 
   Vector<CharacterRange> IndividualCharacterRanges() const;
 

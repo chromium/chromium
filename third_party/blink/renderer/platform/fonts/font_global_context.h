@@ -23,6 +23,7 @@ namespace blink {
 class FontCache;
 class FontUniqueNameLookup;
 class HarfBuzzFontCache;
+class UnicodeRangeSet;
 
 // FontGlobalContext contains non-thread-safe, thread-specific data used for
 // font formatting.
@@ -40,10 +41,7 @@ class PLATFORM_EXPORT FontGlobalContext
 
   static FontGlobalContext& Get();
 
-  void Trace(Visitor* visitor) const {
-    visitor->Trace(font_cache_);
-    visitor->Trace(harfbuzz_font_cache_);
-  }
+  void Trace(Visitor*) const;
 
   FontGlobalContext(const FontGlobalContext&) = delete;
   FontGlobalContext& operator=(const FontGlobalContext&) = delete;
@@ -55,6 +53,7 @@ class PLATFORM_EXPORT FontGlobalContext
   }
 
   static FontUniqueNameLookup* GetFontUniqueNameLookup();
+  static const UnicodeRangeSet* GetNonPrivateUseRangeSet();
 
   // Replaces this thread's `FontUniqueNameLookup`. Passing nullptr restores the
   // platform default. Callers must also invalidate the `FontCache`, which
@@ -72,6 +71,7 @@ class PLATFORM_EXPORT FontGlobalContext
  private:
   FontCache font_cache_;
   HarfBuzzFontCache harfbuzz_font_cache_;
+  Member<const UnicodeRangeSet> non_private_use_range_set_;
   std::unique_ptr<FontUniqueNameLookup> font_unique_name_lookup_;
 
   MemoryConsumerRegistration memory_consumer_registration_;

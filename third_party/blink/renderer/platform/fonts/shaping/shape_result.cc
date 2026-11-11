@@ -886,6 +886,15 @@ bool ShapeResult::HasFallbackFonts(const SimpleFontData* primary_font) const {
   return false;
 }
 
+bool ShapeResult::HasNotDefGlyph() const {
+  for (const Member<ShapeResultRun>& run : runs_) {
+    if (run->GetGlyphDataRange().HasNotDefGlyph()) [[unlikely]] {
+      return true;
+    }
+  }
+  return false;
+}
+
 void ShapeResult::GetRunFontData(HeapVector<RunFontData>* font_data) const {
   for (const auto& run : runs_) {
     font_data->push_back(

@@ -31,6 +31,7 @@ class PLATFORM_EXPORT GlyphDataRange {
   base::span<const HarfBuzzRunGlyphData> NonCompactGlyphs() const;
 
   bool HasOffsets() const;
+  bool HasNotDefGlyph() const;
 
   // The `span` of `GlyphOffset` if `HasOffsets()`, or an empty span.
   base::span<const GlyphOffset> Offsets() const;

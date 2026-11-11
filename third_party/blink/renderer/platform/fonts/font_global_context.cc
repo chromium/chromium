@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_unique_name_lookup.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_face.h"
+#include "third_party/blink/renderer/platform/fonts/unicode_range_set.h"
 #include "third_party/blink/renderer/platform/wtf/thread_specific.h"
 
 namespace blink {
@@ -63,12 +64,33 @@ void FontGlobalContext::Dispose() {
 
 FontGlobalContext::~FontGlobalContext() = default;
 
+void FontGlobalContext::Trace(Visitor* visitor) const {
+  visitor->Trace(font_cache_);
+  visitor->Trace(harfbuzz_font_cache_);
+  visitor->Trace(non_private_use_range_set_);
+}
+
 FontUniqueNameLookup* FontGlobalContext::GetFontUniqueNameLookup() {
   if (!Get().font_unique_name_lookup_) {
     Get().font_unique_name_lookup_ =
         FontUniqueNameLookup::GetPlatformUniqueNameLookup();
   }
   return Get().font_unique_name_lookup_.get();
+}
+
+const UnicodeRangeSet* FontGlobalContext::GetNonPrivateUseRangeSet() {
+  if (!Get().non_private_use_range_set_) {
+    HeapVector<UnicodeRange> ranges = {
+        {0, uchar::kPrivateUseFirst - 1},
+        {uchar::kPrivateUseLast + 1, uchar::kSupplementaryPrivateUseAFirst - 1},
+        {uchar::kSupplementaryPrivateUseALast + 1,
+         uchar::kSupplementaryPrivateUseBFirst - 1},
+        {uchar::kSupplementaryPrivateUseBLast + 1, uchar::kMaxCodepoint},
+    };
+    Get().non_private_use_range_set_ =
+        MakeGarbageCollected<UnicodeRangeSet>(std::move(ranges));
+  }
+  return Get().non_private_use_range_set_.Get();
 }
 
 // static

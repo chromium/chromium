@@ -264,6 +264,10 @@ const UChar32 kTagDigitNine = 0xE0039;
 const UChar32 kTagLatinSmallLetterA = 0xE0061;
 const UChar32 kTagLatinSmallLetterZ = 0xE007A;
 const UChar32 kCancelTag = 0xE007F;
+const UChar32 kSupplementaryPrivateUseAFirst = 0xF0000;
+const UChar32 kSupplementaryPrivateUseALast = 0xFFFFD;
+const UChar32 kSupplementaryPrivateUseBFirst = 0x100000;
+const UChar32 kSupplementaryPrivateUseBLast = 0x10FFFD;
 
 const UChar32 kMaxCodepoint = 0x10ffff;
 

@@ -51,6 +51,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/font_fallback_iterator.h"
 #include "third_party/blink/renderer/platform/fonts/font_fallback_priority.h"
+#include "third_party/blink/renderer/platform/fonts/font_global_context.h"
 #include "third_party/blink/renderer/platform/fonts/font_variant_emoji.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/open_type_caps_support.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/case_mapping_harfbuzz_buffer_filler.h"
@@ -933,6 +934,10 @@ void HarfBuzzShaper::ShapeSegment(
           font_description.VariantEmoji());
   bool incremental_font_transfer_enabled =
       RuntimeEnabledFeatures::IncrementalFontTransferEnabled();
+  // Pre-fetch the non-private use range set if this is only 8-bit text
+  // so we can potentially, efficiently, skip unicode range checking.
+  const UnicodeRangeSet* non_private_use_range_set =
+      text_.Is8Bit() ? FontGlobalContext::GetNonPrivateUseRangeSet() : nullptr;
   while (!range_data->reshape_queue.empty()) {
     ReshapeQueueItem current_queue_item = range_data->reshape_queue.TakeFirst();
 
@@ -1059,10 +1064,20 @@ void HarfBuzzShaper::ShapeSegment(
           font_features);
     }
 
+    const UnicodeRangeSet* range_set =
+        current_font_data_for_range_set->Ranges();
+    // If the range set for the current font is the non-private-use range set,
+    // but we are using 8-bit text, we know it cannot have violating code
+    // points, so we can skip passing the range set along.
+    //
+    // We only initialized `non_private_use_range_set` if this is 8-bit text, so
+    // don't need to check that portion here again.
+    if (range_set == non_private_use_range_set) {
+      range_set = nullptr;
+    }
     if (!ShapeRange(range_data->buffer.Get(), range_data->font_features,
-                    adjusted_font, current_font_data_for_range_set->Ranges(),
-                    segment.script, direction, language,
-                    font_description.SpecifiedSize(),
+                    adjusted_font, range_set, segment.script, direction,
+                    language, font_description.SpecifiedSize(),
                     variation_selector_mode)) {
       DLOG(ERROR) << "Shaping range failed.";
     }

@@ -170,11 +170,16 @@ class ReusingTextShaper final {
     };
     if (allow_shape_cache_) {
       const LayoutLocale* locale = font.GetFontDescription().Locale();
-      return font.PrimaryFont()->GetShapeCache().GetOrCreate(
-          ShapeCacheKey(shaper_.GetText(), start_item.StartOffset(), end_offset,
-                        locale ? locale->LocaleString() : g_null_atom,
-                        font.GetFontFeatures(), start_item.Direction()),
-          ShapeFunc);
+      FontFallbackList* fallback_list = font.EnsureFontFallbackList();
+      const FontFallbackList::PrimaryFontData* primary_font_data =
+          fallback_list->PrimaryFontDataWithSpace(font.GetFontDescription());
+      return primary_font_data->simple_font_data->GetShapeCache().GetOrCreate(
+          ShapeCacheKey(
+              shaper_.GetText(), start_item.StartOffset(), end_offset,
+              locale ? locale->LocaleString() : g_null_atom,
+              fallback_list->GetFontFeatures(font.GetFontDescription()),
+              start_item.Direction()),
+          primary_font_data->is_generic_family_or_last_resort, ShapeFunc);
     }
     return ShapeFunc().shape_result;
   }

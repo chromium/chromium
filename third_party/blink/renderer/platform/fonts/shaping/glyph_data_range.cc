@@ -29,6 +29,15 @@ bool GlyphDataRange::HasOffsets() const {
   return run_ && run_->glyph_data_.HasNonZeroOffsets();
 }
 
+bool GlyphDataRange::HasNotDefGlyph() const {
+  if (IsCompactSource()) [[unlikely]] {
+    return std::ranges::contains(CompactGlyphs(), 0);
+  }
+  return std::ranges::any_of(
+      NonCompactGlyphs(),
+      [](const HarfBuzzRunGlyphData& glyph) { return glyph.glyph == 0; });
+}
+
 bool GlyphDataRange::IsCompactSource() const {
   return run_ && run_->glyph_data_.IsCompact();
 }

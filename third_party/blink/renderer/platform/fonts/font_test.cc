@@ -84,6 +84,26 @@ TEST_F(FontTest, ConvertBaseline) {
   EXPECT_EQ(metrics.FixedCapHeight(FontBaseline::kCentral), 50);
 }
 
+TEST_F(FontTest, PrimaryFontGenericFamilyOrLastResort) {
+  Font* named_font = test::CreateAhemFont(100);
+  const FontFallbackList::PrimaryFontData* named_data =
+      named_font->EnsureFontFallbackList()->PrimaryFontDataWithSpace(
+          named_font->GetFontDescription());
+  EXPECT_FALSE(named_data->is_generic_family_or_last_resort);
+
+  Font* generic_font = CreateTestFont(
+      AtomicString("Ahem"), test::PlatformTestDataPath("Ahem.woff"), 100,
+      /*ligatures=*/nullptr, FontVariantEmoji::kNormal,
+      [](FontDescription* font_description) {
+        font_description->SetFamily(FontFamily(
+            AtomicString("AhemFamily"), FontFamily::Type::kGenericFamily));
+      });
+  const FontFallbackList::PrimaryFontData* generic_data =
+      generic_font->EnsureFontFallbackList()->PrimaryFontDataWithSpace(
+          generic_font->GetFontDescription());
+  EXPECT_TRUE(generic_data->is_generic_family_or_last_resort);
+}
+
 TEST_F(FontTest, FixedPitchMatchesTypeface) {
   for (const char* path :
        {"Ahem.woff", "third_party/Roboto/roboto-regular.woff2"}) {

@@ -461,6 +461,27 @@ TEST_F(ShapeResultRunTest, GlyphDataCopyFromRange) {
   EXPECT_EQ(GlyphOffset(1, 1), run3->glyph_data_.Offsets()[0]);
 }
 
+TEST_F(ShapeResultRunTest, GlyphDataRangeHasNotDefGlyph) {
+  ShapeResultRun* without_notdef = CreateConstantAdvanceRun(8, 8);
+  ShapeResultRun* with_notdef = CreateConstantAdvanceRun(8, 8);
+  with_notdef->glyph_data_.MutableGlyphAt(3).glyph = 0;
+
+  GlyphDataRange without_notdef_range(*without_notdef);
+  GlyphDataRange with_notdef_range(*with_notdef);
+  ASSERT_FALSE(without_notdef_range.IsCompactSource());
+  ASSERT_FALSE(with_notdef_range.IsCompactSource());
+  EXPECT_FALSE(without_notdef_range.HasNotDefGlyph());
+  EXPECT_TRUE(with_notdef_range.HasNotDefGlyph());
+
+  ASSERT_TRUE(
+      without_notdef->glyph_data_.TryMakeCompact(without_notdef->IsRtl()));
+  ASSERT_TRUE(with_notdef->glyph_data_.TryMakeCompact(with_notdef->IsRtl()));
+  ASSERT_TRUE(without_notdef_range.IsCompactSource());
+  ASSERT_TRUE(with_notdef_range.IsCompactSource());
+  EXPECT_FALSE(without_notdef_range.HasNotDefGlyph());
+  EXPECT_TRUE(with_notdef_range.HasNotDefGlyph());
+}
+
 TEST_F(ShapeResultRunTest, GlyphDataReverse) {
   ShapeResultRun* run = CreateTestShapeResultRun(2, 2);
 

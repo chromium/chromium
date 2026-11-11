@@ -56,7 +56,6 @@ external/wpt/css/css-contain/content-visibility/content-visibility-with-top-laye
 external/wpt/css/css-fonts/fallback-url-to-local.html
 external/wpt/css/css-fonts/font-display/font-display-change.html
 external/wpt/css/css-fonts/font-display/font-display-preload.html
-external/wpt/css/css-fonts/matching/font-unicode-PUA.html
 external/wpt/css/css-fonts/system-ui-mixed.html
 external/wpt/css/css-layout-api/fallback-intrinsic-sizes/constructor-error.https.html
 external/wpt/css/css-layout-api/fallback-layout/constructor-error.https.html

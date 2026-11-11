@@ -841,6 +841,7 @@ struct PLATFORM_EXPORT ShapeResultRun final
                            FixedPitchDoesNotGuaranteeConstantAdvances);
   FRIEND_TEST_ALL_PREFIXES(ShapeResultRunTest, GlyphDataCopyConstructor);
   FRIEND_TEST_ALL_PREFIXES(ShapeResultRunTest, GlyphDataCopyFromRange);
+  FRIEND_TEST_ALL_PREFIXES(ShapeResultRunTest, GlyphDataRangeHasNotDefGlyph);
   FRIEND_TEST_ALL_PREFIXES(ShapeResultRunTest, GlyphDataReverse);
   FRIEND_TEST_ALL_PREFIXES(ShapeResultRunTest, GlyphDataAddOffsetHeightAt);
   FRIEND_TEST_ALL_PREFIXES(ShapeResultRunTest, GlyphDataAddOffsetWidthAt);

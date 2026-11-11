@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/memory_coordinator/memory_consumer_registration.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/text/character.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -48,6 +49,7 @@
 #include "third_party/blink/renderer/platform/wtf/hash_table_deleted_value_type.h"
 #include "third_party/blink/renderer/platform/wtf/hash_traits.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
+#include "third_party/blink/renderer/platform/wtf/text/utf16.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -113,6 +115,21 @@ struct ShapeCacheKey {
 
   const String& GetText() const { return text_; }
 
+  bool ContainsPrivateUse() const {
+    if (text_.Is8Bit()) {
+      return false;
+    }
+    const auto text =
+        text_.Span16().subspan(start_offset_, end_offset_ - start_offset_);
+    size_t offset = 0;
+    while (offset < text.size()) {
+      if (unicode::IsPrivateUse(CodePointAtAndNext(text, offset))) {
+        return true;
+      }
+    }
+    return false;
+  }
+
  private:
   String text_;
   wtf_size_t start_offset_ = 0u;
@@ -169,10 +186,18 @@ class NGShapeCache : public GarbageCollected<NGShapeCache>,
 
   template <typename ShapeResultFunc>
   const ShapeResult* GetOrCreate(const ShapeCacheKey& key,
+                                 bool is_generic_family_or_last_resort,
                                  const ShapeResultFunc& shape_result_func) {
     DCHECK(!key.GetText().empty());
 
     if (key.GetText().length() > kMaxTextLengthOfEntries) {
+      return shape_result_func().shape_result;
+    }
+
+    // Generic families and last resort fonts may not be matched to PUA
+    // codepoints.
+    // https://www.w3.org/TR/css-fonts-4/#char-handling-issues
+    if (is_generic_family_or_last_resort && key.ContainsPrivateUse()) {
       return shape_result_func().shape_result;
     }
 
@@ -226,23 +251,10 @@ class NGShapeCache : public GarbageCollected<NGShapeCache>,
       // Verify that the cache is consistent.
 #if EXPENSIVE_DCHECKS_ARE_ON()
       const auto [other_shape_result, can_cache_other] = shape_result_func();
-      const bool has_private_or_non_characters =
-          !key.GetText().Is8Bit() &&
-          std::ranges::any_of(key.GetText().Span16(), [](UChar32 c) {
-            return unicode::IsPrivateUse(c) || unicode::IsNonCharacter(c);
-          });
+
       // The shape-result call might try and reuse previous shape-results, we
       // can't check for equality in this case.
-      //
-      // TODO(crbug.com/486945341): We currently incorrectly cache shape-results
-      // which contain PUA or non-characters.
-      //
-      // Specifically `FontCache::FallbackFontForCharacter` has different
-      // fallback logic for these characters; for the same primary-font, and
-      // different fallback lists we may produce two different shape-results.
-      //
-      // We should avoid the cache for this case.
-      if (can_cache_other && !has_private_or_non_characters) {
+      if (can_cache_other) {
         DCHECK_EQ(*cached_result, *other_shape_result);
       }
 #endif
@@ -252,9 +264,12 @@ class NGShapeCache : public GarbageCollected<NGShapeCache>,
     FontPerformance::AddShapeCacheMiss();
     const auto [shape_result, can_cache] = shape_result_func();
 
-    // Only shape-results without font-fallback are valid, because the cache is
-    // in the `primary_font_`.
-    if (can_cache && !shape_result->HasFallbackFonts(primary_font_)) {
+    // The cache belongs to the primary font, so results that depend on the
+    // fallback list are not reusable. This includes results that used fallback
+    // fonts and results containing .notdef, since another fallback list may
+    // provide a glyph for the same character.
+    if (can_cache && !shape_result->HasFallbackFonts(primary_font_) &&
+        !shape_result->HasNotDefGlyph()) {
       add_result.stored_value->value = shape_result;
     }
 

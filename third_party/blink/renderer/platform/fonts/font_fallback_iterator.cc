@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/font_fallback_list.h"
+#include "third_party/blink/renderer/platform/fonts/font_global_context.h"
 #include "third_party/blink/renderer/platform/fonts/segmented_font_data.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_face.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
@@ -107,8 +108,10 @@ bool FontFallbackIterator::NeedsHintList() const {
   if (fallback_stage_ != kFontGroupFonts)
     return false;
 
-  const FontData* font_data = font_fallback_list_->FontDataAt(
-      font_description_, current_font_data_index_);
+  const FontData* font_data =
+      font_fallback_list_
+          ->FontDataAt(font_description_, current_font_data_index_)
+          .font_data.Get();
 
   if (!font_data)
     return false;
@@ -179,8 +182,10 @@ FontDataForRangeSet* FontFallbackIterator::Next(const HintCharList& hint_list) {
 
   DCHECK(fallback_stage_ == kFontGroupFonts ||
          fallback_stage_ == kSegmentedFace);
-  const FontData* font_data = font_fallback_list_->FontDataAt(
-      font_description_, current_font_data_index_);
+  FontFallbackList::FontDataEntry font_data_entry =
+      font_fallback_list_->FontDataAt(font_description_,
+                                      current_font_data_index_);
+  const FontData* font_data = font_data_entry.font_data.Get();
 
   if (!font_data) {
     // If there is no fontData coming from the fallback list, it means
@@ -200,11 +205,21 @@ FontDataForRangeSet* FontFallbackIterator::Next(const HintCharList& hint_list) {
     if (!font_data->IsLoading()) {
       SimpleFontData* non_segmented =
           const_cast<SimpleFontData*>(To<SimpleFontData>(font_data));
+
+      // Generic families and last resort fonts may not be matched to PUA
+      // codepoints.
+      // https://www.w3.org/TR/css-fonts-4/#char-handling-issues
+      const UnicodeRangeSet* range_set =
+          font_data_entry.is_generic_family_or_last_resort
+              ? FontGlobalContext::GetNonPrivateUseRangeSet()
+              : nullptr;
+
       // The fontData object that we have here is tracked in m_fontList of
       // FontFallbackList and gets released in the font cache when the
       // FontFallbackList is destroyed.
       return UniqueOrNext(
-          MakeGarbageCollected<FontDataForRangeSet>(non_segmented), hint_list);
+          MakeGarbageCollected<FontDataForRangeSet>(non_segmented, range_set),
+          hint_list);
     }
     return Next(hint_list);
   }
