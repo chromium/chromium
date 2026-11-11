@@ -10,7 +10,7 @@ specific_include_rules = {
   "tracing_controller_impl\\.cc": [
     "+v8"
   ],
-  "cast_tracing_agent\\.": [
+  "cast_tracing_agent\\.(cc|h)": [
     "+chromecast/tracing"
   ],
 }

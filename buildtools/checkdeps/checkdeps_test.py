@@ -209,6 +209,21 @@ class CheckDepsTest(unittest.TestCase):
     )
     self.assertFalse(problems)
 
+  def testSpecificIncludeRulesMatchWholeFilename(self):
+    # testdata/allowed/DEPS has a specific rule for ".*_unittest\\.cc".
+    include = (
+      '#include "buildtools/checkdeps/testdata/disallowed/teststuff/a.h"'
+    )
+    problems = self.deps_checker.CheckAddedCppIncludes(
+      [['buildtools/checkdeps/testdata/allowed/foo_unittest.cc', [include]]]
+    )
+    self.assertFalse(problems)
+    # The regular expression must match the whole file name, not just a prefix.
+    problems = self.deps_checker.CheckAddedCppIncludes(
+      [['buildtools/checkdeps/testdata/allowed/foo_unittest.cc.h', [include]]]
+    )
+    self.assertTrue(problems)
+
   def testCheckAddedIncludesManyGarbageLines(self):
     garbage_lines = ["My name is Sam%d\n" % num for num in range(50)]
     problems = self.deps_checker.CheckAddedCppIncludes(

@@ -37,7 +37,7 @@ specific_include_rules = {
     # layer between the service and ui.
     "+chrome/browser/actor/ui/event_dispatcher.h",
   ],
-  'execution_engine*': [
+  'execution_engine.*': [
     # This dependency is intentional and required to provide a translation
     # layer between the service and ui.
     "+chrome/browser/actor/ui/event_dispatcher.h",
@@ -60,7 +60,7 @@ specific_include_rules = {
     "+chrome/browser/actor/ui/event_dispatcher.h",
     "+chrome/browser/actor/ui/test_support/mock_actor_ui_state_manager.h",
   ],
-  'actor_keyed_service_fake*': [
+  'actor_keyed_service_fake.*': [
     # This is required for unit tests.
     "+chrome/browser/actor/ui/event_dispatcher.h",
   "+chrome/browser/actor/ui/ui_event.h",
@@ -72,7 +72,7 @@ specific_include_rules = {
     "+chrome/browser/actor/ui/event_dispatcher.h",
     "+chrome/browser/actor/ui/test_support/mock_event_dispatcher.h",
   ],
-  'actor_test_util*': [
+  'actor_test_util.*': [
     # This is required for unit tests.
     "+chrome/browser/actor/ui/event_dispatcher.h",
   ],

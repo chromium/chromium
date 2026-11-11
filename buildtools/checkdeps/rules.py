@@ -112,7 +112,7 @@ class Rules(object):
     self._general_rules = []
 
     # Keys are regular expression strings, values are arrays of rules
-    # that apply to dependee files whose basename matches the regular
+    # that apply to dependee files whose entire basename matches the regular
     # expression.  These are applied before the general rules, but
     # their internal order is arbitrary.
     self._specific_rules = {}
@@ -195,7 +195,7 @@ class Rules(object):
 
     dependee_filename = os.path.basename(dependee_path)
     for regexp, specific_rules in list(self._specific_rules.items()):
-      if re.match(regexp, dependee_filename):
+      if re.fullmatch(regexp, dependee_filename):
         for rule in specific_rules:
           if rule.ChildOrMatch(include_path):
             if review_parent is None:

@@ -71,7 +71,7 @@ specific_include_rules = {
   'chrome_debug_urls.cc': [
     "+partition_alloc/oom.h",
   ],
-  'content_to_visible_time_reporter*': [
+  'content_to_visible_time_reporter.*': [
     "+components/viz/common/frame_timing_details.h"
   ],
   'features.cc': [

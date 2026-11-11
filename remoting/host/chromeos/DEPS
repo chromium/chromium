@@ -8,7 +8,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "audio_helper_chromeos*": [
+  "audio_helper_chromeos.*": [
     "+media/audio",
     "+media/base",
     "+media/mojo",

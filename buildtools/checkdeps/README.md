@@ -46,10 +46,11 @@ include_rules = [
 If you have certain include rules that should only be applied for some files
 within this directory and subdirectories, you can write a section named
 `specific_include_rules` that is a hash map of regular expressions to the list
-of rules that should apply to files matching them. Note that such rules will
-always be applied before the rules from `include_rules` have been applied, but
-the order in which rules associated with different regular expressions is
-applied is arbitrary.
+of rules that should apply to files matching them. A regular expression must
+match the entire file name (the last component of the path), not just a prefix
+of it. Note that such rules will always be applied before the rules from
+`include_rules` have been applied, but the order in which rules associated with
+different regular expressions is applied is arbitrary.
 
 ```
 specific_include_rules = {

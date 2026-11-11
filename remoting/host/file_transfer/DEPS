@@ -1,7 +1,7 @@
 include_rules = []
 
 specific_include_rules = {
-    "file_chooser_chromeos*": [
+    "file_chooser_chromeos.*": [
         "+content/public/test",
         "+ui/shell_dialogs"
     ],
