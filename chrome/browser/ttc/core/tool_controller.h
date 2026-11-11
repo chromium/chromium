@@ -96,6 +96,7 @@ class ToolController {
   void CreateNewWindow(ToolResponseCallback callback);
   void FindAndHighlight(const base::DictValue& arguments,
                         ToolResponseCallback callback);
+  void GetPointer(ToolResponseCallback callback);
   void GetScreenshot(ToolResponseCallback callback);
   void OnGetScreenshotUrlChecked(base::WeakPtr<content::Page> page,
                                  ToolResponseCallback callback,

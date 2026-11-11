@@ -41,6 +41,11 @@ BASE_DECLARE_FEATURE(kTtcHotlClickConfirmation);
 inline constexpr base::FeatureParam<base::TimeDelta> kHotlConfirmationTimeout{
     &kTtcHotlClickConfirmation, "confirmation_timeout", base::Seconds(10)};
 
+// Offers the model a get_pointer tool that resolves where the user's pointer
+// has been during their turn, so "what is this?" can be answered. Design:
+// go/ttc-get-pointer.
+BASE_DECLARE_FEATURE(kTtcGetPointer);
+
 }  // namespace ttc
 
 #endif  // CHROME_BROWSER_TTC_CORE_FEATURES_H_
