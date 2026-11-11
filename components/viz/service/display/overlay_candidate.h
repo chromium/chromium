@@ -262,7 +262,7 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
   // Parameters for macOS CoreAnimation CABackdropLayer when present.
   std::optional<gfx::RRectF> backdrop_filter_bounds;
   std::optional<gfx::RectF> backdrop_filter_clip;
-  std::optional<ui::CABackdropFilter> backdrop_filter_params;
+  std::vector<ui::CABackdropFilter> backdrop_filters;
 #endif  // BUILDFLAG(IS_APPLE)
 
   // A (ideally) unique key used to temporally identify a specific overlay

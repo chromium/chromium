@@ -10,6 +10,7 @@
 #include <limits>
 #include <utility>
 #include <variant>
+#include <vector>
 
 #include "base/mac/mac_util.h"
 #include "base/metrics/histogram_macros.h"
@@ -222,7 +223,7 @@ CALayerBackdropResult ExtractBackdropFilter(
   // Support Gaussian blur and color matrix adjustments (saturate, brightness,
   // contrast) commonly paired with blur in glassmorphism UI. Other operations
   // (e.g. sepia, invert, grayscale, drop-shadow) fall back to SkiaRenderer.
-  ui::CABackdropFilter filter_params;
+  std::vector<ui::CABackdropFilter> backdrop_filters;
   bool has_blur = false;
   bool has_color_matrix = false;
   SkColorMatrix color_matrix;
@@ -243,7 +244,9 @@ CALayerBackdropResult ExtractBackdropFilter(
           return CALayerBackdropResult::kUnsupportedBlurFilterChain;
         }
         has_blur = true;
+        ui::CABackdropFilter filter_params;
         filter_params.blur_radius = amount * scale;
+        backdrop_filters.push_back(std::move(filter_params));
         break;
       }
       case cc::FilterOperation::SATURATE: {
@@ -293,7 +296,9 @@ CALayerBackdropResult ExtractBackdropFilter(
     std::array<float, 20> row_major;
     color_matrix.getRowMajor(row_major.data());
     if (row_major != kIdentityColorMatrix) {
+      ui::CABackdropFilter filter_params;
       filter_params.color_matrix = row_major;
+      backdrop_filters.push_back(std::move(filter_params));
     }
   }
 
@@ -340,7 +345,7 @@ CALayerBackdropResult ExtractBackdropFilter(
     ca_layer_overlay->backdrop_filter_bounds = *bounds;
   }
 
-  ca_layer_overlay->backdrop_filter_params = std::move(filter_params);
+  ca_layer_overlay->backdrop_filters = std::move(backdrop_filters);
   return CALayerBackdropResult::kSuccess;
 }
 
