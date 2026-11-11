@@ -14,7 +14,7 @@ import "services/network/public/mojom/x509_certificate.mojom";
 // Provides a set of methods to allow the Daemon process to initialize and
 // control the network (a.k.a. host) process.
 // The remote for this interface is owned in the high-privilege daemon process
-// and the receiver is bound in the low-privilege network process.
+// and the receiver is bound in the unprivileged, trusted network process.
 interface RemotingHostControl {
   // Provides host configuration details to the network process such as the
   // owner email and robot account to use for authentication to service APIs.
@@ -32,12 +32,13 @@ interface RemotingHostControl {
   InitializePairingRegistry(handle<platform> privileged_handle,
                             handle<platform> unprivileged_handle);
 
-  // Requests the network process to bind a pending receiver of
-  // ChromotingHostServices coming from a user-launched process. On
-  // multi-process hosts, the daemon process or agent broker process is
-  // responsible for brokering all mojo IPCs, but it doesn't affect where the
-  // receivers and remotes are bound. Please see comments on the
-  // ChromotingHostServices interface.
+  // Requests the current macOS host process to bind a pending receiver of
+  // ChromotingHostServices forwarded by `agent_process_broker` from a
+  // user-launched process. (On Windows and Linux multi-process hosts,
+  // `DaemonProcess` binds `ChromotingHostServices` directly instead.)
+  // Please see comments on the ChromotingHostServices interface.
+  // TODO(crbug.com/499082867): Remove once macOS migrates to multi-process
+  // mode.
   [EnableIf=is_mac]
   BindChromotingHostServices(pending_receiver<ChromotingHostServices> receiver);
 };
@@ -50,8 +51,8 @@ interface RemotingHostControl {
 // a user in the FTL signaling service which is used for client to host
 // messaging (a necessary step in establishing a P2P connection). An example
 // ID would be <user_email@domain.com>/chromoting_ftl_<unique_ftl_resource_id>.
-// The remote for this interface is owned in the low-privilege network process
-// and the receiver is bound in the high-privilege daemon process.
+// The remote for this interface is owned in the unprivileged, trusted network
+// process and the receiver is bound in the high-privilege daemon process.
 [EnableIf=is_win|is_linux]
 interface HostStatusObserver {
   // Called when an unauthorized user attempts to connect to the host.
@@ -91,9 +92,9 @@ struct ClientCertificateDetails {
   pending_remote<network.mojom.SSLPrivateKey> private_key;
 };
 
-// Provides an interface for the sandboxed network process to query client
-// certificates and delegate private key signing to the elevated daemon process
-// while keeping raw private key handles isolated in the daemon.
+// Provides an interface for the unprivileged, trusted network process to query
+// client certificates and delegate private key signing to the elevated daemon
+// process while keeping raw private key handles isolated in the daemon.
 //
 // Security note: This interface is only exposed to the host network process,
 // which acts as the control-plane/signaling process and communicates over HTTPS

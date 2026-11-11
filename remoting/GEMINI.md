@@ -14,6 +14,9 @@ these documents:**
 *   **Testing:** See `docs/testing.md` if you are writing, modifying, or
     debugging tests.
 
+*   **Security & Threat Model:** See `SECURITY.md` when evaluating trust
+    boundaries, process privileges, Mojo IPC security, or vulnerability reports.
+
 *   **Architecture & IPC:** See `docs/architecture.md` if you are modifying host
     architecture, IPC, or adding/removing processes.
 

@@ -116,8 +116,8 @@ void DaemonProcess::OnAssociatedInterfaceRequest(
   // Typically we'd want to ensure that an associated receiver was not requested
   // multiple times as that would indicate a logic error (or that the calling
   // process had possibly been compromised). In the case of the network process,
-  // which handles network traffic and encoding, it's possible that there is a
-  // protocol error or OS driver fault which causes the process to crash. When
+  // which handles signaling and session control, it's possible that there is a
+  // protocol error or OS fault which causes the process to crash. When
   // that occurs, the daemon process will launch a new instance of the network
   // process (which is handled outside of this class) and that new instance will
   // attempt to retrieve the set of associated interfaces it needs to do its

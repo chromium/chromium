@@ -9,23 +9,39 @@ architecture.
 
 *   **`remoting_host.mojom`**
     *   *Users:* `Network` <-> `Daemon`
-    *   *Role:* High-level host control and status.
+    *   *Role:* High-level host control, configuration, certificate brokering,
+        and status.
+*   **`peer_session.mojom`**
+    *   *Users:* `Daemon` / `Network` <-> `PeerConnection`
+    *   *Role:* Spawning per-session `PeerConnection` processes and narrow
+        control/signaling relay across the untrusted boundary.
 *   **`desktop_session.mojom`**
-    *   *Users:* `Network` <-> `Desktop`
-    *   *Role:* Screen capture, input injection, and session lifecycle.
+    *   *Users:* `Daemon` <-> `Network` (`DesktopSessionManager`), and Session
+        Owner (`PeerConnection`) <-> `Desktop`
+    *   *Role:* Desktop session brokering, screen/audio capture, input
+        injection, and file transfer.
 *   **`chromoting_host_services.mojom`**
-    *   *Users:* `Network` <-> `UserProcess`
-    *   *Role:* Allows user-level processes (like remote-open-url) to request
-        services.
+    *   *Users:* `UserProcess` -> `Daemon` (`ChromotingHostServices`) -> Session
+        Owner (`PeerConnection` or single-process host,
+        `ChromotingSessionServices`)
+    *   *Role:* Allows user-level processes (like `remote-open-url` and
+        `remote-webauthn`) to bind session-scoped services after UID/session
+        verification.
 *   **`remote_url_opener.mojom`**
-    *   *Users:* `Network` <-> `RemoteOpenUrl`
-    *   *Role:* URL forwarding from client to host.
+    *   *Users:* Session Owner (`PeerConnection` or single-process host) <->
+        `RemoteOpenUrl`
+    *   *Role:* URL forwarding from host session to client.
 *   **`webauthn_proxy.mojom`**
-    *   *Users:* `Network` <-> `WebAuthn`
+    *   *Users:* Session Owner (`PeerConnection` or single-process host) <->
+        `WebAuthn`
     *   *Role:* WebAuthn request/response proxying.
+*   **`remote_security_key.mojom`**
+    *   *Users:* `RemoteSecurityKey` (Windows) or `Desktop` (POSIX) <-> Session
+        Owner (`PeerConnection` or single-process host)
+    *   *Role:* Security-key (gnubby/SSH agent) request/response forwarding.
 *   **`login_session.mojom`**
-    *   *Users:* `Daemon` <-> `LoginSession`
-    *   *Role:* Linux-specific session login management.
+    *   *Users:* `RemoteSessionInfo` (Linux user helper) <-> `Daemon`
+    *   *Role:* Linux-specific session login management and reporting.
 
 ## Important Guidelines
 

@@ -57,9 +57,10 @@ class DesktopSession;
 class PeerConnectionProcessHandler;
 class HostEventLogger;
 
-// This class implements core of the daemon process. It manages the networking
-// process running at lower privileges and maintains the list of desktop
-// sessions.
+// This class implements core of the daemon process. It manages the trusted
+// control-plane network process (running under an unprivileged service
+// account), spawns sandboxed per-session peer connection processes, and
+// maintains the list of desktop sessions.
 class DaemonProcess : public ConfigWatcher::Delegate,
                       public WorkerProcessIpcDelegate,
                       public HostStatusObserver,
@@ -189,7 +190,10 @@ class DaemonProcess : public ConfigWatcher::Delegate,
   void OnHostShutdown() override;
 
   // Creates a platform-specific desktop session and assigns a unique ID to it.
-  // An implementation should validate |params| as they are received via IPC.
+  // `options` (`client_id`, `required_username`, etc.) is populated by the
+  // trusted network process after client authentication; implementations must
+  // still enforce OS session/account eligibility invariants (such as rejecting
+  // root/system UIDs and validating session routing).
   virtual std::unique_ptr<DesktopSession> DoCreateDesktopSession(
       int terminal_id,
       const mojom::DesktopSessionOptions& options) = 0;

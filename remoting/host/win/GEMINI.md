@@ -8,11 +8,11 @@ is characterized by deep integration with Windows services, COM, and WTS
 
 *   **Daemon Process (Windows Service):** `remoting/host/win/host_service.cc`
     *   This is the entry point when running as a Windows service.
-    *   It manages the lifecycle of the `Network` and `Desktop` processes.
+    *   It manages the lifecycle of the `Network`, `PeerConnection`, and `Desktop` processes.
 *   **Host Process Executables & Roles:**
-    *   `remoting_host.exe`: Daemon Windows Service running as `SYSTEM`.
-    *   `remoting_network.exe`: Network process running as `LOCAL SERVICE` (Low Integrity).
-    *   `remoting_peer_connection.exe`: Peer Connection process running as `LOCAL SERVICE` inside AppContainer (`chromoting.peer_connection`, Untrusted Integrity).
+    *   `remoting_host.exe`: Daemon Windows Service running as `SYSTEM` (TCB broker).
+    *   `remoting_network.exe`: Trusted control-plane network process running as `LOCAL SERVICE` (Low Integrity).
+    *   `remoting_peer_connection.exe`: Untrusted per-session Peer Connection process running as `LOCAL SERVICE` inside AppContainer (`chromoting.peer_connection`, Untrusted Integrity).
     *   `remoting_desktop.exe`: Desktop integration process running as `SYSTEM` in the interactive console or RDP user session (`uiAccess="true"`).
     *   `remoting_curtain.exe`: Curtain mode loopback RDP process activated via COM `LocalServer32` as `LOCAL SERVICE`.
 *   **RDP Integration:** `remoting/host/win/rdp_desktop_session.cc` and
@@ -35,8 +35,9 @@ is characterized by deep integration with Windows services, COM, and WTS
 1.  **COM Security:** Many interfaces rely on `CoInitializeSecurity`. DO NOT
     change COM security settings without expert review.
 2.  **Session 0 Isolation:** The `Daemon` process runs in Session 0. It cannot
-    interact with the UI directly. The same is true for the `Network` process
-    which is also sandboxed (low-integrity) and runs as a low privilege user.
+    interact with the UI directly. The same is true for `Network` (trusted
+    control plane running as `LOCAL SERVICE` at Low Integrity) and
+    `PeerConnection` (untrusted WebRTC process inside an AppContainer).
 3.  **WTS Session Tracking:** WTS session IDs can change during a connection
     (e.g., when a user logs in). Use `WtsSessionChangeObserver` to track these
     changes.

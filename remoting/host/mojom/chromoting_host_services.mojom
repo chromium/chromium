@@ -9,12 +9,14 @@ import "remoting/host/mojom/webauthn_proxy.mojom";
 import "remoting/host/mojom/remote_security_key.mojom";
 import "remoting/host/mojom/remote_url_opener.mojom";
 
-// ChromotingHostServices defines the APIs that live in the Chromoting
-// network/host process and are accessed from user-launched client applications
-// (e.g. remote_open_url and the WebAuthn native messaging host). The calling
-// processes run in the user context. On Linux, the network/host process also
-// runs in the user context, while on Windows, the network/host process runs as
-// LOCAL_SERVICE in a low-integrity sandbox.
+// ChromotingHostServices defines the entry-point API accessed from
+// user-launched client applications (e.g. remote_open_url and the WebAuthn
+// native messaging host) running in the remoted user session.
+// In multi-process mode, the receiver is bound in the daemon process (which
+// verifies the caller's OS UID or WTS session ID) and forwards session-scoped
+// requests to the owning session process. In single-process mode or the current
+// macOS brokered mode, the receiver is bound in the host process.
+// TODO(crbug.com/499082867): Update once macOS migrates to multi-process mode.
 interface ChromotingHostServices {
   // Binds the ChromotingSessionServices interface which allows accessing APIs
   // that are scoped to the current remote desktop session.
@@ -23,9 +25,9 @@ interface ChromotingHostServices {
   BindSessionServices(pending_receiver<ChromotingSessionServices> receiver);
 };
 
-// ChromotingHostServices defines APIs that are scoped to an active remote
-// session. The interface is brokered by ChromotingHostServices, so it has the
-// same host-client pair.
+// ChromotingSessionServices defines APIs that are scoped to an active remote
+// session. The receiver is bound in the session owner (the sandboxed
+// `peer_connection` process in multi-process mode, or the single-process host).
 interface ChromotingSessionServices {
   // Binds the WebAuthnProxy interface which allows the WebAuthn native
   // messaging host to send remote WebAuthn requests to the remote client.

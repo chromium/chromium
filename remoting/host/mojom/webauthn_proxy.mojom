@@ -59,13 +59,16 @@ interface WebAuthnRequestCanceller {
 //   chrome/common/extensions/api/web_authentication_proxy.idl
 //
 // The remote of this interface is always owned by a native messaging host
-// process; on Windows, the receiver is bound in a chromoting network process,
-// while on Linux, the receiver is bound in a chromoting host process. Both the
-// remote and the receiver are generally trusted.
+// process running in the remoted user session; the receiver is bound in the
+// session owner (the sandboxed `peer_connection` process in multi-process mode,
+// or the single-process host). Responses originate from the remote client and
+// must be treated as untrusted input.
 //
-// There is an intrinsic risk of remote WebAuthn forwarding, but it's an
-// accepted risk and the impact is limited given the limited scope of the
-// feature. Please see the note here: go/crd-webauthn#heading=h.s445jjbbs1m2
+// Forwarding WebAuthn requests to a remote client carries an inherent session
+// delegation risk, which is accepted because requests are restricted to the
+// extensions allowlisted in the `remote_webauthn` Native Messaging manifest
+// (the CRD companion and security key extensions) within an
+// already-authenticated remote session (see `//remoting/SECURITY.md`).
 //
 // Note that both processes are chromoting-only and they don't make IPCs with
 // Chrome processes.

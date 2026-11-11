@@ -11,7 +11,7 @@ The host codebase serves two distinct feature modes:
 1.  **Me2Me (Remote Access):**
     *   *Persistent:* Runs as an OS daemon/service.
     *   *Auto-Start:* Can start before a user logs in.
-    *   *Architecture:* Multi-process (Daemon, Network, Desktop).
+    *   *Architecture:* Multi-process (`Daemon`, `Network`, `PeerConnection`, `Desktop`; see `//remoting/SECURITY.md`).
     *   *Entry Point:* `remoting/host/host_main.cc`.
 2.  **It2Me (Remote Support):**
     *   *On-Demand:* Launched by the browser as a Native Messaging Host (NMH).
@@ -30,10 +30,10 @@ Most Me2Me processes are launched via a single binary (e.g.,
     *   *Purpose:* Default mode for Mac/Linux (official).
     *   *Entry:* `remoting/host/remoting_me2me_host.cc`
 *   **`network`**
-    *   *Purpose:* Handles host signaling, authentication, and session orchestration.
+    *   *Purpose:* Trusted control-plane process handling host signaling, policies, authentication, and session orchestration.
     *   *Entry:* `remoting/host/remoting_me2me_host.cc`
 *   **`peer_connection`**
-    *   *Purpose:* Sandboxed WebRTC transport, media encoding, and data channels.
+    *   *Purpose:* Untrusted sandboxed process isolating WebRTC P2P transport, media codecs, data channels, and session services.
     *   *Entry:* `remoting/host/peer_connection_process_main.cc`
 *   **`daemon`**
     *   *Purpose:* Privileged process (SYSTEM/Root).
@@ -75,9 +75,12 @@ Most Me2Me processes are launched via a single binary (e.g.,
 1.  **Mojo Brokerage:** The `daemon` process is typically the Mojo Broker.
     NEVER change brokerage logic in `host_main.cc` without verifying security
     impact.
-2.  **Privilege Separation:** Code in `desktop` or `network` processes should
-    NEVER assume it has SYSTEM/Root privileges. Use Mojo to request privileged
-    operations from the `daemon`.
+2.  **Privilege Separation:** Only `daemon` (`root` on Linux, Session 0 `SYSTEM`
+    on Windows) and Windows `desktop` (`SYSTEM` in the user WTS session) run
+    with OS-level root/`SYSTEM` privileges. `network` (trusted control plane),
+    `peer_connection` (untrusted sandboxed WebRTC data plane), and Linux
+    `desktop` (target session user) must NEVER assume `root`/`SYSTEM`
+    privileges; see `//remoting/SECURITY.md` for trust boundaries.
 3.  **Platform Macros:** This directory is heavily guarded with
     `BUILDFLAG(IS_WIN)`, `BUILDFLAG(IS_APPLE)`, and `BUILDFLAG(IS_LINUX)`.
     ALWAYS check all three platforms when modifying shared files.

@@ -231,19 +231,17 @@ enum UrlForwarderState {
   kSetupPendingUserIntervention = 4,
 };
 
-// Allows the desktop process to request that the daemon process perform an
-// action on its behalf. Though both processes are high-privilege, the daemon
-// process brokers the IPC channel between the desktop and network processes and
-// owns the lifetime of the network process. It also has the ability to execute
-// actions from session 0 (whereas the desktop process runs in a user session)
-// on Windows.
-// The remote for this interface is owned in the high-privilege desktop
-// integration process and the receiver is bound in the high-privilege daemon
-// process.
+// Allows the desktop integration process to request that the daemon process
+// perform an action on its behalf. The daemon process (`root` on Linux,
+// `SYSTEM` in Session 0 on Windows) brokers the IPC channel between the desktop
+// process (`SYSTEM` in the user session on Windows, or the target session user
+// on Linux) and the session owner (the sandboxed `peer_connection` process).
+// The remote for this interface is owned in the desktop integration process and
+// the receiver is bound in the high-privilege daemon process.
 interface DesktopSessionRequestHandler {
-  // Ask the daemon process to forward the |desktop_pipe| handle to the network
-  // process in order to establish an IPC connection between the desktop and
-  // network processes.
+  // Ask the daemon process to forward the |desktop_pipe| handle to the session
+  // owner in order to establish an IPC connection between the desktop process
+  // and the session owner.
   ConnectDesktopChannel(handle<message_pipe> desktop_pipe);
 
   // Ask the daemon process to inject the secure attention sequence for the
@@ -251,8 +249,12 @@ interface DesktopSessionRequestHandler {
   InjectSecureAttentionSequence();
 
   // Ask the daemon process to crash the network process. The desktop process
-  // will request this when it receives invalid IPC requests or messages from
-  // the network process.
+  // requests this when it receives invalid IPC requests or messages from its
+  // session peer. Currently, `DaemonProcess` still crashes and restarts the
+  // host-wide `network` process (disconnecting all active sessions) rather than
+  // targeting only the offending session's `peer_connection` process.
+  // TODO(crbug.com/584825017): Scope this to terminating only the offending
+  // session's `peer_connection` process.
   CrashNetworkProcess();
 };
 
@@ -274,8 +276,8 @@ struct DesktopSessionOptions {
   string client_id;
 };
 
-// Allows the session owner (network process or peer connection process) to
-// control a specific desktop session.
+// Allows the session owner (the sandboxed `peer_connection` process) to control
+// a specific desktop session.
 // The remote for this interface is owned by the session owner and the receiver
 // is bound in the high-privilege daemon process.
 // Note that closing or resetting the `DesktopSession` Mojo remote endpoint may
@@ -291,7 +293,7 @@ interface DesktopSession {
 };
 
 // Provides a set of methods to allow the Daemon process to notify the session
-// owner (network process or peer connection process) of changes in the desktop
+// owner (the sandboxed `peer_connection` process) of changes in the desktop
 // environment.
 // The remote for this interface is owned in the high-privilege daemon process
 // and the receiver is bound in the session owner process.
@@ -371,8 +373,9 @@ struct ScreenResolution {
 
 // Starts the agent in the desktop session and returns an interface to allow the
 // caller to inject input events and control A/V capture.
-// The remote for this interface is owned in the low-privilege network process
-// and the receiver is bound in the high-privilege desktop integration process.
+// The remote for this interface is owned in the session owner (the sandboxed
+// `peer_connection` process) and the receiver is bound in the desktop
+// integration process.
 interface DesktopSessionAgent {
   // Passes the client session data to the desktop session agent and starts it.
   // Note: This must only be called once per desktop process instance.
@@ -383,10 +386,11 @@ interface DesktopSessionAgent {
 };
 
 // Enables writing to a file, this is used when the client website uploads a
-// a file to the host machine. The remote is provided in the return value of a
+// file to the host machine. The remote is provided in the return value of a
 // successful mojom::DesktopSessionControl::BeginFileWrite() call.
-// The remote for this interface is owned in the low-privilege network process
-// and the receiver is bound in the high-privilege desktop integration process.
+// The remote for this interface is owned in the session owner (the sandboxed
+// `peer_connection` process) and the receiver is bound in the desktop
+// integration process.
 interface FileWriter {
   // Writes |data| to the file opened in the BeginFileWrite call. Returns
   // |error| if the data could not be written.
@@ -408,8 +412,9 @@ union ReadChunkResult {
 // Allows reading from a file, this is used when the client website downloads
 // a file from the host machine. The remote is provided after a successful call
 // to mojom::DesktopSessionControl::BeginFileRead().
-// The remote for this interface is owned in the low-privilege network process
-// and the receiver is bound in the high-privilege desktop integration process.
+// The remote for this interface is owned in the session owner (the sandboxed
+// `peer_connection` process) and the receiver is bound in the desktop
+// integration process.
 interface FileReader {
   // Reads |bytes_to_read| from the file opened in the BeginFileRead call.
   // |result| contains the file data if successful, otherwise an error.
@@ -481,10 +486,10 @@ union BeginFileWriteResult {
   FileTransferError error;
 };
 
-// Allows the network process to inject input events and control A/V capture in
-// the desktop session.
-// The remote for this interface is owned in the low-privilege network process
-// and the receiver is bound in the high-privilege desktop integration process.
+// Allows the session owner (the sandboxed `peer_connection` process) to inject
+// input events and control A/V capture in the desktop session.
+// The remote for this interface is owned in the session owner and the receiver
+// is bound in the desktop integration process.
 interface DesktopSessionControl {
   // Requests the Desktop process to create a new video-capturer for the
   // specified display device.
@@ -552,8 +557,9 @@ struct CreateVideoCapturerResult {
 };
 
 // Enables capturing from a display device.
-// The remote for this interface is owned in the low-privilege network process
-// and the receiver is bound in the high-privilege desktop integration process.
+// The remote for this interface is owned in the session owner (the sandboxed
+// `peer_connection` process) and the receiver is bound in the desktop
+// integration process.
 interface VideoCapturer {
   // Starts capturing. Video-frames are returned via VideoCapturerEventHandler,
   // ordered relative to the shared-memory events.
@@ -572,26 +578,26 @@ interface VideoCapturer {
 
 // Enables receiving capture information (shared-memory, video-frames) from a
 // display device.
-// The remote for this interface is owned in the high-privilege desktop
-// integration process and the receiver is bound in the low-privilege network
-// process.
+// The remote for this interface is owned in the desktop integration process and
+// the receiver is bound in the session owner (the sandboxed `peer_connection`
+// process).
 interface VideoCapturerEventHandler {
-  // Notifies the network process that a new shared memory region has been
+  // Notifies the session owner that a new shared memory region has been
   // created to use for passing video frames between processes. |id| refers to
   // the new shared memory region and is included in each capture result to
   // indicate which region the frame data resides in.
   OnSharedMemoryRegionCreated(
       int32 id, mojo_base.mojom.ReadOnlySharedMemoryRegion region, uint32 size);
 
-  // Notifies the network process that a shared memory region has been released
+  // Notifies the session owner that a shared memory region has been released
   // and should no longer be used.
   OnSharedMemoryRegionReleased(int32 id);
 
-  // Notifies the network process that a frame capture has started at the
+  // Notifies the session owner that a frame capture has started at the
   // specified time.
   OnFrameCaptureStart(mojo_base.mojom.TimeTicks start_time);
 
-  // Notifies the network process that new frame data is available in the shared
+  // Notifies the session owner that new frame data is available in the shared
   // memory region along with the details on how to access it (e.g. stride,
   // size, etc.), otherwise provides the error reason the capture failed.
   OnCaptureResult(CaptureResult result);
@@ -661,12 +667,12 @@ struct VideoLayout {
   PixelType? pixel_type;
 };
 
-// Allows the desktop process to forward events and data to the network process
-// which may process it (e.g. encode a video frame) or forward it to the client
-// (in the case of updated clipboard contents).
-// The remote for this interface is owned in the high-privilege desktop
-// integration process and the receiver is bound in the low-privilege network
-// process.
+// Allows the desktop process to forward events and data to the session owner
+// (the sandboxed `peer_connection` process), which may process it (e.g. encode
+// a video frame) or forward it to the client (in the case of updated clipboard
+// contents).
+// The remote for this interface is owned in the desktop integration process and
+// the receiver is bound in the session owner.
 interface DesktopSessionEventHandler {
   // Used to forward clipboard events from the host to the client.
   OnClipboardEvent(ClipboardEvent event);
@@ -679,38 +685,38 @@ interface DesktopSessionEventHandler {
   // Forwards an audio packet captured from the desktop session to the client.
   OnAudioPacket(AudioPacket audio_packet);
 
-  // Notifies the network process that the host display layout has changed.
+  // Notifies the session owner that the host display layout has changed.
   OnDesktopDisplayChanged(VideoLayout layout);
 
-  // Notifies the network process that the mouse cursor has changed.
+  // Notifies the session owner that the mouse cursor has changed.
   OnMouseCursorChanged(MouseCursor mouse_cursor);
 
-  // Notifies the network process that the fractional position of the mouse
+  // Notifies the session owner that the fractional position of the mouse
   // cursor has changed.
   OnMouseCursorFractionalPositionChanged(FractionalCoordinate position);
 
-  // Notifies the network process that the keyboard layout has changed.
+  // Notifies the session owner that the keyboard layout has changed.
   OnKeyboardLayoutChanged(KeyboardLayout keyboard_layout);
 
-  // Notifies the network process that local mouse movement was detected.
+  // Notifies the session owner that local mouse movement was detected.
   OnLocalMouseMoveDetected(DesktopVector new_position);
 
-  // Notifies the network process that local keyboard input was detected.
+  // Notifies the session owner that local keyboard input was detected.
   OnLocalKeyboardInputDetected(int32 usb_keycode);
 
-  // Notifies the network process that a new security key connection has been
+  // Notifies the session owner that a new security key connection has been
   // established and passes the SecurityKeyForwarder receiver to it.
   OnSecurityKeyConnection(pending_receiver<SecurityKeyForwarder> receiver);
 
-  // Notifies the network process that the audio injector state has changed.
+  // Notifies the session owner that the audio injector state has changed.
   OnMicrophoneControl(MicrophoneControl control);
 };
 
 // Provides the desktop integration process with a mechanism for controlling the
-// client session owned by the network process.
-// The remote for this interface is owned in the high-privilege desktop
-// integration process and the receiver is bound in the low-privilege network
-// process.
+// client session owned by the session owner (the sandboxed `peer_connection`
+// process).
+// The remote for this interface is owned in the desktop integration process and
+// the receiver is bound in the session owner.
 interface DesktopSessionStateHandler {
   // Disconnects the remote client from the host machine. All arguments will
   // be passed to the website client as the reason for the disconnection.
@@ -729,19 +735,20 @@ interface DesktopSessionStateHandler {
 
 // Allows the worker process launcher to send messages to a child process.
 // The remote for this interface is owned in the high-privilege daemon process
-// which uses the WorkerProcessLauncher class to spawn the low-privilege network
-// process or high-privilege desktop integration process. The receiver is bound
-// in the child process.
+// which uses WorkerProcessLauncher to spawn worker processes (such as the
+// network process or desktop integration process). The receiver is bound in the
+// child process.
 interface WorkerProcessControl {
   // Instructs the receiving process to crash itself.
   CrashProcess(string function_name, string file_name, int32 line_number);
 };
 
-// Allows the high-privilege daemon process to control the high-privilege
-// desktop process.
+// Allows the high-privilege daemon process to control the desktop integration
+// process.
 interface DesktopProcessControl {
-  // Request the desktop process to reconnect the network channel, i.e. create
-  // a new DesktopSessionAgent and pass a new desktop pipe to the network
-  // process via the daemon process.
+  // Request the desktop process to reconnect the session channel, i.e. create
+  // a new DesktopSessionAgent and pass a new desktop pipe to the session owner
+  // via the daemon process.
+  // TODO(crbug.com/502281489): Rename to ReconnectSessionChannel().
   ReconnectNetworkChannel();
 };

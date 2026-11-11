@@ -25,16 +25,16 @@ namespace remoting {
 // comment block describes the relationships and pieces involved at a high-level
 // to help those looking to understand the code.
 //
-// The IpcFileOperations and related classes are all used in the low-privilege
-// network process. They handle network communication with the website client
-// over a WebRTC data channel and proxy those requests using Mojo to the
-// SessionFileOperationsHandler (and friends) which lives in the high-privilege
-// desktop process and handles the actual file reading and writing.
+// The IpcFileOperations and related classes run in the session owner process
+// (the sandboxed peer_connection process). They handle communication with the
+// website client over a WebRTC data channel and proxy those requests using Mojo
+// to the SessionFileOperationsHandler (and friends) in the desktop process,
+// which handles the actual file reading and writing.
 //
 // When a new file transfer data channel is opened by the client, the
-// ClientSession instance on the host (running in the network process) will
+// ClientSession/PeerSessionImpl instance in the session owner process will
 // create a FileTransferMessageHandler (FTMH) instance to service it. As part of
-// the FTMH creation, ClientSession will ask the IpcDesktopEnvironment to create
+// the FTMH creation, it asks the IpcDesktopEnvironment to create
 // a new IpcFileOperations instance. This instance will be provided with a
 // WeakPtr<IpcFileOperations::RequestHandler> which is used to start a file read
 // or write operation in the desktop process over an existing IPC channel owned
