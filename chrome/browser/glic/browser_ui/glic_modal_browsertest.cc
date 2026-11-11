@@ -10,6 +10,7 @@
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "base/test/test_future.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/webui_url_constants.h"
@@ -37,7 +38,13 @@ namespace {
 
 using GlicModalBrowserTest = InProcessBrowserTest;
 
-IN_PROC_BROWSER_TEST_F(GlicModalBrowserTest, ShowAndCloseModal) {
+// TODO(crbug.com/477622144): Timed out on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ShowAndCloseModal DISABLED_ShowAndCloseModal
+#else
+#define MAYBE_ShowAndCloseModal ShowAndCloseModal
+#endif
+IN_PROC_BROWSER_TEST_F(GlicModalBrowserTest, MAYBE_ShowAndCloseModal) {
   tabs::TabInterface* tab = browser()->GetActiveTabInterface();
   ASSERT_TRUE(tab);
 
