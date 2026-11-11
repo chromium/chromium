@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_COMPONENT_UPDATER_COMPONENT_UPDATER_SERVICE_INTERNAL_H_
 #define COMPONENTS_COMPONENT_UPDATER_COMPONENT_UPDATER_SERVICE_INTERNAL_H_
 
+#include <stddef.h>
+
 #include <map>
 #include <memory>
 #include <optional>
@@ -15,13 +17,12 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "build/branding_buildflags.h"
 #include "components/component_updater/update_scheduler.h"
 #include "components/update_client/persisted_data.h"
-
-namespace base {
-class TimeTicks;
-}
+#include "net/base/network_change_notifier.h"
 
 namespace update_client {
 enum class Error;
@@ -32,9 +33,12 @@ namespace component_updater {
 class OnDemandUpdater;
 class RequiredComponentsController;
 
-class CrxUpdateService : public ComponentUpdateService,
-                         public ComponentUpdateService::Observer,
-                         public OnDemandUpdater {
+class CrxUpdateService
+    : public ComponentUpdateService,
+      public ComponentUpdateService::Observer,
+      public OnDemandUpdater,
+      public net::NetworkChangeNotifier::ConnectionCostObserver,
+      public net::NetworkChangeNotifier::NetworkChangeObserver {
   using Observer = ComponentUpdateService::Observer;
 
  public:
@@ -78,6 +82,14 @@ class CrxUpdateService : public ComponentUpdateService,
                       Priority priority,
                       Callback callback) override;
 
+  // Overrides for net::NetworkChangeNotifier::ConnectionCostObserver.
+  void OnConnectionCostChanged(
+      net::NetworkChangeNotifier::ConnectionCost cost) override;
+
+  // Overrides for net::NetworkChangeNotifier::NetworkChangeObserver.
+  void OnNetworkChanged(
+      net::NetworkChangeNotifier::ConnectionType type) override;
+
  private:
   void Start();
 
@@ -86,6 +98,9 @@ class CrxUpdateService : public ComponentUpdateService,
   void OnDemandUpdateInternal(const std::string& id,
                               Priority priority,
                               Callback callback);
+  void StartOnDemandUpdate(const std::string& id,
+                           Priority priority,
+                           Callback callback);
   bool OnDemandUpdateWithCooldown(const std::string& id);
 
   bool DoUnregisterComponent(const std::string& id);
@@ -104,6 +119,27 @@ class CrxUpdateService : public ComponentUpdateService,
   void OnUpdateComplete(Callback callback,
                         const base::TimeTicks& start_time,
                         update_client::Error error);
+  void OnDemandUpdateComplete(const std::string& id,
+                              Priority priority,
+                              Callback callback,
+                              base::TimeTicks start_time,
+                              update_client::Error error);
+
+  // Cancels the downloads of components that disallow metered updates and
+  // defers their updates.
+  void CancelMeteredDownloads();
+
+  // Returns the priority of the on-demand update in progress for `id`, or
+  // `Priority::BACKGROUND` if there is none.
+  Priority GetOnDemandPriority(const std::string& id) const;
+
+  // Defers the update of `id` until the connection is no longer metered. A
+  // deferred foreground update stays foreground.
+  void DeferUpdate(const std::string& id, Priority priority);
+
+  // Resumes the updates recorded in `deferred_updates_`, unless the
+  // connection is metered again.
+  void ResumeDeferredUpdates();
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -145,6 +181,21 @@ class CrxUpdateService : public ComponentUpdateService,
   // for that media type. Only the most recently-registered component is
   // tracked. May include the IDs of un-registered components.
   std::map<std::string, std::string> component_ids_by_mime_type_;
+
+  // Number of in-flight foreground on-demand updates for each component, used
+  // to resume an update deferred by a metered connection at the priority it
+  // was requested with.
+  base::flat_map<std::string, size_t> foreground_update_counts_;
+
+  // The components whose update was cancelled or refused because the
+  // connection is metered, mapped to whether the update should be resumed at
+  // foreground priority once the connection is no longer metered.
+  base::flat_map<std::string, bool> deferred_updates_;
+
+  // Runs `ResumeDeferredUpdates()` after the connection stops being metered.
+  base::OneShotTimer resume_deferred_updates_timer_;
+
+  bool is_stopped_ = false;
 
 #if BUILDFLAG(CHROME_FOR_TESTING)
   std::unique_ptr<RequiredComponentsController> required_components_controller_;

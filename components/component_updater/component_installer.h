@@ -123,10 +123,13 @@ class ComponentInstallerPolicy {
   // at the expected cadence, disabling cached copies is a reasonable choice.
   virtual bool AllowCachedCopies() const;
 
-  // Returns true if the component should not update over metered connections.
-  // Defaults to |true|. This only controls whether updates are accepted: if the
-  // network type changes from unmetered to metered during a download, there is
-  // no guarantee that the transfer will be suspended or cancelled.
+  // Returns true if the component may update over metered connections.
+  // Defaults to `true`. If false, the component updater does not start an
+  // update on a metered connection. On platforms that report connection cost
+  // changes, it also cancels an in-browser (`UrlFetcherDownloader`) download
+  // in progress when the connection becomes metered (on Windows, background
+  // downloads use DO/BITS and are not cancelled), and retries the update once
+  // it is no longer metered.
   virtual bool AllowUpdatesOnMeteredConnections() const;
 
   // Returns true if the component is allowed to update.

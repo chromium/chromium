@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -41,6 +42,7 @@
 #include "components/update_client/update_client.h"
 #include "components/update_client/update_client_errors.h"
 #include "components/update_client/utils.h"
+#include "net/base/network_change_notifier.h"
 #include "url/gurl.h"
 
 namespace {
@@ -53,6 +55,23 @@ enum UpdateType {
   UPDATE_TYPE_AUTOMATIC,
   UPDATE_TYPE_COUNT,
 };
+
+// Delay before resuming deferred updates once the connection is no longer
+// metered, so that a connection that turns metered again right away does not
+// restart the downloads.
+constexpr base::TimeDelta kResumeDeferredUpdatesDelay = base::Seconds(5);
+
+// Returns true if the update client refused the update in `item` only
+// because the connection is metered.
+bool IsRefusedOnMeteredConnection(
+    const component_updater::CrxUpdateItem& item) {
+  return item.state == update_client::ComponentState::kUpdateError &&
+         item.error_category == update_client::ErrorCategory::kService &&
+         item.error_code ==
+             std::to_underlying(update_client::ServiceError::UPDATE_DISABLED) &&
+         item.component && item.component->updates_enabled &&
+         !item.component->allow_updates_on_metered_connection;
+}
 
 }  // namespace
 
@@ -80,6 +99,8 @@ CrxUpdateService::CrxUpdateService(scoped_refptr<Configurator> config,
 #endif
 
   AddObserver(this);
+  net::NetworkChangeNotifier::AddConnectionCostObserver(this);
+  net::NetworkChangeNotifier::AddNetworkChangeObserver(this);
 }
 
 CrxUpdateService::~CrxUpdateService() {
@@ -146,6 +167,10 @@ void CrxUpdateService::Start() {
 void CrxUpdateService::Stop() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << "CrxUpdateService stopping";
+  is_stopped_ = true;
+  net::NetworkChangeNotifier::RemoveNetworkChangeObserver(this);
+  net::NetworkChangeNotifier::RemoveConnectionCostObserver(this);
+  resume_deferred_updates_timer_.Stop();
   scheduler_->Stop();
   update_client_->Stop();
 }
@@ -207,6 +232,10 @@ bool CrxUpdateService::UnregisterComponent(const std::string& id) {
     return false;
   }
 
+  if (deferred_updates_.erase(id) && deferred_updates_.empty()) {
+    resume_deferred_updates_timer_.Stop();
+  }
+
   // Delay the uninstall of the component if the component is being updated.
   if (update_client_->IsUpdating(id)) {
     components_pending_unregistration_.push_back(id);
@@ -228,6 +257,9 @@ bool CrxUpdateService::DoUnregisterComponent(const std::string& id) {
 
   components_.erase(id);
   component_states_.erase(id);
+  if (deferred_updates_.erase(id) && deferred_updates_.empty()) {
+    resume_deferred_updates_timer_.Stop();
+  }
 
   return result;
 }
@@ -386,18 +418,39 @@ void CrxUpdateService::OnDemandUpdateInternal(const std::string& id,
                                               Callback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (!config_->IsConnectionMetered() &&
+      !net::NetworkChangeNotifier::IsOffline()) {
+    if (const auto it = deferred_updates_.find(id);
+        it != deferred_updates_.end() &&
+        (priority == Priority::FOREGROUND || !it->second)) {
+      deferred_updates_.erase(it);
+      if (deferred_updates_.empty()) {
+        resume_deferred_updates_timer_.Stop();
+      }
+    }
+  }
+
   UMA_HISTOGRAM_ENUMERATION("ComponentUpdater.Calls", UPDATE_TYPE_MANUAL,
                             UPDATE_TYPE_COUNT);
+  StartOnDemandUpdate(id, priority, std::move(callback));
+}
 
+void CrxUpdateService::StartOnDemandUpdate(const std::string& id,
+                                           Priority priority,
+                                           Callback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  const bool is_foreground = priority == Priority::FOREGROUND;
+  if (is_foreground) {
+    ++foreground_update_counts_[id];
+  }
   update_client_->Update(
       {id},
       base::BindOnce(&CrxUpdateService::GetCrxComponents,
                      weak_ptr_factory_.GetWeakPtr()),
-      /*crx_state_change_callback=*/{},
-      /*is_foreground=*/priority == Priority::FOREGROUND,
-      base::BindOnce(&CrxUpdateService::OnUpdateComplete,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                     base::TimeTicks::Now()));
+      /*crx_state_change_callback=*/{}, is_foreground,
+      base::BindOnce(&CrxUpdateService::OnDemandUpdateComplete,
+                     weak_ptr_factory_.GetWeakPtr(), id, priority,
+                     std::move(callback), base::TimeTicks::Now()));
 }
 
 bool CrxUpdateService::Cancel(const std::string& id) {
@@ -499,6 +552,22 @@ void CrxUpdateService::OnUpdateComplete(Callback callback,
   }
 }
 
+void CrxUpdateService::OnDemandUpdateComplete(const std::string& id,
+                                              Priority priority,
+                                              Callback callback,
+                                              base::TimeTicks start_time,
+                                              update_client::Error error) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (priority == Priority::FOREGROUND) {
+    const auto it = foreground_update_counts_.find(id);
+    CHECK(it != foreground_update_counts_.end());
+    if (--it->second == 0) {
+      foreground_update_counts_.erase(it);
+    }
+  }
+  OnUpdateComplete(std::move(callback), start_time, error);
+}
+
 void CrxUpdateService::OnEvent(const CrxUpdateItem& update_item) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -528,11 +597,134 @@ void CrxUpdateService::OnEvent(const CrxUpdateItem& update_item) {
     }
   }
 
+  if (update_item.state == update_client::ComponentState::kUpdated ||
+      update_item.state == update_client::ComponentState::kUpToDate) {
+    if (deferred_updates_.erase(update_item.id) && deferred_updates_.empty()) {
+      resume_deferred_updates_timer_.Stop();
+    }
+  }
+
+  // An update refused because the connection is metered is attempted again
+  // once the connection is no longer metered, instead of waiting for the next
+  // scheduled update check.
+  if (IsRefusedOnMeteredConnection(update_item) &&
+      components_.contains(update_item.id)) {
+    VLOG(1) << "Deferring the update of " << update_item.id
+            << " until the connection is no longer metered.";
+    DeferUpdate(update_item.id, GetOnDemandPriority(update_item.id));
+  }
+
 #if BUILDFLAG(CHROME_FOR_TESTING)
   if (required_components_controller_) {
     required_components_controller_->OnEvent(update_item);
   }
 #endif
+}
+
+void CrxUpdateService::OnConnectionCostChanged(
+    net::NetworkChangeNotifier::ConnectionCost /*cost*/) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (is_stopped_) {
+    return;
+  }
+  if (config_->IsConnectionMetered()) {
+    resume_deferred_updates_timer_.Stop();
+    CancelMeteredDownloads();
+    return;
+  }
+  if (net::NetworkChangeNotifier::IsOffline()) {
+    resume_deferred_updates_timer_.Stop();
+    return;
+  }
+  if (!deferred_updates_.empty() &&
+      !resume_deferred_updates_timer_.IsRunning()) {
+    resume_deferred_updates_timer_.Start(
+        FROM_HERE, kResumeDeferredUpdatesDelay, this,
+        &CrxUpdateService::ResumeDeferredUpdates);
+  }
+}
+
+void CrxUpdateService::OnNetworkChanged(
+    net::NetworkChangeNotifier::ConnectionType /*type*/) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  OnConnectionCostChanged(net::NetworkChangeNotifier::CONNECTION_COST_UNKNOWN);
+}
+
+void CrxUpdateService::CancelMeteredDownloads() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  for (const auto& [id, component] : components_) {
+    if (component.allow_updates_on_metered_connection) {
+      continue;
+    }
+    CrxUpdateItem item;
+    if (update_client_->GetCrxUpdateState(id, &item) &&
+        item.state == update_client::ComponentState::kDownloading &&
+        Cancel(id)) {
+      VLOG(1) << "Cancelled the download of " << id
+              << ": the connection is metered.";
+      DeferUpdate(id, GetOnDemandPriority(id));
+    }
+  }
+}
+
+OnDemandUpdater::Priority CrxUpdateService::GetOnDemandPriority(
+    const std::string& id) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return foreground_update_counts_.contains(id) ? Priority::FOREGROUND
+                                                : Priority::BACKGROUND;
+}
+
+void CrxUpdateService::DeferUpdate(const std::string& id, Priority priority) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (is_stopped_ ||
+      std::ranges::contains(components_pending_unregistration_, id)) {
+    return;
+  }
+  bool& is_foreground = deferred_updates_[id];
+  is_foreground = is_foreground || priority == Priority::FOREGROUND;
+  if (!config_->IsConnectionMetered() &&
+      !net::NetworkChangeNotifier::IsOffline() &&
+      !resume_deferred_updates_timer_.IsRunning()) {
+    resume_deferred_updates_timer_.Start(
+        FROM_HERE, kResumeDeferredUpdatesDelay, this,
+        &CrxUpdateService::ResumeDeferredUpdates);
+  }
+}
+
+void CrxUpdateService::ResumeDeferredUpdates() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (is_stopped_ || config_->IsConnectionMetered() ||
+      net::NetworkChangeNotifier::IsOffline()) {
+    // The connection became metered or went offline; the updates stay
+    // deferred.
+    return;
+  }
+  // Cancelling a single component completes its original UpdateClient task with
+  // `Error::NONE`, so the original `OnDemandUpdate()` callback has already run
+  // and retries below use an empty `Callback()`.
+  const base::flat_map<std::string, bool> deferred_updates =
+      std::exchange(deferred_updates_, {});
+  std::vector<std::string> background_ids;
+  for (const auto& [id, is_foreground] : deferred_updates) {
+    VLOG(1) << "Resuming the update of " << id
+            << ": the connection is no longer metered.";
+    if (is_foreground) {
+      StartOnDemandUpdate(id, Priority::FOREGROUND, Callback());
+    } else {
+      background_ids.push_back(id);
+    }
+  }
+  if (!background_ids.empty()) {
+    update_client_->Update(background_ids,
+                           base::BindOnce(&CrxUpdateService::GetCrxComponents,
+                                          weak_ptr_factory_.GetWeakPtr()),
+                           /*crx_state_change_callback=*/{},
+                           /*is_foreground=*/false,
+                           base::BindOnce(&CrxUpdateService::OnUpdateComplete,
+                                          weak_ptr_factory_.GetWeakPtr(),
+                                          Callback(), base::TimeTicks::Now()));
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
