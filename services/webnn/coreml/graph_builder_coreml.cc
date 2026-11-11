@@ -4740,6 +4740,20 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForPad(
   CHECK(context_properties_.data_type_limits.pad_input.data_types.Has(
       MILDataTypeToOperandType(input_operand_info.mil_data_type)));
 
+  // When a dimension exceeds 16384, CoreML's legacy Espresso engine rejects its
+  // native MPS pad layer and falls back to MPSNDArrayPad (padArrayData), which
+  // dispatches uniform (32, 8, 1) threadgroups without bounds-checking the
+  // outer dimension and writes out of bounds when the product of outer
+  // dimensions is not a multiple of 8 (crbug.com/497514417).
+  constexpr uint32_t kMaxDimensionForPad = 16384;
+  const OperandInfo& output_operand_info =
+      GetOperandInfo(operation.output_operand_id);
+  if (std::ranges::any_of(output_operand_info.dimensions, [](uint32_t dim) {
+        return dim > kMaxDimensionForPad;
+      })) {
+    return NewNotSupportedError("Unsupported dimension size for pad.");
+  }
+
   CoreML::Specification::MILSpec::Operation* op = &block.emplace_back();
   op->set_type(kOpPadTypeName);
 
