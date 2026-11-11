@@ -1555,6 +1555,9 @@ public class ImeTest {
     @Test
     @MediumTest
     @Feature({"TextInput"})
+    @DisableIf.Build(
+            sdk_is_greater_than = Build.VERSION_CODES.UPSIDE_DOWN_CAKE,
+            message = "https://crbug.com/584777619")
     public void testRestartInputWhileComposingText() throws Throwable {
         mRule.setComposingText("abc", 1);
         mRule.waitAndVerifyUpdateSelection(0, 3, 3, 0, 3);
