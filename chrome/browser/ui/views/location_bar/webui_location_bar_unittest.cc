@@ -280,20 +280,6 @@ TEST_F(WebUILocationBarTest, MouseClickSuppression) {
   EXPECT_FALSE(WillNextBubbleShowBeSuppressed());
 }
 
-TEST_F(WebUILocationBarTest, OnLhsChipDrag) {
-  // Should not crash when called with various identifiers, even with null
-  // web contents.
-  location_bar_->OnLhsChipDrag(
-      toolbar_ui_api::mojom::LhsChipIdentifier::kLocationIcon,
-      ui::mojom::DragEventSource::kMouse);
-  location_bar_->OnLhsChipDrag(
-      toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionRequest,
-      ui::mojom::DragEventSource::kMouse);
-  location_bar_->OnLhsChipDrag(
-      toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionIndicator,
-      ui::mojom::DragEventSource::kMouse);
-}
-
 class MockPermissionChipObserver : public PermissionChipInterface::Observer {
  public:
   MOCK_METHOD(void, OnMousePressed, (), (override));

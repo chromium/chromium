@@ -1329,6 +1329,7 @@ class TestDragDropClient : public aura::client::DragDropClient,
         data->GetURLs(ui::FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
     if (!urls.empty()) {
       dragged_url_ = urls[0].url;
+      dragged_title_ = urls[0].title;
     }
     std::optional<std::u16string> text = data->GetString();
     if (text) {
@@ -1388,6 +1389,7 @@ class TestDragDropClient : public aura::client::DragDropClient,
 
   bool drag_triggered() const { return drag_triggered_; }
   const GURL& dragged_url() const { return dragged_url_; }
+  const std::u16string& dragged_title() const { return dragged_title_; }
   const std::u16string& dragged_text() const { return dragged_text_; }
   // Bitmask of `ui::OSExchangeData::Format` values carried by the drag.
   int dragged_formats() const { return dragged_formats_; }
@@ -1413,6 +1415,7 @@ class TestDragDropClient : public aura::client::DragDropClient,
   bool drag_triggered_ = false;
   base::OnceCallback<void(const ui::OSExchangeData&)> drop_callback_;
   GURL dragged_url_;
+  std::u16string dragged_title_;
   std::u16string dragged_text_;
   int dragged_formats_ = 0;
   int allowed_operations_ = ui::DragDropTypes::DRAG_NONE;
@@ -1694,6 +1697,28 @@ class WebUIToolbarViewsLocationBarInteractiveUiTest
         ReleaseMouse(), ResetDragDropClient());
   }
 
+  // Drags the location icon out to a sibling Views-level element, and checks
+  // the drag data. Like native Views, the drag carries the page URL and title,
+  // and allows copy and link.
+  MultiStep DragFromLocationIconAndCheck(const GURL& url,
+                                         const std::u16string& title) {
+    return Steps(
+        SetupDragDropClient(),
+        MoveMouseTo(WebUIToolbarId(), kLocationIconDeepQuery),
+        DragMouseTo(kReloadButtonElementId, CenterPoint(), /*release=*/false),
+        PollUntil(base::BindLambdaForTesting(
+                      [this]() { return drag_drop_client_->drag_triggered(); }),
+                  "Drag was triggered"),
+        // Use non-fatal checks, so that the steps below still clean up.
+        Do(base::BindLambdaForTesting([this, url, title]() {
+          EXPECT_EQ(url, drag_drop_client_->dragged_url());
+          EXPECT_EQ(title, drag_drop_client_->dragged_title());
+          EXPECT_EQ(ui::DragDropTypes::DRAG_COPY | ui::DragDropTypes::DRAG_LINK,
+                    drag_drop_client_->allowed_operations());
+        })),
+        ReleaseMouse(), ResetDragDropClient());
+  }
+
   // Checks the omnibox after a drag out of it ended: like the native omnibox,
   // it still has `text`, and it still accepts text dropped into it from
   // outside, i.e. it no longer treats drags as its own. Like a real drop, the
@@ -1871,60 +1896,99 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarInteractiveUiTest,
 }
 
 #if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_DragLocationIcon DragLocationIcon
+#define MAYBE_LocationIcon_DragUrl LocationIcon_DragUrl
+#define MAYBE_LocationIcon_DragWhileEditing LocationIcon_DragWhileEditing
 #else
-#define MAYBE_DragLocationIcon DISABLED_DragLocationIcon
+#define MAYBE_LocationIcon_DragUrl DISABLED_LocationIcon_DragUrl
+#define MAYBE_LocationIcon_DragWhileEditing \
+  DISABLED_LocationIcon_DragWhileEditing
 #endif
+
 IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarInteractiveUiTest,
-                       MAYBE_DragLocationIcon) {
+                       MAYBE_LocationIcon_DragUrl) {
+#if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS)
+  const GURL initial_url = embedded_test_server()->GetURL("/title2.html");
+
+  RunTestSequence(
+      WaitForToolbarLoaded(), NavigateWebContents(TabId(), initial_url),
+      WaitForJsResultAt(WebUIToolbarId(), kLocationIconDeepQuery,
+                        "el => el.clickable"),
+      DragFromLocationIconAndCheck(initial_url, u"Title Of Awesomeness"));
+#endif
+}
+
+// Like native Views, pressing the location icon while the omnibox is being
+// edited, when the icon cannot be dragged, keeps the omnibox focused and its
+// suggestions popup open.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarInteractiveUiTest,
+                       LocationIcon_PressWhileEditing) {
+  const GURL initial_url = embedded_test_server()->GetURL("/title1.html");
+
+  RunTestSequence(
+      WaitForToolbarLoaded(), NavigateWebContents(TabId(), initial_url),
+      WaitForJsResultAt(WebUIToolbarId(), kTextInputDeepQuery,
+                        "el => el.value.includes('title1')"),
+      TypeInOmniboxAndSelectAll("hello world"),
+      PollUntil(
+          base::BindLambdaForTesting([this]() { return IsOmniboxPopupOpen(); }),
+          "Popup is open"),
+      WaitForJsResultAt(WebUIToolbarId(), kLocationIconDeepQuery,
+                        "el => !el.clickable"),
+      MoveMouseTo(WebUIToolbarId(), kLocationIconDeepQuery),
+      ClickMouse(ui_controls::LEFT, /*release=*/false),
+      // Round trip to the toolbar, so that a blur caused by the press would
+      // have reached the browser, before checking the popup.
+      CheckJsResultAt(WebUIToolbarId(), kOmniboxDeepQuery,
+                      "el => el.hasFocus()"),
+      CheckResult(
+          base::BindLambdaForTesting([this]() { return IsOmniboxPopupOpen(); }),
+          true, "Popup stays open on press"),
+      ReleaseMouse(),
+      CheckJsResultAt(WebUIToolbarId(), kOmniboxDeepQuery,
+                      "el => el.hasFocus()"),
+      CheckResult(
+          base::BindLambdaForTesting([this]() { return IsOmniboxPopupOpen(); }),
+          true, "Popup stays open on release"));
+}
+
+// Like native Views, dragging the location icon closes the omnibox suggestions
+// popup, so that it does not cover the drop target, even while the omnibox is
+// being edited and the icon cannot be dragged.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarInteractiveUiTest,
+                       MAYBE_LocationIcon_DragWhileEditing) {
 #if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS)
   const GURL initial_url = embedded_test_server()->GetURL("/title1.html");
 
-  std::unique_ptr<TestDragDropClient> drag_drop_client;
-
   RunTestSequence(
-      // Setup and navigate to a page.
       WaitForToolbarLoaded(), NavigateWebContents(TabId(), initial_url),
-
-      // Wait until the icon is actually clickable.
+      WaitForJsResultAt(WebUIToolbarId(), kTextInputDeepQuery,
+                        "el => el.value.includes('title1')"),
+      TypeInOmniboxAndSelectAll("hello world"),
+      PollUntil(
+          base::BindLambdaForTesting([this]() { return IsOmniboxPopupOpen(); }),
+          "Popup is open"),
       WaitForJsResultAt(WebUIToolbarId(), kLocationIconDeepQuery,
-                        "el => el.clickable"),
-
-      // Setup interception and trigger drag.
-      Do(base::BindLambdaForTesting([&]() {
-        auto* root_window = BrowserView::GetBrowserViewForBrowser(browser())
-                                ->GetWidget()
-                                ->GetNativeWindow()
-                                ->GetRootWindow();
-        drag_drop_client = std::make_unique<TestDragDropClient>(root_window);
-        aura::test::EnvTestHelper(aura::Env::GetInstance())
-            .SetInputStateLookup(nullptr);
-      })),
-
-      // Move to icon and perform drag gesture.
+                        "el => !el.clickable"),
+      SetupDragDropClient(),
       MoveMouseTo(WebUIToolbarId(), kLocationIconDeepQuery),
-      DragMouseTo(base::BindOnce([]() -> gfx::Point {
-                    return display::Screen::Get()->GetCursorScreenPoint() +
-                           gfx::Vector2d(0, 20);
-                  }),
-                  /*release=*/false),
-
-      // Verify that drag was triggered with correct data.
-      PollUntil(base::BindLambdaForTesting([&]() {
-                  return drag_drop_client->drag_triggered() &&
-                         drag_drop_client->dragged_url() == initial_url;
-                }),
-                "Drag was triggered with correct URL"),
-
-      ReleaseMouse(),
-
-      // Cleanup.
-      Do(base::BindLambdaForTesting([&]() {
-        aura::test::EnvTestHelper(aura::Env::GetInstance())
-            .SetInputStateLookup(aura::InputStateLookup::Create());
-        drag_drop_client.reset();
-      })));
-#endif  // defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS)
+      ClickMouse(ui_controls::LEFT, /*release=*/false),
+      // Round trip to the toolbar, so that a blur caused by the press would
+      // have reached the browser, before checking that the press alone keeps
+      // the popup open.
+      CheckJsResultAt(WebUIToolbarId(), kOmniboxDeepQuery,
+                      "el => el.hasFocus()"),
+      CheckResult(
+          base::BindLambdaForTesting([this]() { return IsOmniboxPopupOpen(); }),
+          true, "Popup stays open on press"),
+      MoveMouseTo(kReloadButtonElementId),
+      PollUntil(base::BindLambdaForTesting(
+                    [this]() { return !IsOmniboxPopupOpen(); }),
+                "Popup is closed on drag"),
+      // Use a non-fatal check, so that the steps below still clean up.
+      Do(base::BindLambdaForTesting(
+          [this]() { EXPECT_FALSE(drag_drop_client_->drag_triggered()); })),
+      ReleaseMouse(), ResetDragDropClient());
+#endif
 }
 
 #if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS)

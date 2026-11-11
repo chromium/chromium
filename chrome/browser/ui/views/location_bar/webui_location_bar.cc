@@ -1093,6 +1093,13 @@ void WebUILocationBar::OnLhsChipDrag(
     return;
   }
 
+  // Like LocationBarView::OnLocationIconDragged(), close the popup, so that it
+  // does not cover the drop target, even if there is nothing to drag.
+  if (auto* popup_closer = omnibox::OmniboxPopupCloser::From(browser_.get())) {
+    popup_closer->CloseWithReason(
+        omnibox::PopupCloseReason::kLocationIconDragged);
+  }
+
   content::WebContents* web_contents = GetWebContents();
   if (!web_contents || !web_contents->GetVisibleURL().is_valid() ||
       IsEditingOrEmpty()) {

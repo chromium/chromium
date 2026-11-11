@@ -24,8 +24,9 @@ export function getHtml(this: LocationIconElement) {
     .tooltip="${this.state.tooltip}"
     .ariaLabel="${this.state.accessibilityState.label}"
     .ariaDescription="${this.state.accessibilityState.description}"
-    @pointerdown="${this.onPointerdown_}" @click="${this.onClick_}"
-    @auxclick="${this.onAuxclick_}" @contextmenu="${this.onContextmenu_}">
+    @mousedown="${this.onMousedown_}" @pointerdown="${this.onPointerdown_}"
+    @click="${this.onClick_}" @auxclick="${this.onAuxclick_}"
+    @contextmenu="${this.onContextmenu_}">
   ${this.glowUpActive ? html`
     <cr-icon id="icon" slot="prefix-icon"
         icon="${this.state.isContextMenuVisible ?

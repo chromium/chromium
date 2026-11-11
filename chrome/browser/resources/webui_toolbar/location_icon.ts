@@ -214,14 +214,34 @@ export class LocationIconElement extends LocationIconElementBase {
     }, duration);
   }
 
+  protected onMousedown_(e: MouseEvent) {
+    // Like native Views, pressing an unclickable icon, e.g. while the omnibox
+    // is being edited, does not take the focus away from the omnibox, which
+    // would close its suggestions popup.
+    if (!this.clickable) {
+      e.preventDefault();
+    }
+  }
+
   protected onPointerdown_(e: PointerEvent) {
     if (this.activePointerId_ !== null) {
       return;
     }
 
+    // An unclickable icon ignores presses, but still reports drags, like
+    // native Views, which closes the omnibox suggestions popup on a drag of
+    // the icon even when there is nothing to drag.
+    if (!this.clickable) {
+      if (e.button === 0) {
+        this.isDragging_ = false;
+        this.startDragTracking_(e);
+      }
+      return;
+    }
+
     // Only handle primary (left), auxiliary (middle), and secondary (right)
     // clicks.
-    if (!this.clickable || ![0, 1, 2].includes(e.button)) {
+    if (![0, 1, 2].includes(e.button)) {
       return;
     }
 
@@ -240,26 +260,29 @@ export class LocationIconElement extends LocationIconElementBase {
     this.isDragging_ = false;
 
     if (e.button === 0) {
-      this.dragStartX_ = e.clientX;
-      this.dragStartY_ = e.clientY;
-      this.activePointerId_ = e.pointerId;
-
-      PointerProxyImpl.getInstance().setPointerCapture(
-          this.$.button, e.pointerId);
-
-      this.eventTracker_.add(
-          this.$.button, 'pointermove',
-          (e: PointerEvent) => this.onContainerPointerMove_(e));
-      this.eventTracker_.add(
-          this.$.button, 'pointerup',
-          (e: PointerEvent) => this.onContainerPointerUp_(e));
-      this.eventTracker_.add(
-          this.$.button, 'pointercancel',
-          () => this.onContainerPointerCancel_());
-      this.eventTracker_.add(
-          this.$.button, 'lostpointercapture',
-          () => this.onContainerLostPointerCapture_());
+      this.startDragTracking_(e);
     }
+  }
+
+  private startDragTracking_(e: PointerEvent) {
+    this.dragStartX_ = e.clientX;
+    this.dragStartY_ = e.clientY;
+    this.activePointerId_ = e.pointerId;
+
+    PointerProxyImpl.getInstance().setPointerCapture(
+        this.$.button, e.pointerId);
+
+    this.eventTracker_.add(
+        this.$.button, 'pointermove',
+        (e: PointerEvent) => this.onContainerPointerMove_(e));
+    this.eventTracker_.add(
+        this.$.button, 'pointerup',
+        (e: PointerEvent) => this.onContainerPointerUp_(e));
+    this.eventTracker_.add(
+        this.$.button, 'pointercancel', () => this.onContainerPointerCancel_());
+    this.eventTracker_.add(
+        this.$.button, 'lostpointercapture',
+        () => this.onContainerLostPointerCapture_());
   }
 
   protected onContainerPointerMove_(e: PointerEvent) {
