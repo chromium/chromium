@@ -38,6 +38,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.url.GURL;
 
 import java.util.concurrent.atomic.AtomicReference;
@@ -59,6 +60,7 @@ public class HistoryTabHelperTest {
     @DisableIf.Build(
             sdk_is_less_than = VERSION_CODES.UPSIDE_DOWN_CAKE,
             message = "This test is using an API introduced in Android U.")
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // https://crbug.com/511288253
     public void testAppHistory() throws Exception {
         Context context = ContextUtils.getApplicationContext();
         String url1 = mActivityTestRule.getTestServer().getURL(FILE_PATH);
