@@ -4,6 +4,9 @@
 
 #import "ios/chrome/browser/passwords/bottom_sheet/ui/remote_actor_credential_bottom_sheet_view_controller.h"
 
+#import "base/apple/foundation_util.h"
+#import "base/check_op.h"
+#import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/strings/grit/components_strings.h"
@@ -11,12 +14,15 @@
 #import "ios/chrome/browser/passwords/bottom_sheet/ui/remote_actor_credential_bottom_sheet_mutator.h"
 #import "ios/chrome/browser/shared/ui/bottom_sheet/table_view_bottom_sheet_view_controller+subclassing.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/favicon_content_configuration.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/table_view_cell_content_configuration.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/chrome/common/ui/util/chrome_button.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
@@ -109,10 +115,14 @@ ButtonStackConfiguration* SetUpButtonConfiguration() {
 }  // namespace
 
 @interface RemoteActorCredentialBottomSheetViewController () <
-    ConfirmationAlertActionHandler>
+    ConfirmationAlertActionHandler,
+    UITableViewDataSource>
 @end
 
 @implementation RemoteActorCredentialBottomSheetViewController {
+  // Table view displaying the credential suggestions.
+  UITableView* _tableView;
+
   // List of credential suggestions to display.
   NSArray<FormSuggestion*>* _suggestions;
 
@@ -183,18 +193,64 @@ ButtonStackConfiguration* SetUpButtonConfiguration() {
     self.configuration.primaryActionEnabled = YES;
     [self reloadConfiguration];
   }
+
+  // The suggestions may arrive after the view has loaded.
+  if (self.isViewLoaded) {
+    [self reloadTableViewData];
+  }
 }
 
 - (void)setFaviconAttributes:(FaviconAttributes*)faviconAttributes {
   _faviconAttributes = faviconAttributes;
+  // The favicon is fetched asynchronously, so it may arrive after the cells
+  // have been laid out.
+  for (UITableViewCell* cell in _tableView.visibleCells) {
+    TableViewCellContentConfiguration* configuration =
+        base::apple::ObjCCastStrict<TableViewCellContentConfiguration>(
+            cell.contentConfiguration);
+    configuration.leadingConfiguration =
+        [self faviconConfiguration:faviconAttributes];
+    cell.contentConfiguration = configuration;
+  }
+}
+
+#pragma mark - UITableViewDataSource
+
+- (NSInteger)tableView:(UITableView*)tableView
+    numberOfRowsInSection:(NSInteger)section {
+  return [self rowCount];
+}
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView*)tableView {
+  return 1;
+}
+
+- (UITableViewCell*)tableView:(UITableView*)tableView
+        cellForRowAtIndexPath:(NSIndexPath*)indexPath {
+  UITableViewCell* cell =
+      [TableViewCellContentConfiguration dequeueTableViewCell:tableView];
+  return [self layoutCell:cell atIndexPath:indexPath];
 }
 
 #pragma mark - TableViewBottomSheetViewController
 
+- (UITableView*)createTableView {
+  _tableView = [super createTableView];
+  _tableView.dataSource = self;
+  [TableViewCellContentConfiguration registerCellForTableView:_tableView];
+  return _tableView;
+}
+
 - (NSUInteger)rowCount {
-  // TODO(crbug.com/579012416): Update `rowCount` to return the number of
-  // credentials to display.
-  return 0;
+  return _suggestions.count;
+}
+
+- (CGFloat)computeTableViewCellHeightAtIndex:(NSUInteger)index {
+  CGFloat tableWidth = [self tableViewWidth];
+  UITableViewCell* cell = [self layoutCell:[[UITableViewCell alloc] init]
+                               atIndexPath:[NSIndexPath indexPathForRow:index
+                                                              inSection:0]];
+  return [cell systemLayoutSizeFittingSize:CGSizeMake(tableWidth, 1)].height;
 }
 
 #pragma mark - ConfirmationAlertViewController
@@ -211,6 +267,57 @@ ButtonStackConfiguration* SetUpButtonConfiguration() {
   };
   [newSubtitle addAttributes:linkAttributes range:_subtitleLinkRange];
   subtitle.attributedText = newSubtitle;
+}
+
+#pragma mark - Private
+
+// Returns the leading favicon configuration for `faviconAttributes`, or nil if
+// the favicon isn't available yet.
+- (FaviconContentConfiguration*)faviconConfiguration:
+    (FaviconAttributes*)faviconAttributes {
+  if (!faviconAttributes) {
+    return nil;
+  }
+  FaviconContentConfiguration* configuration =
+      [[FaviconContentConfiguration alloc] init];
+  configuration.faviconAttributes = faviconAttributes;
+  return configuration;
+}
+
+// Returns the accessibility value for the cell at `indexPath`.
+- (NSString*)cellAccessibilityValueAtIndexPath:(NSIndexPath*)indexPath {
+  return l10n_util::GetNSStringF(IDS_IOS_AUTOFILL_SUGGESTION_INDEX_VALUE,
+                                 base::NumberToString16(indexPath.row + 1),
+                                 base::NumberToString16([self rowCount]));
+}
+
+// Lays out `cell` for the credential suggestion at `indexPath`.
+- (UITableViewCell*)layoutCell:(UITableViewCell*)cell
+                   atIndexPath:(NSIndexPath*)indexPath {
+  CHECK_LT(static_cast<NSUInteger>(indexPath.row), _suggestions.count);
+  NSString* username = _suggestions[indexPath.row].value;
+
+  TableViewCellContentConfiguration* configuration =
+      [[TableViewCellContentConfiguration alloc] init];
+  configuration.title =
+      username.length
+          ? username
+          : l10n_util::GetNSString(IDS_IOS_CREDENTIAL_BOTTOM_SHEET_NO_USERNAME);
+  configuration.titleNumberOfLines = 1;
+  configuration.titleLineBreakMode = NSLineBreakByTruncatingMiddle;
+  configuration.subtitle = l10n_util::GetNSString(IDS_IOS_PASSWORD_SUBTEXT);
+  configuration.subtitleNumberOfLines = 1;
+  configuration.leadingConfiguration =
+      [self faviconConfiguration:_faviconAttributes];
+
+  cell.contentConfiguration = configuration;
+  cell.accessibilityIdentifier = configuration.title;
+  cell.accessibilityValue = [self cellAccessibilityValueAtIndexPath:indexPath];
+  cell.accessoryType = [self accessoryType:indexPath];
+  cell.selectionStyle = UITableViewCellSelectionStyleNone;
+  cell.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
+
+  return cell;
 }
 
 @end
