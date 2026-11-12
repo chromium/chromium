@@ -18,7 +18,6 @@
 #include "components/safe_browsing/core/browser/tailored_security_service/tailored_security_service.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
-#include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "components/sync/test/test_sync_service.h"
@@ -119,11 +118,7 @@ class SafeBrowsingPrefChangeHandlerTest : public testing::Test {
   }
 
   void SetSignedIn() {
-    signin::ConsentLevel consent_level =
-        syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
-            ? signin::ConsentLevel::kSignin
-            : signin::ConsentLevel::kSync;
-    sync_service()->SetSignedIn(consent_level);
+    sync_service()->SetSignedIn(signin::ConsentLevel::kSignin);
   }
 
   content::BrowserTaskEnvironment task_environment_;

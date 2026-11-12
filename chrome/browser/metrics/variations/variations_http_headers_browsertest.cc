@@ -48,7 +48,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
-#include "components/sync/base/features.h"
 #include "components/variations/pref_names.h"
 #include "components/variations/proto/layer.pb.h"
 #include "components/variations/proto/study.pb.h"
@@ -971,10 +970,7 @@ IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest, UserSignedIn) {
       chrome_test_utils::GetProfile(this));
 
   adaptor.identity_test_env()->MakePrimaryAccountAvailable(
-      "main_email@gmail.com",
-      syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
-          ? signin::ConsentLevel::kSignin
-          : signin::ConsentLevel::kSync);
+      "main_email@gmail.com", signin::ConsentLevel::kSignin);
 
   ASSERT_TRUE(NavigateToURL(GetGoogleUrl(server())));
 

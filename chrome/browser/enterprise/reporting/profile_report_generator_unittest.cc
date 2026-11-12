@@ -237,20 +237,6 @@ TEST_F(ProfileReportGeneratorTest, UnsignedInProfile) {
   EXPECT_FALSE(report->has_chrome_signed_in_user());
 }
 
-// TODO(crbug.com/417950948): This test can be deleted when all users have been
-// migrated away from kSync.
-TEST_F(ProfileReportGeneratorTest, SyncingProfile) {
-  IdentityTestEnvironmentProfileAdaptor identity_test_env_adaptor(profile());
-  auto expected_info =
-      identity_test_env_adaptor.identity_test_env()->SetPrimaryAccount(
-          "test@mail.com", signin::ConsentLevel::kSync);
-  auto report = GenerateReport();
-  EXPECT_TRUE(report->has_chrome_signed_in_user());
-  EXPECT_EQ(expected_info.email, report->chrome_signed_in_user().email());
-  EXPECT_EQ(expected_info.gaia.ToString(),
-            report->chrome_signed_in_user().obfuscated_gaia_id());
-}
-
 TEST_F(ProfileReportGeneratorTest, SignedInProfile) {
   IdentityTestEnvironmentProfileAdaptor identity_test_env_adaptor(profile());
   auto expected_info =

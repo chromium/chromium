@@ -22,7 +22,6 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
-#include "components/sync/base/features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -59,11 +58,8 @@ class GeneratedHttpsFirstModePrefTest : public testing::Test {
         AccountInfo::Builder(account_info)
             .SetIsUnderAdvancedProtection(is_under_advanced_protection)
             .Build();
-    identity_test_env()->SetPrimaryAccount(
-        account_info.GetEmail(),
-        syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
-            ? signin::ConsentLevel::kSignin
-            : signin::ConsentLevel::kSync);
+    identity_test_env()->SetPrimaryAccount(account_info.GetEmail(),
+                                           signin::ConsentLevel::kSignin);
     identity_test_env()->UpdateAccountInfoForAccount(account_info);
   }
 

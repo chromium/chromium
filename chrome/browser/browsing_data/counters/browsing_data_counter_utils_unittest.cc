@@ -27,7 +27,6 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
-#include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/test/test_sync_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -306,9 +305,6 @@ class CookieBrowsingDataCounterUtilsTest : public BrowsingDataCounterUtilsTest {
     kAccountAware,
     kSignin,
     kSigninPending,
-    // TODO(crbug.com/417950948): Remove sync-related states.
-    kSyncing,
-    kSyncPaused
   };
 
   struct TestCase {
@@ -334,23 +330,19 @@ class CookieBrowsingDataCounterUtilsTest : public BrowsingDataCounterUtilsTest {
   }
 
   CoreAccountInfo SetSignedInState(
-      signin::ConsentLevel consent_level,
       signin::IdentityTestEnvironment* identity_test_env,
-      syncer::TestSyncService* test_sync_service,
-      PrefService* prefs) {
+      syncer::TestSyncService* test_sync_service) {
     AccountInfo account_info = identity_test_env->MakePrimaryAccountAvailable(
-        "user@gmail.com", consent_level);
-    test_sync_service->SetSignedIn(consent_level,
+        "user@gmail.com", signin::ConsentLevel::kSignin);
+    test_sync_service->SetSignedIn(signin::ConsentLevel::kSignin,
                                    account_info.GetCoreAccountInfo());
     return account_info.GetCoreAccountInfo();
   }
 
   void SetSigninPendingState(signin::IdentityTestEnvironment* identity_test_env,
-                             syncer::TestSyncService* test_sync_service,
-                             PrefService* prefs) {
+                             syncer::TestSyncService* test_sync_service) {
     CoreAccountInfo account_info =
-        SetSignedInState(signin::ConsentLevel::kSignin, identity_test_env,
-                         test_sync_service, prefs);
+        SetSignedInState(identity_test_env, test_sync_service);
     identity_test_env->UpdatePersistentErrorOfRefreshTokenForAccount(
         account_info.account_id,
         GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
@@ -360,26 +352,6 @@ class CookieBrowsingDataCounterUtilsTest : public BrowsingDataCounterUtilsTest {
         identity_test_env->identity_manager()
             ->GetErrorStateOfRefreshTokenForAccount(account_info.account_id)
             .IsPersistentError());
-  }
-
-  void SetSyncPausedState(signin::IdentityTestEnvironment* identity_test_env,
-                          syncer::TestSyncService* test_sync_service,
-                          PrefService* prefs) {
-    CoreAccountInfo account_info =
-        SetSignedInState(signin::ConsentLevel::kSync, identity_test_env,
-                         test_sync_service, prefs);
-    identity_test_env->UpdatePersistentErrorOfRefreshTokenForAccount(
-        account_info.account_id,
-        GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
-            GoogleServiceAuthError::InvalidGaiaCredentialsReason::
-                CREDENTIALS_REJECTED_BY_SERVER));
-    test_sync_service->SetPersistentAuthError();
-    ASSERT_TRUE(
-        identity_test_env->identity_manager()
-            ->GetErrorStateOfRefreshTokenForAccount(account_info.account_id)
-            .IsPersistentError());
-    ASSERT_EQ(syncer::SyncService::UserActionableError::kSignInNeedsUpdate,
-              test_sync_service->GetUserActionableError());
   }
 
   void VerifyTestCase(const TestCase& test_case) {
@@ -416,22 +388,10 @@ class CookieBrowsingDataCounterUtilsTest : public BrowsingDataCounterUtilsTest {
         SetAccountAwareState(identity_test_env, test_sync_service);
         break;
       case SigninState::kSignin:
-        SetSignedInState(signin::ConsentLevel::kSignin, identity_test_env,
-                         test_sync_service, testing_profile->GetPrefs());
+        SetSignedInState(identity_test_env, test_sync_service);
         break;
       case SigninState::kSigninPending:
-        SetSigninPendingState(identity_test_env, test_sync_service,
-                              testing_profile->GetPrefs());
-        break;
-      case SigninState::kSyncing:
-        CHECK(!syncer::IsReplaceSyncPromosWithSignInPromosEnabled());
-        SetSignedInState(signin::ConsentLevel::kSync, identity_test_env,
-                         test_sync_service, testing_profile->GetPrefs());
-        break;
-      case SigninState::kSyncPaused:
-        CHECK(!syncer::IsReplaceSyncPromosWithSignInPromosEnabled());
-        SetSyncPausedState(identity_test_env, test_sync_service,
-                           testing_profile->GetPrefs());
+        SetSigninPendingState(identity_test_env, test_sync_service);
         break;
     }
 
@@ -462,21 +422,10 @@ TEST_F(CookieBrowsingDataCounterUtilsTest, CookieCounterResult) {
       {/*num_sites= */ 1, SigninState::kSignin,
        "From 1 site. To delete Google cookies from this device, <a href=\"#\" "
        "target=\"_blank\" id=\"signOutLink\">sign out of Chrome</a>."},
+      {/*num_sites= */ 0, SigninState::kSignin, "None"},
+      {/*num_sites= */ 42, SigninState::kSignin, "From 42 sites",
+       /*signout_allowed= */ false},
   };
-
-  if (!syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
-    test_cases.push_back(
-        {/*num_sites= */ 10, SigninState::kSyncPaused, "From 10 sites"});
-    test_cases.push_back(
-        {/*num_sites= */ 42, SigninState::kSyncing,
-         "From 42 sites. To delete Google cookies from this device, <a "
-         "href=\"#\" target=\"_blank\" id=\"signOutLink\">sign out of "
-         "Chrome</a>."});
-    test_cases.push_back({/*num_sites= */ 0, SigninState::kSyncing, "None"});
-    test_cases.push_back({/*num_sites= */ 42, SigninState::kSyncing,
-                          "From 42 sites",
-                          /*signout_allowed= */ false});
-  }
 
   for (const TestCase& test_case : test_cases) {
     VerifyTestCase(test_case);

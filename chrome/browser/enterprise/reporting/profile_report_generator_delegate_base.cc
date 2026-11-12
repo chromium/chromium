@@ -41,7 +41,6 @@
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/sync/base/features.h"
 #include "google_apis/gaia/gaia_id.h"
 
 namespace em = enterprise_management;
@@ -70,13 +69,9 @@ bool ProfileReportGeneratorDelegateBase::Init(const base::FilePath& path) {
 
 void ProfileReportGeneratorDelegateBase::GetSigninUserInfo(
     em::ChromeUserProfileInfo* report) {
-  signin::ConsentLevel consent_level =
-      syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
-          ? signin::ConsentLevel::kSignin
-          : signin::ConsentLevel::kSync;
   auto account_info =
       IdentityManagerFactory::GetForProfile(profile_)->GetPrimaryAccountInfo(
-          consent_level);
+          signin::ConsentLevel::kSignin);
   if (account_info.IsEmpty()) {
     return;
   }

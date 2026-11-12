@@ -27,7 +27,6 @@
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
-#include "components/sync/base/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/base_window.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -292,10 +291,6 @@ void InvalidateAccount(Profile* profile) {
       identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
           identity_manager->GetPrimaryAccountId(
               signin::ConsentLevel::kSignin)));
-  if (!syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
-    ASSERT_FALSE(
-        identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
-  }
   ASSERT_TRUE(
       identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 }
