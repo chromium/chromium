@@ -77,13 +77,19 @@ class TestGpuChannelManagerDelegate : public GpuChannelManagerDelegate {
   const raw_ptr<Scheduler> scheduler_;
 };
 
-GpuChannelTestCommon::GpuChannelTestCommon(bool use_stub_bindings)
-    : GpuChannelTestCommon(std::vector<int32_t>(), use_stub_bindings) {}
+GpuChannelTestCommon::GpuChannelTestCommon(
+    bool use_stub_bindings,
+    base::test::TaskEnvironment::TimeSource time_source)
+    : GpuChannelTestCommon(std::vector<int32_t>(),
+                           use_stub_bindings,
+                           time_source) {}
 
 GpuChannelTestCommon::GpuChannelTestCommon(
     std::vector<int32_t> enabled_workarounds,
-    bool use_stub_bindings)
-    : memory_dump_manager_(
+    bool use_stub_bindings,
+    base::test::TaskEnvironment::TimeSource time_source)
+    : task_environment_(time_source),
+      memory_dump_manager_(
           base::trace_event::MemoryDumpManager::CreateInstanceForTesting()),
       sync_point_manager_(new SyncPointManager()),
       shared_image_manager_(new SharedImageManager(false /* thread_safe */)),

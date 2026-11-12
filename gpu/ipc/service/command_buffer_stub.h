@@ -294,6 +294,8 @@ class GPU_IPC_SERVICE_EXPORT CommandBufferStub
   void ScheduleDelayedWork(base::TimeDelta delay);
 
   void CheckCompleteWaits();
+  void BoostPriorityForWait();
+  void EscalateWaitPriorityToHigh();
 
   // Set driver bug workarounds and disabled GL extensions to the context.
   static void SetContextGpuFeatureInfo(gl::GLContext* context,
@@ -316,6 +318,7 @@ class GPU_IPC_SERVICE_EXPORT CommandBufferStub
   base::ObserverList<DestructionObserver>::Unchecked destruction_observers_;
 
   base::DeadlineTimer process_delayed_work_timer_;
+  base::RetainingOneShotTimer wait_priority_escalation_timer_;
   uint32_t previous_processed_num_;
   base::TimeTicks last_idle_time_;
 

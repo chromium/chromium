@@ -57,6 +57,10 @@ GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kNoUndamagedOverlayPromotion);
 GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kAdjustGpuProcessPriority);
 #endif
 
+GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kCapCommandBufferWaitPriority);
+GPU_CONFIG_EXPORT extern const base::FeatureParam<base::TimeDelta>
+    kCommandBufferWaitHighPriorityDelay;
+
 GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kClearGrShaderDiskCacheOnInvalidPrefix);
 
 GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kGpuInitOptimization);

@@ -35,10 +35,15 @@ class TestGpuChannelManagerDelegate;
 
 class GpuChannelTestCommon : public testing::Test {
  public:
-  explicit GpuChannelTestCommon(bool use_stub_bindings);
+  explicit GpuChannelTestCommon(
+      bool use_stub_bindings,
+      base::test::TaskEnvironment::TimeSource time_source =
+          base::test::TaskEnvironment::TimeSource::DEFAULT);
   // Constructor which allows a custom set of GPU driver bug workarounds.
   GpuChannelTestCommon(std::vector<int32_t> enabled_workarounds,
-                       bool use_stub_bindings);
+                       bool use_stub_bindings,
+                       base::test::TaskEnvironment::TimeSource time_source =
+                           base::test::TaskEnvironment::TimeSource::DEFAULT);
 
   GpuChannelTestCommon(const GpuChannelTestCommon&) = delete;
   GpuChannelTestCommon& operator=(const GpuChannelTestCommon&) = delete;

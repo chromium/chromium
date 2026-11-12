@@ -4,9 +4,12 @@
 
 #include "gpu/ipc/service/command_buffer_stub.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/auto_reset.h"
+#include "base/check.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/hash/hash.h"
@@ -31,6 +34,7 @@
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/sync_point_manager.h"
 #include "gpu/config/gpu_crash_keys.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "gpu/ipc/common/command_buffer_trace_utils.h"
 #include "gpu/ipc/service/gpu_channel.h"
 #include "gpu/ipc/service/gpu_channel_manager.h"
@@ -137,6 +141,7 @@ CommandBufferStub::CommandBufferStub(
       wait_set_get_buffer_count_(0),
       has_stateful_context_(IsStateful(*init_params.attribs)) {
   process_delayed_work_timer_.SetTaskRunner(channel_->task_runner());
+  wait_priority_escalation_timer_.SetTaskRunner(channel_->task_runner());
 }
 
 CommandBufferStub::~CommandBufferStub() {
@@ -302,6 +307,7 @@ void CommandBufferStub::CreateCacheUse(
 
 void CommandBufferStub::Destroy() {
   UpdateActiveUrl();
+  wait_priority_escalation_timer_.Stop();
   if (wait_for_token_) {
     std::move(wait_for_token_->callback).Run(gpu::CommandBuffer::State());
     wait_for_token_.reset();
@@ -409,12 +415,12 @@ void CommandBufferStub::WaitForTokenInRange(int32_t start,
   TRACE_EVENT0("gpu", "CommandBufferStub::WaitForTokenInRange");
   DCHECK(command_buffer_.get());
   CheckContextLost();
-  if (wait_for_token_)
+  if (wait_for_token_) {
     LOG(ERROR) << "Got WaitForToken command while currently waiting for token.";
-  channel_->scheduler()->SetSequencePriority(sequence_id_,
-                                             SchedulingPriority::kHigh);
+  }
   wait_for_token_ =
       std::make_unique<WaitForCommandState>(start, end, std::move(callback));
+  BoostPriorityForWait();
   CheckCompleteWaits();
 }
 
@@ -432,12 +438,48 @@ void CommandBufferStub::WaitForGetOffsetInRange(uint32_t set_get_buffer_count,
     LOG(ERROR)
         << "Got WaitForGetOffset command while currently waiting for offset.";
   }
-  channel_->scheduler()->SetSequencePriority(sequence_id_,
-                                             SchedulingPriority::kHigh);
   wait_for_get_offset_ =
       std::make_unique<WaitForCommandState>(start, end, std::move(callback));
   wait_set_get_buffer_count_ = set_get_buffer_count;
+  BoostPriorityForWait();
   CheckCompleteWaits();
+}
+
+void CommandBufferStub::BoostPriorityForWait() {
+  if (!base::FeatureList::IsEnabled(features::kCapCommandBufferWaitPriority)) {
+    channel_->scheduler()->SetSequencePriority(sequence_id_,
+                                               SchedulingPriority::kHigh);
+    return;
+  }
+  // Initially cap the priority boost at kNormal so routine per-frame waits
+  // (such as readbacks or ringbuffer space waits) do not preempt the display
+  // compositor (Viz) or browser UI. Note that lower enum values represent
+  // higher priority (kHigh = 0, kNormal = 1, kLow = 2).
+  const SchedulingPriority initial_wait_priority =
+      std::min(channel_->scheduler()->GetSequenceDefaultPriority(sequence_id_),
+               SchedulingPriority::kNormal);
+  channel_->scheduler()->SetSequencePriority(sequence_id_,
+                                             initial_wait_priority);
+
+  // If the GPU main thread is saturated with kHigh work, a waiting command
+  // buffer with no sync token dependencies could be starved. To avoid
+  // triggering the client thread's HangWatcher, escalate to kHigh after
+  // `kCommandBufferWaitHighPriorityDelay`.
+  if (!wait_priority_escalation_timer_.IsRunning()) {
+    if (wait_priority_escalation_timer_.user_task().is_null()) {
+      wait_priority_escalation_timer_.Start(
+          FROM_HERE, features::kCommandBufferWaitHighPriorityDelay.Get(), this,
+          &CommandBufferStub::EscalateWaitPriorityToHigh);
+    } else {
+      wait_priority_escalation_timer_.Reset();
+    }
+  }
+}
+
+void CommandBufferStub::EscalateWaitPriorityToHigh() {
+  CHECK(wait_for_token_ || wait_for_get_offset_);
+  channel_->scheduler()->SetSequencePriority(sequence_id_,
+                                             SchedulingPriority::kHigh);
 }
 
 void CommandBufferStub::CheckCompleteWaits() {
@@ -464,6 +506,7 @@ void CommandBufferStub::CheckCompleteWaits() {
     }
   }
   if (has_wait && !(wait_for_token_ || wait_for_get_offset_)) {
+    wait_priority_escalation_timer_.Stop();
     channel_->scheduler()->SetSequencePriority(
         sequence_id_,
         channel_->scheduler()->GetSequenceDefaultPriority(sequence_id_));
