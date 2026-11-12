@@ -13,7 +13,7 @@ found in the LICENSE file.
     android:layout_width="match_parent"
     android:layout_height="@dimen/toolbar_height_no_shadow"
     android:visibility="gone"
-    android:paddingEnd="0dp"
+    android:paddingEnd="-4dp"
     android:background="@drawable/toolbar_no_divider">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -104,6 +104,7 @@ found in the LICENSE file.
                 android:layout_height="match_parent"
                 android:contentDescription="@string/page_zoom_decrease_zoom_button_text"
                 android:src="@drawable/ic_remove"
+                android:background="@drawable/pdf_toolbar_button_background"
                 app:tint="@color/default_icon_color_tint_list"
                 android:paddingTop="8dp"
                 android:paddingBottom="8dp"
@@ -139,6 +140,7 @@ found in the LICENSE file.
                 android:paddingStart="12dp"
                 android:paddingEnd="12dp"
                 android:src="@drawable/ic_add_24dp"
+                android:background="@drawable/pdf_toolbar_button_background"
                 app:tint="@color/default_icon_color_tint_list" />
 
             <!-- zoom_fit_divider -->
@@ -157,9 +159,12 @@ found in the LICENSE file.
                 android:layout_height="match_parent"
                 android:contentDescription="@string/pdf_fit_page"
                 android:layout_marginStart="8dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
                 android:paddingStart="12dp"
                 android:paddingEnd="12dp"
                 android:src="@drawable/ic_fit_page_height_24dp"
+                android:background="@drawable/pdf_toolbar_button_background"
                 app:tint="@color/default_icon_color_tint_list" />
 
 
@@ -184,7 +189,7 @@ found in the LICENSE file.
                 android:paddingStart="12dp"
                 android:paddingEnd="12dp"
                 android:src="@drawable/ic_edit_24dp"
-                android:background="@drawable/pdf_edit_button_background"
+                android:background="@drawable/pdf_toolbar_button_background"
                 app:tint="@color/pdf_edit_button_tint" />
 
         </LinearLayout>
@@ -214,6 +219,7 @@ found in the LICENSE file.
                 android:paddingStart="12dp"
                 android:paddingEnd="12dp"
                 android:src="@drawable/ic_download"
+                android:background="@drawable/pdf_toolbar_button_background"
                 app:tint="@color/default_icon_color_tint_list" />
 
             <org.chromium.ui.widget.ButtonCompat
@@ -236,6 +242,7 @@ found in the LICENSE file.
                 android:paddingStart="12dp"
                 android:paddingEnd="12dp"
                 android:src="@drawable/ic_print_24dp"
+                android:background="@drawable/pdf_toolbar_button_background"
                 app:tint="@color/default_icon_color_tint_list" />
 
             <org.chromium.ui.listmenu.ListMenuButton
@@ -243,12 +250,12 @@ found in the LICENSE file.
                 style="@style/ToolbarButton"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_marginEnd="-4dp"
                 android:paddingTop="8dp"
                 android:paddingBottom="8dp"
                 android:paddingStart="12dp"
                 android:paddingEnd="12dp"
                 android:src="@drawable/ic_more_vert_24dp"
+                android:background="@drawable/pdf_toolbar_button_background"
                 app:tint="@color/default_icon_color_tint_list" />
 
         </LinearLayout>
