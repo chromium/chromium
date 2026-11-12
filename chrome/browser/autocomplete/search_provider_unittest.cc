@@ -11,6 +11,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/auto_reset.h"
 #include "base/base64.h"
 #include "base/command_line.h"
 #include "base/containers/span.h"
@@ -449,7 +450,9 @@ void BaseSearchProviderTest::RunTillProviderDone() {
     return;
 
   base::RunLoop run_loop;
-  run_loop_ = &run_loop;
+  // `OnProviderUpdate()` clears `run_loop_`, but `-Wlifetime-safety` cannot
+  // see across callbacks.
+  base::AutoReset<raw_ptr<base::RunLoop>> auto_reset(&run_loop_, &run_loop);
   run_loop.Run();
 }
 
