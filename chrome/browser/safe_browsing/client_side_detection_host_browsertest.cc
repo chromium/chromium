@@ -38,6 +38,7 @@
 #include "components/safe_browsing/core/browser/client_side_detection/credit_card_form_event.h"
 #include "components/safe_browsing/core/browser/client_side_detection/csd_model_type.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/core/common/phishing_classifier/scorer.h"
 #include "components/safe_browsing/core/common/proto/client_model.pb.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -86,6 +87,19 @@ class FakeClientSideDetectionService : public ClientSideDetectionService {
  public:
   FakeClientSideDetectionService()
       : ClientSideDetectionService(std::make_unique<FakeDelegate>(), nullptr) {}
+
+  void SendModelToRenderers() override {
+    if (base::FeatureList::IsEnabled(kClientSideDetectionCopyFromSurface)) {
+      // Existing tests call `SendModelToRenderers()` to prime the fake
+      // service's model state; populate the browser-side `Scorer` instead when
+      // classification runs in the browser process.
+      SetScorerForTesting(Scorer::Create(GetClassificationInputWidth(),
+                                         GetClassificationInputHeight(),
+                                         base::File()));
+      return;
+    }
+    ClientSideDetectionService::SendModelToRenderers();
+  }
 
   void SendClientReportPhishingRequest(
       std::unique_ptr<ClientPhishingRequest> verdict,
@@ -410,11 +424,17 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostPrerenderBrowserTest,
   if (base::FeatureList::IsEnabled(kClientSideDetectionNewObservers)) {
     // With new observers, we wait beyond the prerender state to start
     // pre-classification.
-    PaintObserverWaiter paint_waiter(GetWebContents());
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
+    {
+      PaintObserverWaiter paint_waiter(GetWebContents());
+      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
+      paint_waiter.Wait();
+    }
     prerender_helper().AddPrerender(page_url);
-    prerender_helper().NavigatePrimaryPage(page_url);
-    paint_waiter.Wait();
+    {
+      PaintObserverWaiter paint_waiter(GetWebContents());
+      prerender_helper().NavigatePrimaryPage(page_url);
+      paint_waiter.Wait();
+    }
   } else {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
   }
@@ -477,11 +497,17 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostPrerenderBrowserTest,
 
   GURL page_url(embedded_test_server()->GetURL("/safe_browsing/malware.html"));
   if (base::FeatureList::IsEnabled(kClientSideDetectionNewObservers)) {
-    PaintObserverWaiter paint_waiter(web_contents);
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
+    {
+      PaintObserverWaiter paint_waiter(web_contents);
+      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
+      paint_waiter.Wait();
+    }
     prerender_helper().AddPrerender(page_url);
-    prerender_helper().NavigatePrimaryPage(page_url);
-    paint_waiter.Wait();
+    {
+      PaintObserverWaiter paint_waiter(web_contents);
+      prerender_helper().NavigatePrimaryPage(page_url);
+      paint_waiter.Wait();
+    }
   } else {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
   }

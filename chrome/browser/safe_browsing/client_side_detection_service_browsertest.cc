@@ -12,6 +12,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/chrome_client_side_detection_service_delegate.h"
@@ -81,7 +82,15 @@ using ::testing::_;
 using ::testing::ReturnRef;
 using ::testing::StrictMock;
 
-class ClientSideDetectionServiceBrowserTest : public PlatformBrowserTest {
+class ClientSideDetectionServiceBrowserTest
+    : public PlatformBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  ClientSideDetectionServiceBrowserTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        kClientSideDetectionCopyFromSurface, GetParam());
+  }
+
  protected:
   void SetUpOnMainThread() override {
     ASSERT_TRUE(embedded_test_server()->Start());
@@ -111,17 +120,23 @@ class ClientSideDetectionServiceBrowserTest : public PlatformBrowserTest {
   }
 
   void LoadVisualTfLiteModel() {
-    content::RenderFrameHost* rfh = web_contents()->GetPrimaryMainFrame();
-    content::RenderProcessHost* rph = rfh->GetProcess();
-
-    std::unique_ptr<PhishingModelWaiter> waiter =
-        CreatePhishingModelWaiter(rph);
-
-    base::RunLoop run_loop;
-    waiter->SetCallback(run_loop.QuitClosure());
     safe_browsing::ClientSideDetectionService* csd_service =
         ClientSideDetectionServiceFactory::GetForProfile(
             Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
+
+    base::test::TestFuture<void> scorer_updated;
+    std::unique_ptr<PhishingModelWaiter> waiter;
+    base::CallbackListSubscription scorer_subscription;
+    if (base::FeatureList::IsEnabled(kClientSideDetectionCopyFromSurface)) {
+      scorer_subscription = csd_service->RegisterCallbackForScorerUpdates(
+          scorer_updated.GetRepeatingCallback());
+    } else {
+      content::RenderFrameHost* rfh = web_contents()->GetPrimaryMainFrame();
+      content::RenderProcessHost* rph = rfh->GetProcess();
+      waiter = CreatePhishingModelWaiter(rph);
+      waiter->SetCallback(scorer_updated.GetCallback());
+    }
+
     base::FilePath model_file_path;
     ASSERT_TRUE(
         base::PathService::Get(chrome::DIR_TEST_DATA, &model_file_path));
@@ -141,7 +156,10 @@ class ClientSideDetectionServiceBrowserTest : public PlatformBrowserTest {
 #endif
     csd_service->SetModelAndVisualTfLiteForTesting(model_file_path,
                                                    additional_files_path);
-    run_loop.Run();
+    ASSERT_TRUE(scorer_updated.Wait());
+    if (base::FeatureList::IsEnabled(kClientSideDetectionCopyFromSurface)) {
+      ASSERT_NE(csd_service->GetScorer(), nullptr);
+    }
   }
 
   ClientPhishingRequest CreateMinimumClientPhishingRequest() {
@@ -159,9 +177,16 @@ class ClientSideDetectionServiceBrowserTest : public PlatformBrowserTest {
     }
     return request;
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(ClientSideDetectionServiceBrowserTest,
+INSTANTIATE_TEST_SUITE_P(All,
+                         ClientSideDetectionServiceBrowserTest,
+                         testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(ClientSideDetectionServiceBrowserTest,
                        ModelUpdatesPropagated) {
   base::HistogramTester histogram_tester;
   GURL url(embedded_test_server()->GetURL("/empty.html"));
@@ -184,7 +209,7 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionServiceBrowserTest,
             0);
 }
 
-IN_PROC_BROWSER_TEST_F(ClientSideDetectionServiceBrowserTest,
+IN_PROC_BROWSER_TEST_P(ClientSideDetectionServiceBrowserTest,
                        NoImageEmbeddingMatch) {
   GURL url(embedded_test_server()->GetURL("/empty.html"));
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -245,7 +270,7 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionServiceBrowserTest,
                                                               // perfect match.
 }
 
-IN_PROC_BROWSER_TEST_F(ClientSideDetectionServiceBrowserTest,
+IN_PROC_BROWSER_TEST_P(ClientSideDetectionServiceBrowserTest,
                        ImageEmbeddingMatch) {
   GURL url(embedded_test_server()->GetURL("/empty.html"));
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));

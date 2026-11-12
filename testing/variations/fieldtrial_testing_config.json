@@ -5295,6 +5295,26 @@
             ]
         }
     ],
+    "ClientSideDetectionCopyFromSurface": [
+        {
+            "platforms": [
+                "android",
+                "android_desktop",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ClientSideDetectionCopyFromSurface"
+                    ]
+                }
+            ]
+        }
+    ],
     "ClientSideDetectionCreditCardForm": [
         {
             "platforms": [
