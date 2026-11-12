@@ -2653,8 +2653,8 @@ class CORE_EXPORT Element : public ContainerNode {
                             const QualifiedName&,
                             const AtomicString& value,
                             AttributeModificationReason);
-  void AppendAttributeInternal(const QualifiedName&,
-                               const AtomicString& value,
+  void AppendAttributeInternal(QualifiedName,
+                               AtomicString value,
                                AttributeModificationReason);
   void RemoveAttributeInternal(wtf_size_t index, AttributeModificationReason);
   AtomicString TrustedTypesCheckForAttribute(const QualifiedName&,

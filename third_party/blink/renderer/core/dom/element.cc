@@ -8558,9 +8558,12 @@ void Element::RemoveAttributeInternal(wtf_size_t index,
   // where removing all attributes send us into O(n²)).
 }
 
-void Element::AppendAttributeInternal(const QualifiedName& name,
-                                      const AtomicString& value,
+void Element::AppendAttributeInternal(QualifiedName name,
+                                      AtomicString value,
                                       AttributeModificationReason reason) {
+  // `name` and `value` are passed by value because they may be references
+  // into `ElementData::Attributes()`, which can be reallocated by
+  // `WillModifyAttribute()`, `Append()`, or `DidAddAttribute()`.
   if (reason !=
       AttributeModificationReason::kBySynchronizationOfLazyAttribute) {
     WillModifyAttribute(name, g_null_atom, value);
@@ -14184,10 +14187,10 @@ ALWAYS_INLINE void Element::SetAttributeInternal(
   QualifiedName existing_attribute_name = existing_attribute.GetName();
 
   // `new_value` may be a reference into `ElementData::Attributes()`, which can
-  // be reallocated if `WillModifyAttribute()` pauses in the debugger and script
-  // mutates attributes. Copy it here (rather than taking `new_value` by value
-  // in `SetAttributeInternal`, which would add refcount churn to the
-  // `AppendAttributeInternal` fast path).
+  // be reallocated if `WillModifyAttribute()` runs script (e.g. by pausing in
+  // the debugger) and mutates attributes. Copy it in the branches that invoke
+  // `WillModifyAttribute()` (and in `AppendAttributeInternal()`) rather than
+  // taking `new_value` by value in `SetAttributeInternal()`.
   if (new_value == existing_attribute.Value()) {
     if (reason !=
         AttributeModificationReason::kBySynchronizationOfLazyAttribute) {

@@ -38,9 +38,12 @@ MediaRemotingInterstitial::MediaRemotingInterstitial(
   background_image_ = MakeGarbageCollected<HTMLImageElement>(GetDocument());
   background_image_->SetShadowPseudoId(
       AtomicString("-internal-media-interstitial-background-image"));
-  background_image_->setAttribute(
-      html_names::kSrcAttr,
-      videoElement.FastGetAttribute(html_names::kPosterAttr));
+  // construct a new AtomicString (reference-counting its internals) rather
+  // than pass a reference to the element's attribute storage that might not
+  // stay valid.
+  AtomicString poster_image_url =
+      videoElement.FastGetAttribute(html_names::kPosterAttr);
+  background_image_->setAttribute(html_names::kSrcAttr, poster_image_url);
   AppendChild(background_image_);
 
   cast_icon_ = MakeGarbageCollected<HTMLDivElement>(GetDocument());
@@ -156,9 +159,12 @@ void MediaRemotingInterstitial::DidMoveToNewDocument(Document& old_document) {
 }
 
 void MediaRemotingInterstitial::OnPosterImageChanged() {
-  background_image_->setAttribute(
-      html_names::kSrcAttr,
-      GetVideoElement().FastGetAttribute(html_names::kPosterAttr));
+  // construct a new AtomicString (reference-counting its internals) rather
+  // than pass a reference to the element's attribute storage that might not
+  // stay valid.
+  AtomicString poster_image_url =
+      GetVideoElement().FastGetAttribute(html_names::kPosterAttr);
+  background_image_->setAttribute(html_names::kSrcAttr, poster_image_url);
 }
 
 void MediaRemotingInterstitial::Trace(Visitor* visitor) const {

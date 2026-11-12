@@ -411,6 +411,38 @@ TEST_P(HTMLVideoElementTest, PictureInPictureInterstitial_Reattach) {
   GetDocument().body()->removeChild(video());
 }
 
+TEST_P(HTMLVideoElementTest, PictureInPictureInterstitialOnPosterImageChanged) {
+  scoped_refptr<cc::Layer> layer = cc::Layer::Create();
+  SetFakeCcLayer(layer.get());
+
+  video()->SetBooleanAttribute(html_names::kControlsAttr, true);
+  video()->SetSrc(AtomicString("http://example.com/foo.mp4"));
+  test::RunPendingTasks();
+
+  EXPECT_CALL(*MockWebMediaPlayer(),
+              OnDisplayTypeChanged(WebMediaPlayer::DisplayType::kInline));
+  video()->OnEnteredPictureInPicture();
+
+  // Setting the poster attribute updates the PictureInPictureInterstitial's
+  // background image src without crashing or reading from dangling references.
+  video()->setAttribute(html_names::kPosterAttr,
+                        AtomicString("http://example.com/poster.png"));
+
+  // Verify the interstitial background image received the src attribute.
+  ShadowRoot* shadow_root = video()->UserAgentShadowRoot();
+  ASSERT_NE(shadow_root, nullptr);
+  auto* interstitial = To<Element>(shadow_root->firstChild());
+  ASSERT_NE(interstitial, nullptr);
+  auto* background_image = To<Element>(interstitial->firstChild());
+  ASSERT_NE(background_image, nullptr);
+  EXPECT_EQ(AtomicString("http://example.com/poster.png"),
+            background_image->getAttribute(html_names::kSrcAttr));
+
+  EXPECT_CALL(*MockWebMediaPlayer(),
+              OnDisplayTypeChanged(WebMediaPlayer::DisplayType::kInline));
+  SetFakeCcLayer(nullptr);
+}
+
 TEST_P(HTMLVideoElementTest, EffectivelyFullscreen_DisplayType) {
   video()->SetSrc(AtomicString("http://example.com/foo.mp4"));
   test::RunPendingTasks();
