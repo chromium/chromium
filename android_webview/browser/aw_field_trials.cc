@@ -179,8 +179,8 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // WebView does not support handling payment links.
   aw_feature_overrides.DisableFeature(blink::features::kPaymentLinkDetection);
 
-  // DISABLED_TEMPORARY: WebView needs to be updated to support 3D-Secure
-  // Telemetry b/575486194.
+  // DISABLED_TEMPORARY: 3D-Secure Telemetry is disabled by default on WebView
+  // so that it can be rolled out using Finch. b/575486194.
   aw_feature_overrides.DisableFeature(
       ::payments::features::kThreeDSecureTelemetry);
 

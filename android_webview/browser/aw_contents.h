@@ -45,6 +45,10 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+namespace payments {
+class WebPaymentsObserver;
+}  // namespace payments
+
 namespace signin {
 struct ManageAccountsParams;
 }
@@ -401,6 +405,7 @@ class AwContents : public FindHelper::Listener,
   std::unique_ptr<AwContents> pending_contents_;
   std::unique_ptr<AwPdfExporter> pdf_exporter_;
   std::unique_ptr<PermissionRequestHandler> permission_request_handler_;
+  std::unique_ptr<payments::WebPaymentsObserver> web_payments_observer_;
   std::unique_ptr<js_injection::JsCommunicationHost> js_communication_host_;
   AwHeaderInterceptorStore header_interceptor_store_;
   bool google_account_mirroring_enabled_ = false;

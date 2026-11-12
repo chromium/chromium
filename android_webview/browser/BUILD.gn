@@ -333,6 +333,7 @@ source_set("browser") {
     "//components/os_crypt/browser:posix_key_provider",
     "//components/page_load_metrics/browser",
     "//components/page_load_metrics/google/browser",
+    "//components/payments/content",
     "//components/payments/content/android",
     "//components/payments/core",
     "//components/performance_manager",

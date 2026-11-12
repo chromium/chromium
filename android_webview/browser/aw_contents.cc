@@ -87,6 +87,8 @@
 #include "components/js_injection/browser/js_communication_host.h"
 #include "components/js_injection/common/enum.mojom.h"
 #include "components/navigation_interception/intercept_navigation_delegate.h"
+#include "components/payments/content/web_payments_observer.h"
+#include "components/payments/core/features.h"
 #include "components/performance_manager/embedder/performance_manager_registry.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -328,6 +330,12 @@ AwContents::AwContents(std::unique_ptr<WebContents> web_contents)
 
   permission_request_handler_ =
       std::make_unique<PermissionRequestHandler>(this, web_contents_.get());
+
+  if (base::FeatureList::IsEnabled(
+          payments::features::kThreeDSecureTelemetry)) {
+    web_payments_observer_ =
+        std::make_unique<payments::WebPaymentsObserver>(web_contents_.get());
+  }
 
   content::SynchronousCompositor::SetClientForWebContents(
       web_contents_.get(), &browser_view_renderer_);
