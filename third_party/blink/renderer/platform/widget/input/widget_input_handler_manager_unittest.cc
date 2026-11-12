@@ -9,11 +9,13 @@
 #include <thread>
 #include <vector>
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
@@ -25,10 +27,13 @@
 #include "cc/test/mock_input_handler.h"
 #include "cc/test/test_task_graph_runner.h"
 #include "cc/trees/layer_tree_settings.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/input/web_gesture_event.h"
+#include "third_party/blink/public/common/input/web_touch_event.h"
 #include "third_party/blink/public/mojom/widget/platform_widget.mojom-blink.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/platform/scheduler/test/fake_widget_scheduler.h"
@@ -352,6 +357,57 @@ TEST_F(WidgetInputHandlerManagerTest, MultiThreadedHostAccess) {
   }
 
   run_loop.Run();
+}
+
+TEST_F(WidgetInputHandlerManagerTest,
+       DispatchEventDisconnectsDuringOriginalEvent) {
+  mojo::PendingRemote<mojom::blink::WidgetInputHandlerHost> host_remote;
+  auto host_receiver = host_remote.InitWithNewPipeAndPassReceiver();
+  widget_input_handler_manager_->SetHost(std::move(host_remote));
+
+  mojo::Remote<mojom::blink::WidgetInputHandler> input_handler_remote;
+  widget_input_handler_manager_->AddInterface(
+      input_handler_remote.BindNewPipeAndPassReceiver());
+
+  auto gesture_event = std::make_unique<WebCoalescedInputEvent>(
+      WebGestureEvent(WebInputEvent::Type::kGestureScrollUpdate,
+                      WebInputEvent::kNoModifiers,
+                      WebInputEvent::GetStaticTimeStampForTests(),
+                      WebGestureDevice::kTouchscreen),
+      ui::LatencyInfo());
+  auto touch_event = std::make_unique<WebCoalescedInputEvent>(
+      WebTouchEvent(WebInputEvent::Type::kTouchMove,
+                    WebInputEvent::kNoModifiers,
+                    WebInputEvent::GetStaticTimeStampForTests()),
+      ui::LatencyInfo());
+
+  base::RunLoop outer_run_loop;
+  EXPECT_CALL(*input_handler_proxy_, HandleInputEventWithLatencyInfo(
+                                         testing::_, testing::_, testing::_))
+      .Times(1)
+      .WillOnce([&](std::unique_ptr<blink::WebCoalescedInputEvent> event,
+                    std::unique_ptr<cc::EventMetrics> metrics,
+                    InputHandlerProxy::EventDispositionCallback callback) {
+        EXPECT_EQ(event->Event().GetType(), WebInputEvent::Type::kTouchMove);
+        // Simulate closing the popup and spinning a nested RunLoop (e.g., via
+        // window.print()) during synchronous dispatch of
+        // `original_event_for_gesture`, which disconnects the
+        // WidgetInputHandler pipe and destroys `WidgetInputHandlerImpl`.
+        base::RunLoop nested_run_loop(
+            base::RunLoop::Type::kNestableTasksAllowed);
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, base::BindLambdaForTesting([&]() {
+              input_handler_remote.reset();
+              base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+                  FROM_HERE, nested_run_loop.QuitClosure());
+            }));
+        nested_run_loop.Run();
+        outer_run_loop.Quit();
+      });
+
+  input_handler_remote->DispatchEvent(
+      std::move(gesture_event), std::move(touch_event), base::DoNothing());
+  outer_run_loop.Run();
 }
 
 }  // namespace blink::test
