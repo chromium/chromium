@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
@@ -248,7 +249,7 @@ class DistillerPageWebContentsTest : public ContentBrowserTest {
                                     bool expect_new_web_contents,
                                     bool wait_for_document_loaded);
 
-  raw_ptr<DistillerPageWebContents, DanglingUntriaged> distiller_page_;
+  raw_ptr<DistillerPageWebContents> distiller_page_;
   std::unique_ptr<DistilledPageProto> distiller_result_;
 };
 
@@ -345,7 +346,12 @@ IN_PROC_BROWSER_TEST_F(DistillerPageWebContentsTest,
       shell()->web_contents()->GetBrowserContext(),
       shell()->web_contents()->GetContainerBounds().size(),
       std::unique_ptr<SourcePageHandleWebContents>());
-  distiller_page_ = &distiller_page;
+
+  // `-Wlifetime-safety` sees this as smuggling the stack-local
+  // `distiller_page` beyond its scope. `base::AutoReset` ensures that
+  // no smuggling is possible.
+  base::AutoReset<decltype(distiller_page_)> resetter{&distiller_page_,
+                                                      &distiller_page};
 
   base::RunLoop run_loop;
   DistillPage(run_loop.QuitClosure(), kSimpleArticlePath);
@@ -368,7 +374,12 @@ IN_PROC_BROWSER_TEST_F(DistillerPageWebContentsTest,
       shell()->web_contents()->GetBrowserContext(),
       shell()->web_contents()->GetContainerBounds().size(),
       std::unique_ptr<SourcePageHandleWebContents>());
-  distiller_page_ = &distiller_page;
+
+  // `-Wlifetime-safety` sees this as smuggling the stack-local
+  // `distiller_page` beyond its scope. `base::AutoReset` ensures that
+  // no smuggling is possible.
+  base::AutoReset<decltype(distiller_page_)> resetter{&distiller_page_,
+                                                      &distiller_page};
 
   base::RunLoop run_loop;
   DistillPage(run_loop.QuitClosure(), kSimpleArticlePath);
@@ -392,7 +403,12 @@ IN_PROC_BROWSER_TEST_F(DistillerPageWebContentsTest,
       shell()->web_contents()->GetBrowserContext(),
       shell()->web_contents()->GetContainerBounds().size(),
       std::unique_ptr<SourcePageHandleWebContents>());
-  distiller_page_ = &distiller_page;
+
+  // `-Wlifetime-safety` sees this as smuggling the stack-local
+  // `distiller_page` beyond its scope. `base::AutoReset` ensures that
+  // no smuggling is possible.
+  base::AutoReset<decltype(distiller_page_)> resetter{&distiller_page_,
+                                                      &distiller_page};
 
   base::RunLoop run_loop;
   DistillPage(run_loop.QuitClosure(), kSimpleArticlePath);
@@ -416,7 +432,12 @@ IN_PROC_BROWSER_TEST_F(DistillerPageWebContentsTest,
       shell()->web_contents()->GetBrowserContext(),
       shell()->web_contents()->GetContainerBounds().size(),
       std::unique_ptr<SourcePageHandleWebContents>());
-  distiller_page_ = &distiller_page;
+
+  // `-Wlifetime-safety` sees this as smuggling the stack-local
+  // `distiller_page` beyond its scope. `base::AutoReset` ensures that
+  // no smuggling is possible.
+  base::AutoReset<decltype(distiller_page_)> resetter{&distiller_page_,
+                                                      &distiller_page};
 
   base::RunLoop run_loop;
   DistillPage(run_loop.QuitClosure(), kVideoArticlePath);
@@ -440,7 +461,12 @@ IN_PROC_BROWSER_TEST_F(DistillerPageWebContentsTest,
       shell()->web_contents()->GetBrowserContext(),
       shell()->web_contents()->GetContainerBounds().size(),
       std::unique_ptr<SourcePageHandleWebContents>());
-  distiller_page_ = &distiller_page;
+
+  // `-Wlifetime-safety` sees this as smuggling the stack-local
+  // `distiller_page` beyond its scope. `base::AutoReset` ensures that
+  // no smuggling is possible.
+  base::AutoReset<decltype(distiller_page_)> resetter{&distiller_page_,
+                                                      &distiller_page};
 
   // visble_style.html and invisible_style.html only differ by the visibility
   // internal stylesheet.
@@ -465,7 +491,12 @@ IN_PROC_BROWSER_TEST_F(DistillerPageWebContentsTest, HandlesShadowDOM) {
       shell()->web_contents()->GetBrowserContext(),
       shell()->web_contents()->GetContainerBounds().size(),
       std::unique_ptr<SourcePageHandleWebContents>());
-  distiller_page_ = &distiller_page;
+
+  // `-Wlifetime-safety` sees this as smuggling the stack-local
+  // `distiller_page` beyond its scope. `base::AutoReset` ensures that
+  // no smuggling is possible.
+  base::AutoReset<decltype(distiller_page_)> resetter{&distiller_page_,
+                                                      &distiller_page};
 
   base::RunLoop run_loop;
   DistillPage(run_loop.QuitClosure(), kShadowDomArticlePath);
@@ -534,7 +565,12 @@ IN_PROC_BROWSER_TEST_F(DistillerPageWebContentsTest,
       shell()->web_contents()->GetBrowserContext(),
       shell()->web_contents()->GetContainerBounds().size(),
       std::unique_ptr<SourcePageHandleWebContents>());
-  distiller_page_ = &distiller_page;
+
+  // `-Wlifetime-safety` sees this as smuggling the stack-local
+  // `distiller_page` beyond its scope. `base::AutoReset` ensures that
+  // no smuggling is possible.
+  base::AutoReset<decltype(distiller_page_)> resetter{&distiller_page_,
+                                                      &distiller_page};
 
   base::RunLoop run_loop;
   DistillPage(run_loop.QuitClosure(), redirect_path);
@@ -689,7 +725,12 @@ void DistillerPageWebContentsTest::RunUseCurrentWebContentsTest(
       shell()->web_contents()->GetBrowserContext(),
       shell()->web_contents()->GetContainerBounds().size(),
       std::move(source_page_handle), expect_new_web_contents);
-  distiller_page_ = &distiller_page;
+
+  // `-Wlifetime-safety` sees this as smuggling the stack-local
+  // `distiller_page` beyond its scope. `base::AutoReset` ensures that
+  // no smuggling is possible.
+  base::AutoReset<decltype(distiller_page_)> resetter{&distiller_page_,
+                                                      &distiller_page};
 
   base::RunLoop run_loop;
   DistillPage(run_loop.QuitClosure(), kSimpleArticlePath);
@@ -831,7 +872,11 @@ IN_PROC_BROWSER_TEST_F(DistillerPageWebContentsTest,
   DistillPage(run_loop.QuitClosure(), kSimpleArticlePath);
 
   // It can not crash the loop when returning the result.
-  delete distiller_page_;
+  //
+  // Silence Dangling Pointer Detector (see `//docs/dangling_ptr.md`)
+  // by pointing `distiller_page_` away from it before destruction.
+  distiller_page_ = nullptr;
+  delete distiller_page;
 
   // Make sure the test ends when it does not crash.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
