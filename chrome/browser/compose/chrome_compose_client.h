@@ -199,8 +199,7 @@ class ChromeComposeClient
 
   // compose::ProactiveNudgeTracker::Delegate implementation.
   void ShowProactiveNudge(autofill::FormGlobalId form,
-                          autofill::FieldGlobalId field,
-                          compose::ComposeEntryPoint entry_point) override;
+                          autofill::FieldGlobalId field) override;
 
   // Returns the Compose optimization guide hints for the current URL.
   // compose::ProactiveNudgeTracker::Delegate implementation.
@@ -380,9 +379,6 @@ class ChromeComposeClient
   // Time since page load, or time since page has changed if it's not loaded
   // yet.
   base::TimeTicks page_change_time_;
-
-  compose::ComposeEntryPoint most_recent_nudge_entry_point_ =
-      compose::ComposeEntryPoint::kProactiveNudge;
 
   std::optional<ui::ScopedUnownedUserData<ChromeComposeClient>>
       scoped_unowned_user_data_;

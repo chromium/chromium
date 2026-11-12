@@ -103,8 +103,6 @@
 #include "components/commerce/core/flag_descriptions.h"
 #include "components/component_updater/component_updater_command_line_config_policy.h"
 #include "components/component_updater/component_updater_switches.h"
-#include "components/compose/buildflags.h"
-#include "components/compose/core/browser/compose_features.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/critical_actions/core/browser/features.h"
@@ -3476,41 +3474,6 @@ const FeatureEntry::FeatureVariation kGroupSuggestionVariations[] = {
     {"Same Origin Only", kGroupSuggestionEnableSameOriginOnly, nullptr},
     {"Tab Switcher Only", kGroupSuggestionEnableTabSwitcherOnly, nullptr},
 };
-
-#if BUILDFLAG(ENABLE_COMPOSE)
-// Variations of the Compose selection nudge.
-const FeatureEntry::FeatureParam kComposeSelectionNudge_1[] = {
-    {"selection_nudge_length", "1"}};
-
-const FeatureEntry::FeatureParam kComposeSelectionNudge_15[] = {
-    {"selection_nudge_length", "15"}};
-
-const FeatureEntry::FeatureParam kComposeSelectionNudge_30[] = {
-    {"selection_nudge_length", "30"}};
-
-const FeatureEntry::FeatureParam kComposeSelectionNudge_30_1s[] = {
-    {"selection_nudge_length", "30"},
-    {"selection_nudge_delay_milliseconds", "1000"}};
-
-const FeatureEntry::FeatureParam kComposeSelectionNudge_30_2s[] = {
-    {"selection_nudge_length", "30"},
-    {"selection_nudge_delay_milliseconds", "2000"}};
-
-const FeatureEntry::FeatureParam kComposeSelectionNudge_50[] = {
-    {"selection_nudge_length", "50"}};
-
-const FeatureEntry::FeatureParam kComposeSelectionNudge_100[] = {
-    {"selection_nudge_length", "100"}};
-
-const FeatureEntry::FeatureVariation kComposeSelectionNudgeVariations[] = {
-    {"1 Char", kComposeSelectionNudge_1, nullptr},
-    {"15 Char", kComposeSelectionNudge_15, nullptr},
-    {"30 Char", kComposeSelectionNudge_30, nullptr},
-    {"50 Char", kComposeSelectionNudge_50, nullptr},
-    {"100 Char", kComposeSelectionNudge_100, nullptr},
-    {"30 Char - 1sec", kComposeSelectionNudge_30_1s, nullptr},
-    {"30 char - 2sec", kComposeSelectionNudge_30_2s, nullptr}};
-#endif  // ENABLE_COMPOSE
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 const FeatureEntry::FeatureParam kLocationProviderManagerModeNetworkOnly[] = {
@@ -10034,16 +9997,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          unexportable_keys::kEnableUnexportableKeysSpareKeyPool)},
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-
-#if BUILDFLAG(ENABLE_COMPOSE)
-    {"compose-selection-nudge", flag_descriptions::kComposeSelectionNudgeName,
-     flag_descriptions::kComposeSelectionNudgeDescription,
-     kOsWin | kOsLinux | kOsMac | kOsCrOS,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         compose::features::kEnableComposeSelectionNudge,
-         kComposeSelectionNudgeVariations,
-         "ComposeSelectionNudge")},
-#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
     {"platform-keys-changes-wave-1",

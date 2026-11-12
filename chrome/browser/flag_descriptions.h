@@ -8438,10 +8438,6 @@ inline constexpr char kEnableAudioFocusEnforcementDescription[] =
     "Enables enforcement of a single media session having audio focus at "
     "any one time. Requires #enable-media-session-service to be enabled too.";
 
-inline constexpr char kComposeSelectionNudgeName[] = "Compose Selection Nudge";
-inline constexpr char kComposeSelectionNudgeDescription[] =
-    "Enables nudge on selection for Compose";
-
 inline constexpr char kAiOverlayDisableNavigationContextName[] =
     "AI Overlay Disable Navigation Context";
 inline constexpr char kAiOverlayDisableNavigationContextDescription[] =

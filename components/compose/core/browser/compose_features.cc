@@ -35,8 +35,6 @@ BASE_FEATURE(kEnableComposeSavedStateNotification,
 
 BASE_FEATURE(kEnableComposeNudgeAtCursor, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableComposeSelectionNudge, base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEnableComposeLanguageBypassForContextMenu,
              "ComposeLanguageBypassForContextMenu",
              base::FEATURE_ENABLED_BY_DEFAULT);

@@ -49,7 +49,6 @@ const char kInnerTextNodeOffsetFound[] =
     "Compose.Dialog.InnerTextNodeOffsetFound";
 const char kComposeContextMenuCtr[] = "Compose.ContextMenu.CTR";
 const char kComposeProactiveNudgeCtr[] = "Compose.ProactiveNudge.CTR";
-const char kComposeSelectionNudgeCtr[] = "Compose.SelectionNudge.CTR";
 const char kComposeProactiveNudgeShowStatus[] =
     "Compose.ProactiveNudge.ShowStatus";
 const char kOpenComposeDialogResult[] =
@@ -188,10 +187,6 @@ void LogComposeProactiveNudgeCtr(ComposeNudgeCtrEvent event) {
   base::UmaHistogramEnumeration(kComposeProactiveNudgeCtr, event);
 }
 
-void LogComposeSelectionNudgeCtr(ComposeNudgeCtrEvent event) {
-  base::UmaHistogramEnumeration(kComposeSelectionNudgeCtr, event);
-}
-
 void LogComposeProactiveNudgeShowStatus(ComposeShowStatus status) {
   base::UmaHistogramEnumeration(kComposeProactiveNudgeShowStatus, status);
 }
@@ -211,10 +206,6 @@ void LogStartSessionEntryPoint(ComposeEntryPoint entry_point) {
     case ComposeEntryPoint::kProactiveNudge:
       base::RecordAction(
           base::UserMetricsAction("Compose.StartedSession.ProactiveNudge"));
-      break;
-    case ComposeEntryPoint::kSelectionNudge:
-      base::RecordAction(
-          base::UserMetricsAction("Compose.StartedSession.SelectionNudge"));
       break;
     case ComposeEntryPoint::kSavedStateNudge:
     case ComposeEntryPoint::kSavedStateNotification:

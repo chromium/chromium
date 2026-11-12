@@ -38,7 +38,6 @@ extern const char kComposeMSBBSessionDialogShownCount[];
 extern const char kInnerTextNodeOffsetFound[];
 extern const char kComposeContextMenuCtr[];
 extern const char kComposeProactiveNudgeCtr[];
-extern const char kComposeSelectionNudgeCtr[];
 extern const char kComposeProactiveNudgeShowStatus[];
 extern const char kOpenComposeDialogResult[];
 extern const char kComposeStartSessionEntryPoint[];
@@ -193,7 +192,8 @@ enum class ComposeNudgeCtrEvent {
 enum class ComposeEntryPoint {
   kContextMenu = 0,
   kProactiveNudge = 1,
-  kSelectionNudge = 2,
+  // DEPRECATED: Selection nudge was removed.
+  // kSelectionNudge = 2,
   kSavedStateNudge = 3,
   kSavedStateNotification = 4,
   kMaxValue = kSavedStateNotification,
@@ -433,8 +433,6 @@ void LogComposeContextMenuCtr(ComposeContextMenuCtrEvent event);
 void LogComposeContextMenuShowStatus(ComposeShowStatus status);
 
 void LogComposeProactiveNudgeCtr(ComposeNudgeCtrEvent event);
-
-void LogComposeSelectionNudgeCtr(ComposeNudgeCtrEvent event);
 
 void LogComposeProactiveNudgeShowStatus(ComposeShowStatus status);
 

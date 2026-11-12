@@ -305,30 +305,4 @@ IN_PROC_BROWSER_TEST_F(ComposeSessionBrowserTest,
       compose::ComposeNudgeCtrEvent::kOpenSettings, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(ComposeSessionBrowserTest,
-                       SelectionNudgeSettingsLaunchedTest) {
-  base::HistogramTester histogram_tester;
-  ASSERT_TRUE(embedded_test_server()->Start());
-  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/compose/test2.html")));
-
-  auto* client = ChromeComposeClient::FromWebContents(web_contents);
-  ASSERT_NE(nullptr, client);
-
-  autofill::FormFieldData field_data;
-  autofill::FormData form_data;
-
-  // Set the most recent nudge to the selection nudge.
-  client->ShowProactiveNudge(form_data.global_id(), field_data.global_id(),
-                             compose::ComposeEntryPoint::kSelectionNudge);
-  client->OpenProactiveNudgeSettings();
-
-  ASSERT_EQ(browser()->tab_strip_model()->count(), 2);
-
-  histogram_tester.ExpectUniqueSample(
-      compose::kComposeSelectionNudgeCtr,
-      compose::ComposeNudgeCtrEvent::kOpenSettings, 1);
-}
-
 }  // namespace compose

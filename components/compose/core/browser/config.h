@@ -109,18 +109,6 @@ struct Config {
   // is set in the constructor.
   base::flat_set<std::string> proactive_nudge_countries;
 
-  // Whether the nudge on selection should be enabled.
-  bool selection_nudge_enabled = false;
-
-  // Minimum selection length needed before showing the selection nudge.
-  unsigned int selection_nudge_length = 30;
-
-  // How long to wait to show the selection nudge.
-  base::TimeDelta selection_nudge_delay = base::Milliseconds(500);
-
-  // Whether the selection nudge can be shown more than once per focus.
-  bool selection_nudge_once_per_focus = false;
-
   // If true, nudge at most once per field per navigation. If false, at most
   // once per field per focus.
   bool proactive_nudge_field_per_navigation = true;

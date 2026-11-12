@@ -141,24 +141,6 @@ Config::Config() {
       features::kEnableComposeProactiveNudge,
       "proactive_nudge_text_change_count", proactive_nudge_text_change_count);
 
-  selection_nudge_enabled =
-      base::FeatureList::IsEnabled(features::kEnableComposeSelectionNudge);
-
-  selection_nudge_length =
-      base::saturated_cast<unsigned int>(GetFieldTrialParamByFeatureAsInt(
-          features::kEnableComposeSelectionNudge, "selection_nudge_length",
-          selection_nudge_length));
-
-  selection_nudge_delay =
-      base::Milliseconds(base::GetFieldTrialParamByFeatureAsInt(
-          features::kEnableComposeSelectionNudge,
-          "selection_nudge_delay_milliseconds",
-          selection_nudge_delay.InMilliseconds()));
-
-  selection_nudge_once_per_focus = base::GetFieldTrialParamByFeatureAsBool(
-      features::kEnableComposeSelectionNudge, "selection_nudge_once_per_focus",
-      selection_nudge_once_per_focus);
-
   nudge_field_change_event_max = GetFieldTrialParamByFeatureAsUnsignedInt(
       features::kEnableComposeProactiveNudge, "nudge_field_change_event_max",
       nudge_field_change_event_max);

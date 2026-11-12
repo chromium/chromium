@@ -545,26 +545,12 @@ void ChromeComposeClient::CreateNewSession(
       utf8_chars.has_value() ? utf8_chars.value() : 0);
 
   if (popup_clicked) {
-    switch (most_recent_nudge_entry_point_) {
-      case compose::ComposeEntryPoint::kProactiveNudge:
-        current_session->set_started_with_proactive_nudge();
-        page_ukm_tracker_->ProactiveNudgeOpened();
-        compose::LogComposeProactiveNudgeCtr(
-            compose::ComposeNudgeCtrEvent::kDialogOpened);
-        compose::LogStartSessionEntryPoint(
-            compose::ComposeEntryPoint::kProactiveNudge);
-        break;
-      case compose::ComposeEntryPoint::kSelectionNudge:
-        compose::LogComposeSelectionNudgeCtr(
-            compose::ComposeNudgeCtrEvent::kDialogOpened);
-        compose::LogStartSessionEntryPoint(
-            compose::ComposeEntryPoint::kSelectionNudge);
-        break;
-      case compose::ComposeEntryPoint::kContextMenu:
-      case compose::ComposeEntryPoint::kSavedStateNudge:
-      case compose::ComposeEntryPoint::kSavedStateNotification:
-        break;
-    }
+    current_session->set_started_with_proactive_nudge();
+    page_ukm_tracker_->ProactiveNudgeOpened();
+    compose::LogComposeProactiveNudgeCtr(
+        compose::ComposeNudgeCtrEvent::kDialogOpened);
+    compose::LogStartSessionEntryPoint(
+        compose::ComposeEntryPoint::kProactiveNudge);
   } else {
     compose::LogStartSessionEntryPoint(
         compose::ComposeEntryPoint::kContextMenu);
@@ -740,6 +726,17 @@ bool ChromeComposeClient::ShouldTriggerPopup(
       GetWebContents().GetPrimaryMainFrame()->GetLastCommittedURL(),
       GetMSBBStateFromPrefs());
 
+  if (!proactive_nudge_status.has_value()) {
+    compose::LogComposeProactiveNudgeShowStatus(proactive_nudge_status.error());
+    // Record that the nudge could have shown if it was disabled by
+    // configuration or flags.
+    if (ComposeNudgeShowStatusDisabledByConfig(
+            proactive_nudge_status.error())) {
+      page_ukm_tracker_->ComposeProactiveNudgeShouldShow();
+    }
+    return false;
+  }
+
   compose::ProactiveNudgeTracker::Signals nudge_signals;
   nudge_signals.ukm_source_id =
       GetWebContents().GetPrimaryMainFrame()->GetPageUkmSourceId();
@@ -749,26 +746,6 @@ bool ChromeComposeClient::ShouldTriggerPopup(
   nudge_signals.form = form_data;
   nudge_signals.field = form_field_data;
   nudge_signals.page_change_time = page_change_time_;
-
-  if (!proactive_nudge_status.has_value()) {
-    compose::LogComposeProactiveNudgeShowStatus(proactive_nudge_status.error());
-    // Record that the nudge could have shown if it was disabled by
-    // configuration or flags.
-    if (ComposeNudgeShowStatusDisabledByConfig(
-            proactive_nudge_status.error())) {
-      page_ukm_tracker_->ComposeProactiveNudgeShouldShow();
-    }
-    if (proactive_nudge_status.error() ==
-            compose::ComposeShowStatus::kProactiveNudgeFeatureDisabled &&
-        compose::GetComposeConfig().selection_nudge_enabled) {
-      // If the proactive nudge is disabled but the selection nudge is is
-      // enabled we need to initialize the nudge tracker for this form field to
-      // accept the selection nudge.
-      return nudge_tracker_.ProactiveNudgeRequestedForFormField(
-          std::move(nudge_signals));
-    }
-    return false;
-  }
 
   // ProactiveNudgeRequestedForFormField logs metrics for showing the nudge.
   if (nudge_tracker_.ProactiveNudgeRequestedForFormField(
@@ -787,21 +764,9 @@ void ChromeComposeClient::DisableProactiveNudge() {
   nudge_tracker_.OnUserDisabledNudge(/*single_site_only=*/false);
   proactive_nudge_enabled_.SetValue(false);
 
-  switch (most_recent_nudge_entry_point_) {
-    case compose::ComposeEntryPoint::kProactiveNudge:
-      compose::LogComposeProactiveNudgeCtr(
-          compose::ComposeNudgeCtrEvent::kUserDisabledProactiveNudge);
-      GetPageUkmTracker()->ProactiveNudgeDisabledGlobally();
-      break;
-    case compose::ComposeEntryPoint::kSelectionNudge:
-      compose::LogComposeSelectionNudgeCtr(
-          compose::ComposeNudgeCtrEvent::kUserDisabledProactiveNudge);
-      break;
-    case compose::ComposeEntryPoint::kContextMenu:
-    case compose::ComposeEntryPoint::kSavedStateNudge:
-    case compose::ComposeEntryPoint::kSavedStateNotification:
-      break;
-  }
+  compose::LogComposeProactiveNudgeCtr(
+      compose::ComposeNudgeCtrEvent::kUserDisabledProactiveNudge);
+  GetPageUkmTracker()->ProactiveNudgeDisabledGlobally();
 
   if (base::FeatureList::IsEnabled(
           compose::features::kHappinessTrackingSurveysForComposeAcceptance)) {
@@ -825,20 +790,8 @@ void ChromeComposeClient::OpenProactiveNudgeSettings() {
   // its WebContents is destroyed.
   CHECK(browser);
 
-  switch (most_recent_nudge_entry_point_) {
-    case compose::ComposeEntryPoint::kProactiveNudge:
-      compose::LogComposeProactiveNudgeCtr(
-          compose::ComposeNudgeCtrEvent::kOpenSettings);
-      break;
-    case compose::ComposeEntryPoint::kSelectionNudge:
-      compose::LogComposeSelectionNudgeCtr(
-          compose::ComposeNudgeCtrEvent::kOpenSettings);
-      break;
-    case compose::ComposeEntryPoint::kContextMenu:
-    case compose::ComposeEntryPoint::kSavedStateNudge:
-    case compose::ComposeEntryPoint::kSavedStateNotification:
-      break;
-  }
+  compose::LogComposeProactiveNudgeCtr(
+      compose::ComposeNudgeCtrEvent::kOpenSettings);
 
   chrome::ShowSettingsSubPage(browser, chrome::kAiHelpMeWriteSubpage);
 }
@@ -849,21 +802,9 @@ void ChromeComposeClient::AddSiteToNeverPromptList(const url::Origin& origin) {
                               prefs::kProactiveNudgeDisabledSitesWithTime);
   update->Set(origin.Serialize(), base::TimeToValue(base::Time::Now()));
 
-  switch (most_recent_nudge_entry_point_) {
-    case compose::ComposeEntryPoint::kProactiveNudge:
-      compose::LogComposeProactiveNudgeCtr(
-          compose::ComposeNudgeCtrEvent::kUserDisabledSite);
-      GetPageUkmTracker()->ProactiveNudgeDisabledForSite();
-      break;
-    case compose::ComposeEntryPoint::kSelectionNudge:
-      compose::LogComposeSelectionNudgeCtr(
-          compose::ComposeNudgeCtrEvent::kUserDisabledSite);
-      break;
-    case compose::ComposeEntryPoint::kContextMenu:
-    case compose::ComposeEntryPoint::kSavedStateNudge:
-    case compose::ComposeEntryPoint::kSavedStateNotification:
-      break;
-  }
+  compose::LogComposeProactiveNudgeCtr(
+      compose::ComposeNudgeCtrEvent::kUserDisabledSite);
+  GetPageUkmTracker()->ProactiveNudgeDisabledForSite();
 }
 
 bool ChromeComposeClient::ShouldTriggerContextMenu(
@@ -1015,10 +956,8 @@ void ChromeComposeClient::OnFocusChangedInPage(
   return nudge_tracker_.FocusChangedInPage();
 }
 
-void ChromeComposeClient::ShowProactiveNudge(
-    autofill::FormGlobalId form,
-    autofill::FieldGlobalId field,
-    compose::ComposeEntryPoint entry_point) {
+void ChromeComposeClient::ShowProactiveNudge(autofill::FormGlobalId form,
+                                             autofill::FieldGlobalId field) {
   if (autofill::AutofillDriver* driver =
           autofill::ContentAutofillDriver::GetForRenderFrameHost(
               GetWebContents().GetPrimaryMainFrame())) {
@@ -1026,7 +965,6 @@ void ChromeComposeClient::ShowProactiveNudge(
         field, autofill::AutofillSuggestionTriggerSource::
                    kComposeDelayedProactiveNudge);
   }
-  most_recent_nudge_entry_point_ = entry_point;
 }
 
 compose::ComposeHintMetadata ChromeComposeClient::GetComposeHintMetadata() {

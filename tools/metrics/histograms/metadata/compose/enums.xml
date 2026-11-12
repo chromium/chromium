@@ -34,7 +34,7 @@ chromium-metrics-reviews@google.com.
 <enum name="ComposeEntryPoint">
   <int value="0" label="Context Menu"/>
   <int value="1" label="Proactive Nudge"/>
-  <int value="2" label="Selection Nudge"/>
+  <int value="2" label="(Obsolete) Selection Nudge"/>
   <int value="3" label="Resume Nudge">
     Shown on field focus when a sessions exists
   </int>

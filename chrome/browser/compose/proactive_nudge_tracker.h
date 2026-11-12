@@ -36,7 +36,6 @@ namespace compose {
 // show for Compose. It has the following states:
 //   - kInitial,
 //   - kWaitingForTimerToStop,
-//   - kTimerCanceled,
 //   - kWaitingForSegmentation,
 //   - kWaitingForProactiveNudgeRequest,
 //   - kBlockedBySegmentation,
@@ -49,7 +48,7 @@ namespace compose {
 // The state is represented by a unique pointer to a `State` struct that is
 // reset whenever a field loses focus.
 // * If the struct is `null` then the state is `kInitial`.
-// * The state remains in `kInitial` until any of the three delay times can be
+// * The state remains in `kInitial` until either of the two delay times can be
 //   triggered.
 // * If the struct has a value, the value of `show_state` differentiates between
 //   the remaining states.
@@ -70,8 +69,7 @@ class ProactiveNudgeTracker : public autofill::AutofillManager::Observer {
   class Delegate {
    public:
     virtual void ShowProactiveNudge(autofill::FormGlobalId form,
-                                    autofill::FieldGlobalId field,
-                                    compose::ComposeEntryPoint entry_point) = 0;
+                                    autofill::FieldGlobalId field) = 0;
 
     virtual compose::PageUkmTracker* GetPageUkmTracker() = 0;
 
@@ -91,7 +89,6 @@ class ProactiveNudgeTracker : public autofill::AutofillManager::Observer {
   enum class ShowState {
     kInitial,
     kWaitingForTimerToStop,
-    kTimerCanceled,
     kWaitingForSegmentation,
     kWaitingForProactiveNudgeRequest,
     kBlockedBySegmentation,
@@ -125,9 +122,6 @@ class ProactiveNudgeTracker : public autofill::AutofillManager::Observer {
         segmentation_result;
     bool segmentation_result_ignored_for_training = false;
     base::OneShotTimer timer;
-    bool selection_nudge_requested = false;
-    bool selection_nudge_shown = false;
-    bool timer_canceled = false;
 
     int text_change_count = 0;
 
@@ -194,7 +188,6 @@ class ProactiveNudgeTracker : public autofill::AutofillManager::Observer {
   void TransitionToState(ShowState new_show_state);
 
   void BeginWaitingForTimerToStop();
-  void BeginTimerCanceled();
   void BeginSegmentation();
   void BeginWaitingForProactiveNudgeRequest();
   void BeginBlockedBySegmentation();
@@ -204,7 +197,6 @@ class ProactiveNudgeTracker : public autofill::AutofillManager::Observer {
   void StartOrRestartTimer();
   bool CanStartFocusTimer();
   bool CanStartTextSettledTimer();
-  bool CanStartSelectionTimer();
 
   void GotClassificationResult(
       const segmentation_platform::ClassificationResult& result);
