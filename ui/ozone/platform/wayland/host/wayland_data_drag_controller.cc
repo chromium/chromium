@@ -466,7 +466,9 @@ void WaylandDataDragController::OnDragOffer(
   if (!window_) {
     data_offer_.reset();
   }
-  CHECK(!data_offer_, base::NotFatalUntil::M163);
+  // TODO(crbug.com/584191899): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!data_offer_);
   VLOG(1) << __FUNCTION__;
   data_offer_ = std::move(offer);
 }
