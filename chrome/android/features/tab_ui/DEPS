@@ -193,7 +193,6 @@ specific_include_rules = {
     "+chrome/android/java/src/org/chromium/chrome/browser/dragdrop/ChromeTabDropDataAndroid.java",
     "+chrome/android/java/src/org/chromium/chrome/browser/dragdrop/ChromeTabGroupDropDataAndroid.java",
     "+chrome/android/java/src/org/chromium/chrome/browser/tab/TabFavicon.java",
-    "+chrome/android/java/src/org/chromium/chrome/browser/tabmodel/NextTabSelectionUtil.java",
   ],
 
   # TODO(b/565320394): Test-only dependencies
