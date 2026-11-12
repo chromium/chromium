@@ -460,6 +460,7 @@ if (!is_android) {
       "webrtc_disable_encryption_flag_browsertest.cc",
       "webrtc_getdisplaymedia_browsertest.cc",
       "webrtc_internals_integration_browsertest.cc",
+      "webrtc_ip_handling_browsertest.cc",
       "webrtc_pan_tilt_zoom_browsertest.cc",
       "webrtc_stats_perf_browsertest.cc",
       "webrtc_video_display_perf_browsertest.cc",

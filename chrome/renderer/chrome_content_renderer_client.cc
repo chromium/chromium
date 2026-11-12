@@ -223,6 +223,7 @@
 #include "chrome/renderer/extensions/chrome_extensions_renderer_client.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/context_data.h"
+#include "extensions/common/extension.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/manifest_handlers/back_forward_cache_info.h"
 #include "extensions/common/manifest_handlers/csp_info.h"
@@ -358,6 +359,29 @@ bool IsStandaloneContentExtensionProcess() {
       extensions::switches::kExtensionProcess);
 #endif
 }
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+// Kill switch for enforcing the WebRTC routing preferences in renderers that
+// host extensions. See https://crbug.com/544139421.
+BASE_FEATURE(kEnforceWebRtcRoutingPreferencesInExtensions,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Returns true if this renderer hosts a platform app.
+bool IsPlatformAppProcess() {
+  const extensions::Dispatcher* dispatcher =
+      extensions::ExtensionsRendererClient::Get()->dispatcher();
+  const extensions::RendererExtensionRegistry* registry =
+      extensions::RendererExtensionRegistry::Get();
+  for (const auto& id : registry->GetIDs()) {
+    const extensions::Extension* extension = registry->GetByID(id);
+    if (extension && extension->is_platform_app() &&
+        dispatcher->IsExtensionActive(id)) {
+      return true;
+    }
+  }
+  return false;
+}
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 bool IsTopChromeWebUiProcess() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -1663,12 +1687,18 @@ void ChromeContentRendererClient::WillDestroyServiceWorkerContextOnWorkerThread(
 #endif
 }
 
-// If we're in an extension, there is no need disabling multiple routes as
-// chrome.system.network.getNetworkInterfaces provides the same
-// information. Also, the enforcement of sending and binding UDP is already done
-// by chrome extension permission model.
 bool ChromeContentRendererClient::ShouldEnforceWebRTCRoutingPreferences() {
-  return !IsStandaloneContentExtensionProcess();
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  if (IsStandaloneContentExtensionProcess()) {
+    // Platform apps stay exempt. They only run where Chrome Apps are still
+    // allowed, e.g. in kiosk sessions or on managed devices, and can enumerate
+    // network interfaces with chrome.system.network.
+    return base::FeatureList::IsEnabled(
+               kEnforceWebRtcRoutingPreferencesInExtensions) &&
+           !IsPlatformAppProcess();
+  }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  return true;
 }
 
 GURL ChromeContentRendererClient::OverrideFlashEmbedWithHTML(const GURL& url) {
