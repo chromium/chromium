@@ -825,6 +825,7 @@ test("components_unittests") {
       "//components/guest_os:unit_tests",
       "//components/ownership:unit_tests",
       "//components/reporting/health:unit_tests",
+      "//components/session_manager/test:unit_tests",
       "//components/user_manager:unit_tests",
     ]
   }

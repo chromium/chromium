@@ -1,4 +1,11 @@
 include_rules = [
+  "+components/prefs",
   "+components/user_manager",
   "+components/session_manager/core",
 ]
+
+specific_include_rules = {
+  ".*_unittest\\.cc": [
+    "+google_apis/gaia/gaia_id.h",
+  ],
+}

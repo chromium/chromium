@@ -6,16 +6,41 @@ static_library("test_support") {
   testonly = true
 
   sources = [
+    "fake_user_session_test_environment_delegate.cc",
+    "fake_user_session_test_environment_delegate.h",
     "user_session_test_environment.cc",
     "user_session_test_environment.h",
   ]
 
+  public_deps = [ "//components/account_id" ]
+
   deps = [
     "//base",
+    "//components/prefs:test_support",
     "//components/session_manager/core",
     "//components/session_manager/core:test_support",
     "//components/user_manager",
     "//components/user_manager:multi_user",
     "//components/user_manager:test_support",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "fake_user_session_test_environment_delegate_unittest.cc" ]
+
+  deps = [
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//components/account_id",
+    "//components/account_id:test_support",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//components/session_manager/core",
+    "//components/user_manager",
+    "//google_apis",
+    "//testing/gtest",
   ]
 }
