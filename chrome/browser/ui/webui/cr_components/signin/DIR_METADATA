@@ -1,6 +1,1 @@
-monorail: {
-  component: "UI>Browser>Profiles"
-}
-buganizer_public: {
-  component_id: 1457509
-}
+mixins: "//chrome/browser/profiles/COMMON_METADATA"
