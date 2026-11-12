@@ -357,6 +357,16 @@ INSTANTIATE_TEST_SUITE_P(
             .expected = {.allowed = false,
                          .reason = SkipReason::kPhishingVerdict},
         },
+        PolicyTestCase{
+            .test_name = "PhishGuardTimeoutBlocksVerification",
+            .input = {.source = OneTimeTokenType::kSmsOtp,
+                      .stage = Stage::kVerification,
+                      .web_otp_used = false,
+                      .phish_guard_verdict =
+                          OneTimeTokensPhishGuardVerdict::kTimedOut},
+            .expected = {.allowed = false,
+                         .reason = SkipReason::kPhishGuardTimedOut},
+        },
 
         // --- Proactive-only UX preconditions (and verification-stage pass) ---
         PolicyTestCase{
