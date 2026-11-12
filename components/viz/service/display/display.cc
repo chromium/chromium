@@ -191,36 +191,6 @@ void IssueDisplayRenderingStatsEvent() {
                       std::move(record_data));
 }
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-//
-// LINT.IfChange(AnimationOrInteractionType)
-enum class AnimationOrInteractionType {
-  kNone = 0,
-  kInteractionOnly = 1,
-  kAnimationOnly = 2,
-  kAnimationAndInteraction = 3,
-  kMaxValue = kAnimationAndInteraction,
-};
-// LINT.ThenChange(//tools/metrics/histograms/enums.xml:FrameHandlingType)
-
-void RecordFrameTypes(bool is_handling_interaction,
-                      bool is_handling_animation) {
-  AnimationOrInteractionType type;
-  if (is_handling_interaction && is_handling_animation) {
-    type = AnimationOrInteractionType::kAnimationAndInteraction;
-  } else if (is_handling_interaction) {
-    type = AnimationOrInteractionType::kInteractionOnly;
-  } else if (is_handling_animation) {
-    type = AnimationOrInteractionType::kAnimationOnly;
-  } else {
-    type = AnimationOrInteractionType::kNone;
-  }
-
-  UMA_HISTOGRAM_ENUMERATION(
-      "GPU.Presentation.FrameHandlesAnimationOrInteraction", type);
-}
-
 }  // namespace
 
 constexpr base::TimeDelta Display::kDrawToSwapMin;
@@ -1081,8 +1051,9 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
         params.choreographer_vsync_id.value_or(0), display_trace_id,
         params.selected_deadline);
 
+#if BUILDFLAG(IS_MAC)
     bool has_interactive_frame = false;
-    bool has_animated_frame = false;
+#endif
     for (const auto& surface_id : aggregator_->previous_contained_surfaces()) {
       surface = surface_manager_->GetSurfaceForId(surface_id);
       if (surface) {
@@ -1092,12 +1063,11 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
           presentation_group_timing.AddPresentationHelper(std::move(helper));
         }
 
+#if BUILDFLAG(IS_MAC)
         has_interactive_frame |=
             surface->HasActiveFrame() &&
             surface->GetActiveFrameMetadata().is_handling_interaction;
-        has_animated_frame |=
-            surface->HasActiveFrame() &&
-            surface->GetActiveFrameMetadata().is_handling_animation;
+#endif
       }
     }
 
@@ -1135,7 +1105,6 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
 
 #if BUILDFLAG(IS_MAC)
     swap_frame_data.frame_data.is_handling_interaction = has_interactive_frame;
-    swap_frame_data.frame_data.is_handling_animation = has_animated_frame;
 #endif
 
     // We must notify scheduler and increase |pending_swaps_| before calling
@@ -1144,8 +1113,6 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
       scheduler_->DidSwapBuffers();
     }
     pending_swaps_++;
-
-    RecordFrameTypes(has_interactive_frame, has_animated_frame);
 
     renderer_->SwapBuffers(std::move(swap_frame_data));
   } else {

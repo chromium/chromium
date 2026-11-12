@@ -45,7 +45,6 @@ struct COMPONENT_EXPORT(GFX) FrameData {
 
 #if BUILDFLAG(IS_MAC)
   bool is_handling_interaction = false;
-  bool is_handling_animation = false;
 #endif
 };
 
