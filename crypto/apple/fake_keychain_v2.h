@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/apple/scoped_cftyperef.h"
@@ -27,7 +28,7 @@ class CRYPTO_EXPORT FakeKeychainV2 : public KeychainV2 {
  public:
   using UVMethod = ScopedFakeKeychainV2::UVMethod;
 
-  explicit FakeKeychainV2(const std::string& keychain_access_group);
+  explicit FakeKeychainV2(std::string_view keychain_access_group);
   FakeKeychainV2(const FakeKeychainV2&) = delete;
   FakeKeychainV2& operator=(const FakeKeychainV2&) = delete;
   ~FakeKeychainV2() override;

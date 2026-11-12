@@ -4,12 +4,18 @@
 
 #include "crypto/unexportable_key.h"
 
+#import <Foundation/Foundation.h>
 #include <Security/SecBase.h>
 
 #include <cstdint>
+#include <string>
+#include <string_view>
+#include <utility>
 #include <vector>
 
+#include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/containers/span_writer.h"
@@ -724,6 +730,138 @@ TEST(UnexportableKeyMacFiltersTest, QueriesDataProtectionKeychain) {
 
   // Trigger a query.
   CHECK_DEREF(provider).AsStatefulUnexportableKeyProvider()->GetAllKeysSlowly();
+}
+
+// Like `FakeKeychainV2`, but only returns an item's `SecKeyRef`
+// (`kSecValueRef`) if the query sets `kSecReturnRef`, as the real keychain
+// does. Counts the returned `SecKeyRef`s, since for Secure Enclave keys each
+// one costs a round trip to the Secure Enclave.
+class KeyRefCountingKeychain : public FakeKeychainV2 {
+ public:
+  explicit KeyRefCountingKeychain(std::string_view keychain_access_group)
+      : FakeKeychainV2(keychain_access_group) {
+    SetInstanceOverride(this);
+  }
+
+  ~KeyRefCountingKeychain() override { ClearInstanceOverride(); }
+
+  // Returns the number of `SecKeyRef`s returned since the last call.
+  size_t TakeKeyRefCount() { return std::exchange(key_ref_count_, 0); }
+
+  // FakeKeychainV2:
+  OSStatus ItemCopyMatching(CFDictionaryRef query, CFTypeRef* result) override {
+    const OSStatus status = FakeKeychainV2::ItemCopyMatching(query, result);
+    if (status != errSecSuccess) {
+      return status;
+    }
+
+    // The code under test always queries with `kSecMatchLimitAll`.
+    NSArray* items = base::apple::CFToNSPtrCast(
+        base::apple::CFCastStrict<CFArrayRef>(*result));
+    if ([base::apple::CFToNSPtrCast(
+            query)[base::apple::CFToNSPtrCast(kSecReturnRef)] boolValue]) {
+      key_ref_count_ += items.count;
+      return status;
+    }
+
+    base::apple::ScopedCFTypeRef<CFTypeRef> items_with_refs(*result);
+    NSMutableArray* items_without_refs = [NSMutableArray array];
+    for (NSDictionary* item in items) {
+      NSMutableDictionary* item_copy = [item mutableCopy];
+      [item_copy removeObjectForKey:base::apple::CFToNSPtrCast(kSecValueRef)];
+      [items_without_refs addObject:item_copy];
+    }
+    *result = base::apple::NSToCFOwnershipCast(items_without_refs);
+    return status;
+  }
+
+ private:
+  size_t key_ref_count_ = 0;
+};
+
+// The keychain access group holds the keys of all user data dirs and channels,
+// so only the keys that match the provider's tag may get a `SecKeyRef`.
+TEST(UnexportableKeyMacFiltersTest, OnlyMatchingKeysGetSecKeyRefs) {
+  KeyRefCountingKeychain keychain(kTestKeychainAccessGroup);
+  std::unique_ptr<UnexportableKeyProvider> provider =
+      GetUnexportableKeyProvider({
+          .keychain_access_group = kTestKeychainAccessGroup,
+          .application_tag = kTestApplicationTag,
+      });
+  ASSERT_TRUE(provider);
+  std::unique_ptr<UnexportableKeyProvider> other_provider =
+      GetUnexportableKeyProvider({
+          .keychain_access_group = kTestKeychainAccessGroup,
+          .application_tag = "other-application-tag",
+      });
+  ASSERT_TRUE(other_provider);
+  for (int i = 0; i < 3; ++i) {
+    ASSERT_TRUE(other_provider->GenerateSigningKeySlowly(kAcceptableAlgos));
+  }
+
+  StatefulUnexportableKeyProvider& stateful_provider =
+      CHECK_DEREF(provider->AsStatefulUnexportableKeyProvider());
+  std::unique_ptr<UnexportableSigningKey> key =
+      provider->GenerateSigningKeySlowly(kAcceptableAlgos);
+  ASSERT_TRUE(key);
+  EXPECT_THAT(stateful_provider.GetAllKeysSlowly(),
+              Optional(UnorderedElementsAre(WrappedKeyEq(key.get()))));
+  EXPECT_EQ(keychain.TakeKeyRefCount(), 1u);
+
+  EXPECT_TRUE(provider->FromWrappedSigningKeySlowly(key->GetWrappedKey()));
+  EXPECT_EQ(keychain.TakeKeyRefCount(), 1u);
+
+  EXPECT_THAT(stateful_provider.DeleteKeysSlowly({key.get()}), Optional(1u));
+  EXPECT_EQ(keychain.TakeKeyRefCount(), 0u);
+
+  key = provider->GenerateSigningKeySlowly(kAcceptableAlgos);
+  ASSERT_TRUE(key);
+  EXPECT_THAT(stateful_provider.DeleteWrappedKeysSlowly({key->GetWrappedKey()}),
+              Optional(1u));
+  EXPECT_EQ(keychain.TakeKeyRefCount(), 0u);
+
+  ASSERT_TRUE(provider->GenerateSigningKeySlowly(kAcceptableAlgos));
+  EXPECT_THAT(stateful_provider.DeleteAllKeysSlowly(), Optional(1u));
+  EXPECT_EQ(keychain.TakeKeyRefCount(), 0u);
+
+  // The other provider's keys are untouched.
+  EXPECT_THAT(
+      other_provider->AsStatefulUnexportableKeyProvider()->GetAllKeysSlowly(),
+      Optional(SizeIs(3)));
+}
+
+// `FromWrappedSigningKeySlowly()` copies a key with another tag to the
+// provider's tag. Both copies share the label, but only the provider's copy may
+// be listed and get a `SecKeyRef`.
+TEST(UnexportableKeyMacFiltersTest, GetAllKeysReturnsCopyWithProviderTag) {
+  KeyRefCountingKeychain keychain(kTestKeychainAccessGroup);
+  std::unique_ptr<UnexportableKeyProvider> provider =
+      GetUnexportableKeyProvider({
+          .keychain_access_group = kTestKeychainAccessGroup,
+          .application_tag = kTestApplicationTag,
+      });
+  ASSERT_TRUE(provider);
+  std::unique_ptr<UnexportableKeyProvider> other_provider =
+      GetUnexportableKeyProvider({
+          .keychain_access_group = kTestKeychainAccessGroup,
+          .application_tag = "other-application-tag",
+      });
+  ASSERT_TRUE(other_provider);
+
+  std::unique_ptr<UnexportableSigningKey> other_key =
+      other_provider->GenerateSigningKeySlowly(kAcceptableAlgos);
+  ASSERT_TRUE(other_key);
+  ASSERT_TRUE(
+      provider->FromWrappedSigningKeySlowly(other_key->GetWrappedKey()));
+  EXPECT_EQ(keychain.TakeKeyRefCount(), 1u);
+
+  std::optional<std::vector<std::unique_ptr<UnexportableSigningKey>>> keys =
+      CHECK_DEREF(provider->AsStatefulUnexportableKeyProvider())
+          .GetAllKeysSlowly();
+  ASSERT_THAT(keys, Optional(SizeIs(1)));
+  EXPECT_EQ(CHECK_DEREF(keys->front()->AsStatefulKey()).GetKeyTag(),
+            kTestApplicationTag);
+  EXPECT_EQ(keychain.TakeKeyRefCount(), 1u);
 }
 
 TEST_F(UnexportableKeyMacTest, GenerateAttestationKeyAndRestore) {

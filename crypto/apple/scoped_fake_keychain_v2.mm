@@ -14,7 +14,7 @@
 namespace crypto::apple {
 
 ScopedFakeKeychainV2::ScopedFakeKeychainV2(
-    const std::string& keychain_access_group)
+    std::string_view keychain_access_group)
     : keychain_(std::make_unique<FakeKeychainV2>(keychain_access_group)) {
   KeychainV2::SetInstanceOverride(keychain_.get());
 }

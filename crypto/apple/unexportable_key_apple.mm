@@ -29,6 +29,7 @@
 #include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/containers/linear_find.h"
 #include "base/containers/span.h"
 #include "base/containers/span_writer.h"
 #include "base/containers/to_vector.h"
@@ -172,16 +173,25 @@ absl::flat_hash_set<T> ToFlatHashSet(R&& range, Proj proj = {}) {
 struct FindUnexportableKeysOptions {
   NSString* access_group = nullptr;
   std::string_view application_tag_prefix;
+  // If set, only keys with exactly this `kSecAttrApplicationTag` value, as
+  // returned by an earlier query, match.
+  id application_tag = nil;
   base::raw_span<const uint8_t> wrapped_key;
   LAContext* lacontext = nullptr;
+  // Whether to also return each key's `SecKeyRef`. Creating one costs a round
+  // trip to the Secure Enclave per key, so only ask for it when `wrapped_key`
+  // narrows the query down.
+  bool return_ref = false;
 };
 
 // Returns a vector of keychain items matching the given attributes or an
-// OSStatus error code in case of failure.
+// OSStatus error code in case of failure. Each item holds the key's attributes,
+// plus its `SecKeyRef` under `kSecValueRef` if `return_ref` is set.
 base::expected<std::vector<base::apple::ScopedCFTypeRef<CFDictionaryRef>>,
                OSStatus>
 FindUnexportableKeys(FindUnexportableKeysOptions options) {
-  auto [access_group, application_tag_prefix, wrapped_key, lacontext] = options;
+  auto [access_group, application_tag_prefix, application_tag, wrapped_key,
+        lacontext, return_ref] = options;
   NSMutableDictionary* query = [NSMutableDictionary dictionaryWithDictionary:@{
     CFToNSPtrCast(kSecUseDataProtectionKeychain) : @YES,
     CFToNSPtrCast(kSecClass) : CFToNSPtrCast(kSecClassKey),
@@ -190,12 +200,16 @@ FindUnexportableKeys(FindUnexportableKeysOptions options) {
     CFToNSPtrCast(kSecAttrAccessGroup) : access_group,
     CFToNSPtrCast(kSecMatchLimit) : CFToNSPtrCast(kSecMatchLimitAll),
     CFToNSPtrCast(kSecReturnAttributes) : @YES,
-    CFToNSPtrCast(kSecReturnRef) : @YES,
+    CFToNSPtrCast(kSecReturnRef) : @(return_ref),
   }];
 
   if (!wrapped_key.empty()) {
     query[CFToNSPtrCast(kSecAttrApplicationLabel)] =
         [NSData dataWithBytes:wrapped_key.data() length:wrapped_key.size()];
+  }
+
+  if (application_tag) {
+    query[CFToNSPtrCast(kSecAttrApplicationTag)] = application_tag;
   }
 
   if (lacontext) {
@@ -509,6 +523,7 @@ std::unique_ptr<KeyClass> FromWrappedKeySlowlyImpl(
           .access_group = keychain_access_group,
           .wrapped_key = wrapped_key,
           .lacontext = lacontext,
+          .return_ref = true,
       }),
       [operation](OSStatus status) {
         LogKeychainOperationError(operation, status);
@@ -656,10 +671,44 @@ UnexportableKeyProviderApple::GetAllKeysSlowly() {
       }),
       [](OSStatus) { return std::nullopt; });
 
-  return base::ToVector(
-      keys, [](const auto& key) -> std::unique_ptr<UnexportableSigningKey> {
-        return std::make_unique<UnexportableSigningKeyApple>(key.get());
-      });
+  // Fetch the `SecKeyRef`s only for the matches, by looking each one up by its
+  // label and tag. The keychain can't filter on a tag prefix, so the query
+  // above read every key in the access group, which all user data dirs and
+  // channels share.
+  std::vector<std::unique_ptr<UnexportableSigningKey>> result;
+  result.reserve(keys.size());
+  for (const auto& key : keys) {
+    // Every key is labeled with the hash of its public key. Without a label,
+    // the lookup below would match other keys.
+    base::span<const uint8_t> label = GetApplicationLabel(key.get());
+    if (label.empty()) {
+      continue;
+    }
+
+    ASSIGN_OR_RETURN(std::vector<base::apple::ScopedCFTypeRef<CFDictionaryRef>>
+                         keys_with_label,
+                     FindUnexportableKeys({
+                         .access_group = objc_storage_->keychain_access_group_,
+                         .application_tag = CFToNSPtrCast(
+                             key.get())[CFToNSPtrCast(kSecAttrApplicationTag)],
+                         .wrapped_key = label,
+                         .return_ref = true,
+                     }),
+                     [](OSStatus) { return std::nullopt; });
+
+    // Copies of the key with other tags share its label, see
+    // `FromWrappedKeySlowlyImpl()`. The tag in the query rules them out, unless
+    // the key has no tag attribute at all.
+    if (const auto* key_with_tag =
+            base::LinearFind(keys_with_label, GetApplicationTag(key.get()),
+                             [](const auto& key_with_label) {
+                               return GetApplicationTag(key_with_label.get());
+                             })) {
+      result.push_back(
+          std::make_unique<UnexportableSigningKeyApple>(key_with_tag->get()));
+    }
+  }
+  return result;
 }
 
 std::optional<size_t> UnexportableKeyProviderApple::DeleteWrappedKeysSlowly(

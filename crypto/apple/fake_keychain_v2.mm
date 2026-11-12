@@ -119,7 +119,7 @@ void IncrementKeychainAccessHistogram() {
 
 }  // namespace
 
-FakeKeychainV2::FakeKeychainV2(const std::string& keychain_access_group)
+FakeKeychainV2::FakeKeychainV2(std::string_view keychain_access_group)
     : keychain_access_group_(
           base::SysUTF8ToCFStringRef(keychain_access_group)) {
   CHECK(keychain_access_group_);

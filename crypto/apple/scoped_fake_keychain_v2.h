@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "crypto/crypto_export.h"
 
@@ -28,7 +29,7 @@ class CRYPTO_EXPORT ScopedFakeKeychainV2 {
     kBiometrics,
   };
 
-  explicit ScopedFakeKeychainV2(const std::string& keychain_access_group);
+  explicit ScopedFakeKeychainV2(std::string_view keychain_access_group);
   ~ScopedFakeKeychainV2();
 
   FakeKeychainV2* keychain() { return keychain_.get(); }
