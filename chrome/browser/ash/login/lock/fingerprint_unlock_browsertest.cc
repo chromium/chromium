@@ -179,17 +179,19 @@ class FingerprintUnlockTest : public InProcessBrowserTest {
 
     bool fingerprint_available = time_change < expiration_time;
 
-    LockContentsViewTestApi lock_contents_test(
-        LockScreen::TestApi(LockScreen::Get()).contents_view());
-    // Allow lock screen timer to be executed.
-    base::RunLoop().RunUntilIdle();
+    {
+      LockContentsViewTestApi lock_contents_test(
+          LockScreen::TestApi(LockScreen::Get()).contents_view());
+      // Allow lock screen timer to be executed.
+      base::RunLoop().RunUntilIdle();
 
-    FingerprintState actual_state =
-        lock_contents_test.GetFingerPrintState(user_manager::StubAccountId());
-    FingerprintState expected_state =
-        fingerprint_available ? FingerprintState::AVAILABLE_DEFAULT
-                              : FingerprintState::DISABLED_FROM_TIMEOUT;
-    EXPECT_EQ(actual_state, expected_state);
+      FingerprintState actual_state =
+          lock_contents_test.GetFingerPrintState(user_manager::StubAccountId());
+      FingerprintState expected_state =
+          fingerprint_available ? FingerprintState::AVAILABLE_DEFAULT
+                                : FingerprintState::DISABLED_FROM_TIMEOUT;
+      EXPECT_EQ(actual_state, expected_state);
+    }
     EXPECT_EQ(fingerprint_available, HasStrongAuth());
 
     // Fingerprint unlock is possible iff we have strong auth. After
@@ -276,25 +278,27 @@ IN_PROC_BROWSER_TEST_F(FingerprintUnlockTest, BiodFailsBeforeLockScreenReady) {
   ScreenLockerTester tester;
   tester.Lock();
 
-  LockContentsViewTestApi lock_contents_test(
-      LockScreen::TestApi(LockScreen::Get()).contents_view());
+  {
+    LockContentsViewTestApi lock_contents_test(
+        LockScreen::TestApi(LockScreen::Get()).contents_view());
 
-  base::RunLoop().RunUntilIdle();
+    base::RunLoop().RunUntilIdle();
 
-  // No fingerprint record is available yet.
-  FingerprintState initial_state =
-      lock_contents_test.GetFingerPrintState(user_manager::StubAccountId());
-  EXPECT_EQ(initial_state, FingerprintState::UNAVAILABLE);
+    // No fingerprint record is available yet.
+    FingerprintState initial_state =
+        lock_contents_test.GetFingerPrintState(user_manager::StubAccountId());
+    EXPECT_EQ(initial_state, FingerprintState::UNAVAILABLE);
 
-  // Simulate a biod late start, giving us fingerprint records.
-  EnrollFingerprint();
-  biod_->SendRestarted();
-  biod_->SendStatusChanged(biod::BiometricsManagerStatus::INITIALIZED);
-  base::RunLoop().RunUntilIdle();
+    // Simulate a biod late start, giving us fingerprint records.
+    EnrollFingerprint();
+    biod_->SendRestarted();
+    biod_->SendStatusChanged(biod::BiometricsManagerStatus::INITIALIZED);
+    base::RunLoop().RunUntilIdle();
 
-  FingerprintState state_after_getting_records =
-      lock_contents_test.GetFingerPrintState(user_manager::StubAccountId());
-  EXPECT_EQ(state_after_getting_records, FingerprintState::AVAILABLE_DEFAULT);
+    FingerprintState state_after_getting_records =
+        lock_contents_test.GetFingerPrintState(user_manager::StubAccountId());
+    EXPECT_EQ(state_after_getting_records, FingerprintState::AVAILABLE_DEFAULT);
+  }
 
   EXPECT_TRUE(tester.IsLocked());
   base::HistogramTester histogram_tester;

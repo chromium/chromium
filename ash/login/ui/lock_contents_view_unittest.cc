@@ -281,7 +281,7 @@ TEST_F(LockContentsViewUnitTest, LayoutInSmallScreenSize) {
       LockScreen::ScreenType::kLock, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   LockContentsViewTestApi lock_contents(contents);
-  std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(contents);
+  SetWidget(CreateWidgetWithContent(contents));
   display::test::DisplayManagerTestApi display_manager_test_api(
       display_manager());
 
@@ -592,7 +592,7 @@ TEST_F(LockContentsViewUnitTest, SwapAuthUsersInTwoUserLayout) {
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   LockContentsViewTestApi test_api(contents);
   SetUserCount(2);
-  std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(contents);
+  SetWidget(CreateWidgetWithContent(contents));
 
   // Capture user info to validate it did not change during the swap.
   AccountId primary_user =
@@ -1899,7 +1899,7 @@ TEST_F(LockContentsViewUnitTest, ExpandedPublicSessionView) {
       LockScreen::ScreenType::kLock, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   LockContentsViewTestApi lock_contents(contents);
-  std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(contents);
+  SetWidget(CreateWidgetWithContent(contents));
   AddPublicAccountUsers(1);
   AddUsers(2);
 

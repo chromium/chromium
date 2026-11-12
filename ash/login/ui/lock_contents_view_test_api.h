@@ -88,7 +88,7 @@ class ASH_EXPORT LockContentsViewTestApi {
   void SetKioskLicenseMode(bool is_kiosk_license_mode);
 
  private:
-  const raw_ptr<LockContentsView, DanglingUntriaged> view_;
+  const raw_ptr<LockContentsView> view_;
 };
 
 }  // namespace ash
