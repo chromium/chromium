@@ -62,28 +62,48 @@ extension ObjectGroup {
     )
 }
 
-// TODO(http://crbug.com/514397167) determine broader URL generation strategy
+private let mojoSameOriginPaths = ["/", "/a", "/b.txt", "/index.html", "/gen/file.txt", "/test?x=1#frag"]
+private let mojoStaticUrls = [
+    "https://a.test/a", "https://localhost/", "http://127.0.0.1/",
+    "wss://a.test/", "about:blank", "data:text/plain,a", "",
+]
+
 public let MojoUrlMojomUrlGenerator = CodeGenerator(
     "MojoUrlMojomUrlGenerator",
     produces: [.jsUrlMojomUrl]
 ) { b in
-    let urlString = b.loadString("https://example.com/" + b.randomString())
+    let urlString: Variable
+    let roll = Int.random(in: 0..<10)
+    if roll < 4 {
+        let sameOriginFn = b.createNamedVariable(forBuiltin: "mojoSameOriginUrl")
+        let pathVar = b.loadString(chooseUniform(from: mojoSameOriginPaths))
+        urlString = b.callFunction(sameOriginFn, withArgs: [pathVar])
+        b.hide(pathVar)
+        b.hide(sameOriginFn)
+    } else if roll < 7 {
+        urlString = b.loadString(chooseUniform(from: mojoStaticUrls))
+    } else {
+        urlString = b.loadString("https://example.com/" + b.randomString())
+    }
     let constructor = b.createNamedVariable(forBuiltin: CommonMojoStrings.urlMojomUrl)
     b.construct(constructor, withArgs: [urlString])
+    b.hide(constructor)
 }
 
-// TODO(http://crbug.com/514397167) determine broader SchemeHostPort generation strategy
 public let MojoUrlMojomUrlSchemeHostPortGenerator = CodeGenerator(
     "MojoUrlMojomUrlSchemeHostPortGenerator",
     produces: [.jsUrlMojomSchemeHostPort]
 ) { b in
-    let schemes = ["https", "wss"]
-    let hosts = ["example.com", "localhost", "127.0.0.1", "[::1]", "xn--n3h.net"]
+    let schemes = ["https", "wss", "http", "file", "about"]
+    let hosts = ["a.test", "example.com", "localhost", "127.0.0.1", "[::1]", "xn--n3h.net"]
 
     let selectedScheme = chooseUniform(from: schemes)
     let selectedHost = chooseUniform(from: hosts)
 
-    let port = Int64.random(in: 1...65535)
+    let port: Int64 =
+        probability(0.5)
+        ? chooseUniform(from: [0, 80, 443, 8080, 65535])
+        : Int64.random(in: 1...65535)
 
     let schemeVar = b.loadString(selectedScheme)
     let hostVar = b.loadString(selectedHost)
@@ -91,4 +111,5 @@ public let MojoUrlMojomUrlSchemeHostPortGenerator = CodeGenerator(
 
     let constructor = b.createNamedVariable(forBuiltin: CommonMojoStrings.urlMojomSchemeHostPort)
     b.construct(constructor, withArgs: [schemeVar, hostVar, portVar])
+    b.hide(constructor)
 }

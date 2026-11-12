@@ -26,7 +26,13 @@ extension CommonMojoStrings {
 }
 
 public let mojoCoreBuiltins: [String: ILType] = [
-    CommonMojoStrings.mojo: .jsMojo
+    CommonMojoStrings.mojo: .jsMojo,
+    "mojoSameOriginUrl": .function([.string] => .jsString),
+]
+
+public let mojoCoreCodeGenerators: [(CodeGenerator, Int)] = [
+    (MojoDataPipeConsumerGenerator, mojoDataPipeGeneratorWeight),
+    (MojoDataPipeProducerGenerator, mojoDataPipeGeneratorWeight),
 ]
 
 public let mojoCoreObjectGroups: [ObjectGroup] = [
@@ -225,4 +231,106 @@ extension OptionsBag {
         ],
         selectionMode: .anySubset,
     )
+}
+
+private func createMojoDataPipe(
+    _ b: ProgramBuilder, elementNumBytes: Int64, capacityNumBytes: Int64
+) -> (producer: Variable, consumer: Variable) {
+    let mojo = b.createNamedVariable(forBuiltin: CommonMojoStrings.mojo)
+    let elem = b.loadInt(elementNumBytes)
+    let cap = b.loadInt(capacityNumBytes)
+    let opts = b.createObject(with: [
+        "elementNumBytes": elem,
+        "capacityNumBytes": cap,
+    ])
+    let pipe = b.callMethod("createDataPipe", on: mojo, withArgs: [opts])
+    let producer = b.getProperty("producer", of: pipe, isReceiverOptional: true)
+    let consumer = b.getProperty("consumer", of: pipe, isReceiverOptional: true)
+    b.hide(pipe)
+    b.hide(opts)
+    b.hide(cap)
+    b.hide(elem)
+    b.hide(mojo)
+    return (producer, consumer)
+}
+
+private func chooseMojoDataPipeElementSize() -> Int64 {
+    return probability(0.85) ? 1 : chooseUniform(from: [2, 3, 4, 17, 4095, 11984])
+}
+
+/// Creates a populated `MojoDataPipeConsumerHandle` by writing 0B, small,
+/// boundary, or >32KiB multi-chunk bytes into its producer and closing the
+/// producer (always when `closeProducer == true`, 85% when `nil`).
+@discardableResult
+public func emitMojoDataPipeConsumer(
+    _ b: ProgramBuilder, byteCount: Int64? = nil, closeProducer: Bool? = nil
+) -> Variable {
+    let elementNumBytes = byteCount == nil ? chooseMojoDataPipeElementSize() : 1
+    let dataSize: Int64
+    if let explicit = byteCount {
+        dataSize = explicit
+    } else if elementNumBytes == 1 {
+        let roll = Int.random(in: 0..<20)
+        switch roll {
+        case 0..<3:
+            dataSize = 0
+        case 3..<11:
+            dataSize = chooseUniform(from: [1, 7, 64, 512, 1024])
+        case 11..<16:
+            dataSize = chooseUniform(from: [4095, 4096, 4097, 32767, 32768, 32769])
+        default:
+            dataSize = chooseUniform(from: [40960, 65536, 70000])
+        }
+    } else {
+        dataSize = probability(0.25) ? 0 : (probability(0.65) ? elementNumBytes : elementNumBytes * 2)
+    }
+    let minCapacity = max(dataSize, elementNumBytes * 4)
+    let capacityNumBytes: Int64 =
+        elementNumBytes == 1
+        ? (dataSize > 65536 ? 131072 : max(minCapacity, chooseUniform(from: [64, 4096, 32768, 65536])))
+        : elementNumBytes * chooseUniform(from: [4, 16, 64])
+    let (producer, consumer) = createMojoDataPipe(
+        b, elementNumBytes: elementNumBytes, capacityNumBytes: capacityNumBytes)
+    if dataSize > 0 {
+        let uint8Ctor = b.createNamedVariable(forBuiltin: "Uint8Array")
+        let sizeVar = b.loadInt(dataSize)
+        let buf = b.construct(uint8Ctor, withArgs: [sizeVar])
+        let fillByte = b.loadInt(Int64.random(in: 1...255))
+        b.callMethod("fill", on: buf, withArgs: [fillByte], isReceiverOptional: true)
+        b.callMethod("writeData", on: producer, withArgs: [buf], isReceiverOptional: true)
+        b.hide(fillByte)
+        b.hide(buf)
+        b.hide(sizeVar)
+        b.hide(uint8Ctor)
+    }
+    if closeProducer ?? probability(0.85) {
+        b.callMethod("close", on: producer, withArgs: [], isReceiverOptional: true)
+        b.hide(producer)
+    }
+    return consumer
+}
+
+/// Generates a populated `MojoDataPipeConsumerHandle` by creating a data pipe,
+/// writing 0B, small, boundary, or >32KiB multi-chunk bytes into its producer,
+/// and usually closing the producer so readers see data followed by EOF.
+public let MojoDataPipeConsumerGenerator = CodeGenerator(
+    "MojoDataPipeConsumerGenerator",
+    produces: [.jsMojoDataPipeConsumerHandle]
+) { b in
+    _ = emitMojoDataPipeConsumer(b)
+}
+
+/// Generates a `MojoDataPipeProducerHandle` paired with a visible consumer so
+/// browser-written data can be read back from the pipe.
+public let MojoDataPipeProducerGenerator = CodeGenerator(
+    "MojoDataPipeProducerGenerator",
+    produces: [.jsMojoDataPipeProducerHandle]
+) { b in
+    let elementNumBytes = chooseMojoDataPipeElementSize()
+    let capacityNumBytes =
+        elementNumBytes == 1
+        ? chooseUniform(from: [64, 4096, 32768, 65536])
+        : elementNumBytes * chooseUniform(from: [4, 16, 64])
+    let _ = createMojoDataPipe(
+        b, elementNumBytes: elementNumBytes, capacityNumBytes: capacityNumBytes)
 }

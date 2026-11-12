@@ -169,6 +169,20 @@ extension ILType {
           "bindNewPipeAndPassReceiver",
         ])
 
+    // CacheStorageSideDataWriter
+    fileprivate static let jsNetworkMojomCacheStorageSideDataWriterRemote: ILType = .object(
+        ofGroup: "network.mojom.CacheStorageSideDataWriterRemote",
+        withProperties: ["$"],
+        withMethods: [
+            "writeSideData",
+        ])
+    fileprivate static let jsNetworkMojomCacheStorageSideDataWriterRemoteWrapper: ILType = .object(
+        ofGroup: "network.mojom.CacheStorageSideDataWriterRemoteWrapper",
+        withMethods: [
+          "close",
+          "isBound",
+        ])
+
     // FileSystemAccessTransferToken
     fileprivate static let jsBlinkMojomFileSystemAccessTransferTokenRemote: ILType = .object(
         ofGroup: "blink.mojom.FileSystemAccessTransferTokenRemote",
@@ -239,10 +253,25 @@ extension ILType {
         withMethods: ["addListener"])
     fileprivate static let jsBlinkMojomIDBFactoryClientUpgradeNeededCallbackReceiver: ILType = .object(
         ofGroup: "BlinkMojomIDBFactoryClientUpgradeNeededCallbackReceiver",
-        withMethods: ["addListener"])
+        withMethods: ["addListener", "nextCall"])
+    fileprivate static let jsBlinkMojomIDBFactoryClientUpgradeNeededCallbackReceiverCall: ILType = .object(
+        ofGroup: "BlinkMojomIDBFactoryClientUpgradeNeededCallbackReceiverCall",
+        withProperties: [
+            "pendingDatabase",
+            "oldVersion",
+            "dataLoss",
+            "dataLossMessage",
+            "dbMetadata",
+        ])
     fileprivate static let jsBlinkMojomIDBFactoryClientOpenSuccessCallbackReceiver: ILType = .object(
         ofGroup: "BlinkMojomIDBFactoryClientOpenSuccessCallbackReceiver",
-        withMethods: ["addListener"])
+        withMethods: ["addListener", "nextCall"])
+    fileprivate static let jsBlinkMojomIDBFactoryClientOpenSuccessCallbackReceiverCall: ILType = .object(
+        ofGroup: "BlinkMojomIDBFactoryClientOpenSuccessCallbackReceiverCall",
+        withProperties: [
+            "pendingDatabase",
+            "metadata",
+        ])
     fileprivate static let jsBlinkMojomIDBFactoryClientDeleteSuccessCallbackReceiver: ILType = .object(
         ofGroup: "BlinkMojomIDBFactoryClientDeleteSuccessCallbackReceiver",
         withMethods: ["addListener"])
@@ -284,13 +313,35 @@ extension ILType {
         withMethods: ["addListener"])
     fileprivate static let jsBlinkMojomBlobReadAllCallbackReceiver: ILType = .object(
         ofGroup: "BlinkMojomBlobReadAllCallbackReceiver",
-        withMethods: ["addListener"])
+        withMethods: ["addListener", "nextCall"])
+    fileprivate static let jsBlinkMojomBlobReadAllCallbackReceiverCall: ILType = .object(
+        ofGroup: "BlinkMojomBlobReadAllCallbackReceiverCall",
+        withProperties: [
+            "pipe",
+            "client",
+        ])
     fileprivate static let jsBlinkMojomBlobReadRangeCallbackReceiver: ILType = .object(
         ofGroup: "BlinkMojomBlobReadRangeCallbackReceiver",
-        withMethods: ["addListener"])
+        withMethods: ["addListener", "nextCall"])
+    fileprivate static let jsBlinkMojomBlobReadRangeCallbackReceiverCall: ILType = .object(
+        ofGroup: "BlinkMojomBlobReadRangeCallbackReceiverCall",
+        withProperties: [
+            "offset",
+            "length",
+            "pipe",
+            "client",
+        ])
     fileprivate static let jsBlinkMojomBlobLoadCallbackReceiver: ILType = .object(
         ofGroup: "BlinkMojomBlobLoadCallbackReceiver",
-        withMethods: ["addListener"])
+        withMethods: ["addListener", "nextCall"])
+    fileprivate static let jsBlinkMojomBlobLoadCallbackReceiverCall: ILType = .object(
+        ofGroup: "BlinkMojomBlobLoadCallbackReceiverCall",
+        withProperties: [
+            "loader",
+            "requestMethod",
+            "headers",
+            "client",
+        ])
     fileprivate static let jsBlinkMojomBlobReadSideDataCallbackReceiver: ILType = .object(
         ofGroup: "BlinkMojomBlobReadSideDataCallbackReceiver",
         withMethods: ["addListener"])
@@ -351,6 +402,28 @@ extension ILType {
         withMethods: ["addListener"])
     fileprivate static let jsNetworkMojomURLLoaderSetPriorityCallbackReceiver: ILType = .object(
         ofGroup: "NetworkMojomURLLoaderSetPriorityCallbackReceiver",
+        withMethods: ["addListener"])
+
+    // CacheStorageSideDataWriter
+    fileprivate static let jsNetworkMojomCacheStorageSideDataWriterCallbackRouter: ILType = .object(
+        ofGroup: "network.mojom.CacheStorageSideDataWriterCallbackRouter",
+        withProperties: [
+            "$",
+            "writeSideData",
+        ])
+    fileprivate static let jsNetworkMojomCacheStorageSideDataWriterCallbackRouterReceiverHelper: ILType = .object(
+        ofGroup: "network.mojom.CacheStorageSideDataWriterCallbackRouterReceiverHelper",
+        withMethods: [
+          "close",
+          "bindNewPipeAndPassRemote",
+        ])
+    fileprivate static let jsNetworkMojomCacheStorageSideDataWriterPendingReceiver: ILType = .object(
+        ofGroup: "network.mojom.CacheStorageSideDataWriterPendingReceiver")
+    fileprivate static let jsNetworkMojomCacheStorageSideDataWriterPendingRemote: ILType = .object(
+        ofGroup: "network.mojom.CacheStorageSideDataWriterPendingRemote",
+        withProperties: ["$"])
+    fileprivate static let jsNetworkMojomCacheStorageSideDataWriterWriteSideDataCallbackReceiver: ILType = .object(
+        ofGroup: "NetworkMojomCacheStorageSideDataWriterWriteSideDataCallbackReceiver",
         withMethods: ["addListener"])
 
     // FileSystemAccessTransferToken
@@ -437,10 +510,23 @@ extension ILType {
         withMethods: ["addListener"])
     fileprivate static let jsNetworkMojomURLLoaderClientOnReceiveResponseCallbackReceiver: ILType = .object(
         ofGroup: "NetworkMojomURLLoaderClientOnReceiveResponseCallbackReceiver",
-        withMethods: ["addListener"])
+        withMethods: ["addListener", "nextCall"])
+    fileprivate static let jsNetworkMojomURLLoaderClientOnReceiveResponseCallbackReceiverCall: ILType = .object(
+        ofGroup: "NetworkMojomURLLoaderClientOnReceiveResponseCallbackReceiverCall",
+        withProperties: [
+            "head",
+            "body",
+            "cachedMetadata",
+        ])
     fileprivate static let jsNetworkMojomURLLoaderClientOnReceiveRedirectCallbackReceiver: ILType = .object(
         ofGroup: "NetworkMojomURLLoaderClientOnReceiveRedirectCallbackReceiver",
-        withMethods: ["addListener"])
+        withMethods: ["addListener", "nextCall"])
+    fileprivate static let jsNetworkMojomURLLoaderClientOnReceiveRedirectCallbackReceiverCall: ILType = .object(
+        ofGroup: "NetworkMojomURLLoaderClientOnReceiveRedirectCallbackReceiverCall",
+        withProperties: [
+            "redirectInfo",
+            "head",
+        ])
     fileprivate static let jsNetworkMojomURLLoaderClientOnUploadProgressCallbackReceiver: ILType = .object(
         ofGroup: "NetworkMojomURLLoaderClientOnUploadProgressCallbackReceiver",
         withMethods: ["addListener"])
@@ -472,7 +558,13 @@ extension ILType {
         withProperties: ["handle"])
     fileprivate static let jsBlinkMojomIDBDatabaseGetAllResultSinkReceiveResultsCallbackReceiver: ILType = .object(
         ofGroup: "BlinkMojomIDBDatabaseGetAllResultSinkReceiveResultsCallbackReceiver",
-        withMethods: ["addListener"])
+        withMethods: ["addListener", "nextCall"])
+    fileprivate static let jsBlinkMojomIDBDatabaseGetAllResultSinkReceiveResultsCallbackReceiverCall: ILType = .object(
+        ofGroup: "BlinkMojomIDBDatabaseGetAllResultSinkReceiveResultsCallbackReceiverCall",
+        withProperties: [
+            "records",
+            "done",
+        ])
     fileprivate static let jsBlinkMojomIDBDatabaseGetAllResultSinkOnErrorCallbackReceiver: ILType = .object(
         ofGroup: "BlinkMojomIDBDatabaseGetAllResultSinkOnErrorCallbackReceiver",
         withMethods: ["addListener"])
@@ -536,7 +628,7 @@ extension ObjectGroup {
                 .plain(.jsBlinkMojomIDBTransactionPendingAssociatedReceiver),
                 .plain(.bigint),
                 .plain(.jsInt32),
-                .plain(.boolean),
+                .either(.bigint, .undefined),
             ] => .undefined,
             "deleteDatabase": [
                 .plain(.jsBlinkMojomIDBFactoryClientPendingAssociatedRemote),
@@ -871,6 +963,27 @@ extension ObjectGroup {
             "bindNewPipeAndPassReceiver": [] => .jsNetworkMojomURLLoaderPendingReceiver,
         ])
 
+    // CacheStorageSideDataWriter
+    fileprivate static let networkMojomCacheStorageSideDataWriterRemote = ObjectGroup(
+        name: "network.mojom.CacheStorageSideDataWriterRemote",
+        instanceType: .jsNetworkMojomCacheStorageSideDataWriterRemote,
+        properties: ["$": .jsNetworkMojomCacheStorageSideDataWriterRemoteWrapper],
+        methods: [
+            "writeSideData": [
+                .plain(.jsMojoBaseMojomBigBufferUnion),
+            ] => .undefined,
+        ]
+    )
+
+    fileprivate static let networkMojomCacheStorageSideDataWriterRemoteWrapper = ObjectGroup(
+        name: "network.mojom.CacheStorageSideDataWriterRemoteWrapper",
+        instanceType: .jsNetworkMojomCacheStorageSideDataWriterRemoteWrapper,
+        properties: [:],
+        methods: [
+            "close": [] => .undefined,
+            "isBound": [] => .boolean,
+        ])
+
     // FileSystemAccessTransferToken
     fileprivate static let blinkMojomFileSystemAccessTransferTokenRemote = ObjectGroup(
         name: "blink.mojom.FileSystemAccessTransferTokenRemote",
@@ -994,7 +1107,22 @@ extension ObjectGroup {
                             .plain(.jsBlinkMojomIDBDatabaseMetadata),
                         ] => .undefined))
             ] => .integer,
+            "nextCall": [.rest(.string)] => .jsPromise(
+                resolvingTo: .jsBlinkMojomIDBFactoryClientUpgradeNeededCallbackReceiverCall),
         ])
+
+    fileprivate static let blinkMojomIDBFactoryClientUpgradeNeededCallbackReceiverCall = ObjectGroup(
+        name: "BlinkMojomIDBFactoryClientUpgradeNeededCallbackReceiverCall",
+        instanceType: .jsBlinkMojomIDBFactoryClientUpgradeNeededCallbackReceiverCall,
+        properties: [
+            "pendingDatabase": .jsBlinkMojomIDBDatabaseRemote,
+            "oldVersion": .bigint,
+            "dataLoss": .jsBlinkMojomIDBDataLoss,
+            "dataLossMessage": .string,
+            "dbMetadata": .jsBlinkMojomIDBDatabaseMetadata,
+        ],
+        methods: [:]
+    )
 
     fileprivate static let blinkMojomIDBFactoryClientOpenSuccessCallbackReceiver = ObjectGroup(
         name: "BlinkMojomIDBFactoryClientOpenSuccessCallbackReceiver",
@@ -1009,7 +1137,19 @@ extension ObjectGroup {
                             .plain(.jsBlinkMojomIDBDatabaseMetadata),
                         ] => .undefined))
             ] => .integer,
+            "nextCall": [.rest(.string)] => .jsPromise(
+                resolvingTo: .jsBlinkMojomIDBFactoryClientOpenSuccessCallbackReceiverCall),
         ])
+
+    fileprivate static let blinkMojomIDBFactoryClientOpenSuccessCallbackReceiverCall = ObjectGroup(
+        name: "BlinkMojomIDBFactoryClientOpenSuccessCallbackReceiverCall",
+        instanceType: .jsBlinkMojomIDBFactoryClientOpenSuccessCallbackReceiverCall,
+        properties: [
+            "pendingDatabase": .jsBlinkMojomIDBDatabaseRemote,
+            "metadata": .jsBlinkMojomIDBDatabaseMetadata,
+        ],
+        methods: [:]
+    )
 
     fileprivate static let blinkMojomIDBFactoryClientDeleteSuccessCallbackReceiver = ObjectGroup(
         name: "BlinkMojomIDBFactoryClientDeleteSuccessCallbackReceiver",
@@ -1114,7 +1254,19 @@ extension ObjectGroup {
                             .either(.jsBlinkMojomBlobReaderClientRemote, .undefined),
                         ] => .undefined))
             ] => .integer,
+            "nextCall": [.rest(.string)] => .jsPromise(
+                resolvingTo: .jsBlinkMojomBlobReadAllCallbackReceiverCall),
         ])
+
+    fileprivate static let blinkMojomBlobReadAllCallbackReceiverCall = ObjectGroup(
+        name: "BlinkMojomBlobReadAllCallbackReceiverCall",
+        instanceType: .jsBlinkMojomBlobReadAllCallbackReceiverCall,
+        properties: [
+            "pipe": .jsMojoDataPipeProducerHandle,
+            "client": .jsBlinkMojomBlobReaderClientRemote,
+        ],
+        methods: [:]
+    )
 
     fileprivate static let blinkMojomBlobReadRangeCallbackReceiver = ObjectGroup(
         name: "BlinkMojomBlobReadRangeCallbackReceiver",
@@ -1131,7 +1283,21 @@ extension ObjectGroup {
                             .either(.jsBlinkMojomBlobReaderClientRemote, .undefined),
                         ] => .undefined))
             ] => .integer,
+            "nextCall": [.rest(.string)] => .jsPromise(
+                resolvingTo: .jsBlinkMojomBlobReadRangeCallbackReceiverCall),
         ])
+
+    fileprivate static let blinkMojomBlobReadRangeCallbackReceiverCall = ObjectGroup(
+        name: "BlinkMojomBlobReadRangeCallbackReceiverCall",
+        instanceType: .jsBlinkMojomBlobReadRangeCallbackReceiverCall,
+        properties: [
+            "offset": .bigint,
+            "length": .bigint,
+            "pipe": .jsMojoDataPipeProducerHandle,
+            "client": .jsBlinkMojomBlobReaderClientRemote,
+        ],
+        methods: [:]
+    )
 
     fileprivate static let blinkMojomBlobLoadCallbackReceiver = ObjectGroup(
         name: "BlinkMojomBlobLoadCallbackReceiver",
@@ -1148,7 +1314,21 @@ extension ObjectGroup {
                             .plain(.jsNetworkMojomURLLoaderClientRemote),
                         ] => .undefined))
             ] => .integer,
+            "nextCall": [.rest(.string)] => .jsPromise(
+                resolvingTo: .jsBlinkMojomBlobLoadCallbackReceiverCall),
         ])
+
+    fileprivate static let blinkMojomBlobLoadCallbackReceiverCall = ObjectGroup(
+        name: "BlinkMojomBlobLoadCallbackReceiverCall",
+        instanceType: .jsBlinkMojomBlobLoadCallbackReceiverCall,
+        properties: [
+            "loader": .jsNetworkMojomURLLoaderPendingReceiver,
+            "requestMethod": .string,
+            "headers": .jsNetworkMojomHttpRequestHeaders,
+            "client": .jsNetworkMojomURLLoaderClientRemote,
+        ],
+        methods: [:]
+    )
 
     fileprivate static let blinkMojomBlobReadSideDataCallbackReceiver = ObjectGroup(
         name: "BlinkMojomBlobReadSideDataCallbackReceiver",
@@ -1326,6 +1506,51 @@ extension ObjectGroup {
         name: "network.mojom.URLLoaderPendingReceiver",
         instanceType: .jsNetworkMojomURLLoaderPendingReceiver,
         properties: ["handle": .jsNetworkMojomURLLoaderReceiverEndpoint],
+        methods: [:]
+    )
+
+    // CacheStorageSideDataWriter
+    fileprivate static let networkMojomCacheStorageSideDataWriterCallbackRouter = ObjectGroup(
+        name: "network.mojom.CacheStorageSideDataWriterCallbackRouter",
+        instanceType: .jsNetworkMojomCacheStorageSideDataWriterCallbackRouter,
+        properties: [
+            "$": .jsNetworkMojomCacheStorageSideDataWriterCallbackRouterReceiverHelper,
+            "writeSideData": .jsNetworkMojomCacheStorageSideDataWriterWriteSideDataCallbackReceiver,
+        ],
+        methods: [:]
+    )
+    fileprivate static let networkMojomCacheStorageSideDataWriterCallbackRouterReceiverHelper = ObjectGroup(
+        name: "network.mojom.CacheStorageSideDataWriterCallbackRouterReceiverHelper",
+        instanceType: .jsNetworkMojomCacheStorageSideDataWriterCallbackRouterReceiverHelper,
+        properties: [:],
+        methods: [
+            "close": [] => .undefined,
+            "bindNewPipeAndPassRemote": [] => .jsNetworkMojomCacheStorageSideDataWriterRemote,
+        ])
+
+    fileprivate static let networkMojomCacheStorageSideDataWriterWriteSideDataCallbackReceiver = ObjectGroup(
+        name: "NetworkMojomCacheStorageSideDataWriterWriteSideDataCallbackReceiver",
+        instanceType: .jsNetworkMojomCacheStorageSideDataWriterWriteSideDataCallbackReceiver,
+        properties: [:],
+        methods: [
+            "addListener": [
+                .plain(
+                    .function(
+                        [
+                            .plain(.jsMojoBaseMojomBigBufferUnion),
+                        ] => .undefined))
+            ] => .integer,
+        ])
+    fileprivate static let networkMojomCacheStorageSideDataWriterPendingReceiver = ObjectGroup(
+        name: "network.mojom.CacheStorageSideDataWriterPendingReceiver",
+        instanceType: .jsNetworkMojomCacheStorageSideDataWriterPendingReceiver,
+        properties: [:],
+        methods: [:]
+    )
+    fileprivate static let networkMojomCacheStorageSideDataWriterPendingRemote = ObjectGroup(
+        name: "network.mojom.CacheStorageSideDataWriterPendingRemote",
+        instanceType: .jsNetworkMojomCacheStorageSideDataWriterPendingRemote,
+        properties: ["$": .jsNetworkMojomCacheStorageSideDataWriterRemoteWrapper],
         methods: [:]
     )
 
@@ -1509,7 +1734,20 @@ extension ObjectGroup {
                             .either(.jsMojoBaseMojomBigBufferUnion, .undefined),
                         ] => .undefined))
             ] => .integer,
+            "nextCall": [.rest(.string)] => .jsPromise(
+                resolvingTo: .jsNetworkMojomURLLoaderClientOnReceiveResponseCallbackReceiverCall),
         ])
+
+    fileprivate static let networkMojomURLLoaderClientOnReceiveResponseCallbackReceiverCall = ObjectGroup(
+        name: "NetworkMojomURLLoaderClientOnReceiveResponseCallbackReceiverCall",
+        instanceType: .jsNetworkMojomURLLoaderClientOnReceiveResponseCallbackReceiverCall,
+        properties: [
+            "head": .jsNetworkMojomURLResponseHead,
+            "body": .jsMojoDataPipeConsumerHandle,
+            "cachedMetadata": .jsMojoBaseMojomBigBufferUnion,
+        ],
+        methods: [:]
+    )
 
     fileprivate static let networkMojomURLLoaderClientOnReceiveRedirectCallbackReceiver = ObjectGroup(
         name: "NetworkMojomURLLoaderClientOnReceiveRedirectCallbackReceiver",
@@ -1524,7 +1762,19 @@ extension ObjectGroup {
                             .plain(.jsNetworkMojomURLResponseHead),
                         ] => .undefined))
             ] => .integer,
+            "nextCall": [.rest(.string)] => .jsPromise(
+                resolvingTo: .jsNetworkMojomURLLoaderClientOnReceiveRedirectCallbackReceiverCall),
         ])
+
+    fileprivate static let networkMojomURLLoaderClientOnReceiveRedirectCallbackReceiverCall = ObjectGroup(
+        name: "NetworkMojomURLLoaderClientOnReceiveRedirectCallbackReceiverCall",
+        instanceType: .jsNetworkMojomURLLoaderClientOnReceiveRedirectCallbackReceiverCall,
+        properties: [
+            "redirectInfo": .jsNetworkMojomURLRequestRedirectInfo,
+            "head": .jsNetworkMojomURLResponseHead,
+        ],
+        methods: [:]
+    )
 
     fileprivate static let networkMojomURLLoaderClientOnUploadProgressCallbackReceiver = ObjectGroup(
         name: "NetworkMojomURLLoaderClientOnUploadProgressCallbackReceiver",
@@ -1614,7 +1864,19 @@ extension ObjectGroup {
                             .plain(.boolean),
                         ] => .undefined))
             ] => .integer,
+            "nextCall": [.rest(.string)] => .jsPromise(
+                resolvingTo: .jsBlinkMojomIDBDatabaseGetAllResultSinkReceiveResultsCallbackReceiverCall),
         ])
+
+    fileprivate static let blinkMojomIDBDatabaseGetAllResultSinkReceiveResultsCallbackReceiverCall = ObjectGroup(
+        name: "BlinkMojomIDBDatabaseGetAllResultSinkReceiveResultsCallbackReceiverCall",
+        instanceType: .jsBlinkMojomIDBDatabaseGetAllResultSinkReceiveResultsCallbackReceiverCall,
+        properties: [
+            "records": .jsBlinkMojomIDBRecordMojoArray,
+            "done": .boolean,
+        ],
+        methods: [:]
+    )
 
     fileprivate static let blinkMojomIDBDatabaseGetAllResultSinkOnErrorCallbackReceiver = ObjectGroup(
         name: "BlinkMojomIDBDatabaseGetAllResultSinkOnErrorCallbackReceiver",
@@ -1780,6 +2042,14 @@ extension ILType {
         .plain(.bigint),
         .either(.jsBlinkMojomIDBFileInfo, .undefined),
     ] => .jsBlinkMojomIDBBlobInfo)
+    fileprivate static let jsMojoBaseMojomByteSize: ILType = .object(
+        ofGroup: "mojoBase.mojom.ByteSize",
+        withProperties: [
+            "size",
+        ])
+    fileprivate static let jsMojoBaseMojomByteSizeConstructor: ILType = .constructor([
+        .plain(.bigint),
+    ] => .jsMojoBaseMojomByteSize)
     fileprivate static let jsNetworkMojomEarlyHints: ILType = .object(
         ofGroup: "network.mojom.EarlyHints",
         withProperties: [
@@ -1855,7 +2125,6 @@ extension ILType {
             "rawDirectives",
             "directives",
             "upgradeInsecureRequests",
-            "treatAsPublicAddress",
             "blockAllMixedContent",
             "sandbox",
             "header",
@@ -1869,7 +2138,6 @@ extension ILType {
         .plain(.jsNetworkMojomCSPSource),
         .plain(.jsNetworkMojomCSPDirectiveName_StringMojoMap),
         .plain(.jsNetworkMojomCSPDirectiveName_NetworkMojomCSPSourceListMojoMap),
-        .plain(.boolean),
         .plain(.boolean),
         .plain(.boolean),
         .plain(.jsNetworkMojomWebSandboxFlags),
@@ -2169,6 +2437,7 @@ extension ILType {
             "responseType",
             "padding",
             "cacheStorageCacheName",
+            "cacheStorageSideDataWriter",
             "certStatus",
             "sslInfo",
             "requestCookies",
@@ -2239,6 +2508,7 @@ extension ILType {
         .plain(.jsNetworkMojomFetchResponseType),
         .plain(.bigint),
         .plain(.string),
+        .either(.jsNetworkMojomCacheStorageSideDataWriterRemote, .undefined),
         .plain(.jsUint32),
         .either(.jsNetworkMojomSSLInfo, .undefined),
         .plain(.jsNetworkMojomParsedRequestCookieMojoArray),
@@ -2464,11 +2734,9 @@ extension ILType {
         ofGroup: "network.mojom.ProxyChain",
         withProperties: [
             "proxyServers",
-            "ipProtectionChainId",
         ])
     fileprivate static let jsNetworkMojomProxyChainConstructor: ILType = .constructor([
         .either(.jsNetworkMojomProxyServerMojoArray, .undefined),
-        .plain(.jsInt32),
     ] => .jsNetworkMojomProxyChain)
     fileprivate static let jsNetworkMojomProxyServer: ILType = .object(
         ofGroup: "network.mojom.ProxyServer",
@@ -2684,14 +2952,6 @@ extension ILType {
         .plain(.jsNetworkMojomResolveErrorInfo),
         .plain(.boolean),
     ] => .jsNetworkMojomURLLoaderCompletionStatus)
-    fileprivate static let jsMojoBaseMojomByteSize: ILType = .object(
-        ofGroup: "mojoBase.mojom.ByteSize",
-        withProperties: [
-            "size",
-        ])
-    fileprivate static let jsMojoBaseMojomByteSizeConstructor: ILType = .constructor([
-        .plain(.bigint),
-    ] => .jsMojoBaseMojomByteSize)
     fileprivate static let jsNetworkMojomCorsErrorStatus: ILType = .object(
         ofGroup: "network.mojom.CorsErrorStatus",
         withProperties: [
@@ -2885,8 +3145,7 @@ extension ILType {
     fileprivate static let jsNetworkMojomDataPipeGetter_Read_ResponseParams: ILType = .object(
         ofGroup: "network.mojom.DataPipeGetter_Read_ResponseParams",
         withProperties: [
-            "status",
-            "size",
+            "result",
         ])
     fileprivate static let jsNetworkMojomURLLoaderClient_OnUploadProgress_ResponseParams: ILType = .object(
         ofGroup: "network.mojom.URLLoaderClient_OnUploadProgress_ResponseParams",
@@ -3002,6 +3261,14 @@ extension ObjectGroup {
         ],
         methods: [:]
     )
+    fileprivate static let mojoBaseMojomByteSize = ObjectGroup(
+        name: "mojoBase.mojom.ByteSize",
+        instanceType: .jsMojoBaseMojomByteSize,
+        properties: [
+            "size": .bigint,
+        ],
+        methods: [:]
+    )
     fileprivate static let networkMojomEarlyHints = ObjectGroup(
         name: "network.mojom.EarlyHints",
         instanceType: .jsNetworkMojomEarlyHints,
@@ -3052,7 +3319,6 @@ extension ObjectGroup {
             "rawDirectives": .jsNetworkMojomCSPDirectiveName_StringMojoMap,
             "directives": .jsNetworkMojomCSPDirectiveName_NetworkMojomCSPSourceListMojoMap,
             "upgradeInsecureRequests": .boolean,
-            "treatAsPublicAddress": .boolean,
             "blockAllMixedContent": .boolean,
             "sandbox": .jsNetworkMojomWebSandboxFlags,
             "header": .jsNetworkMojomContentSecurityPolicyHeader,
@@ -3292,6 +3558,7 @@ extension ObjectGroup {
             "responseType": .jsNetworkMojomFetchResponseType,
             "padding": .bigint,
             "cacheStorageCacheName": .string,
+            "cacheStorageSideDataWriter": .jsNetworkMojomCacheStorageSideDataWriterRemote,
             "certStatus": .jsUint32,
             "sslInfo": .jsNetworkMojomSSLInfo,
             "requestCookies": .jsNetworkMojomParsedRequestCookieMojoArray,
@@ -3479,7 +3746,6 @@ extension ObjectGroup {
         instanceType: .jsNetworkMojomProxyChain,
         properties: [
             "proxyServers": .jsNetworkMojomProxyServerMojoArray,
-            "ipProtectionChainId": .jsInt32,
         ],
         methods: [:]
     )
@@ -3642,14 +3908,6 @@ extension ObjectGroup {
             "shouldReportOrbBlocking": .boolean,
             "resolveErrorInfo": .jsNetworkMojomResolveErrorInfo,
             "shouldCollapseInitiator": .boolean,
-        ],
-        methods: [:]
-    )
-    fileprivate static let mojoBaseMojomByteSize = ObjectGroup(
-        name: "mojoBase.mojom.ByteSize",
-        instanceType: .jsMojoBaseMojomByteSize,
-        properties: [
-            "size": .bigint,
         ],
         methods: [:]
     )
@@ -3856,8 +4114,7 @@ extension ObjectGroup {
         name: "network.mojom.DataPipeGetter_Read_ResponseParams",
         instanceType: .jsNetworkMojomDataPipeGetter_Read_ResponseParams,
         properties: [
-            "status": .jsInt32,
-            "size": .bigint,
+            "result": .jsNetworkMojomDataPipeGetter_Read_ResponseParam_ResultUnion,
         ],
         methods: [:]
     )
@@ -4310,7 +4567,7 @@ extension ILType {
     fileprivate static let jsNetworkMojomCSPDirectiveName_StringMojoMap: ILType =
         .createJsMapType(
             ofKeyType: .jsNetworkMojomCSPDirectiveName,
-            ofValueType: .string
+            ofValueType: .jsString
         )
     fileprivate static let jsNetworkMojomCSPDirectiveName_NetworkMojomCSPSourceListMojoMap: ILType =
         .createJsMapType(
@@ -4319,8 +4576,8 @@ extension ILType {
         )
     fileprivate static let jsString_StringMojoMap: ILType =
         .createJsMapType(
-            ofKeyType: .string,
-            ofValueType: .string
+            ofKeyType: .jsString,
+            ofValueType: .jsString
         )
     fileprivate static let jsInt64_BlinkMojomIDBObjectStoreMetadataMojoMap: ILType =
         .createJsMapType(
@@ -4351,7 +4608,7 @@ private let MojoNetworkMojomCSPDirectiveName_StringMojoMapGenerator = CodeGenera
     produces: [.jsNetworkMojomCSPDirectiveName_StringMojoMap]
 ) { b, _ in
     let key = b.findOrGenerateType(.jsNetworkMojomCSPDirectiveName)
-    let val = b.findOrGenerateType(.string)
+    let val = b.findOrGenerateType(.jsString)
     var keys: [Variable] = [key]
     var values: [Variable] = [val]
     b.createMap(withKeys: keys, withValues: values)
@@ -4372,8 +4629,8 @@ private let MojoString_StringMojoMapGenerator = CodeGenerator(
     inputs: .one,
     produces: [.jsString_StringMojoMap]
 ) { b, _ in
-    let key = b.findOrGenerateType(.string)
-    let val = b.findOrGenerateType(.string)
+    let key = b.findOrGenerateType(.jsString)
+    let val = b.findOrGenerateType(.jsString)
     var keys: [Variable] = [key]
     var values: [Variable] = [val]
     b.createMap(withKeys: keys, withValues: values)
@@ -4391,7 +4648,7 @@ extension ILType {
         withValues: [0, 1, 2, 3, 4, 5])
     fileprivate static let jsNetworkMojomCSPDirectiveName: ILType = .intEnumeration(
         ofName: "network.mojom.CSPDirectiveName",
-        withValues: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29])
+        withValues: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28])
     fileprivate static let jsNetworkMojomIntegrityAlgorithm: ILType = .intEnumeration(
         ofName: "network.mojom.IntegrityAlgorithm",
         withValues: [0, 1, 2, 3])
@@ -4595,6 +4852,16 @@ extension ILType {
         [.plain(.jsBlinkMojomIDBBlobInfo)] => .jsBlinkMojomIDBExternalObjectUnion)
     fileprivate static let jsBlinkMojomIDBExternalObjectUnionFileSystemAccessTokenConstructor: ILType = .constructor(
         [.plain(.jsBlinkMojomFileSystemAccessTransferTokenRemote)] => .jsBlinkMojomIDBExternalObjectUnion)
+    fileprivate static let jsNetworkMojomDataPipeGetter_Read_ResponseParam_ResultUnion: ILType = .object(
+        ofGroup: "network.mojom.DataPipeGetter_Read_ResponseParam_Result",
+        withProperties: [
+            "success",
+            "failure",
+        ])
+    fileprivate static let jsNetworkMojomDataPipeGetter_Read_ResponseParam_ResultUnionSuccessConstructor: ILType = .constructor(
+        [.plain(.jsMojoBaseMojomByteSize)] => .jsNetworkMojomDataPipeGetter_Read_ResponseParam_ResultUnion)
+    fileprivate static let jsNetworkMojomDataPipeGetter_Read_ResponseParam_ResultUnionFailureConstructor: ILType = .constructor(
+        [.plain(.jsInt32)] => .jsNetworkMojomDataPipeGetter_Read_ResponseParam_ResultUnion)
     fileprivate static let jsNetworkMojomOriginOrWildcardHeaderValueUnion: ILType = .object(
         ofGroup: "network.mojom.OriginOrWildcardHeaderValue",
         withProperties: [
@@ -4709,6 +4976,15 @@ extension ObjectGroup {
         ],
         methods: [:]
     )
+    fileprivate static let networkMojomDataPipeGetterReadResponseParamResultUnion = ObjectGroup(
+        name: "network.mojom.DataPipeGetter_Read_ResponseParam_Result",
+        instanceType: .jsNetworkMojomDataPipeGetter_Read_ResponseParam_ResultUnion,
+        properties: [
+            "success": .jsMojoBaseMojomByteSize,
+            "failure": .jsInt32,
+        ],
+        methods: [:]
+    )
     fileprivate static let networkMojomOriginOrWildcardHeaderValueUnion = ObjectGroup(
         name: "network.mojom.OriginOrWildcardHeaderValue",
         instanceType: .jsNetworkMojomOriginOrWildcardHeaderValueUnion,
@@ -4812,6 +5088,292 @@ private func isTargetObject(type: ILType) -> Bool {
     return mojoTargetGroups.contains(group)
 }
 
+/// Groups of the remotes of the interfaces that JS calls into.
+private let mojoRemoteGroups: Set<String> = [
+    "blink.mojom.IDBFactoryRemote",
+    "blink.mojom.IDBDatabaseRemote",
+    "blink.mojom.IDBTransactionRemote",
+    "blink.mojom.BlobReaderClientRemote",
+    "network.mojom.URLLoaderClientRemote",
+    "blink.mojom.BlobRemote",
+    "network.mojom.DataPipeGetterRemote",
+    "network.mojom.URLLoaderRemote",
+    "network.mojom.CacheStorageSideDataWriterRemote",
+    "blink.mojom.FileSystemAccessTransferTokenRemote",
+    "blink.mojom.IDBCursorRemote",
+]
+
+/// Group of the remote that `getOrCreatePrimaryRemote()` returns.
+private let mojoPrimaryRemoteGroup = "blink.mojom.IDBFactoryRemote"
+
+/// Groups of the routers of the interfaces that JS implements.
+private let mojoRouterGroups: Set<String> = [
+    "blink.mojom.IDBFactoryClientCallbackRouter",
+    "blink.mojom.BlobCallbackRouter",
+    "network.mojom.DataPipeGetterCallbackRouter",
+    "network.mojom.URLLoaderCallbackRouter",
+    "network.mojom.CacheStorageSideDataWriterCallbackRouter",
+    "blink.mojom.FileSystemAccessTransferTokenCallbackRouter",
+    "blink.mojom.BlobReaderClientCallbackRouter",
+    "network.mojom.URLLoaderClientCallbackRouter",
+    "blink.mojom.IDBDatabaseGetAllResultSinkCallbackRouter",
+    "blink.mojom.IDBDatabaseCallbacksCallbackRouter",
+]
+
+/// For every remote group, the methods whose reply carries remotes or Mojo
+/// handles, with the property paths to them in the reply.
+private let mojoReplyEndpoints: [String: [String: [[String]]]] = [
+    "blink.mojom.IDBDatabaseRemote": [
+        "get": [
+            ["result", "value", "value", "externalObjects", "[0]", "blobOrFile", "blob"],
+            ["result", "value", "value", "externalObjects", "[0]", "fileSystemAccessToken"],
+        ],
+        "getAll": [
+            ["records", "[0]", "returnValue", "value", "externalObjects", "[0]", "blobOrFile", "blob"],
+            ["records", "[0]", "returnValue", "value", "externalObjects", "[0]", "fileSystemAccessToken"],
+        ],
+        "openCursor": [
+            ["result", "value", "cursor"],
+            ["result", "value", "value", "externalObjects", "[0]", "blobOrFile", "blob"],
+            ["result", "value", "value", "externalObjects", "[0]", "fileSystemAccessToken"],
+        ],
+    ],
+    "blink.mojom.IDBCursorRemote": [
+        "advance": [
+            ["result", "values", "values", "[0]", "externalObjects", "[0]", "blobOrFile", "blob"],
+            ["result", "values", "values", "[0]", "externalObjects", "[0]", "fileSystemAccessToken"],
+        ],
+        "continue": [
+            ["result", "values", "values", "[0]", "externalObjects", "[0]", "blobOrFile", "blob"],
+            ["result", "values", "values", "[0]", "externalObjects", "[0]", "fileSystemAccessToken"],
+        ],
+        "prefetch": [
+            ["result", "values", "values", "[0]", "externalObjects", "[0]", "blobOrFile", "blob"],
+            ["result", "values", "values", "[0]", "externalObjects", "[0]", "fileSystemAccessToken"],
+        ],
+    ],
+]
+
+/// For every router group, the methods without a reply whose arguments carry
+/// remotes or Mojo handles: the names of all the parameters of the method, and
+/// the property paths to the remotes and handles in an object that has one
+/// property per parameter. This is how the browser hands out some interfaces,
+/// e.g. `IDBFactoryClient.UpgradeNeeded(pending_database, ...)`.
+private let mojoCallbackEndpoints:
+    [String: [(method: String, parameters: [String], paths: [[String]])]] = [
+    "blink.mojom.IDBFactoryClientCallbackRouter": [
+        (
+            "upgradeNeeded",
+            ["pendingDatabase", "oldVersion", "dataLoss", "dataLossMessage", "dbMetadata", ],
+            [
+                ["pendingDatabase"],
+            ]
+        ),
+        (
+            "openSuccess",
+            ["pendingDatabase", "metadata", ],
+            [
+                ["pendingDatabase"],
+            ]
+        ),
+    ],
+    "blink.mojom.BlobCallbackRouter": [
+        (
+            "readAll",
+            ["pipe", "client", ],
+            [
+                ["pipe"],
+                ["client"],
+            ]
+        ),
+        (
+            "readRange",
+            ["offset", "length", "pipe", "client", ],
+            [
+                ["pipe"],
+                ["client"],
+            ]
+        ),
+        (
+            "load",
+            ["loader", "requestMethod", "headers", "client", ],
+            [
+                ["client"],
+            ]
+        ),
+    ],
+    "network.mojom.URLLoaderClientCallbackRouter": [
+        (
+            "onReceiveResponse",
+            ["head", "body", "cachedMetadata", ],
+            [
+                ["head", "cacheStorageSideDataWriter"],
+                ["body"],
+            ]
+        ),
+        (
+            "onReceiveRedirect",
+            ["redirectInfo", "head", ],
+            [
+                ["head", "cacheStorageSideDataWriter"],
+            ]
+        ),
+    ],
+    "blink.mojom.IDBDatabaseGetAllResultSinkCallbackRouter": [
+        (
+            "receiveResults",
+            ["records", "done", ],
+            [
+                ["records", "[0]", "returnValue", "value", "externalObjects", "[0]", "blobOrFile", "blob"],
+                ["records", "[0]", "returnValue", "value", "externalObjects", "[0]", "fileSystemAccessToken"],
+            ]
+        ),
+    ],
+]
+
+/// For every remote group, the methods whose reply carries pending receivers for
+/// JS-implemented interfaces, with the property path to each receiver and the
+/// CallbackRouter ObjectGroup name to bind it to.
+private let mojoReplyReceivers:
+    [String: [String: [(path: [String], router: String)]]] = [
+    "blink.mojom.IDBDatabaseRemote": [
+        "getAll": [
+            (["receiver"], "blink.mojom.IDBDatabaseGetAllResultSinkCallbackRouter"),
+        ],
+    ],
+]
+
+/// For every remote group, all methods whose arguments or replies create new
+/// child remotes, handles, or pending receivers (weighted 3x in
+/// `pickRemoteMethod`).
+private let mojoEndpointCreatorMethods: [String: Set<String>] = [
+    "blink.mojom.IDBFactoryRemote": [
+        "open",
+        "deleteDatabase",
+    ],
+    "blink.mojom.IDBDatabaseRemote": [
+        "get",
+        "openCursor",
+        "getAll",
+        "createTransaction",
+    ],
+    "blink.mojom.BlobRemote": [
+        "clone",
+        "asDataPipeGetter",
+        "load",
+    ],
+    "network.mojom.DataPipeGetterRemote": [
+        "clone",
+    ],
+    "blink.mojom.FileSystemAccessTransferTokenRemote": [
+        "clone",
+    ],
+    "blink.mojom.IDBCursorRemote": [
+        "continue",
+        "advance",
+        "prefetch",
+    ],
+]
+
+/// Names of Mojo struct ObjectGroups constructed by this profile, used for
+/// cross-variant optional property and nullable field mutations.
+private let mojoStructGroups: Set<String> = [
+    "blink.mojom.IDBKeyPath",
+    "blink.mojom.IDBValue",
+    "blink.mojom.IDBBlobInfo",
+    "mojoBase.mojom.ByteSize",
+    "network.mojom.EarlyHints",
+    "network.mojom.ParsedHeaders",
+    "network.mojom.ContentSecurityPolicy",
+    "network.mojom.CSPSource",
+    "network.mojom.CSPSourceList",
+    "network.mojom.IntegrityMetadata",
+    "network.mojom.ContentSecurityPolicyHeader",
+    "network.mojom.CSPTrustedTypes",
+    "url.mojom.Origin",
+    "mojoBase.mojom.UnguessableToken",
+    "network.mojom.ConnectionAllowlists",
+    "network.mojom.ConnectionAllowlist",
+    "network.mojom.CrossOriginEmbedderPolicy",
+    "network.mojom.CrossOriginOpenerPolicy",
+    "network.mojom.DocumentIsolationPolicy",
+    "network.mojom.IntegrityPolicy",
+    "network.mojom.LinkHeader",
+    "network.mojom.NoVarySearch",
+    "network.mojom.DeclarativePerformanceObserverPolicy",
+    "network.mojom.URLResponseHead",
+    "mojoBase.mojom.Time",
+    "network.mojom.HttpResponseHeaders",
+    "network.mojom.EncodedBodyLength",
+    "network.mojom.LoadTimingInfo",
+    "mojoBase.mojom.TimeTicks",
+    "network.mojom.LoadTimingInfoConnectTiming",
+    "network.mojom.LoadTimingInternalInfo",
+    "mojoBase.mojom.TimeDelta",
+    "network.mojom.ResolutionDetails",
+    "network.mojom.DohResolutionDetails",
+    "network.mojom.QuicConnectionReuseDetails",
+    "network.mojom.IPEndPoint",
+    "network.mojom.IPAddress",
+    "network.mojom.ProxyChain",
+    "network.mojom.ProxyServer",
+    "network.mojom.HostPortPair",
+    "network.mojom.ServiceWorkerRouterInfo",
+    "network.mojom.SSLInfo",
+    "network.mojom.X509Certificate",
+    "network.mojom.SHA256HashValue",
+    "network.mojom.SignedCertificateTimestampAndStatus",
+    "network.mojom.SignedCertificateTimestamp",
+    "network.mojom.DigitallySigned",
+    "network.mojom.ParsedRequestCookie",
+    "network.mojom.AuthChallengeInfo",
+    "network.mojom.UnencodedDigests",
+    "network.mojom.URLRequestRedirectInfo",
+    "network.mojom.URLLoaderCompletionStatus",
+    "network.mojom.CorsErrorStatus",
+    "network.mojom.BlockedByResponseReasonWrapper",
+    "network.mojom.ResolveErrorInfo",
+    "blink.mojom.IDBFileInfo",
+    "blink.mojom.IDBIndexKeys",
+    "blink.mojom.IDBKeyRange",
+    "network.mojom.HttpRequestHeadersUpdateParams",
+    "network.mojom.HttpRequestHeaders",
+    "network.mojom.HttpRequestHeaderKeyValuePair",
+    "mojoBase.mojom.ByteString",
+    "blink.mojom.IDBIndexMetadata",
+]
+
+/// For every constructible Mojo struct, the field names declared nullable in
+/// Mojom so generators can independently set them to `undefined`/`null` or
+/// cross-populate fields belonging to other enum variants.
+private let mojoNullableStructProperties: [String: Set<String>] = [
+    "blink.mojom.IDBKeyPath": ["data"],
+    "blink.mojom.IDBBlobInfo": ["file"],
+    "network.mojom.ParsedHeaders": ["allowCspFrom", "allowConnectionAllowlistFrom", "acceptCh", "criticalCh", "timingAllowOrigin", "reportingEndpoints", "cookieIndices", "availLanguage", "contentLanguage", "noVarySearchWithParseError", "declarativePerformanceObserverPolicy", "prefetchActivationBeaconEndpoint"],
+    "network.mojom.ContentSecurityPolicy": ["trustedTypes"],
+    "network.mojom.CSPSourceList": ["reportHashAlgorithm"],
+    "url.mojom.Origin": ["nonceIfOpaque"],
+    "network.mojom.ConnectionAllowlists": ["enforced", "reportOnly", "reportingSource"],
+    "network.mojom.ConnectionAllowlist": ["reportingEndpoint"],
+    "network.mojom.CrossOriginEmbedderPolicy": ["reportingEndpoint", "reportOnlyReportingEndpoint"],
+    "network.mojom.CrossOriginOpenerPolicy": ["reportingEndpoint", "reportOnlyReportingEndpoint"],
+    "network.mojom.DocumentIsolationPolicy": ["reportingEndpoint", "reportOnlyReportingEndpoint"],
+    "network.mojom.LinkHeader": ["mimeType"],
+    "network.mojom.DeclarativePerformanceObserverPolicy": ["reportingEndpoint", "includeUserTiming"],
+    "network.mojom.URLResponseHead": ["headers", "encodedBodyLength", "loadTimingInternalInfo", "initialServiceWorkerStatus", "serviceWorkerRouterInfo", "cacheStorageSideDataWriter", "sslInfo", "authChallengeInfo", "parsedHeaders", "recursivePrefetchToken", "unencodedDigests"],
+    "network.mojom.LoadTimingInternalInfo": ["maxStreamLimitPendingDelay", "sessionSource", "resolutionDetails", "quicConnectionReuseDetails", "sessionCreationInitiator"],
+    "network.mojom.ResolutionDetails": ["taskCompletionDelay", "dohDetails"],
+    "network.mojom.QuicConnectionReuseDetails": ["establishmentReason", "nonReuseReason"],
+    "network.mojom.ProxyChain": ["proxyServers"],
+    "network.mojom.ProxyServer": ["hostAndPort"],
+    "network.mojom.ServiceWorkerRouterInfo": ["ruleIdMatched", "matchedSourceType", "actualSourceType", "evaluationWorkerStatus"],
+    "network.mojom.SSLInfo": ["cert", "unverifiedCert"],
+    "network.mojom.URLLoaderCompletionStatus": ["corsErrorStatus", "sslInfo", "blockedByResponseReason"],
+]
+
+/// Methods that are left to the generators made for them.
+private let mojoListenerMethods: Set<String> = ["addListener", "nextCall"]
+
 /// Whether `type` is an interface endpoint: a remote or a pending endpoint.
 private func isEndpoint(type: ILType) -> Bool {
     guard let group = type.group else { return false }
@@ -4823,8 +5385,22 @@ private func isEndpoint(type: ILType) -> Bool {
 /// among the `arguments` of a call, so that Fuzzilli does not send or call
 /// them again.
 private func hideEndpoints(_ b: ProgramBuilder, in arguments: [Variable]) {
-    for argument in Set(arguments) where isEndpoint(type: b.type(of: argument)) {
+    let visible = Set(b.visibleVariables)
+    for argument in Set(arguments)
+    where visible.contains(argument) && isEndpoint(type: b.type(of: argument)) {
         b.hide(argument)
+    }
+}
+
+/// Hides every visible constructor and function. The generators call the ones
+/// they load themselves. Left visible, Fuzzilli would pass them where a value
+/// is wanted (`f(gfx.mojom.Size)` instead of `f(new gfx.mojom.Size(...))`).
+private func hideCallables(_ b: ProgramBuilder) {
+    for variable in b.visibleVariables {
+        let type = b.type(of: variable)
+        if type.Is(.constructor()) || type.Is(.function()) {
+            b.hide(variable)
+        }
     }
 }
 
@@ -4868,6 +5444,174 @@ private let mojoRemoteBinders: [String: [(owner: String, method: String, index: 
     ],
 ]
 
+/// Returns `signature` without the parameters at `indices`, for a call whose
+/// caller provides those arguments. Generating them as well would add code
+/// whose result is thrown away, and that code can break the argument that
+/// replaces it: binding a remote a second time drops its first pipe.
+private func removeParameters(at indices: [Int], from signature: Signature) -> Signature {
+    var parameters = signature.parameters
+    for index in indices.sorted(by: >) {
+        parameters.remove(at: index)
+    }
+    return Signature(expects: parameters, returns: signature.outputType)
+}
+
+/// Returns the type that `parameter` expects.
+private func parameterType(_ parameter: Parameter) -> ILType {
+    switch parameter {
+    case .plain(let type), .opt(let type), .rest(let type), .either(let type, _):
+        return type
+    }
+}
+
+/// Creates a remote and returns its receiver, if `type` is the pending receiver
+/// of an interface that JS calls and can construct a remote of.
+///
+/// The receiver of a call always comes from a new remote, which stays in scope
+/// for later calls. Left to Fuzzilli, the receiver may come from a remote that
+/// is in use: that binds the remote a second time, which drops its pipe, and
+/// throws if the remote is the `null` of a failed reply.
+private func makeReceiver(_ b: ProgramBuilder, ofType type: ILType) -> Variable? {
+    guard let group = type.group else { return nil }
+    let bind: String
+    let suffix: String
+    if group.hasSuffix("PendingAssociatedReceiver") {
+        (bind, suffix) = ("associateAndPassReceiver", "PendingAssociatedReceiver")
+    } else if group.hasSuffix("PendingReceiver") {
+        (bind, suffix) = ("bindNewPipeAndPassReceiver", "PendingReceiver")
+    } else {
+        return nil
+    }
+    let constructor = String(group.dropLast(suffix.count)) + "Remote"
+    guard mojoRemoteGroups.contains(constructor),
+        b.fuzzer.environment.hasBuiltin(constructor)
+    else { return nil }
+
+    let remote = b.construct(b.createNamedVariable(forBuiltin: constructor), withArgs: [])
+    let wrapper = b.getProperty("$", of: remote, isReceiverOptional: true)
+    let receiver = b.callMethod(bind, on: wrapper, withArgs: [], isReceiverOptional: true)
+    // Binding the remote a second time would drop the pipe just made.
+    if b.visibleVariables.contains(wrapper) {
+        b.hide(wrapper)
+    }
+    return receiver
+}
+
+/// A call that the browser may make on an interface that JS implements: the
+/// promise that `nextCall` returned for it, and the property paths to the
+/// remotes and handles among its arguments.
+private typealias PendingCall = (promise: Variable, paths: [[String]])
+
+/// Starts waiting for the browser to call `method` on `router`, and returns
+/// the promise of the arguments of that call. `codePrefix` defines `nextCall`
+/// (see `mojoCommonCodePrefix`).
+private func nextCall(
+    _ b: ProgramBuilder, of method: String, on router: Variable, parameters: [String]
+) -> Variable {
+    let receiver = b.getProperty(method, of: router, isReceiverOptional: true)
+    let names = parameters.map { b.loadString($0) }
+    let promise = b.callMethod("nextCall", on: receiver, withArgs: names, isReceiverOptional: true)
+    if b.visibleVariables.contains(receiver) {
+        b.hide(receiver)
+    }
+    names.forEach { if b.visibleVariables.contains($0) { b.hide($0) } }
+    return promise
+}
+
+/// Creates a router (or reuses one in scope) and returns the remote to it, if
+/// `type` is the pending remote of an interface that JS implements.
+///
+/// Also returns the calls of the browser that carry remotes or handles. The
+/// program starts waiting for them here, before the remote is sent, so that it
+/// cannot miss one. When `attachListeners` is true, also attaches a re-entrant
+/// listener to a newly created router with probability 0.5 before binding.
+private func makeRouter(
+    _ b: ProgramBuilder, ofType type: ILType, attachListeners: Bool = true,
+    awaitCallbacks: Bool = true
+) -> (remote: Variable, calls: [PendingCall])? {
+    guard let group = type.group else { return nil }
+    let bind: String
+    let suffix: String
+    if group.hasSuffix("PendingAssociatedRemote") {
+        (bind, suffix) = ("associateAndPassRemote", "PendingAssociatedRemote")
+    } else if group.hasSuffix("PendingRemote") {
+        (bind, suffix) = ("bindNewPipeAndPassRemote", "PendingRemote")
+    } else {
+        return nil
+    }
+    let constructor = String(group.dropLast(suffix.count)) + "CallbackRouter"
+    guard mojoRouterGroups.contains(constructor) else { return nil }
+
+    let existing = b.visibleVariables.first { b.type(of: $0).group == constructor }
+    let router = existing
+        ?? b.construct(b.createNamedVariable(forBuiltin: constructor), withArgs: [])
+    if existing == nil && attachListeners && probability(0.5) {
+        attachReentrancyListener(b, to: router, ofGroup: constructor)
+    }
+    var calls = [PendingCall]()
+    if awaitCallbacks {
+        for (method, parameters, paths) in mojoCallbackEndpoints[constructor] ?? [] {
+            calls.append((nextCall(b, of: method, on: router, parameters: parameters), paths))
+        }
+    }
+    let helper = b.getProperty("$", of: router, isReceiverOptional: true)
+    let remote = b.callMethod(bind, on: helper, withArgs: [], isReceiverOptional: true)
+    if b.visibleVariables.contains(helper) {
+        b.hide(helper)
+    }
+    return (remote, calls)
+}
+
+/// Walks `path` on `object`, treating `"[0]"` as array element access `[0]`
+/// and every other segment as optional property access.
+private func walkPath(_ b: ProgramBuilder, from object: Variable, path: [String]) -> Variable {
+    var value = object
+    for segment in path {
+        if segment == "[0]" {
+            value = b.getElement(0, of: value, isReceiverOptional: true)
+        } else {
+            value = b.getProperty(segment, of: value, isReceiverOptional: true)
+        }
+    }
+    return value
+}
+
+/// Loads the remotes and handles at `paths` in `object`, which is a reply or
+/// the arguments of a call by the browser, into variables.
+private func loadEndpoints(_ b: ProgramBuilder, from object: Variable, at paths: [[String]]) {
+    for path in paths.shuffled().prefix(3) {
+        _ = walkPath(b, from: object, path: path)
+    }
+}
+
+/// Binds any `PendingReceiver` / `PendingAssociatedReceiver` values returned in
+/// a remote reply (`mojoReplyReceivers`) to a `CallbackRouter` and attaches a
+/// re-entrant listener so browser callbacks exercise live objects and teardown.
+private func bindReplyReceivers(
+    _ b: ProgramBuilder, from reply: Variable,
+    specs: [(path: [String], router: String)],
+    attachListeners: Bool = true
+) {
+    for spec in specs {
+        guard mojoRouterGroups.contains(spec.router) else { continue }
+        let receiver = walkPath(b, from: reply, path: spec.path)
+        let handle = b.getProperty("handle", of: receiver, isReceiverOptional: true)
+        let existing = b.visibleVariables.first { b.type(of: $0).group == spec.router }
+        let router = existing
+            ?? b.construct(b.createNamedVariable(forBuiltin: spec.router), withArgs: [])
+        if attachListeners && (existing == nil || probability(0.5)) {
+            attachReentrancyListener(b, to: router, ofGroup: spec.router)
+        }
+        let helper = b.getProperty("$", of: router, isReceiverOptional: true)
+        b.callMethod("bindHandle", on: helper, withArgs: [handle], isReceiverOptional: true)
+        for hidden in [receiver, handle, helper] {
+            if hidden != reply && b.visibleVariables.contains(hidden) {
+                b.hide(hidden)
+            }
+        }
+    }
+}
+
 /// Binds a new remote for each parameter of `signature` that is a remote JS
 /// sends. Parameters for which no such object is in scope are left out.
 private func bindRemoteArguments(
@@ -4875,13 +5619,7 @@ private func bindRemoteArguments(
 ) -> [Int: Variable] {
     var remotes = [Int: Variable]()
     for (i, parameter) in signature.parameters.enumerated() {
-        // Extract the underlying type from the `Parameter` enum.
-        let type: ILType
-        switch parameter {
-        case .plain(let t), .opt(let t), .rest(let t), .either(let t, _):
-            type = t
-        }
-
+        let type = parameterType(parameter)
         guard let group = type.group, let binders = mojoRemoteBinders[group] else { continue }
         // Find all variables that provide binders for this type
         let available = binders.compactMap { binder in
@@ -4889,138 +5627,749 @@ private func bindRemoteArguments(
         }
         guard let (owner, binder) = available.randomElement() else { continue }
 
-        let remote = b.construct(b.createNamedVariable(forBuiltin: group), withArgs: [])
-        let receiver = b.callMethod(
-            "bindNewPipeAndPassReceiver", on: b.getProperty("$", of: remote), withArgs: [])
+        // The other arguments are found or generated before the new remote
+        // exists, so that they cannot be built from it.
         let bindSignature = b.methodSignatures(of: binder.method, on: owner)[0]
         var bindArguments = b.findOrGenerateArguments(
-            forSignature: bindSignature, maxNumberOfVariablesToGenerate: 1000)
-        bindArguments[binder.index] = receiver
+            forSignature: removeParameters(at: [binder.index], from: bindSignature),
+            maxNumberOfVariablesToGenerate: 1000)
+        let remote = b.construct(b.createNamedVariable(forBuiltin: group), withArgs: [])
+        let wrapper = b.getProperty("$", of: remote)
+        let receiver = b.callMethod("bindNewPipeAndPassReceiver", on: wrapper, withArgs: [])
+        // Binding the remote a second time would drop the pipe just made.
+        b.hide(wrapper)
+        bindArguments.insert(receiver, at: binder.index)
         hideEndpoints(b, in: bindArguments)
-        b.callMethod(binder.method, on: owner, withArgs: bindArguments, guard: false)
+        b.callMethod(
+            binder.method, on: owner, withArgs: bindArguments, guard: false,
+            isReceiverOptional: true)
         remotes[i] = remote
     }
     return remotes
 }
 
-/// Finds or generates arguments for a call with `signature`, binding the remotes
-/// JS sends (see `bindRemoteArguments`).
+/// Finds or generates arguments for a call with `signature`.
+///
+/// Three kinds of arguments are built here rather than by Fuzzilli: the
+/// remotes that JS sends, which are bound first (see `bindRemoteArguments`),
+/// the receivers, which come from new remotes (see `makeReceiver`), and the
+/// remotes to interfaces that JS implements, which come from new routers (see
+/// `makeRouter`). The other arguments are found or generated before those
+/// exist, so that they cannot be built from them.
+///
+/// Also returns the calls that the browser may make on the new routers.
 private func findOrGenerateMojoArguments(
-    _ b: ProgramBuilder, forSignature signature: Signature
-) -> [Variable] {
-    let remotes = bindRemoteArguments(b, for: signature)
-    var arguments = b.findOrGenerateArguments(
-        forSignature: signature, maxNumberOfVariablesToGenerate: 1000)
-    for (i, remote) in remotes {
-        arguments[i] = remote
+    _ b: ProgramBuilder, forSignature signature: Signature, attachListeners: Bool = true,
+    awaitCallbacks: Bool = true
+) -> (arguments: [Variable], calls: [PendingCall]) {
+    let parameters = signature.parameters
+    // Nullable endpoints are left to Fuzzilli one time out of five, which
+    // then often passes `undefined`.
+    func indices(withSuffixes suffixes: [String]) -> [Int] {
+        return parameters.indices.filter { i in
+            guard let group = parameterType(parameters[i]).group,
+                suffixes.contains(where: group.hasSuffix)
+            else { return false }
+            if case .either = parameters[i], probability(0.2) { return false }
+            return true
+        }
     }
-    return arguments
+    let receiverIndices = indices(withSuffixes: ["PendingReceiver", "PendingAssociatedReceiver"])
+    let routerIndices = indices(withSuffixes: ["PendingRemote", "PendingAssociatedRemote"])
+    let remoteIndices = parameters.indices.filter { i in
+        mojoRemoteBinders[parameterType(parameters[i]).group ?? ""] != nil
+    }
+    let builtHere = receiverIndices + routerIndices + remoteIndices
+    let remainingSig = removeParameters(at: builtHere, from: signature)
+    let needsDirectString = remainingSig.parameters.contains(where: {
+        let t = parameterType($0)
+        return t.Is(.string) && !t.isEnumeration
+    })
+    let needsStructOrArray = remainingSig.parameters.contains(where: {
+        let t = parameterType($0)
+        return t.Is(.object()) || t.Is(.iterable())
+    })
+    if needsDirectString || needsStructOrArray {
+        let visibleStrings = b.visibleVariables.filter { b.type(of: $0).Is(.string) }.count
+        if visibleStrings < 2 {
+            _ = emitMojoString(b)
+            _ = emitMojoString(b)
+        } else if needsDirectString && probability(0.6) {
+            _ = emitMojoString(b)
+        }
+    }
+    if remainingSig.parameters.contains(where: { parameterType($0).Is(.bigint) }) {
+        let visibleBigInts = b.visibleVariables.filter { b.type(of: $0).Is(.bigint) }.count
+        if visibleBigInts == 0 || probability(0.6) {
+            _ = emitMojoBigInt(b)
+        }
+    }
+    if let intParam = remainingSig.parameters.first(where: {
+        let t = parameterType($0)
+        return t.Is(.integer) && !t.isEnumeration
+    }) {
+        let t = parameterType(intParam)
+        if probability(0.55) {
+            _ = emitMojoInteger(b, as: t.group)
+        }
+    } else if needsStructOrArray && probability(0.35) {
+        let visibleInts = b.visibleVariables.filter { b.type(of: $0).Is(.integer) }.count
+        if visibleInts < 2 {
+            _ = emitMojoInteger(b, as: probability(0.5) ? "Uint16" : "Int32")
+        }
+    }
+    if remainingSig.parameters.contains(where: { parameterType($0).Is(.float) }) {
+        if probability(0.7) {
+            _ = emitMojoFloat(b)
+        }
+    } else if needsStructOrArray && probability(0.35) {
+        let visibleFloats = b.visibleVariables.filter { b.type(of: $0).Is(.float) }.count
+        if visibleFloats == 0 {
+            _ = emitMojoFloat(b)
+        }
+    }
+
+    var others = b.findOrGenerateArguments(
+        forSignature: remainingSig,
+        maxNumberOfVariablesToGenerate: 1000)
+    for arg in others {
+        if mojoStructGroups.contains(b.type(of: arg).group ?? ""), probability(0.25) {
+            mutateMojoStruct(b, arg, preserveValidEndpoints: true)
+        }
+    }
+    var provided = bindRemoteArguments(b, for: signature)
+    for i in receiverIndices {
+        provided[i] = makeReceiver(b, ofType: parameterType(parameters[i]))
+    }
+    var calls = [PendingCall]()
+    for i in routerIndices {
+        if let router = makeRouter(
+            b, ofType: parameterType(parameters[i]), attachListeners: attachListeners,
+            awaitCallbacks: awaitCallbacks)
+        {
+            provided[i] = router.remote
+            calls += router.calls
+        }
+    }
+
+    let arguments = parameters.indices.map { i in
+        if let argument = provided[i] {
+            return argument
+        }
+        if builtHere.contains(i) {
+            // Could not be built here after all.
+            return b.findOrGenerateType(parameterType(parameters[i]))
+        }
+        return others.removeFirst()
+    }
+    return (arguments, calls)
+}
+
+/// Picks the object that the next call is made on.
+///
+/// First picks an object group among the Mojo variables with methods, and then
+/// a variable of that group. This gives each interface in scope the same share
+/// of calls, however many variables hold it. Remotes are picked nine times out
+/// of ten. The other objects (the `$` wrappers, Mojo handles and `Mojo`) do
+/// not send messages to the interface. `addListener` calls are left to the
+/// router listener generators, which build proper listeners.
+private func pickCallTarget(_ b: ProgramBuilder, remotesOnly: Bool = false) -> Variable? {
+    var remoteGroups = Set<String>()
+    var otherGroups = Set<String>()
+    for variable in b.visibleVariables {
+        let type = b.type(of: variable)
+        guard isTargetObject(type: type), let group = type.group,
+            !type.methods.subtracting(mojoListenerMethods).isEmpty
+        else { continue }
+        if mojoRemoteGroups.contains(group) {
+            remoteGroups.insert(group)
+        } else {
+            otherGroups.insert(group)
+        }
+    }
+
+    let group: String
+    if let remoteGroup = remoteGroups.randomElement(),
+        remotesOnly || otherGroups.isEmpty || probability(0.9)
+    {
+        group = remoteGroup
+    } else if !remotesOnly, let otherGroup = otherGroups.randomElement() {
+        group = otherGroup
+    } else {
+        return nil
+    }
+    return b.findVariable { b.type(of: $0).group == group }
+}
+
+/// Returns the primary remote.
+private func getPrimaryRemote(_ b: ProgramBuilder) -> Variable {
+    let getRemote = b.createNamedVariable(forBuiltin: "getOrCreatePrimaryRemote")
+    let remote = b.callFunction(getRemote, withArgs: [])
+    b.hide(getRemote)
+    return remote
+}
+
+/// Returns all visible remote handles in scope that expose at least one
+/// callable method (excluding empty marker interfaces such as `LockHandle`).
+private func callableRemotes(_ b: ProgramBuilder) -> [Variable] {
+    return b.visibleVariables.filter {
+        let type = b.type(of: $0)
+        return mojoRemoteGroups.contains(type.group ?? "") && !type.methods.isEmpty
+    }
+}
+
+/// Methods whose execution destroys or disconnects the endpoint; downweighted in
+/// random picks so operational methods run first.
+private let mojoDestructiveMethods: Set<String> = ["close", "abort", "destroy", "unobserve"]
+
+/// Methods that drop their reply callback or close the pipe with BadMessage on
+/// synthetic tokens; always sent un-awaited so they never wait for the reply timeout.
+private let mojoUnawaitedMethods: Set<String> = ["getEntryFromDataTransferToken"]
+
+/// Returns the effective ILType for `remote`, falling back to `expectedGroup`
+/// when dynamic indexing (`entries[0]`) erased static type info to `.jsAnything`.
+private func effectiveRemoteType(
+    _ b: ProgramBuilder, _ remote: Variable, expectedGroup: String? = nil
+) -> ILType {
+    let actual = b.type(of: remote)
+    if actual.group != nil { return actual }
+    guard let group = expectedGroup else { return actual }
+    return b.fuzzer.environment.type(ofGroup: group)
+}
+
+/// Returns true when `method` requires a bound remote token whose binder owner
+/// interface is not currently visible in scope.
+private func hasMissingBinderOwner(
+    _ b: ProgramBuilder, _ method: String, on remoteType: ILType, visibleGroups: Set<String>
+) -> Bool {
+    guard let sig = b.fuzzer.environment.signatures(ofMethod: method, on: remoteType).first else {
+        return false
+    }
+    return sig.parameters.contains { param in
+        guard let g = parameterType(param).group,
+            let binders = mojoRemoteBinders[g]
+        else { return false }
+        return !binders.contains { visibleGroups.contains($0.owner) }
+    }
+}
+
+/// Picks a method of the remote `remote`, or `nil` if `remote` has no usable methods.
+/// Methods whose reply carries remotes or handles are six times as likely as
+/// destructive methods (three times ordinary operational methods), since they are
+/// the way to the interfaces behind this one. Methods that require a bound
+/// remote token (`mojoRemoteBinders`, e.g. `FileSystemAccessTransferToken`) are
+/// only picked once an owner remote that can mint that token is in scope.
+private func pickRemoteMethod(
+    _ b: ProgramBuilder, of remote: Variable, expectedGroup: String? = nil
+) -> String? {
+    let type = effectiveRemoteType(b, remote, expectedGroup: expectedGroup)
+    guard !type.methods.isEmpty else { return nil }
+    let endpoints = mojoReplyEndpoints[type.group ?? ""] ?? [:]
+    let creators = mojoEndpointCreatorMethods[type.group ?? ""] ?? []
+    let visibleGroups = Set(b.visibleVariables.compactMap { b.type(of: $0).group })
+    var methods = WeightedList<String>()
+    for method in type.methods {
+        if mojoUnawaitedMethods.contains(method)
+            || hasMissingBinderOwner(b, method, on: type, visibleGroups: visibleGroups)
+        {
+            continue
+        }
+        let isCreator = endpoints[method] != nil || creators.contains(method)
+        let weight = isCreator ? 6 : (mojoDestructiveMethods.contains(method) ? 1 : 2)
+        methods.append(method, withWeight: weight)
+    }
+    return methods.randomElement()
+}
+
+/// Calls `method` on the remote `remote`.
+///
+/// The call is `remote?.method(...)`: a remote that comes from a reply is
+/// `null` when the call that should have returned it failed, and the program
+/// should go on then instead of throwing.
+///
+/// With `awaitReply` and in an async function, the program waits for what the
+/// call gives it, and loads the remotes and handles in it into variables right
+/// away, so that the following calls can use them. That is the reply, if the
+/// method has one, and the calls that the browser makes in turn on the
+/// interfaces that JS implements and passed in this call (see `makeRouter`).
+@discardableResult
+private func callRemoteMethod(
+    _ b: ProgramBuilder, _ method: String, on remote: Variable, awaitReply: Bool,
+    attachListeners: Bool = true, expectedGroup: String? = nil
+) -> Variable {
+    let remoteType = effectiveRemoteType(b, remote, expectedGroup: expectedGroup)
+    let group = remoteType.group ?? ""
+    let shouldAwait = awaitReply && !mojoUnawaitedMethods.contains(method) && b.context.contains(.async)
+    let signature = chooseUniform(
+        from: b.fuzzer.environment.signatures(ofMethod: method, on: remoteType))
+    let (arguments, calls) = findOrGenerateMojoArguments(
+        b, forSignature: signature, attachListeners: attachListeners,
+        awaitCallbacks: shouldAwait)
+    hideEndpoints(b, in: arguments)
+    var result = b.callMethod(
+        method, on: remote, withArgs: arguments, guard: false, isReceiverOptional: true)
+    guard shouldAwait else {
+        return result
+    }
+
+    if !signature.outputType.Is(.undefined) {
+        result = b.await(result)
+        loadEndpoints(b, from: result, at: mojoReplyEndpoints[group]?[method] ?? [])
+        bindReplyReceivers(
+            b, from: result, specs: mojoReplyReceivers[group]?[method] ?? [],
+            attachListeners: attachListeners)
+    }
+    for call in calls {
+        loadEndpoints(b, from: b.await(call.promise), at: call.paths)
+    }
+    return result
+}
+
+private func generateMojoPropertyValue(_ b: ProgramBuilder, ofType propType: ILType) -> Variable {
+    if propType.Is(.string) && !propType.isEnumeration {
+        return emitMojoString(b)
+    } else if propType.Is(.float) {
+        return emitMojoFloat(b)
+    } else if propType.Is(.bigint) {
+        return emitMojoBigInt(b)
+    } else if propType.Is(.integer) && !propType.isEnumeration {
+        return emitMojoInteger(b, as: propType.group)
+    }
+    return b.findOrGenerateType(propType)
+}
+
+/// Mutates one property on an existing Mojo struct instance to exercise
+/// cross-variant optional fields, independent null/undefined clearing of inner
+/// nullable handles/blobs, and numeric/string boundary overrides.
+private func mutateMojoStruct(
+    _ b: ProgramBuilder, _ obj: Variable, preserveValidEndpoints: Bool = false
+) {
+    let objType = b.type(of: obj)
+    guard let group = objType.group, !objType.properties.isEmpty else { return }
+    let nullableProps = mojoNullableStructProperties[group] ?? []
+    let prop: String
+    if !nullableProps.isEmpty && probability(0.55) {
+        prop = nullableProps.randomElement()!
+    } else {
+        prop = objType.randomProperty()!
+    }
+    let propType = b.fuzzer.environment.type(ofProperty: prop, on: objType)
+    if isEndpoint(type: propType) {
+        if nullableProps.contains(prop) && probability(0.8) {
+            let nullish = probability(0.75) ? b.loadUndefined() : b.loadNull()
+            b.setProperty(prop, of: obj, to: nullish)
+            return
+        }
+        if preserveValidEndpoints { return }
+        guard let g = propType.group,
+            let existing = b.findVariable(satisfying: { b.type(of: $0).Is(propType) })
+                ?? (b.fuzzer.environment.hasBuiltin(g)
+                    ? b.construct(b.createNamedVariable(forBuiltin: g), withArgs: []) : nil)
+        else { return }
+        b.setProperty(prop, of: obj, to: existing)
+        hideEndpoints(b, in: [existing])
+        return
+    }
+    let value: Variable
+    if nullableProps.contains(prop) && probability(0.45) {
+        value = probability(0.75) ? b.loadUndefined() : b.loadNull()
+    } else {
+        value = generateMojoPropertyValue(b, ofType: propType)
+    }
+    b.setProperty(prop, of: obj, to: value)
+}
+
+/// Mutates an existing Mojo struct variable in scope so subsequent calls see
+/// cross-variant optional fields and cleared nullable nested handles/blobs.
+private let MojoStructMutateGenerator = CodeGenerator("MojoStructMutateGenerator") { b in
+    let candidates = b.visibleVariables.filter {
+        guard let g = b.type(of: $0).group else { return false }
+        return mojoStructGroups.contains(g)
+    }
+    guard let obj = candidates.randomElement() else { return }
+    mutateMojoStruct(b, obj)
 }
 
 /// Mojo variant of the builtin `MethodCallGenerator` that operates only on
 /// "Mojo" objects instead of all the objects in the JavaScript environment,
 /// most of which are unrelated to the interface. This generator emits random
 /// method calls, generating any arguments that are not available.
+///
+/// In an async function, most calls on remotes are awaited. The others leave
+/// their message in flight, which is what a later teardown races with.
 private let MojoMethodCallGenerator = CodeGenerator("MojoMethodCallGenerator") {
     b in
-    // Pick an object group among all Mojo variables with methods, and then a
-    // variable of that group. This gives each interface in scope the same
-    // share of calls, however many variables hold it (e.g. one per
-    // `getOrCreatePrimaryRemote()` call). `addListener` calls are left to the
-    // router listener generators, which build proper listeners.
-    let groups = Set(b.visibleVariables.compactMap { v -> String? in
-        let type = b.type(of: v)
-        let methods = type.methods.subtracting(["addListener"])
-        return isTargetObject(type: type) && !methods.isEmpty ? type.group : nil
-    })
-
+    defer { hideCallables(b) }
     // If we can't find a Mojo object in scope, create the IDBFactory remote
-    guard let group = groups.randomElement() else {
-        let getRemoteFunc = b.createNamedVariable(forBuiltin: "getOrCreatePrimaryRemote")
-        b.callFunction(getRemoteFunc, withArgs: [])
+    guard let obj = pickCallTarget(b) else {
+        let _ = getPrimaryRemote(b)
         return
     }
-    let obj = b.findVariable { b.type(of: $0).group == group }!
 
-    let methodName = b.type(of: obj).randomMethod()!
+    let type = b.type(of: obj)
+    if mojoRemoteGroups.contains(type.group ?? "") {
+        if let method = pickRemoteMethod(b, of: obj) {
+            callRemoteMethod(b, method, on: obj, awaitReply: probability(0.65))
+            if probability(0.35) {
+                let m2 = probability(0.5) ? method : (pickRemoteMethod(b, of: obj) ?? method)
+                callRemoteMethod(b, m2, on: obj, awaitReply: false, attachListeners: false)
+                if probability(0.35),
+                    let closeM = type.methods.filter({ mojoDestructiveMethods.contains($0) })
+                        .randomElement()
+                {
+                    callRemoteMethod(b, closeM, on: obj, awaitReply: false, attachListeners: false)
+                }
+            }
+        }
+        return
+    }
+
+    let methodName = type.methods.subtracting(mojoListenerMethods).randomElement()!
     let signatures = b.methodSignatures(of: methodName, on: obj)
     let signature = chooseUniform(from: signatures)
-    let arguments = findOrGenerateMojoArguments(b, forSignature: signature)
+    let arguments = findOrGenerateMojoArguments(b, forSignature: signature).arguments
     hideEndpoints(b, in: arguments)
     b.callMethod(methodName, on: obj, withArgs: arguments, guard: false)
 }
 
+/// Calls a method of a remote and awaits its reply (see `callRemoteMethod`).
+///
+/// This generator needs an async function. When Fuzzilli picks it outside of
+/// one, it opens one with `MojoAsyncFunctionGenerator` first, so the weight of
+/// this generator is also what makes programs consist of async functions that
+/// call the interface, await the replies and use what they return.
+private let MojoAwaitedCallGenerator = CodeGenerator(
+    "MojoAwaitedCallGenerator", inContext: .single(.async)
+) { b in
+    defer { hideCallables(b) }
+    let remote = pickCallTarget(b, remotesOnly: true) ?? getPrimaryRemote(b)
+    if let method = pickRemoteMethod(b, of: remote) {
+        callRemoteMethod(b, method, on: remote, awaitReply: true)
+    }
+}
+/// Waits for the browser to call a method of an interface that JS implements,
+/// and loads the remotes and handles among the arguments into variables.
+///
+/// `callRemoteMethod` already waits for the first such call after it passes a
+/// router. This generator is for the calls that come later, e.g.
+/// `IDBFactoryClient.OpenSuccess` once the version change transaction that
+/// `UpgradeNeeded` announced is done.
+private let MojoNextCallGenerator = CodeGenerator(
+    "MojoNextCallGenerator", inContext: .single(.async)
+) { b in
+    guard
+        let router = b.findVariable(satisfying: {
+            mojoCallbackEndpoints[b.type(of: $0).group ?? ""] != nil
+        }),
+        let methods = mojoCallbackEndpoints[b.type(of: router).group ?? ""]
+    else { return }
+    let (method, parameters, paths) = chooseUniform(from: methods)
+    let promise = nextCall(b, of: method, on: router, parameters: parameters)
+    loadEndpoints(b, from: b.await(promise), at: paths)
+}
+
+/// Closes a remote, a `CallbackRouter` or a Mojo handle.
+private func closeMojoObject(_ b: ProgramBuilder, _ target: Variable, hideTarget: Bool = true) {
+    let type = b.type(of: target)
+    if type.methods.contains("close") {
+        b.callMethod("close", on: target, withArgs: [], isReceiverOptional: true)
+    } else {
+        let wrapper = b.getProperty("$", of: target, isReceiverOptional: true)
+        b.callMethod("close", on: wrapper, withArgs: [], isReceiverOptional: true)
+        if b.visibleVariables.contains(wrapper) {
+            b.hide(wrapper)
+        }
+    }
+    if hideTarget && b.visibleVariables.contains(target) {
+        b.hide(target)
+    }
+}
+
+/// Closes one end of a connection while calls on it or on objects it returned
+/// are still in flight (not awaited), and then keeps using the surviving
+/// objects.
+///
+/// Closes a remote, the receiver (`CallbackRouter`) of an interface that JS
+/// implements, or a Mojo handle. Before closing, it fires 1–2 un-awaited calls
+/// so messages are in flight when the pipe closes. After closing, it calls a
+/// surviving remote (such as a child remote returned earlier or bound during
+/// the in-flight call). For the primary remote, `getOrCreatePrimaryRemote()`
+/// binds a new one after this.
+private let MojoTeardownGenerator = CodeGenerator("MojoTeardownGenerator") { b in
+    defer { hideCallables(b) }
+    let hasSecondary = b.visibleVariables.contains { v in
+        guard let g = b.type(of: v).group, g != mojoPrimaryRemoteGroup else { return false }
+        return mojoRemoteGroups.contains(g) || mojoRouterGroups.contains(g)
+    }
+    if !hasSecondary {
+        let primary = pickCallTarget(b, remotesOnly: true) ?? getPrimaryRemote(b)
+        if let method = pickRemoteMethod(b, of: primary) {
+            callRemoteMethod(b, method, on: primary, awaitReply: b.context.contains(.async))
+        }
+    }
+
+    // Closing the primary remote closes the underlying pipe carrier for all
+    // associated endpoints (e.g. `IDBDatabase`, `IDBTransaction`), so when
+    // secondary objects exist in scope we close a secondary remote, router or
+    // handle so that continued use of child objects reaches the browser.
+    let secondaryCandidates = b.visibleVariables.filter { variable in
+        let type = b.type(of: variable)
+        guard isTargetObject(type: type), let group = type.group,
+            group != mojoPrimaryRemoteGroup
+        else { return false }
+        return mojoRemoteGroups.contains(group) || mojoRouterGroups.contains(group)
+            || (group.hasPrefix("Mojo") && type.methods.contains("close"))
+    }
+    let target = secondaryCandidates.randomElement()
+        ?? b.visibleVariables.first { b.type(of: $0).group == mojoPrimaryRemoteGroup }
+        ?? getPrimaryRemote(b)
+    let targetGroup = b.type(of: target).group ?? ""
+
+    // 1. Fire 1–2 un-awaited calls so messages are in flight during teardown.
+    if mojoRemoteGroups.contains(targetGroup), let m1 = pickRemoteMethod(b, of: target) {
+        callRemoteMethod(b, m1, on: target, awaitReply: false)
+    }
+    let otherRemotesBefore = callableRemotes(b).filter { $0 != target }
+    if let other = otherRemotesBefore.randomElement(),
+        let m2 = pickRemoteMethod(b, of: other)
+    {
+        callRemoteMethod(b, m2, on: other, awaitReply: false)
+    }
+
+    // 2. Close `target` while those calls are still outstanding.
+    closeMojoObject(b, target, hideTarget: true)
+
+    // 3. Keep using the surviving objects after `target` is closed.
+    let survivors = callableRemotes(b)
+    let afterTarget = survivors.first { b.type(of: $0).group != mojoPrimaryRemoteGroup }
+        ?? survivors.randomElement()
+        ?? getPrimaryRemote(b)
+    if let mAfter = pickRemoteMethod(b, of: afterTarget) {
+        callRemoteMethod(b, mAfter, on: afterTarget, awaitReply: b.context.contains(.async))
+    }
+}
+
+/// Fires 2–3 un-awaited calls on live remotes in scope and immediately closes
+/// the primary remote without awaiting their replies, disconnecting the primary
+/// pipe and all associated endpoints in the browser while those messages are in
+/// flight. Called with probability `mojoFinalPrimaryTeardownProbability` as the
+/// final action of an async function.
+private func emitFinalPrimaryTeardown(_ b: ProgramBuilder) {
+    defer { hideCallables(b) }
+    var remotes = callableRemotes(b)
+    if remotes.isEmpty {
+        remotes = [getPrimaryRemote(b)]
+    }
+    let secondaryRemotes = remotes.filter {
+        b.type(of: $0).group != mojoPrimaryRemoteGroup
+    }
+    for _ in 0..<Int.random(in: 2...3) {
+        let remote =
+            (!secondaryRemotes.isEmpty && probability(0.75))
+            ? secondaryRemotes.randomElement()!
+            : remotes.randomElement()!
+        if let method = pickRemoteMethod(b, of: remote) {
+            callRemoteMethod(b, method, on: remote, awaitReply: false, attachListeners: false)
+        }
+    }
+    let primary =
+        b.visibleVariables.first { b.type(of: $0).group == mojoPrimaryRemoteGroup }
+        ?? getPrimaryRemote(b)
+    closeMojoObject(b, primary, hideTarget: true)
+}
+
 /// Mojo variant of the builtin `PropertyRetrievalGenerator` that operates only
 /// on "Mojo" objects instead of all the objects in the JavaScript environment,
-/// most of which are unrelated to the interface. This generator emits random
-/// property retrievals.
+/// most of which are unrelated to the interface. This generator loads a random
+/// property that the object is known to have.
 private let MojoPropertyRetrievalGenerator = CodeGenerator(
     "MojoPropertyRetrievalGenerator"
 ) { b in
-    let targetVar = b.findVariable { isTargetObject(type: b.type(of: $0)) }
-    guard let obj = targetVar else { return }
-
-    let propertyName =
-        b.type(of: obj).randomProperty() ?? b.randomCustomPropertyName()
-    b.getProperty(propertyName, of: obj)
+    let targetVar = b.findVariable {
+        let type = b.type(of: $0)
+        return isTargetObject(type: type) && !type.properties.isEmpty
+    }
+    guard let obj = targetVar, let propertyName = b.type(of: obj).randomProperty() else {
+        return
+    }
+    b.getProperty(propertyName, of: obj, isReceiverOptional: true)
 }
 
-/// Generates a call to add a callback to the blinkMojomIDBFactoryClientCallbackRouter.
-///
-/// The callback has one parameter, specified with `.parameters(n: 1)`. `build(n: 5)`
-/// then tells Fuzzilli to populate the callback body with five random expressions.
-/// For methods with a response, the callback returns the response parameters.
+/// Attaches a re-entrant listener to a `BlinkMojomIDBFactoryClientCallbackRouter`
+/// whose body calls back into a Mojo remote in scope and/or closes a remote or
+/// the router while the browser is inside the callback dispatch.
+private func attachReentrancyListenerToBlinkMojomIDBFactoryClient(
+    _ b: ProgramBuilder, _ router: Variable
+) {
+    let listeners: [(String, ParameterList)] = [
+        (
+            "error",
+            [
+                .plain(.jsBlinkMojomIDBException),
+                .plain(.jsMojoBaseMojomString16),
+            ]
+        ),
+        (
+            "blocked",
+            [
+                .plain(.bigint),
+            ]
+        ),
+        (
+            "upgradeNeeded",
+            [
+                .plain(.jsBlinkMojomIDBDatabaseRemote),
+                .plain(.bigint),
+                .plain(.jsBlinkMojomIDBDataLoss),
+                .plain(.jsString),
+                .plain(.jsBlinkMojomIDBDatabaseMetadata),
+            ]
+        ),
+        (
+            "openSuccess",
+            [
+                .plain(.jsBlinkMojomIDBDatabaseRemote),
+                .plain(.jsBlinkMojomIDBDatabaseMetadata),
+            ]
+        ),
+        (
+            "deleteSuccess",
+            [
+                .plain(.bigint),
+            ]
+        ),
+    ]
+    let (eventName, parameters) = chooseUniform(from: listeners)
+    let outerRemotes = callableRemotes(b)
+    let outerClosables = b.visibleVariables.filter { v in
+        guard let g = b.type(of: v).group, g != mojoPrimaryRemoteGroup else { return false }
+        return mojoRemoteGroups.contains(g) || mojoRouterGroups.contains(g)
+    }
+
+    let listenerHost = b.getProperty(eventName, of: router, isReceiverOptional: true)
+    let callback = b.buildAsyncArrowFunction(with: .parameters(parameters)) { args in
+        let argRemotes = args.filter {
+            let t = b.type(of: $0)
+            return mojoRemoteGroups.contains(t.group ?? "") && !t.methods.isEmpty
+        }
+        let remoteToCall = argRemotes.randomElement()
+            ?? outerRemotes.first { b.type(of: $0).group != mojoPrimaryRemoteGroup }
+            ?? outerRemotes.randomElement()
+            ?? getPrimaryRemote(b)
+        if let m = pickRemoteMethod(b, of: remoteToCall) {
+            callRemoteMethod(
+                b, m, on: remoteToCall, awaitReply: probability(0.5), attachListeners: false)
+        }
+
+        if probability(0.5) {
+            let toClose = chooseUniform(from: [router] + outerClosables)
+            closeMojoObject(b, toClose, hideTarget: false)
+        }
+    }
+    b.callMethod("addListener", on: listenerHost, withArgs: [callback], isReceiverOptional: true)
+    if b.visibleVariables.contains(listenerHost) {
+        b.hide(listenerHost)
+    }
+    hideCallables(b)
+}
+
+/// Generates or reuses a `BlinkMojomIDBFactoryClientCallbackRouter` and
+/// registers a re-entrant callback listener on it.
 private let MojoBlinkMojomIDBFactoryClientRouterListenerGenerator = CodeGenerator(
-    "MojoBlinkMojomIDBFactoryClientRouterListenerGenerator",
-    inputs: .required(.jsBlinkMojomIDBFactoryClientCallbackRouter)
-) { b, router in
-    guard
-        let eventName = ILType.jsBlinkMojomIDBFactoryClientCallbackRouter.properties
-            .subtracting(["$"])
-            .randomElement()
-    else {
-        return
-    }
-
-    let listenerHost = b.getProperty(eventName, of: router)
-    let callback = b.buildPlainFunction(with: .parameters(n: 1)) { args in
-        if probability(0.2) {
-            b.buildIf(args[0]) {
-                let wrapper = b.getProperty("$", of: args[0])
-                b.callMethod("close", on: wrapper, withArgs: [])
-            }
-        }
-        b.build(n: 5)
-    }
-    b.callMethod("addListener", on: listenerHost, withArgs: [callback])
+    "MojoBlinkMojomIDBFactoryClientRouterListenerGenerator"
+) { b in
+    let routerGroup = "blink.mojom.IDBFactoryClientCallbackRouter"
+    let router = b.visibleVariables.first { b.type(of: $0).group == routerGroup }
+        ?? b.construct(b.createNamedVariable(forBuiltin: routerGroup), withArgs: [])
+    attachReentrancyListenerToBlinkMojomIDBFactoryClient(b, router)
 }
 
-/// Generates a call to add a callback to the blinkMojomBlobCallbackRouter.
-///
-/// The callback has one parameter, specified with `.parameters(n: 1)`. `build(n: 5)`
-/// then tells Fuzzilli to populate the callback body with five random expressions.
-/// For methods with a response, the callback returns the response parameters.
-private let MojoBlinkMojomBlobRouterListenerGenerator = CodeGenerator(
-    "MojoBlinkMojomBlobRouterListenerGenerator",
-    inputs: .required(.jsBlinkMojomBlobCallbackRouter)
-) { b, router in
-    guard
-        let eventName = ILType.jsBlinkMojomBlobCallbackRouter.properties
-            .subtracting(["$"])
-            .randomElement()
-    else {
-        return
+/// Attaches a re-entrant listener to a `BlinkMojomBlobCallbackRouter`
+/// whose body calls back into a Mojo remote in scope and/or closes a remote or
+/// the router while the browser is inside the callback dispatch.
+private func attachReentrancyListenerToBlinkMojomBlob(
+    _ b: ProgramBuilder, _ router: Variable
+) {
+    let listeners: [(String, ParameterList)] = [
+        (
+            "clone",
+            [
+                .plain(.jsBlinkMojomBlobPendingReceiver),
+            ]
+        ),
+        (
+            "asDataPipeGetter",
+            [
+                .plain(.jsNetworkMojomDataPipeGetterPendingReceiver),
+            ]
+        ),
+        (
+            "readAll",
+            [
+                .plain(.jsMojoDataPipeProducerHandle),
+                .plain(.jsBlinkMojomBlobReaderClientRemote),
+            ]
+        ),
+        (
+            "readRange",
+            [
+                .plain(.bigint),
+                .plain(.bigint),
+                .plain(.jsMojoDataPipeProducerHandle),
+                .plain(.jsBlinkMojomBlobReaderClientRemote),
+            ]
+        ),
+        (
+            "load",
+            [
+                .plain(.jsNetworkMojomURLLoaderPendingReceiver),
+                .plain(.jsString),
+                .plain(.jsNetworkMojomHttpRequestHeaders),
+                .plain(.jsNetworkMojomURLLoaderClientRemote),
+            ]
+        ),
+        (
+            "readSideData",
+            [
+            ]
+        ),
+        (
+            "captureSnapshot",
+            [
+            ]
+        ),
+        (
+            "getInternalUUID",
+            [
+            ]
+        ),
+    ]
+    let (eventName, parameters) = chooseUniform(from: listeners)
+    let outerRemotes = callableRemotes(b)
+    let outerClosables = b.visibleVariables.filter { v in
+        guard let g = b.type(of: v).group, g != mojoPrimaryRemoteGroup else { return false }
+        return mojoRemoteGroups.contains(g) || mojoRouterGroups.contains(g)
     }
 
-    let listenerHost = b.getProperty(eventName, of: router)
-    let callback = b.buildPlainFunction(with: .parameters(n: 1)) { args in
-        if probability(0.2) {
-            b.buildIf(args[0]) {
-                let wrapper = b.getProperty("$", of: args[0])
-                b.callMethod("close", on: wrapper, withArgs: [])
-            }
+    let listenerHost = b.getProperty(eventName, of: router, isReceiverOptional: true)
+    let callback = b.buildAsyncArrowFunction(with: .parameters(parameters)) { args in
+        let argRemotes = args.filter {
+            let t = b.type(of: $0)
+            return mojoRemoteGroups.contains(t.group ?? "") && !t.methods.isEmpty
         }
-        b.build(n: 5)
+        let remoteToCall = argRemotes.randomElement()
+            ?? outerRemotes.first { b.type(of: $0).group != mojoPrimaryRemoteGroup }
+            ?? outerRemotes.randomElement()
+            ?? getPrimaryRemote(b)
+        if let m = pickRemoteMethod(b, of: remoteToCall) {
+            callRemoteMethod(
+                b, m, on: remoteToCall, awaitReply: probability(0.5), attachListeners: false)
+        }
+
+        if probability(0.5) {
+            let toClose = chooseUniform(from: [router] + outerClosables)
+            closeMojoObject(b, toClose, hideTarget: false)
+        }
         switch eventName {
         case "readSideData":
             b.doReturn(b.createObject(with: [
@@ -5039,104 +6388,268 @@ private let MojoBlinkMojomBlobRouterListenerGenerator = CodeGenerator(
             break
         }
     }
-    b.callMethod("addListener", on: listenerHost, withArgs: [callback])
+    b.callMethod("addListener", on: listenerHost, withArgs: [callback], isReceiverOptional: true)
+    if b.visibleVariables.contains(listenerHost) {
+        b.hide(listenerHost)
+    }
+    hideCallables(b)
 }
 
-/// Generates a call to add a callback to the networkMojomDataPipeGetterCallbackRouter.
-///
-/// The callback has one parameter, specified with `.parameters(n: 1)`. `build(n: 5)`
-/// then tells Fuzzilli to populate the callback body with five random expressions.
-/// For methods with a response, the callback returns the response parameters.
-private let MojoNetworkMojomDataPipeGetterRouterListenerGenerator = CodeGenerator(
-    "MojoNetworkMojomDataPipeGetterRouterListenerGenerator",
-    inputs: .required(.jsNetworkMojomDataPipeGetterCallbackRouter)
-) { b, router in
-    guard
-        let eventName = ILType.jsNetworkMojomDataPipeGetterCallbackRouter.properties
-            .subtracting(["$"])
-            .randomElement()
-    else {
-        return
+/// Generates or reuses a `BlinkMojomBlobCallbackRouter` and
+/// registers a re-entrant callback listener on it.
+private let MojoBlinkMojomBlobRouterListenerGenerator = CodeGenerator(
+    "MojoBlinkMojomBlobRouterListenerGenerator"
+) { b in
+    let routerGroup = "blink.mojom.BlobCallbackRouter"
+    let router = b.visibleVariables.first { b.type(of: $0).group == routerGroup }
+        ?? b.construct(b.createNamedVariable(forBuiltin: routerGroup), withArgs: [])
+    attachReentrancyListenerToBlinkMojomBlob(b, router)
+}
+
+/// Attaches a re-entrant listener to a `NetworkMojomDataPipeGetterCallbackRouter`
+/// whose body calls back into a Mojo remote in scope and/or closes a remote or
+/// the router while the browser is inside the callback dispatch.
+private func attachReentrancyListenerToNetworkMojomDataPipeGetter(
+    _ b: ProgramBuilder, _ router: Variable
+) {
+    let listeners: [(String, ParameterList)] = [
+        (
+            "read",
+            [
+                .plain(.jsMojoDataPipeProducerHandle),
+            ]
+        ),
+        (
+            "clone",
+            [
+                .plain(.jsNetworkMojomDataPipeGetterPendingReceiver),
+            ]
+        ),
+    ]
+    let (eventName, parameters) = chooseUniform(from: listeners)
+    let outerRemotes = callableRemotes(b)
+    let outerClosables = b.visibleVariables.filter { v in
+        guard let g = b.type(of: v).group, g != mojoPrimaryRemoteGroup else { return false }
+        return mojoRemoteGroups.contains(g) || mojoRouterGroups.contains(g)
     }
 
-    let listenerHost = b.getProperty(eventName, of: router)
-    let callback = b.buildPlainFunction(with: .parameters(n: 1)) { args in
-        if probability(0.2) {
-            b.buildIf(args[0]) {
-                let wrapper = b.getProperty("$", of: args[0])
-                b.callMethod("close", on: wrapper, withArgs: [])
-            }
+    let listenerHost = b.getProperty(eventName, of: router, isReceiverOptional: true)
+    let callback = b.buildAsyncArrowFunction(with: .parameters(parameters)) { args in
+        let argRemotes = args.filter {
+            let t = b.type(of: $0)
+            return mojoRemoteGroups.contains(t.group ?? "") && !t.methods.isEmpty
         }
-        b.build(n: 5)
+        let remoteToCall = argRemotes.randomElement()
+            ?? outerRemotes.first { b.type(of: $0).group != mojoPrimaryRemoteGroup }
+            ?? outerRemotes.randomElement()
+            ?? getPrimaryRemote(b)
+        if let m = pickRemoteMethod(b, of: remoteToCall) {
+            callRemoteMethod(
+                b, m, on: remoteToCall, awaitReply: probability(0.5), attachListeners: false)
+        }
+
+        if probability(0.5) {
+            let toClose = chooseUniform(from: [router] + outerClosables)
+            closeMojoObject(b, toClose, hideTarget: false)
+        }
         switch eventName {
         case "read":
             b.doReturn(b.createObject(with: [
-                "status": b.findOrGenerateType(.jsInt32),
-                "size": b.findOrGenerateType(.bigint),
+                "result": b.findOrGenerateType(.jsNetworkMojomDataPipeGetter_Read_ResponseParam_ResultUnion),
             ]))
         default:
             break
         }
     }
-    b.callMethod("addListener", on: listenerHost, withArgs: [callback])
+    b.callMethod("addListener", on: listenerHost, withArgs: [callback], isReceiverOptional: true)
+    if b.visibleVariables.contains(listenerHost) {
+        b.hide(listenerHost)
+    }
+    hideCallables(b)
 }
 
-/// Generates a call to add a callback to the networkMojomURLLoaderCallbackRouter.
-///
-/// The callback has one parameter, specified with `.parameters(n: 1)`. `build(n: 5)`
-/// then tells Fuzzilli to populate the callback body with five random expressions.
-/// For methods with a response, the callback returns the response parameters.
+/// Generates or reuses a `NetworkMojomDataPipeGetterCallbackRouter` and
+/// registers a re-entrant callback listener on it.
+private let MojoNetworkMojomDataPipeGetterRouterListenerGenerator = CodeGenerator(
+    "MojoNetworkMojomDataPipeGetterRouterListenerGenerator"
+) { b in
+    let routerGroup = "network.mojom.DataPipeGetterCallbackRouter"
+    let router = b.visibleVariables.first { b.type(of: $0).group == routerGroup }
+        ?? b.construct(b.createNamedVariable(forBuiltin: routerGroup), withArgs: [])
+    attachReentrancyListenerToNetworkMojomDataPipeGetter(b, router)
+}
+
+/// Attaches a re-entrant listener to a `NetworkMojomURLLoaderCallbackRouter`
+/// whose body calls back into a Mojo remote in scope and/or closes a remote or
+/// the router while the browser is inside the callback dispatch.
+private func attachReentrancyListenerToNetworkMojomURLLoader(
+    _ b: ProgramBuilder, _ router: Variable
+) {
+    let listeners: [(String, ParameterList)] = [
+        (
+            "followRedirect",
+            [
+                .plain(.jsNetworkMojomHttpRequestHeadersUpdateParams),
+                .plain(.jsUrlMojomUrl),
+            ]
+        ),
+        (
+            "setPriority",
+            [
+                .plain(.jsNetworkMojomRequestPriority),
+                .plain(.jsInt32),
+            ]
+        ),
+    ]
+    let (eventName, parameters) = chooseUniform(from: listeners)
+    let outerRemotes = callableRemotes(b)
+    let outerClosables = b.visibleVariables.filter { v in
+        guard let g = b.type(of: v).group, g != mojoPrimaryRemoteGroup else { return false }
+        return mojoRemoteGroups.contains(g) || mojoRouterGroups.contains(g)
+    }
+
+    let listenerHost = b.getProperty(eventName, of: router, isReceiverOptional: true)
+    let callback = b.buildAsyncArrowFunction(with: .parameters(parameters)) { args in
+        let argRemotes = args.filter {
+            let t = b.type(of: $0)
+            return mojoRemoteGroups.contains(t.group ?? "") && !t.methods.isEmpty
+        }
+        let remoteToCall = argRemotes.randomElement()
+            ?? outerRemotes.first { b.type(of: $0).group != mojoPrimaryRemoteGroup }
+            ?? outerRemotes.randomElement()
+            ?? getPrimaryRemote(b)
+        if let m = pickRemoteMethod(b, of: remoteToCall) {
+            callRemoteMethod(
+                b, m, on: remoteToCall, awaitReply: probability(0.5), attachListeners: false)
+        }
+
+        if probability(0.5) {
+            let toClose = chooseUniform(from: [router] + outerClosables)
+            closeMojoObject(b, toClose, hideTarget: false)
+        }
+    }
+    b.callMethod("addListener", on: listenerHost, withArgs: [callback], isReceiverOptional: true)
+    if b.visibleVariables.contains(listenerHost) {
+        b.hide(listenerHost)
+    }
+    hideCallables(b)
+}
+
+/// Generates or reuses a `NetworkMojomURLLoaderCallbackRouter` and
+/// registers a re-entrant callback listener on it.
 private let MojoNetworkMojomURLLoaderRouterListenerGenerator = CodeGenerator(
-    "MojoNetworkMojomURLLoaderRouterListenerGenerator",
-    inputs: .required(.jsNetworkMojomURLLoaderCallbackRouter)
-) { b, router in
-    guard
-        let eventName = ILType.jsNetworkMojomURLLoaderCallbackRouter.properties
-            .subtracting(["$"])
-            .randomElement()
-    else {
-        return
-    }
-
-    let listenerHost = b.getProperty(eventName, of: router)
-    let callback = b.buildPlainFunction(with: .parameters(n: 1)) { args in
-        if probability(0.2) {
-            b.buildIf(args[0]) {
-                let wrapper = b.getProperty("$", of: args[0])
-                b.callMethod("close", on: wrapper, withArgs: [])
-            }
-        }
-        b.build(n: 5)
-    }
-    b.callMethod("addListener", on: listenerHost, withArgs: [callback])
+    "MojoNetworkMojomURLLoaderRouterListenerGenerator"
+) { b in
+    let routerGroup = "network.mojom.URLLoaderCallbackRouter"
+    let router = b.visibleVariables.first { b.type(of: $0).group == routerGroup }
+        ?? b.construct(b.createNamedVariable(forBuiltin: routerGroup), withArgs: [])
+    attachReentrancyListenerToNetworkMojomURLLoader(b, router)
 }
 
-/// Generates a call to add a callback to the blinkMojomFileSystemAccessTransferTokenCallbackRouter.
-///
-/// The callback has one parameter, specified with `.parameters(n: 1)`. `build(n: 5)`
-/// then tells Fuzzilli to populate the callback body with five random expressions.
-/// For methods with a response, the callback returns the response parameters.
-private let MojoBlinkMojomFileSystemAccessTransferTokenRouterListenerGenerator = CodeGenerator(
-    "MojoBlinkMojomFileSystemAccessTransferTokenRouterListenerGenerator",
-    inputs: .required(.jsBlinkMojomFileSystemAccessTransferTokenCallbackRouter)
-) { b, router in
-    guard
-        let eventName = ILType.jsBlinkMojomFileSystemAccessTransferTokenCallbackRouter.properties
-            .subtracting(["$"])
-            .randomElement()
-    else {
-        return
+/// Attaches a re-entrant listener to a `NetworkMojomCacheStorageSideDataWriterCallbackRouter`
+/// whose body calls back into a Mojo remote in scope and/or closes a remote or
+/// the router while the browser is inside the callback dispatch.
+private func attachReentrancyListenerToNetworkMojomCacheStorageSideDataWriter(
+    _ b: ProgramBuilder, _ router: Variable
+) {
+    let listeners: [(String, ParameterList)] = [
+        (
+            "writeSideData",
+            [
+                .plain(.jsMojoBaseMojomBigBufferUnion),
+            ]
+        ),
+    ]
+    let (eventName, parameters) = chooseUniform(from: listeners)
+    let outerRemotes = callableRemotes(b)
+    let outerClosables = b.visibleVariables.filter { v in
+        guard let g = b.type(of: v).group, g != mojoPrimaryRemoteGroup else { return false }
+        return mojoRemoteGroups.contains(g) || mojoRouterGroups.contains(g)
     }
 
-    let listenerHost = b.getProperty(eventName, of: router)
-    let callback = b.buildPlainFunction(with: .parameters(n: 1)) { args in
-        if probability(0.2) {
-            b.buildIf(args[0]) {
-                let wrapper = b.getProperty("$", of: args[0])
-                b.callMethod("close", on: wrapper, withArgs: [])
-            }
+    let listenerHost = b.getProperty(eventName, of: router, isReceiverOptional: true)
+    let callback = b.buildAsyncArrowFunction(with: .parameters(parameters)) { args in
+        let argRemotes = args.filter {
+            let t = b.type(of: $0)
+            return mojoRemoteGroups.contains(t.group ?? "") && !t.methods.isEmpty
         }
-        b.build(n: 5)
+        let remoteToCall = argRemotes.randomElement()
+            ?? outerRemotes.first { b.type(of: $0).group != mojoPrimaryRemoteGroup }
+            ?? outerRemotes.randomElement()
+            ?? getPrimaryRemote(b)
+        if let m = pickRemoteMethod(b, of: remoteToCall) {
+            callRemoteMethod(
+                b, m, on: remoteToCall, awaitReply: probability(0.5), attachListeners: false)
+        }
+
+        if probability(0.5) {
+            let toClose = chooseUniform(from: [router] + outerClosables)
+            closeMojoObject(b, toClose, hideTarget: false)
+        }
+    }
+    b.callMethod("addListener", on: listenerHost, withArgs: [callback], isReceiverOptional: true)
+    if b.visibleVariables.contains(listenerHost) {
+        b.hide(listenerHost)
+    }
+    hideCallables(b)
+}
+
+/// Generates or reuses a `NetworkMojomCacheStorageSideDataWriterCallbackRouter` and
+/// registers a re-entrant callback listener on it.
+private let MojoNetworkMojomCacheStorageSideDataWriterRouterListenerGenerator = CodeGenerator(
+    "MojoNetworkMojomCacheStorageSideDataWriterRouterListenerGenerator"
+) { b in
+    let routerGroup = "network.mojom.CacheStorageSideDataWriterCallbackRouter"
+    let router = b.visibleVariables.first { b.type(of: $0).group == routerGroup }
+        ?? b.construct(b.createNamedVariable(forBuiltin: routerGroup), withArgs: [])
+    attachReentrancyListenerToNetworkMojomCacheStorageSideDataWriter(b, router)
+}
+
+/// Attaches a re-entrant listener to a `BlinkMojomFileSystemAccessTransferTokenCallbackRouter`
+/// whose body calls back into a Mojo remote in scope and/or closes a remote or
+/// the router while the browser is inside the callback dispatch.
+private func attachReentrancyListenerToBlinkMojomFileSystemAccessTransferToken(
+    _ b: ProgramBuilder, _ router: Variable
+) {
+    let listeners: [(String, ParameterList)] = [
+        (
+            "getInternalID",
+            [
+            ]
+        ),
+        (
+            "clone",
+            [
+                .plain(.jsBlinkMojomFileSystemAccessTransferTokenPendingReceiver),
+            ]
+        ),
+    ]
+    let (eventName, parameters) = chooseUniform(from: listeners)
+    let outerRemotes = callableRemotes(b)
+    let outerClosables = b.visibleVariables.filter { v in
+        guard let g = b.type(of: v).group, g != mojoPrimaryRemoteGroup else { return false }
+        return mojoRemoteGroups.contains(g) || mojoRouterGroups.contains(g)
+    }
+
+    let listenerHost = b.getProperty(eventName, of: router, isReceiverOptional: true)
+    let callback = b.buildAsyncArrowFunction(with: .parameters(parameters)) { args in
+        let argRemotes = args.filter {
+            let t = b.type(of: $0)
+            return mojoRemoteGroups.contains(t.group ?? "") && !t.methods.isEmpty
+        }
+        let remoteToCall = argRemotes.randomElement()
+            ?? outerRemotes.first { b.type(of: $0).group != mojoPrimaryRemoteGroup }
+            ?? outerRemotes.randomElement()
+            ?? getPrimaryRemote(b)
+        if let m = pickRemoteMethod(b, of: remoteToCall) {
+            callRemoteMethod(
+                b, m, on: remoteToCall, awaitReply: probability(0.5), attachListeners: false)
+        }
+
+        if probability(0.5) {
+            let toClose = chooseUniform(from: [router] + outerClosables)
+            closeMojoObject(b, toClose, hideTarget: false)
+        }
         switch eventName {
         case "getInternalID":
             b.doReturn(b.createObject(with: [
@@ -5146,65 +6659,165 @@ private let MojoBlinkMojomFileSystemAccessTransferTokenRouterListenerGenerator =
             break
         }
     }
-    b.callMethod("addListener", on: listenerHost, withArgs: [callback])
+    b.callMethod("addListener", on: listenerHost, withArgs: [callback], isReceiverOptional: true)
+    if b.visibleVariables.contains(listenerHost) {
+        b.hide(listenerHost)
+    }
+    hideCallables(b)
 }
 
-/// Generates a call to add a callback to the blinkMojomBlobReaderClientCallbackRouter.
-///
-/// The callback has one parameter, specified with `.parameters(n: 1)`. `build(n: 5)`
-/// then tells Fuzzilli to populate the callback body with five random expressions.
-/// For methods with a response, the callback returns the response parameters.
+/// Generates or reuses a `BlinkMojomFileSystemAccessTransferTokenCallbackRouter` and
+/// registers a re-entrant callback listener on it.
+private let MojoBlinkMojomFileSystemAccessTransferTokenRouterListenerGenerator = CodeGenerator(
+    "MojoBlinkMojomFileSystemAccessTransferTokenRouterListenerGenerator"
+) { b in
+    let routerGroup = "blink.mojom.FileSystemAccessTransferTokenCallbackRouter"
+    let router = b.visibleVariables.first { b.type(of: $0).group == routerGroup }
+        ?? b.construct(b.createNamedVariable(forBuiltin: routerGroup), withArgs: [])
+    attachReentrancyListenerToBlinkMojomFileSystemAccessTransferToken(b, router)
+}
+
+/// Attaches a re-entrant listener to a `BlinkMojomBlobReaderClientCallbackRouter`
+/// whose body calls back into a Mojo remote in scope and/or closes a remote or
+/// the router while the browser is inside the callback dispatch.
+private func attachReentrancyListenerToBlinkMojomBlobReaderClient(
+    _ b: ProgramBuilder, _ router: Variable
+) {
+    let listeners: [(String, ParameterList)] = [
+        (
+            "onCalculatedSize",
+            [
+                .plain(.bigint),
+                .plain(.bigint),
+            ]
+        ),
+        (
+            "onComplete",
+            [
+                .plain(.jsInt32),
+                .plain(.bigint),
+            ]
+        ),
+    ]
+    let (eventName, parameters) = chooseUniform(from: listeners)
+    let outerRemotes = callableRemotes(b)
+    let outerClosables = b.visibleVariables.filter { v in
+        guard let g = b.type(of: v).group, g != mojoPrimaryRemoteGroup else { return false }
+        return mojoRemoteGroups.contains(g) || mojoRouterGroups.contains(g)
+    }
+
+    let listenerHost = b.getProperty(eventName, of: router, isReceiverOptional: true)
+    let callback = b.buildAsyncArrowFunction(with: .parameters(parameters)) { args in
+        let argRemotes = args.filter {
+            let t = b.type(of: $0)
+            return mojoRemoteGroups.contains(t.group ?? "") && !t.methods.isEmpty
+        }
+        let remoteToCall = argRemotes.randomElement()
+            ?? outerRemotes.first { b.type(of: $0).group != mojoPrimaryRemoteGroup }
+            ?? outerRemotes.randomElement()
+            ?? getPrimaryRemote(b)
+        if let m = pickRemoteMethod(b, of: remoteToCall) {
+            callRemoteMethod(
+                b, m, on: remoteToCall, awaitReply: probability(0.5), attachListeners: false)
+        }
+
+        if probability(0.5) {
+            let toClose = chooseUniform(from: [router] + outerClosables)
+            closeMojoObject(b, toClose, hideTarget: false)
+        }
+    }
+    b.callMethod("addListener", on: listenerHost, withArgs: [callback], isReceiverOptional: true)
+    if b.visibleVariables.contains(listenerHost) {
+        b.hide(listenerHost)
+    }
+    hideCallables(b)
+}
+
+/// Generates or reuses a `BlinkMojomBlobReaderClientCallbackRouter` and
+/// registers a re-entrant callback listener on it.
 private let MojoBlinkMojomBlobReaderClientRouterListenerGenerator = CodeGenerator(
-    "MojoBlinkMojomBlobReaderClientRouterListenerGenerator",
-    inputs: .required(.jsBlinkMojomBlobReaderClientCallbackRouter)
-) { b, router in
-    guard
-        let eventName = ILType.jsBlinkMojomBlobReaderClientCallbackRouter.properties
-            .subtracting(["$"])
-            .randomElement()
-    else {
-        return
-    }
-
-    let listenerHost = b.getProperty(eventName, of: router)
-    let callback = b.buildPlainFunction(with: .parameters(n: 1)) { args in
-        if probability(0.2) {
-            b.buildIf(args[0]) {
-                let wrapper = b.getProperty("$", of: args[0])
-                b.callMethod("close", on: wrapper, withArgs: [])
-            }
-        }
-        b.build(n: 5)
-    }
-    b.callMethod("addListener", on: listenerHost, withArgs: [callback])
+    "MojoBlinkMojomBlobReaderClientRouterListenerGenerator"
+) { b in
+    let routerGroup = "blink.mojom.BlobReaderClientCallbackRouter"
+    let router = b.visibleVariables.first { b.type(of: $0).group == routerGroup }
+        ?? b.construct(b.createNamedVariable(forBuiltin: routerGroup), withArgs: [])
+    attachReentrancyListenerToBlinkMojomBlobReaderClient(b, router)
 }
 
-/// Generates a call to add a callback to the networkMojomURLLoaderClientCallbackRouter.
-///
-/// The callback has one parameter, specified with `.parameters(n: 1)`. `build(n: 5)`
-/// then tells Fuzzilli to populate the callback body with five random expressions.
-/// For methods with a response, the callback returns the response parameters.
-private let MojoNetworkMojomURLLoaderClientRouterListenerGenerator = CodeGenerator(
-    "MojoNetworkMojomURLLoaderClientRouterListenerGenerator",
-    inputs: .required(.jsNetworkMojomURLLoaderClientCallbackRouter)
-) { b, router in
-    guard
-        let eventName = ILType.jsNetworkMojomURLLoaderClientCallbackRouter.properties
-            .subtracting(["$"])
-            .randomElement()
-    else {
-        return
+/// Attaches a re-entrant listener to a `NetworkMojomURLLoaderClientCallbackRouter`
+/// whose body calls back into a Mojo remote in scope and/or closes a remote or
+/// the router while the browser is inside the callback dispatch.
+private func attachReentrancyListenerToNetworkMojomURLLoaderClient(
+    _ b: ProgramBuilder, _ router: Variable
+) {
+    let listeners: [(String, ParameterList)] = [
+        (
+            "onReceiveEarlyHints",
+            [
+                .plain(.jsNetworkMojomEarlyHints),
+            ]
+        ),
+        (
+            "onReceiveResponse",
+            [
+                .plain(.jsNetworkMojomURLResponseHead),
+                .plain(.jsMojoDataPipeConsumerHandle),
+                .plain(.jsMojoBaseMojomBigBufferUnion),
+            ]
+        ),
+        (
+            "onReceiveRedirect",
+            [
+                .plain(.jsNetworkMojomURLRequestRedirectInfo),
+                .plain(.jsNetworkMojomURLResponseHead),
+            ]
+        ),
+        (
+            "onUploadProgress",
+            [
+                .plain(.bigint),
+                .plain(.bigint),
+            ]
+        ),
+        (
+            "onTransferSizeUpdated",
+            [
+                .plain(.jsInt32),
+            ]
+        ),
+        (
+            "onComplete",
+            [
+                .plain(.jsNetworkMojomURLLoaderCompletionStatus),
+            ]
+        ),
+    ]
+    let (eventName, parameters) = chooseUniform(from: listeners)
+    let outerRemotes = callableRemotes(b)
+    let outerClosables = b.visibleVariables.filter { v in
+        guard let g = b.type(of: v).group, g != mojoPrimaryRemoteGroup else { return false }
+        return mojoRemoteGroups.contains(g) || mojoRouterGroups.contains(g)
     }
 
-    let listenerHost = b.getProperty(eventName, of: router)
-    let callback = b.buildPlainFunction(with: .parameters(n: 1)) { args in
-        if probability(0.2) {
-            b.buildIf(args[0]) {
-                let wrapper = b.getProperty("$", of: args[0])
-                b.callMethod("close", on: wrapper, withArgs: [])
-            }
+    let listenerHost = b.getProperty(eventName, of: router, isReceiverOptional: true)
+    let callback = b.buildAsyncArrowFunction(with: .parameters(parameters)) { args in
+        let argRemotes = args.filter {
+            let t = b.type(of: $0)
+            return mojoRemoteGroups.contains(t.group ?? "") && !t.methods.isEmpty
         }
-        b.build(n: 5)
+        let remoteToCall = argRemotes.randomElement()
+            ?? outerRemotes.first { b.type(of: $0).group != mojoPrimaryRemoteGroup }
+            ?? outerRemotes.randomElement()
+            ?? getPrimaryRemote(b)
+        if let m = pickRemoteMethod(b, of: remoteToCall) {
+            callRemoteMethod(
+                b, m, on: remoteToCall, awaitReply: probability(0.5), attachListeners: false)
+        }
+
+        if probability(0.5) {
+            let toClose = chooseUniform(from: [router] + outerClosables)
+            closeMojoObject(b, toClose, hideTarget: false)
+        }
         switch eventName {
         case "onUploadProgress":
             b.doReturn(b.createObject(with: [:]))
@@ -5212,82 +6825,218 @@ private let MojoNetworkMojomURLLoaderClientRouterListenerGenerator = CodeGenerat
             break
         }
     }
-    b.callMethod("addListener", on: listenerHost, withArgs: [callback])
+    b.callMethod("addListener", on: listenerHost, withArgs: [callback], isReceiverOptional: true)
+    if b.visibleVariables.contains(listenerHost) {
+        b.hide(listenerHost)
+    }
+    hideCallables(b)
 }
 
-/// Generates a call to add a callback to the blinkMojomIDBDatabaseGetAllResultSinkCallbackRouter.
-///
-/// The callback has one parameter, specified with `.parameters(n: 1)`. `build(n: 5)`
-/// then tells Fuzzilli to populate the callback body with five random expressions.
-/// For methods with a response, the callback returns the response parameters.
+/// Generates or reuses a `NetworkMojomURLLoaderClientCallbackRouter` and
+/// registers a re-entrant callback listener on it.
+private let MojoNetworkMojomURLLoaderClientRouterListenerGenerator = CodeGenerator(
+    "MojoNetworkMojomURLLoaderClientRouterListenerGenerator"
+) { b in
+    let routerGroup = "network.mojom.URLLoaderClientCallbackRouter"
+    let router = b.visibleVariables.first { b.type(of: $0).group == routerGroup }
+        ?? b.construct(b.createNamedVariable(forBuiltin: routerGroup), withArgs: [])
+    attachReentrancyListenerToNetworkMojomURLLoaderClient(b, router)
+}
+
+/// Attaches a re-entrant listener to a `BlinkMojomIDBDatabaseGetAllResultSinkCallbackRouter`
+/// whose body calls back into a Mojo remote in scope and/or closes a remote or
+/// the router while the browser is inside the callback dispatch.
+private func attachReentrancyListenerToBlinkMojomIDBDatabaseGetAllResultSink(
+    _ b: ProgramBuilder, _ router: Variable
+) {
+    let listeners: [(String, ParameterList)] = [
+        (
+            "receiveResults",
+            [
+                .plain(.jsBlinkMojomIDBRecordMojoArray),
+                .plain(.boolean),
+            ]
+        ),
+        (
+            "onError",
+            [
+                .plain(.jsBlinkMojomIDBError),
+            ]
+        ),
+    ]
+    let (eventName, parameters) = chooseUniform(from: listeners)
+    let outerRemotes = callableRemotes(b)
+    let outerClosables = b.visibleVariables.filter { v in
+        guard let g = b.type(of: v).group, g != mojoPrimaryRemoteGroup else { return false }
+        return mojoRemoteGroups.contains(g) || mojoRouterGroups.contains(g)
+    }
+
+    let listenerHost = b.getProperty(eventName, of: router, isReceiverOptional: true)
+    let callback = b.buildAsyncArrowFunction(with: .parameters(parameters)) { args in
+        let argRemotes = args.filter {
+            let t = b.type(of: $0)
+            return mojoRemoteGroups.contains(t.group ?? "") && !t.methods.isEmpty
+        }
+        let remoteToCall = argRemotes.randomElement()
+            ?? outerRemotes.first { b.type(of: $0).group != mojoPrimaryRemoteGroup }
+            ?? outerRemotes.randomElement()
+            ?? getPrimaryRemote(b)
+        if let m = pickRemoteMethod(b, of: remoteToCall) {
+            callRemoteMethod(
+                b, m, on: remoteToCall, awaitReply: probability(0.5), attachListeners: false)
+        }
+
+        if probability(0.5) {
+            let toClose = chooseUniform(from: [router] + outerClosables)
+            closeMojoObject(b, toClose, hideTarget: false)
+        }
+    }
+    b.callMethod("addListener", on: listenerHost, withArgs: [callback], isReceiverOptional: true)
+    if b.visibleVariables.contains(listenerHost) {
+        b.hide(listenerHost)
+    }
+    hideCallables(b)
+}
+
+/// Generates or reuses a `BlinkMojomIDBDatabaseGetAllResultSinkCallbackRouter` and
+/// registers a re-entrant callback listener on it.
 private let MojoBlinkMojomIDBDatabaseGetAllResultSinkRouterListenerGenerator = CodeGenerator(
-    "MojoBlinkMojomIDBDatabaseGetAllResultSinkRouterListenerGenerator",
-    inputs: .required(.jsBlinkMojomIDBDatabaseGetAllResultSinkCallbackRouter)
-) { b, router in
-    guard
-        let eventName = ILType.jsBlinkMojomIDBDatabaseGetAllResultSinkCallbackRouter.properties
-            .subtracting(["$"])
-            .randomElement()
-    else {
-        return
-    }
-
-    let listenerHost = b.getProperty(eventName, of: router)
-    let callback = b.buildPlainFunction(with: .parameters(n: 1)) { args in
-        if probability(0.2) {
-            b.buildIf(args[0]) {
-                let wrapper = b.getProperty("$", of: args[0])
-                b.callMethod("close", on: wrapper, withArgs: [])
-            }
-        }
-        b.build(n: 5)
-    }
-    b.callMethod("addListener", on: listenerHost, withArgs: [callback])
+    "MojoBlinkMojomIDBDatabaseGetAllResultSinkRouterListenerGenerator"
+) { b in
+    let routerGroup = "blink.mojom.IDBDatabaseGetAllResultSinkCallbackRouter"
+    let router = b.visibleVariables.first { b.type(of: $0).group == routerGroup }
+        ?? b.construct(b.createNamedVariable(forBuiltin: routerGroup), withArgs: [])
+    attachReentrancyListenerToBlinkMojomIDBDatabaseGetAllResultSink(b, router)
 }
 
-/// Generates a call to add a callback to the blinkMojomIDBDatabaseCallbacksCallbackRouter.
-///
-/// The callback has one parameter, specified with `.parameters(n: 1)`. `build(n: 5)`
-/// then tells Fuzzilli to populate the callback body with five random expressions.
-/// For methods with a response, the callback returns the response parameters.
-private let MojoBlinkMojomIDBDatabaseCallbacksRouterListenerGenerator = CodeGenerator(
-    "MojoBlinkMojomIDBDatabaseCallbacksRouterListenerGenerator",
-    inputs: .required(.jsBlinkMojomIDBDatabaseCallbacksCallbackRouter)
-) { b, router in
-    guard
-        let eventName = ILType.jsBlinkMojomIDBDatabaseCallbacksCallbackRouter.properties
-            .subtracting(["$"])
-            .randomElement()
-    else {
-        return
+/// Attaches a re-entrant listener to a `BlinkMojomIDBDatabaseCallbacksCallbackRouter`
+/// whose body calls back into a Mojo remote in scope and/or closes a remote or
+/// the router while the browser is inside the callback dispatch.
+private func attachReentrancyListenerToBlinkMojomIDBDatabaseCallbacks(
+    _ b: ProgramBuilder, _ router: Variable
+) {
+    let listeners: [(String, ParameterList)] = [
+        (
+            "forcedClose",
+            [
+            ]
+        ),
+        (
+            "versionChange",
+            [
+                .plain(.bigint),
+                .plain(.bigint),
+            ]
+        ),
+        (
+            "abort",
+            [
+                .plain(.bigint),
+                .plain(.jsBlinkMojomIDBException),
+                .plain(.jsMojoBaseMojomString16),
+            ]
+        ),
+        (
+            "complete",
+            [
+                .plain(.bigint),
+            ]
+        ),
+    ]
+    let (eventName, parameters) = chooseUniform(from: listeners)
+    let outerRemotes = callableRemotes(b)
+    let outerClosables = b.visibleVariables.filter { v in
+        guard let g = b.type(of: v).group, g != mojoPrimaryRemoteGroup else { return false }
+        return mojoRemoteGroups.contains(g) || mojoRouterGroups.contains(g)
     }
 
-    let listenerHost = b.getProperty(eventName, of: router)
-    let callback = b.buildPlainFunction(with: .parameters(n: 1)) { args in
-        if probability(0.2) {
-            b.buildIf(args[0]) {
-                let wrapper = b.getProperty("$", of: args[0])
-                b.callMethod("close", on: wrapper, withArgs: [])
-            }
+    let listenerHost = b.getProperty(eventName, of: router, isReceiverOptional: true)
+    let callback = b.buildAsyncArrowFunction(with: .parameters(parameters)) { args in
+        let argRemotes = args.filter {
+            let t = b.type(of: $0)
+            return mojoRemoteGroups.contains(t.group ?? "") && !t.methods.isEmpty
         }
-        b.build(n: 5)
+        let remoteToCall = argRemotes.randomElement()
+            ?? outerRemotes.first { b.type(of: $0).group != mojoPrimaryRemoteGroup }
+            ?? outerRemotes.randomElement()
+            ?? getPrimaryRemote(b)
+        if let m = pickRemoteMethod(b, of: remoteToCall) {
+            callRemoteMethod(
+                b, m, on: remoteToCall, awaitReply: probability(0.5), attachListeners: false)
+        }
+
+        if probability(0.5) {
+            let toClose = chooseUniform(from: [router] + outerClosables)
+            closeMojoObject(b, toClose, hideTarget: false)
+        }
     }
-    b.callMethod("addListener", on: listenerHost, withArgs: [callback])
+    b.callMethod("addListener", on: listenerHost, withArgs: [callback], isReceiverOptional: true)
+    if b.visibleVariables.contains(listenerHost) {
+        b.hide(listenerHost)
+    }
+    hideCallables(b)
+}
+
+/// Generates or reuses a `BlinkMojomIDBDatabaseCallbacksCallbackRouter` and
+/// registers a re-entrant callback listener on it.
+private let MojoBlinkMojomIDBDatabaseCallbacksRouterListenerGenerator = CodeGenerator(
+    "MojoBlinkMojomIDBDatabaseCallbacksRouterListenerGenerator"
+) { b in
+    let routerGroup = "blink.mojom.IDBDatabaseCallbacksCallbackRouter"
+    let router = b.visibleVariables.first { b.type(of: $0).group == routerGroup }
+        ?? b.construct(b.createNamedVariable(forBuiltin: routerGroup), withArgs: [])
+    attachReentrancyListenerToBlinkMojomIDBDatabaseCallbacks(b, router)
+}
+
+private func attachReentrancyListener(
+    _ b: ProgramBuilder, to router: Variable, ofGroup group: String
+) {
+    switch group {
+    case "blink.mojom.IDBFactoryClientCallbackRouter":
+        attachReentrancyListenerToBlinkMojomIDBFactoryClient(b, router)
+    case "blink.mojom.BlobCallbackRouter":
+        attachReentrancyListenerToBlinkMojomBlob(b, router)
+    case "network.mojom.DataPipeGetterCallbackRouter":
+        attachReentrancyListenerToNetworkMojomDataPipeGetter(b, router)
+    case "network.mojom.URLLoaderCallbackRouter":
+        attachReentrancyListenerToNetworkMojomURLLoader(b, router)
+    case "network.mojom.CacheStorageSideDataWriterCallbackRouter":
+        attachReentrancyListenerToNetworkMojomCacheStorageSideDataWriter(b, router)
+    case "blink.mojom.FileSystemAccessTransferTokenCallbackRouter":
+        attachReentrancyListenerToBlinkMojomFileSystemAccessTransferToken(b, router)
+    case "blink.mojom.BlobReaderClientCallbackRouter":
+        attachReentrancyListenerToBlinkMojomBlobReaderClient(b, router)
+    case "network.mojom.URLLoaderClientCallbackRouter":
+        attachReentrancyListenerToNetworkMojomURLLoaderClient(b, router)
+    case "blink.mojom.IDBDatabaseGetAllResultSinkCallbackRouter":
+        attachReentrancyListenerToBlinkMojomIDBDatabaseGetAllResultSink(b, router)
+    case "blink.mojom.IDBDatabaseCallbacksCallbackRouter":
+        attachReentrancyListenerToBlinkMojomIDBDatabaseCallbacks(b, router)
+    default:
+        break
+    }
 }
 
 /// Awaits a call to `method` on `remote` and returns the remote at `path` in
 /// the reply.
 private func awaitRemoteChain(
-    _ b: ProgramBuilder, _ method: String, on remote: Variable, at path: [String]
+    _ b: ProgramBuilder, _ method: String, on remote: Variable, at path: [String],
+    expectedGroup: String? = nil
 ) -> Variable {
-    let signature = b.methodSignatures(of: method, on: remote)[0]
-    let arguments = findOrGenerateMojoArguments(b, forSignature: signature)
-    hideEndpoints(b, in: arguments)
-    var value = b.await(b.callMethod(method, on: remote, withArgs: arguments, guard: false))
-    for property in path {
-        value = b.getProperty(property, of: value)
+    let remoteType = effectiveRemoteType(b, remote, expectedGroup: expectedGroup)
+    let signature = b.fuzzer.environment.signatures(ofMethod: method, on: remoteType)[0]
+    var arguments = findOrGenerateMojoArguments(b, forSignature: signature).arguments
+    if (method == "getFile" || method == "getDirectory") && arguments.count >= 2 {
+        arguments[0] = b.loadString(chooseUniform(from: ["a", "b.txt", "sub"]))
+        arguments[1] = b.loadBool(probability(0.9))
+    } else if method == "getSandboxedFileSystemForDevtools" && !arguments.isEmpty {
+        arguments[0] = b.createArray(with: probability(0.65) ? [] : [b.loadString("sub")])
     }
-    return value
+    hideEndpoints(b, in: arguments)
+    let value = b.await(
+        b.callMethod(
+            method, on: remote, withArgs: arguments, guard: false, isReceiverOptional: true))
+    return walkPath(b, from: value, path: path)
 }
 
 /// Calls `method` on `remote`, passing at `index` a receiver for a new remote
@@ -5296,16 +7045,49 @@ private func awaitRemoteChain(
 /// built from it.
 private func passReceiver(
     _ b: ProgramBuilder, _ method: String, on remote: Variable, at index: Int,
-    constructor: String, bind: String
+    constructor: String, bind: String, expectedGroup: String? = nil
 ) -> Variable {
-    let signature = b.methodSignatures(of: method, on: remote)[0]
-    var arguments = findOrGenerateMojoArguments(b, forSignature: signature)
+    let remoteType = effectiveRemoteType(b, remote, expectedGroup: expectedGroup)
+    let signature = b.fuzzer.environment.signatures(ofMethod: method, on: remoteType)[0]
+    var arguments = findOrGenerateMojoArguments(
+        b, forSignature: removeParameters(at: [index], from: signature)
+    ).arguments
     let newRemote = b.construct(b.createNamedVariable(forBuiltin: constructor), withArgs: [])
-    let receiver = b.callMethod(bind, on: b.getProperty("$", of: newRemote), withArgs: [])
-    arguments[index] = receiver
+    let wrapper = b.getProperty("$", of: newRemote)
+    let receiver = b.callMethod(bind, on: wrapper, withArgs: [])
+    b.hide(wrapper)
+    arguments.insert(receiver, at: index)
     hideEndpoints(b, in: arguments)
-    b.callMethod(method, on: remote, withArgs: arguments, guard: false)
+    b.callMethod(
+        method, on: remote, withArgs: arguments, guard: false, isReceiverOptional: true)
     return newRemote
+}
+
+/// Exercises a newly obtained leaf remote with up to two distinct non-closing
+/// operational calls followed optionally by a closing/teardown call, so leaf
+/// stateful methods execute before the pipe is closed or diluted by other
+/// variables in scope.
+private func followUpChainLeaf(
+    _ b: ProgramBuilder, _ remote: Variable, expectedGroup: String? = nil
+) {
+    let type = effectiveRemoteType(b, remote, expectedGroup: expectedGroup)
+    guard let group = type.group, mojoRemoteGroups.contains(group),
+        !type.methods.isEmpty
+    else { return }
+    let visibleGroups = Set(b.visibleVariables.compactMap { b.type(of: $0).group })
+    let callable = type.methods.filter {
+        !hasMissingBinderOwner(b, $0, on: type, visibleGroups: visibleGroups)
+    }
+    guard !callable.isEmpty else { return }
+    let nonClosing = callable.filter { !mojoDestructiveMethods.contains($0) }.shuffled()
+    let closing = callable.filter { mojoDestructiveMethods.contains($0) }
+    let followUpCount = min(nonClosing.count, probability(0.85) ? 2 : 1)
+    for method in nonClosing.prefix(followUpCount) {
+        callRemoteMethod(b, method, on: remote, awaitReply: true, expectedGroup: expectedGroup)
+    }
+    if probability(0.6), let closeMethod = closing.randomElement() {
+        callRemoteMethod(b, closeMethod, on: remote, awaitReply: true, expectedGroup: expectedGroup)
+    }
 }
 /// Follows a chain of calls from a remote that culminates in a remote. Each call
 /// either returns a remote in its reply, or takes a receiver for a new remote.
@@ -5317,11 +7099,14 @@ private func passReceiver(
 private let MojoReplyChain1Generator = CodeGenerator(
     "MojoReplyChain1Generator", inContext: .single(.async)
 ) { b in
-    var remote = b.callFunction(
-        b.createNamedVariable(forBuiltin: "getOrCreatePrimaryRemote"), withArgs: [])
+    var remote = getPrimaryRemote(b)
     remote = passReceiver(
         b, "open", on: remote, at: 4,
-        constructor: "blink.mojom.IDBTransactionRemote", bind: "associateAndPassReceiver")
+        constructor: "blink.mojom.IDBTransactionRemote", bind: "associateAndPassReceiver",
+        expectedGroup: "blink.mojom.IDBFactoryRemote")
+    followUpChainLeaf(
+        b, remote, expectedGroup: "blink.mojom.IDBTransactionRemote")
+    hideCallables(b)
 }
 /// Chain2:
 ///   IDBDatabase.createTransaction(IDBTransaction receiver)
@@ -5332,39 +7117,370 @@ private let MojoReplyChain2Generator = CodeGenerator(
     var remote = root
     remote = passReceiver(
         b, "createTransaction", on: remote, at: 0,
-        constructor: "blink.mojom.IDBTransactionRemote", bind: "associateAndPassReceiver")
+        constructor: "blink.mojom.IDBTransactionRemote", bind: "associateAndPassReceiver",
+        expectedGroup: "blink.mojom.IDBDatabaseRemote")
+    followUpChainLeaf(
+        b, remote, expectedGroup: "blink.mojom.IDBTransactionRemote")
+    hideCallables(b)
 }
 /// Chain3:
-///   IDBDatabase.openCursor().result.value.cursor
+///   IDBDatabase.get().result.value.value.externalObjects.[0].blobOrFile.blob
+///   Blob.asDataPipeGetter(DataPipeGetter receiver)
 private let MojoReplyChain3Generator = CodeGenerator(
     "MojoReplyChain3Generator", inContext: .single(.async),
     inputs: .required(.jsBlinkMojomIDBDatabaseRemote)
 ) { b, root in
     var remote = root
-    remote = awaitRemoteChain(b, "openCursor", on: remote, at: ["result", "value", "cursor"])
-}
-/// Chain4:
-///   Blob.asDataPipeGetter(DataPipeGetter receiver)
-private let MojoReplyChain4Generator = CodeGenerator(
-    "MojoReplyChain4Generator", inContext: .single(.async),
-    inputs: .required(.jsBlinkMojomBlobRemote)
-) { b, root in
-    var remote = root
+    remote = awaitRemoteChain(
+        b, "get", on: remote, at: ["result", "value", "value", "externalObjects", "[0]", "blobOrFile", "blob"],
+        expectedGroup: "blink.mojom.IDBDatabaseRemote")
     remote = passReceiver(
         b, "asDataPipeGetter", on: remote, at: 0,
-        constructor: "network.mojom.DataPipeGetterRemote", bind: "bindNewPipeAndPassReceiver")
+        constructor: "network.mojom.DataPipeGetterRemote", bind: "bindNewPipeAndPassReceiver",
+        expectedGroup: "blink.mojom.BlobRemote")
+    followUpChainLeaf(
+        b, remote, expectedGroup: "network.mojom.DataPipeGetterRemote")
+    hideCallables(b)
 }
-/// Chain5:
+/// Chain4:
+///   IDBDatabase.get().result.value.value.externalObjects.[0].blobOrFile.blob
 ///   Blob.load(URLLoader receiver)
-private let MojoReplyChain5Generator = CodeGenerator(
-    "MojoReplyChain5Generator", inContext: .single(.async),
-    inputs: .required(.jsBlinkMojomBlobRemote)
+private let MojoReplyChain4Generator = CodeGenerator(
+    "MojoReplyChain4Generator", inContext: .single(.async),
+    inputs: .required(.jsBlinkMojomIDBDatabaseRemote)
 ) { b, root in
     var remote = root
+    remote = awaitRemoteChain(
+        b, "get", on: remote, at: ["result", "value", "value", "externalObjects", "[0]", "blobOrFile", "blob"],
+        expectedGroup: "blink.mojom.IDBDatabaseRemote")
     remote = passReceiver(
         b, "load", on: remote, at: 0,
-        constructor: "network.mojom.URLLoaderRemote", bind: "bindNewPipeAndPassReceiver")
+        constructor: "network.mojom.URLLoaderRemote", bind: "bindNewPipeAndPassReceiver",
+        expectedGroup: "blink.mojom.BlobRemote")
+    followUpChainLeaf(
+        b, remote, expectedGroup: "network.mojom.URLLoaderRemote")
+    hideCallables(b)
 }
+/// Chain5:
+///   IDBDatabase.get().result.value.value.externalObjects.[0].fileSystemAccessToken
+private let MojoReplyChain5Generator = CodeGenerator(
+    "MojoReplyChain5Generator", inContext: .single(.async),
+    inputs: .required(.jsBlinkMojomIDBDatabaseRemote)
+) { b, root in
+    var remote = root
+    remote = awaitRemoteChain(
+        b, "get", on: remote, at: ["result", "value", "value", "externalObjects", "[0]", "fileSystemAccessToken"],
+        expectedGroup: "blink.mojom.IDBDatabaseRemote")
+    followUpChainLeaf(
+        b, remote, expectedGroup: "blink.mojom.FileSystemAccessTransferTokenRemote")
+    hideCallables(b)
+}
+/// Chain6:
+///   IDBDatabase.getAll().records.[0].returnValue.value.externalObjects.[0].blobOrFile.blob
+///   Blob.asDataPipeGetter(DataPipeGetter receiver)
+private let MojoReplyChain6Generator = CodeGenerator(
+    "MojoReplyChain6Generator", inContext: .single(.async),
+    inputs: .required(.jsBlinkMojomIDBDatabaseRemote)
+) { b, root in
+    var remote = root
+    remote = awaitRemoteChain(
+        b, "getAll", on: remote, at: ["records", "[0]", "returnValue", "value", "externalObjects", "[0]", "blobOrFile", "blob"],
+        expectedGroup: "blink.mojom.IDBDatabaseRemote")
+    remote = passReceiver(
+        b, "asDataPipeGetter", on: remote, at: 0,
+        constructor: "network.mojom.DataPipeGetterRemote", bind: "bindNewPipeAndPassReceiver",
+        expectedGroup: "blink.mojom.BlobRemote")
+    followUpChainLeaf(
+        b, remote, expectedGroup: "network.mojom.DataPipeGetterRemote")
+    hideCallables(b)
+}
+/// Chain7:
+///   IDBDatabase.getAll().records.[0].returnValue.value.externalObjects.[0].blobOrFile.blob
+///   Blob.load(URLLoader receiver)
+private let MojoReplyChain7Generator = CodeGenerator(
+    "MojoReplyChain7Generator", inContext: .single(.async),
+    inputs: .required(.jsBlinkMojomIDBDatabaseRemote)
+) { b, root in
+    var remote = root
+    remote = awaitRemoteChain(
+        b, "getAll", on: remote, at: ["records", "[0]", "returnValue", "value", "externalObjects", "[0]", "blobOrFile", "blob"],
+        expectedGroup: "blink.mojom.IDBDatabaseRemote")
+    remote = passReceiver(
+        b, "load", on: remote, at: 0,
+        constructor: "network.mojom.URLLoaderRemote", bind: "bindNewPipeAndPassReceiver",
+        expectedGroup: "blink.mojom.BlobRemote")
+    followUpChainLeaf(
+        b, remote, expectedGroup: "network.mojom.URLLoaderRemote")
+    hideCallables(b)
+}
+/// Chain8:
+///   IDBDatabase.getAll().records.[0].returnValue.value.externalObjects.[0].fileSystemAccessToken
+private let MojoReplyChain8Generator = CodeGenerator(
+    "MojoReplyChain8Generator", inContext: .single(.async),
+    inputs: .required(.jsBlinkMojomIDBDatabaseRemote)
+) { b, root in
+    var remote = root
+    remote = awaitRemoteChain(
+        b, "getAll", on: remote, at: ["records", "[0]", "returnValue", "value", "externalObjects", "[0]", "fileSystemAccessToken"],
+        expectedGroup: "blink.mojom.IDBDatabaseRemote")
+    followUpChainLeaf(
+        b, remote, expectedGroup: "blink.mojom.FileSystemAccessTransferTokenRemote")
+    hideCallables(b)
+}
+/// Chain9:
+///   IDBDatabase.openCursor().result.value.cursor
+///   IDBCursor.advance().result.values.values.[0].externalObjects.[0].blobOrFile.blob
+///   Blob.asDataPipeGetter(DataPipeGetter receiver)
+private let MojoReplyChain9Generator = CodeGenerator(
+    "MojoReplyChain9Generator", inContext: .single(.async),
+    inputs: .required(.jsBlinkMojomIDBDatabaseRemote)
+) { b, root in
+    var remote = root
+    remote = awaitRemoteChain(
+        b, "openCursor", on: remote, at: ["result", "value", "cursor"],
+        expectedGroup: "blink.mojom.IDBDatabaseRemote")
+    remote = awaitRemoteChain(
+        b, "advance", on: remote, at: ["result", "values", "values", "[0]", "externalObjects", "[0]", "blobOrFile", "blob"],
+        expectedGroup: "blink.mojom.IDBCursorRemote")
+    remote = passReceiver(
+        b, "asDataPipeGetter", on: remote, at: 0,
+        constructor: "network.mojom.DataPipeGetterRemote", bind: "bindNewPipeAndPassReceiver",
+        expectedGroup: "blink.mojom.BlobRemote")
+    followUpChainLeaf(
+        b, remote, expectedGroup: "network.mojom.DataPipeGetterRemote")
+    hideCallables(b)
+}
+/// Chain10:
+///   IDBDatabase.openCursor().result.value.cursor
+///   IDBCursor.advance().result.values.values.[0].externalObjects.[0].blobOrFile.blob
+///   Blob.load(URLLoader receiver)
+private let MojoReplyChain10Generator = CodeGenerator(
+    "MojoReplyChain10Generator", inContext: .single(.async),
+    inputs: .required(.jsBlinkMojomIDBDatabaseRemote)
+) { b, root in
+    var remote = root
+    remote = awaitRemoteChain(
+        b, "openCursor", on: remote, at: ["result", "value", "cursor"],
+        expectedGroup: "blink.mojom.IDBDatabaseRemote")
+    remote = awaitRemoteChain(
+        b, "advance", on: remote, at: ["result", "values", "values", "[0]", "externalObjects", "[0]", "blobOrFile", "blob"],
+        expectedGroup: "blink.mojom.IDBCursorRemote")
+    remote = passReceiver(
+        b, "load", on: remote, at: 0,
+        constructor: "network.mojom.URLLoaderRemote", bind: "bindNewPipeAndPassReceiver",
+        expectedGroup: "blink.mojom.BlobRemote")
+    followUpChainLeaf(
+        b, remote, expectedGroup: "network.mojom.URLLoaderRemote")
+    hideCallables(b)
+}
+/// Chain11:
+///   IDBDatabase.openCursor().result.value.cursor
+///   IDBCursor.advance().result.values.values.[0].externalObjects.[0].fileSystemAccessToken
+private let MojoReplyChain11Generator = CodeGenerator(
+    "MojoReplyChain11Generator", inContext: .single(.async),
+    inputs: .required(.jsBlinkMojomIDBDatabaseRemote)
+) { b, root in
+    var remote = root
+    remote = awaitRemoteChain(
+        b, "openCursor", on: remote, at: ["result", "value", "cursor"],
+        expectedGroup: "blink.mojom.IDBDatabaseRemote")
+    remote = awaitRemoteChain(
+        b, "advance", on: remote, at: ["result", "values", "values", "[0]", "externalObjects", "[0]", "fileSystemAccessToken"],
+        expectedGroup: "blink.mojom.IDBCursorRemote")
+    followUpChainLeaf(
+        b, remote, expectedGroup: "blink.mojom.FileSystemAccessTransferTokenRemote")
+    hideCallables(b)
+}
+/// Chain12:
+///   IDBDatabase.openCursor().result.value.cursor
+///   IDBCursor.continue().result.values.values.[0].externalObjects.[0].blobOrFile.blob
+///   Blob.asDataPipeGetter(DataPipeGetter receiver)
+private let MojoReplyChain12Generator = CodeGenerator(
+    "MojoReplyChain12Generator", inContext: .single(.async),
+    inputs: .required(.jsBlinkMojomIDBDatabaseRemote)
+) { b, root in
+    var remote = root
+    remote = awaitRemoteChain(
+        b, "openCursor", on: remote, at: ["result", "value", "cursor"],
+        expectedGroup: "blink.mojom.IDBDatabaseRemote")
+    remote = awaitRemoteChain(
+        b, "continue", on: remote, at: ["result", "values", "values", "[0]", "externalObjects", "[0]", "blobOrFile", "blob"],
+        expectedGroup: "blink.mojom.IDBCursorRemote")
+    remote = passReceiver(
+        b, "asDataPipeGetter", on: remote, at: 0,
+        constructor: "network.mojom.DataPipeGetterRemote", bind: "bindNewPipeAndPassReceiver",
+        expectedGroup: "blink.mojom.BlobRemote")
+    followUpChainLeaf(
+        b, remote, expectedGroup: "network.mojom.DataPipeGetterRemote")
+    hideCallables(b)
+}
+/// Chain13:
+///   IDBDatabase.openCursor().result.value.cursor
+///   IDBCursor.continue().result.values.values.[0].externalObjects.[0].blobOrFile.blob
+///   Blob.load(URLLoader receiver)
+private let MojoReplyChain13Generator = CodeGenerator(
+    "MojoReplyChain13Generator", inContext: .single(.async),
+    inputs: .required(.jsBlinkMojomIDBDatabaseRemote)
+) { b, root in
+    var remote = root
+    remote = awaitRemoteChain(
+        b, "openCursor", on: remote, at: ["result", "value", "cursor"],
+        expectedGroup: "blink.mojom.IDBDatabaseRemote")
+    remote = awaitRemoteChain(
+        b, "continue", on: remote, at: ["result", "values", "values", "[0]", "externalObjects", "[0]", "blobOrFile", "blob"],
+        expectedGroup: "blink.mojom.IDBCursorRemote")
+    remote = passReceiver(
+        b, "load", on: remote, at: 0,
+        constructor: "network.mojom.URLLoaderRemote", bind: "bindNewPipeAndPassReceiver",
+        expectedGroup: "blink.mojom.BlobRemote")
+    followUpChainLeaf(
+        b, remote, expectedGroup: "network.mojom.URLLoaderRemote")
+    hideCallables(b)
+}
+/// Chain14:
+///   IDBDatabase.openCursor().result.value.cursor
+///   IDBCursor.continue().result.values.values.[0].externalObjects.[0].fileSystemAccessToken
+private let MojoReplyChain14Generator = CodeGenerator(
+    "MojoReplyChain14Generator", inContext: .single(.async),
+    inputs: .required(.jsBlinkMojomIDBDatabaseRemote)
+) { b, root in
+    var remote = root
+    remote = awaitRemoteChain(
+        b, "openCursor", on: remote, at: ["result", "value", "cursor"],
+        expectedGroup: "blink.mojom.IDBDatabaseRemote")
+    remote = awaitRemoteChain(
+        b, "continue", on: remote, at: ["result", "values", "values", "[0]", "externalObjects", "[0]", "fileSystemAccessToken"],
+        expectedGroup: "blink.mojom.IDBCursorRemote")
+    followUpChainLeaf(
+        b, remote, expectedGroup: "blink.mojom.FileSystemAccessTransferTokenRemote")
+    hideCallables(b)
+}
+/// Chain15:
+///   IDBDatabase.openCursor().result.value.cursor
+///   IDBCursor.prefetch().result.values.values.[0].externalObjects.[0].blobOrFile.blob
+///   Blob.asDataPipeGetter(DataPipeGetter receiver)
+private let MojoReplyChain15Generator = CodeGenerator(
+    "MojoReplyChain15Generator", inContext: .single(.async),
+    inputs: .required(.jsBlinkMojomIDBDatabaseRemote)
+) { b, root in
+    var remote = root
+    remote = awaitRemoteChain(
+        b, "openCursor", on: remote, at: ["result", "value", "cursor"],
+        expectedGroup: "blink.mojom.IDBDatabaseRemote")
+    remote = awaitRemoteChain(
+        b, "prefetch", on: remote, at: ["result", "values", "values", "[0]", "externalObjects", "[0]", "blobOrFile", "blob"],
+        expectedGroup: "blink.mojom.IDBCursorRemote")
+    remote = passReceiver(
+        b, "asDataPipeGetter", on: remote, at: 0,
+        constructor: "network.mojom.DataPipeGetterRemote", bind: "bindNewPipeAndPassReceiver",
+        expectedGroup: "blink.mojom.BlobRemote")
+    followUpChainLeaf(
+        b, remote, expectedGroup: "network.mojom.DataPipeGetterRemote")
+    hideCallables(b)
+}
+/// Chain16:
+///   IDBDatabase.openCursor().result.value.cursor
+///   IDBCursor.prefetch().result.values.values.[0].externalObjects.[0].blobOrFile.blob
+///   Blob.load(URLLoader receiver)
+private let MojoReplyChain16Generator = CodeGenerator(
+    "MojoReplyChain16Generator", inContext: .single(.async),
+    inputs: .required(.jsBlinkMojomIDBDatabaseRemote)
+) { b, root in
+    var remote = root
+    remote = awaitRemoteChain(
+        b, "openCursor", on: remote, at: ["result", "value", "cursor"],
+        expectedGroup: "blink.mojom.IDBDatabaseRemote")
+    remote = awaitRemoteChain(
+        b, "prefetch", on: remote, at: ["result", "values", "values", "[0]", "externalObjects", "[0]", "blobOrFile", "blob"],
+        expectedGroup: "blink.mojom.IDBCursorRemote")
+    remote = passReceiver(
+        b, "load", on: remote, at: 0,
+        constructor: "network.mojom.URLLoaderRemote", bind: "bindNewPipeAndPassReceiver",
+        expectedGroup: "blink.mojom.BlobRemote")
+    followUpChainLeaf(
+        b, remote, expectedGroup: "network.mojom.URLLoaderRemote")
+    hideCallables(b)
+}
+/// Chain17:
+///   IDBDatabase.openCursor().result.value.cursor
+///   IDBCursor.prefetch().result.values.values.[0].externalObjects.[0].fileSystemAccessToken
+private let MojoReplyChain17Generator = CodeGenerator(
+    "MojoReplyChain17Generator", inContext: .single(.async),
+    inputs: .required(.jsBlinkMojomIDBDatabaseRemote)
+) { b, root in
+    var remote = root
+    remote = awaitRemoteChain(
+        b, "openCursor", on: remote, at: ["result", "value", "cursor"],
+        expectedGroup: "blink.mojom.IDBDatabaseRemote")
+    remote = awaitRemoteChain(
+        b, "prefetch", on: remote, at: ["result", "values", "values", "[0]", "externalObjects", "[0]", "fileSystemAccessToken"],
+        expectedGroup: "blink.mojom.IDBCursorRemote")
+    followUpChainLeaf(
+        b, remote, expectedGroup: "blink.mojom.FileSystemAccessTransferTokenRemote")
+    hideCallables(b)
+}
+/// Chain18:
+///   IDBDatabase.openCursor().result.value.value.externalObjects.[0].blobOrFile.blob
+///   Blob.asDataPipeGetter(DataPipeGetter receiver)
+private let MojoReplyChain18Generator = CodeGenerator(
+    "MojoReplyChain18Generator", inContext: .single(.async),
+    inputs: .required(.jsBlinkMojomIDBDatabaseRemote)
+) { b, root in
+    var remote = root
+    remote = awaitRemoteChain(
+        b, "openCursor", on: remote, at: ["result", "value", "value", "externalObjects", "[0]", "blobOrFile", "blob"],
+        expectedGroup: "blink.mojom.IDBDatabaseRemote")
+    remote = passReceiver(
+        b, "asDataPipeGetter", on: remote, at: 0,
+        constructor: "network.mojom.DataPipeGetterRemote", bind: "bindNewPipeAndPassReceiver",
+        expectedGroup: "blink.mojom.BlobRemote")
+    followUpChainLeaf(
+        b, remote, expectedGroup: "network.mojom.DataPipeGetterRemote")
+    hideCallables(b)
+}
+/// Chain19:
+///   IDBDatabase.openCursor().result.value.value.externalObjects.[0].blobOrFile.blob
+///   Blob.load(URLLoader receiver)
+private let MojoReplyChain19Generator = CodeGenerator(
+    "MojoReplyChain19Generator", inContext: .single(.async),
+    inputs: .required(.jsBlinkMojomIDBDatabaseRemote)
+) { b, root in
+    var remote = root
+    remote = awaitRemoteChain(
+        b, "openCursor", on: remote, at: ["result", "value", "value", "externalObjects", "[0]", "blobOrFile", "blob"],
+        expectedGroup: "blink.mojom.IDBDatabaseRemote")
+    remote = passReceiver(
+        b, "load", on: remote, at: 0,
+        constructor: "network.mojom.URLLoaderRemote", bind: "bindNewPipeAndPassReceiver",
+        expectedGroup: "blink.mojom.BlobRemote")
+    followUpChainLeaf(
+        b, remote, expectedGroup: "network.mojom.URLLoaderRemote")
+    hideCallables(b)
+}
+/// Chain20:
+///   IDBDatabase.openCursor().result.value.value.externalObjects.[0].fileSystemAccessToken
+private let MojoReplyChain20Generator = CodeGenerator(
+    "MojoReplyChain20Generator", inContext: .single(.async),
+    inputs: .required(.jsBlinkMojomIDBDatabaseRemote)
+) { b, root in
+    var remote = root
+    remote = awaitRemoteChain(
+        b, "openCursor", on: remote, at: ["result", "value", "value", "externalObjects", "[0]", "fileSystemAccessToken"],
+        expectedGroup: "blink.mojom.IDBDatabaseRemote")
+    followUpChainLeaf(
+        b, remote, expectedGroup: "blink.mojom.FileSystemAccessTransferTokenRemote")
+    hideCallables(b)
+}
+
+// Shared tuning constants (`mojoMaxExecsBeforeRespawn`, `mojoReplyTimeoutMs`,
+// `mojoProgramBudgetMs`, `mojoCallbackTimeoutMs`, `mojoMaxSharedBufferSize`,
+// `mojoMaxIpcCallsPerProgram`, `mojoFinalPrimaryTeardownProbability`,
+// `mojoAwaitedCallWeight`, `mojoMethodCallWeight`, `mojoTeardownWeight`,
+// `mojoNextCallWeight`, `mojoPropertyRetrievalWeight`,
+// `mojoRouterListenerWeight`, `mojoReplyChainWeight`,
+// `mojoAsyncFunctionWeight`, `mojoStringGeneratorWeight`,
+// `mojoBigIntGeneratorWeight`, `mojoDataPipeGeneratorWeight`) are defined at the
+// top of `common/MojoCommonProfile.swift` so all profiles share one definition.
 
 /// Every ObjectGroup registered by this profile. Also used by `isTargetObject`
 /// to decide which variables the Mojo generators operate on.
@@ -5386,6 +7502,8 @@ private let mojoObjectGroups: [ObjectGroup] = [
     .networkMojomDataPipeGetterRemoteWrapper,
     .networkMojomURLLoaderRemote,
     .networkMojomURLLoaderRemoteWrapper,
+    .networkMojomCacheStorageSideDataWriterRemote,
+    .networkMojomCacheStorageSideDataWriterRemoteWrapper,
     .blinkMojomFileSystemAccessTransferTokenRemote,
     .blinkMojomFileSystemAccessTransferTokenRemoteWrapper,
     .blinkMojomIDBCursorRemote,
@@ -5398,7 +7516,9 @@ private let mojoObjectGroups: [ObjectGroup] = [
     .blinkMojomIDBFactoryClientErrorCallbackReceiver,
     .blinkMojomIDBFactoryClientBlockedCallbackReceiver,
     .blinkMojomIDBFactoryClientUpgradeNeededCallbackReceiver,
+    .blinkMojomIDBFactoryClientUpgradeNeededCallbackReceiverCall,
     .blinkMojomIDBFactoryClientOpenSuccessCallbackReceiver,
+    .blinkMojomIDBFactoryClientOpenSuccessCallbackReceiverCall,
     .blinkMojomIDBFactoryClientDeleteSuccessCallbackReceiver,
     .blinkMojomBlobCallbackRouter,
     .blinkMojomBlobCallbackRouterReceiverHelper,
@@ -5408,8 +7528,11 @@ private let mojoObjectGroups: [ObjectGroup] = [
     .blinkMojomBlobCloneCallbackReceiver,
     .blinkMojomBlobAsDataPipeGetterCallbackReceiver,
     .blinkMojomBlobReadAllCallbackReceiver,
+    .blinkMojomBlobReadAllCallbackReceiverCall,
     .blinkMojomBlobReadRangeCallbackReceiver,
+    .blinkMojomBlobReadRangeCallbackReceiverCall,
     .blinkMojomBlobLoadCallbackReceiver,
+    .blinkMojomBlobLoadCallbackReceiverCall,
     .blinkMojomBlobReadSideDataCallbackReceiver,
     .blinkMojomBlobCaptureSnapshotCallbackReceiver,
     .blinkMojomBlobGetInternalUUIDCallbackReceiver,
@@ -5425,6 +7548,11 @@ private let mojoObjectGroups: [ObjectGroup] = [
     .networkMojomURLLoaderPendingReceiver,
     .networkMojomURLLoaderFollowRedirectCallbackReceiver,
     .networkMojomURLLoaderSetPriorityCallbackReceiver,
+    .networkMojomCacheStorageSideDataWriterCallbackRouter,
+    .networkMojomCacheStorageSideDataWriterCallbackRouterReceiverHelper,
+    .networkMojomCacheStorageSideDataWriterPendingReceiver,
+    .networkMojomCacheStorageSideDataWriterPendingRemote,
+    .networkMojomCacheStorageSideDataWriterWriteSideDataCallbackReceiver,
     .blinkMojomFileSystemAccessTransferTokenCallbackRouter,
     .blinkMojomFileSystemAccessTransferTokenCallbackRouterReceiverHelper,
     .blinkMojomFileSystemAccessTransferTokenReceiverEndpoint,
@@ -5444,7 +7572,9 @@ private let mojoObjectGroups: [ObjectGroup] = [
     .networkMojomURLLoaderClientPendingRemote,
     .networkMojomURLLoaderClientOnReceiveEarlyHintsCallbackReceiver,
     .networkMojomURLLoaderClientOnReceiveResponseCallbackReceiver,
+    .networkMojomURLLoaderClientOnReceiveResponseCallbackReceiverCall,
     .networkMojomURLLoaderClientOnReceiveRedirectCallbackReceiver,
+    .networkMojomURLLoaderClientOnReceiveRedirectCallbackReceiverCall,
     .networkMojomURLLoaderClientOnUploadProgressCallbackReceiver,
     .networkMojomURLLoaderClientOnTransferSizeUpdatedCallbackReceiver,
     .networkMojomURLLoaderClientOnCompleteCallbackReceiver,
@@ -5453,6 +7583,7 @@ private let mojoObjectGroups: [ObjectGroup] = [
     .blinkMojomIDBDatabaseGetAllResultSinkReceiverEndpoint,
     .blinkMojomIDBDatabaseGetAllResultSinkPendingAssociatedReceiver,
     .blinkMojomIDBDatabaseGetAllResultSinkReceiveResultsCallbackReceiver,
+    .blinkMojomIDBDatabaseGetAllResultSinkReceiveResultsCallbackReceiverCall,
     .blinkMojomIDBDatabaseGetAllResultSinkOnErrorCallbackReceiver,
     .blinkMojomIDBDatabaseCallbacksCallbackRouter,
     .blinkMojomIDBDatabaseCallbacksCallbackRouterReceiverHelper,
@@ -5466,6 +7597,7 @@ private let mojoObjectGroups: [ObjectGroup] = [
     .blinkMojomIDBKeyPath,
     .blinkMojomIDBValue,
     .blinkMojomIDBBlobInfo,
+    .mojoBaseMojomByteSize,
     .networkMojomEarlyHints,
     .networkMojomParsedHeaders,
     .networkMojomContentSecurityPolicy,
@@ -5514,7 +7646,6 @@ private let mojoObjectGroups: [ObjectGroup] = [
     .networkMojomUnencodedDigests,
     .networkMojomURLRequestRedirectInfo,
     .networkMojomURLLoaderCompletionStatus,
-    .mojoBaseMojomByteSize,
     .networkMojomCorsErrorStatus,
     .networkMojomBlockedByResponseReasonWrapper,
     .networkMojomResolveErrorInfo,
@@ -5554,6 +7685,7 @@ private let mojoObjectGroups: [ObjectGroup] = [
     .blinkMojomIDBDatabaseClearResponseParams,
     .blinkMojomIDBKeyPathDataUnion,
     .blinkMojomIDBExternalObjectUnion,
+    .networkMojomDataPipeGetterReadResponseParamResultUnion,
     .networkMojomOriginOrWildcardHeaderValueUnion,
     .networkMojomTimingAllowOriginUnion,
     .networkMojomNoVarySearchWithParseErrorUnion,
@@ -5593,6 +7725,8 @@ private let mojoBuiltins: [String: ILType] = [
        .constructor([] => .jsNetworkMojomDataPipeGetterCallbackRouter),
     "network.mojom.URLLoaderCallbackRouter":
        .constructor([] => .jsNetworkMojomURLLoaderCallbackRouter),
+    "network.mojom.CacheStorageSideDataWriterCallbackRouter":
+       .constructor([] => .jsNetworkMojomCacheStorageSideDataWriterCallbackRouter),
     "blink.mojom.FileSystemAccessTransferTokenCallbackRouter":
        .constructor([] => .jsBlinkMojomFileSystemAccessTransferTokenCallbackRouter),
     "blink.mojom.BlobReaderClientCallbackRouter":
@@ -5606,6 +7740,7 @@ private let mojoBuiltins: [String: ILType] = [
     "blink.mojom.IDBKeyPath": .jsBlinkMojomIDBKeyPathConstructor,
     "blink.mojom.IDBValue": .jsBlinkMojomIDBValueConstructor,
     "blink.mojom.IDBBlobInfo": .jsBlinkMojomIDBBlobInfoConstructor,
+    "mojoBase.mojom.ByteSize": .jsMojoBaseMojomByteSizeConstructor,
     "network.mojom.EarlyHints": .jsNetworkMojomEarlyHintsConstructor,
     "network.mojom.ParsedHeaders": .jsNetworkMojomParsedHeadersConstructor,
     "network.mojom.ContentSecurityPolicy": .jsNetworkMojomContentSecurityPolicyConstructor,
@@ -5654,7 +7789,6 @@ private let mojoBuiltins: [String: ILType] = [
     "network.mojom.UnencodedDigests": .jsNetworkMojomUnencodedDigestsConstructor,
     "network.mojom.URLRequestRedirectInfo": .jsNetworkMojomURLRequestRedirectInfoConstructor,
     "network.mojom.URLLoaderCompletionStatus": .jsNetworkMojomURLLoaderCompletionStatusConstructor,
-    "mojoBase.mojom.ByteSize": .jsMojoBaseMojomByteSizeConstructor,
     "network.mojom.CorsErrorStatus": .jsNetworkMojomCorsErrorStatusConstructor,
     "network.mojom.BlockedByResponseReasonWrapper": .jsNetworkMojomBlockedByResponseReasonWrapperConstructor,
     "network.mojom.ResolveErrorInfo": .jsNetworkMojomResolveErrorInfoConstructor,
@@ -5670,6 +7804,8 @@ private let mojoBuiltins: [String: ILType] = [
     "blink.mojom.IDBKeyPathData.stringArray": .jsBlinkMojomIDBKeyPathDataUnionStringArrayConstructor,
     "blink.mojom.IDBExternalObject.blobOrFile": .jsBlinkMojomIDBExternalObjectUnionBlobOrFileConstructor,
     "blink.mojom.IDBExternalObject.fileSystemAccessToken": .jsBlinkMojomIDBExternalObjectUnionFileSystemAccessTokenConstructor,
+    "network.mojom.DataPipeGetter_Read_ResponseParam_Result.success": .jsNetworkMojomDataPipeGetter_Read_ResponseParam_ResultUnionSuccessConstructor,
+    "network.mojom.DataPipeGetter_Read_ResponseParam_Result.failure": .jsNetworkMojomDataPipeGetter_Read_ResponseParam_ResultUnionFailureConstructor,
     "network.mojom.OriginOrWildcardHeaderValue.allowStar": .jsNetworkMojomOriginOrWildcardHeaderValueUnionAllowStarConstructor,
     "network.mojom.OriginOrWildcardHeaderValue.origin": .jsNetworkMojomOriginOrWildcardHeaderValueUnionOriginConstructor,
     "network.mojom.OriginOrWildcardHeaderValue.errorMessage": .jsNetworkMojomOriginOrWildcardHeaderValueUnionErrorMessageConstructor,
@@ -5688,8 +7824,16 @@ private let mojoBuiltins: [String: ILType] = [
 ]
 
 private let keepGenerators = [
-    "IntegerGenerator", "StringGenerator", "TernaryOperationGenerator",
-    "PlainFunctionGenerator", "SubroutineReturnGenerator", "TryCatchGenerator",
+    "IntegerGenerator", "TernaryOperationGenerator",
+    "TryCatchGenerator",
+]
+
+private let mojoIgnoredTypesUsed: Set<String> = [
+    "mojoBase.mojom.BigBuffer",
+    "mojoBase.mojom.String16",
+    "network.mojom.ConnectionInfo",
+    "url.mojom.SchemeHostPort",
+    "url.mojom.Url",
 ]
 
 private let mojoDisabledGenerators: [String] = CodeGenerators.map { $0.name }
@@ -5698,22 +7842,37 @@ private let mojoDisabledGenerators: [String] = CodeGenerators.map { $0.name }
     }
 
 let mojoIDBFactoryProfile = Profile(
-    processArgs: { _ in return [] },
+    processArgs: mojoProcessArgs,
     processArgsReference: nil,
     processEnv: [
-        "ASAN_OPTIONS": "detect_odr_violation=0:abort_on_error=1", "DISPLAY": ":20",
+        "ASAN_OPTIONS": "detect_odr_violation=0:abort_on_error=1",
+        "DISPLAY": ":20",
+        "JS_IN_PROCESS_FUZZER_MOJO_SCRIPTS_PAGE": "/gen/third_party/blink/public/mojom/indexeddb/indexeddb.mojom-scripts-page.html",
     ],
-    maxExecsBeforeRespawn: 50,
+    maxExecsBeforeRespawn: mojoMaxExecsBeforeRespawn,
     timeout: Timeout.interval(11000, 11000),
     // The first statement tells js_in_process_fuzzer which Mojo scripts page to
     // load before running the program.
     codePrefix: """
         // --- Begin program prefix ---
         'mojo-scripts-page: /gen/third_party/blink/public/mojom/indexeddb/indexeddb.mojom-scripts-page.html';
+        \(mojoCommonCodePrefix)
         let globalRemote = null;
         const mojoAsyncFunctionPromises = [];
+        function mojoSameOriginUrl(path) {
+            const o = (typeof origin !== 'undefined' && origin && origin !== 'null')
+                ? origin
+                : (typeof location !== 'undefined' && location.origin && location.origin !== 'null'
+                    ? location.origin
+                    : 'https://a.test');
+            return o + path;
+        }
+        // Binds the primary remote again once its pipe is closed, be it by the
+        // program or by the browser, so that the program still has an entry
+        // point after that.
         function getOrCreatePrimaryRemote() {
-            if (!globalRemote) {
+            const endpoint = globalRemote && globalRemote.proxy.endpoint;
+            if (!endpoint || !endpoint.isStarted) {
                 globalRemote = blink.mojom.IDBFactory.getRemote();
             }
             return globalRemote;
@@ -5730,8 +7889,30 @@ let mojoIDBFactoryProfile = Profile(
         // Errors thrown in async functions do not fail the program on their
         // own. Without rethrowing them here, Fuzzilli would keep programs,
         // accepting mutations and minimizations on them.
+        //
+        // A listener that the browser calls while the program waits starts an
+        // async function of its own, whose promise is pushed then. The loop
+        // waits for those as well. No program waits longer than the budget
+        // below for its async functions, so that one that hangs ends long
+        // before Fuzzilli's timeout kills the process.
         ;(async () => {
-            const results = await Promise.allSettled(mojoAsyncFunctionPromises);
+            let timer;
+            const budget = new Promise((resolve) => {
+                timer = setTimeout(resolve, \(mojoProgramBudgetMs));
+            });
+            let results = [];
+            for (;;) {
+                const settled = await Promise.race(
+                    [Promise.allSettled(mojoAsyncFunctionPromises), budget]);
+                if (!settled) {
+                    break;
+                }
+                results = settled;
+                if (results.length === mojoAsyncFunctionPromises.length) {
+                    break;
+                }
+            }
+            clearTimeout(timer);
             if (globalRemote) {globalRemote.$.close()}
             for (const result of results) {
                 const error = result.reason
@@ -5756,17 +7937,36 @@ let mojoIDBFactoryProfile = Profile(
         ),
     ] + v8Profile.startupTests,
     additionalCodeGenerators: [
-        (MojoMethodCallGenerator, 10000),
-        (MojoPropertyRetrievalGenerator, 10000),
-        (MojoBlinkMojomIDBFactoryClientRouterListenerGenerator, 555),
-        (MojoBlinkMojomBlobRouterListenerGenerator, 555),
-        (MojoNetworkMojomDataPipeGetterRouterListenerGenerator, 555),
-        (MojoNetworkMojomURLLoaderRouterListenerGenerator, 555),
-        (MojoBlinkMojomFileSystemAccessTransferTokenRouterListenerGenerator, 555),
-        (MojoBlinkMojomBlobReaderClientRouterListenerGenerator, 555),
-        (MojoNetworkMojomURLLoaderClientRouterListenerGenerator, 555),
-        (MojoBlinkMojomIDBDatabaseGetAllResultSinkRouterListenerGenerator, 555),
-        (MojoBlinkMojomIDBDatabaseCallbacksRouterListenerGenerator, 555),
+        (
+            makeMojoAsyncFunctionGenerator(finalTeardown: emitFinalPrimaryTeardown),
+            mojoAsyncFunctionWeight
+        ),
+        (MojoAwaitedCallGenerator, mojoAwaitedCallWeight),
+        (MojoMethodCallGenerator, mojoMethodCallWeight),
+        (MojoStructMutateGenerator, mojoStructMutateWeight),
+        (MojoTeardownGenerator, mojoTeardownWeight),
+        (MojoNextCallGenerator, mojoNextCallWeight),
+        (MojoPropertyRetrievalGenerator, mojoPropertyRetrievalWeight),
+        (MojoBlinkMojomIDBFactoryClientRouterListenerGenerator,
+            max(mojoRouterListenerWeight / 10, 1)),
+        (MojoBlinkMojomBlobRouterListenerGenerator,
+            max(mojoRouterListenerWeight / 10, 1)),
+        (MojoNetworkMojomDataPipeGetterRouterListenerGenerator,
+            max(mojoRouterListenerWeight / 10, 1)),
+        (MojoNetworkMojomURLLoaderRouterListenerGenerator,
+            max(mojoRouterListenerWeight / 10, 1)),
+        (MojoNetworkMojomCacheStorageSideDataWriterRouterListenerGenerator,
+            max(mojoRouterListenerWeight / 10, 1)),
+        (MojoBlinkMojomFileSystemAccessTransferTokenRouterListenerGenerator,
+            max(mojoRouterListenerWeight / 10, 1)),
+        (MojoBlinkMojomBlobReaderClientRouterListenerGenerator,
+            max(mojoRouterListenerWeight / 10, 1)),
+        (MojoNetworkMojomURLLoaderClientRouterListenerGenerator,
+            max(mojoRouterListenerWeight / 10, 1)),
+        (MojoBlinkMojomIDBDatabaseGetAllResultSinkRouterListenerGenerator,
+            max(mojoRouterListenerWeight / 10, 1)),
+        (MojoBlinkMojomIDBDatabaseCallbacksRouterListenerGenerator,
+            max(mojoRouterListenerWeight / 10, 1)),
         (MojoMojoBaseMojomString16MojoArrayGenerator, 1),
         (MojoBlinkMojomIDBExternalObjectUnionMojoArrayGenerator, 1),
         (MojoNetworkMojomContentSecurityPolicyMojoArrayGenerator, 1),
@@ -5796,18 +7996,54 @@ let mojoIDBFactoryProfile = Profile(
         (MojoNetworkMojomCSPDirectiveName_StringMojoMapGenerator, 1),
         (MojoNetworkMojomCSPDirectiveName_NetworkMojomCSPSourceListMojoMapGenerator, 1),
         (MojoString_StringMojoMapGenerator, 1),
-        (MojoReplyChain1Generator, 1000),
-        (MojoReplyChain2Generator, 1000),
-        (MojoReplyChain3Generator, 1000),
-        (MojoReplyChain4Generator, 1000),
-        (MojoReplyChain5Generator, 1000),
-    ] + commonMojoCodeGenerators,
+        (MojoReplyChain1Generator,
+            max(mojoReplyChainWeight / 20, 1)),
+        (MojoReplyChain2Generator,
+            max(mojoReplyChainWeight / 20, 1)),
+        (MojoReplyChain3Generator,
+            max(mojoReplyChainWeight / 20, 1)),
+        (MojoReplyChain4Generator,
+            max(mojoReplyChainWeight / 20, 1)),
+        (MojoReplyChain5Generator,
+            max(mojoReplyChainWeight / 20, 1)),
+        (MojoReplyChain6Generator,
+            max(mojoReplyChainWeight / 20, 1)),
+        (MojoReplyChain7Generator,
+            max(mojoReplyChainWeight / 20, 1)),
+        (MojoReplyChain8Generator,
+            max(mojoReplyChainWeight / 20, 1)),
+        (MojoReplyChain9Generator,
+            max(mojoReplyChainWeight / 20, 1)),
+        (MojoReplyChain10Generator,
+            max(mojoReplyChainWeight / 20, 1)),
+        (MojoReplyChain11Generator,
+            max(mojoReplyChainWeight / 20, 1)),
+        (MojoReplyChain12Generator,
+            max(mojoReplyChainWeight / 20, 1)),
+        (MojoReplyChain13Generator,
+            max(mojoReplyChainWeight / 20, 1)),
+        (MojoReplyChain14Generator,
+            max(mojoReplyChainWeight / 20, 1)),
+        (MojoReplyChain15Generator,
+            max(mojoReplyChainWeight / 20, 1)),
+        (MojoReplyChain16Generator,
+            max(mojoReplyChainWeight / 20, 1)),
+        (MojoReplyChain17Generator,
+            max(mojoReplyChainWeight / 20, 1)),
+        (MojoReplyChain18Generator,
+            max(mojoReplyChainWeight / 20, 1)),
+        (MojoReplyChain19Generator,
+            max(mojoReplyChainWeight / 20, 1)),
+        (MojoReplyChain20Generator,
+            max(mojoReplyChainWeight / 20, 1)),
+    ] + commonMojoCodeGenerators(for: mojoIgnoredTypesUsed),
     additionalProgramTemplates: WeightedList([]),
     disabledCodeGenerators: mojoDisabledGenerators,
     disabledMutators: [
-        "ExplorationMutator", "ProbingMutator", "PropertyAccessorMutator"
+        "ExplorationMutator", "ProbingMutator", "PropertyAccessorMutator",
+        "InputMutator (loose)",
     ],
-    additionalBuiltins: mojoBuiltins.merging(commonMojoBuiltins) { (existing, _) in existing },
+    additionalBuiltins: mojoBuiltins.merging(commonMojoBuiltins(for: mojoIgnoredTypesUsed)) { (existing, _) in existing },
     additionalObjectGroups: mojoObjectGroups,
     additionalEnumerations: [
         .jsBlinkMojomIDBException,
@@ -5874,5 +8110,5 @@ let mojoIDBFactoryProfile = Profile(
         .jsBlinkMojomIDBDataLoss,
     ] + commonMojoEnumerations,
     additionalOptionsBags: [] + commonMojoOptionsBags,
-    optionalPostProcessor: nil
+    optionalPostProcessor: MojoFuzzingPostProcessor(finalTeardown: emitFinalPrimaryTeardown)
 )

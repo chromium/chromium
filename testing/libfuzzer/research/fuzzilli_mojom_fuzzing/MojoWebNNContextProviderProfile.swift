@@ -139,7 +139,7 @@ extension ObjectGroup {
             "createTensorFromMailbox": [
                 .plain(.jsWebnnMojomTensorInfo),
                 .plain(.jsGpuMojomMailbox),
-                .plain(.jsGpuMojomSyncToken),
+                .plain(.jsGpuMojomSyncTokenMojoArray),
             ] => .jsPromise(resolvingTo: .jsWebnnMojomWebNNContext_CreateTensorFromMailbox_ResponseParams),
             "dispatch": [
                 .plain(.jsBlinkMojomWebNNGraphToken),
@@ -222,7 +222,7 @@ extension ObjectGroup {
             ] => .jsPromise(resolvingTo: .jsWebnnMojomWebNNTensor_ExportTensorSync_ResponseParams),
             "importTensor": [
                 .plain(.bigint),
-                .plain(.jsGpuMojomSyncToken),
+                .plain(.jsGpuMojomSyncTokenMojoArray),
             ] => .undefined,
         ]
     )
@@ -2735,6 +2735,8 @@ extension ILType {
         .createJsArrayType(ofElementType: .float)
     fileprivate static let jsWebnnMojomRangeMojoArray: ILType =
         .createJsArrayType(ofElementType: .jsWebnnMojomRange)
+    fileprivate static let jsGpuMojomSyncTokenMojoArray: ILType =
+        .createJsArrayType(ofElementType: .jsGpuMojomSyncToken)
     fileprivate static let jsInt8MojoArray: ILType =
         .createJsArrayType(ofElementType: .jsInt8)
     fileprivate static let jsWebnnMojomDeviceMojoArray: ILType =
@@ -2815,6 +2817,15 @@ private let MojoWebnnMojomRangeMojoArrayGenerator = CodeGenerator(
     var elements: [Variable] = [elem]
     b.createArray(with: elements)
 }
+private let MojoGpuMojomSyncTokenMojoArrayGenerator = CodeGenerator(
+    "MojoGpuMojomSyncTokenMojoArrayGenerator",
+    inputs: .one,
+    produces: [.jsGpuMojomSyncTokenMojoArray]
+) { b, _ in
+    let elem = b.findOrGenerateType(.jsGpuMojomSyncToken)
+    var elements: [Variable] = [elem]
+    b.createArray(with: elements)
+}
 private let MojoInt8MojoArrayGenerator = CodeGenerator(
     "MojoInt8MojoArrayGenerator",
     inputs: .one,
@@ -2836,7 +2847,7 @@ extension ILType {
         )
     fileprivate static let jsString_BlinkMojomWebNNTensorTokenMojoMap: ILType =
         .createJsMapType(
-            ofKeyType: .string,
+            ofKeyType: .jsString,
             ofValueType: .jsBlinkMojomWebNNTensorToken
         )
 }
@@ -2868,7 +2879,7 @@ private let MojoString_BlinkMojomWebNNTensorTokenMojoMapGenerator = CodeGenerato
     inputs: .one,
     produces: [.jsString_BlinkMojomWebNNTensorTokenMojoMap]
 ) { b, _ in
-    let key = b.findOrGenerateType(.string)
+    let key = b.findOrGenerateType(.jsString)
     let val = b.findOrGenerateType(.jsBlinkMojomWebNNTensorToken)
     var keys: [Variable] = [key]
     var values: [Variable] = [val]
@@ -3268,6 +3279,174 @@ private func isTargetObject(type: ILType) -> Bool {
     return mojoTargetGroups.contains(group)
 }
 
+/// Groups of the remotes of the interfaces that JS calls into.
+private let mojoRemoteGroups: Set<String> = [
+    "webnn.mojom.WebNNContextProviderRemote",
+    "webnn.mojom.WebNNContextRemote",
+    "webnn.mojom.WebNNGraphBuilderRemote",
+    "webnn.mojom.WebNNTensorRemote",
+    "webnn.mojom.WebNNCompilerContextRemote",
+]
+
+/// Group of the remote that `getOrCreatePrimaryRemote()` returns.
+private let mojoPrimaryRemoteGroup = "webnn.mojom.WebNNContextProviderRemote"
+
+/// Groups of the routers of the interfaces that JS implements.
+private let mojoRouterGroups: Set<String> = [
+]
+
+/// For every remote group, the methods whose reply carries remotes or Mojo
+/// handles, with the property paths to them in the reply.
+private let mojoReplyEndpoints: [String: [String: [[String]]]] = [
+    "webnn.mojom.WebNNContextProviderRemote": [
+        "createWebNNContext": [
+            ["result", "success", "contextRemote"],
+            ["result", "success", "compilerContextRemote"],
+            ["result", "success", "writeTensorProducer"],
+            ["result", "success", "readTensorConsumer"],
+        ],
+    ],
+    "webnn.mojom.WebNNContextRemote": [
+        "createTensor": [
+            ["result", "success", "tensorRemote"],
+        ],
+        "createTensorFromMailbox": [
+            ["result", "success", "tensorRemote"],
+        ],
+    ],
+]
+
+/// For every router group, the methods without a reply whose arguments carry
+/// remotes or Mojo handles: the names of all the parameters of the method, and
+/// the property paths to the remotes and handles in an object that has one
+/// property per parameter. This is how the browser hands out some interfaces,
+/// e.g. `IDBFactoryClient.UpgradeNeeded(pending_database, ...)`.
+private let mojoCallbackEndpoints:
+    [String: [(method: String, parameters: [String], paths: [[String]])]] = [:
+]
+
+/// For every remote group, the methods whose reply carries pending receivers for
+/// JS-implemented interfaces, with the property path to each receiver and the
+/// CallbackRouter ObjectGroup name to bind it to.
+private let mojoReplyReceivers:
+    [String: [String: [(path: [String], router: String)]]] = [:
+]
+
+/// For every remote group, all methods whose arguments or replies create new
+/// child remotes, handles, or pending receivers (weighted 3x in
+/// `pickRemoteMethod`).
+private let mojoEndpointCreatorMethods: [String: Set<String>] = [
+    "webnn.mojom.WebNNContextProviderRemote": [
+        "createWebNNContext",
+    ],
+    "webnn.mojom.WebNNContextRemote": [
+        "createTensorFromMailbox",
+        "createTensor",
+        "createGraphBuilder",
+        "requestCompilerContext",
+    ],
+    "webnn.mojom.WebNNCompilerContextRemote": [
+        "createGraphBuilder",
+    ],
+]
+
+/// Names of Mojo struct ObjectGroups constructed by this profile, used for
+/// cross-variant optional property and nullable field mutations.
+private let mojoStructGroups: Set<String> = [
+    "webnn.mojom.CreateContextOptions",
+    "blink.mojom.WebNNPendingConstantToken",
+    "mojoBase.mojom.UnguessableToken",
+    "webnn.mojom.GraphInfo",
+    "webnn.mojom.Operand",
+    "webnn.mojom.OperandId",
+    "webnn.mojom.ArgMinMax",
+    "webnn.mojom.BatchNormalization",
+    "webnn.mojom.Clamp",
+    "webnn.mojom.Concat",
+    "webnn.mojom.Conv2d",
+    "webnn.mojom.Padding2d",
+    "webnn.mojom.Size2d",
+    "webnn.mojom.CumulativeSum",
+    "webnn.mojom.DequantizeLinear",
+    "webnn.mojom.ElementWiseBinary",
+    "webnn.mojom.Elu",
+    "webnn.mojom.ElementWiseUnary",
+    "webnn.mojom.Expand",
+    "webnn.mojom.Gather",
+    "webnn.mojom.GatherElements",
+    "webnn.mojom.GatherND",
+    "webnn.mojom.Gelu",
+    "webnn.mojom.Gemm",
+    "webnn.mojom.Gru",
+    "webnn.mojom.GruCell",
+    "webnn.mojom.HardSigmoid",
+    "webnn.mojom.HardSwish",
+    "webnn.mojom.LayerNormalization",
+    "webnn.mojom.InstanceNormalization",
+    "webnn.mojom.LeakyRelu",
+    "webnn.mojom.Linear",
+    "webnn.mojom.Lstm",
+    "webnn.mojom.LstmCell",
+    "webnn.mojom.Matmul",
+    "webnn.mojom.Pad",
+    "webnn.mojom.ConstantPadding",
+    "webnn.mojom.EdgePadding",
+    "webnn.mojom.ReflectionPadding",
+    "webnn.mojom.Pool2d",
+    "webnn.mojom.Prelu",
+    "webnn.mojom.QuantizeLinear",
+    "webnn.mojom.Reduce",
+    "webnn.mojom.Relu",
+    "webnn.mojom.Resample2d",
+    "webnn.mojom.Reshape",
+    "webnn.mojom.Reverse",
+    "webnn.mojom.ScatterElements",
+    "webnn.mojom.ScatterND",
+    "webnn.mojom.Sigmoid",
+    "webnn.mojom.Slice",
+    "webnn.mojom.Range",
+    "webnn.mojom.Softmax",
+    "webnn.mojom.Softplus",
+    "webnn.mojom.Softsign",
+    "webnn.mojom.Split",
+    "webnn.mojom.Tanh",
+    "webnn.mojom.Tile",
+    "webnn.mojom.Transpose",
+    "webnn.mojom.Triangular",
+    "webnn.mojom.Where",
+    "webnn.mojom.ContextProperties",
+    "webnn.mojom.DataTypeLimits",
+    "webnn.mojom.SupportedTensors",
+    "webnn.mojom.SupportedDataTypes",
+    "webnn.mojom.SupportedRanks",
+    "webnn.mojom.TensorInfo",
+    "webnn.mojom.TensorUsage",
+    "gpu.mojom.SyncToken",
+    "gpu.mojom.Mailbox",
+    "blink.mojom.WebNNGraphToken",
+    "blink.mojom.WebNNTensorToken",
+]
+
+/// For every constructible Mojo struct, the field names declared nullable in
+/// Mojom so generators can independently set them to `undefined`/`null` or
+/// cross-populate fields belonging to other enum variants.
+private let mojoNullableStructProperties: [String: Set<String>] = [
+    "webnn.mojom.Operand": ["name"],
+    "webnn.mojom.BatchNormalization": ["scaleOperandId", "biasOperandId"],
+    "webnn.mojom.Conv2d": ["biasOperandId"],
+    "webnn.mojom.Gemm": ["cOperandId"],
+    "webnn.mojom.Gru": ["biasOperandId", "recurrentBiasOperandId", "initialHiddenStateOperandId"],
+    "webnn.mojom.GruCell": ["biasOperandId", "recurrentBiasOperandId"],
+    "webnn.mojom.LayerNormalization": ["scaleOperandId", "biasOperandId"],
+    "webnn.mojom.InstanceNormalization": ["scaleOperandId", "biasOperandId"],
+    "webnn.mojom.Lstm": ["biasOperandId", "recurrentBiasOperandId", "peepholeWeightOperandId", "initialHiddenStateOperandId", "initialCellStateOperandId"],
+    "webnn.mojom.LstmCell": ["biasOperandId", "recurrentBiasOperandId", "peepholeWeightOperandId"],
+    "webnn.mojom.Resample2d": ["scales"],
+]
+
+/// Methods that are left to the generators made for them.
+private let mojoListenerMethods: Set<String> = ["addListener", "nextCall"]
+
 /// Whether `type` is an interface endpoint: a remote or a pending endpoint.
 private func isEndpoint(type: ILType) -> Bool {
     guard let group = type.group else { return false }
@@ -3279,8 +3458,22 @@ private func isEndpoint(type: ILType) -> Bool {
 /// among the `arguments` of a call, so that Fuzzilli does not send or call
 /// them again.
 private func hideEndpoints(_ b: ProgramBuilder, in arguments: [Variable]) {
-    for argument in Set(arguments) where isEndpoint(type: b.type(of: argument)) {
+    let visible = Set(b.visibleVariables)
+    for argument in Set(arguments)
+    where visible.contains(argument) && isEndpoint(type: b.type(of: argument)) {
         b.hide(argument)
+    }
+}
+
+/// Hides every visible constructor and function. The generators call the ones
+/// they load themselves. Left visible, Fuzzilli would pass them where a value
+/// is wanted (`f(gfx.mojom.Size)` instead of `f(new gfx.mojom.Size(...))`).
+private func hideCallables(_ b: ProgramBuilder) {
+    for variable in b.visibleVariables {
+        let type = b.type(of: variable)
+        if type.Is(.constructor()) || type.Is(.function()) {
+            b.hide(variable)
+        }
     }
 }
 
@@ -3291,6 +3484,174 @@ private func hideEndpoints(_ b: ProgramBuilder, in arguments: [Variable]) {
 private let mojoRemoteBinders: [String: [(owner: String, method: String, index: Int)]] = [:
 ]
 
+/// Returns `signature` without the parameters at `indices`, for a call whose
+/// caller provides those arguments. Generating them as well would add code
+/// whose result is thrown away, and that code can break the argument that
+/// replaces it: binding a remote a second time drops its first pipe.
+private func removeParameters(at indices: [Int], from signature: Signature) -> Signature {
+    var parameters = signature.parameters
+    for index in indices.sorted(by: >) {
+        parameters.remove(at: index)
+    }
+    return Signature(expects: parameters, returns: signature.outputType)
+}
+
+/// Returns the type that `parameter` expects.
+private func parameterType(_ parameter: Parameter) -> ILType {
+    switch parameter {
+    case .plain(let type), .opt(let type), .rest(let type), .either(let type, _):
+        return type
+    }
+}
+
+/// Creates a remote and returns its receiver, if `type` is the pending receiver
+/// of an interface that JS calls and can construct a remote of.
+///
+/// The receiver of a call always comes from a new remote, which stays in scope
+/// for later calls. Left to Fuzzilli, the receiver may come from a remote that
+/// is in use: that binds the remote a second time, which drops its pipe, and
+/// throws if the remote is the `null` of a failed reply.
+private func makeReceiver(_ b: ProgramBuilder, ofType type: ILType) -> Variable? {
+    guard let group = type.group else { return nil }
+    let bind: String
+    let suffix: String
+    if group.hasSuffix("PendingAssociatedReceiver") {
+        (bind, suffix) = ("associateAndPassReceiver", "PendingAssociatedReceiver")
+    } else if group.hasSuffix("PendingReceiver") {
+        (bind, suffix) = ("bindNewPipeAndPassReceiver", "PendingReceiver")
+    } else {
+        return nil
+    }
+    let constructor = String(group.dropLast(suffix.count)) + "Remote"
+    guard mojoRemoteGroups.contains(constructor),
+        b.fuzzer.environment.hasBuiltin(constructor)
+    else { return nil }
+
+    let remote = b.construct(b.createNamedVariable(forBuiltin: constructor), withArgs: [])
+    let wrapper = b.getProperty("$", of: remote, isReceiverOptional: true)
+    let receiver = b.callMethod(bind, on: wrapper, withArgs: [], isReceiverOptional: true)
+    // Binding the remote a second time would drop the pipe just made.
+    if b.visibleVariables.contains(wrapper) {
+        b.hide(wrapper)
+    }
+    return receiver
+}
+
+/// A call that the browser may make on an interface that JS implements: the
+/// promise that `nextCall` returned for it, and the property paths to the
+/// remotes and handles among its arguments.
+private typealias PendingCall = (promise: Variable, paths: [[String]])
+
+/// Starts waiting for the browser to call `method` on `router`, and returns
+/// the promise of the arguments of that call. `codePrefix` defines `nextCall`
+/// (see `mojoCommonCodePrefix`).
+private func nextCall(
+    _ b: ProgramBuilder, of method: String, on router: Variable, parameters: [String]
+) -> Variable {
+    let receiver = b.getProperty(method, of: router, isReceiverOptional: true)
+    let names = parameters.map { b.loadString($0) }
+    let promise = b.callMethod("nextCall", on: receiver, withArgs: names, isReceiverOptional: true)
+    if b.visibleVariables.contains(receiver) {
+        b.hide(receiver)
+    }
+    names.forEach { if b.visibleVariables.contains($0) { b.hide($0) } }
+    return promise
+}
+
+/// Creates a router (or reuses one in scope) and returns the remote to it, if
+/// `type` is the pending remote of an interface that JS implements.
+///
+/// Also returns the calls of the browser that carry remotes or handles. The
+/// program starts waiting for them here, before the remote is sent, so that it
+/// cannot miss one. When `attachListeners` is true, also attaches a re-entrant
+/// listener to a newly created router with probability 0.5 before binding.
+private func makeRouter(
+    _ b: ProgramBuilder, ofType type: ILType, attachListeners: Bool = true,
+    awaitCallbacks: Bool = true
+) -> (remote: Variable, calls: [PendingCall])? {
+    guard let group = type.group else { return nil }
+    let bind: String
+    let suffix: String
+    if group.hasSuffix("PendingAssociatedRemote") {
+        (bind, suffix) = ("associateAndPassRemote", "PendingAssociatedRemote")
+    } else if group.hasSuffix("PendingRemote") {
+        (bind, suffix) = ("bindNewPipeAndPassRemote", "PendingRemote")
+    } else {
+        return nil
+    }
+    let constructor = String(group.dropLast(suffix.count)) + "CallbackRouter"
+    guard mojoRouterGroups.contains(constructor) else { return nil }
+
+    let existing = b.visibleVariables.first { b.type(of: $0).group == constructor }
+    let router = existing
+        ?? b.construct(b.createNamedVariable(forBuiltin: constructor), withArgs: [])
+    if existing == nil && attachListeners && probability(0.5) {
+        attachReentrancyListener(b, to: router, ofGroup: constructor)
+    }
+    var calls = [PendingCall]()
+    if awaitCallbacks {
+        for (method, parameters, paths) in mojoCallbackEndpoints[constructor] ?? [] {
+            calls.append((nextCall(b, of: method, on: router, parameters: parameters), paths))
+        }
+    }
+    let helper = b.getProperty("$", of: router, isReceiverOptional: true)
+    let remote = b.callMethod(bind, on: helper, withArgs: [], isReceiverOptional: true)
+    if b.visibleVariables.contains(helper) {
+        b.hide(helper)
+    }
+    return (remote, calls)
+}
+
+/// Walks `path` on `object`, treating `"[0]"` as array element access `[0]`
+/// and every other segment as optional property access.
+private func walkPath(_ b: ProgramBuilder, from object: Variable, path: [String]) -> Variable {
+    var value = object
+    for segment in path {
+        if segment == "[0]" {
+            value = b.getElement(0, of: value, isReceiverOptional: true)
+        } else {
+            value = b.getProperty(segment, of: value, isReceiverOptional: true)
+        }
+    }
+    return value
+}
+
+/// Loads the remotes and handles at `paths` in `object`, which is a reply or
+/// the arguments of a call by the browser, into variables.
+private func loadEndpoints(_ b: ProgramBuilder, from object: Variable, at paths: [[String]]) {
+    for path in paths.shuffled().prefix(3) {
+        _ = walkPath(b, from: object, path: path)
+    }
+}
+
+/// Binds any `PendingReceiver` / `PendingAssociatedReceiver` values returned in
+/// a remote reply (`mojoReplyReceivers`) to a `CallbackRouter` and attaches a
+/// re-entrant listener so browser callbacks exercise live objects and teardown.
+private func bindReplyReceivers(
+    _ b: ProgramBuilder, from reply: Variable,
+    specs: [(path: [String], router: String)],
+    attachListeners: Bool = true
+) {
+    for spec in specs {
+        guard mojoRouterGroups.contains(spec.router) else { continue }
+        let receiver = walkPath(b, from: reply, path: spec.path)
+        let handle = b.getProperty("handle", of: receiver, isReceiverOptional: true)
+        let existing = b.visibleVariables.first { b.type(of: $0).group == spec.router }
+        let router = existing
+            ?? b.construct(b.createNamedVariable(forBuiltin: spec.router), withArgs: [])
+        if attachListeners && (existing == nil || probability(0.5)) {
+            attachReentrancyListener(b, to: router, ofGroup: spec.router)
+        }
+        let helper = b.getProperty("$", of: router, isReceiverOptional: true)
+        b.callMethod("bindHandle", on: helper, withArgs: [handle], isReceiverOptional: true)
+        for hidden in [receiver, handle, helper] {
+            if hidden != reply && b.visibleVariables.contains(hidden) {
+                b.hide(hidden)
+            }
+        }
+    }
+}
+
 /// Binds a new remote for each parameter of `signature` that is a remote JS
 /// sends. Parameters for which no such object is in scope are left out.
 private func bindRemoteArguments(
@@ -3298,13 +3659,7 @@ private func bindRemoteArguments(
 ) -> [Int: Variable] {
     var remotes = [Int: Variable]()
     for (i, parameter) in signature.parameters.enumerated() {
-        // Extract the underlying type from the `Parameter` enum.
-        let type: ILType
-        switch parameter {
-        case .plain(let t), .opt(let t), .rest(let t), .either(let t, _):
-            type = t
-        }
-
+        let type = parameterType(parameter)
         guard let group = type.group, let binders = mojoRemoteBinders[group] else { continue }
         // Find all variables that provide binders for this type
         let available = binders.compactMap { binder in
@@ -3312,95 +3667,581 @@ private func bindRemoteArguments(
         }
         guard let (owner, binder) = available.randomElement() else { continue }
 
-        let remote = b.construct(b.createNamedVariable(forBuiltin: group), withArgs: [])
-        let receiver = b.callMethod(
-            "bindNewPipeAndPassReceiver", on: b.getProperty("$", of: remote), withArgs: [])
+        // The other arguments are found or generated before the new remote
+        // exists, so that they cannot be built from it.
         let bindSignature = b.methodSignatures(of: binder.method, on: owner)[0]
         var bindArguments = b.findOrGenerateArguments(
-            forSignature: bindSignature, maxNumberOfVariablesToGenerate: 1000)
-        bindArguments[binder.index] = receiver
+            forSignature: removeParameters(at: [binder.index], from: bindSignature),
+            maxNumberOfVariablesToGenerate: 1000)
+        let remote = b.construct(b.createNamedVariable(forBuiltin: group), withArgs: [])
+        let wrapper = b.getProperty("$", of: remote)
+        let receiver = b.callMethod("bindNewPipeAndPassReceiver", on: wrapper, withArgs: [])
+        // Binding the remote a second time would drop the pipe just made.
+        b.hide(wrapper)
+        bindArguments.insert(receiver, at: binder.index)
         hideEndpoints(b, in: bindArguments)
-        b.callMethod(binder.method, on: owner, withArgs: bindArguments, guard: false)
+        b.callMethod(
+            binder.method, on: owner, withArgs: bindArguments, guard: false,
+            isReceiverOptional: true)
         remotes[i] = remote
     }
     return remotes
 }
 
-/// Finds or generates arguments for a call with `signature`, binding the remotes
-/// JS sends (see `bindRemoteArguments`).
+/// Finds or generates arguments for a call with `signature`.
+///
+/// Three kinds of arguments are built here rather than by Fuzzilli: the
+/// remotes that JS sends, which are bound first (see `bindRemoteArguments`),
+/// the receivers, which come from new remotes (see `makeReceiver`), and the
+/// remotes to interfaces that JS implements, which come from new routers (see
+/// `makeRouter`). The other arguments are found or generated before those
+/// exist, so that they cannot be built from them.
+///
+/// Also returns the calls that the browser may make on the new routers.
 private func findOrGenerateMojoArguments(
-    _ b: ProgramBuilder, forSignature signature: Signature
-) -> [Variable] {
-    let remotes = bindRemoteArguments(b, for: signature)
-    var arguments = b.findOrGenerateArguments(
-        forSignature: signature, maxNumberOfVariablesToGenerate: 1000)
-    for (i, remote) in remotes {
-        arguments[i] = remote
+    _ b: ProgramBuilder, forSignature signature: Signature, attachListeners: Bool = true,
+    awaitCallbacks: Bool = true
+) -> (arguments: [Variable], calls: [PendingCall]) {
+    let parameters = signature.parameters
+    // Nullable endpoints are left to Fuzzilli one time out of five, which
+    // then often passes `undefined`.
+    func indices(withSuffixes suffixes: [String]) -> [Int] {
+        return parameters.indices.filter { i in
+            guard let group = parameterType(parameters[i]).group,
+                suffixes.contains(where: group.hasSuffix)
+            else { return false }
+            if case .either = parameters[i], probability(0.2) { return false }
+            return true
+        }
     }
-    return arguments
+    let receiverIndices = indices(withSuffixes: ["PendingReceiver", "PendingAssociatedReceiver"])
+    let routerIndices = indices(withSuffixes: ["PendingRemote", "PendingAssociatedRemote"])
+    let remoteIndices = parameters.indices.filter { i in
+        mojoRemoteBinders[parameterType(parameters[i]).group ?? ""] != nil
+    }
+    let builtHere = receiverIndices + routerIndices + remoteIndices
+    let remainingSig = removeParameters(at: builtHere, from: signature)
+    let needsDirectString = remainingSig.parameters.contains(where: {
+        let t = parameterType($0)
+        return t.Is(.string) && !t.isEnumeration
+    })
+    let needsStructOrArray = remainingSig.parameters.contains(where: {
+        let t = parameterType($0)
+        return t.Is(.object()) || t.Is(.iterable())
+    })
+    if needsDirectString || needsStructOrArray {
+        let visibleStrings = b.visibleVariables.filter { b.type(of: $0).Is(.string) }.count
+        if visibleStrings < 2 {
+            _ = emitMojoString(b)
+            _ = emitMojoString(b)
+        } else if needsDirectString && probability(0.6) {
+            _ = emitMojoString(b)
+        }
+    }
+    if remainingSig.parameters.contains(where: { parameterType($0).Is(.bigint) }) {
+        let visibleBigInts = b.visibleVariables.filter { b.type(of: $0).Is(.bigint) }.count
+        if visibleBigInts == 0 || probability(0.6) {
+            _ = emitMojoBigInt(b)
+        }
+    }
+    if let intParam = remainingSig.parameters.first(where: {
+        let t = parameterType($0)
+        return t.Is(.integer) && !t.isEnumeration
+    }) {
+        let t = parameterType(intParam)
+        if probability(0.55) {
+            _ = emitMojoInteger(b, as: t.group)
+        }
+    } else if needsStructOrArray && probability(0.35) {
+        let visibleInts = b.visibleVariables.filter { b.type(of: $0).Is(.integer) }.count
+        if visibleInts < 2 {
+            _ = emitMojoInteger(b, as: probability(0.5) ? "Uint16" : "Int32")
+        }
+    }
+    if remainingSig.parameters.contains(where: { parameterType($0).Is(.float) }) {
+        if probability(0.7) {
+            _ = emitMojoFloat(b)
+        }
+    } else if needsStructOrArray && probability(0.35) {
+        let visibleFloats = b.visibleVariables.filter { b.type(of: $0).Is(.float) }.count
+        if visibleFloats == 0 {
+            _ = emitMojoFloat(b)
+        }
+    }
+
+    var others = b.findOrGenerateArguments(
+        forSignature: remainingSig,
+        maxNumberOfVariablesToGenerate: 1000)
+    for arg in others {
+        if mojoStructGroups.contains(b.type(of: arg).group ?? ""), probability(0.25) {
+            mutateMojoStruct(b, arg, preserveValidEndpoints: true)
+        }
+    }
+    var provided = bindRemoteArguments(b, for: signature)
+    for i in receiverIndices {
+        provided[i] = makeReceiver(b, ofType: parameterType(parameters[i]))
+    }
+    var calls = [PendingCall]()
+    for i in routerIndices {
+        if let router = makeRouter(
+            b, ofType: parameterType(parameters[i]), attachListeners: attachListeners,
+            awaitCallbacks: awaitCallbacks)
+        {
+            provided[i] = router.remote
+            calls += router.calls
+        }
+    }
+
+    let arguments = parameters.indices.map { i in
+        if let argument = provided[i] {
+            return argument
+        }
+        if builtHere.contains(i) {
+            // Could not be built here after all.
+            return b.findOrGenerateType(parameterType(parameters[i]))
+        }
+        return others.removeFirst()
+    }
+    return (arguments, calls)
+}
+
+/// Picks the object that the next call is made on.
+///
+/// First picks an object group among the Mojo variables with methods, and then
+/// a variable of that group. This gives each interface in scope the same share
+/// of calls, however many variables hold it. Remotes are picked nine times out
+/// of ten. The other objects (the `$` wrappers, Mojo handles and `Mojo`) do
+/// not send messages to the interface. `addListener` calls are left to the
+/// router listener generators, which build proper listeners.
+private func pickCallTarget(_ b: ProgramBuilder, remotesOnly: Bool = false) -> Variable? {
+    var remoteGroups = Set<String>()
+    var otherGroups = Set<String>()
+    for variable in b.visibleVariables {
+        let type = b.type(of: variable)
+        guard isTargetObject(type: type), let group = type.group,
+            !type.methods.subtracting(mojoListenerMethods).isEmpty
+        else { continue }
+        if mojoRemoteGroups.contains(group) {
+            remoteGroups.insert(group)
+        } else {
+            otherGroups.insert(group)
+        }
+    }
+
+    let group: String
+    if let remoteGroup = remoteGroups.randomElement(),
+        remotesOnly || otherGroups.isEmpty || probability(0.9)
+    {
+        group = remoteGroup
+    } else if !remotesOnly, let otherGroup = otherGroups.randomElement() {
+        group = otherGroup
+    } else {
+        return nil
+    }
+    return b.findVariable { b.type(of: $0).group == group }
+}
+
+/// Returns the primary remote.
+private func getPrimaryRemote(_ b: ProgramBuilder) -> Variable {
+    let getRemote = b.createNamedVariable(forBuiltin: "getOrCreatePrimaryRemote")
+    let remote = b.callFunction(getRemote, withArgs: [])
+    b.hide(getRemote)
+    return remote
+}
+
+/// Returns all visible remote handles in scope that expose at least one
+/// callable method (excluding empty marker interfaces such as `LockHandle`).
+private func callableRemotes(_ b: ProgramBuilder) -> [Variable] {
+    return b.visibleVariables.filter {
+        let type = b.type(of: $0)
+        return mojoRemoteGroups.contains(type.group ?? "") && !type.methods.isEmpty
+    }
+}
+
+/// Methods whose execution destroys or disconnects the endpoint; downweighted in
+/// random picks so operational methods run first.
+private let mojoDestructiveMethods: Set<String> = ["close", "abort", "destroy", "unobserve"]
+
+/// Methods that drop their reply callback or close the pipe with BadMessage on
+/// synthetic tokens; always sent un-awaited so they never wait for the reply timeout.
+private let mojoUnawaitedMethods: Set<String> = ["getEntryFromDataTransferToken"]
+
+/// Returns the effective ILType for `remote`, falling back to `expectedGroup`
+/// when dynamic indexing (`entries[0]`) erased static type info to `.jsAnything`.
+private func effectiveRemoteType(
+    _ b: ProgramBuilder, _ remote: Variable, expectedGroup: String? = nil
+) -> ILType {
+    let actual = b.type(of: remote)
+    if actual.group != nil { return actual }
+    guard let group = expectedGroup else { return actual }
+    return b.fuzzer.environment.type(ofGroup: group)
+}
+
+/// Returns true when `method` requires a bound remote token whose binder owner
+/// interface is not currently visible in scope.
+private func hasMissingBinderOwner(
+    _ b: ProgramBuilder, _ method: String, on remoteType: ILType, visibleGroups: Set<String>
+) -> Bool {
+    guard let sig = b.fuzzer.environment.signatures(ofMethod: method, on: remoteType).first else {
+        return false
+    }
+    return sig.parameters.contains { param in
+        guard let g = parameterType(param).group,
+            let binders = mojoRemoteBinders[g]
+        else { return false }
+        return !binders.contains { visibleGroups.contains($0.owner) }
+    }
+}
+
+/// Picks a method of the remote `remote`, or `nil` if `remote` has no usable methods.
+/// Methods whose reply carries remotes or handles are six times as likely as
+/// destructive methods (three times ordinary operational methods), since they are
+/// the way to the interfaces behind this one. Methods that require a bound
+/// remote token (`mojoRemoteBinders`, e.g. `FileSystemAccessTransferToken`) are
+/// only picked once an owner remote that can mint that token is in scope.
+private func pickRemoteMethod(
+    _ b: ProgramBuilder, of remote: Variable, expectedGroup: String? = nil
+) -> String? {
+    let type = effectiveRemoteType(b, remote, expectedGroup: expectedGroup)
+    guard !type.methods.isEmpty else { return nil }
+    let endpoints = mojoReplyEndpoints[type.group ?? ""] ?? [:]
+    let creators = mojoEndpointCreatorMethods[type.group ?? ""] ?? []
+    let visibleGroups = Set(b.visibleVariables.compactMap { b.type(of: $0).group })
+    var methods = WeightedList<String>()
+    for method in type.methods {
+        if mojoUnawaitedMethods.contains(method)
+            || hasMissingBinderOwner(b, method, on: type, visibleGroups: visibleGroups)
+        {
+            continue
+        }
+        let isCreator = endpoints[method] != nil || creators.contains(method)
+        let weight = isCreator ? 6 : (mojoDestructiveMethods.contains(method) ? 1 : 2)
+        methods.append(method, withWeight: weight)
+    }
+    return methods.randomElement()
+}
+
+/// Calls `method` on the remote `remote`.
+///
+/// The call is `remote?.method(...)`: a remote that comes from a reply is
+/// `null` when the call that should have returned it failed, and the program
+/// should go on then instead of throwing.
+///
+/// With `awaitReply` and in an async function, the program waits for what the
+/// call gives it, and loads the remotes and handles in it into variables right
+/// away, so that the following calls can use them. That is the reply, if the
+/// method has one, and the calls that the browser makes in turn on the
+/// interfaces that JS implements and passed in this call (see `makeRouter`).
+@discardableResult
+private func callRemoteMethod(
+    _ b: ProgramBuilder, _ method: String, on remote: Variable, awaitReply: Bool,
+    attachListeners: Bool = true, expectedGroup: String? = nil
+) -> Variable {
+    let remoteType = effectiveRemoteType(b, remote, expectedGroup: expectedGroup)
+    let group = remoteType.group ?? ""
+    let shouldAwait = awaitReply && !mojoUnawaitedMethods.contains(method) && b.context.contains(.async)
+    let signature = chooseUniform(
+        from: b.fuzzer.environment.signatures(ofMethod: method, on: remoteType))
+    let (arguments, calls) = findOrGenerateMojoArguments(
+        b, forSignature: signature, attachListeners: attachListeners,
+        awaitCallbacks: shouldAwait)
+    hideEndpoints(b, in: arguments)
+    var result = b.callMethod(
+        method, on: remote, withArgs: arguments, guard: false, isReceiverOptional: true)
+    guard shouldAwait else {
+        return result
+    }
+
+    if !signature.outputType.Is(.undefined) {
+        result = b.await(result)
+        loadEndpoints(b, from: result, at: mojoReplyEndpoints[group]?[method] ?? [])
+        bindReplyReceivers(
+            b, from: result, specs: mojoReplyReceivers[group]?[method] ?? [],
+            attachListeners: attachListeners)
+    }
+    for call in calls {
+        loadEndpoints(b, from: b.await(call.promise), at: call.paths)
+    }
+    return result
+}
+
+private func generateMojoPropertyValue(_ b: ProgramBuilder, ofType propType: ILType) -> Variable {
+    if propType.Is(.string) && !propType.isEnumeration {
+        return emitMojoString(b)
+    } else if propType.Is(.float) {
+        return emitMojoFloat(b)
+    } else if propType.Is(.bigint) {
+        return emitMojoBigInt(b)
+    } else if propType.Is(.integer) && !propType.isEnumeration {
+        return emitMojoInteger(b, as: propType.group)
+    }
+    return b.findOrGenerateType(propType)
+}
+
+/// Mutates one property on an existing Mojo struct instance to exercise
+/// cross-variant optional fields, independent null/undefined clearing of inner
+/// nullable handles/blobs, and numeric/string boundary overrides.
+private func mutateMojoStruct(
+    _ b: ProgramBuilder, _ obj: Variable, preserveValidEndpoints: Bool = false
+) {
+    let objType = b.type(of: obj)
+    guard let group = objType.group, !objType.properties.isEmpty else { return }
+    let nullableProps = mojoNullableStructProperties[group] ?? []
+    let prop: String
+    if !nullableProps.isEmpty && probability(0.55) {
+        prop = nullableProps.randomElement()!
+    } else {
+        prop = objType.randomProperty()!
+    }
+    let propType = b.fuzzer.environment.type(ofProperty: prop, on: objType)
+    if isEndpoint(type: propType) {
+        if nullableProps.contains(prop) && probability(0.8) {
+            let nullish = probability(0.75) ? b.loadUndefined() : b.loadNull()
+            b.setProperty(prop, of: obj, to: nullish)
+            return
+        }
+        if preserveValidEndpoints { return }
+        guard let g = propType.group,
+            let existing = b.findVariable(satisfying: { b.type(of: $0).Is(propType) })
+                ?? (b.fuzzer.environment.hasBuiltin(g)
+                    ? b.construct(b.createNamedVariable(forBuiltin: g), withArgs: []) : nil)
+        else { return }
+        b.setProperty(prop, of: obj, to: existing)
+        hideEndpoints(b, in: [existing])
+        return
+    }
+    let value: Variable
+    if nullableProps.contains(prop) && probability(0.45) {
+        value = probability(0.75) ? b.loadUndefined() : b.loadNull()
+    } else {
+        value = generateMojoPropertyValue(b, ofType: propType)
+    }
+    b.setProperty(prop, of: obj, to: value)
+}
+
+/// Mutates an existing Mojo struct variable in scope so subsequent calls see
+/// cross-variant optional fields and cleared nullable nested handles/blobs.
+private let MojoStructMutateGenerator = CodeGenerator("MojoStructMutateGenerator") { b in
+    let candidates = b.visibleVariables.filter {
+        guard let g = b.type(of: $0).group else { return false }
+        return mojoStructGroups.contains(g)
+    }
+    guard let obj = candidates.randomElement() else { return }
+    mutateMojoStruct(b, obj)
 }
 
 /// Mojo variant of the builtin `MethodCallGenerator` that operates only on
 /// "Mojo" objects instead of all the objects in the JavaScript environment,
 /// most of which are unrelated to the interface. This generator emits random
 /// method calls, generating any arguments that are not available.
+///
+/// In an async function, most calls on remotes are awaited. The others leave
+/// their message in flight, which is what a later teardown races with.
 private let MojoMethodCallGenerator = CodeGenerator("MojoMethodCallGenerator") {
     b in
-    // Pick an object group among all Mojo variables with methods, and then a
-    // variable of that group. This gives each interface in scope the same
-    // share of calls, however many variables hold it (e.g. one per
-    // `getOrCreatePrimaryRemote()` call). `addListener` calls are left to the
-    // router listener generators, which build proper listeners.
-    let groups = Set(b.visibleVariables.compactMap { v -> String? in
-        let type = b.type(of: v)
-        let methods = type.methods.subtracting(["addListener"])
-        return isTargetObject(type: type) && !methods.isEmpty ? type.group : nil
-    })
-
+    defer { hideCallables(b) }
     // If we can't find a Mojo object in scope, create the WebNNContextProvider remote
-    guard let group = groups.randomElement() else {
-        let getRemoteFunc = b.createNamedVariable(forBuiltin: "getOrCreatePrimaryRemote")
-        b.callFunction(getRemoteFunc, withArgs: [])
+    guard let obj = pickCallTarget(b) else {
+        let _ = getPrimaryRemote(b)
         return
     }
-    let obj = b.findVariable { b.type(of: $0).group == group }!
 
-    let methodName = b.type(of: obj).randomMethod()!
+    let type = b.type(of: obj)
+    if mojoRemoteGroups.contains(type.group ?? "") {
+        if let method = pickRemoteMethod(b, of: obj) {
+            callRemoteMethod(b, method, on: obj, awaitReply: probability(0.65))
+            if probability(0.35) {
+                let m2 = probability(0.5) ? method : (pickRemoteMethod(b, of: obj) ?? method)
+                callRemoteMethod(b, m2, on: obj, awaitReply: false, attachListeners: false)
+                if probability(0.35),
+                    let closeM = type.methods.filter({ mojoDestructiveMethods.contains($0) })
+                        .randomElement()
+                {
+                    callRemoteMethod(b, closeM, on: obj, awaitReply: false, attachListeners: false)
+                }
+            }
+        }
+        return
+    }
+
+    let methodName = type.methods.subtracting(mojoListenerMethods).randomElement()!
     let signatures = b.methodSignatures(of: methodName, on: obj)
     let signature = chooseUniform(from: signatures)
-    let arguments = findOrGenerateMojoArguments(b, forSignature: signature)
+    let arguments = findOrGenerateMojoArguments(b, forSignature: signature).arguments
     hideEndpoints(b, in: arguments)
     b.callMethod(methodName, on: obj, withArgs: arguments, guard: false)
 }
 
+/// Calls a method of a remote and awaits its reply (see `callRemoteMethod`).
+///
+/// This generator needs an async function. When Fuzzilli picks it outside of
+/// one, it opens one with `MojoAsyncFunctionGenerator` first, so the weight of
+/// this generator is also what makes programs consist of async functions that
+/// call the interface, await the replies and use what they return.
+private let MojoAwaitedCallGenerator = CodeGenerator(
+    "MojoAwaitedCallGenerator", inContext: .single(.async)
+) { b in
+    defer { hideCallables(b) }
+    let remote = pickCallTarget(b, remotesOnly: true) ?? getPrimaryRemote(b)
+    if let method = pickRemoteMethod(b, of: remote) {
+        callRemoteMethod(b, method, on: remote, awaitReply: true)
+    }
+}/// Closes a remote, a `CallbackRouter` or a Mojo handle.
+private func closeMojoObject(_ b: ProgramBuilder, _ target: Variable, hideTarget: Bool = true) {
+    let type = b.type(of: target)
+    if type.methods.contains("close") {
+        b.callMethod("close", on: target, withArgs: [], isReceiverOptional: true)
+    } else {
+        let wrapper = b.getProperty("$", of: target, isReceiverOptional: true)
+        b.callMethod("close", on: wrapper, withArgs: [], isReceiverOptional: true)
+        if b.visibleVariables.contains(wrapper) {
+            b.hide(wrapper)
+        }
+    }
+    if hideTarget && b.visibleVariables.contains(target) {
+        b.hide(target)
+    }
+}
+
+/// Closes one end of a connection while calls on it or on objects it returned
+/// are still in flight (not awaited), and then keeps using the surviving
+/// objects.
+///
+/// Closes a remote, the receiver (`CallbackRouter`) of an interface that JS
+/// implements, or a Mojo handle. Before closing, it fires 1–2 un-awaited calls
+/// so messages are in flight when the pipe closes. After closing, it calls a
+/// surviving remote (such as a child remote returned earlier or bound during
+/// the in-flight call). For the primary remote, `getOrCreatePrimaryRemote()`
+/// binds a new one after this.
+private let MojoTeardownGenerator = CodeGenerator("MojoTeardownGenerator") { b in
+    defer { hideCallables(b) }
+    let hasSecondary = b.visibleVariables.contains { v in
+        guard let g = b.type(of: v).group, g != mojoPrimaryRemoteGroup else { return false }
+        return mojoRemoteGroups.contains(g) || mojoRouterGroups.contains(g)
+    }
+    if !hasSecondary {
+        let primary = pickCallTarget(b, remotesOnly: true) ?? getPrimaryRemote(b)
+        if let method = pickRemoteMethod(b, of: primary) {
+            callRemoteMethod(b, method, on: primary, awaitReply: b.context.contains(.async))
+        }
+    }
+
+    // Closing the primary remote closes the underlying pipe carrier for all
+    // associated endpoints (e.g. `IDBDatabase`, `IDBTransaction`), so when
+    // secondary objects exist in scope we close a secondary remote, router or
+    // handle so that continued use of child objects reaches the browser.
+    let secondaryCandidates = b.visibleVariables.filter { variable in
+        let type = b.type(of: variable)
+        guard isTargetObject(type: type), let group = type.group,
+            group != mojoPrimaryRemoteGroup
+        else { return false }
+        return mojoRemoteGroups.contains(group) || mojoRouterGroups.contains(group)
+            || (group.hasPrefix("Mojo") && type.methods.contains("close"))
+    }
+    let target = secondaryCandidates.randomElement()
+        ?? b.visibleVariables.first { b.type(of: $0).group == mojoPrimaryRemoteGroup }
+        ?? getPrimaryRemote(b)
+    let targetGroup = b.type(of: target).group ?? ""
+
+    // 1. Fire 1–2 un-awaited calls so messages are in flight during teardown.
+    if mojoRemoteGroups.contains(targetGroup), let m1 = pickRemoteMethod(b, of: target) {
+        callRemoteMethod(b, m1, on: target, awaitReply: false)
+    }
+    let otherRemotesBefore = callableRemotes(b).filter { $0 != target }
+    if let other = otherRemotesBefore.randomElement(),
+        let m2 = pickRemoteMethod(b, of: other)
+    {
+        callRemoteMethod(b, m2, on: other, awaitReply: false)
+    }
+
+    // 2. Close `target` while those calls are still outstanding.
+    closeMojoObject(b, target, hideTarget: true)
+
+    // 3. Keep using the surviving objects after `target` is closed.
+    let survivors = callableRemotes(b)
+    let afterTarget = survivors.first { b.type(of: $0).group != mojoPrimaryRemoteGroup }
+        ?? survivors.randomElement()
+        ?? getPrimaryRemote(b)
+    if let mAfter = pickRemoteMethod(b, of: afterTarget) {
+        callRemoteMethod(b, mAfter, on: afterTarget, awaitReply: b.context.contains(.async))
+    }
+}
+
+/// Fires 2–3 un-awaited calls on live remotes in scope and immediately closes
+/// the primary remote without awaiting their replies, disconnecting the primary
+/// pipe and all associated endpoints in the browser while those messages are in
+/// flight. Called with probability `mojoFinalPrimaryTeardownProbability` as the
+/// final action of an async function.
+private func emitFinalPrimaryTeardown(_ b: ProgramBuilder) {
+    defer { hideCallables(b) }
+    var remotes = callableRemotes(b)
+    if remotes.isEmpty {
+        remotes = [getPrimaryRemote(b)]
+    }
+    let secondaryRemotes = remotes.filter {
+        b.type(of: $0).group != mojoPrimaryRemoteGroup
+    }
+    for _ in 0..<Int.random(in: 2...3) {
+        let remote =
+            (!secondaryRemotes.isEmpty && probability(0.75))
+            ? secondaryRemotes.randomElement()!
+            : remotes.randomElement()!
+        if let method = pickRemoteMethod(b, of: remote) {
+            callRemoteMethod(b, method, on: remote, awaitReply: false, attachListeners: false)
+        }
+    }
+    let primary =
+        b.visibleVariables.first { b.type(of: $0).group == mojoPrimaryRemoteGroup }
+        ?? getPrimaryRemote(b)
+    closeMojoObject(b, primary, hideTarget: true)
+}
+
 /// Mojo variant of the builtin `PropertyRetrievalGenerator` that operates only
 /// on "Mojo" objects instead of all the objects in the JavaScript environment,
-/// most of which are unrelated to the interface. This generator emits random
-/// property retrievals.
+/// most of which are unrelated to the interface. This generator loads a random
+/// property that the object is known to have.
 private let MojoPropertyRetrievalGenerator = CodeGenerator(
     "MojoPropertyRetrievalGenerator"
 ) { b in
-    let targetVar = b.findVariable { isTargetObject(type: b.type(of: $0)) }
-    guard let obj = targetVar else { return }
+    let targetVar = b.findVariable {
+        let type = b.type(of: $0)
+        return isTargetObject(type: type) && !type.properties.isEmpty
+    }
+    guard let obj = targetVar, let propertyName = b.type(of: obj).randomProperty() else {
+        return
+    }
+    b.getProperty(propertyName, of: obj, isReceiverOptional: true)
+}
 
-    let propertyName =
-        b.type(of: obj).randomProperty() ?? b.randomCustomPropertyName()
-    b.getProperty(propertyName, of: obj)
+private func attachReentrancyListener(
+    _ b: ProgramBuilder, to router: Variable, ofGroup group: String
+) {
+    switch group {
+    default:
+        break
+    }
 }
 
 /// Awaits a call to `method` on `remote` and returns the remote at `path` in
 /// the reply.
 private func awaitRemoteChain(
-    _ b: ProgramBuilder, _ method: String, on remote: Variable, at path: [String]
+    _ b: ProgramBuilder, _ method: String, on remote: Variable, at path: [String],
+    expectedGroup: String? = nil
 ) -> Variable {
-    let signature = b.methodSignatures(of: method, on: remote)[0]
-    let arguments = findOrGenerateMojoArguments(b, forSignature: signature)
-    hideEndpoints(b, in: arguments)
-    var value = b.await(b.callMethod(method, on: remote, withArgs: arguments, guard: false))
-    for property in path {
-        value = b.getProperty(property, of: value)
+    let remoteType = effectiveRemoteType(b, remote, expectedGroup: expectedGroup)
+    let signature = b.fuzzer.environment.signatures(ofMethod: method, on: remoteType)[0]
+    var arguments = findOrGenerateMojoArguments(b, forSignature: signature).arguments
+    if (method == "getFile" || method == "getDirectory") && arguments.count >= 2 {
+        arguments[0] = b.loadString(chooseUniform(from: ["a", "b.txt", "sub"]))
+        arguments[1] = b.loadBool(probability(0.9))
+    } else if method == "getSandboxedFileSystemForDevtools" && !arguments.isEmpty {
+        arguments[0] = b.createArray(with: probability(0.65) ? [] : [b.loadString("sub")])
     }
-    return value
+    hideEndpoints(b, in: arguments)
+    let value = b.await(
+        b.callMethod(
+            method, on: remote, withArgs: arguments, guard: false, isReceiverOptional: true))
+    return walkPath(b, from: value, path: path)
 }
 
 /// Calls `method` on `remote`, passing at `index` a receiver for a new remote
@@ -3409,16 +4250,49 @@ private func awaitRemoteChain(
 /// built from it.
 private func passReceiver(
     _ b: ProgramBuilder, _ method: String, on remote: Variable, at index: Int,
-    constructor: String, bind: String
+    constructor: String, bind: String, expectedGroup: String? = nil
 ) -> Variable {
-    let signature = b.methodSignatures(of: method, on: remote)[0]
-    var arguments = findOrGenerateMojoArguments(b, forSignature: signature)
+    let remoteType = effectiveRemoteType(b, remote, expectedGroup: expectedGroup)
+    let signature = b.fuzzer.environment.signatures(ofMethod: method, on: remoteType)[0]
+    var arguments = findOrGenerateMojoArguments(
+        b, forSignature: removeParameters(at: [index], from: signature)
+    ).arguments
     let newRemote = b.construct(b.createNamedVariable(forBuiltin: constructor), withArgs: [])
-    let receiver = b.callMethod(bind, on: b.getProperty("$", of: newRemote), withArgs: [])
-    arguments[index] = receiver
+    let wrapper = b.getProperty("$", of: newRemote)
+    let receiver = b.callMethod(bind, on: wrapper, withArgs: [])
+    b.hide(wrapper)
+    arguments.insert(receiver, at: index)
     hideEndpoints(b, in: arguments)
-    b.callMethod(method, on: remote, withArgs: arguments, guard: false)
+    b.callMethod(
+        method, on: remote, withArgs: arguments, guard: false, isReceiverOptional: true)
     return newRemote
+}
+
+/// Exercises a newly obtained leaf remote with up to two distinct non-closing
+/// operational calls followed optionally by a closing/teardown call, so leaf
+/// stateful methods execute before the pipe is closed or diluted by other
+/// variables in scope.
+private func followUpChainLeaf(
+    _ b: ProgramBuilder, _ remote: Variable, expectedGroup: String? = nil
+) {
+    let type = effectiveRemoteType(b, remote, expectedGroup: expectedGroup)
+    guard let group = type.group, mojoRemoteGroups.contains(group),
+        !type.methods.isEmpty
+    else { return }
+    let visibleGroups = Set(b.visibleVariables.compactMap { b.type(of: $0).group })
+    let callable = type.methods.filter {
+        !hasMissingBinderOwner(b, $0, on: type, visibleGroups: visibleGroups)
+    }
+    guard !callable.isEmpty else { return }
+    let nonClosing = callable.filter { !mojoDestructiveMethods.contains($0) }.shuffled()
+    let closing = callable.filter { mojoDestructiveMethods.contains($0) }
+    let followUpCount = min(nonClosing.count, probability(0.85) ? 2 : 1)
+    for method in nonClosing.prefix(followUpCount) {
+        callRemoteMethod(b, method, on: remote, awaitReply: true, expectedGroup: expectedGroup)
+    }
+    if probability(0.6), let closeMethod = closing.randomElement() {
+        callRemoteMethod(b, closeMethod, on: remote, awaitReply: true, expectedGroup: expectedGroup)
+    }
 }
 /// Follows a chain of calls from a remote that culminates in a remote. Each call
 /// either returns a remote in its reply, or takes a receiver for a new remote.
@@ -3431,12 +4305,17 @@ private func passReceiver(
 private let MojoReplyChain1Generator = CodeGenerator(
     "MojoReplyChain1Generator", inContext: .single(.async)
 ) { b in
-    var remote = b.callFunction(
-        b.createNamedVariable(forBuiltin: "getOrCreatePrimaryRemote"), withArgs: [])
-    remote = awaitRemoteChain(b, "createWebNNContext", on: remote, at: ["result", "success", "contextRemote"])
+    var remote = getPrimaryRemote(b)
+    remote = awaitRemoteChain(
+        b, "createWebNNContext", on: remote, at: ["result", "success", "contextRemote"],
+        expectedGroup: "webnn.mojom.WebNNContextProviderRemote")
     remote = passReceiver(
         b, "createGraphBuilder", on: remote, at: 0,
-        constructor: "webnn.mojom.WebNNGraphBuilderRemote", bind: "bindNewPipeAndPassReceiver")
+        constructor: "webnn.mojom.WebNNGraphBuilderRemote", bind: "bindNewPipeAndPassReceiver",
+        expectedGroup: "webnn.mojom.WebNNContextRemote")
+    followUpChainLeaf(
+        b, remote, expectedGroup: "webnn.mojom.WebNNGraphBuilderRemote")
+    hideCallables(b)
 }
 /// Chain2:
 ///   WebNNContextProvider.createWebNNContext().result.success.contextRemote
@@ -3444,10 +4323,16 @@ private let MojoReplyChain1Generator = CodeGenerator(
 private let MojoReplyChain2Generator = CodeGenerator(
     "MojoReplyChain2Generator", inContext: .single(.async)
 ) { b in
-    var remote = b.callFunction(
-        b.createNamedVariable(forBuiltin: "getOrCreatePrimaryRemote"), withArgs: [])
-    remote = awaitRemoteChain(b, "createWebNNContext", on: remote, at: ["result", "success", "contextRemote"])
-    remote = awaitRemoteChain(b, "createTensor", on: remote, at: ["result", "success", "tensorRemote"])
+    var remote = getPrimaryRemote(b)
+    remote = awaitRemoteChain(
+        b, "createWebNNContext", on: remote, at: ["result", "success", "contextRemote"],
+        expectedGroup: "webnn.mojom.WebNNContextProviderRemote")
+    remote = awaitRemoteChain(
+        b, "createTensor", on: remote, at: ["result", "success", "tensorRemote"],
+        expectedGroup: "webnn.mojom.WebNNContextRemote")
+    followUpChainLeaf(
+        b, remote, expectedGroup: "webnn.mojom.WebNNTensorRemote")
+    hideCallables(b)
 }
 /// Chain3:
 ///   WebNNContextProvider.createWebNNContext().result.success.contextRemote
@@ -3455,10 +4340,16 @@ private let MojoReplyChain2Generator = CodeGenerator(
 private let MojoReplyChain3Generator = CodeGenerator(
     "MojoReplyChain3Generator", inContext: .single(.async)
 ) { b in
-    var remote = b.callFunction(
-        b.createNamedVariable(forBuiltin: "getOrCreatePrimaryRemote"), withArgs: [])
-    remote = awaitRemoteChain(b, "createWebNNContext", on: remote, at: ["result", "success", "contextRemote"])
-    remote = awaitRemoteChain(b, "createTensorFromMailbox", on: remote, at: ["result", "success", "tensorRemote"])
+    var remote = getPrimaryRemote(b)
+    remote = awaitRemoteChain(
+        b, "createWebNNContext", on: remote, at: ["result", "success", "contextRemote"],
+        expectedGroup: "webnn.mojom.WebNNContextProviderRemote")
+    remote = awaitRemoteChain(
+        b, "createTensorFromMailbox", on: remote, at: ["result", "success", "tensorRemote"],
+        expectedGroup: "webnn.mojom.WebNNContextRemote")
+    followUpChainLeaf(
+        b, remote, expectedGroup: "webnn.mojom.WebNNTensorRemote")
+    hideCallables(b)
 }
 /// Chain4:
 ///   WebNNContextProvider.createWebNNContext().result.success.contextRemote
@@ -3467,15 +4358,21 @@ private let MojoReplyChain3Generator = CodeGenerator(
 private let MojoReplyChain4Generator = CodeGenerator(
     "MojoReplyChain4Generator", inContext: .single(.async)
 ) { b in
-    var remote = b.callFunction(
-        b.createNamedVariable(forBuiltin: "getOrCreatePrimaryRemote"), withArgs: [])
-    remote = awaitRemoteChain(b, "createWebNNContext", on: remote, at: ["result", "success", "contextRemote"])
+    var remote = getPrimaryRemote(b)
+    remote = awaitRemoteChain(
+        b, "createWebNNContext", on: remote, at: ["result", "success", "contextRemote"],
+        expectedGroup: "webnn.mojom.WebNNContextProviderRemote")
     remote = passReceiver(
         b, "requestCompilerContext", on: remote, at: 0,
-        constructor: "webnn.mojom.WebNNCompilerContextRemote", bind: "bindNewPipeAndPassReceiver")
+        constructor: "webnn.mojom.WebNNCompilerContextRemote", bind: "bindNewPipeAndPassReceiver",
+        expectedGroup: "webnn.mojom.WebNNContextRemote")
     remote = passReceiver(
         b, "createGraphBuilder", on: remote, at: 0,
-        constructor: "webnn.mojom.WebNNGraphBuilderRemote", bind: "bindNewPipeAndPassReceiver")
+        constructor: "webnn.mojom.WebNNGraphBuilderRemote", bind: "bindNewPipeAndPassReceiver",
+        expectedGroup: "webnn.mojom.WebNNCompilerContextRemote")
+    followUpChainLeaf(
+        b, remote, expectedGroup: "webnn.mojom.WebNNGraphBuilderRemote")
+    hideCallables(b)
 }
 /// Chain5:
 ///   WebNNContextProvider.createWebNNContext().result.success.compilerContextRemote
@@ -3483,13 +4380,28 @@ private let MojoReplyChain4Generator = CodeGenerator(
 private let MojoReplyChain5Generator = CodeGenerator(
     "MojoReplyChain5Generator", inContext: .single(.async)
 ) { b in
-    var remote = b.callFunction(
-        b.createNamedVariable(forBuiltin: "getOrCreatePrimaryRemote"), withArgs: [])
-    remote = awaitRemoteChain(b, "createWebNNContext", on: remote, at: ["result", "success", "compilerContextRemote"])
+    var remote = getPrimaryRemote(b)
+    remote = awaitRemoteChain(
+        b, "createWebNNContext", on: remote, at: ["result", "success", "compilerContextRemote"],
+        expectedGroup: "webnn.mojom.WebNNContextProviderRemote")
     remote = passReceiver(
         b, "createGraphBuilder", on: remote, at: 0,
-        constructor: "webnn.mojom.WebNNGraphBuilderRemote", bind: "bindNewPipeAndPassReceiver")
+        constructor: "webnn.mojom.WebNNGraphBuilderRemote", bind: "bindNewPipeAndPassReceiver",
+        expectedGroup: "webnn.mojom.WebNNCompilerContextRemote")
+    followUpChainLeaf(
+        b, remote, expectedGroup: "webnn.mojom.WebNNGraphBuilderRemote")
+    hideCallables(b)
 }
+
+// Shared tuning constants (`mojoMaxExecsBeforeRespawn`, `mojoReplyTimeoutMs`,
+// `mojoProgramBudgetMs`, `mojoCallbackTimeoutMs`, `mojoMaxSharedBufferSize`,
+// `mojoMaxIpcCallsPerProgram`, `mojoFinalPrimaryTeardownProbability`,
+// `mojoAwaitedCallWeight`, `mojoMethodCallWeight`, `mojoTeardownWeight`,
+// `mojoNextCallWeight`, `mojoPropertyRetrievalWeight`,
+// `mojoRouterListenerWeight`, `mojoReplyChainWeight`,
+// `mojoAsyncFunctionWeight`, `mojoStringGeneratorWeight`,
+// `mojoBigIntGeneratorWeight`, `mojoDataPipeGeneratorWeight`) are defined at the
+// top of `common/MojoCommonProfile.swift` so all profiles share one definition.
 
 /// Every ObjectGroup registered by this profile. Also used by `isTargetObject`
 /// to decide which variables the Mojo generators operate on.
@@ -3743,8 +4655,15 @@ private let mojoBuiltins: [String: ILType] = [
 ]
 
 private let keepGenerators = [
-    "IntegerGenerator", "StringGenerator", "TernaryOperationGenerator",
-    "PlainFunctionGenerator", "SubroutineReturnGenerator", "TryCatchGenerator",
+    "IntegerGenerator", "TernaryOperationGenerator",
+    "TryCatchGenerator",
+]
+
+private let mojoIgnoredTypesUsed: Set<String> = [
+    "mojoBase.mojom.BigBuffer",
+    "webnn.mojom.DataType",
+    "webnn.mojom.Device",
+    "webnn.mojom.OperandDescriptor",
 ]
 
 private let mojoDisabledGenerators: [String] = CodeGenerators.map { $0.name }
@@ -3753,22 +4672,37 @@ private let mojoDisabledGenerators: [String] = CodeGenerators.map { $0.name }
     }
 
 let mojoWebNNContextProviderProfile = Profile(
-    processArgs: { _ in return [] },
+    processArgs: mojoProcessArgs,
     processArgsReference: nil,
     processEnv: [
-        "ASAN_OPTIONS": "detect_odr_violation=0:abort_on_error=1", "DISPLAY": ":20",
+        "ASAN_OPTIONS": "detect_odr_violation=0:abort_on_error=1",
+        "DISPLAY": ":20",
+        "JS_IN_PROCESS_FUZZER_MOJO_SCRIPTS_PAGE": "/gen/services/webnn/public/mojom/webnn_context_provider.mojom-scripts-page.html",
     ],
-    maxExecsBeforeRespawn: 50,
+    maxExecsBeforeRespawn: mojoMaxExecsBeforeRespawn,
     timeout: Timeout.interval(11000, 11000),
     // The first statement tells js_in_process_fuzzer which Mojo scripts page to
     // load before running the program.
     codePrefix: """
         // --- Begin program prefix ---
         'mojo-scripts-page: /gen/services/webnn/public/mojom/webnn_context_provider.mojom-scripts-page.html';
+        \(mojoCommonCodePrefix)
         let globalRemote = null;
         const mojoAsyncFunctionPromises = [];
+        function mojoSameOriginUrl(path) {
+            const o = (typeof origin !== 'undefined' && origin && origin !== 'null')
+                ? origin
+                : (typeof location !== 'undefined' && location.origin && location.origin !== 'null'
+                    ? location.origin
+                    : 'https://a.test');
+            return o + path;
+        }
+        // Binds the primary remote again once its pipe is closed, be it by the
+        // program or by the browser, so that the program still has an entry
+        // point after that.
         function getOrCreatePrimaryRemote() {
-            if (!globalRemote) {
+            const endpoint = globalRemote && globalRemote.proxy.endpoint;
+            if (!endpoint || !endpoint.isStarted) {
                 globalRemote = webnn.mojom.WebNNContextProvider.getRemote();
             }
             return globalRemote;
@@ -3785,8 +4719,30 @@ let mojoWebNNContextProviderProfile = Profile(
         // Errors thrown in async functions do not fail the program on their
         // own. Without rethrowing them here, Fuzzilli would keep programs,
         // accepting mutations and minimizations on them.
+        //
+        // A listener that the browser calls while the program waits starts an
+        // async function of its own, whose promise is pushed then. The loop
+        // waits for those as well. No program waits longer than the budget
+        // below for its async functions, so that one that hangs ends long
+        // before Fuzzilli's timeout kills the process.
         ;(async () => {
-            const results = await Promise.allSettled(mojoAsyncFunctionPromises);
+            let timer;
+            const budget = new Promise((resolve) => {
+                timer = setTimeout(resolve, \(mojoProgramBudgetMs));
+            });
+            let results = [];
+            for (;;) {
+                const settled = await Promise.race(
+                    [Promise.allSettled(mojoAsyncFunctionPromises), budget]);
+                if (!settled) {
+                    break;
+                }
+                results = settled;
+                if (results.length === mojoAsyncFunctionPromises.length) {
+                    break;
+                }
+            }
+            clearTimeout(timer);
             if (globalRemote) {globalRemote.$.close()}
             for (const result of results) {
                 const error = result.reason
@@ -3811,8 +4767,15 @@ let mojoWebNNContextProviderProfile = Profile(
         ),
     ] + v8Profile.startupTests,
     additionalCodeGenerators: [
-        (MojoMethodCallGenerator, 10000),
-        (MojoPropertyRetrievalGenerator, 10000),
+        (
+            makeMojoAsyncFunctionGenerator(finalTeardown: emitFinalPrimaryTeardown),
+            mojoAsyncFunctionWeight
+        ),
+        (MojoAwaitedCallGenerator, mojoAwaitedCallWeight),
+        (MojoMethodCallGenerator, mojoMethodCallWeight),
+        (MojoStructMutateGenerator, mojoStructMutateWeight),
+        (MojoTeardownGenerator, mojoTeardownWeight),
+        (MojoPropertyRetrievalGenerator, mojoPropertyRetrievalWeight),
         (MojoWebnnMojomOperandMojoArrayGenerator, 1),
         (MojoWebnnMojomOperandIdMojoArrayGenerator, 1),
         (MojoWebnnMojomOperationUnionMojoArrayGenerator, 1),
@@ -3820,21 +4783,28 @@ let mojoWebNNContextProviderProfile = Profile(
         (MojoUint32MojoArrayGenerator, 1),
         (MojoFloatMojoArrayGenerator, 1),
         (MojoWebnnMojomRangeMojoArrayGenerator, 1),
+        (MojoGpuMojomSyncTokenMojoArrayGenerator, 1),
         (MojoInt8MojoArrayGenerator, 1),
         (MojoWebnnMojomOperandId_BlinkMojomWebNNPendingConstantTokenMojoMapGenerator, 1),
         (MojoString_BlinkMojomWebNNTensorTokenMojoMapGenerator, 1),
-        (MojoReplyChain1Generator, 1000),
-        (MojoReplyChain2Generator, 1000),
-        (MojoReplyChain3Generator, 1000),
-        (MojoReplyChain4Generator, 1000),
-        (MojoReplyChain5Generator, 1000),
-    ] + commonMojoCodeGenerators,
+        (MojoReplyChain1Generator,
+            max(mojoReplyChainWeight / 5, 1)),
+        (MojoReplyChain2Generator,
+            max(mojoReplyChainWeight / 5, 1)),
+        (MojoReplyChain3Generator,
+            max(mojoReplyChainWeight / 5, 1)),
+        (MojoReplyChain4Generator,
+            max(mojoReplyChainWeight / 5, 1)),
+        (MojoReplyChain5Generator,
+            max(mojoReplyChainWeight / 5, 1)),
+    ] + commonMojoCodeGenerators(for: mojoIgnoredTypesUsed),
     additionalProgramTemplates: WeightedList([]),
     disabledCodeGenerators: mojoDisabledGenerators,
     disabledMutators: [
-        "ExplorationMutator", "ProbingMutator", "PropertyAccessorMutator"
+        "ExplorationMutator", "ProbingMutator", "PropertyAccessorMutator",
+        "InputMutator (loose)",
     ],
-    additionalBuiltins: mojoBuiltins.merging(commonMojoBuiltins) { (existing, _) in existing },
+    additionalBuiltins: mojoBuiltins.merging(commonMojoBuiltins(for: mojoIgnoredTypesUsed)) { (existing, _) in existing },
     additionalObjectGroups: mojoObjectGroups,
     additionalEnumerations: [
         .jsWebnnMojomCreateContextOptions_PowerPreference,
@@ -3857,5 +4827,5 @@ let mojoWebNNContextProviderProfile = Profile(
         .jsGpuMojomCommandBufferNamespace,
     ] + commonMojoEnumerations,
     additionalOptionsBags: [] + commonMojoOptionsBags,
-    optionalPostProcessor: nil
+    optionalPostProcessor: MojoFuzzingPostProcessor(finalTeardown: emitFinalPrimaryTeardown)
 )

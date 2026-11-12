@@ -138,7 +138,14 @@ public let MojoMojoBaseMojomBigBufferUnionBytesGenerator = CodeGenerator(
     inputs: .one,
     produces: [.createJsArrayType(ofElementType: .jsUint8)]
 ) { b, _ in
-    var elements: [Variable] = [b.findOrGenerateType(.jsUint8)]
+    let count: Int
+    switch Int.random(in: 0..<4) {
+    case 0: count = 1
+    case 1: count = Int.random(in: 2...16)
+    case 2: count = 32
+    default: count = 64
+    }
+    let elements = (0..<count).map { _ in b.findOrGenerateType(.jsUint8) }
     b.createArray(with: elements)
 }
 
@@ -148,7 +155,19 @@ public let MojoMojoBaseMojomBigBufferSharedMemoryRegionGenerator = CodeGenerator
     produces: [.jsMojoBaseMojomBigBufferSharedMemoryRegion]
 ) { b, _ in
     let mojo = b.createNamedVariable(forBuiltin: "Mojo")
-    let numBytes = b.loadInt(Int64.random(in: 0...Int64(UInt32.max)))
+    // BigBuffer switches from inline bytes to shared memory at 64 KiB, so most
+    // buffers are around that size. Larger ones cost time to map and fill, and
+    // `Mojo.createSharedBuffer` is capped anyway (see `mojoCommonCodePrefix`).
+    let size: Int64
+    switch Int.random(in: 0..<10) {
+    case 0: size = Int64.random(in: 0...16)
+    case 1...6: size = Int64.random(in: 1...(128 * 1024))
+    case 7, 8:
+        size = chooseUniform(
+            from: [4095, 4096, 4097, 32767, 32768, 32769, 65535, 65536, 65537, 131072])
+    default: size = Int64.random(in: 1...Int64(mojoMaxSharedBufferSize))
+    }
+    let numBytes = b.loadInt(size)
     let sharedBufferResult = b.callMethod("createSharedBuffer", on: mojo, withArgs: [numBytes])
     let handle = b.getProperty("handle", of: sharedBufferResult)
 
@@ -161,21 +180,37 @@ public let MojoMojoBaseMojomBigBufferSharedMemoryRegionGenerator = CodeGenerator
 
     let regionConstructor = b.createNamedVariable(
         forBuiltin: CommonMojoStrings.mojoBaseMojomBigBufferSharedMemoryRegion)
-    b.construct(regionConstructor, withArgs: [handle, numBytes])
+    // The size in the message is what the browser has to validate against the
+    // buffer, so it sometimes differs from the size of the buffer.
+    var claimedSize = numBytes
+    if probability(0.2) {
+        claimedSize = b.loadInt(
+            chooseUniform(from: [0, size - 1, size + 1, size * 2, Int64(UInt32.max)]))
+    }
+    b.construct(regionConstructor, withArgs: [handle, claimedSize])
 }
+
+private let string16Vocabulary = [
+    "db", "store", "idx", "a", "b.txt", "sub", "", ".", "..", "a/b", ".crswap", "user", "pass",
+    "a\u{0}b", "\u{0}", "sub\u{0}.txt", "a\r\nb: c", "\u{01}\u{1F}\u{7F}", ".git", ".ssh",
+    "a/./b",
+]
 
 public let MojoMojoBaseMojomString16Generator = CodeGenerator(
     "MojoMojoBaseMojomString16Generator",
     inputs: .one,
     produces: [.jsMojoBaseMojomString16]
 ) { b, _ in
-    // Ideally the CodeGenerator would use a string from the JavaScript
-    // program. Such a string would be represented by a `Variable` object, and
-    // there is no clean way to grab the underlying string value from a
-    // `Variable` object. So, instead, generate a random uint16 values.
     var elements: [Variable] = []
-    for _ in (0..<Int64.random(in: 1...30)) {
-       elements.append(b.findOrGenerateType(.jsUint16))
+    if probability(0.75) {
+        let word = chooseUniform(from: string16Vocabulary)
+        for u in word.utf16 {
+            elements.append(b.loadInt(Int64(u), customName: "Uint16"))
+        }
+    } else {
+        for _ in (0..<Int64.random(in: 1...20)) {
+            elements.append(b.findOrGenerateType(.jsUint16))
+        }
     }
     let array = b.createArray(with: elements)
     let constructor = b.createNamedVariable(forBuiltin: CommonMojoStrings.mojoBaseMojomString16)
