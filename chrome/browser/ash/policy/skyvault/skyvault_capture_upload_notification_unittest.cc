@@ -8,7 +8,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/weak_ptr.h"
-#include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -40,7 +39,7 @@ class SkyvaultCaptureUploadNotificationTest : public BrowserWithTestWindowTest {
 TEST_F(SkyvaultCaptureUploadNotificationTest, CreationAndDisplay) {
   SkyvaultCaptureUploadNotification notification(file_path_,
                                                  /*for_video=*/false);
-  base::RunLoop().RunUntilIdle();
+  task_environment()->RunUntilIdle();
 
   const message_center::Notification* displayed_notification =
       message_center::MessageCenter::Get()->FindNotificationById(
@@ -54,10 +53,10 @@ TEST_F(SkyvaultCaptureUploadNotificationTest, CreationAndDisplay) {
 TEST_F(SkyvaultCaptureUploadNotificationTest, UpdateProgress) {
   SkyvaultCaptureUploadNotification notification(file_path_,
                                                  /*for_video=*/false);
-  base::RunLoop().RunUntilIdle();
+  task_environment()->RunUntilIdle();
 
   notification.UpdateProgress(6);
-  base::RunLoop().RunUntilIdle();
+  task_environment()->RunUntilIdle();
 
   const message_center::Notification* displayed_notification =
       message_center::MessageCenter::Get()->FindNotificationById(
@@ -69,7 +68,7 @@ TEST_F(SkyvaultCaptureUploadNotificationTest, UpdateProgress) {
 TEST_F(SkyvaultCaptureUploadNotificationTest, CancelClosure) {
   SkyvaultCaptureUploadNotification notification(file_path_,
                                                  /*for_video=*/false);
-  base::RunLoop().RunUntilIdle();
+  task_environment()->RunUntilIdle();
 
   bool cancel_called = false;
   notification.SetCancelClosure(
@@ -79,6 +78,31 @@ TEST_F(SkyvaultCaptureUploadNotificationTest, CancelClosure) {
       kUploadNotificationId, 0);
 
   EXPECT_TRUE(cancel_called);
+}
+
+TEST_F(SkyvaultCaptureUploadNotificationTest, UpdateProgressWithEmptyFile) {
+  base::FilePath empty_file_path =
+      temp_dir_.GetPath().AppendASCII("empty_capture.png");
+  ASSERT_TRUE(base::WriteFile(empty_file_path, ""));
+
+  SkyvaultCaptureUploadNotification notification(empty_file_path,
+                                                 /*for_video=*/false);
+  task_environment()->RunUntilIdle();
+
+  const message_center::Notification* displayed_notification =
+      message_center::MessageCenter::Get()->FindNotificationById(
+          kUploadNotificationId);
+  ASSERT_TRUE(displayed_notification);
+  EXPECT_EQ(displayed_notification->progress(), -1);
+
+  notification.UpdateProgress(10);
+  task_environment()->RunUntilIdle();
+
+  displayed_notification =
+      message_center::MessageCenter::Get()->FindNotificationById(
+          kUploadNotificationId);
+  ASSERT_TRUE(displayed_notification);
+  EXPECT_EQ(displayed_notification->progress(), -1);
 }
 
 }  // namespace policy::skyvault

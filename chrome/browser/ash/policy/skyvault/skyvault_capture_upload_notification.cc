@@ -68,7 +68,7 @@ SkyvaultCaptureUploadNotification::~SkyvaultCaptureUploadNotification() {
 }
 
 void SkyvaultCaptureUploadNotification::UpdateProgress(int64_t bytes_so_far) {
-  if (file_size_.has_value()) {
+  if (file_size_.has_value() && file_size_.value() > 0) {
     const auto percent = 100.0 * bytes_so_far / file_size_.value();
     notification_->set_progress(static_cast<int>(percent));
     message_center::MessageCenter::Get()->AddNotification(
