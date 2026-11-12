@@ -29163,13 +29163,6 @@ This is true even if the type has been removed from the mojom file.
   <int value="3" label="Hit memory cache"/>
 </enum>
 
-<enum name="WebPushDeviceState">
-  <int value="0" label="Not idle, not high priority"/>
-  <int value="1" label="Not idle, high priority"/>
-  <int value="2" label="Idle, not high priority"/>
-  <int value="3" label="Idle, high priority"/>
-</enum>
-
 <enum name="WebShareMethod">
   <int value="0" label="Share"/>
 </enum>

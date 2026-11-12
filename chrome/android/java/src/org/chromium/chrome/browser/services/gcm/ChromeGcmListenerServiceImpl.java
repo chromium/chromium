@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.services.gcm;
 
 import static org.chromium.build.NullUtil.assertNonNull;
-import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
 import android.content.Intent;
@@ -21,7 +20,6 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.base.SplitCompatGcmListenerService;
-import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.init.ProcessInitializationHandler;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
@@ -188,43 +186,18 @@ public class ChromeGcmListenerServiceImpl extends SplitCompatGcmListenerService.
                 .schedule(ContextUtils.getApplicationContext(), backgroundTask);
     }
 
-    private static void recordWebPushMetrics(GCMMessage message) {
-        Context context = ContextUtils.getApplicationContext();
-        boolean inIdleMode = DeviceConditions.isCurrentlyInIdleMode(context);
-        boolean isHighPriority = message.getOriginalPriority() == GCMMessage.Priority.HIGH;
-
-        @GcmUma.WebPushDeviceState int state;
-        if (inIdleMode) {
-            state =
-                    isHighPriority
-                            ? GcmUma.WebPushDeviceState.IDLE_HIGH_PRIORITY
-                            : GcmUma.WebPushDeviceState.IDLE_NOT_HIGH_PRIORITY;
-        } else {
-            state =
-                    isHighPriority
-                            ? GcmUma.WebPushDeviceState.NOT_IDLE_HIGH_PRIORITY
-                            : GcmUma.WebPushDeviceState.NOT_IDLE_NOT_HIGH_PRIORITY;
-        }
-        GcmUma.recordWebPushReceivedDeviceState(state);
-    }
-
     /**
-     * If Chrome is backgrounded, messages coming from lazy subscriptions are
-     * persisted on disk and replayed next time Chrome is forgrounded. If Chrome is forgrounded or
-     * if the message isn't coming from a lazy subscription, this method either schedules |message|
-     * to be dispatched through the Job Scheduler, which we use on Android N and beyond, or
-     * immediately dispatches the message on other versions of Android. Some subscriptions bypass
-     * the Job Scheduler and use Context#startService instead if the |message| has a high priority.
-     * Must be called on the UI thread both for the BackgroundTaskScheduler and for dispatching the
-     * |message| to the GCMDriver.
+     * If Chrome is backgrounded, messages coming from lazy subscriptions are persisted on disk and
+     * replayed next time Chrome is forgrounded. If Chrome is forgrounded or if the message isn't
+     * coming from a lazy subscription, this method either schedules |message| to be dispatched
+     * through the Job Scheduler, which we use on Android N and beyond, or immediately dispatches
+     * the message on other versions of Android. Some subscriptions bypass the Job Scheduler and use
+     * Context#startService instead if the |message| has a high priority. Must be called on the UI
+     * thread both for the BackgroundTaskScheduler and for dispatching the |message| to the
+     * GCMDriver.
      */
     static void scheduleOrDispatchMessageToDriver(GCMMessage message) {
         ThreadUtils.assertOnUiThread();
-
-        // GCMMessage#getAppId never returns null.
-        if (assumeNonNull(message.getAppId()).startsWith("wp:")) {
-            recordWebPushMetrics(message);
-        }
 
         // Check if we should only persist the message for now.
         if (maybePersistLazyMessage(message)) {
