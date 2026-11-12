@@ -1405,18 +1405,20 @@ void AwProxyingURLLoaderFactory::GetCookieHeader(
              base::OnceCallback<void(std::string)> callback,
              const net::CookieAccessResultList& results,
              const net::CookieAccessResultList& excluded_cookies) {
-            net::CookieList cookies;
-
-            for (const net::CookieWithAccessResult& cookie : results) {
-              if (privacy_setting == PrivacySetting::kStateAllowed ||
-                  cookie.cookie.IsPartitioned()) {
-                cookies.push_back(cookie.cookie);
+            std::string cookie_line;
+            if (privacy_setting == PrivacySetting::kStateAllowed) {
+              cookie_line = net::CanonicalCookie::BuildCookieLine(results);
+            } else {
+              net::CookieList cookies;
+              cookies.reserve(results.size());
+              for (const net::CookieWithAccessResult& cookie : results) {
+                if (cookie.cookie.IsPartitioned()) {
+                  cookies.push_back(cookie.cookie);
+                }
               }
+              cookie_line = net::CanonicalCookie::BuildCookieLine(cookies);
             }
-
-            std::string cookie_line =
-                net::CanonicalCookie::BuildCookieLine(cookies);
-            std::move(callback).Run(cookie_line);
+            std::move(callback).Run(std::move(cookie_line));
             UMA_HISTOGRAM_TIMES(
                 "Android.WebView.ShouldInterceptRequest.GetCookieHeader."
                 "PostMojo.TimeToRun",

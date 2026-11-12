@@ -640,7 +640,8 @@ std::vector<std::string> CookieManager::GetCookieInfo(const std::string& url) {
                                     base::Unretained(this), host,
                                     &cookie_list));
   std::vector<std::string> cookie_attributes;
-  for (net::CanonicalCookie cookie : cookie_list) {
+  cookie_attributes.reserve(cookie_list.size());
+  for (const net::CanonicalCookie& cookie : cookie_list) {
     cookie_attributes.push_back(
         net::CanonicalCookie::BuildCookieAttributesLine(cookie));
   }
