@@ -227,8 +227,8 @@ class XRSystem final : public EventTarget,
                              ExceptionState* exception_state);
 
     device::mojom::blink::XRSessionMode mode() const;
-    const XRSessionFeatureSet& RequiredFeatures() const;
-    const XRSessionFeatureSet& OptionalFeatures() const;
+    XRSessionFeatureSet RequiredFeatures() const;
+    XRSessionFeatureSet OptionalFeatures() const;
     bool InvalidRequiredFeatures() const;
     bool InvalidOptionalFeatures() const;
     bool HasFeature(device::mojom::XRSessionFeature) const;

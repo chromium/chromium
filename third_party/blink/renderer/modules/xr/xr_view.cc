@@ -154,13 +154,13 @@ XRViewData::XRViewData(
     double depth_near,
     double depth_far,
     const device::mojom::blink::XRSessionDeviceConfig& device_config,
-    const HashSet<device::mojom::XRSessionFeature>& enabled_feature_set,
+    XRSessionFeatureSet enabled_feature_set,
     XRGraphicsBinding::Api graphics_api)
     : XRViewGeometry(graphics_api),
       index_(index),
       eye_(view->eye),
       viewport_(view->viewport) {
-  if (enabled_feature_set.Contains(device::mojom::XRSessionFeature::DEPTH)) {
+  if (enabled_feature_set.Has(device::mojom::XRSessionFeature::DEPTH)) {
     if (!device_config.depth_configuration) {
       DCHECK(false)
           << "The session reports that depth sensing is supported but "

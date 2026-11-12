@@ -321,9 +321,10 @@ void XRSession::MetricsReporter::ReportFeatureUsed(
   using device::mojom::blink::XRSessionFeature;
 
   // If we've already reported using this feature, no need to report again.
-  if (!reported_features_.insert(feature).is_new_entry) {
+  if (reported_features_.Has(feature)) {
     return;
   }
+  reported_features_.Put(feature);
 
   switch (feature) {
     case XRSessionFeature::REF_SPACE_VIEWER:
@@ -397,7 +398,7 @@ XRSession::XRSession(
       sensorless_session_(sensorless_session),
       trace_id_(trace_id) {
   FrozenArray<IDLString>::VectorType enabled_features;
-  for (const auto& feature : enabled_feature_set_) {
+  for (device::mojom::XRSessionFeature feature : enabled_feature_set_) {
     enabled_features.push_back(XRSessionFeatureToString(feature).ToString());
   }
   enabled_features_ =
@@ -461,8 +462,8 @@ XRSession::XRSession(
 
 void XRSession::SetDOMOverlayElement(Element* element) {
   DVLOG(2) << __func__ << ": element=" << element;
-  DCHECK(enabled_feature_set_.Contains(
-      device::mojom::XRSessionFeature::DOM_OVERLAY));
+  DCHECK(
+      enabled_feature_set_.Has(device::mojom::XRSessionFeature::DOM_OVERLAY));
   DCHECK(element);
 
   overlay_element_ = element;
@@ -2214,7 +2215,7 @@ void XRSession::UpdateWorldUnderstandingStateForFrame(
 
 bool XRSession::IsFeatureEnabled(
     device::mojom::XRSessionFeature feature) const {
-  return enabled_feature_set_.Contains(feature);
+  return enabled_feature_set_.Has(feature);
 }
 
 void XRSession::SetMetricsReporter(std::unique_ptr<MetricsReporter> reporter) {

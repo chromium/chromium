@@ -54,7 +54,7 @@ TEST(XRViewTest, ViewMatrices) {
   xr_view->viewport = gfx::Rect(0, 0, kRenderSize, kRenderSize);
 
   auto device_config = device::mojom::blink::XRSessionDeviceConfig::New();
-  HashSet<device::mojom::XRSessionFeature> features = {
+  XRSessionFeatureSet features = {
       device::mojom::XRSessionFeature::REF_SPACE_VIEWER};
   XRViewData* view_data = MakeGarbageCollected<XRViewData>(
       /*index=*/0, std::move(xr_view), kDepthNear, kDepthFar, *device_config,

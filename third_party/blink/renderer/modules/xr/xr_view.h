@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_VIEW_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_VIEW_H_
 
+#include "base/containers/enum_set.h"
 #include "device/vr/public/mojom/visibility_mask_id.h"
 #include "device/vr/public/mojom/vr_service.mojom-blink.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
@@ -15,7 +16,6 @@
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
-#include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/transform.h"
@@ -30,6 +30,8 @@ class XRFrame;
 class XRSession;
 class XRViewData;
 class XRWebGLDepthInformation;
+
+using XRSessionFeatureSet = base::EnumSet<device::mojom::XRSessionFeature>;
 
 class MODULES_EXPORT XRView final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -94,14 +96,13 @@ class MODULES_EXPORT XRViewData final : public GarbageCollected<XRViewData>,
         index_(index),
         eye_(eye),
         viewport_(viewport) {}
-  XRViewData(
-      wtf_size_t index,
-      device::mojom::blink::XRViewPtr view,
-      double depth_near,
-      double depth_far,
-      const device::mojom::blink::XRSessionDeviceConfig& device_config,
-      const HashSet<device::mojom::XRSessionFeature>& enabled_feature_set,
-      XRGraphicsBinding::Api graphics_api);
+  XRViewData(wtf_size_t index,
+             device::mojom::blink::XRViewPtr view,
+             double depth_near,
+             double depth_far,
+             const device::mojom::blink::XRSessionDeviceConfig& device_config,
+             XRSessionFeatureSet enabled_feature_set,
+             XRGraphicsBinding::Api graphics_api);
 
   void UpdateView(device::mojom::blink::XRViewPtr view,
                   double depth_near,

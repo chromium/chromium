@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/containers/enum_set.h"
 #include "base/containers/span.h"
 #include "device/vr/public/mojom/layer_id.h"
 #include "device/vr/public/mojom/vr_service.mojom-blink.h"
@@ -80,7 +81,7 @@ class XRFrameTransportDelegate;
 template <typename IDLType>
 class FrozenArray;
 
-using XRSessionFeatureSet = HashSet<device::mojom::XRSessionFeature>;
+using XRSessionFeatureSet = base::EnumSet<device::mojom::XRSessionFeature>;
 
 class XRSession final : public EventTarget,
                         public device::mojom::blink::XRSessionClient,
@@ -132,7 +133,7 @@ class XRSession final : public EventTarget,
 
     // Keeps track of which features have already been reported, to reduce
     // redundant mojom calls.
-    HashSet<device::mojom::blink::XRSessionFeature> reported_features_;
+    XRSessionFeatureSet reported_features_;
   };
 
   XRSession(XRSystem* xr,

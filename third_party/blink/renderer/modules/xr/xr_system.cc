@@ -537,13 +537,13 @@ XRSystem::PendingRequestSessionQuery::GetFeatureRequestStatus(
     const XRSession* session) const {
   using device::mojom::XRSessionFeatureRequestStatus;
 
-  if (RequiredFeatures().Contains(feature)) {
+  if (RequiredFeatures().Has(feature)) {
     // In the case of required features, accepted/rejected state is
     // the same as the entire session.
     return XRSessionFeatureRequestStatus::kRequired;
   }
 
-  if (OptionalFeatures().Contains(feature)) {
+  if (OptionalFeatures().Has(feature)) {
     if (!session || !session->IsFeatureEnabled(feature)) {
       return XRSessionFeatureRequestStatus::kOptionalRejected;
     }
@@ -691,20 +691,19 @@ device::mojom::blink::XRSessionMode XRSystem::PendingRequestSessionQuery::mode()
   return mode_;
 }
 
-const XRSessionFeatureSet&
-XRSystem::PendingRequestSessionQuery::RequiredFeatures() const {
+XRSessionFeatureSet XRSystem::PendingRequestSessionQuery::RequiredFeatures()
+    const {
   return required_features_.valid_features;
 }
 
-const XRSessionFeatureSet&
-XRSystem::PendingRequestSessionQuery::OptionalFeatures() const {
+XRSessionFeatureSet XRSystem::PendingRequestSessionQuery::OptionalFeatures()
+    const {
   return optional_features_.valid_features;
 }
 
 bool XRSystem::PendingRequestSessionQuery::HasFeature(
     device::mojom::XRSessionFeature feature) const {
-  return RequiredFeatures().Contains(feature) ||
-         OptionalFeatures().Contains(feature);
+  return RequiredFeatures().Has(feature) || OptionalFeatures().Has(feature);
 }
 
 bool XRSystem::PendingRequestSessionQuery::InvalidRequiredFeatures() const {
@@ -727,7 +726,7 @@ void XRSystem::PendingRequestSessionQuery::ParseSensorRequirement() {
   }
 
   // If any required features require sensors, then sensors are required.
-  for (const auto& feature : RequiredFeatures()) {
+  for (device::mojom::XRSessionFeature feature : RequiredFeatures()) {
     if (feature != device::mojom::XRSessionFeature::REF_SPACE_VIEWER) {
       sensor_requirement_ = SensorRequirement::kRequired;
       return;
@@ -735,7 +734,7 @@ void XRSystem::PendingRequestSessionQuery::ParseSensorRequirement() {
   }
 
   // If any optional features require sensors, then sensors are optional.
-  for (const auto& feature : OptionalFeatures()) {
+  for (device::mojom::XRSessionFeature feature : OptionalFeatures()) {
     if (feature != device::mojom::XRSessionFeature::REF_SPACE_VIEWER) {
       sensor_requirement_ = SensorRequirement::kOptional;
       return;
@@ -1226,7 +1225,7 @@ XRSystem::RequestedXRSessionFeatureSet XRSystem::ParseRequestedFeatures(
     } else {
       DVLOG(3) << __func__ << ": Adding feature " << feature_string
                << " to valid_features.";
-      result.valid_features.insert(feature_enum.value());
+      result.valid_features.Put(feature_enum.value());
     }
   }
 
@@ -1310,7 +1309,7 @@ ScriptPromise<XRSession> XRSystem::requestSession(
 
   for (const auto& feature : default_features) {
     if (HasRequiredPermissionsPolicy(GetExecutionContext(), feature)) {
-      required_features.valid_features.insert(feature);
+      required_features.valid_features.Put(feature);
     } else {
       DVLOG(2) << __func__
                << ": permissions policy not satisfied for a default feature: "
@@ -1587,7 +1586,7 @@ void XRSystem::FinishSessionCreation(
   XRSessionFeatureSet enabled_features;
   for (const auto& feature : session_ptr->enabled_features) {
     DVLOG(2) << __func__ << ": feature " << feature << " will be enabled";
-    enabled_features.insert(feature);
+    enabled_features.Put(feature);
   }
 
   XRSession* session = CreateSession(
@@ -1609,9 +1608,9 @@ void XRSystem::FinishSessionCreation(
   if (query->mode() == device::mojom::blink::XRSessionMode::kImmersiveVr ||
       query->mode() == device::mojom::blink::XRSessionMode::kImmersiveAr) {
     const bool anchors_enabled =
-        enabled_features.Contains(device::mojom::XRSessionFeature::ANCHORS);
+        enabled_features.Has(device::mojom::XRSessionFeature::ANCHORS);
     const bool hit_test_enabled =
-        enabled_features.Contains(device::mojom::XRSessionFeature::HIT_TEST);
+        enabled_features.Has(device::mojom::XRSessionFeature::HIT_TEST);
     const bool environment_integration = hit_test_enabled || anchors_enabled;
     if (environment_integration) {
       // See Task Sources spreadsheet for more information:
@@ -1632,7 +1631,7 @@ void XRSystem::FinishSessionCreation(
     auto dom_overlay_feature = device::mojom::XRSessionFeature::DOM_OVERLAY;
     if (query->mode() == device::mojom::blink::XRSessionMode::kImmersiveAr &&
         query->HasFeature(dom_overlay_feature) &&
-        enabled_features.Contains(dom_overlay_feature)) {
+        enabled_features.Has(dom_overlay_feature)) {
       DCHECK(query->DOMOverlayElement());
       // The session is using DOM overlay mode. At this point the overlay
       // element is already in fullscreen mode, and the session can proceed.
