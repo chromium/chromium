@@ -19284,11 +19284,47 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_ON_DEVICE_MODEL_CATEGORY_GENERAL_PURPOSE_DESCRIPTION" translateable="false" desc="Short description for the general purpose on-device AI capability in Settings.">
       Helps to write, summarize, and more
     </message>
+    <message name="IDS_ON_DEVICE_MODEL_CATEGORY_GENERAL_PURPOSE_DETAIL_1" translateable="false" desc="First detail bullet for the general purpose on-device AI capability in Settings.">
+      Helps you draft, rephrase, and organize text on sites that use it
+    </message>
+    <message name="IDS_ON_DEVICE_MODEL_CATEGORY_GENERAL_PURPOSE_DETAIL_2" translateable="false" desc="Second detail bullet for the general purpose on-device AI capability in Settings.">
+      Handles many tasks, so one download covers multiple features
+    </message>
+    <message name="IDS_ON_DEVICE_MODEL_CATEGORY_PROOFREADING_TITLE" translateable="false" desc="Title for the proofreading on-device AI capability shown in Settings and download notifications.">
+      Proofreading
+    </message>
+    <message name="IDS_ON_DEVICE_MODEL_CATEGORY_PROOFREADING_DESCRIPTION" translateable="false" desc="Short description for the proofreading on-device AI capability in Settings.">
+      High-speed syntax and typographical checking without content alteration
+    </message>
+    <message name="IDS_ON_DEVICE_MODEL_CATEGORY_PROOFREADING_DETAIL_1" translateable="false" desc="First detail bullet for the proofreading on-device AI capability in Settings.">
+      Suggests fixes for spelling, grammar, and punctuation as you type
+    </message>
+    <message name="IDS_ON_DEVICE_MODEL_CATEGORY_PROOFREADING_DETAIL_2" translateable="false" desc="Second detail bullet for the proofreading on-device AI capability in Settings.">
+      Only suggests fixes without rewriting your text
+    </message>
+    <message name="IDS_ON_DEVICE_MODEL_CATEGORY_SUMMARIZING_TITLE" translateable="false" desc="Title for the summarizing on-device AI capability shown in Settings and download notifications.">
+      Summarizing
+    </message>
+    <message name="IDS_ON_DEVICE_MODEL_CATEGORY_SUMMARIZING_DESCRIPTION" translateable="false" desc="Short description for the summarizing on-device AI capability in Settings.">
+      Condensing long-form web content into concise takeaways
+    </message>
+    <message name="IDS_ON_DEVICE_MODEL_CATEGORY_SUMMARIZING_DETAIL_1" translateable="false" desc="First detail bullet for the summarizing on-device AI capability in Settings.">
+      Gives you key points, a short summary, or a headline
+    </message>
+    <message name="IDS_ON_DEVICE_MODEL_CATEGORY_SUMMARIZING_DETAIL_2" translateable="false" desc="Second detail bullet for the summarizing on-device AI capability in Settings.">
+      Faster and more compact than general-purpose writing
+    </message>
     <message name="IDS_ON_DEVICE_MODEL_CATEGORY_LIVE_TRANSCRIPTION_TITLE" translateable="false" desc="Title for the live transcription on-device AI capability shown in Settings and download notifications.">
       Live transcription
     </message>
     <message name="IDS_ON_DEVICE_MODEL_CATEGORY_LIVE_TRANSCRIPTION_DESCRIPTION" translateable="false" desc="Short description for the live transcription on-device AI capability in Settings.">
       Transcribes speech to text in real time
+    </message>
+    <message name="IDS_ON_DEVICE_MODEL_CATEGORY_LIVE_TRANSCRIPTION_DETAIL_1" translateable="false" desc="First detail bullet for the live transcription on-device AI capability in Settings.">
+      Works on sites that support live audio transcription
+    </message>
+    <message name="IDS_ON_DEVICE_MODEL_CATEGORY_LIVE_TRANSCRIPTION_DETAIL_2" translateable="false" desc="Second detail bullet for the live transcription on-device AI capability in Settings.">
+      Downloads separately for each language you use
     </message>
   </messages>
 </release>

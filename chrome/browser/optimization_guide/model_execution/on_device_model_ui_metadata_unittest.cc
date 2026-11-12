@@ -5,10 +5,13 @@
 #include "chrome/browser/optimization_guide/model_execution/on_device_model_ui_metadata.h"
 
 #include "components/optimization_guide/core/model_execution/on_device_model_names.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace optimization_guide {
 namespace {
+
+using ::testing::ElementsAre;
 
 TEST(OnDeviceModelUiMetadataTest, GeneralPurposeModels) {
   auto gemma4 = GetOnDeviceModelUiMetadata(OnDeviceBaseModel::kGemma4);
@@ -18,6 +21,11 @@ TEST(OnDeviceModelUiMetadataTest, GeneralPurposeModels) {
   EXPECT_EQ(gemma4->category_description,
             u"Helps to write, summarize, and more");
   EXPECT_EQ(gemma4->model_display_name, u"Gemma 4");
+  EXPECT_THAT(
+      gemma4->details,
+      ElementsAre(
+          u"Helps you draft, rephrase, and organize text on sites that use it",
+          u"Handles many tasks, so one download covers multiple features"));
 
   auto nano_gpu = GetOnDeviceModelUiMetadata(OnDeviceBaseModel::kV3NanoGpu);
   ASSERT_TRUE(nano_gpu.has_value());
@@ -26,6 +34,11 @@ TEST(OnDeviceModelUiMetadataTest, GeneralPurposeModels) {
   EXPECT_EQ(nano_gpu->category_description,
             u"Helps to write, summarize, and more");
   EXPECT_EQ(nano_gpu->model_display_name, u"Gemini Nano");
+  EXPECT_THAT(
+      nano_gpu->details,
+      ElementsAre(
+          u"Helps you draft, rephrase, and organize text on sites that use it",
+          u"Handles many tasks, so one download covers multiple features"));
 
   auto nano_cpu = GetOnDeviceModelUiMetadata(OnDeviceBaseModel::kV3NanoCpu);
   ASSERT_TRUE(nano_cpu.has_value());
@@ -34,6 +47,11 @@ TEST(OnDeviceModelUiMetadataTest, GeneralPurposeModels) {
   EXPECT_EQ(nano_cpu->category_description,
             u"Helps to write, summarize, and more");
   EXPECT_EQ(nano_cpu->model_display_name, u"Gemini Nano");
+  EXPECT_THAT(
+      nano_cpu->details,
+      ElementsAre(
+          u"Helps you draft, rephrase, and organize text on sites that use it",
+          u"Handles many tasks, so one download covers multiple features"));
 }
 
 TEST(OnDeviceModelUiMetadataTest, LiveTranscriptionModel) {
@@ -45,6 +63,10 @@ TEST(OnDeviceModelUiMetadataTest, LiveTranscriptionModel) {
   EXPECT_EQ(speech->category_description,
             u"Transcribes speech to text in real time");
   EXPECT_EQ(speech->model_display_name, u"Live Caption and Transcription");
+  EXPECT_THAT(
+      speech->details,
+      ElementsAre(u"Works on sites that support live audio transcription",
+                  u"Downloads separately for each language you use"));
 }
 
 TEST(OnDeviceModelUiMetadataTest, HiddenModelsReturnNullopt) {

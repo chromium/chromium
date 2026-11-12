@@ -43,6 +43,11 @@ struct VisibleCapabilityRow {
     item.Set("description", metadata.category_description);
     item.Set("modelName", metadata.model_display_name);
     item.Set("size", ui::FormatBytes(size));
+    base::ListValue details_list;
+    for (const auto& detail : metadata.details) {
+      details_list.Append(detail);
+    }
+    item.Set("details", std::move(details_list));
     return item;
   }
 };

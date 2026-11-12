@@ -61,7 +61,9 @@ std::string ConvertComponentKeyToUmaModelName(const std::string& key);
 // approved.
 enum class OnDeviceModelCategory {
   kGeneralPurpose = 0,
-  kLiveTranscription = 1,
+  kProofreading = 1,
+  kSummarizing = 2,
+  kLiveTranscription = 3,
   kMaxValue = kLiveTranscription,
 };
 

@@ -293,6 +293,15 @@ TEST_F(OnDeviceAiSettingsHandlerTest,
   EXPECT_EQ("Gemma 4", *row0.FindString("modelName"));
   EXPECT_EQ(base::UTF16ToUTF8(ui::FormatBytes(kGemmaSize)),
             *row0.FindString("size"));
+  const base::ListValue* row0_details = row0.FindList("details");
+  ASSERT_NE(nullptr, row0_details);
+  ASSERT_EQ(2u, row0_details->size());
+  EXPECT_EQ(l10n_util::GetStringUTF8(
+                IDS_ON_DEVICE_MODEL_CATEGORY_GENERAL_PURPOSE_DETAIL_1),
+            (*row0_details)[0].GetString());
+  EXPECT_EQ(l10n_util::GetStringUTF8(
+                IDS_ON_DEVICE_MODEL_CATEGORY_GENERAL_PURPOSE_DETAIL_2),
+            (*row0_details)[1].GetString());
 
   const base::DictValue& row1 = (*capabilities)[1].GetDict();
   EXPECT_EQ(static_cast<int>(OnDeviceBaseModel::kV3NanoGpu),
