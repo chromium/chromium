@@ -172,6 +172,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_metrics.cc:TabGroupContextMenuSource) -->
 
+<!-- LINT.IfChange(TabGroupFocusAnimation) -->
+
+<variants name="TabGroupFocusAnimation">
+  <variant name="Enter" summary="Entering focus mode from the unfocused state"/>
+  <variant name="Exit" summary="Exiting focus mode to the unfocused state"/>
+  <variant name="Switch"
+      summary="Switching focus directly from one group to another"/>
+</variants>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/views/animations/focus_mode_animations.cc:FocusModeAnimationHistogramNames, //chrome/browser/ui/views/animations/focus_mode_animations.h:FocusModeAnimationHistogramNames) -->
+
 <!-- LINT.IfChange(TabOrchestratorType) -->
 
 <variants name="TabModelOrchestratorType">
@@ -1114,6 +1125,43 @@ chromium-metrics-reviews@google.com.
     Recorded when the user exits Tab Groups Focus Mode (or closes the window
     while in focus mode). Measures the duration the user spent in focus mode.
   </summary>
+</histogram>
+
+<histogram
+    name="TabGroups.Focus.{TabStripMode}.{TabGroupFocusAnimation}.AnimationFPS"
+    units="fps" expires_after="2027-05-10">
+  <owner>kunaldaftari@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Records the frames per second for the tab strip focus mode animation in the
+    {TabStripMode}. Recorded when the {TabGroupFocusAnimation} motion completes;
+    motions that are interrupted by another focus change are not recorded.
+
+    Only recorded by the unified (collection-based) tab strip; the legacy
+    horizontal tab strip does not run this animation and never emits this
+    histogram.
+  </summary>
+  <token key="TabStripMode" variants="TabStripMode"/>
+  <token key="TabGroupFocusAnimation" variants="TabGroupFocusAnimation"/>
+</histogram>
+
+<histogram
+    name="TabGroups.Focus.{TabStripMode}.{TabGroupFocusAnimation}.TimeOfLongestAnimationStep"
+    units="ms" expires_after="2027-05-10">
+  <owner>kunaldaftari@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Records the length of the longest frame in the tab strip focus mode
+    animation in the {TabStripMode}. Recorded when the {TabGroupFocusAnimation}
+    motion completes; motions that are interrupted by another focus change are
+    not recorded.
+
+    Only recorded by the unified (collection-based) tab strip; the legacy
+    horizontal tab strip does not run this animation and never emits this
+    histogram.
+  </summary>
+  <token key="TabStripMode" variants="TabStripMode"/>
+  <token key="TabGroupFocusAnimation" variants="TabGroupFocusAnimation"/>
 </histogram>
 
 <histogram

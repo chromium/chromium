@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_TABS_COMMON_TAB_STRIP_COLLECTION_CONTROLLER_H_
 
 #include <optional>
+#include <string_view>
 
 #include "base/auto_reset.h"
 #include "base/callback_list.h"
@@ -208,6 +209,8 @@ class TabStripCollectionController : public TabContextMenuController::Delegate {
   void OnFocusAnimationUpdated(const BrowserAnimationController* controller,
                                BrowserAnimationUpdate status);
   void EndFocusTransition();
+
+  std::string_view GetFocusAnimationHistogramGroupPrefix() const;
 
   std::unique_ptr<TabContextMenuController> context_menu_controller_;
   std::unique_ptr<ExpandOnHoverLock> expand_on_hover_lock_;

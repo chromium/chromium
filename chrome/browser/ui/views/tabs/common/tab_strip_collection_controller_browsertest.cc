@@ -5,9 +5,12 @@
 #include "chrome/browser/ui/views/tabs/common/tab_strip_collection_controller.h"
 
 #include <numeric>
+#include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -1197,6 +1200,263 @@ IN_PROC_BROWSER_TEST_F(TabStripControllerFocusTransitionBrowserTest,
   EXPECT_FALSE(controller->GetFocusTransition().has_value());
   EXPECT_FALSE(model->group_model()->ContainsTabGroup(group_id));
 }
+
+// Verifies the performance histograms emitted for the focus motion
+// (`TabGroups.Focus.{TabStripMode}.{Enter,Exit,Switch}.*`). The motion is
+// driven by a test-controlled animation container while the logger observes
+// the browser widget's real compositor, so histograms are emitted exactly when
+// a motion runs to completion.
+class TabStripControllerFocusAnimationMetricsBrowserTest
+    : public VerticalTabsBrowserTestMixin<InProcessBrowserTest>,
+      public testing::WithParamInterface<TabStripOrientation> {
+ public:
+  TabStripOrientation orientation() const { return GetParam(); }
+  bool is_horizontal() const {
+    return orientation() == TabStripOrientation::kHorizontal;
+  }
+
+  void SetUpOnMainThread() override {
+    VerticalTabsBrowserTestMixin<InProcessBrowserTest>::SetUpOnMainThread();
+    if (is_horizontal()) {
+      ExitVerticalTabsMode();
+    }
+  }
+
+  const std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
+      override {
+    auto enabled = VerticalTabsBrowserTestMixin<
+        InProcessBrowserTest>::GetEnabledFeatures();
+    enabled.push_back({features::kTabGroupsFocusing, {}});
+    enabled.push_back({tabs::kTabStripUnification, {}});
+    return enabled;
+  }
+
+ protected:
+  // Setup runs without rich animations so that it settles synchronously. The
+  // test under measurement enables them and drives `kFocusMode` from a
+  // container whose clock only advances through `AdvanceFocusMotion()`.
+  void EnableRichAnimations() {
+    rich_animations_disabled_.reset();
+    rich_animations_enabled_ =
+        gfx::AnimationTestApi::SetRichAnimationRenderMode(
+            gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED);
+    normal_duration_mode_ =
+        std::make_unique<gfx::ScopedAnimationDurationScaleMode>(
+            gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+    animation_container_ = base::MakeRefCounted<gfx::AnimationContainer>();
+    BrowserAnimationController::From(browser())
+        ->SetAnimationContainerForTesting(FocusModeAnimations::kFocusMode,
+                                          animation_container_.get());
+    animation_container_test_api_ =
+        std::make_unique<gfx::AnimationContainerTestApi>(
+            animation_container_.get());
+  }
+
+  const BrowserAnimationController* animation_controller() {
+    return BrowserAnimationController::From(browser());
+  }
+
+  bool IsFocusMotionAnimating() {
+    return animation_controller()->IsAnimating(FocusModeAnimations::kFocusMode);
+  }
+
+  void AdvanceFocusMotion(base::TimeDelta delta) {
+    animation_container_test_api_->IncrementTime(delta);
+    RunScheduledLayouts();
+  }
+
+  void FinishFocusMotion() {
+    AdvanceFocusMotion(animation_controller()->GetMotionDuration(
+        FocusModeAnimations::kFocusMode));
+    EXPECT_FALSE(IsFocusMotionAnimating());
+  }
+
+  // The histogram group prefix for the orientation under test, and for the
+  // other orientation (which must never receive samples).
+  std::string_view group_prefix() const {
+    return is_horizontal()
+               ? FocusModeAnimations::kHistogramGroupPrefixHorizontal
+               : FocusModeAnimations::kHistogramGroupPrefixVertical;
+  }
+  std::string_view other_group_prefix() const {
+    return is_horizontal()
+               ? FocusModeAnimations::kHistogramGroupPrefixVertical
+               : FocusModeAnimations::kHistogramGroupPrefixHorizontal;
+  }
+
+  std::string FpsHistogram(std::string_view motion) const {
+    return base::StrCat(
+        {group_prefix(), ".", motion,
+         BrowserAnimationController::kFramesPerSecondHistogramSuffix});
+  }
+  std::string LongestStepHistogram(std::string_view motion) const {
+    return base::StrCat(
+        {group_prefix(), ".", motion,
+         BrowserAnimationController::kLongestFrameHistogramSuffix});
+  }
+
+  // Expects both performance histograms for `motion` to have been recorded
+  // exactly `count` times under this orientation's prefix.
+  void ExpectMotionRecorded(std::string_view motion, int count) {
+    SCOPED_TRACE(motion);
+    histogram_tester_.ExpectTotalCount(FpsHistogram(motion), count);
+    histogram_tester_.ExpectTotalCount(LongestStepHistogram(motion), count);
+    if (count > 0) {
+      // Even when the compositor presents no frames during the test, the
+      // logger counts at least one, so FPS is always strictly positive.
+      EXPECT_GT(histogram_tester_.GetTotalSum(FpsHistogram(motion)), 0);
+    }
+  }
+
+  // Expects that no focus animation histogram has been recorded under the
+  // other orientation's prefix.
+  void ExpectNothingRecordedForOtherOrientation() {
+    EXPECT_TRUE(
+        histogram_tester_.GetTotalCountsForPrefix(other_group_prefix()).empty())
+        << "Unexpected samples under " << other_group_prefix();
+  }
+
+  base::HistogramTester histogram_tester_;
+
+ private:
+  std::unique_ptr<base::AutoReset<gfx::Animation::RichAnimationRenderMode>>
+      rich_animations_disabled_ =
+          gfx::AnimationTestApi::SetRichAnimationRenderMode(
+              gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
+  std::unique_ptr<base::AutoReset<gfx::Animation::RichAnimationRenderMode>>
+      rich_animations_enabled_;
+  std::unique_ptr<gfx::ScopedAnimationDurationScaleMode> normal_duration_mode_;
+  scoped_refptr<gfx::AnimationContainer> animation_container_;
+  std::unique_ptr<gfx::AnimationContainerTestApi> animation_container_test_api_;
+};
+
+// Entering focus mode records the `Enter` histograms once the motion
+// completes, and exiting records the `Exit` histograms. Neither is attributed
+// to `Switch` or to the other tab strip orientation.
+IN_PROC_BROWSER_TEST_P(TabStripControllerFocusAnimationMetricsBrowserTest,
+                       EnterAndExitRecordPerformanceHistograms) {
+  AppendTab();
+  TabStripModel* const model = browser()->GetTabStripModel();
+  const tab_groups::TabGroupId group_id = model->AddToNewGroup({1});
+  model->ActivateTabAt(0);
+  RunScheduledLayouts();
+
+  EnableRichAnimations();
+  model->EnterFocusMode(group_id);
+  RunScheduledLayouts();
+  ASSERT_TRUE(IsFocusMotionAnimating());
+  // Nothing is recorded until the motion completes.
+  ExpectMotionRecorded("Enter", 0);
+
+  FinishFocusMotion();
+  ExpectMotionRecorded("Enter", 1);
+  ExpectMotionRecorded("Exit", 0);
+  ExpectMotionRecorded(FocusModeAnimations::kSwitchMotionHistogramName, 0);
+
+  model->ExitFocusMode();
+  RunScheduledLayouts();
+  ASSERT_TRUE(IsFocusMotionAnimating());
+  ExpectMotionRecorded("Exit", 0);
+
+  FinishFocusMotion();
+  ExpectMotionRecorded("Enter", 1);
+  ExpectMotionRecorded("Exit", 1);
+  ExpectMotionRecorded(FocusModeAnimations::kSwitchMotionHistogramName, 0);
+  ExpectNothingRecordedForOtherOrientation();
+}
+
+// Switching focus directly from one group to another plays the enter motion
+// but is recorded under `Switch`, not `Enter`. The synchronous exit reset that
+// precedes the switch must not record an `Exit` sample.
+IN_PROC_BROWSER_TEST_P(TabStripControllerFocusAnimationMetricsBrowserTest,
+                       DirectSwitchRecordsSwitchHistograms) {
+  AppendTab();
+  AppendTab();
+  TabStripModel* const model = browser()->GetTabStripModel();
+  const tab_groups::TabGroupId group_a = model->AddToNewGroup({1});
+  const tab_groups::TabGroupId group_b = model->AddToNewGroup({2});
+  model->EnterFocusMode(group_a);
+  RunScheduledLayouts();
+
+  EnableRichAnimations();
+  model->EnterFocusMode(group_b);
+  RunScheduledLayouts();
+  ASSERT_TRUE(IsFocusMotionAnimating());
+
+  FinishFocusMotion();
+  ExpectMotionRecorded(FocusModeAnimations::kSwitchMotionHistogramName, 1);
+  ExpectMotionRecorded("Enter", 0);
+  ExpectMotionRecorded("Exit", 0);
+  ExpectNothingRecordedForOtherOrientation();
+}
+
+// A motion that is interrupted by another focus change before it completes
+// is not recorded; only the motion that runs to completion is.
+IN_PROC_BROWSER_TEST_P(TabStripControllerFocusAnimationMetricsBrowserTest,
+                       InterruptedMotionIsNotRecorded) {
+  AppendTab();
+  TabStripModel* const model = browser()->GetTabStripModel();
+  const tab_groups::TabGroupId group_id = model->AddToNewGroup({1});
+  model->ActivateTabAt(0);
+  RunScheduledLayouts();
+
+  EnableRichAnimations();
+  model->EnterFocusMode(group_id);
+  AdvanceFocusMotion(base::Milliseconds(150));
+  ASSERT_TRUE(IsFocusMotionAnimating());
+
+  // Exiting mid-motion cancels the enter motion and starts the exit motion.
+  model->ExitFocusMode();
+  RunScheduledLayouts();
+  ASSERT_TRUE(IsFocusMotionAnimating());
+  ExpectMotionRecorded("Enter", 0);
+
+  FinishFocusMotion();
+  ExpectMotionRecorded("Enter", 0);
+  ExpectMotionRecorded("Exit", 1);
+  ExpectMotionRecorded(FocusModeAnimations::kSwitchMotionHistogramName, 0);
+  ExpectNothingRecordedForOtherOrientation();
+}
+
+// Without rich animations the focus change snaps to its resting state and no
+// motion is played, so no performance histograms are recorded.
+IN_PROC_BROWSER_TEST_P(TabStripControllerFocusAnimationMetricsBrowserTest,
+                       ReducedMotionRecordsNothing) {
+  AppendTab();
+  AppendTab();
+  TabStripModel* const model = browser()->GetTabStripModel();
+  const tab_groups::TabGroupId group_a = model->AddToNewGroup({1});
+  const tab_groups::TabGroupId group_b = model->AddToNewGroup({2});
+  model->ActivateTabAt(0);
+  RunScheduledLayouts();
+
+  model->EnterFocusMode(group_a);
+  RunScheduledLayouts();
+  model->EnterFocusMode(group_b);
+  RunScheduledLayouts();
+  model->ExitFocusMode();
+  RunScheduledLayouts();
+  EXPECT_FALSE(IsFocusMotionAnimating());
+
+  ExpectMotionRecorded("Enter", 0);
+  ExpectMotionRecorded("Exit", 0);
+  ExpectMotionRecorded(FocusModeAnimations::kSwitchMotionHistogramName, 0);
+  ExpectNothingRecordedForOtherOrientation();
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    TabStripControllerFocusAnimationMetricsBrowserTest,
+    testing::Values(TabStripOrientation::kVertical,
+                    TabStripOrientation::kHorizontal),
+    [](const testing::TestParamInfo<TabStripOrientation>& info) {
+      switch (info.param) {
+        case TabStripOrientation::kVertical:
+          return "Vertical";
+        case TabStripOrientation::kHorizontal:
+          return "Horizontal";
+      }
+    });
 
 class TabStripControllerFocusFreezingBrowserTest
     : public VerticalTabsBrowserTestMixin<InProcessBrowserTest>,

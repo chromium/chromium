@@ -36,6 +36,16 @@ FocusModeAnimations::FocusModeAnimations() {
   SetSequenceParams(kFocusMode, Default(kProgress, 0.0, true),
                     Default(kUnrelatedTabsOpacity, 1.0, true),
                     Default(kUnfocusLabelOpacity, 0.0, true));
+
+  // The group prefix is specified when starting the animation based on the
+  // tab strip orientation, so no histogram name is set for `kFocusMode` here.
+  // A direct switch between groups plays `kEnter` but overrides the motion
+  // name with `kSwitchMotionHistogramName`.
+
+  // LINT.IfChange(FocusModeAnimationHistogramNames)
+  SetHistogramName(kEnter, "Enter");
+  SetHistogramName(kExit, "Exit");
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/tab/histograms.xml:TabGroupFocusAnimation)
 }
 
 FocusModeAnimations::~FocusModeAnimations() = default;

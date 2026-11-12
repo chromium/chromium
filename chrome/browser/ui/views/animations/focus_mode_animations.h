@@ -16,6 +16,17 @@ class FocusModeAnimations : public CachingBrowserAnimationProvider {
  public:
   DECLARE_SAFE_CAST_TARGET()
 
+  // LINT.IfChange(FocusModeAnimationHistogramNames)
+  // Histogram group prefixes, keyed by tab strip orientation.
+  static constexpr char kHistogramGroupPrefixHorizontal[] =
+      "TabGroups.Focus.HorizontalTabStrip";
+  static constexpr char kHistogramGroupPrefixVertical[] =
+      "TabGroups.Focus.VerticalTabStrip";
+
+  // Motion infix for `kEnter` when switching directly between focused groups.
+  static constexpr char kSwitchMotionHistogramName[] = "Switch";
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/tab/histograms.xml:TabGroupFocusAnimation)
+
   FocusModeAnimations();
   ~FocusModeAnimations() override;
 
