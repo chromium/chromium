@@ -10,9 +10,11 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/check.h"
 #include "base/component_export.h"
+#include "base/containers/circular_deque.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
@@ -28,6 +30,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/private_insights/event_queue.h"
 #include "components/private_insights/events/contextual_cue_log_event.pb.h"
+#include "components/private_insights/populations/population.h"
 
 class PrefService;
 
@@ -43,6 +46,8 @@ class FcpFlags;
 class FcpLogManager;
 class FcpSimpleTaskEnvironment;
 class PendingEventsBatch;
+template <typename EventProto>
+class TypedPopulation;
 
 class PrivateInsightsService;
 
@@ -67,13 +72,6 @@ inline constexpr char kContributedTaskCountHistogram[] =
     "PrivateMetrics.PrivateInsights.ContributedTaskCount";
 inline constexpr char kFederatedComputationOutcomeHistogram[] =
     "PrivateMetrics.PrivateInsights.FederatedComputationOutcome";
-// Prefix of the Contextual Cues `EventQueue` health histograms (see
-// `EventQueue` for the suffixes it appends).
-inline constexpr char kContextualCueEventsHistogramPrefix[] =
-    "PrivateMetrics.PrivateInsights.ContextualCueEvents";
-inline constexpr char kContextualCueEventsLoggingOnShutdownCountHistogram[] =
-    "PrivateMetrics.PrivateInsights.ContextualCueEvents.Logging."
-    "OnShutdownCount";
 
 class COMPONENT_EXPORT(PRIVATE_INSIGHTS) PrivateInsightsService
     : public KeyedService {
@@ -172,8 +170,8 @@ class COMPONENT_EXPORT(PRIVATE_INSIGHTS) PrivateInsightsService
     std::string server_uri;
     std::string population_name;
     std::unique_ptr<PendingEventsBatch> batch;
-    // When `TriggerUpload()` created this task; used to measure how long the
-    // task waited before the thread pool picked it up.
+    // When this task was created; used to measure how long it waited before
+    // the thread pool picked it up.
     base::TimeTicks trigger_time;
   };
 
@@ -186,33 +184,35 @@ class COMPONENT_EXPORT(PRIVATE_INSIGHTS) PrivateInsightsService
 
   void OnMetricsChoiceChanged();
 
-  void TriggerUpload();
+  // Adds `population` to the set uploaded every round.
+  void RegisterPopulation(std::unique_ptr<Population> population);
 
-  // Detaches all events currently in `queue` into a new `UploadTask` targeting
-  // `population_name`. If the upload fails, the events are requeued onto
-  // `queue` subject to `max_events` (see `EventQueue::Requeue()`). The requeue
-  // callback holds a `WeakPtr` to `queue`, so it is a no-op if the queue has
-  // been destroyed by the time the upload completes.
-  //
-  // This is a private implementation detail of the service: like the other
-  // templates in this class it is defined in the .cc and may only be
-  // instantiated from there (see `TriggerUploadTask()`).
-  template <typename EventProto>
-  UploadTask MakeUploadTask(EventQueue<EventProto>& queue,
-                            std::string population_name,
-                            int max_events);
+  // Starts an upload round: every registered population with pending events,
+  // then (while Contextual Cues is not registered) its legacy queue. FCP
+  // uploads one population per call, so the round is a chain of calls; ticks
+  // that arrive mid-round are skipped.
+  void TriggerUpload();
+  // Posts the next upload of the current round, if any. One upload is in
+  // flight at a time because they share `fcp_task_env_`;
+  // `OnUploadTaskComplete()` calls this again to continue the round.
+  void UploadNextInRound();
+
+  // Original Contextual Cues upload path, used iff Contextual Cues is not
+  // registered. Unchanged apart from being moved out of `TriggerUpload()`.
+  // TODO(b/576348553): Remove once Contextual Cues is on the `UploadTask` path.
+  void UploadLegacyContextualCues();
+
+  // Detaches `population`'s pending events into a new `UploadTask`.
+  UploadTask MakeUploadTask(Population& population);
 
   // Runs on a background thread pool sequence (allows blocking).
   static FederatedComputationResult UploadBlocking(
       scoped_refptr<FcpSimpleTaskEnvironment> task_env,
       base::TimeTicks trigger_time);
 
-  // `UploadTask` pipeline, used when `kPrivateInsightsUploadTaskPipeline` is
-  // enabled. Population agnostic; serializes events on the thread pool.
-  // `TriggerUpload()` dispatches here; the original path above is left
-  // unchanged until the rollout completes.
-  // TODO(b/576348553): Make this the only path and remove the original.
-  void TriggerUploadTask();
+  // `UploadTask` pipeline: serializes `population`'s batch on the thread pool
+  // and uploads it.
+  void UploadPopulation(Population& population);
   // Runs on a background thread pool sequence (allows blocking). Serializes
   // the task's batch into the task environment and runs the federated
   // computation for the task's population.
@@ -227,6 +227,9 @@ class COMPONENT_EXPORT(PRIVATE_INSIGHTS) PrivateInsightsService
   void OnUploadComplete(ContextualCueEventQueue::Entries pending_events,
                         FederatedComputationResult result);
 
+  // Whichever Contextual Cues queue is live.
+  const ContextualCueEventQueue& ContextualCueEventsForTesting() const;
+
   raw_ptr<PrefService> local_state_ GUARDED_BY_CONTEXT(sequence_checker_) =
       nullptr;
   base::FilePath profile_dir_ GUARDED_BY_CONTEXT(sequence_checker_);
@@ -238,8 +241,28 @@ class COMPONENT_EXPORT(PRIVATE_INSIGHTS) PrivateInsightsService
   scoped_refptr<FcpSimpleTaskEnvironment> fcp_task_env_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // TODO(b/574637098): Move into a `ContextualCuePopulation` once the
-  // population registry lands.
+  // In registration order.
+  std::vector<std::unique_ptr<Population>> populations_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  // Indices into `populations_` still to upload in the current round, then
+  // whether the legacy Contextual Cues queue is still to upload. The legacy
+  // upload goes last so its (unchanged) completion handler need not continue
+  // the round.
+  base::circular_deque<size_t> upload_round_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  bool legacy_upload_in_round_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+  // Whether `kTaskPosted` was recorded for the current round; one sample per
+  // `TriggerUpload()` that posts anything.
+  bool round_task_posted_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+  // Owned by `populations_`. Set iff `kPrivateInsightsUploadTaskPipeline` was
+  // enabled at construction; null means the legacy queue is in use.
+  raw_ptr<TypedPopulation<events::ContextualCueLogEvent>>
+      contextual_cue_population_ GUARDED_BY_CONTEXT(sequence_checker_) =
+          nullptr;
+
+  // Legacy Contextual Cues queue, used iff `contextual_cue_population_` is
+  // null.
+  // TODO(b/576348553): Remove with the legacy upload path.
   ContextualCueEventQueue contextual_cue_events_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
@@ -269,6 +292,19 @@ class COMPONENT_EXPORT(PRIVATE_INSIGHTS) PrivateInsightsService
                            UploadPathSelectedByFlag);
   FRIEND_TEST_ALL_PREFIXES(PrivateInsightsServiceTriggerUploadTest,
                            HandleEvents);
+  // The fixture is a friend for its `RunUploadRound()` helper; the test bodies
+  // are separate classes and need their own entries.
+  friend class PrivateInsightsServicePopulationsTest;
+  FRIEND_TEST_ALL_PREFIXES(PrivateInsightsServicePopulationsTest,
+                           UploadsEverySourceEachRound);
+  FRIEND_TEST_ALL_PREFIXES(PrivateInsightsServicePopulationsTest,
+                           SkipsSourcesWithoutEvents);
+  FRIEND_TEST_ALL_PREFIXES(PrivateInsightsServicePopulationsTest,
+                           RequeuesToOwningSource);
+  FRIEND_TEST_ALL_PREFIXES(PrivateInsightsServicePopulationsTest,
+                           StopEndsRoundInProgress);
+  FRIEND_TEST_ALL_PREFIXES(PrivateInsightsServicePopulationsTest,
+                           ShutdownNotifiesEverySource);
 };
 
 }  // namespace private_insights

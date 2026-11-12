@@ -4,6 +4,7 @@
 
 #include "components/private_insights/private_insights_service.h"
 
+#include <cstddef>
 #include <memory>
 #include <string>
 #include <utility>
@@ -28,6 +29,8 @@
 #include "components/private_insights/fcp_log_manager.h"
 #include "components/private_insights/fcp_simple_task_environment.h"
 #include "components/private_insights/populations/pending_events_batch.h"
+#include "components/private_insights/populations/population.h"
+#include "components/private_insights/populations/typed_population.h"
 #include "components/private_insights/private_insights_features.h"
 #include "components/version_info/version_info.h"
 #include "google_apis/google_api_keys.h"
@@ -39,6 +42,9 @@
 namespace private_insights {
 
 namespace {
+
+// Histogram name under `kPopulationHistogramPrefix`.
+constexpr char kContextualCueEventsHistogramName[] = "ContextualCueEvents";
 
 PrivateInsightsService::FederatedComputationResult
 ParseFederatedComputationResult(
@@ -111,9 +117,21 @@ PrivateInsightsService::PrivateInsightsService(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : local_state_(local_state),
       profile_dir_(profile_dir),
-      contextual_cue_events_(kContextualCueEventsHistogramPrefix) {
+      contextual_cue_events_(base::StrCat(
+          {kPopulationHistogramPrefix, kContextualCueEventsHistogramName})) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(local_state_);
+
+  // `kPrivateInsightsUploadTaskPipeline` only selects Contextual Cues' upload
+  // path. Read once here so a mid-session flip cannot strand events.
+  if (base::FeatureList::IsEnabled(kPrivateInsightsUploadTaskPipeline)) {
+    auto contextual_cue_population =
+        std::make_unique<TypedPopulation<events::ContextualCueLogEvent>>(
+            kContextualCueEventsHistogramName, kFcpPopulationNameContextualCues,
+            kMaxContextualCueEvents);
+    contextual_cue_population_ = contextual_cue_population.get();
+    RegisterPopulation(std::move(contextual_cue_population));
+  }
 
   base::FilePath private_insights_dir =
       profile_dir_.AppendASCII("PrivateInsights");
@@ -173,20 +191,51 @@ void PrivateInsightsService::Start() {
 void PrivateInsightsService::Stop() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   upload_timer_.Stop();
+  // End any round in progress so nothing new is uploaded after, e.g., the
+  // user turns off metrics reporting. An upload already posted completes.
+  upload_round_.clear();
+  legacy_upload_in_round_ = false;
 }
 
 void PrivateInsightsService::Shutdown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::UmaHistogramCounts100(
-      kContextualCueEventsLoggingOnShutdownCountHistogram,
-      static_cast<int>(contextual_cue_events_.size()));
+  for (const auto& population : populations_) {
+    population->OnShutdown();
+  }
+  if (!contextual_cue_population_) {
+    // Same name `TypedPopulation::OnShutdown()` derives.
+    base::UmaHistogramCounts100(
+        base::StrCat({kPopulationHistogramPrefix,
+                      kContextualCueEventsHistogramName,
+                      ".Logging.OnShutdownCount"}),
+        static_cast<int>(contextual_cue_events_.size()));
+  }
   Stop();
+}
+
+void PrivateInsightsService::RegisterPopulation(
+    std::unique_ptr<Population> population) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(population);
+  populations_.push_back(std::move(population));
 }
 
 void PrivateInsightsService::LogContextualCueEvent(
     events::ContextualCueLogEvent event) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (contextual_cue_population_) {
+    contextual_cue_population_->LogEvent(std::move(event));
+    return;
+  }
   contextual_cue_events_.Push(std::move(event), kMaxContextualCueEvents.Get());
+}
+
+const PrivateInsightsService::ContextualCueEventQueue&
+PrivateInsightsService::ContextualCueEventsForTesting() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return contextual_cue_population_
+             ? contextual_cue_population_->queue_for_testing()  // IN-TEST
+             : contextual_cue_events_;
 }
 
 PrivateInsightsService::UploadTask::UploadTask() = default;
@@ -195,32 +244,15 @@ PrivateInsightsService::UploadTask&
 PrivateInsightsService::UploadTask::operator=(UploadTask&&) = default;
 PrivateInsightsService::UploadTask::~UploadTask() = default;
 
-template <typename EventProto>
 PrivateInsightsService::UploadTask PrivateInsightsService::MakeUploadTask(
-    EventQueue<EventProto>& queue,
-    std::string population_name,
-    int max_events) {
+    Population& population) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   UploadTask task;
   task.task_env = fcp_task_env_;
   task.server_uri = kFcpServerUri.Get();
-  task.population_name = std::move(population_name);
+  task.population_name = population.population_name();
   task.trigger_time = base::TimeTicks::Now();
-
-  // The requeue callback holds a WeakPtr to the queue, so it is a no-op if the
-  // queue (and the service that owns it) is gone by the time the upload
-  // completes. (`base::BindOnce` only cancels on an invalidated WeakPtr for
-  // member function targets, so the lambda checks it explicitly.)
-  task.batch = std::make_unique<TypedPendingEventsBatch<EventProto>>(
-      queue.TakeAll(),
-      base::BindOnce(
-          [](base::WeakPtr<EventQueue<EventProto>> queue, int max_events,
-             typename EventQueue<EventProto>::Entries events) {
-            if (queue) {
-              queue->Requeue(std::move(events), max_events);
-            }
-          },
-          queue.GetWeakPtr(), max_events));
+  task.batch = population.TakePendingEvents();
   return task;
 }
 
@@ -232,18 +264,48 @@ void PrivateInsightsService::TriggerUpload() {
     return;
   }
 
-  if (base::FeatureList::IsEnabled(kPrivateInsightsUploadTaskPipeline)) {
-    TriggerUploadTask();
-    return;
+  DCHECK(upload_round_.empty());
+  DCHECK(!legacy_upload_in_round_);
+  for (size_t i = 0; i < populations_.size(); ++i) {
+    if (populations_[i]->pending_event_count() > 0) {
+      upload_round_.push_back(i);
+    }
   }
-
-  ContextualCueEventQueue::Entries pending_events =
-      contextual_cue_events_.TakeAll();
-  if (pending_events.empty()) {
+  legacy_upload_in_round_ =
+      !contextual_cue_population_ && !contextual_cue_events_.empty();
+  if (upload_round_.empty() && !legacy_upload_in_round_) {
     base::UmaHistogramEnumeration(kTriggerUploadOutcomeHistogram,
                                   TriggerUploadOutcome::kSkippedNoData);
     return;
   }
+  round_task_posted_ = false;
+  UploadNextInRound();
+}
+
+void PrivateInsightsService::UploadNextInRound() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!is_upload_running_);
+  while (!upload_round_.empty()) {
+    Population& population = *populations_[upload_round_.front()];
+    upload_round_.pop_front();
+    UploadPopulation(population);
+    if (is_upload_running_) {
+      return;  // Continues from OnUploadTaskComplete().
+    }
+    // Nothing was posted for this population (no server URI); try the next.
+  }
+  if (legacy_upload_in_round_) {
+    legacy_upload_in_round_ = false;
+    UploadLegacyContextualCues();
+  }
+}
+
+void PrivateInsightsService::UploadLegacyContextualCues() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!is_upload_running_);
+  ContextualCueEventQueue::Entries pending_events =
+      contextual_cue_events_.TakeAll();
+  DCHECK(!pending_events.empty());
 
   fcp_task_env_->result().Clear();
   SerializeEventsToQueryResult<events::ContextualCueLogEvent>(
@@ -307,24 +369,18 @@ PrivateInsightsService::UploadBlocking(
   return result;
 }
 
-void PrivateInsightsService::TriggerUploadTask() {
+void PrivateInsightsService::UploadPopulation(Population& population) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!is_upload_running_);
 
-  // TODO(b/574637098): Iterate over registered populations instead of
-  // hard-coding Contextual Cues once the population registry lands.
-  UploadTask task = MakeUploadTask(contextual_cue_events_,
-                                   kFcpPopulationNameContextualCues.Get(),
-                                   kMaxContextualCueEvents.Get());
-  if (task.batch->size() == 0) {
-    base::UmaHistogramEnumeration(kTriggerUploadOutcomeHistogram,
-                                  TriggerUploadOutcome::kSkippedNoData);
-    return;
-  }
+  UploadTask task = MakeUploadTask(population);
+  DCHECK_GT(task.batch->size(), 0u);
   if (task.server_uri.empty()) {
-    // Misconfiguration; nothing can be uploaded. Record same federated
+    // Misconfiguration; nothing can be uploaded. Record the same federated
     // computation outcome the original path reports from the thread pool, and
-    // drop the batch (the original path doesn't requeue in this case either).
+    // drop the batch: `task` goes out of scope here without `Requeue()` being
+    // called, so the events it took from the population are destroyed with it
+    // (the original path doesn't requeue in this case either).
     base::UmaHistogramEnumeration(kTriggerUploadOutcomeHistogram,
                                   TriggerUploadOutcome::kSkippedNoServerUri);
     base::UmaHistogramEnumeration(
@@ -343,14 +399,19 @@ void PrivateInsightsService::TriggerUploadTask() {
       base::BindOnce(&PrivateInsightsService::OnUploadTaskComplete,
                      weak_ptr_factory_.GetWeakPtr()));
 
-  base::UmaHistogramEnumeration(kTriggerUploadOutcomeHistogram,
-                                TriggerUploadOutcome::kTaskPosted);
+  // One `kTaskPosted` per round. The legacy upload records its own, so when
+  // it is part of the round it provides the sample.
+  if (!round_task_posted_ && !legacy_upload_in_round_) {
+    base::UmaHistogramEnumeration(kTriggerUploadOutcomeHistogram,
+                                  TriggerUploadOutcome::kTaskPosted);
+  }
+  round_task_posted_ = true;
 }
 
 // static
 PrivateInsightsService::UploadTaskResult PrivateInsightsService::RunUploadTask(
     UploadTask task) {
-  DCHECK(!task.server_uri.empty());  // Checked in TriggerUploadTask().
+  DCHECK(!task.server_uri.empty());  // Checked in UploadPopulation().
   base::UmaHistogramTimes(kUploadPendingTimeHistogram,
                           base::TimeTicks::Now() - task.trigger_time);
 
@@ -475,6 +536,7 @@ void PrivateInsightsService::OnUploadTaskComplete(
     // guarantees of FCP.
     upload_result.task.batch->Requeue();
   }
+  UploadNextInRound();
 }
 
 // static
