@@ -48,6 +48,7 @@
 #include "components/sync/protocol/preference_specifics.pb.h"
 #include "components/sync/service/sync_service_impl.h"
 #include "components/sync_preferences/common_syncable_prefs_database.h"
+#include "components/sync_preferences/features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -1313,6 +1314,256 @@ IN_PROC_BROWSER_TEST_P(SingleClientPreferencesWithAccountStorageMergeSyncTest,
   EXPECT_EQ(GetPrefs(0)->GetList(
                 sync_preferences::kSyncableMergeableListPrefForTesting),
             updated_value);
+}
+
+class SingleClientPreferencesWithAccountStorageMergeRemovalSyncTest
+    : public SingleClientPreferencesWithAccountStorageSyncTest {
+  base::test::ScopedFeatureList feature_list_{
+      sync_preferences::features::kSyncUnmergeRemotePrefRemovals};
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    SingleClientPreferencesWithAccountStorageMergeRemovalSyncTest,
+    GetSyncTestModes(),
+    testing::PrintToStringParamName());
+
+IN_PROC_BROWSER_TEST_P(
+    SingleClientPreferencesWithAccountStorageMergeRemovalSyncTest,
+    ShouldRemoveRemotelyDeletedListEntryFromLocalStore) {
+  ASSERT_TRUE(SetupClients());
+  GetRegistry(GetProfile(0))
+      ->RegisterListPref(sync_preferences::kSyncableMergeableListPrefForTesting,
+                         user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  ASSERT_FALSE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+
+  // Seed a local-only entry along with entries shared with the server before
+  // enabling sync.
+  GetPrefs(0)->SetList(sync_preferences::kSyncableMergeableListPrefForTesting,
+                       base::ListValue()
+                           .Append("local.com")
+                           .Append("cnn.com")
+                           .Append("facebook.com"));
+
+  InjectPreferenceToFakeServer(
+      syncer::PREFERENCES,
+      sync_preferences::kSyncableMergeableListPrefForTesting,
+      base::Value(base::ListValue().Append("cnn.com").Append("facebook.com")));
+
+  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+  ASSERT_EQ(GetPrefs(0)->GetList(
+                sync_preferences::kSyncableMergeableListPrefForTesting),
+            base::ListValue()
+                .Append("cnn.com")
+                .Append("facebook.com")
+                .Append("local.com"));
+
+  // Remote update removes "facebook.com".
+  InjectPreferenceToFakeServer(
+      syncer::PREFERENCES,
+      sync_preferences::kSyncableMergeableListPrefForTesting,
+      base::Value(base::ListValue().Append("cnn.com")));
+  ASSERT_TRUE(
+      PrefValueChecker(
+          GetPrefs(0), sync_preferences::kSyncableMergeableListPrefForTesting,
+          base::Value(base::ListValue().Append("cnn.com").Append("local.com")))
+          .Wait());
+
+  // Disable syncing preferences; the local-only and kept entries remain and the
+  // deleted entry stays gone.
+  ASSERT_TRUE(GetClient(0)->DisableSelectableType(
+      syncer::UserSelectableType::kPreferences));
+  ASSERT_FALSE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+  EXPECT_EQ(GetPrefs(0)->GetList(
+                sync_preferences::kSyncableMergeableListPrefForTesting),
+            base::ListValue().Append("local.com").Append("cnn.com"));
+}
+
+IN_PROC_BROWSER_TEST_P(
+    SingleClientPreferencesWithAccountStorageMergeRemovalSyncTest,
+    ShouldRemoveRemotelyDeletedDictEntryFromLocalStore) {
+  ASSERT_TRUE(SetupClients());
+  GetRegistry(GetProfile(0))
+      ->RegisterDictionaryPref(
+          sync_preferences::kSyncableMergeableDictPrefForTesting,
+          user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  ASSERT_FALSE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+
+  // Seed a local-only key and subkey before enabling sync.
+  GetPrefs(0)->SetDict(
+      sync_preferences::kSyncableMergeableDictPrefForTesting,
+      base::DictValue()
+          .Set("local.com", "allow")
+          .Set("nested", base::DictValue().Set("local_sub", "allow")));
+
+  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+
+  GetPrefs(0)->SetDict(
+      sync_preferences::kSyncableMergeableDictPrefForTesting,
+      base::DictValue()
+          .Set("local.com", "allow")
+          .Set("kept.com", "allow")
+          .Set("removed.com", "deny")
+          .Set("nested", base::DictValue()
+                             .Set("local_sub", "allow")
+                             .Set("removed_sub", "deny"))
+          .Set("emptied_nested", base::DictValue().Set("sub", "deny")));
+
+  ASSERT_TRUE(
+      FakeServerPrefMatchesValueChecker(
+          syncer::DataType::PREFERENCES,
+          sync_preferences::kSyncableMergeableDictPrefForTesting,
+          ConvertPrefValueToValueInSpecifics(base::Value(
+              base::DictValue()
+                  .Set("kept.com", "allow")
+                  .Set("removed.com", "deny")
+                  .Set("nested", base::DictValue().Set("removed_sub", "deny"))
+                  .Set("emptied_nested",
+                       base::DictValue().Set("sub", "deny")))))
+          .Wait());
+
+  // Remote update removes "removed.com", "nested.removed_sub", and
+  // "emptied_nested".
+  InjectPreferenceToFakeServer(
+      syncer::PREFERENCES,
+      sync_preferences::kSyncableMergeableDictPrefForTesting,
+      base::Value(base::DictValue().Set("kept.com", "allow")));
+
+  base::DictValue expected_after_removal =
+      base::DictValue()
+          .Set("local.com", "allow")
+          .Set("kept.com", "allow")
+          .Set("nested", base::DictValue().Set("local_sub", "allow"));
+  ASSERT_TRUE(
+      PrefValueChecker(GetPrefs(0),
+                       sync_preferences::kSyncableMergeableDictPrefForTesting,
+                       base::Value(expected_after_removal.Clone()))
+          .Wait());
+
+  // Adding another remote key does not resurrect the deleted entries.
+  InjectPreferenceToFakeServer(
+      syncer::PREFERENCES,
+      sync_preferences::kSyncableMergeableDictPrefForTesting,
+      base::Value(base::DictValue()
+                      .Set("kept.com", "allow")
+                      .Set("added.com", "allow")));
+
+  ASSERT_TRUE(
+      PrefValueChecker(
+          GetPrefs(0), sync_preferences::kSyncableMergeableDictPrefForTesting,
+          base::Value(expected_after_removal.Clone().Set("added.com", "allow")))
+          .Wait());
+
+  // Disable syncing preferences; local-only entries remain and deleted ones
+  // stay gone.
+  ASSERT_TRUE(GetClient(0)->DisableSelectableType(
+      syncer::UserSelectableType::kPreferences));
+  ASSERT_FALSE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+  EXPECT_EQ(GetPrefs(0)->GetDict(
+                sync_preferences::kSyncableMergeableDictPrefForTesting),
+            expected_after_removal);
+}
+
+class SingleClientPreferencesWithAccountStorageMergeRemovalDisabledSyncTest
+    : public SingleClientPreferencesWithAccountStorageSyncTest {
+ public:
+  SingleClientPreferencesWithAccountStorageMergeRemovalDisabledSyncTest() {
+    feature_list_.InitAndDisableFeature(
+        sync_preferences::features::kSyncUnmergeRemotePrefRemovals);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    SingleClientPreferencesWithAccountStorageMergeRemovalDisabledSyncTest,
+    GetSyncTestModes(),
+    testing::PrintToStringParamName());
+
+IN_PROC_BROWSER_TEST_P(
+    SingleClientPreferencesWithAccountStorageMergeRemovalDisabledSyncTest,
+    ShouldKeepDeletedEntriesInLocalStore) {
+  ASSERT_TRUE(SetupClients());
+  GetRegistry(GetProfile(0))
+      ->RegisterListPref(sync_preferences::kSyncableMergeableListPrefForTesting,
+                         user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  GetRegistry(GetProfile(0))
+      ->RegisterDictionaryPref(
+          sync_preferences::kSyncableMergeableDictPrefForTesting,
+          user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  ASSERT_FALSE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+
+  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+
+  base::ListValue initial_list =
+      base::ListValue().Append("kept.com").Append("removed.com");
+  GetPrefs(0)->SetList(sync_preferences::kSyncableMergeableListPrefForTesting,
+                       initial_list.Clone());
+  base::DictValue initial_dict =
+      base::DictValue().Set("kept.com", "allow").Set("removed.com", "deny");
+  GetPrefs(0)->SetDict(sync_preferences::kSyncableMergeableDictPrefForTesting,
+                       initial_dict.Clone());
+  ASSERT_TRUE(
+      FakeServerPrefMatchesValueChecker(
+          syncer::DataType::PREFERENCES,
+          sync_preferences::kSyncableMergeableListPrefForTesting,
+          ConvertPrefValueToValueInSpecifics(base::Value(initial_list.Clone())))
+          .Wait());
+  ASSERT_TRUE(
+      FakeServerPrefMatchesValueChecker(
+          syncer::DataType::PREFERENCES,
+          sync_preferences::kSyncableMergeableDictPrefForTesting,
+          ConvertPrefValueToValueInSpecifics(base::Value(initial_dict.Clone())))
+          .Wait());
+
+  // Remote updates remove "removed.com" and add "added.com".
+  InjectPreferenceToFakeServer(
+      syncer::PREFERENCES,
+      sync_preferences::kSyncableMergeableListPrefForTesting,
+      base::Value(base::ListValue().Append("kept.com").Append("added.com")));
+  InjectPreferenceToFakeServer(
+      syncer::PREFERENCES,
+      sync_preferences::kSyncableMergeableDictPrefForTesting,
+      base::Value(base::DictValue()
+                      .Set("kept.com", "allow")
+                      .Set("added.com", "allow")));
+
+  // With the flag disabled, "removed.com" remains in the local store and
+  // resurrects in the merged values.
+  ASSERT_TRUE(
+      PrefValueChecker(GetPrefs(0),
+                       sync_preferences::kSyncableMergeableListPrefForTesting,
+                       base::Value(base::ListValue()
+                                       .Append("kept.com")
+                                       .Append("added.com")
+                                       .Append("removed.com")))
+          .Wait());
+  ASSERT_TRUE(PrefValueChecker(
+                  GetPrefs(0),
+                  sync_preferences::kSyncableMergeableDictPrefForTesting,
+                  base::Value(initial_dict.Clone().Set("added.com", "allow")))
+                  .Wait());
+
+  ASSERT_TRUE(GetClient(0)->DisableSelectableType(
+      syncer::UserSelectableType::kPreferences));
+  ASSERT_FALSE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+  EXPECT_EQ(GetPrefs(0)->GetList(
+                sync_preferences::kSyncableMergeableListPrefForTesting),
+            initial_list);
+  EXPECT_EQ(GetPrefs(0)->GetDict(
+                sync_preferences::kSyncableMergeableDictPrefForTesting),
+            initial_dict);
 }
 
 #if BUILDFLAG(IS_ANDROID)

@@ -27,6 +27,7 @@
 #include "components/sync/test/fake_sync_change_processor.h"
 #include "components/sync/test/sync_change_processor_wrapper_for_test.h"
 #include "components/sync/test/test_sync_service.h"
+#include "components/sync_preferences/features.h"
 #include "components/sync_preferences/pref_model_associator_client.h"
 #include "components/sync_preferences/pref_service_mock_factory.h"
 #include "components/sync_preferences/pref_service_syncable.h"
@@ -782,6 +783,10 @@ class PrefModelAssociatorWithPreferencesAccountStorageTest
     pref_registry_->RegisterStringPref(
         kStringPrefName, std::string(),
         user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+    pref_registry_->RegisterListPref(
+        kListPrefName, user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+    pref_registry_->RegisterDictionaryPref(
+        kDictionaryPrefName, user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
     pref_registry_->RegisterBooleanPref(
         kCustomMergePrefName, false,
         user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
@@ -1136,6 +1141,76 @@ TEST_F(PrefModelAssociatorWithPreferencesAccountStorageTest,
   EXPECT_EQ(changes[0].sync_data().ToString(),
             CreateLocalSyncData(kStringPrefName, base::Value("new_value"))
                 .ToString());
+}
+
+class PrefModelAssociatorRemoteRemovalsTest
+    : public PrefModelAssociatorWithPreferencesAccountStorageTest {
+ private:
+  base::test::ScopedFeatureList unmerge_remote_removals_feature_list_{
+      features::kSyncUnmergeRemotePrefRemovals};
+};
+
+TEST_F(PrefModelAssociatorRemoteRemovalsTest,
+       ShouldRemoveDeletedListEntryOnProcessSyncChangesUpdate) {
+  local_pref_store_->SetValueSilently(kListPrefName,
+                                      base::Value(base::ListValue()
+                                                      .Append("local_only")
+                                                      .Append("item1")
+                                                      .Append("item2")),
+                                      0);
+
+  syncer::SyncDataList initial_data;
+  initial_data.push_back(CreateRemoteSyncData(
+      kListPrefName, base::ListValue().Append("item1").Append("item2")));
+  MergeDataAndStartSyncing(initial_data);
+
+  syncer::SyncChangeList changes;
+  changes.push_back(syncer::SyncChange(
+      FROM_HERE, syncer::SyncChange::ACTION_UPDATE,
+      CreateRemoteSyncData(kListPrefName, base::ListValue().Append("item1"))));
+  EXPECT_FALSE(pref_model_associator_->ProcessSyncChanges(FROM_HERE, changes)
+                   .has_value());
+
+  EXPECT_EQ(pref_service_->GetList(kListPrefName),
+            base::ListValue().Append("item1").Append("local_only"));
+
+  // Stop syncing so only `local_pref_store_` remains; the deleted item must not
+  // resurrect, while the local-only item is preserved.
+  pref_model_associator_->StopSyncing(syncer::PREFERENCES);
+  EXPECT_EQ(pref_service_->GetList(kListPrefName),
+            base::ListValue().Append("local_only").Append("item1"));
+}
+
+TEST_F(PrefModelAssociatorRemoteRemovalsTest,
+       ShouldRemoveDeletedDictEntryOnProcessSyncChangesUpdate) {
+  local_pref_store_->SetValueSilently(kDictionaryPrefName,
+                                      base::Value(base::DictValue()
+                                                      .Set("local_only", "v0")
+                                                      .Set("k1", "v1")
+                                                      .Set("k2", "v2")),
+                                      0);
+
+  syncer::SyncDataList initial_data;
+  initial_data.push_back(CreateRemoteSyncData(
+      kDictionaryPrefName, base::DictValue().Set("k1", "v1").Set("k2", "v2")));
+  MergeDataAndStartSyncing(initial_data);
+
+  syncer::SyncChangeList changes;
+  changes.push_back(syncer::SyncChange(
+      FROM_HERE, syncer::SyncChange::ACTION_UPDATE,
+      CreateRemoteSyncData(kDictionaryPrefName,
+                           base::DictValue().Set("k1", "v1"))));
+  EXPECT_FALSE(pref_model_associator_->ProcessSyncChanges(FROM_HERE, changes)
+                   .has_value());
+
+  base::DictValue expected_dict =
+      base::DictValue().Set("local_only", "v0").Set("k1", "v1");
+  EXPECT_EQ(pref_service_->GetDict(kDictionaryPrefName), expected_dict);
+
+  // Stop syncing so only `local_pref_store_` remains; the deleted key must not
+  // resurrect, while the local-only key is preserved.
+  pref_model_associator_->StopSyncing(syncer::PREFERENCES);
+  EXPECT_EQ(pref_service_->GetDict(kDictionaryPrefName), expected_dict);
 }
 }  // namespace
 

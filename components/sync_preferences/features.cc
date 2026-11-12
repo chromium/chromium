@@ -16,4 +16,6 @@ BASE_FEATURE(kEnableCrossDevicePrefTracker,
 BASE_FEATURE(kCrossDevicePrefTrackerExtraLogs,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSyncUnmergeRemotePrefRemovals, base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace sync_preferences::features

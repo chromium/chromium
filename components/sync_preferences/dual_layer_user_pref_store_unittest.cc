@@ -36,6 +36,10 @@ constexpr char kPriorityPrefName[] = "priority.pref";
 constexpr char kNonExistentPrefName[] = "nonexistent-pref";
 constexpr char kNonSyncablePrefName[] = "nonsyncable.pref";
 constexpr char kHistorySensitivePrefName[] = "sensitive.pref";
+constexpr char kHistorySensitiveMergeableListPref[] =
+    "sensitive.mergeable.list.pref";
+constexpr char kHistorySensitiveMergeableDictPref[] =
+    "sensitive.mergeable.dict.pref";
 constexpr char kMergeableListPref[] = "mergeable.list.pref";
 constexpr char kMergeableDictPref1[] = "mergeable.dict.pref1";
 constexpr char kMergeableDictPref2[] = "mergeable.dict.pref2";
@@ -68,6 +72,13 @@ const TestSyncablePrefsDatabase::PrefsMap kSyncablePrefsDatabase = {
     {kHistorySensitivePrefName,
      {0, syncer::PREFERENCES, PrefSensitivity::kSensitiveRequiresHistory,
       MergeBehavior::kNone, WriteBehavior::kWriteToBoth}},
+    {kHistorySensitiveMergeableListPref,
+     {0, syncer::PREFERENCES, PrefSensitivity::kSensitiveRequiresHistory,
+      MergeBehavior::kMergeableListWithRewriteOnUpdate,
+      WriteBehavior::kWriteToBoth}},
+    {kHistorySensitiveMergeableDictPref,
+     {0, syncer::PREFERENCES, PrefSensitivity::kSensitiveRequiresHistory,
+      MergeBehavior::kMergeableDict, WriteBehavior::kWriteToBoth}},
     {kMergeableListPref,
      {0, syncer::PREFERENCES, PrefSensitivity::kNone,
       MergeBehavior::kMergeableListWithRewriteOnUpdate,
@@ -958,9 +969,8 @@ TEST_F(DualLayerUserPrefStoreTest, ShouldCommitPendingWritesForBothStores) {
 
 // Tests that notifications are not sent out if the same value already exists in
 // the local store, i.e. the effective value is unchanged.
-TEST_F(
-    DualLayerUserPrefStoreTest,
-    ShouldNotNotifyIfEffectiveValueIsUnchangedUponSetValueInAccountStoreOnly) {
+TEST_F(DualLayerUserPrefStoreTest,
+       ShouldNotNotifyIfEffectiveValueIsUnchangedUponSetValueFromSync) {
   store()->GetLocalPrefStore()->SetValueSilently(kPrefName,
                                                  base::Value("value"), 0);
 
@@ -977,14 +987,14 @@ TEST_F(
   // notified.
   EXPECT_CALL(account_store_observer, OnPrefValueChanged);
 
-  store()->SetValueInAccountStoreOnly(kPrefName, base::Value("value"), 0);
+  store()->SetValueFromSync(kPrefName, base::Value("value"), 0);
 
   store()->GetAccountPrefStore()->RemoveObserver(&account_store_observer);
   store()->RemoveObserver(&observer);
 }
 
 TEST_F(DualLayerUserPrefStoreTest,
-       ShouldNotifyIfEffectiveValueChangesUponSetValueInAccountStoreOnly) {
+       ShouldNotifyIfEffectiveValueChangesUponSetValueFromSync) {
   store()->GetLocalPrefStore()->SetValueSilently(kPrefName,
                                                  base::Value("value"), 0);
 
@@ -998,7 +1008,7 @@ TEST_F(DualLayerUserPrefStoreTest,
   EXPECT_CALL(observer, OnPrefValueChanged);
   EXPECT_CALL(account_store_observer, OnPrefValueChanged);
 
-  store()->SetValueInAccountStoreOnly(kPrefName, base::Value("new value"), 0);
+  store()->SetValueFromSync(kPrefName, base::Value("new value"), 0);
 
   store()->GetAccountPrefStore()->RemoveObserver(&account_store_observer);
   store()->RemoveObserver(&observer);
@@ -2565,6 +2575,380 @@ TEST_F(DualLayerUserPrefStoreMergeTest,
 
   // The pointer should be stable.
   EXPECT_EQ(merged_value1, merged_value2);
+}
+
+class DualLayerUserPrefStoreRemoteRemovalsTest
+    : public DualLayerUserPrefStoreMergeTest {
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      features::kSyncUnmergeRemotePrefRemovals};
+};
+
+TEST_F(DualLayerUserPrefStoreRemoteRemovalsTest,
+       ShouldRemoveDeletedAccountEntriesFromLocalStoreForMergeableListPref) {
+  store()->SetValueSilently(
+      kMergeableListPref,
+      base::Value(base::ListValue().Append("a").Append("b")), 0);
+
+  EXPECT_CALL(observer_, OnPrefValueChanged(kMergeableListPref));
+  store()->SetValueFromSync(kMergeableListPref,
+                            base::Value(base::ListValue().Append("a")), 0);
+
+  base::Value expected(base::ListValue().Append("a"));
+  EXPECT_TRUE(ValueInStoreIs(*store()->GetLocalPrefStore(), kMergeableListPref,
+                             expected));
+  EXPECT_TRUE(ValueInStoreIs(*store()->GetAccountPrefStore(),
+                             kMergeableListPref, expected));
+  EXPECT_TRUE(ValueInStoreIs(*store(), kMergeableListPref, expected));
+}
+
+TEST_F(DualLayerUserPrefStoreRemoteRemovalsTest,
+       ShouldPreserveLocalOnlyEntriesAndOrderWhenRemovingSyncedListEntries) {
+  store()->GetLocalPrefStore()->SetValueSilently(
+      kMergeableListPref,
+      base::Value(base::ListValue()
+                      .Append("local1")
+                      .Append("synced1")
+                      .Append("local2")
+                      .Append("synced2")
+                      .Append("local3")),
+      0);
+  store()->GetAccountPrefStore()->SetValueSilently(
+      kMergeableListPref,
+      base::Value(base::ListValue().Append("synced1").Append("synced2")), 0);
+
+  EXPECT_CALL(observer_, OnPrefValueChanged(kMergeableListPref));
+  store()->SetValueFromSync(
+      kMergeableListPref, base::Value(base::ListValue().Append("synced2")), 0);
+
+  EXPECT_TRUE(ValueInStoreIs(*store()->GetLocalPrefStore(), kMergeableListPref,
+                             base::Value(base::ListValue()
+                                             .Append("local1")
+                                             .Append("local2")
+                                             .Append("synced2")
+                                             .Append("local3"))));
+  EXPECT_TRUE(ValueInStoreIs(*store()->GetAccountPrefStore(),
+                             kMergeableListPref,
+                             base::Value(base::ListValue().Append("synced2"))));
+  EXPECT_TRUE(ValueInStoreIs(*store(), kMergeableListPref,
+                             base::Value(base::ListValue()
+                                             .Append("synced2")
+                                             .Append("local1")
+                                             .Append("local2")
+                                             .Append("local3"))));
+}
+
+TEST_F(DualLayerUserPrefStoreRemoteRemovalsTest,
+       ShouldRemoveDeletedAccountEntriesFromLocalStoreForMergeableDictPref) {
+  store()->GetLocalPrefStore()->SetValueSilently(
+      kMergeableDictPref1,
+      base::Value(
+          base::DictValue().Set("local_only", "0").Set("a", "1").Set("b", "2")),
+      0);
+  store()->GetAccountPrefStore()->SetValueSilently(
+      kMergeableDictPref1,
+      base::Value(base::DictValue().Set("a", "1").Set("b", "2")), 0);
+
+  EXPECT_CALL(observer_, OnPrefValueChanged(kMergeableDictPref1));
+  store()->SetValueFromSync(kMergeableDictPref1,
+                            base::Value(base::DictValue().Set("a", "1")), 0);
+
+  EXPECT_TRUE(ValueInStoreIs(
+      *store()->GetLocalPrefStore(), kMergeableDictPref1,
+      base::Value(base::DictValue().Set("local_only", "0").Set("a", "1"))));
+  EXPECT_TRUE(ValueInStoreIs(*store()->GetAccountPrefStore(),
+                             kMergeableDictPref1,
+                             base::Value(base::DictValue().Set("a", "1"))));
+  EXPECT_TRUE(ValueInStoreIs(
+      *store(), kMergeableDictPref1,
+      base::Value(base::DictValue().Set("local_only", "0").Set("a", "1"))));
+}
+
+TEST_F(DualLayerUserPrefStoreRemoteRemovalsTest,
+       ShouldHandleNestedDictRemovalsAndPruneEmptiedSubdictsInLocalStore) {
+  store()->GetLocalPrefStore()->SetValueSilently(
+      kMergeableDictPref1,
+      base::Value(base::DictValue()
+                      .Set("sub1", base::DictValue()
+                                       .Set("local_sub", "1")
+                                       .Set("synced_sub", "2"))
+                      .Set("sub2", base::DictValue().Set("synced_only", "3"))),
+      0);
+  store()->GetAccountPrefStore()->SetValueSilently(
+      kMergeableDictPref1,
+      base::Value(
+          base::DictValue()
+              .Set(
+                  "sub1",
+                  base::DictValue().Set("kept_sub", "0").Set("synced_sub", "2"))
+              .Set("sub2", base::DictValue().Set("synced_only", "3"))),
+      0);
+
+  base::Value updated_account(
+      base::DictValue().Set("sub1", base::DictValue().Set("kept_sub", "0")));
+  EXPECT_CALL(observer_, OnPrefValueChanged(kMergeableDictPref1));
+  store()->SetValueFromSync(kMergeableDictPref1, updated_account.Clone(), 0);
+
+  // `sub1` keeps `local_sub`; `sub2` became empty and is pruned.
+  EXPECT_TRUE(
+      ValueInStoreIs(*store()->GetLocalPrefStore(), kMergeableDictPref1,
+                     base::Value(base::DictValue().Set(
+                         "sub1", base::DictValue().Set("local_sub", "1")))));
+  EXPECT_TRUE(ValueInStoreIs(*store()->GetAccountPrefStore(),
+                             kMergeableDictPref1, updated_account));
+  EXPECT_TRUE(ValueInStoreIs(
+      *store(), kMergeableDictPref1,
+      base::Value(base::DictValue().Set(
+          "sub1",
+          base::DictValue().Set("kept_sub", "0").Set("local_sub", "1")))));
+}
+
+TEST_F(DualLayerUserPrefStoreRemoteRemovalsTest,
+       ShouldNotReintroduceRemovedEntriesOnSubsequentRemoteUpdate) {
+  // Mergeable list pref.
+  store()->SetValueSilently(kMergeableListPref,
+                            base::Value(base::ListValue().Append("U1")), 0);
+
+  EXPECT_CALL(observer_, OnPrefValueChanged(kMergeableListPref));
+  store()->SetValueFromSync(kMergeableListPref, base::Value(base::ListValue()),
+                            0);
+  EXPECT_TRUE(ValueInStoreIs(*store(), kMergeableListPref,
+                             base::Value(base::ListValue())));
+
+  EXPECT_CALL(observer_, OnPrefValueChanged(kMergeableListPref));
+  store()->SetValueFromSync(kMergeableListPref,
+                            base::Value(base::ListValue().Append("U2")), 0);
+
+  base::Value expected_list(base::ListValue().Append("U2"));
+  EXPECT_TRUE(ValueInStoreIs(*store()->GetLocalPrefStore(), kMergeableListPref,
+                             base::Value(base::ListValue())));
+  EXPECT_TRUE(ValueInStoreIs(*store()->GetAccountPrefStore(),
+                             kMergeableListPref, expected_list));
+  EXPECT_TRUE(ValueInStoreIs(*store(), kMergeableListPref, expected_list));
+
+  // Mergeable dict pref.
+  store()->SetValueSilently(kMergeableDictPref1,
+                            base::Value(base::DictValue().Set("k1", "v1")), 0);
+
+  EXPECT_CALL(observer_, OnPrefValueChanged(kMergeableDictPref1));
+  store()->SetValueFromSync(kMergeableDictPref1, base::Value(base::DictValue()),
+                            0);
+  EXPECT_TRUE(ValueInStoreIs(*store(), kMergeableDictPref1,
+                             base::Value(base::DictValue())));
+
+  EXPECT_CALL(observer_, OnPrefValueChanged(kMergeableDictPref1));
+  store()->SetValueFromSync(kMergeableDictPref1,
+                            base::Value(base::DictValue().Set("k2", "v2")), 0);
+
+  base::Value expected_dict(base::DictValue().Set("k2", "v2"));
+  EXPECT_TRUE(ValueInStoreIs(*store()->GetLocalPrefStore(), kMergeableDictPref1,
+                             base::Value(base::DictValue())));
+  EXPECT_TRUE(ValueInStoreIs(*store()->GetAccountPrefStore(),
+                             kMergeableDictPref1, expected_dict));
+  EXPECT_TRUE(ValueInStoreIs(*store(), kMergeableDictPref1, expected_dict));
+}
+
+TEST_F(DualLayerUserPrefStoreRemoteRemovalsTest,
+       ShouldLeaveLocalStoreUntouchedWhenRemoteUpdateRemovesNothing) {
+  base::Value initial_local_list(
+      base::ListValue().Append("local_only").Append("a").Append("b"));
+  store()->GetLocalPrefStore()->SetValueSilently(kMergeableListPref,
+                                                 initial_local_list.Clone(), 0);
+  store()->GetAccountPrefStore()->SetValueSilently(
+      kMergeableListPref,
+      base::Value(base::ListValue().Append("a").Append("b")), 0);
+
+  base::Value initial_local_dict(
+      base::DictValue().Set("local_only", "0").Set("k1", "local_v1"));
+  store()->GetLocalPrefStore()->SetValueSilently(kMergeableDictPref1,
+                                                 initial_local_dict.Clone(), 0);
+  store()->GetAccountPrefStore()->SetValueSilently(
+      kMergeableDictPref1, base::Value(base::DictValue().Set("k1", "v1")), 0);
+
+  testing::StrictMock<MockPrefStoreObserver> local_observer;
+  local_store_->AddObserver(&local_observer);
+  EXPECT_CALL(local_observer, OnPrefValueChanged(testing::_)).Times(0);
+
+  // Mergeable list pref: reordering and adding an item removes nothing.
+  EXPECT_CALL(observer_, OnPrefValueChanged(kMergeableListPref));
+  store()->SetValueFromSync(
+      kMergeableListPref,
+      base::Value(base::ListValue().Append("b").Append("a").Append("c")), 0);
+
+  EXPECT_TRUE(ValueInStoreIs(*store()->GetLocalPrefStore(), kMergeableListPref,
+                             initial_local_list));
+  EXPECT_TRUE(ValueInStoreIs(
+      *store(), kMergeableListPref,
+      base::Value(base::ListValue().Append("b").Append("a").Append("c").Append(
+          "local_only"))));
+
+  // Mergeable dict pref: updating a value and adding a key removes nothing.
+  EXPECT_CALL(observer_, OnPrefValueChanged(kMergeableDictPref1));
+  store()->SetValueFromSync(
+      kMergeableDictPref1,
+      base::Value(base::DictValue().Set("k1", "updated_v1").Set("k2", "v2")),
+      0);
+
+  EXPECT_TRUE(ValueInStoreIs(*store()->GetLocalPrefStore(), kMergeableDictPref1,
+                             initial_local_dict));
+  EXPECT_TRUE(ValueInStoreIs(*store(), kMergeableDictPref1,
+                             base::Value(base::DictValue()
+                                             .Set("local_only", "0")
+                                             .Set("k1", "updated_v1")
+                                             .Set("k2", "v2"))));
+
+  local_store_->RemoveObserver(&local_observer);
+}
+
+TEST_F(DualLayerUserPrefStoreRemoteRemovalsTest,
+       ShouldLeaveLocalStoreUntouchedWhenEitherStoreHasNoValue) {
+  // Mergeable list pref with a local value only.
+  base::Value initial_list(base::ListValue().Append("a").Append("b"));
+  store()->GetLocalPrefStore()->SetValueSilently(kMergeableListPref,
+                                                 initial_list.Clone(), 0);
+
+  EXPECT_CALL(observer_, OnPrefValueChanged(kMergeableListPref));
+  store()->SetValueFromSync(kMergeableListPref,
+                            base::Value(base::ListValue().Append("a")), 0);
+
+  EXPECT_TRUE(ValueInStoreIs(*store()->GetLocalPrefStore(), kMergeableListPref,
+                             initial_list));
+  EXPECT_TRUE(ValueInStoreIs(*store()->GetAccountPrefStore(),
+                             kMergeableListPref,
+                             base::Value(base::ListValue().Append("a"))));
+  EXPECT_TRUE(ValueInStoreIs(*store(), kMergeableListPref, initial_list));
+
+  // Mergeable dict pref with an account value only.
+  store()->GetAccountPrefStore()->SetValueSilently(
+      kMergeableDictPref1,
+      base::Value(base::DictValue().Set("a", "1").Set("b", "2")), 0);
+
+  EXPECT_CALL(observer_, OnPrefValueChanged(kMergeableDictPref1));
+  store()->SetValueFromSync(kMergeableDictPref1,
+                            base::Value(base::DictValue().Set("a", "1")), 0);
+
+  EXPECT_TRUE(
+      ValueInStoreIsAbsent(*store()->GetLocalPrefStore(), kMergeableDictPref1));
+  EXPECT_TRUE(ValueInStoreIs(*store(), kMergeableDictPref1,
+                             base::Value(base::DictValue().Set("a", "1"))));
+}
+
+TEST_F(DualLayerUserPrefStoreRemoteRemovalsTest,
+       ShouldNotModifyLocalStoreForNonMergeableAndCustomMergePrefs) {
+  // Non-mergeable list pref.
+  base::Value initial_list(base::ListValue().Append("a").Append("b"));
+  store()->SetValueSilently(kPref2, initial_list.Clone(), 0);
+
+  EXPECT_CALL(observer_, OnPrefValueChanged(kPref2));
+  store()->SetValueFromSync(kPref2, base::Value(base::ListValue().Append("a")),
+                            0);
+  EXPECT_TRUE(
+      ValueInStoreIs(*store()->GetLocalPrefStore(), kPref2, initial_list));
+
+  // Non-mergeable dict pref.
+  base::Value initial_dict(base::DictValue().Set("k1", "v1").Set("k2", "v2"));
+  store()->SetValueSilently(kPref3, initial_dict.Clone(), 0);
+
+  EXPECT_CALL(observer_, OnPrefValueChanged(kPref3));
+  store()->SetValueFromSync(kPref3,
+                            base::Value(base::DictValue().Set("k1", "v1")), 0);
+  EXPECT_TRUE(
+      ValueInStoreIs(*store()->GetLocalPrefStore(), kPref3, initial_dict));
+
+  // Custom merge pref.
+  store()->SetValueSilently(kCustomMergePref, initial_dict.Clone(), 0);
+
+  EXPECT_CALL(observer_, OnPrefValueChanged(kCustomMergePref));
+  store()->SetValueFromSync(kCustomMergePref,
+                            base::Value(base::DictValue().Set("k1", "v1")), 0);
+  EXPECT_TRUE(ValueInStoreIs(*store()->GetLocalPrefStore(), kCustomMergePref,
+                             initial_dict));
+}
+
+TEST_F(
+    DualLayerUserPrefStoreRemoteRemovalsTest,
+    ShouldLeaveLocalStoreUntouchedForHistorySensitiveMergeablePrefsWhenHistorySyncOff) {
+  store()->SetIsHistorySyncEnabledForTest(false);
+
+  // Remote removals in the account store must not modify the local store.
+  base::Value initial_list(base::ListValue().Append("a").Append("b"));
+  store()->GetLocalPrefStore()->SetValueSilently(
+      kHistorySensitiveMergeableListPref, initial_list.Clone(), 0);
+  store()->GetAccountPrefStore()->SetValueSilently(
+      kHistorySensitiveMergeableListPref, initial_list.Clone(), 0);
+  EXPECT_CALL(observer_,
+              OnPrefValueChanged(kHistorySensitiveMergeableListPref));
+  store()->SetValueFromSync(kHistorySensitiveMergeableListPref,
+                            base::Value(base::ListValue().Append("a")), 0);
+  EXPECT_TRUE(ValueInStoreIs(*store()->GetLocalPrefStore(),
+                             kHistorySensitiveMergeableListPref, initial_list));
+  EXPECT_TRUE(ValueInStoreIs(*store()->GetAccountPrefStore(),
+                             kHistorySensitiveMergeableListPref,
+                             base::Value(base::ListValue().Append("a"))));
+  EXPECT_TRUE(ValueInStoreIs(*store(), kHistorySensitiveMergeableListPref,
+                             initial_list));
+
+  base::Value initial_dict(base::DictValue().Set("a", "1").Set("b", "2"));
+  store()->GetLocalPrefStore()->SetValueSilently(
+      kHistorySensitiveMergeableDictPref, initial_dict.Clone(), 0);
+  store()->GetAccountPrefStore()->SetValueSilently(
+      kHistorySensitiveMergeableDictPref, initial_dict.Clone(), 0);
+  EXPECT_CALL(observer_,
+              OnPrefValueChanged(kHistorySensitiveMergeableDictPref));
+  store()->SetValueFromSync(kHistorySensitiveMergeableDictPref,
+                            base::Value(base::DictValue().Set("a", "1")), 0);
+  EXPECT_TRUE(ValueInStoreIs(*store()->GetLocalPrefStore(),
+                             kHistorySensitiveMergeableDictPref, initial_dict));
+  EXPECT_TRUE(ValueInStoreIs(*store()->GetAccountPrefStore(),
+                             kHistorySensitiveMergeableDictPref,
+                             base::Value(base::DictValue().Set("a", "1"))));
+  EXPECT_TRUE(ValueInStoreIs(*store(), kHistorySensitiveMergeableDictPref,
+                             initial_dict));
+}
+
+class DualLayerUserPrefStoreRemoteRemovalsDisabledTest
+    : public DualLayerUserPrefStoreMergeTest {
+ public:
+  DualLayerUserPrefStoreRemoteRemovalsDisabledTest() {
+    feature_list_.InitAndDisableFeature(
+        features::kSyncUnmergeRemotePrefRemovals);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(DualLayerUserPrefStoreRemoteRemovalsDisabledTest,
+       ShouldNotRemoveDeletedAccountEntriesFromLocalStore) {
+  // Mergeable list pref.
+  base::Value initial_list(base::ListValue().Append("a").Append("b"));
+  store()->SetValueSilently(kMergeableListPref, initial_list.Clone(), 0);
+
+  EXPECT_CALL(observer_, OnPrefValueChanged(kMergeableListPref));
+  store()->SetValueFromSync(kMergeableListPref,
+                            base::Value(base::ListValue().Append("a")), 0);
+
+  EXPECT_TRUE(ValueInStoreIs(*store()->GetLocalPrefStore(), kMergeableListPref,
+                             initial_list));
+  EXPECT_TRUE(ValueInStoreIs(*store()->GetAccountPrefStore(),
+                             kMergeableListPref,
+                             base::Value(base::ListValue().Append("a"))));
+  EXPECT_TRUE(ValueInStoreIs(*store(), kMergeableListPref, initial_list));
+
+  // Mergeable dict pref.
+  base::Value initial_dict(base::DictValue().Set("k1", "v1").Set("k2", "v2"));
+  store()->SetValueSilently(kMergeableDictPref1, initial_dict.Clone(), 0);
+
+  EXPECT_CALL(observer_, OnPrefValueChanged(kMergeableDictPref1));
+  store()->SetValueFromSync(kMergeableDictPref1,
+                            base::Value(base::DictValue().Set("k1", "v1")), 0);
+
+  EXPECT_TRUE(ValueInStoreIs(*store()->GetLocalPrefStore(), kMergeableDictPref1,
+                             initial_dict));
+  EXPECT_TRUE(ValueInStoreIs(*store()->GetAccountPrefStore(),
+                             kMergeableDictPref1,
+                             base::Value(base::DictValue().Set("k1", "v1"))));
+  EXPECT_TRUE(ValueInStoreIs(*store(), kMergeableDictPref1, initial_dict));
 }
 
 using DualLayerUserPrefStoreHistoryOptInTest = DualLayerUserPrefStoreTest;

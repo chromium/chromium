@@ -20,6 +20,10 @@ BASE_DECLARE_FEATURE(kEnableCrossDevicePrefTracker);
 // stable.
 BASE_DECLARE_FEATURE(kCrossDevicePrefTrackerExtraLogs);
 
+// Propagates remote entry removals to the local store for mergeable prefs
+// (crbug.com/571967962).
+BASE_DECLARE_FEATURE(kSyncUnmergeRemotePrefRemovals);
+
 }  // namespace sync_preferences::features
 
 #endif  // COMPONENTS_SYNC_PREFERENCES_FEATURES_H_

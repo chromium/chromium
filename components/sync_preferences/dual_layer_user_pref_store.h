@@ -37,7 +37,9 @@ class PrefModelAssociatorClient;
 //   the two values may be merged.
 // * Dual writes: Any changes made to prefs *on this device* are written to both
 //   stores. However, incoming changes made on other devices only go into the
-//   account store.
+//   account store, except that entries removed remotely from a mergeable pref
+//   (`MergeBehavior::kMergeableListWithRewriteOnUpdate` or `kMergeableDict`)
+//   written to both stores are also removed from the local store.
 class DualLayerUserPrefStore : public PersistentPrefStore,
                                public syncer::SyncServiceObserver {
  public:
@@ -58,17 +60,15 @@ class DualLayerUserPrefStore : public PersistentPrefStore,
   // storage. This should be called when a data type stops syncing.
   void DisableTypeAndClearAccountStore(syncer::DataType data_type);
 
-  // Sets value for preference `key` only in the account store. This is meant
-  // for use by sync components (specifically PrefModelAssociator) to insert
-  // value in the account store directly but only leads to notifications for
-  // DualLayerUserPrefStore observers if the effective value changes.
-  // Note: This does not do any merge/unmerge and does not check whether the
-  // pref `key` is syncable.
-  // TODO(crbug.com/40277783): Implement a better way to handle this usage by
-  // the sync components.
-  void SetValueInAccountStoreOnly(std::string_view key,
-                                  base::Value value,
-                                  uint32_t flags);
+  // Sets preference `key` to `value` received from sync. Meant for use by sync
+  // components (specifically PrefModelAssociator). `value` is written only to
+  // the account store. For mergeable prefs, entries removed remotely are also
+  // removed from the local store (guarded by `kSyncUnmergeRemotePrefRemovals`).
+  // Observers are only notified if the effective value changes.
+  // Note: This does not check whether `key` is syncable.
+  void SetValueFromSync(std::string_view key,
+                        base::Value value,
+                        uint32_t flags);
 
   void OnSyncServiceInitialized(syncer::SyncService* sync_service);
 
@@ -185,6 +185,12 @@ class DualLayerUserPrefStore : public PersistentPrefStore,
 
   // Returns whether the pref with the given `key` is mergeable.
   bool IsPrefKeyMergeable(std::string_view key) const;
+
+  // Removes entries deleted remotely from the local value of mergeable `key`.
+  // Must be called before `new_account_value` is written to the account store.
+  void ApplyRemoteRemovalsToLocalStore(std::string_view key,
+                                       const base::Value& new_account_value,
+                                       uint32_t flags);
 
   // Produces a "merged" view of `account_value` and `local_value`. In case
   // `pref_name` is a mergeable pref, a new merged pref is returned, which is

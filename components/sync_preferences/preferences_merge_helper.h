@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SYNC_PREFERENCES_PREFERENCES_MERGE_HELPER_H_
 #define COMPONENTS_SYNC_PREFERENCES_PREFERENCES_MERGE_HELPER_H_
 
+#include <optional>
 #include <string_view>
 #include <utility>
 
@@ -46,6 +47,17 @@ std::pair<base::DictValue, base::DictValue> UnmergeDictionaryValues(
     base::DictValue new_value,
     const base::DictValue& original_local_value,
     const base::DictValue& original_account_value);
+
+// Returns `local_value` with the entries removed remotely from
+// `old_account_value` -> `new_account_value` also removed, for mergeable prefs.
+// Local-only entries are preserved. Returns `std::nullopt` if nothing was
+// removed.
+std::optional<base::Value> GetLocalValueAfterRemoteRemovals(
+    const PrefModelAssociatorClient& client,
+    std::string_view pref_name,
+    const base::Value& local_value,
+    const base::Value& old_account_value,
+    const base::Value& new_account_value);
 
 }  // namespace helper
 }  // namespace sync_preferences

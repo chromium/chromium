@@ -23,6 +23,51 @@ MergeBehavior GetMergeBehavior(const PrefModelAssociatorClient& client,
   return metadata->merge_behavior();
 }
 
+// Removes from `local_dict` the keys that are in `old_account_dict` but not in
+// `new_account_dict`. Nested dicts are handled recursively, so local-only
+// subkeys are kept, and subdicts left empty are removed. Returns true if
+// `local_dict` changed.
+bool RemoveDeletedAccountDictEntries(base::DictValue& local_dict,
+                                     const base::DictValue& old_account_dict,
+                                     const base::DictValue& new_account_dict) {
+  const base::DictValue empty_dict;
+  bool local_dict_changed = false;
+  for (auto [key, old_account_value] : old_account_dict) {
+    base::Value* local_value = local_dict.Find(key);
+    if (!local_value) {
+      continue;
+    }
+    const base::Value* new_account_value = new_account_dict.Find(key);
+    const bool removed_from_account = !new_account_value;
+    const bool is_nested_dict =
+        old_account_value.is_dict() && local_value->is_dict() &&
+        (removed_from_account || new_account_value->is_dict());
+
+    if (!is_nested_dict) {
+      // Non-dict entries are dropped only if the key was removed.
+      if (removed_from_account) {
+        local_dict.Remove(key);
+        local_dict_changed = true;
+      }
+      continue;
+    }
+
+    // Recurse so local-only subkeys survive; a removed key diffs against {}.
+    base::DictValue& local_subdict = local_value->GetDict();
+    const bool local_subdict_changed = RemoveDeletedAccountDictEntries(
+        local_subdict, old_account_value.GetDict(),
+        removed_from_account ? empty_dict : new_account_value->GetDict());
+    local_dict_changed |= local_subdict_changed;
+    // Drop an emptied subdict, but keep an already-empty one whose key stays.
+    if (local_subdict.empty() &&
+        (local_subdict_changed || removed_from_account)) {
+      local_dict.Remove(key);
+      local_dict_changed = true;
+    }
+  }
+  return local_dict_changed;
+}
+
 }  // namespace
 
 base::ListValue MergeListValues(const base::ListValue& local_value,
@@ -184,6 +229,53 @@ std::pair<base::DictValue, base::DictValue> UnmergeDictionaryValues(
     }
   }
   return {std::move(new_local_dict), std::move(new_account_dict)};
+}
+
+std::optional<base::Value> GetLocalValueAfterRemoteRemovals(
+    const PrefModelAssociatorClient& client,
+    std::string_view pref_name,
+    const base::Value& local_value,
+    const base::Value& old_account_value,
+    const base::Value& new_account_value) {
+  switch (GetMergeBehavior(client, pref_name)) {
+    case MergeBehavior::kMergeableListWithRewriteOnUpdate: {
+      if (!local_value.is_list() || !old_account_value.is_list() ||
+          !new_account_value.is_list()) {
+        return std::nullopt;
+      }
+      const base::ListValue& old_account_list = old_account_value.GetList();
+      const base::ListValue& new_account_list = new_account_value.GetList();
+      base::ListValue updated_local = local_value.GetList().Clone();
+      const size_t removed =
+          updated_local.EraseIf([&](const base::Value& entry) {
+            return std::ranges::contains(old_account_list, entry) &&
+                   !std::ranges::contains(new_account_list, entry);
+          });
+      if (removed == 0) {
+        return std::nullopt;
+      }
+      return base::Value(std::move(updated_local));
+    }
+    case MergeBehavior::kMergeableDict: {
+      if (!local_value.is_dict() || !old_account_value.is_dict() ||
+          !new_account_value.is_dict()) {
+        return std::nullopt;
+      }
+      base::DictValue updated_local = local_value.GetDict().Clone();
+      if (!RemoveDeletedAccountDictEntries(updated_local,
+                                           old_account_value.GetDict(),
+                                           new_account_value.GetDict())) {
+        return std::nullopt;
+      }
+      return base::Value(std::move(updated_local));
+    }
+    case MergeBehavior::kCustom:
+    case MergeBehavior::kNone:
+      // `MergeBehavior::kCustom` has no generic element-removal semantics
+      // (crbug.com/40256874).
+      return std::nullopt;
+  }
+  NOTREACHED();
 }
 
 }  // namespace sync_preferences::helper

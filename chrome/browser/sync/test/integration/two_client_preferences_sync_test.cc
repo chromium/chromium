@@ -7,7 +7,9 @@
 
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/uuid.h"
+#include "base/values.h"
 #include "chrome/browser/sync/test/integration/preferences_helper.h"
 #include "chrome/browser/sync/test/integration/sync_integration_test_util.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
@@ -18,6 +20,7 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/sync/engine/cycle/entity_change_metric_recording.h"
 #include "components/sync_preferences/common_syncable_prefs_database.h"
+#include "components/sync_preferences/features.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -216,6 +219,111 @@ IN_PROC_BROWSER_TEST_P(TwoClientPreferencesSyncTest,
       Eq(true));
   EXPECT_THAT(GetPrefs(1)->GetString(sync_preferences::kSyncablePrefForTesting),
               Eq(string_value));
+}
+
+class TwoClientPreferencesWithAccountStorageMergeRemovalSyncTest
+    : public TwoClientPreferencesSyncTest {
+ public:
+  TwoClientPreferencesWithAccountStorageMergeRemovalSyncTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {switches::kEnablePreferencesAccountStorage,
+         sync_preferences::features::kSyncUnmergeRemotePrefRemovals},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    TwoClientPreferencesWithAccountStorageMergeRemovalSyncTest,
+    GetSyncTestModes(),
+    testing::PrintToStringParamName());
+
+IN_PROC_BROWSER_TEST_P(
+    TwoClientPreferencesWithAccountStorageMergeRemovalSyncTest,
+    ShouldNotReaddRemotelyRemovedListEntries) {
+  ASSERT_TRUE(SetupClients());
+  GetRegistry(GetProfile(0))
+      ->RegisterListPref(sync_preferences::kSyncableMergeableListPrefForTesting,
+                         user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  GetRegistry(GetProfile(1))
+      ->RegisterListPref(sync_preferences::kSyncableMergeableListPrefForTesting,
+                         user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  ASSERT_TRUE(SetupSync());
+
+  const base::ListValue list_u1 = base::ListValue().Append("U1");
+  ChangeListPref(0, sync_preferences::kSyncableMergeableListPrefForTesting,
+                 list_u1);
+  ASSERT_TRUE(
+      PrefValueChecker(GetPrefs(1),
+                       sync_preferences::kSyncableMergeableListPrefForTesting,
+                       base::Value(list_u1.Clone()))
+          .Wait());
+
+  const base::ListValue empty_list;
+  ChangeListPref(1, sync_preferences::kSyncableMergeableListPrefForTesting,
+                 empty_list);
+  ASSERT_TRUE(
+      PrefValueChecker(GetPrefs(0),
+                       sync_preferences::kSyncableMergeableListPrefForTesting,
+                       base::Value(empty_list.Clone()))
+          .Wait());
+
+  const base::ListValue list_u2 = base::ListValue().Append("U2");
+  ChangeListPref(1, sync_preferences::kSyncableMergeableListPrefForTesting,
+                 list_u2);
+  EXPECT_TRUE(
+      PrefValueChecker(GetPrefs(0),
+                       sync_preferences::kSyncableMergeableListPrefForTesting,
+                       base::Value(list_u2.Clone()))
+          .Wait());
+}
+
+IN_PROC_BROWSER_TEST_P(
+    TwoClientPreferencesWithAccountStorageMergeRemovalSyncTest,
+    ShouldNotReaddRemotelyRemovedDictEntries) {
+  ASSERT_TRUE(SetupClients());
+  GetRegistry(GetProfile(0))
+      ->RegisterDictionaryPref(
+          sync_preferences::kSyncableMergeableDictPrefForTesting,
+          user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  GetRegistry(GetProfile(1))
+      ->RegisterDictionaryPref(
+          sync_preferences::kSyncableMergeableDictPrefForTesting,
+          user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  ASSERT_TRUE(SetupSync());
+
+  base::DictValue initial_dict =
+      base::DictValue()
+          .Set("kept.com", "allow")
+          .Set("removed.com", "deny")
+          .Set("nested", base::DictValue()
+                             .Set("kept_sub", "allow")
+                             .Set("removed_sub", "deny"));
+  GetPrefs(0)->SetDict(sync_preferences::kSyncableMergeableDictPrefForTesting,
+                       initial_dict.Clone());
+  ASSERT_TRUE(
+      PrefValueChecker(GetPrefs(1),
+                       sync_preferences::kSyncableMergeableDictPrefForTesting,
+                       base::Value(initial_dict.Clone()))
+          .Wait());
+
+  // Client 1 removes "removed.com" and "nested.removed_sub", and adds
+  // "added_by_1.com".
+  base::DictValue updated_dict =
+      base::DictValue()
+          .Set("kept.com", "allow")
+          .Set("added_by_1.com", "allow")
+          .Set("nested", base::DictValue().Set("kept_sub", "allow"));
+  GetPrefs(1)->SetDict(sync_preferences::kSyncableMergeableDictPrefForTesting,
+                       updated_dict.Clone());
+  EXPECT_TRUE(
+      PrefValueChecker(GetPrefs(0),
+                       sync_preferences::kSyncableMergeableDictPrefForTesting,
+                       base::Value(updated_dict.Clone()))
+          .Wait());
 }
 
 }  // namespace

@@ -17,6 +17,8 @@ namespace {
 
 const char kMergeableDictPref[] = "mergeable.dict.pref";
 const char kMergeableListPref[] = "mergeable.list.pref";
+const char kCustomMergePref[] = "custom.merge.pref";
+const char kNonMergeablePref[] = "nonmergeable.pref";
 
 const TestSyncablePrefsDatabase::PrefsMap kSyncablePrefsDatabase = {
     {kMergeableListPref,
@@ -26,6 +28,12 @@ const TestSyncablePrefsDatabase::PrefsMap kSyncablePrefsDatabase = {
     {kMergeableDictPref,
      {/*syncable_pref_id=*/2, syncer::PREFERENCES, PrefSensitivity::kNone,
       MergeBehavior::kMergeableDict, WriteBehavior::kWriteToBoth}},
+    {kCustomMergePref,
+     {/*syncable_pref_id=*/3, syncer::PREFERENCES, PrefSensitivity::kNone,
+      MergeBehavior::kCustom, WriteBehavior::kWriteToBoth}},
+    {kNonMergeablePref,
+     {/*syncable_pref_id=*/4, syncer::PREFERENCES, PrefSensitivity::kNone,
+      MergeBehavior::kNone, WriteBehavior::kWriteToBoth}},
 };
 
 TEST(PreferencesMergeHelperTest, MergeListValues) {
@@ -676,6 +684,296 @@ TEST(PreferencesMergeHelperTest,
 
 // Tests for MergePreference() exists in pref_model_associator_unittest.cc.
 // TODO(crbug.com/40256874): Move those tests here.
+
+TEST(
+    PreferencesMergeHelperTest,
+    GetLocalValueAfterRemoteRemovalsShouldRemoveDeletedListEntriesWhilePreservingLocal) {
+  auto client = base::MakeRefCounted<TestPrefModelAssociatorClient>();
+
+  base::Value old_account_value(base::ListValue().Append("a").Append("b"));
+  base::Value new_account_value(base::ListValue().Append("b"));
+
+  EXPECT_EQ(
+      helper::GetLocalValueAfterRemoteRemovals(
+          *client, kMergeableListPref,
+          base::Value(
+              base::ListValue().Append("local1").Append("a").Append("b").Append(
+                  "local2")),
+          old_account_value, new_account_value),
+      base::Value(
+          base::ListValue().Append("local1").Append("b").Append("local2")));
+
+  // Duplicate occurrences of a deleted entry in `local_value` are all removed.
+  EXPECT_EQ(helper::GetLocalValueAfterRemoteRemovals(
+                *client, kMergeableListPref,
+                base::Value(
+                    base::ListValue().Append("a").Append("local1").Append("a")),
+                old_account_value, new_account_value),
+            base::Value(base::ListValue().Append("local1")));
+
+  // Deleting all entries leaves an empty list rather than `std::nullopt`.
+  EXPECT_EQ(helper::GetLocalValueAfterRemoteRemovals(
+                *client, kMergeableListPref,
+                base::Value(base::ListValue().Append("a")), old_account_value,
+                new_account_value),
+            base::Value(base::ListValue()));
+}
+
+TEST(
+    PreferencesMergeHelperTest,
+    GetLocalValueAfterRemoteRemovalsShouldReturnNulloptWhenListUpdateRemovesNothing) {
+  auto client = base::MakeRefCounted<TestPrefModelAssociatorClient>();
+
+  base::Value local_value(
+      base::ListValue().Append("local1").Append("a").Append("b"));
+
+  EXPECT_EQ(
+      helper::GetLocalValueAfterRemoteRemovals(
+          *client, kMergeableListPref, local_value,
+          base::Value(base::ListValue().Append("a").Append("b")),
+          base::Value(base::ListValue().Append("b").Append("a").Append("c"))),
+      std::nullopt);
+
+  // Entry removed from account, but absent from `local_value`.
+  EXPECT_EQ(helper::GetLocalValueAfterRemoteRemovals(
+                *client, kMergeableListPref, local_value,
+                base::Value(
+                    base::ListValue().Append("a").Append("b").Append("absent")),
+                base::Value(base::ListValue().Append("a").Append("b"))),
+            std::nullopt);
+}
+
+TEST(
+    PreferencesMergeHelperTest,
+    GetLocalValueAfterRemoteRemovalsShouldRemoveDeletedFlatDictKeysWhilePreservingLocal) {
+  auto client = base::MakeRefCounted<TestPrefModelAssociatorClient>();
+
+  EXPECT_EQ(
+      helper::GetLocalValueAfterRemoteRemovals(
+          *client, kMergeableDictPref,
+          base::Value(base::DictValue()
+                          .Set("local", 1)
+                          .Set("shared", 2)
+                          .Set("removed", 1)),
+          base::Value(base::DictValue().Set("shared", 2).Set("removed", 3)),
+          base::Value(base::DictValue().Set("shared", 2).Set("added", 4))),
+      base::Value(base::DictValue().Set("local", 1).Set("shared", 2)));
+}
+
+TEST(
+    PreferencesMergeHelperTest,
+    GetLocalValueAfterRemoteRemovalsShouldHandleNestedDictRemovalsAndPruneEmptiedSubdicts) {
+  auto client = base::MakeRefCounted<TestPrefModelAssociatorClient>();
+
+  // Nested subkey removed while another local-only subkey stays intact.
+  EXPECT_EQ(
+      helper::GetLocalValueAfterRemoteRemovals(
+          *client, kMergeableDictPref,
+          base::Value(base::DictValue()
+                          .Set("nested", base::DictValue()
+                                             .Set("local_sub", 1)
+                                             .Set("removed_sub", 2))
+                          .Set("keep", "v")),
+          base::Value(base::DictValue()
+                          .Set("nested", base::DictValue()
+                                             .Set("kept_sub", 0)
+                                             .Set("removed_sub", 2))
+                          .Set("keep", "v")),
+          base::Value(base::DictValue()
+                          .Set("nested", base::DictValue().Set("kept_sub", 0))
+                          .Set("keep", "v"))),
+      base::Value(base::DictValue()
+                      .Set("nested", base::DictValue().Set("local_sub", 1))
+                      .Set("keep", "v")));
+
+  // Nested subdict emptied by subkey removal is pruned from local dict.
+  EXPECT_EQ(
+      helper::GetLocalValueAfterRemoteRemovals(
+          *client, kMergeableDictPref,
+          base::Value(
+              base::DictValue()
+                  .Set("nested", base::DictValue().Set("removed_sub", 2))
+                  .Set("keep", "v")),
+          base::Value(base::DictValue()
+                          .Set("nested", base::DictValue()
+                                             .Set("kept_sub", 0)
+                                             .Set("removed_sub", 2))
+                          .Set("keep", "v")),
+          base::Value(base::DictValue()
+                          .Set("nested", base::DictValue().Set("kept_sub", 0))
+                          .Set("keep", "v"))),
+      base::Value(base::DictValue().Set("keep", "v")));
+
+  // Deleting an entire account subdict preserves local-only nested keys.
+  EXPECT_EQ(
+      helper::GetLocalValueAfterRemoteRemovals(
+          *client, kMergeableDictPref,
+          base::Value(base::DictValue().Set(
+              "nested",
+              base::DictValue().Set("local_sub", 1).Set("synced_sub", 2))),
+          base::Value(base::DictValue().Set(
+              "nested", base::DictValue().Set("synced_sub", 2))),
+          base::Value(base::DictValue())),
+      base::Value(base::DictValue().Set(
+          "nested", base::DictValue().Set("local_sub", 1))));
+
+  // Deleting all entries leaves an empty top-level dict rather than nullopt.
+  EXPECT_EQ(helper::GetLocalValueAfterRemoteRemovals(
+                *client, kMergeableDictPref,
+                base::Value(base::DictValue().Set(
+                    "nested", base::DictValue().Set("synced_sub", 2))),
+                base::Value(base::DictValue().Set(
+                    "nested", base::DictValue().Set("synced_sub", 2))),
+                base::Value(base::DictValue())),
+            base::Value(base::DictValue()));
+
+  // Deleting an empty subdict in account removes the empty subdict from local.
+  EXPECT_EQ(helper::GetLocalValueAfterRemoteRemovals(
+                *client, kMergeableDictPref,
+                base::Value(base::DictValue()
+                                .Set("empty_sub", base::DictValue())
+                                .Set("keep", "v")),
+                base::Value(base::DictValue()
+                                .Set("empty_sub", base::DictValue())
+                                .Set("keep", "v")),
+                base::Value(base::DictValue().Set("keep", "v"))),
+            base::Value(base::DictValue().Set("keep", "v")));
+}
+
+TEST(PreferencesMergeHelperTest,
+     GetLocalValueAfterRemoteRemovalsShouldHandleTypeMismatchAtDictSubkey) {
+  auto client = base::MakeRefCounted<TestPrefModelAssociatorClient>();
+
+  // Updating a subkey whose type changed leaves `local` untouched.
+  EXPECT_EQ(helper::GetLocalValueAfterRemoteRemovals(
+                *client, kMergeableDictPref,
+                base::Value(base::DictValue().Set(
+                    "k", base::DictValue().Set("sub", 1).Set("local_sub", 2))),
+                base::Value(base::DictValue().Set(
+                    "k", base::DictValue().Set("sub", 1))),
+                base::Value(base::DictValue().Set("k", "scalar"))),
+            std::nullopt);
+  EXPECT_EQ(helper::GetLocalValueAfterRemoteRemovals(
+                *client, kMergeableDictPref,
+                base::Value(base::DictValue().Set(
+                    "k", base::DictValue().Set("local_sub", 2))),
+                base::Value(base::DictValue().Set("k", "scalar")),
+                base::Value(base::DictValue().Set(
+                    "k", base::DictValue().Set("sub", 1)))),
+            std::nullopt);
+
+  // Removing a subkey with mismatched types removes the key from `local`.
+  EXPECT_EQ(helper::GetLocalValueAfterRemoteRemovals(
+                *client, kMergeableDictPref,
+                base::Value(
+                    base::DictValue().Set("k", "local_scalar").Set("keep", 1)),
+                base::Value(base::DictValue().Set(
+                    "k", base::DictValue().Set("sub", 1))),
+                base::Value(base::DictValue())),
+            base::Value(base::DictValue().Set("keep", 1)));
+  EXPECT_EQ(helper::GetLocalValueAfterRemoteRemovals(
+                *client, kMergeableDictPref,
+                base::Value(base::DictValue()
+                                .Set("k", base::DictValue().Set("sub", 1))
+                                .Set("keep", 1)),
+                base::Value(base::DictValue().Set("k", "account_scalar")),
+                base::Value(base::DictValue())),
+            base::Value(base::DictValue().Set("keep", 1)));
+}
+
+TEST(
+    PreferencesMergeHelperTest,
+    GetLocalValueAfterRemoteRemovalsShouldReturnNulloptOnTopLevelTypeMismatch) {
+  auto client = base::MakeRefCounted<TestPrefModelAssociatorClient>();
+  const base::Value corrupt("corrupt");
+
+  // Without corruption, these inputs would remove "a" from `local`.
+  const base::Value list(base::ListValue().Append("a"));
+  const base::Value empty_list(base::Value::Type::LIST);
+  EXPECT_EQ(helper::GetLocalValueAfterRemoteRemovals(
+                *client, kMergeableListPref, corrupt, list, empty_list),
+            std::nullopt);
+  EXPECT_EQ(helper::GetLocalValueAfterRemoteRemovals(
+                *client, kMergeableListPref, list, corrupt, empty_list),
+            std::nullopt);
+  EXPECT_EQ(helper::GetLocalValueAfterRemoteRemovals(
+                *client, kMergeableListPref, list, list, corrupt),
+            std::nullopt);
+
+  // Without corruption, these inputs would remove "a" from `local`.
+  const base::Value dict(base::DictValue().Set("a", 1));
+  const base::Value empty_dict(base::Value::Type::DICT);
+  EXPECT_EQ(helper::GetLocalValueAfterRemoteRemovals(
+                *client, kMergeableDictPref, corrupt, dict, empty_dict),
+            std::nullopt);
+  EXPECT_EQ(helper::GetLocalValueAfterRemoteRemovals(
+                *client, kMergeableDictPref, dict, corrupt, empty_dict),
+            std::nullopt);
+  EXPECT_EQ(helper::GetLocalValueAfterRemoteRemovals(
+                *client, kMergeableDictPref, dict, dict, corrupt),
+            std::nullopt);
+}
+
+TEST(
+    PreferencesMergeHelperTest,
+    GetLocalValueAfterRemoteRemovalsShouldReturnNulloptWhenDictUpdatedWithoutRemoval) {
+  auto client = base::MakeRefCounted<TestPrefModelAssociatorClient>();
+
+  base::Value local_value(base::DictValue()
+                              .Set("k", "local")
+                              .Set("nested", base::DictValue().Set("a", 1))
+                              .Set("local_only", 2));
+
+  EXPECT_EQ(
+      helper::GetLocalValueAfterRemoteRemovals(
+          *client, kMergeableDictPref, local_value,
+          base::Value(base::DictValue()
+                          .Set("k", "old")
+                          .Set("nested", base::DictValue().Set("a", 1))),
+          base::Value(
+              base::DictValue()
+                  .Set("k", "new")
+                  .Set("nested", base::DictValue().Set("a", 2).Set("b", 3)))),
+      std::nullopt);
+
+  // Top-level key and nested subkey removed from account, but absent from
+  // `local_value`.
+  EXPECT_EQ(
+      helper::GetLocalValueAfterRemoteRemovals(
+          *client, kMergeableDictPref, local_value,
+          base::Value(base::DictValue()
+                          .Set("absent_top", 1)
+                          .Set("nested", base::DictValue().Set("a", 1).Set(
+                                             "absent_sub", 2))),
+          base::Value(
+              base::DictValue().Set("nested", base::DictValue().Set("a", 1)))),
+      std::nullopt);
+
+  // Entire account subdict removed, while `local_value`'s corresponding subdict
+  // contains only local-only keys.
+  EXPECT_EQ(helper::GetLocalValueAfterRemoteRemovals(
+                *client, kMergeableDictPref, local_value,
+                base::Value(base::DictValue().Set(
+                    "nested", base::DictValue().Set("absent_sub", 2))),
+                base::Value(base::DictValue())),
+            std::nullopt);
+}
+
+TEST(
+    PreferencesMergeHelperTest,
+    GetLocalValueAfterRemoteRemovalsShouldReturnNulloptForCustomAndNonMergeablePrefs) {
+  auto client = base::MakeRefCounted<TestPrefModelAssociatorClient>();
+
+  base::Value dict(base::DictValue().Set("k", "v"));
+  base::Value empty_dict(base::Value::Type::DICT);
+
+  EXPECT_EQ(helper::GetLocalValueAfterRemoteRemovals(*client, kCustomMergePref,
+                                                     dict, dict, empty_dict),
+            std::nullopt);
+  EXPECT_EQ(helper::GetLocalValueAfterRemoteRemovals(*client, kNonMergeablePref,
+                                                     dict, dict, empty_dict),
+            std::nullopt);
+}
 
 }  // namespace
 }  // namespace sync_preferences
