@@ -8,7 +8,6 @@
 #include <optional>
 #include <string>
 
-#include "base/auto_reset.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
@@ -67,9 +66,6 @@ class PinSetupScreen : public BaseOSAuthSetupScreen {
   enum class HardwareSupport { kLoginCompatible, kUnlockOnly };
 
   static std::string GetResultString(Result result);
-
-  static std::unique_ptr<base::AutoReset<bool>>
-  SetForceNoSkipBecauseOfPolicyForTests(bool value);
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
 

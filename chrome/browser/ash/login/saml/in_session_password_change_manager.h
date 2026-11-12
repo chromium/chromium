@@ -172,10 +172,6 @@ class InSessionPasswordChangeManager
                       const std::string& new_password,
                       PasswordSource password_source);
 
-  // Handle a failure to scrape the passwords during in-session password change,
-  // by showing a dialog for the user to confirm their old + new password.
-  void HandlePasswordScrapeFailure();
-
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 

@@ -9,7 +9,6 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/apps/almanac_api_client/device_info_manager.h"
 #include "chrome/browser/ash/login/oobe_apps_service/oobe_apps_types.h"
 #include "chrome/browser/ash/login/oobe_apps_service/proto/oobe.pb.h"
 #include "chrome/browser/profiles/profile.h"
@@ -52,9 +51,6 @@ class OobeAppsDiscoveryService : public KeyedService {
 
   void PropagateResult(ResultCallbackAppsAndUseCases callback,
                        AppsFetchingResult result);
-
-  // Calls the Almanac server with the device information provided.
-  void OnGetDeviceInfo(apps::DeviceInfo device_info);
 
   // Writes the response to the result apps and categories list.
   void OnServerResponse(std::optional<oobe::proto::OOBEListResponse> response);

@@ -127,7 +127,7 @@ bool RecommendAppsScreen::MaybeSkip(WizardContext& context) {
 
   bool is_managed_account = profile->GetProfilePolicyConnector()->IsManaged();
   bool is_child_account = user_manager->IsLoggedInAsChildUser();
-  if (is_managed_account || is_child_account || skip_for_testing_) {
+  if (is_managed_account || is_child_account) {
     exit_callback_.Run(Result::kNotApplicable);
     return true;
   }

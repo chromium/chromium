@@ -46,13 +46,6 @@ class DemoComponents {
   // The name of the demo mode app ChromeOS component.
   static const char kDemoModeAppComponentName[];
 
-  // Location on disk where pre-installed demo mode resources are expected to be
-  // found.
-  static base::FilePath GetPreInstalledPath();
-
-  static void OverridePreinstalledResourcesRootPathForTesting(
-      const base::FilePath* path);
-
   // `local_state` must be non-null and must be valid while the main run loop is
   // running because it will be bound to a UI thread task.
   // `component_manager_ash` must be non-null.

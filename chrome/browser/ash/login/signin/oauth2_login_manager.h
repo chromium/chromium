@@ -144,9 +144,6 @@ class OAuth2LoginManager : public KeyedService,
   // Retrieves the primary account ID for `user_profile_`.
   CoreAccountId GetUnconsentedPrimaryAccountId();
 
-  // Issue GAIA cookie recovery (MergeSession) from `refresh_token_`.
-  void RestoreSessionCookies();
-
   // Checks GAIA error and figures out whether the request should be
   // re-attempted.
   bool RetryOnError(const GoogleServiceAuthError& error);

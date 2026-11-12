@@ -80,17 +80,6 @@ class HIDDetectionScreen : public BaseScreen,
   // Called when continue button was clicked.
   void OnContinueButtonClicked();
 
-  // Sends a notification to the Web UI of the status of available Bluetooth/USB
-  // pointing device.
-  void SendPointingDeviceNotification();
-
-  // Sends a notification to the Web UI of the status of available Bluetooth/USB
-  // keyboard device.
-  void SendKeyboardDeviceNotification();
-
-  // Sends a notification to the Web UI of the status of available Touch Screen
-  void SendTouchScreenDeviceNotification();
-
   void Exit(Result result);
 
   const raw_ref<PrefService> local_state_;

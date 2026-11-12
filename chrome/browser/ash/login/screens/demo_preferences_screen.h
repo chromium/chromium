@@ -38,8 +38,6 @@ class DemoPreferencesScreen : public BaseScreen {
 
   ~DemoPreferencesScreen() override;
 
-  void SetDemoModeCountry(const std::string& country_id);
-
  protected:
   // BaseScreen:
   void ShowImpl() override;

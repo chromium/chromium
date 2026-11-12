@@ -112,12 +112,6 @@ class FingerprintStorage final
       const base::flat_map<std::string, std::string>& fingerprints_list_mapping,
       bool success);
 
-  // GetRecordsForUser logic
-  void GetRecordsForUserInternal();
-
-  // On GetRecordsForUser failure, retries to retrieve the records
-  void RetryGetRecords();
-
   friend class FingerprintStorageTestApi;
   friend class QuickUnlockStorage;
 

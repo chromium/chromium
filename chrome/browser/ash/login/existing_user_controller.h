@@ -155,10 +155,6 @@ class ExistingUserController : public HttpAuthDialog::Observer,
   // Get account id used in last login attempt.
   AccountId GetLastLoginAttemptAccountId() const;
 
-  // Extracts out users allowed on login screen.
-  static user_manager::UserList ExtractLoginUsers(
-      const user_manager::UserList& users);
-
   // Calls login() on previously-used `login_performer_`.
   void LoginAuthenticated(std::unique_ptr<UserContext> user_context);
 
@@ -250,9 +246,6 @@ class ExistingUserController : public HttpAuthDialog::Observer,
   void ContinuePerformLoginWithoutMigration(
       LoginPerformer::AuthorizationMode auth_mode,
       std::unique_ptr<UserContext> user_context);
-
-  // Asks the user to enter their password again.
-  void RestartLogin(const UserContext& user_context);
 
   // Updates the `login_display_` attached to this controller.
   void UpdateLoginDisplay(const user_manager::UserList& users);

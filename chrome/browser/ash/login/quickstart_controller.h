@@ -135,7 +135,6 @@ class QuickStartController
   QRCode GetQrCode() { return qr_code_.value(); }
   std::string GetPin() { return pin_.value(); }
   UserInfo GetUserInfo() { return user_info_; }
-  std::string GetWiFiName() { return wifi_name_.value(); }
   std::string GetFallbackUrl() { return fallback_url_.value(); }
 
   // If we're already connected to Wi-Fi at the start of the flow we won't
@@ -266,9 +265,6 @@ class QuickStartController
 
   // User information that is shown while 'Signing in...'
   UserInfo user_info_;
-
-  // WiFi name to be shown on the UI.
-  std::optional<std::string> wifi_name_;
 
   // Main state that the controller can be in.
   ControllerState controller_state_ = ControllerState::NOT_ACTIVE;

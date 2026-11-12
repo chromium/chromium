@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "ash/public/cpp/locale_update_controller.h"
 #include "ash/system/tray/system_tray_observer.h"
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
@@ -174,12 +173,8 @@ class WelcomeScreen : public BaseScreen,
                               const std::string& new_language_list_locale,
                               const std::string& new_selected_language);
 
-  // Callback when the system timezone settings is changed.
-  void OnSystemTimezoneChanged();
-
   // Notifies locale change via LocaleUpdateController.
   void NotifyLocaleChange();
-  void OnLocaleChangeResult(LocaleNotificationResult result);
 
   void OnAccessibilityStatusChanged(
       const AccessibilityStatusEventDetails& details);

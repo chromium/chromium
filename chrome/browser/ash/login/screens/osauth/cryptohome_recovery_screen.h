@@ -78,9 +78,6 @@ class CryptohomeRecoveryScreen : public BaseScreen {
                                   std::optional<AuthenticationError> error);
   void OnRotateRecoveryFactor(std::unique_ptr<UserContext> context,
                               std::optional<AuthenticationError> error);
-  void OnReplaceContextKey(std::unique_ptr<UserContext> context,
-                           std::optional<AuthenticationError> error);
-  void OnAuthSessionExpired();
 
   void OnRefreshFactorsConfiguration(std::unique_ptr<UserContext> user_context,
                                      std::optional<AuthenticationError> error);

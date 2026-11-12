@@ -112,12 +112,6 @@ class SyncConsentScreen : public BaseScreen,
   void OnStateChanged(syncer::SyncService* sync) override;
   void OnSyncShutdown(syncer::SyncService* sync) override;
 
-  // Reacts to user action on sync.
-  void OnContinue(const bool opted_in,
-                  const bool review_sync,
-                  const std::vector<int>& consent_description,
-                  const int consent_confirmation);
-
   // Enables sync if required when skipping the dialog.
   void MaybeEnableSyncForSkip();
 

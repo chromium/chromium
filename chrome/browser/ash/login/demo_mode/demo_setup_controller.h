@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
@@ -277,12 +276,6 @@ class DemoSetupController
   void Enroll(OnSetupSuccess on_setup_success,
               OnSetupError on_setup_error,
               const OnSetCurrentSetupStep& set_current_setup_step);
-
-  // Converts a relative path to an absolute path under the preinstalled demo
-  // resources mount. Returns an empty string if the preinstalled demo resources
-  // are not mounted.
-  base::FilePath GetPreinstalledDemoResourcesPath(
-      const base::FilePath& relative_path);
 
   // EnrollmentLauncher::EnrollmentStatusConsumer:
   void OnDeviceEnrolled() override;

@@ -51,8 +51,6 @@ class RecommendAppsScreen : public BaseScreen {
   // Called when the user Install the selected apps.
   void OnInstall(base::ListValue apps);
 
-  void SetSkipForTesting() { skip_for_testing_ = true; }
-
   // BaseScreen:
   bool MaybeSkip(WizardContext& context) override;
 
@@ -77,9 +75,6 @@ class RecommendAppsScreen : public BaseScreen {
   ScreenExitCallback exit_callback_;
 
   raw_ptr<apps::AppDiscoveryService> app_discovery_service_ = nullptr;
-
-  // Skip the screen for testing if set to true.
-  bool skip_for_testing_ = false;
 
   size_t recommended_app_count_ = 0;
 

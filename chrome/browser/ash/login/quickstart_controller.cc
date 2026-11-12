@@ -834,7 +834,6 @@ void QuickStartController::ResetState() {
   pin_.reset();
   user_info_ = UserInfo();
   gaia_creds_ = TargetDeviceBootstrapController::GaiaCredentials();
-  wifi_name_.reset();
   controller_state_ = ControllerState::NOT_ACTIVE;
   ui_state_.reset();
   auto* wizard_context = LoginDisplayHost::default_host()->GetWizardContext();

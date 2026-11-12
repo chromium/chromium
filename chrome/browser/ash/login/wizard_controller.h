@@ -401,7 +401,6 @@ class WizardController : public OobeUI::Observer {
   void ShowOsTrialScreen();
   void ShowConsolidatedConsentScreen();
   void ShowCryptohomeRecoverySetupScreen();
-  void ShowAuthenticationSetupScreen();
   void ShowGuestTosScreen();
   void ShowThemeSelectionScreen();
   void ShowChoobeScreen();
