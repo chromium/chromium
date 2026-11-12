@@ -69,6 +69,39 @@ TEST_F(LayoutViewTest, DisplayNoneFrame) {
   EXPECT_FALSE(frame_doc->NeedsLayoutTreeUpdate());
 }
 
+TEST_F(LayoutViewTest, HitTestUpdatesChildFrameOnlyIfEntered) {
+  SetBodyInnerHTML("<iframe></iframe>");
+  SetChildFrameHTML("<div></div>");
+  UpdateAllLifecyclePhasesForTest();
+
+  ChildDocument().body()->setAttribute(html_names::kStyleAttr,
+                                       AtomicString("color: red"));
+  GetDocument().ElementFromPoint(10, 10);
+  EXPECT_TRUE(ChildDocument().NeedsLayoutTreeUpdate());
+
+  HitTestLocation location(gfx::PointF(10, 10));
+  HitTestResult result(
+      HitTestRequest(HitTestRequest::kReadOnly | HitTestRequest::kActive |
+                     HitTestRequest::kAllowChildFrameContent),
+      location);
+  GetLayoutView().HitTest(location, result);
+  EXPECT_FALSE(ChildDocument().NeedsLayoutTreeUpdate());
+}
+
+TEST_F(LayoutViewTest, HitTestDoesNotDirtySkippedChildFrame) {
+  SetBodyInnerHTML("<iframe></iframe>");
+  SetChildFrameHTML("<div></div>");
+  UpdateAllLifecyclePhasesForTest();
+
+  // A frame requiring IntersectionObserver steps is updated even if throttled,
+  // but not if the throttling is forced.
+  ChildDocument().View()->SetIntersectionObservationState(
+      LocalFrameView::kRequired);
+  GetDocument().ElementFromPoint(10, 10);
+  EXPECT_GE(ChildDocument().Lifecycle().GetState(),
+            DocumentLifecycle::kPrePaintClean);
+}
+
 TEST_F(LayoutViewTest, NamedPages) {
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>

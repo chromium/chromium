@@ -3765,6 +3765,12 @@
       status: "stable",
     },
     {
+      // Kill switch. Hit tests on a local root that can't enter child frames
+      // (such as elementFromPoint()) skip the lifecycle update of child frames.
+      name: "HitTestSkipChildFrameLifecycle",
+      status: "stable",
+    },
+    {
       name: "HrefTranslate",
       depends_on: ["TranslateService"],
       origin_trial_feature_name: "HrefTranslate",

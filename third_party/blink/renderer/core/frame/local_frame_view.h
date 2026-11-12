@@ -402,6 +402,10 @@ class CORE_EXPORT LocalFrameView final
   // desired state.
   bool UpdateAllLifecyclePhasesExceptPaint(DocumentUpdateReason reason);
 
+  // Same as above, for a hit test with `request`. If this is a local root and
+  // the hit test can't enter child frames, they are skipped as if throttled.
+  bool UpdateLifecyclePhasesForHitTest(const HitTestRequest& request);
+
   // Printing needs everything up-to-date except paint (which will be done
   // specially). We may also print a detached frame or a descendant of a
   // detached frame and need special handling of the frame.
@@ -1293,6 +1297,8 @@ class CORE_EXPORT LocalFrameView final
   bool allow_throttling_ = false;
   // Used by ForceThrottlingScope
   bool force_throttling_ = false;
+  // Used by UpdateLifecyclePhasesForHitTest()
+  bool throttle_child_frames_ = false;
 
   // This is set on the local root frame view only.
   DocumentLifecycle::LifecycleState target_state_;

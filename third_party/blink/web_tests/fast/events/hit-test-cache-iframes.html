@@ -28,7 +28,7 @@ function iFrameLoaded() {
 
 function doHit() {
   var rect = document.getElementById('myframe').getBoundingClientRect();
-  internals.elementFromPoint(document, rect.left + 8, rect.top + 8, false, false);
+  internals.elementFromPoint(document, rect.left + 8, rect.top + 8, false, true);
   shouldBe("internals.hitTestCacheHits(document)", "0");
 }
 </script>

@@ -2383,6 +2383,15 @@ bool LocalFrameView::UpdateAllLifecyclePhasesExceptPaint(
       DocumentLifecycle::kPrePaintClean, reason);
 }
 
+bool LocalFrameView::UpdateLifecyclePhasesForHitTest(
+    const HitTestRequest& request) {
+  base::AutoReset<bool> throttle_child_frames(
+      &throttle_child_frames_,
+      frame_->IsLocalRoot() && !request.AllowsChildFrameContent() &&
+          RuntimeEnabledFeatures::HitTestSkipChildFrameLifecycleEnabled());
+  return UpdateAllLifecyclePhasesExceptPaint(DocumentUpdateReason::kHitTest);
+}
+
 void LocalFrameView::DryRunPaintingForPrerender() {
   TRACE_EVENT("blink", "DryRunPaintingForPrerender");
   CHECK(GetFrame().GetDocument()->IsPrerendering());
@@ -2515,16 +2524,20 @@ bool LocalFrameView::LocalFrameTreeAllowsThrottling() const {
 }
 
 bool LocalFrameView::LocalFrameTreeForcesThrottling() const {
-  if (LocalFrameView* root_view = GetFrame().LocalFrameRoot().View())
-    return root_view->force_throttling_;
+  if (LocalFrameView* root_view = GetFrame().LocalFrameRoot().View()) {
+    return root_view->force_throttling_ ||
+           (root_view->throttle_child_frames_ && root_view != this);
+  }
   return false;
 }
 
 void LocalFrameView::PrepareForLifecycleUpdateRecursive() {
   // We will run lifecycle phases for LocalFrameViews that are unthrottled; or
-  // are throttled but require IntersectionObserver steps to run.
+  // are throttled but require IntersectionObserver steps to run, unless the
+  // throttling is forced (see ShouldThrottleRendering()).
   if (!ShouldThrottleRendering() ||
-      intersection_observation_state_ == kRequired) {
+      (intersection_observation_state_ == kRequired &&
+       !LocalFrameTreeForcesThrottling())) {
     Lifecycle().EnsureStateAtMost(DocumentLifecycle::kVisualUpdatePending);
     ForAllChildLocalFrameViews([](LocalFrameView& child) {
       child.PrepareForLifecycleUpdateRecursive();

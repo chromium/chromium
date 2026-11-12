@@ -132,9 +132,12 @@ bool LayoutView::HitTest(const HitTestLocation& location,
   // Note that if an iframe has its render pipeline throttled, it will not
   // update layout here, and it will also not propagate the hit test into the
   // iframe's inner document.
-  if (!GetFrameView()->UpdateAllLifecyclePhasesExceptPaint(
-          DocumentUpdateReason::kHitTest))
+  // If the hit test can't enter child frames, they are not updated either, like
+  // Document::UpdateStyleAndLayout(). They stay dirty until the next update.
+  if (!GetFrameView()->UpdateLifecyclePhasesForHitTest(
+          result.GetHitTestRequest())) {
     return false;
+  }
 
   // This means the LayoutView is not updated for PrePaint above, probably
   // because the frame is detached.
