@@ -27,7 +27,7 @@ class CORE_EXPORT HTMLSelectedContentElement : public HTMLElement {
   // CloneContentsFromOptionElement clones the contents of a single option
   // element into this selectedcontent element, which is used for select
   // elements without the multiple attribute.
-  void CloneContentsFromOptionElement(const HTMLOptionElement*);
+  void CloneContentsFromOptionElement(HTMLOptionElement*);
   // CloneMultipleOptionsFromSelectElement clones the contents of each selected
   // option element into this selectedcontent element, which is used for select
   // elements with the multiple attribute.

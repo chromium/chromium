@@ -7,16 +7,75 @@
 #include "base/functional/bind.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatch_forbidden_scope.h"
+#include "third_party/blink/renderer/core/dom/shadow_including_tree_order_traversal.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/html_collection.h"
+#include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/svg/svg_script_element.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
+
+namespace {
+
+bool ShouldOmitFromSelectedContent(const Element& element) {
+  return element.HasTagName(html_names::kScriptTag) ||
+         IsA<SVGScriptElement>(element) ||
+         element.HasTagName(html_names::kFrameTag) ||
+         element.HasTagName(html_names::kIFrameTag) ||
+         element.HasTagName(html_names::kEmbedTag) ||
+         element.HasTagName(html_names::kObjectTag);
+}
+
+// Clones the children of `option` and appends them to `nodes`, omitting
+// script, SVG script, frame, iframe, embed, and object elements, including
+// those in shadow trees.
+// https://html.spec.whatwg.org/#clone-an-option-into-a-selectedcontent
+void CloneOptionChildrenForSelectedContent(HTMLOptionElement& option,
+                                           VectorOf<Node>& nodes) {
+  HeapVector<Member<Element>> omitted_elements;
+  for (Node& child : NodeTraversal::ChildrenOf(option)) {
+    Node* clone = child.cloneNode(/*deep=*/true);
+    if (RuntimeEnabledFeatures::SelectedcontentOmitScriptsAndFramesEnabled()) {
+      for (Node& node :
+           ShadowIncludingTreeOrderTraversal::InclusiveDescendantsOf(*clone)) {
+        if (auto* element = DynamicTo<Element>(node);
+            element && ShouldOmitFromSelectedContent(*element)) {
+          omitted_elements.push_back(element);
+        }
+      }
+      if (auto* element = DynamicTo<Element>(clone);
+          element && ShouldOmitFromSelectedContent(*element)) {
+        // This element would be removed from the document fragment, so just
+        // don't include it.
+        continue;
+      }
+    }
+    nodes.push_back(clone);
+  }
+  // The clones aren't connected to a document yet, so removing elements from
+  // them can't run script. None of these elements should be in user-agent
+  // shadow trees, which shouldn't be modified. Omitted clones of the option's
+  // children don't have a parent, so remove() does nothing for them.
+  for (Element* element : omitted_elements) {
+    CHECK(!element->IsInUserAgentShadowRoot());
+    option.AddConsoleMessage(
+        mojom::blink::ConsoleMessageSource::kRendering,
+        mojom::blink::ConsoleMessageLevel::kWarning,
+        "A <" + element->localName() +
+            "> element in an <option> was not cloned into <selectedcontent>. "
+            "script, frame, iframe, embed, and object elements are not cloned "
+            "into <selectedcontent>.");
+    element->remove();
+  }
+}
+
+}  // namespace
 
 HTMLSelectedContentElement::HTMLSelectedContentElement(Document& document)
     : HTMLElement(html_names::kSelectedcontentTag, document) {
@@ -24,7 +83,7 @@ HTMLSelectedContentElement::HTMLSelectedContentElement(Document& document)
 }
 
 void HTMLSelectedContentElement::CloneContentsFromOptionElement(
-    const HTMLOptionElement* option) {
+    HTMLOptionElement* option) {
   if (disabled_) {
     return;
   }
@@ -41,9 +100,7 @@ void HTMLSelectedContentElement::CloneContentsFromOptionElement(
     // after the caller resolved it.
     HTMLSelectElement* owner_select = option->OwnerSelectElement();
     CHECK(!owner_select || !owner_select->IsMultiple());
-    for (Node& child : NodeTraversal::ChildrenOf(*option)) {
-      nodes.push_back(child.cloneNode(/*deep=*/true));
-    }
+    CloneOptionChildrenForSelectedContent(*option, nodes);
   }
 
   // `ASSERT_NO_EXCEPTION` is safe here because `ReplaceChildren()` only
@@ -67,8 +124,11 @@ void HTMLSelectedContentElement::CloneMultipleOptionsFromSelectElement(
   for (Element* option : *select.selectedOptions()) {
     HTMLDivElement* container =
         MakeGarbageCollected<HTMLDivElement>(GetDocument());
-    for (Node& child : NodeTraversal::ChildrenOf(*option)) {
-      container->appendChild(child.cloneNode(/*deep=*/true));
+    VectorOf<Node> option_nodes;
+    CloneOptionChildrenForSelectedContent(To<HTMLOptionElement>(*option),
+                                          option_nodes);
+    for (Node* option_node : option_nodes) {
+      container->appendChild(option_node);
     }
     nodes.push_back(container);
   }

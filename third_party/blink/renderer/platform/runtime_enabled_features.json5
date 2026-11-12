@@ -6065,6 +6065,14 @@
       depends_on: ["CustomizableSelectMultiplePopup"],
     },
     {
+      // When cloning an option into a <selectedcontent> element, removes
+      // script, SVG script, frame, iframe, embed, and object elements from
+      // the cloned content, including in shadow trees.
+      // https://github.com/whatwg/html/pull/13201
+      name: "SelectedcontentOmitScriptsAndFrames",
+      status: "stable",
+    },
+    {
       // Makes minor tweaks to edge cases with the <selectedcontent> element.
       // The prior set of spec-driven changes to the selectedcontent element
       // were called "SelectedcontentSpec", so this one is called
