@@ -166,6 +166,10 @@ public class ExclusiveAccessContext implements Destroyable {
     public void exitFullscreenModeForTab() {
         if (mActiveTab != null) {
             mFullscreenManager.onExitFullscreen(mActiveTab);
+        } else {
+            // In browser fullscreen, the user may exit fullscreen while no active tab is present
+            // (e.g. in the tab switcher or after closing tabs).
+            mFullscreenManager.exitPersistentFullscreenMode();
         }
     }
 

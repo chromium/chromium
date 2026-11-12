@@ -101,7 +101,6 @@ import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
-import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.glic.GlicKeyedService.GlicInvocationSource;
 import org.chromium.chrome.browser.handoff.HandoffController;
 import org.chromium.chrome.browser.host_zoom.HostZoomListenerFactory;
@@ -768,19 +767,15 @@ public class RootUiCoordinator
 
                             @Override
                             public void enterImmersiveMode() {
-                                DisplayAndroid display =
-                                        DisplayAndroid.getNonMultiDisplay(mActivity);
+                                assert ChromeFeatureList.sAndroidZoomImmersive.isEnabled();
                                 Tab tab = mActivityTabProvider.get();
                                 if (tab == null) {
                                     return;
                                 }
 
-                                mFullscreenManager.onEnterFullscreen(
-                                        tab,
-                                        new FullscreenOptions(
-                                                /* showNavigationBar= */ false,
-                                                /* showStatusBar= */ false,
-                                                /* displayId= */ display.getDisplayId()));
+                                assumeNonNull(mExclusiveAccessManager);
+                                mExclusiveAccessManager.toggleBrowserFullscreenMode(
+                                        /* userInitiated= */ true);
                                 assumeNonNull(mAppMenuCoordinator);
                                 mAppMenuCoordinator.getAppMenuHandler().hideAppMenu();
                             }

@@ -43,6 +43,8 @@ class ExclusiveAccessManagerAndroid {
       JNIEnv* env,
       const jni_zero::JavaRef<jobject>& jweb_contents);
 
+  void ToggleBrowserFullscreenMode(JNIEnv* env, bool user_initiated);
+
   bool IsFullscreenForTabOrPending(
       JNIEnv* env,
       const jni_zero::JavaRef<jobject>& jweb_contents);

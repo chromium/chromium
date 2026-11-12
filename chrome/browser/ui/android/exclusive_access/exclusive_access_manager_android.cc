@@ -67,6 +67,12 @@ void ExclusiveAccessManagerAndroid::ExitFullscreenModeForTab(
   eam_.fullscreen_controller()->ExitFullscreenModeForTab(wc);
 }
 
+void ExclusiveAccessManagerAndroid::ToggleBrowserFullscreenMode(
+    JNIEnv* env,
+    bool user_initiated) {
+  eam_.fullscreen_controller()->ToggleBrowserFullscreenMode(user_initiated);
+}
+
 bool ExclusiveAccessManagerAndroid::HasExclusiveAccess(JNIEnv* env) {
   return eam_.fullscreen_controller()->IsTabFullscreen() ||
          eam_.pointer_lock_controller()->IsPointerLocked() ||

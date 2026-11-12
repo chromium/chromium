@@ -251,6 +251,20 @@ public class ExclusiveAccessManager
                 .exitFullscreenModeForTab(mExclusiveAccessManagerAndroidNativePointer, webContents);
     }
 
+    /**
+     * Toggles browser-initiated fullscreen mode (e.g. from the 3-dot app menu button).
+     *
+     * @param userInitiated whether the toggle was directly initiated by the user.
+     */
+    public void toggleBrowserFullscreenMode(boolean userInitiated) {
+        if (mExclusiveAccessManagerAndroidNativePointer == null) {
+            return;
+        }
+        ExclusiveAccessManagerJni.get()
+                .toggleBrowserFullscreenMode(
+                        mExclusiveAccessManagerAndroidNativePointer, userInitiated);
+    }
+
     /** Force exit of all exclusive access controllers */
     public void exitExclusiveAccess() {
         if (mExclusiveAccessManagerAndroidNativePointer == null) {
@@ -473,6 +487,9 @@ public class ExclusiveAccessManager
         void exitFullscreenModeForTab(
                 JniPtr<NativeExclusiveAccessManagerAndroid> self,
                 @Nullable WebContents webContents);
+
+        void toggleBrowserFullscreenMode(
+                JniPtr<NativeExclusiveAccessManagerAndroid> self, boolean userInitiated);
 
         boolean isFullscreenForTabOrPending(
                 JniPtr<NativeExclusiveAccessManagerAndroid> self, WebContents webContents);
