@@ -2793,18 +2793,15 @@ void DispatchAutofillEvent(blink::WebDocument document,
     return;
   }
 
-  std::vector<std::pair<WebFormControlElement, WebString>> autofill_values;
-  for (const FormFieldData::FillData& field : fields) {
-    WebFormControlElement control_element =
-        GetFormControlByRendererId(field.renderer_id);
-
-    if (control_element.IsNull()) {
-      continue;
-    }
-
-    autofill_values.emplace_back(control_element,
-                                 WebString::FromUtf16(field.value));
-  }
+  std::vector<std::pair<WebFormControlElement, WebString>> autofill_values =
+      base::ToVector(fields, [](const FormFieldData::FillData& field) {
+        return std::pair(GetFormControlByRendererId(field.renderer_id),
+                         WebString::FromUtf16(field.value));
+      });
+  std::erase_if(autofill_values, [&](const auto& p) {
+    const WebFormControlElement& control = p.first;
+    return !control || control.GetDocument() != document;
+  });
 
   if (autofill_values.empty()) {
     return;

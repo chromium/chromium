@@ -7755,5 +7755,71 @@ TEST_F(AutofillFocusTest, VerifyFocusAndBlurEventAfterElementRemoved) {
   EXPECT_EQ(GetFocusLog(), "c0");
 }
 
+// Tests that `DispatchAutofillEvent()` ignores form control elements that
+// belong to another document in the same renderer process.
+TEST_F(FormAutofillUtilsTest,
+       DispatchAutofillEventIgnoresCrossDocumentElements) {
+  blink::WebRuntimeFeatures::EnableFeatureFromString("AutofillEvent", true);
+  LoadHTML(R"(
+    <input id="main_input">
+    <iframe id="iframe"></iframe>
+    <script>
+      const iframeDoc = document.getElementById('iframe').contentDocument;
+      const iframeInput = iframeDoc.createElement('input');
+      iframeInput.id = 'iframe_input';
+      iframeDoc.body.appendChild(iframeInput);
+
+      window.autofillEventCount = 0;
+      window.autofillFieldIds = [];
+      document.addEventListener('autofill', (e) => {
+        ++window.autofillEventCount;
+        window.autofillFieldIds = e.autofillValues.map((v) => v.field.id);
+      });
+    </script>
+  )");
+
+  WebDocument main_doc = GetDocument();
+  WebDocument iframe_doc = GetIframeDocumentById(main_doc, "iframe");
+  WebFormControlElement main_input =
+      GetFormControlElementById(main_doc, "main_input");
+  WebFormControlElement iframe_input =
+      GetFormControlElementById(iframe_doc, "iframe_input");
+  ASSERT_TRUE(main_input);
+  ASSERT_TRUE(iframe_input);
+  ASSERT_NE(main_input.GetDocument(), iframe_input.GetDocument());
+
+  FormFieldData main_field;
+  main_field.set_renderer_id(GetFieldRendererId(main_input));
+  main_field.set_value(u"main_value");
+
+  FormFieldData iframe_field;
+  iframe_field.set_renderer_id(GetFieldRendererId(iframe_input));
+  iframe_field.set_value(u"iframe_value");
+
+  // If all fields belong to another document, no event should be dispatched.
+  DispatchAutofillEvent(main_doc, {FormFieldData::FillData(iframe_field)},
+                        FillId::Create(), /*supports_refill=*/false);
+  int event_count = -1;
+  ASSERT_TRUE(ExecuteJavaScriptAndReturnIntValue(u"window.autofillEventCount",
+                                                 &event_count));
+  EXPECT_EQ(event_count, 0);
+
+  // If both same-document and cross-document fields are passed, only the
+  // same-document field should be exposed in `autofillValues`.
+  DispatchAutofillEvent(main_doc,
+                        {FormFieldData::FillData(main_field),
+                         FormFieldData::FillData(iframe_field)},
+                        FillId::Create(), /*supports_refill=*/false);
+  ASSERT_TRUE(ExecuteJavaScriptAndReturnIntValue(u"window.autofillEventCount",
+                                                 &event_count));
+  EXPECT_EQ(event_count, 1);
+  int matched_only_main = 0;
+  ASSERT_TRUE(ExecuteJavaScriptAndReturnIntValue(
+      u"window.autofillFieldIds.length === 1 && "
+      u"window.autofillFieldIds[0] === 'main_input' ? 1 : 0",
+      &matched_only_main));
+  EXPECT_EQ(matched_only_main, 1);
+}
+
 }  // namespace
 }  // namespace autofill::form_util
