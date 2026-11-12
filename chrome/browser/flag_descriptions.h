@@ -5332,7 +5332,7 @@ inline constexpr const char* kDecisionsAPILinks[1] = {
 inline constexpr char kGemma4ForBuiltInAIName[] = "Gemma 4 for Built-in AI";
 inline constexpr char kGemma4ForBuiltInAIDescription[] =
     "Enables all built-in AI APIs (Prompt, Summarizer, Writer, etc.) to use "
-    "the Gemma 4 model.";
+    "the Gemma 4 model with the LiteRT-LM Conversation backend.";
 
 inline constexpr char kOnDeviceModelSpeculativeDecodingName[] =
     "Multi-Token Prediction (MTP) for Built-in AI";
