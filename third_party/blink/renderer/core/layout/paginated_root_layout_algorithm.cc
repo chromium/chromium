@@ -178,7 +178,8 @@ const LayoutResult* PaginatedRootLayoutAlgorithm::LayoutInternal() {
   // The page containers are ready to be soldered onto the fragment builder.
   for (const LogicalFragmentLink& container : page_containers) {
     const auto& page_container = To<PhysicalBoxFragment>(*container.fragment);
-    container_builder_.AddChild(page_container, container.offset);
+    container_builder_.AddChild(page_container, container.offset,
+                                /*margins=*/BoxStrut());
 
     // Propagate all OOFs from each fragmentainer (page area). They are not
     // propagated through the page border box and page container, since they are

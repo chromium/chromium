@@ -1392,7 +1392,8 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutLine(
   // Commit all column fragments to the fragment builder.
   for (const auto& result_with_offset : new_columns) {
     const PhysicalBoxFragment& column = result_with_offset.Fragment();
-    container_builder_.AddChild(column, result_with_offset.offset);
+    container_builder_.AddChild(column, result_with_offset.offset,
+                                /*margins=*/BoxStrut());
     PropagateBaselineFromChild(column, result_with_offset.offset.block_offset);
 
     // Create a ::column pseudo-element, and, if needed, also a

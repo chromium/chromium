@@ -65,7 +65,7 @@ const LayoutResult* PageBorderBoxLayoutAlgorithm::Layout() {
                                  container_builder_.Size());
   LogicalOffset origin = converter.ToLogical(
       PhysicalOffset(), result->GetPhysicalFragment().Size());
-  container_builder_.AddResult(*result, origin, /*margins=*/std::nullopt);
+  container_builder_.AddResult(*result, origin, /*margins=*/BoxStrut());
 
   return container_builder_.ToBoxFragment();
 }

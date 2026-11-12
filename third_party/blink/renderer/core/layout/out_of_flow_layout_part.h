@@ -501,7 +501,8 @@ class CORE_EXPORT OutOfFlowLayoutPart {
       child_fragment_storage_->push_back(
           LogicalFragmentLink{fragmentainer, fragmentainer_offset});
     } else {
-      container_builder_.AddChild(fragmentainer, fragmentainer_offset);
+      container_builder_.AddChild(fragmentainer, fragmentainer_offset,
+                                  /*margins=*/BoxStrut());
     }
   }
 

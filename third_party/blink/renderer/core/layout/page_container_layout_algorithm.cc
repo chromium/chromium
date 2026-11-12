@@ -255,7 +255,7 @@ void PageContainerLayoutAlgorithm::LayoutPageBorderBox(
     const LayoutResult* existing_border_box_result =
         page_border_box_fragment.OwnerLayoutBox()->GetLayoutResult(0);
     container_builder_.AddResult(*existing_border_box_result, target_offset,
-                                 /*margins=*/std::nullopt);
+                                 /*margins=*/BoxStrut());
     return;
   }
 
@@ -307,7 +307,7 @@ void PageContainerLayoutAlgorithm::LayoutPageBorderBox(
   page_border_box_node.FinishPageContainerLayout(result);
 
   container_builder_.AddResult(*result, target_offset,
-                               /*margins=*/std::nullopt);
+                               /*margins=*/BoxStrut());
 
   fragmentainer_break_token_ = child_algorithm.FragmentainerBreakToken();
 }
@@ -415,7 +415,7 @@ void PageContainerLayoutAlgorithm::LayoutCornerMarginNode(
   BoxStrut logical_margins =
       physical_margins.ConvertToLogical(Style().GetWritingDirection());
   LogicalOffset offset = logical_rect.offset + logical_margins.StartOffset();
-  container_builder_.AddResult(*result, offset);
+  container_builder_.AddResult(*result, offset, /*margins=*/BoxStrut());
 }
 
 void PageContainerLayoutAlgorithm::LayoutEdgeMarginNodes(
@@ -852,7 +852,7 @@ void PageContainerLayoutAlgorithm::LayoutEdgeMarginNode(
                                  GetConstraintSpace().AvailableSize());
   LogicalOffset logical_offset =
       converter.ToLogical(offset, box_fragment.Size());
-  container_builder_.AddResult(*result, logical_offset);
+  container_builder_.AddResult(*result, logical_offset, /*margins=*/BoxStrut());
 }
 
 PhysicalBoxStrut PageContainerLayoutAlgorithm::ResolveMargins(
