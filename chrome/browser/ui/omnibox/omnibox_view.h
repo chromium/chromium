@@ -160,6 +160,9 @@ class OmniboxView {
   // true.
   virtual void ApplyCaretVisibility() = 0;
 
+  // Called when the model's has_focus() state changes.
+  virtual void OnFocusChanged() {}
+
   // Updates the accessibility state by enunciating any on-focus text.
   virtual void SetAccessibilityLabel(const std::u16string& display_text,
                                      const AutocompleteMatch& match,

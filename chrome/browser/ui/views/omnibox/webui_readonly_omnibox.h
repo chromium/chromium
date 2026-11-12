@@ -78,6 +78,9 @@ class WebUIReadOnlyOmnibox
     // If the location bar is using a full popup, ask to open it,
     // potentially also querying zero suggest.
     virtual void OpenOmniboxIfFullPopup(bool query_zps) = 0;
+
+    // Notifies the location bar when the edit model's focus state changes.
+    virtual void OnOmniboxFocusChanged(bool focused) = 0;
   };
 
   // Parameters must outlive `this`.
@@ -133,6 +136,7 @@ class WebUIReadOnlyOmnibox
   void ApplyFocusRingToAimButton(bool focus_aim) override;
   bool AimButtonVisible() const override;
   void ApplyCaretVisibility() override;
+  void OnFocusChanged() override;
   void SetAccessibilityLabel(const std::u16string& display_text,
                              const AutocompleteMatch& match,
                              bool notify_text_changed) override;

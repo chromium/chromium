@@ -67,6 +67,7 @@ class WebUILocationBar : public LocationBar,
   void PropagateFocusRequest(
       toolbar_ui_api::mojom::FocusRequestTarget target) override;
   void OpenOmniboxIfFullPopup(bool query_zps) override;
+  void OnOmniboxFocusChanged(bool focused) override;
 
   // Called from WebUIToolbarWebView:
   void OnThemeChanged();

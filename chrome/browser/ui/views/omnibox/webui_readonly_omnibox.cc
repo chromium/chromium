@@ -320,6 +320,11 @@ void WebUIReadOnlyOmnibox::ApplyCaretVisibility() {
   RequestUpdateWebUI();
 }
 
+void WebUIReadOnlyOmnibox::OnFocusChanged() {
+  update_propagator_->OnOmniboxFocusChanged(
+      controller()->edit_model()->has_focus());
+}
+
 void WebUIReadOnlyOmnibox::SetAccessibilityLabel(
     const std::u16string& display_text,
     const AutocompleteMatch& match,

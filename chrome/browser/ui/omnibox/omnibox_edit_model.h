@@ -761,8 +761,8 @@ class OmniboxEditModel {
 
   // If focus_state_ does not match |state|, we update it and notify the
   // InstantController about the change (passing along the |reason| for the
-  // change). If the caret visibility changes, we call ApplyCaretVisibility() on
-  // the view.
+  // change). If the focus state or caret visibility changes, we call
+  // OnFocusChanged() or ApplyCaretVisibility() on the view.
   void SetFocusState(OmniboxFocusState state, OmniboxFocusChangeReason reason);
 
   // This is an event handler that notifies the popup view of match icon

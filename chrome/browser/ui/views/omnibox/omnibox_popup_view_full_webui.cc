@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/views/location_bar/selected_keyword_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_full_popup_webui_content.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_full_presenter.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_host.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_delegate.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_webui.h"
@@ -557,6 +558,7 @@ void OmniboxPopupViewFullWebUI::OnFocus(bool query_zps,
   controller()->popup_state_manager()->SetPopupState(OmniboxPopupState::kFull);
   controller()->edit_model()->OnSetFocus(/*control_down=*/false);
 
+  popup_host()->OnOmniboxFocused();
   popup_host()->Show();
   // Explicitly request focus on the popup host and its WebContents to ensure
   // keyboard events route to the WebUI input field.

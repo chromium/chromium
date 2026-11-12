@@ -286,6 +286,16 @@ void WebUILocationBar::OpenOmniboxIfFullPopup(bool query_zps) {
                                /*show_full_url=*/false);
 }
 
+void WebUILocationBar::OnOmniboxFocusChanged(bool focused) {
+  // Focus state affects whether AI mode button is visible or not.
+  RefreshAiModePageAction();
+
+  // Lets a popup that creates its content on demand start loading it.
+  if (focused && omnibox_popup_view_ && omnibox_popup_view_->popup_host()) {
+    omnibox_popup_view_->popup_host()->OnOmniboxFocused();
+  }
+}
+
 void WebUILocationBar::OnThemeChanged() {
   if (!is_initialized_) {
     return;
@@ -320,15 +330,7 @@ void WebUILocationBar::SetFocusWithin(bool focused) {
     return;
   }
   focus_within_ = focused;
-
-  // Focus state affects whether AI mode button is visible or not.
-  RefreshAiModePageAction();
-
-  // Lets a popup that creates its content on demand start loading it.
-  if (focused && omnibox_popup_view_ && omnibox_popup_view_->popup_host()) {
-    omnibox_popup_view_->popup_host()->OnOmniboxFocused();
-  }
-
+  OnOmniboxFocusChanged(focused);
   NotifyFocusChanged();
 }
 

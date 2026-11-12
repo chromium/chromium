@@ -9,6 +9,7 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
@@ -34,6 +35,7 @@
 namespace {
 
 using testing::ElementsAre;
+using testing::IsEmpty;
 
 MATCHER_P2(IsSpan, expect_text, expect_color, "") {
   EXPECT_EQ(arg->text, base::UTF8ToUTF16(expect_text));
@@ -79,6 +81,14 @@ class TestUpdatePropagator : public WebUIReadOnlyOmnibox::UpdatePropagator {
 
   void OpenOmniboxIfFullPopup(bool query_zps) override {}
 
+  void OnOmniboxFocusChanged(bool focused) override {
+    focus_changed_values_.push_back(focused);
+  }
+
+  std::vector<bool> TakeFocusChangedValues() {
+    return std::exchange(focus_changed_values_, {});
+  }
+
   toolbar_ui_api::mojom::OmniboxViewStatePtr TakeState() {
     return std::move(state_);
   }
@@ -93,6 +103,7 @@ class TestUpdatePropagator : public WebUIReadOnlyOmnibox::UpdatePropagator {
   toolbar_ui_api::mojom::OmniboxViewStatePtr state_;
   std::optional<toolbar_ui_api::mojom::FocusRequestTarget>
       last_focus_request_target_;
+  std::vector<bool> focus_changed_values_;
 };
 
 class WebUIReadOnlyOmniboxTest : public ChromeViewsTestBase {
@@ -949,6 +960,20 @@ TEST_F(WebUIReadOnlyOmniboxTest, ApplyCaretVisibilityPropagatesState) {
   omnibox_view_->ApplyCaretVisibility();
   auto mojo_state = update_propagator_.TakeState();
   EXPECT_TRUE(mojo_state);
+}
+
+TEST_F(WebUIReadOnlyOmniboxTest, OnFocusChangedNotifiesPropagator) {
+  update_propagator_.TakeFocusChangedValues();
+
+  omnibox_controller_->edit_model()->OnSetFocus(/*control_down=*/false);
+  EXPECT_THAT(update_propagator_.TakeFocusChangedValues(), ElementsAre(true));
+
+  // Hiding the caret while focused should not report a focus change.
+  omnibox_controller_->edit_model()->SetCaretVisibility(/*visible=*/false);
+  EXPECT_THAT(update_propagator_.TakeFocusChangedValues(), IsEmpty());
+
+  omnibox_controller_->edit_model()->OnKillFocus();
+  EXPECT_THAT(update_propagator_.TakeFocusChangedValues(), ElementsAre(false));
 }
 
 }  // namespace
