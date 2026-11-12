@@ -24,6 +24,9 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "extensions/buildflags/buildflags.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "net/cookies/canonical_cookie.h"
+#include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "url/gurl.h"
@@ -87,6 +90,7 @@ class ContextualTasksSidePanelCoordinator
       public ContextualTasksPanelHost::Observer,
       public TabListInterfaceObserver,
       public signin::IdentityManager::Observer,
+      public network::mojom::CookieChangeListener,
       content::WebContentsObserver
 #if !BUILDFLAG(IS_ANDROID)
     ,
@@ -280,6 +284,9 @@ class ContextualTasksSidePanelCoordinator
       const GoogleServiceAuthError& error) override;
   void OnIdentityManagerShutdown(
       signin::IdentityManager* identity_manager) override;
+
+  // network::mojom::CookieChangeListener:
+  void OnCookieChange(const net::CookieChangeInfo& change) override;
 
 #if !BUILDFLAG(IS_ANDROID)
   // ThemeServiceObserver:
@@ -559,6 +566,10 @@ class ContextualTasksSidePanelCoordinator
   // user signs out of Google on the web, so they no longer show or restore
   // content from the signed-out account.
   void ResetWebContentsToZeroStateAfterWebSignOut();
+  void CheckOffTheRecordSigninCookie();
+  void OnOffTheRecordCookiesRead(
+      const net::CookieAccessResultList& cookies,
+      const net::CookieAccessResultList& excluded_cookies);
 
   // Whether the user was signed in to at least one Google account on the web
   // the last time the cookie jar was observed.
@@ -566,6 +577,8 @@ class ContextualTasksSidePanelCoordinator
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       identity_manager_observation_{this};
+  mojo::Receiver<network::mojom::CookieChangeListener>
+      otr_cookie_listener_receiver_{this};
 
 #if !BUILDFLAG(IS_ANDROID)
   // Refreshes cached side panel `WebContents` when the profile's effective dark

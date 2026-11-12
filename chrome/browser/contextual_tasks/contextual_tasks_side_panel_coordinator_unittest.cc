@@ -14,8 +14,10 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/active_task_context_provider.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_cookie_synchronizer.h"
@@ -69,6 +71,7 @@
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/scoped_web_ui_controller_factory_registration.h"
@@ -76,11 +79,17 @@
 #include "content/public/test/web_contents_tester.h"
 #include "extensions/buildflags/buildflags.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/gaia_id.h"
+#include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/url_util.h"
+#include "net/cookies/canonical_cookie.h"
+#include "net/cookies/cookie_change_dispatcher.h"
+#include "net/cookies/cookie_options.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -4853,6 +4862,59 @@ TEST_F(ContextualTasksSidePanelCoordinatorWebSignOutTest,
   SetActiveTab(background_tab);
   coordinator_->OnActiveTabChanged(*tab_list_, background_tab);
   EXPECT_EQ(coordinator_->GetActiveWebContents(), panel_contents);
+  EXPECT_FALSE(GetWebContentsForTaskForTesting(task_.GetTaskId()));
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorWebSignOutTest,
+       ResetsCachedWebContentsToZeroStateAfterOffTheRecordCookieSignOut) {
+  content::WebContents* panel_contents = ShowPanelWithThread();
+  ASSERT_TRUE(panel_contents);
+
+  network::mojom::CookieManager* cookie_manager =
+      profile_->GetDefaultStoragePartition()
+          ->GetCookieManagerForBrowserProcess();
+  std::unique_ptr<net::CanonicalCookie> cookie =
+      net::CanonicalCookie::CreateSanitizedCookie(
+          GaiaUrls::GetInstance()->secure_google_url(),
+          GaiaConstants::kGaiaSigninCookieName, "cookie_value", ".google.com",
+          "/", base::Time::Now(), base::Time::Now() + base::Days(1),
+          base::Time::Now(), /*secure=*/true, /*http_only=*/false,
+          net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_DEFAULT,
+          /*partition_key=*/std::nullopt, /*status=*/nullptr);
+  ASSERT_TRUE(cookie);
+
+  base::test::TestFuture<net::CookieAccessResult> set_cookie_future;
+  cookie_manager->SetCanonicalCookie(
+      *cookie, GaiaUrls::GetInstance()->secure_google_url(),
+      net::CookieOptions::MakeAllInclusive(), set_cookie_future.GetCallback());
+  ASSERT_TRUE(set_cookie_future.Take().status.IsInclude());
+
+  coordinator_->OnCookieChange(net::CookieChangeInfo(
+      *cookie, net::CookieAccessResult(), net::CookieChangeCause::INSERTED));
+  base::test::TestFuture<void> flush_future;
+  cookie_manager->FlushCookieStore(flush_future.GetCallback());
+  ASSERT_TRUE(flush_future.Wait());
+  EXPECT_EQ(GetWebContentsForTaskForTesting(task_.GetTaskId()), panel_contents);
+
+  // Deleting the Gaia sign-in cookie moves the panel to a new zero-state task.
+  ContextualTask new_task(base::Uuid::GenerateRandomV4());
+  EXPECT_CALL(*mock_controller_, CreateTask()).WillOnce(Return(new_task));
+  ON_CALL(*mock_ui_service(), GetDefaultAiPageUrlForTask(new_task.GetTaskId()))
+      .WillByDefault(
+          Return(GURL("https://www.google.com/search?udm=50&aep=46")));
+
+  network::mojom::CookieDeletionFilterPtr filter =
+      network::mojom::CookieDeletionFilter::New();
+  base::test::TestFuture<uint32_t> delete_future;
+  cookie_manager->DeleteCookies(std::move(filter), delete_future.GetCallback());
+  EXPECT_GT(delete_future.Take(), 0u);
+
+  coordinator_->OnCookieChange(net::CookieChangeInfo(
+      *cookie, net::CookieAccessResult(), net::CookieChangeCause::EXPLICIT));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return GetWebContentsForTaskForTesting(new_task.GetTaskId()) ==
+           panel_contents;
+  }));
   EXPECT_FALSE(GetWebContentsForTaskForTesting(task_.GetTaskId()));
 }
 
