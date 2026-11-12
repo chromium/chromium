@@ -432,6 +432,9 @@ inline bool LineBreaker::ShouldAutoWrap(const ComputedStyle& style) const {
   if (disallow_auto_wrap_) [[unlikely]] {
     return false;
   }
+  if (line_clamp_ellipsis_width_ && override_break_anywhere_) [[unlikely]] {
+    return true;
+  }
   return style.ShouldWrapLine();
 }
 
@@ -962,10 +965,6 @@ void LineBreaker::NextLine(LineInfo* line_info) {
   //    before a forced new-line.
   //  - During min/max content sizing (to correctly determine the line width).
   //
-  // With line-clamp, the entire contents of the line can be replaced by an
-  // ellipsis. This can only happen when the non-displaced line would create a
-  // line box, and the line box is still created after the replacement.
-  //
   // TODO(kojii): There are cases where we need to PlaceItems() without creating
   // line boxes. These cases need to be reviewed.
   const bool should_create_line_box =
@@ -978,26 +977,6 @@ void LineBreaker::NextLine(LineInfo* line_info) {
   if (line_clamp_ellipsis_width_ &&
       (!should_create_line_box || line_info->IsBlockInInline())) {
     line_clamp_ellipsis_width_ = LayoutUnit();
-  }
-
-  // If the line-clamp ellipsis would overflow, the entire line is replaced.
-  if (line_clamp_ellipsis_width_ && !CanFitOnLine()) {
-    Rewind(0, line_info);
-    line_info->SetIsLastLine(false);
-
-    // We only mark the line as overflowing (which matters for determining if
-    // it gets pushed down by floats) if the ellipsis itself wouldn't fit.
-    // We can't rely on AvailableWidth() here, since it gets clamped to be
-    // non-negative after the ellipsis width gets subtracted, so we need to
-    // check the line opportunity as well.
-    bool has_overflow = !AvailableWidth() &&
-                        line_opportunity_.AvailableInlineSize().AddEpsilon() <
-                            line_clamp_ellipsis_width_;
-    line_info->SetHasOverflow(has_overflow);
-
-    // Overflow disables score and bisect line breaking, but if we fixed the
-    // overflow by replacing the whole line, then we can reenable bisect.
-    disable_bisect_line_break_ = has_overflow;
   }
 
   if (!should_create_line_box) {
@@ -1557,6 +1536,12 @@ void LineBreaker::HandleText(const InlineItem& item,
   trailing_whitespace_ = WhitespaceState::kUnknown;
   position_ += item_result->inline_size;
   MoveToNextOf(item);
+
+  // When ellipsizing because of line-clamp, non-wrappable items that overflow
+  // can trigger break-anywhere behavior.
+  if (line_clamp_ellipsis_width_) {
+    HandleOverflowIfNeeded(line_info);
+  }
 }
 
 // In SVG <text>, we produce InlineItemResult split into segments partitioned
@@ -2526,7 +2511,8 @@ void LineBreaker::HandleTrailingSpaces(const InlineItem& item,
     InlineItemResults* item_results = line_info->MutableResults();
     DCHECK(!item_results->empty());
     item_results->back().can_break_after = true;
-  } else if (!style.ShouldBreakSpaces()) {
+  } else if (!style.ShouldBreakSpaces() &&
+             !(line_clamp_ellipsis_width_ && override_break_anywhere_)) {
     // Find the end of the run of space characters in this item.
     // Other white space characters (e.g., tab) are not included in this item.
     DCHECK(style.ShouldBreakOnlyAfterWhiteSpace() ||
@@ -4674,9 +4660,7 @@ void LineBreaker::SetCurrentStyleForce(const ComputedStyle& style) {
           break;
         case EWordBreak::kBreakWord:
           line_break_type = LineBreakType::kNormal;
-          // overflow-wrap doesn't take effect if the line has a line-clamp
-          // ellipsis, and neither does `word-break: break-word`.
-          break_anywhere_if_overflow_ = !line_clamp_ellipsis_width_;
+          break_anywhere_if_overflow_ = true;
           break;
         case EWordBreak::kKeepAll:
           line_break_type = LineBreakType::kKeepAll;
@@ -4693,16 +4677,16 @@ void LineBreaker::SetCurrentStyleForce(const ComputedStyle& style) {
           break_anywhere_if_overflow_ = false;
           break;
       }
-      if (!break_anywhere_if_overflow_ && !line_clamp_ellipsis_width_) {
+      if (!break_anywhere_if_overflow_) {
         // `overflow-wrap: anywhere` affects both layout and min-content, while
         // `break-word` affects layout but not min-content.
-        // This only takes effect if this line doesn't have a line-clamp
-        // ellipsis.
+        // We can also break anywhere if we're ellipsizing because of line-clamp
         const EOverflowWrap overflow_wrap = style.OverflowWrap();
         break_anywhere_if_overflow_ =
             overflow_wrap == EOverflowWrap::kAnywhere ||
             (overflow_wrap == EOverflowWrap::kBreakWord &&
-             mode_ == LineBreakerMode::kContent);
+             mode_ == LineBreakerMode::kContent) ||
+            line_clamp_ellipsis_width_;
       }
       if (break_anywhere_if_overflow_) [[unlikely]] {
         if (override_break_anywhere_) [[unlikely]] {
@@ -4728,6 +4712,18 @@ void LineBreaker::SetCurrentStyleForce(const ComputedStyle& style) {
       disable_score_line_break_ = true;
     } else {
       break_iterator_.SetBreakSpace(BreakSpaceType::kAfterSpaceRun);
+    }
+  } else if (line_clamp_ellipsis_width_) {
+    break_anywhere_if_overflow_ = true;
+    if (override_break_anywhere_) {
+      // Behaves like `white-space: break-spaces; line-break: anywhere; hyphens:
+      // none`. In this case, `ShouldAutoWrap` returns true.
+      break_iterator_.SetStrictness(LineBreakStrictness::kDefault);
+      break_iterator_.SetBreakType(LineBreakType::kBreakCharacter);
+      break_iterator_.EnableSoftHyphen(false);
+      break_iterator_.SetBreakSpace(BreakSpaceType::kAfterEverySpace);
+      hyphenation_ = nullptr;
+      disable_score_line_break_ = true;
     }
   }
 }

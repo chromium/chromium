@@ -87,8 +87,15 @@ class CORE_EXPORT LineBreaker {
 
   void SetLineClampEllipsisWidth(LayoutUnit width) {
     DCHECK(RuntimeEnabledFeatures::CSSLineClampLineBreakingEllipsisEnabled());
+    bool had_ellipsis = line_clamp_ellipsis_width_;
     line_clamp_ellipsis_width_ = width;
     UpdateAvailableWidth();
+
+    // The presence of an ellipsis has an effect on how the style is applied.
+    if (current_style_ &&
+        had_ellipsis != static_cast<bool>(line_clamp_ellipsis_width_)) {
+      SetCurrentStyleForce(*current_style_);
+    }
   }
 
   // Computing |LineBreakerMode::kMinContent| with |MaxSizeCache| caches
