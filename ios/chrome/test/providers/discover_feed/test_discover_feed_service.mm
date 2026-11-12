@@ -4,6 +4,10 @@
 
 #import "ios/chrome/test/providers/discover_feed/test_discover_feed_service.h"
 
+TestDiscoverFeedService::TestDiscoverFeedService() = default;
+
+TestDiscoverFeedService::~TestDiscoverFeedService() = default;
+
 void TestDiscoverFeedService::CreateFeedModel() {}
 
 void TestDiscoverFeedService::SetIsShownOnStartSurface(
@@ -16,7 +20,7 @@ FeedMetricsRecorder* TestDiscoverFeedService::GetFeedMetricsRecorder() {
 UIViewController*
 TestDiscoverFeedService::NewDiscoverFeedViewControllerWithConfiguration(
     DiscoverFeedViewControllerConfiguration* configuration) {
-  return nil;
+  return feed_view_controller_;
 }
 
 void TestDiscoverFeedService::RemoveFeedViewController(
@@ -51,6 +55,11 @@ void TestDiscoverFeedService::set_eligibility_handler(
 FakeDiscoverFeedEligibilityHandler*
 TestDiscoverFeedService::get_eligibility_handler() {
   return eligibility_handler_;
+}
+
+void TestDiscoverFeedService::set_feed_view_controller(
+    UIViewController* feed_view_controller) {
+  feed_view_controller_ = feed_view_controller;
 }
 
 UICollectionView* TestDiscoverFeedService::collection_view() {

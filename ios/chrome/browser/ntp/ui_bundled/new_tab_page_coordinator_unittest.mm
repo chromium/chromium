@@ -161,10 +161,6 @@ class NewTabPageCoordinatorTest : public PlatformTest {
     histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
 
-  ~NewTabPageCoordinatorTest() override {
-    EXPECT_OCMOCK_VERIFY(component_factory_mock_);
-  }
-
   ProfileIOS* GetProfile() { return profile_.get(); }
 
   void TearDown() override {
@@ -177,7 +173,6 @@ class NewTabPageCoordinatorTest : public PlatformTest {
     EXPECT_OCMOCK_VERIFY(lens_handler_mock_);
     EXPECT_OCMOCK_VERIFY(browser_coordinator_handler_mock_);
     EXPECT_OCMOCK_VERIFY(popup_menu_commands_handler_mock_);
-    EXPECT_OCMOCK_VERIFY(component_factory_mock_);
   }
 
   std::unique_ptr<web::FakeWebState> CreateWebState(const char* url) {
@@ -213,6 +208,16 @@ class NewTabPageCoordinatorTest : public PlatformTest {
               DiscoverFeedServiceFactory::GetForProfile(profile_.get()));
       eligibility_handler_ =
           test_discover_feed_service->get_eligibility_handler();
+      // Configures a fake Discover feed view controller so the NTP can test
+      // feed-dependent views, such as the feed top section.
+      fake_feed_view_controller_ = [[UIViewController alloc] init];
+      UICollectionView* fake_feed_collection_view = [[UICollectionView alloc]
+                 initWithFrame:CGRectZero
+          collectionViewLayout:[[UICollectionViewFlowLayout alloc] init]];
+      fake_feed_collection_view.translatesAutoresizingMaskIntoConstraints = NO;
+      [fake_feed_view_controller_.view addSubview:fake_feed_collection_view];
+      test_discover_feed_service->set_feed_view_controller(
+          fake_feed_view_controller_);
       // Create non-NTP WebState
       browser_.get()->GetWebStateList()->InsertWebState(
           CreateWebState("http://chromium.org"),
@@ -225,26 +230,9 @@ class NewTabPageCoordinatorTest : public PlatformTest {
       browser_agent->SaveMostRecentTab();
     }
 
-    // Mocks the component factory so that the NTP is tested with a fake feed.
-    // This allows testing of feed-dependent views, such as the feed top
-    // section.
-    // TODO(crbug.com/40266435): Replace this with a
-    // FakeNewTabPageComponentFactory implementation.
-    component_factory_mock_ =
-        OCMPartialMock([[NewTabPageComponentFactory alloc] init]);
-    fake_feed_view_controller_ = [[UIViewController alloc] init];
-    UICollectionView* fakeFeedCollectionView = [[UICollectionView alloc]
-               initWithFrame:CGRectZero
-        collectionViewLayout:[[UICollectionViewFlowLayout alloc] init]];
-    fakeFeedCollectionView.translatesAutoresizingMaskIntoConstraints = NO;
-    [fake_feed_view_controller_.view addSubview:fakeFeedCollectionView];
-    OCMStub([component_factory_mock_ discoverFeedForBrowser:browser_.get()
-                                viewControllerConfiguration:[OCMArg any]])
-        .andReturn(fake_feed_view_controller_);
-
-    coordinator_ =
-        [[NewTabPageCoordinator alloc] initWithBrowser:browser_.get()
-                                      componentFactory:component_factory_mock_];
+    coordinator_ = [[NewTabPageCoordinator alloc]
+         initWithBrowser:browser_.get()
+        componentFactory:[[NewTabPageComponentFactory alloc] init]];
     coordinator_.baseViewController = base_view_controller_;
     coordinator_.toolbarDelegate = toolbar_delegate_;
 
@@ -404,7 +392,6 @@ class NewTabPageCoordinatorTest : public PlatformTest {
   NewTabPageCoordinator* coordinator_;
   NewTabPageMetricsRecorder* NTPMetricsRecorder_;
   FakeDiscoverFeedEligibilityHandler* eligibility_handler_;
-  id component_factory_mock_;
   UIViewController* base_view_controller_;
   id application_handler_mock_;
   id help_commands_handler_mock_;

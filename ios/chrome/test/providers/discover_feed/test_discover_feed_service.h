@@ -12,6 +12,9 @@
 // Dummy DiscoverFeedService implementation used for tests.
 class TestDiscoverFeedService final : public DiscoverFeedService {
  public:
+  TestDiscoverFeedService();
+  ~TestDiscoverFeedService() final;
+
   // DiscoverFeedService implementation:
   void CreateFeedModel() final;
   void SetIsShownOnStartSurface(bool shown_on_start_surface) final;
@@ -34,6 +37,10 @@ class TestDiscoverFeedService final : public DiscoverFeedService {
   // TestDiscoverFeedService methods:
   void set_eligibility_handler(FakeDiscoverFeedEligibilityHandler* handler);
   FakeDiscoverFeedEligibilityHandler* get_eligibility_handler();
+  // Sets the view controller retained and returned across
+  // `NewDiscoverFeedViewControllerWithConfiguration()` calls (not cleared by
+  // `RemoveFeedViewController()`).
+  void set_feed_view_controller(UIViewController* feed_view_controller);
   UICollectionView* collection_view();
   BrowserViewVisibilityState visibility_state();
 
@@ -41,6 +48,7 @@ class TestDiscoverFeedService final : public DiscoverFeedService {
   UICollectionView* collection_view_;
   BrowserViewVisibilityState visibility_state_;
   FakeDiscoverFeedEligibilityHandler* eligibility_handler_;
+  UIViewController* feed_view_controller_;
 };
 
 #endif  // IOS_CHROME_TEST_PROVIDERS_DISCOVER_FEED_TEST_DISCOVER_FEED_SERVICE_H_
