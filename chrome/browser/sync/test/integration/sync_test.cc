@@ -1319,29 +1319,35 @@ syncer::DataTypeSet AllowedTypesInStandaloneTransportMode() {
   static_assert(64 == syncer::GetNumDataTypes(),
                 "Add new types below if they can run in transport mode");
 
-#if BUILDFLAG(IS_ANDROID)
-  CHECK(syncer::IsReplaceSyncPromosWithSignInPromosEnabled());
-#endif  // BUILDFLAG(IS_ANDROID)
-
   // Only some types will run by default in transport mode (i.e. without their
   // own separate opt-in).
-  syncer::DataTypeSet allowed_types = {syncer::AUTOFILL_WALLET_CREDENTIAL,
+  syncer::DataTypeSet allowed_types = {syncer::AUTOFILL_VALUABLE,
+                                       syncer::AUTOFILL_WALLET_CREDENTIAL,
                                        syncer::AUTOFILL_WALLET_DATA,
+                                       syncer::AUTOFILL_WALLET_METADATA,
                                        syncer::AUTOFILL_WALLET_USAGE,
+                                       syncer::CONTACT_INFO,
                                        syncer::DEVICE_INFO,
+                                       syncer::HISTORY,
+                                       syncer::HISTORY_DELETE_DIRECTIVES,
+                                       syncer::PASSWORDS,
+                                       syncer::READING_LIST,
+                                       syncer::SAVED_TAB_GROUP,
                                        syncer::SECURITY_EVENTS,
                                        syncer::SEND_TAB_TO_SELF,
+                                       syncer::SESSIONS,
                                        syncer::SHARING_MESSAGE,
-                                       syncer::USER_CONSENTS};
+                                       syncer::USER_CONSENTS,
+                                       syncer::USER_EVENTS};
   allowed_types.PutAll(syncer::ControlTypes());
-  allowed_types.Put(syncer::CONTACT_INFO);
-  allowed_types.Put(syncer::PASSWORDS);
 
 #if BUILDFLAG(IS_CHROMEOS)
   // OS sync types run in transport mode.
-  allowed_types.PutAll({syncer::APP_LIST, syncer::ARC_PACKAGE, syncer::WEB_APPS,
-                        syncer::OS_PREFERENCES,
-                        syncer::OS_PRIORITY_PREFERENCES});
+  allowed_types.PutAll({syncer::APPS, syncer::APP_LIST, syncer::APP_SETTINGS,
+                        syncer::ARC_PACKAGE, syncer::OS_PREFERENCES,
+                        syncer::OS_PRIORITY_PREFERENCES, syncer::PRINTERS,
+                        syncer::WEB_APPS, syncer::WIFI_CONFIGURATIONS,
+                        syncer::WORKSPACE_DESK});
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   if (base::FeatureList::IsEnabled(
@@ -1353,50 +1359,33 @@ syncer::DataTypeSet AllowedTypesInStandaloneTransportMode() {
           switches::kSyncEnableBookmarksInTransportMode)) {
     allowed_types.Put(syncer::BOOKMARKS);
   }
-  allowed_types.Put(syncer::READING_LIST);
-  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
-    allowed_types.Put(syncer::AUTOFILL_WALLET_METADATA);
-    if (base::FeatureList::IsEnabled(syncer::kSyncEncryptedTabContext)) {
-      allowed_types.Put(syncer::ENCRYPTED_TAB_CONTEXT_CONTAINER);
-      allowed_types.Put(syncer::ENCRYPTED_TAB_CONTEXT_ITEM);
-    }
-    if (base::FeatureList::IsEnabled(syncer::kSyncNotebook)) {
-      allowed_types.Put(syncer::NOTEBOOK);
-    }
-    allowed_types.Put(syncer::HISTORY);
-    allowed_types.Put(syncer::HISTORY_DELETE_DIRECTIVES);
-    allowed_types.Put(syncer::SAVED_TAB_GROUP);
-    allowed_types.Put(syncer::SESSIONS);
-    allowed_types.Put(syncer::USER_EVENTS);
-#if BUILDFLAG(IS_CHROMEOS)
-    allowed_types.Put(syncer::APPS);
-    allowed_types.Put(syncer::APP_SETTINGS);
-    allowed_types.Put(syncer::PRINTERS);
-    allowed_types.Put(syncer::WIFI_CONFIGURATIONS);
-    allowed_types.Put(syncer::WORKSPACE_DESK);
-#endif  // BUILDFLAG(IS_CHROMEOS)
+  if (base::FeatureList::IsEnabled(syncer::kSyncEncryptedTabContext)) {
+    allowed_types.Put(syncer::ENCRYPTED_TAB_CONTEXT_CONTAINER);
+    allowed_types.Put(syncer::ENCRYPTED_TAB_CONTEXT_ITEM);
+  }
+  if (base::FeatureList::IsEnabled(syncer::kSyncNotebook)) {
+    allowed_types.Put(syncer::NOTEBOOK);
+  }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS) && !BUILDFLAG(IS_CHROMEOS)
-    allowed_types.Put(syncer::WEB_APPS);
+  allowed_types.Put(syncer::WEB_APPS);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS) && !BUILDFLAG(IS_CHROMEOS)
 
-    if (data_sharing::features::IsDataSharingFunctionalityEnabled()) {
-      allowed_types.Put(syncer::SHARED_TAB_GROUP_DATA);
-      allowed_types.Put(syncer::COLLABORATION_GROUP);
+  if (data_sharing::features::IsDataSharingFunctionalityEnabled()) {
+    allowed_types.Put(syncer::SHARED_TAB_GROUP_DATA);
+    allowed_types.Put(syncer::COLLABORATION_GROUP);
 
-      allowed_types.Put(syncer::SHARED_TAB_GROUP_ACCOUNT_DATA);
+    allowed_types.Put(syncer::SHARED_TAB_GROUP_ACCOUNT_DATA);
 
-      if (base::FeatureList::IsEnabled(syncer::kSyncSharedComment)) {
-        allowed_types.Put(syncer::SHARED_COMMENT);
-      }
+    if (base::FeatureList::IsEnabled(syncer::kSyncSharedComment)) {
+      allowed_types.Put(syncer::SHARED_COMMENT);
     }
+  }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-    allowed_types.Put(syncer::EXTENSIONS);
-    allowed_types.Put(syncer::EXTENSION_SETTINGS);
+  allowed_types.Put(syncer::EXTENSIONS);
+  allowed_types.Put(syncer::EXTENSION_SETTINGS);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-  }
-  allowed_types.Put(syncer::AUTOFILL_VALUABLE);
 
   if (base::FeatureList::IsEnabled(syncer::kSyncAutofillValuableMetadata)) {
     allowed_types.Put(syncer::AUTOFILL_VALUABLE_METADATA);
@@ -1412,10 +1401,6 @@ syncer::DataTypeSet AllowedTypesInStandaloneTransportMode() {
 
   if (base::FeatureList::IsEnabled(syncer::kNewTabPageCustomizationThemeSync)) {
     allowed_types.Put(syncer::THEMES_ANDROID);
-  }
-
-  if (base::FeatureList::IsEnabled(syncer::kSyncNotebook)) {
-    allowed_types.Put(syncer::NOTEBOOK);
   }
 
   if (base::FeatureList::IsEnabled(syncer::kSyncJourney)) {
