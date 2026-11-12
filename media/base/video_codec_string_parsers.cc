@@ -526,18 +526,141 @@ std::optional<VideoType> ParseAv1CodecId(std::string_view codec_id) {
 }
 
 std::optional<VideoType> ParseAv2CodecId(std::string_view codec_id) {
-  if (!base::StartsWith(codec_id, "av02", base::CompareCase::SENSITIVE) &&
-      !base::StartsWith(codec_id, "av2", base::CompareCase::SENSITIVE)) {
+  // The codecs parameter string for the AOM AV2 codec is specified in:
+  // https://aomediacodec.github.io/av2-isobmff/main/#codecsparam
+  //
+  // <sample entry 4CC>.<profile>.<level><tier>.<bitDepth>.<channelCount>.
+  // <chromaSubsampling>.<colorPrimaries>.<transferCharacteristics>.
+  // <matrixCoefficients>.<videoFullRangeFlag>
+  //
+  // Optional fields (after bitDepth) default to:
+  //   channelCount             3
+  //   chromaSubsampling        22 (4:2:0 co-located with (0, 0) luma sample)
+  //   colorPrimaries           01 (ITU-R BT.709)
+  //   transferCharacteristics  01 (ITU-R BT.709)
+  //   matrixCoefficients       01 (ITU-R BT.709)
+  //   videoFullRangeFlag       0 (studio swing representation)
+  //
+  // Allowed 4CCs:
+  // - "av2E" (OutOfBandAV2SampleEntry) and "av2e" (InBandAV2SampleEntry) are
+  //   the VisualSampleEntry box types defined in Section 3.2.1.
+  // - "av02" is the ISOBMFF brand 4CC (Section 3.1), which is also used in
+  //   Section 6's own #codecsparam examples (e.g. "av02.0.01M.08").
+  static constexpr std::string_view kAv2Fourccs[] = {"av2E", "av2e", "av02"};
+  std::optional<ParsedAomCodecFields> parsed =
+      ParseAomCodecFields(codec_id, kAv2Fourccs);
+  if (!parsed) {
     return std::nullopt;
   }
-  // TODO(crbug.com/576753051) Implement full codec string parsing
+
   VideoType result = {
       .codec = VideoCodec::kAV2,
-      .profile = AV2PROFILE_MAIN_420_10_IP0,
-      .level = kNoVideoCodecLevel,
-      .color_space = VideoColorSpace::REC709(),
+      .level = parsed->level,
+      .color_space = parsed->color_space,
       .subsampling = VideoChromaSampling::k420,
+      .bit_depth = parsed->bit_depth,
   };
+
+  // AV2 seq_profile_idc is 5 bits (0..31), and Section 6 prose states that all
+  // fields after the 4CC are 2-digit decimals unless indicated otherwise (so
+  // "00".."05", "31"), whereas Section 6's examples write a single digit ("0",
+  // e.g. "av02.0.01M.08"). Accept both 1- and 2-digit decimals and map AV2
+  // Annex A Table A.1 profile IDCs to VideoCodecProfile.
+  if (parsed->fields[1].size() != 1 && parsed->fields[1].size() != 2) {
+    DVLOG(3) << __func__ << " Invalid profile (" << parsed->fields[1] << ")";
+    return std::nullopt;
+  }
+  switch (parsed->values[1]) {
+    case 0:
+      result.profile = AV2PROFILE_MAIN_420_10_IP0;
+      break;
+    case 1:
+      result.profile = AV2PROFILE_MAIN_420_10_IP1;
+      break;
+    case 2:
+      result.profile = AV2PROFILE_MAIN_420_10_IP2;
+      break;
+    case 3:
+      result.profile = AV2PROFILE_MAIN_422_10_IP1;
+      break;
+    case 4:
+      result.profile = AV2PROFILE_MAIN_444_10_IP1;
+      break;
+    case 5:
+      result.profile = AV2PROFILE_MAIN_444C_12_IP2;
+      break;
+    case 31:
+      result.profile = AV2PROFILE_CONFIGURABLE;
+      break;
+    default:
+      DVLOG(3) << __func__ << " Invalid profile (" << parsed->fields[1] << ")";
+      return std::nullopt;
+  }
+
+  if (parsed->values.size() <= 4) {
+    return result;
+  }
+
+  // Unlike AV1's 1-bit `monochrome` field, AV2 carries a 1-digit `channelCount`
+  // (1..4) equal to NumPlanes (1 for 4:0:0, 3 for YUV) plus 1 if the 'pixi' box
+  // signals an alpha channel (channel_idc == 5):
+  //   1 = monochrome (4:0:0)
+  //   2 = monochrome + alpha
+  //   3 = 3-plane color
+  //   4 = 3-plane color + alpha
+  const int channel_count = parsed->values[4];
+  if (parsed->fields[4].size() != 1 || channel_count < 1 || channel_count > 4) {
+    DVLOG(3) << __func__ << " Invalid channelCount (" << parsed->fields[4]
+             << ")";
+    return std::nullopt;
+  }
+  const bool is_monochrome = channel_count <= 2;
+
+  if (parsed->values.size() <= 5) {
+    if (is_monochrome) {
+      result.subsampling = VideoChromaSampling::k400;
+    }
+    return result;
+  }
+
+  // Unlike AV1's 3-digit <subsampling_x><subsampling_y><position>, AV2 carries
+  // a 2-digit <subsampling_type><subsampling_location> from the ISOBMFF 'pixi'
+  // box's chroma channels (channel_idc 3 and 4), or 0 when unsignaled:
+  //   first digit  (subsampling_type):     0 = 4:4:4 (or monochrome),
+  //                                        1 = 4:2:2, 2 = 4:2:0
+  //   second digit (subsampling_location): 0..5 (e.g. 2 = co-located with (0,0)
+  //                                        luma sample; 0 when monochrome)
+  const std::string_view subsampling_field = parsed->fields[5];
+  if (subsampling_field.size() != 2) {
+    DVLOG(3) << __func__ << " Invalid chroma subsampling (" << subsampling_field
+             << ")";
+    return std::nullopt;
+  }
+  const char subsampling_type = subsampling_field[0];
+  const char subsampling_location = subsampling_field[1];
+  if (is_monochrome) {
+    if (subsampling_field != "00") {
+      DVLOG(3) << __func__ << " Invalid monochrome subsampling ("
+               << subsampling_field << ")";
+      return std::nullopt;
+    }
+    result.subsampling = VideoChromaSampling::k400;
+  } else if (subsampling_location > '5') {
+    DVLOG(3) << __func__ << " Invalid chroma subsampling location ("
+             << subsampling_field << ")";
+    return std::nullopt;
+  } else if (subsampling_type == '0') {
+    result.subsampling = VideoChromaSampling::k444;
+  } else if (subsampling_type == '1') {
+    result.subsampling = VideoChromaSampling::k422;
+  } else if (subsampling_type == '2') {
+    result.subsampling = VideoChromaSampling::k420;
+  } else {
+    DVLOG(3) << __func__ << " Unsupported chroma subsampling ("
+             << subsampling_field << ")";
+    return std::nullopt;
+  }
+
   return result;
 }
 

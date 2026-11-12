@@ -514,6 +514,121 @@ TEST(ParseAv1CodecId, VerifyOptionalColorProperties) {
   EXPECT_FALSE(ParseAv1CodecId("av01.0.00M.10.0.110.01.01.00.2"));
 }
 
+TEST(ParseAv2CodecId, VerifyRequiredValues) {
+  EXPECT_FALSE(ParseAv2CodecId("av2"));
+  EXPECT_FALSE(ParseAv2CodecId("av02"));
+  EXPECT_FALSE(ParseAv2CodecId("av02.0"));
+  EXPECT_FALSE(ParseAv2CodecId("av02.0.01M"));
+
+  // All three AV2 4CCs ("av2E", "av2e", and "av02") and both 1-digit (spec
+  // examples) and 2-digit (spec prose) profile fields are accepted.
+  struct ProfileTestCase {
+    const char* field;
+    VideoCodecProfile expected_profile;
+  };
+  static constexpr ProfileTestCase kProfileCases[] = {
+      {"0", AV2PROFILE_MAIN_420_10_IP0},  {"00", AV2PROFILE_MAIN_420_10_IP0},
+      {"1", AV2PROFILE_MAIN_420_10_IP1},  {"01", AV2PROFILE_MAIN_420_10_IP1},
+      {"2", AV2PROFILE_MAIN_420_10_IP2},  {"02", AV2PROFILE_MAIN_420_10_IP2},
+      {"3", AV2PROFILE_MAIN_422_10_IP1},  {"03", AV2PROFILE_MAIN_422_10_IP1},
+      {"4", AV2PROFILE_MAIN_444_10_IP1},  {"04", AV2PROFILE_MAIN_444_10_IP1},
+      {"5", AV2PROFILE_MAIN_444C_12_IP2}, {"05", AV2PROFILE_MAIN_444C_12_IP2},
+      {"31", AV2PROFILE_CONFIGURABLE},
+  };
+  for (const char* fourcc : {"av2E", "av2e", "av02"}) {
+    for (const auto& tc : kProfileCases) {
+      const std::string codec_string =
+          base::StringPrintf("%s.%s.01M.08", fourcc, tc.field);
+      SCOPED_TRACE(codec_string);
+      auto result = ParseAv2CodecId(codec_string);
+      ASSERT_TRUE(result);
+      EXPECT_EQ(VideoCodec::kAV2, result->codec);
+      EXPECT_EQ(tc.expected_profile, result->profile);
+      EXPECT_EQ(1u, result->level);
+      EXPECT_EQ(8u, result->bit_depth);
+      EXPECT_EQ(VideoChromaSampling::k420, result->subsampling);
+      EXPECT_EQ(VideoColorSpace::REC709(), result->color_space);
+    }
+  }
+
+  EXPECT_FALSE(ParseAv2CodecId("av02.000.01M.08"));
+  EXPECT_FALSE(ParseAv2CodecId("av02.6.01M.08"));
+  EXPECT_FALSE(ParseAv2CodecId("av02.06.01M.08"));
+  EXPECT_FALSE(ParseAv2CodecId("av02.12.01M.08"));
+  EXPECT_FALSE(ParseAv2CodecId("av02.30.01M.08"));
+  EXPECT_FALSE(ParseAv2CodecId("av02.32.01M.08"));
+  EXPECT_FALSE(ParseAv2CodecId("av02.-0.01M.08"));
+  EXPECT_FALSE(ParseAv2CodecId("av02.+0.01M.08"));
+  EXPECT_FALSE(ParseAv2CodecId("av02.0.1M.08"));
+  EXPECT_FALSE(ParseAv2CodecId("av02.0.32M.08"));
+  EXPECT_FALSE(ParseAv2CodecId("av02.0.01L.08"));
+  EXPECT_FALSE(ParseAv2CodecId("av02.0.01M.8"));
+  EXPECT_FALSE(ParseAv2CodecId("av02.0.01M.16"));
+}
+
+TEST(ParseAv2CodecId, VerifyChannelCountAndSubsampling) {
+  // channelCount: 1..4 (1 = mono, 2 = mono+alpha, 3 = color, 4 = color+alpha).
+  EXPECT_FALSE(ParseAv2CodecId("av02.0.01M.08.0"));
+  EXPECT_FALSE(ParseAv2CodecId("av02.0.01M.08.03"));
+  EXPECT_FALSE(ParseAv2CodecId("av02.0.01M.08.5"));
+
+  for (int channels : {1, 2}) {
+    auto mono =
+        ParseAv2CodecId(base::StringPrintf("av02.0.01M.08.%d", channels));
+    ASSERT_TRUE(mono);
+    EXPECT_EQ(VideoChromaSampling::k400, mono->subsampling);
+
+    auto mono_00 =
+        ParseAv2CodecId(base::StringPrintf("av02.0.01M.08.%d.00", channels));
+    ASSERT_TRUE(mono_00);
+    EXPECT_EQ(VideoChromaSampling::k400, mono_00->subsampling);
+
+    // Monochrome tracks have no chroma channels in 'pixi', so non-"00" is
+    // invalid.
+    EXPECT_FALSE(
+        ParseAv2CodecId(base::StringPrintf("av02.0.01M.08.%d.22", channels)));
+  }
+
+  // 2-digit pixi chromaSubsampling (<subsampling_type><subsampling_location>).
+  {
+    auto yuv444 = ParseAv2CodecId("av2E.00.04M.10.3.00");
+    ASSERT_TRUE(yuv444);
+    EXPECT_EQ(VideoChromaSampling::k444, yuv444->subsampling);
+  }
+  {
+    auto yuv422 = ParseAv2CodecId("av2E.00.04M.10.3.10");
+    ASSERT_TRUE(yuv422);
+    EXPECT_EQ(VideoChromaSampling::k422, yuv422->subsampling);
+  }
+  {
+    auto yuv420 = ParseAv2CodecId("av2E.00.04M.10.3.22");
+    ASSERT_TRUE(yuv420);
+    EXPECT_EQ(VideoChromaSampling::k420, yuv420->subsampling);
+  }
+
+  // AV1-style 3-digit subsampling, unsupported subsampling_type (>= 3), or
+  // invalid subsampling_location (> 5) must fail.
+  EXPECT_FALSE(ParseAv2CodecId("av02.0.04M.10.3.112"));
+  EXPECT_FALSE(ParseAv2CodecId("av02.0.04M.10.3.30"));
+  EXPECT_FALSE(ParseAv2CodecId("av02.0.04M.10.3.26"));
+
+  // Full 10-field example from av2-isobmff Section 6 (#codecsparam).
+  {
+    auto hdr = ParseAv2CodecId("av02.0.04M.10.4.22.09.16.09.0");
+    ASSERT_TRUE(hdr);
+    EXPECT_EQ(VideoCodec::kAV2, hdr->codec);
+    EXPECT_EQ(AV2PROFILE_MAIN_420_10_IP0, hdr->profile);
+    EXPECT_EQ(4u, hdr->level);
+    EXPECT_EQ(10u, hdr->bit_depth);
+    EXPECT_EQ(VideoChromaSampling::k420, hdr->subsampling);
+    EXPECT_EQ(VideoColorSpace::PrimaryID::BT2020, hdr->color_space.primaries());
+    EXPECT_EQ(VideoColorSpace::TransferID::SMPTEST2084,
+              hdr->color_space.transfer());
+    EXPECT_EQ(VideoColorSpace::MatrixID::BT2020_NCL, hdr->color_space.matrix());
+    EXPECT_EQ(gfx::ColorSpace::RangeID::LIMITED, hdr->color_space.range());
+  }
+}
+
 TEST(ParseHEVCCodecIdTest, InvalidHEVCCodecIds) {
   // Both hev1 and hvc1 should be supported
   {
