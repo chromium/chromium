@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_COMMON_TAB_GROUP_VIEW_HORIZONTAL_LAYOUT_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_COMMON_TAB_GROUP_VIEW_HORIZONTAL_LAYOUT_H_
 
+#include <optional>
+
 #include "chrome/browser/ui/views/tabs/common/tab_group_view.h"
 
 namespace views {
@@ -23,13 +25,11 @@ class TabGroupViewHorizontalLayout : public TabGroupView::LayoutManager {
   // TabGroupView::LayoutManager:
   int GetCrossoverWidth() const override;
 
-  // views::LayoutManagerBase:
-  gfx::Size GetMinimumSize(const views::View* host) const override;
-
  protected:
   // views::LayoutManagerBase:
   views::ProposedLayout CalculateProposedLayout(
       const views::SizeBounds& size_bounds) const override;
+  void OnLayoutChanged() override;
 
  private:
   // Geometry of the header area for the group's current focus progress: the
@@ -49,6 +49,9 @@ class TabGroupViewHorizontalLayout : public TabGroupView::LayoutManager {
     bool has_header() const { return total_width() > 0; }
   };
   HeaderLayoutInfo ComputeHeaderInfo() const;
+  int CalculateCrossoverWidth() const;
+
+  mutable std::optional<int> cached_crossover_width_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_COMMON_TAB_GROUP_VIEW_HORIZONTAL_LAYOUT_H_

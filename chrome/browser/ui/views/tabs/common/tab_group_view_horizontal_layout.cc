@@ -30,6 +30,18 @@ TabGroupViewHorizontalLayout::TabGroupViewHorizontalLayout() = default;
 TabGroupViewHorizontalLayout::~TabGroupViewHorizontalLayout() = default;
 
 int TabGroupViewHorizontalLayout::GetCrossoverWidth() const {
+  if (!cached_crossover_width_) {
+    cached_crossover_width_ = CalculateCrossoverWidth();
+  }
+  return *cached_crossover_width_;
+}
+
+void TabGroupViewHorizontalLayout::OnLayoutChanged() {
+  TabGroupView::LayoutManager::OnLayoutChanged();
+  cached_crossover_width_.reset();
+}
+
+int TabGroupViewHorizontalLayout::CalculateCrossoverWidth() const {
   if (!TabGroupView().collection_node_) {
     return 0;
   }
@@ -60,39 +72,6 @@ int TabGroupViewHorizontalLayout::GetCrossoverWidth() const {
         0, crossover_width - static_cast<int>(count - 1) * tab_overlap);
   }
   return crossover_width;
-}
-
-gfx::Size TabGroupViewHorizontalLayout::GetMinimumSize(
-    const views::View* host) const {
-  if (!TabGroupView().collection_node_) {
-    return gfx::Size();
-  }
-  const HeaderLayoutInfo header = ComputeHeaderInfo();
-  int min_width = header.total_width();
-  size_t count = 0;
-  if (!TabGroupView().IsCollapsed()) {
-    for (const auto* child :
-         TabGroupView().collection_node_->GetDirectChildren()) {
-      if (!CanBeVisible(child)) {
-        continue;
-      }
-      auto drag_data = TabGroupView().GetVisualDataForDraggedView(*child);
-      if (drag_data && drag_data->should_hide) {
-        continue;
-      }
-      min_width += child->GetMinimumSize().width();
-      count++;
-    }
-  }
-  const int tab_overlap = TabStyle::Get()->GetTabOverlap();
-  if (count > 0 && header.has_header()) {
-    min_width = std::max(0, min_width - header.overlap -
-                                static_cast<int>(count - 1) * tab_overlap);
-  } else if (count > 1) {
-    min_width =
-        std::max(0, min_width - static_cast<int>(count - 1) * tab_overlap);
-  }
-  return gfx::Size(min_width, TabStyle::Get()->GetStandardHeight());
 }
 
 views::ProposedLayout TabGroupViewHorizontalLayout::CalculateProposedLayout(

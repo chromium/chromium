@@ -36,6 +36,7 @@
 #include "chrome/browser/ui/views/tabs/common/tab_strip_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_view.h"
 #include "chrome/browser/ui/views/tabs/common/unpinned_tab_container_view.h"
+#include "chrome/browser/ui/views/tabs/horizontal/horizontal_tab_closing_helper.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_types.h"
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
 #include "chrome/browser/ui/views/test/vertical_tabs_browser_test_mixin.h"
@@ -747,6 +748,103 @@ IN_PROC_BROWSER_TEST_P(TabGroupViewTest,
   }
 }
 
+IN_PROC_BROWSER_TEST_P(
+    TabGroupViewTest,
+    FocusingCollapsedGroupDoesNotStartCompetingLayoutAnimation) {
+  DisableFocusAnimations();
+  const tab_groups::TabGroupId group_id = CreateInactiveTabGroup();
+  TabGroupView* const group_view = GetTabGroupView(group_id);
+  ASSERT_NE(group_view, nullptr);
+
+  group_view->ToggleCollapsedState(
+      ToggleTabGroupCollapsedStateOrigin::kMenuAction);
+  RunScheduledLayouts();
+  ASSERT_TRUE(group_view->IsCollapsed());
+
+  EnableFocusAnimations();
+  const BrowserAnimationController* const anim_controller =
+      BrowserAnimationController::From(browser());
+  browser()->GetTabStripModel()->EnterFocusMode(group_id);
+  RunScheduledLayouts();
+
+  // Auto-expanding a collapsed group as part of entering focus mode must snap
+  // into the focus motion rather than running a competing layout animation.
+  EXPECT_FALSE(group_view->IsCollapsed());
+  EXPECT_TRUE(anim_controller->IsAnimating(FocusModeAnimations::kFocusMode));
+  EXPECT_FALSE(IsAnyTabLayoutAnimating());
+
+  FinishFocusMotion();
+  EXPECT_TRUE(group_view->unfocus_header()->GetVisible());
+}
+
+IN_PROC_BROWSER_TEST_P(TabGroupViewTest,
+                       NonAnimatedFocusChangeInvalidatesCachedGroupSizes) {
+  DisableFocusAnimations();
+  AppendTab();
+  AppendTab();
+  AppendTab();
+  TabStripModel* const model = browser()->GetTabStripModel();
+  const tab_groups::TabGroupId group_a = model->AddToNewGroup({0, 1});
+  const tab_groups::TabGroupId group_b = model->AddToNewGroup({2, 3});
+  const tab_groups::TabGroupVisualData visual_data(
+      u"", tab_groups::TabGroupColorId::kBlue);
+  model->ChangeTabGroupVisuals(group_a, visual_data, /*is_customized=*/false);
+  model->ChangeTabGroupVisuals(group_b, visual_data, /*is_customized=*/false);
+
+  model->EnterFocusMode(group_a);
+  RunScheduledLayouts();
+
+  TabGroupView* const group_view_a = GetTabGroupView(group_a);
+  TabGroupView* const group_view_b = GetTabGroupView(group_b);
+  ASSERT_NE(group_view_a, nullptr);
+  ASSERT_NE(group_view_b, nullptr);
+  ASSERT_TRUE(group_view_a->unfocus_header()->GetVisible());
+  ASSERT_FALSE(group_view_b->unfocus_header()->GetVisible());
+
+  const gfx::Size a_focused_min = group_view_a->GetMinimumSize();
+  const int a_focused_crossover = group_view_a->GetCrossoverWidth();
+  const gfx::Size a_focused_pref =
+      group_view_a->GetPreferredSize(views::SizeBounds());
+  const gfx::Size b_unfocused_min = group_view_b->GetMinimumSize();
+  const int b_unfocused_crossover = group_view_b->GetCrossoverWidth();
+  const gfx::Size b_unfocused_pref =
+      group_view_b->GetPreferredSize(views::SizeBounds());
+
+  // Switch focus to `group_b` via the non-animated `Reset()` path
+  // (`!ShouldAnimateLayout()`), with identical group colors so
+  // `Widget::ThemeChanged()` does not mask missing layout invalidation.
+  model->RemoveObserver(root_node());
+  model->EnterFocusMode(group_b);
+  model->AddObserver(root_node());
+
+  TabStripCollectionController* const controller = collection_controller();
+  ASSERT_NE(controller, nullptr);
+  ASSERT_FALSE(controller->ShouldAnimateLayout());
+  controller->TabGroupFocusChanged(group_b, group_a);
+  RunScheduledLayouts();
+
+  EXPECT_FALSE(group_view_a->unfocus_header()->GetVisible());
+  EXPECT_TRUE(group_view_b->unfocus_header()->GetVisible());
+  if (GetParam() == TabStripOrientation::kHorizontal) {
+    EXPECT_LT(group_view_a->GetMinimumSize().width(), a_focused_min.width());
+    EXPECT_LT(group_view_a->GetCrossoverWidth(), a_focused_crossover);
+    EXPECT_LT(group_view_a->GetPreferredSize(views::SizeBounds()).width(),
+              a_focused_pref.width());
+    EXPECT_GT(group_view_b->GetMinimumSize().width(), b_unfocused_min.width());
+    EXPECT_GT(group_view_b->GetCrossoverWidth(), b_unfocused_crossover);
+    EXPECT_GT(group_view_b->GetPreferredSize(views::SizeBounds()).width(),
+              b_unfocused_pref.width());
+  } else {
+    EXPECT_LT(group_view_a->GetMinimumSize().height(), a_focused_min.height());
+    EXPECT_LT(group_view_a->GetPreferredSize(views::SizeBounds()).height(),
+              a_focused_pref.height());
+    EXPECT_GT(group_view_b->GetMinimumSize().height(),
+              b_unfocused_min.height());
+    EXPECT_GT(group_view_b->GetPreferredSize(views::SizeBounds()).height(),
+              b_unfocused_pref.height());
+  }
+}
+
 INSTANTIATE_TEST_SUITE_P(
     All,
     TabGroupViewTest,
@@ -1357,7 +1455,10 @@ class HorizontalTabGroupViewBrowserTest : public InProcessBrowserTest {
   HorizontalTabGroupViewBrowserTest()
       : animation_mode_reset_(gfx::AnimationTestApi::SetRichAnimationRenderMode(
             gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED)) {
-    feature_list_.InitAndEnableFeature(tabs::kTabStripUnification);
+    feature_list_.InitWithFeatures(
+        {tabs::kTabStripUnification, features::kTabGroupsFocusing,
+         features::kNonGroupFocus},
+        {});
   }
 
  protected:
@@ -2007,6 +2108,211 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabGroupViewBrowserTest,
   EXPECT_EQ(
       unpinned_container->GetEventHandlerForPoint(point_in_last_grouped_tab),
       last_grouped_tab_view);
+}
+
+IN_PROC_BROWSER_TEST_F(HorizontalTabGroupViewBrowserTest,
+                       FocusingMouseCollapsedGroupInClosingMode) {
+  TabGroupView* const group_view =
+      SetUpTrailingGroup(/*ungrouped_tabs=*/5, /*window_width=*/800);
+  ASSERT_NE(group_view, nullptr);
+  const tab_groups::TabGroupId group_id = group_view->GetTabGroup().id();
+
+  ToggleCollapse(group_view, /*expected_collapsed=*/true,
+                 ToggleTabGroupCollapsedStateOrigin::kMouse);
+  HorizontalTabClosingHelper* const closing_helper =
+      root_node()->GetController()->tab_closing_helper();
+  ASSERT_NE(closing_helper, nullptr);
+  ASSERT_TRUE(closing_helper->in_tab_close());
+
+  GetTabStripModel()->EnterFocusMode(group_id);
+  tab_strip_view()->GetWidget()->LayoutRootViewIfNecessary();
+
+  EXPECT_EQ(GetTabStripModel()->GetFocusedGroup(), group_id);
+  EXPECT_FALSE(group_view->IsCollapsed());
+  EXPECT_FALSE(closing_helper->in_tab_close());
+  EXPECT_TRUE(group_view->unfocus_header()->GetVisible());
+  EXPECT_LE(group_view->GetMinimumSize().width(),
+            group_view->GetCrossoverWidth());
+  EXPECT_LE(group_view->GetCrossoverWidth(),
+            group_view->GetPreferredSize(views::SizeBounds()).width());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    HorizontalTabGroupViewBrowserTest,
+    CachedGroupSizesRemainConsistentDuringSelectionChangeNotification) {
+  TabGroupView* const group_view =
+      SetUpTrailingGroup(/*ungrouped_tabs=*/5, /*window_width=*/800);
+  ASSERT_NE(group_view, nullptr);
+  const tab_groups::TabGroupId group_id = group_view->GetTabGroup().id();
+  views::Widget* const widget = tab_strip_view()->GetWidget();
+
+  // Keep active tab 5 inside `group_id` while also selecting ungrouped tab 0 so
+  // `EnterFocusMode()` deselects tab 0 (`selection_changed() == true`,
+  // `active_tab_changed() == false`), invalidating `UnpinnedTabContainerView`
+  // before `OnTabGroupFocusChanged()` invalidates `group_view`.
+  ui::ListSelectionModel initial_selection;
+  initial_selection.AddIndexToSelection(0);
+  initial_selection.AddIndexToSelection(5);
+  initial_selection.set_active(5);
+  initial_selection.set_anchor(5);
+  GetTabStripModel()->SetSelectionFromModel(std::move(initial_selection));
+  widget->LayoutRootViewIfNecessary();
+  ASSERT_EQ(GetTabStripModel()->active_index(), 5);
+  ASSERT_FALSE(group_view->unfocus_header()->GetVisible());
+
+  struct SelectionObserver : public TabStripModelObserver {
+    SelectionObserver(views::Widget* widget,
+                      TabGroupView* group_view,
+                      tab_groups::TabGroupId group_id)
+        : widget_(widget), group_view_(group_view), group_id_(group_id) {}
+
+    void OnTabStripModelChanged(
+        TabStripModel* tab_strip_model,
+        const TabStripModelChange& change,
+        const TabStripSelectionChange& selection) override {
+      if (!selection.selection_changed()) {
+        return;
+      }
+      observed_selection_change = true;
+      EXPECT_EQ(tab_strip_model->GetFocusedGroup(), group_id_);
+      observed_min = group_view_->GetMinimumSize().width();
+      observed_crossover = group_view_->GetCrossoverWidth();
+      observed_pref =
+          group_view_->GetPreferredSize(views::SizeBounds()).width();
+      EXPECT_LE(observed_min, observed_crossover);
+      EXPECT_LE(observed_crossover, observed_pref);
+      widget_->LayoutRootViewIfNecessary();
+    }
+
+    raw_ptr<views::Widget> widget_;
+    raw_ptr<TabGroupView> group_view_;
+    tab_groups::TabGroupId group_id_;
+    bool observed_selection_change = false;
+    int observed_min = 0;
+    int observed_crossover = 0;
+    int observed_pref = 0;
+  };
+
+  SelectionObserver observer(widget, group_view, group_id);
+  GetTabStripModel()->AddObserver(&observer);
+  GetTabStripModel()->EnterFocusMode(group_id);
+  GetTabStripModel()->RemoveObserver(&observer);
+  ASSERT_TRUE(observer.observed_selection_change);
+
+  widget->LayoutRootViewIfNecessary();
+  EXPECT_TRUE(group_view->unfocus_header()->GetVisible());
+  const int focused_min = group_view->GetMinimumSize().width();
+  const int focused_crossover = group_view->GetCrossoverWidth();
+  const int focused_pref =
+      group_view->GetPreferredSize(views::SizeBounds()).width();
+  EXPECT_GT(focused_min, observer.observed_min);
+  EXPECT_GT(focused_crossover, observer.observed_crossover);
+  EXPECT_GT(focused_pref, observer.observed_pref);
+  EXPECT_LE(focused_min, focused_crossover);
+  EXPECT_LE(focused_crossover, focused_pref);
+
+  GetTabStripModel()->ExitFocusMode();
+  widget->LayoutRootViewIfNecessary();
+  EXPECT_FALSE(group_view->unfocus_header()->GetVisible());
+  EXPECT_EQ(group_view->GetMinimumSize().width(), observer.observed_min);
+  EXPECT_EQ(group_view->GetCrossoverWidth(), observer.observed_crossover);
+  EXPECT_EQ(group_view->GetPreferredSize(views::SizeBounds()).width(),
+            observer.observed_pref);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    VerticalTabGroupViewBrowserTest,
+    FocusModeExitKeepsUnfocusButtonVisibleOnStartNotification) {
+  DisableFocusAnimations();
+  TabGroupView* group_view = nullptr;
+  bool observed_exit_start = false;
+
+  // Subscribe before creating `group_view` so this callback runs right after
+  // `UnpinnedTabContainerView::OnFocusAnimationUpdated()` on `kStarted`.
+  base::CallbackListSubscription sub =
+      BrowserAnimationController::From(browser())->Subscribe(
+          FocusModeAnimations::kFocusMode,
+          base::BindRepeating(
+              [](TabGroupView** group_view_ptr, bool* observed_exit_start,
+                 TabStripModel* model, const BrowserAnimationController*,
+                 BrowserAnimationUpdate status) {
+                if (status == BrowserAnimationUpdate::kStarted &&
+                    *group_view_ptr && !model->GetFocusedGroup().has_value()) {
+                  *observed_exit_start = true;
+                  EXPECT_TRUE((*group_view_ptr)->ShouldShowUnfocusButton());
+                }
+              },
+              &group_view, &observed_exit_start,
+              browser()->GetTabStripModel()));
+
+  const tab_groups::TabGroupId group_id = CreateActiveTabGroup();
+  group_view = GetTabGroupView(group_id);
+  ASSERT_NE(group_view, nullptr);
+
+  browser()->GetTabStripModel()->EnterFocusMode(group_id);
+  RunScheduledLayouts();
+  FinishFocusMotion();
+  ASSERT_TRUE(group_view->unfocus_header()->GetVisible());
+
+  EnableFocusAnimations();
+  browser()->GetTabStripModel()->ExitFocusMode();
+  RunScheduledLayouts();
+
+  EXPECT_TRUE(observed_exit_start);
+  FinishFocusMotion();
+  EXPECT_FALSE(group_view->unfocus_header()->GetVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(VerticalTabGroupViewBrowserTest,
+                       FocusModeInterruptedSwitchSettlesOutgoingGroupCleanly) {
+  DisableFocusAnimations();
+  AppendTab();
+  AppendTab();
+  AppendTab();
+  TabStripModel* const model = browser()->GetTabStripModel();
+  const tab_groups::TabGroupId group_a = model->AddToNewGroup({1});
+  const tab_groups::TabGroupId group_b = model->AddToNewGroup({2});
+  const tab_groups::TabGroupId group_c = model->AddToNewGroup({3});
+  TabGroupView* const group_view_a = GetTabGroupView(group_a);
+  TabGroupView* const group_view_b = GetTabGroupView(group_b);
+  TabGroupView* const group_view_c = GetTabGroupView(group_c);
+  ASSERT_NE(group_view_a, nullptr);
+  ASSERT_NE(group_view_b, nullptr);
+  ASSERT_NE(group_view_c, nullptr);
+
+  model->EnterFocusMode(group_a);
+  RunScheduledLayouts();
+  FinishFocusMotion();
+
+  EnableFocusAnimations();
+  // Interrupting `group_a -> group_b` mid-switch by switching again to
+  // `group_c` settles `group_view_a` immediately without starting a secondary
+  // layout animation.
+  model->EnterFocusMode(group_b);
+  AdvanceFocusMotion(base::Milliseconds(25));
+  ASSERT_TRUE(group_view_a->unfocus_header()->GetVisible());
+  ASSERT_NE(group_view_a->GetFocusSwitchSlideOffset(), 0);
+
+  model->EnterFocusMode(group_c);
+  RunScheduledLayouts();
+  EXPECT_FALSE(group_view_a->unfocus_header()->GetVisible());
+  EXPECT_EQ(group_view_a->GetFocusSwitchSlideOffset(), 0);
+  EXPECT_FALSE(IsAnyTabLayoutAnimating());
+
+  // Interrupting `group_b -> group_c` mid-switch with `ExitFocusMode` settles
+  // `group_view_b` immediately without starting a secondary layout animation.
+  AdvanceFocusMotion(base::Milliseconds(25));
+  ASSERT_TRUE(group_view_b->unfocus_header()->GetVisible());
+  ASSERT_NE(group_view_b->GetFocusSwitchSlideOffset(), 0);
+
+  model->ExitFocusMode();
+  RunScheduledLayouts();
+  EXPECT_FALSE(group_view_b->unfocus_header()->GetVisible());
+  EXPECT_EQ(group_view_b->GetFocusSwitchSlideOffset(), 0);
+  EXPECT_FALSE(IsAnyTabLayoutAnimating());
+
+  FinishFocusMotion();
+  EXPECT_FALSE(group_view_c->unfocus_header()->GetVisible());
 }
 
 // TODO(crbug.com/490428062): Create Tests to Verify Focus Order of Tab Group

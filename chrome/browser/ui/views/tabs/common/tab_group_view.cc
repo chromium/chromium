@@ -206,6 +206,7 @@ void TabGroupView::ToggleCollapsedState(
   if (!collection_node_) {
     return;
   }
+  CHECK(!IsGroupFocused());
 
   const bool is_currently_collapsed = IsCollapsed();
   std::optional<int> new_override;
@@ -227,8 +228,7 @@ void TabGroupView::ToggleCollapsedState(
       // Collapsing a trailing group adds trailing header padding; otherwise it
       // reduces trailing overlap from `GetTabOverlap()` to header overlap.
       const int collapsed_trailing_space =
-          IsGroupFocused() ||
-                  closing_helper->IsLastVisibleUnpinnedChild(collection_node_)
+          closing_helper->IsLastVisibleUnpinnedChild(collection_node_)
               ? TabGroupStyle::GetTrailingGroupHeaderPadding()
               : TabStyle::Get()->GetTabOverlap() -
                     TabGroupStyle::GetTabGroupOverlapAdjustment();
@@ -379,6 +379,7 @@ void TabGroupView::OnDataChanged() {
   const tabs::TabGroupData& tab_group_data =
       tab_group_data_observer_->tab_group_data();
   is_ephemeral_ = GetTabGroupFromNode(collection_node_)->is_ephemeral();
+  was_focused_ = IsGroupFocused();
   const bool has_collapse_state_changed =
       tab_group_visual_data_.is_collapsed() !=
       tab_group_data.visual_data.is_collapsed();
@@ -392,7 +393,7 @@ void TabGroupView::OnDataChanged() {
   group_header_->OnDataChanged(tab_group_data);
 
   std::optional<base::AutoReset<bool>> allow_animation;
-  if (has_collapse_state_changed) {
+  if (has_collapse_state_changed && !was_focused_) {
     allow_animation.emplace(
         collection_node_->GetController()->ScopedAnimateLayout());
   }
@@ -414,7 +415,7 @@ void TabGroupView::OnFocusAnimationUpdated(
     BrowserAnimationUpdate status) {
   const FocusTransitionRole role = GetFocusTransitionRole();
   if (role == FocusTransitionRole::kNone) {
-    if (is_focus_animating_) {
+    if (is_focus_animating_ || was_focused_ != IsGroupFocused()) {
       FinishFocusAnimation();
     }
     return;
@@ -716,8 +717,7 @@ bool TabGroupView::ShouldUseFocusedHeaderStyle() const {
   // During a direct switch between groups, the outgoing group also keeps its
   // focused header style while the container shrinks it away.
   return is_ephemeral_ || IsGroupFocused() ||
-         (is_focus_animating_ &&
-          GetFocusTransitionRole() == FocusTransitionRole::kSwitchingFocus);
+         GetFocusTransitionRole() == FocusTransitionRole::kSwitchingFocus;
 }
 
 float TabGroupView::GetFocusProgress() const {
@@ -741,7 +741,8 @@ bool TabGroupView::ShouldShowGroupLine() const {
 }
 
 bool TabGroupView::ShouldShowUnfocusButton() const {
-  return IsGroupFocused() || is_focus_animating_;
+  return IsGroupFocused() ||
+         GetFocusTransitionRole() != FocusTransitionRole::kNone;
 }
 
 int TabGroupView::GetFocusSwitchSlideOffset() const {

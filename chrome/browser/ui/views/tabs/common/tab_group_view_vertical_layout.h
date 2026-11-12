@@ -20,9 +20,6 @@ class TabGroupViewVerticalLayout : public TabGroupView::LayoutManager {
       delete;
   ~TabGroupViewVerticalLayout() override;
 
-  // views::LayoutManagerBase:
-  gfx::Size GetMinimumSize(const views::View* host) const override;
-
  protected:
   // views::LayoutManagerBase:
   views::ProposedLayout CalculateProposedLayout(
