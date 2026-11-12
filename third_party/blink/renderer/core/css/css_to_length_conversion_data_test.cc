@@ -354,9 +354,14 @@ TEST_F(CSSToLengthConversionDataTest, Flags) {
 TEST_F(CSSToLengthConversionDataTest, ConversionWithoutPrimaryFont) {
   FontDescription font_description;
   Font* font = MakeGarbageCollected<Font>(font_description);
-  font->NullifyPrimaryFontForTesting();
+  font->SimulateMissingLastResortFontForTesting();
 
-  ASSERT_FALSE(font->PrimaryFont());
+  if (RuntimeEnabledFeatures::FontNonNullPrimaryFontEnabled()) {
+    ASSERT_TRUE(font->PrimaryFont());
+    ASSERT_EQ(font->PrimaryFont()->PlatformData().Typeface()->countGlyphs(), 0);
+  } else {
+    ASSERT_FALSE(font->PrimaryFont());
+  }
 
   CSSToLengthConversionData data(/*element=*/nullptr);
   CSSToLengthConversionData::FontSizes font_sizes(

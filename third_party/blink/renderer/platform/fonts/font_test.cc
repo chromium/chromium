@@ -264,12 +264,24 @@ TEST_F(FontTest, TabWidthWithSpacing) {
               kTolerance);
 }
 
-TEST_F(FontTest, NullifyPrimaryFontForTesting) {
+TEST_F(FontTest, SimulateMissingLastResortFontForTesting) {
   Font* font = CreateTestFont(AtomicString("Ahem"),
                               test::PlatformTestDataPath("Ahem.woff"), 0);
-  EXPECT_TRUE(font->PrimaryFont());
-  font->NullifyPrimaryFontForTesting();
-  EXPECT_FALSE(font->PrimaryFont());
+  ASSERT_TRUE(font->PrimaryFont());
+  EXPECT_GT(font->PrimaryFont()->PlatformData().Typeface()->countGlyphs(), 0);
+  font->SimulateMissingLastResortFontForTesting();
+  if (RuntimeEnabledFeatures::FontNonNullPrimaryFontEnabled()) {
+    ASSERT_TRUE(font->PrimaryFont());
+    EXPECT_EQ(font->PrimaryFont()->PlatformData().Typeface()->countGlyphs(), 0);
+    EXPECT_TRUE(font->PrimaryFontWithDigitZero());
+    EXPECT_TRUE(font->PrimaryFontWithCjkWater());
+    EXPECT_TRUE(font->PrimaryFontForTabSize());
+  } else {
+    EXPECT_FALSE(font->PrimaryFont());
+    EXPECT_FALSE(font->PrimaryFontWithDigitZero());
+    EXPECT_FALSE(font->PrimaryFontWithCjkWater());
+    EXPECT_FALSE(font->PrimaryFontForTabSize());
+  }
 }
 
 }  // namespace blink

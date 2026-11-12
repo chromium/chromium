@@ -92,21 +92,18 @@ class PLATFORM_EXPORT FontFallbackList
 
   const PrimaryFontData* PrimaryFontDataWithSpace(
       const FontDescription& font_description) {
-    if (nullify_primary_font_data_for_test_) {
+    if (!PrimarySimpleFontDataWithSpace(font_description)) {
       return nullptr;
     }
-    PrimarySimpleFontDataWithSpace(font_description);
     return &cached_primary_simple_font_data_with_space_;
   }
   const SimpleFontData* PrimarySimpleFontDataWithSpace(
       const FontDescription& font_description) {
-    if (nullify_primary_font_data_for_test_) {
-      return nullptr;
-    }
     if (!cached_primary_simple_font_data_with_space_) {
       cached_primary_simple_font_data_with_space_ =
           DeterminePrimarySimpleFontData(font_description, uchar::kSpace);
-      DCHECK(cached_primary_simple_font_data_with_space_);
+      DCHECK(cached_primary_simple_font_data_with_space_ ||
+             missing_last_resort_font_for_test_);
     }
     return cached_primary_simple_font_data_with_space_.simple_font_data.Get();
   }
@@ -116,7 +113,8 @@ class PLATFORM_EXPORT FontFallbackList
       cached_primary_simple_font_data_with_digit_zero_ =
           DeterminePrimarySimpleFontData(font_description, uchar::kDigitZero)
               .simple_font_data;
-      DCHECK(cached_primary_simple_font_data_with_digit_zero_);
+      DCHECK(cached_primary_simple_font_data_with_digit_zero_ ||
+             missing_last_resort_font_for_test_);
     }
     return cached_primary_simple_font_data_with_digit_zero_;
   }
@@ -138,7 +136,8 @@ class PLATFORM_EXPORT FontFallbackList
           DeterminePrimarySimpleFontData(font_description, uchar::kSpace,
                                          /*should_contain_glyph=*/true)
               .simple_font_data;
-      DCHECK(cached_primary_simple_font_data_for_tab_size_);
+      DCHECK(cached_primary_simple_font_data_for_tab_size_ ||
+             missing_last_resort_font_for_test_);
     }
     return cached_primary_simple_font_data_for_tab_size_;
   }
@@ -155,9 +154,13 @@ class PLATFORM_EXPORT FontFallbackList
     can_shape_word_by_word_computed_ = true;
   }
 
-  // See Font::NullifyPrimaryFontForTesting.
-  void NullifyPrimarySimpleFontDataForTesting() {
-    nullify_primary_font_data_for_test_ = true;
+  // See Font::SimulateMissingLastResortFontForTesting.
+  void SimulateMissingLastResortFontForTesting() {
+    missing_last_resort_font_for_test_ = true;
+    cached_primary_simple_font_data_with_space_ = PrimaryFontData();
+    cached_primary_simple_font_data_with_digit_zero_ = nullptr;
+    cached_primary_simple_font_data_with_cjk_water_ = nullptr;
+    cached_primary_simple_font_data_for_tab_size_ = nullptr;
   }
 
   bool HasLoadingFallback() const { return has_loading_fallback_; }
@@ -192,7 +195,7 @@ class PLATFORM_EXPORT FontFallbackList
   bool can_shape_word_by_word_ : 1 = false;
   bool can_shape_word_by_word_computed_ : 1 = false;
   bool is_invalid_ : 1 = false;
-  bool nullify_primary_font_data_for_test_ : 1 = false;
+  bool missing_last_resort_font_for_test_ : 1 = false;
   bool is_font_features_computed_ : 1 = false;
   bool has_simple_font_features_ : 1 = false;
 

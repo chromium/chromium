@@ -96,7 +96,8 @@ FontFallbackList::DeterminePrimarySimpleFontDataCore(
     bool should_contain_glyph) {
   bool should_load_custom_font = true;
 
-  for (wtf_size_t font_index = 0;; ++font_index) {
+  for (wtf_size_t font_index = 0; !missing_last_resort_font_for_test_;
+       ++font_index) {
     FontDataEntry font_data_entry = FontDataAt(font_description, font_index);
     const FontData* font_data = font_data_entry.font_data.Get();
     if (!font_data) {
@@ -112,22 +113,11 @@ FontFallbackList::DeterminePrimarySimpleFontDataCore(
       const SimpleFontData* last_resort_fallback =
           font_cache.GetLastResortFallbackFont(font_description);
       DCHECK(last_resort_fallback);
-      if (!last_resort_fallback &&
-          RuntimeEnabledFeatures::FontNonNullPrimaryFontEnabled()) {
-        LOG(ERROR) << "Last resort fallback font is not available: family="
-                   << font_description.Family().FamilyName()
-                   << ", generic=" << font_description.GenericFamily()
-                   << ", size=" << font_description.EffectiveFontSize();
-        last_resort_fallback = font_cache.FontDataFromFontPlatformData(
-            MakeGarbageCollected<FontPlatformData>(
-                SkTypeface::MakeEmpty(), std::string(),
-                font_description.EffectiveFontSize(),
-                /*synthetic_bold=*/false, /*synthetic_italic=*/false,
-                font_description.TextRendering(), ResolvedFontFeatures(),
-                font_description.Orientation()));
+      if (last_resort_fallback) {
+        return {last_resort_fallback,
+                /*is_generic_family_or_last_resort=*/true};
       }
-      return {last_resort_fallback,
-              /*is_generic_family_or_last_resort=*/true};
+      break;
     }
 
     const auto* segmented = DynamicTo<SegmentedFontData>(font_data);
@@ -171,6 +161,23 @@ FontFallbackList::DeterminePrimarySimpleFontDataCore(
       font_data_for_space->GetCustomFontData()->BeginLoadIfNeeded();
     }
   }
+
+  const SimpleFontData* last_resort_fallback = nullptr;
+  if (RuntimeEnabledFeatures::FontNonNullPrimaryFontEnabled()) {
+    LOG(ERROR) << "Last resort fallback font is not available: family="
+               << font_description.Family().FamilyName()
+               << ", generic=" << font_description.GenericFamily()
+               << ", size=" << font_description.EffectiveFontSize();
+    last_resort_fallback = FontCache::Get().FontDataFromFontPlatformData(
+        MakeGarbageCollected<FontPlatformData>(
+            SkTypeface::MakeEmpty(), std::string(),
+            font_description.EffectiveFontSize(),
+            /*synthetic_bold=*/false, /*synthetic_italic=*/false,
+            font_description.TextRendering(), ResolvedFontFeatures(),
+            font_description.Orientation()));
+  }
+  return {last_resort_fallback,
+          /*is_generic_family_or_last_resort=*/true};
 }
 
 FontFallbackList::FontDataEntry FontFallbackList::GetFontData(
