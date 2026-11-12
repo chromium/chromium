@@ -55,9 +55,6 @@ tast.apps.SystemWebAppsInstallGuest
 tast.inputs.VirtualKeyboardHandwriting.docked
 tast.inputs.VirtualKeyboardHandwriting.floating
 
-# b/424789710
-tast.apps.LaunchGalleryFromNotifications.stable
-
 # https://crbug.com/437961311
 tast.bruschetta.Basic.with_fieldtrial_config@betty
 tast.bruschetta.CommandVim@betty
