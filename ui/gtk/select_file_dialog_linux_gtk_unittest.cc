@@ -13,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/glib/scoped_gobject.h"
 #include "ui/gtk/gtk_compat.h"
 #include "ui/gtk/gtk_ui_platform_stub.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
@@ -43,29 +44,30 @@ class TestListener : public ui::SelectFileDialog::Listener {
   std::vector<base::FilePath> selected_paths_;
 };
 
-// Records the windows passed to ShowGtkWindow(). When `defer_show_` is set,
-// leaves them unmapped, like GtkUiPlatformWayland does while a transient
-// parent is being exported.
+// Records the windows passed to ShowGtkWindow(), holding a reference so they
+// outlive the dialog's `GtkWindowDestroy()`. When `defer_show_` is set, leaves
+// them unmapped, like GtkUiPlatformWayland does while a transient parent is
+// being exported.
 class TestGtkUiPlatform : public GtkUiPlatformStub {
  public:
   TestGtkUiPlatform() = default;
   ~TestGtkUiPlatform() override = default;
 
   void ShowGtkWindow(GtkWindow* window) override {
-    shown_windows_.push_back(window);
+    shown_windows_.push_back(WrapGObject(window));
     if (!defer_show_) {
       GtkUiPlatformStub::ShowGtkWindow(window);
     }
   }
 
   void set_defer_show(bool defer_show) { defer_show_ = defer_show; }
-  const std::vector<GtkWindow*>& shown_windows() const {
+  const std::vector<ScopedGObject<GtkWindow>>& shown_windows() const {
     return shown_windows_;
   }
 
  private:
   bool defer_show_ = false;
-  std::vector<GtkWindow*> shown_windows_;
+  std::vector<ScopedGObject<GtkWindow>> shown_windows_;
 };
 
 // Reads the "visible" property through GObject, since GTK functions are only
@@ -249,7 +251,7 @@ TEST_F(SelectFileDialogLinuxGtkTest, PlatformMapsDialog) {
   GtkWidget* widget = GetDialogWidget();
   ASSERT_TRUE(widget);
   ASSERT_EQ(platform_->shown_windows().size(), 1u);
-  GtkWindow* window = platform_->shown_windows()[0];
+  GtkWindow* window = platform_->shown_windows()[0].get();
   EXPECT_EQ(reinterpret_cast<GtkWidget*>(window), widget);
   EXPECT_FALSE(IsVisible(widget));
 
