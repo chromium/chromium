@@ -191,6 +191,11 @@ vars = {
   # when specifically compiling MSan targets.
   'checkout_instrumented_libraries': False,
 
+  # By default, do not check out the Linux snap runtime libraries. They are
+  # only needed to build the Linux snap package (`enable_snap_package = true`
+  # in GN).
+  'checkout_snap_runtime': False,
+
   # By default, do not check out WebKit for iOS, as it is not needed unless
   # running against ToT WebKit rather than system WebKit. This can be overridden
   # e.g. with custom_vars.
@@ -1359,6 +1364,19 @@ deps = {
   'src/chrome/browser/resources/preinstalled_web_apps/internal': {
     'url': Var('chrome_git') + '/chrome/components/default_apps.git' + '@' + 'fbc0f36186884f936537d5f74758550dd772b980',
     'condition': 'checkout_src_internal',
+  },
+
+  # Ubuntu 26.04 libraries bundled into the Linux snap package. Built by
+  # //chrome/installer/linux/snap/runtime/3pp.
+  'src/chrome/installer/linux/snap/runtime/linux-amd64': {
+    'packages': [
+      {
+        'package': 'chromium/chrome/installer/linux/snap/runtime/linux-amd64',
+        'version': 'version:2@20261103.3',
+      },
+    ],
+    'condition': 'checkout_linux and checkout_snap_runtime',
+    'dep_type': 'cipd',
   },
 
   'src/third_party/compiler-rt/src':

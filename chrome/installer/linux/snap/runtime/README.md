@@ -63,8 +63,19 @@ The `3pp-linux-amd64-packager` builder runs `build.py`, which:
 
 The package contains `prime/` (files for the root of the snap), `copyright/`
 (the `debian/copyright` file of every bundled package) and `manifest.json`.
-`//DEPS` will check it out to `linux-amd64/` when the gclient variable
-`checkout_snap_runtime` is set, once the first version is uploaded.
+`//DEPS` checks it out to `linux-amd64/` when the gclient variable
+`checkout_snap_runtime` is set to `True`, e.g. in `.gclient`:
+
+```
+solutions = [
+  {
+    ...
+    "custom_vars": {
+      "checkout_snap_runtime": True,
+    },
+  },
+]
+```
 
 ## Updating
 
