@@ -20,6 +20,24 @@
         setTimeout(clickById, 100, element_id);
       }
     }
+
+    let locationEvents = 0;
+    let onLocationEvent = null;
+    document.getElementById('geolocation').addEventListener('location', () => {
+      locationEvents++;
+      if (onLocationEvent) {
+        onLocationEvent();
+      }
+    });
+
+    // Resolves once the <geolocation> element has fired `count` location
+    // events in total.
+    async function waitForLocationEvents(count) {
+      while (locationEvents < count) {
+        await new Promise(resolve => onLocationEvent = resolve);
+      }
+      return true;
+    }
   </script>
 </body>
 </html>

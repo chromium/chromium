@@ -4,6 +4,8 @@
 
 #include <memory>
 #include <optional>
+#include <string>
+#include <string_view>
 
 #include "base/command_line.h"
 #include "base/strings/strcat.h"
@@ -36,6 +38,7 @@
 #include "content/public/test/test_devtools_protocol_client.h"
 #include "media/base/media_switches.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "services/device/public/cpp/test/scoped_geolocation_overrider.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-shared.h"
@@ -659,6 +662,12 @@ class MiscellaneousElementBrowserTest
     ASSERT_TRUE(ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
         browser(), embedded_test_server()->GetURL(url), 1));
   }
+
+ private:
+  // The <geolocation> element requests the current position once it is
+  // granted. Provide a position so that request completes.
+  device::ScopedGeolocationOverrider geolocation_overrider_{/*latitude=*/0,
+                                                            /*longitude=*/0};
 };
 
 IN_PROC_BROWSER_TEST_F(MiscellaneousElementBrowserTest,
@@ -749,11 +758,24 @@ IN_PROC_BROWSER_TEST_F(MiscellaneousElementBrowserTest,
   // to ensure the chance of this test passing is minimal if the crash root
   // cause is not fixed.
   int test_runs = 5;
+  int geolocation_grants = 0;
   while (test_runs--) {
-    for (const auto& id : {"camera", "microphone", "geolocation"}) {
+    for (const std::string_view id : {"camera", "microphone", "geolocation"}) {
       permissions::PermissionRequestObserver observer(web_contents());
-      ClickElementWithId(web_contents(), id);
+      ClickElementWithId(web_contents(), std::string(id));
       observer.Wait();
+      if (id == "geolocation") {
+        // Once granted, the <geolocation> element requests the current
+        // position, which checks the geolocation permission again. Wait for
+        // that request to finish: if it is still in flight when the content
+        // setting is reset below, it shows a new prompt, which is auto-accepted
+        // and grants geolocation again. Clicking the already-granted element
+        // in the next run then shows no prompt and `observer.Wait()` times out.
+        EXPECT_EQ(true, content::EvalJs(
+                            web_contents(),
+                            content::JsReplace("waitForLocationEvents($1)",
+                                               ++geolocation_grants)));
+      }
     }
 
     map->SetContentSettingDefaultScope(
