@@ -4,17 +4,16 @@
 
 #include "content/common/webid/identity_url_loader_throttle.h"
 
+#include <memory>
+#include <optional>
+#include <string>
+#include <string_view>
+
+#include "base/functional/bind.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/scoped_feature_list.h"
-#include "base/test/task_environment.h"
-#include "content/common/features.h"
-#include "content/public/common/content_features.h"
-#include "content/public/common/content_switches.h"
 #include "content/public/common/web_identity.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/http/http_response_headers.h"
-#include "net/http/structured_headers.h"
-#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -38,10 +37,6 @@ class IdentityUrlLoaderThrottleTest : public testing::Test {
   SetIdpStatusCallback CreateCallback() {
     return base::BindRepeating(&IdentityUrlLoaderThrottleTest::SetIdpStatus,
                                base::Unretained(this));
-  }
-
-  ParseSetLoginHeaderCallback CreateParseCallback() {
-    return GetSetLoginHeaderInProcessParser();
   }
 
   void SetIdpStatus(network::mojom::RequestDestination destination,
@@ -72,8 +67,7 @@ TEST_P(IdentityUrlLoaderThrottleTestParameterized, Headers) {
 
   TestDelegate delegate;
   std::unique_ptr<blink::URLLoaderThrottle> throttle =
-      MaybeCreateIdentityUrlLoaderThrottle(CreateCallback(),
-                                           CreateParseCallback());
+      MaybeCreateIdentityUrlLoaderThrottle(CreateCallback());
   ASSERT_NE(nullptr, throttle);
   throttle->set_delegate(&delegate);
 
@@ -113,8 +107,7 @@ INSTANTIATE_TEST_SUITE_P(SignInOut,
 TEST_F(IdentityUrlLoaderThrottleTest, NoRelevantHeader) {
   TestDelegate delegate;
   std::unique_ptr<blink::URLLoaderThrottle> throttle =
-      MaybeCreateIdentityUrlLoaderThrottle(CreateCallback(),
-                                           CreateParseCallback());
+      MaybeCreateIdentityUrlLoaderThrottle(CreateCallback());
   ASSERT_NE(nullptr, throttle);
   throttle->set_delegate(&delegate);
 
@@ -138,8 +131,7 @@ TEST_F(IdentityUrlLoaderThrottleTest, NoRelevantHeader) {
 TEST_F(IdentityUrlLoaderThrottleTest, NonDefaultDestination) {
   TestDelegate delegate;
   std::unique_ptr<blink::URLLoaderThrottle> throttle =
-      MaybeCreateIdentityUrlLoaderThrottle(CreateCallback(),
-                                           CreateParseCallback());
+      MaybeCreateIdentityUrlLoaderThrottle(CreateCallback());
   ASSERT_NE(nullptr, throttle);
   throttle->set_delegate(&delegate);
 
@@ -164,8 +156,7 @@ TEST_F(IdentityUrlLoaderThrottleTest, NonDefaultDestination) {
 TEST_F(IdentityUrlLoaderThrottleTest, InvalidHeader) {
   TestDelegate delegate;
   std::unique_ptr<blink::URLLoaderThrottle> throttle =
-      MaybeCreateIdentityUrlLoaderThrottle(CreateCallback(),
-                                           CreateParseCallback());
+      MaybeCreateIdentityUrlLoaderThrottle(CreateCallback());
   ASSERT_NE(nullptr, throttle);
   throttle->set_delegate(&delegate);
 
@@ -174,165 +165,41 @@ TEST_F(IdentityUrlLoaderThrottleTest, InvalidHeader) {
   bool defer = false;
   throttle->WillStartRequest(&request, &defer);
 
-  // Quoted string is not a token item.
+  // Malformed structured-header item.
   network::mojom::URLResponseHead response_head;
+  response_head.headers = net::HttpResponseHeaders::TryToCreate(
+      "HTTP/1.1 200 OK\nSet-Login: !!!\n");
+  throttle->WillProcessResponse(request.url, &response_head, &defer);
+  EXPECT_FALSE(defer);
+  EXPECT_EQ(0, cb_num_calls_);
+
+  // Quoted string is not a token item.
   response_head.headers = net::HttpResponseHeaders::TryToCreate(
       "HTTP/1.1 200 OK\nSet-Login: \"logged-in\"\n");
   throttle->WillProcessResponse(request.url, &response_head, &defer);
+  EXPECT_FALSE(defer);
   EXPECT_EQ(0, cb_num_calls_);
 
   // Unrecognized token.
   response_head.headers = net::HttpResponseHeaders::TryToCreate(
       "HTTP/1.1 200 OK\nSet-Login: unknown-status\n");
   throttle->WillProcessResponse(request.url, &response_head, &defer);
+  EXPECT_FALSE(defer);
   EXPECT_EQ(0, cb_num_calls_);
 
   // Integer is not a token item.
   response_head.headers = net::HttpResponseHeaders::TryToCreate(
       "HTTP/1.1 200 OK\nSet-Login: 123\n");
   throttle->WillProcessResponse(request.url, &response_head, &defer);
+  EXPECT_FALSE(defer);
   EXPECT_EQ(0, cb_num_calls_);
   EXPECT_EQ(0, delegate.resume_called_);
-}
-
-TEST_F(IdentityUrlLoaderThrottleTest, AsyncParserCallback) {
-  TestDelegate delegate;
-  base::OnceCallback<void(
-      std::optional<net::structured_headers::ParameterizedItem> item)>
-      saved_completion_cb;
-
-  ParseSetLoginHeaderCallback async_parse_cb = base::BindRepeating(
-      [](base::OnceCallback<void(
-             std::optional<net::structured_headers::ParameterizedItem> item)>*
-             saved_completion_cb,
-         const std::string& header_value,
-         base::OnceCallback<void(
-             std::optional<net::structured_headers::ParameterizedItem> item)>
-             completion_cb) {
-        *saved_completion_cb = std::move(completion_cb);
-      },
-      &saved_completion_cb);
-
-  std::unique_ptr<blink::URLLoaderThrottle> throttle =
-      MaybeCreateIdentityUrlLoaderThrottle(CreateCallback(), async_parse_cb);
-  ASSERT_NE(nullptr, throttle);
-  throttle->set_delegate(&delegate);
-
-  network::ResourceRequest request;
-  request.url = GURL("https://accounts.idp.example/");
-  bool defer = false;
-  throttle->WillStartRequest(&request, &defer);
-
-  network::mojom::URLResponseHead response_head;
-  response_head.headers = net::HttpResponseHeaders::TryToCreate(
-      "HTTP/1.1 200 OK\nSet-Login: logged-in\n");
-  throttle->WillProcessResponse(request.url, &response_head, &defer);
-
-  // Loading should be deferred while async header parsing is in progress.
-  EXPECT_TRUE(defer);
-  EXPECT_EQ(0, cb_num_calls_);
-  ASSERT_TRUE(saved_completion_cb);
-
-  // Simulating async completion from DataDecoder:
-  std::move(saved_completion_cb)
-      .Run(net::structured_headers::ParameterizedItem(
-          net::structured_headers::Item(net::structured_headers::Item::token,
-                                        "logged-in"),
-          {}));
-
-  EXPECT_EQ(1, cb_num_calls_);
-  EXPECT_EQ(IdpSigninStatus::kSignedIn, cb_signin_status_);
-  EXPECT_EQ(1, delegate.resume_called_);
-}
-
-TEST_F(IdentityUrlLoaderThrottleTest, ParseCallbackReturnsNull) {
-  ParseSetLoginHeaderCallback failing_parse_cb = base::BindRepeating(
-      [](const std::string& header_value,
-         base::OnceCallback<void(
-             std::optional<net::structured_headers::ParameterizedItem> item)>
-             completion_cb) { std::move(completion_cb).Run(std::nullopt); });
-
-  TestDelegate delegate;
-  std::unique_ptr<blink::URLLoaderThrottle> throttle =
-      MaybeCreateIdentityUrlLoaderThrottle(CreateCallback(), failing_parse_cb);
-  ASSERT_NE(nullptr, throttle);
-  throttle->set_delegate(&delegate);
-
-  network::ResourceRequest request;
-  request.url = GURL("https://accounts.idp.example/");
-  bool defer = false;
-  throttle->WillStartRequest(&request, &defer);
-
-  network::mojom::URLResponseHead response_head;
-  response_head.headers = net::HttpResponseHeaders::TryToCreate(
-      "HTTP/1.1 200 OK\nSet-Login: logged-in\n");
-  throttle->WillProcessResponse(request.url, &response_head, &defer);
-
-  EXPECT_EQ(0, cb_num_calls_);
-  EXPECT_EQ(0, delegate.resume_called_);
-}
-
-TEST_F(IdentityUrlLoaderThrottleTest, InProcessParserCallback) {
-  ParseSetLoginHeaderCallback parse_cb = GetSetLoginHeaderInProcessParser();
-
-  std::optional<net::structured_headers::ParameterizedItem> result_item;
-  parse_cb.Run(
-      "logged-in; foo=bar",
-      base::BindOnce(
-          [](std::optional<net::structured_headers::ParameterizedItem>* out,
-             std::optional<net::structured_headers::ParameterizedItem> res) {
-            *out = res;
-          },
-          &result_item));
-  ASSERT_TRUE(result_item);
-  EXPECT_EQ(result_item->item,
-            net::structured_headers::Item(net::structured_headers::Item::token,
-                                          "logged-in"));
-
-  result_item.reset();
-  parse_cb.Run(
-      "logged-out",
-      base::BindOnce(
-          [](std::optional<net::structured_headers::ParameterizedItem>* out,
-             std::optional<net::structured_headers::ParameterizedItem> res) {
-            *out = res;
-          },
-          &result_item));
-  ASSERT_TRUE(result_item);
-  EXPECT_EQ(result_item->item,
-            net::structured_headers::Item(net::structured_headers::Item::token,
-                                          "logged-out"));
-
-  result_item.reset();
-  parse_cb.Run(
-      "\"logged-in\"",
-      base::BindOnce(
-          [](std::optional<net::structured_headers::ParameterizedItem>* out,
-             std::optional<net::structured_headers::ParameterizedItem> res) {
-            *out = res;
-          },
-          &result_item));
-  ASSERT_TRUE(result_item);
-  EXPECT_TRUE(result_item->item.is_string());
-
-  result_item.reset();
-  parse_cb.Run(
-      "123",
-      base::BindOnce(
-          [](std::optional<net::structured_headers::ParameterizedItem>* out,
-             std::optional<net::structured_headers::ParameterizedItem> res) {
-            *out = res;
-          },
-          &result_item));
-  ASSERT_TRUE(result_item);
-  EXPECT_TRUE(result_item->item.is_integer());
 }
 
 TEST_F(IdentityUrlLoaderThrottleTest, CertError) {
   TestDelegate delegate;
   std::unique_ptr<blink::URLLoaderThrottle> throttle =
-      MaybeCreateIdentityUrlLoaderThrottle(CreateCallback(),
-                                           CreateParseCallback());
+      MaybeCreateIdentityUrlLoaderThrottle(CreateCallback());
   ASSERT_NE(nullptr, throttle);
   throttle->set_delegate(&delegate);
 

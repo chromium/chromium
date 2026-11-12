@@ -269,8 +269,8 @@ URLLoaderThrottleProviderImpl::CreateThrottles(
 #endif
 
   if (local_frame_token.has_value()) {
-    auto throttle = content::MaybeCreateIdentityUrlLoaderThrottle(
-        base::BindRepeating(
+    auto throttle =
+        content::MaybeCreateIdentityUrlLoaderThrottle(base::BindRepeating(
             [](const blink::LocalFrameToken& token,
                const scoped_refptr<base::SequencedTaskRunner>
                    main_thread_task_runner,
@@ -288,8 +288,7 @@ URLLoaderThrottleProviderImpl::CreateThrottles(
                                               idp_origin, status));
               }
             },
-            local_frame_token.value(), main_thread_task_runner_),
-        content::GetSetLoginHeaderInProcessParser());
+            local_frame_token.value(), main_thread_task_runner_));
     if (throttle) {
       throttles.push_back(std::move(throttle));
     }

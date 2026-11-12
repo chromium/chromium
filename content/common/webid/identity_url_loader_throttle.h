@@ -5,16 +5,10 @@
 #ifndef CONTENT_COMMON_WEBID_IDENTITY_URL_LOADER_THROTTLE_H_
 #define CONTENT_COMMON_WEBID_IDENTITY_URL_LOADER_THROTTLE_H_
 
-#include <memory>
-#include <string_view>
+#include <optional>
 
-#include "base/functional/callback.h"
-#include "base/gtest_prod_util.h"
-#include "base/memory/weak_ptr.h"
-#include "base/types/expected.h"
 #include "content/common/content_export.h"
 #include "content/public/common/web_identity.h"
-#include "net/http/structured_headers.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "url/gurl.h"
@@ -26,8 +20,7 @@ namespace content {
 class CONTENT_EXPORT IdentityUrlLoaderThrottle
     : public blink::URLLoaderThrottle {
  public:
-  IdentityUrlLoaderThrottle(SetIdpStatusCallback status_cb,
-                            ParseSetLoginHeaderCallback parse_cb);
+  explicit IdentityUrlLoaderThrottle(SetIdpStatusCallback status_cb);
   ~IdentityUrlLoaderThrottle() override;
   IdentityUrlLoaderThrottle(const IdentityUrlLoaderThrottle&) = delete;
   IdentityUrlLoaderThrottle& operator=(const IdentityUrlLoaderThrottle&) =
@@ -49,23 +42,13 @@ class CONTENT_EXPORT IdentityUrlLoaderThrottle
  private:
   void HandleResponseOrRedirect(
       const GURL& response_url,
-      const network::mojom::URLResponseHead& response_head,
-      bool* defer);
-
-  void OnHeaderParsed(
-      const url::Origin& idp_origin,
-      std::optional<net::structured_headers::ParameterizedItem> item);
+      const network::mojom::URLResponseHead& response_head);
 
   GURL request_url_;
   std::optional<url::Origin> request_initiator_;
   network::mojom::RequestDestination request_destination_ =
       network::mojom::RequestDestination::kEmpty;
   SetIdpStatusCallback set_idp_status_cb_;
-  ParseSetLoginHeaderCallback parse_set_login_header_cb_;
-  bool is_inside_handler_response_ = false;
-  bool is_header_parsed_ = false;
-
-  base::WeakPtrFactory<IdentityUrlLoaderThrottle> weak_ptr_factory_{this};
 };
 
 }  // namespace content

@@ -4,20 +4,18 @@
 
 #include "content/common/webid/identity_url_loader_throttle.h"
 
-#include <algorithm>
-#include <string_view>
+#include <memory>
+#include <optional>
+#include <string>
+#include <utility>
 
-#include "base/auto_reset.h"
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
-#include "base/strings/string_split.h"
+#include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/time/time.h"
 #include "components/network_session_configurator/common/network_switches.h"
-#include "content/common/features.h"
-#include "content/public/common/content_client.h"
-#include "content/public/common/content_features.h"
-#include "content/public/common/content_switches.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/structured_headers.h"
@@ -39,31 +37,16 @@ static constexpr char kSetLoginHeaderValueLoggedOut[] = "logged-out";
 
 namespace content {
 
-// TODO(crbug.com/574411295): Remove the callback abstraction associated with
-// this, as `net::structured_headers::ParseItem` can be invoked synchronously.
-ParseSetLoginHeaderCallback GetSetLoginHeaderInProcessParser() {
-  return base::BindRepeating(
-      [](const std::string& header_value,
-         base::OnceCallback<void(
-             std::optional<net::structured_headers::ParameterizedItem> item)>
-             callback) {
-        std::move(callback).Run(
-            net::structured_headers::ParseItem(header_value));
-      });
-}
-
 std::unique_ptr<blink::URLLoaderThrottle> MaybeCreateIdentityUrlLoaderThrottle(
-    SetIdpStatusCallback status_cb,
-    ParseSetLoginHeaderCallback parse_cb) {
-  return std::make_unique<IdentityUrlLoaderThrottle>(std::move(status_cb),
-                                                     std::move(parse_cb));
+    SetIdpStatusCallback status_cb) {
+  return std::make_unique<IdentityUrlLoaderThrottle>(std::move(status_cb));
 }
 
 IdentityUrlLoaderThrottle::IdentityUrlLoaderThrottle(
-    SetIdpStatusCallback status_cb,
-    ParseSetLoginHeaderCallback parse_cb)
-    : set_idp_status_cb_(std::move(status_cb)),
-      parse_set_login_header_cb_(std::move(parse_cb)) {}
+    SetIdpStatusCallback status_cb)
+    : set_idp_status_cb_(std::move(status_cb)) {
+  CHECK(set_idp_status_cb_);
+}
 
 IdentityUrlLoaderThrottle::~IdentityUrlLoaderThrottle() = default;
 
@@ -98,7 +81,7 @@ void IdentityUrlLoaderThrottle::WillProcessResponse(
     network::mojom::URLResponseHead* response_head,
     bool* defer) {
   DCHECK(response_head);
-  HandleResponseOrRedirect(response_url, *response_head, defer);
+  HandleResponseOrRedirect(response_url, *response_head);
 }
 
 void IdentityUrlLoaderThrottle::WillRedirectRequest(
@@ -108,14 +91,13 @@ void IdentityUrlLoaderThrottle::WillRedirectRequest(
     network::HttpRequestHeadersUpdateParams* headers_update_params) {
   // We want to check headers for each redirect. It is common that the header
   // is on the initial load which then redirects back to a homepage.
-  HandleResponseOrRedirect(request_url_, response_head, defer);
+  HandleResponseOrRedirect(request_url_, response_head);
   request_url_ = redirect_info->new_url;
 }
 
 void IdentityUrlLoaderThrottle::HandleResponseOrRedirect(
     const GURL& response_url,
-    const network::mojom::URLResponseHead& response_head,
-    bool* defer) {
+    const network::mojom::URLResponseHead& response_head) {
   url::Origin idp_origin = url::Origin::Create(response_url);
   if (!network::IsOriginPotentiallyTrustworthy(idp_origin)) {
     return;
@@ -132,8 +114,9 @@ void IdentityUrlLoaderThrottle::HandleResponseOrRedirect(
   // - Decide whether to limit to same-origin
 
   scoped_refptr<net::HttpResponseHeaders> headers = response_head.headers;
-  if (!headers)
+  if (!headers) {
     return;
+  }
 
   std::optional<std::string> header_value =
       headers->GetNormalizedHeader(kSetLoginHeader);
@@ -141,45 +124,27 @@ void IdentityUrlLoaderThrottle::HandleResponseOrRedirect(
     return;
   }
 
-  CHECK(parse_set_login_header_cb_);
-  is_header_parsed_ = false;
-  {
-    base::AutoReset<bool> auto_reset(&is_inside_handler_response_, true);
-    parse_set_login_header_cb_.Run(
-        *header_value,
-        base::BindOnce(&IdentityUrlLoaderThrottle::OnHeaderParsed,
-                       weak_ptr_factory_.GetWeakPtr(), idp_origin));
+  std::optional<net::structured_headers::ParameterizedItem> item =
+      net::structured_headers::ParseItem(*header_value);
+  if (!item) {
+    return;
   }
 
-  // If header is not parsed yet, then the parsing callback is running
-  // asynchronously and we need to defer.
-  *defer = !is_header_parsed_;
-}
-
-void IdentityUrlLoaderThrottle::OnHeaderParsed(
-    const url::Origin& idp_origin,
-    std::optional<net::structured_headers::ParameterizedItem> item) {
-  is_header_parsed_ = true;
-
-  const std::string* token = item ? item->item.GetIfToken() : nullptr;
-  if (token) {
-    if (*token == kSetLoginHeaderValueLoggedIn) {
-      // Mark IDP as logged in
-      VLOG(1) << "IDP signed in: " << idp_origin.Serialize();
-      set_idp_status_cb_.Run(request_destination_, request_initiator_,
-                             idp_origin, IdpSigninStatus::kSignedIn);
-    } else if (*token == kSetLoginHeaderValueLoggedOut) {
-      // Mark IDP as logged out
-      VLOG(1) << "IDP signed out: " << idp_origin.Serialize();
-      set_idp_status_cb_.Run(request_destination_, request_initiator_,
-                             idp_origin, IdpSigninStatus::kSignedOut);
-    }
+  const std::string* token = item->item.GetIfToken();
+  if (!token) {
+    return;
   }
 
-  if (!is_inside_handler_response_) {
-    if (delegate_) {
-      delegate_->Resume();
-    }
+  if (*token == kSetLoginHeaderValueLoggedIn) {
+    // Mark IDP as logged in
+    VLOG(1) << "IDP signed in: " << idp_origin.Serialize();
+    set_idp_status_cb_.Run(request_destination_, request_initiator_, idp_origin,
+                           IdpSigninStatus::kSignedIn);
+  } else if (*token == kSetLoginHeaderValueLoggedOut) {
+    // Mark IDP as logged out
+    VLOG(1) << "IDP signed out: " << idp_origin.Serialize();
+    set_idp_status_cb_.Run(request_destination_, request_initiator_, idp_origin,
+                           IdpSigninStatus::kSignedOut);
   }
 }
 
