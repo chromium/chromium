@@ -360,7 +360,7 @@ cr-composebox-contextual-entrypoint-and-menu,
 
 #composeButton::part(compose-button) {
   --cr-hover-background-color: transparent;
-  background-color: var(--color-sys-surface-container-high);
+  background-color: var(--color-composebox-context-entrypoint-background);
   color: var(--color-sys-on-surface);
 }
 

@@ -247,7 +247,6 @@ OmniboxEverywhereHotkeyBubbleView::OmniboxEverywhereHotkeyBubbleView(
   set_parent_window(parent_widget_->GetNativeView());
   SetAnchorRect(anchor_rect);
   SetArrow(views::BubbleBorder::NONE);
-  SetBackgroundColor(ui::kColorSysSurface);
   set_corner_radius(kBubbleCornerRadius);
   set_margins(gfx::Insets(kBubbleMargin));
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));

@@ -23,7 +23,7 @@
 
 .chin-container {
   align-items: center;
-  background-color: var(--color-sys-surface);
+  background-color: var(--color-new-tab-page-background);
   border-radius: 12px;
   box-shadow: var(--cr-elevation-3, 0 1px 3px 0 rgba(0, 0, 0, 0.15),
       0 4px 8px 3px rgba(0, 0, 0, 0.15));

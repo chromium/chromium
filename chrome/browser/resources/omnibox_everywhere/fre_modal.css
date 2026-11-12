@@ -29,7 +29,7 @@ img {
   background: linear-gradient(
           var(--omnibox-inactive-hover-overlay, transparent),
           var(--omnibox-inactive-hover-overlay, transparent)),
-      var(--color-sys-surface);
+      var(--color-new-tab-page-background);
   border-radius: 16px;
   box-shadow: var(--cr-elevation-3, 0 1px 3px 0 rgba(0, 0, 0, 0.15),
       0 4px 8px 3px rgba(0, 0, 0, 0.15));
