@@ -2921,6 +2921,12 @@ IN_PROC_BROWSER_TEST_F(ContentScriptSkipServiceWorkerTest,
     beacon.WaitForRequest();
   }
   EXPECT_EQ("BEACON_PAYLOAD", beacon.http_request()->content);
+
+  // Answer the beacon so its keepalive loader finishes. Otherwise, with
+  // features::kKeepAliveBrowserProcessAlive, the pending loader keeps the
+  // browser process alive at shutdown until the loader times out.
+  beacon.Send(net::HTTP_OK);
+  beacon.Done();
 }
 
 // Test fixture for verifying service worker registration behaviors when
