@@ -85,7 +85,7 @@ enum class SharedImageAccessStream;
 // A struct to hold parameters for shared image access. This allows passing
 // context-specific information to backings so they can determine if they
 // can support a given access request.
-struct AccessParams {
+struct GPU_GLES2_EXPORT AccessParams {
   AccessParams();
   AccessParams(const AccessParams&);
   AccessParams& operator=(const AccessParams&);

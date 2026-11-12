@@ -243,16 +243,16 @@ bool WrappedSkImageBackingFactory::IsSupportedForAccessStream(
     return false;
   }
 
+  AccessParams access_params = params ? *params : AccessParams();
   if (use_graphite_) {
     // We create a temporary backing just to check for support.
     // TODO(crbug.com/394385381): Consider refactoring this to not require a
     // context_state or a backing instance.
-    AccessParams access_params = params ? *params : AccessParams();
-    bool supported = WrappedGraphiteTextureBacking::CheckSupportForAccessStream(
+    return WrappedGraphiteTextureBacking::CheckSupportForAccessStream(
         stream, format, access_params);
-    return supported;
   }
-  return true;
+  return WrappedSkImageBacking::CheckSupportForAccessStream(stream,
+                                                            access_params);
 }
 
 }  // namespace gpu
