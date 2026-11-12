@@ -12,6 +12,7 @@
 #import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/run_until.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/time/time.h"
 #import "base/values.h"
@@ -448,7 +449,45 @@ TEST_F(AccountSwitchingPromoSceneAgentTest,
   EXPECT_CALL(*promos_manager_, RegisterPromoForSingleDisplay(testing::_))
       .Times(0);
   EXPECT_CALL(*promos_manager_,
-              DeregisterPromo(promos_manager::Promo::AccountSwitching));
+              DeregisterPromo(promos_manager::Promo::AccountSwitching))
+      .Times(testing::AtLeast(1));
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+}
+
+// Tests that removing an account from the device deletes its reverse pair
+// suppression, so the promo is registered again once it is re-added.
+TEST_F(AccountSwitchingPromoSceneAgentTest,
+       RemovingAccountDeletesPairStateAllowingFreshStartWhenReadded) {
+  FakeSystemIdentity* primary = [FakeSystemIdentity fakeIdentity1];
+  FakeSystemIdentity* target = [FakeSystemIdentity fakeIdentity2];
+  FakeSystemIdentityManager* system_identity_manager =
+      FakeSystemIdentityManager::FromSystemIdentityManager(
+          GetApplicationContext()->GetSystemIdentityManager());
+  system_identity_manager->AddIdentity(primary);
+  system_identity_manager->AddIdentity(target);
+
+  // Switch `target` -> `primary` so reverse pair (`primary` -> `target`) is
+  // suppressed.
+  authentication_service_->SignIn(target,
+                                  signin_metrics::AccessPoint::kStartPage);
+  authentication_service_->SignOut(signin_metrics::ProfileSignout::kTest);
+  authentication_service_->SignIn(primary,
+                                  signin_metrics::AccessPoint::kStartPage);
+  signin::SuppressAccountSwitchingReversePair(*profile_->GetPrefs(),
+                                              target.gaiaId, primary.gaiaId);
+  SetNotSupervised(primary);
+  task_environment_.FastForwardBy(base::Days(60));
+
+  // Remove `target` from device, then re-add it.
+  system_identity_manager->ForgetIdentityFromOtherApplication(target);
+  system_identity_manager->AddIdentity(target);
+
+  signin::AccountPreviewDataService::AccountPreviewPreference pref{
+      .gaia_id = target.gaiaId};
+  test_preview_service_->SetPreferredAccountForSwitching(pref);
+
+  EXPECT_CALL(*promos_manager_, RegisterPromoForSingleDisplay(
+                                    promos_manager::Promo::AccountSwitching));
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
 }
 
@@ -616,6 +655,138 @@ TEST_F(AccountSwitchingPromoSceneAgentTest,
       prefs::kRestrictAccountsToPatterns,
       base::ListValue().Append("foo1@gmail.com"));
   EXPECT_FALSE(agent_.targetIdentity);
+}
+
+// Tests that signing out within 24 hours of accepting the promo records `true`
+// for `Signin.AccountSwitchingPromo.SwitchedAwayWithin24Hours`.
+TEST_F(AccountSwitchingPromoSceneAgentTest,
+       RecordsRetentionMetricOnPrimaryAccountChange) {
+  base::HistogramTester histogram_tester;
+  FakeSystemIdentity* primary = [FakeSystemIdentity fakeIdentity1];
+  SetUpEligibleAccounts(primary, [FakeSystemIdentity fakeIdentity2]);
+  // Simulates that `primary` was selected via the promo.
+  signin::RecordAccountSwitchingPromoAccepted(*profile_->GetPrefs(),
+                                              primary.gaiaId);
+
+  authentication_service_->SignOut(signin_metrics::ProfileSignout::kTest);
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.AccountSwitchingPromo.SwitchedAwayWithin24Hours", true, 1);
+}
+
+// Tests that staying on the accepted account for 24 hours records `false` for
+// `Signin.AccountSwitchingPromo.SwitchedAwayWithin24Hours` once startup reaches
+// `ProfileInitStage::kFinal`.
+TEST_F(AccountSwitchingPromoSceneAgentTest,
+       RecordsRetentionMetricOnStartupAfter24Hours) {
+  base::HistogramTester histogram_tester;
+  ProfileState* profile_state = [[ProfileState alloc] initWithAppState:nil];
+  SetProfileStateInitStage(profile_state, ProfileInitStage::kFirstRun);
+  profile_state.profile = profile_;
+  FakeSceneState* scene_state =
+      [[FakeSceneState alloc] initWithProfile:profile_];
+  scene_state.profileState = profile_state;
+  scene_state.UIEnabled = YES;
+  AccountSwitchingPromoSceneAgent* agent =
+      [AccountSwitchingPromoSceneAgent agentWithProfile:profile_];
+  agent.sceneState = scene_state;
+
+  FakeSystemIdentity* primary = [FakeSystemIdentity fakeIdentity1];
+  SetUpEligibleAccounts(primary, [FakeSystemIdentity fakeIdentity2]);
+  // Simulates that `primary` was selected via the promo.
+  signin::RecordAccountSwitchingPromoAccepted(*profile_->GetPrefs(),
+                                              primary.gaiaId);
+
+  task_environment_.FastForwardBy(base::Hours(25));
+  SetProfileStateInitStage(profile_state, ProfileInitStage::kNormalUI);
+  histogram_tester.ExpectTotalCount(
+      "Signin.AccountSwitchingPromo.SwitchedAwayWithin24Hours", 0);
+
+  SetProfileStateInitStage(profile_state, ProfileInitStage::kFinal);
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.AccountSwitchingPromo.SwitchedAwayWithin24Hours", false, 1);
+
+  scene_state.UIEnabled = NO;
+  [scene_state shutdown];
+}
+
+// Tests that staying on the accepted account for 24 hours records `false` for
+// `Signin.AccountSwitchingPromo.SwitchedAwayWithin24Hours` on scene activation.
+TEST_F(AccountSwitchingPromoSceneAgentTest,
+       RecordsRetentionMetricOnSceneActivationAfter24Hours) {
+  base::HistogramTester histogram_tester;
+  FakeSystemIdentity* primary = [FakeSystemIdentity fakeIdentity1];
+  SetUpEligibleAccounts(primary, [FakeSystemIdentity fakeIdentity2]);
+  // Simulates that `primary` was selected via the promo.
+  signin::RecordAccountSwitchingPromoAccepted(*profile_->GetPrefs(),
+                                              primary.gaiaId);
+
+  task_environment_.FastForwardBy(base::Hours(25));
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.AccountSwitchingPromo.SwitchedAwayWithin24Hours", false, 1);
+}
+
+// Tests that removing the accepted primary account from the device within 24
+// hours prunes its state without recording
+// `Signin.AccountSwitchingPromo.SwitchedAwayWithin24Hours`, both during an
+// active session (including async sign-out) and on scene activation when the
+// account was removed while Chrome was not running.
+TEST_F(AccountSwitchingPromoSceneAgentTest,
+       RemovingAcceptedAccountDoesNotRecordRetentionMetric) {
+  base::HistogramTester histogram_tester;
+  FakeSystemIdentity* primary = [FakeSystemIdentity fakeIdentity1];
+  SetUpEligibleAccounts(primary, [FakeSystemIdentity fakeIdentity2]);
+  // Simulates that `primary` was selected via the promo.
+  signin::RecordAccountSwitchingPromoAccepted(*profile_->GetPrefs(),
+                                              primary.gaiaId);
+
+  FakeSystemIdentityManager::FromSystemIdentityManager(
+      GetApplicationContext()->GetSystemIdentityManager())
+      ->ForgetIdentityFromOtherApplication(primary);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return !authentication_service_->HasPrimaryIdentity(); }));
+  histogram_tester.ExpectTotalCount(
+      "Signin.AccountSwitchingPromo.SwitchedAwayWithin24Hours", 0);
+
+  // Also simulate `primary` having been removed while Chrome was not running,
+  // before `scene_state_` becomes foreground-active.
+  signin::RecordAccountSwitchingPromoAccepted(*profile_->GetPrefs(),
+                                              primary.gaiaId);
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+
+  histogram_tester.ExpectTotalCount(
+      "Signin.AccountSwitchingPromo.SwitchedAwayWithin24Hours", 0);
+  EXPECT_TRUE(profile_->GetPrefs()
+                  ->GetDict(signin::kAccountSwitchingPromoStatePref)
+                  .empty());
+}
+
+// Tests that `kAccountSwitchingPromoStatePref` is cleared when the profile is
+// no longer the personal profile.
+TEST_F(AccountSwitchingPromoSceneAgentTest,
+       ClearsPromoStateWhenProfileIsNoLongerPersonal) {
+  FakeSystemIdentity* primary = [FakeSystemIdentity fakeIdentity1];
+  SetUpEligibleAccounts(primary, [FakeSystemIdentity fakeIdentity2]);
+  signin::RecordAccountSwitchingPromoAccepted(*profile_->GetPrefs(),
+                                              primary.gaiaId);
+  ASSERT_FALSE(profile_->GetPrefs()
+                   ->GetDict(signin::kAccountSwitchingPromoStatePref)
+                   .empty());
+
+  const std::string other_profile_name =
+      profile_manager_.ReserveNewProfileName();
+  GetApplicationContext()
+      ->GetProfileManager()
+      ->GetProfileAttributesStorage()
+      ->SetPersonalProfileName(other_profile_name);
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+
+  EXPECT_TRUE(profile_->GetPrefs()
+                  ->GetDict(signin::kAccountSwitchingPromoStatePref)
+                  .empty());
 }
 
 using AccountSwitchingPromoSceneAgentNoServiceTest = PlatformTest;

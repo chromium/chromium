@@ -15,8 +15,10 @@ class ProfileIOS;
 // Scene agent that evaluates smart account switching eligibility at Chrome
 // startup, and registers `promos_manager::Promo::AccountSwitching` with
 // `PromosManager` if eligible. `PromosManager` then decides when to show the
-// promo. The agent deregisters the promo if it stops being eligible, and
-// notifies the Feature Engagement Tracker when the primary account is set.
+// promo. The agent deregisters the promo if it stops being eligible, prunes the
+// promo state of accounts removed from the device, records the 24-hour
+// retention metric of an accepted switch, and notifies the Feature Engagement
+// Tracker when the primary account is set.
 @interface AccountSwitchingPromoSceneAgent : ObservingSceneAgent
 
 // The identity of this profile that the promo offers to switch to, if the

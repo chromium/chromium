@@ -6,14 +6,18 @@
 
 #import <memory>
 #import <optional>
+#import <utility>
+#import <vector>
 
 #import "base/check.h"
+#import "base/containers/flat_set.h"
 #import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/not_fatal_until.h"
 #import "base/time/time.h"
+#import "base/values.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/prefs/pref_change_registrar.h"
@@ -22,6 +26,7 @@
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/signin/public/base/signin_switches.h"
+#import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/signin/public/identity_manager/tribool.h"
@@ -226,8 +231,9 @@ constexpr base::TimeDelta kMinDaysSinceLastSignin = base::Days(28);
 
 - (void)setSceneState:(SceneState*)sceneState {
   [super setSceneState:sceneState];
-  // Replays `profileState:didTransitionToInitStage:fromInitStage:` if the
-  // profile is already initializing.
+  // Replays `-profileState:didTransitionToInitStage:fromInitStage:` if the
+  // profile is already initializing, which prunes the prefs and records the
+  // retention metrics once `ProfileInitStage::kFinal` is reached.
   [self.sceneState.profileState addObserver:self];
 }
 
@@ -236,6 +242,9 @@ constexpr base::TimeDelta kMinDaysSinceLastSignin = base::Days(28);
 - (void)profileState:(ProfileState*)profileState
     didTransitionToInitStage:(ProfileInitStage)nextInitStage
                fromInitStage:(ProfileInitStage)fromInitStage {
+  if (nextInitStage == ProfileInitStage::kFinal) {
+    [self maybeRecordRetentionMetrics];
+  }
   [self maybeEvaluatePromoAtStartup];
 }
 
@@ -243,6 +252,9 @@ constexpr base::TimeDelta kMinDaysSinceLastSignin = base::Days(28);
 
 - (void)sceneState:(SceneState*)sceneState
     transitionedToActivationLevel:(SceneActivationLevel)level {
+  if (level == SceneActivationLevelForegroundActive) {
+    [self maybeRecordRetentionMetrics];
+  }
   [self maybeEvaluatePromoAtStartup];
 }
 
@@ -276,6 +288,7 @@ constexpr base::TimeDelta kMinDaysSinceLastSignin = base::Days(28);
     _featureEngagementTracker->NotifyEvent(
         feature_engagement::events::kIOSAccountSwitchingPrimaryAccountChanged);
   }
+  [self maybeRecordRetentionMetrics];
   [self deregisterPromoIfIneligible];
 }
 
@@ -288,6 +301,7 @@ constexpr base::TimeDelta kMinDaysSinceLastSignin = base::Days(28);
 }
 
 - (void)accountsOnDeviceDidChange {
+  [self pruneRemovedAccountsFromPrefs];
   [self deregisterPromoIfIneligible];
 }
 
@@ -311,6 +325,47 @@ constexpr base::TimeDelta kMinDaysSinceLastSignin = base::Days(28);
 // Deregisters `promos_manager::Promo::AccountSwitching` from `_promosManager`.
 - (void)deregisterAccountSwitchingPromo {
   _promosManager->DeregisterPromo(promos_manager::Promo::AccountSwitching);
+}
+
+// Prunes promo preferences for accounts removed from the device, or clears
+// `kAccountSwitchingPromoStatePref` if the profile is no longer the personal
+// profile.
+- (void)pruneRemovedAccountsFromPrefs {
+  if (_prefService->GetDict(signin::kAccountSwitchingPromoStatePref).empty()) {
+    // Early return: no promo state is stored yet.
+    return;
+  }
+  if (![self isPersonalProfile]) {
+    // Clear stored state if the personal profile was converted into a managed
+    // profile via `MakePersonalProfileManagedWithGaiaID()`.
+    _prefService->ClearPref(signin::kAccountSwitchingPromoStatePref);
+    return;
+  }
+
+  std::vector<GaiaId> activeGaiaIds;
+  for (const AccountInfo& account : _identityManager->GetAccountsOnDevice()) {
+    activeGaiaIds.push_back(account.GetGaiaId());
+  }
+  signin::DeleteAccountSwitchingPromoStateForRemovedAccounts(
+      *_prefService, base::flat_set<GaiaId>(std::move(activeGaiaIds)));
+}
+
+// Prunes any accounts removed from the device (so removing the primary account
+// from the device does not record a switch away) and records account switching
+// 24-hour retention metrics if a pending evaluation is ready and the profile is
+// personal.
+- (void)maybeRecordRetentionMetrics {
+  [self pruneRemovedAccountsFromPrefs];
+
+  if (![self isPersonalProfile]) {
+    // Early return: account switching promo state is only stored for the
+    // personal profile.
+    return;
+  }
+
+  id<SystemIdentity> primaryIdentity = _authService->GetPrimaryIdentity();
+  signin::MaybeRecordAccountSwitchingRetention(
+      *_prefService, primaryIdentity ? primaryIdentity.gaiaId : GaiaId());
 }
 
 // Returns whether the promo may be offered for the current primary account.
