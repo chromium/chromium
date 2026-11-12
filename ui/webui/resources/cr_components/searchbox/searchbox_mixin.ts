@@ -970,7 +970,8 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
       }
 
       const isPureCtrlEnter = this.shouldAppendDotComOnCtrlEnter() &&
-          e.ctrlKey && !e.shiftKey && !e.altKey && !e.metaKey &&
+          !this.inKeywordMode && e.ctrlKey && !e.shiftKey && !e.altKey &&
+          !e.metaKey &&
           this.controlKeyState !== ControlKeyState.DOWN_AND_CONSUMED;
 
       e.preventDefault();

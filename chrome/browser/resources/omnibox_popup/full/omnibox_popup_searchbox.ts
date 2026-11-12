@@ -2200,7 +2200,8 @@ export class OmniboxPopupSearchboxElement extends
       // On an open page where no suggestion match is highlighted, submit the
       // verbatim input text (or reload the permanent URL).
       e.preventDefault();
-      if (e.ctrlKey && !e.shiftKey && !e.altKey && !e.metaKey &&
+      if (!this.inKeywordMode && e.ctrlKey && !e.shiftKey && !e.altKey &&
+          !e.metaKey &&
           this.controlKeyState !== ControlKeyState.DOWN_AND_CONSUMED) {
         this.openCtrlEnterMatch(-1);
       } else {
