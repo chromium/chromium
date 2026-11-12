@@ -484,5 +484,11 @@ source_set("fuzztest_gtest_main") {
   if (use_centipede) {
     data_deps = [ ":centipede" ]
   }
+  if (is_win && use_fuzzing_engine) {
+    # ASan can hang while printing a crash report if msdia140.dll isn't loaded
+    # yet. This main() doesn't preload it, so we link in fuzzer_support_win.cc
+    # which loads it at startup.
+    deps += [ "//testing/libfuzzer:fuzzer_support_win" ]
+  }
   testonly = true
 }

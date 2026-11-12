@@ -34,6 +34,15 @@ source_set("libfuzzer_exports") {
   sources = [ "libfuzzer_exports.h" ]
 }
 
+if (is_win) {
+  # Preloads dbghelp.dll and msdia140.dll so that ASan's crash reports don't
+  # hang. See fuzzer_support_win.cc.
+  source_set("fuzzer_support_win") {
+    testonly = true
+    sources = [ "fuzzer_support_win.cc" ]
+  }
+}
+
 # Temporary target for legacy reasons. Some third party repos explicitly
 # refer to libfuzzer_main though they should refer to fuzzer_engine_main
 # instead, and so do some infrastructure repos. We should migrate them

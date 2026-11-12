@@ -397,7 +397,7 @@ template("fuzzer_test") {
       }
 
       if (is_win) {
-        sources += [ "//testing/libfuzzer/fuzzer_support_win.cc" ]
+        deps += [ "//testing/libfuzzer:fuzzer_support_win" ]
       }
 
       if (is_ios) {

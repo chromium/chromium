@@ -62,18 +62,12 @@ test("fuzzing_unittests") {
     # and Windows (see _building_fuzztest_fuzzer in testing/test.gni).
     if (use_fuzztest_wrapper && (is_linux || is_mac || is_win)) {
       data_deps += [
+        ":fuzztest_crashing_fuzzer_FuzzTestCrashing_CheckFailure_fuzzer__generate",
         ":fuzztest_crashing_fuzzer_FuzzTestCrashing_FastCrash_fuzzer__generate",
         ":fuzztest_proto_crashing_fuzzer_FuzzTestProtoCrashing_FastCrash_fuzzer__generate",
         ":fuzztest_proto_stub_fuzzer_FuzzTestProtoStub_Stub_fuzzer__generate",
         ":fuzztest_stub_fuzzer_FuzzTestStub_Stub_fuzzer__generate",
       ]
-
-      # TODO(crbug.com/584855924): Also run on Windows; see `kFuzzerTestCases`
-      # in `fuzzer_smoke_test.cc`.
-      if (!is_win) {
-        data_deps += [ ":fuzztest_crashing_fuzzer_FuzzTestCrashing_CheckFailure_fuzzer__generate" ]
-      }
-
       if (use_centipede) {
         data_deps += [
           ":test_config_only_LLVMFuzzer_TestOneInput_fuzzer__generate",

@@ -97,15 +97,11 @@ constexpr FuzzerTestCase kFuzzerTestCases[] = {
         .fuzzer = "fuzztest_crashing_fuzzer_FuzzTestCrashing_FastCrash_fuzzer",
         .expectation = FuzzExpectation::kCrash,
     },
-// TODO(crbug.com/584855924): Also run on Windows, where a failed CHECK in a
-// FuzzTest can hang in ASan's crash report.
-#if !BUILDFLAG(IS_WIN)
     {
         .fuzzer =
             "fuzztest_crashing_fuzzer_FuzzTestCrashing_CheckFailure_fuzzer",
         .expectation = FuzzExpectation::kCrash,
     },
-#endif
     {
         .fuzzer = "fuzztest_proto_stub_fuzzer_FuzzTestProtoStub_Stub_fuzzer",
         .expectation = FuzzExpectation::kSuccess,
