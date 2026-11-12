@@ -181,7 +181,23 @@ views::ProposedLayout TabGroupViewHorizontalLayout::CalculateProposedLayout(
                                        show_group_line, group_line_bounds);
   }
 
-  layouts.host_size = gfx::Size(total_group_width, container_height);
+  // If the group is focused and we are handling a drag, we need to account for
+  // the dragged views' trailing bound. In focus mode the focused group owns the
+  // drag instead of the unpinned container, so the group's preferred width is
+  // what lets parent layouts (and the new tab button) follow the drag.
+  int dragged_view_right = 0;
+  if (TabGroupView().IsGroupFocused() && TabGroupView().IsHandlingDrag()) {
+    const gfx::Rect dragging_bounds = TabGroupView().GetDraggingViewsBounds();
+    dragged_view_right = TabGroupView().GetMirroredXForRect(dragging_bounds) +
+                         dragging_bounds.width();
+    if (size_bounds.width().is_bounded()) {
+      dragged_view_right =
+          std::min(dragged_view_right, size_bounds.width().value());
+    }
+  }
+
+  layouts.host_size = gfx::Size(std::max(total_group_width, dragged_view_right),
+                                container_height);
   return layouts;
 }
 

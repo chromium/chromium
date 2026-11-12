@@ -1465,6 +1465,68 @@ IN_PROC_BROWSER_TEST_P(TabDragFocusModeTest,
                         chrome::kChromeUIVersionURL})));
 }
 
+// In focus mode the focused group owns the drag, so the group's preferred
+// size along the main axis must expand to the dragged views' trailing edge.
+// This is what lets parent layouts (and, horizontally, the new tab button)
+// follow the dragged tab.
+IN_PROC_BROWSER_TEST_P(TabDragFocusModeTest,
+                       FocusedGroupExpandsToDraggedTabTrailingEdge) {
+  TabStripModel* tab_strip_model = browser()->GetTabStripModel();
+  ASSERT_NE(nullptr, tab_strip_model);
+  int group_main_size_before = 0;
+  int new_tab_button_x_before = 0;
+  const gfx::Vector2d drag_offset =
+      is_horizontal() ? gfx::Vector2d(80, 0) : gfx::Vector2d(0, 80);
+  const auto main_size = [this](const gfx::Size& size) {
+    return is_horizontal() ? size.width() : size.height();
+  };
+  const auto trailing_edge = [this](const gfx::Rect& rect) {
+    return is_horizontal() ? rect.right() : rect.bottom();
+  };
+
+  RunTestSequence(
+      AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUIBookmarksURL), 1),
+      AddInstrumentedTab(kThirdTab, GURL(chrome::kChromeUISettingsURL), 2),
+      AddTabsToNewGroup({1, 2}), Do([&]() {
+        const std::vector<tab_groups::TabGroupId> groups =
+            tab_strip_model->group_model()->ListTabGroups();
+        ASSERT_EQ(1u, groups.size());
+        tab_strip_model->EnterFocusMode(groups[0]);
+        views::test::RunScheduledLayout(&GetBrowserView());
+      }),
+      Do([&]() {
+        TabGroupView* group_view = GetTabGroupViewAt(0);
+        ASSERT_NE(nullptr, group_view);
+        ASSERT_TRUE(group_view->IsGroupFocused());
+        group_main_size_before = main_size(group_view->GetPreferredSize({}));
+      }),
+      If([this]() { return is_horizontal(); },
+         Then(WithView(kNewTabButtonElementId,
+                       [&](views::View* button) {
+                         new_tab_button_x_before = button->x();
+                       }))),
+      PollState(kDragStatePoller, GetDragActive()),
+      // Drag the trailing tab of the focused group further toward the trailing
+      // edge of the tab strip.
+      StartDragTabByOffset(2, drag_offset),
+      WaitForState(kDragStatePoller, true), RunScheduledLayout(), Do([&]() {
+        TabGroupView* group_view = GetTabGroupViewAt(0);
+        ASSERT_NE(nullptr, group_view);
+        ASSERT_TRUE(group_view->IsHandlingDrag());
+        const int dragged_trailing_edge =
+            trailing_edge(group_view->GetDraggingViewsBounds());
+        const int group_main_size = main_size(group_view->GetPreferredSize({}));
+        EXPECT_GE(group_main_size, dragged_trailing_edge);
+        EXPECT_GT(group_main_size, group_main_size_before);
+      }),
+      If([this]() { return is_horizontal(); },
+         Then(CheckView(kNewTabButtonElementId,
+                        [&](views::View* button) {
+                          return button->x() > new_tab_button_x_before;
+                        }))),
+      ReleaseMouse(), WaitForState(kDragStatePoller, false));
+}
+
 IN_PROC_BROWSER_TEST_P(TabDragTest, DragCollapsedGroupStaysCollapsed) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFourthTab);
   TabStripModel* tab_strip_model = browser()->GetTabStripModel();
