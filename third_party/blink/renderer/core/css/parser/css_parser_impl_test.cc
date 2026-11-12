@@ -1763,17 +1763,6 @@ TEST(CSSParserImplTest, ParseNestedRule) {
                 ->SelectorTextExpandingPseudoReferences(/*scope_id=*/0));
 }
 
-TEST(CSSParserImplTest, UnexpectedTokenInVar_IdentFunctionDisabled) {
-  test::TaskEnvironment task_environment;
-  ScopedNullExecutionContext execution_context;
-  ScopedCSSIdentFunctionForTest scoped_feature(false);
-  Document* document =
-      Document::CreateForTest(execution_context.GetExecutionContext());
-  // Don't crash:
-  css_test_helpers::ParseRule(*document, ".a { color: var(42); }");
-  css_test_helpers::ParseRule(*document, ".a { color: var(ident('thing')); }");
-}
-
 TEST(CSSParserImplTest, CustomMediaBoolValueValid) {
   CSSParserTokenStream stream("@custom-media --true-val true;");
   TestCSSParserImpl parser;

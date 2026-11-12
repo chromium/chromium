@@ -2307,8 +2307,7 @@ AtomicString StyleBuilderConverter::ConvertNoneOrCustomIdentUnscoped(
 AtomicString StyleBuilderConverter::ConvertCustomIdentUnscoped(
     StyleResolverState& state,
     const CSSValue& value) {
-  return To<CSSCustomIdentValue>(value).ComputeIdent(
-      state.CssToLengthConversionData());
+  return To<CSSCustomIdentValue>(value).Value();
 }
 
 StylePositionAnchor StyleBuilderConverter::ConvertPositionAnchor(
@@ -3633,9 +3632,6 @@ static const CSSValue& ComputeRegisteredPropertyValue(
       value.IsUnresolvedColorValue()) {
     return ComputeColorValue(css_to_length_conversion_data, value, document,
                              theme_info);
-  }
-  if (auto* custom_ident = DynamicTo<CSSCustomIdentValue>(value)) {
-    return *custom_ident->Resolve(css_to_length_conversion_data);
   }
   return value;
 }

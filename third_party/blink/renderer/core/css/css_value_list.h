@@ -56,9 +56,6 @@ class CORE_EXPORT CSSValueList : public CSSValue {
   explicit CSSValueList(ValueListSeparator);
   CSSValueList(ValueListSeparator, bool needs_tree_scope_population);
   CSSValueList(ValueListSeparator, HeapVector<Member<const CSSValue>, 4>);
-  CSSValueList(ClassType,
-               ValueListSeparator,
-               HeapVector<Member<const CSSValue>, 4>);
   CSSValueList(const CSSValueList&) = delete;
   CSSValueList& operator=(const CSSValueList&) = delete;
 

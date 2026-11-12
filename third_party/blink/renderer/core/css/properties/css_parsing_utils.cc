@@ -1704,64 +1704,9 @@ CSSIdentifierValue* ConsumeIdentRange(CSSParserTokenStream& stream,
   return ConsumeIdent(stream);
 }
 
-// https://drafts.csswg.org/css-values-5/#ident
-CSSFunctionValue* ConsumeIdentFunction(CSSParserTokenStream& stream,
-                                       const CSSParserContext& context) {
-  CHECK(RuntimeEnabledFeatures::CSSIdentFunctionEnabled());
-  if (stream.Peek().FunctionId() != CSSValueID::kIdent) {
-    return nullptr;
-  }
-
-  CSSParserTokenStream::RestoringBlockGuard guard(stream);
-  stream.ConsumeWhitespace();
-
-  HeapVector<Member<const CSSValue>, 4> values;
-
-  CSSParserLocalContext local_context =
-      CSSParserLocalContext::CreateWithoutPropertyForIdent();
-  while (!stream.AtEnd()) {
-    if (CSSValue* custom_ident =
-            ConsumeCustomIdent(stream, context, local_context)) {
-      values.push_back(custom_ident);
-      continue;
-    }
-    if (CSSValue* string_value = ConsumeString(stream)) {
-      values.push_back(string_value);
-      continue;
-    }
-    if (CSSValue* integer_value =
-            ConsumeInteger(stream, context, local_context,
-                           CSSPrimitiveValue::ValueRange::kInteger,
-                           /*is_percentage_allowed=*/false)) {
-      // TODO(crbug.com/488111037): Add support for random() inside ident().
-      if (integer_value->HasRandomFunctions()) {
-        return nullptr;
-      }
-      values.push_back(integer_value);
-      continue;
-    }
-    return nullptr;
-  }
-
-  if (values.empty()) {
-    return nullptr;
-  }
-
-  CHECK(guard.Release());
-  stream.ConsumeWhitespace();
-
-  return MakeGarbageCollected<CSSFunctionValue>(
-      CSSValueID::kIdent, CSSValueList::kSpaceSeparator, std::move(values));
-}
-
 CSSCustomIdentValue* ConsumeCustomIdent(CSSParserTokenStream& stream,
                                         const CSSParserContext& context,
                                         CSSParserLocalContext& local_context) {
-  if (RuntimeEnabledFeatures::CSSIdentFunctionEnabled()) {
-    if (auto* ident_function = ConsumeIdentFunction(stream, context)) {
-      return MakeGarbageCollected<CSSCustomIdentValue>(*ident_function);
-    }
-  }
   if (stream.Peek().GetType() != kIdentToken ||
       IsCSSWideKeyword(stream.Peek().Id()) ||
       stream.Peek().Id() == CSSValueID::kDefault) {
@@ -1774,11 +1719,10 @@ CSSCustomIdentValue* ConsumeCustomIdent(CSSParserTokenStream& stream,
 CSSCustomIdentValue* ConsumeDashedIdent(CSSParserTokenStream& stream,
                                         const CSSParserContext& context,
                                         CSSParserLocalContext& local_context) {
-  // Note that the ident() function can currently bypass the double-dash
-  // requirement of <dashed-ident>.
-  // https://github.com/w3c/csswg-drafts/issues/12206
-  if (stream.Peek().GetType() == kIdentToken &&
-      !stream.Peek().Value().starts_with(kTwoDashes)) {
+  if (stream.Peek().GetType() != kIdentToken) {
+    return nullptr;
+  }
+  if (!stream.Peek().Value().starts_with(kTwoDashes)) {
     return nullptr;
   }
   return ConsumeCustomIdent(stream, context, local_context);
@@ -9688,19 +9632,20 @@ CSSValue* ParseSpacing(CSSParserTokenStream& stream,
 CSSValue* ConsumeSingleContainerName(CSSParserTokenStream& stream,
                                      const CSSParserContext& context,
                                      CSSParserLocalContext& local_context) {
-  if (stream.Peek().GetType() == kIdentToken) {
-    if (stream.Peek().Id() == CSSValueID::kNone) {
-      return nullptr;
-    }
-    if (EqualIgnoringAsciiCase(stream.Peek().Value(), "not")) {
-      return nullptr;
-    }
-    if (EqualIgnoringAsciiCase(stream.Peek().Value(), "and")) {
-      return nullptr;
-    }
-    if (EqualIgnoringAsciiCase(stream.Peek().Value(), "or")) {
-      return nullptr;
-    }
+  if (stream.Peek().GetType() != kIdentToken) {
+    return nullptr;
+  }
+  if (stream.Peek().Id() == CSSValueID::kNone) {
+    return nullptr;
+  }
+  if (EqualIgnoringAsciiCase(stream.Peek().Value(), "not")) {
+    return nullptr;
+  }
+  if (EqualIgnoringAsciiCase(stream.Peek().Value(), "and")) {
+    return nullptr;
+  }
+  if (EqualIgnoringAsciiCase(stream.Peek().Value(), "or")) {
+    return nullptr;
   }
   return ConsumeCustomIdent(stream, context, local_context);
 }

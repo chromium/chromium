@@ -215,9 +215,6 @@ template <CSSValueID... allowedIdents>
 cssvalue::CSSScopedKeywordValue* ConsumeScopedKeywordValue(
     CSSParserTokenStream&);
 
-// https://drafts.csswg.org/css-values-5/#ident
-CSSFunctionValue* ConsumeIdentFunction(CSSParserTokenStream&,
-                                       const CSSParserContext&);
 CSSCustomIdentValue* ConsumeCustomIdent(CSSParserTokenStream&,
                                         const CSSParserContext&,
                                         CSSParserLocalContext&);

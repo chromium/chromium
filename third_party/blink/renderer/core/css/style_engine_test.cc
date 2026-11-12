@@ -8510,19 +8510,6 @@ TEST_F(StyleEngineTest, ScrollStateUseCounter) {
   ClearWebDXFeatureCounter(WebDXFeature::kContainerScrollStateQueries);
 }
 
-TEST_F(StyleEngineTest, MissingVarArgument_IdentFunctionDisabled) {
-  ScopedCSSIdentFunctionForTest scoped_feature(false);
-  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
-    <style>
-      div {
-        color: var();
-      }
-    </style>
-    <div></div>
-  )HTML");
-  UpdateAllLifecyclePhasesForTest();
-}
-
 TEST_F(StyleEngineTest, UpdateRootFontRelativeUnits_NoRecalcForNonInherited) {
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>

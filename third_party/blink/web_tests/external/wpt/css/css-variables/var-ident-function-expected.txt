@@ -1,5 +1,11 @@
 This is a testharness.js-based test.
+[FAIL] Referencing a custom property with ident()
+  assert_equals: expected "PASS" but got "FAIL1"
 [FAIL] ident() is substituted on custom properties
   assert_equals: expected "x" but got "ident(\\"x\\")"
+[FAIL] ident() causing lookup of invalid custom property, fallback
+  assert_equals: expected "PASS" but got ""
+[FAIL] ident() causing lookup of invalid custom property, fallback, CSS-wide keyword
+  assert_equals: expected "PASS" but got "FAIL"
 Harness: the test ran to completion.
 

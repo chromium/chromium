@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] Property position-try-fallbacks value 'ident("--myident" calc(42 * sign(1em - 1px)))'
+  assert_true: 'ident("--myident" calc(42 * sign(1em - 1px)))' is a supported value for position-try-fallbacks. expected true got false
+[FAIL] Property position-try-fallbacks value 'flip-block, ident("--myident" calc(42 * sign(1em - 1px)))'
+  assert_true: 'flip-block, ident("--myident" calc(42 * sign(1em - 1px)))' is a supported value for position-try-fallbacks. expected true got false
+[FAIL] Property position-try value 'ident("--myident" calc(42 * sign(1em - 1px)))'
+  assert_true: 'ident("--myident" calc(42 * sign(1em - 1px)))' is a supported value for position-try. expected true got false
+[FAIL] Property position-try value 'most-width ident("--myident" calc(42 * sign(1em - 1px)))'
+  assert_true: 'most-width ident("--myident" calc(42 * sign(1em - 1px)))' is a supported value for position-try. expected true got false
+Harness: the test ran to completion.
+

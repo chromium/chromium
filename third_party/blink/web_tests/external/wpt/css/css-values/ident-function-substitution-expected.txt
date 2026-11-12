@@ -7,8 +7,14 @@ This is a testharness.js-based test.
   assert_equals: expected "myname" but got "ident(ident(\\"my\\") ident(\\"name\\"))"
 [FAIL] ident() building the var() name argument from an attribute
   assert_equals: expected "PASS" but got ""
+[FAIL] sibling-index() in the ident() argument
+  assert_equals: expected "vtl-3" but got "none"
+[FAIL] a math function over sibling-index() in the ident() argument
+  assert_equals: expected "vtl-6" but got "none"
 [FAIL] an argument that is not <ident-arg>+ makes ident() invalid at computed-value time
   assert_equals: expected "" but got "ident(5px)"
+[FAIL] an ident() with no attr() involved does not taint the property it names
+  assert_equals: expected "url(\\"https://does-not-exist.test/404.png\\")" but got "none"
 [FAIL] ident() substituting a value the property does not accept
   assert_equals: expected "784px" but got "10px"
 Harness: the test ran to completion.

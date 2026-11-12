@@ -1,0 +1,17 @@
+This is a testharness.js-based test.
+[FAIL] Property anchor-name value 'ident("--myident" calc(42 * sign(1em - 1px)))'
+  assert_true: 'ident("--myident" calc(42 * sign(1em - 1px)))' is a supported value for anchor-name. expected true got false
+[FAIL] Property anchor-name value '--tl, ident("--myident" calc(42 * sign(1em - 1px)))'
+  assert_true: '--tl, ident("--myident" calc(42 * sign(1em - 1px)))' is a supported value for anchor-name. expected true got false
+[FAIL] Property anchor-name value 'ident("--myident" calc(42 * sign(1em - 1px))), ident("--myident" calc(42 * sign(1em - 1px)))'
+  assert_true: 'ident("--myident" calc(42 * sign(1em - 1px))), ident("--myident" calc(42 * sign(1em - 1px)))' is a supported value for anchor-name. expected true got false
+[FAIL] Property anchor-scope value 'ident("--myident" calc(42 * sign(1em - 1px)))'
+  assert_true: 'ident("--myident" calc(42 * sign(1em - 1px)))' is a supported value for anchor-scope. expected true got false
+[FAIL] Property anchor-scope value '--tl, ident("--myident" calc(42 * sign(1em - 1px)))'
+  assert_true: '--tl, ident("--myident" calc(42 * sign(1em - 1px)))' is a supported value for anchor-scope. expected true got false
+[FAIL] Property anchor-scope value 'ident("--myident" calc(42 * sign(1em - 1px))), ident("--myident" calc(42 * sign(1em - 1px)))'
+  assert_true: 'ident("--myident" calc(42 * sign(1em - 1px))), ident("--myident" calc(42 * sign(1em - 1px)))' is a supported value for anchor-scope. expected true got false
+[FAIL] Property position-anchor value 'ident("--myident" calc(42 * sign(1em - 1px)))'
+  assert_true: 'ident("--myident" calc(42 * sign(1em - 1px)))' is a supported value for position-anchor. expected true got false
+Harness: the test ran to completion.
+

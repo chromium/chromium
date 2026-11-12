@@ -1,7 +1,31 @@
 This is a testharness.js-based test.
+[FAIL] Property view-transition-name value 'ident(myident)'
+  assert_true: 'ident(myident)' is a supported value for view-transition-name. expected true got false
+[FAIL] Property view-transition-name value 'ident("myident")'
+  assert_true: 'ident("myident")' is a supported value for view-transition-name. expected true got false
+[FAIL] Property view-transition-name value 'ident("myident" 3)'
+  assert_true: 'ident("myident" 3)' is a supported value for view-transition-name. expected true got false
+[FAIL] Property view-transition-name value 'ident(3 "myident")'
+  assert_true: 'ident(3 "myident")' is a supported value for view-transition-name. expected true got false
+[FAIL] Property view-transition-name value 'ident("my" "ident")'
+  assert_true: 'ident("my" "ident")' is a supported value for view-transition-name. expected true got false
+[FAIL] Property view-transition-name value 'ident(my "ident")'
+  assert_true: 'ident(my "ident")' is a supported value for view-transition-name. expected true got false
+[FAIL] Property view-transition-name value 'ident("my" ident)'
+  assert_true: 'ident("my" ident)' is a supported value for view-transition-name. expected true got false
+[FAIL] Property view-transition-name value 'ident(my ident)'
+  assert_true: 'ident(my ident)' is a supported value for view-transition-name. expected true got false
+[FAIL] Property view-transition-name value 'ident(-- myident)'
+  assert_true: 'ident(-- myident)' is a supported value for view-transition-name. expected true got false
+[FAIL] Property view-transition-name value 'ident(my 3 3 3 3 ident)'
+  assert_true: 'ident(my 3 3 3 3 ident)' is a supported value for view-transition-name. expected true got false
+[FAIL] Property view-transition-name value 'ident("--prop" calc(1 + 2))'
+  assert_true: 'ident("--prop" calc(1 + 2))' is a supported value for view-transition-name. expected true got false
 [FAIL] Property view-transition-name value 'ident(5px)'
   assert_true: 'ident(5px)' is a supported value for view-transition-name. expected true got false
 [FAIL] Property view-transition-name value 'ident(rgb(1, 2, 3))'
   assert_true: 'ident(rgb(1, 2, 3))' is a supported value for view-transition-name. expected true got false
+[FAIL] Property view-transition-name value 'ident("myident" 42)'
+  assert_true: 'ident("myident" 42)' is a supported value for view-transition-name. expected true got false
 Harness: the test ran to completion.
 

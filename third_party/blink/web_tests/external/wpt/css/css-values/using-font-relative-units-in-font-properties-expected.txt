@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] Property font-palette value 'ident("--test-" calc(1em / 1px))'
+  assert_true: 'ident("--test-" calc(1em / 1px))' is a supported value for font-palette. expected true got false
+[FAIL] Property font-variant-alternates value 'stylistic(ident("test-" calc(1em / 1px)))'
+  assert_true: 'stylistic(ident("test-" calc(1em / 1px)))' is a supported value for font-variant-alternates. expected true got false
+[FAIL] Property font-width value 'calc(1em / 1px * 1%)'
+  assert_true: font-width doesn't seem to be supported in the computed style expected true got false
+Harness: the test ran to completion.
+

@@ -100,28 +100,6 @@ AtomicString ConsumeIfVariableName(CSSParserTokenStream& stream) {
   return stream.ConsumeIncludingWhitespace().Value().ToAtomicString();
 }
 
-AtomicString ConsumeAndComputeVariableName(CSSParserTokenStream& stream,
-                                           const CSSParserContext& context,
-                                           StyleResolverState& state) {
-  stream.ConsumeWhitespace();
-  if (stream.Peek().GetType() == kIdentToken) {
-    // Note that CSSVariableParser has previously checked that the ident
-    // has a valid form.
-    return stream.ConsumeIncludingWhitespaceRaw().Value().ToAtomicString();
-  }
-  // ident()
-  DCHECK_EQ(stream.Peek().FunctionId(), CSSValueID::kIdent);
-  CSSFunctionValue* ident_function =
-      css_parsing_utils::ConsumeIdentFunction(stream, context);
-  DCHECK(ident_function);
-  AtomicString computed_ident = CSSCustomIdentValue::ComputeIdent(
-      *ident_function, state.CssToLengthConversionData());
-  if (!CSSVariableParser::IsValidVariableName(computed_ident)) {
-    return AtomicString("unknown");
-  }
-  return computed_ident;
-}
-
 bool ConsumeComma(CSSParserTokenStream& stream) {
   if (stream.Peek().GetType() == kCommaToken) {
     stream.ConsumeRaw();
@@ -1799,13 +1777,7 @@ bool StyleCascade::ResolveVarInto(CSSParserTokenStream& stream,
                                   const CSSParserContext& context,
                                   FunctionContext* function_context,
                                   TokenSequence& out) {
-  AtomicString var_name =
-      ConsumeAndComputeVariableName(stream, context, state_);
-  // Note that `var_name` may be "unknown" when an ident() function
-  // didn't produce a valid variable name. Looking up this custom property
-  // name (which is unreachable for authors, and therefore never set)
-  // automatically gives the correct IACVT/fallback behavior without
-  // any explicit handling.
+  AtomicString var_name = ConsumeVariableName(stream);
   DCHECK(stream.AtEnd() || (stream.Peek().GetType() == kCommaToken));
 
   // Within a function context (i.e. when resolving values within the body of
@@ -1906,8 +1878,7 @@ bool StyleCascade::ResolveInheritInto(CSSParserTokenStream& stream,
   // then we need to explicitly find the inherited value. Note that since
   // we're depending on the already-finished ComputedStyle of the parent
   // element, cycles with properties on *this* element cannot happen.
-  AtomicString var_name =
-      ConsumeAndComputeVariableName(stream, context, state_);
+  AtomicString var_name = ConsumeVariableName(stream);
   if (!stream.AtEnd()) {
     DCHECK_EQ(stream.Peek().GetType(), kCommaToken);
   }

@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Property link-parameters value 'param(ident("--a"): orange)'
+  assert_true: 'param(ident("--a"): orange)' is a supported value for link-parameters. expected true got false
+Harness: the test ran to completion.
+

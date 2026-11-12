@@ -1,0 +1,27 @@
+This is a testharness.js-based test.
+[FAIL] Property animation-timeline value 'ident("--myident" calc(42 * sign(1em - 1px)))'
+  assert_true: 'ident("--myident" calc(42 * sign(1em - 1px)))' is a supported value for animation-timeline. expected true got false
+[FAIL] Property animation-timeline value '--tl, scroll(), ident("--myident" calc(42 * sign(1em - 1px)))'
+  assert_true: '--tl, scroll(), ident("--myident" calc(42 * sign(1em - 1px)))' is a supported value for animation-timeline. expected true got false
+[FAIL] Property animation-timeline value 'ident("--myident" calc(42 * sign(1em - 1px))), ident("--myident" calc(42 * sign(1em - 1px)))'
+  assert_true: 'ident("--myident" calc(42 * sign(1em - 1px))), ident("--myident" calc(42 * sign(1em - 1px)))' is a supported value for animation-timeline. expected true got false
+[FAIL] Property scroll-timeline-name value 'ident("--myident" calc(42 * sign(1em - 1px)))'
+  assert_true: 'ident("--myident" calc(42 * sign(1em - 1px)))' is a supported value for scroll-timeline-name. expected true got false
+[FAIL] Property scroll-timeline-name value '--tl, ident("--myident" calc(42 * sign(1em - 1px)))'
+  assert_true: '--tl, ident("--myident" calc(42 * sign(1em - 1px)))' is a supported value for scroll-timeline-name. expected true got false
+[FAIL] Property scroll-timeline-name value 'ident("--myident" calc(42 * sign(1em - 1px))), ident("--myident" calc(42 * sign(1em - 1px)))'
+  assert_true: 'ident("--myident" calc(42 * sign(1em - 1px))), ident("--myident" calc(42 * sign(1em - 1px)))' is a supported value for scroll-timeline-name. expected true got false
+[FAIL] Property timeline-scope value 'ident("--myident" calc(42 * sign(1em - 1px)))'
+  assert_true: 'ident("--myident" calc(42 * sign(1em - 1px)))' is a supported value for timeline-scope. expected true got false
+[FAIL] Property timeline-scope value '--tl, ident("--myident" calc(42 * sign(1em - 1px)))'
+  assert_true: '--tl, ident("--myident" calc(42 * sign(1em - 1px)))' is a supported value for timeline-scope. expected true got false
+[FAIL] Property timeline-scope value 'ident("--myident" calc(42 * sign(1em - 1px))), ident("--myident" calc(42 * sign(1em - 1px)))'
+  assert_true: 'ident("--myident" calc(42 * sign(1em - 1px))), ident("--myident" calc(42 * sign(1em - 1px)))' is a supported value for timeline-scope. expected true got false
+[FAIL] Property view-timeline-name value 'ident("--myident" calc(42 * sign(1em - 1px)))'
+  assert_true: 'ident("--myident" calc(42 * sign(1em - 1px)))' is a supported value for view-timeline-name. expected true got false
+[FAIL] Property view-timeline-name value '--tl, ident("--myident" calc(42 * sign(1em - 1px)))'
+  assert_true: '--tl, ident("--myident" calc(42 * sign(1em - 1px)))' is a supported value for view-timeline-name. expected true got false
+[FAIL] Property view-timeline-name value 'ident("--myident" calc(42 * sign(1em - 1px))), ident("--myident" calc(42 * sign(1em - 1px)))'
+  assert_true: 'ident("--myident" calc(42 * sign(1em - 1px))), ident("--myident" calc(42 * sign(1em - 1px)))' is a supported value for view-timeline-name. expected true got false
+Harness: the test ran to completion.
+
