@@ -152,6 +152,8 @@ SK_API void SkLog_FileLine(const char* file,
 // Packed 4:2:2 format support
 #define SK_ENABLE_YUVA_PACKED_422
 
+#define SK_LEGACY_SCISSOR
+
 ///////////////////////// Imported from BUILD.gn and skia_common.gypi
 
 /* In some places Skia can use static initializers for global initialization,
