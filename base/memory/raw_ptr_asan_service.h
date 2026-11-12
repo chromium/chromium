@@ -69,6 +69,7 @@ class BASE_EXPORT RawPtrAsanService {
     NotQuarantined = 0,
     Quarantined,
     EarlyAllocation,
+    BrpDisabledAllocation,
   };
 
   struct AllocationMetadata {

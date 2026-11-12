@@ -175,7 +175,8 @@ void RawPtrAsanService::Reset() {
     internal::PartitionAutoLock lock(map.GetLock());
     auto& map_internal = map.GetMap();
     for (auto it = map_internal.begin(); it != map_internal.end(); ++it) {
-      if (it->second.quarantine_flag != QuarantineFlag::NotQuarantined) {
+      if (it->second.quarantine_flag == QuarantineFlag::Quarantined ||
+          it->second.quarantine_flag == QuarantineFlag::EarlyAllocation) {
         free(reinterpret_cast<void*>(it->first));
       }
     }
@@ -230,7 +231,11 @@ void RawPtrAsanService::PartitionAllocHook(
     // and leaked on free.
     auto& map = GetAllocationMetadataMap(address);
     internal::PartitionAutoLock guard(map.GetLock());
-    map.GetMap().erase(address);
+    auto it = map.GetMap().find(address);
+    CHECK(it != map.GetMap().end());
+    // Note: to distinguish brp-disabled allocation from allocation inside
+    // allocation guard, mark BrpDisabledAllocation for BRP-disabled allocation.
+    it->second.quarantine_flag = QuarantineFlag::BrpDisabledAllocation;
 #else
     uint8_t* header = UNSAFE_BUFFERS(
         static_cast<uint8_t*>(notification_data.address()) - kChunkHeaderSize);
@@ -248,10 +253,16 @@ void RawPtrAsanService::MallocHook(const volatile void* ptr, size_t size) {
   uint8_t* header = UNSAFE_TODO(static_cast<uint8_t*>(const_cast<void*>(ptr)) -
                                 kChunkHeaderSize);
 #if PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR_V2)
-  ALLOC_REENTRANCY_GUARD();
-
+  // Note: we need to mark the allocation with `kAsanUserPoisonedMemoryMagic`
+  // before `ALLOC_REENTRANCY_GUARD()`. Because if we mark after
+  // `ALLOC_REENTRANCY_GUARD()`, `ALLOC_REENTRANCY_GUARD()` will immediately
+  // return from `MallocHook()` while reentrancy guard. The allocations will not
+  // have `kAsanUserPoisonedMemoryMagic` in the headers. So the allocations
+  // will be treated as EarlyAllocation and will be leaked at free().
   *RawPtrAsanService::GetInstance().GetShadow(header) =
       kAsanUserPoisonedMemoryMagic;
+
+  ALLOC_REENTRANCY_GUARD();
 
   auto alloc_thread_id = internal::GetCurrentRawPtrAsanThreadId();
   {
@@ -336,8 +347,8 @@ int RawPtrAsanService::IgnoreFreeHook(const volatile void* ptr) {
     auto& map = GetAllocationMetadataMap(reinterpret_cast<uintptr_t>(ptr));
     internal::PartitionAutoLock guard(map.GetLock());
     auto it = map.GetMap().find(reinterpret_cast<uintptr_t>(ptr));
-    // If the memory was allocated from non-BRP root, the memory will not be
-    // found in AllocationMetadataMap.
+    // The `map` doesn't contain allocations while reentrancy guard. So they
+    // should be immediately freed.
     if (it == map.GetMap().end()) [[unlikely]] {
       return 0;
     }
@@ -345,10 +356,13 @@ int RawPtrAsanService::IgnoreFreeHook(const volatile void* ptr) {
     // including unprotected-in-release ones: those don't provide protection in
     // release, but quarantining here lets the dangling access still be detected
     // and reported as unprotected-in-release.
-    if (it->second.count == 0 && it->second.unprotected_in_release_count == 0) {
+    if (it->second.quarantine_flag == QuarantineFlag::BrpDisabledAllocation ||
+        (it->second.count == 0 &&
+         it->second.unprotected_in_release_count == 0)) {
       map.GetMap().erase(it);
       return 0;
     }
+
     it->second.quarantine_flag = QuarantineFlag::Quarantined;
     it->second.free_thread_id = current_thread_id;
   }

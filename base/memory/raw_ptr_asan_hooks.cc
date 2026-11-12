@@ -82,7 +82,7 @@ void RawPtrAsanService::AcquireInternal(uintptr_t address,
     return;  // This means, early allocation.
   }
 
-  QuarantineFlag quarantine_flag;
+  QuarantineFlag quarantine_flag = QuarantineFlag::NotQuarantined;
   {
     auto& map = RawPtrAsanService::GetAllocationMetadataMap(
         reinterpret_cast<uintptr_t>(allocation_start_ptr));
@@ -90,9 +90,14 @@ void RawPtrAsanService::AcquireInternal(uintptr_t address,
     auto it =
         map.GetMap().find(reinterpret_cast<uintptr_t>(allocation_start_ptr));
 
-    // If not found, the memory was allocated from non-BRP root.
-    // So quarantine_flag should be `NotQuarantined`.
+    // If not found, the memory was allocated under allocation guard or
+    // early allocation. So quarantine_flag should be `NotQuarantined`.
     if (it != map.GetMap().end()) [[likely]] {
+      // If BRP-disabled allocation, it has no refcount.
+      if (it->second.quarantine_flag == QuarantineFlag::BrpDisabledAllocation)
+          [[unlikely]] {
+        return;
+      }
       if (unprotected_in_release) {
         // Check overflow.
         PA_CHECK(it->second.unprotected_in_release_count < kMaxPtrCount);
@@ -103,8 +108,6 @@ void RawPtrAsanService::AcquireInternal(uintptr_t address,
         ++it->second.count;
       }
       quarantine_flag = it->second.quarantine_flag;
-    } else {
-      quarantine_flag = QuarantineFlag::NotQuarantined;
     }
   }
 
@@ -161,8 +164,9 @@ void RawPtrAsanService::ReleaseInternal(uintptr_t address,
         RawPtrAsanService::GetAllocationMetadataMap(allocation_start_address);
     internal::PartitionAutoLock lock(map.GetLock());
     auto it = map.GetMap().find(allocation_start_address);
-    if (it == map.GetMap().end()) [[unlikely]] {
-      // Not BRP-enabled memory allocation.
+    PA_CHECK(it != map.GetMap().end());
+    if (it->second.quarantine_flag == QuarantineFlag::BrpDisabledAllocation)
+        [[unlikely]] {
       return;
     }
 
