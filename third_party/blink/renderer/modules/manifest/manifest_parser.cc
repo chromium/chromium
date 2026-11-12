@@ -27,7 +27,6 @@
 #include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/common/safe_url_pattern.h"
 #include "third_party/blink/public/common/security/protocol_handler_security_level.h"
@@ -306,26 +305,6 @@ MigrationBehaviorFromString(const std::string& behavior) {
   return std::nullopt;
 }
 
-template <typename T>
-std::vector<T> ToStdVector(const Vector<T>& blink_vector) {
-  std::vector<T> std_vector;
-  std_vector.reserve(blink_vector.size());
-  for (const auto& p : blink_vector) {
-    std_vector.push_back(p);
-  }
-  return std_vector;
-}
-
-template <typename T>
-Vector<T> ToBlinkVector(const std::vector<T>& std_vector) {
-  Vector<T> blink_vector;
-  blink_vector.reserve(base::checked_cast<wtf_size_t>(std_vector.size()));
-  for (const auto& p : std_vector) {
-    blink_vector.push_back(p);
-  }
-  return blink_vector;
-}
-
 }  // anonymous namespace
 
 ManifestParser::ManifestParser(const String& data,
@@ -409,14 +388,9 @@ bool ManifestParser::Parse() {
     }
   }
 
-  Vector<blink::Manifest::DisplayOverride> display_override =
-      ParseDisplayOverride(root_object.get());
-  for (const auto& item : display_override) {
-    manifest_->display_override.push_back(
-        mojom::blink::DisplayOverrideItem::New(
-            item.display(), ToBlinkVector(item.url_patterns())));
-
-    switch (item.display()) {
+  manifest_->display_override = ParseDisplayOverride(root_object.get());
+  for (const auto& item : manifest_->display_override) {
+    switch (item->display) {
       case mojom::blink::DisplayMode::kWindowControlsOverlay:
         UseCounter::Count(execution_context_,
                           WebFeature::kWebAppWindowControlsOverlay);
@@ -937,9 +911,9 @@ blink::mojom::DisplayMode ManifestParser::ParseDisplay(
   return display_enum;
 }
 
-Vector<blink::Manifest::DisplayOverride> ManifestParser::ParseDisplayOverride(
-    const JSONObject* object) {
-  Vector<blink::Manifest::DisplayOverride> display_override;
+Vector<mojom::blink::DisplayOverrideItemPtr>
+ManifestParser::ParseDisplayOverride(const JSONObject* object) {
+  Vector<mojom::blink::DisplayOverrideItemPtr> display_override;
 
   JSONValue* json_value = object->Get("display_override");
   if (!json_value) {
@@ -980,18 +954,17 @@ Vector<blink::Manifest::DisplayOverride> ManifestParser::ParseDisplayOverride(
     }
 
     if (display_enum != mojom::blink::DisplayMode::kUndefined) {
-      std::vector<SafeUrlPattern> url_patterns;
-      if (display_override_object) {
-        url_patterns = ToStdVector(
-            ParseUrlPatterns(display_override_object, "url_patterns"));
-      }
-      if (display_enum == mojom::blink::DisplayMode::kUnframed) {
-        display_override.push_back(
-            blink::Manifest::DisplayOverride::CreateUnframed(
-                std::move(url_patterns)));
-      } else if (url_patterns.empty()) {
-        display_override.push_back(
-            blink::Manifest::DisplayOverride::Create(display_enum));
+      Vector<SafeUrlPattern> url_patterns =
+          display_override_object
+              ? ParseUrlPatterns(display_override_object, "url_patterns")
+              : Vector<SafeUrlPattern>();
+      // `url_patterns` are only allowed in the "unframed" display mode. The
+      // browser side also rejects other combinations in the DisplayOverrideItem
+      // StructTraits.
+      if (display_enum == mojom::blink::DisplayMode::kUnframed ||
+          url_patterns.empty()) {
+        display_override.push_back(mojom::blink::DisplayOverrideItem::New(
+            display_enum, std::move(url_patterns)));
       } else {
         AddErrorInfo(StrCat({"display override '", display_enum_string,
                              "' ignored, url_patterns are not allowed."}));
