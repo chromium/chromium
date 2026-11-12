@@ -202,3 +202,6 @@ crbug.com/584197764 [ Linux ] external/wpt/speculation-rules/prefetch/* [ Pass T
 crbug.com/584197764 [ Linux ] virtual/prefetch-cancel-unrelated-prefetch/external/wpt/speculation-rules/prefetch/* [ Skip ]
 crbug.com/584197764 [ Linux ] virtual/prefetch-force-off-the-main-thread-wculf/external/wpt/speculation-rules/prefetch/* [ Skip ]
 crbug.com/584197764 [ Linux ] virtual/prefetch-force-off-the-main-thread/external/wpt/speculation-rules/prefetch/* [ Skip ]
+
+# Gardener 2026-11-12
+crbug.com/407751100 [ Linux ] http/tests/devtools/sources/debugger/navigator-view.js [ Skip ]
