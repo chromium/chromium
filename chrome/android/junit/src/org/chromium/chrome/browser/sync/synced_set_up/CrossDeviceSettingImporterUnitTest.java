@@ -15,7 +15,6 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -82,7 +81,6 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.prefs.LocalStatePrefs;
-import org.chromium.chrome.browser.prefs.LocalStatePrefsJni;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.prefs.CrossDevicePrefTrackerFactory;
@@ -137,8 +135,6 @@ public class CrossDeviceSettingImporterUnitTest {
     @Mock private Profile mProfile;
     @Mock private PrefService mPrefService;
     @Mock private HomeModulesConfigManager mHomeModulesConfigManager;
-    @Mock private LocalStatePrefs.Natives mLocalStatePrefsNatives;
-    @Mock private PrefService mLocalPrefService;
     @Mock private CrossDevicePrefTracker mCrossDevicePrefTracker;
     @Mock private CrossDeviceThemeTracker.Natives mCrossDeviceThemeTrackerNatives;
     @Mock private CrossDeviceThemeTracker mCrossDeviceThemeTracker;
@@ -200,9 +196,6 @@ public class CrossDeviceSettingImporterUnitTest {
         when(mNtpSyncedThemeManager.isSyncedThemeReady()).thenReturn(true);
         SyncedSetUpUtilsBridgeJni.setInstanceForTesting(mSyncedSetUpUtilsBridgeNatives);
 
-        // Native pref mocks.
-        LocalStatePrefsJni.setInstanceForTesting(mLocalStatePrefsNatives);
-        when(mLocalStatePrefsNatives.getPrefService()).thenReturn(mLocalPrefService);
         LocalStatePrefs.setNativePrefsLoadedForTesting(true);
 
         mUserActionTester = new UserActionTester();
@@ -497,7 +490,7 @@ public class CrossDeviceSettingImporterUnitTest {
                         activity1,
                         mModalDialogManagerSupplier,
                         mSnackbarManagerSupplier);
-        when(mLocalPrefService.getBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION)).thenReturn(false);
+        LocalStatePrefs.get().setBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION, false);
         SyncedSetupSettings toApply =
                 new SyncedSetupSettings(Map.of(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION, true));
 
@@ -543,7 +536,7 @@ public class CrossDeviceSettingImporterUnitTest {
 
         // Clicking Apply on the restored snackbar applies settings and shows the Undo snackbar.
         restoredSnackbar.getController().onAction(null);
-        verify(mLocalPrefService).setBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION, true);
+        assertTrue(LocalStatePrefs.get().getBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION));
         verify(mSnackbarManager, times(3)).showSnackbar(mSnackbarCaptor.capture());
         assertEquals(
                 mActivity.getString(R.string.undo), mSnackbarCaptor.getValue().getActionText());
@@ -783,7 +776,7 @@ public class CrossDeviceSettingImporterUnitTest {
         Map<String, Object> preferencesToApply = new HashMap<>();
         preferencesToApply.put(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION, false);
         preferencesToApply.put(Pref.MAGIC_STACK_HOME_MODULE_ENABLED, false);
-        when(mLocalPrefService.getBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION)).thenReturn(true);
+        LocalStatePrefs.get().setBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION, true);
 
         when(mCrossDevicePrefTracker.getServiceStatus())
                 .thenReturn(ServiceStatus.DEVICE_INFO_TRACKER_MISSING);
@@ -798,8 +791,7 @@ public class CrossDeviceSettingImporterUnitTest {
         snackbar.getController().onAction(null);
 
         // Verify that only the local state preference is changed.
-        verify(mLocalPrefService, atLeastOnce())
-                .setBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION, false);
+        assertFalse(LocalStatePrefs.get().getBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION));
         verify(mHomeModulesConfigManager, never()).setPrefAllCardsEnabled(any(Boolean.class));
         assertTrue(
                 "The 'Apply' user action for non-NTP settings should be recorded.",
@@ -812,7 +804,7 @@ public class CrossDeviceSettingImporterUnitTest {
     public void testAskToApplySettingImportIfNeeded_NonNtp_noDiffs() {
         Map<String, Object> preferencesToApply = new HashMap<>();
         preferencesToApply.put(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION, true);
-        when(mLocalPrefService.getBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION)).thenReturn(true);
+        LocalStatePrefs.get().setBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION, true);
 
         initializeCrossDeviceSettingImporter()
                 .askToApplySettingImportIfNeeded(mProfile, preferencesToApply, /* nonNtp= */ true);
@@ -825,7 +817,7 @@ public class CrossDeviceSettingImporterUnitTest {
         // Test that when nonNtp=false, omnibox changes still trigger the snackbar.
         Map<String, Object> preferencesToApply = new HashMap<>();
         preferencesToApply.put(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION, false);
-        when(mLocalPrefService.getBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION)).thenReturn(true);
+        LocalStatePrefs.get().setBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION, true);
 
         // Other preferences match current.
         when(mPrefService.isDefaultValuePreference(any(String.class))).thenReturn(true);
@@ -841,7 +833,7 @@ public class CrossDeviceSettingImporterUnitTest {
     public void testRecordAction_UndoRedo() {
         Map<String, Object> preferencesToApply = new HashMap<>();
         preferencesToApply.put(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION, false);
-        when(mLocalPrefService.getBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION)).thenReturn(true);
+        LocalStatePrefs.get().setBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION, true);
 
         initializeCrossDeviceSettingImporter()
                 .askToApplySettingImportIfNeeded(mProfile, preferencesToApply, /* nonNtp= */ true);
@@ -1029,7 +1021,7 @@ public class CrossDeviceSettingImporterUnitTest {
         // Use remote preferences that differ from local.
         SyncedSetUpUtilsBridge.setCrossDeviceSettingsForTesting(
                 Map.of(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION, false));
-        when(mLocalPrefService.getBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION)).thenReturn(true);
+        LocalStatePrefs.get().setBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION, true);
 
         // Simulate tab change to a non-NTP (non-NTP settings import only).
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
@@ -1073,7 +1065,7 @@ public class CrossDeviceSettingImporterUnitTest {
         ChromeSharedPreferences.getInstance()
                 .writeBoolean(ChromePreferenceKeys.CROSS_DEVICE_IMPORTED_NON_NTP_SETTINGS, true);
 
-        when(mLocalPrefService.getBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION)).thenReturn(true);
+        LocalStatePrefs.get().setBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION, true);
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
 
         initializeCrossDeviceSettingImporter()
@@ -1091,7 +1083,7 @@ public class CrossDeviceSettingImporterUnitTest {
         ChromeSharedPreferences.getInstance()
                 .writeBoolean(ChromePreferenceKeys.CROSS_DEVICE_IMPORTED_BOTTOM_OMNIBOX, true);
 
-        when(mLocalPrefService.getBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION)).thenReturn(true);
+        LocalStatePrefs.get().setBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION, true);
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
 
         initializeCrossDeviceSettingImporter()
@@ -1114,21 +1106,10 @@ public class CrossDeviceSettingImporterUnitTest {
 
     @Test
     public void testApplyLocalStateSettings_UpdatesAddressBarPreference() {
-        when(mLocalPrefService.hasPrefPath(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION)).thenReturn(true);
-
         Map<String, Object> preferencesToApply = new HashMap<>();
         preferencesToApply.put(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION, true);
         // Local state is currently TOP (false).
-        AtomicBoolean isOmniboxInBottomPosition = new AtomicBoolean(false);
-        doAnswer(
-                        (inv) -> {
-                            isOmniboxInBottomPosition.set(inv.getArgument(1));
-                            return null;
-                        })
-                .when(mLocalPrefService)
-                .setBoolean(any(String.class), anyBoolean());
-        when(mLocalPrefService.getBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION))
-                .thenAnswer((inv) -> isOmniboxInBottomPosition.get());
+        LocalStatePrefs.get().setBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION, false);
         // ChromeSharedPref is currently TOP_SETTINGS.
         ChromeSharedPreferences.getInstance()
                 .writeInt(
@@ -1145,8 +1126,7 @@ public class CrossDeviceSettingImporterUnitTest {
         snackbar.getController().onAction(null);
 
         // Verify that the local state preference is changed.
-        verify(mLocalPrefService, atLeastOnce())
-                .setBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION, true);
+        assertTrue(LocalStatePrefs.get().getBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION));
 
         // Verify that AddressBarPreference was updated.
         assertEquals(
@@ -1939,7 +1919,7 @@ public class CrossDeviceSettingImporterUnitTest {
         when(mCrossDevicePrefTracker.getServiceStatus()).thenReturn(ServiceStatus.AVAILABLE);
 
         // Omnibox setting is not changed.
-        when(mLocalPrefService.getBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION)).thenReturn(false);
+        LocalStatePrefs.get().setBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION, false);
         SyncedSetUpUtilsBridge.setCrossDeviceSettingsForTesting(
                 Map.of(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION, false));
 
@@ -1966,7 +1946,7 @@ public class CrossDeviceSettingImporterUnitTest {
         when(mCrossDevicePrefTracker.getServiceStatus()).thenReturn(ServiceStatus.AVAILABLE);
 
         // Omnibox setting is not changed.
-        when(mLocalPrefService.getBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION)).thenReturn(false);
+        LocalStatePrefs.get().setBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION, false);
         SyncedSetUpUtilsBridge.setCrossDeviceSettingsForTesting(
                 Map.of(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION, false));
 
@@ -2261,7 +2241,7 @@ public class CrossDeviceSettingImporterUnitTest {
         when(mCrossDevicePrefTracker.getServiceStatus()).thenReturn(ServiceStatus.AVAILABLE);
         when(mPrefService.isDefaultValuePreference(any(String.class))).thenReturn(true);
         when(mPrefService.getBoolean(Pref.MAGIC_STACK_HOME_MODULE_ENABLED)).thenReturn(true);
-        when(mLocalPrefService.getBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION)).thenReturn(false);
+        LocalStatePrefs.get().setBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION, false);
 
         ActivityController<Activity> activityController =
                 Robolectric.buildActivity(Activity.class).setup();

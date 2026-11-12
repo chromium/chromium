@@ -692,8 +692,7 @@ public class ProcessInitializationHandler {
                 () -> {
                     mDevToolsServer =
                             new DevToolsServer(
-                                    DEV_TOOLS_SERVER_SOCKET_PREFIX,
-                                    assumeNonNull(LocalStatePrefs.get()));
+                                    DEV_TOOLS_SERVER_SOCKET_PREFIX, LocalStatePrefs.get());
                     mDevToolsServer.setRemoteDebuggingEnabled(
                             true, DevToolsServer.Security.ALLOW_DEBUG_PERMISSION);
                 });

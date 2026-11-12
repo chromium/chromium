@@ -24,6 +24,7 @@
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/metrics/chrome_metrics_services_manager_client.h"
 #include "chrome/browser/prefs/browser_prefs.h"
+#include "chrome/browser/prefs/chrome_command_line_pref_store.h"
 #include "chrome/browser/prefs/chrome_pref_service_factory.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
@@ -44,6 +45,7 @@
 #include "ui/base/resource/resource_bundle.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/prefs/android/local_state_prefs_android.h"
 #include "components/variations/android/variations_seed_bridge.h"
 #endif
 
@@ -67,7 +69,9 @@ ChromeFeatureListCreator* ChromeFeatureListCreator::GetInstance() {
 ChromeFeatureListCreator::~ChromeFeatureListCreator() = default;
 
 void ChromeFeatureListCreator::CreateFeatureList() {
-  CreatePrefService();
+  if (!local_state_) {
+    CreatePrefService();
+  }
   ConvertFlagsToSwitches();
   CreateMetricsServices();
   SetupInitialPrefs();
@@ -128,6 +132,7 @@ ChromeFeatureListCreator::ChromeFeatureListCreator() {
 }
 
 void ChromeFeatureListCreator::CreatePrefService() {
+  CHECK(!local_state_);
   base::FilePath local_state_file;
   bool result =
       base::PathService::Get(chrome::FILE_LOCAL_STATE, &local_state_file);
@@ -194,6 +199,12 @@ void ChromeFeatureListCreator::CreatePrefService() {
     }
   }
 #endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_ANDROID)
+  // Make LocalStatePrefs available to Java as soon as `local_state_` is
+  // created (before BrowserProcessImpl takes ownership of it).
+  chrome_browser_prefs::OnLocalStatePrefsLoaded();
+#endif
 }
 
 void ChromeFeatureListCreator::ConvertFlagsToSwitches() {
@@ -219,6 +230,12 @@ void ChromeFeatureListCreator::ConvertFlagsToSwitches() {
   about_flags::ConvertFlagsToSwitches(&flags_storage,
                                       base::CommandLine::ForCurrentProcess(),
                                       flags_ui::kAddSentinels);
+  // Also apply command-line switches to local_state_ now so switches added
+  // from about:flags above take effect (including during early Android
+  // startup).
+  local_state_->UpdateCommandLinePrefStore(
+      base::MakeRefCounted<ChromeCommandLinePrefStore>(
+          base::CommandLine::ForCurrentProcess()));
 }
 
 void ChromeFeatureListCreator::CreateNetworkTimeTracker() {

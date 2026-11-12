@@ -10,7 +10,6 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "chrome/browser/metrics/chrome_feature_list_creator.h"
-#include "chrome/browser/prefs/chrome_command_line_pref_store.h"
 #include "chrome/browser/prefs/chrome_pref_service_factory.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
@@ -125,10 +124,6 @@ std::string LoadLocalState(
     return std::string();
 
   InitializeLocalState(chrome_feature_list_creator);
-
-  chrome_feature_list_creator->local_state()->UpdateCommandLinePrefStore(
-      base::MakeRefCounted<ChromeCommandLinePrefStore>(
-          base::CommandLine::ForCurrentProcess()));
 
   return InitResourceBundleAndDetermineLocale(
       chrome_feature_list_creator->local_state(), is_running_tests);

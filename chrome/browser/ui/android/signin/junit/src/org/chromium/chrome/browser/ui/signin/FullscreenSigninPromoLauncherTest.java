@@ -38,7 +38,6 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.prefs.LocalStatePrefs;
-import org.chromium.chrome.browser.prefs.LocalStatePrefsJni;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -115,10 +114,6 @@ public class FullscreenSigninPromoLauncherTest {
 
     @Mock private PrefService mPrefServiceMock;
 
-    @Mock private LocalStatePrefs.Natives mLocalStatePrefsNativeMock;
-
-    @Mock private PrefService mLocalPrefsServiceMock;
-
     @Mock private IdentityManager mIdentityManagerMock;
 
     @Mock private SigninManager mSigninManagerMock;
@@ -140,11 +135,6 @@ public class FullscreenSigninPromoLauncherTest {
     public void setUp() {
         mTimeInPast = TimeUtils.currentTimeMillis();
         mFakeTimeTestRule.advanceMillis(TWO_DAYS_IN_MILLIS);
-
-        LocalStatePrefsJni.setInstanceForTesting(mLocalStatePrefsNativeMock);
-        LocalStatePrefs.setNativePrefsLoadedForTesting(true);
-        when(mLocalStatePrefsNativeMock.getPrefService()).thenReturn(mLocalPrefsServiceMock);
-        when(mLocalPrefsServiceMock.getBoolean(Pref.FORCE_BROWSER_SIGNIN)).thenReturn(false);
 
         UserPrefsJni.setInstanceForTesting(mUserPrefsNativeMock);
         IdentityServicesProvider.setIdentityManagerForTesting(mIdentityManagerMock);
@@ -279,7 +269,7 @@ public class FullscreenSigninPromoLauncherTest {
     @Test
     public void promoNotForcedByFlagWhenSigninForcedByPolicy() {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
-        when(mLocalPrefsServiceMock.getBoolean(Pref.FORCE_BROWSER_SIGNIN)).thenReturn(true);
+        LocalStatePrefs.get().setBoolean(Pref.FORCE_BROWSER_SIGNIN, true);
 
         Assert.assertFalse(
                 FullscreenSigninPromoLauncher.launchPromoIfForced(

@@ -7,8 +7,16 @@
 
 namespace variations::android {
 
-// Did we initialize the feature list early?
-bool DidInitFeatureListEarly();
+// Returns whether Java called InitializeFeatureList.initializeLocalState() or
+// InitializeFeatureList.initializeFeatureList(), which create the ThreadPool,
+// the BrowserTaskExecutor, and Local State before content main runs.
+bool DidInitLocalStateEarly();
+
+// Creates the FeatureList and starts the ThreadPool if
+// InitializeFeatureList.initializeFeatureList() has not already done so (e.g.
+// because the first-run variations seed was being fetched). Must be called
+// only when DidInitLocalStateEarly() is true.
+void EnsureFeatureListInitialized();
 
 }  // namespace variations::android
 

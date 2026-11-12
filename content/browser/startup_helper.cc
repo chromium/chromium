@@ -15,6 +15,7 @@
 #include "base/task/thread_pool/initialization_util.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "build/build_config.h"
+#include "content/browser/scheduler/browser_task_executor.h"
 #include "content/common/thread_pool_util.h"
 #include "content/public/common/content_switch_dependent_feature_overrides.h"
 #include "content/public/common/content_switches.h"
@@ -96,6 +97,10 @@ void StartBrowserThreadPool() {
   }
 
   base::ThreadPoolInstance::Get()->Start(thread_pool_init_params);
+
+#if BUILDFLAG(IS_ANDROID)
+  BrowserTaskExecutor::OnThreadPoolStarted();
+#endif
 }
 
 }  // namespace content

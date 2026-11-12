@@ -9,8 +9,12 @@ import android.os.Build;
 import android.view.View;
 
 import org.chromium.base.PathUtils;
+import org.chromium.base.library_loader.LibraryProcessType;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.content_public.browser.BrowserStartupController;
+import org.chromium.content_public.browser.BrowserStartupController.StartupCallback;
+import org.chromium.content_public.browser.BrowserStartupController.StartupMetrics;
 import org.chromium.native_test.NativeBrowserTest;
 import org.chromium.native_test.NativeTest;
 
@@ -62,6 +66,31 @@ public class ChromeBrowserTestsActivity extends ChromeTabbedActivity {
                             // and then by Java in
                             // BrowserStartupControllerImpl::browserStartupComplete().
                             mTest.postStart(this, false);
+                        });
+    }
+
+    @Override
+    protected void doLayoutInflation() {
+        // Delay layout inflation until the C++ test harness has initialized FeatureList and
+        // LocalState (including any test fixture overrides in SetUpLocalStatePrefService()).
+        // Also avoids inflating the UI entirely when only listing tests (--gtest_list_tests).
+        BrowserStartupController.getInstance()
+                .startBrowserProcessesAsync(
+                        LibraryProcessType.PROCESS_BROWSER,
+                        shouldStartGpuProcess(),
+                        startMinimalBrowser(),
+                        /* singleProcess= */ false,
+                        new StartupCallback() {
+                            @Override
+                            public void onSuccess(@Nullable StartupMetrics metrics) {
+                                if (isActivityFinishingOrDestroyed()) return;
+                                ChromeBrowserTestsActivity.super.doLayoutInflation();
+                            }
+
+                            @Override
+                            public void onFailure() {
+                                onStartupFailure(null);
+                            }
                         });
     }
 

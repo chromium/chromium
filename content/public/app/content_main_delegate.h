@@ -180,9 +180,14 @@ class CONTENT_EXPORT ContentMainDelegate {
   // initialized.
   virtual bool ShouldInitializePerfetto(InvokedIn invoked_in);
 
-  // Do we want to initialize feature list early?
-  // This is an experimental feature and its tracking bug is crbug.com/423925400
-  virtual bool IsInitFeatureListEarly();
+  // Returns true if the embedder already performed early initialization
+  // (creating the ThreadPool, possibly without starting it, the
+  // BrowserTaskExecutor, and the VariationsIdsProvider) before ContentMain()
+  // ran. If so, by the end of PostEarlyInitialization() (after FeatureList has
+  // been initialized per ShouldCreateFeatureList()), the embedder must also
+  // have called PostFeatureListInit(), started the ThreadPool, and
+  // reconfigured PartitionAlloc.
+  virtual bool DidPerformEarlyInitialization();
 
   // Returns true if PartitionAlloc should be reconfigured after the feature
   // list has been initialized. Default is true.

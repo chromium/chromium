@@ -100,7 +100,7 @@ bool ContentMainDelegate::ShouldInitializePerfetto(InvokedIn invoked_in) {
   return true;
 }
 
-bool ContentMainDelegate::IsInitFeatureListEarly() {
+bool ContentMainDelegate::DidPerformEarlyInitialization() {
   return false;
 }
 

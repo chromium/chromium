@@ -18,7 +18,6 @@ import org.chromium.base.Log;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -68,27 +67,14 @@ public class AddressBarPreference extends ContainedRadioButtonGroupPreference
         mHighlightedOption = highlightedOption;
     }
 
-    /** If native is initialized, writes the toolbar position and source. */
+    /** Writes the toolbar position and source. */
     public static void setToolbarPositionAndSource(@ToolbarPositionAndSource int sharedPref) {
         SharedPreferencesManager sharedPreferencesManager = ChromeSharedPreferences.getInstance();
-        @Nullable PrefService localPrefService = LocalStatePrefs.get();
-        if (localPrefService != null) {
-            // Set the local pref service value first, since this is the source of truth.
-            localPrefService.setBoolean(
-                    Pref.IS_OMNIBOX_IN_BOTTOM_POSITION, isToolbarAtBottom(sharedPref));
-            if (ChromeFeatureList.isEnabled(
-                    ChromeFeatureList.CROSS_DEVICE_PREF_TRACKER_EXTRA_LOGS)) {
-                Log.i(
-                        TAG,
-                        "AddressBarPreference:setToolbarPositionAndSource - localPrefService was"
-                                + " non-null, set omnibox position");
-            }
-        } else if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.CROSS_DEVICE_PREF_TRACKER_EXTRA_LOGS)) {
-            Log.i(
-                    TAG,
-                    "AddressBarPreference:setToolbarPositionAndSource - localPrefService was null,"
-                            + " so omnibox position was not written");
+        // Set the local pref service value first, since this is the source of truth.
+        LocalStatePrefs.get()
+                .setBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION, isToolbarAtBottom(sharedPref));
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CROSS_DEVICE_PREF_TRACKER_EXTRA_LOGS)) {
+            Log.i(TAG, "AddressBarPreference:setToolbarPositionAndSource - set omnibox position");
         }
         sharedPreferencesManager.writeInt(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, sharedPref);
     }
@@ -112,8 +98,7 @@ public class AddressBarPreference extends ContainedRadioButtonGroupPreference
                 existingPositionAndSource != ToolbarPositionAndSource.UNDEFINED;
         boolean existingPositionAsBool = isToolbarAtBottom(existingPositionAndSource);
 
-        @Nullable PrefService localPrefService = LocalStatePrefs.get();
-        if (localPrefService == null) return existingPositionAndSource;
+        PrefService localPrefService = LocalStatePrefs.get();
         boolean isLocalStateSet = localPrefService.hasPrefPath(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION);
         boolean existingLocalState =
                 localPrefService.getBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION);

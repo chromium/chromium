@@ -12,6 +12,9 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /** PrefService provides read and write access to native PrefService. */
 @NullMarked
 public class PrefService {
@@ -35,6 +38,18 @@ public class PrefService {
     @VisibleForTesting
     PrefService(long nativePrefServiceAndroid) {
         mNativePrefServiceAndroid = nativePrefServiceAndroid;
+    }
+
+    /**
+     * Returns an in-memory {@link PrefService} instance for tests.
+     *
+     * <p>The returned instance stores preferences in an in-memory map rather than native prefs, so
+     * it does not consult native {@code PrefRegistry} defaults or enforce registered pref types.
+     * Unset keys default to type zero-values ({@code false}, {@code 0}, {@code 0.0}, {@code 0L},
+     * {@code ""}), and policy/recommendation queries return {@code false}.
+     */
+    public static PrefService createForTesting() {
+        return new FakePrefService();
     }
 
     /**
@@ -172,6 +187,99 @@ public class PrefService {
      */
     public boolean isDefaultValuePreference(String preference) {
         return PrefServiceJni.get().isDefaultValuePreference(mNativePrefServiceAndroid, preference);
+    }
+
+    private static class FakePrefService extends PrefService {
+        private final Map<String, Object> mValues = new HashMap<>();
+
+        private FakePrefService() {
+            super(0);
+        }
+
+        @Override
+        public void clearPref(String preference) {
+            mValues.remove(preference);
+        }
+
+        @Override
+        public boolean hasPrefPath(String preference) {
+            return mValues.containsKey(preference);
+        }
+
+        @Override
+        public boolean getBoolean(String preference) {
+            return (Boolean) mValues.getOrDefault(preference, false);
+        }
+
+        @Override
+        public void setBoolean(String preference, boolean value) {
+            mValues.put(preference, value);
+        }
+
+        @Override
+        public int getInteger(String preference) {
+            return (Integer) mValues.getOrDefault(preference, 0);
+        }
+
+        @Override
+        public void setInteger(String preference, int value) {
+            mValues.put(preference, value);
+        }
+
+        @Override
+        public double getDouble(String preference) {
+            return (Double) mValues.getOrDefault(preference, 0.0);
+        }
+
+        @Override
+        public void setDouble(String preference, double value) {
+            mValues.put(preference, value);
+        }
+
+        @Override
+        public long getLong(String preference) {
+            return (Long) mValues.getOrDefault(preference, 0L);
+        }
+
+        @Override
+        public void setLong(String preference, long value) {
+            mValues.put(preference, value);
+        }
+
+        @Override
+        public String getString(String preference) {
+            return (String) mValues.getOrDefault(preference, "");
+        }
+
+        @Override
+        public void setString(String preference, String value) {
+            mValues.put(preference, value);
+        }
+
+        @Override
+        public boolean isManagedPreference(String preference) {
+            return false;
+        }
+
+        @Override
+        public boolean hasRecommendation(String preference) {
+            return false;
+        }
+
+        @Override
+        public boolean isFollowingRecommendation(String preference) {
+            return false;
+        }
+
+        @Override
+        public boolean isRecommendedPreference(String preference) {
+            return false;
+        }
+
+        @Override
+        public boolean isDefaultValuePreference(String preference) {
+            return !mValues.containsKey(preference);
+        }
     }
 
     @NativeMethods

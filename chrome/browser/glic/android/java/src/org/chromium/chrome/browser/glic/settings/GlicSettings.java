@@ -128,7 +128,6 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
     private @Nullable ChromeSwitchPreference mLauncherEnabledPref;
     private @Nullable Preference mLauncherHotkeyPref;
     private @Nullable Preference mNavigationShortcutPref;
-    private @Nullable PrefService mLocalPrefs;
     private GlicKeyedService.@Nullable UserEnabledActuationOnWebObserver
             mUserEnabledActuationOnWebObserver;
     private GlicKeyedService.@Nullable ExperimentalTriggeringObserver
@@ -270,10 +269,9 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
         mLauncherEnabledPref = findPreference(PREF_LAUNCHER_ENABLED);
         mLauncherHotkeyPref = findPreference(PREF_LAUNCHER_HOTKEY);
         mNavigationShortcutPref = findPreference(PREF_NAVIGATION_SHORTCUT);
-        mLocalPrefs = LocalStatePrefs.get();
 
-        if (mLocalPrefs != null && KeyboardUtils.isHardKeyboardConnected(context)) {
-            final PrefService localPrefs = mLocalPrefs;
+        if (KeyboardUtils.isHardKeyboardConnected(context)) {
+            PrefService localPrefs = LocalStatePrefs.get();
             boolean enabled = localPrefs.getBoolean(GlicPrefNames.GLIC_LAUNCHER_ENABLED);
             if (mLauncherEnabledPref != null) {
                 mLauncherEnabledPref.setChecked(enabled);

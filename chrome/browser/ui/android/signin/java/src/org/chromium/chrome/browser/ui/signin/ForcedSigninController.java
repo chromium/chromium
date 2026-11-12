@@ -71,7 +71,7 @@ public class ForcedSigninController
 
     /** Whether the forced sign-in policy is enabled. */
     public static boolean isForcedSigninPolicyEnabled() {
-        return assumeNonNull(LocalStatePrefs.get()).getBoolean(Pref.FORCE_BROWSER_SIGNIN);
+        return LocalStatePrefs.get().getBoolean(Pref.FORCE_BROWSER_SIGNIN);
     }
 
     /** Whether the forced sign-in screen should be displayed for the given profile. */

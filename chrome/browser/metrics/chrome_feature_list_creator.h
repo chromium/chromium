@@ -55,8 +55,14 @@ class ChromeFeatureListCreator {
   ~ChromeFeatureListCreator();
 
   // Initializes all necessary parameters to create the feature list and calls
-  // base::FeatureList::SetInstance() to set the global instance.
+  // base::FeatureList::SetInstance() to set the global instance. Calls
+  // CreatePrefService() if it has not already been called.
   void CreateFeatureList();
+
+  // Creates Local State. On Android, this may be called before
+  // CreateFeatureList() so that Local State is available while the FeatureList
+  // waits for the first-run variations seed.
+  void CreatePrefService();
 
   // Sets the application locale and verifies (via a CHECK) that it matches
   // what was used when creating field trials.
@@ -116,7 +122,6 @@ class ChromeFeatureListCreator {
 
   ChromeFeatureListCreator();
 
-  void CreatePrefService();
   void ConvertFlagsToSwitches();
   void CreateNetworkTimeTracker();
 

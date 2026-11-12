@@ -15,7 +15,6 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.prefs.LocalStatePrefs;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.feature_engagement.Tracker;
-import org.chromium.components.prefs.PrefService;
 
 import java.util.function.Supplier;
 
@@ -67,8 +66,7 @@ public final class TrackerFactory {
                 || !ChromeFeatureList.sUserEducationEnterprisePolicy.isEnabled()) {
             return false;
         }
-        PrefService localState = LocalStatePrefs.get();
-        return localState != null && !localState.getBoolean(Pref.PROMOTIONS_ENABLED);
+        return !LocalStatePrefs.get().getBoolean(Pref.PROMOTIONS_ENABLED);
     }
 
     /**

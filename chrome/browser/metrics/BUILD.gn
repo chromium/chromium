@@ -352,6 +352,7 @@ source_set("impl") {
     deps += [
       "//chrome/browser/android/metrics:jni_headers",
       "//chrome/browser/notifications:jni_headers",
+      "//chrome/browser/prefs/android:jni_cc",
       "//chrome/browser/ui/browser_window",
     ]
     if (current_cpu == "arm") {

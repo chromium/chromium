@@ -32,6 +32,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.init.InitializeFeatureList;
 import org.chromium.chrome.modules.on_demand.OnDemandModule;
+import org.chromium.components.variations.VariationsSwitches;
 import org.chromium.components.variations.firstrun.VariationsSeedFetcher;
 
 import java.util.concurrent.CountDownLatch;
@@ -215,15 +216,32 @@ public class SplitChromeApplication extends SplitCompatApplication {
         LibraryLoader.getInstance().ensureInitialized();
 
         if (BuildConfig.IS_FOR_TEST) {
-            // For test builds, we should initialize the feature list early to apply the
-            // fieldtrial_testing_config.json.
             ContextUtils.sDoFeatureListInitHookForTesting =
-                    InitializeFeatureList::initializeFeatureList;
-        } else if (!BuildConfig.IS_CHROME_BRANDED || !VariationsSeedFetcher.shouldFetchSeed()) {
+                    () -> {
+                        // When --variations-server-url is set, match the first-run seed-fetch path
+                        // so tests can exercise early-LocalState-only startup before FeatureList
+                        // init.
+                        if (CommandLine.getInstance()
+                                .hasSwitch(VariationsSwitches.VARIATIONS_SERVER_URL)) {
+                            InitializeFeatureList.initializeLocalState();
+                        } else {
+                            // For test builds, we should initialize the feature list early to apply
+                            // the fieldtrial_testing_config.json.
+                            InitializeFeatureList.initializeFeatureList();
+                        }
+                    };
+        } else if ((BuildConfig.IS_CHROME_BRANDED
+                        || CommandLine.getInstance()
+                                .hasSwitch(VariationsSwitches.VARIATIONS_SERVER_URL))
+                && VariationsSeedFetcher.shouldFetchSeed()) {
+            // The FeatureList must wait for the first run variations seed, but Local State does
+            // not depend on it.
+            InitializeFeatureList.initializeLocalState();
+        } else {
             // For non-Chrome branded builds, we should initialize the feature list early to
-            // apply the fieldtrial_testing_config.json. Otherwise, we should initialize the
-            // feature list early in non-first run when we are not fetching the first run
-            // variations seed.
+            // apply the fieldtrial_testing_config.json, unless --variations-server-url is set.
+            // Otherwise, we should initialize the feature list early in non-first run when we are
+            // not fetching the first run variations seed.
             long startTimeMs = SystemClock.uptimeMillis();
             InitializeFeatureList.initializeFeatureList();
             long endTimeMs = SystemClock.uptimeMillis();

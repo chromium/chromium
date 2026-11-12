@@ -56,7 +56,7 @@ class ChromeTestChromeMainDelegate
   bool ShouldHandleConsoleControlEvents() override;
 #endif
   void CreateThreadPool(std::string_view name) override;
-  bool IsInitFeatureListEarly() override;
+  bool DidPerformEarlyInitialization() override;
 
  private:
   std::unique_ptr<content::ContentRendererClient>

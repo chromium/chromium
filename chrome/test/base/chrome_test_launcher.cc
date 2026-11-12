@@ -288,7 +288,7 @@ void ChromeTestChromeMainDelegate::CreateThreadPool(std::string_view name) {
 #endif
 }
 
-bool ChromeTestChromeMainDelegate::IsInitFeatureListEarly() {
+bool ChromeTestChromeMainDelegate::DidPerformEarlyInitialization() {
   return false;
 }
 

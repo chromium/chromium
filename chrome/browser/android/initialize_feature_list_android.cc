@@ -20,13 +20,11 @@
 
 namespace {
 
-bool did_init_feature_list_early = false;
+bool did_init_local_state_early = false;
+bool did_init_feature_list = false;
 
-}  // namespace
-
-namespace variations::android {
-
-static void JNI_InitializeFeatureList_InitializeFeatureList(JNIEnv* env) {
+void InitializeLocalStateEarly() {
+  CHECK(!did_init_local_state_early);
   chrome::RegisterPathProvider();
   // Must run before ThreadPoolInstance::Create() and ReconfigureEarlyish()
   // read the cached trial configuration.
@@ -49,7 +47,33 @@ static void JNI_InitializeFeatureList_InitializeFeatureList(JNIEnv* env) {
       variations::VariationsIdsProvider::Mode::kUseSignedInState,
       std::make_unique<variations::VariationsNetworkClock>(
           chrome_feature_list_creator->network_time_tracker()));
-  chrome_feature_list_creator->CreateFeatureList();
+  chrome_feature_list_creator->CreatePrefService();
+  did_init_local_state_early = true;
+}
+
+}  // namespace
+
+namespace variations::android {
+
+static void JNI_InitializeFeatureList_InitializeLocalState() {
+  InitializeLocalStateEarly();
+}
+
+static void JNI_InitializeFeatureList_InitializeFeatureList() {
+  InitializeLocalStateEarly();
+  EnsureFeatureListInitialized();
+}
+
+bool DidInitLocalStateEarly() {
+  return did_init_local_state_early;
+}
+
+void EnsureFeatureListInitialized() {
+  CHECK(did_init_local_state_early);
+  if (did_init_feature_list) {
+    return;
+  }
+  ChromeFeatureListCreator::GetInstance()->CreateFeatureList();
 
   // Re-evaluate feature state now that FeatureList has been initialized, as
   // the task executor was created before FeatureList and could not access
@@ -66,11 +90,7 @@ static void JNI_InitializeFeatureList_InitializeFeatureList(JNIEnv* env) {
   base::allocator::PartitionAllocSupport::Get()->ReconfigureAfterTaskRunnerInit(
       "");
 
-  did_init_feature_list_early = true;
-}
-
-bool DidInitFeatureListEarly() {
-  return did_init_feature_list_early;
+  did_init_feature_list = true;
 }
 
 }  // namespace variations::android

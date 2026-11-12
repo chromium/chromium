@@ -34,6 +34,16 @@ public final class InitializeFeatureList {
         }
     }
 
+    /**
+     * Creates the ThreadPool, BrowserTaskExecutor, and Local State, but not the FeatureList. Native
+     * finishes initialization during content main.
+     */
+    public static void initializeLocalState() {
+        setupBackgroundThreadPoolFieldTrial();
+        InitializeFeatureListJni.get().initializeLocalState();
+    }
+
+    /** Creates the ThreadPool, BrowserTaskExecutor, Local State, and the FeatureList. */
     public static void initializeFeatureList() {
         setupBackgroundThreadPoolFieldTrial();
         InitializeFeatureListJni.get().initializeFeatureList();
@@ -41,6 +51,8 @@ public final class InitializeFeatureList {
 
     @NativeMethods
     interface Natives {
+        void initializeLocalState();
+
         void initializeFeatureList();
     }
 }

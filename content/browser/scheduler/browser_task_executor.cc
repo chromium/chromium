@@ -29,6 +29,7 @@
 #include "base/android/task_scheduler/post_task_android.h"
 #include "base/android/task_scheduler/task_runner_android.h"
 #include "base/android/task_scheduler/task_traits_android.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #endif
 
 using QueueType = content::BrowserTaskQueues::QueueType;
@@ -205,7 +206,15 @@ void BrowserTaskExecutor::CreateInternal(
   // maps onto the BrowserThread::UI in C++.
   base::TaskRunnerAndroid::SetUiThreadTaskRunnerCallback(
       base::BindRepeating(&GetTaskRunnerForAndroidMainThread));
-  base::PostTaskAndroid::SignalNativeSchedulerReady();
+  // Java tasks must not be routed to a ThreadPool that has not been started
+  // (e.g. during content main, or when Chrome creates Local State before the
+  // FeatureList), since Java might wait on them before triggering the code
+  // that starts it.
+  // OnThreadPoolStarted() signals in that case.
+  base::ThreadPoolInstance* thread_pool = base::ThreadPoolInstance::Get();
+  if (thread_pool != nullptr && thread_pool->WasStarted()) {
+    base::PostTaskAndroid::SignalNativeSchedulerReady();
+  }
 #endif
 }
 
@@ -329,6 +338,16 @@ void BrowserTaskExecutor::
   CHECK_DEREF(Get()->browser_ui_thread_scheduler_.get())
       .InstallPartitionAllocSchedulerLoopQuarantineTaskObserver();
 }
+
+#if BUILDFLAG(IS_ANDROID)
+// static
+void BrowserTaskExecutor::OnThreadPoolStarted() {
+  // CreateInternal() signals if the ThreadPool is started before it runs.
+  if (g_browser_task_executor) {
+    base::PostTaskAndroid::SignalNativeSchedulerReady();
+  }
+}
+#endif
 
 // static
 void BrowserTaskExecutor::PostFeatureListInit() {

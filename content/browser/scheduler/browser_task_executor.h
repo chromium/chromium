@@ -99,6 +99,12 @@ class CONTENT_EXPORT BrowserTaskExecutor {
   // Can be called multiple times.
   static void OnStartupComplete();
 
+#if BUILDFLAG(IS_ANDROID)
+  // Informs BrowserTaskExecutor that the ThreadPool has been started, which
+  // allows Java tasks to be routed to the native scheduler.
+  static void OnThreadPoolStarted();
+#endif
+
   // Helpers to statically call into BaseBrowserTaskExecutor::GetTaskRunner()
   // from browser_thread_impl.cc. Callers should use browser_thread.h's
   // GetUIThreadTaskRunner over this.

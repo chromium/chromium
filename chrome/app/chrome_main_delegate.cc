@@ -971,7 +971,13 @@ std::optional<int> ChromeMainDelegate::PostEarlyInitialization(
       chrome_content_browser_client_->startup_data()
           ->chrome_feature_list_creator();
 
-  if (!IsInitFeatureListEarly()) {
+  if (DidPerformEarlyInitialization()) {
+#if BUILDFLAG(IS_ANDROID)
+    // Java might have created Local State early, but deferred creating the
+    // FeatureList (e.g. while fetching the first-run variations seed).
+    variations::android::EnsureFeatureListInitialized();
+#endif
+  } else {
     // The DBus initialization above is needed for FeatureList creation here;
     // and features are needed for Mojo initialization.
     chrome_feature_list_creator->CreateFeatureList();
@@ -1089,7 +1095,7 @@ ChromeMainDelegate::CreateVariationsIdsProvider() {
 }
 
 void ChromeMainDelegate::CreateThreadPool(std::string_view name) {
-  if (!IsInitFeatureListEarly()) {
+  if (!DidPerformEarlyInitialization()) {
     // The ThreadGroupProfiler client must be set before thread pool is created.
     base::ThreadGroupProfiler::SetClient(
         std::make_unique<ChromeThreadGroupProfilerClient>());
@@ -1412,7 +1418,7 @@ std::optional<int> ChromeMainDelegate::BasicStartupComplete() {
 #endif  // BUILDFLAG(IS_WIN)
 #endif  // !defined(BUILDING_CHROME_RENDERER)
 
-  if (!IsInitFeatureListEarly()) {
+  if (!DidPerformEarlyInitialization()) {
     chrome::RegisterPathProvider();
   }
 
@@ -2056,9 +2062,12 @@ void ChromeMainDelegate::InitializeMemorySystem() {
       .Initialize(memory_system_);
 }
 
-bool ChromeMainDelegate::IsInitFeatureListEarly() {
+bool ChromeMainDelegate::DidPerformEarlyInitialization() {
 #if BUILDFLAG(IS_ANDROID)
-  return variations::android::DidInitFeatureListEarly();
+  // Local State, the ThreadPool, and BrowserTaskExecutor already exist, even if
+  // the FeatureList itself might not yet. PostEarlyInitialization() creates
+  // the FeatureList if needed.
+  return variations::android::DidInitLocalStateEarly();
 #else
   return false;
 #endif

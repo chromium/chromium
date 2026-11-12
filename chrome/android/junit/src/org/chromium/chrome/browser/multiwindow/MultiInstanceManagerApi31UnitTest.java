@@ -2980,6 +2980,14 @@ public class MultiInstanceManagerApi31UnitTest {
         verify(appTasks.get(0), times(1)).getTaskInfo();
     }
 
+    @Test
+    public void testOnTopResumedActivityChanged_beforeInitialize_doesNotWriteLastAccessedTime() {
+        mMultiInstanceManager.onTopResumedActivityChanged(true);
+        assertFalse(
+                ChromeMultiInstancePersistentStore.readAllInstanceIds()
+                        .contains(MultiInstanceManager.INVALID_WINDOW_ID));
+    }
+
     private TestActivity createActivity(int taskId) {
         TestActivity activity = Robolectric.buildActivity(TestActivity.class).get();
         activity.mTaskId = taskId;

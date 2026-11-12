@@ -976,7 +976,7 @@ int ContentMainRunnerImpl::Initialize(ContentMainParams params) {
   if (basic_startup_exit_code.has_value())
     return basic_startup_exit_code.value();
 
-  if (!delegate_->IsInitFeatureListEarly()) {
+  if (!delegate_->DidPerformEarlyInitialization()) {
     base::allocator::PartitionAllocSupport::Get()->ReconfigureEarlyish(
         process_type);
   }
@@ -1316,7 +1316,7 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams main_params,
 #endif
 
     // When this is enabled, these things will have already been initialized.
-    if (!delegate_->IsInitFeatureListEarly()) {
+    if (!delegate_->DidPerformEarlyInitialization()) {
       // Register the TaskExecutor for posting task to the BrowserThreads. It is
       // incorrect to post to a BrowserThread before this point. This
       // instantiates and binds the MessageLoopForUI on the main thread (but
@@ -1345,7 +1345,7 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams main_params,
       best_effort_fence_.emplace();
     }
 
-    if (!delegate_->IsInitFeatureListEarly()) {
+    if (!delegate_->DidPerformEarlyInitialization()) {
       // Re-evaluate feature state now that FeatureList has been initialized, as
       // the task executor was created before FeatureList and could not access
       // Finch configurations.
@@ -1393,7 +1393,7 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams main_params,
     background_tracing_manager_ =
         CreateBackgroundTracingManagerAndInitializeScenarios();
 
-    if (!delegate_->IsInitFeatureListEarly()) {
+    if (!delegate_->DidPerformEarlyInitialization()) {
       // The FeatureList needs to be created before starting the ThreadPool.
       StartBrowserThreadPool();
 
@@ -1441,7 +1441,7 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams main_params,
 #endif
   }
 
-  if (!delegate_->IsInitFeatureListEarly()) {
+  if (!delegate_->DidPerformEarlyInitialization()) {
     // No specified process type means this is the Browser process.
     base::allocator::PartitionAllocSupport::Get()
         ->ReconfigureAfterFeatureListInit("");

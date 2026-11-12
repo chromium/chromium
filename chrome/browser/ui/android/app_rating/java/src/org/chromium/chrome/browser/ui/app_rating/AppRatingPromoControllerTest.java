@@ -32,7 +32,6 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.prefs.LocalStatePrefs;
-import org.chromium.chrome.browser.prefs.LocalStatePrefsJni;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.segmentation_platform.SegmentationPlatformServiceFactory;
 import org.chromium.components.feature_engagement.FeatureConstants;
@@ -61,8 +60,6 @@ public class AppRatingPromoControllerTest {
     @Mock private SegmentationPlatformService mSegmentationService;
     @Mock private AppRatingManager mAppRatingManager;
     @Mock private PrefService mPrefService;
-    @Mock private PrefService mLocalPrefService;
-    @Mock private LocalStatePrefs.Natives mLocalStateNatives;
     @Mock private Tracker mTracker;
     @Captor private ArgumentCaptor<Callback<ClassificationResult>> mCallbackCapturer;
     @Captor private ArgumentCaptor<Runnable> mRunnableCapturer;
@@ -72,15 +69,12 @@ public class AppRatingPromoControllerTest {
     @Before
     public void setUp() {
         UserPrefs.setPrefServiceForTesting(mPrefService);
-        LocalStatePrefsJni.setInstanceForTesting(mLocalStateNatives);
-        LocalStatePrefs.setNativePrefsLoadedForTesting(true);
-        when(mLocalStateNatives.getPrefService()).thenReturn(mLocalPrefService);
 
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         SegmentationPlatformServiceFactory.setForTests(mSegmentationService);
         AppRatingManagerFactory.setInstanceForTesting(mAppRatingManager);
         TrackerFactory.setTrackerForTests(mTracker);
-        when(mLocalPrefService.getBoolean(Pref.APP_RATING_POLICY_ENABLED)).thenReturn(true);
+        LocalStatePrefs.get().setBoolean(Pref.APP_RATING_POLICY_ENABLED, true);
         when(mTracker.wouldTriggerHelpUi(FeatureConstants.APP_RATING_PROMPT_FEATURE))
                 .thenReturn(true);
         when(mTracker.shouldTriggerHelpUi(eq(FeatureConstants.APP_RATING_PROMPT_FEATURE), any()))
@@ -100,7 +94,7 @@ public class AppRatingPromoControllerTest {
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_APP_RATING_PROMPT)
     public void testMaybeShowPromo_PolicyDisabled() {
-        when(mLocalPrefService.getBoolean(Pref.APP_RATING_POLICY_ENABLED)).thenReturn(false);
+        LocalStatePrefs.get().setBoolean(Pref.APP_RATING_POLICY_ENABLED, false);
         Assert.assertFalse(
                 "Promo should not be shown when enterprise policy is disabled.",
                 AppRatingPromoController.maybeShowPromo(mProfile, mActivity, ALLOWED_COUNTRY));

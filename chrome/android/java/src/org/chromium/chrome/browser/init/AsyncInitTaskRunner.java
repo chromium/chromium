@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.init;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
@@ -17,6 +18,7 @@ import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ChromeActivitySessionTracker;
+import org.chromium.components.variations.VariationsSwitches;
 import org.chromium.components.variations.firstrun.VariationsSeedFetcher;
 import org.chromium.content_public.browser.ChildProcessLauncherHelper;
 
@@ -38,7 +40,10 @@ public abstract class AsyncInitTaskRunner {
 
     @VisibleForTesting
     boolean shouldFetchVariationsSeedDuringFirstRun() {
-        return VersionInfo.isOfficialBuild();
+        return VersionInfo.isOfficialBuild()
+                || (CommandLine.isInitialized()
+                        && CommandLine.getInstance()
+                                .hasSwitch(VariationsSwitches.VARIATIONS_SERVER_URL));
     }
 
     private class FetchSeedTask implements Runnable {

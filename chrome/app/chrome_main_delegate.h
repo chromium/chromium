@@ -106,7 +106,7 @@ class ChromeMainDelegate : public content::ContentMainDelegate {
 
   void InitializeMemorySystem();
 
-  bool IsInitFeatureListEarly() override;
+  bool DidPerformEarlyInitialization() override;
 
 #if !defined(BUILDING_CHROME_RENDERER)
   std::unique_ptr<ChromeContentBrowserClient> chrome_content_browser_client_;

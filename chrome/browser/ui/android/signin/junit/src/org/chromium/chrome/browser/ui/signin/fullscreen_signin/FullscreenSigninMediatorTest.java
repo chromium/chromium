@@ -54,7 +54,6 @@ import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.prefs.LocalStatePrefs;
-import org.chromium.chrome.browser.prefs.LocalStatePrefsJni;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
@@ -135,8 +134,6 @@ public class FullscreenSigninMediatorTest {
     @Mock private ExternalAuthUtils mExternalAuthUtilsMock;
     @Mock private PrefService mPrefServiceMock;
     @Mock private SyncService mSyncServiceMock;
-    @Mock private LocalStatePrefs.Natives mLocalStatePrefsNativeMock;
-    @Mock private PrefService mLocalPrefsServiceMock;
     @Captor private ArgumentCaptor<SignInCallback> mSignInCallbackCaptor;
     @Captor private ArgumentCaptor<Runnable> mSignOutCallbackCaptor;
 
@@ -1051,10 +1048,7 @@ public class FullscreenSigninMediatorTest {
      * before {@link #createMediator()}, because it replaces the policy load listener.
      */
     private void enableForcedSigninPolicy() {
-        LocalStatePrefsJni.setInstanceForTesting(mLocalStatePrefsNativeMock);
-        LocalStatePrefs.setNativePrefsLoadedForTesting(true);
-        when(mLocalStatePrefsNativeMock.getPrefService()).thenReturn(mLocalPrefsServiceMock);
-        when(mLocalPrefsServiceMock.getBoolean(Pref.FORCE_BROWSER_SIGNIN)).thenReturn(true);
+        LocalStatePrefs.get().setBoolean(Pref.FORCE_BROWSER_SIGNIN, true);
         mPolicyLoadListener = new OneshotSupplierImpl<>();
         mPolicyLoadListener.set(true);
         when(mDelegateMock.getPolicyLoadListener()).thenReturn(mPolicyLoadListener);

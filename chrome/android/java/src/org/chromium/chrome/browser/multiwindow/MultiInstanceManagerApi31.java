@@ -1132,7 +1132,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         // undesirably marking a finishing activity as recently accessed in a scenario where
         // multiple activities are finishing as a result of a bulk shutdown, so that we persist
         // accurate instance state for the window that was truly accessed last.
-        if (isTopResumedActivity && !mActivity.isFinishing()) {
+        if (mInstanceId != INVALID_WINDOW_ID && isTopResumedActivity && !mActivity.isFinishing()) {
             ChromeMultiInstancePersistentStore.writeLastAccessedTime(mInstanceId);
         }
     }

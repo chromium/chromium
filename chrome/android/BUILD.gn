@@ -2282,6 +2282,7 @@ if (_is_default_toolchain) {
       "//chrome/browser/language/android:base_module_java",
       "//chrome/browser/policy/android:util_java",
       "//chrome/browser/preferences:java",
+      "//chrome/browser/prefs/android:java",
       "//chrome/browser/ui/android/pdf:pdf_provider_java",
       "//chrome/browser/util:java",
       "//chrome/browser/version:java",
@@ -2291,6 +2292,7 @@ if (_is_default_toolchain) {
       "//components/minidump_uploader:minidump_uploader_java",
       "//components/module_installer/android:module_installer_java",
       "//components/policy/android:policy_java",
+      "//components/variations:variations_java",
       "//components/variations/android:variations_java",
       "//third_party/android_deps:material_design_java",
       "//third_party/android_deps:playcore_java",
@@ -2584,14 +2586,16 @@ if (_is_default_toolchain) {
     # test intentionally does not set <instrumentation android:targetPackage> to
     # the bundle under test.)
     "--enable-breakpad-dump",
-
-    # FRE is too flakey on some old devices https://crbug.com/40817673
-    "--disable-fre",
   ]
 
   instrumentation_test_runner("chrome_public_smoke_test") {
     apk_under_test = ":chrome_public_apk"
     android_test_apk = ":chrome_smoke_test_apk"
+    extra_args =
+        _common_smoke_test_args + [
+          # FRE is too flakey on some old devices https://crbug.com/40817673
+          "--disable-fre",
+        ]
     additional_apks = [ "//net/android:net_test_support_apk" ]
     if (!is_java_debug) {
       proguard_mapping_path = "$root_build_dir/apks/ChromePublic.apk.mapping"
@@ -2602,7 +2606,12 @@ if (_is_default_toolchain) {
     apk_under_test = "//chrome/android:chrome_public_bundle_apks"
 
     android_test_apk = ":chrome_smoke_test_apk"
-    extra_args = _common_smoke_test_args
+
+    # Omitting --disable-fre and passing --variations-server-url (pointing at an
+    # unreachable localhost port so it fails fast) exercises FRE +
+    # VariationsSeedFetcher + early-LocalState-only startup.
+    extra_args = _common_smoke_test_args +
+                 [ "--variations-server-url=http://127.0.0.1:4/seed" ]
     additional_apks = [ "//net/android:net_test_support_apk" ]
     if (!is_java_debug) {
       proguard_mapping_path = "$root_build_dir/apks/ChromePublic.aab.mapping"

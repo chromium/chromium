@@ -10,6 +10,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.prefs.PrefService;
@@ -18,18 +19,26 @@ import org.chromium.components.prefs.PrefService;
 @JNINamespace("chrome_browser_prefs")
 @NullMarked
 public class LocalStatePrefs {
-    private static boolean sIsNativeReady;
+    private static boolean sNativePrefsLoaded;
+    private static @Nullable PrefService sPrefServiceForTesting;
     private static final ObserverList<Runnable> sObservers = new ObserverList<>();
 
     /** Returns the {@link PrefService} associated with local state. */
-    public static @Nullable PrefService get() {
-        if (!areNativePrefsLoaded()) return null;
+    public static PrefService get() {
+        if (BuildConfig.IS_ROBOLECTRIC) {
+            if (sPrefServiceForTesting == null) {
+                sPrefServiceForTesting = PrefService.createForTesting(); // IN-TEST
+                ResettersForTesting.register(() -> sPrefServiceForTesting = null); // IN-TEST
+            }
+            return sPrefServiceForTesting;
+        }
+        assert sNativePrefsLoaded : "LocalStatePrefs accessed before native initialization";
         return LocalStatePrefsJni.get().getPrefService();
     }
 
     /** Returns whether the native side is initialized. */
     public static boolean areNativePrefsLoaded() {
-        return sIsNativeReady;
+        return sNativePrefsLoaded;
     }
 
     /** Adds an observer to be notified when the local state prefs are ready. */
@@ -44,28 +53,25 @@ public class LocalStatePrefs {
 
     @CalledByNative
     private static void setNativePrefsLoaded() {
-        sIsNativeReady = true;
+        sNativePrefsLoaded = true;
         for (Runnable observer : sObservers) {
             observer.run();
         }
     }
 
-    public static void setNativePrefsLoadedForTesting(boolean state) {
-        boolean oldState = sIsNativeReady;
-        sIsNativeReady = state;
-        if (sIsNativeReady) {
+    public static void setNativePrefsLoadedForTesting(boolean isNativePrefsLoaded) {
+        boolean oldValue = sNativePrefsLoaded;
+        sNativePrefsLoaded = isNativePrefsLoaded;
+        if (sNativePrefsLoaded) {
             for (Runnable observer : sObservers) {
                 observer.run();
             }
         }
-        ResettersForTesting.register(
-                () -> {
-                    sIsNativeReady = oldState;
-                });
+        ResettersForTesting.register(() -> sNativePrefsLoaded = oldValue);
     }
 
     @NativeMethods
-    public interface Natives {
+    interface Natives {
         PrefService getPrefService();
     }
 }
