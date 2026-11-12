@@ -977,6 +977,40 @@ const FeatureEntry::FeatureParam kAim3pEntrypointDebugEnabled[] = {
 const FeatureEntry::FeatureVariation kAim3pEntrypointVariations[] = {
     {"with debug config", kAim3pEntrypointDebugEnabled, nullptr}};
 
+const FeatureEntry::FeatureParam kDynamicAimFulfillmentSrpInputNone[] = {
+    {"srp_input_mode", "none"}};
+const FeatureEntry::FeatureParam kDynamicAimFulfillmentSrpInputSingleImage[] = {
+    {"srp_input_mode", "single_image"}};
+const FeatureEntry::FeatureParam kDynamicAimFulfillmentSrpInputMultiImage[] = {
+    {"srp_input_mode", "multi_image"}};
+const FeatureEntry::FeatureParam
+    kDynamicAimFulfillmentSrpInputAnyCombinationImagesFiles[] = {
+        {"srp_input_mode", "any_combination_images_files"}};
+const FeatureEntry::FeatureParam
+    kDynamicAimFulfillmentSrpInputAnyCombinationImagesFilesTabs[] = {
+        {"srp_input_mode", "any_combination_images_files_tabs"}};
+const FeatureEntry::FeatureParam
+    kDynamicAimFulfillmentSrpInputAnyCombinationImagesFilesDrive[] = {
+        {"srp_input_mode", "any_combination_images_files_drive"}};
+const FeatureEntry::FeatureParam
+    kDynamicAimFulfillmentSrpInputAnyCombinationAllTypes[] = {
+        {"srp_input_mode", "any_combination_all_types"}};
+
+const FeatureEntry::FeatureVariation kDynamicAimFulfillmentVariations[] = {
+    {"- SRP inputs: none", kDynamicAimFulfillmentSrpInputNone, nullptr},
+    {"- SRP inputs: single image", kDynamicAimFulfillmentSrpInputSingleImage,
+     nullptr},
+    {"- SRP inputs: multi image", kDynamicAimFulfillmentSrpInputMultiImage,
+     nullptr},
+    {"- SRP inputs: images and files",
+     kDynamicAimFulfillmentSrpInputAnyCombinationImagesFiles, nullptr},
+    {"- SRP inputs: images, files, and tabs",
+     kDynamicAimFulfillmentSrpInputAnyCombinationImagesFilesTabs, nullptr},
+    {"- SRP inputs: images, files, and Drive files",
+     kDynamicAimFulfillmentSrpInputAnyCombinationImagesFilesDrive, nullptr},
+    {"- SRP inputs: all types",
+     kDynamicAimFulfillmentSrpInputAnyCombinationAllTypes, nullptr}};
+
 #if !BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kOmniboxDynamicAimSubmitRhsHint[] = {
     {"Omnibox_ShowRhsAimHint", "true"},
@@ -14279,6 +14313,24 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(
          content_settings::features::kBlockV8OptimizerOnUnfamiliarSites)},
+
+    {"dynamic-aim-fulfillment", flag_descriptions::kDynamicAimFulfillmentName,
+     flag_descriptions::kDynamicAimFulfillmentDescription,
+     kOsDesktop | kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kDynamicAimFulfillment,
+                                    kDynamicAimFulfillmentVariations,
+                                    "DynamicAimFulfillment")},
+
+    {"dynamic-aim-fulfillment-omnibox",
+     flag_descriptions::kDynamicAimFulfillmentOmniboxName,
+     flag_descriptions::kDynamicAimFulfillmentOmniboxDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(omnibox::kDynamicAimFulfillmentOmnibox)},
+
+    {"dynamic-aim-fulfillment-realbox",
+     flag_descriptions::kDynamicAimFulfillmentRealboxName,
+     flag_descriptions::kDynamicAimFulfillmentRealboxDescription,
+     kOsDesktop | kOsAndroid,
+     FEATURE_VALUE_TYPE(omnibox::kDynamicAimFulfillmentRealbox)},
 
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

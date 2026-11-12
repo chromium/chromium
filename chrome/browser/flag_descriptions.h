@@ -2384,6 +2384,25 @@ inline constexpr char kDomStorageSqliteDescription[] =
     "data is migrated from existing backing stores, including LevelDB stores "
     "or SQLite stores with older schemas; use at your own peril.";
 
+inline constexpr char kDynamicAimFulfillmentName[] = "Dynamic AIM Fulfillment";
+inline constexpr char kDynamicAimFulfillmentDescription[] =
+    "Main switch for dynamic AIM fulfillment, routing Composebox queries to "
+    "the Search results page unless active tools, models, or inputs require "
+    "AI Mode. Must be enabled alongside the per-surface (Realbox or Omnibox) "
+    "flag.";
+
+inline constexpr char kDynamicAimFulfillmentOmniboxName[] =
+    "Dynamic AIM Fulfillment (Omnibox)";
+inline constexpr char kDynamicAimFulfillmentOmniboxDescription[] =
+    "Enables dynamic AIM fulfillment in the WebUI Omnibox Composebox. "
+    "Requires Dynamic AIM Fulfillment to also be enabled.";
+
+inline constexpr char kDynamicAimFulfillmentRealboxName[] =
+    "Dynamic AIM Fulfillment (Realbox)";
+inline constexpr char kDynamicAimFulfillmentRealboxDescription[] =
+    "Enables dynamic AIM fulfillment in the NTP Realbox Composebox. "
+    "Requires Dynamic AIM Fulfillment to also be enabled.";
+
 inline constexpr char kEnableTLS13EarlyDataName[] = "TLS 1.3 Early Data";
 inline constexpr char kEnableTLS13EarlyDataDescription[] =
     "This option enables TLS 1.3 Early Data, allowing GET requests to be sent "
