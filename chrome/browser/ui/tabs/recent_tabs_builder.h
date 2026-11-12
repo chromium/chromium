@@ -123,7 +123,7 @@ class RecentTabsBuilder {
   // submenus for the tabs beyond the per-device cap, and `kDivider` separators
   // between devices) for the "Other device tabs" submenu, ordered by recency.
   // Returns an empty vector if `profile` is ineligible or has no foreign
-  // sessions with open tabs.
+  // sessions.
   static std::vector<RecentTabItem> BuildOtherDeviceTabs(Profile* profile);
 };
 

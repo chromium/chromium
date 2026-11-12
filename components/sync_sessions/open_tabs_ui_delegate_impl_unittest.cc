@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "components/sessions/core/serialized_navigation_entry_test_helper.h"
+#include "components/sync_device_info/device_info.h"
 #include "components/sync_sessions/mock_sync_sessions_client.h"
 #include "components/sync_sessions/synced_session_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -22,8 +23,10 @@ namespace {
 using sessions::SessionTab;
 using testing::ElementsAre;
 using testing::Field;
+using testing::NiceMock;
 using testing::Pointee;
 using testing::Property;
+using testing::Return;
 
 const char kSessionTag1[] = "foreign1";
 const char kSessionTag2[] = "foreign2";
@@ -45,7 +48,7 @@ class OpenTabsUIDelegateImplTest : public testing::Test {
                   &session_tracker_,
                   base::BindRepeating(&IngnoreForeignSessionDeletion)) {}
 
-  testing::NiceMock<MockSyncSessionsClient> mock_sync_sessions_client_;
+  NiceMock<MockSyncSessionsClient> mock_sync_sessions_client_;
   SyncedSessionTracker session_tracker_;
   OpenTabsUIDelegateImpl delegate_;
 };
@@ -185,7 +188,7 @@ TEST_F(OpenTabsUIDelegateImplTest, GetAllForeignSessionLastModifiedTimes) {
 
 TEST_F(OpenTabsUIDelegateImplTest, ShouldSkipNonSyncableTabs) {
   ON_CALL(mock_sync_sessions_client_, ShouldSyncURL(GURL("http://url1")))
-      .WillByDefault(testing::Return(false));
+      .WillByDefault(Return(false));
 
   // Create two sessions, with one window and tab each. The first of the two
   // contains a URL that should not be synced.
@@ -210,6 +213,110 @@ TEST_F(OpenTabsUIDelegateImplTest, ShouldSkipNonSyncableTabs) {
   std::vector<raw_ptr<const SyncedSession, VectorExperimental>> sessions;
   EXPECT_TRUE(delegate_.GetAllForeignSessions(&sessions));
   EXPECT_EQ(sessions[0]->GetSessionTag(), kSessionTag2);
+}
+
+TEST_F(OpenTabsUIDelegateImplTest,
+       GetAllRawForeignSessionsReturnsZeroTabAndNonSyncableSessions) {
+  std::vector<raw_ptr<const SyncedSession, VectorExperimental>> empty_sessions;
+  EXPECT_FALSE(delegate_.GetAllRawForeignSessions(&empty_sessions));
+  EXPECT_TRUE(empty_sessions.empty());
+
+  const base::Time kTime0 = base::Time::Now();
+  ON_CALL(mock_sync_sessions_client_, ShouldSyncURL(GURL("chrome://newtab")))
+      .WillByDefault(Return(false));
+
+  // Foreign session with 0 tabs (oldest).
+  session_tracker_.GetSession(kSessionTag1)->SetSessionName("device1");
+  session_tracker_.GetSession(kSessionTag1)
+      ->SetModifiedTime(kTime0 - base::Seconds(3));
+
+  // Foreign session with only a non-syncable/NTP tab (most recent).
+  sessions::SerializedNavigationEntry ntp_entry =
+      sessions::SerializedNavigationEntryTestHelper::CreateNavigationForTest();
+  ntp_entry.set_virtual_url(GURL("chrome://newtab"));
+  ntp_entry.set_title(u"New Tab");
+  session_tracker_.PutWindowInSession(kSessionTag2, kWindowId2);
+  session_tracker_.PutTabInWindow(kSessionTag2, kWindowId2, kTabId2);
+  session_tracker_.GetTab(kSessionTag2, kTabId2)
+      ->navigations.push_back(ntp_entry);
+  session_tracker_.GetSession(kSessionTag2)->SetSessionName("device2");
+  session_tracker_.GetSession(kSessionTag2)
+      ->SetModifiedTime(kTime0 - base::Seconds(1));
+
+  // Foreign session with a syncable tab (middle recency).
+  sessions::SerializedNavigationEntry syncable_entry =
+      sessions::SerializedNavigationEntryTestHelper::CreateNavigationForTest();
+  syncable_entry.set_virtual_url(GURL("http://url3"));
+  syncable_entry.set_title(u"title3");
+  session_tracker_.PutWindowInSession(kSessionTag3, kWindowId3);
+  session_tracker_.PutTabInWindow(kSessionTag3, kWindowId3, kTabId3);
+  session_tracker_.GetTab(kSessionTag3, kTabId3)
+      ->navigations.push_back(syncable_entry);
+  session_tracker_.GetSession(kSessionTag3)->SetSessionName("device3");
+  session_tracker_.GetSession(kSessionTag3)
+      ->SetModifiedTime(kTime0 - base::Seconds(2));
+
+  std::vector<raw_ptr<const SyncedSession, VectorExperimental>>
+      presentable_sessions;
+  EXPECT_TRUE(delegate_.GetAllForeignSessions(&presentable_sessions));
+  ASSERT_EQ(presentable_sessions.size(), 1u);
+  EXPECT_EQ(presentable_sessions[0]->GetSessionTag(), kSessionTag3);
+
+  std::vector<raw_ptr<const SyncedSession, VectorExperimental>> raw_sessions;
+  EXPECT_TRUE(delegate_.GetAllRawForeignSessions(&raw_sessions));
+  ASSERT_EQ(raw_sessions.size(), 3u);
+  EXPECT_EQ(raw_sessions[0]->GetSessionTag(), kSessionTag2);
+  EXPECT_EQ(raw_sessions[1]->GetSessionTag(), kSessionTag3);
+  EXPECT_EQ(raw_sessions[2]->GetSessionTag(), kSessionTag1);
+}
+
+TEST_F(OpenTabsUIDelegateImplTest,
+       GetAllRawForeignSessionsIncludesEmptyWindowAndExcludesLocalAndDeleted) {
+  session_tracker_.InitLocalSession("local_tag", "Local Device",
+                                    syncer::DeviceInfo::DeviceType::kLinux,
+                                    syncer::DeviceInfo::FormFactor::kDesktop);
+  ON_CALL(mock_sync_sessions_client_,
+          IsRecentLocalCacheGuid("recent_local_tag"))
+      .WillByDefault(Return(true));
+  session_tracker_.GetSession("recent_local_tag");
+
+  // Foreign session with an empty window (no tabs).
+  session_tracker_.GetSession(kSessionTag1)->SetSessionName("device1");
+  session_tracker_.PutWindowInSession(kSessionTag1, kWindowId1);
+
+  // Foreign session that gets deleted.
+  session_tracker_.GetSession(kSessionTag2)->SetSessionName("device2");
+  session_tracker_.DeleteForeignSession(kSessionTag2);
+
+  std::vector<raw_ptr<const SyncedSession, VectorExperimental>>
+      presentable_sessions;
+  EXPECT_FALSE(delegate_.GetAllForeignSessions(&presentable_sessions));
+  EXPECT_TRUE(presentable_sessions.empty());
+
+  std::vector<raw_ptr<const SyncedSession, VectorExperimental>> raw_sessions;
+  EXPECT_TRUE(delegate_.GetAllRawForeignSessions(&raw_sessions));
+  ASSERT_EQ(raw_sessions.size(), 1u);
+  EXPECT_EQ(raw_sessions[0]->GetSessionTag(), kSessionTag1);
+
+  session_tracker_.DeleteForeignSession(kSessionTag1);
+  EXPECT_FALSE(delegate_.GetAllRawForeignSessions(&raw_sessions));
+  EXPECT_TRUE(raw_sessions.empty());
+}
+
+TEST_F(OpenTabsUIDelegateImplTest,
+       GetAllRawForeignSessionsExcludesUnnamedSessions) {
+  // Headerless/unnamed session (empty session name).
+  session_tracker_.GetSession(kSessionTag1);
+
+  std::vector<raw_ptr<const SyncedSession, VectorExperimental>> raw_sessions;
+  EXPECT_FALSE(delegate_.GetAllRawForeignSessions(&raw_sessions));
+  EXPECT_TRUE(raw_sessions.empty());
+
+  // Named 0-tab session alongside the unnamed session.
+  session_tracker_.GetSession(kSessionTag2)->SetSessionName("device2");
+  EXPECT_TRUE(delegate_.GetAllRawForeignSessions(&raw_sessions));
+  ASSERT_EQ(raw_sessions.size(), 1u);
+  EXPECT_EQ(raw_sessions[0]->GetSessionTag(), kSessionTag2);
 }
 
 }  // namespace

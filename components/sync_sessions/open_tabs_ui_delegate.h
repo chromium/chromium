@@ -21,10 +21,20 @@ namespace sync_sessions {
 
 class OpenTabsUIDelegate {
  public:
-  // Builds a list of all foreign sessions, ordered from most recent to least
-  // recent. Caller does NOT own SyncedSession objects.
-  // Returns true if foreign sessions were found, false otherwise.
+  // Builds a list of foreign sessions with presentable tabs, ordered from most
+  // recent to least recent (unlike `GetAllRawForeignSessions`, excludes
+  // sessions without presentable tabs). Caller does NOT own `SyncedSession`
+  // objects. Returns true if foreign sessions were found, false otherwise.
   virtual bool GetAllForeignSessions(
+      std::vector<raw_ptr<const SyncedSession, VectorExperimental>>*
+          sessions) = 0;
+
+  // Builds a list of all named foreign sessions (excluding sessions with an
+  // empty name), including those without presentable tabs (e.g., 0 tabs or
+  // only non-syncable/NTP tabs), ordered from most recent to least recent.
+  // Caller does NOT own `SyncedSession` objects. Returns true if foreign
+  // sessions were found, false otherwise.
+  virtual bool GetAllRawForeignSessions(
       std::vector<raw_ptr<const SyncedSession, VectorExperimental>>*
           sessions) = 0;
 

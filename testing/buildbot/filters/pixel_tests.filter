@@ -15,6 +15,7 @@ AddNewAddressProfileTest.*
 AppInfoDialogBrowserTest.*
 AppMenuAiRingBrowserTest*.InvokeUi_*
 AppMenuBrowserTest*.InvokeUi_*
+AppMenuOtherDeviceTabs*.*
 AskGoogleForSuggestionsDialogTest.*
 *AutofillAiImportDataBubbleViewBrowsertest.*
 BatchUploadDialogViewPixelTest.*

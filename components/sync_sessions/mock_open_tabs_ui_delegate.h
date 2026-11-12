@@ -38,6 +38,11 @@ class MockOpenTabsUIDelegate : public OpenTabsUIDelegate {
               ((std::vector<raw_ptr<const SyncedSession, VectorExperimental>> *
                 sessions)),
               (override));
+  MOCK_METHOD(bool,
+              GetAllRawForeignSessions,
+              ((std::vector<raw_ptr<const SyncedSession, VectorExperimental>> *
+                sessions)),
+              (override));
   MOCK_METHOD((base::flat_map<std::string, base::Time>),
               GetAllForeignSessionLastModifiedTimes,
               (),

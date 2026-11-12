@@ -44,17 +44,25 @@
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/sync/base/client_tag_hash.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/base/user_selectable_type.h"
+#include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/model/data_type_activation_request.h"
 #include "components/sync/model/data_type_controller_delegate.h"
+#include "components/sync/protocol/data_type_state.pb.h"
+#include "components/sync/protocol/entity_data.h"
+#include "components/sync/protocol/session_specifics.pb.h"
+#include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "components/sync/test/mock_commit_queue.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
+#include "components/sync_sessions/session_store.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -206,8 +214,10 @@ class OtherDeviceTabsSubMenuModelTest : public InProcessBrowserTest {
       recent_tabs_builder_.AddWindow(s);
       all_devices_have_tabs &= num_tabs_per_device[i] > 0;
       for (int t = 0; t < num_tabs_per_device[i]; ++t) {
+        // Offset by at least 1 minute so a 0-tab device (whose export timestamp
+        // is `base::Time::Now()`) is strictly more recent than tabbed devices.
         recent_tabs_builder_.AddTabWithInfo(
-            s, 0, now - base::Minutes(100 * (num_devices - 1 - i) + t),
+            s, 0, now - base::Minutes(100 * (num_devices - 1 - i) + t + 1),
             TabTitle(s, t));
       }
     }
@@ -219,6 +229,47 @@ class OtherDeviceTabsSubMenuModelTest : public InProcessBrowserTest {
           SessionSyncServiceFactory::GetForProfile(browser()->GetProfile())
               ->GetOpenTabsUIDelegate());
     }
+  }
+
+  // Registers a single-window, single-tab foreign session with an explicit URL
+  // (e.g., a non-syncable URL like `chrome://newtab`). Can also be called on an
+  // existing `session_tag` to open a tab on it.
+  void RegisterDeviceWithTabUrl(const std::string& session_tag,
+                                const std::string& session_name,
+                                const std::string& url,
+                                const std::string& tab_title = "New Tab",
+                                base::Time timestamp = base::Time::Now()) {
+    sync_pb::SessionSpecifics header_specifics =
+        BuildSessionHeaderSpecifics(session_tag, session_name);
+    sync_pb::SessionWindow* window =
+        header_specifics.mutable_header()->add_window();
+    window->set_window_id(1);
+    window->set_selected_tab_index(0);
+    window->set_browser_type(sync_pb::SyncEnums_BrowserType_TYPE_TABBED);
+    window->add_tab(2);
+
+    sync_pb::SessionSpecifics tab_specifics;
+    tab_specifics.set_session_tag(session_tag);
+    tab_specifics.set_tab_node_id(1);
+    sync_pb::SessionTab* tab = tab_specifics.mutable_tab();
+    tab->set_window_id(1);
+    tab->set_tab_id(2);
+    tab->set_current_navigation_index(0);
+    sync_pb::TabNavigation* navigation = tab->add_navigation();
+    navigation->set_virtual_url(url);
+    navigation->set_title(tab_title);
+    navigation->set_page_transition(sync_pb::SyncEnums_PageTransition_TYPED);
+
+    SendSessionSpecifics({tab_specifics, header_specifics}, timestamp);
+  }
+
+  // Registers a foreign session with no windows or tabs, or clears all windows
+  // and tabs from an existing `session_tag`.
+  void RegisterEmptyDevice(const std::string& session_tag,
+                           const std::string& session_name,
+                           base::Time timestamp = base::Time::Now()) {
+    SendSessionSpecifics(
+        {BuildSessionHeaderSpecifics(session_tag, session_name)}, timestamp);
   }
 
   // The device label shown for the device registered at `device_index`.
@@ -251,8 +302,50 @@ class OtherDeviceTabsSubMenuModelTest : public InProcessBrowserTest {
                                        enable_feature);
   }
 
+  sync_pb::SessionSpecifics BuildSessionHeaderSpecifics(
+      const std::string& session_tag,
+      const std::string& session_name) {
+    sync_pb::SessionSpecifics header_specifics;
+    header_specifics.set_session_tag(session_tag);
+    sync_pb::SessionHeader* header = header_specifics.mutable_header();
+    header->set_device_type(sync_pb::SyncEnums_DeviceType_TYPE_CROS);
+    header->set_device_form_factor(
+        sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_DESKTOP);
+    header->set_client_name(session_name);
+    return header_specifics;
+  }
+
+  void SendSessionSpecifics(
+      const std::vector<sync_pb::SessionSpecifics>& specifics_list,
+      base::Time timestamp) {
+    syncer::UpdateResponseDataList updates;
+    for (const auto& specifics : specifics_list) {
+      syncer::EntityData entity;
+      *entity.specifics.mutable_session() = specifics;
+      entity.creation_time = timestamp;
+      entity.modification_time = timestamp;
+      entity.client_tag_hash = syncer::ClientTagHash::FromUnhashed(
+          syncer::SESSIONS,
+          sync_sessions::SessionStore::GetClientTag(specifics));
+      entity.id = entity.client_tag_hash.value();
+
+      syncer::UpdateResponseData update;
+      update.entity = std::move(entity);
+      update.response_version = next_response_version_++;
+      updates.push_back(std::move(update));
+    }
+
+    sync_pb::DataTypeState data_type_state;
+    data_type_state.set_initial_sync_state(
+        sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+    sync_processor_->OnUpdateReceived(data_type_state, std::move(updates),
+                                      /*gc_directive=*/std::nullopt);
+    base::RunLoop().RunUntilIdle();
+  }
+
   std::unique_ptr<syncer::DataTypeProcessor> sync_processor_;
   RecentTabsBuilderTestHelper recent_tabs_builder_;
+  int next_response_version_ = 1;
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -267,6 +360,9 @@ class OtherDeviceTabsSubMenuModelFlagOffTest
       : OtherDeviceTabsSubMenuModelTest(/*enable_feature=*/false) {}
 };
 IN_PROC_BROWSER_TEST_F(OtherDeviceTabsSubMenuModelFlagOffTest, NoAppMenuRow) {
+  SetUpSignedInWithTabSync();
+  RegisterDevices({0, 1});
+
   std::unique_ptr<AppMenuModel> app_menu_model = CreateAppMenuModel(browser());
 
   EXPECT_FALSE(
@@ -274,6 +370,12 @@ IN_PROC_BROWSER_TEST_F(OtherDeviceTabsSubMenuModelFlagOffTest, NoAppMenuRow) {
           ->GetIndexOfCommandId(AppMenuModel::kOtherDeviceTabsMenuPlaceholder)
           .has_value());
   EXPECT_FALSE(app_menu_model->IsCommandIdEnabled(IDC_OTHER_DEVICE_TABS_MENU));
+
+  // History submenu still omits 0-tab devices when the flag is disabled.
+  const std::vector<RecentTabItem> remote_entries =
+      RecentTabsBuilder::BuildRemoteEntries(browser()->GetProfile());
+  ASSERT_EQ(2u, remote_entries.size());
+  EXPECT_EQ(DeviceName(1), remote_entries[1].title());
 }
 
 // --- Non-eligible state -----------------------------------------------------
@@ -305,16 +407,115 @@ IN_PROC_BROWSER_TEST_F(OtherDeviceTabsSubMenuModelTest, EmptyWhenNotEligible) {
 // --- Active: inline device headers and tabs --------------------------------
 
 IN_PROC_BROWSER_TEST_F(OtherDeviceTabsSubMenuModelTest,
-                       DeviceWithoutTabsIsSkipped) {
+                       DeviceWithoutTabsShowsEmptyState) {
   SetUpSignedInWithTabSync();
   RegisterDevices({0, 2});
 
   std::unique_ptr<OtherDeviceTabsSubMenuModel> model = CreateModel();
-  VerifyModel(*model, {{{ui::MenuModel::TYPE_TITLE, false},
-                        {ui::MenuModel::TYPE_COMMAND, true},
-                        {ui::MenuModel::TYPE_COMMAND, true}}});
-  EXPECT_THAT(LabelsInRange(*model, 0, model->GetItemCount()),
+  VerifyModel(*model, {{ui::MenuModel::TYPE_TITLE, false},
+                       {ui::MenuModel::TYPE_SEPARATOR, true},
+                       {ui::MenuModel::TYPE_TITLE, false},
+                       {ui::MenuModel::TYPE_COMMAND, true},
+                       {ui::MenuModel::TYPE_COMMAND, true}});
+  EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_OTHER_DEVICE_TABS_NO_OPEN_TABS,
+                                       DeviceName(0)),
+            model->GetLabelAt(0));
+  EXPECT_THAT(LabelsInRange(*model, 2, model->GetItemCount()),
               ElementsAre(DeviceName(1), TabTitle(1, 0), TabTitle(1, 1)));
+}
+
+IN_PROC_BROWSER_TEST_F(OtherDeviceTabsSubMenuModelTest,
+                       SingleDeviceWithoutTabsShowsEmptyState) {
+  SetUpSignedInWithTabSync();
+  RegisterDevices({0});
+
+  std::unique_ptr<OtherDeviceTabsSubMenuModel> model = CreateModel();
+  VerifyModel(*model, {{ui::MenuModel::TYPE_TITLE, false}});
+  EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_OTHER_DEVICE_TABS_NO_OPEN_TABS,
+                                       DeviceName(0)),
+            model->GetLabelAt(0));
+}
+
+IN_PROC_BROWSER_TEST_F(OtherDeviceTabsSubMenuModelTest,
+                       DeviceWithOnlyNtpTabShowsEmptyState) {
+  SetUpSignedInWithTabSync();
+  RegisterDeviceWithTabUrl("ntp_session_tag", "NTP Device", "chrome://newtab");
+
+  std::unique_ptr<OtherDeviceTabsSubMenuModel> model = CreateModel();
+  VerifyModel(*model, {{ui::MenuModel::TYPE_TITLE, false}});
+  EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_OTHER_DEVICE_TABS_NO_OPEN_TABS,
+                                       u"NTP Device"),
+            model->GetLabelAt(0));
+}
+
+IN_PROC_BROWSER_TEST_F(OtherDeviceTabsSubMenuModelTest,
+                       EmptyDeviceOrderedByRecency) {
+  SetUpSignedInWithTabSync();
+  const base::Time now = base::Time::Now();
+  RegisterDeviceWithTabUrl("old_tag", "Oldest", "https://old.example.com",
+                           "Oldest Tab", now - base::Minutes(30));
+  RegisterEmptyDevice("empty_tag", "Empty Device", now - base::Minutes(20));
+  RegisterDeviceWithTabUrl("new_tag", "Newest", "https://new.example.com",
+                           "Newest Tab", now - base::Minutes(10));
+
+  std::unique_ptr<OtherDeviceTabsSubMenuModel> model = CreateModel();
+  VerifyModel(*model, {{ui::MenuModel::TYPE_TITLE, false},
+                       {ui::MenuModel::TYPE_COMMAND, true},
+                       {ui::MenuModel::TYPE_SEPARATOR, true},
+                       {ui::MenuModel::TYPE_TITLE, false},
+                       {ui::MenuModel::TYPE_SEPARATOR, true},
+                       {ui::MenuModel::TYPE_TITLE, false},
+                       {ui::MenuModel::TYPE_COMMAND, true}});
+  EXPECT_THAT(
+      LabelsInRange(*model, 0, model->GetItemCount()),
+      ElementsAre(u"Newest", u"Newest Tab", u"",
+                  l10n_util::GetStringFUTF16(IDS_OTHER_DEVICE_TABS_NO_OPEN_TABS,
+                                             u"Empty Device"),
+                  u"", u"Oldest", u"Oldest Tab"));
+}
+
+IN_PROC_BROWSER_TEST_F(OtherDeviceTabsSubMenuModelTest,
+                       InlineTabCapIncludesDevicesWithoutTabs) {
+  SetUpSignedInWithTabSync();
+  RegisterDevices({0, 12});
+
+  // Two devices total (even though one has 0 tabs) caps the active device to 5
+  // inline tabs plus a "See 7 more tabs" flyout.
+  std::unique_ptr<OtherDeviceTabsSubMenuModel> model = CreateModel();
+  VerifyModel(*model, {{ui::MenuModel::TYPE_TITLE, false},
+                       {ui::MenuModel::TYPE_SEPARATOR, true},
+                       {ui::MenuModel::TYPE_TITLE, false},
+                       {ui::MenuModel::TYPE_COMMAND, true},
+                       {ui::MenuModel::TYPE_COMMAND, true},
+                       {ui::MenuModel::TYPE_COMMAND, true},
+                       {ui::MenuModel::TYPE_COMMAND, true},
+                       {ui::MenuModel::TYPE_COMMAND, true},
+                       {ui::MenuModel::TYPE_SUBMENU, true}});
+  EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_OTHER_DEVICE_TABS_NO_OPEN_TABS,
+                                       DeviceName(0)),
+            model->GetLabelAt(0));
+  EXPECT_THAT(LabelsInRange(*model, 2, 8),
+              ElementsAre(DeviceName(1), TabTitle(1, 0), TabTitle(1, 1),
+                          TabTitle(1, 2), TabTitle(1, 3), TabTitle(1, 4)));
+  EXPECT_EQ(
+      l10n_util::GetPluralStringFUTF16(IDS_OTHER_DEVICE_TABS_SEE_MORE_TABS, 7),
+      model->GetLabelAt(8));
+  EXPECT_EQ(7u, model->GetSubmenuModelAt(8)->GetItemCount());
+
+  // Adding two more 0-tab devices crosses the 3->4 device threshold, dropping
+  // the inline tab cap from 5 to 3 (9 tabs in the flyout).
+  RegisterDevices({0, 0});
+  model = CreateModel();
+  // Three 0-tab devices (title + separator each) + 1 tabbed device (title +
+  // 3 inline tabs + 1 flyout).
+  ASSERT_EQ(11u, model->GetItemCount());
+  EXPECT_THAT(LabelsInRange(*model, 6, 10),
+              ElementsAre(DeviceName(1), TabTitle(1, 0), TabTitle(1, 1),
+                          TabTitle(1, 2)));
+  EXPECT_EQ(
+      l10n_util::GetPluralStringFUTF16(IDS_OTHER_DEVICE_TABS_SEE_MORE_TABS, 9),
+      model->GetLabelAt(10));
+  EXPECT_EQ(9u, model->GetSubmenuModelAt(10)->GetItemCount());
 }
 
 IN_PROC_BROWSER_TEST_F(OtherDeviceTabsSubMenuModelTest,
@@ -343,17 +544,17 @@ IN_PROC_BROWSER_TEST_F(OtherDeviceTabsSubMenuModelTest,
 
   std::unique_ptr<OtherDeviceTabsSubMenuModel> model = CreateModel();
   ASSERT_NO_FATAL_FAILURE(
-      VerifyModel(*model, {{{ui::MenuModel::TYPE_TITLE, false},
-                            {ui::MenuModel::TYPE_COMMAND, true},
-                            {ui::MenuModel::TYPE_COMMAND, true},
-                            {ui::MenuModel::TYPE_SEPARATOR, true},
-                            {ui::MenuModel::TYPE_TITLE, false},
-                            {ui::MenuModel::TYPE_COMMAND, true},
-                            {ui::MenuModel::TYPE_COMMAND, true},
-                            {ui::MenuModel::TYPE_SEPARATOR, true},
-                            {ui::MenuModel::TYPE_TITLE, false},
-                            {ui::MenuModel::TYPE_COMMAND, true},
-                            {ui::MenuModel::TYPE_COMMAND, true}}}));
+      VerifyModel(*model, {{ui::MenuModel::TYPE_TITLE, false},
+                           {ui::MenuModel::TYPE_COMMAND, true},
+                           {ui::MenuModel::TYPE_COMMAND, true},
+                           {ui::MenuModel::TYPE_SEPARATOR, true},
+                           {ui::MenuModel::TYPE_TITLE, false},
+                           {ui::MenuModel::TYPE_COMMAND, true},
+                           {ui::MenuModel::TYPE_COMMAND, true},
+                           {ui::MenuModel::TYPE_SEPARATOR, true},
+                           {ui::MenuModel::TYPE_TITLE, false},
+                           {ui::MenuModel::TYPE_COMMAND, true},
+                           {ui::MenuModel::TYPE_COMMAND, true}}));
 
   // Devices are listed most recent first (reverse registration order), with
   // each device's tabs directly below its title in recency order.
@@ -596,6 +797,35 @@ IN_PROC_BROWSER_TEST_F(OtherDeviceTabsSubMenuModelTest,
   DeleteDevice(0);
 
   EXPECT_EQ(6, delegate.structure_changes());
+  EXPECT_EQ(0u, model->GetItemCount());
+
+  // Add a 0-tab device, open a tab on it, close its last tab, then delete it.
+  RegisterEmptyDevice("empty_tag", "Empty Device", now);
+  EXPECT_EQ(7, delegate.structure_changes());
+  VerifyModel(*model, {{ui::MenuModel::TYPE_TITLE, false}});
+  EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_OTHER_DEVICE_TABS_NO_OPEN_TABS,
+                                       u"Empty Device"),
+            model->GetLabelAt(0));
+
+  RegisterDeviceWithTabUrl("empty_tag", "Empty Device", "https://example.com",
+                           "Example Tab", now);
+  EXPECT_EQ(8, delegate.structure_changes());
+  VerifyModel(*model, {{ui::MenuModel::TYPE_TITLE, false},
+                       {ui::MenuModel::TYPE_COMMAND, true}});
+  EXPECT_THAT(LabelsInRange(*model, 0, model->GetItemCount()),
+              ElementsAre(u"Empty Device", u"Example Tab"));
+
+  RegisterEmptyDevice("empty_tag", "Empty Device", now);
+  EXPECT_EQ(9, delegate.structure_changes());
+  VerifyModel(*model, {{ui::MenuModel::TYPE_TITLE, false}});
+  EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_OTHER_DEVICE_TABS_NO_OPEN_TABS,
+                                       u"Empty Device"),
+            model->GetLabelAt(0));
+
+  SessionSyncServiceFactory::GetForProfile(browser()->GetProfile())
+      ->GetOpenTabsUIDelegate()
+      ->DeleteForeignSession("empty_tag");
+  EXPECT_EQ(10, delegate.structure_changes());
   EXPECT_EQ(0u, model->GetItemCount());
 }
 

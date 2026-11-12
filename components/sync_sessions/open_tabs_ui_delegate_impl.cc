@@ -16,6 +16,21 @@
 
 namespace sync_sessions {
 
+namespace {
+
+bool GetForeignSessionsWithLookup(
+    const SyncedSessionTracker& session_tracker,
+    SyncedSessionTracker::SessionLookup lookup,
+    std::vector<raw_ptr<const SyncedSession, VectorExperimental>>* sessions) {
+  *sessions = session_tracker.LookupAllForeignSessions(lookup);
+  std::ranges::sort(
+      *sessions, std::greater(),
+      [](const SyncedSession* session) { return session->GetModifiedTime(); });
+  return !sessions->empty();
+}
+
+}  // namespace
+
 OpenTabsUIDelegateImpl::OpenTabsUIDelegateImpl(
     const SyncSessionsClient* sessions_client,
     const SyncedSessionTracker* session_tracker,
@@ -28,11 +43,18 @@ OpenTabsUIDelegateImpl::~OpenTabsUIDelegateImpl() = default;
 
 bool OpenTabsUIDelegateImpl::GetAllForeignSessions(
     std::vector<raw_ptr<const SyncedSession, VectorExperimental>>* sessions) {
-  *sessions = session_tracker_->LookupAllForeignSessions(
-      SyncedSessionTracker::PRESENTABLE);
-  std::ranges::sort(
-      *sessions, std::greater(),
-      [](const SyncedSession* session) { return session->GetModifiedTime(); });
+  return GetForeignSessionsWithLookup(
+      *session_tracker_, SyncedSessionTracker::PRESENTABLE, sessions);
+}
+
+bool OpenTabsUIDelegateImpl::GetAllRawForeignSessions(
+    std::vector<raw_ptr<const SyncedSession, VectorExperimental>>* sessions) {
+  GetForeignSessionsWithLookup(*session_tracker_, SyncedSessionTracker::RAW,
+                               sessions);
+  // Exclude headerless/unnamed sessions so callers never render an empty name.
+  std::erase_if(*sessions, [](const SyncedSession* session) {
+    return session->GetSessionName().empty();
+  });
   return !sessions->empty();
 }
 

@@ -51,12 +51,21 @@
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/enterprise/isolated_mode/isolated_mode_features.h"
 #include "components/enterprise/isolated_mode/prefs.h"
+#include "components/sync/base/client_tag_hash.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
+#include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/model/data_type_activation_request.h"
 #include "components/sync/model/data_type_controller_delegate.h"
+#include "components/sync/protocol/data_type_state.pb.h"
+#include "components/sync/protocol/entity_data.h"
+#include "components/sync/protocol/session_specifics.pb.h"
+#include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync/test/mock_commit_queue.h"
 #include "components/sync_device_info/device_info.h"
+#include "components/sync_sessions/open_tabs_ui_delegate.h"
+#include "components/sync_sessions/session_store.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/web_contents.h"
@@ -80,6 +89,8 @@
 #include "ui/views/test/widget_test_api.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
+
+using ::testing::ElementsAre;
 
 namespace {
 
@@ -142,6 +153,85 @@ std::vector<std::u16string> GetItemsDepthFirst(actions::BaseAction* item) {
     items.insert(items.end(), grandchildren.begin(), grandchildren.end());
   }
   return items;
+}
+
+std::vector<std::u16string> GetSubmenuItemTitles(views::MenuItemView* parent) {
+  std::vector<std::u16string> titles;
+  for (views::MenuItemView* item : parent->GetSubmenu()->GetMenuItems()) {
+    titles.push_back(item->title());
+  }
+  return titles;
+}
+
+void SendSessionSpecifics(
+    syncer::DataTypeProcessor* sync_processor,
+    const std::vector<sync_pb::SessionSpecifics>& specifics_list,
+    base::Time timestamp,
+    int& next_response_version) {
+  syncer::UpdateResponseDataList updates;
+  for (const auto& specifics : specifics_list) {
+    syncer::EntityData entity;
+    *entity.specifics.mutable_session() = specifics;
+    entity.creation_time = timestamp;
+    entity.modification_time = timestamp;
+    entity.client_tag_hash = syncer::ClientTagHash::FromUnhashed(
+        syncer::SESSIONS, sync_sessions::SessionStore::GetClientTag(specifics));
+    entity.id = entity.client_tag_hash.value();
+
+    syncer::UpdateResponseData update;
+    update.entity = std::move(entity);
+    update.response_version = next_response_version++;
+    updates.push_back(std::move(update));
+  }
+
+  sync_pb::DataTypeState data_type_state;
+  data_type_state.set_initial_sync_state(
+      sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+  sync_processor->OnUpdateReceived(data_type_state, std::move(updates),
+                                   /*gc_directive=*/std::nullopt);
+  base::RunLoop().RunUntilIdle();
+}
+
+void SendEmptyOrSingleTabSession(syncer::DataTypeProcessor* sync_processor,
+                                 const std::string& session_tag,
+                                 const std::string& session_name,
+                                 std::optional<std::string> tab_title,
+                                 base::Time timestamp,
+                                 int& next_response_version) {
+  sync_pb::SessionSpecifics header_specifics;
+  header_specifics.set_session_tag(session_tag);
+  sync_pb::SessionHeader* header = header_specifics.mutable_header();
+  header->set_device_type(sync_pb::SyncEnums_DeviceType_TYPE_CROS);
+  header->set_device_form_factor(
+      sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_DESKTOP);
+  header->set_client_name(session_name);
+
+  if (!tab_title.has_value()) {
+    SendSessionSpecifics(sync_processor, {header_specifics}, timestamp,
+                         next_response_version);
+    return;
+  }
+
+  sync_pb::SessionWindow* window = header->add_window();
+  window->set_window_id(1);
+  window->set_selected_tab_index(0);
+  window->set_browser_type(sync_pb::SyncEnums_BrowserType_TYPE_TABBED);
+  window->add_tab(2);
+
+  sync_pb::SessionSpecifics tab_specifics;
+  tab_specifics.set_session_tag(session_tag);
+  tab_specifics.set_tab_node_id(1);
+  sync_pb::SessionTab* tab = tab_specifics.mutable_tab();
+  tab->set_window_id(1);
+  tab->set_tab_id(2);
+  tab->set_current_navigation_index(0);
+  sync_pb::TabNavigation* navigation = tab->add_navigation();
+  navigation->set_virtual_url("https://example.com");
+  navigation->set_title(*tab_title);
+  navigation->set_page_transition(sync_pb::SyncEnums_PageTransition_TYPED);
+
+  SendSessionSpecifics(sync_processor, {tab_specifics, header_specifics},
+                       timestamp, next_response_version);
 }
 
 class MockAppMenuHost : public AppMenuDragAndDropDelegate::Host {
@@ -649,10 +739,9 @@ IN_PROC_BROWSER_TEST_F(ActionAppMenuWithOtherDeviceTabsBrowserTest,
       actions::ActionItem::Builder().Build();
   dynamic_menu.BuildOtherDeviceTabsActions(root.get());
 
-  EXPECT_THAT(
-      GetItemsDepthFirst(root.get()),
-      testing::ElementsAre(GetSessionName(helper, 0), u"Newest", u"Older", u"",
-                           GetSessionName(helper, 1), u"Oldest"));
+  EXPECT_THAT(GetItemsDepthFirst(root.get()),
+              ElementsAre(GetSessionName(helper, 0), u"Newest", u"Older", u"",
+                          GetSessionName(helper, 1), u"Oldest"));
 
   const std::vector<RecentTabItem> items =
       RecentTabsBuilder::BuildOtherDeviceTabs(browser()->GetProfile());
@@ -857,13 +946,42 @@ IN_PROC_BROWSER_TEST_F(ActionAppMenuWithOtherDeviceTabsBrowserTest,
   helper.AddTabWithInfo(0, 0, now - base::Minutes(5), u"New");
   helper.ExportToSessionSync(sync_processor.get());
 
-  std::vector<std::u16string> titles;
-  for (views::MenuItemView* item :
-       other_device_tabs_item->GetSubmenu()->GetMenuItems()) {
-    titles.push_back(item->title());
-  }
-  EXPECT_THAT(titles,
-              testing::ElementsAre(GetSessionName(helper, 0), u"New", u"Old"));
+  EXPECT_THAT(GetSubmenuItemTitles(other_device_tabs_item),
+              ElementsAre(GetSessionName(helper, 0), u"New", u"Old"));
+
+  // Add a 0-tab device, open a tab on it, close its last tab, then delete it
+  // while the submenu remains open.
+  int next_response_version = 1;
+  const std::u16string empty_state_label = l10n_util::GetStringFUTF16(
+      IDS_OTHER_DEVICE_TABS_NO_OPEN_TABS, u"Empty Device");
+  SendEmptyOrSingleTabSession(sync_processor.get(), "empty_tag", "Empty Device",
+                              std::nullopt, now, next_response_version);
+  EXPECT_THAT(GetSubmenuItemTitles(other_device_tabs_item),
+              ElementsAre(empty_state_label, GetSessionName(helper, 0), u"New",
+                          u"Old"));
+
+  SendEmptyOrSingleTabSession(sync_processor.get(), "empty_tag", "Empty Device",
+                              "Empty Device Tab", now, next_response_version);
+  EXPECT_THAT(GetSubmenuItemTitles(other_device_tabs_item),
+              ElementsAre(u"Empty Device", u"Empty Device Tab",
+                          GetSessionName(helper, 0), u"New", u"Old"));
+
+  SendEmptyOrSingleTabSession(sync_processor.get(), "empty_tag", "Empty Device",
+                              std::nullopt, now, next_response_version);
+  EXPECT_THAT(GetSubmenuItemTitles(other_device_tabs_item),
+              ElementsAre(empty_state_label, GetSessionName(helper, 0), u"New",
+                          u"Old"));
+  views::MenuItemView* empty_item =
+      FindMenuItemByTitle(other_device_tabs_item, empty_state_label);
+  ASSERT_TRUE(empty_item);
+  EXPECT_EQ(views::MenuItemView::Type::kTitle, empty_item->GetType());
+  EXPECT_FALSE(empty_item->GetEnabled());
+
+  SessionSyncServiceFactory::GetForProfile(browser()->GetProfile())
+      ->GetOpenTabsUIDelegate()
+      ->DeleteForeignSession("empty_tag");
+  EXPECT_THAT(GetSubmenuItemTitles(other_device_tabs_item),
+              ElementsAre(GetSessionName(helper, 0), u"New", u"Old"));
 
   views::MenuItemView* tab_item =
       FindMenuItemByTitle(other_device_tabs_item, u"New");
@@ -879,6 +997,60 @@ IN_PROC_BROWSER_TEST_F(ActionAppMenuWithOtherDeviceTabsBrowserTest,
   EXPECT_EQ(
       expected_url,
       browser()->GetTabStripModel()->GetActiveWebContents()->GetVisibleURL());
+
+  menu_control->CloseMenu();
+}
+
+IN_PROC_BROWSER_TEST_F(ActionAppMenuWithOtherDeviceTabsBrowserTest,
+                       OtherDeviceTabsSubmenuDeviceWithoutTabs) {
+  std::unique_ptr<syncer::DataTypeProcessor> sync_processor =
+      StartSessionSync();
+
+  const base::Time now = base::Time::Now();
+  RecentTabsBuilderTestHelper helper;
+  helper.AddSession();
+  helper.AddWindow(0);
+  helper.AddSession();
+  helper.AddWindow(1);
+  helper.AddTabWithInfo(1, 0, now - base::Minutes(5), u"Remote Tab");
+  helper.ExportToSessionSync(sync_processor.get());
+
+  const std::u16string empty_state_label = l10n_util::GetStringFUTF16(
+      IDS_OTHER_DEVICE_TABS_NO_OPEN_TABS, GetSessionName(helper, 0));
+
+  testing::NiceMock<MockAppMenuHost> host;
+  RecentTabsDynamicMenu dynamic_menu(browser(), &host);
+  std::unique_ptr<actions::ActionItem> action_root =
+      actions::ActionItem::Builder().Build();
+  dynamic_menu.BuildOtherDeviceTabsActions(action_root.get());
+  EXPECT_THAT(GetItemsDepthFirst(action_root.get()),
+              ElementsAre(empty_state_label, u"", GetSessionName(helper, 1),
+                          u"Remote Tab"));
+
+  AppMenuControl* menu_control = GetMenuControl();
+  ASSERT_TRUE(menu_control);
+  menu_control->ShowMenuWithFlags(views::MenuRunner::NO_FLAGS);
+  ActionAppMenu* action_menu = menu_control->GetActionAppMenuForTesting();
+  ASSERT_TRUE(action_menu);
+  views::MenuItemView* other_device_tabs_item =
+      action_menu->root_menu_item_for_testing()->GetMenuItemByID(
+          kActionOtherDeviceTabsSubmenu);
+  ASSERT_TRUE(other_device_tabs_item);
+  action_menu->WillShowMenu(other_device_tabs_item);
+
+  std::vector<std::u16string> titles;
+  for (views::MenuItemView* item :
+       other_device_tabs_item->GetSubmenu()->GetMenuItems()) {
+    titles.push_back(item->title());
+  }
+  EXPECT_THAT(titles, ElementsAre(empty_state_label, GetSessionName(helper, 1),
+                                  u"Remote Tab"));
+
+  views::MenuItemView* empty_state_item =
+      FindMenuItemByTitle(other_device_tabs_item, empty_state_label);
+  ASSERT_TRUE(empty_state_item);
+  EXPECT_EQ(views::MenuItemView::Type::kTitle, empty_state_item->GetType());
+  EXPECT_FALSE(empty_state_item->GetEnabled());
 
   menu_control->CloseMenu();
 }

@@ -42,6 +42,11 @@ bool FakeOpenTabsUIDelegate::GetAllForeignSessions(
   return !foreign_sessions_.empty();
 }
 
+bool FakeOpenTabsUIDelegate::GetAllRawForeignSessions(
+    std::vector<raw_ptr<const SyncedSession, VectorExperimental>>* sessions) {
+  return GetAllForeignSessions(sessions);
+}
+
 base::flat_map<std::string, base::Time>
 FakeOpenTabsUIDelegate::GetAllForeignSessionLastModifiedTimes() const {
   return base::MakeFlatMap<std::string, base::Time>(

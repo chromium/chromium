@@ -14215,6 +14215,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_OTHER_DEVICE_TABS_SEE_MORE_TABS" desc="Label of the last row under a device in the 'Other device tabs' sub-menu of the wrench menu. It opens a sub-menu listing the remaining tabs open on that device. [ICU_Syntax]">
         {COUNT, plural, =1 {See 1 more tab} other {See # more tabs}}
       </message>
+      <message name="IDS_OTHER_DEVICE_TABS_NO_OPEN_TABS" desc="Non-interactive header shown in place of open tabs under a device section in the 'Other device tabs' sub-menu of the wrench menu when that device has no open tabs.">
+        No open tabs on <ph name="DEVICE_NAME">$1<ex>iPad Air</ex></ph>
+      </message>
       <message name="IDS_DEFAULT_DOWNLOAD_FILENAME" desc="Default name for downloaded files when we have no idea what they could be.">
         download
       </message>

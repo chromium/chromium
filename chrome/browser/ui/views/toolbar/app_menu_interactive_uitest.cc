@@ -12,6 +12,7 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/functional/callback_helpers.h"
+#include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -41,12 +42,20 @@
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/prefs/pref_service.h"
+#include "components/sync/base/client_tag_hash.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
+#include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/model/data_type_activation_request.h"
 #include "components/sync/model/data_type_controller_delegate.h"
+#include "components/sync/protocol/data_type_state.pb.h"
+#include "components/sync/protocol/entity_data.h"
+#include "components/sync/protocol/session_specifics.pb.h"
+#include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync/test/mock_commit_queue.h"
 #include "components/sync_device_info/device_info.h"
+#include "components/sync_sessions/session_store.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -395,6 +404,40 @@ class AppMenuOtherDeviceTabsInteractiveTest : public InteractiveBrowserTest {
     helper.ExportToSessionSync(sync_processor_.get());
   }
 
+  // Syncs Laptop (12 tabs) followed by an older Tablet with 0 open tabs.
+  void SyncLaptopAndEmptyTablet() {
+    SyncDevices(1);
+    const base::Time tablet_time = base::Time::Now() - base::Minutes(100);
+    sync_pb::SessionSpecifics specifics;
+    specifics.set_session_tag("tablet_session_tag");
+    sync_pb::SessionHeader* header = specifics.mutable_header();
+    header->set_device_type(sync_pb::SyncEnums_DeviceType_TYPE_CROS);
+    header->set_device_form_factor(
+        sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_TABLET);
+    header->set_client_name("Tablet");
+
+    syncer::EntityData entity;
+    *entity.specifics.mutable_session() = specifics;
+    entity.creation_time = tablet_time;
+    entity.modification_time = tablet_time;
+    entity.client_tag_hash = syncer::ClientTagHash::FromUnhashed(
+        syncer::SESSIONS, sync_sessions::SessionStore::GetClientTag(specifics));
+    entity.id = entity.client_tag_hash.value();
+
+    syncer::UpdateResponseData update;
+    update.entity = std::move(entity);
+    update.response_version = 1;
+    syncer::UpdateResponseDataList updates;
+    updates.push_back(std::move(update));
+
+    sync_pb::DataTypeState data_type_state;
+    data_type_state.set_initial_sync_state(
+        sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+    sync_processor_->OnUpdateReceived(data_type_state, std::move(updates),
+                                      /*gc_directive=*/std::nullopt);
+    base::RunLoop().RunUntilIdle();
+  }
+
   // Opens the submenu, where the laptop shows `max_inline_tabs` of its tabs
   // inline above its flyout row.
   auto ShowSubmenu(int max_inline_tabs) {
@@ -410,12 +453,44 @@ class AppMenuOtherDeviceTabsInteractiveTest : public InteractiveBrowserTest {
   }
 
   // Like ShowSubmenu(), then takes a screenshot of the submenu.
-  auto ShowSubmenuAndScreenshot(int max_inline_tabs) {
+  auto ShowSubmenuAndScreenshot(int max_inline_tabs,
+                                std::string_view baseline_cl = kBaselineCl) {
     return Steps(
         ShowSubmenu(max_inline_tabs),
         SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
                                 kSkipPixelTestsReason),
-        ScreenshotSurface(kFlyoutRow, "other_device_tabs_menu", kBaselineCl));
+        ScreenshotSurface(kFlyoutRow, "other_device_tabs_menu",
+                          std::string(baseline_cl)));
+  }
+
+  // Opens the submenu for Laptop (5 inline tabs + flyout) + empty Tablet,
+  // screenshots the submenu, and verifies the empty-state title row.
+  auto ShowSubmenuWithEmptyDeviceAndScreenshot() {
+    return Steps(
+        ShowSubmenuAndScreenshot(/*max_inline_tabs=*/5, "8796148"),
+        NameMenuItemWithTitle(
+            kEmptyStateRow, l10n_util::GetStringFUTF16(
+                                IDS_OTHER_DEVICE_TABS_NO_OPEN_TABS, u"Tablet")),
+        CheckView(kEmptyStateRow, [](views::MenuItemView* item) {
+          if (item->GetType() != views::MenuItemView::Type::kTitle ||
+              item->GetEnabled()) {
+            return false;
+          }
+          const std::u16string flyout_title = l10n_util::GetPluralStringFUTF16(
+              IDS_OTHER_DEVICE_TABS_SEE_MORE_TABS, kNumLaptopTabs - 5);
+          for (views::View* child : item->parent()->children()) {
+            if (auto* menu_item =
+                    views::AsViewClass<views::MenuItemView>(child)) {
+              if (menu_item->title() == flyout_title) {
+                return true;
+              }
+              if (menu_item == item) {
+                return false;
+              }
+            }
+          }
+          return false;
+        }));
   }
 
   // From the open submenu, opens the last tab of the laptop's flyout after
@@ -453,6 +528,7 @@ class AppMenuOtherDeviceTabsInteractiveTest : public InteractiveBrowserTest {
 
  protected:
   static constexpr int kNumLaptopTabs = 12;
+  static constexpr char kEmptyStateRow[] = "empty_state_row";
   static constexpr char kFlyoutRow[] = "flyout_row";
   static constexpr char kFlyoutTab[] = "flyout_tab";
   static constexpr char16_t kLastTab[] = u"Tab 11";
@@ -498,6 +574,12 @@ IN_PROC_BROWSER_TEST_F(AppMenuOtherDeviceTabsInteractiveTest,
                        ShowSubmenuWithFourDevices) {
   SyncDevices(4);
   RunTestSequence(ShowSubmenuAndScreenshot(/*max_inline_tabs=*/3));
+}
+
+IN_PROC_BROWSER_TEST_F(AppMenuOtherDeviceTabsInteractiveTest,
+                       ShowSubmenuWithEmptyDevice) {
+  SyncLaptopAndEmptyTablet();
+  RunTestSequence(ShowSubmenuWithEmptyDeviceAndScreenshot());
 }
 
 // Like inline tabs, a Ctrl/Cmd-clicked flyout tab opens without closing the
@@ -550,4 +632,10 @@ IN_PROC_BROWSER_TEST_F(AppMenuOtherDeviceTabsGlowUpInteractiveTest,
                        ShowSubmenuWithFourDevices) {
   SyncDevices(4);
   RunTestSequence(ShowSubmenuAndScreenshot(/*max_inline_tabs=*/3));
+}
+
+IN_PROC_BROWSER_TEST_F(AppMenuOtherDeviceTabsGlowUpInteractiveTest,
+                       ShowSubmenuWithEmptyDevice) {
+  SyncLaptopAndEmptyTablet();
+  RunTestSequence(ShowSubmenuWithEmptyDeviceAndScreenshot());
 }
