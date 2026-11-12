@@ -1488,6 +1488,7 @@ _CHROME_AI_WPT_TEST_CONFIG = targets.legacy_test_config(
     mixins = [
         "has_native_resultdb_integration",
         "blink_tests_write_run_histories",
+        "chrome_ai_wpt_component_cache",
     ],
     # Hardcoded '--child-processes=1' to enforce sequential execution by default
     # and prevent timeouts. The slower x64 builders are sharded to 8 shards
@@ -1511,6 +1512,7 @@ _CHROME_AI_WPT_GPU_HIGH_TIER_TEST_CONFIG = targets.legacy_test_config(
     mixins = [
         "has_native_resultdb_integration",
         "blink_tests_write_run_histories",
+        "chrome_ai_wpt_component_cache",
     ],
     # Hardcoded '--child-processes=1' to enforce sequential execution by default
     # and prevent timeouts. The slower x64 builders are sharded to 8 shards

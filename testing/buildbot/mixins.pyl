@@ -93,6 +93,21 @@
       'service_account': 'chrome-tester@chops-service-accounts.iam.gserviceaccount.com',
     },
   },
+  'chrome_ai_wpt_component_cache': {
+    'swarming': {
+      'optional_dimensions': {
+        '60': {
+          'caches': 'chrome_ai_wpt_components',
+        },
+      },
+      'named_caches': [
+        {
+          'name': 'chrome_ai_wpt_components',
+          'path': 'chrome_ai_wpt_components',
+        },
+      ],
+    },
+  },
   'chromeos-betty-finch': {
     'args': [
       '--board=betty',

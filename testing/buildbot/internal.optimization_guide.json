@@ -1348,6 +1348,17 @@
             "os": "Ubuntu",
             "pool": "chrome.tests.intelligence"
           },
+          "named_caches": [
+            {
+              "name": "chrome_ai_wpt_components",
+              "path": "chrome_ai_wpt_components"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "chrome_ai_wpt_components"
+            }
+          },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 8
         },
@@ -1381,6 +1392,17 @@
             "cpu": "x86-64",
             "os": "Ubuntu",
             "pool": "chrome.tests.intelligence"
+          },
+          "named_caches": [
+            {
+              "name": "chrome_ai_wpt_components",
+              "path": "chrome_ai_wpt_components"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "chrome_ai_wpt_components"
+            }
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 8
@@ -1416,6 +1438,17 @@
             "os": "Ubuntu",
             "pool": "chrome.tests.intelligence"
           },
+          "named_caches": [
+            {
+              "name": "chrome_ai_wpt_components",
+              "path": "chrome_ai_wpt_components"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "chrome_ai_wpt_components"
+            }
+          },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 8
         },
@@ -1449,6 +1482,17 @@
             "cpu": "x86-64",
             "os": "Ubuntu",
             "pool": "chrome.tests.intelligence"
+          },
+          "named_caches": [
+            {
+              "name": "chrome_ai_wpt_components",
+              "path": "chrome_ai_wpt_components"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "chrome_ai_wpt_components"
+            }
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 8
@@ -1485,6 +1529,17 @@
             "gpu": "10de|1002|8086:4680|8086:a780|8086:a7a0",
             "os": "Ubuntu",
             "pool": "chrome.tests.intelligence"
+          },
+          "named_caches": [
+            {
+              "name": "chrome_ai_wpt_components",
+              "path": "chrome_ai_wpt_components"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "chrome_ai_wpt_components"
+            }
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 8
@@ -1523,6 +1578,17 @@
             "os": "Ubuntu",
             "pool": "chrome.tests.intelligence"
           },
+          "named_caches": [
+            {
+              "name": "chrome_ai_wpt_components",
+              "path": "chrome_ai_wpt_components"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "chrome_ai_wpt_components"
+            }
+          },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 8
         },
@@ -1558,6 +1624,17 @@
             "gpu": "10de|1002",
             "os": "Ubuntu",
             "pool": "chrome.tests.intelligence"
+          },
+          "named_caches": [
+            {
+              "name": "chrome_ai_wpt_components",
+              "path": "chrome_ai_wpt_components"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "chrome_ai_wpt_components"
+            }
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 8
@@ -1596,6 +1673,17 @@
             "os": "Ubuntu",
             "pool": "chrome.tests.intelligence"
           },
+          "named_caches": [
+            {
+              "name": "chrome_ai_wpt_components",
+              "path": "chrome_ai_wpt_components"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "chrome_ai_wpt_components"
+            }
+          },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 8
         },
@@ -1630,6 +1718,17 @@
             "gce": "0",
             "os": "Ubuntu",
             "pool": "chrome.tests.intelligence"
+          },
+          "named_caches": [
+            {
+              "name": "chrome_ai_wpt_components",
+              "path": "chrome_ai_wpt_components"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "chrome_ai_wpt_components"
+            }
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 8
@@ -1667,6 +1766,17 @@
             "os": "Ubuntu",
             "pool": "chrome.tests.intelligence"
           },
+          "named_caches": [
+            {
+              "name": "chrome_ai_wpt_components",
+              "path": "chrome_ai_wpt_components"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "chrome_ai_wpt_components"
+            }
+          },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 8
         },
@@ -1702,6 +1812,17 @@
             "gpu": "10de|1002",
             "os": "Ubuntu",
             "pool": "chrome.tests.intelligence"
+          },
+          "named_caches": [
+            {
+              "name": "chrome_ai_wpt_components",
+              "path": "chrome_ai_wpt_components"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "chrome_ai_wpt_components"
+            }
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 8
@@ -1739,6 +1860,17 @@
             "gpu": "10de|1002",
             "os": "Ubuntu",
             "pool": "chrome.tests.intelligence"
+          },
+          "named_caches": [
+            {
+              "name": "chrome_ai_wpt_components",
+              "path": "chrome_ai_wpt_components"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "chrome_ai_wpt_components"
+            }
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 8
@@ -2121,6 +2253,17 @@
             "os": "Mac-26",
             "pool": "chrome.tests"
           },
+          "named_caches": [
+            {
+              "name": "chrome_ai_wpt_components",
+              "path": "chrome_ai_wpt_components"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "chrome_ai_wpt_components"
+            }
+          },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
@@ -2158,6 +2301,17 @@
             "os": "Mac-26",
             "pool": "chrome.tests"
           },
+          "named_caches": [
+            {
+              "name": "chrome_ai_wpt_components",
+              "path": "chrome_ai_wpt_components"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "chrome_ai_wpt_components"
+            }
+          },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
@@ -2193,6 +2347,17 @@
             "cpu": "arm64",
             "os": "Mac-26",
             "pool": "chrome.tests"
+          },
+          "named_caches": [
+            {
+              "name": "chrome_ai_wpt_components",
+              "path": "chrome_ai_wpt_components"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "chrome_ai_wpt_components"
+            }
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
@@ -2231,6 +2396,17 @@
             "os": "Mac-26",
             "pool": "chrome.tests"
           },
+          "named_caches": [
+            {
+              "name": "chrome_ai_wpt_components",
+              "path": "chrome_ai_wpt_components"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "chrome_ai_wpt_components"
+            }
+          },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
@@ -2266,6 +2442,17 @@
             "cpu": "arm64",
             "os": "Mac-26",
             "pool": "chrome.tests"
+          },
+          "named_caches": [
+            {
+              "name": "chrome_ai_wpt_components",
+              "path": "chrome_ai_wpt_components"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "chrome_ai_wpt_components"
+            }
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
@@ -2304,6 +2491,17 @@
             "os": "Mac-26",
             "pool": "chrome.tests"
           },
+          "named_caches": [
+            {
+              "name": "chrome_ai_wpt_components",
+              "path": "chrome_ai_wpt_components"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "chrome_ai_wpt_components"
+            }
+          },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
@@ -2339,6 +2537,17 @@
             "cpu": "arm64",
             "os": "Mac-26",
             "pool": "chrome.tests"
+          },
+          "named_caches": [
+            {
+              "name": "chrome_ai_wpt_components",
+              "path": "chrome_ai_wpt_components"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "chrome_ai_wpt_components"
+            }
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
@@ -2377,6 +2586,17 @@
             "os": "Mac-26",
             "pool": "chrome.tests"
           },
+          "named_caches": [
+            {
+              "name": "chrome_ai_wpt_components",
+              "path": "chrome_ai_wpt_components"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "chrome_ai_wpt_components"
+            }
+          },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
@@ -2412,6 +2632,17 @@
             "cpu": "arm64",
             "os": "Mac-26",
             "pool": "chrome.tests"
+          },
+          "named_caches": [
+            {
+              "name": "chrome_ai_wpt_components",
+              "path": "chrome_ai_wpt_components"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "chrome_ai_wpt_components"
+            }
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
@@ -2450,6 +2681,17 @@
             "os": "Mac-26",
             "pool": "chrome.tests"
           },
+          "named_caches": [
+            {
+              "name": "chrome_ai_wpt_components",
+              "path": "chrome_ai_wpt_components"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "chrome_ai_wpt_components"
+            }
+          },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
@@ -2485,6 +2727,17 @@
             "cpu": "arm64",
             "os": "Mac-26",
             "pool": "chrome.tests"
+          },
+          "named_caches": [
+            {
+              "name": "chrome_ai_wpt_components",
+              "path": "chrome_ai_wpt_components"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "chrome_ai_wpt_components"
+            }
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
@@ -2522,6 +2775,17 @@
             "cpu": "arm64",
             "os": "Mac-26",
             "pool": "chrome.tests"
+          },
+          "named_caches": [
+            {
+              "name": "chrome_ai_wpt_components",
+              "path": "chrome_ai_wpt_components"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "chrome_ai_wpt_components"
+            }
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
@@ -2884,6 +3148,17 @@
             "os": "Mac-15",
             "pool": "chrome.tests"
           },
+          "named_caches": [
+            {
+              "name": "chrome_ai_wpt_components",
+              "path": "chrome_ai_wpt_components"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "chrome_ai_wpt_components"
+            }
+          },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
@@ -2921,6 +3196,17 @@
             "os": "Mac-15",
             "pool": "chrome.tests"
           },
+          "named_caches": [
+            {
+              "name": "chrome_ai_wpt_components",
+              "path": "chrome_ai_wpt_components"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "chrome_ai_wpt_components"
+            }
+          },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
@@ -2956,6 +3242,17 @@
             "cpu": "x86-64",
             "os": "Mac-15",
             "pool": "chrome.tests"
+          },
+          "named_caches": [
+            {
+              "name": "chrome_ai_wpt_components",
+              "path": "chrome_ai_wpt_components"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "chrome_ai_wpt_components"
+            }
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
@@ -2994,6 +3291,17 @@
             "os": "Mac-15",
             "pool": "chrome.tests"
           },
+          "named_caches": [
+            {
+              "name": "chrome_ai_wpt_components",
+              "path": "chrome_ai_wpt_components"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "chrome_ai_wpt_components"
+            }
+          },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
@@ -3029,6 +3337,17 @@
             "cpu": "x86-64",
             "os": "Mac-15",
             "pool": "chrome.tests"
+          },
+          "named_caches": [
+            {
+              "name": "chrome_ai_wpt_components",
+              "path": "chrome_ai_wpt_components"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "chrome_ai_wpt_components"
+            }
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
@@ -3067,6 +3386,17 @@
             "os": "Mac-15",
             "pool": "chrome.tests"
           },
+          "named_caches": [
+            {
+              "name": "chrome_ai_wpt_components",
+              "path": "chrome_ai_wpt_components"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "chrome_ai_wpt_components"
+            }
+          },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
@@ -3102,6 +3432,17 @@
             "cpu": "x86-64",
             "os": "Mac-15",
             "pool": "chrome.tests"
+          },
+          "named_caches": [
+            {
+              "name": "chrome_ai_wpt_components",
+              "path": "chrome_ai_wpt_components"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "chrome_ai_wpt_components"
+            }
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
@@ -3140,6 +3481,17 @@
             "os": "Mac-15",
             "pool": "chrome.tests"
           },
+          "named_caches": [
+            {
+              "name": "chrome_ai_wpt_components",
+              "path": "chrome_ai_wpt_components"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "chrome_ai_wpt_components"
+            }
+          },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
@@ -3175,6 +3527,17 @@
             "cpu": "x86-64",
             "os": "Mac-15",
             "pool": "chrome.tests"
+          },
+          "named_caches": [
+            {
+              "name": "chrome_ai_wpt_components",
+              "path": "chrome_ai_wpt_components"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "chrome_ai_wpt_components"
+            }
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
@@ -3213,6 +3576,17 @@
             "os": "Mac-15",
             "pool": "chrome.tests"
           },
+          "named_caches": [
+            {
+              "name": "chrome_ai_wpt_components",
+              "path": "chrome_ai_wpt_components"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "chrome_ai_wpt_components"
+            }
+          },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
@@ -3248,6 +3622,17 @@
             "cpu": "x86-64",
             "os": "Mac-15",
             "pool": "chrome.tests"
+          },
+          "named_caches": [
+            {
+              "name": "chrome_ai_wpt_components",
+              "path": "chrome_ai_wpt_components"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "chrome_ai_wpt_components"
+            }
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
@@ -3285,6 +3670,17 @@
             "cpu": "x86-64",
             "os": "Mac-15",
             "pool": "chrome.tests"
+          },
+          "named_caches": [
+            {
+              "name": "chrome_ai_wpt_components",
+              "path": "chrome_ai_wpt_components"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "chrome_ai_wpt_components"
+            }
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
@@ -3655,6 +4051,17 @@
             "screen_scaling_percent": "100"
           },
           "expiration": 7200,
+          "named_caches": [
+            {
+              "name": "chrome_ai_wpt_components",
+              "path": "chrome_ai_wpt_components"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "chrome_ai_wpt_components"
+            }
+          },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
@@ -3692,6 +4099,17 @@
             "screen_scaling_percent": "100"
           },
           "expiration": 7200,
+          "named_caches": [
+            {
+              "name": "chrome_ai_wpt_components",
+              "path": "chrome_ai_wpt_components"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "chrome_ai_wpt_components"
+            }
+          },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
@@ -3728,6 +4146,17 @@
             "screen_scaling_percent": "100"
           },
           "expiration": 7200,
+          "named_caches": [
+            {
+              "name": "chrome_ai_wpt_components",
+              "path": "chrome_ai_wpt_components"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "chrome_ai_wpt_components"
+            }
+          },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
@@ -3765,6 +4194,17 @@
             "screen_scaling_percent": "100"
           },
           "expiration": 7200,
+          "named_caches": [
+            {
+              "name": "chrome_ai_wpt_components",
+              "path": "chrome_ai_wpt_components"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "chrome_ai_wpt_components"
+            }
+          },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
@@ -3803,6 +4243,17 @@
             "screen_scaling_percent": "100"
           },
           "expiration": 7200,
+          "named_caches": [
+            {
+              "name": "chrome_ai_wpt_components",
+              "path": "chrome_ai_wpt_components"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "chrome_ai_wpt_components"
+            }
+          },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
@@ -3842,6 +4293,17 @@
             "screen_scaling_percent": "100"
           },
           "expiration": 7200,
+          "named_caches": [
+            {
+              "name": "chrome_ai_wpt_components",
+              "path": "chrome_ai_wpt_components"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "chrome_ai_wpt_components"
+            }
+          },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
@@ -3880,6 +4342,17 @@
             "screen_scaling_percent": "100"
           },
           "expiration": 7200,
+          "named_caches": [
+            {
+              "name": "chrome_ai_wpt_components",
+              "path": "chrome_ai_wpt_components"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "chrome_ai_wpt_components"
+            }
+          },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
@@ -3919,6 +4392,17 @@
             "screen_scaling_percent": "100"
           },
           "expiration": 7200,
+          "named_caches": [
+            {
+              "name": "chrome_ai_wpt_components",
+              "path": "chrome_ai_wpt_components"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "chrome_ai_wpt_components"
+            }
+          },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
@@ -3955,6 +4439,17 @@
             "screen_scaling_percent": "100"
           },
           "expiration": 7200,
+          "named_caches": [
+            {
+              "name": "chrome_ai_wpt_components",
+              "path": "chrome_ai_wpt_components"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "chrome_ai_wpt_components"
+            }
+          },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
@@ -3992,6 +4487,17 @@
             "screen_scaling_percent": "100"
           },
           "expiration": 7200,
+          "named_caches": [
+            {
+              "name": "chrome_ai_wpt_components",
+              "path": "chrome_ai_wpt_components"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "chrome_ai_wpt_components"
+            }
+          },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
@@ -4028,6 +4534,17 @@
             "screen_scaling_percent": "100"
           },
           "expiration": 7200,
+          "named_caches": [
+            {
+              "name": "chrome_ai_wpt_components",
+              "path": "chrome_ai_wpt_components"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "chrome_ai_wpt_components"
+            }
+          },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
@@ -4065,6 +4582,17 @@
             "screen_scaling_percent": "100"
           },
           "expiration": 7200,
+          "named_caches": [
+            {
+              "name": "chrome_ai_wpt_components",
+              "path": "chrome_ai_wpt_components"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "chrome_ai_wpt_components"
+            }
+          },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
@@ -4737,6 +5265,17 @@
             "os": "Windows",
             "pool": "chrome.tests.intelligence"
           },
+          "named_caches": [
+            {
+              "name": "chrome_ai_wpt_components",
+              "path": "chrome_ai_wpt_components"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "chrome_ai_wpt_components"
+            }
+          },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 8
         },
@@ -4772,6 +5311,17 @@
             "os": "Windows",
             "pool": "chrome.tests.intelligence"
           },
+          "named_caches": [
+            {
+              "name": "chrome_ai_wpt_components",
+              "path": "chrome_ai_wpt_components"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "chrome_ai_wpt_components"
+            }
+          },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 8
         },
@@ -4805,6 +5355,17 @@
             "cpu": "x86-64",
             "os": "Windows",
             "pool": "chrome.tests.intelligence"
+          },
+          "named_caches": [
+            {
+              "name": "chrome_ai_wpt_components",
+              "path": "chrome_ai_wpt_components"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "chrome_ai_wpt_components"
+            }
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 8
@@ -4840,6 +5401,17 @@
             "cpu": "x86-64",
             "os": "Windows",
             "pool": "chrome.tests.intelligence"
+          },
+          "named_caches": [
+            {
+              "name": "chrome_ai_wpt_components",
+              "path": "chrome_ai_wpt_components"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "chrome_ai_wpt_components"
+            }
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 8
@@ -4878,6 +5450,17 @@
             "gpu": "10de|8086|1002:7340|1002:744c|1002:7480|1002:7550",
             "os": "Windows",
             "pool": "chrome.tests.intelligence"
+          },
+          "named_caches": [
+            {
+              "name": "chrome_ai_wpt_components",
+              "path": "chrome_ai_wpt_components"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "chrome_ai_wpt_components"
+            }
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 8
@@ -4918,6 +5501,17 @@
             "os": "Windows",
             "pool": "chrome.tests.intelligence"
           },
+          "named_caches": [
+            {
+              "name": "chrome_ai_wpt_components",
+              "path": "chrome_ai_wpt_components"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "chrome_ai_wpt_components"
+            }
+          },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 8
         },
@@ -4955,6 +5549,17 @@
             "gpu": "10de",
             "os": "Windows",
             "pool": "chrome.tests.intelligence"
+          },
+          "named_caches": [
+            {
+              "name": "chrome_ai_wpt_components",
+              "path": "chrome_ai_wpt_components"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "chrome_ai_wpt_components"
+            }
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 8
@@ -4995,6 +5600,17 @@
             "os": "Windows",
             "pool": "chrome.tests.intelligence"
           },
+          "named_caches": [
+            {
+              "name": "chrome_ai_wpt_components",
+              "path": "chrome_ai_wpt_components"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "chrome_ai_wpt_components"
+            }
+          },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 8
         },
@@ -5030,6 +5646,17 @@
             "gpu": "10de|8086|1002:7340|1002:744c|1002:7480|1002:7550",
             "os": "Windows",
             "pool": "chrome.tests.intelligence"
+          },
+          "named_caches": [
+            {
+              "name": "chrome_ai_wpt_components",
+              "path": "chrome_ai_wpt_components"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "chrome_ai_wpt_components"
+            }
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 8
@@ -5068,6 +5695,17 @@
             "os": "Windows",
             "pool": "chrome.tests.intelligence"
           },
+          "named_caches": [
+            {
+              "name": "chrome_ai_wpt_components",
+              "path": "chrome_ai_wpt_components"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "chrome_ai_wpt_components"
+            }
+          },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 8
         },
@@ -5103,6 +5741,17 @@
             "gpu": "10de",
             "os": "Windows",
             "pool": "chrome.tests.intelligence"
+          },
+          "named_caches": [
+            {
+              "name": "chrome_ai_wpt_components",
+              "path": "chrome_ai_wpt_components"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "chrome_ai_wpt_components"
+            }
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 8
@@ -5140,6 +5789,17 @@
             "gpu": "10de",
             "os": "Windows",
             "pool": "chrome.tests.intelligence"
+          },
+          "named_caches": [
+            {
+              "name": "chrome_ai_wpt_components",
+              "path": "chrome_ai_wpt_components"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "chrome_ai_wpt_components"
+            }
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 8

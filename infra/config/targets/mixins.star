@@ -288,6 +288,23 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "chrome_ai_wpt_component_cache",
+    swarming = targets.swarming(
+        optional_dimensions = {
+            60: {
+                "caches": "chrome_ai_wpt_components",
+            },
+        },
+        named_caches = [
+            swarming.cache(
+                name = "chrome_ai_wpt_components",
+                path = "chrome_ai_wpt_components",
+            ),
+        ],
+    ),
+)
+
+targets.mixin(
     name = "chromeos-generic-vm",
     args = [
         "--magic-vm-cache=magic_cros_vm_cache",

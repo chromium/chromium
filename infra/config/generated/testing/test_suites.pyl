@@ -57,6 +57,7 @@
         'mixins': [
           'has_native_resultdb_integration',
           'blink_tests_write_run_histories',
+          'chrome_ai_wpt_component_cache',
         ],
         'args': [
           '--release',
@@ -88,6 +89,7 @@
         'mixins': [
           'has_native_resultdb_integration',
           'blink_tests_write_run_histories',
+          'chrome_ai_wpt_component_cache',
         ],
         'args': [
           '--release',
@@ -123,6 +125,7 @@
         'mixins': [
           'has_native_resultdb_integration',
           'blink_tests_write_run_histories',
+          'chrome_ai_wpt_component_cache',
         ],
         'args': [
           '--release',
@@ -157,6 +160,7 @@
         'mixins': [
           'has_native_resultdb_integration',
           'blink_tests_write_run_histories',
+          'chrome_ai_wpt_component_cache',
         ],
         'args': [
           '--release',
@@ -191,6 +195,7 @@
         'mixins': [
           'has_native_resultdb_integration',
           'blink_tests_write_run_histories',
+          'chrome_ai_wpt_component_cache',
         ],
         'args': [
           '--release',
@@ -225,6 +230,7 @@
         'mixins': [
           'has_native_resultdb_integration',
           'blink_tests_write_run_histories',
+          'chrome_ai_wpt_component_cache',
         ],
         'args': [
           '--release',
@@ -259,6 +265,7 @@
         'mixins': [
           'has_native_resultdb_integration',
           'blink_tests_write_run_histories',
+          'chrome_ai_wpt_component_cache',
         ],
         'args': [
           '--release',
@@ -293,6 +300,7 @@
         'mixins': [
           'has_native_resultdb_integration',
           'blink_tests_write_run_histories',
+          'chrome_ai_wpt_component_cache',
         ],
         'args': [
           '--release',
@@ -324,6 +332,7 @@
         'mixins': [
           'has_native_resultdb_integration',
           'blink_tests_write_run_histories',
+          'chrome_ai_wpt_component_cache',
         ],
         'args': [
           '--release',
@@ -359,6 +368,7 @@
         'mixins': [
           'has_native_resultdb_integration',
           'blink_tests_write_run_histories',
+          'chrome_ai_wpt_component_cache',
         ],
         'args': [
           '--release',
@@ -393,6 +403,7 @@
         'mixins': [
           'has_native_resultdb_integration',
           'blink_tests_write_run_histories',
+          'chrome_ai_wpt_component_cache',
         ],
         'args': [
           '--release',
@@ -424,6 +435,7 @@
         'mixins': [
           'has_native_resultdb_integration',
           'blink_tests_write_run_histories',
+          'chrome_ai_wpt_component_cache',
         ],
         'args': [
           '--release',
@@ -459,6 +471,7 @@
         'mixins': [
           'has_native_resultdb_integration',
           'blink_tests_write_run_histories',
+          'chrome_ai_wpt_component_cache',
         ],
         'args': [
           '--release',
@@ -493,6 +506,7 @@
         'mixins': [
           'has_native_resultdb_integration',
           'blink_tests_write_run_histories',
+          'chrome_ai_wpt_component_cache',
         ],
         'args': [
           '--release',
@@ -531,6 +545,7 @@
         'mixins': [
           'has_native_resultdb_integration',
           'blink_tests_write_run_histories',
+          'chrome_ai_wpt_component_cache',
         ],
         'args': [
           '--release',
@@ -569,6 +584,7 @@
         'mixins': [
           'has_native_resultdb_integration',
           'blink_tests_write_run_histories',
+          'chrome_ai_wpt_component_cache',
         ],
         'args': [
           '--release',
@@ -607,6 +623,7 @@
         'mixins': [
           'has_native_resultdb_integration',
           'blink_tests_write_run_histories',
+          'chrome_ai_wpt_component_cache',
         ],
         'args': [
           '--release',
@@ -645,6 +662,7 @@
         'mixins': [
           'has_native_resultdb_integration',
           'blink_tests_write_run_histories',
+          'chrome_ai_wpt_component_cache',
         ],
         'args': [
           '--release',
@@ -679,6 +697,7 @@
         'mixins': [
           'has_native_resultdb_integration',
           'blink_tests_write_run_histories',
+          'chrome_ai_wpt_component_cache',
         ],
         'args': [
           '--release',
@@ -713,6 +732,7 @@
         'mixins': [
           'has_native_resultdb_integration',
           'blink_tests_write_run_histories',
+          'chrome_ai_wpt_component_cache',
         ],
         'args': [
           '--release',
@@ -747,6 +767,7 @@
         'mixins': [
           'has_native_resultdb_integration',
           'blink_tests_write_run_histories',
+          'chrome_ai_wpt_component_cache',
         ],
         'args': [
           '--release',
@@ -781,6 +802,7 @@
         'mixins': [
           'has_native_resultdb_integration',
           'blink_tests_write_run_histories',
+          'chrome_ai_wpt_component_cache',
         ],
         'args': [
           '--release',
@@ -812,6 +834,7 @@
         'mixins': [
           'has_native_resultdb_integration',
           'blink_tests_write_run_histories',
+          'chrome_ai_wpt_component_cache',
         ],
         'args': [
           '--release',
@@ -847,6 +870,7 @@
         'mixins': [
           'has_native_resultdb_integration',
           'blink_tests_write_run_histories',
+          'chrome_ai_wpt_component_cache',
         ],
         'args': [
           '--release',

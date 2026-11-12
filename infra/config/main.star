@@ -233,6 +233,7 @@ chromium_luci.configure_targets(
             "amd_radeon_rx_5500_xt": True,
             "android": True,
             "blink_tests_write_run_histories": True,
+            "chrome_ai_wpt_component_cache": True,
             "chrome-finch-swarming-pool": True,
             "chrome-flame-fleet-pool": True,
             "chrome-intelligence-swarming-pool": True,
