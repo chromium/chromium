@@ -120,6 +120,11 @@ non-allowlisted files with exit code 2).
      identify a different candidate. Ensure the same histogram is not selected
      again in this session.
 
+3. **Record XML Owners:** Before editing in Step 4 deletes the histogram from
+   XML, inspect its entry in `histograms.xml` and note its XML `<owner>` entries
+   **in the exact order listed** (emails and any `OWNERS` file references) so
+   they are available for Step 7.
+
 ### Step 4: Refactoring & Implementation
 
 Process the changes **file by file**, and apply modifications inside each file
@@ -220,10 +225,28 @@ validation exits 0.
 
 #### 4. Submission Pipeline
 
-Follow [submission.md](../hub/references/submission.md), passing:
+Run the reviewer picker first, then follow the shared pipeline.
 
-- **Branch Name:** `cleanup-<HistogramName>` (without `{...}` token braces for
-  patterned names)
-- **Commit File:** `../commit`
+1. Run the reviewer picker before submission (pass the XML `<owner>` entries
+   recorded in Step 3 in listed order, space-separated; do not run
+   `find_owners.py` for this skill):
 
-Do NOT pass `--reviewers` or `--cc`.
+   ```bash
+   python3 agents/projects/code-health/histogram-cleanup/scripts/pick_histogram_reviewer.py \
+     --owners <ordered XML owners from Step 3>
+   ```
+
+2. Follow [submission.md](../hub/references/submission.md), passing:
+
+   - **Branch Name:** `cleanup-<HistogramName>` (without `{...}` token braces
+     for patterned names)
+   - **Commit File:** `../commit`
+   - **Reviewer Lookup:** `none` (the lookup already ran in the previous step)
+
+   Suggest only: do NOT pass `Upload Flags`, `--reviewers`, or `--cc`.
+
+3. In the final summary (even if the user skips uploading), report the suggested
+   reviewer from step 1, or state that no clear reviewer was found. Also include
+   any secondary note, warning, or skipped-owner reasons (e.g., left Google,
+   team alias, or OOO for more than a week) so the user can add a reviewer
+   manually on Gerrit if desired.
