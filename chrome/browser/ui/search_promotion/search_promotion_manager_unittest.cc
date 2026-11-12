@@ -812,7 +812,8 @@ TEST_F(SearchPromotionManagerTest,
       .WillOnce([&close_callback](user_education::FeaturePromoParams params) {
         close_callback = std::move(params.close_callback);
         return true;
-      });
+      })
+      .WillOnce(testing::Return(false));
 
   manager->OnTargetURLVisited(mock_user_education);
 
@@ -821,14 +822,15 @@ TEST_F(SearchPromotionManagerTest,
   // at startup in browser_user_education_service.cc (which calls
   // manager->OnPromoAccepted() directly).
   //
-  // We simulate this flow by invoking OnPromoAccepted() directly on the
-  // manager, then executing the close callback to trigger metrics logging.
-  manager->OnPromoAccepted();
-
-  // Now close the promo, triggering close_callback.
+  // FeaturePromoControllerImpl::OnCustomAction runs close_callback
+  // synchronously while evaluating callback.Run()'s arguments before invoking
+  // the custom action callback (OnPromoAccepted). Simulate that exact order,
+  // plus an intervening navigation before the posted OnPromoClosed task runs.
   ASSERT_TRUE(close_callback);
   base::HistogramTester histogram_tester;
   std::move(close_callback).Run();
+  manager->OnPromoAccepted();
+  manager->OnTargetURLVisited(mock_user_education);
 
   // Let the background thread pool task run and finish.
   EXPECT_TRUE(base::test::RunUntil([&]() {
@@ -842,6 +844,8 @@ TEST_F(SearchPromotionManagerTest,
   // is 4, since we mocked "Firefox" in SetUp).
   histogram_tester.ExpectBucketCount(
       "Search.SearchPromotion.DefaultBrowserType.Accepted.Open", 4, 1);
+  histogram_tester.ExpectTotalCount(
+      "Search.SearchPromotion.DefaultBrowserType.Dismissed.Open", 0);
 }
 
 TEST_F(SearchPromotionManagerTest,
@@ -885,14 +889,18 @@ TEST_F(SearchPromotionManagerTest,
       .WillOnce([&close_callback](user_education::FeaturePromoParams params) {
         close_callback = std::move(params.close_callback);
         return true;
-      });
+      })
+      .WillOnce(testing::Return(false));
 
   manager->OnTargetURLVisited(mock_user_education);
-  manager->OnPromoAccepted();
 
+  // Simulate production callback ordering (close_callback before
+  // OnPromoAccepted) and an intervening navigation before OnPromoClosed runs.
   ASSERT_TRUE(close_callback);
   base::HistogramTester histogram_tester;
   std::move(close_callback).Run();
+  manager->OnPromoAccepted();
+  manager->OnTargetURLVisited(mock_user_education);
 
   EXPECT_TRUE(base::test::RunUntil([&]() {
     auto samples = histogram_tester.GetHistogramSamplesSinceCreation(
@@ -902,6 +910,8 @@ TEST_F(SearchPromotionManagerTest,
 
   histogram_tester.ExpectBucketCount(
       "Search.SearchPromotion.DefaultBrowserType.Accepted.Install", 4, 1);
+  histogram_tester.ExpectTotalCount(
+      "Search.SearchPromotion.DefaultBrowserType.Dismissed.Install", 0);
 }
 
 TEST_F(SearchPromotionManagerTest,

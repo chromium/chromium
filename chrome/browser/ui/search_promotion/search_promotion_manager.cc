@@ -15,6 +15,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/version.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
@@ -178,6 +179,16 @@ void SearchPromotionManager::OnPromoAccepted() {
 }
 
 void SearchPromotionManager::OnPromoClosed() {
+  // Defer reading was_accepted_ to a subsequent task on the current sequence so
+  // it observes was_accepted_ after FeaturePromoControllerImpl::OnCustomAction
+  // invokes OnPromoAccepted.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&SearchPromotionManager::RecordPromoClosedMetrics,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void SearchPromotionManager::RecordPromoClosedMetrics() {
   // Capture current class state to determine if the user accepted the promo.
   bool accepted = was_accepted_;
   // Reset the accepted flag. This prevents subsequent triggers from

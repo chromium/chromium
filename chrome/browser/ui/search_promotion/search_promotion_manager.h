@@ -126,6 +126,7 @@ class SearchPromotionManager : public KeyedService {
   void RecordDefaultBrowserState(
       shell_integration::DefaultWebClientState state);
   void OnPromoClosed();
+  void RecordPromoClosedMetrics();
   void OnDefaultBrowserNameRetrieved(bool accepted,
                                      const std::u16string& name);
 
