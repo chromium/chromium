@@ -7002,22 +7002,11 @@ class GLGenerator:
       for state_name in sorted(_STATE_INFO.keys()):
         state = _STATE_INFO[state_name]
         for item in state['states']:
-          if isinstance(item['default'], list):
-            f.write(
-              "%s %s[%d];\n"
-              % (item['type'], item['name'], len(item['default']))
-            )
-          else:
-            f.write("%s %s;\n" % (item['type'], item['name']))
+          assert isinstance(item['default'], str)
+          f.write("%s %s;\n" % (item['type'], item['name']))
 
           if item.get('cached', False):
-            if isinstance(item['default'], list):
-              f.write(
-                "%s cached_%s[%d];\n"
-                % (item['type'], item['name'], len(item['default']))
-              )
-            else:
-              f.write("%s cached_%s;\n" % (item['type'], item['name']))
+            f.write("%s cached_%s;\n" % (item['type'], item['name']))
 
       f.write("\n")
       f.write("""
@@ -7093,36 +7082,14 @@ bool %s::GetStateAs%s(
           f.write("      return true;\n")
         else:
           for item in state['states']:
+            assert isinstance(item['default'], str)
             f.write("    case %s:\n" % item['enum'])
-            if isinstance(item['default'], list):
-              item_len = len(item['default'])
-              f.write("      *num_written = %d;\n" % item_len)
-              f.write("      if (params) {\n")
-              if item['type'] == gl_type:
-                f.write(
-                  "        UNSAFE_TODO(memcpy(params, %s, sizeof(%s) * %d));\n"
-                  % (item['name'], item['type'], item_len)
-                )
-              else:
-                f.write(
-                  "        for (size_t i = 0; i < %s; ++i) {\n" % item_len
-                )
-                f.write(
-                  "          UNSAFE_TODO(params[i]) = %s;\n"
-                  % (
-                    GetGLGetTypeConversion(
-                      gl_type, item['type'], "UNSAFE_TODO(%s[i])" % item['name']
-                    )
-                  )
-                )
-                f.write("        }\n")
-            else:
-              f.write("      *num_written = 1;\n")
-              f.write("      if (params) {\n")
-              f.write(
-                "        UNSAFE_TODO(params[0]) = %s;\n"
-                % (GetGLGetTypeConversion(gl_type, item['type'], item['name']))
-              )
+            f.write("      *num_written = 1;\n")
+            f.write("      if (params) {\n")
+            f.write(
+              "        UNSAFE_TODO(params[0]) = %s;\n"
+              % (GetGLGetTypeConversion(gl_type, item['type'], item['name']))
+            )
             f.write("      }\n")
             f.write("      return true;\n")
       for capability in self.capability_flags:
@@ -7165,17 +7132,10 @@ bool %s::GetStateAs%s(
       for state_name in sorted(_STATE_INFO.keys()):
         state = _STATE_INFO[state_name]
         for item in state['states']:
-          if isinstance(item['default'], list):
-            for ndx, value in enumerate(item['default']):
-              f.write("  %s[%d] = %s;\n" % (item['name'], ndx, value))
-          else:
-            f.write("  %s = %s;\n" % (item['name'], item['default']))
+          assert isinstance(item['default'], str)
+          f.write("  %s = %s;\n" % (item['name'], item['default']))
           if item.get('cached', False):
-            if isinstance(item['default'], list):
-              for ndx, value in enumerate(item['default']):
-                f.write("  cached_%s[%d] = %s;\n" % (item['name'], ndx, value))
-            else:
-              f.write("  cached_%s = %s;\n" % (item['name'], item['default']))
+            f.write("  cached_%s = %s;\n" % (item['name'], item['default']))
       f.write("}\n")
 
       f.write("""
@@ -7261,17 +7221,11 @@ void ContextState::InitState(const ContextState *prev_state) const {
               item_name = CachedStateName(item)
 
               operation = []
+              assert isinstance(item['default'], str)
               if test_prev:
-                if isinstance(item['default'], list):
-                  operation.append(
-                    "  if (UNSAFE_TODO(memcmp(prev_state->%s, %s, "
-                    "sizeof(%s) * %d))) {\n"
-                    % (item_name, item_name, item['type'], len(item['default']))
-                  )
-                else:
-                  operation.append(
-                    "  if (prev_state->%s != %s) {\n  " % (item_name, item_name)
-                  )
+                operation.append(
+                  "  if (prev_state->%s != %s) {\n  " % (item_name, item_name)
+                )
 
               operation.append(
                 "  api()->gl%sFn(%s, %s);\n"
