@@ -9708,17 +9708,15 @@
             ]
         }
     ],
-    "GlicPdfSummarizeButton": [
+    "GlicPdfSummarizeSingleCta": [
         {
             "platforms": [
-                "linux",
                 "mac",
-                "windows",
-                "chromeos"
+                "windows"
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_SingleCta",
                     "params": {
                         "arm": "3"
                     },
