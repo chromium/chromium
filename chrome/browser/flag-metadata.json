@@ -7735,7 +7735,7 @@
   {
     "name": "omnibox-paste-promo-experiment",
     "owners": [ "lilybalas@google.com", "bling-mony-pod@google.com" ],
-    "expiry_milestone": 160
+    "expiry_milestone": 170
   },
   {
     "name": "omnibox-post-frame-autocomplete-start",
