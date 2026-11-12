@@ -96,6 +96,13 @@ void AbaSearchJourneyCueTarget::OnChipShown() {
   OnCueShown(/*is_anchored_message=*/false);
 }
 
+void AbaSearchJourneyCueTarget::OnChipClicked() {
+  if (SearchJourneyTabFeature* feature =
+          SearchJourneyTabFeature::From(&tab_.get())) {
+    feature->OnCueChipClicked();
+  }
+}
+
 void AbaSearchJourneyCueTarget::OnAnchoredMessageShown(
     page_actions::PageActionPriorityCategory priority) {
   OnCueShown(/*is_anchored_message=*/true);

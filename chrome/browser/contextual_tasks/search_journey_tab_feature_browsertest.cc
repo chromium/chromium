@@ -836,6 +836,59 @@ IN_PROC_BROWSER_TEST_F(SearchJourneyCueBrowserTest,
   EXPECT_EQ(user_action_tester.GetActionCount(
                 "ContextualTasks.SearchJourney.Restored"),
             1);
+  histogram_tester.ExpectUniqueSample("ContextualTasks.SearchJourney.EndReason",
+                                      SearchJourneyEndReason::kRestored, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.SearchJourney.CueOutcome",
+      SearchJourneyCueOutcome::kAnchoredMessageClicked, 1);
+}
+
+// Tests that clicking the cue's chip re-shows its anchored message, and that
+// clicking that restores the journey and records a chip click.
+IN_PROC_BROWSER_TEST_F(SearchJourneyCueBrowserTest,
+                       ClickingChipThenAnchoredMessageRestoresJourney) {
+  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
+  BlockLoudCues();
+  tabs::TabInterface* source_tab = StartJourney(CreatePromoParams());
+  ASSERT_TRUE(source_tab);
+  page_actions::PageActionController* page_action_controller =
+      page_actions::PageActionController::From(source_tab);
+  ASSERT_TRUE(page_action_controller);
+  page_actions::PageActionObserver observer(kActionAnchoredContextualCue);
+  observer.RegisterAsPageActionObserver(*page_action_controller);
+
+  tab_list()->ActivateTab(source_tab->GetHandle());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return observer.GetCurrentPageActionState().showing; }));
+  ASSERT_FALSE(observer.GetCurrentPageActionState().anchored_message_showing);
+  actions::ActionItem* action = actions::ActionManager::Get().FindAction(
+      kActionAnchoredContextualCue,
+      BrowserActions::From(browser())->root_action_item());
+  ASSERT_TRUE(action);
+
+  action->InvokeAction();
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return observer.GetCurrentPageActionState().anchored_message_showing;
+  }));
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "ContextualTasks.SearchJourney.Cue.ChipClicked"),
+            1);
+  EXPECT_FALSE(tracker()->GetActiveJourneysForTesting().empty());
+
+  EXPECT_CALL(*ui_service(),
+              StartTaskUiInSidePanelImpl(testing::_, source_tab, testing::_,
+                                         testing::_, testing::_));
+  action->InvokeAction();
+  EXPECT_TRUE(tracker()->GetActiveJourneysForTesting().empty());
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "ContextualTasks.SearchJourney.Cue.Shown"),
+            1);
+  histogram_tester.ExpectUniqueSample("ContextualTasks.SearchJourney.EndReason",
+                                      SearchJourneyEndReason::kRestored, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.SearchJourney.CueOutcome",
+      SearchJourneyCueOutcome::kChipClicked, 1);
 }
 
 // Tests that the cue shows at most once per journey, even if the user returns

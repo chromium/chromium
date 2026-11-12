@@ -31,6 +31,23 @@ chromium-metrics-reviews@google.com.
   <variant name="Shown" summary="shown on the source tab"/>
 </variants>
 
+<variants name="AbaSearchJourneyType">
+  <variant name="ContextMenuSearch"
+      summary="journeys whose query matched text selected for a context-menu
+               search on the source tab"/>
+  <variant name="CopyMatch"
+      summary="journeys whose query matched text copied or selected for a
+               context-menu search on the source tab"/>
+  <variant name="EduConceptual"
+      summary="journeys labeled EduConceptual by the search results page"/>
+  <variant name="EduHomework"
+      summary="journeys labeled EduHomework by the search results page"/>
+  <variant name="HowToWebApp"
+      summary="journeys labeled HowToWebApp by the search results page"/>
+  <variant name="NoQueryHint"
+      summary="journeys without a label from the search results page"/>
+</variants>
+
 <histogram name="ContextualTasks.ActiveTab.UserAction.LinkClicked"
     enum="Boolean" expires_after="2027-05-09">
   <owner>sophiechang@chromium.org</owner>
@@ -1022,6 +1039,49 @@ chromium-metrics-reviews@google.com.
     query.
   </summary>
   <token key="Interaction" variants="AbaSearchJourneyCueInteraction"/>
+</histogram>
+
+<histogram name="ContextualTasks.SearchJourney.CueOutcome"
+    enum="SearchJourneyCueOutcome" expires_after="2027-06-18">
+  <owner>juanmojica@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded once when an ABA search journey ends, if the journey's contextual
+    cue was eligible to show on the first qualifying return to the source tab.
+    Records whether the cue showed, whether it first showed as the expanded
+    anchored message or the collapsed chip, and whether the user clicked it to
+    restore the journey in the side panel.
+  </summary>
+</histogram>
+
+<histogram name="ContextualTasks.SearchJourney.CueOutcome.{JourneyType}"
+    enum="SearchJourneyCueOutcome" expires_after="2027-06-18">
+  <owner>juanmojica@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded once when an ABA search journey ends, for {JourneyType}, if the
+    journey's contextual cue was eligible to show on the first qualifying return
+    to the source tab. Records whether the cue showed, whether it first showed
+    as the expanded anchored message or the collapsed chip, and whether the user
+    clicked it to restore the journey in the side panel. A journey labeled with
+    several hints is recorded once for each.
+  </summary>
+  <token key="JourneyType" variants="AbaSearchJourneyType"/>
+</histogram>
+
+<histogram name="ContextualTasks.SearchJourney.EndReason"
+    enum="SearchJourneyEndReason" expires_after="2027-06-18">
+  <owner>juanmojica@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded once when an armed ABA search journey ends. Records why it ended:
+    it was restored in the side panel; it expired; the user returned to the
+    source tab on a different page; the source tab was closed or discarded
+    (including when its window closed); the search tab committed a different
+    search, or a new journey started for the source tab; the user switched to
+    another tab; or all journeys were cleared, usually because the default
+    search provider changed.
+  </summary>
 </histogram>
 
 <histogram name="ContextualTasks.Session.Completed" enum="Boolean"

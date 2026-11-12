@@ -176,6 +176,33 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/contextual_tasks/contextual_tasks_web_contents_user_data.h:ContextualTasksThreadContextLibraryUpdateOutcome) -->
 
+<!-- LINT.IfChange(SearchJourneyCueOutcome) -->
+
+<enum name="SearchJourneyCueOutcome">
+  <int value="0" label="No cue"/>
+  <int value="1" label="Anchored message clicked"/>
+  <int value="2" label="Anchored message collapsed, then clicked"/>
+  <int value="3" label="Anchored message ignored"/>
+  <int value="4" label="Chip clicked"/>
+  <int value="5" label="Chip ignored"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/contextual_tasks/search_journey_tracker.h:SearchJourneyCueOutcome) -->
+
+<!-- LINT.IfChange(SearchJourneyEndReason) -->
+
+<enum name="SearchJourneyEndReason">
+  <int value="0" label="Restored"/>
+  <int value="1" label="Expired"/>
+  <int value="2" label="Source tab navigated"/>
+  <int value="3" label="Source tab closed or discarded"/>
+  <int value="4" label="Replaced by new search"/>
+  <int value="5" label="Intermediate tab"/>
+  <int value="6" label="State cleared (e.g. default search provider changed)"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/contextual_tasks/search_journey_tracker.h:SearchJourneyEndReason) -->
+
 </enums>
 
 </histogram-configuration>

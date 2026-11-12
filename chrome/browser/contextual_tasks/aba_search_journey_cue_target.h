@@ -51,6 +51,7 @@ class AbaSearchJourneyCueTarget : public contextual_cueing::CueTarget {
       const page_content_annotations::PageContentAnnotationsResult& result,
       content::WebContents* active_web_contents) const override;
   void OnChipShown() override;
+  void OnChipClicked() override;
   void OnAnchoredMessageShown(
       page_actions::PageActionPriorityCategory priority) override;
   void OnAnchoredMessageClicked(contextual_cueing::CueActionData data) override;

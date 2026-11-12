@@ -10522,6 +10522,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="ContextualTasks.SearchJourney.Cue.ChipClicked">
+  <owner>juanmojica@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <description>
+    Recorded when the user clicks the collapsed chip of the ABA search journey
+    contextual cue on the source tab, which re-shows its anchored message.
+  </description>
+</action>
+
 <action name="ContextualTasks.SearchJourney.Cue.Clicked">
   <owner>juanmojica@google.com</owner>
   <owner>chrome-contextual-tasks-eng@google.com</owner>
