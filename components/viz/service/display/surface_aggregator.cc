@@ -680,8 +680,7 @@ ResolvedFrameData* SurfaceAggregator::GetResolvedFrame(
         auto& prev_resolved_frame = prev_resolved_frame_iter->second;
         if (prev_resolved_frame.is_valid()) {
           prev_frame_index = prev_resolved_frame.previous_frame_index();
-          prev_root_pass_id =
-              prev_resolved_frame.GetRootRenderPassData().remapped_id();
+          prev_root_pass_id = prev_resolved_frame.TakeRootRenderPassId();
         }
       }
     }

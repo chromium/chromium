@@ -329,6 +329,11 @@ class VIZ_SERVICE_EXPORT ResolvedFrameData {
   ResolvedPassData& GetRootRenderPassData();
   const ResolvedPassData& GetRootRenderPassData() const;
 
+  // Takes the root render pass ID to be reused by a new surface from the same
+  // frame sink so the ID is not used by both surfaces. Returns a null ID if
+  // this frame was already used in the current aggregation.
+  AggregatedRenderPassId TakeRootRenderPassId();
+
   std::vector<ResolvedPassData>& GetResolvedPasses() {
     return resolved_passes_;
   }
@@ -380,7 +385,8 @@ class VIZ_SERVICE_EXPORT ResolvedFrameData {
 
   // Set `CompositorRenderPass` for all `resolved_passes_`. Each
   // `ResolvedPassData` must have been aggregated before.
-  void ReuseActiveFrame();
+  void ReuseActiveFrame(
+      AggregatedRenderPassId::Generator& render_pass_id_generator);
 
   void RegisterWithResourceProvider();
   void MovePersistentPassDataFromPreviousFrame(
@@ -418,7 +424,8 @@ class VIZ_SERVICE_EXPORT ResolvedFrameData {
   base::flat_map<CompositorRenderPassId, AggregatedRenderPassId>
       aggregated_id_map_;
 
-  const AggregatedRenderPassId prev_root_pass_id_;
+  // A fixed ID used for the root render pass.
+  AggregatedRenderPassId root_pass_id_;
 
   // Track if the this resolved frame was used this aggregation.
   bool used_in_aggregation_ = false;

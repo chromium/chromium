@@ -375,6 +375,25 @@ TEST_F(ResolvedFrameDataTest, ReusePreviousRootPassId) {
   EXPECT_EQ(resolved_frame.GetRootRenderPassData().remapped_id(),
             prev_root_pass_id);
   resolved_frame.ResetAfterAggregation();
+
+  // Taking the root render pass ID returns `prev_root_pass_id` and clears the
+  // root pass ID on `resolved_frame` so a new ID is generated on the next
+  // aggregation.
+  EXPECT_EQ(resolved_frame.TakeRootRenderPassId(), prev_root_pass_id);
+  EXPECT_TRUE(resolved_frame.GetRootRenderPassData().remapped_id().is_null());
+
+  resolved_frame.UpdateForAggregation(render_pass_id_generator_);
+  AggregatedRenderPassId new_root_pass_id =
+      resolved_frame.GetRootRenderPassData().remapped_id();
+  EXPECT_FALSE(new_root_pass_id.is_null());
+  EXPECT_NE(new_root_pass_id, prev_root_pass_id);
+  resolved_frame.ResetAfterAggregation();
+
+  SubmitCompositorFrame(MakeSimpleFrame());
+  resolved_frame.UpdateForAggregation(render_pass_id_generator_);
+  EXPECT_NE(resolved_frame.GetRootRenderPassData().remapped_id(),
+            prev_root_pass_id);
+  resolved_frame.ResetAfterAggregation();
 }
 
 // Verify OffsetTag creating a modified copy of original CompositorRenderPasses.
