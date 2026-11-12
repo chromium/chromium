@@ -1317,3 +1317,32 @@ TEST_F(IdentityDialogControllerTest, ShowNativeAppUiDismissed) {
   EXPECT_CALL(native_result_callback, Run).Times(0);
   controller->OnDismiss(IdentityDialogController::DismissReason::kOther);
 }
+
+// Tests that the controller does not access its members when it gets destroyed
+// while showing the verifying dialog, e.g. because the view dismissed the
+// dialog synchronously and the request completed.
+TEST_F(IdentityDialogControllerTest,
+       ControllerDestroyedDuringShowVerifyingDialog) {
+  auto controller = std::make_unique<IdentityDialogController>(web_contents());
+  IdentityDialogController* controller_ptr = controller.get();
+  auto mock_view = std::make_unique<MockAccountSelectionView>();
+  MockAccountSelectionView* mock_view_ptr = mock_view.get();
+  controller->SetAccountSelectionViewForTesting(std::move(mock_view));
+
+  accounts_ = CreateAccount();
+  IdentityProviderDataPtr idp_data = CreateIdentityProviderData(accounts_);
+
+  // The view reports that the dialog was shown even though the controller was
+  // destroyed. The controller should report that the dialog was not shown.
+  EXPECT_CALL(*mock_view_ptr, ShowVerifyingDialog).WillOnce([&controller]() {
+    controller.reset();
+    return true;
+  });
+  EXPECT_FALSE(controller_ptr->ShowVerifyingDialog(
+      content::RelyingPartyData(kTopFrameEtldPlusOne,
+                                /*iframe_for_display=*/u""),
+      idp_data, accounts_[0],
+      content::IdentityRequestAccount::SignInMode::kAuto,
+      blink::mojom::RpMode::kPassive, base::DoNothing()));
+  EXPECT_FALSE(controller);
+}
