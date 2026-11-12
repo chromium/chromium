@@ -70,6 +70,10 @@
 extern const int kCcompressedProtocolJSON;
 #endif
 
+#if BUILDFLAG(BUNDLE_CHROME_BIDI_MAPPER)
+#include "content/grit/content_resources.h"
+#endif
+
 namespace content {
 
 namespace {
@@ -505,6 +509,15 @@ void ServerWrapper::OnHttpRequest(int connection_id,
     return;
   }
 
+#if BUILDFLAG(BUNDLE_CHROME_BIDI_MAPPER)
+  if (info.path == "/bidi-mapper.js") {
+    GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&DevToolsHttpHandler::OnBidiResourceRequest,
+                                  handler_, connection_id));
+    return;
+  }
+#endif
+
   if (!base::StartsWith(info.path, "/devtools/",
                         base::CompareCase::SENSITIVE)) {
     server_->Send404(connection_id, kDevtoolsHttpHandlerTrafficAnnotation);
@@ -804,6 +817,15 @@ void DevToolsHttpHandler::OnDiscoveryPageRequest(int connection_id) {
                                 base::Unretained(server_wrapper_.get()),
                                 connection_id, response));
 }
+
+#if BUILDFLAG(BUNDLE_CHROME_BIDI_MAPPER)
+void DevToolsHttpHandler::OnBidiResourceRequest(int connection_id) {
+  std::string bidi_mapper_js =
+      GetContentClient()->GetDataResourceString(IDR_CHROME_BIDI_MAPPER_JS);
+  CHECK(!bidi_mapper_js.empty()) << "Could not load BiDi mapper";
+  Send200(connection_id, bidi_mapper_js, "text/javascript; charset=UTF-8");
+}
+#endif
 
 void DevToolsHttpHandler::OnFrontendResourceRequest(int connection_id,
                                                     std::string_view path) {

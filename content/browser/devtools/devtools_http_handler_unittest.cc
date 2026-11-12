@@ -32,6 +32,7 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/devtools_manager_delegate.h"
 #include "content/public/browser/devtools_socket_factory.h"
+#include "content/public/common/buildflags.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_constants.h"
 #include "content/public/common/content_switches.h"
@@ -51,6 +52,10 @@
 #include "net/url_request/url_request_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(BUNDLE_CHROME_BIDI_MAPPER)
+#include "content/grit/content_resources.h"
+#endif
 
 namespace content {
 namespace {
@@ -551,6 +556,34 @@ TEST_F(DevToolsHttpHandlerWithServerTest, JsonVersionIncludesFilePathStyle) {
 #else
 #error Unsupported native file path style
 #endif
+}
+
+TEST_F(DevToolsHttpHandlerWithServerTest, TestBidi) {
+  int port = StartServer();
+
+  GURL url(base::StringPrintf("http://127.0.0.1:%d/bidi-mapper.js", port));
+  net::TestDelegate delegate;
+  auto request = request_context_->CreateRequest(
+      url, net::DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS,
+      net::handles::kInvalidNetworkHandle);
+  request->Start();
+  delegate.RunUntilComplete();
+  EXPECT_GE(delegate.request_status(), 0);
+
+#if BUILDFLAG(BUNDLE_CHROME_BIDI_MAPPER)
+  EXPECT_EQ(200, request->response_info().headers->response_code());
+  std::string mime_type;
+  EXPECT_TRUE(request->response_info().headers->GetMimeType(&mime_type));
+  EXPECT_EQ("text/javascript", mime_type);
+  EXPECT_FALSE(delegate.data_received().empty());
+  EXPECT_EQ(GetContentClientForTesting()->GetDataResourceString(
+                IDR_CHROME_BIDI_MAPPER_JS),
+            delegate.data_received());
+#else
+  EXPECT_EQ(404, request->response_info().headers->response_code());
+#endif
+
+  StopServer();
 }
 
 class DevToolsWebSocketHandlerTest : public DevToolsHttpHandlerWithServerTest {

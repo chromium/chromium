@@ -17,6 +17,7 @@
 #include "base/values.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/devtools_manager_delegate.h"
+#include "content/public/common/buildflags.h"
 #include "net/base/ip_endpoint.h"
 #include "net/http/http_status_code.h"
 
@@ -80,6 +81,9 @@ class DevToolsHttpHandler {
                          DevToolsAgentHost::List agent_hosts,
                          bool for_tab);
   void OnDiscoveryPageRequest(int connection_id);
+#if BUILDFLAG(BUNDLE_CHROME_BIDI_MAPPER)
+  void OnBidiResourceRequest(int connection_id);
+#endif
   void OnFrontendResourceRequest(int connection_id, std::string_view path);
   void OnWebSocketRequest(int connection_id,
                           const net::HttpServerRequestInfo& info);
