@@ -176,6 +176,18 @@ TEST_F(ChildModuleManagerTest, IgnoresInvalidDirectories) {
   EXPECT_THAT(manager_->GetAvailableVersionsForTesting(), IsEmpty());
 }
 
+TEST_F(ChildModuleManagerTest, IgnoresVersionsWithoutFourComponents) {
+  StageVersion(base::Version("147"));
+  StageVersion(base::Version("147.0"));
+  StageVersion(base::Version("147.0.7727"));
+  StageVersion(base::Version("147.0.7727.50.1"));
+
+  CreateManager();
+
+  EXPECT_EQ(SelectModuleForNewHost(), std::nullopt);
+  EXPECT_THAT(manager_->GetAvailableVersionsForTesting(), IsEmpty());
+}
+
 TEST_F(ChildModuleManagerTest, DetectsDynamicallyAddedVersion) {
   const base::Version kVersion("147.0.7727.55");
   CreateManager();

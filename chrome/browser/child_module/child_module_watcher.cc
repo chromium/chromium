@@ -27,7 +27,7 @@ constexpr base::TimeDelta kDebounceDelay = base::Milliseconds(200);
 // Periodic rescan interval as a fallback for missed filesystem events.
 constexpr base::TimeDelta kPeriodicRescanInterval = base::Minutes(20);
 
-// Scans `modules_dir` for valid, ready child module versions.
+// Scans `modules_dir` for valid, ready 4-component child module versions.
 VersionSet ScanChildModules(const base::FilePath& modules_dir) {
   VersionSet versions;
   base::FileEnumerator enumerator(modules_dir, /*recursive=*/false,
@@ -35,8 +35,8 @@ VersionSet ScanChildModules(const base::FilePath& modules_dir) {
   enumerator.ForEach([&](const base::FilePath& dir) {
     std::string dir_name = enumerator.GetInfo().GetName().MaybeAsASCII();
     base::Version candidate(dir_name);
-    if (!candidate.IsValid() || candidate.GetString() != dir_name ||
-        base::IsLink(dir)) {
+    if (!candidate.IsValid() || candidate.components().size() != 4 ||
+        candidate.GetString() != dir_name || base::IsLink(dir)) {
       return;
     }
     base::FilePath manifest_path = GetManifestPath(dir);
