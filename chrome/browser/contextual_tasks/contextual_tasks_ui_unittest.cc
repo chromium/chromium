@@ -5503,6 +5503,9 @@ TEST_F(ContextualTasksUiTest, ProfileIndicator_LoadTimeDataPopulated) {
 }
 
 TEST_F(ContextualTasksUiTest, ProfileIndicator_IncognitoSignedOutInitially) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      kContextualTasksSidePanelRearchitecture};
+
   // Even if the parent regular profile is signed in to Chrome and the web,
   // an Incognito profile with no Gaia cookies should not show the indicator.
   AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
@@ -5543,6 +5546,9 @@ TEST_F(ContextualTasksUiTest, ProfileIndicator_IncognitoSignedOutInitially) {
 
 TEST_F(ContextualTasksUiTest,
        ProfileIndicator_IncognitoWebSignedInAndCookieChange) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      kContextualTasksSidePanelRearchitecture};
+
   const std::string list_accounts_url =
       GaiaUrls::GetInstance()
           ->ListAccountsURLWithSource(
