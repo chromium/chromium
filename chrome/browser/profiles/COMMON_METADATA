@@ -5,3 +5,4 @@ team_email: "chrome-signin-team@google.com"
 buganizer_public: {
   component_id: 1457509
 }
+agentic_review {}
