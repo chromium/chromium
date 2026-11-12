@@ -96,7 +96,8 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InterfaceEndpointClient
   bool has_pending_responders() const {
     CHECK(sequence_checker_.CalledOnValidSequence());
     base::AutoLock lock(async_responders_lock_);
-    return !async_responders_.empty() || !sync_responses_.empty();
+    return (async_responders_ && !async_responders_->empty()) ||
+           (sync_responses_ && !sync_responses_->empty());
   }
 
   AssociatedGroup* associated_group();
@@ -175,7 +176,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InterfaceEndpointClient
 
   // Sets a callback to handle idle notifications. This callback will be invoked
   // any time the peer endpoint sends a NotifyIdle control message AND
-  // |num_unacked_messages_| is zero.
+  // the number of unacked messages is zero.
   //
   // Configures the peer endpoint to ack incoming messages send NotifyIdle
   // notifications only once it's been idle continuously for at least a duration
@@ -183,7 +184,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InterfaceEndpointClient
   void SetIdleHandler(base::TimeDelta timeout, base::RepeatingClosure handler);
 
   unsigned int GetNumUnackedMessagesForTesting() const {
-    return num_unacked_messages_;
+    return idle_state_ ? idle_state_->num_unacked_messages : 0;
   }
 
   // Sets a callback to invoke whenever this endpoint receives an
@@ -304,33 +305,47 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InterfaceEndpointClient
 
   const base::raw_span<const uint32_t> sync_method_ordinals_;
 
-  // The callback to invoke when our peer endpoint sends us NotifyIdle and we
-  // have no outstanding unacked messages. If null, no callback has been set and
-  // we do not expect to receive NotifyIdle or MessageAck messages from the
-  // peer.
-  base::RepeatingClosure idle_handler_;
-
   // A callback to invoke if and when this endpoint receives an
-  // EnableIdleTracking control message.
+  // EnableIdleTracking control message. Every Receiver sets this, so it is not
+  // part of IdleTrackingState below.
   IdleTrackingEnabledCallback idle_tracking_enabled_callback_;
 
-  // The timeout to wait for continuous idling before notiftying our peer that
-  // we're idle.
-  std::optional<base::TimeDelta> idle_timeout_;
+  // State for idle tracking. Only a handful of endpoints per process ever
+  // enable idle tracking, so this is allocated lazily to keep every
+  // InterfaceEndpointClient small.
+  struct IdleTrackingState {
+    IdleTrackingState();
+    ~IdleTrackingState();
 
-  // The current idle timer, valid only while we're idle. If this fires, we send
-  // a NotifyIdle to our peer.
-  std::optional<base::OneShotTimer> notify_idle_timer_;
+    // The callback to invoke when our peer endpoint sends us NotifyIdle and we
+    // have no outstanding unacked messages. If null, no callback has been set
+    // and we do not expect to receive NotifyIdle or MessageAck messages from
+    // the peer.
+    base::RepeatingClosure idle_handler;
 
-  // A ref to a ConnectionGroup used to track the idle state of this endpoint,
-  // if any. Only non-null if an EnableIdleTracking message has been received.
-  // This is a weak ref to the group.
-  ConnectionGroupRef idle_tracking_connection_group_;
+    // The timeout to wait for continuous idling before notiftying our peer
+    // that we're idle.
+    std::optional<base::TimeDelta> idle_timeout;
 
-  // Indicates the number of unacked messages that have been sent so far. Only
-  // non-zero when |idle_handler_| has been set and some number of unacked
-  // messages remain in-flight.
-  unsigned int num_unacked_messages_ = 0;
+    // The current idle timer, valid only while we're idle. If this fires, we
+    // send a NotifyIdle to our peer.
+    std::optional<base::OneShotTimer> notify_idle_timer;
+
+    // A ref to a ConnectionGroup used to track the idle state of this
+    // endpoint, if any. Only non-null if an EnableIdleTracking message has
+    // been received. This is a weak ref to the group.
+    ConnectionGroupRef idle_tracking_connection_group;
+
+    // Indicates the number of unacked messages that have been sent so far. Only
+    // non-zero when |idle_handler| has been set and some number of unacked
+    // messages remain in-flight.
+    unsigned int num_unacked_messages = 0;
+  };
+
+  // Returns the idle-tracking state, allocating it on first use.
+  IdleTrackingState& GetOrCreateIdleState();
+
+  std::unique_ptr<IdleTrackingState> idle_state_;
 
   ScopedInterfaceEndpointHandle handle_;
   std::unique_ptr<AssociatedGroup> associated_group_;
@@ -346,8 +361,12 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InterfaceEndpointClient
   MessageDispatcher dispatcher_;
 
   mutable base::Lock async_responders_lock_;
-  AsyncResponderMap async_responders_ GUARDED_BY(async_responders_lock_);
-  SyncResponseMap sync_responses_;
+  // Both maps are allocated on first use: most endpoints never have a
+  // pending response (receivers, or remotes whose calls have no reply), and
+  // there are thousands of endpoints per process.
+  std::unique_ptr<AsyncResponderMap> async_responders_
+      GUARDED_BY(async_responders_lock_);
+  std::unique_ptr<SyncResponseMap> sync_responses_;
 
   uint64_t next_request_id_ = 1;
 

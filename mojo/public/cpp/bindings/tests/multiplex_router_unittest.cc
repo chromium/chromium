@@ -86,6 +86,29 @@ class MultiplexRouterTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
+// A response for a request that was never sent (so the client has no pending
+// responders, not even an allocated map of them) is rejected as a bad message.
+TEST_F(MultiplexRouterTest, ResponseWithoutRequestIsRejected) {
+  InterfaceEndpointClient client0(
+      std::move(endpoint0_), nullptr, &PassThroughFilter::Accept, {},
+      base::SingleThreadTaskRunner::GetCurrentDefault(), 0u, kTestInterfaceName,
+      MessageToMethodInfo, MessageToMethodName);
+  InterfaceEndpointClient client1(
+      std::move(endpoint1_), nullptr, &PassThroughFilter::Accept, {},
+      base::SingleThreadTaskRunner::GetCurrentDefault(), 0u, kTestInterfaceName,
+      MessageToMethodInfo, MessageToMethodName);
+
+  base::RunLoop run_loop;
+  client0.set_connection_error_handler(run_loop.QuitClosure());
+
+  Message response;
+  AllocResponseMessage(1, "unexpected", 42u, &response);
+  client1.Accept(&response);
+
+  run_loop.Run();
+  EXPECT_TRUE(client0.encountered_error());
+}
+
 TEST_F(MultiplexRouterTest, BasicRequestResponse) {
   InterfaceEndpointClient client0(
       std::move(endpoint0_), nullptr, &PassThroughFilter::Accept, {},

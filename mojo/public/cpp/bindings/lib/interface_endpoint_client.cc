@@ -48,6 +48,15 @@ namespace mojo {
 
 namespace {
 
+// Returns `*map`, allocating it on first use.
+template <typename Map>
+Map& EnsureMap(std::unique_ptr<Map>& map) {
+  if (!map) {
+    map = std::make_unique<Map>();
+  }
+  return *map;
+}
+
 constinit thread_local base::HistogramBase* g_end_to_end_metric = nullptr;
 
 // A helper to expose a subset of an InterfaceEndpointClient's functionality
@@ -537,8 +546,8 @@ bool InterfaceEndpointClient::SendMessage(Message* message,
     return false;
   }
 
-  if (!is_control_message && idle_handler_) {
-    ++num_unacked_messages_;
+  if (!is_control_message && idle_state_ && idle_state_->idle_handler) {
+    ++idle_state_->num_unacked_messages;
   }
 
   return true;
@@ -587,29 +596,31 @@ bool InterfaceEndpointClient::SendMessageWithResponder(
     return false;
   }
 
-  if (!is_control_message && idle_handler_) {
-    ++num_unacked_messages_;
+  if (!is_control_message && idle_state_ && idle_state_->idle_handler) {
+    ++idle_state_->num_unacked_messages;
   }
 
   if (!is_sync || sync_send_mode == SyncSendMode::kForceAsync) {
     if (is_sync) {
       // This was forced to send async. Leave a placeholder in the map of
       // expected sync responses so HandleValidatedMessage knows what to do.
-      sync_responses_.emplace(request_id, nullptr);
+      EnsureMap(sync_responses_).emplace(request_id, nullptr);
       controller_->RegisterExternalSyncWaiter(request_id);
     }
     base::AutoLock lock(async_responders_lock_);
-    async_responders_.emplace(
-        request_id, PendingAsyncResponse{message_name, std::move(responder)});
+    EnsureMap(async_responders_)
+        .emplace(request_id,
+                 PendingAsyncResponse{message_name, std::move(responder)});
     return true;
   }
 
   SyncCallRestrictions::AssertSyncCallAllowed();
 
   bool response_received = false;
-  sync_responses_.insert(std::make_pair(
-      request_id,
-      std::make_unique<SyncResponseInfo>(message_name, &response_received)));
+  EnsureMap(sync_responses_)
+      .insert(
+          std::make_pair(request_id, std::make_unique<SyncResponseInfo>(
+                                         message_name, &response_received)));
 
   base::WeakPtr<InterfaceEndpointClient> weak_self =
       weak_ptr_factory_.GetWeakPtr();
@@ -620,8 +631,8 @@ bool InterfaceEndpointClient::SendMessageWithResponder(
   }
   // Make sure that this instance hasn't been destroyed.
   if (weak_self) {
-    DCHECK(sync_responses_.contains(request_id));
-    auto iter = sync_responses_.find(request_id);
+    DCHECK(sync_responses_ && sync_responses_->contains(request_id));
+    auto iter = sync_responses_->find(request_id);
     DCHECK_EQ(&response_received, iter->second->response_received);
     if (response_received) {
       std::ignore = responder->Accept(&iter->second->response);
@@ -630,7 +641,7 @@ bool InterfaceEndpointClient::SendMessageWithResponder(
                << "Typcially it is because the interface has been "
                << "disconnected.";
     }
-    sync_responses_.erase(iter);
+    sync_responses_->erase(iter);
   }
 
   return true;
@@ -673,7 +684,7 @@ void InterfaceEndpointClient::NotifyError(
   // them alive any longer. Note that it's allowed that a pending response
   // callback may own this endpoint, so we simply move the responders onto the
   // stack here and let them be destroyed when the stack unwinds.
-  AsyncResponderMap responders;
+  std::unique_ptr<AsyncResponderMap> responders;
   {
     base::AutoLock lock(async_responders_lock_);
     std::swap(responders, async_responders_);
@@ -714,7 +725,7 @@ void InterfaceEndpointClient::SetIdleHandler(base::TimeDelta timeout,
                                              base::RepeatingClosure handler) {
   // We allow for idle handler replacement and changing the timeout duration.
   control_message_proxy_.EnableIdleTracking(timeout);
-  idle_handler_ = std::move(handler);
+  GetOrCreateIdleState().idle_handler = std::move(handler);
 }
 
 void InterfaceEndpointClient::SetIdleTrackingEnabledCallback(
@@ -727,40 +738,43 @@ bool InterfaceEndpointClient::AcceptEnableIdleTracking(
   // If this is the first time EnableIdleTracking was received, set up the
   // ConnectionGroup and give a ref to our owner.
   if (idle_tracking_enabled_callback_) {
-    idle_tracking_connection_group_ = ConnectionGroup::Create(
+    IdleTrackingState& state = GetOrCreateIdleState();
+    state.idle_tracking_connection_group = ConnectionGroup::Create(
         base::BindRepeating(&InterfaceEndpointClient::MaybeStartIdleTimer,
                             weak_ptr_factory_.GetWeakPtr()),
         task_runner_);
     std::move(idle_tracking_enabled_callback_)
-        .Run(idle_tracking_connection_group_.WeakCopy());
+        .Run(state.idle_tracking_connection_group.WeakCopy());
   }
-
-  idle_timeout_ = timeout;
+  if (idle_state_) {
+    idle_state_->idle_timeout = timeout;
+  }
   return true;
 }
 
 bool InterfaceEndpointClient::AcceptMessageAck() {
-  if (!idle_handler_ || num_unacked_messages_ == 0) {
+  if (!idle_state_ || !idle_state_->idle_handler ||
+      idle_state_->num_unacked_messages == 0) {
     return false;
   }
 
-  --num_unacked_messages_;
+  --idle_state_->num_unacked_messages;
   return true;
 }
 
 bool InterfaceEndpointClient::AcceptNotifyIdle() {
-  if (!idle_handler_) {
+  if (!idle_state_ || !idle_state_->idle_handler) {
     return false;
   }
 
   // We have outstanding unacked messages, so quietly ignore this NotifyIdle.
-  if (num_unacked_messages_ > 0) {
+  if (idle_state_->num_unacked_messages > 0) {
     return true;
   }
 
   // With no outstanding unacked messages, a NotifyIdle received implies that
   // the peer really is idle. We can invoke our idle handler.
-  idle_handler_.Run();
+  idle_state_->idle_handler.Run();
   return true;
 }
 
@@ -768,25 +782,40 @@ void InterfaceEndpointClient::MaybeStartIdleTimer() {
   // Something has happened to interrupt the current idle state, if any. We
   // either restart the idle timer (if idle again) or clear it so it doesn't
   // fire.
-  if (idle_tracking_connection_group_ &&
-      idle_tracking_connection_group_.HasZeroRefs()) {
-    DCHECK(idle_timeout_);
-    notify_idle_timer_.emplace();
-    notify_idle_timer_->Start(
-        FROM_HERE, *idle_timeout_,
+  if (!idle_state_) {
+    return;
+  }
+  if (idle_state_->idle_tracking_connection_group &&
+      idle_state_->idle_tracking_connection_group.HasZeroRefs()) {
+    DCHECK(idle_state_->idle_timeout);
+    idle_state_->notify_idle_timer.emplace();
+    idle_state_->notify_idle_timer->Start(
+        FROM_HERE, *idle_state_->idle_timeout,
         base::BindOnce(&InterfaceEndpointClient::MaybeSendNotifyIdle,
                        base::Unretained(this)));
   } else {
-    notify_idle_timer_.reset();
+    idle_state_->notify_idle_timer.reset();
   }
 }
 
 void InterfaceEndpointClient::MaybeSendNotifyIdle() {
-  if (idle_tracking_connection_group_ &&
-      idle_tracking_connection_group_.HasZeroRefs()) {
+  if (idle_state_ && idle_state_->idle_tracking_connection_group &&
+      idle_state_->idle_tracking_connection_group.HasZeroRefs()) {
     control_message_proxy_.NotifyIdle();
   }
 }
+
+InterfaceEndpointClient::IdleTrackingState&
+InterfaceEndpointClient::GetOrCreateIdleState() {
+  if (!idle_state_) {
+    idle_state_ = std::make_unique<IdleTrackingState>();
+  }
+  return *idle_state_;
+}
+
+InterfaceEndpointClient::IdleTrackingState::IdleTrackingState() = default;
+
+InterfaceEndpointClient::IdleTrackingState::~IdleTrackingState() = default;
 
 void InterfaceEndpointClient::ResetFromAnotherSequenceUnsafe() {
   sequence_checker_.DetachFromSequence();
@@ -803,12 +832,15 @@ void InterfaceEndpointClient::ForgetAsyncRequest(uint64_t request_id) {
   std::optional<PendingAsyncResponse> response;
   {
     base::AutoLock lock(async_responders_lock_);
-    auto it = async_responders_.find(request_id);
-    if (it == async_responders_.end()) {
+    if (!async_responders_) {
+      return;
+    }
+    auto it = async_responders_->find(request_id);
+    if (it == async_responders_->end()) {
       return;
     }
     response = std::move(it->second);
-    async_responders_.erase(it);
+    async_responders_->erase(it);
   }
 }
 
@@ -933,8 +965,9 @@ bool InterfaceEndpointClient::HandleValidatedMessage(Message* message) {
       return control_message_handler_.AcceptWithResponder(message,
                                                           std::move(responder));
     } else {
-      if (idle_tracking_connection_group_) {
-        responder->set_connection_group(idle_tracking_connection_group_);
+      if (idle_state_ && idle_state_->idle_tracking_connection_group) {
+        responder->set_connection_group(
+            idle_state_->idle_tracking_connection_group);
       }
       accepted_interface_message = incoming_receiver_->AcceptWithResponder(
           message, std::move(responder));
@@ -943,8 +976,11 @@ bool InterfaceEndpointClient::HandleValidatedMessage(Message* message) {
     uint64_t request_id = message->request_id();
 
     if (message->has_flag(Message::kFlagIsSync)) {
-      auto it = sync_responses_.find(request_id);
-      if (it == sync_responses_.end()) {
+      if (!sync_responses_) {
+        return false;
+      }
+      auto it = sync_responses_->find(request_id);
+      if (it == sync_responses_->end()) {
         return false;
       }
 
@@ -960,18 +996,21 @@ bool InterfaceEndpointClient::HandleValidatedMessage(Message* message) {
 
       // This was a sync message sent forcibly as async. Clean up and proceed as
       // if the message were any other async message.
-      sync_responses_.erase(it);
+      sync_responses_->erase(it);
     }
 
     std::optional<PendingAsyncResponse> pending_response;
     {
       base::AutoLock lock(async_responders_lock_);
-      auto it = async_responders_.find(request_id);
-      if (it == async_responders_.end()) {
+      if (!async_responders_) {
+        return false;
+      }
+      auto it = async_responders_->find(request_id);
+      if (it == async_responders_->end()) {
         return false;
       }
       pending_response = std::move(it->second);
-      async_responders_.erase(it);
+      async_responders_->erase(it);
     }
 
     if (message->name() != pending_response->request_message_name) {
@@ -988,8 +1027,8 @@ bool InterfaceEndpointClient::HandleValidatedMessage(Message* message) {
     accepted_interface_message = incoming_receiver_->Accept(message);
   }
 
-  if (weak_self && accepted_interface_message &&
-      idle_tracking_connection_group_) {
+  if (weak_self && accepted_interface_message && idle_state_ &&
+      idle_state_->idle_tracking_connection_group) {
     control_message_proxy_.SendMessageAck();
     if (!has_response) {
       MaybeStartIdleTimer();
