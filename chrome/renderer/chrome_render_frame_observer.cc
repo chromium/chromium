@@ -15,6 +15,7 @@
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
@@ -462,14 +463,15 @@ void ChromeRenderFrameObserver::RequestImageForContextNode(
   // Map for converting between multiple mojom ImageFormat structures to
   // prevent a circular dependency (go/lens-logging-in-chromium)
   // TODO(shivpatel): add default value UNKNOWN for if ImageFormat is updated
-  const std::map<chrome::mojom::ImageFormat, lens::mojom::ImageFormat>
-      image_format_conversion = {
+  static constexpr auto kImageFormatConversion =
+      base::MakeFixedFlatMap<chrome::mojom::ImageFormat,
+                             lens::mojom::ImageFormat>({
           {chrome::mojom::ImageFormat::ORIGINAL,
            lens::mojom::ImageFormat::ORIGINAL},
           {chrome::mojom::ImageFormat::PNG, lens::mojom::ImageFormat::PNG},
           {chrome::mojom::ImageFormat::JPEG, lens::mojom::ImageFormat::JPEG},
           {chrome::mojom::ImageFormat::WEBP, lens::mojom::ImageFormat::WEBP},
-      };
+      });
 
   if (context_node.IsNull() || !context_node.IsElementNode()) {
     // The downscaled size is the original size, since no downscaling was
@@ -500,7 +502,7 @@ void ChromeRenderFrameObserver::RequestImageForContextNode(
   if (needs_downscale) {
     latency_logs.push_back(lens::mojom::LatencyLog::New(
         lens::mojom::Phase::DOWNSCALE_START, original_size, gfx::Size(),
-        image_format_conversion.at(image_format), base::Time::Now(),
+        kImageFormatConversion.at(image_format), base::Time::Now(),
         /*encoded_size_bytes=*/0));
   }
   SkBitmap thumbnail =
@@ -509,7 +511,7 @@ void ChromeRenderFrameObserver::RequestImageForContextNode(
   if (needs_downscale) {
     latency_logs.push_back(lens::mojom::LatencyLog::New(
         lens::mojom::Phase::DOWNSCALE_END, original_size, downscaled_size,
-        image_format_conversion.at(image_format), base::Time::Now(),
+        kImageFormatConversion.at(image_format), base::Time::Now(),
         /*encoded_size_bytes=*/0));
   }
 
@@ -536,7 +538,7 @@ void ChromeRenderFrameObserver::RequestImageForContextNode(
   if (needs_encode) {
     latency_logs.push_back(lens::mojom::LatencyLog::New(
         lens::mojom::Phase::ENCODE_START, original_size, downscaled_size,
-        image_format_conversion.at(image_format), base::Time::Now(),
+        kImageFormatConversion.at(image_format), base::Time::Now(),
         /*encoded_size_bytes=*/0));
   }
   std::optional<std::vector<uint8_t>> data;
@@ -569,7 +571,7 @@ void ChromeRenderFrameObserver::RequestImageForContextNode(
   if (needs_encode) {
     latency_logs.push_back(lens::mojom::LatencyLog::New(
         lens::mojom::Phase::ENCODE_END, original_size, downscaled_size,
-        image_format_conversion.at(image_format), base::Time::Now(),
+        kImageFormatConversion.at(image_format), base::Time::Now(),
         sizeof(uint8_t) * image_data.size()));
   }
 
