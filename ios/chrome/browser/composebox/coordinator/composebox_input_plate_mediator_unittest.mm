@@ -1392,23 +1392,23 @@ TEST_F(ComposeboxInputPlateMediatorTest,
   ASSERT_TRUE(item != nil);
   item.isAutoAdded = YES;
 
-  EXPECT_FALSE([mediator isWebStateIDRemoved:web_state_id]);
+  EXPECT_FALSE([mediator isWebStateIDRemovedByUser:web_state_id]);
 
   // Explicitly remove the item.
   [mediator removeItem:item];
   EXPECT_EQ(consumer.items.count, 0U);
-  EXPECT_TRUE([mediator isWebStateIDRemoved:web_state_id]);
+  EXPECT_TRUE([mediator isWebStateIDRemovedByUser:web_state_id]);
 
   // Refocusing the omnibox must not clear removed state or trigger
   // auto-attachment.
   [mediator setOmniboxFocused:NO];
   [mediator setOmniboxFocused:YES];
-  EXPECT_TRUE([mediator isWebStateIDRemoved:web_state_id]);
+  EXPECT_TRUE([mediator isWebStateIDRemovedByUser:web_state_id]);
   EXPECT_EQ(consumer.items.count, 0U);
 
   // Page load completion events must also not clear removed state.
   fake_web_state->OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
-  EXPECT_TRUE([mediator isWebStateIDRemoved:web_state_id]);
+  EXPECT_TRUE([mediator isWebStateIDRemovedByUser:web_state_id]);
   EXPECT_EQ(consumer.items.count, 0U);
 }
 
@@ -1443,7 +1443,7 @@ TEST_F(ComposeboxInputPlateMediatorTest,
   // User explicitly removes the tab.
   [mediator removeItem:item];
   EXPECT_EQ(consumer.items.count, 0U);
-  EXPECT_TRUE([mediator isWebStateIDRemoved:web_state_id]);
+  EXPECT_TRUE([mediator isWebStateIDRemovedByUser:web_state_id]);
 
   // Simulate navigating the web state to a same-document URL (should stay
   // removed).
@@ -1453,7 +1453,7 @@ TEST_F(ComposeboxInputPlateMediatorTest,
   same_doc_context.SetHasCommitted(true);
   same_doc_context.SetIsSameDocument(true);
   fake_web_state->OnNavigationFinished(&same_doc_context);
-  EXPECT_TRUE([mediator isWebStateIDRemoved:web_state_id]);
+  EXPECT_TRUE([mediator isWebStateIDRemovedByUser:web_state_id]);
 
   // Simulate navigating the web state to a new document (committed).
   web::FakeNavigationContext context;
@@ -1463,7 +1463,7 @@ TEST_F(ComposeboxInputPlateMediatorTest,
 
   // The new page navigation clears the removed state, re-enabling
   // auto-attachment.
-  EXPECT_FALSE([mediator isWebStateIDRemoved:web_state_id]);
+  EXPECT_FALSE([mediator isWebStateIDRemovedByUser:web_state_id]);
 }
 
 // Tests that deselecting a tab in the tab picker prevents it from being
@@ -1490,17 +1490,17 @@ TEST_F(ComposeboxInputPlateMediatorTest,
   [mediator createInputItemForWebState:active_web_state
                                 source:ComposeboxInputItemSource::kTabPicker];
   ASSERT_EQ(consumer.items.count, 1U);
-  EXPECT_FALSE([mediator isWebStateIDRemoved:web_state_id]);
+  EXPECT_FALSE([mediator isWebStateIDRemovedByUser:web_state_id]);
 
   // Deselect the tab via tab picker removal.
   [mediator removeDeselectedIDs:{web_state_id}];
   EXPECT_EQ(consumer.items.count, 0U);
-  EXPECT_TRUE([mediator isWebStateIDRemoved:web_state_id]);
+  EXPECT_TRUE([mediator isWebStateIDRemovedByUser:web_state_id]);
 
   // Explicitly attaching the tab clears its removed status.
   [mediator attachTabSelection:ComposeboxTabSelection{
                                    .selected_ids = {web_state_id}}];
-  EXPECT_FALSE([mediator isWebStateIDRemoved:web_state_id]);
+  EXPECT_FALSE([mediator isWebStateIDRemovedByUser:web_state_id]);
 }
 
 // Tests that in Co-browse mode, auto-attachment is not triggered when
@@ -2987,7 +2987,7 @@ TEST_F(ComposeboxInputPlateMediatorTest,
   [mediator attachTabSelection:ComposeboxTabSelection{}];
   ASSERT_EQ(consumer.items.count, 1U);
   EXPECT_EQ(consumer.items[0].tabURL, page_a_url);
-  EXPECT_TRUE([mediator isWebStateIDRemoved:active_id]);
+  EXPECT_TRUE([mediator isWebStateIDRemovedByUser:active_id]);
 
   // Re-attach Page B via the Tab Picker, then explicitly remove historical
   // Page A (`consumer.items[0]`). Removing historical Page A must not mark
@@ -2995,12 +2995,12 @@ TEST_F(ComposeboxInputPlateMediatorTest,
   [mediator
       attachTabSelection:ComposeboxTabSelection{.selected_ids = {active_id}}];
   ASSERT_EQ(consumer.items.count, 2U);
-  EXPECT_FALSE([mediator isWebStateIDRemoved:active_id]);
+  EXPECT_FALSE([mediator isWebStateIDRemovedByUser:active_id]);
 
   [mediator removeItem:consumer.items[0]];
   ASSERT_EQ(consumer.items.count, 1U);
   EXPECT_EQ(consumer.items[0].tabURL, page_b_url);
-  EXPECT_FALSE([mediator isWebStateIDRemoved:active_id]);
+  EXPECT_FALSE([mediator isWebStateIDRemovedByUser:active_id]);
 }
 
 // Tests that `didCreateSearchURL:` in AIM mode with the active tab attached
@@ -3250,8 +3250,8 @@ TEST_F(ComposeboxInputPlateMediatorTest,
       .WillOnce(testing::Return(true));
   [mediator removeSharedTabWithInputItemIdentifier:restored_item.identifier];
   EXPECT_EQ(consumer.items.count, 0U);
-  EXPECT_TRUE(
-      [mediator isWebStateIDRemoved:active_web_state->GetUniqueIdentifier()]);
+  EXPECT_TRUE([mediator
+      isWebStateIDRemovedByUser:active_web_state->GetUniqueIdentifier()]);
 }
 
 // Fixture for tests that depend on timers, using mock time.
