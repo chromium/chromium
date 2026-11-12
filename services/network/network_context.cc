@@ -3504,6 +3504,10 @@ GURL NetworkContext::GetHSTSRedirectForPreconnect(const GURL& original_url) {
 void NetworkContext::DestroySocketManager(P2PSocketManager* socket_manager) {
   auto iter = socket_managers_.find(socket_manager);
   CHECK(iter != socket_managers_.end());
+  // Move out of `socket_managers_` before erasing so `~P2PSocketManager()`
+  // never runs while `flat_map::erase()` is mutating the container.
+  std::unique_ptr<P2PSocketManager> owned_socket_manager =
+      std::move(iter->second);
   socket_managers_.erase(iter);
 }
 #endif  // BUILDFLAG(IS_P2P_ENABLED)

@@ -19,6 +19,7 @@
 #include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/webrtc/fake_ssl_client_socket.h"
@@ -225,6 +226,23 @@ TEST_F(P2PSocketTcpTest, SendDataNoAuth) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(fake_client_->connection_error());
+}
+
+// Verify that a failing socket doesn't call its delegate after
+// ClearDelegate(). FakeP2PSocketDelegate::DestroySocket() CHECKs that the
+// socket is expected to be destroyed.
+TEST_F(P2PSocketTcpTest, NoDelegateCallAfterClearDelegate) {
+  webrtc::AsyncSocketPacketOptions options;
+  std::vector<uint8_t> packet;
+  CreateRandomPacket(&packet);
+
+  socket_impl_->ClearDelegate();
+  // Sending data before receiving a STUN response fails the socket.
+  socket_impl_->Send(packet, P2PPacketInfo(dest_.ip_address, options, 0));
+
+  EXPECT_EQ(0U, sent_data_.size());
+  EXPECT_TRUE(
+      base::test::RunUntil([&] { return fake_client_->connection_error(); }));
 }
 
 // Verify that we can send data after we've received STUN response
