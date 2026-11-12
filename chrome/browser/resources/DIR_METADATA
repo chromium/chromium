@@ -1,6 +1,1 @@
-monorail: {
-  component: "UI"
-}
-buganizer_public: {
-  component_id: 1457123
-}
+mixins: "//ui/webui/COMMON_METADATA"
