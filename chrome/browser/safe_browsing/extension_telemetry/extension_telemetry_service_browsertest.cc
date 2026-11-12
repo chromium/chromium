@@ -10,6 +10,7 @@
 #include "base/strings/string_util.h"
 #include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/values.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
@@ -37,6 +38,8 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
+#include "extensions/browser/background_script_executor.h"
 #include "extensions/browser/extensions_test.h"
 #include "extensions/common/api/declarative_net_request/test_utils.h"
 #include "extensions/common/extension_features.h"
@@ -152,6 +155,19 @@ class ExtensionTelemetryServiceBrowserTest
 
   bool IsEnterpriseExtensionStoreEmpty() {
     return telemetry_service()->enterprise_extension_store_.empty();
+  }
+
+  // Returns whether `service` holds enterprise signals from `extension_id`.
+  static bool HasEnterpriseSignals(
+      const ExtensionTelemetryService& service,
+      const extensions::ExtensionId& extension_id) {
+    return service.enterprise_extension_store_.contains(extension_id);
+  }
+
+  // Returns whether `service` holds ESB signals from `extension_id`.
+  static bool HasEsbSignals(const ExtensionTelemetryService& service,
+                            const extensions::ExtensionId& extension_id) {
+    return service.extension_store_.contains(extension_id);
   }
 
   using ExtensionInfo = ExtensionTelemetryReportRequest_ExtensionInfo;
@@ -1231,10 +1247,53 @@ class ExtensionTelemetryServiceIsolatedModeBrowserTest
 
   bool IsMilestone2Enabled() const { return GetParam(); }
 
+ protected:
+  // Loads a `spanning` mode extension, enabled in Isolated Mode. Its
+  // background only runs the scripts sent by the tests.
+  extensions::ExtensionId LoadSpanningExtension() {
+    static constexpr char kManifest[] =
+        R"({
+           "name": "Spanning Extension",
+           "version": "0.1",
+           "manifest_version": 3,
+           "background": { "service_worker": "background.js" },
+           "permissions": ["tabs"]
+         })";
+    spanning_extension_dir_.WriteManifest(kManifest);
+    spanning_extension_dir_.WriteFile(FILE_PATH_LITERAL("background.js"), "");
+    const extensions::Extension* extension = LoadExtension(
+        spanning_extension_dir_.UnpackedPath(), {.allow_in_incognito = true});
+    CHECK(extension);
+    return extension->id();
+  }
+
+  // Runs `call`, a promise-returning extension API call, in the extension's
+  // background and waits for it to finish.
+  void RunInExtensionBackground(const extensions::ExtensionId& extension_id,
+                                const std::string& call) {
+    EXPECT_EQ(extensions::BackgroundScriptExecutor::ExecuteScript(
+                  browser()->GetProfile(), extension_id,
+                  call + ".then(() => chrome.test.sendScriptResult('done'))" +
+                      ".catch(e => chrome.test.sendScriptResult(String(e)));",
+                  extensions::BackgroundScriptExecutor::ResultCapture::
+                      kSendScriptResult),
+              base::Value("done"));
+  }
+
+  // Navigates the tab with `tab_id` to `url` through chrome.tabs.update().
+  void UpdateTabFromExtension(const extensions::ExtensionId& extension_id,
+                              int tab_id,
+                              const GURL& url) {
+    RunInExtensionBackground(
+        extension_id,
+        content::JsReplace("chrome.tabs.update($1, {url: $2})", tab_id, url));
+  }
+
  private:
   base::test::ScopedFeatureList isolated_mode_feature_list_;
   enterprise_isolated_mode::ScopedIsolatedModeOverrideForTesting
       scoped_isolated_mode_;
+  extensions::TestExtensionDir spanning_extension_dir_;
 };
 
 IN_PROC_BROWSER_TEST_P(ExtensionTelemetryServiceIsolatedModeBrowserTest,
@@ -1271,6 +1330,46 @@ IN_PROC_BROWSER_TEST_P(ExtensionTelemetryServiceIsolatedModeBrowserTest,
   EXPECT_EQ(ExtensionTelemetryService::GetForSignal(isolated_profile,
                                                     /*target=*/nullptr),
             nullptr);
+}
+
+IN_PROC_BROWSER_TEST_P(ExtensionTelemetryServiceIsolatedModeBrowserTest,
+                       ReportsSpanningTabsSignalOnRegularTab) {
+  SetSafeBrowsingState(prefs(), SafeBrowsingState::ENHANCED_PROTECTION);
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  const extensions::ExtensionId extension_id = LoadSpanningExtension();
+  const int regular_tab_id =
+      extensions::ExtensionTabUtil::GetTabId(web_contents(browser()));
+
+  UpdateTabFromExtension(extension_id, regular_tab_id,
+                         embedded_test_server()->GetURL("/title1.html"));
+
+  EXPECT_TRUE(HasEnterpriseSignals(*telemetry_service(), extension_id));
+  EXPECT_TRUE(HasEsbSignals(*telemetry_service(), extension_id));
+}
+
+IN_PROC_BROWSER_TEST_P(ExtensionTelemetryServiceIsolatedModeBrowserTest,
+                       RoutesSpanningTabsSignalOnIsolatedTab) {
+  SetSafeBrowsingState(prefs(), SafeBrowsingState::ENHANCED_PROTECTION);
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  const extensions::ExtensionId extension_id = LoadSpanningExtension();
+  BrowserWindowInterface* isolated_browser = CreateIncognitoBrowser();
+  ASSERT_TRUE(
+      isolated_browser->GetProfile()->IsEnterpriseIsolatedModeProfile());
+  const int isolated_tab_id =
+      extensions::ExtensionTabUtil::GetTabId(web_contents(isolated_browser));
+
+  UpdateTabFromExtension(extension_id, isolated_tab_id,
+                         embedded_test_server()->GetURL("/title1.html"));
+
+  if (!IsMilestone2Enabled()) {
+    // The signal goes to the caller's service, as before.
+    EXPECT_TRUE(HasEnterpriseSignals(*telemetry_service(), extension_id));
+    EXPECT_TRUE(HasEsbSignals(*telemetry_service(), extension_id));
+    return;
+  }
+  // The signal is dropped: the Isolated Mode profile has no service yet.
+  EXPECT_FALSE(HasEnterpriseSignals(*telemetry_service(), extension_id));
+  EXPECT_FALSE(HasEsbSignals(*telemetry_service(), extension_id));
 }
 
 INSTANTIATE_TEST_SUITE_P(,

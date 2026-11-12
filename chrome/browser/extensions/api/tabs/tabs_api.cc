@@ -56,6 +56,7 @@
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/common/language_detection_details.h"
 #include "components/zoom/zoom_controller.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
@@ -390,7 +391,8 @@ api::tabs::Tab CreateTabObjectHelper(content::WebContents* contents,
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 // Notifies the safe browsing telemetry service of a relevant extension action.
-void NotifyExtensionTelemetry(Profile* profile,
+void NotifyExtensionTelemetry(content::BrowserContext* caller,
+                              content::BrowserContext* target,
                               const Extension* extension,
                               safe_browsing::TabsApiInfo::ApiMethod api_method,
                               const std::string& current_url,
@@ -402,7 +404,7 @@ void NotifyExtensionTelemetry(Profile* profile,
   }
 
   auto* extension_telemetry_service =
-      safe_browsing::ExtensionTelemetryService::Get(profile);
+      safe_browsing::ExtensionTelemetryService::GetForSignal(caller, target);
 
   if (!extension_telemetry_service || !extension_telemetry_service->enabled()) {
     return;
@@ -1185,7 +1187,7 @@ void TabsCreateFunction::OpenTabInBrowser(BrowserWindowInterface& browser,
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
-  NotifyExtensionTelemetry(Profile::FromBrowserContext(browser_context()),
+  NotifyExtensionTelemetry(browser_context(), new_contents->GetBrowserContext(),
                            extension(), safe_browsing::TabsApiInfo::CREATE,
                            /*current_url=*/std::string(),
                            original_url_.value_or(std::string()),
@@ -1559,7 +1561,8 @@ ExtensionFunction::ResponseAction TabsUpdateFunction::Run() {
     }
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
-    NotifyExtensionTelemetry(Profile::FromBrowserContext(browser_context()),
+    NotifyExtensionTelemetry(browser_context(),
+                             original_contents->GetBrowserContext(),
                              extension(), safe_browsing::TabsApiInfo::UPDATE,
                              current_url, updated_url, js_callstack());
 #endif
@@ -2137,7 +2140,7 @@ bool TabsRemoveFunction::RemoveTab(int tab_id, std::string* error) {
   std::string current_url = contents->GetVisibleURL().is_valid()
                                 ? contents->GetVisibleURL().spec()
                                 : std::string();
-  NotifyExtensionTelemetry(Profile::FromBrowserContext(browser_context()),
+  NotifyExtensionTelemetry(browser_context(), contents->GetBrowserContext(),
                            extension(), safe_browsing::TabsApiInfo::REMOVE,
                            current_url,
                            /*new_url=*/std::string(), js_callstack());
@@ -2722,7 +2725,7 @@ ExtensionFunction::ResponseAction TabsCaptureVisibleTabFunction::Run() {
                                 ? contents->GetLastCommittedURL().spec()
                                 : std::string();
   NotifyExtensionTelemetry(
-      Profile::FromBrowserContext(browser_context()), extension(),
+      browser_context(), contents->GetBrowserContext(), extension(),
       safe_browsing::TabsApiInfo::CAPTURE_VISIBLE_TAB, current_url,
       /*new_url=*/std::string(), js_callstack());
 #endif
