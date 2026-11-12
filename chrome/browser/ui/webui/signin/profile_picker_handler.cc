@@ -488,8 +488,30 @@ void ProfilePickerHandler::TryLaunchLockedProfile(
 
 void ProfilePickerHandler::OnProfileLoadedForSwitchToReauth(Profile* profile) {
   if (!profile) {
+    OnResetPickerButtons(false);
     return;
   }
+  CHECK(signin_util::IsForceSigninEnabled());
+
+  ProfileAttributesEntry& entry =
+      CHECK_DEREF(g_browser_process->profile_manager()
+                      ->GetProfileAttributesStorage()
+                      .GetProfileAttributesWithPath(profile->GetPath()));
+  CHECK(entry.IsSigninRequired());
+
+  // Loading the profile initializes `IdentityManager`, `AccountsPolicyManager`,
+  // and `SigninProfileAttributesUpdater`, which may clear the primary account
+  // (e.g. if `RestrictSigninToPattern` or `SigninAllowed` disallows it, or if
+  // `ProfileAttributesStorage` was out of sync with the profile prefs). If the
+  // GAIA ID or email is now missing, reauth cannot proceed.
+  if (entry.GetGAIAId().empty() || entry.GetUserName().empty()) {
+    DisplaySigninErrorDialog(
+        /*profile_path=*/base::FilePath(),
+        ForceSigninUIError::ReauthNotAllowed());
+    OnResetPickerButtons(false);
+    return;
+  }
+
   ProfilePicker::SwitchToReauth(
       profile,
       base::BindOnce(&ProfilePickerHandler::OnResetPickerButtons,

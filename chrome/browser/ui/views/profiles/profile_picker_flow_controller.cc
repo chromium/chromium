@@ -7,6 +7,7 @@
 #include <string>
 #include <variant>
 
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -311,16 +312,16 @@ std::unique_ptr<ProfileManagementStepController> CreateReauthtep(
     Profile* profile,
     base::OnceCallback<void(bool, const ForceSigninUIError&)>
         on_reauth_completed) {
-  ProfileAttributesEntry* entry =
-      g_browser_process->profile_manager()
-          ->GetProfileAttributesStorage()
-          .GetProfileAttributesWithPath(profile->GetPath());
+  ProfileAttributesEntry& entry =
+      CHECK_DEREF(g_browser_process->profile_manager()
+                      ->GetProfileAttributesStorage()
+                      .GetProfileAttributesWithPath(profile->GetPath()));
 
   return std::make_unique<ReauthFlowStepController>(
       host,
       std::make_unique<ProfilePickerReauthProvider>(
-          host, profile, entry->GetGAIAId(),
-          base::UTF16ToUTF8(entry->GetUserName()),
+          host, profile, entry.GetGAIAId(),
+          base::UTF16ToUTF8(entry.GetUserName()),
           std::move(on_reauth_completed)),
       profile);
 }

@@ -19,9 +19,11 @@
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
+#include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/profile_waiter.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -35,6 +37,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_contents_factory.h"
 #include "content/public/test/test_web_ui.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -158,6 +161,9 @@ class ProfilePickerHandlerTest : public testing::Test {
   ProfilePickerHandler* handler() { return handler_.get(); }
   std::vector<ProfileAttributesEntry*> GetProfilesAttributesForDisplay() {
     return handler()->GetProfilesAttributesForDisplay();
+  }
+  void CallOnProfileLoadedForSwitchToReauth(Profile* profile) {
+    handler()->OnProfileLoadedForSwitchToReauth(profile);
   }
 
  private:
@@ -651,4 +657,86 @@ TEST_F(ProfilePickerHandlerGlicVersionTest, ChangeAiSubscriptionTier) {
   ineligible_1->SetAiSubscriptionTier(1);
   VerifyProfileListWasPushed({eligible_1});
   web_ui()->ClearTrackedCalls();
+}
+
+// Regression test for crbug.com/580195900: if a locked profile's primary
+// account is cleared while loading for reauth (or has an empty GAIA ID),
+// `OnProfileLoadedForSwitchToReauth` should not proceed to
+// `ProfilePickerReauthProvider` and should show `ReauthNotAllowed` for an
+// active profile.
+TEST_F(ProfilePickerHandlerTest,
+       LockedProfileMissingGaiaIdOnLoadShowsReauthNotAllowed) {
+  signin_util::ScopedForceSigninSetterForTesting force_signin_setter{true};
+  ProfileAttributesEntry* entry = CreateTestingProfile("LockedProfile");
+  InitializeMainViewAndVerifyProfileList({entry});
+
+  entry->SetActiveTimeToNow();
+  entry->LockForceSigninProfile(true);
+  // Simulate `ProfileAttributesEntry` having a username without a GAIA ID so
+  // `GetSigninState() != SigninState::kNotSignedIn` triggers the reauth load
+  // path, while reauth itself cannot proceed without a GAIA ID.
+  entry->SetAuthInfo(GaiaId(), u"user@gmail.com",
+                     /*is_consented_primary_account=*/false);
+  web_ui()->ClearTrackedCalls();
+
+  base::ListValue args;
+  args.Append(base::FilePathToValue(entry->GetPath()));
+  web_ui()->HandleReceivedMessage("launchSelectedProfile", args);
+
+  ForceSigninUIError::UiTexts expected_error =
+      ForceSigninUIError::ReauthNotAllowed().GetErrorTexts();
+
+  ASSERT_GE(web_ui()->call_data().size(), 2u);
+  const content::TestWebUI::CallData& dialog_call =
+      *web_ui()->call_data()[web_ui()->call_data().size() - 2];
+  EXPECT_EQ("cr.webUIListenerCallback", dialog_call.function_name());
+  EXPECT_EQ("display-signin-error-dialog", dialog_call.arg1()->GetString());
+  EXPECT_EQ(base::UTF16ToUTF8(expected_error.first),
+            dialog_call.arg2()->GetString());
+  EXPECT_EQ(base::UTF16ToUTF8(expected_error.second),
+            dialog_call.arg3()->GetString());
+  EXPECT_TRUE(dialog_call.arg4()->GetString().empty());
+
+  const content::TestWebUI::CallData& reset_call =
+      *web_ui()->call_data().back();
+  EXPECT_EQ("cr.webUIListenerCallback", reset_call.function_name());
+  EXPECT_EQ("reset-picker-buttons", reset_call.arg1()->GetString());
+  EXPECT_FALSE(reset_call.arg2()->GetBool());
+}
+
+TEST_F(ProfilePickerHandlerTest,
+       OnProfileLoadedForSwitchToReauthHandlesSignedOutAndNullProfile) {
+  signin_util::ScopedForceSigninSetterForTesting force_signin_setter{true};
+  ProfileAttributesEntry* entry = CreateTestingProfile("SignedOutLocked");
+  InitializeMainViewAndVerifyProfileList({entry});
+  web_ui()->ClearTrackedCalls();
+
+  // Null profile (failed load) resets picker buttons cleanly.
+  CallOnProfileLoadedForSwitchToReauth(nullptr);
+  ASSERT_EQ(web_ui()->call_data().size(), 1u);
+  EXPECT_EQ("reset-picker-buttons",
+            web_ui()->call_data().back()->arg1()->GetString());
+  EXPECT_FALSE(web_ui()->call_data().back()->arg2()->GetBool());
+  web_ui()->ClearTrackedCalls();
+
+  // Active locked profile whose primary account was cleared during load shows
+  // `ReauthNotAllowed` and resets picker buttons.
+  Profile* profile =
+      profile_manager()->profile_manager()->GetProfileByPath(entry->GetPath());
+  ASSERT_TRUE(profile);
+  entry->SetActiveTimeToNow();
+  entry->LockForceSigninProfile(true);
+  ASSERT_TRUE(entry->GetGAIAId().empty());
+
+  CallOnProfileLoadedForSwitchToReauth(profile);
+  ForceSigninUIError::UiTexts expected_error =
+      ForceSigninUIError::ReauthNotAllowed().GetErrorTexts();
+  ASSERT_EQ(web_ui()->call_data().size(), 2u);
+  EXPECT_EQ("display-signin-error-dialog",
+            web_ui()->call_data()[0]->arg1()->GetString());
+  EXPECT_EQ(base::UTF16ToUTF8(expected_error.first),
+            web_ui()->call_data()[0]->arg2()->GetString());
+  EXPECT_EQ("reset-picker-buttons",
+            web_ui()->call_data()[1]->arg1()->GetString());
+  EXPECT_FALSE(web_ui()->call_data()[1]->arg2()->GetBool());
 }

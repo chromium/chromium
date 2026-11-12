@@ -69,10 +69,8 @@ ProfilePickerReauthProvider::ProfilePickerReauthProvider(
       gaia_id_to_reauth_(gaia_id_to_reauth),
       email_to_reauth_(email_to_reauth),
       on_reauth_completed_(std::move(on_reauth_completed)) {
-  // TODO(crbug.com/580195900): CHECK-exclusion: Convert to a CHECK once we are
-  // confident it won't be triggered.
-  DCHECK(!gaia_id_to_reauth_.empty());
-  CHECK(!email_to_reauth_.empty(), base::NotFatalUntil::M162);
+  CHECK(!gaia_id_to_reauth_.empty(), base::NotFatalUntil::M164);
+  CHECK(!email_to_reauth_.empty(), base::NotFatalUntil::M164);
 }
 
 ProfilePickerReauthProvider::~ProfilePickerReauthProvider() = default;

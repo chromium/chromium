@@ -1858,6 +1858,76 @@ IN_PROC_BROWSER_TEST_F(ForceSigninProfilePickerCreationFlowBrowserTestWithPRE,
 
 #endif  // !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
 
+// Regression test for crbug.com/580195900: when an unloaded locked profile has
+// cached sign-in attributes in `ProfileAttributesStorage`, but loading the
+// profile clears its primary account (for example due to
+// `RestrictSigninToPattern`), `OnProfileLoadedForSwitchToReauth` must not
+// construct `ProfilePickerReauthProvider` with an empty GAIA ID and should
+// display the `ReauthNotAllowed` error dialog instead.
+IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
+                       LockedProfilePrimaryAccountClearedOnLoad) {
+  size_t initial_browser_count =
+      GlobalBrowserCollection::GetInstance()->GetSize();
+  ASSERT_EQ(1u, initial_browser_count);
+
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  base::FilePath locked_profile_path =
+      profile_manager->GenerateNextProfileDirectoryPath();
+  Profile* locked_profile = &profiles::testing::CreateProfileSync(
+      profile_manager, locked_profile_path);
+  signin::MakePrimaryAccountAvailable(
+      IdentityManagerFactory::GetForProfile(locked_profile),
+      "joe.consumer@gmail.com", signin::ConsentLevel::kSignin);
+
+  // Open and close a browser for `locked_profile` so it has a non-null active
+  // time and is unloaded from memory while retaining its
+  // `ProfileAttributesEntry`.
+  ProfileDestructionWaiter profile_destruction_waiter(locked_profile);
+  BrowserWindowInterface* extra_browser = CreateBrowser(locked_profile);
+  CloseBrowserSynchronously(extra_browser);
+  profile_destruction_waiter.Wait();
+  locked_profile = nullptr;
+  ASSERT_EQ(nullptr, profile_manager->GetProfileByPath(locked_profile_path));
+
+  ProfileAttributesEntry* entry =
+      profile_manager->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(locked_profile_path);
+  ASSERT_TRUE(entry);
+  ASSERT_FALSE(entry->GetActiveTime().is_null());
+  ASSERT_FALSE(entry->GetGAIAId().empty());
+  ASSERT_EQ(entry->GetSigninState(),
+            SigninState::kSignedInWithUnconsentedPrimaryAccount);
+
+  // Enable ForceSignin, lock the unloaded profile, and restrict allowed
+  // usernames so `AccountsPolicyManager` clears the primary account when
+  // `LoadProfileByPath()` initializes the profile.
+  signin_util::ScopedForceSigninSetterForTesting force_signin_setter{true};
+  entry->LockForceSigninProfile(true);
+  g_browser_process->local_state()->SetString(
+      prefs::kGoogleServicesUsernamePattern, "*@corp.com");
+
+  ShowPickerAndWait(/*start_on_management_page=*/true);
+  ASSERT_TRUE(ProfilePicker::IsOpen());
+  ASSERT_FALSE(IsSigninErrorDialogShown(web_contents()));
+
+  OpenProfileFromPicker(locked_profile_path, /*open_settings=*/false);
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return IsSigninErrorDialogShown(web_contents()); }));
+  EXPECT_TRUE(entry->GetGAIAId().empty());
+  EXPECT_EQ(entry->GetSigninState(), SigninState::kNotSignedIn);
+  EXPECT_TRUE(entry->IsSigninRequired());
+  EXPECT_EQ(initial_browser_count,
+            GlobalBrowserCollection::GetInstance()->GetSize());
+
+  ForceSigninUIError::UiTexts expected_errors =
+      ForceSigninUIError::ReauthNotAllowed().GetErrorTexts();
+  EXPECT_EQ(GetSigninErrorDialogTitleText(web_contents()),
+            expected_errors.first);
+  EXPECT_EQ(GetSigninErrorDialogBodyText(web_contents()),
+            expected_errors.second);
+}
+
 // Regression test for crbug.com/40802113.
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
                        CreateSignedInProfileWithSyncEncryptionKeys) {
