@@ -149,7 +149,7 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
     std::u16string_view GetPinStatusMessageContent() const;
 
    private:
-    const raw_ptr<LoginAuthUserView, DanglingUntriaged> view_;
+    const raw_ptr<LoginAuthUserView> view_;
   };
 
   using OnAuthCallback =

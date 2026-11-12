@@ -2454,16 +2454,18 @@ TEST_F(LockContentsViewUnitTest, RemoveUserFocusMovesBackToPrimaryUser) {
       .WillOnce(Invoke(this, &LoginTestBase::RemoveUser));
 
   LockContentsViewTestApi test_api(lock);
-  LoginAuthUserView::TestApi secondary_test_api(
-      test_api.opt_secondary_big_view()->auth_user());
-  LoginUserView::TestApi user_test_api(secondary_test_api.user_view());
+  {
+    LoginAuthUserView::TestApi secondary_test_api(
+        test_api.opt_secondary_big_view()->auth_user());
+    LoginUserView::TestApi user_test_api(secondary_test_api.user_view());
 
-  // Remove the user. First, focus the dropdown to raise the bubble.
-  user_test_api.dropdown()->RequestFocus();
-  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
-  base::RunLoop().RunUntilIdle();
-  // Focus the remove user bubble, tap twice to remove the user.
-  secondary_test_api.remove_account_dialog()->RequestFocus();
+    // Remove the user. First, focus the dropdown to raise the bubble.
+    user_test_api.dropdown()->RequestFocus();
+    PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
+    base::RunLoop().RunUntilIdle();
+    // Focus the remove user bubble, tap twice to remove the user.
+    secondary_test_api.remove_account_dialog()->RequestFocus();
+  }
   PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
   base::RunLoop().RunUntilIdle();
   PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
