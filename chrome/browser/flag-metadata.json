@@ -817,6 +817,11 @@
     "expiry_milestone": 170
   },
   {
+    "name": "app-switcher-promo-experiment",
+    "owners": [ "lilybalas@google.com", "bling-mony-pod@google.com" ],
+    "expiry_milestone": 170
+  },
+  {
     "name": "apply-clientside-model-predictions-for-password-types",
     "owners": [
       "kazinova@google.com",

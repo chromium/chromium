@@ -449,6 +449,26 @@ constexpr FeatureEntry::FeatureVariation
         {"Arm 10", kOmniboxPastePromoExperimentArm10, nullptr},
 };
 
+constexpr FeatureEntry::FeatureParam kAppSwitcherPromoExperimentArm1[] = {
+    {"AppSwitcherPromoExperimentArm", "1"}};
+constexpr FeatureEntry::FeatureParam kAppSwitcherPromoExperimentArm2[] = {
+    {"AppSwitcherPromoExperimentArm", "2"}};
+constexpr FeatureEntry::FeatureParam kAppSwitcherPromoExperimentArm3[] = {
+    {"AppSwitcherPromoExperimentArm", "3"}};
+constexpr FeatureEntry::FeatureParam kAppSwitcherPromoExperimentArm4[] = {
+    {"AppSwitcherPromoExperimentArm", "4"}};
+constexpr FeatureEntry::FeatureParam kAppSwitcherPromoExperimentArm5[] = {
+    {"AppSwitcherPromoExperimentArm", "5"}};
+
+constexpr FeatureEntry::FeatureVariation
+    kAppSwitcherPromoExperimentVariations[] = {
+        {"Arm 1", kAppSwitcherPromoExperimentArm1, nullptr},
+        {"Arm 2", kAppSwitcherPromoExperimentArm2, nullptr},
+        {"Arm 3", kAppSwitcherPromoExperimentArm3, nullptr},
+        {"Arm 4", kAppSwitcherPromoExperimentArm4, nullptr},
+        {"Arm 5", kAppSwitcherPromoExperimentArm5, nullptr},
+};
+
 constexpr FeatureEntry::FeatureParam kSettingsDefaultBrowserCardParam[] = {
     {kIOSSettingsDefaultBrowserPromoTypeParam, "0"}};
 constexpr FeatureEntry::FeatureParam kSettingsDefaultBrowserCellParam[] = {
@@ -1826,6 +1846,13 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      FEATURE_WITH_PARAMS_VALUE_TYPE(kOmniboxPastePromoExperiment,
                                     kOmniboxPastePromoExperimentVariations,
                                     "OmniboxPastePromoExperiment")},
+    {"app-switcher-promo-experiment",
+     flag_descriptions::kAppSwitcherPromoExperimentName,
+     flag_descriptions::kAppSwitcherPromoExperimentDescription,
+     flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kAppSwitcherPromoExperiment,
+                                    kAppSwitcherPromoExperimentVariations,
+                                    "AppSwitcherPromoExperiment")},
 #if BUILDFLAG(IOS_BACKGROUND_MODE_ENABLED)
     {"feed-background-refresh-ios",
      flag_descriptions::kFeedBackgroundRefreshName,

@@ -129,6 +129,12 @@ inline constexpr char kAppSwitcherAISummarizationDescription[] =
     "When enabled, the app will properly handle external actions from the "
     "AI Summarization option in the App Switcher.";
 
+inline constexpr char kAppSwitcherPromoExperimentName[] =
+    "App Switcher Flow Default Browser Promo Experiment";
+inline constexpr char kAppSwitcherPromoExperimentDescription[] =
+    "Enables non-modal default browser promo experiment arms for when Chrome "
+    "is opened from a first-party app.";
+
 inline constexpr char kAppleCalendarExperienceKitName[] =
     "Experience Kit Apple Calendar";
 inline constexpr char kAppleCalendarExperienceKitDescription[] =

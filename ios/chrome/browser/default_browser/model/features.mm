@@ -97,6 +97,17 @@ int GetOmniboxPastePromoExperimentType() {
   return kOmniboxPastePromoExperimentType.Get();
 }
 
+BASE_FEATURE(kAppSwitcherPromoExperiment, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE_PARAM(int,
+                   kAppSwitcherPromoExperimentArm,
+                   &kAppSwitcherPromoExperiment,
+                   1);
+
+int GetAppSwitcherPromoExperimentType() {
+  return kAppSwitcherPromoExperimentArm.Get();
+}
+
 BASE_FEATURE(kDefaultBrowserPipTextVideo, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsDefaultBrowserPipTextVideoEnabled() {

@@ -316,6 +316,21 @@ Try waiting a few minutes before switching accounts. If you switch accounts now,
       <message name="IDS_IOS_DEFAULT_BROWSER_NON_MODAL_1P_APP_DESCRIPTION" desc="Description for the non-modal default browser promotion banner when Chrome is opened from a first-party app.">
         Open links from Gmail, Maps, Youtube and other apps in Chrome
       </message>
+      <message name="IDS_IOS_DEFAULT_BROWSER_NON_MODAL_1P_APP_DESCRIPTION_EXP1" desc="Description for the non-modal default browser promotion banner when Chrome is opened from a first-party app (Google Ecosystem Integration experiment) [iOS only].">
+        Open links directly in Chrome.
+      </message>
+      <message name="IDS_IOS_DEFAULT_BROWSER_NON_MODAL_1P_APP_DESCRIPTION_EXP3" desc="Description for the non-modal default browser promotion banner when Chrome is opened from a first-party app (Primary Destination experiment) [iOS only].">
+        Ensure all links always open in Chrome.
+      </message>
+      <message name="IDS_IOS_DEFAULT_BROWSER_NON_MODAL_1P_APP_DESCRIPTION_EXP4" desc="Description for the non-modal default browser promotion banner when Chrome is opened from a first-party app (Convenience experiment) [iOS only].">
+        Set Chrome as default to make app transitions faster and easier.
+      </message>
+      <message name="IDS_IOS_DEFAULT_BROWSER_NON_MODAL_1P_APP_DESCRIPTION_EXP5" desc="Description for the non-modal default browser promotion banner when Chrome is opened from a first-party app (Productivity experiment) [iOS only].">
+        Open external links in Chrome by default.
+      </message>
+      <message name="IDS_IOS_DEFAULT_BROWSER_NON_MODAL_1P_APP_TITLE_EXP2" desc="Title for the non-modal default browser promotion banner when Chrome is opened from a first-party app (Zero Friction Transition experiment) [iOS only].">
+        Jump straight to Chrome
+      </message>
       <message name="IDS_IOS_DEFAULT_BROWSER_NON_MODAL_OMNIBOX_NAVIGATION_DESCRIPTION" desc="Description for the non-modal default browser promotion banner after Omnibox URL copy/paste and navigation.">
         Open Chrome anytime you tap on links in other apps
       </message>

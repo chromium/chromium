@@ -65,6 +65,12 @@ BASE_DECLARE_FEATURE(kOmniboxPastePromoExperiment);
 // Returns the active experiment arm (1 through 10).
 int GetOmniboxPastePromoExperimentType();
 
+// Feature to enable the App Switcher Flow copy experiments.
+BASE_DECLARE_FEATURE(kAppSwitcherPromoExperiment);
+
+// Returns the active App Switcher Flow experiment arm (1 through 5).
+int GetAppSwitcherPromoExperimentType();
+
 // Feature to display a text video in the default browser picture in picture.
 BASE_DECLARE_FEATURE(kDefaultBrowserPipTextVideo);
 

@@ -176,8 +176,10 @@
               IDS_IOS_DEFAULT_BROWSER_NON_MODAL_OMNIBOX_NAVIGATION_DESCRIPTION
                                                  isTitle:NO]);
     case NonModalDefaultBrowserPromoReason::PromoReasonAppSwitcher:
-      return l10n_util::GetNSString(
-          IDS_IOS_DEFAULT_BROWSER_NON_MODAL_1P_APP_DESCRIPTION);
+      return l10n_util::GetNSString([self
+          stringIdForAppSwitcherExperimentWithDefaultId:
+              IDS_IOS_DEFAULT_BROWSER_NON_MODAL_1P_APP_DESCRIPTION
+                                                isTitle:NO]);
     case NonModalDefaultBrowserPromoReason::PromoReasonShare:
       return l10n_util::GetNSString(
           IDS_IOS_DEFAULT_BROWSER_NON_MODAL_SHARE_DESCRIPTION);
@@ -206,8 +208,10 @@
               IDS_IOS_DEFAULT_BROWSER_NON_MODAL_OMNIBOX_NAVIGATION_TITLE
                                                  isTitle:YES]);
     case NonModalDefaultBrowserPromoReason::PromoReasonAppSwitcher:
-      return l10n_util::GetNSString(
-          IDS_IOS_DEFAULT_BROWSER_NON_MODAL_1P_APP_TITLE);
+      return l10n_util::GetNSString([self
+          stringIdForAppSwitcherExperimentWithDefaultId:
+              IDS_IOS_DEFAULT_BROWSER_NON_MODAL_1P_APP_TITLE
+                                                isTitle:YES]);
     case NonModalDefaultBrowserPromoReason::PromoReasonShare:
       return l10n_util::GetNSString(
           IDS_IOS_DEFAULT_BROWSER_NON_MODAL_SHARE_TITLE);
@@ -263,6 +267,38 @@
       return isTitle
                  ? IDS_IOS_DEFAULT_BROWSER_NON_MODAL_OMNIBOX_NAVIGATION_TITLE_EXP10
                  : IDS_IOS_DEFAULT_BROWSER_NON_MODAL_OMNIBOX_NAVIGATION_DESCRIPTION_EXP10;
+    default:
+      return defaultId;
+  }
+}
+
+// Returns the string resource ID for the active App Switcher experiment arm.
+- (int)stringIdForAppSwitcherExperimentWithDefaultId:(int)defaultId
+                                             isTitle:(BOOL)isTitle {
+  if (!base::FeatureList::IsEnabled(kAppSwitcherPromoExperiment)) {
+    return defaultId;
+  }
+  switch (GetAppSwitcherPromoExperimentType()) {
+    case 1:
+      return isTitle
+                 ? IDS_IOS_DEFAULT_BROWSER_NON_MODAL_1P_APP_TITLE_EXP1
+                 : IDS_IOS_DEFAULT_BROWSER_NON_MODAL_1P_APP_DESCRIPTION_EXP1;
+    case 2:
+      return isTitle
+                 ? IDS_IOS_DEFAULT_BROWSER_NON_MODAL_1P_APP_TITLE_EXP2
+                 : IDS_IOS_DEFAULT_BROWSER_NON_MODAL_1P_APP_DESCRIPTION_EXP2;
+    case 3:
+      return isTitle
+                 ? IDS_IOS_DEFAULT_BROWSER_NON_MODAL_1P_APP_TITLE_EXP3
+                 : IDS_IOS_DEFAULT_BROWSER_NON_MODAL_1P_APP_DESCRIPTION_EXP3;
+    case 4:
+      return isTitle
+                 ? IDS_IOS_DEFAULT_BROWSER_NON_MODAL_1P_APP_TITLE_EXP4
+                 : IDS_IOS_DEFAULT_BROWSER_NON_MODAL_1P_APP_DESCRIPTION_EXP4;
+    case 5:
+      return isTitle
+                 ? IDS_IOS_DEFAULT_BROWSER_NON_MODAL_1P_APP_TITLE_EXP5
+                 : IDS_IOS_DEFAULT_BROWSER_NON_MODAL_1P_APP_DESCRIPTION_EXP5;
     default:
       return defaultId;
   }

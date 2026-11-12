@@ -1385,6 +1385,24 @@
             ]
         }
     ],
+    "AppSwitcherPromoExperiment": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Arm1",
+                    "params": {
+                        "AppSwitcherPromoExperimentArm": "1"
+                    },
+                    "enable_features": [
+                        "AppSwitcherPromoExperiment"
+                    ]
+                }
+            ]
+        }
+    ],
     "ArcBlockIoScheduler": [
         {
             "platforms": [

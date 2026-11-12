@@ -2618,8 +2618,23 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
       <message name="IDS_IOS_DEFAULT_BROWSER_CONTEXTUAL_SECONDARY_BUTTON_TEXT" desc="Secondary button text for the contextual default browser promo [iOS only].">
         No thanks
       </message>
+      <message name="IDS_IOS_DEFAULT_BROWSER_NON_MODAL_1P_APP_DESCRIPTION_EXP2" desc="Description for the non-modal default browser promotion banner when Chrome is opened from a first-party app (Zero Friction Transition experiment) [iOS only].">
+        Open links here automatically.
+      </message>
       <message name="IDS_IOS_DEFAULT_BROWSER_NON_MODAL_1P_APP_TITLE" desc="Title for the non-modal default browser promotion banner when Chrome is opened from a first-party app.">
         Better browsing by default
+      </message>
+      <message name="IDS_IOS_DEFAULT_BROWSER_NON_MODAL_1P_APP_TITLE_EXP1" desc="Title for the non-modal default browser promotion banner when Chrome is opened from a first-party app (Google Ecosystem Integration experiment) [iOS only].">
+        Better together
+      </message>
+      <message name="IDS_IOS_DEFAULT_BROWSER_NON_MODAL_1P_APP_TITLE_EXP3" desc="Title for the non-modal default browser promotion banner when Chrome is opened from a first-party app (Primary Destination experiment) [iOS only].">
+        Your preferred link destination
+      </message>
+      <message name="IDS_IOS_DEFAULT_BROWSER_NON_MODAL_1P_APP_TITLE_EXP4" desc="Title for the non-modal default browser promotion banner when Chrome is opened from a first-party app (Convenience experiment) [iOS only].">
+        Open links here
+      </message>
+      <message name="IDS_IOS_DEFAULT_BROWSER_NON_MODAL_1P_APP_TITLE_EXP5" desc="Title for the non-modal default browser promotion banner when Chrome is opened from a first-party app (Productivity experiment) [iOS only].">
+        Faster cross-app browsing
       </message>
       <message name="IDS_IOS_DEFAULT_BROWSER_NON_MODAL_OMNIBOX_NAVIGATION_TITLE_EXP1" desc="Title for the non-modal default browser promotion banner after Omnibox URL copy/paste and navigation (Copy/Paste Friction experiment) [iOS only].">
         Skip the Copy &amp; Paste

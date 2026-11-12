@@ -138,3 +138,90 @@ TEST_F(DefaultBrowserPromoNonModalCoordinatorTest, ExperimentArms) {
                 coordinator.bannerViewController.subtitleText);
   }
 }
+
+// Tests that the default App Switcher strings are used when the App Switcher
+// experiment feature is disabled.
+TEST_F(DefaultBrowserPromoNonModalCoordinatorTest, AppSwitcherFeatureDisabled) {
+  scoped_feature_list_.InitAndDisableFeature(kAppSwitcherPromoExperiment);
+
+  DefaultBrowserPromoNonModalCoordinator* coordinator =
+      [[DefaultBrowserPromoNonModalCoordinator alloc]
+          initWithBaseViewController:view_controller_
+                             browser:browser_.get()
+                         promoReason:NonModalDefaultBrowserPromoReason::
+                                         PromoReasonAppSwitcher];
+  [coordinator start];
+
+  NSString* expected_title =
+      l10n_util::GetNSString(IDS_IOS_DEFAULT_BROWSER_NON_MODAL_1P_APP_TITLE);
+  NSString* expected_subtitle = l10n_util::GetNSString(
+      IDS_IOS_DEFAULT_BROWSER_NON_MODAL_1P_APP_DESCRIPTION);
+
+  EXPECT_NSEQ(expected_title, coordinator.bannerViewController.titleText);
+  EXPECT_NSEQ(expected_subtitle, coordinator.bannerViewController.subtitleText);
+}
+
+// Tests that the first arm's strings are used when the App Switcher experiment
+// feature is enabled but no arm is specified.
+TEST_F(DefaultBrowserPromoNonModalCoordinatorTest,
+       AppSwitcherFeatureEnabledNoArm) {
+  scoped_feature_list_.InitAndEnableFeature(kAppSwitcherPromoExperiment);
+
+  DefaultBrowserPromoNonModalCoordinator* coordinator =
+      [[DefaultBrowserPromoNonModalCoordinator alloc]
+          initWithBaseViewController:view_controller_
+                             browser:browser_.get()
+                         promoReason:NonModalDefaultBrowserPromoReason::
+                                         PromoReasonAppSwitcher];
+  [coordinator start];
+
+  NSString* expected_title = l10n_util::GetNSString(
+      IDS_IOS_DEFAULT_BROWSER_NON_MODAL_1P_APP_TITLE_EXP1);
+  NSString* expected_subtitle = l10n_util::GetNSString(
+      IDS_IOS_DEFAULT_BROWSER_NON_MODAL_1P_APP_DESCRIPTION_EXP1);
+
+  EXPECT_NSEQ(expected_title, coordinator.bannerViewController.titleText);
+  EXPECT_NSEQ(expected_subtitle, coordinator.bannerViewController.subtitleText);
+}
+
+// Tests that the correct strings are used for each App Switcher experiment arm.
+TEST_F(DefaultBrowserPromoNonModalCoordinatorTest, AppSwitcherExperimentArms) {
+  struct {
+    std::string arm_value;
+    int title_id;
+    int subtitle_id;
+  } kTestCases[] = {
+      {"1", IDS_IOS_DEFAULT_BROWSER_NON_MODAL_1P_APP_TITLE_EXP1,
+       IDS_IOS_DEFAULT_BROWSER_NON_MODAL_1P_APP_DESCRIPTION_EXP1},
+      {"2", IDS_IOS_DEFAULT_BROWSER_NON_MODAL_1P_APP_TITLE_EXP2,
+       IDS_IOS_DEFAULT_BROWSER_NON_MODAL_1P_APP_DESCRIPTION_EXP2},
+      {"3", IDS_IOS_DEFAULT_BROWSER_NON_MODAL_1P_APP_TITLE_EXP3,
+       IDS_IOS_DEFAULT_BROWSER_NON_MODAL_1P_APP_DESCRIPTION_EXP3},
+      {"4", IDS_IOS_DEFAULT_BROWSER_NON_MODAL_1P_APP_TITLE_EXP4,
+       IDS_IOS_DEFAULT_BROWSER_NON_MODAL_1P_APP_DESCRIPTION_EXP4},
+      {"5", IDS_IOS_DEFAULT_BROWSER_NON_MODAL_1P_APP_TITLE_EXP5,
+       IDS_IOS_DEFAULT_BROWSER_NON_MODAL_1P_APP_DESCRIPTION_EXP5},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    base::test::ScopedFeatureList local_feature_list;
+    local_feature_list.InitAndEnableFeatureWithParameters(
+        kAppSwitcherPromoExperiment,
+        {{"AppSwitcherPromoExperimentArm", test_case.arm_value}});
+
+    DefaultBrowserPromoNonModalCoordinator* coordinator =
+        [[DefaultBrowserPromoNonModalCoordinator alloc]
+            initWithBaseViewController:view_controller_
+                               browser:browser_.get()
+                           promoReason:NonModalDefaultBrowserPromoReason::
+                                           PromoReasonAppSwitcher];
+    [coordinator start];
+
+    NSString* expected_title = l10n_util::GetNSString(test_case.title_id);
+    NSString* expected_subtitle = l10n_util::GetNSString(test_case.subtitle_id);
+
+    EXPECT_NSEQ(expected_title, coordinator.bannerViewController.titleText);
+    EXPECT_NSEQ(expected_subtitle,
+                coordinator.bannerViewController.subtitleText);
+  }
+}
