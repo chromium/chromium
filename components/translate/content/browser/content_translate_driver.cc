@@ -25,6 +25,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/supports_user_data.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "components/google/core/common/google_util.h"
 #include "components/language/core/browser/url_language_histogram.h"
 #include "components/translate/content/browser/content_record_page_language.h"
@@ -409,16 +410,6 @@ void ContentTranslateDriver::DidFinishNavigation(
 
   InitiateTranslationIfReload(navigation_handle);
 
-  if (navigation_handle->IsPrerenderedPageActivation()) {
-    // Set it to NULL time, and do not report the LanguageDeterminedDuration
-    // metric in this case.
-    // The browser defers the RegisterPage() message on a prerendering page, so
-    // this kind of data is noisy and should be filtered out.
-    finish_navigation_time_ = base::TimeTicks();
-  } else {
-    finish_navigation_time_ = base::TimeTicks::Now();
-  }
-
   // Let the LanguageState clear its state.
   const bool reload =
       navigation_handle->GetReloadType() != content::ReloadType::NONE ||
@@ -473,15 +464,12 @@ void ContentTranslateDriver::RegisterPage(
   if (!web_contents()) {
     return;
   }
-  base::TimeTicks language_determined_time = base::TimeTicks::Now();
 
   int page_seq_no = UpdatePageSequenceNumber();
   if (IsReadingModeSidePanel(details.url)) {
     BindSidePanelTranslateAgent(page_seq_no, std::move(translate_agent));
     return;
   }
-  ReportLanguageDeterminedDuration(finish_navigation_time_,
-                                   language_determined_time);
 
   // If we have a language histogram (i.e. we're not in incognito), update it
   // with the detected language of every page visited.

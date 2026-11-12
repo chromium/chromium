@@ -585,7 +585,6 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
   histograms.ExpectTotalCount("Translate.LanguageDetection.ContentLength", 1);
   histograms.ExpectBucketCount("Translate.LanguageDetection.ContentLength", 149,
                                1);
-  histograms.ExpectTotalCount("Translate.LanguageDeterminedDuration", 1);
 }
 
 // Test that the translation was successful in an about:blank page.
@@ -1298,7 +1297,6 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerPrerenderBrowserTest,
   EXPECT_FALSE(chrome_translate_client->GetLanguageState().translation_error());
   EXPECT_EQ(TranslateErrors::NONE, GetPageTranslatedResult());
   histograms.ExpectTotalCount("Translate.LanguageDetection.ContentLength", 1);
-  histograms.ExpectTotalCount("Translate.LanguageDeterminedDuration", 1);
 
   // Activate the prerendered page.
   prerender_helper_.NavigatePrimaryPage(
@@ -1319,9 +1317,6 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerPrerenderBrowserTest,
   EXPECT_FALSE(chrome_translate_client->GetLanguageState().translation_error());
   EXPECT_EQ(TranslateErrors::NONE, GetPageTranslatedResult());
   histograms.ExpectTotalCount("Translate.LanguageDetection.ContentLength", 2);
-
-  // Check noisy data was filtered out.
-  histograms.ExpectTotalCount("Translate.LanguageDeterminedDuration", 1);
 }
 
 class TranslateManagerBackForwardCacheBrowserTest

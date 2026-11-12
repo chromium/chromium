@@ -16,7 +16,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation_traits.h"
-#include "base/time/time.h"
 #include "components/translate/content/common/translate.mojom.h"
 #include "components/translate/core/browser/translate_driver.h"
 #include "components/translate/core/common/translate_errors.h"
@@ -197,11 +196,6 @@ class ContentTranslateDriver : public TranslateDriver,
   // frames may be contained in a single web contents. TranslateAgents get the
   // other end of this receiver in the form of a ContentTranslateDriver.
   mojo::ReceiverSet<translate::mojom::ContentTranslateDriver> receivers_;
-
-  // Time when the navigation was finished (i.e., DidFinishNavigation
-  // in the main frame). This is used to know a duration time to when the
-  // page language is determined.
-  base::TimeTicks finish_navigation_time_;
 
   base::WeakPtrFactory<ContentTranslateDriver> weak_pointer_factory_{this};
 };
