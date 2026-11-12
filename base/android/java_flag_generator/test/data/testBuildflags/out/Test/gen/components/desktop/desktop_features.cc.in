@@ -1,0 +1,5 @@
+namespace foo {
+
+BASE_FEATURE(kDesktopOnly, base::FEATURE_DISABLED_BY_DEFAULT);
+
+}  // namespace foo

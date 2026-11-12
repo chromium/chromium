@@ -57,11 +57,11 @@ _accessed_goldens = set()
 
 
 class BaseTest(unittest.TestCase):
-    def _copy_test_data(self, dest_dir):
-        """Copies the files in test/data/<test name>/ to `dest_dir`.
+    def _copy_test_data(self, dest_dir, data_name):
+        """Copies the files in test/data/<data_name>/ to `dest_dir`.
         Removes _DATA_SUFFIX from the file names.
         """
-        data_dir = os.path.join(_DATA_DIR, self._testMethodName)
+        data_dir = os.path.join(_DATA_DIR, data_name)
         if not os.path.isdir(data_dir):
             self.fail(f'Test data directory does not exist: {data_dir}')
         for dirpath, _, filenames in os.walk(data_dir):
@@ -79,14 +79,22 @@ class BaseTest(unittest.TestCase):
                 os.makedirs(os.path.dirname(dest_path), exist_ok=True)
                 shutil.copyfile(src_path, dest_path)
 
-    def _run_generator(self, sources, class_name, feature_map_class_name):
-        """Runs the generator on a copy of the test's data directory.
+    def _run_generator(
+        self,
+        sources,
+        class_name,
+        feature_map_class_name,
+        is_desktop_android=False,
+        data_name=None,
+    ):
+        """Runs the generator on a copy of the test's data directory, or of
+        test/data/<data_name>/ if set.
         Returns the temporary build directory (which is deleted at the end of
         the test) and the completed process.
         """
         tdir = tempfile.TemporaryDirectory()
         self.addCleanup(tdir.cleanup)
-        self._copy_test_data(tdir.name)
+        self._copy_test_data(tdir.name, data_name or self._testMethodName)
         build_dir = os.path.join(tdir.name, _BUILD_DIR)
         os.makedirs(build_dir, exist_ok=True)
 
@@ -106,6 +114,8 @@ class BaseTest(unittest.TestCase):
         ]
         if feature_map_class_name:
             cmd += ['--feature-map-class-name', feature_map_class_name]
+        if is_desktop_android:
+            cmd.append('--is-desktop-android')
         cmd += [f'{_SOURCE_ROOT}/{source}' for source in sources]
         result = subprocess.run(
             cmd, cwd=build_dir, capture_output=True, check=False, text=True
@@ -167,12 +177,18 @@ class BaseTest(unittest.TestCase):
         sources=(_SOURCE,),
         class_name=_CLASS_NAME,
         feature_map_class_name=None,
+        is_desktop_android=False,
+        data_name=None,
     ):
         """Checks the generated class against the test's golden file.
         Returns the output and the inputs listed in the depfile.
         """
         build_dir, result = self._run_generator(
-            sources, class_name, feature_map_class_name
+            sources,
+            class_name,
+            feature_map_class_name,
+            is_desktop_android=is_desktop_android,
+            data_name=data_name,
         )
         self.assertEqual(
             0, result.returncode, f'Generator failed:\n{result.stderr}'
@@ -293,6 +309,30 @@ class Tests(BaseTest):
             feature_map_class_name='org.chromium.base.BaseFeatureMap'
         )
 
+    def testBuildflags(self):
+        depfile = self._test_generate()
+        # Files that code that is not compiled includes or lists in
+        # FEATURE_DEFINITION_FILE comments are not searched.
+        self.assertEqual(
+            (_OUTPUT_SRCJAR, ['../../chrome/flags/test_feature_list.cc']),
+            depfile,
+        )
+
+    def testBuildflagsOnDesktopAndroid(self):
+        depfile = self._test_generate(
+            is_desktop_android=True, data_name='testBuildflags'
+        )
+        self.assertEqual(
+            (
+                _OUTPUT_SRCJAR,
+                [
+                    '../../chrome/flags/test_feature_list.cc',
+                    'gen/components/desktop/desktop_features.cc',
+                ],
+            ),
+            depfile,
+        )
+
     def testError_invalidClassName(self):
         self._test_error(
             [
@@ -378,17 +418,6 @@ the `deps` of the java_flag_generator() target.
 Candidates:
     {_SOURCE_PATH}:2: a::kFoo -> FooInA
     {_SOURCE_PATH}:5: b::kFoo -> FooInB
-""",
-            stderr,
-        )
-
-    def testError_conflictingDefinitions(self):
-        stderr = self._test_error()
-        self.assertEqual(
-            f"""\
-{_SOURCE_PATH}:7: error: "kFoo" has conflicting definitions:
-    {_SOURCE_PATH}:3: foo::kFoo -> DesktopFoo
-    {_SOURCE_PATH}:5: foo::kFoo -> MobileFoo
 """,
             stderr,
         )
@@ -530,21 +559,6 @@ Candidates:
 Candidates:
     {_SOURCE_PATH}:2: a::kFeature -> FeatureInA
     {_SOURCE_PATH}:6: b::kFeature -> FeatureInB
-""",
-            stderr,
-        )
-
-    def testError_conflictingParamDefinitions(self):
-        stderr = self._test_error()
-        self.assertEqual(
-            f"""\
-{_SOURCE_PATH}:15: error: "kParam" has conflicting definitions:
-    {_SOURCE_PATH}:4: foo::kParam -> desktop_param
-    {_SOURCE_PATH}:8: foo::kParam -> mobile_param
-{_SOURCE_PATH}:16: error: "kConflictingFeature" (the feature of \
-kOfConflictingFeature at {_SOURCE_PATH}:12) has conflicting definitions:
-    {_SOURCE_PATH}:5: foo::kConflictingFeature -> DesktopFeature
-    {_SOURCE_PATH}:9: foo::kConflictingFeature -> MobileFeature
 """,
             stderr,
         )

@@ -1,0 +1,77 @@
+#include "chrome/flags/test_feature_list.h"
+
+#if BUILDFLAG(IS_WIN)
+// Not searched for definitions, because Android builds don't include it.
+#include "components/win/win_features.h"
+#endif
+
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+// Defines kDesktopOnly. Not searched in other builds, where it would be unused.
+// FEATURE_DEFINITION_FILE: //components/desktop/desktop_features.cc
+#endif
+
+namespace foo {
+
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kOsDependent, "AndroidName", base::FEATURE_DISABLED_BY_DEFAULT);
+#else
+BASE_FEATURE(kOsDependent, "OtherOsName", base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+BASE_FEATURE(kFormFactorDependent, "DesktopName",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#else
+BASE_FEATURE(kFormFactorDependent, "NotDesktopName",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
+#if BUILDFLAG(IS_IOS)
+BASE_FEATURE(kElif, "IosName", base::FEATURE_DISABLED_BY_DEFAULT);
+#elif BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_DESKTOP_ANDROID)
+BASE_FEATURE(kElif, "AndroidButNotDesktopName",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#else
+BASE_FEATURE(kElif, "ElseName", base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
+// Other BUILDFLAG()s are assumed to be true, even when negated.
+#if !BUILDFLAG(ENABLE_FOO)
+BASE_FEATURE(kOtherBuildflag, "FirstBranchName",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#else
+BASE_FEATURE(kOtherBuildflag, "SecondBranchName",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
+BASE_FEATURE(kNotDesktopOnly, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE_PARAM(int, kFormFactorParam, &kFormFactorDependent,
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+                   "desktop_param",
+#else
+                   "not_desktop_param",
+#endif
+                   0);
+
+const base::Feature* const kFeaturesExposedToJava[] = {
+    &kOsDependent,
+    &kFormFactorDependent,
+    &kElif,
+    &kOtherBuildflag,
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+    &kDesktopOnly,
+#else
+    &kNotDesktopOnly,
+#endif
+};
+
+const base::FeatureParam<int>* const kIntParamsExposedToJava[] = {
+    &kFormFactorParam,
+};
+
+static int64_t JNI_SampleFeatureMap_GetNativeMap(JNIEnv* env) {
+  return reinterpret_cast<int64_t>(GetFeatureMap());
+}
+
+}  // namespace foo

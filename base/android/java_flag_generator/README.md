@@ -124,6 +124,34 @@ literal. With 4 arguments, the param name is derived from the identifier
 (`kFooParam` -> `"FooParam"`). Declarations (`BASE_DECLARE_FEATURE_PARAM`) are
 not definitions.
 
+## Preprocessor conditionals
+
+The generator only reads the code that is compiled in the current build, as far
+as the conditions of `#if` and `#elif` can tell. It evaluates them with these
+values:
+
+* The OS flags of `//build/build_config.h` have their Android values:
+  `BUILDFLAG(IS_ANDROID)` and `BUILDFLAG(IS_POSIX)` are true, and the others,
+  such as `BUILDFLAG(IS_WIN)`, are false.
+* `BUILDFLAG(IS_DESKTOP_ANDROID)` is the value of the `is_desktop_android` GN
+  arg, so the generated class can differ between desktop and other Android
+  builds.
+* Anything else, such as `BUILDFLAG(FOO)`, `defined(FOO)` or `DCHECK_IS_ON()`,
+  is unknown. Known values only decide a condition if the unknown parts can't
+  change the result: `BUILDFLAG(IS_WIN) && defined(FOO)` is false, and
+  `BUILDFLAG(IS_ANDROID) || defined(FOO)` is true. Otherwise, a condition with
+  unknown parts is unknown as a whole, e.g.
+  `!BUILDFLAG(IS_ANDROID) || BUILDFLAG(FOO)`. Conditions that are unknown as a
+  whole are assumed to be true, even when negated, and so are the conditions of
+  `#ifdef` and `#ifndef`. For example, the first branch of
+  `#if !defined(FOO) ... #else ... #endif` is used.
+
+Code in branches that are not compiled is ignored, including `#include`s and
+`FEATURE_DEFINITION_FILE` comments. If a `FEATURE_DEFINITION_FILE` is only
+needed in some builds, put it in the same `#if` block as the entries that need
+it. `#if` blocks are supported inside `kFeaturesExposedToJava` and
+`k<Type>ParamsExposedToJava`, but other preprocessor directives are not.
+
 ## Changing the generator
 
 * Golden tests that run the generator end to end live in

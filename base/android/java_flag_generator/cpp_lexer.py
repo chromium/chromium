@@ -1,10 +1,10 @@
 # Copyright 2026 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Minimal C++ lexing helpers."""
+"""Minimal C++ lexing and preprocessing helpers."""
 
 import re
-from typing import List, Tuple
+from typing import Dict, List, Optional, Tuple
 
 _SPECIAL_RE = re.compile(r'//|/\*|"|\'')
 _NON_NEWLINE_RE = re.compile(r'[^\n]')
@@ -174,17 +174,260 @@ def split_top_level(
     return ranges
 
 
-def blank_preprocessor_lines(code: str, structure: str) -> Tuple[str, str]:
-    """Blanks preprocessor directive lines (incl. continuations) in both views.
-    `structure` decides which lines are directives so that a `#` inside a string
-    literal or comment is never mistaken for one.
+# The BUILDFLAG()s for the target OS in //build/build_config.h, and their values
+# in Android builds.
+_ANDROID_OS_BUILDFLAGS = {
+    'IS_AIX': False,
+    'IS_ANDROID': True,
+    'IS_APPLE': False,
+    'IS_ASMJS': False,
+    'IS_BSD': False,
+    'IS_CHROMEOS': False,
+    'IS_FREEBSD': False,
+    'IS_FUCHSIA': False,
+    'IS_IOS': False,
+    'IS_IOS_MACCATALYST': False,
+    'IS_IOS_TVOS': False,
+    'IS_LINUX': False,
+    'IS_MAC': False,
+    'IS_NETBSD': False,
+    'IS_OPENBSD': False,
+    'IS_OZONE': False,
+    'IS_POSIX': True,
+    'IS_QNX': False,
+    'IS_SOLARIS': False,
+    'IS_WATCHOS': False,
+    'IS_WIN': False,
+}
+_DIRECTIVE_NAME_RE = re.compile(r'\s*#\s*(\w*)')
+_CONDITION_TOKEN_RE = re.compile(r'&&|\|\||\w+|\S')
+# Tokens that end an unknown operand, such as defined(FOO) or FOO >= 2, unless
+# they are nested in parentheses.
+_OPERAND_END_TOKENS = ('&&', '||', '?', ':', ',', ')')
+# The directives that start a branch of an #if block.
+_BRANCH_DIRECTIVES = (
+    'if',
+    'ifdef',
+    'ifndef',
+    'elif',
+    'elifdef',
+    'elifndef',
+    'else',
+)
+
+# The value of a condition: True, False, or None if it is unknown.
+_Value = Optional[bool]
+
+
+class _UnsupportedCondition(Exception):
+    pass
+
+
+class _ConditionEvaluator:
+    """Evaluates the condition of an #if or #elif.
+
+    Only the BUILDFLAG()s in `buildflags` are known. Other operands, such as
+    other BUILDFLAG()s or defined(FOO), are unknown, and follow three-valued
+    logic: false && x is false and true || x is true, but any other
+    combination with an unknown operand is unknown, e.g.
+    BUILDFLAG(IS_WIN) || BUILDFLAG(FOO). Conditions that are unknown as a whole
+    are assumed to be true, even when negated.
     """
+
+    def __init__(self, condition: str, buildflags: Dict[str, bool]):
+        self._tokens = _CONDITION_TOKEN_RE.findall(condition)
+        self._pos = 0
+        self._buildflags = buildflags
+
+    def evaluate(self) -> bool:
+        try:
+            value = self._parse_or()
+            # E.g. the "== 0" of "BUILDFLAG(IS_WIN) == 0" is not supported.
+            if self._pos != len(self._tokens):
+                value = None
+        except _UnsupportedCondition:
+            value = None
+        return True if value is None else value
+
+    def _peek(self) -> Optional[str]:
+        if self._pos < len(self._tokens):
+            return self._tokens[self._pos]
+        return None
+
+    def _next(self) -> str:
+        token = self._peek()
+        if token is None:
+            raise _UnsupportedCondition()
+        self._pos += 1
+        return token
+
+    def _expect(self, expected: str) -> None:
+        if self._next() != expected:
+            raise _UnsupportedCondition()
+
+    def _and(self, a: _Value, b: _Value) -> _Value:
+        if a is False or b is False:
+            return False
+        if a is None or b is None:
+            return None
+        return True
+
+    def _or(self, a: _Value, b: _Value) -> _Value:
+        if a is True or b is True:
+            return True
+        if a is None or b is None:
+            return None
+        return False
+
+    def _parse_or(self) -> _Value:
+        value = self._parse_and()
+        while self._peek() == '||':
+            self._pos += 1
+            value = self._or(value, self._parse_and())
+        return value
+
+    def _parse_and(self) -> _Value:
+        value = self._parse_not()
+        while self._peek() == '&&':
+            self._pos += 1
+            value = self._and(value, self._parse_not())
+        return value
+
+    def _parse_not(self) -> _Value:
+        if self._peek() == '!':
+            self._pos += 1
+            value = self._parse_not()
+            return None if value is None else not value
+        return self._parse_operand()
+
+    def _parse_operand(self) -> _Value:
+        if self._peek() == '(':
+            self._pos += 1
+            value = self._parse_or()
+            self._expect(')')
+            return value
+        if self._tokens[self._pos : self._pos + 2] == ['BUILDFLAG', '(']:
+            self._pos += 2
+            flag = self._next()
+            self._expect(')')
+            return self._buildflags.get(flag)
+        # Any other operand is unknown.
+        start = self._pos
+        depth = 0
+        while (token := self._peek()) is not None:
+            if depth == 0 and token in _OPERAND_END_TOKENS:
+                break
+            if token == '(':
+                depth += 1
+            elif token == ')':
+                depth -= 1
+            self._pos += 1
+        if self._pos == start:
+            raise _UnsupportedCondition()
+        return None
+
+
+class _Block:
+    """The state of an #if block, from its #if to its #endif."""
+
+    def __init__(self, parent_active: bool):
+        # Whether the code around the block is compiled.
+        self._parent_active = parent_active
+        # Whether an earlier branch is compiled.
+        self._taken = False
+        # Whether the current branch is compiled.
+        self.active = False
+
+    def start_branch(self, value: bool) -> None:
+        """Starts the branch of an #if, #elif or #else whose condition has
+        `value`.
+        """
+        self.active = self._parent_active and not self._taken and value
+        self._taken = self._taken or self.active
+
+
+def blank_inactive_branches(
+    text: str, code: str, structure: str, is_desktop_android: bool
+) -> Tuple[str, str, str]:
+    """Blanks the branches of #if blocks that an Android build doesn't
+    compile, in the text, code and structure views of a file (see lex()), and
+    returns the resulting views. The same lines are blanked in all three.
+
+    The conditions of #if and #elif are evaluated with these values:
+    * The OS BUILDFLAG()s of //build/build_config.h have their Android values,
+      e.g. BUILDFLAG(IS_ANDROID) is true and BUILDFLAG(IS_WIN) is false.
+    * BUILDFLAG(IS_DESKTOP_ANDROID) is `is_desktop_android`.
+    * Anything else, such as BUILDFLAG(FOO) or defined(FOO), is unknown. Known
+      values only decide a condition if unknown ones can't change it, e.g.
+      BUILDFLAG(IS_WIN) && defined(FOO) is false. Conditions that are unknown
+      as a whole, e.g. BUILDFLAG(IS_WIN) || BUILDFLAG(FOO), are assumed to be
+      true, even when negated, and so are the conditions of #ifdef and
+      #ifndef.
+    The lines of #if, #elif, #else and #endif are blanked too, because they
+    may sit between the arguments of a macro, e.g.
+      BASE_FEATURE(kFoo,
+      #if BUILDFLAG(IS_DESKTOP_ANDROID)
+                   base::FEATURE_ENABLED_BY_DEFAULT);
+      #else
+                   base::FEATURE_DISABLED_BY_DEFAULT);
+      #endif
+    Other directives are left alone, unless they are in a blanked branch.
+    `structure` decides which lines are directives, so that a `#` inside a
+    string literal or comment is never mistaken for one.
+    """
+    buildflags = dict(
+        _ANDROID_OS_BUILDFLAGS, IS_DESKTOP_ANDROID=is_desktop_android
+    )
+    text_lines = text.split('\n')
     code_lines = code.split('\n')
     structure_lines = structure.split('\n')
-    in_continuation = False
-    for idx, line in enumerate(structure_lines):
-        if in_continuation or line.lstrip().startswith('#'):
-            in_continuation = code_lines[idx].rstrip().endswith('\\')
-            code_lines[idx] = ' ' * len(code_lines[idx])
-            structure_lines[idx] = ' ' * len(line)
-    return '\n'.join(code_lines), '\n'.join(structure_lines)
+    num_lines = len(structure_lines)
+    keep = [True] * num_lines
+    blocks: List[_Block] = []
+    idx = 0
+
+    def strip_continuation(line: str) -> str:
+        line = line.rstrip()
+        return line[:-1] if line.endswith('\\') else line
+
+    while idx < num_lines:
+        active = not blocks or blocks[-1].active
+        m = _DIRECTIVE_NAME_RE.match(structure_lines[idx])
+        if not m:
+            keep[idx] = active
+            idx += 1
+            continue
+        end = idx
+        while end + 1 < num_lines and code_lines[end].rstrip().endswith('\\'):
+            end += 1
+        name = m.group(1)
+        if name in ('if', 'ifdef', 'ifndef'):
+            blocks.append(_Block(active))
+        if name in _BRANCH_DIRECTIVES and blocks:
+            # The conditions of #ifdef, #ifndef, #elifdef and #elifndef are
+            # unknown, so they are assumed to be true, like #else.
+            value = True
+            if name in ('if', 'elif'):
+                condition = ' '.join(
+                    strip_continuation(line)
+                    for line in [structure_lines[idx][m.end() :]]
+                    + structure_lines[idx + 1 : end + 1]
+                )
+                value = _ConditionEvaluator(condition, buildflags).evaluate()
+            blocks[-1].start_branch(value)
+            keep_directive = False
+        elif name == 'endif' and blocks:
+            blocks.pop()
+            keep_directive = False
+        else:
+            # Other directives, and #elif, #else and #endif without an #if.
+            keep_directive = active
+        keep[idx : end + 1] = [keep_directive] * (end + 1 - idx)
+        idx = end + 1
+
+    def blank(lines: List[str]) -> str:
+        return '\n'.join(
+            line if kept else ' ' * len(line) for line, kept in zip(lines, keep)
+        )
+
+    return blank(text_lines), blank(code_lines), blank(structure_lines)

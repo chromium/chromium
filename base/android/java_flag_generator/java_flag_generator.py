@@ -44,7 +44,8 @@ class _FileCache:
     depfile).
     """
 
-    def __init__(self):
+    def __init__(self, is_desktop_android: bool):
+        self._is_desktop_android = is_desktop_android
         self._files: Dict[str, Tuple[str, str, str]] = {}
         self._feature_definitions: Dict[
             str, List[models.FeatureDefinition]
@@ -52,24 +53,17 @@ class _FileCache:
         self._param_definitions: Dict[str, List[models.ParamDefinition]] = {}
 
     def read(self, path: str) -> Tuple[str, str, str]:
-        """Returns the text of a file, and its code and structure views (see
-        cpp_lexer.lex()) with preprocessor lines blanked.
+        """Returns the text of a file and its code and structure views (see
+        cpp_lexer.lex()), all without the code that is not compiled in this
+        build (see cpp_lexer.blank_inactive_branches()).
         """
         if path not in self._files:
             with open(path, encoding='utf-8', errors='replace') as f:
                 text = f.read()
             code, structure = cpp_lexer.lex(text)
-            # Preprocessor lines often sit between BASE_FEATURE arguments, e.g.
-            #   BASE_FEATURE(kFoo,
-            #   #if BUILDFLAG(IS_ANDROID)
-            #                base::FEATURE_ENABLED_BY_DEFAULT);
-            #   #else
-            #                base::FEATURE_DISABLED_BY_DEFAULT);
-            #   #endif
-            code, structure = cpp_lexer.blank_preprocessor_lines(
-                code, structure
+            self._files[path] = cpp_lexer.blank_inactive_branches(
+                text, code, structure, self._is_desktop_android
             )
-            self._files[path] = (text, code, structure)
         return self._files[path]
 
     def feature_definitions(self, path: str) -> List[models.FeatureDefinition]:
@@ -100,8 +94,8 @@ def _resolve_source(
     output_class: models.JavaClass,
     feature_map_override: Optional[models.JavaClass],
 ) -> Tuple[List[models.ResolvedFeature], List[models.ResolvedParam]]:
-    text, _, structure = cache.read(path)
-    source = cpp_parser.parse_source(path, text, structure)
+    text, code, structure = cache.read(path)
+    source = cpp_parser.parse_source(path, text, code, structure)
     feature_map = naming.feature_map_for_source(
         source, output_class, feature_map_override
     )
@@ -226,6 +220,11 @@ def _parse_args(argv):
     )
     parser.add_argument('--depfile', help='Path of the depfile to write.')
     parser.add_argument(
+        '--is-desktop-android',
+        action='store_true',
+        help='Whether BUILDFLAG(IS_DESKTOP_ANDROID) is true in this build.',
+    )
+    parser.add_argument(
         'sources',
         nargs='+',
         help='C++ files that define kFeaturesExposedToJava, '
@@ -236,7 +235,7 @@ def _parse_args(argv):
 
 def main(argv):
     args = _parse_args(argv)
-    cache = _FileCache()
+    cache = _FileCache(args.is_desktop_android)
     try:
         features_class = _build_model(args, cache)
     except models.GeneratorError as e:

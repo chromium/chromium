@@ -76,23 +76,24 @@ def _iter_lines_with_offsets(text: str):
 
 def _parse_entries(
     path: str,
-    text: str,
     structure: str,
     line_numbers: _LineNumberTracker,
     array_name: str,
     body: Tuple[int, int],
 ) -> List[models.ArrayEntry]:
     body_start, body_end = body
-    # Preprocessor lines are blanked in `structure`, so look for them in `text`.
-    body_text = text[body_start:body_end]
+    # The directives of #if blocks are blanked in `structure`, but other
+    # directives are not.
     errors = []
-    for offset, line_text in _iter_lines_with_offsets(body_text):
-        if line_text.lstrip().startswith('#'):
+    for offset, body_line in _iter_lines_with_offsets(
+        structure[body_start:body_end]
+    ):
+        if body_line.lstrip().startswith('#'):
             line = line_numbers.at(body_start + offset)
             errors.append(
-                f'{path}:{line}: error: Preprocessor directives are not '
-                f'supported inside {array_name}, because the generated '
-                f'Java class is not conditional.'
+                f'{path}:{line}: error: Unsupported preprocessor directive '
+                f'inside {array_name}. Only #if, #ifdef, #ifndef, #elif, '
+                f'#else and #endif are supported.'
             )
     if errors:
         raise models.GeneratorError(errors)
@@ -156,7 +157,6 @@ def _parse_directives(
 
 def _parse_array(
     path: str,
-    text: str,
     structure: str,
     line_numbers: _LineNumberTracker,
     namespaces: _NamespaceTracker,
@@ -199,7 +199,6 @@ def _parse_array(
 
     entries = _parse_entries(
         path,
-        text,
         structure,
         line_numbers,
         array_name,
@@ -210,10 +209,13 @@ def _parse_array(
     )
 
 
-def parse_source(path: str, text: str, structure: str) -> models.ParsedSource:
+def parse_source(
+    path: str, text: str, code: str, structure: str
+) -> models.ParsedSource:
     """Parses a C++ file that defines kFeaturesExposedToJava, and optionally
-    k<Type>ParamsExposedToJava arrays. `structure` is the structure view of
-    `text` (see cpp_lexer.lex()) with preprocessor lines blanked.
+    k<Type>ParamsExposedToJava arrays. `text` is the content of the file, and
+    `code` and `structure` are its views (see cpp_lexer.lex()), all without the
+    code that is not compiled (see cpp_lexer.blank_inactive_branches()).
     """
     line_numbers = _LineNumberTracker(text)
     namespaces = _NamespaceTracker(structure)
@@ -223,7 +225,6 @@ def parse_source(path: str, text: str, structure: str) -> models.ParsedSource:
     try:
         feature_array = _parse_array(
             path,
-            text,
             structure,
             line_numbers,
             namespaces,
@@ -238,7 +239,6 @@ def parse_source(path: str, text: str, structure: str) -> models.ParsedSource:
         try:
             param_array = _parse_array(
                 path,
-                text,
                 structure,
                 line_numbers,
                 namespaces,
@@ -253,7 +253,8 @@ def parse_source(path: str, text: str, structure: str) -> models.ParsedSource:
     if errors:
         raise models.GeneratorError(errors)
 
-    includes = tuple(m.group(1) for m in _INCLUDE_RE.finditer(text))
+    includes = tuple(m.group(1) for m in _INCLUDE_RE.finditer(code))
+    # Comments are blanked in `code` and `structure`.
     directives = _parse_directives(path, text, line_numbers)
 
     feature_map_names = tuple(
@@ -408,8 +409,9 @@ def parse_feature_definitions(
     """Finds feature definitions such as BASE_FEATURE(kFoo, ...) in a file.
     A definition is any ALL_CAPS macro call whose name contains FEATURE (but not
     DECLARE or PARAM) and whose first argument is a kCamelCase identifier.
-    `code` and `structure` are the views of the file (see cpp_lexer.lex()) with
-    preprocessor lines blanked.
+    `code` and `structure` are the views of the file (see cpp_lexer.lex())
+    without the code that is not compiled (see
+    cpp_lexer.blank_inactive_branches()).
     """
 
     def is_feature_definition_macro(macro: str) -> bool:
@@ -442,7 +444,8 @@ def parse_param_definitions(
     """Finds param definitions such as BASE_FEATURE_PARAM(int, kFoo, ...) in a
     file. A definition is any BASE_FEATURE_PARAM call whose second argument is
     a kCamelCase identifier. `code` and `structure` are the views of the file
-    (see cpp_lexer.lex()) with preprocessor lines blanked.
+    (see cpp_lexer.lex()) without the code that is not compiled (see
+    cpp_lexer.blank_inactive_branches()).
     """
     # Avoids scanning the many files that don't define any param.
     if _PARAM_MACRO not in structure:

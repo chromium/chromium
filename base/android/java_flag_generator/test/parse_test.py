@@ -19,28 +19,36 @@ import models
 _PATH = 'feature_list.cc'
 
 
-def _parse_source(text):
+def _views(text, is_desktop_android=False):
+    """Returns the text and its code and structure views without the code that
+    is not compiled, which the cpp_parser functions expect, like
+    java_flag_generator._FileCache.read().
+    """
+    code, structure = cpp_lexer.lex(text)
+    return cpp_lexer.blank_inactive_branches(
+        text, code, structure, is_desktop_android
+    )
+
+
+def _parse_source(text, is_desktop_android=False):
     """Calls cpp_parser.parse_source() with the views that it expects."""
-    _, structure = cpp_lexer.blank_preprocessor_lines(*cpp_lexer.lex(text))
-    return cpp_parser.parse_source(_PATH, text, structure)
+    return cpp_parser.parse_source(_PATH, *_views(text, is_desktop_android))
 
 
 def _parse_feature_definitions(text):
     """Calls cpp_parser.parse_feature_definitions() with the views that it
     expects.
     """
-    return cpp_parser.parse_feature_definitions(
-        _PATH, *cpp_lexer.blank_preprocessor_lines(*cpp_lexer.lex(text))
-    )
+    _, code, structure = _views(text)
+    return cpp_parser.parse_feature_definitions(_PATH, code, structure)
 
 
 def _parse_param_definitions(text):
     """Calls cpp_parser.parse_param_definitions() with the views that it
     expects.
     """
-    return cpp_parser.parse_param_definitions(
-        _PATH, *cpp_lexer.blank_preprocessor_lines(*cpp_lexer.lex(text))
-    )
+    _, code, structure = _views(text)
+    return cpp_parser.parse_param_definitions(_PATH, code, structure)
 
 
 class CppLexerTest(unittest.TestCase):
@@ -183,45 +191,253 @@ class CppLexerTest(unittest.TestCase):
             ['x', ' g(y, z)'], [structure[start:end] for start, end in ranges]
         )
 
-    def testBlankPreprocessorLines(self):
-        code, structure = cpp_lexer.blank_preprocessor_lines(
-            *cpp_lexer.lex(
-                '#include "a.h"\n'
-                'a;\n'
-                '  # define M(x) \\\n'
-                '    (x)\n'
-                'b;\n'
-                'R"(\n'
-                '#not_a_directive\n'
-                ')";\n'
+
+class BlankInactiveBranchesTest(unittest.TestCase):
+    def _assert_blanked(self, annotated, is_desktop_android=False):
+        """Checks which lines blank_inactive_branches() blanks in the text, code
+        and structure views. Each line of `annotated` starts with '-' if it is
+        blanked, or with ' ' if it is kept.
+        """
+        lines = annotated.split('\n')
+        text = '\n'.join(line[1:] for line in lines)
+        blanked = [line.startswith('-') for line in lines]
+
+        def blank(view):
+            return '\n'.join(
+                ' ' * len(line) if line_blanked else line
+                for line, line_blanked in zip(view.split('\n'), blanked)
             )
+
+        code, structure = cpp_lexer.lex(text)
+        actual = cpp_lexer.blank_inactive_branches(
+            text, code, structure, is_desktop_android
         )
-        self.assertEqual(
-            self._blanked(
-                '~~~~~~~~~~~~~~\n'
-                'a;\n'
-                '~~~~~~~~~~~~~~~~~\n'
-                '~~~~~~~\n'
-                'b;\n'
-                'R"(\n'
-                '#not_a_directive\n'
-                ')";\n'
-            ),
-            code,
-        )
-        self.assertEqual(
-            self._blanked(
-                '~~~~~~~~~~~~~~\n'
-                'a;\n'
-                '~~~~~~~~~~~~~~~~~\n'
-                '~~~~~~~\n'
-                'b;\n'
-                'R"(\n'
-                '~~~~~~~~~~~~~~~~\n'
-                ')";\n'
-            ),
-            structure,
-        )
+        for name, view, actual_view in zip(
+            ('text', 'code', 'structure'), (text, code, structure), actual
+        ):
+            self.assertEqual(blank(view), actual_view, f'{name} view')
+
+    def testOsBuildflags(self):
+        text = """\
+-#if BUILDFLAG(IS_ANDROID)
+ android
+-#else
+-not_android
+-#endif
+-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_IOS)
+-win_or_ios
+-#endif
+-#if !BUILDFLAG(IS_MAC) && BUILDFLAG(IS_POSIX)
+ posix_but_not_mac
+-#endif
+"""
+        self._assert_blanked(text)
+
+    def testDesktopAndroid(self):
+        desktop = """\
+-#if BUILDFLAG(IS_DESKTOP_ANDROID)
+ desktop
+-#else
+-not_desktop
+-#endif
+"""
+        not_desktop = """\
+-#if BUILDFLAG(IS_DESKTOP_ANDROID)
+-desktop
+-#else
+ not_desktop
+-#endif
+"""
+        self._assert_blanked(desktop, is_desktop_android=True)
+        self._assert_blanked(not_desktop, is_desktop_android=False)
+
+    def testUnknownBuildflagsAreTrue(self):
+        # Even when they are negated.
+        text = """\
+-#if BUILDFLAG(ENABLE_FOO)
+ foo
+-#else
+-not_foo
+-#endif
+-#if !BUILDFLAG(ENABLE_FOO)
+ not_foo
+-#else
+-foo
+-#endif
+"""
+        self._assert_blanked(text)
+
+    def testThreeValuedLogic(self):
+        # Known values only decide a condition if the unknown ones can't change
+        # it. Otherwise, the condition is unknown, and assumed to be true.
+        text = """\
+-#if BUILDFLAG(IS_WIN) && BUILDFLAG(ENABLE_FOO)
+-win_and_foo
+-#endif
+-#if defined(FOO) && BUILDFLAG(IS_WIN)
+-foo_and_win
+-#endif
+-#if !(BUILDFLAG(IS_ANDROID) || defined(FOO))
+-neither_android_nor_foo
+-#endif
+-#if BUILDFLAG(IS_WIN) || BUILDFLAG(ENABLE_FOO)
+ win_or_foo
+-#endif
+-#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_FOO)
+ not_android_or_foo
+-#endif
+-#if !(BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_32_BITS))
+ not_32_bit_android
+-#endif
+-#if BUILDFLAG(IS_ANDROID) && !BUILDFLAG(ENABLE_FOO)
+ android_and_not_foo
+-#endif
+"""
+        self._assert_blanked(text)
+
+    def testElif(self):
+        text = """\
+-#if BUILDFLAG(IS_IOS)
+-ios
+-#elif BUILDFLAG(IS_ANDROID)
+ android
+-#elif BUILDFLAG(IS_POSIX)
+-other_posix
+-#else
+-other
+-#endif
+-#if BUILDFLAG(IS_WIN)
+-win
+-#elif BUILDFLAG(IS_MAC)
+-mac
+-#else
+ other
+-#endif
+"""
+        self._assert_blanked(text)
+
+    def testNestedBlocks(self):
+        text = """\
+-#if BUILDFLAG(IS_WIN)
+-#if BUILDFLAG(IS_ANDROID)
+-win_and_android
+-#else
+-win_only
+-#endif
+-#ifdef FOO
+-win_and_foo
+-#else
+-win_and_not_foo
+-#endif
+-win
+-#else
+ not_win
+-#if BUILDFLAG(IS_DESKTOP_ANDROID)
+-desktop
+-#else
+ not_desktop
+-#endif
+-#endif
+"""
+        self._assert_blanked(text)
+
+    def testOtherConditionsAreTrue(self):
+        text = """\
+-#if DCHECK_IS_ON()
+ dcheck
+-#else
+-no_dcheck
+-#endif
+-#if !defined(FOO)
+ not_foo
+-#endif
+-#ifdef FOO
+ foo
+-#elif BUILDFLAG(IS_ANDROID)
+-android
+-#endif
+-#ifndef FOO
+ not_foo
+-#endif
+-#if BUILDFLAG(IS_WIN)
+-win
+-#elifdef FOO
+ foo
+-#else
+-other
+-#endif
+"""
+        self._assert_blanked(text)
+
+    def testUnparsableConditionsAreTrue(self):
+        text = """\
+-#if BUILDFLAG(IS_WIN) == 1
+ compared
+-#endif
+-#if BUILDFLAG(IS_WIN) ? 1 : 0
+ ternary
+-#endif
+-#if BUILDFLAG(IS_WIN) &&
+ incomplete
+-#endif
+-#if BUILDFLAG(IS_WIN
+ unterminated
+-#endif
+"""
+        self._assert_blanked(text)
+
+    def testFormatting(self):
+        text = """\
+-  #  if BUILDFLAG(IS_WIN)  // Windows only.
+-win
+-  #  endif  // BUILDFLAG(IS_WIN)
+-#if BUILDFLAG(IS_WIN) /* Windows */ || \\
+-    BUILDFLAG(IS_MAC)
+-win_or_mac
+-#endif
+-#if(BUILDFLAG(IS_ANDROID)&&!BUILDFLAG(IS_WIN))
+ android
+-#endif
+"""
+        self._assert_blanked(text)
+
+    def testOtherDirectives(self):
+        text = """\
+ #include "foo.h"
+ #define FOO(x) \\
+   (x)
+ #pragma once
+-#if BUILDFLAG(IS_WIN)
+-#include "win.h"
+-#define BAR(x) \\
+-  (x)
+-#endif
+"""
+        self._assert_blanked(text)
+
+    def testDirectivesInCommentsAndStrings(self):
+        text = """\
+ /*
+ #if BUILDFLAG(IS_WIN)
+ */
+ not_in_comment
+ const char kText[] = R"(
+ #if BUILDFLAG(IS_WIN)
+ )";
+ not_in_string
+"""
+        self._assert_blanked(text)
+
+    def testUnbalancedDirectives(self):
+        # An unterminated #if ends at the end of the file.
+        text = """\
+ #endif
+ #else
+ stray
+-#if BUILDFLAG(IS_WIN)
+-unterminated
+"""
+        self._assert_blanked(text)
 
 
 class ParseSourceTest(unittest.TestCase):
@@ -358,12 +574,39 @@ const std::array<const base::Feature*, 0> kFeaturesExposedToJava = {};
 // #include "commented_out.h"
 /* #include "block_commented_out.h" */
 #include "d.inc"
+#if BUILDFLAG(IS_WIN)
+#include "not_compiled.h"
+#endif
 const char kText[] = "#include \\"in_string.h\\"";
 const base::Feature* const kFeaturesExposedToJava[] = {&kFoo};
 """
         self.assertEqual(
             ('a/b.h', 'c.h', 'd.inc'), _parse_source(text).includes
         )
+
+    def testDirectivesInInactiveBranches(self):
+        text = """\
+// FEATURE_DEFINITION_FILE: //always.cc
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+// FEATURE_DEFINITION_FILE: //desktop.cc
+#else
+// FEATURE_DEFINITION_FILE: //not_desktop.cc
+#endif
+#if BUILDFLAG(IS_WIN)
+// FEATURE_DEFINITION_FILE: not/a/valid/path.cc
+#endif
+const base::Feature* const kFeaturesExposedToJava[] = {&kFoo};
+"""
+        for is_desktop_android, expected in (
+            (True, [(1, '//always.cc'), (3, '//desktop.cc')]),
+            (False, [(1, '//always.cc'), (5, '//not_desktop.cc')]),
+        ):
+            with self.subTest(is_desktop_android=is_desktop_android):
+                source = _parse_source(text, is_desktop_android)
+                self.assertEqual(
+                    expected,
+                    [(d.line, d.written_path) for d in source.directives],
+                )
 
     def testArrayNamespace(self):
         array = 'const base::Feature* const kFeaturesExposedToJava[] = {};'
@@ -377,7 +620,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {&kFoo};
             ('namespace a {\nstruct S {\n  void F() {}\n};\n', ('a',)),
             ('namespace a {\nnamespace b = c;\n', ('a',)),
             ('namespace a {\n// }\nconst char kText[] = "}";\n', ('a',)),
-            ('namespace a {\n#define CLOSE_NAMESPACE }\n', ('a',)),
         ):
             with self.subTest(prefix=prefix):
                 source = _parse_source(prefix + array)
@@ -386,7 +628,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {&kFoo};
     def testFeatureMapNames(self):
         text = """\
 // JNI_InComment_GetNativeMap(
-#define JNI_InMacro_GetNativeMap(env) 0
 const char kText[] = "JNI_InString_GetNativeMap(";
 static int64_t JNI_SecondFeatureMap_GetNativeMap(JNIEnv* env);
 static int64_t JNI_FirstFeatureMap_GetNativeMap(JNIEnv* env) {
@@ -488,22 +729,6 @@ BASE_FEATURE(kFoo, base::FEATURE_DISABLED_BY_DEFAULT);
             text,
         )
 
-    def testErrorMultipleArrays(self):
-        text = """\
-#if BUILDFLAG(IS_DESKTOP_ANDROID)
-const base::Feature* const kFeaturesExposedToJava[] = {&kFoo};
-#else
-const base::Feature* const kFeaturesExposedToJava[] = {&kBar};
-#endif
-"""
-        self._assert_error(
-            [
-                f'{_PATH}: error: Found multiple definitions of '
-                'kFeaturesExposedToJava (lines 2, 4).'
-            ],
-            text,
-        )
-
     def testErrorUnbalancedArray(self):
         for body, reason in (
             ('{&kFoo,\n', 'Unterminated bracket'),
@@ -579,22 +804,50 @@ const base::Feature* const kFeaturesExposedToJava[] = {
             text,
         )
 
+    def testConditionsInArrays(self):
+        text = """\
+const base::Feature* const kFeaturesExposedToJava[] = {
+    &kFoo,
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+    &kDesktopOnly,
+#else
+    &kNotDesktopOnly,
+#endif
+#if BUILDFLAG(IS_WIN)
+    &kWinOnly,
+#endif
+#ifdef BAR
+    &kBar,
+#else
+    &kNotBar,
+#endif
+};
+"""
+        for is_desktop_android, expected in (
+            (True, [(2, 'kFoo'), (4, 'kDesktopOnly'), (12, 'kBar')]),
+            (False, [(2, 'kFoo'), (6, 'kNotDesktopOnly'), (12, 'kBar')]),
+        ):
+            with self.subTest(is_desktop_android=is_desktop_android):
+                self.assertEqual(
+                    expected,
+                    self._entries(_parse_source(text, is_desktop_android)),
+                )
+
     def testErrorPreprocessorDirectivesInArray(self):
         text = """\
 const base::Feature* const kFeaturesExposedToJava[] = {
     &kFoo,
-#if BUILDFLAG(IS_ANDROID)
-    &kBar,
-#endif  // BUILDFLAG(IS_ANDROID)
+#define BAR_FEATURE &kBar
+#include "more_features.inc"
 };
 """
         message = (
-            'error: Preprocessor directives are not supported inside '
-            'kFeaturesExposedToJava, because the generated Java class '
-            'is not conditional.'
+            'error: Unsupported preprocessor directive inside '
+            'kFeaturesExposedToJava. Only #if, #ifdef, #ifndef, #elif, #else '
+            'and #endif are supported.'
         )
         self._assert_error(
-            [f'{_PATH}:3: {message}', f'{_PATH}:5: {message}'], text
+            [f'{_PATH}:3: {message}', f'{_PATH}:4: {message}'], text
         )
 
     def testErrorInvalidDirectives(self):
@@ -634,9 +887,7 @@ const base::FeatureParam<int>* const kIntParamsExposedToJava[] = {
     kNotAPointer,
 };
 const base::FeatureParam<double>* const kDoubleParamsExposedToJava[] = {
-#if BUILDFLAG(IS_ANDROID)
-    &kBar,
-#endif
+#include "double_params.inc"
 };
 const base::FeatureParam<std::string>* const kStringParamsExposedToJava[] = {};
 const base::FeatureParam<std::string>* const kStringParamsExposedToJava[] = {};
@@ -649,23 +900,17 @@ const base::FeatureParam<std::string>* const kStringParamsExposedToJava[] = {};
                 '"&namespace::kSomeName".'
             )
 
-        def preprocessor_message(line):
-            return (
-                f'{_PATH}:{line}: error: Preprocessor directives are not '
-                'supported inside kDoubleParamsExposedToJava, because the '
-                'generated Java class is not conditional.'
-            )
-
         self._assert_error(
             [
                 unsupported_entry_message(1, 'kFeaturesExposedToJava'),
                 f'{_PATH}:4: error: Duplicate entry "kFoo" (first listed on '
                 'line 3).',
                 unsupported_entry_message(7, 'kIntParamsExposedToJava'),
-                preprocessor_message(10),
-                preprocessor_message(12),
+                f'{_PATH}:10: error: Unsupported preprocessor directive inside '
+                'kDoubleParamsExposedToJava. Only #if, #ifdef, #ifndef, #elif, '
+                '#else and #endif are supported.',
                 f'{_PATH}: error: Found multiple definitions of '
-                'kStringParamsExposedToJava (lines 14, 15).',
+                'kStringParamsExposedToJava (lines 12, 13).',
             ],
             text,
         )

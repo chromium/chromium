@@ -1,0 +1,7 @@
+namespace foo {
+
+// Would conflict with the definition in test_feature_list.cc if it was
+// searched.
+BASE_FEATURE(kOsDependent, "WinName", base::FEATURE_DISABLED_BY_DEFAULT);
+
+}  // namespace foo
