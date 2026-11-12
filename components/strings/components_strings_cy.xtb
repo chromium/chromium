@@ -823,6 +823,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2356941001189392209">Rhestr gyfyngedig o gyfeiriadau URL tudalennau rydych yn ymweld â nhw lle mae digwyddiadau technoleg etifeddol yn digwydd</translation>
 <translation id="2357312461142072202">{NUM_TABS,plural, =1{Bydd yn rhannu 1 tab}zero{Bydd yn rhannu {NUM_TABS} tab}two{Bydd yn rhannu {NUM_TABS} dab}few{Bydd yn rhannu {NUM_TABS} thab}many{Bydd yn rhannu {NUM_TABS} thab}other{Bydd yn rhannu {NUM_TABS} tab}}</translation>
 <translation id="2357481397660644965">Rheolir eich dyfais gan <ph name="DEVICE_MANAGER" /> a rheolir eich cyfrif gan <ph name="ACCOUNT_MANAGER" />.</translation>
+<translation id="2358479643736965923">Gweld eich ateb chwilio AI Google ar y tab hwn</translation>
 <translation id="2359629602545592467">Mwy nad un</translation>
 <translation id="2359808026110333948">Parhau</translation>
 <translation id="236000571258713023">Cerbydau</translation>
@@ -1141,6 +1142,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2925032407415783182">Cadw tocyn digwyddiad i Wallet</translation>
 <translation id="2925454999967523701">Botwm creu doc, gweithredwch i greu Google Doc newydd yn gyflym</translation>
 <translation id="2925673989565098301">Dull Cyflwyno</translation>
+<translation id="2927328994673424423">2 wythnos yn ôl</translation>
 <translation id="2928426578619531300">Defnyddiwr cysylltiedig</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> ac <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> arall}two{<ph name="SHIPPING_ADDRESS_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> arall}few{<ph name="SHIPPING_ADDRESS_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> arall}many{<ph name="SHIPPING_ADDRESS_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> arall}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> arall}}</translation>
 <translation id="2930531075747147366">Tab o'ch Dyfais Arall</translation>

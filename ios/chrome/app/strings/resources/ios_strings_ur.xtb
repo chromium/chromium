@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">پاسورڈز دیکھنے کے لیے، آپ کو اپنے آلے پر پہلے پاس کوڈ سیٹ کرنا چاہیے۔</translation>
 <translation id="201759455285471444">ٹیب گروپ کو پھیلائیں۔</translation>
 <translation id="2022431790688770637">‏‫Gemini کی تجاویز کا نظم کریں</translation>
+<translation id="2023265063803387188">‏‫Gemini پوشیدگی وضع میں دستیاب نہیں ہے</translation>
 <translation id="2031515492007104071">‫Level Up</translation>
 <translation id="2044394949148788042">ٹیب گرڈ کھولیں</translation>
 <translation id="2044681667265133332">اکاؤنٹ <ph name="USER_EMAIL" /> کا نظم <ph name="HOSTED_DOMAIN" /> کے ذریعے کیا جاتا ہے جو کچھ معلومات دیکھنے کے قابل ہو سکتا ہے۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
@@ -1213,6 +1214,7 @@
 <translation id="479628432297359449">ڈاؤن لوڈ روکیں؟</translation>
 <translation id="4796496140132859135">ٹیب گروپ۔ سکیڑا گیا۔</translation>
 <translation id="4800912004582762296">کلک کیا جا رہا ہے</translation>
+<translation id="4800930308997591052">‏اپنے آلات کے درمیان بغیر کسی رکاوٹ کے ٹیبز کا اشتراک کرنے اور اپنے Google اکاؤنٹ سے اپنے پاس ورڈز، بُک مارکس اور مزید حاصل کرنے کے لیے <ph name="EMAIL" /> پر سوئچ کریں۔</translation>
 <translation id="4802185666270672526">'ڈیسک ٹاپ سائٹ کی درخواست کریں' کو چھپائیں</translation>
 <translation id="4803185665210547709">آپ کی تنظیم کے زیر انتظام۔
 <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
@@ -2148,6 +2150,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7618220760967055820">منتخب کریں کہ ٹول بار میں کون سا بٹن دکھانا ہے</translation>
 <translation id="7620522820075868385">منسوخ کریں</translation>
 <translation id="762078666799342162">‏آپ اپنے پہلے کے ڈاؤن لوڈز کو <ph name="BEGIN_LINK" />Files<ph name="END_LINK" /> میں دیکھ سکتے ہیں</translation>
+<translation id="7636034359405891151">اپنے کمپیوٹر پر وہیں سے شروع کریں جہاں سے آپ نے چھوڑا تھا</translation>
 <translation id="7638584964844754484">غلط پاس فریز</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{متاثرہ پاس ورڈز}=1{‫{COUNT} متاثرہ پاس ورڈ}other{‫{COUNT} متاثرہ پاس ورڈز}}</translation>
 <translation id="7640669552036055091">‏Android سے ٹیبز</translation>
@@ -2608,6 +2611,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8976382372951310360">مدد</translation>
 <translation id="8976414606286374109">‏کارڈز آپ کے Google اکاؤنٹ میں محفوظ ہوتے ہیں۔</translation>
 <translation id="8981454092730389528">‏Google سرگرمی کنٹرولز</translation>
+<translation id="8987736167266086032">جہاں آپ نے چھوڑا وہیں سے شروع کریں</translation>
 <translation id="8988107725234939347">‫<ph name="WEBSITE_TITLE" />، پن کردہ سائٹ</translation>
 <translation id="8989779557457435460">بطور ڈیفالٹ موجودہ ٹیب کا اشتراک کریں</translation>
 <translation id="8990960056509724223">آپ کی تنظیم کی پالیسیوں کی وجہ سے فائل محفوظ نہیں ہو سکی</translation>
@@ -2649,6 +2653,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="91023216973987714">ادائیگی کے طریقے</translation>
 <translation id="9106655997975673326">منجانب "<ph name="SOURCE_DEVICE" />"</translation>
 <translation id="9107664647686727385">متاثرہ پاس ورڈز کیلئے چیک کریں</translation>
+<translation id="9115035712231910133">‏منسلک کردہ تصویر {title}</translation>
 <translation id="9119764377203471454">منسلکات کو شامل نہیں کیا جا سکا</translation>
 <translation id="9124387962554796433">‏تلاش اور Google کی دیگر سروسز کو ذاتی نوعیت کا بنانے کیلئے Google آپ کی سرگزشت کا استعمال کر سکتا ہے۔</translation>
 <translation id="9124978074365039456">اپنے کیمرے اور تصویری گیلری کا استعمال کرتے ہوئے جو آپ کو دکھائی دیتا ہے اسے خریدیں، ترجمہ کریں اور شناخت کریں</translation>

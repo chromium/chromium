@@ -342,6 +342,7 @@
 <translation id="4022972681110646219">תרגום המסך</translation>
 <translation id="4023601594785368013">שפה מקורית: <ph name="LANGUAGE" /></translation>
 <translation id="4034249157893816477">‏מנהל הסיסמאות מובנה ב-Chrome ומאפשר לך ליצור סיסמאות חזקות, לשמור אותן ולמלא אותן אוטומטית. כדי להגיע אליו בקלות, אפשר להוסיף את קיצור הדרך.</translation>
+<translation id="4034420818911109432">‏‫<ph name="USER_NAME" />,‏ <ph name="EMAIL" />. מינוי לשירות של Google.</translation>
 <translation id="4035053306113201399">‏יש להפעיל מחדש את ChromeOS כדי להחיל את העדכון.</translation>
 <translation id="4050175100176540509">הגרסה החדשה כוללת שיפורי בטיחות חשובים ותכונות חדשות.</translation>
 <translation id="4053720452172726777">‏פעולות נוספות ב-Google Chrome</translation>
@@ -932,6 +933,7 @@
 <translation id="9148058034647219655">יציאה</translation>
 <translation id="9150331942025550505">‏עם אפליקציית Chrome במכשיר <ph name="DEVICE_TYPE" /> אפשר ליהנות מהיתרונות של AI</translation>
 <translation id="919706545465235479">‏יש לעדכן את Chrome כדי להתחיל את הסנכרון</translation>
+<translation id="9210313013767007472">‏‫<ph name="USER_NAME_OR_EMAIL" />. מינוי לשירות של Google.</translation>
 <translation id="922152298093051471">‏התאמה אישית של Chrome</translation>
 <translation id="93760716455950538">‏הפעלה מחדש של ChromeOS Flex</translation>
 <translation id="943390475793766444">‏ההמלצה של Chrome היא לסרוק את הקובץ הזה כי הוא עלול להיות מסוכן.</translation>

@@ -823,6 +823,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2356941001189392209">Một danh sách hạn chế chứa URL của những trang bạn truy cập có diễn ra sự kiện công nghệ cũ</translation>
 <translation id="2357312461142072202">{NUM_TABS,plural, =1{Sẽ chia sẻ 1 thẻ}other{Sẽ chia sẻ {NUM_TABS} thẻ}}</translation>
 <translation id="2357481397660644965">Thiết bị của bạn do <ph name="DEVICE_MANAGER" /> quản lý, còn tài khoản của bạn do <ph name="ACCOUNT_MANAGER" /> quản lý.</translation>
+<translation id="2358479643736965923">Xem câu trả lời từ AI của Google trong Tìm kiếm trên thẻ này</translation>
 <translation id="2359629602545592467">Nhiều</translation>
 <translation id="2359808026110333948">Tiếp tục</translation>
 <translation id="236000571258713023">Xe cộ</translation>
@@ -1141,6 +1142,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2925032407415783182">Lưu vé xem sự kiện vào Wallet</translation>
 <translation id="2925454999967523701">Nút Tạo tài liệu, hãy nhấn nút này để tạo nhanh một tài liệu mới trong Google Tài liệu</translation>
 <translation id="2925673989565098301">Phương thức giao hàng</translation>
+<translation id="2927328994673424423">2 tuần trước</translation>
 <translation id="2928426578619531300">Người dùng được liên kết</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> và <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> địa chỉ giao hàng khác}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> và <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> địa chỉ giao hàng khác}}</translation>
 <translation id="2930531075747147366">Thẻ được gửi từ thiết bị khác của bạn</translation>
@@ -2107,7 +2109,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4489023393592172404">Phong bì Kaku 4</translation>
 <translation id="4489977488133295402">Xác minh danh tính của bạn để tự động điền thông tin phương thức thanh toán</translation>
 <translation id="4490717597759821841">A7</translation>
-<translation id="449126573531210296">Mã hóa các mật khẩu đã đồng bộ hóa bằng Tài khoản Google của bạn</translation>
+<translation id="449126573531210296">Mã hoá các mật khẩu đã đồng bộ hoá với Tài khoản Google của bạn</translation>
 <translation id="4493480324863638523">URL không hợp lệ. Phải là URL chứa tên giao thức chuẩn, chẳng hạn như: http://example.com hoặc https://example.com.</translation>
 <translation id="4497843134750481377">Quản lý ưu đãi</translation>
 <translation id="4500587658229086076">nội dung không an toàn</translation>
@@ -3308,7 +3310,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6464094930452079790">hình ảnh</translation>
 <translation id="646789491285795429">Bạn đang theo dõi sản phẩm này rồi</translation>
 <translation id="6468485451923838994">Phông chữ</translation>
-<translation id="6469702164109431067">Mật khẩu và khoá đăng nhập</translation>
+<translation id="6469702164109431067">Mật khẩu và khoá truy cập</translation>
 <translation id="647261751007945333">Chính sách thiết bị</translation>
 <translation id="6472874020827012601">Vải (Không bóng)</translation>
 <translation id="6474220430271405609">Kiểm thử chính sách</translation>

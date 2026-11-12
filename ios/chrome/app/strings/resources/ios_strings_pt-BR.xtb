@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">Para acessar as senhas, defina uma senha no dispositivo primeiro.</translation>
 <translation id="201759455285471444">Abrir grupo de guias.</translation>
 <translation id="2022431790688770637">Gerenciar sugestões do Gemini</translation>
+<translation id="2023265063803387188">O Gemini não está disponível no modo de navegação anônima</translation>
 <translation id="2031515492007104071">Subir de nível</translation>
 <translation id="2044394949148788042">Abrir a grade de guias</translation>
 <translation id="2044681667265133332">A conta <ph name="USER_EMAIL" /> é gerenciada por <ph name="HOSTED_DOMAIN" />, que pode ver algumas informações. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
@@ -852,7 +853,7 @@
 <translation id="3631443864840848029">Salve a senha atual para este site.</translation>
 <translation id="3641456520301071208">Os sites podem solicitar sua localização</translation>
 <translation id="3642060527569456384">Os grupos de guias são salvos e atualizados automaticamente em todos os seus dispositivos.</translation>
-<translation id="3643338347976071250">{count,plural, =1{{count} senha foi salva apenas neste dispositivo. Para usá-la em outros dispositivos, salve na sua Conta do Google, {email}.}one{{count} senha foi salva apenas neste dispositivo. Para usá-la em outros dispositivos, salve na sua Conta do Google, {email}.}other{{count} senhas foram salvas apenas neste dispositivo. Para usá-los em outros dispositivos, salve na sua Conta do Google, {email}.}}</translation>
+<translation id="3643338347976071250">{count,plural, =1{{count} senha foi salva apenas neste dispositivo. Para usá-la em outros dispositivos, salve na sua Conta do Google, {email}.}one{{count} senha foi salva apenas neste dispositivo. Para usá-la em outros dispositivos, salve na sua Conta do Google, {email}.}other{{count} senhas foram salvas apenas neste dispositivo. Para usá-las em outros dispositivos, salve na sua Conta do Google, {email}.}}</translation>
 <translation id="3657176844107584515"><ph name="EMAIL" />, assinatura do Google.</translation>
 <translation id="3659297405161482746">Nenhuma forma de pagamento encontrada</translation>
 <translation id="3662966164093827811">{count,plural, =1{1 selecionada}one{# selecionada}other{# selecionadas}}</translation>
@@ -867,7 +868,7 @@
 <translation id="3695446226812920698">Saiba como</translation>
 <translation id="3700134753671613714">Faça login para ter acesso aos seus favoritos em todos os seus dispositivos.</translation>
 <translation id="3701167022068948696">Corrigir agora</translation>
-<translation id="3708944822379815019">{COUNT,plural, =1{{COUNT} senha foi salva apenas neste dispositivo. Para usá-la em outros dispositivos, salve na sua Conta do Google, {EMAIL}.}one{{COUNT} senha foi salva apenas neste dispositivo. Para usá-la em outros dispositivos, salve na sua Conta do Google, {EMAIL}.}other{{COUNT} senhas foram salvas apenas neste dispositivo. Para usá-los em outros dispositivos, salve na sua Conta do Google, {EMAIL}.}}</translation>
+<translation id="3708944822379815019">{COUNT,plural, =1{{COUNT} senha foi salva apenas neste dispositivo. Para usá-la em outros dispositivos, salve na sua Conta do Google, {EMAIL}.}one{{COUNT} senha foi salva apenas neste dispositivo. Para usá-la em outros dispositivos, salve na sua Conta do Google, {EMAIL}.}other{{COUNT} senhas foram salvas apenas neste dispositivo. Para usá-las em outros dispositivos, salve na sua Conta do Google, {EMAIL}.}}</translation>
 <translation id="3709621342136814217">Escolha aqui sua fonte, tamanho do texto e muito mais</translation>
 <translation id="371230970611282515">Prevê e avisa sobre eventos perigosos antes que eles aconteçam.</translation>
 <translation id="372115889256123713">arquivos em cache</translation>
@@ -2608,6 +2609,7 @@ Você pode reiniciar a qualquer momento.</translation>
 <translation id="8976382372951310360">Ajuda</translation>
 <translation id="8976414606286374109">Os cartões são salvos na sua Conta do Google.</translation>
 <translation id="8981454092730389528">Controles de atividades do Google</translation>
+<translation id="8987736167266086032">Continue de onde parou</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, site fixado</translation>
 <translation id="8989779557457435460">Compartilhar a guia atual por padrão</translation>
 <translation id="8990960056509724223">Não foi possível salvar o arquivo devido às políticas da sua organização</translation>
@@ -2649,6 +2651,7 @@ Você pode reiniciar a qualquer momento.</translation>
 <translation id="91023216973987714">Formas de pagamento</translation>
 <translation id="9106655997975673326">De "<ph name="SOURCE_DEVICE" />"</translation>
 <translation id="9107664647686727385">Veja se há senhas comprometidas</translation>
+<translation id="9115035712231910133">Imagem anexada {title}</translation>
 <translation id="9119764377203471454">Não foi possível adicionar anexos</translation>
 <translation id="9124387962554796433">O Google pode usar seu histórico para personalizar a Pesquisa e outros Serviços do Google.</translation>
 <translation id="9124978074365039456">Compre, traduza e identifique o que você quiser usando a câmera e a galeria de fotos</translation>

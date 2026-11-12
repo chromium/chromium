@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">Para ver os contrasinais, en primeiro lugar debes definir un código de desbloqueo no teu dispositivo.</translation>
 <translation id="201759455285471444">Despregar o grupo de pestanas.</translation>
 <translation id="2022431790688770637">Xestionar suxestións de Gemini</translation>
+<translation id="2023265063803387188">Gemini non está dispoñible no modo de incógnito</translation>
 <translation id="2031515492007104071">Level Up</translation>
 <translation id="2044394949148788042">Abre a grade de pestanas</translation>
 <translation id="2044681667265133332"><ph name="HOSTED_DOMAIN" /> xestiona a conta <ph name="USER_EMAIL" />, polo que é posible que poida ver parte da información. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
@@ -2035,6 +2036,7 @@ Para continuar desde o ordenador, cambia a <ph name="OTHER_EMAIL" />. Obterás o
 <translation id="728025568708172005">Iniciar introdución</translation>
 <translation id="7280980607183752256">Este ficheiro non se pode importar</translation>
 <translation id="7282197670900591579">Tema cidra</translation>
+<translation id="7283937415134849498">Para ofrecerche axuda personalizada, Gemini comparte algúns dos teus datos (como partes dos teus chats, a localización e outra información relevante) con outros servizos de Google, como Maps e Voos. Estes poden usar esa información para mellorar, mesmo se máis adiante eliminas o historial de Gemini. Tes máis detalles no <ph name="BEGIN_LINK" />Centro de privacidade das aplicacións Gemini<ph name="END_LINK" />.</translation>
 <translation id="7293429513719260019">Seleccionar idioma</translation>
 <translation id="72961285530871072">Con esta acción, eliminarase de forma permanente o teu progreso en Level Up e os datos de uso das funcións deste programa deixarán de enviarse ao teu perfil de Google.
 
@@ -2607,6 +2609,7 @@ Podes reinicialo cando queiras.</translation>
 <translation id="8976382372951310360">Axuda</translation>
 <translation id="8976414606286374109">As tarxetas gárdanse na túa Conta de Google.</translation>
 <translation id="8981454092730389528">Controis de actividade de Google</translation>
+<translation id="8987736167266086032">Continúa onde o deixaches</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, sitio fixado</translation>
 <translation id="8989779557457435460">Compartir pestana actual de forma predeterminada</translation>
 <translation id="8990960056509724223">Non se puido gardar o ficheiro debido ás políticas da túa organización</translation>
@@ -2648,6 +2651,7 @@ Podes reinicialo cando queiras.</translation>
 <translation id="91023216973987714">Métodos de pago</translation>
 <translation id="9106655997975673326">De <ph name="SOURCE_DEVICE" /></translation>
 <translation id="9107664647686727385">Comproba se hai contrasinais vulnerados</translation>
+<translation id="9115035712231910133">Imaxe anexa {title}</translation>
 <translation id="9119764377203471454">Non se puideron engadir os anexos</translation>
 <translation id="9124387962554796433">Google pode usar o teu historial de para personalizar a Busca e outros servizos seus.</translation>
 <translation id="9124978074365039456">Compra, traduce e identifica o que vexas mediante a cámara e a galería de fotos</translation>

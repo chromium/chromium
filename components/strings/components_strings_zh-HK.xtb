@@ -823,6 +823,7 @@
 <translation id="2356941001189392209">你瀏覽的網頁網址清單 (只列出發生舊版科技事件的網址)</translation>
 <translation id="2357312461142072202">{NUM_TABS,plural, =1{將會分享 1 個分頁}other{將會分享 {NUM_TABS} 個分頁}}</translation>
 <translation id="2357481397660644965">您的裝置由 <ph name="DEVICE_MANAGER" /> 管理，而您的帳戶由 <ph name="ACCOUNT_MANAGER" /> 管理。</translation>
+<translation id="2358479643736965923">在此分頁查看 Google AI 搜尋答案</translation>
 <translation id="2359629602545592467">多種貨幣</translation>
 <translation id="2359808026110333948">繼續</translation>
 <translation id="236000571258713023">汽車</translation>
@@ -1141,6 +1142,7 @@
 <translation id="2925032407415783182">將活動門票儲存至「錢包」</translation>
 <translation id="2925454999967523701">建立文件按鈕，啟動之後就可以快速建立新嘅 Google 文件</translation>
 <translation id="2925673989565098301">送貨方式</translation>
+<translation id="2927328994673424423">2 星期前</translation>
 <translation id="2928426578619531300">相關聯的使用者</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{「<ph name="SHIPPING_ADDRESS_PREVIEW" />」和另外 <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> 個地址}other{「<ph name="SHIPPING_ADDRESS_PREVIEW" />」和另外 <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> 個地址}}</translation>
 <translation id="2930531075747147366">你的另一部裝置傳來分頁</translation>

@@ -823,6 +823,7 @@
 <translation id="2356941001189392209">アクセスしたページのうち、以前のテクノロジー イベントが発生しているページの URL リストのみ</translation>
 <translation id="2357312461142072202">{NUM_TABS,plural, =1{1 個のタブを共有します}other{{NUM_TABS} 個のタブを共有します}}</translation>
 <translation id="2357481397660644965">ご使用のデバイスは <ph name="DEVICE_MANAGER" /> で管理され、アカウントは <ph name="ACCOUNT_MANAGER" /> で管理されています。</translation>
+<translation id="2358479643736965923">このタブで Google AI 検索の回答を確認できます</translation>
 <translation id="2359629602545592467">複数</translation>
 <translation id="2359808026110333948">続行</translation>
 <translation id="236000571258713023">車両</translation>
@@ -1141,6 +1142,7 @@
 <translation id="2925032407415783182">イベント チケットをウォレットに保存</translation>
 <translation id="2925454999967523701">[ドキュメントを作成] ボタンです。実行すると、新しい Google ドキュメントをすばやく作成できます</translation>
 <translation id="2925673989565098301">配達方法</translation>
+<translation id="2927328994673424423">2 週間前</translation>
 <translation id="2928426578619531300">関連付けられたユーザー</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" />（他 <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> 件）}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />（他 <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> 件）}}</translation>
 <translation id="2930531075747147366">他のデバイスのタブ</translation>
@@ -2072,7 +2074,7 @@
 <translation id="4412377069090572315">レビュー</translation>
 <translation id="4414515549596849729">Cookie とサイトデータ</translation>
 <translation id="4415156962929755728">プラスチック（高光沢）</translation>
-<translation id="4415276339145661267">Google アカウントの管理</translation>
+<translation id="4415276339145661267">Google アカウントを管理</translation>
 <translation id="4415426530740016218">受け取り場所の住所</translation>
 <translation id="4415748029120993980">SECG 楕円曲線 secp384r1（別名 NIST P-384）</translation>
 <translation id="4418150423720608641">ML-DSA-87</translation>

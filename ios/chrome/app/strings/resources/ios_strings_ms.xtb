@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">Untuk melihat kata laluan, mula-mula anda mesti menetapkan kod laluan pada peranti anda.</translation>
 <translation id="201759455285471444">Kembangkan kumpulan tab.</translation>
 <translation id="2022431790688770637">Urus cadangan Gemini</translation>
+<translation id="2023265063803387188">Gemini tidak tersedia dalam Mod inkognito</translation>
 <translation id="2031515492007104071">Level Up</translation>
 <translation id="2044394949148788042">Buka grid tab</translation>
 <translation id="2044681667265133332">Akaun <ph name="USER_EMAIL" /> diurus oleh <ph name="HOSTED_DOMAIN" />, yang boleh melihat sesetengah maklumat. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
@@ -2608,6 +2609,7 @@ Anda boleh memulakan semula pada bila-bila masa.</translation>
 <translation id="8976382372951310360">Bantuan</translation>
 <translation id="8976414606286374109">Kad disimpan pada Google Account anda.</translation>
 <translation id="8981454092730389528">Kawalan Aktiviti Google</translation>
+<translation id="8987736167266086032">Sambung semula dari tempat anda berhenti</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, laman yang disematkan</translation>
 <translation id="8989779557457435460">Kongsi tab semasa secara lalai</translation>
 <translation id="8990960056509724223">Fail tidak dapat disimpan disebabkan oleh dasar organisasi anda</translation>

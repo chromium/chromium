@@ -823,6 +823,7 @@
 <translation id="2356941001189392209">ඔබ පිවිසෙන පිටුවල URL ලිපිනවල සීමිත ලැයිස්තුවක් ලෙගසි තාක්ෂණ සිදුවීම් සිදු වේ</translation>
 <translation id="2357312461142072202">{NUM_TABS,plural, =1{1 පටිත්තක් බෙදා ගනු ඇත}one{පටිති {NUM_TABS}ක් බෙදා ගනු ඇත}other{පටිති {NUM_TABS}ක් බෙදා ගනු ඇත}}</translation>
 <translation id="2357481397660644965">ඔබගේ උපාංගය <ph name="DEVICE_MANAGER" /> විසින් කළමනාකරණය කරන අතර ඔබගේ ගිණුම <ph name="ACCOUNT_MANAGER" /> විසින් කළමනාකරණය කෙරේ.</translation>
+<translation id="2358479643736965923">මෙම පටිත්තෙහි ඔබේ Google AI සෙවීම් පිළිතුර බලන්න</translation>
 <translation id="2359629602545592467">බහුවිධ</translation>
 <translation id="2359808026110333948">කරගෙන යන්න</translation>
 <translation id="236000571258713023">වාහන</translation>
@@ -1141,6 +1142,7 @@
 <translation id="2925032407415783182">සිදුවීම් ප්‍රවේශපත්‍රය Wallet වෙත සුරකින්න</translation>
 <translation id="2925454999967523701">ලේඛනය තනන්න බොත්තම, ඉක්මනින් නව Google ලේඛනයක් තැනීමට සක්‍රිය කරන්න</translation>
 <translation id="2925673989565098301">බෙදා හැරීමේ ක්‍රමය</translation>
+<translation id="2927328994673424423">සති 2කට පෙර</translation>
 <translation id="2928426578619531300">පරිශීලක අනුබද්ධ</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> සහ තව <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}one{<ph name="SHIPPING_ADDRESS_PREVIEW" /> සහ තව <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> සහ තව <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="2930531075747147366">ඔබේ අනෙකුත් උපාංගයේ පටිත්ත</translation>

@@ -688,7 +688,7 @@
 <translation id="2154144347038514978">在设备上自动启动</translation>
 <translation id="2154484045852737596">修改支付卡</translation>
 <translation id="2155260325161282517">5 x 7 英寸</translation>
-<translation id="2156467141257470387">您可在各 Google 产品中使用已保存的地址。这不会更改现有工作地址。此地址将保存至您的 Google 账号：<ph name="ACCOUNT" />。</translation>
+<translation id="2156467141257470387">已保存的地址可在各 Google 产品中通用。这不会更改现有工作地址。此地址将保存至您的 Google 账号：<ph name="ACCOUNT" />。</translation>
 <translation id="2157640075051554492">价格跟踪通知</translation>
 <translation id="2158964559178498011">自动填充功能可在更多位置使用 - 按两次 Ctrl 键即可查找并填充信息</translation>
 <translation id="2161656808144014275">文字</translation>
@@ -926,7 +926,7 @@
 <translation id="2524461107774643265">添加更多信息</translation>
 <translation id="2524962131655207565"><ph name="BEGIN_BOLD" />为提供以上选项，系统会将结账页中的内容分享给 Google。<ph name="END_BOLD" />付款方案需满足资格要求。如要隐藏先买后付选项，请前往<ph name="BEGIN_LINK" />支付设置<ph name="END_LINK" />。</translation>
 <translation id="2526062290525841862">如需运行此应用，请重新启用独立式 Web 应用 (IWA) 开发者模式</translation>
-<translation id="2526280916094749336">您可在各 Google 产品中使用已保存的地址。此地址将保存至您的 Google 账号：<ph name="ACCOUNT" />。</translation>
+<translation id="2526280916094749336">已保存的地址可在各 Google 产品中通用。此地址将保存至您的 Google 账号：<ph name="ACCOUNT" />。</translation>
 <translation id="2527451058878391043">您的银行卡验证码 (CVC) 位于银行卡的正面，即卡号右上角的 4 位数代码。</translation>
 <translation id="2529899080962247600">此字段最多只能包含 <ph name="MAX_ITEMS_LIMIT" /> 个条目，在达到这一上限后添加的所有条目都将被忽略。</translation>
 <translation id="2530042584066815841">锁定和使用鼠标</translation>
@@ -2417,7 +2417,7 @@
 <translation id="5018422839182700155">无法打开此网页</translation>
 <translation id="5018802455907704660">16 x 20 英寸</translation>
 <translation id="5019198164206649151">后备存储状态不佳</translation>
-<translation id="5019293549442035120">您可在各 Google 产品中使用已保存的地址。此地址将保存至您的 Google 账号：<ph name="USER_EMAIL" />。</translation>
+<translation id="5019293549442035120">已保存的地址可在各 Google 产品中通用。此地址将保存至您的 Google 账号：<ph name="USER_EMAIL" />。</translation>
 <translation id="5019819206251569004">移动传感器和光传感器</translation>
 <translation id="5019952743397118625">已设置 <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> 政策。<ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> 不会控制开发者模式在扩展程序页面上的使用情况。</translation>
 <translation id="502075697789439404">文件已下载</translation>
@@ -2997,7 +2997,7 @@
 <translation id="5984570616552610254">室内湿度</translation>
 <translation id="598637245381783098">无法打开付款应用</translation>
 <translation id="5989320800837274978">固定代理服务器和 .pac 脚本网址均未指定。</translation>
-<translation id="5989917734461988169">您可在各 Google 产品中使用已保存的地址。这不会更改现有住址。此地址将保存至您的 Google 账号：<ph name="ACCOUNT" />。</translation>
+<translation id="5989917734461988169">已保存的地址可在各 Google 产品中通用。这不会更改现有住址。此地址将保存至您的 Google 账号：<ph name="ACCOUNT" />。</translation>
 <translation id="5992691462791905444">工程 Z 型折</translation>
 <translation id="5995727681868049093">在您的 Google 账号中管理自己的信息、隐私和安全</translation>
 <translation id="5997247540087773573">您刚才使用的密码遭遇了数据泄露。为确保您的账号安全，Google 密码管理工具建议您立即更改此密码并检查您已保存的所有密码。</translation>
@@ -3045,7 +3045,7 @@
 <translation id="6051898664905071243">页数：</translation>
 <translation id="605237284704429106">正在填充 IBAN</translation>
 <translation id="6052557981901634648">制定计划</translation>
-<translation id="6053584886670442526">您可在各 Google 产品中使用已保存的地址。此地址会保存至您的 Google 账号：<ph name="ACCOUNT" />。</translation>
+<translation id="6053584886670442526">已保存的地址可在各 Google 产品中通用。此地址已保存至您的 Google 账号：<ph name="ACCOUNT" />。</translation>
 <translation id="6055392876709372977">PKCS #1，带有 RSA 加密的 SHA-256</translation>
 <translation id="6055982527635883756">信封（存档用）</translation>
 <translation id="6059925163896151826">USB 设备</translation>

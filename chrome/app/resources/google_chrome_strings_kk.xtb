@@ -345,6 +345,7 @@
 <translation id="4022972681110646219">Экран мазмұнын аудару</translation>
 <translation id="4023601594785368013">Түпнұсқа тілі: <ph name="LANGUAGE" /></translation>
 <translation id="4034249157893816477">Күрделі құпия сөздерді жасауға, сақтауға және автоматты түрде толтыруға көмектесу үшін Chrome-ға ендірілген. Оңай кіру үшін пернелер тіркесімін қосыңыз.</translation>
+<translation id="4034420818911109432"><ph name="USER_NAME" />, <ph name="EMAIL" />. Google мүшелігі.</translation>
 <translation id="4035053306113201399">Жаңарту күшіне енуі үшін ChromeOS жүйесін өшіріп қосу керек.</translation>
 <translation id="4050175100176540509">Соңғы нұсқасында қауіпсіздік жақсартылып, жаңа мүмкіндіктер берілген.</translation>
 <translation id="4053720452172726777">Google Chrome-ды бейімдеу және басқару</translation>
@@ -939,6 +940,7 @@ Google Chrome параметрлеріңізді қалпына келтіре �
 <translation id="9148058034647219655">Шығу</translation>
 <translation id="9150331942025550505">Chrome-ды <ph name="DEVICE_TYPE" /> құрылғысында пайдаланған кезде, ЖИ мүмкіндіктерін қолданыңыз</translation>
 <translation id="919706545465235479">Синхрондауды бастау үшін Chrome жүйесін жаңартыңыз</translation>
+<translation id="9210313013767007472"><ph name="USER_NAME_OR_EMAIL" />. Google мүшелігі.</translation>
 <translation id="922152298093051471">Chrome-ды реттеу</translation>
 <translation id="93760716455950538">ChromeOS Flex операциялық жүйесін өшіріп қосу</translation>
 <translation id="943390475793766444">Chrome бұл файлды сканерлеуді ұсынады, себебі ол қауіпті болуы мүмкін.</translation>

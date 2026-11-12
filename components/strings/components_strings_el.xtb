@@ -823,6 +823,7 @@
 <translation id="2356941001189392209">Μια περιορισμένη λίστα URL των σελίδων που επισκέπτεστε όπου προκύπτουν συμβάντα τεχνολογίας παλαιού τύπου</translation>
 <translation id="2357312461142072202">{NUM_TABS,plural, =1{Θα γίνει κοινή χρήση 1 καρτέλας}other{Θα γίνει κοινή χρήση {NUM_TABS} καρτελών}}</translation>
 <translation id="2357481397660644965">Η διαχείριση της συσκευής σας γίνεται από τον τομέα <ph name="DEVICE_MANAGER" /> και του λογαριασμού σας από τον τομέα <ph name="ACCOUNT_MANAGER" />.</translation>
+<translation id="2358479643736965923">Δείτε την απάντηση της Αναζήτησης Google AI σε αυτή την καρτέλα</translation>
 <translation id="2359629602545592467">Πολλά</translation>
 <translation id="2359808026110333948">Συνέχεια</translation>
 <translation id="236000571258713023">Οχήματα</translation>
@@ -1141,6 +1142,7 @@
 <translation id="2925032407415783182">Αποθήκευση εισιτηρίου εκδήλωσης στο Πορτοφόλι</translation>
 <translation id="2925454999967523701">Κουμπί Δημιουργία εγγράφου, ενεργοποιήστε το για να δημιουργήσετε γρήγορα ένα νέο Έγγραφο Google</translation>
 <translation id="2925673989565098301">Τρόπος προβολής</translation>
+<translation id="2927328994673424423">Πριν από 2 εβδομάδες</translation>
 <translation id="2928426578619531300">Συνδεδεμένος χρήστης</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> και <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ακόμη}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> και <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ακόμη}}</translation>
 <translation id="2930531075747147366">Καρτέλα από την άλλη συσκευή σας</translation>

@@ -823,6 +823,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2356941001189392209">Rajallinen lista sellaisten avaamiesi sivujen URL-osoitteista, joilla esiintyy vanhoja teknologiatapahtumia.</translation>
 <translation id="2357312461142072202">{NUM_TABS,plural, =1{1 välilehti jaetaan}other{{NUM_TABS} välilehteä jaetaan}}</translation>
 <translation id="2357481397660644965"><ph name="DEVICE_MANAGER" /> ylläpitää laitettasi ja <ph name="ACCOUNT_MANAGER" /> tiliäsi.</translation>
+<translation id="2358479643736965923">Katso Googlen tekoälyhaun vastaus tällä välilehdellä</translation>
 <translation id="2359629602545592467">Useita</translation>
 <translation id="2359808026110333948">Jatka</translation>
 <translation id="236000571258713023">Ajoneuvot</translation>
@@ -1141,6 +1142,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2925032407415783182">Tallenna tapahtumalippu Walletiin</translation>
 <translation id="2925454999967523701">Luo dokumentti ‑painike, aktivoi luodaksesi uusi Google-dokumentti nopeasti</translation>
 <translation id="2925673989565098301">Toimitustapa</translation>
+<translation id="2927328994673424423">Kaksi viikkoa sitten</translation>
 <translation id="2928426578619531300">Käyttäjiin liittyvä</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" /><ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{ ja <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> toinen}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> ja <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> muuta}}</translation>
 <translation id="2930531075747147366">Välilehti toiselta laitteelta</translation>

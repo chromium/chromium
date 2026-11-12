@@ -822,6 +822,7 @@
 <translation id="2356941001189392209">你造訪的網頁網址清單 (僅列出發生舊版技術事件的網址)</translation>
 <translation id="2357312461142072202">{NUM_TABS,plural, =1{將分享 1 個分頁}other{將分享 {NUM_TABS} 個分頁}}</translation>
 <translation id="2357481397660644965">你的裝置是由 <ph name="DEVICE_MANAGER" /> 管理，帳戶是由 <ph name="ACCOUNT_MANAGER" /> 管理。</translation>
+<translation id="2358479643736965923">在這個分頁查看 Google AI 搜尋回覆</translation>
 <translation id="2359629602545592467">多種</translation>
 <translation id="2359808026110333948">繼續</translation>
 <translation id="236000571258713023">車輛</translation>
@@ -1140,6 +1141,7 @@
 <translation id="2925032407415783182">將活動票券儲存到 Google 錢包</translation>
 <translation id="2925454999967523701">「建立文件」按鈕，啟動後即可快速建立新的 Google 文件</translation>
 <translation id="2925673989565098301">快遞方式</translation>
+<translation id="2927328994673424423">2 週前</translation>
 <translation id="2928426578619531300">相關聯的使用者</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{「<ph name="SHIPPING_ADDRESS_PREVIEW" />」和另外 <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> 個地址}other{「<ph name="SHIPPING_ADDRESS_PREVIEW" />」和另外 <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> 個地址}}</translation>
 <translation id="2930531075747147366">來自其他裝置的分頁</translation>
@@ -2105,7 +2107,7 @@
 <translation id="4489023393592172404">Envelope Kaku 4</translation>
 <translation id="4489977488133295402">先驗證身分再自動填入付款方式</translation>
 <translation id="4490717597759821841">A7</translation>
-<translation id="449126573531210296">使用你的 Google 帳戶對已同步處理的密碼進行加密</translation>
+<translation id="449126573531210296">使用 Google 帳戶為已同步的密碼加密</translation>
 <translation id="4493480324863638523">網址無效。網址必須採用標準架構，例如 http://example.com 或 https://example.com。</translation>
 <translation id="4497843134750481377">管理優惠</translation>
 <translation id="4500587658229086076">不安全的內容</translation>
@@ -3071,7 +3073,7 @@
 <translation id="6097297436119286254">驗證身分即可填寫付款資訊</translation>
 <translation id="6099269767116481177">22 x 29.5 吋</translation>
 <translation id="6104072995492677441">JIS B6</translation>
-<translation id="6104418023125705346">這項政策應在裝置層級套用。如果將這項政策套用為使用者政策，系統不正式支援其行為，且將停用這項功能。</translation>
+<translation id="6104418023125705346">這項政策應在裝置層級套用。如果將這項政策套用為使用者政策，系統不正式支援此行為，且將淘汰這個做法。</translation>
 <translation id="6105460996796456817">建立網站</translation>
 <translation id="6105511947520166941">下次直接在 Chrome 中透過 Pix 付款</translation>
 <translation id="6105745639559695088">展開/收合側欄</translation>
@@ -3851,7 +3853,7 @@
       &lt;li&gt;前往 &lt;a href="https://support.google.com/chrome/answer/6098869"&gt;Chrome 說明中心&lt;/a&gt;瞭解如何將該軟體從電腦上永久移除
       &lt;/ol&gt;</translation>
 <translation id="7410852728357935715">投放到裝置</translation>
-<translation id="741204030948306876">是，我要啟用</translation>
+<translation id="741204030948306876">啟用同步功能</translation>
 <translation id="7412081313067625215">卡片已儲存至 Google 錢包，日後購物時會自動填入卡片資訊</translation>
 <translation id="7416351320495623771">管理密碼…</translation>
 <translation id="741772962178517671">Affirm</translation>
@@ -4493,7 +4495,7 @@
 <translation id="8457125768502047971">無限期</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
 <translation id="8461289985785035071">編輯補救號碼 (Redress number)</translation>
-<translation id="8461694314515752532">使用你自己的同步通關密語，加密保護同步資料</translation>
+<translation id="8461694314515752532">使用自己的同步通關密語，為已同步的資料加密</translation>
 <translation id="8461973047386722744">找不到密碼</translation>
 <translation id="8467494337615822642">前往設定中的 Chrome 安全檢查頁面</translation>
 <translation id="8468358362970107653">Envelope C3</translation>

@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">Per visualizzare le password, per prima cosa imposta un passcode sul tuo dispositivo.</translation>
 <translation id="201759455285471444">Espandi il gruppo di schede.</translation>
 <translation id="2022431790688770637">Gestisci i suggerimenti di Gemini</translation>
+<translation id="2023265063803387188">Gemini non è disponibile nella modalità Incognito</translation>
 <translation id="2031515492007104071">Level Up</translation>
 <translation id="2044394949148788042">Apri la griglia delle schede</translation>
 <translation id="2044681667265133332">L'account <ph name="USER_EMAIL" /> è gestito da <ph name="HOSTED_DOMAIN" />, che potrebbe essere in grado di visualizzare alcune informazioni. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
@@ -2035,6 +2036,7 @@ Per continuare dal computer, passa a <ph name="OTHER_EMAIL" />. Potrai usare le 
 <translation id="728025568708172005">Avvia il tour</translation>
 <translation id="7280980607183752256">Impossibile importare questo file</translation>
 <translation id="7282197670900591579">Tema cedro</translation>
+<translation id="7283937415134849498">Per fornirti un'assistenza personalizzata, Gemini condivide alcuni dei tuoi dati (ad esempio parti delle tue chat, la posizione e altre informazioni pertinenti) con altri servizi Google, come Maps e Voli. Questi servizi possono utilizzare queste informazioni per migliorarsi, anche se in seguito elimini la cronologia di Gemini. Scopri di più nel <ph name="BEGIN_LINK" />Centro per la privacy delle app Gemini<ph name="END_LINK" />.</translation>
 <translation id="7293429513719260019">Seleziona lingua</translation>
 <translation id="72961285530871072">Questa operazione eliminerà definitivamente i tuoi progressi in Level Up e i dati sull'utilizzo della funzionalità non verranno più inviati a Google per il tuo profilo.
 
@@ -2607,6 +2609,7 @@ Puoi ricominciare in qualsiasi momento.</translation>
 <translation id="8976382372951310360">Guida</translation>
 <translation id="8976414606286374109">Le carte di credito vengono salvate nel tuo Account Google.</translation>
 <translation id="8981454092730389528">Gestione attività di Google</translation>
+<translation id="8987736167266086032">Riprendi da dove hai interrotto</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, sito fissato</translation>
 <translation id="8989779557457435460">Condividi la scheda corrente per impostazione predefinita</translation>
 <translation id="8990960056509724223">Impossibile salvare il file a causa delle policy della tua organizzazione</translation>
@@ -2648,6 +2651,7 @@ Puoi ricominciare in qualsiasi momento.</translation>
 <translation id="91023216973987714">Metodi di pagamento</translation>
 <translation id="9106655997975673326">Di "<ph name="SOURCE_DEVICE" />"</translation>
 <translation id="9107664647686727385">Controlla eventuali password compromesse</translation>
+<translation id="9115035712231910133">Immagine allegata {title}</translation>
 <translation id="9119764377203471454">Impossibile aggiungere allegati</translation>
 <translation id="9124387962554796433">Google può utilizzare la tua cronologia per personalizzare la Ricerca e altri servizi Google.</translation>
 <translation id="9124978074365039456">Acquista, traduci e identifica ciò che vedi usando la fotocamera e la galleria fotografica</translation>

@@ -824,6 +824,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2356941001189392209">Daftar terbatas URL halaman yang Anda buka tempat peristiwa teknologi lama terjadi</translation>
 <translation id="2357312461142072202">{NUM_TABS,plural, =1{Akan membagikan 1 tab}other{Akan membagikan {NUM_TABS} tab}}</translation>
 <translation id="2357481397660644965">Perangkat Anda dikelola oleh <ph name="DEVICE_MANAGER" /> dan akun Anda dikelola oleh <ph name="ACCOUNT_MANAGER" />.</translation>
+<translation id="2358479643736965923">Lihat jawaban penelusuran AI Google Anda di tab ini</translation>
 <translation id="2359629602545592467">Beberapa</translation>
 <translation id="2359808026110333948">Lanjutkan</translation>
 <translation id="236000571258713023">Kendaraan</translation>
@@ -1142,6 +1143,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2925032407415783182">Simpan tiket acara ke Wallet</translation>
 <translation id="2925454999967523701">Tombol Buat dokumen, aktifkan untuk membuat Dokumen Google baru dengan cepat</translation>
 <translation id="2925673989565098301">Metode Pengiriman</translation>
+<translation id="2927328994673424423">2 minggu lalu</translation>
 <translation id="2928426578619531300">Pengguna terafiliasi</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> dan <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> lainnya}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> dan <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> lainnya}}</translation>
 <translation id="2930531075747147366">Tab dari Perangkat Anda yang Lain</translation>

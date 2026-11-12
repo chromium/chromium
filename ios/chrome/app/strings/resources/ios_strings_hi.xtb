@@ -1213,6 +1213,7 @@
 <translation id="479628432297359449">क्या डाउनलोड रोकना है?</translation>
 <translation id="4796496140132859135">टैब ग्रुप. छोटा किया गया.</translation>
 <translation id="4800912004582762296">क्लिक किया जा रहा है</translation>
+<translation id="4800930308997591052"><ph name="EMAIL" /> पर स्विच करें, ताकि आप अपने डिवाइसों के बीच आसानी से टैब शेयर कर सकें. साथ ही, अपने Google खाते से पासवर्ड, बुकमार्क वगैरह ऐक्सेस कर सकें.</translation>
 <translation id="4802185666270672526">'डेस्कटॉप साइट का अनुरोध करें' विकल्प को छिपाएं</translation>
 <translation id="4803185665210547709">आपका संगठन मैनेज करता है.
 <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
@@ -2035,6 +2036,7 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="728025568708172005">देखें कि यह सुविधा कैसे काम करती है</translation>
 <translation id="7280980607183752256">इस फ़ाइल को इंपोर्ट नहीं किया जा सकता</translation>
 <translation id="7282197670900591579">सिट्रन रंग वाली थीम</translation>
+<translation id="7283937415134849498">आपको आपकी दिलचस्पी के हिसाब से मदद मिले, इसके लिए Gemini आपका कुछ डेटा (जैसे, चैट का कुछ हिस्सा, जगह की जानकारी, और काम की अन्य जानकारी) Google की अन्य सेवाओं के साथ शेयर करता है. जैसे, Maps और फ़्लाइट. ये सेवाएं अपनी सुविधाओं को और बेहतर बनाने के लिए, Gemini में की गई गतिविधियों के इतिहास का इस्तेमाल कर सकती हैं. भले ही, आप बाद में यह डेटा मिटा दें. इस बारे में ज़्यादा जानने के लिए, <ph name="BEGIN_LINK" />Gemini Apps निजता हब<ph name="END_LINK" /> पर जाएं.</translation>
 <translation id="7293429513719260019">भाषा चुनें</translation>
 <translation id="72961285530871072">ऐसा करने पर, Level Up में आपकी अब तक की प्रोग्रेस हमेशा के लिए मिट जाएगी. साथ ही, आपकी प्रोफ़ाइल के लिए Level Up के इस्तेमाल से जुड़ा डेटा, अब Google को नहीं भेजा जाएगा.
 
@@ -2147,6 +2149,7 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="7618220760967055820">चुनें कि टूलबार में कौनसा बटन दिखेगा</translation>
 <translation id="7620522820075868385">रद्द करें</translation>
 <translation id="762078666799342162"><ph name="BEGIN_LINK" />Files<ph name="END_LINK" /> में जाकर, पहले डाउनलोड की गई फ़ाइलें देखें</translation>
+<translation id="7636034359405891151">अपने कंप्यूटर पर वहीं से शुरू करें जहां आपने छोड़ा था</translation>
 <translation id="7638584964844754484">गलत 'पासफ़्रेज़'</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{पासवर्ड हैक या चोरी हुआ}=1{{COUNT} पासवर्ड हैक या चोरी हुआ}one{{COUNT} पासवर्ड हैक या चोरी हुआ}other{{COUNT} पासवर्ड हैक या चोरी हुए}}</translation>
 <translation id="7640669552036055091">Android पर इस्तेमाल किए जा रहे टैब</translation>
@@ -2607,6 +2610,7 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="8976382372951310360">सहायता</translation>
 <translation id="8976414606286374109">कार्ड आपके Google खाते में सेव हो जाते हैं.</translation>
 <translation id="8981454092730389528">Google गतिविधि कंट्रोल</translation>
+<translation id="8987736167266086032">वहीं से प्रारंभ करें जहां आपने छोड़ा था</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, पिन की गई साइट</translation>
 <translation id="8989779557457435460">डिफ़ॉल्ट रूप से मौजूदा टैब को शेयर करें</translation>
 <translation id="8990960056509724223">आपके संगठन की नीतियों की वजह से, फ़ाइल सेव नहीं की जा सकी</translation>

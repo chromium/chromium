@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">Postavite šifru na uređaju da vidite lozinke.</translation>
 <translation id="201759455285471444">Proširivanje grupe kartica.</translation>
 <translation id="2022431790688770637">Upravljajte Geminijevim prijedlozima</translation>
+<translation id="2023265063803387188">Gemini nije dostupan u anonimnom načinu rada</translation>
 <translation id="2031515492007104071">Sljedeći nivo</translation>
 <translation id="2044394949148788042">Otvorite mrežu kartica.</translation>
 <translation id="2044681667265133332">Računom <ph name="USER_EMAIL" /> upravlja domena <ph name="HOSTED_DOMAIN" />, koja će možda moći pregledati određene informacije. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
@@ -2035,6 +2036,7 @@ Da nastavite s računara, prebacite se na <ph name="OTHER_EMAIL" />. Dobijat će
 <translation id="728025568708172005">Povedi me u obilazak</translation>
 <translation id="7280980607183752256">Fajl se ne može uvesti</translation>
 <translation id="7282197670900591579">Tema u boji limuna</translation>
+<translation id="7283937415134849498">Da pruža prilagođenu pomoć, Gemini dijeli neke vaše podatke (kao što su dijelovi chatova, lokacija i druge relevantne informacije) s drugim Googleovim uslugama, kao što su Mape i Letovi. Ove usluge mogu koristiti te informacije za poboljšavanje, čak i ako kasnije izbrišete historiju u Geminiju. Saznajte više u <ph name="BEGIN_LINK" />Središtu za privatnost aplikacija Gemini<ph name="END_LINK" />.</translation>
 <translation id="7293429513719260019">Odaberite jezik</translation>
 <translation id="72961285530871072">Ovo će trajno izbrisati vaš napredak u Level Upu, a podaci o korištenju funkcija za Level Up se više neće slati Googleu za vaš profil.
 
@@ -2607,6 +2609,7 @@ Možete ponovo pokrenuti bilo kada.</translation>
 <translation id="8976382372951310360">Pomoć</translation>
 <translation id="8976414606286374109">Kartice se pohranjuju na vaš Google račun.</translation>
 <translation id="8981454092730389528">Kontrole aktivnosti na Googleu</translation>
+<translation id="8987736167266086032">Nastavite tamo gdje ste stali</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, zakačena web lokacija</translation>
 <translation id="8989779557457435460">Dijeli trenutnu karticu prema zadanim postavkama</translation>
 <translation id="8990960056509724223">Fajl se nije mogao sačuvati zbog pravila vaše organizacije</translation>
@@ -2648,6 +2651,7 @@ Možete ponovo pokrenuti bilo kada.</translation>
 <translation id="91023216973987714">Načini plaćanja</translation>
 <translation id="9106655997975673326">S uređaja "<ph name="SOURCE_DEVICE" />"</translation>
 <translation id="9107664647686727385">Provjera ugroženih lozinki</translation>
+<translation id="9115035712231910133">Priložena slika {title}</translation>
 <translation id="9119764377203471454">Nije moguće dodati priloge</translation>
 <translation id="9124387962554796433">Google može koristiti vašu historiju da personalizira Pretraživanje i druge Googleove usluge.</translation>
 <translation id="9124978074365039456">Kupujte, prevodite sadržaj i prepoznajte šta vidite pomoću kamere i galerije fotografija</translation>

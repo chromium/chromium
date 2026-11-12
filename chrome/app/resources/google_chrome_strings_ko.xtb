@@ -158,7 +158,9 @@
 <translation id="2301513536169703857">모든 기기에서 비밀번호, 북마크 등을 사용하려면 Chrome에 로그인하세요</translation>
 <translation id="2307973900865360088">도크에 고정</translation>
 <translation id="2309047409763057870">Chrome의 보조 설치이며 기본 브라우저로 설정할 수 없습니다.</translation>
+<translation id="2330059234841117265">Chrome에서 Google 검색 열기</translation>
 <translation id="2345992953227471816">Chrome에서 다음 확장 프로그램에 멀웨어가 포함된 것을 발견했습니다.</translation>
+<translation id="2350411688004301551">Gemini Enterprise로 전환</translation>
 <translation id="2358140144860869442">모든 기기에서 읽기 목록 등을 사용하려면 Chrome에 로그인하세요</translation>
 <translation id="2359808026110333948">계속</translation>
 <translation id="2403703063067034158">시작 오류: 현재 다른 설정 인스턴스가 실행 중입니다. 나중에 다시 시도해 주세요.</translation>
@@ -169,6 +171,7 @@
 <translation id="2482846200327569645"><ph name="EXISTING_USER" /> 계정은 이미 로그인되어 있습니다. 방문 기록을 별도로 보관하려면 내 프로필에서 <ph name="USER_EMAIL_ADDRESS" /> 주소로 Chrome에 로그인하세요. 이렇게 하면 <ph name="DEVICE" />에서 북마크 등을 사용할 수 있습니다.</translation>
 <translation id="2485422356828889247">제거</translation>
 <translation id="2513154137948333830">재부팅 필요: <ph name="INSTALL_SUCCESS" /></translation>
+<translation id="251329670120169391">조직</translation>
 <translation id="2521391734665471391">Google 검색 AI 모드 닫기</translation>
 <translation id="2523492931736391680">Chrome에서 안전하게 업무 처리</translation>
 <translation id="2534365042754120737">데이터를 보호하려면 최근에 방문하지 않은 사이트의 권한을 Chrome에서 삭제하도록 허용하세요. 알림은 중지되지 않습니다.</translation>
@@ -218,6 +221,7 @@
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome에서 데이터를 비공개로 유지하는 방법<ph name="END_LINK" /> 자세히 알아보기</translation>
 <translation id="2885378588091291677">작업 관리자</translation>
 <translation id="2888126860611144412">Chrome 정보</translation>
+<translation id="2898830646167954300">비관리형 Gemini 어시스턴트로 다시 전환</translation>
 <translation id="2915996080311180594">나중에 다시 시작</translation>
 <translation id="2926952073016206995">Chrome에서 사이트에 대한 카메라 권한이 필요합니다.</translation>
 <translation id="2945997411976714835">설치 오류: 설치 프로그램 프로세스를 시작할 수 없습니다.</translation>
@@ -257,6 +261,7 @@
 <translation id="3140883423282498090">Chrome을 다시 시작하면 변경사항이 적용됩니다.</translation>
 <translation id="3149510190863420837">Chrome 앱</translation>
 <translation id="3161522574479303604">모든 언어</translation>
+<translation id="3183555099201190073">모든 탭에서 검색 이용 가능</translation>
 <translation id="318555301233810762"><ph name="EXISTING_USER" /> 계정은 이미 로그인되어 있습니다. 방문 기록을 별도로 보관하려면 내 프로필에서 <ph name="USER_EMAIL_ADDRESS" /> 주소로 Chrome에 로그인하세요. 이렇게 하면 모든 기기에서 북마크 등을 사용할 수 있습니다.</translation>
 <translation id="319199214552513804">모든 컴퓨터에서 이 확장 프로그램 등을 사용하려면 Chrome에 로그인하세요.</translation>
 <translation id="3196187562065225381">위험한 파일이므로 Chrome에서 이 다운로드를 차단했습니다.</translation>
@@ -345,11 +350,13 @@
 <translation id="4022972681110646219">화면 번역</translation>
 <translation id="4023601594785368013">원본 언어, <ph name="LANGUAGE" /></translation>
 <translation id="4034249157893816477">Chrome에 내장되어 있어 안전한 비밀번호를 만들고, 저장하고, 자동 완성하도록 도와줍니다. 바로가기를 추가하여 간편하게 액세스하세요</translation>
+<translation id="4034420818911109432"><ph name="USER_NAME" />, <ph name="EMAIL" />. Google 멤버십 보유.</translation>
 <translation id="4035053306113201399">업데이트를 적용하려면 ChromeOS를 다시 시작해야 합니다.</translation>
 <translation id="4050175100176540509">최신 버전에는 중요한 보안 개선사항 및 새로운 기능이 포함되어 있습니다.</translation>
 <translation id="4053720452172726777">Chrome 맞춤설정 및 제어</translation>
 <translation id="408393047846373801">모든 기기에서 비밀번호 등을 가져오려면 Chrome에 로그인하세요. 로그인하면 이 비밀번호가 Google 계정에 저장됩니다.</translation>
 <translation id="4102173024714616627">확장 프로그램은 Chrome을 맞춤설정할 수 있는 부가기능입니다. 정리부터 일상적인 할 일을 간소화하는 것까지, 확장 프로그램을 통해 Chrome을 나만의 브라우저로 만들 수 있습니다.</translation>
+<translation id="4103543596018881622">Chrome의 Google 검색이 툴바에 고정되었습니다.</translation>
 <translation id="4110895483821904099">새 Chrome 프로필 설정</translation>
 <translation id="4111566860456076004">Chrome에서 이 확장 프로그램의 출처를 확인할 수 없습니다. 안전하지 않은 확장 프로그램일 수 있습니다. 더 이상 개인 정보를 비롯한 방문 사이트의 데이터를 확인하고 변경할 수 없도록 Chrome에서 이 확장 프로그램을 삭제하세요.</translation>
 <translation id="4147555960264124640">관리 계정으로 로그인하여 관리자에게 Chrome 프로필에 대한 제어권을 부여하려고 합니다. 앱, 북마크, 방문 기록, 비밀번호 및 기타 설정과 같은 Chrome 데이터가 <ph name="USER_NAME" /> 계정에 영구적으로 연결됩니다. 이후 이 데이터를 Google 계정 대시보드에서 삭제할 수는 있지만 다른 계정에 연결할 수는 없습니다. <ph name="LEARN_MORE" /></translation>
@@ -473,6 +480,7 @@
 <translation id="5321325624576443340">Google 렌즈를 사용할 수 없습니다. 나중에 다시 시도해 주세요.</translation>
 <translation id="5334309298019785904">내 도메인에서 동기화를 사용할 수 없으므로 ChromeOS에서 데이터를 동기화할 수 없습니다.</translation>
 <translation id="5334487786912937552">파일을 다운로드하려면 Chrome에 저장소 액세스 권한이 필요합니다.</translation>
+<translation id="5336664042114176802">원래 Google 계정과 연결되어 있으며 <ph name="DOMAIN" />에서 관리하지 않는 Gemini 어시스턴트로 전환할 수 있습니다. 대답은 더 이상 <ph name="DOMAIN" />에서 관리하는 파일 또는 서비스를 기반으로 제공되지 않으며 채팅 기록도 이전되지 않습니다. 업무용으로 사용하기에 적합하지 않을 수 있습니다. 전환하려면 Chrome을 다시 실행해야 합니다.</translation>
 <translation id="5337648990166757586">선택사항: 진단 및 사용 데이터를 Google에 자동으로 전송하여 ChromeOS의 기능 및 성능 개선에 참여합니다.</translation>
 <translation id="5346389065299425353">여러 탭, 파일, 도구를 추가하여 심층적으로 검색하세요.</translation>
 <translation id="5353252989841766347">Chrome에서 비밀번호 내보내기</translation>
@@ -590,6 +598,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="6326175484149238433">Chrome에서 삭제</translation>
 <translation id="6334815226785304306">Chrome을 기본 브라우저로 설정하고 태스크 바에 고정합니다.</translation>
 <translation id="6339888439788291743">새 아이콘, 동일한 바로가기: 클릭하면 Google 검색 AI 모드를 사용해 탐색 중에도 질문할 수 있습니다.</translation>
+<translation id="6349304688246983183">Google 검색을 사용해 탐색 중에도 쉽게 질문할 수 있습니다.</translation>
 <translation id="63540178978900677">Chrome이 더 이상 기본 브라우저가 아닙니다. Chrome을 기본 브라우저로 설정하시겠습니까?</translation>
 <translation id="6357670763064300993">Chrome의 Gemini Enterprise</translation>
 <translation id="6360449101159168105">이 탭이 비활성 상태인 동안 Chrome의 속도를 빠르게 유지하기 위해 메모리를 확보했습니다. 이 사이트가 비활성 상태가 되지 않도록 항상 제외할 수 있습니다.</translation>
@@ -604,6 +613,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="6438015621983209660">휴대전화에서 Chrome으로 향상된 세이프 브라우징을 확장하세요</translation>
 <translation id="6442774133615368941">iOS용 Chrome 앱에서 카메라를 사용해 눈앞의 물건을 쇼핑하고, 번역하고, 알아보세요.</translation>
 <translation id="6446105560007692480">Chrome으로 검색하거나 <ph name="BEGIN_LINK" />설정<ph name="END_LINK" />에서 맞춤설정합니다.</translation>
+<translation id="6447943657065463998">이 관리 브라우저는 <ph name="DOMAIN" />에서 업무용으로 설정한 Gemini 어시스턴트를 사용할 수 있습니다. 조직의 파일 및 승인된 서비스를 바탕으로 정보를 찾고 대답을 제공할 수 있습니다. 개인 프로필에서 사용하는 것은 권장되지 않을 수 있습니다. 채팅 기록은 이전되지 않습니다. 전환하려면 Chrome을 다시 실행해야 합니다.</translation>
 <translation id="6448835208126432197">Chrome의 Gemini에서 화면의 일부를 선택하려면 키보드 단축키를 사용하세요.</translation>
 <translation id="6473905796280459355">Chrome 정보 페이지로 이동</translation>
 <translation id="6481963882741794338">맞춤설정 등의 목적으로 Chrome과 다른 Google 서비스를 연결합니다</translation>
@@ -798,6 +808,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8064965390968184078">1. 아래의 <ph name="BUTTON_LABEL" /> 버튼을 클릭합니다.
 2. Windows 설정에서 <ph name="BUTTON_2" /> 버튼을 클릭합니다.
 3. 빠른 액세스를 위해 Windows 알림에서 <ph name="BUTTON_3" /> 버튼을 클릭하여 Chrome을 작업 표시줄에 고정합니다.</translation>
+<translation id="8066474819446975249">Chrome을 다시 실행하여 전환</translation>
 <translation id="8069447462453318634">'툴바에 고정'을 선택합니다.</translation>
 <translation id="8074398340364918139">특정 Chrome 기능 또는 확장 프로그램을 검색하려면 주소 표시줄에 바로가기를 입력한 다음 선택한 키보드 키를 입력하세요</translation>
 <translation id="8077579734294125741">기타 Chrome 프로필</translation>
@@ -939,6 +950,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="9148058034647219655">나가기</translation>
 <translation id="9150331942025550505"><ph name="DEVICE_TYPE" />에서 Chrome 앱을 사용하여 AI의 강력한 기능을 활용하세요</translation>
 <translation id="919706545465235479">동기화를 시작하려면 Chrome을 업데이트하세요.</translation>
+<translation id="9210313013767007472"><ph name="USER_NAME_OR_EMAIL" />. Google 멤버십 보유.</translation>
 <translation id="922152298093051471">Chrome 맞춤설정</translation>
 <translation id="93760716455950538">ChromeOS Flex 다시 시작</translation>
 <translation id="943390475793766444">위험할 수 있는 파일이므로 검사하는 것이 좋습니다.</translation>

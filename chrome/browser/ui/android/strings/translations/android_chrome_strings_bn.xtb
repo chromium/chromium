@@ -129,6 +129,7 @@
 <translation id="1460751212339734034">সময় বাঁচান, কম টাইপ করুন</translation>
 <translation id="146522654774760805">পাসওয়ার্ড ও অটোফিল</translation>
 <translation id="1466383950273130737">Chrome-এর ভাষা বেছে নিন</translation>
+<translation id="1473344277210704336">একেবারে নিচে থাকা নতুন টুলবারে Gemini ও আপনার প্রয়োজনীয় জিনিস রয়েছে</translation>
 <translation id="1477626028522505441">সার্ভার সমস্যার কারণে <ph name="FILE_NAME" /> ডাউনলোড করা যায়নি।</translation>
 <translation id="147982357559798527">পরিবর্তন করা হয়েছে</translation>
 <translation id="1480287803138246127">আপনার কিছু ইতিহাস এখানে নাও দেখা যেতে পারে। আপনার সব Chrome ইতিহাস দেখতে, সম্পূর্ণ Chrome ইতিহাস খুলুন।</translation>
@@ -206,6 +207,7 @@
 <translation id="1807709131360304325">একটি নতুন উইন্ডো খুলুন</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" />-এ, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ব্যবহার করা চালিয়ে যাওয়া যাচ্ছে না</translation>
 <translation id="1815975907734103433"><ph name="TAB_TITLE" />, রেকর্ডিং ট্যাব</translation>
+<translation id="1817594121551034302">অ্যাড্রেস বার শর্টকাট</translation>
 <translation id="1819443852740954262">সব ইউআরএল ছদ্মবেশী উইন্ডোতে খুলুন</translation>
 <translation id="1820408774134375111">স্ক্রিনের নিচে অ্যাটাচ করা শিটে সাইন-ইন করুন</translation>
 <translation id="1824902652744048041">'ব্রাউজিং ডেটা মুছে দিন' বিকল্পে ট্যাপ করুন।</translation>
@@ -427,7 +429,6 @@
 <translation id="2650348088770008516">গোপনীয়তা সংক্রান্ত গাইডের বিবরণ বন্ধ করে দেওয়া হয়েছে</translation>
 <translation id="2650751991977523696">আবার ফাইল ডাউনলোড করবেন?</translation>
 <translation id="265156376773362237">স্ট্যান্ডার্ড প্রিলোডিং</translation>
-<translation id="2651797114528729973">নতুন টুলবারে Gemini ও আপনার প্রয়োজনীয় জিনিস</translation>
 <translation id="2656405586795711023">ওয়েব অ্যাপ</translation>
 <translation id="2664252182805397291">সাইট দেখুন</translation>
 <translation id="2666092431469916601">শীর্ষ</translation>
@@ -675,6 +676,7 @@
 <translation id="368978924030580338">{BOOKMARKS_COUNT,plural, =1{১টি বুকমার্ক শুধু এই ডিভাইসে সেভ করা হয়েছে। অন্যান্য ডিভাইসে ব্যবহার করতে, আপনার Google অ্যাকাউন্টে সেটি সেভ করুন।}one{#টি বুকমার্ক এই ডিভাইসে শুধু সেভ করা হয়েছে। অন্যান্য ডিভাইসে ব্যবহার করতে, আপনার Google অ্যাকাউন্টে সেগুলি সেভ করুন।}other{#টি বুকমার্ক এই ডিভাইসে শুধু সেভ করা হয়েছে। অন্যান্য ডিভাইসে ব্যবহার করতে, আপনার Google অ্যাকাউন্টে সেগুলি সেভ করুন।}}</translation>
 <translation id="3692944402865947621">স্টোর করার জায়গা খুঁজে না পাওয়ায় <ph name="FILE_NAME" /> ডাউনলোড করা যায়নি।</translation>
 <translation id="3699022356773522638">ফাইল ডাউনলোড করবেন?</translation>
+<translation id="3701167022068948696">এখনই সমাধান করুন</translation>
 <translation id="3701515417135397388">ডেটার নিরাপত্তা লঙ্ঘনের কারণে কোনও পাসওয়ার্ড হ্যাক হয়ে থাকলে আপনাকে সেই সম্পর্কে সতর্ক করে।</translation>
 <translation id="3703166520839776970">এই সমস্যা থেকে গেলে, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> থেকে আরও তথ্য পেতে নিচে "আরও বিবরণ" বিকল্প বেছে নিন।</translation>
 <translation id="3708100450779900829">আপনার ডিভাইস ফোল্ড করা থাকলে, কোনও একটি বিকল্প বেছে নিতে পারবেন অথবা পজিশন পরিবর্তন করার জন্য অ্যাড্রেস বার টাচ করে ধরে রাখুন</translation>
@@ -830,6 +832,7 @@
 <translation id="4283234489712362947"><ph name="TAB_TITLE" />, ছবির-মধ্যে-ছবি ছদ্মবেশী ট্যাব</translation>
 <translation id="4285498937028063278">আনপিন</translation>
 <translation id="4285846616383034558">কুকি, ক্যাশে ও অন্যান্য সাইট ডেটা</translation>
+<translation id="429016203314124112">আপনার বেছে নেওয়া সার্চ ইঞ্জিন Chrome-এ ডিফল্ট হিসেবে ব্যবহার করা হবে</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android সেটিংসে স্ক্রিন লক চালু করুন<ph name="END_LINK" /></translation>
 <translation id="4293154608148215505">আপনার ফোন</translation>
 <translation id="4295640788982898778">আপনার Google অ্যাকাউন্টে এক্সটেনশন সেভ করা আছে, তবে শুধুমাত্র এই ডিভাইসে সেভ করা কোনও ডেটা মুছে ফেলা হতে পারে</translation>
@@ -905,6 +908,7 @@
 <translation id="4537987892902330164">আপনি <ph name="NAME_OR_EMAIL" /> হিসেবে সাইন-ইন করে আছেন।</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" />টি ট্যাব}one{<ph name="TAB_COUNT_MANY" />টি ট্যাব, <ph name="TAB_COUNT_INCOGNITO" />টি ছদ্মবেশী ট্যাব}other{<ph name="TAB_COUNT_MANY" />টি ট্যাব, <ph name="TAB_COUNT_INCOGNITO" />টি ছদ্মবেশী ট্যাব}}</translation>
 <translation id="4558311620361989323">ওয়েবপৃষ্ঠার শর্টকাটগুলি</translation>
+<translation id="4558547432122102499"><ph name="USER_NAME" />, <ph name="EMAIL" />. <ph name="SUBSCRIPTION_NAME" /> মেম্বারশিপ।</translation>
 <translation id="4572422548854449519">ম্যানেজ করা অ্যাকাউন্টে সাইন-ইন করুন</translation>
 <translation id="4577115723294378384">A থেকে Z অনুসারে সাজান</translation>
 <translation id="4578289292431526768">শুরু করা যাক</translation>
@@ -912,6 +916,7 @@
 <translation id="4585751637295612750">আপনার প্রশ্নে এটি যোগ করতে নতুন ট্যাব খুলুন</translation>
 <translation id="4585793705637313973">পৃষ্ঠা সম্পাদনা করুন</translation>
 <translation id="4587589328781138893">সাইট</translation>
+<translation id="4587590257937792551">Chrome-এ একেবারে নিচে থাকা নতুন টুলবার আপনার সুবিধার্থে তৈরি করা হয়েছে। আপনি যেকোনও সময় <ph name="BEGIN_LINK" />সেটিংস<ph name="END_LINK" /> থেকে আবার পাল্টাতে পারবেন।</translation>
 <translation id="4594952190837476234">এই অফলাইন পৃষ্ঠাটি <ph name="CREATION_TIME" />-এ তৈরি করা হয়েছিল এবং এটি অনলাইন ভার্সনের থেকে আলাদা হতে পারে।</translation>
 <translation id="4595237294768457124">নতুন ট্যাব পৃষ্ঠা খুলুন</translation>
 <translation id="4595276580892809760">গ্যালারি থেকে ছবি অ্যাটাচ করুন</translation>
@@ -984,6 +989,7 @@
 <translation id="4822710610088666676"><ph name="TAB_GROUP_TITLE" /> ট্যাব গ্রুপ বন্ধ ও সেভ করা হয়েছে</translation>
 <translation id="4835385943915508971">অনুরোধকৃত সম্পদে Chrome এর অ্যাক্সেস নেই।</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{নতুন ব্যাকগ্রাউন্ড ট্যাব গ্রুপ হিসেবে, <ph name="COLOR_NAME" /> কালার সহ <ph name="TAB_COUNT_ONE" />টি ট্যাবের ট্যাব গ্রুপ ফিরিয়ে আনুন।}one{নতুন ব্যাকগ্রাউন্ড ট্যাব গ্রুপ হিসেবে, <ph name="COLOR_NAME" /> কালার সহ <ph name="TAB_COUNT_MANY" />টি ট্যাবের ট্যাব গ্রুপ ফিরিয়ে আনুন।}other{নতুন ব্যাকগ্রাউন্ড ট্যাব গ্রুপ হিসেবে, <ph name="COLOR_NAME" /> কালার সহ <ph name="TAB_COUNT_MANY" />টি ট্যাবের ট্যাব গ্রুপ ফিরিয়ে আনুন।}}</translation>
+<translation id="48431900345921167"><ph name="ACCOUNT_EMAIL" />-এর জন্য কিছু পরিষেবা উপলভ্য নেই</translation>
 <translation id="4849731766219625109">আপনার <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> অ্যাকাউন্ট ব্যবহার করুন</translation>
 <translation id="4850886885716139402">দেখুন</translation>
 <translation id="4860895144060829044">কল করুন</translation>
@@ -1042,6 +1048,7 @@
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{<ph name="WINDOW_COUNT_ONE" />টি উইন্ডো বেছে নেওয়া হয়েছে}one{<ph name="WINDOW_COUNT_NORMAL" />টি উইন্ডো বেছে নেওয়া হয়েছে}other{<ph name="WINDOW_COUNT_NORMAL" />টি উইন্ডো বেছে নেওয়া হয়েছে}}</translation>
 <translation id="5058506215037547387">পৃষ্ঠার প্রিভিউ দেখুন</translation>
 <translation id="506254248375231072">কোনও ট্যাব নেই</translation>
+<translation id="5065494736868031814">টুলবারে</translation>
 <translation id="5075939510584558547">এনক্রিপশন না করে সেভ করুন</translation>
 <translation id="5078638979202084724">সকল ট্যাব বুকমার্ক করুন</translation>
 <translation id="5085038751173179818">আপনার ডিভাইসে আপনার বুকমার্ক ও আরও অনেক কিছু পেতে এই সাইট ও Chrome-এ সাইন-ইন করুন</translation>
@@ -1256,6 +1263,7 @@
 <translation id="5992182727984874868"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> <ph name="SEPARATOR" /> Chrome এইসব অনুমতি সরিয়ে দিয়েছে কারণ আপনি সম্প্রতি দেখেননি</translation>
 <translation id="5995726099713306770">পৃষ্ঠাটি আবার ডাউনলোড করবেন?</translation>
 <translation id="6000066717592683814">Google কে রাখুন</translation>
+<translation id="6000860861660592745">পছন্দ সেভ করা হয়েছে</translation>
 <translation id="6002122790816966947">আপনার ডিভাইসগুলি</translation>
 <translation id="6011308810877101166">সার্চ সাজেশন উন্নত করুন</translation>
 <translation id="6013305291643746595">সবচেয়ে পুরনো অনুযায়ী সাজানো হচ্ছে</translation>
@@ -1282,6 +1290,7 @@
 <translation id="6095578583683628124">তাছাড়া, Google আপনার ডিফল্ট সার্চ ইঞ্জিন হিসেবে সেট করা থাকলে, আপনি আরও ভাল ও প্রাসঙ্গিক সাজেশন দেখতে পাবেন</translation>
 <translation id="6104768972315313991">QR কোড জেনারেট করা হয়েছে</translation>
 <translation id="610630277578876674">মেসেজ ও আরও অনেক কিছুতে দ্রুত লিঙ্ক খুলুন</translation>
+<translation id="6110067234345111822">আপনার অঞ্চলের আইন অনুযায়ী, আপনাকে Chrome-এর জন্য সার্চ ইঞ্জিন বেছে নিতে হবে</translation>
 <translation id="6112702117600201073">রিফ্রেশ পৃষ্ঠা</translation>
 <translation id="612221930823678863">কোয়েরি ফিল্ডে <ph name="QUERY" /> সহ URL লিখুন</translation>
 <translation id="6122831415929794347">Safe Browsing বন্ধ করতে চান?</translation>
@@ -1329,7 +1338,6 @@
 <translation id="6254139308321626268">আপনি কোনও একটি PDF ফাইল দেখছেন</translation>
 <translation id="6255809143828972562">Chrome-এর টুল দিয়ে আপনি নিরাপদে ব্রাউজ ও কন্ট্রোল করতে পারবেন</translation>
 <translation id="6259107733340311168">স্ক্রিনের নিচে অ্যাটাচ করা এন্টারপ্রাইজ সিগন্যাল সংক্রান্ত ডিসক্লেমার শিট সম্পূর্ণ স্ক্রিন জুড়ে খুলেছে</translation>
-<translation id="6259539576554609209">আপনার প্রয়োজনীয় জিনিস, টুলবারে রয়েছে। আপনি যেকোনও সময় <ph name="BEGIN_LINK" />সেটিংস<ph name="END_LINK" /> থেকে আবার সুইচ করতে পারবেন</translation>
 <translation id="6260260490042862943">সাইট কন্ট্রোল</translation>
 <translation id="6264376385120300461">তবুও ডাউনলোড করুন</translation>
 <translation id="6264485186158353794">সুরক্ষাতে ফিরুন</translation>
@@ -1429,6 +1437,7 @@
 <translation id="6573096386450695060">সর্বদা অনুমতি দিন</translation>
 <translation id="657480975869429144">Chrome-এর একটি নতুন ভার্সন উপলভ্য রয়েছে</translation>
 <translation id="658099107946526506">অননুমোদিত অ্যাক্সেস আটকাতে পিন ব্যবহার করে আপনার ব্যক্তিগত ব্রাউজিং সুরক্ষিত রাখুন</translation>
+<translation id="65829135876155327">সময়সীমা</translation>
 <translation id="6583199322650523874">বর্তমান পৃষ্ঠাটি বুকমার্ক করুন</translation>
 <translation id="6588043302623806746">নিরাপদ ডিএনএস ব্যবহার করুন</translation>
 <translation id="6590471736817333463">সর্বাধিক ৬০ শতাংশ ডেটা সাশ্রয় করুন</translation>
@@ -1437,18 +1446,19 @@
 <translation id="6595046016124923392">আপনার জন্য ছবির বিবরণ আরও উন্নত করতে ছবিগুলি Google-এ পাঠানো হয়।</translation>
 <translation id="6602173570135186741">অটোফিল ও পাসওয়ার্ড</translation>
 <translation id="661266467055912436">ওয়েবে আপনার এবং সকলের জন্য নিরাপত্তা আরও উন্নত করুন।</translation>
-<translation id="6615455863669487791">আমাকে দেখান</translation>
 <translation id="6621391692573306628">এই ট্যাবটিকে অন্য ডিভাইসে পাঠাতে, উভয় ডিভাইসেই Chrome-এ সাইন-ইন করুন</translation>
 <translation id="6627583120233659107">ফোল্ডার সম্পাদনা করুন</translation>
 <translation id="6633067410344541938">'ছদ্মবেশী' মোড আনলক করুন</translation>
 <translation id="6636623428211296678">নিচে দেওয়া আরও সেটিংস দেখুন অথবা এখনই শেষ করুন</translation>
 <translation id="6637100877383020115">অ্যাপ উন্নত করার জন্য সাহায্য করতে, Chrome ব্যবহার সম্পর্কিত ও ক্র্যাশ ডেটা Google-এ পাঠায়। <ph name="BEGIN_UMA_LINK" />ম্যানেজ করুন<ph name="END_UMA_LINK" /></translation>
+<translation id="6640259500074236510">আপনার প্রয়োজনীয় জিনিস একেবারে নিচে থাকা টুলবারে রয়েছে। আপনি যেকোনও সময় <ph name="BEGIN_LINK" />সেটিংস<ph name="END_LINK" /> থেকে আবার পাল্টাতে পারবেন।</translation>
 <translation id="6642299196749785472">ট্যাব অ্যাটাচ করুন</translation>
 <translation id="6647441008198474441">আপনি পরে কোন কোন সাইট ভিজিট করতে পারেন তা অনুমান করার জন্য আপনি যেসব URL দেখেন তা Google-এ পাঠানো হয়</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 এবং <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> আরও অনেক}one{<ph name="CONTACT_PREVIEW" />\u2026 এবং <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> আরও অনেক}other{<ph name="CONTACT_PREVIEW" />\u2026 এবং <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> আরও অনেক}}</translation>
 <translation id="6659594942844771486">ট্যাব</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" /> এ খুলুন</translation>
 <translation id="6669390930482049506">আমাকে জানান</translation>
+<translation id="6670742294143102726">আপনার সার্চে যোগ করার জন্য এক বা একাধিক ট্যাব বেছে নিন</translation>
 <translation id="6671495933530132209">ছবি কপি করুন</translation>
 <translation id="6672697278890207089">আপনার পাসফ্রেজটি প্রবেশ করান</translation>
 <translation id="6675622031235530028">বেরিয়ে আসতে Ctrl+Q প্রেস করে ধরে থাকুন</translation>
@@ -1580,6 +1590,7 @@
 <translation id="7119984597597798764"><ph name="INSTANCE_TITLE" /> বন্ধ করুন</translation>
 <translation id="7121179479711575744">Chrome-এ সাইন-ইন করুন</translation>
 <translation id="7130633106249192408">এই ডিভাইস থেকে ব্রাউজ করা ডেটা মুছুন</translation>
+<translation id="7134511521562699550">অ্যাড্রেস বারে</translation>
 <translation id="7136694880210472378">ডিফল্ট করুন</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{১টি সাইটের জন্য অনুমতি পর্যালোচনা করা হয়েছে}one{#টি সাইটের জন্য অনুমতি পর্যালোচনা করা হয়েছে}other{#টি সাইটের জন্য অনুমতি পর্যালোচনা করা হয়েছে}}</translation>
 <translation id="7138678301420049075">অন্যান্য</translation>
@@ -1612,6 +1623,7 @@
 <translation id="7196455519852483601">আপনি কিছু বা সব ইতিহাস, কুকি ও সাইট ডেটা এবং আরও অনেক কিছু মুছে ফেলতে পারবেন</translation>
 <translation id="7197682514647286393">দ্রুত আপনার ব্রাউজ করা ডেটা মুছুন</translation>
 <translation id="719791532916917144">কীবোর্ড শর্টকাট</translation>
+<translation id="7198747540865146057">আপনার ডিফল্ট সার্চ ইঞ্জিন বেছে নেওয়া</translation>
 <translation id="7203150201908454328">প্রসারিত</translation>
 <translation id="7207760545532569765">নতুন ব্যাকগ্রাউন্ড ট্যাব হিসেবে <ph name="TAB_COUNT" />টি ট্যাব ফিরিয়ে আনুন।</translation>
 <translation id="7217781228893594884">আপনি Chrome থেকে বেরিয়ে আসলে ছদ্মবেশী ট্যাব লক হয়ে যাবে</translation>
@@ -1638,6 +1650,7 @@
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, বেছে নেওয়া পিন করা শেয়ারিং ট্যাব</translation>
 <translation id="7311244614769792472">কোনও ফলাফল পাওয়া যায়নি</translation>
 <translation id="7314734791127433392">পাসওয়ার্ড চেক করা যাচ্ছে না</translation>
+<translation id="7324177883197548771">Chrome-এর নতুন লুক আপনার সুবিধার্থে তৈরি করা হয়েছে। আপনি যেকোনও সময় <ph name="BEGIN_LINK" />সেটিংস<ph name="END_LINK" /> থেকে আবার পাল্টাতে পারবেন।</translation>
 <translation id="7324354302972299151">“Do Not Track” অনুরোধ পাঠান</translation>
 <translation id="7333041109965360609">বিজ্ঞপ্তি থেকে আনসাবস্ক্রাইব করুন</translation>
 <translation id="7335766481146072567">'চালিয়ে যান' বোতাম প্রেস করুন</translation>
@@ -1740,6 +1753,7 @@
 <translation id="7697383401610880082">টেনে আনার হ্যান্ডেল</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" />-এ ইমেল আইডি তৈরি করুন</translation>
 <translation id="7702420606070050505">সাম্প্রতিক কার্যকলাপের স্ক্রিনের নিচে অ্যাটাচ করা শিট সম্পূর্ণ স্ক্রিন জুড়ে খোলা হয়েছে</translation>
+<translation id="7706590516064393665"><ph name="USER_NAME_OR_EMAIL" />। <ph name="SUBSCRIPTION_NAME" /> মেম্বারশিপ।</translation>
 <translation id="7707922173985738739">মোবাইল ডেটা ব্যবহার করুন</translation>
 <translation id="7708994397325774423">আপনার সব পাসওয়ার্ড পেয়ে যান</translation>
 <translation id="7714077993070342304">Chrome মেনু খুলুন</translation>
@@ -1827,6 +1841,7 @@
 <translation id="8036587585440959897">কিছু এক্সটেনশন Chrome-এ সার্চ ইঞ্জিন যোগ করতে পারে।</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> দিন বাকি আছে</translation>
 <translation id="8037801708772278989">এখনই চেক করা হয়েছে</translation>
+<translation id="8038975372993801438">সময়সীমা অনুযায়ী ফিল্টার করুন</translation>
 <translation id="804335162455518893">এসডি কার্ড পাওয়া যায়নি</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" />টি ছদ্মবেশী ট্যাব}one{<ph name="TAB_COUNT_NORMAL" />টি ছদ্মবেশী ট্যাব}other{<ph name="TAB_COUNT_NORMAL" />টি ছদ্মবেশী ট্যাব}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> এমবি উপলভ্য</translation>
@@ -1846,7 +1861,6 @@
 <translation id="8084864785646838999">আপনার কিছু ইতিহাস এখানে নাও দেখা যেতে পারে। আপনার সব Chrome ইতিহাস দেখতে, সম্পূর্ণ Chrome ইতিহাস খুলুন। এছাড়াও, <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> লিঙ্কে আপনার Google অ্যাকাউন্টের অন্যান্য ধরনের ব্রাউজিং ইতিহাস থাকতে পারে।</translation>
 <translation id="8088176524274673045">কাছাকাছি আছেন এমন ব্যক্তির সাথে শেয়ার করতে তাকে এই QR কোড স্ক্যান করতে দিন</translation>
 <translation id="8090732854597034573">সাহায্যের প্রয়োজন হলে, অভিভাবককে জিজ্ঞাসা করো</translation>
-<translation id="8095180473590852507">Chrome-এ নতুন টুলবার এসেছে, যা আপনার সুবিধার্থে তৈরি করা হয়েছে। আপনি যেকোনও সময় <ph name="BEGIN_LINK" />সেটিংস<ph name="END_LINK" /> থেকে আবার সুইচ করতে পারবেন</translation>
 <translation id="8101414242770404289"><ph name="TIME_PERIOD" />-এ কোনও ট্যাব নেই</translation>
 <translation id="810433609302852">পরামর্শ বিজ্ঞপ্তি ফিচার প্রোমো ও ব্যবহারের ধাপ নিচে দেওয়া শিট</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
@@ -1923,6 +1937,7 @@
 <translation id="8368001212524806591">দাম ট্র্যাক করুন</translation>
 <translation id="8368772330826888223">{TAB_GROUP_COUNT,plural, =1{<ph name="TAB_GROUPS_ONE" />টি ট্যাব গ্রুপ}one{<ph name="TAB_GROUPS_MANY" />টি ট্যাব গ্রুপ}other{<ph name="TAB_GROUPS_MANY" />টি ট্যাব গ্রুপ}}</translation>
 <translation id="8387617938027387193">আপনার পরিচয় যাচাই করান</translation>
+<translation id="8392241619862061825">Gemini শর্টকাট দেখুন</translation>
 <translation id="8393700583063109961">বার্তা পাঠান</translation>
 <translation id="8398389123831319859">ছদ্মবেশী মোডে পরিবর্তন করতে ডবল ট্যাপ করে ধরে রাখুন</translation>
 <translation id="8401904657382223224">হোস্ট অনুযায়ী ফিল্টার করুন</translation>
@@ -2004,6 +2019,7 @@
 <translation id="8639963783467694461">স্বতঃপূর্ণ সেটিংস</translation>
 <translation id="8642256427178803328">Chrome থেকে বেরিয়ে আসার সময় ছদ্মবেশী ট্যাব লক করার বিকল্প টগল করুন</translation>
 <translation id="8644482734962137770">Chrome ব্যবহার করার জন্য Gemini-কে অনুমতি দিতে হবে</translation>
+<translation id="8653883575875371543">টুলবারে Gemini দেখুন</translation>
 <translation id="8662474268934425487"><ph name="SITE_ETLD_PLUS_ONE" />-এ সাইন-ইন করুন</translation>
 <translation id="8664979001105139458">ফাইলের নামটি আগে থেকেই আছে</translation>
 <translation id="8676276370198826499"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-এর সাথে <ph name="SITE_ETLD_PLUS_ONE" />-এ সাইন-আপ করুন</translation>
@@ -2154,6 +2170,7 @@
 <translation id="9205933215779845960">এই পৃষ্ঠাটি খুঁজে পাওয়া যাচ্ছে না। আপনার লেখা বানান চেক করুন বা <ph name="SEARCH_ENGINE" />-এ সার্চ করে দেখুন।</translation>
 <translation id="9206873250291191720">আ</translation>
 <translation id="9212845824145208577">এর চেয়ে নিচে আর যেতে পারবেন না। পৃষ্ঠার নিচে থেকে শুরু করার চেষ্টা করে দেখুন।</translation>
+<translation id="9213433120051936369">কেমন দেখাবে তা কাস্টমাইজ করুন</translation>
 <translation id="9218430445555521422">ডিফল্ট হিসেবে সেট করুন</translation>
 <translation id="9219103736887031265">Images</translation>
 <translation id="922152298093051471">Chrome কাস্টমাইজ করুন</translation>

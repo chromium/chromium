@@ -595,7 +595,7 @@
 <translation id="2761898608071930085">使用其他账号</translation>
 <translation id="2762000892062317888">刚刚</translation>
 <translation id="2766178952536179189">{COUNT,plural, =1{最多可添加 1 张图片}other{最多可添加 {COUNT} 张图片}}</translation>
-<translation id="2772667768515195373">您可在各 Google 产品中使用已保存的地址。此地址会保存至您的 Google 账号：<ph name="USER_EMAIL" />。</translation>
+<translation id="2772667768515195373">已保存的地址可在各 Google 产品中通用。此地址已保存至您的 Google 账号：<ph name="USER_EMAIL" />。</translation>
 <translation id="2773344962924806829">邮件通知</translation>
 <translation id="2781331604911854368">已开启</translation>
 <translation id="2781692009645368755">Google Pay</translation>
@@ -796,7 +796,7 @@
 <translation id="3469117812148449995">密码保存选项</translation>
 <translation id="3472469028191701821">在新标签页中打开</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{涉及 {COUNT} 个网站或应用}other{涉及 {COUNT} 个网站和应用}}</translation>
-<translation id="3474624961160222204">继续用“<ph name="NAME" />”的账号登录</translation>
+<translation id="3474624961160222204">以“<ph name="NAME" />”的身份继续</translation>
 <translation id="3476450923187944815">在不同应用中使用保存的密码。</translation>
 <translation id="3479552764303398839">以后再说</translation>
 <translation id="3481315707647070701">直观呈现，随心修改</translation>
@@ -1866,7 +1866,7 @@
 <translation id="6722638373100589752">如需自动填充您的信息，请在 Google 钱包设置中开启“在各项 Google 产品和服务中使用卡券”</translation>
 <translation id="6723740634201835758">在您的 Google 账号中</translation>
 <translation id="6724024423419410528">颜色</translation>
-<translation id="672735642903863329">在您的所有设备上同步书签、密码等信息。</translation>
+<translation id="672735642903863329">在所有设备上获取保存的书签、密码等信息。</translation>
 <translation id="6729493062119577923">共享标签页分组活动记录</translation>
 <translation id="6732087373923685049">摄像头</translation>
 <translation id="6746338529702829275">检查您的账号数据</translation>
@@ -1959,7 +1959,7 @@
 <translation id="6998251471716094661">跟踪商品价格，并在有网站降价时收到提醒</translation>
 <translation id="7004032350256606903">贵单位要求您进行无痕浏览。
 <ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
-<translation id="7005768247344091502">在“设置”中设为默认选项…</translation>
+<translation id="7005768247344091502">前往“设置”设为默认…</translation>
 <translation id="7007970306646738803">选择如何处理此设备上现有的浏览数据，例如标签页、历史记录和密码。</translation>
 <translation id="701134422972919485">此网站的麦克风使用权</translation>
 <translation id="7012978439516925343">验证您的身份以创建通行密钥</translation>
@@ -2035,6 +2035,7 @@
 <translation id="728025568708172005">带我看看</translation>
 <translation id="7280980607183752256">无法导入此文件</translation>
 <translation id="7282197670900591579">香橼黄色主题</translation>
+<translation id="7283937415134849498">为了提供个性化的帮助，Gemini 会与 Google 地图和 Google 机票等其他 Google 服务共享您的部分数据（例如部分对话内容、位置信息和其他相关信息）。即使您日后删除 Gemini 历史记录，这些服务也可能会利用这类信息进行改进。如需了解详情，请前往 <ph name="BEGIN_LINK" />Gemini 应用隐私信息中心<ph name="END_LINK" />。</translation>
 <translation id="7293429513719260019">选择语言</translation>
 <translation id="72961285530871072">这将永久删除您的 Level Up 进度，且系统将不再针对您的个人资料向 Google 发送 Level Up 功能使用情况数据。
 
@@ -2413,7 +2414,7 @@
 <translation id="8407831512155324054">您的密码看起来安全系数较高</translation>
 <translation id="8414283596511250978">再也不必担心忘记密码</translation>
 <translation id="8415120635186642416">研究任何内容</translation>
-<translation id="842523302461531262">在“设置”中设为默认选项…</translation>
+<translation id="842523302461531262">前往“设置”设为默认…</translation>
 <translation id="8428045167754449968">市/镇</translation>
 <translation id="8428213095426709021">设置</translation>
 <translation id="8428634594422941299">知道了</translation>
@@ -2607,6 +2608,7 @@
 <translation id="8976382372951310360">帮助</translation>
 <translation id="8976414606286374109">系统会将信用卡信息保存到您的 Google 账号中。</translation>
 <translation id="8981454092730389528">Google 活动控件</translation>
+<translation id="8987736167266086032">从上次停下的地方继续</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />，已固定的网站</translation>
 <translation id="8989779557457435460">默认分享当前标签页</translation>
 <translation id="8990960056509724223">根据您所在组织的政策，无法保存文件</translation>
@@ -2648,6 +2650,7 @@
 <translation id="91023216973987714">支付方式</translation>
 <translation id="9106655997975673326">来自“<ph name="SOURCE_DEVICE" />”</translation>
 <translation id="9107664647686727385">检查是否有已泄露的密码</translation>
+<translation id="9115035712231910133">已附加图片“{title}”</translation>
 <translation id="9119764377203471454">无法添加附件</translation>
 <translation id="9124387962554796433">Google 可能会使用您的历史记录为您提供个性化的 Google 搜索和其他 Google 服务。</translation>
 <translation id="9124978074365039456">打开相机和图库，轻松购物、实时翻译、拍照识物</translation>

@@ -345,6 +345,7 @@ Si cette page ne fonctionne pas comme prévu, essayez d'autoriser l'optimisation
 <translation id="4022972681110646219">Traduire l'écran</translation>
 <translation id="4023601594785368013">Langue d'origine : <ph name="LANGUAGE" /></translation>
 <translation id="4034249157893816477">Intégré à Chrome pour vous aider à créer, enregistrer et saisir automatiquement des mots de passe sécurisés. Ajoutez le raccourci pour y accéder facilement.</translation>
+<translation id="4034420818911109432"><ph name="USER_NAME" />, <ph name="EMAIL" />. Abonnement Google.</translation>
 <translation id="4035053306113201399">Redémarrez Chrome OS pour appliquer la mise à jour.</translation>
 <translation id="4050175100176540509">La dernière version propose d'importantes améliorations de la sécurité ainsi que de nouvelles fonctionnalités.</translation>
 <translation id="4053720452172726777">Personnaliser et contrôler Google Chrome</translation>
@@ -939,6 +940,7 @@ Vous ne pourrez pas enregistrer de nouveaux favoris dans votre compte tant que v
 <translation id="9148058034647219655">Quitter</translation>
 <translation id="9150331942025550505">Profitez pleinement de la puissance de l'IA lorsque vous utilisez l'appli Chrome sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="919706545465235479">Mettre à jour Chrome pour lancer la synchronisation</translation>
+<translation id="9210313013767007472"><ph name="USER_NAME_OR_EMAIL" />. Abonnement Google.</translation>
 <translation id="922152298093051471">Personnaliser Chrome</translation>
 <translation id="93760716455950538">Redémarrer ChromeOS Flex</translation>
 <translation id="943390475793766444">Chrome recommande d'analyser ce fichier, car il est peut-être dangereux.</translation>

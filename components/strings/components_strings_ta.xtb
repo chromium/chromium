@@ -823,6 +823,7 @@
 <translation id="2356941001189392209">நீங்கள் பார்வையிடும் பக்கங்களில், பழைய தொழில்நுட்ப நிகழ்வுகள் நடைபெறும் சிலவற்றின் URLகளின் பட்டியல்</translation>
 <translation id="2357312461142072202">{NUM_TABS,plural, =1{1 பக்கத்தைப் பகிரும்}other{{NUM_TABS} பக்கங்களைப் பகிரும்}}</translation>
 <translation id="2357481397660644965">உங்கள் சாதனத்தை <ph name="DEVICE_MANAGER" /> நிர்வகிக்கிறது, கணக்கை <ph name="ACCOUNT_MANAGER" /> நிர்வகிக்கிறது.</translation>
+<translation id="2358479643736965923">உங்கள் Google AI தேடல் பதிலை இந்தப் பக்கத்தில் பார்க்கலாம்</translation>
 <translation id="2359629602545592467">பல</translation>
 <translation id="2359808026110333948">தொடர்க</translation>
 <translation id="236000571258713023">வாகனங்கள்</translation>
@@ -1141,6 +1142,7 @@
 <translation id="2925032407415783182">நிகழ்ச்சிக்கான டிக்கெட்டை Walletடில் சேமித்தல்</translation>
 <translation id="2925454999967523701">ஆவணத்தை உருவாக்குவதற்கான பட்டன். புதிய Google ஆவணத்தை விரைவாக உருவாக்க இதை இயக்குங்கள்</translation>
 <translation id="2925673989565098301">டெலிவரி முறை</translation>
+<translation id="2927328994673424423">2 வாரங்களுக்கு முன்பு</translation>
 <translation id="2928426578619531300">பயனருடன் தொடர்புடையது</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" />, மேலும் <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />, மேலும் <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="2930531075747147366">உங்களின் மற்றொரு சாதனத்தில் இருந்து பக்கம் பெறப்பட்டுள்ளது</translation>

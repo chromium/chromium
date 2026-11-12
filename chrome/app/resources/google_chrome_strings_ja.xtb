@@ -154,7 +154,9 @@
 <translation id="2301513536169703857">すべてのデバイスで同じパスワード、ブックマーク、その他の設定を使用するには、Chrome にログインしてください</translation>
 <translation id="2307973900865360088">Dock に追加</translation>
 <translation id="2309047409763057870">この Google Chrome はセカンダリ インストールのため、既定のブラウザには設定できません。</translation>
+<translation id="2330059234841117265">「Chrome で Google 検索」を開く</translation>
 <translation id="2345992953227471816">Chrome で次の拡張機能に不正なソフトウェアが含まれていることが検出されました。</translation>
+<translation id="2350411688004301551">Gemini Enterprise に切り替える</translation>
 <translation id="2358140144860869442">すべてのデバイスで同じリーディング リストなどを使用するには、Chrome にログインしてください</translation>
 <translation id="2359808026110333948">続行</translation>
 <translation id="2403703063067034158">起動エラー: 現在、別のインスタンスのセットアップが実行中です。しばらくしてからもう一度お試しください。</translation>
@@ -165,6 +167,7 @@
 <translation id="2482846200327569645"><ph name="EXISTING_USER" /> がすでにログインしています。ブラウジング環境を分ける場合は、<ph name="USER_EMAIL_ADDRESS" /> として自分用のプロフィールで Chrome にログインしてください。<ph name="DEVICE" /> のブックマークなどの設定を使用できます。</translation>
 <translation id="2485422356828889247">アンインストール</translation>
 <translation id="2513154137948333830">再起動が必要です: <ph name="INSTALL_SUCCESS" /></translation>
+<translation id="251329670120169391">あなたの組織</translation>
 <translation id="2521391734665471391">Google 検索の AI モードを閉じる</translation>
 <translation id="2523492931736391680">Chrome で作業データを保護</translation>
 <translation id="2534365042754120737">データを保護するため、最近アクセスしていないサイトから権限を自動で削除します。通知は停止されません。</translation>
@@ -212,6 +215,7 @@
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome でユーザーデータのプライバシーを保護する方法<ph name="END_LINK" />についての詳細</translation>
 <translation id="2885378588091291677">タスク マネージャ</translation>
 <translation id="2888126860611144412">Chrome について</translation>
+<translation id="2898830646167954300">管理対象外の Gemini アシスタントに戻す</translation>
 <translation id="2915996080311180594">後で再起動</translation>
 <translation id="2926952073016206995">このサイトを利用するには、Chrome でカメラの使用を許可する必要があります</translation>
 <translation id="2945997411976714835">インストール エラー: インストーラのプロセスを開始できませんでした。</translation>
@@ -251,6 +255,7 @@
 <translation id="3140883423282498090">変更内容は次に Google Chrome を再起動したときに有効になります。</translation>
 <translation id="3149510190863420837">Chrome アプリ</translation>
 <translation id="3161522574479303604">すべての言語</translation>
+<translation id="3183555099201190073">どのタブからでも検索にアクセス</translation>
 <translation id="318555301233810762"><ph name="EXISTING_USER" /> がすでにログインしています。ブラウジング環境を分ける場合は、<ph name="USER_EMAIL_ADDRESS" /> として自分用のプロフィールで Chrome にログインしてください。すべてのデバイスでブックマークなどの設定を使用できます。</translation>
 <translation id="319199214552513804">すべてのパソコンでこの拡張機能などを使用するには、Chrome にログインしてください</translation>
 <translation id="3196187562065225381">危険なファイルであるため、このダウンロードは Chrome でブロックされました</translation>
@@ -339,11 +344,13 @@
 <translation id="4022972681110646219">画面を翻訳</translation>
 <translation id="4023601594785368013">元の言語: <ph name="LANGUAGE" /></translation>
 <translation id="4034249157893816477">Chrome に組み込まれており、安全なパスワードを作成、保存、自動入力できます。ショートカットを追加すると、簡単にアクセスできます。</translation>
+<translation id="4034420818911109432"><ph name="USER_NAME" />、<ph name="EMAIL" />。Google メンバーシップ。</translation>
 <translation id="4035053306113201399">更新を適用するには、ChromeOS を再起動する必要があります。</translation>
 <translation id="4050175100176540509">最新バージョンに更新すると、重要なセキュリティ更新と新機能が適用されます。</translation>
 <translation id="4053720452172726777">Google Chrome の設定</translation>
 <translation id="408393047846373801">すべてのデバイスでパスワードやその他の設定を使用するには、Chrome にログインしてください。このパスワードは、ログイン後に Google アカウントに保存されます。</translation>
 <translation id="4102173024714616627">拡張機能は、Chrome をカスタマイズできるアドオンです。情報整理や日々のタスクの効率化など、拡張機能を使って Chrome を自分仕様にすることができます。</translation>
+<translation id="4103543596018881622">「Chrome で Google 検索」をツールバーに固定しました。</translation>
 <translation id="4110895483821904099">新しい Chrome プロファイルの設定</translation>
 <translation id="4111566860456076004">Chrome では、この拡張機能の提供元を確認できないため、安全でない可能性があります。アクセスしたサイトでユーザーデータ（個人情報を含む）が参照、変更されないように、Chrome からこの拡張機能を削除してください。</translation>
 <translation id="4147555960264124640">現在、管理対象アカウントでログインしており、あなたの Google Chrome プロファイルを管理者が制御できる状態になっています。あなたの Chrome データ（アプリ、ブックマーク、履歴、パスワードなどの設定）は永続的に <ph name="USER_NAME" /> に関連付けられます。このデータは Google アカウントのダッシュボードを介して削除できますが、このデータを別のアカウントに関連付けることはできなくなります。<ph name="LEARN_MORE" /></translation>
@@ -465,6 +472,7 @@
 <translation id="5321325624576443340">Google レンズはご利用いただけません。しばらくしてからもう一度お試しください。</translation>
 <translation id="5334309298019785904">ご使用のドメインでは同期を利用できないため、ChromeOS はデータを同期できませんでした。</translation>
 <translation id="5334487786912937552">ファイルをダウンロードするには、Chrome でストレージへのアクセスを許可する必要があります</translation>
+<translation id="5336664042114176802">Google アカウントに元々関連付けられていた、<ph name="DOMAIN" /> で管理されていない Gemini アシスタントに切り替えることができます。回答は <ph name="DOMAIN" /> で管理されているファイルやサービスに基づくものではなくなり、チャットの履歴も引き継がれません。仕事での使用には適さない可能性があります。切り替えるには、Chrome を再起動する必要があります。</translation>
 <translation id="5337648990166757586">任意: 診断と使用状況のデータを Google に自動送信して、ChromeOS の機能とパフォーマンスの改善に協力する。</translation>
 <translation id="5346389065299425353">複数のタブ、ファイル、ツールを追加し、対象を掘り下げて検索します</translation>
 <translation id="5353252989841766347">Chrome からパスワードをエクスポート</translation>
@@ -580,6 +588,7 @@
 <translation id="6326175484149238433">Chrome から削除</translation>
 <translation id="6334815226785304306">Google Chrome を既定のブラウザに設定してタスクバーに固定する</translation>
 <translation id="6339888439788291743">新しいアイコン、同じショートカット: クリックすると、ブラウジング中に Google 検索の AI モードで質問できます。</translation>
+<translation id="6349304688246983183">ブラウジング中に Google 検索を使用して簡単に質問できます</translation>
 <translation id="63540178978900677">Chrome は既定のブラウザではなくなりました。Chrome を既定のブラウザにしますか？</translation>
 <translation id="6357670763064300993">Gemini Enterprise in Chrome</translation>
 <translation id="6360449101159168105">Chrome を高速に保つため、このタブがアクティブでないときにメモリを解放しました。このサイトを常にアクティブにするよう選択できます。</translation>
@@ -594,6 +603,7 @@
 <translation id="6438015621983209660">スマートフォンの Chrome でセーフ ブラウジング保護強化機能を有効にする</translation>
 <translation id="6442774133615368941">Chrome iOS アプリで、カメラに映ったものを購入、翻訳、特定できます</translation>
 <translation id="6446105560007692480">Chrome で検索するか、[<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />] でカスタマイズします</translation>
+<translation id="6447943657065463998">この管理対象ブラウザでは、<ph name="DOMAIN" /> により仕事用に設定された Gemini アシスタントを使用できます。組織のファイルや承認済みのサービスに基づいて、情報を検索し、回答を提供できます。個人用プロファイルでの使用は推奨されていない可能性があります。チャットの履歴は引き継がれません。切り替えるには、Chrome を再起動する必要があります。</translation>
 <translation id="6448835208126432197">Gemini in Chrome で画面の一部を選択するときに、キーボード ショートカットを使用します。</translation>
 <translation id="6473905796280459355">Chrome についてのページに移動</translation>
 <translation id="6481963882741794338">パーソナライズなどの目的で、Chrome と他の Google サービスをリンクします</translation>
@@ -788,6 +798,7 @@
 <translation id="8064965390968184078">1. 下の [<ph name="BUTTON_LABEL" />] をクリックします
 2. Windows の設定で [<ph name="BUTTON_2" />] をクリックします
 3. Windows の通知で [<ph name="BUTTON_3" />] をクリックすると、Chrome がタスクバーに固定され、すばやくアクセスできるようになります</translation>
+<translation id="8066474819446975249">Chrome を再起動して切り替える</translation>
 <translation id="8069447462453318634">[ツールバーに固定] を選択します</translation>
 <translation id="8074398340364918139">Chrome の特定の機能や拡張機能を検索するには、アドレスバーに該当のショートカットを入力して、選択したキーボードキーを押します</translation>
 <translation id="8077579734294125741">その他の Chrome プロファイル</translation>
@@ -929,6 +940,7 @@
 <translation id="9148058034647219655">終了</translation>
 <translation id="9150331942025550505"><ph name="DEVICE_TYPE" /> の Chrome アプリで AI を活用できます</translation>
 <translation id="919706545465235479">同期を開始するには、Chrome を更新します</translation>
+<translation id="9210313013767007472"><ph name="USER_NAME_OR_EMAIL" />。Google メンバーシップ。</translation>
 <translation id="922152298093051471">Chrome をカスタマイズ</translation>
 <translation id="93760716455950538">ChromeOS Flex を再起動</translation>
 <translation id="943390475793766444">このファイルは危害を及ぼす可能性があるため、スキャンすることをおすすめします。</translation>

@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">Jos haluat nähdä salasanat, sinun on ensin määritettävä tunnuskoodi laitteellesi.</translation>
 <translation id="201759455285471444">Laajenna välilehtiryhmä.</translation>
 <translation id="2022431790688770637">Muuta Gemini-ehdotuksia</translation>
+<translation id="2023265063803387188">Gemini ei ole käytettävissä incognito-tilassa</translation>
 <translation id="2031515492007104071">Tason nostaminen</translation>
 <translation id="2044394949148788042">Avaa välilehtiruudukko</translation>
 <translation id="2044681667265133332"><ph name="HOSTED_DOMAIN" /> ylläpitää tiliä <ph name="USER_EMAIL" /> ja voi nähdä joitakin tietoja. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
@@ -1213,6 +1214,7 @@
 <translation id="479628432297359449">Pysäytetäänkö lataus?</translation>
 <translation id="4796496140132859135">Välilehtiryhmä. Tiivistetty.</translation>
 <translation id="4800912004582762296">Klikataan</translation>
+<translation id="4800930308997591052">Vaihda tilille <ph name="EMAIL" />, niin voit jakaa välilehtiä saumattomasti laitteiden välillä ja käyttää esimerkiksi Google-tilin salasanoja ja kirjanmerkkejä.</translation>
 <translation id="4802185666270672526">Piilota "Käytä tietokoneversiota"</translation>
 <translation id="4803185665210547709">Organisaatiosi ylläpitämä.
 <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
@@ -2035,6 +2037,7 @@ Jos haluat jatkaa tietokoneella, vaihda tiliksi <ph name="OTHER_EMAIL" />. Saat 
 <translation id="728025568708172005">Esittele paikkaa</translation>
 <translation id="7280980607183752256">Tiedostoa ei voi tuoda</translation>
 <translation id="7282197670900591579">Sitruunankeltainen teema</translation>
+<translation id="7283937415134849498">Gemini jakaa osan datastasi (esim. osia keskusteluista, sijainnin ja muita relevantteja tietoja) muille Googlen palveluille, kuten Mapsille ja Lennoille, jotta voit saada räätälöityä apua. Palvelut voivat käyttää tietoja toimintansa parantamiseen, vaikka poistaisit Gemini-historian. Lue lisää <ph name="BEGIN_LINK" />Gemini-sovellusten Yksityisyys- ja tietosuojakeskuksesta<ph name="END_LINK" />.</translation>
 <translation id="7293429513719260019">Valitse kieli</translation>
 <translation id="72961285530871072">Tämä poistaa Level Up ‑edistymisesi pysyvästi, eikä ominaisuuksien käyttödataa enää lähetetä Googlelle profiiliasi varten.
 
@@ -2147,6 +2150,7 @@ Voit aloittaa uudelleen milloin tahansa.</translation>
 <translation id="7618220760967055820">Valitse yläpalkissa näkyvä painike</translation>
 <translation id="7620522820075868385">Peru</translation>
 <translation id="762078666799342162">Aiemmat lataukset löytyvät <ph name="BEGIN_LINK" />Tiedostot<ph name="END_LINK" />-sovelluksesta</translation>
+<translation id="7636034359405891151">Jatka tietokoneella siitä, mihin jäit</translation>
 <translation id="7638584964844754484">Väärä tunnuslause.</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Vaarantuneet salasanat}=1{{COUNT} vaarantunut salasana}other{{COUNT} vaarantunutta salasanaa}}</translation>
 <translation id="7640669552036055091">Välilehdet Android-laitteelta</translation>
@@ -2607,6 +2611,7 @@ Voit aloittaa uudelleen milloin tahansa.</translation>
 <translation id="8976382372951310360">Ohje</translation>
 <translation id="8976414606286374109">Kortit tallennetaan Google-tilillesi.</translation>
 <translation id="8981454092730389528">Googlen toimintojen hallinta</translation>
+<translation id="8987736167266086032">Jatka siitä, mihin jäit</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, kiinnitetty sivusto</translation>
 <translation id="8989779557457435460">Jaa nykyinen välilehti oletuksena</translation>
 <translation id="8990960056509724223">Tiedostoa ei voitu tallentaa organisaation käytäntöjen vuoksi</translation>
@@ -2648,6 +2653,7 @@ Voit aloittaa uudelleen milloin tahansa.</translation>
 <translation id="91023216973987714">Maksutavat</translation>
 <translation id="9106655997975673326">Laite: <ph name="SOURCE_DEVICE" /></translation>
 <translation id="9107664647686727385">Tarkista salasanojen vaarantuminen</translation>
+<translation id="9115035712231910133">Liitetty kuva {title}</translation>
 <translation id="9119764377203471454">Liitteiden lisääminen ei onnistu</translation>
 <translation id="9124387962554796433">Google voi muokata Hakua ja muita Googlen palveluita historiasi perusteella.</translation>
 <translation id="9124978074365039456">Tee ostoksia, käännä ja tunnista näkemiäsi asioita kameran ja kuvagallerian avulla</translation>

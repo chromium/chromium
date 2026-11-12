@@ -3559,6 +3559,13 @@ Microsoft Outlook カードには、追加の管理者設定が必要です。Ch
 <translation id="3284094172359247914">WebUSB API の使用を管理する</translation>
 <translation id="3285231260918855067">透かしテキストの輪郭の不透明度、0（透明）～100（不透明）。</translation>
 <translation id="3286159327013237833">ログイン画面で自動クリックを有効にする</translation>
+<translation id="3286515980166695377">このポリシーは M153 で非推奨となり、M159 以降では無視されます。プログレッシブ ウェブ アプリケーション（PWA）のインストール時に作成されたネイティブ アプリケーションのアドホック署名は、<ph name="MAC_OS_NAME" /> では恒久的に有効になりました。これにより、インストールされた各アプリは <ph name="MAC_OS_NAME" /> のシステム コンポーネントで一意に識別されます。
+
+このポリシーを有効に設定するか未設定のままにした場合、プログレッシブ ウェブ アプリケーション（PWA）のインストール時に作成されたネイティブ アプリケーションで、アドホック署名の使用が有効になります。これにより、インストールされた各アプリは <ph name="MAC_OS_NAME" /> のシステム コンポーネントで一意に識別されます。
+
+このポリシーを無効に設定した場合、プログレッシブ ウェブ アプリケーションのインストール時に作成されたネイティブ アプリケーションは、すべて同じものとして識別されます。その結果、<ph name="MAC_OS_NAME" /> の機能の動作が妨げられる可能性があります。
+
+このポリシーの無効化は、アドホック署名のあるアプリケーションをブロックするエンドポイント セキュリティ ソリューションを使用している場合のみにしてください。</translation>
 <translation id="3288595667065905535">リリース チャンネル</translation>
 <translation id="3294430356898755483">このポリシーを設定した場合、管理者はユーザー用のプリンタのリストを設定できます。プリンタの選択は、ユーザーが初めて印刷しようとしたときに行われます。
 
@@ -5292,7 +5299,7 @@ WebSQL は M112 で削除されました。</translation>
 <translation id="4461400898496433231">IPv6 のネットワーク到達性チェックをオーバーライドしない。デバイスがグローバル IPv6 ホストに到達可能な場合のみ、AAAA レコードをクエリしてホスト名を解決する。</translation>
 <translation id="4463675333222095358">クイック アンサーの単位変換を有効にする</translation>
 <translation id="4464365009416584564"><ph name="CHROME_SYNC_NAME" /> を無効にする</translation>
-<translation id="4467952432486360968">サードパーティの Cookie をブロックする</translation>
+<translation id="4467952432486360968">サードパーティ Cookie をブロックする</translation>
 <translation id="4468220154891570994">キオスクモードで「ピンチしてズーム」を許可する</translation>
 <translation id="4472740647327683596">ページの幅（マイクロメートル）</translation>
 <translation id="4474167089968829729">パスワード マネージャーへのパスワード保存を有効にする</translation>
@@ -5405,6 +5412,11 @@ WebSQL は M112 で削除されました。</translation>
 
 適用される上限は <ph name="ALLOW_SOCKET_POOL_SIZE_RANDOMIZATION_FOR_PROXIES_POLICY_NAME" /> の影響を受けることにご注意ください。</translation>
 <translation id="4528981768990874684"><ph name="IP_PROTECTION_NAME" /> 機能を無効にする。</translation>
+<translation id="4529292353296224032">このポリシーを有効に設定した場合、キーボード ショートカットまたは拡張機能 API を使用したスクリーンショットは許可されません。このポリシーを無効に設定するか未設定のままにした場合は、スクリーンショットが許可されます。
+
+<ph name="PRODUCT_NAME" /> バージョン 155～158 では、このポリシーを有効にすると、拡張機能が「chrome.debugger.attach()」を介してデバッガをアタッチできなくなる場合もあります（<ph name="CHROME_VARIATIONS_POLICY_NAME" /> ポリシーですべてのバリエーションを無効にしている場合など）。
+
+なお、<ph name="MS_WIN_NAME" />、<ph name="MAC_OS_NAME" />、<ph name="LINUX_OS_NAME" /> では、オペレーティング システムやサードパーティのアプリケーションによるスクリーンショットの撮影をブロックできません。</translation>
 <translation id="453031441196755904">このポリシーはサポートを終了しました。</translation>
 <translation id="4531088355818260318">このポリシーでは、特定の URL パターンに一致するウェブ リクエストにカスタム HTTP ヘッダーを挿入するルールのリストを定義できます。このポリシーで設定したヘッダーは、リクエストに最初に存在していたヘッダーや、ユーザーまたは拡張機能によって試行された変更より優先されます。
 
@@ -5572,6 +5584,21 @@ URL パターンは、<ph name="CONTROLLED_FRAME_BLOCKED_FOR_URLS_POLICY_NAME" /
       false に設定した場合、デバイスでネットワーク パケット キャプチャは使用できません。</translation>
 <translation id="4599810650416623373">JavaScript の最適化を無効にするサイトを指定する</translation>
 <translation id="4600786265870346112">大きいカーソルを有効にする</translation>
+<translation id="460264931744856609">このポリシーを設定することで、既存の拡張機能関連ポリシーで管理されている設定もすべて含め、<ph name="PRODUCT_NAME" /> の拡張機能の設定を管理できます。
+
+このポリシーでは、特定の設定のみを指定するには拡張機能 ID または更新 URL を使用します。また、「<ph name="DEFAULT_SCOPE" />」という特別な ID でデフォルトの設定を指定できます。デフォルトの設定は、このポリシーでカスタムの設定が指定されていないすべての拡張機能に適用されます。
+
+このポリシーでは、以前のポリシーの拡張機能ごとの設定をオーバーライドできます。
+
+<ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />、<ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />、<ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" />、または <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> の ID ごとの拡張機能の設定には、<ph name="DEFAULT_SCOPE" /> のデフォルト設定から「installation_mode」と「update_url」のみが継承されます。他のプロパティは継承されません。更新 URL の場合、拡張機能マニフェストで指定された更新 URL が正確に一致する拡張機能に設定が適用されます（http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy）。「override_update_url」フラグが true に設定されている場合、拡張機能は、<ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> ポリシーまたはこのポリシーの「update_url」フィールドで指定された「更新」URL を使用してインストールおよび更新されます。「update_url」が Chrome ウェブストアの URL の場合、「override_update_url」フラグは無視されます。
+
+<ph name="PRODUCT_NAME" /> バージョン 155～158 では、「debugger」権限を持つ拡張機能に「runtime_blocked_hosts」を適用すると、すべてのターゲットで「chrome.debugger.attach()」が完全に無効化される場合があります（<ph name="CHROME_VARIATIONS_POLICY_NAME" /> ポリシーですべてのバリエーションが無効になっている場合など）。
+
+<ph name="MS_WIN_NAME" /> の場合、Chrome ウェブストア以外から取得されたアプリと拡張機能を自動インストールできるのは、<ph name="MS_AD_NAME" /> ドメインに追加されたインスタンス、<ph name="MS_AAD_NAME" /> に追加されたインスタンス、または <ph name="CHROME_ENTERPRISE_CORE_NAME" /> に登録されているインスタンスのみです。
+
+<ph name="MAC_OS_NAME" /> の場合、Chrome ウェブストア以外から取得されたアプリと拡張機能を自動インストールできるのは、MDM を介して管理されるインスタンス、MCX を介してドメインに追加されたインスタンス、または <ph name="CHROME_ENTERPRISE_CORE_NAME" /> に登録されているインスタンスのみです。
+
+注: このポリシーは、拡張機能がサポートされているプラットフォームにのみ適用されます。</translation>
 <translation id="4602988345256038309">このパソコンへのリモート サポート接続を許可する</translation>
 <translation id="4605677392792989397">このポリシーでは、企業のログイン URL のリストを設定できます（HTTP と HTTPS プロトコルのみ）。パスワード保護サービスでは、これらの URL で入力されたパスワードのソルトハッシュを取得し、パスワードの再利用を検出する目的で使用します。<ph name="PRODUCT_NAME" /> でパスワードのソルトハッシュが適切に取得されるようにするには、ログインページが https://www.chromium.org/developers/design-documents/create-amazing-password-forms のガイドラインに沿っていることを確認します。
 
@@ -11342,6 +11369,12 @@ false に設定した場合、管理対象のネットワークに接続され�
 このポリシーを設定した場合、許可リストで指定した URL について、ウェブサイトのテレメトリー レポートを送信します。
 未設定のままにした場合、ウェブサイトのテレメトリーは報告されません。
 有効な URL パターンについて詳しくは、https://chromeenterprise.google/policies/url-patterns/ をご覧ください。このポリシーで使用できるのは、HTTP と HTTPS の URL スキームのみです。</translation>
+<translation id="8392016343898518010">コンテンツの提案機能が削除されたため、このポリシーは非推奨となり、M159 以降では無視されます。
+
+M159 までは、この機能により、アプリやウェブページなどの新しいコンテンツの提案が有効になっていました。
+このポリシーを True に設定した場合、新しいコンテンツの提案が有効になっていました。
+このポリシーを False に設定した場合、新しいコンテンツの提案は無効になっていました。
+このポリシーを未設定のままにした場合、新しいコンテンツの提案は、管理対象ユーザーに対して無効に、その他のユーザーに対しては有効になっていました。</translation>
 <translation id="8392478748777481636">このポリシーは非推奨で、サポートされていません。代わりに「<ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" />」ポリシーを使用してください。</translation>
 <translation id="8393850527597048037">プラットフォーム専用</translation>
 <translation id="8395350646076131800">ロック画面にユーザーのスクリーンセーバーを表示するまでのアイドル タイムアウト。</translation>

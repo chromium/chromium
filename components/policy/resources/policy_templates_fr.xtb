@@ -3702,6 +3702,13 @@ Si <ph name="NTPCARDSVISIBLE" /> est désactivé, la carte Outlook ne s'affiche 
 <translation id="3284094172359247914">Contrôler l'utilisation de l'API WebUSB</translation>
 <translation id="3285231260918855067">Opacité du contour du texte du filigrane, de 0 (transparent) à 100 (opaque).</translation>
 <translation id="3286159327013237833">Activer les clics automatiques sur l'écran de connexion</translation>
+<translation id="3286515980166695377">Cette règle a été abandonnée dans M153 et n'a aucun effet à partir de M159. Les signatures ponctuelles pour les applis natives créées lors de l'installation d'une progressive web app (PWA) sont désormais activées de manière permanente sur <ph name="MAC_OS_NAME" />. Cela garantit que chaque appli installée a une identité unique pour les composants système <ph name="MAC_OS_NAME" />.
+
+Si cette règle est activée ou qu'elle n'est pas configurée, les signatures ponctuelles sont autorisées pour l'appli native créée lors de l'installation d'une progressive web app (PWA). Cela garantit que chaque appli installée a une identité unique pour les composants système <ph name="MAC_OS_NAME" />.
+
+Si cette règle est désactivée, toutes les applis natives créées lors de l'installation de PWA auront la même identité. Cela peut interférer avec la fonctionnalité <ph name="MAC_OS_NAME" />.
+
+Désactivez cette règle uniquement si vous utilisez une solution de sécurité des points de terminaison qui bloque les applis avec une signature ponctuelle.</translation>
 <translation id="3288595667065905535">Version disponible</translation>
 <translation id="3294430356898755483">Cette règle permet aux administrateurs de configurer une liste d'imprimantes pour leurs utilisateurs. La sélection de l'imprimante est effectuée la première fois que l'utilisateur lance une impression.
 
@@ -5550,6 +5557,11 @@ Toute augmentation de la valeur par défaut (128) est effectuée à vos propres 
 
 Veuillez noter que les limites appliquées sont affectées par <ph name="ALLOW_SOCKET_POOL_SIZE_RANDOMIZATION_FOR_PROXIES_POLICY_NAME" />.</translation>
 <translation id="4528981768990874684">Désactiver la fonctionnalité <ph name="IP_PROTECTION_NAME" />.</translation>
+<translation id="4529292353296224032">Si cette règle est activée, les utilisateurs ne peuvent pas faire de captures d'écran avec des raccourcis clavier ni avec des API d'extension. Si elle est désactivée ou qu'elle n'est pas configurée, les captures d'écran sont autorisées.
+
+Dans les versions 155 à 158 de <ph name="PRODUCT_NAME" />, l'activation de cette règle peut également empêcher les extensions d'associer le débogueur via "chrome.debugger.attach()", par exemple lorsque la règle <ph name="CHROME_VARIATIONS_POLICY_NAME" /> désactive toutes les variantes.
+
+Sachez que, sur <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> et <ph name="LINUX_OS_NAME" />, cela n'empêche pas d'effectuer des captures d'écran avec des applis tierces ou du système d'exploitation.</translation>
 <translation id="453031441196755904">Cette règle est obsolète.</translation>
 <translation id="4531088355818260318">Cette règle permet de définir une liste de règles pour l'injection d'en-têtes HTTP personnalisés dans les requêtes Web correspondant à des formats d'URL spécifiques. Les en-têtes définis par cette règle prévalent sur ceux qui étaient initialement présents dans la requête, ainsi que sur les modifications tentées par les utilisateurs ou les extensions.
 
@@ -5721,6 +5733,21 @@ Cette règle n'a aucun effet si <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_F
       Si elle est définie sur "false", la capture de paquets du réseau ne sera pas possible sur l'appareil.</translation>
 <translation id="4599810650416623373">Bloquer les optimisations JavaScript sur ces sites</translation>
 <translation id="4600786265870346112">Activer le grand curseur</translation>
+<translation id="460264931744856609">Cette règle permet de contrôler les paramètres de gestion des extensions pour <ph name="PRODUCT_NAME" />, y compris ceux contrôlés par des règles existantes liées aux extensions.
+
+Elle fait correspondre un ID d'extension ou une URL de mise à jour uniquement avec sa configuration spécifique. Une configuration par défaut peut être définie pour l'ID spécial <ph name="DEFAULT_SCOPE" />, lequel s'applique à toutes les extensions pour lesquelles aucune configuration personnalisée n'est définie dans cette règle.
+
+Cette règle peut remplacer la configuration par extension des anciennes règles.
+
+Notez que tout paramètre d'extension par ID provenant de <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />, <ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />, <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" /> ou <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> n'héritera que de "installation_mode" et "update_url" à partir des valeurs par défaut de <ph name="DEFAULT_SCOPE" />. Il n'héritera d'aucune autre propriété. Avec une URL de mise à jour, la configuration s'applique aux extensions avec l'URL de mise à jour telle qu'elle est indiquée dans le fichier manifeste de ces extensions ( http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy ). Si le flag "override_update_url" est défini sur "True", l'extension est installée et mise à jour à l'aide de l'URL spécifiée dans la règle "<ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />" ou dans le champ "update_url" de cette règle. L'indicateur "override_update_url" est ignoré si le champ "update_url" contient une URL du Chrome Web Store.
+
+Dans les versions 155 à 158 de <ph name="PRODUCT_NAME" />, l'application de "runtime_blocked_hosts" à une extension disposant de l'autorisation "debugger" peut désactiver complètement "chrome.debugger.attach()" sur toutes les cibles, par exemple lorsque la règle <ph name="CHROME_VARIATIONS_POLICY_NAME" /> désactive toutes les variantes.
+
+Pour les instances <ph name="MS_WIN_NAME" />, les applis et extensions non issues du Chrome Web Store ne peuvent être installées d'office que si l'instance est associée à un domaine <ph name="MS_AD_NAME" />, à <ph name="MS_AAD_NAME" /> ou bénéficie de <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Pour les instances <ph name="MAC_OS_NAME" />, les applis et extensions non issues du Chrome Web Store ne peuvent être installées d'office que si l'instance est gérée via MDM, associée à un domaine via MCX ou bénéficie de la <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Remarque : Cette règle ne s'applique qu'aux plates-formes compatibles avec les extensions.</translation>
 <translation id="4602988345256038309">Autoriser les connexions d'assistance à distance à cet appareil</translation>
 <translation id="4605677392792989397">Cette règle permet de lister les URL de connexion d'entreprise (protocoles HTTP et HTTPS uniquement). Le service de protection par mot de passe enregistre des copies hachées et après salage des mots de passe au niveau de ces URL afin de détecter les mots de passe réutilisés. Pour que <ph name="PRODUCT_NAME" /> enregistre correctement ces copies, vérifiez que vos pages de connexion respectent les consignes décrites sur https://www.chromium.org/developers/design-documents/create-amazing-password-forms.
 
@@ -11786,6 +11813,12 @@ Les certificats doivent être encodés en base64.</translation>
 Si cette règle est configurée, des rapports de télémétrie de site Web sont créés pour les URL figurant dans la liste d'autorisation.
 Si cette règle n'est pas configurée, aucun rapport de télémétrie de site Web n'est créé.
 Pour en savoir plus sur les formats d'URL valides, consultez https://chromeenterprise.google/policies/url-patterns/. Seuls les schémas d'URL HTTP et HTTPS sont autorisés pour cette règle.</translation>
+<translation id="8392016343898518010">Cette règle est obsolète et n'a aucun effet à partir de M159, car la fonctionnalité de suggestions de contenus a été supprimée.
+
+Avant M159, cette fonctionnalité permettait de suggérer de nouveaux contenus à explorer, y compris des applis, des pages Web, etc.
+Si cette règle était définie sur "True", les suggestions de nouveaux contenus à explorer étaient activées.
+Si cette règle était définie sur "False", les suggestions de nouveaux contenus à explorer étaient désactivées.
+Si cette règle n'était pas configurée, les suggestions de nouveaux contenus à explorer étaient désactivées pour les utilisateurs gérés et activées pour les autres.</translation>
 <translation id="8392478748777481636">Cette règle est obsolète et non compatible, veuillez utiliser la règle <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" /> à la place.</translation>
 <translation id="8393850527597048037">Plate-forme uniquement</translation>
 <translation id="8395350646076131800">Délai d'inactivité pour l'écran de verrouillage de l'économiseur d'écran de l'utilisateur.</translation>

@@ -823,6 +823,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="2356941001189392209">Uhlu olukhawulelwe lwama-URL wamakhasi owavakashelayo lapho imicimbi yobuchwepheshe befa yenzeka khona</translation>
 <translation id="2357312461142072202">{NUM_TABS,plural, =1{Izokwabelana ngethebhu e-1}one{Izokwabelana ngamathebhu angu-{NUM_TABS}}other{Izokwabelana ngamathebhu angu-{NUM_TABS}}}</translation>
 <translation id="2357481397660644965">Idivayisi yakho iphethwe yi-<ph name="DEVICE_MANAGER" /> futhi i-akhawunti yakho iphethwe yi-<ph name="ACCOUNT_MANAGER" />.</translation>
+<translation id="2358479643736965923">Bona impendulo yakho yosesho lwe-AI yeGoogle kule thebhu</translation>
 <translation id="2359629602545592467">Okuningi</translation>
 <translation id="2359808026110333948">Qhubeka</translation>
 <translation id="236000571258713023">Izimoto</translation>
@@ -1141,6 +1142,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="2925032407415783182">Londoloza ithikithi lomcimbi kuWallet</translation>
 <translation id="2925454999967523701">Sungula inkinobho yedokhumenti, yenza kusebenze ukuze usungule i-Gogole Doc entsha ngokushesha</translation>
 <translation id="2925673989565098301">Indlela yokulethwa</translation>
+<translation id="2927328994673424423">Amaviki adlule ama-2</translation>
 <translation id="2928426578619531300">Umsebenzisi uhlobene</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> nongu-<ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ngaphezulu}one{<ph name="SHIPPING_ADDRESS_PREVIEW" /> nongu-<ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ngaphezulu}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> nongu-<ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ngaphezulu}}</translation>
 <translation id="2930531075747147366">Thepha ukusuka Kwenye Idivayisi Yakho</translation>

@@ -823,6 +823,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2356941001189392209">Takmarkaður listi vefslóða síðna sem þú opnar þar sem tilvik vegna eldri tækni koma upp</translation>
 <translation id="2357312461142072202">{NUM_TABS,plural, =1{Mun deila einum flipa}one{Mun deila {NUM_TABS} flipa}other{Mun deila {NUM_TABS} flipum}}</translation>
 <translation id="2357481397660644965"><ph name="DEVICE_MANAGER" /> hefur umsjón með tækinu þínu og <ph name="ACCOUNT_MANAGER" /> hefur umsjón með reikningnum þínum.</translation>
+<translation id="2358479643736965923">Sjáðu svar gervigreindarleitar á þessum flipa</translation>
 <translation id="2359629602545592467">Margir</translation>
 <translation id="2359808026110333948">Halda áfram</translation>
 <translation id="236000571258713023">Ökutæki</translation>
@@ -1141,6 +1142,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2925032407415783182">Vistaðu miða á viðburð í Veski</translation>
 <translation id="2925454999967523701">Hnappurinn „Búa til skjal“, virkjaðu til að búa til nýtt Google-skjal á skjótan hátt</translation>
 <translation id="2925673989565098301">Afhendingarmáti</translation>
+<translation id="2927328994673424423">Fyrir tveimur vikum síðan</translation>
 <translation id="2928426578619531300">Tengt notanda</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> í viðbót}one{<ph name="SHIPPING_ADDRESS_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> í viðbót}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> í viðbót}}</translation>
 <translation id="2930531075747147366">Flipi úr hinu tækinu</translation>

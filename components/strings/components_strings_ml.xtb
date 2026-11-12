@@ -823,6 +823,7 @@
 <translation id="2356941001189392209">ലെഗസി ടെക്‌നോളജി ഇവന്റുകൾ നടക്കുന്ന, നിങ്ങൾ സന്ദർശിക്കുന്ന പേജുകളുടെ URL-കളുടെ പരിമിതമായ ലിസ്‌റ്റ്</translation>
 <translation id="2357312461142072202">{NUM_TABS,plural, =1{ഒരു ടാബ് പങ്കിടും}other{{NUM_TABS} ടാബുകൾ പങ്കിടും}}</translation>
 <translation id="2357481397660644965">നിങ്ങളുടെ ഉപകരണം <ph name="DEVICE_MANAGER" />-ഉം അക്കൗണ്ട് <ph name="ACCOUNT_MANAGER" />-ഉം മാനേജ് ചെയ്യുന്നു.</translation>
+<translation id="2358479643736965923">ഈ ടാബിൽ നിങ്ങളുടെ Google AI Search ഉത്തരം കാണുക</translation>
 <translation id="2359629602545592467">ഒന്നിലധികം</translation>
 <translation id="2359808026110333948">തുടരുക</translation>
 <translation id="236000571258713023">വാഹനങ്ങൾ</translation>
@@ -1141,6 +1142,7 @@
 <translation id="2925032407415783182">Wallet-ലേക്ക് ഇവന്റ് ടിക്കറ്റ് സംരക്ഷിക്കുക</translation>
 <translation id="2925454999967523701">'ഡോക് സൃഷ്ടിക്കുക' ബട്ടൺ, പുതിയൊരു Google ഡോക് വേഗത്തിൽ സൃഷ്ടിക്കാൻ സജീവമാക്കുക</translation>
 <translation id="2925673989565098301">ഡെലിവറി രീതി</translation>
+<translation id="2927328994673424423">2 ആഴ്ച മുമ്പ്</translation>
 <translation id="2928426578619531300">ഉപയോക്താവ് അഫിലിയേറ്റ് ചെയ്തത്</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> എന്നതും മറ്റ് <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> എണ്ണവും}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> എന്നതും മറ്റ് <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> എണ്ണവും}}</translation>
 <translation id="2930531075747147366">നിങ്ങളുടെ ഇതര ഉപകരണത്തിൽ നിന്നുള്ള ടാബ്</translation>

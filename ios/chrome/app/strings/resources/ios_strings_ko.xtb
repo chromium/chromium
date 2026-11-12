@@ -95,7 +95,7 @@
 <translation id="126737128831326059">내보내기 완료</translation>
 <translation id="1272079795634619415">중지</translation>
 <translation id="1273416271143914096">{count,plural, =1{비밀번호 {count}개}other{비밀번호 {count}개}}</translation>
-<translation id="1274721046703404848">Google 검색 서비스와 Google Drive 등 Google Workspace 앱 간의 연결을 관리해 보세요.</translation>
+<translation id="1274721046703404848">Google 검색 서비스와 Google Drive 등 Google Workspace 앱 간의 연결을 관리합니다</translation>
 <translation id="1275718070701477396">선택됨</translation>
 <translation id="1279024913354609713">허용 안함</translation>
 <translation id="1285320974508926690">이 사이트 번역 안함</translation>
@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">비밀번호를 보려면 먼저 기기에 비밀번호를 설정해야 합니다.</translation>
 <translation id="201759455285471444">탭 그룹을 펼칩니다.</translation>
 <translation id="2022431790688770637">Gemini 추천 관리</translation>
+<translation id="2023265063803387188">Gemini는 시크릿 모드에서 사용할 수 없습니다.</translation>
 <translation id="2031515492007104071">레벨 업</translation>
 <translation id="2044394949148788042">탭 그리드 열기</translation>
 <translation id="2044681667265133332"><ph name="USER_EMAIL" /> 계정은 일부 정보를 볼 수 있는 <ph name="HOSTED_DOMAIN" />에서 관리합니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
@@ -1866,10 +1867,10 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="6722638373100589752">정보를 자동 완성하려면 월렛 설정에서 'Google 서비스 전반에서 패스 사용'을 사용 설정하세요.</translation>
 <translation id="6723740634201835758">내 Google 계정에서</translation>
 <translation id="6724024423419410528">색상</translation>
-<translation id="672735642903863329">모든 기기에 북마크, 비밀번호 등을 가져오세요.</translation>
+<translation id="672735642903863329">모든 기기에서 내 북마크, 비밀번호 등을 사용하세요.</translation>
 <translation id="6729493062119577923">공유 탭 그룹 활동</translation>
 <translation id="6732087373923685049">카메라</translation>
-<translation id="6746338529702829275">계정 데이터 검토</translation>
+<translation id="6746338529702829275">계정 데이터를 검토합니다</translation>
 <translation id="6749473226660745022">사진</translation>
 <translation id="6750456911389438250">{count,plural, =1{방문 기록 항목 {count}개 가져옴}other{방문 기록 항목 {count}개 가져옴}}</translation>
 <translation id="6751817018972413719">{count,plural, =1{키보드 위에 사용자 인증 옵션 {count}개가 있습니다.}other{키보드 위에 사용자 인증 옵션 {count}개가 있습니다.}}</translation>
@@ -2004,7 +2005,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="7173114856073700355">설정 열기</translation>
 <translation id="7173721738069475737">{count,plural, =1{북마크 저장됨}other{북마크 {count}개 저장됨}}</translation>
 <translation id="7176183551031110427">축소</translation>
-<translation id="7186568385131859684">Google 서비스 전반에서 방문 기록이 다른 데이터와 함께 사용되는 방식 제어하기</translation>
+<translation id="7186568385131859684">Google 서비스 전반에서 방문 기록이 다른 데이터와 함께 사용되는 방식을 제어합니다</translation>
 <translation id="719133302483559673">관심분야 및 환경설정을 관리합니다.</translation>
 <translation id="7191382490098297347">카메라 롤 이미지</translation>
 <translation id="7203150201908454328">펼쳐짐</translation>
@@ -2035,6 +2036,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="728025568708172005">둘러보기</translation>
 <translation id="7280980607183752256">이 파일은 가져올 수 없습니다.</translation>
 <translation id="7282197670900591579">시트론 테마</translation>
+<translation id="7283937415134849498">Gemini는 맞춤형 지원을 제공하기 위해 사용자의 데이터 일부(예: 채팅의 일부, 위치, 기타 관련 정보)를 지도, 항공편 검색과 같은 다른 Google 서비스와 공유합니다. 사용자가 나중에 Gemini 기록을 삭제하더라도 정보를 공유받은 서비스에서는 서비스 개선을 위해 이 정보를 사용할 수 있습니다. <ph name="BEGIN_LINK" />Gemini 앱 개인 정보 보호 허브<ph name="END_LINK" />에서 자세히 알아보세요.</translation>
 <translation id="7293429513719260019">언어 선택</translation>
 <translation id="72961285530871072">이렇게 하면 Level Up 진행 상황이 영구적으로 삭제되며, 더 이상 프로필을 위해 Level Up 기능 사용 데이터가 Google로 전송되지 않습니다.
 
@@ -2607,6 +2609,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="8976382372951310360">도움말</translation>
 <translation id="8976414606286374109">카드가 Google 계정에 저장됩니다.</translation>
 <translation id="8981454092730389528">Google 활동 제어</translation>
+<translation id="8987736167266086032">멈춘 부분에서 계속</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, 고정된 사이트</translation>
 <translation id="8989779557457435460">기본적으로 현재 탭 공유</translation>
 <translation id="8990960056509724223">조직의 정책으로 인해 파일을 저장할 수 없습니다.</translation>
@@ -2648,6 +2651,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="91023216973987714">결제 수단</translation>
 <translation id="9106655997975673326">출처: '<ph name="SOURCE_DEVICE" />'</translation>
 <translation id="9107664647686727385">유출된 비밀번호를 확인하세요</translation>
+<translation id="9115035712231910133">첨부된 이미지 {title}</translation>
 <translation id="9119764377203471454">첨부파일을 추가할 수 없습니다.</translation>
 <translation id="9124387962554796433">Google 검색 및 다른 Google 서비스를 맞춤설정하기 위하여 Google에서 사용자의 방문 기록을 이용할 수 있습니다</translation>
 <translation id="9124978074365039456">카메라와 사진 갤러리를 사용하여 지금 보고 있는 항목을 쇼핑하고, 번역하고, 무엇인지 알아보세요</translation>

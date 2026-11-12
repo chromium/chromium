@@ -823,6 +823,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2356941001189392209">Ograničena lista URL-ova stranica koje posećujete na kojima se dešavaju događaji sa zastarelom tehnologijom</translation>
 <translation id="2357312461142072202">{NUM_TABS,plural, =1{Deliće se 1 kartica}one{Deliće se {NUM_TABS} kartica}few{Deliće se {NUM_TABS} kartice}other{Deliće se {NUM_TABS} kartica}}</translation>
 <translation id="2357481397660644965">Uređajem upravlja <ph name="DEVICE_MANAGER" />, a nalogom <ph name="ACCOUNT_MANAGER" />.</translation>
+<translation id="2358479643736965923">Pogledajte odgovor Google AI pretrage na ovoj kartici</translation>
 <translation id="2359629602545592467">Više</translation>
 <translation id="2359808026110333948">Nastavi</translation>
 <translation id="236000571258713023">Vozila</translation>
@@ -1141,6 +1142,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2925032407415783182">Sačuvajte kartu za događaj u Novčaniku</translation>
 <translation id="2925454999967523701">Dugme Napravi dokument, aktivirajte ga da biste brzo napravili nov Google dokument</translation>
 <translation id="2925673989565098301">Način isporuke</translation>
+<translation id="2927328994673424423">pre 2 nedelje</translation>
 <translation id="2928426578619531300">Povezani korisnik</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> i još <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}one{<ph name="SHIPPING_ADDRESS_PREVIEW" /> i još <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}few{<ph name="SHIPPING_ADDRESS_PREVIEW" /> i još <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> i još <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="2930531075747147366">Kartica sa drugog uređaja</translation>

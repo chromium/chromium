@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">पासवर्ड पाहण्यासाठी, तुम्ही प्रथम तुमच्या डीव्हाइसवर पासकोड सेट करणे आवश्यक आहे.</translation>
 <translation id="201759455285471444">टॅब गटाचा विस्तार करा.</translation>
 <translation id="2022431790688770637">Gemini सूचना व्यवस्थापित करा</translation>
+<translation id="2023265063803387188">Gemini हे गुप्त मोडमध्ये उपलब्ध नाही</translation>
 <translation id="2031515492007104071">लेव्हल अप करा</translation>
 <translation id="2044394949148788042">टॅब ग्रिड उघडा</translation>
 <translation id="2044681667265133332"><ph name="USER_EMAIL" /> हे खाते <ph name="HOSTED_DOMAIN" /> द्वारे व्यवस्थापित केले आहे, ज्याला काही माहिती दिसू शकते. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
@@ -1213,6 +1214,7 @@
 <translation id="479628432297359449">डाउनलोड थांबवायचा आहे का?</translation>
 <translation id="4796496140132859135">टॅब गट. कोलॅप्स केला आहे.</translation>
 <translation id="4800912004582762296">क्लिक करत आहे</translation>
+<translation id="4800930308997591052">तुमच्या डिव्हाइसदरम्यान अखंडपणे टॅब शेअर करण्यासाठी आणि तुमच्या Google खाते मधून तुमचे पासवर्ड, बुकमार्क व आणखी बरेच काही मिळवण्यासाठी <ph name="EMAIL" /> वर स्विच करा.</translation>
 <translation id="4802185666270672526">डेस्कटॉप साइटची विनंती करा हे लपवा</translation>
 <translation id="4803185665210547709">तुमच्या संस्थेने व्यवस्थापित केलेले.
 <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
@@ -2149,6 +2151,7 @@
 <translation id="7618220760967055820">टूलबारमध्ये कोणते बटण दाखवावे हे निवडा</translation>
 <translation id="7620522820075868385">रद्द करा</translation>
 <translation id="762078666799342162">तुम्ही <ph name="BEGIN_LINK" />Files<ph name="END_LINK" /> मध्ये तुमचे मागील डाउनलोड पाहू शकता</translation>
+<translation id="7636034359405891151">तुमच्या कॉंप्युटरवर तुम्ही जिथे सोडले होते तिथून पुढे सुरू करा</translation>
 <translation id="7638584964844754484">अयोग्य सांकेतिक पासफ्रेझ</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Compromised passwords}=1{धोक्यात असलेला {COUNT} पासवर्ड}other{धोक्यात असलेले {COUNT} पासवर्ड}}</translation>
 <translation id="7640669552036055091">Android वरील टॅब</translation>
@@ -2609,6 +2612,7 @@
 <translation id="8976382372951310360">मदत</translation>
 <translation id="8976414606286374109">कार्ड तुमच्या Google खाते मध्ये सेव्ह केली जातात.</translation>
 <translation id="8981454092730389528">Google ॲक्टिव्हिटी नियंत्रणे</translation>
+<translation id="8987736167266086032">तुम्ही सोडले होते तिथून पुढे सुरू करा</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, पिन केलेली साइट</translation>
 <translation id="8989779557457435460">सद्य टॅब बाय डीफॉल्ट शेअर करा</translation>
 <translation id="8990960056509724223">तुमच्या संस्थेच्या धोरणांमुळे फाइल सेव्ह करता आली नाही</translation>
@@ -2650,6 +2654,7 @@
 <translation id="91023216973987714">पेमेंट पद्धती</translation>
 <translation id="9106655997975673326">"<ph name="SOURCE_DEVICE" />" कडील</translation>
 <translation id="9107664647686727385">धोक्यात असलेले पासवर्ड तपासा</translation>
+<translation id="9115035712231910133">{title} ही इमेज अटॅच केली आहे</translation>
 <translation id="9119764377203471454">अटॅचमेंट जोडता आल्या नाहीत</translation>
 <translation id="9124387962554796433">Search आणि इतर Google सेवा पर्सनलाइझ करण्यासाठी Google कदाचित तुमचा इतिहास वापरू शकते.</translation>
 <translation id="9124978074365039456">तुमचा कॅमेरा आणि फोटो गॅलरी वापरून तुम्ही पाहता त्या गोष्टी खरेदी करा, त्यांचे भाषांतर करा व ओळखा</translation>

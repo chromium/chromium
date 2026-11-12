@@ -35,7 +35,7 @@
 <translation id="1081948304372277788">Désactiver Level Up</translation>
 <translation id="1082554859195167538">Avis sur les produits pour vous</translation>
 <translation id="1084365883616172403">Post Facebook publié.</translation>
-<translation id="108485301461714610">Mode IA de la recherche Google et applis connectées</translation>
+<translation id="108485301461714610">Mode IA de la Recherche Google et applis connectées</translation>
 <translation id="1085677983426914530">Impossible d'ouvrir <ph name="FILENAME" /></translation>
 <translation id="1086486568852410168">Rechercher avec Google Lens</translation>
 <translation id="1095093219235104018">Rechercher et remplir avec Gemini</translation>
@@ -812,7 +812,7 @@
 <translation id="3519792890877853853">Cette fiche affiche les avis sur les produits dans vos onglets ouverts</translation>
 <translation id="3519905498307021260">{count,plural, =1{Ouvrir l'onglet}one{Ouvrir {count} onglet}other{Ouvrir {count} onglets}}</translation>
 <translation id="3523513363815970085">Masquer "Vos sites les plus visités"</translation>
-<translation id="3523789730715594198">Vous pouvez arrêter la synchronisation à tout moment dans les paramètres. Google peut personnaliser la recherche et d'autres services en fonction de votre historique.</translation>
+<translation id="3523789730715594198">Vous pouvez arrêter la synchronisation à tout moment dans les paramètres. Google peut personnaliser la Recherche et d'autres services en fonction de votre historique.</translation>
 <translation id="3527085408025491307">Dossier</translation>
 <translation id="3529024052484145543">Non sécurisé</translation>
 <translation id="3530024057633834563">Vous n'avez pas enregistré de mot de passe ni de clé d'accès, mais vous pouvez supprimer la liste des sites et applis pour lesquels vous avez choisi de ne jamais enregistrer d'informations de connexion. Les comptes que vous avez créés pour des sites et des applis ne seront pas supprimés.</translation>
@@ -1556,7 +1556,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="5831217499016131155">Google Wallet</translation>
 <translation id="583281660410589416">Inconnu</translation>
 <translation id="5838430324585198889">Profitez de plus de fonctionnalités sur votre iPad avec les applis Google</translation>
-<translation id="583923961930319521">Utiliser des mots de passe sur tous vos appareils</translation>
+<translation id="583923961930319521">Utiliser les mots de passe sur tous vos appareils</translation>
 <translation id="5841763734702350465">Prompt 3 sur 3 : Ajoute ceci à mon agenda</translation>
 <translation id="5843013299019689749">Couleur d'arrière-plan noire</translation>
 <translation id="5844284118433003733">Lorsque vous êtes connecté, ces données sont associées à votre compte Google afin de vous protéger dans tous les services Google, par exemple pour renforcer la protection dans Gmail après un incident de sécurité.</translation>
@@ -1869,7 +1869,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="672735642903863329">Accédez à vos favoris, à vos mots de passe et plus encore sur tous vos appareils.</translation>
 <translation id="6729493062119577923">Activité du groupe d'onglets partagé</translation>
 <translation id="6732087373923685049">la caméra</translation>
-<translation id="6746338529702829275">Examinez les données de votre compte</translation>
+<translation id="6746338529702829275">Examiner les données de votre compte</translation>
 <translation id="6749473226660745022">Photos</translation>
 <translation id="6750456911389438250">{count,plural, =1{{count} élément d'historique importé}one{{count} élément d'historique importé}other{{count} éléments d'historique importés}}</translation>
 <translation id="6751817018972413719">{count,plural, =1{{count} option d'identifiant disponible au-dessus de votre clavier.}one{{count} option d'identifiant disponible au-dessus de votre clavier.}other{{count} options d'identifiant disponibles au-dessus de votre clavier.}}</translation>
@@ -2035,6 +2035,7 @@ Pour continuer depuis votre ordinateur, connectez-vous à <ph name="OTHER_EMAIL"
 <translation id="728025568708172005">Découvrir</translation>
 <translation id="7280980607183752256">Impossible d'importer ce fichier</translation>
 <translation id="7282197670900591579">Thème citron</translation>
+<translation id="7283937415134849498">Pour vous fournir une aide personnalisée, Gemini partage certaines de vos données (comme des extraits de vos discussions, votre position et d'autres informations utiles) avec d'autres services Google, comme Maps et Vols. Ces services peuvent utiliser ces informations pour s'améliorer, même si vous supprimez votre historique Gemini par la suite. Pour en savoir plus, consultez le <ph name="BEGIN_LINK" />Guide sur la confidentialité dans les applications Gemini<ph name="END_LINK" />.</translation>
 <translation id="7293429513719260019">Sélectionner une langue</translation>
 <translation id="72961285530871072">Votre progression dans Level Up sera définitivement supprimée, et les données d'utilisation des fonctionnalités Level Up ne seront plus envoyées à Google pour votre profil.
 
@@ -2175,7 +2176,7 @@ Vous pouvez recommencer à tout moment.</translation>
 <translation id="7710096647785049958">Gagnez du temps sur chaque lien</translation>
 <translation id="7711440461521638739">Tous vos mots de passe sont uniques</translation>
 <translation id="7712361583414030698">Afficher la version hors connexion</translation>
-<translation id="7719038820139380048">Connectez-vous pour obtenir des contenus conformes à vos centres d'intérêt.</translation>
+<translation id="7719038820139380048">Connectez-vous pour recevoir des contenus basés sur vos centres d'intérêt.</translation>
 <translation id="7720901330179380635">Recherche avec <ph name="SEARCH_ENGINE" /></translation>
 <translation id="7724085059277147439">{count,plural, =1{Élément enregistré dans votre compte Google, {email}}one{Élément enregistré dans votre compte Google, {email}}other{Éléments enregistrés dans votre compte Google, {email}}}</translation>
 <translation id="7729458878441927652">Pour voir les onglets de vos autres appareils, synchronisez vos onglets et l'historique.</translation>
@@ -2398,7 +2399,7 @@ Vous pouvez recommencer à tout moment.</translation>
 <translation id="8366466717204352506">Aucune vérification jusqu'à présent</translation>
 <translation id="8367705492654390392">Posez une question</translation>
 <translation id="8368001212524806591">Suivre les prix</translation>
-<translation id="8368198938968349418">Activer la saisie automatique</translation>
+<translation id="8368198938968349418">Activer le remplissage automatique</translation>
 <translation id="8370406443343902172">Accéder aux paramètres</translation>
 <translation id="8370929854657845191">Développer en hauteur moyenne</translation>
 <translation id="8371494817541821097">Clé d'accès créée le <ph name="DATE" /></translation>
@@ -2607,6 +2608,7 @@ Vous pouvez recommencer à tout moment.</translation>
 <translation id="8976382372951310360">Aide</translation>
 <translation id="8976414606286374109">Les cartes sont enregistrées dans votre compte Google.</translation>
 <translation id="8981454092730389528">Commandes relatives à l'activité Google</translation>
+<translation id="8987736167266086032">Reprenez là où vous en étiez</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, site épinglé</translation>
 <translation id="8989779557457435460">Partager l'onglet actuel par défaut</translation>
 <translation id="8990960056509724223">Impossible d'enregistrer le fichier à cause des règles de votre organisation</translation>
@@ -2648,6 +2650,7 @@ Vous pouvez recommencer à tout moment.</translation>
 <translation id="91023216973987714">Modes de paiement</translation>
 <translation id="9106655997975673326">Provenant de <ph name="SOURCE_DEVICE" /></translation>
 <translation id="9107664647686727385">Pour vérifier la présence de mots de passe compromis</translation>
+<translation id="9115035712231910133">Image jointe {title}</translation>
 <translation id="9119764377203471454">Impossible d'ajouter les pièces jointes</translation>
 <translation id="9124387962554796433">Google pourra utiliser votre historique pour personnaliser la recherche et d'autres de ses services.</translation>
 <translation id="9124978074365039456">Achetez, traduisez et identifiez ce que vous voyez à l'aide de votre appareil photo et de votre galerie photo</translation>

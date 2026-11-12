@@ -256,6 +256,7 @@
 <translation id="3561853857681580870">若要共享屏幕，请在“系统设置”中为 Chromium 启用屏幕录制功能。</translation>
 <translation id="3597003331831379823">未能以提升的权限运行设置。<ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">登录 Chromium</translation>
+<translation id="36205707939705218"><ph name="USER_NAME" />，<ph name="EMAIL" />。会员。</translation>
 <translation id="3639635944603682591">系统将会从此设备上删除该用户的浏览数据。要想恢复这些数据，请以“<ph name="USER_EMAIL" />”的身份登录 Chromium。</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{Chromium 有一项新的可用更新；一旦您重新启动，系统即会应用这项更新。}=1{Chromium 有一项新的可用更新；一旦您重新启动，系统即会应用这项更新。您的无痕式窗口不会重新打开。}other{Chromium 有一项新的可用更新；一旦您重新启动，系统即会应用这项更新。您的 # 个无痕式窗口不会重新打开。}}</translation>
 <translation id="3667616615096815454">无法安装，服务器无法识别该应用。</translation>
@@ -484,6 +485,7 @@
 <translation id="6096348254544841612">有可用的更新。欢迎自定义和控制 Chromium。</translation>
 <translation id="6107893135096467929">已开启 • Chromium 无法验证此扩展程序的来源</translation>
 <translation id="611228897408671387">设置 Chromium 账号</translation>
+<translation id="6114975763361458436">关闭侧边栏中的搜索功能</translation>
 <translation id="6119438414301547735">允许扩展程序在 Chromium 工具栏中显示访问请求</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> 存在危险，因此 Chromium 已将其拦截。</translation>
 <translation id="6132897690380286411">Chromium 即将关闭并删除数据</translation>
@@ -496,6 +498,7 @@
 <translation id="6182736845697986886">更新服务器出现内部错误，因此安装失败。</translation>
 <translation id="6183079672144801177">请确保您已在“<ph name="TARGET_DEVICE_NAME" />”上登录 Chromium，然后再次尝试发送。</translation>
 <translation id="6192070012454216182">随时随地搜索和提问，即使 Chromium 已最小化也无妨。允许 Chromium 在后台运行。</translation>
+<translation id="6210269448287455102">重新打开侧边栏中的搜索功能</translation>
 <translation id="6212496753309875659">此计算机已安装了更高版本的 Chromium。如果软件无法正常运行，请卸载 Chromium 并重试。</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium 将立即重新启动}=1{Chromium 将在 1 秒后重新启动}other{Chromium 将在 # 秒后重新启动}}</translation>
 <translation id="6232046770428574552">Chromium 将在屏幕闲置时更新</translation>
@@ -569,6 +572,7 @@
 <translation id="67706546131546258">Chromium 建议您扫描此文件，因为它可能包含危险因素。</translation>
 <translation id="6779406956731413166">Chromium 操作系统是借助了其他<ph name="BEGIN_LINK_CROS_OSS" />开源软件<ph name="END_LINK_CROS_OSS" />才得以问世。</translation>
 <translation id="6804256634866838775">关闭当前搜索</translation>
+<translation id="6818170431027022139"><ph name="USER_NAME_OR_EMAIL" />。会员。</translation>
 <translation id="6831043979455480757">翻译</translation>
 <translation id="6847869444787758381">Chromium 会让您知道您的密码是否曾被泄露</translation>
 <translation id="684888714667046800">无法连接到互联网。如果使用防火墙，请确保 <ph name="PRODUCT_EXE_NAME" /> 在许可名单中。</translation>
@@ -593,6 +597,7 @@
             • 重置 Chromium 快捷方式
             <ph name="LINE_BREAKS" />
             书签、历史记录和已保存的密码不会受到影响。</translation>
+<translation id="6930607614725241390">在侧边栏中搜索</translation>
 <translation id="6948031725951063910">您已达到 Chromium 的书签数量上限（<ph name="BOOKMARK_LIMIT" /> 个），因此部分书签尚未保存到您的 Google 账号中。
 
 请先删除一些书签，否则新书签将无法保存到账号中。如果现在退出账号，系统将删除未保存的书签。</translation>

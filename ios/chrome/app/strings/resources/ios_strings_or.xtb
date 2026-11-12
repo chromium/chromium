@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">ପାସ୍‍ୱାର୍ଡଗୁଡ଼ିକୁ ଦେଖିବା ପାଇଁ ଆପଣଙ୍କୁ ପ୍ରଥମରୁ ଆପଣଙ୍କ ଡିଭାଇସ୍‌ରେ ନିଶ୍ଚିତ ରୂପେ ଗୋଟିଏ ପାସକୋଡ୍ ସେଟ୍ କରିବାକୁ ହେବ।</translation>
 <translation id="201759455285471444">ଟାବ ଗ୍ରୁପକୁ ବିସ୍ତାର କରନ୍ତୁ।</translation>
 <translation id="2022431790688770637">Gemini ପରାମର୍ଶଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
+<translation id="2023265063803387188">ଇନକଗ୍ନିଟୋ ମୋଡରେ Gemini ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="2031515492007104071">Level Up</translation>
 <translation id="2044394949148788042">ଟାବ ଗ୍ରିଡ ଖୋଲନ୍ତୁ</translation>
 <translation id="2044681667265133332"><ph name="USER_EMAIL" /> ଆକାଉଣ୍ଟ <ph name="HOSTED_DOMAIN" /> ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି, ଯାହା କିଛି ସୂଚନା ଭ୍ୟୁ କରିବାକୁ ସକ୍ଷମ ହୋଇପାରେ। <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
@@ -2035,6 +2036,7 @@ Handoff, ନିଶ୍ଚିତ ରୂପେ ସେଟିଂସ୍‍ର ସା�
 <translation id="728025568708172005">ମୋତେ ଅଧିକ ଦେଖାନ୍ତୁ</translation>
 <translation id="7280980607183752256">ଏହି ଫାଇଲକୁ ଇମ୍ପୋର୍ଟ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="7282197670900591579">ସାଇଟ୍ରନ ଥିମ</translation>
+<translation id="7283937415134849498">ଉପଯୋଗୀ ସହାୟତା ପ୍ରଦାନ କରିବା ପାଇଁ Gemini ଆପଣଙ୍କର କିଛି ଡାଟା (ଯେପରି ଆପଣଙ୍କ ଚାଟର କିଛି ଅଂଶ, ଲୋକେସନ ଏବଂ ଅନ୍ୟ ପ୍ରାସଙ୍ଗିକ ସୂଚନା)କୁ Maps ଏବଂ Flights ପରି ଅନ୍ୟ Google ସର୍ଭିସେସ ସହ ସେୟାର କରେ। ଆପଣ ପରେ ଆପଣଙ୍କ Gemini ଇତିହାସକୁ ଡିଲିଟ କଲେ ମଧ୍ୟ ଏହି ସର୍ଭିସେସ ସେଗୁଡ଼ିକର ଉନ୍ନତି ପାଇଁ ସେହି ସୂଚନାକୁ ବ୍ୟବହାର କରିପାରେ। <ph name="BEGIN_LINK" />Gemini ଆପ୍ସ ଗୋପନୀୟତା ହବ<ph name="END_LINK" />ରେ ଅଧିକ ଜାଣନ୍ତୁ।</translation>
 <translation id="7293429513719260019">ଭାଷା ଚୟନ କରନ୍ତୁ</translation>
 <translation id="72961285530871072">ଏହା ଆପଣଙ୍କର ଲେଭେଲ ଅପ ପ୍ରୋଗ୍ରେସକୁ ସ୍ଥାୟୀ ଭାବରେ ଡିଲିଟ କରିଦେବ ଏବଂ ଲେଭେଲ ଅପ ପାଇଁ ଫିଚର ବ୍ୟବହାର ଡାଟା ଆଉ ଆପଣଙ୍କ ପ୍ରୋଫାଇଲ ପାଇଁ Googleକୁ ପଠାଯିବ ନାହିଁ।
 
@@ -2607,6 +2609,7 @@ Handoff, ନିଶ୍ଚିତ ରୂପେ ସେଟିଂସ୍‍ର ସା�
 <translation id="8976382372951310360">ସହାୟତା</translation>
 <translation id="8976414606286374109">କାର୍ଡଗୁଡ଼ିକ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ସେଭ୍ ହୋଇଥାଏ।</translation>
 <translation id="8981454092730389528">Google ଗତିବିଧି ନିୟନ୍ତ୍ରଣ</translation>
+<translation id="8987736167266086032">ଆପଣ ଯେଉଁଠି ଛାଡ଼ିଥିଲେ ସେଠାରୁ ଆରମ୍ଭ କର</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, ପିନ କରାଯାଇଥିବା ସାଇଟ</translation>
 <translation id="8989779557457435460">ଡିଫଲ୍ଟ ଭାବେ ବର୍ତ୍ତମାନର ଟାବ ସେୟାର କରନ୍ତୁ</translation>
 <translation id="8990960056509724223">ଆପଣଙ୍କ ସଂସ୍ଥାର ନୀତି ଯୋଗୁଁ ଫାଇଲ ସେଭ ହୋଇପାରିଲା ନାହିଁ</translation>
@@ -2648,6 +2651,7 @@ Handoff, ନିଶ୍ଚିତ ରୂପେ ସେଟିଂସ୍‍ର ସା�
 <translation id="91023216973987714">ପେମେଣ୍ଟ ପଦ୍ଧତି</translation>
 <translation id="9106655997975673326">"<ph name="SOURCE_DEVICE" />" ତରଫରୁ</translation>
 <translation id="9107664647686727385">ଚୋରି ହୋଇଯାଇଥିବା ପାସୱାର୍ଡଗୁଡ଼ିକ ପାଇଁ ଯାଞ୍ଚ କରନ୍ତୁ</translation>
+<translation id="9115035712231910133">ଆଟାଚ କରାଯାଇଥିବା ଇମେଜ {title}</translation>
 <translation id="9119764377203471454">ଆଟାଚମେଣ୍ଟଗୁଡ଼ିକୁ ଯୋଗ କରିବାରେ ଅସମର୍ଥ</translation>
 <translation id="9124387962554796433">Search ଏବଂ ଅନ୍ୟ Google ସେବାଗୁଡ଼ିକୁ ପର୍ସନାଲାଇଜ କରିବା ପାଇଁ Google ଆପଣଙ୍କ ଇତିହାସ ବ୍ୟବହାର କରିପାରେ।</translation>
 <translation id="9124978074365039456">ଆପଣଙ୍କ କେମେରା ଓ ଫଟୋ ଗେଲେରୀ ବ୍ୟବହାର କରି ଆପଣ ଯାହା ଦେଖନ୍ତି ତାହାକୁ କ୍ରୟ, ଅନୁବାଦ ଏବଂ ଚିହ୍ନଟ କରନ୍ତୁ</translation>

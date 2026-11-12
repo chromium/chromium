@@ -823,6 +823,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2356941001189392209">Omejen seznam URL-jev strani, ki jih obiščete, na katerih prihaja do starejših tehnoloških dogodkov</translation>
 <translation id="2357312461142072202">{NUM_TABS,plural, =1{Deljen bo 1 zavihek}one{Deljen bo {NUM_TABS} zavihek}two{Deljena bosta {NUM_TABS} zavihka}few{Deljeni bodo {NUM_TABS} zavihki}other{Deljenih bo {NUM_TABS} zavihkov}}</translation>
 <translation id="2357481397660644965">Vašo napravo upravlja domena <ph name="DEVICE_MANAGER" /> in vaš račun upravlja domena <ph name="ACCOUNT_MANAGER" />.</translation>
+<translation id="2358479643736965923">Oglejte si odgovor Googlovega iskanja z umetno inteligenco na tem zavihku</translation>
 <translation id="2359629602545592467">Več valut</translation>
 <translation id="2359808026110333948">Naprej</translation>
 <translation id="236000571258713023">Vozila</translation>
@@ -1141,6 +1142,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2925032407415783182">Shranjevanje vstopnice za dogodek v Denarnico</translation>
 <translation id="2925454999967523701">Gumb za ustvarjanje dokumenta, aktivirajte, če želite hitro ustvariti nov Google Dokument</translation>
 <translation id="2925673989565098301">Način dostave</translation>
+<translation id="2927328994673424423">Pred 2 tednoma</translation>
 <translation id="2928426578619531300">Povezano z uporabnikom</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> in še <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}one{<ph name="SHIPPING_ADDRESS_PREVIEW" /> in še <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}two{<ph name="SHIPPING_ADDRESS_PREVIEW" /> in še <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}few{<ph name="SHIPPING_ADDRESS_PREVIEW" /> in še <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> in še <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="2930531075747147366">Zavihek iz druge naprave</translation>
@@ -1275,7 +1277,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3141337053413339205">Preklop na ta zavihek.</translation>
 <translation id="3144458715650412431">Uporabljeni so bili preizkusni pravilniki. Preglejte in ponastavite jih na chrome://policy/test. Pravilniki skrbnika ne bodo uporabljeni.</translation>
 <translation id="3145945101586104090">Dekodiranje odziva ni uspelo</translation>
-<translation id="3149865382039202168">Shranite podatke v storitvi <ph name="GOOGLE_WALLET_TITLE" /> in hitreje opravite delo, na primer izpolnite obrazce v Googlovih izdelkih. <ph name="HOW_INFO_IS_USED_LINK" />, lahko nadzirate v nastavitvah zasebnih kartic za račun <ph name="ACCOUNT" />. <ph name="PRIVACY_POLICY_LINK" /></translation>
+<translation id="3149865382039202168">Shranite podatke v storitvi <ph name="GOOGLE_WALLET_TITLE" /> in hitreje opravite delo, na primer izpolnite obrazce v Googlovih izdelkih. V nastavitvah zasebnih kartic za račun <ph name="ACCOUNT" /> lahko nadzirate, <ph name="HOW_INFO_IS_USED_LINK" />. <ph name="PRIVACY_POLICY_LINK" /></translation>
 <translation id="3150653042067488994">Začasna napaka strežnika</translation>
 <translation id="3150889484970506196">Gumb za ustvarjanje preglednice, aktivirajte, če želite hitro ustvariti novo Google Preglednico</translation>
 <translation id="3154506275960390542">Na tej strani je tudi obrazec, ki morda ne bo poslan varno. Podatke, ki jih pošljete, si lahko med prenosom ogledujejo drugi, ali pa jih lahko spremeni morebitni napadalec, tako da strežnik prejme spremenjene podatke.</translation>
@@ -3210,7 +3212,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6322182122604171028">Funkcije Windows Hello ni bilo mogoče uporabiti</translation>
 <translation id="6326175484149238433">Odstrani iz Chroma</translation>
 <translation id="6326947323444967009">Nastavite Chrome kot privzeti brskalnik sistema v nastavitvah sistema iOS</translation>
-<translation id="6327434859517217259">Kako se ti podatki uporabljajo v Googlu</translation>
+<translation id="6327434859517217259">kako se ti podatki uporabljajo v Googlu</translation>
 <translation id="6328639280570009161">Poskusite onemogočiti omrežno predvidevanje</translation>
 <translation id="6329742260390895689">Če želite samodejno izpolniti podatke, v nastavitvah Denarnice vklopite »Uporaba kartic v Googlu«</translation>
 <translation id="6329815962353376655">&lt;Vnesite vprašanje&gt;</translation>

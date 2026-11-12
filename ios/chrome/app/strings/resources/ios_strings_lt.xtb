@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">Jei norite matyti slaptažodžius, pirmiausia turite nustatyti įrenginio slaptažodį.</translation>
 <translation id="201759455285471444">Išskleisti skirtukų grupę.</translation>
 <translation id="2022431790688770637">Tvarkyti „Gemini“ pasiūlymus</translation>
+<translation id="2023265063803387188">„Gemini“ nepasiekiama inkognito režimu</translation>
 <translation id="2031515492007104071">Naujas lygis</translation>
 <translation id="2044394949148788042">Atidarykite skirtuko tinklelį</translation>
 <translation id="2044681667265133332">Paskyrą <ph name="USER_EMAIL" /> tvarko svetainė <ph name="HOSTED_DOMAIN" />, kuri gali peržiūrėti tam tikrą informaciją. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
@@ -2035,6 +2036,7 @@ Jei norite tęsti kompiuteryje, perjunkite į <ph name="OTHER_EMAIL" />. Gausite
 <translation id="728025568708172005">Pradėti turą</translation>
 <translation id="7280980607183752256">Nepavyko importuoti šio failo</translation>
 <translation id="7282197670900591579">Citrinų spalvos tema</translation>
+<translation id="7283937415134849498">Kad galėtų teikti pritaikytą pagalbą, „Gemini“ bendrina kai kuriuos jūsų duomenis (pvz., pokalbių dalis, vietovės ir kitą susijusią informaciją) su kitomis „Google“ paslaugomis, pvz., Žemėlapiais ir Skrydžiais. Šios paslaugos gali naudoti šią informaciją tobulinimo tikslais, net jei vėliau ištrinsite „Gemini“ istoriją. Sužinokite daugiau <ph name="BEGIN_LINK" />„Gemini Apps“ privatumo pagalbos centre<ph name="END_LINK" />.</translation>
 <translation id="7293429513719260019">Pasirinkti kalbą</translation>
 <translation id="72961285530871072">Atlikus šį veiksmą bus visam laikui ištrintas jūsų „Level Up“ progresas ir „Level Up“ funkcijų naudojimo duomenys nebebus siunčiami į „Google“ jūsų profilį.
 
@@ -2607,6 +2609,7 @@ Galite bet kada paleisti iš naujo.</translation>
 <translation id="8976382372951310360">Pagalba</translation>
 <translation id="8976414606286374109">Kortelės išsaugomos „Google“ paskyroje.</translation>
 <translation id="8981454092730389528">„Google“ veiklos valdikliai</translation>
+<translation id="8987736167266086032">Pradėkite ten, kur baigėte</translation>
 <translation id="8988107725234939347">„<ph name="WEBSITE_TITLE" />“, prisegta svetainė</translation>
 <translation id="8989779557457435460">Pagal numatytuosius nustatymus bendrinti dabartinį skirtuką</translation>
 <translation id="8990960056509724223">Failo nepavyko išsaugoti dėl organizacijos politikos</translation>
@@ -2648,6 +2651,7 @@ Galite bet kada paleisti iš naujo.</translation>
 <translation id="91023216973987714">Mokėjimo metodai</translation>
 <translation id="9106655997975673326">Iš „<ph name="SOURCE_DEVICE" />“</translation>
 <translation id="9107664647686727385">Patikrinkite, ar nėra pažeistų slaptažodžių</translation>
+<translation id="9115035712231910133">Pridėtas vaizdas „{title}“</translation>
 <translation id="9119764377203471454">Nepavyko pridėti priedų</translation>
 <translation id="9124387962554796433">Naudodama naršymo istoriją „Google“ gali suasmeninti Paiešką ir kitas „Google“ paslaugas.</translation>
 <translation id="9124978074365039456">Pirkite, verskite ir nustatykite, ką matote, naudodami fotoaparatą ir nuotraukų galeriją</translation>

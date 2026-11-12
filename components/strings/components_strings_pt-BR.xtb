@@ -823,6 +823,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2356941001189392209">Uma lista limitada de URLs de páginas acessadas em que eventos de tecnologia legados estão ocorrendo</translation>
 <translation id="2357312461142072202">{NUM_TABS,plural, =1{Vai compartilhar 1 guia}one{Vai compartilhar {NUM_TABS} guia}other{Vai compartilhar {NUM_TABS} guias}}</translation>
 <translation id="2357481397660644965">Seu dispositivo é gerenciado por <ph name="DEVICE_MANAGER" />, e sua conta é gerenciada por <ph name="ACCOUNT_MANAGER" />.</translation>
+<translation id="2358479643736965923">Veja a resposta da Pesquisa com IA do Google nesta guia</translation>
 <translation id="2359629602545592467">Várias</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="236000571258713023">Veículos</translation>
@@ -1141,6 +1142,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2925032407415783182">Salvar ingresso do evento na Carteira</translation>
 <translation id="2925454999967523701">Botão "Criar documento". Ative para criar rapidamente um novo arquivo do Google Docs</translation>
 <translation id="2925673989565098301">Método de envio</translation>
+<translation id="2927328994673424423">Há 2 semanas</translation>
 <translation id="2928426578619531300">Afiliado do usuário</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}one{<ph name="SHIPPING_ADDRESS_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="2930531075747147366">Guia no seu outro dispositivo</translation>

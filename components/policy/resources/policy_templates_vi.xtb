@@ -3739,6 +3739,13 @@ Nếu bạn tắt <ph name="NTPCARDSVISIBLE" />, Thẻ Outlook sẽ không hiể
 <translation id="3284094172359247914">Kiểm soát việc sử dụng API WebUSB</translation>
 <translation id="3285231260918855067">Độ mờ viền của văn bản hình mờ, từ 0 (trong suốt) đến 100 (mờ).</translation>
 <translation id="3286159327013237833">Bật tính năng tự động nhấp trên màn hình đăng nhập</translation>
+<translation id="3286515980166695377">Chính sách này không được dùng nữa trong M153 và không có hiệu lực kể từ M159. Giờ đây, chữ ký đặc biệt cho ứng dụng gốc được tạo khi cài đặt Ứng dụng web tiến bộ (PWA) được bật vĩnh viễn trên <ph name="MAC_OS_NAME" />. Điều này đảm bảo rằng mỗi ứng dụng được cài đặt đều có danh tính riêng biệt đối với các thành phần hệ thống <ph name="MAC_OS_NAME" />.
+
+Nếu bạn đặt chính sách này thành Bật hoặc không đặt chính sách này, người dùng có thể sử dụng chữ ký đặc biệt cho ứng dụng gốc được tạo khi cài đặt Ứng dụng web tiến bộ (PWA). Điều này đảm bảo rằng mỗi ứng dụng được cài đặt đều có danh tính riêng biệt đối với các thành phần hệ thống <ph name="MAC_OS_NAME" />.
+
+Nếu bạn đặt chính sách này thành Tắt, mọi ứng dụng gốc được tạo khi cài đặt Ứng dụng web tiến bộ sẽ có cùng một danh tính. Điều này có thể ảnh hưởng đến chức năng của <ph name="MAC_OS_NAME" />.
+
+Bạn chỉ nên tắt chính sách này nếu đang sử dụng giải pháp bảo mật điểm cuối có tác dụng chặn các ứng dụng có chữ ký đặc biệt.</translation>
 <translation id="3288595667065905535">Kênh phát hành</translation>
 <translation id="3294430356898755483">Nếu bạn đặt chính sách này, quản trị viên có thể thiết lập một danh sách máy in cho người dùng của họ. Máy in sẽ được chọn ngay trong lần đầu tiên người dùng cố gắng in.
 
@@ -5632,6 +5639,11 @@ Bạn phải tự chịu rủi ro khi đặt giá trị cao hơn giá trị mặ
 
 Xin lưu ý rằng các giới hạn được áp dụng chịu ảnh hưởng bởi <ph name="ALLOW_SOCKET_POOL_SIZE_RANDOMIZATION_FOR_PROXIES_POLICY_NAME" />.</translation>
 <translation id="4528981768990874684">Tắt tính năng <ph name="IP_PROTECTION_NAME" />.</translation>
+<translation id="4529292353296224032">Nếu bạn đặt chính sách này thành Bật thì người dùng sẽ không thể dùng phím tắt hoặc API tiện ích để chụp ảnh màn hình. Nếu bạn đặt chính sách này thành Tắt hoặc không đặt thì người dùng có thể chụp ảnh màn hình.
+
+Trong các phiên bản <ph name="PRODUCT_NAME" /> từ 155 đến 158, việc bật chính sách này cũng có thể ngăn các tiện ích đính kèm trình gỡ lỗi thông qua "chrome.debugger.attach()", chẳng hạn như khi chính sách <ph name="CHROME_VARIATIONS_POLICY_NAME" /> tắt tất cả các biến thể.
+
+Xin lưu ý rằng chính sách này không ngăn người dùng chụp ảnh màn hình bằng hệ điều hành hoặc các ứng dụng của bên thứ ba trên <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> và <ph name="LINUX_OS_NAME" />.</translation>
 <translation id="453031441196755904">Chính sách này không còn dùng nữa.</translation>
 <translation id="4531088355818260318">Chính sách này cho phép xác định danh sách các quy tắc để chèn các tiêu đề HTTP tuỳ chỉnh vào những yêu cầu web khớp với các mẫu URL cụ thể. Các tiêu đề được thiết lập theo chính sách này sẽ được ưu tiên hơn những tiêu đề vốn có trong yêu cầu, cũng như những thay đổi mà người dùng hoặc tiện ích cố gắng thực hiện.
 
@@ -5803,6 +5815,21 @@ Chính sách này không có hiệu lực nếu bạn tắt hoặc không đặt
       Nếu bạn tắt chính sách này, người dùng sẽ không sử dụng được kỹ thuật chặn bắt gói tin qua mạng trên thiết bị.</translation>
 <translation id="4599810650416623373">Chặn tính năng tối ưu hoá JavaScript trên các trang web này</translation>
 <translation id="4600786265870346112">Bật con trỏ lớn</translation>
+<translation id="460264931744856609">Nếu bạn đặt chính sách này, hệ thống sẽ kiểm soát các chế độ cài đặt quản lý tiện ích cho <ph name="PRODUCT_NAME" />, bao gồm cả những chế độ cài đặt chịu sự kiểm soát của các chính sách hiện có liên quan đến tiện ích.
+
+Chính sách này chỉ ánh xạ một mã tiện ích hoặc một URL cập nhật với chế độ cài đặt cụ thể tương ứng. Bạn có thể đặt cấu hình mặc định cho mã đặc biệt <ph name="DEFAULT_SCOPE" />. Cấu hình này sẽ áp dụng cho tất cả tiện ích chưa đặt cấu hình tuỳ chỉnh trong chính sách này.
+
+Chính sách này có thể ghi đè cấu hình theo từng tiện ích từ các chính sách cũ.
+
+Lưu ý: Mọi chế độ cài đặt tiện ích theo mã nhận dạng từ <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />, <ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />, <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" /> hoặc <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> sẽ chỉ kế thừa "installation_mode" và "update_url" từ các giá trị mặc định của <ph name="DEFAULT_SCOPE" />. Chế độ cài đặt sẽ không kế thừa bất kỳ thuộc tính nào khác. Với URL cập nhật, cấu hình sẽ áp dụng cho những tiện ích có URL cập nhật chính xác được nêu trong tệp kê khai của tiện ích đó (http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy). Nếu bạn đặt cờ "override_update_url" thành true (đúng), thì tiện ích đó sẽ được cài đặt và cập nhật bằng URL "cập nhật" được chỉ định trong chính sách <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> hoặc trong trường "update_url" của chính sách này. Cờ "override_update_url" sẽ bị bỏ qua nếu "update_url" là một URL của Cửa hàng Chrome trực tuyến.
+
+Trong các phiên bản <ph name="PRODUCT_NAME" /> từ 155 đến 158, việc áp dụng "runtime_blocked_hosts" cho một tiện ích có quyền "debugger" có thể tắt hoàn toàn "chrome.debugger.attach()" trên tất cả các mục tiêu, chẳng hạn như khi chính sách <ph name="CHROME_VARIATIONS_POLICY_NAME" /> tắt tất cả các biến thể.
+
+Trên các phiên bản <ph name="MS_WIN_NAME" />, bạn chỉ có thể buộc cài đặt các ứng dụng và tiện ích từ bên ngoài Cửa hàng Chrome trực tuyến nếu phiên bản đó đã liên kết với một miền <ph name="MS_AD_NAME" />, <ph name="MS_AAD_NAME" /> hoặc đã đăng ký <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Trên các phiên bản <ph name="MAC_OS_NAME" />, bạn chỉ có thể buộc cài đặt các ứng dụng và tiện ích từ bên ngoài Cửa hàng Chrome trực tuyến nếu phiên bản đó được quản lý qua MDM, đã liên kết với một miền qua MCX hoặc đã đăng ký <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Lưu ý: Chính sách này chỉ áp dụng cho những nền tảng hỗ trợ tiện ích.</translation>
 <translation id="4602988345256038309">Cho phép các kết nối hỗ trợ từ xa đến máy này</translation>
 <translation id="4605677392792989397">Việc đặt chính sách này sẽ đặt danh sách các URL đăng nhập của doanh nghiệp (chỉ giao thức HTTP và HTTPS). Dịch vụ bảo vệ mật khẩu sẽ ghi lại hàm băm được thêm dữ liệu ngẫu nhiên của mật khẩu trên các URL này và dùng cho mục đích phát hiện mật khẩu trùng lặp. Để <ph name="PRODUCT_NAME" /> ghi lại chính xác hàm băm được thêm dữ liệu ngẫu nhiên vào mật khẩu, hãy đảm bảo các trang đăng nhập của bạn tuân thủ những nguyên tắc này (https://www.chromium.org/developers/design-documents/create-amazing-password-forms).
 
@@ -12026,6 +12053,12 @@ Chứng chỉ cần được mã hoá base64.</translation>
 
 Nếu bạn đặt chính sách này, tính năng báo cáo dữ liệu đo từ xa của trang web đối với các URL có trong danh sách cho phép sẽ được kiểm soát. Còn nếu bạn không đặt chính sách này, dữ liệu đo từ xa của trang web sẽ không được báo cáo.
 Để biết thông tin chi tiết về các mẫu URL hợp lệ, vui lòng truy cập vào https://chromeenterprise.google/policies/url-patterns/. Chính sách này chỉ cho phép các giao thức URL thuộc loại HTTP và HTTPS.</translation>
+<translation id="8392016343898518010">Chính sách này không được dùng nữa và không có hiệu lực kể từ M159 vì tính năng Nội dung đề xuất đã bị loại bỏ.
+
+Trước M159, tính năng này bật tuỳ chọn đề xuất nội dung mới để khám phá, bao gồm cả ứng dụng, trang web và nhiều nội dung khác.
+Nếu bạn đặt chính sách này thành True (Đúng), tuỳ chọn đề xuất nội dung mới để khám phá sẽ được bật.
+Nếu bạn đặt chính sách này thành False (Sai), tuỳ chọn đề xuất nội dung mới để khám phá sẽ bị tắt.
+Nếu bạn không đặt chính sách này, tuỳ chọn đề xuất nội dung mới để khám phá sẽ bị tắt đối với người dùng được quản lý và được bật đối với những người dùng khác.</translation>
 <translation id="8392478748777481636">Chính sách này không còn được dùng nữa và không được hỗ trợ, vui lòng dùng chính sách "<ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" />".</translation>
 <translation id="8393850527597048037">Chỉ trên nền tảng</translation>
 <translation id="8395350646076131800">Thời gian chờ ở trạng thái rảnh trên màn hình khoá trên trình bảo vệ màn hình của người dùng.</translation>

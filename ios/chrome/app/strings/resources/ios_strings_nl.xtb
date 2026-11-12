@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">Als je wachtwoorden wilt zien, moet je eerst een toegangscode instellen op je apparaat.</translation>
 <translation id="201759455285471444">Tabbladgroep uitvouwen.</translation>
 <translation id="2022431790688770637">Gemini-suggesties beheren</translation>
+<translation id="2023265063803387188">Gemini is niet beschikbaar in de incognitomodus</translation>
 <translation id="2031515492007104071">Level Up</translation>
 <translation id="2044394949148788042">Open het tabbladraster</translation>
 <translation id="2044681667265133332">Het account <ph name="USER_EMAIL" /> wordt beheerd door <ph name="HOSTED_DOMAIN" />. Dit domein kan bepaalde informatie bekijken. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
@@ -1213,6 +1214,7 @@
 <translation id="479628432297359449">Download stoppen?</translation>
 <translation id="4796496140132859135">Tabbladgroep. Samengevouwen.</translation>
 <translation id="4800912004582762296">Klikken</translation>
+<translation id="4800930308997591052">Wissel naar <ph name="EMAIL" /> om naadloos tabbladen te delen tussen je apparaten en onder andere je wachtwoorden en bookmarks uit je Google-account op te halen.</translation>
 <translation id="4802185666270672526">Desktopsite opvragen verbergen</translation>
 <translation id="4803185665210547709">Beheerd door je organisatie.
 <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
@@ -2035,6 +2037,7 @@ Wissel naar <ph name="OTHER_EMAIL" /> om door te gaan vanaf je computer. Je krij
 <translation id="728025568708172005">Rondleiding</translation>
 <translation id="7280980607183752256">Dit bestand kan niet worden geïmporteerd</translation>
 <translation id="7282197670900591579">Citroenkleurig thema</translation>
+<translation id="7283937415134849498">Om hulp op maat te bieden, deelt Gemini bepaalde gegevens (zoals fragmenten van je gesprekken, je locatie en andere relevante informatie) met andere Google-services, zoals Maps en Vluchten. Deze services kunnen die informatie gebruiken om beter te worden, ook als je je Gemini-geschiedenis later verwijdert. Meer informatie vind je in de <ph name="BEGIN_LINK" />Gemini Apps Privacy Hub<ph name="END_LINK" />.</translation>
 <translation id="7293429513719260019">Taal selecteren</translation>
 <translation id="72961285530871072">Hiermee wordt je Level Up-voortgang definitief verwijderd en worden gegevens over functiegebruik voor Level Up niet meer naar Google gestuurd voor je profiel.
 
@@ -2147,6 +2150,7 @@ Je kunt op elk moment opnieuw beginnen.</translation>
 <translation id="7618220760967055820">Kies welke knop wordt getoond op de werkbalk</translation>
 <translation id="7620522820075868385">Annuleren</translation>
 <translation id="762078666799342162">Je kunt je eerdere downloads bekijken in <ph name="BEGIN_LINK" />Bestanden<ph name="END_LINK" /></translation>
+<translation id="7636034359405891151">Ga verder waar je gebleven was op je computer</translation>
 <translation id="7638584964844754484">Onjuiste wachtwoordzin</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Gehackte wachtwoorden}=1{{COUNT} gehackt wachtwoord}other{{COUNT} gehackte wachtwoorden}}</translation>
 <translation id="7640669552036055091">Tabbladen van Android</translation>
@@ -2607,6 +2611,7 @@ Je kunt op elk moment opnieuw beginnen.</translation>
 <translation id="8976382372951310360">Hulp</translation>
 <translation id="8976414606286374109">Kaarten worden opgeslagen in je Google-account.</translation>
 <translation id="8981454092730389528">Google-activiteitsopties</translation>
+<translation id="8987736167266086032">Ga verder waar je gebleven was</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, vastgezette site</translation>
 <translation id="8989779557457435460">Huidig tabblad standaard delen</translation>
 <translation id="8990960056509724223">Kan het bestand niet opslaan vanwege het beleid van je organisatie</translation>
@@ -2648,6 +2653,7 @@ Je kunt op elk moment opnieuw beginnen.</translation>
 <translation id="91023216973987714">Betaalmethoden</translation>
 <translation id="9106655997975673326">Van <ph name="SOURCE_DEVICE" /></translation>
 <translation id="9107664647686727385">Checken op gehackte wachtwoorden</translation>
+<translation id="9115035712231910133">Bijgevoegde afbeelding {title}</translation>
 <translation id="9119764377203471454">Kan bijlagen niet toevoegen</translation>
 <translation id="9124387962554796433">Google kan je geschiedenis gebruiken om Google Zoeken en andere Google-services te personaliseren.</translation>
 <translation id="9124978074365039456">Winkel, vertaal en identificeer wat je ziet met je camera en fotogalerij</translation>

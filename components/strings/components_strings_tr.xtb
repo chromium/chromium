@@ -823,6 +823,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2356941001189392209">Eski teknoloji etkinliklerinin gerçekleştiği, ziyaret ettiğiniz sayfaların URL'lerinin sınırlı bir listesi</translation>
 <translation id="2357312461142072202">{NUM_TABS,plural, =1{1 sekme paylaşılacak}other{{NUM_TABS} sekme paylaşılacak}}</translation>
 <translation id="2357481397660644965">Cihazınız <ph name="DEVICE_MANAGER" /> tarafından, hesabınız ise <ph name="ACCOUNT_MANAGER" /> tarafından yönetiliyor.</translation>
+<translation id="2358479643736965923">Google AI arama yanıtını bu sekmede görüntüleyin</translation>
 <translation id="2359629602545592467">Birden fazla</translation>
 <translation id="2359808026110333948">Devam</translation>
 <translation id="236000571258713023">Araçlar</translation>
@@ -1003,7 +1004,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2647086987482648627">Kumaş (Yarı Parlak)</translation>
 <translation id="264810637653812429">Uyumlu cihaz bulunamadı.</translation>
 <translation id="2650446666397867134">Dosyaya erişim reddedildi</translation>
-<translation id="2651465929321991146">Geçmiş ve Sekmeler</translation>
+<translation id="2651465929321991146">Geçmiş ve sekmeler</translation>
 <translation id="2653659639078652383">Gönder</translation>
 <translation id="2656194288057285221">Chrome İpucunu Kapat düğmesi, kapatmak için Enter'a basın</translation>
 <translation id="2657637947725373811">{0,plural, =1{Gizli dosya aktarılsın mı?}other{Gizli dosyalar aktarılsın mı?}}</translation>
@@ -1031,7 +1032,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2699273987028089219">Alt menü mevcut. Ek seçeneklere gitmek için <ph name="SHORTCUT" /> öğesini kullanın.</translation>
 <translation id="2701514975700770343">Aşağı dönük</translation>
 <translation id="2702592986366989640">Düşük fiyatlı seçenek</translation>
-<translation id="2702801445560668637">Okuma Listesi</translation>
+<translation id="2702801445560668637">Okuma listesi</translation>
 <translation id="270415722347413271">Optik Disk (Mat)</translation>
 <translation id="2704192696317130398">Fareniz kilitlensin mi?</translation>
 <translation id="2704283930420550640">Değer, biçimle eşleşmiyor.</translation>
@@ -1141,6 +1142,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2925032407415783182">Etkinlik biletini Cüzdan'a kaydedin</translation>
 <translation id="2925454999967523701">Doküman oluştur düğmesi, hızlıca yeni bir Google Dokümanı oluşturmak için etkinleştirin</translation>
 <translation id="2925673989565098301">Teslimat Yöntemi</translation>
+<translation id="2927328994673424423">2 hafta önce</translation>
 <translation id="2928426578619531300">Kullanıcıyla ilişkili</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> ve <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> adres daha}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> ve <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> adres daha}}</translation>
 <translation id="2930531075747147366">Diğer cihazınızdaki sekme</translation>
@@ -2544,7 +2546,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="5216942107514965959">En son bugün ziyaret edildi</translation>
 <translation id="5217759126664161410">Geçersiz protokol biçimi.</translation>
 <translation id="5221377878828867877">Şifre yeniden kullanımı, kuruluşunuz tarafından izleniyor</translation>
-<translation id="5222676887888702881">Çıkış</translation>
+<translation id="5222676887888702881">Oturumu kapat</translation>
 <translation id="5222812217790122047">E-posta gerekli</translation>
 <translation id="5226979307236834587">Planları nazik bir şekilde nasıl reddedebilirim?</translation>
 <translation id="5229844812197559338"><ph name="SELECT_PROVIDER_TITLE" />. <ph name="LOGO_DESCRIPTION" /></translation>
@@ -2711,7 +2713,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="5485973315555778056">Bulut makinesi</translation>
 <translation id="5488367146069768854">Web uygulaması yüklemeleri</translation>
 <translation id="5488590678320979185">Not oluştur düğmesi, Google Keep'te hızlıca yeni bir not oluşturmak için etkinleştirin</translation>
-<translation id="5490432419156082418">Adresler ve Daha Fazlası</translation>
+<translation id="5490432419156082418">Adresler ve daha fazlası</translation>
 <translation id="5492298309214877701">Şirket, kuruluş veya okul intranet'indeki bu site harici bir web sitesiyle aynı URL'ye sahip.
     <ph name="LINE_BREAK" />
     Sistem yöneticinize başvurmayı deneyin.</translation>

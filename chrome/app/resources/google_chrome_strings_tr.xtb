@@ -154,7 +154,9 @@
 <translation id="2301513536169703857">Şifrelerinizi, yer işaretlerinizi ve diğer öğelerinizi tüm cihazlarınızda kullanmak için Chrome'da oturum açın</translation>
 <translation id="2307973900865360088">Dock'ta tut</translation>
 <translation id="2309047409763057870">Bu, Google Chrome'un ikincil bir yüklemesidir ve varsayılan tarayıcınız yapılamaz.</translation>
+<translation id="2330059234841117265">Chrome'da Google Arama'yı açın</translation>
 <translation id="2345992953227471816">Chrome aşağıdaki uzantılarda kötü amaçlı yazılım tespit etti:</translation>
+<translation id="2350411688004301551">Gemini Enterprise'a geç</translation>
 <translation id="2358140144860869442">Okuma listenize ve diğer öğelerinize tüm cihazlarınızda erişmek için Chrome'da oturum açın</translation>
 <translation id="2359808026110333948">Devam</translation>
 <translation id="2403703063067034158">Başlatma hatası: Şu anda başka bir kurulum işlemi devam ediyor. Lütfen daha sonra tekrar deneyin.</translation>
@@ -165,6 +167,7 @@
 <translation id="2482846200327569645"><ph name="EXISTING_USER" /> zaten oturum açmış durumda. Göz atma işlemlerinizi ayrı tutmak için Chrome'da kendi profilinizde <ph name="USER_EMAIL_ADDRESS" /> olarak oturum açın. Ayrıca, <ph name="DEVICE" /> içindeki yer işaretlerinize ve diğer öğelere de erişebilirsiniz.</translation>
 <translation id="2485422356828889247">Kaldır</translation>
 <translation id="2513154137948333830">Yeniden başlatma gerekiyor: <ph name="INSTALL_SUCCESS" /></translation>
+<translation id="251329670120169391">kuruluşunuz</translation>
 <translation id="2521391734665471391">Google Arama AI Modu'nu kapat</translation>
 <translation id="2523492931736391680">Çalışmanız Chrome'da güvende</translation>
 <translation id="2534365042754120737">Verilerinizin korunması için Chrome'un, yakın zamanda ziyaret etmediğiniz sitelerin izinlerini kaldırmasına izin verin. Bu işlem, bildirimleri durdurmaz.</translation>
@@ -214,6 +217,7 @@ Bu sayfa beklendiği gibi çalışmıyorsa optimizasyona izin vermeyi deneyin.</
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome'un verilerinizi nasıl gizli tuttuğu<ph name="END_LINK" /> hakkında daha fazla bilgi edinin</translation>
 <translation id="2885378588091291677">Görev Yöneticisi</translation>
 <translation id="2888126860611144412">Chrome hakkında</translation>
+<translation id="2898830646167954300">Yönetilmeyen Gemini asistanınıza geri dönün</translation>
 <translation id="2915996080311180594">Daha Sonra Yeniden Başlat</translation>
 <translation id="2926952073016206995">Bu site için Chrome'un kamera iznine ihtiyacı var</translation>
 <translation id="2945997411976714835">Yükleme hatası: Yükleyici işlemi başlatılamadı.</translation>
@@ -253,6 +257,7 @@ Bu sayfa beklendiği gibi çalışmıyorsa optimizasyona izin vermeyi deneyin.</
 <translation id="3140883423282498090">Yaptığınız değişiklikler Google Chrome'u yeniden başlattığınızda geçerli olacak.</translation>
 <translation id="3149510190863420837">Chrome Uygulamaları</translation>
 <translation id="3161522574479303604">Tüm diller</translation>
+<translation id="3183555099201190073">Arama'ya her sekmeden erişin</translation>
 <translation id="318555301233810762"><ph name="EXISTING_USER" /> zaten oturum açmış durumda. Göz atma işlemlerinizi ayrı tutmak için Chrome'da kendi profilinizde <ph name="USER_EMAIL_ADDRESS" /> olarak oturum açın. Ayrıca, yer işaretlerinize ve diğer öğelerinize tüm cihazlarınızdan erişebilirsiniz.</translation>
 <translation id="319199214552513804">Bu uzantıya ve diğer öğelerinize tüm bilgisayarlarınızda erişmek için Chrome'da oturum açın</translation>
 <translation id="3196187562065225381">Dosya tehlikeli olduğu için Chrome bu indirme işlemini engelledi</translation>
@@ -341,11 +346,13 @@ Bu sayfa beklendiği gibi çalışmıyorsa optimizasyona izin vermeyi deneyin.</
 <translation id="4022972681110646219">Ekrandaki yazıları çevir</translation>
 <translation id="4023601594785368013">Orijinal dil: <ph name="LANGUAGE" /></translation>
 <translation id="4034249157893816477">Güçlü şifreler oluşturmanıza, kaydetmenize ve otomatik doldurmanıza yardımcı olmak için Chrome'a entegre edilmiştir. Kolay erişim için kısayol ekleyin.</translation>
+<translation id="4034420818911109432"><ph name="USER_NAME" />, <ph name="EMAIL" />. Google üyeliği.</translation>
 <translation id="4035053306113201399">Güncellemenin uygulanması için ChromeOS yeniden başlatılmalıdır.</translation>
 <translation id="4050175100176540509">Son sürümde güvenlikle ilgili önemli iyileştirmeler ve yeni özellikler mevcuttur.</translation>
 <translation id="4053720452172726777">Google Chrome'u özelleştirin ve kontrol edin</translation>
 <translation id="408393047846373801">Şifrelerinizi ve diğer öğelerinizi tüm cihazlarınızda kullanmak için Chrome'da oturum açın. Bu şifre, oturum açtıktan sonra Google Hesabınıza kaydedilir.</translation>
 <translation id="4102173024714616627">Uzantılar, Chrome'u özelleştirmenize olanak tanıyan eklentilerdir. Düzenli kalmanıza ve günlük işleri basitleştirmenize yardımcı olan uzantılarla Chrome'u istediğiniz gibi kişiselleştirebilirsiniz.</translation>
+<translation id="4103543596018881622">Chrome'da Google Arama, araç çubuğuna sabitlendi.</translation>
 <translation id="4110895483821904099">Yeni Chrome profilinizi oluşturun</translation>
 <translation id="4111566860456076004">Chrome, bu uzantının kaynağını doğrulayamadığı için uzantı güvenli olmayabilir. Kişisel bilgileriniz de dahil olmak üzere ziyaret ettiğiniz sitelerdeki verilerinizi artık görememesi ve değiştirememesi için bu uzantıyı Chrome'dan kaldırın.</translation>
 <translation id="4147555960264124640">Yönetilen bir hesapla oturum açıyor ve hesabın yöneticisine Google Chrome profilinizi denetleme izni veriyorsunuz. Uygulamalarınız, yer işaretleriniz, geçmişiniz, şifreleriniz ve diğer ayarlarınız gibi Chrome verileriniz kalıcı olarak <ph name="USER_NAME" /> ile bağlantılandırılacaktır. Google Hesapları Hesap Özeti'ni kullanarak bu verileri silebilecek, ancak bu verileri başka bir hesapla ilişkilendiremeyeceksiniz.<ph name="LEARN_MORE" /></translation>
@@ -469,6 +476,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="5321325624576443340">Google Lens kullanılamıyor. Daha sonra tekrar deneyin.</translation>
 <translation id="5334309298019785904">Senkronizasyon, alan adınızda kullanılamadığından ChromeOS, verilerinizi senkronize edemedi.</translation>
 <translation id="5334487786912937552">Dosya indirmek için Chrome'un depolama alanına erişmesi gerekiyor</translation>
+<translation id="5336664042114176802">Başlangıçta Google Hesabınızla ilişkilendirilmiş olan ve <ph name="DOMAIN" /> tarafından yönetilmeyen Gemini asistanına geçebilirsiniz. Yanıtlar artık <ph name="DOMAIN" /> tarafından yönetilen dosyalara veya hizmetlere dayalı olmayacak ve sohbet geçmişiniz aktarılmayacak. İş amaçlı kullanıma uygun olmayabilir. Geçiş yapmak için Chrome'un yeniden başlatılması gerekir.</translation>
 <translation id="5337648990166757586">İsteğe bağlı: Teşhis ve kullanım verilerini Google'a otomatik olarak göndererek ChromeOS özelliklerini ve performansını iyileştirmeye yardımcı olun.</translation>
 <translation id="5346389065299425353">Birden fazla sekme, dosya ve araç ekleyerek aramanızı derinleştirin</translation>
 <translation id="5353252989841766347">Şifreleri Chrome'dan Aktar</translation>
@@ -584,6 +592,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="6326175484149238433">Chrome'dan kaldır</translation>
 <translation id="6334815226785304306">Google Chrome'u varsayılan tarayıcı yapın ve görev çubuğuna sabitleyin</translation>
 <translation id="6339888439788291743">Yeni simge, aynı kısayol: Google Arama AI Modu ile göz atarken soru sormak için tıklayın.</translation>
+<translation id="6349304688246983183">Google Arama özelliğiyle göz atarken kolayca soru sorun</translation>
 <translation id="63540178978900677">Chrome artık varsayılan tarayıcınız değil. Chrome varsayılan tarayıcı olsun mu?</translation>
 <translation id="6357670763064300993">Chrome'da Gemini Enterprise</translation>
 <translation id="6360449101159168105">Bu sekme etkin değilken Chrome'un hızlı çalışmaya devam etmesi için bellekte yer açıldı. Bu siteyi, etkin olmayan sitelerden her zaman hariç tutabilirsiniz.</translation>
@@ -598,6 +607,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="6438015621983209660">Telefonunuzda Chrome ile Gelişmiş Güvenli Tarama'yı genişletin</translation>
 <translation id="6442774133615368941">Chrome iOS uygulamasında kameranızı kullanarak gördüklerinizi satın alın, çevirin ve tanımlayın</translation>
 <translation id="6446105560007692480">Chrome ile arayın veya <ph name="BEGIN_LINK" />Ayarlar<ph name="END_LINK" />'da özelleştirin</translation>
+<translation id="6447943657065463998">Bu yönetilen tarayıcı, <ph name="DOMAIN" /> tarafından iş için yapılandırılmış bir Gemini asistanını kullanabilir. Kuruluşun dosyalarına ve onaylı hizmetlerine dayanarak bilgi bulabilir ve yanıt verebilir. Kişisel profille kullanılması önerilmeyebilir. Sohbet geçmişi aktarılmaz. Geçiş yapmak için Chrome'un yeniden başlatılması gerekir.</translation>
 <translation id="6448835208126432197">Chrome'da Gemini'da ekranın bir bölümünü seçmek için klavye kısayolunu kullanın.</translation>
 <translation id="6473905796280459355">Chrome hakkında sayfasına gidin</translation>
 <translation id="6481963882741794338">Kişiselleştirme ve diğer amaçlar için Chrome ile diğer Google hizmetlerini bağlayın</translation>
@@ -792,6 +802,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="8064965390968184078">1. Aşağıdaki <ph name="BUTTON_LABEL" /> düğmesini tıklayın.
 2. Windows ayarlarınızda <ph name="BUTTON_2" /> düğmesini tıklayın.
 3. Hızlı erişim için Chrome'u görev çubuğunuza sabitlemek isterseniz Windows bildiriminde <ph name="BUTTON_3" /> düğmesini tıklayın.</translation>
+<translation id="8066474819446975249">Geçiş yapmak için Chrome'u yeniden başlatın</translation>
 <translation id="8069447462453318634">"Araç çubuğuna sabitle"yi seçin</translation>
 <translation id="8074398340364918139">Belirli bir Chrome özelliğinde veya uzantısında arama yapmak için ilgili kısayolu adres çubuğuna yazdıktan sonra seçtiğiniz klavye tuşuna basın</translation>
 <translation id="8077579734294125741">Diğer Chrome Profilleri</translation>
@@ -933,6 +944,7 @@ Bazı yer işaretlerini silene kadar hesabınıza yeni yer işaretleri kaydedile
 <translation id="9148058034647219655">Çıkış</translation>
 <translation id="9150331942025550505"><ph name="DEVICE_TYPE" /> cihazınızda Chrome uygulamasını kullanarak yapay zekanın gücünden yararlanın</translation>
 <translation id="919706545465235479">Senkronizasyonu başlatmak için Chrome'u güncelleyin</translation>
+<translation id="9210313013767007472"><ph name="USER_NAME_OR_EMAIL" />. Google üyeliği.</translation>
 <translation id="922152298093051471">Chrome'u özelleştir</translation>
 <translation id="93760716455950538">ChromeOS Flex'i yeniden başlatın</translation>
 <translation id="943390475793766444">Chrome, tehlikeli olabileceği için bu dosyanın taranmasını öneriyor.</translation>

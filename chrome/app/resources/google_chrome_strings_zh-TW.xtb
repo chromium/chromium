@@ -154,7 +154,9 @@
 <translation id="2301513536169703857">如要在所有裝置上使用你的密碼、書籤和其他資料，請登入 Chrome</translation>
 <translation id="2307973900865360088">保留在 Dock 上</translation>
 <translation id="2309047409763057870">這是以並存形式安裝的次要 Google Chrome，無法設為您的預設瀏覽器。</translation>
+<translation id="2330059234841117265">開啟 Chrome 的 Google 搜尋</translation>
 <translation id="2345992953227471816">Chrome 偵測到下列擴充功能含有惡意軟體：</translation>
+<translation id="2350411688004301551">切換至 Gemini Enterprise</translation>
 <translation id="2358140144860869442">如要在所有裝置上存取閱讀清單和其他資料，請登入 Chrome</translation>
 <translation id="2359808026110333948">繼續</translation>
 <translation id="2403703063067034158">啟動時發生錯誤：目前正在執行其他設定作業，請稍後再試。</translation>
@@ -165,6 +167,7 @@
 <translation id="2482846200327569645">目前登入的帳戶為：<ph name="EXISTING_USER" />。如要分開保存你的瀏覽資料，請在 Chrome 中登入自己的設定檔 (<ph name="USER_EMAIL_ADDRESS" />)。你還能使用<ph name="DEVICE" />中的書籤和其他資料。</translation>
 <translation id="2485422356828889247">解除安裝</translation>
 <translation id="2513154137948333830">必須重新啟動：<ph name="INSTALL_SUCCESS" /></translation>
+<translation id="251329670120169391">貴機構</translation>
 <translation id="2521391734665471391">關閉 Google 搜尋 AI 模式</translation>
 <translation id="2523492931736391680">Chrome 可確保工作安全無虞</translation>
 <translation id="2534365042754120737">為保護你的資料，允許 Chrome 從近期未造訪的網站移除權限。這項設定不會關閉通知。</translation>
@@ -212,6 +215,7 @@
 <translation id="2876628302275096482">進一步瞭解 <ph name="BEGIN_LINK" />Chrome 如何保護你的資料隱私<ph name="END_LINK" /></translation>
 <translation id="2885378588091291677">工作管理員</translation>
 <translation id="2888126860611144412">關於 Chrome</translation>
+<translation id="2898830646167954300">切換回非受管的 Gemini 助理</translation>
 <translation id="2915996080311180594">稍後再重新啟動</translation>
 <translation id="2926952073016206995">Chrome 需要相機權限，才能執行這個網站要求的功能</translation>
 <translation id="2945997411976714835">安裝錯誤：無法啟動安裝程式程序。</translation>
@@ -251,6 +255,7 @@
 <translation id="3140883423282498090">你的變更將於下次重新啟動 Google Chrome 時生效。</translation>
 <translation id="3149510190863420837">Chrome 應用程式</translation>
 <translation id="3161522574479303604">所有語言</translation>
+<translation id="3183555099201190073">在任何分頁都能使用搜尋功能</translation>
 <translation id="318555301233810762">目前登入的帳戶為：<ph name="EXISTING_USER" />。如要分開保存你的瀏覽資料，請在 Chrome 中登入自己的設定檔 (<ph name="USER_EMAIL_ADDRESS" />)。你還能在所有裝置上存取書籤和其他資料。</translation>
 <translation id="319199214552513804">如要在所有電腦上使用這個擴充功能及其他擴充功能，請登入 Chrome</translation>
 <translation id="3196187562065225381">這個檔案有危險，因此 Chrome 已禁止下載</translation>
@@ -344,6 +349,7 @@
 <translation id="4053720452172726777">自訂及管理 Google Chrome</translation>
 <translation id="408393047846373801">如要在任何裝置上使用你的密碼和其他資料，請登入 Chrome。登入後，這個密碼就會儲存到 Google 帳戶。</translation>
 <translation id="4102173024714616627">擴充功能是外掛程式，可用來自訂 Chrome。無論是整理資料或簡化日常工作，都能用擴充功能打造個人化的 Chrome。</translation>
+<translation id="4103543596018881622">「Chrome 的 Google 搜尋」已固定到工具列！</translation>
 <translation id="4110895483821904099">設定新的 Chrome 設定檔</translation>
 <translation id="4111566860456076004">Chrome 無法驗證擴充功能的來源，因此可能不安全。請從 Chrome 中移除這項擴充功能，使其無法再查看及變更你瀏覽網站時留下的資料，包括個人資訊。</translation>
 <translation id="4147555960264124640">你已登入管理化環境下的帳戶，並將管理控制權授予你的 Chrome 設定檔。你的 Chrome 資料 (例如應用程式、書籤、記錄、密碼和其他設定) 均將永久與 <ph name="USER_NAME" /> 建立關聯。你可以透過 Google 帳戶資訊主頁刪除這些資料，但你無法將這些資料與其他帳戶建立關聯。<ph name="LEARN_MORE" /></translation>
@@ -465,6 +471,7 @@
 <translation id="5321325624576443340">Google 智慧鏡頭目前無法使用，請稍後再試。</translation>
 <translation id="5334309298019785904">你的網域無法使用「同步」功能，因此 Chrome OS 無法同步處理你的資料。</translation>
 <translation id="5334487786912937552">Chrome 需要儲存空間存取權才能下載檔案</translation>
+<translation id="5336664042114176802">你可以切換回原本與 Google 帳戶相關聯，且不受「<ph name="DOMAIN" />」管理的 Gemini 助理。回覆將不再以受「<ph name="DOMAIN" />」管理的檔案或服務為基準，對話記錄也不會保留。可能不適合用於工作。切換時必須重新啟動 Chrome。</translation>
 <translation id="5337648990166757586">選用：自動將診斷資訊和使用資料傳送給 Google，協助改善 Chrome OS 的功能與效能。</translation>
 <translation id="5346389065299425353">新增多個分頁、檔案和工具，進一步搜尋所需資訊</translation>
 <translation id="5353252989841766347">從 Chrome 中匯出密碼</translation>
@@ -582,6 +589,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="6326175484149238433">從 Chrome 中移除</translation>
 <translation id="6334815226785304306">將 Google Chrome 設為預設瀏覽器，並固定到工作列</translation>
 <translation id="6339888439788291743">新圖示，舊捷徑：點選即可在瀏覽網頁時，使用「Google 搜尋 AI 模式」提問。</translation>
+<translation id="6349304688246983183">使用 Google 搜尋，就能在瀏覽網頁時輕鬆提問</translation>
 <translation id="63540178978900677">Chrome 不再是預設瀏覽器。將 Chrome 設為預設瀏覽器？</translation>
 <translation id="6357670763064300993">Chrome 內建 Gemini Enterprise</translation>
 <translation id="6360449101159168105">當這個分頁處於閒置狀態時，系統會釋出記憶體，加快 Chrome 的運作速度。你可以選擇一律不讓這個網站進入閒置狀態。</translation>
@@ -596,6 +604,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="6438015621983209660">在手機上使用 Chrome，享有更全面的安全瀏覽強化防護功能</translation>
 <translation id="6442774133615368941">在 Chrome iOS 應用程式使用相機購物、翻譯及辨識所見事物</translation>
 <translation id="6446105560007692480">即可使用 Chrome 搜尋，或前往「<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />」自訂</translation>
+<translation id="6447943657065463998">這個受管理的瀏覽器可以使用由「<ph name="DOMAIN" />」設定的工作用 Gemini 助理。這個助理能搜尋資訊，並根據貴機構的檔案和核准的服務提供基準解答。不建議搭配個人設定檔使用。對話記錄不會一併轉移。切換時必須重新啟動 Chrome。</translation>
 <translation id="6448835208126432197">如要在 Chrome 內建 Gemini 中選取部分畫面，請使用鍵盤快速鍵。</translation>
 <translation id="6473905796280459355">前往「關於 Chrome」頁面</translation>
 <translation id="6481963882741794338">連結 Chrome 和其他 Google 服務，用於個人化等用途</translation>
@@ -790,6 +799,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="8064965390968184078">1. 點選下方的「<ph name="BUTTON_LABEL" />」
 2. 在 Windows 設定中，點選「<ph name="BUTTON_2" />」
 3. 在 Windows 通知中點選「<ph name="BUTTON_3" />」，即可將 Chrom 釘選到工作列以便快速存取</translation>
+<translation id="8066474819446975249">重新啟動 Chrome 即可切換</translation>
 <translation id="8069447462453318634">選取「釘選至工具列」</translation>
 <translation id="8074398340364918139">如要搜尋特定 Chrome 功能或擴充功能，請在網址列輸入其捷徑，然後按下你所選擇的鍵盤按鍵</translation>
 <translation id="8077579734294125741">其他 Chrome 設定檔</translation>
@@ -895,7 +905,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome 建議你將其移除}other{Chrome 建議你將其移除}}</translation>
 <translation id="8861692536395317751">Google Chrome 僅支援 Windows 10 1809 以上版本。</translation>
 <translation id="8862326446509486874">你沒有在系統層級進行安裝的權限，請以管理員的身分執行安裝檔。</translation>
-<translation id="8865415417596392024">你帳戶中的 Chrome 資料</translation>
+<translation id="8865415417596392024">帳戶中的 Chrome 資料</translation>
 <translation id="8897637834206928776">新圖示，舊捷徑：點選即可在瀏覽網頁時，使用側邊面板的 Google 搜尋提問。</translation>
 <translation id="8914504000324227558">重新啟動 Chrome</translation>
 <translation id="8920304659326707347">在 iOS 使用 Chrome，順暢接續先前的進度。</translation>

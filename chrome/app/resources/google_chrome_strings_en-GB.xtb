@@ -158,7 +158,9 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2301513536169703857">To get your passwords, bookmarks and more on all your devices, sign in to Chrome</translation>
 <translation id="2307973900865360088">Keep in Dock</translation>
 <translation id="2309047409763057870">This is a secondary installation of Google Chrome, and cannot be made your default browser.</translation>
+<translation id="2330059234841117265">Open Google Search in Chrome</translation>
 <translation id="2345992953227471816">Chrome found that these extensions contain malware:</translation>
+<translation id="2350411688004301551">Switch to Gemini Enterprise</translation>
 <translation id="2358140144860869442">To get your reading list and more on all your devices, sign in to Chrome</translation>
 <translation id="2359808026110333948">Continue</translation>
 <translation id="2403703063067034158">Startup error: Another instance of setup is currently running, please try again later.</translation>
@@ -169,6 +171,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2482846200327569645"><ph name="EXISTING_USER" /> is already signed in. To keep your browsing separate, sign in to Chrome in your own profile as <ph name="USER_EMAIL_ADDRESS" />. You'll also get your bookmarks and more from <ph name="DEVICE" />.</translation>
 <translation id="2485422356828889247">Uninstall</translation>
 <translation id="2513154137948333830">Reboot required: <ph name="INSTALL_SUCCESS" /></translation>
+<translation id="251329670120169391">your organisation</translation>
 <translation id="2521391734665471391">Close Google Search AI Mode</translation>
 <translation id="2523492931736391680">Your work secured on Chrome</translation>
 <translation id="2534365042754120737">To protect your data, let Chrome remove permissions from sites you haven't visited recently. Doesn't stop notifications.</translation>
@@ -218,6 +221,7 @@ If this page isn't working as expected, try allowing optimisation.</translation>
 <translation id="2876628302275096482">Learn more about <ph name="BEGIN_LINK" />how Chrome keeps your data private<ph name="END_LINK" /></translation>
 <translation id="2885378588091291677">Task manager</translation>
 <translation id="2888126860611144412">About Chrome</translation>
+<translation id="2898830646167954300">Switch back to your unmanaged Gemini assistant</translation>
 <translation id="2915996080311180594">Restart later</translation>
 <translation id="2926952073016206995">Chrome needs camera permission for this site</translation>
 <translation id="2945997411976714835">Install error: The installer process failed to start.</translation>
@@ -257,6 +261,7 @@ If this page isn't working as expected, try allowing optimisation.</translation>
 <translation id="3140883423282498090">Your changes will take effect the next time you relaunch Google Chrome.</translation>
 <translation id="3149510190863420837">Chrome Apps</translation>
 <translation id="3161522574479303604">All languages</translation>
+<translation id="3183555099201190073">Access Search from any tab</translation>
 <translation id="318555301233810762"><ph name="EXISTING_USER" /> is already signed in. To keep your browsing separate, sign in to Chrome in your own profile as <ph name="USER_EMAIL_ADDRESS" />. You’ll also get your bookmarks and more on all your devices.</translation>
 <translation id="319199214552513804">To get this extension and more on all your computers, sign in to Chrome</translation>
 <translation id="3196187562065225381">Chrome blocked this download because the file is dangerous</translation>
@@ -346,11 +351,13 @@ If this page isn't working as expected, try allowing optimisation.</translation>
 <translation id="4022972681110646219">Translate screen</translation>
 <translation id="4023601594785368013">Original language: <ph name="LANGUAGE" /></translation>
 <translation id="4034249157893816477">Built into Chrome to help you create, save and autofill strong passwords. Add the shortcut for easy access.</translation>
+<translation id="4034420818911109432"><ph name="USER_NAME" />, <ph name="EMAIL" />. Google membership.</translation>
 <translation id="4035053306113201399">Chrome OS needs to be restarted to apply the update.</translation>
 <translation id="4050175100176540509">Important security improvements and new features are available in the latest version.</translation>
 <translation id="4053720452172726777">Customise and control Google Chrome</translation>
 <translation id="408393047846373801">To get your passwords and more on all your devices, sign in to Chrome. This password will be saved in your Google Account after you sign in.</translation>
 <translation id="4102173024714616627">Extensions are add-ons that let you customise Chrome. From staying organised to simplifying everyday tasks, extensions help you make Chrome your own.</translation>
+<translation id="4103543596018881622">Google Search in Chrome pinned to toolbar.</translation>
 <translation id="4110895483821904099">Set up your new Chrome profile</translation>
 <translation id="4111566860456076004">Chrome can't verify where this extension comes from, and it might be unsafe. Remove it from Chrome so that it can no longer see and change your data on sites that you visit, including your personal info.</translation>
 <translation id="4147555960264124640">You are signing in with a managed account and giving its administrator control over your Google Chrome profile. Your Chrome data, such as your apps, bookmarks, history, passwords and other settings will become permanently tied to <ph name="USER_NAME" />. You will be able to delete this data via the Google Accounts Dashboard, but you will not be able to associate this data with another account. <ph name="LEARN_MORE" /></translation>
@@ -474,6 +481,7 @@ Some features may be unavailable. Please specify a different profile directory o
 <translation id="5321325624576443340">Google Lens is not available. Please try again later.</translation>
 <translation id="5334309298019785904">Chrome OS could not sync your data because sync is not available for your domain.</translation>
 <translation id="5334487786912937552">Chrome needs storage access permission to download files</translation>
+<translation id="5336664042114176802">You can switch to the Gemini assistant originally associated with your Google Account and not managed by <ph name="DOMAIN" />. Answers will no longer be grounded in files or services managed by <ph name="DOMAIN" /> and your chat history won't carry over. It may not be suitable to use for work. Switching requires relaunching Chrome.</translation>
 <translation id="5337648990166757586">Optional: Help improve Chrome OS features and performance by automatically sending diagnostic and usage data to Google.</translation>
 <translation id="5346389065299425353">Deepen your search by adding multiple tabs, files and tools</translation>
 <translation id="5353252989841766347">Export Passwords From Chrome</translation>
@@ -591,6 +599,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="6326175484149238433">Remove from Chrome</translation>
 <translation id="6334815226785304306">Make Google Chrome the default browser and pin to the taskbar</translation>
 <translation id="6339888439788291743">New icon, same shortcut: Click to ask questions as you browse with Google Search AI Mode.</translation>
+<translation id="6349304688246983183">Easily ask questions as you browse with Google Search</translation>
 <translation id="63540178978900677">Chrome is no longer your default browser. Make Chrome the default browser?</translation>
 <translation id="6357670763064300993">Gemini Enterprise in Chrome</translation>
 <translation id="6360449101159168105">While this tab was inactive, memory was freed up to keep Chrome fast. You can choose to always exclude this site from being inactive.</translation>
@@ -605,6 +614,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="6438015621983209660">Extend Enhanced Safe Browsing with Chrome on your phone</translation>
 <translation id="6442774133615368941">Shop, translate and identify what you see with your camera on the Chrome iOS app</translation>
 <translation id="6446105560007692480">to search with Chrome or customise in <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" /></translation>
+<translation id="6447943657065463998">This managed browser can use a Gemini assistant set up for work by <ph name="DOMAIN" />. It can find info and provide answers grounded in the organisation's files and approved services. Using it with a personal profile may not be recommended. Chat history won't carry over. Switching requires relaunching Chrome.</translation>
 <translation id="6448835208126432197">To select part of the screen in Gemini in Chrome, use keyboard shortcut.</translation>
 <translation id="6473905796280459355">Go to the About Chrome page</translation>
 <translation id="6481963882741794338">Link Chrome and other Google services for personalisation and other purposes</translation>
@@ -799,6 +809,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8064965390968184078">1. Click <ph name="BUTTON_LABEL" /> below
 2. Click <ph name="BUTTON_2" /> in your Windows settings
 3. Click <ph name="BUTTON_3" /> in the Windows notification to pin Chrome to your taskbar for quick access</translation>
+<translation id="8066474819446975249">Relaunch Chrome to switch</translation>
 <translation id="8069447462453318634">Select 'Pin to toolbar'</translation>
 <translation id="8074398340364918139">To search a specific Chrome feature or extension, type its shortcut in the address bar, followed by your selected keyboard key</translation>
 <translation id="8077579734294125741">Other Chrome profiles</translation>
@@ -940,6 +951,7 @@ New bookmarks can't be saved in your account until you delete some. If you sign 
 <translation id="9148058034647219655">Exit</translation>
 <translation id="9150331942025550505">Get the power of AI when you use the Chrome app on your <ph name="DEVICE_TYPE" /></translation>
 <translation id="919706545465235479">Update Chrome to start sync</translation>
+<translation id="9210313013767007472"><ph name="USER_NAME_OR_EMAIL" />. Google membership.</translation>
 <translation id="922152298093051471">Customise Chrome</translation>
 <translation id="93760716455950538">Restart Chrome OS Flex</translation>
 <translation id="943390475793766444">Chrome recommends scanning this file because it may be dangerous.</translation>

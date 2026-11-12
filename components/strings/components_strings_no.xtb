@@ -823,6 +823,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2356941001189392209">En begrenset liste over nettadressene til sider du besøker som bruker hendelser fra eldre teknologi</translation>
 <translation id="2357312461142072202">{NUM_TABS,plural, =1{Deler 1 fane}other{Deler {NUM_TABS} faner}}</translation>
 <translation id="2357481397660644965">Enheten administreres av <ph name="DEVICE_MANAGER" />, og kontoen administreres av <ph name="ACCOUNT_MANAGER" />.</translation>
+<translation id="2358479643736965923">Se AI-svaret for Google-søket på denne fanen</translation>
 <translation id="2359629602545592467">Flere</translation>
 <translation id="2359808026110333948">Fortsett</translation>
 <translation id="236000571258713023">Kjøretøy</translation>
@@ -1141,6 +1142,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2925032407415783182">Lagre arrangementsbilletten i Wallet</translation>
 <translation id="2925454999967523701">Knappen «Opprett dokument» – aktiver for å opprette et nytt Google-dokument raskt</translation>
 <translation id="2925673989565098301">Leveringsmåte</translation>
+<translation id="2927328994673424423">For 2 uker siden</translation>
 <translation id="2928426578619531300">Brukeren er tilknyttet</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> til}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> til}}</translation>
 <translation id="2930531075747147366">Fane fra den andre enheten din</translation>

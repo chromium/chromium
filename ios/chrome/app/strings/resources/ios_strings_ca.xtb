@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">Per veure les contrasenyes, primer has d'establir una contrasenya al dispositiu.</translation>
 <translation id="201759455285471444">Desplega el grup de pestanyes.</translation>
 <translation id="2022431790688770637">Gestiona els suggeriments de Gemini</translation>
+<translation id="2023265063803387188">Gemini no està disponible en el mode d'incògnit</translation>
 <translation id="2031515492007104071">Puja de nivell</translation>
 <translation id="2044394949148788042">Obre la quadrícula de pestanyes</translation>
 <translation id="2044681667265133332"><ph name="HOSTED_DOMAIN" /> gestiona el compte <ph name="USER_EMAIL" />, així que és possible que vegi algunes dades. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
@@ -2035,6 +2036,7 @@ Per continuar des de l'ordinador, canvia a <ph name="OTHER_EMAIL" />. Obtindràs
 <translation id="728025568708172005">Mostra'm la zona</translation>
 <translation id="7280980607183752256">Aquest fitxer no es pot importar</translation>
 <translation id="7282197670900591579">Tema groc verdós</translation>
+<translation id="7283937415134849498">Per proporcionar-te ajuda personalitzada, Gemini comparteix algunes de les teves dades (per exemple, parts dels xats, la ubicació i altra informació rellevant) amb altres serveis de Google, com ara Maps i Vols. Aquests serveis poden utilitzar aquesta informació per millorar, fins i tot si més endavant suprimeixes el teu historial de Gemini. Obtén més informació al <ph name="BEGIN_LINK" />Centre de privadesa de les aplicacions de Gemini<ph name="END_LINK" />.</translation>
 <translation id="7293429513719260019">Selecciona l'idioma</translation>
 <translation id="72961285530871072">Aquesta acció suprimirà permanentment el teu progrés a Level Up i les dades d'ús de les funcions de Level Up ja no s'enviaran a Google per al teu perfil.
 
@@ -2607,6 +2609,7 @@ Pots reiniciar Level Up en qualsevol moment.</translation>
 <translation id="8976382372951310360">Ajuda</translation>
 <translation id="8976414606286374109">Les targetes es desen al teu Compte de Google.</translation>
 <translation id="8981454092730389528">Controls d'activitat de Google</translation>
+<translation id="8987736167266086032">Continua des d'on ho vas deixar</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, lloc web fixat</translation>
 <translation id="8989779557457435460">Comparteix la pestanya actual de manera predeterminada</translation>
 <translation id="8990960056509724223">El fitxer no s'ha pogut desar a causa de les polítiques de l'organització</translation>
@@ -2648,6 +2651,7 @@ Pots reiniciar Level Up en qualsevol moment.</translation>
 <translation id="91023216973987714">Formes de pagament</translation>
 <translation id="9106655997975673326">De <ph name="SOURCE_DEVICE" /></translation>
 <translation id="9107664647686727385">Comprova que no hi hagi contrasenyes en perill</translation>
+<translation id="9115035712231910133">Imatge adjunta {title}</translation>
 <translation id="9119764377203471454">No es poden afegir fitxers adjunts</translation>
 <translation id="9124387962554796433">És possible que Google utilitzi el teu historial per personalitzar la Cerca i altres serveis de Google.</translation>
 <translation id="9124978074365039456">Compra, tradueix i identifica el que veus utilitzant la càmera i la galeria de fotos</translation>

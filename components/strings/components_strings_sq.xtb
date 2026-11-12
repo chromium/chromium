@@ -823,6 +823,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2356941001189392209">Një listë e kufizuar e URL-ve të faqeve që viziton ti ku ka ngjarje të teknologjisë së vjetër</translation>
 <translation id="2357312461142072202">{NUM_TABS,plural, =1{Do të ndajë 1 skedë}other{Do të ndajë {NUM_TABS} skeda}}</translation>
 <translation id="2357481397660644965">Pajisja jote menaxhohet nga <ph name="DEVICE_MANAGER" /> dhe llogaria jote menaxhohet nga <ph name="ACCOUNT_MANAGER" />.</translation>
+<translation id="2358479643736965923">Shiko përgjigjen e kërkimit nga IA-ja e Google në këtë skedë</translation>
 <translation id="2359629602545592467">Disa</translation>
 <translation id="2359808026110333948">Vazhdo</translation>
 <translation id="236000571258713023">Automjetet</translation>
@@ -1141,6 +1142,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2925032407415783182">Ruaje biletën e ngjarjes te "Portofoli"</translation>
 <translation id="2925454999967523701">Butoni "Krijo dokument". Aktivizoje për të krijuar me shpejtësi një "Dokument të ri të Google"</translation>
 <translation id="2925673989565098301">Mënyra e dorëzimit</translation>
+<translation id="2927328994673424423">2 javë më parë</translation>
 <translation id="2928426578619531300">Përdorues i lidhur</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> dhe <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> tjetër}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> dhe <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> të tjera}}</translation>
 <translation id="2930531075747147366">Skeda nga pajisja jote tjetër</translation>

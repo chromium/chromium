@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">Paroolide nägemiseks peate oma seadmes esmalt pääsukoodi seadistama.</translation>
 <translation id="201759455285471444">Vahelehegrupi laiendamine.</translation>
 <translation id="2022431790688770637">Gemini soovituste haldamine</translation>
+<translation id="2023265063803387188">Gemini pole inkognito režiimis saadaval</translation>
 <translation id="2031515492007104071">Level Up</translation>
 <translation id="2044394949148788042">Avage vahelehtede ruudustik</translation>
 <translation id="2044681667265133332">Kontot <ph name="USER_EMAIL" /> haldab <ph name="HOSTED_DOMAIN" />, millel võib olla võimalik teatud teavet vaadata. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
@@ -2035,6 +2036,7 @@ Arvutis jätkamiseks minge üle kontole <ph name="OTHER_EMAIL" />. Saate selle k
 <translation id="728025568708172005">Alusta tutvustust</translation>
 <translation id="7280980607183752256">Seda faili ei saa importida.</translation>
 <translation id="7282197670900591579">Sidrunikollane teema</translation>
+<translation id="7283937415134849498">Kohandatud abi pakkumiseks jagab Gemini osa teie andmetest (nt osa teie vestlustest, asukohta ja muud asjakohast teavet) teiste Google’i teenustega, nagu Maps ja Lennud. Need teenused võivad seda teavet kasutada täiustuste tegemiseks, isegi kui te hiljem oma Gemini ajaloo kustutate. Vaadake lisateavet <ph name="BEGIN_LINK" />Gemini rakenduste privaatsusjaotisest<ph name="END_LINK" />.</translation>
 <translation id="7293429513719260019">Valige keel</translation>
 <translation id="72961285530871072">See kustutab jäädavalt teie Level Upi edenemise ja teie profiili Level Upi funktsioonide kasutusandmeid ei saadeta enam Google'ile.
 
@@ -2607,6 +2609,7 @@ Saate igal ajal uuesti alustada.</translation>
 <translation id="8976382372951310360">Abi</translation>
 <translation id="8976414606286374109">Kaardid salvestatakse teie Google'i kontole.</translation>
 <translation id="8981454092730389528">Google'i kontotegevuste haldus</translation>
+<translation id="8987736167266086032">Jätkake poolelijäänud kohast</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, kinnitatud sait</translation>
 <translation id="8989779557457435460">Jaga vaikimisi praegust vahelehte</translation>
 <translation id="8990960056509724223">Faili ei saanud teie organisatsiooni eeskirjade tõttu salvestada.</translation>
@@ -2648,6 +2651,7 @@ Saate igal ajal uuesti alustada.</translation>
 <translation id="91023216973987714">Makseviisid</translation>
 <translation id="9106655997975673326">Seadmest <ph name="SOURCE_DEVICE" /></translation>
 <translation id="9107664647686727385">Ohustatud paroolide otsimine</translation>
+<translation id="9115035712231910133">Manustatud pilt {title}</translation>
 <translation id="9119764377203471454">Manuseid ei saa lisada.</translation>
 <translation id="9124387962554796433">Google võib kasutada teie ajalugu otsingu ja muude Google'i teenuste isikupärastamiseks.</translation>
 <translation id="9124978074365039456">Ostke, tõlkige ja tuvastage, mida näete, kasutades oma kaamerat ja fotogaleriid</translation>

@@ -343,6 +343,7 @@ Ak stránka nefunguje podľa očakávaní, skúste optimalizáciu povoliť.</tra
 <translation id="4022972681110646219">Preložiť obrazovku</translation>
 <translation id="4023601594785368013">Pôvodný jazyk: <ph name="LANGUAGE" /></translation>
 <translation id="4034249157893816477">Je integrovaný v Chrome, aby vám pomáhal vytvárať, ukladať a automaticky dopĺňať silné heslá. Pridajte si odkaz na jednoduchý prístup.</translation>
+<translation id="4034420818911109432"><ph name="USER_NAME" />, <ph name="EMAIL" />. Členstvo Google.</translation>
 <translation id="4035053306113201399">Aktualizácia sa použije po reštartovaní systému Chrome OS.</translation>
 <translation id="4050175100176540509">V najnovšej verzii sú k dispozícii dôležité vylepšenia zabezpečenia a nové funkcie.</translation>
 <translation id="4053720452172726777">Prispôsobiť a ovládať Google Chrome</translation>
@@ -937,6 +938,7 @@ Nové záložky sa nebudú môcť ukladať do vášho účtu, kým niektoré neo
 <translation id="9148058034647219655">Ukončiť</translation>
 <translation id="9150331942025550505">Využívajte možnosti umelej inteligencie v aplikácii Chrome v zariadení <ph name="DEVICE_TYPE" /></translation>
 <translation id="919706545465235479">Ak chcete spustiť synchronizáciu, aktualizujte Chrome</translation>
+<translation id="9210313013767007472"><ph name="USER_NAME_OR_EMAIL" />. Členstvo Google.</translation>
 <translation id="922152298093051471">Prispôsobiť Chrome</translation>
 <translation id="93760716455950538">Reštartujte Chrome OS Flex</translation>
 <translation id="943390475793766444">Chrome odporúča skontrolovať tento súbor, pretože môže byť nebezpečný.</translation>

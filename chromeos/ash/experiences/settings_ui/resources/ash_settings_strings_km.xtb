@@ -1,4 +1,1061 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="km">
+<translation id="1011355516189274711">កម្រិតសំឡេង​បំប្លែង​អត្ថបទ​ទៅជា​ការនិយាយ</translation>
+<translation id="1015041505466489552">TrackPoint</translation>
+<translation id="1029526375103058355">ប៉ះដើម្បីចុច</translation>
+<translation id="1038643060055067718">បន្ទាត់៖</translation>
+<translation id="104385770822424034">បញ្ចូល​សកម្មភាព</translation>
+<translation id="1046572983040892965">បានផ្លាស់ទីវិនដូឡើងលើ និងទៅខាងឆ្វេង</translation>
+<translation id="1053226848101751430">បានលុប​ធាតុចូល</translation>
+<translation id="1076882167394279216">មិនអាចទាញយកវចនានុក្រមពិនិត្យ​អក្ខរាវិរុទ្ធសម្រាប់ភាសា<ph name="LANGUAGE" /> បានទេ។ សូមព្យាយាមម្ដងទៀត។</translation>
+<translation id="1078037449555275327">ការកំណត់ ChromeVox</translation>
+<translation id="1085618740036066768">មិនបាន​ជ្រើសរើស <ph name="ITEM" /> ទេ។ ទី <ph name="INDEX" /> នៃ <ph name="COUNT" />។ សូមចុច "ស្វែងរក" រួមជាមួយ "ដកឃ្លា" ដើម្បីជ្រើសរើស។</translation>
+<translation id="1093645050124056515">ctrl + alt + ព្រួញចុះក្រោម</translation>
+<translation id="1106350001632362876">បង្កើនកម្រិតកំណត់</translation>
+<translation id="1110965959145884739">ជ្រើសរើសភាសា​ដែលត្រូវដំឡើង​នៅលើឧបករណ៍នេះ។ ឯកសារភាសា​ត្រូវបានចែករំលែក​ក្នុងចំណោម​អ្នកប្រើប្រាស់ ដើម្បីសន្សំសំចៃ​ទំហំថាស។ <ph name="BEGIN_LINK_LEARN_MORE" />ស្វែងយល់បន្ថែម<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="1114202307280046356">ពេជ្រ</translation>
+<translation id="1125550662859510761">មើល​ទៅដូចជា <ph name="WIDTH" /> x <ph name="HEIGHT" /> (ដើម)</translation>
+<translation id="1133751489735776037">ចុចម៉ៅស៍​បីដង</translation>
+<translation id="114036956334641753">សំឡេង និង​អក្សររត់</translation>
+<translation id="114715166554490743">ព្រួញដែលបញ្ជា​ដោយ​ក្បាល</translation>
+<translation id="1148624853678088576">អ្នកត្រូវបានកំណត់រួចអស់ហើយ!</translation>
+<translation id="1149483087970735785">បច្ចេកវិទ្យា​ជំនួយ</translation>
+<translation id="1160800016654917722">បានផ្លាស់ទីវិនដូចុះក្រោម និងទៅខាងឆ្វេង</translation>
+<translation id="1164015913575846413">alt + ចុច</translation>
+<translation id="1165039591588034296">កំហុសឆ្គង</translation>
+<translation id="116896278675803795">ប្ដូរ​ភាសា​ដោយ​ស្វ័យ​ប្រវត្តិ​ ដើម្បី​ឱ្យ​ត្រូវ​នឹង​ខ្លឹមសារ​ដែល​បាន​ជ្រើសរើស</translation>
+<translation id="1173894706177603556">ប្តូរឈ្មោះ</translation>
+<translation id="1175572348579024023">រំកិល</translation>
+<translation id="1175914831232945926">តួលេខ</translation>
+<translation id="1177863135347784049">ផ្ទាល់ខ្លួន</translation>
+<translation id="1182876754474670069">home</translation>
+<translation id="1190155014618058972">បង្កើតបន្សំ​គ្រាប់ចុចផ្ទាល់ខ្លួន</translation>
+<translation id="1197088940767939838">ទឹក​ក្រូច</translation>
+<translation id="1198066799963193307">ឧបករណ៍​និយាយ​សម្រាប់​អ្នក​ខ្សោយ​ភ្នែក</translation>
+<translation id="1201402288615127009">បន្ទាប់</translation>
+<translation id="1208392090861059168">កាលវិភាគបច្ចុប្បន្នត្រូវបានកំណត់ទៅម៉ោង <ph name="SUNRISE" /> - <ph name="SUNSET" />។ ដើម្បីធ្វើបច្ចុប្បន្នភាពកាលវិភាគថ្ងៃលិច និងថ្ងៃរះ​ដោយស្វ័យប្រវត្តិ សូម<ph name="BEGIN_LINK" />បើកសិទ្ធិចូលប្រើទីតាំង​ប្រព័ន្ធ<ph name="END_LINK" />។</translation>
+<translation id="1217668622537098248">ត្រឡប់ទៅការចុចនៅផ្នែកខាងឆ្វេងវិញ បន្ទាប់ពីធ្វើសកម្មភាពហើយ</translation>
+<translation id="1237950098253310325">តម្រៀប <ph name="BUTTON_NAME" /> ឡើងវិញ ដោយប្រើ Ctrl និងព្រួញឡើងលើ ឬព្រួញចុះក្រោម</translation>
+<translation id="124116460088058876">ភាសា​ច្រើន​ទៀត</translation>
+<translation id="1247372569136754018">មីក្រូហ្វូន (ខាងក្នុង)</translation>
+<translation id="1261380933454402672">ល្មម</translation>
+<translation id="1263733306853729545">ប្រើ​គ្រាប់ចុច <ph name="MINUS" /> និង <ph name="EQUAL" /> ដើម្បី​មើលបញ្ជី​ពាក្យ</translation>
+<translation id="1264956950255940376">បើកភ្នែក​ខាងឆ្វេងព្រឹមៗ</translation>
+<translation id="126768002343224824">16x</translation>
+<translation id="1275936815032730048">គ្រាប់ចុច​ចាប់ផ្ដើម + ព្រួញទៅ​ស្ដាំ</translation>
+<translation id="1288037062697528143">ពន្លឺ​ពេល​យប់នឹងបើកដោយស្វ័យប្រវត្តិនៅពេលថ្ងៃលិច</translation>
+<translation id="1288300545283011870">លក្ខណៈ​សម្បត្តិ​ការនិយាយ</translation>
+<translation id="1291057703584594733">ការជ្រើសរើស​ចលនា​ដែលបាន​កំណត់​រួចហើយ​នឹងដកវា​ចេញពី​សកម្មភាព​ដើម​របស់វា។</translation>
+<translation id="1291421198328146277">កំណត់​គ្រាប់ចុច​ឡើងវិញ</translation>
+<translation id="1293360286536751243">"<ph name="MAIN_GESTURE" />" អាច​ជាន់គ្នា​ជាមួយ "<ph name="CONFLICTING_GESTURE_ONE" />" "<ph name="CONFLICTING_GESTURE_TWO" />" និង "<ph name="CONFLICTING_GESTURE_THREE" />"។ ប្រសិនបើ​អាច សូម​សាកល្បង​ជ្រើសរើស​ចលនា​ផ្សេង។</translation>
+<translation id="131364520783682672">Caps Lock</translation>
+<translation id="132539964543492755">ប្រើ “x” ដើម្បីផ្លាស់ប្ដូរការជ្រើសរើសប៊ូតុងម៉ៅស៍រវាងប៊ូតុងខាងឆ្វេង ប៊ូតុងខាងស្ដាំ និងទាំងពីរ</translation>
+<translation id="1328928545650070438">ទម្លាក់​ចិញ្ចើម</translation>
+<translation id="13392265090583506">ភាពងាយស្រួល</translation>
+<translation id="1346748346194534595">ស្តាំ</translation>
+<translation id="1348966090521113558">ការកំណត់​ភាពងាយស្រួលប្រើប្រាស់​កណ្ដុរ</translation>
+<translation id="135389172849514421">ដំណើរការ​ដោយគ្មាន​អ៊ីនធឺណិត</translation>
+<translation id="1365650529628379165">ញាក់​ចិញ្ចើម</translation>
+<translation id="1381567580865186407">ការនិយាយ​ជាភាសា<ph name="LANGUAGE" />ត្រូវបានផ្ញើទៅ Google ដើម្បី​ដំណើរការ</translation>
+<translation id="1383876407941801731">ស្វែងរក</translation>
+<translation id="1392047138650695757">វចនានុក្រម​អ្នក​ប្រើប្រាស់</translation>
+<translation id="1395832189806039783">រំលេច​ធាតុ​ដែល​មាន​ការផ្ដោត​តាម​ក្ដារចុច</translation>
+<translation id="1427179946227469514">កម្រិតសំឡេង​បំប្លែង​អត្ថបទ​ទៅជា​ការនិយាយ</translation>
+<translation id="1438630805136563416">បានដក​សកម្មភាព <ph name="REMOVED_ACTION" /> ចេញ</translation>
+<translation id="1445330076053050041">ជ្រើសរើស​សកម្មភាព​សម្រាប់​គ្រាប់ចុច <ph name="KEY_NAME" /></translation>
+<translation id="1449191289887455076">ចុច “<ph name="CURRENTKEY" />” ម្ដងទៀត ដើម្បី​បញ្ជាក់ការកំណត់ រួច<ph name="RESPONSE" /></translation>
+<translation id="145432137617179457">ភាសាដែលអាចពិនិត្យ​អក្ខរាវិរុទ្ធ</translation>
+<translation id="1467432559032391204">ឆ្វេង</translation>
+<translation id="1480663089572535854">អ្នកអាច​ត្រឡប់ក្រោយ ដើម្បីប្ដូរ​ការកំណត់សម្រាប់ “ជ្រើសរើស”។ អ្នកអាចបិទការស្កេន​ដោយស្វ័យប្រវត្តិ​នៅក្នុង​ការកំណត់​បានជានិច្ច។</translation>
+<translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
+<translation id="1486458761710757218">កែតម្រូវពន្លឺក្រោយក្ដារចុចដោយស្វ័យប្រវត្តិ</translation>
+<translation id="1498498210836053409">បិទមុខងារ​ស្អិត​ នៅពេលកែអត្ថបទ (មុខងារ​ស្អិតឆ្លាតវៃ)</translation>
+<translation id="1499041187027566160">បង្កើនសម្លេង</translation>
+<translation id="1506187449813838456">បង្កើនកម្រិតសម្លេង</translation>
+<translation id="1510238584712386396">ឡាន់ឆ័រ</translation>
+<translation id="1523978563989812243">ម៉ាស៊ីន​បំប្លែង​អត្ថបទ​ទៅជា​ការនិយាយ</translation>
+<translation id="1527336312600375509">អត្រាផ្ទុកឡើងវិញរបស់អេក្រង់</translation>
+<translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
+<translation id="1535228823998016251">ឮខ្លាំង</translation>
+<translation id="1535753739390684432">ស្ដាប់​ការអាន​អក្សរ​ជាក់លាក់​ឮៗ។ ដំបូង សូមជ្រើសរើស​រូប "ជ្រើសរើស​ដើម្បីអាន" នៅផ្នែកខាងក្រោម​នៃ​អេក្រង់​របស់អ្នក រួច​រំលេច​អក្សរ។</translation>
+<translation id="1537254971476575106">កែវ​ពង្រីក​ពេញ​អេក្រង់</translation>
+<translation id="1554640914375980459">បាញ់​ពន្លឺអេក្រង់ នៅពេលអ្នក​ទទួលបាន​ការជូនដំណឹង។ ប្រើ​ការជូនដំណឹង​បាញ់ពន្លឺ​ដោយប្រុងប្រយ័ត្ន ប្រសិនបើអ្នក​ងាយមានរំញោចចំពោះពន្លឺ។</translation>
+<translation id="1555130319947370107">ខៀវ</translation>
+<translation id="155803912725350982">គ្រាប់ចុចយឺត</translation>
+<translation id="155865706765934889">ផ្ទាំងប៉ះ</translation>
+<translation id="156793199942386351">បានកំណត់ '<ph name="CURRENTKEY" />' ទៅសកម្មភាព '<ph name="ACTION" />' រួចហើយ។ ចុច​គ្រាប់ចុច​ណាមួយ ដើម្បី<ph name="RESPONSE" />។</translation>
+<translation id="1583127975413389276">ភាសា<ph name="LANGUAGE" />ត្រូវបានដំណើរការ​នៅក្នុងឧបករណ៍ និងដំណើរការដោយ​គ្មានអ៊ីនធឺណិត</translation>
+<translation id="15916883652754430">ការ​កំណត់​សំឡេង​របស់​ប្រព័ន្ធ</translation>
+<translation id="1594781465361405478">បើក/បិទ​សំឡេង</translation>
+<translation id="1597806446183714225">កែលម្អ​គុណភាព​សំឡេង ដើម្បីឱ្យ​សំឡេង​ឮច្បាស់​ដូចធម្មជាតិ។</translation>
+<translation id="1605148987885002237">ក្ដារចុច និង​ការបញ្ចូល</translation>
+<translation id="161042844686301425">បៃតងខ្ចី</translation>
+<translation id="1611649489706141841">ទៅមុខ</translation>
+<translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
+<translation id="1623723619460186680">ការកាត់បន្ថយ​ពន្លឺពណ៌ខៀវ</translation>
+<translation id="1631503405579357839">ការមិនអាចបែងចែក​ពណ៌បាន</translation>
+<translation id="1632278969378690607">ស្វែងរក + ចុច</translation>
+<translation id="163309982320328737">ប្រវែងតួអក្សរចាប់ផ្តើមពេញ</translation>
+<translation id="1647986356840967552">ទំព័រ​មុន</translation>
+<translation id="1648439345221797326">ctrl + shift + <ph name="TOP_ROW_KEY" /></translation>
+<translation id="1667842670298352129">ស្ដាប់​ការអាន​អក្សរ​ជាក់លាក់​ឮៗ។ ដំបូង សូមជ្រើសរើស​រូប "ជ្រើសរើស​ដើម្បីអាន" នៅផ្នែកខាងក្រោម​នៃ​អេក្រង់​របស់អ្នក រួច​រំលេច​អក្សរ។ អ្នកក៏អាច​ប្រើប្រាស់​ផ្លូវកាត់​ក្ដារចុច៖ រំលេច​អក្សរ រួច​ចុច Search + S។</translation>
+<translation id="167997285881077031">ការកំណត់​សំឡេង​អត្ថបទ​ទៅជាការ​និយាយ</translation>
+<translation id="1682696837763999627">ទស្សន៍ទ្រនិច​កណ្ដុរ​ធំ</translation>
+<translation id="1686550358074589746">បើកការវាយបញ្ចូលដោយចលនាអូសម្រាមដៃ</translation>
+<translation id="1698899521169711967">Caret browsing</translation>
+<translation id="17081583771848899">គ្រាប់ចុចបើកដំណើរការ + alt + <ph name="TOP_ROW_KEY" /></translation>
+<translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (ដើម)</translation>
+<translation id="1714644264617423774">បើក​មុខងារភាពងាយប្រើ ដើម្បីធ្វើឱ្យ​ឧបករណ៍​របស់អ្នក​ងាយស្រួលប្រើ​ជាងមុន។ <ph name="LINK_BEGIN" />ស្វែងយល់បន្ថែម<ph name="LINK_END" /></translation>
+<translation id="1724801751621173132">មុខងារបញ្ចូល</translation>
+<translation id="1755601632425835748">ទំហំ​អក្សរ</translation>
+<translation id="1761402971842586829">បាន​រៀបចំ<ph name="BUTTON_NAME" />ឡើងវិញ​ទៅ <ph name="REMAPPING_OPTION" />។</translation>
+<translation id="1767508543310534319">ការអានសញ្ញាវណ្ណយុត្ត</translation>
+<translation id="177814385589420211">ចុច​ប៊ូតុងស្វែងរក​ឱ្យជាប់ ដើម្បីប្ដូរ​រវាង​គ្រាប់ចុច Function និង​គ្រាប់ចុច​ជួរខាងលើ​របស់ប្រព័ន្ធ</translation>
+<translation id="1781164264587898620">ប្រើ​ការកាត់បន្ថយ​សំឡេង​រំខាន និង​ការធ្វើឱ្យ​សំឡេង​ប្រសើរឡើង។</translation>
+<translation id="1781553166608855614">ភាសានិយាយ</translation>
+<translation id="1792619191750875668">អេក្រង់បន្ថែម</translation>
+<translation id="1795438342141780114">កំណត់ទស្សន៍ទ្រនិច​ទៅកណ្ដាលឡើងវិញ</translation>
+<translation id="180203835522132923">Search + O បន្ទាប់មក W</translation>
+<translation id="1808805149659872686">ការបញ្ចូលថ្មី</translation>
+<translation id="1816036116994822943">ល្បឿនស្កេន​ក្ដារចុច</translation>
+<translation id="1822517323280215012">ប្រផេះ</translation>
+<translation id="1838374766361614909">ជម្រះការស្វែងរក</translation>
+<translation id="184183613002882946">ទេ បន្តជាមួយ​ឧបករណ៍ចុច 1</translation>
+<translation id="1842681835432895345">មិនរួម​បញ្ចូល​ផ្ទាំងអេក្រង់នេះ​នៅក្នុង​មុខងារ​កញ្ចក់ទេ</translation>
+<translation id="1864400682872660285">កាន់តែខៀវ​</translation>
+<translation id="1877860345998737529">ការចាត់ចែងសកម្មភាព​ប៊ូតុង​ចុច</translation>
+<translation id="1878885068166344708">ធាតុ​ត្រូវបាន​រំលេច នៅពេល​អ្នក​ផ្លាស់ទី​ចំណុចផ្ដោត។ ចុច tab ឬជ្រើសរើស​ធាតុ​ដើម្បីផ្លាស់ប្ដូរ​ចំណុចផ្ដោត។</translation>
+<translation id="1881445033931614352">ប្លង់​ក្តារចុច</translation>
+<translation id="1907044622262489040">វាយបញ្ចូលដោយប្រើសំឡេងរបស់អ្នក។ ប្រើប្រាស់ Search + D រួច​ចាប់ផ្ដើម​និយាយ។</translation>
+<translation id="1923539912171292317">ចុចដោយស្វ័យប្រវត្តិ</translation>
+<translation id="1926887872692564784">ទស្សន៍ទ្រនិច</translation>
+<translation id="1938351510777341717">ការបញ្ជា​ខាងក្រៅ</translation>
+<translation id="1951012854035635156">ជំនួយ​ការ</translation>
+<translation id="1966649499058910679">រំលេចពាក្យនីមួយៗនៅពេលដែលពាក្យនោះត្រូវបាននិយាយ</translation>
+<translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
+<translation id="1973886230221301399">ChromeVox</translation>
+<translation id="1974060860693918893">កម្រិតខ្ពស់</translation>
+<translation id="1974159333077206889">សំឡេង​ដូចគ្នាពី​ឧបករណ៍បំពង​សំឡេង​ទាំងអស់</translation>
+<translation id="1988733631391393183">បង្ហាញ​ការបញ្ជា​អក្សរស្ទាប​នៅក្នុង​ម៉ឺនុយ ChromeVox</translation>
+<translation id="1999763610967697511">អូស​ហើយ​ទម្លាក់</translation>
+<translation id="2003596238737586336">កាលវិភាគបច្ចុប្បន្នត្រូវបានកំណត់ទៅម៉ោង <ph name="SUNRISE" /> - <ph name="SUNSET" />។ ការកំណត់នេះត្រូវបានគ្រប់គ្រងដោយអ្នកគ្រប់គ្រងរបស់អ្នក។</translation>
+<translation id="2025123106058020990">ការចុច​ចំៗ</translation>
+<translation id="2026377162111110983">សំឡេង​នៅកន្លែង</translation>
+<translation id="2030455719695904263">ផ្ទាំងប៉ះ</translation>
+<translation id="2045838962742066664">ការវាយបញ្ចូល​កាត់ៗ</translation>
+<translation id="2066700471214517561">បាញ់តម្រង់​រលកសញ្ញា​ទៅមីក្រូហ្វូន ដើម្បីឱ្យ​អ្នកដែលប្រើ Chromebook មាន​សំឡេង​ច្បាស់។</translation>
+<translation id="2079545284768500474">ត្រឡប់វិញ</translation>
+<translation id="2088564884469682888">TrackPoint ដែល​ភ្ជាប់មក​ជា​មួយ​ស្រាប់</translation>
+<translation id="2091523941449737894">ចលនា​កាន់តែរហ័ស​នៅលើ​ផ្ទាំងប៉ះ​របស់អ្នក​នឹងផ្លាស់ទី​ទស្សន៍ទ្រនិច​កាន់តែឆ្ងាយ</translation>
+<translation id="2091887806945687916">សំឡេង</translation>
+<translation id="2135456203358955318">កែវ​ពង្រីក​ដាក់​ខាង​លើ​បំផុត</translation>
+<translation id="2143915448548023856">បង្ហាញការកំណត់</translation>
+<translation id="2147282432401652483">command</translation>
+<translation id="2148212683005708350"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="KEY" /></translation>
+<translation id="2155772377859296191">មើល​ទៅដូចជា <ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
+<translation id="2157457598652721267">ប្រើ “/” និង “-” ដើម្បីជ្រើសរើសប៊ូតុងម៉ៅស៍ខាងឆ្វេង ឬខាងស្ដាំ។ ប្រើ “*” ដើម្បីជ្រើសរើសទាំងពីរ។</translation>
+<translation id="2158249272743343757">លុបទិន្នន័យ​សម្រាប់ការកំណត់ឱ្យមានលក្ខណៈផ្ទាល់ខ្លួន...</translation>
+<translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> និងប៊ូតុង​ចុច 1 ទៀត</translation>
+<translation id="2165177462441582039">ជ្រើសរើសរយៈពេលរំលេចសម្រាប់ធាតុនីមួយៗ</translation>
+<translation id="2175526076681939329">ប្រើគ្រាប់ចុចចម្បង</translation>
+<translation id="2218019600945559112">កណ្តុរ និងផ្ទាំងប៉ះ</translation>
+<translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
+<translation id="2234208862050358325">ប្រើគ្រាប់ចុច 1, 2, 3, q, e, a, s, d ដើម្បីផ្លាស់ទីទស្សន៍ទ្រនិច</translation>
+<translation id="2243934210752059021">ស្វែងរក + alt + <ph name="TOP_ROW_KEY" /></translation>
+<translation id="2245603955208828424">ប្រើប្រាស់​គ្រាប់ចុច​ព្រួញ ដើម្បីផ្លាស់ទី​កាត់​ធាតុ​មួយ​អក្សរ​ម្ដងៗ</translation>
+<translation id="2247870315273396641">ស្ដាប់សំឡេងសាកល្បង</translation>
+<translation id="2250153645770828940">លុប​វចនានុក្រម</translation>
+<translation id="22505994009453896">គ្រប់គ្រងទស្សន៍ទ្រនិច​ម៉ៅស៍របស់អ្នកដោយប្រើផ្ទាំងចុច​លេខ</translation>
+<translation id="2262477216570151239">ពន្យាពេលមុនពេលធ្វើសារឡើងវិញ</translation>
+<translation id="2263371730707937087">អត្រាផ្ទុកឡើងវិញរបស់អេក្រង់</translation>
+<translation id="2270666014403455717">កំណត់​ឧបករណ៍ចុច​សម្រាប់ “ជ្រើសរើស”</translation>
+<translation id="2272430695183451567">បានកំណត់ឧបករណ៍ចុច 0</translation>
+<translation id="228059581448666199">ចុចម៉ៅស៍ខាងឆ្វេង</translation>
+<translation id="2290615375132886363">ប៊ូតុង​រុករក​ក្នុង​មុខងារ​ថេប្លេត</translation>
+<translation id="2310923358723722542">ការ​បង្ហាញ និង​ការ​ពង្រីក</translation>
+<translation id="2319459402137712349">ជ្រើសរើស​កន្លែង​បញ្ចូល​អក្សរ ដើម្បីបើក​ក្ដារចុច។ អ្នកក៏អាច​ជ្រើសរើស​រូប​ក្ដារចុច​នៅផ្នែក​ខាងក្រោម​នៃ​អេក្រង់របស់អ្នក​បាន​ផងដែរ។</translation>
+<translation id="2373499590298659902">ប្រើ “0” ដើម្បីចុចប៊ូតុងម៉ៅស៍ឱ្យជាប់</translation>
+<translation id="2376056713414548745">អានឱ្យឮ</translation>
+<translation id="2382368170666222719">បិទ​ផ្ទាំងប៉ះ​ដែលមានភ្ជាប់​មកជាមួយ​ស្រាប់</translation>
+<translation id="2383825469508278924">ប្ដូរ​ការចាប់​ប្លង់​គ្រាប់ចុច​លើ​ក្ដារចុច គ្រាប់ចុច​មុខងារ និង​អ្វីៗ​ជាច្រើនទៀត</translation>
+<translation id="2410298923485357543">ប្រើសំឡេងធម្មជាតិ នៅពេលឧបករណ៍មានអ៊ីនធឺណិត</translation>
+<translation id="2416435988630956212">គ្រាប់ចុច​មុខងារ​នៅលើក្ដារចុច</translation>
+<translation id="2427507373259914951">ចុច​កណ្ដុរ​ខាងឆ្វេង</translation>
+<translation id="2445726032315793326">កែវពង្រីក​នៅផ្នែក​ខ្លះ</translation>
+<translation id="2448810255793562605">ការស្កេនដោយស្វ័យប្រវត្តិ​ក្នុងមុខងារប្រើ​ប៊ូតុងចុច​</translation>
+<translation id="2451298179137331965">2x</translation>
+<translation id="2469375675106140201">កំណត់ការ​ពិនិត្យអក្ខរាវិរុទ្ធ​តាមបំណង</translation>
+<translation id="2471469610750100598">ខ្មៅ (លំនាំដើម)</translation>
+<translation id="2477065602824695373">ដោយសារ​អ្នកបានរៀបចំ​ឧបករណ៍ចុចច្រើន ការស្កេន​ដោយស្វ័យប្រវត្តិត្រូវបានបិទ។</translation>
+<translation id="2479541499757560845">ការកំណត់​ក្ដារចុច​ភាពងាយ​ស្រួល</translation>
+<translation id="248676429071089168">អូសឡើងលើដើម្បីផ្លាស់ទីទំព័រចុះក្រោម</translation>
+<translation id="2489686758589235262">កំណត់​ឧបករណ៍ចុច 2 ទៀត</translation>
+<translation id="249330843868392562">បើកការកំណត់​ការបំប្លែងអត្ថបទទៅជាការនិយាយ</translation>
+<translation id="2497229222757901769">ល្បឿនកណ្តុរ</translation>
+<translation id="2501920221385095727">គ្រាប់ចុចស្អិត</translation>
+<translation id="250704661983564564">ការរៀបចំ​ផ្ទាំងអេក្រង់</translation>
+<translation id="2507491234071975894">ឧបករណ៍​បំពង​សំឡេង</translation>
+<translation id="2509566264613697683">8x</translation>
+<translation id="2512065992892294946"><ph name="LANGUAGE" /> (បានជ្រើសរើស)</translation>
+<translation id="2514465118223423406">នៅពេល​ភ្ជាប់​ម៉ៅស៍</translation>
+<translation id="2515586267016047495">Alt</translation>
+<translation id="2517472476991765520">ស្កេន</translation>
+<translation id="2521835766824839541">ចម្រៀង​មុន</translation>
+<translation id="2529887123641260401">អ្នកអាច​ប្ដូរការកំណត់របស់អ្នក​បានជានិច្ច ឬបើក​ការណែនាំ​អំពីការរៀបចំ​ម្តងទៀត​ពីការកំណត់​មុខងារប្រើឧបករណ៍ចុច។</translation>
+<translation id="2532589005999780174">របៀបភាពដិតកម្រិតខ្ពស់</translation>
+<translation id="2546991196809436099">ពង្រីក ដើម្បី​ធ្វើឱ្យ​ធាតុ​នៅលើ​អេក្រង់​ធំជាងមុន។ ប្រើប្រាស់ Search + Ctrl + M ដើម្បីបើក និង​បិទ​កែវពង្រីក។</translation>
+<translation id="2573831315551295105">កំណត់ឧបករណ៍ចុច​សម្រាប់ “<ph name="ACTION" />”</translation>
+<translation id="2577127557293415225">បិទភ្នែក​ទាំងពីរ​មួយភ្លែត</translation>
+<translation id="258095186877893873">វែង</translation>
+<translation id="2581786034175502848">ចុច shift 5 ដង ដើម្បី​បើកវា​ឡើងវិញ</translation>
+<translation id="2619340799655338321">ចាក់/ផ្អាក</translation>
+<translation id="2620900772667816510">កម្រិតគុណភាពកំពូលរបស់ប៊្លូធូស</translation>
+<translation id="262373406453641243">Colemak</translation>
+<translation id="2631498379019108537">បង្ហាញជម្រើសធាតុចូលនៅក្នុងធ្នើ</translation>
+<translation id="2634199532920451708">ប្រវត្តិ​បោះពុម្ព</translation>
+<translation id="264897126871533291">បញ្ហាងងឹតពណ៌ក្រហម</translation>
+<translation id="2657612187216250073">ការកំណត់​ភាពងាយស្រួល​ប្រើប្រាស់​​ព្រួញ</translation>
+<translation id="2659694935349347275">បានផ្លាស់ទីវិនដូចុះក្រោម និងទៅខាងស្ដាំ</translation>
+<translation id="2670350619068134931">រូបមានចលនា​ដែលបានកាត់បន្ថយ</translation>
+<translation id="267442004702508783">ធ្វើឲ្យថ្មីឡើងវិញ</translation>
+<translation id="2692503699962701720">ប្ដូរ​កម្រិតសំឡេង នៅពេលអាន​ប្រភេទធាតុ និង​អត្ថបទដែល​មានរចនាប័ទ្ម​ជាក់លាក់</translation>
+<translation id="2693134906590795721">សំឡេងសាកថ្ម</translation>
+<translation id="270516211545221798">ល្បឿនផ្ទាំងប៉ះ</translation>
+<translation id="2706462751667573066">Up</translation>
+<translation id="2714180132046334502">ផ្ទៃខាង​ក្រោយ​ងងឹត</translation>
+<translation id="271749239614426244">មិនអើពើ​ចលនា​ទស្សន៍ទ្រនិច​តិចតួច</translation>
+<translation id="2718395828230677721">ពន្លឺពេលយប់</translation>
+<translation id="2726776862643824793">បន្ថយពន្លឺ​ផ្ទាំងអេក្រង់</translation>
+<translation id="27349076983469322">ផ្ទៃខាង​ក្រោយ​ភ្លឺ</translation>
+<translation id="2735712963799620190">កាលវិភាគ</translation>
+<translation id="2751454300227269244">ធ្វើចលនា​មាត់​របស់អ្នក​ទៅស្ដាំ</translation>
+<translation id="2752805177271551234">ប្រើប្រវត្តិបញ្ចូល</translation>
+<translation id="2755367719610958252">គ្រប់គ្រងលក្ខណៈពិសេសលទ្ធភាពចូលប្រើ</translation>
+<translation id="2765217105034171413">តូច</translation>
+<translation id="2770929488047004208">កម្រិតច្បាស់របស់អេក្រង់</translation>
+<translation id="2801954693771979815">ទំហំអេក្រង់</translation>
+<translation id="2802911274872454492">ការកំណត់ចលនា៖ <ph name="SELECTED_GESTURE" /></translation>
+<translation id="2804742109948581745">ទន្ទឹម​គ្នា</translation>
+<translation id="2808985063107661499">"<ph name="MAIN_GESTURE" />" អាច​ជាន់គ្នា​ជាមួយ "<ph name="CONFLICTING_GESTURE_ONE" />" និង "<ph name="CONFLICTING_GESTURE_TWO" />"។ ប្រសិនបើ​អាច សូម​សាកល្បង​ជ្រើសរើស​ចលនា​ផ្សេង។</translation>
+<translation id="2809346626032021864">ការអាន</translation>
+<translation id="2822634587701817431">បង្រួម / ពង្រីក</translation>
+<translation id="2833144527504272627">រុករក​ដោយប្រើ​ទស្សន៍ទ្រនិច​អក្សរ</translation>
+<translation id="2835177225987815960">ការរៀបចំ​ការស្កេនបច្ចុប្បន្ន​របស់អ្នកនឹងត្រូវ​បានកំណត់ឡើងវិញ រួមទាំងឧបករណ៍ចុច​ដែលបានកំណត់ និងចំណូលចិត្តនៃ​ល្បឿនស្កេនដោយស្វ័យប្រវត្តិ។</translation>
+<translation id="2849035674501872372">រកមើល</translation>
+<translation id="2860710618359053450">ទាញថ្គាម​ទៅខាងស្ដាំ</translation>
+<translation id="2865057607286263192">ចុច​គ្រាប់ចុច​លើក្ដារចុច​ឱ្យជាប់ ដើម្បីមើល​ឃើញសញ្ញាសម្គាល់​សំឡេង និង​តួអក្សរ​ពិសេស។ ការធ្វើបែបនេះ​បិទការចុច​គ្រាប់ចុច​ឡើងវិញ​សម្រាប់​គ្រាប់ចុច​អក្ខរក្រម។ អាចប្រើបាន​សម្រាប់តែភាសា​អង់គ្លេស (សហរដ្ឋអាមេរិក) ប៉ុណ្ណោះ។</translation>
+<translation id="2873744479411987024">តាមរយៈ​អត្រាផ្ទុកឡើងវិញ​កាន់តែខ្ពស់ អ្នកនឹងមាន​ផ្ទាំងអេក្រង់​កាន់តែរលូនដោយមាន​ភាពលម្អិត​កាន់តែខ្ពស់។ អត្រាផ្ទុក​ឡើងវិញ​ខ្ពស់ជាងមុន​អាចប៉ះពាល់ដល់​កម្រិតថាមពលថ្ម។</translation>
+<translation id="2885129935310217435">មានប៊ូតុង​ដែលមាន​ឈ្មោះដូចគ្នា។ សូម​ជ្រើសរើស​ឈ្មោះ​ផ្សេងទៀត។</translation>
+<translation id="2903925626657991994">ប្រើ “,” ដើម្បីផ្លាស់ប្ដូរការជ្រើសរើសប៊ូតុងម៉ៅស៍រវាងប៊ូតុងខាងឆ្វេង ប៊ូតុងខាងស្ដាំ និងទាំងពីរ</translation>
+<translation id="2908358077082926882">ចុច “<ph name="CURRENTKEY" />” ម្ដងទៀត ដើម្បីដកការកំណត់ រួច<ph name="RESPONSE" /></translation>
+<translation id="2915873080513663243">ស្កេនដោយស្វ័យប្រវត្តិ</translation>
+<translation id="2941112035454246133">ទាប</translation>
+<translation id="2946190589196900944">គែម​ផ្ទាំងអេក្រង់</translation>
+<translation id="2960942820860729477">អត្រាផ្ទុកឡើងវិញ</translation>
+<translation id="2981113813906970160">បង្ហាញព្រួញកណ្តុរធំ</translation>
+<translation id="2989123969927553766">ការបង្កើន​ល្បឿន​រំកិលកណ្ដុរ</translation>
+<translation id="3000461861112256445">សំឡេង​ម៉ូណូ</translation>
+<translation id="3001614333383288217">{COUNT,plural, =0{មិនបាន​ប្ដូរគ្រាប់ចុច​តាមបំណងទេ}=1{បាន​ប្ដូរគ្រាប់ចុច 1 តាមបំណង}other{បាន​ប្ដូរគ្រាប់ចុច {COUNT} តាមបំណង}}</translation>
+<translation id="3004385386820284928">ប្ដូរ​គ្រាប់ចុច​លើក្ដារចុច​តាមបំណង</translation>
+<translation id="3009178788565917040">ទិន្នផល</translation>
+<translation id="3009352964623081324">Search + O បន្ទាប់មក S។ ប្រើដើម្បី​ដំឡើង គ្រប់គ្រង និងប្ដូរសំឡេង​តាមបំណង។</translation>
+<translation id="3029466929721441205">បង្ហាញ​ឧបករណ៍​របស់ប៊ិក​នៅក្នុងធ្នើរ</translation>
+<translation id="3030967311408872958">ថ្ងៃលិចរហូតដល់ថ្ងៃរះ</translation>
+<translation id="3031532026314193077">ប្រើ​ផ្ទាំងប៉ះ និង​ក្ដារចុច ដើម្បី​ចុចកណ្ដុរ​ខាងស្ដាំ</translation>
+<translation id="3032204772252313646">អក្សរ​រត់​ដែល​ត្រូវ​បាន​បង្កើត​ដោយ​ស្វ័យប្រវត្តិ</translation>
+<translation id="3038628620670416486">កំណត់​ទីតាំង​ប៊ូតុង​នៅលើ​ម៉ៅស៍​របស់អ្នក</translation>
+<translation id="304747341537320566">កម្មវិធី​ម៉ាសីុន​និយាយ</translation>
+<translation id="3051250416341590778">ទំហំ​ផ្ទាំងអេក្រង់</translation>
+<translation id="3053274730492362225">កុំលោតភ្លឹបភ្លែត</translation>
+<translation id="3061302636956643119">អត្ថបទនឹងត្រូវបានបញ្ជូនទៅ Google សម្រាប់ដំណើរការ។</translation>
+<translation id="3065522099314259755">ការពន្យារពេល​នៃការសរសេរដដែលៗ​នៅលើ​ក្ដារចុច</translation>
+<translation id="3077734595579995578">SHIFT</translation>
+<translation id="3083899879156272923">រំកិលអេក្រង់ដោយរក្សាឱ្យកណ្ដុរនៅកណ្ដាលអេក្រង់</translation>
+<translation id="3090227230165225418">ប្រកាស​ការជូនដំណឹង​អំពី​ការទាញយក</translation>
+<translation id="3101126716313987672">ពន្លឺតិច</translation>
+<translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (ប៊្លូធូស)</translation>
+<translation id="3108957152224931571">ពណ៌រំលេច</translation>
+<translation id="3119743309973425629">អត្រាលោតភ្លឹបភ្លែតរបស់ទស្សន៍ទ្រនិចអក្សរ</translation>
+<translation id="3126026824346185272">Ctrl</translation>
+<translation id="3151786313568798007">ទិសដៅ</translation>
+<translation id="3161522574479303604">ភាសាទាំងអស់</translation>
+<translation id="3167446923957429259">ធ្វើចលនា​មាត់​របស់អ្នក​ទៅឆ្វេង</translation>
+<translation id="3176347586396987181">ប្រើ “z” ដើម្បីចុចប៊ូតុងម៉ៅស៍ឱ្យជាប់</translation>
+<translation id="3180990259147710757">ទាញថ្គាម​ទៅខាងឆ្វេង</translation>
+<translation id="3182749001423093222">ពិនិត្យអក្ខរាវិរុទ្ធ</translation>
+<translation id="3183944777708523606">ការរៀបចំ​ផ្ទាំងអេក្រង់</translation>
+<translation id="3189187154924005138">ទស្សន៍ទ្រនិច​ធំ</translation>
+<translation id="3206289903841621620">វចនានុក្រម​អ្នកប្រើប្រាស់​ទី <ph name="NUMBER" /></translation>
+<translation id="3227137524299004712">ម៉ៃក្រូហ្វូន</translation>
+<translation id="3241638166094654466">ក្រឡា​នៅក្នុង​បន្ទាត់​នីមួយៗ៖</translation>
+<translation id="324366796737464147">ការកាត់បន្ថយ​សំឡេងរំខាន</translation>
+<translation id="3266688867683447361">បាន​ជ្រើសរើស <ph name="ITEM" />។ ទី <ph name="INDEX" /> នៃ <ph name="COUNT" />។ សូមចុច "ស្វែងរក" រួមជាមួយ "ដកឃ្លា" ដើម្បីដក​ការ​ជ្រើសរើស។</translation>
+<translation id="3277214528693754078">រុករក​ដោយ​ប្រើ​ទស្សន៍ទ្រនិច​អក្សរ (caret browsing)</translation>
+<translation id="3289668031376215426">ការសរសេរជា​អក្សរធំស្វ័យប្រវត្តិ</translation>
+<translation id="3321460131042519426">បើកដំណើរការតម្រឹមពាក្យ</translation>
+<translation id="3335380372402547327">មើលការជូនដំណឹងបាញ់ពន្លឺសាកល្បង</translation>
+<translation id="334252345105450327">ថតអេក្រង់</translation>
+<translation id="3351472127384196879">បញ្ចូល ឬ​កំណត់ទីតាំង​ប៊ូតុង​នៅលើ​ប៊ិករបស់អ្នក</translation>
+<translation id="335581015389089642">ការនិយាយ</translation>
+<translation id="3370260763947406229">ការកែស្វ័យប្រវត្តិ</translation>
+<translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
+<translation id="3390740059150071453">មើលទៅ​ខាងឆ្វេង</translation>
+<translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hertz) - ប្រទាក់គ្នា</translation>
+<translation id="3406396172897554194">ស្វែងរក​តាម​ភាសា ឬ​ឈ្មោះ​វិធីសាស្រ្ត​បញ្ចូល</translation>
+<translation id="3409157109901479672">ផ្នែក​ខាងឆ្វេង</translation>
+<translation id="3414974735818878791">ចុចកណ្ដុរ​កណ្ដាល</translation>
+<translation id="3431530007831146102">ប្រើ​ចលនាក្បាល ដើម្បី​គ្រប់គ្រង​ទស្សន៍ទ្រនិច​ម៉ៅស៍</translation>
+<translation id="3441653493275994384">អេក្រង់</translation>
+<translation id="3445465968953598059">ការគ្រប់គ្រង​ដោយមុខ</translation>
+<translation id="3459509316159669723">កំពុងបោះពុម្ព</translation>
+<translation id="3474218480460386727">ប្រើ 99 តួ ឬតិចជាងនេះសម្រាប់ពាក្យថ្មី</translation>
+<translation id="3479357084663933762">បញ្ហាងងឹតពណ៌បៃតង</translation>
+<translation id="348268549820508141">ការសម្គាល់ការនិយាយ</translation>
+<translation id="3491616972057195633">គ្រាប់ចុចឡង</translation>
+<translation id="3496213124478423963">បង្រួម</translation>
+<translation id="3496238553815913323"><ph name="LANGUAGE" /> (មិនបាន​ជ្រើសរើស)</translation>
+<translation id="3496689104192986836">កម្រិត​ថ្ម <ph name="PERCENTAGE" />%</translation>
+<translation id="3511528412952710609">ខ្លី</translation>
+<translation id="3541823293333232175">បានកំណត់</translation>
+<translation id="3548162552723420559">កែតម្រូវ​ពណ៌អេក្រង់​ឱ្យ​ស៊ីគ្នា​ជាមួយ​មជ្ឈដ្ឋាន​ជុំវិញ</translation>
+<translation id="3582299299336701326">ប្ដូរ​ពន្លឺ​អេក្រង់​ភ្លឺឱ្យងងឹត និង​អេក្រង់​ងងឹត​ឱ្យ​ភ្លឺ។ ចុច Search + Ctrl + H ដើម្បីបើក និង​បិទ​ការបញ្ច្រាស​ពណ៌។</translation>
+<translation id="3587279952965197737">ត្រូវ​តែ​មាន <ph name="MAX_CHARACTER_COUNT" /> តួ ឬ​តិច​ជាង​នេះ</translation>
+<translation id="3587482841069643663">ទាំងអស់</translation>
+<translation id="3593152357631900254">បើកដំណើរការរបៀបភិញអ៊ិញមិនច្បាស់</translation>
+<translation id="3602290021589620013">ពិនិត្យមើល</translation>
+<translation id="3602894439067790744">អាន​លេខ​ជា</translation>
+<translation id="3616113530831147358">សម្លេង</translation>
+<translation id="3617062258679844578">ដើម្បីចុច សូម​ប៉ះ​ផ្ទាំងប៉ះ​របស់អ្នក ជំនួសឱ្យ​ការចុចសង្កត់លើវា</translation>
+<translation id="3621202678540785336">ធាតុបញ្ចូល</translation>
+<translation id="3622820753353315928">ពណ៌​អេក្រង់​បាញ់​ពន្លឺ</translation>
+<translation id="3642070413432681490">គូស​រង្វង់​ជុំវិញ​ទស្សន៍ទ្រនិច</translation>
+<translation id="3652181838577940678">កំណត់​ទីតាំង​ប៊ូតុង​នៅលើ​ប៊ិក​របស់អ្នក</translation>
+<translation id="3653227677390502622">ឆ្លើយតបរហ័ស</translation>
+<translation id="3656328935986149999">ល្បឿនទស្សន៍ទ្រនិច</translation>
+<translation id="3656701180077048004">បញ្ចូល​ការពន្យារ​ពេល​រវាង​ពេលដែលអ្នក​ចុចគ្រាប់ចុច និង​ពេល​ដែលវា​បើកដំណើរការ</translation>
+<translation id="3658871634334445293">ការបង្កើនល្បឿន TrackPoint</translation>
+<translation id="3679126865530709868">ផ្ទាំងប៉ះដែលភ្ជាប់​មកជាមួយ​ស្រាប់</translation>
+<translation id="3680683624079082902">សំឡេង​បំប្លែង​អត្ថបទ​ទៅជា​ការនិយាយ</translation>
+<translation id="3681548574519135185">រង្វង់​ផ្ដោត</translation>
+<translation id="3694590407685276748">រំលេច​ទស្សន៍ទ្រនិច​អក្សរ</translation>
+<translation id="369736917241079046">គ្រាប់ចុច​ចាប់ផ្ដើម + ព្រួញ​ទៅឆ្វេង</translation>
+<translation id="3701028563242674350">អង្រួនទស្សន៍ទ្រនិចម៉ៅស៍ ដើម្បីពង្រីកវា</translation>
+<translation id="3708295717182051206">អក្សរត់</translation>
+<translation id="371370241367527062">មីក្រូហ្វូន​ខាងមុខ</translation>
+<translation id="37143699183660101">ស្ថិរភាពទស្សន៍ទ្រនិច</translation>
+<translation id="372062398998492895">CUPS</translation>
+<translation id="3730076362938942381">កម្មវិធី​សរសេរ​ដោយប្រើប៊ិក</translation>
+<translation id="3735039640698208086">នៅ​ពេល​ចាក់​សំឡេង...</translation>
+<translation id="3742235229730461951">ប្លង់​ក្តារចុច​កូរ៉េ</translation>
+<translation id="3753142252662437130">តម្រង​ពណ៌</translation>
+<translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
+<translation id="3783640748446814672">alt</translation>
+<translation id="3783725005098956899">បង្ហាញ​កំណត់ហេតុ</translation>
+<translation id="3786834302860277193">បង្ហាញបន្ទាត់គូសពី​ក្រោមសម្រាប់អក្សរផ្សំ</translation>
+<translation id="3789841737615482174">តំឡើង</translation>
+<translation id="3796215473395753611">alt + ព្រួញឡើងលើ</translation>
+<translation id="3798670284305777884">ឧបករណ៍បំពងសំឡេង (ខាងក្នុង)</translation>
+<translation id="3799128412641261490">ការកំណត់​ការប្រើប៊ូតុងចុច</translation>
+<translation id="3800764353337460026">ស្តាយ៍និមិត្តសញ្ញា</translation>
+<translation id="3805079316250491151">ឈ្មោះ​ប៊ូតុង​ថ្មី</translation>
+<translation id="3808202562160426447">បន្ថយពន្លឺ​ខ្លឹមសារ​ផ្ទៃខាងក្រោយ</translation>
+<translation id="3819164369574292143">ពង្រីក ដើម្បី​ធ្វើឱ្យ​ធាតុ​នៅលើ​អេក្រង់​ធំជាងមុន។ ប្រើប្រាស់ Search + Ctrl + M ដើម្បីបើក និង​បិទ​មុខងារ​កែវពង្រីក។ ប្រើប្រាស់ Ctrl + Alt + គ្រាប់ចុច​ព្រួញ ដើម្បីផ្លាស់ទី បន្ទាប់​ពីពង្រីក។</translation>
+<translation id="3827548509471720579">ពន្លឺ​ផ្ទាំងអេក្រង់</translation>
+<translation id="3840096463915153852">ប្រវត្តិ​នៃការសន្ទនា</translation>
+<translation id="3841319830220785495">សំឡេងធម្មជាតិ​លំនាំដើម</translation>
+<translation id="3852215160863921508">ជំនួយ​ក្នុងការ​បញ្ចូល</translation>
+<translation id="3865414814144988605">គុណភាពបង្ហាញ</translation>
+<translation id="3867134342671430205">អូស ឬប្រើគ្រាប់ចុចព្រួញ ដើម្បីផ្លាស់ទីផ្ទាំងអេក្រង់</translation>
+<translation id="3867831579565057323">ភ្ជាប់​ទំនាក់ទំនងអេក្រង់ថាច់​របស់អ្នក</translation>
+<translation id="389313931326656921">កំណត់​ឧបករណ៍ចុច​សម្រាប់ “បន្ទាប់”</translation>
+<translation id="3898233949376129212">ភាសា​របស់ឧបករណ៍</translation>
+<translation id="3903187154317825986">ក្ដារចុច​ដែលភ្ជាប់​មកជាមួយ​ស្រាប់</translation>
+<translation id="3924145049010392604">Meta</translation>
+<translation id="3950841222883198950">ការវាយបញ្ចូលដោយប្រើសំឡេង</translation>
+<translation id="3954469006674843813"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hertz)</translation>
+<translation id="3968739731834770921">កាណា</translation>
+<translation id="3974514184580396500">ប្រើ “បន្ទាប់” ដើម្បីផ្លាស់ទីការផ្ដោតរបស់អ្នកទៅមុខនៅលើអេក្រង់</translation>
+<translation id="3978325380690188371">មិនអាចប្រើ​គ្រាប់ចុចស្អិតបានទេ នៅពេលបើក ChromeVox</translation>
+<translation id="3983769721878416534">ពន្យារពេលមុនពេលចុច</translation>
+<translation id="3984536049089846927">ទំព័របន្ទាប់</translation>
+<translation id="3994530503403062649">កំណត់​ទីតាំង​ប៊ូតុង​នៅលើ​ថេប្លេត​របស់អ្នក</translation>
+<translation id="4001540981461989979">រំលេច​ទស្សន៍ទ្រនិច​កណ្ដុរ​នៅពេល​រំកិល</translation>
+<translation id="4028467762035011525">បញ្ចូល​វិធីសាស្ត្រ​បញ្ចូល</translation>
+<translation id="4029024445166427442">គ្រាប់ចុច​ចាប់ផ្ដើម + shift + Backspace</translation>
+<translation id="4043267180218562935">ទំហំ​ទស្សន៍ទ្រនិច</translation>
+<translation id="4045196801416070837">សំឡេង​ឧបករណ៍</translation>
+<translation id="4050379682069019014">"<ph name="MAIN_GESTURE" />" អាច​ជាន់គ្នា​ជាមួយ "<ph name="CONFLICTING_GESTURE" />"។ ប្រសិនបើ​អាច សូម​សាកល្បង​ជ្រើសរើស​ចលនា​ផ្សេង។</translation>
+<translation id="4050931325744810690">ដើម្បីប្ដូរទៅវិធីបញ្ចូលដែលបានប្រើចុងក្រោយ សូមចុច <ph name="KEY_CODES" /></translation>
+<translation id="4051177682900543628">ស្វែងរក + ព្រួញទៅ​ស្ដាំ</translation>
+<translation id="4074164314564067597">ក្ដារចុច</translation>
+<translation id="4078738236287221428">ដោយបង្ខំ</translation>
+<translation id="4089817585533500276">shift + <ph name="TOP_ROW_KEY" /></translation>
+<translation id="4095507791297118304">អេក្រង់ចម្បង</translation>
+<translation id="4098667039111970300">ឧបករណ៍​របស់ប៊ិក​នៅក្នុង​របារឧបករណ៍</translation>
+<translation id="4100020874626534113">អនុញ្ញាត​ការកំណត់​វណ្ណយុត្ត​ដែលមាន​ភាពបត់បែន។ ឧទាហរណ៍ អ្នកអាច​វាយបញ្ចូល “anhs” ឬ “asnh” ដើម្បីឱ្យចេញជា “ánh”។</translation>
+<translation id="410225014223200513">ធ្វើមាត់​របស់អ្នក​ជារាង​រង្វង់</translation>
+<translation id="4103644672850109428">កម្មវិធី​អាន​អេក្រង់, ការពង្រីក</translation>
+<translation id="4107793386654579933">ជ្រើសរើស​ផ្លូវកាត់​សម្រាប់​សកម្មភាព<ph name="ACTION_NAME" /></translation>
+<translation id="4115378294792113321">ស្វាយខ្ចី</translation>
+<translation id="4116480382905329353">ចាប់បាន 1 ដង</translation>
+<translation id="4117714603282104018">មតិស្ថាបនាតាមការប៉ះផ្ទាំងប៉ះ</translation>
+<translation id="4130877444234883490">ប្រើ “m” ដើម្បីចុចប៊ូតុងម៉ៅស៍ឱ្យជាប់</translation>
+<translation id="4136203100490971508">ពន្លឺ​ពេល​យប់នឹងបិទដោយស្វ័យប្រវត្តិពេលថ្ងៃរះ</translation>
+<translation id="4138598238327913711">បច្ចុប្បន្ននេះ អាចប្រើ​ការពិនិត្យ​វេយ្យាករណ៍បាន​សម្រាប់តែ​ភាសាអង់គ្លេស​ប៉ុណ្ណោះ</translation>
+<translation id="4147099377280085053">ជ្រើសរើស​តារាង​អក្សរស្ទាប</translation>
+<translation id="4150201353443180367">ការបង្ហាញ</translation>
+<translation id="4158315983204257156">ពុម្ពអក្សរ និង​ទំហំ​អក្សរ​គេហទំព័រ</translation>
+<translation id="4159784952369912983">ស្វាយ</translation>
+<translation id="4176463684765177261">បានបិទដំណើរការ</translation>
+<translation id="4181602000363099176">20x</translation>
+<translation id="4190828427319282529">រំលេច​ការផ្ដោត​ក្ដារចុច</translation>
+<translation id="419427585139779713">បញ្ចូល​មួយព្យាង្គ​ក្នុងមួយលើក</translation>
+<translation id="4209092469652827314">ធំ</translation>
+<translation id="42126664696688958">នាំចេញ</translation>
+<translation id="4217571870635786043">ការសរសេរ​តាមអាន​</translation>
+<translation id="4235976607074422892">ល្បឿនរំកិល</translation>
+<translation id="4241224519481557898">ប្រភេទ</translation>
+<translation id="4243624244759495699"><ph name="LOCALE" />, កម្រិត <ph name="GRADE" /></translation>
+<translation id="4244238649050961491">ស្វែងរក​កម្មវិធី​ប៊ិច​ជា​ច្រើន​ទៀត</translation>
+<translation id="4250229828105606438">ថតអេក្រង់</translation>
+<translation id="4254414375763576535">ព្រួញ​ចង្អុល​ធំ</translation>
+<translation id="4255016471934258618">ហាមាត់​របស់អ្នក​ឱ្យធំ</translation>
+<translation id="4275291496240508082">សំឡេង​ពេលចាប់ផ្ដើម</translation>
+<translation id="4275397969489577657">បើក​ការធ្វើ​កំណត់ហេតុ​កម្រងព្រឹត្តិការណ៍</translation>
+<translation id="4281849573951338030">ប្ដូរ​ប៊ូតុង​ប៊ិក​តាមបំណង</translation>
+<translation id="4284903252249997120">មុខងារ​ជ្រើសរើសដើម្បីអាន និង​កម្មវិធី​អាន​អេក្រង់ ChromeVox</translation>
+<translation id="4289540628985791613">ទិដ្ឋភាពទូទៅ</translation>
+<translation id="4290898381118933198">អូស ដើម្បី​រុករក​រវាង​ទំព័រនានា</translation>
+<translation id="4292613336957320546">ការបង្កើនល្បឿន</translation>
+<translation id="4297813521149011456">ការ​បង្វិលផ្ទាំងអេក្រង់</translation>
+<translation id="4307992518367153382">មូលដ្ឋាន</translation>
+<translation id="4321179778687042513">ctrl</translation>
+<translation id="4356100841225547054">បិទ​កម្រិត​សំឡេង</translation>
+<translation id="4360738659108163902">ចុចម៉ៅស៍ខាងស្ដាំ</translation>
+<translation id="4362459470237309049">ប្រើ “.” ដើម្បីលែងប៊ូតុងម៉ៅស៍</translation>
+<translation id="4369233657762989723">បើក/បិទ​ការសរសេរ​តាមអាន</translation>
+<translation id="437809255587011096">ប្រកាស​អំពី​រចនាប័ទ្ម​អត្ថបទ</translation>
+<translation id="4378589147979399051">គ្រប់គ្រងទស្សន៍ទ្រនិច​ម៉ៅស៍របស់អ្នកដោយប្រើក្ដារចុចចម្បងរបស់អ្នក</translation>
+<translation id="4386604394450371010">ទិដ្ឋភាព​រួម</translation>
+<translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> និងប៊ូតុងចុច <ph name="NUMBER_OF_OTHER_SWITCHES" /> ទៀត</translation>
+<translation id="4393102500004843976">ស្វែងរក + shift + <ph name="TOP_ROW_KEY" /></translation>
+<translation id="4394049700291259645">បិទដំណើរការ</translation>
+<translation id="4400632832271803360">ចុច​ប៊ូតុងកម្មវិធីចាប់ផ្ដើមឲ្យជាប់ ដើម្បី​ប្តូរលក្ខណៈ​គ្រាប់ចុច​នៅជួរ​ខាងលើ</translation>
+<translation id="4403012369005671154">ការបំប្លែង​ការនិយាយ​ទៅ​ជា​អត្ថបទ</translation>
+<translation id="4405781821077215583">ធ្វើឱ្យធាតុ​នៅលើ​អេក្រង់​របស់អ្នក រួមទាំង​អក្សរ​ធំជាងមុន ឬ​តូចជាងមុន</translation>
+<translation id="4406883609789734330">អក្សររត់​ក្នុងពេល​ជាក់ស្ដែង</translation>
+<translation id="4414051792721275732">នៅពេល​អ្នកធ្វើ​ចលនា​ដើម្បីចុច ល្បឿន​ម៉ៅស៍​នឹង​ថយចុះ ដើម្បីផ្ដល់​ការគ្រប់គ្រង​បន្ថែម។ សូម​ធ្វើចលនានោះ​ម្ដងទៀត ដើម្បី​បញ្ចប់​ការចុច។</translation>
+<translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
+<translation id="4423525817792153232">បង្ហាញ​ធ្មេញទាំងអស់​របស់អ្នក</translation>
+<translation id="4426464032773610160">ដើម្បីចាប់ផ្ដើម សូមប្រាកដថាឧបករណ៍ចុចសម្រាប់ជនពិការដែលប្រើប៊្លូធូស ឬ USB ត្រូវបានភ្ជាប់ជាមួយ Chromebook របស់អ្នក។ អ្នកក៏អាច​ប្រើគ្រាប់ចុចរបស់ក្ដារចុចបានផងដែរ។</translation>
+<translation id="4427111270137140798">ចាប់បាន <ph name="COUNT" /> ដង</translation>
+<translation id="4429163740524851942">ប្លង់​ក្ដារចុច​រូបវន្ត</translation>
+<translation id="4430019312045809116">សម្លេង</translation>
+<translation id="4446933390699670756">បានឆ្លុះ</translation>
+<translation id="4457472090507035117">ជ្រើសរើស​សំឡេង​បច្ចុប្បន្ន៖</translation>
+<translation id="4471354919263203780">កំពុងទាញយក​ឯកសារ​សម្គាល់ការនិយាយ... <ph name="PERCENT" />%</translation>
+<translation id="450552327874992444">បានបញ្ចូលពាក្យរួចហើយ</translation>
+<translation id="4513872120116766993">ការសរសេរតាម​ការទស្សន៍ទាយ</translation>
+<translation id="4538417792467843292">លុបពាក្យ</translation>
+<translation id="4546345569117159016">ប៊ូតុងស្ដាំ</translation>
+<translation id="4559063558809888563">ចលនា​ផ្ទៃមុខ</translation>
+<translation id="4563210852471260509">ភាសាបញ្ចូលដើមគឺភាសាចិន</translation>
+<translation id="4567772783389002344">បន្ថែមពាក្យ</translation>
+<translation id="4580127151758731432">បើក្បាលមានចលនា​កាន់តែខ្លាំង នោះ​ទស្សន៍ទ្រនិចនឹង​ផ្លាស់ទីកាន់តែឆ្ងាយ</translation>
+<translation id="4588749726511456218">ការបង្កើន​ល្បឿនរំកិល <ph name="LINK_BEGIN" />ស្វែងយល់បន្ថែម<ph name="LINK_END" /></translation>
+<translation id="4592891116925567110">កម្មវិធី​គូរដោយប្រើ​ប៊ិក</translation>
+<translation id="4600071396330666617">ចំនួន​នៃការណែនាំ</translation>
+<translation id="4606933160360542263">បន្សំ​គ្រាប់ចុច​ផ្ទាល់ខ្លួន៖ <ph name="KEY_COMBINATION" /></translation>
+<translation id="4611619000650855880">នៅពេលប៊ូតុងម៉ៅស៍ខាងឆ្វេងត្រូវបានជ្រើសរើស ប្រើ “/” ដើម្បីចុចពីរដង</translation>
+<translation id="4620757807254334872">ម៉ៅស៍</translation>
+<translation id="4631955550884380853">សំឡេង​ផ្ដោត</translation>
+<translation id="4657914796247705218">ល្បឿន TrackPoint</translation>
+<translation id="4673442866648850031">បើកឧបករណ៍ប៊ិច នៅពេលលុបប៊ិចនោះ</translation>
+<translation id="4683947955326903992"><ph name="PERCENTAGE" />% (លំនាំដើម)</translation>
+<translation id="4697231114332146850">ប្រើគ្រាប់ចុច 7, 8, 9, 4, 6, 1, 2, 3 ដើម្បីផ្លាស់ទីទស្សន៍ទ្រនិច</translation>
+<translation id="470644585772471629">ការបញ្ច្រាស​ពណ៌</translation>
+<translation id="4726710355753484204">ប្រើប្រាស់ Ctrl + Alt + បង្កើន​ពន្លឺ ដើម្បីពង្រីក។
+ប្រើប្រាស់ Ctrl + Alt + បន្ថយ​ពន្លឺ ដើម្បីបង្រួម។</translation>
+<translation id="4732799736617504962">មីក្រូហ្វូន​ដែលបាន​ភ្ជាប់​អាចប្រើ​បានតែ​ការកាត់បន្ថយ​សំឡេង​រំខាន​ប៉ុណ្ណោះ</translation>
+<translation id="4735506354605317060">គូស​រង្វង់​ជុំវិញ​ព្រួញ​ចង្អុល</translation>
+<translation id="4735819417216076266">ស្តាយ៍ធាតុបញ្ចូលចន្លោះ</translation>
+<translation id="473775607612524610">ធ្វើបច្ចុប្បន្នភាព</translation>
+<translation id="4744260496658845719">ពន្លឺក្រោយក្ដារចុច</translation>
+<translation id="4750394297954878236">ការផ្តល់យោបល់</translation>
+<translation id="4756671452988984333">អក្សរ​សម្រាប់​សំឡេង</translation>
+<translation id="4762489666082647806">ពណ៌​ព្រួញ​ចង្អុល</translation>
+<translation id="4776311127346151860"><ph name="DEVICE_NAME" /> ត្រូវបាន​ភ្ជាប់</translation>
+<translation id="4779083564647765204">ពង្រីក</translation>
+<translation id="4792290259143007505">បើក​ការបង្កើនល្បឿន TrackPoint</translation>
+<translation id="479989351350248267">ស្វែងរក</translation>
+<translation id="4804818685124855865">ផ្តាច់</translation>
+<translation id="4811212958317149293">ការស្កេន​ក្ដារចុច​ក្នុងមុខងារប្រើ​ប៊ូតុងចុច​ដោយស្វ័យប្រវត្តិ</translation>
+<translation id="4820795723433418303">ប្រើគ្រាប់ចុច Function ជាគ្រាប់ចុច​ជួរខាងលើ</translation>
+<translation id="4824263260587281352">ប្ដូរ​បន្សំ​គ្រាប់ចុច <ph name="KEY_COMBINATION" /></translation>
+<translation id="4827784381479890589">បានបើកការពិនិត្យ​អក្ខរាវិរុទ្ធនៅក្នុងកម្មវិធីរុករកតាមអ៊ីនធឺណិត Chrome (អត្ថបទត្រូវបានផ្ញើទៅ Google ដើម្បីទទួលបានការណែនាំអំពី​អក្ខរាវិរុទ្ធ)</translation>
+<translation id="4831226137013573603">បិទ​សំឡេង​មីក្រូហ្វូន</translation>
+<translation id="483262387981411190">ផ្អាក ឬបន្តការគ្រប់គ្រងដោយមុខ</translation>
+<translation id="4835598628985424375">បូញមាត់​ដោយផ្អិប​បបូរមាត់​ចូលគ្នា</translation>
+<translation id="4847742514726489375">ចលនា​ដែលបាន​កាត់បន្ថយ</translation>
+<translation id="4850669014075537160">ការេមូរ</translation>
+<translation id="4852916668365817106">ពណ៌​កណ្ដុរ</translation>
+<translation id="485806788160414322">ចាក់ ឬផ្អាក​មេឌៀ</translation>
+<translation id="486213875233855629">បានបិទ​សំឡេង​ដោយ​អ្នកគ្រប់គ្រង​របស់​អ្នក</translation>
+<translation id="4863769717153320198">មើល​ទៅដូចជា <ph name="WIDTH" /> x <ph name="HEIGHT" /> (លំនាំ​ដើម)</translation>
+<translation id="4884987973312178454">6x</translation>
+<translation id="4892981359753171125">ការគ្រប់គ្រងមុខ</translation>
+<translation id="4893073099212494043">បើក​ការទស្សន៍ទាយ​ពាក្យ​បន្ទាប់</translation>
+<translation id="4899052647152077033">បញ្ច្រាស​ពណ៌</translation>
+<translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz - ប្រទាក់គ្នា</translation>
+<translation id="4900652253009739885">មិនអាចលុប​ឧបករណ៍ចុចតែមួយ​ដែលបានកំណត់ទៅ “ជ្រើសរើស” បានទេ។ សូមចុច​គ្រាប់ចុចណាមួយ ដើម្បី<ph name="RESPONSE" />។</translation>
+<translation id="4921348630401250116">ការបំប្លែង​អត្ថបទ​ទៅជា​ការនិយាយ</translation>
+<translation id="4924352752174756392">12x</translation>
+<translation id="4938052313977274277">ល្បឿន</translation>
+<translation id="4946998421534856407">គ្រាប់ចុច​ចាប់ផ្ដើម + ព្រួញ​ឡើងលើ</translation>
+<translation id="495170559598752135">សកម្មភាព</translation>
+<translation id="4956847150856741762">1</translation>
+<translation id="4960020053211143927">មិនអាច​ប្រើបាន​ដោយកម្មវិធី​មួយចំនួនទេ</translation>
+<translation id="4964455510556214366">ការរៀបចំ</translation>
+<translation id="4967571733817147990">ប្ដូរ​ប៊ូតុង​ម៉ៅស៍​តាមបំណង</translation>
+<translation id="4979263087381759787">ជម្រើសសម្រាប់​អ្នក​អភិវឌ្ឍន៍</translation>
+<translation id="4991420928586866460">ប្រើប៊ូតុងជួរខាងលើជាប៊ូតុងមុខងារ</translation>
+<translation id="4992473555164495036">អ្នកគ្រប់គ្រង​របស់អ្នក​បានកម្រិត​វិធីបញ្ចូល​ដែល​អាចប្រើបាន។</translation>
+<translation id="4994426888044765950">ប្រសិនបើអ្នក​ចុចឱ្យជាប់លើគ្រាប់ចុច​ណាមួយ តួអក្សរ​របស់គ្រាប់ចុចនោះ​នឹងបង្ហាញជា​បន្តបន្ទាប់</translation>
+<translation id="4998430619171209993">បើក</translation>
+<translation id="5003070249435823986">ប្រើ​ចលនា ដើម្បីចូល​មុខងារ​រំកិល បន្ទាប់មក​ធ្វើចលនា​ក្បាល​របស់អ្នក​ក្នុងទិសដៅ​ដែលអ្នក​ចង់រំកិល។ ប្រើ​ចលនានេះ​ម្ដងទៀត ដើម្បី​ចាកចេញ​ពីមុខងារ​រំកិល។</translation>
+<translation id="501394389332262641">សំឡេងពេលថ្មសល់តិច</translation>
+<translation id="5020651427400641814">បើក​ការធ្វើ​កំណត់ហេតុ​ការនិយាយ</translation>
+<translation id="5040262127954254034">ឯកជនភាព</translation>
+<translation id="5050330054928994520">TTS</translation>
+<translation id="5059429103770496207">របៀបបង្ហាញ</translation>
+<translation id="5066534201484101197">រំកិលហួស ដើម្បី​រុករក​រវាង​ទំព័រនានា</translation>
+<translation id="5075563999073408211">គ្រប់គ្រង​ឧបករណ៍​របស់អ្នក​ដោយប្រើ​ឧបករណ៍ចុច​មួយ ឬ​ច្រើន។ ឧបករណ៍​ចុច​អាច​ជា​គ្រាប់ចុច​ក្ដារចុច ប៊ូតុង​ដៃហ្គេម ឬ​ឧបករណ៍​ដាច់ដោយឡែក។</translation>
+<translation id="5083035541015925118">ctrl + alt + ព្រួញឡើងលើ</translation>
+<translation id="5087864757604726239">ថយក្រោយ</translation>
+<translation id="5097874180538493929">ចុចដោយស្វ័យប្រវត្តិ នៅពេល​ទស្សន៍ទ្រនិច​ឈប់</translation>
+<translation id="5101398513835324081">បញ្ចូលសកម្មភាព</translation>
+<translation id="5101839224773798795">ចុច​ដោយស្វ័យប្រវត្តិ នៅពេលសញ្ញាព្រួញឈប់</translation>
+<translation id="5103311607312269661">បង្កើន​ពន្លឺផ្ទាំងអេក្រង់</translation>
+<translation id="5109816792918100764">ដក <ph name="LANGUAGE_NAME" /> ចេញ</translation>
+<translation id="512642543295077915">ស្វែងរក + Backspace</translation>
+<translation id="5130080518784460891">Eten</translation>
+<translation id="5131591206283983824">ការចុចអូស​នៅលើ​ផ្ទាំងប៉ះ</translation>
+<translation id="5140742218917419811">គ្រាប់ចុចដែលត្រូវប្រើ</translation>
+<translation id="5141957579434225843">ឧទាហរណ៍ ប្រើ oà, oè, uỳ ជំនួសឱ្យ òa, òe, ùy</translation>
+<translation id="514387318601895731">មើលទៅ​ខាងក្រោម</translation>
+<translation id="5144815231216017543">alt + <ph name="TOP_ROW_KEY" /></translation>
+<translation id="5146896637028965135">សំឡេង​របស់​ប្រព័ន្ធ</translation>
+<translation id="5153074793829217329">ប្រើក្ដារចុចរបស់អ្នក ឬផ្ទាំងចុច​លេខ ដើម្បីគ្រប់គ្រងទស្សន៍ទ្រនិច​ម៉ៅស៍របស់អ្នក</translation>
+<translation id="5156638757840305347">ទស្សន៍ទ្រនិច​ត្រូវបាន​រំលេច​នៅពេល​វា​បង្ហាញ ឬ​ផ្លាស់ទី</translation>
+<translation id="5160634252433617617">ក្ដារចុច​រូបវន្ត</translation>
+<translation id="5196790039230503600">ប្រើ​ចលនានេះ បន្ទាប់មក​ធ្វើចលនា​ក្បាល​របស់អ្នក ដើម្បី​បង្ហាញ​កន្លែង​ដែលអ្នកចង់​ទម្លាក់​ធាតុ។ ប្រើ​ចលនានេះ​ម្ដងទៀត​ដើម្បី​ទម្លាក់វា។</translation>
+<translation id="5207949376430453814">រំលេច​សញ្ញា​អត្ថបទ</translation>
+<translation id="5208988882104884956">ប្រវែងពាក់កណ្តាល</translation>
+<translation id="5220011581825921581">ស្វែងរក + ព្រួញឡើងលើ</translation>
+<translation id="5230190638672215545">វាយបញ្ចូល "uow" ដើម្បីទទួលបាន "ươ"</translation>
+<translation id="5261929928981501666">បង្ហាញរបាររំកិលជានិច្ច</translation>
+<translation id="5275084684151588738">វចនានុក្រម​អ្នក​ប្រើប្រាស់</translation>
+<translation id="5296350763804564124">ស្ដាប់​ការអានអេក្រង់ ដើម្បីឱ្យ​អ្នក​អាច​ប្រើប្រាស់​ឧបករណ៍​របស់អ្នក ដោយ​មិនចាំបាច់​មើល​អេក្រង់។ ការអាន​អក្សរស្ទាប​អាចប្រើបាន​ជាមួយ​ឧបករណ៍​ដែលបានភ្ជាប់។</translation>
+<translation id="5302048478445481009">ភាសា</translation>
+<translation id="5307386115243749078">ផ្គូផ្គងឧបករណ៍ចុចសម្រាប់ជនពិការដែលប្រើប៊្លូធូស</translation>
+<translation id="5308380583665731573">ភ្ជាប់</translation>
+<translation id="5312746996236433535">បញ្ចាំង​អេក្រង់</translation>
+<translation id="5317780077021120954">រក្សាទុក</translation>
+<translation id="5327248766486351172">ឈ្មោះ</translation>
+<translation id="5336689872433667741">ទស្សន៍ទ្រនិច​ និង​ផ្ទាំងប៉ះ</translation>
+<translation id="5389943529251318913">បន្ថយ​ល្បឿន​ម៉ៅស៍</translation>
+<translation id="5402367795255837559">ប្រែល</translation>
+<translation id="5404740137318486384">ចុច​ឧបករណ៍ចុច ឬគ្រាប់ចុច​ក្ដារចុច ដើម្បីកំណត់វាឱ្យ “<ph name="ACTION" />”។
+អ្នកអាច​កំណត់ឧបករណ៍ចុច​ច្រើន​ឱ្យធ្វើសកម្មភាពនេះ។</translation>
+<translation id="5406844893187365798">ការវាយបញ្ចូលដែលបត់បែន</translation>
+<translation id="541737483547792035">ពង្រីក​អេក្រង់</translation>
+<translation id="5420438158931847627">កំណត់​ភាពច្បាស់មុត​នៃអត្ថបទ និង​រូបភាព</translation>
+<translation id="542606797693939821">ស្វែងរក​សញ្ញាព្រួញ​ម៉ៅស៍</translation>
+<translation id="5429818411180678468">ប្រវែងពេញ</translation>
+<translation id="5435274640623994081">បើក​ការធ្វើ​កំណត់ហេតុ​សំឡេងសម្គាល់</translation>
+<translation id="5445400788035474247">10x</translation>
+<translation id="5450469615146335984">ជ្រើសរើស​ផ្លូវកាត់​សម្រាប់​សកម្មភាព​នីមួយៗ</translation>
+<translation id="5452976525201205853"><ph name="LANGUAGE" /> (ដំណើរការ​ដោយគ្មាន​អ៊ីនធឺណិត)</translation>
+<translation id="5458214261780477893">Dvorak</translation>
+<translation id="5468504405124548160">ប្ដូរ​ឈ្មោះ​ប៊ូតុង</translation>
+<translation id="5471768120198416576">សួស្ដី! ខ្ញុំ​គឺ​ជា​សំឡេង​ម៉ាស៊ីនអត្ថបទ​ទៅជា​ការនិយាយ​របស់អ្នក។</translation>
+<translation id="5473062644742711742">ស្វែងរក​ឧបករណ៍​​ភាព​ងាយស្រួល​កាន់តែ​ច្រើន​នៅ​ក្នុង​ Chrome Web Store</translation>
+<translation id="5473075389972733037">IBM</translation>
+<translation id="5476957746413745956">កែតម្រូវ​ល្បឿន​ដាច់ដោយឡែក​សម្រាប់​ទិសដៅ​នីមួយៗ</translation>
+<translation id="549602578321198708">ពាក្យ</translation>
+<translation id="5500163593833085874">នៅពេលប៊ូតុងម៉ៅស៍ខាងឆ្វេងត្រូវបានជ្រើសរើស ប្រើ “+” ដើម្បីចុចពីរដង</translation>
+<translation id="5511379779384092781">តូច​​ជាង​ធម្មតា</translation>
+<translation id="5520605865175417976">ដក​សកម្មភាពចេញ <ph name="ACTION_TO_REMOVE" /></translation>
+<translation id="5551573675707792127">ក្ដារចុច និង​ការបញ្ចូល​អត្ថបទ</translation>
+<translation id="5555760010546505198">ការកំណត់​ផ្ទាំងអេក្រង់ ការបញ្ច្រាសពណ៌ ការកែតម្រូវពណ៌ និងកែវពង្រីក</translation>
+<translation id="55601339223879446">កែសម្រួលដែនកំណត់នៃដេស៍ថបរបស់អ្នកសម្រាប់អេក្រង់នេះ</translation>
+<translation id="5582634344048669777">8 ចំណុច</translation>
+<translation id="5583640892426849032">Backspace</translation>
+<translation id="558918721941304263">កំពុង​ផ្ទុក​កម្មវិធី...</translation>
+<translation id="5590418976913374224">ចាក់សំឡេង​នៅពេល​ចាប់ផ្ដើម​ឧបករណ៍</translation>
+<translation id="5592745162308462420">fn</translation>
+<translation id="5608580678041221894">ចុច​គ្រាប់​ចុច​ខាង​ក្រោម ដើម្បី​កែសម្រួល​ ឬ​រំកិល​តំបន់​ដែល​ត្រូវច្រឹប</translation>
+<translation id="5627832140542566187">ទិស​ផ្ទាំងអេក្រង់</translation>
+<translation id="56360247219959198"><ph name="DICTIONARY" /> នឹង​ត្រូវបានលុប​ជាអចិន្ត្រៃយ៍។ មិន​អាច​ត្រឡប់​សកម្មភាព​នេះ​វិញ​បាន​ទេ។</translation>
+<translation id="5648021990716966815">ឌុយ​មីក្រូហ្វូន</translation>
+<translation id="5655823808357523308">កែតម្រូវ​របៀបដែល​ពណ៌​បង្ហាញ​នៅលើ​អេក្រង់​របស់​អ្នក</translation>
+<translation id="5663459693447872156">ឆ្លាស់ទៅប្រវែងពាក់កណ្តាលដោយស្វ័យប្រវត្តិ</translation>
+<translation id="5689233503102158537">alt + backspace</translation>
+<translation id="5697832193891326782">ផ្ទាំងជ្រើសរើស​រូបអារម្មណ៍</translation>
+<translation id="5703716265115423771">បន្ថយសម្លេង</translation>
+<translation id="5705005699929844214">បង្ហាញ​ជម្រើស​ភាពងាយស្រួល​ជានិច្ច</translation>
+<translation id="5713988532993992900">បញ្ច្រាស</translation>
+<translation id="5714100381896040477">ដាក់កំហិតលើ​ចលនា​នៅលើ​អេក្រង់</translation>
+<translation id="5733109311583381874">បញ្ចូល​ពាក្យ​របស់​អ្នក​ផ្ទាល់ទៅ​ក្នុង​វចនានុក្រម​​​អ្នកប្រើប្រាស់ ដើម្បី​ប្ដូរពាក្យ​បំប្លែង​តាម​បំណង។</translation>
+<translation id="573520097779121706">ប្រើគ្រាប់ចុច 7, 8, 9, u, o, j, k, l ដើម្បីផ្លាស់ទីទស្សន៍ទ្រនិច</translation>
+<translation id="574104302965107104">ការបញ្ចាំងផ្ទាំងអេក្រង់</translation>
+<translation id="574209121243317957">កម្រិតកម្ពស់​សូរ</translation>
+<translation id="5750288053043553775">0</translation>
+<translation id="5757187557809630523">ចម្រៀង​បន្ទាប់</translation>
+<translation id="5773047469207327552">កែតម្រូវ​ពន្លឺ​ដោយ​ផ្អែកលើ​មជ្ឈដ្ឋាន​របស់អ្នក</translation>
+<translation id="5773628847865626753">គ្រាប់ចុចបើកដំណើរការ + ctrl + shift + <ph name="TOP_ROW_KEY" /></translation>
+<translation id="5783346913439924978">ការរេតាមក្បាល</translation>
+<translation id="5787420647064736989">ឈ្មោះ​ឧបករណ៍</translation>
+<translation id="5805268472388605531">ចុច​គ្រាប់ចុច​លើក្ដារចុច​ឱ្យជាប់ ដើម្បីមើល​សញ្ញាសម្គាល់​សំឡេង និង​តួអក្សរ​ពិសេស</translation>
+<translation id="5806773519584576205">0° (លំនាំដើម)</translation>
+<translation id="5807774529265708172">បង្ហាញ ឬលាក់ក្ដារ​ចុច​លើ​អេក្រង់</translation>
+<translation id="581911254119283028">កម្មវិធី​ទាំងអស់</translation>
+<translation id="5824976764713185207">អាន​ទំព័រ​ដោយ​ស្វ័យប្រវត្តិ​ បន្ទាប់​ពី​វា​បញ្ចប់​ការ​ផ្ទុក</translation>
+<translation id="583281660410589416">មិនស្គាល់</translation>
+<translation id="5833746798680181492"><ph name="ALREADY_ASSIGNED_MESSAGE" /> <ph name="CONFLICTING_GESTURES_MESSAGE" /></translation>
+<translation id="5846749317653566506">កែ​ការកំណត់​ការកែ​តម្រូវពណ៌ ដើម្បី​ប្រាកដ​ថា​ពណ៌​ខុស​ពី​គ្នា</translation>
+<translation id="5855643921295613558">0.6 វិនាទី</translation>
+<translation id="585979798156957858">មេតា​ខាងក្រៅ</translation>
+<translation id="5860033963881614850">បិទ</translation>
+<translation id="5860335608673904825">ស្វែងរក + ctrl + shift + <ph name="TOP_ROW_KEY" /></translation>
+<translation id="5862109781435984885">បង្ហាញឧបករណ៍ប៊ិចនៅក្នុងធ្នើនេះ</translation>
+<translation id="5868434909835797817">មីក្រូហ្វូន​ត្រូវ​បានបិទ​នៅលើ​ឧបករណ៍​របស់​អ្នក</translation>
+<translation id="5899860758576822363">ចាក់​ក្នុង​កម្រិត​សំឡេង​ទាប​ជាង​មុន​ នៅ​ពេល​ដែល ChromeVox កំពុង​និយាយ</translation>
+<translation id="5901630391730855834">លឿង</translation>
+<translation id="5906974869830879618">សូមបញ្ចូល​លេខកូដ pin</translation>
+<translation id="5911497236110691522">ដើម្បីប្ដូរទៅវិធីបញ្ចូលបន្ទាប់ សូមចុច <ph name="KEY_CODES" /></translation>
+<translation id="5916655001090539219">ការអាន​ដោយ​ស្វ័យ​ប្រវត្តិ</translation>
+<translation id="59174027418879706">បានបើកដំណើរការ</translation>
+<translation id="5939518447894949180">កំណត់ឡើងវិញ</translation>
+<translation id="594048410531370124">មិនស្គាល់គ្រាប់ចុច។ ចុច​គ្រាប់ចុច​ណាមួយ ដើម្បី<ph name="RESPONSE" />។</translation>
+<translation id="5945192511027649793">បិទ​ផ្ទាំងប៉ះ</translation>
+<translation id="5947651424015173580">ចុចម៉ៅស៍ពីរដង</translation>
+<translation id="594993197557058302">ចុច​គ្រាប់ចុច​កែសម្រួល 1-4 (ctrl, alt, shift, ស្វែងរក ឬ​គ្រាប់ចុច​ចាប់ផ្ដើម) និង​គ្រាប់ចុច 1 ទៀត។ អ្នកក៏អាច​ជ្រើសរើស​គ្រាប់ចុចទោល​បានផងដែរ។</translation>
+<translation id="5951624318208955736">ផ្ទាំង​អេក្រង់</translation>
+<translation id="5952020381407136867">ផ្ទាំងប៉ះ</translation>
+<translation id="5957987129450536192">ចុច​រូប​ជ្រើសរើស​ដើម្បីអាន​នៅជិត​រូបភាព​កម្រង​ព័ត៌មាន​របស់អ្នក បន្ទាប់មក​ជ្រើសរើស​អ្វី​ដែលអ្នក​ចង់ឮ។</translation>
+<translation id="5959982036207776176">កែវពង្រីក​ទៅតាមពាក្យ​ដែលកំពុង​ត្រូវបានអាន​ដោយ​មុខងារ​ជ្រើសរើស​ដើម្បីអាន</translation>
+<translation id="5961545272769624207">កំណត់ចលនា</translation>
+<translation id="5968022600320704045">គ្មាន​លទ្ធផល​ស្វែងរក​ទេ</translation>
+<translation id="598810097218913399">លុប​ការកំណត់​គ្រាប់ចុច</translation>
+<translation id="5988563937187882754">មើលទៅ​ខាងស្ដាំ</translation>
+<translation id="5992225669837656567">កណ្ដុរ​ទាំងអស់​ត្រូវបានផ្ដាច់</translation>
+<translation id="5999630716831179808">សម្លេង</translation>
+<translation id="6002458620803359783">សូរអាន​តាម​ចំណូល​ចិត្ត</translation>
+<translation id="6007053304250788613">អាច​មិនរួមបញ្ចូល​ផ្ទាំងអេក្រង់​នៅក្នុង​មុខងារកញ្ចក់​បានតែមួយ​ប៉ុណ្ណោះ</translation>
+<translation id="6017514345406065928">បៃតង</translation>
+<translation id="6021969570711251331">ត្រួតលើគ្នា</translation>
+<translation id="6031600495088157824">ជម្រើស​ការបញ្ចូល​នៅក្នុង​របារឧបករណ៍</translation>
+<translation id="6045114302329202345">ប៊ូតុង TrackPoint ចម្បង</translation>
+<translation id="6048747414605857443">ជ្រើសរើស និង​ប្ដូរ​តាម​បំណង​នូវ​សំឡេង​នៃ​ការបំប្លែង​អត្ថបទ​ទៅជា​ការនិយាយ​សម្រាប់ ChromeVox និងមុខងារ​​ជ្រើសរើសដើម្បីអាន</translation>
+<translation id="6050189528197190982">មាត្រដ្ឋានប្រផេះ</translation>
+<translation id="6064764629679333574">កែលម្អគុណភាពសំឡេងមីក្រូហ្វូនប៊្លូធូសតាមរយៈការបង្កើនសំឡេងដែលមានកម្រិតគុណភាពទាបទៅជាសំឡេងមានកម្រិតគុណភាពខ្ពស់។</translation>
+<translation id="6073292342939316679">បន្ថយ​ពន្លឺក្ដារចុច</translation>
+<translation id="6077476112742402730">ការសរសេរតាមអាន</translation>
+<translation id="6089289670051481345">បញ្ហាងងឹតពណ៌ខៀវ</translation>
+<translation id="6104929924898022309">ប្រើ​ប៊ូតុងស្វែងរក ដើម្បីប្ដូរ​សកម្មភាព​គ្រាប់ចុច Function</translation>
+<translation id="6113832060210023016">គ្រាប់ចុច​ចាប់ផ្ដើម + ចុច</translation>
+<translation id="6119972796024789243">ការកែតម្រូវ​ពណ៌</translation>
+<translation id="6127292407256937949">កម្រិតសំឡេង​ត្រូវបានបើក។ បិទ​កម្រិត​សំឡេង។</translation>
+<translation id="6129953537138746214">ដកឃ្លា</translation>
+<translation id="6136285399872347291">លុបថយក្រោយ</translation>
+<translation id="6149791593592044995">ប្រើការដាក់សញ្ញាសង្កត់សំឡេងទំនើប</translation>
+<translation id="6156944117133588106">បង្ហាញ​ប៊ូតុង​រុករក​នៅក្នុង​មុខងារ​ថេប្លេត</translation>
+<translation id="6174909075810107548">ប្រើ “5” ដើម្បីចុចប៊ូតុងម៉ៅស៍</translation>
+<translation id="61988015556954366">ពន្លឺបាញ់​ចេញពី​អេក្រង់</translation>
+<translation id="622484624075952240">ចុះក្រោម</translation>
+<translation id="6231782223312638214">បានផ្តល់យោបល់</translation>
+<translation id="6237474966939441970">កម្មវិធី​កត់ត្រា​ដោយប្រើ​ប៊ិក</translation>
+<translation id="6247708409970142803"><ph name="PERCENTAGE" />%</translation>
+<translation id="6249200942125593849">គ្រប់គ្រង​ភាពងាយស្រួល</translation>
+<translation id="628352644014831790">4 វិនាទី</translation>
+<translation id="6294759976468837022">ល្បឿនស្កេនស្វ័យប្រវត្តិ</translation>
+<translation id="6302661287897119265">តម្រង</translation>
+<translation id="6305627295927385295">លុប​ធាតុ​ខាងក្រោម៖</translation>
+<translation id="6305702903308659374">ចាក់​ក្នុង​កម្រិត​សំឡេង​ធម្មតា​ បើ​ទោះបីជា ChromeVox កំពុង​និយាយក៏ដោយ</translation>
+<translation id="6309443618838462258">អ្នកគ្រប់គ្រង​របស់អ្នក​មិនអនុញ្ញាត​ឱ្យប្រើវិធីសាស្ត្រ​បញ្ចូលនេះ​ទេ</translation>
+<translation id="6315170314923504164">សម្លេង</translation>
+<translation id="6343981313228733146">បានផ្លាស់ទីវិនដូឡើងលើ និងទៅខាងស្ដាំ</translation>
+<translation id="6344576354370880196">ម៉ាស៊ីនបោះពុម្ព​ដែលបានរក្សាទុក</translation>
+<translation id="6349101878882523185">ដំឡើង <ph name="APP_NAME" /></translation>
+<translation id="6356718524173428713">រំកិល​ឡើងលើ ដើម្បីផ្លាស់ទី​ទំព័រចុះក្រោម</translation>
+<translation id="6367196786591004737">លុបធាតុ</translation>
+<translation id="6367396429435748845">ចុច <ph name="ALT" /> + <ph name="LAUNCHER" /> + <ph name="NUM_4" /> ដើម្បីផ្អាក និងបន្តគ្រាប់ចុចម៉ៅស៍ឡើងវិញ</translation>
+<translation id="6370551072524410110">ស្វែងរក + shift + Backspace</translation>
+<translation id="6388429472088318283">ភាសា​សម្រាប់​ការ​ស្វែងរក</translation>
+<translation id="6405999530973682789">ទស្សន៍ទ្រនិច​ម៉ៅស៍ដែលបាត់</translation>
+<translation id="6411135999030237579">ចុចឱ្យជាប់ ដើម្បី​ចុចគ្រាប់ចុច​ឡើងវិញ​ដោយស្វ័យប្រវត្តិ</translation>
+<translation id="6415757856498750027">វាយបញ្ចូល "w" ដើម្បីទទួលបាន "ư"</translation>
+<translation id="641817663353603351">page up</translation>
+<translation id="6425556984042222041">ល្បឿន​បំប្លែង​អត្ថបទ​ទៅជា​ការនិយាយ</translation>
+<translation id="6434104957329207050">ល្បឿនស្កេន​លក្ខណៈចំណុច</translation>
+<translation id="6444147596556711162">ប្រើ “បន្ទាប់” និង “មុន” ដើម្បីផ្លាស់ទី​រវាងធាតុ​នៅលើ​អេក្រង់</translation>
+<translation id="6453921811609336127">ដើម្បីប្ដូរទៅវិធីបញ្ចូលបន្ទាប់ សូមចុច <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
+<translation id="6463488491707167747">លុប​វចនានុក្រម​នេះ</translation>
+<translation id="6470120577693311302">ការជូន​ដំណឹង​បាញ់ពន្លឺ</translation>
+<translation id="6476482583633999078">ល្បឿន​និយាយ</translation>
+<translation id="6476671549211161535">ចុចប៊ូតុងដែលមិនមែនជាប៊ូតុងម៉ៅស៍ខាងឆ្វេង ឬខាងស្ដាំនៅលើ <ph name="DEVICE_NAME" /> របស់អ្នក។</translation>
+<translation id="6482559668224714696">កែវ​ពង្រីក​ពេញ​អេក្រង់</translation>
+<translation id="648927581764831596">មិនមានអ្វីនៅទីនេះទេ</translation>
+<translation id="6497784818439587832">ប្ដូរ​ទំហំ​បង្ហាញ ដើម្បីធ្វើឱ្យ​ធាតុ​នៅលើ​អេក្រង់​របស់អ្នក​តូចជាង ឬ​ធំជាងមុន</translation>
+<translation id="6497789971060331894">ការរំកិល​កណ្ដុរ​បញ្រ្ចាស</translation>
+<translation id="650185290742160385">បន្ថយកម្រិតកំណត់</translation>
+<translation id="650457560773015827">ប៊ូតុងឆ្វេង</translation>
+<translation id="65334502113648172">ចុចគ្រាប់​ចុចព្រួញ ដើម្បីបង្រួម ឬ​ពង្រីក​ផ្ទៃបង្ហាញ។ ដើម្បី​ផ្លាស់ទី​ផ្ទៃបង្ហាញ​ចុះឡើង សូមចុច shift និង + បន្ទាប់មក​ប្រើគ្រាប់​ចុចព្រួញ។</translation>
+<translation id="654219396498297850">នៅពេលប៊ូតុងម៉ៅស៍ខាងឆ្វេងត្រូវបានជ្រើសរើស ប្រើ “v” ដើម្បីចុចពីរដង</translation>
+<translation id="6544134392255015460">បិទ/បើក​ពន្លឺផ្នែក​ខាងក្រោយ​ក្ដារចុច</translation>
+<translation id="6545665334409411530">អត្រាធ្វើសារឡើងវិញ</translation>
+<translation id="6549038875972762904">ធ្វើ​ការរៀបចំ​វិញ</translation>
+<translation id="6556866813142980365">ធ្វើវិញ</translation>
+<translation id="6580203076670148210">ល្បឿន​ស្កេន</translation>
+<translation id="6585584201072946561">ប្ដូរ​ពុម្ពអក្សរ និង​ទំហំ​អក្សរ​តាមបំណង​សម្រាប់​កម្មវិធីរុករកតាមអ៊ីនធឺណិត</translation>
+<translation id="6586451623538375658">ឆ្លាស់ប៊ូតុងម៉ៅស៍ចម្បង</translation>
+<translation id="6601262427770154296">គ្រប់គ្រង​​វចនានុក្រម​អ្នក​ប្រើប្រាស់</translation>
+<translation id="660846213831377756">គ្រាប់ចុច​ម៉ៅស៍</translation>
+<translation id="6626581113916585374">មុខងារ​បែបផែន</translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
+<translation id="6630452975878488444">ការជ្រើសរើសផ្លូវកាត់</translation>
+<translation id="6647690760956378579">ការស្ដាប់​សំឡង​បែប​ធម្មជាតិ​សាកល្បង</translation>
+<translation id="6660819301598582123">កញ្ជ្រោងពណ៌ត្នោតដ៏រហ័សរហួនបានលោតរំលងឆ្កែកម្ជិល។</translation>
+<translation id="6673898378497337661">បង្កើន​ពន្លឺក្ដារចុច</translation>
+<translation id="6677527809400770913">បានកំណត់​ចលនា<ph name="GESTURE" />ទៅ<ph name="ACTION" /></translation>
+<translation id="6680650203439190394">អត្រា</translation>
+<translation id="6683022854667115063">កាស</translation>
+<translation id="668599234725812620">បើក Google Play</translation>
+<translation id="6689948774466767379">គ្រាប់ចុចម៉ៅស៍</translation>
+<translation id="6694462491298752106">ផ្ទាំងប៉ះ​ដែលភ្ជាប់​មកជាមួយ​ស្រាប់​ត្រូវបានបិទ</translation>
+<translation id="6710213216561001401">មុន</translation>
+<translation id="6713441551032149301">ចុច​គ្រាប់ចុច​កម្មវិធី​ចាប់ផ្ដើម​ឱ្យជាប់ ដើម្បីប្ដូរ​រវាង​គ្រាប់ចុច Function និង​គ្រាប់ចុច​ជួរខាងលើ​របស់ប្រព័ន្ធ</translation>
+<translation id="6725970970008349185">ចំនួនបេក្ខជនដើម្បីបង្ហាញក្នុងមួយទំព័រ</translation>
+<translation id="6755702685749429945">បញ្ចូលវចនានុក្រម</translation>
+<translation id="6756643207511618722">ម៉ាស៊ីន​បំប្លែង​អត្ថបទ​ទៅ​ជា​ការនិយាយ</translation>
+<translation id="6785915470941880363">ការរំកិលបញ្រ្ចាស <ph name="LINK_BEGIN" />ស្វែងយល់បន្ថែម<ph name="LINK_END" /></translation>
+<translation id="6787839852456839824">ផ្លូវកាត់ក្តារចុច</translation>
+<translation id="6790428901817661496">លេង</translation>
+<translation id="6795371939514004514">ការស្កេន​ដោយស្វ័យប្រវត្តិ​អនុញ្ញាតឱ្យអ្នកផ្លាស់ទីកាត់​ធាតុនៅលើអេក្រង់​ដោយស្វ័យប្រវត្តិ។ នៅពេល​ធាតុត្រូវបានរំលេច សូមចុច “ជ្រើសរើស” ដើម្បីបើក​ដំណើរការវា។</translation>
+<translation id="6801435275744557998">ក្រិត​អេក្រង់​ចុច</translation>
+<translation id="6811151703183939603">ខ្លាំង</translation>
+<translation id="6811792477922751991">ប្រើ​គ្រាប់ចុច​កម្មវិធី​ចាប់ផ្ដើម ដើម្បីប្ដូរ​សកម្មភាព​គ្រាប់ចុច Function</translation>
+<translation id="6816097980753839617">ខៀវ-លឿង (បញ្ហាងងឹតពណ៌ខៀវ)</translation>
+<translation id="6823174134746916417">ការប៉ះ​ដើម្បីចុច​នៅលើ​ផ្ទាំងប៉ះ</translation>
+<translation id="6838992358006915573">កែវពង្រីក​ទៅតាម​ការផ្ដោតរបស់ ChromeVox</translation>
+<translation id="6843725295806269523">បិទសម្លេង</translation>
+<translation id="6856623341093082836">រៀបចំ និង​កែ​សម្រួល​កម្រិត​ពណ៌​ដែល​ត្រឹមត្រូវ​សម្រាប់​អេក្រង់​ចុច​របស់​អ្នក</translation>
+<translation id="686609795364435700">​ស្ងាត់</translation>
+<translation id="686664946474413495">ទម្រង់ពណ៌</translation>
+<translation id="6889957081990109136">ឧបករណ៍ចុច​មិនទាន់ត្រូវបានកំណត់​នៅឡើយទេ</translation>
+<translation id="6893164346922798247">eSpeak</translation>
+<translation id="6899427698619335650">អនុញ្ញាត​ការកំណត់​វណ្ណយុត្ត​ដែលមាន​ភាពបត់បែន។ ឧទាហរណ៍ អ្នកអាច​វាយបញ្ចូល “anh1” ឬ “a1nh” ដើម្បីឱ្យចេញជា “ánh”។</translation>
+<translation id="6902066522699286937">សំឡេង​សម្រាប់ស្ដាប់​សាកល្បង</translation>
+<translation id="691289340230098384">ចំណូលចិត្ត​អក្សររត់</translation>
+<translation id="692135145298539227">លុប</translation>
+<translation id="6931690462168617033">កម្លាំងចុច</translation>
+<translation id="6945221475159498467">ជ្រើសរើស</translation>
+<translation id="6955893174999506273">កំណត់​ឧបករណ៍ចុច 1 ទៀត</translation>
+<translation id="695817292005698051">កម្រិតកំណត់នៃការចាប់ដឹងចលនា</translation>
+<translation id="6960648667961844909">មិនអាច​ទាញយក​ឯកសារនៃ​ការនិយាយ​ជាភាសា<ph name="LANGUAGE" />បានទេ។ នឹងព្យាយាម​ទាញយក​នៅពេលក្រោយ។ ការនិយាយ​ត្រូវបានផ្ញើទៅ Google ដើម្បីដំណើរការ រហូតដល់បញ្ចប់​ការទាញយក។</translation>
+<translation id="6963772203726867701">ចាប់​មិនបានទេ</translation>
+<translation id="6963872466817251924">ឧបករណ៍​រំលេច​ទស្សន៍ទ្រនិច​អក្សរ</translation>
+<translation id="6965978654500191972">ឧបករណ៍</translation>
+<translation id="6980402667292348590">insert</translation>
+<translation id="6981982820502123353">លទ្ធភាពប្រើប្រាស់</translation>
+<translation id="6983890893900549383">escape</translation>
+<translation id="6985607387932385770">ម៉ាស៊ីន​បោះពុម្ព</translation>
+<translation id="7014741021609395734">កម្រិត​ពង្រីកបង្រួម</translation>
+<translation id="7016995776279438971">ក្រហម-បៃតង ខ្សោយពណ៌​ក្រហម (បញ្ហាងងឹតពណ៌ក្រហម)</translation>
+<translation id="7019805045859631636">លឿន</translation>
+<translation id="7022222879220069865">ផ្ទាំងប៉ះ​ទាំងអស់​ត្រូវបានផ្ដាច់</translation>
+<translation id="7027432471322992835">បិទ​ផ្ទាំងប៉ះ</translation>
+<translation id="7037509989619051237">អត្ថបទត្រូវ​មើលសាកល្បង</translation>
+<translation id="7038632520572155338">មុខងារប្រើឧបករណ៍ចុចសម្រាប់ជនពិការ</translation>
+<translation id="7067396782363924830">ពណ៌​មជ្ឈដ្ឋានជុំវិញ</translation>
+<translation id="7077751457066325012">មើល និង​ប្ដូរផ្លូវកាត់​ក្ដារចុច​តាមបំណង</translation>
+<translation id="7088960765736518739">មុខងារប្រើឧបករណ៍ចុចសម្រាប់ជនពិការ</translation>
+<translation id="7107609441453408294">ចាក់សំឡេង​តែ​មួយ​តាម​ឧបករណ៍បំពងសំឡេង​ទាំងអស់</translation>
+<translation id="7116931001458704701">អង្រួន​ដើម្បី​កំណត់​ទីតាំង​ទស្សន៍ទ្រនិច</translation>
+<translation id="7118268675952955085">រូបថត​អេក្រង់</translation>
+<translation id="7124013154139278147">កំណត់​ឧបករណ៍ចុច​សម្រាប់ “មុន”</translation>
+<translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
+<translation id="7131431455372521159">TrackPoint ទាំងអស់​ត្រូវបានផ្ដាច់</translation>
+<translation id="7143207342074048698">កំពុងភ្ជាប់...</translation>
+<translation id="7153101072880472645">បើក/បិទ​កម្រិតរំលេច​ពណ៌ខ្ពស់</translation>
+<translation id="715396040729904728">គ្រាប់ចុចបើកដំណើរការ + shift + <ph name="TOP_ROW_KEY" /></translation>
+<translation id="7167327771183668296">ការចុច​ស្វ័យប្រវត្តិ</translation>
+<translation id="7210432570808024354">ចុចរួច​អូស ដើម្បី​ផ្លាស់ទី​ធាតុ</translation>
+<translation id="7211783048245131419">មិនមាន​ប៊ូតុងបិទបើក​ដែលត្រូវបានកំណត់នៅឡើយទេ</translation>
+<translation id="7222373446505536781">F11</translation>
+<translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (ល្អបំផុត)</translation>
+<translation id="7256634071279256947">មីក្រូហ្វូន​ខាងក្រោយ</translation>
+<translation id="7260206782629605806">ប្រសិនបើ​អ្នកបន្ថយ​កម្រិតកំណត់ អ្នកអាច​ប្រើចលនា​បន្តិចបន្តួច។ ប្រសិនបើ​អ្នកបង្កើន​កម្រិតកំណត់ អ្នកប្រហែលជា​ត្រូវធ្វើ​ចលនា​កាន់តែខ្លាំង។</translation>
+<translation id="7260802376010589729">ប្រើ “c” ដើម្បីលែងប៊ូតុងម៉ៅស៍</translation>
+<translation id="7261612856573623172">សំឡេង​នៃការបំប្លែងអត្ថបទទៅជាការនិយាយ​របស់​ប្រព័ន្ធ</translation>
+<translation id="7271278495464744706">បើកការពណ៌នារៀបរាប់</translation>
+<translation id="7280649757394340890">ការកំណត់​សំឡេង​អត្ថបទ​ទៅជាការ​និយាយ</translation>
+<translation id="7282547042039404307">រលូន</translation>
+<translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
+<translation id="7304030187361489308">ខ្ពស់</translation>
+<translation id="7313539585802573958">ពណ៌ពន្លឺក្រោយក្ដារចុច</translation>
+<translation id="7323315405936922211">ទំហំ​តំបន់​ទស្សន៍ទ្រនិច</translation>
+<translation id="7331646370422660166">alt + ព្រួញចុះក្រោម</translation>
+<translation id="7348093485538360975">ក្តារចុចលើអេក្រង់</translation>
+<translation id="7360333718677093875">ផ្ទាំង​ជ្រើសរើស​រូបអារម្មណ៍</translation>
+<translation id="7365076891350562061">ទំហំ​ផ្ទាំងអេក្រង់</translation>
+<translation id="7376553024552204454">ហាយឡាយ៍ទស្សន៍ទ្រនិចកណ្តុរនៅពេលវារំកិល</translation>
+<translation id="7384687527486377545">ការសរសេរ​ដដែលៗ​នៅលើ​ក្ដារចុច​ដោយស្វ័យប្រវត្តិ</translation>
+<translation id="740333000181878130">សំឡេង​ចាប់ផ្ដើម​ឧបករណ៍</translation>
+<translation id="7409549334477097887">ធំ​ជាង​ធម្មតា</translation>
+<translation id="7414464185801331860">18x</translation>
+<translation id="7423513079490750513">លុប <ph name="INPUT_METHOD_NAME" /> ចេញ</translation>
+<translation id="7429415133937917139">ត្រាប់​លទ្ធផល​នៃអក្សរប្រៃយ៍ដែលអាច​ផ្ទុកឡើងវិញ
+    នៅក្នុង​ផ្ទាំង ChromeVox ផ្នែក​ខាងលើ​អេក្រង់</translation>
+<translation id="7434757724413878233">ការបង្កើន​ល្បឿន​កណ្ដុរ</translation>
+<translation id="7466861475611330213">ស្តាយ៍ការប្រើសញ្ញា</translation>
+<translation id="7471520329163184433">យឺត​ជាង</translation>
+<translation id="7494694779888133066"><ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
+<translation id="7505149250476994901">និយាយថា "អក្សរធំ" បន្ទាប់ពី​អក្សរ</translation>
+<translation id="7514417110442087199">បញ្ចូល​ការកំណត់​គ្រាប់ចុច</translation>
+<translation id="7516641972665276706">page down</translation>
+<translation id="7523117833414447032">នៅពេល​អាន​អក្សរធំ</translation>
+<translation id="755472745191515939">អ្នកគ្រប់គ្រងរបស់អ្នក​មិនអនុញ្ញាតឱ្យប្រើ​ភាសានេះទេ</translation>
+<translation id="7561196759112975576">ជានិច្ច</translation>
+<translation id="7561759921596375678">បើក​កម្រិត​សំឡេង</translation>
+<translation id="7566723889363720618">F12</translation>
+<translation id="7566969018588966785">បង្កើតបន្សំ​គ្រាប់ចុច</translation>
+<translation id="7575272930307342804">ការគ្រប់គ្រង​ការរុករក</translation>
+<translation id="7587806318633605613">ប្រវត្តិនៃ​ការណែនាំ</translation>
+<translation id="7590883480672980941">ការកំណត់ការបញ្ចូល</translation>
+<translation id="7592060599656252486">មួយ​ចំនួន</translation>
+<translation id="7602173054665172958">ការគ្រប់គ្រង​ការបោះពុម្ព</translation>
+<translation id="7611713099524036757">មេតា</translation>
+<translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), កម្រិត <ph name="GRADE" /></translation>
+<translation id="762917478230183172">ជ្រើសរើស​សកម្មភាព​សម្រាប់​គ្រាប់ចុច​នីមួយៗ</translation>
+<translation id="7648048654005891115">ស្តាយ៍ Keymap</translation>
+<translation id="7658239707568436148">បដិសេធ</translation>
+<translation id="7663774460282684730">មានផ្លូវកាត់ក្ដារចុច</translation>
+<translation id="76641554187607347">មិនបានភ្ជាប់​ក្ដារចុចទេ</translation>
+<translation id="7668648754769651616">មុខងារ​ភាពងាយស្រួល​ធ្វើឱ្យ​ឧបករណ៍​របស់អ្នក​កាន់តែងាយស្រួល​ប្រើ។ ដើម្បីចូលប្រើប្រាស់​ការកំណត់រហ័ស សូមជ្រើសរើស​ពេល​វេលា​នៅផ្នែក​ខាងក្រោម​នៃ​អេក្រង់​របស់អ្នក។</translation>
+<translation id="7670483791111801022">អក្សររត់</translation>
+<translation id="7680416688940118410">ការក្រិតអេក្រង់ចុច</translation>
+<translation id="7683834360226457448">ឧបករណ៍បង្ហាញ​សម្រាប់​អ្នក​ខ្សោយ​ភ្នែក</translation>
+<translation id="7685351732518564314">ចុចប៊ូតុងនៅលើ <ph name="DEVICE_NAME" /> របស់អ្នក។</translation>
+<translation id="7701040980221191251">គ្មាន</translation>
+<translation id="7711968363685835633">បិទ​ការ​ណែនាំ និង​ការបំប្លែង​ដែលមានលក្ខណៈផ្ទាល់ខ្លួន ក៏ដូចជាវចនានុក្រម​អ្នក​ប្រើប្រាស់</translation>
+<translation id="7713139339518499741">សំឡេងធម្មជាតិ</translation>
+<translation id="7715455358521357192">បើកភ្នែក​ខាងស្ដាំព្រឹមៗ</translation>
+<translation id="7718490543420739837">ក្ដារចុច​លើ​អេក្រង់ ការសរសេរ​តាមអាន មុខងារប្រើឧបករណ៍ចុច និង​អ្វីៗ​ជាច្រើនទៀត</translation>
+<translation id="7721179060400456005">អនុញ្ញាតឲ្យវិនដូគ្របដណ្តប់លើការបង្ហាញ</translation>
+<translation id="7721237513035801311"><ph name="SWITCH" /> (<ph name="DEVICE_TYPE" />)</translation>
+<translation id="77381465218432215">បង្ហាញ​សញ្ញា​សម្គាល់​សំឡេង និង​តួអក្សរ​ពិសេស</translation>
+<translation id="7744649840067671761">ចុចគ្រាប់​ចុចក្ដារចុច ឬឧបករណ៍ចុចថ្មី ដើម្បីចាប់ផ្ដើម​ការកំណត់។
+ចុចគ្រាប់​ចុច ឬឧបករណ៍ចុចដែលបានកំណត់ ដើម្បីដក​ការកំណត់។</translation>
+<translation id="7765158879357617694">ផ្លាស់ទី</translation>
+<translation id="7768784765476638775">ជ្រើសរើសដើម្បីអាន</translation>
+<translation id="7769709635093101687">ផ្លូវកាត់​ក្ដារ​ចុចសម្រាប់ផ្អាក</translation>
+<translation id="7776701556330691704">រក​មិន​ឃើញ​សំឡេង​ទេ</translation>
+<translation id="7779840061887151693">ផ្ទាំងអេក្រង់</translation>
+<translation id="7805371082115476536">ស្រាល</translation>
+<translation id="7820561748632634942">កំណត់​ឧបករណ៍ចុច​បន្ថែមឬ?</translation>
+<translation id="7833720883933317473">ពាក្យ​ផ្ទាល់ខ្លួន​ដែល​បាន​រក្សាទុក​នឹង​បង្ហាញ​នៅទីនេះ</translation>
+<translation id="7842062217214609161">គ្មានផ្លូវកាត់ទេ</translation>
+<translation id="784475655832336580">មិនអាច​រំលេចធាតុ​ដែលមានការផ្ដោត​តាមក្ដារចុចបានទេ នៅពេលបើក ChromeVox</translation>
+<translation id="7846634333498149051">ក្ដារចុច</translation>
+<translation id="7855258394151767387">ប្រើ “w” ដើម្បីចុចប៊ូតុងម៉ៅស៍</translation>
+<translation id="7871109039747854576">ប្រើ​គ្រាប់ចុច <ph name="COMMA" /> និង <ph name="PERIOD" /> ដើម្បី​មើលបញ្ជី​ពាក្យ</translation>
+<translation id="7871277686245037315">ស្វែងរក + ព្រួញ​ទៅឆ្វេង</translation>
+<translation id="7871691770940645922">អេក្រង់ប៊្រែលនិម្មិត</translation>
+<translation id="787268756490971083">បិទ</translation>
+<translation id="7879478708475862060">ធ្វើតាមរបៀបធាតុបញ្ចូល</translation>
+<translation id="7889371445710865055">ប្ដូរ​ភាសា​សរសេរ​តាមអាន</translation>
+<translation id="7903984238293908205">កាតាកាណា</translation>
+<translation id="7919210519031517829"><ph name="DURATION" />វិ</translation>
+<translation id="7920482456679570420">បញ្ចូលពាក្យសម្ងាត់ដែលអ្នកចង់រំលងការពិនិត្យ​អក្ខរាវិរុទ្ធ</translation>
+<translation id="792514962475806987">កម្រិត​ពង្រីកបង្រួម​នៃ​កែវ​ពង្រីក​ដាក់​ខាង​លើ​បំផុត៖</translation>
+<translation id="7932992556896556665">រៀបចំ និង​ភ្ជាប់​ទំនាក់ទំនងឧបករណ៍​អេក្រង់ថាច់​របស់អ្នក​ទៅផ្ទាំង​អេក្រង់​ដែលត្រឹមត្រូវ</translation>
+<translation id="7942349550061667556">ក្រហម</translation>
+<translation id="7945703887991230167">សំឡេងដែលចង់ប្រើ</translation>
+<translation id="7953669802889559161">វិធីសាស្ត្រ​បញ្ចូល</translation>
+<translation id="7960540720012720106">បើកទិដ្ឋភាព​រួមនៃវិនដូ</translation>
+<translation id="7961015016161918242">មិនដែល</translation>
+<translation id="7963001036288347286">ការបង្កើន​ល្បឿន​ផ្ទាំងប៉ះ</translation>
+<translation id="7963513503134856713">បានផ្លាស់ទីវិនដូទៅខាងស្ដាំ</translation>
+<translation id="7969046989155602842">បញ្ជា</translation>
+<translation id="7974936243149753750">ពង្រីកជ្រុល</translation>
+<translation id="7984068253310542383">បញ្ចាំង <ph name="DISPLAY_NAME" /></translation>
+<translation id="7990863024647916394">សំឡេងជាភាសា<ph name="DISPLAY_NAME" /> ទី <ph name="COUNT" /></translation>
+<translation id="7991296728590311172">ការកំណត់ការប្រើប៊ូតុងចុច</translation>
+<translation id="7992203134935383159">ការ​សំយោគ​ការ​និយាយ</translation>
+<translation id="8004507136466386272">ពាក្យ</translation>
+<translation id="8012188750847319132">caps lock</translation>
+<translation id="8017004049696748317">ចាប់ផ្ដើម ឬបញ្ឈប់ការសរសេរ​តាមអាន</translation>
+<translation id="8044899503464538266">យឺត</translation>
+<translation id="8049948037269924837">ការរំកិល​បញ្រ្ចាស​នៅលើ​ផ្ទាំងប៉ះ</translation>
+<translation id="8061970399284390013">ការពិនិត្យអក្ខរាវិរុទ្ធ និង​វេយ្យាករណ៍</translation>
+<translation id="8070662218171013510">ប្រតិកម្មប៉ះ</translation>
+<translation id="8106114112474206597">ប្រើ “i” ដើម្បីចុចប៊ូតុងម៉ៅស៍</translation>
+<translation id="810728361871746125">កម្រិតច្បាស់របស់ផ្ទាំងអេក្រង់</translation>
+<translation id="8118515372935001629">អត្រាផ្ទុកឡើងវិញរបស់ផ្ទាំងអេក្រង់</translation>
+<translation id="811994229154425014">ដកឃ្លា​ពីរដង ដើម្បី​វាយបញ្ចូល​សញ្ញាចុច</translation>
+<translation id="8126355825906412872">ញញឹម</translation>
+<translation id="8139440916039659819">ការបង្កើន​ល្បឿនទស្សន៍ទ្រនិច​</translation>
+<translation id="8159652640256729753">ទទួលបាន​ការបញ្ជាក់អំពីការញ័រ​សម្រាប់សកម្មភាព​ផ្សេងៗដូចជា មុខងារបំបែក​អេក្រង់ និងការប្ដូរតុជាដើម។ <ph name="LINK_BEGIN" />ស្វែងយល់បន្ថែម<ph name="LINK_END" /></translation>
+<translation id="8172303073969862496">ផ្នែក​ខាងស្ដាំ</translation>
+<translation id="8195265224453131880">កម្រិត</translation>
+<translation id="8195920051450756553">ពន្យារពេល មុនពេល​បើកដំណើរការ​គ្រាប់ចុច​ដដែល​ម្ដងទៀត</translation>
+<translation id="8203795194971602413">ចុចកណ្ដុរខាងស្ដាំ</translation>
+<translation id="8205478243727418828">គ្រាប់ចុច​ចាប់ផ្ដើម + ព្រួញ​ចុះក្រោម</translation>
+<translation id="8217212468862726597">រំលេច​ព្រួញ​ចង្អុល</translation>
+<translation id="8236911020904880539">ចាកចេញ</translation>
+<translation id="8260864402787962391">កណ្តុរ</translation>
+<translation id="8261506727792406068">លុប</translation>
+<translation id="8266947622852630193">វិធីសាស្ត្រ​បញ្ចូលទាំងអស់</translation>
+<translation id="8267539814046467575">បញ្ចូល​ម៉ាស៊ីន​បោះពុម្ព</translation>
+<translation id="8274921654076766238">កែវពង្រីកគឺទៅតាម​ការផ្ដោតក្ដារចុច</translation>
+<translation id="8275038454117074363">នាំចូល</translation>
+<translation id="827966378414194229">ប្រើ​ចលនាក្បាល និង​ទឹកមុខ ដើម្បី​គ្រប់គ្រង Chromebook របស់អ្នក។ <ph name="LINK_BEGIN" />ស្វែងយល់បន្ថែម<ph name="LINK_END" /></translation>
+<translation id="8286227656784970313">ប្រើថតឯកសារប្រព័ន្ធ</translation>
+<translation id="8314835274931377415">ចាប់ផ្ដើម​រៀបចំ​មុខងារប្រើឧបករណ៍ចុច​ឬ?</translation>
+<translation id="8318266828739827371">ប្រើប្រាស់​ទិដ្ឋភាព​បំបែកអេក្រង់ ដើម្បីមើលឃើញ​តំបន់​ដែលបានពង្រីក​នៃអេក្រង់​របស់អ្នក។ ប្រើប្រាស់ Search + Ctrl + D ដើម្បីបើក និង​បិទ​កែវពង្រីក​ដាក់ពីលើ។</translation>
+<translation id="833262891116910667">រំលេច</translation>
+<translation id="8339288417038613756">ទំហំ​បង្ហាញ និង​អក្សរ</translation>
+<translation id="8347227221149377169">ការងារ​បោះពុម្ព</translation>
+<translation id="8349826889576450703">កម្មវិធី​ចាប់ផ្ដើម</translation>
+<translation id="8350789879725387295">ឧបករណ៍​របស់ប៊ិក​នៅក្នុង​របារឧបករណ៍</translation>
+<translation id="8351316842353540018">បង្ហាញ​ជម្រើសភាពងាយស្រួល​ជានិច្ច</translation>
+<translation id="8366694425498033255">ប៊ូតុងការជ្រើសរើស</translation>
+<translation id="8392726714909453725">ការកំណត់មុខងារជ្រើសរើសដើម្បីអាន</translation>
+<translation id="8394212467245680403">លេខអាល់ហ្វា</translation>
+<translation id="8394908167088220973">លេង/ផ្អាក កំសាន្ត</translation>
+<translation id="8411043186249152291">អេក្រង់​ពេញ</translation>
+<translation id="8420308167132684745">កែ​ធាតុ​វចនានុក្រម</translation>
+<translation id="8425213833346101688">ប្តូរ</translation>
+<translation id="8431977087510901105">បានកំណត់​ការកំណត់​ទស្សន៍ទ្រនិច​ឡើងវិញ</translation>
+<translation id="8437209419043462667">អាមេរិក</translation>
+<translation id="8451512073679317615">ជំនួយ​ការ</translation>
+<translation id="8473540203671727883">អានអត្ថបទនៅផ្នែកខាងក្រោម​កណ្ដុរ</translation>
+<translation id="8476408756881832830">ផ្អាក​ការ​ចាក់​នៅ​ពេល​ដែល​ ChromeVox កំពុង​និយាយ</translation>
+<translation id="8487678622945914333">ពង្រីក</translation>
+<translation id="8488735603679729015">ពន្យារពេល មុនពេល​បើកដំណើរការ​គ្រាប់ចុច</translation>
+<translation id="8498214519255567734">វាធ្វើ​ឲ្យមាន​ភាពងាយស្រួល​ជាងមុន​ក្នុងការ​មើលអេក្រង់​របស់អ្នក ឬ​អាននៅ​កន្លែងដែល​មាន​ពន្លឺតិច</translation>
+<translation id="8500123638242682652">បានផ្លាស់ទីវិនដូឡើងលើ</translation>
+<translation id="850399339579925930">វចនានុក្រម</translation>
+<translation id="8507227974644337342">កម្រិតច្បាស់របស់​អេក្រង់</translation>
+<translation id="8513108775083588393">បង្វិល​ស្វ័យ​ប្រវត្តិ</translation>
+<translation id="8524594273111932386">ស្វែងរក + ព្រួញចុះក្រោម</translation>
+<translation id="8527228059738193856">ឧបករណ៍​បំពង​សំឡេង</translation>
+<translation id="8536956381488731905">សំឡេង​នៅពេលចុច​គ្រាប់ចុច</translation>
+<translation id="8541838361296720865">ចុច​ឧបករណ៍ចុច ឬគ្រាប់ចុច​ក្ដារចុច ដើម្បីកំណត់វាឱ្យ “<ph name="ACTION" />”</translation>
+<translation id="85486688517848470">ចុច​ប៊ូតុង​ស្វែងរក​ឲ្យជាប់ ដើម្បី​ប្តូរលក្ខណៈ​គ្រាប់ចុច​នៅជួរ​ខាងលើ</translation>
+<translation id="8573111744706778015">វាយបញ្ចូល "uo7" ដើម្បីទទួលបាន "ươ"</translation>
+<translation id="8577052309681449949">ការចុចដោយស្វ័យប្រវត្តិ ទំហំទស្សន៍ទ្រនិច ពណ៌ទស្សន៍ទ្រនិច និងអ្វីៗ​ជាច្រើនទៀត</translation>
+<translation id="858006550102277544">មតិ</translation>
+<translation id="8587386584550433409">កែតម្រូវ​ពន្លឺផ្ទាំងអេក្រង់​ដោយ​ស្វ័យប្រវត្តិ</translation>
+<translation id="8591783563402255548">1 វិនាទី</translation>
+<translation id="8598249292448297523">បោះពុម្ព</translation>
+<translation id="8642900771896232685">2 វិនាទី</translation>
+<translation id="8648408795949963811">កម្រិតគុណភាព​ពណ៌ពន្លឺពេលយប់</translation>
+<translation id="8648889679430451455">សម្អាត​ទិន្នន័យ​សម្រាប់​ការកំណត់​ឱ្យមាន​លក្ខណៈ​ផ្ទាល់ខ្លួន</translation>
+<translation id="8656888282555543604">បើក​ការធ្វើកំណត់ហេតុ​អក្សរស្ទាប</translation>
+<translation id="8657542881463614516">ប្រើចលនាអូស ដើម្បីរុករករវាងទំព័រនានា</translation>
+<translation id="8659609431223166673">បានផ្លាស់ទីវិនដូចុះក្រោម</translation>
+<translation id="8666268818656583275">ឥឡូវនេះ គ្រាប់ចុច F នឹងមាន​សកម្មភាព​ដូចគ្រាប់ចុច​ជួរខាងលើ​របស់ប្រព័ន្ធ​ដែរ</translation>
+<translation id="8669284339312441707">កាន់តែលឿង</translation>
+<translation id="8689998525144040851">100</translation>
+<translation id="8700416429250425628">គ្រាប់ចុច​ចាប់ផ្ដើម + Backspace</translation>
+<translation id="8713110120305151436">បង្ហាញ​ជម្រើស​ភាពងាយស្រួល​នៅក្នុង​ការកំណត់​រហ័ស</translation>
+<translation id="8719665168401479425">ប្រើ​ចលនា​ផ្ទៃមុខ ដើម្បី​ធ្វើសកម្មភាព</translation>
+<translation id="8725066075913043281">ព្យាយាមម្តងទៀត</translation>
+<translation id="8730621377337864115">រួចរាល់</translation>
+<translation id="8731258351357994801">ធាតុចូល​ទី <ph name="NUMBER" /></translation>
+<translation id="8741944563400125534">ការណែនាំ​អំពី​ការរៀបចំ​មុខងារប្រើឧបករណ៍ចុចសម្រាប់ជនពិការ</translation>
+<translation id="8744641000906923997">រ៉ូម៉ាជី</translation>
+<translation id="8752451679755290210">ផ្លាស់ទី​រវាងធាតុ​ដោយស្វ័យប្រវត្តិ</translation>
+<translation id="875532100880844232">សម្រាប់ <ph name="DEVICE_NAME" /> សូមជ្រើសរើស​សកម្មភាព​សម្រាប់​គ្រាប់ចុច​នីមួយៗ</translation>
+<translation id="8756262226135340085">មិនអើពើនឹង​ការចុច​គ្រាប់ចុច​ក្ដារចុចដដែល​ច្រំដែល​យ៉ាងរហ័សទេ</translation>
+<translation id="8766796754185931010">កូតូរី</translation>
+<translation id="8777509665768981163">បញ្ចូល ឬ​កំណត់ទីតាំង​ប៊ូតុង​នៅលើថេប្លេត​របស់អ្នក</translation>
+<translation id="8780123805589053431">ទាញយក​ការពណ៌នា​អំពី​រូបភាពពី Google</translation>
+<translation id="8785622406424941542">ប៊ិច</translation>
+<translation id="8788008845761123079">ជ្រើសរើសចលនាសម្រាប់ "<ph name="SELECTED_ACTION" />"</translation>
+<translation id="8798099450830957504">លំនាំដើម</translation>
+<translation id="8807632654848257479">ថេរ</translation>
+<translation id="8814319344131658221">ភាសា​ដែលអាច​ពិនិត្យ​អក្ខរាវិរុទ្ធ​គឺផ្អែកលើ​ចំណូលចិត្ត​ភាសា​របស់អ្នក</translation>
+<translation id="8818988764764862764">បានផ្លាស់ទីវិនដូទៅខាងឆ្វេង</translation>
+<translation id="8819762137851963556">ស្វែងរក​ទស្សន៍ទ្រនិច​ម៉ៅស៍</translation>
+<translation id="88265931742956713">ប្ដូរ​ប៊ូតុង​ថេប្លេត​តាមបំណង</translation>
+<translation id="8836782447513334597">បន្ត</translation>
+<translation id="8846239054091760429">សំឡេង​ម៉ូណូ សំឡេង​ពេលចាប់ផ្ដើម អក្សររត់ក្នុងពេលជាក់ស្ដែង និង​អ្វីៗ​ជាច្រើន​ទៀត</translation>
+<translation id="8847988622838149491">USB</translation>
+<translation id="8848709220963126773">ឆ្លាស់របៀបប៊ូតុង Shift</translation>
+<translation id="8861568709166518036">ប្រើប្រាស់​ប៊ូតុង​លើ​អេក្រង់ ដើម្បីទៅ​កាន់​ទំព័រដើម ថយក្រោយ និង​ប្ដូរ​កម្មវិធី។ បើក​ដោយស្វ័យប្រវត្តិ ប្រសិនបើ ChromeVox ឬ​ការចុច​ស្វ័យប្រវត្តិ​ត្រូវបាន​បើក។</translation>
+<translation id="8872774989979382243">កម្រិត​សំឡេង​ត្រូ​វបានបិទ។ សូមបើក​កម្រិត​សំឡេង។</translation>
+<translation id="888256071122006425">ការកំណត់​កណ្ដុរ និង​ផ្ទាំងប៉ះ</translation>
+<translation id="8896830132794747524">ចលនាកាន់តែរហ័ស​នៃកណ្ដុររបស់អ្នក​នឹងផ្លាស់ទី​ទស្សន៍ទ្រនិច​កាន់តែឆ្ងាយ</translation>
+<translation id="8902667442496790482">បើក​ការកំណត់​ជ្រើសរើសដើម្បីអាន</translation>
+<translation id="8912810933860534797">បើក​ការស្កេនស្វ័យប្រវត្តិ</translation>
+<translation id="8922624386829239660">រំកិលអេក្រង់ នៅពេលកណ្ដុរប៉ះគែមអេក្រង់</translation>
+<translation id="8929738682246584251">បើក/បិទ​កែវពង្រីក</translation>
+<translation id="8945274638472141382">ទំហំ​រូបតំណាង</translation>
+<translation id="8945508919180478719">មីក្រូហ្វូន​លំដាប់​ស្ទូឌីយ៉ូ</translation>
+<translation id="89720367119469899">គេច</translation>
+<translation id="8978939272793553320"><ph name="DEVICE_NAME" /> ត្រូវបាន​ផ្ដាច់</translation>
+<translation id="8985561265504464578">កម្រិតកំណត់នៃការចាប់ដឹង</translation>
+<translation id="8986362086234534611">បំភ្លេច</translation>
+<translation id="8993737615451556423">ផ្ដល់ការគ្រប់គ្រង ដើម្បីបង្កើនល្បឿន បន្ថយល្បឿន និងផ្អាកសំឡេងអាន</translation>
+<translation id="8999651235576960439">ចលនា​ដែលបាន​កាត់បន្ថយ​នៅលើ​អេក្រង់</translation>
+<translation id="9012122671773859802">រំកិលអេក្រង់ជានិច្ច នៅពេលរំកិលកណ្ដុរ</translation>
+<translation id="9014206344398081366">មេរៀន​អំពី ChromeVox</translation>
+<translation id="9014674417732091912">បានផ្លាស់ទីទៅជួរដេកទី <ph name="ROW_NUMBER" /></translation>
+<translation id="9016827136585652292">បិទ/បើក​របាំងឯកជនភាព</translation>
+<translation id="9019956081903586892">មិនអាចទាញយកវចនានុក្រមពិនិត្យ​អក្ខរាវិរុទ្ធបានទេ</translation>
+<translation id="9020362265352758658">4x</translation>
+<translation id="902638246363752736">ការកំណត់ក្តារចុច</translation>
+<translation id="9026393603776578602">ការសរសេរ​តាមអាន</translation>
+<translation id="9030754204056345429">លឿន​ជាង</translation>
+<translation id="9031811691986152304">ព្យាយាម​ម្ដង​ទៀត</translation>
+<translation id="9043767139743235992">ទាក់ទងទៅផ្នែកជំនួយពិការភាព Google</translation>
+<translation id="9062468308252555888">14x</translation>
+<translation id="9066782832737749352">អត្ថបទទៅការនិយាយ</translation>
+<translation id="9068598199622656904">ចុច​គ្រាប់ចុច​ម្ដង​មួយៗ​សម្រាប់​ផ្លូវកាត់​ក្ដារចុច​ជាជាង​សង្កត់​គ្រាប់ចុច​ច្រើន​ឱ្យ​ជាប់​ក្នុងពេលដំណាលគ្នា</translation>
+<translation id="9074739597929991885">ប៊្លូធូស</translation>
+<translation id="9089416786594320554">វិធីសាស្ត្របញ្ចូល</translation>
+<translation id="9096053102600371572">ការរំកិល​ដែលមាន​ការគ្រប់គ្រង <ph name="LINK_BEGIN" />ស្វែងយល់បន្ថែម<ph name="LINK_END" /></translation>
+<translation id="9100416672768993722">ដើម្បីប្ដូរទៅវិធីបញ្ចូលដែលបានប្រើចុងក្រោយ សូមចុច <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
+<translation id="9111330022786356709">បញ្ចូល ឬ​កំណត់ទីតាំង​ប៊ូតុង​នៅលើ​ម៉ៅស៍​របស់អ្នក</translation>
+<translation id="9116799625073598554">កម្មវិធី​កត់ត្រា</translation>
+<translation id="9126149354162942022">ពណ៌ទស្សន៍ទ្រនិច​</translation>
+<translation id="9128335130883257666">បើក​ទំព័រ​ការកំណត់​សម្រាប់ <ph name="INPUT_METHOD_NAME" /></translation>
+<translation id="9148058034647219655">ចាកចេញ</translation>
+<translation id="9151249085738989067">ប្ដូរ​សំឡេង ChromeVox ដោយស្វ័យប្រវត្តិ​ដោយផ្អែកលើ​ភាសា</translation>
+<translation id="9151906066336345901">end</translation>
+<translation id="9153451439615847952">កាត់បន្ថយសំឡេងផ្ទៃខាងក្រោយសម្រាប់ការជូនដំណឹង</translation>
+<translation id="915485121129452731">ប៊ិក ថេប្លេត</translation>
+<translation id="9157096865782046368">0.8 វិនាទី</translation>
+<translation id="9169496697824289689">មើលផ្លូវកាត់ក្តារចុច</translation>
+<translation id="9187967020623675250">គ្រាប់ចុច​មិនត្រូវគ្នាទេ។ ចុច​គ្រាប់ចុច​ណាមួយ ដើម្បី<ph name="RESPONSE" />។</translation>
+<translation id="9192019773545828776">ស្ដាប់​ការអានអេក្រង់ ដើម្បីឱ្យ​អ្នក​អាច​ប្រើប្រាស់​ឧបករណ៍​របស់អ្នក ដោយ​មិនចាំបាច់​មើល​អេក្រង់។ ការអាន​អក្សរស្ទាប​អាចប្រើបាន​ជាមួយ​ឧបករណ៍​ដែលបានភ្ជាប់។ ប្រើប្រាស់ Ctrl + Alt + Z ដើម្បីបើក និង​បិទ ChromeVox។ ប្រើប្រាស់ Search + ព្រួញ​ទៅឆ្វេង ឬ​ព្រួញ​ទៅស្ដាំ ដើម្បីរុករក។ ប្រើប្រាស់ Search + Space ដើម្បីជ្រើសរើស (បើក​ដំណើរការ)។</translation>
+<translation id="9203296457393252944">ក្រហម-បៃតង ខ្សោយ​ពណ៌បៃតង (បញ្ហាងងឹតពណ៌បៃតង)</translation>
+<translation id="9205304506427975617">អ្នកអាចរក្សាទស្សន៍ទ្រនិច​ឱ្យនៅស្ងៀមបាន ទោះបីជាអ្នកធ្វើចលនាក្បាលតិចតួចក្ដី។ ការកំណត់នេះតម្រូវឱ្យប្រឹងប្រែងបន្ថែមក្នុងការផ្លាស់ទីទស្សន៍ទ្រនិច។</translation>
+<translation id="930551443325541578">គ្រាប់ចុចដែលចុច​ឡើងវិញ និងសញ្ញា​សម្គាល់​សំឡេង</translation>
+<translation id="942296794412775122">បើក/បិទ​មីក្រូហ្វូន</translation>
+<translation id="950307215746360464">ការណែនាំអំពី​ការរៀបចំ</translation>
+<translation id="957179356621191750">6 ចំណុច</translation>
+<translation id="964790508619473209">ការគ្រប់គ្រង​អេក្រង់</translation>
+<translation id="966588271015727539">ជ្រើសរើស​អក្សរប្រៃយ៍​ប៊្លូធូស</translation>
+<translation id="973558314812359997">ទំហំ​កណ្ដុរ</translation>
+<translation id="978146274692397928">ប្រវែងតួអក្សរចាប់ផ្តើមពេញ</translation>
+<translation id="978978324795544535">ចុច​ធាតុ​ពីរដង សង្កត់ឱ្យជាប់​នៅពេលចុច​លើកទីពីរ រួច​អូសធាតុនោះ ដើម្បីផ្លាស់ទីវា</translation>
+<translation id="984705303330760860">បញ្ចូលភាសាដែលអាច​ពិនិត្យអក្ខរាវិរុទ្ធ</translation>
+<translation id="987264212798334818">ទូទៅ</translation>
+<translation id="992256792861109788">ផ្កា​ឈូក</translation>
 </translationbundle>

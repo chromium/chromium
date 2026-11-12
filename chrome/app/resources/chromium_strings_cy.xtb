@@ -24,6 +24,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="1185134272377778587">Ynghylch Chromium</translation>
 <translation id="1186645291482254714">Cael rhybuddion olrhain prisiau gyda Chromium ar eich ffôn</translation>
 <translation id="1203500561924088507">Diolch am osod. Rhaid i chi ailgychwyn eich porwr cyn defnyddio <ph name="BUNDLE_NAME" />.</translation>
+<translation id="1208896746806402915">Eicon newydd, yr un llwybr byr: Cliciwch i ofyn cwestiynau wrth i chi bori gyda Search yn y panel ochr.</translation>
 <translation id="1232234696885483911">Pan fyddwch yn agor Chwilio Lluniau, bydd teitl y dudalen, URL, a chynnwys, gan gynnwys PDFs, yn cael eu hanfon yn awtomatig at y gweinydd. <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">Tra byddwch wedi mewngofnodi, gallwch ddefnyddio'ch cyfrineiriau a mwy o'ch Cyfrif Google yn Chromium. I newid hyn, ewch i 'Eich cyfrif yn Chromium'.</translation>
 <translation id="1244381985120794049">Dangos Gemini yn Chromium ym mar dewislen Mac</translation>
@@ -33,6 +34,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="126567311906253476">Wrth fewngofnodi i wasanaethau Google megis Gmail neu YouTube gyda <ph name="USER_EMAIL" />, gallwch fewngofnodi yn awtomatig i Chromium gyda'r un cyfrif</translation>
 <translation id="1287534462498555020">Cael Chromium ar eich ffôn</translation>
 <translation id="1290883685122687410">Gwall gosod: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
+<translation id="1304670607231413751">Mae gan y botwm "Search yn Chrome" ar y bar offer eicon newydd. Cliciwch arno i ofyn cwestiynau wrth i chi bori gyda Search yn Chrome.</translation>
 <translation id="1315551408014407711">Gosod eich proffil Chromium newydd</translation>
 <translation id="132092532143527429">Rhowch gynnig arni gyda Gemini yn Chromium</translation>
 <translation id="1324107359134968521">Mae angen mynediad Bluetooth ar Chromium i archwilio 
@@ -54,6 +56,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="154404805518949443">Mewngofnodi i Chromium</translation>
 <translation id="1547469039832541117">Yn gorffen y dasg a amlygwyd.</translation>
 <translation id="1562320819937089394">Pinio Chromium</translation>
+<translation id="1572572333538561328">Ailagor Dull AI Search</translation>
 <translation id="1574377791422810894">Offer diogelwch Chromium</translation>
 <translation id="1594928384848033697">Mae Chromium eisiau dileu eich data Rheolwr Cyfrineiriau. Teipiwch eich cyfrinair Windows i ganiatáu hyn.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Mae eich gweinyddwr yn gofyn i chi ail-lansio Chromium i gymhwyso diweddariad}=1{Mae eich gweinyddwr yn gofyn i chi ail-lansio Chromium i gymhwyso diweddariad. Ni fydd eich ffenestr Anhysbys yn ailagor.}two{Mae eich gweinyddwr yn gofyn i chi ail-lansio Chromium i gymhwyso diweddariad. Ni fydd eich # ffenestr Anhysbys yn ailagor.}few{Mae eich gweinyddwr yn gofyn i chi ail-lansio Chromium i gymhwyso diweddariad. Ni fydd eich # ffenestr Anhysbys yn ailagor.}many{Mae eich gweinyddwr yn gofyn i chi ail-lansio Chromium i gymhwyso diweddariad. Ni fydd eich # ffenestr Anhysbys yn ailagor.}other{Mae eich gweinyddwr yn gofyn i chi ail-lansio Chromium i gymhwyso diweddariad. Ni fydd eich # ffenestr Anhysbys yn ailagor.}}</translation>
@@ -80,10 +83,13 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="1838374766361614909">Clirio'r blwch chwilio</translation>
 <translation id="18552579716432081">I ddileu data pori o'r ddyfais hon yn unig, tra'n eu cadw yn eich Cyfrif Google, <ph name="BEGIN_LINK" />allgofnodwch o Chromium<ph name="END_LINK" />.</translation>
 <translation id="1857749206890802997">Lawrlwythwch Chromium ar eich ffôn i agor neu greu grwpiau tabiau newydd wrth fynd.</translation>
+<translation id="1858576284142106424">Cau Dull AI Search</translation>
 <translation id="185970820835152459">Gallwch reoli'ch Cyfrifon Google sydd wedi'u mewngofnodi. Defnyddir eich Cyfrifon Google ar gyfer porwr Chromium, Play Store, Gmail, a rhagor. Os ydych am ychwanegu cyfrif ar gyfer rhywun arall, megis aelod o'r teulu, ychwanegwch berson newydd at eich <ph name="DEVICE_TYPE" /> yn lle. <ph name="LINK_BEGIN" />Dysgu rhagor<ph name="LINK_END" /></translation>
 <translation id="1862852878885210965">Chwilio gyda Chwilio Lluniau</translation>
 <translation id="1863837059069884561">Mae <ph name="EXISTING_USER" /> eisoes wedi mewngofnodi. I gadw'ch pori ar wahân, mewngofnodwch i Chromium yn eich proffil eich hun fel <ph name="USER_EMAIL_ADDRESS" />. Byddwch hefyd yn cael eich nodau tudalen a rhagor o'ch <ph name="DEVICE" />.</translation>
+<translation id="1880495786739455486">Gallwch ailagor Search yn y panel ochr i ofyn cwestiynau wrth i chi bori</translation>
 <translation id="1880677175115548835">Dewis testun</translation>
+<translation id="188102464690227119">Mae gan y botwm "Search yn y panel ochr" ar y bar offer eicon newydd. Cliciwch arno i ofyn cwestiynau wrth i chi bori gyda Search yn y panel ochr.</translation>
 <translation id="1881322772814446296">Rydych yn mewngofnodi gyda chyfrif a reolir ac yn rhoi rheolaeth dros eich proffil Chromium i'w weinyddwr. Bydd eich data Chromium, megis eich apiau, eich nodau tudalen, eich hanes, eich cyfrineiriau, a'ch gosodiadau eraill wedi'u cysylltu'n barhaol â <ph name="USER_NAME" />. Byddwch yn gallu dileu'r data hyn drwy'r Dangosfwrdd Cyfrifon Google, ond ni fyddwch yn gallu cysylltu'r data hyn â chyfrif arall. Gallwch ddewis creu proffil newydd i gadw'ch data Chromium presennol ar wahân. <ph name="LEARN_MORE" /></translation>
 <translation id="1896836275755235458">Mae Chromium yn arbed pŵer batri drwy gyfyngu ar weithgarwch cefndir ac effeithiau gweledol, megis sgrolio llyfn a chyfraddau ffrâm fideo. <ph name="BEGIN_LINK" />Dysgu rhagor am yr Arbedwr Ynni<ph name="END_LINK" /></translation>
 <translation id="1900969832270057921">Gwasanaeth Diweddaru Chromium</translation>
@@ -119,6 +125,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="2185166961232948079">Chromium - Mewngofnodi Rhwydwaith - <ph name="PAGE_TITLE" /></translation>
 <translation id="2190166659037789668">Gwall gwiriad diweddaru: <ph name="UPDATE_CHECK_ERROR" />.</translation>
 <translation id="2199210295479376551">Tynnu cyfrif o Chromium</translation>
+<translation id="2199625713624030299">Cau Search yn Chrome</translation>
 <translation id="2201788217099588893">Defnyddiwch yr ap Chromium i fynd â'r offer siopa gorau gyda chi wrth fynd</translation>
 <translation id="2209877494277346829">Ynysu Chromium o apiau eraill</translation>
 <translation id="2210502920229141283">Cadwch yn fwy diogel wrth fynd gyda Gwell Pori'n Ddiogel ar Chromium ar gyfer iOS</translation>
@@ -131,6 +138,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="2287771843518581140">{NUM_TABS,plural, =1{Mae Chromium yn argymell seibio'r tab sy'n arafu eich porwr}zero{Mae Chromium yn argymell seibio'r tabiau sy'n arafu eich porwr}two{Mae Chromium yn argymell seibio'r tabiau sy'n arafu eich porwr}few{Mae Chromium yn argymell seibio'r tabiau sy'n arafu eich porwr}many{Mae Chromium yn argymell seibio'r tabiau sy'n arafu eich porwr}other{Mae Chromium yn argymell seibio'r tabiau sy'n arafu eich porwr}}</translation>
 <translation id="2307973900865360088">Cadw yn y Doc</translation>
 <translation id="2313870531055795960">Yn gwirio URL gyda rhestr o wefannau anniogel sydd wedi'u storio yn Chromium. Os yw gwefan yn ceisio dwyn eich cyfrinair, neu pan fyddwch yn lawrlwytho ffeil niweidiol, gall Chromium hefyd anfon URL, gan gynnwys darnau o gynnwys tudalen, i Pori'n Ddiogel.</translation>
+<translation id="2350411688004301551">Newid i Gemini Enterprise</translation>
 <translation id="2356070529366658676">Gofyn</translation>
 <translation id="2359808026110333948">Parhau</translation>
 <translation id="2361918034042471035">Mae'r estyniad "<ph name="EXTENSION_NAME" />" eisiau i chi fewngofnodi i Chromium</translation>
@@ -149,6 +157,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="2483889755041906834">Yn Chromium</translation>
 <translation id="2485422356828889247">Dadosod</translation>
 <translation id="2513154137948333830">Mae angen ailgychwyn: <ph name="INSTALL_SUCCESS" /></translation>
+<translation id="251329670120169391">eich sefydliad</translation>
 <translation id="2542968102051442371">Dewis testun gyda Chwilio Lluniau</translation>
 <translation id="2554739539410784893">Mae Chromium yn ceisio disodli cyfrineiriau presennol. Teipiwch eich cyfrinair Windows i ganiatáu hyn.</translation>
 <translation id="2560420686485554789">Mae angen mynediad storfa ar Chromium i lawrlwytho ffeiliau</translation>
@@ -185,6 +194,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="2847479871509788944">Tynnu o Chromium...</translation>
 <translation id="2850691299438350830">Yn eich cadw'n ddiogel ar Chromium a gellir ei ddefnyddio i wella'ch diogelwch mewn apiau Google eraill pan fyddwch wedi'ch mewngofnodi</translation>
 <translation id="2885378588091291677">Rheolwr Tasgau</translation>
+<translation id="2898830646167954300">Newid yn ôl i'ch cynorthwyydd Gemini heb ei reoli</translation>
 <translation id="2910007522516064972">Ynghylch &amp;Chromium</translation>
 <translation id="2915996080311180594">Ailddechrau'n Ddiweddarach</translation>
 <translation id="2933336679234709858">Mae eich data wedi'u hamgryptio â'ch cyfrinymadrodd. Rhowch ef i ddefnyddio a chadw data Chromium yn eich Cyfrif Google.</translation>
@@ -224,6 +234,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="3155163173539279776">Ail-lansio Chromium</translation>
 <translation id="3161522574479303604">Pob iaith</translation>
 <translation id="3179665906251668410">Agor y Ddolen mewn Ffenestr Anhys&amp;bys Chromium</translation>
+<translation id="3183555099201190073">Cael mynediad at Search o unrhyw dab</translation>
 <translation id="3185330573522821672">Personoleiddio eich proffil Chromium newydd</translation>
 <translation id="3189205223539394158">Gallwch barhau i sgwrsio gyda'r Dull AI heb newid tabiau. I ddechrau arni, mewngofnodwch i Chromium. Byddwch hefyd yn cael eich cyfrineiriau a rhagor ar eich holl ddyfeisiau.</translation>
 <translation id="3224847870593914902">I dynnu'ch Cyfrif Google o Chromium, allgofnodwch o Chromium yn y dudalen Gosodiadau</translation>
@@ -259,6 +270,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="3561853857681580870">I rannu'ch sgrîn, caniatewch recordio sgrîn ar gyfer Chromium yn y Gosodiadau System.</translation>
 <translation id="3597003331831379823">Wedi methu rhedeg gosod gyda breintiau uwch. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">Mewngofnodi i Chromium</translation>
+<translation id="36205707939705218"><ph name="USER_NAME" />, <ph name="EMAIL" />. Aelodaeth.</translation>
 <translation id="3639635944603682591">Bydd data pori’r unigolyn hwn yn cael eu dileu o’r ddyfais hon. I adfer y data, mewngofnodwch i Chromium fel <ph name="USER_EMAIL" />.</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{Mae diweddariad newydd ar gyfer Chromium ar gael a bydd yn cael ei gymhwyso cyn gynted ag y byddwch yn ail-lansio.}=1{Mae diweddariad newydd ar gyfer Chromium ar gael a bydd yn cael ei gymhwyso cyn gynted ag y byddwch yn ail-lansio. Ni fydd eich ffenestr Anhysbys yn ailagor.}two{Mae diweddariad newydd ar gyfer Chromium ar gael a bydd yn cael ei gymhwyso cyn gynted ag y byddwch yn ail-lansio. Ni fydd eich # ffenestr Anhysbys yn ailagor.}few{Mae diweddariad newydd ar gyfer Chromium ar gael a bydd yn cael ei gymhwyso cyn gynted ag y byddwch yn ail-lansio. Ni fydd eich # ffenestr Anhysbys yn ailagor.}many{Mae diweddariad newydd ar gyfer Chromium ar gael a bydd yn cael ei gymhwyso cyn gynted ag y byddwch yn ail-lansio. Ni fydd eich # ffenestr Anhysbys yn ailagor.}other{Mae diweddariad newydd ar gyfer Chromium ar gael a bydd yn cael ei gymhwyso cyn gynted ag y byddwch yn ail-lansio. Ni fydd eich # ffenestr Anhysbys yn ailagor.}}</translation>
 <translation id="3667616615096815454">Methu â gosod, mae'r ap yn anhysbys i'r gweinydd.</translation>
@@ -267,6 +279,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="3713809861844741608">Agor y ddolen mewn tab Chromium &amp;newydd</translation>
 <translation id="3728124580182886854">Cysylltwch Chromium a gwasanaethau Google eraill at ddibenion personoleiddio a dibenion eraill</translation>
 <translation id="3729187154190517324">Dyfnhau eich chwiliad trwy ychwanegu sawl tab, ffeil ac offeryn gan ddefnyddio'r botwm "Ychwanegu tab a rhagor".</translation>
+<translation id="3751920144677881410">O'r botwm "Chwilio panel ochr" ar y bar offer, gallwch ailagor Chwilio panel ochr i ofyn cwestiynau wrth i chi bori</translation>
 <translation id="3788675262216168505">Rheoli Proffiliau Chromium</translation>
 <translation id="3790262771324122253">Dysgu pam fod Chromium yn rhwystro rhai lawrlwythiadau</translation>
 <translation id="379589255253486813">Bydd Chromium yn rhoi gwybod i chi os oes angen i chi adolygu unrhyw beth</translation>
@@ -285,6 +298,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="3892148308691398805">Copïo'r testun</translation>
 <translation id="390528597099634151">Mae <ph name="EXISTING_USER" /> wedi'i fewngofnodi yn barod i'r proffil Chromium hwn. I gadw'ch pori ar wahân, gall Chromium greu proffil eich hun ar eich cyfer.</translation>
 <translation id="3909353120217047026">Mae'r estyniad hwn yn torri polisi Chrome Web Store, a gallai fod yn anniogel. Tynnwch ef o Chromium fel na all weld na newid eich data ar wefannau rydych yn ymweld â nhw mwyach, gan gynnwys eich gwybodaeth bersonol.</translation>
+<translation id="3909954316701345612">Eicon newydd, yr un llwybr byr: Cliciwch i ofyn cwestiynau wrth i chi bori gyda'r panel Search.</translation>
 <translation id="3941890832296813527">Gwall gosod: Mae enw ffeil y gosodwr yn annilys neu heb ei gefnogi.</translation>
 <translation id="3945058413678539331">Mae Chromium yn ceisio copïo cyfrineiriau. Teipiwch eich cyfrinair Windows i ganiatáu hyn.</translation>
 <translation id="3950481960271781644">I gael eich gwybodaeth sydd wedi'i chadw a rhagor ar eich holl ddyfeisiau, mewngofnodwch i Chromium</translation>
@@ -304,6 +318,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="4036079820698952681">Helpwch i wneud Chromium yn well drwy adrodd am <ph name="BEGIN_LINK" />y gosodiadau presennol<ph name="END_LINK" /></translation>
 <translation id="4050175100176540509">Mae gwelliannau diogelwch pwysig a nodweddion newydd ar gael yn y fersiwn ddiweddaraf.</translation>
 <translation id="4055805654398742145">R&amp;heolwr Cyfrineiriau</translation>
+<translation id="4062925381179797083">Mae gan y botwm "panel Search" ar y bar offer eicon newydd. Cliciwch arno i ofyn cwestiynau wrth i chi bori gyda'r panel Search.</translation>
 <translation id="4095980151185649725">{COUNT,plural, =1{Mae eich sefydliad yn cau Chromium yn awtomatig pan na chaiff ei ddefnyddio am 1 funud. Mae data pori yn cael eu dileu. Gallai hyn gynnwys hanes, awtolenwi a lawrlwythiadau.}zero{Mae eich sefydliad yn cau Chromium yn awtomatig pan na chaiff ei ddefnyddio am # munud. Mae data pori yn cael eu dileu. Gallai hyn gynnwys hanes, awtolenwi a lawrlwythiadau.}two{Mae eich sefydliad yn cau Chromium yn awtomatig pan na chaiff ei ddefnyddio am # funud. Mae data pori yn cael eu dileu. Gallai hyn gynnwys hanes, awtolenwi a lawrlwythiadau.}few{Mae eich sefydliad yn cau Chromium yn awtomatig pan na chaiff ei ddefnyddio am # munud. Mae data pori yn cael eu dileu. Gallai hyn gynnwys hanes, awtolenwi a lawrlwythiadau.}many{Mae eich sefydliad yn cau Chromium yn awtomatig pan na chaiff ei ddefnyddio am # munud. Mae data pori yn cael eu dileu. Gallai hyn gynnwys hanes, awtolenwi a lawrlwythiadau.}other{Mae eich sefydliad yn cau Chromium yn awtomatig pan na chaiff ei ddefnyddio am # munud. Mae data pori yn cael eu dileu. Gallai hyn gynnwys hanes, awtolenwi a lawrlwythiadau.}}</translation>
 <translation id="4118474109249235144">Chromium Anhysbys</translation>
 <translation id="4122186850977583290">Mynd i'r dudalen Ynghylch Chromium</translation>
@@ -319,6 +334,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="4222932583846282852">Wrthi'n canslo...</translation>
 <translation id="4224210481850767180">Mae'r gosodiad wedi'i ganslo.</translation>
 <translation id="4230135487732243613">Cysylltu eich data Chromium â'r cyfrif hwn?</translation>
+<translation id="4250620086255466556">Panel Search</translation>
 <translation id="4251772536351901305">Yn eich rhybuddio am wefannau peryglus, hyd yn oed rhai nad oedd Google yn gwybod amdanynt o'r blaen, trwy ddadansoddi mwy o ddata o wefannau na diogelwch safonol. Gallwch ddewis hepgor rhybuddion Chromium.</translation>
 <translation id="4269093074552541569">Allgofnodi o Chromium</translation>
 <translation id="4271805377592243930">Cael help gyda Chromium</translation>
@@ -354,6 +370,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="4594305310729380060">I Rheolwr Cyfrineiriau ar y ddyfais hon</translation>
 <translation id="459535195905078186">Apiau Chromium</translation>
 <translation id="4598116752460667024">Chwilio am unrhyw broses o'r rhestr.</translation>
+<translation id="4602691126289526388">Gofynnwch gwestiynau yn hawdd wrth i chi bori gyda Search</translation>
 <translation id="4613863813562375431">Fersiwn ChromiumOS</translation>
 <translation id="4621240073146040695">Bron yn gyfoes! Ail-lansiwch Chromium i orffen diweddaru.</translation>
 <translation id="4625064703209785397">Yn cyflymu gwefannau gydag injan V8 Chromium ond yn lleihau gallu Chromium i wrthsefyll ymosodiadau ychydig</translation>
@@ -389,6 +406,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="504699503110800016">Agor y ddewislen gorlif</translation>
 <translation id="5074496654342756568">Cael mynediad at eich holl ffefrynnau Google gyda Chromium ar eich <ph name="DEVICE_TYPE" /></translation>
 <translation id="5123973130450702873">Mae angen caniatâd i olrhain eich dwylo ar Chromium</translation>
+<translation id="5139546603444206048">Gallwch newid i'r cynorthwyydd Gemini sy'n gysylltiedig â'ch Cyfrif Google yn wreiddiol ac nad yw'n cael ei reoli gan <ph name="DOMAIN" />. Ni fydd atebion bellach wedi'u seilio ar ffeiliau neu wasanaethau a reolir gan <ph name="DOMAIN" /> ac ni fydd eich hanes sgwrsio yn cael ei drosglwyddo. Mae'n bosib na fydd yn addas i'w ddefnyddio ar gyfer gwaith. Mae newid yn gofyn am ail-lansio Chromium.</translation>
 <translation id="5141988424377517949">Nid ydych wedi ymweld yn ddiweddar. Mae Chromium wedi tynnu <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />.</translation>
 <translation id="5171868502429358653">Mewngofnodi i Chromium</translation>
 <translation id="5174969993834422967">Rydych fel arfer yn rhwystro hysbysiadau. I adael i'r wefan hon eich hysbysu, cliciwch yr eicon hysbysu ar gornel dde eich bar lleoliad.</translation>
@@ -397,7 +415,10 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="5223510345050543907">Parhau yn union lle y gwnaethoch adael gyda Chromium ar iOS.</translation>
 <translation id="5231355151045086930">Allgofnodi o Chromium</translation>
 <translation id="5234764350956374838">Diystyru</translation>
+<translation id="5248765037108226189">Gallwch ailagor Search yn Chrome i ofyn cwestiynau wrth i chi bori</translation>
 <translation id="5249261924633168472">Agor dolen mewn ffenestr Anhy&amp;sbys Chromium</translation>
+<translation id="5251599664870628153">Mae gan y botwm "panel ochr Search" ar y bar offer eicon newydd. Cliciwch arno i ofyn cwestiynau wrth i chi bori gyda phanel ochr Search.</translation>
+<translation id="5254294706894496832">Gallwch binio'r panel Search i ofyn cwestiynau wrth i chi bori</translation>
 <translation id="5276305953263010518">Cael yr ap Chromium i gadw cyfrineiriau wrth fynd</translation>
 <translation id="5277894862589591112">I gymhwyso'ch newidiadau, ail-lansiwch Chromium</translation>
 <translation id="5286907366254680517">Wedi'i ganfod</translation>
@@ -432,6 +453,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="5524890928877629608">cornel chwith uchaf yr ardal chwilio: <ph name="LEFT" />% i'r chwith, <ph name="TOP" />% ar y brig</translation>
 <translation id="5527463683072221100">Agor ffeiliau PDF yn Chromium</translation>
 <translation id="5536164441519929134">Gofyn<ph name="LINE_BREAK" />am y tab hwn</translation>
+<translation id="5557035028197464376">Search yn Chrome wedi'i binio i'r bar offer!</translation>
 <translation id="555970465369471303">Er diogelwch, mae Chromium yn diffodd optimeiddio JavaScript pan fyddwch yn ymweld â gwefan am y tro cyntaf.
 
 Os nad yw'r dudalen hon yn gweithio fel y disgwylir, rhowch gynnig ar ganiatáu optimeiddio.</translation>
@@ -451,6 +473,7 @@ Os nad yw'r dudalen hon yn gweithio fel y disgwylir, rhowch gynnig ar ganiatáu 
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Dangos Chromium yn yr iaith hon</translation>
 <translation id="569897634095159764">Methu â chysylltu â'r Rhyngrwyd. Mae angen dilysu'r dirprwy weinydd.</translation>
+<translation id="5762954990778294910">O'r botwm "Panel chwilio" ar y bar offer, gallwch ailagor y panel Search i ofyn cwestiynau wrth i chi bori</translation>
 <translation id="5768371961535086509">Bydd Chromium yn rhyddhau cof o dabiau anweithredol. Mae hyn yn rhoi mwy o adnoddau cyfrifiadurol i dabiau gweithredol ac apiau eraill ac yn cadw Chromium yn gyflym. Mae eich tabiau anweithredol yn dod yn weithredol eto yn awtomatig pan fyddwch yn dychwelyd atynt. <ph name="BEGIN_LINK" />Dysgu rhagor am yr Arbedwr Cof<ph name="END_LINK" /></translation>
 <translation id="5775198138441669627">Os byddwch yn anghofio'ch cyfrinymadrodd neu eisiau newid y gosodiad hwn, <ph name="SETTINGS_LINK" /> y data Chromium yn eich cyfrif</translation>
 <translation id="5800158606660203929">Personoleiddio a rheoli Chromium. Gosod Chromium yn borwr diofyn.</translation>
@@ -459,7 +482,10 @@ Os nad yw'r dudalen hon yn gweithio fel y disgwylir, rhowch gynnig ar ganiatáu 
 <translation id="5817952762723416573">Yn cyflymu gwefannau gydag injan V8 Chromium ond yn lleihau gallu Chromium i wrthsefyll ymosodiadau ychydig. Mae'r gosodiad hwn wedi'i ddiffodd.</translation>
 <translation id="5821520528363214608">I ddefnyddio a chadw data Chromium yn eich Cyfrif Google, diweddarwch Chromium</translation>
 <translation id="5824893331272123205">Methu â llwytho'r panel hwn, rhowch gynnig arall arni</translation>
+<translation id="583474880403859264">Agor Chwilio yn Chrome</translation>
+<translation id="5840880340010374616">Cau'r panel Chwilio</translation>
 <translation id="5862307444128926510">Croeso i Chromium</translation>
+<translation id="5862977913729030139">Chwilio Dull AI</translation>
 <translation id="5871205389137001634">Cliciwch i adael Chwilio Lluniau</translation>
 <translation id="5883558403894052917">Gwnaeth Chromium ganfod bod yr eitemau hyn yn cynnwys drwgwedd:</translation>
 <translation id="5889361821821684993">Mae Chromium yn gwirio i sicrhau bod gan eich porwr y gosodiadau mwyaf diogel yn rheolaidd. Byddwn yn rhoi gwybod i chi os oes angen i chi adolygu unrhyw beth.</translation>
@@ -475,6 +501,7 @@ Os nad yw'r dudalen hon yn gweithio fel y disgwylir, rhowch gynnig ar ganiatáu 
 <translation id="5986585015444752010">{COUNT,plural, =1{Mae eich sefydliad yn cau Chromium yn awtomatig pan na chaiff ei ddefnyddio am 1 funud.}zero{Mae eich sefydliad yn cau Chromium yn awtomatig pan na chaiff ei ddefnyddio am # munud.}two{Mae eich sefydliad yn cau Chromium yn awtomatig pan na chaiff ei ddefnyddio am # funud.}few{Mae eich sefydliad yn cau Chromium yn awtomatig pan na chaiff ei ddefnyddio am # munud.}many{Mae eich sefydliad yn cau Chromium yn awtomatig pan na chaiff ei ddefnyddio am # munud.}other{Mae eich sefydliad yn cau Chromium yn awtomatig pan na chaiff ei ddefnyddio am # munud.}}</translation>
 <translation id="5987687638152509985">Diweddarwch Chromium i ddechrau cysoni</translation>
 <translation id="5990360079535151574">O'r botwm "Tasgau Cyd-destunol" ar y bar offer, gallwch ailagor Tasgau Cyd-destunol i ofyn cwestiynau wrth i chi bori</translation>
+<translation id="5996342273201332056">Gallwch binio panel ochr Search i ofyn cwestiynau wrth i chi bori</translation>
 <translation id="6003112304606738118">Wrthi'n lawrlwytho... Mae <ph name="HOURS" /> awr ar ôl</translation>
 <translation id="6009821354356307391">Gofyn cwestiwn dilyn i fyny</translation>
 <translation id="6040143037577758943">Cau</translation>
@@ -483,9 +510,12 @@ Os nad yw'r dudalen hon yn gweithio fel y disgwylir, rhowch gynnig ar ganiatáu 
 <translation id="6063093106622310249">&amp;Agor yn Chromium</translation>
 <translation id="6069027071882229820">Copïo fel llun</translation>
 <translation id="6072279588547424923">Mae <ph name="EXTENSION_NAME" /> wedi'i ychwanegu at Chromium</translation>
+<translation id="6076631285161795690">O'r botwm "Search yn Chrome" ar y bar offer, gallwch ailagor Search yn Chrome i ofyn cwestiynau wrth i chi bori</translation>
+<translation id="6090632163254655665">Ailagor panel ochr Search</translation>
 <translation id="6096348254544841612">Personoleiddio a rheoli Chromium. Mae diweddariad ar gael.</translation>
 <translation id="6107893135096467929">Ymlaen • Nid yw Chromium yn gallu dilysu o ble mae'r estyniad hwn yn dod</translation>
 <translation id="611228897408671387">Eich cyfrif yn Chromium</translation>
+<translation id="6114975763361458436">Cau Chwilio yn y panel ochr</translation>
 <translation id="6119438414301547735">Caniatáu i estyniad ddangos ceisiadau am fynediad ym mar offer Chromium</translation>
 <translation id="6129621093834146363">Mae <ph name="FILE_NAME" /> yn beryglus, felly mae Chromium wedi ei rhwystro.</translation>
 <translation id="6132897690380286411">Bydd Chromium yn cau ac yn dileu data yn fuan</translation>
@@ -498,6 +528,7 @@ Os nad yw'r dudalen hon yn gweithio fel y disgwylir, rhowch gynnig ar ganiatáu 
 <translation id="6182736845697986886">Methodd y gosodiad oherwydd gwall mewnol yn y gweinydd diweddaru.</translation>
 <translation id="6183079672144801177">Gwnewch yn siŵr eich bod wedi mewngofnodi i Chromium ar eich <ph name="TARGET_DEVICE_NAME" /> a rhowch gynnig arall arni.</translation>
 <translation id="6192070012454216182">Chwilio a gofyn cwestiynau o unrhyw le, hyd yn oed os yw Chromium wedi'i leihau. Yn caniatáu i Chromium redeg yn y cefndir.</translation>
+<translation id="6210269448287455102">Ailagor Chwilio yn y panel ochr</translation>
 <translation id="6212496753309875659">Mae gan y cyfrifiadur hwn fersiwn fwy diweddar o Chromium eisoes. Os nad yw'r feddalwedd yn gweithio, dadosodwch Chromium a rhowch gynnig arall arni.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Bydd Chromium yn ail-lansio nawr}=1{Bydd Chromium yn ail-lansio mewn 1 eiliad}two{Bydd Chromium yn ail-lansio mewn # eiliad}few{Bydd Chromium yn ail-lansio mewn # eiliad}many{Bydd Chromium yn ail-lansio mewn # eiliad}other{Bydd Chromium yn ail-lansio mewn # eiliad}}</translation>
 <translation id="6232046770428574552">Bydd Chromium yn diweddaru pan fydd eich sgrîn heb ei defnyddio</translation>
@@ -526,7 +557,9 @@ Os nad yw'r dudalen hon yn gweithio fel y disgwylir, rhowch gynnig ar ganiatáu 
 <translation id="6403826409255603130">Porwr gwe yw Chromium sy'n rhedeg tudalennau gwe a rhaglenni mewn chwinciad. Mae'n gyflym, sefydlog ac yn hawdd ei ddefnyddio. Porwch y we yn fwy diogel gyda diogelwch rhag maleiswedd a gwe-rwydo pwrpasol yn Chromium.</translation>
 <translation id="6414624068245092115">I wneud yn siŵr y gallwch ddefnyddio a chadw data Chromium yn eich Cyfrif Google bob amser, cadarnhewch mai chi sydd yno</translation>
 <translation id="642132557830635295">Mae Chromium yn rhedeg yn gyflymach a dylai nodweddion sy'n defnyddio JavaScript weithio fel y'u dyluniwyd</translation>
+<translation id="6434631832954028336">Ailagor y panel Search</translation>
 <translation id="6436260184216827876">Nid yw Chwilio Lluniau ar gael. Rhowch gynnig arall arni'n nes ymlaen.</translation>
+<translation id="6436991218539695041">Eicon newydd, yr un llwybr byr: Cliciwch i ofyn cwestiynau wrth i chi bori gyda Search yn Chrome.</translation>
 <translation id="6442900851116057561">Ailgychwyn ChromiumOS</translation>
 <translation id="6443470774889161065">Mae Chromium yn rhaglwytho hyd yn oed mwy o dudalennau rydych yn debygol o ymweld â nhw, fel eu bod yn llwytho yn gyflymach pan rydych yn gwneud hynny</translation>
 <translation id="6450948450282634257">Lawrlwythwch Chromium ar eich ffôn i olrhain prisiau a chael rhybuddion pan fydd y pris yn gostwng ar unrhyw wefan</translation>
@@ -538,6 +571,7 @@ Os nad yw'r dudalen hon yn gweithio fel y disgwylir, rhowch gynnig ar ganiatáu 
 <translation id="648319183876919572">Mae Pori'n Ddiogel Uwch yn gwneud rhagor i'ch amddiffyn rhag lawrlwythiadau a gwefannau peryglus</translation>
 <translation id="6510925080656968729">Dadosod Chromium</translation>
 <translation id="651535675648445253">Mae llwybrau byr yn agor yn Chromium</translation>
+<translation id="6534946732446042463">Gallwch ailagor panel ochr Search i ofyn cwestiynau wrth i chi bori</translation>
 <translation id="6539122709674868420">Mae eich sefydliad yn cau Chromium pan na chaiff ei ddefnyddio ar ei gyfer <ph name="TIMEOUT_DURATION" />. Cafodd data pori eu dileu. Gallai hyn gynnwys hanes, awtolenwi, a lawrlwythiadau.</translation>
 <translation id="6542839706527980775">Mae gan bob proffil ei wybodaeth Chromium ei hun megis nodau tudalen, hanes, cyfrineiriau, a rhagor</translation>
 <translation id="6556755379298048869">Chwilio gyda llwybr byr bysellfwrdd.</translation>
@@ -571,6 +605,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael. Rhowch gyfeiriadur proffil gwahanol
 <translation id="67706546131546258">Mae Chromium yn argymell sganio'r ffeil hon oherwydd y gallai fod yn beryglus.</translation>
 <translation id="6779406956731413166">Mae ChromiumOS yn bosib drwy <ph name="BEGIN_LINK_CROS_OSS" />feddalwedd ffynhonnell agored<ph name="END_LINK_CROS_OSS" /> ychwanegol.</translation>
 <translation id="6804256634866838775">Diystyru chwiliad gweithredol</translation>
+<translation id="6818170431027022139"><ph name="USER_NAME_OR_EMAIL" />. Aelodaeth.</translation>
 <translation id="6831043979455480757">Cyfieithu</translation>
 <translation id="6847869444787758381">Mae Chromium yn gadael i chi wybod a yw'ch cyfrineiriau byth wedi'u darganfod</translation>
 <translation id="684888714667046800">Methu â chysylltu â'r Rhyngrwyd. Os ydych yn defnyddio mur cadarn, sicrhewch fod <ph name="PRODUCT_EXE_NAME" /> yn y rhestr ganiatáu.</translation>
@@ -595,6 +630,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael. Rhowch gyfeiriadur proffil gwahanol
             • Ailosod llwybrau byr Chromium
             <ph name="LINE_BREAKS" />
             Ni fydd hyn yn effeithio ar nodau tudalen, hanes a chyfrineiriau sydd wedi'u cadw.</translation>
+<translation id="6930607614725241390">Chwilio yn y panel ochr</translation>
 <translation id="6948031725951063910">Rydych wedi cyrraedd terfyn Chromium o <ph name="BOOKMARK_LIMIT" /> nod tudalen, felly nid yw rhai o'ch nodau tudalen wedi'u cadw yn eich Cyfrif Google eto.
 
 Ni ellir cadw nodau tudalen newydd yn eich cyfrif nes i chi ddileu rhai. Os byddwch yn allgofnodi nawr, bydd nodau tudalen sydd heb eu cadw yn cael eu dileu.</translation>
@@ -607,6 +643,7 @@ Ni ellir cadw nodau tudalen newydd yn eich cyfrif nes i chi ddileu rhai. Os bydd
 <translation id="7037186623849853406">{COUNT,plural, =1{Mae Diogelwch Uwch yn gofyn i chi ail-lansio Chromium i gymhwyso diweddariad. Ni fydd eich ffenestr Ynysig yn ailagor.}zero{Mae Diogelwch Uwch yn gofyn i chi ail-lansio Chromium i gymhwyso diweddariad. Ni fydd eich # ffenestr Ynysig yn ailagor.}two{Mae Diogelwch Uwch yn gofyn i chi ail-lansio Chromium i gymhwyso diweddariad. Ni fydd eich # ffenestr Ynysig yn ailagor.}few{Mae Diogelwch Uwch yn gofyn i chi ail-lansio Chromium i gymhwyso diweddariad. Ni fydd eich # ffenestr Ynysig yn ailagor.}many{Mae Diogelwch Uwch yn gofyn i chi ail-lansio Chromium i gymhwyso diweddariad. Ni fydd eich # ffenestr Ynysig yn ailagor.}other{Mae Diogelwch Uwch yn gofyn i chi ail-lansio Chromium i gymhwyso diweddariad. Ni fydd eich # ffenestr Ynysig yn ailagor.}}</translation>
 <translation id="7045244423563602563">Personoleiddiwch Chromium</translation>
 <translation id="7047386856539490735">Ydy'r canlyniadau hyn yn ddefnyddiol?</translation>
+<translation id="7056949952597412593">O'r botwm "Search yn y panel ochr" ar y bar offer, gallwch ailagor Search yn y panel ochr i ofyn cwestiynau wrth i chi bori</translation>
 <translation id="705851970750939768">Diweddaru Chromium</translation>
 <translation id="7067091210845072982">Os nad oes gan ddelwedd ddisgrifiad defnyddiol, bydd Chromium yn ceisio darparu un ar eich cyfer. Rydym yn anfon delweddau at Google er mwyn creu disgrifiadau.</translation>
 <translation id="7074836723476134809">Cael pŵer AI pan fyddwch yn defnyddio'r ap Chromium ar eich <ph name="DEVICE_TYPE" /></translation>
@@ -659,10 +696,14 @@ Ni all Chromium adfer eich gosodiadau.</translation>
 <translation id="7483335560992089831">Methu â gosod yr un fersiwn o Chromium sy'n rhedeg ar hyn o bryd. Caewch Chromium a rhowch gynnig arall arni.</translation>
 <translation id="7510190804000607802">Nodyn atgoffa: Y gorau o Google yn eich poced</translation>
 <translation id="751935028865900641">Mae'n debyg y bydd gwefannau yn gweithio yn ôl y disgwyl. Byddwch yn cael eich allgofnodi o'r rhan fwyaf o wefannau pan fyddwch yn cau holl ffenestri Chromium, ac eithrio eich Cyfrif Google os ydych wedi mewngofnodi i Chromium.</translation>
+<translation id="7527373353833064142">Gallwch ailagor y panel Search i ofyn cwestiynau wrth i chi bori</translation>
 <translation id="753534427205733210">{0,plural, =1{Bydd Chromium yn ail-lansio mewn 1 funud}zero{Bydd Chromium yn ail-lansio mewn # munud}two{Bydd Chromium yn ail-lansio mewn # funud}few{Bydd Chromium yn ail-lansio mewn # munud}many{Bydd Chromium yn ail-lansio mewn # munud}other{Bydd Chromium yn ail-lansio mewn # munud}}</translation>
 <translation id="7565444033145385702">I ddiogelu eich data, gadewch i Chromium dynnu caniatadau o wefannau nad ydych wedi ymweld â nhw yn ddiweddar.</translation>
+<translation id="7582826101081069259">Ailagor Search yn Chrome</translation>
 <translation id="7583104404158659071">Lansio Chromium yn awtomatig i ddechrau pori ar unwaith.</translation>
 <translation id="7583399374488819119">Gosodwr <ph name="COMPANY_NAME" /></translation>
+<translation id="7583487342282700781">Eicon newydd, yr un llwybr byr: Cliciwch i ofyn cwestiynau wrth i chi bori gyda phanel ochr Search.</translation>
+<translation id="7603292664535326725">Llwyddiant! Gallwch bellach ofyn cwestiynau yn hawdd wrth i chi bori gyda phanel ochr Search</translation>
 <translation id="761356813943268536">Mae Chromium yn defnyddio'ch camera a'ch meicroffon.</translation>
 <translation id="7617377681829253106">Mae Chromium newydd fynd hyd yn oed yn well</translation>
 <translation id="7622753900276619808">Mae gennych chi bellach fwy o nodweddion ar gael yn Chromium</translation>
@@ -697,15 +738,19 @@ Ni all Chromium adfer eich gosodiadau.</translation>
 <translation id="7873537467422636035">Os byddwch yn anghofio'ch cyfrinymadrodd neu eisiau newid y gosodiad hwn, bydd angen i chi <ph name="BEGIN_LINK" />ddileu'r data Chromium yn eich cyfrif<ph name="END_LINK" /></translation>
 <translation id="7874369989024033742">Agorwch Gemini yn gyflym yn Chromium pryd bynnag y bydd ei angen arnoch</translation>
 <translation id="7888981273428720788">Gosod Chromium yn borwr diofyn</translation>
+<translation id="789179266956577884">Panel ochr Search</translation>
 <translation id="7934340546140346950">Mae Chromium yn uwchraddio cysylltiadau anniogel i HTTPS yn awtomatig pan fo modd</translation>
 <translation id="7937630085815544518">Roeddech wedi'ch mewngofnodi i Chromium fel <ph name="USER_EMAIL_ADDRESS" />. Defnyddiwch yr un cyfrif i fewngofnodi eto.</translation>
 <translation id="7944602660083060118">Mae <ph name="EXISTING_USER" /> eisoes wedi mewngofnodi. I gadw'ch pori ar wahân, mewngofnodwch i Chromium yn eich proffil eich hun fel <ph name="USER_EMAIL_ADDRESS" />. Byddwch hefyd yn cael eich nodau tudalen a rhagor ar eich holl ddyfeisiau.</translation>
+<translation id="7947655529129620297">Gallwch binio Search yn y panel ochr i ofyn cwestiynau wrth i chi bori</translation>
 <translation id="7975919845073681630">Gosodiad eilaidd o Chromium yw hwn, ac ni ellir ei wneud yn borwr diofyn i chi.</translation>
 <translation id="7997934263947464652">Gall estyniadau, apiau a themâu o ffynonellau anhysbys niweidio'ch dyfais. Mae Chromium yn argymell eu gosod o'r <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> yn unig</translation>
 <translation id="8000759043835159571">Cael y gorau o Google gyda'r ap Chromium ar eich <ph name="DEVICE_TYPE" /></translation>
 <translation id="8004582292198964060">Porwr</translation>
+<translation id="8008233848513969696">Cau panel ochr Search</translation>
 <translation id="8010081455002666927">Awto-ganfod</translation>
 <translation id="8013436988911883588">Unwaith y bydd gan Chromium fynediad, bydd gwefannau yn gallu gofyn i chi am fynediad.</translation>
+<translation id="8014387184082426885">Llwyddiant! Gallwch bellach ofyn cwestiynau yn hawdd wrth i chi bori gyda'r panel Search</translation>
 <translation id="8031714377769448844">Pinio Chromium i'ch bar tasgau i'w gyrraedd yn gyflym unrhyw bryd</translation>
 <translation id="80471789339884597">Diolch am osod. Rhaid i chi ailgychwyn eich holl borwyr cyn defnyddio <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8054112667659782652">Dangos llwybr byr Chwilio Lluniau bob amser</translation>
@@ -721,6 +766,7 @@ Ni all Chromium adfer eich gosodiadau.</translation>
 <translation id="8130609355518033382">Gwneud Chromium yn unigryw i chi</translation>
 <translation id="8133124826068723441">Nid oedd ChromiumOS yn gallu cysoni eich data gan nad yw Cysoni ar gael ar gyfer eich parth.</translation>
 <translation id="813913629614996137">Wrthi'n cychwyn…</translation>
+<translation id="8158143604667288086">Gallwch binio Search yn Chrome i ofyn cwestiynau wrth i chi bori</translation>
 <translation id="8161503455832158203">Agor Gemini yn Chromium gyda llwybr byr bysellfwrdd.</translation>
 <translation id="8164014945047474187">Telerau Gwasanaeth Ychwanegol Chromium</translation>
 <translation id="8172503648109091906">{COUNT,plural, =1{Mae eich gweinyddwr yn gofyn i chi ail-lansio Chromium i gymhwyso diweddariad. Mae ffenestr Anhysbys neu Ynysig ar agor. Ni fydd yn ailagor ar ôl i chi ail-lansio.}zero{Mae eich gweinyddwr yn gofyn i chi ail-lansio Chromium i gymhwyso diweddariad. Mae # ffenestr Anhysbys ac Ynysig ar agor ar draws proffiliau. Ni fyddant yn ailagor ar ôl i chi ail-lansio.}two{Mae eich gweinyddwr yn gofyn i chi ail-lansio Chromium i gymhwyso diweddariad. Mae # ffenestr Anhysbys ac Ynysig ar agor ar draws proffiliau. Ni fyddant yn ailagor ar ôl i chi ail-lansio.}few{Mae eich gweinyddwr yn gofyn i chi ail-lansio Chromium i gymhwyso diweddariad. Mae # ffenestr Anhysbys ac Ynysig ar agor ar draws proffiliau. Ni fyddant yn ailagor ar ôl i chi ail-lansio.}many{Mae eich gweinyddwr yn gofyn i chi ail-lansio Chromium i gymhwyso diweddariad. Mae # ffenestr Anhysbys ac Ynysig ar agor ar draws proffiliau. Ni fyddant yn ailagor ar ôl i chi ail-lansio.}other{Mae eich gweinyddwr yn gofyn i chi ail-lansio Chromium i gymhwyso diweddariad. Mae # ffenestr Anhysbys ac Ynysig ar agor ar draws proffiliau. Ni fyddant yn ailagor ar ôl i chi ail-lansio.}}</translation>
@@ -760,6 +806,7 @@ Ni all Chromium adfer eich gosodiadau.</translation>
 <translation id="8453117565092476964">Mae'r archif gosodwr wedi'i lygru neu'n annilys. Lawrlwythwch Chromium eto.</translation>
 <translation id="8463672209299734063">Dewisol: Helpu i wella nodweddion a pherfformiad ChromiumOS drwy anfon data diagnostig a defnydd at Google yn awtomatig.</translation>
 <translation id="8471947159125090285">I ddefnyddio a chadw data Chromium yn eich Cyfrif Google, cadarnhewch mai chi sydd yno</translation>
+<translation id="8473541503127475913">Ail-lansiwch Chromium i newid</translation>
 <translation id="8482493977473846331">Dangos anogwyr i fewngofnodi i Chromium</translation>
 <translation id="8493179195440786826">Mae Chromium yn Hen</translation>
 <translation id="850264194101621529">Diolch am ddewis Chromium fel eich porwr diofyn!</translation>
@@ -774,6 +821,7 @@ Ni all Chromium adfer eich gosodiadau.</translation>
 <translation id="8586442755830160949">Hawlfraint <ph name="YEAR" /> Awduron Chromium. Cedwir Pob Hawl.</translation>
 <translation id="8619360774459241877">Wrthi'n lansio Chromium...</translation>
 <translation id="8624541899164515475">Gosodiadau, yn agor mewn tab newydd.</translation>
+<translation id="8647316383949836607">Llwyddiant! Gallwch bellach ofyn cwestiynau yn hawdd wrth i chi bori gyda Search yn y panel ochr</translation>
 <translation id="8648201657708811153">Ni ellir gwneud Google Chrome for Testing yn borwr diofyn i chi.</translation>
 <translation id="8676101123715131330">Chwilio gyda Chromium o unrhyw le</translation>
 <translation id="8697124171261953979">Mae hefyd yn rheoli pa dudalen sy'n cael ei dangos pan fyddwch yn cychwyn Chromium neu'n chwilio o'r Omniflwch.</translation>
@@ -796,6 +844,8 @@ Ni all Chromium adfer eich gosodiadau.</translation>
 <translation id="8891709362986793894">Mae eich sefydliad yn gofyn i chi fewngofnodi i Chromium</translation>
 <translation id="8906384069222226849">Mae angen Windows 10 fersiwn 1809 neu uwch ar Chromium.</translation>
 <translation id="8907580949721785412">Mae Chromium yn ceisio dangos cyfrineiriau. Rhowch eich cyfrinair Windows i ganiatáu hyn.</translation>
+<translation id="8910309838319708610">Llwyddiant! Gallwch bellach ofyn cwestiynau yn hawdd wrth i chi bori gyda Dull AI Search</translation>
+<translation id="8915682436012075700">Gall y porwr hwn a reolir ddefnyddio cynorthwyydd Gemini a sefydlwyd ar gyfer gwaith gan <ph name="DOMAIN" />. Gall ddod o hyd i wybodaeth a darparu atebion sydd wedi'u seilio ar ffeiliau'r sefydliad a gwasanaethau cymeradwy. Mae'n bosib na fyddai'n cael ei argymell i'w ddefnyddio gyda phroffil personol. Ni fydd hanes sgwrsio yn cael ei drosglwyddo. Mae newid yn gofyn am ail-lansio Chromium.</translation>
 <translation id="8932992523185907506">Nid Chromium yw eich porwr diofyn mwyach. Gwneud Chromium yn borwr diofyn?</translation>
 <translation id="8941642502866065432">Methu â diweddaru Chromium</translation>
 <translation id="8944232836376404813">Bydd y weithred hon yn:
@@ -835,6 +885,7 @@ Ni all Chromium adfer eich gosodiadau.</translation>
 <translation id="9148058034647219655">Gadael</translation>
 <translation id="9155105544013854680">Parhewch lle gwnaethoch chi adael: Gall Chromium adfer eich tabiau bob tro y byddwch chi'n ailgychwyn. I droi hyn ymlaen, ewch i</translation>
 <translation id="9158494823179993217">Mae'ch gweinyddwr system wedi ffurfweddu Chromium i agor porwr gwahanol i fynd i mewn i <ph name="TARGET_URL_HOSTNAME" />.</translation>
+<translation id="9165824416732784256">Llwyddiant! Gallwch bellach ofyn cwestiynau yn hawdd wrth i chi bori gyda Search yn Chrome</translation>
 <translation id="9185526690718004400">Ail-lansiwch i ddiweddaru &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="924957577793602335">Personoleiddio Chromium</translation>

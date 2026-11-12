@@ -823,6 +823,7 @@
 <translation id="2356941001189392209">Ограничен список со URL-адреси на страниците што ги отворате на кои се случуваат настани со застарена технологија</translation>
 <translation id="2357312461142072202">{NUM_TABS,plural, =1{Ќе се сподели 1 картичка}one{Ќе се споделат {NUM_TABS} картичка}other{Ќе се споделат {NUM_TABS} картички}}</translation>
 <translation id="2357481397660644965"><ph name="DEVICE_MANAGER" /> управува со уредот, а <ph name="ACCOUNT_MANAGER" /> управува со сметката.</translation>
+<translation id="2358479643736965923">Погледнете го вашиот одговор од AI на „Пребарување на Google“ на оваа картичка</translation>
 <translation id="2359629602545592467">Повеќе</translation>
 <translation id="2359808026110333948">Продолжи</translation>
 <translation id="236000571258713023">Возила</translation>
@@ -1141,6 +1142,7 @@
 <translation id="2925032407415783182">Зачувајте го билетот за настанот во Wallet</translation>
 <translation id="2925454999967523701">Копче за создавање документ, активирајте го за да набрзина создадете нов документ на Google</translation>
 <translation id="2925673989565098301">Начин на испорака</translation>
+<translation id="2927328994673424423">Пред 2 седмици</translation>
 <translation id="2928426578619531300">Корисникот е партнер</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> и уште <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}one{<ph name="SHIPPING_ADDRESS_PREVIEW" /> и уште <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> и уште <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="2930531075747147366">Картичка од другиот ваш уред</translation>

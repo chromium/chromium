@@ -823,6 +823,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2356941001189392209">’n Beperkte lys URL’e van bladsye wat jy besoek waar vorigetegnologiegeleenthede plaasvind</translation>
 <translation id="2357312461142072202">{NUM_TABS,plural, =1{Sal 1 oortjie deel}other{Sal {NUM_TABS} oortjies deel}}</translation>
 <translation id="2357481397660644965">Jou toestel word deur <ph name="DEVICE_MANAGER" /> bestuur en jou rekening word deur <ph name="ACCOUNT_MANAGER" /> bestuur.</translation>
+<translation id="2358479643736965923">Sien jou Google KI-soekantwoord op hierdie oortjie</translation>
 <translation id="2359629602545592467">Veelvuldige</translation>
 <translation id="2359808026110333948">Gaan voort</translation>
 <translation id="236000571258713023">Voertuie</translation>
@@ -1141,6 +1142,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2925032407415783182">Stoor geleentheidkaartjie in Wallet</translation>
 <translation id="2925454999967523701">Knoppie om dokument te skep; aktiveer om vinnig ’n nuwe Google-dokument te skep</translation>
 <translation id="2925673989565098301">Afleweringmetode</translation>
+<translation id="2927328994673424423">2 weke gelede</translation>
 <translation id="2928426578619531300">Gebruikergeaffilieer</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> en nog <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> en nog <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="2930531075747147366">Oortjie van jou ander toestel af</translation>

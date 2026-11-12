@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">Para ver las contraseñas, primero debes configurar un código de acceso en tu dispositivo.</translation>
 <translation id="201759455285471444">Desplegar grupo de pestañas.</translation>
 <translation id="2022431790688770637">Gestionar sugerencias de Gemini</translation>
+<translation id="2023265063803387188">Gemini no está disponible en el modo Incógnito</translation>
 <translation id="2031515492007104071">Subir de nivel</translation>
 <translation id="2044394949148788042">Abre la cuadrícula de pestañas</translation>
 <translation id="2044681667265133332">La cuenta <ph name="USER_EMAIL" /> la gestiona <ph name="HOSTED_DOMAIN" />, que podría ver cierta información. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
@@ -2035,6 +2036,7 @@ Para continuar desde tu ordenador, cambia a <ph name="OTHER_EMAIL" />. Podrás a
 <translation id="728025568708172005">Ver ahora</translation>
 <translation id="7280980607183752256">Este archivo no se puede importar</translation>
 <translation id="7282197670900591579">Tema mostaza</translation>
+<translation id="7283937415134849498">Para ofrecerte ayuda personalizada, Gemini comparte algunos de tus datos (como partes de tus conversaciones, tu ubicación y otra información pertinente) con otros servicios de Google, como Maps y Vuelos. Esos servicios pueden usar la información para mejorar, aunque luego elimines tu historial de Gemini. Consulta más información en el <ph name="BEGIN_LINK" />Centro de Privacidad de las Aplicaciones de Gemini<ph name="END_LINK" />.</translation>
 <translation id="7293429513719260019">Seleccionar idioma</translation>
 <translation id="72961285530871072">Se eliminará de forma permanente tu progreso de Level Up. Además, los datos de uso de las funciones de Level Up dejarán de enviarse a Google para tu perfil.
 
@@ -2607,6 +2609,7 @@ Puedes reiniciar Level Up en cualquier momento.</translation>
 <translation id="8976382372951310360">Ayuda</translation>
 <translation id="8976414606286374109">Las tarjetas se guardan en tu cuenta de Google.</translation>
 <translation id="8981454092730389528">Gestión de tu actividad en Google</translation>
+<translation id="8987736167266086032">Continúa donde lo dejaste</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, sitio fijado</translation>
 <translation id="8989779557457435460">Compartir la pestaña actual de forma predeterminada</translation>
 <translation id="8990960056509724223">No se ha podido guardar el archivo debido a las políticas de tu organización</translation>
@@ -2648,6 +2651,7 @@ Puedes reiniciar Level Up en cualquier momento.</translation>
 <translation id="91023216973987714">Métodos de pago</translation>
 <translation id="9106655997975673326">De <ph name="SOURCE_DEVICE" /></translation>
 <translation id="9107664647686727385">Comprueba si tienes contraseñas vulneradas</translation>
+<translation id="9115035712231910133">Imagen adjunta {title}</translation>
 <translation id="9119764377203471454">No se pueden añadir archivos adjuntos</translation>
 <translation id="9124387962554796433">Es posible que Google utilice tu historial para personalizar la Búsqueda y otros servicios de Google.</translation>
 <translation id="9124978074365039456">Compra, traduce e identifica lo que ves con tu cámara y tu galería de fotos</translation>

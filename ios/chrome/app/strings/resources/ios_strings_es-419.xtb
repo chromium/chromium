@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">Para ver las contraseñas, primero debes establecer una en tu dispositivo.</translation>
 <translation id="201759455285471444">Expandir grupo de pestañas.</translation>
 <translation id="2022431790688770637">Administrar las sugerencias de Gemini</translation>
+<translation id="2023265063803387188">Gemini no está disponible en el modo Incógnito</translation>
 <translation id="2031515492007104071">Subir de nivel</translation>
 <translation id="2044394949148788042">Abre la cuadrícula de pestañas</translation>
 <translation id="2044681667265133332"><ph name="HOSTED_DOMAIN" /> administra la cuenta <ph name="USER_EMAIL" />, por lo que es posible que pueda ver cierta información. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
@@ -2035,6 +2036,7 @@ Para continuar desde tu computadora, cambia a <ph name="OTHER_EMAIL" />. Obtendr
 <translation id="728025568708172005">Mostrar el lugar</translation>
 <translation id="7280980607183752256">No se puede importar este archivo</translation>
 <translation id="7282197670900591579">Tema mostaza</translation>
+<translation id="7283937415134849498">Para brindarte ayuda personalizada, Gemini comparte algunos de tus datos (como fragmentos de los chats, tu ubicación y otra información pertinente) con otros servicios de Google, como Maps y Vuelos. Es posible que estos servicios usen esa información para mejorar, incluso si después borras tu historial de Gemini. Obtén más información en el <ph name="BEGIN_LINK" />Centro de privacidad de las Apps con Gemini<ph name="END_LINK" />.</translation>
 <translation id="7293429513719260019">Seleccionar idioma</translation>
 <translation id="72961285530871072">Esta acción borrará de forma permanente tu progreso de Level Up, y los datos de uso de la función ya no se enviarán a Google para tu perfil.
 
@@ -2607,6 +2609,7 @@ Puedes reiniciar en cualquier momento.</translation>
 <translation id="8976382372951310360">Ayuda</translation>
 <translation id="8976414606286374109">Las tarjetas se guardan en tu Cuenta de Google.</translation>
 <translation id="8981454092730389528">Controles de actividad de Google</translation>
+<translation id="8987736167266086032">Retoma tu sesión</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, sitio fijado</translation>
 <translation id="8989779557457435460">Compartir la pestaña actual de forma predeterminada</translation>
 <translation id="8990960056509724223">No se pudo guardar el archivo debido a las políticas de tu organización</translation>
@@ -2648,6 +2651,7 @@ Puedes reiniciar en cualquier momento.</translation>
 <translation id="91023216973987714">Formas de pago</translation>
 <translation id="9106655997975673326">De "<ph name="SOURCE_DEVICE" />"</translation>
 <translation id="9107664647686727385">Verifica si hay contraseñas hackeadas</translation>
+<translation id="9115035712231910133">Imagen adjunta {title}</translation>
 <translation id="9119764377203471454">No se pueden agregar archivos adjuntos</translation>
 <translation id="9124387962554796433">Es posible que Google use tu historial para personalizar la Búsqueda y otros servicios de Google.</translation>
 <translation id="9124978074365039456">Compra, identifica y traduce lo que ves con la cámara y en la galería de fotos</translation>

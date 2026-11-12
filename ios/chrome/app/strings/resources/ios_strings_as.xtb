@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">পাছৱৰ্ড চাবলৈ আপুনি প্ৰথমে এই ডিভাইচটোত এটা পাছক‘ড ছেট কৰিব লাগিব।</translation>
 <translation id="201759455285471444">টেবৰ গোট বিস্তাৰ কৰক।</translation>
 <translation id="2022431790688770637">Geminiৰ পৰামৰ্শ পৰিচালনা কৰক</translation>
+<translation id="2023265063803387188">ইনক’গনিট’ ম’ডত Gemini উপলব্ধ নহয়</translation>
 <translation id="2031515492007104071">স্তৰ-উন্নীতকৰণ</translation>
 <translation id="2044394949148788042">টেব গ্ৰীডটো খোলক</translation>
 <translation id="2044681667265133332"><ph name="USER_EMAIL" /> একাউণ্টটো <ph name="HOSTED_DOMAIN" />এ পৰিচালনা কৰে, যি হয়তো কিছুমান তথ্য চাব পাৰিব। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
@@ -2035,6 +2036,7 @@
 <translation id="728025568708172005">মোক আমোদকজনক সুবিধাসমূহ দেখুৱাওক</translation>
 <translation id="7280980607183752256">এই ফাইলটো আমদানি কৰিব নোৱাৰি</translation>
 <translation id="7282197670900591579">চিট্ৰন থীম</translation>
+<translation id="7283937415134849498">আপোনাক অধিক উন্নত আৰু সঠিক সহায় আগবঢ়াবলৈ, Geminiএ আপোনাৰ কিছুমান তথ্য (যেনে- আপোনাৰ চাটৰ অংশবিশেষ, অৱস্থান আৰু অন্যান্য প্ৰাসংগিক তথ্য) Maps আৰু Flightsৰ দৰে Googleৰ অন্য সেৱাসমূহৰ সৈতে শ্বেয়াৰ কৰে। আপুনি পাছত আপোনাৰ Geminiৰ ইতিহাস মচি পেলালেও সেই সেৱাসমূহে সেই তথ্য নিজৰ বিকাশৰ বাবে ব্যৱহাৰ কৰিব পাৰে। <ph name="BEGIN_LINK" />Gemini এপৰ গোপনীয়তা কেন্দ্ৰ<ph name="END_LINK" />ত অধিক জানক।</translation>
 <translation id="7293429513719260019">ভাষা বাছনি কৰক</translation>
 <translation id="72961285530871072">এইটোৱে আপোনাৰ Level Upৰ অগ্ৰগতি স্থায়ীভাৱে মচিব আৰু আপোনাৰ প্ৰ’ফাইলৰ বাবে Level Upৰ সুবিধাৰ ব্যৱহাৰৰ ডেটা আৰু Googleলৈ পঠিওৱা নহ’ব।
 
@@ -2613,6 +2615,7 @@
 <translation id="8976382372951310360">সহায়</translation>
 <translation id="8976414606286374109">আপোনাৰ Google একাউণ্টত কাৰ্ডসমূহ ছেভ কৰা হৈছে।</translation>
 <translation id="8981454092730389528">Googleৰ কাৰ্যকলাপৰ নিয়ন্ত্ৰণ</translation>
+<translation id="8987736167266086032">আপুনি য’ত এৰিছিল তাৰ পৰা আৰম্ভ কৰক</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, পিন কৰা ছাইট</translation>
 <translation id="8989779557457435460">ডিফ’ল্ট হিচাপে বৰ্তমানৰ টেবটো শ্বেয়াৰ কৰক</translation>
 <translation id="8990960056509724223">আপোনাৰ প্ৰতিষ্ঠানৰ নীতিৰ বাবে ফাইল ছেভ কৰিব পৰা নগ’ল</translation>
@@ -2654,6 +2657,7 @@
 <translation id="91023216973987714">পৰিশোধ পদ্ধতি</translation>
 <translation id="9106655997975673326">"<ph name="SOURCE_DEVICE" />"ৰ পৰা</translation>
 <translation id="9107664647686727385">পাছৱৰ্ড হেক কৰা হৈছেনে নাই পৰীক্ষা কৰক</translation>
+<translation id="9115035712231910133">সংলগ্ন কৰা প্ৰতিচ্ছবি {title}</translation>
 <translation id="9119764377203471454">সংলগ্নক যোগ দিব পৰা নগ’ল</translation>
 <translation id="9124387962554796433">Googleএ Search আৰু অন্য Google সেৱাসমূহ ব্যক্তিগতকৃত কৰিবলৈ আপোনাৰ ইতিহাস ব্যৱহাৰ কৰিব পাৰে।</translation>
 <translation id="9124978074365039456">আপোনাৰ কেমেৰা আৰু ফট’ গেলাৰী ব্যৱহাৰ কৰি ক্ৰয় কৰক, অনুবাদ কৰক আৰু আপুনি দেখা পোৱা বস্তু চিনাক্ত কৰক</translation>

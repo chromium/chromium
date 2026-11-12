@@ -823,6 +823,7 @@
 <translation id="2356941001189392209">तपाईंले खोलेका लिगेसी प्रविधिसम्बन्धी कार्यक्रमहरू देखाइएका पेजका URL हरूको सीमित सूची</translation>
 <translation id="2357312461142072202">{NUM_TABS,plural, =1{एउटा ट्याब सेयर गरिने छ}other{{NUM_TABS} वटा ट्याब सेयर गरिने छन्}}</translation>
 <translation id="2357481397660644965"><ph name="DEVICE_MANAGER" /> ले तपाईंको यन्त्र व्यवस्थापन गर्छ र <ph name="ACCOUNT_MANAGER" /> ले तपाईंको खाता व्यवस्थापन गर्छ।</translation>
+<translation id="2358479643736965923">Google AI ले दिएको जवाफ यो ट्याबमा हेर्नुहोस्</translation>
 <translation id="2359629602545592467">बहु मुद्राहरू</translation>
 <translation id="2359808026110333948">जारी राख्नुहोस्</translation>
 <translation id="236000571258713023">सवारी साधनहरू</translation>
@@ -1141,6 +1142,7 @@
 <translation id="2925032407415783182">कार्यक्रमको टिकट Wallet मा सेभ गर्नुहोस्</translation>
 <translation id="2925454999967523701">डकुमेन्ट बनाउने बटन, Google डकुमेन्ट प्रयोग गरी तुरुन्तै नयाँ डकुमेन्ट बनाउन यो बटन थिच्नुहोस्</translation>
 <translation id="2925673989565098301">डेलिभरीको विधि</translation>
+<translation id="2927328994673424423">२ हप्ताअघि</translation>
 <translation id="2928426578619531300">प्रयोगकर्तासँग सम्बन्धित</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> र थप <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> र थप <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="2930531075747147366">तपाईंको अर्को डिभाइसबाट पठाइएको ट्याब</translation>

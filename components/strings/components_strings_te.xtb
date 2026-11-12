@@ -818,6 +818,7 @@
 <translation id="2356941001189392209">లెగసీ టెక్నాలజీ ఈవెంట్‌లు జరుగుతున్న చోట మీరు చూసే పేజీల URLలకు సంబంధించిన పరిమిత లిస్ట్</translation>
 <translation id="2357312461142072202">{NUM_TABS,plural, =1{1 ట్యాబ్‌ను షేర్ చేస్తుంది}other{{NUM_TABS} ట్యాబ్‌లను షేర్ చేస్తుంది}}</translation>
 <translation id="2357481397660644965"><ph name="DEVICE_MANAGER" /> మీ డివైజ్‌ను మేనేజ్ చేస్తోంది, <ph name="ACCOUNT_MANAGER" /> మీ ఖాతాను మేనేజ్ చేస్తోంది.</translation>
+<translation id="2358479643736965923">ఈ ట్యాబ్‌లో మీ Google AI సెర్చ్ సమాధానాన్ని చూడండి</translation>
 <translation id="2359629602545592467">అనేకం</translation>
 <translation id="2359808026110333948">కొనసాగించండి</translation>
 <translation id="236000571258713023">వాహనాలు</translation>
@@ -1136,6 +1137,7 @@
 <translation id="2925032407415783182">ఈవెంట్ టికెట్‌ను Walletకు సేవ్ చేయండి</translation>
 <translation id="2925454999967523701">'డాక్యుమెంట్‌ను క్రియేట్ చేయండి' బటన్, కొత్త Google డాక్‌ను క్విక్‌గా క్రియేట్ చేయడానికి దీన్ని యాక్టివేట్ చేయండి</translation>
 <translation id="2925673989565098301">డెలివరీ పద్ధతి</translation>
+<translation id="2927328994673424423">2 వారాల క్రితం</translation>
 <translation id="2928426578619531300">యూజర్‌ను అనుబంధించడం జరిగింది</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="2930531075747147366">మీ ఇతర పరికరం నుండి పొందిన ట్యాబ్</translation>

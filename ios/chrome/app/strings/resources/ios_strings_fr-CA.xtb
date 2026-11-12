@@ -2035,6 +2035,7 @@ Pour continuer à partir de votre ordinateur, passez à <ph name="OTHER_EMAIL" /
 <translation id="728025568708172005">Commencer la visite guidée</translation>
 <translation id="7280980607183752256">Impossible d'importer ce fichier</translation>
 <translation id="7282197670900591579">Thème citron</translation>
+<translation id="7283937415134849498">Pour vous fournir une aide personnalisée, Gemini partage certaines de vos données (comme des parties de vos clavardages, votre position et d'autres informations pertinentes) avec d'autres services Google, comme Maps et Vols. Ces services peuvent utiliser ces informations pour s'améliorer, même si vous supprimez ultérieurement votre historique Gemini. Apprenez-en plus dans le <ph name="BEGIN_LINK" />centre de confidentialité des applis Gemini<ph name="END_LINK" />.</translation>
 <translation id="7293429513719260019">Sélectionner la langue</translation>
 <translation id="72961285530871072">Cela supprimera définitivement votre progression dans Level Up, et les données d'utilisation de la fonctionnalité pour le programme Level Up ne seront plus envoyées à Google pour votre profil.
 
@@ -2607,6 +2608,7 @@ Vous pouvez le redémarrer à tout moment.</translation>
 <translation id="8976382372951310360">Aide</translation>
 <translation id="8976414606286374109">Les cartes seront enregistrées dans votre compte Google.</translation>
 <translation id="8981454092730389528">Commandes d'activité Google</translation>
+<translation id="8987736167266086032">Reprenez là où vous vous étiez arrêté</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, site épinglé</translation>
 <translation id="8989779557457435460">Partager l'onglet actuel par défaut</translation>
 <translation id="8990960056509724223">Impossible d'enregistrer le fichier en raison des politiques de votre organisation</translation>
@@ -2648,6 +2650,7 @@ Vous pouvez le redémarrer à tout moment.</translation>
 <translation id="91023216973987714">Modes de paiement</translation>
 <translation id="9106655997975673326">De « <ph name="SOURCE_DEVICE" /> »</translation>
 <translation id="9107664647686727385">Pour vérifier la présence de mots de passe compromis</translation>
+<translation id="9115035712231910133">Image jointe : {title}</translation>
 <translation id="9119764377203471454">Impossible d'ajouter des pièces jointes</translation>
 <translation id="9124387962554796433">Google peut utiliser votre historique pour personnaliser la recherche et d'autres services Google.</translation>
 <translation id="9124978074365039456">Magasinez, traduisez et identifiez ce que vous voyez à l'aide de votre appareil photo et de votre galerie de photos</translation>

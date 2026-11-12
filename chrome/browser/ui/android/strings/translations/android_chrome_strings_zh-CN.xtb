@@ -427,7 +427,6 @@
 <translation id="2650348088770008516">隐私保护指南说明已关闭</translation>
 <translation id="2650751991977523696">是否重新下载文件？</translation>
 <translation id="265156376773362237">标准预加载</translation>
-<translation id="2651797114528729973">Gemini 与常用功能，现已齐聚全新工具栏</translation>
 <translation id="2656405586795711023">Web 应用</translation>
 <translation id="2664252182805397291">查看网站</translation>
 <translation id="2666092431469916601">顶部</translation>
@@ -616,7 +615,7 @@
 <translation id="3443221991560634068">重新加载当前网页</translation>
 <translation id="3444179773590444986">针对为网站开启深色主题分享反馈？</translation>
 <translation id="3452832259067974318">为保护您的隐私，Chrome 不会在此字段中自动填充您的密码。</translation>
-<translation id="3474624961160222204">继续用“<ph name="NAME" />”的账号登录</translation>
+<translation id="3474624961160222204">以“<ph name="NAME" />”的身份继续</translation>
 <translation id="3478363558367712427">您可自行选择要使用的搜索引擎</translation>
 <translation id="3479552764303398839">以后再说</translation>
 <translation id="3482805106082349287">使用键盘、语音、无痕模式或相机进行搜索</translation>
@@ -675,6 +674,7 @@
 <translation id="368978924030580338">{BOOKMARKS_COUNT,plural, =1{有 1 个书签只保存到此设备上。若要在其他设备上使用它，请将它保存到您的 Google 账号中。}other{有 # 个书签只保存到此设备上。若要在其他设备上使用它们，请将它们保存到您的 Google 账号中。}}</translation>
 <translation id="3692944402865947621">未能成功下载“<ph name="FILE_NAME" />”，因为无法访问它的存储位置。</translation>
 <translation id="3699022356773522638">下载文件？</translation>
+<translation id="3701167022068948696">立即修正</translation>
 <translation id="3701515417135397388">发现密码遭遇数据泄露时向您发出警告</translation>
 <translation id="3703166520839776970">如果此问题仍然存在，请选择下方的“更多详情”以从 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 处获取更多信息。</translation>
 <translation id="3708100450779900829">当设备折叠时，如果想调整地址栏的位置，可以轻触并按住地址栏或者选择以下一项</translation>
@@ -984,6 +984,7 @@
 <translation id="4822710610088666676">已关闭并保存“<ph name="TAB_GROUP_TITLE" />”标签页分组</translation>
 <translation id="4835385943915508971">Chrome 无权访问请求的资源。</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{将包含 <ph name="TAB_COUNT_ONE" /> 个标签页（颜色为<ph name="COLOR_NAME" />）的标签页分组恢复为新的背景标签页分组。}other{将包含 <ph name="TAB_COUNT_MANY" /> 个标签页（颜色为<ph name="COLOR_NAME" />）的标签页分组恢复为新的背景标签页分组。}}</translation>
+<translation id="48431900345921167"><ph name="ACCOUNT_EMAIL" /> 无法使用部分服务</translation>
 <translation id="4849731766219625109">使用您的 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 账号</translation>
 <translation id="4850886885716139402">查看</translation>
 <translation id="4860895144060829044">致电</translation>
@@ -1329,7 +1330,6 @@
 <translation id="6254139308321626268">您正在查看 PDF 文件</translation>
 <translation id="6255809143828972562">借助 Chrome 中的工具，您可以安全地浏览并掌控个人数据的安全</translation>
 <translation id="6259107733340311168">企业信号免责声明底部动作条已以最大高度打开</translation>
-<translation id="6259539576554609209">常用功能，尽在工具栏。您随时可在<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />中切换回来</translation>
 <translation id="6260260490042862943">网站控件</translation>
 <translation id="6264376385120300461">仍然下载</translation>
 <translation id="6264485186158353794">返回安全连接</translation>
@@ -1437,7 +1437,6 @@
 <translation id="6595046016124923392">系统会将图片发送给 Google 以便为您改进说明。</translation>
 <translation id="6602173570135186741">自动填充和密码</translation>
 <translation id="661266467055912436">为您和网络上的所有人提供更好的安全保障。</translation>
-<translation id="6615455863669487791">演示一下</translation>
 <translation id="6621391692573306628">若要将此标签页发送到另一设备，请在这两部设备上都登录 Chrome</translation>
 <translation id="6627583120233659107">修改文件夹</translation>
 <translation id="6633067410344541938">解锁无痕模式</translation>
@@ -1800,6 +1799,7 @@
 <translation id="7956713633345437162">移动设备书签</translation>
 <translation id="7957413488482743710">使用虚拟卡可隐藏您的实体卡信息，保护您免遭潜在欺诈活动的威胁。<ph name="BEGIN_LINK1" />详细了解虚拟卡<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">此设备上的标签页</translation>
+<translation id="7959802829514004148">无法下载 PDF</translation>
 <translation id="7961926449547174351">您已停用存储空间的访问权限，请转到“设置”启用该访问权限。</translation>
 <translation id="7965838025086216108">您可在任何设备上使用已保存的密码。系统会将密码保存到 <ph name="ACCOUNT" /> 的 Google 密码管理工具中。</translation>
 <translation id="7968014550143838305">已添加到阅读清单</translation>
@@ -1843,7 +1843,6 @@
 <translation id="8084864785646838999">您的部分历史记录可能不会在此处显示。如需查看您的所有 Chrome 历史记录，请打开完整的 Chrome 历史记录。此外，您的 Google 账号在 <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 上可能有其他形式的浏览记录。</translation>
 <translation id="8088176524274673045">若要与附近的人分享，请让他们扫描此二维码</translation>
 <translation id="8090732854597034573">如需帮助，请找家长帮忙</translation>
-<translation id="8095180473590852507">Chrome 推出全新工具栏，让操作更顺手。您随时可在<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />中切换回来。</translation>
 <translation id="8101414242770404289"><ph name="TIME_PERIOD" />内没有要关闭的标签页</translation>
 <translation id="810433609302852">提示通知功能宣传内容和使用步骤底部动作条</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
@@ -1888,6 +1887,7 @@
 <translation id="8244387390464017490">自定义新标签页页面</translation>
 <translation id="8244444485683708655">附加摄像头照片</translation>
 <translation id="8250920743982581267">文档</translation>
+<translation id="8254205582828322729">点按“保存”，即可在下次登录时轻松使用此密码</translation>
 <translation id="8257429805444572809">不再接收 <ph name="DOMAIN" /> 的通知</translation>
 <translation id="8258999165172757081">已添加</translation>
 <translation id="8259179246279078674">由于预加载的网页均已加密，因此 Google 不会得知与预加载的网页内容有关的任何信息。不过，Google 服务器会得知哪些网站是以私密方式预加载的。该信息仅用于预加载网页，不会关联到您 Google 账号中的其他信息。</translation>
@@ -1977,6 +1977,7 @@
 <translation id="8560602726703398413">您可在“书签”界面中找到自己的阅读清单</translation>
 <translation id="85618473456579127">点按右上角的个人资料</translation>
 <translation id="8565021320663436446">要移除<ph name="MEMBER_FULL_NAME" />吗？</translation>
+<translation id="8567433453247478023">点按“隐私与安全”</translation>
 <translation id="8570677896027847510">无法安全地下载文件</translation>
 <translation id="8571213806525832805">过去 4 周</translation>
 <translation id="8580435650274205305">失效日期（必填）</translation>
@@ -1997,6 +1998,7 @@
 <translation id="8635399646025169806">要保留标签页分组吗？</translation>
 <translation id="8636825310635137004">要访问您从其他设备打开的标签页，请开启同步功能。</translation>
 <translation id="8639963783467694461">自动填充设置</translation>
+<translation id="8642256427178803328">开启“在您退出 Chrome 时锁定无痕式标签页”</translation>
 <translation id="8644482734962137770">Gemini 需要 Chrome 的使用权限</translation>
 <translation id="8662474268934425487">登录 <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8664979001105139458">文件名已存在</translation>
@@ -2148,6 +2150,7 @@
 <translation id="9205933215779845960">找不到这个页面。请检查拼写，或尝试在 <ph name="SEARCH_ENGINE" /> 上进行搜索。</translation>
 <translation id="9206873250291191720">A</translation>
 <translation id="9212845824145208577">无法继续向下滚动屏幕了。请尝试从页面中更靠下的位置开始截屏。</translation>
+<translation id="9213433120051936369">自定义外观</translation>
 <translation id="9218430445555521422">设为默认</translation>
 <translation id="9219103736887031265">图片</translation>
 <translation id="922152298093051471">自定义 Chrome</translation>

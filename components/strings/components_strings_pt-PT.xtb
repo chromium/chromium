@@ -823,6 +823,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2356941001189392209">Uma lista limitada de URLs de páginas que visita onde estão a ocorrer eventos de tecnologia antiga</translation>
 <translation id="2357312461142072202">{NUM_TABS,plural, =1{Vai partilhar 1 separador}other{Vai partilhar {NUM_TABS} separadores}}</translation>
 <translation id="2357481397660644965">O seu dispositivo é gerido por <ph name="DEVICE_MANAGER" /> e a sua conta é gerida por <ph name="ACCOUNT_MANAGER" />.</translation>
+<translation id="2358479643736965923">Veja a sua resposta da pesquisa com a IA da Google neste separador</translation>
 <translation id="2359629602545592467">Várias</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="236000571258713023">Veículos</translation>
@@ -1141,6 +1142,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2925032407415783182">Guarde o bilhete para evento na Carteira</translation>
 <translation id="2925454999967523701">Botão Criar documento; ative para criar rapidamente um novo documento Google</translation>
 <translation id="2925673989565098301">Método de fornecimento</translation>
+<translation id="2927328994673424423">Há 2 semanas</translation>
 <translation id="2928426578619531300">Utilizador afiliado</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="2930531075747147366">Separador do seu outro dispositivo</translation>

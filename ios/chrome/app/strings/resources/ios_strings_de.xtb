@@ -518,6 +518,7 @@
 <translation id="2524699375503213836">Daten aus Safari importieren</translation>
 <translation id="2526166285241366046">Passwort speichern</translation>
 <translation id="2529021024822217800">Alle öffnen</translation>
+<translation id="2536421147135705892">Standortbestimmung zulassen?</translation>
 <translation id="2536991091671391962">Du kannst gespeicherte Passwörter auf jedem Gerät nutzen. Sie werden im Google Passwortmanager für <ph name="EMAIL" /> gespeichert.</translation>
 <translation id="2538103551183528357">Ausgeblendetes Passwort</translation>
 <translation id="2538705697765638552">Wenn du deine Informationen speicherst, kannst du viele Dinge schneller erledigen, z. B. Formulare in Google-Produkten ausfüllen. Du kannst deine Informationen für <ph name="USER_EMAIL" /> in Google Wallet verwalten.</translation>
@@ -1335,6 +1336,7 @@
 <translation id="5128788795241319992">Neues Menü ansehen</translation>
 <translation id="5132942445612118989">Passwörter, Verlauf und mehr auf allen Geräten synchronisieren</translation>
 <translation id="5137568953923142260">Einmal zulassen</translation>
+<translation id="5139344197062265975">Du kannst dein Mikrofon verwenden, um dich mit Gemini zu unterhalten. Wenn du mit Gemini sprichst, werden die Audiodaten im Gemini-Verlauf gespeichert (sofern aktiviert). Deine Daten werden nicht zur Verbesserung generativer KI-Modelle verwendet.</translation>
 <translation id="5141363746588976328">Karte „Preissenkungen auf deinen Tabs“ ausblenden</translation>
 <translation id="514154868070499296">Schriftart: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">Tab-Wechsler beenden</translation>
@@ -1568,7 +1570,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="5888889603768021126">Angemeldet mit</translation>
 <translation id="5889333064153755823">Browserdaten löschen</translation>
 <translation id="5896576662943111387">Entwickelt für iOS</translation>
-<translation id="5897749768294722429">Synchronisiere Tabs und Verlauf, um bereits besuchte Websites schnell wieder aufzurufen.</translation>
+<translation id="5897749768294722429">Synchronisiere Tabs und den Verlauf, um bereits besuchte Websites schnell wieder aufzurufen.</translation>
 <translation id="5898848375214731122">Gewicht (Masse)</translation>
 <translation id="5899314093904173337">Um diesen Inhalt mit Leuten in deiner Nähe zu teilen, bitte sie, den QR-Code mit ihrer Kamera oder einer entsprechenden App zu scannen.</translation>
 <translation id="5902752768726620872">{count,plural, =1{{count} neuer Tab}other{{count} neue Tabs}}</translation>
@@ -1604,6 +1606,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="6000893618966378846">Löschen der Browserdaten abgeschlossen</translation>
 <translation id="6004988584831654445">Fertig! Du wirst benachrichtigt, wenn neue Aufgaben anstehen.</translation>
 <translation id="6006672969046233841">Neuer Tab</translation>
+<translation id="6006758170939001741">Es gelten unsere <ph name="BEGIN_LINK" />Nutzungsbedingungen<ph name="END_LINK" />, die <ph name="BEGIN_LINK" />Standortnutzungsbedingungen für Korea<ph name="END_LINK" /> und unsere <ph name="BEGIN_LINK" />Datenschutzhinweise<ph name="END_LINK" />. Chats werden geprüft und zum Trainieren generativer KI-Modelle verwendet. Gemini ist eine KI und kann Fehler machen, auch bei Informationen über Personen. Einige Inhalte sind möglicherweise nicht für alle Nutzer geeignet. Du kannst deinen <ph name="BEGIN_LINK" />Verlauf verwalten<ph name="END_LINK" />, einschließlich <ph name="BEGIN_LINK" />Informationen zu deinem Standort<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Weitere Informationen zu möglichen Einstellungen<ph name="END_LINK" /></translation>
 <translation id="6011308810877101166">Suchvorschläge verbessern</translation>
 <translation id="6012140227487808125">Wird verschlüsselt…</translation>
 <translation id="6014801569448771146">Passwörter prüfen</translation>
@@ -2134,6 +2137,7 @@ Du kannst „Level Up“ jederzeit wieder aktivieren.</translation>
 <translation id="7596103009408415410">{COUNT,plural, =1{{COUNT} inaktiven Tab schließen?}other{{COUNT} inaktive Tabs schließen?}}</translation>
 <translation id="7598439272585186139">Mehr Sicherheit</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> nie übersetzen</translation>
+<translation id="760230853074995500">Chats werden geprüft und zum Trainieren generativer KI-Modelle verwendet. Du kannst deinen <ph name="BEGIN_LINK" />Verlauf verwalten<ph name="END_LINK" />, einschließlich <ph name="BEGIN_LINK" />Informationen zu deinem Standort<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Weitere Informationen zu möglichen Einstellungen<ph name="END_LINK" /></translation>
 <translation id="7603308509262646847"><ph name="NAME" /> als Karteninhaber automatisch einfügen</translation>
 <translation id="7603852183842204213">Pop-ups blockiert (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7605594153474022051">Synchronisierung funktioniert nicht</translation>
@@ -2603,6 +2607,7 @@ Du kannst „Level Up“ jederzeit wieder aktivieren.</translation>
 <translation id="8976382372951310360">Hilfe</translation>
 <translation id="8976414606286374109">Karten werden in deinem Google-Konto gespeichert.</translation>
 <translation id="8981454092730389528">Google-Aktivitätseinstellungen</translation>
+<translation id="8987736167266086032">Da weitermachen, wo du aufgehört hast</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, angepinnte Website</translation>
 <translation id="8989779557457435460">Aktuellen Tab standardmäßig teilen</translation>
 <translation id="8990960056509724223">Die Datei konnte nicht gespeichert werden, da sie nicht den Richtlinien deiner Organisation entspricht</translation>
@@ -2627,6 +2632,7 @@ Du kannst „Level Up“ jederzeit wieder aktivieren.</translation>
 <translation id="9066097352053395362">„Lesezeichen bearbeiten“ ausblenden</translation>
 <translation id="9070824521421603770">Du wirst abgemeldet und Tabs werden geschlossen</translation>
 <translation id="9072837124205571418">Tabgruppen von allen Geräten</translation>
+<translation id="9073322251019919253">Gemini ist eine KI und kann Fehler machen, auch bei Informationen über Personen. Einige Inhalte sind möglicherweise nicht für alle Nutzer geeignet. Chats werden geprüft und zum Trainieren generativer KI-Modelle verwendet. Du kannst deinen <ph name="BEGIN_LINK" />Verlauf verwalten<ph name="END_LINK" />, einschließlich <ph name="BEGIN_LINK" />Informationen zu deinem Standort<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Hier findest du weitere Informationen zu möglichen Einstellungen.<ph name="END_LINK" /> Es gelten unsere <ph name="BEGIN_LINK" />Nutzungsbedingungen<ph name="END_LINK" /> und <ph name="BEGIN_LINK" />Datenschutzhinweise<ph name="END_LINK" />.</translation>
 <translation id="9081058212938299310">Passwort für <ph name="USERNAME" /> aktualisieren?</translation>
 <translation id="908365381820697818">Jetzt kannst du Informationen aus Gmail und mehr suchen und einfügen</translation>
 <translation id="9083838294503912307">Aktiviere die Synchronisierung, um geräteübergreifend zu synchronisieren und zu personalisieren.</translation>

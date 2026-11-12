@@ -158,7 +158,9 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="2301513536169703857">Logga in i Chrome om du vill få tillgång till dina lösenord, bokmärken med mera på alla dina enheter</translation>
 <translation id="2307973900865360088">Behåll i dockan</translation>
 <translation id="2309047409763057870">Det här är en sekundär installation av Google Chrome. Det går inte att göra den till standardwebbläsare.</translation>
+<translation id="2330059234841117265">Öppna Google Sök i Chrome</translation>
 <translation id="2345992953227471816">Chrome har upptäckt att dessa tillägg innehåller skadlig kod:</translation>
+<translation id="2350411688004301551">Byt till Gemini Enterprise</translation>
 <translation id="2358140144860869442">Logga in i Chrome om du vill få tillgång till din läslista med mera på alla dina enheter</translation>
 <translation id="2359808026110333948">Fortsätt</translation>
 <translation id="2403703063067034158">Startfel: En annan instans av konfigurationen körs för närvarande. Försök igen senare.</translation>
@@ -169,6 +171,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="2482846200327569645"><ph name="EXISTING_USER" /> är redan inloggad. Om du vill hålla isär webbinformationen loggar du in i Chrome i din egen profil med <ph name="USER_EMAIL_ADDRESS" />. Du får även dina bokmärken med mera från <ph name="DEVICE" />.</translation>
 <translation id="2485422356828889247">Avinstallera</translation>
 <translation id="2513154137948333830">Omstart krävs: <ph name="INSTALL_SUCCESS" /></translation>
+<translation id="251329670120169391">din organisation</translation>
 <translation id="2521391734665471391">Stäng AI-läget i Google Sök</translation>
 <translation id="2523492931736391680">Ditt arbete är säkert i Chrome</translation>
 <translation id="2534365042754120737">Låt Chrome ta bort behörigheter från webbplatser som du inte har besökt nyligen för att skydda din data. Detta stoppar inte aviseringar.</translation>
@@ -218,6 +221,7 @@ Om sidan inte fungerar som förväntat kan du testa att tillåta optimering.</tr
 <translation id="2876628302275096482">Läs mer om <ph name="BEGIN_LINK" />hur Chrome skyddar din data<ph name="END_LINK" /></translation>
 <translation id="2885378588091291677">Aktivitetshanteraren</translation>
 <translation id="2888126860611144412">Om Chrome</translation>
+<translation id="2898830646167954300">Byt tillbaka till din ohanterade Gemini-assistent</translation>
 <translation id="2915996080311180594">Starta om senare</translation>
 <translation id="2926952073016206995">Du behöver ge Chrome kamerabehörighet för den här webbplatsen</translation>
 <translation id="2945997411976714835">Installationsfel: Det gick inte att starta installationsprocessen.</translation>
@@ -257,6 +261,7 @@ Om sidan inte fungerar som förväntat kan du testa att tillåta optimering.</tr
 <translation id="3140883423282498090">Ändringarna börjar gälla nästa gång du startar Google Chrome.</translation>
 <translation id="3149510190863420837">Chrome-appar</translation>
 <translation id="3161522574479303604">Alla språk</translation>
+<translation id="3183555099201190073">Få åtkomst till Sök från alla flikar</translation>
 <translation id="318555301233810762"><ph name="EXISTING_USER" /> är redan inloggad. Om du vill hålla isär webbinformationen loggar du in i Chrome i din egen profil med <ph name="USER_EMAIL_ADDRESS" />. Du får även dina bokmärken med mera på alla dina enheter.</translation>
 <translation id="319199214552513804">Logga in i Chrome om du vill ha det här tillägget med mera på alla dina datorer</translation>
 <translation id="3196187562065225381">Den här nedladdningen blockerades av Chrome eftersom filen är farlig</translation>
@@ -346,11 +351,13 @@ Om sidan inte fungerar som förväntat kan du testa att tillåta optimering.</tr
 <translation id="4022972681110646219">Översätt text på skärmen</translation>
 <translation id="4023601594785368013">Originalspråk: <ph name="LANGUAGE" /></translation>
 <translation id="4034249157893816477">Inbyggt i Chrome för att hjälpa dig att skapa, spara och fylla i starka lösenord automatiskt. Lägg till genvägen för enkel åtkomst.</translation>
+<translation id="4034420818911109432"><ph name="USER_NAME" />, <ph name="EMAIL" />. Google-medlemskap.</translation>
 <translation id="4035053306113201399">ChromeOS måste startas om för att uppdateringen ska börja gälla.</translation>
 <translation id="4050175100176540509">Den senaste versionen har viktiga säkerhetsförbättringar och nya funktioner.</translation>
 <translation id="4053720452172726777">Anpassa och kontrollera Google Chrome</translation>
 <translation id="408393047846373801">Logga in i Chrome om du vill få tillgång till dina lösenord med mera på alla dina enheter. Lösenordet sparas i ditt Google-konto när du har loggat in.</translation>
 <translation id="4102173024714616627">Tillägg är add-ons som gör att du kan anpassa Chrome. Med tillägg kan du anpassa Chrome så att det passar dig, från att hålla ordning till att förenkla vardagssysslor.</translation>
+<translation id="4103543596018881622">Google Sök i Chrome har fästs i verktygsfältet!</translation>
 <translation id="4110895483821904099">Konfigurera din nya profil i Chrome</translation>
 <translation id="4111566860456076004">Chrome kan inte verifiera var tillägget kommer från. Det kan vara osäkert. Ta bort det från Chrome så att det inte längre kan se och ändra data, inklusive personliga uppgifter, på webbplatser du besöker.</translation>
 <translation id="4147555960264124640">Du loggar in med ett hanterat konto och ger dess administratör kontroll över din Google Chrome-profil. Dina Chrome-uppgifter, t.ex. dina appar, bokmärken, din historik, dina lösenord och andra inställningar, knyts permanent till <ph name="USER_NAME" />. Du kommer att kunna ta bort dessa uppgifter via instrumentpanelen i Google Konton, men du kommer inte att kunna koppla dessa uppgifter till ett annat konto. <ph name="LEARN_MORE" /></translation>
@@ -474,6 +481,7 @@ Vissa funktioner är kanske inte tillgängliga. Ange en annan profilkatalog om d
 <translation id="5321325624576443340">Google Lens är inte tillgängligt. Försök igen senare.</translation>
 <translation id="5334309298019785904">Det gick inte att synkronisera data med ChromeOS eftersom synkronisering inte är tillgängligt för din domän.</translation>
 <translation id="5334487786912937552">Du behöver ge Chrome åtkomst till lagringsutrymmet om det ska gå att ladda ned filer</translation>
+<translation id="5336664042114176802">Du kan byta till Gemini-assistenten som ursprungligen var kopplad till ditt Google-konto och som inte hanteras av <ph name="DOMAIN" />. Svaren kommer inte längre att baseras på filer eller tjänster som hanteras av <ph name="DOMAIN" /> och din chatthistorik överförs inte. Den kanske inte är lämplig att använda i arbetet. Du måste starta om Chrome för att byta.</translation>
 <translation id="5337648990166757586">Valfritt: Skicka diagnostik- och användningsdata automatiskt till Google och hjälp oss att förbättra funktioner och prestanda i ChromeOS.</translation>
 <translation id="5346389065299425353">Fördjupa sökningen genom att lägga till flera flikar, filer och verktyg</translation>
 <translation id="5353252989841766347">Exportera lösenord från Chrome</translation>
@@ -591,6 +599,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="6326175484149238433">Ta bort från Chrome</translation>
 <translation id="6334815226785304306">Ställ in Google Chrome som standardwebbläsare och fäst den på aktivitetsfältet</translation>
 <translation id="6339888439788291743">Ny ikon, samma genväg: Klicka för att ställa frågor medan du surfar med AI-läget i Google Sök.</translation>
+<translation id="6349304688246983183">Ställ enkelt frågor medan du surfar med Google Sök</translation>
 <translation id="63540178978900677">Chrome är inte längre din standardwebbläsare. Vill du använda Chrome som standardwebbläsare?</translation>
 <translation id="6357670763064300993">Gemini Enterprise i Chrome</translation>
 <translation id="6360449101159168105">När den här fliken var inaktiv frigjordes minne för att hålla Chrome snabbt. Du kan välja att aldrig inaktivera den här webbplatsen.</translation>
@@ -605,6 +614,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="6438015621983209660">Förbättrad säker webbsökning når längre med Chrome på telefonen</translation>
 <translation id="6442774133615368941">Shoppa, översätt och identifiera det du ser med kameran i Chrome-appen för iOS</translation>
 <translation id="6446105560007692480">för att söka med Chrome eller anpassa i <ph name="BEGIN_LINK" />Inställningar<ph name="END_LINK" /></translation>
+<translation id="6447943657065463998">Den här hanterade webbläsaren kan använda en Gemini-assistent som har konfigurerats för arbete av <ph name="DOMAIN" />. Den kan hitta information och ge svar som baseras på organisationens filer och godkända tjänster. Vi rekommenderar inte att du använder den med en personlig profil. Chatthistoriken överförs inte. Du måste starta om Chrome för att byta.</translation>
 <translation id="6448835208126432197">Använd kortkommandot för att välja en del av skärmen i Gemini i Chrome.</translation>
 <translation id="6473905796280459355">Öppna sidan Om Chrome</translation>
 <translation id="6481963882741794338">Länka Chrome och andra tjänster från Google för anpassning och andra syften</translation>
@@ -799,6 +809,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="8064965390968184078">1. Klicka på <ph name="BUTTON_LABEL" /> nedan
 2. Klicka på <ph name="BUTTON_2" /> i Windows-inställningarna
 3. Klicka på <ph name="BUTTON_3" /> i Windows-aviseringen för att fästa Chrome i aktivitetsfältet för snabb åtkomst</translation>
+<translation id="8066474819446975249">Starta om Chrome för att byta</translation>
 <translation id="8069447462453318634">Välj Fäst i verktygsfältet</translation>
 <translation id="8074398340364918139">Om du vill söka efter en specifik funktion eller ett specifikt tillägg i Chrome skriver du kortkommandot i adressfältet följt av önskad tangent</translation>
 <translation id="8077579734294125741">Andra Chrome-profiler</translation>
@@ -940,6 +951,7 @@ Nya bokmärken kan inte sparas i ditt konto förrän du har raderat några. Om d
 <translation id="9148058034647219655">Avsluta</translation>
 <translation id="9150331942025550505">Få hjälp av AI när du använder Chrome-appen på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="919706545465235479">Du måste uppdatera Chrome innan synkroniseringen kan starta</translation>
+<translation id="9210313013767007472"><ph name="USER_NAME_OR_EMAIL" />. Google-medlemskap.</translation>
 <translation id="922152298093051471">Anpassa Chrome</translation>
 <translation id="93760716455950538">Starta om ChromeOS Flex</translation>
 <translation id="943390475793766444">Den här filen bör genomsökas eftersom den kan vara farlig.</translation>

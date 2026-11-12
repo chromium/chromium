@@ -823,6 +823,7 @@
 <translation id="2356941001189392209">URL только тех посещенных вами страниц, на которых зафиксированы события, связанные с устаревшими технологиями.</translation>
 <translation id="2357312461142072202">{NUM_TABS,plural, =1{Вы поделитесь 1 вкладкой}one{Вы поделитесь {NUM_TABS} вкладкой}few{Вы поделитесь {NUM_TABS} вкладками}many{Вы поделитесь {NUM_TABS} вкладками}other{Вы поделитесь {NUM_TABS} вкладки}}</translation>
 <translation id="2357481397660644965">Вашим устройством управляет <ph name="DEVICE_MANAGER" />, а аккаунтом – <ph name="ACCOUNT_MANAGER" />.</translation>
+<translation id="2358479643736965923">Посмотрите ответ от ИИ в Google Поиске на этой вкладке</translation>
 <translation id="2359629602545592467">Несколько</translation>
 <translation id="2359808026110333948">Продолжить</translation>
 <translation id="236000571258713023">Транспортные средства</translation>
@@ -1141,6 +1142,7 @@
 <translation id="2925032407415783182">Сохраните билет на мероприятие в Кошельке</translation>
 <translation id="2925454999967523701">Кнопка "Создать документ". Нажмите ее, чтобы быстро создать документ Google.</translation>
 <translation id="2925673989565098301">Способ доставки</translation>
+<translation id="2927328994673424423">2 недели назад</translation>
 <translation id="2928426578619531300">Аффилированный пользователь</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> адрес}one{<ph name="SHIPPING_ADDRESS_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> адрес}few{<ph name="SHIPPING_ADDRESS_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> адреса}many{<ph name="SHIPPING_ADDRESS_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> адресов}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> адреса}}</translation>
 <translation id="2930531075747147366">Вкладка с другого устройства</translation>

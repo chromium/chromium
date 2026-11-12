@@ -823,6 +823,7 @@
 <translation id="2356941001189392209">თქვენ მიერ მონახულებული იმ გვერდების URL-ების შეზღუდული სია, რომლებზეც მოვლენები მოძველებული ტექნოლოგიით ხდება</translation>
 <translation id="2357312461142072202">{NUM_TABS,plural, =1{გაზიარდება 1 ჩანართი}other{გაზიარდება {NUM_TABS} ჩანართი}}</translation>
 <translation id="2357481397660644965">თქვენს მოწყობილობას მართავს <ph name="DEVICE_MANAGER" />, ხოლო თქვენს ანგარიშს — <ph name="ACCOUNT_MANAGER" />.</translation>
+<translation id="2358479643736965923">იხილეთ თქვენი Google AI ძიების პასუხი ამ ჩანართში</translation>
 <translation id="2359629602545592467">რამდენიმე</translation>
 <translation id="2359808026110333948">გაგრძელება</translation>
 <translation id="236000571258713023">სატრანსპორტო საშუალებები</translation>
@@ -1141,6 +1142,7 @@
 <translation id="2925032407415783182">ღონისძიების ბილეთის საფულეში შენახვა</translation>
 <translation id="2925454999967523701">დოკუმენტის შექმნის ღილაკი, ახალი Google Doc-ის სწრაფად შესაქმნელად გაააქტიურეთ ის</translation>
 <translation id="2925673989565098301">მიწოდების მეთოდი</translation>
+<translation id="2927328994673424423">2 კვირის წინ</translation>
 <translation id="2928426578619531300">მომხმარებელთან აფილირებული</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> და <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> სხვა}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> და <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> სხვა}}</translation>
 <translation id="2930531075747147366">ჩანართი თქვენი სხვა მოწყობილობიდან</translation>

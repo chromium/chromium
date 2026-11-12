@@ -345,6 +345,7 @@ Si cette page ne fonctionne pas comme prévu, essayez d'autoriser l'optimisation
 <translation id="4022972681110646219">Traduire le contenu à l'écran</translation>
 <translation id="4023601594785368013">Langue d'origine : <ph name="LANGUAGE" /></translation>
 <translation id="4034249157893816477">Intégré à Chrome pour vous aider à créer, à enregistrer et à remplir automatiquement des mots de passe forts. Ajoutez le raccourci pour un accès facile.</translation>
+<translation id="4034420818911109432"><ph name="USER_NAME" />, <ph name="EMAIL" />. Abonnement à Google.</translation>
 <translation id="4035053306113201399">Chrome OS doit être redémarré pour appliquer la mise à jour.</translation>
 <translation id="4050175100176540509">La dernière version propose d'importantes améliorations de la sécurité ainsi que de nouvelles fonctionnalités.</translation>
 <translation id="4053720452172726777">Personnaliser et gérer Google Chrome</translation>
@@ -939,6 +940,7 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="9148058034647219655">Quitter</translation>
 <translation id="9150331942025550505">Profitez de la puissance de l'IA lorsque vous utilisez l'appli Chrome sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="919706545465235479">Mettez Chrome à jour pour commencer la synchronisation</translation>
+<translation id="9210313013767007472"><ph name="USER_NAME_OR_EMAIL" />. Abonnement à Google.</translation>
 <translation id="922152298093051471">Personnaliser Chrome</translation>
 <translation id="93760716455950538">Redémarrer Chrome OS Flex</translation>
 <translation id="943390475793766444">Chrome recommande de numériser ce fichier, car il pourrait être dangereux.</translation>

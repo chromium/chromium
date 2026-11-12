@@ -823,6 +823,7 @@
 <translation id="2356941001189392209">লিগেচী প্ৰযুক্তিৰ লগত জড়িত ঘটনাসমূহ সংঘটিত হোৱা আপুনি চোৱা পৃষ্ঠাসমূহৰ URLসমূহৰ এখন সীমিত সূচী</translation>
 <translation id="2357312461142072202">{NUM_TABS,plural, =1{১ টা টেব শ্বেয়াৰ কৰিব}one{{NUM_TABS} টা টেব শ্বেয়াৰ কৰিব}other{{NUM_TABS} টা টেব শ্বেয়াৰ কৰিব}}</translation>
 <translation id="2357481397660644965">আপোনাৰ ডিভাইচটো <ph name="DEVICE_MANAGER" />এ আৰু আপোনাৰ একাউণ্টটো <ph name="ACCOUNT_MANAGER" />এ পৰিচালনা কৰে।</translation>
+<translation id="2358479643736965923">এই টেবটোত আপোনাৰ Google AI সন্ধানৰ উত্তৰ চাওক</translation>
 <translation id="2359629602545592467">একাধিক</translation>
 <translation id="2359808026110333948">অব্যাহত ৰাখক</translation>
 <translation id="236000571258713023">বাহন</translation>
@@ -1141,6 +1142,7 @@
 <translation id="2925032407415783182">Walletত অনুষ্ঠানৰ টিকেট ছেভ কৰক</translation>
 <translation id="2925454999967523701">নথি সৃষ্টি কৰাৰ বুটাম, এখন নতুন Google Doc ক্ষিপ্ৰতাৰে সৃষ্টি কৰিবলৈ সক্ৰিয় কৰক</translation>
 <translation id="2925673989565098301">ডেলিভাৰীৰ পদ্ধতি</translation>
+<translation id="2927328994673424423">২ সপ্তাহ পূৰ্বে</translation>
 <translation id="2928426578619531300">ব্যৱহাৰকাৰী অনুমোদিত</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> আৰু <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />টা অধিক}one{<ph name="SHIPPING_ADDRESS_PREVIEW" /> আৰু <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />টা অধিক}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> আৰু <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />টা অধিক}}</translation>
 <translation id="2930531075747147366">আপোনাৰ অন্য ডিভাইচৰ পৰা টেব</translation>

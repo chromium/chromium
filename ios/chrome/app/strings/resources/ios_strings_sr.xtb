@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">Да бисте видели лозинке, прво морате да подесите шифру на уређају.</translation>
 <translation id="201759455285471444">Проширите групу картица.</translation>
 <translation id="2022431790688770637">Управљај Gemini предлозима</translation>
+<translation id="2023265063803387188">Gemini није доступан у режиму без архивирања</translation>
 <translation id="2031515492007104071">Виши ниво</translation>
 <translation id="2044394949148788042">Отворите мрежу за картице</translation>
 <translation id="2044681667265133332">Налогом <ph name="USER_EMAIL" /> управља <ph name="HOSTED_DOMAIN" />, који може да прегледа одређене информације. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
@@ -2035,6 +2036,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="728025568708172005">Покажи ми</translation>
 <translation id="7280980607183752256">Не можете да увезете овај фајл</translation>
 <translation id="7282197670900591579">Лимун-жута тема</translation>
+<translation id="7283937415134849498">Да би вам пружао прилагођену помоћ, Gemini дели неке од ваших података (као што су делови четова, локација и друге релевантне информације) са другим Google услугама, као што су Мапе и Летови. Те услуге могу да користе те податке за побољшање, чак и ако касније избришете Gemini историју. Сазнајте више у <ph name="BEGIN_LINK" />центру за приватност Gemini апликација<ph name="END_LINK" />.</translation>
 <translation id="7293429513719260019">Изаберите језик</translation>
 <translation id="72961285530871072">Тиме ћете трајно избрисати напредак у програму Level Up и подаци о коришћењу функција за Level Up више се неће слати Google-у за ваш профил.
 
@@ -2607,6 +2609,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8976382372951310360">Помоћ</translation>
 <translation id="8976414606286374109">Картице се чувају на Google налогу.</translation>
 <translation id="8981454092730389528">Google контроле активности</translation>
+<translation id="8987736167266086032">Наставите тамо где сте стали</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, закачен сајт</translation>
 <translation id="8989779557457435460">Подразумевано дели актуелну картицу</translation>
 <translation id="8990960056509724223">Чување фајла није могуће због смерница организације</translation>
@@ -2648,6 +2651,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="91023216973987714">Начини плаћања</translation>
 <translation id="9106655997975673326">Са телефона <ph name="SOURCE_DEVICE" /></translation>
 <translation id="9107664647686727385">Траже угрожене лозинке</translation>
+<translation id="9115035712231910133">Приложена је слика {title}</translation>
 <translation id="9119764377203471454">Додавање прилога није успело</translation>
 <translation id="9124387962554796433">Google може да користи историју за персонализацију Претраге и других Google услуга.</translation>
 <translation id="9124978074365039456">Купујте, преводите и идентификујте оно што видите помоћу камере и фото-галеријe</translation>

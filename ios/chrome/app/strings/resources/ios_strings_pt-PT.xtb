@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">Para ver as palavras-passe, tem de definir primeiro um código secreto no dispositivo.</translation>
 <translation id="201759455285471444">Expandir grupo de separadores.</translation>
 <translation id="2022431790688770637">Gerir sugestões do Gemini</translation>
+<translation id="2023265063803387188">O Gemini não está disponível no modo de navegação anónima</translation>
 <translation id="2031515492007104071">Level Up</translation>
 <translation id="2044394949148788042">Abra a grelha de separadores</translation>
 <translation id="2044681667265133332">A conta <ph name="USER_EMAIL" /> é gerida por <ph name="HOSTED_DOMAIN" />, que pode ver algumas informações. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
@@ -1213,6 +1214,7 @@
 <translation id="479628432297359449">Quer parar a transferência?</translation>
 <translation id="4796496140132859135">Grupo de separadores Reduzido.</translation>
 <translation id="4800912004582762296">A clicar</translation>
+<translation id="4800930308997591052">Mude para <ph name="EMAIL" /> para partilhar separadores facilmente entre os seus dispositivos e aceder às suas palavras-passe, marcadores e muito mais a partir da sua Conta Google.</translation>
 <translation id="4802185666270672526">Ocultar Pedir site para computador</translation>
 <translation id="4803185665210547709">Gerido pela sua organização.
 <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
@@ -2035,6 +2037,7 @@ Para continuar a partir do computador, mude para <ph name="OTHER_EMAIL" />. Tem 
 <translation id="728025568708172005">Iniciar visita guiada</translation>
 <translation id="7280980607183752256">Não é possível importar este ficheiro</translation>
 <translation id="7282197670900591579">Tema citrino</translation>
+<translation id="7283937415134849498">Para oferecer ajuda personalizada, o Gemini partilha alguns dos seus dados (como partes dos seus chats, a localização e outras informações relevantes) com outros serviços Google, como o Maps e o Voos. Estes serviços podem usar essas informações para melhorar, mesmo que elimine o seu histórico do Gemini mais tarde. Saiba mais no <ph name="BEGIN_LINK" />Centro de Privacidade das Apps Gemini<ph name="END_LINK" />.</translation>
 <translation id="7293429513719260019">Selecionar idioma</translation>
 <translation id="72961285530871072">Esta ação elimina permanentemente o seu progresso do Level Up, e os dados de utilização das funcionalidades do Level Up deixam de ser enviados para a Google para o seu perfil.
 
@@ -2147,6 +2150,7 @@ Pode reiniciar em qualquer altura.</translation>
 <translation id="7618220760967055820">Escolha o botão que é apresentado na barra de ferramentas</translation>
 <translation id="7620522820075868385">Cancelar</translation>
 <translation id="762078666799342162">Pode ver as transferências anteriores na app <ph name="BEGIN_LINK" />Files<ph name="END_LINK" /></translation>
+<translation id="7636034359405891151">Continue a partir do ponto onde ficou no computador</translation>
 <translation id="7638584964844754484">Frase de acesso incorreta</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Palavras-passe comprometidas}=1{{COUNT} palavra-passe comprometida}other{{COUNT} palavras-passe comprometidas}}</translation>
 <translation id="7640669552036055091">Separadores do Android</translation>
@@ -2607,6 +2611,7 @@ Pode reiniciar em qualquer altura.</translation>
 <translation id="8976382372951310360">Ajuda</translation>
 <translation id="8976414606286374109">Os cartões são guardados na sua Conta Google.</translation>
 <translation id="8981454092730389528">Controlos da atividade Google</translation>
+<translation id="8987736167266086032">Continue onde ficou</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, site fixado</translation>
 <translation id="8989779557457435460">Partilhar separador atual por predefinição</translation>
 <translation id="8990960056509724223">Não foi possível guardar o ficheiro devido às políticas da sua organização</translation>
@@ -2648,6 +2653,7 @@ Pode reiniciar em qualquer altura.</translation>
 <translation id="91023216973987714">Métodos de pagamento</translation>
 <translation id="9106655997975673326">De "<ph name="SOURCE_DEVICE" />"</translation>
 <translation id="9107664647686727385">Verifique a existência de palavras-passe comprometidas.</translation>
+<translation id="9115035712231910133">Imagem anexada {title}</translation>
 <translation id="9119764377203471454">Não é possível adicionar anexos</translation>
 <translation id="9124387962554796433">A Google pode utilizar o seu histórico para personalizar a Pesquisa e outros serviços Google.</translation>
 <translation id="9124978074365039456">Compre, traduza e identifique o que vê com a câmara e a galeria de fotos</translation>

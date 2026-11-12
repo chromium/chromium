@@ -823,6 +823,7 @@
 <translation id="2356941001189392209">Köhnə texnologiya hadisələri olan səhifələrin məhdud URL siyahısı</translation>
 <translation id="2357312461142072202">{NUM_TABS,plural, =1{1 tab paylaşılacaq}other{{NUM_TABS} tab paylaşılacaq}}</translation>
 <translation id="2357481397660644965">Cihazı <ph name="DEVICE_MANAGER" />, hesabı isə<ph name="ACCOUNT_MANAGER" /> idarə edir.</translation>
+<translation id="2358479643736965923">Bu tabda Google Sİ axtarış cavabına baxın</translation>
 <translation id="2359629602545592467">Çoxsaylı</translation>
 <translation id="2359808026110333948">Davam edin</translation>
 <translation id="236000571258713023">Nəqliyyat vasitələri</translation>
@@ -1141,6 +1142,7 @@
 <translation id="2925032407415783182">Tədbir biletini Pulqabıda yadda saxlayın</translation>
 <translation id="2925454999967523701">"Sənəd yaradın" düyməsi, aktivləşdirərək cəld yeni Google Sənəd yaradın</translation>
 <translation id="2925673989565098301">Çatdırılma Üsulu</translation>
+<translation id="2927328994673424423">2 həftə əvvəl</translation>
 <translation id="2928426578619531300">İstifadəçi ilə bağlı</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> və daha <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> və daha <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="2930531075747147366">Digər cihazınızdan tab</translation>

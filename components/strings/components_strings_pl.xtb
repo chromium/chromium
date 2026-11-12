@@ -823,6 +823,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2356941001189392209">Ograniczona lista adresów URL odwiedzanych przez Ciebie stron, na których występują zdarzenia oparte na starszej technologii</translation>
 <translation id="2357312461142072202">{NUM_TABS,plural, =1{Zostanie udostępniona 1 karta}few{Zostaną udostępnione {NUM_TABS} karty}many{Zostanie udostępnionych {NUM_TABS} kart}other{Zostanie udostępnione {NUM_TABS} karty}}</translation>
 <translation id="2357481397660644965">Twoim urządzeniem zarządza <ph name="DEVICE_MANAGER" />, a Twoim kontem – <ph name="ACCOUNT_MANAGER" />.</translation>
+<translation id="2358479643736965923">Na tej karcie znajdziesz odpowiedź AI z wyszukiwarki Google</translation>
 <translation id="2359629602545592467">Różne</translation>
 <translation id="2359808026110333948">Dalej</translation>
 <translation id="236000571258713023">Pojazdy</translation>
@@ -1141,6 +1142,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2925032407415783182">Zapisz bilet na wydarzenie w Portfelu</translation>
 <translation id="2925454999967523701">Przycisk Utwórz dokument; aktywuj, aby szybko utworzyć nowy dokument Google</translation>
 <translation id="2925673989565098301">Metoda dostawy</translation>
+<translation id="2927328994673424423">2 tygodnie temu</translation>
 <translation id="2928426578619531300">Użytkownik jest powiązany</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> i jeszcze <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}few{<ph name="SHIPPING_ADDRESS_PREVIEW" /> i jeszcze <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}many{<ph name="SHIPPING_ADDRESS_PREVIEW" /> i jeszcze <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> i jeszcze <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="2930531075747147366">Karta z innego urządzenia</translation>

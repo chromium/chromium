@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">Če si želite ogledati gesla, morate najprej nastaviti geslo v napravi.</translation>
 <translation id="201759455285471444">Razširitev skupine zavihkov.</translation>
 <translation id="2022431790688770637">Upravljanje Geminijevih predlogov</translation>
+<translation id="2023265063803387188">Gemini ni na voljo v anonimnem načinu</translation>
 <translation id="2031515492007104071">Prehod na višjo stopnjo</translation>
 <translation id="2044394949148788042">Odprite mrežo zavihkov</translation>
 <translation id="2044681667265133332">Račun <ph name="USER_EMAIL" /> upravlja <ph name="HOSTED_DOMAIN" />, ki si lahko morda ogleda nekatere podatke. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
@@ -2035,6 +2036,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="728025568708172005">Predstavi mi</translation>
 <translation id="7280980607183752256">Te datoteke ni mogoče uvoziti</translation>
 <translation id="7282197670900591579">Limonova tema</translation>
+<translation id="7283937415134849498">Gemini za zagotavljanje prilagojene pomoči nekatere vaše podatke (kot so deli klepetov, lokacija in druge ustrezne informacije) deli z drugimi Googlovimi storitvami, kot so Zemljevidi in Leti. Te storitve lahko te podatke uporabijo za izboljšanje, tudi če pozneje izbrišete zgodovino v Geminiju. Več o tem lahko preberete v <ph name="BEGIN_LINK" />središču za zasebnost za aplikacije Gemini<ph name="END_LINK" />.</translation>
 <translation id="7293429513719260019">Izbira jezika</translation>
 <translation id="72961285530871072">S tem boste trajno izbrisali napredek v programu Level Up, podatki o uporabi funkcij za Level Up pa se ne bodo več pošiljali Googlu za vaš profil.
 
@@ -2607,6 +2609,7 @@ Kadar koli lahko znova začnete.</translation>
 <translation id="8976382372951310360">Pomoč</translation>
 <translation id="8976414606286374109">Kartice se shranijo v račun Google.</translation>
 <translation id="8981454092730389528">Googlovi kontrolniki za dejavnost</translation>
+<translation id="8987736167266086032">Nadaljujte, kjer ste ostali</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, pripeto spletno mesto</translation>
 <translation id="8989779557457435460">Privzeto deli trenutni zavihek</translation>
 <translation id="8990960056509724223">Datoteke ni bilo mogoče shraniti zaradi pravilnikov vaše organizacije</translation>
@@ -2648,6 +2651,7 @@ Kadar koli lahko znova začnete.</translation>
 <translation id="91023216973987714">Plačilna sredstva</translation>
 <translation id="9106655997975673326">Iz naprave »<ph name="SOURCE_DEVICE" />«</translation>
 <translation id="9107664647686727385">Iskanje ogroženih gesel</translation>
+<translation id="9115035712231910133">Priložena slika {title}</translation>
 <translation id="9119764377203471454">Prilog ni mogoče dodati</translation>
 <translation id="9124387962554796433">Google lahko vašo zgodovino uporabi za prilagajanje Iskanja Google in drugih Googlovih storitev.</translation>
 <translation id="9124978074365039456">Uporabite fotoaparat in fotogalerijo, da boste lahko nakupovali, prevajali in prepoznavali, kaj je prikazano</translation>

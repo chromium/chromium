@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">Du måste ställa in ett lösenord på enheten om du vill kunna se lösenorden.</translation>
 <translation id="201759455285471444">Utöka flikgruppen.</translation>
 <translation id="2022431790688770637">Hantera Gemini-förslag</translation>
+<translation id="2023265063803387188">Gemini är inte tillgänglig i inkognitoläget</translation>
 <translation id="2031515492007104071">Level Up</translation>
 <translation id="2044394949148788042">Öppna rutnätet med flikar</translation>
 <translation id="2044681667265133332">Kontot <ph name="USER_EMAIL" /> hanteras av <ph name="HOSTED_DOMAIN" />, som kanska kan se viss information. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
@@ -1213,6 +1214,7 @@
 <translation id="479628432297359449">Vill du avbryta nedladdningen?</translation>
 <translation id="4796496140132859135">Flikgrupp. Komprimerad.</translation>
 <translation id="4800912004582762296">Klickar</translation>
+<translation id="4800930308997591052">Byt till <ph name="EMAIL" /> för att smidigt dela flikar mellan dina enheter och få dina lösenord, bokmärken med mera från Google-kontot.</translation>
 <translation id="4802185666270672526">Dölj Begär webbplats för dator</translation>
 <translation id="4803185665210547709">Hanteras av organisationen.
 <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
@@ -2035,6 +2037,7 @@ Byt till <ph name="OTHER_EMAIL" /> om du vill fortsätta på datorn. Du får lö
 <translation id="728025568708172005">Visa mig</translation>
 <translation id="7280980607183752256">Det går inte att importera den här filen</translation>
 <translation id="7282197670900591579">Citrongult tema</translation>
+<translation id="7283937415134849498">För att ge anpassad hjälp delar Gemini viss data (som delar av dina chattar, din plats och annan relevant information) med andra tjänster från Google, som Maps och Flights. Dessa tjänster kan använda informationen för att bli bättre, även om du raderar din Gemini-historik senare. Läs mer i <ph name="BEGIN_LINK" />integritetscentret för Gemini-apparna<ph name="END_LINK" />.</translation>
 <translation id="7293429513719260019">Välj språk</translation>
 <translation id="72961285530871072">Detta raderar dina framsteg i Level Up permanent och data om funktionsanvändning för Level Up skickas inte längre till Google för din profil.
 
@@ -2147,6 +2150,7 @@ Du kan starta om när som helst.</translation>
 <translation id="7618220760967055820">Välj vilken knapp som ska visas i verktygsfältet</translation>
 <translation id="7620522820075868385">Avbryt</translation>
 <translation id="762078666799342162">Du kan se dina tidigare nedladdningar i <ph name="BEGIN_LINK" />Filer<ph name="END_LINK" /></translation>
+<translation id="7636034359405891151">Fortsätt där du slutade på datorn</translation>
 <translation id="7638584964844754484">Felaktig lösenfras</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Utsatta lösenord}=1{{COUNT} utsatt lösenord}other{{COUNT} utsatta lösenord}}</translation>
 <translation id="7640669552036055091">Flikar från Android</translation>
@@ -2607,6 +2611,7 @@ Du kan starta om när som helst.</translation>
 <translation id="8976382372951310360">Hjälp</translation>
 <translation id="8976414606286374109">Korten sparas i Google-kontot.</translation>
 <translation id="8981454092730389528">Googles aktivitetsinställningar</translation>
+<translation id="8987736167266086032">Fortsätt där du slutade</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, fäst webbplats</translation>
 <translation id="8989779557457435460">Dela aktuell flik som standard</translation>
 <translation id="8990960056509724223">Det gick inte att spara filen på grund av organisationens policyer</translation>
@@ -2648,6 +2653,7 @@ Du kan starta om när som helst.</translation>
 <translation id="91023216973987714">Betalningsmetoder</translation>
 <translation id="9106655997975673326">Från <ph name="SOURCE_DEVICE" /></translation>
 <translation id="9107664647686727385">Sök efter utsatta lösenord</translation>
+<translation id="9115035712231910133">Bifogad bild {title}</translation>
 <translation id="9119764377203471454">Det gick inte att lägga till bilagor</translation>
 <translation id="9124387962554796433">Google kan anpassa Sök och andra Google-tjänster utifrån historiken.</translation>
 <translation id="9124978074365039456">Köp, översätt och identifiera det du ser med hjälp av kameran och fotogalleriet</translation>

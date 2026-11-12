@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">Untuk melihat sandi, Anda harus menyetel kode sandi di perangkat terlebih dahulu.</translation>
 <translation id="201759455285471444">Luaskan grup tab.</translation>
 <translation id="2022431790688770637">Kelola saran Gemini</translation>
+<translation id="2023265063803387188">Gemini tidak tersedia dalam mode Samaran</translation>
 <translation id="2031515492007104071">Level Up</translation>
 <translation id="2044394949148788042">Buka petak tab</translation>
 <translation id="2044681667265133332">Akun <ph name="USER_EMAIL" /> dikelola oleh <ph name="HOSTED_DOMAIN" />, yang mungkin dapat melihat beberapa informasi. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
@@ -2035,6 +2036,7 @@ Untuk melanjutkan dari komputer, beralihlah ke <ph name="OTHER_EMAIL" />. Anda a
 <translation id="728025568708172005">Mulai Tur Terpandu</translation>
 <translation id="7280980607183752256">File ini tidak dapat diimpor</translation>
 <translation id="7282197670900591579">Tema sitrun</translation>
+<translation id="7283937415134849498">Untuk memberikan bantuan yang disesuaikan, Gemini akan membagikan beberapa data Anda (seperti bagian dari percakapan Anda, lokasi, dan info relevan lainnya) ke layanan Google lainnya, seperti Maps dan Penerbangan. Layanan ini mungkin menggunakan info tersebut untuk meningkatkan kualitasnya, meskipun Anda menghapus histori Gemini Anda nanti. Pelajari lebih lanjut di <ph name="BEGIN_LINK" />Hub Privasi Aplikasi Gemini<ph name="END_LINK" />.</translation>
 <translation id="7293429513719260019">Pilih bahasa</translation>
 <translation id="72961285530871072">Tindakan ini akan menghapus permanen progres Level Up Anda dan data penggunaan fitur untuk Level Up tidak akan lagi dikirim ke Google untuk profil Anda.
 
@@ -2607,6 +2609,7 @@ Anda dapat memulai ulang kapan saja.</translation>
 <translation id="8976382372951310360">Bantuan</translation>
 <translation id="8976414606286374109">Kartu disimpan ke Akun Google Anda.</translation>
 <translation id="8981454092730389528">Kontrol Aktivitas Google</translation>
+<translation id="8987736167266086032">Lanjutkan dari saat terakhir Anda menggunakannya</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, situs yang disematkan</translation>
 <translation id="8989779557457435460">Bagikan tab saat ini secara default</translation>
 <translation id="8990960056509724223">File tidak dapat disimpan karena kebijakan organisasi Anda</translation>
@@ -2648,6 +2651,7 @@ Anda dapat memulai ulang kapan saja.</translation>
 <translation id="91023216973987714">Metode pembayaran</translation>
 <translation id="9106655997975673326">Dari "<ph name="SOURCE_DEVICE" />"</translation>
 <translation id="9107664647686727385">Periksa sandi yang telah dibobol</translation>
+<translation id="9115035712231910133">Gambar terlampir {title}</translation>
 <translation id="9119764377203471454">Tidak dapat menambahkan lampiran</translation>
 <translation id="9124387962554796433">Google dapat menggunakan histori Anda untuk mempersonalisasi Penelusuran dan layanan Google lainnya.</translation>
 <translation id="9124978074365039456">Belanja, terjemahkan, dan identifikasi hal yang Anda lihat menggunakan kamera dan galeri foto</translation>

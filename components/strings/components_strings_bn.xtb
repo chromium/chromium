@@ -824,6 +824,7 @@
 <translation id="2356941001189392209">পুরনো টেকনোলজি ইভেন্ট হচ্ছে এমন যেসব পৃষ্ঠা আপনি দেখেন, তার URL-এর সীমিত তালিকা</translation>
 <translation id="2357312461142072202">{NUM_TABS,plural, =1{১টি ট্যাব শেয়ার করা হবে}one{{NUM_TABS}টি ট্যাব শেয়ার করা হবে}other{{NUM_TABS}টি ট্যাব শেয়ার করা হবে}}</translation>
 <translation id="2357481397660644965">আপনার ডিভাইস <ph name="DEVICE_MANAGER" />-এর মাধ্যমে এবং আপনার অ্যাকাউন্ট <ph name="ACCOUNT_MANAGER" />-এর মাধ্যমে ম্যানেজ করা হয়।</translation>
+<translation id="2358479643736965923">এই ট্যাবে আপনার Google AI সার্চের উত্তর দেখুন</translation>
 <translation id="2359629602545592467">একাধিক</translation>
 <translation id="2359808026110333948">চালিয়ে যান</translation>
 <translation id="236000571258713023">গাড়ি</translation>
@@ -1142,6 +1143,7 @@
 <translation id="2925032407415783182">Wallet-এ ইভেন্টের টিকিট সেভ করুন</translation>
 <translation id="2925454999967523701">'ডকুমেন্ট তৈরি করুন' বোতাম, চটপট নতুন Google Doc তৈরি করতে এটি চালু করুন</translation>
 <translation id="2925673989565098301">ডেলিভারির পদ্ধতি</translation>
+<translation id="2927328994673424423">২ সপ্তাহ আগে</translation>
 <translation id="2928426578619531300">ব্যবহারকারী অনুমোদিত</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> এবং আরও <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />টি}one{<ph name="SHIPPING_ADDRESS_PREVIEW" /> এবং আরও <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />টি}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> এবং আরও <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />টি}}</translation>
 <translation id="2930531075747147366">আপনার অন্যান্য ডিভাইস থেকে ট্যাব</translation>

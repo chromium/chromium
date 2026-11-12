@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">Ili uone manenosiri, ni lazima kwanza uweke namba ya siri kwenye kifaa chako.</translation>
 <translation id="201759455285471444">Panua kikundi cha vichupo.</translation>
 <translation id="2022431790688770637">Dhibiti mapendekezo ya Gemini</translation>
+<translation id="2023265063803387188">Gemini haipatikani katika Hali ya kutumia faraghani</translation>
 <translation id="2031515492007104071">Level Up</translation>
 <translation id="2044394949148788042">Fungua gridi ya kichupo</translation>
 <translation id="2044681667265133332">Akaunti ya <ph name="USER_EMAIL" /> inasimamiwa na <ph name="HOSTED_DOMAIN" />, inayoweza kuangalia baadhi ya maelezo. <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /></translation>
@@ -2035,6 +2036,7 @@ Ili uendelee kwenye kompyuta yako, badilisha utumie <ph name="OTHER_EMAIL" />. U
 <translation id="728025568708172005">Nisaidie kufahamu</translation>
 <translation id="7280980607183752256">Huwezi kupakia faili hii</translation>
 <translation id="7282197670900591579">Mandhari ya rangi ya limau</translation>
+<translation id="7283937415134849498">Ili ikupe usaidizi unaokufaa, Gemini huruhusu huduma nyingine za Google, kama vile Ramani na Safari za Ndege zifikie baadhi ya data yako (kama vile sehemu za magumzo yako, data ya mahali uliko na maelezo mengine yanayofaa). Huenda huduma hizi zikatumia maelezo hayo ili kujiboresha, hata ukifuta historia yako kwenye Gemini baadaye. Pata maelezo zaidi katika <ph name="BEGIN_LINK" />Kituo cha Faragha kwenye Programu za Gemini<ph name="END_LINK" />.</translation>
 <translation id="7293429513719260019">Chagua lugha</translation>
 <translation id="72961285530871072">Hatua hii itafuta kabisa hatua ulizopiga kwenye Level Up na data ya matumizi ya kipengele cha Level Up haitatumwa tena kwa Google kwenye wasifu wako.
 
@@ -2607,6 +2609,7 @@ Unaweza kuanzisha upya wakati wowote.</translation>
 <translation id="8976382372951310360">Usaidizi</translation>
 <translation id="8976414606286374109">Kadi huhifadhiwa kwenye Akaunti yako ya Google.</translation>
 <translation id="8981454092730389528">Vidhibiti vya Shughuli za Google</translation>
+<translation id="8987736167266086032">Endelea kutoka ulipoachia</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, tovuti imebandikwa</translation>
 <translation id="8989779557457435460">Ruhusu kichupo unachotumia sasa kifikiwe kwa chaguomsingi</translation>
 <translation id="8990960056509724223">Imeshindwa kuhifadhi faili kutokana na sera za shirika lako</translation>
@@ -2648,6 +2651,7 @@ Unaweza kuanzisha upya wakati wowote.</translation>
 <translation id="91023216973987714">Njia za kulipa</translation>
 <translation id="9106655997975673326">Kwenye "<ph name="SOURCE_DEVICE" />"</translation>
 <translation id="9107664647686727385">Kagua kama kuna manenosiri yaliyoathiriwa</translation>
+<translation id="9115035712231910133">Imeambatisha picha ya {title}</translation>
 <translation id="9119764377203471454">Imeshindwa kuweka viambatisho</translation>
 <translation id="9124387962554796433">Huenda Google ikatumia historia yako kuboresha huduma ya Tafuta na huduma nyingine za Google.</translation>
 <translation id="9124978074365039456">Nunua, tafsiri na utambue unachokiona ukitumia kamera na matunzio yako ya picha</translation>

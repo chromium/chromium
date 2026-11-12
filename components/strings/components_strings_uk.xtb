@@ -823,6 +823,7 @@
 <translation id="2356941001189392209">Обмежений список URL-адрес відвіданих сторінок, на яких виявлено події застарілих технологій</translation>
 <translation id="2357312461142072202">{NUM_TABS,plural, =1{Буде надано доступ до 1 вкладки}one{Буде надано доступ до {NUM_TABS} вкладки}few{Буде надано доступ до {NUM_TABS} вкладок}many{Буде надано доступ до {NUM_TABS} вкладок}other{Буде надано доступ до {NUM_TABS} вкладки}}</translation>
 <translation id="2357481397660644965">Вашим пристроєм керує <ph name="DEVICE_MANAGER" />, а обліковим записом – <ph name="ACCOUNT_MANAGER" />.</translation>
+<translation id="2358479643736965923">Перегляньте відповідь ШІ від Google у Пошуку на цій вкладці</translation>
 <translation id="2359629602545592467">Декілька</translation>
 <translation id="2359808026110333948">Продовжити</translation>
 <translation id="236000571258713023">Транспортні засоби</translation>
@@ -1141,6 +1142,7 @@
 <translation id="2925032407415783182">Зберегти квиток на захід у Гаманці</translation>
 <translation id="2925454999967523701">Кнопка "Створити документ"; активуйте, щоб швидко створити новий документ Google</translation>
 <translation id="2925673989565098301">Спосіб доставки</translation>
+<translation id="2927328994673424423">2 тижні тому</translation>
 <translation id="2928426578619531300">Афілійований користувач</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> і ще <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}one{<ph name="SHIPPING_ADDRESS_PREVIEW" /> і ще <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}few{<ph name="SHIPPING_ADDRESS_PREVIEW" /> і ще <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}many{<ph name="SHIPPING_ADDRESS_PREVIEW" /> і ще <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> і ще <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="2930531075747147366">Вкладка з іншого вашого пристрою</translation>

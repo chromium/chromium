@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">For å se passordene må du først angi en adgangskode på enheten din.</translation>
 <translation id="201759455285471444">Vis fanegruppen.</translation>
 <translation id="2022431790688770637">Administrer Gemini-forslag</translation>
+<translation id="2023265063803387188">Gemini er ikke tilgjengelig i inkognitomodus</translation>
 <translation id="2031515492007104071">Nytt nivå</translation>
 <translation id="2044394949148788042">Åpne fanerutenettet</translation>
 <translation id="2044681667265133332">Kontoen <ph name="USER_EMAIL" /> administreres av <ph name="HOSTED_DOMAIN" />, som kan se visse typer informasjon. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
@@ -2035,6 +2036,7 @@ Bytt til <ph name="OTHER_EMAIL" /> for å fortsette fra datamaskinen. Du får pa
 <translation id="728025568708172005">Vis meg rundt</translation>
 <translation id="7280980607183752256">Denne filen kan ikke importeres</translation>
 <translation id="7282197670900591579">Sitron tema</translation>
+<translation id="7283937415134849498">For å gi deg skreddersydd hjelp deler Gemini noen av dataene dine (for eksempel deler av chattene dine, posisjonen din og annen relevant informasjon) med andre Google-tjenester, for eksempel Maps og Flyreiser. Disse tjenestene kan bruke informasjonen til forbedringer, selv om du sletter Gemini-loggen senere. Finn ut mer i <ph name="BEGIN_LINK" />hjelpesenteret for personvern i Gemini-apper<ph name="END_LINK" />.</translation>
 <translation id="7293429513719260019">Velg språk</translation>
 <translation id="72961285530871072">Dette sletter Level Up-fremdriften permanent, og data om bruk av Level Up-funksjoner blir ikke lenger sendt til Google for profilen din.
 
@@ -2607,6 +2609,7 @@ Du kan starte på nytt når som helst.</translation>
 <translation id="8976382372951310360">Hjelp</translation>
 <translation id="8976414606286374109">Kort lagres i Google-kontoen din.</translation>
 <translation id="8981454092730389528">Google Aktivitetslagring</translation>
+<translation id="8987736167266086032">Fortsett der du slapp</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, festet nettsted</translation>
 <translation id="8989779557457435460">Del den aktive fanen som standard</translation>
 <translation id="8990960056509724223">Filen kunne ikke lagres på grunn av retningslinjene for organisasjonen din</translation>
@@ -2648,6 +2651,7 @@ Du kan starte på nytt når som helst.</translation>
 <translation id="91023216973987714">Betalingsmåter</translation>
 <translation id="9106655997975673326">Fra «<ph name="SOURCE_DEVICE" />»</translation>
 <translation id="9107664647686727385">Sjekk om du har passord som er utsatt for sikkerhetsbrudd</translation>
+<translation id="9115035712231910133">Vedlagt bilde {title}</translation>
 <translation id="9119764377203471454">Kan ikke legge til vedlegg</translation>
 <translation id="9124387962554796433">Google kan bruke loggen din for å gi Søk og andre Google-tjenester et personlig preg.</translation>
 <translation id="9124978074365039456">Kjøp, oversett og identifiser det du ser, ved bruk av kameraet og bildegalleriet</translation>

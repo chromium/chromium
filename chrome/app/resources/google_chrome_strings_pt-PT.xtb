@@ -154,7 +154,9 @@
 <translation id="2301513536169703857">Para aceder às suas palavras-passe, marcadores e muito mais em todos os seus dispositivos, inicie sessão no Chrome</translation>
 <translation id="2307973900865360088">Manter na Dock</translation>
 <translation id="2309047409763057870">Esta é uma instalação secundária do Google Chrome, pelo que não pode tornar-se o navegador predefinido.</translation>
+<translation id="2330059234841117265">Abrir a Pesquisa Google no Chrome</translation>
 <translation id="2345992953227471816">O Chrome encontrou malware nestas extensões:</translation>
+<translation id="2350411688004301551">Mudar para Gemini Enterprise</translation>
 <translation id="2358140144860869442">Para aceder à sua Lista de leitura e muito mais em todos os seus dispositivos, inicie sessão no Chrome</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2403703063067034158">Erro de arranque: está a ser executada outra instância da configuração. Tente mais tarde.</translation>
@@ -165,6 +167,7 @@
 <translation id="2482846200327569645"><ph name="EXISTING_USER" /> já tem sessão iniciada. Para manter a sua navegação separada, inicie sessão no Chrome no seu perfil como <ph name="USER_EMAIL_ADDRESS" />. Também tem acesso aos seus marcadores e muito mais do <ph name="DEVICE" />.</translation>
 <translation id="2485422356828889247">Desinstalar</translation>
 <translation id="2513154137948333830">Reinício necessário: <ph name="INSTALL_SUCCESS" /></translation>
+<translation id="251329670120169391">a sua organização</translation>
 <translation id="2521391734665471391">Fechar Modo IA da Pesquisa Google</translation>
 <translation id="2523492931736391680">O seu trabalho está seguro no Chrome</translation>
 <translation id="2534365042754120737">Para proteger os seus dados, permita que o Chrome remova as autorizações de sites que não visitou recentemente. Esta opção não para as notificações.</translation>
@@ -214,6 +217,7 @@ Se esta página não estiver a funcionar conforme esperado, experimente permitir
 <translation id="2876628302275096482">Saiba <ph name="BEGIN_LINK" />como o Chrome mantém os seus dados privados<ph name="END_LINK" /></translation>
 <translation id="2885378588091291677">Gestor de tarefas</translation>
 <translation id="2888126860611144412">Acerca do Chrome</translation>
+<translation id="2898830646167954300">Volte ao seu assistente Gemini não gerido</translation>
 <translation id="2915996080311180594">Reiniciar mais tarde</translation>
 <translation id="2926952073016206995">O Chrome necessita da autorização da câmara para este site</translation>
 <translation id="2945997411976714835">Erro de instalação: não foi possível iniciar o processo do instalador.</translation>
@@ -253,6 +257,7 @@ Se esta página não estiver a funcionar conforme esperado, experimente permitir
 <translation id="3140883423282498090">As alterações terão efeito da próxima vez que voltar a iniciar o Google Chrome.</translation>
 <translation id="3149510190863420837">Apps do Chrome</translation>
 <translation id="3161522574479303604">Todos os idiomas</translation>
+<translation id="3183555099201190073">Aceda à Pesquisa a partir de qualquer separador</translation>
 <translation id="318555301233810762"><ph name="EXISTING_USER" /> já tem sessão iniciada. Para manter a sua navegação separada, inicie sessão no Chrome no seu perfil como <ph name="USER_EMAIL_ADDRESS" />. Também tem acesso aos seus marcadores e muito mais em todos os seus dispositivos.</translation>
 <translation id="319199214552513804">Para usar esta extensão e muito mais em todos os seus computadores, inicie sessão no Chrome</translation>
 <translation id="3196187562065225381">O Chrome bloqueou esta transferência porque o ficheiro é perigoso</translation>
@@ -342,11 +347,13 @@ Se esta página não estiver a funcionar conforme esperado, experimente permitir
 <translation id="4022972681110646219">Traduzir ecrã</translation>
 <translation id="4023601594785368013">Idioma original: <ph name="LANGUAGE" /></translation>
 <translation id="4034249157893816477">Integrado no Chrome para ajudar a criar, guardar e preencher automaticamente palavras-passe fortes. Adicione o atalho para facilitar o acesso.</translation>
+<translation id="4034420818911109432"><ph name="USER_NAME" />, <ph name="EMAIL" />. Subscrição da Google.</translation>
 <translation id="4035053306113201399">O ChromeOS tem de ser reiniciado para aplicar a atualização.</translation>
 <translation id="4050175100176540509">Estão disponíveis na versão mais recente melhorias de segurança importantes e novas funcionalidades.</translation>
 <translation id="4053720452172726777">Personalizar e controlar o Google Chrome</translation>
 <translation id="408393047846373801">Para aceder às suas palavras-passe e muito mais em todos os seus dispositivos, inicie sessão no Chrome. Esta palavra-passe é guardada na sua Conta Google depois de iniciar sessão.</translation>
 <translation id="4102173024714616627">As extensões são suplementos que permitem personalizar o Chrome. Desde manter a organização a simplificar tarefas diárias, as extensões ajudam a personalizar o Chrome.</translation>
+<translation id="4103543596018881622">A Pesquisa Google no Chrome foi afixada à barra de ferramentas!</translation>
 <translation id="4110895483821904099">Configure o seu novo perfil do Chrome</translation>
 <translation id="4111566860456076004">O Chrome não consegue validar a origem desta extensão, e pode não ser segura. Remova-a do Chrome para que deixe de poder ver e alterar os seus dados nos sites que visita, incluindo informações pessoais.</translation>
 <translation id="4147555960264124640">Está a iniciar sessão com uma conta gerida e a permitir que o gestor controle o seu perfil do Google Chrome. Os seus dados do Chrome, como aplicações, marcadores, histórico, palavras-passe e outras definições, ficarão associados definitivamente a <ph name="USER_NAME" />. Poderá eliminar estes dados através do Painel de Controlo das Contas Google, mas não poderá associá-los a outra conta. <ph name="LEARN_MORE" /></translation>
@@ -468,6 +475,7 @@ Se esta página não estiver a funcionar conforme esperado, experimente permitir
 <translation id="5321325624576443340">O Google Lens não está disponível. Tente mais tarde.</translation>
 <translation id="5334309298019785904">O ChromeOS não conseguiu sincronizar os dados porque a sincronização não está disponível para o seu domínio.</translation>
 <translation id="5334487786912937552">O Chrome necessita da autorização de acesso ao armazenamento para transferir ficheiros</translation>
+<translation id="5336664042114176802">Pode mudar para o assistente Gemini originalmente associado à sua Conta Google e não gerido por <ph name="DOMAIN" />. As respostas vão deixar de ser ancoradas em ficheiros ou serviços geridos por <ph name="DOMAIN" />, e o seu histórico do chat não vai ser transferido. Pode não ser adequado para usar no trabalho. A mudança requer o reinício do Chrome.</translation>
 <translation id="5337648990166757586">Opcional: ajudar a melhorar as funcionalidades e o desempenho do ChromeOS ao enviar automaticamente dados de diagnóstico e utilização para a Google.</translation>
 <translation id="5346389065299425353">Aprofunde a sua pesquisa adicionando vários separadores, ficheiros e ferramentas</translation>
 <translation id="5353252989841766347">Exportar palavras-passe do Chrome</translation>
@@ -583,6 +591,7 @@ Se esta página não estiver a funcionar conforme esperado, experimente permitir
 <translation id="6326175484149238433">Remover do Chrome</translation>
 <translation id="6334815226785304306">Defina o Google Chrome como o navegador predefinido e afixe-o à barra de tarefas</translation>
 <translation id="6339888439788291743">Novo ícone, mesmo atalho: clique para fazer perguntas enquanto navega com o Modo IA da Pesquisa Google.</translation>
+<translation id="6349304688246983183">Faça perguntas facilmente enquanto navega com a Pesquisa Google</translation>
 <translation id="63540178978900677">O Chrome já não é o seu navegador predefinido. Tornar o Chrome no navegador predefinido?</translation>
 <translation id="6357670763064300993">Gemini Enterprise no Chrome</translation>
 <translation id="6360449101159168105">Enquanto este separador estava inativo, foi libertada memória para manter o Chrome rápido. Pode optar por evitar sempre que este site fique inativo.</translation>
@@ -597,6 +606,7 @@ Se esta página não estiver a funcionar conforme esperado, experimente permitir
 <translation id="6438015621983209660">Expanda a Navegação segura melhorada com o Chrome no seu telemóvel</translation>
 <translation id="6442774133615368941">Compre, traduza e identifique o que vê com a câmara na app Chrome para iOS</translation>
 <translation id="6446105560007692480">para pesquisar com o Chrome ou personalizar nas <ph name="BEGIN_LINK" />Definições<ph name="END_LINK" /></translation>
+<translation id="6447943657065463998">Este navegador gerido pode usar um assistente Gemini configurado para o trabalho por <ph name="DOMAIN" />. Este pode encontrar informações e dar respostas ancoradas nos ficheiros e nos serviços aprovados da organização. A sua utilização com um perfil pessoal pode não ser recomendada. O histórico do chat não é transferido. A mudança requer o reinício do Chrome.</translation>
 <translation id="6448835208126432197">Para selecionar parte do ecrã no Gemini no Chrome, use o atalho de teclado.</translation>
 <translation id="6473905796280459355">Aceder à página Acerca do Chrome</translation>
 <translation id="6481963882741794338">Associe o Chrome e outros serviços Google para personalização e outras finalidades</translation>
@@ -791,6 +801,7 @@ Se esta página não estiver a funcionar conforme esperado, experimente permitir
 <translation id="8064965390968184078">1. Clique em <ph name="BUTTON_LABEL" /> abaixo
 2. Clique em <ph name="BUTTON_2" /> nas definições do Windows
 3. Clique em <ph name="BUTTON_3" /> na notificação do Windows para afixar o Chrome à barra de tarefas para um acesso rápido</translation>
+<translation id="8066474819446975249">Reiniciar Chrome para mudar</translation>
 <translation id="8069447462453318634">Selecione "Fixar na barra de ferramentas"</translation>
 <translation id="8074398340364918139">Para pesquisar uma extensão ou uma funcionalidade específica do Chrome, introduza o respetivo atalho na barra de endereço, seguido da tecla do teclado selecionada</translation>
 <translation id="8077579734294125741">Outros perfis do Chrome</translation>
@@ -932,6 +943,7 @@ Não é possível guardar novos marcadores na sua conta até eliminar alguns. Se
 <translation id="9148058034647219655">Sair</translation>
 <translation id="9150331942025550505">Aproveite o poder da IA ao usar a app Chrome no <ph name="DEVICE_TYPE" /></translation>
 <translation id="919706545465235479">Atualize o Chrome para iniciar a sincronização</translation>
+<translation id="9210313013767007472"><ph name="USER_NAME_OR_EMAIL" />. Subscrição da Google.</translation>
 <translation id="922152298093051471">Personalizar o Chrome</translation>
 <translation id="93760716455950538">Reinicie o ChromeOS Flex</translation>
 <translation id="943390475793766444">O Chrome recomenda que analise este ficheiro porque pode ser perigoso.</translation>

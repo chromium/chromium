@@ -3762,6 +3762,13 @@ Microsoft Outlook 카드에는 추가 관리자 구성이 필요합니다. Chrom
 <translation id="3284094172359247914">WebUSB API 사용 조정</translation>
 <translation id="3285231260918855067">워터마크 텍스트의 윤곽선 불투명도로, 0(투명)에서 100(불투명) 사이입니다.</translation>
 <translation id="3286159327013237833">로그인 화면에서 자동 클릭 사용</translation>
+<translation id="3286515980166695377">이 정책은 M153에서 지원 중단되었으며 M159부터는 영향을 미치지 않습니다. 프로그레시브 웹 애플리케이션(PWA)을 설치할 때 생성되는 네이티브 애플리케이션의 임시 서명이 이제 <ph name="MAC_OS_NAME" />에서 영구적으로 사용 설정됩니다. 이렇게 하면 설치되어 있는 각 애플리케이션이 <ph name="MAC_OS_NAME" /> 시스템 구성요소에 대한 고유한 ID를 갖게 됩니다.
+
+이 정책을 사용 설정하거나 설정하지 않은 상태로 두면 프로그레시브 웹 애플리케이션(PWA)을 설치할 때 생성되는 네이티브 애플리케이션에 임시 서명을 사용할 수 있습니다. 이렇게 하면 설치되어 있는 각 애플리케이션이 <ph name="MAC_OS_NAME" /> 시스템 구성요소에 대한 고유한 ID를 갖게 됩니다.
+
+이 정책을 사용 안함으로 설정하면 프로그레시브 웹 애플리케이션을 설치할 때 생성되는 모든 네이티브 애플리케이션이 동일한 ID를 갖게 됩니다. 이에 따라 <ph name="MAC_OS_NAME" /> 기능이 방해될 수 있습니다.
+
+임시 서명으로 애플리케이션을 차단하는 엔드포인트 보안 솔루션을 사용하는 경우에만 정책을 사용 중지하세요.</translation>
 <translation id="3288595667065905535">배포 채널</translation>
 <translation id="3294430356898755483">정책을 설정하면 관리자가 사용자의 프린터 목록을 설정할 수 있습니다. 사용자가 처음 인쇄를 시도할 때 프린터를 선택하게 됩니다.
 
@@ -5644,6 +5651,11 @@ WebSocket 요청 한도를 수정하려면 <ph name="MAX_CONNECTIONS_PER_PROXY_F
 
 적용된 한도는 <ph name="ALLOW_SOCKET_POOL_SIZE_RANDOMIZATION_FOR_PROXIES_POLICY_NAME" />의 영향을 받습니다.</translation>
 <translation id="4528981768990874684"><ph name="IP_PROTECTION_NAME" /> 기능을 사용 중지합니다.</translation>
+<translation id="4529292353296224032">정책을 '사용'으로 설정하면 키보드 단축키나 확장 프로그램 API를 통해 스크린샷을 캡처할 수 없습니다. 정책을 설정하지 않거나 '사용 안함'으로 설정하면 스크린샷을 캡처할 수 있습니다.
+
+<ph name="PRODUCT_NAME" /> 버전 155~158에서 이 정책을 사용 설정하면 확장 프로그램이 'chrome.debugger.attach()'를 통해 디버거를 연결할 수 없습니다(예: <ph name="CHROME_VARIATIONS_POLICY_NAME" /> 정책에 따라 모든 변형이 사용 중지되는 경우).
+
+정책 설정과 관계없이 <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" />, <ph name="LINUX_OS_NAME" />에서는 운영체제나 서드 파티 애플리케이션으로 찍은 스크린샷이 차단되지 않습니다.</translation>
 <translation id="453031441196755904">지원 중단된 정책입니다.</translation>
 <translation id="4531088355818260318">이 정책을 사용하면 특정 URL 패턴과 일치하는 웹 요청에 맞춤 HTTP 헤더를 삽입하는 규칙 목록을 정의할 수 있습니다. 이 정책에 의해 설정된 헤더는 요청에 원래 포함되어 있던 헤더뿐만 아니라 사용자 또는 확장 프로그램이 시도한 수정 사항보다 우선 적용됩니다.
 
@@ -5815,6 +5827,21 @@ URL 패턴은 <ph name="CONTROLLED_FRAME_BLOCKED_FOR_URLS_POLICY_NAME" /> 정책
       false로 설정하면 기기에서 네트워크 패킷 캡처가 지원되지 않습니다.</translation>
 <translation id="4599810650416623373">이 사이트에서 JavaScript 최적화 차단</translation>
 <translation id="4600786265870346112">큰 커서 사용</translation>
+<translation id="460264931744856609">정책을 설정하면 기존 확장 프로그램 관련 정책으로 제어되는 설정을 포함해 <ph name="PRODUCT_NAME" />의 확장 프로그램 관리 설정을 제어할 수 있습니다.
+
+이 정책은 확장 프로그램 ID 또는 업데이트 URL을 특정 설정에만 매핑합니다. 특수 ID <ph name="DEFAULT_SCOPE" />에 기본 구성을 설정할 수 있으며, 정책에서 맞춤 구성이 설정되지 않은 모든 확장 프로그램에 기본 구성이 적용됩니다.
+
+이 정책은 기존 정책의 확장 프로그램별 구성보다 우선될 수 있습니다.
+
+<ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />, <ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />, <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" /> 또는 <ph name="EXTENSION_SETTINGS_POLICY_NAME" />의 ID별 확장 프로그램 설정은 <ph name="DEFAULT_SCOPE" /> 기본값에서 'installation_mode' 및 'update_url'만 상속받습니다. 다른 속성은 상속받지 않습니다. 업데이트 URL이 있으면 구성은 확장 프로그램 매니페스트(http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy)에 규정된 정확한 업데이트 URL을 포함하는 확장 프로그램에 적용됩니다. 'override_update_url' 플래그가 true로 설정된 경우 <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> 정책 또는 이 정책의 'update_url' 필드에 지정된 'update' URL을 사용하여 확장 프로그램이 설치 및 업데이트됩니다. 'update_url'이 Chrome 웹 스토어 url인 경우 'override_update_url' 플래그가 무시됩니다.
+
+<ph name="PRODUCT_NAME" /> 버전 155~158에서 'debugger' 권한이 있는 확장 프로그램에 'runtime_blocked_hosts'를 적용하면 모든 타겟에서 'chrome.debugger.attach()'가 완전히 사용 중지될 수 있습니다(예: <ph name="CHROME_VARIATIONS_POLICY_NAME" /> 정책에 따라 모든 변형이 사용 중지되는 경우).
+
+<ph name="MS_WIN_NAME" /> 인스턴스의 경우 인스턴스가 <ph name="MS_AD_NAME" /> 도메인에 연결되거나, <ph name="MS_AAD_NAME" />에 연결되거나, <ph name="CHROME_ENTERPRISE_CORE_NAME" />에 등록된 경우에만 Chrome 웹 스토어 외부의 앱 및 확장 프로그램이 강제 설치될 수 있습니다.
+
+<ph name="MAC_OS_NAME" /> 인스턴스의 경우 인스턴스가 MDM을 통해 관리되거나, MCX를 통해 도메인에 연결되거나, <ph name="CHROME_ENTERPRISE_CORE_NAME" />에 등록된 경우에만 Chrome 웹 스토어 외부의 앱 및 확장 프로그램이 강제 설치될 수 있습니다.
+
+참고: 이 정책은 확장 프로그램을 지원하는 플랫폼에만 적용됩니다.</translation>
 <translation id="4602988345256038309">이 시스템에 대한 원격 지원 연결을 허용합니다.</translation>
 <translation id="4605677392792989397">정책을 설정하면 엔터프라이즈 로그인 URL(HTTP 및 HTTPS 프로토콜만 해당) 목록이 설정됩니다. 비밀번호 보호 서비스는 이러한 URL에서 비밀번호의 솔트 처리된 해시를 캡처하여 비밀번호 재사용 감지에 사용합니다. <ph name="PRODUCT_NAME" />이 비밀번호의 솔트 처리된 해시를 제대로 캡처하려면 로그인 페이지가 https://www.chromium.org/developers/design-documents/create-amazing-password-forms에 설명된 가이드라인을 준수해야 합니다.
 
@@ -12007,6 +12034,12 @@ Windows에서는 GPO를 통해 정책을 설정하는 것이 좋습니다. 하�
 정책을 설정하면 허용 목록에 추가된 URL에 대해 웹사이트 텔레메트리 보고서가 관리됩니다.
 설정하지 않으면 웹사이트 텔레메트리가 보고되지 않습니다.
 유효한 URL 패턴에 관해 자세히 알아보려면 https://chromeenterprise.google/policies/url-patterns/ 페이지를 참고하세요. 이 정책에는 HTTP 및 HTTPS URL 스키마만 허용됩니다.</translation>
+<translation id="8392016343898518010">추천 콘텐츠 기능이 삭제되었으므로 이 정책은 지원 중단되며 M159부터는 적용되지 않습니다.
+
+M159 이전까지 이 기능은 앱, 웹페이지 등 볼 만한 신규 콘텐츠를 추천하도록 설정하는 데 사용되었습니다.
+이 정책을 True로 설정하면 볼 만한 신규 콘텐츠 추천 기능이 사용 설정됩니다.
+이 정책을 False로 설정하면 볼 만한 신규 콘텐츠 추천 기능이 사용 중지됩니다.
+이 정책을 설정하지 않으면 관리 사용자의 경우 볼 만한 신규 콘텐츠 추천 기능이 사용 중지되고 다른 사용자의 경우 사용 설정됩니다.</translation>
 <translation id="8392478748777481636">이 정책은 지원 중단되었으며 지원되지 않습니다. 대신 '<ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" />' 정책을 사용하세요.</translation>
 <translation id="8393850527597048037">플랫폼만</translation>
 <translation id="8395350646076131800">사용자 화면 보호기 잠금 화면의 유휴 상태 제한 시간입니다.</translation>

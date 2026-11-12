@@ -823,6 +823,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2356941001189392209">Una llista limitada d'URL de les pàgines que visites en què es produeixen esdeveniments tecnològics heretats</translation>
 <translation id="2357312461142072202">{NUM_TABS,plural, =1{Es compartirà 1 pestanya}other{Es compartiran {NUM_TABS} pestanyes}}</translation>
 <translation id="2357481397660644965">El dispositiu està gestionat per <ph name="DEVICE_MANAGER" /> i el compte està gestionat per <ph name="ACCOUNT_MANAGER" />.</translation>
+<translation id="2358479643736965923">Consulta la resposta de la Cerca amb IA de Google en aquesta pestanya</translation>
 <translation id="2359629602545592467">Diverses</translation>
 <translation id="2359808026110333948">Continua</translation>
 <translation id="236000571258713023">Vehicles</translation>
@@ -1141,6 +1142,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2925032407415783182">Desa l'entrada per a l'esdeveniment a Wallet</translation>
 <translation id="2925454999967523701">Botó Crea un document: activa'l per crear ràpidament un document nou de Google</translation>
 <translation id="2925673989565098301">Mètode d'entrega</translation>
+<translation id="2927328994673424423">Fa 2 setmanes</translation>
 <translation id="2928426578619531300">Usuari afiliat</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> i <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> més}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> i <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> més}}</translation>
 <translation id="2930531075747147366">Pestanya del teu altre dispositiu</translation>
@@ -3073,7 +3075,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="6097297436119286254">Verifica la teva identitat per emplenar la informació de pagament</translation>
 <translation id="6099269767116481177">22 x 29,5 polzades</translation>
 <translation id="6104072995492677441">JIS B6</translation>
-<translation id="6104418023125705346">Aquesta política està concebuda per aplicar-se al nivell d'equip. El seu comportament quan s'aplica com a política d'usuari no s'admet oficialment i es discontinuarà.</translation>
+<translation id="6104418023125705346">Aquesta política està pensada per aplicar-se al nivell d'equip. El seu comportament quan s'aplica com a política d'usuari no s'admet oficialment i es discontinuarà.</translation>
 <translation id="6105460996796456817">Crea un lloc web</translation>
 <translation id="6105511947520166941">La propera vegada, paga amb Pix directament a Chrome</translation>
 <translation id="6105745639559695088">Commuta la barra lateral</translation>

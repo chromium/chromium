@@ -346,6 +346,7 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 <translation id="4022972681110646219">Экрандагы нерсени которуу</translation>
 <translation id="4023601594785368013">Баштапкы тил: <ph name="LANGUAGE" /></translation>
 <translation id="4034249157893816477">Chrome'го алдын ала орнотулган жана татаал сырсөздөрдү түзүүгө, сактоого жана автотолтурууга жардам берет. Оңой кирүү үчүн ыкчам баскычты кошуңуз.</translation>
+<translation id="4034420818911109432"><ph name="USER_NAME" />, <ph name="EMAIL" />. Google'га катталуу.</translation>
 <translation id="4035053306113201399">Жаңыртууну колдонуу үчүн ChromeOS өчүрүлүп күйгүзүлүшү керек.</translation>
 <translation id="4050175100176540509">Эң акыркы версияда коопсуздукту бекемдөө каражаттары менен жаңы мүмкүнчүлүктөр камтылган.</translation>
 <translation id="4053720452172726777">Google Chrome'ду өзгөчөлөштүрүү жана көзөмөлдөө</translation>
@@ -940,6 +941,7 @@ Google Chrome параметрлериңизди калыбына келтире
 <translation id="9148058034647219655">Чыгуу</translation>
 <translation id="9150331942025550505"><ph name="DEVICE_TYPE" /> түзмөгүңүздөгү Chrome колдонмосу менен ЖИнин мүмкүнчүлүктөрүн пайдаланыңыз</translation>
 <translation id="919706545465235479">Шайкештирип баштоо үчүн Chrome'ду жаңыртыңыз</translation>
+<translation id="9210313013767007472"><ph name="USER_NAME_OR_EMAIL" />. Google'га катталуу.</translation>
 <translation id="922152298093051471">Chrome'ду ыңгайлаштыруу</translation>
 <translation id="93760716455950538">ChromeOS Flex'ти өчүрүп күйгүзүү</translation>
 <translation id="943390475793766444">Chrome бул файлды текшерүүнү сунуштайт. Ал кооптуу болушу мүмкүн.</translation>

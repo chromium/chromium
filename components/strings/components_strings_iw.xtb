@@ -457,6 +457,7 @@
 <translation id="1746531169546376413">0 מעלות</translation>
 <translation id="1747777564644667857">טיסה</translation>
 <translation id="1748225549612934682">צריך לקצר את הטקסט כדי לקבל עזרה בכתיבה</translation>
+<translation id="1748985883817578907"><ph name="FULL_NAME" /> – <ph name="EMAIL" /></translation>
 <translation id="1752021286346845558">תיבת דואר 8</translation>
 <translation id="1753706481035618306">מספר דף</translation>
 <translation id="1756026472674246267">פתיחת הקישור בכרטיסייה חדשה</translation>
@@ -745,6 +746,7 @@
 <translation id="2236949375853147973">הפעילות שלי</translation>
 <translation id="2239100178324503013">שליחה</translation>
 <translation id="223921069122391343">תהיה לך אפשרות לממש את המבצע ששמרת בקופה באמצעות מילוי אוטומטי. <ph name="BEGIN_LINK" />לעיון בתנאים ובהגבלות<ph name="END_LINK" /></translation>
+<translation id="2241152885794021133">‏יציאה מהחשבון ב-google.com</translation>
 <translation id="224130779555573777">‏הוספת מספר Redress</translation>
 <translation id="2241693394036365668">הורדת קובץ</translation>
 <translation id="2242389809734574253">‏הודעת שמירת מספר ה-IBAN נסגרה.</translation>
@@ -1095,6 +1097,7 @@
 <translation id="2840680829170913626">‏כדי להציע את האפשרויות האלה, התוכן של דף התשלום משותף עם Google. תוכניות התשלומים כפופות לעמידה בדרישות. אם רוצים להסתיר את האפשרויות לתשלום אחר כך במילוי האוטומטי, צריך לעבור אל <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="2843623755398178332">לגלול את הכרטיסייה המשותפת ולשנות את מרחק התצוגה שלה?</translation>
 <translation id="2849936225196189499">קריטי</translation>
+<translation id="2850376380414956858">יציאה מכל החשבונות</translation>
 <translation id="2851291081585704741">אין חיבור לאינטרנט</translation>
 <translation id="2854163610915391726">‏אפשר לקבוע אילו פריטים מ-Chrome יישמרו בחשבון Google</translation>
 <translation id="2858134430383535011">‏200x300 מ"מ</translation>
@@ -1173,6 +1176,7 @@
 <translation id="2980742331521553164">‏כדי שתהליך התשלום יהיה מהיר יותר, קוד האימות (CVC) של הכרטיס הזה יוצפן ויישמר בחשבון Google שלך</translation>
 <translation id="2983666748527428214">פתיחת כרטיסייה פרטית</translation>
 <translation id="2985398929374701810">עליך להזין כתובת חוקית</translation>
+<translation id="2985848978986605722">כדי לנווט בין קישורי המקורות, צריך להשתמש במקשי החצים שמאלה או ימינה.</translation>
 <translation id="2986485254770343131">מתבצעת שמירה של קבצי המצלמה</translation>
 <translation id="2987034854559945715">אין תכונות תואמות</translation>
 <translation id="2989742184762224133">שתי סיכות הידוק בחלק העליון</translation>
@@ -1591,6 +1595,7 @@
 <translation id="3671540257457995106">לאפשר את שינוי הגודל?</translation>
 <translation id="3672568546897166916">שגיאה ב-<ph name="ERROR_PATH" />: ‏<ph name="ERROR_MESSAGE" /></translation>
 <translation id="3675563144891642599">גליל שלישי</translation>
+<translation id="3675778643732456976">‫<ph name="SUGGESTION_TEXT" />‏, פתיחה בחלונית הצדדית</translation>
 <translation id="3676592649209844519">מזהה מכשיר:</translation>
 <translation id="3677008721441257057">‏התכוונת לכתובת &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;?</translation>
 <translation id="3678029195006412963">לא ניתן היה לחתום על הבקשה</translation>
@@ -1991,6 +1996,7 @@
 <translation id="4297937944457164390">בוצע עדכון של <ph name="ATTRIBUTE_NAME" /></translation>
 <translation id="4298148761711700950">‏תשלום מיידי בלי להעלות קוד QR</translation>
 <translation id="4298925811540301889">‏קובצי ה-Cookie של האתר הזה מסונכרנים בכל מכשירי ChromeOS. כדי לנהל את הסנכרון, צריך לעבור אל <ph name="SYNC_SETTINGS" />.</translation>
+<translation id="4299360487321267760">מקור <ph name="SOURCE_INDEX" /> של <ph name="APP_NAME" /></translation>
 <translation id="4299919199185766032">השם של קיצור הדרך חורג ממגבלת האורך של <ph name="MAX_LENGTH" /> תווים.</translation>
 <translation id="4300272766492248925">פתיחת האפליקציה</translation>
 <translation id="4300675098767811073">ניקובים מרובים בצד ימין</translation>
@@ -2106,6 +2112,7 @@
 <translation id="4497843134750481377">ניהול מבצעים</translation>
 <translation id="4500587658229086076">תוכן לא מאובטח</translation>
 <translation id="4501939680615452918">תחפש שולחן פנוי במסעדות פופולריות</translation>
+<translation id="4503437956670248875">מחובר למקום העבודה</translation>
 <translation id="4503459574136856756">תשכתב את המידע הביוגרפי שלי כך שיישמע מקצועי יותר</translation>
 <translation id="4504850595255879616">‫<ph name="ENGINE" /> אנשים</translation>
 <translation id="4506176782989081258">שגיאת אימות: <ph name="VALIDATION_ERROR" /></translation>
@@ -3157,6 +3164,7 @@ Del</translation>
 <translation id="6246316216123107851">לפני <ph name="NUM_DAYS" /> ימים</translation>
 <translation id="6246382863801034910">כלי רכב</translation>
 <translation id="6246868321321344665">נתוני גלישה, כמו סיסמאות והיסטוריה בפרופיל העבודה ובפרופיל האישי, גלויים לארגון שלך</translation>
+<translation id="6247135136978128662">המכשיר מחובר</translation>
 <translation id="6248479108671123143">הכרטיסייה <ph name="TAB_TITLE" /> שונתה על ידי <ph name="MEMBER_FIRST_NAME" /></translation>
 <translation id="6248988683584659830">חיפוש בהגדרות</translation>
 <translation id="6251906504834538140">{0,plural, =1{אין אפשרות להעביר את הקובץ}one{אין אפשרות להעביר <ph name="FILE_COUNT" /> קבצים}two{אין אפשרות להעביר <ph name="FILE_COUNT" /> קבצים}other{אין אפשרות להעביר <ph name="FILE_COUNT" /> קבצים}}</translation>
@@ -3426,6 +3434,7 @@ Del</translation>
 <translation id="6698381487523150993">נוצר:</translation>
 <translation id="6698769547327354196">‏כדי להשבית את Pix ב-Chrome, צריך לעבור אל <ph name="BEGIN_LINK1" />הגדרות התשלומים<ph name="END_LINK1" /></translation>
 <translation id="67007264085648978">מחוון זמן</translation>
+<translation id="67008498521868073">‏יציאה מכל החשבונות ב-google.com</translation>
 <translation id="6702919718839027939">הצגה</translation>
 <translation id="6704458454638854812">‏המאפיין 'custom_size' מוגדר, אבל שם המאפיין לא מוגדר כ-'custom'.</translation>
 <translation id="670477556876354552">נדרשת הפעלה מחדש</translation>
@@ -3595,7 +3604,7 @@ Del</translation>
 <translation id="6978236010531171013">אני רוצה לשתף בכל זאת</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">השתקה (ברירת מחדל)</translation>
-<translation id="6979737339423435258">משחר ההיסטוריה</translation>
+<translation id="6979737339423435258">מתחילת השימוש</translation>
 <translation id="6983783921975806247">‏OID רשום</translation>
 <translation id="6984095691972094111">אני מנסה ללמוד שפה חדשה. תכין לי בוחן שיעזור לי לתרגל אוצר מילים ודקדוק.</translation>
 <translation id="698450079873764780">תעזור לי להתכונן לשיחה קשה באמצעות משחק תפקידים כדי שאוכל לתרגל את התשובות שלי</translation>
@@ -4055,6 +4064,7 @@ Del</translation>
 <translation id="7716147886133743102">נחסמה על-ידי מנהל המערכת</translation>
 <translation id="7716375162095500223">עדיין לא הועלה או המערכת מתעלמת מהפריט</translation>
 <translation id="7716424297397655342">לא ניתן לטעון את האתר הזה מהמטמון</translation>
+<translation id="7717821180424994530">לא מחובר</translation>
 <translation id="7718626066800460799">לא ניתן לשמור את הסריקה</translation>
 <translation id="772128550427553158">‏קוד האימות (CVC) מופיע בצד הקדמי של הכרטיס.</translation>
 <translation id="7724603315864178912">חיתוך</translation>
@@ -4413,6 +4423,7 @@ Del</translation>
 <translation id="833935588477667012">‫<ph name="FIELD_LABEL" />, חובה</translation>
 <translation id="8339463238135163999"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /><ph name="TIMESTMAP" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
+<translation id="8340798050747465939">מחובר, אין פרטים</translation>
 <translation id="8344776605855290140">רישום הכרטיס הווירטואלי נפתח בגובה מלא</translation>
 <translation id="834805203690963649">תוקפים יכולים לראות ולשנות מידע שנשלח או שמתקבל מהאתר.</translation>
 <translation id="8349305172487531364">סרגל סימניות</translation>
@@ -4453,6 +4464,7 @@ Del</translation>
 <translation id="8405579342203358118">‏ניתן לקבוע איזה מידע יסונכרן בהגדרות Chrome</translation>
 <translation id="8405621913275228683">הסריקה אבדה בגלל שגיאה לא ידועה</translation>
 <translation id="8406071103346257942">להפסיק להשתמש בנעילת המסך למילוי סיסמאות</translation>
+<translation id="8407618705357144341">‏חיבור ל-Microsoft Entra:</translation>
 <translation id="8409413588194360210">‏רכיבי handler של תשלומים</translation>
 <translation id="8410956920192583322">תשלום חודשי או 4 תשלומים.</translation>
 <translation id="8412145213513410671">קריסות (<ph name="CRASH_COUNT" />)</translation>

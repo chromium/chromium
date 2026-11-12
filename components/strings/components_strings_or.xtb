@@ -823,6 +823,7 @@
 <translation id="2356941001189392209">ଲିଗାସି ଟେକ୍ନୋଲୋଜି ଇଭେଣ୍ଟଗୁଡ଼ିକ ହେଉଥିବା ଆପଣ ଭିଜିଟ କରୁଥିବା ପୃଷ୍ଠାଗୁଡ଼ିକର URLର ଏକ ସୀମିତ ତାଲିକା</translation>
 <translation id="2357312461142072202">{NUM_TABS,plural, =1{1 ଟାବ ସେୟାର କରାଯିବ}other{{NUM_TABS} ଟାବ ସେୟାର କରାଯିବ}}</translation>
 <translation id="2357481397660644965">ଆପଣଙ୍କର ଡିଭାଇସ୍ <ph name="DEVICE_MANAGER" /> ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି ଏବଂ ଆପଣଙ୍କର ଆକାଉଣ୍ଟ <ph name="ACCOUNT_MANAGER" /> ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି।</translation>
+<translation id="2358479643736965923">ଏହି ଟାବରେ ଆପଣଙ୍କ Google AI ସର୍ଚ୍ଚ ଉତ୍ତର ଦେଖନ୍ତୁ</translation>
 <translation id="2359629602545592467">ଏକାଧିକ</translation>
 <translation id="2359808026110333948">ଜାରି ରଖନ୍ତୁ</translation>
 <translation id="236000571258713023">ଗାଡ଼ି</translation>
@@ -1141,6 +1142,7 @@
 <translation id="2925032407415783182">Walletରେ ଇଭେଣ୍ଟ ଟିକେଟ ସେଭ କରନ୍ତୁ</translation>
 <translation id="2925454999967523701">'ଡକ୍ୟୁମେଣ୍ଟ ତିଆରି କରନ୍ତୁ' ବଟନ, ଶୀଘ୍ର ଏକ ନୂଆ Google Doc ତିଆରି କରିବା ପାଇଁ ଏହାକୁ ସକ୍ରିୟ କରନ୍ତୁ</translation>
 <translation id="2925673989565098301">ବିତରଣ ପଦ୍ଧତି</translation>
+<translation id="2927328994673424423">2 ସପ୍ତାହ ପୂର୍ବେ</translation>
 <translation id="2928426578619531300">ୟୁଜରଙ୍କ ଆଫିଲିଏସନ</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> ଏବଂ ଅଧିକ<ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />ଟି}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> ଏବଂ ଅଧିକ <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />ଟି}}</translation>
 <translation id="2930531075747147366">ଆପଣଙ୍କ ଅନ୍ୟ ଡିଭାଇସରୁ ଟାବ</translation>

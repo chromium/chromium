@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">পাসওয়ার্ড দেখার জন্য আপনার ডিভাইসে আপনাকে অবশ্যই একটি পাসকোড সেট করতে হবে।</translation>
 <translation id="201759455285471444">ট্যাব গ্রুপ বড় করুন।</translation>
 <translation id="2022431790688770637">Gemini-এর সাজেশন ম্যানেজ করুন</translation>
+<translation id="2023265063803387188">ছদ্মবেশী মোডে Gemini উপলভ্য হয় না</translation>
 <translation id="2031515492007104071">Level Up</translation>
 <translation id="2044394949148788042">ট্যাব গ্রিড খুলুন</translation>
 <translation id="2044681667265133332"><ph name="USER_EMAIL" /> অ্যাকাউন্ট <ph name="HOSTED_DOMAIN" /> দ্বারা ম্যানেজ করা হয়, যেটি কিছু তথ্য দেখতে পেতে পারে। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
@@ -1213,6 +1214,7 @@
 <translation id="479628432297359449">ডাউনলোড বন্ধ করবেন?</translation>
 <translation id="4796496140132859135">ট্যাব গ্রুপ। আড়াল করা হয়েছে।</translation>
 <translation id="4800912004582762296">ক্লিক করা হচ্ছে</translation>
+<translation id="4800930308997591052">আপনার ডিভাইসগুলির মধ্যে নির্বিঘ্নে ট্যাব শেয়ার করতে এবং আপনার Google অ্যাকাউন্ট থেকে আপনার পাসওয়ার্ড, বুকমার্ক এবং আরও অনেক কিছু পেতে <ph name="EMAIL" />-এ পরিবর্তন করুন।</translation>
 <translation id="4802185666270672526">'ডেস্কটপ সাইটের জন্য অনুরোধ জানান' বিকল্পটি লুকান</translation>
 <translation id="4803185665210547709">আপনার সংস্থা এটি ম্যানেজ করে।
 <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
@@ -2149,6 +2151,7 @@
 <translation id="7618220760967055820">টুলবারে কোন বোতাম দেখা যাবে তা বেছে নিন</translation>
 <translation id="7620522820075868385">বাতিল করুন</translation>
 <translation id="762078666799342162"><ph name="BEGIN_LINK" />ফাইল<ph name="END_LINK" /> থেকে আগে ডাউনলোড করা ফাইল দেখতে পারবেন</translation>
+<translation id="7636034359405891151">আপনার কম্পিউটারে যেখানে শেষ করেছিলেন সেখান থেকেই শুরু করুন</translation>
 <translation id="7638584964844754484">ত্রুটিপূর্ণ পাসফ্রেজ</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{চুরি হয়ে যাওয়া পাসওয়ার্ড}=1{{COUNT}টি চুরি হয়ে যাওয়া পাসওয়ার্ড}one{{COUNT}টি চুরি হয়ে যাওয়া পাসওয়ার্ড}other{{COUNT}টি চুরি হয়ে যাওয়া পাসওয়ার্ড}}</translation>
 <translation id="7640669552036055091">Android-এ অ্যাক্টিভ থাকা ট্যাব</translation>
@@ -2609,6 +2612,7 @@
 <translation id="8976382372951310360">সহায়তা</translation>
 <translation id="8976414606286374109">কার্ড আপনার Google অ্যাকাউন্টে সেভ করা হয়।</translation>
 <translation id="8981454092730389528">Google অ্যাক্টিভিটির নিয়ন্ত্রণগুলি</translation>
+<translation id="8987736167266086032">আপনি যেখানে ছেড়ে গিয়েছিলেন সেখান থেকে শুরু করুন</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, পিন করা সাইট</translation>
 <translation id="8989779557457435460">ডিফল্ট হিসেবে বর্তমান ট্যাব শেয়ার করুন</translation>
 <translation id="8990960056509724223">আপনার প্রতিষ্ঠানের নীতির কারণে ফাইল সেভ করা যায়নি</translation>
@@ -2650,6 +2654,7 @@
 <translation id="91023216973987714">পেমেন্ট পদ্ধতি</translation>
 <translation id="9106655997975673326">"<ph name="SOURCE_DEVICE" />"-এর থেকে</translation>
 <translation id="9107664647686727385">কোনও পাসওয়ার্ড লিক হয়েছে কিনা দেখুন</translation>
+<translation id="9115035712231910133">{title} ছবি অ্যাটাচ করা হয়েছে</translation>
 <translation id="9119764377203471454">অ্যাটাচমেন্ট যোগ করা যায়নি</translation>
 <translation id="9124387962554796433">সার্চ এবং অন্যান্য Google পরিষেবা আপনার পছন্দমতো সাজানোর জন্য Google আপনার ইতিহাস ব্যবহার করতে পারে।</translation>
 <translation id="9124978074365039456">আপনার ক্যামেরা ও ফটো গ্যালারি ব্যবহার করে যা দেখেন তা কিনুন, অনুবাদ ও শনাক্ত করুন</translation>

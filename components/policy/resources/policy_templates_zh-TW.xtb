@@ -3156,7 +3156,7 @@ PAC 樣式的字串：
 
       如果將這項政策設為「允許登入瀏覽器」，則使用者可以登入瀏覽器。在 <ph name="IOS_NAME" /> 以外的所有平台上，使用者會在登入 Gmail 等 Google 網路服務後自動登入瀏覽器。登入瀏覽器後，使用者的帳戶資訊會保留在瀏覽器。不過，<ph name="PRODUCT_NAME" /> 同步功能不會因此預設為開啟，使用者必須另外選擇啟用這項功能。啟用這項政策後，使用者將無法關閉允許登入瀏覽器的設定。如要控管是否提供 <ph name="PRODUCT_NAME" /> 同步功能，請使用 <ph name="SYNC_POLICY_NAME" /> 政策。
 
-      如果將這項政策設為「強制登入瀏覽器」，使用者會看到選取帳戶的對話方塊，而且必須選擇帳戶並登入才能使用瀏覽器。這樣可以確保系統在與該帳戶關聯的所有受管理帳戶中套用並強制執行相關政策。在 <ph name="MS_WIN_NAME" />、<ph name="MAC_OS_NAME" /> 和 <ph name="LINUX_OS_NAME" /> 上，<ph name="GUEST_MODE_POLICY_NAME" /> 的預設值將設為已停用。啟用這項政策後，未登入的現有設定檔會遭到鎖定，無法再使用。詳情請參閱說明中心文章：https://support.google.com/chrome/?p=force_browser_signin。在 <ph name="ANDROID_NAME" /> 上，這個選項自第 153 版起支援；在更早的版本中，系統將改為使用「允許登入瀏覽器」。
+      如果將這項政策設為「強制登入瀏覽器」，使用者會看到選取帳戶的對話方塊，而且必須選擇帳戶並登入才能使用瀏覽器。這樣可以確保系統會對所有受管理帳戶套用並強制執行與帳戶關聯的政策。在 <ph name="MS_WIN_NAME" />、<ph name="MAC_OS_NAME" /> 和 <ph name="LINUX_OS_NAME" /> 上，<ph name="GUEST_MODE_POLICY_NAME" /> 的預設值將設為已停用。啟用這項政策後，未登入的現有設定檔會遭到鎖定，無法再使用。詳情請參閱說明中心文章：https://support.google.com/chrome/?p=force_browser_signin。在 <ph name="ANDROID_NAME" /> 上，這個選項自第 153 版起支援；在更早的版本中，系統將改為使用「允許登入瀏覽器」。
 
       如果不設定這項政策，使用者可自行決定是否在 <ph name="PRODUCT_NAME" /> 設定中啟用瀏覽器登入選項。</translation>
 <translation id="2976033779241323433">根據預設系統經驗法則啟用觸控虛擬鍵盤</translation>
@@ -3617,6 +3617,13 @@ Microsoft Outlook 資訊卡需要額外的管理員設定。想進一步瞭解�
 <translation id="3284094172359247914">控制 WebUSB API 使用權限</translation>
 <translation id="3285231260918855067">浮水印文字的外框不透明度，範圍從 0 (透明) 到 100 (不透明)。</translation>
 <translation id="3286159327013237833">在登入畫面上啟用自動點選功能</translation>
+<translation id="3286515980166695377">這項政策已於 M153 淘汰，並自 M159 起不再具有任何效力。在 <ph name="MAC_OS_NAME" /> 上，安裝漸進式網頁應用程式 (PWA) 時建立的原生應用程式，現在已永久啟用臨時簽名機制，確保每個安裝的應用程式都有專屬身分，供 <ph name="MAC_OS_NAME" /> 系統元件識別。
+
+如果將這項政策設為啟用或不設定，即可在安裝漸進式網頁應用程式 (PWA) 時，為建立的原生應用程式進行臨時簽名，確保每個安裝的應用程式都有專屬身分，供 <ph name="MAC_OS_NAME" /> 系統元件識別。
+
+如果設為停用，安裝漸進式網頁應用程式 (PWA) 時，建立的原生應用程式都會具有相同身分，這可能會干擾 <ph name="MAC_OS_NAME" /> 的功能運作。
+
+除非端點安全性解決方案會封鎖具有臨時簽名的應用程式，否則不建議停用這項政策。</translation>
 <translation id="3288595667065905535">發布頻道</translation>
 <translation id="3294430356898755483">你可以透過這項政策，讓管理員為使用者設定印表機清單。印表機選取作業會在使用者第一次嘗試列印時啟動。
 
@@ -5432,6 +5439,11 @@ Protected Audience API 已淘汰，因此這項政策已在 <ph name="PRODUCT_NA
 
 請注意，強制執行的限制會受 <ph name="ALLOW_SOCKET_POOL_SIZE_RANDOMIZATION_FOR_PROXIES_POLICY_NAME" /> 影響。</translation>
 <translation id="4528981768990874684">停用 <ph name="IP_PROTECTION_NAME" />功能。</translation>
+<translation id="4529292353296224032">如果將這項政策設為啟用，使用者將無法使用鍵盤快速鍵或擴充功能 API 擷取螢幕截圖；如果設為停用或不設定，使用者就能擷取螢幕截圖。
+
+在 <ph name="PRODUCT_NAME" /> 155 至 158 版中，啟用這項政策也能禁止擴充功能透過「chrome.debugger.attach()」附加偵錯工具，例如當 <ph name="CHROME_VARIATIONS_POLICY_NAME" /> 政策停用所有變化版本時。
+
+請注意，在 <ph name="MS_WIN_NAME" />、<ph name="MAC_OS_NAME" /> 和 <ph name="LINUX_OS_NAME" /> 上，這項政策無法防止透過作業系統或第三方應用程式擷取螢幕截圖。</translation>
 <translation id="453031441196755904">這項政策已遭到淘汰。</translation>
 <translation id="4531088355818260318">這項政策可讓你定義規則清單，將自訂 HTTP 標頭插入符合特定網址模式的網頁要求。經此政策設定的標頭，優先順序高於要求中原有的標頭，也高於使用者或擴充功能嘗試進行的修改。
 
@@ -5592,6 +5604,19 @@ Protected Audience API 已淘汰，因此這項政策已在 <ph name="PRODUCT_NA
       如果設為 false，使用者則無法在裝置上執行網路封包擷取作業。</translation>
 <translation id="4599810650416623373">禁止這些網站使用 JavaScript 最佳化功能</translation>
 <translation id="4600786265870346112">啟用大型游標</translation>
+<translation id="460264931744856609">你可以透過這項政策控管 <ph name="PRODUCT_NAME" /> 的擴充功能管理設定，包括由現有擴充功能相關政策控管的任何設定。
+
+這項政策只能將擴充功能 ID 或更新網址對應到其特定的設定。你可以為特殊 ID <ph name="DEFAULT_SCOPE" /> 指定預設設定，凡是未透過這項政策自訂設定的擴充功能，一律會套用此預設設定。
+
+這項政策可覆寫舊版政策中針對個別擴充功能所做的設定。
+
+請注意，凡是來自 <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />、<ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />、<ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" /> 或 <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> 的個別 ID 擴充功能設定，都只會從 <ph name="DEFAULT_SCOPE" /> 的預設值繼承「installation_mode」和「update_url」，不會繼承任何其他屬性。如果指定更新網址，系統會將設定套用到擴充功能資訊清單中載明相同更新網址的擴充功能 (http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy)。如果「override_update_url」旗標設為 true，系統則會使用 <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> 政策中指定的「更新」網址，或是本政策中「update_url」欄位指定的網址，來安裝及更新擴充功能。如果「update_url」是 Chrome 線上應用程式商店網址，系統會忽略「override_update_url」旗標。
+
+在 <ph name="PRODUCT_NAME" /> 155 至 158 版中，若將「runtime_blocked_hosts」套用至具備「debugger」權限的擴充功能，可能會導致所有目標的「chrome.debugger.attach()」完全失效，例如當 <ph name="CHROME_VARIATIONS_POLICY_NAME" /> 政策停用所有變化版本時。<ph name="MS_WIN_NAME" /> 執行個體必須加入 <ph name="MS_AD_NAME" /> 網域或 <ph name="MS_AAD_NAME" />，或者註冊 <ph name="CHROME_ENTERPRISE_CORE_NAME" />，才能強制安裝 Chrome 線上應用程式商店以外的應用程式和擴充功能。
+
+<ph name="MAC_OS_NAME" /> 執行個體必須由行動裝置管理 (MDM) 軟體控管、透過 MCX 加入網域，或者註冊 <ph name="CHROME_ENTERPRISE_CORE_NAME" />，才能強制安裝 Chrome 線上應用程式商店以外的應用程式和擴充功能。
+
+注意：這項政策僅適用支援擴充功能的平台。</translation>
 <translation id="4602988345256038309">允許與這部裝置建立遠端支援連線</translation>
 <translation id="4605677392792989397">你可以透過設定這項政策設定企業登入網址清單 (僅限 HTTP 和 HTTPS 通訊協定)。密碼保護服務會從這些網址擷取密碼的加鹽雜湊值，用於偵測密碼重複使用情形。請務必按照以下網址所述規範製作登入頁面，<ph name="PRODUCT_NAME" /> 才能正確擷取密碼的加鹽雜湊值：https://www.chromium.org/developers/design-documents/create-amazing-password-forms。
 

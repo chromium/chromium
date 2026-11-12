@@ -823,6 +823,7 @@
 <translation id="2356941001189392209">Ограничена листа URL-ова страница које посећујете на којима се дешавају догађаји са застарелом технологијом</translation>
 <translation id="2357312461142072202">{NUM_TABS,plural, =1{Делиће се 1 картица}one{Делиће се {NUM_TABS} картица}few{Делиће се {NUM_TABS} картице}other{Делиће се {NUM_TABS} картица}}</translation>
 <translation id="2357481397660644965">Уређајем управља <ph name="DEVICE_MANAGER" />, а налогом <ph name="ACCOUNT_MANAGER" />.</translation>
+<translation id="2358479643736965923">Погледајте одговор Google AI претраге на овој картици</translation>
 <translation id="2359629602545592467">Више</translation>
 <translation id="2359808026110333948">Настави</translation>
 <translation id="236000571258713023">Возила</translation>
@@ -1141,6 +1142,7 @@
 <translation id="2925032407415783182">Сачувајте карту за догађај у Новчанику</translation>
 <translation id="2925454999967523701">Дугме Направи документ, активирајте га да бисте брзо направили нов Google документ</translation>
 <translation id="2925673989565098301">Начин испоруке</translation>
+<translation id="2927328994673424423">пре 2 недеље</translation>
 <translation id="2928426578619531300">Повезани корисник</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> и још <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}one{<ph name="SHIPPING_ADDRESS_PREVIEW" /> и још <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}few{<ph name="SHIPPING_ADDRESS_PREVIEW" /> и још <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> и још <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="2930531075747147366">Картица са другог уређаја</translation>

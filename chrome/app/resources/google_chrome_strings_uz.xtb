@@ -155,7 +155,9 @@
 <translation id="2301513536169703857">Barcha qurilmalarda parollar, bukmarklar va boshqalarni olish uchun Chrome hisobidan kiring</translation>
 <translation id="2307973900865360088">Dokda qoldirish</translation>
 <translation id="2309047409763057870">Google Chrome takroran o‘rnatilgan, shuning uchun u asosiy brauzer bo‘la olmaydi.</translation>
+<translation id="2330059234841117265">Chrome ichida Google Qidiruvni ochish</translation>
 <translation id="2345992953227471816">Chrome quyidagi kengaytmalar tarkibida zararli dastur aniqladi:</translation>
+<translation id="2350411688004301551">Gemini Enterprisega almashtirish</translation>
 <translation id="2358140144860869442">Barcha qurilmalaringizda saqlangan sahifalar va boshqa maʼlumotlardan foydalanish uchun Chrome hisobiga kiring</translation>
 <translation id="2359808026110333948">Davom etish</translation>
 <translation id="2403703063067034158">Ishga tushirishda xato: boshqa oʻrnatish jarayoni ishga tushgan, keyinroq qayta urining.</translation>
@@ -166,6 +168,7 @@
 <translation id="2482846200327569645"><ph name="EXISTING_USER" /> hisobiga allaqachon kirilgan. Internetni alohida kezish uchun Chromega shaxsiy profilingiz (<ph name="USER_EMAIL_ADDRESS" />) orqali kiring. Shuningdek, <ph name="DEVICE" /> qurilmasidagi bukmarklar va boshqa maʼlumotlardan foydalana olasiz.</translation>
 <translation id="2485422356828889247">O‘chirib tashlash</translation>
 <translation id="2513154137948333830">Qayta yoqish shart: <ph name="INSTALL_SUCCESS" /></translation>
+<translation id="251329670120169391">tashkilotingiz</translation>
 <translation id="2521391734665471391">Google Qidiruv AI rejimini yopish</translation>
 <translation id="2523492931736391680">Chromedagi ishingiz himoyalangan</translation>
 <translation id="2534365042754120737">Maʼlumotlaringizni himoyalash maqsadida Chrome brauzeriga uzoq vaqt kirmagan saytlardan ruxsatlarni olib tashlashi uchun ruxsat bering. Bildirishnomalar kelishi davom etadi.</translation>
@@ -215,6 +218,7 @@ Bu sahifa kutilganidek ishlamasa, optimallashga ruxsat bering.</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome maʼlumotlaringizni qanday xavfsiz saqlashi<ph name="END_LINK" /> haqida batafsil</translation>
 <translation id="2885378588091291677">Vazifalar boshqaruvi</translation>
 <translation id="2888126860611144412">Chrome haqida</translation>
+<translation id="2898830646167954300">Shaxsiy Gemini assistentingizga qayting</translation>
 <translation id="2915996080311180594">Keyinroq qayta ishga tushirish</translation>
 <translation id="2926952073016206995">Chrome bu saytda kameradan foydalanishiga ruxsat kerak</translation>
 <translation id="2945997411976714835">Oʻrnatishda xato: Oʻrnatish vositasi boshlanmadi.</translation>
@@ -254,6 +258,7 @@ Bu sahifa kutilganidek ishlamasa, optimallashga ruxsat bering.</translation>
 <translation id="3140883423282498090">O‘zgartirishlar Google Chrome qaytadan ishga tushirilganda kuchga kiradi.</translation>
 <translation id="3149510190863420837">Chrome ilovalari</translation>
 <translation id="3161522574479303604">Barcha tillar</translation>
+<translation id="3183555099201190073">Istalgan varaqdan Qidiruvga kiring</translation>
 <translation id="318555301233810762"><ph name="EXISTING_USER" /> hisobiga allaqachon kirilgan. Internetni alohida kezish uchun Chromega shaxsiy profilingiz (<ph name="USER_EMAIL_ADDRESS" />) orqali kiring. Shuningdek, bukmarklar va boshqa maʼlumotlardan barcha qurilmalarda foydalana olasiz.</translation>
 <translation id="319199214552513804">Bu va boshqa kengaytmalardan barcha kompyuterlarda foydalanish uchun Chromega kiring</translation>
 <translation id="3196187562065225381">Chrome bu yuklamani blokladi, chunki bu fayl xavfli</translation>
@@ -342,11 +347,13 @@ Bu sahifa kutilganidek ishlamasa, optimallashga ruxsat bering.</translation>
 <translation id="4022972681110646219">Ekrandagi matnni tarjima qilish</translation>
 <translation id="4023601594785368013">Asl tili: <ph name="LANGUAGE" /></translation>
 <translation id="4034249157893816477">Kuchli parollarni yaratish, saqlash va avtomatik kiritishda yordam berish uchun Chromeda oldindan oʻrnatilgan. Tezkor ruxsat olish uchun yorliq qoʻshing.</translation>
+<translation id="4034420818911109432"><ph name="USER_NAME" />, <ph name="EMAIL" />. Google obunasi.</translation>
 <translation id="4035053306113201399">Yangilanishni oʻrnatish uchun ChromeOS qayta ishga tushirilishi kerak.</translation>
 <translation id="4050175100176540509">So‘nggi versiyada himoya devori yaxshilandi va yangi funksiyalar qo‘shildi.</translation>
 <translation id="4053720452172726777">Google Chrome’ni sozlash va boshqarish</translation>
 <translation id="408393047846373801">Barcha qurilmalarda parollaringiz va boshqalarni olish uchun Chromega kiring. Hisobga kirilgandan keyin bu parol Google hisobida saqlanadi.</translation>
 <translation id="4102173024714616627">Kengaytmalar – bu Chrome brauzerini moslash imkonini beruvchi plaginlardir. Tartiblashdan tortib, kundalik vazifalarni oson qilishgacha, kengaytmalar Chromeni oʻzingizga moslashga yordam beradi.</translation>
+<translation id="4103543596018881622">Chrome ichida Google Qidiruv asboblar paneliga mahkamlandi!</translation>
 <translation id="4110895483821904099">Yangi Chrome profilini sozlang</translation>
 <translation id="4111566860456076004">Chrome bu kengaytma manbasini tekshira olmadi va u xavfli boʻlishi mumkin. Ochilgan saytlarda shaxsiy axborot kabi maʼlumotlarni koʻrishi va oʻzgartirishini tugatish uchun uni Chromedan olib tashlang.</translation>
 <translation id="4147555960264124640">Siz boshqaruvdagi hisobga kiryapsiz va uning administratoriga Google Chrome profilingizni boshqarishga ruxsat beryapsiz. Ilovalar, xatcho‘plar, brauzer tarixi, parollar va boshqa sozlamalar kabi barcha Chrome ma’lumotlaringiz <ph name="USER_NAME" /> hisobiga biriktiriladi. Siz bu ma’lumotlarni Google hisoblar shaxsiy kabinetidan o‘chirishingiz mumkin, lekin bu ma’lumotlarni boshqa hisob bilan bog‘lay olmaysiz. <ph name="LEARN_MORE" /></translation>
@@ -470,6 +477,7 @@ Ba’zi imkoniyatlar ishlamasligi mumkin. Profilni saqlash uchun boshqa jild tan
 <translation id="5321325624576443340">Google Lens ishlamayapti. Keyinroq qayta urining.</translation>
 <translation id="5334309298019785904">Domeningizda Sinxronlash xizmati mavjud emasligi sababli ChromeOS maʼlumotlaringizni sinxronlay olmadi.</translation>
 <translation id="5334487786912937552">Chrome bu fayllarni yuklab olishi uchun xotiraga saqlash ruxsati kerak</translation>
+<translation id="5336664042114176802">Google hisobingizga biriktirilgan va <ph name="DOMAIN" /> tomonidan boshqarilmaydigan Gemini yordamchisiga almashtirish mumkin. Javoblar endi <ph name="DOMAIN" /> tomonidan boshqariladigan fayllar yoki xizmatlarga asoslanmaydi va chat tarixingiz oʻtkazilmaydi. Ish uchun mos kelmasligi mumkin. Almashtirish uchun Chrome qayta ishga tushirilishi kerak.</translation>
 <translation id="5337648990166757586">Ixtiyoriy: Google serverlariga diagnostika va foydalanish statistikasi maʼlumotlarini yuborish orqali ChromeOS tizimini takomillashtirishga yordam bering.</translation>
 <translation id="5346389065299425353">Bir nechta varaq, fayl va vositalar kiritish orqali qidiruvni chuqurlashtiring</translation>
 <translation id="5353252989841766347">Parollarni Chrome’dan eksport qilish</translation>
@@ -587,6 +595,7 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="6326175484149238433">Chrome‘dan olib tashlash</translation>
 <translation id="6334815226785304306">Chromeni birlamchi brauzer etib tayinlash va vazifalar paneliga mahkamlash</translation>
 <translation id="6339888439788291743">Yangi belgi, bir xil yorliq: Google Qidiruv AI rejimi bilan kezish davomida savol berish uchun bosing.</translation>
+<translation id="6349304688246983183">Google Qidiruv bilan internetni kezish davomida savollaringizga javoblarni oson oling</translation>
 <translation id="63540178978900677">Chrome endi birlamchi brauzeringiz emas. Chrome asosiy brauzer etib tayinlansinmi?</translation>
 <translation id="6357670763064300993">Chrome ichida Gemini Enterprise</translation>
 <translation id="6360449101159168105">Bu varaq nofaol boʻlganida Chrome tezroq ishlashi uchun xotira boʻshatiladi. Bu saytni har doim nofaol boʻlmasligini tanlash mumkin.</translation>
@@ -601,6 +610,7 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="6438015621983209660">Telefonda Chrome orqali Saytlarni kuchaytirilgan rejimda xavfsiz kezish imkoniyatini kengaytiring</translation>
 <translation id="6442774133615368941">Mahsulotlarni topish, matnlarni tarjima qilish va atrofdagi narsalar haqida axborot olish uchun Chrome iOS ilovasidan foydalaning</translation>
 <translation id="6446105560007692480">va Chrome orqali qidiring yoki <ph name="BEGIN_LINK" />Sozlamalar<ph name="END_LINK" /> orqali moslang.</translation>
+<translation id="6447943657065463998">Bu boshqariladigan brauzer <ph name="DOMAIN" /> tomonidan ish uchun sozlangan Gemini assistentidan foydalanishi mumkin. U tashkilot fayllari va tasdiqlangan xizmatlar asosida maʼlumot topishi va javob berishi mumkin. Uni shaxsiy profil bilan ishlatish tavsiya etilmaydi. Chat tarixi koʻchirilmaydi. Almashtirish uchun Chrome qayta ishga tushirilishi kerak.</translation>
 <translation id="6448835208126432197">Chrome ichidagi Gemini ekranining bir qismini tanlash uchun tezkor tugmadan foydalaning.</translation>
 <translation id="6473905796280459355">Chrome haqida sahifasini oching</translation>
 <translation id="6481963882741794338">Chrome va boshqa Google xizmatlarini moslashtirish kabi maqsadlarda ulang</translation>
@@ -795,6 +805,7 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="8064965390968184078">1. Quyida <ph name="BUTTON_LABEL" /> tugmasini bosing
 2. Windows sozlamalarida <ph name="BUTTON_2" /> tugmasini bosing
 3. Tezkor kirish uchun Chrome ilovasini vazifalar paneliga mahkamlash uchun Windows bildirishnomasida <ph name="BUTTON_3" /> tugmasini bosing</translation>
+<translation id="8066474819446975249">Almashtirish uchun Chromeni qayta ishga tushiring</translation>
 <translation id="8069447462453318634">“Asboblar paneliga qadash” bandini tanlang</translation>
 <translation id="8074398340364918139">Muayyan Chrome funksiyasi yoki kengaytmasini qidirish uchun manzillar qatorida buyruqni kiritib, keyin belgilangan tezkor tugmani bosing.</translation>
 <translation id="8077579734294125741">Boshqa Chrome profillari</translation>
@@ -936,6 +947,7 @@ Ayrim bukmarklar hisobingizdan oʻchirilmaguncha yangilari saqlanmaydi. Hozir hi
 <translation id="9148058034647219655">To‘liq ekran rejimidan chiqish</translation>
 <translation id="9150331942025550505"><ph name="DEVICE_TYPE" /> qurilmangizda Chrome ilovasi bilan AI qudratini his eting</translation>
 <translation id="919706545465235479">Sinxronizatsiyani boshlash uchun Chrome brauzerini yangilang</translation>
+<translation id="9210313013767007472"><ph name="USER_NAME_OR_EMAIL" />. Google obunasi bor.</translation>
 <translation id="922152298093051471">Chromeni moslash</translation>
 <translation id="93760716455950538">ChromeOS Flex tizimini qayta ishga tushirish</translation>
 <translation id="943390475793766444">Bu fayl xavfli boʻlishi mumkin, Chrome uni tekshirishni tavsiya qiladi.</translation>

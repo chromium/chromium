@@ -823,6 +823,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2356941001189392209">A limited list of URLs of pages that you visit where legacy technology events are occurring</translation>
 <translation id="2357312461142072202">{NUM_TABS,plural, =1{Will share 1 tab}other{Will share {NUM_TABS} tabs}}</translation>
 <translation id="2357481397660644965">Your device is managed by <ph name="DEVICE_MANAGER" /> and your account is managed by <ph name="ACCOUNT_MANAGER" />.</translation>
+<translation id="2358479643736965923">See your Google AI search answer on this tab</translation>
 <translation id="2359629602545592467">Multiple</translation>
 <translation id="2359808026110333948">Continue</translation>
 <translation id="236000571258713023">Vehicles</translation>
@@ -1141,6 +1142,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2925032407415783182">Save event ticket to Wallet</translation>
 <translation id="2925454999967523701">Create doc button, activate to quickly create a new Google Doc</translation>
 <translation id="2925673989565098301">Delivery Method</translation>
+<translation id="2927328994673424423">2 weeks ago</translation>
 <translation id="2928426578619531300">User affiliated</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> and <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> more}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> and <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> more}}</translation>
 <translation id="2930531075747147366">Tab from your other device</translation>

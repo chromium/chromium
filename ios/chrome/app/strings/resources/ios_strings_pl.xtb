@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">Aby wyświetlić hasła, musisz najpierw ustawić kod dostępu na urządzeniu.</translation>
 <translation id="201759455285471444">Rozwiń grupę kart.</translation>
 <translation id="2022431790688770637">Zarządzaj sugestiami Gemini</translation>
+<translation id="2023265063803387188">Gemini jest niedostępny w trybie incognito</translation>
 <translation id="2031515492007104071">Level Up</translation>
 <translation id="2044394949148788042">Otwieranie siatki kart</translation>
 <translation id="2044681667265133332">Kontem <ph name="USER_EMAIL" /> zarządza domena <ph name="HOSTED_DOMAIN" />, która może wyświetlać niektóre informacje. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
@@ -2035,6 +2036,7 @@ Aby kontynuować na komputerze, przełącz się na <ph name="OTHER_EMAIL" />. B�
 <translation id="728025568708172005">Uruchom prezentację wstępną</translation>
 <translation id="7280980607183752256">Nie można zaimportować tego pliku</translation>
 <translation id="7282197670900591579">Motyw cytrynowy</translation>
+<translation id="7283937415134849498">Aby zapewnić Ci spersonalizowaną pomoc, Gemini udostępnia niektóre Twoje dane (np. fragmenty Twoich czatów, Twoją lokalizację i inne istotne informacje) innym usługom Google, takim jak Mapy czy Loty. Pozwala to ulepszać te usługi, nawet jeśli później usuniesz swoją historię w Gemini. Więcej informacji znajdziesz w <ph name="BEGIN_LINK" />Centrum prywatności dotyczącym aplikacji z Gemini<ph name="END_LINK" />.</translation>
 <translation id="7293429513719260019">Wybierz język</translation>
 <translation id="72961285530871072">Spowoduje to trwałe usunięcie Twoich postępów w Level Up, a dane o korzystaniu z tej funkcji nie będą już wysyłane do Google z Twojego profilu.
 
@@ -2607,6 +2609,7 @@ Możesz to wznowić w dowolnym momencie.</translation>
 <translation id="8976382372951310360">Pomoc</translation>
 <translation id="8976414606286374109">Karty zostały zapisane na koncie Google.</translation>
 <translation id="8981454092730389528">Zarządzanie aktywnością w Google</translation>
+<translation id="8987736167266086032">Wznów od tego samego miejsca</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, przypięta witryna</translation>
 <translation id="8989779557457435460">Domyślnie udostępniaj bieżącą kartę</translation>
 <translation id="8990960056509724223">Ze względu na zasady obowiązujące w Twojej organizacji nie udało się zapisać pliku</translation>
@@ -2648,6 +2651,7 @@ Możesz to wznowić w dowolnym momencie.</translation>
 <translation id="91023216973987714">Formy płatności</translation>
 <translation id="9106655997975673326">Z urządzenia „<ph name="SOURCE_DEVICE" />”</translation>
 <translation id="9107664647686727385">Sprawdź, czy nie przejęto haseł</translation>
+<translation id="9115035712231910133">Załączony obraz {title}</translation>
 <translation id="9119764377203471454">Nie udało się dodać załączników</translation>
 <translation id="9124387962554796433">Google może korzystać z Twojej historii, żeby personalizować wyniki wyszukiwania i działanie innych usług Google.</translation>
 <translation id="9124978074365039456">Kupuj, tłumacz i rozpoznawaj to, co widzisz, za pomocą aparatu i galerii zdjęć</translation>

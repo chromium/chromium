@@ -824,6 +824,7 @@
 <translation id="2356941001189392209">فهرست محدودی از نشانی وب صفحه‌هایی که بازدید می‌کنید و رویدادهای فناوری قدیمی در آن‌ها روی می‌دهد</translation>
 <translation id="2357312461142072202">{NUM_TABS,plural, =1{‫۱ زبانه هم‌رسانی خواهد شد}one{‫{NUM_TABS} زبانه هم‌رسانی خواهد شد}other{‫{NUM_TABS} زبانه هم‌رسانی خواهد شد}}</translation>
 <translation id="2357481397660644965">دستگاهتان توسط <ph name="DEVICE_MANAGER" />، و حسابتان توسط <ph name="ACCOUNT_MANAGER" /> مدیریت می‌شود.</translation>
+<translation id="2358479643736965923">‏پاسخ جستجوی Google AI را در این زبانه ببینید</translation>
 <translation id="2359629602545592467">چند ارز</translation>
 <translation id="2359808026110333948">ادامه</translation>
 <translation id="236000571258713023">وسایل نقلیه</translation>
@@ -1142,6 +1143,7 @@
 <translation id="2925032407415783182">ذخیره کردن بلیت رویداد در «کیف پول»</translation>
 <translation id="2925454999967523701">‏دکمه ایجاد سند؛ برای ایجاد سریع «سندنگار Google» جدید، آن را فعال کنید</translation>
 <translation id="2925673989565098301">روش ارسال</translation>
+<translation id="2927328994673424423">‫۲ هفته قبل</translation>
 <translation id="2928426578619531300">کاربر وابسته</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> و <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> نشانی دیگر}one{<ph name="SHIPPING_ADDRESS_PREVIEW" /> و <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> نشانی دیگر}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> و <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> نشانی دیگر}}</translation>
 <translation id="2930531075747147366">زبانه از «دستگاه دیگر شما»</translation>

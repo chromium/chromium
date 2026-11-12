@@ -342,6 +342,7 @@
 <translation id="4022972681110646219">翻译屏幕</translation>
 <translation id="4023601594785368013">源语言：<ph name="LANGUAGE" /></translation>
 <translation id="4034249157893816477">内置于 Chrome 中，可帮助您创建、保存和自动填充安全系数高的密码。添加快捷方式，即可轻松访问。</translation>
+<translation id="4034420818911109432"><ph name="USER_NAME" />，<ph name="EMAIL" />。Google 会员。</translation>
 <translation id="4035053306113201399">需要重新启动 Chrome 操作系统以应用更新。</translation>
 <translation id="4050175100176540509">最新版本不仅在安全性方面做出了重要改进，还提供了多项新功能。</translation>
 <translation id="4053720452172726777">自定义及控制 Google Chrome</translation>
@@ -932,6 +933,7 @@
 <translation id="9148058034647219655">退出</translation>
 <translation id="9150331942025550505">强大 AI 体验，尽在 <ph name="DEVICE_TYPE" /> 版 Chrome 应用</translation>
 <translation id="919706545465235479">更新 Chrome 以开始同步</translation>
+<translation id="9210313013767007472"><ph name="USER_NAME_OR_EMAIL" />。Google 会员。</translation>
 <translation id="922152298093051471">自定义 Chrome</translation>
 <translation id="93760716455950538">重启 ChromeOS Flex</translation>
 <translation id="943390475793766444">Chrome 建议您扫描此文件，因为它可能包含危险因素。</translation>

@@ -158,7 +158,9 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="2301513536169703857">Log in bij Chrome om onder andere je wachtwoorden en bookmarks te gebruiken op al je apparaten</translation>
 <translation id="2307973900865360088">In Dock houden</translation>
 <translation id="2309047409763057870">Dit is een tweede installatie van Google Chrome en kan niet als standaardbrowser worden ingesteld.</translation>
+<translation id="2330059234841117265">Google Zoeken openen in Chrome</translation>
 <translation id="2345992953227471816">Chrome heeft vastgesteld dat deze extensies malware bevatten:</translation>
+<translation id="2350411688004301551">Overstappen op Gemini Enterprise</translation>
 <translation id="2358140144860869442">Log in bij Chrome om onder andere je leeslijst op al je apparaten te gebruiken</translation>
 <translation id="2359808026110333948">Doorgaan</translation>
 <translation id="2403703063067034158">Opstartfout: Er wordt op dit moment een andere instantie van het instelproces uitgevoerd. Probeer het later opnieuw.</translation>
@@ -169,6 +171,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="2482846200327569645"><ph name="EXISTING_USER" /> is al ingelogd. Als je je browsegegevens gescheiden wilt houden, log je in Chrome in op je eigen profiel als <ph name="USER_EMAIL_ADDRESS" />. Je krijgt ook onder andere je bookmarks van <ph name="DEVICE" />.</translation>
 <translation id="2485422356828889247">Verwijderen</translation>
 <translation id="2513154137948333830">Opnieuw opstarten vereist: <ph name="INSTALL_SUCCESS" /></translation>
+<translation id="251329670120169391">je organisatie</translation>
 <translation id="2521391734665471391">AI-modus in Google Zoeken sluiten</translation>
 <translation id="2523492931736391680">Je werk beveiligd in Chrome</translation>
 <translation id="2534365042754120737">Ter bescherming van je gegevens kun je Chrome de rechten laten verwijderen voor sites die je niet recent hebt bezocht. Hiermee worden meldingen niet gestopt.</translation>
@@ -218,6 +221,7 @@ Als deze pagina niet werkt zoals verwacht, kun je optimalisatie toestaan.</trans
 <translation id="2876628302275096482">Meer informatie over <ph name="BEGIN_LINK" />hoe Chrome je gegevens privé houdt<ph name="END_LINK" /></translation>
 <translation id="2885378588091291677">Taakbeheer</translation>
 <translation id="2888126860611144412">Over Chrome</translation>
+<translation id="2898830646167954300">Terugschakelen naar je onbeheerde Gemini-assistent</translation>
 <translation id="2915996080311180594">Later opnieuw opstarten</translation>
 <translation id="2926952073016206995">Chrome heeft camerarechten nodig voor deze site</translation>
 <translation id="2945997411976714835">Installatiefout: Het installatieproces kan niet worden gestart.</translation>
@@ -257,6 +261,7 @@ Als deze pagina niet werkt zoals verwacht, kun je optimalisatie toestaan.</trans
 <translation id="3140883423282498090">Je wijzigingen worden toegepast als je Google Chrome opnieuw start.</translation>
 <translation id="3149510190863420837">Chrome-apps</translation>
 <translation id="3161522574479303604">Alle talen</translation>
+<translation id="3183555099201190073">Toegang tot Zoeken vanaf elk tabblad</translation>
 <translation id="318555301233810762"><ph name="EXISTING_USER" /> is al ingelogd. Als je je browsegegevens gescheiden wilt houden, log je in Chrome in op je eigen profiel als <ph name="USER_EMAIL_ADDRESS" />. Je kunt ook onder andere je bookmarks op al je apparaten gebruiken.</translation>
 <translation id="319199214552513804">Log in bij Chrome om onder andere deze extensie te gebruiken op al je computers</translation>
 <translation id="3196187562065225381">Chrome heeft deze download geblokkeerd, omdat het bestand gevaarlijk is</translation>
@@ -345,11 +350,13 @@ Als deze pagina niet werkt zoals verwacht, kun je optimalisatie toestaan.</trans
 <translation id="4022972681110646219">Scherm vertalen</translation>
 <translation id="4023601594785368013">Oorspronkelijke taal: <ph name="LANGUAGE" /></translation>
 <translation id="4034249157893816477">Geïntegreerd in Chrome om je te helpen sterke wachtwoorden te maken, op te slaan en automatisch in te vullen. Voeg de snelkoppeling toe voor makkelijke toegang.</translation>
+<translation id="4034420818911109432"><ph name="USER_NAME" />, <ph name="EMAIL" />. Google-lidmaatschap.</translation>
 <translation id="4035053306113201399">Chrome OS moet opnieuw worden gestart om de update uit te voeren.</translation>
 <translation id="4050175100176540509">Er zijn belangrijke beveiligingsverbeteringen en nieuwe functies beschikbaar in de nieuwste versie.</translation>
 <translation id="4053720452172726777">Google Chrome aanpassen en beheren</translation>
 <translation id="408393047846373801">Log in bij Chrome om onder andere je wachtwoorden te gebruiken op al je apparaten. Dit wachtwoord wordt opgeslagen in je Google-account nadat je bent ingelogd.</translation>
 <translation id="4102173024714616627">Extensies zijn add-ons waarmee je Chrome kunt aanpassen. Extensies helpen je om Chrome aan te passen, van georganiseerd blijven tot dagelijkse taken vereenvoudigen.</translation>
+<translation id="4103543596018881622">Google Zoeken in Chrome vastgezet op werkbalk.</translation>
 <translation id="4110895483821904099">Je nieuwe Chrome-profiel instellen</translation>
 <translation id="4111566860456076004">Chrome kan niet verifiëren waar deze extensie vandaan komt en de extensie is misschien onveilig. Verwijder de extensie uit Chrome zodat deze je gegevens (waaronder je persoonlijke informatie) niet meer kan bekijken en wijzigen op sites die je bezoekt.</translation>
 <translation id="4147555960264124640">Je logt in op een beheerd account en geeft de beheerderscontrole over aan je Google Chrome-profiel. Je Chrome-gegevens zoals je apps, bookmarks, geschiedenis, wachtwoorden en andere instellingen worden permanent gekoppeld aan <ph name="USER_NAME" />. Je kunt deze gegevens verwijderen via het Google Accounts Dashboard, maar je kunt deze gegevens niet koppelen aan een ander account. <ph name="LEARN_MORE" /></translation>
@@ -473,6 +480,7 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="5321325624576443340">Google Lens is niet beschikbaar. Probeer het later opnieuw.</translation>
 <translation id="5334309298019785904">Chrome OS kan je gegevens niet synchroniseren, omdat synchronisatie niet beschikbaar is voor je domein.</translation>
 <translation id="5334487786912937552">Chrome heeft toegang tot de opslag nodig om bestanden te downloaden</translation>
+<translation id="5336664042114176802">Je kunt overschakelen naar de Gemini-assistent die oorspronkelijk aan je Google-account was gekoppeld en niet wordt beheerd door <ph name="DOMAIN" />. Antwoorden worden niet meer gebaseerd op bestanden of services die worden beheerd door <ph name="DOMAIN" /> en je gespreksgeschiedenis wordt niet overgezet. De assistent is misschien niet geschikt voor gebruik op het werk. Als je wilt overschakelen, moet je Chrome herstarten.</translation>
 <translation id="5337648990166757586">Optioneel: Help de functies en prestaties van Chrome OS te verbeteren door automatisch diagnostische en gebruiksgegevens naar Google te sturen.</translation>
 <translation id="5346389065299425353">Verfijn je zoekopdracht door meerdere tabbladen, bestanden en tools toe te voegen</translation>
 <translation id="5353252989841766347">Wachtwoorden exporteren uit Chrome</translation>
@@ -588,6 +596,7 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="6326175484149238433">Verwijderen uit Chrome</translation>
 <translation id="6334815226785304306">Google Chrome instellen als de standaardbrowser en vastzetten op de taakbalk</translation>
 <translation id="6339888439788291743">Nieuw icoon, dezelfde snelkoppeling: klik om vragen te stellen terwijl je browst met de AI-modus van Google Zoeken.</translation>
+<translation id="6349304688246983183">Stel makkelijk vragen terwijl je browst met Google Zoeken</translation>
 <translation id="63540178978900677">Chrome is niet meer je standaardbrowser. Chrome instellen als de standaardbrowser?</translation>
 <translation id="6357670763064300993">Gemini Enterprise in Chrome</translation>
 <translation id="6360449101159168105">Terwijl dit tabblad inactief was, is er geheugen vrijgemaakt om Chrome snel te houden. Je kunt ervoor kiezen deze site altijd uit te sluiten van inactiviteit.</translation>
@@ -602,6 +611,7 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="6438015621983209660">Gebruik de uitgebreide versie van Safe Browsing met Chrome op je telefoon</translation>
 <translation id="6442774133615368941">Winkel, vertaal en herken wat je ziet met je camera in de Chrome iOS-app</translation>
 <translation id="6446105560007692480">om te zoeken met Chrome of aan te passen in <ph name="BEGIN_LINK" />Instellingen<ph name="END_LINK" /></translation>
+<translation id="6447943657065463998">Deze beheerde browser kan een Gemini-assistent gebruiken die is ingesteld voor werk door <ph name="DOMAIN" />. Deze kan informatie vinden en antwoorden geven op basis van de bestanden en goedgekeurde services van de organisatie. Het wordt misschien niet aanbevolen om deze te gebruiken met een persoonlijk profiel. De gespreksgeschiedenis wordt niet overgezet. Als je wilt overschakelen, moet je Chrome herstarten.</translation>
 <translation id="6448835208126432197">Gebruik de sneltoets om een deel van het scherm te selecteren in Gemini in Chrome.</translation>
 <translation id="6473905796280459355">Naar de pagina Over Chrome</translation>
 <translation id="6481963882741794338">Koppel Chrome en andere Google-services voor personalisatie en andere doeleinden</translation>
@@ -796,6 +806,7 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="8064965390968184078">1. Klik hieronder op <ph name="BUTTON_LABEL" />.
 2. Klik op <ph name="BUTTON_2" /> in je Windows-instellingen.
 3. Klik op <ph name="BUTTON_3" /> in de Windows-melding om Chrome vast te zetten op je taakbalk voor snelle toegang.</translation>
+<translation id="8066474819446975249">Chrome herstarten om te wisselen</translation>
 <translation id="8069447462453318634">Selecteer Vastzetten op werkbalk</translation>
 <translation id="8074398340364918139">Als je een specifieke Chrome-functie of -extensie wilt doorzoeken, typ je de bijbehorende snelkoppeling in de adresbalk gevolgd door de door jou geselecteerde toets</translation>
 <translation id="8077579734294125741">Andere Chrome-profielen</translation>
@@ -937,6 +948,7 @@ Je kunt pas nieuwe bookmarks opslaan in je account als je er een paar hebt verwi
 <translation id="9148058034647219655">Sluiten</translation>
 <translation id="9150331942025550505">Profiteer van de kracht van AI door de Chrome-app te gebruiken op je <ph name="DEVICE_TYPE" /></translation>
 <translation id="919706545465235479">Chrome updaten om de synchronisatie te starten</translation>
+<translation id="9210313013767007472"><ph name="USER_NAME_OR_EMAIL" />. Google-lidmaatschap.</translation>
 <translation id="922152298093051471">Chrome aanpassen</translation>
 <translation id="93760716455950538">Chrome OS Flex opnieuw opstarten</translation>
 <translation id="943390475793766444">Chrome raadt aan dit bestand te scannen omdat het misschien gevaarlijk is.</translation>

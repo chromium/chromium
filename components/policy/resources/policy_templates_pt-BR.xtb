@@ -12292,6 +12292,12 @@ Os certificados precisam ser codificados em Base64.</translation>
 A definição da política controla a geração de relatórios de telemetria do site para URLs da lista de permissões.
 Se não definida, nenhuma telemetria do site será informada.
 Para saber mais sobre padrões de URL válidos, consulte https://chromeenterprise.google/policies/url-patterns/. Apenas esquemas de URL HTTP e HTTPS são permitidos para esta política.</translation>
+<translation id="8392016343898518010">Esta política foi descontinuada e não tem efeito a partir da versão M159 porque o recurso de conteúdo sugerido foi removido.
+
+Antes da versão M159, esse recurso ativava sugestões de novos conteúdos a conhecer, incluindo apps, páginas da web e muito mais.
+Se esta política fosse definida como verdadeira, as sugestões de novos conteúdos a conhecer seriam ativadas.
+Se esta política fosse definida como falsa, as sugestões de novos conteúdos a conhecer seriam desativadas.
+Se esta política não for definida, as sugestões de novos conteúdos a conhecer serão desativadas para usuários gerenciados e ativadas para outros usuários.</translation>
 <translation id="8392478748777481636">Essa política foi descontinuada e parou de ter suporte. Use a <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" />.</translation>
 <translation id="8393850527597048037">Somente de plataforma</translation>
 <translation id="8395350646076131800">Tempo limite de inatividade do protetor da tela de bloqueio do usuário.</translation>

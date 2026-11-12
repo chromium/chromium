@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">Chcete-li zobrazit hesla, musíte nejdříve na zařízení nastavit heslo.</translation>
 <translation id="201759455285471444">Rozbalit skupinu karet.</translation>
 <translation id="2022431790688770637">Spravovat návrhy od Gemini</translation>
+<translation id="2023265063803387188">V anonymním režimu není Gemini k dispozici</translation>
 <translation id="2031515492007104071">Další úroveň</translation>
 <translation id="2044394949148788042">Otevřít mřížku karet</translation>
 <translation id="2044681667265133332">Účet <ph name="USER_EMAIL" /> spravuje doména <ph name="HOSTED_DOMAIN" />, která může mít přístup k některým informacím. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
@@ -2035,6 +2036,7 @@ Pokud chcete pokračovat z počítače, přepněte na <ph name="OTHER_EMAIL" />
 <translation id="728025568708172005">Proveďte mě</translation>
 <translation id="7280980607183752256">Tento soubor nelze importovat</translation>
 <translation id="7282197670900591579">Citronový motiv</translation>
+<translation id="7283937415134849498">K poskytování přizpůsobené pomoci sdílí Gemini některá vaše data (například části chatů, polohu a další relevantní informace) s ostatními službami Google, jako jsou Mapy a Letenky. Tyto služby mohou takové informace využívat ke zdokonalování, a to i případě, že později svou historii Gemini vymažete. Další informace najdete v <ph name="BEGIN_LINK" />centru ochrany soukromí aplikací s Gemini<ph name="END_LINK" />.</translation>
 <translation id="7293429513719260019">Zvolte jazyk</translation>
 <translation id="72961285530871072">Trvale smažete svůj postup v programu Další úroveň a přestanete do Googlu pro svůj profil odesílat data o využití funkcí pro Další úroveň.
 
@@ -2607,6 +2609,7 @@ Kdykoli můžete začít znovu.</translation>
 <translation id="8976382372951310360">Nápověda</translation>
 <translation id="8976414606286374109">Karty se ukládají do vašeho účtu Google.</translation>
 <translation id="8981454092730389528">Ovládací prvky aktivity Google</translation>
+<translation id="8987736167266086032">Pokračujte, kde jste skončili</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, připnutý web</translation>
 <translation id="8989779557457435460">Ve výchozím nastavení sdílet aktuální kartu</translation>
 <translation id="8990960056509724223">Soubor se kvůli zásadám vaší organizace nepodařilo uložit</translation>
@@ -2648,6 +2651,7 @@ Kdykoli můžete začít znovu.</translation>
 <translation id="91023216973987714">Platební metody</translation>
 <translation id="9106655997975673326">Ze zařízení <ph name="SOURCE_DEVICE" /></translation>
 <translation id="9107664647686727385">Kontroluje, zda nedošlo k prolomení hesel</translation>
+<translation id="9115035712231910133">Přiložený obrázek {title}</translation>
 <translation id="9119764377203471454">Přílohy se nepodařilo přidat</translation>
 <translation id="9124387962554796433">Google vaši historii může používat k personalizaci Vyhledávání a dalších služeb Google</translation>
 <translation id="9124978074365039456">Nakupujte, překládejte a identifikujte různé věci pomocí fotoaparátu a galerie fotek</translation>

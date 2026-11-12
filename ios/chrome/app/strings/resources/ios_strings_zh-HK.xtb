@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">如要查看密碼，您必須先在裝置上設定密碼。</translation>
 <translation id="201759455285471444">打開分頁群組。</translation>
 <translation id="2022431790688770637">管理 Gemini 建議</translation>
+<translation id="2023265063803387188">Gemini 不支援無痕模式</translation>
 <translation id="2031515492007104071">升級</translation>
 <translation id="2044394949148788042">開啟分頁網格</translation>
 <translation id="2044681667265133332">帳戶 <ph name="USER_EMAIL" /> 由 <ph name="HOSTED_DOMAIN" /> 管理，管理員可以查看某些資料。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
@@ -2033,6 +2034,7 @@
 <translation id="728025568708172005">開始導覽</translation>
 <translation id="7280980607183752256">無法匯入此檔案</translation>
 <translation id="7282197670900591579">青檸色主題</translation>
+<translation id="7283937415134849498">為提供個人化支援，Gemini 會與「地圖」和「機票」等其他 Google 服務分享你的部分資料 (例如部分對話、位置和其他相關資料)。即使你之後刪除 Gemini 記錄，這些服務可能仍會使用有關資料改善功能。詳情請瀏覽「<ph name="BEGIN_LINK" />Gemini 應用程式私隱說明中心<ph name="END_LINK" />」。</translation>
 <translation id="7293429513719260019">選取語言</translation>
 <translation id="72961285530871072">此操作會永久刪除你的 Level Up 進度，而系統不會再為你的個人檔案傳送 Level Up 功能使用情況資料至 Google。
 
@@ -2605,6 +2607,7 @@
 <translation id="8976382372951310360">說明</translation>
 <translation id="8976414606286374109">信用卡會儲存至您的 Google 帳戶。</translation>
 <translation id="8981454092730389528">Google 活動控制項</translation>
+<translation id="8987736167266086032">從上次離開的地方繼續瀏覽</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />，已固定的網站</translation>
 <translation id="8989779557457435460">預設分享目前分頁</translation>
 <translation id="8990960056509724223">根據你機構的政策，你不可儲存檔案</translation>
@@ -2646,6 +2649,7 @@
 <translation id="91023216973987714">付款方法</translation>
 <translation id="9106655997975673326">來自「<ph name="SOURCE_DEVICE" />」</translation>
 <translation id="9107664647686727385">檢查是否有被盜用的密碼</translation>
+<translation id="9115035712231910133">附加咗圖片「{title}」</translation>
 <translation id="9119764377203471454">無法新增附件</translation>
 <translation id="9124387962554796433">Google 可能會使用您的記錄，為您提供個人化的搜尋服務和其他 Google 服務。</translation>
 <translation id="9124978074365039456">使用相機和圖片庫購物、翻譯及識別所見內容</translation>

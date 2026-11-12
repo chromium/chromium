@@ -156,7 +156,9 @@
 <translation id="2301513536169703857">Kõigis seadmetes paroolide, järjehoidjate ja muude võimaluste kasutamiseks logige sisse Chrome'i</translation>
 <translation id="2307973900865360088">Hoia dokis</translation>
 <translation id="2309047409763057870">See on Google Chrome'i sekundaarne install ja seda ei saa määrata vaikebrauseriks.</translation>
+<translation id="2330059234841117265">Ava Google'i otsing Chrome'is</translation>
 <translation id="2345992953227471816">Chrome leidis, et need laiendused sisaldavad pahavara:</translation>
+<translation id="2350411688004301551">Lülitu Gemini Enterprise’ile</translation>
 <translation id="2358140144860869442">Kõigis oma seadmetes lugemisloendile ja muule sisule juurdepääsemiseks kasutamiseks logige sisse Chrome'i.</translation>
 <translation id="2359808026110333948">Jätka</translation>
 <translation id="2403703063067034158">Käivitamisviga: praegu käitatakse seadistuse teist eksemplari, proovige hiljem uuesti.</translation>
@@ -167,6 +169,7 @@
 <translation id="2482846200327569645"><ph name="EXISTING_USER" /> on juba sisse logitud. Sirvimise eraldi hoidmiseks logige Chrome'i sisse omaenda profiilil kasutajana <ph name="USER_EMAIL_ADDRESS" />. Lisaks pääsete juurde oma järjehoidjatele ja muule järgmises seadmes: <ph name="DEVICE" />.</translation>
 <translation id="2485422356828889247">Desinstalli</translation>
 <translation id="2513154137948333830">Vajalik on taaskäivitamine: <ph name="INSTALL_SUCCESS" /></translation>
+<translation id="251329670120169391">teie organisatsioon</translation>
 <translation id="2521391734665471391">Sule Google'i otsingu AI-režiim</translation>
 <translation id="2523492931736391680">Teie töö on Chrome'is kaitstud</translation>
 <translation id="2534365042754120737">Andmete kaitsmiseks laske Chrome'il eemaldada load saitidelt, mida te pole hiljuti külastanud. See ei peata märguandeid.</translation>
@@ -216,6 +219,7 @@ Kui see leht ei tööta ootuspäraselt, proovige optimeerimine lubada.</translat
 <translation id="2876628302275096482">Vaadake lisateavet, <ph name="BEGIN_LINK" />kuidas Chrome teie andmeid privaatsena hoiab<ph name="END_LINK" /></translation>
 <translation id="2885378588091291677">Tegumihaldur</translation>
 <translation id="2888126860611144412">Teave Chrome'i kohta</translation>
+<translation id="2898830646167954300">Lülituge tagasi mittehallatavale Gemini assistendile</translation>
 <translation id="2915996080311180594">Taaskäivita hiljem</translation>
 <translation id="2926952073016206995">Chrome vajab selle saidi puhul kaamera kasutamise luba</translation>
 <translation id="2945997411976714835">Installimisviga: installiprotsessi käivitamine ebaõnnestus.</translation>
@@ -255,6 +259,7 @@ Kui see leht ei tööta ootuspäraselt, proovige optimeerimine lubada.</translat
 <translation id="3140883423282498090">Teie muudatused jõustuvad järgmine kord, kui avate Google Chrome'i.</translation>
 <translation id="3149510190863420837">Chrome'i rakendused</translation>
 <translation id="3161522574479303604">Kõik keeled</translation>
+<translation id="3183555099201190073">Juurdepääs otsingule mis tahes vahelehelt</translation>
 <translation id="318555301233810762"><ph name="EXISTING_USER" /> on juba sisse logitud. Sirvimise eraldi hoidmiseks logige Chrome'i sisse omaenda profiilil kasutajana <ph name="USER_EMAIL_ADDRESS" />. Lisaks pääsete kõigis seadmetes juurde oma järjehoidjatele ja muule.</translation>
 <translation id="319199214552513804">Selleks et saada see laiendus ja muu kõikidesse oma arvutisse, logige Chrome'i sisse</translation>
 <translation id="3196187562065225381">Chrome blokeeris selle allalaadimise, kuna fail on ohtlik</translation>
@@ -344,11 +349,13 @@ Kui see leht ei tööta ootuspäraselt, proovige optimeerimine lubada.</translat
 <translation id="4022972681110646219">Tõlgi kuva</translation>
 <translation id="4023601594785368013">Lähtekeel: <ph name="LANGUAGE" /></translation>
 <translation id="4034249157893816477">Chrome'i sisse ehitatud, et aidata teil luua, salvestada ja automaatselt täita tugevaid paroole. Lisage otsetee, et hõlpsasti juurde pääseda.</translation>
+<translation id="4034420818911109432"><ph name="USER_NAME" />, <ph name="EMAIL" />. Google'i liikmesus.</translation>
 <translation id="4035053306113201399">Chrome OS tuleb värskenduse rakendamiseks taaskäivitada.</translation>
 <translation id="4050175100176540509">Uusimas versioonis on saadaval olulised turvatäiendused ja uued funktsioonid.</translation>
 <translation id="4053720452172726777">Google Chrome'i kohandamine ja juhtimine</translation>
 <translation id="408393047846373801">Kõigis seadmetes paroolide ja muude võimaluste kasutamiseks logige sisse Chrome'i. See parool salvestatakse pärast sisselogimist teie Google'i kontole.</translation>
 <translation id="4102173024714616627">Laiendused on pistikprogrammid, mis võimaldavad teil Chrome'i kohandada. Laiendused aitavad teil Chrome'i enda vajaduste järgi kohandada, olgu selleks siis asjade organiseerimine või igapäevaste toimingute lihtsustamine.</translation>
+<translation id="4103543596018881622">Google'i otsing Chrome'is on kinnitatud tööriistaribale!</translation>
 <translation id="4110895483821904099">Uue Chrome'i profiili seadistamine</translation>
 <translation id="4111566860456076004">Chrome ei suuda tuvastada, kust see laiendus pärineb. Laiendus võib olla ebaturvaline. Eemaldage see Chrome'ist, et see ei saaks enam näha ja muuta teie andmeid saitidel, mida külastate, sealhulgas isiklikku teavet.</translation>
 <translation id="4147555960264124640">Logite sisse hallatud kontoga ja annate selle administraatorile üle Google Chrome'i profiili juhtimise. Teie Chrome'i andmed, nagu rakendused, järjehoidjad, ajalugu, paroolid ja muud seaded seotakse jäädavalt kasutajaga <ph name="USER_NAME" />. Saate need andmed Google'i kontode juhtpaneeli kaudu kustutada, kuid te ei saa neid seostada teise kontoga. <ph name="LEARN_MORE" /></translation>
@@ -472,6 +479,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="5321325624576443340">Google Lens pole saadaval. Proovige hiljem uuesti.</translation>
 <translation id="5334309298019785904">Google OS ei saanud teie andmeid sünkroonida, sest sünkroonimine pole teie domeenil saadaval.</translation>
 <translation id="5334487786912937552">Chrome vajab failide allalaadimiseks juurdepääsu salvestusruumile</translation>
+<translation id="5336664042114176802">Saate lülituda teie Google'i kontoga algselt seotud Gemini assistendile, mida <ph name="DOMAIN" /> ei halda. Vastused ei põhine enam failidel ega teenustel, mida haldab <ph name="DOMAIN" />, ja teie vestlusajalugu ei kanta üle. See ei pruugi olla töö jaoks sobilik. Vahetamiseks tuleb Chrome uuesti käivitada.</translation>
 <translation id="5337648990166757586">Valikuline. Aidake Chrome OS-i funktsioone ning toimivust täiustada, saates Google'ile automaatselt diagnostika- ja kasutusandmeid.</translation>
 <translation id="5346389065299425353">Otsingu süvendamine mitme vahelehe, faili ja tööriista lisamisega.</translation>
 <translation id="5353252989841766347">Paroolide eksportimine Chrome'ist</translation>
@@ -587,6 +595,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="6326175484149238433">Eemalda Chrome'ist</translation>
 <translation id="6334815226785304306">Muuda Google Chrome vaikebrauseriks ja kinnita tegumiribale</translation>
 <translation id="6339888439788291743">Uus ikoon, sama otsetee: klõpsake, et Google'i otsingu AI-režiimi kaudu sirvimise ajal küsimusi esitada.</translation>
+<translation id="6349304688246983183">Google'i otsingu abil sirvides saate hõlpsalt küsimusi esitada</translation>
 <translation id="63540178978900677">Chrome ei ole enam teie vaikebrauser. Kas määrata Chrome vaikebrauseriks?</translation>
 <translation id="6357670763064300993">Gemini Enterprise Chrome'is</translation>
 <translation id="6360449101159168105">Ajal, mil see vaheleht oli inaktiivne, vabastati mälu, et Chrome oleks jätkuvalt kiire. Soovi korral võite selle saidi inaktiivseks muutumise alati välistada.</translation>
@@ -601,6 +610,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="6438015621983209660">Laiendage telefonis Chrome'iga täiustatud ohutut sirvimist</translation>
 <translation id="6442774133615368941">Ostke, tõlkige ja tuvastage, mida näete, kasutades Chrome'i iOS-i rakenduses oma kaamerat.</translation>
 <translation id="6446105560007692480">Chrome'iga otsimiseks või <ph name="BEGIN_LINK" />seadetes<ph name="END_LINK" /> kohandamiseks.</translation>
+<translation id="6447943657065463998">See hallatav brauser saab kasutada Gemini assistenti, mille <ph name="DOMAIN" /> on töö jaoks seadistanud. See saab otsida teavet ja anda organisatsiooni failide ja kinnitatud teenuste põhjal maandatud vastuseid. Selle kasutamine isikliku profiiliga ei pruugi olla soovitatav. Vestlusajalugu ei kanta üle. Vahetamiseks tuleb Chrome uuesti käivitada.</translation>
 <translation id="6448835208126432197">Ekraanikuva osa valimiseks funktsioonis Gemini Chrome'is kasutage klaviatuuri otseteed.</translation>
 <translation id="6473905796280459355">Minemine lehele Teave Chrome’i kohta</translation>
 <translation id="6481963882741794338">Linkige Chrome ja teised Google’i teenused isikupärastamiseks ja muudel eesmärkidel</translation>
@@ -795,6 +805,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="8064965390968184078">1. Klõpsake alloleval nupul <ph name="BUTTON_LABEL" />
 2. Klõpsake Windowsi seadetes nupul <ph name="BUTTON_2" />
 3. Kiireks juurdepääsuks klõpsake Windowsi märguandes nupul <ph name="BUTTON_3" />, et kinnitada Chrome oma tegumiribale</translation>
+<translation id="8066474819446975249">Vahetamiseks käivita Chrome uuesti</translation>
 <translation id="8069447462453318634">Tehke valik „Kinnita tööriistaribale“.</translation>
 <translation id="8074398340364918139">Konkreetse Chrome'i funktsiooni või laienduse otsimiseks sisestage selle otsetee aadressiribale ja lisage enda valitud klaviatuuriklahv.</translation>
 <translation id="8077579734294125741">Muud Chrome'i profiilid</translation>
@@ -936,6 +947,7 @@ Uusi järjehoidjaid ei saa teie kontole salvestada, enne kui mõned kustutate. K
 <translation id="9148058034647219655">Välju</translation>
 <translation id="9150331942025550505">Kasutage Chrome'i rakendust oma seadmes <ph name="DEVICE_TYPE" /> ja saate juurdepääsu AI-le</translation>
 <translation id="919706545465235479">Sünkroonimise alustamiseks värskendage Chrome'i</translation>
+<translation id="9210313013767007472"><ph name="USER_NAME_OR_EMAIL" />. Google'i liikmesus.</translation>
 <translation id="922152298093051471">Chrome'i kohandamine</translation>
 <translation id="93760716455950538">Taaskäivitage Chrome OS Flex</translation>
 <translation id="943390475793766444">Chrome soovitab seda faili skannida, kuna see võib olla ohtlik.</translation>

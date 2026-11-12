@@ -823,6 +823,7 @@
 <translation id="2356941001189392209">Ограничен списък с URL адреси на посещаваните от вас страници, където има предишни технологични събития</translation>
 <translation id="2357312461142072202">{NUM_TABS,plural, =1{Ще бъде споделен 1 раздел}other{Ще бъдат споделени {NUM_TABS} раздела}}</translation>
 <translation id="2357481397660644965">Устройството ви се управлява от <ph name="DEVICE_MANAGER" />, а профилът ви се управлява от <ph name="ACCOUNT_MANAGER" />.</translation>
+<translation id="2358479643736965923">Вижте отговора от AI в Google Търсене в този раздел</translation>
 <translation id="2359629602545592467">Няколко</translation>
 <translation id="2359808026110333948">Напред</translation>
 <translation id="236000571258713023">Превозни средства</translation>
@@ -1141,6 +1142,7 @@
 <translation id="2925032407415783182">Запазване на билета за събитие в Wallet</translation>
 <translation id="2925454999967523701">Бутон за създаване на документ. Активирайте, за да създадете бързо документ в Google Документи</translation>
 <translation id="2925673989565098301">Начин на бърза доставка</translation>
+<translation id="2927328994673424423">Преди 2 седмици</translation>
 <translation id="2928426578619531300">Свързано с потребителя</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> и още <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> и още <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="2930531075747147366">Раздел от другото ви устройство</translation>

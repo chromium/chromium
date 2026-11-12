@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">Upang makita ang mga password, dapat ka munang magtakda ng passcode sa iyong device.</translation>
 <translation id="201759455285471444">I-expand ang grupo ng tab.</translation>
 <translation id="2022431790688770637">Pamahalaan ang mga suhestyon ng Gemini</translation>
+<translation id="2023265063803387188">Hindi available ang Gemini sa Incognito mode</translation>
 <translation id="2031515492007104071">Level Up</translation>
 <translation id="2044394949148788042">Buksan ang grid ng tab</translation>
 <translation id="2044681667265133332">Ang account na <ph name="USER_EMAIL" /> ay pinapamahalaan ng <ph name="HOSTED_DOMAIN" />, na posibleng makakita ng ilang impormasyon. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
@@ -2035,6 +2036,7 @@ Para magpatuloy mula sa iyong computer, lumipat sa <ph name="OTHER_EMAIL" />. Ma
 <translation id="728025568708172005">Simulan ang tour</translation>
 <translation id="7280980607183752256">Hindi mai-import ang file na ito</translation>
 <translation id="7282197670900591579">Citron na tema</translation>
+<translation id="7283937415134849498">Para makapagbigay ng iniangkop na tulong, sine-share ng Gemini ang ilan sa iyong data (tulad ng mga bahagi ng mga chat mo, lokasyon, at iba pang nauugnay na impormasyon) sa iba pang serbisyo ng Google, tulad ng Maps at Flights. Posibleng gamitin ng mga serbisyong ito ang impormasyong iyon para humusay, kahit na i-delete mo ang iyong history sa Gemini sa ibang pagkakataon. Matuto pa sa <ph name="BEGIN_LINK" />Hub ng Privacy ng Mga Gemini App<ph name="END_LINK" />.</translation>
 <translation id="7293429513719260019">Pumili ng wika</translation>
 <translation id="72961285530871072">Permanente nitong ide-delete ang iyong pag-usad sa Level Up at hindi na ipapadala sa Google para sa profile mo ang data ng paggamit ng feature para sa Level Up.
 
@@ -2608,6 +2610,7 @@ Puwede kang mag-restart anumang oras.</translation>
 <translation id="8976382372951310360">Tulong</translation>
 <translation id="8976414606286374109">Naka-save ang mga card sa iyong Google Account.</translation>
 <translation id="8981454092730389528">Mga Kontrol ng Aktibidad ng Google</translation>
+<translation id="8987736167266086032">Bumalik kung saan ka tumigil</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, naka-pin na site</translation>
 <translation id="8989779557457435460">I-share ang kasalukuyang tab bilang default</translation>
 <translation id="8990960056509724223">Hindi ma-save ang file dahil sa mga patakaran ng iyong organisasyon</translation>
@@ -2649,6 +2652,7 @@ Puwede kang mag-restart anumang oras.</translation>
 <translation id="91023216973987714">Mga paraan ng pagbabayad</translation>
 <translation id="9106655997975673326">Mula sa "<ph name="SOURCE_DEVICE" />"</translation>
 <translation id="9107664647686727385">Tingnan kung may mga nakompromisong password</translation>
+<translation id="9115035712231910133">Naka-attach na larawan {title}</translation>
 <translation id="9119764377203471454">Hindi makapagdagdag ng mga attachment</translation>
 <translation id="9124387962554796433">Puwedeng gamitin ng Google ang iyong history para i-personalize ang Search at iba pang serbisyo ng Google.</translation>
 <translation id="9124978074365039456">Bilhin, isalin, at tukuyin ang nakikita mo gamit ang iyong camera at gallery ng larawan</translation>

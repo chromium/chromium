@@ -22,6 +22,7 @@
 <translation id="1185134272377778587">A Chromium névjegye</translation>
 <translation id="1186645291482254714">Árfigyelési értesítések fogadása a Chromiummal telefonon</translation>
 <translation id="1203500561924088507">Köszönjük, hogy elvégezte a telepítést. A(z) <ph name="BUNDLE_NAME" /> használata előtt újra kell indítania a böngészőt.</translation>
+<translation id="1208896746806402915">Új ikon, ugyanaz a gyorsparancs: kattintson rá, ha kérdéseket szeretne feltenni böngészés közben az oldalsó panelen lévő Keresővel.</translation>
 <translation id="1232234696885483911">A képkereső megnyitásakor a rendszer automatikusan elküldi az oldal címét, URL-jét és tartalmát (beleértve a PDF-eket is) a szervernek. <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">Amíg be van jelentkezve, használhatja a Google-fiókjában tárolt jelszavait és egyéb tartalmait a Chromiumban. A módosításhoz lépjen „Az Ön fiókja a Chromiumban” részhez.</translation>
 <translation id="1244381985120794049">A Gemini a Chromiumban szolgáltatás megjelenítése a Mac menüsorán</translation>
@@ -31,6 +32,7 @@
 <translation id="126567311906253476">Amikor <ph name="USER_EMAIL" /> fiókjával bejelentkezik a Google-szolgáltatásokba (például a Gmailbe vagy a YouTube-ba), ugyanazzal a fiókkal automatikusan bejelentkezhet a Chromiumba is.</translation>
 <translation id="1287534462498555020">A Chromium letöltése telefonra</translation>
 <translation id="1290883685122687410">Beállítási hiba: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" />.</translation>
+<translation id="1304670607231413751">Az eszköztáron található „Keresés a Chrome-ban” gomb új ikont kapott. Kattintson rá, ha kérdéseket szeretne feltenni böngészés közben a Keresővel a Chrome-ban.</translation>
 <translation id="1315551408014407711">Új Chromium-profil beállítása</translation>
 <translation id="132092532143527429">Kipróbálás a Gemini a Chromiumban funkcióval</translation>
 <translation id="1324107359134968521">A Chromiumnak Bluetooth-hozzáférésre van szüksége a 
@@ -52,6 +54,7 @@
 <translation id="154404805518949443">Bejelentkezés a Chromiumba</translation>
 <translation id="1547469039832541117">Befejezi a kiemelt feladatot.</translation>
 <translation id="1562320819937089394">A Chromium kitűzése</translation>
+<translation id="1572572333538561328">A Kereső AI-módjának újbóli megnyitása</translation>
 <translation id="1574377791422810894">A Chromium biztonsági eszközei</translation>
 <translation id="1594928384848033697">A Chromium törölni szeretné a Jelszókezelőhöz tartozó adatait. Az engedélyezéshez adja meg Windows-jelszavát.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{A rendszergazda előírta, hogy újra kell indítania a Chromiumot a frissítés alkalmazásához.}=1{A rendszergazda előírta, hogy újra kell indítania a Chromiumot a frissítés alkalmazásához. Az inkognitó ablak nem fog újra megnyílni.}other{A rendszergazda előírta, hogy újra kell indítania a Chromiumot a frissítés alkalmazásához. A(z) # inkognitó ablak nem fog újra megnyílni.}}</translation>
@@ -78,10 +81,13 @@
 <translation id="1838374766361614909">Keresett kifejezés törlése</translation>
 <translation id="18552579716432081">Ha csak erről az eszközről szeretné törölni böngészési adatait, Google-fiókjából azonban nem, <ph name="BEGIN_LINK" />jelentkezzen ki a Chromiumból<ph name="END_LINK" />.</translation>
 <translation id="1857749206890802997">Töltse le a Chromiumot a telefonjára, hogy útközben is megnyithasson vagy létrehozhasson új lapcsoportokat.</translation>
+<translation id="1858576284142106424">A Kereső AI-módjának bezárása</translation>
 <translation id="185970820835152459">Kezelheti a bejelentkezett Google-fiókjait. Google-fiókjait használhatja a Chromium böngészőben, a Play Áruházban, a Gmailben és még sok más helyen. Ha más számára szeretne hozzáadni fiókot (például családtagjának), inkább új személyt adjon hozzá <ph name="DEVICE_TYPE" /> eszközéhez. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" /></translation>
 <translation id="1862852878885210965">Keresés a Képkeresővel</translation>
 <translation id="1863837059069884561"><ph name="EXISTING_USER" /> már bejelentkezett. Ha szeretné elkülöníteni böngészési tevékenységeit, jelentkezzen be a Chromiumban a saját profiljába a következő e-mail-címmel: <ph name="USER_EMAIL_ADDRESS" />. Egyebek mellett a(z) <ph name="DEVICE" /> eszközön lévő könyvjelzőihez is hozzáférhet.</translation>
+<translation id="1880495786739455486">Újra megnyithatja a Keresőt az oldalsó panelen, hogy böngészés közben kérdéseket tehessen fel</translation>
 <translation id="1880677175115548835">Szöveg kijelölése</translation>
+<translation id="188102464690227119">Az eszköztáron található „Kereső az oldalsó panelen” gomb új ikont kapott. Kattintson rá, ha kérdéseket szeretne feltenni böngészés közben az oldalsó panelen lévő Keresővel.</translation>
 <translation id="1881322772814446296">Kezelt fiókkal jelentkezik be, és annak adminisztrátora számára hozzáférést biztosít Chromium-profiljához. Chromium-adatait – például alkalmazásait, könyvjelzőit, előzményeit, jelszavait és más beállításait – a rendszer véglegesen társítja a(z) <ph name="USER_NAME" /> fiókhoz. Ezen adatokat a Google-fiók Irányítópultján törölheti, de más fiókhoz nem társíthatja őket. Létrehozhat egy új profilt is meglévő Chromium-adatainak elkülönített tárolásához. <ph name="LEARN_MORE" /></translation>
 <translation id="1896836275755235458">A Chromium kíméli az akkumulátort: korlátozza a háttértevékenységeket és a vizuális effekteket, például a finomgörgetést és a videók képkockasebességét. <ph name="BEGIN_LINK" />További információ az Energiatakarékos módról<ph name="END_LINK" />.</translation>
 <translation id="1900969832270057921">Chromium-frissítési szolgáltatás</translation>
@@ -117,6 +123,7 @@
 <translation id="2185166961232948079">Chromium – Hálózati bejelentkezés – <ph name="PAGE_TITLE" /></translation>
 <translation id="2190166659037789668">Frissítés-ellenőrzési hiba: <ph name="UPDATE_CHECK_ERROR" />.</translation>
 <translation id="2199210295479376551">Fiók eltávolítása a Chromiumból</translation>
+<translation id="2199625713624030299">A Keresés a Chrome-ban bezárása</translation>
 <translation id="2201788217099588893">A Chromium app használatával útközben is használhatja a legjobb vásárlási eszközöket</translation>
 <translation id="2209877494277346829">A Chromium elkülönítése más alkalmazásoktól</translation>
 <translation id="2210502920229141283">A Biztonságos Böngészés fokozott védelemmel funkcióval biztonságosabban böngészhet útközben is az iOS rendszeren működő Chromiummal.</translation>
@@ -129,6 +136,7 @@
 <translation id="2287771843518581140">{NUM_TABS,plural, =1{A Chromium a böngészőt lassító lap szüneteltetését javasolja}other{A Chromium a böngészőt lassító lapok szüneteltetését javasolja}}</translation>
 <translation id="2307973900865360088">Megtartás a Dockban</translation>
 <translation id="2313870531055795960">Ellenőrzi az URL-eket a Chromiumban a nem biztonságos webhelyekről tárolt lista alapján. Ha valamelyik webhely megpróbálja ellopni az Ön jelszavát, illetve ha Ön kártékony fájlt tölt le, akkor a Chromium elküldheti az URL-eket is (az oldal tartalmának részeivel együtt) a Biztonságos Böngészésnek.</translation>
+<translation id="2350411688004301551">Váltás a Gemini Enterprise szolgáltatásra</translation>
 <translation id="2356070529366658676">Kérés</translation>
 <translation id="2359808026110333948">Tovább</translation>
 <translation id="2361918034042471035">A(z) „<ph name="EXTENSION_NAME" />” bővítmény arra kéri, hogy jelentkezzen be a Chromiumba</translation>
@@ -147,6 +155,7 @@
 <translation id="2483889755041906834">A Chromiumban</translation>
 <translation id="2485422356828889247">Eltávolítás</translation>
 <translation id="2513154137948333830">Újraindításra van szükség: <ph name="INSTALL_SUCCESS" /></translation>
+<translation id="251329670120169391">saját szervezet</translation>
 <translation id="2542968102051442371">Jelölje ki a szöveget a Képkeresővel</translation>
 <translation id="2554739539410784893">A Chromium lecserélni próbálja a meglévő jelszavakat. Az engedélyezéshez adja meg Windows-jelszavát.</translation>
 <translation id="2560420686485554789">A Chromiumnak tárhelyhozzáférésre van szüksége a fájlok letöltéséhez</translation>
@@ -183,6 +192,7 @@
 <translation id="2847479871509788944">Eltávolítás a Chromiumból…</translation>
 <translation id="2850691299438350830">Gondoskodik a biztonságáról a Chromiumban, és használható a biztonság növelésére más Google-alkalmazásokban olyankor, amikor Ön be van jelentkezve.</translation>
 <translation id="2885378588091291677">Feladatkezelő</translation>
+<translation id="2898830646167954300">Visszaváltás a nem felügyelt Gemini asszisztensre</translation>
 <translation id="2910007522516064972">A &amp;Chromium névjegye</translation>
 <translation id="2915996080311180594">Újraindítás később</translation>
 <translation id="2933336679234709858">Adatai az összetett jelszavával vannak titkosítva. Adja meg, ha Google-fiókjában Chromium-adatokat szeretne használni és menteni.</translation>
@@ -222,6 +232,7 @@
 <translation id="3155163173539279776">A Chromium újraindítása</translation>
 <translation id="3161522574479303604">Minden nyelv</translation>
 <translation id="3179665906251668410">Link megnyitása Chromium-inko&amp;gnitóablakban</translation>
+<translation id="3183555099201190073">Bármelyik lapról hozzáférhet a Keresőhöz</translation>
 <translation id="3185330573522821672">Szabja személyre az új Chromium-profilját</translation>
 <translation id="3189205223539394158">Lapváltás nélkül cseveghet az AI-móddal. A kezdéshez jelentkezzen be a Chromiumba. Egyebek mellett a jelszavaihoz is hozzáférhet bármely eszközén.</translation>
 <translation id="3224847870593914902">Ha el szeretné távolítani Google-fiókját a Chromiumból, jelentkezzen ki a Chromiumból a Beállítások oldalon</translation>
@@ -257,6 +268,7 @@
 <translation id="3561853857681580870">A képernyő megosztásához engedélyezze a Chromium számára a képernyőrögzítést a Rendszerbeállításokban.</translation>
 <translation id="3597003331831379823">Nem sikerült futtatni a beállítást emelt szintű jogosultságokkal. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">Bejelentkezés a Chromiumba</translation>
+<translation id="36205707939705218"><ph name="USER_NAME" />, <ph name="EMAIL" />. Tagság.</translation>
 <translation id="3639635944603682591">A személy böngészési adatai törlődnek az eszközről. Az adatok visszaállításához jelentkezzen be a Chromiumba a következő felhasználóként: <ph name="USER_EMAIL" />.</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{Új Chromium-frissítés jelent meg, amely az újraindítás után azonnal érvénybe lép.}=1{Új Chromium-frissítés jelent meg, amely az újraindítás után azonnal érvénybe lép. Az inkognitó ablak nem fog újra megnyílni.}other{Új Chromium-frissítés jelent meg, amely az újraindítás után azonnal érvénybe lép. A(z) # inkognitó ablak nem fog újra megnyílni.}}</translation>
 <translation id="3667616615096815454">A telepítés sikertelen volt, mert az alkalmazás ismeretlen a szerver számára.</translation>
@@ -265,6 +277,7 @@
 <translation id="3713809861844741608">Link megnyi&amp;tása új Chromium-lapon</translation>
 <translation id="3728124580182886854">A Chromium és más Google-szolgáltatások összekapcsolása személyre szabási és egyéb célokból</translation>
 <translation id="3729187154190517324">A „Lap és egyebek hozzáadása” gombbal több lapot, fájlt és eszközt is hozzáadhat a keresés elmélyítése céljából.</translation>
+<translation id="3751920144677881410">Az eszköztáron található „Kereső oldalsó panelje” gombbal újra megnyithatja a Kereső oldalsó paneljét, hogy kérdéseket tehessen fel böngészés közben</translation>
 <translation id="3788675262216168505">Chromium-profilok kezelése</translation>
 <translation id="3790262771324122253">További információ arról, hogy miért tilt le bizonyos letöltéseket a Chromium</translation>
 <translation id="379589255253486813">A Chromium értesíti Önt, ha bármit érdemes áttekintenie</translation>
@@ -283,6 +296,7 @@
 <translation id="3892148308691398805">Szöveg másolása</translation>
 <translation id="390528597099634151"><ph name="EXISTING_USER" /> már be van jelentkezve ebbe a Chromium-profilba. Ha szeretné elkülöníteni böngészési tevékenységeit, a Chromium saját profilt hozhat létre Önnek.</translation>
 <translation id="3909353120217047026">Ez a bővítmény sérti a Chrome Webáruház irányelveit, és előfordulhat, hogy nem biztonságos. Távolítsa el a Chromiumból, így a továbbiakban már nem láthatja és módosíthatja az Ön felkeresett webhelyekkel kapcsolatos adatait, beleértve a személyes adatokat is.</translation>
+<translation id="3909954316701345612">Új ikon, ugyanaz a gyorsparancs: kattintson rá, ha kérdéseket szeretne feltenni böngészés közben a Kereső panelen.</translation>
 <translation id="3941890832296813527">Telepítési hiba: A telepítő fájlneve érvénytelen vagy nem támogatott.</translation>
 <translation id="3945058413678539331">A Chromium megpróbálkozik a jelszavak másolásával. Ennek engedélyezéséhez írja be Windows-jelszavát.</translation>
 <translation id="3950481960271781644">Ha az összes eszközén szeretne hozzáférni mentett adataihoz és egyebekhez, jelentkezzen be a Chromiumba</translation>
@@ -302,6 +316,7 @@
 <translation id="4036079820698952681">Segítsen a Chromium fejlesztésében a <ph name="BEGIN_LINK" />jelenlegi beállítások<ph name="END_LINK" /> elküldésével</translation>
 <translation id="4050175100176540509">A legújabb verzióban fontos biztonsági fejlesztések és új funkciók érhetők el.</translation>
 <translation id="4055805654398742145">J&amp;elszókezelő</translation>
+<translation id="4062925381179797083">Az eszköztáron található „Kereső panel” gomb új ikont kapott. Kattintson rá, ha kérdéseket szeretne feltenni böngészés közben a Kereső panelen.</translation>
 <translation id="4095980151185649725">{COUNT,plural, =1{Szervezete automatikusan bezárja a Chromiumot, ha 1 percig nincs használatban. A böngészési adatok ekkor törlődnek. A böngészési adatok közé tartozhatnak az előzmények, az automatikus kitöltés adatai és a letöltések.}other{Szervezete automatikusan bezárja a Chromiumot, ha # percig nincs használatban. A böngészési adatok ekkor törlődnek. A böngészési adatok közé tartozhatnak az előzmények, az automatikus kitöltés adatai és a letöltések.}}</translation>
 <translation id="4118474109249235144">Chromium inkognitó mód</translation>
 <translation id="4122186850977583290">Ugrás A Chromium névjegye oldalra</translation>
@@ -317,6 +332,7 @@
 <translation id="4222932583846282852">Visszavonás…</translation>
 <translation id="4224210481850767180">A telepítés meg lett szakítva.</translation>
 <translation id="4230135487732243613">Társítja Chromium-adatait ezzel a fiókkal?</translation>
+<translation id="4250620086255466556">Kereső panel</translation>
 <translation id="4251772536351901305">Figyelmezteti Önt a veszélyes webhelyekre (még azokra is, amelyekről a Google korábban nem tudott), azáltal hogy több, webhelyekről származó adatot elemez, mint a normál védelem. Beállíthatja a Chromium figyelmeztetéseinek kihagyását.</translation>
 <translation id="4269093074552541569">Kijelentkezés a Chromiumból</translation>
 <translation id="4271805377592243930">Segítség a Chromium használatával kapcsolatban</translation>
@@ -352,6 +368,7 @@
 <translation id="4594305310729380060">Az eszközön található Jelszókezelőbe</translation>
 <translation id="459535195905078186">Chromium-alkalmazások</translation>
 <translation id="4598116752460667024">Keressen rá a listában található bármelyik folyamatra.</translation>
+<translation id="4602691126289526388">Egyszerűen tehet fel kérdéseket böngészés közben a Keresővel</translation>
 <translation id="4613863813562375431">A ChromiumOS verziója</translation>
 <translation id="4621240073146040695">Már majdnem naprakész! Indítsa újra a Chromiumot a frissítés befejezéséhez.</translation>
 <translation id="4625064703209785397">A Chromium V8 motorjával felgyorsítja a webhelyeket, de kissé kevésbé ellenállóvá teszi a Chromiumot a támadásokkal szemben.</translation>
@@ -387,6 +404,7 @@
 <translation id="504699503110800016">A további elemeket tartalmazó menü megnyitása</translation>
 <translation id="5074496654342756568">A Chromiummal hozzáférhet az összes kedvenc Google-termékéhez <ph name="DEVICE_TYPE" /> eszközén</translation>
 <translation id="5123973130450702873">A Chromiumnak engedélyre van szüksége ahhoz, hogy követhesse az Ön kézmozgását</translation>
+<translation id="5139546603444206048">Átválthat a saját Google-fiókjához eredetileg társított, nem a(z) <ph name="DOMAIN" /> által kezelt Gemini asszisztensre. A válaszok a továbbiakban nem a(z) <ph name="DOMAIN" /> által kezelt fájlokon vagy szolgáltatásokon fognak alapulni, és a csevegési előzmények nem kerülnek át. Előfordulhat, hogy az asszisztens nem alkalmas munkavégzésre. A váltáshoz újra kell indítani a Chromiumot.</translation>
 <translation id="5141988424377517949">Nem látogatta meg mostanában. A Chromium eltávolította a következőket: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> és <ph name="PERMISSION_3" />.</translation>
 <translation id="5171868502429358653">Bejelentkezés a Chromiumba</translation>
 <translation id="5174969993834422967">Ön általában letiltja az értesítéseket. Ha azt szeretné, hogy ez a webhely küldjön értesítéseket, kattintson a helysáv jobb sarkában lévő értesítési ikonra.</translation>
@@ -395,7 +413,10 @@
 <translation id="5223510345050543907">Ott folytathatja a Chromium használatát iOS rendszeren, ahol abbahagyta.</translation>
 <translation id="5231355151045086930">Kijelentkezés a Chromiumból</translation>
 <translation id="5234764350956374838">Elvetés</translation>
+<translation id="5248765037108226189">Újra megnyithatja a Keresőt a Chrome-ban, hogy kérdéseket tehessen fel böngészés közben</translation>
 <translation id="5249261924633168472">Link megnyitása Chromium-inkognitóablakban</translation>
+<translation id="5251599664870628153">Az eszköztáron található „Kereső oldalsó panelje” gomb új ikont kapott. Kattintson rá, ha kérdéseket szeretne feltenni böngészés közben a Kereső oldalsó paneljével.</translation>
+<translation id="5254294706894496832">Kitűzheti a Kereső panelt, hogy kérdéseket tehessen fel böngészés közben</translation>
 <translation id="5276305953263010518">A Chromium app letöltésével útközben is mentheti jelszavait</translation>
 <translation id="5277894862589591112">A módosítások alkalmazásához indítsa újra a Chromiumot</translation>
 <translation id="5286907366254680517">Észlelve</translation>
@@ -430,6 +451,7 @@
 <translation id="5524890928877629608">keresési terület bal felső sarka: bal <ph name="LEFT" />%, fent <ph name="TOP" />%</translation>
 <translation id="5527463683072221100">PDF-fájlok megnyitása a Chromiumban</translation>
 <translation id="5536164441519929134">Kérdés<ph name="LINE_BREAK" />erről a lapról</translation>
+<translation id="5557035028197464376">A Keresés a Chrome-ban funkció kitűzve az eszköztárra!</translation>
 <translation id="555970465369471303">Biztonsági okokból a Chromium kikapcsolja a JavaScript-optimalizálást, amikor Ön első alkalommal keres fel egy webhelyet.
 
 Ha ez az oldal nem a várt módon működik, próbálkozzon az optimalizálás engedélyezésével.</translation>
@@ -449,6 +471,7 @@ Ha ez az oldal nem a várt módon működik, próbálkozzon az optimalizálás e
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">A Chromium megjelenítése ezen a nyelven</translation>
 <translation id="569897634095159764">Nem lehet csatlakozni az internethez. A proxyszerver hitelesítést igényel.</translation>
+<translation id="5762954990778294910">Az eszköztáron található „Kereső panel” gombbal újra megnyithatja a Kereső panelt, hogy kérdéseket tehessen fel böngészés közben</translation>
 <translation id="5768371961535086509">A Chromium memóriát szabadít fel az inaktív lapokból. Így az aktív lapok és más alkalmazások több számítógépes erőforrást kapnak, és a Chromium gyors marad. Az inaktív lapok automatikusan ismét aktívak lesznek, amikor visszalép rájuk. <ph name="BEGIN_LINK" />További információ a Memóriatakarékos funkcióról<ph name="END_LINK" />.</translation>
 <translation id="5775198138441669627">Ha elfelejtette az összetett jelszavát, vagy módosítani szeretné ezt a beállítást, <ph name="SETTINGS_LINK" /> törölje a fiókjában lévő Chromium-adatokat.</translation>
 <translation id="5800158606660203929">Személyre szabhatja a Chromium működését. Beállíthatja a Chromiumot alapértelmezettként.</translation>
@@ -457,7 +480,10 @@ Ha ez az oldal nem a várt módon működik, próbálkozzon az optimalizálás e
 <translation id="5817952762723416573">A Chromium V8 motorjával felgyorsítja a webhelyeket, de kissé kevésbé ellenállóvá teszi a Chromiumot a támadásokkal szemben. Ez a beállítás ki van kapcsolva.</translation>
 <translation id="5821520528363214608">Ha Chromium-adatokat szeretne használni és tárolni Google-fiókjában, frissítse a Chromiumot</translation>
 <translation id="5824893331272123205">Nem sikerült betölteni ezt a panelt. Próbálja újra.</translation>
+<translation id="583474880403859264">A Kereső megnyitása a Chrome-ban</translation>
+<translation id="5840880340010374616">Kereső panel bezárása</translation>
 <translation id="5862307444128926510">Üdvözli a Chromium!</translation>
+<translation id="5862977913729030139">Kereső AI-módja</translation>
 <translation id="5871205389137001634">Kattintson a Képkeresőből való kilépéshez</translation>
 <translation id="5883558403894052917">A Chromium rosszindulatú programot talált a következő elemekben:</translation>
 <translation id="5889361821821684993">A Chromium rendszeresen ellenőrzi, hogy a böngészője a legbiztonságosabb beállításokkal rendelkezik-e. Tudatni fogjuk, ha bármit felül kell vizsgálni.</translation>
@@ -473,6 +499,7 @@ Ha ez az oldal nem a várt módon működik, próbálkozzon az optimalizálás e
 <translation id="5986585015444752010">{COUNT,plural, =1{Szervezete automatikusan bezárja a Chromiumot, ha 1 percig nincs használatban.}other{Szervezete automatikusan bezárja a Chromiumot, ha # percig nincs használatban.}}</translation>
 <translation id="5987687638152509985">Frissítse a Chromiumot a szinkronizálás megkezdéséhez</translation>
 <translation id="5990360079535151574">Az eszköztár „Kontextuális feladatok” gombjával újra megnyithatja a Kontextuális feladatok panelt, hogy böngészés közben tehessen fel kérdéseket.</translation>
+<translation id="5996342273201332056">Kitűzheti a Kereső oldalsó paneljét, hogy kérdéseket tehessen fel böngészés közben</translation>
 <translation id="6003112304606738118">Letöltés… <ph name="HOURS" /> óra van hátra</translation>
 <translation id="6009821354356307391">Kiegészítő keresés kérése</translation>
 <translation id="6040143037577758943">Bezárás</translation>
@@ -481,9 +508,12 @@ Ha ez az oldal nem a várt módon működik, próbálkozzon az optimalizálás e
 <translation id="6063093106622310249">Megnyitás Chromiumban</translation>
 <translation id="6069027071882229820">Másolás képként</translation>
 <translation id="6072279588547424923">A(z) <ph name="EXTENSION_NAME" /> hozzá lett adva a Chromiumhoz</translation>
+<translation id="6076631285161795690">Az eszköztáron található „Keresés a Chrome-ban” gombbal újra megnyithatja a Keresés a Chrome-ban funkciót, hogy kérdéseket tehessen fel böngészés közben</translation>
+<translation id="6090632163254655665">A Kereső oldalsó paneljének újbóli megnyitása</translation>
 <translation id="6096348254544841612">A Chromium személyre szabása és vezérlése. Van rendelkezésre álló frissítés.</translation>
 <translation id="6107893135096467929">Be • A Chromium nem tudja ellenőrizni a bővítmény forrását</translation>
 <translation id="611228897408671387">Az Ön fiókja a Chromiumban</translation>
+<translation id="6114975763361458436">Az oldalsó panelen való keresés bezárása</translation>
 <translation id="6119438414301547735">A bővítmény megjeleníthet hozzáférési kérelmeket a Chromium eszköztárán</translation>
 <translation id="6129621093834146363">A(z) <ph name="FILE_NAME" /> veszélyes, ezért a Chromium letiltotta.</translation>
 <translation id="6132897690380286411">A Chromium hamarosan bezáródik, és törli az adatokat</translation>
@@ -496,6 +526,7 @@ Ha ez az oldal nem a várt módon működik, próbálkozzon az optimalizálás e
 <translation id="6182736845697986886">A telepítés a frissítési szerver belső hibája miatt nem sikerült.</translation>
 <translation id="6183079672144801177">Ellenőrizze, hogy bejelentkezett-e a Chromiumba <ph name="TARGET_DEVICE_NAME" /> eszközén, majd próbálja meg újraküldeni.</translation>
 <translation id="6192070012454216182">Bárhonnan kereshet és kérdezhet, még akkor is, ha a Chromium kis méretre van állítva. Lehetővé teszi, hogy a Chromium a háttérben fusson.</translation>
+<translation id="6210269448287455102">Az oldalsó panelen való keresés újbóli megnyitása</translation>
 <translation id="6212496753309875659">A számítógépen már megtalálható a Chromium újabb verziója. Ha a szoftver nem működik, kérjük, távolítsa el a Chromiumot, majd próbálkozzon újra.</translation>
 <translation id="6219195342503754812">{0,plural, =0{A Chromium most újraindul}=1{A Chromium 1 másodpercen belül újraindul}other{A Chromium # másodpercen belül újraindul}}</translation>
 <translation id="6232046770428574552">A Chromium akkor frissül, amikor a képernyő nincs használatban</translation>
@@ -524,7 +555,9 @@ Ha ez az oldal nem a várt módon működik, próbálkozzon az optimalizálás e
 <translation id="6403826409255603130">A Chromium olyan böngésző, amely villámgyorsan futtatja a weboldalakat és az alkalmazásokat. Gyors, stabil és könnyen használható. A beépített, adathalászat és kártékony programok elleni védelemmel biztonságosabban böngészhet az interneten.</translation>
 <translation id="6414624068245092115">Annak érdekében, hogy mindig használhassa és menthesse a Chromium-adatokat a Google-fiókjában, igazolja személyazonosságát</translation>
 <translation id="642132557830635295">A Chromium gyorsabban fut, a JavaScriptet használó funkcióknak pedig a tervezett módon kell működniük</translation>
+<translation id="6434631832954028336">A Kereső panel újbóli megnyitása</translation>
 <translation id="6436260184216827876">A Képkereső nem áll rendelkezésre. Próbálja újra később.</translation>
+<translation id="6436991218539695041">Új ikon, ugyanaz a gyorsparancs: kattintson rá, ha kérdéseket szeretne feltenni böngészés közben a Keresővel a Chrome-ban</translation>
 <translation id="6442900851116057561">A ChromiumOS újraindítása</translation>
 <translation id="6443470774889161065">A Chromium még több olyan oldalt előtölt, amelyeket Ön valószínűsíthetően fel fog keresni, így amikor valóban felkeresi őket, gyorsabban töltődnek be.</translation>
 <translation id="6450948450282634257">Töltse le a Chromiumot a telefonjára, hogy nyomon követhesse az árakat, és értesítést kapjon, ha valamelyik webhelyen csökkennek az árak.</translation>
@@ -536,6 +569,7 @@ Ha ez az oldal nem a várt módon működik, próbálkozzon az optimalizálás e
 <translation id="648319183876919572">A Biztonságos Böngészés fokozott védelemmel funkció többet tesz a veszélyes webhelyekkel és letöltésekkel szembeni védekezésért</translation>
 <translation id="6510925080656968729">Chromium eltávolítása</translation>
 <translation id="651535675648445253">A parancsikonok a Chromiumban nyílnak meg</translation>
+<translation id="6534946732446042463">Újra megnyithatja a Kereső oldalsó paneljét, hogy kérdéseket tehessen fel böngészés közben</translation>
 <translation id="6539122709674868420">Szervezete bezárja a Chromiumot, ha nem használja a böngészőt ennyi ideig:<ph name="TIMEOUT_DURATION" />. A böngészési adatok törlődtek. A böngészési adatok közé tartozhatnak az előzmények, az automatikus kitöltés adatai és a letöltött tartalom is.</translation>
 <translation id="6542839706527980775">Minden profil saját Chromium-adatokat (például könyvjelzőket, előzményeket, jelszavakat és egyebeket) tárol.</translation>
 <translation id="6556755379298048869">Keresés billentyűparancs használatával.</translation>
@@ -567,6 +601,7 @@ Ha ez az oldal nem a várt módon működik, próbálkozzon az optimalizálás e
 <translation id="67706546131546258">A Chromium a fájl ellenőrzését javasolja, mert veszélyes lehet.</translation>
 <translation id="6779406956731413166">A ChromiumOS létrejöttéhez további <ph name="BEGIN_LINK_CROS_OSS" />nyílt forráskódú szoftverek<ph name="END_LINK_CROS_OSS" /> is hozzájárultak.</translation>
 <translation id="6804256634866838775">Aktív keresés elvetése</translation>
+<translation id="6818170431027022139"><ph name="USER_NAME_OR_EMAIL" />. Tagság.</translation>
 <translation id="6831043979455480757">Fordítás</translation>
 <translation id="6847869444787758381">A Chromium tájékoztatja arról, ha jelszavai illetéktelen kezekbe kerülnek</translation>
 <translation id="684888714667046800">Nem lehet kapcsolódni az internethez. Ha tűzfalat használ, győződjön meg arról, hogy a(z) <ph name="PRODUCT_EXE_NAME" /> szerepel az engedélyezőlistán.</translation>
@@ -591,6 +626,7 @@ Ha ez az oldal nem a várt módon működik, próbálkozzon az optimalizálás e
             • visszaállítja a Chromium-billentyűparancsokat.
             <ph name="LINE_BREAKS" />
             Nem lesz hatással a könyvjelzőkre, az előzményekre és a mentett jelszavakra.</translation>
+<translation id="6930607614725241390">Keresés az oldalsó panelen</translation>
 <translation id="6948031725951063910">Elérte a Chromium <ph name="BOOKMARK_LIMIT" /> könyvjelzős korlátját, ezért egyes könyvjelzőit még nem mentette a rendszer a Google-fiókjába.
 
 Új könyvjelzőket nem lehet menteni a fiókjába, amíg nem töröl néhányat. Ha most jelentkezik ki, a nem mentett könyvjelzők törlődnek.</translation>
@@ -603,6 +639,7 @@ Ha ez az oldal nem a várt módon működik, próbálkozzon az optimalizálás e
 <translation id="7037186623849853406">{COUNT,plural, =1{A Speciális védelemhez újra kell indítania a Chromiumot a frissítés alkalmazásához. Az izolált ablak nem fog újra megnyílni.}other{A Speciális védelemhez újra kell indítania a Chromiumot a frissítés alkalmazásához. A(z) # izolált ablak nem fog újra megnyílni.}}</translation>
 <translation id="7045244423563602563">Tegye személyessé a Chromiumot</translation>
 <translation id="7047386856539490735">Hasznosak ezek a találatok?</translation>
+<translation id="7056949952597412593">Az eszköztáron található „Kereső az oldalsó panelen” gombbal újra megnyithatja a Keresőt az oldalsó panelen, hogy kérdéseket tehessen fel böngészés közben</translation>
 <translation id="705851970750939768">A Chromium frissítése</translation>
 <translation id="7067091210845072982">Ha valamelyik kép nem rendelkezik hasznos leírással, akkor a Chromium igyekszik leírást adni róla. A Google automatikusan megkapja a leírások létrehozásához szükséges képeket.</translation>
 <translation id="7074836723476134809">Használja ki az AI erejét, amikor a Chromium appot használja <ph name="DEVICE_TYPE" /> eszközén</translation>
@@ -655,10 +692,14 @@ A Chromium nem tudja visszaállítani a beállításait.</translation>
 <translation id="7483335560992089831">Nem lehet ugyanazt a Chromium-verziót telepíteni, amely jelenleg is fut. Zárja be a Chromiumot, és próbálja újra.</translation>
 <translation id="7510190804000607802">Emlékeztető: A Google legjava a zsebében</translation>
 <translation id="751935028865900641">A webhelyek valószínűleg a várt módon fognak működni. Az összes Chromium-ablak bezárásakor a legtöbb webhelyről kijelentkezteti a rendszer, kivéve a Google-fiókját, ha bejelentkezett a Chromiumba.</translation>
+<translation id="7527373353833064142">Újra megnyithatja a Kereső panelt, hogy kérdéseket tehessen fel böngészés közben</translation>
 <translation id="753534427205733210">{0,plural, =1{A Chromium 1 percen belül újraindul}other{A Chromium # percen belül újraindul}}</translation>
 <translation id="7565444033145385702">Adatainak védelme érdekében engedélyezze, hogy a Chromium eltávolítsa azoknak a webhelyeknek az engedélyeit, amelyeket Ön nem keresett fel mostanában.</translation>
+<translation id="7582826101081069259">A Kereső újbóli megnyitása a Chrome-ban</translation>
 <translation id="7583104404158659071">A Chromium automatikus elindítása a böngészés azonnali elkezdéséhez.</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" />-telepítő</translation>
+<translation id="7583487342282700781">Új ikon, ugyanaz a gyorsparancs: kattintson rá, ha kérdéseket szeretne feltenni böngészés közben a Kereső oldalsó paneljével.</translation>
+<translation id="7603292664535326725">Sikerült! Mostantól egyszerűen tehet fel kérdéseket böngészés közben az oldalsó panelen lévő Keresővel.</translation>
 <translation id="761356813943268536">A Chromium használja a kamerát és a mikrofont.</translation>
 <translation id="7617377681829253106">A Chromium még jobb lett</translation>
 <translation id="7622753900276619808">Mostantól több funkció áll rendelkezésre a Chromiumban</translation>
@@ -693,15 +734,19 @@ A Chromium nem tudja visszaállítani a beállításait.</translation>
 <translation id="7873537467422636035">Ha elfelejtette az összetett jelszavát, vagy módosítani szeretné ezt a beállítást, <ph name="BEGIN_LINK" />törölje a fiókjában lévő Chromium-adatokat<ph name="END_LINK" />.</translation>
 <translation id="7874369989024033742">Gyorsan megnyithatja a Gemini a Chromiumban szolgáltatást, amikor szüksége van rá</translation>
 <translation id="7888981273428720788">A Chromium beállítása alapértelmezettként</translation>
+<translation id="789179266956577884">Kereső oldalsó panelje</translation>
 <translation id="7934340546140346950">A Chromium automatikusan frissíti a nem biztonságos kapcsolatokat HTTPS-re, amikor lehetséges.</translation>
 <translation id="7937630085815544518"><ph name="USER_EMAIL_ADDRESS" /> néven volt bejelentkezve a Chromiumba. Kérjük, ugyanazzal a fiókkal jelentkezzen be újra.</translation>
 <translation id="7944602660083060118"><ph name="EXISTING_USER" /> már bejelentkezett. Ha szeretné elkülöníteni böngészési tevékenységeit, jelentkezzen be a Chromiumban a saját profiljába a következő e-mail-címmel: <ph name="USER_EMAIL_ADDRESS" />. Egyebek mellett a könyvjelzőihez is hozzáférhet bármely eszközén.</translation>
+<translation id="7947655529129620297">Kitűzheti a Keresőt az oldalsó panelen, hogy böngészés közben kérdéseket tehessen fel</translation>
 <translation id="7975919845073681630">Ez a Chromium második telepítése, amelyet nem állíthat be az alapértelmezett böngészővé.</translation>
 <translation id="7997934263947464652">Az ismeretlen forrásból származó bővítmények, alkalmazások és témák károsíthatják az eszközt. A Chromium azt javasolja, hogy csak a következő helyről telepítse őket: <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8000759043835159571">Hozza ki a legtöbbet a Google-ból a Chromium alkalmazással <ph name="DEVICE_TYPE" /> eszközén</translation>
 <translation id="8004582292198964060">Böngésző</translation>
+<translation id="8008233848513969696">A Kereső oldalsó paneljének bezárása</translation>
 <translation id="8010081455002666927">Automatikus felismerés</translation>
 <translation id="8013436988911883588">Miután hozzáférést biztosított a Chromiumnak, a webhelyek is hozzáférést kérhetnek.</translation>
+<translation id="8014387184082426885">Sikerült! Mostantól egyszerűen tehet fel kérdéseket böngészés közben a Kereső panelen.</translation>
 <translation id="8031714377769448844">Tűzze ki a Chromiumot a tálcára, hogy bármikor gyorsan hozzáférhessen</translation>
 <translation id="80471789339884597">Köszönjük, hogy elvégezte a telepítést. A(z) <ph name="BUNDLE_NAME" /> használata előtt minden böngészőt újra kell indítania.</translation>
 <translation id="8054112667659782652">A Képkereső parancsikonja mindig jelenjen meg</translation>
@@ -717,6 +762,7 @@ A Chromium nem tudja visszaállítani a beállításait.</translation>
 <translation id="8130609355518033382">Tegye személyessé a Chromiumot</translation>
 <translation id="8133124826068723441">A ChromiumOS nem tudta szinkronizálni az adatait, mert a szinkronizálás nem áll rendelkezésre az Ön domainjénél.</translation>
 <translation id="813913629614996137">Indítás…</translation>
+<translation id="8158143604667288086">Kitűzheti a Keresőt a Chrome-ban, hogy kérdéseket tehessen fel böngészés közben</translation>
 <translation id="8161503455832158203">A Gemini a Chromiumban szolgáltatás megnyitása billentyűparancs használatával.</translation>
 <translation id="8164014945047474187">A Chromium kiegészítő szerződési feltételei</translation>
 <translation id="8172503648109091906">{COUNT,plural, =1{A rendszergazda előírta, hogy újra kell indítania a Chromiumot a frissítés alkalmazásához. Van megnyitott inkognitó vagy izolált ablak. Az újraindítás után nem fog újra megnyílni.}other{A rendszergazda előírta, hogy újra kell indítania a Chromiumot a frissítés alkalmazásához. # inkognitó és izolált ablak van megnyitva a profilokban. Az újraindítás után nem fognak újra megnyílni.}}</translation>
@@ -756,6 +802,7 @@ A Chromium nem tudja visszaállítani a beállításait.</translation>
 <translation id="8453117565092476964">A telepítő tömörített állománya megsérült vagy érvénytelen. Kérjük, töltse le újra a Chromium böngészőt.</translation>
 <translation id="8463672209299734063">Nem kötelező: Hozzájárulhat a ChromiumOS funkcióinak és teljesítményének javításához azzal, hogy automatikusan elküldi a diagnosztikai és használati adatokat a Google-nak.</translation>
 <translation id="8471947159125090285">Ha Chromium-adatokat szeretne használni és tárolni Google-fiókjában, igazolja személyazonosságát.</translation>
+<translation id="8473541503127475913">A váltáshoz indítsa újra a Chromiumot</translation>
 <translation id="8482493977473846331">Értesítéseket jelenít meg a Chromiumba való bejelentkezéshez</translation>
 <translation id="8493179195440786826">A Chromium elavult</translation>
 <translation id="850264194101621529">Köszönjük, hogy a Chromiumot választotta alapértelmezett böngészőként!</translation>
@@ -770,6 +817,7 @@ A Chromium nem tudja visszaállítani a beállításait.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> – A Chromium szerzői. Minden jog fenntartva.</translation>
 <translation id="8619360774459241877">Chromium indítása…</translation>
 <translation id="8624541899164515475">Beállítások, új lapon nyílik meg.</translation>
+<translation id="8647316383949836607">Sikerült! Mostantól egyszerűen tehet fel kérdéseket böngészés közben az oldalsó panelen lévő Keresővel.</translation>
 <translation id="8648201657708811153">A Google Chrome for Testing nem alkalmazható alapértelmezett böngészőként.</translation>
 <translation id="8676101123715131330">Keresés a Chromiummal bárhonnan</translation>
 <translation id="8697124171261953979">Továbbá azt is szabályozza, hogy melyik oldal jelenik meg a Chromium indításakor vagy a cím- és keresősávban indított kereséskor.</translation>
@@ -792,6 +840,8 @@ A Chromium nem tudja visszaállítani a beállításait.</translation>
 <translation id="8891709362986793894">Szervezete megköveteli a Chromiumba történő bejelentkezést</translation>
 <translation id="8906384069222226849">A Chromium futtatásához a Windows 10 1809-es vagy újabb verziója szükséges.</translation>
 <translation id="8907580949721785412">A Chromium megkísérli megjeleníteni a jelszavakat. Ennek engedélyezéséhez írja be Windows-jelszavát.</translation>
+<translation id="8910309838319708610">Sikerült! Mostantól egyszerűen tehet fel kérdéseket böngészés közben a Kereső AI-módjával.</translation>
+<translation id="8915682436012075700">Ez a felügyelt böngésző használhatja a(z) <ph name="DOMAIN" /> által munkához beállított Gemini asszisztenst. Az asszisztens információkat kereshet, és a szervezet fájljain és jóváhagyott szolgáltatásain alapuló válaszokat adhat. Személyes profillal való használata nem javasolt. A csevegési előzmények nem kerülnek átvitelre. A váltáshoz újra kell indítani a Chromiumot.</translation>
 <translation id="8932992523185907506">Már nem a Chromium az alapértelmezett böngésző. Beállítja a Chromiumot alapértelmezett böngészőként?</translation>
 <translation id="8941642502866065432">Nem sikerült a Chromium frissítése</translation>
 <translation id="8944232836376404813">Ez a művelet:
@@ -831,6 +881,7 @@ A Chromium nem tudja visszaállítani a beállításait.</translation>
 <translation id="9148058034647219655">Kilépés</translation>
 <translation id="9155105544013854680">Ott folytathatja, ahol abbahagyta: a Chromium minden újraindításkor vissza tudja állítani a lapokat. A bekapcsoláshoz lépjen ide:</translation>
 <translation id="9158494823179993217">Rendszergazdája úgy állította be a Chromiumot, hogy másik böngészőt nyisson meg a(z) <ph name="TARGET_URL_HOSTNAME" /> eléréséhez.</translation>
+<translation id="9165824416732784256">Sikerült! Mostantól egyszerűen tehet fel kérdéseket böngészés közben a Keresővel a Chrome-ban.</translation>
 <translation id="9185526690718004400">Indítsa újra a Chromium frissítéshez</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="924957577793602335">Tegye sajátjává a Chromiumot</translation>

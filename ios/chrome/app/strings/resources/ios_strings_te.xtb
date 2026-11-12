@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">పాస్‌వర్డ్‌లను చూడటానికి, మీరు ముందుగా తప్పక మీ పరికరంలో పాస్‌కోడ్‌ను సెట్ చేయాలి.</translation>
 <translation id="201759455285471444">ట్యాబ్ గ్రూప్‌ను విస్తరించండి.</translation>
 <translation id="2022431790688770637">Gemini సూచనలను మేనేజ్ చేయండి</translation>
+<translation id="2023265063803387188">Gemini, అజ్ఞాత మోడ్‌లో అందుబాటులో లేదు</translation>
 <translation id="2031515492007104071">స్థాయిని పెంచుకోండి</translation>
 <translation id="2044394949148788042">ట్యాబ్ గ్రిడ్‌ను తెరవండి</translation>
 <translation id="2044681667265133332"><ph name="USER_EMAIL" /> ఖాతా <ph name="HOSTED_DOMAIN" /> ద్వారా మేనేజ్ చేయబడుతుంది, ఇది కొంత సమాచారాన్ని చూడగలదు. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
@@ -2608,6 +2609,7 @@
 <translation id="8976382372951310360">సహాయం</translation>
 <translation id="8976414606286374109">కార్డ్‌లు మీ Google ఖాతాకు సేవ్ చేయబడ్డాయి.</translation>
 <translation id="8981454092730389528">Google కార్య‌క‌లాపాల నియంత్రణలు</translation>
+<translation id="8987736167266086032">మీరు ఎక్కడ ఆపుతారో అక్కడి నుండే కొనసాగించవచ్చు</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, పిన్ చేసిన సైట్</translation>
 <translation id="8989779557457435460">ప్రస్తుత ట్యాబ్‌ను ఆటోమేటిక్ ట్యాబ్‌గా షేర్ చేయండి</translation>
 <translation id="8990960056509724223">మీ సంస్థ పాలసీల కారణంగా ఫైల్‌ను సేవ్ చేయడం సాధ్యపడలేదు</translation>
@@ -2649,6 +2651,7 @@
 <translation id="91023216973987714">పేమెంట్ ఆప్షన్‌లు</translation>
 <translation id="9106655997975673326">"<ph name="SOURCE_DEVICE" />" నుండి</translation>
 <translation id="9107664647686727385">చోరీకి గురైన పాస్‌వర్డ్‌ల కోసం చెక్ చేయండి</translation>
+<translation id="9115035712231910133">అటాచ్ చేసిన ఇమేజ్ {title}</translation>
 <translation id="9119764377203471454">అటాచ్‌మెంట్‌లను జోడించడం సాధ్యపడలేదు</translation>
 <translation id="9124387962554796433">Search, అలాగే ఇతర Google సర్వీస్‌లను వ్యక్తిగతీకరించడం కోసం Google మీ హిస్టరీని ఉపయోగించవచ్చు.</translation>
 <translation id="9124978074365039456">మీ కెమెరా, ఫోటో గ్యాలరీని ఉపయోగించి షాపింగ్ చేయండి, అనువదించండి, మీకు కనిపించిన వాటిని గుర్తించండి</translation>

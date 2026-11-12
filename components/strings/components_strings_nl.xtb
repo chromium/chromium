@@ -823,6 +823,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2356941001189392209">Een beperkte lijst met URL's van pagina's die je bezoekt waarop verouderde technologiegebeurtenissen plaatsvinden</translation>
 <translation id="2357312461142072202">{NUM_TABS,plural, =1{Deelt 1 tabblad}other{Deelt {NUM_TABS} tabbladen}}</translation>
 <translation id="2357481397660644965">Je apparaat wordt beheerd door <ph name="DEVICE_MANAGER" /> en je account wordt beheerd door <ph name="ACCOUNT_MANAGER" />.</translation>
+<translation id="2358479643736965923">Bekijk het antwoord van AI van Google op dit tabblad</translation>
 <translation id="2359629602545592467">Meerdere</translation>
 <translation id="2359808026110333948">Doorgaan</translation>
 <translation id="236000571258713023">Voertuigen</translation>
@@ -1141,6 +1142,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2925032407415783182">Evenementticket opslaan in Wallet</translation>
 <translation id="2925454999967523701">Knop Document maken. Activeer deze om snel een nieuw Google-document te maken.</translation>
 <translation id="2925673989565098301">Bezorgingsmethode</translation>
+<translation id="2927328994673424423">2 weken geleden</translation>
 <translation id="2928426578619531300">Gebruiker aangesloten</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> en nog <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> en nog <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="2930531075747147366">Tabblad van je andere apparaat</translation>

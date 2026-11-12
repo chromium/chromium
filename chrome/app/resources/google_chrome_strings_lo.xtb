@@ -346,6 +346,7 @@
 <translation id="4022972681110646219">ແປໜ້າຈໍ</translation>
 <translation id="4023601594785368013">ພາສາຕົ້ນສະບັບ: <ph name="LANGUAGE" /></translation>
 <translation id="4034249157893816477">ຕິດຕັ້ງມາໃນ Chrome ເພື່ອຊ່ວຍທ່ານສ້າງ, ບັນທຶກ ແລະ ຕື່ມຂໍ້ມູນລະຫັດຜ່ານຍາກໂດຍອັດຕະໂນມັດ. ເພີ່ມທາງລັດເພື່ອໃຫ້ເຂົ້າເຖິງໄດ້ງ່າຍ.</translation>
+<translation id="4034420818911109432"><ph name="USER_NAME" />, <ph name="EMAIL" />. ການເປັນສະມາຊິກ Google.</translation>
 <translation id="4035053306113201399">ຈຳເປັນຕ້ອງຣີສະຕາດ ChromeOS ເພື່ອນຳໃຊ້ອັບເດດ.</translation>
 <translation id="4050175100176540509">ການ​ປັບ​ປຸງ​ຄວາມ​ປອດ​ໄພ​ທີ່​ສຳ​ຄັນ ແລະ​ຄຸນ​ສົມ​ບັດ​ໃໝ່​ມີ​ໃຫ້​ຢູ່​ໃນ​ເວີ​ຊັນ​ຫຼ້າ​ສຸດ.</translation>
 <translation id="4053720452172726777">ກໍານົດເອງ ແລະຄວບຄຸມ Google Chrome</translation>
@@ -940,6 +941,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="9148058034647219655">ອອກ</translation>
 <translation id="9150331942025550505">ສຳຜັດປະສິດທິພາບຂອງ AI ເມື່ອທ່ານໃຊ້ແອັບ Chrome ຢູ່ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ</translation>
 <translation id="919706545465235479">ອັບເດດ Chrome ເພື່ອເລີ່ມຊິ້ງຂໍ້ມູນ</translation>
+<translation id="9210313013767007472"><ph name="USER_NAME_OR_EMAIL" />. ການເປັນສະມາຊິກ Google.</translation>
 <translation id="922152298093051471">ປັບແຕ່ງ Chrome</translation>
 <translation id="93760716455950538">ຣີສະຕາດ ChromeOS Flex</translation>
 <translation id="943390475793766444">Chrome ແນະນຳໃຫ້ສະແກນໄຟລ໌ນີ້ເນື່ອງຈາກມັນອາດເປັນອັນຕະລາຍໄດ້.</translation>

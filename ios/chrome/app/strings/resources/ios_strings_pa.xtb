@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">ਪਾਸਵਰਡਾਂ ਨੂੰ ਦੇਖਣ ਲਈ, ਪਹਿਲਾਂ ਤੁਹਾਨੂੰ ਆਪਣੇ ਡੀਵਾਈਸ 'ਤੇ ਕਿਸੇ ਪਾਸਕੋਡ ਨੂੰ ਸੈੱਟ ਕਰਨ ਦੀ ਲੋੜ ਹੈ।</translation>
 <translation id="201759455285471444">ਟੈਬ ਗਰੁੱਪ ਦਾ ਵਿਸਤਾਰ ਕਰੋ।</translation>
 <translation id="2022431790688770637">Gemini ਦੇ ਸੁਝਾਵਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
+<translation id="2023265063803387188">Gemini ਇਨਕੋਗਨਿਟੋ ਮੋਡ ਵਿੱਚ ਉਪਲਬਧ ਨਹੀਂ ਹੈ</translation>
 <translation id="2031515492007104071">ਅਗਲਾ ਪੱਧਰ</translation>
 <translation id="2044394949148788042">ਟੈਬ GRid ਖੋਲ੍ਹੋ</translation>
 <translation id="2044681667265133332"><ph name="USER_EMAIL" /> ਖਾਤੇ ਦਾ ਪ੍ਰਬੰਧਨ <ph name="HOSTED_DOMAIN" /> ਵੱਲੋਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ, ਜਿਸ ਵੱਲੋਂ ਕੁਝ ਜਾਣਕਾਰੀ ਨੂੰ ਦੇਖਿਆ ਜਾ ਸਕਦਾ ਹੈ। <ph name="BEGIN_LINK" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK" /></translation>
@@ -2035,6 +2036,7 @@ Handoff ਨੂੰ ਵੀ ਸੈਟਿੰਗਾਂ ਦੇ 'ਆਮ' ਸੈਕਸ਼�
 <translation id="728025568708172005">ਮੈਨੂੰ ਹੋਰ ਜਾਣਕਾਰੀ ਦਿਖਾਓ</translation>
 <translation id="7280980607183752256">ਇਸ ਫ਼ਾਈਲ ਨੂੰ ਆਯਾਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
 <translation id="7282197670900591579">ਨਿੰਬੂ ਰੰਗਾ ਥੀਮ</translation>
+<translation id="7283937415134849498">ਵਿਉਂਤਬੱਧ ਮਦਦ ਮੁਹੱਈਆ ਕਰਵਾਉਣ ਲਈ, Gemini ਤੁਹਾਡੇ ਕੁਝ ਡਾਟੇ (ਜਿਵੇਂ ਕਿ ਤੁਹਾਡੀਆਂ ਚੈਟਾਂ ਦੇ ਕੁਝ ਹਿੱਸੇ, ਟਿਕਾਣਾ ਅਤੇ ਹੋਰ ਸੰਬੰਧਿਤ ਜਾਣਕਾਰੀ) ਨੂੰ Maps ਅਤੇ Flights ਵਰਗੀਆਂ ਹੋਰ Google ਸੇਵਾਵਾਂ ਨਾਲ ਸਾਂਝਾ ਕਰਦਾ ਹੈ। ਇਹ ਸੇਵਾਵਾਂ ਬਿਹਤਰ ਬਣਾਉਣ ਲਈ ਜਾਣਕਾਰੀ ਦੀ ਵਰਤੋਂ ਕਰ ਸਕਦੀਆਂ ਹਨ, ਭਾਵੇਂ ਤੁਸੀਂ ਬਾਅਦ ਵਿੱਚ ਆਪਣੇ Gemini ਇਤਿਹਾਸ ਨੂੰ ਮਿਟਾ ਦੇਵੋ। <ph name="BEGIN_LINK" />Gemini ਐਪਾਂ ਸੰਬੰਧੀ ਪਰਦੇਦਾਰੀ ਹੱਬ<ph name="END_LINK" /> ਵਿੱਚ ਹੋਰ ਜਾਣੋ।</translation>
 <translation id="7293429513719260019">ਭਾਸ਼ਾ ਚੁਣੋ</translation>
 <translation id="72961285530871072">ਇਸ ਨਾਲ ਤੁਹਾਡੀ ਅਗਲੇ ਪੱਧਰ ਦੀ ਪ੍ਰਗਤੀ ਪੱਕੇ ਤੌਰ 'ਤੇ ਮਿਟ ਜਾਵੇਗੀ ਅਤੇ ਅਗਲੇ ਪੱਧਰ ਲਈ ਵਿਸ਼ੇਸ਼ਤਾ ਦਾ ਵਰਤੋਂ ਡਾਟਾ ਹੁਣ ਤੁਹਾਡੇ ਪ੍ਰੋਫਾਈਲ ਲਈ Google ਨੂੰ ਨਹੀਂ ਭੇਜਿਆ ਜਾਵੇਗਾ।
 
@@ -2607,6 +2609,7 @@ Handoff ਨੂੰ ਵੀ ਸੈਟਿੰਗਾਂ ਦੇ 'ਆਮ' ਸੈਕਸ਼�
 <translation id="8976382372951310360">ਮਦਦ</translation>
 <translation id="8976414606286374109">ਕਾਰਡ ਤੁਹਾਡੇ Google ਖਾਤੇ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤੇ ਜਾਂਦੇ ਹਨ।</translation>
 <translation id="8981454092730389528">Google ਸਰਗਰਮੀ ਕੰਟਰੋਲ</translation>
+<translation id="8987736167266086032">ਜਿੱਥੇ ਤੁਸੀਂ ਛੱਡਿਆ ਸੀ ਓਥੋਂ ਸ਼ੁਰੂ ਕਰੋ</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, ਪਿੰਨ ਕੀਤੀ ਸਾਈਟ</translation>
 <translation id="8989779557457435460">ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਤੌਰ 'ਤੇ ਮੌਜੂਦਾ ਟੈਬ ਨੂੰ ਸਾਂਝਾ ਕਰੋ</translation>
 <translation id="8990960056509724223">ਤੁਹਾਡੀ ਸੰਸਥਾ ਦੀਆਂ ਨੀਤੀਆਂ ਕਰਕੇ ਫ਼ਾਈਲ ਨੂੰ ਰੱਖਿਅਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ</translation>
@@ -2648,6 +2651,7 @@ Handoff ਨੂੰ ਵੀ ਸੈਟਿੰਗਾਂ ਦੇ 'ਆਮ' ਸੈਕਸ਼�
 <translation id="91023216973987714">ਭੁਗਤਾਨ ਵਿਧੀਆਂ</translation>
 <translation id="9106655997975673326">"<ph name="SOURCE_DEVICE" />" ਤੋਂ</translation>
 <translation id="9107664647686727385">ਛੇੜਛਾੜ ਵਾਲੇ ਪਾਸਵਰਡਾਂ ਦੀ ਜਾਂਚ ਕਰੋ</translation>
+<translation id="9115035712231910133">ਨੱਥੀ ਕੀਤਾ ਚਿੱਤਰ {title}</translation>
 <translation id="9119764377203471454">ਨੱਥੀ ਫ਼ਾਈਲਾਂ ਨੂੰ ਸ਼ਾਮਲ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ</translation>
 <translation id="9124387962554796433">Google ਤੁਹਾਡੇ ਇਤਿਹਾਸ ਦੀ ਵਰਤੋਂ Search ਅਤੇ ਹੋਰ Google ਸੇਵਾਵਾਂ ਨੂੰ ਵਿਅਕਤੀਗਤ ਬਣਾਉਣ ਲਈ ਕਰ ਸਕਦਾ ਹੈ।</translation>
 <translation id="9124978074365039456">ਤੁਹਾਨੂੰ ਜਿਹੜੀਆਂ ਚੀਜ਼ਾਂ ਦਿਖ ਰਹੀਆਂ ਹਨ, ਉਨ੍ਹਾਂ ਨੂੰ ਕੈਮਰੇ ਅਤੇ ਫ਼ੋਟੋ ਗੈਲਰੀ ਦੀ ਵਰਤੋਂ ਕਰ ਕੇ ਖਰੀਦੋ, ਅਨੁਵਾਦ ਕਰੋ ਅਤੇ ਉਨ੍ਹਾਂ ਦੀ ਪਛਾਣ ਕਰੋ</translation>

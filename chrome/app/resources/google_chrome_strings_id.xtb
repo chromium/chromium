@@ -154,7 +154,9 @@
 <translation id="2301513536169703857">Untuk mendapatkan sandi, bookmark, dan info Anda yang lain di semua perangkat Anda, login ke Chrome</translation>
 <translation id="2307973900865360088">Simpan di Dok</translation>
 <translation id="2309047409763057870">Ini adalah pemasangan Google Chrome sekunder, dan tidak dapat digunakan sebagai browser default.</translation>
+<translation id="2330059234841117265">Buka Google Penelusuran di Chrome</translation>
 <translation id="2345992953227471816">Chrome menemukan bahwa ekstensi berikut berisi malware:</translation>
+<translation id="2350411688004301551">Beralih ke Gemini Enterprise</translation>
 <translation id="2358140144860869442">Untuk mendapatkan daftar bacaan dan data lainnya di semua perangkat Anda, login ke Chrome</translation>
 <translation id="2359808026110333948">Lanjutkan</translation>
 <translation id="2403703063067034158">Error saat sistem dimulai: instance penyiapan lain sedang berjalan, coba lagi nanti.</translation>
@@ -165,6 +167,7 @@
 <translation id="2482846200327569645"><ph name="EXISTING_USER" /> sudah login. Agar penjelajahan Anda tetap terpisah, login ke Chrome di profil Anda sendiri sebagai <ph name="USER_EMAIL_ADDRESS" />. Anda juga akan mendapatkan bookmark dan data lainnya dari <ph name="DEVICE" />.</translation>
 <translation id="2485422356828889247">Uninstal</translation>
 <translation id="2513154137948333830">Perlu memulai ulang: <ph name="INSTALL_SUCCESS" /></translation>
+<translation id="251329670120169391">organisasi Anda</translation>
 <translation id="2521391734665471391">Tutup Mode AI Google Penelusuran</translation>
 <translation id="2523492931736391680">Pekerjaan Anda diamankan di Chrome</translation>
 <translation id="2534365042754120737">Untuk melindungi data Anda, izinkan Chrome menghapus izin dari situs yang tidak Anda kunjungi baru-baru ini. Tindakan ini tidak menghentikan notifikasi.</translation>
@@ -214,6 +217,7 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="2876628302275096482">Pelajari lebih lanjut <ph name="BEGIN_LINK" />cara Chrome menjaga privasi data Anda<ph name="END_LINK" /></translation>
 <translation id="2885378588091291677">Pengelola Tugas</translation>
 <translation id="2888126860611144412">Tentang Chrome</translation>
+<translation id="2898830646167954300">Beralih kembali ke asisten Gemini yang tidak dikelola</translation>
 <translation id="2915996080311180594">Mulai Ulang Nanti</translation>
 <translation id="2926952073016206995">Chrome memerlukan izin kamera untuk situs ini</translation>
 <translation id="2945997411976714835">Error penginstalan: Proses penginstal gagal dimulai.</translation>
@@ -253,6 +257,7 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="3140883423282498090">Perubahan Anda akan berlaku pada peluncuran ulang Google Chrome selanjutnya.</translation>
 <translation id="3149510190863420837">Aplikasi Chrome</translation>
 <translation id="3161522574479303604">Semua bahasa</translation>
+<translation id="3183555099201190073">Akses Penelusuran dari tab mana pun</translation>
 <translation id="318555301233810762"><ph name="EXISTING_USER" /> sudah login. Agar penjelajahan Anda tetap terpisah, login ke Chrome di profil Anda sendiri sebagai <ph name="USER_EMAIL_ADDRESS" />. Anda juga akan mendapatkan bookmark dan data lainnya semua perangkat Anda.</translation>
 <translation id="319199214552513804">Untuk mendapatkan ekstensi ini dan yang lainnya di semua komputer Anda, login ke Chrome</translation>
 <translation id="3196187562065225381">Chrome memblokir download ini karena file tersebut berbahaya</translation>
@@ -342,11 +347,13 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="4022972681110646219">Terjemahkan layar</translation>
 <translation id="4023601594785368013">Bahasa asli: <ph name="LANGUAGE" /></translation>
 <translation id="4034249157893816477">Diintegrasikan dalam Chrome untuk membantu Anda membuat, menyimpan, dan mengisi otomatis sandi kuat. Tambahkan pintasan untuk memudahkan akses.</translation>
+<translation id="4034420818911109432"><ph name="USER_NAME" />, <ph name="EMAIL" />. Langganan Google.</translation>
 <translation id="4035053306113201399">ChromeOS harus dimulai ulang untuk menerapkan update.</translation>
 <translation id="4050175100176540509">Peningkatan keamanan dan fitur baru yang penting tersedia di versi terbaru.</translation>
 <translation id="4053720452172726777">Sesuaikan dan kontrol Google Chrome</translation>
 <translation id="408393047846373801">Untuk mendapatkan sandi dan info Anda yang lain di semua perangkat Anda, login ke Chrome. Sandi ini akan disimpan di Akun Google Anda setelah Anda login.</translation>
 <translation id="4102173024714616627">Ekstensi adalah add-on yang memungkinkan Anda menyesuaikan Chrome. Mulai dari membantu Anda tetap teratur hingga menyederhanakan tugas sehari-hari, ekstensi membantu Anda mempersonalisasi Chrome.</translation>
+<translation id="4103543596018881622">Google Penelusuran di Chrome kini disematkan ke toolbar.</translation>
 <translation id="4110895483821904099">Siapkan profil Chrome baru Anda</translation>
 <translation id="4111566860456076004">Chrome tidak dapat memverifikasi asal ekstensi ini, dan mungkin ekstensi ini tidak aman. Hapus dari Chrome agar ekstensi ini tidak dapat lagi melihat dan mengubah data Anda di situs yang Anda kunjungi, termasuk info pribadi Anda.</translation>
 <translation id="4147555960264124640">Anda masuk dengan akun terkelola dan memberikan administratornya kontrol atas profil Google Chrome Anda. Data Chrome Anda, seperti aplikasi, bookmark, histori, sandi, dan setelan lain selamanya akan dikaitkan ke <ph name="USER_NAME" />. Anda dapat menghapus data ini melalui Dasbor Akun Google, namun Anda tidak akan dapat mengaitkan data ini dengan akun yang lain. <ph name="LEARN_MORE" /></translation>
@@ -468,6 +475,7 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="5321325624576443340">Google Lens tidak tersedia. Coba lagi nanti.</translation>
 <translation id="5334309298019785904">ChromeOS tidak dapat menyinkronkan data Anda karena Sinkronisasi tidak tersedia untuk domain Anda.</translation>
 <translation id="5334487786912937552">Chrome memerlukan izin akses penyimpanan untuk mendownload file</translation>
+<translation id="5336664042114176802">Anda dapat beralih ke asisten Gemini yang awalnya dikaitkan dengan Akun Google Anda dan tidak dikelola oleh <ph name="DOMAIN" />. Jawaban tidak akan lagi didasarkan pada file atau layanan yang dikelola oleh <ph name="DOMAIN" /> dan histori percakapan Anda tidak akan dipindahkan. Asisten ini mungkin tidak cocok digunakan untuk keperluan pekerjaan. Beralih memerlukan peluncuran kembali Chrome.</translation>
 <translation id="5337648990166757586">Opsional: Bantu tingkatkan fitur dan performa ChromeOS dengan mengirimkan data penggunaan dan diagnostik secara otomatis ke Google.</translation>
 <translation id="5346389065299425353">Perdalam penelusuran Anda dengan menambahkan beberapa tab, file, dan alat</translation>
 <translation id="5353252989841766347">Ekspor Sandi dari Chrome</translation>
@@ -583,6 +591,7 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="6326175484149238433">Hapus dari Chrome</translation>
 <translation id="6334815226785304306">Jadikan Google Chrome sebagai browser default dan sematkan ke taskbar</translation>
 <translation id="6339888439788291743">Ikon baru, pintasan tetap sama: Klik untuk mengajukan pertanyaan saat menjelajah dengan Mode AI Google Penelusuran.</translation>
+<translation id="6349304688246983183">Ajukan pertanyaan dengan mudah saat Anda menjelajah dengan Google Penelusuran</translation>
 <translation id="63540178978900677">Chrome bukan lagi browser default Anda. Jadikan Chrome browser default?</translation>
 <translation id="6357670763064300993">Gemini Enterprise di Chrome</translation>
 <translation id="6360449101159168105">Saat tab ini tidak aktif, memori akan dikosongkan agar Chrome tetap cepat. Anda dapat memilih untuk selalu mengecualikan situs ini agar tetap aktif.</translation>
@@ -597,6 +606,7 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="6438015621983209660">Manfaatkan Safe Browsing yang Disempurnakan dengan Chrome di ponsel</translation>
 <translation id="6442774133615368941">Gunakan kamera di aplikasi Chrome versi iOS untuk berbelanja, menerjemahkan teks, dan mengidentifikasi objek yang Anda lihat</translation>
 <translation id="6446105560007692480">untuk menelusuri dengan Chrome atau menyesuaikan di <ph name="BEGIN_LINK" />Setelan<ph name="END_LINK" /></translation>
+<translation id="6447943657065463998">Browser terkelola ini dapat menggunakan asisten Gemini yang disiapkan untuk kantor oleh <ph name="DOMAIN" />. Gemini dapat menemukan info dan memberikan jawaban yang didasarkan pada file dan layanan yang disetujui organisasi. Penggunaan dengan profil pribadi mungkin tidak disarankan. Histori percakapan tidak akan dipindahkan. Beralih memerlukan peluncuran kembali Chrome.</translation>
 <translation id="6448835208126432197">Gunakan pintasan keyboard untuk memilih bagian tertentu dari layar di Gemini di Chrome.</translation>
 <translation id="6473905796280459355">Buka halaman Tentang Chrome</translation>
 <translation id="6481963882741794338">Tautkan Chrome dan layanan Google lainnya untuk personalisasi dan tujuan lainnya</translation>
@@ -789,6 +799,7 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="80471789339884597">Terima kasih telah menginstal. Anda harus memulai ulang semua browser sebelum menggunakan <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8064965390968184078">1. Klik <ph name="BUTTON_LABEL" /> di bawah Klik <ph name="BUTTON_2" /> di setelan Windows Klik <ph name="BUTTON_3" /> di notifikasi Windows untuk menyematkan Chrome ke taskbar agar dapat diakses dengan cepat</translation>
+<translation id="8066474819446975249">Luncurkan kembali Chrome untuk beralih</translation>
 <translation id="8069447462453318634">Pilih "Sematkan ke toolbar"</translation>
 <translation id="8074398340364918139">Untuk menelusuri fitur atau ekstensi Chrome tertentu, ketik pintasannya di kolom URL diikuti tombol keyboard pilihan Anda</translation>
 <translation id="8077579734294125741">Profil Chrome lainnya</translation>
@@ -930,6 +941,7 @@ Bookmark baru tidak dapat disimpan di akun hingga Anda menghapus beberapa bookma
 <translation id="9148058034647219655">Keluar</translation>
 <translation id="9150331942025550505">Nikmati kecanggihan AI saat menggunakan aplikasi Chrome di <ph name="DEVICE_TYPE" /></translation>
 <translation id="919706545465235479">Perbarui Chrome untuk memulai sinkronisasi</translation>
+<translation id="9210313013767007472"><ph name="USER_NAME_OR_EMAIL" />. Langganan Google.</translation>
 <translation id="922152298093051471">Sesuaikan Chrome</translation>
 <translation id="93760716455950538">Mulai ulang ChromeOS Flex</translation>
 <translation id="943390475793766444">Chrome merekomendasikan pemindaian file ini karena file mungkin berbahaya.</translation>

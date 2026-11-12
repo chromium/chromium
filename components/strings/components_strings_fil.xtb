@@ -823,6 +823,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2356941001189392209">Limitadong listahan ng mga URL ng mga page na binisita mo kung saan may mga event ng legacy na teknolohiya</translation>
 <translation id="2357312461142072202">{NUM_TABS,plural, =1{Magse-share ng 1 tab}one{Magse-share ng {NUM_TABS} tab}other{Magse-share ng {NUM_TABS} na tab}}</translation>
 <translation id="2357481397660644965">Pinapamahalaan ng <ph name="DEVICE_MANAGER" /> ang iyong device at pinapamahalaan ng <ph name="ACCOUNT_MANAGER" /> ang account mo.</translation>
+<translation id="2358479643736965923">Tingnan ang iyong sagot sa paghahanap ng Google AI sa tab na ito</translation>
 <translation id="2359629602545592467">Marami</translation>
 <translation id="2359808026110333948">Magpatuloy</translation>
 <translation id="236000571258713023">Mga sasakyan</translation>
@@ -1141,6 +1142,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2925032407415783182">I-save ang ticket ng event sa Wallet</translation>
 <translation id="2925454999967523701">Button na Gumawa ng doc, i-activate para mabilis na makagawa ng bagong Google Doc</translation>
 <translation id="2925673989565098301">Paraan ng Paghahatid</translation>
+<translation id="2927328994673424423">2 linggo ang nakalipas</translation>
 <translation id="2928426578619531300">Affiliated na user</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> at <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> pa}one{<ph name="SHIPPING_ADDRESS_PREVIEW" /> at <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> pa}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> at <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> pa}}</translation>
 <translation id="2930531075747147366">Tab mula sa Iba Mo Pang Device</translation>

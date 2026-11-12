@@ -823,6 +823,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2356941001189392209">A felkeresett oldalak URL-jeinek korlátozott listája, ahol régi technológiai események történnek</translation>
 <translation id="2357312461142072202">{NUM_TABS,plural, =1{1 lapot fog megosztani}other{{NUM_TABS} lapot fog megosztani}}</translation>
 <translation id="2357481397660644965">Eszközét a(z) <ph name="DEVICE_MANAGER" />, fiókját pedig a(z) <ph name="ACCOUNT_MANAGER" /> kezeli.</translation>
+<translation id="2358479643736965923">A Google AI-alapú keresési válasz megtekintése ezen a lapon</translation>
 <translation id="2359629602545592467">Több</translation>
 <translation id="2359808026110333948">Tovább</translation>
 <translation id="236000571258713023">Járművek</translation>
@@ -1141,6 +1142,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2925032407415783182">Belépőjegy mentése a Walletbe</translation>
 <translation id="2925454999967523701">Dokumentum létrehozása gomb. A gombot megnyomva gyorsan létrehozhat új Google-dokumentumot.</translation>
 <translation id="2925673989565098301">Kézbesítési mód</translation>
+<translation id="2927328994673424423">2 hete</translation>
 <translation id="2928426578619531300">Felhasználó társítva</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> és további <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> és további <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="2930531075747147366">A másik eszközéről küldött lap</translation>

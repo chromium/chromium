@@ -823,6 +823,7 @@
 <translation id="2356941001189392209">기존 기술 이벤트가 발생하는 페이지의 제한된 URL 목록</translation>
 <translation id="2357312461142072202">{NUM_TABS,plural, =1{탭 1개 공유 예정}other{탭 {NUM_TABS}개 공유 예정}}</translation>
 <translation id="2357481397660644965">내 기기는 <ph name="DEVICE_MANAGER" />에서 관리하며 내 계정은 <ph name="ACCOUNT_MANAGER" />에서 관리합니다.</translation>
+<translation id="2358479643736965923">이 탭에서 Google AI 검색 대답을 확인하세요.</translation>
 <translation id="2359629602545592467">복수</translation>
 <translation id="2359808026110333948">계속</translation>
 <translation id="236000571258713023">차량</translation>
@@ -1141,6 +1142,7 @@
 <translation id="2925032407415783182">월렛에 이벤트 티켓을 저장하세요</translation>
 <translation id="2925454999967523701">문서 만들기 버튼, 새 Google 문서를 빠르게 만들려면 활성화하세요.</translation>
 <translation id="2925673989565098301">배달 방법</translation>
+<translation id="2927328994673424423">2주 전</translation>
 <translation id="2928426578619531300">연결된 사용자</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> 외 <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />개}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> 외 <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />개}}</translation>
 <translation id="2930531075747147366">다른 기기의 탭</translation>

@@ -22,6 +22,7 @@
 <translation id="1185134272377778587">เกี่ยวกับ Chromium</translation>
 <translation id="1186645291482254714">รับการแจ้งเตือนการติดตามราคาด้วย Chromium ในโทรศัพท์</translation>
 <translation id="1203500561924088507">ขอขอบคุณที่ติดตั้ง คุณต้องรีสตาร์ทเบราว์เซอร์ก่อนใช้ <ph name="BUNDLE_NAME" /></translation>
+<translation id="1208896746806402915">ไอคอนใหม่ ทางลัดเดิม: คลิกเพื่อถามคำถามขณะท่องเว็บด้วย Search ในแผงด้านข้าง</translation>
 <translation id="1232234696885483911">เมื่อคุณเปิดการค้นหารูปภาพ ระบบจะส่งชื่อหน้า, URL และเนื้อหา รวมถึง PDF ไปยังเซิร์ฟเวอร์โดยอัตโนมัติ <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">เมื่อลงชื่อเข้าใช้อยู่ คุณจะใช้รหัสผ่านและข้อมูลอื่นๆ จากบัญชี Google ใน Chromium ได้ หากต้องการเปลี่ยน ให้ไปที่ "บัญชีของคุณใน Chromium"</translation>
 <translation id="1244381985120794049">แสดง Gemini ใน Chromium ในแถบเมนูของ Mac</translation>
@@ -31,6 +32,7 @@
 <translation id="126567311906253476">เมื่อลงชื่อเข้าใช้บริการของ Google อย่าง Gmail หรือ YouTube ด้วย <ph name="USER_EMAIL" /> คุณจะลงชื่อเข้าใช้ Chromium ด้วยบัญชีเดียวกันได้โดยอัตโนมัติ</translation>
 <translation id="1287534462498555020">ดาวน์โหลด Chromium ในโทรศัพท์</translation>
 <translation id="1290883685122687410">ข้อผิดพลาดในการตั้งค่า: <ph name="METAINSTALLER_EXIT_CODE" /> <ph name="WINDOWS_ERROR" /></translation>
+<translation id="1304670607231413751">ปุ่ม "Search ใน Chrome" บนแถบเครื่องมือมีไอคอนใหม่ คลิกเพื่อถามคำถามขณะท่องเว็บด้วย Search ใน Chrome</translation>
 <translation id="1315551408014407711">ตั้งค่าโปรไฟล์ Chromium ใหม่</translation>
 <translation id="132092532143527429">ลองใช้ Gemini ใน Chromium</translation>
 <translation id="1324107359134968521">Chromium ต้องการสิทธิ์เข้าถึงบลูทูธเพื่อสำรวจอุปกรณ์บลูทูธ <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
@@ -51,6 +53,7 @@
 <translation id="154404805518949443">ลงชื่อเข้าใช้ Chromium</translation>
 <translation id="1547469039832541117">สิ้นสุดงานที่ไฮไลต์ไว้</translation>
 <translation id="1562320819937089394">ปักหมุด Chromium</translation>
+<translation id="1572572333538561328">เปิดโหมด AI ของ Search อีกครั้ง</translation>
 <translation id="1574377791422810894">เครื่องมือด้านความปลอดภัยของ Chromium</translation>
 <translation id="1594928384848033697">Chromium ต้องการลบข้อมูลในเครื่องมือจัดการรหัสผ่าน โปรดพิมพ์รหัสผ่าน Windows ของคุณเพื่ออนุญาต</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{ผู้ดูแลระบบต้องการให้คุณเปิด Chromium ขึ้นมาใหม่เพื่อใช้การอัปเดต}=1{ผู้ดูแลระบบต้องการให้คุณเปิด Chromium ขึ้นมาใหม่เพื่อใช้การอัปเดต หน้าต่างที่ไม่ระบุตัวตนจะไม่เปิดให้อีก}other{ผู้ดูแลระบบต้องการให้คุณเปิด Chromium ขึ้นมาใหม่เพื่อใช้การอัปเดต หน้าต่างที่ไม่ระบุตัวตนจำนวน # หน้าต่างจะไม่เปิดให้อีก}}</translation>
@@ -77,10 +80,13 @@
 <translation id="1838374766361614909">ล้างการค้นหา</translation>
 <translation id="18552579716432081">หากต้องการลบข้อมูลการท่องเว็บออกจากอุปกรณ์นี้เท่านั้น แต่ยังเก็บข้อมูลดังกล่าวไว้ในบัญชี Google ให้<ph name="BEGIN_LINK" />ออกจากระบบ Chromium<ph name="END_LINK" /></translation>
 <translation id="1857749206890802997">ดาวน์โหลด Chromium บนโทรศัพท์เพื่อเปิดหรือสร้างกลุ่มแท็บใหม่ได้ทุกที่ทุกเวลา</translation>
+<translation id="1858576284142106424">ปิดโหมด AI ของ Search</translation>
 <translation id="185970820835152459">คุณจัดการบัญชี Google ที่ลงชื่อเข้าใช้ได้ บัญชี Google ใช้สำหรับเบราว์เซอร์ Chromium, Play Store, Gmail และอื่นๆ หากต้องการเพิ่มบัญชีให้คนอื่น เช่น สมาชิกในครอบครัว ให้เพิ่มบุคคลใหม่ลงใน <ph name="DEVICE_TYPE" /> แทน <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="1862852878885210965">ค้นหาด้วยการค้นหารูปภาพ</translation>
 <translation id="1863837059069884561"><ph name="EXISTING_USER" /> ลงชื่อเข้าใช้อยู่แล้ว หากต้องการแยกการท่องเว็บของคุณไว้ต่างหาก ให้ลงชื่อเข้าใช้ Chromium ในโปรไฟล์ของคุณเองด้วย <ph name="USER_EMAIL_ADDRESS" /> นอกจากนี้ คุณยังรับบุ๊กมาร์กและข้อมูลอื่นๆ จาก <ph name="DEVICE" /> ได้ด้วย</translation>
+<translation id="1880495786739455486">คุณสามารถเปิด Search ในแผงด้านข้างอีกครั้งเพื่อถามคำถามขณะท่องเว็บได้</translation>
 <translation id="1880677175115548835">เลือกข้อความ</translation>
+<translation id="188102464690227119">ปุ่ม "Search ในแผงด้านข้าง" บนแถบเครื่องมือมีไอคอนใหม่ คลิกเพื่อถามคำถามขณะท่องเว็บด้วย Search ในแผงด้านข้าง</translation>
 <translation id="1881322772814446296">คุณกำลังลงชื่อเข้าใช้ด้วยบัญชีที่จัดการ และให้การควบคุมระดับผู้ดูแลระบบของบัญชีดังกล่าวเหนือโปรไฟล์ Chromium ของคุณ ข้อมูล Chromium เช่น แอป บุ๊กมาร์ก ประวัติการเข้าชม รหัสผ่าน และการตั้งค่าอื่นๆ จะเชื่อมโยงอย่างถาวรกับ <ph name="USER_NAME" /> คุณจะสามารถลบข้อมูลนี้ผ่านทางแผงควบคุมบัญชี Google แต่คุณจะไม่สามารถเชื่อมโยงข้อมูลนี้กับบัญชีอื่น คุณสามารถเลือกที่จะสร้างโปรไฟล์ใหม่เพื่อแยกเก็บข้อมูล Chromium ที่มีอยู่ของคุณ <ph name="LEARN_MORE" /></translation>
 <translation id="1896836275755235458">Chromium จะช่วยสงวนพลังงานแบตเตอรี่โดยการจำกัดกิจกรรมในเบื้องหลังและเอฟเฟกต์ภาพ เช่น การเลื่อนอย่างราบรื่นและอัตราเฟรมวิดีโอ <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติมเกี่ยวกับโหมดประหยัดพลังงาน<ph name="END_LINK" /></translation>
 <translation id="1900969832270057921">บริการ Chromium Updater</translation>
@@ -116,6 +122,7 @@
 <translation id="2185166961232948079">Chromium - หน้าลงชื่อเข้าใช้ของเครือข่าย - <ph name="PAGE_TITLE" /></translation>
 <translation id="2190166659037789668">ข้อผิดพลาดในการตรวจสอบการอัปเดต: <ph name="UPDATE_CHECK_ERROR" /></translation>
 <translation id="2199210295479376551">นำบัญชีออกจาก Chromium</translation>
+<translation id="2199625713624030299">ปิด Search ใน Chrome</translation>
 <translation id="2201788217099588893">ใช้แอป Chromium เพื่อนำเครื่องมือช็อปปิ้งที่ดีที่สุดไปด้วยได้ทุกที่ทุกเวลา</translation>
 <translation id="2209877494277346829">แยก Chromium ออกจากแอปอื่นๆ</translation>
 <translation id="2210502920229141283">ใช้งานได้อย่างปลอดภัยมากขึ้นทุกที่ทุกเวลาด้วย Safe Browsing พร้อมการปกป้องที่ดียิ่งขึ้นใน Chromium สำหรับ iOS</translation>
@@ -128,6 +135,7 @@
 <translation id="2287771843518581140">{NUM_TABS,plural, =1{Chromium แนะนำให้หยุดแท็บที่ทำให้เบราว์เซอร์ทำงานช้าลงชั่วคราว}other{Chromium แนะนำให้หยุดแท็บที่ทําให้เบราว์เซอร์ทำงานช้าลงชั่วคราว}}</translation>
 <translation id="2307973900865360088">ปักหมุดไว้ที่แถบแอป</translation>
 <translation id="2313870531055795960">ตรวจสอบ URL กับรายการเว็บไซต์ที่ไม่ปลอดภัยซึ่งจัดเก็บไว้ใน Chromium หากเว็บไซต์พยายามขโมยรหัสผ่าน หรือคุณดาวน์โหลดไฟล์ที่เป็นอันตราย Chromium อาจส่ง URL รวมถึงเนื้อหาบางส่วนในหน้าไปยัง Google Safe Browsing ด้วย</translation>
+<translation id="2350411688004301551">เปลี่ยนไปใช้ Gemini Enterprise</translation>
 <translation id="2356070529366658676">ถาม</translation>
 <translation id="2359808026110333948">ต่อไป</translation>
 <translation id="2361918034042471035">ส่วนขยาย "<ph name="EXTENSION_NAME" />" ต้องการให้คุณลงชื่อเข้าใช้ Chromium</translation>
@@ -146,6 +154,7 @@
 <translation id="2483889755041906834">ใน Chromium</translation>
 <translation id="2485422356828889247">ถอนการติดตั้ง</translation>
 <translation id="2513154137948333830">ต้องรีบูต: <ph name="INSTALL_SUCCESS" /></translation>
+<translation id="251329670120169391">องค์กรของคุณ</translation>
 <translation id="2542968102051442371">เลือกข้อความด้วยการค้นหารูปภาพ</translation>
 <translation id="2554739539410784893">Chromium กำลังพยายามแทนที่รหัสผ่านที่มีอยู่ โปรดพิมพ์รหัสผ่าน Windows ของคุณเพื่ออนุญาต</translation>
 <translation id="2560420686485554789">Chromium ต้องการสิทธิ์เข้าถึงพื้นที่เก็บข้อมูลเพื่อดาวน์โหลดไฟล์</translation>
@@ -182,6 +191,7 @@
 <translation id="2847479871509788944">นำออกจาก Chromium...</translation>
 <translation id="2850691299438350830">รักษาความปลอดภัยของคุณใน Chromium และอาจใช้เพื่อปรับปรุงความปลอดภัยในแอปอื่นๆ ของ Google เมื่อลงชื่อเข้าใช้</translation>
 <translation id="2885378588091291677">ตัวจัดการงาน</translation>
+<translation id="2898830646167954300">เปลี่ยนกลับไปใช้ผู้ช่วย Gemini ที่ไม่มีการจัดการ</translation>
 <translation id="2910007522516064972">เกี่ยวกับ &amp;Chromium</translation>
 <translation id="2915996080311180594">รีสตาร์ทภายหลัง</translation>
 <translation id="2933336679234709858">ข้อมูลของคุณมีการเข้ารหัสด้วยพาสเฟรส ป้อนพาสเฟรสเพื่อใช้และบันทึกข้อมูล Chromium ในบัญชี Google</translation>
@@ -221,6 +231,7 @@
 <translation id="3155163173539279776">เรียกใช้งาน Chromium อีกครั้ง</translation>
 <translation id="3161522574479303604">ทุกภาษา</translation>
 <translation id="3179665906251668410">เปิดลิงก์ในหน้าต่างที่ไม่ระบุตัวตนของ Chromium</translation>
+<translation id="3183555099201190073">เข้าถึง Search ได้จากทุกแท็บ</translation>
 <translation id="3185330573522821672">ปรับแต่งโปรไฟล์ Chromium ใหม่</translation>
 <translation id="3189205223539394158">คุณสามารถแชทกับโหมด AI ต่อไปได้โดยไม่ต้องเปลี่ยนแท็บ หากต้องการเริ่มต้นใช้งาน ให้ลงชื่อเข้าใช้ Chromium นอกจากนี้ คุณยังรับรหัสผ่านและข้อมูลอื่นๆ ในอุปกรณ์ทุกเครื่องได้ด้วย</translation>
 <translation id="3224847870593914902">หากต้องการนำบัญชี Google ออกจาก Chromium ให้ออกจากระบบ Chromium ในหน้าการตั้งค่า</translation>
@@ -256,6 +267,7 @@
 <translation id="3561853857681580870">หากต้องการแชร์หน้าจอ ให้อนุญาตการบันทึกหน้าจอสำหรับ Chromium ใน "การตั้งค่าระบบ"</translation>
 <translation id="3597003331831379823">เรียกใช้การตั้งค่าด้วยสิทธิ์ในระดับสูงขึ้นไม่สำเร็จ <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">ลงชื่อเข้าใช้ Chromium</translation>
+<translation id="36205707939705218"><ph name="USER_NAME" />, <ph name="EMAIL" /> การเป็นสมาชิก</translation>
 <translation id="3639635944603682591">ระบบจะลบข้อมูลการท่องเว็บของบุคคลนี้ออกจากอุปกรณ์นี้ หากต้องการกู้ข้อมูลคืน ให้ลงชื่อเข้าใช้ Chromium ในชื่อ <ph name="USER_EMAIL" /></translation>
 <translation id="364817392622123556">{COUNT,plural, =0{อัปเดตใหม่ของ Chromium พร้อมให้ใช้งานแล้วและระบบจะใช้อัปเดตดังกล่าวเมื่อคุณเปิด Chromium ขึ้นมาใหม่}=1{อัปเดตใหม่ของ Chromium พร้อมให้ใช้งานแล้วและระบบจะใช้อัปเดตดังกล่าวเมื่อคุณเปิด Chromium ขึ้นมาใหม่ หน้าต่างที่ไม่ระบุตัวตนจะไม่เปิดให้อีก}other{อัปเดตใหม่ของ Chromium พร้อมให้ใช้งานแล้วและระบบจะใช้อัปเดตดังกล่าวเมื่อคุณเปิด Chromium ขึ้นมาใหม่ หน้าต่างที่ไม่ระบุตัวตนจำนวน # หน้าต่างจะไม่เปิดให้อีก}}</translation>
 <translation id="3667616615096815454">ติดตั้งไม่ได้เนื่องจากเซิร์ฟเวอร์ไม่รู้จักแอปพลิเคชัน</translation>
@@ -264,6 +276,7 @@
 <translation id="3713809861844741608">เปิดลิงก์ใน Chromium แท็บใหม่</translation>
 <translation id="3728124580182886854">ลิงก์ Chromium และบริการอื่นๆ ของ Google เพื่อการปรับเปลี่ยนในแบบของคุณและวัตถุประสงค์อื่นๆ</translation>
 <translation id="3729187154190517324">เจาะลึกการค้นหาด้วยการเพิ่มแท็บ ไฟล์ และเครื่องมือหลายรายการโดยใช้ปุ่ม "เพิ่มแท็บและอื่นๆ"</translation>
+<translation id="3751920144677881410">จากปุ่ม "แผงด้านข้างของ Search" บนแถบเครื่องมือ คุณสามารถเปิดแผงด้านข้างของ Search อีกครั้งเพื่อถามคำถามขณะท่องเว็บได้</translation>
 <translation id="3788675262216168505">จัดการโปรไฟล์ Chromium</translation>
 <translation id="3790262771324122253">ดูสาเหตุที่ Chromium บล็อกการดาวน์โหลดบางรายการ</translation>
 <translation id="379589255253486813">Chromium จะแจ้งให้คุณทราบหากมีสิ่งใดที่คุณควรตรวจสอบ</translation>
@@ -282,6 +295,7 @@
 <translation id="3892148308691398805">คัดลอกข้อความ</translation>
 <translation id="390528597099634151"><ph name="EXISTING_USER" /> ลงชื่อเข้าใช้โปรไฟล์ Chromium นี้แล้ว หากต้องการแยกการท่องเว็บของคุณไว้ต่างหาก Chromium สร้างโปรไฟล์ให้คุณโดยเฉพาะได้</translation>
 <translation id="3909353120217047026">ส่วนขยายนี้ละเมิดนโยบาย Chrome เว็บสโตร์และอาจไม่ปลอดภัย นำส่วนขยายดังกล่าวออกจาก Chromium เพื่อไม่ให้ดูและเปลี่ยนแปลงข้อมูลของคุณในเว็บไซต์ที่เข้าชม รวมถึงข้อมูลส่วนบุคคลได้อีกต่อไป</translation>
+<translation id="3909954316701345612">ไอคอนใหม่ ทางลัดเดิม: คลิกเพื่อถามคำถามขณะท่องเว็บด้วยแผง Search</translation>
 <translation id="3941890832296813527">ข้อผิดพลาดในการติดตั้ง: ชื่อไฟล์ของโปรแกรมติดตั้งไม่ถูกต้องหรือระบบไม่รองรับ</translation>
 <translation id="3945058413678539331">Chromium กำลังพยายามคัดลอกรหัสผ่าน โปรดพิมพ์รหัสผ่าน Windows ของคุณเพื่ออนุญาต</translation>
 <translation id="3950481960271781644">ลงชื่อเข้าใช้ Chromium เพื่อเข้าถึงข้อมูลที่บันทึกไว้และอื่นๆ ในอุปกรณ์ทุกเครื่อง</translation>
@@ -301,6 +315,7 @@
 <translation id="4036079820698952681">ช่วยให้ Chromium ดียิ่งขึ้นด้วยการรายงาน<ph name="BEGIN_LINK" />การตั้งค่าปัจจุบัน<ph name="END_LINK" /></translation>
 <translation id="4050175100176540509">การปรับปรุงด้านความปลอดภัยที่สำคัญและฟีเจอร์ใหม่ๆ พร้อมให้บริการในเวอร์ชันล่าสุด</translation>
 <translation id="4055805654398742145">เครื่องมือจัดการรหัสผ่าน</translation>
+<translation id="4062925381179797083">ปุ่ม "แผง Search" บนแถบเครื่องมือมีไอคอนใหม่ คลิกเพื่อถามคำถามขณะท่องเว็บด้วยแผง Search</translation>
 <translation id="4095980151185649725">{COUNT,plural, =1{องค์กรจะปิด Chromium โดยอัตโนมัติเมื่อไม่มีการใช้งานเป็นเวลา 1 นาที ลบข้อมูลการท่องเว็บแล้ว ซึ่งอาจรวมถึงประวัติการเข้าชม การป้อนข้อความอัตโนมัติ และการดาวน์โหลด}other{องค์กรจะปิด Chromium โดยอัตโนมัติเมื่อไม่มีการใช้งานเป็นเวลา # นาที ลบข้อมูลการท่องเว็บแล้ว ซึ่งอาจรวมถึงประวัติการเข้าชม การป้อนข้อความอัตโนมัติ และการดาวน์โหลด}}</translation>
 <translation id="4118474109249235144">โหมดไม่ระบุตัวตนของ Chromium</translation>
 <translation id="4122186850977583290">ไปที่หน้าเกี่ยวกับ Chromium</translation>
@@ -316,6 +331,7 @@
 <translation id="4222932583846282852">กำลังยกเลิก...</translation>
 <translation id="4224210481850767180">ยกเลิกการติดตั้งแล้ว</translation>
 <translation id="4230135487732243613">เชื่อมโยงข้อมูล Chromium กับบัญชีนี้ไหม</translation>
+<translation id="4250620086255466556">แผง Search</translation>
 <translation id="4251772536351901305">เตือนคุณเกี่ยวกับเว็บไซต์ที่เป็นอันตราย แม้แต่เว็บไซต์ที่ Google ไม่เคยรู้จักมาก่อนด้วยการวิเคราะห์ข้อมูลจากเว็บไซต์มากกว่าการปกป้องแบบมาตรฐาน คุณเลือกข้ามคำเตือนของ Chromium ได้</translation>
 <translation id="4269093074552541569">ออกจากระบบ Chromium</translation>
 <translation id="4271805377592243930">รับความช่วยเหลือเกี่ยวกับ Chromium</translation>
@@ -351,6 +367,7 @@
 <translation id="4594305310729380060">ไปยังเครื่องมือจัดการรหัสผ่านบนอุปกรณ์นี้</translation>
 <translation id="459535195905078186">แอป Chromium</translation>
 <translation id="4598116752460667024">ค้นหากระบวนการใดๆ จากรายการ</translation>
+<translation id="4602691126289526388">ถามคำถามได้อย่างง่ายดายขณะท่องเว็บด้วย Search</translation>
 <translation id="4613863813562375431">เวอร์ชัน Chromium OS</translation>
 <translation id="4621240073146040695">การอัปเดตใกล้จะเสร็จเรียบร้อยแล้ว เปิด Chromium อีกครั้งเพื่อให้การอัปเดตเสร็จสิ้น</translation>
 <translation id="4625064703209785397">เพิ่มความเร็วให้เว็บไซต์ด้วยเครื่องมือ V8 ของ Chromium แต่ทำให้ Chromium ต้านทานการโจมตีได้น้อยลงเล็กน้อย</translation>
@@ -386,6 +403,7 @@
 <translation id="504699503110800016">เปิดเมนูรายการเพิ่มเติม</translation>
 <translation id="5074496654342756568">เข้าถึงแอป Google โปรดทั้งหมดด้วย Chromium ใน <ph name="DEVICE_TYPE" /></translation>
 <translation id="5123973130450702873">Chromium ต้องการสิทธิ์ในการติดตามการเคลื่อนไหวของมือ</translation>
+<translation id="5139546603444206048">คุณสามารถเปลี่ยนไปใช้ผู้ช่วย Gemini ที่เชื่อมโยงกับบัญชี Google ของคุณตั้งแต่แรกและไม่ได้จัดการโดย <ph name="DOMAIN" /> คำตอบจะไม่อิงตามแหล่งข้อมูลจากไฟล์หรือบริการที่ <ph name="DOMAIN" /> จัดการอีกต่อไป และระบบจะไม่ย้ายประวัติการแชทของคุณ ซึ่งอาจไม่เหมาะกับการใช้เพื่อการทำงาน ในการเปลี่ยนจะต้องเปิด Chromium อีกครั้ง</translation>
 <translation id="5141988424377517949">คุณไม่ได้เข้าชมเมื่อเร็วๆ นี้ Chromium นำสิทธิ์เข้าถึง<ph name="PERMISSION_1" /> <ph name="PERMISSION_2" /> และ<ph name="PERMISSION_3" />ออกแล้ว</translation>
 <translation id="5171868502429358653">ลงชื่อเข้าใช้ Chromium</translation>
 <translation id="5174969993834422967">คุณมักจะบล็อกการแจ้งเตือน หากต้องการให้เว็บไซต์ส่งการแจ้งเตือน ให้คลิกไอคอนการแจ้งเตือนที่มุมขวาของแถบตําแหน่ง</translation>
@@ -394,7 +412,10 @@
 <translation id="5223510345050543907">ดำเนินการต่อจากที่ค้างไว้ด้วย Chromium บน iOS</translation>
 <translation id="5231355151045086930">ออกจากระบบ Chromium</translation>
 <translation id="5234764350956374838">ปิด</translation>
+<translation id="5248765037108226189">คุณสามารถเปิด Search ใน Chrome อีกครั้งเพื่อถามคำถามขณะท่องเว็บได้</translation>
 <translation id="5249261924633168472">เปิดลิงก์ในหน้าต่างที่ไม่ระบุตัวตนของ Chromium</translation>
+<translation id="5251599664870628153">ปุ่ม "แผงด้านข้างของ Search" บนแถบเครื่องมือมีไอคอนใหม่ คลิกเพื่อถามคำถามขณะท่องเว็บด้วยแผงด้านข้างของ Search</translation>
+<translation id="5254294706894496832">คุณสามารถปักหมุดแผง Search เพื่อถามคำถามขณะท่องเว็บได้</translation>
 <translation id="5276305953263010518">ดาวน์โหลดแอป Chromium เพื่อบันทึกรหัสผ่านได้ทุกที่ทุกเวลา</translation>
 <translation id="5277894862589591112">เปิด Chromium ขึ้นมาใหม่เพื่อให้การเปลี่ยนแปลงมีผล</translation>
 <translation id="5286907366254680517">ตรวจพบ</translation>
@@ -429,6 +450,7 @@
 <translation id="5524890928877629608">มุมซ้ายบนของพื้นที่การค้นหา: ซ้าย <ph name="LEFT" />% บน <ph name="TOP" />%</translation>
 <translation id="5527463683072221100">เปิด PDF ใน Chromium</translation>
 <translation id="5536164441519929134">ถาม<ph name="LINE_BREAK" />เกี่ยวกับแท็บนี้</translation>
+<translation id="5557035028197464376">ปักหมุด Search ใน Chrome ไว้ที่แถบเครื่องมือแล้ว</translation>
 <translation id="555970465369471303">Chromium จะปิดการเพิ่มประสิทธิภาพ JavaScript เมื่อคุณเข้าชมเว็บไซต์เป็นครั้งแรกเพื่อความปลอดภัย
 
 หากหน้านี้ไม่ทำงานตามที่คาดไว้ ให้ลองอนุญาตการเพิ่มประสิทธิภาพ</translation>
@@ -448,6 +470,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">แสดง Chromium ในภาษานี้</translation>
 <translation id="569897634095159764">เชื่อมต่อกับอินเทอร์เน็ตไม่ได้ พร็อกซีเซิร์ฟเวอร์ต้องมีการตรวจสอบสิทธิ์</translation>
+<translation id="5762954990778294910">จากปุ่ม "แผง Search" บนแถบเครื่องมือ คุณสามารถเปิดแผง Search อีกครั้งเพื่อถามคำถามขณะท่องเว็บได้</translation>
 <translation id="5768371961535086509">Chromium จะเพิ่มหน่วยความจำจากแท็บที่ไม่ได้ใช้งาน ซึ่งทำให้แท็บที่ใช้งานอยู่และแอปอื่นๆ มีทรัพยากรสำหรับคอมพิวเตอร์เพิ่มขึ้นและช่วยให้ Chromium ทำงานได้เร็ว แท็บที่ไม่มีการใช้งานจะกลับมาทำงานโดยอัตโนมัติเมื่อคุณไปที่แท็บเหล่านั้น <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติมเกี่ยวกับการประหยัดหน่วยความจำ<ph name="END_LINK" /></translation>
 <translation id="5775198138441669627">หากลืมพาสเฟรสหรือต้องการเปลี่ยนการตั้งค่านี้ ให้<ph name="SETTINGS_LINK" />ข้อมูล Chromium ในบัญชี</translation>
 <translation id="5800158606660203929">ปรับแต่งและควบคุม Chromium ตั้ง Chromium เป็นเบราว์เซอร์เริ่มต้น</translation>
@@ -456,7 +479,10 @@
 <translation id="5817952762723416573">เพิ่มความเร็วให้เว็บไซต์ด้วยเครื่องมือ V8 ของ Chromium แต่ทำให้ Chromium ต้านทานการโจมตีได้น้อยลงเล็กน้อย การตั้งค่านี้ปิดอยู่</translation>
 <translation id="5821520528363214608">โปรดอัปเดต Chromium เพื่อใช้และบันทึกข้อมูล Chromium ลงในบัญชี Google</translation>
 <translation id="5824893331272123205">โหลดแผงนี้ไม่ได้ โปรดลองอีกครั้ง</translation>
+<translation id="583474880403859264">เปิด Search ใน Chrome</translation>
+<translation id="5840880340010374616">ปิดแผง Search</translation>
 <translation id="5862307444128926510">ยินดีต้อนรับสู่ Chromium</translation>
+<translation id="5862977913729030139">โหมด AI ของ Search</translation>
 <translation id="5871205389137001634">คลิกเพื่อออกจากการค้นหารูปภาพ</translation>
 <translation id="5883558403894052917">Chromium พบว่ารายการเหล่านี้มีมัลแวร์</translation>
 <translation id="5889361821821684993">Chromium ดำเนินการตรวจสอบเป็นประจำเพื่อให้มั่นใจว่าเบราว์เซอร์มีการตั้งค่าที่ปลอดภัยที่สุด เราจะแจ้งให้คุณทราบหากมีสิ่งใดที่คุณต้องตรวจสอบ</translation>
@@ -472,6 +498,7 @@
 <translation id="5986585015444752010">{COUNT,plural, =1{องค์กรจะปิด Chromium โดยอัตโนมัติเมื่อไม่มีการใช้งานเป็นเวลา 1 นาที}other{องค์กรจะปิด Chromium โดยอัตโนมัติเมื่อไม่มีการใช้งานเป็นเวลา # นาที}}</translation>
 <translation id="5987687638152509985">อัปเดต Chromium เพื่อเริ่มการซิงค์</translation>
 <translation id="5990360079535151574">คุณเปิดงานตามบริบทอีกครั้งเพื่อถามคำถามขณะท่องเว็บได้จากปุ่ม "งานตามบริบท" ในแถบเครื่องมือ</translation>
+<translation id="5996342273201332056">คุณสามารถปักหมุดแผงด้านข้างของ Search เพื่อถามคำถามขณะท่องเว็บได้</translation>
 <translation id="6003112304606738118">กำลังดาวน์โหลด... เหลืออีก <ph name="HOURS" /> ชั่วโมง</translation>
 <translation id="6009821354356307391">ขอการติดตามผล</translation>
 <translation id="6040143037577758943">ปิด</translation>
@@ -480,9 +507,12 @@
 <translation id="6063093106622310249">&amp;เปิดใน Chromium</translation>
 <translation id="6069027071882229820">คัดลอกเป็นภาพ</translation>
 <translation id="6072279588547424923">เพิ่ม <ph name="EXTENSION_NAME" /> ลงใน Chromium แล้ว</translation>
+<translation id="6076631285161795690">จากปุ่ม "Search ใน Chrome" บนแถบเครื่องมือ คุณสามารถเปิด Search ใน Chrome อีกครั้งเพื่อถามคำถามขณะท่องเว็บได้</translation>
+<translation id="6090632163254655665">เปิดแผงด้านข้างของ Search อีกครั้ง</translation>
 <translation id="6096348254544841612">ปรับแต่งและควบคุม Chromium มีการอัปเดต</translation>
 <translation id="6107893135096467929">เปิด • Chromium ยืนยันไม่ได้ว่าส่วนขยายนี้มาจากไหน</translation>
 <translation id="611228897408671387">บัญชีของคุณใน Chromium</translation>
+<translation id="6114975763361458436">ปิดการค้นหาในแผงด้านข้าง</translation>
 <translation id="6119438414301547735">อนุญาตให้ส่วนขยายแสดงคำขอเข้าถึงในแถบเครื่องมือ Chromium</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> เป็นอันตราย Chromium จึงบล็อกไว้</translation>
 <translation id="6132897690380286411">Chromium จะปิดและลบข้อมูลเร็วๆ นี้</translation>
@@ -495,6 +525,7 @@
 <translation id="6182736845697986886">การติดตั้งไม่สำเร็จเนื่องจากเกิดข้อผิดพลาดภายในเซิร์ฟเวอร์การอัปเดต</translation>
 <translation id="6183079672144801177">ตรวจสอบว่าคุณลงชื่อเข้าใช้ Chromium ใน <ph name="TARGET_DEVICE_NAME" /> แล้วลองส่งอีกครั้ง</translation>
 <translation id="6192070012454216182">ค้นหาและถามคำถามได้จากทุกที่ แม้ว่าจะย่อ Chromium อยู่ก็ตาม อนุญาตให้ Chromium ทำงานในเบื้องหลัง</translation>
+<translation id="6210269448287455102">เปิดการค้นหาในแผงด้านข้างอีกครั้ง</translation>
 <translation id="6212496753309875659">คอมพิวเตอร์เครื่องนี้ติดตั้ง Chromium รุ่นที่ใหม่กว่าอยู่แล้ว ถ้าซอฟต์แวร์ไม่ทำงาน โปรดถอนการติดตั้ง Chromium และลองอีกครั้ง</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium จะเปิดขึ้นมาใหม่ตอนนี้}=1{Chromium จะเปิดขึ้นมาใหม่ใน 1 วินาที}other{Chromium จะเปิดขึ้นมาใหม่ใน # วินาที}}</translation>
 <translation id="6232046770428574552">Chromium จะอัปเดตเมื่อไม่มีการใช้งานหน้าจอ</translation>
@@ -523,7 +554,9 @@
 <translation id="6403826409255603130">Chromium เป็นเว็บเบราว์เซอร์ที่เรียกใช้หน้าเว็บและแอปพลิเคชันด้วยความเร็วสูง มีความรวดเร็ว เสถียร และง่ายในการใช้งาน เรียกดูเว็บได้อย่างปลอดภัยมากขึ้นด้วยการป้องกันมัลแวร์และฟิชชิงที่สร้างอยู่ภายใน Chromium</translation>
 <translation id="6414624068245092115">โปรดยืนยันว่าเป็นคุณเพื่อให้ใช้และบันทึกข้อมูล Chromium ในบัญชี Google ได้เสมอ</translation>
 <translation id="642132557830635295">Chromium ทำงานได้เร็วขึ้นและฟีเจอร์ที่ใช้ JavaScript ควรทำงานตามที่ออกแบบไว้</translation>
+<translation id="6434631832954028336">เปิดแผง Search อีกครั้ง</translation>
 <translation id="6436260184216827876">การค้นหารูปภาพไม่พร้อมใช้งาน โปรดลองอีกครั้งในภายหลัง</translation>
+<translation id="6436991218539695041">ไอคอนใหม่ ทางลัดเดิม: คลิกเพื่อถามคำถามขณะท่องเว็บด้วย Search ใน Chrome</translation>
 <translation id="6442900851116057561">รีสตาร์ท Chromium OS</translation>
 <translation id="6443470774889161065">Chromium จะโหลดหน้าเว็บที่คุณน่าจะเข้าชมเอาไว้ล่วงหน้าเพิ่มมากขึ้น เพื่อให้หน้าเหล่านั้นโหลดเร็วขึ้นเมื่อคุณเข้าชม</translation>
 <translation id="6450948450282634257">ดาวน์โหลด Chromium บนโทรศัพท์เพื่อติดตามราคาและรับการแจ้งเตือนเมื่อราคาต่ำลงในเว็บไซต์ใดก็ตาม</translation>
@@ -535,6 +568,7 @@
 <translation id="648319183876919572">Safe Browsing พร้อมการปกป้องที่ดียิ่งขึ้นทำสิ่งต่างๆ ได้มากขึ้นเพื่อปกป้องคุณจากเว็บไซต์และการดาวน์โหลดที่เป็นอันตราย</translation>
 <translation id="6510925080656968729">ถอนการติดตั้ง Chromium</translation>
 <translation id="651535675648445253">เปิดทางลัดใน Chromium</translation>
+<translation id="6534946732446042463">คุณสามารถเปิดแผงด้านข้างของ Search อีกครั้งเพื่อถามคำถามขณะท่องเว็บได้</translation>
 <translation id="6539122709674868420">องค์กรจะปิด Chromium เมื่อไม่มีการใช้งานเป็นเวลา <ph name="TIMEOUT_DURATION" /> ลบข้อมูลการท่องเว็บแล้ว ซึ่งอาจรวมถึงประวัติการเข้าชม การป้อนข้อความอัตโนมัติ และการดาวน์โหลด</translation>
 <translation id="6542839706527980775">แต่ละโปรไฟล์จะเก็บข้อมูล Chromium ของตัวเอง เช่น บุ๊กมาร์ก ประวัติการเข้าชม รหัสผ่าน และอื่นๆ</translation>
 <translation id="6556755379298048869">ค้นหาด้วยแป้นพิมพ์ลัด</translation>
@@ -568,6 +602,7 @@
 <translation id="67706546131546258">Chromium แนะนำให้สแกนไฟล์นี้เนื่องจากอาจเป็นอันตราย</translation>
 <translation id="6779406956731413166">Chromium OS เกิดขึ้นได้ด้วยการสนับสนุนจาก<ph name="BEGIN_LINK_CROS_OSS" />ซอฟต์แวร์โอเพนซอร์ส<ph name="END_LINK_CROS_OSS" />อื่นเพิ่มเติม</translation>
 <translation id="6804256634866838775">ปิดการค้นหากิจกรรม</translation>
+<translation id="6818170431027022139"><ph name="USER_NAME_OR_EMAIL" /> การเป็นสมาชิก</translation>
 <translation id="6831043979455480757">แปลภาษา</translation>
 <translation id="6847869444787758381">Chromium จะแจ้งให้ทราบหากมีคนล่วงรู้รหัสผ่านของคุณ</translation>
 <translation id="684888714667046800">เชื่อมต่อกับอินเทอร์เน็ตไม่ได้ หากคุณใช้ไฟร์วอลล์ โปรดตรวจสอบว่า <ph name="PRODUCT_EXE_NAME" /> อยู่ในรายการที่อนุญาต</translation>
@@ -592,6 +627,7 @@
             • รีเซ็ตแป้นพิมพ์ลัดของ Chromium
             <ph name="LINE_BREAKS" />
             การดำเนินการนี้จะไม่มีผลกับบุ๊กมาร์ก ประวัติการเข้าชม และรหัสผ่านที่บันทึกไว้</translation>
+<translation id="6930607614725241390">ค้นหาในแผงด้านข้าง</translation>
 <translation id="6948031725951063910">คุณมีบุ๊กมาร์กถึงขีดจำกัด <ph name="BOOKMARK_LIMIT" /> รายการของ Chromium แล้ว ระบบจึงยังไม่ได้บันทึกบุ๊กมาร์กบางรายการลงในบัญชี Google
 
 บันทึกบุ๊กมาร์กใหม่ในบัญชีไม่ได้จนกว่าคุณจะลบบุ๊กมาร์กบางรายการ หากคุณออกจากระบบตอนนี้ ระบบจะลบบุ๊กมาร์กที่ยังไม่ได้บันทึก</translation>
@@ -604,6 +640,7 @@
 <translation id="7037186623849853406">{COUNT,plural, =1{การปกป้องขั้นสูงกำหนดให้คุณต้องเปิด Chromium ขึ้นมาใหม่เพื่อใช้การอัปเดต หน้าต่างแยกจะไม่เปิดขึ้นมาใหม่}other{การปกป้องขั้นสูงกำหนดให้คุณต้องเปิด Chromium ขึ้นมาใหม่เพื่อใช้การอัปเดต หน้าต่างแยก # หน้าต่างจะไม่เปิดขึ้นมาใหม่}}</translation>
 <translation id="7045244423563602563">ปรับเปลี่ยน Chromium ในแบบของคุณ</translation>
 <translation id="7047386856539490735">ผลการค้นหาเหล่านี้มีประโยชน์ไหม</translation>
+<translation id="7056949952597412593">จากปุ่ม "Search ในแผงด้านข้าง" บนแถบเครื่องมือ คุณสามารถเปิด Search ในแผงด้านข้างอีกครั้งเพื่อถามคำถามขณะท่องเว็บได้</translation>
 <translation id="705851970750939768">อัปเดต Chromium</translation>
 <translation id="7067091210845072982">หากรูปภาพไม่มีคำอธิบายที่เป็นประโยชน์ Chromium จะพยายามใส่คำอธิบายให้คุณ รูปภาพจะส่งมายัง Google เพื่อสร้างคำอธิบาย</translation>
 <translation id="7074836723476134809">รับขุมพลังแห่ง AI เมื่อใช้แอป Chromium บน <ph name="DEVICE_TYPE" /></translation>
@@ -656,10 +693,14 @@ Chromium ไม่สามารถกู้คืนการตั้งค�
 <translation id="7483335560992089831">ไม่สามารถติดตั้ง Chromium รุ่นเดียวกับที่กำลังใช้งานอยู่ในขณะนี้ โปรดปิด Chromium และลองอีกครั้ง</translation>
 <translation id="7510190804000607802">การช่วยเตือน: สิ่งที่ดีที่สุดจาก Google ในกระเป๋าของคุณ</translation>
 <translation id="751935028865900641">เว็บไซต์อาจทำงานตามที่คาดไว้ คุณจะออกจากระบบของเว็บไซต์ส่วนใหญ่เมื่อปิดหน้าต่าง Chromium ทั้งหมด ยกเว้นบัญชี Google ที่ลงชื่อเข้าใช้ Chromium</translation>
+<translation id="7527373353833064142">คุณสามารถเปิดแผง Search อีกครั้งเพื่อถามคำถามขณะท่องเว็บได้</translation>
 <translation id="753534427205733210">{0,plural, =1{Chromium จะเปิดขึ้นมาใหม่ใน 1 นาที}other{Chromium จะเปิดขึ้นมาใหม่ใน # นาที}}</translation>
 <translation id="7565444033145385702">ให้ Chromium นำสิทธิ์ออกจากเว็บไซต์ที่คุณไม่ได้เข้าชมเมื่อเร็วๆ นี้เพื่อปกป้องข้อมูลของคุณ</translation>
+<translation id="7582826101081069259">เปิด Search ใน Chrome อีกครั้ง</translation>
 <translation id="7583104404158659071">เปิด Chromium โดยอัตโนมัติเพื่อเริ่มท่องเว็บได้ทันที</translation>
 <translation id="7583399374488819119">โปรแกรมติดตั้ง <ph name="COMPANY_NAME" /></translation>
+<translation id="7583487342282700781">ไอคอนใหม่ ทางลัดเดิม: คลิกเพื่อถามคำถามขณะท่องเว็บด้วยแผงด้านข้างของ Search</translation>
+<translation id="7603292664535326725">สำเร็จ! ตอนนี้คุณสามารถถามคำถามได้อย่างง่ายดายขณะท่องเว็บด้วยแผงด้านข้างของ Search</translation>
 <translation id="761356813943268536">Chromium ใช้กล้องและไมโครโฟนของคุณอยู่</translation>
 <translation id="7617377681829253106">Chromium ดีขึ้นกว่าเดิม</translation>
 <translation id="7622753900276619808">ตอนนี้คุณมีฟีเจอร์เพิ่มเติมใน Chromium</translation>
@@ -694,15 +735,19 @@ Chromium ไม่สามารถกู้คืนการตั้งค�
 <translation id="7873537467422636035">หากลืมพาสเฟรสหรือต้องการเปลี่ยนการตั้งค่านี้ ให้<ph name="BEGIN_LINK" />ลบข้อมูล Chromium ในบัญชี<ph name="END_LINK" /></translation>
 <translation id="7874369989024033742">เปิด Gemini ใน Chromium ได้อย่างรวดเร็วทุกเมื่อที่ต้องการ</translation>
 <translation id="7888981273428720788">ตั้ง Chromium เป็นเบราว์เซอร์เริ่มต้น</translation>
+<translation id="789179266956577884">แผงด้านข้างของ Search</translation>
 <translation id="7934340546140346950">Chromium จะอัปเกรดการเชื่อมต่อที่ไม่ปลอดภัยเป็น HTTPS โดยอัตโนมัติเมื่อเป็นไปได้</translation>
 <translation id="7937630085815544518">คุณเคยลงชื่อเข้าใช้ Chromium ในชื่อ <ph name="USER_EMAIL_ADDRESS" /> โปรดใช้บัญชีเดิมเพื่อลงชื่อเข้าใช้อีกครั้ง</translation>
 <translation id="7944602660083060118"><ph name="EXISTING_USER" /> ลงชื่อเข้าใช้อยู่แล้ว หากต้องการแยกการท่องเว็บของคุณไว้ต่างหาก ให้ลงชื่อเข้าใช้ Chromium ในโปรไฟล์ของคุณเองด้วย <ph name="USER_EMAIL_ADDRESS" /> นอกจากนี้ คุณยังรับบุ๊กมาร์กและข้อมูลอื่นๆ ในอุปกรณ์ทุกเครื่องได้ด้วย</translation>
+<translation id="7947655529129620297">คุณสามารถปักหมุด Search ในแผงด้านข้างเพื่อถามคำถามขณะท่องเว็บได้</translation>
 <translation id="7975919845073681630">นี่เป็นการติดตั้ง Chromium แบบสำรอง และไม่สามารถใช้เป็นเบราว์เซอร์เริ่มต้นของคุณ</translation>
 <translation id="7997934263947464652">ส่วนขยาย แอป และธีมจากแหล่งที่มาที่ไม่รู้จักอาจเป็นอันตรายต่ออุปกรณ์ของคุณ ขอแนะนำให้ติดตั้ง Chromium จาก <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> เท่านั้น</translation>
 <translation id="8000759043835159571">ใช้ประโยชน์สูงสุดจาก Google ด้วยแอป Chromium ในโทรศัพท์<ph name="DEVICE_TYPE" /></translation>
 <translation id="8004582292198964060">เบราว์เซอร์</translation>
+<translation id="8008233848513969696">ปิดแผงด้านข้างของ Search</translation>
 <translation id="8010081455002666927">ตรวจหาอัตโนมัติ</translation>
 <translation id="8013436988911883588">เมื่อ Chromium มีสิทธิ์การเข้าถึงแล้ว เว็บไซต์จะขอสิทธิ์การเข้าถึงจากคุณได้</translation>
+<translation id="8014387184082426885">สำเร็จ! ตอนนี้คุณสามารถถามคำถามได้อย่างง่ายดายขณะท่องเว็บด้วยแผง Search</translation>
 <translation id="8031714377769448844">ปักหมุด Chromium ไว้ที่แถบงานเพื่อให้เข้าถึงได้รวดเร็วทุกเมื่อ</translation>
 <translation id="80471789339884597">ขอขอบคุณที่ติดตั้ง คุณต้องรีสตาร์ทเบราว์เซอร์ทั้งหมดก่อนใช้ <ph name="BUNDLE_NAME" /></translation>
 <translation id="8054112667659782652">แสดงทางลัดการค้นหารูปภาพเสมอ</translation>
@@ -718,6 +763,7 @@ Chromium ไม่สามารถกู้คืนการตั้งค�
 <translation id="8130609355518033382">ปรับเปลี่ยน Chromium ในแบบของคุณ</translation>
 <translation id="8133124826068723441">Chromium OS ซิงค์ข้อมูลไม่ได้เนื่องจากการซิงค์ไม่พร้อมใช้งานสำหรับโดเมนของคุณ</translation>
 <translation id="813913629614996137">กำลังเริ่มดำเนินการ...</translation>
+<translation id="8158143604667288086">คุณสามารถปักหมุด Search ใน Chrome เพื่อถามคำถามขณะท่องเว็บได้</translation>
 <translation id="8161503455832158203">เปิด Gemini ใน Chromium ด้วยแป้นพิมพ์ลัด</translation>
 <translation id="8164014945047474187">ข้อกำหนดในการให้บริการเพิ่มเติมของ Chromium</translation>
 <translation id="8172503648109091906">{COUNT,plural, =1{ผู้ดูแลระบบต้องการให้คุณเปิด Chromium ขึ้นมาใหม่เพื่อใช้การอัปเดต มีหน้าต่างที่ไม่ระบุตัวตนหรือหน้าต่างแยกเปิดอยู่ หน้าต่างดังกล่าวจะไม่เปิดขึ้นมาใหม่เมื่อคุณเบราว์เซอร์เปิดอีกครั้ง}other{ผู้ดูแลระบบต้องการให้คุณเปิด Chromium ขึ้นมาใหม่เพื่อใช้การอัปเดต มีหน้าต่างที่ไม่ระบุตัวตนและหน้าต่างแยก # หน้าต่างเปิดอยู่ในโปรไฟล์ต่างๆ หน้าต่างดังกล่าวจะไม่เปิดขึ้นมาใหม่เมื่อคุณเบราว์เซอร์เปิดอีกครั้ง}}</translation>
@@ -757,6 +803,7 @@ Chromium ไม่สามารถกู้คืนการตั้งค�
 <translation id="8453117565092476964">การเก็บข้อมูลของโปรแกรมติดตั้งเสียหายหรือไม่ถูกต้อง โปรดดาวน์โหลด Chromium อีกครั้ง</translation>
 <translation id="8463672209299734063">ไม่บังคับ: ช่วยปรับปรุงฟีเจอร์และประสิทธิภาพของ Chromium OS โดยการส่งข้อมูลการวินิจฉัยและการใช้งานให้ Google โดยอัตโนมัติ</translation>
 <translation id="8471947159125090285">โปรดยืนยันว่าเป็นคุณเพื่อใช้และบันทึกข้อมูล Chromium ในบัญชี Google</translation>
+<translation id="8473541503127475913">เปิด Chromium อีกครั้งเพื่อเปลี่ยน</translation>
 <translation id="8482493977473846331">แสดงข้อความแจ้งให้ลงชื่อเข้าใช้ Chromium</translation>
 <translation id="8493179195440786826">Chromium ล้าสมัย</translation>
 <translation id="850264194101621529">ขอขอบคุณที่เลือกใช้ Chromium เป็นเบราว์เซอร์เริ่มต้น</translation>
@@ -771,6 +818,7 @@ Chromium ไม่สามารถกู้คืนการตั้งค�
 <translation id="8586442755830160949">ลิขสิทธิ์ <ph name="YEAR" /> The Chromium Authors สงวนลิขสิทธิ์</translation>
 <translation id="8619360774459241877">กำลังเปิด Chromium...</translation>
 <translation id="8624541899164515475">การตั้งค่า เปิดในแท็บใหม่</translation>
+<translation id="8647316383949836607">สำเร็จ! ตอนนี้คุณสามารถถามคำถามได้อย่างง่ายดายขณะท่องเว็บด้วย Search ในแผงด้านข้าง</translation>
 <translation id="8648201657708811153">ไม่สามารถตั้ง Google Chrome สำหรับการทดสอบเป็นเบราว์เซอร์เริ่มต้นได้</translation>
 <translation id="8676101123715131330">ค้นหาด้วย Chromium ได้จากทุกที่</translation>
 <translation id="8697124171261953979">อีกทั้งยังควบคุมหน้าที่จะแสดงเมื่อคุณเปิด Chromium หรือทำการค้นหาจากแถบอเนกประสงค์ด้วย</translation>
@@ -793,6 +841,8 @@ Chromium ไม่สามารถกู้คืนการตั้งค�
 <translation id="8891709362986793894">องค์กรกำหนดให้คุณต้องลงชื่อเข้าใช้ Chromium</translation>
 <translation id="8906384069222226849">Chromium ต้องใช้ Windows 10 เวอร์ชัน 1809 ขึ้นไป</translation>
 <translation id="8907580949721785412">Chromium กำลังพยายามแสดงรหัสผ่าน พิมพ์รหัสผ่าน Windows ของคุณเพื่อแสดงรหัสผ่าน</translation>
+<translation id="8910309838319708610">สำเร็จ! ตอนนี้คุณสามารถถามคำถามได้อย่างง่ายดายขณะท่องเว็บด้วยโหมด AI ของ Search</translation>
+<translation id="8915682436012075700">เบราว์เซอร์ที่มีการจัดการนี้สามารถใช้ผู้ช่วย Gemini ที่ <ph name="DOMAIN" /> ตั้งค่าไว้สำหรับการทำงาน โดยสามารถค้นหาข้อมูลและให้คำตอบที่อิงตามแหล่งข้อมูลจากไฟล์และบริการที่ได้รับอนุมัติขององค์กร เราไม่แนะนำให้ใช้กับโปรไฟล์ส่วนตัว ประวัติการแชทจะไม่ย้ายตามไปด้วย ในการเปลี่ยนจะต้องเปิด Chromium อีกครั้ง</translation>
 <translation id="8932992523185907506">Chromium ไม่ใช่เบราว์เซอร์เริ่มต้นของคุณอีกต่อไป ทำให้ Chromium เป็นเบราว์เซอร์เริ่มต้นไหม</translation>
 <translation id="8941642502866065432">อัปเดต Chromium ไม่ได้</translation>
 <translation id="8944232836376404813">การดำเนินการนี้จะทำสิ่งต่อไปนี้
@@ -832,6 +882,7 @@ Chromium ไม่สามารถกู้คืนการตั้งค�
 <translation id="9148058034647219655">ออก</translation>
 <translation id="9155105544013854680">ดำเนินการต่อจากที่ค้างไว้: Chromium สามารถคืนค่าแท็บทุกครั้งที่คุณรีสตาร์ท หากต้องการเปิดตัวเลือกนี้ ให้ไปที่</translation>
 <translation id="9158494823179993217">ผู้ดูแลระบบของคุณกำหนดค่าให้ Chromium เปิดเบราว์เซอร์สำรองเพื่อเข้าถึง <ph name="TARGET_URL_HOSTNAME" /></translation>
+<translation id="9165824416732784256">สำเร็จ! ตอนนี้คุณสามารถถามคำถามได้อย่างง่ายดายขณะท่องเว็บด้วย Search ใน Chrome</translation>
 <translation id="9185526690718004400">เปิดอีกครั้งเพื่ออัปเดต Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="924957577793602335">ปรับเปลี่ยน Chromium ในแบบของคุณ</translation>

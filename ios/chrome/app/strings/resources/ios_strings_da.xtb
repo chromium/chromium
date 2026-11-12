@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">Angiv en adgangskode på din enhed, før du kan se adgangskoder.</translation>
 <translation id="201759455285471444">Udvid fanegruppe.</translation>
 <translation id="2022431790688770637">Administrer Gemini-forslag</translation>
+<translation id="2023265063803387188">Gemini er ikke tilgængelig i inkognitotilstand</translation>
 <translation id="2031515492007104071">Level Up</translation>
 <translation id="2044394949148788042">Åbn fanegitteret</translation>
 <translation id="2044681667265133332">Kontoen <ph name="USER_EMAIL" /> administreres af <ph name="HOSTED_DOMAIN" />, som muligvis kan se visse oplysninger. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
@@ -2035,6 +2036,7 @@ Skift til <ph name="OTHER_EMAIL" /> for at fortsætte på din computer. Du får 
 <translation id="728025568708172005">Vis mig rundt</translation>
 <translation id="7280980607183752256">Denne fil kan ikke importeres</translation>
 <translation id="7282197670900591579">Citrongult tema</translation>
+<translation id="7283937415134849498">For at give dig tilpasset hjælp deler Gemini nogle af dine data (f.eks. uddrag af dine chatsamtaler, din lokation og andre relevante oplysninger) med andre Google-tjenester, f.eks. Maps og Flights. Disse tjenester kan bruge oplysningerne til at blive bedre, også selvom du senere sletter din Gemini-historik. Få flere oplysninger i <ph name="BEGIN_LINK" />Hjælp til privatliv for Gemini-apps<ph name="END_LINK" />.</translation>
 <translation id="7293429513719260019">Vælg sprog</translation>
 <translation id="72961285530871072">Dette sletter permanent dine fremskridt i Level Up, og data om brug af funktioner i Level Up sendes ikke længere til Google for din profil.
 
@@ -2607,6 +2609,7 @@ Du kan til enhver tid genstarte.</translation>
 <translation id="8976382372951310360">Hjælp</translation>
 <translation id="8976414606286374109">Kort gemmes på din Google-konto.</translation>
 <translation id="8981454092730389528">Aktivitetsadministration på Google</translation>
+<translation id="8987736167266086032">Fortsæt, hvor du slap</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, fastgjort website</translation>
 <translation id="8989779557457435460">Del den aktuelle fane som standard</translation>
 <translation id="8990960056509724223">Filen kunne ikke gemmes på grund af din organisations politikker</translation>
@@ -2648,6 +2651,7 @@ Du kan til enhver tid genstarte.</translation>
 <translation id="91023216973987714">Betalingsmetoder</translation>
 <translation id="9106655997975673326">Fra "<ph name="SOURCE_DEVICE" />"</translation>
 <translation id="9107664647686727385">Tjekker, om der er kompromitterede adgangskoder</translation>
+<translation id="9115035712231910133">Vedhæftet billede {title}</translation>
 <translation id="9119764377203471454">De vedhæftede filer kunne ikke tilføjes</translation>
 <translation id="9124387962554796433">Google kan bruge din historik til at personligt tilpasse Søgning og andre Google-tjenester.</translation>
 <translation id="9124978074365039456">Køb, oversæt og identificer det, du ser, med dit kamera og billedgalleri</translation>

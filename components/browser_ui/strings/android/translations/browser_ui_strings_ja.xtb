@@ -83,7 +83,7 @@
 <translation id="1796588414813960292">音を使用する機能は動作しなくなります</translation>
 <translation id="1816835383954230954">オンにすると、Chrome の動作が速くなり、JavaScript を使用する機能が設計どおりに動作します。オフにすると、パフォーマンスは低下しますが、攻撃に対する V8 の耐性が強化されます。</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" /> に AR の使用を許可するには、<ph name="BEGIN_LINK" />Android の設定<ph name="END_LINK" />でもカメラをオンにしてください。</translation>
-<translation id="1822318649925991542">位置を変更してブラウジング環境をカスタマイズ</translation>
+<translation id="1822318649925991542">位置を変更してブラウジング環境をカスタマイズします</translation>
 <translation id="1848033246551405023">フォント Sans Serif</translation>
 <translation id="1861244985839668297">オンにすると、サイトは HID デバイスの使用を要求できます。オフにすると、サイトは HID デバイスを使用できません。</translation>
 <translation id="1861262398884155592">このフォルダは空です</translation>
@@ -478,7 +478,7 @@
 <translation id="5908617755156109052">サイトに周囲の 3D マップの作成またはカメラ位置の追跡を許可しない</translation>
 <translation id="5916664084637901428">オン</translation>
 <translation id="5922853908706496913">画面を共有しています</translation>
-<translation id="5922967540311291836">サードパーティの Cookie をブロックする:</translation>
+<translation id="5922967540311291836">サードパーティ Cookie をブロックする:</translation>
 <translation id="5923512600150154850">サイトにより保存された <ph name="DATASIZE" /> のデータと Cookie が削除されます。</translation>
 <translation id="5930707844513754220">設定リストをもっと見る</translation>
 <translation id="5939518447894949180">リセット</translation>

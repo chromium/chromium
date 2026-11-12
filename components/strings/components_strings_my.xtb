@@ -824,6 +824,7 @@
 <translation id="2356941001189392209">ယခင်နည်းပညာ ဖြစ်ရပ်များ ရှိနေသည့် သင်ဝင်ကြည့်သော စာမျက်နှာ URL များ၏ ကန့်သတ်စာရင်း</translation>
 <translation id="2357312461142072202">{NUM_TABS,plural, =1{တဘ် ၁ ခုကို မျှဝေပါမည်}other{တဘ် {NUM_TABS} ခုကို မျှဝေပါမည်}}</translation>
 <translation id="2357481397660644965">သင့်စက်ပစ္စည်းကို <ph name="DEVICE_MANAGER" /> က စီမံခန့်ခွဲပြီး သင့်အကောင့်ကို <ph name="ACCOUNT_MANAGER" /> က စီမံခန့်ခွဲသည်။</translation>
+<translation id="2358479643736965923">ဤတဘ်တွင် သင်၏ Google AI Search အဖြေကို ကြည့်ပါ</translation>
 <translation id="2359629602545592467">များစွာ</translation>
 <translation id="2359808026110333948">ဆက်လုပ်ရန်</translation>
 <translation id="236000571258713023">ယာဉ်များ</translation>
@@ -1146,6 +1147,7 @@
 <translation id="2925032407415783182">ပွဲလက်မှတ်ကို Wallet တွင် သိမ်းခြင်း</translation>
 <translation id="2925454999967523701">Google Doc အသစ် အမြန်ပြုလုပ်ရန်အတွက် ‘Doc ပြုလုပ်ရန်’ ခလုတ်ကို နှိပ်နိုင်သည်</translation>
 <translation id="2925673989565098301">ပို့ရန် နည်းလမ်း</translation>
+<translation id="2927328994673424423">ပြီးခဲ့သော ၂ ပတ်</translation>
 <translation id="2928426578619531300">အသုံးပြုသူနှင့် တွဲဖက်ပြီးပြီ</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> နှင့် နောက်ထပ် <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> နှင့် နောက်ထပ် <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="2930531075747147366">အခြားစက်မှ တဘ်</translation>

@@ -154,7 +154,9 @@
 <translation id="2301513536169703857">Aby mieć dostęp do haseł, zakładek oraz innych ustawień i danych na wszystkich swoich urządzeniach, zaloguj się w Chrome</translation>
 <translation id="2307973900865360088">Zachowaj w Docku</translation>
 <translation id="2309047409763057870">To jest druga instalacja Google Chrome. Nie można ustawić jej jako przeglądarki domyślnej.</translation>
+<translation id="2330059234841117265">Otwórz wyszukiwarkę Google w Chrome</translation>
 <translation id="2345992953227471816">Przeglądarka Chrome wykryła w tych rozszerzeniach złośliwe oprogramowanie:</translation>
+<translation id="2350411688004301551">Przełącz się na Gemini Enterprise</translation>
 <translation id="2358140144860869442">Aby mieć dostęp do listy Do przeczytania oraz innych ustawień i danych na wszystkich swoich urządzeniach, zaloguj się w Chrome</translation>
 <translation id="2359808026110333948">Dalej</translation>
 <translation id="2403703063067034158">Błąd podczas uruchamiania: obecnie działa inna instancja konfiguracji. Spróbuj ponownie później.</translation>
@@ -165,6 +167,7 @@
 <translation id="2482846200327569645">Zalogowano się już na konto <ph name="EXISTING_USER" />. Aby przeglądać osobno, zaloguj się w Chrome na swoim profilu jako <ph name="USER_EMAIL_ADDRESS" />. Będziesz też mieć dostęp do zakładek oraz innych danych z <ph name="DEVICE" />.</translation>
 <translation id="2485422356828889247">Odinstaluj</translation>
 <translation id="2513154137948333830">Wymagany restart: <ph name="INSTALL_SUCCESS" /></translation>
+<translation id="251329670120169391">Twoja organizacja</translation>
 <translation id="2521391734665471391">Zamknij Tryb AI w wyszukiwarce Google</translation>
 <translation id="2523492931736391680">Zabezpieczenie Twojej pracy w Chrome</translation>
 <translation id="2534365042754120737">Aby chronić swoje dane, zezwól Chrome na usuwanie uprawnień witryn, których ostatnio nie odwiedzasz. Powiadomienia nie zostaną wyłączone.</translation>
@@ -214,6 +217,7 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="2876628302275096482">Dowiedz się więcej o tym, <ph name="BEGIN_LINK" />jak Chrome dba o prywatność Twoich danych<ph name="END_LINK" />.</translation>
 <translation id="2885378588091291677">Menedżer zadań</translation>
 <translation id="2888126860611144412">Chrome – informacje</translation>
+<translation id="2898830646167954300">Przełącz się z powrotem na niezarządzanego asystenta Gemini</translation>
 <translation id="2915996080311180594">Uruchom ponownie później</translation>
 <translation id="2926952073016206995">Ta strona musi mieć w Chrome dostęp do aparatu</translation>
 <translation id="2945997411976714835">Błąd instalacji: nie udało się uruchomić procesu instalatora.</translation>
@@ -253,6 +257,7 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="3140883423282498090">Zmiany zaczną obowiązywać po ponownym uruchomieniu Google Chrome.</translation>
 <translation id="3149510190863420837">Aplikacje Chrome</translation>
 <translation id="3161522574479303604">Wszystkie języki</translation>
+<translation id="3183555099201190073">Dostęp do wyszukiwarki z dowolnej karty</translation>
 <translation id="318555301233810762">Zalogowano się już na konto <ph name="EXISTING_USER" />. Aby przeglądać osobno, zaloguj się w Chrome na swoim profilu jako <ph name="USER_EMAIL_ADDRESS" />. Będziesz też mieć dostęp do zakładek oraz innych danych na wszystkich swoich urządzeniach.</translation>
 <translation id="319199214552513804">Aby móc korzystać z tego rozszerzenia i innych funkcji na wszystkich swoich komputerach, zaloguj się w Chrome</translation>
 <translation id="3196187562065225381">Pobieranie zostało zablokowane przez Chrome, bo plik jest niebezpieczny</translation>
@@ -341,11 +346,13 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="4022972681110646219">Przetłumacz ekran</translation>
 <translation id="4023601594785368013">Język oryginału: <ph name="LANGUAGE" /></translation>
 <translation id="4034249157893816477">Jest wbudowany w Chrome i ułatwi Ci tworzenie, zapisywanie oraz autouzupełnianie silnych haseł. Dodaj skrót, aby mieć łatwy dostęp.</translation>
+<translation id="4034420818911109432"><ph name="USER_NAME" />, <ph name="EMAIL" />. Subskrypcja Google.</translation>
 <translation id="4035053306113201399">Aby system operacyjny Chrome mógł zastosować aktualizacje, musisz go ponownie uruchomić.</translation>
 <translation id="4050175100176540509">W najnowszej wersji zostały wprowadzone ważne poprawki bezpieczeństwa i nowe funkcje.</translation>
 <translation id="4053720452172726777">Dostosowywanie i kontrolowanie Google Chrome</translation>
 <translation id="408393047846373801">Aby mieć dostęp do haseł oraz innych ustawień i danych na wszystkich swoich urządzeniach, zaloguj się w Chrome. To hasło zostanie zapisane na Twoim koncie Google, gdy się zalogujesz.</translation>
 <translation id="4102173024714616627">Rozszerzenia to dodatki, które umożliwiają dostosowanie Chrome. Dzięki nim możesz dopasować Chrome do swoich potrzeb – od utrzymania porządku po łatwiejsze wykonywanie codziennych zadań.</translation>
+<translation id="4103543596018881622">Wyszukiwarka Google w Chrome została przypięta do paska narzędzi.</translation>
 <translation id="4110895483821904099">Skonfiguruj nowy profil w Chrome</translation>
 <translation id="4111566860456076004">Chrome nie może zweryfikować, skąd pochodzi to rozszerzenie, które może być niebezpieczne. Usuń je z Chrome, aby nie odczytywało ani nie zmieniało Twoich danych na stronach, które odwiedzasz. Dotyczy to też danych osobowych.</translation>
 <translation id="4147555960264124640">Logujesz się na zarządzane konto i przekazujesz jego administratorowi kontrolę nad swoim profilem Google Chrome. Twoje dane Chrome, takie jak aplikacje, zakładki, historia, hasła i inne ustawienia, zostaną trwale powiązane z użytkownikiem <ph name="USER_NAME" />. Będzie można je usunąć w Panelu kont Google, ale nie będzie można ich powiązać z innym kontem. <ph name="LEARN_MORE" /></translation>
@@ -467,6 +474,7 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="5321325624576443340">Obiektyw Google jest niedostępny. Spróbuj ponownie później.</translation>
 <translation id="5334309298019785904">Chrome OS nie może zsynchronizować danych, ponieważ synchronizacja jest niedostępna w Twojej domenie.</translation>
 <translation id="5334487786912937552">Aby pobierać pliki, Chrome musi mieć dostęp do pamięci</translation>
+<translation id="5336664042114176802">Możesz przełączyć się na asystenta Gemini, który był pierwotnie powiązany z Twoim kontem Google i którym nie zarządza <ph name="DOMAIN" />. Odpowiedzi nie będą już oparte na plikach ani usługach, którymi zarządza <ph name="DOMAIN" />, a historia czatów nie zostanie przeniesiona. Ten asystent może nie nadawać się do użytku służbowego. Aby się przełączyć, musisz ponownie uruchomić Chrome.</translation>
 <translation id="5337648990166757586">Opcjonalnie: pomóż ulepszyć funkcje i działanie Chrome OS, automatycznie wysyłając do Google dane diagnostyczne i dane o korzystaniu.</translation>
 <translation id="5346389065299425353">Pogłębiaj wyszukiwanie, dodając kilka kart, plików i narzędzi</translation>
 <translation id="5353252989841766347">Eksportowanie haseł z Chrome</translation>
@@ -582,6 +590,7 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="6326175484149238433">Usuń z Chrome</translation>
 <translation id="6334815226785304306">Ustaw Google Chrome jako przeglądarkę domyślną i przypnij ją do paska zadań</translation>
 <translation id="6339888439788291743">Nowa ikona, ten sam skrót: kliknij, aby zadawać pytania podczas przeglądania za pomocą trybu AI w wyszukiwarce Google.</translation>
+<translation id="6349304688246983183">Łatwo zadawaj pytania w wyszukiwarce Google podczas przeglądania stron</translation>
 <translation id="63540178978900677">Chrome nie jest już przeglądarką domyślną. Czy ma nią być?</translation>
 <translation id="6357670763064300993">Gemini Enterprise w Chrome</translation>
 <translation id="6360449101159168105">Gdy ta karta była nieaktywna, pamięć została zwolniona, aby przeglądarka Chrome działała szybko. Możesz zdecydować, że ta witryna ma być zawsze aktywna.</translation>
@@ -596,6 +605,7 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="6438015621983209660">Korzystaj z Ulepszonego bezpiecznego przeglądania także na telefonie dzięki Chrome</translation>
 <translation id="6442774133615368941">Kupuj, tłumacz i rozpoznawaj to, co widzisz, za pomocą aparatu w aplikacji Chrome na iOS</translation>
 <translation id="6446105560007692480">aby wyszukać za pomocą Chrome lub dostosować w <ph name="BEGIN_LINK" />Ustawieniach<ph name="END_LINK" /></translation>
+<translation id="6447943657065463998">Ta zarządzana przeglądarka może korzystać z asystenta Gemini skonfigurowanego do użytku służbowego przez: <ph name="DOMAIN" />. Może on znajdować informacje i udzielać odpowiedzi na podstawie plików organizacji i zatwierdzonych usług. Używanie go w profilu osobistym może nie być zalecane. Historia czatów nie zostanie przeniesiona. Aby się przełączyć, musisz ponownie uruchomić Chrome.</translation>
 <translation id="6448835208126432197">Aby zaznaczyć część ekranu w Gemini w Chrome, użyj skrótu klawiszowego.</translation>
 <translation id="6473905796280459355">Otwórz stronę Chrome – informacje</translation>
 <translation id="6481963882741794338">Połącz Chrome i inne usługi Google na potrzeby personalizacji oraz w innych celach</translation>
@@ -790,6 +800,7 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="8064965390968184078">1. Kliknij <ph name="BUTTON_LABEL" /> poniżej
 2. Kliknij <ph name="BUTTON_2" /> w ustawieniach systemu Windows
 3. Kliknij <ph name="BUTTON_3" /> w powiadomieniu systemu Windows, aby przypiąć przeglądarkę Chrome do paska zadań i mieć do niej szybki dostęp</translation>
+<translation id="8066474819446975249">Uruchom ponownie Chrome, aby się przełączyć</translation>
 <translation id="8069447462453318634">Wybierz „Przypnij do paska narzędzi”</translation>
 <translation id="8074398340364918139">Aby wyszukać konkretną funkcję lub rozszerzenie Chrome, wpisz skrót do danego elementu na pasku adresu i naciśnij wybrany klawisz</translation>
 <translation id="8077579734294125741">Inne profile Chrome</translation>
@@ -931,6 +942,7 @@ Dopóki nie usuniesz niektórych zakładek, nie będzie można zapisywać nowych
 <translation id="9148058034647219655">Zakończ</translation>
 <translation id="9150331942025550505">Wykorzystaj możliwości AI dzięki aplikacji Chrome na urządzeniu <ph name="DEVICE_TYPE" /></translation>
 <translation id="919706545465235479">Aby rozpocząć synchronizację, zaktualizuj Chrome</translation>
+<translation id="9210313013767007472"><ph name="USER_NAME_OR_EMAIL" />. Subskrypcja Google.</translation>
 <translation id="922152298093051471">Dostosuj Chrome</translation>
 <translation id="93760716455950538">Uruchom ChromeOS Flex ponownie</translation>
 <translation id="943390475793766444">Chrome zaleca przeskanowanie tego pliku, bo może on być niebezpieczny.</translation>

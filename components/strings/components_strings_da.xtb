@@ -823,6 +823,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2356941001189392209">En begrænset liste over webadresser for sider, du besøger, hvor der forekommer hændelser relateret til forældet teknologi</translation>
 <translation id="2357312461142072202">{NUM_TABS,plural, =1{Deler 1 fane}one{Deler {NUM_TABS} fane}other{Deler {NUM_TABS} faner}}</translation>
 <translation id="2357481397660644965">Din enhed administreres af <ph name="DEVICE_MANAGER" />, og din konto administreres af <ph name="ACCOUNT_MANAGER" />.</translation>
+<translation id="2358479643736965923">Se dit AI-svar fra Google Søgning på denne fane</translation>
 <translation id="2359629602545592467">Flere</translation>
 <translation id="2359808026110333948">Fortsæt</translation>
 <translation id="236000571258713023">Køretøjer</translation>
@@ -1141,6 +1142,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2925032407415783182">Gem billetten i Wallet</translation>
 <translation id="2925454999967523701">Knappen Opret dokument, aktivér for hurtigt at oprette et nyt Google-dokument</translation>
 <translation id="2925673989565098301">Leveringsmetode</translation>
+<translation id="2927328994673424423">2 uger siden</translation>
 <translation id="2928426578619531300">Tilknyttet bruger</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> anden}one{<ph name="SHIPPING_ADDRESS_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> anden}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> andre}}</translation>
 <translation id="2930531075747147366">Fane fra din anden enhed</translation>

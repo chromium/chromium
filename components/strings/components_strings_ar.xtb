@@ -823,6 +823,7 @@
 <translation id="2356941001189392209">‏قائمة تضم فقط عناوين URL للصفحات التي استخدمت تكنولوجيا قديمة عند زيارتك لها</translation>
 <translation id="2357312461142072202">{NUM_TABS,plural, =1{ستتم مشاركة علامة تبويب واحدة}zero{ستتم مشاركة {NUM_TABS} علامة تبويب}two{ستتم مشاركة علامتَي تبويب ({NUM_TABS})}few{ستتم مشاركة {NUM_TABS} علامات تبويب}many{ستتم مشاركة {NUM_TABS} علامة تبويب}other{ستتم مشاركة {NUM_TABS} علامة تبويب}}</translation>
 <translation id="2357481397660644965">يدير <ph name="DEVICE_MANAGER" /> جهازك، ويدير <ph name="ACCOUNT_MANAGER" /> حسابك.</translation>
+<translation id="2358479643736965923">‏يمكنك الاطّلاع على إجابة "بحث Google" بالذكاء الاصطناعي في علامة التبويب هذه</translation>
 <translation id="2359629602545592467">متعددة</translation>
 <translation id="2359808026110333948">متابعة</translation>
 <translation id="236000571258713023">مركبات</translation>
@@ -1141,6 +1142,7 @@
 <translation id="2925032407415783182">‏حفظ تذكرة حضور الفعالية في "محفظة Google"</translation>
 <translation id="2925454999967523701">‏زر إنشاء مستند: انقر على هذا الزر لإنشاء مستند Google جديد بسرعة.</translation>
 <translation id="2925673989565098301">طريقة التسليم</translation>
+<translation id="2927328994673424423">قبل أسبوعين</translation>
 <translation id="2928426578619531300">مستخدم تابع</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> وعنوان <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> آخر}two{<ph name="SHIPPING_ADDRESS_PREVIEW" /> وعنوانان (<ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />) آخران}few{<ph name="SHIPPING_ADDRESS_PREVIEW" /> و<ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> عناوين أخرى}many{<ph name="SHIPPING_ADDRESS_PREVIEW" /> و<ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> عنوانًا آخر}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> و<ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> عنوان آخر}}</translation>
 <translation id="2930531075747147366">علامة تبويب من جهازك الآخر</translation>
