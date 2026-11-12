@@ -5,29 +5,22 @@
 #import "ios/chrome/browser/autofill/autofill_ai/ui/autofill_ai_sources_util.h"
 
 #import <algorithm>
-#import <variant>
 
-#import "base/i18n/time_formatting.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
-#import "base/time/time.h"
 #import "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #import "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
+#import "components/autofill/core/browser/ui/autofill_ai/entity_source_attribution_utils.h"
 #import "ios/chrome/browser/autofill/autofill_ai/ui/autofill_ai_source_item.h"
 #import "ios/chrome/browser/shared/ui/buildflags.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/grit/ios_strings.h"
-#import "third_party/abseil-cpp/absl/functional/overload.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
 
 namespace {
 
-using GmailSourceMetadata = autofill::EntityInstance::
-    PersonalContextRecordTypePayload::GmailSourceMetadata;
-using PhotosSourceMetadata = autofill::EntityInstance::
-    PersonalContextRecordTypePayload::PhotosSourceMetadata;
 using Source =
     autofill::EntityInstance::PersonalContextRecordTypePayload::Source;
 
@@ -47,29 +40,6 @@ UIImage* GetSourceIcon(Source::Type type) {
 #endif
   }
   NOTREACHED();
-}
-
-// Formats a `timestamp` as a short date string, or returns an empty string if
-// null.
-NSString* FormatTimestamp(base::Time timestamp) {
-  return timestamp.is_null()
-             ? @""
-             : base::SysUTF16ToNSString(base::TimeFormatShortDate(timestamp));
-}
-
-// Returns the display title for `source` (title or timestamp for Gmail,
-// timestamp for Photos).
-NSString* GetSourceTitle(const Source& source) {
-  return std::visit(
-      absl::Overload{[](const GmailSourceMetadata& gmail) {
-                       return !gmail.title.empty()
-                                  ? base::SysUTF8ToNSString(gmail.title)
-                                  : FormatTimestamp(gmail.timestamp);
-                     },
-                     [](const PhotosSourceMetadata& photos) {
-                       return FormatTimestamp(photos.timestamp);
-                     }},
-      source.metadata);
 }
 
 }  // namespace
@@ -103,7 +73,8 @@ NSArray<AutofillAiSourceGroup*>* ExtractSourcesFromEntity(
       continue;
     }
     AutofillAiSourceItem* item = [[AutofillAiSourceItem alloc]
-        initWithTitle:GetSourceTitle(source)
+        initWithTitle:base::SysUTF16ToNSString(
+                          autofill::GetSourceDisplayTitle(source))
              subtitle:nil
                   URL:source.url
                  type:source.type()

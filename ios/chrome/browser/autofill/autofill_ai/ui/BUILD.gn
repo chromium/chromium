@@ -22,7 +22,6 @@ source_set("ui") {
   ]
   deps = [
     "//base",
-    "//base:i18n",
     "//components/autofill/core/browser",
     "//components/strings",
     "//ios/chrome/app/strings",

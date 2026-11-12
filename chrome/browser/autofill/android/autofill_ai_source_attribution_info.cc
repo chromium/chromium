@@ -6,44 +6,15 @@
 
 #include <string>
 #include <utility>
-#include <variant>
 
 #include "base/check_op.h"
-#include "base/i18n/time_formatting.h"
-#include "base/strings/utf_string_conversions.h"
-#include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/functional/overload.h"
+#include "components/autofill/core/browser/ui/autofill_ai/entity_source_attribution_utils.h"
 #include "url/android/gurl_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/autofill/android/main_autofill_jni_headers/AutofillAiSourceAttributionInfo_jni.h"
 
 namespace autofill {
-
-namespace {
-
-std::u16string FormatTimestamp(base::Time timestamp) {
-  return timestamp.is_null() ? std::u16string()
-                             : base::TimeFormatShortDate(timestamp);
-}
-
-std::u16string GetSourceTitle(
-    const EntityInstance::PersonalContextRecordTypePayload::Source& source) {
-  return std::visit(
-      absl::Overload{[](const EntityInstance::PersonalContextRecordTypePayload::
-                            GmailSourceMetadata& gmail) {
-                       return !gmail.title.empty()
-                                  ? base::UTF8ToUTF16(gmail.title)
-                                  : FormatTimestamp(gmail.timestamp);
-                     },
-                     [](const EntityInstance::PersonalContextRecordTypePayload::
-                            PhotosSourceMetadata& photos) {
-                       return FormatTimestamp(photos.timestamp);
-                     }},
-      source.metadata);
-}
-
-}  // namespace
 
 AutofillAiSourceAttributionInfo::AutofillAiSourceAttributionInfo(
     SourceType source_type,
@@ -55,7 +26,7 @@ AutofillAiSourceAttributionInfo::AutofillAiSourceAttributionInfo(
     const EntityInstance::PersonalContextRecordTypePayload::Source& source)
     : source_type(source.type()),
       url(source.url),
-      title(GetSourceTitle(source)) {}
+      title(GetSourceDisplayTitle(source)) {}
 
 }  // namespace autofill
 
