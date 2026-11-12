@@ -40,6 +40,7 @@ class ContextMenuHeaderMediator implements View.OnClickListener {
 
     private final Context mContext;
     private final GURL mPlainUrl;
+    private @Nullable LargeIconBridge mIconBridge;
 
     ContextMenuHeaderMediator(
             Context context,
@@ -59,18 +60,31 @@ class ContextMenuHeaderMediator implements View.OnClickListener {
             nativeDelegate.retrieveImageForContextMenu(
                     imageMaxSize, imageMaxSize, this::onImageThumbnailRetrieved);
         } else if (!params.isImage() && !params.isVideo()) {
-            LargeIconBridge iconBridge = new LargeIconBridge(profile);
-            iconBridge.getLargeIconForUrl(
-                    mPlainUrl,
-                    context.getResources().getDimensionPixelSize(R.dimen.default_favicon_min_size),
-                    this::onFaviconAvailable);
+            mIconBridge = new LargeIconBridge(profile);
+            boolean willCall =
+                    mIconBridge.getLargeIconForUrl(
+                            mPlainUrl,
+                            context.getResources()
+                                    .getDimensionPixelSize(R.dimen.default_favicon_min_size),
+                            this::onFaviconAvailable);
+            if (!willCall) {
+                destroy();
+            }
         } else if (params.isVideo()) {
             setVideoIcon();
         }
     }
 
+    void destroy() {
+        if (mIconBridge != null) {
+            mIconBridge.destroy();
+            mIconBridge = null;
+        }
+    }
+
     /**
      * This is called when the thumbnail is fetched and ready to display.
+     *
      * @param thumbnail The bitmap received that will be displayed as the header image.
      */
     void onImageThumbnailRetrieved(Bitmap thumbnail) {
@@ -86,6 +100,7 @@ class ContextMenuHeaderMediator implements View.OnClickListener {
             @ColorInt int fallbackColor,
             boolean isColorDefault,
             @IconType int iconType) {
+        destroy();
         // If we didn't get a favicon, generate a monogram instead
         if (icon == null) {
             final RoundedIconGenerator iconGenerator = createRoundedIconGenerator(fallbackColor);

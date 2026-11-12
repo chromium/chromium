@@ -14,6 +14,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifier;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
@@ -33,6 +34,7 @@ import org.chromium.url.GURL;
 @NullMarked
 class ContextMenuHeaderCoordinator {
     private final PropertyModel mModel;
+    private @Nullable ContextMenuHeaderMediator mMediator;
 
     private static boolean sDisableForTesting;
 
@@ -81,7 +83,15 @@ class ContextMenuHeaderCoordinator {
                         : "";
 
         mModel = buildModel(activity, pageTitle, altText, url, secondaryUrl, tertiaryUrl);
-        new ContextMenuHeaderMediator(activity, mModel, params, profile, nativeDelegate);
+        mMediator =
+                new ContextMenuHeaderMediator(activity, mModel, params, profile, nativeDelegate);
+    }
+
+    void destroy() {
+        if (mMediator != null) {
+            mMediator.destroy();
+            mMediator = null;
+        }
     }
 
     public static void setDisableForTesting(boolean disable) {

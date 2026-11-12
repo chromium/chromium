@@ -488,6 +488,9 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
     }
 
     private void dismissDialogs() {
+        if (mHeaderCoordinator != null) {
+            mHeaderCoordinator.destroy();
+        }
         if (mWebContentsObserver != null) {
             mWebContentsObserver.observe(null);
         }
