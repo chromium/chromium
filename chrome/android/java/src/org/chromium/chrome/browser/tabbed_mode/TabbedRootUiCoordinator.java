@@ -394,6 +394,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private @Nullable TouchEventObserver mDragDropTouchObserver;
     private @Nullable ViewGroup mCoordinator;
     private final OneshotSupplierImpl<SystemBarColorHelper> mSystemBarColorHelperSupplier;
+
+    @SuppressWarnings("UnusedVariable")
+    private final OneshotSupplierImpl<SystemBarColorHelper> mTopScalpColorHelperSupplier;
+
     private final MonotonicObservableSupplier<ManualFillingComponent>
             mManualFillingComponentSupplier;
     private final DataSharingTabManager mDataSharingTabManager;
@@ -598,6 +602,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
      * @param topInsetProvider The {@link TopInsetProvider} instance.
      * @param systemBarColorHelperSupplier Supplies the {@link SystemBarColorHelper} for the
      *     edge-to-edge bottom chin.
+     * @param topScalpColorHelperSupplier Supplies the {@link SystemBarColorHelper} for the
+     *     edge-to-edge top scalp.
      * @param activityType The {@link ActivityType} for the activity.
      * @param isInOverviewModeSupplier Supplies whether the app is in overview mode.
      * @param appMenuDelegate The app menu delegate.
@@ -660,6 +666,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             SettableMonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
             TopInsetProvider topInsetProvider,
             OneshotSupplierImpl<SystemBarColorHelper> systemBarColorHelperSupplier,
+            OneshotSupplierImpl<SystemBarColorHelper> topScalpColorHelperSupplier,
             @ActivityType int activityType,
             Supplier<Boolean> isInOverviewModeSupplier,
             AppMenuDelegate appMenuDelegate,
@@ -790,6 +797,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         mHubManagerSupplier = hubManagerSupplier;
         mStatusBarColorController.setAllowToolbarColorOnTablets(true);
         mSystemBarColorHelperSupplier = systemBarColorHelperSupplier;
+        mTopScalpColorHelperSupplier = topScalpColorHelperSupplier;
         mManualFillingComponentSupplier = manualFillingComponentSupplier;
         mInactivityTrackerSupplier = inactivityTrackerSupplier;
         mVerticalTabsActionDelegate = verticalTabsActionDelegate;

@@ -655,6 +655,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             new SearchActivityClientImpl(this, IntentOrigin.HUB);
     private final OneshotSupplierImpl<SystemBarColorHelper> mBottomChinSupplier =
             new OneshotSupplierImpl<>();
+    private final OneshotSupplierImpl<SystemBarColorHelper> mTopScalpSupplier =
+            new OneshotSupplierImpl<>();
 
     private final MainIntentBehaviorMetrics mMainIntentMetrics;
     private final AppLaunchDrawBlocker mAppLaunchDrawBlocker;
@@ -3564,6 +3566,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 mEdgeToEdgeControllerSupplier,
                 mTransitiveTopInsetProvider,
                 mBottomChinSupplier,
+                mTopScalpSupplier,
                 getActivityType(),
                 this::isInOverviewMode,
                 /* appMenuDelegate= */ this,
@@ -3597,7 +3600,9 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         if (EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled()) {
             mSystemBarColorHelperSupplier.set(
                     new TabbedSystemBarColorHelper(
-                            ensureEdgeToEdgeLayoutCoordinator(), mBottomChinSupplier));
+                            ensureEdgeToEdgeLayoutCoordinator(),
+                            mBottomChinSupplier,
+                            mTopScalpSupplier));
             return mSystemBarColorHelperSupplier;
         }
         return mBottomChinSupplier;

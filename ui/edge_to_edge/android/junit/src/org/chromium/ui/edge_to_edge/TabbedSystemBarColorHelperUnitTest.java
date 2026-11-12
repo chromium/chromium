@@ -33,16 +33,21 @@ public class TabbedSystemBarColorHelperUnitTest {
 
     @Mock private EdgeToEdgeLayoutCoordinator mEdgeToEdgeLayoutCoordinator;
     @Mock private SystemBarColorHelper mEdgeToEdgeBottomChinCoordinator;
+    @Mock private SystemBarColorHelper mEdgeToEdgeTopScalpCoordinator;
 
     private TabbedSystemBarColorHelper mTabbedSystemBarColorHelper;
     private final OneshotSupplierImpl<SystemBarColorHelper>
             mEdgeToEdgeBottomChinCoordinatorSupplier = new OneshotSupplierImpl<>();
+    private final OneshotSupplierImpl<SystemBarColorHelper> mEdgeToEdgeTopScalpCoordinatorSupplier =
+            new OneshotSupplierImpl<>();
 
     @Before
     public void setup() {
         mTabbedSystemBarColorHelper =
                 new TabbedSystemBarColorHelper(
-                        mEdgeToEdgeLayoutCoordinator, mEdgeToEdgeBottomChinCoordinatorSupplier);
+                        mEdgeToEdgeLayoutCoordinator,
+                        mEdgeToEdgeBottomChinCoordinatorSupplier,
+                        mEdgeToEdgeTopScalpCoordinatorSupplier);
     }
 
     @Test
@@ -78,5 +83,33 @@ public class TabbedSystemBarColorHelperUnitTest {
         ShadowLooper.idleMainLooper(CALLBACK_DURATION_MS, TimeUnit.MILLISECONDS);
         verify(mEdgeToEdgeBottomChinCoordinator).setNavigationBarColor(Color.BLUE);
         verify(mEdgeToEdgeLayoutCoordinator).setNavigationBarColor(Color.TRANSPARENT);
+    }
+
+    @Test
+    public void testEdgeToEdgeTopScalpCoordinatorIsAvailable() {
+        mEdgeToEdgeTopScalpCoordinatorSupplier.set(mEdgeToEdgeTopScalpCoordinator);
+        mTabbedSystemBarColorHelper.setStatusBarColor(Color.BLUE);
+
+        verify(mEdgeToEdgeTopScalpCoordinator).setStatusBarColor(Color.BLUE);
+        verify(mEdgeToEdgeLayoutCoordinator).setStatusBarColor(Color.TRANSPARENT);
+        verify(mEdgeToEdgeLayoutCoordinator, never()).setStatusBarColor(Color.BLUE);
+    }
+
+    @Test
+    public void testEdgeToEdgeTopScalpCoordinatorIsNull() {
+        mTabbedSystemBarColorHelper.setStatusBarColor(Color.BLUE);
+        verify(mEdgeToEdgeLayoutCoordinator).setStatusBarColor(Color.BLUE);
+        verify(mEdgeToEdgeLayoutCoordinator, never()).setStatusBarColor(Color.TRANSPARENT);
+    }
+
+    @Test
+    public void testEdgeToEdgeTopScalpCoordinatorInitiallyUnavailable() {
+        mTabbedSystemBarColorHelper.setStatusBarColor(Color.BLUE);
+        verify(mEdgeToEdgeLayoutCoordinator).setStatusBarColor(Color.BLUE);
+
+        mEdgeToEdgeTopScalpCoordinatorSupplier.set(mEdgeToEdgeTopScalpCoordinator);
+        ShadowLooper.idleMainLooper(CALLBACK_DURATION_MS, TimeUnit.MILLISECONDS);
+        verify(mEdgeToEdgeTopScalpCoordinator).setStatusBarColor(Color.BLUE);
+        verify(mEdgeToEdgeLayoutCoordinator).setStatusBarColor(Color.TRANSPARENT);
     }
 }

@@ -448,6 +448,7 @@ public class TabbedRootUiCoordinatorUnitTest {
                 /* edgeToEdgeSupplier= */ ObservableSuppliers.createMonotonic(),
                 mTopInsetProvider,
                 /* systemBarColorHelperSupplier= */ new OneshotSupplierImpl<>(),
+                /* topScalpColorHelperSupplier= */ new OneshotSupplierImpl<>(),
                 ActivityType.TABBED,
                 /* isInOverviewModeSupplier= */ () -> false,
                 mAppMenuDelegate,
