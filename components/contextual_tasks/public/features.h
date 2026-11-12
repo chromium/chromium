@@ -678,8 +678,7 @@ extern bool IsContextualTasksPinningV2Enabled();
 
 // Returns whether the ephemeral pin button refactor is enabled under Pinning
 // V2, routing the unpinned ephemeral toolbar button through
-// PinnedToolbarActions::ShowActionEphemerallyInToolbar instead of
-// ContextualTasksButton.
+// PinnedToolbarActions::ShowActionEphemerallyInToolbar.
 extern bool IsContextualTasksEphemeralPinButtonRefactorEnabled();
 
 // Returns whether the ephemeral toolbar button should stay visible alongside

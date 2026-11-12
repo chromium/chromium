@@ -1068,6 +1068,15 @@ class ContextualTasksEphemeralButtonAnimatedPinnedInteractiveTest
     return enabled_features;
   }
 
+  std::vector<base::test::FeatureRef> GetDisabledFeatures() override {
+    std::vector<base::test::FeatureRef> disabled_features =
+        ContextualTasksEphemeralButtonFeatureEnabledInteractiveTest::
+            GetDisabledFeatures();
+    disabled_features.push_back(
+        contextual_tasks::kContextualTasksEphemeralPinButtonRefactor);
+    return disabled_features;
+  }
+
   bool ShouldDisableSidePanelAnimations() const override { return false; }
 };
 
@@ -1337,6 +1346,19 @@ class ContextualTasksPinningV2ParamMixin
           {contextual_tasks::kContextualTasksPinnedButtonActiveIndicator, {}});
     }
     return enabled_features;
+  }
+
+  std::vector<base::test::FeatureRef> GetDisabledFeatures() override {
+    std::vector<base::test::FeatureRef> disabled_features =
+        T::GetDisabledFeatures();
+    if (IsRefactorEnabled()) {
+      std::erase(disabled_features,
+                 contextual_tasks::kContextualTasksEphemeralPinButtonRefactor);
+    } else {
+      disabled_features.push_back(
+          contextual_tasks::kContextualTasksEphemeralPinButtonRefactor);
+    }
+    return disabled_features;
   }
 
   void SetUpOnMainThread() override {
@@ -1742,6 +1764,14 @@ class ContextualTasksEphemeralButtonPinningV2InteractiveTest
     return enabled_features;
   }
 
+  std::vector<base::test::FeatureRef> GetDisabledFeatures() override {
+    std::vector<base::test::FeatureRef> disabled_features =
+        ContextualTasksEphemeralButtonInteractiveTest::GetDisabledFeatures();
+    disabled_features.push_back(
+        contextual_tasks::kContextualTasksEphemeralPinButtonRefactor);
+    return disabled_features;
+  }
+
   auto SetContextualTasksRightAligned(bool right_aligned) {
     return Do([this, right_aligned]() {
       ScopedDictPrefUpdate(browser()->GetProfile()->GetPrefs(),
@@ -2104,12 +2134,15 @@ class ContextualTasksEphemeralButtonCobrowseDisabledInteractiveTest
     : public ContextualTasksButtonInteractiveTestBase {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        GetEnabledFeatures(),
-        {contextual_tasks::kContextualTasks,
-         contextual_tasks::kContextualTasksRearchitecture,
-         contextual_tasks::kContextualTasksSidePanelRearchitecture});
+    scoped_feature_list_.InitWithFeaturesAndParameters(GetEnabledFeatures(),
+                                                       GetDisabledFeatures());
     InteractiveBrowserTest::SetUp();
+  }
+
+  virtual std::vector<base::test::FeatureRef> GetDisabledFeatures() {
+    return {contextual_tasks::kContextualTasks,
+            contextual_tasks::kContextualTasksRearchitecture,
+            contextual_tasks::kContextualTasksSidePanelRearchitecture};
   }
 
   virtual std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() {
@@ -2246,6 +2279,15 @@ class ContextualTasksEphemeralButtonCobrowseDisabledPinningV2InteractiveTest
     enabled_features.push_back(
         {contextual_tasks::kContextualTasksPinningV2, {}});
     return enabled_features;
+  }
+
+  std::vector<base::test::FeatureRef> GetDisabledFeatures() override {
+    std::vector<base::test::FeatureRef> disabled_features =
+        ContextualTasksEphemeralButtonCobrowseDisabledInteractiveTest::
+            GetDisabledFeatures();
+    disabled_features.push_back(
+        contextual_tasks::kContextualTasksEphemeralPinButtonRefactor);
+    return disabled_features;
   }
 };
 
@@ -4268,6 +4310,10 @@ class ContextualTasksEphemeralPinButtonRefactorInteractiveTest
     enabled_features.push_back(
         {contextual_tasks::kContextualTasksPinnedButtonActiveIndicator, {}});
     return enabled_features;
+  }
+
+  std::vector<base::test::FeatureRef> GetDisabledFeatures() override {
+    return ContextualTasksEphemeralButtonInteractiveTest::GetDisabledFeatures();
   }
 };
 

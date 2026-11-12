@@ -620,7 +620,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerPromoTest, ShowsPromo) {
       // Selecting a region should have opened the Contextual Tasks side panel
       // and shown the ephemeral toolbar button.
       WaitForShow(kContextualTasksSidePanelWebViewElementId),
-      WaitForShow(kContextualTasksEphemeralToolbarButtonElementId),
+      WaitForShow(kPinnedToolbarActionShowSidePanelContextualTasksElementId),
 
       // Show the pinnable Contextual Tasks IPH promo anchored to the ephemeral
       // toolbar button.
