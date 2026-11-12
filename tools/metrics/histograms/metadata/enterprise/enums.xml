@@ -417,6 +417,20 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="Success, but Without a Key Signature"/>
 </enum>
 
+<enum name="DTAttestationTokenResult">
+<!-- Must be kept in sync with AttestationTokenStatus in internal Chrome for Android code. -->
+
+  <summary>
+    Outcome of a call to the attestation token provider on Android, such as a
+    token request.
+  </summary>
+  <int value="0" label="Other failure"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="Timeout"/>
+  <int value="3" label="API unavailable"/>
+  <int value="4" label="Token provider failure"/>
+</enum>
+
 <enum name="DTEnrollmentStatus">
   <int value="0" label="Managed"/>
   <int value="1" label="Unmanaged"/>

@@ -2147,6 +2147,19 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Enterprise.DeviceTrust.AttestationToken.Result"
+    enum="DTAttestationTokenResult" expires_after="2027-10-01">
+  <owner>mwalachowski@google.com</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
+  <summary>
+    Outcome of each request for the attestation token that signs a Device Trust
+    connector challenge response, including results that arrive after the
+    handshake timed out. Not recorded for pre-warming, or when the
+    DeviceTrustAndroidAttestationTokens feature is disabled. Google Chrome on
+    Android only.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.DeviceTrust.AttestationToken.Size" units="bytes"
     expires_after="2027-10-01">
   <owner>mwalachowski@google.com</owner>
