@@ -9,8 +9,10 @@
 #import "base/test/ios/wait_util.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/autofill/authentication/test/authentication_egtest_util.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -118,6 +120,8 @@ id<GREYMatcher> VirtualCardEnrollmentAcceptButton() {
 
 - (void)setUp {
   [super setUp];
+  [SigninEarlGrey
+      signinWithFakeIdentity:[FakeSystemIdentity fakeIdentityWithMissingNames]];
   [AutofillAppInterface clearCreditCardStore];
   [AutofillAppInterface setUpFakeCreditCardServer];
   [AutofillAppInterface clearVirtualCardEnrollmentStrikes];
