@@ -52,6 +52,8 @@ source_set("app") {
   sources = [
     "app_startup_parameters.h",
     "app_startup_parameters.mm",
+    "app_switcher_params.h",
+    "app_switcher_params.mm",
     "deferred_initialization_queue.h",
     "deferred_initialization_queue.mm",
     "deferred_initialization_runner.h",
@@ -218,6 +220,7 @@ source_set("unit_tests") {
   sources = [
     "app_metrics_app_state_agent_unittest.mm",
     "app_startup_parameters_unittest.mm",
+    "app_switcher_params_unittest.mm",
     "change_profile_animator_unittest.mm",
     "deferred_initialization_runner_unittest.mm",
     "legacy_scene_identifier_map_unittest.mm",

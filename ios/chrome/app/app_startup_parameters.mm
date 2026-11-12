@@ -6,41 +6,17 @@
 
 #import "base/check.h"
 #import "base/feature_list.h"
-#import "base/metrics/histogram_functions.h"
-#import "base/metrics/histogram_macros.h"
-#import "base/strings/sys_string_conversions.h"
+#import "base/functional/bind.h"
+#import "base/functional/callback.h"
 #import "ios/chrome/app/actor_request.h"
-#import "ios/chrome/app/startup/app_startup_utils.h"
-#import "ios/chrome/browser/app_switcher/metrics/app_switcher_metrics.h"
-#import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/app/app_switcher_params.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/public/provider/chrome/browser/app_switcher/app_switcher_api.h"
-#import "ios/public/provider/chrome/browser/application_mode_fetcher/application_mode_fetcher_api.h"
 #import "net/base/apple/url_conversions.h"
 #import "net/base/url_util.h"
 #import "url/gurl.h"
 
 namespace {
-
-// This enum is used for Histogram. Items should not be removed or reordered and
-// this enum should be kept synced with `IOSAppModeFetchingOutcomeType` in
-// histograms.xml. The four states correspond to:
-// - APP_MODE_FETCHED_INCOGNITO: The application mode fetching response was
-// successful and the fetched app mode is incognito.
-// - APP_MODE_FETCHED_NON_INCOGNITO: The application mode fetching response was
-// successful and the fetched app mode is non-incognito.
-// - APP_MODE_FETCHED_FAILURE: The application mode fetching results in an error
-// (different from a time out error)
-// - APP_MODE_FETCHED_TIME_OUT: The application mode fetching results in a time
-// out error.
-enum class AppModeFetchingOutcomeType {
-  kIncognito,
-  kNonIncognito,
-  kFailure,
-  kTimeOut,
-  kMaxValue = kTimeOut
-};
 
 // Returns a `AppSwitcherParamsRequestStatus` based on the source `app_ID`, the
 // `AppSwitcherParamsRequestStatus` and if the mode is forced or not.
@@ -48,20 +24,11 @@ AppSwitcherParamsRequestStatus AppSwitcherParamsAvailability(
     NSString* app_id,
     ApplicationModeForTabOpening mode,
     bool application_mode_forced) {
-  if (IsAppSwitcherAISummarizationEnabled()) {
-    if (IsCallerAppAllowListedForAISummarization(app_id)) {
-      return AppSwitcherParamsRequestStatus::kUnavailable;
-    }
-  }
-
-  if (IsCallerAppAllowListedForApplicationMode(app_id)) {
-    if (!(application_mode_forced &&
-          mode == ApplicationModeForTabOpening::INCOGNITO)) {
-      return AppSwitcherParamsRequestStatus::kUnavailable;
-    }
-  }
-
-  return AppSwitcherParamsRequestStatus::kAvailable;
+  bool is_incognito_forced = application_mode_forced &&
+                             mode == ApplicationModeForTabOpening::INCOGNITO;
+  return ShouldFetchAppSwitcherParams(app_id, is_incognito_forced)
+             ? AppSwitcherParamsRequestStatus::kUnavailable
+             : AppSwitcherParamsRequestStatus::kAvailable;
 }
 
 }  // namespace
@@ -303,64 +270,40 @@ AppSwitcherParamsRequestStatus AppSwitcherParamsAvailability(
       _appSwitcherParamsRequestStatus =
           AppSwitcherParamsRequestStatus::kRequested;
       __weak __typeof(self) weakSelf = self;
-      base::TimeTicks startFetchTime = base::TimeTicks::Now();
-
-      if (IsAppSwitcherAISummarizationEnabled()) {
-        auto fetching_response = base::BindOnce(
-            ^(ios::provider::AppSwitcherUrlOpeningResult result) {
-              [weakSelf handleAppSwitcherParamsRequest:result
-                                        startFetchTime:startFetchTime];
-            });
-        ios::provider::FetchAppSwitcherParams(
-            _externalURL, base::SysNSStringToUTF8(_sourceAppID),
-            std::move(fetching_response));
-      } else {
-        auto fetching_response = base::BindOnce(
-            ^(bool isAppSwitcherIncognito, NSError* error) {
-              [weakSelf handleApplicationModeRequest:isAppSwitcherIncognito
-                                                    error:error
-                                           startFetchTime:startFetchTime];
-            });
-        ios::provider::FetchApplicationMode(_externalURL, _sourceAppID,
-                                            std::move(fetching_response));
-      }
+      RequestAppSwitcherParams(
+          _externalURL, _sourceAppID,
+          base::BindOnce(^(const AppSwitcherParams& params) {
+            [weakSelf handleAppSwitcherParams:params];
+          }));
       break;
     }
   }
 }
 
-// Handles the callback from the App Switcher parameters fetcher.
-- (void)handleAppSwitcherParamsRequest:
-            (ios::provider::AppSwitcherUrlOpeningResult)result
-                        startFetchTime:(base::TimeTicks)startFetchTime {
+// Applies the fetched App Switcher `params` and runs the pending blocks.
+- (void)handleAppSwitcherParams:(const AppSwitcherParams&)params {
   _appSwitcherParamsRequestStatus = AppSwitcherParamsRequestStatus::kAvailable;
-
-  BOOL success = !result.error;
-  RecordAppSwitcherFetchOutcome(success);
-  RecordAppSwitcherFetchDuration(base::TimeTicks::Now() - startFetchTime);
-
-  if (IsAppSwitcherAISummarizationEnabled()) {
-    if (IsCallerAppAllowListedForAISummarization(_sourceAppID)) {
-      RecordAppSwitcherAISummarizationFetchOutcome(success);
-      if (success && result.is_ai_summarization) {
-        self.postOpeningAction = START_GEMINI_AI_SUMMARIZATION;
-        self.appSwitcherHashedUserID =
-            base::SysUTF8ToNSString(result.hashed_user_id);
-        RecordAppSwitcherAISummarizationEntrypoint();
-      }
-    }
+  if (params.is_ai_summarization) {
+    self.postOpeningAction = START_GEMINI_AI_SUMMARIZATION;
+    self.appSwitcherHashedUserID = params.hashed_user_id;
   }
-
-  if (IsCallerAppAllowListedForApplicationMode(_sourceAppID)) {
-    [self handleApplicationModeRequest:result.is_incognito
-                                 error:result.error
-                        startFetchTime:startFetchTime];
+  // A mode forced by policy takes precedence over the fetched one. The forced
+  // state is read now because it may have been updated during the fetch.
+  bool shouldApplyMode =
+      params.can_change_application_mode && !_forceApplicationMode;
+  if (shouldApplyMode) {
+    _applicationMode =
+        ApplicationModeForAppSwitcherParams(params, _applicationMode);
   }
 
   for (AppSwitcherParamsRequestBlock block in _pendingBlocks) {
     block(_applicationMode);
   }
   _pendingBlocks = nil;
+
+  if (shouldApplyMode) {
+    RecordAppModeFetchingMetrics(params);
+  }
 }
 
 - (void)setApplicationMode:(ApplicationModeForTabOpening)applicationMode
@@ -383,52 +326,6 @@ AppSwitcherParamsRequestStatus AppSwitcherParamsAvailability(
   // TODO(crbug.com/465336545): Remove this getter once the
   // `kChromeStartupParametersAsync` is fully removed.
   return _applicationMode;
-}
-
-- (void)handleApplicationModeRequest:(BOOL)isAppSwitcherIncognito
-                               error:(NSError*)error
-                      startFetchTime:(base::TimeTicks)startFetchTime {
-  _appSwitcherParamsRequestStatus = AppSwitcherParamsRequestStatus::kAvailable;
-  // If the application mode was forced, ignore the fetched application mode
-  // result. When `IsAppSwitcherAISummarizationEnabled()` is enabled,
-  // `handleAppSwitcherParamsRequest:` handles executing pending blocks.
-  if (_forceApplicationMode) {
-    if (!IsAppSwitcherAISummarizationEnabled()) {
-      for (AppSwitcherParamsRequestBlock block in _pendingBlocks) {
-        block(_applicationMode);
-      }
-      _pendingBlocks = nil;
-    }
-    return;
-  }
-
-  AppModeFetchingOutcomeType outcome =
-      AppModeFetchingOutcomeType::kNonIncognito;
-  if (isAppSwitcherIncognito) {
-    // When the `applicationMode` needs changing the error associated to the
-    // response must be nil.
-    CHECK(!error);
-    _applicationMode = ApplicationModeForTabOpening::APP_SWITCHER_INCOGNITO;
-    outcome = AppModeFetchingOutcomeType::kIncognito;
-  } else {
-    if (error) {
-      _applicationMode =
-          ApplicationModeForTabOpening::APP_SWITCHER_UNDETERMINED;
-      outcome = [error.domain isEqualToString:@"AppSwitcherTimeoutError"]
-                    ? AppModeFetchingOutcomeType::kTimeOut
-                    : AppModeFetchingOutcomeType::kFailure;
-    }
-  }
-
-  if (!IsAppSwitcherAISummarizationEnabled()) {
-    for (AppSwitcherParamsRequestBlock block in _pendingBlocks) {
-      block(_applicationMode);
-    }
-    _pendingBlocks = nil;
-    base::UmaHistogramEnumeration("IOS.AppModeFetching.Outcome", outcome);
-    base::UmaHistogramTimes("IOS.AppModeFetching.Duration",
-                            base::TimeTicks::Now() - startFetchTime);
-  }
 }
 
 @end
