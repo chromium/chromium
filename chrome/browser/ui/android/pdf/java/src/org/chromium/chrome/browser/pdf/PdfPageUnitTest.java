@@ -1198,4 +1198,315 @@ public class PdfPageUnitTest {
                         mActivity.getString(R.string.pdf_download_failed), R.id.toast_text));
         pdfPage.destroy();
     }
+
+    @Test
+    public void testTransientDownloadTime_RecordedOnceOnDownloadComplete() {
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher("Android.Pdf.DownloadTime.Transient");
+        PdfPage pdfPage =
+                new PdfPage(
+                        mMockNativePageHost,
+                        mMockTab,
+                        mActivity,
+                        mPdfPageUrl,
+                        mPdfInfo,
+                        DEFAULT_TAB_TITLE,
+                        mPdfFragmentViewTracker);
+        pdfPage.onDownloadComplete(FILE_NAME, FILE_PATH, true);
+        watcher.assertExpected();
+
+        // Calling onDownloadComplete again should not re-record the metric.
+        HistogramWatcher noRecordsWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Android.Pdf.DownloadTime.Transient")
+                        .build();
+        pdfPage.onDownloadComplete(FILE_NAME, FILE_PATH, true);
+        noRecordsWatcher.assertExpected();
+
+        pdfPage.destroy();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.PDF_REUSE_FRAGMENT)
+    public void testTransientDownloadTime_ReusedPageWithUpdateForUrl() {
+        PdfPage pdfPage =
+                new PdfPage(
+                        mMockNativePageHost,
+                        mMockTab,
+                        mActivity,
+                        mPdfPageUrl,
+                        mPdfInfo,
+                        DEFAULT_TAB_TITLE,
+                        mPdfFragmentViewTracker);
+        pdfPage.onDownloadComplete(FILE_NAME, FILE_PATH, true);
+
+        // Reusing the page with a new transient URL should reset the timestamp.
+        pdfPage.updateForUrl(mPdfPageUrl + "&new=1");
+
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher("Android.Pdf.DownloadTime.Transient");
+        pdfPage.onDownloadComplete(FILE_NAME, FILE_PATH, true);
+        watcher.assertExpected();
+
+        pdfPage.destroy();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.PDF_REUSE_FRAGMENT)
+    public void testTransientDownloadTime_ConstructedWithFilepath_DoesNotRecord() {
+        PdfInfo pdfInfoWithFile = new PdfInfo(FILE_NAME, FILE_PATH, true);
+        PdfPage pdfPage =
+                new PdfPage(
+                        mMockNativePageHost,
+                        mMockTab,
+                        mActivity,
+                        mPdfPageUrl,
+                        pdfInfoWithFile,
+                        DEFAULT_TAB_TITLE,
+                        mPdfFragmentViewTracker);
+
+        // NativePageFactory immediately calls updateForUrl before the view is attached.
+        pdfPage.updateForUrl(mPdfPageUrl);
+
+        // No download was in progress, so no metric should be recorded on completion.
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Android.Pdf.DownloadTime.Transient")
+                        .build();
+        pdfPage.onDownloadComplete(FILE_NAME, FILE_PATH, true);
+        watcher.assertExpected();
+
+        pdfPage.destroy();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.PDF_REUSE_FRAGMENT)
+    public void testTransientDownloadTime_ReusedPage_SameUrl_PdfReuseFragmentEnabled() {
+        PdfPage pdfPage =
+                new PdfPage(
+                        mMockNativePageHost,
+                        mMockTab,
+                        mActivity,
+                        mPdfPageUrl,
+                        mPdfInfo,
+                        DEFAULT_TAB_TITLE,
+                        mPdfFragmentViewTracker);
+        pdfPage.onDownloadComplete(FILE_NAME, FILE_PATH, true);
+        View view = pdfPage.mPdfCoordinator.getView();
+        ViewGroup contentView = mActivity.findViewById(android.R.id.content);
+        contentView.addView(view);
+        ShadowLooper.idleMainLooper();
+
+        // Calling updateForUrl with identical URL without changes returns early and does not arm
+        // download timestamp.
+        pdfPage.updateForUrl(mPdfPageUrl);
+
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Android.Pdf.DownloadTime.Transient")
+                        .build();
+        pdfPage.onDownloadComplete(FILE_NAME, FILE_PATH + "_new", true);
+        watcher.assertExpected();
+
+        contentView.removeView(view);
+        pdfPage.destroy();
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.PDF_REUSE_FRAGMENT)
+    public void testTransientDownloadTime_ReusedPage_SameUrl_PdfReuseFragmentDisabled() {
+        PdfPage pdfPage =
+                new PdfPage(
+                        mMockNativePageHost,
+                        mMockTab,
+                        mActivity,
+                        mPdfPageUrl,
+                        mPdfInfo,
+                        DEFAULT_TAB_TITLE,
+                        mPdfFragmentViewTracker);
+        pdfPage.onDownloadComplete(FILE_NAME, FILE_PATH, true);
+
+        // When PdfReuseFragment is disabled, updateForUrl returns early at the feature check and
+        // does not arm download timestamp.
+        pdfPage.updateForUrl(mPdfPageUrl);
+
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Android.Pdf.DownloadTime.Transient")
+                        .build();
+        pdfPage.onDownloadComplete(FILE_NAME, FILE_PATH + "_new", true);
+        watcher.assertExpected();
+
+        pdfPage.destroy();
+    }
+
+    @Test
+    public void testTransientDownloadTime_OnDownloadFailed_ResetsTimestamp() {
+        PdfPage pdfPage =
+                new PdfPage(
+                        mMockNativePageHost,
+                        mMockTab,
+                        mActivity,
+                        mPdfPageUrl,
+                        mPdfInfo,
+                        DEFAULT_TAB_TITLE,
+                        mPdfFragmentViewTracker);
+        pdfPage.onDownloadFailed();
+
+        // After failure, unexpected onDownloadComplete should not record metric.
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Android.Pdf.DownloadTime.Transient")
+                        .build();
+        pdfPage.onDownloadComplete(FILE_NAME, FILE_PATH, true);
+        watcher.assertExpected();
+
+        pdfPage.destroy();
+    }
+
+    @Test
+    public void testTransientDownloadTime_Destroy_ResetsTimestamp() {
+        PdfPage pdfPage =
+                new PdfPage(
+                        mMockNativePageHost,
+                        mMockTab,
+                        mActivity,
+                        mPdfPageUrl,
+                        mPdfInfo,
+                        DEFAULT_TAB_TITLE,
+                        mPdfFragmentViewTracker);
+        pdfPage.destroy();
+
+        // After destroy, late completion callback should not record metric.
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Android.Pdf.DownloadTime.Transient")
+                        .build();
+        pdfPage.onDownloadComplete(FILE_NAME, FILE_PATH, true);
+        watcher.assertExpected();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.PDF_REUSE_FRAGMENT)
+    public void testTransientDownloadTime_LocalPdf_DoesNotRecord() {
+        PdfPage pdfPage =
+                new PdfPage(
+                        mMockNativePageHost,
+                        mMockTab,
+                        mActivity,
+                        mPdfPageUrl,
+                        mPdfInfo,
+                        DEFAULT_TAB_TITLE,
+                        mPdfFragmentViewTracker);
+
+        // Reusing the page with a local PDF while a transient download is pending should reset
+        // timestamp to 0.
+        String localPageUrl = PdfUtils.encodePdfPageUrl(CONTENT_URL);
+        pdfPage.updateForUrl(localPageUrl);
+
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Android.Pdf.DownloadTime.Transient")
+                        .build();
+        pdfPage.onDownloadComplete(FILE_NAME, FILE_PATH, true);
+        watcher.assertExpected();
+
+        pdfPage.destroy();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    public void testTransientDownloadTime_Reload_ResetsTimestamp() {
+        PdfPage pdfPage =
+                new PdfPage(
+                        mMockNativePageHost,
+                        mMockTab,
+                        mActivity,
+                        mPdfPageUrl,
+                        mPdfInfo,
+                        DEFAULT_TAB_TITLE,
+                        mPdfFragmentViewTracker);
+        pdfPage.onDownloadComplete(FILE_NAME, FILE_PATH, true);
+
+        // Calling reload on a transient PDF initiates a navigation to redownload the document.
+        // It does not set the download start timestamp prematurely before network navigation.
+        pdfPage.reload();
+
+        // Premature completion before response headers arrive / download starts should not record.
+        HistogramWatcher prematureWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Android.Pdf.DownloadTime.Transient")
+                        .build();
+        pdfPage.onDownloadComplete(FILE_NAME, FILE_PATH, true);
+        prematureWatcher.assertExpected();
+
+        // updateForUrl with identical URL does not arm the download start timestamp.
+        pdfPage.updateForUrl(mPdfPageUrl);
+
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Android.Pdf.DownloadTime.Transient")
+                        .build();
+        pdfPage.onDownloadComplete(FILE_NAME, FILE_PATH, true);
+        watcher.assertExpected();
+
+        pdfPage.destroy();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    public void testTransientDownloadTime_Reload_PendingDownload_ResetsTimestamp() {
+        PdfPage pdfPage =
+                new PdfPage(
+                        mMockNativePageHost,
+                        mMockTab,
+                        mActivity,
+                        mPdfPageUrl,
+                        mPdfInfo,
+                        DEFAULT_TAB_TITLE,
+                        mPdfFragmentViewTracker);
+
+        // Calling reload while an initial transient download is pending resets the timestamp.
+        pdfPage.reload();
+
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Android.Pdf.DownloadTime.Transient")
+                        .build();
+        pdfPage.onDownloadComplete(FILE_NAME, FILE_PATH, true);
+        watcher.assertExpected();
+
+        pdfPage.destroy();
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.INLINE_PDF_V2, ChromeFeatureList.PDF_REUSE_FRAGMENT})
+    public void testTransientDownloadTime_Reload_ResetsTimestamp_PdfReuseFragmentEnabled() {
+        PdfPage pdfPage =
+                new PdfPage(
+                        mMockNativePageHost,
+                        mMockTab,
+                        mActivity,
+                        mPdfPageUrl,
+                        mPdfInfo,
+                        DEFAULT_TAB_TITLE,
+                        mPdfFragmentViewTracker);
+        pdfPage.onDownloadComplete(FILE_NAME, FILE_PATH, true);
+
+        // Calling reload initiates re-download and clears mTransientDownloadStartTimestamp.
+        pdfPage.reload();
+
+        // When PdfReuseFragment is enabled, resetLoadState() allows updateForUrl with the same URL
+        // to proceed into doUpdate, but identical URL does not arm the download timestamp.
+        pdfPage.updateForUrl(mPdfPageUrl);
+
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Android.Pdf.DownloadTime.Transient")
+                        .build();
+        pdfPage.onDownloadComplete(FILE_NAME, FILE_PATH, true);
+        watcher.assertExpected();
+
+        pdfPage.destroy();
+    }
 }
