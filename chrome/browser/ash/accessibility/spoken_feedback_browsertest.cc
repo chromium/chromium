@@ -963,8 +963,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, NavigateSpeechMenu) {
   sm()->Replay();
 }
 
-// TODO(https://crbug.com/1486666): Fix flakiness
-IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, DISABLED_OpenContextMenu) {
+IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, OpenContextMenu) {
   chromevox_test_utils()->EnableChromeVox();
   StablizeChromeVoxState();
   sm()->Call([this]() { SendKeyPressWithSearch(ui::VKEY_M); });
@@ -975,6 +974,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, DISABLED_OpenContextMenu) {
     NavigateToUrl(GURL(R"(data:text/html;charset=utf-8,
             <button autofocus>I'm a button</button>)"));
   });
+  sm()->ExpectSpeech("I'm a button");
   sm()->Call([this]() { SendKeyPressWithSearch(ui::VKEY_M); });
   sm()->ExpectSpeech("menu opened");
 
