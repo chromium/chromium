@@ -67,10 +67,8 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.TabPersistenceUtils;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.tabwindow.WindowId;
-import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.chrome.browser.util.MultiInstanceUtils;
-import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageIdentifier;
@@ -103,14 +101,6 @@ public class MultiWindowUtils implements ActivityStateListener {
 
     public static final String PERSISTENT_STATE_ID = "persistent_state_id";
 
-    static final String HISTOGRAM_NUM_ACTIVITIES_DESKTOP_WINDOW =
-            "Android.MultiInstance.NumActivities.DesktopWindow";
-    static final String HISTOGRAM_NUM_INSTANCES_DESKTOP_WINDOW =
-            "Android.MultiInstance.NumInstances.DesktopWindow";
-    static final String HISTOGRAM_NUM_ACTIVITIES_DESKTOP_WINDOW_INCOGNITO =
-            "Android.MultiInstance.NumActivities.DesktopWindow.Incognito";
-    static final String HISTOGRAM_NUM_INSTANCES_DESKTOP_WINDOW_INCOGNITO =
-            "Android.MultiInstance.NumInstances.DesktopWindow.Incognito";
     static final String HISTOGRAM_PERSISTENT_STATE_ID_VERIFICATION =
             "Android.MultiInstance.PersistAcrossReboots.IdVerification";
     static final String HISTOGRAM_LAUNCH_IN_INSTANCE_EARLY_FAILURE =
@@ -1482,56 +1472,6 @@ public class MultiWindowUtils implements ActivityStateListener {
         assert windowId != INVALID_WINDOW_ID
                 : "A valid instance ID was not found for the specified activity.";
         return windowId;
-    }
-
-    /**
-     * Record the number of running ChromeTabbedActivity's as well as the total number of Chrome
-     * instances when a new ChromeTabbedActivity is created in a desktop window.
-     *
-     * @param isColdStart Whether app startup is a cold start.
-     */
-    public static void maybeRecordDesktopWindowCountHistograms(
-            @Nullable DesktopWindowStateManager desktopWindowStateManager,
-            boolean isColdStart) {
-        if (!isMultiInstanceApi31Enabled()) return;
-
-        // Emit the histogram only for an activity that starts in a desktop window.
-        if (!AppHeaderUtils.isAppInDesktopWindow(desktopWindowStateManager)) return;
-
-        // Emit the histogram only for a newly created activity that is cold-started.
-        if (!isColdStart) return;
-
-        Set<Integer> appTaskIds = getAllAppTaskIds(ContextUtils.getApplicationContext());
-
-        // Emit histograms for running activity count.
-        RecordHistogram.recordExactLinearHistogram(
-                HISTOGRAM_NUM_ACTIVITIES_DESKTOP_WINDOW,
-                getRunningTabbedActivityCount(),
-                TabWindowManager.MAX_SELECTORS_1000 + 1);
-
-        // Emit histograms for total instance count.
-        RecordHistogram.recordExactLinearHistogram(
-                HISTOGRAM_NUM_INSTANCES_DESKTOP_WINDOW,
-                getInstanceCount(PersistedInstanceType.ANY, appTaskIds),
-                TabWindowManager.MAX_SELECTORS_1000 + 1);
-
-        // Emit histograms for running Incognito activity count.
-        if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
-            RecordHistogram.recordExactLinearHistogram(
-                    HISTOGRAM_NUM_ACTIVITIES_DESKTOP_WINDOW_INCOGNITO,
-                    getInstanceCount(
-                            PersistedInstanceType.ACTIVE | PersistedInstanceType.OFF_THE_RECORD,
-                            appTaskIds),
-                    TabWindowManager.MAX_SELECTORS_1000 + 1);
-        }
-
-        // Emit histograms for total Incognito instance count.
-        if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
-            RecordHistogram.recordExactLinearHistogram(
-                    HISTOGRAM_NUM_INSTANCES_DESKTOP_WINDOW_INCOGNITO,
-                    getInstanceCount(PersistedInstanceType.OFF_THE_RECORD, appTaskIds),
-                    TabWindowManager.MAX_SELECTORS_1000 + 1);
-        }
     }
 
     /**

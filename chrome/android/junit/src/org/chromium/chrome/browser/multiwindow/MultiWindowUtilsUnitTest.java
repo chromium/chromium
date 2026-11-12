@@ -14,8 +14,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.browser.multiwindow.MultiWindowUtils.HISTOGRAM_NUM_ACTIVITIES_DESKTOP_WINDOW;
-import static org.chromium.chrome.browser.multiwindow.MultiWindowUtils.HISTOGRAM_NUM_INSTANCES_DESKTOP_WINDOW;
 import static org.chromium.chrome.browser.multiwindow.MultiWindowUtils.HISTOGRAM_PERSISTENT_STATE_ID_VERIFICATION;
 import static org.chromium.chrome.browser.multiwindow.MultiWindowUtils.INVALID_TASK_ID;
 import static org.chromium.chrome.browser.multiwindow.MultiWindowUtils.PERSISTENT_STATE_ID;
@@ -74,8 +72,6 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.test.OverrideContextWrapperTestRule;
-import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
-import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.util.ConversionUtils;
 import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageBannerProperties;
@@ -158,8 +154,6 @@ public class MultiWindowUtilsUnitTest {
     @Mock TabModelSelector mTabModelSelector;
     @Mock TabModel mNormalTabModel;
     @Mock TabModel mIncognitoTabModel;
-    @Mock DesktopWindowStateManager mDesktopWindowStateManager;
-    @Mock AppHeaderState mAppHeaderState;
     @Mock Tab mTab1;
     @Mock Tab mTab2;
     @Mock Tab mTab3;
@@ -182,8 +176,6 @@ public class MultiWindowUtilsUnitTest {
                     }
                 };
 
-        when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(mAppHeaderState);
-        when(mAppHeaderState.isInDesktopWindow()).thenReturn(false);
         when(mTabModelSelector.getCurrentTabModelSupplier()).thenReturn(mTabModelSupplier);
 
         SysUtils.setAmountOfPhysicalMemoryKbForTesting(
@@ -1311,88 +1303,6 @@ public class MultiWindowUtilsUnitTest {
                 "Should return INVALID_WINDOW_ID to allow for new window creation.",
                 TabWindowManager.INVALID_WINDOW_ID,
                 instanceId);
-    }
-
-    @Test
-    @Config(sdk = 31)
-    public void testRecordDesktopWindowCount_OnlyOnColdStart() {
-        MultiWindowTestUtils.enableMultiInstance();
-        when(mAppHeaderState.isInDesktopWindow()).thenReturn(true);
-
-        // Simulate persistence of 2 instances, running of 1.
-        MultiWindowUtils.setAppTaskIdsForTesting(new HashSet<>(List.of(TASK_ID_5, TASK_ID_6)));
-        writeInstanceInfo(
-                INSTANCE_ID_0, URL_1, /* tabCount= */ 3, /* incognitoTabCount= */ 2, TASK_ID_5);
-        writeInstanceInfo(
-                INSTANCE_ID_1, URL_2, /* tabCount= */ 0, /* incognitoTabCount= */ 0, TASK_ID_6);
-        int runningActivityCount = 1;
-        addRunningTabbedActivity(INSTANCE_ID_0);
-
-        var watcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord(
-                                HISTOGRAM_NUM_ACTIVITIES_DESKTOP_WINDOW, runningActivityCount)
-                        .expectIntRecord(HISTOGRAM_NUM_INSTANCES_DESKTOP_WINDOW, 2)
-                        .build();
-
-        // Assume that the histograms are attempted to be recorded on a cold start of the app.
-        MultiWindowUtils.maybeRecordDesktopWindowCountHistograms(
-                mDesktopWindowStateManager,
-                /* isColdStart= */ true);
-
-        // Assume that the histograms are attempted to be recorded on a subsequent warm start.
-        MultiWindowUtils.maybeRecordDesktopWindowCountHistograms(
-                mDesktopWindowStateManager,
-                /* isColdStart= */ false);
-
-        // Each histogram should be emitted only once.
-        watcher.assertExpected();
-    }
-
-    @Test
-    @Config(sdk = 31)
-    public void testRecordDesktopWindowCount_ColdStartOfInstance() {
-        MultiWindowTestUtils.enableMultiInstance();
-        when(mAppHeaderState.isInDesktopWindow()).thenReturn(true);
-
-        // Simulate persistence of 2 instances, running of 1.
-        MultiWindowUtils.setAppTaskIdsForTesting(new HashSet<>(List.of(TASK_ID_5, TASK_ID_6)));
-        writeInstanceInfo(
-                INSTANCE_ID_0, URL_1, /* tabCount= */ 3, /* incognitoTabCount= */ 2, TASK_ID_5);
-        writeInstanceInfo(
-                INSTANCE_ID_1, URL_2, /* tabCount= */ 0, /* incognitoTabCount= */ 0, TASK_ID_6);
-        int runningActivityCount = 1;
-        addRunningTabbedActivity(INSTANCE_ID_0);
-
-        // Assume that the histograms are attempted to be recorded on a cold start of an instance.
-        var watcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord(
-                                HISTOGRAM_NUM_ACTIVITIES_DESKTOP_WINDOW, runningActivityCount)
-                        .expectIntRecord(HISTOGRAM_NUM_INSTANCES_DESKTOP_WINDOW, 2)
-                        .build();
-        MultiWindowUtils.maybeRecordDesktopWindowCountHistograms(
-                mDesktopWindowStateManager, /* isColdStart= */ true);
-        watcher.assertExpected();
-    }
-
-    @Test
-    @Config(sdk = 31)
-    public void testRecordDesktopWindowCount_NotInDesktopWindow() {
-        var watcher =
-                HistogramWatcher.newBuilder()
-                        .expectNoRecords(HISTOGRAM_NUM_ACTIVITIES_DESKTOP_WINDOW)
-                        .expectNoRecords(HISTOGRAM_NUM_INSTANCES_DESKTOP_WINDOW)
-                        .build();
-
-        // Assume that the histograms are attempted to be recorded on a cold start of the app, not
-        // in a desktop window.
-        MultiWindowUtils.maybeRecordDesktopWindowCountHistograms(
-                mDesktopWindowStateManager,
-                /* isColdStart= */ true);
-
-        // Histograms should not be emitted.
-        watcher.assertExpected();
     }
 
     @Test

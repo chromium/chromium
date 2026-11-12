@@ -1950,9 +1950,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         resetPersistentInstanceState();
         BookmarkUtils.maybeExpireLastBookmarkLocationForReadLater(
                 assumeNonNull(mInactivityTrackerSupplier.get()).getTimeSinceLastBackgroundedMs());
-
-        MultiWindowUtils.maybeRecordDesktopWindowCountHistograms(
-                mRootUiCoordinator.getDesktopWindowStateManager(), !mFromResumption);
     }
 
     @Override
