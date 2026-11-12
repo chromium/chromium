@@ -4181,12 +4181,11 @@ constexpr char kWebiumFlag[] = "webium";
 constexpr char kWebiumFeatures[] =
     "Webium,SurfaceEmbed,ExtensionsMenuAccessControl";
 constexpr char kWebUIToolbarFlag[] = "webui-toolbar";
-// To update kWebUIToolbarEnableFeatures:
+// To update kWebUIToolbarEnableFeatures and kWebUIToolbarDisableFeatures:
 // 1. Edit chrome/browser/ui/webui/webui_toolbar/scripts/enabled.sh.
-// 2. Run generate_chrome_flags.sh in the same directory.
-// 3. Replace the list below with its output.
-// 4. Make sure kWebUIToolbarDisableFeatures includes every feature in
-//    the list (names only, without params).
+// 2. Run generate_chrome_flags.py in the same directory (which updates both
+//    lists below, tools/perf/core/bot_platforms.py, and
+//    tools/perf/core/shard_maps/*_map.json in-place).
 // The script appends `WebUIToolbar` so that the flag turns on the entire
 // WebUI toolbar.
 // LINT.IfChange(WebUIToolbarEnableFeatures)
@@ -4196,6 +4195,8 @@ constexpr char kWebUIToolbarEnableFeatures[] =
     "DeferLayoutDuringBrowserStartup,"
     "DeferSessionStorageScavengingOnStartup,"
     "DeferSpellcheckInitialization,"
+    "GpuPersistentCacheAsyncInitialize,"
+    "GtkPrefetchNavButtonIcons,"
     "InitialWebUI,"
     "InitialWebUISurfaceSync:deadline_in_frames/12000/"
     "renderer_commit_delay_ms/100000,"
@@ -4205,7 +4206,10 @@ constexpr char kWebUIToolbarEnableFeatures[] =
     "LazyKeyedServiceInstantiation,"
     "OmniboxAimPopupDeferCreation,"
     "OmniboxWebUIPopupDeferCreation,"
+    "OnlyUseWindowResizeHelperOnResize,"
+    "OptimizeVariationsIpc,"
     "PerDependencyDeadlines,"
+    "PrioritizeCompositorTaskRunnerOnStartup,"
     "PrioritizeResizeTaskRunnerOnStartup,"
     "SendGPUChannelEarly,"
     "SkipIPCChannelPausingForNonGuests,"
@@ -4228,21 +4232,30 @@ constexpr char kWebUIToolbarEnableFeatures[] =
     "WebUISplitTabsButton,"
     "WebUIToolbarFrameEvictionOptOut,"
     "WebUIToolbar";
-// LINT.ThenChange(//chrome/browser/ui/webui/webui_toolbar/scripts/enabled.sh)
 constexpr char kWebUIToolbarDisableFeatures[] =
     "BypassOutdatedSurfaceActivation,"
     "DeferHistoryBackendInit,"
     "DeferLayoutDuringBrowserStartup,"
     "DeferSessionStorageScavengingOnStartup,"
     "DeferSpellcheckInitialization,"
+    "GpuPersistentCacheAsyncInitialize,"
+    "GtkPrefetchNavButtonIcons,"
     "InitialWebUI,"
     "InitialWebUISurfaceSync,"
     "InitialWebUIWithoutExtensions,"
+    "InitialWebUIWithoutSpellCheckForNtp,"
+    "InitialWebUIWithoutTranslateForNtp,"
     "LazyKeyedServiceInstantiation,"
+    "OmniboxAimPopupDeferCreation,"
+    "OmniboxWebUIPopupDeferCreation,"
+    "OnlyUseWindowResizeHelperOnResize,"
+    "OptimizeVariationsIpc,"
     "PerDependencyDeadlines,"
+    "PrioritizeCompositorTaskRunnerOnStartup,"
     "PrioritizeResizeTaskRunnerOnStartup,"
     "SendGPUChannelEarly,"
     "SkipIPCChannelPausingForNonGuests,"
+    "TopChromeWebUISharedRenderer,"
     "WebiumMetricsMapping,"
     "WebUIBackForwardButton,"
     "WebUIBundledCodeCache,"
@@ -4253,6 +4266,7 @@ constexpr char kWebUIToolbarDisableFeatures[] =
     "WebUISplitTabsButton,"
     "WebUIToolbarFrameEvictionOptOut,"
     "WebUIToolbar";
+// LINT.ThenChange(//chrome/browser/ui/webui/webui_toolbar/scripts/enabled.sh:WebUIToolbarEnableFeatures)
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 constexpr char kTabsFromOtherDevicesEnhancementFeatures[] =

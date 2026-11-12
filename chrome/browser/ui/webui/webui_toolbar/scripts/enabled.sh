@@ -37,13 +37,16 @@ function WebUIReloadButtonParams() {
     # empty line
 }
 
-# LINT.IfChange
+# After editing this list, run `./generate_chrome_flags.py` (see `README.md`).
+# LINT.IfChange(WebUIToolbarEnableFeatures)
 join , \
   BypassOutdatedSurfaceActivation \
   DeferHistoryBackendInit \
   DeferLayoutDuringBrowserStartup \
   DeferSessionStorageScavengingOnStartup \
   DeferSpellcheckInitialization \
+  GpuPersistentCacheAsyncInitialize \
+  GtkPrefetchNavButtonIcons \
   InitialWebUI \
   InitialWebUISurfaceSync:$(InitialWebUISurfaceSyncParams) \
   InitialWebUIWithoutExtensions \
@@ -52,7 +55,10 @@ join , \
   LazyKeyedServiceInstantiation \
   OmniboxAimPopupDeferCreation \
   OmniboxWebUIPopupDeferCreation \
+  OnlyUseWindowResizeHelperOnResize \
+  OptimizeVariationsIpc \
   PerDependencyDeadlines \
+  PrioritizeCompositorTaskRunnerOnStartup \
   PrioritizeResizeTaskRunnerOnStartup \
   SendGPUChannelEarly \
   SkipIPCChannelPausingForNonGuests \
