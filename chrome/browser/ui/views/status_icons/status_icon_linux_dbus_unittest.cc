@@ -14,6 +14,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/test_future.h"
 #include "content/public/test/browser_task_environment.h"
 #include "dbus/bus.h"
@@ -40,14 +41,24 @@ class TestDelegate : public ui::StatusIconLinux::Delegate {
   const gfx::VectorIcon* GetIcon() const override { return nullptr; }
   const std::u16string& GetToolTip() const override { return tool_tip_; }
   ui::MenuModel* GetMenuModel() const override { return nullptr; }
-  void OnImplInitializationFailed() override {}
+  void OnImplInitializationFailed() override { failed_count_++; }
+  void OnImplInitializationDelayed() override { delayed_count_++; }
+  void OnImplInitialized() override { initialized_count_++; }
+
+  int failed_count() const { return failed_count_; }
+  int delayed_count() const { return delayed_count_; }
+  int initialized_count() const { return initialized_count_; }
 
  private:
+  int failed_count_ = 0;
+  int delayed_count_ = 0;
+  int initialized_count_ = 0;
   gfx::ImageSkia image_;
   std::u16string tool_tip_;
 };
 
-void OnBusProxyCall(dbus::MethodCall* method_call,
+void OnBusProxyCall(bool watcher_has_owner,
+                    dbus::MethodCall* method_call,
                     int timeout_ms,
                     dbus::ObjectProxy::ResponseOrErrorCallback callback) {
   if (method_call->GetSerial() == 0) {
@@ -56,7 +67,7 @@ void OnBusProxyCall(dbus::MethodCall* method_call,
   auto response = dbus::Response::FromMethodCall(method_call);
   dbus::MessageWriter writer(response.get());
   if (method_call->GetMember() == "NameHasOwner") {
-    writer.AppendBool(true);
+    writer.AppendBool(watcher_has_owner);
   }
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(
@@ -68,6 +79,7 @@ void OnBusProxyCall(dbus::MethodCall* method_call,
 }
 
 void OnWatcherProxyCall(std::string* registered_service_out,
+                        bool host_registered,
                         dbus::MethodCall* method_call,
                         int timeout_ms,
                         dbus::ObjectProxy::ResponseOrErrorCallback callback) {
@@ -79,7 +91,7 @@ void OnWatcherProxyCall(std::string* registered_service_out,
   if (method_call->GetMember() == "Get") {
     dbus::MessageWriter variant_writer(nullptr);
     writer.OpenVariant("b", &variant_writer);
-    variant_writer.AppendBool(true);
+    variant_writer.AppendBool(host_registered);
     writer.CloseContainer(&variant_writer);
   } else if (method_call->GetMember() == "RegisterStatusNotifierItem") {
     if (registered_service_out) {
@@ -152,15 +164,27 @@ class StatusIconLinuxDbusTest : public testing::Test {
         .WillRepeatedly(testing::Return(":1.100"));
 
     EXPECT_CALL(*bus_proxy_, CallMethodWithErrorResponse(_, _, _))
-        .WillRepeatedly(&OnBusProxyCall);
+        .WillRepeatedly(
+            [](dbus::MethodCall* method_call, int timeout_ms,
+               dbus::ObjectProxy::ResponseOrErrorCallback callback) {
+              OnBusProxyCall(true, method_call, timeout_ms,
+                             std::move(callback));
+            });
 
     EXPECT_CALL(*watcher_proxy_, CallMethodWithErrorResponse(_, _, _))
         .WillRepeatedly(
             [](dbus::MethodCall* method_call, int timeout_ms,
                dbus::ObjectProxy::ResponseOrErrorCallback callback) {
-              OnWatcherProxyCall(nullptr, method_call, timeout_ms,
+              OnWatcherProxyCall(nullptr, true, method_call, timeout_ms,
                                  std::move(callback));
             });
+
+    EXPECT_CALL(*watcher_proxy_, SetNameOwnerChangedCallback(_))
+        .WillRepeatedly(testing::SaveArg<0>(&name_owner_changed_callback_));
+    EXPECT_CALL(*watcher_proxy_,
+                ConnectToSignal("org.kde.StatusNotifierWatcher",
+                                "StatusNotifierHostRegistered", _, _))
+        .WillRepeatedly(testing::SaveArg<2>(&host_registered_callback_));
   }
 
  protected:
@@ -170,6 +194,8 @@ class StatusIconLinuxDbusTest : public testing::Test {
   scoped_refptr<dbus::MockObjectProxy> watcher_proxy_;
   scoped_refptr<dbus::MockExportedObject> exported_item_object_;
   scoped_refptr<dbus::MockExportedObject> exported_menu_object_;
+  dbus::ObjectProxy::NameOwnerChangedCallback name_owner_changed_callback_;
+  dbus::ObjectProxy::SignalCallback host_registered_callback_;
 };
 
 TEST_F(StatusIconLinuxDbusTest, InterfaceSupport) {
@@ -302,7 +328,7 @@ TEST_F(StatusIconLinuxDbusTest, RegisterStatusNotifierItem) {
   EXPECT_CALL(*watcher_proxy_, CallMethodWithErrorResponse(_, _, _))
       .WillRepeatedly([&](dbus::MethodCall* method_call, int timeout_ms,
                           dbus::ObjectProxy::ResponseOrErrorCallback callback) {
-        OnWatcherProxyCall(&registered_service, method_call, timeout_ms,
+        OnWatcherProxyCall(&registered_service, true, method_call, timeout_ms,
                            std::move(callback));
       });
 
@@ -315,6 +341,9 @@ TEST_F(StatusIconLinuxDbusTest, RegisterStatusNotifierItem) {
   // The service string passed to RegisterStatusNotifierItem should be
   // the unique bus connection name.
   EXPECT_EQ(registered_service, ":1.100");
+  EXPECT_EQ(delegate.delayed_count(), 0);
+  EXPECT_EQ(delegate.initialized_count(), 1);
+  EXPECT_EQ(delegate.failed_count(), 0);
 }
 
 TEST_F(StatusIconLinuxDbusTest, MultipleStatusIcons) {
@@ -359,7 +388,10 @@ TEST_F(StatusIconLinuxDbusTest, MultipleStatusIcons) {
                 .Run(interface_name, method_name, true);
           });
   EXPECT_CALL(*bus_proxy2, CallMethodWithErrorResponse(_, _, _))
-      .WillRepeatedly(&OnBusProxyCall);
+      .WillRepeatedly([](dbus::MethodCall* method_call, int timeout_ms,
+                         dbus::ObjectProxy::ResponseOrErrorCallback callback) {
+        OnBusProxyCall(true, method_call, timeout_ms, std::move(callback));
+      });
 
   std::string registered_service1;
   std::string registered_service2;
@@ -384,13 +416,13 @@ TEST_F(StatusIconLinuxDbusTest, MultipleStatusIcons) {
   EXPECT_CALL(*watcher_proxy_, CallMethodWithErrorResponse(_, _, _))
       .WillRepeatedly([&](dbus::MethodCall* method_call, int timeout_ms,
                           dbus::ObjectProxy::ResponseOrErrorCallback callback) {
-        OnWatcherProxyCall(&registered_service1, method_call, timeout_ms,
+        OnWatcherProxyCall(&registered_service1, true, method_call, timeout_ms,
                            std::move(callback));
       });
   EXPECT_CALL(*watcher_proxy2, CallMethodWithErrorResponse(_, _, _))
       .WillRepeatedly([&](dbus::MethodCall* method_call, int timeout_ms,
                           dbus::ObjectProxy::ResponseOrErrorCallback callback) {
-        OnWatcherProxyCall(&registered_service2, method_call, timeout_ms,
+        OnWatcherProxyCall(&registered_service2, true, method_call, timeout_ms,
                            std::move(callback));
       });
 
@@ -407,4 +439,107 @@ TEST_F(StatusIconLinuxDbusTest, MultipleStatusIcons) {
   EXPECT_EQ(registered_service1, ":1.100");
   EXPECT_EQ(registered_service2, ":1.101");
   EXPECT_NE(registered_service1, registered_service2);
+}
+
+// Regression test for https://crbug.com/580998950: the item must be registered
+// once a StatusNotifierWatcher appears after the status icon was created.
+TEST_F(StatusIconLinuxDbusTest, RegisterWhenWatcherAppearsLater) {
+  bool watcher_has_owner = false;
+  std::string registered_service;
+
+  EXPECT_CALL(*bus_proxy_, CallMethodWithErrorResponse(_, _, _))
+      .WillRepeatedly([&](dbus::MethodCall* method_call, int timeout_ms,
+                          dbus::ObjectProxy::ResponseOrErrorCallback callback) {
+        OnBusProxyCall(watcher_has_owner, method_call, timeout_ms,
+                       std::move(callback));
+      });
+  EXPECT_CALL(*exported_item_object_, ExportMethod(_, _, _, _))
+      .WillRepeatedly(
+          [](const std::string& interface_name, const std::string& method_name,
+             dbus::ExportedObject::MethodCallCallback callback,
+             dbus::ExportedObject::OnExportedCallback on_exported_callback) {
+            std::move(on_exported_callback)
+                .Run(interface_name, method_name, true);
+          });
+  EXPECT_CALL(*watcher_proxy_, CallMethodWithErrorResponse(_, _, _))
+      .WillRepeatedly([&](dbus::MethodCall* method_call, int timeout_ms,
+                          dbus::ObjectProxy::ResponseOrErrorCallback callback) {
+        OnWatcherProxyCall(&registered_service, true, method_call, timeout_ms,
+                           std::move(callback));
+      });
+
+  TestDelegate delegate;
+  auto status_icon = base::MakeRefCounted<StatusIconLinuxDbus>(bus_);
+  status_icon->SetDelegate(&delegate);
+  ASSERT_TRUE(base::test::RunUntil([&] { return delegate.delayed_count(); }));
+
+  EXPECT_TRUE(registered_service.empty());
+  EXPECT_EQ(delegate.delayed_count(), 1);
+  EXPECT_EQ(delegate.initialized_count(), 0);
+  EXPECT_EQ(delegate.failed_count(), 0);
+
+  // The watcher appears.
+  watcher_has_owner = true;
+  ASSERT_TRUE(name_owner_changed_callback_);
+  name_owner_changed_callback_.Run("", ":1.200");
+  ASSERT_TRUE(
+      base::test::RunUntil([&] { return delegate.initialized_count(); }));
+
+  EXPECT_EQ(registered_service, ":1.100");
+  EXPECT_EQ(delegate.delayed_count(), 1);
+  EXPECT_EQ(delegate.initialized_count(), 1);
+  EXPECT_EQ(delegate.failed_count(), 0);
+
+  // The item is registered again with a new watcher.
+  registered_service.clear();
+  name_owner_changed_callback_.Run(":1.200", "");
+  name_owner_changed_callback_.Run("", ":1.201");
+  ASSERT_TRUE(
+      base::test::RunUntil([&] { return delegate.initialized_count() == 2; }));
+  EXPECT_EQ(registered_service, ":1.100");
+  EXPECT_EQ(delegate.failed_count(), 0);
+}
+
+// The item must be registered once a StatusNotifierHost registers with a
+// StatusNotifierWatcher that had none when the status icon was created.
+TEST_F(StatusIconLinuxDbusTest, RegisterWhenHostRegistersLater) {
+  bool host_registered = false;
+  std::string registered_service;
+
+  EXPECT_CALL(*exported_item_object_, ExportMethod(_, _, _, _))
+      .WillRepeatedly(
+          [](const std::string& interface_name, const std::string& method_name,
+             dbus::ExportedObject::MethodCallCallback callback,
+             dbus::ExportedObject::OnExportedCallback on_exported_callback) {
+            std::move(on_exported_callback)
+                .Run(interface_name, method_name, true);
+          });
+  EXPECT_CALL(*watcher_proxy_, CallMethodWithErrorResponse(_, _, _))
+      .WillRepeatedly([&](dbus::MethodCall* method_call, int timeout_ms,
+                          dbus::ObjectProxy::ResponseOrErrorCallback callback) {
+        OnWatcherProxyCall(&registered_service, host_registered, method_call,
+                           timeout_ms, std::move(callback));
+      });
+
+  TestDelegate delegate;
+  auto status_icon = base::MakeRefCounted<StatusIconLinuxDbus>(bus_);
+  status_icon->SetDelegate(&delegate);
+  ASSERT_TRUE(base::test::RunUntil([&] { return delegate.delayed_count(); }));
+
+  EXPECT_TRUE(registered_service.empty());
+  EXPECT_EQ(delegate.delayed_count(), 1);
+  EXPECT_EQ(delegate.failed_count(), 0);
+
+  // A host registers.
+  host_registered = true;
+  ASSERT_TRUE(host_registered_callback_);
+  dbus::Signal signal("org.kde.StatusNotifierWatcher",
+                      "StatusNotifierHostRegistered");
+  host_registered_callback_.Run(&signal);
+  ASSERT_TRUE(
+      base::test::RunUntil([&] { return delegate.initialized_count(); }));
+
+  EXPECT_EQ(registered_service, ":1.100");
+  EXPECT_EQ(delegate.initialized_count(), 1);
+  EXPECT_EQ(delegate.failed_count(), 0);
 }

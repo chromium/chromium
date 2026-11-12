@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
@@ -79,6 +80,12 @@ StatusIconLinuxWrapper::~StatusIconLinuxWrapper() {
   if (auto* status_icon = GetStatusIcon()) {
     status_icon->SetDelegate(nullptr);
   }
+#if BUILDFLAG(USE_DBUS)
+  // The D-Bus icon may still be waiting for a StatusNotifierWatcher.
+  if (status_icon_dbus_) {
+    status_icon_dbus_->SetDelegate(nullptr);
+  }
+#endif
 }
 
 void StatusIconLinuxWrapper::SetImage(const gfx::ImageSkia& image) {
@@ -148,6 +155,12 @@ void StatusIconLinuxWrapper::OnImplInitializationFailed() {
     case kTypeWindowed:
       status_icon_linux_.reset();
       status_icon_type_ = kTypeNone;
+#if BUILDFLAG(USE_DBUS)
+      if (status_icon_dbus_) {
+        // Keep the menu for the D-Bus icon, which may still initialize.
+        return;
+      }
+#endif
       if (menu_model_) {
         menu_model_->RemoveObserver(this);
       }
@@ -156,6 +169,39 @@ void StatusIconLinuxWrapper::OnImplInitializationFailed() {
     case kTypeNone:
       NOTREACHED();
   }
+}
+
+void StatusIconLinuxWrapper::OnImplInitializationDelayed() {
+#if BUILDFLAG(USE_DBUS)
+  // Only the D-Bus icon delays initialization. Keep it, and use the windowed
+  // icon until it initializes.
+  CHECK_EQ(status_icon_type_, kTypeDbus);
+  status_icon_linux_ = std::make_unique<StatusIconButtonLinux>();
+  status_icon_type_ = kTypeWindowed;
+  status_icon_linux_->SetDelegate(this);
+#else
+  NOTREACHED();
+#endif
+}
+
+void StatusIconLinuxWrapper::OnImplInitialized() {
+#if BUILDFLAG(USE_DBUS)
+  if (status_icon_type_ == kTypeDbus || !status_icon_dbus_) {
+    return;
+  }
+
+  // The D-Bus icon initialized after a delay. Replace the fallback with it, and
+  // update it with any changes made since it read its initial state.
+  status_icon_linux_.reset();
+  status_icon_type_ = kTypeDbus;
+  status_icon_dbus_->UpdatePlatformContextMenu(menu_model_);
+  status_icon_dbus_->SetToolTip(tool_tip_);
+  if (icon_) {
+    status_icon_dbus_->SetIcon(*icon_);
+  } else {
+    status_icon_dbus_->SetImage(image_);
+  }
+#endif
 }
 
 void StatusIconLinuxWrapper::OnMenuStateChanged() {
@@ -180,7 +226,12 @@ StatusIconLinuxWrapper::CreateWrappedStatusIcon(
 
 void StatusIconLinuxWrapper::UpdatePlatformContextMenu(
     StatusIconMenuModel* model) {
-  if (!GetStatusIcon()) {
+  bool has_status_icon = GetStatusIcon() != nullptr;
+#if BUILDFLAG(USE_DBUS)
+  // Keep the menu for a D-Bus icon that may still initialize.
+  has_status_icon = has_status_icon || status_icon_dbus_;
+#endif
+  if (!has_status_icon) {
     return;
   }
 
@@ -189,7 +240,9 @@ void StatusIconLinuxWrapper::UpdatePlatformContextMenu(
     menu_model_->RemoveObserver(this);
   }
 
-  GetStatusIcon()->UpdatePlatformContextMenu(model);
+  if (auto* status_icon = GetStatusIcon()) {
+    status_icon->UpdatePlatformContextMenu(model);
+  }
   menu_model_ = model;
 
   if (model) {

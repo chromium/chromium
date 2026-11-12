@@ -46,6 +46,8 @@ class StatusIconLinuxWrapper : public StatusIcon,
   const std::u16string& GetToolTip() const override;
   ui::MenuModel* GetMenuModel() const override;
   void OnImplInitializationFailed() override;
+  void OnImplInitializationDelayed() override;
+  void OnImplInitialized() override;
 
   // StatusIconMenuModel::Observer overrides:
   void OnMenuStateChanged() override;
@@ -92,7 +94,9 @@ class StatusIconLinuxWrapper : public StatusIcon,
   DesktopNotificationBalloon notification_;
 
   // The status icon may be ref-counted (via |status_icon_dbus_|) or owned by
-  // |this| (via |status_icon_linux_|).
+  // |this| (via |status_icon_linux_|). While the D-Bus icon waits for a
+  // StatusNotifierWatcher, both may be set and |status_icon_type_| is not
+  // kTypeDbus.
 #if BUILDFLAG(USE_DBUS)
   scoped_refptr<StatusIconLinuxDbus> status_icon_dbus_;
 #endif

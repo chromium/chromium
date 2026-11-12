@@ -40,6 +40,16 @@ class COMPONENT_EXPORT(LINUX_UI) StatusIconLinux {
     // This should be called at most once by the implementation.
     virtual void OnImplInitializationFailed() = 0;
 
+    // Called at most once by an implementation that can't show the icon yet,
+    // but keeps waiting until it can (e.g. while no StatusNotifierWatcher is
+    // running). The delegate may show a fallback icon until
+    // OnImplInitialized() is called. Until then, the implementation doesn't
+    // call OnImplInitializationFailed().
+    virtual void OnImplInitializationDelayed() = 0;
+
+    // Called by the implementation each time it has registered the icon.
+    virtual void OnImplInitialized() = 0;
+
    protected:
     virtual ~Delegate();
   };

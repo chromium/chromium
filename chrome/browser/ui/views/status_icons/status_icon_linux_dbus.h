@@ -68,6 +68,7 @@ class StatusIconLinuxDbus : public ui::StatusIconLinux,
 
   // Step 2: verify with the StatusNotifierWatcher that a StatusNotifierHost is
   // registered.
+  void CheckStatusNotifierHostRegistered();
   void OnHostRegisteredResponse(dbus_utils::CallMethodResultSig<"v"> response);
 
   void OnInitialized(bool success);
@@ -77,9 +78,20 @@ class StatusIconLinuxDbus : public ui::StatusIconLinux,
   void OnRegistered(dbus_utils::CallMethodResultSig<""> response);
 
   // Called when the name owner of StatusNotifierWatcher has changed, which
-  // can happen when lock/unlock screen.
+  // can happen when lock/unlock screen, or when the StatusNotifierWatcher
+  // starts after the status icon was created.
   void OnNameOwnerChangedReceived(const std::string& old_owner,
                                   const std::string& new_owner);
+
+  // Called when a StatusNotifierHost registers with the StatusNotifierWatcher.
+  void OnHostRegisteredSignal(dbus::Signal* signal);
+
+  // Called when there's no StatusNotifierWatcher or StatusNotifierHost yet.
+  // Initialization continues once one appears.
+  void DelayInitialization();
+
+  // Reports failure to the delegate, unless initialization is delayed.
+  void OnInitializationFailed();
 
   // DBus methods.
   // Action       -> KDE behavior:
@@ -132,6 +144,11 @@ class StatusIconLinuxDbus : public ui::StatusIconLinux,
   scoped_refptr<dbus::Bus> bus_;
 
   int service_id_ = 0;
+  // Whether the delegate was told that initialization is delayed, and the item
+  // hasn't been registered since.
+  bool initialization_delayed_ = false;
+  // Whether the item was exported, so it can be (re-)registered.
+  bool initialized_ = false;
   std::string service_name_;
   raw_ptr<dbus::ObjectProxy, DanglingUntriaged> watcher_ = nullptr;
   raw_ptr<dbus::ExportedObject, DanglingUntriaged> item_ = nullptr;

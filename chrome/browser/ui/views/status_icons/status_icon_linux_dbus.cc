@@ -7,6 +7,7 @@
 #include <dbus/dbus-shared.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/check_op.h"
@@ -108,6 +109,8 @@ const char kPropertyToolTip[] = "ToolTip";
 const char kSignalNewIcon[] = "NewIcon";
 const char kSignalNewIconThemePath[] = "NewIconThemePath";
 const char kSignalNewToolTip[] = "NewToolTip";
+const char kSignalStatusNotifierHostRegistered[] =
+    "StatusNotifierHostRegistered";
 
 // Property values.
 const char kPropertyValueCategory[] = "ApplicationStatus";
@@ -363,6 +366,20 @@ StatusIconLinuxDbus::~StatusIconLinuxDbus() {
 
 void StatusIconLinuxDbus::CheckStatusNotifierWatcherHasOwner() {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
+  // Watch for the StatusNotifierWatcher and a StatusNotifierHost to appear
+  // before checking whether they exist. The match rules are added on the D-Bus
+  // thread before the NameHasOwner call is sent, so no change is missed.
+  watcher_ = bus_->GetObjectProxy(kServiceStatusNotifierWatcher,
+                                  dbus::ObjectPath(kPathStatusNotifierWatcher));
+  watcher_->SetNameOwnerChangedCallback(
+      base::BindRepeating(&StatusIconLinuxDbus::OnNameOwnerChangedReceived,
+                          weak_factory_.GetWeakPtr()));
+  watcher_->ConnectToSignal(
+      kInterfaceStatusNotifierWatcher, kSignalStatusNotifierHostRegistered,
+      base::BindRepeating(&StatusIconLinuxDbus::OnHostRegisteredSignal,
+                          weak_factory_.GetWeakPtr()),
+      base::DoNothing());
+
   dbus::ObjectProxy* bus_proxy =
       bus_->GetObjectProxy(DBUS_SERVICE_DBUS, dbus::ObjectPath(DBUS_PATH_DBUS));
   dbus_utils::CallMethod<"s", "b">(
@@ -375,14 +392,21 @@ void StatusIconLinuxDbus::CheckStatusNotifierWatcherHasOwner() {
 void StatusIconLinuxDbus::OnNameHasOwnerResponse(
     dbus_utils::CallMethodResultSig<"b"> response) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
-  if (!response.has_value() || !std::get<0>(*response)) {
-    delegate_->OnImplInitializationFailed();
+  if (!response.has_value()) {
+    OnInitializationFailed();
+    return;
+  }
+  if (!std::get<0>(*response)) {
+    // Wait for OnNameOwnerChangedReceived().
+    DelayInitialization();
     return;
   }
 
-  watcher_ = bus_->GetObjectProxy(kServiceStatusNotifierWatcher,
-                                  dbus::ObjectPath(kPathStatusNotifierWatcher));
+  CheckStatusNotifierHostRegistered();
+}
 
+void StatusIconLinuxDbus::CheckStatusNotifierHostRegistered() {
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   dbus_utils::CallMethod<"ss", "v">(
       watcher_, DBUS_INTERFACE_PROPERTIES, kMethodGet,
       base::BindOnce(&StatusIconLinuxDbus::OnHostRegisteredResponse,
@@ -393,14 +417,21 @@ void StatusIconLinuxDbus::OnNameHasOwnerResponse(
 void StatusIconLinuxDbus::OnHostRegisteredResponse(
     dbus_utils::CallMethodResultSig<"v"> response) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
-  if (!response.has_value()) {
-    delegate_->OnImplInitializationFailed();
+  if (item_) {
+    // Initialization was already started by an earlier response.
     return;
   }
 
-  auto registered = std::move(std::get<0>(*response)).Take<bool>();
+  std::optional<bool> registered;
+  if (response.has_value()) {
+    registered = std::move(std::get<0>(*response)).Take<bool>();
+  }
   if (!registered.value_or(false)) {
-    delegate_->OnImplInitializationFailed();
+    // No StatusNotifierHost yet. An error response is treated the same way,
+    // since it usually means the StatusNotifierWatcher exited after
+    // NameHasOwner; a new one is noticed by OnNameOwnerChangedReceived(). Wait
+    // for OnHostRegisteredSignal() or OnNameOwnerChangedReceived().
+    DelayInitialization();
     return;
   }
 
@@ -484,14 +515,11 @@ void StatusIconLinuxDbus::OnHostRegisteredResponse(
 void StatusIconLinuxDbus::OnInitialized(bool success) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   if (!success) {
-    delegate_->OnImplInitializationFailed();
+    OnInitializationFailed();
     return;
   }
 
-  watcher_->SetNameOwnerChangedCallback(
-      base::BindRepeating(&StatusIconLinuxDbus::OnNameOwnerChangedReceived,
-                          weak_factory_.GetWeakPtr()));
-
+  initialized_ = true;
   RegisterStatusNotifierItem();
 }
 
@@ -508,16 +536,56 @@ void StatusIconLinuxDbus::OnRegistered(
     dbus_utils::CallMethodResultSig<""> response) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   if (!response.has_value()) {
-    delegate_->OnImplInitializationFailed();
+    OnInitializationFailed();
+    return;
   }
+
+  initialization_delayed_ = false;
+  delegate_->OnImplInitialized();
 }
 
 void StatusIconLinuxDbus::OnNameOwnerChangedReceived(
     const std::string& old_owner,
     const std::string& new_owner) {
-  // Re-register the item when the StatusNotifierWatcher has a new owner.
-  if (!new_owner.empty()) {
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
+  if (new_owner.empty()) {
+    return;
+  }
+  if (initialized_) {
+    // Re-register the item with the new StatusNotifierWatcher.
     RegisterStatusNotifierItem();
+  } else if (!item_) {
+    // A StatusNotifierWatcher appeared before initialization started.
+    CheckStatusNotifierHostRegistered();
+  }
+}
+
+void StatusIconLinuxDbus::OnHostRegisteredSignal(dbus::Signal* signal) {
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
+  if (!item_) {
+    CheckStatusNotifierHostRegistered();
+  }
+}
+
+void StatusIconLinuxDbus::DelayInitialization() {
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
+  if (initialization_delayed_) {
+    return;
+  }
+  initialization_delayed_ = true;
+  delegate_->OnImplInitializationDelayed();
+}
+
+void StatusIconLinuxDbus::OnInitializationFailed() {
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
+  // While initialization is delayed, the delegate may use a fallback icon. Stay
+  // inactive instead of failing so the delegate keeps it. No state needs to be
+  // reset for a later attempt: a failed RegisterStatusNotifierItem call is
+  // retried when a new StatusNotifierWatcher appears, since |initialized_|
+  // stays set. A failure to export the menu isn't caused by the
+  // StatusNotifierWatcher and isn't retried.
+  if (!initialization_delayed_) {
+    delegate_->OnImplInitializationFailed();
   }
 }
 
