@@ -7869,39 +7869,18 @@ be describing additional metrics about the same event.
       The number of times the Compose result was inserted into the page. Uses
       exponential buckets for privacy.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="MenuItemClicked">
     <summary>
       The number of times the Compose context menu item was clicked for an
       element on the page. Uses exponential buckets for privacy.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="MenuItemShown">
     <summary>
       The number of times the Compose context menu item was shown for an element
       on the page. Uses exponential buckets for privacy.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="MissingFormData">
     <summary>
@@ -7936,13 +7915,6 @@ be describing additional metrics about the same event.
       during this page load. Recorded everytime the nudge is opened. Added in
       M126.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="ProactiveNudgeShouldShow">
     <summary>
@@ -7950,13 +7922,6 @@ be describing additional metrics about the same event.
       page load. Recorded any time Compose is asked to show the proactive nudge
       even if it is eventually not shown. Added in M125.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="ProactiveNudgeShown">
     <summary>
@@ -7964,13 +7929,6 @@ be describing additional metrics about the same event.
       load. Recorded everytime a request to show the nudge returns true. Added
       in M126.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
 </event>
 
@@ -8141,13 +8099,6 @@ be describing additional metrics about the same event.
       The control type, such as text or textarea. See
       |autofill::FormControlType|.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="EditingTime">
     <summary>
@@ -8174,13 +8125,6 @@ be describing additional metrics about the same event.
     <summary>
       Whether the field is detected and supported by Autofill.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="TypedCharacterCount">
     <summary>
@@ -8190,13 +8134,6 @@ be describing additional metrics about the same event.
       count only typed changes, but is not always accurate. Additionally, there
       is a limit to the total possible length observed.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="TypedWordCount">
     <summary>
@@ -8207,13 +8144,6 @@ be describing additional metrics about the same event.
       accurate. Additionally, there is a limit to the total possible length
       observed.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
 </event>
 
