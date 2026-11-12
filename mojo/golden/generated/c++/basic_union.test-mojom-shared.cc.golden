@@ -7,7 +7,7 @@
 #include "basic_union.test-mojom-shared.h"
 #include <ostream>
 #include <utility>
-#include "base/strings/stringprintf.h"
+#include "mojo/public/cpp/bindings/lib/enum_util.h"
 #include "mojo/public/cpp/bindings/lib/validate_params.h"
 #include "mojo/public/cpp/bindings/lib/validation_errors.h"
 #include "mojo/public/cpp/bindings/lib/validation_util.h"
@@ -31,7 +31,7 @@ NOINLINE static const char* EnumInUnionToStringHelper(EnumInUnion value) {
 std::string EnumInUnionToString(EnumInUnion value) {
   const char *str = EnumInUnionToStringHelper(value);
   if (!str) {
-    return base::StringPrintf("Unknown EnumInUnion value: %i", static_cast<int32_t>(value));
+    return mojo::internal::FormatUnknownEnumValue("EnumInUnion", static_cast<int32_t>(value));
   }
   return str;
 }
@@ -55,7 +55,7 @@ NOINLINE static const char* ExtensibleEnumInUnionToStringHelper(ExtensibleEnumIn
 std::string ExtensibleEnumInUnionToString(ExtensibleEnumInUnion value) {
   const char *str = ExtensibleEnumInUnionToStringHelper(value);
   if (!str) {
-    return base::StringPrintf("Unknown ExtensibleEnumInUnion value: %i", static_cast<int32_t>(value));
+    return mojo::internal::FormatUnknownEnumValue("ExtensibleEnumInUnion", static_cast<int32_t>(value));
   }
   return str;
 }

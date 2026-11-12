@@ -8,9 +8,8 @@
 #include <ostream>
 {%- endif %}
 #include <utility>
-
 {%- if all_enums %}
-#include "base/strings/stringprintf.h"
+#include "mojo/public/cpp/bindings/lib/enum_util.h"
 {%- endif %}
 #include "mojo/public/cpp/bindings/lib/validate_params.h"
 #include "mojo/public/cpp/bindings/lib/validation_errors.h"

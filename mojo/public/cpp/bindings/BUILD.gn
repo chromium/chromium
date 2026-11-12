@@ -70,6 +70,8 @@ component("bindings_base") {
     "lib/buffer.cc",
     "lib/buffer.h",
     "lib/default_construct_tag_internal.h",
+    "lib/enum_util.cc",
+    "lib/enum_util.h",
     "lib/handle_serialization.cc",
     "lib/handle_serialization.h",
     "lib/handle_serialization_send_validation.h",

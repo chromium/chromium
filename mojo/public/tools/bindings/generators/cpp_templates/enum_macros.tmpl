@@ -95,7 +95,7 @@ NOINLINE static const char* {{enum_name}}ToStringHelper({{enum_name}} value) {
 std::string {{enum_name}}ToString({{enum_name}} value) {
   const char *str = {{enum_name}}ToStringHelper(value);
   if (!str) {
-    return base::StringPrintf("Unknown {{enum_name}} value: %i", static_cast<int32_t>(value));
+    return mojo::internal::FormatUnknownEnumValue("{{enum_name}}", static_cast<int32_t>(value));
   }
   return str;
 }
