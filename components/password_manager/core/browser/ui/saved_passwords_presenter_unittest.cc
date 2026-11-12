@@ -56,9 +56,12 @@ using affiliations::Facet;
 using affiliations::FacetURI;
 using affiliations::FakeAffiliationService;
 using ::testing::_;
+using ::testing::AllOf;
 using ::testing::Contains;
 using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
+using ::testing::Eq;
+using ::testing::Field;
 using ::testing::IsEmpty;
 using ::testing::Pair;
 using ::testing::Return;
@@ -479,7 +482,10 @@ TEST_F(SavedPasswordsPresenterTest, EditOnlyUsernameClearsPartialIssues) {
   CredentialUIEntry credential_to_edit(form);
   credential_to_edit.username = kNewUsername;
 
-  EXPECT_CALL(observer, OnEdited(CredentialUIEntry(updated_username)));
+  EXPECT_CALL(observer,
+              OnEdited(AllOf(Eq(CredentialUIEntry(updated_username)),
+                             Field(&CredentialUIEntry::password_issues,
+                                   updated_username.password_issues))));
   EXPECT_CALL(observer, OnSavedPasswordsChanged);
   EXPECT_EQ(SavedPasswordsPresenter::EditResult::kSuccess,
             presenter().EditSavedCredentials(CredentialUIEntry(form),
@@ -502,6 +508,15 @@ TEST_F(SavedPasswordsPresenterTest, EditOnlyPassword) {
   // because of the password change.
   form.password_issues = {
       {InsecureType::kLeaked,
+       InsecurityMetadata(base::Time::FromTimeT(1), IsMuted(false),
+                          TriggerBackendNotification(false))},
+      {InsecureType::kPhished,
+       InsecurityMetadata(base::Time::FromTimeT(1), IsMuted(false),
+                          TriggerBackendNotification(false))},
+      {InsecureType::kReused,
+       InsecurityMetadata(base::Time::FromTimeT(1), IsMuted(false),
+                          TriggerBackendNotification(false))},
+      {InsecureType::kWeak,
        InsecurityMetadata(base::Time::FromTimeT(1), IsMuted(false),
                           TriggerBackendNotification(false))}};
 
@@ -529,7 +544,10 @@ TEST_F(SavedPasswordsPresenterTest, EditOnlyPassword) {
   base::HistogramTester histogram_tester;
   // Verify that editing a password triggers the right notifications.
   EXPECT_CALL(observer, OnSavedPasswordsChanged);
-  EXPECT_CALL(observer, OnEdited(CredentialUIEntry(updated_password)));
+  EXPECT_CALL(
+      observer,
+      OnEdited(AllOf(Eq(CredentialUIEntry(updated_password)),
+                     Field(&CredentialUIEntry::password_issues, IsEmpty()))));
   EXPECT_EQ(SavedPasswordsPresenter::EditResult::kSuccess,
             presenter().EditSavedCredentials(CredentialUIEntry(form),
                                              credential_to_edit));
@@ -707,6 +725,15 @@ TEST_F(SavedPasswordsPresenterTest, EditUsernameAndPassword) {
   form.password_issues = {
       {InsecureType::kLeaked,
        InsecurityMetadata(base::Time::FromTimeT(1), IsMuted(false),
+                          TriggerBackendNotification(false))},
+      {InsecureType::kPhished,
+       InsecurityMetadata(base::Time::FromTimeT(1), IsMuted(false),
+                          TriggerBackendNotification(false))},
+      {InsecureType::kReused,
+       InsecurityMetadata(base::Time::FromTimeT(1), IsMuted(false),
+                          TriggerBackendNotification(false))},
+      {InsecureType::kWeak,
+       InsecurityMetadata(base::Time::FromTimeT(1), IsMuted(false),
                           TriggerBackendNotification(false))}};
 
   StrictMockSavedPasswordsPresenterObserver observer;
@@ -736,7 +763,10 @@ TEST_F(SavedPasswordsPresenterTest, EditUsernameAndPassword) {
   base::HistogramTester histogram_tester;
   // Verify that editing username and password triggers the right notifications.
   EXPECT_CALL(observer, OnSavedPasswordsChanged);
-  EXPECT_CALL(observer, OnEdited(CredentialUIEntry(updated_both)));
+  EXPECT_CALL(
+      observer,
+      OnEdited(AllOf(Eq(CredentialUIEntry(updated_both)),
+                     Field(&CredentialUIEntry::password_issues, IsEmpty()))));
   EXPECT_EQ(SavedPasswordsPresenter::EditResult::kSuccess,
             presenter().EditSavedCredentials(CredentialUIEntry(form),
                                              credential_to_edit));

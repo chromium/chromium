@@ -16,6 +16,7 @@
 #include "base/barrier_closure.h"
 #include "base/check.h"
 #include "base/containers/fixed_flat_set.h"
+#include "base/containers/flat_map.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -55,6 +56,8 @@ using IsPasswordNoteChanged =
 using PasswordNote = password_manager::PasswordNote;
 using Store = password_manager::PasswordForm::Store;
 using EditResult = password_manager::SavedPasswordsPresenter::EditResult;
+using InsecureType = password_manager::InsecureType;
+using InsecurityMetadata = password_manager::InsecurityMetadata;
 
 bool IsUsernameAlreadyUsed(
     const password_manager::SavedPasswordsPresenter::DuplicatePasswordsMap&
@@ -101,6 +104,21 @@ password_manager::StoredCredential GenerateStoredCredentialFromCredential(
 
 bool MergeDeleteAllResultsFromPasswordStores(std::vector<bool> results) {
   return std::ranges::all_of(results, [](bool result) { return result; });
+}
+
+// Changing the password invalidates all existing issues. Changing only the
+// username invalidates compromised (username, password)-pair issues while
+// keeping password-intrinsic issues (weak/reused).
+void ClearResolvedPasswordIssues(
+    base::flat_map<InsecureType, InsecurityMetadata>& issues,
+    IsPasswordChanged password_changed,
+    IsUsernameChanged username_changed) {
+  if (password_changed) {
+    issues.clear();
+  } else if (username_changed) {
+    issues.erase(InsecureType::kPhished);
+    issues.erase(InsecureType::kLeaked);
+  }
 }
 
 }  // namespace
@@ -839,10 +857,14 @@ SavedPasswordsPresenter::EditResult SavedPasswordsPresenter::EditPassword(
   base::RepeatingClosure completion_barrier_closure = base::DoNothing();
   // Only change in username or password is interesting for OnEdited listeners.
   if (username_changed || password_changed) {
+    CredentialUIEntry notified_credential = updated_credential;
+    ClearResolvedPasswordIssues(notified_credential.password_issues,
+                                password_changed, username_changed);
     completion_barrier_closure = base::BarrierClosure(
         credentials_to_change.size(),
         base::BindOnce(&SavedPasswordsPresenter::NotifyEdited,
-                       weak_ptr_factory_.GetWeakPtr(), updated_credential));
+                       weak_ptr_factory_.GetWeakPtr(),
+                       std::move(notified_credential)));
   }
 
   for (const auto& old_credential : credentials_to_change) {
@@ -853,10 +875,12 @@ SavedPasswordsPresenter::EditResult SavedPasswordsPresenter::EditPassword(
       new_credential.password_issues = updated_credential.password_issues;
     }
 
+    ClearResolvedPasswordIssues(new_credential.password_issues,
+                                password_changed, username_changed);
+
     if (password_changed) {
       new_credential.password_value = updated_credential.password;
       new_credential.date_password_modified = base::Time::Now();
-      new_credential.password_issues.clear();
     }
 
     if (note_changed) {
@@ -867,8 +891,6 @@ SavedPasswordsPresenter::EditResult SavedPasswordsPresenter::EditPassword(
     // to make sure to call the right API.
     if (username_changed) {
       new_credential.username_value = updated_credential.username;
-      new_credential.password_issues.erase(InsecureType::kPhished);
-      new_credential.password_issues.erase(InsecureType::kLeaked);
       store.UpdateLoginWithPrimaryKey(std::move(new_credential),
                                       CloneStoredCredential(old_credential),
                                       completion_barrier_closure);
