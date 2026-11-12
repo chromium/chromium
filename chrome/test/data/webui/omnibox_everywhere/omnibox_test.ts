@@ -4320,7 +4320,7 @@ suite('OmniboxEverywhereContextMenuTest', () => {
           tab: null,
           fileToken: null,
           fileInfo: null,
-          isPendingScreenshot: false,
+          isPendingContextUpload: false,
         });
         await microtasksFinished();
 
@@ -4352,7 +4352,7 @@ suite('OmniboxEverywhereContextMenuTest', () => {
           },
           fileToken: null,
           fileInfo: null,
-          isPendingScreenshot: false,
+          isPendingContextUpload: false,
         });
         await microtasksFinished();
 
@@ -4377,7 +4377,7 @@ suite('OmniboxEverywhereContextMenuTest', () => {
             isDeletable: true,
             selectionTime: new Date(),
           },
-          isPendingScreenshot: false,
+          isPendingContextUpload: false,
         });
         await microtasksFinished();
 
@@ -4408,7 +4408,7 @@ suite('OmniboxEverywhereContextMenuTest', () => {
             isDeletable: true,
             selectionTime: new Date(),
           },
-          isPendingScreenshot: false,
+          isPendingContextUpload: false,
         });
         await microtasksFinished();
 
@@ -4448,7 +4448,7 @@ suite('OmniboxEverywhereContextMenuTest', () => {
             isDeletable: true,
             selectionTime: new Date(),
           },
-          isPendingScreenshot: false,
+          isPendingContextUpload: false,
         });
         await microtasksFinished();
 
@@ -4476,7 +4476,8 @@ suite('OmniboxEverywhereContextMenuTest', () => {
       });
 
   test(
-      'openComposebox with isPendingScreenshot suppresses suggestions dropdown',
+      'openComposebox with isPendingContextUpload suppresses suggestions ' +
+          'dropdown',
       async () => {
         testEverywhereProxy.page.openComposebox({
           tool: ToolMode.kUnspecified,
@@ -4484,17 +4485,18 @@ suite('OmniboxEverywhereContextMenuTest', () => {
           tab: null,
           fileToken: null,
           fileInfo: null,
-          isPendingScreenshot: true,
+          isPendingContextUpload: true,
         });
         await microtasksFinished();
 
         const composebox =
             app.shadowRoot.querySelector('omnibox-everywhere-composebox');
         assertTrue(!!composebox);
-        assertTrue(composebox.isPendingScreenshot);
+        assertTrue(composebox.isPendingContextUpload);
         assertFalse(composebox.computeShowDropdown());
 
-        // Delivering a file context resets isPendingScreenshot and plays glow.
+        // Delivering a file context resets isPendingContextUpload and plays
+        // glow.
         let glowPlayed = false;
         composebox.playGlowAnimation = () => {
           glowPlayed = true;
@@ -4511,7 +4513,7 @@ suite('OmniboxEverywhereContextMenuTest', () => {
             });
         await microtasksFinished();
 
-        assertFalse(composebox.isPendingScreenshot);
+        assertFalse(composebox.isPendingContextUpload);
         assertTrue(glowPlayed);
       });
 
@@ -4531,15 +4533,15 @@ suite('OmniboxEverywhereContextMenuTest', () => {
           tab: null,
           fileToken: null,
           fileInfo: null,
-          isPendingScreenshot: true,
+          isPendingContextUpload: true,
         });
         await microtasksFinished();
 
-        // Should be in composebox mode with isPendingScreenshot = true.
+        // Should be in composebox mode with isPendingContextUpload = true.
         const composebox =
             app.shadowRoot.querySelector('omnibox-everywhere-composebox');
         assertTrue(!!composebox);
-        assertTrue(composebox.isPendingScreenshot);
+        assertTrue(composebox.isPendingContextUpload);
 
         // Reset the mock calls before cancelling.
         testEverywhereProxy.handler.reset();
@@ -4570,14 +4572,14 @@ suite('OmniboxEverywhereContextMenuTest', () => {
           tab: null,
           fileToken: null,
           fileInfo: null,
-          isPendingScreenshot: false,
+          isPendingContextUpload: false,
         });
         await microtasksFinished();
 
         let composebox =
             app.shadowRoot.querySelector('omnibox-everywhere-composebox');
         assertTrue(!!composebox);
-        assertFalse(composebox.isPendingScreenshot);
+        assertFalse(composebox.isPendingContextUpload);
 
         // Initiate screenshot from within composebox mode.
         testEverywhereProxy.page.openComposebox({
@@ -4586,25 +4588,25 @@ suite('OmniboxEverywhereContextMenuTest', () => {
           tab: null,
           fileToken: null,
           fileInfo: null,
-          isPendingScreenshot: true,
+          isPendingContextUpload: true,
         });
         await microtasksFinished();
 
         composebox =
             app.shadowRoot.querySelector('omnibox-everywhere-composebox');
         assertTrue(!!composebox);
-        assertTrue(composebox.isPendingScreenshot);
+        assertTrue(composebox.isPendingContextUpload);
 
         // Cancel the screenshot capture.
         testEverywhereProxy.page.onScreenshotCaptureCancelled();
         await microtasksFinished();
 
-        // Should remain in composebox mode with isPendingScreenshot reset to
+        // Should remain in composebox mode with isPendingContextUpload reset to
         // false.
         composebox =
             app.shadowRoot.querySelector('omnibox-everywhere-composebox');
         assertTrue(!!composebox);
-        assertFalse(composebox.isPendingScreenshot);
+        assertFalse(composebox.isPendingContextUpload);
       });
 
   test('input does not overspill profile icon in RTL or LTR', async () => {
@@ -4703,7 +4705,7 @@ suite('OmniboxEverywhereContextMenuTest', () => {
             tab: null,
             fileToken: null,
             fileInfo: null,
-            isPendingScreenshot: false,
+            isPendingContextUpload: false,
           });
           await microtasksFinished();
 

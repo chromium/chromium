@@ -14,7 +14,7 @@ export function getHtml(this: OmniboxEverywhereAppElement) {
       this.isComposeboxMode_ ? html`
     <omnibox-everywhere-composebox id="composebox" searchbox-next-enabled
         ?is-active="${this.isActive_}"
-        .isPendingScreenshot="${this.isPendingScreenshot_}"
+        .isPendingContextUpload="${this.isPendingContextUpload_}"
         searchbox-layout-mode="${this.searchboxLayoutMode_}"
         .clearAllInputsWhenSubmittingQuery="${true}"
         @close-composebox="${this.onCloseComposebox_}"

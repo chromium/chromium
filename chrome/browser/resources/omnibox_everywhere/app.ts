@@ -135,14 +135,14 @@ export class OmniboxEverywhereAppElement extends
         reflect: true,
         attribute: 'is-active',
       },
-      isPendingScreenshot_: {type: Boolean},
+      isPendingContextUpload_: {type: Boolean},
     };
   }
 
   protected accessor isHotkeyDropdownOpen_: boolean = false;
   protected accessor isActive_: boolean = true;
   protected accessor isComposeboxMode_: boolean = false;
-  protected accessor isPendingScreenshot_: boolean = false;
+  protected accessor isPendingContextUpload_: boolean = false;
   protected accessor searchboxLayoutMode_: string =
       loadTimeData.getString('searchboxLayoutMode');
   protected accessor usePecApi_: boolean =
@@ -183,7 +183,7 @@ export class OmniboxEverywhereAppElement extends
 
   private isPersistentMode_: boolean =
       loadTimeData.getBoolean('isPersistentMode');
-  private screenshotOriginWasSearchbox_: boolean = false;
+  private contextUploadOriginWasSearchbox_: boolean = false;
   private eventTracker_ = new EventTracker();
   private mostVisitedListenerId_: number|null = null;
   private searchboxListenerIds_: number[] = [];
@@ -237,7 +237,7 @@ export class OmniboxEverywhereAppElement extends
   private setupListeners_() {
     const onOpenComposebox = (initialState: ComposeboxInitialState|null) => {
       const state: Partial<ComposeboxState> = {};
-      let isPendingScreenshot = false;
+      let isPendingContextUpload = false;
       if (initialState) {
         if (initialState.tab) {
           state.files = [{
@@ -260,11 +260,11 @@ export class OmniboxEverywhereAppElement extends
             initialState.model !== ModelMode.kUnspecified) {
           state.model = initialState.model;
         }
-        if (initialState.isPendingScreenshot) {
-          isPendingScreenshot = true;
+        if (initialState.isPendingContextUpload) {
+          isPendingContextUpload = true;
         }
       }
-      this.openComposebox(state, isPendingScreenshot);
+      this.openComposebox(state, isPendingContextUpload);
     };
 
     const onContextMenuClosed = () => {
@@ -273,9 +273,9 @@ export class OmniboxEverywhereAppElement extends
     };
 
     const onScreenshotCaptureCancelled = async () => {
-      this.isPendingScreenshot_ = false;
-      if (this.screenshotOriginWasSearchbox_) {
-        this.screenshotOriginWasSearchbox_ = false;
+      this.isPendingContextUpload_ = false;
+      if (this.contextUploadOriginWasSearchbox_) {
+        this.contextUploadOriginWasSearchbox_ = false;
         this.setIsComposebox_(false);
         await this.updateComplete;
         this.searchbox?.focusInput?.();
@@ -356,12 +356,13 @@ export class OmniboxEverywhereAppElement extends
    * 2. WebUI internal action handlers and DOM custom events.
    */
   async openComposebox(
-      state?: Partial<ComposeboxState>, isPendingScreenshot: boolean = false) {
+      state?: Partial<ComposeboxState>,
+      isPendingContextUpload: boolean = false) {
     if (this.isComposeboxMode_) {
-      this.isPendingScreenshot_ = isPendingScreenshot;
-      this.screenshotOriginWasSearchbox_ = false;
+      this.isPendingContextUpload_ = isPendingContextUpload;
+      this.contextUploadOriginWasSearchbox_ = false;
       if (this.composebox) {
-        this.composebox.isPendingScreenshot = isPendingScreenshot;
+        this.composebox.isPendingContextUpload = isPendingContextUpload;
       }
       if (!this.composebox || !state) {
         return;
@@ -406,11 +407,11 @@ export class OmniboxEverywhereAppElement extends
       SearchboxBrowserProxy.getInstance().handler.setActiveToolMode(
           initialMode, false);
     }
-    // Set isPendingScreenshot_ for this transition into Composebox mode so that
-    // the newly mounted composebox element receives the property binding and
-    // suppresses suggestions / glow animation until capture completes.
-    this.isPendingScreenshot_ = isPendingScreenshot;
-    this.screenshotOriginWasSearchbox_ = isPendingScreenshot;
+    // Set isPendingContextUpload_ for this transition into Composebox mode so
+    // that the newly mounted composebox element receives the property binding
+    // and suppresses suggestions / glow animation until capture completes.
+    this.isPendingContextUpload_ = isPendingContextUpload;
+    this.contextUploadOriginWasSearchbox_ = isPendingContextUpload;
     // Clear any active autocomplete suggestion matches on the omnibox searchbox
     // so stale dropdown results do not linger or flash when switching modes or
     // if the user subsequently exits Composebox back to Omnibox.
@@ -420,7 +421,7 @@ export class OmniboxEverywhereAppElement extends
     if (this.composebox) {
       this.composebox.state = composeboxState;
       this.composebox.focusInput();
-      if (!isPendingScreenshot) {
+      if (!isPendingContextUpload) {
         this.composebox.playGlowAnimation();
         this.composebox.queryAutocomplete(/*clearMatches=*/ true);
       }
@@ -561,7 +562,7 @@ export class OmniboxEverywhereAppElement extends
     SearchboxBrowserProxy.getInstance().handler.openHotkeySettings();
   }
   protected async onOpenComposebox_(e: CustomEvent<ComposeboxState>) {
-    this.screenshotOriginWasSearchbox_ = false;
+    this.contextUploadOriginWasSearchbox_ = false;
     this.setIsComposebox_(true);
     await this.updateComplete;
     const composebox =
@@ -575,8 +576,8 @@ export class OmniboxEverywhereAppElement extends
   }
 
   protected async onCloseComposebox_() {
-    this.isPendingScreenshot_ = false;
-    this.screenshotOriginWasSearchbox_ = false;
+    this.isPendingContextUpload_ = false;
+    this.contextUploadOriginWasSearchbox_ = false;
     this.setIsComposebox_(false);
     await this.updateComplete;
     this.focusActiveInput_();
@@ -618,8 +619,8 @@ export class OmniboxEverywhereAppElement extends
 
   protected async onComposeboxSubmit_() {
     this.isComposeboxMode_ = false;
-    this.isPendingScreenshot_ = false;
-    this.screenshotOriginWasSearchbox_ = false;
+    this.isPendingContextUpload_ = false;
+    this.contextUploadOriginWasSearchbox_ = false;
     await this.updateComplete;
     this.focusActiveInput_();
   }

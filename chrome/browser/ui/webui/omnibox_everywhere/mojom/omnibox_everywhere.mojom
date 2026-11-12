@@ -33,9 +33,9 @@ struct ComposeboxInitialState {
   // selected file corresponding to `file_token`.
   searchbox.mojom.SelectedFileInfo? file_info;
 
-  // True if transitioning into composebox while an asynchronous screenshot
-  // capture (e.g. from the Lens menu) is in progress.
-  bool is_pending_screenshot = false;
+  // True if transitioning into composebox while an asynchronous context
+  // upload (e.g. screenshot capture or file picker) is in progress.
+  bool is_pending_context_upload = false;
 };
 
 // The browser-side handler factory for Omnibox Everywhere.
