@@ -240,9 +240,6 @@ class KerberosCredentialsManager : public KeyedService,
   // |RemoveAccount()| or |ClearAccounts()|.
   void ValidateActivePrincipal(const RepeatedAccountField& accounts);
 
-  // Notification shown when the Kerberos ticket is about to expire.
-  void ShowTicketExpiryNotification();
-
   // Pref change handlers.
   void UpdateEnabledFromPref();
   void UpdateRememberPasswordEnabledFromPref();

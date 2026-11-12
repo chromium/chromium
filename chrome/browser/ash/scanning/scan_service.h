@@ -162,10 +162,6 @@ class ScanService : public scanning::mojom::ScanService,
   // Resets the mojo::Receiver |multi_page_controller_receiver_|.
   void ResetMultiPageScanController();
 
-  // Determines whether the service supports saving scanned images to
-  // |file_path|.
-  bool FilePathSupported(const base::FilePath& file_path);
-
   // Returns the scanner name corresponding to the given |scanner_id| or an
   // empty string if the name cannot be found.
   std::string GetScannerName(const base::UnguessableToken& scanner_id);

@@ -335,10 +335,6 @@ class DriveIntegrationService : public KeyedService,
 
   PrefService* GetPrefs() const { return profile_->GetPrefs(); }
 
-  // Returns true if Drive is enabled.
-  // Must be called on UI thread.
-  bool IsDriveEnabled();
-
   enum class DirResult { kError, kExisting, kCreated };
   static DirResult EnsureDirectoryExists(const base::FilePath& data_dir);
 
@@ -406,13 +402,6 @@ class DriveIntegrationService : public KeyedService,
   // Regularly samples the bulk-pinning preference and stores the result in a
   // UMA histogram.
   void SampleBulkPinningPref();
-
-  void OnGetOfflineItemsPage(
-      int64_t total_size,
-      mojo::Remote<drivefs::mojom::SearchQuery> search_query,
-      base::OnceCallback<void(int64_t)> callback,
-      FileError error,
-      std::optional<std::vector<drivefs::mojom::QueryItemPtr>> results);
 
   void OnSearchDriveByFileName(
       SearchDriveByFileNameCallback callback,

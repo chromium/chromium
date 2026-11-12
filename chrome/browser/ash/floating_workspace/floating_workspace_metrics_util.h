@@ -63,7 +63,6 @@ void RecordFloatingWorkspaceStartupUiClosureReason(
 void RecordFloatingWorkspaceV2TemplateLaunchFailureType(
     LaunchTemplateFailureType type);
 void RecordFloatingWorkspaceV2TemplateLoadTime(base::TimeDelta duration);
-void RecordFloatingWorkspaceV2TemplateSize(size_t file_size);
 void RecordFloatingWorkspaceV2TemplateUploadStatusHistogram(
     desks_storage::DeskModel::AddOrUpdateEntryStatus status);
 void RecordFloatingWorkspaceV2InitializedHistogram();

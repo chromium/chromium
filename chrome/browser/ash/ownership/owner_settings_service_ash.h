@@ -73,8 +73,6 @@ class OwnerSettingsServiceAsh : public ownership::OwnerSettingsService,
 
   void OnTPMTokenReady();
 
-  void OnEasyUnlockKeyOpsFinished();
-
   bool HasPendingChanges() const;
 
   // ownership::OwnerSettingsService implementation:

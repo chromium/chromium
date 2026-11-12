@@ -85,7 +85,6 @@ class Preferences : public sync_preferences::PrefServiceSyncableObserver,
             Profile* profile,
             sync_preferences::PrefServiceSyncable* prefs);
 
-  void InitPrefsForTesting(sync_preferences::PrefServiceSyncable* prefs);
   void InitUserPrefsForTesting(
       sync_preferences::PrefServiceSyncable* prefs,
       const user_manager::User* user,

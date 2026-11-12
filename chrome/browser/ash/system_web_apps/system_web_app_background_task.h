@@ -85,10 +85,6 @@ class SystemWebAppBackgroundTask {
     return polling_since_time_;
   }
 
-  webapps::WebAppUrlLoader* UrlLoaderForTesting() {
-    return web_app_url_loader_.get();
-  }
-
   // Set the url loader for testing. Takes ownership of the argument.
   void SetUrlLoaderForTesting(
       std::unique_ptr<webapps::WebAppUrlLoader> loader) {

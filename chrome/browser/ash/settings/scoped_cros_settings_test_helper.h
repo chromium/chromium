@@ -48,7 +48,6 @@ class ScopedCrosSettingsTestHelper {
   // settings in memory unsigned; see StubCrosSettingsProvider for more info.
   void ReplaceDeviceSettingsProviderWithStub();
   void RestoreRealDeviceSettingsProvider();
-  bool IsDeviceSettingsProviderStubbed();
 
   // Method to create an owner settings service that uses
   // |stub_settings_provider_| as settings write path.

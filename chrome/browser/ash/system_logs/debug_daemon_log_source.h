@@ -66,9 +66,6 @@ class DebugDaemonLogSource : public SystemLogsSource {
   // so that we can see any debugd related errors surface in feedback reports.
   void GetLoggedInUsersLogFiles();
 
-  void OnGetUserLogFiles(bool succeeded,
-                         const KeyValueMap& logs);
-
   // Merge the responses from ReadUserLogFiles into the main response dict and
   // invoke the callback_.Run method with the assumption that all other logs
   // have already been collected.

@@ -87,7 +87,6 @@ class SoftBindAttestationFlowImpl : public SoftBindAttestationFlow {
   void OnCertificateReady(std::unique_ptr<Session> session,
                           AttestationStatus operation_status,
                           const std::string& certificate_chain);
-  EVP_PKEY* GetLeafCertSpki(const std::string& certificate_chain);
   void OnCertificateSigned(std::unique_ptr<Session> session,
                            const std::string& tbs_cert,
                            const std::string& certificate_chain,
@@ -95,7 +94,6 @@ class SoftBindAttestationFlowImpl : public SoftBindAttestationFlow {
                            const ::attestation::SignReply& reply);
   bool IsAttestationAllowedByPolicy() const;
   CertificateExpiryStatus CheckExpiry(const std::string& certificate_chain);
-  EVP_PKEY* GetLeafSubjectPublicKeyInfo(const std::string& certificate_chain);
   void RenewCertificateCallback(const std::string& old_certificate_chain,
                                 AttestationStatus operation_status,
                                 const std::string& certificate_chain);

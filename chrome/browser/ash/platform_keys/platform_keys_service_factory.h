@@ -67,8 +67,6 @@ class PlatformKeysServiceFactory : public ProfileKeyedServiceFactory {
       content::BrowserContext* context) const override;
   void BrowserContextShutdown(content::BrowserContext* context) override;
 
-  PlatformKeysService* GetOrCreateDeviceWideService();
-
   // A PlatformKeysService that is not tied to a Profile/User and only has
   // access to the system token.
   // Initialized lazily.

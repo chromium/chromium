@@ -107,9 +107,6 @@ class MahiWebContentsManagerImpl : public chromeos::MahiWebContentsManager {
                      chromeos::MahiGetContentCallback callback,
                      ui::AXTreeUpdate& snapshot);
 
-  void OnFinishDistillableCheck(const base::UnguessableToken& page_id,
-                                bool is_distillable);
-
   // Get the page content of normal web pages.
   void RequestWebContent(const base::UnguessableToken& page_id,
                          chromeos::MahiGetContentCallback callback);

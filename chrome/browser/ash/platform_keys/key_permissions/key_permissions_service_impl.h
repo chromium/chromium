@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_PLATFORM_KEYS_KEY_PERMISSIONS_KEY_PERMISSIONS_SERVICE_IMPL_H_
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
@@ -53,10 +52,6 @@ class KeyPermissionsServiceImpl : public KeyPermissionsService {
   }
 
  private:
-  // Returns true if |public_key_spki_der_b64| (which is located only on a user
-  // token) is marked for corporate usage.
-  bool IsUserKeyCorporate(const std::string& public_key_spki_der_b64) const;
-
   void CanUserGrantPermissionForKeyWithLocations(
       std::vector<uint8_t> public_key_spki_der,
       CanUserGrantPermissionForKeyCallback callback,

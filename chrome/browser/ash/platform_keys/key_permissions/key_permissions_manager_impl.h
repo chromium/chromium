@@ -9,7 +9,6 @@
 
 #include <memory>
 #include <optional>
-#include <string>
 #include <vector>
 
 #include "base/containers/queue.h"
@@ -171,11 +170,6 @@ class KeyPermissionsManagerImpl : public KeyPermissionsManager,
 
   void AllowKeyForCorporateUsage(AllowKeyForUsageCallback callback,
                                  std::vector<uint8_t> public_key_spki_der);
-
-  void OnKeyPermissionsRetrieved(
-      IsKeyAllowedForUsageCallback callback,
-      const std::optional<std::string>& attribute_value,
-      chromeos::platform_keys::Status status);
 
   void IsKeyAllowedForUsageWithPermissions(
       IsKeyAllowedForUsageCallback callback,

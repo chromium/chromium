@@ -171,8 +171,6 @@ class RemoteAppsManager
 
   void HandleOnAppAdded(const std::string& id);
 
-  void HandleOnFolderCreated(const std::string& folder_id);
-
   void StartIconDownload(const std::string& id, const GURL& icon_url);
 
   void OnIconDownloaded(const std::string& id, const gfx::ImageSkia& icon);

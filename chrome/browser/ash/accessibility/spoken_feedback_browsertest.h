@@ -94,9 +94,6 @@ class LoggedInSpokenFeedbackTest
 
   void StablizeChromeVoxState();
 
-  void PressRepeatedlyUntilUtterance(ui::KeyboardCode key,
-                                     const std::string& expected_utterance);
-
   ui::test::EventGenerator* event_generator() { return event_generator_.get(); }
 
   ChromeVoxTestUtils* chromevox_test_utils() {

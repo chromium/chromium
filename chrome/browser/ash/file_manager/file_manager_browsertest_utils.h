@@ -89,11 +89,7 @@ struct TestCase {
 
   TestCase& BypassRequiresJustification();
 
-  TestCase& EnableSearchV2();
-
   TestCase& EnableLocalImageSearch();
-
-  TestCase& EnableOsFeedback();
 
   TestCase& DisableGoogleOneOfferFilesBanner();
 

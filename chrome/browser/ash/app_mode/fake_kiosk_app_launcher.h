@@ -21,8 +21,6 @@ class FakeKioskAppLauncher : public KioskAppLauncher {
   void ContinueWithNetworkReady() override;
   void LaunchApp() override;
 
-  void ResetAppLaunched();
-
   bool IsInitialized() const { return initialize_called_ > 0; }
   bool HasAppLaunched() const { return launch_app_called_ > 0; }
   bool HasContinueWithNetworkReadyBeenCalled() const {

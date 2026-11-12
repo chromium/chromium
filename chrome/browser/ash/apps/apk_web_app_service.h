@@ -166,8 +166,6 @@ class ApkWebAppService : public KeyedService,
                           webapps::InstallResultCode code);
   void OnDidRemoveInstallSource(const webapps::AppId& app_id,
                                 webapps::UninstallResultCode code);
-  void UpdatePackageInfo(const std::string& app_id,
-                         const arc::mojom::WebAppInfoPtr& web_app_info);
   const base::DictValue& WebAppToApks() const;
   void SyncArcAndWebApps();
 

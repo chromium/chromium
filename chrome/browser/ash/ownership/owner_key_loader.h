@@ -14,10 +14,6 @@
 
 class Profile;
 
-namespace enterprise_management {
-class PolicyData;
-}
-
 namespace ash {
 
 class DeviceSettingsService;
@@ -67,8 +63,6 @@ class OwnerKeyLoader {
   void GenerateNewKey();
   void OnNewKeyGenerated(scoped_refptr<ownership::PublicKey> public_key,
                          scoped_refptr<ownership::PrivateKey> private_key);
-  void MaybeRegenerateLostKey(
-      const enterprise_management::PolicyData* policy_data);
 
   const raw_ptr<Profile> profile_;
   const raw_ptr<DeviceSettingsService> device_settings_service_;

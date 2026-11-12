@@ -127,18 +127,6 @@ bool MigratePathFromOldFormat(Profile* profile,
                               const base::FilePath& old_path,
                               base::FilePath* new_path);
 
-// Converts |old_path| in <cryptohome>/Downloads[/*] to |new_path| in
-// <cryptohome/MyFiles/Downloads[*].  Returns true if path is changed else
-// returns false if |old_path| was not inside Downloads, and |new_path| is
-// undefined.
-//
-// Introduced in M73.  This code updates values stored in prefs.
-// TODO(crbug.com/41430020) Remove this when no users are running M72 or
-// earlier.
-bool MigrateFromDownloadsToMyFiles(Profile* profile,
-                                   const base::FilePath& old_path,
-                                   base::FilePath* new_path);
-
 // Convers |old_path| in /special/drive-<hash> to |new_path| in
 // /media/fuse/drivefs-<id>. Returns true if path is changed else
 // returns false if |old_path| was not inside Drive, and |new_path| is

@@ -303,12 +303,6 @@ class AccessibilityManager
   // Returns if focus highlighting is enabled.
   bool IsFocusHighlightEnabled() const;
 
-  // Enables or disables tap dragging.
-  void EnableTapDragging(bool enabled);
-
-  // Returns true if the tap dragging is enabled, or false if not.
-  bool IsTapDraggingEnabled() const;
-
   // Invoked to enable or disable select-to-speak.
   void SetSelectToSpeakEnabled(bool enabled);
 
@@ -611,7 +605,6 @@ class AccessibilityManager
   void OnCaretHighlightChanged();
   void OnCursorHighlightChanged();
   void OnFocusHighlightChanged();
-  void OnTapDraggingChanged();
   void OnSelectToSpeakChanged();
   void OnAccessibilityCommonChanged(const std::string& pref_name);
   void OnSwitchAccessChanged();

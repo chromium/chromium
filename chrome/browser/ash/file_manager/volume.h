@@ -91,10 +91,6 @@ class Volume {
 
   static std::unique_ptr<Volume> CreateForMediaView(const std::string& root_id);
 
-  static std::unique_ptr<Volume> CreateMediaViewForTesting(
-      base::FilePath mount_path,
-      const std::string& root_id);
-
   static std::unique_ptr<Volume> CreateForSshfsCrostini(
       base::FilePath crostini_path,
       base::FilePath remote_mount_path);

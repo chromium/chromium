@@ -231,10 +231,6 @@ class Adapter : public AlsReader::Observer,
   // |InitParams|.
   void UpdateStatus();
 
-  // Called after adapter is initialized. It sets metrics reporter's device
-  // class if metrics reporter is set up.
-  void SetMetricsReporterDeviceClass();
-
   // Checks whether brightness should be changed.
   // This is generally the case when the brightness hasn't been manually
   // set, we've received enough initial ambient light readings, and
@@ -268,18 +264,6 @@ class Adapter : public AlsReader::Observer,
   void WriteLogMessages(double new_log_als,
                         double new_brightness,
                         BrightnessChangeCause cause) const;
-
-  // Logs AdapterDecision. Also logs ratio of user brightness change to model
-  // brightness change if previous brightness change was triggered by the model.
-  // Only called when user changes brightness manually, i.e. when
-  // |OnUserBrightnessChanged| is called.
-  // |old_brightness_percent| and |new_brightness_percent| should come directly
-  // from BrightnessMonitor, and values are between 0 and 100.
-  void LogAdapterDecision(
-      base::TimeTicks first_recent_user_brightness_request_time,
-      const AdapterDecision& decision,
-      double old_brightness_percent,
-      double new_brightness_percent) const;
 
   const raw_ref<PrefService> profile_prefs_;
 

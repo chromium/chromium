@@ -64,7 +64,6 @@ class DnsLatencyRoutine : public NetworkDiagnosticsRoutine {
 
   void CreateHostResolver();
   void AttemptNextResolution();
-  bool ProblemDetected();
 
   // Unowned
   raw_ptr<network::mojom::NetworkContext> network_context_ = nullptr;

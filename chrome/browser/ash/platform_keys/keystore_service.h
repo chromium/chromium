@@ -122,12 +122,6 @@ class KeystoreService : public KeyedService {
                           SetAttributeForKeyCallback callback);
 
  private:
-  // Returns a correct instance of PlatformKeysService to use. If a specific
-  // browser context was passed into constructor, the corresponding
-  // PlatformKeysService instance will be used for all operations.
-  // Otherwise the class will use an instance for the primary profile.
-  platform_keys::PlatformKeysService* GetPlatformKeys();
-
   // Returns a correct instance of KeyPermissionsService to use. If a specific
   // browser context was passed into constructor, the corresponding
   // KeyPermissionsService instance will be used for all operations.

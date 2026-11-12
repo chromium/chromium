@@ -95,9 +95,6 @@ class KioskMetricsService {
 
   void ClearStartTime();
 
-  void OnPreviousKioskSessionResult(const base::Time& start_time,
-                                    bool crashed) const;
-
   raw_ptr<PrefService> prefs_;
 
   // Initialized once the kiosk session is started or during recording of the
