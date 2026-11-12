@@ -575,7 +575,8 @@
                 "arguments": [
                     "--disable-field-trials",
                     "--required-device-config-mode=warn",
-                    "--cool-down-threshold=moderate"
+                    "--cool-down-threshold=moderate",
+                    "--allow-build-type=user,userdebug"
                 ]
             }
         },
