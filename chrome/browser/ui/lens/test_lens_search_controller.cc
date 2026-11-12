@@ -20,6 +20,7 @@
 #include "components/tabs/public/mock_tab_interface.h"
 #include "components/variations/variations_client.h"
 #include "content/public/browser/navigation_controller.h"
+#include "third_party/lens_server_proto/lens_overlay_server.pb.h"
 
 namespace lens {
 
@@ -185,12 +186,26 @@ FakeLensQueryFlowRouter::FakeLensQueryFlowRouter(
   ON_CALL(*mock_handle_, CreateSearchUrl(::testing::_, ::testing::_))
       .WillByDefault(
           ::testing::WithArg<1>([](base::OnceCallback<void(GURL)> callback) {
-            std::move(callback).Run(GURL("http://dummy-search-url.com"));
+            std::move(callback).Run(
+                GURL("https://www.google.com/search?lns_mode=un"));
           }));
   ON_CALL(*mock_handle_, GetController())
       .WillByDefault(::testing::Return(mock_context_controller_.get()));
 
   mock_file_info_ = std::make_unique<contextual_search::FileInfo>();
+  // Populate fake OCR text in the uploaded file's response bodies to match
+  // `TestLensOverlayQueryController`.
+  lens::LensOverlayServerResponse server_response;
+  server_response.mutable_objects_response()->mutable_text()->CopyFrom(
+      CreateTestText({"This", "is", "test", "text."}));
+  server_response.mutable_objects_response()
+      ->mutable_cluster_info()
+      ->set_server_session_id(kTestServerSessionId);
+  server_response.mutable_objects_response()
+      ->mutable_cluster_info()
+      ->set_search_session_id(kTestSearchSessionId);
+  mock_file_info_->response_bodies.push_back(
+      server_response.SerializeAsString());
 
   ON_CALL(*mock_handle_, CreateContextToken())
       .WillByDefault(::testing::Return(base::UnguessableToken::Create()));

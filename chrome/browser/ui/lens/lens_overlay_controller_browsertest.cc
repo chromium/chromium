@@ -9386,10 +9386,16 @@ class LensOverlayControllerSideBySideBrowserTest
   void SetupFeatureList() override {
     feature_list_.InitWithFeaturesAndParameters(
         {{lens::features::kLensOverlay, {{"use-blur", "true"}}}},
-        {contextual_tasks::kContextualTasks,
-         contextual_tasks::kContextualTasksSidePanel,
-         contextual_tasks::kContextualTasksRearchitecture,
-         contextual_tasks::kContextualTasksSidePanelRearchitecture});
+        /*disabled_features=*/{});
+  }
+
+  void SetUpOnMainThread() override {
+    LensOverlayControllerBrowserTest::SetUpOnMainThread();
+    // Clear default per-entry side panel alignment overrides so tests can
+    // exercise both global horizontal alignment and explicit per-entry
+    // overrides.
+    browser()->GetProfile()->GetPrefs()->SetDict(
+        prefs::kSidePanelAlignmentOverrides, base::DictValue());
   }
 
   bool AreAnyRoundedCornersShowing() {
@@ -9482,11 +9488,12 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerSideBySideBrowserTest,
   ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
 
   // Open a side panel.
-  controller->IssueTextSelectionRequestForTesting(/*text_query=*/"Apples",
-                                                  /*selection_start_index=*/0,
-                                                  /*selection_end_index=*/0);
-  ASSERT_TRUE(
-      base::test::RunUntil([&]() { return IsLensResultsSidePanelShowing(); }));
+  controller->IssueLensRegionRequestForTesting(kTestRegion->Clone(),
+                                               /*is_click=*/false);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return static_cast<LensOverlayControllerFake*>(controller)
+        ->IsResultsSidePanelShowing();
+  }));
 
   // Expect the side panel rounded corner to exist.
   ASSERT_TRUE(controller->GetOverlayViewForTesting()->layer());
@@ -9513,8 +9520,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerSideBySideBrowserTest,
   WaitForPaint();
 
   // State should start in off.
-  auto* controller_1 = GetLensOverlayController();
-  auto* side_panel_coordinator_1 = GetLensOverlaySidePanelCoordinator();
+  auto* controller_1 =
+      static_cast<LensOverlayControllerFake*>(GetLensOverlayController());
   ASSERT_EQ(controller_1->state(), State::kOff);
 
   // Showing UI should change the state to screenshot and eventually to overlay.
@@ -9525,11 +9532,10 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerSideBySideBrowserTest,
   ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
 
   // Open a side panel.
-  controller_1->IssueTextSelectionRequestForTesting(/*text_query=*/"Apples",
-                                                    /*selection_start_index=*/0,
-                                                    /*selection_end_index=*/0);
+  controller_1->IssueLensRegionRequestForTesting(kTestRegion->Clone(),
+                                                 /*is_click=*/false);
   ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return side_panel_coordinator_1->IsEntryShowing(); }));
+      [&]() { return controller_1->IsResultsSidePanelShowing(); }));
 
   // Expect overlay view's corners to be rounded.
   EXPECT_TRUE(controller_1->GetOverlayViewForTesting()->layer() &&
@@ -9546,7 +9552,6 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerSideBySideBrowserTest,
 
   // State should start in off.
   auto* controller_0 = GetLensOverlayController();
-  auto* side_panel_coordinator_0 = GetLensOverlaySidePanelCoordinator();
   ASSERT_EQ(controller_0->state(), State::kOff);
 
   // Showing UI should change the state to screenshot and eventually to overlay.
@@ -9569,7 +9574,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerSideBySideBrowserTest,
 
   // Wait for backgrounded state to be restored.
   ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return side_panel_coordinator_0->IsEntryShowing(); }));
+      [&]() { return controller_1->IsResultsSidePanelShowing(); }));
 
   // Expect overlay view's corners to be rounded.
   EXPECT_TRUE(controller_1->GetOverlayViewForTesting()->layer() &&
@@ -9599,11 +9604,12 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerSideBySideBrowserTest,
   ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
 
   // Open a side panel.
-  controller->IssueTextSelectionRequestForTesting(/*text_query=*/"Apples",
-                                                  /*selection_start_index=*/0,
-                                                  /*selection_end_index=*/0);
-  ASSERT_TRUE(
-      base::test::RunUntil([&]() { return IsLensResultsSidePanelShowing(); }));
+  controller->IssueLensRegionRequestForTesting(kTestRegion->Clone(),
+                                               /*is_click=*/false);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return static_cast<LensOverlayControllerFake*>(controller)
+        ->IsResultsSidePanelShowing();
+  }));
 
   // Expect overlay view's top right corner to be rounded.
   gfx::RoundedCornersF rounded_corners = controller->GetOverlayViewForTesting()
@@ -10600,11 +10606,7 @@ class LensOverlayControllerCoBrowsePreselectionTest
          {lens::features::kLensOverlay,
           {{"results-search-url", kResultsSearchBaseUrl}}},
          {lens::features::kLensOverlayContextualSearchbox, {}}},
-        /*disabled_features=*/{
-            contextual_tasks::kContextualTasks,
-            contextual_tasks::kContextualTasksSidePanel,
-            contextual_tasks::kContextualTasksRearchitecture,
-            contextual_tasks::kContextualTasksSidePanelRearchitecture});
+        /*disabled_features=*/{});
   }
 };
 
@@ -10615,18 +10617,17 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerCoBrowsePreselectionTest,
   auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
 
-  // Show UI via kOmniboxPageAction invocation source.
+  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
+  ASSERT_TRUE(fake_controller);
+  fake_controller->set_mock_results_side_panel_showing(true);
+
+  // Show UI via `kOmniboxPageAction` invocation source while the results side
+  // panel is already showing.
   OpenLensOverlay(LensOverlayInvocationSource::kOmniboxPageAction);
   ASSERT_EQ(controller->state(), State::kScreenshot);
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
-
-  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
-  ASSERT_TRUE(fake_controller);
-
-  // Open the results side panel to simulate the panel being visible.
-  fake_controller->OpenSidePanelForTesting();
-  ASSERT_TRUE(IsLensResultsSidePanelShowing());
+  ASSERT_TRUE(fake_controller->IsResultsSidePanelShowing());
 
   // Preselection toast should remain visible even though the results side panel
   // is showing.
@@ -10651,11 +10652,7 @@ class LensOverlayControllerNonBlockingPrivacyNoticeBrowserTest
         /*enabled_features=*/
         {lens::features::kLensOverlayNonBlockingPrivacyNotice,
          lens::features::kLensOverlayContextualSearchbox},
-        /*disabled_features=*/{
-            contextual_tasks::kContextualTasks,
-            contextual_tasks::kContextualTasksSidePanel,
-            contextual_tasks::kContextualTasksRearchitecture,
-            contextual_tasks::kContextualTasksSidePanelRearchitecture});
+        /*disabled_features=*/{});
   }
 
   void SetUpOnMainThread() override {
@@ -10860,11 +10857,7 @@ class LensOverlayControllerPrivacyNoticeFeatureDisabledBrowserTest
         /*enabled_features=*/
         {lens::features::kLensOverlayContextualSearchbox},
         /*disabled_features=*/{
-            lens::features::kLensOverlayNonBlockingPrivacyNotice,
-            contextual_tasks::kContextualTasks,
-            contextual_tasks::kContextualTasksSidePanel,
-            contextual_tasks::kContextualTasksRearchitecture,
-            contextual_tasks::kContextualTasksSidePanelRearchitecture});
+            lens::features::kLensOverlayNonBlockingPrivacyNotice});
   }
 };
 
