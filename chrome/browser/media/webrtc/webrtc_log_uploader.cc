@@ -180,7 +180,9 @@ void WebRtcLogUploader::OnLoggingStopped(
         base::NotFatalUntil::M161);
   CHECK(log_buffer.get(), base::NotFatalUntil::M161);
   CHECK(meta_data.get(), base::NotFatalUntil::M161);
-  CHECK(!upload_done_data.paths.directory.empty(), base::NotFatalUntil::M161);
+  // TODO(crbug.com/584671785): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!upload_done_data.paths.directory.empty());
 
   std::string compressed_log = CompressLog(log_buffer.get());
 
