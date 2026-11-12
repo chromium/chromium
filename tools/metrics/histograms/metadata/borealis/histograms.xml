@@ -222,32 +222,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Borealis.Install.Source" enum="BorealisLaunchSource"
-    expires_after="2026-02-01">
-  <owner>philpearson@google.com</owner>
-  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
-  <summary>
-    The referring source for a Borealis installer launch, for example, a
-    chromeos-steam://install link, the Steam installer app in the Launcher, or a
-    Unified App Installer click. This is recorded at the start of an
-    installation attempt.
-  </summary>
-</histogram>
-
-<histogram name="Borealis.Launch.Source" enum="BorealisLaunchSource"
-    expires_after="2026-04-05">
-  <owner>philpearson@google.com</owner>
-  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
-  <summary>
-    The referring source for a non-installer Borealis launch, for example, a
-    chromeos-steam://install link, the Steam installer app in the Launcher, a
-    Unified App Installer click, when uninstalling an app, launching an app by
-    URL, retrying a previous launch, or the Open Steam button in the installer.
-    This is recorded when starting to launch a Borealis app: a game, or the
-    Steam client.
-  </summary>
-</histogram>
-
 <histogram name="Borealis.Shutdown.Attempt" enum="BooleanAttempted"
     expires_after="2026-02-01">
   <owner>philpearson@google.com</owner>
@@ -286,47 +260,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The time taken for fsck to complete during VM startup. This is recorded once
     during each startup, when maitred emits disk related metrics.
-  </summary>
-</histogram>
-
-<histogram name="Borealis.Startup.NumAttempts" enum="BooleanAttempted"
-    expires_after="2026-02-01">
-  <owner>philpearson@google.com</owner>
-  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
-  <summary>Recording every attempt to start Borealis (via the UI).</summary>
-</histogram>
-
-<histogram name="Borealis.Startup.OverallTime2" units="ms"
-    expires_after="2026-09-13">
-  <owner>philpearson@google.com</owner>
-  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
-  <improvement direction="LOWER_IS_BETTER"/>
-  <summary>
-    Recording the time taken for each successful attempt to start the Borealis
-    VM (via the UI), until the VM is responsive and able to launch the Steam
-    client.
-  </summary>
-</histogram>
-
-<histogram name="Borealis.Startup.Result" enum="BorealisStartupResult"
-    expires_after="2026-09-13">
-  <owner>philpearson@google.com</owner>
-  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
-  <summary>
-    Recording the result of each attempt to start Borealis, whether it was
-    successful or the error that it faced.
-  </summary>
-</histogram>
-
-<histogram name="Borealis.Startup.TimeToFirstWindow" units="ms"
-    expires_after="2026-08-09">
-  <owner>philpearson@google.com</owner>
-  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
-  <improvement direction="LOWER_IS_BETTER"/>
-  <summary>
-    Recording the time taken for each successful attempt to start Borealis (via
-    the UI), from when the splash screen is shown to when the first window is
-    shown (probably either an update dialog or a Steam client window).
   </summary>
 </histogram>
 

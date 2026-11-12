@@ -55,44 +55,6 @@ chromium-metrics-reviews@google.com.
   <int value="13" label="Main app never showed up"/>
 </enum>
 
-<enum name="BorealisLaunchSource">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="chromeos-steam://install"/>
-  <int value="2" label="Unified App Installer"/>
-  <int value="3" label="Steam installer Launcher app"/>
-  <int value="4" label="insert_coin crosh command"/>
-  <int value="5" label="App uninstaller"/>
-  <int value="6" label="App URL handler"/>
-  <int value="7" label="Retry clicked on launch error dialog"/>
-  <int value="8" label="Launch button on successful install"/>
-</enum>
-
-<enum name="BorealisStartupResult">
-  <int value="0" label="Success"/>
-  <int value="1" label="Cancelled"/>
-  <int value="2" label="Failed mounting DLC"/>
-  <int value="3" label="Failed creating disk image"/>
-  <int value="4" label="Failed starting VM"/>
-  <int value="5" label="Failed awaiting startup"/>
-  <int value="6" label="Failed Syncing Disks"/>
-  <int value="7" label="Failed starting wayland server"/>
-  <int value="8" label="Disallowed"/>
-  <int value="9" label="DLC install was cancelled"/>
-  <int value="10" label="DLC failed because the device is offline"/>
-  <int value="11" label="DLC couldn't find an image at the correct version"/>
-  <int value="12"
-      label="Device has a pending update and needs to be restarted to use
-             Borealis DLC"/>
-  <int value="13" label="Device needs more space to use Borealis DLC"/>
-  <int value="14" label="DLC service is busy"/>
-  <int value="15" label="DLC reported an internal error"/>
-  <int value="16" label="Borealis DLC is not supported"/>
-  <int value="17" label="DLC faced an unknown error"/>
-  <int value="18" label="Concierge was unavailable"/>
-  <int value="19" label="Received an empty disk response from Concierge"/>
-  <int value="20" label="Received an empty startup response from Concierge"/>
-</enum>
-
 </enums>
 
 </histogram-configuration>

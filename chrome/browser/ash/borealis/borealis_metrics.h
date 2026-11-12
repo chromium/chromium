@@ -12,19 +12,11 @@ namespace borealis {
 
 extern const char kBorealisInstallNumAttemptsHistogram[];
 extern const char kBorealisInstallResultHistogram[];
-extern const char kBorealisInstallSourceHistogram[];
 extern const char kBorealisInstallOverallTimeHistogram[];
-extern const char kBorealisShutdownNumAttemptsHistogram[];
-extern const char kBorealisShutdownResultHistogram[];
 extern const char kBorealisStabilityHistogram[];
-extern const char kBorealisStartupNumAttemptsHistogram[];
-extern const char kBorealisStartupResultHistogram[];
-extern const char kBorealisStartupOverallTimeHistogram2[];
 extern const char kBorealisUninstallNumAttemptsHistogram[];
 extern const char kBorealisUninstallResultHistogram[];
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
 enum class BorealisLaunchSource {
   kUnknown = 0,
   kInstallUrl = 1,
@@ -49,64 +41,14 @@ enum class BorealisUninstallResult {
   kMaxValue = kRemoveDlcFailed,
 };
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class BorealisStartupResult {
-  kSuccess = 0,
-  kCancelled = 1,
-  // kMountFailed = 2, // No longer used, expanded into kDlc*.
-  kDiskImageFailed = 3,
-  kStartVmFailed = 4,
-  kAwaitBorealisStartupFailed = 5,
-  kSyncDiskFailed = 6,
-  kRequestWaylandFailed = 7,
-  kDisallowed = 8,
-  kDlcCancelled = 9,
-  kDlcOffline = 10,
-  kDlcNeedUpdateError = 11,
-  kDlcNeedRebootError = 12,
-  kDlcNeedSpaceError = 13,
-  kDlcBusyError = 14,
-  kDlcInternalError = 15,
-  kDlcUnsupportedError = 16,
-  kDlcUnknownError = 17,
-  kConciergeUnavailable = 18,
-  kEmptyDiskResponse = 19,
-  kStartVmEmptyResponse = 20,
-  // Remember to add new entries to histograms/enums.xml.
-  kMaxValue = kStartVmEmptyResponse,
-};
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class BorealisShutdownResult {
-  kSuccess = 0,
-  kInProgress = 1,
-  kFailed = 2,
-  kMaxValue = kFailed,
-};
-
 void RecordBorealisInstallNumAttemptsHistogram();
 void RecordBorealisInstallResultHistogram(
     borealis::mojom::InstallResult install_result);
-void RecordBorealisInstallSourceHistogram(BorealisLaunchSource install_source);
 void RecordBorealisInstallOverallTimeHistogram(base::TimeDelta install_time);
-void RecordBorealisLaunchSourceHistogram(BorealisLaunchSource launch_source);
 void RecordBorealisUninstallNumAttemptsHistogram();
 void RecordBorealisUninstallResultHistogram(
     BorealisUninstallResult uninstall_result);
-void RecordBorealisStartupNumAttemptsHistogram();
-void RecordBorealisStartupResultHistogram(BorealisStartupResult startup_result);
-void RecordBorealisStartupOverallTimeHistogram(base::TimeDelta startup_time);
-void RecordBorealisStartupTimeToFirstWindowHistogram(
-    base::TimeDelta startup_time);
-void RecordBorealisShutdownNumAttemptsHistogram();
-void RecordBorealisShutdownResultHistogram(
-    BorealisShutdownResult shutdown_result);
 
 }  // namespace borealis
-
-std::ostream& operator<<(std::ostream& stream,
-                         borealis::BorealisStartupResult result);
 
 #endif  // CHROME_BROWSER_ASH_BOREALIS_BOREALIS_METRICS_H_
