@@ -13,6 +13,7 @@ import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.LargeTest;
 
 import org.hamcrest.Matchers;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -27,7 +28,6 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.customtabs.IncognitoCustomTabActivityTestRule;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -47,7 +47,6 @@ import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.content_public.browser.NavigationHistory;
 import org.chromium.net.test.EmbeddedTestServer;
-import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -83,6 +82,11 @@ public class IncognitoHistoryLeakageTest {
                         ApplicationProvider.getApplicationContext());
         mTestPage1 = mTestServer.getURL(TEST_PAGE_1);
         mTestPage2 = mTestServer.getURL(TEST_PAGE_2);
+    }
+
+    @After
+    public void tearDown() {
+        IncognitoDataTestUtils.tearDown(mChromeActivityTestRule, mCustomTabActivityTestRule);
     }
 
     /**
@@ -149,7 +153,6 @@ public class IncognitoHistoryLeakageTest {
     @Test
     @LargeTest
     @UseMethodParameter(AllTypesToAllTypes.class)
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/568490859
     public void testTabNavigationHistoryDoNotLeakBetweenActivities(
             String activityType1, String activityType2) throws TimeoutException {
         ActivityType activity1 = ActivityType.valueOf(activityType1);

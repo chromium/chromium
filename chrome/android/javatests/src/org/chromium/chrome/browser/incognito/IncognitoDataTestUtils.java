@@ -9,6 +9,7 @@ import static org.junit.Assert.assertEquals;
 import static org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils.createMinimalCustomTabIntent;
 import static org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils.createMinimalIncognitoCustomTabIntent;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 
@@ -16,28 +17,31 @@ import androidx.test.core.app.ApplicationProvider;
 
 import org.hamcrest.Matchers;
 
+import org.chromium.base.ActivityState;
+import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.params.ParameterProvider;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.TrafficControl;
-import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
-import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
+import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
-import org.chromium.content_public.browser.BrowserStartupController;
-import org.chromium.content_public.browser.BrowserStartupController.StartupMetrics;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Supplier;
 
 /**
  * This class provides helper methods for launching any Urls in CCT or Tabs. This also provides
@@ -166,53 +170,119 @@ public class IncognitoDataTestUtils {
         }
     }
 
+    private static void moveTaskToFrontIfPausedOrStopped(
+            Activity activity, @ActivityState int state) {
+        if (state == ActivityState.PAUSED || state == ActivityState.STOPPED) {
+            ApiCompatibilityUtils.moveTaskToFront(activity, activity.getTaskId(), 0);
+        }
+    }
+
+    private static Tab runWithFocusGuard(Supplier<Tab> launchSupplier) {
+        Set<Activity> priorActivities =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> new HashSet<>(ApplicationStatus.getRunningActivities()));
+        AtomicBoolean active = new AtomicBoolean(true);
+        Runnable focusTask =
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        if (!active.get()) return;
+                        for (Activity activity : ApplicationStatus.getRunningActivities()) {
+                            if (priorActivities.contains(activity)) continue;
+                            if (!(activity instanceof ChromeActivity)) continue;
+                            if (activity.isFinishing() || activity.isDestroyed()) continue;
+                            moveTaskToFrontIfPausedOrStopped(
+                                    activity, ApplicationStatus.getStateForActivity(activity));
+                        }
+                        if (active.get()) {
+                            ThreadUtils.postOnUiThreadDelayed(this, 100);
+                        }
+                    }
+                };
+        ApplicationStatus.ActivityStateListener stateListener =
+                (activity, newState) -> {
+                    if (!active.get()) return;
+                    if (priorActivities.contains(activity)) return;
+                    if (!(activity instanceof ChromeActivity)) return;
+                    if (activity.isFinishing() || activity.isDestroyed()) return;
+                    moveTaskToFrontIfPausedOrStopped(activity, newState);
+                };
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ApplicationStatus.registerStateListenerForAllActivities(stateListener);
+                    ThreadUtils.postOnUiThreadDelayed(focusTask, 100);
+                });
+        try {
+            return launchSupplier.get();
+        } finally {
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        active.set(false);
+                        ApplicationStatus.unregisterActivityStateListener(stateListener);
+                    });
+        }
+    }
+
     private static Tab launchUrlInTab(
             FreshCtaTransitTestRule testRule, String url, boolean incognito) {
-        List<Station<?>> stations = TrafficControl.getActiveStations();
-        if (stations.isEmpty()) {
-            WebPageStation blankStation =
-                    incognito ? testRule.startOnIncognitoBlankPage() : testRule.startOnBlankPage();
-            return blankStation.loadWebPageProgrammatically(url).getTab();
-        }
+        return runWithFocusGuard(
+                () -> {
+                    List<Station<?>> stations = TrafficControl.getActiveStations();
+                    if (stations.isEmpty()) {
+                        WebPageStation blankStation =
+                                incognito
+                                        ? testRule.startOnIncognitoBlankPage()
+                                        : testRule.startOnBlankPage();
+                        return blankStation.loadWebPageProgrammatically(url).getTab();
+                    }
 
-        WebPageStation activeStation = null;
-        for (int i = stations.size() - 1; i >= 0; i--) {
-            if (stations.get(i) instanceof WebPageStation) {
-                activeStation = (WebPageStation) stations.get(i);
-                break;
-            }
-        }
-        if (activeStation == null) {
-            throw new IllegalStateException("No active WebPageStation found.");
-        }
+                    WebPageStation activeStation = null;
+                    for (int i = stations.size() - 1; i >= 0; i--) {
+                        if (stations.get(i) instanceof WebPageStation) {
+                            activeStation = (WebPageStation) stations.get(i);
+                            break;
+                        }
+                    }
+                    if (activeStation == null) {
+                        throw new IllegalStateException("No active WebPageStation found.");
+                    }
 
-        if (incognito) {
-            return activeStation
-                    .openNewIncognitoTabOrWindowFast()
-                    .loadWebPageProgrammatically(url)
-                    .getTab();
-        } else {
-            return activeStation.openNewTabOrWindowFast().loadWebPageProgrammatically(url).getTab();
-        }
+                    if (incognito) {
+                        return activeStation
+                                .openNewIncognitoTabOrWindowFast()
+                                .loadWebPageProgrammatically(url)
+                                .getTab();
+                    } else {
+                        return activeStation
+                                .openNewTabOrWindowFast()
+                                .loadWebPageProgrammatically(url)
+                                .getTab();
+                    }
+                });
     }
 
     private static Tab launchUrlInCct(
             CustomTabActivityTestRule testRule, String url, boolean incognito) {
-        Context context = ApplicationProvider.getApplicationContext();
-        Intent intent =
-                incognito
-                        ? createMinimalIncognitoCustomTabIntent(context, url)
-                        : createMinimalCustomTabIntent(context, url);
+        return runWithFocusGuard(
+                () -> {
+                    Context context = ApplicationProvider.getApplicationContext();
+                    Intent intent =
+                            incognito
+                                    ? createMinimalIncognitoCustomTabIntent(context, url)
+                                    : createMinimalCustomTabIntent(context, url);
 
-        testRule.startCustomTabActivityWithIntent(intent);
-        Tab tab = testRule.getActivity().getActivityTab();
+                    testRule.startCustomTabActivityWithIntent(intent);
+                    Tab tab = testRule.getActivity().getActivityTab();
 
-        // Giving time to the WebContents to be ready.
-        CriteriaHelper.pollUiThread(
-                () -> Criteria.checkThat(tab.getWebContents(), Matchers.notNullValue()));
+                    // Giving time to the WebContents to be ready.
+                    CriteriaHelper.pollUiThread(
+                            () ->
+                                    Criteria.checkThat(
+                                            tab.getWebContents(), Matchers.notNullValue()));
 
-        assertEquals(incognito, tab.getWebContents().isIncognito());
-        return tab;
+                    assertEquals(incognito, tab.getWebContents().isIncognito());
+                    return tab;
+                });
     }
 
     public static void closeTabs(FreshCtaTransitTestRule testRule) {
@@ -228,28 +298,18 @@ public class IncognitoDataTestUtils {
                 .closeTabs(TabClosureParams.closeAllTabs().build(), /* allowDialog= */ false);
     }
 
+    public static void tearDown(
+            FreshCtaTransitTestRule chromeTabbedActivityRule,
+            CustomTabActivityTestRule customTabActivityTestRule) {
+        chromeTabbedActivityRule.closeAllWindowsAndDeleteInstanceAndTabState();
+        CustomTabsTestUtils.cleanupSessions();
+        CriteriaHelper.pollUiThread(() -> ApplicationStatus.getRunningActivities().isEmpty());
+        customTabActivityTestRule.setActivity(null);
+        chromeTabbedActivityRule.getActivityTestRule().setActivity(null);
+    }
+
     // Warming up CCT so that the native is initialized before we access feature flags.
     public static void fireAndWaitForCctWarmup() throws TimeoutException {
-        CallbackHelper startUpCallback = new CallbackHelper();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    BrowserStartupController.getInstance()
-                            .addStartupCompletedObserver(
-                                    new BrowserStartupController.StartupCallback() {
-                                        @Override
-                                        public void onSuccess(@Nullable StartupMetrics metrics) {
-                                            startUpCallback.notifyCalled();
-                                        }
-
-                                        @Override
-                                        public void onFailure() {
-                                            // Need a successful startup for test.
-                                            assert false;
-                                        }
-                                    });
-                });
-
-        CustomTabsConnection.getInstance().warmup();
-        startUpCallback.waitForCallback(0);
+        CustomTabsTestUtils.warmUpAndWait();
     }
 }
