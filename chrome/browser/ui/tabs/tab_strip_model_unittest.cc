@@ -26,6 +26,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/mock_callback.h"
@@ -33,6 +34,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/tabs/features.h"
@@ -49,6 +51,7 @@
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/test/base/testing_browser_process_death_test_mixin.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/commerce/core/commerce_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -3416,10 +3419,10 @@ TEST_F(TabStripModelTest, CloseAllTabsInGroup_EphemeralGroup) {
   EXPECT_TRUE(tabstrip()->group_model()->ContainsTabGroup(ephemeral_group));
 }
 
-// Moving every tab of an ephemeral group to another window dissolves the group
+// Moving every tab of an ephemeral group to another window removes the group
 // rather than transplanting it, and is reported as its own exit reason instead
 // of looking like the group's last tab was closed.
-TEST_F(TabStripModelTest, MovingEphemeralGroupToAnotherWindowDissolvesIt) {
+TEST_F(TabStripModelTest, MovingEphemeralGroupToAnotherWindowRemovesIt) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       {features::kTabGroupsFocusing, features::kNonGroupFocus}, {});
@@ -3509,7 +3512,7 @@ TEST_F(TabStripModelTest, EphemeralGroupRemovalLock_KeepsGroupUntilReleased) {
   EXPECT_EQ(ephemeral_group, tabstrip()->GetTabGroupForTab(1));
   EXPECT_EQ(ephemeral_group, tabstrip()->GetTabGroupForTab(2));
 
-  // Releasing the lock dissolves the group.
+  // Releasing the lock removes the group.
   lock.RunAndReset();
   EXPECT_FALSE(tabstrip()->group_model()->ContainsTabGroup(ephemeral_group));
   EXPECT_EQ(std::nullopt, tabstrip()->GetTabGroupForTab(1));
@@ -3517,7 +3520,7 @@ TEST_F(TabStripModelTest, EphemeralGroupRemovalLock_KeepsGroupUntilReleased) {
 }
 
 TEST_F(TabStripModelTest,
-       EphemeralGroupRemovalLock_ReleasedDuringNotificationDissolvesOnce) {
+       EphemeralGroupRemovalLock_ReleasedDuringNotificationRemovesOnce) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       {features::kTabGroupsFocusing, features::kNonGroupFocus}, {});
@@ -3536,7 +3539,7 @@ TEST_F(TabStripModelTest,
         // An observer that takes the lock but finds nothing to animate (e.g.
         // under reduced motion) releases it before this notification returns.
         // The group must survive the release so that `ExitFocusMode()` can
-        // dissolve it exactly once after the notification.
+        // remove it exactly once after the notification.
         base::ScopedClosureRunner lock =
             tabstrip()->TakeEphemeralGroupRemovalLock(ephemeral_group);
         ASSERT_TRUE(lock);
@@ -3695,6 +3698,206 @@ TEST_F(TabStripModelTest, OnTabGroupPromotedOnlyForPromotion) {
               testing::ElementsAre(regular_group, ephemeral_group));
 
   tabstrip()->RemoveObserver(&observer);
+}
+
+#if !BUILDFLAG(IS_CHROMEOS)
+// Creating a `TestingProfile` in a death test subprocess fails on ChromeOS
+// because `UnitTestTestSuite::Run()` initializes Blink before `TestSuite`
+// initializes ICU, causing `TimezoneSettingsStubImpl` to hit a DCHECK in
+// `timezone_settings_helper.cc`.
+namespace {
+
+// Runs `closure` from inside the OnTabGroupFocusChanged() notification, i.e.
+// while the TabStripModel's reentrancy guard is held by the mutation that sent
+// the notification.
+class ReentrantFocusObserver : public TabStripModelObserver {
+ public:
+  explicit ReentrantFocusObserver(base::OnceClosure closure)
+      : closure_(std::move(closure)) {}
+
+  void OnTabGroupFocusChanged(
+      std::optional<tab_groups::TabGroupId> new_focused_group_id,
+      std::optional<tab_groups::TabGroupId> old_focused_group_id) override {
+    if (closure_) {
+      std::move(closure_).Run();
+    }
+  }
+
+ private:
+  base::OnceClosure closure_;
+};
+
+enum class FocusReentrancyCase {
+  kExitFocusMode,
+  kEnterFocusModeGroup,
+  kRotateFocusedGroup,
+  kEnterNonGroupFocusMode,
+  kPromoteEphemeralTabGroup,
+};
+
+// Sets up the environment and triggers a reentrant focus-mode call. Kept out
+// of the test fixture so the parent test process does not pay TestingProfile /
+// BrowserTaskEnvironment startup cost before spawning the "threadsafe" death
+// test subprocess.
+void TriggerReentrantFocusEntryPoint(FocusReentrancyCase test_case) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {features::kTabGroupsFocusing, features::kNonGroupFocus}, {});
+
+  content::BrowserTaskEnvironment task_environment;
+  content::RenderViewHostTestEnabler rvh_test_enabler;
+  TestingProfile::Builder profile_builder;
+  // GTest suppresses ChromeUnitTestSuiteInitializer::OnTestStart() in
+  // death-test subprocesses, so PublisherHostFactory is not registered there.
+  profile_builder.AddTestingFactory(
+      apps::AppServiceProxyFactory::GetInstance(),
+      BrowserContextKeyedServiceFactory::TestingFactory());
+  std::unique_ptr<TestingProfile> profile = profile_builder.Build();
+  const tabs::TabModel::PreventFeatureInitializationForTesting prevent;
+  TestTabStripModelDelegate delegate;
+  TabStripModel model(&delegate, profile.get());
+
+  auto add_tab = [&]() {
+    model.AppendWebContents(content::WebContentsTester::CreateTestWebContents(
+                                profile.get(), nullptr),
+                            true);
+  };
+
+  switch (test_case) {
+    case FocusReentrancyCase::kExitFocusMode: {
+      add_tab();
+      const tab_groups::TabGroupId group = model.AddToNewGroup({0});
+      ReentrantFocusObserver observer(
+          base::BindOnce([](TabStripModel* m) { m->ExitFocusMode(); }, &model));
+      model.AddObserver(&observer);
+      model.EnterFocusMode(group);
+      break;
+    }
+    case FocusReentrancyCase::kEnterFocusModeGroup: {
+      add_tab();
+      add_tab();
+      model.ForgetAllOpeners();
+      const tab_groups::TabGroupId group_a = model.AddToNewGroup({0});
+      const tab_groups::TabGroupId group_b = model.AddToNewGroup({1});
+      model.EnterFocusMode(group_a);
+      ReentrantFocusObserver observer(base::BindOnce(
+          [](TabStripModel* m, tab_groups::TabGroupId group) {
+            m->EnterFocusMode(group);
+          },
+          &model, group_b));
+      model.AddObserver(&observer);
+      model.ExitFocusMode();
+      break;
+    }
+    case FocusReentrancyCase::kRotateFocusedGroup: {
+      add_tab();
+      const tab_groups::TabGroupId group = model.AddToNewGroup({0});
+      model.EnterFocusMode(group);
+      ReentrantFocusObserver observer(base::BindOnce(
+          [](TabStripModel* m) { m->RotateFocusedGroup(true); }, &model));
+      model.AddObserver(&observer);
+      model.ExitFocusMode();
+      break;
+    }
+    case FocusReentrancyCase::kEnterNonGroupFocusMode: {
+      add_tab();
+      add_tab();
+      model.ForgetAllOpeners();
+      const tab_groups::TabGroupId group = model.AddToNewGroup({0});
+      model.EnterFocusMode(group);
+      ReentrantFocusObserver observer(base::BindOnce(
+          [](TabStripModel* m) { m->EnterFocusMode(std::vector<int>{1}); },
+          &model));
+      model.AddObserver(&observer);
+      model.ExitFocusMode();
+      break;
+    }
+    case FocusReentrancyCase::kPromoteEphemeralTabGroup: {
+      add_tab();
+      ReentrantFocusObserver observer(base::BindOnce(
+          [](TabStripModel* m) {
+            m->PromoteEphemeralTabGroup(*m->GetFocusedGroup());
+          },
+          &model));
+      model.AddObserver(&observer);
+      model.EnterFocusMode(std::vector<int>{0});
+      break;
+    }
+  }
+}
+
+class TabStripModelFocusReentrancyDeathTest
+    : public chrome_test_utils::TestingBrowserProcessDeathTestMixin,
+      public testing::TestWithParam<FocusReentrancyCase> {};
+
+// Every public focus-mode entry point takes the reentrancy guard, so calling
+// one from inside a TabStripModel notification CHECKs. Split into one death
+// assertion per test because Chromium's "threadsafe" death test style spawns a
+// fresh unit_tests subprocess per assertion, which otherwise times out under
+// UBSan/TSan.
+TEST_P(TabStripModelFocusReentrancyDeathTest, RejectsReentrancy) {
+  EXPECT_CHECK_DEATH_WITH(TriggerReentrantFocusEntryPoint(GetParam()),
+                          "!\\*guard_flag");
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    TabStripModelFocusReentrancyDeathTest,
+    testing::Values(FocusReentrancyCase::kExitFocusMode,
+                    FocusReentrancyCase::kEnterFocusModeGroup,
+                    FocusReentrancyCase::kRotateFocusedGroup,
+                    FocusReentrancyCase::kEnterNonGroupFocusMode,
+                    FocusReentrancyCase::kPromoteEphemeralTabGroup),
+    [](const testing::TestParamInfo<FocusReentrancyCase>& info) {
+      switch (info.param) {
+        case FocusReentrancyCase::kExitFocusMode:
+          return "ExitFocusMode";
+        case FocusReentrancyCase::kEnterFocusModeGroup:
+          return "EnterFocusModeGroup";
+        case FocusReentrancyCase::kRotateFocusedGroup:
+          return "RotateFocusedGroup";
+        case FocusReentrancyCase::kEnterNonGroupFocusMode:
+          return "EnterNonGroupFocusMode";
+        case FocusReentrancyCase::kPromoteEphemeralTabGroup:
+          return "PromoteEphemeralTabGroup";
+      }
+    });
+
+}  // namespace
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
+// Focus-mode transitions triggered from inside other guarded mutations (e.g.
+// activating a tab outside the focused group from ActivateTabAt()) go through
+// the unguarded *Impl paths and must not trip the reentrancy guard.
+TEST_F(TabStripModelTest, FocusModeExitFromGuardedMutationDoesNotReenter) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {features::kTabGroupsFocusing, features::kNonGroupFocus}, {});
+
+  PrepareTabs(tabstrip(), 3);
+  tabstrip()->ForgetAllOpeners();
+  const tab_groups::TabGroupId group = tabstrip()->AddToNewGroup({0, 1});
+
+  // Regular group: activating an outside tab exits focus mode.
+  tabstrip()->EnterFocusMode(group);
+  ASSERT_EQ(group, tabstrip()->GetFocusedGroup());
+  tabstrip()->ActivateTabAt(2);
+  EXPECT_EQ(std::nullopt, tabstrip()->GetFocusedGroup());
+  EXPECT_TRUE(tabstrip()->group_model()->ContainsTabGroup(group));
+
+  // Ephemeral group: activating an outside tab exits focus mode and removes
+  // the group, all from within ActivateTabAt()'s guard.
+  const tab_groups::TabGroupId ephemeral = tabstrip()->EnterFocusMode({2});
+  ASSERT_EQ(ephemeral, tabstrip()->GetFocusedGroup());
+  tabstrip()->ActivateTabAt(0);
+  EXPECT_EQ(std::nullopt, tabstrip()->GetFocusedGroup());
+  EXPECT_FALSE(tabstrip()->group_model()->ContainsTabGroup(ephemeral));
+
+  // Closing the focused group's tabs exits focus mode from within
+  // CloseAllTabsInGroup()'s guard.
+  tabstrip()->EnterFocusMode(group);
+  tabstrip()->CloseAllTabsInGroup(group);
+  EXPECT_EQ(std::nullopt, tabstrip()->GetFocusedGroup());
 }
 
 TEST_F(TabStripModelTest, AddToNewSplit_MultipleIndices_Active) {

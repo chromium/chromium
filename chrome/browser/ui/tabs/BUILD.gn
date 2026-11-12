@@ -1101,6 +1101,7 @@ if (!is_android) {
       "//chrome/app:command_ids",
       "//chrome/browser/actor",
       "//chrome/browser/actor:test_support",
+      "//chrome/browser/apps/app_service",
       "//chrome/browser/commerce",
       "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/contextual_tasks",
