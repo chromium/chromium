@@ -41,6 +41,8 @@ class MEDIA_EXPORT MediaFoundationCdmFactory final : public CdmFactory {
       const std::string& key_system,
       CreateCdmFactoryCB create_cdm_factory_cb);
 
+  static void ResetFirstInitializeReportedForTesting();
+
   // CdmFactory implementation.
   void Create(const CdmConfig& cdm_config,
               const SessionMessageCB& session_message_cb,

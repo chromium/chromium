@@ -63,6 +63,7 @@ class MediaFoundationCdmFactoryTest : public testing::Test {
     cdm_factory_ =
         std::make_unique<MediaFoundationCdmFactory>(std::move(cdm_helper));
 
+    MediaFoundationCdmFactory::ResetFirstInitializeReportedForTesting();
     MediaFoundationCdmModule::GetInstance()->SetIsOsCdmForTesting(false);
   }
 

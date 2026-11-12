@@ -60,6 +60,8 @@ IsTypeSupportedValueOrError IsTypeSupportedInternalEx(
 
 crash_reporter::CrashKeyString<256> g_origin_crash_key("cdm-origin");
 
+bool g_first_initialize_reported = false;
+
 }  // namespace
 
 MediaFoundationCdmFactory::MediaFoundationCdmFactory(
@@ -76,6 +78,11 @@ void MediaFoundationCdmFactory::SetCreateCdmFactoryCallbackForTesting(
   CHECK(!create_cdm_factory_cbs_for_testing_.count(key_system));
   create_cdm_factory_cbs_for_testing_[key_system] =
       std::move(create_cdm_factory_cb);
+}
+
+// static
+void MediaFoundationCdmFactory::ResetFirstInitializeReportedForTesting() {
+  g_first_initialize_reported = false;
 }
 
 void MediaFoundationCdmFactory::Create(
@@ -167,10 +174,9 @@ void MediaFoundationCdmFactory::InitializeMediaFoundationCdm(
 
   HRESULT hr = cdm->Initialize();
 
-  static bool s_first_initialize_reported = false;
-  if (!s_first_initialize_reported) {
+  if (!g_first_initialize_reported) {
     base::UmaHistogramSparse(uma_prefix + "FirstInitialize", hr);
-    s_first_initialize_reported = true;
+    g_first_initialize_reported = true;
   }
 
   if (FAILED(hr)) {
