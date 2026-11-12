@@ -82,6 +82,14 @@ class PinStorageCryptohome {
                          std::unique_ptr<UserContext> user_context,
                          std::optional<AuthenticationError> error);
 
+  // Continues `TryAuthenticate()` once the user's auth factors configuration
+  // has been fetched.
+  void TryAuthenticateWithAuthFactors(const Key& key,
+                                      AuthOperationCallback callback,
+                                      Purpose purpose,
+                                      std::unique_ptr<UserContext> user_context,
+                                      std::optional<AuthenticationError> error);
+
   void TryAuthenticateWithAuthSession(const Key& key,
                                       AuthOperationCallback callback,
                                       bool user_exists,

@@ -38,8 +38,11 @@ namespace {
 
 using ::cryptohome::KeyLabel;
 
+bool IsPinBlocked(const UserContext& user_context, Purpose purpose);
+
 void CheckCryptohomePinFactor(
     PinStorageCryptohome::AvailabilityCallback callback,
+    std::optional<Purpose> policy_purpose,
     bool require_unlocked,
     std::unique_ptr<UserContext> user_context,
     std::optional<AuthenticationError> error) {
@@ -52,6 +55,13 @@ void CheckCryptohomePinFactor(
   const cryptohome::AuthFactor* pin_factor =
       config.FindFactorByType(cryptohome::AuthFactorType::kPin);
   if (!pin_factor) {
+    std::move(callback).Run(false, std::nullopt);
+    return;
+  }
+
+  if (policy_purpose.has_value() &&
+      IsPinBlocked(*user_context, *policy_purpose)) {
+    LOG(WARNING) << "PIN is disabled by policy.";
     std::move(callback).Run(false, std::nullopt);
     return;
   }
@@ -129,6 +139,24 @@ bool IsCryptohomePinDisabledByPolicy(const AccountId& account_id,
   return pref_service && IsPinDisabledByPolicy(pref_service, purpose);
 }
 
+// Returns whether the PIN can't be used because of policy. PIN policies
+// restrict a PIN that is used next to a password. They don't apply to users
+// without a password, who would otherwise have no PIN or password left to
+// authenticate with. Those users are handled by
+// `LocalAuthFactorsPolicyController` instead.
+bool IsPinBlocked(const UserContext& user_context, Purpose purpose) {
+  if (!IsCryptohomePinDisabledByPolicy(user_context.GetAccountId(), purpose)) {
+    return false;
+  }
+  if (!user_context.GetAuthFactorsConfiguration().HasConfiguredFactor(
+          cryptohome::AuthFactorType::kPassword)) {
+    LOG(WARNING) << "PIN is disabled by policy, but the user has no password "
+                    "so the policy doesn't apply.";
+    return false;
+  }
+  return true;
+}
+
 }  // namespace
 
 // static
@@ -184,7 +212,8 @@ void PinStorageCryptohome::IsPinSetInCryptohome(
       std::move(user_context),
       base::BindOnce(&CheckCryptohomePinFactor,
                      base::BindOnce(availability_callback, std::move(result)),
-                     false /*require_unlocked*/));
+                     /*policy_purpose=*/std::nullopt,
+                     /*require_unlocked=*/false));
 }
 
 void PinStorageCryptohome::SetPin(std::unique_ptr<UserContext> user_context,
@@ -262,15 +291,10 @@ void PinStorageCryptohome::CanAuthenticate(
     std::unique_ptr<UserContext> user_context,
     Purpose purpose,
     AvailabilityCallback result_callback) {
-  if (IsCryptohomePinDisabledByPolicy(user_context->GetAccountId(), purpose)) {
-    std::move(result_callback).Run(false, std::nullopt);
-    return;
-  }
-
   auth_factor_editor_.GetAuthFactorsConfiguration(
       std::move(user_context),
       base::BindOnce(&CheckCryptohomePinFactor, std::move(result_callback),
-                     true /*require_unlocked*/));
+                     purpose, /*require_unlocked=*/true));
 }
 
 void PinStorageCryptohome::TryAuthenticate(
@@ -278,9 +302,30 @@ void PinStorageCryptohome::TryAuthenticate(
     const Key& key,
     Purpose purpose,
     AuthOperationCallback callback) {
-  if (IsCryptohomePinDisabledByPolicy(user_context->GetAccountId(), purpose)) {
-    AuthenticationError error{AuthFailure::AUTH_DISABLED};
+  // Whether the PIN policy applies depends on the user's auth factors, see
+  // `IsPinBlocked()`.
+  auth_factor_editor_.GetAuthFactorsConfiguration(
+      std::move(user_context),
+      base::BindOnce(&PinStorageCryptohome::TryAuthenticateWithAuthFactors,
+                     weak_factory_.GetWeakPtr(), key, std::move(callback),
+                     purpose));
+}
+
+void PinStorageCryptohome::TryAuthenticateWithAuthFactors(
+    const Key& key,
+    AuthOperationCallback callback,
+    Purpose purpose,
+    std::unique_ptr<UserContext> user_context,
+    std::optional<AuthenticationError> error) {
+  if (error.has_value()) {
     std::move(callback).Run(std::move(user_context), std::move(error));
+    return;
+  }
+
+  if (IsPinBlocked(*user_context, purpose)) {
+    LOG(WARNING) << "PIN authentication rejected, PIN is disabled by policy.";
+    std::move(callback).Run(std::move(user_context),
+                            AuthenticationError{AuthFailure::AUTH_DISABLED});
     return;
   }
   CHECK_NE(purpose, Purpose::kWebAuthn)

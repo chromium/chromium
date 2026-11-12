@@ -17,7 +17,10 @@
 #include "base/test/test_future.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/auth_factors_policy/local_auth_factors_policy_controller_factory.h"
+#include "chrome/browser/ash/login/lock/screen_locker_tester.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
+#include "chrome/browser/ash/login/quick_unlock/pin_backend.h"
+#include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/ash/login/reauth_stats.h"
 #include "chrome/browser/ash/login/signin/signin_error_notifier.h"
 #include "chrome/browser/ash/login/test/cryptohome_mixin.h"
@@ -27,6 +30,7 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
@@ -469,6 +473,61 @@ IN_PROC_BROWSER_TEST_F(LocalAuthFactorsPolicyControllerTest,
   user_manager::KnownUser(g_browser_process->local_state())
       .UpdateUsingSAML(saml_user_.account_id, true);
   PerformLoginAndVerifyPolicyEnforcement(saml_user_, ReauthReason::kNone);
+}
+
+// Verifies how PIN policies affect unlocking the lock screen with a PIN.
+class LocalAuthFactorsPolicyLockScreenTest
+    : public LocalAuthFactorsPolicyControllerTest {
+ public:
+  LocalAuthFactorsPolicyLockScreenTest() {
+    FakeUserDataAuthClient::TestApi::Get()
+        ->set_supports_low_entropy_credentials(true);
+  }
+
+ protected:
+  // Disallows all local auth factors and all quick unlock modes, logs `user`
+  // in and locks the screen.
+  void LoginWithPinDisabledByPolicyAndLock(
+      const LoginManagerMixin::TestUserInfo& user,
+      ScreenLockerTester& locker_tester) {
+    // Empty list means no quick unlock modes allowed, so PIN is disabled.
+    SetQuickUnlockAllowedModesPolicy(base::ListValue());
+    PerformLoginAndVerifyPolicyEnforcement(
+        user, ReauthReason::kForcedByLocalAuthFactorsPolicy);
+    locker_tester.Lock();
+  }
+};
+
+// A PIN which is the user's only knowledge factor must keep working on the
+// lock screen even if PIN is disabled by policy, otherwise the user is locked
+// out of their session (b/537263939). The policy is enforced on the next
+// sign-in instead.
+IN_PROC_BROWSER_TEST_F(LocalAuthFactorsPolicyLockScreenTest,
+                       PinOnlyUserCanUnlockWithPinWhenPinDisabledByPolicy) {
+  ScreenLockerTester locker_tester;
+  LoginWithPinDisabledByPolicyAndLock(pin_only_user_, locker_tester);
+
+  LoginScreenTestApi::SubmitPin(pin_only_user_.account_id, test::kAuthPin);
+  locker_tester.WaitForUnlock();
+  EXPECT_FALSE(locker_tester.IsLocked());
+}
+
+// A PIN configured next to a password is a quick unlock factor, so it isn't
+// offered on the lock screen when PIN is disabled by policy.
+IN_PROC_BROWSER_TEST_F(LocalAuthFactorsPolicyLockScreenTest,
+                       PinWithPasswordUserCannotUnlockWithPinWhenDisabled) {
+  ScreenLockerTester locker_tester;
+  LoginWithPinDisabledByPolicyAndLock(gaia_password_and_pin_user_,
+                                      locker_tester);
+
+  const AccountId& account_id = gaia_password_and_pin_user_.account_id;
+  base::test::TestFuture<bool, std::optional<base::Time>> can_authenticate;
+  quick_unlock::PinBackend::GetInstance()->CanAuthenticate(
+      account_id, quick_unlock::Purpose::kUnlock,
+      can_authenticate.GetCallback());
+  EXPECT_FALSE(can_authenticate.Get<0>());
+  EXPECT_TRUE(LoginScreenTestApi::IsPasswordFieldShown(account_id));
+  EXPECT_TRUE(locker_tester.IsLocked());
 }
 
 }  // namespace ash

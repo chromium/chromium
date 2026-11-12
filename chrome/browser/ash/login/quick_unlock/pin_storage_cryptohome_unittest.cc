@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chromeos/ash/components/cryptohome/common_types.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
+#include "chromeos/ash/components/cryptohome/error_types.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
 #include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_cryptohome_misc_client.h"
@@ -35,6 +36,7 @@ namespace {
 using ::cryptohome::KeyLabel;
 
 constexpr char kDummyPin[] = "123456";
+constexpr char kDummyPassword[] = "password";
 
 struct Param {
   const bool use_auth_factors_feature;
@@ -153,6 +155,26 @@ class PinStorageCryptohomeUnitTest : public testing::Test {
     return res;
   }
 
+  void AddRecoveryFactor() const {
+    ::user_data_auth::AddAuthFactorRequest request;
+    request.set_auth_session_id(user_context_->GetAuthSessionId());
+    request.mutable_auth_factor()->set_type(
+        ::user_data_auth::AUTH_FACTOR_TYPE_CRYPTOHOME_RECOVERY);
+    request.mutable_auth_factor()->set_label(kCryptohomeRecoveryKeyLabel);
+    request.mutable_auth_factor()->mutable_cryptohome_recovery_metadata();
+    request.mutable_auth_input()->mutable_cryptohome_recovery_input();
+    base::RunLoop run_loop;
+    UserDataAuthClient::Get()->AddAuthFactor(
+        request,
+        base::BindOnce(
+            [](base::OnceClosure closure,
+               std::optional<::user_data_auth::AddAuthFactorReply> reply) {
+              std::move(closure).Run();
+            },
+            run_loop.QuitClosure()));
+    run_loop.Run();
+  }
+
   void SetPassword(const std::string& password) const {
     ::user_data_auth::AddAuthFactorRequest request;
     request.set_auth_session_id(user_context_->GetAuthSessionId());
@@ -224,6 +246,14 @@ class PinStorageCryptohomeUnitTest : public testing::Test {
     return res;
   }
 
+  // Replaces the PIN policy override so that PIN is disabled by policy for
+  // every purpose.
+  void DisablePinByPolicy() {
+    // The previous `TestApi` must be destroyed before creating a new one.
+    test_api_.reset();
+    test_api_ = std::make_unique<TestApi>(/*override_quick_unlock=*/true);
+  }
+
   content::BrowserTaskEnvironment task_environment_;
 
   std::unique_ptr<PinStorageCryptohome> storage_;
@@ -281,6 +311,97 @@ TEST_F(PinStorageCryptohomeUnitTest, AuthLockedTest) {
 
   ASSERT_FALSE(CanAuthenticate());
   ASSERT_TRUE(IsPinSet());
+}
+
+// A PIN which is the user's only knowledge factor is their primary credential
+// and must stay usable even if PIN is disabled by policy, otherwise the user
+// would be locked out.
+TEST_F(PinStorageCryptohomeUnitTest, PinOnlyNotBlockedByPolicy) {
+  ASSERT_TRUE(SetPin(kDummyPin));
+  DisablePinByPolicy();
+
+  EXPECT_TRUE(CanAuthenticate());
+  EXPECT_TRUE(TryAuthenticate(kDummyPin, Purpose::kAny));
+}
+
+// Other non-password factors (here: recovery) don't make PIN policies apply:
+// without a password, the PIN stays usable.
+TEST_F(PinStorageCryptohomeUnitTest, PinWithRecoveryNotBlockedByPolicy) {
+  AddRecoveryFactor();
+  ASSERT_TRUE(SetPin(kDummyPin));
+  DisablePinByPolicy();
+
+  EXPECT_TRUE(CanAuthenticate());
+  EXPECT_TRUE(TryAuthenticate(kDummyPin, Purpose::kAny));
+}
+
+// A PIN configured next to a password is a quick unlock factor, so PIN
+// policies still apply.
+TEST_F(PinStorageCryptohomeUnitTest, PinWithPasswordDisabledByPolicy) {
+  SetPassword(kDummyPassword);
+  ASSERT_TRUE(SetPin(kDummyPin));
+  DisablePinByPolicy();
+
+  EXPECT_FALSE(CanAuthenticate());
+  EXPECT_FALSE(TryAuthenticate(kDummyPin, Purpose::kAny));
+}
+
+// A PIN configured next to a password can be used when allowed by policy.
+TEST_F(PinStorageCryptohomeUnitTest, PinWithPasswordAllowedByPolicy) {
+  SetPassword(kDummyPassword);
+  ASSERT_TRUE(SetPin(kDummyPin));
+
+  EXPECT_TRUE(CanAuthenticate());
+  EXPECT_TRUE(TryAuthenticate(kDummyPin, Purpose::kAny));
+}
+
+// If the auth factors can't be listed, PIN availability is reported as
+// unavailable (instead of hanging or allowing the PIN), and the next check
+// works again.
+TEST_F(PinStorageCryptohomeUnitTest, CanAuthenticateFactorLookupFails) {
+  ASSERT_TRUE(SetPin(kDummyPin));
+  DisablePinByPolicy();
+
+  FakeUserDataAuthClient::TestApi::Get()->SetNextOperationError(
+      FakeUserDataAuthClient::Operation::kListAuthFactors,
+      cryptohome::ErrorWrapper::CreateFromErrorCodeOnly(
+          ::user_data_auth::CRYPTOHOME_ERROR_MOUNT_FATAL));
+  EXPECT_FALSE(CanAuthenticate());
+
+  EXPECT_TRUE(CanAuthenticate());
+}
+
+// If the auth factors can't be listed, PIN authentication fails with an error
+// (instead of hanging or skipping the policy check), and the next attempt
+// works again.
+TEST_F(PinStorageCryptohomeUnitTest, TryAuthenticateFactorLookupFails) {
+  ASSERT_TRUE(SetPin(kDummyPin));
+  DisablePinByPolicy();
+
+  FakeUserDataAuthClient::TestApi::Get()->SetNextOperationError(
+      FakeUserDataAuthClient::Operation::kListAuthFactors,
+      cryptohome::ErrorWrapper::CreateFromErrorCodeOnly(
+          ::user_data_auth::CRYPTOHOME_ERROR_MOUNT_FATAL));
+  EXPECT_FALSE(TryAuthenticate(kDummyPin, Purpose::kAny));
+
+  EXPECT_TRUE(TryAuthenticate(kDummyPin, Purpose::kAny));
+}
+
+// Same as above for a user with a password, where PIN policies apply: a failed
+// lookup must not let the PIN through.
+TEST_F(PinStorageCryptohomeUnitTest,
+       TryAuthenticateFactorLookupFailsWithPassword) {
+  SetPassword(kDummyPassword);
+  ASSERT_TRUE(SetPin(kDummyPin));
+  DisablePinByPolicy();
+
+  FakeUserDataAuthClient::TestApi::Get()->SetNextOperationError(
+      FakeUserDataAuthClient::Operation::kListAuthFactors,
+      cryptohome::ErrorWrapper::CreateFromErrorCodeOnly(
+          ::user_data_auth::CRYPTOHOME_ERROR_MOUNT_FATAL));
+  EXPECT_FALSE(TryAuthenticate(kDummyPin, Purpose::kAny));
+
+  EXPECT_FALSE(TryAuthenticate(kDummyPin, Purpose::kAny));
 }
 
 }  // namespace ash::quick_unlock
