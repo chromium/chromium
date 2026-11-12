@@ -1543,7 +1543,10 @@ public abstract class ChromeFeatureList {
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
     public static final CachedFlag sWebUiAndroidTheming =
-            newCachedFlag(WEB_UI_ANDROID_THEMING, BuildConfig.IS_DESKTOP_ANDROID);
+            newCachedFlag(
+                    WEB_UI_ANDROID_THEMING,
+                    /* defaultValue= */ BuildConfig.IS_DESKTOP_ANDROID,
+                    /* defaultValueInTests= */ true);
     // keep-sorted end
 
     public static final List<CachedFlag> sFlagsCachedFullBrowser =

@@ -804,7 +804,8 @@
                     "enable_features": [
                         "AndroidNewTabButtonTabstripWebUI",
                         "InitialWebUI",
-                        "WebUIToolbarFrameEvictionOptOut"
+                        "WebUIToolbarFrameEvictionOptOut",
+                        "WebUiAndroidTheming"
                     ]
                 }
             ]
