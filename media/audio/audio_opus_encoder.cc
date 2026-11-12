@@ -39,6 +39,10 @@ constexpr base::TimeDelta kDefaultOpusBufferDuration = base::Milliseconds(20);
 
 constexpr base::TimeDelta kMinFrameDuration = base::Microseconds(2500);
 
+// Per third_party/opus/src/include/opus.h, an encoded packet of 2 bytes or
+// less does not need to be transmitted (DTX).
+constexpr size_t kOpusMaxDtxPacketBytes = 2;
+
 // Keep this in reverse order as `ComputeCompatibleFrameDuration` grabs the
 // largest compatible frame greedily.
 constexpr std::array<base::TimeDelta, 6> kStandardDurations = {
@@ -386,10 +390,6 @@ void AudioOpusEncoder::DoEncode(const AudioBus* audio_bus) {
         .Run(EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode,
                            opus_strerror(result)));
     return;
-  } else if (result <= 1) {
-    // If |result| in {0,1}, do nothing; the documentation says that a return
-    // value of zero or one means the packet does not need to be transmitted.
-    return;
   }
 
   if (!opus_repacketizer_) {
@@ -427,20 +427,22 @@ void AudioOpusEncoder::DoEncode(const AudioBus* audio_bus) {
 }
 
 void AudioOpusEncoder::EmitEncodedBuffer(size_t encoded_data_size) {
-  std::optional<CodecDescription> desc;
-  if (need_to_emit_extra_data_) {
-    desc = PrepareExtraData();
-    need_to_emit_extra_data_ = false;
+  if (encoded_data_size > kOpusMaxDtxPacketBytes) {
+    std::optional<CodecDescription> desc;
+    if (need_to_emit_extra_data_) {
+      desc = PrepareExtraData();
+      need_to_emit_extra_data_ = false;
+    }
+
+    auto ts = base::TimeTicks() + timestamp_tracker_->GetTimestamp();
+
+    EncodedAudioBuffer encoded_buffer(
+        converted_params_,
+        base::HeapArray<uint8_t>::CopiedFrom(
+            base::span(encoding_buffer_).first(encoded_data_size)),
+        ts, final_frame_duration_);
+    output_cb_.Run(std::move(encoded_buffer), desc);
   }
-
-  auto ts = base::TimeTicks() + timestamp_tracker_->GetTimestamp();
-
-  EncodedAudioBuffer encoded_buffer(
-      converted_params_,
-      base::HeapArray<uint8_t>::CopiedFrom(
-          base::span(encoding_buffer_).first(encoded_data_size)),
-      ts, final_frame_duration_);
-  output_cb_.Run(std::move(encoded_buffer), desc);
   timestamp_tracker_->AddFrames(AudioTimestampHelper::TimeToFrames(
       final_frame_duration_, converted_params_.sample_rate()));
   waiting_for_output_ = false;
