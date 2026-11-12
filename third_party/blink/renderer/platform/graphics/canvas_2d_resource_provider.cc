@@ -63,36 +63,6 @@ Canvas2DResourceProvider::CreateWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-scoped_refptr<CanvasResourceSharedImage>
-Canvas2DResourceProvider::NewOrRecycledResource(bool is_accelerated) {
-  if (!image_pool_) {
-    return nullptr;
-  }
-
-  auto resource = image_pool_->GetImage();
-  if (!resource) {
-    return nullptr;
-  }
-
-  CHECK(!IsSingleBuffered() || !resource->IsInitialized());
-
-  if (!resource->IsInitialized()) {
-    if (image_pool_->GetImageInfo().is_software) {
-      resource->InitializeSoftware(
-          CreateWeakPtr(), shared_image_interface_provider_, hdr_metadata_);
-    } else {
-      resource->Initialize(CreateWeakPtr(), context_provider_wrapper_,
-                           hdr_metadata_, is_accelerated);
-    }
-    ++num_inflight_resources_;
-    if (num_inflight_resources_ > max_inflight_resources_) {
-      max_inflight_resources_ = num_inflight_resources_;
-    }
-  }
-  DCHECK(resource->HasOneRef());
-  return resource;
-}
-
 void Canvas2DResourceProvider::OnResourceRefReturned(
     scoped_refptr<CanvasResourceSharedImage>&& resource) {
   if (!resource->IsLost() && resource->HasOneRef() &&
@@ -109,26 +79,9 @@ void Canvas2DResourceProvider::SetResourceRecyclingEnabled(bool value) {
 }
 
 Canvas2DResourceProvider::Canvas2DResourceProvider(
-    std::unique_ptr<gpu::SharedImagePool<CanvasResourceSharedImage>> image_pool,
-    base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
-    const gfx::HDRMetadata& hdr_metadata)
-    : image_pool_(std::move(image_pool)),
-      context_provider_wrapper_(std::move(context_provider_wrapper)),
-      hdr_metadata_(hdr_metadata) {
+    std::unique_ptr<gpu::SharedImagePool<CanvasResourceSharedImage>> image_pool)
+    : image_pool_(std::move(image_pool)) {
   CHECK(image_pool_);
-  CHECK(context_provider_wrapper_);
-}
-
-Canvas2DResourceProvider::Canvas2DResourceProvider(
-    std::unique_ptr<gpu::SharedImagePool<CanvasResourceSharedImage>> image_pool,
-    WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
-    const gfx::HDRMetadata& hdr_metadata)
-    : image_pool_(std::move(image_pool)),
-      shared_image_interface_provider_(
-          shared_image_interface_provider->GetWeakPtr()),
-      hdr_metadata_(hdr_metadata) {
-  CHECK(image_pool_);
-  CHECK(shared_image_interface_provider_);
 }
 
 Canvas2DResourceProvider::~Canvas2DResourceProvider() {

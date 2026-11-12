@@ -288,6 +288,40 @@ void BaseRenderingContext2D::ResetSharedImageBacking() {
   is_accelerated_ = false;
 }
 
+scoped_refptr<CanvasResourceSharedImage>
+BaseRenderingContext2D::NewOrRecycledResource() {
+  if (!shared_image_provider_) {
+    return nullptr;
+  }
+
+  auto resource = shared_image_provider_->image_pool_->GetImage();
+  if (!resource) {
+    return nullptr;
+  }
+
+  CHECK(!IsSingleBuffered() || !resource->IsInitialized());
+
+  if (!resource->IsInitialized()) {
+    if (shared_image_provider_->image_pool_->GetImageInfo().is_software) {
+      resource->InitializeSoftware(shared_image_provider_->CreateWeakPtr(),
+                                   shared_image_interface_provider_,
+                                   color_params_.GetGfxHdrMetadata());
+    } else {
+      resource->Initialize(shared_image_provider_->CreateWeakPtr(),
+                           context_provider_wrapper_,
+                           color_params_.GetGfxHdrMetadata(), is_accelerated_);
+    }
+    ++shared_image_provider_->num_inflight_resources_;
+    if (shared_image_provider_->num_inflight_resources_ >
+        shared_image_provider_->max_inflight_resources_) {
+      shared_image_provider_->max_inflight_resources_ =
+          shared_image_provider_->num_inflight_resources_;
+    }
+  }
+  DCHECK(resource->HasOneRef());
+  return resource;
+}
+
 void BaseRenderingContext2D::ResetBacking() {
   if (HasBacking()) {
     CanvasMemoryDumpProvider::Instance()->UnregisterClient(this);
@@ -513,11 +547,10 @@ void BaseRenderingContext2D::CreateSharedImageProvider(
       image_info, sii,
       is_accelerated_ ? "CanvasResourceRaster" : "CanvasResourceRasterGmb",
       is_single_buffered ? 0 : kMaxRecycledCanvasResources, expiration_time);
-  shared_image_provider_ = std::make_unique<Canvas2DResourceProvider>(
-      std::move(image_pool), context_provider_wrapper,
-      color_params_.GetGfxHdrMetadata());
+  shared_image_provider_ =
+      std::make_unique<Canvas2DResourceProvider>(std::move(image_pool));
 
-  resource_ = shared_image_provider_->NewOrRecycledResource(is_accelerated_);
+  resource_ = NewOrRecycledResource();
 
   // Single buffered mode supported only for accelerated canvas.
   CHECK(!IsSingleBuffered() || is_accelerated_);
@@ -609,9 +642,8 @@ void BaseRenderingContext2D::CreateSharedImageProviderForSoftwareCompositor() {
   auto image_pool = gpu::SharedImagePool<CanvasResourceSharedImage>::Create(
       image_info, sii, "CanvasResourceSharedImage",
       kMaxRecycledCanvasResources);
-  shared_image_provider_ = std::make_unique<Canvas2DResourceProvider>(
-      std::move(image_pool), shared_image_interface_provider,
-      color_params_.GetGfxHdrMetadata());
+  shared_image_provider_ =
+      std::make_unique<Canvas2DResourceProvider>(std::move(image_pool));
   CreateSoftwareSurface();
   if (!surface_) {
     ResetSharedImageBacking();
@@ -867,7 +899,7 @@ void BaseRenderingContext2D::EnsureResourceReadyForDraw() {
         << "Write access must be released before sharing the resource";
 
     auto old_resource = std::move(resource_);
-    resource_ = shared_image_provider_->NewOrRecycledResource(is_accelerated_);
+    resource_ = NewOrRecycledResource();
     if (must_preserve_content_on_copy_on_write_) {
       auto [src_token, dst_token] = RasterInterface()->CopySharedImage(
           old_resource->GetSharedImage(), old_resource->acquire_sync_token(),
@@ -919,8 +951,7 @@ void BaseRenderingContext2D::EndWriteAccess() {
     must_preserve_content_on_copy_on_write_ = true;
   } else {
     if (!resource_ || resource_->IsLost() || !resource_->HasOneRef()) {
-      resource_ =
-          shared_image_provider_->NewOrRecycledResource(is_accelerated_);
+      resource_ = NewOrRecycledResource();
     }
     if (!resource_ || !surface_) {
       return;
@@ -1162,7 +1193,7 @@ BaseRenderingContext2D::PaintRenderingResultsToResource(
   if (shared_image_provider_->image_pool_->GetImageInfo().is_software) {
     DCHECK(surface_);
     scoped_refptr<CanvasResourceSharedImage> output_resource =
-        shared_image_provider_->NewOrRecycledResource(is_accelerated_);
+        NewOrRecycledResource();
     if (!output_resource) {
       return nullptr;
     }

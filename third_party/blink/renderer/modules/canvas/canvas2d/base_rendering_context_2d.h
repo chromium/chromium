@@ -450,6 +450,7 @@ class MODULES_EXPORT BaseRenderingContext2D
   void OnGpuChannelLost() override;
 
   void ResetSharedImageBacking();
+  scoped_refptr<CanvasResourceSharedImage> NewOrRecycledResource();
   gpu::raster::RasterInterface* RasterInterface() const;
   bool IsGpuContextLost() const;
   bool ShouldReplaceTargetBuffer();

@@ -34,26 +34,15 @@ namespace blink {
 
 class BaseRenderingContext2D;
 class CanvasResourceSharedImage;
-class Canvas2DResourceProvider;
-class CanvasImageProvider;
-class WebGraphicsSharedImageInterfaceProvider;
 
 // * Subclass of CanvasResourceProvider that is specialized for usage
 // * by Canvas2D.
 class PLATFORM_EXPORT Canvas2DResourceProvider
     : public CanvasResourceSharedImage::Client {
  public:
-  Canvas2DResourceProvider(
+  explicit Canvas2DResourceProvider(
       std::unique_ptr<gpu::SharedImagePool<CanvasResourceSharedImage>>
-          image_pool,
-      base::WeakPtr<WebGraphicsContext3DProviderWrapper>
-          context_provider_wrapper,
-      const gfx::HDRMetadata& hdr_metadata);
-  Canvas2DResourceProvider(
-      std::unique_ptr<gpu::SharedImagePool<CanvasResourceSharedImage>>
-          image_pool,
-      WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
-      const gfx::HDRMetadata& hdr_metadata);
+          image_pool);
 
   ~Canvas2DResourceProvider() override;
 
@@ -72,24 +61,15 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
       scoped_refptr<CanvasResourceSharedImage>&& resource) override;
   void OnDestroyResource() override { --num_inflight_resources_; }
 
-  scoped_refptr<CanvasResourceSharedImage> NewOrRecycledResource(
-      bool is_accelerated);
-
   base::WeakPtr<Canvas2DResourceProvider> CreateWeakPtr();
 
   // If this instance is single-buffered or |resource_recycling_enabled_| is
   // false, |image_pool_| will not recycle resources.
   std::unique_ptr<gpu::SharedImagePool<CanvasResourceSharedImage>> image_pool_;
 
-  base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
-  base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>
-      shared_image_interface_provider_;
-
   bool resource_recycling_enabled_ = true;
   int num_inflight_resources_ = 0;
   int max_inflight_resources_ = 0;
-
-  gfx::HDRMetadata hdr_metadata_;
 
   base::WeakPtrFactory<Canvas2DResourceProvider> weak_ptr_factory_{this};
 };
