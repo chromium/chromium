@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/performance_entry_names.h"
 #include "third_party/blink/renderer/core/timing/performance.h"
 
@@ -15,7 +16,7 @@ namespace blink {
 PerformanceContainerTiming* PerformanceContainerTiming::Create(
     const gfx::Rect& intersection_rect,
     double size,
-    Element* root_element,
+    HTMLElement* root_element,
     const AtomicString& identifier,
     Element* last_painted_element,
     DOMWindow* source) {
@@ -27,7 +28,7 @@ PerformanceContainerTiming* PerformanceContainerTiming::Create(
 PerformanceContainerTiming::PerformanceContainerTiming(
     const gfx::Rect& intersection_rect,
     double size,
-    Element* root_element,
+    HTMLElement* root_element,
     const AtomicString& identifier,
     Element* last_painted_element,
     DOMWindow* source)
@@ -80,7 +81,7 @@ void PerformanceContainerTiming::FinalizeEntry(
   FinalizeEntry(paint_timing_info, navigation_id);
 }
 
-Element* PerformanceContainerTiming::rootElement() const {
+HTMLElement* PerformanceContainerTiming::rootElement() const {
   return Performance::CanExposeNode(root_element_, source()) ? root_element_
                                                              : nullptr;
 }

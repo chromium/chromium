@@ -24,6 +24,10 @@ namespace blink {
 
 class ContainerTimingTest : public PageTestBase {
  protected:
+  HTMLElement* GetHTMLElementById(const char* id) {
+    return To<HTMLElement>(GetElementById(id));
+  }
+
   ContainerTiming& GetContainerTiming() {
     return ContainerTiming::From(*GetDocument().domWindow());
   }
@@ -365,7 +369,7 @@ TEST_F(ContainerTimingTest, StaleTrackerGuard_RootDisconnected) {
   SetBodyContent(R"HTML(
     <div id="root" containertiming="root"><div id="content">x</div></div>
   )HTML");
-  auto* root = GetElementById("root");
+  auto* root = GetHTMLElementById("root");
   auto* content = GetElementById("content");
   SimulatePaint(content, gfx::RectF(0, 0, 100, 100));
   ASSERT_TRUE(GetContainerTiming().HasRecordForTesting(root));
@@ -912,7 +916,7 @@ TEST_F(ContainerTimingTest, RemovingAttributeDropsRecord) {
   SetBodyContent(R"HTML(
     <div id="root" containertiming="root"><div id="content">x</div></div>
   )HTML");
-  auto* root = GetElementById("root");
+  auto* root = GetHTMLElementById("root");
   SimulatePaint(GetElementById("content"), gfx::RectF(0, 0, 100, 100));
   ASSERT_TRUE(GetContainerTiming().HasRecordForTesting(root));
 
@@ -924,7 +928,7 @@ TEST_F(ContainerTimingTest, RemovingRootDropsRecord) {
   SetBodyContent(R"HTML(
     <div id="root" containertiming="root"><div id="content">x</div></div>
   )HTML");
-  auto* root = GetElementById("root");
+  auto* root = GetHTMLElementById("root");
   SimulatePaint(GetElementById("content"), gfx::RectF(0, 0, 100, 100));
   ASSERT_TRUE(GetContainerTiming().HasRecordForTesting(root));
 
@@ -940,8 +944,8 @@ TEST_F(ContainerTimingTest, RemovingAncestorDropsNestedRecords) {
       </div>
     </div>
   )HTML");
-  auto* outer = GetElementById("outer");
-  auto* inner = GetElementById("inner");
+  auto* outer = GetHTMLElementById("outer");
+  auto* inner = GetHTMLElementById("inner");
   SimulatePaint(GetElementById("content"), gfx::RectF(0, 0, 100, 100));
   ASSERT_TRUE(GetContainerTiming().HasRecordForTesting(outer));
   ASSERT_TRUE(GetContainerTiming().HasRecordForTesting(inner));
@@ -1033,7 +1037,7 @@ TEST_F(ContainerTimingTest, RootDisconnectedBetweenPaintAndPresentation) {
   SetBodyContent(R"HTML(
     <div id="root" containertiming="root"><div id="content">x</div></div>
   )HTML");
-  auto* root = GetElementById("root");
+  auto* root = GetHTMLElementById("root");
   auto* content = GetElementById("content");
 
   SimulatePaint(content, gfx::RectF(0, 0, 100, 100));
@@ -1063,7 +1067,7 @@ TEST_F(ContainerTimingTest, AttributeRemovedBetweenPaintAndPresentation) {
   SetBodyContent(R"HTML(
     <div id="root" containertiming="root"><div id="content">x</div></div>
   )HTML");
-  auto* root = GetElementById("root");
+  auto* root = GetHTMLElementById("root");
   auto* content = GetElementById("content");
 
   SimulatePaint(content, gfx::RectF(0, 0, 100, 100));

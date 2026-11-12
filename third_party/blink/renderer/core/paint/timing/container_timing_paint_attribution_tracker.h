@@ -11,7 +11,7 @@
 
 namespace blink {
 
-class Element;
+class HTMLElement;
 class LayoutObject;
 class Node;
 
@@ -38,11 +38,11 @@ class CORE_EXPORT ContainerTimingPaintAttributionTracker
   };
 
   PrePaintUpdateResult UpdateOnPrePaint(const LayoutObject& object,
-                                        Element* context_container_root,
+                                        HTMLElement* context_container_root,
                                         Node* text_aggregator);
 
-  Element* GetContainerRootFor(Node* node) const;
-  Element* GetParentContainerRootFor(Element* container_root) const;
+  HTMLElement* GetContainerRootFor(Node* node) const;
+  HTMLElement* GetParentContainerRootFor(HTMLElement* container_root) const;
 
   void Trace(Visitor*) const;
 
@@ -50,10 +50,11 @@ class CORE_EXPORT ContainerTimingPaintAttributionTracker
   // Marks `node` as attributed to `container_root`, or erases the existing
   // entry if `container_root` is null. Called for every walked leaf so that
   // stale entries get refreshed as the walk passes through.
-  void MarkNodeForPaintTracking(Node& node, Element* container_root);
+  void MarkNodeForPaintTracking(Node& node, HTMLElement* container_root);
 
-  HeapHashMap<WeakMember<Node>, WeakMember<Element>> marked_nodes_;
-  HeapHashMap<WeakMember<Element>, WeakMember<Element>> container_root_parents_;
+  HeapHashMap<WeakMember<Node>, WeakMember<HTMLElement>> marked_nodes_;
+  HeapHashMap<WeakMember<HTMLElement>, WeakMember<HTMLElement>>
+      container_root_parents_;
 };
 
 }  // namespace blink

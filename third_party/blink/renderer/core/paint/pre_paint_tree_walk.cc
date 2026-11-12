@@ -365,7 +365,8 @@ void PrePaintTreeWalk::UpdateContainerTimingContext(
       case Result::kPropagateCurrentRoot:
         object.GetMutableForPainting().SetShouldInheritContainerTimingRoot(
             false);
-        context.container_timing_context_root = To<Element>(object.GetNode());
+        context.container_timing_context_root =
+            To<HTMLElement>(object.GetNode());
         break;
       case Result::kStopPropagation:
         object.GetMutableForPainting().SetShouldInheritContainerTimingRoot(
@@ -381,13 +382,12 @@ void PrePaintTreeWalk::UpdateContainerTimingContext(
     // Cached result: this node is a container root or stop node.
     // ShouldInheritContainerTimingRoot() can only be false when
     // kPropagateCurrentRoot or kStopPropagation was returned by
-    // UpdateOnPrePaint(), which only happens for elements (not anonymous
+    // UpdateOnPrePaint(), which only happens for HTML elements (not anonymous
     // boxes, which always return kPropagateAncestorRoot). So GetNode() is
-    // guaranteed non-null here.
-    CHECK(object.GetNode());
-    auto* element = DynamicTo<Element>(object.GetNode());
-    if (element &&
-        element->FastHasAttribute(html_names::kContainertimingAttr)) {
+    // guaranteed to be an HTMLElement here.
+    auto* element = To<HTMLElement>(object.GetNode());
+    CHECK(element);
+    if (element->FastHasAttribute(html_names::kContainertimingAttr)) {
       context.container_timing_context_root = element;
     } else {
       // Stop node (containertimingignore without containertiming).

@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_callbacks.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
@@ -42,10 +43,10 @@ class CORE_EXPORT ContainerTiming final
   // populated during the pre-paint walk.
   static bool ContributesToContainerTiming(Element* element);
 
-  void MaybeUpdateContainerRootIdentifier(Element* element,
+  void MaybeUpdateContainerRootIdentifier(HTMLElement* element,
                                           const AtomicString& new_value);
   // Drops the record of a disconnected container root.
-  void OnContainerRootDisconnected(Element* element);
+  void OnContainerRootDisconnected(HTMLElement* element);
 
   ContainerTimingPaintAttributionTracker* PaintAttributionTracker() {
     return paint_attribution_tracker_.Get();
@@ -60,7 +61,7 @@ class CORE_EXPORT ContainerTiming final
   // nullopt if none grew.
   OptionalPaintTimingCallback TakePaintTimingCallback();
 
-  bool HasRecordForTesting(Element* container_root) const {
+  bool HasRecordForTesting(HTMLElement* container_root) const {
     return container_root_records_.Contains(container_root);
   }
 
@@ -69,7 +70,7 @@ class CORE_EXPORT ContainerTiming final
  private:
   class Record final : public GarbageCollected<Record> {
    public:
-    Record(Element* container_root, const AtomicString& identifier);
+    Record(HTMLElement* container_root, const AtomicString& identifier);
     Record(const Record&) = delete;
     Record& operator=(const Record&) = delete;
 
@@ -94,7 +95,7 @@ class CORE_EXPORT ContainerTiming final
    private:
     // 0 until the first frame that reported this container is presented.
     DOMHighResTimeStamp first_render_time_ = 0.0;
-    const WeakMember<Element> container_root_;
+    const WeakMember<HTMLElement> container_root_;
     const AtomicString identifier_;
     // The largest element, by its own clipped area, painted since the last
     // entry was created, and that area. Both reset when an entry is created.
@@ -112,10 +113,10 @@ class CORE_EXPORT ContainerTiming final
                                     const base::TimeTicks&,
                                     const DOMPaintTimingInfo&,
                                     uint64_t navigation_id);
-  Record* GetOrCreateRecord(Element* container_root);
+  Record* GetOrCreateRecord(HTMLElement* container_root);
 
   Member<WindowPerformance> performance_;
-  HeapHashMap<WeakMember<Element>, Member<Record>> container_root_records_;
+  HeapHashMap<WeakMember<HTMLElement>, Member<Record>> container_root_records_;
   // Records that grew since the last TakePaintTimingCallback().
   HeapVector<Member<Record>> dirty_records_;
   // Never null: created in the constructor, which CHECKs that container timing

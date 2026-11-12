@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/paint/timing/container_timing_paint_attribution_tracker.h"
 
-#include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_utils.h"
@@ -14,7 +14,7 @@ namespace blink {
 ContainerTimingPaintAttributionTracker::PrePaintUpdateResult
 ContainerTimingPaintAttributionTracker::UpdateOnPrePaint(
     const LayoutObject& object,
-    Element* context_container_root,
+    HTMLElement* context_container_root,
     Node* text_aggregator) {
   Node* node = object.GetNode();
 
@@ -23,8 +23,9 @@ ContainerTimingPaintAttributionTracker::UpdateOnPrePaint(
     return PrePaintUpdateResult::kPropagateAncestorRoot;
   }
 
-  // 2. Update container timing root if changed.
-  auto* element = DynamicTo<Element>(node);
+  // 2. Update container timing root if changed. Only HTML elements can be
+  // container roots or ignore nodes.
+  auto* element = DynamicTo<HTMLElement>(node);
   const bool has_container_timing =
       element && element->FastHasAttribute(html_names::kContainertimingAttr);
   const bool has_ignore =
@@ -79,7 +80,7 @@ ContainerTimingPaintAttributionTracker::UpdateOnPrePaint(
 
 void ContainerTimingPaintAttributionTracker::MarkNodeForPaintTracking(
     Node& node,
-    Element* container_root) {
+    HTMLElement* container_root) {
   if (container_root) {
     marked_nodes_.Set(&node, container_root);
   } else {
@@ -87,14 +88,14 @@ void ContainerTimingPaintAttributionTracker::MarkNodeForPaintTracking(
   }
 }
 
-Element* ContainerTimingPaintAttributionTracker::GetContainerRootFor(
+HTMLElement* ContainerTimingPaintAttributionTracker::GetContainerRootFor(
     Node* node) const {
   auto it = marked_nodes_.find(node);
   return it != marked_nodes_.end() ? it->value.Get() : nullptr;
 }
 
-Element* ContainerTimingPaintAttributionTracker::GetParentContainerRootFor(
-    Element* root) const {
+HTMLElement* ContainerTimingPaintAttributionTracker::GetParentContainerRootFor(
+    HTMLElement* root) const {
   auto it = container_root_parents_.find(root);
   return it != container_root_parents_.end() ? it->value.Get() : nullptr;
 }

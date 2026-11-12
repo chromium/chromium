@@ -6546,10 +6546,12 @@ Called by update_use_counter_feature_enum.py.-->
       label="V8PerformanceContainerTiming_LastPaintedElement_AttributeGetter"/>
   <int value="5739"
       label="V8PerformanceContainerTiming_FirstRenderTime_AttributeGetter"/>
-  <int value="5740" label="V8Element_ContainerTiming_AttributeGetter"/>
-  <int value="5741" label="V8Element_ContainerTiming_AttributeSetter"/>
-  <int value="5742" label="V8Element_ContainerTimingIgnore_AttributeGetter"/>
-  <int value="5743" label="V8Element_ContainerTimingIgnore_AttributeSetter"/>
+  <int value="5740" label="V8HTMLElement_ContainerTiming_AttributeGetter"/>
+  <int value="5741" label="V8HTMLElement_ContainerTiming_AttributeSetter"/>
+  <int value="5742"
+      label="V8HTMLElement_ContainerTimingIgnore_AttributeGetter"/>
+  <int value="5743"
+      label="V8HTMLElement_ContainerTimingIgnore_AttributeSetter"/>
   <int value="5744" label="ContainerTimingExplicitlyRequested"/>
   <int value="5745" label="ContainerTimingObserved"/>
   <int value="5746" label="CookieStoreMaxAge"/>

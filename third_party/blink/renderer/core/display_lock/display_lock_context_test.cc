@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/highlight/highlight.h"
 #include "third_party/blink/renderer/core/highlight/highlight_registry.h"
+#include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_plugin_element.h"
 #include "third_party/blink/renderer/core/html/html_template_element.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
@@ -4445,9 +4446,11 @@ TEST_F(ContainerTimingDisplayLockContextTest, NestedRootsAcrossLockBoundary) {
     </div>
   )HTML");
 
-  auto* outer_element = GetDocument().getElementById(AtomicString("outer"));
+  auto* outer_element =
+      To<HTMLElement>(GetDocument().getElementById(AtomicString("outer")));
   auto* locked_element = GetDocument().getElementById(AtomicString("locked"));
-  auto* inner_element = GetDocument().getElementById(AtomicString("inner"));
+  auto* inner_element =
+      To<HTMLElement>(GetDocument().getElementById(AtomicString("inner")));
   auto* content_element = GetDocument().getElementById(AtomicString("content"));
 
   LockElement(*locked_element, false);

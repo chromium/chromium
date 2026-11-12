@@ -67,7 +67,7 @@ bool ContainerTiming::ContributesToContainerTiming(Element* element) {
   return tracker->GetContainerRootFor(element) != nullptr;
 }
 
-ContainerTiming::Record::Record(Element* container_root,
+ContainerTiming::Record::Record(HTMLElement* container_root,
                                 const AtomicString& identifier)
     : container_root_(container_root), identifier_(identifier) {}
 
@@ -125,7 +125,7 @@ void ContainerTiming::Record::Trace(Visitor* visitor) const {
 }
 
 ContainerTiming::Record* ContainerTiming::GetOrCreateRecord(
-    Element* container_root) {
+    HTMLElement* container_root) {
   Record* record = nullptr;
   auto it = container_root_records_.find(container_root);
 
@@ -142,7 +142,7 @@ ContainerTiming::Record* ContainerTiming::GetOrCreateRecord(
 }
 
 void ContainerTiming::MaybeUpdateContainerRootIdentifier(
-    Element* element,
+    HTMLElement* element,
     const AtomicString& new_value) {
   auto it = container_root_records_.find(element);
   if (it != container_root_records_.end()) {
@@ -157,7 +157,7 @@ void ContainerTiming::MaybeUpdateContainerRootIdentifier(
   }
 }
 
-void ContainerTiming::OnContainerRootDisconnected(Element* element) {
+void ContainerTiming::OnContainerRootDisconnected(HTMLElement* element) {
   container_root_records_.erase(element);
 }
 
@@ -169,7 +169,7 @@ void ContainerTiming::OnElementPainted(Element& element,
   //
   // TODO(crbug.com/559075199): decoupling ContainerTiming from ElementTiming
   // would let this become a CHECK.
-  Element* container_root =
+  HTMLElement* container_root =
       paint_attribution_tracker_->GetContainerRootFor(&element);
   if (!container_root) {
     return;

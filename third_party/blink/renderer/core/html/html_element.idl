@@ -83,6 +83,11 @@
     [ContextEnabled=UnboundedElement,CallWith=ScriptState] Promise<undefined> showUnboundedElement();
     [ContextEnabled=UnboundedElement,CallWith=ScriptState] Promise<undefined> hideUnboundedElement();
 
+    // Container Timing
+    // https://w3c.github.io/container-timing/
+    [RuntimeEnabled=ContainerTiming, CEReactions, Reflect=containertiming, Measure] attribute DOMString containerTiming;
+    [RuntimeEnabled=ContainerTiming, CEReactions, Reflect=containertimingignore, Measure] attribute boolean containerTimingIgnore;
+
     // Non-standard APIs
     [CEReactions, RaisesException=Setter, MeasureAs=HTMLElementInnerText, ImplementedAs=innerTextForBinding] attribute ([LegacyNullToEmptyString] DOMString or TrustedScript) innerText;
     [CEReactions, RaisesException=Setter, MeasureAs=HTMLElementOuterText] attribute [LegacyNullToEmptyString] DOMString outerText;

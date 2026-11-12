@@ -17,6 +17,8 @@
 
 namespace blink {
 
+class HTMLElement;
+
 class CORE_EXPORT PerformanceContainerTiming final : public PerformanceEntry {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -25,13 +27,13 @@ class CORE_EXPORT PerformanceContainerTiming final : public PerformanceEntry {
   // is presented.
   static PerformanceContainerTiming* Create(const gfx::Rect& intersection_rect,
                                             double size,
-                                            Element* root_element,
+                                            HTMLElement* root_element,
                                             const AtomicString& identifier,
                                             Element* last_painted_element,
                                             DOMWindow* source);
   PerformanceContainerTiming(const gfx::Rect& intersection_rect,
                              double size,
-                             Element* rootElement,
+                             HTMLElement* root_element,
                              const AtomicString& identifier,
                              Element* last_painted_element,
                              DOMWindow* source);
@@ -48,7 +50,7 @@ class CORE_EXPORT PerformanceContainerTiming final : public PerformanceEntry {
 
   DOMRectReadOnly* intersectionRect() const { return intersection_rect_.Get(); }
   double size() const { return size_; }
-  Element* rootElement() const;
+  HTMLElement* rootElement() const;
   AtomicString identifier() const { return identifier_; }
   Element* lastPaintedElement() const;
   DOMHighResTimeStamp firstRenderTime() const { return first_render_time_; }
@@ -64,7 +66,7 @@ class CORE_EXPORT PerformanceContainerTiming final : public PerformanceEntry {
 
   Member<DOMRectReadOnly> intersection_rect_;
   double size_;
-  WeakMember<Element> root_element_;
+  WeakMember<HTMLElement> root_element_;
   AtomicString identifier_;
   WeakMember<Element> last_painted_element_;
   DOMHighResTimeStamp first_render_time_ = 0.0;

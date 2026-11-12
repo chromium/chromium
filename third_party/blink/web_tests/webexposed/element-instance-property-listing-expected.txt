@@ -1517,8 +1517,6 @@ namespace http://www.w3.org/2000/svg
     property computedName
     property computedRole
     property computedStyleMap
-    property containerTiming
-    property containerTimingIgnore
     property contains
     property convertPointFromNode
     property convertQuadFromNode

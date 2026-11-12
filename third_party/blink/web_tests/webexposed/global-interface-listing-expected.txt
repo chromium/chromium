@@ -2570,8 +2570,6 @@ interface Element : Node
     getter clientWidth
     getter computedName
     getter computedRole
-    getter containerTiming
-    getter containerTimingIgnore
     getter currentCSSZoom
     getter customElementRegistry
     getter elementTiming
@@ -2748,8 +2746,6 @@ interface Element : Node
     setter ariaValueText
     setter classList
     setter className
-    setter containerTiming
-    setter containerTimingIgnore
     setter elementTiming
     setter headingOffset
     setter headingReset
@@ -4055,6 +4051,8 @@ interface HTMLElement : Element
     getter autocapitalize
     getter autocorrect
     getter autofocus
+    getter containerTiming
+    getter containerTimingIgnore
     getter contentEditable
     getter dataset
     getter dir
@@ -4212,6 +4210,8 @@ interface HTMLElement : Element
     setter autocapitalize
     setter autocorrect
     setter autofocus
+    setter containerTiming
+    setter containerTimingIgnore
     setter contentEditable
     setter dir
     setter draggable
