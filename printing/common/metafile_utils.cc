@@ -517,12 +517,12 @@ sk_sp<SkTypeface> DeserializeOopTypeface(SkStream& stream, void* ctx) {
   auto* context = reinterpret_cast<TypefaceDeserializationContext*>(ctx);
   auto iter = context->find(id);
   if (iter != context->end()) {
-    DCHECK(!data_included);
+    CHECK(!data_included);
     return iter->second;
   }
 
   // Typeface not encountered before, expect it to be present in the stream.
-  DCHECK(data_included);
+  CHECK(data_included);
   sk_sp<SkTypeface> typeface;
   if (base::FeatureList::IsEnabled(blink::features::kFontationsPrinting)) {
     typeface = skia::MakeTypefaceWithFontations(&stream);
