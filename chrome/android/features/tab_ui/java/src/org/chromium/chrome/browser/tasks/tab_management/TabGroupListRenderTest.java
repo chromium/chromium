@@ -70,6 +70,7 @@ public class TabGroupListRenderTest {
         // Disable item animations to prevent DefaultItemAnimator from setting row alpha to 0
         // and delaying fade-in during model repopulation, which causes blank render captures.
         ThreadUtils.runOnUiThreadBlocking(() -> recyclerView.setItemAnimator(null));
+        waitForView(withText("Group 1"));
         waitForStableRecyclerView(recyclerView);
         mRenderTestRule.render(recyclerView, "1_group");
 
