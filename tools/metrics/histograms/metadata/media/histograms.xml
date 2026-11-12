@@ -3949,7 +3949,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.DocumentPictureInPicture.RequestedInitialWidth"
-    units="px" expires_after="2026-02-01">
+    units="px" expires_after="2027-11-11">
   <owner>steimel@chromium.org</owner>
   <owner>liberato@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
@@ -3960,17 +3960,23 @@ chromium-metrics-reviews@google.com.
     size larger than the area of the screen, it will be recorded as 100%. If a
     website does not request a size or requests a size of zero, it is recorded
     as 1%.
+
+    Warning: this histogram was expired from 2026-02-01 to 2026-11-11; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Media.DocumentPictureInPicture.RequestedLargeInitialSize"
-    enum="BooleanOccurred" expires_after="2026-03-19">
+    enum="BooleanOccurred" expires_after="2027-11-11">
   <owner>steimel@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
     Recorded when a website opens a document picture-in-picture window. Records
     `Occurred` if the website requested a window size larger than the maximum
     allowed window size, otherwise records `Did not occur`.
+
+    Warning: this histogram was expired from 2026-03-19 to 2026-11-11; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -7000,7 +7006,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.PictureInPicture.Tucked"
-    enum="PictureInPictureTuckedType" expires_after="2026-04-22">
+    enum="PictureInPictureTuckedType" expires_after="2027-11-11">
   <owner>steimel@chromium.org</owner>
   <owner>liberato@chromium.org</owner>
   <summary>
@@ -7008,6 +7014,9 @@ chromium-metrics-reviews@google.com.
     ScopedTuckPictureInPicture object. Records whether the tucked
     picture-in-picture window was just opened or already existed when the
     ScopedTuckPictureInPicture was created.
+
+    Warning: this histogram was expired from 2026-04-22 to 2026-11-11; data may
+    be missing.
   </summary>
 </histogram>
 
