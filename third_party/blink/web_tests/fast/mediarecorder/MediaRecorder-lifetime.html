@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/gc.js"></script>
+<script>
+// Checks that a MediaRecorder that the page no longer references is garbage
+// collected unless it is recording or paused. See crbug.com/41423134.
+//
+// This test uses internals.observeGC() and is therefore not suitable for
+// upstreaming to Web Platform Tests.
+
+// Creates a MediaRecorder for `stream`, runs `action` on it, and returns a
+// GCObservation for it. The recorder is only referenced inside this function,
+// so nothing on the caller's stack keeps it alive.
+async function observeRecorder(stream, action) {
+  const recorder = new MediaRecorder(stream);
+  const observation = internals.observeGC(recorder);
+  await action(recorder);
+  return observation;
+}
+
+function waitForEvent(target, type) {
+  return new Promise(resolve => {
+    target.addEventListener(type, resolve, {once: true});
+  });
+}
+
+// Lets queued tasks run, including the MediaRecorder events that hold a strong
+// reference to the recorder until they are dispatched.
+function flushTasks() {
+  return new Promise(resolve => setTimeout(resolve, 0));
+}
+
+async function getVideoStream(t) {
+  const stream = await navigator.mediaDevices.getUserMedia({video: true});
+  t.add_cleanup(() => stream.getTracks().forEach(track => track.stop()));
+  return stream;
+}
+
+promise_test(async t => {
+  const stream = await getVideoStream(t);
+  const observation = await observeRecorder(stream, () => {});
+  await flushTasks();
+  await asyncGC();
+  assert_true(observation.wasCollected);
+}, 'A MediaRecorder that never started is collected.');
+
+promise_test(async t => {
+  const stream = await getVideoStream(t);
+  const observation = await observeRecorder(stream, async recorder => {
+    recorder.start();
+    await waitForEvent(recorder, 'start');
+    recorder.stop();
+    await waitForEvent(recorder, 'stop');
+  });
+  await flushTasks();
+  await asyncGC();
+  assert_true(observation.wasCollected);
+}, 'A MediaRecorder that was stopped is collected.');
+
+promise_test(async t => {
+  const stream = await getVideoStream(t);
+  // An ended track makes start() fail after the recorder has begun to set
+  // itself up.
+  stream.getVideoTracks()[0].stop();
+  const observation = await observeRecorder(stream, recorder => {
+    assert_throws_dom('NotSupportedError', () => recorder.start());
+    assert_equals(recorder.state, 'inactive');
+  });
+  await flushTasks();
+  await asyncGC();
+  assert_true(observation.wasCollected);
+}, 'A MediaRecorder whose start() failed is collected.');
+
+promise_test(async t => {
+  const stream = await getVideoStream(t);
+  const observation = await observeRecorder(stream, async recorder => {
+    recorder.start();
+    await waitForEvent(recorder, 'start');
+  });
+  await flushTasks();
+  await asyncGC();
+  // A recording MediaRecorder must stay alive so it can fire its events. This
+  // also shows that the checks above can detect a retained recorder. The
+  // cleanup stops the tracks, which stops the recording.
+  assert_false(observation.wasCollected);
+}, 'A MediaRecorder that is recording is not collected.');
+
+promise_test(async t => {
+  const stream = await getVideoStream(t);
+  const observation = await observeRecorder(stream, async recorder => {
+    recorder.start();
+    await waitForEvent(recorder, 'start');
+    recorder.pause();
+    await waitForEvent(recorder, 'pause');
+  });
+  await flushTasks();
+  await asyncGC();
+  assert_false(observation.wasCollected);
+}, 'A MediaRecorder that is paused is not collected.');
+</script>
