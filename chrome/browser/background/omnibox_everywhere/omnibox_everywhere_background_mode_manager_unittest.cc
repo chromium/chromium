@@ -42,10 +42,13 @@
 #if BUILDFLAG(IS_WIN)
 #include <optional>
 
+#include "base/test/run_until.h"
+#include "base/test/test_reg_util_win.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/startup/startup_features.h"
 #include "chrome/browser/startup/startup_launch_manager.h"
+#include "chrome/browser/status_icons/status_tray_theme_watcher_win_test_util.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/installer/util/auto_launch_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -56,6 +59,14 @@ namespace omnibox_everywhere {
 
 namespace {
 
+// The DIP size of the search loupe in the status icon.
+constexpr int kLoupeDipSize =
+#if BUILDFLAG(IS_WIN)
+    32;
+#else
+    16;
+#endif
+
 class MockStatusIcon : public StatusIcon {
  public:
   explicit MockStatusIcon(const gfx::ImageSkia& image) : image_(image) {}
@@ -64,7 +75,16 @@ class MockStatusIcon : public StatusIcon {
   void SetImage(const gfx::ImageSkia& image) override {
     image_ = image;
     ++set_image_count_;
+#if BUILDFLAG(IS_MAC)
+    // Like `StatusIconMac`, a new image is not a template image.
+    is_template_ = false;
+#endif
   }
+#if BUILDFLAG(IS_MAC)
+  void SetImageTemplate(bool is_template) override {
+    is_template_ = is_template;
+  }
+#endif
   void SetToolTip(const std::u16string& tool_tip) override {}
   void DisplayBalloon(const gfx::ImageSkia& icon,
                       const std::u16string& title,
@@ -74,10 +94,16 @@ class MockStatusIcon : public StatusIcon {
 
   const gfx::ImageSkia& image() const { return image_; }
   int set_image_count() const { return set_image_count_; }
+#if BUILDFLAG(IS_MAC)
+  bool is_template() const { return is_template_; }
+#endif
 
  private:
   gfx::ImageSkia image_;
   int set_image_count_ = 0;
+#if BUILDFLAG(IS_MAC)
+  bool is_template_ = false;
+#endif
 };
 
 class MockStatusTray : public StatusTray {
@@ -122,6 +148,11 @@ class OmniboxEverywhereBackgroundModeManagerTest : public ChromeViewsTestBase {
       local_state->SetBoolean(prefs::kOmniboxEverywhereEnabled, true);
       local_state->SetBoolean(prefs::kOmniboxEverywhereBackgroundMode, true);
     }
+#if BUILDFLAG(IS_WIN)
+    ASSERT_NO_FATAL_FAILURE(
+        registry_override_.OverrideRegistry(HKEY_CURRENT_USER));
+    SetTaskbarDarkModeInRegistry(false);
+#endif
   }
 
   void TearDown() override {
@@ -162,6 +193,9 @@ class OmniboxEverywhereBackgroundModeManagerTest : public ChromeViewsTestBase {
  protected:
   base::test::ScopedFeatureList feature_list_{omnibox::kOmniboxEverywhere};
   std::unique_ptr<TestingProfile> profile_;
+#if BUILDFLAG(IS_WIN)
+  registry_util::RegistryOverrideManager registry_override_;
+#endif
 };
 
 TEST_F(OmniboxEverywhereBackgroundModeManagerTest, InitializationDoesNotCrash) {
@@ -236,16 +270,18 @@ TEST_F(OmniboxEverywhereBackgroundModeManagerTest,
 
 TEST_F(OmniboxEverywhereBackgroundModeManagerTest,
        StatusIconFollowsDefaultSearchEngine) {
-  constexpr int kExpectedDipSize =
-#if BUILDFLAG(IS_WIN)
-      32;
-#else
-      16;
-#endif
   const gfx::Image expected_loupe(gfx::CreateVectorIcon(
-      vector_icons::kSearchIcon, kExpectedDipSize, SK_ColorBLACK));
+      vector_icons::kSearchIcon, kLoupeDipSize, SK_ColorBLACK));
+  EXPECT_TRUE(
+      gfx::test::AreImagesEqual(gfx::Image(GetOmniboxEverywhereIcon(
+                                    nullptr, /*for_dark_background=*/false)),
+                                expected_loupe));
+  // On a dark background, the loupe is white.
   EXPECT_TRUE(gfx::test::AreImagesEqual(
-      gfx::Image(GetOmniboxEverywhereIcon(nullptr)), expected_loupe));
+      gfx::Image(
+          GetOmniboxEverywhereIcon(nullptr, /*for_dark_background=*/true)),
+      gfx::Image(gfx::CreateVectorIcon(vector_icons::kSearchIcon, kLoupeDipSize,
+                                       SK_ColorWHITE))));
 
   TemplateURLServiceFactoryTestUtil template_url_service_util(profile());
   template_url_service_util.VerifyLoad();
@@ -258,11 +294,18 @@ TEST_F(OmniboxEverywhereBackgroundModeManagerTest,
                           : "https://www.other.com/search?q={searchTerms}");
     template_url_service->SetUserSelectedDefaultSearchProvider(
         template_url_service->Add(std::make_unique<TemplateURL>(data)));
-    return gfx::Image(GetOmniboxEverywhereIcon(template_url_service));
+    return gfx::Image(GetOmniboxEverywhereIcon(template_url_service,
+                                               /*for_dark_background=*/false));
   };
   const gfx::Image google_icon = set_default_search_provider(true);
   EXPECT_EQ(gfx::test::AreImagesEqual(google_icon, expected_loupe),
             !BUILDFLAG(GOOGLE_CHROME_BRANDING));
+  // The Google "G" keeps its colors on a dark background, unlike the loupe.
+  EXPECT_EQ(gfx::test::AreImagesEqual(
+                gfx::Image(GetOmniboxEverywhereIcon(
+                    template_url_service, /*for_dark_background=*/true)),
+                google_icon),
+            BUILDFLAG(GOOGLE_CHROME_BRANDING));
 
   OmniboxEverywhereBackgroundModeManager manager(base::DoNothing());
   manager.SetProfile(profile());
@@ -271,6 +314,10 @@ TEST_F(OmniboxEverywhereBackgroundModeManagerTest,
   ASSERT_NE(status_icon, nullptr);
   EXPECT_TRUE(
       gfx::test::AreImagesEqual(gfx::Image(status_icon->image()), google_icon));
+#if BUILDFLAG(IS_MAC)
+  // Only the monochrome loupe is a template image.
+  EXPECT_EQ(status_icon->is_template(), !BUILDFLAG(GOOGLE_CHROME_BRANDING));
+#endif
 
   // Switching to a non-Google search engine updates the status icon to the
   // generic search loupe.
@@ -280,6 +327,9 @@ TEST_F(OmniboxEverywhereBackgroundModeManagerTest,
   EXPECT_GT(count_after_other, 0);
   EXPECT_TRUE(gfx::test::AreImagesEqual(gfx::Image(status_icon->image()),
                                         expected_loupe));
+#if BUILDFLAG(IS_MAC)
+  EXPECT_TRUE(status_icon->is_template());
+#endif
 
   // Switching back to Google restores the Google icon.
   set_default_search_provider(true);
@@ -299,6 +349,31 @@ TEST_F(OmniboxEverywhereBackgroundModeManagerTest,
   EXPECT_TRUE(
       gfx::test::AreImagesEqual(gfx::Image(status_icon->image()), google_icon));
 }
+
+#if BUILDFLAG(IS_WIN)
+TEST_F(OmniboxEverywhereBackgroundModeManagerTest,
+       StatusIconFollowsTaskbarTheme) {
+  // `profile()` has no default search engine, so the status icon is the loupe.
+  OmniboxEverywhereBackgroundModeManager manager(base::DoNothing());
+  manager.SetProfile(profile());
+  auto* status_icon =
+      static_cast<MockStatusIcon*>(manager.status_icon_for_testing());
+  ASSERT_NE(status_icon, nullptr);
+  auto shows_loupe = [&](SkColor color) {
+    return gfx::test::AreImagesEqual(
+        gfx::Image(status_icon->image()),
+        gfx::Image(gfx::CreateVectorIcon(vector_icons::kSearchIcon,
+                                         kLoupeDipSize, color)));
+  };
+  EXPECT_TRUE(shows_loupe(SK_ColorBLACK));
+
+  SetTaskbarDarkModeInRegistry(true);
+  EXPECT_TRUE(base::test::RunUntil([&] { return shows_loupe(SK_ColorWHITE); }));
+
+  SetTaskbarDarkModeInRegistry(false);
+  EXPECT_TRUE(base::test::RunUntil([&] { return shows_loupe(SK_ColorBLACK); }));
+}
+#endif
 
 TEST_F(OmniboxEverywhereBackgroundModeManagerTest,
        StatusIconClickTriggersCallback) {

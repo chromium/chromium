@@ -20,10 +20,11 @@
 namespace omnibox_everywhere {
 
 gfx::ImageSkia GetOmniboxEverywhereIcon(
-    const TemplateURLService* template_url_service) {
+    const TemplateURLService* template_url_service,
+    bool for_dark_background) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Like the omnibox, never show the Google "G" for other search engines.
-  if (search::DefaultSearchProviderIsGoogle(template_url_service)) {
+  if (!IsOmniboxEverywhereIconMonochrome(template_url_service)) {
     gfx::ImageSkia icon =
         *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
             IDR_GOOGLE_G_GRADIENT_16_ALT);
@@ -44,8 +45,18 @@ gfx::ImageSkia GetOmniboxEverywhereIcon(
 #else
   constexpr int kIconDipSize = 16;
 #endif
-  return gfx::CreateVectorIcon(vector_icons::kSearchIcon, kIconDipSize,
-                               SK_ColorBLACK);
+  return gfx::CreateVectorIcon(
+      vector_icons::kSearchIcon, kIconDipSize,
+      for_dark_background ? SK_ColorWHITE : SK_ColorBLACK);
+}
+
+bool IsOmniboxEverywhereIconMonochrome(
+    const TemplateURLService* template_url_service) {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return !search::DefaultSearchProviderIsGoogle(template_url_service);
+#else
+  return true;
+#endif
 }
 
 }  // namespace omnibox_everywhere

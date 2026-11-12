@@ -198,17 +198,15 @@ void OmniboxEverywhereBackgroundModeManager::ShowStatusIcon() {
     return;
   }
 
-  gfx::ImageSkia icon_image =
-      GetOmniboxEverywhereIcon(template_url_service_observation_.GetSource());
-
   std::u16string tooltip =
       l10n_util::GetStringUTF16(IDS_OMNIBOX_EVERYWHERE_STATUS_ICON_TOOLTIP);
   status_icon_ = status_tray->CreateStatusIcon(
-      StatusTray::OMNIBOX_EVERYWHERE_ICON, icon_image, tooltip);
+      StatusTray::OMNIBOX_EVERYWHERE_ICON, GetStatusIconImage(), tooltip);
   if (status_icon_) {
     status_icon_->AddObserver(this);
 #if BUILDFLAG(IS_MAC)
     status_icon_->SetOpenMenuWithSecondaryClick(true);
+    UpdateStatusIconImageTemplate();
 #endif
     UpdateStatusIconContextMenu();
   }
@@ -281,11 +279,39 @@ void OmniboxEverywhereBackgroundModeManager::OnBrowserClosed(
   UpdateVisibilityOfExitInContextMenu();
 }
 
-void OmniboxEverywhereBackgroundModeManager::OnTemplateURLServiceChanged() {
-  if (status_icon_) {
-    status_icon_->SetImage(GetOmniboxEverywhereIcon(
-        template_url_service_observation_.GetSource()));
+gfx::ImageSkia OmniboxEverywhereBackgroundModeManager::GetStatusIconImage()
+    const {
+  bool for_dark_background = false;
+#if BUILDFLAG(IS_WIN)
+  for_dark_background = taskbar_theme_watcher_.in_dark_mode();
+#endif
+  return GetOmniboxEverywhereIcon(template_url_service_observation_.GetSource(),
+                                  for_dark_background);
+}
+
+void OmniboxEverywhereBackgroundModeManager::UpdateStatusIconImage() {
+  if (!status_icon_) {
+    return;
   }
+  status_icon_->SetImage(GetStatusIconImage());
+#if BUILDFLAG(IS_MAC)
+  // The template property belongs to the image, so set it again after every
+  // `SetImage()`.
+  UpdateStatusIconImageTemplate();
+#endif
+}
+
+#if BUILDFLAG(IS_MAC)
+void OmniboxEverywhereBackgroundModeManager::UpdateStatusIconImageTemplate() {
+  // Let macOS draw the monochrome loupe in the menu bar's color, e.g. white on
+  // a dark menu bar.
+  status_icon_->SetImageTemplate(IsOmniboxEverywhereIconMonochrome(
+      template_url_service_observation_.GetSource()));
+}
+#endif
+
+void OmniboxEverywhereBackgroundModeManager::OnTemplateURLServiceChanged() {
+  UpdateStatusIconImage();
 }
 
 void OmniboxEverywhereBackgroundModeManager::

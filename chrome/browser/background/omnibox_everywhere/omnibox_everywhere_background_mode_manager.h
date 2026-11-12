@@ -19,7 +19,9 @@
 #include "components/search_engines/template_url_service_observer.h"
 
 #if BUILDFLAG(IS_WIN)
+#include "base/functional/bind.h"
 #include "chrome/browser/startup/startup_launch_manager.h"
+#include "chrome/browser/status_icons/status_tray_theme_watcher_win.h"
 #endif
 
 class BrowserWindowInterface;
@@ -69,6 +71,13 @@ class OmniboxEverywhereBackgroundModeManager
 
   void ShowStatusIcon();
   void HideStatusIcon();
+  gfx::ImageSkia GetStatusIconImage() const;
+  void UpdateStatusIconImage();
+#if BUILDFLAG(IS_MAC)
+  // Marks `status_icon_`'s image as a template image when it is the
+  // monochrome loupe. `status_icon_` must not be null.
+  void UpdateStatusIconImageTemplate();
+#endif
   void UpdateStatusIconContextMenu();
   void UpdateProfileKeepAlive();
 
@@ -109,6 +118,10 @@ class OmniboxEverywhereBackgroundModeManager
   StartupLaunchManager::Client startup_launch_client_{
       StartupLaunchReason::kOmniboxEverywhere};
   BooleanPrefMember launch_on_startup_pref_member_;
+  // Redraws the search loupe when the taskbar switches between light and dark.
+  StatusTrayThemeWatcherWin taskbar_theme_watcher_{base::BindRepeating(
+      &OmniboxEverywhereBackgroundModeManager::UpdateStatusIconImage,
+      base::Unretained(this))};
 #endif
 
   // Used strictly to schedule and cancel deferred `ShowStatusIcon()` tasks.

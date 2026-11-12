@@ -23,7 +23,8 @@ namespace {
 ui::ImageModel GetWindowIconFor(
     const TemplateURLService* template_url_service) {
   return ui::ImageModel::FromImageSkia(
-      GetOmniboxEverywhereIcon(template_url_service));
+      GetOmniboxEverywhereIcon(template_url_service,
+                               /*for_dark_background=*/false));
 }
 
 }  // namespace
