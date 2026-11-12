@@ -13,6 +13,7 @@
 #include "base/test/run_until.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
+#include "mojo/public/cpp/system/platform_handle.h"
 #include "skia/ext/skcolorspace_primaries.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -21,8 +22,10 @@
 #include "ui/ozone/platform/wayland/gpu/wayland_buffer_manager_gpu.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
+#include "ui/ozone/platform/wayland/host/wayland_subsurface.h"
 #include "ui/ozone/platform/wayland/host/wayland_wp_color_manager.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
+#include "ui/ozone/platform/wayland/test/mock_wp_presentation.h"
 #include "ui/ozone/platform/wayland/test/scoped_wl_array.h"
 #include "ui/ozone/platform/wayland/test/test_wayland_server_thread.h"
 #include "ui/ozone/platform/wayland/test/test_wp_color_manager.h"
@@ -109,6 +112,30 @@ class WaylandFrameManagerTest : public WaylandTestSimple {
     ++buffer_id_;
   }
 
+  void CreateHostShmBuffer(uint32_t buffer_id) {
+    connection_->buffer_manager_host()->CreateShmBasedBuffer(
+        mojo::PlatformHandle(MakeFD()), kLength, kBufferSize, buffer_id);
+  }
+
+  // Synchronously registers an SHM buffer on the host and records a frame
+  // without spinning the main-thread RunLoop, avoiding races with Mojo buffer
+  // creation or the real-time 50ms `frame_callback_timer_`.
+  void RecordHostShmFrame(bool requires_acks = false) {
+    const uint32_t id = buffer_id_++;
+    CreateHostShmBuffer(id);
+
+    wl::WaylandOverlayConfig config;
+    config.buffer_id = id;
+    config.bounds_rect = {0, 0, kWidth, kHeight};
+    auto* surface = window_->root_surface();
+    std::unique_ptr<WaylandFrame> frame =
+        requires_acks
+            ? std::make_unique<WaylandFrame>(id, gfx::FrameData(), surface,
+                                             std::move(config))
+            : std::make_unique<WaylandFrame>(surface, std::move(config));
+    frame_manager_->RecordFrame(std::move(frame));
+  }
+
   void TestSurfaceCommits(bool expect_surface_commits) {
     // Setup wl_buffers.
     InitBufferManager();
@@ -137,10 +164,10 @@ class WaylandFrameManagerTest : public WaylandTestSimple {
     EXPECT_EQ(0u, NumPendingFrames());
     EXPECT_EQ(1u, NumSubmittedFrames());
     if (expect_surface_commits) {
-      EXPECT_TRUE(LastSubmittedFrameHasFrameCallback());
+      EXPECT_TRUE(HasPendingFrameCallback());
       EXPECT_TRUE(LastSubmittedFrameHasSubmittedBuffers());
     } else {
-      EXPECT_FALSE(LastSubmittedFrameHasFrameCallback());
+      EXPECT_FALSE(HasPendingFrameCallback());
       EXPECT_FALSE(LastSubmittedFrameHasSubmittedBuffers());
     }
   }
@@ -151,8 +178,8 @@ class WaylandFrameManagerTest : public WaylandTestSimple {
     return frame_manager_->submitted_frames_.size();
   }
 
-  bool LastSubmittedFrameHasFrameCallback() {
-    return !!frame_manager_->submitted_frames_.back()->wl_frame_callback;
+  bool HasPendingFrameCallback() {
+    return !!frame_manager_->wl_frame_callback_;
   }
 
   bool LastSubmittedFrameAcked() {
@@ -281,10 +308,9 @@ TEST_F(WaylandFrameManagerTest,
   InitBufferManager();
   RecordFrame();
   EXPECT_EQ(1u, NumSubmittedFrames());
-  EXPECT_TRUE(LastSubmittedFrameHasFrameCallback());
+  EXPECT_TRUE(HasPendingFrameCallback());
   EXPECT_TRUE(LastSubmittedFrameHasSubmittedBuffers());
   EXPECT_EQ(0u, NumPendingFrames());
-  EXPECT_TRUE(LastSubmittedFrameHasFrameCallback());
 
   // Ensure pending frame
   RecordFrame();
@@ -376,7 +402,7 @@ TEST_F(WaylandFrameManagerTest,
   // be cleared.
   EXPECT_EQ(0u, NumPendingFrames());
   EXPECT_EQ(1u, NumSubmittedFrames());
-  EXPECT_FALSE(LastSubmittedFrameHasFrameCallback());
+  EXPECT_FALSE(HasPendingFrameCallback());
   EXPECT_FALSE(LastSubmittedFrameHasSubmittedBuffers());
   EXPECT_TRUE(LastSubmittedFrameAcked());
   ASSERT_TRUE(LastSubmittedFrameFeedback().has_value());
@@ -390,7 +416,7 @@ TEST_F(WaylandFrameManagerTest, UnblockFrames_OnTransitionToSwapWithoutCommit) {
   RecordFrame();
   EXPECT_EQ(1u, NumSubmittedFrames());
   EXPECT_EQ(0u, NumPendingFrames());
-  EXPECT_TRUE(LastSubmittedFrameHasFrameCallback());
+  EXPECT_TRUE(HasPendingFrameCallback());
 
   // Ensure pending frame
   RecordFrame();
@@ -418,7 +444,7 @@ TEST_F(WaylandFrameManagerTest, UnblockFrames_OnTransitionToSwapWithoutCommit) {
   // 2 submitted frames should be cleared and one pending frame should be
   // submitted.
   EXPECT_EQ(1u, NumSubmittedFrames());
-  EXPECT_FALSE(LastSubmittedFrameHasFrameCallback());
+  EXPECT_FALSE(HasPendingFrameCallback());
   EXPECT_FALSE(LastSubmittedFrameHasSubmittedBuffers());
   EXPECT_TRUE(LastSubmittedFrameAcked());
 }
@@ -630,6 +656,216 @@ TEST_F(WaylandFrameManagerColorManagementTest, HeldFrameFlushesRequests) {
 
   // Once the loop runs, the requests get flushed and the frame drains.
   EXPECT_TRUE(base::test::RunUntil([&] { return NumSubmittedFrames() == 1u; }));
+}
+
+// Tests that skipping frame callbacks during video capture on an occluded
+// window keeps at most one pending wl_surface.frame callback in flight and
+// still recovers once the compositor delivers that callback, even after the
+// frame that originally requested it has been popped from submitted_frames_.
+TEST_F(WaylandFrameManagerTest,
+       FrameCallbacksBounded_WhileSkippingFrameCallbacks) {
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    ASSERT_TRUE(server->EnsureAndGetWpPresentation());
+  });
+  InitBufferManager();
+  ASSERT_TRUE(connection_->presentation());
+
+  const uint32_t root_id = window_->root_surface()->get_surface_id();
+  frame_manager_->SetVideoCapture();
+
+  // First frame while becoming occluded requests a single frame callback.
+  PostToServerAndWait([root_id](wl::TestWaylandServerThread* server) {
+    auto* mock_surface = server->GetObject<wl::MockSurface>(root_id);
+    EXPECT_CALL(*mock_surface, Frame(_)).Times(1);
+  });
+  RecordHostShmFrame(/*requires_acks=*/true);
+  EXPECT_EQ(0u, NumPendingFrames());
+  EXPECT_EQ(1u, NumSubmittedFrames());
+  PostToServerAndWait([root_id](wl::TestWaylandServerThread* server) {
+    Mock::VerifyAndClearExpectations(
+        server->GetObject<wl::MockSurface>(root_id));
+  });
+
+  // Freeze detected: subsequent frames are submitted without waiting, and must
+  // not request additional wl_surface.frame callbacks while the first callback
+  // is still pending on the compositor.
+  frame_manager_->FrameCallbackTimeout();
+
+  PostToServerAndWait([root_id](wl::TestWaylandServerThread* server) {
+    auto* mock_surface = server->GetObject<wl::MockSurface>(root_id);
+    EXPECT_CALL(*mock_surface, Frame(_)).Times(0);
+  });
+
+  for (int i = 0; i < 10; ++i) {
+    RecordHostShmFrame(/*requires_acks=*/true);
+    PostToServerAndWait([root_id](wl::TestWaylandServerThread* server) {
+      auto* mock_surface = server->GetObject<wl::MockSurface>(root_id);
+      if (auto* buffer = mock_surface->prev_attached_buffer()) {
+        mock_surface->ReleaseBuffer(buffer);
+      }
+      server->EnsureAndGetWpPresentation()->SendPresentationCallbackDiscarded();
+    });
+    EXPECT_EQ(0u, NumPendingFrames());
+    // Older frames (including the first one) are cleared once their buffers are
+    // released and their presentation feedbacks are discarded.
+    EXPECT_LE(NumSubmittedFrames(), 2u);
+  }
+
+  // If video capture ends while still occluded, subsequent frames wait on the
+  // existing pending callback without requesting another one.
+  frame_manager_->ReleaseVideoCapture();
+  RecordHostShmFrame(/*requires_acks=*/true);
+  EXPECT_EQ(1u, NumPendingFrames());
+  frame_manager_->SetVideoCapture();
+  EXPECT_EQ(0u, NumPendingFrames());
+
+  PostToServerAndWait([root_id](wl::TestWaylandServerThread* server) {
+    Mock::VerifyAndClearExpectations(
+        server->GetObject<wl::MockSurface>(root_id));
+  });
+
+  // Un-occluding delivers the single pending frame callback and recovers from
+  // the freeze.
+  PostToServerAndWait([root_id](wl::TestWaylandServerThread* server) {
+    auto* mock_surface = server->GetObject<wl::MockSurface>(root_id);
+    mock_surface->SendFrameCallback();
+    server->EnsureAndGetWpPresentation()->SendPresentationCallback();
+  });
+
+  // Normal frame-callback-driven playback resumes: the next frame requests one
+  // new callback, and the following frame waits for it. Submit both frames
+  // synchronously and clear states before spinning RunLoops so the real-time
+  // 50ms `frame_callback_timer_` cannot fire mid-check under load.
+  PostToServerAndWait([root_id](wl::TestWaylandServerThread* server) {
+    auto* mock_surface = server->GetObject<wl::MockSurface>(root_id);
+    EXPECT_CALL(*mock_surface, Frame(_)).Times(1);
+  });
+  RecordHostShmFrame(/*requires_acks=*/true);
+  EXPECT_EQ(0u, NumPendingFrames());
+  RecordHostShmFrame(/*requires_acks=*/true);
+  EXPECT_EQ(1u, NumPendingFrames());
+
+  frame_manager_->ClearStates();
+
+  // Verify the single Frame() call and clean up server-side presentation
+  // callbacks now that no pending frames can be played back during TearDown.
+  PostToServerAndWait([root_id](wl::TestWaylandServerThread* server) {
+    Mock::VerifyAndClearExpectations(
+        server->GetObject<wl::MockSurface>(root_id));
+    auto* presentation = server->EnsureAndGetWpPresentation();
+    while (presentation->num_of_presentation_callbacks() > 0) {
+      presentation->DropPresentationCallback();
+    }
+  });
+}
+
+// Tests that if the single pending wl_surface.frame callback was requested on a
+// subsurface that is subsequently hidden while skipping frame callbacks, a
+// replacement callback is requested on a visible surface so recovery still
+// works upon un-occlusion.
+TEST_F(WaylandFrameManagerTest,
+       FrameCallbackReplaced_WhenCallbackSubsurfaceHiddenDuringSkip) {
+  InitBufferManager();
+  WaylandSubsurface subsurface(connection_.get(), window_.get());
+  SyncDisplay();
+
+  const uint32_t root_id = window_->root_surface()->get_surface_id();
+  const uint32_t sub_id = subsurface.wayland_surface()->get_surface_id();
+  PostToServerAndWait([sub_id](wl::TestWaylandServerThread* server) {
+    server->GetObject<wl::MockSurface>(sub_id)->AllowResettingFrameCallback();
+  });
+
+  // Frame 1 attaches root buffer 1 and completes its frame callback.
+  const uint32_t kRootBuf1 = 100;
+  CreateHostShmBuffer(kRootBuf1);
+  {
+    wl::WaylandOverlayConfig root_cfg;
+    root_cfg.buffer_id = kRootBuf1;
+    root_cfg.bounds_rect = {0, 0, kWidth, kHeight};
+    frame_manager_->RecordFrame(std::make_unique<WaylandFrame>(
+        window_->root_surface(), std::move(root_cfg)));
+  }
+  SendFrameCallback();
+
+  // Frame 2 keeps the same root buffer (will_attach == false on root) and
+  // attaches a new buffer on the subsurface, so the pending callback is created
+  // on the subsurface.
+  frame_manager_->SetVideoCapture();
+  const uint32_t kSubBuf1 = 101;
+  CreateHostShmBuffer(kSubBuf1);
+  PostToServerAndWait([root_id, sub_id](wl::TestWaylandServerThread* server) {
+    EXPECT_CALL(*server->GetObject<wl::MockSurface>(root_id), Frame(_))
+        .Times(0);
+    EXPECT_CALL(*server->GetObject<wl::MockSurface>(sub_id), Frame(_)).Times(1);
+  });
+  {
+    wl::WaylandOverlayConfig root_cfg;
+    root_cfg.buffer_id = kRootBuf1;
+    root_cfg.bounds_rect = {0, 0, kWidth, kHeight};
+    wl::WaylandOverlayConfig sub_cfg;
+    sub_cfg.buffer_id = kSubBuf1;
+    sub_cfg.bounds_rect = {0, 0, kWidth, kHeight};
+    base::circular_deque<
+        std::pair<WaylandSubsurface*, wl::WaylandOverlayConfig>>
+        subs;
+    subs.emplace_back(&subsurface, std::move(sub_cfg));
+    frame_manager_->RecordFrame(std::make_unique<WaylandFrame>(
+        window_->root_surface(), std::move(root_cfg), std::move(subs)));
+  }
+  PostToServerAndWait([root_id, sub_id](wl::TestWaylandServerThread* server) {
+    Mock::VerifyAndClearExpectations(
+        server->GetObject<wl::MockSurface>(root_id));
+    Mock::VerifyAndClearExpectations(
+        server->GetObject<wl::MockSurface>(sub_id));
+  });
+
+  // Enter skip-frame-callbacks mode, then hide the subsurface while attaching a
+  // new buffer on root_surface: root_surface must request a replacement frame
+  // callback once, and subsequent skipped frames must request none.
+  frame_manager_->FrameCallbackTimeout();
+  const uint32_t kRootBuf2 = 102;
+  const uint32_t kRootBuf3 = 103;
+  CreateHostShmBuffer(kRootBuf2);
+  CreateHostShmBuffer(kRootBuf3);
+
+  PostToServerAndWait([root_id, sub_id](wl::TestWaylandServerThread* server) {
+    EXPECT_CALL(*server->GetObject<wl::MockSurface>(root_id), Frame(_))
+        .Times(1);
+    EXPECT_CALL(*server->GetObject<wl::MockSurface>(sub_id), Frame(_)).Times(0);
+  });
+  {
+    wl::WaylandOverlayConfig root_cfg;
+    root_cfg.buffer_id = kRootBuf2;
+    root_cfg.bounds_rect = {0, 0, kWidth, kHeight};
+    base::circular_deque<
+        std::pair<WaylandSubsurface*, wl::WaylandOverlayConfig>>
+        subs;
+    subs.emplace_back(&subsurface, wl::WaylandOverlayConfig());
+    frame_manager_->RecordFrame(std::make_unique<WaylandFrame>(
+        window_->root_surface(), std::move(root_cfg), std::move(subs)));
+  }
+  {
+    wl::WaylandOverlayConfig root_cfg;
+    root_cfg.buffer_id = kRootBuf3;
+    root_cfg.bounds_rect = {0, 0, kWidth, kHeight};
+    frame_manager_->RecordFrame(std::make_unique<WaylandFrame>(
+        window_->root_surface(), std::move(root_cfg)));
+  }
+  PostToServerAndWait([root_id, sub_id](wl::TestWaylandServerThread* server) {
+    Mock::VerifyAndClearExpectations(
+        server->GetObject<wl::MockSurface>(root_id));
+    Mock::VerifyAndClearExpectations(
+        server->GetObject<wl::MockSurface>(sub_id));
+  });
+
+  // Delivering the replacement callback on root_surface ends the freeze.
+  SendFrameCallback();
+  RecordHostShmFrame();
+  EXPECT_EQ(0u, NumPendingFrames());
+  RecordHostShmFrame();
+  EXPECT_EQ(1u, NumPendingFrames());
+
+  frame_manager_->ClearStates();
 }
 
 }  // namespace ui
