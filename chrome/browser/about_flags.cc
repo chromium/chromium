@@ -4540,18 +4540,6 @@ const FeatureEntry::FeatureVariation kXplatSyncedSetupThemesVariations[] = {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-const FeatureEntry::FeatureParam kCrossDeviceSigninFromDesktopDefaultUrl[] = {
-    {"url",
-     "https://www.google.com/chrome/go-mobile?entry_point_id=1&email=$1"},
-};
-
-const FeatureEntry::FeatureVariation kCrossDeviceSigninFromDesktopVariations[] =
-    {
-        {"Default URL "
-         "(https://www.google.com/chrome/go-mobile?entry_point_id=1&email=$1)",
-         kCrossDeviceSigninFromDesktopDefaultUrl, nullptr},
-};
-
 const FeatureEntry::FeatureParam
     kDeviceSignalsBackfillDisclaimer_ClearPermissionOnStartup[] = {
         {"clear_device_signals_permission_on_startup", "true"}};
@@ -11833,13 +11821,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-    {"cross-device-signin-from-desktop",
-     flag_descriptions::kCrossDeviceSigninFromDesktopName,
-     flag_descriptions::kCrossDeviceSigninFromDesktopDescription,
-     kOsMac | kOsWin | kOsLinux,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(switches::kCrossDeviceSigninFromDesktop,
-                                    kCrossDeviceSigninFromDesktopVariations,
-                                    "CrossDeviceSigninFromDesktop")},
     {"cross-device-signin-from-desktop-followup",
      flag_descriptions::kCrossDeviceSigninFromDesktopFollowupName,
      flag_descriptions::kCrossDeviceSigninFromDesktopFollowupDescription,
