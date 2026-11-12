@@ -665,7 +665,6 @@ public class KeyboardAccessoryViewTest {
 
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.TABLET_OR_DESKTOP) // TODO(crbug.com/572882852): Re-enable.
     public void testScrollingNotResetOnItemUpdate() throws InterruptedException {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -698,8 +697,13 @@ public class KeyboardAccessoryViewTest {
                                         }));
         onActivityViewWaiting(withText("Item 1 - very long text to fill width"));
 
-        // Scroll the view manually
-        ThreadUtils.runOnUiThreadBlocking(() -> view.mBarItemsView.scrollBy(500, 0));
+        // Scroll by two-thirds of the first chip's width so the first item remains partially
+        // visible (itemsBefore == 0) while item 2 is also attached across all screen densities.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    int scrollOffset = view.mBarItemsView.getChildAt(0).getWidth() * 2 / 3;
+                    view.mBarItemsView.scrollBy(scrollOffset, 0);
+                });
 
         // Wait until it actually scrolled
         CriteriaHelper.pollUiThread(() -> view.mBarItemsView.computeHorizontalScrollOffset() > 0);
@@ -708,17 +712,27 @@ public class KeyboardAccessoryViewTest {
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> view.mBarItemsView.computeHorizontalScrollOffset());
 
-        // Update an item in the middle
+        // Update an item in the middle without shrinking total content width on wide viewports.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    AutofillBarItem updatedItem = createAutofillBarItem("Item 3 Updated", null);
+                    AutofillBarItem updatedItem =
+                            createAutofillBarItem(
+                                    "Item 3 Updated - very long text to fill width", null);
                     updatedItem.setLoading(true);
                     mModel.get(BAR_ITEMS).update(2, updatedItem);
                 });
 
-        // The scroll offset should not be reset to 0
+        // The scroll offset should not be reset to 0 after the updated item is bound and laid out.
         CriteriaHelper.pollUiThread(
-                () -> view.mBarItemsView.computeHorizontalScrollOffset() == initialScrollOffset);
+                () -> {
+                    var holder = view.mBarItemsView.findViewHolderForAdapterPosition(2);
+                    if (holder == null || view.mBarItemsView.isLayoutRequested()) return false;
+                    ChipView chipView = (ChipView) holder.itemView;
+                    return "Item 3 Updated - very long text to fill width"
+                                    .contentEquals(chipView.getPrimaryTextView().getText())
+                            && view.mBarItemsView.computeHorizontalScrollOffset()
+                                    == initialScrollOffset;
+                });
     }
 
     @Test
