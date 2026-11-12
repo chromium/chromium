@@ -3072,7 +3072,7 @@
   {
     "name": "devtools-source-map-scopes-in-sources-panel",
     "owners": [ "szuend@chromium.org" ],
-    "expiry_milestone": 160
+    "expiry_milestone": 165
   },
   {
     "name": "dialogs-on-large-form-factors",
