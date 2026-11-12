@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#import "base/memory/raw_ptr.h"
 #import "ios/web/public/find_in_page/find_in_page_manager_delegate.h"
 
 namespace web {
@@ -41,7 +40,6 @@ class FakeFindInPageManagerDelegate : public FindInPageManagerDelegate {
   struct State {
     State();
     ~State();
-    raw_ptr<WebState, DanglingUntriaged> web_state = nullptr;
     int match_count = -1;
     NSString* query;
     int index = -1;
