@@ -301,11 +301,15 @@ LayoutResult::RareData* LayoutResult::EnsureRareData() {
 }
 
 void LayoutResult::CopyMutableData(const LayoutResult& other) const {
-  To<PhysicalBoxFragment>(GetPhysicalFragment())
-      .GetMutableForPositioned()
-      .SetUsedPositionInsets(
-          To<PhysicalBoxFragment>(other.GetPhysicalFragment())
-              .UsedPositionInsets());
+  const PhysicalBoxFragment& fragment =
+      To<PhysicalBoxFragment>(GetPhysicalFragment());
+  const PhysicalBoxFragment& other_fragment =
+      To<PhysicalBoxFragment>(other.GetPhysicalFragment());
+
+  fragment.GetMutableForContainerLayout().SetMargins(other_fragment.Margins());
+  fragment.GetMutableForPositioned().SetUsedPositionInsets(
+      other_fragment.UsedPositionInsets());
+
   if (std::optional<PhysicalRect> imcb = other.InsetModifiedContainingBlock()) {
     GetMutableForOutOfFlow().SetInsetModifiedContainingBlock(*imcb);
   }
