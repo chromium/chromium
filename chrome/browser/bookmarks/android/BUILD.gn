@@ -238,6 +238,7 @@ android_library("java") {
     "//ui/accessibility:keyboard_focus_java",
     "//ui/android:ui_java",
     "//ui/edge_to_edge:java",
+    "//ui/events/mojom:mojom_java",
     "//url:url_java",
   ]
   srcjar_deps = [
@@ -305,6 +306,7 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarButtonTest.java",
     "junit/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarContextMenuMediatorTest.java",
     "junit/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarContextMenuMetricsTest.java",
+    "junit/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarControllerFeatureTest.java",
     "junit/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarCoordinatorTest.java",
     "junit/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarIphControllerTest.java",
     "junit/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarItemsLayoutManagerTest.java",
@@ -323,11 +325,13 @@ robolectric_library("junit") {
     "//chrome/browser/hub:pane_base_java",
     "//chrome/browser/ui/android/signin:java",
     "//chrome/browser/ui/android/toolbar:optional_button_java",
+    "//chrome/browser/ui/browser_window/public/android:java",
     "//components/browser_ui/device_lock/android:java",
     "//components/browser_ui/widget/android:java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_java_test_support",
+    "//ui/events/mojom:mojom_java",
   ]
 }
 
