@@ -9,10 +9,7 @@ per-file generated_security_settings_bundle_pref*=jacastro@chromium.org
 per-file security_settings_bundle_pref_change_handler*=jacastro@chromium.org
 per-file security_settings_bundle_toast_helper*=jacastro@chromium.org
 
-per-file *client_side_detection*=nwokedi@chromium.org
-per-file *client_side_detection*=jdh@chromium.org
-per-file *client_side_detection*=andysjlim@chromium.org #{LAST_RESORT_SUGGESTION}
-per-file *client_side_detection*=skrakowi@chromium.org #{LAST_RESORT_SUGGESTION}
-per-file *intelligent_scan_delegate*=skrakowi@chromium.org
+per-file *client_side_detection*=file://components/safe_browsing/core/browser/client_side_detection/OWNERS
+per-file *intelligent_scan_delegate*=file://components/safe_browsing/core/browser/client_side_detection/intelligent_scan_delegate/OWNERS
 
 per-file chrome_safe_browsing_hats_delegate*=nwokedi@chromium.org

@@ -1,6 +1,3 @@
 # CSD model
 # For non-mechanical changes, please send to nwokedi@ first as pre-reviewer.
-per-file client_side_*=nwokedi@chromium.org
-per-file client_side_*=jdh@chromium.org
-per-file client_side_*=andysjlim@chromium.org #{LAST_RESORT_SUGGESTION}
-per-file client_side_*=skrakowi@chromium.org #{LAST_RESORT_SUGGESTION}
+per-file client_side_*=file://components/safe_browsing/core/browser/client_side_detection/OWNERS
