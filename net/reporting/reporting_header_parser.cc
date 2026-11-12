@@ -11,6 +11,8 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/flat_map.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
@@ -20,6 +22,7 @@
 #include "net/base/isolation_info.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "net/http/structured_headers.h"
 #include "net/reporting/reporting_cache.h"
 #include "net/reporting/reporting_context.h"
 #include "net/reporting/reporting_delegate.h"
@@ -268,25 +271,27 @@ bool ProcessV1Endpoint(ReportingDelegate* delegate,
 std::optional<base::flat_map<std::string, std::string>> ParseReportingEndpoints(
     const std::string& header) {
   // Ignore empty header values.
-  if (header.empty())
+  if (header.empty()) {
     return std::nullopt;
+  }
   std::optional<structured_headers::Dictionary> header_dict =
       structured_headers::ParseDictionary(header);
   if (!header_dict) {
     return std::nullopt;
   }
-  base::flat_map<std::string, std::string> parsed_header;
   for (const structured_headers::DictionaryMember& entry : *header_dict) {
-    const net::structured_headers::ParameterizedItem* item =
+    const structured_headers::ParameterizedItem* item =
         entry.second.GetIfItem();
-    const std::string* endpoint_url_string =
-        item ? item->item.GetIfString() : nullptr;
-    if (!endpoint_url_string) {
+    if (!item || !item->item.is_string()) {
       return std::nullopt;
     }
-    parsed_header[entry.first] = *endpoint_url_string;
   }
-  return parsed_header;
+  return base::ToVector(
+      *header_dict, [](structured_headers::DictionaryMember& entry) {
+        return std::pair(
+            std::move(entry.first),
+            std::move(*entry.second.GetIfItem()->item.GetIfString()));
+      });
 }
 
 // static

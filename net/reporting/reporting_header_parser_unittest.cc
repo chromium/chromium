@@ -26,6 +26,7 @@
 #include "net/reporting/reporting_endpoint.h"
 #include "net/reporting/reporting_target_type.h"
 #include "net/reporting/reporting_test_util.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -1812,8 +1813,11 @@ TEST_P(ReportingHeaderParserStructuredHeaderTest, ParseInvalid) {
     const char* header_value;
     const char* description;
   } kInvalidHeaderTestCases[] = {
+      {"", "empty"},
       {"default=", "missing url"},
       {"default=1", "non-string url"},
+      {"default=(\"https://endpoint.test/\")", "inner list"},
+      {"a=\"https://endpoint.test/\", b=1", "valid followed by non-string"},
   };
 
   for (auto& test_case : kInvalidHeaderTestCases) {
@@ -1863,6 +1867,22 @@ TEST_P(ReportingHeaderParserStructuredHeaderTest, ParseBasic) {
       << "\") parsed as invalid.";
   EXPECT_EQ(1u, parsed_result->size());
   EXPECT_EQ(parsed_result->at(kGroup1_), kEndpoint1_.spec());
+}
+
+TEST_P(ReportingHeaderParserStructuredHeaderTest, ParseMultipleAndDuplicate) {
+  auto parsed_result = ParseReportingEndpoints(
+      "z=\"https://endpoint-z.example.test/report-collector\", "
+      "a=\"https://endpoint-a-old.example.test/report-collector\", "
+      "a=\"https://endpoint-a.example.test/report-collector\"");
+
+  ASSERT_TRUE(parsed_result.has_value());
+  EXPECT_THAT(
+      *parsed_result,
+      testing::ElementsAre(
+          testing::Pair("a",
+                        "https://endpoint-a.example.test/report-collector"),
+          testing::Pair("z",
+                        "https://endpoint-z.example.test/report-collector")));
 }
 
 TEST_P(ReportingHeaderParserStructuredHeaderTest, Basic) {
