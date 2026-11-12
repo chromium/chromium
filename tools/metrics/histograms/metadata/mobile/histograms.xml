@@ -34,15 +34,6 @@ chromium-metrics-reviews@google.com.
   <variant name=".InfobarTypePasswordUpdate" summary=""/>
 </variants>
 
-<variants name="MobileFreInflationSpeedComparison">
-  <variant name=".FasterThanInflation"
-      summary="This histogram reports just those timings that were faster
-               than inflation."/>
-  <variant name=".SlowerThanInflation"
-      summary="This histogram reports just those timings that were slower
-               than inflation."/>
-</variants>
-
 <variants name="MobileInfobarType">
   <variant name="InfobarTypeAutofillAddressProfile"
       summary="Recorded for Autofill Address Infobar."/>
@@ -1075,35 +1066,6 @@ chromium-metrics-reviews@google.com.
     through download preference. May be recorded even when the user didn't
     download anything.
   </summary>
-</histogram>
-
-<histogram
-    name="MobileFre.CctTos.EnterprisePolicyCheckSpeed2{MobileFreInflationSpeedComparison}"
-    units="ms" expires_after="2022-05-01">
-  <owner>skym@chromium.org</owner>
-  <owner>wenyufu@chromium.org</owner>
-  <summary>
-    Android: Records the time it takes from ToS fragment attached to the
-    activity to the enterprise policy check completing. This check is often
-    skipped when its result becomes irrelevant.
-    {MobileFreInflationSpeedComparison}
-  </summary>
-  <token key="MobileFreInflationSpeedComparison"
-      variants="MobileFreInflationSpeedComparison"/>
-</histogram>
-
-<histogram
-    name="MobileFre.CctTos.IsDeviceOwnedCheckSpeed2{MobileFreInflationSpeedComparison}"
-    units="ms" expires_after="2022-05-01">
-  <owner>skym@chromium.org</owner>
-  <owner>wenyufu@chromium.org</owner>
-  <summary>
-    Android: Records the time it takes from ToS fragment attached to the
-    activity to the device ownership check completing.
-    {MobileFreInflationSpeedComparison}
-  </summary>
-  <token key="MobileFreInflationSpeedComparison"
-      variants="MobileFreInflationSpeedComparison"/>
 </histogram>
 
 <histogram name="MobileFre.ChildAccountStatusDuration" units="ms"
