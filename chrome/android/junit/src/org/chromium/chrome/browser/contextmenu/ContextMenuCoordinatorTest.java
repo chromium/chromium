@@ -365,7 +365,7 @@ public class ContextMenuCoordinatorTest {
             int triggeringTouchXDp, int triggeringTouchYDp, List<ModelList> items) {
         final ContextMenuParams params =
                 new ContextMenuParams(
-                        0,
+                        null,
                         mMenuModelBridge,
                         ContextMenuDataMediaType.IMAGE,
                         ContextMenuDataMediaFlags.MEDIA_NONE,

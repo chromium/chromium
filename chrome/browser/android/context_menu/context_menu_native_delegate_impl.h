@@ -21,7 +21,7 @@ class ContextMenuNativeDelegateImpl {
  public:
   explicit ContextMenuNativeDelegateImpl(
       content::WebContents* const web_contents,
-      content::ContextMenuParams* const context_menu_params);
+      const content::ContextMenuParams& context_menu_params);
 
   ContextMenuNativeDelegateImpl(const ContextMenuNativeDelegateImpl&) = delete;
   ContextMenuNativeDelegateImpl& operator=(
@@ -76,7 +76,7 @@ class ContextMenuNativeDelegateImpl {
                              chrome::mojom::ImageFormat image_format);
 
   const raw_ptr<content::WebContents> web_contents_;
-  const raw_ptr<content::ContextMenuParams> context_menu_params_;
+  const content::ContextMenuParams context_menu_params_;
 };
 
 #endif  // CHROME_BROWSER_ANDROID_CONTEXT_MENU_CONTEXT_MENU_NATIVE_DELEGATE_IMPL_H_

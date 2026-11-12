@@ -1083,7 +1083,7 @@ public class ContextMenuTest {
                 ContextMenuHelper.createForTesting(tab.getWebContents());
         ContextMenuParams params =
                 new ContextMenuParams(
-                        0,
+                        null,
                         mMenuModelBridge,
                         ContextMenuDataMediaType.NONE,
                         ContextMenuDataMediaFlags.MEDIA_NONE,

@@ -8,6 +8,10 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.JniUniquePtr;
 
 import org.chromium.blink_public.common.ContextMenuDataMediaFlags;
 import org.chromium.blink_public.common.ContextMenuDataMediaType;
@@ -26,7 +30,10 @@ import org.chromium.url.GURL;
 @JNINamespace("context_menu")
 @NullMarked
 public class ContextMenuParams {
-    private final long mNativePtr;
+    @JniType("::content::ContextMenuParams")
+    public interface NativeContextMenuParams extends JniTypeToken {}
+
+    private @Nullable JniUniquePtr<NativeContextMenuParams> mNativePtr;
     private final GURL mPageUrl;
     private final GURL mLinkUrl;
     private final String mLinkText;
@@ -56,11 +63,13 @@ public class ContextMenuParams {
     private final MenuModelBridge mMenuModelBridge;
 
     @CalledByNative
-    private long getNativePointer() {
+    private @Nullable JniPtr<NativeContextMenuParams> getNativePointer() {
         return mNativePtr;
     }
 
-    /** @return The URL associated with the main frame of the page that triggered the context menu. */
+    /**
+     * @return The URL associated with the main frame of the page that triggered the context menu.
+     */
     public GURL getPageUrl() {
         return mPageUrl;
     }
@@ -222,6 +231,10 @@ public class ContextMenuParams {
 
     /** Releases resources associated with this Context Menu. */
     public void destroy() {
+        if (mNativePtr != null) {
+            mNativePtr.destroy();
+            mNativePtr = null;
+        }
         if (mAdditionalNavigationParams != null) {
             mAdditionalNavigationParams.destroy();
             mAdditionalNavigationParams = null;
@@ -235,7 +248,7 @@ public class ContextMenuParams {
 
     @VisibleForTesting
     public ContextMenuParams(
-            long nativePtr,
+            @Nullable JniUniquePtr<NativeContextMenuParams> nativePtr,
             MenuModelBridge menuModelBridge,
             @ContextMenuDataMediaType int mediaType,
             @ContextMenuDataMediaFlags int mediaFlags,
@@ -285,7 +298,7 @@ public class ContextMenuParams {
 
     @CalledByNative
     private static ContextMenuParams create(
-            long nativePtr,
+            JniUniquePtr<NativeContextMenuParams> nativePtr,
             MenuModelBridge menuModelBridge,
             @ContextMenuDataMediaType int mediaType,
             @ContextMenuDataMediaFlags int mediaFlags,

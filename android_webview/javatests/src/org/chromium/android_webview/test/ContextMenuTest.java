@@ -603,7 +603,7 @@ public class ContextMenuTest extends AwParameterizedTest {
     public void doNotShowContextMenuForNonLinkItems() {
         final ContextMenuParams params =
                 new ContextMenuParams(
-                        /* nativePtr= */ 0,
+                        /* nativePtr= */ null,
                         new MenuModelBridge(0L),
                         ContextMenuDataMediaType.NONE,
                         ContextMenuDataMediaFlags.MEDIA_NONE,
@@ -893,7 +893,7 @@ public class ContextMenuTest extends AwParameterizedTest {
             String srcUrl) {
 
         return new ContextMenuParams(
-                0,
+                null,
                 new MenuModelBridge(0L),
                 mediaType,
                 ContextMenuDataMediaFlags.MEDIA_NONE,

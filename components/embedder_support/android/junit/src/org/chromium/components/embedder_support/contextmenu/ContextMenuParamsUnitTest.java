@@ -21,7 +21,7 @@ import org.chromium.url.GURL;
 public class ContextMenuParamsUnitTest {
     private ContextMenuParams createContextMenuParamsWithMediaFlags(int mediaFlags) {
         return new ContextMenuParams(
-                /* nativePtr= */ 0,
+                /* nativePtr= */ null,
                 /* menuModelBridge= */ null,
                 ContextMenuDataMediaType.VIDEO,
                 mediaFlags,

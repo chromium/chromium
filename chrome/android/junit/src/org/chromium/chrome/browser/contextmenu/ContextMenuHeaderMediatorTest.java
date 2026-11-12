@@ -79,7 +79,7 @@ public class ContextMenuHeaderMediatorTest {
         final GURL url = JUnitTestGURLs.EXAMPLE_URL;
         final ContextMenuParams params =
                 new ContextMenuParams(
-                        0,
+                        null,
                         mMenuModelBridge,
                         ContextMenuDataMediaType.IMAGE,
                         ContextMenuDataMediaFlags.MEDIA_NONE,
@@ -128,7 +128,7 @@ public class ContextMenuHeaderMediatorTest {
                 new PropertyModel.Builder(ContextMenuHeaderProperties.ALL_KEYS).build();
         final ContextMenuParams params =
                 new ContextMenuParams(
-                        0,
+                        null,
                         mMenuModelBridge,
                         ContextMenuDataMediaType.VIDEO,
                         ContextMenuDataMediaFlags.MEDIA_NONE,
@@ -170,7 +170,7 @@ public class ContextMenuHeaderMediatorTest {
         final GURL linkUrl = JUnitTestGURLs.URL_1;
         final ContextMenuParams params =
                 new ContextMenuParams(
-                        0,
+                        null,
                         mMenuModelBridge,
                         ContextMenuDataMediaType.FILE,
                         ContextMenuDataMediaFlags.MEDIA_NONE,
@@ -596,7 +596,7 @@ public class ContextMenuHeaderMediatorTest {
     private ContextMenuHeaderMediator createMediatorWithDefaultParams(PropertyModel model) {
         final ContextMenuParams params =
                 new ContextMenuParams(
-                        0,
+                        null,
                         mMenuModelBridge,
                         ContextMenuDataMediaType.IMAGE,
                         ContextMenuDataMediaFlags.MEDIA_NONE,

@@ -442,7 +442,7 @@ public class ChromeContextMenuPopulatorTest {
 
     private ContextMenuParams getPageParams() {
         return new ContextMenuParams(
-                0,
+                null,
                 mMenuModelBridge,
                 ContextMenuDataMediaType.NONE,
                 ContextMenuDataMediaFlags.MEDIA_NONE,
@@ -464,7 +464,7 @@ public class ChromeContextMenuPopulatorTest {
 
     private ContextMenuParams getLinkParamsWithUrl(String linkUrl) {
         return new ContextMenuParams(
-                0,
+                null,
                 mMenuModelBridge,
                 ContextMenuDataMediaType.NONE,
                 ContextMenuDataMediaFlags.MEDIA_NONE,
@@ -486,7 +486,7 @@ public class ChromeContextMenuPopulatorTest {
 
     private ContextMenuParams getImageLinkParams() {
         return new ContextMenuParams(
-                0,
+                null,
                 mMenuModelBridge,
                 ContextMenuDataMediaType.IMAGE,
                 ContextMenuDataMediaFlags.MEDIA_NONE,
@@ -512,7 +512,7 @@ public class ChromeContextMenuPopulatorTest {
 
     private ContextMenuParams getInterestForLinkParams() {
         return new ContextMenuParams(
-                0,
+                null,
                 mMenuModelBridge,
                 ContextMenuDataMediaType.NONE,
                 ContextMenuDataMediaFlags.MEDIA_NONE,
@@ -536,7 +536,7 @@ public class ChromeContextMenuPopulatorTest {
         GURL sourceUrl = new GURL("http://www.blah.com/");
         GURL url = new GURL(sourceUrl.getSpec() + "I_love_mouse_video.avi");
         return new ContextMenuParams(
-                0,
+                null,
                 mMenuModelBridge,
                 ContextMenuDataMediaType.VIDEO,
                 mediaFlags,
@@ -716,7 +716,7 @@ public class ChromeContextMenuPopulatorTest {
         DownloadUtils.setIsDownloadRestrictedByPolicyForTesting(TriState.TRUE);
         ContextMenuParams params =
                 new ContextMenuParams(
-                        0,
+                        null,
                         mMenuModelBridge,
                         ContextMenuDataMediaType.NONE,
                         ContextMenuDataMediaFlags.MEDIA_NONE,
@@ -805,7 +805,7 @@ public class ChromeContextMenuPopulatorTest {
     public void testHttpLinkWithPreviewTabEnabled() {
         ContextMenuParams params =
                 new ContextMenuParams(
-                        0,
+                        null,
                         mMenuModelBridge,
                         ContextMenuDataMediaType.NONE,
                         ContextMenuDataMediaFlags.MEDIA_NONE,
@@ -897,7 +897,7 @@ public class ChromeContextMenuPopulatorTest {
     public void testDataUrlDisablesPreviewTab() {
         ContextMenuParams params =
                 new ContextMenuParams(
-                        0,
+                        null,
                         mMenuModelBridge,
                         ContextMenuDataMediaType.NONE,
                         ContextMenuDataMediaFlags.MEDIA_NONE,
@@ -980,7 +980,7 @@ public class ChromeContextMenuPopulatorTest {
     public void testDataSrcUrlDisablesImagePreviewTab() {
         ContextMenuParams params =
                 new ContextMenuParams(
-                        0,
+                        null,
                         mMenuModelBridge,
                         ContextMenuDataMediaType.IMAGE,
                         ContextMenuDataMediaFlags.MEDIA_NONE,
@@ -1030,7 +1030,7 @@ public class ChromeContextMenuPopulatorTest {
         GURL mailto = new GURL("mailto:fake@email.com");
         ContextMenuParams params =
                 new ContextMenuParams(
-                        0,
+                        null,
                         mMenuModelBridge,
                         ContextMenuDataMediaType.NONE,
                         ContextMenuDataMediaFlags.MEDIA_NONE,
@@ -1123,7 +1123,7 @@ public class ChromeContextMenuPopulatorTest {
         GURL tel = new GURL("tel:0048221234567");
         ContextMenuParams params =
                 new ContextMenuParams(
-                        0,
+                        null,
                         mMenuModelBridge,
                         ContextMenuDataMediaType.NONE,
                         ContextMenuDataMediaFlags.MEDIA_NONE,
@@ -1381,7 +1381,7 @@ public class ChromeContextMenuPopulatorTest {
         // Set canSaveMedia to false (e.g., MediaSource video like YouTube).
         ContextMenuParams params =
                 new ContextMenuParams(
-                        0,
+                        null,
                         mMenuModelBridge,
                         ContextMenuDataMediaType.VIDEO,
                         ContextMenuDataMediaFlags.MEDIA_HAS_READABLE_VIDEO_FRAME,
@@ -1431,7 +1431,7 @@ public class ChromeContextMenuPopulatorTest {
         GURL internalUrl = new GURL("chrome://history");
         ContextMenuParams params =
                 new ContextMenuParams(
-                        0,
+                        null,
                         mMenuModelBridge,
                         ContextMenuDataMediaType.VIDEO,
                         ContextMenuDataMediaFlags.MEDIA_HAS_READABLE_VIDEO_FRAME,
@@ -1519,7 +1519,7 @@ public class ChromeContextMenuPopulatorTest {
         GURL url = new GURL(sourceUrl.getSpec() + "I_love_mouse_video.avi");
         ContextMenuParams params =
                 new ContextMenuParams(
-                        0,
+                        null,
                         mMenuModelBridge,
                         ContextMenuDataMediaType.VIDEO,
                         ContextMenuDataMediaFlags.MEDIA_HAS_READABLE_VIDEO_FRAME,
@@ -1667,7 +1667,7 @@ public class ChromeContextMenuPopulatorTest {
         GURL url = new GURL(sourceUrl.getSpec() + "I_love_mouse_video.avi");
         ContextMenuParams params =
                 new ContextMenuParams(
-                        0,
+                        null,
                         mMenuModelBridge,
                         ContextMenuDataMediaType.VIDEO,
                         ContextMenuDataMediaFlags.MEDIA_HAS_READABLE_VIDEO_FRAME,
@@ -1866,7 +1866,7 @@ public class ChromeContextMenuPopulatorTest {
         setMandatoryFlowCompleted(isForcedSigninShowing, /* isCompleted= */ false);
         ContextMenuParams params =
                 new ContextMenuParams(
-                        0,
+                        null,
                         mMenuModelBridge,
                         ContextMenuDataMediaType.IMAGE,
                         ContextMenuDataMediaFlags.MEDIA_NONE,
@@ -1967,7 +1967,7 @@ public class ChromeContextMenuPopulatorTest {
         setMandatoryFlowCompleted(isForcedSigninShowing, /* isCompleted= */ false);
         ContextMenuParams params =
                 new ContextMenuParams(
-                        0,
+                        null,
                         mMenuModelBridge,
                         ContextMenuDataMediaType.IMAGE,
                         ContextMenuDataMediaFlags.MEDIA_NONE,
@@ -2099,7 +2099,7 @@ public class ChromeContextMenuPopulatorTest {
         DownloadUtils.setIsDownloadRestrictedByPolicyForTesting(TriState.TRUE);
         ContextMenuParams params =
                 new ContextMenuParams(
-                        0,
+                        null,
                         mMenuModelBridge,
                         ContextMenuDataMediaType.IMAGE,
                         ContextMenuDataMediaFlags.MEDIA_NONE,
@@ -2177,7 +2177,7 @@ public class ChromeContextMenuPopulatorTest {
 
         ContextMenuParams params =
                 new ContextMenuParams(
-                        0,
+                        null,
                         mMenuModelBridge,
                         ContextMenuDataMediaType.NONE,
                         ContextMenuDataMediaFlags.MEDIA_NONE,
@@ -2264,7 +2264,7 @@ public class ChromeContextMenuPopulatorTest {
         // Non-http scheme should not include read later context menu item.
         params =
                 new ContextMenuParams(
-                        0,
+                        null,
                         mMenuModelBridge,
                         ContextMenuDataMediaType.NONE,
                         ContextMenuDataMediaFlags.MEDIA_NONE,
@@ -2309,7 +2309,7 @@ public class ChromeContextMenuPopulatorTest {
 
         ContextMenuParams params =
                 new ContextMenuParams(
-                        0,
+                        null,
                         mMenuModelBridge,
                         ContextMenuDataMediaType.NONE,
                         ContextMenuDataMediaFlags.MEDIA_NONE,
@@ -2366,7 +2366,7 @@ public class ChromeContextMenuPopulatorTest {
 
         ContextMenuParams params =
                 new ContextMenuParams(
-                        0,
+                        null,
                         mMenuModelBridge,
                         ContextMenuDataMediaType.NONE,
                         ContextMenuDataMediaFlags.MEDIA_NONE,
@@ -2457,7 +2457,7 @@ public class ChromeContextMenuPopulatorTest {
         when(mIdentityManager.getPrimaryAccountInfo()).thenReturn(TestAccounts.ACCOUNT1);
         ContextMenuParams params =
                 new ContextMenuParams(
-                        0,
+                        null,
                         mMenuModelBridge,
                         ContextMenuDataMediaType.NONE,
                         ContextMenuDataMediaFlags.MEDIA_NONE,
@@ -2539,7 +2539,7 @@ public class ChromeContextMenuPopulatorTest {
         // The setup requires only the openedFromHighlight param.
         ContextMenuParams params =
                 new ContextMenuParams(
-                        /* nativePtr= */ 0,
+                        /* nativePtr= */ null,
                         /* menuModelBridge= */ mMenuModelBridge,
                         ContextMenuDataMediaType.NONE,
                         ContextMenuDataMediaFlags.MEDIA_NONE,
@@ -2589,7 +2589,7 @@ public class ChromeContextMenuPopulatorTest {
 
         ContextMenuParams linkParams =
                 new ContextMenuParams(
-                        0,
+                        null,
                         mMenuModelBridge,
                         ContextMenuDataMediaType.NONE,
                         ContextMenuDataMediaFlags.MEDIA_NONE,
@@ -2630,7 +2630,7 @@ public class ChromeContextMenuPopulatorTest {
 
         ContextMenuParams imageParams =
                 new ContextMenuParams(
-                        0,
+                        null,
                         mMenuModelBridge,
                         ContextMenuDataMediaType.IMAGE,
                         ContextMenuDataMediaFlags.MEDIA_NONE,
@@ -3229,7 +3229,7 @@ public class ChromeContextMenuPopulatorTest {
 
         ContextMenuParams imageParams =
                 new ContextMenuParams(
-                        0,
+                        null,
                         mMenuModelBridge,
                         ContextMenuDataMediaType.IMAGE,
                         ContextMenuDataMediaFlags.MEDIA_NONE,
@@ -3358,7 +3358,7 @@ public class ChromeContextMenuPopulatorTest {
 
         ContextMenuParams imageParams =
                 new ContextMenuParams(
-                        0,
+                        null,
                         mMenuModelBridge,
                         ContextMenuDataMediaType.IMAGE,
                         ContextMenuDataMediaFlags.MEDIA_NONE,
@@ -3503,7 +3503,7 @@ public class ChromeContextMenuPopulatorTest {
 
         ContextMenuParams mixedParams =
                 new ContextMenuParams(
-                        0,
+                        null,
                         mMenuModelBridge,
                         ContextMenuDataMediaType.IMAGE,
                         ContextMenuDataMediaFlags.MEDIA_NONE,
@@ -3922,7 +3922,7 @@ public class ChromeContextMenuPopulatorTest {
         // 3. Test Video (excludes SAVE_VIDEO, DOWNLOAD_VIDEO_FRAME)
         ContextMenuParams videoParams =
                 new ContextMenuParams(
-                        0,
+                        null,
                         mMenuModelBridge,
                         ContextMenuDataMediaType.VIDEO,
                         ContextMenuDataMediaFlags.MEDIA_HAS_READABLE_VIDEO_FRAME,
@@ -4085,7 +4085,7 @@ public class ChromeContextMenuPopulatorTest {
 
     private ContextMenuParams getLinkParams(String url) {
         return new ContextMenuParams(
-                0,
+                null,
                 mMenuModelBridge,
                 ContextMenuDataMediaType.NONE,
                 ContextMenuDataMediaFlags.MEDIA_NONE,
@@ -4107,7 +4107,7 @@ public class ChromeContextMenuPopulatorTest {
 
     private ContextMenuParams getImageParams() {
         return new ContextMenuParams(
-                0,
+                null,
                 mMenuModelBridge,
                 ContextMenuDataMediaType.IMAGE,
                 ContextMenuDataMediaFlags.MEDIA_NONE,
@@ -4129,7 +4129,7 @@ public class ChromeContextMenuPopulatorTest {
 
     private ContextMenuParams getKeyboardPageParams() {
         return new ContextMenuParams(
-                0,
+                null,
                 mMenuModelBridge,
                 ContextMenuDataMediaType.NONE,
                 ContextMenuDataMediaFlags.MEDIA_NONE,

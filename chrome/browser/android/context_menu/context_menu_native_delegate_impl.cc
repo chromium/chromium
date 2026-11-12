@@ -133,7 +133,7 @@ void OnRetrieveImageForContextMenu(
 
 ContextMenuNativeDelegateImpl::ContextMenuNativeDelegateImpl(
     content::WebContents* const web_contents,
-    content::ContextMenuParams* const context_menu_params)
+    const content::ContextMenuParams& context_menu_params)
     : web_contents_(web_contents), context_menu_params_(context_menu_params) {}
 
 ContextMenuNativeDelegateImpl::~ContextMenuNativeDelegateImpl() = default;
@@ -142,7 +142,7 @@ void ContextMenuNativeDelegateImpl::StartDownload(JNIEnv* env,
                                                   const GURL& url,
                                                   bool jis_media) {
   DownloadControllerBase::Get()->StartContextMenuDownload(
-      url, *context_menu_params_, web_contents_, jis_media);
+      url, context_menu_params_, web_contents_, jis_media);
 }
 
 void ContextMenuNativeDelegateImpl::SearchForImage(
@@ -153,7 +153,7 @@ void ContextMenuNativeDelegateImpl::SearchForImage(
 
   if (auto* core_tab_helper = CoreTabHelper::FromWebContents(web_contents_)) {
     core_tab_helper->SearchByImage(render_frame_host,
-                                   context_menu_params_->src_url);
+                                   context_menu_params_.src_url);
   }
 }
 
@@ -230,7 +230,7 @@ void ContextMenuNativeDelegateImpl::SetPictureInPicture(
   }
 
   render_frame_host->ExecuteMediaPlayerActionAtLocation(
-      gfx::Point(context_menu_params_->x, context_menu_params_->y),
+      gfx::Point(context_menu_params_.x, context_menu_params_.y),
       blink::mojom::MediaPlayerAction(
           blink::mojom::MediaPlayerActionType::kPictureInPicture, enter_pip));
 }
@@ -242,7 +242,7 @@ void ContextMenuNativeDelegateImpl::CopyVideoFrame(
     return;
   }
   render_frame_host->ExecuteMediaPlayerActionAtLocation(
-      gfx::Point(context_menu_params_->x, context_menu_params_->y),
+      gfx::Point(context_menu_params_.x, context_menu_params_.y),
       blink::mojom::MediaPlayerAction(
           blink::mojom::MediaPlayerActionType::kCopyVideoFrame, false));
 }
@@ -254,14 +254,14 @@ void ContextMenuNativeDelegateImpl::DownloadVideoFrame(
     return;
   }
   render_frame_host->ExecuteMediaPlayerActionAtLocation(
-      gfx::Point(context_menu_params_->x, context_menu_params_->y),
+      gfx::Point(context_menu_params_.x, context_menu_params_.y),
       blink::mojom::MediaPlayerAction(
           blink::mojom::MediaPlayerActionType::kSaveVideoFrameAs, true));
 }
 
 void ContextMenuNativeDelegateImpl::ShowInterestInElement(JNIEnv* env) {
   web_contents_->ShowInterestInElement(
-      context_menu_params_->interest_for_dom_node_id);
+      context_menu_params_.interest_for_dom_node_id);
 }
 
 static jni_zero::JniUniquePtr<ContextMenuNativeDelegateImpl>
@@ -272,8 +272,8 @@ JNI_ContextMenuNativeDelegateImpl_Init(
   CHECK(web_contents, base::NotFatalUntil::M161);
   auto* params =
       context_menu::ContextMenuParamsFromJavaObject(jcontext_menu_params);
-  return jni_zero::MakeUnique<ContextMenuNativeDelegateImpl>(web_contents,
-                                                             params);
+  return jni_zero::MakeUnique<ContextMenuNativeDelegateImpl>(
+      web_contents, params ? *params : content::ContextMenuParams());
 }
 
 DEFINE_JNI(ContextMenuNativeDelegateImpl)

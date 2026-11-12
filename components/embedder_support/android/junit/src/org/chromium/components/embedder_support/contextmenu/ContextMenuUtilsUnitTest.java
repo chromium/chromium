@@ -22,6 +22,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.webkit.URLUtil;
 
+import org.jni_zero.JniUniquePtr;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -84,7 +85,7 @@ public class ContextMenuUtilsUnitTest {
     public void testGetHeaderInfo_noCustomItemPresent() {
         ContextMenuParams params =
                 new ContextMenuParams(
-                        0,
+                        null,
                         mMenuModelBridge,
                         ContextMenuDataMediaType.IMAGE,
                         ContextMenuDataMediaFlags.MEDIA_NONE,
@@ -123,7 +124,7 @@ public class ContextMenuUtilsUnitTest {
     public void testGetHeaderInfo_customItemPresent_notImage() {
         ContextMenuParams params =
                 new ContextMenuParams(
-                        0,
+                        null,
                         mMenuModelBridge,
                         ContextMenuDataMediaType.VIDEO,
                         ContextMenuDataMediaFlags.MEDIA_NONE,
@@ -167,7 +168,7 @@ public class ContextMenuUtilsUnitTest {
     public void testGetHeaderInfo_customItemPresent_isImageLink() {
         ContextMenuParams params =
                 new ContextMenuParams(
-                        0,
+                        null,
                         mMenuModelBridge,
                         ContextMenuDataMediaType.IMAGE,
                         ContextMenuDataMediaFlags.MEDIA_NONE,
@@ -206,7 +207,7 @@ public class ContextMenuUtilsUnitTest {
     public void testGetHeaderInfo_customItemPresent_isImageNotAnchor() {
         ContextMenuParams params =
                 new ContextMenuParams(
-                        0,
+                        null,
                         mMenuModelBridge,
                         ContextMenuDataMediaType.IMAGE,
                         ContextMenuDataMediaFlags.MEDIA_NONE,
@@ -245,7 +246,7 @@ public class ContextMenuUtilsUnitTest {
     public void getAltText_hasAltTextText() {
         ContextMenuParams params =
                 new ContextMenuParams(
-                        0,
+                        null,
                         mMenuModelBridge,
                         ContextMenuDataMediaType.IMAGE,
                         ContextMenuDataMediaFlags.MEDIA_NONE,
@@ -271,7 +272,7 @@ public class ContextMenuUtilsUnitTest {
     public void getAltText_noAltTextTextHasLinkText() {
         ContextMenuParams params =
                 new ContextMenuParams(
-                        0,
+                        null,
                         mMenuModelBridge,
                         ContextMenuDataMediaType.IMAGE,
                         ContextMenuDataMediaFlags.MEDIA_NONE,
@@ -297,7 +298,7 @@ public class ContextMenuUtilsUnitTest {
     public void getAltText_noAltTextTextOrLinkText() {
         ContextMenuParams params =
                 new ContextMenuParams(
-                        0,
+                        null,
                         mMenuModelBridge,
                         ContextMenuDataMediaType.IMAGE,
                         0,
@@ -324,7 +325,7 @@ public class ContextMenuUtilsUnitTest {
     public void getAltText_noShareParams() {
         ContextMenuParams params =
                 new ContextMenuParams(
-                        0,
+                        null,
                         mMenuModelBridge,
                         ContextMenuDataMediaType.NONE,
                         ContextMenuDataMediaFlags.MEDIA_NONE,
@@ -428,7 +429,7 @@ public class ContextMenuUtilsUnitTest {
     public void isMouseOrHighlightPopup_mouse() {
         ContextMenuParams params =
                 new ContextMenuParams(
-                        0,
+                        null,
                         mMenuModelBridge,
                         ContextMenuDataMediaType.NONE,
                         ContextMenuDataMediaFlags.MEDIA_NONE,
@@ -456,7 +457,7 @@ public class ContextMenuUtilsUnitTest {
     public void isMouseOrHighlightPopup_highlight() {
         ContextMenuParams params =
                 new ContextMenuParams(
-                        0,
+                        null,
                         mMenuModelBridge,
                         ContextMenuDataMediaType.NONE,
                         ContextMenuDataMediaFlags.MEDIA_NONE,
@@ -484,7 +485,7 @@ public class ContextMenuUtilsUnitTest {
     public void isMouseOrHighlightPopup_neither() {
         ContextMenuParams params =
                 new ContextMenuParams(
-                        0,
+                        null,
                         mMenuModelBridge,
                         ContextMenuDataMediaType.NONE,
                         ContextMenuDataMediaFlags.MEDIA_NONE,
@@ -530,7 +531,7 @@ public class ContextMenuUtilsUnitTest {
 
     private ContextMenuParams createKeyboardContextMenuParams() {
         return new ContextMenuParams(
-                0,
+                null,
                 mMenuModelBridge,
                 ContextMenuDataMediaType.NONE,
                 ContextMenuDataMediaFlags.MEDIA_NONE,
@@ -586,7 +587,7 @@ public class ContextMenuUtilsUnitTest {
 
         ContextMenuParams params =
                 new ContextMenuParams(
-                        0,
+                        null,
                         mMenuModelBridge,
                         ContextMenuDataMediaType.NONE,
                         ContextMenuDataMediaFlags.MEDIA_NONE,
@@ -687,7 +688,7 @@ public class ContextMenuUtilsUnitTest {
 
         ContextMenuParams params =
                 new ContextMenuParams(
-                        0,
+                        null,
                         mMenuModelBridge,
                         ContextMenuDataMediaType.NONE,
                         ContextMenuDataMediaFlags.MEDIA_NONE,
@@ -780,11 +781,14 @@ public class ContextMenuUtilsUnitTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testContextMenuParamsDestroy() {
+        JniUniquePtr<ContextMenuParams.NativeContextMenuParams> nativePtr =
+                mock(JniUniquePtr.class);
         AdditionalNavigationParams unusedParams = mock(AdditionalNavigationParams.class);
         ContextMenuParams menuParamsUnused =
                 new ContextMenuParams(
-                        0,
+                        nativePtr,
                         mMenuModelBridge,
                         ContextMenuDataMediaType.NONE,
                         ContextMenuDataMediaFlags.MEDIA_NONE,
@@ -803,12 +807,13 @@ public class ContextMenuUtilsUnitTest {
                         /* openedFromInterestFor= */ false,
                         unusedParams);
         menuParamsUnused.destroy();
+        verify(nativePtr).destroy();
         verify(unusedParams).destroy();
 
         AdditionalNavigationParams takenParams = mock(AdditionalNavigationParams.class);
         ContextMenuParams menuParamsTaken =
                 new ContextMenuParams(
-                        0,
+                        null,
                         mMenuModelBridge,
                         ContextMenuDataMediaType.NONE,
                         ContextMenuDataMediaFlags.MEDIA_NONE,
