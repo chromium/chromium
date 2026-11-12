@@ -30,12 +30,14 @@
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/network_service_util.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/browser/service_process_info.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/page_type.h"
 #include "content/public/test/browser_test.h"
@@ -1033,6 +1035,19 @@ class TLS13EarlyDataPolicyTestBase
     if (!for_web_contents) {
       for_web_contents = chrome_test_utils::GetActiveWebContents(this);
     }
+    // Navigating to the test page can trigger speculative preconnects to the
+    // test server. Such a socket does a full handshake in parallel with the
+    // navigation's connection, before any session ticket is cached, and then
+    // sits idle. If the fetch below picked it up, its request would not be
+    // sent as early data. Close all connections (which also cancels pending
+    // preconnects) so that the fetch makes a new connection that resumes a
+    // cached session. This does not clear the session cache.
+    base::test::TestFuture<void> close_future;
+    for_web_contents->GetBrowserContext()
+        ->GetDefaultStoragePartition()
+        ->GetNetworkContext()
+        ->CloseAllConnections(close_future.GetCallback());
+    EXPECT_TRUE(close_future.Wait());
     content::EvalJsResult result = content::EvalJs(
         for_web_contents, content::JsReplace(R"(
       fetch($1).then(res => res.text())
