@@ -10,11 +10,12 @@
 #include "base/check_op.h"
 #include "base/memory_coordinator/utils.h"
 #include "base/numerics/safe_conversions.h"
-#include "chrome/browser/glic/public/features.h"
 
 namespace glic {
 
-BASE_FEATURE(kGlicMaxAwakeInstances, FEATURE_ENABLED_BY_DEFAULT_ALL_PLATFORMS);
+// Default-enabled platforms: all (memory-scaled awake instance limit applies
+// across platforms).
+BASE_FEATURE(kGlicMaxAwakeInstances, base::FEATURE_ENABLED_BY_DEFAULT);
 constexpr base::FeatureParam<int> kGlicMaxAwakeInstancesLimit{
     &kGlicMaxAwakeInstances, "limit", 15};
 constexpr base::FeatureParam<size_t>

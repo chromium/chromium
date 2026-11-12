@@ -81,7 +81,13 @@ BASE_FEATURE(kGlicLiveMode,
 
 BASE_FEATURE(kGlicSummarizeVideoSuggestion, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kGlicContextMenu, FEATURE_ENABLED_BY_DEFAULT_NON_ANDROID);
+BASE_FEATURE(kGlicContextMenu,
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
 const base::FeatureParam<std::string> kGlicContextMenuArm{&kGlicContextMenu,
                                                           "variant", "arm3"};
 const base::FeatureParam<bool> kGlicContextMenuWithOnboarding{
@@ -90,7 +96,12 @@ const base::FeatureParam<bool> kGlicContextMenuWithOnboarding{
 BASE_FEATURE(kGlicContextMenuBelowSearch, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicTextSelectionContextMenu,
-             FEATURE_ENABLED_BY_DEFAULT_NON_ANDROID);
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
 const base::FeatureParam<bool> kGlicTextSelectionContextMenuMessageFirstFre{
     &kGlicTextSelectionContextMenu, "message_first_fre", false};
 const base::FeatureParam<bool> kGlicTextSelectionContextMenuAutoSubmit{
@@ -199,10 +210,13 @@ const base::FeatureParam<int> kGlicMaxLoadingTimeMs{
 
 BASE_FEATURE(kGlicContextualCueingV2AutoSubmit,
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kGlicContextualCuesHandleEdu,
-             FEATURE_ENABLED_BY_DEFAULT_ALL_PLATFORMS);
+// Default-enabled platforms: all (EDU contextual cue handling applies across
+// platforms).
+BASE_FEATURE(kGlicContextualCuesHandleEdu, base::FEATURE_ENABLED_BY_DEFAULT);
+// Default-enabled platforms: all (shopping contextual cue handling applies
+// across platforms).
 BASE_FEATURE(kGlicContextualCuesHandleShopping,
-             FEATURE_ENABLED_BY_DEFAULT_ALL_PLATFORMS);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicContextualCueV2ActiveUserBackoff,
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -251,7 +265,13 @@ bool IsGlicNativeLoadingPlaceholderEnabled() {
          !base::FeatureList::IsEnabled(kGlicNoWebUiLoader);
 }
 
-BASE_FEATURE(kGeic, FEATURE_ENABLED_BY_DEFAULT_NON_ANDROID);
+BASE_FEATURE(kGeic,
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
 
 const base::FeatureParam<bool> kGeicEnabledParam{&kGeic, "enabled", true};
 
@@ -259,12 +279,20 @@ BASE_FEATURE(kGeicActuation, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGeicSsr, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kGeicProviderChangePrompt, FEATURE_ENABLED_BY_DEFAULT_NON_ANDROID);
+BASE_FEATURE(kGeicProviderChangePrompt,
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
 
 const base::FeatureParam<std::string> kGeicGuestURL{&kGeic, "geic-guest-url",
                                                     ""};
 
-BASE_FEATURE(kGeicFre, FEATURE_ENABLED_BY_DEFAULT_ALL_PLATFORMS);
+// Default-enabled platforms: all (gates FRE completion whenever GEiC is
+// active).
+BASE_FEATURE(kGeicFre, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicHotkeyLocalScope,
 #if BUILDFLAG(IS_ANDROID)
@@ -274,11 +302,12 @@ BASE_FEATURE(kGlicHotkeyLocalScope,
 #endif
 );
 
-BASE_FEATURE(kGlicPasteEligibilityCheck,
-             FEATURE_ENABLED_BY_DEFAULT_ALL_PLATFORMS);
+// Default-enabled platforms: all (paste eligibility guard for the Glic guest).
+BASE_FEATURE(kGlicPasteEligibilityCheck, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kGlicWebPasteEligibilityCheck,
-             FEATURE_ENABLED_BY_DEFAULT_ALL_PLATFORMS);
+// Default-enabled platforms: all (web-source paste eligibility guard for the
+// Glic guest).
+BASE_FEATURE(kGlicWebPasteEligibilityCheck, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicTabGroups, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicSparkSettingsAccessibleLabels,
@@ -291,13 +320,15 @@ BASE_FEATURE(kGlicStructuredYieldMetadata, base::FEATURE_ENABLED_BY_DEFAULT);
 // This is a work in progress. See b/534807813.
 BASE_FEATURE(kGlicNoWebview, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicDisableHfcr, base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kGlicSetAuthUser, FEATURE_ENABLED_BY_DEFAULT_ALL_PLATFORMS);
+// Default-enabled platforms: all (appends authuser to the NoWebview guest URL).
+BASE_FEATURE(kGlicSetAuthUser, base::FEATURE_ENABLED_BY_DEFAULT);
 // Whether to disallow webview communication directly with the glic host
 // (chrome/browser/resources/glic/glic_api_impl/host). When enabled, some
 // functionality implemented by glic's webview.ts is implemented instead by c++
 // code.
 BASE_FEATURE(kGlicDisconnectedWebview, base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kGlicGuestInitialSize, FEATURE_ENABLED_BY_DEFAULT_ALL_PLATFORMS);
+// Default-enabled platforms: all (sets initial guest size in NoWebview mode).
+BASE_FEATURE(kGlicGuestInitialSize, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicShakeTrigger, base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<bool> kGlicShakeTriggerOnlyOnSidePanel{
     &kGlicShakeTrigger, "only_on_side_panel", true};
@@ -334,7 +365,8 @@ BASE_FEATURE(kGlicSsr, base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<bool> kGlicShowLoaderUntilMainPageOnload{
     &kGlicSsr, "show_loader_until_main_page_onload", false};
 
-BASE_FEATURE(kGlicClientDataStorage, FEATURE_ENABLED_BY_DEFAULT_ALL_PLATFORMS);
+// Default-enabled platforms: all (client data storage API for the Glic guest).
+BASE_FEATURE(kGlicClientDataStorage, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicShowNotTellTutorials, base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<int> kGlicShowNotTellTutorialsArm{
@@ -345,7 +377,12 @@ BASE_FEATURE(kGlicActivityHub, base::FEATURE_DISABLED_BY_DEFAULT);
 // TODO(b/55358603): Remove, together with the legacy
 // IDS_ACTOR_EXPERIMENTAL_TRIGGERING_NOTIFICATION_* strings, once launched.
 BASE_FEATURE(kGlicExperimentalTriggeringOsNotificationUpdatedStrings,
-             FEATURE_ENABLED_BY_DEFAULT_NON_ANDROID);
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
 
 BASE_FEATURE(kGlicRecordPeriodicInstanceCountMetrics,
              // Enabled on all platforms including BUILDFLAG(IS_ANDROID);

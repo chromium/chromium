@@ -173,10 +173,6 @@ def _CheckGlicFeaturesDefaultState(input_api, output_api):
 
     if not errors:
         return []
-    # Don't point at the FEATURE_ENABLED_BY_DEFAULT_* macros in features.h:
-    # //PRESUBMIT.py (CheckBaseFeatureMacro) rejects them for new features
-    # because tools/metrics/common/cpp_feature_parser.py can't resolve them.
-    # See b/582871743.
     message = (
         'Glic feature(s) use bare base::FEATURE_ENABLED_BY_DEFAULT without\n'
         'specifying intended platforms. Confirm the target platforms in a\n'
@@ -203,9 +199,10 @@ def _HasDefaultEnabledPlatformsComment(lines, start_line):
         line = lines[index].strip()
         if not line.startswith('//'):
             return False
-        if line.startswith(_DEFAULT_ENABLED_PLATFORMS_PREFIX) and line[
-            len(_DEFAULT_ENABLED_PLATFORMS_PREFIX):
-        ].strip():
+        if (
+            line.startswith(_DEFAULT_ENABLED_PLATFORMS_PREFIX)
+            and line[len(_DEFAULT_ENABLED_PLATFORMS_PREFIX) :].strip()
+        ):
             return True
         index -= 1
     return False

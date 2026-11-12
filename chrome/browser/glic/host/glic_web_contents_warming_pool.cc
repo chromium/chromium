@@ -31,8 +31,10 @@ BASE_FEATURE(kGlicReloadWebContentsAfterExpiry,
 const base::FeatureParam<int> kGlicMaxReloadCount{
     &kGlicReloadWebContentsAfterExpiry, "max_reload_count", 4};
 
+// Default-enabled platforms: all (caps warming pool recovery under memory
+// pressure).
 BASE_FEATURE(kGlicLimitMemoryPressureRecovery,
-             FEATURE_ENABLED_BY_DEFAULT_ALL_PLATFORMS);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<int> kGlicMaxMemoryPressureRecoveries{
     &kGlicLimitMemoryPressureRecovery, "max_recoveries", 2};

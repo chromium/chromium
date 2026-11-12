@@ -10,9 +10,9 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "build/build_config.h"
 #include "chrome/browser/glic/host/glic_theme_util.h"
 #include "chrome/browser/glic/host/guest_util.h"
-#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/guest_view/browser/guest_view_base.h"
@@ -43,7 +43,12 @@ enum class WebViewAutoPlayProgress {
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:WebViewAutoPlayProgress)
 
 BASE_FEATURE(kGlicUpdateHiddenScreenInfo,
-             FEATURE_ENABLED_BY_DEFAULT_NON_ANDROID);
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
 
 bool HasEmptyScreenInfo(content::WebContents* contents) {
   if (!contents) {

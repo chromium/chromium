@@ -112,14 +112,18 @@ BASE_FEATURE(kGlicSelectionOverlayFullSizeScreenshot,
 
 // Kill switch for loading the overlay WebUI while the selection chip is
 // hovered, so a click can show it without waiting for the WebUI to boot.
+// Default-enabled platforms: desktop only (selection target is
+// assert(!is_android)).
 BASE_FEATURE(kGlicSelectionOverlayHoverPrewarm,
-             FEATURE_ENABLED_BY_DEFAULT_ALL_PLATFORMS);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kStaticSelectionSuggestions, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Kill switch for sending the selected region with the overlay's prompt.
+// Default-enabled platforms: desktop only (selection target is
+// assert(!is_android)).
 BASE_FEATURE(kGlicSelectionOverlaySendRegionWithPrompt,
-             FEATURE_ENABLED_BY_DEFAULT_ALL_PLATFORMS);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsSelectionOverlayPromptEnabled() {
   return base::FeatureList::IsEnabled(features::kGlicSelectionOverlayPrompt) ||

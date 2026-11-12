@@ -36,8 +36,9 @@
 
 namespace glic {
 
-BASE_FEATURE(kGlicShowSecurityInterstitials,
-             FEATURE_ENABLED_BY_DEFAULT_ALL_PLATFORMS);
+// Default-enabled platforms: all (security interstitial handling for the Glic
+// guest).
+BASE_FEATURE(kGlicShowSecurityInterstitials, base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 
