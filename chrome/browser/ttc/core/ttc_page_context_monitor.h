@@ -18,6 +18,7 @@
 #include "chrome/browser/ttc/core/session_controller.h"
 #include "chrome/browser/ttc/core/states.h"
 #include "components/actor/core/aggregated_journal.h"
+#include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
 #include "content/public/browser/web_contents_observer.h"
 
@@ -122,6 +123,11 @@ class TtcPageContextMonitor
           journal_event,
       std::optional<page_content_annotations::ExtractedPageContentResult>
           result);
+  void OnActionablePageContentFetched(
+      std::unique_ptr<actor::AggregatedJournal::PendingAsyncEntry>
+          journal_event,
+      base::WeakPtr<content::Page> page,
+      optimization_guide::AIPageContentResultOrError result);
 
   const raw_ref<SessionControllerImpl> session_controller_;
   base::ScopedObservation<SessionController, SessionController::Observer>

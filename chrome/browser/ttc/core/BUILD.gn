@@ -171,6 +171,7 @@ source_set("impl") {
     "//components/critical_actions/core/browser",
     "//components/keyed_service/core",
     "//components/optimization_guide/content/browser",
+    "//components/page_content_annotations/core",
     "//components/sessions:session_id",
     "//components/tabs:public",
     "//components/ttc/app/public",
@@ -179,6 +180,7 @@ source_set("impl") {
     "//mojo/public/cpp/bindings",
     "//skia",
     "//third_party/blink/public/common:headers",
+    "//third_party/blink/public/mojom:mojom_platform_headers",
     "//ui/actions:actions_headers",
     "//ui/base/idle",
     "//ui/gfx/codec",
@@ -370,6 +372,7 @@ source_set("browser_test_support") {
 source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  data = [ "//chrome/test/data/ttc/" ]
   sources = [
     "page_context_monitor_browsertest.cc",
     "pointer_input_observer_browsertest.cc",

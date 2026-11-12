@@ -29,6 +29,23 @@ inline constexpr base::FeatureParam<base::TimeDelta>
     kPlaybackStatusReportInterval{&kTtc, "playback_status_report_interval",
                                   base::Milliseconds(200)};
 
+enum class TtcPageContentMode {
+  kDefault,
+  kActionable,
+};
+
+// "default" here refers to APC default. Actionable is the Ttc's default fetch
+// mode.
+inline constexpr base::FeatureParam<TtcPageContentMode>::Option
+    kTtcPageContentModeOptions[] = {
+        {TtcPageContentMode::kDefault, "default"},
+        {TtcPageContentMode::kActionable, "actionable"},
+};
+
+inline constexpr base::FeatureParam<TtcPageContentMode> kTtcPageContentMode{
+    &kTtc, "apc_mode", TtcPageContentMode::kActionable,
+    &kTtcPageContentModeOptions};
+
 // Enables the first run experience feature for TTC. While FRE is under
 // development, this is used to hide the unfinished FRE. Once FRE is complete,
 // this can be used to suppress the feature in tests.

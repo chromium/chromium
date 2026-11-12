@@ -16,14 +16,17 @@
 #include "chrome/browser/actor/enterprise_policy_checker.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ttc/core/features.h"
 #include "chrome/browser/ttc/core/page_context_util.h"
 #include "chrome/browser/ttc/core/session_controller_impl.h"
 #include "chrome/browser/ttc/core/session_journal_impl.h"
 #include "components/actor/core/journal_details_builder.h"
+#include "components/page_content_annotations/core/page_content_annotations_features.h"
 #include "components/page_content_annotations/core/page_content_extraction_types.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
 #include "url/gurl.h"
 
 namespace ttc {
@@ -44,6 +47,19 @@ PageContextResult BuildPageContextResult(
                                 kPageContextNotEligible);
   }
   return PageContext(std::move(page_content));
+}
+
+blink::mojom::AIPageContentOptionsPtr CreateActionableOptions() {
+  auto options = optimization_guide::ActionableAIPageContentOptions(
+      page_content_annotations::features::
+          IsAnnotatedPageContentOnCriticalPath());
+  if (page_content_annotations::features::
+          ShouldAnnotatedPageContentExcludeAdRelated()) {
+    options->non_salient_content_config =
+        blink::mojom::NonSalientContentConfig::New();
+    options->non_salient_content_config->exclude_ad_related = true;
+  }
+  return options;
 }
 
 }  // namespace
@@ -101,17 +117,33 @@ void TtcPageContextMonitor::RefreshPageContext() {
   }
 
   pending_cached_notification_.Cancel();
+  if (kTtcPageContentMode.Get() == TtcPageContentMode::kActionable) {
+    optimization_guide::GetAIPageContent(
+        web_contents(), CreateActionableOptions(),
+        base::BindOnce(
+            &TtcPageContextMonitor::OnActionablePageContentFetched,
+            fetch_weak_ptr_factory_.GetWeakPtr(),
+            GetJournal().BeginAsyncEvent("TtcPageContextRefresh",
+                                         actor::JournalDetailsBuilder()
+                                             .Add("url", url)
+                                             .Add("kind", "actionable")
+                                             .Build()),
+            page.GetWeakPtr()));
+    return;
+  }
   // As in FetchPageContext(), PCES notifies OnPageContentExtracted() when this
   // refresh extracts new APC, which forwards it to `on_page_context_fetched_`.
   // `OnFetchCompleted` only tracks the in-flight request and closes the async
   // journal event.
   extraction_service_->RefreshExtractedPageContentAndEligibilityForPage(
-      page, base::BindOnce(
-                &TtcPageContextMonitor::OnFetchCompleted,
-                fetch_weak_ptr_factory_.GetWeakPtr(),
-                GetJournal().BeginAsyncEvent(
-                    "TtcPageContextRefresh",
-                    actor::JournalDetailsBuilder().Add("url", url).Build())));
+      page,
+      base::BindOnce(&TtcPageContextMonitor::OnFetchCompleted,
+                     fetch_weak_ptr_factory_.GetWeakPtr(),
+                     GetJournal().BeginAsyncEvent("TtcPageContextRefresh",
+                                                  actor::JournalDetailsBuilder()
+                                                      .Add("url", url)
+                                                      .Add("kind", "default")
+                                                      .Build())));
 }
 
 void TtcPageContextMonitor::FetchPageContext() {
@@ -271,6 +303,38 @@ void TtcPageContextMonitor::OnFetchCompleted(
   journal_event->EndEntry(actor::JournalDetailsBuilder()
                               .Add("success", result.has_value())
                               .Build());
+}
+
+void TtcPageContextMonitor::OnActionablePageContentFetched(
+    std::unique_ptr<actor::AggregatedJournal::PendingAsyncEntry> journal_event,
+    base::WeakPtr<content::Page> weak_page,
+    optimization_guide::AIPageContentResultOrError actionable_result) {
+  journal_event->EndEntry(actor::JournalDetailsBuilder()
+                              .Add("success", actionable_result.has_value())
+                              .Build());
+  if (!weak_page || !IsMonitoredPage(*weak_page)) {
+    return;
+  }
+  if (!actionable_result.has_value() &&
+      !web_contents()->GetPrimaryMainFrame()->IsRenderFrameLive()) {
+    return;
+  }
+
+  pending_cached_notification_.Cancel();
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  if (!actionable_result.has_value()) {
+    MaybeNotifyPageContextFetched(
+        weak_page,
+        base::unexpected(
+            page_content_annotations::FetchPageContextError::kUnknown));
+    return;
+  }
+
+  MaybeNotifyPageContextFetched(
+      weak_page,
+      PageContext(base::MakeRefCounted<
+                  page_content_annotations::RefCountedAnnotatedPageContent>(
+          std::move(actionable_result->proto))));
 }
 
 }  // namespace ttc
