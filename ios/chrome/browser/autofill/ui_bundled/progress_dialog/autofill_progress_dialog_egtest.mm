@@ -46,6 +46,8 @@
   [ChromeEarlGrey loadURL:testURL];
   [ChromeEarlGrey waitForWebStateContainingText:kAutofillTestString];
   [AutofillAppInterface considerCreditCardFormSecureForTesting];
+  GREYAssertTrue([AutofillAppInterface waitForFormToBeCachedInMainFrame],
+                 @"Forms were not parsed and cached.");
   [self addTeardownBlock:^{
     [AutofillAppInterface clearAllServerDataForTesting];
     [AutofillAppInterface tearDownFakeCreditCardServer];

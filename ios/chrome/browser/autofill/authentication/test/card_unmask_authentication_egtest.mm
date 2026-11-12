@@ -105,6 +105,8 @@ id<GREYMatcher> ActivityIndicatorMatcher() {
   [ChromeEarlGrey waitForWebStateContainingText:kAutofillTestString];
 
   [AutofillAppInterface considerCreditCardFormSecureForTesting];
+  GREYAssertTrue([AutofillAppInterface waitForFormToBeCachedInMainFrame],
+                 @"Forms were not parsed and cached.");
 }
 
 - (void)tearDownHelper {

@@ -147,6 +147,8 @@ id<GREYMatcher> VirtualCardEnrollmentAcceptButton() {
 - (void)fillAndSubmitFormWithServerResponse {
   // Load the test page with a credit card form.
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kCreditCardUploadUrl)];
+  GREYAssertTrue([AutofillAppInterface waitForFormToBeCachedInMainFrame],
+                 @"Forms were not parsed and cached.");
 
   // Inject a response from the payments server for get save card details.
   [AutofillAppInterface setPaymentsResponse:kGetSaveCardDetailsResponse

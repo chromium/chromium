@@ -235,6 +235,9 @@ void CheckAutofillSuggestionAcceptedIndexMetricsCount(
   // overridden for the tests to work. This will allow us to fill the textfields
   // on the web page.
   [AutofillAppInterface considerCreditCardFormSecureForTesting];
+
+  GREYAssertTrue([AutofillAppInterface waitForFormToBeCachedInMainFrame],
+                 @"Forms were not parsed and cached.");
 }
 
 // Loads a page on local host to test payment and autofocus.
