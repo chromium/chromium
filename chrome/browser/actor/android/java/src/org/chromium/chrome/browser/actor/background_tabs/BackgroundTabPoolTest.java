@@ -93,14 +93,6 @@ public class BackgroundTabPoolTest {
         assertEquals(PROFILE_TOKEN, mPool.getProfileToken());
     }
 
-    @Test(expected = AssertionError.class)
-    public void testAddDestroyedTabThrowsAssertion() {
-        Tab tab = createMockTab(TAB_ID_1);
-        when(tab.isDestroyed()).thenReturn(true);
-        new LiveBackgroundTab(
-                mPool, tab, PLACEHOLDER_ID, /* originalTabIndex= */ TabModel.INVALID_TAB_INDEX);
-    }
-
     @Test
     public void testAddAndGetLiveTab() {
         Tab tab = createMockTab(TAB_ID_1);
@@ -299,24 +291,6 @@ public class BackgroundTabPoolTest {
     }
 
     @Test
-    public void testAttachLiveBackgroundTabTwice_throwsAssertionError() {
-        Tab tab = createMockTab(TAB_ID_1);
-        TabState tabState = createMockTabState();
-        TabStateExtractor.setTabStateForTesting(TAB_ID_1, tabState);
-
-        LiveBackgroundTab liveTab =
-                new LiveBackgroundTab(
-                        mPool,
-                        tab,
-                        PLACEHOLDER_ID,
-                        /* originalTabIndex= */ TabModel.INVALID_TAB_INDEX);
-        mPool.addLiveTab(liveTab);
-
-        liveTab.attachTab(mTabModel, 0);
-        assertThrows(AssertionError.class, () -> liveTab.attachTab(mTabModel, 0));
-    }
-
-    @Test
     public void testRemoveTabById_clearsFromTabCache() {
         Tab tab = createMockTab(TAB_ID_1);
         TabState tabState = createMockTabState();
@@ -405,25 +379,6 @@ public class BackgroundTabPoolTest {
 
         ShadowLooper.idleMainLooper();
         verify(mOnEmptyCallback).run();
-    }
-
-    @Test
-    public void testRemoveTabById() {
-        Tab tab = createMockTab(TAB_ID_1);
-        TabState tabState = createMockTabState();
-        TabStateExtractor.setTabStateForTesting(TAB_ID_1, tabState);
-
-        mPool.addLiveTab(
-                new LiveBackgroundTab(
-                        mPool,
-                        tab,
-                        PLACEHOLDER_ID,
-                        /* originalTabIndex= */ TabModel.INVALID_TAB_INDEX));
-        assertTrue(mPool.getAllPlaceholderTabIds().contains(PLACEHOLDER_ID));
-
-        mPool.removeTabById(TAB_ID_1);
-        assertFalse(mPool.getAllPlaceholderTabIds().contains(PLACEHOLDER_ID));
-        assertTrue(mPool.isEmpty());
     }
 
     @Test

@@ -477,6 +477,21 @@ public class ActorTabStateHelperTest {
     }
 
     @Test
+    public void testBackgroundSession_addTab_inheritsWindowId() {
+        Tab tab2 = mock(Tab.class);
+        BackgroundSession.BackgroundTabData tabData1 =
+                new BackgroundSession.BackgroundTabData(mTab, 101, 0, 42);
+        BackgroundSession session = new BackgroundSession(tabData1, 500);
+
+        session.addTab(tab2);
+
+        assertEquals(2, session.getTabDataList().size());
+        assertEquals(42, session.getTabDataList().get(0).getTabWindowId());
+        assertEquals(42, session.getTabDataList().get(1).getTabWindowId());
+        assertNull(session.getTabDataList().get(1).getPlaceholderTabId());
+    }
+
+    @Test
     public void testSelectTabAndShow_nullSelector() {
         assertNull(ActorTabStateHelper.selectTabAndShow(null, mLayoutManager, TAB_ID));
     }

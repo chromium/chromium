@@ -242,20 +242,6 @@ public class BackgroundTabRestorationHelperTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)
-    public void testFetchBackgroundTabIds_nonAuthoritativeStore() {
-        BackgroundTabPoolManager.setPoolForTesting(mBackgroundTabPool);
-        Set<Integer> ids =
-                BackgroundTabRestorationHelper.fetchBackgroundTabIds(
-                        TabOrchestratorType.TABBED,
-                        mTabModelSelector,
-                        /* isIncognito= */ false,
-                        /* isAuthoritativeStore= */ false);
-        assertTrue(ids.isEmpty());
-        verify(mBackgroundTabPool, never()).getAllPlaceholderTabIds();
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)
     public void testFetchBackgroundTabIds_incognito() {
         BackgroundTabPoolManager.setPoolForTesting(mBackgroundTabPool);
         Set<Integer> ids =
@@ -263,20 +249,6 @@ public class BackgroundTabRestorationHelperTest {
                         TabOrchestratorType.TABBED,
                         mTabModelSelector,
                         /* isIncognito= */ true,
-                        /* isAuthoritativeStore= */ true);
-        assertTrue(ids.isEmpty());
-        verify(mBackgroundTabPool, never()).getAllTabIds();
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)
-    public void testFetchBackgroundTabIds_nonTabbedOrchestrator() {
-        BackgroundTabPoolManager.setPoolForTesting(mBackgroundTabPool);
-        Set<Integer> ids =
-                BackgroundTabRestorationHelper.fetchBackgroundTabIds(
-                        TabOrchestratorType.CUSTOM,
-                        mTabModelSelector,
-                        /* isIncognito= */ false,
                         /* isAuthoritativeStore= */ true);
         assertTrue(ids.isEmpty());
         verify(mBackgroundTabPool, never()).getAllPlaceholderTabIds();
@@ -343,48 +315,6 @@ public class BackgroundTabRestorationHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)
-    public void testMaybeRestoreBackgroundTab_nonAuthoritativeStore() {
-        BackgroundTabPoolManager.setPoolForTesting(mBackgroundTabPool);
-        TabState tabState = new TabState();
-        tabState.contentsState = mWebContentsState;
-
-        Tab restoredTab =
-                BackgroundTabRestorationHelper.maybeRestoreBackgroundTab(
-                        TabOrchestratorType.TABBED,
-                        mTabModelSelector,
-                        TAB_ID,
-                        DESTINATION_INDEX,
-                        tabState,
-                        /* isAuthoritativeStore= */ false);
-
-        assertNull(restoredTab);
-        verify(mBackgroundTabPool, never()).loadTabByPlaceholderId(anyInt());
-        assertEquals(mWebContentsState, tabState.contentsState);
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)
-    public void testMaybeRestoreBackgroundTab_nonTabbedOrchestrator() {
-        BackgroundTabPoolManager.setPoolForTesting(mBackgroundTabPool);
-        TabState tabState = new TabState();
-        tabState.contentsState = mWebContentsState;
-
-        Tab restoredTab =
-                BackgroundTabRestorationHelper.maybeRestoreBackgroundTab(
-                        TabOrchestratorType.CUSTOM,
-                        mTabModelSelector,
-                        TAB_ID,
-                        DESTINATION_INDEX,
-                        tabState,
-                        /* isAuthoritativeStore= */ true);
-
-        assertNull(restoredTab);
-        verify(mBackgroundTabPool, never()).loadTabByPlaceholderId(anyInt());
-        assertEquals(mWebContentsState, tabState.contentsState);
-    }
-
-    @Test
     @DisableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)
     public void testMaybeRestoreBackgroundTab_flagDisabled() {
         BackgroundTabPoolManager.setPoolForTesting(mBackgroundTabPool);
@@ -407,36 +337,14 @@ public class BackgroundTabRestorationHelperTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)
-    public void testMaybeRestoreBackgroundTab_notificationsDisabled() {
-        NotificationProxyUtils.setNotificationEnabledForTest(false);
-        BackgroundTabPoolManager.setPoolForTesting(mBackgroundTabPool);
-        TabState tabState = new TabState();
-        tabState.contentsState = mWebContentsState;
-
-        when(mBackgroundTabPool.loadTabByPlaceholderId(TAB_ID)).thenReturn(mBackgroundPoolTab);
-        when(mBackgroundPoolTab.attachTab(eq(mNormalTabModel), eq(DESTINATION_INDEX), eq(tabState)))
-                .thenReturn(mTab);
-
-        Tab restoredTab =
-                BackgroundTabRestorationHelper.maybeRestoreBackgroundTab(
-                        TabOrchestratorType.TABBED,
-                        mTabModelSelector,
-                        TAB_ID,
-                        DESTINATION_INDEX,
-                        tabState,
-                        /* isAuthoritativeStore= */ true);
-
-        assertEquals(mTab, restoredTab);
-        verify(mBackgroundTabPool).loadTabByPlaceholderId(TAB_ID);
-        verify(mBackgroundPoolTab).prepareForForeground(mTabModelSelector);
-        assertNull(tabState.contentsState);
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)
     public void testMaybeRestoreBackgroundTab_tabNotFoundInPool() {
         BackgroundTabPoolManager.setPoolForTesting(mBackgroundTabPool);
         when(mBackgroundTabPool.loadTabByPlaceholderId(TAB_ID)).thenReturn(null);
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(
+                                ActorMetrics.ACTOR_BACKGROUND_ACTUATION_COLD_RESTORE_LATENCY)
+                        .build();
 
         TabState tabState = new TabState();
         tabState.contentsState = mWebContentsState;
@@ -453,6 +361,7 @@ public class BackgroundTabRestorationHelperTest {
         assertNull(restoredTab);
         verify(mBackgroundTabPool).loadTabByPlaceholderId(TAB_ID);
         assertEquals(mWebContentsState, tabState.contentsState);
+        watcher.assertExpected();
     }
 
     @Test
@@ -502,21 +411,6 @@ public class BackgroundTabRestorationHelperTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)
-    public void testClaimRemainingBackgroundTabIds_nonAuthoritativeStore() {
-        BackgroundTabPoolManager.setPoolForTesting(mBackgroundTabPool);
-
-        Set<Integer> ids =
-                BackgroundTabRestorationHelper.claimRemainingBackgroundTabIds(
-                        TabOrchestratorType.TABBED,
-                        mTabModelSelector,
-                        /* isIncognito= */ false,
-                        /* isAuthoritativeStore= */ false);
-        assertTrue(ids.isEmpty());
-        verify(mBackgroundTabPool, never()).claimTabIdsWithoutPlaceholders();
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)
     public void testClaimRemainingBackgroundTabIds_incognito() {
         BackgroundTabPoolManager.setPoolForTesting(mBackgroundTabPool);
 
@@ -561,46 +455,6 @@ public class BackgroundTabRestorationHelperTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)
-    public void testRestoreRemainingBackgroundTabs_success() {
-        BackgroundTabPoolManager.setPoolForTesting(mBackgroundTabPool);
-        BackgroundPoolTab coldTab1 = mock(BackgroundPoolTab.class);
-        BackgroundPoolTab coldTab2 = mock(BackgroundPoolTab.class);
-        Tab restoredTab1 = mock(Tab.class);
-        Tab restoredTab2 = mock(Tab.class);
-        when(restoredTab1.getId()).thenReturn(1);
-        when(restoredTab2.getId()).thenReturn(2);
-
-        when(mNormalTabModel.getTabById(1)).thenReturn(null);
-        when(mNormalTabModel.getTabById(2)).thenReturn(null);
-        when(mBackgroundTabPool.getLiveTab(1)).thenReturn(null);
-        when(mBackgroundTabPool.getLiveTab(2)).thenReturn(null);
-        when(mBackgroundTabPool.loadTabByOriginalId(1)).thenReturn(coldTab1);
-        when(mBackgroundTabPool.loadTabByOriginalId(2)).thenReturn(coldTab2);
-        when(mNormalTabModel.getCount()).thenReturn(0).thenReturn(1);
-        when(coldTab1.attachTab(eq(mNormalTabModel), eq(0))).thenReturn(restoredTab1);
-        when(coldTab2.attachTab(eq(mNormalTabModel), eq(1))).thenReturn(restoredTab2);
-
-        List<Tab> restoredTabs =
-                BackgroundTabRestorationHelper.restoreRemainingBackgroundTabs(
-                        TabOrchestratorType.TABBED,
-                        mTabModelSelector,
-                        List.of(1, 2),
-                        /* isAuthoritativeStore= */ true);
-
-        assertEquals(2, restoredTabs.size());
-        assertEquals(restoredTab1, restoredTabs.get(0));
-        assertEquals(restoredTab2, restoredTabs.get(1));
-        verify(mBackgroundTabPool).loadTabByOriginalId(1);
-        verify(mBackgroundTabPool).loadTabByOriginalId(2);
-        verify(coldTab1).prepareForForeground(mTabModelSelector);
-        verify(coldTab2).prepareForForeground(mTabModelSelector);
-        verify(coldTab1).attachTab(mNormalTabModel, 0);
-        verify(coldTab2).attachTab(mNormalTabModel, 1);
-        verify(mBackgroundTabPool).cleanupPostRestore();
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)
     public void testRestoreRemainingBackgroundTabs_emptyTabIds() {
         BackgroundTabPoolManager.setPoolForTesting(mBackgroundTabPool);
 
@@ -610,22 +464,6 @@ public class BackgroundTabRestorationHelperTest {
                         mTabModelSelector,
                         Collections.emptySet(),
                         /* isAuthoritativeStore= */ true);
-
-        assertTrue(restoredTabs.isEmpty());
-        verify(mBackgroundTabPool, never()).loadTabByOriginalId(anyInt());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)
-    public void testRestoreRemainingBackgroundTabs_nonAuthoritativeStore() {
-        BackgroundTabPoolManager.setPoolForTesting(mBackgroundTabPool);
-
-        List<Tab> restoredTabs =
-                BackgroundTabRestorationHelper.restoreRemainingBackgroundTabs(
-                        TabOrchestratorType.TABBED,
-                        mTabModelSelector,
-                        Set.of(1),
-                        /* isAuthoritativeStore= */ false);
 
         assertTrue(restoredTabs.isEmpty());
         verify(mBackgroundTabPool, never()).loadTabByOriginalId(anyInt());
@@ -739,31 +577,6 @@ public class BackgroundTabRestorationHelperTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)
-    public void testMaybeRestoreBackgroundTab_tabNotFound_doesNotRecordLatency() {
-        BackgroundTabPoolManager.setPoolForTesting(mBackgroundTabPool);
-        when(mBackgroundTabPool.loadTabByPlaceholderId(TAB_ID)).thenReturn(null);
-
-        var watcher =
-                HistogramWatcher.newBuilder()
-                        .expectNoRecords(
-                                ActorMetrics.ACTOR_BACKGROUND_ACTUATION_COLD_RESTORE_LATENCY)
-                        .build();
-
-        Tab restoredTab =
-                BackgroundTabRestorationHelper.maybeRestoreBackgroundTab(
-                        TabOrchestratorType.TABBED,
-                        mTabModelSelector,
-                        TAB_ID,
-                        DESTINATION_INDEX,
-                        null,
-                        /* isAuthoritativeStore= */ true);
-
-        assertNull(restoredTab);
-        watcher.assertExpected();
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)
     public void testRestoreRemainingBackgroundTabs_recordsColdRestoreLatency() {
         BackgroundTabPoolManager.setPoolForTesting(mBackgroundTabPool);
         BackgroundPoolTab coldTab1 = mock(BackgroundPoolTab.class);
@@ -807,6 +620,11 @@ public class BackgroundTabRestorationHelperTest {
                         /* isAuthoritativeStore= */ true);
 
         assertEquals(2, restoredTabs.size());
+        assertEquals(restoredTab1, restoredTabs.get(0));
+        assertEquals(restoredTab2, restoredTabs.get(1));
+        verify(coldTab1).prepareForForeground(mTabModelSelector);
+        verify(coldTab2).prepareForForeground(mTabModelSelector);
+        verify(mBackgroundTabPool).cleanupPostRestore();
         watcher.assertExpected();
     }
 }

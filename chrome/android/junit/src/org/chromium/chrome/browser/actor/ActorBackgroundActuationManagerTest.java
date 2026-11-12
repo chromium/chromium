@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.actor;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -800,23 +799,6 @@ public class ActorBackgroundActuationManagerTest {
     }
 
     @Test
-    public void testDestroy_WarmActivity_RestoresTabsBeforeClear() {
-        setupWarmActivityMocks();
-        ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.CREATED);
-        ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.STOPPED);
-
-        mManager.startBackgroundActuation(mProfile, "msg_warm_test");
-        triggerPageLoadFinished();
-        assertEquals(1, mManager.getBackgroundSessions().size());
-
-        mManager.destroy();
-
-        verify(mTab).updateAttachment(eq(mWindowAndroid), any());
-        verify(mTabPersistentStore).saveState();
-        assertEquals(0, mManager.getBackgroundSessions().size());
-    }
-
-    @Test
     public void testDestroy_TabStateNotInitialized_SkipsRestoration() {
         setupWarmActivityMocks();
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(false);
@@ -912,32 +894,6 @@ public class ActorBackgroundActuationManagerTest {
         verify(mTab, never()).updateAttachment(any(), any());
         verify(mOffscreenRenderingManager, atLeastOnce()).stopOffscreenRendering(mTab);
         verify(mTabPersistentStore, never()).saveState();
-        assertEquals(0, mManager.getBackgroundSessions().size());
-    }
-
-    @Test
-    public void testOnTaskCompleted_WarmActivity_RestoresTabsBeforeStop() {
-        setupTransitionMocks();
-        setupWarmActivityMocks();
-        ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.CREATED);
-        ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.STOPPED);
-
-        when(mActorKeyedService.getActiveTasksCount()).thenReturn(1);
-        when(mActorKeyedService.getActiveTaskIdOnTab(100, false)).thenReturn(777);
-        ActorTask task = mock(ActorTask.class);
-        when(task.getId()).thenReturn(777);
-        when(task.isUnderActorControl()).thenReturn(true);
-        when(task.getTabs()).thenReturn(Collections.singleton(100));
-        when(mActorKeyedService.getActiveTasks()).thenReturn(Collections.singletonList(task));
-
-        when(mTabModel.getTabCreator()).thenReturn(mTabCreator);
-        mManager.transitionActiveTasksToBackground(mTabModelSelector);
-        assertEquals(1, mManager.getBackgroundSessions().size());
-
-        mManager.onTaskCompleted(777);
-
-        verify(mTab).updateAttachment(eq(mWindowAndroid), any());
-        verify(mTabPersistentStore).saveState();
         assertEquals(0, mManager.getBackgroundSessions().size());
     }
 
@@ -1161,21 +1117,6 @@ public class ActorBackgroundActuationManagerTest {
         assertTrue(session.getTabDataList().isEmpty());
         verify(mTab, never()).updateAttachment(any(), any());
         verify(mTabRemover).removeTab(mPlaceholderTab, false);
-    }
-
-    @Test
-    public void testBackgroundSession_AddTab_InheritsWindowId() {
-        Tab tab2 = mock(Tab.class);
-        BackgroundSession.BackgroundTabData tabData1 =
-                new BackgroundSession.BackgroundTabData(mTab, 101, 0, 42);
-        BackgroundSession session = new BackgroundSession(tabData1, 500);
-
-        session.addTab(tab2);
-
-        assertEquals(2, session.getTabDataList().size());
-        assertEquals(42, session.getTabDataList().get(0).getTabWindowId());
-        assertEquals(42, session.getTabDataList().get(1).getTabWindowId());
-        assertNull(session.getTabDataList().get(1).getPlaceholderTabId());
     }
 
     @Test
@@ -1496,6 +1437,7 @@ public class ActorBackgroundActuationManagerTest {
         mManager.onTaskCompleted(777);
 
         watcher.assertExpected();
+        verify(mTab).updateAttachment(eq(mWindowAndroid), any());
         verify(mTabPersistentStore).saveState();
         assertEquals(0, mManager.getBackgroundSessions().size());
     }

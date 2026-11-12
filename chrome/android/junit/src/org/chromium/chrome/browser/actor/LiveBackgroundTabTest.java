@@ -89,6 +89,16 @@ public class LiveBackgroundTabTest {
     }
 
     @Test
+    public void testConstructor_destroyedTab_throwsAssertionError() {
+        when(mTab.isDestroyed()).thenReturn(true);
+        assertThrows(
+                AssertionError.class,
+                () ->
+                        new LiveBackgroundTab(
+                                mPool, mTab, PLACEHOLDER_TAB_ID, TabModel.INVALID_TAB_INDEX));
+    }
+
+    @Test
     public void testAttachTab_attachesAndRemovesFromPool() {
         mLiveBackgroundTab =
                 new LiveBackgroundTab(

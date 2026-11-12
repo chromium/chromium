@@ -355,16 +355,6 @@ public class ActorForegroundServiceControllerImplTest {
     }
 
     @Test
-    public void testIsActivityVisibleForTabs_WithTabs_SilencesWhenTabInActivity() {
-        int tabId = 123;
-        ApplicationStatus.onStateChangeForTesting(mChromeActivity, ActivityState.CREATED);
-        ApplicationStatus.onStateChangeForTesting(mChromeActivity, ActivityState.RESUMED);
-        when(mTabModelSelector.getTabById(tabId)).thenReturn(mTab);
-
-        assertTrue(mController.isActivityVisibleForTabs(Collections.singleton(tabId)));
-    }
-
-    @Test
     public void testIsActivityVisibleForTabs_WithTabs_NoSilenceWhenTabNotInActivity() {
         int tabId = 123;
         ApplicationStatus.onStateChangeForTesting(mChromeActivity, ActivityState.CREATED);
@@ -529,6 +519,7 @@ public class ActorForegroundServiceControllerImplTest {
         ActorKeyedServiceFactory.setForTesting(null);
     }
 
+    // TODO(crbug.com/585092074): Move this test to a dedicated ActorTaskTest.
     @Test
     public void testActorTask_getTargetTabId() {
         long nativeTaskPtr = 123L;

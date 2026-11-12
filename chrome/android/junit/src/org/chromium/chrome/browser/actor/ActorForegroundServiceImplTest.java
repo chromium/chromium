@@ -91,6 +91,15 @@ public class ActorForegroundServiceImplTest {
     }
 
     @Test
+    public void testStopActorForegroundService_PassesFlagsToStopForeground() {
+        ActorForegroundServiceImpl spyService = spy(mServiceImpl);
+
+        spyService.stopActorForegroundService(ServiceCompat.STOP_FOREGROUND_REMOVE);
+
+        verify(spyService).stopForegroundInternal(ServiceCompat.STOP_FOREGROUND_REMOVE);
+    }
+
+    @Test
     public void testStopReasonStopped() {
         var watcher =
                 HistogramWatcher.newBuilder()

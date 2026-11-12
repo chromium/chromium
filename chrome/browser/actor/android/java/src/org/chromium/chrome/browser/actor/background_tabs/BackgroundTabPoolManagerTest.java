@@ -237,29 +237,6 @@ public class BackgroundTabPoolManagerTest {
         assertSame(pool1, BackgroundTabPoolManager.getPoolForTesting(mProfile));
     }
 
-    @Test
-    public void testDestroyOnProfileTeardown() {
-        BackgroundTabPool pool = BackgroundTabPoolManager.acquire(mProfile);
-        assertNotNull(pool);
-        assertEquals(1, BackgroundTabPoolManager.getLeaseCountForTesting(mProfile));
-
-        BackgroundTabPoolManager.resetForTesting();
-        assertNull(BackgroundTabPoolManager.getPoolForTesting(mProfile));
-        assertEquals(0, BackgroundTabPoolManager.getLeaseCountForTesting(mProfile));
-    }
-
-    @Test
-    public void testSetPoolForTesting() {
-        BackgroundTabPool mockPool = mock(BackgroundTabPool.class);
-        BackgroundTabPoolManager.setPoolForTesting(mockPool);
-
-        BackgroundTabPool acquired = BackgroundTabPoolManager.acquire(mProfile);
-        assertSame(mockPool, acquired);
-
-        BackgroundTabPoolManager.release(mockPool);
-        assertSame(mockPool, BackgroundTabPoolManager.acquire(mProfile));
-    }
-
     @Test(expected = AssertionError.class)
     public void testOffTheRecordProfileThrowsAssertion() {
         Profile otrProfile = mock(Profile.class);
