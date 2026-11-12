@@ -220,25 +220,18 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUiTest,
       WaitForGlicClose());
 }
 
-// TODO(crbug.com/401158115): Flaky on macOS
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_OpenMenuItemShows DISABLED_OpenMenuItemShows
-#else
-#define MAYBE_OpenMenuItemShows OpenMenuItemShows
-#endif
-IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUiTest, MAYBE_OpenMenuItemShows) {
-  if (!base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
-    RunTestSequence(SimulateOpenMenuItem(),
-                    WaitForAndInstrumentGlic(kHostAndContents),
-                    CheckControllerWidgetMode(GlicWindowMode::kDetached),
-                    CloseGlicWindow());
-  } else {
-    TrackGlicInstanceWithTabIndex(0);
-    RunTestSequence(SimulateOpenMenuItem(),
-                    WaitForAndInstrumentGlic(kHostAndContents),
-                    CheckControllerWidgetMode(GlicWindowMode::kAttached),
-                    CloseGlicWindow());
-  }
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUiTest, OpenMenuItemShows) {
+  TrackGlicInstanceWithTabIndex(0);
+  RunTestSequence(
+      SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
+                              kActivateSurfaceIncompatibilityNotice),
+      // The menu item resolves its target browser via
+      // GetActiveGlicEligibleBrowser(), which on Mac requires the browser
+      // to be active.
+      ActivateSurface(kBrowserViewElementId), SimulateOpenMenuItem(),
+      WaitForAndInstrumentGlic(kHostAndContents),
+      CheckControllerWidgetMode(GlicWindowMode::kAttached),
+      CloseGlicWindow());
 }
 
 #if BUILDFLAG(IS_WIN)
