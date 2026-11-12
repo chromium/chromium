@@ -39,8 +39,6 @@ class TabCollectionTabModelImpl {
  public:
   explicit TabCollectionTabModelImpl(Profile* profile);
   ~TabCollectionTabModelImpl();
-  // Called by Java to destroy this object. Do not call directly in C++.
-  void Destroy();
 
   TabCollectionTabModelImpl(const TabCollectionTabModelImpl&) = delete;
   TabCollectionTabModelImpl& operator=(const TabCollectionTabModelImpl&) =

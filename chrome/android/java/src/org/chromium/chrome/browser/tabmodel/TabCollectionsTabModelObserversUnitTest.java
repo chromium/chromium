@@ -120,20 +120,16 @@ public class TabCollectionsTabModelObserversUnitTest {
 
         TabCollectionTabModelImplJni.setInstanceForTesting(mTabCollectionTabModelImplJni);
         when(mTabCollectionTabModelImplJni.init(eq(mProfile)))
-                .thenReturn(TAB_COLLECTION_TAB_MODEL_IMPL_PTR);
+                .thenAnswer(
+                        inv -> JniUniquePtr.createForTesting(TAB_COLLECTION_TAB_MODEL_IMPL_PTR));
 
         mTabs = new ArrayList<>();
 
-        when(mTabCollectionTabModelImplJni.getAllTabs(eq(TAB_COLLECTION_TAB_MODEL_IMPL_PTR)))
+        when(mTabCollectionTabModelImplJni.getAllTabs(any()))
                 .thenAnswer(invocation -> new ArrayList<>(mTabs));
 
         when(mTabCollectionTabModelImplJni.addTabRecursive(
-                        eq(TAB_COLLECTION_TAB_MODEL_IMPL_PTR),
-                        any(Tab.class),
-                        anyInt(),
-                        any(),
-                        anyBoolean(),
-                        anyBoolean()))
+                        any(), any(Tab.class), anyInt(), any(), anyBoolean(), anyBoolean()))
                 .thenAnswer(
                         invocation -> {
                             Tab tab = invocation.getArgument(1);
@@ -149,14 +145,10 @@ public class TabCollectionsTabModelObserversUnitTest {
                             return null;
                         })
                 .when(mTabCollectionTabModelImplJni)
-                .removeTabRecursive(eq(TAB_COLLECTION_TAB_MODEL_IMPL_PTR), any(Tab.class));
+                .removeTabRecursive(any(), any(Tab.class));
 
         when(mTabCollectionTabModelImplJni.moveTabRecursive(
-                        eq(TAB_COLLECTION_TAB_MODEL_IMPL_PTR),
-                        anyInt(),
-                        anyInt(),
-                        any(),
-                        anyBoolean()))
+                        any(), anyInt(), anyInt(), any(), anyBoolean()))
                 .thenAnswer(
                         invocation -> {
                             int oldIndex = invocation.getArgument(1);
@@ -170,8 +162,7 @@ public class TabCollectionsTabModelObserversUnitTest {
                             return newIndex;
                         });
 
-        when(mTabCollectionTabModelImplJni.getTabsInGroup(
-                        eq(TAB_COLLECTION_TAB_MODEL_IMPL_PTR), any()))
+        when(mTabCollectionTabModelImplJni.getTabsInGroup(any(), any()))
                 .thenAnswer(
                         invocation -> {
                             Token groupId = invocation.getArgument(1);
@@ -185,8 +176,7 @@ public class TabCollectionsTabModelObserversUnitTest {
                             return result;
                         });
 
-        when(mTabCollectionTabModelImplJni.getTabCountForGroup(
-                        eq(TAB_COLLECTION_TAB_MODEL_IMPL_PTR), any()))
+        when(mTabCollectionTabModelImplJni.getTabCountForGroup(any(), any()))
                 .thenAnswer(
                         invocation -> {
                             Token groupId = invocation.getArgument(1);
@@ -200,8 +190,7 @@ public class TabCollectionsTabModelObserversUnitTest {
                             return count;
                         });
 
-        when(mTabCollectionTabModelImplJni.moveTabGroupTo(
-                        eq(TAB_COLLECTION_TAB_MODEL_IMPL_PTR), any(), anyInt()))
+        when(mTabCollectionTabModelImplJni.moveTabGroupTo(any(), any(), anyInt()))
                 .thenAnswer(
                         invocation -> {
                             Token groupId = invocation.getArgument(1);
@@ -217,8 +206,7 @@ public class TabCollectionsTabModelObserversUnitTest {
                             return newIndex;
                         });
 
-        when(mTabCollectionTabModelImplJni.getAllTabGroupIds(
-                        eq(TAB_COLLECTION_TAB_MODEL_IMPL_PTR)))
+        when(mTabCollectionTabModelImplJni.getAllTabGroupIds(any()))
                 .thenAnswer(
                         invocation -> {
                             Set<Token> groupIds = new HashSet<>();
@@ -230,8 +218,7 @@ public class TabCollectionsTabModelObserversUnitTest {
                             return new ArrayList<>(groupIds);
                         });
 
-        when(mTabCollectionTabModelImplJni.tabGroupExists(
-                        eq(TAB_COLLECTION_TAB_MODEL_IMPL_PTR), any()))
+        when(mTabCollectionTabModelImplJni.tabGroupExists(any(), any()))
                 .thenAnswer(
                         invocation -> {
                             Token groupId = invocation.getArgument(1);
@@ -278,7 +265,6 @@ public class TabCollectionsTabModelObserversUnitTest {
         UkmRecorderJni.setInstanceForTesting(null);
         TabGroupSyncFeaturesJni.setInstanceForTesting(null);
         mTabModel.destroy();
-        verify(mTabCollectionTabModelImplJni).destroy(eq(TAB_COLLECTION_TAB_MODEL_IMPL_PTR));
     }
 
     // willAddTab
@@ -1062,8 +1048,7 @@ public class TabCollectionsTabModelObserversUnitTest {
     @Test
     public void testOnTabGroupVisualsChanged_title() {
         Token groupId = new Token(1L, 2L);
-        when(mTabCollectionTabModelImplJni.getTabGroupTitle(
-                        eq(TAB_COLLECTION_TAB_MODEL_IMPL_PTR), eq(groupId)))
+        when(mTabCollectionTabModelImplJni.getTabGroupTitle(any(), eq(groupId)))
                 .thenReturn("Old Title");
 
         mTabModel.setTabGroupTitle(groupId, "New Title");
@@ -1073,8 +1058,7 @@ public class TabCollectionsTabModelObserversUnitTest {
     @Test
     public void testOnTabGroupVisualsChanged_color() {
         Token groupId = new Token(1L, 2L);
-        when(mTabCollectionTabModelImplJni.getTabGroupColor(
-                        eq(TAB_COLLECTION_TAB_MODEL_IMPL_PTR), eq(groupId)))
+        when(mTabCollectionTabModelImplJni.getTabGroupColor(any(), eq(groupId)))
                 .thenReturn(TabGroupColorId.GREY);
 
         mTabModel.setTabGroupColor(groupId, TabGroupColorId.BLUE);
@@ -1084,8 +1068,7 @@ public class TabCollectionsTabModelObserversUnitTest {
     @Test
     public void testOnTabGroupVisualsChanged_collapsed() {
         Token groupId = new Token(1L, 2L);
-        when(mTabCollectionTabModelImplJni.getTabGroupCollapsed(
-                        eq(TAB_COLLECTION_TAB_MODEL_IMPL_PTR), eq(groupId)))
+        when(mTabCollectionTabModelImplJni.getTabGroupCollapsed(any(), eq(groupId)))
                 .thenReturn(false);
 
         mTabModel.setTabGroupCollapsed(groupId, true);
@@ -1095,8 +1078,7 @@ public class TabCollectionsTabModelObserversUnitTest {
     @Test
     public void testOnTabGroupVisualsChanged_visualData() {
         Token groupId = new Token(1L, 2L);
-        when(mTabCollectionTabModelImplJni.getTabGroupTitle(
-                        eq(TAB_COLLECTION_TAB_MODEL_IMPL_PTR), eq(groupId)))
+        when(mTabCollectionTabModelImplJni.getTabGroupTitle(any(), eq(groupId)))
                 .thenReturn("Old Title");
 
         mTabModel.setTabGroupVisualData(

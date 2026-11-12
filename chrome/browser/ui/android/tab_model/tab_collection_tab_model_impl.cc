@@ -64,10 +64,6 @@ TabCollectionTabModelImpl::TabCollectionTabModelImpl(Profile* profile)
 
 TabCollectionTabModelImpl::~TabCollectionTabModelImpl() = default;
 
-void TabCollectionTabModelImpl::Destroy() {
-  delete this;
-}
-
 int TabCollectionTabModelImpl::GetIndexOfTabRecursive(
     TabAndroid* tab_android) const {
   if (!tab_android) {
@@ -538,10 +534,9 @@ bool TabCollectionTabModelImpl::HasTabGroup(const TabGroupId& group_id) const {
          tab_strip_collection_->GetDetachedTabGroup(group_id);
 }
 
-static int64_t JNI_TabCollectionTabModelImpl_Init(Profile* profile) {
-  TabCollectionTabModelImpl* tab_collection_tab_model_impl =
-      new TabCollectionTabModelImpl(profile);
-  return reinterpret_cast<intptr_t>(tab_collection_tab_model_impl);
+static jni_zero::JniUniquePtr<TabCollectionTabModelImpl>
+JNI_TabCollectionTabModelImpl_Init(Profile* profile) {
+  return jni_zero::MakeUnique<TabCollectionTabModelImpl>(profile);
 }
 
 }  // namespace tabs
