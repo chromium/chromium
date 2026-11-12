@@ -129,4 +129,8 @@ source_set("unit_tests") {
     "//ui/views",
     "//ui/views:test_support",
   ]
+
+  if (is_chromeos) {
+    deps += [ "//chromeos/ui/base" ]
+  }
 }

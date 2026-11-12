@@ -68,6 +68,12 @@
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget_utils.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/ui/base/chromeos_ui_constants.h"
+#include "ui/base/hit_test.h"
+#include "ui/views/window/non_client_view.h"
+#endif
+
 namespace {
 
 constexpr gfx::Size kMinWindowSize(200, 100);
@@ -1893,3 +1899,18 @@ TEST_F(VideoOverlayWindowWithMuteControlTest, ToggleMuteButton_HitTest) {
   EXPECT_TRUE(overlay_window().ControlsHitTestContainsPoint(
       mute_button_bounds.CenterPoint()));
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+// The window can be resized from just outside of its bounds.
+TEST_F(VideoOverlayWindowViewsTest, ResizeFromOutsideBounds) {
+  views::NonClientView* non_client_view = overlay_window().non_client_view();
+  const gfx::Size size = non_client_view->size();
+  const int y = size.height() / 2;
+
+  EXPECT_EQ(HTLEFT, non_client_view->NonClientHitTest(gfx::Point(-1, y)));
+  EXPECT_EQ(HTRIGHT,
+            non_client_view->NonClientHitTest(gfx::Point(size.width(), y)));
+  EXPECT_EQ(HTNOWHERE, non_client_view->NonClientHitTest(gfx::Point(
+                           -chromeos::kResizeOutsideBoundsSize - 1, y)));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)

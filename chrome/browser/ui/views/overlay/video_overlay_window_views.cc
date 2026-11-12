@@ -85,6 +85,7 @@
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #endif
 
@@ -226,15 +227,30 @@ class OverlayWindowFrameView : public views::FrameView {
     return bounds();
   }
   int NonClientHitTest(const gfx::Point& point) override {
-    // Outside of the window bounds, do nothing.
-    if (!bounds().Contains(point)) {
-      return HTNOWHERE;
-    }
-
     constexpr int kResizeAreaCornerSize = 16;
     int window_component = GetHTComponentForFrame(
         point, gfx::Insets(kOverlayBorderThickness), kResizeAreaCornerSize,
         kResizeAreaCornerSize, GetWidget()->widget_delegate()->CanResize());
+
+    if (!bounds().Contains(point)) {
+#if BUILDFLAG(IS_CHROMEOS)
+      // Like other windows, the window can be resized from just outside of its
+      // bounds, where ash extends the hit region of the window.
+      gfx::Rect resize_outside_bounds = bounds();
+      int outside_size = chromeos::kResizeOutsideBoundsSize;
+      if (aura::Env::GetInstance()->is_touch_down()) {
+        outside_size *= chromeos::kResizeOutsideBoundsScaleForTouch;
+      }
+      resize_outside_bounds.Inset(-outside_size);
+      // `HTBORDER` means the window is not resizable.
+      if (resize_outside_bounds.Contains(point) &&
+          window_component != HTBORDER) {
+        return window_component;
+      }
+#endif
+      // Otherwise, outside of the window bounds, do nothing.
+      return HTNOWHERE;
+    }
 
     // The overlay controls should take and handle user interaction.
     VideoOverlayWindowViews* window =
