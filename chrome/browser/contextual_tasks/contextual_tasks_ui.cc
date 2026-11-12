@@ -1267,7 +1267,7 @@ void ContextualTasksUI::MaybeTriggerPinningPromo() {
     return;
   }
 
-  // Anchored to `kContextualTasksEphemeralToolbarButtonElementId`,
+  // Anchored to `kPinnedToolbarActionShowSidePanelContextualTasksElementId`,
   // so it only shows if the ephemeral button is visible.
   BrowserWindowInterface* browser_window = GetBrowser();
   if (!browser_window) {

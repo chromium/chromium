@@ -4695,22 +4695,15 @@ INSTANTIATE_TEST_SUITE_P(
                     UserVariation::kIncognito),
     &UserVariationToString);
 
-// Enables the ephemeral branded toolbar entry point, which surfaces the
-// ephemeral Contextual Tasks toolbar button after the side panel is closed on a
-// tab associated with a task.
+// Enables Pinning V2, which surfaces the ephemeral Contextual Tasks toolbar
+// button on a tab associated with a task.
 class ContextualTasksEphemeralToolbarInteractiveUiTest
     : public ContextualTasksInteractiveUiTest {
  public:
   void SetUpFeatureList() override {
     std::vector<base::test::FeatureRefAndParams> enabled =
         GetDefaultEnabledFeatures();
-    // The ephemeral button only shows when it matches the side panel dock.
-    // Enable the right-hand variant so the test does not depend on the
-    // default side panel alignment.
-    enabled.push_back(
-        {kContextualTasksEphemeralBrandedEntryPoint,
-         {{"ContextualTasksEntryPoint", "toolbar-ephemeral-branded"},
-          {"enable-right-hand-contextual-tasks-ephemeral-button", "true"}}});
+    enabled.push_back({kContextualTasksPinningV2, {}});
     enabled.push_back({kContextualTasksForceEntryPointEligibility, {}});
     feature_list_.InitWithFeaturesAndParameters(enabled,
                                                 GetDefaultDisabledFeatures());
@@ -4742,12 +4735,11 @@ class ContextualTasksEphemeralToolbarInteractiveUiTest
 //  (2) Contextual Tasks side panel opens with an active task for the tab.
 //  (3) User clicks the close button in the Contextual Tasks side panel
 //      toolbar.
-//  (4) Side panel closes and the ephemeral Contextual Tasks button appears in
+//  (4) Side panel closes and the ephemeral Contextual Tasks button remains in
 //      the browser toolbar.
 //  (5) User clicks the ephemeral toolbar button.
 //  (6) Contextual Tasks side panel reopens and restores the same task and
 //      side panel contents.
-//  (7) Ephemeral toolbar button hides while the side panel is open.
 IN_PROC_BROWSER_TEST_P(ContextualTasksEphemeralToolbarInteractiveUiTest,
                        EphemeralToolbarButtonReopen) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
@@ -4782,7 +4774,6 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksEphemeralToolbarInteractiveUiTest,
                        }),
       InstrumentNonTabWebView(kSidePanelId, "EphemeralReopenSidePanelContents"),
       WaitForElementVisible(kSidePanelId, kCloseButton),
-      EnsureNotPresent(kContextualTasksEphemeralToolbarButtonElementId),
       Do([&]() {
         task_id_before_close = GetTaskIdForActiveTab();
         content::WebContents* const contents = GetActiveSidePanelWebContents();
@@ -4806,12 +4797,13 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksEphemeralToolbarInteractiveUiTest,
                               /*fail_if_not_instrumented=*/false),
       GetParam() == UserVariation::kIncognito
           ? Steps(EnsureNotPresent(
-                      kContextualTasksEphemeralToolbarButtonElementId),
+                      kPinnedToolbarActionShowSidePanelContextualTasksElementId),
                   Check([&]() { return !GetTaskIdForActiveTab().has_value(); },
                         "Active tab is disassociated from the task after "
                         "closing in Incognito"))
           : Steps(
-                WaitForShow(kContextualTasksEphemeralToolbarButtonElementId),
+                WaitForShow(
+                    kPinnedToolbarActionShowSidePanelContextualTasksElementId),
                 Check(
                     [&]() {
                       return GetTaskIdForActiveTab() == task_id_before_close;
@@ -4819,7 +4811,8 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksEphemeralToolbarInteractiveUiTest,
                     "Active tab stays associated with the task after closing"),
 
                 // (5) Click the ephemeral toolbar button.
-                PressButton(kContextualTasksEphemeralToolbarButtonElementId),
+                PressButton(
+                    kPinnedToolbarActionShowSidePanelContextualTasksElementId),
 
                 // (6) The side panel reopens and restores the same task and
                 // contents.
@@ -4852,8 +4845,10 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksEphemeralToolbarInteractiveUiTest,
                                         "EphemeralReopenedSidePanelContents"),
                 WaitForElementVisible(kReopenedSidePanelId, kCloseButton),
 
-                // (7) The ephemeral button hides while the side panel is open.
-                WaitForHide(kContextualTasksEphemeralToolbarButtonElementId)));
+                // (7) The ephemeral button stays shown while the side panel is
+                // open.
+                WaitForShow(
+                    kPinnedToolbarActionShowSidePanelContextualTasksElementId)));
 }
 
 INSTANTIATE_TEST_SUITE_P(

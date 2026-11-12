@@ -587,8 +587,6 @@ class LensOverlayControllerPromoTest : public LensOverlayControllerCUJTest {
          {media::kContextMenuSearchForVideoFrame, {}},
          {lens::features::kLensOverlayContextualSearchbox,
           {{"use-pdfs-as-context", "true"}, {"auto-focus-searchbox", "false"}}},
-         {contextual_tasks::kContextualTasksEphemeralBrandedEntryPoint,
-          {{"ContextualTasksEntryPoint", "toolbar-ephemeral-branded"}}},
          {contextual_tasks::kContextualTasksPinningV2, {}},
          {contextual_tasks::kEnableContextualTasksPinButtonInToolbar, {}},
          {contextual_tasks::kContextualTasksForceEntryPointEligibility, {}}},

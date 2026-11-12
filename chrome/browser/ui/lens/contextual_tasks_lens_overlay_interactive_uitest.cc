@@ -917,8 +917,8 @@ class ContextualTasksLensOverlayEphemeralButtonInteractiveUiTest
   void SetUpFeatureList() override {
     feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
-        {{contextual_tasks::kContextualTasksEphemeralBrandedEntryPoint,
-          {{"ContextualTasksEntryPoint", "toolbar-ephemeral-branded"}}}},
+        {{contextual_tasks::kContextualTasksPinningV2, {}},
+         {contextual_tasks::kContextualTasksForceEntryPointEligibility, {}}},
         /*disabled_features=*/
         {contextual_tasks::kContextualTasksRearchitecture,
          contextual_tasks::kContextualTasksSidePanelRearchitecture,
@@ -945,10 +945,10 @@ IN_PROC_BROWSER_TEST_P(
   });
 
   RunTestSequence(
-      EnsureNotPresent(kContextualTasksEphemeralToolbarButtonElementId),
+      EnsureNotPresent(
+          kPinnedToolbarActionShowSidePanelContextualTasksElementId),
       OpenLensOverlayWithRegionSearch(kFirstTab, kOverlayId, off_center_point),
       WaitForShow(kContextualTasksSidePanelWebViewElementId),
-      EnsureNotPresent(kContextualTasksEphemeralToolbarButtonElementId),
       Do([&]() {
         // Close the panel after it is opened.
         controller->Close();
@@ -956,9 +956,9 @@ IN_PROC_BROWSER_TEST_P(
       WaitForContextualPanelAndLensToClose(),
       GetParam() == contextual_tasks::UserVariation::kIncognito
           ? Steps(EnsureNotPresent(
-                kContextualTasksEphemeralToolbarButtonElementId))
-          : Steps(
-                WaitForShow(kContextualTasksEphemeralToolbarButtonElementId)));
+                kPinnedToolbarActionShowSidePanelContextualTasksElementId))
+          : Steps(WaitForShow(
+                kPinnedToolbarActionShowSidePanelContextualTasksElementId)));
 }
 
 INSTANTIATE_TEST_SUITE_P(
