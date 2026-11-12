@@ -500,6 +500,14 @@ class ContextualTasksComposeboxHandlerTest
     // Reset handler first to destroy the omnibox client which observes the
     // lens controller.
     handler_.reset();
+    if (web_contents()) {
+      if (auto* helper = ContextualSearchWebContentsHelper::FromWebContents(
+              web_contents())) {
+        helper->SetTaskSession(std::nullopt, nullptr, nullptr);
+      }
+    }
+    upload_observers_.Clear();
+    controller_weak_factory_.reset();
     mock_controller_ = nullptr;
     mock_contextual_tasks_service_ptr_ = nullptr;
     mock_tab_controller_ = nullptr;

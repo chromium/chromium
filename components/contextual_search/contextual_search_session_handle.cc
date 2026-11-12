@@ -475,6 +475,7 @@ void ContextualSearchSessionHandle::StartTabContextUploadFlow(
           lens::LensOverlayContextualInputUploadType::
               CONTEXTUAL_INPUT_UPLOAD_TYPE_EXPLICIT;
     }
+    std::optional<TabInfo> attached_tab;
     if (contextual_input_data->tab_session_id.has_value()) {
       TabInfo tab;
       tab.context_token = file_token;
@@ -482,12 +483,17 @@ void ContextualSearchSessionHandle::StartTabContextUploadFlow(
       tab.url = contextual_input_data->page_url.value_or(GURL());
       tab.title = contextual_input_data->page_title.value_or("");
       tab.uploaded = !contextual_input_data->is_implicit_upload;
-      // Updates in place if the tab is already attached (e.g. it was
-      // attached before upload, or is being re-uploaded with a new token).
-      AddAttachedTab(std::move(tab));
+      attached_tab = std::move(tab);
     }
     controller->StartFileUploadFlow(
         file_token, std::move(contextual_input_data), image_options);
+    if (attached_tab.has_value()) {
+      // Updates in place if the tab is already attached (e.g. it was
+      // attached before upload, or is being re-uploaded with a new token).
+      // Runs after `StartFileUploadFlow` so `FileInfo` (`is_implicit_upload`)
+      // and initial upload status are registered before notifying subscribers.
+      AddAttachedTab(std::move(*attached_tab));
+    }
   }
 }
 
