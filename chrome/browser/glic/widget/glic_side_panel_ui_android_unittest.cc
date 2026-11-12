@@ -10,6 +10,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/metrics/user_action_tester.h"
@@ -17,16 +18,25 @@
 #include "base/unguessable_token.h"
 #include "chrome/browser/glic/android/glic_helper_android.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 #include "chrome/browser/glic/service/glic_ui_embedder.h"
 #include "chrome/browser/glic/service/metrics/glic_instance_metrics.h"
 #include "chrome/browser/glic/widget/glic_co_browse_views.h"
 #include "chrome/browser/glic/widget/glic_inactive_side_panel_ui_android.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "components/metrics/profile_metrics_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/mock_tab_interface.h"
@@ -1086,5 +1096,112 @@ TEST_F(GlicSidePanelUiAndroidTest, NativeFreLatchSurvivesActiveInactiveReshow) {
   // Consenting cleared the latch rather than only masking it.
   SetFreCompleted(false);
   EXPECT_FALSE(coordinator.GetCoBrowseViews()->IsShowingNativeFreForTesting());
+}
+
+class GlicSidePanelUiAndroidConsentTest : public GlicSidePanelUiAndroidTest {
+ public:
+  void SetUp() override {
+    GlicSidePanelUiAndroidTest::SetUp();
+    ASSERT_TRUE(profile_manager_.SetUp());
+
+    TestingProfile::TestingFactories factories =
+        IdentityTestEnvironmentProfileAdaptor::
+            GetIdentityTestEnvironmentFactories();
+    factories.push_back(
+        {GlicKeyedServiceFactory::GetInstance(),
+         base::BindRepeating(
+             [](ProfileManager* pm, GlicProfileManager* gpm,
+                content::BrowserContext* context)
+                 -> std::unique_ptr<KeyedService> {
+               Profile* p = Profile::FromBrowserContext(context);
+               return std::make_unique<GlicKeyedService>(
+                   p, IdentityManagerFactory::GetForProfile(p), pm, gpm,
+                   /*contextual_cueing_service=*/nullptr,
+                   /*actor_keyed_service=*/nullptr);
+             },
+             profile_manager_.profile_manager(), &glic_profile_manager_)});
+
+    keyed_profile_ =
+        profile_manager_.CreateTestingProfile("user", std::move(factories));
+    identity_adaptor_ =
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(keyed_profile_);
+    ASSERT_TRUE(GlicKeyedServiceFactory::GetGlicKeyedService(keyed_profile_,
+                                                             /*create=*/true));
+
+    keyed_host_ = std::make_unique<FakeHost>(keyed_profile_);
+    keyed_delegate_ =
+        std::make_unique<FakeGlicUiEmbedderDelegate>(*keyed_host_);
+    keyed_metrics_ = std::make_unique<GlicInstanceMetrics>(
+        &keyed_profile_metrics_service_, keyed_profile_);
+
+    ON_CALL(keyed_tab_, GetProfile())
+        .WillByDefault(testing::Return(keyed_profile_));
+    ON_CALL(keyed_tab_, GetBrowserWindowInterface())
+        .WillByDefault(testing::Return(&browser_window()));
+  }
+
+  void TearDown() override {
+    keyed_metrics_.reset();
+    keyed_delegate_.reset();
+    keyed_host_.reset();
+    identity_adaptor_.reset();
+    keyed_profile_ = nullptr;
+    GlicSidePanelUiAndroidTest::TearDown();
+  }
+
+  TestingProfile* keyed_profile() { return keyed_profile_; }
+  GlicEnabling& enabling() {
+    return GlicKeyedService::Get(keyed_profile_)->enabling();
+  }
+  FakeHost& keyed_host() { return *keyed_host_; }
+  FakeGlicUiEmbedderDelegate& keyed_delegate() { return *keyed_delegate_; }
+  GlicInstanceMetrics& keyed_metrics() { return *keyed_metrics_; }
+  tabs::MockTabInterface& keyed_tab() { return keyed_tab_; }
+  base::WeakPtr<tabs::TabInterface> keyed_tab_weak_ptr() {
+    return keyed_tab_weak_factory_.GetWeakPtr();
+  }
+
+ private:
+  GlicEnabling::ScopedBypassEnablementChecksForTesting bypass_enablement_;
+  GlicProfileManager glic_profile_manager_;
+  TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
+  raw_ptr<TestingProfile> keyed_profile_ = nullptr;
+  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor> identity_adaptor_;
+  metrics::ProfileMetricsService keyed_profile_metrics_service_;
+  std::unique_ptr<FakeHost> keyed_host_;
+  std::unique_ptr<FakeGlicUiEmbedderDelegate> keyed_delegate_;
+  std::unique_ptr<GlicInstanceMetrics> keyed_metrics_;
+  tabs::MockTabInterface keyed_tab_;
+  base::WeakPtrFactory<tabs::TabInterface> keyed_tab_weak_factory_{&keyed_tab_};
+};
+
+TEST_F(GlicSidePanelUiAndroidConsentTest,
+       ConsentInAnotherWindowClearsNativeFreAndRevealsLoadingPlaceholder) {
+  keyed_host().set_showing_native_loading(true);
+  FakeGlicSidePanelCoordinator coordinator(&keyed_tab());
+  enabling().SetCompletedFre(prefs::FreStatus::kNotStarted);
+
+  auto side_panel_ui = std::make_unique<GlicSidePanelUi>(
+      keyed_profile(), keyed_tab_weak_ptr(), keyed_delegate(), keyed_metrics());
+  GlicCoBrowseViews* views = coordinator.GetCoBrowseViews();
+  ASSERT_TRUE(views);
+
+  auto show_options = ShowOptions::ForSidePanel(keyed_tab());
+  show_options.fre_override = mojom::FreOverride::kNativeFre;
+  side_panel_ui->Show(show_options);
+
+  EXPECT_TRUE(views->IsShowingNativeFreForTesting());
+  EXPECT_FALSE(views->ShouldShowLoadingPlaceholderForTesting());
+
+  // Completing FRE on the profile (e.g. from another window) immediately clears
+  // the native FRE latch and reveals the loading placeholder without a re-show.
+  enabling().SetCompletedFre(prefs::FreStatus::kCompleted);
+
+  EXPECT_FALSE(views->IsShowingNativeFreForTesting());
+  EXPECT_TRUE(views->ShouldShowLoadingPlaceholderForTesting());
+
+  // Reverting the pref confirms the latch was cleared rather than masked.
+  enabling().SetCompletedFre(prefs::FreStatus::kNotStarted);
+  EXPECT_FALSE(views->IsShowingNativeFreForTesting());
 }
 }  // namespace glic

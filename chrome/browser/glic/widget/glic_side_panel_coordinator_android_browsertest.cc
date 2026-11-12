@@ -333,19 +333,61 @@ IN_PROC_BROWSER_TEST_F(GlicSidePanelCoordinatorAndroidBrowserTest,
   auto* views = coordinator->GetCoBrowseViews();
   ASSERT_TRUE(views);
   EXPECT_TRUE(views->IsShowingNativeFreForTesting());
+  EXPECT_TRUE(views->HasJavaNativeFreForTesting());
   EXPECT_EQ(coordinator->state(), GlicSidePanelCoordinator::State::kShown);
 
   int accept_called = 0;
   base::ScopedClosureRunner resetter = views->Configure({
-      .native_fre_accepted_callback =
-          base::BindLambdaForTesting([&]() { ++accept_called; }),
+      .native_fre_accepted_callback = base::BindLambdaForTesting([&]() {
+        ++accept_called;
+        GlicKeyedService::Get(tab->GetProfile())
+            ->enabling()
+            .SetCompletedFre(prefs::FreStatus::kCompleted);
+      }),
   });
 
   views->OnNativeFreAccepted();
 
   EXPECT_EQ(accept_called, 1);
   EXPECT_FALSE(views->IsShowingNativeFreForTesting());
+  // Accepting in this window leaves the Java FRE coordinator mounted while its
+  // fade-out animation runs rather than tearing it down synchronously.
+  EXPECT_TRUE(views->HasJavaNativeFreForTesting());
   EXPECT_EQ(coordinator->state(), GlicSidePanelCoordinator::State::kShown);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicSidePanelCoordinatorAndroidBrowserTest,
+                       ConsentInAnotherWindowHidesOpenNativeFre) {
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  auto* coordinator = GetSidePanelCoordinatorAndroid(tab);
+
+  ShowNativeFre(tab);
+  auto* views = coordinator->GetCoBrowseViews();
+  ASSERT_TRUE(views);
+  views->SetIsLoading(true);
+
+  EXPECT_TRUE(views->IsShowingNativeFreForTesting());
+  EXPECT_TRUE(views->HasJavaNativeFreForTesting());
+  EXPECT_FALSE(views->ShouldShowLoadingPlaceholderForTesting());
+  EXPECT_EQ(coordinator->state(), GlicSidePanelCoordinator::State::kShown);
+
+  // Simulate FRE completion in another window for the same profile.
+  GlicKeyedService::Get(tab->GetProfile())
+      ->enabling()
+      .SetCompletedFre(prefs::FreStatus::kCompleted);
+
+  EXPECT_FALSE(views->IsShowingNativeFreForTesting());
+  EXPECT_FALSE(views->HasJavaNativeFreForTesting());
+  EXPECT_TRUE(views->ShouldShowLoadingPlaceholderForTesting());
+  EXPECT_EQ(coordinator->state(), GlicSidePanelCoordinator::State::kShown);
+
+  // Consenting cleared the per-tab latch immediately rather than only masking
+  // it.
+  GlicKeyedService::Get(tab->GetProfile())
+      ->enabling()
+      .SetCompletedFre(prefs::FreStatus::kNotStarted);
+  EXPECT_FALSE(views->IsShowingNativeFreForTesting());
+  EXPECT_FALSE(views->HasJavaNativeFreForTesting());
 }
 
 IN_PROC_BROWSER_TEST_F(GlicSidePanelCoordinatorAndroidBrowserTest,

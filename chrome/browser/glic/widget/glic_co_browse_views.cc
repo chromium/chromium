@@ -14,6 +14,7 @@
 #include "chrome/browser/glic/android/jni_headers/GlicBottomSheetComponentProvider_jni.h"
 #include "chrome/browser/glic/android/jni_headers/GlicSidePanelComponentProvider_jni.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "components/tabs/public/tab_interface.h"
@@ -31,6 +32,13 @@ GlicCoBrowseViews::GlicCoBrowseViews(base::WeakPtr<tabs::TabInterface> tab,
   if (tab_) {
     will_detach_subscription_ = tab_->RegisterWillDetach(base::BindRepeating(
         &GlicCoBrowseViews::OnTabWillDetach, weak_ptr_factory_.GetWeakPtr()));
+  }
+  if (is_bottom_sheet_) {
+    if (auto* glic_service = GlicKeyedService::Get(&profile_.get())) {
+      consent_subscription_ = glic_service->enabling().RegisterOnConsentChanged(
+          base::BindRepeating(&GlicCoBrowseViews::UpdateJavaNativeFre,
+                              weak_ptr_factory_.GetWeakPtr()));
+    }
   }
 }
 
@@ -105,6 +113,14 @@ bool GlicCoBrowseViews::HasJavaWebContentsForTesting() const {
          views_bridge_->HasJavaWebContentsForTesting();  // IN-TEST
 }
 
+bool GlicCoBrowseViews::HasJavaNativeFreForTesting() const {
+  if (!component_provider_ || !is_bottom_sheet_) {
+    return false;
+  }
+  return Java_GlicBottomSheetComponentProvider_isNativeFreShowingForTesting(  // IN-TEST
+      base::android::AttachCurrentThread(), component_provider_);
+}
+
 bool GlicCoBrowseViews::IsShowingNativeFreForTesting() const {
   return ShouldShowNativeFre();
 }
@@ -174,6 +190,7 @@ void GlicCoBrowseViews::OnTabWillDetach(
     tabs::TabInterface* tab,
     tabs::TabInterface::DetachReason detach_reason) {
   if (detach_reason == tabs::TabInterface::DetachReason::kDelete) {
+    consent_subscription_ = {};
     views_bridge_.reset();
     component_provider_.Reset();
   }
@@ -185,8 +202,6 @@ bool GlicCoBrowseViews::ShouldShowNativeFre() const {
 }
 
 void GlicCoBrowseViews::UpdateJavaNativeFre() {
-  // TODO(b/571546684): Observe FRE completion so an accept in another window
-  // hides this FRE.
   if (!ShouldShowNativeFre()) {
     ResetNativeFre();
     return;

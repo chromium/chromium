@@ -13,6 +13,7 @@ import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.CalledByNativeForTesting;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniPtr;
 import org.jni_zero.JniRawPtr;
@@ -79,6 +80,11 @@ public class GlicBottomSheetComponentProvider implements CoBrowseComponentProvid
         } else if (mActiveContent != null) {
             mActiveContent.teardownNativeFre();
         }
+    }
+
+    @CalledByNativeForTesting
+    boolean isNativeFreShowingForTesting() {
+        return mActiveContent != null && mActiveContent.isNativeFreShowingForTesting(); // IN-TEST
     }
 
     @Override

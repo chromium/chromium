@@ -88,6 +88,7 @@ class GlicCoBrowseViews {
   bool is_loading_for_testing() const { return is_loading_; }
   bool HasViewsBridgeForTesting() const { return views_bridge_ != nullptr; }
   bool HasJavaWebContentsForTesting() const;
+  bool HasJavaNativeFreForTesting() const;
   bool IsShowingNativeFreForTesting() const;
   bool ShouldShowLoadingPlaceholderForTesting() const;
   void RequestCloseForTesting();
@@ -121,6 +122,7 @@ class GlicCoBrowseViews {
   base::RepeatingClosure on_native_fre_accepted_;
 
   base::CallbackListSubscription will_detach_subscription_;
+  base::CallbackListSubscription consent_subscription_;
 
   std::unique_ptr<context_sharing::CoBrowseViewsBridge> views_bridge_;
   base::android::ScopedJavaGlobalRef<jobject> component_provider_;
