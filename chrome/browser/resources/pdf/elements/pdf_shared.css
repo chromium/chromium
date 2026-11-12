@@ -48,6 +48,5 @@ viewer-bookmark {
 }
 
 .md-select:hover {
-  /* --cr-fallback-color-state-hover-on-subtle_ in dark mode */
-  background-color: rgba(253, 252, 251, .10);
+  background-color: var(--viewer-hover-on-subtle-background-color);
 }

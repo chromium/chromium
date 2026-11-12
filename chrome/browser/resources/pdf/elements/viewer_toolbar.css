@@ -6,6 +6,7 @@
  * #type=style-lit
  * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
  * #import=./pdf_shared.css.js
+ * #import=./shared_vars.css.js
  * #include=pdf-shared
  * #css_wrapper_metadata_end */
 
@@ -179,7 +180,7 @@ cr-progress,
 #glic-summarize-button {
   --cr-button-text-color: #e3e3e3;
   --cr-focus-outline-color:var(--viewer-icon-focus-outline-color);
-  --cr-hover-background-color: rgba(253, 252, 251, 0.10);
+  --cr-hover-background-color: var(--viewer-hover-on-subtle-background-color);
   border: none;
   font-weight: 400;
   gap: 4px;

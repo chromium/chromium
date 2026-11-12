@@ -11,6 +11,8 @@ html {
   --iron-icon-height: 20px;
   --iron-icon-width: 20px;
   --viewer-border-color: rgb(94, 94, 94);
+  /* --cr-fallback-color-state-hover-on-subtle_ in dark mode */
+  --viewer-hover-on-subtle-background-color: rgba(253, 252, 251, 0.1);
   --viewer-icon-focus-outline-color: var(--google-grey-500);
 <if expr="enable_pdf_ink2">
   --viewer-icon-ink-background-color: rgb(143, 143, 143);
