@@ -301,30 +301,36 @@ class ToastControllerInteractiveTest
     WaitForOmniboxFocus();
   }
 
+  ToastParams MakeLinkCopiedToastParams(int count = 1) {
+    ToastParams params(ToastId::kLinkCopied);
+    params.body_string_cardinality_param = count;
+    return params;
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest, ShowToast) {
   RunTestSequence(
-      ShowToast(ToastParams(ToastId::kLinkCopied)),
+      ShowToast(MakeLinkCopiedToastParams()),
       WaitForShow(toasts::ToastView::kToastViewId),
       Check([=, this]() { return GetToastController()->IsShowingToast(); }));
 }
 
 IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest, ShowSameToastTwice) {
   RunTestSequence(
-      ShowToast(ToastParams(ToastId::kLinkCopied)),
+      ShowToast(MakeLinkCopiedToastParams()),
       WaitForShow(toasts::ToastView::kToastViewId),
       Check([=, this]() { return GetToastController()->IsShowingToast(); }),
-      ShowToast(ToastParams(ToastId::kLinkCopied)),
+      ShowToast(MakeLinkCopiedToastParams()),
       WaitForShow(toasts::ToastView::kToastViewId),
       Check([=, this]() { return GetToastController()->IsShowingToast(); }));
 }
 
 IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest, PreemptToast) {
   RunTestSequence(
-      ShowToast(ToastParams(ToastId::kLinkCopied)),
+      ShowToast(MakeLinkCopiedToastParams()),
       WaitForShow(toasts::ToastView::kToastViewId),
       Check([=, this]() { return GetToastController()->IsShowingToast(); }),
       ShowToast(ToastParams(ToastId::kImageCopied)));
@@ -425,7 +431,7 @@ IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest,
   RunTestSequence(InstrumentTab(kFirstTab),
                   AddInstrumentedTab(kSecondTab, GetURL()),
                   SelectTab(kTabStripElementId, 0), WaitForShow(kFirstTab),
-                  ShowToast(ToastParams(ToastId::kLinkCopied)),
+                  ShowToast(MakeLinkCopiedToastParams()),
                   WaitForShow(toasts::ToastView::kToastViewId),
                   SelectTab(kTabStripElementId, 1),
                   WaitForHide(toasts::ToastView::kToastViewId));
@@ -445,7 +451,7 @@ IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest,
 IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest,
                        HideTabScopedToastOnNavigation) {
   RunTestSequence(InstrumentTab(kFirstTab),
-                  ShowToast(ToastParams(ToastId::kLinkCopied)),
+                  ShowToast(MakeLinkCopiedToastParams()),
                   WaitForShow(toasts::ToastView::kToastViewId),
                   NavigateWebContents(kFirstTab, GetURL()),
                   WaitForHide(toasts::ToastView::kToastViewId));
@@ -568,8 +574,7 @@ IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest,
   // the omnibox doesn't have a popup and the user isn't interacting with the
   // omnibox.
   ToastController* const toast_controller = GetToastController();
-  EXPECT_TRUE(
-      toast_controller->MaybeShowToast(ToastParams(ToastId::kLinkCopied)));
+  EXPECT_TRUE(toast_controller->MaybeShowToast(MakeLinkCopiedToastParams()));
   EXPECT_TRUE(toast_controller->IsShowingToast());
   EXPECT_TRUE(toast_controller->GetToastWidgetForTesting()->IsVisible());
 
@@ -591,8 +596,7 @@ IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest,
   // the omnibox doesn't have a popup and the user isn't interacting with the
   // omnibox.
   ToastController* const toast_controller = GetToastController();
-  EXPECT_TRUE(
-      toast_controller->MaybeShowToast(ToastParams(ToastId::kLinkCopied)));
+  EXPECT_TRUE(toast_controller->MaybeShowToast(MakeLinkCopiedToastParams()));
   EXPECT_TRUE(toast_controller->IsShowingToast());
   EXPECT_TRUE(toast_controller->GetToastWidgetForTesting()->IsVisible());
 
@@ -628,8 +632,7 @@ IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest,
   // the omnibox doesn't have a popup and the user isn't interacting with the
   // omnibox.
   ToastController* const toast_controller = GetToastController();
-  EXPECT_TRUE(
-      toast_controller->MaybeShowToast(ToastParams(ToastId::kLinkCopied)));
+  EXPECT_TRUE(toast_controller->MaybeShowToast(MakeLinkCopiedToastParams()));
   EXPECT_TRUE(toast_controller->IsShowingToast());
   EXPECT_TRUE(toast_controller->GetToastWidgetForTesting()->IsVisible());
 
@@ -658,7 +661,7 @@ IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest, RecordToastShows) {
         histogram_tester.ExpectBucketCount("Toast.TriggeredToShow",
                                            ToastId::kLinkCopied, 0);
       }),
-      ShowToast(ToastParams(ToastId::kLinkCopied)),
+      ShowToast(MakeLinkCopiedToastParams()),
       WaitForShow(toasts::ToastView::kToastViewId), Do([&]() {
         histogram_tester.ExpectBucketCount("Toast.TriggeredToShow",
                                            ToastId::kLinkCopied, 1);
@@ -674,7 +677,7 @@ IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest,
         histogram_tester.ExpectBucketCount("Toast.LinkCopied.Dismissed",
                                            toasts::ToastCloseReason::kAbort, 0);
       }),
-      ShowToast(ToastParams(ToastId::kLinkCopied)),
+      ShowToast(MakeLinkCopiedToastParams()),
       WaitForShow(toasts::ToastView::kToastViewId),
       SelectTab(kTabStripElementId, 1),
       WaitForHide(toasts::ToastView::kToastViewId), Do([&]() {
@@ -699,8 +702,7 @@ IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest,
 #endif
 
   ToastController* const toast_controller = GetToastController();
-  EXPECT_TRUE(
-      toast_controller->MaybeShowToast(ToastParams(ToastId::kLinkCopied)));
+  EXPECT_TRUE(toast_controller->MaybeShowToast(MakeLinkCopiedToastParams()));
   const gfx::Rect toast_bounds =
       toast_controller->GetToastViewForTesting()->GetBoundsInScreen();
   const gfx::Rect web_view_bounds =
@@ -721,16 +723,14 @@ IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest,
             gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
     gfx::Animation::SetPrefersReducedMotionForTesting(true);
     EXPECT_TRUE(gfx::Animation::PrefersReducedMotion());
-    EXPECT_TRUE(
-        toast_controller->MaybeShowToast(ToastParams(ToastId::kLinkCopied)));
+    EXPECT_TRUE(toast_controller->MaybeShowToast(MakeLinkCopiedToastParams()));
   }
   {
     // Animate out toast (due to new toast showing) after enabling animations.
     const gfx::AnimationTestApi::RenderModeResetter disable_rich_animations =
         gfx::AnimationTestApi::SetRichAnimationRenderMode(
             gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED);
-    EXPECT_TRUE(
-        toast_controller->MaybeShowToast(ToastParams(ToastId::kLinkCopied)));
+    EXPECT_TRUE(toast_controller->MaybeShowToast(MakeLinkCopiedToastParams()));
   }
 }
 

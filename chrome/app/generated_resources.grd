@@ -18249,8 +18249,8 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_MULTISTEP_FILTER_IPH_BODY_SCREENREADER" is_accessibility_with_no_ui="true" desc="Screenreader text shown in the IPH bubble for educating users about Multistep Filter." translateable="false">
         Chrome can now suggest your recent filters and search details, helping you pick up where you left off or compare options across sites
       </message>
-      <message name="IDS_LINK_COPIED_TOAST_BODY" desc="Text on a toast notification that is shown when a link is successfully copied.">
-        Link copied
+      <message name="IDS_LINK_COPIED_TOAST_BODY" desc="Text on a toast notification that is shown when one or more links are successfully copied. [ICU Syntax]">
+        {LINKS, plural, =1 {Link copied} other {Links copied}}
       </message>
       <message name="IDS_IMAGE_COPIED_TOAST_BODY" desc="Text on a toast notification that is shown when an image is successfully copied.">
         Image copied

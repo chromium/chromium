@@ -1278,7 +1278,9 @@ void RenderViewContextMenu::WriteURLToClipboard(const GURL& url, int id) {
       toast_features::IsEnabled(toast_features::kLinkCopiedToast)) {
     auto* const toast_controller = GetToastController();
     if (toast_controller) {
-      toast_controller->MaybeShowToast(ToastParams(ToastId::kLinkCopied));
+      ToastParams params(ToastId::kLinkCopied);
+      params.body_string_cardinality_param = 1;
+      toast_controller->MaybeShowToast(std::move(params));
     }
   }
 #endif

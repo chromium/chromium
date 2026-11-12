@@ -2960,7 +2960,9 @@ void CopyURL(BrowserWindowInterface* browser,
   if (toast_features::IsEnabled(toast_features::kLinkCopiedToast)) {
     ToastController* const toast_controller = ToastController::From(browser);
     if (toast_controller) {
-      toast_controller->MaybeShowToast(ToastParams(ToastId::kLinkCopied));
+      ToastParams params(ToastId::kLinkCopied);
+      params.body_string_cardinality_param = 1;
+      toast_controller->MaybeShowToast(std::move(params));
     }
   }
 #endif
