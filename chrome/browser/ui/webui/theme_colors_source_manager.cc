@@ -13,11 +13,11 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/strings/strcat.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/browser/web_contents.h"
@@ -29,6 +29,10 @@
 #include "ui/native_theme/native_theme.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace {
 
@@ -51,6 +55,7 @@ void ThemeColorsSourceManager::PopulateLocalResourceLoaderConfig(
     CHECK_IS_TEST();
     color_provider = color_provider_for_testing_.get();
   } else {
+#if !BUILDFLAG(IS_ANDROID)
     // Use the Widget's ColorProvider to ensure matching the window's theme.
     // TODO(crbug.com/457618790): Explore making the browser early via
     // webui::GetBrowserWindowInterface().
@@ -59,6 +64,16 @@ void ThemeColorsSourceManager::PopulateLocalResourceLoaderConfig(
     if (browser_window) {
       color_provider = browser_window->GetColorProvider();
     }
+#else
+    // `BrowserWindow` is desktop-only. On Android, the embedder attaches the
+    // `WindowAndroid` (the WebContents' `ColorProviderSource`, which supplies
+    // the Activity's Java `Context` for dynamic theme colors) before starting
+    // the navigation, so the WebContents' `ColorProvider` reflects the window's
+    // theme.
+    if (web_contents) {
+      color_provider = &web_contents->GetColorProvider();
+    }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
     // Fallback to ThemeService if we couldn't get the ColorProvider from the
     // BrowserWindow or prewarming sequence. We prioritize the BrowserWindow's

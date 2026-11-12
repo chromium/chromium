@@ -16,6 +16,8 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "third_party/blink/public/mojom/loader/local_resource_loader_config.mojom-forward.h"
+#include "url/origin.h"
 
 namespace content {
 class WebContents;
@@ -72,6 +74,11 @@ class TabStripNtbUI : public TopChromeWebUIController,
 
   // tabstrip_ntb::mojom::PageHandlerFactory:
   void BindPage(mojo::PendingRemote<tabstrip_ntb::mojom::Page> page) override;
+
+  // TopChromeWebUIController:
+  void PopulateLocalResourceLoaderConfig(
+      blink::mojom::LocalResourceLoaderConfig* config,
+      const url::Origin& requesting_origin) override;
 
  private:
   // The page end of a pipe to the `tabs_api::TabStripService`, created at

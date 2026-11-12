@@ -13,6 +13,8 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/theme_colors_source_manager.h"
+#include "chrome/browser/ui/webui/theme_colors_source_manager_factory.h"
 #include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/webui_url_constants.h"
@@ -167,6 +169,19 @@ void TabStripNtbUI::BindPage(
     mojo::PendingRemote<tabstrip_ntb::mojom::Page> page) {
   TabStripServiceUserData::GetOrCreateForWebContents(web_ui()->GetWebContents())
       ->BindPage(std::move(page));
+}
+
+void TabStripNtbUI::PopulateLocalResourceLoaderConfig(
+    blink::mojom::LocalResourceLoaderConfig* config,
+    const url::Origin& requesting_origin) {
+  auto* theme_colors_manager = ThemeColorsSourceManagerFactory::GetForProfile(
+      Profile::FromWebUI(web_ui()));
+  // Without a manager the stylesheet is still fetched over the network.
+  if (!theme_colors_manager) {
+    return;
+  }
+  theme_colors_manager->PopulateLocalResourceLoaderConfig(
+      config, requesting_origin, web_ui()->GetWebContents());
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(TabStripNtbUI)

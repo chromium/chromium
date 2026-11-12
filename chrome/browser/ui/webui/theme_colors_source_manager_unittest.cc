@@ -134,8 +134,6 @@ TEST_F(ThemeColorsSourceManagerTest,
   blink::mojom::LocalResourceLoaderConfig config;
   url::Origin requesting_origin =
       url::Origin::Create(GURL("chrome://foo-bar/"));
-  ui::ColorProvider color_provider;
-  manager->SetColorProviderForTesting(&color_provider);
 
   manager->PopulateLocalResourceLoaderConfig(&config, requesting_origin,
                                              web_contents());
