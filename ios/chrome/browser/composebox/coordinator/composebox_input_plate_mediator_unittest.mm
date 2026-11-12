@@ -1389,6 +1389,54 @@ TEST_F(ComposeboxInputPlateMediatorTest, RemovesAttachedTabOnCloseInCobrowse) {
   EXPECT_EQ(consumer.items.count, 0U);
 }
 
+// Tests that closing an attached tab in Cobrowse mode after its visible URL
+// changed still removes stale items for that WebStateID and clears its
+// user-removed state.
+TEST_F(ComposeboxInputPlateMediatorTest,
+       CloseAttachedTabAfterURLChangeRemovesStaleItem) {
+  ComposeboxInputPlateMediator* mediator = CreateMediator();
+
+  TestComposeboxInputPlateConsumer* consumer =
+      [[TestComposeboxInputPlateConsumer alloc] init];
+  mediator.consumer = consumer;
+
+  base::ScopedClosureRunner disconnect_runner(base::BindOnce(^{
+    [mediator disconnect];
+  }));
+
+  web::FakeWebState* active_web_state =
+      static_cast<web::FakeWebState*>(web_state_list_->GetActiveWebState());
+  ASSERT_TRUE(active_web_state);
+  web::WebStateID web_state_id = active_web_state->GetUniqueIdentifier();
+  const GURL page_1_url("https://www.example.com/page1");
+  const GURL page_2_url("https://www.example.com/page2");
+
+  active_web_state->SetVisibleURL(page_1_url);
+  [mediator createInputItemForWebState:active_web_state
+                                source:ComposeboxInputItemSource::kTabPicker];
+  ASSERT_EQ(consumer.items.count, 1U);
+
+  // Simulate a pending browser-initiated navigation that updated the tab's
+  // visible URL before `didFinishNavigation:` committed, leaving `page_1_url`
+  // attached for `web_state_id`. Also attach and user-remove an item for
+  // `page_2_url` so `isWebStateIDRemovedByUser:` returns `YES`.
+  active_web_state->SetVisibleURL(page_2_url);
+  [mediator createInputItemForWebState:active_web_state
+                                source:ComposeboxInputItemSource::kCurrentTab];
+  ASSERT_EQ(consumer.items.count, 2U);
+  [mediator removeItem:consumer.items[1]];
+  ASSERT_EQ(consumer.items.count, 1U);
+  ASSERT_EQ(consumer.items[0].tabURL, page_1_url);
+  ASSERT_TRUE([mediator isWebStateIDRemovedByUser:web_state_id]);
+
+  // Closing the tab must remove all items for `web_state_id` regardless of
+  // URL and reset `isWebStateIDRemovedByUser:`.
+  web_state_list_->CloseWebStateAt(0, WebStateList::ClosingReason::kUserAction);
+
+  EXPECT_EQ(consumer.items.count, 0U);
+  EXPECT_FALSE([mediator isWebStateIDRemovedByUser:web_state_id]);
+}
+
 // Tests that removing an auto-added tab in Co-browse mode prevents it from
 // being automatically re-added when the omnibox is focused or re-focused.
 TEST_F(ComposeboxInputPlateMediatorTest,

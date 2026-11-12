@@ -1249,21 +1249,21 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   }
 }
 
-// Notifies `_contextualSearchSession` and removes UI items associated with a
-// detached `detachedWebState`.
+// Notifies `_contextualSearchSession` and removes all UI items associated with
+// a detached `detachedWebState`.
 - (void)handleDetachedWebState:(web::WebState*)detachedWebState {
   if (!detachedWebState) {
     return;
   }
   web::WebStateID detachedID = detachedWebState->GetUniqueIdentifier();
+  _userRemovedWebStateIDs.erase(detachedID);
   if (_contextualSearchSession && detachedID.valid()) {
     _contextualSearchSession->OnTabClosedOrNavigated(
         detachedID.ToSessionID(), /*current_url=*/std::nullopt,
         /*current_title=*/std::nullopt);
   }
   for (ComposeboxInputItem* item in [_items.containedItems copy]) {
-    if (_latestTabSelectionMapping[item.identifier] == detachedID &&
-        item.tabURL == detachedWebState->GetVisibleURL()) {
+    if (_latestTabSelectionMapping[item.identifier] == detachedID) {
       item.serverToken = base::UnguessableToken();
       [self removeItemFromUI:item];
     }
