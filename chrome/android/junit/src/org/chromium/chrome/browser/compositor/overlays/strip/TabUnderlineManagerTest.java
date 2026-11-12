@@ -24,6 +24,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -58,6 +59,8 @@ public class TabUnderlineManagerTest {
 
     @Before
     public void setUp() {
+        // Contextual Tasks UI is only enabled on the desktop form factor.
+        DeviceInfo.setIsDesktopForTesting(true);
         TabUnderlineManagerJni.setInstanceForTesting(mMockJni);
         when(mMockJni.init(any())).thenReturn(mNativePtr);
         when(mWindowAndroid.getUnownedUserDataHost()).thenReturn(mUserDataHost);

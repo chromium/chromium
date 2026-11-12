@@ -8,6 +8,7 @@
 
 #include "base/callback_list.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/data_type_store_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
@@ -18,6 +19,10 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/device_info.h"
+#endif
 
 class FakeDataTypeStoreService : public syncer::DataTypeStoreService {
  public:
@@ -53,6 +58,12 @@ class ContextualTasksServiceFactoryTest : public testing::Test {
   ~ContextualTasksServiceFactoryTest() override = default;
 
   void SetUp() override {
+#if BUILDFLAG(IS_ANDROID)
+    if (!base::android::device_info::is_desktop()) {
+      GTEST_SKIP() << "Contextual Tasks UI is only supported on Desktop "
+                      "Android.";
+    }
+#endif
     create_services_subscription_ =
         BrowserContextDependencyManager::GetInstance()
             ->RegisterCreateServicesCallbackForTesting(

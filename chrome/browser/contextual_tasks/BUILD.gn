@@ -1130,6 +1130,7 @@ if (is_android) {
     srcjar_deps = [ ":utils_jni_headers" ]
     sources = [ "android/java/src/org/chromium/chrome/browser/contextual_tasks/ContextualTasksUtils.java" ]
     deps = [
+      "//base:build_info_java",
       "//base:features_java",
       "//chrome/browser/flags:java",
       "//components/embedder_support/android:util_java",

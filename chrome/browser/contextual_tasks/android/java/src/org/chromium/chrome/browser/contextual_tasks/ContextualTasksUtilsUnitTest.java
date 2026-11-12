@@ -10,6 +10,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -22,6 +23,7 @@ public class ContextualTasksUtilsUnitTest {
 
     @Test
     public void testIsContextualTasksUiEnabled_preNative_defaultDisabled() {
+        DeviceInfo.setIsDesktopForTesting(true);
         assertFalse(FeatureList.isNativeInitialized());
         assertFalse(ContextualTasksUtils.isContextualTasksUiEnabled());
     }
@@ -29,13 +31,23 @@ public class ContextualTasksUtilsUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.CONTEXTUAL_TASKS_SIDE_PANEL)
     public void testIsContextualTasksUiEnabled_preNative_sidePanelEnabled() {
+        DeviceInfo.setIsDesktopForTesting(true);
         assertFalse(FeatureList.isNativeInitialized());
         assertTrue(ContextualTasksUtils.isContextualTasksUiEnabled());
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.CONTEXTUAL_TASKS_SIDE_PANEL)
+    public void testIsContextualTasksUiEnabled_preNative_sidePanelEnabled_notDesktop() {
+        DeviceInfo.setIsDesktopForTesting(false);
+        assertFalse(FeatureList.isNativeInitialized());
+        assertFalse(ContextualTasksUtils.isContextualTasksUiEnabled());
+    }
+
+    @Test
     @DisableFeatures(ChromeFeatureList.CONTEXTUAL_TASKS_SIDE_PANEL)
     public void testIsContextualTasksUiEnabled_preNative_sidePanelDisabled() {
+        DeviceInfo.setIsDesktopForTesting(true);
         assertFalse(FeatureList.isNativeInitialized());
         assertFalse(ContextualTasksUtils.isContextualTasksUiEnabled());
     }

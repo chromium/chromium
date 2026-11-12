@@ -18,6 +18,10 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/device_info.h"
+#endif
+
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/test/base/chrome_test_utils.h"
 #include "content/public/browser/web_contents.h"
@@ -65,6 +69,16 @@ class ContextualTasksBrowserTest : public WebUIMochaBrowserTest {
         {contextual_tasks::kContextualTasksRearchitecture,
          contextual_tasks::kContextualTasksSidePanelRearchitecture});
     set_test_loader_host(chrome::kChromeUIContextualTasksHost);
+  }
+
+  void SetUp() override {
+#if BUILDFLAG(IS_ANDROID)
+    if (!base::android::device_info::is_desktop()) {
+      GTEST_SKIP() << "Contextual Tasks UI is only supported on the desktop "
+                      "form factor on Android.";
+    }
+#endif
+    WebUIMochaBrowserTest::SetUp();
   }
 
   void SetUpInProcessBrowserTestFixture() override {

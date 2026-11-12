@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_cookie_synchronizer.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_eligibility_manager.h"
@@ -39,6 +40,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/device_info.h"
+#endif
 
 namespace contextual_tasks {
 
@@ -136,6 +141,12 @@ class EntryPointEligibilityManagerTest : public testing::Test {
     scoped_feature_list_.InitAndEnableFeature(kContextualTasks);
   }
   void SetUp() override {
+#if BUILDFLAG(IS_ANDROID)
+    if (!base::android::device_info::is_desktop()) {
+      GTEST_SKIP() << "Contextual Tasks UI is only supported on Desktop "
+                      "Android.";
+    }
+#endif
     TestingProfile::Builder builder;
     builder.AddTestingFactories(IdentityTestEnvironmentProfileAdaptor::
                                     GetIdentityTestEnvironmentFactories());

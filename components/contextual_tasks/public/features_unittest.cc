@@ -5,8 +5,15 @@
 #include "components/contextual_tasks/public/features.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "components/contextual_tasks/public/host_override.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/device_info.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
+#endif
 
 namespace contextual_tasks {
 
@@ -124,6 +131,12 @@ TEST(FeaturesTest,
 }
 
 TEST(FeaturesTest, IsContextualTasksUIEnabled_SidePanelRearchitectureEnabled) {
+#if BUILDFLAG(IS_ANDROID)
+  // On Android, Contextual Tasks UI is only enabled on the desktop form factor.
+  base::android::device_info::set_is_desktop_for_testing(true);
+  base::ScopedClosureRunner reset_is_desktop(base::BindOnce(
+      &base::android::device_info::reset_is_desktop_for_testing));
+#endif
   base::test::ScopedFeatureList scoped_features;
   scoped_features.InitWithFeatures({kContextualTasksSidePanelRearchitecture},
                                    {kContextualTasks, kContextualTasksSidePanel,
@@ -251,5 +264,34 @@ TEST(FeaturesTest, GetEphemeralButtonContextMenuOption_LegacyBooleanFallback) {
               GetEphemeralButtonContextMenuOption());
   }
 }
+
+#if BUILDFLAG(IS_ANDROID)
+TEST(FeaturesTest, IsContextualTasksUIEnabled_DesktopAndroid) {
+  base::android::device_info::set_is_desktop_for_testing(true);
+  base::ScopedClosureRunner reset_is_desktop(base::BindOnce(
+      &base::android::device_info::reset_is_desktop_for_testing));
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitWithFeatures(
+      {kContextualTasksSidePanel},
+      {kContextualTasks, kContextualTasksRearchitecture,
+       kContextualTasksSidePanelRearchitecture});
+
+  EXPECT_TRUE(IsContextualTasksUIEnabled());
+}
+
+TEST(FeaturesTest, IsContextualTasksUIEnabled_NotDesktopAndroid) {
+  base::android::device_info::set_is_desktop_for_testing(false);
+  base::ScopedClosureRunner reset_is_desktop(base::BindOnce(
+      &base::android::device_info::reset_is_desktop_for_testing));
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitWithFeatures(
+      {kContextualTasksSidePanel, kContextualTasks,
+       kContextualTasksRearchitecture, kContextualTasksSidePanelRearchitecture},
+      {});
+
+  // Phones and tablets are not supported, even with every flag enabled.
+  EXPECT_FALSE(IsContextualTasksUIEnabled());
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace contextual_tasks

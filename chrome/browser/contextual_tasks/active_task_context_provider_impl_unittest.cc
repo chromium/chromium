@@ -53,6 +53,10 @@
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/device_info.h"
+#endif
+
 namespace contextual_tasks {
 
 using testing::_;
@@ -73,6 +77,12 @@ class MockObserver : public ActiveTaskContextProvider::Observer {
 class ActiveTaskContextProviderImplTest : public testing::Test {
  public:
   void SetUp() override {
+#if BUILDFLAG(IS_ANDROID)
+    if (!base::android::device_info::is_desktop()) {
+      GTEST_SKIP() << "Contextual Tasks UI is only supported on Desktop "
+                      "Android.";
+    }
+#endif
     InitializeFeatureList();
     profile_ = std::make_unique<TestingProfile>();
     browser_window_ = std::make_unique<NiceMock<MockBrowserWindowInterface>>();
@@ -120,6 +130,12 @@ class ActiveTaskContextProviderImplTest : public testing::Test {
   }
 
   void TearDown() override {
+#if BUILDFLAG(IS_ANDROID)
+    if (!base::android::device_info::is_desktop()) {
+      // SetUp() skipped the test.
+      return;
+    }
+#endif
     provider_->RemoveObserver(&observer_);
     provider_.reset();
     contextual_tasks_panel_controller_.reset();

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.contextual_tasks;
 
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.FeatureList;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -33,13 +34,15 @@ public final class ContextualTasksUtils {
 
     /**
      * Returns whether the Contextual Tasks UI is enabled. If called before native init, it will
-     * look at the values of cached flags from earlier session.
+     * look at the values of cached flags from earlier session. Always false on non-desktop form
+     * factors (phones and tablets).
      *
      * @return True if Contextual Tasks UI is enabled.
      */
     public static boolean isContextualTasksUiEnabled() {
         if (!FeatureList.isNativeInitialized()) {
-            return ChromeFeatureList.sContextualTasksSidePanel.isEnabled();
+            return DeviceInfo.isDesktop()
+                    && ChromeFeatureList.sContextualTasksSidePanel.isEnabled();
         }
         return ContextualTasksUtilsJni.get().isContextualTasksUiEnabled();
     }
