@@ -516,6 +516,42 @@ bool IsAllowSignedOutUserInDesktopAndroidEnabled() {
 #endif
 }
 
+BASE_FEATURE(kContextualTasksEntryPoints, base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<bool> kContextualTasksEntryPointsPageContextMenu(
+    &kContextualTasksEntryPoints,
+    "page_context_menu",
+    true);
+
+const base::FeatureParam<bool> kContextualTasksEntryPointsAppMenu(
+    &kContextualTasksEntryPoints,
+    "app_menu",
+    true);
+
+const base::FeatureParam<bool> kContextualTasksEntryPointsImageContextMenu(
+    &kContextualTasksEntryPoints,
+    "image_context_menu",
+    true);
+
+const base::FeatureParam<bool> kContextualTasksEntryPointsToolbarButton(
+    &kContextualTasksEntryPoints,
+    "toolbar_button",
+    true);
+
+const base::FeatureParam<bool> kContextualTasksEntryPointsOmnibox(
+    &kContextualTasksEntryPoints,
+    "omnibox",
+    true);
+
+bool IsContextualTasksEntryPointsEnabled() {
+#if BUILDFLAG(IS_ANDROID)
+  return base::FeatureList::IsEnabled(kContextualTasksEntryPoints) &&
+         ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_DESKTOP;
+#else
+  return false;
+#endif
+}
+
 bool GetIsContextualTasksPdfCitationsEnabled() {
   return base::FeatureList::IsEnabled(kContextualTasksPdfCitations);
 }
@@ -1485,6 +1521,13 @@ const char kAllowSignedOutUserInDesktopAndroidName[] =
     "Contextual Tasks Allow Signed-Out User In Desktop Android";
 const char kAllowSignedOutUserInDesktopAndroidDescription[] =
     "Allows signed-out users to use side panel cobrowse on Desktop Android.";
+
+const char kContextualTasksEntryPointsName[] =
+    "Contextual Tasks Entry Points on Desktop Android";
+const char kContextualTasksEntryPointsDescription[] =
+    "Enables Contextual Search (Ask Google) entry points in the page context "
+    "menu, app menu, image context menu, toolbar button, and omnibox on "
+    "Desktop Android.";
 
 }  // namespace flag_descriptions
 

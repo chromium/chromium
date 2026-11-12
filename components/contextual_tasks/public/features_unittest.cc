@@ -294,4 +294,35 @@ TEST(FeaturesTest, IsContextualTasksUIEnabled_NotDesktopAndroid) {
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
+TEST(FeaturesTest, ContextualTasksEntryPoints_DefaultsAndParams) {
+  EXPECT_FALSE(base::FeatureList::IsEnabled(kContextualTasksEntryPoints));
+  EXPECT_FALSE(IsContextualTasksEntryPointsEnabled());
+
+  {
+    base::test::ScopedFeatureList scoped_features;
+    scoped_features.InitAndEnableFeature(kContextualTasksEntryPoints);
+    EXPECT_TRUE(base::FeatureList::IsEnabled(kContextualTasksEntryPoints));
+    EXPECT_TRUE(kContextualTasksEntryPointsPageContextMenu.Get());
+    EXPECT_TRUE(kContextualTasksEntryPointsAppMenu.Get());
+    EXPECT_TRUE(kContextualTasksEntryPointsImageContextMenu.Get());
+    EXPECT_TRUE(kContextualTasksEntryPointsToolbarButton.Get());
+    EXPECT_TRUE(kContextualTasksEntryPointsOmnibox.Get());
+  }
+
+  {
+    base::test::ScopedFeatureList scoped_features;
+    scoped_features.InitAndEnableFeatureWithParameters(
+        kContextualTasksEntryPoints, {{"page_context_menu", "false"},
+                                      {"app_menu", "true"},
+                                      {"image_context_menu", "false"},
+                                      {"toolbar_button", "true"},
+                                      {"omnibox", "false"}});
+    EXPECT_FALSE(kContextualTasksEntryPointsPageContextMenu.Get());
+    EXPECT_TRUE(kContextualTasksEntryPointsAppMenu.Get());
+    EXPECT_FALSE(kContextualTasksEntryPointsImageContextMenu.Get());
+    EXPECT_TRUE(kContextualTasksEntryPointsToolbarButton.Get());
+    EXPECT_FALSE(kContextualTasksEntryPointsOmnibox.Get());
+  }
+}
+
 }  // namespace contextual_tasks

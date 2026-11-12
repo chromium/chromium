@@ -563,6 +563,7 @@ public abstract class ChromeFeatureList {
     public static final String CONTEXTUAL_SEARCH_SUPPRESS_SHORT_VIEW =
             "ContextualSearchSuppressShortView";
     public static final String CONTEXTUAL_TASKS = "ContextualTasks";
+    public static final String CONTEXTUAL_TASKS_ENTRY_POINTS = "ContextualTasksEntryPoints";
     public static final String CONTEXTUAL_TASKS_SIDE_PANEL = "ContextualTasksSidePanel";
     public static final String CONTEXT_MENU_COPY_VIDEO_FRAME_ANDROID = "ContextMenuCopyVideoFrame";
     public static final String CONTEXT_MENU_DOWNLOAD_VIDEO_FRAME_ANDROID =
@@ -1828,6 +1829,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(BROWSING_HISTORY_FILTER_BY_DOMAIN_V2, false);
     public static final MutableFlagWithSafeDefault sBrowsingHistoryFilterByTime =
             newMutableFlagWithSafeDefault(BROWSING_HISTORY_FILTER_BY_TIME, false);
+    public static final MutableFlagWithSafeDefault sContextualTasksEntryPoints =
+            newMutableFlagWithSafeDefault(CONTEXTUAL_TASKS_ENTRY_POINTS, false);
     public static final MutableFlagWithSafeDefault sCriticalActionHistory =
             newMutableFlagWithSafeDefault(CRITICAL_ACTION_HISTORY, false);
     public static final MutableFlagWithSafeDefault sCrossWindowTabGroupOperations =
@@ -2662,6 +2665,19 @@ public abstract class ChromeFeatureList {
     public static final MutableIntParamWithSafeDefault
             sAutofillCardScanningBugfixesAvailabilityTimeoutMs =
                     sAutofillCardScanningBugfixes.newIntParam("availability_timeout_ms", 200);
+    public static final MutableBooleanParamWithSafeDefault sContextualTasksEntryPointsAppMenu =
+            sContextualTasksEntryPoints.newBooleanParam("app_menu", true);
+    public static final MutableBooleanParamWithSafeDefault
+            sContextualTasksEntryPointsImageContextMenu =
+                    sContextualTasksEntryPoints.newBooleanParam("image_context_menu", true);
+    public static final MutableBooleanParamWithSafeDefault sContextualTasksEntryPointsOmnibox =
+            sContextualTasksEntryPoints.newBooleanParam("omnibox", true);
+    public static final MutableBooleanParamWithSafeDefault
+            sContextualTasksEntryPointsPageContextMenu =
+                    sContextualTasksEntryPoints.newBooleanParam("page_context_menu", true);
+    public static final MutableBooleanParamWithSafeDefault
+            sContextualTasksEntryPointsToolbarButton =
+                    sContextualTasksEntryPoints.newBooleanParam("toolbar_button", true);
     public static final MutableBooleanParamWithSafeDefault
             sCrossWindowTabGroupOperationsRemoteGroupOperations =
                     sCrossWindowTabGroupOperations.newBooleanParam(

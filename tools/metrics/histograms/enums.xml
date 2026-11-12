@@ -13082,6 +13082,7 @@ from previous Chrome versions.
   <int value="-592148755" label="RoundedWindows:enabled"/>
   <int value="-591874964" label="LiteVideo:enabled"/>
   <int value="-591219096" label="SystemChinesePhysicalTyping:enabled"/>
+  <int value="-590107209" label="ContextualTasksEntryPoints:disabled"/>
   <int value="-589491568" label="DataSharingNonProductionEnvironment:disabled"/>
   <int value="-589096918" label="ash-enable-fullscreen-app-list"/>
   <int value="-588491904" label="glic-reset-mi-enabled-by-tier:disabled"/>
@@ -15513,6 +15514,7 @@ from previous Chrome versions.
   <int value="131188289" label="GlicActorUiMagicCursor:enabled"/>
   <int value="131533451" label="EdgeToEdgeAutomotive:disabled"/>
   <int value="131881947" label="D3DVsync:enabled"/>
+  <int value="132187246" label="ContextualTasksEntryPoints:enabled"/>
   <int value="132560299"
       label="OmniboxUIExperimentHideSteadyStateUrlScheme:disabled"/>
   <int value="132907995" label="DownloadProgressMessage:enabled"/>

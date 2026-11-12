@@ -211,6 +211,23 @@ BASE_DECLARE_FEATURE(kAllowSignedOutUserInDesktopAndroid);
 // Desktop Android.
 bool IsAllowSignedOutUserInDesktopAndroidEnabled();
 
+// Enables Contextual Search ("Ask Google") entry points on Desktop Android,
+// including page context menu, app menu, image context menu, toolbar button,
+// and omnibox suggestions.
+BASE_DECLARE_FEATURE(kContextualTasksEntryPoints);
+
+extern const base::FeatureParam<bool>
+    kContextualTasksEntryPointsPageContextMenu;
+extern const base::FeatureParam<bool> kContextualTasksEntryPointsAppMenu;
+extern const base::FeatureParam<bool>
+    kContextualTasksEntryPointsImageContextMenu;
+extern const base::FeatureParam<bool> kContextualTasksEntryPointsToolbarButton;
+extern const base::FeatureParam<bool> kContextualTasksEntryPointsOmnibox;
+
+// Returns whether Contextual Search entry points are enabled on Desktop
+// Android.
+bool IsContextualTasksEntryPointsEnabled();
+
 // When enabled, tracks cross-tab ABA search journeys (Tab A -> Search in Tab B
 // -> Return to Tab A) to trigger an in-product help promo for Contextual Tasks.
 BASE_DECLARE_FEATURE(kABASearchJourneys);
@@ -804,6 +821,8 @@ extern const char kABASearchJourneysName[];
 extern const char kABASearchJourneysDescription[];
 extern const char kAllowSignedOutUserInDesktopAndroidName[];
 extern const char kAllowSignedOutUserInDesktopAndroidDescription[];
+extern const char kContextualTasksEntryPointsName[];
+extern const char kContextualTasksEntryPointsDescription[];
 
 }  // namespace flag_descriptions
 
