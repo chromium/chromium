@@ -38,6 +38,10 @@ BASE_DECLARE_FEATURE(kGmsCoreUlp);
 BASE_DECLARE_FEATURE(kReduceAcceptLanguageCount);
 BASE_DECLARE_FEATURE_PARAM(int, kMaxAcceptLanguage);
 
+// Enables localizing the UI using the grammatical gender from the primary
+// Google Account's capabilities.
+BASE_DECLARE_FEATURE(kGrammaticalGenderLocalization);
+
 }  // namespace language
 
 #endif  // COMPONENTS_LANGUAGE_CORE_COMMON_LANGUAGE_EXPERIMENTS_H_

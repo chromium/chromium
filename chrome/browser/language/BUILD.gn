@@ -5,6 +5,7 @@
 source_set("language") {
   sources = [
     "accept_languages_service_factory.h",
+    "grammatical_gender_service_factory.h",
     "language_model_manager_factory.h",
     "url_language_histogram_factory.h",
   ]
@@ -18,6 +19,7 @@ source_set("language") {
 source_set("impl") {
   sources = [
     "accept_languages_service_factory.cc",
+    "grammatical_gender_service_factory.cc",
     "language_model_manager_factory.cc",
     "url_language_histogram_factory.cc",
   ]
@@ -26,6 +28,7 @@ source_set("impl") {
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin",
     "//components/keyed_service/core",
     "//components/language/content/browser",
     "//components/language/core/browser",
@@ -45,6 +48,7 @@ source_set("impl") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "grammatical_gender_service_factory_unittest.cc",
     "language_model_manager_factory_unittest.cc",
     "url_language_histogram_factory_unittest.cc",
   ]
@@ -55,6 +59,7 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//components/language/core/browser",
     "//components/language/core/common",
+    "//testing/gmock",
     "//testing/gtest",
   ]
 }

@@ -6,6 +6,8 @@ static_library("browser") {
   sources = [
     "accept_languages_service.cc",
     "accept_languages_service.h",
+    "grammatical_gender_service.cc",
+    "grammatical_gender_service.h",
     "language_model.cc",
     "language_model.h",
     "language_model_manager.cc",
@@ -22,6 +24,8 @@ static_library("browser") {
     "url_language_histogram.cc",
     "url_language_histogram.h",
   ]
+
+  public_deps = [ "//components/signin/public/identity_manager" ]
 
   deps = [
     ":generate_incognito_language_list_map",
@@ -40,6 +44,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "accept_languages_service_unittest.cc",
+    "grammatical_gender_service_unittest.cc",
     "language_model_manager_unittest.cc",
     "language_prefs_unittest.cc",
     "language_usage_metrics_unittest.cc",
@@ -56,6 +61,9 @@ source_set("unit_tests") {
     "//components/pref_registry",
     "//components/prefs",
     "//components/prefs:test_support",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager:test_support",
     "//components/sync_preferences:test_support",
     "//components/translate/core/browser",
     "//net:test_support",

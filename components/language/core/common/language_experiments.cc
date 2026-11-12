@@ -30,4 +30,6 @@ BASE_FEATURE_PARAM(int,
                    /*name=*/"MaxAcceptLanguage",
                    /*default_value=*/10);
 
+BASE_FEATURE(kGrammaticalGenderLocalization, base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace language

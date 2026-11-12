@@ -121,6 +121,7 @@
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
 #include "chrome/browser/indigo/indigo_service_factory.h"
 #include "chrome/browser/language/accept_languages_service_factory.h"
+#include "chrome/browser/language/grammatical_gender_service_factory.h"
 #include "chrome/browser/language/language_model_manager_factory.h"
 #include "chrome/browser/language/url_language_histogram_factory.h"
 #include "chrome/browser/language_detection/language_detection_model_service_factory.h"
@@ -1074,6 +1075,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   GlobalErrorServiceFactory::GetInstance();
 #endif
   GoogleGroupsManagerFactory::GetInstance();
+  GrammaticalGenderServiceFactory::GetInstance();
   HatsServiceFactory::GetInstance();
   HeavyAdServiceFactory::GetInstance();
   HidChooserContextFactory::GetInstance();

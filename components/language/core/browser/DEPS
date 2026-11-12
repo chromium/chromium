@@ -1,5 +1,8 @@
 include_rules = [
   "+components/keyed_service/core",
+  "+components/signin/public",
   "+components/translate/core/browser",
+  "+google_apis/gaia/core_account_id.h",
   "+ui/base/l10n",
+  "+ui/base/resource/resource_bundle.h",
 ]
