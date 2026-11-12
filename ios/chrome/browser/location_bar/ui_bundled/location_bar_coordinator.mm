@@ -992,7 +992,7 @@ struct AIHubBadgeActiveWindowsData : public base::SupportsUserData::Data {
     if (IsLocationBarPerformanceImprovementsEnabled()) {
       [self.locationBarBadgeCoordinator setActive:_active];
     }
-    // TODO (crbug.com/429140788): Remove after migration when this view is
+    // TODO(crbug.com/569998074): Remove after migration when this view is
     // permanently shown.
     self.locationBarBadgeCoordinator.viewController.visibilityDelegate =
         self.viewController.contextualEntrypointVisibilityDelegate;

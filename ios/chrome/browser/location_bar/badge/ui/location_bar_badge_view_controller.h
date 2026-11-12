@@ -39,7 +39,7 @@
 // This view controller's Location Bar Badge mutator.
 @property(nonatomic, weak) id<LocationBarBadgeMutator> mutator;
 
-// TODO(crbug.com/429140788): Remove after migration.
+// TODO(crbug.com/569998074): Remove after migration.
 // The entrypoint visibility delegate.
 @property(nonatomic, weak) id<ContextualPanelEntrypointVisibilityDelegate>
     visibilityDelegate;

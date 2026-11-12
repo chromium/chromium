@@ -298,7 +298,7 @@ constexpr base::TimeDelta kStartCollapseTransitionTime = base::Seconds(5);
   // ignore the update.
   if (![self shouldShowBadge:config.badgeType] ||
       [self.consumer isBadgeVisible]) {
-    // TODO (crbug.com/445719031): Store badge updates in consumer instead of
+    // TODO(crbug.com/574559217): Store badge updates in consumer instead of
     // ignoring the update.
     return;
   }
@@ -880,7 +880,7 @@ constexpr base::TimeDelta kStartCollapseTransitionTime = base::Seconds(5);
   }
 
   RecordLocationBarBadgeUpdate(badgeType);
-  // TODO(crbug.com/448422022): Store Contextual Panel Entrypoint badges
+  // TODO(crbug.com/574559217): Store Contextual Panel Entrypoint badges
   // instead of preventing them.
   if ([self.consumer isBadgeVisible]) {
     return nil;

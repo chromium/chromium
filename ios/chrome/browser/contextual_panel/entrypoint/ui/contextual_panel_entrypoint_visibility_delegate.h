@@ -30,13 +30,13 @@ enum class ContextualPanelEntrypointState {
 // Sets whether the contextual panel entrypoint is currently animating.
 - (void)setContextualPanelCurrentlyAnimating:(BOOL)animating;
 
-// TODO(crbug.com/458307626): Remove when migration is complete.
+// TODO(crbug.com/569998074): Remove when migration is complete.
 // Sets the state of the contextual panel entrypoint.
 - (void)setContextualPanelEntrypointState:(ContextualPanelEntrypointState)state;
 
 @optional
 
-// TODO(crbug.com/458307626): Remove when migration is complete.
+// TODO(crbug.com/569998074): Remove when migration is complete.
 - (void)disableProactiveSuggestionOverlay:(BOOL)disabled;
 
 @end

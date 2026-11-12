@@ -16,7 +16,7 @@
 // `LocationBarBadgeType::kPermissionsCamera` as a default value; the actual
 // badge (camera or microphone) depends on `GetStatesForAllPermissions()` of
 // the active `WebState` and must be overridden by the caller when used.
-// TODO(crbug.com/429140788): Remove `BadgeTypeForInfobarType()` in
+// TODO(crbug.com/569998074): Remove `BadgeTypeForInfobarType()` in
 // `ios/chrome/browser/badges/ui_bundled/badge_type_util.h` once the Location
 // Bar Badge migration completes.
 std::optional<LocationBarBadgeType> LocationBarBadgeTypeForInfobarType(

@@ -491,7 +491,7 @@ const CGFloat kSeparatorVerticalPadding = 12.0;
       l10n_util::GetNSString(IDS_IOS_ACCNAME_OPEN_PAGE_ACTION_MENU);
   _tapOverlayButton.accessibilityTraits = UIAccessibilityTraitButton;
 
-  // TODO(crbug.com/448422022): Remove overlay when migrating to
+  // TODO(crbug.com/569998074): Remove overlay when migrating to
   // LocationBarBadgeViewController.
   [self addSubview:_tapOverlayButton];
   AddSameConstraints(_containerStackView, _tapOverlayButton);

@@ -272,7 +272,7 @@ LocationBarBadgeType LocationBarBadgeTypeFromBadgeType(BadgeType badgeType) {
     }
     BadgeType badgeType =
         BadgeTypeForInfobarType(infobarTypeBadgeStatePair.first);
-    // TODO(crbug.com/448422022): Remove this translate badge filtering logic
+    // TODO(crbug.com/569998074): Remove this translate badge filtering logic
     // when migrating to LocationBarBadgeViewController.
     if (IsProactiveSuggestionsFrameworkEnabled()) {
       BadgeState badgeState = infobarTypeBadgeStatePair.second;
@@ -285,7 +285,7 @@ LocationBarBadgeType LocationBarBadgeTypeFromBadgeType(BadgeType badgeType) {
     // of the web state.
     if (infobarTypeBadgeStatePair.first ==
         InfobarType::kInfobarTypePermissions) {
-      // TODO(crbug.com/458307626): Migrate to LocationBarBadge.
+      // TODO(crbug.com/584804875): Migrate to `LocationBarBadge`.
       if (IsProactiveSuggestionsFrameworkEnabled() && self.webState) {
         // Check camera permission.
         if (self.webState->GetStateForPermission(web::PermissionCamera) ==

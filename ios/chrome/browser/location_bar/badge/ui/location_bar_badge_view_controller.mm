@@ -209,8 +209,8 @@ const CGFloat kLeadingSeparatorSpace = 5.0;
 
 #pragma mark - LocationBarBadgeConsumer
 
-// TODO(crbug.com/448422022): Trigger visibility refresh when a new badge comes
-// in and store the badge for multi-badge setup.
+// TODO(crbug.com/574559217): Trigger visibility refresh when a new badge comes
+// in.
 - (void)setBadgeConfig:(LocationBarBadgeConfiguration*)config {
   if (!config) {
     return;
@@ -237,7 +237,7 @@ const CGFloat kLeadingSeparatorSpace = 5.0;
 
 #pragma mark - ContextualPanelEntrypointVisibilityDelegate
 
-// TODO(crbug.com/429140788): Remove after migration and BadgesContainerView
+// TODO(crbug.com/569998074): Remove after migration and `BadgesContainerView`
 // is obsolete. Should not be used to update Location Bar Badge visibility.
 // Should instead use `setLocationBarBadgeHidden`.
 - (void)setContextualPanelEntrypointHidden:(BOOL)hidden {
@@ -288,8 +288,6 @@ const CGFloat kLeadingSeparatorSpace = 5.0;
     return;
   }
 
-  // TODO(crbug.com/453296003): If no priority badge shows, manipulate self.view
-  // to change into "placeholder" badge.
   // Records why the placeholder view is hidden. These are not mutually
   // exclusive, price tracking will take precedence over messages.
   if (placeholderHidden) {
@@ -586,7 +584,7 @@ const CGFloat kLeadingSeparatorSpace = 5.0;
 - (void)setLocationBarBadgeHidden:(BOOL)hidden {
   _locationBarBadgeShouldBeVisible = !hidden;
   [self updateViewsVisibility];
-  // TODO(crbug.com/429140788): Remove after migration and BadgesContainerView
+  // TODO(crbug.com/569998074): Remove after migration and `BadgesContainerView`
   // is obsolete.
   [self.visibilityDelegate setContextualPanelEntrypointHidden:hidden];
   HideViewIfNecessary(self.view, hidden);
@@ -623,7 +621,7 @@ const CGFloat kLeadingSeparatorSpace = 5.0;
     }
 
     RecordLocationBarBadgeUpdate(badgeType);
-    // TODO(crbug.com/448422022): Store Contextual Panel Entrypoint badges
+    // TODO(crbug.com/574559217): Store Contextual Panel Entrypoint badges
     // instead of preventing them.
     if (_locationBarBadgeShouldBeVisible) {
       return;
@@ -892,7 +890,7 @@ const CGFloat kLeadingSeparatorSpace = 5.0;
     _unreadIndicatorView.accessibilityIdentifier =
         kBadgeUnreadIndicatorAccessibilityIdentifier;
 
-    // TODO(crbug.com/457567241): Add _unreadIndicatorView as a subview and
+    // TODO(crbug.com/584805159): Add _unreadIndicatorView as a subview and
     // related constraints.
     _unreadIndicatorView.hidden = !unread;
   }
