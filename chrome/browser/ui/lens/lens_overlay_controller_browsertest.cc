@@ -7388,6 +7388,13 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                .size() != 0;
   }));
 
+  // This histogram is async and requires both page content and the initial
+  // full-image OCR response before closing the overlay cancels in-flight work.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return histogram_tester.GetBucketCount("Lens.Overlay.OcrDomSimilarity",
+                                           80) == 1;
+  }));
+
   CloseOverlayAndWaitForOff(controller,
                             LensOverlayDismissalSource::kOverlayCloseButton);
 
@@ -7429,12 +7436,6 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       ukm::builders::Lens_Overlay_ContextualSearchBox_ShownInSession::
           kPageContentTypeName,
       static_cast<int64_t>(lens::MimeType::kAnnotatedPageContent));
-
-  // This histogram is async so run until it is recorded.
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return histogram_tester.GetBucketCount("Lens.Overlay.OcrDomSimilarity",
-                                           80) == 1;
-  }));
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
@@ -8798,16 +8799,22 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerInnerTextAndApc,
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
 
-  CloseOverlayAndWaitForOff(controller,
-                            LensOverlayDismissalSource::kOverlayCloseButton);
-
-  // This histogram is async so run until it is recorded.
+  // These histograms are async and require both page content and the initial
+  // full-image OCR response before closing the overlay cancels in-flight work.
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return histogram_tester.GetBucketCount(
                "Lens.Overlay.ByPageContentType.AnnotatedPageContent."
                "DocumentSize2",
-               0) == 1;
+               0) == 1 &&
+           histogram_tester.GetBucketCount(
+               "Lens.Overlay.ByPageContentType.PlainText.DocumentSize2", 0) ==
+               1 &&
+           histogram_tester.GetBucketCount("Lens.Overlay.OcrDomSimilarity",
+                                           80) == 1;
   }));
+
+  CloseOverlayAndWaitForOff(controller,
+                            LensOverlayDismissalSource::kOverlayCloseButton);
 
   histogram_tester.ExpectUniqueSample(
       "Lens.Overlay.ByDocumentType.Html.Invoked",
@@ -8850,12 +8857,6 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerInnerTextAndApc,
       ukm::builders::Lens_Overlay_ContextualSearchBox_ShownInSession::
           kPageContentTypeName,
       static_cast<int64_t>(lens::MimeType::kAnnotatedPageContent));
-
-  // This histogram is async so run until it is recorded.
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return histogram_tester.GetBucketCount("Lens.Overlay.OcrDomSimilarity",
-                                           80) == 1;
-  }));
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerInnerTextAndApc,

@@ -404,6 +404,7 @@ public class ViewTransitionPixelTest {
         // duration of the test. This test is interested in how the <dialog> element is positioned.
         // Since that's in the end-state, skip straight to that.
         startTransitionAnimation();
+        waitForTransitionReady();
         animateToEndState();
         mViewportTestUtils.waitForFramePresented();
 
