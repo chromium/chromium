@@ -46,6 +46,9 @@ class PictureInPictureBrowserFrameViewLinux
   // views::View:
   void OnPaint(gfx::Canvas* canvas) override;
 
+  // views::WidgetObserver:
+  void OnWidgetShowStateChanged(views::Widget* widget) override;
+
   // Returns whether a client-side shadow should be drawn for the window.
   bool ShouldDrawFrameShadow() const;
 
@@ -55,9 +58,19 @@ class PictureInPictureBrowserFrameViewLinux
   gfx::Insets FrameBorderInsets() const override;
 
  private:
+  // Returns the frame border insets for the restored window state. These are
+  // used even while the window is maximized, e.g. to convert between the
+  // window geometry and bounds of the restored window.
+  gfx::Insets RestoredFrameBorderInsets() const;
+
+  // Returns whether the frame border and shadow are drawn, which is the case
+  // unless the window is maximized or fullscreen.
+  bool IsShowingFrame() const;
+
   // Used to draw window frame borders and shadow on Linux when GTK theme is
-  // enabled.
+  // enabled, for restored and maximized/fullscreen states respectively.
   raw_ptr<ui::WindowFrameProvider> window_frame_provider_ = nullptr;
+  raw_ptr<ui::WindowFrameProvider> maximized_window_frame_provider_ = nullptr;
 
   // Used to draw window frame borders and shadow on Linux when classic theme is
   // enabled.
