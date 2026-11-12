@@ -74,11 +74,6 @@ PasswordForm MakeSavedPassword(std::string_view signon_realm,
   form.username_value = std::u16string(kUsername116);
   form.password_value = PasswordString(std::u16string(password));
   form.in_store = PasswordForm::Store::kProfileStore;
-  // TODO(crbug.com/40774419): Once all places that operate changes on forms
-  // via UpdateLogin properly set `password_issues`, setting them to an empty
-  // map should be part of the default constructor.
-  form.password_issues =
-      base::flat_map<InsecureType, password_manager::InsecurityMetadata>();
   return form;
 }
 
