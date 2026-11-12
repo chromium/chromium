@@ -11,11 +11,11 @@
 
 namespace aura {
 class Window;
-}
+}  // namespace aura
 
 namespace wm {
 
-// DecorationControllerDelegate allows a user to modify a shadow on certain
+// DecorationControllerDelegate allows a user to modify a decoration on certain
 // windows differently from the normal use case.
 class COMPONENT_EXPORT(UI_WM) DecorationControllerDelegate {
  public:
@@ -28,19 +28,23 @@ class COMPONENT_EXPORT(UI_WM) DecorationControllerDelegate {
   // activation change or manually.
   virtual bool ShouldShowShadowForWindow(const aura::Window* window) = 0;
 
+  // Invoked to determine whether `window` should display a highlight border.
+  virtual bool ShouldShowHighlightBorderForWindow(
+      const aura::Window* window) = 0;
+
   // Invoked when the `window` property changes.
-  virtual bool ShouldUpdateShadowOnWindowPropertyChange(
+  virtual bool ShouldUpdateDecorationOnWindowPropertyChange(
       const aura::Window* window,
       const void* key,
       intptr_t old) = 0;
 
-  // Invoked when the shadow on `window` is created to apply the window color
-  // theme to its shadow.
-  virtual void ApplyColorThemeToWindowShadow(aura::Window* window) = 0;
+  // Invoked when the decoration on `window` is created to apply the window
+  // color theme to its decoration.
+  virtual void ApplyColorThemeToWindowDecoration(aura::Window* window) = 0;
 
-  // Invoked to determine if the shadow should consider the curvature of the
+  // Invoked to determine if the decoration should consider the curvature of the
   // `window`.
-  virtual bool ShouldRoundShadowForWindow(const aura::Window* window) = 0;
+  virtual bool ShouldRoundDecorationForWindow(const aura::Window* window) = 0;
 };
 
 }  // namespace wm

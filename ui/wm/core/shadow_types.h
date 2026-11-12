@@ -51,6 +51,11 @@ int GetShadowElevationConvertDefault(const aura::Window* window);
 COMPONENT_EXPORT(UI_WM)
 extern const aura::WindowProperty<int>* const kShadowElevationKey;
 
+// A property key indicating whether a highlight border should be displayed
+// around the window.
+COMPONENT_EXPORT(UI_WM)
+extern const aura::WindowProperty<bool>* const kWindowHasHighlightBorderKey;
+
 }  // namespace wm
 
 #endif  // UI_WM_CORE_SHADOW_TYPES_H_

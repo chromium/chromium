@@ -13,8 +13,8 @@ class Window;
 
 namespace ash {
 
-// WmShadowControllerDelegate is a delegate for showing the shadow for window
-// management purposes.
+// WmDecorationControllerDelegate is a delegate for showing the shadow and
+// highlight border for window management purposes.
 class WmDecorationControllerDelegate : public wm::DecorationControllerDelegate {
  public:
   WmDecorationControllerDelegate();
@@ -24,14 +24,15 @@ class WmDecorationControllerDelegate : public wm::DecorationControllerDelegate {
       const WmDecorationControllerDelegate&) = delete;
   ~WmDecorationControllerDelegate() override;
 
-  // wm::ShadowControllerDelegate:
+  // wm::DecorationControllerDelegate:
   bool ShouldObserveWindow(const aura::Window* window) override;
   bool ShouldShowShadowForWindow(const aura::Window* window) override;
-  bool ShouldUpdateShadowOnWindowPropertyChange(const aura::Window* window,
-                                                const void* key,
-                                                intptr_t old) override;
-  void ApplyColorThemeToWindowShadow(aura::Window* window) override;
-  bool ShouldRoundShadowForWindow(const aura::Window* window) override;
+  bool ShouldShowHighlightBorderForWindow(const aura::Window* window) override;
+  bool ShouldUpdateDecorationOnWindowPropertyChange(const aura::Window* window,
+                                                    const void* key,
+                                                    intptr_t old) override;
+  void ApplyColorThemeToWindowDecoration(aura::Window* window) override;
+  bool ShouldRoundDecorationForWindow(const aura::Window* window) override;
 };
 
 }  // namespace ash

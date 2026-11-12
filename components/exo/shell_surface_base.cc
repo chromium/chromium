@@ -2174,10 +2174,18 @@ void ShellSurfaceBase::UpdateShadow() {
     // Surfaces that can't be activated are usually menus and tooltips. Use a
     // small style shadow for them.
     if (!CanActivate()) {
-      decoration->GetSourceAs<ui::decoration::Shadow>()->SetElevation(
-          wm::kShadowElevationMenuOrTooltip);
+      if (auto* shadow = wm::DecorationController::GetShadowForWindow(window)) {
+        shadow->SetElevation(wm::kShadowElevationMenuOrTooltip);
+      }
     }
 
+    UpdateShadowRoundedCorners();
+  } else if (wm::DecorationController::GetHighlightBorderForWindow(window)) {
+    if (!window->GetProperty(aura::client::kUseWindowBoundsForShadow)) {
+      decoration->SetContentBounds(shadow_bounds_.has_value()
+                                       ? GetShadowBounds()
+                                       : gfx::Rect(window->bounds().size()));
+    }
     UpdateShadowRoundedCorners();
   }
 

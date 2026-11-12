@@ -22,6 +22,8 @@
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
+#include "ui/decoration/highlight_border.h"
+#include "ui/decoration/shadow_with_highlight_border.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/wm/core/decoration_controller_delegate.h"
@@ -29,14 +31,15 @@
 #include "ui/wm/core/window_util.h"
 #include "ui/wm/public/activation_client.h"
 
-using std::make_pair;
-
 DEFINE_UI_CLASS_PROPERTY_TYPE(ui::Decoration*)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(ui::Decoration, kDecorationKey)
 
 namespace wm {
 
 namespace {
+
+constexpr SkColor kDefaultHighlightColor = SkColorSetA(SK_ColorWHITE, 0x28);
+constexpr SkColor kDefaultBorderColor = SkColorSetA(SK_ColorBLACK, 0x14);
 
 int GetShadowElevationForActiveState(aura::Window* window) {
   int elevation = window->GetProperty(kShadowElevationKey);
@@ -65,6 +68,13 @@ int GetShadowElevationForWindowLosingActive(aura::Window* losing_active,
   return kShadowElevationInactiveWindow;
 }
 
+bool IsFullscreenOrMaximized(const aura::Window* window) {
+  const ui::mojom::WindowShowState show_state =
+      window->GetProperty(aura::client::kShowStateKey);
+  return show_state == ui::mojom::WindowShowState::kFullscreen ||
+         show_state == ui::mojom::WindowShowState::kMaximized;
+}
+
 }  // namespace
 
 // DecorationController::Impl --------------------------------------------------
@@ -87,6 +97,7 @@ class DecorationController::Impl : public aura::EnvObserver,
     delegate_ = std::move(delegate);
   }
   bool IsShadowVisibleForWindow(aura::Window* window);
+  bool IsHighlightBorderVisibleForWindow(aura::Window* window);
   void UpdateDecorationForWindow(aura::Window* window);
 
   // aura::EnvObserver override:
@@ -122,12 +133,11 @@ class DecorationController::Impl : public aura::EnvObserver,
   // Checks if |window| is visible and contains a property requesting a shadow.
   bool ShouldShowShadowForWindow(aura::Window* window) const;
 
+  // Checks if `window` should display a highlight border.
+  bool ShouldShowHighlightBorderForWindow(aura::Window* window) const;
+
   // Sets rounded corner on the decoration for the `window`.
   void MaybeSetDecorationRadiusForWindow(aura::Window* window) const;
-
-  // Updates the decoration for windows when activation changes.
-  void HandleWindowActivationChange(aura::Window* gaining_active,
-                                    aura::Window* losing_active);
 
   // Shows or hides |window|'s decoration as needed (creating the decoration if
   // necessary).
@@ -165,7 +175,18 @@ bool DecorationController::Impl::IsShadowVisibleForWindow(
     return false;
   }
   ui::Decoration* decoration = GetDecorationForWindow(window);
-  return decoration && decoration->layer()->visible();
+  return decoration && decoration->layer()->visible() &&
+         GetShadowForWindow(window)->elevation() > 0;
+}
+
+bool DecorationController::Impl::IsHighlightBorderVisibleForWindow(
+    aura::Window* window) {
+  if (!observation_manager_.IsObservingSource(window)) {
+    return false;
+  }
+  ui::Decoration* decoration = GetDecorationForWindow(window);
+  return decoration && decoration->layer()->visible() &&
+         GetHighlightBorderForWindow(window) != nullptr;
 }
 
 void DecorationController::Impl::UpdateDecorationForWindow(
@@ -191,6 +212,16 @@ void DecorationController::Impl::OnWindowHierarchyChanged(
   if (!params.new_parent) {
     return;
   }
+  // If a child window was added to an observed window with a highlight border,
+  // keep the decoration layer stacked on top of the child's layer.
+  if (params.new_parent == params.receiver &&
+      params.target != params.receiver) {
+    if (GetHighlightBorderForWindow(params.receiver)) {
+      ui::Decoration* decoration = GetDecorationForWindow(params.receiver);
+      params.receiver->layer()->StackAtTop(decoration->layer());
+    }
+    return;
+  }
   // Update the decoration if the observing window is visible and its parent has
   // changed.
   const bool parent_changed = params.target == params.receiver &&
@@ -203,27 +234,29 @@ void DecorationController::Impl::OnWindowHierarchyChanged(
 void DecorationController::Impl::OnWindowPropertyChanged(aura::Window* window,
                                                          const void* key,
                                                          intptr_t old) {
-  bool shadow_will_change = key == kShadowElevationKey &&
-                            window->GetProperty(kShadowElevationKey) != old;
-
-  if (key == aura::client::kShowStateKey) {
-    shadow_will_change = window->GetProperty(aura::client::kShowStateKey) !=
-                         static_cast<ui::mojom::WindowShowState>(old);
-  }
-
-  if (key == aura::client::kWindowRoundedCornersKey) {
-    shadow_will_change =
+  bool decoration_will_change = false;
+  if (key == kShadowElevationKey) {
+    decoration_will_change = window->GetProperty(kShadowElevationKey) != old;
+  } else if (key == kWindowHasHighlightBorderKey) {
+    decoration_will_change =
+        window->GetProperty(kWindowHasHighlightBorderKey) !=
+        static_cast<bool>(old);
+  } else if (key == aura::client::kShowStateKey) {
+    decoration_will_change = window->GetProperty(aura::client::kShowStateKey) !=
+                             static_cast<ui::mojom::WindowShowState>(old);
+  } else if (key == aura::client::kWindowRoundedCornersKey) {
+    decoration_will_change =
         *window->GetProperty(aura::client::kWindowRoundedCornersKey) !=
         static_cast<gfx::RoundedCornersF>(old);
+  } else if (delegate_) {
+    decoration_will_change =
+        delegate_->ShouldUpdateDecorationOnWindowPropertyChange(window, key,
+                                                                old);
   }
-
-  shadow_will_change |=
-      delegate_ &&
-      delegate_->ShouldUpdateShadowOnWindowPropertyChange(window, key, old);
 
   // Check the target visibility. IsVisible() may return false if a parent layer
   // is hidden, but |this| only observes calls to Show()/Hide() on |window|.
-  if (shadow_will_change && window->TargetVisibility()) {
+  if (decoration_will_change && window->TargetVisibility()) {
     HandlePossibleDecorationVisibilityChange(window);
   }
 }
@@ -267,17 +300,17 @@ void DecorationController::Impl::OnWindowActivated(ActivationReason reason,
                                                    aura::Window* gained_active,
                                                    aura::Window* lost_active) {
   if (gained_active) {
-    ui::Decoration* decoration = GetDecorationForWindow(gained_active);
-    if (decoration) {
-      decoration->GetSourceAs<ui::decoration::Shadow>()->SetElevation(
-          GetShadowElevationForActiveState(gained_active));
+    if (auto* shadow = GetShadowForWindow(gained_active);
+        shadow && ShouldShowShadowForWindow(gained_active)) {
+      shadow->SetElevation(GetShadowElevationForActiveState(gained_active));
     }
   }
   if (lost_active) {
-    ui::Decoration* decoration = GetDecorationForWindow(lost_active);
-    if (decoration && GetShadowElevationConvertDefault(lost_active) ==
-                          kShadowElevationInactiveWindow) {
-      decoration->GetSourceAs<ui::decoration::Shadow>()->SetElevation(
+    if (auto* shadow = GetShadowForWindow(lost_active);
+        shadow && ShouldShowShadowForWindow(lost_active) &&
+        GetShadowElevationConvertDefault(lost_active) ==
+            kShadowElevationInactiveWindow) {
+      shadow->SetElevation(
           GetShadowElevationForWindowLosingActive(lost_active, gained_active));
     }
   }
@@ -285,10 +318,6 @@ void DecorationController::Impl::OnWindowActivated(ActivationReason reason,
 
 bool DecorationController::Impl::ShouldShowShadowForWindow(
     aura::Window* window) const {
-  if (window->GetOcclusionState() == aura::Window::OcclusionState::OCCLUDED) {
-    return false;
-  }
-
   if (delegate_) {
     const bool should_show = delegate_->ShouldShowShadowForWindow(window);
     if (should_show) {
@@ -298,14 +327,24 @@ bool DecorationController::Impl::ShouldShowShadowForWindow(
     return should_show;
   }
 
-  ui::mojom::WindowShowState show_state =
-      window->GetProperty(aura::client::kShowStateKey);
-  if (show_state == ui::mojom::WindowShowState::kFullscreen ||
-      show_state == ui::mojom::WindowShowState::kMaximized) {
+  if (IsFullscreenOrMaximized(window)) {
     return false;
   }
 
   return GetShadowElevationConvertDefault(window) > 0;
+}
+
+bool DecorationController::Impl::ShouldShowHighlightBorderForWindow(
+    aura::Window* window) const {
+  if (delegate_) {
+    return delegate_->ShouldShowHighlightBorderForWindow(window);
+  }
+
+  if (IsFullscreenOrMaximized(window)) {
+    return false;
+  }
+
+  return window->GetProperty(kWindowHasHighlightBorderKey);
 }
 
 void DecorationController::Impl::OnWindowOcclusionChanged(
@@ -322,7 +361,7 @@ void DecorationController::Impl::MaybeSetDecorationRadiusForWindow(
   ui::Decoration* decoration = GetDecorationForWindow(window);
   CHECK(decoration);
 
-  if (delegate_ && !delegate_->ShouldRoundShadowForWindow(window)) {
+  if (delegate_ && !delegate_->ShouldRoundDecorationForWindow(window)) {
     decoration->SetRoundedCorners(gfx::RoundedCornersF());
     return;
   }
@@ -340,17 +379,58 @@ void DecorationController::Impl::MaybeSetDecorationRadiusForWindow(
 
 void DecorationController::Impl::HandlePossibleDecorationVisibilityChange(
     aura::Window* window) {
-  const bool should_show = ShouldShowShadowForWindow(window);
+  const bool is_occluded =
+      window->GetOcclusionState() == aura::Window::OcclusionState::OCCLUDED;
+  const bool should_show_shadow = ShouldShowShadowForWindow(window);
+  const bool should_show_highlight_border =
+      ShouldShowHighlightBorderForWindow(window);
+  const bool should_show_any =
+      !is_occluded && (should_show_shadow || should_show_highlight_border);
+
   ui::Decoration* decoration = GetDecorationForWindow(window);
-  if (decoration) {
-    decoration->GetSourceAs<ui::decoration::Shadow>()->SetElevation(
-        GetShadowElevationForActiveState(window));
-    MaybeSetDecorationRadiusForWindow(window);
-    if (decoration->layer()->GetTargetVisibility() != should_show) {
-      decoration->layer()->SetVisible(should_show);
+  if (!decoration) {
+    if (!should_show_any) {
+      return;
     }
-  } else if (should_show) {
     CreateDecorationForWindow(window);
+    decoration = GetDecorationForWindow(window);
+  }
+
+  auto* source =
+      decoration->GetSourceAs<ui::decoration::ShadowWithHighlightBorder>();
+  CHECK(source);
+
+  source->shadow()->SetElevation(
+      should_show_shadow ? GetShadowElevationForActiveState(window) : 0);
+
+  if (should_show_highlight_border) {
+    if (!source->highlight_border()) {
+      source->SetHighlightBorder(
+          std::make_unique<ui::decoration::HighlightBorder>(
+              kDefaultHighlightColor, kDefaultBorderColor));
+      if (delegate_) {
+        delegate_->ApplyColorThemeToWindowDecoration(window);
+      }
+    }
+  } else if (source->highlight_border()) {
+    source->SetHighlightBorder(nullptr);
+  }
+
+  MaybeSetDecorationRadiusForWindow(window);
+
+  // The highlight border draws an inner highlight stroke inside the window
+  // bounds, so the decoration layer must be stacked at the top of the window's
+  // layer to remain visible over the window's content layers. When only a drop
+  // shadow is present, stacking at the bottom behind the window's content is
+  // sufficient.
+  if (source->highlight_border()) {
+    window->layer()->StackAtTop(decoration->layer());
+  } else {
+    window->layer()->StackAtBottom(decoration->layer());
+  }
+
+  if (decoration->layer()->GetTargetVisibility() != should_show_any) {
+    decoration->layer()->SetVisible(should_show_any);
   }
 }
 
@@ -363,19 +443,21 @@ void DecorationController::Impl::CreateDecorationForWindow(
   style = ui::decoration::Shadow::Style::kChromeOSSystemUI;
 #endif
   ui::Decoration* decoration = window->SetProperty(
-      kDecorationKey, ui::Decoration::CreateShadow(
-                          GetShadowElevationForActiveState(window), style));
-
+      kDecorationKey, ui::Decoration::CreateShadowWithHighlightBorder(
+                          std::make_unique<ui::decoration::Shadow>(
+                              ShouldShowShadowForWindow(window)
+                                  ? GetShadowElevationForActiveState(window)
+                                  : 0,
+                              style)));
+  // Historically, window shadows frame content with slightly rounded corners
+  // unless `aura::client::kWindowRoundedCornersKey` specifies otherwise.
+  decoration->SetRoundedCorners(gfx::RoundedCornersF(2.f));
   decoration->SetContentBounds(gfx::Rect(window->bounds().size()));
-  MaybeSetDecorationRadiusForWindow(window);
-  decoration->layer()->SetVisible(ShouldShowShadowForWindow(window));
   window->layer()->Add(decoration->layer());
-  window->layer()->StackAtBottom(decoration->layer());
-
   window->TrackOcclusionState();
 
   if (delegate_) {
-    delegate_->ApplyColorThemeToWindowShadow(window);
+    delegate_->ApplyColorThemeToWindowDecoration(window);
   }
 }
 
@@ -409,6 +491,28 @@ ui::Decoration* DecorationController::GetDecorationForWindow(
   return window->GetProperty(kDecorationKey);
 }
 
+ui::decoration::Shadow* DecorationController::GetShadowForWindow(
+    aura::Window* window) {
+  ui::Decoration* decoration = GetDecorationForWindow(window);
+  if (!decoration) {
+    return nullptr;
+  }
+  auto* source =
+      decoration->GetSourceAs<ui::decoration::ShadowWithHighlightBorder>();
+  return source ? source->shadow() : nullptr;
+}
+
+ui::decoration::HighlightBorder*
+DecorationController::GetHighlightBorderForWindow(aura::Window* window) {
+  ui::Decoration* decoration = GetDecorationForWindow(window);
+  if (!decoration) {
+    return nullptr;
+  }
+  auto* source =
+      decoration->GetSourceAs<ui::decoration::ShadowWithHighlightBorder>();
+  return source ? source->highlight_border() : nullptr;
+}
+
 ui::decoration::Shadow::ElevationToColorsMap
 DecorationController::GenerateShadowColorsMap(
     const ui::ColorProvider* color_provider) {
@@ -433,6 +537,16 @@ DecorationController::GenerateShadowColorsMap(
   return color_map;
 }
 
+std::pair<SkColor, SkColor> DecorationController::GetHighlightBorderColors(
+    const ui::ColorProvider* color_provider) {
+#if BUILDFLAG(IS_CHROMEOS)
+  return {color_provider->GetColor(ui::kColorCrosSystemHighlight),
+          color_provider->GetColor(ui::kColorCrosSystemHighlightBorder1)};
+#else
+  return {kDefaultHighlightColor, kDefaultBorderColor};
+#endif
+}
+
 DecorationController::DecorationController(
     ActivationClient* activation_client,
     std::unique_ptr<DecorationControllerDelegate> delegate,
@@ -452,6 +566,11 @@ DecorationController::~DecorationController() {
 
 bool DecorationController::IsShadowVisibleForWindow(aura::Window* window) {
   return impl_->IsShadowVisibleForWindow(window);
+}
+
+bool DecorationController::IsHighlightBorderVisibleForWindow(
+    aura::Window* window) {
+  return impl_->IsHighlightBorderVisibleForWindow(window);
 }
 
 void DecorationController::UpdateDecorationForWindow(aura::Window* window) {

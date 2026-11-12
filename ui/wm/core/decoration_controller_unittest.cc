@@ -21,7 +21,9 @@
 #include "ui/color/color_recipe.h"
 #include "ui/compositor/layer.h"
 #include "ui/decoration/decoration.h"
+#include "ui/decoration/highlight_border.h"
 #include "ui/decoration/shadow.h"
+#include "ui/decoration/shadow_with_highlight_border.h"
 #include "ui/wm/core/decoration_controller_delegate.h"
 #include "ui/wm/core/shadow_types.h"
 #include "ui/wm/core/window_util.h"
@@ -33,7 +35,9 @@ namespace {
 
 // The shadow drawing `decoration`.
 ui::decoration::Shadow* GetShadow(ui::Decoration* decoration) {
-  return decoration->GetSourceAs<ui::decoration::Shadow>();
+  auto* source =
+      decoration->GetSourceAs<ui::decoration::ShadowWithHighlightBorder>();
+  return source ? source->shadow() : nullptr;
 }
 
 }  // namespace
@@ -296,14 +300,19 @@ TEST_F(DecorationControllerTest, SetColorsMapToShadow) {
   ui::Decoration* decoration =
       DecorationController::GetDecorationForWindow(window.get());
   // Before setting color map, the shadow should has default colors.
-  const auto* default_details = GetShadow(decoration)->details_for_testing();
+  auto get_shadow_values = [](ui::Decoration* decoration) {
+    return GetShadow(decoration)
+        ->GetSpec(decoration->content_bounds(), decoration->rounded_corners());
+  };
+  const auto default_values = get_shadow_values(decoration);
+  ASSERT_TRUE(default_values.has_value());
   SkColor default_key_color = SkColorSetA(SK_ColorBLACK, 0x3d);
   SkColor default_ambient_color = SkColorSetA(SK_ColorBLACK, 0x1f);
 #if BUILDFLAG(IS_CHROMEOS)
   default_ambient_color = SkColorSetA(SK_ColorBLACK, 0x1a);
 #endif
-  EXPECT_EQ(default_details->spec[0].color(), default_key_color);
-  EXPECT_EQ(default_details->spec[1].color(), default_ambient_color);
+  EXPECT_EQ((*default_values)[0].color(), default_key_color);
+  EXPECT_EQ((*default_values)[1].color(), default_ambient_color);
 
   // Change shadow colors map.
   ui::ColorProvider color_provider;
@@ -318,15 +327,17 @@ TEST_F(DecorationControllerTest, SetColorsMapToShadow) {
           DecorationController::GenerateShadowColorsMap(&color_provider));
 
   // After setting color map, the shadow colors will be updated.
-  const auto* inactive_details = GetShadow(decoration)->details_for_testing();
-  EXPECT_EQ(inactive_details->spec[0].color(), SK_ColorYELLOW);
-  EXPECT_EQ(inactive_details->spec[1].color(), SK_ColorRED);
+  const auto inactive_values = get_shadow_values(decoration);
+  ASSERT_TRUE(inactive_values.has_value());
+  EXPECT_EQ((*inactive_values)[0].color(), SK_ColorYELLOW);
+  EXPECT_EQ((*inactive_values)[1].color(), SK_ColorRED);
 
   // Activate window will change shadow colors.
   ActivateWindow(window.get());
-  const auto* active_details = GetShadow(decoration)->details_for_testing();
-  EXPECT_EQ(active_details->spec[0].color(), SK_ColorGREEN);
-  EXPECT_EQ(active_details->spec[1].color(), SK_ColorBLUE);
+  const auto active_values = get_shadow_values(decoration);
+  ASSERT_TRUE(active_values.has_value());
+  EXPECT_EQ((*active_values)[0].color(), SK_ColorGREEN);
+  EXPECT_EQ((*active_values)[1].color(), SK_ColorBLUE);
 }
 
 namespace {
@@ -351,15 +362,19 @@ class TestDecorationControllerDelegate
     return window->parent();
   }
 
-  bool ShouldUpdateShadowOnWindowPropertyChange(const aura::Window* window,
-                                                const void* key,
-                                                intptr_t old) override {
+  bool ShouldShowHighlightBorderForWindow(const aura::Window* window) override {
     return false;
   }
 
-  void ApplyColorThemeToWindowShadow(aura::Window* window) override {}
+  bool ShouldUpdateDecorationOnWindowPropertyChange(const aura::Window* window,
+                                                    const void* key,
+                                                    intptr_t old) override {
+    return false;
+  }
 
-  bool ShouldRoundShadowForWindow(const aura::Window* window) override {
+  void ApplyColorThemeToWindowDecoration(aura::Window* window) override {}
+
+  bool ShouldRoundDecorationForWindow(const aura::Window* window) override {
     return true;
   }
 };
@@ -397,6 +412,89 @@ TEST_F(DecorationControllerTest, UpdateShadowWhenAddedToParent) {
 
     ASSERT_FALSE(DecorationController::GetDecorationForWindow(embedded.get()));
   }
+}
+
+TEST_F(DecorationControllerTest, HighlightBorderVisibilityAndShowStates) {
+  auto window = std::make_unique<aura::Window>(nullptr);
+  window->SetType(aura::client::WINDOW_TYPE_NORMAL);
+  window->Init(ui::LAYER_TEXTURED);
+  ParentWindow(window.get());
+  window->SetBounds(gfx::Rect(10, 20, 300, 400));
+  window->SetProperty(kWindowHasHighlightBorderKey, true);
+  window->Show();
+
+  EXPECT_TRUE(decoration_controller()->IsShadowVisibleForWindow(window.get()));
+  EXPECT_TRUE(
+      decoration_controller()->IsHighlightBorderVisibleForWindow(window.get()));
+  EXPECT_TRUE(DecorationController::GetShadowForWindow(window.get()));
+  EXPECT_TRUE(DecorationController::GetHighlightBorderForWindow(window.get()));
+
+  // Maximizing hides both shadow and highlight border.
+  window->SetProperty(aura::client::kShowStateKey,
+                      ui::mojom::WindowShowState::kMaximized);
+  EXPECT_FALSE(decoration_controller()->IsShadowVisibleForWindow(window.get()));
+  EXPECT_FALSE(
+      decoration_controller()->IsHighlightBorderVisibleForWindow(window.get()));
+  EXPECT_EQ(
+      0, DecorationController::GetShadowForWindow(window.get())->elevation());
+  EXPECT_FALSE(DecorationController::GetHighlightBorderForWindow(window.get()));
+
+  // Fullscreen hides both shadow and highlight border.
+  window->SetProperty(aura::client::kShowStateKey,
+                      ui::mojom::WindowShowState::kFullscreen);
+  EXPECT_FALSE(decoration_controller()->IsShadowVisibleForWindow(window.get()));
+  EXPECT_FALSE(
+      decoration_controller()->IsHighlightBorderVisibleForWindow(window.get()));
+
+  // Restoring brings back both shadow and highlight border.
+  window->SetProperty(aura::client::kShowStateKey,
+                      ui::mojom::WindowShowState::kNormal);
+  EXPECT_TRUE(decoration_controller()->IsShadowVisibleForWindow(window.get()));
+  EXPECT_TRUE(
+      decoration_controller()->IsHighlightBorderVisibleForWindow(window.get()));
+
+  // Disabling the highlight border property removes only the highlight border.
+  window->SetProperty(kWindowHasHighlightBorderKey, false);
+  EXPECT_TRUE(decoration_controller()->IsShadowVisibleForWindow(window.get()));
+  EXPECT_FALSE(
+      decoration_controller()->IsHighlightBorderVisibleForWindow(window.get()));
+}
+
+TEST_F(DecorationControllerTest, HighlightBorderStacksAboveChildWindows) {
+  auto window = std::make_unique<aura::Window>(nullptr);
+  window->SetType(aura::client::WINDOW_TYPE_NORMAL);
+  window->Init(ui::LAYER_TEXTURED);
+  ParentWindow(window.get());
+  window->SetBounds(gfx::Rect(10, 20, 300, 400));
+
+  auto child1 = std::make_unique<aura::Window>(nullptr);
+  child1->SetType(aura::client::WINDOW_TYPE_CONTROL);
+  child1->Init(ui::LAYER_TEXTURED);
+  window->AddChild(child1.get());
+  window->Show();
+
+  ui::Decoration* decoration =
+      DecorationController::GetDecorationForWindow(window.get());
+  ASSERT_TRUE(decoration);
+
+  // Without a highlight border, the decoration sits at the bottom of the
+  // window's layer.
+  EXPECT_EQ(window->layer()->children().front(), decoration->layer());
+
+  // Enabling the highlight border stacks the decoration at the top.
+  window->SetProperty(kWindowHasHighlightBorderKey, true);
+  EXPECT_EQ(window->layer()->children().back(), decoration->layer());
+
+  // Adding another child window afterwards keeps the decoration on top.
+  auto child2 = std::make_unique<aura::Window>(nullptr);
+  child2->SetType(aura::client::WINDOW_TYPE_CONTROL);
+  child2->Init(ui::LAYER_TEXTURED);
+  window->AddChild(child2.get());
+  EXPECT_EQ(window->layer()->children().back(), decoration->layer());
+
+  // Clearing the highlight border restacks the decoration at the bottom.
+  window->SetProperty(kWindowHasHighlightBorderKey, false);
+  EXPECT_EQ(window->layer()->children().front(), decoration->layer());
 }
 
 TEST_F(DecorationControllerTest, NonUniformRoundedCorners) {
