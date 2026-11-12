@@ -91,10 +91,21 @@ SidePanelWebUIView::~SidePanelWebUIView() = default;
 void SidePanelWebUIView::ViewHierarchyChanged(
     const views::ViewHierarchyChangedDetails& details) {
   WebView::ViewHierarchyChanged(details);
-  // Ensure the WebContents is in a visible state after being added to the
-  // side panel so the correct lifecycle hooks are triggered.
-  if (details.is_add && details.child == this) {
+  if (details.child != this || !web_contents()) {
+    return;
+  }
+  if (details.is_add) {
+    // Ensure the WebContents is in a visible state after being added to the
+    // side panel so the correct lifecycle hooks are triggered.
     web_contents()->WasShown();
+  } else if (!details.move_view) {
+    // Hide the WebContents when it is removed from the side panel (e.g. when
+    // the entry is swapped out and its view is cached). Occlusion tracking
+    // alone isn't enough: until the WebContents' window has been reported
+    // visible once, `WebContentsImpl::UpdateWebContentsVisibility()` ignores
+    // HIDDEN, so the WebContents would otherwise stay VISIBLE after the
+    // `WasShown()` above.
+    web_contents()->WasHidden();
   }
 }
 
