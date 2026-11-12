@@ -418,7 +418,22 @@ void RecordObfuscationResult(Error result) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
+namespace {
+base::FilePath& GetVirtualFilesystemPathOverride() {
+  static base::NoDestructor<base::FilePath> path;
+  return *path;
+}
+}  // namespace
+
+void SetVirtualFilesystemPathForTesting(const base::FilePath& path) {
+  GetVirtualFilesystemPathOverride() = path;
+}
+
 bool IsVirtualFilesystem(const base::FilePath& path) {
+  const base::FilePath& test_path = GetVirtualFilesystemPathOverride();
+  if (!test_path.empty() && (test_path == path || test_path.IsParent(path))) {
+    return true;
+  }
   const base::FilePath kFusePath("/media/fuse");
   return kFusePath == path || kFusePath.IsParent(path);
 }

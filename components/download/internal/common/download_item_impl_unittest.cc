@@ -40,6 +40,7 @@
 #include "components/download/public/common/download_file_factory.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/download/public/common/download_item_impl_delegate.h"
+#include "components/download/public/common/download_item_rename_handler.h"
 #include "components/download/public/common/download_target_info.h"
 #include "components/download/public/common/download_url_parameters.h"
 #include "components/download/public/common/mock_download_file.h"
@@ -114,6 +115,22 @@ class MockDelegate : public DownloadItemImplDelegate {
   MOCK_CONST_METHOD0(IsOffTheRecord, bool());
   MOCK_METHOD(bool, IsActiveNetworkMetered, (), (const override));
 
+  std::unique_ptr<DownloadItemRenameHandler> GetRenameHandlerForDownload(
+      DownloadItemImpl* download_item) override {
+    ++get_rename_handler_call_count_;
+    if (create_rename_handler_) {
+      return std::make_unique<DownloadItemRenameHandler>(download_item);
+    }
+    return nullptr;
+  }
+
+  int get_rename_handler_call_count() const {
+    return get_rename_handler_call_count_;
+  }
+  void set_create_rename_handler(bool create) {
+    create_rename_handler_ = create;
+  }
+
   void VerifyAndClearExpectations() {
     ::testing::Mock::VerifyAndClearExpectations(this);
     SetDefaultExpectations();
@@ -127,6 +144,9 @@ class MockDelegate : public DownloadItemImplDelegate {
     EXPECT_CALL(*this, IsOffTheRecord()).WillRepeatedly(Return(false));
     EXPECT_CALL(*this, IsActiveNetworkMetered).WillRepeatedly(Return(false));
   }
+
+  int get_rename_handler_call_count_ = 0;
+  bool create_rename_handler_ = false;
 };
 
 class TestDownloadItemObserver : public DownloadItem::Observer {
@@ -1393,6 +1413,29 @@ TEST_F(DownloadItemTest, RenameToDifferentTargetPath) {
 
   EXPECT_EQ(moved_final_path, item->GetTargetFilePath());
   EXPECT_EQ(moved_final_path, item->GetFullPath());
+}
+
+// Regression test for crbug.com/503210986: calling `GetRenameHandler()` before
+// target determination completes (e.g. from UI progress observers) must not
+// invoke `GetRenameHandlerForDownload()` or cache a handler before the target
+// path is determined.
+TEST_F(DownloadItemTest, GetRenameHandlerDeferredUntilTargetDetermined) {
+  mock_delegate()->set_create_rename_handler(true);
+  DownloadItemImpl* item = CreateDownloadItem();
+  download::DownloadTargetCallback callback;
+  MockDownloadFile* download_file = CallDownloadItemStart(item, &callback);
+
+  // Before target determination completes, `GetRenameHandler()` must return
+  // nullptr without querying the delegate.
+  EXPECT_EQ(nullptr, item->GetRenameHandler());
+  EXPECT_EQ(0, mock_delegate()->get_rename_handler_call_count());
+
+  DoRenameAndRunTargetCallback(item, download_file, std::move(callback),
+                               DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS);
+
+  EXPECT_NE(nullptr, item->GetRenameHandler());
+  EXPECT_EQ(1, mock_delegate()->get_rename_handler_call_count());
+  CleanupItem(item, download_file, DownloadItem::IN_PROGRESS);
 }
 
 // Test that the delegate is invoked after the download file is renamed and the

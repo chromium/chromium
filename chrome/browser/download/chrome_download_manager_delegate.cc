@@ -2598,30 +2598,37 @@ std::unique_ptr<download::DownloadItemRenameHandler>
 ChromeDownloadManagerDelegate::GetRenameHandlerForDownload(
     download::DownloadItem* download_item) {
 #if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+  // Check if this download requires obfuscation and is destined for a non-local
+  // virtual path (e.g. OneDrive or Google Drive). Checking this before
+  // `SkyvaultRenameHandler` ensures staged virtual filesystem downloads are
+  // relocated out of the temporary directory to their intended target path.
+  const auto* obfuscation_data =
+      static_cast<const enterprise_obfuscation::DownloadObfuscationData*>(
+          download_item->GetUserData(
+              enterprise_obfuscation::DownloadObfuscationData::kUserDataKey));
+  const bool has_original_target_path =
+      obfuscation_data && !obfuscation_data->original_target_path.empty();
+  if (has_original_target_path || ShouldObfuscateDownload(download_item)) {
+    const base::FilePath& target_path =
+        has_original_target_path ? obfuscation_data->original_target_path
+                                 : download_item->GetTargetFilePath();
+    if (enterprise_obfuscation::IsVirtualFilesystem(target_path)) {
+      std::unique_ptr<download::DownloadItemRenameHandler> obfuscation_handler =
+          enterprise_obfuscation::ObfuscationRenameHandler::CreateIfNeeded(
+              download_item);
+      if (obfuscation_handler) {
+        return obfuscation_handler;
+      }
+    }
+  }
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+
   auto skyvault_handler = policy::SkyvaultRenameHandler::CreateIfNeeded(
       CHECK_DEREF(g_browser_process->local_state()), download_item);
   if (skyvault_handler) {
     return skyvault_handler;
   }
-
-#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
-  // Check if this download requires obfuscation and is destined for a non-local
-  // virtual path (e.g. OneDrive).
-  if (ShouldObfuscateDownload(download_item)) {
-    auto* obfuscation_data =
-        static_cast<enterprise_obfuscation::DownloadObfuscationData*>(
-            download_item->GetUserData(
-                enterprise_obfuscation::DownloadObfuscationData::kUserDataKey));
-    const base::FilePath& target_path =
-        (obfuscation_data && !obfuscation_data->original_target_path.empty())
-            ? obfuscation_data->original_target_path
-            : download_item->GetTargetFilePath();
-    if (enterprise_obfuscation::IsVirtualFilesystem(target_path)) {
-      return enterprise_obfuscation::ObfuscationRenameHandler::CreateIfNeeded(
-          download_item);
-    }
-  }
-#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   return nullptr;

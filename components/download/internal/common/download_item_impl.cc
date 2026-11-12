@@ -1107,6 +1107,9 @@ DownloadFile* DownloadItemImpl::GetDownloadFile() {
 }
 
 DownloadItemRenameHandler* DownloadItemImpl::GetRenameHandler() {
+  if (destination_info_.target_path.empty()) {
+    return nullptr;
+  }
   if (!rename_handler_ && delegate_) {
     rename_handler_ = delegate_->GetRenameHandlerForDownload(this);
   }
@@ -1873,6 +1876,7 @@ void DownloadItemImpl::OnDownloadTargetDetermined(
 
   destination_info_.target_path = target_info.target_path;
   destination_info_.target_disposition = target_info.target_disposition;
+  rename_handler_.reset();
   SetDangerType(target_info.danger_type);
   insecure_download_status_ = target_info.insecure_download_status;
   if (!target_info.display_name.empty()) {

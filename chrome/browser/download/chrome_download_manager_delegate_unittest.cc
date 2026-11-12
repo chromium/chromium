@@ -99,6 +99,12 @@
 #include "chrome/browser/download/download_prompt_status.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
+#include "chrome/browser/ash/policy/skyvault/policy_utils.h"
+#endif
+
 using download::DownloadItem;
 using download::DownloadPathReservationTracker;
 using download::PathValidationResult;
@@ -3018,6 +3024,145 @@ TEST_F(ChromeDownloadManagerDelegateTestWithSafeBrowsing,
 
   // The relocation to the virtual filesystem is still pending, so a rename
   // handler is required here.
+  EXPECT_TRUE(delegate()->GetRenameHandlerForDownload(download_item.get()));
+}
+
+// Regression test for crbug.com/503210986: when SkyVault
+// (LocalUserFilesAllowed=false with DownloadDirectory=${google_drive} or
+// ${microsoft_onedrive}) and Enterprise Content Analysis obfuscation are both
+// active, a download staged in /tmp with `original_target_path` pointing to a
+// virtual filesystem (/media/fuse) must receive `ObfuscationRenameHandler`
+// rather than `SkyvaultRenameHandler` so that the file is relocated out of /tmp
+// to its intended virtual target path.
+TEST_F(ChromeDownloadManagerDelegateTestWithSafeBrowsing,
+       GetRenameHandlerForDownload_ObfuscationTakesPrecedenceOverSkyvault) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {enterprise_obfuscation::kEnterpriseFileObfuscation,
+       ash::features::kSkyVault},
+      {});
+
+  TestingBrowserProcess::GetGlobal()->local_state()->SetBoolean(
+      ash::prefs::kLocalUserFilesAllowed, false);
+  base::ScopedClosureRunner reset_local_user_files(base::BindOnce([]() {
+    TestingBrowserProcess::GetGlobal()->local_state()->SetBoolean(
+        ash::prefs::kLocalUserFilesAllowed, true);
+  }));
+  pref_service()->SetFilePath(
+      prefs::kDownloadDefaultDirectory,
+      base::FilePath(policy::local_user_files::kGoogleDrivePolicyVariableName));
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath staging_path =
+      temp_dir.GetPath().AppendASCII(".com.google.Chrome.123456");
+  base::FilePath virtual_path("/media/fuse/drivefs-test/root/report.xlsx");
+
+  std::unique_ptr<download::MockDownloadItem> download_item =
+      CreateActiveDownloadItem(0);
+  EXPECT_CALL(*download_item, RequireSafetyChecks())
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(*download_item, GetTargetFilePath())
+      .WillRepeatedly(ReturnRef(staging_path));
+  EXPECT_CALL(*download_item, GetFullPath())
+      .WillRepeatedly(ReturnRef(staging_path));
+
+  auto mock_protection_service =
+      std::make_unique<::testing::NiceMock<TestDownloadProtectionService>>();
+  EXPECT_CALL(*delegate(), GetDownloadProtectionService())
+      .WillRepeatedly(Return(mock_protection_service.get()));
+
+  policy::SetDMTokenForTesting(policy::DMToken::CreateValidToken("dm_token"));
+  enterprise_connectors::test::SetAnalysisConnector(
+      pref_service(), enterprise_connectors::FILE_DOWNLOADED,
+      R"({
+        "service_provider": "google",
+        "enable": [
+          {
+            "url_list": ["*"],
+            "tags": ["malware", "dlp"]
+          }
+        ],
+        "block_until_verdict": 1
+      })");
+
+  auto obfuscation_data =
+      std::make_unique<enterprise_obfuscation::DownloadObfuscationData>(
+          /*is_obfuscated=*/false);
+  obfuscation_data->original_target_path = virtual_path;
+  download_item->SetUserData(
+      enterprise_obfuscation::DownloadObfuscationData::kUserDataKey,
+      std::move(obfuscation_data));
+
+  // `ObfuscationRenameHandler::ShowRenameProgress()` returns false, whereas
+  // `SkyvaultRenameHandler::ShowRenameProgress()` returns true.
+  std::unique_ptr<download::DownloadItemRenameHandler> handler =
+      delegate()->GetRenameHandlerForDownload(download_item.get());
+  ASSERT_TRUE(handler);
+  EXPECT_FALSE(handler->ShowRenameProgress());
+
+  // Also verify when DownloadDirectory is ${microsoft_onedrive} and the user
+  // selected a virtual path under /media/fuse/fusebox.
+  base::FilePath onedrive_virtual_path(
+      "/media/fuse/fusebox/fsp.onedrive/report.xlsx");
+  auto onedrive_obfuscation_data =
+      std::make_unique<enterprise_obfuscation::DownloadObfuscationData>(
+          /*is_obfuscated=*/false);
+  onedrive_obfuscation_data->original_target_path = onedrive_virtual_path;
+  download_item->SetUserData(
+      enterprise_obfuscation::DownloadObfuscationData::kUserDataKey,
+      std::move(onedrive_obfuscation_data));
+  pref_service()->SetFilePath(
+      prefs::kDownloadDefaultDirectory,
+      base::FilePath(policy::local_user_files::kOneDrivePolicyVariableName));
+  std::unique_ptr<download::DownloadItemRenameHandler> onedrive_handler =
+      delegate()->GetRenameHandlerForDownload(download_item.get());
+  ASSERT_TRUE(onedrive_handler);
+  EXPECT_FALSE(onedrive_handler->ShowRenameProgress());
+
+  // If `original_target_path` is empty (so `ObfuscationRenameHandler` is not
+  // needed), `GetRenameHandlerForDownload()` must fall through and still return
+  // `SkyvaultRenameHandler` rather than nullptr.
+  download_item->RemoveUserData(
+      enterprise_obfuscation::DownloadObfuscationData::kUserDataKey);
+  EXPECT_CALL(*download_item, GetTargetFilePath())
+      .WillRepeatedly(ReturnRef(onedrive_virtual_path));
+  std::unique_ptr<download::DownloadItemRenameHandler> fallback_handler =
+      delegate()->GetRenameHandlerForDownload(download_item.get());
+  ASSERT_TRUE(fallback_handler);
+  EXPECT_TRUE(fallback_handler->ShowRenameProgress());
+}
+
+// Regression test for crbug.com/503210986: if a chunked download had unknown
+// size when `DetermineLocalPath()` staged it in /tmp (populating
+// `original_target_path`) and later exceeded `kMaxUploadSizeBytes` by
+// completion time, `GetRenameHandlerForDownload()` must still return
+// `ObfuscationRenameHandler` so the file is not left in /tmp.
+TEST_F(ChromeDownloadManagerDelegateTestWithSafeBrowsing,
+       GetRenameHandlerForDownload_ChunkedDownloadExceedingMaxSize) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath staging_path =
+      temp_dir.GetPath().AppendASCII(".com.google.Chrome.654321");
+  base::FilePath virtual_path("/media/fuse/odfs/large_archive.zip");
+
+  std::unique_ptr<download::MockDownloadItem> download_item =
+      CreateActiveDownloadItem(0);
+  EXPECT_CALL(*download_item, GetTargetFilePath())
+      .WillRepeatedly(ReturnRef(staging_path));
+  // Simulate total bytes exceeding 50 MB at completion time, causing
+  // `ShouldObfuscateDownload()` to return false.
+  EXPECT_CALL(*download_item, GetTotalBytes())
+      .WillRepeatedly(Return(100LL * 1024 * 1024));
+
+  auto obfuscation_data =
+      std::make_unique<enterprise_obfuscation::DownloadObfuscationData>(
+          /*is_obfuscated=*/false);
+  obfuscation_data->original_target_path = virtual_path;
+  download_item->SetUserData(
+      enterprise_obfuscation::DownloadObfuscationData::kUserDataKey,
+      std::move(obfuscation_data));
+
   EXPECT_TRUE(delegate()->GetRenameHandlerForDownload(download_item.get()));
 }
 

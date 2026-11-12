@@ -180,6 +180,11 @@ inline base::expected<T, Error> RecordAndReturn(
 // /media/fuse).
 COMPONENT_EXPORT(ENTERPRISE_OBFUSCATION)
 bool IsVirtualFilesystem(const base::FilePath& path);
+
+// Overrides the virtual filesystem root path for testing on environments where
+// /media/fuse is not writable.
+COMPONENT_EXPORT(ENTERPRISE_OBFUSCATION)
+void SetVirtualFilesystemPathForTesting(const base::FilePath& path);
 #endif
 
 }  // namespace enterprise_obfuscation
