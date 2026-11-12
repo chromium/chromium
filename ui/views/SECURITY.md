@@ -1,37 +1,45 @@
-# Nested Message Loop Mechanism
+# Views Re-entrancy and Lifetime Guidance
 
-## Overview
-In Chromium, the UI thread's message pump processes work in a round-robin
-fashion from two primary sources: the Chrome Task Queue and the native OS
-Message Queue (e.g., the Windows Message Queue). Bugs may occur when the thread
-blocks and spins a nested message loop, causing re-entrancy into UI code that
-destroys objects currently in use by the blocked outer stack frames.
+Consult [content/browser/SECURITY.md][content-browser-sec] and [Security for
+Agents][sec-agents] first for canonical UI-thread message pump, nested loop,
+platform callback, threat-model, and report-validation rules.
 
-## Mechanisms of Re-entrancy
-When writing UI code, be aware of the following mechanisms that introduce
-implicit nested message loops:
+## `Widget` and `View` Lifetime Hazards
 
-1.  **OS `SendMessage` (Windows):** If a `SendMessage` call crosses thread
-    boundaries, the sending thread blocks until the target thread responds.
-    While blocked, the OS will automatically dispatch incoming **non-queued**
-    messages to the waiting thread.
-    *   *Note:* Chrome tasks rely on *queued* messages, so they will not
-        execute during this block. The risk comes entirely from native OS
-        callbacks (e.g., window activation, focus changes, destruction)
-        firing re-entrantly and calling back into Views code.
-    *   Messages already on the queue will not be dispatched during these
-        calls. Only sending a message directly to the thread will dispatch
-        immediately.
-    *   Any risk to these calls must originate from a direct `SendMessage` call
-        to the HWND during a cross-thread call. When citing a direct
-        `SendMessage` call as a risk, a clear code reference must be provided.
-        `SendMessage` calls do not suddenly appear without a caller. In
-        addition, Chrome cannot mitigate `SendMessage` calls from
-        third-parties. These external callers are already running code inside
-        the environment and can perform more damaging actions.
-2.  **COM Synchronous Calls (Windows):** When a thread part of a single-threaded
-    apartment (STA) blocks on a synchronous cross-apartment COM call, COM spins
-    an internal message pump. This pump only processes messages from its
-    internal RPC HWND and within a specific message range. However, if COM
-    dispatches an RPC callback that re-enters Chrome code, state can still be
-    mutated unexpectedly.
+In `//ui/views`, re-entrancy bugs occur when a `View` or `Widget` operation
+triggers a synchronous native callback or nested message loop (under the
+mechanisms and constraints described in
+[content/browser/SECURITY.md][content-browser-sec]) that destroys the `Widget`
+or mutates the `View` hierarchy while outer stack frames still hold raw `this`
+or child pointers:
+
+* **Deferred vs. synchronous `Widget` close:**
+  * `Widget::Close()` / `Widget::CloseWithReason()` normally hides the window
+    and posts an asynchronous task to destroy the native widget after returning
+    to the message loop (queued tasks do not execute inside native OS nested
+    loops by default).
+  * **Synchronous destruction** occurs on the current call stack when:
+    * a `CLIENT_OWNS_WIDGET` owner has registered
+      `Widget::MakeCloseSynchronous()` and resets its `unique_ptr<Widget>`
+      inside that callback when `Widget::Close()` / `Widget::CloseWithReason()`
+      runs (instead of posting an asynchronous close task), or
+    * a caller invokes `Widget::CloseNow()` or the native window is destroyed
+      directly by the OS (e.g., `WM_NCDESTROY`): under
+      `NATIVE_WIDGET_OWNS_WIDGET`, this synchronously deletes the `Widget` (and
+      `RootView`), whereas under `CLIENT_OWNS_WIDGET` (or
+      `WIDGET_OWNS_NATIVE_WIDGET`) it synchronously destroys the
+      `NativeWidget`—firing `WidgetObserver::OnWidgetDestroying`,
+      `WidgetDelegate::WindowClosing()`, `WidgetObserver::OnWidgetDestroyed`,
+      `WidgetDelegate::DeleteDelegate()`, and any `MakeCloseSynchronous()`
+      callback—and leaves the `Widget` alive in a zombie state unless the owner
+      resets its `unique_ptr<Widget>` in one of those callbacks (the same
+      callbacks also run if the owner resets `unique_ptr<Widget>` later when
+      `Close()`'s asynchronous task destroys the `NativeWidget`).
+* **Views observer and delegate callbacks:** Synchronous native windowing
+  notifications (such as focus, activation, or bounds changes) can invoke
+  `WidgetObserver`, `ViewObserver`, `FocusChangeListener`, or `WidgetDelegate`
+  methods directly on the current call stack without invoking Chrome's message
+  pump.
+
+[content-browser-sec]: /content/browser/SECURITY.md
+[sec-agents]: /docs/security/security-for-agents.md

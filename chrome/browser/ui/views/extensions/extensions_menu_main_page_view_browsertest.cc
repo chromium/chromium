@@ -1962,11 +1962,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewBrowserTest,
               testing::ElementsAre(extension->id()));
 }
 
-// Verifies that synchronously closing the extensions menu bubble from inside an
-// accessibility event callback (e.g. Windows UIA ::UiaRaiseAutomationEvent
-// spinning the COM STA message loop on kTextChanged and servicing
-// accDoDefaultAction on the toolbar button) while UpdateMainPage() is on the
-// stack does not cause a Use-After-Free.
+// Verifies that closing the extensions menu bubble from inside a kTextChanged
+// accessibility event callback on the site settings label while
+// UpdateMainPage() is on the stack defers teardown and does not cause a
+// Use-After-Free.
 IN_PROC_BROWSER_TEST_F(
     ExtensionsMenuMainPageViewBrowserTest,
     CloseMenuSynchronouslyDuringSiteSettingsTextChangedEvent) {

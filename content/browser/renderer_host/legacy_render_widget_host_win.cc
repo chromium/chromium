@@ -130,9 +130,9 @@ void LegacyRenderWidgetHostHWND::UpdateParent(HWND new_parent) {
   if (current_parent != new_parent) {
     // ::SetParent, CreateDirectManipulationHelper (CoCreateInstance /
     // IDirectManipulationManager::Activate / Enable), and UpdateTooltip
-    // (NotifyWinEvent / UiaRaiseAutomationEvent) can synchronously dispatch
-    // window messages. Re-entrant dispatch may reach
-    // RenderWidgetHostViewAura::OnWindowDestroying ->
+    // (hiding a tooltip window or invoking an in-process WINEVENT_INCONTEXT
+    // hook via NotifyWinEvent) can synchronously re-enter on the current stack
+    // and reach RenderWidgetHostViewAura::OnWindowDestroying ->
     // LegacyRenderWidgetHostHWND::Destroy() -> ::DestroyWindow() ->
     // WM_NCDESTROY -> OnNCDestroy -> delete this. Guard against |this| being
     // freed mid-method, matching the pattern used in OnKeyboardRange et al.
@@ -243,10 +243,12 @@ bool LegacyRenderWidgetHostHWND::InitOrDeleteSelf(HWND parent) {
   set_window_class_name(ui::kLegacyRenderWidgetHostHwnd);
   set_window_name(L"Chrome Legacy Window");
 
-  // WindowImpl::Init (::CreateWindowEx), NotifyWinEvent, UpdateTooltip, and
+  // WindowImpl::Init (::CreateWindowEx),
   // DirectManipulationHelper::CreateInstance (CoCreateInstance / Activate /
-  // Enable) can synchronously dispatch window messages. Re-entrant dispatch may
-  // reach RenderWidgetHostViewAura::OnWindowDestroying ->
+  // Enable), UpdateTooltip (hiding a tooltip window), and NotifyWinEvent (if an
+  // in-process WINEVENT_INCONTEXT hook DLL is loaded) can synchronously
+  // re-enter on the current stack and reach
+  // RenderWidgetHostViewAura::OnWindowDestroying ->
   // LegacyRenderWidgetHostHWND::Destroy() -> ::DestroyWindow() ->
   // WM_NCDESTROY -> OnNCDestroy -> delete this. Guard against |this| being
   // freed mid-method.

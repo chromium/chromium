@@ -60,8 +60,8 @@ void ExtensionsMenuCoordinator::Hide() {
         base::NotFatalUntil::M162);
   if (views::Widget* const menu = GetExtensionsMenuWidget()) {
     // Close the widget asynchronously so any views or delegate frames currently
-    // on the stack (e.g., when a synchronous accessibility event spins a nested
-    // message loop that invokes Hide()) can unwind safely before teardown.
+    // on the stack can unwind safely before teardown if Hide() is called
+    // re-entrantly from a callback.
     menu->Close();
     // Immediately stop tracking the view so IsShowing() returns false.
     // `bubble_view_observation_` and `menu_delegate_` are reset when the widget
