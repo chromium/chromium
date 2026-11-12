@@ -9303,13 +9303,6 @@ be describing additional metrics about the same event.
       permission. The exponential bucketing is applied for privacy reasons by
       using ukm::GetExponentialBucketMin(value, 2).
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="DeclarativeNetRequestPermissionCount">
     <summary>
@@ -9317,13 +9310,6 @@ be describing additional metrics about the same event.
       permission. The exponential bucketing is applied for privacy reasons by
       using ukm::GetExponentialBucketMin(value, 2).
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="DeclarativeNetRequestWithHostAccessPermissionCount">
     <summary>
@@ -9332,13 +9318,6 @@ be describing additional metrics about the same event.
       is applied for privacy reasons by using
       ukm::GetExponentialBucketMin(value, 2).
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="DeclarativeWebRequestPermissionCount">
     <summary>
@@ -9346,13 +9325,6 @@ be describing additional metrics about the same event.
       permission. The exponential bucketing is applied for privacy reasons by
       using ukm::GetExponentialBucketMin(value, 2).
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="EnabledExtensionCount">
     <summary>
@@ -9374,13 +9346,6 @@ be describing additional metrics about the same event.
       navigation target URL. The exponential bucketing is applied for privacy
       reasons by using ukm::GetExponentialBucketMin(value, 2).
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="EnabledExtensionCount.InjectContentScript">
     <summary>
@@ -9388,13 +9353,6 @@ be describing additional metrics about the same event.
       exponential bucketing is applied for privacy reasons by using
       ukm::GetExponentialBucketMin(value, 2).
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="WebRequestAuthProviderPermissionCount">
     <summary>
@@ -9402,13 +9360,6 @@ be describing additional metrics about the same event.
       permission. The exponential bucketing is applied for privacy reasons by
       using ukm::GetExponentialBucketMin(value, 2).
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="WebRequestBlockingPermissionCount">
     <summary>
@@ -9416,13 +9367,6 @@ be describing additional metrics about the same event.
       permission. The exponential bucketing is applied for privacy reasons by
       using ukm::GetExponentialBucketMin(value, 2).
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="WebRequestPermissionCount">
     <summary>
@@ -9430,13 +9374,6 @@ be describing additional metrics about the same event.
       exponential bucketing is applied for privacy reasons by using
       ukm::GetExponentialBucketMin(value, 2).
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
 </event>
 
