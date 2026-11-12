@@ -4,6 +4,18 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# Process substitution (used below) is unavailable in POSIX mode on
+# bash < 5.1, and POSIX mode can be inherited from the environment (e.g. via
+# BASH_ENV or POSIXLY_CORRECT), so turn it off. This also unsets
+# POSIXLY_CORRECT; an exported value is restored before exec'ing the binary.
+# Check `declare -x` rather than `-v` because `set -o posix` in BASH_ENV sets
+# an unexported POSIXLY_CORRECT=y that should not be exported to the browser.
+unset chrome_posixly_correct
+if [[ "$(declare -p POSIXLY_CORRECT 2>/dev/null)" == "declare -x "* ]]; then
+  chrome_posixly_correct="$POSIXLY_CORRECT"
+fi
+set +o posix
+
 # Let the wrapped binary know that it has been run through the wrapper.
 export CHROME_WRAPPER="`readlink -f "$0"`"
 
@@ -25,6 +37,10 @@ export GNOME_DISABLE_CRASH_DIALOG=SET_BY_GOOGLE_CHROME
 exec < /dev/null
 exec > >(exec cat)
 exec 2> >(exec cat >&2)
+
+if [ -v chrome_posixly_correct ]; then
+  export POSIXLY_CORRECT="$chrome_posixly_correct"
+fi
 
 # Note: exec -a below is a bashism.
 exec -a "$0" "$HERE/@@PROGNAME" "$@"
