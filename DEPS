@@ -3077,7 +3077,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/dcleblanc/safeint.git' + '@' + '72f0745e26091af6d1186fd91426377f16688ba7',
 
   'src/third_party/search_engines_data/resources':
-    Var('chromium_git') + '/external/search_engines_data.git' + '@' + '5dc9f1afd38a8ac2b26b1972eb4fc1bbd5754e8c',
+    Var('chromium_git') + '/external/search_engines_data.git' + '@' + '2da94de6d3d627bf0c39a491d5dfab08670cfbf9',
 
   'src/third_party/search_engines_data/resources_internal': {
     'url': Var('chrome_git') + '/external/search_engines_data_internal.git' + '@' + '348335df388bf9a9634bca40a487e5ac07fc949b',
