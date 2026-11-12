@@ -5,7 +5,9 @@
 #include "chrome/browser/offline_pages/visuals_decoder_impl.h"
 
 #include "base/base64.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_view_util.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/image_fetcher/image_decoder_impl.h"
@@ -38,7 +40,13 @@ TEST_F(VisualsDecoderImplTest, Success) {
   const int kImageHeight = 2;
   const gfx::Image kDecodedImage =
       gfx::test::CreateImage(kImageWidth, kImageHeight);
-  EXPECT_CALL(*image_decoder, DecodeImage(kImageData, _, _, _))
+  EXPECT_CALL(
+      *image_decoder,
+      DecodeImage(testing::Truly([](const image_fetcher::ImageData& data) {
+                    return data && base::as_string_view(base::span(*data)) ==
+                                       kImageData;
+                  }),
+                  _, _, _))
       .WillOnce(testing::WithArg<3>(
           [&](image_fetcher::ImageDecodedCallback callback) {
             std::move(callback).Run(kDecodedImage);
@@ -53,7 +61,13 @@ TEST_F(VisualsDecoderImplTest, Success) {
 
 TEST_F(VisualsDecoderImplTest, DecodeFail) {
   const gfx::Image kDecodedImage = gfx::Image();
-  EXPECT_CALL(*image_decoder, DecodeImage(kImageData, _, _, _))
+  EXPECT_CALL(
+      *image_decoder,
+      DecodeImage(testing::Truly([](const image_fetcher::ImageData& data) {
+                    return data && base::as_string_view(base::span(*data)) ==
+                                       kImageData;
+                  }),
+                  _, _, _))
       .WillOnce(testing::WithArg<3>(
           [&](image_fetcher::ImageDecodedCallback callback) {
             std::move(callback).Run(kDecodedImage);

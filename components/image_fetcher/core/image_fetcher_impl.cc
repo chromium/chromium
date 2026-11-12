@@ -121,13 +121,10 @@ void ImageFetcherImpl::OnImageURLFetched(const ImageRequestKey& request_key,
     }
     return;
   }
-  // TODO(crbug.com/579214229): Let the decoder accept `ImageData` to avoid
-  // copying the downloaded data into an owning string.
-  image_decoder_->DecodeImage(
-      std::string(base::as_string_view(base::span(*image_data))),
-      params.frame_size(), params.data_decoder(),
-      base::BindOnce(&ImageFetcherImpl::OnImageDecoded, weak_this, request_key,
-                     metadata));
+  image_decoder_->DecodeImage(std::move(image_data), params.frame_size(),
+                              params.data_decoder(),
+                              base::BindOnce(&ImageFetcherImpl::OnImageDecoded,
+                                             weak_this, request_key, metadata));
 }
 
 void ImageFetcherImpl::OnImageDecoded(const ImageRequestKey& request_key,

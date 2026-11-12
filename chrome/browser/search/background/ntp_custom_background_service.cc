@@ -237,7 +237,7 @@ void NtpCustomBackgroundService::UpdateCustomLocalBackgroundColorAsync(
 
 void NtpCustomBackgroundService::ProcessLocalImageData(std::string image_data) {
   if (!image_data.empty()) {
-    image_fetcher_->GetImageDecoder()->DecodeImage(
+    image_fetcher_->GetImageDecoder()->DecodeImageFromString(
         image_data, gfx::Size(), nullptr,
         base::BindOnce(
             &NtpCustomBackgroundService::UpdateCustomLocalBackgroundColorAsync,

@@ -23,13 +23,13 @@ FakeImageDecoder::FakeImageDecoder(const FakeImageDecoder& other) {
 FakeImageDecoder::~FakeImageDecoder() = default;
 
 void FakeImageDecoder::DecodeImage(
-    const std::string& image_data,
+    ImageData image_data,
     const gfx::Size& desired_image_frame_size,
     data_decoder::DataDecoder* data_decoder,
     image_fetcher::ImageDecodedCallback callback) {
   ASSERT_TRUE(enabled_);
   gfx::Image image;
-  if (valid_ && decoded_image_.IsEmpty() && !image_data.empty()) {
+  if (valid_ && decoded_image_.IsEmpty() && image_data->size() != 0) {
     decoded_image_ = gfx::test::CreateImage(2, 3);
   }
 

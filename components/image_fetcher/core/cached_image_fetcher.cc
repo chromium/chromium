@@ -195,7 +195,7 @@ void CachedImageFetcher::OnImageFetchedFromCache(
       TRACE_EVENT("ui", "CachedImageFetcher::OnImageFetchedFromCache Decode");
       auto* data_decoder = request.params.data_decoder();
       GetImageDecoder()->DecodeImage(
-          shared_image_data->as_string(), gfx::Size(), data_decoder,
+          std::move(shared_image_data), gfx::Size(), data_decoder,
           base::BindOnce(&CachedImageFetcher::OnImageDecodedFromCache,
                          weak_this, std::move(request),
                          ImageDataFetcherCallback(), std::move(image_callback),

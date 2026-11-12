@@ -112,6 +112,43 @@ TEST_F(ImageFetcherImplTest, FetchImageAndDataSuccess) {
   RunUntilIdle();
 }
 
+TEST_F(ImageFetcherImplTest, SharesDownloadedBufferWithDecoder) {
+  const std::string bytes("a\0b\xff", 4);
+  test_url_loader_factory()->AddResponse(kImageURL, bytes);
+  ImageData downloaded_data;
+  ImageData decoder_data;
+  ImageDecodedCallback pending_decode;
+  base::test::TestFuture<void> decoding_started;
+  auto decoder = std::make_unique<MockImageDecoder>();
+  EXPECT_CALL(*decoder, DecodeImage(_, _, _, _))
+      .WillOnce([&](ImageData data, const gfx::Size&,
+                    data_decoder::DataDecoder*, ImageDecodedCallback callback) {
+        EXPECT_EQ(data.get(), downloaded_data.get());
+        decoder_data = std::move(data);
+        pending_decode = std::move(callback);
+        decoding_started.SetValue();
+      });
+  RecreateFetcherWithDecoder(std::move(decoder));
+  base::MockCallback<ImageFetcherCallback> image_callback;
+  EXPECT_CALL(image_callback, Run(_, _)).Times(0);
+  image_fetcher()->FetchImageAndData(
+      GURL(kImageURL),
+      base::BindLambdaForTesting([&](ImageData data, const RequestMetadata&) {
+        downloaded_data = std::move(data);
+      }),
+      image_callback.Get(),
+      ImageFetcherParams(TRAFFIC_ANNOTATION_FOR_TESTS, kImageUmaName));
+  ASSERT_TRUE(decoding_started.Wait());
+
+  ASSERT_TRUE(decoder_data);
+  ASSERT_TRUE(pending_decode);
+  downloaded_data.reset();
+  DestroyImageFetcher();
+  EXPECT_EQ(base::as_string_view(base::span(*decoder_data)), bytes);
+  // The decoder can finish after the fetcher and its other buffer owners die.
+  std::move(pending_decode).Run(gfx::test::CreateImage(2, 3));
+}
+
 TEST_F(ImageFetcherImplTest, SharesDataWithConcurrentAndLateSubscribers) {
   test_url_loader_factory()->AddResponse(kImageURL, kImageData);
   base::test::TestFuture<ImageData, RequestMetadata> first;
@@ -290,7 +327,7 @@ TEST_P(ImageFetcherRequestOptionsTest, ConcurrentRequestsHonorFrameSizes) {
   // Model selection of an embedded ICO frame using the size passed to the
   // decoder, without assuming whether downloads or decoding are shared.
   EXPECT_CALL(*decoder, DecodeImage(_, _, _, _))
-      .WillRepeatedly([](const std::string&, const gfx::Size& size,
+      .WillRepeatedly([](ImageData, const gfx::Size& size,
                          data_decoder::DataDecoder*,
                          ImageDecodedCallback callback) {
         std::move(callback).Run(
@@ -437,14 +474,14 @@ TEST_F(ImageFetcherImplTest, DifferentFrameSizeWhileDecodingStartsNewRequest) {
   base::test::TestFuture<void> decoding_started;
   auto decoder = std::make_unique<MockImageDecoder>();
   EXPECT_CALL(*decoder, DecodeImage(_, gfx::Size(16, 16), _, _))
-      .WillOnce([&](const std::string&, const gfx::Size&,
-                    data_decoder::DataDecoder*, ImageDecodedCallback callback) {
+      .WillOnce([&](ImageData, const gfx::Size&, data_decoder::DataDecoder*,
+                    ImageDecodedCallback callback) {
         pending_decode = std::move(callback);
         decoding_started.SetValue();
       });
   EXPECT_CALL(*decoder, DecodeImage(_, gfx::Size(64, 64), _, _))
-      .WillOnce([](const std::string&, const gfx::Size&,
-                   data_decoder::DataDecoder*, ImageDecodedCallback callback) {
+      .WillOnce([](ImageData, const gfx::Size&, data_decoder::DataDecoder*,
+                   ImageDecodedCallback callback) {
         std::move(callback).Run(gfx::test::CreateImage(64, 64));
       });
   RecreateFetcherWithDecoder(std::move(decoder));
@@ -584,7 +621,7 @@ TEST_F(ImageFetcherImplTest, DifferentDataDecodersAreSeparate) {
   data_decoder::DataDecoder first_decoder;
   data_decoder::DataDecoder second_decoder;
   auto decoder = std::make_unique<MockImageDecoder>();
-  auto finish_decode = [](const std::string&, const gfx::Size&,
+  auto finish_decode = [](ImageData, const gfx::Size&,
                           data_decoder::DataDecoder*,
                           ImageDecodedCallback callback) {
     std::move(callback).Run(gfx::test::CreateImage(2, 3));

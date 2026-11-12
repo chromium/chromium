@@ -188,7 +188,7 @@ IconCacherImpl::MaybeProvideDefaultIcon(
           base::BindOnce(&IconCacherImpl::SaveAndNotifyDefaultIconForSite,
                          weak_ptr_factory_.GetWeakPtr(), site,
                          std::move(preliminary_icon_available))));
-  image_fetcher_->GetImageDecoder()->DecodeImage(
+  image_fetcher_->GetImageDecoder()->DecodeImageFromString(
       std::string(ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
           site.default_icon_resource)),
       gfx::Size(kDesiredFrameSize, kDesiredFrameSize), data_decoder_.get(),

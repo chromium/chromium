@@ -403,7 +403,7 @@ void LogoServiceImpl::OnCachedLogoRead(
     scoped_refptr<base::RefCountedString> encoded_image =
         cached_logo->encoded_image;
     image_decoder_->DecodeImage(
-        encoded_image->as_string(), gfx::Size(),  // No particular size desired.
+        std::move(encoded_image), gfx::Size(),  // No particular size desired.
         /*data_decoder=*/nullptr,
         ImageDecodedHandlerWithTimeout::Wrap(base::BindOnce(
             &LogoServiceImpl::OnLightCachedImageDecoded,
@@ -443,7 +443,7 @@ void LogoServiceImpl::OnLightCachedImageDecoded(
       cached_logo->dark_encoded_image;
 
   image_decoder_->DecodeImage(
-      dark_encoded_image->as_string(),
+      std::move(dark_encoded_image),
       gfx::Size(),  // No particular size desired.
       /*data_decoder=*/nullptr,
       ImageDecodedHandlerWithTimeout::Wrap(base::BindOnce(
@@ -548,7 +548,7 @@ void LogoServiceImpl::OnFreshLogoParsed(bool* parsing_failed,
     scoped_refptr<base::RefCountedString> encoded_image = logo->encoded_image;
 
     image_decoder_->DecodeImage(
-        encoded_image->as_string(), gfx::Size(),  // No particular size desired.
+        std::move(encoded_image), gfx::Size(),  // No particular size desired.
         /*data_decoder=*/nullptr,
         ImageDecodedHandlerWithTimeout::Wrap(base::BindOnce(
             &LogoServiceImpl::OnLightFreshImageDecoded,
@@ -570,13 +570,13 @@ void LogoServiceImpl::OnLightFreshImageDecoded(
   }
 
   // Store the value of logo->dark_encoded_image for use below. This ensures
-  // that logo->encoded_image is evaluated before std::move(logo), which sets
-  // logo to nullptr.
+  // that logo->dark_encoded_image is evaluated before std::move(logo), which
+  // sets logo to nullptr.
   scoped_refptr<base::RefCountedString> dark_encoded_image =
       logo->dark_encoded_image;
 
   image_decoder_->DecodeImage(
-      dark_encoded_image->as_string(),
+      std::move(dark_encoded_image),
       gfx::Size(),  // No particular size desired.
       /*data_decoder=*/nullptr,
       ImageDecodedHandlerWithTimeout::Wrap(base::BindOnce(

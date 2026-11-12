@@ -29,6 +29,7 @@ source_set("unit_tests") {
     ":webp_transcode_unit_tests_bundle_data",
     "//base",
     "//base/test:test_support",
+    "//components/image_fetcher/core",
     "//net",
     "//services/network:test_support",
     "//services/network/public/cpp",

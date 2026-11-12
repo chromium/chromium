@@ -615,12 +615,14 @@ void WallpaperSearchHandler::OnHistoryUpdated() {
   WallpaperSearchHandler::UpdateHistory();
 }
 
-// This function is a wrapper around image_fetcher::ImageDecoder::DecodeImage()
-// because of argument order when working with PostTaskAndReplyWithResult().
+// This function is a wrapper around
+// image_fetcher::ImageDecoder::DecodeImageFromString() because of argument
+// order when working with PostTaskAndReplyWithResult().
 void WallpaperSearchHandler::DecodeHistoryImage(
     image_fetcher::ImageDecodedCallback callback,
     std::string image) {
-  image_decoder_->DecodeImage(image, gfx::Size(), nullptr, std::move(callback));
+  image_decoder_->DecodeImageFromString(image, gfx::Size(), nullptr,
+                                        std::move(callback));
 }
 
 void WallpaperSearchHandler::OnDescriptorsRetrieved(
@@ -786,7 +788,7 @@ void WallpaperSearchHandler::OnInspirationImageDownloaded(
              << image_download_simple_url_loader_->NetError();
     return;
   }
-  image_decoder_->DecodeImage(
+  image_decoder_->DecodeImageFromString(
       *response_body, gfx::Size(), nullptr,
       base::BindOnce(&WallpaperSearchHandler::OnInspirationImageDecoded,
                      weak_ptr_factory_.GetWeakPtr(), id, std::move(timer)));
@@ -1035,7 +1037,7 @@ void WallpaperSearchHandler::OnWallpaperSearchResultsRetrieved(
       image_quality->set_previewed(false);
       image_quality->set_selected(false);
     }
-    image_decoder_->DecodeImage(
+    image_decoder_->DecodeImageFromString(
         image.encoded_image(), gfx::Size(), nullptr,
         base::BindOnce(
             [](base::RepeatingCallback<void(

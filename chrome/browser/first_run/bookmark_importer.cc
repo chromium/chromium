@@ -164,7 +164,7 @@ class FirstRunBookmarkImporter {
     }
 
     // Image decoding will happen in a sandboxed utility process.
-    image_decoder_->DecodeImage(
+    image_decoder_->DecodeImageFromString(
         parsed_image_data, /*desired_image_frame_size=*/gfx::Size(),
         /*data_decoder=*/nullptr,
         base::BindOnce(&PersistFaviconPostFetch, profile_->GetWeakPtr(),

@@ -32,7 +32,7 @@ class IOSImageDecoderImpl : public ImageDecoder {
 
   // Note, that |desired_image_frame_size| is not supported
   // (http://crbug/697596).
-  void DecodeImage(const std::string& image_data,
+  void DecodeImage(ImageData image_data,
                    const gfx::Size& desired_image_frame_size,
                    data_decoder::DataDecoder* data_decoder,
                    ImageDecodedCallback callback) override;
@@ -42,13 +42,13 @@ IOSImageDecoderImpl::IOSImageDecoderImpl() = default;
 
 IOSImageDecoderImpl::~IOSImageDecoderImpl() = default;
 
-void IOSImageDecoderImpl::DecodeImage(const std::string& image_data,
+void IOSImageDecoderImpl::DecodeImage(ImageData image_data,
                                       const gfx::Size& desired_image_frame_size,
                                       data_decoder::DataDecoder* data_decoder,
                                       ImageDecodedCallback callback) {
-  // Convert the |image_data| std::string to an NSData buffer.
-  NSData* data =
-      [NSData dataWithBytes:image_data.data() length:image_data.size()];
+  // Copy the encoded bytes into the platform decoding buffer.
+  NSData* data = [NSData dataWithBytes:image_data->data()
+                                length:image_data->size()];
 
   // Decode the image data using UIImage.
   // "Most likely" always returns 1x images.

@@ -94,7 +94,8 @@ class ImageDecoder {
   ImageDecoder& operator=(const ImageDecoder&) = delete;
 
   // Calls StartWithOptions() with default options.
-  // ImageDataType can be std::vector<uint8_t> or std::string.
+  // `ImageDataType` can be `std::vector<uint8_t>`, `std::string`, or a non-null
+  // `scoped_refptr<base::RefCountedMemory>`.
   template <typename ImageDataType>
   static void Start(ImageRequest* image_request, ImageDataType image_data);
 

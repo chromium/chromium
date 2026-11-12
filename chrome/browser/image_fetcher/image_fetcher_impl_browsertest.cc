@@ -181,15 +181,16 @@ IN_PROC_BROWSER_TEST_F(ImageFetcherImplBrowserTest, DestroyInCallback) {
   data_decoder::DataDecoder data_decoder;
   auto decoder = std::make_unique<ImageDecoderImpl>();
   base::RunLoop fail_loop;
-  decoder->DecodeImage("invalid image data", gfx::Size(), &data_decoder,
-                       base::BindLambdaForTesting([&](const gfx::Image& image) {
-                         if (image.IsEmpty()) {
-                           num_callback_null_called_++;
-                         }
-                         decoder.reset();
-                         fail_loop.Quit();
-                       }));
-  decoder->DecodeImage(
+  decoder->DecodeImageFromString(
+      "invalid image data", gfx::Size(), &data_decoder,
+      base::BindLambdaForTesting([&](const gfx::Image& image) {
+        if (image.IsEmpty()) {
+          num_callback_null_called_++;
+        }
+        decoder.reset();
+        fail_loop.Quit();
+      }));
+  decoder->DecodeImageFromString(
       "other pending request", gfx::Size(), &data_decoder,
       base::BindOnce([](const gfx::Image& image) { ADD_FAILURE(); }));
   fail_loop.Run();

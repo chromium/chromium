@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "components/image_fetcher/core/image_fetcher_types.h"
 
 namespace data_decoder {
 class DataDecoder;
@@ -45,10 +46,19 @@ class ImageDecoder {
   // decodes in the same process. If `data_decoder` is null, a new process will
   // be created to decode this image. `data_decoder` must outlive the
   // ImageDecoder.
-  virtual void DecodeImage(const std::string& image_data,
+  // `image_data` must be non-null. Implementations may retain it while
+  // decoding.
+  virtual void DecodeImage(ImageData image_data,
                            const gfx::Size& desired_image_frame_size,
                            data_decoder::DataDecoder* data_decoder,
                            ImageDecodedCallback callback) = 0;
+
+  // Copies string data into a shared buffer for callers that do not already
+  // have one. Empty strings are passed through as empty, non-null buffers.
+  void DecodeImageFromString(const std::string& image_data,
+                             const gfx::Size& desired_image_frame_size,
+                             data_decoder::DataDecoder* data_decoder,
+                             ImageDecodedCallback callback);
 };
 
 }  // namespace image_fetcher

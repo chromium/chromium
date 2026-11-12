@@ -56,8 +56,9 @@ void VisualsDecoderImpl::DecodeAndCropImage(const std::string& thumbnail_data,
 
   // kPreferredFaviconSize only has an effect for images with multiple frames
   // (.ico) and shouldn't make a difference for thumbnails.
-  image_decoder_->DecodeImage(thumbnail_data, kPreferredFaviconSize,
-                              /*data_decoder=*/nullptr, std::move(callback));
+  image_decoder_->DecodeImageFromString(thumbnail_data, kPreferredFaviconSize,
+                                        /*data_decoder=*/nullptr,
+                                        std::move(callback));
 }
 
 }  // namespace offline_pages

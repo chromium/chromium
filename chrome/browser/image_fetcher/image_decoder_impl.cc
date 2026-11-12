@@ -74,7 +74,7 @@ ImageDecoderImpl::ImageDecoderImpl() = default;
 ImageDecoderImpl::~ImageDecoderImpl() = default;
 
 void ImageDecoderImpl::DecodeImage(
-    const std::string& image_data,
+    image_fetcher::ImageData image_data,
     const gfx::Size& desired_image_frame_size,
     data_decoder::DataDecoder* data_decoder,
     image_fetcher::ImageDecodedCallback callback) {
@@ -82,7 +82,8 @@ void ImageDecoderImpl::DecodeImage(
       new DecodeImageRequest(this, data_decoder, std::move(callback)));
 
   ::ImageDecoder::StartWithOptions(
-      decode_image_request.get(), image_data, ::ImageDecoder::DEFAULT_CODEC,
+      decode_image_request.get(), std::move(image_data),
+      ::ImageDecoder::DEFAULT_CODEC,
       /*shrink_to_fit=*/false, desired_image_frame_size);
 
   decode_image_requests_.push_back(std::move(decode_image_request));

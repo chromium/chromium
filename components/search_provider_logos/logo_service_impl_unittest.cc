@@ -13,6 +13,7 @@
 
 #include "base/base64.h"
 #include "base/byte_size.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -308,12 +309,12 @@ class MockLogoCache : public LogoCache {
 
 class FakeImageDecoder : public image_fetcher::ImageDecoder {
  public:
-  void DecodeImage(const std::string& image_data,
+  void DecodeImage(image_fetcher::ImageData image_data,
                    const gfx::Size& desired_image_frame_size,
                    data_decoder::DataDecoder* data_decoder,
                    image_fetcher::ImageDecodedCallback callback) override {
     gfx::Image image =
-        gfx::Image::CreateFrom1xPNGBytes(base::as_byte_span(image_data));
+        gfx::Image::CreateFrom1xPNGBytes(base::span(*image_data));
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), image));
   }

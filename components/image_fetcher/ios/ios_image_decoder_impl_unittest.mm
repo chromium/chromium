@@ -6,10 +6,14 @@
 
 #import <UIKit/UIKit.h>
 
+#include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/memory/ref_counted_memory.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 #include "ui/gfx/geometry/size.h"
@@ -75,7 +79,7 @@ TEST_F(IOSImageDecoderImplTest, JPGImage) {
 
   std::string image_data =
       std::string(reinterpret_cast<char*>(kJPGImage), sizeof(kJPGImage));
-  ios_image_decoder_impl_->DecodeImage(
+  ios_image_decoder_impl_->DecodeImageFromString(
       image_data, gfx::Size(), /*data_decoder=*/nullptr,
       base::BindOnce(&IOSImageDecoderImplTest::OnImageDecoded,
                      base::Unretained(this)));
@@ -90,7 +94,7 @@ TEST_F(IOSImageDecoderImplTest, WebpImage) {
 
   std::string image_data =
       std::string(reinterpret_cast<char*>(kWEBPImage), sizeof(kWEBPImage));
-  ios_image_decoder_impl_->DecodeImage(
+  ios_image_decoder_impl_->DecodeImageFromString(
       image_data, gfx::Size(), /*data_decoder=*/nullptr,
       base::BindOnce(&IOSImageDecoderImplTest::OnImageDecoded,
                      base::Unretained(this)));
@@ -100,6 +104,31 @@ TEST_F(IOSImageDecoderImplTest, WebpImage) {
   EXPECT_FALSE(decoded_image_.IsEmpty());
 }
 
+TEST_F(IOSImageDecoderImplTest, SharedBuffer) {
+  ImageData data =
+      base::MakeRefCounted<base::RefCountedBytes>(base::span(kJPGImage));
+  base::test::TestFuture<gfx::Image> result;
+  ios_image_decoder_impl_->DecodeImage(data, gfx::Size(), nullptr,
+                                       result.GetCallback<const gfx::Image&>());
+  data.reset();
+  ASSERT_TRUE(result.Wait());
+  EXPECT_FALSE(result.Get().IsEmpty());
+  EXPECT_EQ(result.Get().Width(), 1);
+  EXPECT_EQ(result.Get().Height(), 1);
+}
+
+TEST_F(IOSImageDecoderImplTest, EmptyAndInvalidSharedBuffers) {
+  for (const std::string& bytes :
+       {std::string(), std::string("invalid image")}) {
+    base::test::TestFuture<gfx::Image> result;
+    ios_image_decoder_impl_->DecodeImage(
+        base::MakeRefCounted<base::RefCountedString>(bytes), gfx::Size(),
+        nullptr, result.GetCallback<const gfx::Image&>());
+    ASSERT_TRUE(result.Wait());
+    EXPECT_TRUE(result.Get().IsEmpty());
+  }
+}
+
 // Verifies that the decoded image retains a 1.0x scale factor.
 TEST_F(IOSImageDecoderImplTest, DecodedImageScale) {
   ASSERT_TRUE(decoded_image_.IsEmpty());
@@ -107,7 +136,7 @@ TEST_F(IOSImageDecoderImplTest, DecodedImageScale) {
   std::string image_data =
       std::string(reinterpret_cast<char*>(kJPGImage), sizeof(kJPGImage));
 
-  ios_image_decoder_impl_->DecodeImage(
+  ios_image_decoder_impl_->DecodeImageFromString(
       image_data, gfx::Size(), /*data_decoder=*/nullptr,
       base::BindOnce(&IOSImageDecoderImplTest::OnImageDecoded,
                      base::Unretained(this)));

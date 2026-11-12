@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_IMAGE_FETCHER_CORE_FAKE_IMAGE_DECODER_H_
 #define COMPONENTS_IMAGE_FETCHER_CORE_FAKE_IMAGE_DECODER_H_
 
-#include <string>
-
 #include "base/functional/bind.h"
 #include "components/image_fetcher/core/image_decoder.h"
 #include "components/image_fetcher/core/image_fetcher_types.h"
@@ -24,7 +22,7 @@ class FakeImageDecoder : public image_fetcher::ImageDecoder {
   FakeImageDecoder(const FakeImageDecoder& other);
   ~FakeImageDecoder() override;
 
-  void DecodeImage(const std::string& image_data,
+  void DecodeImage(ImageData image_data,
                    const gfx::Size& desired_image_frame_size,
                    data_decoder::DataDecoder* data_decoder,
                    image_fetcher::ImageDecodedCallback callback) override;

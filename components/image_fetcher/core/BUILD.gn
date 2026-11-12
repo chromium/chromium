@@ -12,6 +12,7 @@ static_library("core") {
     "cached_image_fetcher.h",
     "image_data_fetcher.cc",
     "image_data_fetcher.h",
+    "image_decoder.cc",
     "image_decoder.h",
     "image_fetcher.cc",
     "image_fetcher.h",
@@ -78,6 +79,7 @@ source_set("unit_tests") {
   sources = [
     "cached_image_fetcher_unittest.cc",
     "image_data_fetcher_unittest.cc",
+    "image_decoder_unittest.cc",
     "image_fetcher_impl_unittest.cc",
     "image_fetcher_metrics_reporter_unittest.cc",
     "reduced_mode_image_fetcher_unittest.cc",

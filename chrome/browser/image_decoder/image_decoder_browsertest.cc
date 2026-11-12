@@ -4,7 +4,10 @@
 
 #include "chrome/browser/image_decoder/image_decoder.h"
 
+#include <utility>
+
 #include "base/compiler_specific.h"
+#include "base/memory/ref_counted_memory.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -109,6 +112,41 @@ IN_PROC_BROWSER_TEST_F(ImageDecoderBrowserTest, Basic) {
   base::RunLoop run_loop;
   TestImageRequest test_request(run_loop.QuitClosure());
   ImageDecoder::Start(&test_request, std::vector<uint8_t>());
+  run_loop.Run();
+  EXPECT_FALSE(test_request.decode_succeeded());
+}
+
+IN_PROC_BROWSER_TEST_F(ImageDecoderBrowserTest, SharedBuffer) {
+  base::RunLoop run_loop;
+  TestImageRequest test_request(run_loop.QuitClosure());
+  scoped_refptr<base::RefCountedMemory> data =
+      base::MakeRefCounted<base::RefCountedBytes>(GetValidPngData());
+  ImageDecoder::StartWithOptions(&test_request, data);
+  // The caller can release its buffer after dispatch, before the result
+  // arrives.
+  data.reset();
+  run_loop.Run();
+  EXPECT_TRUE(test_request.decode_succeeded());
+  EXPECT_EQ(test_request.get_bitmap().width(), 1);
+  EXPECT_EQ(test_request.get_bitmap().height(), 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ImageDecoderBrowserTest, EmptySharedBuffer) {
+  base::RunLoop run_loop;
+  TestImageRequest test_request(run_loop.QuitClosure());
+  scoped_refptr<base::RefCountedMemory> data =
+      base::MakeRefCounted<base::RefCountedBytes>();
+  ImageDecoder::Start(&test_request, std::move(data));
+  run_loop.Run();
+  EXPECT_FALSE(test_request.decode_succeeded());
+}
+
+IN_PROC_BROWSER_TEST_F(ImageDecoderBrowserTest, InvalidSharedBuffer) {
+  base::RunLoop run_loop;
+  TestImageRequest test_request(run_loop.QuitClosure());
+  scoped_refptr<base::RefCountedMemory> data =
+      base::MakeRefCounted<base::RefCountedString>("invalid image");
+  ImageDecoder::Start(&test_request, std::move(data));
   run_loop.Run();
   EXPECT_FALSE(test_request.decode_succeeded());
 }
