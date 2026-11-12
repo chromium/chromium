@@ -7742,11 +7742,6 @@ Called by update_permissions_policy_enum.py.-->
   <int value="5" label="IdleTaskNotSupported"/>
 </enum>
 
-<enum name="ImageHasMultipleGeneratorClientIds">
-  <int value="0" label="Image decode is requested by at least one client"/>
-  <int value="1" label="Image decode is requested by more than one client"/>
-</enum>
-
 <enum name="ImageSelectionRetrievalOutcome">
   <int value="0" label="Cached image node was successfully retrieved."/>
   <int value="1" label="Cached image node was not found."/>
