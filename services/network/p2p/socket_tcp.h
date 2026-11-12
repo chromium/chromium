@@ -123,7 +123,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketTcpBase : public P2PSocket {
   raw_ptr<ProxyResolvingClientSocketFactory> proxy_resolving_socket_factory_;
 };
 
-class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketTcp : public P2PSocketTcpBase {
+class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketTcp final
+    : public P2PSocketTcpBase {
  public:
   P2PSocketTcp(
       Delegate* delegate,
@@ -151,7 +152,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketTcp : public P2PSocketTcpBase {
 // with TURN. These messages will not have length at front of the packet and
 // are padded to multiple of 4 bytes.
 // Formatting of messages is defined in RFC5766.
-class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketStunTcp
+class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketStunTcp final
     : public P2PSocketTcpBase {
  public:
   P2PSocketStunTcp(
