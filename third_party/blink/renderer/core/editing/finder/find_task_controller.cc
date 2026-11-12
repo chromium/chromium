@@ -18,7 +18,6 @@
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/scheduler/scripted_idle_task_controller.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace blink {
@@ -73,7 +72,6 @@ class FindTaskController::FindTask final : public GarbageCollected<FindTask> {
                                  true /* aborted */, task_start_time);
       return;
     }
-    SCOPED_UMA_HISTOGRAM_TIMER("WebCore.FindInPage.TaskDuration");
 
     Document* document = controller_->GetLocalFrame()->GetDocument();
     if (!document || document_ != document)
