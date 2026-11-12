@@ -34,6 +34,10 @@ bool InitializeCrashpadClient(const std::wstring& handler_pipe) {
 std::wstring GetCrashpadHandlerPipe() {
   return CrashpadWin::GetInstance().GetHandlerIPCPipe();
 }
+
+bool CanUnprivilegedCrashpadClientsConnect() {
+  return CrashpadWin::GetInstance().CanUnprivilegedClientsConnect();
+}
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_LINUX)

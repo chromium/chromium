@@ -15,7 +15,7 @@
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/strings/utf_string_conversions.h"
-#endif
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_LINUX)
 #include <grp.h>
@@ -162,4 +162,8 @@ int wmain(int argc, wchar_t* argv[]) {
   return HandlerMainAdaptor(argc, argv_as_utf8.data());
 }
 
-#endif  // BUILDFLAG(IS_LINUX)
+int APIENTRY wWinMain(HINSTANCE, HINSTANCE, wchar_t*, int) {
+  return wmain(__argc, __wargv);
+}
+
+#endif  // BUILDFLAG(IS_LINUX) / BUILDFLAG(IS_WIN)

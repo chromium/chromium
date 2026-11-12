@@ -946,7 +946,7 @@
       Return="ignore"/>
 
     <SetProperty Id="remove_minidumps_uninstall"
-      Value="&quot;[POWERSHELLEXE]&quot; -NoLogo -NonInteractive -NoProfile -ExecutionPolicy Bypass Remove-Item -Force -Recurse -ErrorAction SilentlyContinue '[binaries]minidumps'"
+      Value="&quot;[POWERSHELLEXE]&quot; -NoLogo -NonInteractive -NoProfile -ExecutionPolicy Bypass Remove-Item -Force -Recurse -ErrorAction SilentlyContinue '[binaries]minidumps', '[binaries]crashpad'"
       Before="remove_minidumps_uninstall"
       Sequence="execute" />
     <CustomAction Id="remove_minidumps_uninstall"
@@ -957,7 +957,7 @@
       Return="ignore"/>
 
     <SetProperty Id="remove_minidumps_install_repair"
-      Value="&quot;[POWERSHELLEXE]&quot; -NoLogo -NonInteractive -NoProfile -ExecutionPolicy Bypass Remove-Item -Force -Recurse -ErrorAction SilentlyContinue '[binaries]minidumps'"
+      Value="&quot;[POWERSHELLEXE]&quot; -NoLogo -NonInteractive -NoProfile -ExecutionPolicy Bypass Remove-Item -Force -Recurse -ErrorAction SilentlyContinue '[binaries]minidumps', '[binaries]crashpad'"
       Before="remove_minidumps_install_repair"
       Sequence="execute" />
     <CustomAction Id="remove_minidumps_install_repair"
@@ -1016,6 +1016,17 @@
       Impersonate="no"
       Return="ignore"/>
 
+    <SetProperty Id="kill_remoting_crashpad_handler"
+      Value="&quot;[POWERSHELLEXE]&quot; -NoLogo -NonInteractive -NoProfile -ExecutionPolicy Bypass Stop-Process -Force -Name remoting_crashpad_handler"
+      Before="kill_remoting_crashpad_handler"
+      Sequence="execute" />
+    <CustomAction Id="kill_remoting_crashpad_handler"
+      BinaryKey="WixCA"
+      DllEntry="$(var.CAQuietExecForPlatform)"
+      Execute="deferred"
+      Impersonate="no"
+      Return="ignore"/>
+
     <!-- Ensure ALL APPLICATION PACKAGES (S-1-15-2-1) has Read & Execute access
          to the install directory and binaries so the sandboxed AppContainer network
          worker process can load remoting_core.dll even if parent inheritance is broken. -->
@@ -1063,7 +1074,7 @@
       <Custom Action="remove_symbolic_link" Before="RemoveFiles">
         Installed AND (NOT MAINTENANCE)
       </Custom>
-      <!-- Clean minidumps before deleting the install directory on uninstall -->
+      <!-- Clean crash directories before deleting the install directory on uninstall -->
       <Custom Action="remove_minidumps_uninstall" Before="RemoveFiles">
         Installed AND (NOT MAINTENANCE)
       </Custom>
@@ -1080,7 +1091,13 @@
       <Custom Action="kill_remote_webauthn" After="InstallInitialize">
         Installed
       </Custom>
-      <!-- Clean minidumps before setting permissions on install/repair -->
+      <!-- Terminate any lingering Crashpad handler (e.g. spawned by standalone
+           binaries or still uploading after StopServices) before removing or
+           overwriting files and crash directories. -->
+      <Custom Action="kill_remoting_crashpad_handler" After="StopServices">
+        Installed
+      </Custom>
+      <!-- Clean crash directories before setting permissions on install/repair -->
       <Custom Action="remove_minidumps_install_repair" Before="grant_appcontainer_permissions">
         NOT REMOVE
       </Custom>

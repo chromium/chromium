@@ -31,6 +31,5 @@ declare_args() {
   remoting_internal = enable_src_internal
 
   # Set to true to enable using Crashpad instead of Breakpad.
-  # Currently, this is only implemented for linux.
-  enable_chromoting_crashpad = is_linux
+  enable_chromoting_crashpad = is_linux || is_win
 }

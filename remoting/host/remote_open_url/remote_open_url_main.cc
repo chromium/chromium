@@ -22,13 +22,9 @@
 #include "remoting/host/usage_stats_consent.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #include "remoting/base/crash/crash_reporting_crashpad.h"
-#endif  // BUILDFLAG(IS_LINUX)
-
-#if BUILDFLAG(IS_WIN)
-#include "remoting/base/crash/crash_reporting_breakpad.h"
-#endif  // BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 
 namespace remoting {
 
@@ -46,11 +42,9 @@ int RemoteOpenUrlMain(int argc, char** argv) {
 
 #if defined(REMOTING_ENABLE_CRASH_REPORTING)
   if (IsUsageStatsAllowed()) {
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
     InitializeCrashpadReporting();
-#elif BUILDFLAG(IS_WIN)
-    InitializeBreakpadReporting();
-#endif  // BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
   }
 #endif  // defined(REMOTING_ENABLE_CRASH_REPORTING)
 

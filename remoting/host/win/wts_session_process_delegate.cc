@@ -9,6 +9,7 @@
 
 #include <atomic>
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/command_line.h"
@@ -37,6 +38,7 @@
 #include "mojo/public/cpp/platform/platform_channel_server_endpoint.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
 #include "mojo/public/cpp/system/invitation.h"
+#include "remoting/base/crash/crash_reporting_crashpad.h"
 #include "remoting/host/base/switches.h"
 #include "remoting/host/ipc_constants.h"
 #include "remoting/host/mojom/desktop_session.mojom.h"
@@ -530,6 +532,11 @@ void WtsSessionProcessDelegate::Core::DoLaunchProcess() {
       IPC::Channel::MODE_SERVER, this, io_task_runner_,
       base::SingleThreadTaskRunner::GetCurrentDefault());
   command_line.AppendSwitchASCII(kMojoPipeToken, mojo_pipe_token);
+
+  std::wstring crashpad_pipe = GetCrashpadHandlerPipe();
+  if (!crashpad_pipe.empty()) {
+    command_line.AppendSwitchNative(kCrashpadHandlerPipe, crashpad_pipe);
+  }
 
   std::unique_ptr<mojo::PlatformChannel> normal_mojo_channel;
   std::unique_ptr<mojo::NamedPlatformChannel> elevated_mojo_channel;

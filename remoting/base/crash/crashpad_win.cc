@@ -50,6 +50,41 @@ int __cdecl OnWindowProcedureException(EXCEPTION_POINTERS* exinfo) {
   return EXCEPTION_CONTINUE_SEARCH;
 }
 
+// Temporarily clears STD_INPUT_HANDLE and STD_OUTPUT_HANDLE while spawning
+// remoting_crashpad_handler.exe synchronously so CrashpadClient::StartHandler()
+// does not add Chrome's inheritable Native Messaging stdin/stdout pipes to the
+// handler's PROC_THREAD_ATTRIBUTE_HANDLE_LIST (leaving STD_ERROR_HANDLE
+// intact).
+class ScopedClearStdIoHandles {
+ public:
+  ScopedClearStdIoHandles()
+      : std_input_(::GetStdHandle(STD_INPUT_HANDLE)),
+        std_output_(::GetStdHandle(STD_OUTPUT_HANDLE)) {
+    if (std_input_ != nullptr && std_input_ != INVALID_HANDLE_VALUE) {
+      ::SetStdHandle(STD_INPUT_HANDLE, nullptr);
+    }
+    if (std_output_ != nullptr && std_output_ != INVALID_HANDLE_VALUE) {
+      ::SetStdHandle(STD_OUTPUT_HANDLE, nullptr);
+    }
+  }
+
+  ScopedClearStdIoHandles(const ScopedClearStdIoHandles&) = delete;
+  ScopedClearStdIoHandles& operator=(const ScopedClearStdIoHandles&) = delete;
+
+  ~ScopedClearStdIoHandles() {
+    if (std_input_ != nullptr && std_input_ != INVALID_HANDLE_VALUE) {
+      ::SetStdHandle(STD_INPUT_HANDLE, std_input_);
+    }
+    if (std_output_ != nullptr && std_output_ != INVALID_HANDLE_VALUE) {
+      ::SetStdHandle(STD_OUTPUT_HANDLE, std_output_);
+    }
+  }
+
+ private:
+  const HANDLE std_input_;
+  const HANDLE std_output_;
+};
+
 bool SetupSystemCrashpadDirectory(const base::FilePath& database_path) {
   CHECK(!database_path.empty());
   if (!base::CreateDirectory(database_path.DirName())) {
@@ -268,9 +303,15 @@ bool CrashpadWin::Initialize() {
   }
 
   auto client = std::make_unique<crashpad::CrashpadClient>();
-  if (!client->StartHandler(handler_path, database_path, metrics_path,
-                            kDefaultCrashpadUploadUrl, annotations, arguments,
-                            false, false)) {
+  bool handler_started = false;
+  {
+    ScopedClearStdIoHandles clear_stdio_handles;
+    handler_started = client->StartHandler(
+        handler_path, database_path, metrics_path, kDefaultCrashpadUploadUrl,
+        annotations, arguments, /*restartable=*/false,
+        /*asynchronous_start=*/false);
+  }
+  if (!handler_started) {
     LOG(ERROR) << "Failed to start Crashpad handler.";
     return false;
   }
@@ -279,7 +320,8 @@ bool CrashpadWin::Initialize() {
   const std::wstring handler_ipc_pipe = crashpad_client_->GetHandlerIPCPipe();
 
   if (is_system) {
-    GrantLocalServiceAccessToHandlerPipe(handler_ipc_pipe);
+    local_service_pipe_access_granted_ =
+        GrantLocalServiceAccessToHandlerPipe(handler_ipc_pipe);
   }
 
   ConfigureProcessExceptionHandling();
@@ -320,6 +362,10 @@ bool CrashpadWin::InitializeClient(const std::wstring& handler_pipe) {
 std::wstring CrashpadWin::GetHandlerIPCPipe() const {
   return crashpad_client_ ? crashpad_client_->GetHandlerIPCPipe()
                           : std::wstring();
+}
+
+bool CrashpadWin::CanUnprivilegedClientsConnect() const {
+  return crashpad_client_ && local_service_pipe_access_granted_;
 }
 
 // static

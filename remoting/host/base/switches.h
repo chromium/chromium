@@ -83,6 +83,9 @@ extern const char kMojoPipeToken[];
 extern const char kCrashServerPipeHandle[];
 
 #if BUILDFLAG(IS_WIN)
+// Used to pass the Crashpad handler IPC pipe name to child processes.
+extern const char kCrashpadHandlerPipe[];
+
 // TODO(crbug.com/502281489): Remove this switch once the PC process is enabled
 // by default.
 // Specifies whether to use the dedicated Peer Connection process.

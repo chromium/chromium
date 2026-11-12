@@ -182,6 +182,7 @@ std::optional<ACCESS_MASK> FindAllowedMaskForSid(
 
 TEST(CrashpadWinTest, GetHandlerPipeBeforeInit) {
   EXPECT_TRUE(GetCrashpadHandlerPipe().empty());
+  EXPECT_FALSE(CanUnprivilegedCrashpadClientsConnect());
 }
 
 TEST(CrashpadWinTest, InitializeClientWithEmptyPipe) {
@@ -237,6 +238,9 @@ MULTIPROCESS_TEST_MAIN(InitializeClientAndGettersChild) {
   }
   if (GetCrashpadHandlerPipe() != pipe_name) {
     return 5;
+  }
+  if (CanUnprivilegedCrashpadClientsConnect()) {
+    return 6;
   }
   return 0;
 }

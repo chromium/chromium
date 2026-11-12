@@ -69,8 +69,6 @@
 
 #include <commctrl.h>
 #include <shellapi.h>
-
-#include "remoting/base/crash/crash_reporting_breakpad.h"
 #endif  // BUILDFLAG(IS_WIN)
 
 namespace remoting {
@@ -409,14 +407,24 @@ int HostMain(int argc, char** argv) {
     }
 #elif BUILDFLAG(IS_WIN)
     // TODO: joedow - Enable crash reporting for the RDP process.
-    if (process_type == kProcessTypeDaemon) {
-      InitializeBreakpadReporting();
-    } else if (process_type == kProcessTypeDesktop) {
-      // TODO(garykac): Switch to use InitializeCrashpadReporting();
-      InitializeBreakpadReporting();
-    } else if (command_line->HasSwitch(kCrashServerPipeHandle)) {
-      InitializeOopCrashClient(
-          command_line->GetSwitchValueASCII(kCrashServerPipeHandle));
+    if (command_line->HasSwitch(kCrashpadHandlerPipe)) {
+      if (!InitializeCrashpadClient(
+              command_line->GetSwitchValueNative(kCrashpadHandlerPipe))) {
+        LOG(ERROR) << "Failed to initialize Crashpad client.";
+      }
+    } else if (process_type == kProcessTypeDaemon ||
+               process_type == kProcessTypeSingleProcessHost) {
+      InitializeCrashpadReporting();
+    } else if (process_type == kProcessTypeDesktop ||
+               process_type == kProcessTypeNetwork ||
+               process_type == kProcessTypePeerConnection) {
+      // Multi-process worker processes never spawn their own Crashpad handler:
+      // network and peer_connection run unprivileged/sandboxed, and desktop
+      // runs inside WtsSessionProcessDelegate's 2-process Job Object (with
+      // JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE) where StartHandler() does not pass
+      // CREATE_BREAKAWAY_FROM_JOB.
+      LOG(WARNING) << "Crashpad handler pipe not provided. Crash reporting is "
+                   << "disabled for " << process_type << " process.";
     }
 #endif
   }

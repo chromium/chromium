@@ -45,8 +45,11 @@
 #include <unistd.h>
 #endif  // BUILDFLAG(IS_POSIX)
 
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #include "remoting/base/crash/crash_reporting_crashpad.h"
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_LINUX)
 #include "remoting/host/linux/host_types.h"
 #include "remoting/host/setup/daemon_controller_delegate_linux_single_process.h"
 #include "remoting/host/setup/start_host_as_root.h"
@@ -56,7 +59,6 @@
 #include <windows.h>
 
 #include "base/process/process_info.h"
-#include "remoting/base/crash/crash_reporting_breakpad.h"
 #endif  // BUILDFLAG(IS_WIN)
 
 namespace remoting {
@@ -446,11 +448,9 @@ int StartHostMain(int argc, char** argv) {
   // setup), which does not affect the actual host daemon process (which will
   // still force crash reporting on corp users).
   if (!command_line->HasSwitch(kDisableCrashReportingSwitchName)) {
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
     InitializeCrashpadReporting();
-#elif BUILDFLAG(IS_WIN)
-    InitializeBreakpadReporting();
-#endif  // BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
   }
 #endif  // defined(REMOTING_ENABLE_CRASH_REPORTING)
 

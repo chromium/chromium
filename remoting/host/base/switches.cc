@@ -54,6 +54,7 @@ const char kMojoPipeToken[] = "mojo-pipe-token";
 const char kCrashServerPipeHandle[] = "crash-server-pipe-handle";
 
 #if BUILDFLAG(IS_WIN)
+const char kCrashpadHandlerPipe[] = "crashpad-handler-pipe";
 const char kUsePeerConnectionProcessSwitch[] = "use-peer-connection-process";
 #endif  // BUILDFLAG(IS_WIN)
 

@@ -51,6 +51,10 @@ bool InitializeCrashpadClient(const std::wstring& handler_pipe);
 // Gets the IPC pipe name of the Crashpad handler started by
 // InitializeCrashpadReporting(), or an empty string if unavailable.
 std::wstring GetCrashpadHandlerPipe();
+
+// Returns true if the Crashpad handler pipe DACL was updated to allow
+// unprivileged LocalService worker processes to connect.
+bool CanUnprivilegedCrashpadClientsConnect();
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_LINUX)

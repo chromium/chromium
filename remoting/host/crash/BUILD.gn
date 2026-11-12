@@ -28,6 +28,9 @@ if (is_linux || is_win) {
     ]
 
     if (is_win) {
+      configs -= [ "//build/config/win:console" ]
+      configs += [ "//build/config/win:windowed" ]
+
       sources += [ "$root_gen_dir/remoting/version.rc" ]
       defines = host_predefines +
                 [ "REMOTING_HOST_BINARY=BINARY_REMOTING_CRASHPAD_HANDLER" ]

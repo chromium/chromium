@@ -27,6 +27,7 @@ class CrashpadWin : CrashpadDatabaseManager::Logger {
   bool Initialize();
   bool InitializeClient(const std::wstring& handler_pipe);
   std::wstring GetHandlerIPCPipe() const;
+  bool CanUnprivilegedClientsConnect() const;
 
   static CrashpadWin& GetInstance();
 
@@ -48,6 +49,7 @@ class CrashpadWin : CrashpadDatabaseManager::Logger {
   void LogError(std::string_view message) const override;
 
   bool initialization_attempted_ = false;
+  bool local_service_pipe_access_granted_ = false;
   std::unique_ptr<crashpad::CrashpadClient> crashpad_client_;
 };
 
