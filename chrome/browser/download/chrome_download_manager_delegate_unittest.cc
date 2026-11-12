@@ -96,6 +96,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/device_info.h"
+#include "chrome/browser/download/android/insecure_download_dialog_bridge.h"
 #include "chrome/browser/download/download_prompt_status.h"
 #endif
 
@@ -1682,6 +1683,28 @@ TEST_F(ChromeDownloadManagerDelegateTest,
   EXPECT_EQ(download::DownloadItem::InsecureDownloadStatus::BLOCK,
             target_info.insecure_download_status);
 }
+
+#if BUILDFLAG(IS_ANDROID)
+// Verify that InsecureDownloadDialogBridge queues the dialog rather than
+// immediately rejecting it when WindowAndroid is null (e.g. while a tab is
+// being reparented to a new window).
+TEST_F(ChromeDownloadManagerDelegateTest,
+       InsecureDownloadDialogBridge_NullWindowAndroid_QueuesDialog) {
+  std::unique_ptr<download::MockDownloadItem> download_item =
+      CreateActiveDownloadItem(0);
+  EXPECT_CALL(*download_item, GetTotalBytes()).WillRepeatedly(Return(1024));
+
+  bool callback_invoked = false;
+  InsecureDownloadDialogBridge bridge;
+  bridge.CreateDialog(
+      download_item.get(), base::FilePath(FILE_PATH_LITERAL("foo.apk")),
+      /*window_android=*/nullptr,
+      base::BindOnce([](bool* invoked, bool accepted) { *invoked = true; },
+                     &callback_invoked));
+  task_environment()->FastForwardBy(base::Milliseconds(1));
+  EXPECT_FALSE(callback_invoked);
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 TEST_F(ChromeDownloadManagerDelegateTest, WithoutHistoryDbNextId) {
   delegate()->GetNextId(base::BindOnce(

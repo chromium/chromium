@@ -92,8 +92,9 @@ public class InsecureDownloadDialog {
                         .with(
                                 ModalDialogProperties.BUTTON_TAP_PROTECTION_PERIOD_MS,
                                 UiUtils.PROMPT_INPUT_PROTECTION_SHORT_DELAY_MS)
+                        .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, false)
                         .build();
 
-        modalDialogManager.showDialog(propertyModel, ModalDialogManager.ModalDialogType.TAB);
+        modalDialogManager.showDialog(propertyModel, ModalDialogManager.ModalDialogType.APP);
     }
 }

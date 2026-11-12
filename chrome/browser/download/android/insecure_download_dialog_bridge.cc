@@ -48,18 +48,14 @@ void InsecureDownloadDialogBridge::CreateDialog(
     const base::FilePath& base_name,
     ui::WindowAndroid* window_android,
     base::OnceCallback<void(bool /* accept */)> callback) {
-  if (!window_android) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), false));
-    return;
-  }
   JNIEnv* env = base::android::AttachCurrentThread();
   intptr_t callback_id = reinterpret_cast<intptr_t>(
       new InsecureDownloadDialogCallback(std::move(callback)));
   validator_.AddJavaCallback(callback_id);
 
   Java_InsecureDownloadDialogBridge_showDialog(
-      env, java_object_, window_android->GetJavaObject(),
+      env, java_object_,
+      window_android ? window_android->GetJavaObject() : nullptr,
       base::UTF8ToUTF16(base_name.value()), download->GetTotalBytes(),
       callback_id);
 }

@@ -2376,7 +2376,8 @@ void ChromeDownloadManagerDelegate::OnDownloadTargetDetermined(
     auto* web_contents = content::DownloadItemUtils::GetWebContents(item);
     gfx::NativeWindow native_window =
         web_contents ? web_contents->GetTopLevelNativeWindow() : nullptr;
-    if (native_window && item) {
+    if (item && (native_window ||
+                 (web_contents && TabAndroid::FromWebContents(web_contents)))) {
       InsecureDownloadDialogBridge::GetInstance()->CreateDialog(
           item, item->GetFileNameToReportUser(), native_window,
           base::BindOnce(HandleInsecureDownloadInfoBarResult, item,
