@@ -12,7 +12,9 @@ export function getHtml(this: PinnedToolbarActionElement) {
     class="${this.hasHelpBubble ? 'help-anchor-highlight' : ''}"
     .buttonTabIndex="${0}" .disabled="${!this.state.enabled}"
     ?is-menu-open="${this.state.highlighted || this.trackedHighlighted}"
-    ?is-activated="${this.state.activated}" .tooltip="${this.getTooltip_()}"
+    ?is-activated="${this.showUnderlineIndicator_()}"
+    ?has-circle-highlight="${this.showCircleHighlight_()}"
+    .tooltip="${this.getTooltip_()}"
     .ariaLabel="${this.state.accessibilityText || this.state.tooltip}"
     .ariaPressed="${
         this.state.highlighted || this.trackedHighlighted ? 'true' : 'false'}"
@@ -36,7 +38,8 @@ ${this.getProgressRingStatus_() ? html`
     </circle>
   </svg>
 ` : nothing}
-<div class="status-indicator" ?hidden="${!this.state.activated}"></div>
+<div class="status-indicator" ?hidden="${!this.showUnderlineIndicator_()}">
+</div>
 ${this.getBadgeText_() ? html`
   <div class="badge" aria-hidden="true" ?disabled="${!this.state.enabled}"
       ?dormant="${this.isDormant_()}" ?is-activated="${this.state.activated}">

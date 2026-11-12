@@ -6,7 +6,7 @@ import 'chrome://webui-toolbar.top-chrome/lazy_load.js';
 
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
-import {BrowserProxyImpl, DownloadProgressRingStatus, IconTable, IconType, TrackedElementManager} from 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
+import {BrowserProxyImpl, DownloadProgressRingStatus, IconTable, IconType, PinnedToolbarActionEngagedIndicatorStyle, TrackedElementManager} from 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
 
 suite('PinnedToolbarAction', function() {
   let action: any;
@@ -510,4 +510,99 @@ suite('PinnedToolbarAction', function() {
           rootStyle.removeProperty('--color-toolbar-button-icon-inactive');
         }
       });
+
+  test('Renders engaged indicator styles', async () => {
+    const rootStyle = document.documentElement.style;
+    rootStyle.setProperty('--color-toolbar-button-icon', 'rgb(1, 2, 3)');
+    rootStyle.setProperty(
+        '--color-toolbar-action-item-engaged', 'rgb(10, 20, 30)');
+    rootStyle.setProperty(
+        '--color-avatar-button-highlight-default', 'rgb(40, 50, 60)');
+    rootStyle.setProperty(
+        '--color-toolbar-feature-promo-highlight', 'rgb(70, 80, 90)');
+    try {
+      const button = action.shadowRoot!.querySelector('toolbar-chip-button')!;
+      const innerButton = button.shadowRoot!.querySelector('#button')!;
+      const indicator: HTMLElement =
+          action.shadowRoot!.querySelector('.status-indicator');
+
+      // Default unengaged state: no underline indicator or circle highlight.
+      assertTrue(indicator.hidden);
+      assertFalse(button.hasAttribute('is-activated'));
+      assertFalse(button.hasAttribute('has-circle-highlight'));
+
+      // Underline engaged indicator style shows the underline and uses the
+      // engaged foreground color.
+      action.state = {
+        ...action.state,
+        activated: true,
+        engagedIndicatorStyle:
+            PinnedToolbarActionEngagedIndicatorStyle.kUnderline,
+      };
+      await microtasksFinished();
+      assertFalse(indicator.hidden);
+      assertTrue(button.hasAttribute('is-activated'));
+      assertFalse(button.hasAttribute('has-circle-highlight'));
+      assertEquals('rgb(10, 20, 30)', getComputedStyle(button).color);
+
+      // Circle highlight engaged indicator style hides the underline, keeps the
+      // normal icon color, and paints the circular background highlight.
+      action.state = {
+        ...action.state,
+        activated: true,
+        engagedIndicatorStyle:
+            PinnedToolbarActionEngagedIndicatorStyle.kCircleHighlight,
+      };
+      await microtasksFinished();
+      assertTrue(indicator.hidden);
+      assertFalse(button.hasAttribute('is-activated'));
+      assertTrue(button.hasAttribute('has-circle-highlight'));
+      assertEquals('rgb(1, 2, 3)', getComputedStyle(button).color);
+      assertEquals(
+          'rgb(40, 50, 60)', getComputedStyle(innerButton).backgroundColor);
+
+      // During an IPH, the circle highlight background is suppressed by the
+      // pulsing IPH highlight and the icon uses the feature promo highlight
+      // color.
+      action.hasHelpBubble = true;
+      await microtasksFinished();
+      assertTrue(button.classList.contains('help-anchor-highlight'));
+      assertEquals('rgb(70, 80, 90)', getComputedStyle(button).color);
+      assertEquals(
+          'rgba(0, 0, 0, 0)', getComputedStyle(innerButton).backgroundColor);
+
+      action.hasHelpBubble = false;
+      await microtasksFinished();
+      assertFalse(button.classList.contains('help-anchor-highlight'));
+      assertEquals('rgb(1, 2, 3)', getComputedStyle(button).color);
+      assertEquals(
+          'rgb(40, 50, 60)', getComputedStyle(innerButton).backgroundColor);
+
+      // Highlighting the button (e.g. open side panel or bubble) suppresses
+      // the circle highlight background, matching native !IsActive().
+      action.state = {
+        ...action.state,
+        highlighted: true,
+      };
+      await microtasksFinished();
+      assertFalse(button.hasAttribute('has-circle-highlight'));
+
+      action.state = {
+        ...action.state,
+        highlighted: false,
+      };
+      action.trackedHighlighted = true;
+      await microtasksFinished();
+      assertFalse(button.hasAttribute('has-circle-highlight'));
+
+      action.trackedHighlighted = false;
+      await microtasksFinished();
+      assertTrue(button.hasAttribute('has-circle-highlight'));
+    } finally {
+      rootStyle.removeProperty('--color-toolbar-button-icon');
+      rootStyle.removeProperty('--color-toolbar-action-item-engaged');
+      rootStyle.removeProperty('--color-avatar-button-highlight-default');
+      rootStyle.removeProperty('--color-toolbar-feature-promo-highlight');
+    }
+  });
 });

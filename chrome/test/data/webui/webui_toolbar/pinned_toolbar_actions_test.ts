@@ -8,7 +8,7 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_as
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {AnimationTracker} from 'chrome://webui-toolbar.top-chrome/lazy_load.js';
 import type {PinnedToolbarActionsElement} from 'chrome://webui-toolbar.top-chrome/lazy_load.js';
-import {BrowserProxyImpl, PinnedToolbarAction, TrackedElementManager} from 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
+import {BrowserProxyImpl, PinnedToolbarAction, PinnedToolbarActionEngagedIndicatorStyle, TrackedElementManager} from 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
 
 suite('PinnedToolbarActions', function() {
   let container: PinnedToolbarActionsElement;
@@ -97,6 +97,8 @@ suite('PinnedToolbarActions', function() {
         icon: {handleId: 1n},
         progressRing: null,
         badgeNumber: null,
+        engagedIndicatorStyle:
+            PinnedToolbarActionEngagedIndicatorStyle.kUnderline,
         iconSizeDelta: 0,
       },
       {
@@ -110,6 +112,8 @@ suite('PinnedToolbarActions', function() {
         icon: {handleId: 2n},
         progressRing: null,
         badgeNumber: null,
+        engagedIndicatorStyle:
+            PinnedToolbarActionEngagedIndicatorStyle.kUnderline,
         iconSizeDelta: 0,
       },
       {
@@ -123,6 +127,8 @@ suite('PinnedToolbarActions', function() {
         icon: {handleId: 0n},
         progressRing: null,
         badgeNumber: null,
+        engagedIndicatorStyle:
+            PinnedToolbarActionEngagedIndicatorStyle.kUnderline,
         iconSizeDelta: 0,
       },
     ];
@@ -142,6 +148,8 @@ suite('PinnedToolbarActions', function() {
         icon: {handleId: 1n},
         progressRing: null,
         badgeNumber: null,
+        engagedIndicatorStyle:
+            PinnedToolbarActionEngagedIndicatorStyle.kUnderline,
         iconSizeDelta: 0,
       },
       {
@@ -155,6 +163,8 @@ suite('PinnedToolbarActions', function() {
         icon: {handleId: 0n},
         progressRing: null,
         badgeNumber: null,
+        engagedIndicatorStyle:
+            PinnedToolbarActionEngagedIndicatorStyle.kUnderline,
         iconSizeDelta: 0,
       },
       {
@@ -168,6 +178,8 @@ suite('PinnedToolbarActions', function() {
         icon: {handleId: 3n},
         progressRing: null,
         badgeNumber: null,
+        engagedIndicatorStyle:
+            PinnedToolbarActionEngagedIndicatorStyle.kUnderline,
         iconSizeDelta: 0,
       },
     ];
@@ -247,6 +259,8 @@ suite('PinnedToolbarActions', function() {
         icon: {handleId: 1n},
         progressRing: null,
         badgeNumber: null,
+        engagedIndicatorStyle:
+            PinnedToolbarActionEngagedIndicatorStyle.kUnderline,
         iconSizeDelta: 0,
       },
       {
@@ -260,6 +274,8 @@ suite('PinnedToolbarActions', function() {
         icon: {handleId: 2n},
         progressRing: null,
         badgeNumber: null,
+        engagedIndicatorStyle:
+            PinnedToolbarActionEngagedIndicatorStyle.kUnderline,
         iconSizeDelta: 0,
       },
     ];
@@ -320,6 +336,8 @@ suite('PinnedToolbarActions', function() {
         icon: {handleId: 1n},
         progressRing: null,
         badgeNumber: null,
+        engagedIndicatorStyle:
+            PinnedToolbarActionEngagedIndicatorStyle.kUnderline,
         iconSizeDelta: 0,
       },
       {
@@ -333,6 +351,8 @@ suite('PinnedToolbarActions', function() {
         icon: {handleId: 0n},
         progressRing: null,
         badgeNumber: null,
+        engagedIndicatorStyle:
+            PinnedToolbarActionEngagedIndicatorStyle.kUnderline,
         iconSizeDelta: 0,
       },
       {
@@ -346,6 +366,8 @@ suite('PinnedToolbarActions', function() {
         icon: {handleId: 3n},
         progressRing: null,
         badgeNumber: null,
+        engagedIndicatorStyle:
+            PinnedToolbarActionEngagedIndicatorStyle.kUnderline,
         iconSizeDelta: 0,
       },
     ];
@@ -432,6 +454,8 @@ suite('PinnedToolbarActions', function() {
         icon: {handleId: 2n},
         progressRing: null,
         badgeNumber: null,
+        engagedIndicatorStyle:
+            PinnedToolbarActionEngagedIndicatorStyle.kUnderline,
         iconSizeDelta: 0,
       },
       {
@@ -445,6 +469,8 @@ suite('PinnedToolbarActions', function() {
         icon: {handleId: 1n},
         progressRing: null,
         badgeNumber: null,
+        engagedIndicatorStyle:
+            PinnedToolbarActionEngagedIndicatorStyle.kUnderline,
         iconSizeDelta: 0,
       },
       {
@@ -458,6 +484,8 @@ suite('PinnedToolbarActions', function() {
         icon: {handleId: 0n},
         progressRing: null,
         badgeNumber: null,
+        engagedIndicatorStyle:
+            PinnedToolbarActionEngagedIndicatorStyle.kUnderline,
         iconSizeDelta: 0,
       },
     ];

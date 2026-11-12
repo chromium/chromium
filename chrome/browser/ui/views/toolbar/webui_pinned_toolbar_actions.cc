@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_ids.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/toolbar/download_button.h"
+#include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button_menu_model.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
@@ -249,10 +250,17 @@ void WebUIPinnedToolbarActions::OnActionsChanged() {
         IsActionHighlighted(id) || (menu_runner_ && menu_runner_->IsRunning() &&
                                     active_context_menu_action_ == id);
     state->enabled = item->GetEnabled();
-    // TODO(crbug.com/578143713): Also plumb
-    // `kActionItemEngagedIndicatorStyleKey` through `PinnedToolbarActionState`
-    // to support `kCircleHighlight` in WebUI.
     state->activated = item->GetProperty(kActionItemUnderlineIndicatorKey);
+    switch (item->GetProperty(kActionItemEngagedIndicatorStyleKey)) {
+      case ActionItemEngagedIndicatorStyle::kUnderline:
+        state->engaged_indicator_style = toolbar_ui_api::mojom::
+            PinnedToolbarActionEngagedIndicatorStyle::kUnderline;
+        break;
+      case ActionItemEngagedIndicatorStyle::kCircleHighlight:
+        state->engaged_indicator_style = toolbar_ui_api::mojom::
+            PinnedToolbarActionEngagedIndicatorStyle::kCircleHighlight;
+        break;
+    }
     state->tooltip = item->GetTooltipText();
     state->accessibility_text = item->GetAccessibleName();
     if (auto element_id = webui_toolbar::ActionIdToElementIdentifier(id)) {

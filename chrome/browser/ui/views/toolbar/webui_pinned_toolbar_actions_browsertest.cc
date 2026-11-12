@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/download_button.h"
+#include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/toolbar/webui_pinned_toolbar_actions_test_base.h"
 #include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
@@ -610,6 +611,74 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest,
                   BrowserActions::From(browser())->root_action_item())
       ->SetProperty(kActionItemUnderlineIndicatorKey, false);
   verify_activated(false);
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest,
+                       CircleHighlightEngagedIndicatorRendering) {
+  actions::ActionId action_id = kActionPrint;
+  toolbar_ui_api::mojom::PinnedToolbarAction mojom_action =
+      toolbar_ui_api::mojom::PinnedToolbarAction::kPrint;
+
+  PinAction(action_id, mojom_action);
+
+  auto verify_circle_highlight = [&](bool expected) {
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return EvalJsOnPinnedAction(
+                 mojom_action,
+                 base::StringPrintf(
+                     "const indicator = "
+                     "actionEl.shadowRoot.querySelector('.status-indicator'); "
+                     "return !btn.hasAttribute('is-activated') && "
+                     "btn.hasAttribute('has-circle-highlight') === %s && "
+                     "!!indicator && !indicator.checkVisibility();",
+                     expected ? "true" : "false"))
+          .ExtractBool();
+    }));
+  };
+
+  // Initially not highlighted.
+  verify_circle_highlight(false);
+
+  actions::ActionItem* const action_item =
+      actions::ActionManager::Get().FindAction(
+          action_id, BrowserActions::From(browser())->root_action_item());
+  ASSERT_TRUE(action_item);
+
+  const auto* color_provider =
+      BrowserView::GetBrowserViewForBrowser(browser())->GetColorProvider();
+  const SkColor highlight_color =
+      color_provider->GetColor(kColorAvatarButtonHighlightDefault);
+  ASSERT_EQ(SK_AlphaOPAQUE, SkColorGetA(highlight_color));
+  const std::string expected_highlight_rgb = base::StringPrintf(
+      "rgb(%d, %d, %d)", SkColorGetR(highlight_color),
+      SkColorGetG(highlight_color), SkColorGetB(highlight_color));
+
+  // Configure circle highlight engaged indicator style and activate the action.
+  action_item->SetProperty(kActionItemEngagedIndicatorStyleKey,
+                           ActionItemEngagedIndicatorStyle::kCircleHighlight);
+  action_item->SetProperty(kActionItemUnderlineIndicatorKey, true);
+  verify_circle_highlight(true);
+  EXPECT_EQ(
+      expected_highlight_rgb,
+      EvalJsOnPinnedAction(
+          mojom_action,
+          "return innerBtn ? getComputedStyle(innerBtn).backgroundColor : "
+          "'(null)';"));
+
+  // While the action is highlighted (e.g. side panel open), the circle
+  // highlight background is suppressed.
+  WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
+  webui_toolbar_view->GetPinnedToolbarActions()->UpdateActionState(action_id,
+                                                                   true);
+  verify_circle_highlight(false);
+
+  webui_toolbar_view->GetPinnedToolbarActions()->UpdateActionState(action_id,
+                                                                   false);
+  verify_circle_highlight(true);
+
+  // Deactivating the action removes the circle highlight.
+  action_item->SetProperty(kActionItemUnderlineIndicatorKey, false);
+  verify_circle_highlight(false);
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest, IconSizeDelta) {

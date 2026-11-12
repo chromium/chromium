@@ -794,6 +794,19 @@ struct DownloadProgressRingState {
   uint8? progress_percentage;
 };
 
+// Visual style used to indicate that a pinned toolbar action button is engaged
+// (`activated`). Mirrors `ActionItemEngagedIndicatorStyle` in
+// //chrome/browser/ui/views/toolbar/pinned_action_toolbar_button.h.
+enum PinnedToolbarActionEngagedIndicatorStyle {
+  // Colors the button icon with `--color-toolbar-action-item-engaged` and shows
+  // an underline status indicator below the icon.
+  kUnderline,
+  // Shows a circular background highlight
+  // (`--color-avatar-button-highlight-default`) behind the button when not
+  // highlighted (`is-menu-open`).
+  kCircleHighlight,
+};
+
 // The state of a pinned toolbar action button that should be displayed.
 struct PinnedToolbarActionState {
   // The action to invoke upon click of this button.
@@ -807,6 +820,12 @@ struct PinnedToolbarActionState {
 
   // Should this button appear activated?
   bool activated;
+
+  // Visual style used to indicate that the action is engaged when `activated`
+  // is true. Mirrors `kActionItemEngagedIndicatorStyleKey` and
+  // `PinnedActionToolbarButton::SetEngagedIndicatorStyle()`.
+  PinnedToolbarActionEngagedIndicatorStyle engaged_indicator_style =
+      PinnedToolbarActionEngagedIndicatorStyle.kUnderline;
 
   // Tooltip text to display on hover.
   mojo_base.mojom.String16 tooltip;
