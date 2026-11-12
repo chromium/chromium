@@ -25,6 +25,7 @@
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
+#include "extensions/browser/content_verifier/content_verify_job.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registrar.h"
@@ -64,6 +65,22 @@ const char kContentVerificationExperimentName[] =
 
 ChromeContentVerifierDelegate::GetVerifyInfoTestOverride::VerifyInfoCallback*
     g_verify_info_test_callback = nullptr;
+
+// Returns the reason to record in UMA when scheduling a reinstall of a
+// force-installed extension after content verification failed with `reason`.
+CorruptedExtensionReinstaller::PolicyReinstallReason GetPolicyReinstallReason(
+    ContentVerifyJob::FailureReason reason,
+    bool is_from_webstore) {
+  using PolicyReinstallReason =
+      CorruptedExtensionReinstaller::PolicyReinstallReason;
+  if (is_from_webstore) {
+    return PolicyReinstallReason::CORRUPTION_DETECTED_WEBSTORE;
+  }
+  if (reason == ContentVerifyJob::MISSING_EXTENSION_MANIFEST) {
+    return PolicyReinstallReason::EXTENSION_MANIFEST_MISSING_FOR_NON_WEBSTORE;
+  }
+  return PolicyReinstallReason::CORRUPTION_DETECTED_NON_WEBSTORE;
+}
 
 }  // namespace
 
@@ -230,6 +247,17 @@ void ChromeContentVerifierDelegate::VerifyFailed(
 
   const VerifyInfo info = GetVerifyInfo(*extension);
 
+  // A missing manifest.json only proves corruption for extensions installed
+  // from a CRX, and for now it is only acted on for policy installs, which
+  // policy can install again. Anything else keeps the missing-hashes handling
+  // below, e.g. a component extension whose manifest comes from resources or
+  // has another name, or an unpacked extension verified because of
+  // --repair-all-valid-extensions.
+  if (reason == ContentVerifyJob::MISSING_EXTENSION_MANIFEST &&
+      !Manifest::IsPolicyLocation(extension->location())) {
+    reason = ContentVerifyJob::MISSING_ALL_HASHES;
+  }
+
   if (reason == ContentVerifyJob::MISSING_ALL_HASHES) {
     // If the failure was due to hashes missing, only "enforce_strict" would
     // disable the extension, but not "enforce".
@@ -237,9 +265,15 @@ void ChromeContentVerifierDelegate::VerifyFailed(
       return;
 
     // If a non-webstore extension has no computed hashes for content
-    // verification, leave it as is for now.
-    // See https://crbug.com/40625642#comment23 for more details.
-    // TODO(crbug.com/40669814): Schedule the extension for reinstall.
+    // verification, leave it as is. Hashes for such extensions are only
+    // computed at install time, so UMA shows the vast majority of these are
+    // extensions whose files are intact (e.g. installed before they were
+    // force-installed, or before hashes were computed at all); disabling and
+    // reinstalling them would break any whose update URL no longer serves the
+    // CRX. The one unambiguous case, a policy install whose manifest.json is
+    // missing too, is reported as MISSING_EXTENSION_MANIFEST instead and
+    // handled below.
+    // See https://crbug.com/40625642#comment23 and crbug.com/40669814.
     if (!info.is_from_webstore) {
       if (!would_be_reinstalled_ids_.contains(extension_id)) {
         corrupted_extension_reinstaller->RecordPolicyReinstallReason(
@@ -275,12 +309,7 @@ void ChromeContentVerifierDelegate::VerifyFailed(
             extension_id))
       return;
     corrupted_extension_reinstaller->ExpectReinstallForCorruption(
-        extension_id,
-        info.is_from_webstore
-            ? CorruptedExtensionReinstaller::PolicyReinstallReason::
-                  CORRUPTION_DETECTED_WEBSTORE
-            : CorruptedExtensionReinstaller::PolicyReinstallReason::
-                  CORRUPTION_DETECTED_NON_WEBSTORE,
+        extension_id, GetPolicyReinstallReason(reason, info.is_from_webstore),
         extension->location());
     registrar->DisableExtension(extension_id,
                                 {disable_reason::DISABLE_CORRUPTED});

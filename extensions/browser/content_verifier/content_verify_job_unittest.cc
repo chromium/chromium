@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -21,6 +22,7 @@
 #include "extensions/browser/content_verifier/test_utils.h"
 #include "extensions/browser/extensions_test.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_paths.h"
 #include "extensions/common/file_util.h"
 #include "extensions/test/test_extension_dir.h"
@@ -722,6 +724,70 @@ TEST_F(ContentVerifyJobWithoutSignedHashesUnittest, ExtensionWithoutHashes) {
     EXPECT_FALSE(
         base::PathExists(file_util::GetComputedHashesPath(extension->path())));
   }
+}
+
+// Tests that an extension without hashes whose manifest.json is missing from
+// disk is reported as MISSING_EXTENSION_MANIFEST rather than
+// MISSING_ALL_HASHES, both when its other files are still there and when its
+// whole install directory is gone.
+TEST_F(ContentVerifyJobWithoutSignedHashesUnittest, ExtensionManifestMissing) {
+  TestExtensionDir temp_dir;
+  content_verifier_delegate()->SetVerifierSourceType(
+      ContentVerifierDelegate::VerifierSourceType::UNSIGNED_HASHES);
+
+  const base::FilePath kResourcePath(FILE_PATH_LITERAL("script-ok.js"));
+  const std::string kContents = "console.log('Nothing special');";
+
+  scoped_refptr<Extension> extension =
+      CreateAndLoadTestExtensionToTempDir(&temp_dir, std::nullopt);
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(
+      base::WriteFile(extension->path().Append(kResourcePath), kContents));
+
+  // With the files in place, the missing hashes are reported as such.
+  EXPECT_EQ(ContentVerifyJob::MISSING_ALL_HASHES,
+            RunContentVerifyJob(*extension.get(), kResourcePath, kContents));
+
+  // Delete only manifest.json; the resource being verified is still there.
+  // Clear the cached hash so that the next job re-reads the disk.
+  ASSERT_TRUE(base::DeleteFile(extension->path().Append(kManifestFilename)));
+  content_verifier()->ClearCacheForTesting();
+  EXPECT_EQ(ContentVerifyJob::MISSING_EXTENSION_MANIFEST,
+            RunContentVerifyJob(*extension.get(), kResourcePath, kContents));
+
+  // Same when the whole extension directory is gone from under the loaded
+  // extension, as when a user data snapshot that lacks the Extensions
+  // directory is restored.
+  ASSERT_TRUE(base::DeletePathRecursively(extension->path()));
+  content_verifier()->ClearCacheForTesting();
+  EXPECT_EQ(ContentVerifyJob::MISSING_EXTENSION_MANIFEST,
+            RunContentVerifyJob(*extension.get(), kResourcePath, std::nullopt));
+}
+
+// Tests that with kExtensionContentVerificationReportsMissingManifest disabled,
+// a missing manifest.json is reported as MISSING_ALL_HASHES as before.
+TEST_F(ContentVerifyJobWithoutSignedHashesUnittest,
+       ExtensionManifestMissingFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      extensions_features::kExtensionContentVerificationReportsMissingManifest);
+
+  TestExtensionDir temp_dir;
+  content_verifier_delegate()->SetVerifierSourceType(
+      ContentVerifierDelegate::VerifierSourceType::UNSIGNED_HASHES);
+
+  const base::FilePath kResourcePath(FILE_PATH_LITERAL("script-ok.js"));
+  const std::string kContents = "console.log('Nothing special');";
+
+  scoped_refptr<Extension> extension =
+      CreateAndLoadTestExtensionToTempDir(&temp_dir, std::nullopt);
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(
+      base::WriteFile(extension->path().Append(kResourcePath), kContents));
+  ASSERT_TRUE(base::DeleteFile(extension->path().Append(kManifestFilename)));
+
+  EXPECT_EQ(ContentVerifyJob::MISSING_ALL_HASHES,
+            RunContentVerifyJob(*extension.get(), kResourcePath, kContents));
 }
 
 class ContentMismatchUnittest
