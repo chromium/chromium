@@ -73,6 +73,7 @@ export class SettingsAutofillPageV2Element extends
       contactInfoCount_: {type: Number},
       identityDocsCount_: {type: Number},
       travelCount_: {type: Number},
+      offersAndLoyaltyCardsCount_: {type: Number},
       shoppingCount_: {type: Number},
       isShoppingEnabled_: {type: Boolean},
       isOffersAndLoyaltyCardsEnabled_: {type: Boolean},
@@ -86,6 +87,7 @@ export class SettingsAutofillPageV2Element extends
   protected accessor contactInfoCount_: number|undefined;
   protected accessor identityDocsCount_: number|undefined;
   protected accessor travelCount_: number|undefined;
+  protected accessor offersAndLoyaltyCardsCount_: number|undefined;
   protected accessor shoppingCount_: number|undefined;
   protected accessor isShoppingEnabled_: boolean =
       loadTimeData.getBoolean('shoppingIntegrationEnabled');
@@ -187,6 +189,10 @@ export class SettingsAutofillPageV2Element extends
     // Wallet: Loyalty cards count.
     const setLoyaltyCardsCount = (loyaltyCardsCount?: number) => {
       this.loyaltyCardsCount_ = loyaltyCardsCount;
+      if (this.isOffersAndLoyaltyCardsEnabled_) {
+        // TODO(crbug.com/546252995): Include the offers count.
+        this.offersAndLoyaltyCardsCount_ = loyaltyCardsCount;
+      }
       this.updatePaymentsCount_();
     };
     this.addWebUiListener('loyalty-cards-count-changed', setLoyaltyCardsCount);
@@ -195,16 +201,21 @@ export class SettingsAutofillPageV2Element extends
   }
 
   private updatePaymentsCount_() {
+    // Loyalty cards are counted in the offers and loyalty cards row instead
+    // when that page is enabled.
+    const loyaltyCardsCount = this.isOffersAndLoyaltyCardsEnabled_ ?
+        undefined :
+        this.loyaltyCardsCount_;
     if (this.creditCardCount_ === undefined && this.ibanCount_ === undefined &&
         this.payOverTimeCount_ === undefined &&
-        this.loyaltyCardsCount_ === undefined) {
+        loyaltyCardsCount === undefined) {
       this.paymentsCount_ = undefined;
       return;
     }
 
     this.paymentsCount_ = (this.creditCardCount_ ?? 0) +
         (this.ibanCount_ ?? 0) + (this.payOverTimeCount_ ?? 0) +
-        (this.loyaltyCardsCount_ ?? 0);
+        (loyaltyCardsCount ?? 0);
   }
 
   private onAutofillAiEntitiesChanged_(entities: EntityInstanceWithLabels[]) {

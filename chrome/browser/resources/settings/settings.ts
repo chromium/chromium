@@ -75,6 +75,8 @@ export {SettingsAutofillPageV2Element} from './autofill_page/autofill_page_v2.js
 export {CollapsibleAutofillSettingsCardElement} from './autofill_page/collapsible_autofill_settings_card.js';
 export {PasswordManagerImpl, PasswordManagerPage} from './autofill_page/passwords/password_manager_proxy.js';
 export type {PasswordManagerProxy} from './autofill_page/passwords/password_manager_proxy.js';
+export {DataManagementSurvey, SavedInfoHandlerImpl} from './autofill_page/saved_info_handler_proxy.js';
+export type {PasswordCount, SavedInfoHandlerProxy} from './autofill_page/saved_info_handler_proxy.js';
 // <if expr="not is_chromeos">
 export {DefaultBrowserBrowserProxyImpl} from './default_browser_page/default_browser_browser_proxy.js';
 export type {DefaultBrowserBrowserProxy, DefaultBrowserInfo} from './default_browser_page/default_browser_browser_proxy.js';

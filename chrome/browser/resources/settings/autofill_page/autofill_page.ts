@@ -167,6 +167,13 @@ export class SettingsAutofillPageElement extends
   }
 
   private initializeDataTypeHierarchy_(): DataTypeHierarchy {
+    const loyaltyCardsChip: DataChip = {
+      id: YourSavedInfoDataChip.LOYALTY_CARDS,
+      label: this.i18n('loyaltyCardsTitle'),
+      icon: 'settings20:loyalty-programs',
+      isVisibleWhenNoEntitiesOfTypeExists: () => true,
+    };
+
     return {
       passwordManager: {
         id: YourSavedInfoDataCategory.PASSWORD_MANAGER,
@@ -208,12 +215,9 @@ export class SettingsAutofillPageElement extends
             isVisibleWhenNoEntitiesOfTypeExists: () =>
                 loadTimeData.getBoolean('shouldShowPayOverTimeSettings'),
           },
-          {
-            id: YourSavedInfoDataChip.LOYALTY_CARDS,
-            label: this.i18n('loyaltyCardsTitle'),
-            icon: 'settings20:loyalty-programs',
-            isVisibleWhenNoEntitiesOfTypeExists: () => true,
-          },
+          // When the offers and loyalty cards page is enabled, loyalty cards
+          // are shown in that category instead of in payments.
+          ...(this.isOffersAndLoyaltyCardsEnabled_ ? [] : [loyaltyCardsChip]),
         ],
       },
       contactInfo: {
@@ -285,8 +289,8 @@ export class SettingsAutofillPageElement extends
       },
       offersAndLoyaltyCards: {
         id: YourSavedInfoDataCategory.OFFERS_AND_LOYALTY_CARDS,
-        // TODO(crbug.com/546252995): Add the offers and loyalty cards chips.
-        chips: [],
+        // TODO(crbug.com/546252995): Add the offers chip.
+        chips: this.isOffersAndLoyaltyCardsEnabled_ ? [loyaltyCardsChip] : [],
       },
       shopping: {
         id: YourSavedInfoDataCategory.SHOPPING,

@@ -4,9 +4,10 @@
 
 import 'chrome://settings/settings.js';
 
+import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {AiEnterpriseFeaturePrefName, AutofillManagerImpl, EntityDataManagerProxyImpl, EntityTypeName, PaymentsManagerImpl} from 'chrome://settings/lazy_load.js';
 import type {CrLinkRowElement, SettingsAutofillPageV2Element} from 'chrome://settings/settings.js';
-import {loadTimeData, MetricsBrowserProxyImpl, ModelExecutionEnterprisePolicyValue, OpenWindowProxyImpl, PasswordManagerImpl, PrefsBrowserProxy, PrefService, resetRouterForTesting, Router, YourSavedInfoDataCategory} from 'chrome://settings/settings.js';
+import {loadTimeData, MetricsBrowserProxyImpl, ModelExecutionEnterprisePolicyValue, OpenWindowProxyImpl, PasswordManagerImpl, PrefsBrowserProxy, PrefService, resetRouterForTesting, Router, SavedInfoHandlerImpl, YourSavedInfoDataCategory} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -16,6 +17,7 @@ import {TestEntityDataManagerProxy} from './test_entity_data_manager_proxy.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
+import {TestSavedInfoHandlerProxy} from './test_saved_info_handler_proxy.js';
 
 async function setupPrefs(): Promise<void> {
   const prefsBrowserProxy = new TestPrefsBrowserProxy([
@@ -70,6 +72,7 @@ suite('AutofillPageV2', function() {
   let entityDataManager: TestEntityDataManagerProxy;
   let paymentsManager: TestPaymentsManager;
   let metricsBrowserProxy: TestMetricsBrowserProxy;
+  let savedInfoHandler: TestSavedInfoHandlerProxy;
 
   suiteSetup(function() {
     return setupPrefs();
@@ -86,6 +89,8 @@ suite('AutofillPageV2', function() {
     metricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
     OpenWindowProxyImpl.setInstance(new TestOpenWindowProxy());
+    savedInfoHandler = new TestSavedInfoHandlerProxy();
+    SavedInfoHandlerImpl.setInstance(savedInfoHandler);
   }
 
   async function setupPage(overrides: {[key: string]: boolean} = {}) {
@@ -184,6 +189,21 @@ suite('AutofillPageV2', function() {
         '#offersAndLoyaltyCardsManagerButton'));
   });
 
+  test('LoyaltyCardsCountedInPaymentsWhenFlagDisabled', async function() {
+    paymentsManager.data.creditCards = [createCreditCardEntry()];
+    savedInfoHandler.setLoyaltyCardsCount(2);
+
+    await setupPage({offersAndLoyaltyCardsSettingsEnabled: false});
+    await paymentsManager.whenCalled('getCreditCardList');
+    await savedInfoHandler.whenCalled('getLoyaltyCardsCount');
+    await microtasksFinished();
+
+    // 1 credit card + 2 loyalty cards.
+    assertEquals('3', getRowCount('#paymentManagerButton'));
+    assertFalse(!!autofillPage.shadowRoot.querySelector(
+        '#offersAndLoyaltyCardsManagerButton'));
+  });
+
   test('OffersAndLoyaltyCardsRowNavigates', async function() {
     await setupPage({offersAndLoyaltyCardsSettingsEnabled: true});
     const row = autofillPage.shadowRoot.querySelector<CrLinkRowElement>(
@@ -205,5 +225,24 @@ suite('AutofillPageV2', function() {
     assertEquals(
         'Settings.YourSavedInfo.CategoryClick.OFFERS_AND_LOYALTY_CARDS',
         action);
+  });
+
+  test('LoyaltyCardsCountedInOffersAndLoyaltyCardsRow', async function() {
+    paymentsManager.data.creditCards = [createCreditCardEntry()];
+    savedInfoHandler.setLoyaltyCardsCount(2);
+
+    await setupPage({offersAndLoyaltyCardsSettingsEnabled: true});
+    await paymentsManager.whenCalled('getCreditCardList');
+    await savedInfoHandler.whenCalled('getLoyaltyCardsCount');
+    await microtasksFinished();
+
+    assertEquals('1', getRowCount('#paymentManagerButton'));
+    assertEquals('2', getRowCount('#offersAndLoyaltyCardsManagerButton'));
+
+    webUIListenerCallback('loyalty-cards-count-changed', 5);
+    await microtasksFinished();
+
+    assertEquals('1', getRowCount('#paymentManagerButton'));
+    assertEquals('5', getRowCount('#offersAndLoyaltyCardsManagerButton'));
   });
 });

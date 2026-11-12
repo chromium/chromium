@@ -219,6 +219,7 @@ build_webui_tests("build") {
     "test_profile_info_browser_proxy.ts",
     "test_reset_browser_proxy.ts",
     "test_safety_hub_browser_proxy.ts",
+    "test_saved_info_handler_proxy.ts",
     "test_search_engines_browser_proxy.ts",
     "test_search_manager.ts",
     "test_security_keys_browser_proxy.ts",

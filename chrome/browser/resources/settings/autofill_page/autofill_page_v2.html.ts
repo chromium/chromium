@@ -42,6 +42,7 @@ export function getHtml(this: SettingsAutofillPageV2Element) {
         sub-label="$i18n{offersAndLoyaltyCardsSublabel}"
         start-icon="settings20:loyalty-programs"
         @click="${this.onOffersAndLoyaltyCardsClick_}">
+      <span slot="icon-label">${this.offersAndLoyaltyCardsCount_}</span>
     </cr-link-row>
   ` : ''}
   ${this.isShoppingEnabled_ ? html`
