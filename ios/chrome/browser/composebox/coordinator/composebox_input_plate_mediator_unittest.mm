@@ -1334,8 +1334,8 @@ TEST_F(ComposeboxInputPlateMediatorTest,
   [test_mediator disconnect];
 }
 
-// Tests that an attached tab is removed and DeleteFile is invoked when the tab
-// is closed and composebox is in cobrowse mode.
+// Tests that closing an attached tab in cobrowse mode removes the item and
+// notifies `OnTabClosedOrNavigated` rather than `DeleteFile`.
 TEST_F(ComposeboxInputPlateMediatorTest, RemovesAttachedTabOnCloseInCobrowse) {
   auto mock_session =
       std::make_unique<testing::NiceMock<TestContextualSearchSessionHandle>>();
@@ -1362,6 +1362,8 @@ TEST_F(ComposeboxInputPlateMediatorTest, RemovesAttachedTabOnCloseInCobrowse) {
 
   web::WebState* active_web_state = web_state_list_->GetActiveWebState();
   ASSERT_TRUE(active_web_state);
+  SessionID tab_session_id =
+      active_web_state->GetUniqueIdentifier().ToSessionID();
 
   [mediator createInputItemForWebState:active_web_state
                                 source:ComposeboxInputItemSource::kTabPicker];
@@ -1373,8 +1375,12 @@ TEST_F(ComposeboxInputPlateMediatorTest, RemovesAttachedTabOnCloseInCobrowse) {
   base::UnguessableToken server_token = base::UnguessableToken::Create();
   consumer.items.firstObject.serverToken = server_token;
 
-  EXPECT_CALL(*raw_mock_session, DeleteFile(server_token))
-      .WillOnce(testing::Return(true));
+  EXPECT_CALL(
+      *raw_mock_session,
+      OnTabClosedOrNavigated(tab_session_id, std::optional<GURL>(std::nullopt),
+                             std::optional<std::string>(std::nullopt)))
+      .Times(1);
+  EXPECT_CALL(*raw_mock_session, DeleteFile(testing::_)).Times(0);
 
   // Close the attached tab.
   web_state_list_->CloseWebStateAt(0, WebStateList::ClosingReason::kUserAction);
@@ -1824,6 +1830,9 @@ TEST_F(ComposeboxInputPlateMediatorTest,
 
   ON_CALL(*raw_mock_session, GetController())
       .WillByDefault(testing::Return(&mock_controller));
+  EXPECT_CALL(*raw_mock_session,
+              OnTabClosedOrNavigated(testing::_, testing::_, testing::_))
+      .Times(0);
 
   ComposeboxInputPlateMediator* mediator =
       CreateMediator(std::move(mock_session));
