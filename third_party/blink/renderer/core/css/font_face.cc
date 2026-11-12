@@ -1120,7 +1120,6 @@ float FontFace::GetSizeAdjust() const {
 }
 
 scoped_refptr<FontFeatureSettings> FontFace::GetFontFeatureSettings() const {
-  DCHECK(RuntimeEnabledFeatures::FontFeatureSettingsDescriptorEnabled());
   if (!feature_settings_) {
     return FontFeatureSettings::Create();
   }

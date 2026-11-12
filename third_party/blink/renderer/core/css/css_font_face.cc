@@ -146,10 +146,8 @@ const SimpleFontData* CSSFontFace::GetFontData(
                 font_face_->GetSizeAdjust())
           : font_description;
 
-  if (RuntimeEnabledFeatures::FontFeatureSettingsDescriptorEnabled()) {
-    size_adjusted_description.MergeFontFeatureSettingsWithDescriptor(
-        font_face_->GetFontFeatureSettings().get());
-  }
+  size_adjusted_description.MergeFontFeatureSettingsWithDescriptor(
+      font_face_->GetFontFeatureSettings().get());
   if (RuntimeEnabledFeatures::FontVariationSettingsDescriptorEnabled()) {
     size_adjusted_description.MergeFontVariationSettingsWithDescriptor(
         font_face_->GetFontVariationSettings().get());

@@ -3444,11 +3444,6 @@
       name: "FontFamilyStyleMatchingCTMigration",
     },
     {
-      // crbug.com/40398871
-      name: "FontFeatureSettingsDescriptor",
-      status: "stable",
-    },
-    {
       name: "FontFormatAvar2",
       status: "stable",
     },
