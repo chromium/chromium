@@ -59,7 +59,7 @@ REPLACEMENTS = {
     'libvpx': 'third_party/libvpx/BUILD.gn',
     'libwebp': 'third_party/libwebp/BUILD.gn',
     'libxml': 'third_party/libxml/BUILD.gn',
-    'libXNVCtrl': 'third_party/angle/src/third_party/libXNVCtrl/BUILD.gn',
+    'libXNVCtrl': 'third_party/angle/src/third_party/libxnvctrl/BUILD.gn',
     'libxslt': 'third_party/libxslt/BUILD.gn',
     'libyuv': 'third_party/libyuv/BUILD.gn',
     'openh264': 'third_party/openh264/BUILD.gn',
