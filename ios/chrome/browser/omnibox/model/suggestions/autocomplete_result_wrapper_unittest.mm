@@ -231,3 +231,61 @@ TEST_F(AutocompleteResultWrapperTest, testWrapPedalMatch) {
   EXPECT_TRUE([wrappedGroups[0].suggestions[0]
       isKindOfClass:[PedalSuggestionWrapper class]]);
 }
+
+/// Tests isWrapping for different match types and templates.
+TEST_F(AutocompleteResultWrapperTest, testIsWrapping) {
+  // Search suggestion wraps by default.
+  AutocompleteMatch searchMatch;
+  searchMatch.type = omnibox::AutocompleteMatchType::kSearchSuggest;
+  AutocompleteMatchFormatter* searchFormatter =
+      [AutocompleteMatchFormatter formatterWithMatch:searchMatch];
+  EXPECT_TRUE(searchFormatter.isWrapping);
+
+  // Search suggestion with wrap_primary_text = false in template does not wrap.
+  AutocompleteMatch searchNoWrapMatch;
+  searchNoWrapMatch.type = omnibox::AutocompleteMatchType::kSearchSuggest;
+  omnibox::SuggestTemplateInfo noWrapTemplate;
+  noWrapTemplate.set_wrap_primary_text(false);
+  searchNoWrapMatch.suggest_template = noWrapTemplate;
+  AutocompleteMatchFormatter* searchNoWrapFormatter =
+      [AutocompleteMatchFormatter formatterWithMatch:searchNoWrapMatch];
+  EXPECT_FALSE(searchNoWrapFormatter.isWrapping);
+
+  // Search suggestion with wrap_primary_text = true in template wraps.
+  AutocompleteMatch searchWrapMatch;
+  searchWrapMatch.type = omnibox::AutocompleteMatchType::kSearchSuggest;
+  omnibox::SuggestTemplateInfo wrapTemplate;
+  wrapTemplate.set_wrap_primary_text(true);
+  searchWrapMatch.suggest_template = wrapTemplate;
+  AutocompleteMatchFormatter* searchWrapFormatter =
+      [AutocompleteMatchFormatter formatterWithMatch:searchWrapMatch];
+  EXPECT_TRUE(searchWrapFormatter.isWrapping);
+
+  // Entity suggestion does not wrap by default.
+  AutocompleteMatch entityMatch;
+  entityMatch.type = omnibox::AutocompleteMatchType::kSearchSuggestEntity;
+  AutocompleteMatchFormatter* entityFormatter =
+      [AutocompleteMatchFormatter formatterWithMatch:entityMatch];
+  EXPECT_FALSE(entityFormatter.isWrapping);
+
+  // Entity suggestion with a template icon but no wrap_primary_text does not
+  // wrap.
+  AutocompleteMatch entityWithIconMatch;
+  entityWithIconMatch.type =
+      omnibox::AutocompleteMatchType::kSearchSuggestEntity;
+  omnibox::SuggestTemplateInfo iconTemplate;
+  iconTemplate.set_type_icon(
+      omnibox::SuggestTemplateInfo::SEARCH_LOOP_WITH_SPARKLE);
+  entityWithIconMatch.suggest_template = iconTemplate;
+  AutocompleteMatchFormatter* entityWithIconFormatter =
+      [AutocompleteMatchFormatter formatterWithMatch:entityWithIconMatch];
+  EXPECT_FALSE(entityWithIconFormatter.isWrapping);
+
+  // Entity suggestion with wrap_primary_text = true in template wraps.
+  AutocompleteMatch entityWrapMatch;
+  entityWrapMatch.type = omnibox::AutocompleteMatchType::kSearchSuggestEntity;
+  entityWrapMatch.suggest_template = wrapTemplate;
+  AutocompleteMatchFormatter* entityWrapFormatter =
+      [AutocompleteMatchFormatter formatterWithMatch:entityWrapMatch];
+  EXPECT_TRUE(entityWrapFormatter.isWrapping);
+}

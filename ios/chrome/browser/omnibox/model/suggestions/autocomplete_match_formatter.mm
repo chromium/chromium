@@ -371,12 +371,9 @@ void ApplyFormattedString(const omnibox::FormattedString& formatted_string,
       _match.suggest_template->has_wrap_primary_text()) {
     return _match.suggest_template->wrap_primary_text();
   }
-  // Don't allow wrapping on entities, unless it uses a template icon.
-  BOOL hasTemplateIcon =
-      _match.suggest_template && _match.suggest_template->has_type_icon();
+  // Don't allow wrapping on entities.
   BOOL isEntity =
-      _match.type == omnibox::AutocompleteMatchType::kSearchSuggestEntity &&
-      !hasTemplateIcon;
+      _match.type == omnibox::AutocompleteMatchType::kSearchSuggestEntity;
   return self.isMatchTypeSearch && !isEntity;
 }
 
