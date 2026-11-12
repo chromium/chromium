@@ -11,7 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "ash/quick_insert/metrics/quick_insert_session_metrics.h"
 #include "ash/quick_insert/model/quick_insert_caps_lock_position.h"
 #include "ash/quick_insert/quick_insert_asset_fetcher.h"
@@ -33,7 +32,6 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/containers/span.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -119,11 +117,6 @@ QuickInsertZeroStateView::QuickInsertZeroStateView(
     if (category == QuickInsertCategory::kEditorRewrite ||
         category == QuickInsertCategory::kLobsterWithSelectedText ||
         category == QuickInsertCategory::kGifs) {
-      continue;
-    }
-
-    if (!base::FeatureList::IsEnabled(features::kLobsterQuickInsertZeroState) &&
-        category == QuickInsertCategory::kLobsterWithNoSelectedText) {
       continue;
     }
 

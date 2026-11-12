@@ -1013,9 +1013,6 @@ BASE_FEATURE(kLobsterDogfood, base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables lobster restriction based on the current active IME.
 BASE_FEATURE(kLobsterDisabledByInvalidIME, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables lobster entry point in quick insert zero state.
-BASE_FEATURE(kLobsterQuickInsertZeroState, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables lobster right click menu entry point.
 BASE_FEATURE(kLobsterRightClickMenu, base::FEATURE_ENABLED_BY_DEFAULT);
 
