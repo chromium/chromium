@@ -398,7 +398,9 @@ TEST_F(AudioEffectsControllerTest, NoiseCancellationAudioInputDevice) {
       VcEffectId::kNoiseCancellation));
 }
 
-TEST_F(AudioEffectsControllerTest, NoiseCancellationSwitchInputDevice) {
+// TODO(crbug.com/559514875): Re-enable flaky tests.
+TEST_F(AudioEffectsControllerTest,
+       DISABLED_NoiseCancellationSwitchInputDevice) {
   fake_cras_audio_client()->SetAudioNodesAndNotifyObserversForTesting(
       GenerateAudioNodeList({kInternalMic_NC, kInternalMic_NoEffects}));
 
