@@ -966,7 +966,7 @@ bool IsDisableFeedbackForIneligibleUsersEnabled() {
   return base::FeatureList::IsEnabled(kDisableFeedbackForIneligibleUsers);
 }
 
-BASE_FEATURE(kIncludeSystemLogInFeedback, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIncludeSystemLogInFeedback, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsIncludeSystemLogInFeedbackEnabled() {
   return base::FeatureList::IsEnabled(kIncludeSystemLogInFeedback);

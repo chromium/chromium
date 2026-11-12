@@ -11864,21 +11864,6 @@
             ]
         }
     ],
-    "IncludeSystemLogInFeedback": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20261106",
-                    "enable_features": [
-                        "IncludeSystemLogInFeedback"
-                    ]
-                }
-            ]
-        }
-    ],
     "IncognitoScreenshot": [
         {
             "platforms": [
