@@ -33,7 +33,7 @@ class DevToolsHttpServiceHandler {
     enum class Error {
       kNone,              // Success
       kServiceNotFound,   // The service is not registered.
-      kAccessDenied,      // The path/method is not in the allow-list.
+      kAccessDenied,      // The path/method/header is not in the allow-list.
       kValidationFailed,  // Service-specific validation failed.
       kTokenFetchFailed,  // Could not get an OAuth token.
       kNetworkError,      // A network-level error occurred (e.g., DNS failure).

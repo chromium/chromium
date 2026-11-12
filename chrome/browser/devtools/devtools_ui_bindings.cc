@@ -1257,7 +1257,7 @@ void DevToolsUIBindings::OnHttpRequestPerformed(
       response_dict.Set("error", "Service not found");
       break;
     case Error::kAccessDenied:
-      response_dict.Set("error", "Disallowed path or method");
+      response_dict.Set("error", "Disallowed path, method, or header");
       break;
     case Error::kValidationFailed:
       response_dict.Set("error", "Request validation failed");

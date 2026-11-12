@@ -203,6 +203,10 @@ void DevToolsHttpServiceHandler::OnTokenFetched(
   }
   resource_request->url = url;
   resource_request->method = params.method;
+  for (const auto& [name, value] : params.headers) {
+    resource_request->headers.SetHeader(name, value);
+  }
+  // Set Authorization last so it cannot be overridden by params.headers.
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kAuthorization,
                                       "Bearer " + access_token_info.token);
 

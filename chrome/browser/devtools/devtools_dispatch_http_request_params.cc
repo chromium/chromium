@@ -60,6 +60,15 @@ DevToolsDispatchHttpRequestParams::FromDict(const base::DictValue& dict) {
     }
   }
 
+  const base::DictValue* headers_dict = dict.FindDict("headers");
+  if (headers_dict) {
+    for (auto [key, value] : *headers_dict) {
+      if (const std::string* str = value.GetIfString()) {
+        params.headers[key] = *str;
+      }
+    }
+  }
+
   params.stream_id = dict.FindInt("streamId");
   return params;
 }

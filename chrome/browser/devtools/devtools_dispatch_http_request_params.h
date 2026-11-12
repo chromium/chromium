@@ -14,6 +14,7 @@
 
 struct DevToolsDispatchHttpRequestParams {
   using QueryParams = base::flat_map<std::string, std::vector<std::string>>;
+  using Headers = base::flat_map<std::string, std::string>;
 
   DevToolsDispatchHttpRequestParams();
   ~DevToolsDispatchHttpRequestParams();
@@ -32,6 +33,7 @@ struct DevToolsDispatchHttpRequestParams {
   std::string method;
   std::optional<std::string> body;
   std::optional<int> stream_id;
+  Headers headers;
   QueryParams query_params;
 };
 

@@ -30,10 +30,12 @@ class DevToolsHttpServiceRegistry {
     };
     std::vector<Endpoint> endpoints;
     std::unique_ptr<DevToolsHttpServiceHandler> handler;
+    std::vector<std::string> allowed_headers;
 
     Service(std::string service,
             std::vector<Endpoint> endpoints,
-            std::unique_ptr<DevToolsHttpServiceHandler> handler);
+            std::unique_ptr<DevToolsHttpServiceHandler> handler,
+            std::vector<std::string> allowed_headers);
     Service(Service&&);
     ~Service();
   };
