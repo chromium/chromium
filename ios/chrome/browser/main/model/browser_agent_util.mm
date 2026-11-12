@@ -221,6 +221,13 @@ void AttachBrowserAgentsForActiveBrowser(Browser* browser) {
     ActorBrowserAgent::CreateForBrowser(browser);
   }
 
+  // Must be attached before `GeminiBrowserAgent`, which passes it to
+  // `GeminiSharedTabsManager`.
+  if (!browser_is_inactive && !browser_is_temporary && !browser_is_off_record &&
+      IsCleanupPersistedTabContextsEnabled()) {
+    PersistTabContextBrowserAgent::CreateForBrowser(browser);
+  }
+
   if (!browser_is_inactive && !browser_is_temporary && !browser_is_off_record &&
       IsPageActionMenuEnabled()) {
     GeminiBrowserAgent::CreateForBrowser(browser);
@@ -251,11 +258,6 @@ void AttachBrowserAgentsForActiveBrowser(Browser* browser) {
         browser,
         AuthenticationServiceFactory::GetForProfile(browser->GetProfile()));
     SigninDisabledBrowserAgent::CreateForBrowser(browser);
-  }
-
-  if (IsCleanupPersistedTabContextsEnabled() && !browser_is_off_record &&
-      !browser_is_inactive && !browser_is_temporary) {
-    PersistTabContextBrowserAgent::CreateForBrowser(browser);
   }
 
   // Mirrors the gating used to attach `EnterpriseProxyTabHelper`, whose

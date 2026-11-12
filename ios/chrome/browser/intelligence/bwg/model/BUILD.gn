@@ -89,6 +89,8 @@ source_set("browser_agent") {
     "gemini_browser_agent.mm",
     "gemini_browser_agent_observer_bridge.h",
     "gemini_browser_agent_observer_bridge.mm",
+    "gemini_shared_tabs_manager_impl.h",
+    "gemini_shared_tabs_manager_impl.mm",
   ]
   deps = [
     ":config",
@@ -102,7 +104,6 @@ source_set("browser_agent") {
     ":tab_helper",
     ":utils",
     "//base",
-    "//components/favicon/ios",
     "//components/feature_engagement/public",
     "//components/keyed_service/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
@@ -125,8 +126,6 @@ source_set("browser_agent") {
     "//ios/chrome/browser/intelligence/bwg/utils:prefs",
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/intelligence/persist_tab_context/model",
-    "//ios/chrome/browser/intelligence/proto_wrappers",
-    "//ios/chrome/browser/intelligence/proto_wrappers:utils",
     "//ios/chrome/browser/omnibox/model/omnibox_focus",
     "//ios/chrome/browser/shared/coordinator/layout_guide",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
@@ -152,7 +151,7 @@ source_set("browser_agent") {
     "//ios/chrome/browser/url_loading/model",
     "//ios/chrome/common/app_group",
     "//ios/public/provider/chrome/browser/bwg:gemini_api",
-    "//ui/gfx",
+    "//ios/web/public",
   ]
 }
 

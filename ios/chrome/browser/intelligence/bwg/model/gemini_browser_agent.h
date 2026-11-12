@@ -8,60 +8,43 @@
 #import <UIKit/UIKit.h>
 
 #import <memory>
-#import <set>
-#import <utility>
-#import <vector>
 
 #import "base/functional/callback.h"
 #import "base/memory/raw_ptr.h"
+#import "base/memory/weak_ptr.h"
 #import "base/observer_list.h"
+#import "base/scoped_observation.h"
 #import "base/time/time.h"
 #import "base/timer/timer.h"
-#import "base/types/expected.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
 #import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent_observer.h"
-#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller_observer.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_mediator_event_handler.h"
-#import "ios/chrome/browser/intelligence/bwg/model/gemini_shared_tabs_manager.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper_observer.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
-#import "ios/chrome/browser/intelligence/persist_tab_context/model/persist_tab_context_browser_agent.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_activation_level.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/tab_grid_state_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 #import "ios/chrome/browser/tabs/model/tabs_dependency_installer.h"
 #import "ios/public/provider/chrome/browser/bwg/gemini_api.h"
-#import "ios/web/public/web_state_id.h"
 
 class Browser;
 class FullscreenController;
-
-namespace gemini {
-enum class FloatyUpdateSource;
-}  // namespace gemini
-
+class GeminiSharedTabsManager;
+class GeminiSharedTabsManagerImpl;
 class ScopedFullscreenDisabler;
+
+@class GeminiConfiguration;
 @class GeminiContainerMediator;
 @class GeminiLinkOpeningHandler;
-@class GeminiPageStateChangeHandler;
-@class GeminiSessionHandler;
-@class GeminiSessionMetricsManager;
-@class GeminiCameraHandler;
-@class GeminiConsentProviderHandler;
 @class GeminiPageContext;
-@class GeminiViewStateChangeHandler;
-@class GeminiScrollObserver;
 @class GeminiSceneStateObserver;
-@class GeminiSuggestionHandler;
-@class GeminiActuationHandler;
+@class GeminiScrollObserver;
+@class GeminiSessionMetricsManager;
 @class TabGridStateObserverBridge;
-
-@protocol BWGGatewayProtocol;
-@protocol FullscreenCommands;
 
 // A browser agent responsible for presenting the floaty and managing
 // its protocol handlers.
@@ -73,12 +56,8 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
                            public BrowserObserver,
                            public signin::IdentityManager::Observer,
                            public TabGridStateObserver,
-                           public GeminiContainerMediatorEventHandler,
-                           public GeminiSharedTabsManager {
+                           public GeminiContainerMediatorEventHandler {
  public:
-  using SharedTabsList =
-      std::vector<std::pair<web::WebStateID, __strong GeminiPageContext*>>;
-
   // Observer interface for GeminiBrowserAgent.
   class Observer : public base::CheckedObserver {
    public:
@@ -189,21 +168,6 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   // Returns the manager for shared tabs in the Gemini session.
   GeminiSharedTabsManager* GetSharedTabsManager();
 
-  // `GeminiSharedTabsManager`:
-  NSArray<GeminiPageContext*>* GetInactiveSharedTabs() const override;
-  void SaveActivePageContextToSharedTabs(
-      GeminiPageContext* active_page_context) override;
-  void UpdateSharedTabsForActiveWebState(
-      web::WebState* active_web_state) override;
-  void DetachTabWithID(NSString* tab_id) override;
-  void UpdateLocalTabAttachmentState(
-      NSString* tab_id,
-      ios::provider::GeminiPageContextAttachmentState new_state) override;
-  NSUInteger SharedTabsCount() const override;
-  void OnTabPickerSelectionChanged(
-      std::set<web::WebStateID> selected_tabs) override;
-  std::set<web::WebStateID> GetSelectedTabsForTabPicker() const override;
-
   // Called when the scene activation level changes.
   void OnSceneActivationLevelChanged(SceneActivationLevel level);
 
@@ -221,24 +185,12 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   friend class BrowserUserData<GeminiBrowserAgent>;
   friend class GeminiBrowserAgentTest;
 
-  // Returns whether there is at least one inactive shared tab attached.
-  bool HasInactiveSharedTabs() const;
-
-  // Generates partial page contexts for `tabs_to_fetch` and triggers async
-  // full page context retrieval for them. Page contexts are inserted directly
-  // into `shared_tabs_`.
-  void UpdateSharedTabContexts(
-      const std::vector<web::WebStateID>& tabs_to_fetch);
-
   // Configures Gemini with startup parameters.
   void ConfigureGemini();
 
   // Helper to get the GeminiTabHelper for the active web state, or nullptr if
   // none exists.
   GeminiTabHelper* GetActiveTabHelper() const;
-
-  // Returns the ID of the active web state, or an invalid ID if none exists.
-  web::WebStateID GetActiveWebStateID() const;
 
   // Callback for scroll events.
   void OnScrollEvent();
@@ -366,52 +318,22 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   // Called when the application enters the foreground.
   void OnAppWillEnterForeground();
 
-  // Called when a request for APC for a list of tabs has completed.
-  void OnPersistTabContextLookupComplete(
-      PersistTabContextBrowserAgent::PageContextMap contexts_map);
-
-  // Retrieves cached full page context for a tab and calls
-  // `OnFullPageContextAvailableForSharedTab` when successful.
-  void RetrieveCachedPageContextForTab(
-      web::WebStateID selected_tab,
-      std::unique_ptr<optimization_guide::proto::PageContext> proto_context);
-
-  // Asynchronously generates full page context for a tab and calls
-  // `OnFullPageContextAvailableForSharedTab` when successful.
-  void GenerateFullPageContextForTab(web::WebStateID selected_tab);
-
-  // Called when full page context for a shared tab becomes available.
-  void OnFullPageContextAvailableForSharedTab(
-      web::WebStateID web_state_id,
-      GeminiPageContext* full_page_context);
-
   // Called for the fullscreen update animation.
   void FullscreenProgressUpdatedForAnimation();
 
-  // Called when the page content sharing preference changes.
-  void OnPageContentPrefChanged();
-
   // Called when the microphone preference changes.
   void OnMicrophonePrefChanged();
-
-  // Creates a partial page context synchronously for a web state.
-  GeminiPageContext* CreatePartialPageContext(web::WebState* web_state);
 
   // Returns whether all Gemini Live permissions and preferences have been
   // granted (user consent, intro played, Chrome mic setting, and OS mic
   // permission).
   bool HasGivenAllLivePermissions() const;
 
-  // Returns the shared page context for `tab_id`, or nil if not found.
-  GeminiPageContext* GetSharedPageContext(web::WebStateID tab_id) const;
-
-  // Adds or updates `page_context` for `tab_id` in `shared_tabs_`, preserving
-  // the insertion order if `tab_id` already exists.
-  void SetSharedPageContext(web::WebStateID tab_id,
-                            GeminiPageContext* page_context);
-
-  // Removes the entry for `tab_id` from `shared_tabs_`.
-  void RemoveSharedPageContext(web::WebStateID tab_id);
+  // Manager for the shared tabs attached to Gemini. Shares the lifecycle of
+  // `GeminiBrowserAgent` so multi-tab selection persists across Gemini
+  // invocations. Declared before `gemini_container_mediator_` so it outlives
+  // the mediator during destruction.
+  std::unique_ptr<GeminiSharedTabsManagerImpl> shared_tabs_manager_;
 
   // Mediator for the Gemini container. Remove after bottom sheet migrations.
   __strong GeminiContainerMediator* gemini_container_mediator_ = nil;
@@ -448,11 +370,6 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
 
   // Whether the keyboard is currently visible.
   bool is_keyboard_visible_ = false;
-
-  // The active and inactive shared tabs currently attached to the floaty,
-  // represented by a list of WebStateID and page context tuples in insertion
-  // order.
-  SharedTabsList shared_tabs_;
 
   // Used to track the last shown view state of an invoked floaty. Used to show
   // a hidden floaty with the previous view state.

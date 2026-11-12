@@ -38,6 +38,8 @@
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_configuration.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_page_context.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_session_handler.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_shared_tabs_manager.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_shared_tabs_manager_impl.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_test_utils.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
@@ -367,11 +369,11 @@ class GeminiBrowserAgentTest : public PlatformTest {
         WebStateList::InsertionParams::Automatic().Activate(activate));
   }
 
-  // Triggers `OnPersistTabContextLookupComplete()` in the browser agent.
+  // Triggers `OnPersistTabContextLookupComplete()` in the shared tabs manager.
   void TriggerPersistTabContextLookupComplete(
       PersistTabContextBrowserAgent::PageContextMap contexts_map) {
-    gemini_browser_agent_->OnPersistTabContextLookupComplete(
-        std::move(contexts_map));
+    gemini_browser_agent_->shared_tabs_manager_
+        ->OnPersistTabContextLookupComplete(std::move(contexts_map));
   }
 
   // Setter for `processing_status_`.
@@ -385,40 +387,45 @@ class GeminiBrowserAgentTest : public PlatformTest {
   }
 
   // Getter for raw `shared_tabs_` member.
-  GeminiBrowserAgent::SharedTabsList GetRawSharedTabs() {
-    return gemini_browser_agent_->shared_tabs_;
+  GeminiSharedTabsManagerImpl::SharedTabsList GetRawSharedTabs() {
+    return gemini_browser_agent_->shared_tabs_manager_->shared_tabs_;
   }
 
   // Getter for an attached tab context by ID.
   GeminiPageContext* GetRawAttachedTabContext(web::WebStateID id) {
-    return gemini_browser_agent_->GetSharedPageContext(id);
+    return gemini_browser_agent_->shared_tabs_manager_->GetSharedPageContext(
+        id);
   }
 
   // Setter for raw `shared_tabs_` member.
   void SetRawAttachedTab(web::WebStateID id, GeminiPageContext* page_context) {
-    gemini_browser_agent_->SetSharedPageContext(id, page_context);
+    gemini_browser_agent_->shared_tabs_manager_->SetSharedPageContext(
+        id, page_context);
   }
 
   // Wrapper for `SharedTabsCount`.
   NSUInteger SharedTabsCount() {
-    return gemini_browser_agent_->SharedTabsCount();
+    return gemini_browser_agent_->GetSharedTabsManager()->SharedTabsCount();
   }
 
   // Wrapper for `GetInactiveSharedTabs`.
   NSUInteger GetInactiveSharedTabsCount() {
-    return gemini_browser_agent_->GetInactiveSharedTabs().count;
+    return gemini_browser_agent_->GetSharedTabsManager()
+        ->GetInactiveSharedTabs()
+        .count;
   }
 
   // Wrapper for `DetachTabWithID`.
   void DetachTabWithID(NSString* tab_id) {
-    gemini_browser_agent_->DetachTabWithID(tab_id);
+    gemini_browser_agent_->GetSharedTabsManager()->DetachTabWithID(tab_id);
   }
 
   // Wrapper for `UpdateLocalTabAttachmentState`.
   void UpdateLocalTabAttachmentState(
       NSString* tab_id,
       ios::provider::GeminiPageContextAttachmentState new_state) {
-    gemini_browser_agent_->UpdateLocalTabAttachmentState(tab_id, new_state);
+    gemini_browser_agent_->GetSharedTabsManager()
+        ->UpdateLocalTabAttachmentState(tab_id, new_state);
   }
 
   // Wrapper for `HasGivenAllLivePermissions`.
@@ -1447,7 +1454,8 @@ TEST_F(GeminiBrowserAgentTest, TestPersistSelectedTabsOnUnMinimize) {
       ios::provider::GeminiPageContextAttachmentState::kAttached;
   SetRawAttachedTab(active_id, active_context);
 
-  gemini_browser_agent_->OnTabPickerSelectionChanged({active_id, other_id});
+  gemini_browser_agent_->GetSharedTabsManager()->OnTabPickerSelectionChanged(
+      {active_id, other_id});
   EXPECT_EQ(GetRawSharedTabs().size(), 2u);
   // GetSelectedWebStateIDs() may return size 1 in downstream unit tests if
   // GCRGemini provider is uninitialized/nil, so we assert on raw selected IDs.
@@ -1580,7 +1588,8 @@ TEST_F(GeminiBrowserAgentTest, TestDetachInvalidTabId) {
       ios::provider::GeminiPageContextAttachmentState::kAttached;
   SetRawAttachedTab(active_id, active_context);
 
-  gemini_browser_agent_->OnTabPickerSelectionChanged({active_id});
+  gemini_browser_agent_->GetSharedTabsManager()->OnTabPickerSelectionChanged(
+      {active_id});
   size_t initial_size = GetRawSharedTabs().size();
 
   DetachTabWithID(@"invalid_id");
@@ -1603,7 +1612,8 @@ TEST_F(GeminiBrowserAgentTest,
       ios::provider::GeminiPageContextAttachmentState::kAttached;
   SetRawAttachedTab(active_id, mock_context);
 
-  gemini_browser_agent_->OnTabPickerSelectionChanged({active_id});
+  gemini_browser_agent_->GetSharedTabsManager()->OnTabPickerSelectionChanged(
+      {active_id});
 
   // Verify it starts as attached.
   auto tabs = GetRawSharedTabs();
@@ -1655,7 +1665,8 @@ TEST_F(GeminiBrowserAgentTest, TestDetachSharedTab) {
       ios::provider::GeminiPageContextAttachmentState::kAttached;
   SetRawAttachedTab(active_id, active_context);
 
-  gemini_browser_agent_->OnTabPickerSelectionChanged({active_id, other_id});
+  gemini_browser_agent_->GetSharedTabsManager()->OnTabPickerSelectionChanged(
+      {active_id, other_id});
 
   auto tabs = GetRawSharedTabs();
   ASSERT_EQ(2u, tabs.size());
@@ -1725,7 +1736,8 @@ TEST_F(GeminiBrowserAgentTest, TestOnTabPickerSelectionChangedNewlyAddedTab) {
       std::move(other_web_state),
       WebStateList::InsertionParams::Automatic().Activate(false));
 
-  gemini_browser_agent_->OnTabPickerSelectionChanged({active_id, other_id});
+  gemini_browser_agent_->GetSharedTabsManager()->OnTabPickerSelectionChanged(
+      {active_id, other_id});
 
   // Verify that `shared_tabs_` now contains a partial context for the new
   // tab.
@@ -1766,7 +1778,8 @@ TEST_F(GeminiBrowserAgentTest,
       std::move(other_web_state),
       WebStateList::InsertionParams::Automatic().Activate(false));
 
-  gemini_browser_agent_->OnTabPickerSelectionChanged({active_id, other_id});
+  gemini_browser_agent_->GetSharedTabsManager()->OnTabPickerSelectionChanged(
+      {active_id, other_id});
 
   // Fire callback indicating cached APC does not exist.
   PersistTabContextBrowserAgent::PageContextMap cache_map;
@@ -1805,7 +1818,8 @@ TEST_F(GeminiBrowserAgentTest,
       std::move(other_web_state),
       WebStateList::InsertionParams::Automatic().Activate(false));
 
-  gemini_browser_agent_->OnTabPickerSelectionChanged({active_id, other_id});
+  gemini_browser_agent_->GetSharedTabsManager()->OnTabPickerSelectionChanged(
+      {active_id, other_id});
 
   // Fire callback indicating cached APC exists.
   PersistTabContextBrowserAgent::PageContextMap cache_map;
@@ -1844,7 +1858,8 @@ TEST_F(GeminiBrowserAgentTest,
       WebStateList::InsertionParams::Automatic().Activate(false));
 
   SetIsFloatyInvoked(true);
-  gemini_browser_agent_->OnTabPickerSelectionChanged({active_id, other_id});
+  gemini_browser_agent_->GetSharedTabsManager()->OnTabPickerSelectionChanged(
+      {active_id, other_id});
   ios::provider::ResetGemini();
 
   PersistTabContextBrowserAgent::PageContextMap cache_map;
@@ -1879,7 +1894,8 @@ TEST_F(GeminiBrowserAgentTest,
       WebStateList::InsertionParams::Automatic().Activate(false));
 
   SetIsFloatyInvoked(true);
-  gemini_browser_agent_->OnTabPickerSelectionChanged({active_id, other_id});
+  gemini_browser_agent_->GetSharedTabsManager()->OnTabPickerSelectionChanged(
+      {active_id, other_id});
   // Dismissing the floaty resets the provider, including its recorded calls.
   gemini_browser_agent_->DismissFloaty();
 
@@ -1917,7 +1933,8 @@ TEST_F(GeminiBrowserAgentTest, TestSwitchingTabRefetchesSharedTab) {
       std::move(other_web_state),
       WebStateList::InsertionParams::Automatic().Activate(false));
 
-  gemini_browser_agent_->OnTabPickerSelectionChanged({active_id, other_id});
+  gemini_browser_agent_->GetSharedTabsManager()->OnTabPickerSelectionChanged(
+      {active_id, other_id});
 
   // Switch to `other_id` and manually set its computation state to kSuccess.
   browser_->GetWebStateList()->ActivateWebStateAt(1);
@@ -1934,6 +1951,39 @@ TEST_F(GeminiBrowserAgentTest, TestSwitchingTabRefetchesSharedTab) {
   EXPECT_EQ(
       ios::provider::GeminiPageContextComputationState::kBlocked,
       GetRawAttachedTabContext(other_id).geminiPageContextComputationState);
+}
+
+// Tests that closing a shared tab in `WebStateList` removes it from
+// `shared_tabs_`.
+TEST_F(GeminiBrowserAgentTest, TestClosingWebStateRemovesSharedTab) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({kGeminiMultiTabContext, kPageActionMenu}, {});
+
+  web::WebStateID active_id = web_state_->GetUniqueIdentifier();
+  GeminiPageContext* active_context = [[GeminiPageContext alloc] init];
+  active_context.geminiPageContextAttachmentState =
+      ios::provider::GeminiPageContextAttachmentState::kAttached;
+  SetRawAttachedTab(active_id, active_context);
+
+  std::unique_ptr<web::FakeWebState> other_web_state =
+      std::make_unique<web::FakeWebState>();
+  other_web_state->SetBrowserState(personal_profile_);
+  GeminiTabHelper::CreateForWebState(other_web_state.get());
+  WebViewProxyTabHelper::CreateForWebState(other_web_state.get());
+  web::WebStateID other_id = other_web_state->GetUniqueIdentifier();
+  browser_->GetWebStateList()->InsertWebState(
+      std::move(other_web_state),
+      WebStateList::InsertionParams::Automatic().Activate(false));
+
+  gemini_browser_agent_->GetSharedTabsManager()->OnTabPickerSelectionChanged(
+      {active_id, other_id});
+  ASSERT_EQ(2u, GetRawSharedTabs().size());
+
+  browser_->GetWebStateList()->CloseWebStateAt(
+      1, WebStateList::ClosingReason::kUserAction);
+
+  EXPECT_EQ(1u, GetRawSharedTabs().size());
+  EXPECT_EQ(nil, GetRawAttachedTabContext(other_id));
 }
 
 // Tests the logic backing the metrics block providers.

@@ -7,24 +7,20 @@
 #import <AVFoundation/AVFoundation.h>
 
 #import <optional>
+#import <set>
+#import <vector>
 
 #import "base/barrier_closure.h"
 #import "base/check.h"
-#import "base/containers/map_util.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/functional/callback_helpers.h"
 #import "base/memory/weak_ptr.h"
 #import "base/not_fatal_until.h"
-#import "base/strings/string_number_conversions.h"
-#import "base/strings/sys_string_conversions.h"
-#import "base/strings/utf_string_conversions.h"
-#import "base/task/thread_pool.h"
 #import "base/time/time.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
-#import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
@@ -48,7 +44,6 @@
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_consent_provider_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_gateway_manager.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_link_opening_handler.h"
-#import "ios/chrome/browser/intelligence/bwg/model/gemini_page_context.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_page_state_change_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_scroll_observer.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service.h"
@@ -56,18 +51,18 @@
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_session_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_session_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_shared_tabs_manager.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_shared_tabs_manager_impl.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_startup_configuration.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_suggestion_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_suggestion_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
-#import "ios/chrome/browser/intelligence/bwg/model/gemini_utils.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_availability.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_feature_availability.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_live_utils.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_prefs.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
-#import "ios/chrome/browser/intelligence/proto_wrappers/page_context_utils.h"
+#import "ios/chrome/browser/intelligence/persist_tab_context/model/persist_tab_context_browser_agent.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_focus/omnibox_focus_browser_agent.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -82,7 +77,6 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
-#import "ios/chrome/browser/shared/model/web_state_list/tab_utils.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
@@ -103,10 +97,8 @@
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/bwg/gemini_api.h"
-#import "ios/web/public/favicon/favicon_status.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ui/base/l10n/l10n_util.h"
-#import "ui/gfx/image/image.h"
 
 namespace {
 
@@ -260,17 +252,6 @@ void ShowGeminiMicrophonePermissionAlert(UIViewController* base_view_controller,
                                    completion:nil];
 }
 
-// Returns true if the page context is eligible to be listed in the tab picker.
-// A context is eligible if its computation state is either success or pending
-// (meaning it is not blocked or protected).
-bool IsPageContextEligibleForTabPicker(GeminiPageContext* context) {
-  auto computation_state = context.geminiPageContextComputationState;
-  return computation_state ==
-             ios::provider::GeminiPageContextComputationState::kSuccess ||
-         computation_state ==
-             ios::provider::GeminiPageContextComputationState::kPending;
-}
-
 }  // namespace
 
 @interface GeminiSceneStateObserver : NSObject <SceneStateObserver>
@@ -320,10 +301,6 @@ GeminiBrowserAgent::GeminiBrowserAgent(Browser* browser)
   StartObserving(browser_);
 
   pref_change_registrar_.Init(browser_->GetProfile()->GetPrefs());
-  pref_change_registrar_.Add(
-      prefs::kIOSBWGPageContentSetting,
-      base::BindRepeating(&GeminiBrowserAgent::OnPageContentPrefChanged,
-                          base::Unretained(this)));
   pref_change_registrar_.Add(
       prefs::kIOSGeminiLiveMicrophoneSetting,
       base::BindRepeating(&GeminiBrowserAgent::OnMicrophonePrefChanged,
@@ -411,6 +388,15 @@ GeminiBrowserAgent::GeminiBrowserAgent(Browser* browser)
       static_cast<id<SceneCommands>>(dispatcher);
   ConfigureGemini();
 
+  shared_tabs_manager_ = std::make_unique<GeminiSharedTabsManagerImpl>(
+      browser_->GetWebStateList(), browser_->GetProfile()->GetPrefs(),
+      PersistTabContextBrowserAgent::FromBrowser(browser_),
+      SnapshotBrowserAgent::FromBrowser(browser_),
+      base::BindRepeating(&GeminiBrowserAgent::is_floaty_invoked,
+                          base::Unretained(this)),
+      base::BindRepeating(&GeminiBrowserAgent::IsTabGridVisible,
+                          base::Unretained(this)));
+
   if (IsIOSGeminiBottomSheetMigrationEnabled()) {
     return;
   }
@@ -422,7 +408,7 @@ GeminiBrowserAgent::GeminiBrowserAgent(Browser* browser)
       authenticationService:AuthenticationServiceFactory::GetForProfile(
                                 browser_->GetProfile())
                eventHandler:this
-          sharedTabsManager:GetSharedTabsManager()
+          sharedTabsManager:shared_tabs_manager_.get()
       sessionMetricsManager:session_metrics_manager_];
 }
 
@@ -498,12 +484,18 @@ void GeminiBrowserAgent::BrowserDestroyed(Browser* browser) {
     session_metrics_manager_ = nil;
   }
 
+  shared_tabs_manager_->Shutdown();
+
   if (identity_manager_) {
     identity_manager_->RemoveObserver(this);
     identity_manager_ = nullptr;
   }
 
   browser->RemoveObserver(this);
+}
+
+GeminiSharedTabsManager* GeminiBrowserAgent::GetSharedTabsManager() {
+  return shared_tabs_manager_.get();
 }
 
 void GeminiBrowserAgent::AddObserver(Observer* observer) {
@@ -766,7 +758,7 @@ void GeminiBrowserAgent::StartGeminiFlow(UIViewController* base_view_controller,
   // invoked. For a new invocation, update shared tabs before generating and
   // saving the active page context so stale tabs are cleared if `web_state` is
   // not already attached.
-  UpdateSharedTabsForActiveWebState(web_state);
+  shared_tabs_manager_->UpdateSharedTabsForActiveWebState(web_state);
 
   // TODO(crbug.com/571506045): Migrate the delayed presentation for
   // autosubmit prompts.
@@ -1400,126 +1392,6 @@ void GeminiBrowserAgent::ForceDismissFloaty() {
   DismissFloaty();
 }
 
-NSUInteger GeminiBrowserAgent::SharedTabsCount() const {
-  NSUInteger count = 0;
-  for (const auto& [tab_id, context] : shared_tabs_) {
-    if (context.geminiPageContextAttachmentState ==
-        ios::provider::GeminiPageContextAttachmentState::kAttached) {
-      count++;
-    }
-  }
-  return count;
-}
-
-void GeminiBrowserAgent::OnTabPickerSelectionChanged(
-    std::set<web::WebStateID> selected_tabs) {
-  web::WebStateID active_web_state_id = GetActiveWebStateID();
-
-  // Create `new_attached_tabs` which will replace `shared_tabs_`.
-  SharedTabsList new_attached_tabs;
-  std::vector<web::WebStateID> tabs_to_fetch;
-
-  // Add existing attached tabs to `new_attached_tabs` in insertion order,
-  // ensuring their attachment state reflects whether they were selected.
-  for (const auto& [tab_id, context] : shared_tabs_) {
-    if (tab_id == active_web_state_id) {
-      if (IsPageContextEligibleForTabPicker(context)) {
-        // Update the active tab's selection state if it was shown in the Tab
-        // Picker.
-        ios::provider::GeminiPageContextAttachmentState new_state =
-            selected_tabs.contains(active_web_state_id)
-                ? ios::provider::GeminiPageContextAttachmentState::kAttached
-                : ios::provider::GeminiPageContextAttachmentState::kDetached;
-        context.geminiPageContextAttachmentState = new_state;
-      }
-      new_attached_tabs.emplace_back(tab_id, context);
-    } else if (selected_tabs.contains(tab_id)) {
-      // Keep existing page context for a tab that is still selected.
-      new_attached_tabs.emplace_back(tab_id, context);
-    }
-  }
-
-  // Identify newly selected tabs and queue them for page context fetch.
-  for (web::WebStateID selected_tab : selected_tabs) {
-    if (selected_tab == active_web_state_id) {
-      // We already processed the active tab above, so we can ignore it here.
-      continue;
-    }
-    if (!GetSharedPageContext(selected_tab)) {
-      // Tab is newly selected and we will need to fetch its page context.
-      tabs_to_fetch.push_back(selected_tab);
-    }
-  }
-
-  shared_tabs_ = std::move(new_attached_tabs);
-
-  UpdateSharedTabContexts(tabs_to_fetch);
-
-  GeminiPageContext* active_page_context =
-      GetSharedPageContext(active_web_state_id);
-  CHECK(active_page_context);
-
-  ios::provider::UpdateActivePageContext(active_page_context,
-                                         GetInactiveSharedTabs());
-}
-
-GeminiSharedTabsManager* GeminiBrowserAgent::GetSharedTabsManager() {
-  return this;
-}
-
-std::set<web::WebStateID> GeminiBrowserAgent::GetSelectedTabsForTabPicker()
-    const {
-  std::set<web::WebStateID> eligible_tabs;
-  for (const auto& [tab_id, context] : shared_tabs_) {
-    if (IsPageContextEligibleForTabPicker(context) &&
-        context.geminiPageContextAttachmentState ==
-            ios::provider::GeminiPageContextAttachmentState::kAttached) {
-      eligible_tabs.insert(tab_id);
-    }
-  }
-  return eligible_tabs;
-}
-
-void GeminiBrowserAgent::UpdateSharedTabContexts(
-    const std::vector<web::WebStateID>& tabs_to_fetch) {
-  if (tabs_to_fetch.empty()) {
-    return;
-  }
-
-  WebStateList* web_state_list = browser_->GetWebStateList();
-  std::vector<std::string> tabs_to_fetch_str;
-
-  // Generate partial page contexts for each tab.
-  for (web::WebStateID tab_to_fetch : tabs_to_fetch) {
-    web::WebState* web_state = GetWebState(
-        web_state_list, WebStateSearchCriteria{.identifier = tab_to_fetch});
-    if (!web_state) {
-      continue;
-    }
-
-    GeminiPageContext* partial_context = CreatePartialPageContext(web_state);
-    CHECK(partial_context);
-
-    partial_context.geminiPageContextAttachmentState =
-        ios::provider::GeminiPageContextAttachmentState::kAttached;
-    SetSharedPageContext(tab_to_fetch, partial_context);
-
-    tabs_to_fetch_str.push_back(
-        base::NumberToString(tab_to_fetch.identifier()));
-  }
-
-  // Trigger full page context fetching, which will call
-  // `OnPersistTabContextLookupComplete` for each tab when completed.
-  PersistTabContextBrowserAgent* persist_agent =
-      PersistTabContextBrowserAgent::FromBrowser(browser_);
-  CHECK(persist_agent);
-
-  persist_agent->GetMultipleContextsAsync(
-      tabs_to_fetch_str,
-      base::BindOnce(&GeminiBrowserAgent::OnPersistTabContextLookupComplete,
-                     weak_factory_.GetWeakPtr()));
-}
-
 void GeminiBrowserAgent::SwitchToChatModeOrDismiss(
     bool animated,
     ios::provider::GeminiViewState target_state) {
@@ -1661,13 +1533,7 @@ void GeminiBrowserAgent::ShowFloatyIfInvoked(
 
 void GeminiBrowserAgent::OnWebStateInserted(web::WebState* web_state) {}
 
-void GeminiBrowserAgent::OnWebStateRemoved(web::WebState* web_state) {
-  if (!IsGeminiMultiTabContextEnabled()) {
-    return;
-  }
-  web::WebStateID removed_web_state_id = web_state->GetUniqueIdentifier();
-  RemoveSharedPageContext(removed_web_state_id);
-}
+void GeminiBrowserAgent::OnWebStateRemoved(web::WebState* web_state) {}
 
 void GeminiBrowserAgent::OnWebStateDeleted(web::WebState* web_state) {
   // A pending presentation was requested for the active tab, which is still
@@ -1676,12 +1542,6 @@ void GeminiBrowserAgent::OnWebStateDeleted(web::WebState* web_state) {
   if (web_state == browser_->GetWebStateList()->GetActiveWebState()) {
     CancelPendingPresentation();
   }
-
-  if (!IsGeminiMultiTabContextEnabled()) {
-    return;
-  }
-  web::WebStateID deleted_web_state_id = web_state->GetUniqueIdentifier();
-  RemoveSharedPageContext(deleted_web_state_id);
 }
 
 void GeminiBrowserAgent::OnActiveWebStateChanged(web::WebState* old_active,
@@ -1697,20 +1557,6 @@ void GeminiBrowserAgent::OnActiveWebStateChanged(web::WebState* old_active,
     }
     [old_active->GetWebViewProxy().scrollViewProxy
         removeObserver:scroll_observer_];
-
-    web::WebStateID old_active_id = old_active->GetUniqueIdentifier();
-    if (GeminiPageContext* old_context = GetSharedPageContext(old_active_id)) {
-      if (old_context.geminiPageContextAttachmentState !=
-          ios::provider::GeminiPageContextAttachmentState::kAttached) {
-        RemoveSharedPageContext(old_active_id);
-      } else if (HasInactiveSharedTabs()) {
-        // We are switching tabs and there is more than one tab attached to the
-        // conversation. Refetch the old active tab's page context to ensure it
-        // reflects its most recent state (instead of the state when the Floaty
-        // was last invoked).
-        UpdateSharedTabContexts({old_active_id});
-      }
-    }
   }
 
   if (new_active) {
@@ -1915,73 +1761,6 @@ void GeminiBrowserAgent::WillExitTabGrid() {
 
 #pragma mark - Private
 
-void GeminiBrowserAgent::UpdateSharedTabsForActiveWebState(
-    web::WebState* active_web_state) {
-  if (!IsGeminiMultiTabContextEnabled()) {
-    return;
-  }
-
-  if (!active_web_state) {
-    shared_tabs_.clear();
-    return;
-  }
-
-  web::WebStateID new_active_id = active_web_state->GetUniqueIdentifier();
-  GeminiPageContext* active_context = GetSharedPageContext(new_active_id);
-  if (!active_context ||
-      active_context.geminiPageContextAttachmentState !=
-          ios::provider::GeminiPageContextAttachmentState::kAttached) {
-    shared_tabs_.clear();
-  }
-}
-
-void GeminiBrowserAgent::SaveActivePageContextToSharedTabs(
-    GeminiPageContext* active_page_context) {
-  if (!IsGeminiMultiTabContextEnabled()) {
-    return;
-  }
-
-  // Save the active page context to `shared_tabs_`. If we are on the tab
-  // grid, the active page context will be saved as `kBlocked` unless we have
-  // other tabs attached. This prevents the current tab from being erroneously
-  // showed as `kBlocked` when we open the Floaty on a different attached tab.
-  bool should_save_active_context =
-      !IsTabGridVisible() || !HasInactiveSharedTabs();
-  if (!should_save_active_context) {
-    return;
-  }
-
-  web::WebState* active_web_state =
-      browser_->GetWebStateList()->GetActiveWebState();
-  if (!active_web_state) {
-    return;
-  }
-
-  SetSharedPageContext(active_web_state->GetUniqueIdentifier(),
-                       active_page_context);
-}
-
-NSArray<GeminiPageContext*>* GeminiBrowserAgent::GetInactiveSharedTabs() const {
-  NSMutableArray<GeminiPageContext*>* inactive_shared_tabs =
-      [NSMutableArray array];
-  web::WebStateID active_web_state_id = GetActiveWebStateID();
-
-  for (const auto& [tab_id, context] : shared_tabs_) {
-    if (tab_id != active_web_state_id) {
-      [inactive_shared_tabs addObject:context];
-    }
-  }
-  return inactive_shared_tabs;
-}
-
-bool GeminiBrowserAgent::HasInactiveSharedTabs() const {
-  if (shared_tabs_.size() > 1) {
-    return true;
-  }
-  return !shared_tabs_.empty() &&
-         shared_tabs_.begin()->first != GetActiveWebStateID();
-}
-
 void GeminiBrowserAgent::PrepareFloatyToBeShown() {
   web::WebState* web_state = browser_->GetWebStateList()->GetActiveWebState();
   if (!IsFullscreenInitialized() || !web_state) {
@@ -2020,28 +1799,6 @@ void GeminiBrowserAgent::ResetFullscreenDisabler() {
   }
 
   fullscreen_disabler_.reset();
-}
-
-GeminiPageContext* GeminiBrowserAgent::CreatePartialPageContext(
-    web::WebState* web_state) {
-  GeminiTabHelper* tab_helper = GeminiTabHelper::FromWebState(web_state);
-  if (tab_helper) {
-    // If web state is realized, get partial page context via tab helper
-    // to perform page context extraction eligibility checks.
-    return tab_helper->GetPartialPageContext(/*forced=*/true);
-  }
-
-  // If the web state is unrealized, the tab has cached APC and we can bypass
-  // page context extraction eligibility checks.
-  return gemini::CreatePartialPageContextForWebState(web_state,
-                                                     /*is_eligible=*/true);
-}
-
-void GeminiBrowserAgent::OnPageContentPrefChanged() {
-  if (!browser_->GetProfile()->GetPrefs()->GetBoolean(
-          prefs::kIOSBWGPageContentSetting)) {
-    shared_tabs_.clear();
-  }
 }
 
 void GeminiBrowserAgent::OnMicrophonePrefChanged() {
@@ -2087,241 +1844,9 @@ void GeminiBrowserAgent::SetSessionCommandHandlers() {
       HandlerForProtocol(dispatcher, GeminiCommands);
 }
 
-web::WebStateID GeminiBrowserAgent::GetActiveWebStateID() const {
-  web::WebState* active_web_state =
-      browser_->GetWebStateList()->GetActiveWebState();
-  return active_web_state ? active_web_state->GetUniqueIdentifier()
-                          : web::WebStateID();
-}
-
 GeminiTabHelper* GeminiBrowserAgent::GetActiveTabHelper() const {
   web::WebState* active_web_state =
       browser_->GetWebStateList()->GetActiveWebState();
   return active_web_state ? GeminiTabHelper::FromWebState(active_web_state)
                           : nullptr;
-}
-
-void GeminiBrowserAgent::OnPersistTabContextLookupComplete(
-    PersistTabContextBrowserAgent::PageContextMap contexts_map) {
-  for (auto& [tab_id_str, proto_context] : contexts_map) {
-    int32_t identifier;
-    if (!base::StringToInt(tab_id_str, &identifier)) {
-      continue;
-    }
-    web::WebStateID selected_tab =
-        web::WebStateID::FromSerializedValue(identifier);
-
-    if (proto_context.has_value()) {
-      RetrieveCachedPageContextForTab(selected_tab,
-                                      std::move(proto_context.value()));
-    } else {
-      GenerateFullPageContextForTab(selected_tab);
-    }
-  }
-}
-
-void GeminiBrowserAgent::RetrieveCachedPageContextForTab(
-    web::WebStateID selected_tab,
-    std::unique_ptr<optimization_guide::proto::PageContext> proto_context) {
-  GeminiPageContext* partial_context = GetSharedPageContext(selected_tab);
-  if (!partial_context) {
-    return;
-  }
-
-  // Create and populate full page context.
-  GeminiPageContext* full_context = [[GeminiPageContext alloc] init];
-  full_context.favicon = partial_context.favicon;
-  full_context.geminiPageContextComputationState =
-      ios::provider::GeminiPageContextComputationState::kSuccess;
-  full_context.uniquePageContext = std::move(proto_context);
-
-  SnapshotBrowserAgent* snapshot_browser_agent =
-      SnapshotBrowserAgent::FromBrowser(browser_);
-
-  if (!snapshot_browser_agent) {
-    OnFullPageContextAvailableForSharedTab(selected_tab, full_context);
-    return;
-  }
-
-  // Retrieve a snapshot of the web state and attach it to the page context.
-  // TODO(crbug.com/534752184): Move screenshot retrieval to PageContextWrapper.
-  base::WeakPtr<GeminiBrowserAgent> weak_this = weak_factory_.GetWeakPtr();
-  snapshot_browser_agent->RetrieveSnapshotWithID(
-      SnapshotID(selected_tab), SnapshotKindColor, ^(UIImage* snapshot) {
-        if (!snapshot || !full_context.uniquePageContext) {
-          if (weak_this) {
-            weak_this->OnFullPageContextAvailableForSharedTab(selected_tab,
-                                                              full_context);
-          }
-          return;
-        }
-
-        std::unique_ptr<optimization_guide::proto::PageContext>
-            extracted_proto = full_context.uniquePageContext;
-        full_context.uniquePageContext = nullptr;
-
-        base::ThreadPool::PostTaskAndReplyWithResult(
-            FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-            // Background task performs heavy image encoding work off the
-            // main thread.
-            base::BindOnce(
-                ^(std::unique_ptr<optimization_guide::proto::PageContext>
-                      proto) {
-                  NSData* image_data = UIImagePNGRepresentation(snapshot);
-                  if (!image_data) {
-                    return proto;
-                  }
-
-                  NSString* base64_string =
-                      [image_data base64EncodedStringWithOptions:0];
-                  proto->set_tab_screenshot(
-                      base::SysNSStringToUTF8(base64_string));
-                  return proto;
-                },
-                std::move(extracted_proto)),
-            // Reply task updates page context and notifies the provider on
-            // the main thread once image encoding is complete.
-            base::BindOnce(
-                [](base::WeakPtr<GeminiBrowserAgent> weak_this,
-                   web::WebStateID selected_tab,
-                   GeminiPageContext* full_context,
-                   std::unique_ptr<optimization_guide::proto::PageContext>
-                       proto) {
-                  full_context.uniquePageContext = std::move(proto);
-                  if (!weak_this) {
-                    return;
-                  }
-                  weak_this->OnFullPageContextAvailableForSharedTab(
-                      selected_tab, full_context);
-                },
-                weak_this, selected_tab, full_context));
-      });
-}
-
-void GeminiBrowserAgent::GenerateFullPageContextForTab(
-    web::WebStateID selected_tab) {
-  web::WebState* web_state =
-      GetWebState(browser_->GetWebStateList(),
-                  WebStateSearchCriteria{.identifier = selected_tab});
-  if (!web_state) {
-    return;
-  }
-
-  GeminiTabHelper* tab_helper = GeminiTabHelper::FromWebState(web_state);
-  if (!tab_helper) {
-    return;
-  }
-
-  tab_helper->GeneratePageContext(
-      base::BindRepeating(
-          &GeminiBrowserAgent::OnFullPageContextAvailableForSharedTab,
-          weak_factory_.GetWeakPtr(), selected_tab),
-      /*is_background_tab=*/true);
-}
-
-void GeminiBrowserAgent::OnFullPageContextAvailableForSharedTab(
-    web::WebStateID web_state_id,
-    GeminiPageContext* full_page_context) {
-  GeminiPageContext* existing_context = GetSharedPageContext(web_state_id);
-  // The tab was un-shared or closed before full page context became available.
-  if (!existing_context) {
-    return;
-  }
-
-  full_page_context.geminiPageContextAttachmentState =
-      existing_context.geminiPageContextAttachmentState;
-
-  SetSharedPageContext(web_state_id, full_page_context);
-
-  // The fetch is asynchronous and can complete after the floaty was dismissed,
-  // e.g. when it was started by a tab switch. The provider is reset on
-  // dismissal and only accepts page context while the floaty is invoked, so
-  // only keep the refreshed context for the next invocation.
-  if (!is_floaty_invoked_) {
-    return;
-  }
-
-  // Re-evaluate and push the updated state to the provider.
-  web::WebState* active_web_state =
-      browser_->GetWebStateList()->GetActiveWebState();
-  if (active_web_state) {
-    GeminiPageContext* active_page_context =
-        GetSharedPageContext(active_web_state->GetUniqueIdentifier());
-    ios::provider::UpdateActivePageContext(active_page_context,
-                                           GetInactiveSharedTabs());
-  }
-}
-
-void GeminiBrowserAgent::DetachTabWithID(NSString* tab_id) {
-  if (!IsGeminiMultiTabContextEnabled()) {
-    return;
-  }
-
-  int32_t identifier_value;
-  if (!base::StringToInt(base::SysNSStringToUTF8(tab_id), &identifier_value)) {
-    return;
-  }
-
-  web::WebStateID detached_tab_id =
-      web::WebStateID::FromSerializedValue(identifier_value);
-
-  web::WebStateID active_web_state_id = GetActiveWebStateID();
-  CHECK(detached_tab_id != active_web_state_id);
-
-  RemoveSharedPageContext(detached_tab_id);
-  RecordGeminiTabDetached();
-
-  GeminiPageContext* active_page_context =
-      GetSharedPageContext(active_web_state_id);
-  ios::provider::UpdateActivePageContext(active_page_context,
-                                         GetInactiveSharedTabs());
-}
-
-void GeminiBrowserAgent::UpdateLocalTabAttachmentState(
-    NSString* tab_id,
-    ios::provider::GeminiPageContextAttachmentState new_state) {
-  int32_t identifier_value;
-  if (!base::StringToInt(base::SysNSStringToUTF8(tab_id), &identifier_value)) {
-    return;
-  }
-
-  web::WebStateID attached_tab_id =
-      web::WebStateID::FromSerializedValue(identifier_value);
-
-  if (GeminiPageContext* page_context = GetSharedPageContext(attached_tab_id)) {
-    page_context.geminiPageContextAttachmentState = new_state;
-    if (new_state ==
-        ios::provider::GeminiPageContextAttachmentState::kAttached) {
-      RecordGeminiActiveTabAttached();
-    } else if (new_state ==
-               ios::provider::GeminiPageContextAttachmentState::kDetached) {
-      RecordGeminiActiveTabDetached();
-    }
-  }
-}
-
-GeminiPageContext* GeminiBrowserAgent::GetSharedPageContext(
-    web::WebStateID tab_id) const {
-  for (const auto& [id, context] : shared_tabs_) {
-    if (id == tab_id) {
-      return context;
-    }
-  }
-  return nil;
-}
-
-void GeminiBrowserAgent::SetSharedPageContext(web::WebStateID tab_id,
-                                              GeminiPageContext* page_context) {
-  for (auto& [id, existing_context] : shared_tabs_) {
-    if (id == tab_id) {
-      existing_context = page_context;
-      return;
-    }
-  }
-  shared_tabs_.emplace_back(tab_id, page_context);
-}
-
-void GeminiBrowserAgent::RemoveSharedPageContext(web::WebStateID tab_id) {
-  std::erase_if(shared_tabs_,
-                [tab_id](const auto& pair) { return pair.first == tab_id; });
 }
