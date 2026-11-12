@@ -36,7 +36,6 @@
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/startup/startup_browser_creator_impl.h"
 #include "chrome/browser/ui/startup/startup_types.h"
-#include "chrome/browser/ui/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
@@ -285,15 +284,7 @@ class InitialWebUIBrowserTestBase : public InProcessBrowserTest {
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
 };
 
-class InitialWebUINavigationBrowserTest : public InitialWebUIBrowserTestBase {
- public:
-  InitialWebUINavigationBrowserTest()
-      : InitialWebUIBrowserTestBase(
-            {},
-            // TODO(crbug.com/579025166): Fix test failures related to missing
-            // tab search bubble.
-            {organizer_panel::kOrganizerPanel}) {}
-};
+using InitialWebUINavigationBrowserTest = InitialWebUIBrowserTestBase;
 
 // TopChrome WebUI flag should be correctly set even if a non-TopChrome WebUI is
 // created first.

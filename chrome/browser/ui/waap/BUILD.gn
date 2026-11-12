@@ -167,7 +167,6 @@ if (!is_android) {
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/browser_window:create_browser_window",
       "//chrome/browser/ui/startup",
-      "//chrome/browser/ui/tabs/organizer",
       "//chrome/browser/ui/views/frame:toolbar_button_provider",
       "//chrome/browser/ui/webui:webui_util",
       "//chrome/browser/ui/webui/webui_toolbar",
