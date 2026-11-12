@@ -104,6 +104,9 @@ class SessionControllerImpl : public SessionController,
 
   SessionView& session_view() { return CHECK_DEREF(session_view_.get()); }
   Conversation& conversation() { return CHECK_DEREF(conversation_.get()); }
+  TtcPageContextMonitor* page_context_monitor_for_testing() {
+    return page_context_monitor_.get();
+  }
 
   // Where the pointer has been over the voice-focused contents, for the
   // get_pointer tool. Null unless kTtcGetPointer is enabled.
@@ -143,7 +146,6 @@ class SessionControllerImpl : public SessionController,
   ActorTaskHolder actor_task_holder_;
   SessionJournalImpl journal_;
   ToolController tool_controller_;
-  std::unique_ptr<TtcPageContextMonitor> page_context_monitor_;
 
   // Both null unless kTtcGetPointer is enabled; the observer also while there
   // are no voice-focused contents. The observer refers to the tracker, so it
@@ -165,6 +167,9 @@ class SessionControllerImpl : public SessionController,
   // The transcripts of the current exchange.
   TranscriptTracker transcript_tracker_;
 
+  // Declared after `observers_` because they hold `ScopedObservation`s on
+  // `this` whose destructors call `RemoveObserver()`, accessing `observers_`.
+  std::unique_ptr<TtcPageContextMonitor> page_context_monitor_;
   std::unique_ptr<SessionInactivityDetector> inactivity_detector_;
   std::unique_ptr<LockOrSuspendDetector> lock_or_suspend_detector_;
 

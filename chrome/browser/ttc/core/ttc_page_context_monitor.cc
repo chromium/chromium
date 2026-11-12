@@ -4,22 +4,23 @@
 
 #include "chrome/browser/ttc/core/ttc_page_context_monitor.h"
 
+#include <memory>
 #include <optional>
 #include <utility>
 
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
 #include "chrome/browser/actor/enterprise_policy_checker.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ttc/core/page_context_util.h"
+#include "chrome/browser/ttc/core/session_controller_impl.h"
+#include "chrome/browser/ttc/core/session_journal_impl.h"
 #include "components/actor/core/journal_details_builder.h"
 #include "components/page_content_annotations/core/page_content_extraction_types.h"
-#include "components/ttc/app/public/session_journal.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -49,12 +50,12 @@ PageContextResult BuildPageContextResult(
 
 TtcPageContextMonitor::TtcPageContextMonitor(
     content::WebContents& web_contents,
-    SessionJournal& journal,
+    SessionControllerImpl& session_controller,
     const actor::EnterprisePolicyChecker* enterprise_policy_checker,
     PageContextInvalidatedCallback on_page_context_invalidated,
     PageContextFetchedCallback on_page_context_fetched)
     : content::WebContentsObserver(&web_contents),
-      journal_(journal),
+      session_controller_(session_controller),
       enterprise_policy_checker_(enterprise_policy_checker),
       extraction_service_(CHECK_DEREF(
           page_content_annotations::PageContentExtractionServiceFactory::
@@ -64,6 +65,7 @@ TtcPageContextMonitor::TtcPageContextMonitor(
       on_page_context_fetched_(std::move(on_page_context_fetched)) {
   CHECK(on_page_context_invalidated_);
   CHECK(on_page_context_fetched_);
+  session_controller_observation_.Observe(&session_controller);
   extraction_service_observation_.Observe(&extraction_service_.get());
 
   // Extract or retrieve cached context for the currently displayed page,
@@ -73,6 +75,44 @@ TtcPageContextMonitor::TtcPageContextMonitor(
 }
 
 TtcPageContextMonitor::~TtcPageContextMonitor() = default;
+
+bool TtcPageContextMonitor::IsFetchingForTesting() const {
+  return fetch_weak_ptr_factory_.HasWeakPtrs();
+}
+
+SessionJournalImpl& TtcPageContextMonitor::GetJournal() {
+  return session_controller_->GetJournal();
+}
+
+void TtcPageContextMonitor::RefreshPageContext() {
+  if (!web_contents() || web_contents()->IsCrashed()) {
+    return;
+  }
+
+  content::Page& page = web_contents()->GetPrimaryPage();
+  const GURL& url = page.GetMainDocument().GetLastCommittedURL();
+
+  if (enterprise_policy_checker_ &&
+      enterprise_policy_checker_->Evaluate(url) ==
+          actor::EnterprisePolicyChecker::UrlBlockReason::kExplicitlyBlocked) {
+    GetJournal().Log("TtcPageContextEnterpriseBlocked",
+                     actor::JournalDetailsBuilder().Add("url", url).Build());
+    return;
+  }
+
+  pending_cached_notification_.Cancel();
+  // As in FetchPageContext(), PCES notifies OnPageContentExtracted() when this
+  // refresh extracts new APC, which forwards it to `on_page_context_fetched_`.
+  // `OnFetchCompleted` only tracks the in-flight request and closes the async
+  // journal event.
+  extraction_service_->RefreshExtractedPageContentAndEligibilityForPage(
+      page, base::BindOnce(
+                &TtcPageContextMonitor::OnFetchCompleted,
+                fetch_weak_ptr_factory_.GetWeakPtr(),
+                GetJournal().BeginAsyncEvent(
+                    "TtcPageContextRefresh",
+                    actor::JournalDetailsBuilder().Add("url", url).Build())));
+}
 
 void TtcPageContextMonitor::FetchPageContext() {
   CHECK(web_contents());
@@ -86,8 +126,8 @@ void TtcPageContextMonitor::FetchPageContext() {
   if (enterprise_policy_checker_ &&
       enterprise_policy_checker_->Evaluate(url) ==
           actor::EnterprisePolicyChecker::UrlBlockReason::kExplicitlyBlocked) {
-    journal_->Log("TtcPageContextEnterpriseBlocked",
-                  actor::JournalDetailsBuilder().Add("url", url).Build());
+    GetJournal().Log("TtcPageContextEnterpriseBlocked",
+                     actor::JournalDetailsBuilder().Add("url", url).Build());
     return;
   }
   // PCES may have a cached extraction for this page. If so, use it; if not,
@@ -110,7 +150,14 @@ void TtcPageContextMonitor::FetchPageContext() {
     // PCES will call its own fetch method, triggering OnPageContentExtracted,
     // when this async method actually extracts new APC.
     extraction_service_->GetExtractedPageContentAndEligibilityForPageAsync(
-        page, base::DoNothing(), /*trigger_if_not_cached=*/true);
+        page,
+        base::BindOnce(
+            &TtcPageContextMonitor::OnFetchCompleted,
+            fetch_weak_ptr_factory_.GetWeakPtr(),
+            GetJournal().BeginAsyncEvent(
+                "TtcPageContextFetch",
+                actor::JournalDetailsBuilder().Add("url", url).Build())),
+        /*trigger_if_not_cached=*/true);
   }
 }
 
@@ -159,12 +206,19 @@ void TtcPageContextMonitor::PrimaryMainFrameRenderProcessGone(
   // until it's reloaded. Report it as not eligible, which only shares its
   // origin, rather than checking whether its URL is supported: the crashed
   // main document no longer has one.
-  journal_->Log("TtcPageContextRendererGone", {});
+  GetJournal().Log("TtcPageContextRendererGone", {});
   pending_cached_notification_.Cancel();
+  fetch_weak_ptr_factory_.InvalidateWeakPtrs();
   weak_ptr_factory_.InvalidateWeakPtrs();
   on_page_context_fetched_.Run(
       base::unexpected(page_content_annotations::FetchPageContextError::
                            kPageContextNotEligible));
+}
+
+void TtcPageContextMonitor::OnSpeakerChanged(Speaker speaker) {
+  if (speaker == Speaker::kUser) {
+    RefreshPageContext();
+  }
 }
 
 bool TtcPageContextMonitor::IsMonitoredPage(const content::Page& page) const {
@@ -196,8 +250,8 @@ void TtcPageContextMonitor::NotifyPageContextFetched(
   }
   const GURL& url = weak_page->GetMainDocument().GetLastCommittedURL();
   if (!is_url_supported) {
-    journal_->Log("TtcPageContextBlocked",
-                  actor::JournalDetailsBuilder().Add("url", url).Build());
+    GetJournal().Log("TtcPageContextBlocked",
+                     actor::JournalDetailsBuilder().Add("url", url).Build());
     // TODO(b/555804152): Figure out how to send specific error messages to
     // the server.
     on_page_context_fetched_.Run(
@@ -205,9 +259,18 @@ void TtcPageContextMonitor::NotifyPageContextFetched(
                              kPageContextNotEligible));
     return;
   }
-  journal_->Log("TtcPageContextUpdated",
-                actor::JournalDetailsBuilder().Add("url", url).Build());
+  GetJournal().Log("TtcPageContextUpdated",
+                   actor::JournalDetailsBuilder().Add("url", url).Build());
   on_page_context_fetched_.Run(result);
+}
+
+void TtcPageContextMonitor::OnFetchCompleted(
+    std::unique_ptr<actor::AggregatedJournal::PendingAsyncEntry> journal_event,
+    std::optional<page_content_annotations::ExtractedPageContentResult>
+        result) {
+  journal_event->EndEntry(actor::JournalDetailsBuilder()
+                              .Add("success", result.has_value())
+                              .Build());
 }
 
 }  // namespace ttc
