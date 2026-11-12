@@ -8,28 +8,27 @@ import type {AddSiteDialogElement} from './add_site_dialog.js';
 
 export function getHtml(this: AddSiteDialogElement) {
   return html`<!--_html_template_start_-->
-    <cr-dialog id="dialog" close-text="$i18n{close}">
-      <div slot="title">$i18n{addSiteTitle}</div>
-      <div slot="body">
-        <cr-input id="site" label="$i18n{addSite}"
-            placeholder="$i18n{addSiteExceptionPlaceholder}"
-            .value="${this.site_}" @input="${this.onInput_}"
-            error-message="${this.errorMessage_}" spellcheck="false"
-            autofocus></cr-input>
-        <cr-checkbox id="incognito"
-            ?hidden="${!this.showIncognitoSessionOnly_()}">
-          $i18n{incognitoSiteOnly}
-        </cr-checkbox>
-      </div>
-      <div slot="button-container">
-        <cr-button class="cancel-button" @click="${this.onCancelClick_}">
-          $i18n{cancel}
-        </cr-button>
-        <cr-button class="action-button" id="add" @click="${this.onSubmitClick_}"
-            disabled>
-          $i18n{add}
-        </cr-button>
-      </div>
-    </cr-dialog>
+<cr-dialog id="dialog" close-text="$i18n{close}">
+  <div slot="title">$i18n{addSiteTitle}</div>
+  <div slot="body">
+    <cr-input id="site" label="$i18n{addSite}"
+        placeholder="$i18n{addSiteExceptionPlaceholder}" .value="${this.site_}"
+        @input="${this.onInput_}" error-message="${this.errorMessage_}"
+        spellcheck="false" autofocus>
+    </cr-input>
+    <cr-checkbox id="incognito" ?hidden="${!this.showIncognitoSessionOnly_()}">
+      $i18n{incognitoSiteOnly}
+    </cr-checkbox>
+  </div>
+  <div slot="button-container">
+    <cr-button class="cancel-button" @click="${this.onCancelClick_}">
+      $i18n{cancel}
+    </cr-button>
+    <cr-button class="action-button" id="add" @click="${this.onSubmitClick_}"
+        disabled>
+      $i18n{add}
+    </cr-button>
+  </div>
+</cr-dialog>
 <!--_html_template_end_-->`;
 }

@@ -5,6 +5,7 @@
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {RestartType} from '../relaunch_mixin_lit.js';
+
 import type {SettingsGlicSubpageElement} from './glic_subpage.js';
 
 export function getHtml(this: SettingsGlicSubpageElement) {

@@ -7,7 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import {type SkillsSidebarElement} from './sidebar.js';
 
 export function getHtml(this: SkillsSidebarElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <cr-menu-selector selectable="a" selected-attribute="selected"
     @iron-activate="${this.onIronActivate_}" .selected="${this.selectedPage}"
@@ -28,5 +27,4 @@ export function getHtml(this: SkillsSidebarElement) {
   </span>
 </div>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

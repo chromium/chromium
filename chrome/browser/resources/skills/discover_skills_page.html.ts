@@ -10,47 +10,53 @@ import type {DiscoverSkillsPageElement} from './discover_skills_page.js';
 import {ErrorType} from './error_page.js';
 
 export function getHtml(this: DiscoverSkillsPageElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 ${this.shouldShowNoSearchResults_() ? html`
   <error-page error-type="${ErrorType.NO_SEARCH_RESULTS}"></error-page>
 ` : html`
-${Array.from(this.topicHeaders_).map(({ categoryName, displayName }) => html`
-  ${this.skillsByTopic_(categoryName).length > 0 ? html`
-<h2 class="page-title">${displayName}</h2>
-<skills-carousel>
-  ${this.skillsByTopic_(categoryName).map(skill => html`
-    <skill-card slot="items" .skill="${skill}"
-        .cardType="${CardType.DISCOVER_SKILL_CARD}"
-        class="${skill.imageUrl ? 'skill-with-image' : ''}"
-        .saveDisabled="${this.shouldDisableSave_(skill)}"
-        .hideTooltip="${true}">
-    </skill-card>`)}
-</skills-carousel>` : ''}
-`)}
-${this.getOtherCategories_().length > 0 ? html`
-<h2 class="page-title" id="browseSkillsTitle">$i18n{browseSkillsTitle}</h2>
-<div id="discoverCategories">
-  ${this.getOtherCategories_().map(category => html`
-    <cr-chip ?selected="${this.isCategorySelected_(category)}"
-        data-category="${category}" @click="${this.onCategoryClick_}">
-      <cr-icon icon="${this.isCategorySelected_(category) ? 'cr:check' :
-          this.getIconForCategory_(category)}">
-      </cr-icon>
-      ${category}
-    </cr-chip>`)}
-</div>
-<div class="skill-cards-container">
-  ${this.getSelectedSkills_().map(skill => html`
-    <skill-card .skill="${skill}" .cardType="${CardType.DISCOVER_SKILL_CARD}"
-        class="${skill.imageUrl ? 'skill-with-image' : ''}"
-        .saveDisabled="${this.shouldDisableSave_(skill)}">
-    </skill-card>`)}
-</div>` : ''}
-<cr-toast id="invalidSkillToast">
-  <div>$i18n{invalidSkillToastText}</div>
-</cr-toast>
+  ${Array.from(this.topicHeaders_).map(({categoryName, displayName}) => html`
+    ${this.skillsByTopic_(categoryName).length > 0 ? html`
+      <h2 class="page-title">${displayName}</h2>
+      <skills-carousel>
+        ${this.skillsByTopic_(categoryName).map(skill => html`
+          <skill-card slot="items" .skill="${skill}"
+              .cardType="${CardType.DISCOVER_SKILL_CARD}"
+              class="${skill.imageUrl ? 'skill-with-image' : ''}"
+              .saveDisabled="${this.shouldDisableSave_(skill)}"
+              .hideTooltip="${true}">
+          </skill-card>
+        `)}
+      </skills-carousel>
+    ` : ''}
+  `)}
+  ${this.getOtherCategories_().length > 0 ? html`
+    <h2 class="page-title" id="browseSkillsTitle">$i18n{browseSkillsTitle}</h2>
+    <div id="discoverCategories">
+      ${this.getOtherCategories_().map(category => html`
+        <cr-chip ?selected="${this.isCategorySelected_(category)}"
+            data-category="${category}" @click="${this.onCategoryClick_}">
+          <cr-icon
+              icon="${this.isCategorySelected_(category) ?
+                  'cr:check' :
+                  this.getIconForCategory_(category)}">
+          </cr-icon>
+          ${category}
+        </cr-chip>
+      `)}
+    </div>
+    <div class="skill-cards-container">
+      ${this.getSelectedSkills_().map(skill => html`
+        <skill-card .skill="${skill}"
+            .cardType="${CardType.DISCOVER_SKILL_CARD}"
+            class="${skill.imageUrl ? 'skill-with-image' : ''}"
+            .saveDisabled="${this.shouldDisableSave_(skill)}">
+        </skill-card>
+      `)}
+    </div>
+  ` : ''}
+  <cr-toast id="invalidSkillToast">
+    <div>$i18n{invalidSkillToastText}</div>
+  </cr-toast>
 `}
 <!--_html_template_end_-->`;
-  // clang-format on
 }

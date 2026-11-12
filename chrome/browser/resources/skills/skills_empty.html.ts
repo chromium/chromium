@@ -8,8 +8,9 @@ import type {SkillsEmptyElement} from './skills_empty.js';
 
 // SVG must be inlined to support tokenized gradient colors.
 export function getHtml(this: SkillsEmptyElement) {
-  // clang-format off
   return html`
+<!-- Disable formatting since this template is just an inline SVG. -->
+<!-- lit-template-format-off -->
 <svg id="skillsEmpty" width="288" height="144" viewBox="0 0 288 144" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="paint0_linear_5733_98994" x1="26" y1="0" x2="26" y2="52" gradientUnits="userSpaceOnUse">
@@ -45,6 +46,5 @@ export function getHtml(this: SkillsEmptyElement) {
   <path d="M95.8514 49C95.3201 48.3651 95 47.5457 95 46.6511C95 44.6346 96.6262 43 98.6322 43C99.5401 43 100.37 43.3348 101.007 43.8884C101.642 43.3348 102.47 43 103.376 43C105.378 43 107 44.6346 107 46.6511C107 47.5457 106.681 48.3651 106.151 49C106.681 49.6349 107 50.4543 107 51.3489C107 53.3654 105.378 55 103.376 55C102.47 55 101.642 54.6652 101.007 54.1116C100.37 54.6652 99.5401 55 98.6322 55C96.6262 55 95 53.3654 95 51.3489C95 50.4543 95.3201 49.6349 95.8514 49Z" fill="var(--color-sys-illo-tertiary-min)"/>
   <circle cx="93" cy="37" r="3" fill="var(--color-sys-illo-tertiary-min)"/>
 </svg>
-`;
-  // clang-format on
+<!-- lit-template-format-on -->`;
 }

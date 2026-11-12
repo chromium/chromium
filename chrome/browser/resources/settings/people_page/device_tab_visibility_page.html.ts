@@ -21,8 +21,7 @@ export function getHtml(this: SettingsDeviceTabVisibilityPageElement) {
     <div id="deviceList" class="list-frame">
       ${this.devices_.map((device, index) => html`
         <div class="list-item device-row">
-          <cr-icon icon="${this.getDeviceIcon_(device.formFactor)}">
-          </cr-icon>
+          <cr-icon icon="${this.getDeviceIcon_(device.formFactor)}"></cr-icon>
           <div class="device-content">
             <div class="cr-padded-text">
               <div class="device-name">${device.deviceName}</div>

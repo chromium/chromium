@@ -9,7 +9,6 @@ import {type SkillsAppElement} from './app.js';
 import {Page} from './sidebar.js';
 
 export function getHtml(this: SkillsAppElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <cr-toolbar id="toolbar" page-name="$i18n{skillsTitle}"
     clear-label="$i18n{delete}" autofocus
@@ -28,7 +27,8 @@ export function getHtml(this: SkillsAppElement) {
   </skills-sidebar>
 </cr-drawer>
 ${this.getErrorType_() !== null ? html`
-  <error-page error-type="${this.getErrorType_()!}"></error-page>` : html`
+  <error-page error-type="${this.getErrorType_()!}"></error-page>
+` : html`
   <div id="content" class="no-outline cr-scrollable">
     <div id="left">
       <div role="navigation" id="sidebar" ?hidden="${this.narrow_}">
@@ -47,5 +47,4 @@ ${this.getErrorType_() !== null ? html`
   </div>
 `}
 <!--_html_template_end_-->`;
-  // clang-format on
 }

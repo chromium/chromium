@@ -124,7 +124,7 @@ def _CheckTypeScriptImports(input_api, output_api):
         return input_api.FilterSourceFile(
             affected_file,
             files_to_check=[r'^chrome/browser/resources/glic/.*\.ts$'],
-            files_to_skip=[r'.*\.d\.ts$'],
+            files_to_skip=[r'.*\.d\.ts$', r'.*\.html\.ts$'],
         )
 
     affected_files = list(

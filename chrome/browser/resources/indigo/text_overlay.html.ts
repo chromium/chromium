@@ -7,7 +7,6 @@ import {html, repeat} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {IndigoTextOverlayElement} from './text_overlay.js';
 
 export function getHtml(this: IndigoTextOverlayElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <div id="container">
   ${repeat(this.showIcon_ ? [this.sequenceId_] : [], id => id, () => html`
@@ -26,11 +25,11 @@ export function getHtml(this: IndigoTextOverlayElement) {
       <div class="${this.getStepClass_(3)}">$i18n{textLayerStep3}</div>
     </div>
     <div id="disclaimer">
-      $i18n{disclaimerLine1}<br>
+      $i18n{disclaimerLine1}
+      <br>
       $i18n{disclaimerLine2}
     </div>
   ` : ''}
 </div>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

@@ -7,25 +7,19 @@ import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {IndigoImageReplacementAppElement} from './app.js';
 
 export function getHtml(this: IndigoImageReplacementAppElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
-<img
-    id="image"
-    .src="${this.imageSrc_}"
+<img id="image" .src="${this.imageSrc_}"
     .style="object-fit: ${this.objectFit_};">
-</img>
 
 ${this.showWatermark_ ? html`
   <div id="watermark">ai</div>
 ` : ''}
 
 ${this.showOverlay_ ? html`
-  <indigo-motion-overlay
-      .animationState="${this.overlayAnimationState_}"
+  <indigo-motion-overlay .animationState="${this.overlayAnimationState_}"
       @entry-complete="${this.onEntryComplete_}"
       @motion-complete="${this.onMotionComplete_}">
   </indigo-motion-overlay>
 ` : ''}
 <!--_html_template_end_-->`;
-  // clang-format on
 }

@@ -7,13 +7,11 @@ import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {SkillsEmojiPickerElement} from './skills_emoji_picker.js';
 
 export function getHtml(this: SkillsEmojiPickerElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <div id="container" @keydown="${this.onKeydown_}" role="dialog"
     aria-label="$i18n{emojiPickerAriaLabel}">
   <div id="searchContainer">
-    <cr-input id="searchInput"
-        placeholder="$i18n{emojiSearchPlaceholder}"
+    <cr-input id="searchInput" placeholder="$i18n{emojiSearchPlaceholder}"
         .value="${this.searchQuery_}"
         @value-changed="${this.onSearchInputValueChanged_}"
         clear-button-visible>
@@ -29,10 +27,8 @@ export function getHtml(this: SkillsEmojiPickerElement) {
         <div class="emoji-row">
           ${this.getEmojisByCategory_(category).map(emoji => html`
             <button class="emoji-button" title="${emoji.name}"
-                aria-label="${emoji.name}"
-                data-emoji="${emoji.emoji}"
-                @click="${this.onEmojiClick_}"
-                role="gridcell">
+                aria-label="${emoji.name}" data-emoji="${emoji.emoji}"
+                @click="${this.onEmojiClick_}" role="gridcell">
               ${emoji.emoji}
             </button>
           `)}
@@ -42,5 +38,4 @@ export function getHtml(this: SkillsEmojiPickerElement) {
   </div>
 </div>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

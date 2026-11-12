@@ -10,13 +10,12 @@ export function getHtml(this: SettingsAntiAbusePageElement) {
   return html`<!--_html_template_start_-->
 <settings-subpage page-title="$i18n{siteSettingsAntiAbuse}"
     route-path="${this.routePath}">
-  <settings-toggle-button
-      id="toggleButton"
-      pref-key="synthetic.settings.site_settings.anti_abuse"
-      no-set-pref
+  <settings-toggle-button id="toggleButton"
+      pref-key="synthetic.settings.site_settings.anti_abuse" no-set-pref
       label="$i18n{siteSettingsAntiAbuse}"
       sub-label="$i18n{siteSettingsAntiAbuseDescription}"
-      @settings-boolean-control-change="${this.onSettingsBooleanControlChange_}">
+      @settings-boolean-control-change="${
+          this.onSettingsBooleanControlChange_}">
   </settings-toggle-button>
   <div class="settings-columned-section">
     <div class="column">
@@ -42,7 +41,9 @@ export function getHtml(this: SettingsAntiAbusePageElement) {
         <li>
           <cr-icon icon="settings20:background-replace" aria-hidden="true">
           </cr-icon>
-          <div class="secondary">$i18n{antiAbuseThingsToConsiderSectionOne}</div>
+          <div class="secondary">
+            $i18n{antiAbuseThingsToConsiderSectionOne}
+          </div>
         </li>
       </ul>
     </div>

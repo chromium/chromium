@@ -8,25 +8,26 @@ import {html, nothing} from '//resources/lit/v3_0/lit.rollup.js';
 import type {ErrorPageElement} from './error_page.js';
 
 export function getHtml(this: ErrorPageElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
-<div id="container"
-    role="${this.dialog ? 'dialog' : nothing}"
+<div id="container" role="${this.dialog ? 'dialog' : nothing}"
     aria-modal="${this.dialog ? 'true' : nothing}"
     aria-labelledby="${this.dialog ? 'errorTitle' : nothing}">
   <div id="mainContent">
     <div id="header">
       ${this.isGlicDisabled_() || this.isSkillsDisabled_() ||
-        this.isSkillsUnsupported_() ||
-        this.isRemoteAuthorityUnreachable_() ? html`
-        <cr-icon icon="cr:error"></cr-icon>` : ''}
+              this.isSkillsUnsupported_() ||
+              this.isRemoteAuthorityUnreachable_() ?
+          html`
+        <cr-icon icon="cr:error"></cr-icon>
+      ` : ''}
       <h1 id="errorTitle" class="headline">${this.errorTitle()}</h1>
     </div>
     <p class="body-text" .innerHTML="${this.errorDescription()}"></p>
     ${!this.dialog && this.isSkillsDisabled_() ? html`
       <cr-button @click="${this.onGoToSettingsClick_}">
         $i18n{goToSettings}
-      </cr-button>` : ''}
+      </cr-button>
+    ` : ''}
   </div>
   ${this.dialog ? html`
     <div class="dialog-actions-row">
@@ -38,14 +39,16 @@ export function getHtml(this: ErrorPageElement) {
         <cr-button id="signInButton" class="action-button"
             @click="${this.onSignInClick_}">
           $i18n{signInToChrome}
-        </cr-button>` : ''}
+        </cr-button>
+      ` : ''}
       ${this.isSkillsDisabled_() ? html`
         <cr-button id="settingsButton" class="action-button"
             @click="${this.onGoToSettingsClick_}">
           $i18n{goToSettings}
-        </cr-button>` : ''}
-    </div>` : ''}
+        </cr-button>
+      ` : ''}
+    </div>
+  ` : ''}
 </div>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

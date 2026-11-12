@@ -9,26 +9,25 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {SkillCardElement} from './card.js';
 
 export function getHtml(this: SkillCardElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <div class="card">
   ${this.skill.imageUrl ? html`
     <div id="illustrationContainer">
       <img is="cr-auto-img" id="illustrationImage"
-          auto-src="${this.getIllustrationUrl_()}"
-          static-encode encode-type="webp">
-      </img>
-    </div>` : html``
-  }
+          auto-src="${this.getIllustrationUrl_()}" static-encode
+          encode-type="webp">
+    </div>
+  ` : html``}
   <div id="cardHeader">
     <div id="infoContainer">
       <div id="icon">${this.skill.icon}</div>
       <div id="name">${this.skill.name}</div>
     </div>
-    ${this.isDiscoverCard_() ? html
-    `<div id="curatedLabel">$i18n{curatedByPrefix} ${this.skill.curatedBy}
-    </div>`
-      : html``}
+    ${this.isDiscoverCard_() ? html`
+      <div id="curatedLabel">
+        $i18n{curatedByPrefix} ${this.skill.curatedBy}
+      </div>
+    ` : html``}
     <!-- Only show the menu button for user-created skills. -->
     ${this.isDiscoverCard_() ? html`` : html`
       <cr-icon-button id="moreButton" iron-icon="cr:more-vert"
@@ -48,9 +47,11 @@ export function getHtml(this: SkillCardElement) {
             @click="${this.onCopyButtonClick_}"
             aria-label="${this.ariaLabelForSkill_('copyInstructions')}">
           <cr-icon
-              icon="${this.webuiRoundedIconsEnabled_
-                  ? 'skills:content-copy'
-                  : 'skills:copy-old'}" slot="prefix-icon"></cr-icon>
+              icon="${this.webuiRoundedIconsEnabled_ ?
+                  'skills:content-copy' :
+                  'skills:copy-old'}"
+              slot="prefix-icon">
+          </cr-icon>
           $i18n{copyInstructions}
         </cr-button>
       </cr-action-menu>
@@ -60,7 +61,8 @@ export function getHtml(this: SkillCardElement) {
       fit-to-visible-bounds ?manual-mode="${this.hideTooltip}">
     ${this.skill.name}
   </cr-tooltip>
-  <div id="${this.cardType}Body" class="card-body">${this.getCardBodyText_()}
+  <div id="${this.cardType}Body" class="card-body">
+    ${this.getCardBodyText_()}
   </div>
   <div id="cardFooter">
     <!-- Show add for discoverable skills and edit for user skills. -->
@@ -75,14 +77,14 @@ export function getHtml(this: SkillCardElement) {
       <cr-button id="editButton" @click="${this.onEditButtonClick_}"
           aria-label="${this.ariaLabelForSkill_('edit')}">
         <cr-icon id="editIcon"
-            icon="${this.webuiRoundedIconsEnabled_
-                ? 'skills:edit'
-                : 'skills:create-old'}" slot="prefix-icon"></cr-icon>
+            icon="${this.webuiRoundedIconsEnabled_ ? 'skills:edit' :
+                                                     'skills:create-old'}"
+            slot="prefix-icon">
+        </cr-icon>
         $i18n{edit}
       </cr-button>
     `}
   </div>
 </div>
 <!--_html_template_end_-->`;
-  // clang-format on
 }
