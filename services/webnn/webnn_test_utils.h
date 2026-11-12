@@ -17,6 +17,7 @@
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph_builder.mojom.h"
+#include "services/webnn/webnn_graph_builder_impl.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace webnn {
@@ -408,6 +409,11 @@ class GraphInfoBuilder final {
       mojom::Operand::Kind kind = mojom::Operand::Kind::kOutput);
 
   mojom::GraphInfoPtr graph_info_;
+
+  // Local copies of the constants sent to the remote graph builder. Consumed by
+  // `IsValidGraphForTesting()`, which may therefore be called at most once.
+  WebNNGraphBuilderImpl::PendingConstantOperandSet pending_constant_operands_;
+  bool validated_ = false;
 
   base::raw_ref<mojo::Remote<mojom::WebNNGraphBuilder>> graph_builder_remote_;
 };

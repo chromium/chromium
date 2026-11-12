@@ -479,13 +479,6 @@ class FakeWebNNGraphBuilder : public blink_mojom::WebNNGraphBuilder {
     NOTIMPLEMENTED();
   }
 
-  void IsValidGraphForTesting(
-      const webnn::ContextProperties& context_properties,
-      webnn::mojom::blink::GraphInfoPtr graph_info,
-      IsValidGraphForTestingCallback callback) override {
-    NOTIMPLEMENTED();
-  }
-
   // TODO(crbug.com/354741414): Fix this dangling pointer.
   const raw_ref<MLGraphTest, DanglingUntriaged> helper_;
 };

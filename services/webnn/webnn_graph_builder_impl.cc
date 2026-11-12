@@ -6,7 +6,6 @@
 
 #include <variant>
 
-#include "base/check_is_test.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
@@ -2803,8 +2802,8 @@ void WebNNGraphBuilderImpl::CreateGraph(mojom::GraphInfoPtr graph_info,
   }
 
   auto validate_graph_result =
-      ValidateGraphImpl(context_->properties(), *graph_info,
-                        /*keep_builder_resources_for_testing=*/false);
+      ValidateGraph(context_->properties(), *graph_info,
+                    std::move(pending_constant_operands_));
 
   has_built_ = true;
 
@@ -2830,16 +2829,6 @@ void WebNNGraphBuilderImpl::SetId(
     mojo::ReceiverId id,
     base::PassKey<GraphBuilderContext> /*pass_key*/) {
   id_ = id;
-}
-
-void WebNNGraphBuilderImpl::IsValidGraphForTesting(
-    const ContextProperties& context_properties,
-    mojom::GraphInfoPtr graph_info,
-    IsValidGraphForTestingCallback callback) {
-  std::move(callback).Run(
-      ValidateGraphImpl(context_properties, *graph_info,
-                        /*keep_builder_resources_for_testing=*/true)
-          .has_value());
 }
 
 void WebNNGraphBuilderImpl::DidTransposePendingPermutations(
@@ -2877,17 +2866,12 @@ void WebNNGraphBuilderImpl::DidCreateGraph(
   std::move(callback).Run(std::move(success));
 }
 
+// static
 std::optional<WebNNGraphBuilderImpl::ValidateGraphSuccessResult>
-WebNNGraphBuilderImpl::ValidateGraphImpl(
+WebNNGraphBuilderImpl::ValidateGraph(
     const ContextProperties& context_properties,
     const mojom::GraphInfo& graph_info,
-    bool keep_builder_resources_for_testing) {
-  if (keep_builder_resources_for_testing) {
-    CHECK_IS_TEST();
-  } else {
-    CHECK(!has_built_);
-  }
-
+    PendingConstantOperandSet pending_constant_operands) {
   // The input operands of graph can be empty.
   if (graph_info.operands.empty() || graph_info.operations.empty() ||
       graph_info.output_operands.empty()) {
@@ -2985,44 +2969,29 @@ WebNNGraphBuilderImpl::ValidateGraphImpl(
           return std::nullopt;
         }
 
-        // ...which must identify a handle known by this builder...
+        // ...which must identify a known pending constant...
         auto pending_constant_operand_it =
-            pending_constant_operands_.find(id_and_handle_it->second);
-        if (pending_constant_operand_it == pending_constant_operands_.end()) {
+            pending_constant_operands.find(id_and_handle_it->second);
+        if (pending_constant_operand_it == pending_constant_operands.end()) {
           return std::nullopt;
         }
 
         // ...whose data must be compatible with what `operand` expects.
-        if (keep_builder_resources_for_testing) {
-          if (!pending_constant_operand_it->get()->IsValidWithDescriptor(
-                  operand->descriptor)) {
-            return std::nullopt;
-          }
+        auto extracted_pending_constant =
+            pending_constant_operands.extract(pending_constant_operand_it);
+        std::unique_ptr<WebNNPendingConstantOperand> pending_constant_operand =
+            std::move(extracted_pending_constant.value());
+        CHECK(pending_constant_operand);
 
-          // Since `keep_builder_resources_for_testing` is true, insert a
-          // placeholder `nullptr` rather than extracting corresponding
-          // `WebNNPendingConstantOperand` from `pending_constant_operands_` and
-          // converting it into a concrete operand, as is done below.
-          graph_constants.emplace_back(operand_id, nullptr);
-        } else {
-          auto extracted_pending_constant =
-              pending_constant_operands_.extract(pending_constant_operand_it);
-          std::unique_ptr<WebNNPendingConstantOperand>
-              pending_constant_operand =
-                  std::move(extracted_pending_constant.value());
-          CHECK(pending_constant_operand);
-
-          // Give the bytes a shape to turn the pending constant operand into a
-          // concrete operand.
-          auto constant_operand =
-              pending_constant_operand->TakeAsConstantOperand(
-                  operand->descriptor);
-          if (!constant_operand) {
-            return std::nullopt;
-          }
-
-          graph_constants.emplace_back(operand_id, std::move(constant_operand));
+        // Give the bytes a shape to turn the pending constant operand into a
+        // concrete operand.
+        auto constant_operand = pending_constant_operand->TakeAsConstantOperand(
+            operand->descriptor);
+        if (!constant_operand) {
+          return std::nullopt;
         }
+
+        graph_constants.emplace_back(operand_id, std::move(constant_operand));
 
         processed_operands.insert(operand_id);
         break;
@@ -3038,15 +3007,10 @@ WebNNGraphBuilderImpl::ValidateGraphImpl(
     return std::nullopt;
   }
 
-  // Items were iteratively erased from `pending_constant_operands_` above, so
-  // any remaining items are unused. Release these unused resources.
-  //
-  // TODO(crbug.com/379844003): Consider erroring if constant (or input)
-  // operands are unused, since this is likely an accidental misuse of the WebNN
-  // API.
-  if (!keep_builder_resources_for_testing) {
-    pending_constant_operands_.clear();
-  }
+  // TODO(crbug.com/379844003): Items were iteratively erased from
+  // `pending_constant_operands` above, so any remaining items are unused.
+  // Consider erroring if constant (or input) operands are unused, since this is
+  // likely an accidental misuse of the WebNN API.
 
   if (graph_constants.size() !=
       graph_info.constant_operand_ids_to_handles.size()) {

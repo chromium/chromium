@@ -5,7 +5,6 @@
 module webnn.mojom;
 
 import "mojo/public/mojom/base/big_buffer.mojom";
-import "services/webnn/public/mojom/webnn_context_properties.mojom";
 import "services/webnn/public/mojom/webnn_device.mojom";
 import "services/webnn/public/mojom/webnn_error.mojom";
 import "services/webnn/public/mojom/webnn_graph.mojom";
@@ -44,8 +43,4 @@ interface WebNNGraphBuilder {
   // This method may be called at most once. Any subsequent messages on this
   // interface are signs of a misbehaving renderer.
   CreateGraph(GraphInfo graph_info) => result<CreateGraphSuccess, Error>;
-
-  // Check whether `graph_info` is a valid graph given `context_properties`.
-  IsValidGraphForTesting(ContextProperties context_properties,
-                         GraphInfo graph_info) => (bool is_valid);
 };

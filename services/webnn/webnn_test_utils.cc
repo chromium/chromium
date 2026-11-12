@@ -6,13 +6,16 @@
 
 #include <limits.h>
 
-#include "base/test/test_future.h"
+#include <memory>
+
 #include "base/unguessable_token.h"
 #include "services/webnn/public/cpp/context_properties.h"
 #include "services/webnn/public/cpp/ml_number.h"
 #include "services/webnn/public/cpp/supported_tensors.h"
 #include "services/webnn/public/cpp/webnn_types.h"
 #include "services/webnn/webnn_context_impl.h"
+#include "services/webnn/webnn_graph_builder_impl.h"
+#include "services/webnn/webnn_pending_constant_operand.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "ui/gl/gl_switches.h"
 
@@ -71,6 +74,8 @@ OperandId GraphInfoBuilder::BuildConstant(
 
   graph_builder_remote_->get()->CreatePendingConstant(
       handle, type, mojo_base::BigBuffer(values));
+  pending_constant_operands_.insert(
+      std::make_unique<WebNNPendingConstantOperand>(handle, type, values));
   graph_info_->constant_operand_ids_to_handles[operand_id] = std::move(handle);
   return operand_id;
 }
@@ -798,10 +803,12 @@ mojom::GraphInfoPtr GraphInfoBuilder::TakeGraphInfo() {
 
 [[nodiscard]] bool GraphInfoBuilder::IsValidGraphForTesting(
     const ContextProperties& context_properties) {
-  base::test::TestFuture<bool> future;
-  graph_builder_remote_->get()->IsValidGraphForTesting(
-      context_properties, CloneGraphInfo(), future.GetCallback());
-  return future.Take();
+  CHECK(!validated_) << "IsValidGraphForTesting() may be called at most once.";
+  validated_ = true;
+  return WebNNGraphBuilderImpl::ValidateGraph(
+             context_properties, *graph_info_,
+             std::move(pending_constant_operands_))
+      .has_value();
 }
 
 mojom::GraphInfoPtr CloneGraphInfoForTesting(
