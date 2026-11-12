@@ -39,6 +39,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
@@ -102,16 +103,17 @@ mojom::blink::BlobRegistry* GetThreadSpecificRegistry() {
     return g_blob_registry_for_testing;
   }
 
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      ThreadSpecific<mojo::Remote<mojom::blink::BlobRegistry>>, registry, ());
-  if (!registry.IsSet()) [[unlikely]] {
+  static base::NoDestructor<
+      ThreadSpecific<mojo::Remote<mojom::blink::BlobRegistry>>>
+      registry;
+  if (!registry->IsSet()) [[unlikely]] {
     // TODO(mek): Going through BrowserInterfaceBroker to get a
     // mojom::blink::BlobRegistry ends up going through the main thread. Ideally
     // workers wouldn't need to do that.
     Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
-        (*registry).BindNewPipeAndPassReceiver());
+        (**registry).BindNewPipeAndPassReceiver());
   }
-  return registry->get();
+  return (*registry)->get();
 }
 
 }  // namespace

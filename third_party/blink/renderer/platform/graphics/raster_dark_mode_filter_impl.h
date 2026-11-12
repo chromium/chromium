@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/gtest_prod_util.h"
+#include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "cc/tiles/raster_dark_mode_filter.h"
@@ -34,6 +35,7 @@ class PLATFORM_EXPORT RasterDarkModeFilterImpl
                                       const SkIRect& src) const override;
 
  private:
+  friend class base::NoDestructor<RasterDarkModeFilterImpl>;
   FRIEND_TEST_ALL_PREFIXES(RasterDarkModeFilterImplTest, ApplyToImageAPI);
 
   explicit RasterDarkModeFilterImpl(const DarkModeSettings& settings);

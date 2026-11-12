@@ -38,6 +38,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/memory/ptr_util.h"
+#include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 #include "third_party/blink/renderer/platform/audio/hrtf_database.h"
@@ -118,19 +119,19 @@ constexpr auto kMaxElevations = std::to_array<int>({
 scoped_refptr<AudioBus> GetConcatenatedImpulseResponsesForSubject(
     int subject_resource_id) {
   using AudioBusMap = HashMap<int, scoped_refptr<AudioBus>>;
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(AudioBusMap, audio_bus_map, ());
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(base::Lock, lock, ());
+  static base::NoDestructor<AudioBusMap> audio_bus_map;
+  static base::NoDestructor<base::Lock> lock;
 
-  base::AutoLock locker(lock);
+  base::AutoLock locker(*lock);
   scoped_refptr<AudioBus> bus;
-  AudioBusMap::iterator iterator = audio_bus_map.find(subject_resource_id);
-  if (iterator == audio_bus_map.end()) {
+  AudioBusMap::iterator iterator = audio_bus_map->find(subject_resource_id);
+  if (iterator == audio_bus_map->end()) {
     scoped_refptr<AudioBus> concatenated_impulse_responses(
         AudioBus::GetDataResource(subject_resource_id, kResponseSampleRate));
     DCHECK(concatenated_impulse_responses);
 
     bus = concatenated_impulse_responses;
-    audio_bus_map.Set(subject_resource_id, bus);
+    audio_bus_map->Set(subject_resource_id, bus);
   } else {
     bus = iterator->value;
   }

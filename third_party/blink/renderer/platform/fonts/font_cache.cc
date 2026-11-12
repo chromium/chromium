@@ -37,6 +37,7 @@
 #include "base/byte_size.h"
 #include "base/debug/alias.h"
 #include "base/feature_list.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/escape.h"
@@ -109,8 +110,8 @@ void FontCache::PrewarmFamily(const AtomicString& family_name) {
     return;
   }
 
-  DEFINE_STATIC_LOCAL(HashSet<AtomicString>, prewarmed_families, ());
-  const auto result = prewarmed_families.insert(family_name);
+  static base::NoDestructor<HashSet<AtomicString>> prewarmed_families;
+  const auto result = prewarmed_families->insert(family_name);
   if (!result.is_new_entry) {
     return;
   }

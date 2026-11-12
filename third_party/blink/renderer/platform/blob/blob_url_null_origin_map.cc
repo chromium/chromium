@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/blob/blob_url_null_origin_map.h"
 
+#include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
 #include "base/unguessable_token.h"
 #include "third_party/blink/renderer/platform/blob/blob_url.h"
@@ -14,9 +15,8 @@ namespace blink {
 
 // static
 ThreadSpecific<BlobURLNullOriginMap>& BlobURLNullOriginMap::GetInstance() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<BlobURLNullOriginMap>, map,
-                                  ());
-  return map;
+  static base::NoDestructor<ThreadSpecific<BlobURLNullOriginMap>> map;
+  return *map;
 }
 
 void BlobURLNullOriginMap::Add(const KURL& blob_url, SecurityOrigin* origin) {
@@ -47,8 +47,8 @@ SecurityOrigin* BlobURLNullOriginMap::Get(const KURL& blob_url) {
 }
 
 BlobURLOpaqueOriginNonceMap& BlobURLOpaqueOriginNonceMap::GetInstance() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(BlobURLOpaqueOriginNonceMap, map, ());
-  return map;
+  static base::NoDestructor<BlobURLOpaqueOriginNonceMap> map;
+  return *map;
 }
 
 void BlobURLOpaqueOriginNonceMap::Add(const KURL& blob_url,

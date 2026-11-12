@@ -9,11 +9,11 @@
 
 #include "base/compiler_specific.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_restrictions.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/disk_data_metadata.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace {
@@ -225,8 +225,8 @@ void DiskDataAllocator::ProvideTemporaryFile(base::File file) {
 
 // static
 DiskDataAllocator& DiskDataAllocator::Instance() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(DiskDataAllocator, instance, ());
-  return instance;
+  static base::NoDestructor<DiskDataAllocator> instance;
+  return *instance;
 }
 
 // static

@@ -43,6 +43,7 @@
 #include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/no_destructor.h"
 #include "base/numerics/checked_math.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -833,9 +834,9 @@ String JPEGImageDecoder::FilenameExtension() const {
 }
 
 const AtomicString& JPEGImageDecoder::MimeType() const {
-  DEFINE_STATIC_LOCAL(const AtomicString, jpeg_mime_type,
-                      (AtomicString::FromLiteral<"image/jpeg">()));
-  return jpeg_mime_type;
+  static const base::NoDestructor<AtomicString> jpeg_mime_type(
+      AtomicString::FromLiteral<"image/jpeg">());
+  return *jpeg_mime_type;
 }
 
 bool JPEGImageDecoder::SetSize(unsigned width, unsigned height) {

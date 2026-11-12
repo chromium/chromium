@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom-blink.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
@@ -25,9 +26,10 @@ mojom::blink::EmbeddedFrameSinkProvider* g_frame_sink_provider_override =
     nullptr;
 
 std::unique_ptr<VideoFrameSinkBundle>& GetThreadFrameSinkBundlePtr() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      ThreadSpecific<std::unique_ptr<VideoFrameSinkBundle>>, bundle, ());
-  return *bundle;
+  static base::NoDestructor<
+      ThreadSpecific<std::unique_ptr<VideoFrameSinkBundle>>>
+      bundle;
+  return **bundle;
 }
 
 }  // namespace

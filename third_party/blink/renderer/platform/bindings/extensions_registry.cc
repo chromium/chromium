@@ -4,12 +4,14 @@
 
 #include "third_party/blink/renderer/platform/bindings/extensions_registry.h"
 
+#include "base/no_destructor.h"
+
 namespace blink {
 
 // static
 ExtensionsRegistry& ExtensionsRegistry::GetInstance() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(ExtensionsRegistry, instance, ());
-  return instance;
+  static base::NoDestructor<ExtensionsRegistry> instance;
+  return *instance;
 }
 
 void ExtensionsRegistry::RegisterBlinkExtensionInstallCallback(

@@ -44,6 +44,7 @@
 #include "base/check_op.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
@@ -127,8 +128,8 @@ class PooledHarfBuzzBuffer {
   using Pool = Vector<hb::unique_ptr<hb_buffer_t>, kInlineCapacity>;
 
   static Pool& GetPool() {
-    DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<Pool>, pool, ());
-    return *pool;
+    static base::NoDestructor<ThreadSpecific<Pool>> pool;
+    return **pool;
   }
 
   hb::unique_ptr<hb_buffer_t> buffer_;

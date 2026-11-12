@@ -36,6 +36,7 @@
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/memory/discardable_memory_allocator.h"
+#include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/test/icu_test_util.h"
@@ -87,9 +88,9 @@ class TestingPlatformSupport::TestingBrowserInterfaceBroker
 
   static ScopedOverrideMojoInterface::GetInterfaceCallback&
   GetOverrideCallback() {
-    DEFINE_THREAD_SAFE_STATIC_LOCAL(
-        ScopedOverrideMojoInterface::GetInterfaceCallback, callback, ());
-    return callback;
+    static base::NoDestructor<ScopedOverrideMojoInterface::GetInterfaceCallback>
+        callback;
+    return *callback;
   }
 };
 

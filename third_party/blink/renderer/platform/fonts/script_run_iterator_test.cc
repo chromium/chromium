@@ -9,6 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/wtf/text/format.h"
@@ -45,8 +46,8 @@ class MockScriptData : public ScriptData {
   ~MockScriptData() override = default;
 
   static const MockScriptData* Instance() {
-    DEFINE_THREAD_SAFE_STATIC_LOCAL(const MockScriptData, mock_script_data, ());
-    return &mock_script_data;
+    static const base::NoDestructor<MockScriptData> mock_script_data;
+    return mock_script_data.get();
   }
 
   void GetScripts(UChar32 ch, UScriptCodeList& dst) const override {

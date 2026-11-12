@@ -934,7 +934,7 @@ TEST(KURLTest, strippedForUseAsReferrer) {
 TEST(KURLTest, ThreadSafesStaticKurlGetters) {
 #if DCHECK_IS_ON()
   // Simulate the static getters being called during/after threads have been
-  // started, so that StaticSingleton's thread checks will be applied.
+  // started.
   WillCreateThread();
 #endif
 

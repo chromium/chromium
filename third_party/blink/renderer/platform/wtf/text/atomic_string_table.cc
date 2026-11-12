@@ -17,9 +17,9 @@
 #include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/synchronization/lock.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_lower_hash_reader.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/convert_to_8bit_hash_reader.h"
@@ -61,8 +61,8 @@ struct alignas(64) SmallStringCache {
 };
 
 NOINLINE SmallStringCache* SmallStringCacheInstance() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<SmallStringCache>, cache, ());
-  return cache;
+  static base::NoDestructor<ThreadSpecific<SmallStringCache>> cache;
+  return *cache;
 }
 
 constinit thread_local SmallStringCache* g_small_string_cache = nullptr;
@@ -341,8 +341,8 @@ struct LowercaseLookupTranslator {
 }  // namespace
 
 AtomicStringTable& AtomicStringTable::Instance() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(AtomicStringTable, table, ());
-  return table;
+  static base::NoDestructor<AtomicStringTable> table;
+  return *table;
 }
 
 AtomicStringTable::AtomicStringTable() = default;

@@ -10,9 +10,9 @@
 #include <array>
 
 #include "base/apple/scoped_cftyperef.h"
+#include "base/no_destructor.h"
 #include "base/strings/sys_string_conversions.h"
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/thread_specific.h"
 
@@ -94,9 +94,9 @@ String BuildIdentifierKey(CTFontRef ct_font) {
   struct CachedFontIdentifierCache {
     std::array<CachedFontIdentifier, 4> entries;
   };
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<CachedFontIdentifierCache>,
-                                  cache_tls, ());
-  auto& entries = cache_tls->entries;
+  static base::NoDestructor<ThreadSpecific<CachedFontIdentifierCache>>
+      cache_tls;
+  auto& entries = (*cache_tls)->entries;
   for (const auto& entry : entries) {
     if (entry.font.get() == ct_font) {
       return entry.identifier;

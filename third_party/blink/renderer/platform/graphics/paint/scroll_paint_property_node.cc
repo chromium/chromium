@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/paint/scroll_paint_property_node.h"
 
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/platform/geometry/infinite_int_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/clip_paint_property_node.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -63,9 +64,9 @@ ScrollPaintPropertyNode::ScrollPaintPropertyNode(RootTag)
       state_{InfiniteIntRect(), InfiniteIntRect()} {}
 
 const ScrollPaintPropertyNode& ScrollPaintPropertyNode::Root() {
-  DEFINE_STATIC_LOCAL(Persistent<ScrollPaintPropertyNode>, root,
-                      (MakeGarbageCollected<ScrollPaintPropertyNode>(kRoot)));
-  return *root;
+  static base::NoDestructor<Persistent<ScrollPaintPropertyNode>> root(
+      MakeGarbageCollected<ScrollPaintPropertyNode>(kRoot));
+  return **root;
 }
 
 void ScrollPaintPropertyNode::ClearChangedToRoot(int sequence_number) const {

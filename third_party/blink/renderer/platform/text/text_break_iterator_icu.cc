@@ -19,10 +19,9 @@
  *
  */
 
-#include "third_party/blink/renderer/platform/text/text_break_iterator.h"
-
 #include <unicode/rbbi.h>
 #include <unicode/ubrk.h>
+
 #include <algorithm>
 #include <limits>
 #include <memory>
@@ -30,8 +29,10 @@
 
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "third_party/blink/renderer/platform/text/icu_error.h"
+#include "third_party/blink/renderer/platform/text/text_break_iterator.h"
 #include "third_party/blink/renderer/platform/text/text_break_iterator_internal_icu.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
@@ -697,9 +698,8 @@ void SetText16(icu::BreakIterator* iter, base::span<const UChar> string) {
 }
 
 TextBreakIterator* WordBreakIterator(base::span<const UChar> string) {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<WordBreakIteratorPool>, pool,
-                                  ());
-  return pool->Get(string);
+  static base::NoDestructor<ThreadSpecific<WordBreakIteratorPool>> pool;
+  return (*pool)->Get(string);
 }
 
 TextBreakIterator* WordBreakIterator(const StringView& string) {
@@ -707,9 +707,8 @@ TextBreakIterator* WordBreakIterator(const StringView& string) {
     return nullptr;
   }
   if (string.Is8Bit()) {
-    DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<WordBreakIteratorPool>, pool,
-                                    ());
-    return pool->Get(string.Span8());
+    static base::NoDestructor<ThreadSpecific<WordBreakIteratorPool>> pool;
+    return (*pool)->Get(string.Span8());
   }
   return WordBreakIterator(string.Span16());
 }
@@ -818,21 +817,21 @@ TextBreakIterator* SentenceBreakIterator(base::span<const UChar> string) {
   UErrorCode open_status = U_ZERO_ERROR;
   // We cannot use ThreadSpecific<TextBreakIterator> directly because
   // TextBreakIterator is an abstract class. So a pointer is required.
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      ThreadSpecific<std::unique_ptr<TextBreakIterator>>, iterator, ());
-  if (!iterator->get()) {
-    *iterator = base::WrapUnique(icu::BreakIterator::createSentenceInstance(
+  static base::NoDestructor<ThreadSpecific<std::unique_ptr<TextBreakIterator>>>
+      iterator;
+  if (!(*iterator)->get()) {
+    **iterator = base::WrapUnique(icu::BreakIterator::createSentenceInstance(
         CurrentTextBreakIcuLocale(), open_status));
     DCHECK(U_SUCCESS(open_status))
         << "ICU could not open a break iterator: " << u_errorName(open_status)
         << " (" << open_status << ")";
-    if (!iterator->get()) {
+    if (!(*iterator)->get()) {
       return nullptr;
     }
   }
 
-  SetText16(iterator->get(), string);
-  return iterator->get();
+  SetText16((*iterator)->get(), string);
+  return (*iterator)->get();
 }
 
 bool IsWordTextBreak(TextBreakIterator* iterator) {

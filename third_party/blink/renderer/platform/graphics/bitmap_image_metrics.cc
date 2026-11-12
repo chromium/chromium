@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "media/media_buildflags.h"
@@ -95,16 +96,13 @@ void BitmapImageMetrics::CountDecodedImageDensity(const String& type,
   if (image_size_kib <= 0)
     return;
 
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      CustomCountHistogram, jpeg_density_histogram,
-      ("Blink.DecodedImage.JpegDensity.KiBWeighted", 1, 1000, 100));
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      CustomCountHistogram, webp_density_histogram,
-      ("Blink.DecodedImage.WebPDensity.KiBWeighted2", 1, 1000, 100));
+  static base::NoDestructor<CustomCountHistogram> jpeg_density_histogram(
+      "Blink.DecodedImage.JpegDensity.KiBWeighted", 1, 1000, 100);
+  static base::NoDestructor<CustomCountHistogram> webp_density_histogram(
+      "Blink.DecodedImage.WebPDensity.KiBWeighted2", 1, 1000, 100);
 #if BUILDFLAG(ENABLE_DAV1D_DECODER)
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      CustomCountHistogram, avif_density_histogram,
-      ("Blink.DecodedImage.AvifDensity.KiBWeighted2", 1, 1000, 100));
+  static base::NoDestructor<CustomCountHistogram> avif_density_histogram(
+      "Blink.DecodedImage.AvifDensity.KiBWeighted2", 1, 1000, 100);
 #endif
 
   CustomCountHistogram* density_histogram = nullptr;
@@ -112,14 +110,14 @@ void BitmapImageMetrics::CountDecodedImageDensity(const String& type,
       StringToDecodedImageType(type);
   switch (decoded_image_type) {
     case BitmapImageMetrics::DecodedImageType::kJPEG:
-      density_histogram = &jpeg_density_histogram;
+      density_histogram = jpeg_density_histogram.get();
       break;
     case BitmapImageMetrics::DecodedImageType::kWebP:
-      density_histogram = &webp_density_histogram;
+      density_histogram = webp_density_histogram.get();
       break;
 #if BUILDFLAG(ENABLE_DAV1D_DECODER)
     case BitmapImageMetrics::DecodedImageType::kAVIF:
-      density_histogram = &avif_density_histogram;
+      density_histogram = avif_density_histogram.get();
       break;
 #endif
     default:

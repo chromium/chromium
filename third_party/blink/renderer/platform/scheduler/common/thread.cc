@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 
 #include "base/feature_list.h"
+#include "base/no_destructor.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/hang_watcher.h"
@@ -34,13 +35,13 @@ namespace {
 constinit thread_local Thread* current_thread = nullptr;
 
 std::unique_ptr<MainThread>& GetMainThread() {
-  DEFINE_STATIC_LOCAL(std::unique_ptr<MainThread>, main_thread, ());
-  return main_thread;
+  static base::NoDestructor<std::unique_ptr<MainThread>> main_thread;
+  return *main_thread;
 }
 
 std::unique_ptr<NonMainThread>& GetCompositorThread() {
-  DEFINE_STATIC_LOCAL(std::unique_ptr<NonMainThread>, compositor_thread, ());
-  return compositor_thread;
+  static base::NoDestructor<std::unique_ptr<NonMainThread>> compositor_thread;
+  return *compositor_thread;
 }
 
 }  // namespace
@@ -91,7 +92,7 @@ void Thread::CreateAndSetCompositorThread() {
           // `compositor_thread_instance.get()` points to an object that will be
           // std::move'd into the std::unique_ptr managed by
           // `GetCompositorThread()`. `GetCompositorThread()` uses
-          // DEFINE_STATIC_LOCAL, ensuring the CompositorThread object lives for
+          // base::NoDestructor, ensuring the CompositorThread object lives for
           // the program's lifetime once assigned.
           base::Unretained(compositor_thread.get())));
 

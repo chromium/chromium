@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_INSTRUMENTATION_TRACING_MEMORY_CACHE_DUMP_PROVIDER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_INSTRUMENTATION_TRACING_MEMORY_CACHE_DUMP_PROVIDER_H_
 
+#include "base/no_destructor.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -48,6 +49,8 @@ class PLATFORM_EXPORT MemoryCacheDumpProvider final
   }
 
  private:
+  friend class base::NoDestructor<MemoryCacheDumpProvider>;
+
   MemoryCacheDumpProvider();
 
   WeakPersistent<MemoryCacheDumpClient> client_;

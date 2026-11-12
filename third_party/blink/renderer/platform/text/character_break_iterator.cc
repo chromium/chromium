@@ -27,6 +27,7 @@
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/platform/text/icu_error.h"
 #include "third_party/blink/renderer/platform/text/text_break_iterator_internal_icu.h"
 #include "third_party/blink/renderer/platform/wtf/thread_specific.h"
@@ -40,8 +41,8 @@ namespace blink {
 class CharacterBreakIterator::Pool {
  public:
   static Pool& Get() {
-    DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<Pool>, pool, ());
-    return *pool;
+    static base::NoDestructor<ThreadSpecific<Pool>> pool;
+    return **pool;
   }
 
   PooledIterator TakeOrCreate() {

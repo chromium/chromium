@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/transform_paint_property_node.h"
 
 #include "base/memory/values_equivalent.h"
+#include "base/no_destructor.h"
 #include "cc/trees/sticky_position_constraint.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scroll_paint_property_node.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -115,10 +116,9 @@ TransformPaintPropertyNode::TransformPaintPropertyNode(RootTag)
              .in_subtree_of_page_scale = false} {}
 
 const TransformPaintPropertyNode& TransformPaintPropertyNode::Root() {
-  DEFINE_STATIC_LOCAL(
-      Persistent<TransformPaintPropertyNode>, root,
-      (MakeGarbageCollected<TransformPaintPropertyNode>(kRoot)));
-  return *root;
+  static base::NoDestructor<Persistent<TransformPaintPropertyNode>> root(
+      MakeGarbageCollected<TransformPaintPropertyNode>(kRoot));
+  return **root;
 }
 
 PaintPropertyChangeType

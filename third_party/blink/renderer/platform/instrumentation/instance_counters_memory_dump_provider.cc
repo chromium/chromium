@@ -4,16 +4,16 @@
 
 #include "third_party/blink/renderer/platform/instrumentation/instance_counters_memory_dump_provider.h"
 
+#include "base/no_destructor.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "third_party/blink/renderer/platform/instrumentation/instance_counters.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace blink {
 
 InstanceCountersMemoryDumpProvider*
 InstanceCountersMemoryDumpProvider::Instance() {
-  DEFINE_STATIC_LOCAL(InstanceCountersMemoryDumpProvider, instance, ());
-  return &instance;
+  static base::NoDestructor<InstanceCountersMemoryDumpProvider> instance;
+  return instance.get();
 }
 
 bool InstanceCountersMemoryDumpProvider::OnMemoryDump(

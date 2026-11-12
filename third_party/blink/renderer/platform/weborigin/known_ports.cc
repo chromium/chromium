@@ -26,10 +26,10 @@
 
 #include "third_party/blink/renderer/platform/weborigin/known_ports.h"
 
+#include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
 #include "net/base/port_util.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -39,8 +39,8 @@ namespace blink {
 namespace {
 
 base::Lock& ExplicitlyAllowedPortsLock() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(base::Lock, lock, ());
-  return lock;
+  static base::NoDestructor<base::Lock> lock;
+  return *lock;
 }
 
 }  // namespace

@@ -41,6 +41,7 @@
 #include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_global_context.h"
@@ -487,8 +488,8 @@ bool HarfBuzzFace::ShouldSubpixelPosition() {
 class HarfBuzzSkiaFontFuncs final {
  public:
   static HarfBuzzSkiaFontFuncs& Get() {
-    DEFINE_THREAD_SAFE_STATIC_LOCAL(HarfBuzzSkiaFontFuncs, shared_hb_funcs, ());
-    return shared_hb_funcs;
+    static base::NoDestructor<HarfBuzzSkiaFontFuncs> shared_hb_funcs;
+    return *shared_hb_funcs;
   }
 
   HarfBuzzSkiaFontFuncs() = default;

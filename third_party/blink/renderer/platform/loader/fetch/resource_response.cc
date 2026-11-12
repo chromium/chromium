@@ -31,6 +31,7 @@
 
 #include "base/containers/fixed_flat_set.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/no_destructor.h"
 #include "net/http/structured_headers.h"
 #include "net/ssl/ssl_info.h"
 #include "services/network/public/cpp/cors/cors.h"
@@ -45,7 +46,6 @@
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
@@ -452,10 +452,10 @@ AtomicString ResourceResponse::HttpContentType() const {
 }
 
 AtomicString ResourceResponse::GetFilteredHttpContentEncoding() const {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(const AtomicString, multiple_value,
-                                  (AtomicString::FromLiteral<"multiple">()));
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(const AtomicString, unknown_value,
-                                  (AtomicString::FromLiteral<"@unknown">()));
+  static const base::NoDestructor<AtomicString> multiple_value(
+      AtomicString::FromLiteral<"multiple">());
+  static const base::NoDestructor<AtomicString> unknown_value(
+      AtomicString::FromLiteral<"@unknown">());
   String content_encoding =
       HttpHeaderField(http_names::kContentEncoding).ToAsciiLower();
   if (content_encoding.IsNull() || content_encoding.empty()) {
@@ -465,9 +465,9 @@ AtomicString ResourceResponse::GetFilteredHttpContentEncoding() const {
     return AtomicString(content_encoding);
   }
   if (content_encoding.contains(',')) {
-    return multiple_value;
+    return *multiple_value;
   }
-  return unknown_value;
+  return *unknown_value;
 }
 
 bool ResourceResponse::WasCached() const {

@@ -27,6 +27,7 @@
 
 #include <array>
 
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/platform/geometry/blend.h"
 #include "third_party/blink/renderer/platform/geometry/calculation_value.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
@@ -149,8 +150,8 @@ class CalculationValueHandleMap {
 
 static CalculationValueHandleMap& CalcHandles() {
   CHECK(IsMainThread());
-  DEFINE_STATIC_LOCAL(CalculationValueHandleMap, handle_map, ());
-  return handle_map;
+  static base::NoDestructor<CalculationValueHandleMap> handle_map;
+  return *handle_map;
 }
 
 Length::Length(const CalculationValue* calc)

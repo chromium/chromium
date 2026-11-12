@@ -43,6 +43,7 @@
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_view_util.h"
 #include "net/http/http_content_disposition.h"
 #include "net/http/http_no_vary_search_data.h"
@@ -442,12 +443,11 @@ const Vector<AtomicString>& ReplaceHeaders() {
   // The list of response headers that we do not copy from the original
   // response when generating a ResourceResponse for a MIME payload.
   // Note: this is called only on the main thread.
-  DEFINE_STATIC_LOCAL(
-      Vector<AtomicString>, headers,
-      ({http_names::kLowerContentType, http_names::kLowerContentLength,
-        http_names::kLowerContentDisposition, http_names::kLowerContentRange,
-        http_names::kLowerRange, http_names::kLowerSetCookie}));
-  return headers;
+  static base::NoDestructor<Vector<AtomicString>> headers(
+      {http_names::kLowerContentType, http_names::kLowerContentLength,
+       http_names::kLowerContentDisposition, http_names::kLowerContentRange,
+       http_names::kLowerRange, http_names::kLowerSetCookie});
+  return *headers;
 }
 
 bool IsWhitespace(UChar chr) {

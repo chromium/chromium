@@ -24,6 +24,7 @@
 
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 
+#include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/platform/linux/web_sandbox_support.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -37,8 +38,8 @@
 namespace blink {
 
 static AtomicString& MutableSystemFontFamily() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(AtomicString, system_font_family, ());
-  return system_font_family;
+  static base::NoDestructor<AtomicString> system_font_family;
+  return *system_font_family;
 }
 
 // static
@@ -95,11 +96,10 @@ const SimpleFontData* FontCache::PlatformFallbackFontForCharacter(
   if (font_description.GetScriptForFont() == USCRIPT_ARABIC_NASTALIQ &&
       unicode::GetScriptBasedOnUnicodeBlock(c) == USCRIPT_ARABIC &&
       RuntimeEnabledFeatures::NastaliqScriptEnabled()) [[unlikely]] {
-    DEFINE_THREAD_SAFE_STATIC_LOCAL(
-        const AtomicString, kNotoNastaliqUrdu,
-        (AtomicString::FromLiteral<"Noto Nastaliq Urdu">()));
+    static const base::NoDestructor<AtomicString> kNotoNastaliqUrdu(
+        AtomicString::FromLiteral<"Noto Nastaliq Urdu">());
     if (const SimpleFontData* nastaliq =
-            GetFontData(font_description, kNotoNastaliqUrdu)) {
+            GetFontData(font_description, *kNotoNastaliqUrdu)) {
       if (nastaliq->GlyphForCharacter(c)) {
         return nastaliq;
       }

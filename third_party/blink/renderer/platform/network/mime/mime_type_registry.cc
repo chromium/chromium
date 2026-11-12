@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
 
 #include "base/files/file_path.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "media/base/mime_util.h"
 #include "media/filters/stream_parser_factory.h"
@@ -69,11 +70,11 @@ STATIC_ASSERT_ENUM(MIMETypeRegistry::kMaybeSupported,
 String MIMETypeRegistry::GetMIMETypeForExtension(const StringView& ext_view) {
   // The sandbox restricts our access to the registry, so we need to proxy
   // these calls over to the browser process.
-  DEFINE_STATIC_LOCAL(MimeRegistryPtrHolder, registry_holder, ());
+  static base::NoDestructor<MimeRegistryPtrHolder> registry_holder;
   String ext = ext_view.IsNull() ? g_empty_string : ext_view.ToString();
   String mime_type;
-  if (!registry_holder.mime_registry->GetMimeTypeFromExtension(ext,
-                                                               &mime_type)) {
+  if (!registry_holder->mime_registry->GetMimeTypeFromExtension(ext,
+                                                                &mime_type)) {
     return String();
   }
   return mime_type;

@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/platform/image-decoders/gif/gif_image_decoder.h"
 
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/skia/include/codec/SkEncodedImageFormat.h"
 #include "third_party/skia/include/codec/SkGifDecoder.h"
@@ -39,9 +40,9 @@ String GIFImageDecoder::FilenameExtension() const {
 }
 
 const AtomicString& GIFImageDecoder::MimeType() const {
-  DEFINE_STATIC_LOCAL(const AtomicString, gif_mime_type,
-                      (AtomicString::FromLiteral<"image/gif">()));
-  return gif_mime_type;
+  static const base::NoDestructor<AtomicString> gif_mime_type(
+      AtomicString::FromLiteral<"image/gif">());
+  return *gif_mime_type;
 }
 
 std::unique_ptr<SkCodec> GIFImageDecoder::OnCreateSkCodec(

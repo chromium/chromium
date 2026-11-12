@@ -63,7 +63,7 @@ The below is a list of major libraries. For a complete list, look at
 
 * **Miscellaneous**
 
-  [std_lib_extras.h] (`DEFINE_STATIC_LOCAL` etc.),
+  [std_lib_extras.h],
   [time.h]
 
 ## History

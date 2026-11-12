@@ -7,6 +7,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/no_destructor.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_chunk.h"
@@ -19,12 +20,11 @@ namespace blink {
 class ChunkToLayerMapperTest : public testing::Test {
  protected:
   static PaintChunk Chunk(const PropertyTreeState& state) {
-    DEFINE_STATIC_LOCAL(Persistent<FakeDisplayItemClient>, fake_client,
-                        (MakeGarbageCollected<FakeDisplayItemClient>()));
-    DEFINE_STATIC_LOCAL(
-        std::optional<PaintChunk::Id>, id,
-        (PaintChunk::Id(fake_client->Id(), DisplayItem::kDrawingFirst)));
-    PaintChunk chunk(0, 1, *fake_client, *id, state);
+    static base::NoDestructor<Persistent<FakeDisplayItemClient>> fake_client(
+        MakeGarbageCollected<FakeDisplayItemClient>());
+    static std::optional<PaintChunk::Id> id(
+        PaintChunk::Id((*fake_client)->Id(), DisplayItem::kDrawingFirst));
+    PaintChunk chunk(0, 1, **fake_client, *id, state);
     return chunk;
   }
 

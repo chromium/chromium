@@ -33,6 +33,7 @@
 #include "base/compiler_specific.h"
 #include "base/functional/callback.h"
 #include "base/i18n/string_search.h"
+#include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_view_util.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
@@ -40,7 +41,6 @@
 #include "third_party/blink/renderer/platform/wtf/leak_annotations.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "third_party/blink/renderer/platform/wtf/static_constructors.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_table.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
@@ -226,8 +226,8 @@ scoped_refptr<StringImpl> StringImpl::CreateUninitialized(
 }
 
 static StaticStringsTable& StaticStrings() {
-  DEFINE_STATIC_LOCAL(StaticStringsTable, static_strings, ());
-  return static_strings;
+  static base::NoDestructor<StaticStringsTable> static_strings;
+  return *static_strings;
 }
 
 #if DCHECK_IS_ON()

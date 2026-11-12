@@ -6,6 +6,7 @@
 
 #include <type_traits>
 
+#include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/platform/bindings/string_resource.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
@@ -211,13 +212,13 @@ static String ToBlinkStringFast(int value) {
   // Most numbers used are <= 100. Even if they aren't used there's very little
   // cost in using the space.
   const int kLowNumbers = 100;
-  DEFINE_STATIC_LOCAL(Vector<AtomicString>, low_numbers, (kLowNumbers + 1));
+  static base::NoDestructor<Vector<AtomicString>> low_numbers(kLowNumbers + 1);
   String web_core_string;
   if (0 <= value && value <= kLowNumbers) {
-    web_core_string = low_numbers[value];
+    web_core_string = (*low_numbers)[value];
     if (!web_core_string) {
-      low_numbers[value] = AtomicString::Number(value);
-      web_core_string = low_numbers[value];
+      (*low_numbers)[value] = AtomicString::Number(value);
+      web_core_string = (*low_numbers)[value];
     }
   } else {
     web_core_string = String::Number(value);

@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_EXTENSIONS_REGISTRY_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_EXTENSIONS_REGISTRY_H_
 
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -24,6 +25,8 @@ class PLATFORM_EXPORT ExtensionsRegistry {
   void InstallExtensions(ScriptState* script_state);
 
  private:
+  friend class base::NoDestructor<ExtensionsRegistry>;
+
   ExtensionsRegistry() = default;
 
   Vector<InstallExtensionFuncType> install_funcs_;

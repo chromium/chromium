@@ -33,6 +33,7 @@
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_view_util.h"
@@ -40,7 +41,6 @@
 #include "third_party/blink/renderer/platform/weborigin/known_ports.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_statics.h"
@@ -180,15 +180,14 @@ bool ProtocolIsJavaScript(const StringView& url) {
 }
 
 const KURL& BlankUrl() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(KURL, blank_url,
-                                  (AtomicString(url::kAboutBlankURL)));
-  return blank_url;
+  static base::NoDestructor<KURL> blank_url{AtomicString(url::kAboutBlankURL)};
+  return *blank_url;
 }
 
 const KURL& SrcdocUrl() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(KURL, srcdoc_url,
-                                  (AtomicString(url::kAboutSrcdocURL)));
-  return srcdoc_url;
+  static base::NoDestructor<KURL> srcdoc_url{
+      AtomicString(url::kAboutSrcdocURL)};
+  return *srcdoc_url;
 }
 
 bool KURL::IsAboutUrl(const char* allowed_path) const {
@@ -217,8 +216,8 @@ bool KURL::IsAboutSrcdocUrl() const {
 }
 
 const KURL& NullUrl() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(KURL, static_null_url, ());
-  return static_null_url;
+  static base::NoDestructor<KURL> static_null_url;
+  return *static_null_url;
 }
 
 String KURL::ElidedString() const {

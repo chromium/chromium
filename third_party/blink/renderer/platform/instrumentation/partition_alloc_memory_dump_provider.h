@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_INSTRUMENTATION_PARTITION_ALLOC_MEMORY_DUMP_PROVIDER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_INSTRUMENTATION_PARTITION_ALLOC_MEMORY_DUMP_PROVIDER_H_
 
+#include "base/no_destructor.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
@@ -28,6 +29,8 @@ class PLATFORM_EXPORT PartitionAllocMemoryDumpProvider final
                     base::trace_event::ProcessMemoryDump*) override;
 
  private:
+  friend class base::NoDestructor<PartitionAllocMemoryDumpProvider>;
+
   PartitionAllocMemoryDumpProvider();
 };
 

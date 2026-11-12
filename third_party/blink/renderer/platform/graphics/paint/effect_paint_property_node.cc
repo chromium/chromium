@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/effect_paint_property_node.h"
 
 #include "base/memory/values_equivalent.h"
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/platform/graphics/paint/clip_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -142,9 +143,9 @@ EffectPaintPropertyNode::EffectPaintPropertyNode(RootTag)
              &ClipPaintPropertyNode::Root()} {}
 
 const EffectPaintPropertyNode& EffectPaintPropertyNode::Root() {
-  DEFINE_STATIC_LOCAL(Persistent<EffectPaintPropertyNode>, root,
-                      (MakeGarbageCollected<EffectPaintPropertyNode>(kRoot)));
-  return *root;
+  static base::NoDestructor<Persistent<EffectPaintPropertyNode>> root(
+      MakeGarbageCollected<EffectPaintPropertyNode>(kRoot));
+  return **root;
 }
 
 bool EffectPaintPropertyNodeOrAlias::Changed(

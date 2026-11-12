@@ -28,6 +28,7 @@
 
 #include <algorithm>
 
+#include "base/no_destructor.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -118,8 +119,8 @@ class URLSchemesRegistry final {
   friend URLSchemesRegistry& GetMutableURLSchemesRegistryForTest();
 
   static URLSchemesRegistry& GetInstance() {
-    DEFINE_THREAD_SAFE_STATIC_LOCAL(URLSchemesRegistry, schemes, ());
-    return schemes;
+    static base::NoDestructor<URLSchemesRegistry> schemes;
+    return *schemes;
   }
 };
 

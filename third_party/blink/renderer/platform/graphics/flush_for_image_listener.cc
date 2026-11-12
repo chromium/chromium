@@ -4,12 +4,14 @@
 
 #include "third_party/blink/renderer/platform/graphics/flush_for_image_listener.h"
 
+#include "base/no_destructor.h"
+
 namespace blink {
 
 FlushForImageListener* FlushForImageListener::Get() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<FlushForImageListener>,
-                                  flush_for_image_listener, ());
-  return flush_for_image_listener;
+  static base::NoDestructor<ThreadSpecific<FlushForImageListener>>
+      flush_for_image_listener;
+  return *flush_for_image_listener;
 }
 
 void NotifyImageBitmapWillTransfer(cc::PaintImage::ContentId content_id) {

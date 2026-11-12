@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_DISPLAY_ITEM_CLIENT_H_
 
 #include "base/dcheck_is_on.h"
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_client_types.h"
 #include "third_party/blink/renderer/platform/graphics/paint_invalidation_reason.h"
@@ -131,10 +132,10 @@ class StaticDisplayItemClient
 // - when recording a DisplayItem that appears only once in the painted result,
 // - when painting with a transient PaintController.
 // Note: debug_name must be a literal string.
-#define DEFINE_STATIC_DISPLAY_ITEM_CLIENT(name, debug_name) \
-  DEFINE_STATIC_LOCAL(                                      \
-      Persistent<StaticDisplayItemClient>, name,            \
-      (MakeGarbageCollected<StaticDisplayItemClient>(debug_name)))
+#define DEFINE_STATIC_DISPLAY_ITEM_CLIENT(name, debug_name)                \
+  static const base::NoDestructor<Persistent<StaticDisplayItemClient>>     \
+      s_##name(MakeGarbageCollected<StaticDisplayItemClient>(debug_name)); \
+  const Persistent<StaticDisplayItemClient>& name = *s_##name
 
 PLATFORM_EXPORT std::ostream& operator<<(std::ostream&,
                                          const DisplayItemClient*);

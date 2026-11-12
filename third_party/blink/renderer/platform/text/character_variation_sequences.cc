@@ -6,6 +6,7 @@
 #include <unicode/unistr.h>
 #include <unicode/uvernum.h>
 
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/platform/text/character.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
 
@@ -453,13 +454,14 @@ bool IsStandardizedVariationSequence(UChar32 ch, UChar32 vs) {
   if (!vs || IsUnicodeEmojiVariationSelector(vs)) {
     return false;
   }
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(icu::UnicodeSet,
-                                  standardized_variation_sequences_set, ());
-  internal::ApplyPatternAndFreezeIfEmpty(&standardized_variation_sequences_set,
-                                         kStandardizedVariationSequences);
+  static base::NoDestructor<icu::UnicodeSet>
+      standardized_variation_sequences_set;
+  internal::ApplyPatternAndFreezeIfEmpty(
+      standardized_variation_sequences_set.get(),
+      kStandardizedVariationSequences);
   icu::UnicodeString variation_sequence =
       (icu::UnicodeString)ch + (icu::UnicodeString)vs;
-  return standardized_variation_sequences_set.contains(variation_sequence);
+  return standardized_variation_sequences_set->contains(variation_sequence);
 }
 
 bool IsEmojiVariationSequence(UChar32 ch, UChar32 vs) {

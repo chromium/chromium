@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/platform/image-decoders/png/png_image_decoder.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
@@ -34,10 +35,9 @@ String ICOImageDecoder::FilenameExtension() const {
 }
 
 const AtomicString& ICOImageDecoder::MimeType() const {
-  DEFINE_STATIC_LOCAL(
-      const AtomicString, ico_mime_type,
-      (AtomicString::FromLiteral<"image/vnd.microsoft.icon">()));
-  return ico_mime_type;
+  static const base::NoDestructor<AtomicString> ico_mime_type(
+      AtomicString::FromLiteral<"image/vnd.microsoft.icon">());
+  return *ico_mime_type;
 }
 
 void ICOImageDecoder::OnSetData(scoped_refptr<SegmentReader> data) {

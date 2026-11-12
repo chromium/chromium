@@ -28,6 +28,7 @@
 #include <array>
 #include <memory>
 
+#include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 #include "net/nqe/effective_connection_type.h"
@@ -39,7 +40,6 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/hash_traits.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
@@ -72,9 +72,8 @@ constexpr std::array<double, kNumEffectiveConnectionTypes>
 }  // namespace
 
 NetworkStateNotifier& GetNetworkStateNotifier() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(NetworkStateNotifier, network_state_notifier,
-                                  ());
-  return network_state_notifier;
+  static base::NoDestructor<NetworkStateNotifier> network_state_notifier;
+  return *network_state_notifier;
 }
 
 NetworkStateNotifier::ScopedNotifier::ScopedNotifier(

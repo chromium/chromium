@@ -24,14 +24,15 @@
 
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 
+#include "base/no_destructor.h"
 #include "skia/ext/font_utils.h"
 #include "third_party/blink/renderer/platform/fonts/font_platform_data.h"
 
 namespace blink {
 
 static AtomicString& MutableSystemFontFamily() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(AtomicString, system_font_family, ());
-  return system_font_family;
+  static base::NoDestructor<AtomicString> system_font_family;
+  return *system_font_family;
 }
 
 // static

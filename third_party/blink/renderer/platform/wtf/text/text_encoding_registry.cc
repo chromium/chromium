@@ -33,11 +33,11 @@
 #include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
@@ -70,8 +70,8 @@ using TextEncodingNameMap =
 using TextCodecMap = HashMap<AtomicString, TextCodecFactory>;
 
 static base::Lock& EncodingRegistryLock() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(base::Lock, lock, ());
-  return lock;
+  static base::NoDestructor<base::Lock> lock;
+  return *lock;
 }
 
 static TextEncodingNameMap* g_text_encoding_name_map;

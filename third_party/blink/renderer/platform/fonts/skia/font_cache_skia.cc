@@ -35,6 +35,7 @@
 
 #include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/string_view_util.h"
 #include "base/timer/elapsed_timer.h"
@@ -157,72 +158,64 @@ const SimpleFontData* FontCache::GetLastResortFallbackFont(
   // We should at least have Sans or Arial which is the last resort fallback of
   // SkFontHost ports.
   if (!font_platform_data) {
-    DEFINE_THREAD_SAFE_STATIC_LOCAL(const FontFaceCreationParams,
-                                    sans_creation_params,
-                                    (font_family_names::kSans));
-    font_platform_data = GetFontPlatformData(description, sans_creation_params,
+    static const base::NoDestructor<FontFaceCreationParams>
+        sans_creation_params(font_family_names::kSans);
+    font_platform_data = GetFontPlatformData(description, *sans_creation_params,
                                              AlternateFontName::kLastResort);
     ++last_resort_fallback_attempt;
   }
   if (!font_platform_data) {
-    DEFINE_THREAD_SAFE_STATIC_LOCAL(const FontFaceCreationParams,
-                                    arial_creation_params,
-                                    (font_family_names::kArial));
-    font_platform_data = GetFontPlatformData(description, arial_creation_params,
-                                             AlternateFontName::kLastResort);
+    static const base::NoDestructor<FontFaceCreationParams>
+        arial_creation_params(font_family_names::kArial);
+    font_platform_data = GetFontPlatformData(
+        description, *arial_creation_params, AlternateFontName::kLastResort);
     ++last_resort_fallback_attempt;
   }
 #if BUILDFLAG(IS_WIN)
   // Try some more Windows-specific fallbacks.
   if (!font_platform_data) {
-    DEFINE_THREAD_SAFE_STATIC_LOCAL(const FontFaceCreationParams,
-                                    msuigothic_creation_params,
-                                    (font_family_names::kMSUIGothic));
+    static const base::NoDestructor<FontFaceCreationParams>
+        msuigothic_creation_params(font_family_names::kMSUIGothic);
     font_platform_data =
-        GetFontPlatformData(description, msuigothic_creation_params,
+        GetFontPlatformData(description, *msuigothic_creation_params,
                             AlternateFontName::kLastResort);
     ++last_resort_fallback_attempt;
   }
   if (!font_platform_data) {
-    DEFINE_THREAD_SAFE_STATIC_LOCAL(const FontFaceCreationParams,
-                                    mssansserif_creation_params,
-                                    (font_family_names::kMicrosoftSansSerif));
+    static const base::NoDestructor<FontFaceCreationParams>
+        mssansserif_creation_params(font_family_names::kMicrosoftSansSerif);
     font_platform_data =
-        GetFontPlatformData(description, mssansserif_creation_params,
+        GetFontPlatformData(description, *mssansserif_creation_params,
                             AlternateFontName::kLastResort);
     ++last_resort_fallback_attempt;
   }
   if (!font_platform_data) {
-    DEFINE_THREAD_SAFE_STATIC_LOCAL(const FontFaceCreationParams,
-                                    segoeui_creation_params,
-                                    (font_family_names::kSegoeUI));
+    static const base::NoDestructor<FontFaceCreationParams>
+        segoeui_creation_params(font_family_names::kSegoeUI);
     font_platform_data = GetFontPlatformData(
-        description, segoeui_creation_params, AlternateFontName::kLastResort);
+        description, *segoeui_creation_params, AlternateFontName::kLastResort);
     ++last_resort_fallback_attempt;
   }
   if (!font_platform_data) {
-    DEFINE_THREAD_SAFE_STATIC_LOCAL(const FontFaceCreationParams,
-                                    calibri_creation_params,
-                                    (font_family_names::kCalibri));
+    static const base::NoDestructor<FontFaceCreationParams>
+        calibri_creation_params(font_family_names::kCalibri);
     font_platform_data = GetFontPlatformData(
-        description, calibri_creation_params, AlternateFontName::kLastResort);
+        description, *calibri_creation_params, AlternateFontName::kLastResort);
     ++last_resort_fallback_attempt;
   }
   if (!font_platform_data) {
-    DEFINE_THREAD_SAFE_STATIC_LOCAL(const FontFaceCreationParams,
-                                    timesnewroman_creation_params,
-                                    (font_family_names::kTimesNewRoman));
+    static const base::NoDestructor<FontFaceCreationParams>
+        timesnewroman_creation_params(font_family_names::kTimesNewRoman);
     font_platform_data =
-        GetFontPlatformData(description, timesnewroman_creation_params,
+        GetFontPlatformData(description, *timesnewroman_creation_params,
                             AlternateFontName::kLastResort);
     ++last_resort_fallback_attempt;
   }
   if (!font_platform_data) {
-    DEFINE_THREAD_SAFE_STATIC_LOCAL(const FontFaceCreationParams,
-                                    couriernew_creation_params,
-                                    (font_family_names::kCourierNew));
+    static const base::NoDestructor<FontFaceCreationParams>
+        couriernew_creation_params(font_family_names::kCourierNew);
     font_platform_data =
-        GetFontPlatformData(description, couriernew_creation_params,
+        GetFontPlatformData(description, *couriernew_creation_params,
                             AlternateFontName::kLastResort);
     ++last_resort_fallback_attempt;
   }

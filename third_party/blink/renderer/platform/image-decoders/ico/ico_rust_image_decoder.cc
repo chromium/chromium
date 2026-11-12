@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/image-decoders/ico/ico_rust_image_decoder.h"
 
 #include "base/check.h"
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/skia/experimental/rust_ico/decoder/SkIcoRustDecoder.h"
 #include "third_party/skia/include/core/SkStream.h"
@@ -18,9 +19,9 @@ String IcoRustImageDecoder::FilenameExtension() const {
 }
 
 const AtomicString& IcoRustImageDecoder::MimeType() const {
-  DEFINE_STATIC_LOCAL(const AtomicString, ico_mime_type,
-                      (AtomicString::FromLiteral<"image/x-icon">()));
-  return ico_mime_type;
+  static const base::NoDestructor<AtomicString> ico_mime_type(
+      AtomicString::FromLiteral<"image/x-icon">());
+  return *ico_mime_type;
 }
 
 gfx::Size IcoRustImageDecoder::FrameSizeAtIndex(wtf_size_t index) const {

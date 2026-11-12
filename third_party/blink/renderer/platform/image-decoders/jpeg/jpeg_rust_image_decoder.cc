@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <array>
 
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/platform/image-decoders/jpeg/jpeg_image_decoder.h"
 #include "third_party/blink/renderer/platform/image-decoders/segment_reader.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -47,9 +48,9 @@ String JpegRustImageDecoder::FilenameExtension() const {
 }
 
 const AtomicString& JpegRustImageDecoder::MimeType() const {
-  DEFINE_STATIC_LOCAL(const AtomicString, jpeg_mime_type,
-                      (AtomicString::FromLiteral<"image/jpeg">()));
-  return jpeg_mime_type;
+  static const base::NoDestructor<AtomicString> jpeg_mime_type(
+      AtomicString::FromLiteral<"image/jpeg">());
+  return *jpeg_mime_type;
 }
 
 void JpegRustImageDecoder::OnSetData(scoped_refptr<SegmentReader> data) {

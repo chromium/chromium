@@ -6,6 +6,7 @@
 
 #include <unicode/uchar.h>
 
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/open_type_features.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/font_features.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_shaper.h"
@@ -33,9 +34,8 @@ HashSet<uint32_t> ExclusiveFeatures() {
 }
 
 bool IsExclusiveFeature(uint32_t tag) {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(HashSet<uint32_t>, tags,
-                                  (ExclusiveFeatures()));
-  return tags.Contains(tag);
+  static base::NoDestructor<HashSet<uint32_t>> tags(ExclusiveFeatures());
+  return tags->Contains(tag);
 }
 
 inline float GetAdvance(const HarfBuzzShaper::GlyphData& glyph,

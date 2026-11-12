@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/offscreen_canvas_placeholder.h"
 
+#include "base/no_destructor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
@@ -20,8 +21,8 @@ namespace {
 typedef HashMap<int, OffscreenCanvasPlaceholder*> PlaceholderIdMap;
 
 PlaceholderIdMap& placeholderRegistry() {
-  DEFINE_STATIC_LOCAL(PlaceholderIdMap, s_placeholder_registry, ());
-  return s_placeholder_registry;
+  static base::NoDestructor<PlaceholderIdMap> s_placeholder_registry;
+  return *s_placeholder_registry;
 }
 
 void UpdatePlaceholderClient(

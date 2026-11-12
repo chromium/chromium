@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/partition_alloc_memory_dump_provider.h"
 
 #include "base/format_macros.h"
+#include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/malloc_dump_provider.h"
 #include "base/trace_event/process_memory_dump.h"
@@ -17,8 +18,8 @@ namespace blink {
 const char kPartitionAllocDumpName[] = "partition_alloc";
 
 PartitionAllocMemoryDumpProvider* PartitionAllocMemoryDumpProvider::Instance() {
-  DEFINE_STATIC_LOCAL(PartitionAllocMemoryDumpProvider, instance, ());
-  return &instance;
+  static base::NoDestructor<PartitionAllocMemoryDumpProvider> instance;
+  return instance.get();
 }
 
 bool PartitionAllocMemoryDumpProvider::OnMemoryDump(

@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/platform/weborigin/referrer.h"
 
+#include "base/no_destructor.h"
 #include "services/network/public/mojom/referrer_policy.mojom-blink.h"
 
 namespace blink {
@@ -38,10 +39,9 @@ Referrer::Referrer()
     : referrer_policy(network::mojom::ReferrerPolicy::kDefault) {}
 
 const AtomicString& Referrer::ClientReferrerString() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      const AtomicString, client_referrer_string,
-      (AtomicString::FromLiteral<"about:client">()));
-  return client_referrer_string;
+  static const base::NoDestructor<AtomicString> client_referrer_string(
+      AtomicString::FromLiteral<"about:client">());
+  return *client_referrer_string;
 }
 
 }  // namespace blink

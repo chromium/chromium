@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 
 #include "base/command_line.h"
+#include "base/no_destructor.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
@@ -30,9 +31,9 @@ namespace {
 }  // namespace
 
 SharedGpuContext* SharedGpuContext::GetInstanceForCurrentThread() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<SharedGpuContext>,
-                                  thread_specific_instance, ());
-  return thread_specific_instance;
+  static base::NoDestructor<ThreadSpecific<SharedGpuContext>>
+      thread_specific_instance;
+  return *thread_specific_instance;
 }
 
 SharedGpuContext::SharedGpuContext() = default;

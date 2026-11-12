@@ -10,6 +10,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/no_destructor.h"
 #include "media/video/gpu_video_accelerator_factories.h"
 #include "third_party/blink/renderer/platform/peerconnection/video_codec_factory.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -57,6 +58,7 @@ class PLATFORM_EXPORT WebrtcDecodingInfoHandler {
       std::optional<gfx::Size> video_resolution) const;
 
  private:
+  friend class base::NoDestructor<WebrtcDecodingInfoHandler>;
   friend class WebrtcDecodingInfoHandlerTests;
   friend class MediaCapabilitiesWebrtcTests;
 

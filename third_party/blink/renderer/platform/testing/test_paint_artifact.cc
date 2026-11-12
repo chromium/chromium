@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/no_destructor.h"
 #include "cc/layers/layer.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_client.h"
@@ -21,10 +22,10 @@
 namespace blink {
 
 static DisplayItemClient& StaticDummyClient() {
-  DEFINE_STATIC_LOCAL(Persistent<FakeDisplayItemClient>, client,
-                      (MakeGarbageCollected<FakeDisplayItemClient>()));
-  client->Validate();
-  return *client;
+  static base::NoDestructor<Persistent<FakeDisplayItemClient>> client(
+      MakeGarbageCollected<FakeDisplayItemClient>());
+  (*client)->Validate();
+  return **client;
 }
 
 TestPaintArtifact& TestPaintArtifact::Chunk(int id) {

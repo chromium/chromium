@@ -9,6 +9,7 @@
 #include "base/containers/adapters.h"
 #include "base/memory_coordinator/traits.h"
 #include "base/memory_coordinator/utils.h"
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/platform/fonts/character_range.h"
 #include "third_party/blink/renderer/platform/fonts/plain_text_node.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/frame_shape_cache.h"
@@ -62,9 +63,9 @@ void PlainTextPainter::Dispose() {
 
 PlainTextPainter& PlainTextPainter::Shared() {
   DCHECK(IsMainThread());
-  DEFINE_STATIC_LOCAL(Persistent<PlainTextPainter>, shared_instance,
-                      (MakeGarbageCollected<PlainTextPainter>(kShared)));
-  return *shared_instance;
+  static base::NoDestructor<Persistent<PlainTextPainter>> shared_instance(
+      MakeGarbageCollected<PlainTextPainter>(kShared));
+  return **shared_instance;
 }
 
 const PlainTextNode& PlainTextPainter::SegmentAndShape(const TextRun& run,

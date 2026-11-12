@@ -13,11 +13,11 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "media/video/gpu_video_accelerator_factories.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/peerconnection/audio_codec_factory.h"
 #include "third_party/blink/renderer/platform/peerconnection/video_codec_factory.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
@@ -34,13 +34,12 @@
 namespace blink {
 WebrtcDecodingInfoHandler* WebrtcDecodingInfoHandler::Instance() {
   if (!IsMainThread()) {
-    DEFINE_THREAD_SAFE_STATIC_LOCAL(WebrtcDecodingInfoHandler, worker_instance,
-                                    (nullptr));
-    return &worker_instance;
+    static base::NoDestructor<WebrtcDecodingInfoHandler> worker_instance(
+        nullptr);
+    return worker_instance.get();
   }
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(WebrtcDecodingInfoHandler,
-                                  main_thread_instance, ());
-  return &main_thread_instance;
+  static base::NoDestructor<WebrtcDecodingInfoHandler> main_thread_instance;
+  return main_thread_instance.get();
 }
 
 WebrtcDecodingInfoHandler::WebrtcDecodingInfoHandler()

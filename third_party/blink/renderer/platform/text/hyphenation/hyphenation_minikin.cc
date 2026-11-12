@@ -12,6 +12,7 @@
 #include "base/files/memory_mapped_file.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/no_destructor.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/hyphenation/hyphenation.mojom-blink.h"
@@ -56,9 +57,9 @@ static mojo::Remote<mojom::blink::Hyphenation> ConnectToRemoteService() {
 }
 
 static mojom::blink::Hyphenation* GetService() {
-  DEFINE_STATIC_LOCAL(mojo::Remote<mojom::blink::Hyphenation>, service,
-                      (ConnectToRemoteService()));
-  return service.get();
+  static base::NoDestructor<mojo::Remote<mojom::blink::Hyphenation>> service(
+      ConnectToRemoteService());
+  return service->get();
 }
 
 bool HyphenationMinikin::OpenDictionary(const AtomicString& locale) {
@@ -267,10 +268,11 @@ static LocaleMap CreateLocaleFallbackMap() {
 
 // static
 AtomicString HyphenationMinikin::MapLocale(const AtomicString& locale) {
-  DEFINE_STATIC_LOCAL(LocaleMap, locale_fallback, (CreateLocaleFallbackMap()));
+  static base::NoDestructor<LocaleMap> locale_fallback(
+      CreateLocaleFallbackMap());
   for (AtomicString mapped_locale = locale;;) {
-    const auto& it = locale_fallback.find(mapped_locale);
-    if (it != locale_fallback.end()) {
+    const auto& it = locale_fallback->find(mapped_locale);
+    if (it != locale_fallback->end()) {
       if (it->value->locale_for_exact_match && locale == mapped_locale)
         return AtomicString(it->value->locale_for_exact_match);
       return AtomicString(it->value->locale);

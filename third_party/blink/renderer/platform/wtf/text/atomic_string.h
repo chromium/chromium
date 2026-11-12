@@ -74,7 +74,7 @@ class WTF_EXPORT AtomicString {
   // AtomicStringTable without allocating on the heap (unless an AtomicString
   // with the same characters is already alive in AtomicStringTable, in which
   // case the existing entry is reused). Intended primarily for static
-  // initialization (such as DEFINE_STATIC_LOCAL).
+  // initialization (such as base::NoDestructor).
   template <StaticStringLiteral Str>
   static AtomicString FromLiteral() {
     if constexpr (StaticAsciiLiteral<Str>::kLength == 0) {

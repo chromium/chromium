@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/platform/text/character.h"
-
 #include <unicode/uniset.h>
 #include <unicode/uvernum.h>
+
+#include "base/no_destructor.h"
+#include "third_party/blink/renderer/platform/text/character.h"
 
 namespace blink::unicode {
 
@@ -299,22 +300,24 @@ bool IsEmoji(UChar32 ch) {
 }
 
 bool IsEmojiTextDefault(UChar32 ch) {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(icu::UnicodeSet, emoji_text_set, ());
-  internal::ApplyPatternAndFreezeIfEmpty(&emoji_text_set, kEmojiTextPattern);
-  return emoji_text_set.contains(ch) && !IsEmojiEmojiDefault(ch);
+  static base::NoDestructor<icu::UnicodeSet> emoji_text_set;
+  internal::ApplyPatternAndFreezeIfEmpty(emoji_text_set.get(),
+                                         kEmojiTextPattern);
+  return emoji_text_set->contains(ch) && !IsEmojiEmojiDefault(ch);
 }
 
 bool IsEmojiEmojiDefault(UChar32 ch) {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(icu::UnicodeSet, emoji_emoji_set, ());
-  internal::ApplyPatternAndFreezeIfEmpty(&emoji_emoji_set, kEmojiEmojiPattern);
-  return emoji_emoji_set.contains(ch);
+  static base::NoDestructor<icu::UnicodeSet> emoji_emoji_set;
+  internal::ApplyPatternAndFreezeIfEmpty(emoji_emoji_set.get(),
+                                         kEmojiEmojiPattern);
+  return emoji_emoji_set->contains(ch);
 }
 
 bool IsEmojiModifierBase(UChar32 ch) {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(icu::UnicodeSet, emoji_modifier_base_set, ());
-  internal::ApplyPatternAndFreezeIfEmpty(&emoji_modifier_base_set,
+  static base::NoDestructor<icu::UnicodeSet> emoji_modifier_base_set;
+  internal::ApplyPatternAndFreezeIfEmpty(emoji_modifier_base_set.get(),
                                          kEmojiModifierBasePattern);
-  return emoji_modifier_base_set.contains(ch);
+  return emoji_modifier_base_set->contains(ch);
 }
 #else
 bool IsEmoji(UChar32 ch) {

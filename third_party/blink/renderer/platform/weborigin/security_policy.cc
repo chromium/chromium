@@ -46,7 +46,6 @@
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/parsing_utilities.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
@@ -56,14 +55,13 @@
 namespace blink {
 
 static base::Lock& GetLock() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(base::Lock, lock, ());
-  return lock;
+  static base::NoDestructor<base::Lock> lock;
+  return *lock;
 }
 
 static network::cors::OriginAccessList& GetOriginAccessList() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(network::cors::OriginAccessList,
-                                  origin_access_list, ());
-  return origin_access_list;
+  static base::NoDestructor<network::cors::OriginAccessList> origin_access_list;
+  return *origin_access_list;
 }
 
 bool SecurityPolicy::ShouldHideReferrer(const KURL& url, const KURL& referrer) {

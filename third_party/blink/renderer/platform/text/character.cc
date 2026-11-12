@@ -39,12 +39,12 @@
 
 #include <algorithm>
 
+#include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/character_property_data.h"
 #include "third_party/blink/renderer/platform/text/icu_error.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -73,8 +73,8 @@ inline CharacterProperty GetProperty(UChar32 c) {
 }
 
 base::Lock& GetFreezePatternLock() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(base::Lock, lock, ());
-  return lock;
+  static base::NoDestructor<base::Lock> lock;
+  return *lock;
 }
 
 }  // namespace

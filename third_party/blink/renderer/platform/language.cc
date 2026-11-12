@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/platform/language.h"
 
+#include "base/no_destructor.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -53,32 +54,31 @@ const AtomicString& PlatformLanguage() {
 }
 
 Vector<AtomicString>& PreferredLanguagesOverride() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<Vector<AtomicString>>,
-                                  thread_specific_languages, ());
-  return *thread_specific_languages;
+  static base::NoDestructor<ThreadSpecific<Vector<AtomicString>>>
+      thread_specific_languages;
+  return **thread_specific_languages;
 }
 
 }  // namespace
 
 void InitializePlatformLanguage() {
   DCHECK(IsMainThread());
-  DEFINE_STATIC_LOCAL(
-      // We add the platform language as a static string for two reasons:
-      // 1. it can be shared across threads.
-      // 2. since this is done very early on, we don't want to accidentally
-      //    collide with a hard coded static string (like "fr" on SVG).
-      const AtomicString, platform_language, (([]() {
-        String canonicalized = CanonicalizeLanguageIdentifier(
-            Platform::Current()->DefaultLocale());
-        if (!canonicalized.empty()) {
-          StringImpl* impl =
-              StringImpl::CreateStatic(base::as_chars(canonicalized.Span8()));
-          return AtomicString(impl);
-        }
-        return AtomicString();
-      })()));
+  // We add the platform language as a static string for two reasons:
+  // 1. it can be shared across threads.
+  // 2. since this is done very early on, we don't want to accidentally
+  //    collide with a hard coded static string (like "fr" on SVG).
+  static const base::NoDestructor<AtomicString> platform_language(([]() {
+    String canonicalized =
+        CanonicalizeLanguageIdentifier(Platform::Current()->DefaultLocale());
+    if (!canonicalized.empty()) {
+      StringImpl* impl =
+          StringImpl::CreateStatic(base::as_chars(canonicalized.Span8()));
+      return AtomicString(impl);
+    }
+    return AtomicString();
+  })());
 
-  g_platform_language = &platform_language;
+  g_platform_language = platform_language.get();
 }
 
 void OverrideUserPreferredLanguagesForTesting(

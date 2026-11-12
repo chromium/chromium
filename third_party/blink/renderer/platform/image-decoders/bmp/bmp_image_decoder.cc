@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/image-decoders/bmp/bmp_image_decoder.h"
 
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/platform/image-decoders/segment_reader.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/skia/include/codec/SkBmpRustDecoder.h"
@@ -25,9 +26,9 @@ String BMPImageDecoder::FilenameExtension() const {
 }
 
 const AtomicString& BMPImageDecoder::MimeType() const {
-  DEFINE_STATIC_LOCAL(const AtomicString, bmp_mime_type,
-                      (AtomicString::FromLiteral<"image/bmp">()));
-  return bmp_mime_type;
+  static const base::NoDestructor<AtomicString> bmp_mime_type(
+      AtomicString::FromLiteral<"image/bmp">());
+  return *bmp_mime_type;
 }
 
 std::unique_ptr<SkCodec> BMPImageDecoder::OnCreateSkCodec(

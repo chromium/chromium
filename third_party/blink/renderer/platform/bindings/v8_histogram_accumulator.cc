@@ -5,16 +5,15 @@
 #include "third_party/blink/renderer/platform/bindings/v8_histogram_accumulator.h"
 
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/time/time.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace blink {
 
 // static
 V8HistogramAccumulator* V8HistogramAccumulator::GetInstance() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(V8HistogramAccumulator, histogram_accumulator,
-                                  ());
-  return &histogram_accumulator;
+  static base::NoDestructor<V8HistogramAccumulator> histogram_accumulator;
+  return histogram_accumulator.get();
 }
 
 void* V8HistogramAccumulator::RegisterHistogram(base::HistogramBase* histogram,

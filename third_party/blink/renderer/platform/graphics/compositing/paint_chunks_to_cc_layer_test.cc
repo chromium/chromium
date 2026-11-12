@@ -6,6 +6,7 @@
 
 #include <initializer_list>
 
+#include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "cc/layers/layer.h"
 #include "cc/paint/display_item_list.h"
@@ -50,10 +51,9 @@ class PaintChunksToCcLayerTest : public testing::Test,
 INSTANTIATE_PAINT_TEST_SUITE_P(PaintChunksToCcLayerTest);
 
 const DisplayItemClient& DefaultClient() {
-  DEFINE_STATIC_LOCAL(
-      Persistent<FakeDisplayItemClient>, fake_client,
-      (MakeGarbageCollected<FakeDisplayItemClient>("FakeDisplayItemClient")));
-  return *fake_client;
+  static base::NoDestructor<Persistent<FakeDisplayItemClient>> fake_client(
+      MakeGarbageCollected<FakeDisplayItemClient>("FakeDisplayItemClient"));
+  return **fake_client;
 }
 
 PaintChunk::Id DefaultId() {

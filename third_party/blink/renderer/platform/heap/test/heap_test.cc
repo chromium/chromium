@@ -32,6 +32,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -2989,9 +2990,9 @@ class ThreadedClearOnShutdownTester : public ThreadedTesterBase {
   static HeapObjectSet& GetHeapObjectSet();
 
   static IntWrapper& ThreadSpecificIntWrapper() {
-    DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<Persistent<IntWrapper>>,
-                                    int_wrapper, ());
-    Persistent<IntWrapper>& handle = *int_wrapper;
+    static base::NoDestructor<ThreadSpecific<Persistent<IntWrapper>>>
+        int_wrapper;
+    Persistent<IntWrapper>& handle = **int_wrapper;
     if (!handle) {
       handle = MakeGarbageCollected<IntWrapper>(42);
       LEAK_SANITIZER_IGNORE_OBJECT(&handle);
@@ -3028,9 +3029,9 @@ class ThreadedClearOnShutdownTester::HeapObject final
 
 ThreadedClearOnShutdownTester::WeakHeapObjectSet&
 ThreadedClearOnShutdownTester::GetWeakHeapObjectSet() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<Persistent<WeakHeapObjectSet>>,
-                                  singleton, ());
-  Persistent<WeakHeapObjectSet>& singleton_persistent = *singleton;
+  static base::NoDestructor<ThreadSpecific<Persistent<WeakHeapObjectSet>>>
+      singleton;
+  Persistent<WeakHeapObjectSet>& singleton_persistent = **singleton;
   if (!singleton_persistent) {
     singleton_persistent = MakeGarbageCollected<WeakHeapObjectSet>();
     LEAK_SANITIZER_IGNORE_OBJECT(&singleton_persistent);
@@ -3040,9 +3041,9 @@ ThreadedClearOnShutdownTester::GetWeakHeapObjectSet() {
 
 ThreadedClearOnShutdownTester::HeapObjectSet&
 ThreadedClearOnShutdownTester::GetHeapObjectSet() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<Persistent<HeapObjectSet>>,
-                                  singleton, ());
-  Persistent<HeapObjectSet>& singleton_persistent = *singleton;
+  static base::NoDestructor<ThreadSpecific<Persistent<HeapObjectSet>>>
+      singleton;
+  Persistent<HeapObjectSet>& singleton_persistent = **singleton;
   if (!singleton_persistent) {
     singleton_persistent = MakeGarbageCollected<HeapObjectSet>();
     LEAK_SANITIZER_IGNORE_OBJECT(&singleton_persistent);

@@ -12,6 +12,7 @@
 #include "base/dcheck_is_on.h"
 #include "base/files/file.h"
 #include "base/gtest_prod_util.h"
+#include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/mojom/disk_allocator.mojom-blink.h"
@@ -88,6 +89,7 @@ class PLATFORM_EXPORT DiskDataAllocator : public mojom::blink::DiskAllocator {
   DiskDataAllocator();
 
  private:
+  friend class base::NoDestructor<DiskDataAllocator>;
   DiskDataMetadata FindFreeChunk(size_t size) EXCLUSIVE_LOCKS_REQUIRED(lock_);
   void ReleaseChunk(const DiskDataMetadata& metadata)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);

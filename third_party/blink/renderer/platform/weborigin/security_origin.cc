@@ -37,6 +37,7 @@
 #include <utility>
 
 #include "base/feature_list.h"
+#include "base/no_destructor.h"
 #include "net/base/schemeful_site.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
@@ -48,7 +49,6 @@
 #include "third_party/blink/renderer/platform/weborigin/origin_access_entry.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -723,8 +723,8 @@ bool SecurityOrigin::IsSameSiteWith(const SecurityOrigin* other) const {
 
 const KURL& SecurityOrigin::UrlWithUniqueOpaqueOrigin() {
   DCHECK(IsMainThread());
-  DEFINE_STATIC_LOCAL(const KURL, url, ("data:,"));
-  return url;
+  static const base::NoDestructor<KURL> url("data:,");
+  return *url;
 }
 
 std::unique_ptr<SecurityOrigin::PrivilegeData>

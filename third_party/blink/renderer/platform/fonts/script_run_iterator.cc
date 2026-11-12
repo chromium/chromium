@@ -8,6 +8,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "third_party/blink/renderer/platform/text/character.h"
 #include "third_party/blink/renderer/platform/text/icu_error.h"
@@ -99,15 +100,15 @@ void FixScriptsByEastAsianWidth(UChar32 ch,
     // U+300C in https://www.unicode.org/Public/UNIDATA/ScriptExtensions.txt.
     // Text can be segmented on multiple threads (e.g. OffscreenCanvas in
     // workers). The list is immutable once initialized.
-    DEFINE_THREAD_SAFE_STATIC_LOCAL(const ScriptRunIterator::UScriptCodeList,
-                                    han_scripts, (GetHanScriptExtensions()));
-    if (han_scripts.empty()) [[unlikely]] {
+    static const base::NoDestructor<ScriptRunIterator::UScriptCodeList>
+        han_scripts(GetHanScriptExtensions());
+    if (han_scripts->empty()) [[unlikely]] {
       // When |GetHanScriptExtensions| returns an empty list, replacing with it
       // will crash later, which makes the analysis complicated.
       NOTREACHED();
     }
     set->Shrink(0);
-    set->append_range(han_scripts);
+    set->append_range(*han_scripts);
   }
 }
 
@@ -226,9 +227,8 @@ PairedBracketType IcuScriptData::GetPairedBracketType(UChar32 ch) const {
 }
 
 const IcuScriptData* IcuScriptData::Instance() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(const IcuScriptData, icu_script_data_instance,
-                                  ());
-  return &icu_script_data_instance;
+  static const base::NoDestructor<IcuScriptData> icu_script_data_instance;
+  return icu_script_data_instance.get();
 }
 
 ScriptData::RunExtensionLookups IcuScriptData::GetSafeToExtendExistingRun(

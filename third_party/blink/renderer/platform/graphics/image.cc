@@ -52,7 +52,6 @@
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
@@ -95,15 +94,13 @@ cc::ImageDecodeCache& Image::SharedCCDecodeCache(SkColorType color_type) {
   DCHECK(color_type == kN32_SkColorType || color_type == kRGBA_F16_SkColorType);
   static const size_t kLockedMemoryLimitBytes = 64 * 1024 * 1024;
   if (color_type == kRGBA_F16_SkColorType) {
-    DEFINE_THREAD_SAFE_STATIC_LOCAL(
-        cc::SoftwareImageDecodeCache, image_decode_cache,
-        (kRGBA_F16_SkColorType, kLockedMemoryLimitBytes));
-    return image_decode_cache;
+    static base::NoDestructor<cc::SoftwareImageDecodeCache> image_decode_cache(
+        kRGBA_F16_SkColorType, kLockedMemoryLimitBytes);
+    return *image_decode_cache;
   }
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(cc::SoftwareImageDecodeCache,
-                                  image_decode_cache,
-                                  (kN32_SkColorType, kLockedMemoryLimitBytes));
-  return image_decode_cache;
+  static base::NoDestructor<cc::SoftwareImageDecodeCache> image_decode_cache(
+      kN32_SkColorType, kLockedMemoryLimitBytes);
+  return *image_decode_cache;
 }
 
 scoped_refptr<Image> Image::LoadPlatformResource(

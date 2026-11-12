@@ -7,6 +7,7 @@
 
 #include <cstddef>
 
+#include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -35,6 +36,8 @@ class PLATFORM_EXPORT BackForwardCacheBufferLimitTracker {
       delete;
 
  private:
+  friend class base::NoDestructor<BackForwardCacheBufferLimitTracker>;
+
   BackForwardCacheBufferLimitTracker();
 
   const size_t max_buffered_bytes_per_process_;

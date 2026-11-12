@@ -12,6 +12,7 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -184,9 +185,9 @@ String WEBPImageDecoder::FilenameExtension() const {
 }
 
 const AtomicString& WEBPImageDecoder::MimeType() const {
-  DEFINE_STATIC_LOCAL(const AtomicString, webp_mime_type,
-                      (AtomicString::FromLiteral<"image/webp">()));
-  return webp_mime_type;
+  static const base::NoDestructor<AtomicString> webp_mime_type(
+      AtomicString::FromLiteral<"image/webp">());
+  return *webp_mime_type;
 }
 void WEBPImageDecoder::Clear() {
   WebPDemuxDelete(demux_);

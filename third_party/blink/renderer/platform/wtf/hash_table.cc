@@ -23,17 +23,18 @@
 
 #include <iomanip>
 
+#include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
 
 namespace blink {
 
 static base::Lock& HashTableStatsLock() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(base::Lock, lock, ());
-  return lock;
+  static base::NoDestructor<base::Lock> lock;
+  return *lock;
 }
 
 HashTableStats& HashTableStats::Instance() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(HashTableStats, stats, ());
+  static HashTableStats stats;
   return stats;
 }
 

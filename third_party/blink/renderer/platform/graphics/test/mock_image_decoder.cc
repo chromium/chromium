@@ -25,14 +25,15 @@
 
 #include "third_party/blink/renderer/platform/graphics/test/mock_image_decoder.h"
 
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
 
 const AtomicString& MockImageDecoder::MimeType() const {
-  DEFINE_STATIC_LOCAL(const AtomicString, mock_mime_type,
-                      (AtomicString::FromLiteral<"image/x-mock">()));
-  return mock_mime_type;
+  static const base::NoDestructor<AtomicString> mock_mime_type(
+      AtomicString::FromLiteral<"image/x-mock">());
+  return *mock_mime_type;
 }
 
 }  // namespace blink

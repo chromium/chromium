@@ -5,7 +5,6 @@
 #include "third_party/blink/public/platform/interface_registry.h"
 
 #include "base/task/single_thread_task_runner.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace blink {
 namespace {
@@ -23,7 +22,7 @@ class EmptyInterfaceRegistry : public InterfaceRegistry {
 }  // namespace
 
 InterfaceRegistry* InterfaceRegistry::GetEmptyInterfaceRegistry() {
-  DEFINE_STATIC_LOCAL(EmptyInterfaceRegistry, empty_interface_registry, ());
+  static EmptyInterfaceRegistry empty_interface_registry;
   return &empty_interface_registry;
 }
 

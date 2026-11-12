@@ -35,10 +35,10 @@
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/types/to_address.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
@@ -58,9 +58,9 @@ IcuConverterWrapper::~IcuConverterWrapper() {
 }
 
 static UConverter*& CachedConverterIcu() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<IcuConverterWrapper>,
-                                  cached_converter_icu, ());
-  return cached_converter_icu->converter;
+  static base::NoDestructor<ThreadSpecific<IcuConverterWrapper>>
+      cached_converter_icu;
+  return (*cached_converter_icu)->converter;
 }
 
 std::unique_ptr<TextCodec> TextCodecIcu::Create(const TextEncoding& encoding) {

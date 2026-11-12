@@ -4,8 +4,8 @@
 
 #include "third_party/blink/renderer/platform/fonts/win/dwrite_font_format_support.h"
 
+#include "base/no_destructor.h"
 #include "skia/ext/font_utils.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/thread_specific.h"
 #include "third_party/skia/include/core/SkFontMgr.h"
 #include "third_party/skia/include/core/SkFontStyle.h"
@@ -67,9 +67,9 @@ bool DWriteVersionSupportsVariations() {
   // the background thread. To avoid this, we made `variations_supported`
   // ThreadSpecific so that DWriteVersionSupportsVariationsImpl() is called only
   // once in each thread.
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      ThreadSpecific<DWriteVersionSupportsVariationsChecker>,
-      variations_supported, ());
-  return variations_supported->value();
+  static base::NoDestructor<
+      ThreadSpecific<DWriteVersionSupportsVariationsChecker>>
+      variations_supported;
+  return (*variations_supported)->value();
 }
 }  // namespace blink

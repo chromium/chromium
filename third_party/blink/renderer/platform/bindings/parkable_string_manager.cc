@@ -13,6 +13,7 @@
 #include "base/memory_coordinator/utils.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_allocator_dump.h"
@@ -27,7 +28,6 @@
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
@@ -102,8 +102,8 @@ const base::TimeDelta ParkableStringManager::kFirstParkingDelay;
 // static
 ParkableStringManagerDumpProvider*
 ParkableStringManagerDumpProvider::Instance() {
-  DEFINE_STATIC_LOCAL(ParkableStringManagerDumpProvider, instance, ());
-  return &instance;
+  static base::NoDestructor<ParkableStringManagerDumpProvider> instance;
+  return instance.get();
 }
 
 bool ParkableStringManagerDumpProvider::OnMemoryDump(
@@ -118,8 +118,8 @@ ParkableStringManagerDumpProvider::ParkableStringManagerDumpProvider() =
     default;
 
 ParkableStringManager& ParkableStringManager::Instance() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(ParkableStringManager, instance, ());
-  return instance;
+  static base::NoDestructor<ParkableStringManager> instance;
+  return *instance;
 }
 
 ParkableStringManager::~ParkableStringManager() = default;

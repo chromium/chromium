@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/image-decoders/png/png_image_decoder.h"
 
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/skia/include/codec/SkPngRustDecoder.h"
 #include "third_party/skia/include/core/SkStream.h"
@@ -17,9 +18,9 @@ String PngImageDecoder::FilenameExtension() const {
 }
 
 const AtomicString& PngImageDecoder::MimeType() const {
-  DEFINE_STATIC_LOCAL(const AtomicString, png_mime_type,
-                      (AtomicString::FromLiteral<"image/png">()));
-  return png_mime_type;
+  static const base::NoDestructor<AtomicString> png_mime_type(
+      AtomicString::FromLiteral<"image/png">());
+  return *png_mime_type;
 }
 
 std::unique_ptr<SkCodec> PngImageDecoder::OnCreateSkCodec(

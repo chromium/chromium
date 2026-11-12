@@ -6,10 +6,12 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_INSTRUMENTATION_HISTOGRAM_H_
 
 #include <stdint.h>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
@@ -84,19 +86,17 @@ static constexpr base::HistogramBase::Sample32 kTimeBasedHistogramMaxSample =
     static_cast<base::Histogram::Sample32>(base::Seconds(10).InMicroseconds());
 static constexpr int32_t kTimeBasedHistogramBucketCount = 50;
 
-#define SCOPED_BLINK_UMA_HISTOGRAM_TIMER_IMPL(name, allow_cross_thread)  \
-  DEFINE_STATIC_LOCAL_IMPL(                                              \
-      CustomCountHistogram, scoped_us_counter,                           \
-      (name, kTimeBasedHistogramMinSample, kTimeBasedHistogramMaxSample, \
-       kTimeBasedHistogramBucketCount),                                  \
-      allow_cross_thread);                                               \
-  ScopedUsHistogramTimer timer(scoped_us_counter);
+#define SCOPED_BLINK_UMA_HISTOGRAM_TIMER_IMPL(name, allow_cross_thread) \
+  static base::NoDestructor<CustomCountHistogram> scoped_us_counter(    \
+      name, kTimeBasedHistogramMinSample, kTimeBasedHistogramMaxSample, \
+      kTimeBasedHistogramBucketCount);                                  \
+  ScopedUsHistogramTimer timer(*scoped_us_counter);
 
 #define SCOPED_BLINK_UMA_HISTOGRAM_TIMER_HIGHRES_IMPL(name,               \
                                                       allow_cross_thread) \
-  DEFINE_STATIC_LOCAL_IMPL(CustomCountHistogram, scoped_us_counter,       \
-                           (name, 0, 10000000, 50), allow_cross_thread);  \
-  ScopedHighResUsHistogramTimer timer(scoped_us_counter);
+  static base::NoDestructor<CustomCountHistogram> scoped_us_counter(      \
+      name, 0, 10000000, 50);                                             \
+  ScopedHighResUsHistogramTimer timer(*scoped_us_counter);
 
 // Use code like this to record time, in microseconds, to execute a block of
 // code:

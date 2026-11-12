@@ -11,6 +11,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/time/default_tick_clock.h"
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
@@ -140,10 +141,10 @@ String RuntimeCallStats::ToString() const {
 
 // static
 void RuntimeCallStats::SetRuntimeCallStatsForTesting() {
-  DEFINE_STATIC_LOCAL(RuntimeCallStats, s_rcs_for_testing,
-                      (base::DefaultTickClock::GetInstance()));
+  static base::NoDestructor<RuntimeCallStats> s_rcs_for_testing(
+      base::DefaultTickClock::GetInstance());
   g_runtime_call_stats_for_testing =
-      static_cast<RuntimeCallStats*>(&s_rcs_for_testing);
+      static_cast<RuntimeCallStats*>(s_rcs_for_testing.get());
 }
 
 // static

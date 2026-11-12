@@ -18,6 +18,7 @@
 #include "base/containers/adapters.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
@@ -206,9 +207,9 @@ String AVIFImageDecoder::FilenameExtension() const {
 }
 
 const AtomicString& AVIFImageDecoder::MimeType() const {
-  DEFINE_STATIC_LOCAL(const AtomicString, avif_mime_type,
-                      (AtomicString::FromLiteral<"image/avif">()));
-  return avif_mime_type;
+  static const base::NoDestructor<AtomicString> avif_mime_type(
+      AtomicString::FromLiteral<"image/avif">());
+  return *avif_mime_type;
 }
 
 bool AVIFImageDecoder::ImageIsHighBitDepth() {

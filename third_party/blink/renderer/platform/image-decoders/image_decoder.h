@@ -35,6 +35,7 @@
 #include "base/containers/heap_array.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/no_destructor.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
@@ -625,12 +626,11 @@ class PLATFORM_EXPORT ImageDecoder {
 // static
 template <const char type[]>
 void ImageDecoder::UpdateBppHistogram(gfx::Size size, size_t image_size_bytes) {
-#define DEFINE_BPP_HISTOGRAM(var, suffix)                                    \
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(                                           \
-      CustomCountHistogram, var,                                             \
-      (base::StrCat({"Blink.DecodedImage.", type, "Density.Count.", suffix}) \
-           .c_str(),                                                         \
-       1, 1000, 100))
+#define DEFINE_BPP_HISTOGRAM(var, suffix)                                   \
+  static base::NoDestructor<CustomCountHistogram> var(                      \
+      base::StrCat({"Blink.DecodedImage.", type, "Density.Count.", suffix}) \
+          .c_str(),                                                         \
+      1, 1000, 100)
 
   // From 1 pixel to 1 MP, we have one histogram per 0.1 MP.
   // From 2 MP to 13 MP, we have one histogram per 1 MP.
@@ -645,11 +645,11 @@ void ImageDecoder::UpdateBppHistogram(gfx::Size size, size_t image_size_bytes) {
   DEFINE_BPP_HISTOGRAM(density_point_8_mp_histogram, "0.8MP");
   DEFINE_BPP_HISTOGRAM(density_point_9_mp_histogram, "0.9MP");
   static std::array<CustomCountHistogram* const, 9> density_histogram_small = {
-      &density_point_1_mp_histogram, &density_point_2_mp_histogram,
-      &density_point_3_mp_histogram, &density_point_4_mp_histogram,
-      &density_point_5_mp_histogram, &density_point_6_mp_histogram,
-      &density_point_7_mp_histogram, &density_point_8_mp_histogram,
-      &density_point_9_mp_histogram};
+      density_point_1_mp_histogram.get(), density_point_2_mp_histogram.get(),
+      density_point_3_mp_histogram.get(), density_point_4_mp_histogram.get(),
+      density_point_5_mp_histogram.get(), density_point_6_mp_histogram.get(),
+      density_point_7_mp_histogram.get(), density_point_8_mp_histogram.get(),
+      density_point_9_mp_histogram.get()};
 
   DEFINE_BPP_HISTOGRAM(density_1_mp_histogram, "01MP");
   DEFINE_BPP_HISTOGRAM(density_2_mp_histogram, "02MP");
@@ -665,13 +665,13 @@ void ImageDecoder::UpdateBppHistogram(gfx::Size size, size_t image_size_bytes) {
   DEFINE_BPP_HISTOGRAM(density_12_mp_histogram, "12MP");
   DEFINE_BPP_HISTOGRAM(density_13_mp_histogram, "13MP");
   static std::array<CustomCountHistogram* const, 13> density_histogram_big = {
-      &density_1_mp_histogram,  &density_2_mp_histogram,
-      &density_3_mp_histogram,  &density_4_mp_histogram,
-      &density_5_mp_histogram,  &density_6_mp_histogram,
-      &density_7_mp_histogram,  &density_8_mp_histogram,
-      &density_9_mp_histogram,  &density_10_mp_histogram,
-      &density_11_mp_histogram, &density_12_mp_histogram,
-      &density_13_mp_histogram};
+      density_1_mp_histogram.get(),  density_2_mp_histogram.get(),
+      density_3_mp_histogram.get(),  density_4_mp_histogram.get(),
+      density_5_mp_histogram.get(),  density_6_mp_histogram.get(),
+      density_7_mp_histogram.get(),  density_8_mp_histogram.get(),
+      density_9_mp_histogram.get(),  density_10_mp_histogram.get(),
+      density_11_mp_histogram.get(), density_12_mp_histogram.get(),
+      density_13_mp_histogram.get()};
 
   DEFINE_BPP_HISTOGRAM(density_14plus_mp_histogram, "14+MP");
 
@@ -697,7 +697,7 @@ void ImageDecoder::UpdateBppHistogram(gfx::Size size, size_t image_size_bytes) {
     int n = (static_cast<int>(image_area) + (1000000 - 1)) / 1000000;
     density_histogram = density_histogram_big[n - 1];
   } else {
-    density_histogram = &density_14plus_mp_histogram;
+    density_histogram = density_14plus_mp_histogram.get();
   }
 
   density_histogram->Count(base::saturated_cast<base::Histogram::Sample32>(

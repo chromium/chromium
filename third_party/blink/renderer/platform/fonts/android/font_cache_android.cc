@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 
 #include "base/feature_list.h"
+#include "base/no_destructor.h"
 #include "skia/ext/font_utils.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/font_family_names.h"
@@ -72,9 +73,9 @@ static AtomicString DefaultFontFamily() {
 
 // static
 const AtomicString& FontCache::SystemFontFamily() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(AtomicString, system_font_family,
-                                  (DefaultFontFamily()));
-  return system_font_family;
+  static base::NoDestructor<AtomicString> system_font_family(
+      DefaultFontFamily());
+  return *system_font_family;
 }
 
 // static

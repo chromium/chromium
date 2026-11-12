@@ -4,16 +4,16 @@
 
 #include "third_party/blink/renderer/platform/instrumentation/canvas_memory_dump_provider.h"
 
+#include "base/no_destructor.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "third_party/blink/renderer/platform/instrumentation/instance_counters.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace blink {
 
 CanvasMemoryDumpProvider* CanvasMemoryDumpProvider::Instance() {
-  DEFINE_STATIC_LOCAL(CanvasMemoryDumpProvider, instance, ());
-  return &instance;
+  static base::NoDestructor<CanvasMemoryDumpProvider> instance;
+  return instance.get();
 }
 
 bool CanvasMemoryDumpProvider::OnMemoryDump(

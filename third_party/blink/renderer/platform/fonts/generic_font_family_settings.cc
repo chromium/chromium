@@ -32,6 +32,7 @@
 
 #include <memory>
 
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
@@ -140,12 +141,12 @@ const AtomicString& GenericFontFamilySettings::Get(GenericFontFamily family,
   const AtomicString& font = GenericFontFamilyForScript(MapFor(family), script);
 #if BUILDFLAG(IS_MAC)
   if (family == GenericFontFamily::kFixed) {
-    DEFINE_THREAD_SAFE_STATIC_LOCAL(AtomicString, kOsaka,
-                                    (AtomicString::FromLiteral<"Osaka">()));
-    DEFINE_THREAD_SAFE_STATIC_LOCAL(
-        AtomicString, kOsakaMono, (AtomicString::FromLiteral<"Osaka-Mono">()));
-    if (font == kOsaka) {
-      return kOsakaMono;
+    static base::NoDestructor<AtomicString> kOsaka(
+        AtomicString::FromLiteral<"Osaka">());
+    static base::NoDestructor<AtomicString> kOsakaMono(
+        AtomicString::FromLiteral<"Osaka-Mono">());
+    if (font == *kOsaka) {
+      return *kOsakaMono;
     }
   }
 #endif

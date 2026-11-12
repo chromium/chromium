@@ -5,10 +5,10 @@
 #include "third_party/blink/renderer/platform/theme/web_theme_engine_helper.h"
 
 #include "base/command_line.h"
+#include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/renderer/platform/graphics/scrollbar_theme_settings.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "ui/native_theme/overlay_scrollbar_constants.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -33,9 +33,9 @@ std::unique_ptr<WebThemeEngine> CreateWebThemeEngine() {
 }
 
 std::unique_ptr<WebThemeEngine>& ThemeEngine() {
-  DEFINE_STATIC_LOCAL(std::unique_ptr<WebThemeEngine>, theme_engine,
-                      {CreateWebThemeEngine()});
-  return theme_engine;
+  static base::NoDestructor<std::unique_ptr<WebThemeEngine>> theme_engine(
+      CreateWebThemeEngine());
+  return *theme_engine;
 }
 
 }  // namespace
@@ -54,18 +54,16 @@ WebThemeEngineHelper::SwapNativeThemeEngineForTesting(
 const WebThemeEngine::ScrollbarStyle&
 WebThemeEngineHelper::AndroidScrollbarStyle() {
   if (ScrollbarThemeSettings::DesktopAndroidScrollbarsEnabled()) {
-    DEFINE_STATIC_LOCAL(
-        WebThemeEngine::ScrollbarStyle, desktop_style,
-        ({/*thumb_thickness=*/8,
-          /*scrollbar_margin=*/4,
-          /*fade_out_delay=*/ui::GetOverlayScrollbarFadeDelay(),
-          /*fade_out_duration=*/ui::GetOverlayScrollbarFadeDuration(),
-          /*idle_thickness_scale=*/ui::kOverlayScrollbarIdleThicknessScale}));
+    static WebThemeEngine::ScrollbarStyle desktop_style{
+        /*thumb_thickness=*/8,
+        /*scrollbar_margin=*/4,
+        /*fade_out_delay=*/ui::GetOverlayScrollbarFadeDelay(),
+        /*fade_out_duration=*/ui::GetOverlayScrollbarFadeDuration(),
+        /*idle_thickness_scale=*/ui::kOverlayScrollbarIdleThicknessScale};
     return desktop_style;
   }
-  DEFINE_STATIC_LOCAL(WebThemeEngine::ScrollbarStyle, style,
-                      ({/*thumb_thickness=*/4,
-                        /*scrollbar_margin=*/0}));
+  static WebThemeEngine::ScrollbarStyle style{/*thumb_thickness=*/4,
+                                              /*scrollbar_margin=*/0};
   return style;
 }
 

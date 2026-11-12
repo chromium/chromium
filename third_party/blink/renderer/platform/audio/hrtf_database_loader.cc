@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/platform/audio/hrtf_database_loader.h"
 
 #include "base/location.h"
+#include "base/no_destructor.h"
 #include "base/synchronization/waitable_event.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
@@ -43,7 +44,7 @@ using LoaderMap = HashMap<double, HRTFDatabaseLoader*>;
 // getLoaderMap() returns the static hash map that contains the mapping between
 // the sample rate and the corresponding HRTF database.
 static LoaderMap& GetLoaderMap() {
-  DEFINE_STATIC_LOCAL(LoaderMap*, map, (new LoaderMap));
+  static base::NoDestructor<LoaderMap> map;
   return *map;
 }
 

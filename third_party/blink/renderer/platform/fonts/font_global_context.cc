@@ -7,6 +7,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory_coordinator/traits.h"
 #include "base/memory_coordinator/utils.h"
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_unique_name_lookup.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_face.h"
@@ -17,9 +18,9 @@ namespace blink {
 
 ThreadSpecific<Persistent<FontGlobalContext>>&
 GetThreadSpecificFontGlobalContextPool() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<Persistent<FontGlobalContext>>,
-                                  thread_specific_pool, ());
-  return thread_specific_pool;
+  static base::NoDestructor<ThreadSpecific<Persistent<FontGlobalContext>>>
+      thread_specific_pool;
+  return *thread_specific_pool;
 }
 
 FontGlobalContext& FontGlobalContext::Get() {

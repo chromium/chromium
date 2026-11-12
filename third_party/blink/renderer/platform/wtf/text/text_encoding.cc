@@ -29,7 +29,7 @@
 
 #include <memory>
 
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding_registry.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -70,10 +70,9 @@ bool TextEncoding::UsesVisualOrdering() const {
   if (NoExtendedTextEncodingNameUsed())
     return false;
 
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      AtomicString, canonical_8859_8,
-      (AtomicCanonicalTextEncodingName("ISO-8859-8")));
-  return name_ == canonical_8859_8;
+  static base::NoDestructor<AtomicString> canonical_8859_8(
+      AtomicCanonicalTextEncodingName("ISO-8859-8"));
+  return name_ == *canonical_8859_8;
 }
 
 bool TextEncoding::IsNonByteBasedEncoding() const {
@@ -97,46 +96,44 @@ const TextEncoding& TextEncoding::EncodingForFormSubmission() const {
 }
 
 const TextEncoding& AsciiEncoding() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(const TextEncoding, global_ascii_encoding,
-                                  ("ASCII"));
-  return global_ascii_encoding;
+  static const base::NoDestructor<TextEncoding> global_ascii_encoding("ASCII");
+  return *global_ascii_encoding;
 }
 
 const TextEncoding& Latin1Encoding() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(const TextEncoding, global_latin1_encoding,
-                                  ("latin1"));
-  return global_latin1_encoding;
+  static const base::NoDestructor<TextEncoding> global_latin1_encoding(
+      "latin1");
+  return *global_latin1_encoding;
 }
 
 const TextEncoding& Utf16BigEndianEncoding() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      const TextEncoding, global_utf16_big_endian_encoding, ("UTF-16BE"));
-  return global_utf16_big_endian_encoding;
+  static const base::NoDestructor<TextEncoding>
+      global_utf16_big_endian_encoding("UTF-16BE");
+  return *global_utf16_big_endian_encoding;
 }
 
 const TextEncoding& Utf16LittleEndianEncoding() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      const TextEncoding, global_utf16_little_endian_encoding, ("UTF-16LE"));
-  return global_utf16_little_endian_encoding;
+  static const base::NoDestructor<TextEncoding>
+      global_utf16_little_endian_encoding("UTF-16LE");
+  return *global_utf16_little_endian_encoding;
 }
 
 const TextEncoding& Utf8Encoding() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(const TextEncoding, global_utf8_encoding,
-                                  ("UTF-8"));
-  DCHECK(global_utf8_encoding.IsValid());
-  return global_utf8_encoding;
+  static const base::NoDestructor<TextEncoding> global_utf8_encoding("UTF-8");
+  DCHECK(global_utf8_encoding->IsValid());
+  return *global_utf8_encoding;
 }
 
 const TextEncoding& WindowsLatin1Encoding() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      const TextEncoding, global_windows_latin1_encoding, ("WinLatin1"));
-  return global_windows_latin1_encoding;
+  static const base::NoDestructor<TextEncoding> global_windows_latin1_encoding(
+      "WinLatin1");
+  return *global_windows_latin1_encoding;
 }
 
 const TextEncoding& UnknownEncoding() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(const TextEncoding, global_unknown_encoding,
-                                  ("Unknown"));
-  return global_unknown_encoding;
+  static const base::NoDestructor<TextEncoding> global_unknown_encoding(
+      "Unknown");
+  return *global_unknown_encoding;
 }
 
 }  // namespace blink

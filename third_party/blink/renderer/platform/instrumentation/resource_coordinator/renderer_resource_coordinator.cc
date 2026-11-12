@@ -4,10 +4,10 @@
 
 #include "third_party/blink/renderer/platform/instrumentation/resource_coordinator/renderer_resource_coordinator.h"
 
+#include "base/no_destructor.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -23,9 +23,8 @@ class DummyRendererResourceCoordinator final
   ~DummyRendererResourceCoordinator() final = default;
 
   static DummyRendererResourceCoordinator* Get() {
-    DEFINE_THREAD_SAFE_STATIC_LOCAL(DummyRendererResourceCoordinator, instance,
-                                    ());
-    return &instance;
+    static base::NoDestructor<DummyRendererResourceCoordinator> instance;
+    return instance.get();
   }
 
   // RendererResourceCoordinator:

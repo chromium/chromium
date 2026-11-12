@@ -4,13 +4,15 @@
 
 #include "third_party/blink/renderer/platform/instrumentation/tracing/memory_cache_dump_provider.h"
 
+#include "base/no_destructor.h"
+
 namespace blink {
 
 void MemoryCacheDumpClient::Trace(Visitor* visitor) const {}
 
 MemoryCacheDumpProvider* MemoryCacheDumpProvider::Instance() {
-  DEFINE_STATIC_LOCAL(MemoryCacheDumpProvider, instance, ());
-  return &instance;
+  static base::NoDestructor<MemoryCacheDumpProvider> instance;
+  return instance.get();
 }
 
 bool MemoryCacheDumpProvider::OnMemoryDump(

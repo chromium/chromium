@@ -4,10 +4,10 @@
 
 #include "third_party/blink/renderer/platform/back_forward_cache_buffer_limit_tracker.h"
 
+#include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/platform/back_forward_cache_utils.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace {
 
@@ -20,9 +20,8 @@ constexpr size_t kDefaultMaxBufferedBodyBytesPerProcess = 1024 * 1000;
 namespace blink {
 
 BackForwardCacheBufferLimitTracker& BackForwardCacheBufferLimitTracker::Get() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(BackForwardCacheBufferLimitTracker, instance,
-                                  ());
-  return instance;
+  static base::NoDestructor<BackForwardCacheBufferLimitTracker> instance;
+  return *instance;
 }
 
 BackForwardCacheBufferLimitTracker::BackForwardCacheBufferLimitTracker()

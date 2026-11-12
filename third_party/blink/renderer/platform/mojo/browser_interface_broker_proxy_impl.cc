@@ -6,9 +6,9 @@
 
 #include <string_view>
 
+#include "base/no_destructor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/platform/wtf/hash_functions_memory.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 
 namespace blink {
@@ -87,9 +87,8 @@ bool TestableBrowserInterfaceBrokerProxy::SetBinderForTesting(
 }
 
 BrowserInterfaceBrokerProxy& GetEmptyBrowserInterfaceBroker() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(EmptyBrowserInterfaceBrokerProxy,
-                                  empty_broker, ());
-  return empty_broker;
+  static base::NoDestructor<EmptyBrowserInterfaceBrokerProxy> empty_broker;
+  return *empty_broker;
 }
 
 BrowserInterfaceBrokerProxy::BrowserInterfaceBrokerProxy() = default;

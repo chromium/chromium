@@ -39,6 +39,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
@@ -280,14 +281,13 @@ bool ShouldResourceBeKeptStrongReference(
 }
 
 static ResourceFetcher::ResourceFetcherSet& MainThreadFetchersSet() {
-  DEFINE_STATIC_LOCAL(
-      Persistent<ResourceFetcher::ResourceFetcherSet>, fetchers,
-      (MakeGarbageCollected<ResourceFetcher::ResourceFetcherSet>()));
-  return *fetchers;
+  static base::NoDestructor<Persistent<ResourceFetcher::ResourceFetcherSet>>
+      fetchers(MakeGarbageCollected<ResourceFetcher::ResourceFetcherSet>());
+  return **fetchers;
 }
 
 static bool& PriorityObserverMapCreated() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(bool, priority_observer_map_created, (false));
+  static bool priority_observer_map_created(false);
   return priority_observer_map_created;
 }
 
@@ -297,8 +297,8 @@ static bool& PriorityObserverMapCreated() {
 using PriorityObserverMap = HashMap<String, base::OnceCallback<void(int)>>;
 static ThreadSpecific<PriorityObserverMap>& PriorityObservers() {
   PriorityObserverMapCreated() = true;
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<PriorityObserverMap>, map, ());
-  return map;
+  static base::NoDestructor<ThreadSpecific<PriorityObserverMap>> map;
+  return *map;
 }
 
 std::unique_ptr<TracedValue> CreateTracedValueWithPriority(

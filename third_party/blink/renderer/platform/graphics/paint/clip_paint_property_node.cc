@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/paint/clip_paint_property_node.h"
 
+#include "base/no_destructor.h"
 #include "third_party/blink/renderer/platform/geometry/infinite_int_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/effect_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
@@ -39,9 +40,9 @@ ClipPaintPropertyNode::ClipPaintPropertyNode(RootTag)
              FloatRoundedRect(InfiniteIntRect())) {}
 
 const ClipPaintPropertyNode& ClipPaintPropertyNode::Root() {
-  DEFINE_STATIC_LOCAL(Persistent<ClipPaintPropertyNode>, root,
-                      (MakeGarbageCollected<ClipPaintPropertyNode>(kRoot)));
-  return *root;
+  static base::NoDestructor<Persistent<ClipPaintPropertyNode>> root(
+      MakeGarbageCollected<ClipPaintPropertyNode>(kRoot));
+  return **root;
 }
 
 bool ClipPaintPropertyNodeOrAlias::Changed(

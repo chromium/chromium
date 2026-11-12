@@ -27,6 +27,7 @@
 
 #include <memory>
 
+#include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
 #include "third_party/blink/renderer/platform/graphics/image_frame_generator.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
@@ -55,8 +56,8 @@ ImageDecodingStore::~ImageDecodingStore() {
 }
 
 ImageDecodingStore& ImageDecodingStore::Instance() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(ImageDecodingStore, store, ());
-  return store;
+  static base::NoDestructor<ImageDecodingStore> store;
+  return *store;
 }
 
 bool ImageDecodingStore::LockDecoder(

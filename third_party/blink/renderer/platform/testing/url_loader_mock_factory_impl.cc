@@ -5,12 +5,14 @@
 #include "third_party/blink/renderer/platform/testing/url_loader_mock_factory_impl.h"
 
 #include <stdint.h>
+
 #include <memory>
 #include <string>
 #include <utility>
 
 #include "base/files/file_util.h"
 #include "base/memory/ptr_util.h"
+#include "base/no_destructor.h"
 #include "base/run_loop.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "third_party/blink/public/platform/file_path_conversion.h"
@@ -28,14 +30,13 @@
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_loader_mock.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace blink {
 
 // static
 URLLoaderMockFactory* URLLoaderMockFactory::GetSingletonInstance() {
-  DEFINE_STATIC_LOCAL(URLLoaderMockFactoryImpl, s_singleton, (nullptr));
-  return &s_singleton;
+  static base::NoDestructor<URLLoaderMockFactoryImpl> s_singleton(nullptr);
+  return s_singleton.get();
 }
 
 URLLoaderMockFactoryImpl::URLLoaderMockFactoryImpl(
