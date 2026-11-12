@@ -96,6 +96,7 @@ class AndroidBatteryMetrics
   ~AndroidBatteryMetrics() override;
 
   void InitializeOnSequence();
+  void OnPriorityChangedOnSequence(base::Process::Priority priority);
 
   // PerformanceScenarioObserverList is initialized after this class, so the
   // observer is added lazily by this method.

@@ -59,6 +59,7 @@ class CONTENT_EXPORT ProcessCpuTimeMetrics
   explicit ProcessCpuTimeMetrics();
 
   void InitializeOnThreadPool();
+  void OnPriorityChangedOnThreadPool(base::Process::Priority priority);
   void PerformFullCollectionOnThreadPool();
   void CollectHighLevelMetricsOnThreadPool();
   void ReportAverageCpuLoad(base::TimeDelta cumulative_cpu_time);

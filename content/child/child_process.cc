@@ -20,7 +20,6 @@
 #include "build/build_config.h"
 #include "build/config/compiler/compiler_buildflags.h"
 #include "content/child/child_thread_impl.h"
-#include "content/common/process_priority_tracker.h"
 #include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/interface_endpoint_client.h"
 #include "net/base/features.h"
@@ -116,9 +115,6 @@ ChildProcess::ChildProcess(base::ThreadType io_thread_type,
       thread_pool->StartWithDefaultParams();
     initialized_thread_pool_ = true;
   }
-
-  // Ensure the visibility tracker is created on the main thread.
-  ProcessPriorityTracker::GetInstance();
 
 #if BUILDFLAG(IS_ANDROID)
   SetupCpuTimeMetrics();

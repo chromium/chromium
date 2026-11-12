@@ -404,6 +404,10 @@ ProcessCpuTimeMetrics::ProcessCpuTimeMetrics()
     reporting_interval_ = kReportAfterEveryNTasksOtherProcess;
   }
 
+  // Added before InitializeOnThreadPool() is posted so that the current
+  // priority, if known, is applied before the first full collection.
+  ProcessPriorityTracker::GetInstance()->AddObserver(this);
+
   task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&ProcessCpuTimeMetrics::InitializeOnThreadPool,
                                 base::Unretained(this)));
@@ -422,7 +426,6 @@ ProcessCpuTimeMetrics::~ProcessCpuTimeMetrics() {
 }
 
 void ProcessCpuTimeMetrics::InitializeOnThreadPool() {
-  ProcessPriorityTracker::GetInstance()->AddObserver(this);
   PerformFullCollectionOnThreadPool();
 }
 
@@ -449,6 +452,15 @@ void ProcessCpuTimeMetrics::DidProcessTask(
 
 // ProcessPriorityTracker::ProcessPriorityObserver implementation:
 void ProcessCpuTimeMetrics::OnPriorityChanged(
+    base::Process::Priority priority) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_);
+  task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&ProcessCpuTimeMetrics::OnPriorityChangedOnThreadPool,
+                     base::Unretained(this), priority));
+}
+
+void ProcessCpuTimeMetrics::OnPriorityChangedOnThreadPool(
     base::Process::Priority priority) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(thread_pool_);
   // Collect high-level metrics that include a visibility breakdown and

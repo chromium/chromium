@@ -302,6 +302,10 @@ AndroidBatteryMetrics::AndroidBatteryMetrics()
   task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&AndroidBatteryMetrics::InitializeOnSequence,
                                 base::Unretained(this)));
+  // Added after InitializeOnSequence() is posted so that the battery power
+  // status is known when the current priority, if known, is applied. The
+  // observer is never removed because this class uses base::NoDestructor.
+  content::ProcessPriorityTracker::GetInstance()->AddObserver(this);
 }
 
 AndroidBatteryMetrics::~AndroidBatteryMetrics() {
@@ -315,8 +319,6 @@ void AndroidBatteryMetrics::InitializeOnSequence() {
   battery_power_status_ =
       power_monitor->AddPowerStateObserverAndReturnBatteryPowerStatus(this);
   power_monitor->AddPowerThermalObserver(this);
-  // The observer is never removed because this class uses base::NoDestructor.
-  content::ProcessPriorityTracker::GetInstance()->AddObserver(this);
   // TODO(b/339859756): Update this call to take into account the unknown battery
   // status.
   UpdateMetricsEnabled();
@@ -344,6 +346,15 @@ void AndroidBatteryMetrics::TryObservePerformanceScenarios() {
 }
 
 void AndroidBatteryMetrics::OnPriorityChanged(
+    base::Process::Priority priority) {
+  // Called on the main thread.
+  task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&AndroidBatteryMetrics::OnPriorityChangedOnSequence,
+                     base::Unretained(this), priority));
+}
+
+void AndroidBatteryMetrics::OnPriorityChangedOnSequence(
     base::Process::Priority priority) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   app_foregrounded_ = (priority != base::Process::Priority::kBestEffort);

@@ -7,12 +7,10 @@
 
 #include <optional>
 
-#include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
-#include "base/observer_list_threadsafe.h"
+#include "base/observer_list.h"
 #include "base/process/process.h"
 #include "base/sequence_checker.h"
-#include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "content/common/content_export.h"
 
@@ -22,17 +20,17 @@ namespace content {
 // embedding application. Currently only works/is used in the browser process on
 // Android (Chrome and WebView).
 // TODO(crbug.com/40168826): implement usage in other processes.
-// Observers can be added from any sequence, but OnProcessPriorityChanged()
-// should be called from the thread that created the tracker instance.
+// This class must only be used on the main thread. Observers are notified
+// synchronously on that thread; observers that live on another sequence must
+// post to it.
 class CONTENT_EXPORT ProcessPriorityTracker {
  public:
-  // Creates the tracker on the current thread. This should be the same thread
-  // that calls OnProcessPriorityChanged(), usually the main thread.
+  // Returns the process-wide instance. Must only be called on the main thread.
   static ProcessPriorityTracker* GetInstance();
 
   class ProcessPriorityObserver : public base::CheckedObserver {
    public:
-    // Refer to Process::Priority for meaning of invidual enum values.
+    // Refer to Process::Priority for meaning of individual enum values.
     // In general, `process_priority != Priority::kBestEffort` determines
     // whether the process is foreground or background.
     virtual void OnPriorityChanged(
@@ -40,12 +38,12 @@ class CONTENT_EXPORT ProcessPriorityTracker {
   };
 
   // Should be called when the embedder app changes priority, generally based on
-  // visibility, from the thread that created the tracker. Refer to
-  // Process::Priority for meaning of individual enum values. Notifies the
-  // registered observers of the change.
+  // visibility. Refer to Process::Priority for meaning of individual enum
+  // values. Synchronously notifies the registered observers of the change.
   void OnProcessPriorityChanged(base::Process::Priority process_priority);
 
-  // Can be called from any thread.
+  // Adds/removes an observer. If the priority is already known, `observer` is
+  // synchronously notified of it when added.
   void AddObserver(ProcessPriorityObserver* observer);
   void RemoveObserver(ProcessPriorityObserver* observer);
 
@@ -54,12 +52,12 @@ class CONTENT_EXPORT ProcessPriorityTracker {
   ProcessPriorityTracker();
   ~ProcessPriorityTracker();
 
-  base::Lock lock_;
-  std::optional<base::Process::Priority> process_priority_ GUARDED_BY(lock_);
-  scoped_refptr<base::ObserverListThreadSafe<ProcessPriorityObserver>>
-      observers_ GUARDED_BY(lock_);
-
   SEQUENCE_CHECKER(main_thread_);
+
+  std::optional<base::Process::Priority> process_priority_
+      GUARDED_BY_CONTEXT(main_thread_);
+  base::ObserverList<ProcessPriorityObserver> observers_
+      GUARDED_BY_CONTEXT(main_thread_);
 };
 
 }  // namespace content
