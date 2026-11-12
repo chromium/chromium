@@ -39,12 +39,10 @@ class GlicDragAndDropTestBase : public GlicApiBrowserTest {
                                 const std::string& name,
                                 const std::string& contents);
 
-#if !BUILDFLAG(IS_ANDROID)
   content::WebContents* SetupSourceTabWithDraggableImage();
   [[nodiscard]] bool SimulateMouseDownAndWait(content::WebContents* source_wc,
                                               const gfx::Point& point);
   void SimulateMouseDragFromImage(content::WebContents* source_wc);
-#endif
 
  private:
   bool is_no_webview_ = false;

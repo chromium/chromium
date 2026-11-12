@@ -89,18 +89,26 @@ class GlicWebDragAndDropBrowserTest extends ApiTestFixtureBase {
   }
 
   async testWebToGlicDragMaterialization() {
-    const {dragEnterPromise, dragOverPromise, invokeDropPromise, state} =
-        this.setupWebDragDropHandlers();
+    const {
+      dragEnterPromise,
+      dragOverPromise,
+      dragLeavePromise,
+      invokeDropPromise,
+      state,
+    } = this.setupWebDragDropHandlers();
 
     await this.advanceToNextStep();
 
     await waitFor(dragEnterPromise, 40000, 'DragEnter never arrived');
     await waitFor(dragOverPromise, 40000, 'DragOver never arrived');
+    await this.advanceToNextStep();
+    await waitFor(dragLeavePromise, 40000, 'DragLeave never arrived');
 
     const droppedData =
         await waitFor(invokeDropPromise, 40000, 'Invoke never arrived');
 
-    // macOS names files by UTType (jpeg); Aura uses the Blink extension (jpg).
+    // macOS names files by UTType (jpeg); Aura and Android use the Blink
+    // extension (jpg).
     assertTrue(/^cors-allowed\.jpe?g$/.test(droppedData), droppedData);
     assertFalse(state.wasDropped);
     assertEquals(0, state.droppedTypesCount);
