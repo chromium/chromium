@@ -1,0 +1,5 @@
+Tests that console.dir does not report deprecation issues while generating object previews.
+runtime-console-dir-deprecated.js:3 Window (hasPreview=true)
+DeprecationIssue: RangeExpand
+runtime-console-dir-deprecated.js:4 undefined (hasPreview=false)
+

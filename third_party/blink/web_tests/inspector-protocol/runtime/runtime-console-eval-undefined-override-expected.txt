@@ -1,0 +1,26 @@
+Tests that Runtime.evaluate with generatePreview does not crash when assigning a cyclic object to undefined and evaluating an undeclared variable. Bug 64155.
+var x = {a:1}; x.self = x; undefined = x;
+{
+    description : Object
+    overflow : false
+    properties : [
+        [0] : {
+            name : a
+            type : number
+            value : 1
+        }
+        [1] : {
+            name : self
+            type : object
+            value : Object
+        }
+    ]
+    type : object
+}
+unknownVar
+{
+    className : ReferenceError
+    description : ReferenceError: unknownVar is not defined     at <anonymous>:1:1
+    text : Uncaught
+}
+

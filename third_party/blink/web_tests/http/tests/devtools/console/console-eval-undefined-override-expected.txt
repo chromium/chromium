@@ -1,8 +1,0 @@
-Tests that evaluating something in console won't crash the browser if undefined value is overriden. The test passes if it doesn't crash. Bug 64155.
-
-var x = {a:1}; x.self = x; undefined = x;
-{a: 1, self: {…}}
-unknownVar
-VM:1 Uncaught ReferenceError: unknownVar is not defined
-(anonymous) @ VM:1
-

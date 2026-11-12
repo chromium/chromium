@@ -1,0 +1,83 @@
+Tests Runtime.evaluate, Runtime.consoleAPICalled, Runtime.getProperties, and getEventListeners with outer scope variables and polluted Object.prototype. Bug 60547.
+
+Running test: testSnippet1
+runtime-console-eval-scoped.js:4 with: Object property value
+VM:1 eval in with: Object property value
+
+Running test: testSnippet2
+VM:1 eval in function: Function parameter
+
+Running test: testConsoleEvalPrimitiveValue
+{
+    result : {
+        type : string
+        value : bar
+    }
+}
+
+Running test: testConsoleEvalObject
+{
+    configurable : true
+    enumerable : true
+    get : {
+        className : Function
+        description : get getter() { }
+        objectId : <string>
+        type : function
+    }
+    isOwn : true
+    name : getter
+    set : {
+        type : undefined
+    }
+}
+{
+    configurable : true
+    enumerable : true
+    get : {
+        type : undefined
+    }
+    isOwn : true
+    name : setter
+    set : {
+        className : Function
+        description : set setter(_) { }
+        objectId : <string>
+        type : function
+    }
+}
+{
+    configurable : true
+    enumerable : true
+    isOwn : true
+    name : baz
+    value : {
+        type : string
+        value : baz
+    }
+    writable : true
+}
+
+Running test: testGetEventListenersDoesNotThrow
+{
+    result : {
+        className : Object
+        description : Object
+        objectId : <string>
+        preview : {
+            description : Object
+            overflow : false
+            properties : [
+                [0] : {
+                    name : click
+                    subtype : array
+                    type : object
+                    value : Array(1)
+                }
+            ]
+            type : object
+        }
+        type : object
+    }
+}
+

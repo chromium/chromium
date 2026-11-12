@@ -1,0 +1,69 @@
+Tests that Runtime.evaluate reports exceptionDetails without crashing when throwing undefined, number, string, object, or Error. Bug 59611.
+
+Running test: testThrowUndefined
+throw undefined
+{
+    exception : {
+        type : undefined
+    }
+    hasStackTrace : true
+    text : Uncaught
+}
+
+Running test: testThrowNumber
+throw 1
+{
+    exception : {
+        description : 1
+        type : number
+        value : 1
+    }
+    hasStackTrace : true
+    text : Uncaught
+}
+
+Running test: testThrowString
+throw 'asdf'
+{
+    exception : {
+        type : string
+        value : asdf
+    }
+    hasStackTrace : true
+    text : Uncaught
+}
+
+Running test: testThrowObject
+throw {a:42}
+{
+    exception : {
+        description : Object
+        preview : {
+            description : Object
+            overflow : false
+            properties : [
+                [0] : {
+                    name : a
+                    type : number
+                    value : 42
+                }
+            ]
+            type : object
+        }
+        type : object
+    }
+    hasStackTrace : true
+    text : Uncaught
+}
+
+Running test: testThrowError
+throw new Error('asdf')
+{
+    exception : {
+        description : Error: asdf     at <anonymous>:1:7
+        type : object
+    }
+    hasStackTrace : true
+    text : Uncaught
+}
+

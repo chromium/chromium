@@ -1,0 +1,11 @@
+Tests that Runtime.getProperties returns built-in, DOM, and user-defined properties on the global window object.
+{
+    Array : 1
+    console : 1
+    document : 1
+    doit : 1
+    eval : 1
+    frames : 1
+    window : 1
+}
+
