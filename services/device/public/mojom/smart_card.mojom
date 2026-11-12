@@ -10,7 +10,6 @@
 // See https://pcscworkgroup.com/specifications/download/
 // And its authoritative implementation, winscard.h:
 // https://learn.microsoft.com/en-us/windows/win32/api/winscard/
-
 module device.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
@@ -24,7 +23,7 @@ union SmartCardResult {
 
 // Indicates that a SmartCard request succeeded.
 enum SmartCardSuccess {
-  kOk
+  kOk,
 };
 
 // Possible error results for a SmartCard* request.
@@ -66,7 +65,7 @@ enum SmartCardError {
   kUnknown,
 
   // This request is covered by a permission check and the user has denied it.
-  kPermissionDenied
+  kPermissionDenied,
 };
 
 // Share mode of a connection.
@@ -76,7 +75,7 @@ enum SmartCardShareMode {
   // SCARD_SHARE_EXCLUSIVE
   kExclusive,
   // SCARD_SHARE_DIRECT
-  kDirect
+  kDirect,
 };
 
 // Communication protocol for a connection to a smart card.
@@ -90,7 +89,7 @@ enum SmartCardProtocol {
   // T=1 protocol
   kT1,
   // SCARD_PROTOCOL_RAW
-  kRaw
+  kRaw,
 };
 
 // Action to take after disconnecting.
@@ -102,7 +101,7 @@ enum SmartCardDisposition {
   // SCARD_UNPOWER_CARD - Power down the card (cold reset).
   kUnpower,
   // SCARD_EJECT_CARD - Eject the card.
-  kEject
+  kEject,
 };
 
 // State of a SmartCardConnection.
@@ -120,7 +119,7 @@ enum SmartCardConnectionState {
   // SCARD_NEGOTIABLE
   kNegotiable,
   // SCARD_SPECIFIC
-  kSpecific
+  kSpecific,
 };
 
 // Flags for describing the state of a smart card reader.
@@ -235,15 +234,15 @@ interface SmartCardTransaction {
   // Ends a logical transaction, allowing other applications to resume
   // interactions with that card.
   // Upon termination, the action indicated by `disposition` is performed.
-  EndTransaction(SmartCardDisposition disposition) => (SmartCardResult result);
+  EndTransaction(SmartCardDisposition disposition)
+      => (SmartCardResult result);
 };
 
 // An interface to a valid connection (SCARDHANDLE) within a context
 // in a PC/SC (winscard.h) provider.
 interface SmartCardConnection {
   // Terminates the connection and leaves the card in the given `disposition`.
-  Disconnect(SmartCardDisposition disposition)
-      => (SmartCardResult result);
+  Disconnect(SmartCardDisposition disposition) => (SmartCardResult result);
 
   // Sends an APDU to the smart card and receives a response back from it.
   Transmit(SmartCardProtocol protocol, array<uint8> data)
@@ -294,17 +293,18 @@ interface SmartCardContext {
   // readers changes.
   GetStatusChange(mojo_base.mojom.TimeDelta timeout,
                   array<SmartCardReaderStateIn> reader_states)
-    => (SmartCardStatusChangeResult result);
+      => (SmartCardStatusChangeResult result);
 
   // Terminates an outstanding GetStatusChange() call with
   // SmartCardError::kCancelled.
   Cancel() => (SmartCardResult result);
 
   // Establishes a connection to the specified reader.
-  Connect(string reader, SmartCardShareMode share_mode,
+  Connect(string reader,
+          SmartCardShareMode share_mode,
           SmartCardProtocols preferred_protocols,
-          pending_remote<SmartCardConnectionWatcher>? connection_watcher) =>
-    (SmartCardConnectResult result);
+          pending_remote<SmartCardConnectionWatcher>? connection_watcher)
+      => (SmartCardConnectResult result);
 };
 
 // An interface to establish contexts with a PC/SC (winscard.h) provider.
