@@ -143,8 +143,6 @@ V8CodeCache::GetMetadataType ReadGetMetadataType(
 
 constexpr const char* kCacheGetHistogram =
     "WebCore.Scripts.V8CodeCacheMetadata.Get";
-constexpr const char* kCacheSetHistogram =
-    "WebCore.Scripts.V8CodeCacheMetadata.Set";
 
 }  // namespace
 
@@ -582,8 +580,6 @@ static void ProduceCacheInternal(
       std::unique_ptr<v8::ScriptCompiler::CachedData> cached_data(
           v8::ScriptCompiler::CreateCodeCache(unbound_script));
       if (cached_data) {
-        V8CodeCache::RecordCacheSetStatistics(
-            V8CodeCache::SetMetadataType::kCodeCache);
         cache_handler->ClearCachedMetadata(
             code_cache_host, CachedMetadataHandler::kClearLocally);
         cache_handler->SetCachedMetadata(
@@ -657,7 +653,6 @@ uint32_t V8CodeCache::TagForCompileHints(
 // Store a timestamp to the cache as hint.
 void V8CodeCache::SetCacheTimeStamp(CodeCacheHost* code_cache_host,
                                     CachedMetadataHandler* cache_handler) {
-  RecordCacheSetStatistics(V8CodeCache::SetMetadataType::kTimestamp);
   uint64_t now_ms = GetTimestamp();
   cache_handler->ClearCachedMetadata(code_cache_host,
                                      CachedMetadataHandler::kClearLocally);
@@ -763,11 +758,6 @@ void V8CodeCache::RecordCacheGetStatistics(
 void V8CodeCache::RecordCacheGetStatistics(
     V8CodeCache::GetMetadataType metadata_type) {
   base::UmaHistogramEnumeration(kCacheGetHistogram, metadata_type);
-}
-
-void V8CodeCache::RecordCacheSetStatistics(
-    V8CodeCache::SetMetadataType metadata_type) {
-  base::UmaHistogramEnumeration(kCacheSetHistogram, metadata_type);
 }
 
 }  // namespace blink

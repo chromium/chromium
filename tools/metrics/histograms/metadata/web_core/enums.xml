@@ -342,13 +342,6 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Code cache"/>
 </enum>
 
-<enum name="V8CodeCacheSetMetadataType">
-  <int value="0" label="Timestamp"/>
-  <int value="1" label="Local compile hints at FMP"/>
-  <int value="2" label="Local compile hints at interactive"/>
-  <int value="3" label="Code cache"/>
-</enum>
-
 <enum name="V8CompileHintsModelQuality">
   <int value="0" label="No model"/>
   <int value="1" label="Bad model"/>

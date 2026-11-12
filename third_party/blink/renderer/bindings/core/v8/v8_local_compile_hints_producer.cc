@@ -73,11 +73,6 @@ void V8LocalCompileHintsProducer::GenerateData(bool final_data) {
     base::UmaHistogramBoolean(kLocalCompileHintsObsoletedByCodeCacheHistogram,
                               false);
 
-    V8CodeCache::RecordCacheSetStatistics(
-        final_data
-            ? V8CodeCache::SetMetadataType::kLocalCompileHintsAtInteractive
-            : V8CodeCache::SetMetadataType::kLocalCompileHintsAtFMP);
-
     v8::Local<v8::CompileHintsCollector> compile_hints_collector =
         compile_hints_collectors_.at(i).Get(isolate);
     std::vector<int> compile_hints =

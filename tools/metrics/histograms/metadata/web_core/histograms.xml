@@ -416,17 +416,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebCore.Scripts.V8CodeCacheMetadata.Set"
-    enum="V8CodeCacheSetMetadataType" expires_after="2025-03-30">
-  <owner>marja@chromium.org</owner>
-  <owner>v8-runtime@google.com</owner>
-  <summary>
-    What type of cache metadata we set for a script. If we set multiple metadata
-    types for the same script, multiple samples are recorded. Recorded when we
-    set the metadata.
-  </summary>
-</histogram>
-
 <histogram name="WebCore.Scripts.V8CompileHintsStatus"
     enum="V8CompileHintsStatus" expires_after="2027-03-06">
   <owner>marja@chromium.org</owner>
