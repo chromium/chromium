@@ -51,10 +51,6 @@ void MockInputMethodEngine::CandidateClicked(uint32_t index) {}
 void MockInputMethodEngine::AssistiveWindowChanged(
     const ash::ime::AssistiveWindow& window) {}
 
-void MockInputMethodEngine::SetMirroringEnabled(bool mirroring_enabled) {}
-
-void MockInputMethodEngine::SetCastingEnabled(bool casting_enabled) {}
-
 bool MockInputMethodEngine::IsReadyForTesting() {
   return true;
 }

@@ -59,8 +59,6 @@ class FakeCupsPrintersManager : public CupsPrintersManager {
   void SetPrinterStatus(const chromeos::CupsPrinterStatus& status);
 
   void MarkInstalled(const std::string& printer_id);
-  void SetPrinterSetupResult(const std::string& printer_id,
-                             PrinterSetupResult result);
   void MarkPrinterAsNotAutoconfigurable(const std::string& printer_id);
   void QueryPrinterForAutoConf(
       const chromeos::Printer& printer,
@@ -75,7 +73,6 @@ class FakeCupsPrintersManager : public CupsPrintersManager {
   base::flat_set<std::string> installed_;
 
   base::flat_set<std::string> printers_marked_as_not_autoconf_;
-  base::flat_map<std::string, PrinterSetupResult> assigned_results_;
   base::ObserverList<LocalPrintersObserver> local_printers_observer_list_;
   const raw_ptr<PrintServersManager> print_servers_manager_;
 };

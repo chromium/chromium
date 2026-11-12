@@ -113,15 +113,6 @@ bool UnittestingSystemAppDelegate::ShouldForceReinstall() const {
   return should_force_reinstall_;
 }
 
-std::vector<std::string>
-UnittestingSystemAppDelegate::GetAppIdsToUninstallAndReplace() const {
-  return uninstall_and_replace_;
-}
-
-gfx::Size UnittestingSystemAppDelegate::GetMinimumWindowSize() const {
-  return minimum_window_size_;
-}
-
 BrowserDelegate* UnittestingSystemAppDelegate::GetWindowForLaunch(
     Profile* profile,
     const GURL& url) const {
@@ -171,9 +162,6 @@ bool UnittestingSystemAppDelegate::ShouldHaveTabStrip() const {
 bool UnittestingSystemAppDelegate::ShouldHideNewTabButton() const {
   return hide_new_tab_button_;
 }
-bool UnittestingSystemAppDelegate::ShouldHaveReloadButtonInMinimalUi() const {
-  return should_have_reload_button_in_minimal_ui_;
-}
 bool UnittestingSystemAppDelegate::ShouldAllowScriptsToCloseWindows() const {
   return allow_scripts_to_close_windows_;
 }
@@ -217,13 +205,6 @@ void UnittestingSystemAppDelegate::SetShouldForceReinstall(bool value) {
   should_force_reinstall_ = value;
 }
 
-void UnittestingSystemAppDelegate::SetAppIdsToUninstallAndReplace(
-    const std::vector<webapps::AppId>& ids) {
-  uninstall_and_replace_ = ids;
-}
-void UnittestingSystemAppDelegate::SetMinimumWindowSize(const gfx::Size& size) {
-  minimum_window_size_ = size;
-}
 void UnittestingSystemAppDelegate::SetShouldReuseExistingWindow(bool value) {
   single_window_ = value;
 }
@@ -265,10 +246,6 @@ void UnittestingSystemAppDelegate::SetShouldHaveTabStrip(bool value) {
 }
 void UnittestingSystemAppDelegate::SetShouldHideNewTabButton(bool value) {
   hide_new_tab_button_ = value;
-}
-void UnittestingSystemAppDelegate::SetShouldHaveReloadButtonInMinimalUi(
-    bool value) {
-  should_have_reload_button_in_minimal_ui_ = value;
 }
 void UnittestingSystemAppDelegate::SetShouldAllowScriptsToCloseWindows(
     bool value) {

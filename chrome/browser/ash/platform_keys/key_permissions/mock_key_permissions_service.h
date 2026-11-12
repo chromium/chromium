@@ -13,12 +13,7 @@
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_service.h"
 #include "chromeos/ash/components/platform_keys/platform_keys.h"
-#include "content/public/browser/browser_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
-
-namespace content {
-class BrowserContext;
-}
 
 namespace ash::platform_keys {
 
@@ -45,9 +40,6 @@ class MockKeyPermissionsService : public KeyPermissionsService {
                SetCorporateKeyCallback callback),
               (override));
 };
-
-std::unique_ptr<KeyedService> BuildMockKeyPermissionsService(
-    content::BrowserContext* browser_context);
 
 }  // namespace ash::platform_keys
 

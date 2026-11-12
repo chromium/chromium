@@ -13,7 +13,6 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
-#include "components/services/app_service/public/cpp/app_launch_params.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -74,23 +73,6 @@ void SystemWebAppIntegrationTest::ExpectSystemWebAppValid(
   // A completed navigation could change the window title. Check again.
   EXPECT_EQ(base::ASCIIToUTF16(title),
             app_browser->GetWindow()->GetNativeWindow()->GetTitle());
-}
-
-content::WebContents* SystemWebAppIntegrationTest::LaunchAppWithFile(
-    ash::SystemWebAppType type,
-    const base::FilePath& file_path) {
-  apps::AppLaunchParams params = LaunchParamsForApp(type);
-  params.launch_files.push_back(file_path);
-  return LaunchApp(std::move(params));
-}
-
-content::WebContents*
-SystemWebAppIntegrationTest::LaunchAppWithFileWithoutWaiting(
-    ash::SystemWebAppType type,
-    const base::FilePath& file_path) {
-  apps::AppLaunchParams params = LaunchParamsForApp(type);
-  params.launch_files.push_back(file_path);
-  return LaunchAppWithoutWaiting(std::move(params));
 }
 
 }  // namespace ash

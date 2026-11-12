@@ -35,17 +35,6 @@ class SystemWebAppIntegrationTest
 
   // Helper to obtain browser()->GetProfile().
   Profile* profile();
-
-  // Launch the given System App |type| with the given |file_path| as a launch
-  // file, and wait for the application to finish loading.
-  content::WebContents* LaunchAppWithFile(SystemWebAppType type,
-                                          const base::FilePath& file_path);
-
-  // Launch the given System App |type| with the given |file_path| as a launch
-  // file, without waiting for the application to finish loading.
-  content::WebContents* LaunchAppWithFileWithoutWaiting(
-      SystemWebAppType type,
-      const base::FilePath& file_path);
 };
 
 }  // namespace ash

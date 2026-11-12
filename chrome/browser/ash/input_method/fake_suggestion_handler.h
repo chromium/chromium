@@ -64,13 +64,9 @@ class FakeSuggestionHandler : public SuggestionHandlerInterface {
     return highlighted_button_;
   }
   std::vector<std::u16string> GetAnnouncements() { return announcements_; }
-  std::vector<std::string> GetLastOnSuggestionChangedEventSuggestions() {
-    return last_on_suggestion_changed_event_suggestions_;
-  }
   ui::ime::SuggestionDetails GetLastSuggestionDetails() {
     return last_suggestion_details_;
   }
-  ui::ime::ButtonId GetLastClickedButton() { return last_clicked_button_; }
 
  private:
   int context_id_ = 0;
@@ -84,9 +80,7 @@ class FakeSuggestionHandler : public SuggestionHandlerInterface {
   bool highlighted_suggestion_ = false;
   ui::ime::AssistiveWindowButton highlighted_button_;
   std::vector<std::u16string> announcements_;
-  std::vector<std::string> last_on_suggestion_changed_event_suggestions_;
   ui::ime::SuggestionDetails last_suggestion_details_;
-  ui::ime::ButtonId last_clicked_button_ = ui::ime::ButtonId::kNone;
 };
 
 }  // namespace input_method

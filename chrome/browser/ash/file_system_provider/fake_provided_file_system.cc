@@ -660,10 +660,6 @@ FakeProvidedFileSystem::StartUserInteraction() {
   return nullptr;
 }
 
-base::WeakPtr<FakeProvidedFileSystem> FakeProvidedFileSystem::GetFakeWeakPtr() {
-  return weak_ptr_factory_.GetWeakPtr();
-}
-
 AbortCallback FakeProvidedFileSystem::PostAbortableTask(
     base::OnceClosure callback) {
   const int task_id =

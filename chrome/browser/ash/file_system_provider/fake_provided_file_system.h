@@ -179,8 +179,6 @@ class FakeProvidedFileSystem : public ProvidedFileSystemInterface {
   base::WeakPtr<ProvidedFileSystemInterface> GetWeakPtr() override;
   std::unique_ptr<ScopedUserInteraction> StartUserInteraction() override;
 
-  base::WeakPtr<FakeProvidedFileSystem> GetFakeWeakPtr();
-
  private:
   using Entries = std::map<base::FilePath, std::unique_ptr<FakeEntry>>;
 

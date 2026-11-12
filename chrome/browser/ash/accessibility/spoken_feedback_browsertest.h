@@ -76,7 +76,6 @@ class LoggedInSpokenFeedbackTest
   // Simulate key press event.
   void SendKeyPress(ui::KeyboardCode key);
   void SendKeyPressWithControl(ui::KeyboardCode key);
-  void SendKeyPressWithControlAndAlt(ui::KeyboardCode key);
   void SendKeyPressWithControlAndShift(ui::KeyboardCode key);
   void SendKeyPressWithShift(ui::KeyboardCode key);
   void SendKeyPressWithAltAndShift(ui::KeyboardCode key);

@@ -178,14 +178,6 @@ void LoggedInSpokenFeedbackTest::SendKeyPressWithControl(ui::KeyboardCode key) {
       /*alt=*/false, /*command=*/false);
 }
 
-void LoggedInSpokenFeedbackTest::SendKeyPressWithControlAndAlt(
-    ui::KeyboardCode key) {
-  ui::test::EmulateFullKeyPressReleaseSequence(event_generator_.get(), key,
-                                               /*control=*/true,
-                                               /*shift=*/false,
-                                               /*alt=*/true, /*command=*/false);
-}
-
 void LoggedInSpokenFeedbackTest::SendKeyPressWithControlAndShift(
     ui::KeyboardCode key) {
   ui::test::EmulateFullKeyPressReleaseSequence(event_generator_.get(), key,

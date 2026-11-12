@@ -13,7 +13,6 @@
 #include "base/test/simple_test_clock.h"
 #include "chrome/browser/ash/app_list/app_list_test_util.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
-#include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "extensions/common/mojom/manifest.mojom.h"
 
 namespace test {
@@ -55,9 +54,6 @@ class AppSearchProviderTestBase : public AppListTestBase {
 
   // Returns list of result IDs sorted by their relevance.
   std::string GetSortedResultsString();
-
-  // Returns list of results.
-  std::vector<ChromeSearchResult*> GetLastResults();
 
   // Installs a test ARC app.
   std::string AddArcApp(const std::string& name,

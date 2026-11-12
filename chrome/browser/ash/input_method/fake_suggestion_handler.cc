@@ -45,9 +45,7 @@ bool FakeSuggestionHandler::AcceptSuggestion(int context_id,
 }
 
 void FakeSuggestionHandler::OnSuggestionsChanged(
-    const std::vector<std::string>& suggestions) {
-  last_on_suggestion_changed_event_suggestions_ = suggestions;
-}
+    const std::vector<std::string>& suggestions) {}
 
 bool FakeSuggestionHandler::SetButtonHighlighted(
     int context_id,
@@ -60,9 +58,7 @@ bool FakeSuggestionHandler::SetButtonHighlighted(
 }
 
 void FakeSuggestionHandler::ClickButton(
-    const ui::ime::AssistiveWindowButton& button) {
-  last_clicked_button_ = button.id;
-}
+    const ui::ime::AssistiveWindowButton& button) {}
 
 bool FakeSuggestionHandler::AcceptSuggestionCandidate(
     int context_id,

@@ -47,11 +47,6 @@ class RankerTestBase : public testing::Test {
     return proto;
   }
 
-  // A helper function that set ftrl_score for the given results from one
-  // provider.
-  void SetFtrlScore(const ResultsMap& results,
-                    ProviderType provider,
-                    const std::vector<double>& ftrl_scores);
   void Wait();
 
  protected:

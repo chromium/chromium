@@ -43,8 +43,6 @@ class UnittestingSystemAppDelegate : public SystemWebAppDelegate {
 
   std::unique_ptr<web_app::WebAppInstallInfo> GetWebAppInfo() const override;
   bool ShouldForceReinstall() const override;
-  std::vector<std::string> GetAppIdsToUninstallAndReplace() const override;
-  gfx::Size GetMinimumWindowSize() const override;
   BrowserDelegate* GetWindowForLaunch(Profile* profile,
                                       const GURL& url) const override;
   bool ShouldShowNewWindowMenuOption() const override;
@@ -60,7 +58,6 @@ class UnittestingSystemAppDelegate : public SystemWebAppDelegate {
   bool ShouldAllowFullscreen() const override;
   bool ShouldHaveTabStrip() const override;
   bool ShouldHideNewTabButton() const override;
-  bool ShouldHaveReloadButtonInMinimalUi() const override;
   bool ShouldAllowScriptsToCloseWindows() const override;
   std::optional<SystemWebAppBackgroundTaskInfo> GetTimerInfo() const override;
   gfx::Rect GetDefaultBounds(BrowserDelegate* browser) const override;
@@ -73,8 +70,6 @@ class UnittestingSystemAppDelegate : public SystemWebAppDelegate {
   bool IsUrlInSystemAppScope(const GURL& url) const override;
   bool UseSystemThemeColor() const override;
   void SetShouldForceReinstall(bool);
-  void SetAppIdsToUninstallAndReplace(const std::vector<webapps::AppId>&);
-  void SetMinimumWindowSize(const gfx::Size&);
   void SetShouldReuseExistingWindow(bool);
   void SetShouldShowNewWindowMenuOption(bool);
   void SetShouldIncludeLaunchDirectory(bool);
@@ -88,7 +83,6 @@ class UnittestingSystemAppDelegate : public SystemWebAppDelegate {
   void SetShouldAllowMaximize(bool);
   void SetShouldHaveTabStrip(bool);
   void SetShouldHideNewTabButton(bool);
-  void SetShouldHaveReloadButtonInMinimalUi(bool);
   void SetShouldAllowScriptsToCloseWindows(bool);
   void SetTimerInfo(const SystemWebAppBackgroundTaskInfo&);
   void SetDefaultBounds(base::RepeatingCallback<gfx::Rect(BrowserDelegate*)>);
@@ -99,8 +93,6 @@ class UnittestingSystemAppDelegate : public SystemWebAppDelegate {
 
  private:
   web_app::WebAppInstallInfoFactory info_factory_;
-  std::vector<webapps::AppId> uninstall_and_replace_;
-  gfx::Size minimum_window_size_;
   bool should_force_reinstall_ = false;
   bool single_window_ = true;
   bool show_new_window_menu_option_ = false;
@@ -115,7 +107,6 @@ class UnittestingSystemAppDelegate : public SystemWebAppDelegate {
   bool is_fullscreenable_ = true;
   bool has_tab_strip_ = false;
   bool hide_new_tab_button_ = false;
-  bool should_have_reload_button_in_minimal_ui_ = true;
   bool allow_scripts_to_close_windows_ = false;
   bool is_app_enabled = true;
   GURL url_in_system_app_scope_;

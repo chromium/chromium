@@ -123,10 +123,6 @@ scoped_refptr<net::X509Certificate> CertificateHelperForTesting::AddCert(
                  not_valid_after);
 }
 
-void CertificateHelperForTesting::ClearCerts() {
-  cert_list_.clear();
-}
-
 const net::CertificateList& CertificateHelperForTesting::GetCerts() const {
   return cert_list_;
 }

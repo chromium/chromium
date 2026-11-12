@@ -49,10 +49,7 @@ class TextInputTestHelper : public ui::InputMethodObserver {
 
   // Returns the latest status notified to ui::InputMethod
   std::u16string GetSurroundingText() const;
-  gfx::Rect GetCaretRect() const;
-  gfx::Rect GetCompositionHead() const;
   gfx::Range GetSelectionRange() const;
-  bool GetFocusState() const;
   ui::TextInputType GetTextInputType() const;
 
   ui::TextInputClient* GetTextInputClient() const;
@@ -61,13 +58,9 @@ class TextInputTestHelper : public ui::InputMethodObserver {
   // loop until the expected event comes.
   void WaitForTextInputStateChanged(ui::TextInputType expected_type);
   void WaitForFocus();
-  void WaitForBlur();
-  void WaitForCaretBoundsChanged(const gfx::Rect& expected_caret_rect,
-                                 const gfx::Rect& expected_composition_head);
   void WaitForSurroundingTextChanged(const std::u16string& expected_text);
   void WaitForSurroundingTextChanged(const std::u16string& expected_text,
                                      const gfx::Range& expected_selection);
-  void WaitForPassageOfTimeMillis(const int milliseconds);
 
   // Converts from string to gfx::Rect. The string should be "x,y,width,height".
   // Returns false if the conversion failed.
@@ -83,11 +76,9 @@ class TextInputTestHelper : public ui::InputMethodObserver {
  private:
   enum WaitImeEventType {
     NO_WAIT,
-    WAIT_ON_BLUR,
     WAIT_ON_CARET_BOUNDS_CHANGED,
     WAIT_ON_FOCUS,
     WAIT_ON_TEXT_INPUT_TYPE_CHANGED,
-    WAIT_ON_PASSAGE_OF_TIME,
   };
 
   // ui::InputMethodObserver overrides.
@@ -101,8 +92,6 @@ class TextInputTestHelper : public ui::InputMethodObserver {
   WaitImeEventType waiting_type_;
 
   std::u16string surrounding_text_;
-  gfx::Rect caret_rect_;
-  gfx::Rect composition_head_;
   gfx::Range selection_range_;
   bool focus_state_;
   ui::TextInputType latest_text_input_type_;

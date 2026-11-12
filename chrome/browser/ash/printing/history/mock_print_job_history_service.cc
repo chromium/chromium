@@ -10,11 +10,4 @@ MockPrintJobHistoryService::MockPrintJobHistoryService() = default;
 
 MockPrintJobHistoryService::~MockPrintJobHistoryService() = default;
 
-void MockPrintJobHistoryService::SavePrintJobProto(
-    const printing::proto::PrintJobInfo& print_job_info) {
-  for (auto& observer : observers_) {
-    observer.OnPrintJobFinished(print_job_info);
-  }
-}
-
 }  // namespace ash

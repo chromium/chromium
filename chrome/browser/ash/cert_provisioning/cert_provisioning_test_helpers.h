@@ -59,7 +59,6 @@ struct CertificateHelperForTesting {
       const std::optional<CertProfileId>& cert_profile_id,
       chromeos::platform_keys::Status status);
 
-  void ClearCerts();
   const net::CertificateList& GetCerts() const;
 
  private:

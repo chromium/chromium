@@ -8,7 +8,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/fake_crostini_features.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
@@ -35,10 +34,6 @@ class CrostiniBrowserTestChromeBrowserMainExtraParts
   CrostiniBrowserTestChromeBrowserMainExtraParts& operator=(
       const CrostiniBrowserTestChromeBrowserMainExtraParts&) = delete;
 
-  component_updater::FakeComponentManagerAsh* component_manager_ash() {
-    return component_manager_ash_ptr_;
-  }
-
   content::NetworkConnectionChangeSimulator* connection_change_simulator() {
     return &connection_change_simulator_;
   }
@@ -59,7 +54,6 @@ class CrostiniBrowserTestChromeBrowserMainExtraParts
               component_updater::ComponentManagerAsh::Error::NONE,
               base::FilePath("/dev/null"), base::FilePath("/dev/null")));
     }
-    component_manager_ash_ptr_ = component_manager_ash.get();
 
     browser_process_platform_part_test_api_ =
         std::make_unique<BrowserProcessPlatformPartTestApi>(
@@ -80,7 +74,6 @@ class CrostiniBrowserTestChromeBrowserMainExtraParts
         net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI);
   }
   void PostMainMessageLoopRun() override {
-    component_manager_ash_ptr_ = nullptr;
     browser_process_platform_part_test_api_->ShutdownComponentManager();
     browser_process_platform_part_test_api_.reset();
   }
@@ -90,8 +83,6 @@ class CrostiniBrowserTestChromeBrowserMainExtraParts
 
   std::unique_ptr<BrowserProcessPlatformPartTestApi>
       browser_process_platform_part_test_api_;
-  raw_ptr<component_updater::FakeComponentManagerAsh>
-      component_manager_ash_ptr_ = nullptr;
 
   content::NetworkConnectionChangeSimulator connection_change_simulator_;
 };
@@ -140,12 +131,4 @@ void CrostiniBrowserTestBase::SetConnectionType(
     net::NetworkChangeNotifier::ConnectionType connection_type) {
   extra_parts_->connection_change_simulator()->SetConnectionType(
       connection_type);
-}
-
-void CrostiniBrowserTestBase::UnregisterTermina() {
-  extra_parts_->component_manager_ash()->ResetComponentState(
-      imageloader::kTerminaComponentName,
-      component_updater::FakeComponentManagerAsh::ComponentInfo(
-          component_updater::ComponentManagerAsh::Error::INSTALL_FAILURE,
-          base::FilePath(), base::FilePath()));
 }

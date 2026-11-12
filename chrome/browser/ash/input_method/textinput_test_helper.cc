@@ -11,7 +11,6 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/threading/platform_thread.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
@@ -48,20 +47,8 @@ std::u16string TextInputTestHelper::GetSurroundingText() const {
   return surrounding_text_;
 }
 
-gfx::Rect TextInputTestHelper::GetCaretRect() const {
-  return caret_rect_;
-}
-
-gfx::Rect TextInputTestHelper::GetCompositionHead() const {
-  return composition_head_;
-}
-
 gfx::Range TextInputTestHelper::GetSelectionRange() const {
   return selection_range_;
-}
-
-bool TextInputTestHelper::GetFocusState() const {
-  return focus_state_;
 }
 
 ui::TextInputType TextInputTestHelper::GetTextInputType() const {
@@ -86,11 +73,6 @@ void TextInputTestHelper::OnFocus() {
 
 void TextInputTestHelper::OnBlur() {
   focus_state_ = false;
-  if (waiting_type_ == WAIT_ON_BLUR) {
-    if (run_loop_) {
-      run_loop_->Quit();
-    }
-  }
 }
 
 void TextInputTestHelper::OnCaretBoundsChanged(
@@ -143,28 +125,6 @@ void TextInputTestHelper::WaitForFocus() {
   waiting_type_ = NO_WAIT;
 }
 
-void TextInputTestHelper::WaitForBlur() {
-  CHECK_EQ(NO_WAIT, waiting_type_);
-  waiting_type_ = WAIT_ON_BLUR;
-  while (!focus_state_) {
-    run_loop_ = std::make_unique<base::RunLoop>();
-    run_loop_->Run();
-  }
-  waiting_type_ = NO_WAIT;
-}
-
-void TextInputTestHelper::WaitForCaretBoundsChanged(
-    const gfx::Rect& expected_caret_rect,
-    const gfx::Rect& expected_composition_head) {
-  waiting_type_ = WAIT_ON_CARET_BOUNDS_CHANGED;
-  while (expected_caret_rect != caret_rect_ ||
-         expected_composition_head != composition_head_) {
-    run_loop_ = std::make_unique<base::RunLoop>();
-    run_loop_->Run();
-  }
-  waiting_type_ = NO_WAIT;
-}
-
 void TextInputTestHelper::WaitForSurroundingTextChanged(
     const std::u16string& expected_text) {
   waiting_type_ = WAIT_ON_CARET_BOUNDS_CHANGED;
@@ -184,13 +144,6 @@ void TextInputTestHelper::WaitForSurroundingTextChanged(
     run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_->Run();
   }
-  waiting_type_ = NO_WAIT;
-}
-
-void TextInputTestHelper::WaitForPassageOfTimeMillis(const int milliseconds) {
-  CHECK_EQ(NO_WAIT, waiting_type_);
-  waiting_type_ = WAIT_ON_PASSAGE_OF_TIME;
-  base::PlatformThread::Sleep(base::Milliseconds(milliseconds));
   waiting_type_ = NO_WAIT;
 }
 

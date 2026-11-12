@@ -34,8 +34,6 @@ class CrostiniBrowserTestBase : public InProcessBrowserTest {
   void SetConnectionType(
       net::NetworkChangeNotifier::ConnectionType connection_type);
 
-  void UnregisterTermina();
-
  protected:
   const bool register_termina_;
 
