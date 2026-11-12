@@ -5186,6 +5186,22 @@
             ]
         }
     ],
+    "ClankStartupTabOptimizations": [
+        {
+            "platforms": [
+                "android",
+                "android_desktop"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ClankStartupTabOptimizations"
+                    ]
+                }
+            ]
+        }
+    ],
     "ClearBrokenAlternativeServicesOnDefaultNetworkChange": [
         {
             "platforms": [

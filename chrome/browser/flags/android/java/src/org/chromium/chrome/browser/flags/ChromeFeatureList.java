@@ -1187,7 +1187,10 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sClankStartupLatencyInjection =
             newCachedFlag(CLANK_STARTUP_LATENCY_INJECTION, false);
     public static final CachedFlag sClankStartupTabOptimizations =
-            newCachedFlag(CLANK_STARTUP_TAB_OPTIMIZATIONS, false);
+            newCachedFlag(
+                    CLANK_STARTUP_TAB_OPTIMIZATIONS,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sClearIntentWhenRecreated =
             newCachedFlag(CLEAR_INTENT_WHEN_RECREATED, /* defaultValue= */ false);
     public static final CachedFlag sCommandLineOnNonRooted =

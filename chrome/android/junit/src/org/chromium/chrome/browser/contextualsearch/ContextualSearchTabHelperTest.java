@@ -23,8 +23,12 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.UserDataHost;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -47,8 +51,12 @@ public class ContextualSearchTabHelperTest {
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private TemplateUrlService mTemplateUrlService;
     @Mock private SelectionPopupControllerImpl mSelectionPopupController;
+    @Mock private ContextualSearchManager mContextualSearchManager;
 
     private final UserDataHost mUserDataHost = new UserDataHost();
+    private final UnownedUserDataHost mUnownedUserDataHost = new UnownedUserDataHost();
+    private final SettableMonotonicObservableSupplier<ContextualSearchManager>
+            mContextualSearchManagerSupplier = ObservableSuppliers.createMonotonic();
     private static final long NATIVE_PTR = 12345;
     private ContextualSearchTabHelper mHelper;
 
@@ -56,18 +64,25 @@ public class ContextualSearchTabHelperTest {
     public void setUp() {
         ContextualSearchTabHelperJni.setInstanceForTesting(mTabHelperJniMock);
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
+        Profile.setProfileFromWebContentsForTesting(mProfile);
 
         when(mTabHelperJniMock.init(any())).thenReturn(NATIVE_PTR);
         when(mTab.getProfile()).thenReturn(mProfile);
         when(mTab.getWindowAndroid()).thenReturn(mWindowAndroid);
         when(mTab.getUserDataHost()).thenReturn(mUserDataHost);
         when(mTab.getWebContents()).thenReturn(mWebContents);
+        when(mWindowAndroid.getUnownedUserDataHost()).thenReturn(mUnownedUserDataHost);
         when(mWebContents.getOrSetUserData(eq(SelectionPopupControllerImpl.class), any()))
                 .thenReturn(mSelectionPopupController);
+
+        ContextualSearchManagerSupplier.attach(
+                mUnownedUserDataHost, mContextualSearchManagerSupplier);
+        mContextualSearchManagerSupplier.set(mContextualSearchManager);
     }
 
     @After
     public void tearDown() {
+        ContextualSearchManagerSupplier.destroy(mContextualSearchManagerSupplier);
         ContextualSearchTabHelper.clearNativeHelperMapForTesting();
     }
 
@@ -81,6 +96,7 @@ public class ContextualSearchTabHelperTest {
 
         // JNI init should be called once WebContents is attached
         verify(mTabHelperJniMock, times(1)).init(mProfile);
+        verify(mTemplateUrlService, times(1)).addObserver(any());
     }
 
     @Test
@@ -110,6 +126,7 @@ public class ContextualSearchTabHelperTest {
 
         // 3. Verify JNI and observers are cleanly released
         verify(mTabHelperJniMock, times(1)).destroy(NATIVE_PTR);
+        verify(mTemplateUrlService, times(1)).removeObserver(any());
         verify(mTab).removeObserver(mHelper);
     }
 
@@ -140,6 +157,11 @@ public class ContextualSearchTabHelperTest {
     @Test
     @EnableFeatures(ChromeFeatureList.CLANK_STARTUP_TAB_OPTIMIZATIONS)
     public void testOnContentChanged_defersNativeAndTemplateUrlInit() {
+        ContextualSearchManagerSupplier.destroy(mContextualSearchManagerSupplier);
+        SettableMonotonicObservableSupplier<ContextualSearchManager> delayedSupplier =
+                ObservableSuppliers.createMonotonic();
+        ContextualSearchManagerSupplier.attach(mUnownedUserDataHost, delayedSupplier);
+
         mHelper = ContextualSearchTabHelper.from(mTab);
         assertNotNull(mHelper);
 
@@ -147,5 +169,25 @@ public class ContextualSearchTabHelperTest {
 
         verify(mTabHelperJniMock, never()).init(any());
         verify(mTemplateUrlService, never()).addObserver(any());
+
+        delayedSupplier.set(mContextualSearchManager);
+
+        verify(mTabHelperJniMock, times(1)).init(mProfile);
+        verify(mTemplateUrlService, times(1)).addObserver(any());
+        ContextualSearchManagerSupplier.destroy(delayedSupplier);
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.CLANK_STARTUP_TAB_OPTIMIZATIONS)
+    public void testOnContentChanged_legacyInitializesWithoutManager() {
+        ContextualSearchManagerSupplier.destroy(mContextualSearchManagerSupplier);
+
+        mHelper = ContextualSearchTabHelper.from(mTab);
+        assertNotNull(mHelper);
+
+        mHelper.onContentChanged(mTab);
+
+        verify(mTabHelperJniMock, times(1)).init(mProfile);
+        verify(mTemplateUrlService, times(1)).addObserver(any());
     }
 }
