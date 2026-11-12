@@ -1,0 +1,33 @@
+version: 2
+updates:
+  # GitHub Actions used by the CI workflow.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      actions:
+        patterns:
+          - "*"
+
+  # Library and dev-dependencies. Dev-dependencies are not held to the MSRV:
+  # the msrv job drops them before building, since nothing depending on
+  # crc32fast ever compiles them.
+  - package-ecosystem: cargo
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      cargo:
+        patterns:
+          - "*"
+
+  # The fuzz crate is a separate, unpublished package with its own manifest.
+  - package-ecosystem: cargo
+    directory: /fuzz
+    schedule:
+      interval: monthly
+    groups:
+      cargo:
+        patterns:
+          - "*"

@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.63"
 name = "crc32fast"
-version = "1.5.2"
+version = "1.5.3"
 authors = [
     "Sam Rijs <srijs@airpost.net>",
     "Alex Crichton <alex@alexcrichton.com>",
@@ -48,6 +48,7 @@ std = []
 [lib]
 name = "crc32fast"
 path = "src/lib.rs"
+bench = false
 
 [[test]]
 name = "exhaustive"
@@ -61,12 +62,14 @@ harness = false
 [dependencies.cfg-if]
 version = "1.0"
 
-[dev-dependencies.bencher]
-version = "0.1"
+[dev-dependencies.criterion]
+version = "0.8"
+features = ["cargo_bench_support"]
+default-features = false
 
 [dev-dependencies.quickcheck]
 version = "1.0"
 default-features = false
 
 [dev-dependencies.rand]
-version = "0.8"
+version = "0.10"

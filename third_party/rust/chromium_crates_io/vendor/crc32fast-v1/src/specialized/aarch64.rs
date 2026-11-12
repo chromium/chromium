@@ -1,49 +1,35 @@
 use core::arch::aarch64 as arch;
 
 #[derive(Clone)]
-pub struct State {
-    state: u32,
-}
+pub struct State(());
 
 impl State {
     #[cfg(not(feature = "std"))]
-    pub fn new(state: u32) -> Option<Self> {
+    pub fn new() -> Option<Self> {
         if cfg!(target_feature = "crc") {
             // SAFETY: The conditions above ensure that all
             //         required instructions are supported by the CPU.
-            Some(Self { state })
+            Some(Self(()))
         } else {
             None
         }
     }
 
     #[cfg(feature = "std")]
-    pub fn new(state: u32) -> Option<Self> {
+    pub fn new() -> Option<Self> {
         if std::arch::is_aarch64_feature_detected!("crc") {
             // SAFETY: The condition above ensures that all
             //         required instructions are supported by the CPU.
-            Some(Self { state })
+            Some(Self(()))
         } else {
             None
         }
     }
 
-    pub fn update(&mut self, buf: &[u8]) {
+    pub fn update(&self, state: u32, buf: &[u8]) -> u32 {
         // SAFETY: The `State::new` constructor ensures that all
         //         required instructions are supported by the CPU.
-        self.state = unsafe { calculate(self.state, buf) }
-    }
-
-    pub fn finalize(self) -> u32 {
-        self.state
-    }
-
-    pub fn reset(&mut self) {
-        self.state = 0;
-    }
-
-    pub fn combine(&mut self, other: u32, amount: u64) {
-        self.state = crate::combine::combine(self.state, other, amount);
+        unsafe { calculate(state, buf) }
     }
 }
 
@@ -148,20 +134,22 @@ unsafe fn crc_bytes(crc: u32, bytes: &[u8]) -> u32 {
 mod test {
     quickcheck::quickcheck! {
         fn check_against_baseline(init: u32, chunks: Vec<(Vec<u8>, usize)>) -> bool {
-            let mut baseline = super::super::super::baseline::State::new(init);
-            let mut aarch64 = super::State::new(init).expect("not supported");
+            let mut baseline = init;
+            let mut aarch64 = init;
+            let spec = super::State::new().expect("not supported");
+
             for (chunk, mut offset) in chunks {
                 // simulate random alignments by offsetting the slice by up to 15 bytes
                 offset &= 0xF;
                 if chunk.len() <= offset {
-                    baseline.update(&chunk);
-                    aarch64.update(&chunk);
+                    baseline = crate::baseline::update_fast_16(baseline, &chunk);
+                    aarch64 = spec.update(aarch64, &chunk);
                 } else {
-                    baseline.update(&chunk[offset..]);
-                    aarch64.update(&chunk[offset..]);
+                    baseline = crate::baseline::update_fast_16(baseline, &chunk[offset..]);
+                    aarch64 = spec.update(aarch64, &chunk[offset..]);
                 }
             }
-            aarch64.finalize() == baseline.finalize()
+            aarch64 == baseline
         }
     }
 
@@ -183,13 +171,12 @@ mod test {
                     continue;
                 }
                 let slice = &data[offset..offset + len];
-                let mut baseline = super::super::super::baseline::State::new(0);
-                baseline.update(slice);
-                let mut specialized = super::State::new(0).expect("not supported");
-                specialized.update(slice);
+                let baseline = crate::baseline::update_fast_16(0, slice);
+                let spec = super::State::new().expect("not supported");
+                let specialized = spec.update(0, slice);
+
                 assert_eq!(
-                    specialized.finalize(),
-                    baseline.finalize(),
+                    specialized, baseline,
                     "mismatch for len={len} offset={offset}",
                 );
             }

@@ -34,7 +34,6 @@ enum Kind {
 
 #[derive(Clone)]
 pub struct State {
-    state: u32,
     kind: Kind,
 }
 
@@ -85,34 +84,23 @@ impl State {
         None
     }
 
-    pub fn new(state: u32) -> Option<Self> {
+    pub fn new() -> Option<Self> {
         // SAFETY: `detect` only returns a `Kind` whose instructions the CPU supports.
-        Self::detect().map(|kind| Self { state, kind })
+        Self::detect().map(|kind| Self { kind })
     }
 
-    pub fn update(&mut self, buf: &[u8]) {
+    #[inline]
+    pub fn update(&self, state: u32, buf: &[u8]) -> u32 {
         // SAFETY: `State::new` ensured the CPU supports the instructions for `self.kind`.
-        self.state = unsafe {
+        unsafe {
             match self.kind {
-                Kind::Sse => calculate(self.state, buf),
+                Kind::Sse => calculate(state, buf),
                 #[cfg(stable_vpclmulqdq)]
-                Kind::Avx2 => calculate_avx2(self.state, buf),
+                Kind::Avx2 => calculate_avx2(state, buf),
                 #[cfg(stable_vpclmulqdq)]
-                Kind::Avx512 => calculate_avx512(self.state, buf),
+                Kind::Avx512 => calculate_avx512(state, buf),
             }
         }
-    }
-
-    pub fn finalize(self) -> u32 {
-        self.state
-    }
-
-    pub fn reset(&mut self) {
-        self.state = 0;
-    }
-
-    pub fn combine(&mut self, other: u32, amount: u64) {
-        self.state = crate::combine::combine(self.state, other, amount);
     }
 }
 
@@ -152,7 +140,7 @@ const K_2048_HIGH: i64 = 0x1322d1430;
 unsafe fn calculate(crc: u32, mut data: &[u8]) -> u32 {
     // Below 16 bytes there isn't even a single full block to load, so use the scalar fallback.
     if data.len() < 16 {
-        return crate::baseline::update_fast_16(crc, data);
+        return crate::baseline::update_slow(crc, data);
     }
 
     // For 16..127 bytes a single-accumulator fold-by-1 is enough; the fold-by-4 setup below only
@@ -471,20 +459,22 @@ unsafe fn get512(a: &mut &[u8]) -> arch::__m512i {
 mod test {
     quickcheck::quickcheck! {
         fn check_against_baseline(init: u32, chunks: Vec<(Vec<u8>, usize)>) -> bool {
-            let mut baseline = super::super::super::baseline::State::new(init);
-            let mut pclmulqdq = super::State::new(init).expect("not supported");
+            let mut baseline = init;
+            let mut pclmulqdq = init;
+            let spec = super::State::new().expect("not supported");
+
             for (chunk, mut offset) in chunks {
                 // simulate random alignments by offsetting the slice by up to 15 bytes
                 offset &= 0xF;
                 if chunk.len() <= offset {
-                    baseline.update(&chunk);
-                    pclmulqdq.update(&chunk);
+                    baseline = crate::baseline::update_fast_16(baseline, &chunk);
+                    pclmulqdq = spec.update(pclmulqdq, &chunk);
                 } else {
-                    baseline.update(&chunk[offset..]);
-                    pclmulqdq.update(&chunk[offset..]);
+                    baseline = crate::baseline::update_fast_16(baseline, &chunk[offset..]);
+                    pclmulqdq = spec.update(pclmulqdq, &chunk[offset..]);
                 }
             }
-            pclmulqdq.finalize() == baseline.finalize()
+            pclmulqdq == baseline
         }
     }
 
@@ -507,13 +497,12 @@ mod test {
                     continue;
                 }
                 let slice = &data[offset..offset + len];
-                let mut baseline = super::super::super::baseline::State::new(0);
-                baseline.update(slice);
-                let mut specialized = super::State::new(0).expect("not supported");
-                specialized.update(slice);
+                let baseline = crate::baseline::update_fast_16(0, slice);
+                let spec = super::State::new().expect("not supported");
+                let specialized = spec.update(0, slice);
+
                 assert_eq!(
-                    specialized.finalize(),
-                    baseline.finalize(),
+                    specialized, baseline,
                     "mismatch for len={len} offset={offset}",
                 );
             }

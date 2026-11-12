@@ -1,161 +1,108 @@
-use bencher::Bencher;
+use std::hint::black_box;
+
 use crc32fast::Hasher;
-use rand::Rng;
+use criterion::{criterion_group, criterion_main, BenchmarkId, Criterion, Throughput};
+use rand::{rngs::StdRng, RngExt, SeedableRng};
 
-fn bench(b: &mut Bencher, size: usize, hasher_init: Hasher) {
-    let mut bytes = vec![0u8; size];
-    rand::thread_rng().fill(&mut bytes[..]);
+/// Benchmark inputs are drawn from a fixed seed so that runs are comparable against a stored
+/// baseline (`--save-baseline` / `--baseline`). With a per-run seed, `combine` in particular
+/// reports large spurious changes, because its timing depends on the random lengths it is given.
+const SEED: u64 = 0x_c0ff_ee00_1dea;
 
-    b.iter(|| {
-        let mut hasher = hasher_init.clone();
-        hasher.update(&bytes);
-        bencher::black_box(hasher.finalize())
-    });
-
-    b.bytes = size as u64;
-}
-
-fn bench_kilobyte_baseline(b: &mut Bencher) {
-    bench(b, 1024, Hasher::internal_new_baseline(0, 0))
-}
-
-fn bench_kilobyte_specialized(b: &mut Bencher) {
-    bench(b, 1024, Hasher::internal_new_specialized(0, 0).unwrap())
-}
-
-fn bench_megabyte_baseline(b: &mut Bencher) {
-    bench(b, 1024 * 1024, Hasher::internal_new_baseline(0, 0))
-}
-
-fn bench_megabyte_specialized(b: &mut Bencher) {
-    bench(
-        b,
-        1024 * 1024,
-        Hasher::internal_new_specialized(0, 0).unwrap(),
-    )
-}
-
-fn bench_16kb_baseline(b: &mut Bencher) {
-    bench(b, 16 * 1024, Hasher::internal_new_baseline(0, 0))
-}
-
-fn bench_16kb_specialized(b: &mut Bencher) {
-    bench(
-        b,
-        16 * 1024,
-        Hasher::internal_new_specialized(0, 0).unwrap(),
-    )
-}
+const BASELINE_SIZES: &[usize] = &[1024, 16 * 1024, 1024 * 1024];
 
 // Small and non-16-multiple ("awkward") sizes: these exercise the small-input clmul path and the
 // partial-block tail fold, and are where the pre-clmul table/scalar fallback was slowest.
-fn bench_16b_specialized(b: &mut Bencher) {
-    bench(b, 16, Hasher::internal_new_specialized(0, 0).unwrap())
+const SPECIALIZED_SIZES: &[usize] = &[
+    16,
+    63,
+    127,
+    255,
+    511,
+    1000,
+    1023,
+    1024,
+    2047,
+    2048,
+    2175,
+    2176,
+    2303,
+    2304,
+    16 * 1024,
+    1024 * 1024,
+];
+
+/// Benchmark `update` over a set of input sizes.
+///
+/// `hasher_init` is built once by the caller and cloned per iteration: constructing a specialized
+/// `Hasher` runs CPU feature detection, which we don't want to measure.
+fn bench_update(c: &mut Criterion, group_name: &str, sizes: &[usize], hasher_init: Hasher) {
+    let mut group = c.benchmark_group(group_name);
+    let mut rng = StdRng::seed_from_u64(SEED);
+
+    for &size in sizes {
+        let mut bytes = vec![0u8; size];
+        rng.fill(&mut bytes[..]);
+
+        group.throughput(Throughput::Bytes(size as u64));
+        group.bench_with_input(BenchmarkId::from_parameter(size), &bytes, |b, bytes| {
+            b.iter(|| {
+                let mut hasher = hasher_init.clone();
+                hasher.update(bytes);
+                black_box(hasher.finalize())
+            })
+        });
+    }
+
+    group.finish();
 }
 
-fn bench_63b_specialized(b: &mut Bencher) {
-    bench(b, 63, Hasher::internal_new_specialized(0, 0).unwrap())
+fn baseline(c: &mut Criterion) {
+    bench_update(
+        c,
+        "baseline",
+        BASELINE_SIZES,
+        Hasher::internal_new_baseline(0, 0),
+    );
 }
 
-fn bench_127b_specialized(b: &mut Bencher) {
-    bench(b, 127, Hasher::internal_new_specialized(0, 0).unwrap())
+fn specialized(c: &mut Criterion) {
+    let Some(hasher) = Hasher::internal_new_specialized(0, 0) else {
+        eprintln!("skipping specialized benches: no SIMD implementation for this target");
+        return;
+    };
+
+    bench_update(c, "specialized", SPECIALIZED_SIZES, hasher);
 }
 
-fn bench_255b_specialized(b: &mut Bencher) {
-    bench(b, 255, Hasher::internal_new_specialized(0, 0).unwrap())
+fn combine(c: &mut Criterion) {
+    let mut group = c.benchmark_group("combine");
+    let mut rng = StdRng::seed_from_u64(SEED);
+
+    // Parameterized by the bit width of the second hasher's length, which drives how much work
+    // `combine` does.
+    for bits in [16u32, 32, 64] {
+        let (i1, l1, i2): (u32, u64, u32) = rng.random();
+        let l2: u64 = match bits {
+            16 => u64::from(rng.random::<u16>()),
+            32 => u64::from(rng.random::<u32>()),
+            _ => rng.random::<u64>(),
+        };
+
+        let h1 = Hasher::new_with_initial_len(i1, l1);
+        let h2 = Hasher::new_with_initial_len(i2, l2);
+
+        group.bench_function(BenchmarkId::from_parameter(bits), |b| {
+            b.iter(|| {
+                let mut h = h1.clone();
+                h.combine(&h2);
+                black_box(h);
+            })
+        });
+    }
+
+    group.finish();
 }
 
-fn bench_511b_specialized(b: &mut Bencher) {
-    bench(b, 511, Hasher::internal_new_specialized(0, 0).unwrap())
-}
-
-fn bench_1000b_specialized(b: &mut Bencher) {
-    bench(b, 1000, Hasher::internal_new_specialized(0, 0).unwrap())
-}
-
-fn bench_1023b_specialized(b: &mut Bencher) {
-    bench(b, 1023, Hasher::internal_new_specialized(0, 0).unwrap())
-}
-
-fn bench_2047b_specialized(b: &mut Bencher) {
-    bench(b, 2047, Hasher::internal_new_specialized(0, 0).unwrap())
-}
-
-fn bench_2048b_specialized(b: &mut Bencher) {
-    bench(b, 2048, Hasher::internal_new_specialized(0, 0).unwrap())
-}
-
-fn bench_2175b_specialized(b: &mut Bencher) {
-    bench(b, 2175, Hasher::internal_new_specialized(0, 0).unwrap())
-}
-
-fn bench_2176b_specialized(b: &mut Bencher) {
-    bench(b, 2176, Hasher::internal_new_specialized(0, 0).unwrap())
-}
-
-fn bench_2303b_specialized(b: &mut Bencher) {
-    bench(b, 2303, Hasher::internal_new_specialized(0, 0).unwrap())
-}
-
-fn bench_2304b_specialized(b: &mut Bencher) {
-    bench(b, 2304, Hasher::internal_new_specialized(0, 0).unwrap())
-}
-
-fn bench_combine_inner(b: &mut Bencher, i1: u32, l1: u64, i2: u32, l2: u64) {
-    let h1 = Hasher::new_with_initial_len(i1, l1);
-    let h2 = Hasher::new_with_initial_len(i2, l2);
-
-    b.iter(|| {
-        let mut h = h1.clone();
-        h.combine(&h2);
-        bencher::black_box(h);
-    })
-}
-
-fn bench_combine_16(b: &mut Bencher) {
-    let (i1, l1, i2, l2): (u32, u64, u32, u16) = rand::thread_rng().gen();
-    bench_combine_inner(b, i1, l1, i2, u64::from(l2))
-}
-
-fn bench_combine_32(b: &mut Bencher) {
-    let (i1, l1, i2, l2): (u32, u64, u32, u32) = rand::thread_rng().gen();
-    bench_combine_inner(b, i1, l1, i2, u64::from(l2))
-}
-
-fn bench_combine_64(b: &mut Bencher) {
-    let (i1, l1, i2, l2): (u32, u64, u32, u64) = rand::thread_rng().gen();
-    bench_combine_inner(b, i1, l1, i2, l2)
-}
-
-bencher::benchmark_group!(
-    bench_baseline,
-    bench_kilobyte_baseline,
-    bench_16kb_baseline,
-    bench_megabyte_baseline
-);
-bencher::benchmark_group!(
-    bench_specialized,
-    bench_16b_specialized,
-    bench_63b_specialized,
-    bench_127b_specialized,
-    bench_255b_specialized,
-    bench_511b_specialized,
-    bench_1000b_specialized,
-    bench_1023b_specialized,
-    bench_kilobyte_specialized,
-    bench_2047b_specialized,
-    bench_2048b_specialized,
-    bench_2175b_specialized,
-    bench_2176b_specialized,
-    bench_2303b_specialized,
-    bench_2304b_specialized,
-    bench_16kb_specialized,
-    bench_megabyte_specialized
-);
-bencher::benchmark_group!(
-    bench_combine,
-    bench_combine_16,
-    bench_combine_32,
-    bench_combine_64
-);
-bencher::benchmark_main!(bench_baseline, bench_specialized, bench_combine);
+criterion_group!(benches, baseline, specialized, combine);
+criterion_main!(benches);
