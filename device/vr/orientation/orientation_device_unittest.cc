@@ -192,9 +192,8 @@ class VROrientationDeviceTest : public testing::Test {
 
     init_params->client_receiver = sensor_client_.BindNewPipeAndPassReceiver();
 
-    init_params->memory = mapped_region_.region.Duplicate();
-
-    init_params->buffer_offset = GetBufferOffset();
+    init_params->shared_buffer = mojom::SensorSharedBuffer::New(
+        mapped_region_.region.Duplicate(), GetBufferOffset());
 
     return init_params;
   }

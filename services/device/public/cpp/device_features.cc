@@ -24,6 +24,9 @@ BASE_FEATURE(kSensorsAllowAskBlockPermissionModel,
 // Enables browser-side privacy mitigations for generic sensors.
 BASE_FEATURE(kSensorPrivacyMitigations, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables delivering sensor readings via Mojo IPC instead of shared memory.
+BASE_FEATURE(kSensorsOverMojo, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Expose serial port logical connection state and dispatch connection events
 // for Bluetooth serial ports when the Bluetooth device connection state
 // changes.

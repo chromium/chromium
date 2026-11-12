@@ -56,7 +56,7 @@ class TestSensorClient : public mojom::SensorClient {
   }
 
   // Implements mojom::SensorClient:
-  void SensorReadingChanged() override {
+  void SensorReadingChanged(const SensorReading& reading) override {
     if (!shared_buffer_reader_->GetReading(&reading_data_)) {
       ADD_FAILURE() << "Failed to get readings from shared buffer";
       return;
@@ -98,7 +98,8 @@ class TestSensorClient : public mojom::SensorClient {
                        mojom::SensorInitParamsPtr params) {
     ASSERT_TRUE(params);
     EXPECT_EQ(mojom::SensorCreationResult::SUCCESS, result);
-    EXPECT_TRUE(params->memory.IsValid());
+    ASSERT_TRUE(params->shared_buffer);
+    EXPECT_TRUE(params->shared_buffer->memory.IsValid());
 
     const double expected_maximum_frequency = std::min(
         kMaximumPlatformFrequency, GetSensorMaxAllowedFrequency(type_));
@@ -112,7 +113,8 @@ class TestSensorClient : public mojom::SensorClient {
                      params->default_configuration.frequency());
 
     shared_buffer_reader_ = device::SensorReadingSharedBufferReader::Create(
-        std::move(params->memory), params->buffer_offset);
+        std::move(params->shared_buffer->memory),
+        params->shared_buffer->buffer_offset);
     ASSERT_TRUE(shared_buffer_reader_);
 
     sensor_.Bind(std::move(params->sensor));

@@ -124,7 +124,8 @@ void SensorProxyImpl::RaiseError() {
   HandleSensorError();
 }
 
-void SensorProxyImpl::SensorReadingChanged() {
+void SensorProxyImpl::SensorReadingChanged(
+    const device::SensorReading& reading) {
   DCHECK_EQ(device::mojom::blink::ReportingMode::ON_CHANGE, mode_);
   if (ShouldProcessReadings())
     UpdateSensorReading();
@@ -179,8 +180,10 @@ void SensorProxyImpl::OnSensorCreated(
   sensor_remote_.Bind(std::move(params->sensor), task_runner_);
   client_receiver_.Bind(std::move(params->client_receiver), task_runner_);
 
+  CHECK(params->shared_buffer);
   shared_buffer_reader_ = device::SensorReadingSharedBufferReader::Create(
-      std::move(params->memory), params->buffer_offset);
+      std::move(params->shared_buffer->memory),
+      params->shared_buffer->buffer_offset);
   if (!shared_buffer_reader_) {
     HandleSensorError();
     return;

@@ -126,7 +126,7 @@ void SensorImpl::OnSensorReadingChanged(mojom::SensorType type) {
   DCHECK(!IsSuspended());
   if (client_ && reading_notification_enabled_ &&
       sensor_->GetReportingMode() == mojom::ReportingMode::ON_CHANGE) {
-    client_->SensorReadingChanged();
+    client_->SensorReadingChanged(SensorReading());
   }
 }
 

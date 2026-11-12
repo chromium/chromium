@@ -15,8 +15,7 @@ source_set("generic_sensor") {
   ]
 
   public_deps = [
-    ":sensor_configuration",
-    ":sensor_reading",
+    ":sensor_mojom_traits",
     "//services/device/public/mojom:generic_sensor",
   ]
 
@@ -27,18 +26,24 @@ source_set("generic_sensor") {
   ]
 }
 
-source_set("sensor_configuration") {
+# Shared by both the blink and non-blink typemaps for
+# device.mojom.SensorReadingRaw so both variants link a single traits
+# component.
+component("sensor_mojom_traits") {
   sources = [
     "platform_sensor_configuration.cc",
     "platform_sensor_configuration.h",
-  ]
-
-  deps = [ "//base" ]
-}
-
-source_set("sensor_reading") {
-  sources = [
+    "sensor_mojom_traits.cc",
+    "sensor_mojom_traits.h",
     "sensor_reading.cc",
     "sensor_reading.h",
+  ]
+
+  defines = [ "IS_GENERIC_SENSOR_MOJOM_TRAITS_IMPL" ]
+
+  public_deps = [
+    "//base",
+    "//mojo/public/cpp/bindings",
+    "//services/device/public/mojom:generic_sensor_shared",
   ]
 }

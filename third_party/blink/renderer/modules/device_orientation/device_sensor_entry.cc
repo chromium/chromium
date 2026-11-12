@@ -106,7 +106,8 @@ void DeviceSensorEntry::RaiseError() {
   HandleSensorError();
 }
 
-void DeviceSensorEntry::SensorReadingChanged() {
+void DeviceSensorEntry::SensorReadingChanged(
+    const device::SensorReading& reading) {
   // Since DeviceSensorEventPump::FireEvent is called in a fixed
   // frequency, the |shared_buffer| is read frequently, and
   // Sensor::ConfigureReadingChangeNotifications() is set to false,
@@ -127,17 +128,19 @@ void DeviceSensorEntry::OnSensorCreated(
     return;
   }
   DCHECK_EQ(device::mojom::SensorCreationResult::SUCCESS, result);
+  CHECK(params->shared_buffer);
 
   constexpr size_t kReadBufferSize = sizeof(device::SensorReadingSharedBuffer);
 
-  DCHECK_EQ(0u, params->buffer_offset % kReadBufferSize);
+  DCHECK_EQ(0u, params->shared_buffer->buffer_offset % kReadBufferSize);
 
   sensor_remote_.Bind(std::move(params->sensor), event_pump_->task_runner_);
   client_receiver_.Bind(std::move(params->client_receiver),
                         event_pump_->task_runner_);
 
   shared_buffer_reader_ = device::SensorReadingSharedBufferReader::Create(
-      std::move(params->memory), params->buffer_offset);
+      std::move(params->shared_buffer->memory),
+      params->shared_buffer->buffer_offset);
   if (!shared_buffer_reader_) {
     HandleSensorError();
     event_pump_->DidStartIfPossible();

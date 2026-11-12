@@ -62,7 +62,7 @@ class DeviceSensorEntry : public GarbageCollected<DeviceSensorEntry>,
  private:
   // device::mojom::SensorClient:
   void RaiseError() override;
-  void SensorReadingChanged() override;
+  void SensorReadingChanged(const device::SensorReading& reading) override;
 
   // Mojo callback for SensorProvider::GetSensor().
   void OnSensorCreated(device::mojom::blink::SensorCreationResult result,

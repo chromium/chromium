@@ -11,6 +11,8 @@
 #include <array>
 #include <type_traits>
 
+#include "base/component_export.h"
+
 namespace device {
 
 // This class is guaranteed to have a fixed size of 64 bits on every platform.
@@ -48,14 +50,15 @@ class SensorReadingField {
   Storage storage_;
 };
 
-struct SensorReadingBase {
+struct COMPONENT_EXPORT(GENERIC_SENSOR_MOJOM_TRAITS) SensorReadingBase {
   SensorReadingBase();
   ~SensorReadingBase() = default;
   SensorReadingField<double> timestamp;
 };
 
 // Represents raw sensor reading data: timestamp and 4 values.
-struct SensorReadingRaw : public SensorReadingBase {
+struct COMPONENT_EXPORT(GENERIC_SENSOR_MOJOM_TRAITS) SensorReadingRaw
+    : public SensorReadingBase {
   SensorReadingRaw();
   ~SensorReadingRaw() = default;
 
@@ -64,14 +67,16 @@ struct SensorReadingRaw : public SensorReadingBase {
 };
 
 // Represents a single data value.
-struct SensorReadingSingle : public SensorReadingBase {
+struct COMPONENT_EXPORT(GENERIC_SENSOR_MOJOM_TRAITS) SensorReadingSingle
+    : public SensorReadingBase {
   SensorReadingSingle();
   ~SensorReadingSingle() = default;
   SensorReadingField<double> value;
 };
 
 // Represents a vector in 3d coordinate system.
-struct SensorReadingXYZ : public SensorReadingBase {
+struct COMPONENT_EXPORT(GENERIC_SENSOR_MOJOM_TRAITS) SensorReadingXYZ
+    : public SensorReadingBase {
   SensorReadingXYZ();
   ~SensorReadingXYZ() = default;
   SensorReadingField<double> x;
@@ -80,7 +85,8 @@ struct SensorReadingXYZ : public SensorReadingBase {
 };
 
 // Represents quaternion.
-struct SensorReadingQuat : public SensorReadingXYZ {
+struct COMPONENT_EXPORT(GENERIC_SENSOR_MOJOM_TRAITS) SensorReadingQuat
+    : public SensorReadingXYZ {
   SensorReadingQuat();
   ~SensorReadingQuat() = default;
   SensorReadingField<double> w;
@@ -184,7 +190,7 @@ struct SensorReadingQuat : public SensorReadingXYZ {
 // orientation_quat.w: w value of a quaternion representing the orientation of
 // the device in 3D space.
 
-union SensorReading {
+union COMPONENT_EXPORT(GENERIC_SENSOR_MOJOM_TRAITS) SensorReading {
   static_assert(std::is_trivially_destructible<SensorReadingRaw>::value,
                 "SensorReading's fields must be trivially destructible.");
 

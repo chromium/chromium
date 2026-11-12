@@ -7,18 +7,26 @@ module device.mojom;
 import "mojo/public/mojom/base/shared_memory.mojom";
 import "services/device/public/mojom/sensor.mojom";
 
-struct SensorInitParams {
-  // The Sensor interface.
-  pending_remote<Sensor> sensor;
-
-  // The SensorClient interface used to report sensor events.
-  pending_receiver<SensorClient> client_receiver;
-
+// Holds the read-only shared memory region and byte offset used to fetch
+// sensor readings when kSensorsOverMojo is disabled.
+struct SensorSharedBuffer {
   // The shared memory handle used to fetch the sensor reading.
   mojo_base.mojom.ReadOnlySharedMemoryRegion memory;
 
   // The offset at which shared buffer must be mapped.
   uint64 buffer_offset;
+};
+
+struct SensorInitParams {
+  // The Sensor interface used to configure the sensor.
+  pending_remote<Sensor> sensor;
+
+  // The SensorClient interface used to report sensor events.
+  pending_receiver<SensorClient> client_receiver;
+
+  // The shared memory handle and offset used to fetch the sensor reading.
+  // Null when kSensorsOverMojo is enabled.
+  SensorSharedBuffer? shared_buffer;
 
   // The ReportingMode supported by the sensor.
   ReportingMode mode;

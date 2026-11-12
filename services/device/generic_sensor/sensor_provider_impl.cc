@@ -167,9 +167,9 @@ void SensorProviderImpl::SensorCreated(
   sensor_to_receiver_id_[sensor_impl_ptr] = receiver_id;
   init_params->sensor = std::move(pending_sensor);
 
-  init_params->memory = std::move(cloned_region);
-  init_params->buffer_offset =
-      GetSensorReadingSharedBufferOffset(sensor->GetType());
+  init_params->shared_buffer = mojom::SensorSharedBuffer::New(
+      std::move(cloned_region),
+      GetSensorReadingSharedBufferOffset(sensor->GetType()));
   init_params->mode = sensor->GetReportingMode();
 
   double maximum_frequency = sensor->GetMaximumSupportedFrequency();

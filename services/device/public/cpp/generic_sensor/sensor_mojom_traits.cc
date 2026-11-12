@@ -5,6 +5,7 @@
 #include "services/device/public/cpp/generic_sensor/sensor_mojom_traits.h"
 
 #include <algorithm>
+#include <cmath>
 
 namespace mojo {
 
@@ -30,7 +31,7 @@ bool StructTraits<
     device::mojom::SensorReadingRawDataView,
     device::SensorReading>::Read(device::mojom::SensorReadingRawDataView data,
                                  device::SensorReading* out) {
-  if (data.timestamp() < 0) {
+  if (!std::isfinite(data.timestamp()) || data.timestamp() < 0) {
     return false;
   }
 

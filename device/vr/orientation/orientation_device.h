@@ -61,7 +61,7 @@ class COMPONENT_EXPORT(VR_ORIENTATION) VROrientationDevice
  private:
   // SensorClient Functions.
   void RaiseError() override;
-  void SensorReadingChanged() override {}
+  void SensorReadingChanged(const SensorReading& reading) override {}
 
   // Sensor event reaction functions.
   void SensorReady(device::mojom::SensorCreationResult result,

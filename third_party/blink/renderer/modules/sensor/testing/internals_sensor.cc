@@ -69,19 +69,14 @@ device::mojom::blink::VirtualSensorMetadataPtr ToMojoSensorMetadata(
   return metadata;
 }
 
-base::expected<device::mojom::blink::SensorReadingRawPtr, String>
-ToMojoRawReading(V8VirtualSensorType::Enum type,
-                 VirtualSensorReading* reading) {
+base::expected<device::SensorReading, String> ToMojoRawReading(
+    V8VirtualSensorType::Enum type,
+    VirtualSensorReading* reading) {
   if (!reading) {
-    return device::mojom::blink::SensorReadingRaw::New();
+    return device::SensorReading();
   }
 
-  // TODO(crbug.com/1492436): with the right Blink Mojo traits, we could use
-  // device::SensorReading instead of device::mojom::blink::SensorReadingRaw.
-  auto raw_reading = device::mojom::blink::SensorReadingRaw::New();
-  raw_reading->timestamp =
-      (base::TimeTicks::Now() - base::TimeTicks()).InSecondsF();
-  raw_reading->values.Fill(0.0, 4);
+  device::SensorReading raw_reading;
   switch (type) {
     case V8VirtualSensorType::Enum::kAbsoluteOrientation:
     case V8VirtualSensorType::Enum::kRelativeOrientation: {
@@ -89,18 +84,10 @@ ToMojoRawReading(V8VirtualSensorType::Enum type,
         const double alpha = reading->getAlphaOr(0);
         const double beta = reading->getBetaOr(0);
         const double gamma = reading->getGammaOr(0);
-        device::SensorReading quaternion_readings;
         if (!device::ComputeQuaternionFromEulerAngles(alpha, beta, gamma,
-                                                      &quaternion_readings)) {
+                                                      &raw_reading)) {
           return base::unexpected("Invalid value for alpha, beta or gamma");
         }
-        Vector<double> quaternion{
-            quaternion_readings.orientation_quat.x,
-            quaternion_readings.orientation_quat.y,
-            quaternion_readings.orientation_quat.z,
-            quaternion_readings.orientation_quat.w,
-        };
-        raw_reading->values.swap(quaternion);
       } else {
         return base::unexpected(
             "'alpha'/'beta'/'gamma' expected in the readings");
@@ -111,7 +98,7 @@ ToMojoRawReading(V8VirtualSensorType::Enum type,
       if (!reading->hasIlluminance()) {
         return base::unexpected("Invalid illuminance reading format");
       }
-      raw_reading->values[0] = reading->getIlluminanceOr(0);
+      raw_reading.als.value = reading->getIlluminanceOr(0);
       break;
     case V8VirtualSensorType::Enum::kAccelerometer:
     case V8VirtualSensorType::Enum::kGravity:
@@ -121,11 +108,13 @@ ToMojoRawReading(V8VirtualSensorType::Enum type,
       if (!reading->hasX() || !reading->hasY() || !reading->hasZ()) {
         return base::unexpected("Invalid xyz reading format");
       }
-      raw_reading->values[0] = reading->getXOr(0);
-      raw_reading->values[1] = reading->getYOr(0);
-      raw_reading->values[2] = reading->getZOr(0);
+      raw_reading.accel.x = reading->getXOr(0);
+      raw_reading.accel.y = reading->getYOr(0);
+      raw_reading.accel.z = reading->getZOr(0);
       break;
   }
+  raw_reading.raw.timestamp =
+      (base::TimeTicks::Now() - base::TimeTicks()).InSecondsF();
   return raw_reading;
 }
 

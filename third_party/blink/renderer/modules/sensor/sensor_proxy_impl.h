@@ -53,7 +53,7 @@ class SensorProxyImpl final : public SensorProxy,
 
   // device::mojom::blink::SensorClient overrides.
   void RaiseError() override;
-  void SensorReadingChanged() override;
+  void SensorReadingChanged(const device::SensorReading& reading) override;
 
   // Generic handler for a fatal error.
   void HandleSensorError(

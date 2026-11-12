@@ -154,13 +154,24 @@ mojom("generic_sensor") {
       traits_headers = [
         "//services/device/public/cpp/generic_sensor/sensor_mojom_traits.h",
       ]
-      traits_sources = [
-        "//services/device/public/cpp/generic_sensor/sensor_mojom_traits.cc",
+      traits_public_deps =
+          [ "//services/device/public/cpp/generic_sensor:sensor_mojom_traits" ]
+    },
+  ]
+
+  blink_cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "device.mojom.SensorReadingRaw"
+          cpp = "::device::SensorReading"
+        },
       ]
-      traits_public_deps = [
-        "//services/device/public/cpp/generic_sensor:sensor_configuration",
-        "//services/device/public/cpp/generic_sensor:sensor_reading",
+      traits_headers = [
+        "//services/device/public/cpp/generic_sensor/sensor_mojom_traits.h",
       ]
+      traits_public_deps =
+          [ "//services/device/public/cpp/generic_sensor:sensor_mojom_traits" ]
     },
   ]
 

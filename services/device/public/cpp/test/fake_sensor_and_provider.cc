@@ -173,7 +173,7 @@ void FakeSensor::SensorReadingChanged() {
   seqlock.WriteEnd();
 
   if (client_ && reading_notification_enabled_)
-    client_->SensorReadingChanged();
+    client_->SensorReadingChanged(reading_);
 }
 
 FakeSensorProvider::FakeSensorProvider() = default;
@@ -273,8 +273,8 @@ void FakeSensorProvider::GetSensor(
   if (sensor) {
     auto init_params = mojom::SensorInitParams::New();
     init_params->client_receiver = sensor->GetClient();
-    init_params->memory = mapped_region_.region.Duplicate();
-    init_params->buffer_offset = sensor->GetBufferOffset();
+    init_params->shared_buffer = mojom::SensorSharedBuffer::New(
+        mapped_region_.region.Duplicate(), sensor->GetBufferOffset());
     init_params->default_configuration = sensor->GetDefaultConfiguration();
     init_params->maximum_frequency = sensor->GetMaximumSupportedFrequency();
     init_params->minimum_frequency = sensor->GetMinimumSupportedFrequency();

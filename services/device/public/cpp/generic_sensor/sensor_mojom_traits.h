@@ -7,6 +7,7 @@
 
 #include <array>
 
+#include "base/component_export.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "services/device/public/cpp/generic_sensor/platform_sensor_configuration.h"
 #include "services/device/public/cpp/generic_sensor/sensor_reading.h"
@@ -15,8 +16,9 @@
 namespace mojo {
 
 template <>
-struct StructTraits<device::mojom::SensorConfigurationDataView,
-                    device::PlatformSensorConfiguration> {
+struct COMPONENT_EXPORT(GENERIC_SENSOR_MOJOM_TRAITS)
+    StructTraits<device::mojom::SensorConfigurationDataView,
+                 device::PlatformSensorConfiguration> {
   static double frequency(const device::PlatformSensorConfiguration& input) {
     return input.frequency();
   }
@@ -26,8 +28,9 @@ struct StructTraits<device::mojom::SensorConfigurationDataView,
 };
 
 template <>
-struct StructTraits<device::mojom::SensorReadingRawDataView,
-                    device::SensorReading> {
+struct COMPONENT_EXPORT(GENERIC_SENSOR_MOJOM_TRAITS)
+    StructTraits<device::mojom::SensorReadingRawDataView,
+                 device::SensorReading> {
   static double timestamp(const device::SensorReading& reading) {
     return reading.timestamp();
   }

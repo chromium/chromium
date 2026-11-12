@@ -86,10 +86,6 @@ void VROrientationDevice::SensorReady(
   }
 
   DVLOG(2) << __func__;
-  constexpr size_t kReadBufferSize = sizeof(device::SensorReadingSharedBuffer);
-
-  DCHECK_EQ(0u, params->buffer_offset % kReadBufferSize);
-
   device::PlatformSensorConfiguration default_config =
       params->default_configuration;
 
@@ -97,8 +93,18 @@ void VROrientationDevice::SensorReady(
 
   receiver_.Bind(std::move(params->client_receiver));
 
+  constexpr size_t kReadBufferSize = sizeof(device::SensorReadingSharedBuffer);
+  if (!params->shared_buffer || !params->shared_buffer->memory.IsValid() ||
+      (params->shared_buffer->buffer_offset % kReadBufferSize != 0)) {
+    // If we cannot read data, we cannot supply a device.
+    HandleSensorError();
+    std::move(ready_callback_).Run();
+    return;
+  }
+
   shared_buffer_reader_ = device::SensorReadingSharedBufferReader::Create(
-      std::move(params->memory), params->buffer_offset);
+      std::move(params->shared_buffer->memory),
+      params->shared_buffer->buffer_offset);
   if (!shared_buffer_reader_) {
     // If we cannot read data, we cannot supply a device.
     HandleSensorError();

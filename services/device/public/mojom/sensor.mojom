@@ -35,8 +35,9 @@ struct SensorReadingRaw {
 //              whenever sensor reading is changed.
 // CONTINUOUS - sensor will continuously update its reading with frequency
 //              specified in SensorConfiguration.frequency.
-//              OnSensorReadingChanged() signal is not sent to the client for
-//              sensors with CONTINUOUS reporting mode.
+//              When kSensorsOverMojo is enabled, readings are delivered via
+//              SensorClient.SensorReadingChanged(); when disabled, the signal
+//              is not sent and readings must be polled from shared memory.
 enum ReportingMode {
   ON_CHANGE,
   CONTINUOUS
@@ -95,7 +96,9 @@ interface SensorClient {
   // Signals SensorClient when there is an error.
   RaiseError();
 
-  // Signals SensorClient when reading has been changed (only for sensors with
-  // ReportingMode::ON_CHANGE).
-  SensorReadingChanged();
+  // Signals SensorClient when reading has been changed.
+  // When kSensorsOverMojo is enabled, delivers `reading` for both CONTINUOUS
+  // and ON_CHANGE sensors. When disabled, invoked only for ON_CHANGE sensors
+  // as a notification to read from the shared buffer.
+  SensorReadingChanged(SensorReadingRaw reading);
 };

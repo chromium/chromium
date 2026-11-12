@@ -5,10 +5,12 @@
 #ifndef SERVICES_DEVICE_PUBLIC_CPP_GENERIC_SENSOR_PLATFORM_SENSOR_CONFIGURATION_H_
 #define SERVICES_DEVICE_PUBLIC_CPP_GENERIC_SENSOR_PLATFORM_SENSOR_CONFIGURATION_H_
 
+#include "base/component_export.h"
 
 namespace device {
 
-class PlatformSensorConfiguration {
+class COMPONENT_EXPORT(GENERIC_SENSOR_MOJOM_TRAITS)
+    PlatformSensorConfiguration {
  public:
   PlatformSensorConfiguration();
   explicit PlatformSensorConfiguration(double frequency);
