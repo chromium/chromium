@@ -22,6 +22,12 @@
 // Keychain access group override.
 + (void)cleanUpRemoteActorKeychain;
 
+// Redirects the Passbox and Agent Permission Service requests to `baseURL`.
++ (void)setRemoteActorEndpointsBaseURL:(NSString*)baseURL;
+
+// Restores the default Passbox and Agent Permission Service endpoints.
++ (void)resetRemoteActorEndpoints;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_PASSWORDS_BOTTOM_SHEET_TEST_REMOTE_ACTOR_CREDENTIAL_BOTTOM_SHEET_APP_INTERFACE_H_

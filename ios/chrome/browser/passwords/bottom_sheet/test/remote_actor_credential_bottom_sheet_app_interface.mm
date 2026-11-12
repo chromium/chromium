@@ -10,7 +10,9 @@
 #import <utility>
 #import <vector>
 
+#import "base/command_line.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/password_manager/core/browser/remote_actor/remote_actor_switches.h"
 #import "crypto/random.h"
 #import "ios/chrome/browser/passwords/model/remote_actor/proto/remote_actor_password_upload_request.pb.h"
 #import "ios/chrome/browser/passwords/model/remote_actor/remote_actor_constants.h"
@@ -57,6 +59,22 @@
   DeleteRemoteActorSharedSymmetricKeyForTesting(
       nil, kRemoteActorKeychainAccount, kRemoteActorKeychainService);
   ResetRemoteActorKeychainAccessGroupOverrideForTesting();
+}
+
++ (void)setRemoteActorEndpointsBaseURL:(NSString*)baseURL {
+  // The endpoints are read from the command line for every request, so they
+  // can be overridden after the app has launched.
+  std::string URL = base::SysNSStringToUTF8(baseURL);
+  base::CommandLine* commandLine = base::CommandLine::ForCurrentProcess();
+  commandLine->AppendSwitchASCII(switches::kPassboxEndpoint, URL);
+  commandLine->AppendSwitchASCII(switches::kAgentPermissionServiceEndpoint,
+                                 URL);
+}
+
++ (void)resetRemoteActorEndpoints {
+  base::CommandLine* commandLine = base::CommandLine::ForCurrentProcess();
+  commandLine->RemoveSwitch(switches::kPassboxEndpoint);
+  commandLine->RemoveSwitch(switches::kAgentPermissionServiceEndpoint);
 }
 
 @end

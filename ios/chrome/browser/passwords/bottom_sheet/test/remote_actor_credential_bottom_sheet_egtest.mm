@@ -5,15 +5,18 @@
 #import <UIKit/UIKit.h>
 #import <XCTest/XCTest.h>
 
+#import <memory>
+
+#import "base/functional/bind.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
-#import "base/time/time.h"
 #import "components/password_manager/core/browser/remote_actor/remote_actor_config.h"
 #import "components/password_manager/core/browser/remote_actor/remote_actor_credential_sharing_result.h"
 #import "components/password_manager/core/common/remote_actor/remote_actor_features.h"
 #import "components/strings/grit/components_strings.h"
 #import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
+#import "ios/chrome/browser/device_reauth/test/reauthentication_app_interface.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/test/remote_actor_credential_bottom_sheet_app_interface.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_manager_egtest_utils.h"
@@ -27,6 +30,10 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "net/http/http_status_code.h"
+#import "net/test/embedded_test_server/embedded_test_server.h"
+#import "net/test/embedded_test_server/http_request.h"
+#import "net/test/embedded_test_server/http_response.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
 
@@ -50,6 +57,10 @@ NSString* const kSuggestion = @"user1@example.com";
 NSString* const kResultHistogram =
     @"PasswordManager.RemoteActorCredentialSharing.Result";
 
+// Path of the test server handling the Passbox and Agent Permission Service
+// requests.
+constexpr char kFakeServicesPath[] = "/remote_actor/";
+
 // Number of suggestions exceeding what fits on screen.
 constexpr int kManySuggestionsCount = 8;
 
@@ -59,6 +70,19 @@ constexpr CGFloat kScrollAmount = 150;
 // Returns the username of the `index`-th generated suggestion.
 NSString* GeneratedSuggestion(int index) {
   return [NSString stringWithFormat:@"user%d@example.com", index];
+}
+
+// Returns a `BasicHttpResponse` with `HTTP_OK` for the Passbox and Agent
+// Permission Service requests starting with `kFakeServicesPath`, or `nullptr`
+// if the request is unhandled.
+std::unique_ptr<net::test_server::HttpResponse> HandleRemoteActorServiceRequest(
+    const net::test_server::HttpRequest& request) {
+  if (!request.relative_url.starts_with(kFakeServicesPath)) {
+    return nullptr;
+  }
+  auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+  response->set_code(net::HTTP_OK);
+  return response;
 }
 
 // Returns the matcher for the "Allow this time" button.
@@ -132,14 +156,14 @@ void AssertCheckmark(NSString* suggestion, BOOL expected) {
 }
 
 // Waits until the sharing flow recorded `result` as its unique result.
-void WaitForResult(RemoteActorCredentialSharingResult result,
-                   base::TimeDelta timeout) {
-  BOOL recorded = base::test::ios::WaitUntilConditionOrTimeout(timeout, ^bool {
-    return [MetricsAppInterface
-               expectUniqueSampleWithCount:1
-                                 forBucket:static_cast<int>(result)
-                              forHistogram:kResultHistogram] == nil;
-  });
+void WaitForResult(RemoteActorCredentialSharingResult result) {
+  bool recorded = base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForUIElementTimeout, ^bool {
+        return [MetricsAppInterface
+                   expectUniqueSampleWithCount:1
+                                     forBucket:static_cast<int>(result)
+                                  forHistogram:kResultHistogram] == nil;
+      });
   GREYAssertTrue(recorded, @"Expected result %d was not recorded.",
                  static_cast<int>(result));
 }
@@ -174,6 +198,13 @@ void DismissBottomSheetWithCancel() {
 }
 
 - (void)tearDownHelper {
+  net::test_server::EmbeddedTestServer* testServer = self.testServer;
+  if (testServer->Started()) {
+    GREYAssertTrue(testServer->ShutdownAndWaitUntilComplete(),
+                   @"Failed to clean up test server.");
+  }
+  [ReauthenticationAppInterface mockReauthenticationModuleShouldSkipReAuth:YES];
+  [RemoteActorCredentialBottomSheetAppInterface resetRemoteActorEndpoints];
   [RemoteActorCredentialBottomSheetAppInterface cleanUpRemoteActorKeychain];
   GREYAssertTrue([PasswordSettingsAppInterface clearPasswordStores],
                  @"Clearing password stores failed.");
@@ -183,6 +214,19 @@ void DismissBottomSheetWithCancel() {
 }
 
 #pragma mark - Helpers
+
+// Starts the test server and redirects the Passbox and Agent Permission
+// Service requests to it.
+- (void)startFakeRemoteActorServices {
+  net::test_server::EmbeddedTestServer* testServer = self.testServer;
+  testServer->RegisterRequestHandler(
+      base::BindRepeating(&HandleRemoteActorServiceRequest));
+  GREYAssertTrue(testServer->Start(), @"Test server failed to start.");
+  [RemoteActorCredentialBottomSheetAppInterface
+      setRemoteActorEndpointsBaseURL:base::SysUTF8ToNSString(
+                                         testServer->GetURL(kFakeServicesPath)
+                                             .spec())];
+}
 
 // Signs in, saves a credential to the account store for each of `suggestions`
 // and opens a valid Remote Actor URL for `kRequestDomain`.
@@ -247,8 +291,32 @@ void DismissBottomSheetWithCancel() {
       performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
 
   [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:Title()];
-  WaitForResult(RemoteActorCredentialSharingResult::kUserCancelledDialog,
-                base::test::ios::kWaitForUIElementTimeout);
+  WaitForResult(RemoteActorCredentialSharingResult::kUserCancelledDialog);
+}
+
+// Tests that tapping "Allow this time" requests a reauthentication, then shares
+// the credential and dismisses the bottom sheet once the flow succeeds.
+- (void)testTapAllow {
+  [self startFakeRemoteActorServices];
+  [ReauthenticationAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kSuccess];
+  // The fake reauthentication module skips reauthentication by default.
+  [ReauthenticationAppInterface mockReauthenticationModuleShouldSkipReAuth:NO];
+  [self openBottomSheetWithSuggestions:@[ kSuggestion ]];
+
+  [[EarlGrey selectElementWithMatcher:AllowButton()] performAction:grey_tap()];
+
+  // The bottom sheet remains displayed while waiting for the reauthentication.
+  [[EarlGrey selectElementWithMatcher:Title()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface expectTotalCount:0 forHistogram:kResultHistogram]);
+
+  // Fails if no reauthentication was requested.
+  [ReauthenticationAppInterface mockReauthenticationModuleReturnMockedResult];
+
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:Title()];
+  WaitForResult(RemoteActorCredentialSharingResult::kSuccess);
 }
 
 // Tests that tapping the learn-more link dismisses the bottom sheet and opens

@@ -68,6 +68,7 @@ source_set("eg_app_support+eg2") {
   ]
   deps = [
     "//base",
+    "//components/password_manager/core/browser/remote_actor",
     "//components/prefs",
     "//crypto",
     "//ios/chrome/browser/autofill/model/bottom_sheet",
