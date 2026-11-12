@@ -40,7 +40,6 @@ Dependent Android libraries pulled in partially:
 | libartbase  | art/libartbase/                                             | Apache  | ddd4776acaa0a4fb0e6027cd063ec450f518c7d7 |
 | libbase     | system/libbase/                                             | Apache  | a5c86f3574f744b22a82a8cd08e7fa0bf7210c28 |
 | libdexfile  | art/libdexfile/                                             | Apache  | ddd4776acaa0a4fb0e6027cd063ec450f518c7d7 |
-| libprocinfo | system/libprocinfo/                                         | Apache  | 295ed0246f153f155b975acee119d7e3adecadec |
 ----------------------------------------------------------------------------------------------------------------------------------
 
 Steps to update `libunwindstack`:
@@ -50,7 +49,6 @@ Steps to update `libunwindstack`:
     ```
     rm -rf src
     mkdir temp src
-    git clone https://android.googlesource.com/platform/system/libprocinfo -b main src/libprocinfo
     git clone https://android.googlesource.com/platform/system/libbase -b main src/android-base
     git clone https://android.googlesource.com/platform/system/unwinding -b main temp/unwinding
     git clone https://android.googlesource.com/platform/art -b main temp/art

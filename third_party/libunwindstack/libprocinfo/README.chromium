@@ -1,0 +1,19 @@
+Name: libprocinfo
+URL: https://android.googlesource.com/platform/system/libprocinfo
+Version: N/A
+Revision: 295ed0246f153f155b975acee119d7e3adecadec
+Update Mechanism: Manual
+License: Apache-2.0
+License File: //third_party/libunwindstack/LICENSE
+Shipped: yes
+Security Critical: yes
+
+Description:
+Helpers from AOSP to read process information from /proc. libunwindstack
+uses include/procinfo/process_map.h, which //third_party/libunwindstack
+builds into its libunwindstack target.
+
+src/ holds that file from the upstream repository root, unchanged.
+
+To update, copy include/procinfo/process_map.h at the new revision into
+src/include/procinfo/ and update Revision above.

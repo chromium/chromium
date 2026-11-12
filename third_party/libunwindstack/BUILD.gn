@@ -42,7 +42,7 @@ source_set("libunwindstack") {
     "src/libartbase",
     "src/libdexfile",
     "src/libdexfile/external/include",
-    "src/libprocinfo/include",
+    "libprocinfo/src/include",
     "src/libunwindstack/include",
     "//third_party/rust/chromium_crates_io/vendor/rustc-demangle-capi-v0_1/include",
     "//third_party/zstd/src/lib",
@@ -89,6 +89,7 @@ source_set("libunwindstack") {
     "src/libunwindstack/include/unwindstack/UserX86_64.h",
   ]
   sources = [
+    "libprocinfo/src/include/procinfo/process_map.h",
     "src/android-base/file.cpp",
     "src/android-base/include/android-base/errno_restorer.h",
     "src/android-base/include/android-base/file.h",
@@ -192,7 +193,6 @@ source_set("libunwindstack") {
     "src/libdexfile/external/dex_file_supp.cc",
     "src/libdexfile/external/include/art_api/dex_file_external.h",
     "src/libdexfile/external/include/art_api/dex_file_support.h",
-    "src/libprocinfo/include/procinfo/process_map.h",
     "src/libunwindstack/ArmExidx.cpp",
     "src/libunwindstack/ArmExidx.h",
     "src/libunwindstack/Check.h",
