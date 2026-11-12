@@ -1968,6 +1968,12 @@ crbug.com/501115605 [ Mac15-arm64 ] virtual/webnn-service-with-gpu/external/wpt/
 crbug.com/501115605 [ Mac15 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/expand.https.any.html?gpu [ Failure ]  # Flaky output
 crbug.com/501115605 [ Mac15 ] virtual/webnn-service-on-npu/external/wpt/webnn/conformance_tests/expand.https.any.html?npu [ Failure ]  # Flaky output
 crbug.com/530645748 [ Mac15 ] virtual/webnn-service-on-npu/external/wpt/webnn/conformance_tests/l2Pool2d.https.any.html?npu [ Failure ]  # Flaky output
+crbug.com/584855272 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/arg_min_max.https.any.html?gpu [ Failure ]
+crbug.com/584855272 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/validation_tests/constant.https.any.html?gpu [ Failure ]
+crbug.com/584855272 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/validation_tests/gather.https.any.html?gpu [ Failure ]
+crbug.com/584855272 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/validation_tests/input.https.any.html?gpu [ Failure ]
+crbug.com/584855272 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/validation_tests/lstmCell.https.any.html?gpu [ Failure ]
+crbug.com/584855272 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/validation_tests/tile.https.any.html?gpu [ Failure ]
 
 # WebDriver WPT tests
 
