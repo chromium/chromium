@@ -85,9 +85,8 @@ class FakeOverlayRequestCallbackInstaller
   const OverlayRequestSupport* GetRequestSupport() const override;
   void InstallCallbacksInternal(OverlayRequest* request) override;
 
-  raw_ptr<FakeOverlayRequestCallbackReceiver, DanglingUntriaged> receiver_ =
-      nullptr;
-  raw_ptr<const OverlayRequestSupport, DanglingUntriaged> request_support_ =
+  raw_ptr<FakeOverlayRequestCallbackReceiver> receiver_ = nullptr;
+  raw_ptr<const OverlayRequestSupport> request_support_ =
       OverlayRequestSupport::All();
   const std::set<raw_ptr<const OverlayResponseSupport>> dispatch_supports_;
 };

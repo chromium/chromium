@@ -37,6 +37,8 @@ class FakeOverlayBrowserAgent
     : public OverlayBrowserAgentBase,
       public BrowserUserData<FakeOverlayBrowserAgent> {
  public:
+  ~FakeOverlayBrowserAgent() override { ClearInstallers(); }
+
   // The mock callback receiver used by the FakeOverlayRequestCallbackInstaller
   // whose callback installation is driven by the OverlayBrowserAgentBase
   // superclass.
