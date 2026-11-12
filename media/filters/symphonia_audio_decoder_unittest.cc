@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 #include <utility>
+#include <vector>
 
 #include "base/functional/callback_helpers.h"
 #include "base/test/task_environment.h"
@@ -74,6 +75,45 @@ TEST(SymphoniaAudioDecoderTest, DecodeTruncatedBufferDoesNotFail) {
   base::test::TestFuture<DecoderStatus> eos_future;
   decoder->Decode(DecoderBuffer::CreateEOSBuffer(), eos_future.GetCallback());
   EXPECT_TRUE(eos_future.Get().is_ok());
+}
+
+// FFmpegDemuxer reports kSampleFormatPlanarF32 for PCM codecs it has no
+// decoder for. Fixed-width PCM codecs must still initialize.
+TEST(SymphoniaAudioDecoderTest, FixedWidthPcmIgnoresSampleFormat) {
+  base::test::TaskEnvironment task_environment;
+  NullMediaLog media_log;
+  struct {
+    AudioCodec codec;
+    size_t coded_bytes_per_sample;
+  } const kCases[] = {
+      {AudioCodec::kPCM_S16BE, 2},
+      {AudioCodec::kPCM_S24BE, 3},
+      {AudioCodec::kPCM_ALAW, 1},
+      {AudioCodec::kPCM_MULAW, 1},
+  };
+  constexpr int kFrames = 160;
+  for (const auto& test_case : kCases) {
+    SCOPED_TRACE(GetCodecName(test_case.codec));
+    SymphoniaAudioDecoder decoder(task_environment.GetMainThreadTaskRunner(),
+                                  &media_log);
+    AudioDecoderConfig config(test_case.codec, kSampleFormatPlanarF32,
+                              ChannelLayoutConfig::Mono(), 8000,
+                              EmptyExtraData(), EncryptionScheme::kUnencrypted);
+    base::test::TestFuture<DecoderStatus> init_future;
+    base::test::TestFuture<scoped_refptr<AudioBuffer>> output_future;
+    decoder.Initialize(config, nullptr, init_future.GetCallback(),
+                       output_future.GetRepeatingCallback(), base::DoNothing());
+    ASSERT_TRUE(init_future.Get().is_ok());
+
+    std::vector<uint8_t> data(kFrames * test_case.coded_bytes_per_sample);
+    auto buffer = DecoderBuffer::CopyFrom(data);
+    buffer->set_timestamp(base::TimeDelta());
+    buffer->set_duration(base::Milliseconds(20));
+    base::test::TestFuture<DecoderStatus> decode_future;
+    decoder.Decode(std::move(buffer), decode_future.GetCallback());
+    EXPECT_TRUE(decode_future.Get().is_ok());
+    EXPECT_EQ(kFrames, output_future.Take()->frame_count());
+  }
 }
 
 TEST(SymphoniaAudioDecoderTest, BackToBackDecodeErrorsFail) {
