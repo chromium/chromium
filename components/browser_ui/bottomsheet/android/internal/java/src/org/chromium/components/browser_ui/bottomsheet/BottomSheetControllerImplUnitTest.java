@@ -209,6 +209,23 @@ public class BottomSheetControllerImplUnitTest {
     }
 
     @Test
+    public void testTopInsetChanged_SheetInitialized() {
+        mController.runSheetInitializerForTesting();
+
+        mController.onTopInsetChanged(50);
+        verify(mBottomSheet).onTopInsetChanged(50);
+    }
+
+    @Test
+    public void testTopInsetChanged_NoInsetChange() {
+        mController.runSheetInitializerForTesting();
+
+        mController.onTopInsetChanged(50);
+        mController.onTopInsetChanged(50);
+        verify(mBottomSheet).onTopInsetChanged(50);
+    }
+
+    @Test
     public void testScrimZOrdering() {
         mController.runSheetInitializerForTesting();
         verify(mBottomSheet).addObserver(mBottomSheetObserverCaptor.capture());

@@ -4,6 +4,8 @@
 
 package org.chromium.components.browser_ui.bottomsheet;
 
+import androidx.annotation.Px;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager.AppHeaderObserver;
 
@@ -56,6 +58,13 @@ public interface ManagedBottomSheetController
 
     /** Set the current offset of the bottom controls. */
     void setBottomControlsOffset(int bottomControlsOffset);
+
+    /**
+     * Called when the top inset changes (e.g. when edge-to-edge top inset is applied).
+     *
+     * @param topInset The top inset in pixels.
+     */
+    default void onTopInsetChanged(@Px int topInset) {}
 
     /** Clean up any state maintained by the controller. */
     void destroy();

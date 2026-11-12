@@ -122,6 +122,7 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
 
     private boolean mScrimVisible;
     private int mAppHeaderHeight;
+    private @Px int mTopInset;
     private int mBottomControlsOffset;
     private boolean mIsAnchoredToBottomControls;
     private final boolean mEnableLargeFormFactorUi;
@@ -204,6 +205,15 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
         }
     }
 
+    @Override
+    public void onTopInsetChanged(@Px int topInset) {
+        if (topInset == mTopInset) return;
+        mTopInset = topInset;
+        if (mBottomSheet != null) {
+            mBottomSheet.onTopInsetChanged(mTopInset);
+        }
+    }
+
     @VisibleForTesting
     boolean isLargeFormFactor() {
         return mEnableLargeFormFactorUi && DeviceInfo.isDesktop();
@@ -252,6 +262,9 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
                 mBottomControlsOffset,
                 insetObserver,
                 isLargeFormFactor());
+        if (mTopInset != 0) {
+            mBottomSheet.onTopInsetChanged(mTopInset);
+        }
 
         // Initialize the queue with a comparator that checks content priority.
         mContentQueue = new PriorityQueue<>(INITIAL_QUEUE_CAPACITY, this::comparePrecedence);

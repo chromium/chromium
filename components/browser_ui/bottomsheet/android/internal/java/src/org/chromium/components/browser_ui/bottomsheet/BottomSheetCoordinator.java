@@ -144,6 +144,9 @@ class BottomSheetCoordinator
     /** The last recorded app header height, in px. */
     private int mAppHeaderHeight;
 
+    /** The last recorded top inset, in px. */
+    private @Px int mTopInset;
+
     private @ColorInt int mSheetBgColor;
     private boolean mIsRelayingOutContainer;
 
@@ -1387,7 +1390,7 @@ class BottomSheetCoordinator
     void onAppHeaderHeightChanged(int appHeaderHeight) {
         assert mSheetContainer != null : "Sheet container should not be null.";
         var params = (MarginLayoutParams) mSheetContainer.getLayoutParams();
-        if (params.topMargin != mAppHeaderHeight) {
+        if (params.topMargin != Math.max(mAppHeaderHeight, mTopInset)) {
             // Log to track cases where the top margin was updated by some other source.
             Log.i(
                     TAG,
@@ -1396,11 +1399,31 @@ class BottomSheetCoordinator
                             + ", previous app header height="
                             + mAppHeaderHeight
                             + ", new app header height="
-                            + appHeaderHeight);
+                            + appHeaderHeight
+                            + ", top inset="
+                            + mTopInset);
         }
         mAppHeaderHeight = appHeaderHeight;
-        if (appHeaderHeight != params.topMargin) {
-            params.topMargin = appHeaderHeight;
+        updateSheetContainerTopMargin();
+    }
+
+    /**
+     * Updates the sheet container's top margin to avoid drawing the sheet into the status bar when
+     * drawing edge-to-edge on top.
+     *
+     * @param topInset The top inset in px.
+     */
+    void onTopInsetChanged(@Px int topInset) {
+        mTopInset = topInset;
+        updateSheetContainerTopMargin();
+    }
+
+    private void updateSheetContainerTopMargin() {
+        assert mSheetContainer != null : "Sheet container should not be null.";
+        var params = (MarginLayoutParams) mSheetContainer.getLayoutParams();
+        int targetTopMargin = Math.max(mAppHeaderHeight, mTopInset);
+        if (targetTopMargin != params.topMargin) {
+            params.topMargin = targetTopMargin;
             mSheetContainer.setLayoutParams(params);
         }
     }

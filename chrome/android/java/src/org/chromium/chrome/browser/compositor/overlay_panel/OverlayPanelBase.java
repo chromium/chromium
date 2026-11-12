@@ -10,6 +10,7 @@ import android.graphics.drawable.Drawable;
 import android.view.ViewGroup;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApiCompatibilityUtils;
@@ -155,6 +156,7 @@ abstract class OverlayPanelBase implements OverlayPanelStateProvider, AppHeaderO
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final BottomControlsStacker mBottomControlsStacker;
     private float mAppHeaderHeightDp;
+    private float mTopInsetDp;
 
     // ============================================================================================
     // Constructor
@@ -495,10 +497,11 @@ abstract class OverlayPanelBase implements OverlayPanelStateProvider, AppHeaderO
     }
 
     /**
-     * @return The height of the tab (accounting for app headers) the panel is displayed on top of.
+     * @return The height of the tab (accounting for app headers and top insets) the panel is
+     *     displayed on top of.
      */
-    public float getTabHeightWithoutAppHeader() {
-        return getTabHeight() - mAppHeaderHeightDp;
+    public float getTabHeightWithoutTopOffset() {
+        return getTabHeight() - Math.max(mAppHeaderHeightDp, mTopInsetDp);
     }
 
     /**
@@ -940,7 +943,7 @@ abstract class OverlayPanelBase implements OverlayPanelStateProvider, AppHeaderO
      */
     protected float getExpandedHeight() {
         if (isFullWidthSizePanel()) {
-            return getTabHeightWithoutAppHeader() * EXPANDED_PANEL_HEIGHT_PERCENTAGE;
+            return getTabHeightWithoutTopOffset() * EXPANDED_PANEL_HEIGHT_PERCENTAGE;
         } else {
             return (getTabHeight() - mToolbarHeightDp * mPxToDp) * EXPANDED_PANEL_HEIGHT_PERCENTAGE;
         }
@@ -950,7 +953,7 @@ abstract class OverlayPanelBase implements OverlayPanelStateProvider, AppHeaderO
      * @return The maximized height of the panel in dps.
      */
     protected float getMaximizedHeight() {
-        return getTabHeightWithoutAppHeader();
+        return getTabHeightWithoutTopOffset();
     }
 
     /**
@@ -1384,7 +1387,27 @@ abstract class OverlayPanelBase implements OverlayPanelStateProvider, AppHeaderO
     /** AppHeaderObserver implementation. */
     @Override
     public void onAppHeaderStateChanged(AppHeaderState newState) {
-        mAppHeaderHeightDp = newState.getAppHeaderHeight() * mPxToDp;
+        float appHeaderHeightDp = newState.getAppHeaderHeight() * mPxToDp;
+        if (MathUtils.areFloatsEqual(mAppHeaderHeightDp, appHeaderHeightDp)) return;
+        mAppHeaderHeightDp = appHeaderHeightDp;
+        onTopOffsetChanged();
+    }
+
+    /**
+     * Updates the top inset when drawing edge-to-edge on top.
+     *
+     * @param topInsetPx The top inset in px.
+     */
+    public void onTopInsetChanged(@Px int topInsetPx) {
+        float topInsetDp = topInsetPx * mPxToDp;
+        if (MathUtils.areFloatsEqual(mTopInsetDp, topInsetDp)) return;
+        mTopInsetDp = topInsetDp;
+        onTopOffsetChanged();
+    }
+
+    /** Updates panel dimensions when the top offset (app header height or top inset) changes. */
+    protected void onTopOffsetChanged() {
+        mMaximumHeight = getPanelHeightFromState(PanelState.MAXIMIZED);
     }
 
     protected void destroy() {

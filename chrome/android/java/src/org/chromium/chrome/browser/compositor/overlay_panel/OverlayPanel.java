@@ -990,6 +990,12 @@ public class OverlayPanel extends OverlayPanelAnimation
         }
     }
 
+    @Override
+    protected void onTopOffsetChanged() {
+        super.onTopOffsetChanged();
+        resizePanelContentView();
+    }
+
     /** Resize the panel's ContentView. Apply adjusted bar size to the height. */
     protected void resizePanelContentView() {
         if (!isShowing()) return;

@@ -141,11 +141,14 @@ public class OverlayPanelBaseTest {
                 case PanelState.EXPANDED:
                     return MOCK_EXPANDED_HEIGHT;
                 case PanelState.MAXIMIZED:
-                    return MOCK_MAXIMIZED_HEIGHT;
+                    return getMaximizedHeight();
                 default:
                     return 0.0f;
             }
         }
+
+        @Override
+        protected void resizePanelContentView() {}
 
         public void setBasePageDesiredOffset(float offset) {
             mBasePageDesiredOffset = offset;
@@ -239,6 +242,8 @@ public class OverlayPanelBaseTest {
                                     mTab,
                                     null,
                                     mBottomControlsStacker);
+                    mExpandPanel.onLayoutChanged(400, MOCK_MAXIMIZED_HEIGHT, 100);
+                    mNoExpandPanel.onLayoutChanged(400, MOCK_MAXIMIZED_HEIGHT, 100);
                 });
     }
 
@@ -334,7 +339,7 @@ public class OverlayPanelBaseTest {
         float pxToDp = 1.f / mActivity.getResources().getDisplayMetrics().density;
 
         // Set layout params.
-        int layoutHeight = 400;
+        int layoutHeight = 500;
         mExpandPanel.onLayoutChanged(400, layoutHeight, 100);
         mExpandPanel.setIsFullWidthSizePanelForTesting(true);
         when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(state);
@@ -360,7 +365,7 @@ public class OverlayPanelBaseTest {
                 MathUtils.EPSILON);
 
         // Set panel height - maximized. Verify base page did not offset.
-        mExpandPanel.setPanelHeight(layoutHeight + 10);
+        mExpandPanel.setPanelHeight(mExpandPanel.getMaximizedHeight());
         float expectedMaxHeight = mExpandPanel.getTabHeight() - (appHeaderHeight * pxToDp);
         Assert.assertEquals(
                 "Maximized panel is not at expected height with app header",
@@ -392,7 +397,7 @@ public class OverlayPanelBaseTest {
                 MathUtils.EPSILON);
 
         // Set panel height - maximized. Verify base page did offset.
-        mExpandPanel.setPanelHeight(layoutHeight + 10);
+        mExpandPanel.setPanelHeight(mExpandPanel.getMaximizedHeight());
         Assert.assertEquals(
                 "Maximized panel is not at expected height without app header",
                 mExpandPanel.getTabHeight(),
@@ -696,5 +701,93 @@ public class OverlayPanelBaseTest {
         when(mBrowserControlsStateProvider.isVisibilityForced()).thenReturn(true);
         mExpandPanel.updateBasePageTargetY();
         Assert.assertEquals(0.0f, mExpandPanel.getBasePageTargetY(), MathUtils.EPSILON);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"OverlayPanelBase"})
+    @UiThreadTest
+    public void testOnTopInsetChanged() {
+        final float tabHeight = 1000;
+        mExpandPanel.onLayoutChanged(400, tabHeight, 100);
+        mExpandPanel.setIsFullWidthSizePanelForTesting(true);
+        Assert.assertEquals(
+                tabHeight, mExpandPanel.getTabHeightWithoutTopOffset(), MathUtils.EPSILON);
+        Assert.assertEquals(tabHeight, mExpandPanel.getMaximizedHeight(), MathUtils.EPSILON);
+        Assert.assertEquals(
+                Math.round(tabHeight / mExpandPanel.mPxToDp),
+                mExpandPanel.getContentViewHeightPx());
+
+        int topInsetPx = 60;
+        float topInsetDp = topInsetPx * mExpandPanel.mPxToDp;
+        mExpandPanel.onTopInsetChanged(topInsetPx);
+        Assert.assertEquals(
+                tabHeight - topInsetDp,
+                mExpandPanel.getTabHeightWithoutTopOffset(),
+                MathUtils.EPSILON);
+        Assert.assertEquals(
+                tabHeight - topInsetDp, mExpandPanel.getMaximizedHeight(), MathUtils.EPSILON);
+        Assert.assertEquals(
+                Math.round((tabHeight - topInsetDp) / mExpandPanel.mPxToDp),
+                mExpandPanel.getContentViewHeightPx());
+
+        // Verify Math.max(mAppHeaderHeightDp, mTopInsetDp) when appHeaderHeight > topInsetPx.
+        int appHeaderHeightPx = 100;
+        float appHeaderHeightDp = appHeaderHeightPx * mExpandPanel.mPxToDp;
+        var appHeaderState =
+                new AppHeaderState(
+                        new Rect(0, 0, 10, appHeaderHeightPx),
+                        new Rect(0, 0, 5, appHeaderHeightPx),
+                        true);
+        mExpandPanel.onAppHeaderStateChanged(appHeaderState);
+        Assert.assertEquals(
+                tabHeight - appHeaderHeightDp,
+                mExpandPanel.getTabHeightWithoutTopOffset(),
+                MathUtils.EPSILON);
+        Assert.assertEquals(
+                tabHeight - appHeaderHeightDp,
+                mExpandPanel.getMaximizedHeight(),
+                MathUtils.EPSILON);
+        Assert.assertEquals(
+                Math.round((tabHeight - appHeaderHeightDp) / mExpandPanel.mPxToDp),
+                mExpandPanel.getContentViewHeightPx());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"OverlayPanelBase"})
+    @UiThreadTest
+    public void testOnTopInsetChanged_whileShowing() {
+        final float tabHeight = 1000;
+        mExpandPanel.onLayoutChanged(400, tabHeight, 100);
+        mExpandPanel.setIsFullWidthSizePanelForTesting(true);
+        mExpandPanel.resizePanelToState(PanelState.MAXIMIZED, StateChangeReason.UNKNOWN);
+        Assert.assertTrue(mExpandPanel.isShowing());
+        Assert.assertEquals(tabHeight, mExpandPanel.getHeight(), MathUtils.EPSILON);
+        Assert.assertEquals(
+                Math.round(tabHeight / mExpandPanel.mPxToDp),
+                mExpandPanel.getContentViewHeightPx());
+
+        int topInsetPx = 60;
+        float topInsetDp = topInsetPx * mExpandPanel.mPxToDp;
+        mExpandPanel.onTopInsetChanged(topInsetPx);
+        Assert.assertEquals(tabHeight - topInsetDp, mExpandPanel.getHeight(), MathUtils.EPSILON);
+        Assert.assertEquals(
+                Math.round((tabHeight - topInsetDp) / mExpandPanel.mPxToDp),
+                mExpandPanel.getContentViewHeightPx());
+
+        int appHeaderHeightPx = 100;
+        float appHeaderHeightDp = appHeaderHeightPx * mExpandPanel.mPxToDp;
+        var appHeaderState =
+                new AppHeaderState(
+                        new Rect(0, 0, 10, appHeaderHeightPx),
+                        new Rect(0, 0, 5, appHeaderHeightPx),
+                        true);
+        mExpandPanel.onAppHeaderStateChanged(appHeaderState);
+        Assert.assertEquals(
+                tabHeight - appHeaderHeightDp, mExpandPanel.getHeight(), MathUtils.EPSILON);
+        Assert.assertEquals(
+                Math.round((tabHeight - appHeaderHeightDp) / mExpandPanel.mPxToDp),
+                mExpandPanel.getContentViewHeightPx());
     }
 }

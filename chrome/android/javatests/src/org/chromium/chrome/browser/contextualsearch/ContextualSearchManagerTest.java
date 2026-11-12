@@ -36,7 +36,7 @@ import org.mockito.Mock;
 
 import org.chromium.base.RequiredCallback;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.SupplierUtils;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
@@ -136,7 +136,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     public void tearDown() throws Exception {
         super.tearDown();
         if (mActionTester != null) mActionTester.tearDown();
-        mPanel.setEdgeToEdgeControllerSupplierForTesting(SupplierUtils.ofNull());
+        mPanel.setEdgeToEdgeControllerSupplierForTesting(ObservableSuppliers.alwaysNull());
     }
 
     // ============================================================================================
@@ -1164,7 +1164,10 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     public void testPeekStateHeightGrowsForEdgeToEdge() throws Exception {
         EdgeToEdgeUtils.setAlwaysDrawWebEdgeToEdgeForTesting(true);
         // Run through with the fake controller using the default logic.
-        mPanel.setEdgeToEdgeControllerSupplierForTesting(() -> mMockEdgeToEdgeController);
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        mPanel.setEdgeToEdgeControllerSupplierForTesting(
+                                ObservableSuppliers.createNonNull(mMockEdgeToEdgeController)));
         when(mMockEdgeToEdgeController.getBottomInset()).thenReturn(0);
         final float defaultHeight = 70;
 

@@ -75,6 +75,7 @@ android_library("manager_java") {
     ":java",
     "//components/browser_ui/desktop_windowing/android:java",
     "//components/browser_ui/widget/android:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_full_java",
   ]
 }

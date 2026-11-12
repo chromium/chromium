@@ -20,6 +20,8 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ActivityState;
+import org.chromium.base.Callback;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
@@ -62,6 +64,7 @@ import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.resources.ResourceManager;
 import org.chromium.ui.util.ColorUtils;
@@ -122,7 +125,24 @@ public class ContextualSearchPanel extends OverlayPanel implements SideUiObserve
     private final boolean mCanPromoteToNewTab;
 
     /** Supplies a {@link EdgeToEdgeController} that adjusts for more screen-bottom space. */
-    private Supplier<@Nullable EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
+    private MonotonicObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
+
+    private @Nullable EdgeToEdgeController mEdgeToEdgeController;
+    private final Callback<EdgeToEdgeController> mEdgeToEdgeControllerCallback =
+            this::onEdgeToEdgeControllerChanged;
+    private final EdgeToEdgePadAdjuster mEdgeToEdgePadAdjuster =
+            new EdgeToEdgePadAdjuster() {
+                @Override
+                public void overrideBottomInset(int inset) {}
+
+                @Override
+                public void overrideTopInset(int inset) {
+                    onTopInsetChanged(inset);
+                }
+
+                @Override
+                public void destroy() {}
+            };
 
     /** Whether the Panel should be promoted to a new tab after being maximized. */
     private boolean mShouldPromoteToTabAfterMaximizing;
@@ -189,7 +209,7 @@ public class ContextualSearchPanel extends OverlayPanel implements SideUiObserve
             ToolbarManager toolbarManager,
             boolean canPromoteToNewTab,
             Supplier<@Nullable Tab> currentTabSupplier,
-            Supplier<@Nullable EdgeToEdgeController> edgeToEdgeControllerSupplier,
+            MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
             @Nullable DesktopWindowStateManager desktopWindowStateManager,
             BottomControlsStacker bottomControlsStacker) {
         super(
@@ -209,12 +229,25 @@ public class ContextualSearchPanel extends OverlayPanel implements SideUiObserve
         mToolbarManager = toolbarManager;
         mCanPromoteToNewTab = canPromoteToNewTab;
         mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;
+        mEdgeToEdgeControllerSupplier.addSyncObserverAndCallIfNonNull(
+                mEdgeToEdgeControllerCallback);
 
         mEndButtonWidthDp =
                 mContext.getResources()
                                 .getDimensionPixelSize(
                                         R.dimen.contextual_search_padded_button_width)
                         * mPxToDp;
+    }
+
+    private void onEdgeToEdgeControllerChanged(
+            @Nullable EdgeToEdgeController edgeToEdgeController) {
+        if (mEdgeToEdgeController != null) {
+            mEdgeToEdgeController.unregisterAdjuster(mEdgeToEdgePadAdjuster);
+        }
+        mEdgeToEdgeController = edgeToEdgeController;
+        if (mEdgeToEdgeController != null) {
+            mEdgeToEdgeController.registerAdjuster(mEdgeToEdgePadAdjuster);
+        }
     }
 
     @Override
@@ -470,6 +503,11 @@ public class ContextualSearchPanel extends OverlayPanel implements SideUiObserve
     @Override
     @SuppressWarnings("NullAway")
     public void destroy() {
+        mEdgeToEdgeControllerSupplier.removeObserver(mEdgeToEdgeControllerCallback);
+        if (mEdgeToEdgeController != null) {
+            mEdgeToEdgeController.unregisterAdjuster(mEdgeToEdgePadAdjuster);
+            mEdgeToEdgeController = null;
+        }
         if (mSideUiStateProvider != null) {
             mSideUiStateProvider.removeObserver(this);
             mSideUiStateProvider = null;
@@ -1381,7 +1419,7 @@ public class ContextualSearchPanel extends OverlayPanel implements SideUiObserve
     }
 
     public void setEdgeToEdgeControllerSupplierForTesting(
-            Supplier<@Nullable EdgeToEdgeController> edgeToEdgeControllerSupplier) {
+            MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier) {
         mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;
     }
 }

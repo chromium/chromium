@@ -308,6 +308,33 @@ public class BottomSheetCoordinatorUnitTest {
     }
 
     @Test
+    public void testTopInsetChanged() {
+        mBottomSheet.onTopInsetChanged(64);
+        MarginLayoutParams params = (MarginLayoutParams) mSheetContainer.getLayoutParams();
+        assertEquals(
+                "Sheet container's top margin should be updated to account for top inset.",
+                64,
+                params.topMargin);
+
+        mBottomSheet.onTopInsetChanged(0);
+        params = (MarginLayoutParams) mSheetContainer.getLayoutParams();
+        assertEquals("Sheet container's top margin should be reset.", 0, params.topMargin);
+    }
+
+    @Test
+    public void testTopInsetAndAppHeaderHeightChanged_UsesMax() {
+        mBottomSheet.onAppHeaderHeightChanged(40);
+        mBottomSheet.onTopInsetChanged(64);
+        assertEquals(64, ((MarginLayoutParams) mSheetContainer.getLayoutParams()).topMargin);
+
+        mBottomSheet.onAppHeaderHeightChanged(80);
+        assertEquals(80, ((MarginLayoutParams) mSheetContainer.getLayoutParams()).topMargin);
+
+        mBottomSheet.onAppHeaderHeightChanged(0);
+        assertEquals(64, ((MarginLayoutParams) mSheetContainer.getLayoutParams()).topMargin);
+    }
+
+    @Test
     @Config(qualifiers = "night")
     public void testBackgroundColorAtFullHeightScrimmed_Dark() {
         doTestBackgroundColorFullHeightScrimmed(

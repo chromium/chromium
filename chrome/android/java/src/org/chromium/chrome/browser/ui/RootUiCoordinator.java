@@ -269,6 +269,7 @@ import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.edge_to_edge.EdgeToEdgeManager;
+import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -485,6 +486,7 @@ public class RootUiCoordinator
     protected @Nullable ActionRegistry mActionRegistry;
     protected @Nullable BottomBarHostManager mBottomBarHostManager;
     private @Nullable AnchoredDialogCoordinator mAnchoredDialogCoordinator;
+    private @Nullable EdgeToEdgePadAdjuster mBottomSheetEdgeToEdgePadAdjuster;
 
     /**
      * Create a new {@link RootUiCoordinator} for the given activity.
@@ -1175,6 +1177,13 @@ public class RootUiCoordinator
             extensionsSigninAndHistorySyncCoordinator.destroy();
         }
 
+        if (mEdgeToEdgeControllerSupplier.get() != null
+                && mBottomSheetEdgeToEdgePadAdjuster != null) {
+            mEdgeToEdgeControllerSupplier
+                    .get()
+                    .unregisterAdjuster(mBottomSheetEdgeToEdgePadAdjuster);
+            mBottomSheetEdgeToEdgePadAdjuster = null;
+        }
         if (mEdgeToEdgeController != null) {
             mEdgeToEdgeController.destroy();
             mEdgeToEdgeController = null;
@@ -2617,6 +2626,25 @@ public class RootUiCoordinator
                                 .sBottomSheetOnDesktopWindowing
                                 .isEnabled());
         mBottomSheetControllerSupplier.set(bottomSheetController);
+        mBottomSheetEdgeToEdgePadAdjuster =
+                new EdgeToEdgePadAdjuster() {
+                    @Override
+                    public void overrideBottomInset(int inset) {}
+
+                    @Override
+                    public void overrideTopInset(int inset) {
+                        bottomSheetController.onTopInsetChanged(inset);
+                    }
+
+                    @Override
+                    public void destroy() {}
+                };
+        mEdgeToEdgeControllerSupplier.addSyncObserverAndCallIfNonNull(
+                mCallbackController.makeCancelable(
+                        edgeToEdgeController -> {
+                            edgeToEdgeController.registerAdjuster(
+                                    assertNonNull(mBottomSheetEdgeToEdgePadAdjuster));
+                        }));
         BottomSheetControllerFactory.setExceptionReporter(
                 ChromePureJavaExceptionReporter::reportJavaException);
         BottomSheetControllerFactory.attach(mWindowAndroid, getBottomSheetController());

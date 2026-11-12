@@ -205,6 +205,17 @@ public abstract class OverlayPanelAnimation extends OverlayPanelBase {
         }
     }
 
+    @Override
+    protected void onTopOffsetChanged() {
+        super.onTopOffsetChanged();
+        if (!isShowing()) return;
+        if (mAnimatingState != null && mAnimatingState != PanelState.UNDEFINED) {
+            animatePanelToState(mAnimatingState, mAnimatingStateReason);
+        } else if (getPanelState() > PanelState.CLOSED) {
+            resizePanelToState(getPanelState(), StateChangeReason.UNKNOWN);
+        }
+    }
+
     /** Updates the Panel so it preserves its state when the size changes. */
     protected void updatePanelForSizeChange() {
         resizePanelToState(getPanelState(), StateChangeReason.UNKNOWN);
