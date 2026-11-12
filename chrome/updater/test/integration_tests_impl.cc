@@ -1036,8 +1036,29 @@ void CheckForUpdate(UpdaterScope scope, const std::string& app_id) {
 
 void ExpectCheckForUpdateOppositeScopeFails(UpdaterScope scope,
                                             const std::string& app_id) {
-  scoped_refptr<UpdateService> update_service = CreateUpdateServiceProxy(
-      IsSystemInstall(scope) ? UpdaterScope::kUser : UpdaterScope::kSystem);
+  const UpdaterScope opposite_scope =
+      IsSystemInstall(scope) ? UpdaterScope::kUser : UpdaterScope::kSystem;
+
+  // An updater installed for the opposite scope, such as one left behind by a
+  // test that was killed before its cleanup, would serve the check below.
+  base::Version opposite_version;
+  {
+    scoped_refptr<UpdateService> version_service =
+        CreateUpdateServiceProxy(opposite_scope);
+    base::RunLoop loop;
+    version_service->GetVersion(
+        base::BindLambdaForTesting([&](const base::Version& version) {
+          opposite_version = version;
+          loop.Quit();
+        }));
+    loop.Run();
+  }
+  ASSERT_FALSE(opposite_version.IsValid())
+      << "An updater " << opposite_version << " is installed for the "
+      << opposite_scope << " scope, probably left behind by another test.";
+
+  scoped_refptr<UpdateService> update_service =
+      CreateUpdateServiceProxy(opposite_scope);
   base::RunLoop loop;
   UpdateService::Result result = UpdateService::Result::kSuccess;
   update_service->CheckForUpdate(

@@ -18,11 +18,16 @@
 #include "chrome/updater/test/integration_test_commands.h"
 #include "chrome/updater/test/integration_tests_impl.h"
 #include "chrome/updater/test/server.h"
+#include "chrome/updater/test/test_scope.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_WIN)
+#include <shlobj.h>
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace updater::test {
 
@@ -45,10 +50,18 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
     }
   }
 
-  void Clean() const override { updater::test::Clean(updater_scope_); }
+  void Clean() const override {
+    updater::test::Clean(updater_scope_);
+    if (ShouldCleanSystemScope()) {
+      updater::test::Clean(UpdaterScope::kSystem);
+    }
+  }
 
   void ExpectClean() const override {
     updater::test::ExpectClean(updater_scope_);
+    if (ShouldCleanSystemScope()) {
+      updater::test::ExpectClean(UpdaterScope::kSystem);
+    }
   }
 
   void Install(const base::ListValue& switches) const override {
@@ -606,6 +619,22 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
 
  private:
   ~IntegrationTestCommandsUser() override = default;
+
+  // Returns true if the system scope is cleaned, and expected to be clean,
+  // along with the user scope. A system test that is killed before its cleanup
+  // can leave a system updater behind, which would serve the system-scope
+  // calls that some user tests expect to fail. The user tests can only remove
+  // it when they run as an administrator. The user-scope commands of the
+  // system tests, such as in `IntegrationTestUserInSystem`, must not touch the
+  // system updater under test.
+  bool ShouldCleanSystemScope() const {
+#if BUILDFLAG(IS_WIN)
+    return !IsSystemInstall(GetUpdaterScopeForTesting()) &&
+           !IsSystemInstall(updater_scope_) && ::IsUserAnAdmin();
+#else
+    return false;
+#endif  // BUILDFLAG(IS_WIN)
+  }
 
   const UpdaterScope updater_scope_;
 };
