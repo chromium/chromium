@@ -22949,6 +22949,17 @@ from previous Chrome versions.
   <int value="12" label="December"/>
 </enum>
 
+<!-- LINT.IfChange(MostVisitedMenuAction) -->
+
+<enum name="MostVisitedMenuAction">
+  <int value="0" label="Edit"/>
+  <int value="1" label="View"/>
+  <int value="2" label="Reorder"/>
+  <int value="3" label="Remove"/>
+</enum>
+
+<!-- LINT.ThenChange(//ui/webui/resources/cr_components/most_visited/most_visited.ts:MostVisitedMenuAction) -->
+
 <!-- LINT.IfChange(MostVisitedShowActions) -->
 
 <enum name="MostVisitedShowActions">

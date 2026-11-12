@@ -2091,6 +2091,16 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="NewTabPage.MostVisited.MenuAction"
+    enum="MostVisitedMenuAction" expires_after="2027-05-09">
+  <owner>jennserrano@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Logs the action taken by the user in the most visited action menu. Recorded
+    when one of the menu items is clicked.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.MostVisited.ReselectMatch.{StrictnessSuffix}"
     enum="MvtReselectUrlMatchResult" expires_after="2025-08-24">
   <owner>fredmello@chromium.org</owner>
