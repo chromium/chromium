@@ -633,8 +633,9 @@ class AXPosition {
                                        : child_index_ - 1;
         AXPositionInstance child_position =
             CreateChildPositionAt(adjusted_child_index);
-        CHECK(child_position && !child_position->IsNullPosition(),
-              base::NotFatalUntil::M163);
+        // TODO(crbug.com/582758121): CHECK-exclusion: Convert to a CHECK once
+        // we are confident it won't be triggered.
+        DCHECK(child_position && !child_position->IsNullPosition());
         return child_position->IsNullPosition() ||
                child_position->GetAnchor()->IsIgnored();
       }
