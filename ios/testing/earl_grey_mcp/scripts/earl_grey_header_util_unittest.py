@@ -5,6 +5,7 @@
 """Unit tests for earl_grey_header_util.py."""
 
 from pathlib import Path
+import tempfile
 import unittest
 
 from earl_grey_header_util import (
@@ -22,18 +23,45 @@ from earl_grey_header_util import (
     MethodParam,
 )
 
-_SRC_ROOT = Path(__file__).resolve().parents[4]
 RULES_PATH = Path(__file__).resolve().parent.parent / 'mcp_domains.yaml'
+
+
+def _create_empty_files(
+    root: Path, rel_paths: tuple[str, ...]
+) -> dict[str, Path]:
+    """Creates empty files under `root` and returns resolved `Path`s."""
+    created: dict[str, Path] = {}
+    for rel_path in rel_paths:
+        file_path = root / rel_path
+        file_path.parent.mkdir(parents=True, exist_ok=True)
+        file_path.write_text('', encoding='utf-8')
+        created[rel_path] = file_path.resolve()
+    return created
 
 
 class EarlGreyHeaderUtilTest(unittest.TestCase):
     """Tests for shared EarlGrey header parsing and validation utilities."""
 
     def test_is_earlgrey_header(self):
-        """Tests header filtering for EarlGrey and AppInterface headers."""
-        rules = load_domain_rules(RULES_PATH)
+        """Tests header path matching, exclusions, and slash normalization."""
+        rules = (
+            DomainGroup(
+                domain_id='testing_core',
+                description='Core testing helpers.',
+                includes=(
+                    'ios/testing/earl_grey/app_launch_manager.h',
+                    'ios/chrome/test/earl_grey/*_app_interface.h',
+                ),
+                excludes=('ios/chrome/test/earl_grey/internal_*.h',),
+            ),
+            DomainGroup(
+                domain_id='feature_ui',
+                description='Feature UI helpers.',
+                includes=('ios/chrome/browser/**/test/*_app_interface.h',),
+                excludes=('ios/chrome/browser/perf/**',),
+            ),
+        )
 
-        # Standalone included headers.
         self.assertTrue(
             is_earlgrey_header(
                 'ios/testing/earl_grey/app_launch_manager.h', rules
@@ -44,67 +72,35 @@ class EarlGreyHeaderUtilTest(unittest.TestCase):
                 '/ios/testing/earl_grey/app_launch_manager.h', rules
             )
         )
-
-        # Standard app interface and earl grey headers.
         self.assertTrue(
             is_earlgrey_header(
-                'ios/chrome/test/earl_grey/chrome_actions_app_interface.h',
-                rules,
+                r'ios\chrome\test\earl_grey\actions_app_interface.h', rules
             )
         )
         self.assertTrue(
             is_earlgrey_header(
-                'ios/chrome/test/earl_grey/chrome_earl_grey.h', rules
-            )
-        )
-        self.assertTrue(
-            is_earlgrey_header(
-                'ios/web/shell/test/earl_grey/shell_actions_app_interface.h',
-                rules,
-            )
-        )
-
-        # Excluded directories.
-        self.assertFalse(
-            is_earlgrey_header(
-                'ios/chrome/test/perf/perf_test_app_interface.h', rules
-            )
-        )
-        self.assertFalse(
-            is_earlgrey_header('ios/chrome/test/wpt/wpt_app_interface.h', rules)
-        )
-
-        # Excluded specific headers (paired backends and internal helpers).
-        self.assertFalse(
-            is_earlgrey_header(
-                'ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h',
-                rules,
+                'ios/chrome/browser/tabs/test/tabs_app_interface.h', rules
             )
         )
         self.assertFalse(
             is_earlgrey_header(
-                'ios/chrome/test/earl_grey/'
-                'earl_grey_scoped_block_swizzler_app_interface.h',
-                rules,
+                'ios/chrome/test/earl_grey/internal_app_interface.h', rules
             )
         )
-
-        # Non-header files.
         self.assertFalse(
             is_earlgrey_header(
-                'ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.mm',
-                rules,
+                'ios/chrome/browser/perf/test/perf_app_interface.h', rules
             )
         )
-
-        # Standard non-EG headers.
+        self.assertFalse(
+            is_earlgrey_header(
+                'ios/chrome/test/earl_grey/actions_app_interface.mm', rules
+            )
+        )
         self.assertFalse(
             is_earlgrey_header(
                 'ios/chrome/browser/ui/tab_grid/tab_grid_view.h', rules
             )
-        )
-        self.assertFalse(
-            is_earlgrey_header('chrome/browser/ui/browser.h', rules)
         )
 
     def test_strip_trailing_attributes(self):
@@ -279,7 +275,45 @@ class EarlGreyHeaderUtilTest(unittest.TestCase):
         self.assertEqual(errors, [])
 
     def test_load_domain_rules(self):
-        """Tests that mcp_domains.yaml loads correctly and validates schema."""
+        """Tests parsing `include`, `matches` fallback, and `exclude` keys."""
+        yaml_content = """
+domains:
+  - id: alpha
+    description: Alpha domain.
+    include:
+      - ios/alpha/**/*.h
+    exclude:
+      - ios/alpha/internal/**
+  - id: legacy
+    description: Legacy matches key domain.
+    matches:
+      - ios/legacy/*.h
+"""
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            yaml_path = Path(tmp_dir) / 'domains.yaml'
+            yaml_path.write_text(yaml_content, encoding='utf-8')
+            rules = load_domain_rules(yaml_path)
+
+        self.assertEqual(
+            rules,
+            (
+                DomainGroup(
+                    domain_id='alpha',
+                    description='Alpha domain.',
+                    includes=('ios/alpha/**/*.h',),
+                    excludes=('ios/alpha/internal/**',),
+                ),
+                DomainGroup(
+                    domain_id='legacy',
+                    description='Legacy matches key domain.',
+                    includes=('ios/legacy/*.h',),
+                    excludes=(),
+                ),
+            ),
+        )
+
+    def test_mcp_domains_yaml_schema(self):
+        """Tests structural schema invariants of `mcp_domains.yaml`."""
         self.assertTrue(RULES_PATH.is_file())
         rules = load_domain_rules(RULES_PATH)
         self.assertGreater(len(rules), 0)
@@ -287,72 +321,63 @@ class EarlGreyHeaderUtilTest(unittest.TestCase):
         seen_domain_ids = set()
         for group in rules:
             self.assertIsInstance(group, DomainGroup)
-            self.assertIsInstance(group.includes, tuple)
-            self.assertGreater(len(group.includes), 0)
-            for prefix in group.includes:
-                self.assertIsInstance(prefix, str)
-                self.assertGreater(len(prefix.strip()), 0)
-            self.assertIsInstance(group.excludes, tuple)
-            for excl in group.excludes:
-                self.assertIsInstance(excl, str)
-                self.assertGreater(len(excl.strip()), 0)
-            self.assertIsInstance(group.domain_id, str)
             self.assertTrue(group.domain_id.islower())
             self.assertNotIn(group.domain_id, seen_domain_ids)
             seen_domain_ids.add(group.domain_id)
-            self.assertIsInstance(group.description, str)
             self.assertGreater(len(group.description.strip()), 0)
-
-        all_domain_excludes = [
-            excl for group in rules for excl in group.excludes
-        ]
-        self.assertIn(
-            'ios/chrome/test/earl_grey/'
-            'earl_grey_scoped_block_swizzler_app_interface.h',
-            all_domain_excludes,
-        )
+            self.assertGreater(len(group.includes), 0)
+            for pattern in group.includes + group.excludes:
+                self.assertIsInstance(pattern, str)
+                self.assertGreater(len(pattern.strip()), 0)
 
     def test_discover_earlgrey_headers(self):
-        """Tests discovery of EarlGrey headers grouped by domain."""
-        rules = load_domain_rules(RULES_PATH)
-        domain_groups = discover_earlgrey_headers(_SRC_ROOT, rules=rules)
-        self.assertIsInstance(domain_groups, dict)
-        self.assertGreater(len(domain_groups), 0)
-
-        total_headers = 0
-        for domain_id, group in domain_groups.items():
-            self.assertIsInstance(domain_id, str)
-            self.assertIsInstance(group, DomainGroup)
-            self.assertEqual(group.domain_id, domain_id)
-            self.assertIsInstance(group.description, str)
-            self.assertGreater(len(group.description.strip()), 0)
-            self.assertIsInstance(group.headers, tuple)
-            total_headers += len(group.headers)
-            for h in group.headers:
-                self.assertTrue(h.is_file())
-                self.assertTrue(h.name.endswith('.h'))
-        self.assertEqual(total_headers, 89)
-
-        # Custom rules test.
-        custom_rules = (
+        """Tests hermetic header discovery, sorting, exclusions, and dedup."""
+        rules = (
             DomainGroup(
-                domain_id='custom_domain',
-                description='Custom description.',
-                includes=('ios/custom/**/*.h',),
+                domain_id='alpha',
+                description='Alpha domain.',
+                includes=('ios/alpha/**/*.h', 'ios/shared/*.h'),
+                excludes=('ios/alpha/excluded_*.h',),
+            ),
+            DomainGroup(
+                domain_id='beta',
+                description='Beta domain.',
+                includes=('ios/shared/*.h', 'ios/beta/*.h'),
+            ),
+            DomainGroup(
+                domain_id='empty',
+                description='Empty domain.',
+                includes=('ios/missing/**/*.h',),
             ),
         )
-        custom_mapping = discover_earlgrey_headers(
-            _SRC_ROOT, rules=custom_rules
-        )
-        self.assertIn('custom_domain', custom_mapping)
-        self.assertIsInstance(custom_mapping['custom_domain'], DomainGroup)
-        self.assertEqual(
-            custom_mapping['custom_domain'].domain_id, 'custom_domain'
-        )
-        self.assertEqual(
-            custom_mapping['custom_domain'].description, 'Custom description.'
-        )
-        self.assertEqual(custom_mapping['custom_domain'].headers, ())
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            src_root = Path(tmp_dir).resolve()
+            files = _create_empty_files(
+                src_root,
+                (
+                    'ios/alpha/b_header.h',
+                    'ios/alpha/a_header.h',
+                    'ios/alpha/a_header.mm',
+                    'ios/alpha/excluded_header.h',
+                    'ios/shared/shared_header.h',
+                    'ios/beta/beta_header.h',
+                ),
+            )
+            discovered = discover_earlgrey_headers(src_root, rules=rules)
+
+            self.assertEqual(set(discovered.keys()), {'alpha', 'beta', 'empty'})
+            self.assertEqual(
+                discovered['alpha'].headers,
+                (
+                    files['ios/alpha/a_header.h'],
+                    files['ios/alpha/b_header.h'],
+                    files['ios/shared/shared_header.h'],
+                ),
+            )
+            self.assertEqual(
+                discovered['beta'].headers, (files['ios/beta/beta_header.h'],)
+            )
+            self.assertEqual(discovered['empty'].headers, ())
 
 
 if __name__ == '__main__':
