@@ -282,11 +282,7 @@ public class ActorBackgroundActuationManager {
                                 placeholderId != null ? placeholderId : Tab.INVALID_TAB_ID;
                         LiveBackgroundTab liveTab =
                                 new LiveBackgroundTab(
-                                        pool,
-                                        tab,
-                                        placeholderTabId,
-                                        session.getTaskId(),
-                                        tabData.getOriginalTabIndex());
+                                        pool, tab, placeholderTabId, tabData.getOriginalTabIndex());
                         LiveBackgroundTab.markDirty(tab);
                         pool.addLiveTab(liveTab);
                     }

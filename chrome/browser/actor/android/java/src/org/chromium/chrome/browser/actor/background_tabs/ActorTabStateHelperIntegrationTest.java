@@ -282,7 +282,6 @@ public class ActorTabStateHelperIntegrationTest {
                                         pool,
                                         mTab,
                                         placeholder.getId(),
-                                        100,
                                         /* originalTabIndex= */ TabModel.INVALID_TAB_INDEX);
                         pool.addLiveTab(liveTab);
 
@@ -355,7 +354,6 @@ public class ActorTabStateHelperIntegrationTest {
                                         pool,
                                         mTab,
                                         placeholder.getId(),
-                                        100,
                                         /* originalTabIndex= */ TabModel.INVALID_TAB_INDEX);
                         pool.addLiveTab(liveTab);
 

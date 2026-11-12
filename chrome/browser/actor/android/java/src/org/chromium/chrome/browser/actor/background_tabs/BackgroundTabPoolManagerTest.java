@@ -152,7 +152,6 @@ public class BackgroundTabPoolManagerTest {
                         pool,
                         tab,
                         PLACEHOLDER_ID,
-                        /* taskId= */ null,
                         /* originalTabIndex= */ TabModel.INVALID_TAB_INDEX));
         assertFalse(pool.isEmpty());
 
@@ -174,7 +173,6 @@ public class BackgroundTabPoolManagerTest {
                         pool1,
                         tab,
                         PLACEHOLDER_ID,
-                        /* taskId= */ null,
                         /* originalTabIndex= */ TabModel.INVALID_TAB_INDEX));
         // Destroy the pool directly so tab state remains persisted in cache
         pool1.destroy();
@@ -216,7 +214,6 @@ public class BackgroundTabPoolManagerTest {
                         pool,
                         tab,
                         PLACEHOLDER_ID,
-                        /* taskId= */ null,
                         /* originalTabIndex= */ TabModel.INVALID_TAB_INDEX));
         BackgroundTabPoolManager.release(pool);
         assertNotNull(BackgroundTabPoolManager.getPoolForTesting(mProfile));
@@ -291,7 +288,6 @@ public class BackgroundTabPoolManagerTest {
                         pool,
                         tab,
                         PLACEHOLDER_ID,
-                        /* taskId= */ null,
                         /* originalTabIndex= */ TabModel.INVALID_TAB_INDEX));
         BackgroundTabPoolManager.release(pool);
 

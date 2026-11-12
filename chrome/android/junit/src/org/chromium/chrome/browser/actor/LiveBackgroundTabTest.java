@@ -47,7 +47,6 @@ import java.util.Collections;
 public class LiveBackgroundTabTest {
     private static final int TAB_ID = 101;
     private static final int PLACEHOLDER_TAB_ID = 202;
-    private static final int TASK_ID = 42;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -83,11 +82,9 @@ public class LiveBackgroundTabTest {
     @Test
     public void testGetters() {
         mLiveBackgroundTab =
-                new LiveBackgroundTab(
-                        mPool, mTab, PLACEHOLDER_TAB_ID, TASK_ID, /* originalTabIndex= */ 3);
+                new LiveBackgroundTab(mPool, mTab, PLACEHOLDER_TAB_ID, /* originalTabIndex= */ 3);
         assertSame(mTab, mLiveBackgroundTab.getTab());
         assertEquals(PLACEHOLDER_TAB_ID, mLiveBackgroundTab.getPlaceholderTabId());
-        assertEquals(Integer.valueOf(TASK_ID), mLiveBackgroundTab.getTaskId());
         assertEquals(3, mLiveBackgroundTab.getOriginalTabIndex());
     }
 
@@ -98,7 +95,6 @@ public class LiveBackgroundTabTest {
                         mPool,
                         mTab,
                         PLACEHOLDER_TAB_ID,
-                        TASK_ID,
                         /* originalTabIndex= */ TabModel.INVALID_TAB_INDEX);
 
         Tab attached = mLiveBackgroundTab.attachTab(mTabModel, 2);
@@ -118,7 +114,6 @@ public class LiveBackgroundTabTest {
                         mPool,
                         mTab,
                         PLACEHOLDER_TAB_ID,
-                        TASK_ID,
                         /* originalTabIndex= */ TabModel.INVALID_TAB_INDEX);
 
         Token placeholderGroupToken = new Token(3L, 4L);
@@ -146,7 +141,6 @@ public class LiveBackgroundTabTest {
                         mPool,
                         mTab,
                         PLACEHOLDER_TAB_ID,
-                        TASK_ID,
                         /* originalTabIndex= */ TabModel.INVALID_TAB_INDEX);
 
         when(mTabModel.getTabById(PLACEHOLDER_TAB_ID)).thenReturn(mPlaceholderTab);
@@ -162,8 +156,7 @@ public class LiveBackgroundTabTest {
     @Test
     public void testAttachToForeground_withPlaceholder_replacesPlaceholderAndTransfersState() {
         mLiveBackgroundTab =
-                new LiveBackgroundTab(
-                        mPool, mTab, PLACEHOLDER_TAB_ID, TASK_ID, /* originalTabIndex= */ 1);
+                new LiveBackgroundTab(mPool, mTab, PLACEHOLDER_TAB_ID, /* originalTabIndex= */ 1);
 
         when(mTabModel.indexOf(mTab)).thenReturn(TabModel.INVALID_TAB_INDEX);
         when(mTabModel.getTabById(PLACEHOLDER_TAB_ID)).thenReturn(mPlaceholderTab);
@@ -186,8 +179,7 @@ public class LiveBackgroundTabTest {
     @Test
     public void testAttachToForeground_withoutPlaceholder_appendsAtOriginalIndex() {
         mLiveBackgroundTab =
-                new LiveBackgroundTab(
-                        mPool, mTab, Tab.INVALID_TAB_ID, TASK_ID, /* originalTabIndex= */ 2);
+                new LiveBackgroundTab(mPool, mTab, Tab.INVALID_TAB_ID, /* originalTabIndex= */ 2);
 
         when(mTabModel.indexOf(mTab)).thenReturn(TabModel.INVALID_TAB_INDEX);
         when(mTabModel.getCount()).thenReturn(5);
@@ -211,7 +203,6 @@ public class LiveBackgroundTabTest {
                         mPool,
                         mTab,
                         Tab.INVALID_TAB_ID,
-                        TASK_ID,
                         /* originalTabIndex= */ TabModel.INVALID_TAB_INDEX);
 
         when(mTabModel.indexOf(mTab)).thenReturn(TabModel.INVALID_TAB_INDEX);
@@ -235,7 +226,6 @@ public class LiveBackgroundTabTest {
                         mPool,
                         mTab,
                         PLACEHOLDER_TAB_ID,
-                        TASK_ID,
                         /* originalTabIndex= */ TabModel.INVALID_TAB_INDEX);
 
         verify(mTab).addObserver(captor.capture());
@@ -254,7 +244,6 @@ public class LiveBackgroundTabTest {
                         mPool,
                         mTab,
                         PLACEHOLDER_TAB_ID,
-                        TASK_ID,
                         /* originalTabIndex= */ TabModel.INVALID_TAB_INDEX);
 
         verify(mTab).addObserver(captor.capture());
@@ -272,8 +261,7 @@ public class LiveBackgroundTabTest {
     @Test
     public void testAttachToForeground_withPlaceholder_pinnedTab_transfersPinnedState() {
         mLiveBackgroundTab =
-                new LiveBackgroundTab(
-                        mPool, mTab, PLACEHOLDER_TAB_ID, TASK_ID, /* originalTabIndex= */ 1);
+                new LiveBackgroundTab(mPool, mTab, PLACEHOLDER_TAB_ID, /* originalTabIndex= */ 1);
 
         when(mTabModel.indexOf(mTab)).thenReturn(TabModel.INVALID_TAB_INDEX);
         when(mTabModel.getTabById(PLACEHOLDER_TAB_ID)).thenReturn(mPlaceholderTab);
@@ -289,8 +277,7 @@ public class LiveBackgroundTabTest {
     @Test
     public void testAttachToForeground_withPlaceholder_tabGroup_transfersTabGroup() {
         mLiveBackgroundTab =
-                new LiveBackgroundTab(
-                        mPool, mTab, PLACEHOLDER_TAB_ID, TASK_ID, /* originalTabIndex= */ 1);
+                new LiveBackgroundTab(mPool, mTab, PLACEHOLDER_TAB_ID, /* originalTabIndex= */ 1);
 
         Token groupId = Token.createRandom();
         when(mTabModel.indexOf(mTab)).thenReturn(TabModel.INVALID_TAB_INDEX);

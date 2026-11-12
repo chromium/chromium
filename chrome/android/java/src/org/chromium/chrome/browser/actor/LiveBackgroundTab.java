@@ -35,7 +35,6 @@ public class LiveBackgroundTab implements BackgroundPoolTab {
     private final BackgroundTabPool mPool;
     private final Tab mTab;
     private final @TabId int mPlaceholderTabId;
-    private final @Nullable Integer mTaskId;
     private final int mOriginalTabIndex;
     private boolean mAttached;
     private @Nullable TabObserver mTabObserver;
@@ -46,23 +45,17 @@ public class LiveBackgroundTab implements BackgroundPoolTab {
      * @param pool The {@link BackgroundTabPool} that owns this tab.
      * @param tab The live in-memory {@link Tab} instance.
      * @param placeholderTabId The placeholder tab ID associated with this background tab.
-     * @param taskId The task ID associated with the background session, or null if none.
      * @param originalTabIndex The original tab model index before detachment, or {@link
      *     TabModel#INVALID_TAB_INDEX}.
      */
     public LiveBackgroundTab(
-            BackgroundTabPool pool,
-            Tab tab,
-            @TabId int placeholderTabId,
-            @Nullable Integer taskId,
-            int originalTabIndex) {
+            BackgroundTabPool pool, Tab tab, @TabId int placeholderTabId, int originalTabIndex) {
         assert !tab.hasParentCollection() : "LiveBackgroundTab must not have a parent collection.";
         assert !tab.isDestroyed() : "LiveBackgroundTab must not wrap a destroyed tab.";
         assert !tab.isOffTheRecord() : "LiveBackgroundTab does not support incognito tabs.";
         mPool = pool;
         mTab = tab;
         mPlaceholderTabId = placeholderTabId;
-        mTaskId = taskId;
         mOriginalTabIndex = originalTabIndex;
 
         mTabObserver =
@@ -186,19 +179,9 @@ public class LiveBackgroundTab implements BackgroundPoolTab {
         return mTab;
     }
 
-    /** Returns the task ID associated with the background session, or null if none. */
-    public @Nullable Integer getTaskId() {
-        return mTaskId;
-    }
-
     /** Returns the original tab index in the tab model before detachment. */
     public int getOriginalTabIndex() {
         return mOriginalTabIndex;
-    }
-
-    /** Marks this background tab dirty to trigger disk persistence by BackgroundTabPool. */
-    public void markDirty() {
-        markDirty(mTab);
     }
 
     /** Marks the given tab dirty so its storage observer (BackgroundTabPool) saves it to disk. */
