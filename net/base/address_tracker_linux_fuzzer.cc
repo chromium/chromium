@@ -20,8 +20,10 @@ class AddressTrackerLinuxTest {
     absl::flat_hash_set<std::string> ignored_interfaces;
     AddressTrackerLinux tracker(base::DoNothing(), base::DoNothing(),
                                 base::DoNothing(), ignored_interfaces);
-    NetworkChangeNotifier::IPAddressChangeType address_change_type;
-    bool link_changed, tunnel_changed;
+    NetworkChangeNotifier::IPAddressChangeType address_change_type =
+        NetworkChangeNotifier::IP_ADDRESS_CHANGE_NONE;
+    bool link_changed = false;
+    bool tunnel_changed = false;
     tracker.HandleMessage(buffer, length, &address_change_type, &link_changed,
                           &tunnel_changed);
   }

@@ -187,16 +187,22 @@ class NET_EXPORT_PRIVATE AddressTrackerLinux : public AddressMapOwnerLinux {
       bool* link_changed,
       bool* tunnel_changed);
 
-  // Sets |*address_change_type| to indicate whether |address_map_| changed and
-  // whether only IPv6 temporary addresses changed in |address_map_|, sets
-  // |*link_changed| to true if |online_links_| changed, sets |*tunnel_changed|
-  // to true if |online_links_| changed with regards to a tunnel interface while
-  // reading the message from |buffer|.
+  // Updates `*address_change_type` to indicate whether `address_map_` changed
+  // and whether only IPv6 temporary addresses changed in `address_map_`, sets
+  // `*link_changed` to true if `online_links_` changed, sets `*tunnel_changed`
+  // to true if `online_links_` changed with regards to a tunnel interface while
+  // reading the message from `buffer`.
   //
-  // If |address_map_| has changed and |address_map_diff_| is not nullopt,
-  // |*address_map_diff_| is populated with the changes to the AddressMap.
-  // Similarly, if |online_links_| has changed and |online_links_diff_| is not
-  // nullopt, |*online_links_diff| is populated with the changes to the set of
+  // `address_change_type` is updated based on its initial value, so must be
+  // set, even if it's never read after invocation. `link_changed` and
+  // `tunnel_changed` are never initialized, only set to true, so must be
+  // initialized to false if they're ever read. These behaviors allow results to
+  // be accumulated across multiple calls.
+  //
+  // If `address_map_` has changed and `address_map_diff_` is not nullopt,
+  // `*address_map_diff_` is populated with the changes to the AddressMap.
+  // Similarly, if `online_links_` has changed and `online_links_diff_` is not
+  // nullopt, `*online_links_diff` is populated with the changes to the set of
   // online links.
   void HandleMessage(
       const char* buffer,
