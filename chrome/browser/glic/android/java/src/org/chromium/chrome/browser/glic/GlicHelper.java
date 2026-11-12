@@ -76,11 +76,8 @@ public class GlicHelper {
             return;
         }
         Activity activity = windowAndroid.getActivity().get();
-        if (activity == null || !(activity instanceof SnackbarManageable snackbarManageable)) {
-            return;
-        }
-        SnackbarManager snackbarManager = snackbarManageable.getSnackbarManager();
-        if (snackbarManager == null) {
+        SnackbarManager snackbarManager = getSnackbarManager(activity);
+        if (activity == null || snackbarManager == null) {
             return;
         }
 
@@ -192,17 +189,14 @@ public class GlicHelper {
      * @param activity The Android activity.
      */
     public static void showNotAvailableInIncognitoSnackbar(Activity activity) {
-        if (activity instanceof SnackbarManageable snackbarManageable) {
-            SnackbarManager snackbarManager = snackbarManageable.getSnackbarManager();
-            if (snackbarManager != null) {
-                snackbarManager.showSnackbar(
-                        Snackbar.make(
-                                activity.getString(R.string.glic_incognito_not_available),
-                                null,
-                                Snackbar.TYPE_NOTIFICATION,
-                                Snackbar.UMA_GLIC));
-            }
-        }
+        SnackbarManager snackbarManager = getSnackbarManager(activity);
+        if (snackbarManager == null) return;
+        snackbarManager.showSnackbar(
+                Snackbar.make(
+                        activity.getString(R.string.glic_incognito_not_available),
+                        null,
+                        Snackbar.TYPE_NOTIFICATION,
+                        Snackbar.UMA_GLIC));
     }
 
     /**
@@ -211,18 +205,14 @@ public class GlicHelper {
      * @param activity The Android activity.
      */
     public static void showUnavailableSnackbar(Activity activity) {
-        if (activity instanceof SnackbarManageable snackbarManageable) {
-            SnackbarManager snackbarManager = snackbarManageable.getSnackbarManager();
-            if (snackbarManager != null) {
-                snackbarManager.showSnackbar(
-                        Snackbar.make(
-                                activity.getString(
-                                        R.string.signin_generic_error_dialog_description),
-                                null,
-                                Snackbar.TYPE_NOTIFICATION,
-                                Snackbar.UMA_GLIC));
-            }
-        }
+        SnackbarManager snackbarManager = getSnackbarManager(activity);
+        if (snackbarManager == null) return;
+        snackbarManager.showSnackbar(
+                Snackbar.make(
+                        activity.getString(R.string.signin_generic_error_dialog_description),
+                        null,
+                        Snackbar.TYPE_NOTIFICATION,
+                        Snackbar.UMA_GLIC));
     }
 
     /**
@@ -232,12 +222,15 @@ public class GlicHelper {
      * @param profile The current {@link Profile}.
      */
     public static void showUnpinnedSnackbar(Activity activity, Profile profile) {
-        if (activity instanceof SnackbarManageable snackbarManageable) {
-            SnackbarManager snackbarManager = snackbarManageable.getSnackbarManager();
-            if (snackbarManager != null) {
-                showUnpinnedSnackbar(snackbarManager, activity, profile);
-            }
-        }
+        SnackbarManager snackbarManager = getSnackbarManager(activity);
+        if (snackbarManager == null) return;
+        showUnpinnedSnackbar(snackbarManager, activity, profile);
+    }
+
+    /** Returns the {@link SnackbarManager} of {@code activity}, or null if it doesn't have one. */
+    private static @Nullable SnackbarManager getSnackbarManager(@Nullable Activity activity) {
+        if (!(activity instanceof SnackbarManageable snackbarManageable)) return null;
+        return snackbarManageable.getSnackbarManager();
     }
 
     /**
