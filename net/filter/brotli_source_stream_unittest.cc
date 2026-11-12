@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <memory>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -20,12 +21,21 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_view_util.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
+#include "net/base/features.h"
 #include "net/base/io_buffer.h"
 #include "net/base/test_completion_callback.h"
 #include "net/filter/mock_source_stream.h"
+#include "net/net_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
+#include "third_party/brotli/include/brotli/decode.h"
+#include "third_party/brotli/include/brotli/encode.h"
+#include "third_party/brotli/include/brotli/shared_dictionary.h"
 
 namespace net {
 
@@ -33,6 +43,25 @@ namespace {
 
 const size_t kDefaultBufferSize = 4096;
 const size_t kSmallBufferSize = 128;
+
+constexpr char kDecodingTimeHistogram[] = "Net.BrotliFilter.DecodingTime";
+constexpr char kDecodingThroughputHistogram[] =
+    "Net.BrotliFilter.DecodingThroughput";
+constexpr char kStatusHistogram[] = "BrotliFilter.Status";
+constexpr char kErrorCodeHistogram[] = "BrotliFilter.ErrorCode";
+
+// Values of BrotliFilterDecodingStatus in enums.xml.
+constexpr int kStatusInProgress = 0;
+constexpr int kStatusDone = 1;
+constexpr int kStatusError = 2;
+
+// The variants of `histogram` for bodies without and with a shared dictionary.
+std::string BrVariant(std::string_view histogram) {
+  return base::StrCat({histogram, ".Br"});
+}
+std::string DcbVariant(std::string_view histogram) {
+  return base::StrCat({histogram, ".Dcb"});
+}
 
 // Get the path of data directory.
 base::FilePath GetTestDataDir() {
@@ -44,10 +73,73 @@ base::FilePath GetTestDataDir() {
   return data_dir;
 }
 
+// Reads the test data file `name` into `contents`.
+void ReadTestFile(std::string_view name, std::string& contents) {
+  ASSERT_TRUE(
+      base::ReadFileToString(GetTestDataDir().AppendASCII(name), &contents));
+}
+
+struct BrotliEncoderStateDeleter {
+  void operator()(BrotliEncoderState* encoder) const {
+    BrotliEncoderDestroyInstance(encoder);
+  }
+};
+
+struct BrotliEncoderPreparedDictionaryDeleter {
+  void operator()(BrotliEncoderPreparedDictionary* dictionary) const {
+    BrotliEncoderDestroyPreparedDictionary(dictionary);
+  }
+};
+
+// Compresses `body` with the raw shared `dictionary` and a window of
+// 2^`window_bits` bytes. Returns an empty vector on failure.
+std::vector<uint8_t> CompressWithDictionary(
+    base::span<const uint8_t> body,
+    base::span<const uint8_t> dictionary,
+    int window_bits) {
+  std::unique_ptr<BrotliEncoderPreparedDictionary,
+                  BrotliEncoderPreparedDictionaryDeleter>
+      prepared_dictionary(BrotliEncoderPrepareDictionary(
+          BROTLI_SHARED_DICTIONARY_RAW, dictionary.size(), dictionary.data(),
+          BROTLI_MAX_QUALITY, /*alloc_func=*/nullptr, /*free_func=*/nullptr,
+          /*opaque=*/nullptr));
+  std::unique_ptr<BrotliEncoderState, BrotliEncoderStateDeleter> encoder(
+      BrotliEncoderCreateInstance(/*alloc_func=*/nullptr,
+                                  /*free_func=*/nullptr, /*opaque=*/nullptr));
+  if (!prepared_dictionary || !encoder ||
+      !BrotliEncoderSetParameter(encoder.get(), BROTLI_PARAM_LGWIN,
+                                 window_bits) ||
+      !BrotliEncoderAttachPreparedDictionary(encoder.get(),
+                                             prepared_dictionary.get())) {
+    return {};
+  }
+  std::vector<uint8_t> encoded(BrotliEncoderMaxCompressedSize(body.size()));
+  size_t available_in = body.size();
+  const uint8_t* next_in = body.data();
+  size_t available_out = encoded.size();
+  uint8_t* next_out = encoded.data();
+  while (!BrotliEncoderIsFinished(encoder.get())) {
+    if (!BrotliEncoderCompressStream(encoder.get(), BROTLI_OPERATION_FINISH,
+                                     &available_in, &next_in, &available_out,
+                                     &next_out, /*total_out=*/nullptr) ||
+        available_out == 0) {
+      return {};
+    }
+  }
+  encoded.resize(encoded.size() - available_out);
+  return encoded;
+}
+
 }  // namespace
 
-class BrotliSourceStreamTest : public PlatformTest {
+// The parameter is whether `features::kRustBrotliInNet` is enabled.
+class BrotliSourceStreamTest : public PlatformTest,
+                               public testing::WithParamInterface<bool> {
  protected:
+  BrotliSourceStreamTest() {
+    feature_list_.InitWithFeatureState(features::kRustBrotliInNet, GetParam());
+  }
+
   void SetUp() override {
     PlatformTest::SetUp();
 
@@ -86,12 +178,17 @@ class BrotliSourceStreamTest : public PlatformTest {
   MockSourceStream* source() { return source_; }
   SourceStream* brotli_stream() { return brotli_stream_.get(); }
 
+  // Destroys the stream, which records its histograms.
+  void DestroyStream() { brotli_stream_.reset(); }
+
   const scoped_refptr<IOBufferWithSize>& out_buffer() { return out_buffer_; }
   void set_out_buffer(scoped_refptr<IOBufferWithSize> buffer) {
     out_buffer_ = std::move(buffer);
   }
 
  private:
+  base::test::ScopedFeatureList feature_list_;
+
   raw_ptr<MockSourceStream, DanglingUntriaged> source_;
   std::unique_ptr<SourceStream> brotli_stream_;
   std::unique_ptr<base::RunLoop> loop_;
@@ -102,8 +199,24 @@ class BrotliSourceStreamTest : public PlatformTest {
   scoped_refptr<IOBufferWithSize> out_buffer_;
 };
 
+// The values of the parameter. The Rust decoder is only tested where //net
+// builds it (see `use_rust_brotli_decoder` in //net/BUILD.gn).
+constexpr bool kRustBrotliInNetValues[] = {
+    false,
+#if BUILDFLAG(USE_RUST_BROTLI_DECODER)
+    true,
+#endif
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         BrotliSourceStreamTest,
+                         testing::ValuesIn(kRustBrotliInNetValues),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "RustBrotli" : "CBrotli";
+                         });
+
 // Basic scenario: decoding brotli data with big enough buffer.
-TEST_F(BrotliSourceStreamTest, DecodeBrotliOneBlockSync) {
+TEST_P(BrotliSourceStreamTest, DecodeBrotliOneBlockSync) {
   source()->AddReadResult(encoded_view(), OK, MockSourceStream::SYNC);
   TestCompletionCallback callback;
   int bytes_read = ReadStream(callback.callback());
@@ -117,7 +230,7 @@ TEST_F(BrotliSourceStreamTest, DecodeBrotliOneBlockSync) {
 // Regression test for crbug.com/659311. The following example is taken out
 // of the bug report. For this specific example, Brotli will consume the first
 // byte in the 6 available bytes and return 0.
-TEST_F(BrotliSourceStreamTest, IgnoreExtraData) {
+TEST_P(BrotliSourceStreamTest, IgnoreExtraData) {
   const unsigned char kResponse[] = {0x1A, 0xDF, 0x6E, 0x74, 0x74, 0x68};
   source()->AddReadResult(base::as_string_view(kResponse), OK,
                           MockSourceStream::SYNC);
@@ -130,7 +243,7 @@ TEST_F(BrotliSourceStreamTest, IgnoreExtraData) {
 }
 
 // If there are data after decoding is done, ignore the data. crbug.com/659311.
-TEST_F(BrotliSourceStreamTest, IgnoreExtraDataInOneRead) {
+TEST_P(BrotliSourceStreamTest, IgnoreExtraDataInOneRead) {
   std::string response_with_extra_data(encoded_view());
   response_with_extra_data.append(1000, 'x');
   source()->AddReadResult(response_with_extra_data, OK, MockSourceStream::SYNC);
@@ -152,7 +265,7 @@ TEST_F(BrotliSourceStreamTest, IgnoreExtraDataInOneRead) {
 }
 
 // Same as above but extra data is in a different read.
-TEST_F(BrotliSourceStreamTest, IgnoreExtraDataInDifferentRead) {
+TEST_P(BrotliSourceStreamTest, IgnoreExtraDataInDifferentRead) {
   std::string extra_data;
   extra_data.append(1000, 'x');
   source()->AddReadResult(encoded_view(), OK, MockSourceStream::SYNC);
@@ -175,7 +288,7 @@ TEST_F(BrotliSourceStreamTest, IgnoreExtraDataInDifferentRead) {
 }
 
 // Basic scenario: decoding brotli data with big enough buffer.
-TEST_F(BrotliSourceStreamTest, DecodeBrotliTwoBlockSync) {
+TEST_P(BrotliSourceStreamTest, DecodeBrotliTwoBlockSync) {
   source()->AddReadResult(encoded_view().substr(0, 10), OK,
                           MockSourceStream::SYNC);
   source()->AddReadResult(encoded_view().substr(10), OK,
@@ -189,7 +302,7 @@ TEST_F(BrotliSourceStreamTest, DecodeBrotliTwoBlockSync) {
 }
 
 // Basic scenario: decoding brotli data with big enough buffer.
-TEST_F(BrotliSourceStreamTest, DecodeBrotliOneBlockAsync) {
+TEST_P(BrotliSourceStreamTest, DecodeBrotliOneBlockAsync) {
   source()->AddReadResult(encoded_view(), OK, MockSourceStream::ASYNC);
   TestCompletionCallback callback;
   int bytes_read = ReadStream(callback.callback());
@@ -206,7 +319,7 @@ TEST_F(BrotliSourceStreamTest, DecodeBrotliOneBlockAsync) {
 // Tests we can call filter repeatedly to get all the data decoded.
 // To do that, we create a filter with a small buffer that can not hold all
 // the input data.
-TEST_F(BrotliSourceStreamTest, DecodeWithSmallBufferSync) {
+TEST_P(BrotliSourceStreamTest, DecodeWithSmallBufferSync) {
   source()->AddReadResult(encoded_view(), OK, MockSourceStream::SYNC);
   // Add a 0 byte read to signal EOF.
   source()->AddReadResult(std::string_view(), OK, MockSourceStream::SYNC);
@@ -232,7 +345,7 @@ TEST_F(BrotliSourceStreamTest, DecodeWithSmallBufferSync) {
 // Tests we can call filter repeatedly to get all the data decoded.
 // To do that, we create a filter with a small buffer that can not hold all
 // the input data.
-TEST_F(BrotliSourceStreamTest, DecodeWithSmallBufferAsync) {
+TEST_P(BrotliSourceStreamTest, DecodeWithSmallBufferAsync) {
   source()->AddReadResult(encoded_view(), OK, MockSourceStream::ASYNC);
   // Add a 0 byte read to signal EOF.
   source()->AddReadResult(std::string_view(), OK, MockSourceStream::ASYNC);
@@ -261,7 +374,7 @@ TEST_F(BrotliSourceStreamTest, DecodeWithSmallBufferAsync) {
 // Tests we can still decode with just 1 byte buffer in the filter.
 // The purpose of this test: sometimes the filter will consume input without
 // generating output. Verify filter can handle it correctly.
-TEST_F(BrotliSourceStreamTest, DecodeWithOneByteBuffer) {
+TEST_P(BrotliSourceStreamTest, DecodeWithOneByteBuffer) {
   source()->AddReadResult(encoded_view(), OK, MockSourceStream::SYNC);
   // Add a 0 byte read to signal EOF.
   source()->AddReadResult(std::string_view(), OK, MockSourceStream::SYNC);
@@ -284,7 +397,7 @@ TEST_F(BrotliSourceStreamTest, DecodeWithOneByteBuffer) {
 }
 
 // Decoding deflate stream with corrupted data.
-TEST_F(BrotliSourceStreamTest, DecodeCorruptedData) {
+TEST_P(BrotliSourceStreamTest, DecodeCorruptedData) {
   std::vector<char> corrupt_data(encoded_view().begin(), encoded_view().end());
   size_t pos = corrupt_data.size() / 2;
   corrupt_data.at(pos) = !corrupt_data.at(pos);
@@ -309,7 +422,7 @@ TEST_F(BrotliSourceStreamTest, DecodeCorruptedData) {
 }
 
 // Decoding deflate stream with missing data.
-TEST_F(BrotliSourceStreamTest, DecodeMissingData) {
+TEST_P(BrotliSourceStreamTest, DecodeMissingData) {
   std::vector<char> corrupt_data(encoded_view().begin(), encoded_view().end());
 
   size_t pos = corrupt_data.size() / 2;
@@ -331,7 +444,7 @@ TEST_F(BrotliSourceStreamTest, DecodeMissingData) {
 }
 
 // Decoding brotli stream with empty output data.
-TEST_F(BrotliSourceStreamTest, DecodeEmptyData) {
+TEST_P(BrotliSourceStreamTest, DecodeEmptyData) {
   char data[1] = {6};  // WBITS = 16, ISLAST = 1, ISLASTEMPTY = 1
 
   source()->AddReadResult(base::as_string_view(data), OK,
@@ -343,18 +456,13 @@ TEST_F(BrotliSourceStreamTest, DecodeEmptyData) {
   EXPECT_EQ("BROTLI", brotli_stream()->Description());
 }
 
-TEST_F(BrotliSourceStreamTest, WithDictionary) {
+TEST_P(BrotliSourceStreamTest, WithDictionary) {
+  base::HistogramTester histograms;
   std::string encoded_buffer;
   std::string dictionary_data;
-
-  base::FilePath data_dir = GetTestDataDir();
-  // Read data from the encoded file into buffer.
-  base::FilePath encoded_file_path = data_dir.AppendASCII("google.sbr");
-  ASSERT_TRUE(base::ReadFileToString(encoded_file_path, &encoded_buffer));
-
-  // Read data from the dictionary file into buffer.
-  base::FilePath dictionary_file_path = data_dir.AppendASCII("test.dict");
-  ASSERT_TRUE(base::ReadFileToString(dictionary_file_path, &dictionary_data));
+  // google.txt compressed with the shared dictionary test.dict.
+  ASSERT_NO_FATAL_FAILURE(ReadTestFile("google.sbr", encoded_buffer));
+  ASSERT_NO_FATAL_FAILURE(ReadTestFile("test.dict", dictionary_data));
 
   scoped_refptr<net::IOBuffer> dictionary_buffer =
       base::MakeRefCounted<net::StringIOBuffer>(dictionary_data);
@@ -374,6 +482,264 @@ TEST_F(BrotliSourceStreamTest, WithDictionary) {
   EXPECT_EQ(base::as_string_view(out_buffer()->first(source_data_len())),
             std::string_view(source_data()));
   EXPECT_EQ("BROTLI", brotli_stream->Description());
+
+  // The histograms are recorded in the variants for "dcb".
+  brotli_stream.reset();
+  histograms.ExpectUniqueSample(DcbVariant(kStatusHistogram), kStatusDone, 1);
+  histograms.ExpectTotalCount(DcbVariant(kDecodingTimeHistogram),
+                              base::TimeTicks::IsHighResolution() ? 1 : 0);
+  histograms.ExpectTotalCount(BrVariant(kStatusHistogram), 0);
+  histograms.ExpectTotalCount(BrVariant(kDecodingTimeHistogram), 0);
+}
+
+// Decodes with a dictionary from one byte of input at a time, into 7 bytes of
+// output at a time. The decoder only stops in the middle of a copy from the
+// dictionary where the copy reaches the end of its ring buffer, so the body is
+// the dictionary twice, compressed with the smallest window: the copies are
+// longer than the ring buffer, and the decoder resumes them in later calls,
+// each of which lends it the dictionary again.
+TEST_P(BrotliSourceStreamTest, WithDictionaryInSmallReads) {
+  base::HistogramTester histograms;
+  std::string dictionary;
+  ASSERT_NO_FATAL_FAILURE(ReadTestFile("test.dict", dictionary));
+  ASSERT_GT(dictionary.size(), 1u << BROTLI_MIN_WINDOW_BITS);
+  const std::string body = base::StrCat({dictionary, dictionary});
+  const std::vector<uint8_t> encoded = CompressWithDictionary(
+      base::as_byte_span(body), base::as_byte_span(dictionary),
+      BROTLI_MIN_WINDOW_BITS);
+  // Only long copies from the dictionary make the body this small.
+  ASSERT_FALSE(encoded.empty());
+  ASSERT_LT(encoded.size(), 32u);
+
+  auto source = std::make_unique<MockSourceStream>();
+  source->set_read_one_byte_at_a_time(true);
+  source->AddReadResult(encoded, OK, MockSourceStream::SYNC);
+  // Add a 0 byte read to signal EOF.
+  source->AddReadResult(std::string_view(), OK, MockSourceStream::SYNC);
+  std::unique_ptr<SourceStream> brotli_stream =
+      CreateBrotliSourceStreamWithDictionary(
+          std::move(source), base::MakeRefCounted<StringIOBuffer>(dictionary),
+          dictionary.size());
+
+  auto buffer = base::MakeRefCounted<IOBufferWithSize>(7);
+  std::string decoded;
+  int bytes_read = OK;
+  do {
+    TestCompletionCallback callback;
+    bytes_read =
+        brotli_stream->Read(buffer.get(), buffer->size(), callback.callback());
+    ASSERT_GE(bytes_read, OK);
+    decoded.append(
+        base::as_string_view(buffer->first(static_cast<size_t>(bytes_read))));
+  } while (bytes_read > 0);
+  EXPECT_EQ(body, decoded);
+
+  brotli_stream.reset();
+  histograms.ExpectUniqueSample(DcbVariant(kStatusHistogram), kStatusDone, 1);
+  histograms.ExpectTotalCount(kErrorCodeHistogram, 0);
+}
+
+// Corrupted data with a dictionary fails, also in small reads, and is recorded
+// in the variants for "dcb".
+TEST_P(BrotliSourceStreamTest, WithDictionaryCorruptedData) {
+  base::HistogramTester histograms;
+  std::string encoded;
+  std::string dictionary;
+  // google.txt compressed with the shared dictionary test.dict.
+  ASSERT_NO_FATAL_FAILURE(ReadTestFile("google.sbr", encoded));
+  ASSERT_NO_FATAL_FAILURE(ReadTestFile("test.dict", dictionary));
+  // Zeroing this byte near the end of the body makes a copy from the
+  // dictionary run past its end, after 13 copies from it.
+  const size_t pos = 468;
+  ASSERT_LT(pos, encoded.size());
+  encoded[pos] = 0;
+
+  auto source = std::make_unique<MockSourceStream>();
+  source->set_read_one_byte_at_a_time(true);
+  // The stream stops reading at the error.
+  source->set_expect_all_input_consumed(false);
+  source->AddReadResult(encoded, OK, MockSourceStream::SYNC);
+  // Add a 0 byte read to signal EOF.
+  source->AddReadResult(std::string_view(), OK, MockSourceStream::SYNC);
+  std::unique_ptr<SourceStream> brotli_stream =
+      CreateBrotliSourceStreamWithDictionary(
+          std::move(source), base::MakeRefCounted<StringIOBuffer>(dictionary),
+          dictionary.size());
+
+  auto buffer = base::MakeRefCounted<IOBufferWithSize>(7);
+  int result = OK;
+  do {
+    TestCompletionCallback callback;
+    result =
+        brotli_stream->Read(buffer.get(), buffer->size(), callback.callback());
+  } while (result > 0);
+  EXPECT_EQ(ERR_CONTENT_DECODING_FAILED, result);
+
+  brotli_stream.reset();
+  histograms.ExpectUniqueSample(DcbVariant(kStatusHistogram), kStatusError, 1);
+  // Both decoders report the same error.
+  histograms.ExpectUniqueSample(DcbVariant(kErrorCodeHistogram),
+                                -BROTLI_DECODER_ERROR_COMPOUND_DICTIONARY, 1);
+  histograms.ExpectTotalCount(BrVariant(kStatusHistogram), 0);
+  histograms.ExpectTotalCount(BrVariant(kErrorCodeHistogram), 0);
+}
+
+TEST_P(BrotliSourceStreamTest, RecordsDecodingTime) {
+  base::HistogramTester histograms;
+  source()->AddReadResult(encoded_view(), OK, MockSourceStream::SYNC);
+  TestCompletionCallback callback;
+  EXPECT_EQ(static_cast<int>(source_data_len()),
+            ReadStream(callback.callback()));
+  DestroyStream();
+
+  // Microsecond histograms aren't recorded without a high-resolution clock.
+  const int expected_count = base::TimeTicks::IsHighResolution() ? 1 : 0;
+  histograms.ExpectTotalCount(kDecodingTimeHistogram, expected_count);
+  histograms.ExpectTotalCount(BrVariant(kDecodingTimeHistogram),
+                              expected_count);
+  histograms.ExpectTotalCount(DcbVariant(kDecodingTimeHistogram), 0);
+  // The body is too small for the throughput.
+  histograms.ExpectTotalCount(kDecodingThroughputHistogram, 0);
+}
+
+TEST_P(BrotliSourceStreamTest, DoesNotRecordDecodingTimeOnError) {
+  base::HistogramTester histograms;
+  std::vector<char> corrupt_data(encoded_view().begin(), encoded_view().end());
+  size_t pos = corrupt_data.size() / 2;
+  corrupt_data.at(pos) = !corrupt_data.at(pos);
+  source()->AddReadResult(base::as_string_view(corrupt_data), OK,
+                          MockSourceStream::SYNC);
+  int error = OK;
+  do {
+    TestCompletionCallback callback;
+    error = ReadStream(callback.callback());
+  } while (error > 0);
+  EXPECT_EQ(ERR_CONTENT_DECODING_FAILED, error);
+  DestroyStream();
+
+  histograms.ExpectTotalCount(kDecodingTimeHistogram, 0);
+}
+
+TEST_P(BrotliSourceStreamTest, RecordsDoneStatus) {
+  base::HistogramTester histograms;
+  source()->AddReadResult(encoded_view(), OK, MockSourceStream::SYNC);
+  TestCompletionCallback callback;
+  EXPECT_EQ(static_cast<int>(source_data_len()),
+            ReadStream(callback.callback()));
+  DestroyStream();
+
+  histograms.ExpectUniqueSample(kStatusHistogram, kStatusDone, 1);
+  histograms.ExpectUniqueSample(BrVariant(kStatusHistogram), kStatusDone, 1);
+  histograms.ExpectTotalCount(DcbVariant(kStatusHistogram), 0);
+  histograms.ExpectTotalCount(kErrorCodeHistogram, 0);
+}
+
+TEST_P(BrotliSourceStreamTest, RecordsErrorStatus) {
+  base::HistogramTester histograms;
+  std::vector<char> corrupt_data(encoded_view().begin(), encoded_view().end());
+  size_t pos = corrupt_data.size() / 2;
+  corrupt_data.at(pos) = !corrupt_data.at(pos);
+  source()->AddReadResult(base::as_string_view(corrupt_data), OK,
+                          MockSourceStream::SYNC);
+  int error = OK;
+  do {
+    TestCompletionCallback callback;
+    error = ReadStream(callback.callback());
+  } while (error > 0);
+  EXPECT_EQ(ERR_CONTENT_DECODING_FAILED, error);
+  DestroyStream();
+
+  histograms.ExpectUniqueSample(kStatusHistogram, kStatusError, 1);
+  histograms.ExpectUniqueSample(BrVariant(kStatusHistogram), kStatusError, 1);
+  histograms.ExpectTotalCount(kErrorCodeHistogram, 1);
+  histograms.ExpectTotalCount(BrVariant(kErrorCodeHistogram), 1);
+}
+
+// Both decoders report the same error for an invalid window size.
+TEST_P(BrotliSourceStreamTest, RecordsErrorCode) {
+  base::HistogramTester histograms;
+  // WBITS with the bits 1, 000, 001, which is only valid for large windows.
+  const uint8_t kInvalidWindowBits[] = {0x11};
+  source()->AddReadResult(base::as_string_view(kInvalidWindowBits), OK,
+                          MockSourceStream::SYNC);
+  TestCompletionCallback callback;
+  EXPECT_EQ(ERR_CONTENT_DECODING_FAILED, ReadStream(callback.callback()));
+  DestroyStream();
+
+  histograms.ExpectUniqueSample(kErrorCodeHistogram,
+                                -BROTLI_DECODER_ERROR_FORMAT_WINDOW_BITS, 1);
+  histograms.ExpectUniqueSample(BrVariant(kErrorCodeHistogram),
+                                -BROTLI_DECODER_ERROR_FORMAT_WINDOW_BITS, 1);
+  histograms.ExpectTotalCount(DcbVariant(kErrorCodeHistogram), 0);
+}
+
+// The throughput is only recorded for bodies of at least 32 KiB.
+TEST_P(BrotliSourceStreamTest, RecordsDecodingThroughput) {
+  std::string body;
+  while (body.size() < 64 * 1024) {
+    body += source_data();
+  }
+  std::vector<uint8_t> encoded(BrotliEncoderMaxCompressedSize(body.size()));
+  size_t encoded_size = encoded.size();
+  ASSERT_TRUE(BrotliEncoderCompress(
+      /*quality=*/5, BROTLI_DEFAULT_WINDOW, BROTLI_MODE_TEXT, body.size(),
+      base::as_byte_span(body).data(), &encoded_size, encoded.data()));
+  encoded.resize(encoded_size);
+
+  base::HistogramTester histograms;
+  source()->AddReadResult(base::as_string_view(encoded), OK,
+                          MockSourceStream::SYNC);
+  // Add an EOF.
+  source()->AddReadResult(std::string_view(), OK, MockSourceStream::SYNC);
+  std::string decoded;
+  int bytes_read = OK;
+  do {
+    TestCompletionCallback callback;
+    bytes_read = ReadStream(callback.callback());
+    ASSERT_GE(bytes_read, OK);
+    decoded.append(base::as_string_view(
+        out_span().first(static_cast<size_t>(bytes_read))));
+  } while (bytes_read > 0);
+  EXPECT_EQ(body, decoded);
+  DestroyStream();
+
+  // Like the decoding time, the throughput needs a high-resolution clock.
+  const int expected_count = base::TimeTicks::IsHighResolution() ? 1 : 0;
+  histograms.ExpectTotalCount(kDecodingThroughputHistogram, expected_count);
+  histograms.ExpectTotalCount(BrVariant(kDecodingThroughputHistogram),
+                              expected_count);
+  histograms.ExpectTotalCount(DcbVariant(kDecodingThroughputHistogram), 0);
+}
+
+// The body ends before the brotli stream does.
+TEST_P(BrotliSourceStreamTest, RecordsInProgressStatus) {
+  base::HistogramTester histograms;
+  source()->AddReadResult(encoded_view().substr(0, encoded_view().size() / 2),
+                          OK, MockSourceStream::SYNC);
+  // Add an EOF.
+  source()->AddReadResult(std::string_view(), OK, MockSourceStream::SYNC);
+  int bytes_read = OK;
+  do {
+    TestCompletionCallback callback;
+    bytes_read = ReadStream(callback.callback());
+  } while (bytes_read > 0);
+  EXPECT_EQ(OK, bytes_read);
+  DestroyStream();
+
+  histograms.ExpectUniqueSample(kStatusHistogram, kStatusInProgress, 1);
+  histograms.ExpectUniqueSample(BrVariant(kStatusHistogram), kStatusInProgress,
+                                1);
+  histograms.ExpectTotalCount(kErrorCodeHistogram, 0);
+}
+
+// Nothing is recorded for a stream that is destroyed before it gets any input,
+// for example because the request was canceled.
+TEST_P(BrotliSourceStreamTest, RecordsNothingWithoutInput) {
+  base::HistogramTester histograms;
+  DestroyStream();
+
+  EXPECT_EQ(histograms.GetTotalCountForPrefix("BrotliFilter."), 0);
+  EXPECT_EQ(histograms.GetTotalCountForPrefix("Net.BrotliFilter."), 0);
 }
 
 }  // namespace net

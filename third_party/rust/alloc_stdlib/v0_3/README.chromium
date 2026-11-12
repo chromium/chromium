@@ -1,0 +1,11 @@
+Name: alloc-stdlib
+URL: https://crates.io/crates/alloc-stdlib
+Version: 0.3.0
+Revision: 0a81fd6928ea3b33c8cd484aa4575d50ffb98012
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: BSD-3-Clause
+License File: //third_party/rust/chromium_crates_io/vendor/alloc-stdlib-v0_3/../alloc-no-stdlib-v3/LICENSE
+Shipped: yes
+Security Critical: yes
+
+Description: A dynamic allocator example that may be used with the stdlib

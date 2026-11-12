@@ -11,15 +11,28 @@
 #include "net/base/test_completion_callback.h"
 #include "net/filter/fuzzed_source_stream.h"
 #include "net/filter/source_stream.h"
+#include "net/net_buildflags.h"
+
+#if BUILDFLAG(USE_RUST_BROTLI_DECODER)
+#include "base/test/scoped_feature_list.h"
+#include "net/base/features.h"
+#endif
 
 // Fuzzer for BrotliSourceStream.
 //
-// |data| is used to create a FuzzedSourceStream.
+// |data| is used to pick the decoder where //net builds the Rust one (the C
+// library, or the Rust crate with `features::kRustBrotliInNet`) and to create
+// a FuzzedSourceStream.
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   net::TestCompletionCallback callback;
   FuzzedDataProvider data_provider(data, size);
 
   const bool is_shared_dictionary = data_provider.ConsumeBool();
+#if BUILDFLAG(USE_RUST_BROTLI_DECODER)
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatureState(net::features::kRustBrotliInNet,
+                                    data_provider.ConsumeBool());
+#endif
   std::unique_ptr<net::SourceStream> brotli_stream;
 
   if (is_shared_dictionary) {

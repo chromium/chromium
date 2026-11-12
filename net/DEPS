@@ -54,7 +54,18 @@ specific_include_rules = {
     "+third_party/brotli",
   ],
 
+  # The tests compress bodies with BrotliEncoderCompress() and check the error
+  # codes of the decoder.
+  "brotli_source_stream_unittest\\.cc": [
+    "+third_party/brotli",
+  ],
+
   "cert_compression\\.cc": [
+    "+third_party/brotli",
+  ],
+
+  # The test server compresses certificates with BrotliEncoderCompress().
+  "cert_compression_unittest\\.cc": [
     "+third_party/brotli",
   ],
 

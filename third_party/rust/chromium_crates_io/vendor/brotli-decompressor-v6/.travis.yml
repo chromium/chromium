@@ -1,0 +1,15 @@
+language: rust
+rust:
+  - nightly
+  - stable
+  - 1.12.0
+
+os:
+  - linux
+  - osx
+
+script:
+  - cargo test
+  - cargo test --features=unsafe --release
+  - cargo test --no-default-features
+  - cargo test --release

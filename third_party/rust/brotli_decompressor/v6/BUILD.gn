@@ -1,0 +1,97 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# @generated from third_party/rust/chromium_crates_io/BUILD.gn.hbs by
+# tools/crates/gnrt.
+# Do not edit!
+
+import("//build/rust/cargo_crate.gni")
+
+cargo_crate("lib") {
+  crate_name = "brotli_decompressor"
+  epoch = "6"
+  crate_type = "rlib"
+  crate_root = "//third_party/rust/chromium_crates_io/vendor/brotli-decompressor-v6/src/lib.rs"
+  sources = [
+    "//third_party/rust/chromium_crates_io/vendor/brotli-decompressor-v6/src/bin/brotli-decompressor.rs",
+    "//third_party/rust/chromium_crates_io/vendor/brotli-decompressor-v6/src/bin/error_handling_tests.rs",
+    "//third_party/rust/chromium_crates_io/vendor/brotli-decompressor-v6/src/bin/ffi_stream_tests.rs",
+    "//third_party/rust/chromium_crates_io/vendor/brotli-decompressor-v6/src/bin/integration_tests.rs",
+    "//third_party/rust/chromium_crates_io/vendor/brotli-decompressor-v6/src/bin/tests.rs",
+    "//third_party/rust/chromium_crates_io/vendor/brotli-decompressor-v6/src/bit_reader/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/brotli-decompressor-v6/src/bit_reader/regression_tests.rs",
+    "//third_party/rust/chromium_crates_io/vendor/brotli-decompressor-v6/src/brotli_alloc.rs",
+    "//third_party/rust/chromium_crates_io/vendor/brotli-decompressor-v6/src/context.rs",
+    "//third_party/rust/chromium_crates_io/vendor/brotli-decompressor-v6/src/decode.rs",
+    "//third_party/rust/chromium_crates_io/vendor/brotli-decompressor-v6/src/dictionary/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/brotli-decompressor-v6/src/ffi/alloc_util.rs",
+    "//third_party/rust/chromium_crates_io/vendor/brotli-decompressor-v6/src/ffi/interface.rs",
+    "//third_party/rust/chromium_crates_io/vendor/brotli-decompressor-v6/src/ffi/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/brotli-decompressor-v6/src/huffman/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/brotli-decompressor-v6/src/huffman/tests.rs",
+    "//third_party/rust/chromium_crates_io/vendor/brotli-decompressor-v6/src/io_wrappers.rs",
+    "//third_party/rust/chromium_crates_io/vendor/brotli-decompressor-v6/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/brotli-decompressor-v6/src/memory.rs",
+    "//third_party/rust/chromium_crates_io/vendor/brotli-decompressor-v6/src/prefix.rs",
+    "//third_party/rust/chromium_crates_io/vendor/brotli-decompressor-v6/src/reader.rs",
+    "//third_party/rust/chromium_crates_io/vendor/brotli-decompressor-v6/src/shared_dictionary.rs",
+    "//third_party/rust/chromium_crates_io/vendor/brotli-decompressor-v6/src/state.rs",
+    "//third_party/rust/chromium_crates_io/vendor/brotli-decompressor-v6/src/test.rs",
+    "//third_party/rust/chromium_crates_io/vendor/brotli-decompressor-v6/src/test_metadata.rs",
+    "//third_party/rust/chromium_crates_io/vendor/brotli-decompressor-v6/src/transform.rs",
+    "//third_party/rust/chromium_crates_io/vendor/brotli-decompressor-v6/src/writer.rs",
+  ]
+  inputs = []
+
+  build_native_rust_unit_tests = false
+  edition = "2015"
+  cargo_pkg_authors =
+      "Daniel Reiter Horn <danielrh@dropbox.com>, The Brotli Authors"
+  cargo_pkg_name = "brotli-decompressor"
+  cargo_pkg_description = "A brotli decompressor that with an interface avoiding the rust stdlib. This makes it suitable for embedded devices and kernels. It is designed with a pluggable allocator so that the standard lib's allocator may be employed. The default build also includes a stdlib allocator and stream interface. Disable this with --features=no-stdlib. Alternatively, --features=unsafe turns off array bounds checks and memory initialization but provides a safe interface for the caller.  Without adding the --features=unsafe argument, all included code is safe. For compression in addition to this library, download https://github.com/dropbox/rust-brotli"
+  cargo_pkg_repository = "https://github.com/dropbox/rust-brotli-decompressor"
+  cargo_pkg_version = "6.3.1"
+
+  allow_unsafe = false
+
+  deps = [
+    "//third_party/rust/alloc_no_stdlib/v3:lib",
+    "//third_party/rust/alloc_stdlib/v0_3:lib",
+  ]
+  features = [
+    "alloc-stdlib",
+    "default",
+    "std",
+  ]
+
+  #####################################################################
+  # Tweaking which GN `config`s apply to this target.
+
+  # Config changes that apply to all `//third_party/rust` crates.
+  _configs_to_remove = [
+    # We don't need code coverage data for any `chromium_crates_io` crates.
+    "//build/config/coverage:default_coverage",
+
+    # This is third-party code, so remove `chromium_code` config.  We are not
+    # at the same time adding `//build/config/compiler:no_chromium_code`,
+    # because 1) we don't want to pull how warnings are handled by that config
+    # and 2) that config doesn't have any non-warnings-related stuff.
+    "//build/config/compiler:chromium_code",
+  ]
+  _configs_to_add = []
+
+  # Changing (if needed) which configs apply to this specific crate (based on
+  # `extra_kv.configs_to_remove` and `extra_kv.configs_to_add` from
+  # `gnrt_config.toml`).
+  _configs_to_remove += [ "//build/config/compiler:default_optimization" ]
+  _configs_to_add += [ "//build/config/compiler:optimize_max" ]
+
+  # Applying config changes.
+  library_configs -= _configs_to_remove
+  library_configs += _configs_to_add
+  executable_configs -= _configs_to_remove
+  executable_configs += _configs_to_add
+  proc_macro_configs -= _configs_to_remove
+  proc_macro_configs += _configs_to_add
+}

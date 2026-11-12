@@ -1,0 +1,4 @@
+max_width = 100
+ideal_width = 80
+reorder_imports = true
+tab_spaces=2

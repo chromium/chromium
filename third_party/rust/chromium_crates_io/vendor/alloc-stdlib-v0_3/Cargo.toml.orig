@@ -1,0 +1,21 @@
+[package]
+name = "alloc-stdlib"
+description = "A dynamic allocator example that may be used with the stdlib"
+version = "0.3.0"
+authors = ["Daniel Reiter Horn <danielrh@dropbox.com>"]
+documentation = "https://raw.githubusercontent.com/dropbox/rust-alloc-no-stdlib/master/alloc-stdlib/tests/lib.rs"
+homepage = "https://github.com/dropbox/rust-alloc-no-stdlib"
+readme = "README.md"
+keywords = ["custom", "allocator", "calloc", "safe", "nostd"]
+license = "BSD-3-Clause"
+repository = "https://github.com/dropbox/rust-alloc-no-stdlib"
+autobins = false
+
+[[bin]]
+name = "example"
+
+[dependencies]
+"alloc-no-stdlib" = { version=">=3.0.0, <4.0.0", path="../"}
+
+[features]
+unsafe = ["alloc-no-stdlib/unsafe"]

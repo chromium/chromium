@@ -1,0 +1,11 @@
+Name: alloc-no-stdlib
+URL: https://crates.io/crates/alloc-no-stdlib
+Version: 3.0.0
+Revision: c87781251c135aa8d099da54b60287f4ff0ccf1c
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: BSD-3-Clause
+License File: //third_party/rust/chromium_crates_io/vendor/alloc-no-stdlib-v3/LICENSE
+Shipped: yes
+Security Critical: yes
+
+Description: A dynamic allocator that may be used with or without the stdlib. This allows a package with nostd to allocate memory dynamically and be used either with a custom allocator, items on the stack, or by a package that wishes to simply use Box<>. It also provides options to use calloc or a mutable global variable for pre-zeroed memory

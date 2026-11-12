@@ -1,0 +1,11 @@
+Name: brotli-decompressor
+URL: https://crates.io/crates/brotli-decompressor
+Version: 6.3.1
+Revision: 26c38e2def3ad84f41a28d182d9ba41779a613c7
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: BSD-3-Clause
+License File: //third_party/rust/chromium_crates_io/vendor/brotli-decompressor-v6/LICENSE
+Shipped: yes
+Security Critical: yes
+
+Description: A brotli decompressor that with an interface avoiding the rust stdlib. This makes it suitable for embedded devices and kernels. It is designed with a pluggable allocator so that the standard lib's allocator may be employed. The default build also includes a stdlib allocator and stream interface. Disable this with --features=no-stdlib. Alternatively, --features=unsafe turns off array bounds checks and memory initialization but provides a safe interface for the caller.  Without adding the --features=unsafe argument, all included code is safe. For compression in addition to this library, download https://github.com/dropbox/rust-brotli 

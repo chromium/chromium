@@ -138,6 +138,13 @@ group = 'safe'
 allow_first_party_usage = false
 extra_kv = { allow_unsafe = false }
 
+[crate.alloc-no-stdlib]
+extra_kv = { allow_unsafe = false }
+
+[crate.alloc-stdlib]
+license_files = ["../alloc-no-stdlib-v3/LICENSE"]
+extra_kv = { allow_unsafe = false }
+
 [crate.android_system_properties]
 extra_kv = { allow_unsafe = true }
 
@@ -194,6 +201,14 @@ extra_kv = { allow_unsafe = false }
 
 [crate.bitflags.extra_kv]
 allow_unsafe = false
+
+[crate.brotli-decompressor.extra_kv]
+allow_unsafe = false
+# Like //third_party/brotli:dec, always optimize the decoder for speed, also in
+# Debug builds and where the default optimizes for size. Most of the decoder is
+# generic, so //net:rust_brotli_decoder, which instantiates it, does the same.
+configs_to_remove = ['//build/config/compiler:default_optimization']
+configs_to_add = ['//build/config/compiler:optimize_max']
 
 [crate.build_id2]
 extra_input_roots = ["../README.md"]

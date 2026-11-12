@@ -6,6 +6,22 @@ found in the LICENSE file.
 
 <histogram-configuration>
 
+<!-- LINT.IfChange(BrotliFilterEncoding) -->
+
+<variants name="BrotliFilterEncoding">
+  <variant name=""
+      summary="all brotli-compressed bodies: &quot;br&quot; and
+               &quot;dcb&quot;"/>
+  <variant name=".Br"
+      summary="bodies with the &quot;br&quot; content encoding, which don't
+               use a shared dictionary"/>
+  <variant name=".Dcb"
+      summary="bodies with the &quot;dcb&quot; content encoding, which use a
+               shared dictionary"/>
+</variants>
+
+<!-- LINT.ThenChange(//net/filter/brotli_source_stream.cc:BrotliFilterEncoding) -->
+
 <!-- LINT.IfChange(ProfileIndex) -->
 
 <variants name="ProfileIndex">

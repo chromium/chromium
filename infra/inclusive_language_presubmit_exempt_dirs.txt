@@ -608,6 +608,8 @@ third_party/rust/chromium_crates_io/supply-chain
 third_party/rust/chromium_crates_io/vendor/ahash-v0_8
 third_party/rust/chromium_crates_io/vendor/ahash-v0_8/.github/workflows
 third_party/rust/chromium_crates_io/vendor/aho-corasick-v1/.github/workflows
+third_party/rust/chromium_crates_io/vendor/alloc-no-stdlib-v3
+third_party/rust/chromium_crates_io/vendor/alloc-stdlib-v0_3
 third_party/rust/chromium_crates_io/vendor/android_system_properties-v0_1
 third_party/rust/chromium_crates_io/vendor/anstyle-v1
 third_party/rust/chromium_crates_io/vendor/antlr4rust-v0_5
@@ -620,6 +622,7 @@ third_party/rust/chromium_crates_io/vendor/bit-set-v0_8
 third_party/rust/chromium_crates_io/vendor/bit-set-v0_8/.github/workflows
 third_party/rust/chromium_crates_io/vendor/bit-vec-v0_8
 third_party/rust/chromium_crates_io/vendor/bit-vec-v0_8/.github/workflows
+third_party/rust/chromium_crates_io/vendor/brotli-decompressor-v6
 third_party/rust/chromium_crates_io/vendor/byteorder-v1/.github/workflows
 third_party/rust/chromium_crates_io/vendor/clap-v4
 third_party/rust/chromium_crates_io/vendor/clap-v4/src

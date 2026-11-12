@@ -631,6 +631,46 @@ chromium-metrics-reviews@google.com.
   <summary>Compressed/Decompressed size ratio.</summary>
 </histogram>
 
+<histogram name="BrotliFilter.ErrorCode{BrotliFilterEncoding}"
+    enum="BrotliFilterErrorCode" expires_after="2027-04-05">
+  <owner>veluca@google.com</owner>
+  <owner>miketaylr@google.com</owner>
+  <owner>marcobartoli@microsoft.com</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    The error that the decoder found in a brotli-compressed response body that
+    it failed to decode. Recorded once per such body, when the stream that
+    decodes it is destroyed, for {BrotliFilterEncoding}. The RustBrotliInNet
+    feature switches the decoder from //third_party/brotli to the Rust
+    brotli-decompressor crate, which uses the same error codes.
+
+    Warning: this histogram was expired from M85 to M110; data may be missing.
+
+    Warning: this histogram was expired from M115 to M158; data may be missing.
+  </summary>
+  <token key="BrotliFilterEncoding" variants="BrotliFilterEncoding"/>
+</histogram>
+
+<histogram name="BrotliFilter.Status{BrotliFilterEncoding}"
+    enum="BrotliFilterDecodingStatus" expires_after="2027-04-05">
+  <owner>veluca@google.com</owner>
+  <owner>miketaylr@google.com</owner>
+  <owner>marcobartoli@microsoft.com</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    The final state of the decoding of a brotli-compressed response body.
+    Recorded once per body, when the stream that decodes it is destroyed, for
+    {BrotliFilterEncoding}. The RustBrotliInNet feature switches the decoder
+    from //third_party/brotli to the Rust brotli-decompressor crate.
+
+    Warning: this histogram was expired from M81 to M110; data may be missing.
+
+    Warning: this histogram was expired from 2025-03-09 to 2026-10-22; data may
+    be missing.
+  </summary>
+  <token key="BrotliFilterEncoding" variants="BrotliFilterEncoding"/>
+</histogram>
+
 <histogram name="ClientHints.AcceptCHFrame" enum="AcceptCHFrameRestart"
     expires_after="2027-04-25">
   <owner>victortan@chromium.org</owner>

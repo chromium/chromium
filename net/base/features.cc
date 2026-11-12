@@ -1225,4 +1225,6 @@ BASE_FEATURE_PARAM(bool,
 BASE_FEATURE(kClearBrokenAlternativeServicesOnDefaultNetworkChange,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kRustBrotliInNet, base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace net::features

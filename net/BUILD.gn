@@ -48,6 +48,14 @@ enable_client_certificates = !is_ios || (use_blink && !is_cronet_build)
 # Unix sockets are not supported on iOS.
 enable_unix_sockets = is_posix && !is_ios
 
+# Whether //net can decode brotli with the Rust `brotli-decompressor` crate
+# (`features::kRustBrotliInNet`). C++ calls it through Crubit, which Cronet
+# doesn't support yet.
+# TODO(crbug.com/535682335): Also use it in Cronet once Cronet supports Crubit
+# dependencies.
+use_rust_brotli_decoder =
+    !disable_brotli_filter && !is_cronet_build && enable_cpp_api_from_rust
+
 # x86/x64 cast_shell builds run on regular trybots and can use python runtime
 # and remote test server. ARM cast_shell builds don't have python runtime.
 is_arm_cast_shell_build = (is_castos || is_cast_android) &&
@@ -88,6 +96,7 @@ buildflag_header("buildflags") {
     "ENABLE_DEVICE_BOUND_SESSIONS=$enable_device_bound_sessions",
     "ENABLE_BRACKETED_PROXY_URIS=$enable_bracketed_proxy_uris",
     "ENABLE_QUIC_PROXY_SUPPORT=$enable_quic_proxy_support",
+    "USE_RUST_BROTLI_DECODER=$use_rust_brotli_decoder",
   ]
 }
 
@@ -199,6 +208,54 @@ rust_static_library("http_chunked_decoder_rust") {
   cxx_bindings = [ "http/http_chunked_decoder.rs" ]
   visibility = [ ":*" ]
   allow_unsafe = true
+}
+
+if (use_rust_brotli_decoder) {
+  # The decoder of `features::kRustBrotliInNet`: the `brotli-decompressor`
+  # crate behind a non-generic type, which C++ calls through Crubit.
+  rust_static_library("rust_brotli_decoder") {
+    crate_root = "filter/rust_brotli_decoder.rs"
+    sources = [ "filter/rust_brotli_decoder.rs" ]
+    visibility = [ ":*" ]
+    deps = [ "//third_party/rust/brotli_decompressor/v6:lib" ]
+    cpp_api_from_rust = {
+      target_name = "rust_brotli_decoder_bindings"
+      cpp_namespace = "net::rust_brotli"
+      h_out = "${target_gen_dir}/filter/rust_brotli_decoder.h"
+    }
+
+    # Like //third_party/brotli:dec and the crate (see
+    # //third_party/rust/chromium_crates_io/gnrt_config.toml), always optimize
+    # for speed. The crate's decoder is generic, so most of it is compiled here.
+    configs -= [ "//build/config/compiler:default_optimization" ]
+    configs += [ "//build/config/compiler:optimize_max" ]
+  }
+}
+
+if (!disable_brotli_filter) {
+  # The sources of `:net` that decode brotli. They `#include` the Crubit
+  # bindings of `:rust_brotli_decoder`, so with `public = []`, the rest of
+  # `:net` and the targets that depend on it don't wait for the Rust
+  # compilation (see //docs/rust/crubit/build_performance.md).
+  source_set("brotli") {
+    visibility = [ ":net" ]
+    public = []
+    sources = [
+      "filter/brotli_source_stream.cc",
+      "ssl/cert_compression.cc",
+    ]
+    deps = [ ":net_deps" ]
+    public_deps = [ ":net_public_deps" ]
+    if (use_rust_brotli_decoder) {
+      deps += [ ":rust_brotli_decoder_bindings" ]
+    }
+
+    # Like `:net`.
+    if (!is_debug && !optimize_for_size) {
+      configs -= [ "//build/config/compiler:default_optimization" ]
+      configs += [ "//build/config/compiler:optimize_max" ]
+    }
+  }
 }
 
 component("net") {
@@ -1175,7 +1232,6 @@ component("net") {
     "spdy/spdy_stream.h",
     "spdy/spdy_write_queue.cc",
     "spdy/spdy_write_queue.h",
-    "ssl/cert_compression.cc",
     "ssl/cert_compression.h",
     "ssl/client_cert_identity.cc",
     "ssl/client_cert_identity.h",
@@ -1938,12 +1994,14 @@ component("net") {
 
   # Brotli support.
   if (!disable_brotli_filter) {
-    sources += [
-      "filter/brotli_source_stream.cc",
-      "filter/brotli_source_stream.h",
-    ]
+    sources += [ "filter/brotli_source_stream.h" ]
+    deps += [ ":brotli" ]
+    allow_circular_includes_from += [ ":brotli" ]
   } else {
-    sources += [ "filter/brotli_source_stream_disabled.cc" ]
+    sources += [
+      "filter/brotli_source_stream_disabled.cc",
+      "ssl/cert_compression.cc",
+    ]
   }
 
   # Zstd support.
@@ -2042,6 +2100,7 @@ component("net") {
 # dependencies.
 source_set("net_deps") {
   visibility = [
+    ":brotli",
     ":net",
     "//crypto",
     "//net/dns",
@@ -2124,6 +2183,7 @@ source_set("net_deps") {
 # dependencies.
 source_set("net_public_deps") {
   visibility = [
+    ":brotli",
     ":net",
     "//net/dns",
     "//net/dns:dns_client",
@@ -3729,7 +3789,13 @@ target(_test_target_type, "net_unittests") {
   }
 
   if (!disable_brotli_filter) {
-    sources += [ "filter/brotli_source_stream_unittest.cc" ]
+    sources += [
+      "filter/brotli_source_stream_unittest.cc",
+      "ssl/cert_compression_unittest.cc",
+    ]
+
+    # The test server of `cert_compression_unittest.cc` compresses with it.
+    deps += [ "//third_party/brotli:enc" ]
   }
 
   if (!disable_zstd_filter) {

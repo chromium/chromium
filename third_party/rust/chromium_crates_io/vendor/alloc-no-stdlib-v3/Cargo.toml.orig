@@ -1,0 +1,21 @@
+[package]
+name = "alloc-no-stdlib"
+description = "A dynamic allocator that may be used with or without the stdlib. This allows a package with nostd to allocate memory dynamically and be used either with a custom allocator, items on the stack, or by a package that wishes to simply use Box<>. It also provides options to use calloc or a mutable global variable for pre-zeroed memory"
+version = "3.0.0"
+authors = ["Daniel Reiter Horn <danielrh@dropbox.com>"]
+documentation = "https://raw.githubusercontent.com/dropbox/rust-alloc-no-stdlib/master/tests/lib.rs"
+homepage = "https://github.com/dropbox/rust-alloc-no-stdlib"
+readme = "README.md"
+keywords = ["custom", "allocator", "calloc", "safe", "nostd"]
+license = "BSD-3-Clause"
+repository = "https://github.com/dropbox/rust-alloc-no-stdlib"
+autobins = false
+
+[[bin]]
+name = "example"
+# The example demonstrates the C calloc-backed allocator, which is the only
+# unsafe code in the crate and now lives behind the "unsafe" feature.
+required-features = ["unsafe"]
+
+[features]
+unsafe = []

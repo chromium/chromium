@@ -1425,6 +1425,45 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.BrotliFilter.DecodingThroughput{BrotliFilterEncoding}"
+    units="KB/ms" expires_after="2027-04-05">
+  <owner>veluca@google.com</owner>
+  <owner>miketaylr@google.com</owner>
+  <owner>marcobartoli@microsoft.com</owner>
+  <owner>net-dev@chromium.org</owner>
+  <improvement direction="HIGHER_IS_BETTER"/>
+  <summary>
+    The decoding speed of one brotli-compressed response body: its decompressed
+    size in KB (1000 bytes) per millisecond of Net.BrotliFilter.DecodingTime,
+    which is the same as MB/s. Recorded once per body, when the whole body was
+    decoded without an error and is at least 32 KiB when decompressed, so that
+    its decoding time is precise, for {BrotliFilterEncoding}. Not recorded on
+    clients without a high-resolution clock. The RustBrotliInNet feature
+    switches the decoder from //third_party/brotli to the Rust
+    brotli-decompressor crate.
+  </summary>
+  <token key="BrotliFilterEncoding" variants="BrotliFilterEncoding"/>
+</histogram>
+
+<histogram name="Net.BrotliFilter.DecodingTime{BrotliFilterEncoding}"
+    units="microseconds" expires_after="2027-04-05">
+  <owner>veluca@google.com</owner>
+  <owner>miketaylr@google.com</owner>
+  <owner>marcobartoli@microsoft.com</owner>
+  <owner>net-dev@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    The time spent decoding one brotli-compressed response body. It is the sum
+    of the time of all calls to the decoder, so it doesn't include the time
+    waiting for network data. Recorded once per body, when the whole body was
+    decoded without an error, for {BrotliFilterEncoding}. Chrome only advertises
+    brotli for HTTPS and localhost requests. Not recorded on clients without a
+    high-resolution clock. The RustBrotliInNet feature switches the decoder from
+    //third_party/brotli to the Rust brotli-decompressor crate.
+  </summary>
+  <token key="BrotliFilterEncoding" variants="BrotliFilterEncoding"/>
+</histogram>
+
 <histogram name="Net.CachingCertVerifier.CacheHit{HostType}" enum="Boolean"
     expires_after="2027-04-11">
   <owner>nidhijaju@chromium.org</owner>

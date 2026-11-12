@@ -1,0 +1,22 @@
+language: rust
+rust:
+  - nightly
+  - stable
+  - 1.12.0
+  - 1.8.0
+
+os:
+  - linux
+  - osx
+
+script:
+  - cargo test
+  - cargo test --features=unsafe --release
+  - cd alloc-stdlib && cargo test && cd ..
+  - cd alloc-stdlib && cargo test --release --features=unsafe && cd ..
+  - cd alloc-stdlib && cargo test --release && cd .. 
+
+matrix:
+  exclude:
+    - rust: 1.8.0
+      os: osx

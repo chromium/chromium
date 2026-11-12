@@ -1203,6 +1203,13 @@ NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool, kPosixUdpEmulatedConnectForQuic);
 NET_EXPORT BASE_DECLARE_FEATURE(
     kClearBrokenAlternativeServicesOnDefaultNetworkChange);
 
+// Decode brotli with the Rust `brotli-decompressor` crate instead of the C
+// library in //third_party/brotli. This covers the `br` content encoding (also
+// with a shared dictionary) and TLS certificate compression. It has no effect
+// where //net doesn't build the Rust decoder, as in Cronet (see
+// `use_rust_brotli_decoder` in //net/BUILD.gn).
+NET_EXPORT BASE_DECLARE_FEATURE(kRustBrotliInNet);
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_

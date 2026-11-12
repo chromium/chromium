@@ -1,0 +1,44 @@
+[package]
+name = "brotli-decompressor"
+version = "6.3.1"
+
+authors = ["Daniel Reiter Horn <danielrh@dropbox.com>", "The Brotli Authors"]
+description = "A brotli decompressor that with an interface avoiding the rust stdlib. This makes it suitable for embedded devices and kernels. It is designed with a pluggable allocator so that the standard lib's allocator may be employed. The default build also includes a stdlib allocator and stream interface. Disable this with --features=no-stdlib. Alternatively, --features=unsafe turns off array bounds checks and memory initialization but provides a safe interface for the caller.  Without adding the --features=unsafe argument, all included code is safe. For compression in addition to this library, download https://github.com/dropbox/rust-brotli "
+license = "BSD-3-Clause/MIT"
+documentation = "https://github.com/dropbox/rust-brotli-decompressor/blob/master/README.md"
+homepage = "https://github.com/dropbox/rust-brotli-decompressor"
+repository = "https://github.com/dropbox/rust-brotli-decompressor"
+keywords = ["brotli", "decompression", "lz77", "huffman", "nostd"]
+readme = "README.md"
+exclude = ["testdata/*"]
+autobins = false
+
+[[bin]]
+doc = false
+name = "brotli-decompressor"
+
+[profile.release]
+incremental=false
+lto=true
+
+[dependencies]
+# Pinned to the 3.x generation of alloc-no-stdlib. alloc-no-stdlib's traits
+# (Allocator/SliceWrapper/...) are part of this crate's public API, so this
+# range must NOT span a major: otherwise the resolver can split the trait
+# identity between this crate and its consumers, after which an allocator from
+# one version no longer satisfies the other version's Allocator bound.
+"alloc-no-stdlib" = {version=">=3.0.0, <4.0.0"}
+"alloc-stdlib" = {version=">=0.3.0, <0.4", optional=true}
+
+[features]
+# alloc-no-stdlib 3.x gates CallocBackingStore behind its "unsafe" feature;
+# the seccomp binary uses it via define_allocator_memory_pool!(.., calloc).
+seccomp = ["alloc-no-stdlib/unsafe"]
+default=["std"]
+std = ["alloc-stdlib"]
+unsafe = ["alloc-no-stdlib/unsafe", "alloc-stdlib/unsafe"]
+pass-through-ffi-panics = []
+disable-timer = []
+benchmark = []
+ffi-api = []
+no-stdlib-ffi-binding = ["ffi-api"]

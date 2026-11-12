@@ -26,6 +26,51 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<!-- LINT.IfChange(BrotliFilterDecodingStatus) -->
+
+<enum name="BrotliFilterDecodingStatus">
+  <int value="0" label="In progress"/>
+  <int value="1" label="Done"/>
+  <int value="2" label="Error"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/filter/brotli_source_stream.cc:DecodingStatus) -->
+
+<enum name="BrotliFilterErrorCode">
+  <summary>
+    The negated values of the errors of BrotliDecoderErrorCode in
+    //third_party/brotli/include/brotli/decode.h. The Rust brotli-decompressor
+    crate uses the same values.
+  </summary>
+  <int value="1" label="FORMAT_EXUBERANT_NIBBLE"/>
+  <int value="2" label="FORMAT_RESERVED"/>
+  <int value="3" label="FORMAT_EXUBERANT_META_NIBBLE"/>
+  <int value="4" label="FORMAT_SIMPLE_HUFFMAN_ALPHABET"/>
+  <int value="5" label="FORMAT_SIMPLE_HUFFMAN_SAME"/>
+  <int value="6" label="FORMAT_CL_SPACE"/>
+  <int value="7" label="FORMAT_HUFFMAN_SPACE"/>
+  <int value="8" label="FORMAT_CONTEXT_MAP_REPEAT"/>
+  <int value="9" label="FORMAT_BLOCK_LENGTH_1"/>
+  <int value="10" label="FORMAT_BLOCK_LENGTH_2"/>
+  <int value="11" label="FORMAT_TRANSFORM"/>
+  <int value="12" label="FORMAT_DICTIONARY"/>
+  <int value="13" label="FORMAT_WINDOW_BITS"/>
+  <int value="14" label="FORMAT_PADDING_1"/>
+  <int value="15" label="FORMAT_PADDING_2"/>
+  <int value="16" label="FORMAT_DISTANCE"/>
+  <int value="17" label="FORMAT_BLOCK_SWITCH"/>
+  <int value="18" label="COMPOUND_DICTIONARY"/>
+  <int value="19" label="DICTIONARY_NOT_SET"/>
+  <int value="20" label="INVALID_ARGUMENTS"/>
+  <int value="21" label="ALLOC_CONTEXT_MODES"/>
+  <int value="22" label="ALLOC_TREE_GROUPS"/>
+  <int value="25" label="ALLOC_CONTEXT_MAP"/>
+  <int value="26" label="ALLOC_RING_BUFFER_1"/>
+  <int value="27" label="ALLOC_RING_BUFFER_2"/>
+  <int value="30" label="ALLOC_BLOCK_TYPE_TREES"/>
+  <int value="31" label="UNREACHABLE"/>
+</enum>
+
 <!-- LINT.IfChange(CrxDownloaderType) -->
 
 <enum name="CrxDownloaderType">
