@@ -113,13 +113,6 @@ public class TabModelMergingTest {
         mActivity2 =
                 MultiWindowTestHelper.createSecondChromeTabbedActivity(
                         mActivity1, new LoadUrlParams(TEST_URL_7));
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    Criteria.checkThat(mActivity2.areTabModelsInitialized(), Matchers.is(true));
-                    Criteria.checkThat(
-                            mActivity2.getTabModelSelector().isTabStateInitialized(),
-                            Matchers.is(true));
-                });
 
         // Create a few tabs in each activity.
         createTabsOnUiThread();

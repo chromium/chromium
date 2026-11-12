@@ -107,8 +107,7 @@ public class TabSwitcherMultiWindowTest {
                 InstrumentationRegistry.getInstrumentation(),
                 mCta1,
                 R.id.move_to_other_window_menu_id);
-        mCta2 = waitForSecondChromeTabbedActivity();
-        CriteriaHelper.pollUiThread(mCta2.getTabModelSelector()::isTabStateInitialized);
+        mCta2 = waitForSecondChromeTabbedActivity(/* isIncognito= */ true);
         moveActivityToFront(mCta1);
         moveTabsToOtherWindow(mCta1, 1);
 
@@ -158,8 +157,7 @@ public class TabSwitcherMultiWindowTest {
                 InstrumentationRegistry.getInstrumentation(),
                 mCta1,
                 R.id.move_to_other_window_menu_id);
-        mCta2 = waitForSecondChromeTabbedActivity();
-        CriteriaHelper.pollUiThread(mCta2.getTabModelSelector()::isTabStateInitialized);
+        mCta2 = waitForSecondChromeTabbedActivity(/* isIncognito= */ true);
 
         int incognitoTabCount1 =
                 ThreadUtils.runOnUiThreadBlocking(

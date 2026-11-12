@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.tabmodel;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
@@ -218,12 +217,6 @@ public class TabModelMultiWindowTest {
     private ChromeTabbedActivity createNewWindow(Context context) {
         ChromeTabbedActivity activity =
                 MultiWindowTestHelper.createNewChromeTabbedActivity(context);
-        CriteriaHelper.pollUiThread(
-                () ->
-                        Criteria.checkThat(
-                                "Activity tab should be non-null.",
-                                activity.getActivityTab(),
-                                notNullValue()));
         Tab tab = ThreadUtils.runOnUiThreadBlocking(() -> activity.getActivityTab());
         ChromeTabUtils.loadUrlOnUiThread(tab, UrlConstants.GOOGLE_URL);
         return activity;

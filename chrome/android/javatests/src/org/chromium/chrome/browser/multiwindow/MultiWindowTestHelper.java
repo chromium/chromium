@@ -19,18 +19,17 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.transit.Triggers;
+import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.ChromeTabbedActivity2;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.test.transit.page.CtaPageStation;
+import org.chromium.chrome.test.transit.tabmodel.TabStateInitializedCondition;
 import org.chromium.content_public.browser.LoadUrlParams;
-
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
 
 /** Utilities helper class for multi-window tests. */
 public class MultiWindowTestHelper {
@@ -48,6 +47,8 @@ public class MultiWindowTestHelper {
     /**
      * Creates a new {@link ChromeTabbedActivity2}.
      *
+     * <p>Enters a {@link CtaPageStation} in the new window and leaves it ACTIVE.
+     *
      * @param activity A current running activity that will handle the intent to start another
      *     activity.
      * @param params {@link LoadUrlParams} used to create the launch intent. May be null if no
@@ -58,9 +59,6 @@ public class MultiWindowTestHelper {
             Activity activity, @Nullable LoadUrlParams params) {
         // TODO(twellington): after there is test support for putting an activity into multi-window
         // mode, this should be changed to use the menu item for opening a new window.
-
-        // Number of expected activities after the second ChromeTabbedActivity is created.
-        int numExpectedActivities = ApplicationStatus.getRunningActivities().size() + 1;
 
         // Get the class name to use for the second ChromeTabbedActivity. This step is important
         // for initializing things in MultiWindowUtils.java.
@@ -83,36 +81,40 @@ public class MultiWindowTestHelper {
         }
 
         MultiWindowUtils.setOpenInOtherWindowIntentExtras(intent, activity, secondActivityClass);
-        MultiInstanceManager.onMultiInstanceModeStarted();
-        activity.startActivity(intent);
-
-        // Wait for ChromeTabbedActivity2 to be created.
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    Criteria.checkThat(
-                            ApplicationStatus.getRunningActivities().size(),
-                            Matchers.is(numExpectedActivities));
-                });
-
-        return waitForSecondChromeTabbedActivity();
+        return (ChromeTabbedActivity2)
+                arriveInNewWindow(
+                                Triggers.runTo(
+                                        () -> {
+                                            MultiInstanceManager.onMultiInstanceModeStarted();
+                                            activity.startActivity(intent);
+                                        }),
+                                /* isIncognito= */ false,
+                                /* allowSubclasses= */ true)
+                        .getActivity();
     }
 
-    /** Waits for an instance of ChromeTabbedActivity2, and then waits until it's resumed. */
+    /**
+     * Waits for an instance of ChromeTabbedActivity2 with a regular tab, and then waits until it's
+     * resumed and its tab state is initialized.
+     *
+     * <p>Enters a {@link CtaPageStation} in that window and leaves it ACTIVE.
+     */
     public static ChromeTabbedActivity2 waitForSecondChromeTabbedActivity() {
-        AtomicReference<ChromeTabbedActivity2> returnActivity = new AtomicReference<>();
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    for (Activity runningActivity : ApplicationStatus.getRunningActivities()) {
-                        if (runningActivity.getClass().equals(ChromeTabbedActivity2.class)) {
-                            returnActivity.set((ChromeTabbedActivity2) runningActivity);
-                            return;
-                        }
-                    }
-                    throw new CriteriaNotSatisfiedException(
-                            "Couldn't find instance of ChromeTabbedActivity2");
-                });
-        waitUntilActivityResumed(returnActivity.get());
-        return returnActivity.get();
+        return waitForSecondChromeTabbedActivity(/* isIncognito= */ false);
+    }
+
+    /**
+     * Waits for an instance of ChromeTabbedActivity2, and then waits until it's resumed and its tab
+     * state is initialized.
+     *
+     * <p>Enters a {@link CtaPageStation} in that window and leaves it ACTIVE.
+     *
+     * @param isIncognito Whether the active tab in the second window is incognito.
+     */
+    public static ChromeTabbedActivity2 waitForSecondChromeTabbedActivity(boolean isIncognito) {
+        return (ChromeTabbedActivity2)
+                arriveInNewWindow(Triggers.noopTo(), isIncognito, /* allowSubclasses= */ true)
+                        .getActivity();
     }
 
     private static void waitUntilActivityResumed(final Activity activity) {
@@ -174,9 +176,13 @@ public class MultiWindowTestHelper {
     /**
      * Creates a new ChromeTabbedActivity (API 31 only) for use in tests.
      *
+     * <p>From a page Station on tablet or desktop, prefer {@code
+     * PageAppMenuFacility#openNewWindow()} or {@code CtaPageStation#openNewWindowFast()}.
+     *
      * @param context The context used to build the intent to start the new activity.
      * @return The newly created ChromeTabbedActivity after it is resumed and its tab state is
      *     initialized.
+     * @see #waitForNewChromeTabbedActivity(Runnable)
      */
     public static ChromeTabbedActivity createNewChromeTabbedActivity(Context context) {
         Intent intent =
@@ -195,39 +201,39 @@ public class MultiWindowTestHelper {
      * ChromeTabbedActivity} (excluding any already-running instances) to reach {@link
      * ActivityState#RESUMED} and complete tab state initialization.
      *
+     * <p>Enters a {@link CtaPageStation} in the new window and leaves it ACTIVE. The windows that
+     * were already open are told apart by their active Stations.
+     *
+     * <p>From an active Station, prefer transitioning to the new window's Station with {@code
+     * TripBuilder#inNewTask()}.
+     *
      * @param trigger Runnable that initiates creation of the new window.
      * @return The newly created {@link ChromeTabbedActivity}.
      */
     public static ChromeTabbedActivity waitForNewChromeTabbedActivity(Runnable trigger) {
-        Set<Activity> existingActivities =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () -> new HashSet<>(ApplicationStatus.getRunningActivities()));
-        ThreadUtils.runOnUiThreadBlocking(trigger);
+        return arriveInNewWindow(
+                        Triggers.runOnUiThreadTo(trigger),
+                        /* isIncognito= */ false,
+                        /* allowSubclasses= */ false)
+                .getActivity();
+    }
 
-        AtomicReference<ChromeTabbedActivity> newActivityRef = new AtomicReference<>();
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    for (Activity runningActivity : ApplicationStatus.getRunningActivities()) {
-                        if (runningActivity instanceof ChromeTabbedActivity
-                                && !existingActivities.contains(runningActivity)) {
-                            newActivityRef.set((ChromeTabbedActivity) runningActivity);
-                            break;
-                        }
-                    }
-                    ChromeTabbedActivity candidate = newActivityRef.get();
-                    Criteria.checkThat(
-                            "New ChromeTabbedActivity was not created.",
-                            candidate,
-                            Matchers.notNullValue());
-                    Criteria.checkThat(
-                            ApplicationStatus.getStateForActivity(candidate),
-                            Matchers.is(ActivityState.RESUMED));
-                    Criteria.checkThat(
-                            candidate.getTabModelSelectorSupplier().get(), Matchers.notNullValue());
-                    Criteria.checkThat(
-                            candidate.getTabModelSelector().isTabStateInitialized(),
-                            Matchers.is(true));
-                });
-        return newActivityRef.get();
+    /**
+     * Enters a {@link CtaPageStation} in the window that {@code trip} opens, in a new task, and
+     * waits for its tab state to be initialized.
+     */
+    private static CtaPageStation arriveInNewWindow(
+            TripBuilder trip, boolean isIncognito, boolean allowSubclasses) {
+        CtaPageStation station =
+                CtaPageStation.newGenericBuilder()
+                        .withEntryPoint()
+                        .withIncognito(isIncognito)
+                        .build();
+        if (allowSubclasses) {
+            station.getActivityElement().allowSubclasses();
+        }
+        return trip.inNewTask()
+                .waitForAnd(new TabStateInitializedCondition(station.tabModelSelectorElement))
+                .arriveAt(station);
     }
 }

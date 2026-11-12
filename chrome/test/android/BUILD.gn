@@ -248,6 +248,7 @@ android_library("chrome_java_transit") {
     "javatests/src/org/chromium/chrome/test/transit/tabmodel/TabModelChangedCondition.java",
     "javatests/src/org/chromium/chrome/test/transit/tabmodel/TabModelCondition.java",
     "javatests/src/org/chromium/chrome/test/transit/tabmodel/TabModelSelectorCondition.java",
+    "javatests/src/org/chromium/chrome/test/transit/tabmodel/TabStateInitializedCondition.java",
     "javatests/src/org/chromium/chrome/test/transit/tabmodel/TabThumbnailCondition.java",
     "javatests/src/org/chromium/chrome/test/transit/tabmodel/TabThumbnailsCapturedCarryOn.java",
     "javatests/src/org/chromium/chrome/test/transit/tabmodel/TabsPinnedStatusCondition.java",

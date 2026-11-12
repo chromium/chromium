@@ -8,15 +8,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 
-import static org.chromium.base.test.transit.Condition.whether;
-
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.google.errorprone.annotations.CheckReturnValue;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.Facility;
-import org.chromium.base.test.transit.SimpleConditions;
 import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.Triggers;
 import org.chromium.base.test.transit.TripBuilder;
@@ -31,6 +28,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
 import org.chromium.chrome.test.transit.hub.UndoSnackbarFacility;
 import org.chromium.chrome.test.transit.page.CtaPageStation;
+import org.chromium.chrome.test.transit.tabmodel.TabStateInitializedCondition;
 import org.chromium.chrome.test.util.MenuUtils;
 
 /** Collection of Chrome-specific Triggers to start Transitions. */
@@ -95,11 +93,7 @@ public class ChromeTriggers {
     public static CtaPageStation selectTabProgrammatically(
             ChromeTabbedActivity activity, int index) {
         TabModelSelector selector = activity.getTabModelSelector();
-        Triggers.noopTo()
-                .waitFor(
-                        SimpleConditions.uiThreadCondition(
-                                "Tab state initialized",
-                                () -> whether(selector.isTabStateInitialized())));
+        Triggers.noopTo().waitFor(new TabStateInitializedCondition(() -> selector));
         TabModel tabModel = ThreadUtils.runOnUiThreadBlocking(selector::getCurrentModel);
         Tab tab = ThreadUtils.runOnUiThreadBlocking(() -> tabModel.getTabAt(index));
         assertNotNull("No tab at index " + index, tab);

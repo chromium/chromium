@@ -81,7 +81,8 @@ public class MultiWindowIntegrationTest {
                     mActivityTestRule.getActivity(),
                     R.id.move_to_other_window_menu_id);
 
-            final ChromeTabbedActivity2 cta2 = waitForSecondChromeTabbedActivity();
+            final ChromeTabbedActivity2 cta2 =
+                    waitForSecondChromeTabbedActivity(/* isIncognito= */ true);
 
             CriteriaHelper.pollUiThread(
                     () -> {
