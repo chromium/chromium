@@ -52,7 +52,8 @@ class FullWebUIOmniboxFrame : public RoundedOmniboxResultsFrame {
 
  private:
 #if defined(USE_AURA)
-  void UpdateWindowTargeter();
+  // RoundedOmniboxResultsFrame:
+  gfx::Insets GetWindowTargeterInsets() const override;
 #endif  // USE_AURA
 
   gfx::Insets shadow_margin_ = GetShadowInsets();

@@ -33,6 +33,7 @@
 #include "ui/aura/client/cursor_client.h"
 #include "ui/aura/client/focus_client.h"
 #include "ui/aura/window_event_dispatcher.h"
+#include "ui/aura/window_targeter.h"
 #include "ui/base/class_property.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/platform_cursor.h"
@@ -1088,6 +1089,21 @@ int DesktopWindowTreeHostWin::GetNonClientComponent(
   }
   gfx::Point dip_position =
       display::win::GetScreenWin()->ClientToDIPPoint(GetHWND(), point);
+  // A WindowTargeter on the content window can make points over the content
+  // window transparent so they fall through to the window beneath. Points
+  // outside the content window (e.g. on a native frame) are left to the normal
+  // non-client hit-testing.
+  if (aura::Window* content = desktop_native_widget_aura_->content_window();
+      content && content->targeter() &&
+      content->bounds().Contains(dip_position)) {
+    gfx::Rect hit_test_rect_mouse;
+    gfx::Rect hit_test_rect_touch;
+    if (!content->targeter()->GetHitTestRects(content, &hit_test_rect_mouse,
+                                              &hit_test_rect_touch) ||
+        !hit_test_rect_mouse.Contains(dip_position)) {
+      return HTTRANSPARENT;
+    }
+  }
   return native_widget_delegate_->GetNonClientComponent(dip_position);
 }
 

@@ -361,6 +361,9 @@ void RoundedOmniboxResultsFrame::SetCutoutVisibility(bool visible) {
     return;
   }
   top_background_->SetVisible(visible);
+#if defined(USE_AURA)
+  UpdateWindowTargeter();
+#endif  // USE_AURA
 }
 
 void RoundedOmniboxResultsFrame::SetElevation(int elevation) {
@@ -375,6 +378,9 @@ void RoundedOmniboxResultsFrame::SetElevation(int elevation) {
     border->set_md_shadow_elevation(elevation);
   }
   SetBorder(std::move(border));
+#if defined(USE_AURA)
+  UpdateWindowTargeter();
+#endif  // USE_AURA
 }
 
 void RoundedOmniboxResultsFrame::Layout(PassKey) {
@@ -438,16 +444,40 @@ void RoundedOmniboxResultsFrame::Layout(PassKey) {
 
 void RoundedOmniboxResultsFrame::AddedToWidget() {
 #if defined(USE_AURA)
-  if (!forward_mouse_events_) {
-    return;
-  }
-  // Use a ui::EventTargeter that allows mouse and touch events in the top
-  // portion of the Widget to pass through to the omnibox beneath it.
-  auto results_targeter = std::make_unique<aura::WindowTargeter>();
-  results_targeter->SetInsets(GetContentInsets());
-  GetWidget()->GetNativeWindow()->SetEventTargeter(std::move(results_targeter));
+  UpdateWindowTargeter();
 #endif  // USE_AURA
 }
+
+#if defined(USE_AURA)
+void RoundedOmniboxResultsFrame::UpdateWindowTargeter() {
+  if (!GetWidget() || GetWidget()->GetClientContentsView() != this ||
+      !GetWidget()->GetNativeWindow()) {
+    return;
+  }
+  const gfx::Insets insets = GetWindowTargeterInsets();
+  auto* window = GetWidget()->GetNativeWindow();
+  if (window->targeter()) {
+    window->targeter()->SetInsets(insets);
+  } else {
+    auto results_targeter = std::make_unique<aura::WindowTargeter>();
+    results_targeter->SetInsets(insets);
+    window->SetEventTargeter(std::move(results_targeter));
+  }
+}
+
+gfx::Insets RoundedOmniboxResultsFrame::GetWindowTargeterInsets() const {
+  // Mouse and touch events in the shadow margin of the Widget pass through to
+  // the browser window beneath it.
+  gfx::Insets insets = draw_shadow_in_webui_ ? GetShadowInsets() : GetInsets();
+  if (forward_mouse_events_) {
+    // Also pass through events over the location bar cutout.
+    // `GetContentInsets()` is the cutout's height, or 0 when the cutout is
+    // hidden.
+    insets += GetContentInsets();
+  }
+  return insets;
+}
+#endif  // USE_AURA
 
 // Note: The OnMouseMoved function is only called for the shadow area, as mouse-
 // moved events are not dispatched through the view hierarchy but are direct-
@@ -476,7 +506,7 @@ void RoundedOmniboxResultsFrame::OnMouseEvent(ui::MouseEvent* event) {
 #endif  // !USE_AURA
 
 // Insets used to position |contents_| within |contents_host_|.
-gfx::Insets RoundedOmniboxResultsFrame::GetContentInsets() {
+gfx::Insets RoundedOmniboxResultsFrame::GetContentInsets() const {
   return gfx::Insets::TLBR(
       GetNonResultSectionHeight(top_background_->GetVisible()), 0, 0, 0);
 }
