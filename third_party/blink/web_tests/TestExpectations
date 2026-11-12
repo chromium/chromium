@@ -1098,6 +1098,8 @@ crbug.com/329106317 external/wpt/css/css-color/lch-010.html [ Failure ]
 crbug.com/329106317 external/wpt/css/css-color/oklch-009.html [ Failure ]
 crbug.com/329106317 external/wpt/css/css-color/oklch-010.html [ Failure ]
 crbug.com/358210825 external/wpt/css/css-color/color-layers-no-blend-mode.html [ Failure ]
+# Marked as [ Slow ] in SlowTests but may still time out because of a huge number of subtests
+crbug.com/583503641 external/wpt/css/css-color/parsing/color-computed-hsl.html [ Pass Timeout ]
 
 # css-conditional
 crbug.com/1269580 external/wpt/css/css-conditional/at-supports-namespace-001.html [ Failure ]
