@@ -68,6 +68,7 @@
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_history_item.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "third_party/blink/public/web/web_local_frame_observer.h"
 #include "third_party/blink/public/web/web_v8_features.h"
 #include "third_party/blink/public/web/web_view.h"
 #include "ui/display/screen_info.h"
@@ -242,18 +243,18 @@ class RenderFrameImplTest : public RenderViewTest {
   blink::LocalFrameToken child_frame_token_;
 };
 
-class RenderFrameTestObserver : public RenderFrameObserver {
+class RenderFrameTestObserver : public RenderFrameObserver,
+                                public blink::WebLocalFrameObserver {
  public:
   explicit RenderFrameTestObserver(RenderFrame* render_frame)
       : RenderFrameObserver(render_frame),
+        blink::WebLocalFrameObserver(render_frame->GetWebFrame()),
         visible_(false),
         last_main_frame_rect_(-1, -1, -1, -1) {}
 
   ~RenderFrameTestObserver() override {}
 
   // RenderFrameObserver implementation.
-  void WasShown() override { visible_ = true; }
-  void WasHidden() override { visible_ = false; }
   void OnDestruct() override { delete this; }
   void OnMainFrameRectangleChanged(const gfx::Rect& main_frame_rect) override {
     last_main_frame_rect_ = main_frame_rect;
@@ -262,6 +263,11 @@ class RenderFrameTestObserver : public RenderFrameObserver {
       const gfx::Rect& main_frame_viewport_rect) override {
     last_main_frame_viewport_rect_ = main_frame_viewport_rect;
   }
+
+  // blink::WebLocalFrameObserver implementation.
+  void OnFrameDetached() override {}
+  void WasShown() override { visible_ = true; }
+  void WasHidden() override { visible_ = false; }
 
   bool visible() const { return visible_; }
   gfx::Rect last_main_frame_rect() const { return last_main_frame_rect_; }

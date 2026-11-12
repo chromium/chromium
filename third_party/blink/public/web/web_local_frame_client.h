@@ -835,12 +835,6 @@ class BLINK_EXPORT WebLocalFrameClient {
   // WebMeaningfulLayout for details.)
   virtual void DidMeaningfulLayout(WebMeaningfulLayout) {}
 
-  // Inform the widget that it was hidden.
-  virtual void WasHidden() {}
-
-  // Inform the widget that it was shown.
-  virtual void WasShown() {}
-
   virtual void OnFrameVisibilityChanged(mojom::FrameVisibility render_status) {}
 
   // Called after a navigation which set the shared memory region for

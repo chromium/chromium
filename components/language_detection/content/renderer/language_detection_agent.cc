@@ -17,13 +17,14 @@
 #include "components/language_detection/core/language_detection_provider.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/web/web_local_frame.h"
 
 namespace language_detection {
 
 LanguageDetectionAgent::LanguageDetectionAgent(
     content::RenderFrame* render_frame,
     language_detection::LanguageDetectionModel& language_detection_model)
-    : content::RenderFrameObserver(render_frame),
+    : blink::WebLocalFrameObserver(render_frame->GetWebFrame()),
       waiting_for_first_foreground_(render_frame->IsHidden()),
       language_detection_model_(language_detection_model),
       language_detection_model_manager_(language_detection_model) {
@@ -66,13 +67,13 @@ void LanguageDetectionAgent::WasShown() {
   RequestModel();
 }
 
-void LanguageDetectionAgent::OnDestruct() {
+void LanguageDetectionAgent::OnFrameDetached() {
   delete this;
 }
 
 void LanguageDetectionAgent::RequestModel() {
   language_detection_model_manager_.GetLanguageDetectionModel(
-      render_frame()->GetBrowserInterfaceBroker(),
+      GetWebLocalFrame()->GetBrowserInterfaceBroker(),
       base::BindOnce([](LanguageDetectionModel* model) {}));
 }
 }  // namespace language_detection

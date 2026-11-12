@@ -222,6 +222,7 @@ ChromeRenderFrameObserver::ChromeRenderFrameObserver(
     content::RenderFrame* render_frame,
     web_cache::WebCacheImpl* web_cache_impl)
     : content::RenderFrameObserver(render_frame),
+      blink::WebLocalFrameObserver(render_frame->GetWebFrame()),
       translate_agent_(nullptr),
       page_text_agent_(new optimization_guide::PageTextAgent(render_frame)),
       actor_journal_(std::make_unique<actor::Journal>()),
@@ -425,6 +426,10 @@ void ChromeRenderFrameObserver::DidMeaningfulLayout(
 
 void ChromeRenderFrameObserver::OnDestruct() {
   delete this;
+}
+
+void ChromeRenderFrameObserver::OnFrameDetached() {
+  translate_agent_ = nullptr;
 }
 
 void ChromeRenderFrameObserver::WillDetach(blink::DetachReason detach_reason) {

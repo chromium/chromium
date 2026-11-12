@@ -81,10 +81,6 @@ class CONTENT_EXPORT RenderFrameObserver {
   // Called when a load is explicitly stopped by the user or browser.
   virtual void OnStop() {}
 
-  // Called when the RenderFrame visiblity is changed.
-  virtual void WasHidden() {}
-  virtual void WasShown() {}
-
   // Navigation callbacks.
   //
   // Each navigation starts with a DidStartNavigation call. Then it may be

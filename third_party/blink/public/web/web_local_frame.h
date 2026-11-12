@@ -995,9 +995,6 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
   // local root).
   virtual gfx::Point GetPositionInViewportForTesting() const = 0;
 
-  virtual void WasHidden() = 0;
-  virtual void WasShown() = 0;
-
   // Grants ability to lookup a named frame via the FindFrame
   // WebLocalFrameClient API. Enhanced binding security checks that check the
   // agent cluster will be enabled for windows that do not have this permission.

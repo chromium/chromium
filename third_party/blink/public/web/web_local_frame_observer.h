@@ -25,6 +25,10 @@ class BLINK_EXPORT WebLocalFrameObserver : public base::CheckedObserver {
   // hasn't yet had a chance to run (and possibly alter/interrupt the submit.)
   virtual void WillSendSubmitEvent(const WebFormElement&) {}
 
+  // Notification that the frame was hidden/shown.
+  virtual void WasHidden() {}
+  virtual void WasShown() {}
+
   // Retrieves the WebLocalFrame that is being observed. Can be null.
   WebLocalFrame* GetWebLocalFrame() const;
 

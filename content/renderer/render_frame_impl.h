@@ -680,8 +680,6 @@ class CONTENT_EXPORT RenderFrameImpl
       const base::UnguessableToken& input_stream_id,
       const std::string& output_device_id) override;
   void DidMeaningfulLayout(blink::WebMeaningfulLayout layout_type) override;
-  void WasHidden() override;
-  void WasShown() override;
 
   blink::WebURL LastCommittedUrlForUKM() override;
   void ScriptedPrint() override;

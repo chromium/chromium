@@ -7,7 +7,11 @@
 
 #include "base/memory/weak_ptr.h"
 #include "components/language_detection/content/renderer/language_detection_model_manager.h"
-#include "content/public/renderer/render_frame_observer.h"
+#include "third_party/blink/public/web/web_local_frame_observer.h"
+
+namespace content {
+class RenderFrame;
+}  // namespace content
 
 namespace language_detection {
 
@@ -15,7 +19,7 @@ namespace language_detection {
 // There is one LanguageDetectionAgent per RenderView.
 // TODO(https://crbug.com/380171876): Move this back into
 // components/translate.
-class LanguageDetectionAgent : public content::RenderFrameObserver {
+class LanguageDetectionAgent : public blink::WebLocalFrameObserver {
  public:
   explicit LanguageDetectionAgent(
       content::RenderFrame* render_frame,
@@ -29,9 +33,9 @@ class LanguageDetectionAgent : public content::RenderFrameObserver {
   bool waiting_for_first_foreground() { return waiting_for_first_foreground_; }
 
  private:
-  // content::RenderFrameObserver implementation.
+  // blink::WebLocalFrameObserver implementation.
+  void OnFrameDetached() override;
   void WasShown() override;
-  void OnDestruct() override;
 
   void RequestModel();
 

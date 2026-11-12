@@ -18,21 +18,21 @@
 #include "components/translate/content/common/translate.mojom.h"
 #include "components/translate/core/common/translate_errors.h"
 #include "components/translate/core/language_detection/language_detection_model.h"
-#include "content/public/renderer/render_frame_observer.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "pdf/buildflags.h"
+#include "third_party/blink/public/web/web_local_frame_observer.h"
 #include "url/gurl.h"
 
-namespace blink {
-class WebLocalFrame;
-}
+namespace content {
+class RenderFrame;
+}  // namespace content
 
 namespace translate {
 
 // This class deals with page translation.
 // There is one TranslateAgent per RenderView.
-class TranslateAgent : public content::RenderFrameObserver,
+class TranslateAgent : public blink::WebLocalFrameObserver,
                        public mojom::TranslateAgent {
  public:
   TranslateAgent(content::RenderFrame* render_frame, int world_id);
@@ -146,8 +146,8 @@ class TranslateAgent : public content::RenderFrameObserver,
   // running page translation.
   void ResetPage();
 
-  // RenderFrameObserver implementation.
-  void OnDestruct() override;
+  // blink::WebLocalFrameObserver implementation.
+  void OnFrameDetached() override;
 
   // Cancels any translation that is currently being performed.  This does not
   // revert existing translations.

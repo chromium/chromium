@@ -3356,11 +3356,17 @@ void WebLocalFrameImpl::OnDevToolsSessionConnectionChanged(bool attached) {
 void WebLocalFrameImpl::WasHidden() {
   if (frame_)
     frame_->WasHidden();
+  for (auto& observer : observers_) {
+    observer.WasHidden();
+  }
 }
 
 void WebLocalFrameImpl::WasShown() {
   if (frame_)
     frame_->WasShown();
+  for (auto& observer : observers_) {
+    observer.WasShown();
+  }
 }
 
 void WebLocalFrameImpl::SetAllowsCrossBrowsingInstanceFrameLookup() {

@@ -70,6 +70,7 @@
 #include "third_party/blink/public/web/web_history_item.h"
 #include "third_party/blink/public/web/web_input_element.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "third_party/blink/public/web/web_local_frame_observer.h"
 #include "third_party/blink/public/web/web_script_source.h"
 #include "third_party/blink/public/web/web_view.h"
 #include "ui/color/color_provider.h"
@@ -240,10 +241,10 @@ class RendererBlinkPlatformImplTestOverrideImpl
 #endif
 };
 
-class RenderFrameWasShownWaiter : public RenderFrameObserver {
+class WebLocalFrameWasShownWaiter : public blink::WebLocalFrameObserver {
  public:
-  explicit RenderFrameWasShownWaiter(RenderFrame* frame)
-      : RenderFrameObserver(frame) {}
+  explicit WebLocalFrameWasShownWaiter(blink::WebLocalFrame* frame)
+      : blink::WebLocalFrameObserver(frame) {}
 
   void Wait() {
     if (was_shown_)
@@ -253,13 +254,13 @@ class RenderFrameWasShownWaiter : public RenderFrameObserver {
   }
 
  private:
-  // RenderFrameObserver implementation.
+  // blink::WebLocalFrameObserver implementation.
   void WasShown() override {
     was_shown_ = true;
     if (run_loop_.running())
       run_loop_.Quit();
   }
-  void OnDestruct() override {}
+  void OnFrameDetached() override {}
 
   bool was_shown_ = false;
   base::RunLoop run_loop_;
@@ -545,8 +546,7 @@ void RenderViewTest::SetUp() {
                                              /*was_created_by_renderer=*/false,
                                              /*base_url=*/blink::WebURL());
 
-  RenderFrameWasShownWaiter waiter(
-      RenderFrame::FromWebFrame(web_view_->MainFrame()->ToWebLocalFrame()));
+  WebLocalFrameWasShownWaiter waiter(web_view_->MainFrame()->ToWebLocalFrame());
   render_widget_host_->widget_remote_for_testing()->WasShown(
       /*was_evicted=*/false, std::nullopt);
   waiter.Wait();

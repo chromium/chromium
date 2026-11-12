@@ -5132,20 +5132,6 @@ void RenderFrameImpl::OnDroppedNavigation() {
   frame_->DidDropNavigation();
 }
 
-void RenderFrameImpl::WasHidden() {
-  frame_->WasHidden();
-  for (auto& observer : observers_) {
-    observer.WasHidden();
-  }
-}
-
-void RenderFrameImpl::WasShown() {
-  frame_->WasShown();
-  for (auto& observer : observers_) {
-    observer.WasShown();
-  }
-}
-
 bool RenderFrameImpl::IsMainFrame() {
   return is_main_frame_;
 }

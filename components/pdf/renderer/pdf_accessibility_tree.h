@@ -19,6 +19,7 @@
 #include "pdf/pdf_accessibility_data_handler.h"
 #include "services/screen_ai/buildflags/buildflags.h"
 #include "third_party/blink/public/web/web_ax_object.h"
+#include "third_party/blink/public/web/web_local_frame_observer.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_tree.h"
@@ -53,6 +54,7 @@ class PdfAccessibilityTree : public ui::AXTreeSource<const ui::AXNode*,
                                                      ui::AXNodeData>,
                              public content::PluginAXTreeActionTargetAdapter,
                              public content::RenderFrameObserver,
+                             public blink::WebLocalFrameObserver,
                              public chrome_pdf::PdfAccessibilityDataHandler {
  public:
   PdfAccessibilityTree(
@@ -126,6 +128,9 @@ class PdfAccessibilityTree : public ui::AXTreeSource<const ui::AXNode*,
   // content::RenderFrameObserver:
   void AccessibilityModeChanged(const ui::AXMode& mode) override;
   void OnDestruct() override {}
+
+  // blink::WebLocalFrameObserver:
+  void OnFrameDetached() override {}
   void WasHidden() override;
   void WasShown() override;
 

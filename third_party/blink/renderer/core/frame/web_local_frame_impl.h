@@ -366,8 +366,6 @@ class CORE_EXPORT WebLocalFrameImpl final
       const std::vector<uint32_t>* pages = nullptr) override;
   gfx::Rect GetSelectionBoundsRectForTesting() const override;
   gfx::Point GetPositionInViewportForTesting() const override;
-  void WasHidden() override;
-  void WasShown() override;
   void SetAllowsCrossBrowsingInstanceFrameLookup() override;
   void NotifyUserActivation(
       mojom::blink::UserActivationNotificationType notification_type) override;
@@ -598,6 +596,8 @@ class CORE_EXPORT WebLocalFrameImpl final
   void RemoveObserver(WebLocalFrameObserver* observer);
 
   void WillSendSubmitEvent(const WebFormElement& form);
+  void WasHidden();
+  void WasShown();
 
  protected:
   // WebLocalFrame protected overrides:

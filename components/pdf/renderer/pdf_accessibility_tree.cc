@@ -325,6 +325,7 @@ PdfAccessibilityTree::PdfAccessibilityTree(
     chrome_pdf::PdfAccessibilityActionHandler* action_handler,
     blink::WebPluginContainer* plugin_container)
     : content::RenderFrameObserver(render_frame),
+      blink::WebLocalFrameObserver(render_frame->GetWebFrame()),
       action_handler_(action_handler),
       plugin_container_(plugin_container) {
   DCHECK(render_frame);

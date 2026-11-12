@@ -5912,10 +5912,9 @@ WebFrameWidgetImpl::ScreenOrientationOverride() {
 }
 
 void WebFrameWidgetImpl::WasHidden() {
-  ForEachLocalFrameControlledByWidget(local_root_->GetFrame(),
-                                      [](WebLocalFrameImpl* local_frame) {
-                                        local_frame->Client()->WasHidden();
-                                      });
+  ForEachLocalFrameControlledByWidget(
+      local_root_->GetFrame(),
+      [](WebLocalFrameImpl* local_frame) { local_frame->WasHidden(); });
 
   if (animation_frame_timing_monitor_) {
     animation_frame_timing_monitor_->Shutdown();
@@ -5929,10 +5928,9 @@ void WebFrameWidgetImpl::WasHidden() {
 }
 
 void WebFrameWidgetImpl::WasShown(bool was_evicted) {
-  ForEachLocalFrameControlledByWidget(local_root_->GetFrame(),
-                                      [](WebLocalFrameImpl* local_frame) {
-                                        local_frame->Client()->WasShown();
-                                      });
+  ForEachLocalFrameControlledByWidget(
+      local_root_->GetFrame(),
+      [](WebLocalFrameImpl* local_frame) { local_frame->WasShown(); });
   if (was_evicted) {
     ForEachRemoteFrameControlledByWidget(
         // On eviction, the last SurfaceId is invalidated. We need to
