@@ -469,18 +469,20 @@ TEST_F(HTMLCapabilityElementBaseTest, DisplayModeIconOnly) {
     EXPECT_EQ(expected_label, permission_element->AccessibleLabel());
     EXPECT_EQ(expected_label, permission_element->computedName());
 
-    permission_element->setAttribute(html_names::kDisplaymodeAttr,
-                                     AtomicString("icon-only"));
-    EXPECT_TRUE(permission_element->IsIconOnly());
-    CheckInnerText(permission_element, g_empty_string);
-    EXPECT_EQ(expected_label, permission_element->AccessibleLabel());
-    EXPECT_EQ(expected_label, permission_element->computedName());
+    for (const QualifiedName& attr :
+         {html_names::kDisplayhintAttr, html_names::kDisplaymodeAttr}) {
+      permission_element->setAttribute(attr, AtomicString("icon-only"));
+      EXPECT_TRUE(permission_element->IsIconOnly());
+      CheckInnerText(permission_element, g_empty_string);
+      EXPECT_EQ(expected_label, permission_element->AccessibleLabel());
+      EXPECT_EQ(expected_label, permission_element->computedName());
 
-    permission_element->removeAttribute(html_names::kDisplaymodeAttr);
-    EXPECT_FALSE(permission_element->IsIconOnly());
-    CheckInnerText(permission_element, expected_label);
-    EXPECT_EQ(expected_label, permission_element->AccessibleLabel());
-    EXPECT_EQ(expected_label, permission_element->computedName());
+      permission_element->removeAttribute(attr);
+      EXPECT_FALSE(permission_element->IsIconOnly());
+      CheckInnerText(permission_element, expected_label);
+      EXPECT_EQ(expected_label, permission_element->AccessibleLabel());
+      EXPECT_EQ(expected_label, permission_element->computedName());
+    }
   }
 }
 
@@ -491,10 +493,13 @@ TEST_F(HTMLCapabilityElementBaseTest, DisplayModeIconOnlyCaseInsensitive) {
   GetDocument().body()->AppendChild(permission_element);
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();
   WaitForPermissionElementRegistration(permission_element);
-  permission_element->setAttribute(html_names::kDisplaymodeAttr,
-                                   AtomicString("iCoN-oNlY"));
-  EXPECT_TRUE(permission_element->IsIconOnly());
-  CheckInnerText(permission_element, g_empty_string);
+  for (const QualifiedName& attr :
+       {html_names::kDisplayhintAttr, html_names::kDisplaymodeAttr}) {
+    permission_element->setAttribute(attr, AtomicString("iCoN-oNlY"));
+    EXPECT_TRUE(permission_element->IsIconOnly());
+    CheckInnerText(permission_element, g_empty_string);
+    permission_element->removeAttribute(attr);
+  }
 }
 
 TEST_F(HTMLCapabilityElementBaseTest, DisplayModeIconOnlyDisabled) {
@@ -509,14 +514,17 @@ TEST_F(HTMLCapabilityElementBaseTest, DisplayModeIconOnlyDisabled) {
                    ->innerText()
                    .empty());
 
-  permission_element->setAttribute(html_names::kDisplaymodeAttr,
-                                   AtomicString("icon-only"));
-  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(permission_element->IsIconOnly());
-  CheckInnerText(permission_element, kCameraString);
-  EXPECT_NE(nullptr, permission_element->permission_text_span_for_testing()
-                         ->GetComputedStyle());
-  EXPECT_EQ(kCameraString, permission_element->computedName());
+  for (const QualifiedName& attr :
+       {html_names::kDisplayhintAttr, html_names::kDisplaymodeAttr}) {
+    permission_element->setAttribute(attr, AtomicString("icon-only"));
+    GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+    EXPECT_FALSE(permission_element->IsIconOnly());
+    CheckInnerText(permission_element, kCameraString);
+    EXPECT_NE(nullptr, permission_element->permission_text_span_for_testing()
+                           ->GetComputedStyle());
+    EXPECT_EQ(kCameraString, permission_element->computedName());
+    permission_element->removeAttribute(attr);
+  }
 }
 
 TEST_F(HTMLCapabilityElementBaseTest,

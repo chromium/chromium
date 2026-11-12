@@ -881,10 +881,13 @@ TEST_F(HTMLInstallElementTestBase, DisplayModeIconOnlyNotSupported) {
   EXPECT_FALSE(element->IsIconOnly());
   CheckInnerText(element, kInstallString);
 
-  element->setAttribute(html_names::kDisplaymodeAttr,
-                        AtomicString("icon-only"));
-  EXPECT_FALSE(element->IsIconOnly());
-  CheckInnerText(element, kInstallString);
+  for (const QualifiedName& attr :
+       {html_names::kDisplayhintAttr, html_names::kDisplaymodeAttr}) {
+    element->setAttribute(attr, AtomicString("icon-only"));
+    EXPECT_FALSE(element->IsIconOnly());
+    CheckInnerText(element, kInstallString);
+    element->removeAttribute(attr);
+  }
 }
 
 }  // namespace blink

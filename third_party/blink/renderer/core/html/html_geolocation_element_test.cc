@@ -295,16 +295,18 @@ TEST_F(HTMLGeolocationElementTest, GeolocationDisplayModeIconOnly) {
   EXPECT_FALSE(geolocation_element->IsIconOnly());
   CheckInnerText(geolocation_element, kGeolocationString);
 
-  geolocation_element->setAttribute(html_names::kDisplaymodeAttr,
-                                    AtomicString("icon-only"));
-  EXPECT_TRUE(geolocation_element->IsIconOnly());
-  CheckInnerText(geolocation_element, g_empty_string);
-  EXPECT_EQ(kGeolocationString, geolocation_element->AccessibleLabel());
-  EXPECT_EQ(kGeolocationString, geolocation_element->computedName());
+  for (const QualifiedName& attr :
+       {html_names::kDisplayhintAttr, html_names::kDisplaymodeAttr}) {
+    geolocation_element->setAttribute(attr, AtomicString("icon-only"));
+    EXPECT_TRUE(geolocation_element->IsIconOnly());
+    CheckInnerText(geolocation_element, g_empty_string);
+    EXPECT_EQ(kGeolocationString, geolocation_element->AccessibleLabel());
+    EXPECT_EQ(kGeolocationString, geolocation_element->computedName());
 
-  geolocation_element->removeAttribute(html_names::kDisplaymodeAttr);
-  EXPECT_FALSE(geolocation_element->IsIconOnly());
-  CheckInnerText(geolocation_element, kGeolocationString);
+    geolocation_element->removeAttribute(attr);
+    EXPECT_FALSE(geolocation_element->IsIconOnly());
+    CheckInnerText(geolocation_element, kGeolocationString);
+  }
 }
 
 TEST_F(HTMLGeolocationElementTest, GeolocationDisplayModeIconOnlyDisabled) {
@@ -314,14 +316,17 @@ TEST_F(HTMLGeolocationElementTest, GeolocationDisplayModeIconOnlyDisabled) {
   EXPECT_FALSE(geolocation_element->IsIconOnly());
   CheckInnerText(geolocation_element, kGeolocationString);
 
-  geolocation_element->setAttribute(html_names::kDisplaymodeAttr,
-                                    AtomicString("icon-only"));
-  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(geolocation_element->IsIconOnly());
-  CheckInnerText(geolocation_element, kGeolocationString);
-  EXPECT_NE(nullptr, geolocation_element->permission_text_span_for_testing()
-                         ->GetComputedStyle());
-  EXPECT_EQ(kGeolocationString, geolocation_element->computedName());
+  for (const QualifiedName& attr :
+       {html_names::kDisplayhintAttr, html_names::kDisplaymodeAttr}) {
+    geolocation_element->setAttribute(attr, AtomicString("icon-only"));
+    GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+    EXPECT_FALSE(geolocation_element->IsIconOnly());
+    CheckInnerText(geolocation_element, kGeolocationString);
+    EXPECT_NE(nullptr, geolocation_element->permission_text_span_for_testing()
+                           ->GetComputedStyle());
+    EXPECT_EQ(kGeolocationString, geolocation_element->computedName());
+    geolocation_element->removeAttribute(attr);
+  }
 }
 
 TEST_F(HTMLGeolocationElementTest, GeolocationStatusChange) {

@@ -505,7 +505,9 @@ bool HTMLCapabilityElementBase::IsIconOnly() const {
           GetDocument().GetExecutionContext())) {
     return false;
   }
-  return EqualIgnoringAsciiCase(FastGetAttribute(html_names::kDisplaymodeAttr),
+  return EqualIgnoringAsciiCase(FastGetAttribute(html_names::kDisplayhintAttr),
+                                "icon-only") ||
+         EqualIgnoringAsciiCase(FastGetAttribute(html_names::kDisplaymodeAttr),
                                 "icon-only");
 }
 
@@ -743,7 +745,8 @@ void HTMLCapabilityElementBase::ParseAttribute(
 
   if (params.name == html_names::kPreciselocationAttr) {
     SetPreciseLocation(params.new_value != nullptr);
-  } else if (params.name == html_names::kDisplaymodeAttr) {
+  } else if (params.name == html_names::kDisplayhintAttr ||
+             params.name == html_names::kDisplaymodeAttr) {
     if (!IsHTMLInstallElement() && !IsHTMLUserMediaElement() &&
         RuntimeEnabledFeatures::CapabilityElementIconOnlyModeEnabled(
             GetDocument().GetExecutionContext()) &&

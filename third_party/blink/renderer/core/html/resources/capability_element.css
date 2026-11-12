@@ -78,14 +78,17 @@ permission::permission-icon, geolocation::permission-icon, install::permission-i
 }
 
 @supports blink-feature(CapabilityElementIconOnlyMode) {
+  permission[displayhint="icon-only" i]::-internal-permission-text, geolocation[displayhint="icon-only" i]::-internal-permission-text, camera[displayhint="icon-only" i]::-internal-permission-text, microphone[displayhint="icon-only" i]::-internal-permission-text,
   permission[displaymode="icon-only" i]::-internal-permission-text, geolocation[displaymode="icon-only" i]::-internal-permission-text, camera[displaymode="icon-only" i]::-internal-permission-text, microphone[displaymode="icon-only" i]::-internal-permission-text {
     display: none !important;
   }
 
+  permission[displayhint="icon-only" i]::permission-icon, geolocation[displayhint="icon-only" i]::permission-icon, camera[displayhint="icon-only" i]::permission-icon, microphone[displayhint="icon-only" i]::permission-icon,
   permission[displaymode="icon-only" i]::permission-icon, geolocation[displaymode="icon-only" i]::permission-icon, camera[displaymode="icon-only" i]::permission-icon, microphone[displaymode="icon-only" i]::permission-icon {
     margin-inline-end: 0px !important;
   }
 
+  permission[displayhint="icon-only" i], geolocation[displayhint="icon-only" i], camera[displayhint="icon-only" i], microphone[displayhint="icon-only" i],
   permission[displaymode="icon-only" i], geolocation[displaymode="icon-only" i], camera[displaymode="icon-only" i], microphone[displaymode="icon-only" i] {
     padding: 8px;
   }

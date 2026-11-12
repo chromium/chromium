@@ -597,11 +597,14 @@ TEST_F(HTMLUserMediaElementTest, DisplayModeIconOnlyNotSupported) {
   EXPECT_EQ(element->permission_text_span_for_testing()->innerText(),
             kCameraMicrophoneString);
 
-  element->setAttribute(html_names::kDisplaymodeAttr,
-                        AtomicString("icon-only"));
-  EXPECT_FALSE(element->IsIconOnly());
-  EXPECT_EQ(element->permission_text_span_for_testing()->innerText(),
-            kCameraMicrophoneString);
+  for (const QualifiedName& attr :
+       {html_names::kDisplayhintAttr, html_names::kDisplaymodeAttr}) {
+    element->setAttribute(attr, AtomicString("icon-only"));
+    EXPECT_FALSE(element->IsIconOnly());
+    EXPECT_EQ(element->permission_text_span_for_testing()->innerText(),
+              kCameraMicrophoneString);
+    element->removeAttribute(attr);
+  }
 }
 
 TEST_F(HTMLUserMediaElementTest, RequestInitiationFlowMetrics) {
