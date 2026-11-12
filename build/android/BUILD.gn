@@ -247,6 +247,10 @@ python_library("logdog_wrapper_py") {
   pydeps_file = "test_wrapper/logdog_wrapper.pydeps"
 }
 
+python_binary("write_build_config") {
+  script = "gyp/write_build_config.py"
+}
+
 python_library("resource_sizes_py") {
   pydeps_file = "resource_sizes.pydeps"
   data_deps = [

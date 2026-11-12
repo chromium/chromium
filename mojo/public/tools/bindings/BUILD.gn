@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/python.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//third_party/jinja2/jinja2.gni")
 
@@ -142,10 +143,19 @@ _ts_template_sources = [
   "$mojom_generator_root/generators/ts_templates/webui_browser_proxy_definition.tmpl",
 ]
 
-action("precompile_cpp_templates") {
-  script = mojom_generator_script
-  sources = mojom_generator_sources + _cpp_template_sources
-  inputs = jinja2_sources
+python_binary("mojom_bindings_generator") {
+  script = "mojom_bindings_generator.py"
+  inputs = mojom_generator_sources + jinja2_sources
+}
+
+python_binary("generate_type_mappings") {
+  script = "generate_type_mappings.py"
+  inputs = mojom_parser_sources
+}
+
+python_action("precompile_cpp_templates") {
+  python_binary = ":mojom_bindings_generator"
+  sources = _cpp_template_sources
   outputs = [ "$target_gen_dir/cpp_templates.zip" ]
   args = [
     "-o",
@@ -157,10 +167,9 @@ action("precompile_cpp_templates") {
   ]
 }
 
-action("precompile_java_templates") {
-  script = mojom_generator_script
-  sources = mojom_generator_sources + _java_template_sources
-  inputs = jinja2_sources
+python_action("precompile_java_templates") {
+  python_binary = ":mojom_bindings_generator"
+  sources = _java_template_sources
   outputs = [ "$target_gen_dir/java_templates.zip" ]
   args = [
     "-o",
@@ -172,10 +181,9 @@ action("precompile_java_templates") {
   ]
 }
 
-action("precompile_js_templates") {
-  script = mojom_generator_script
-  sources = mojom_generator_sources + _js_template_sources
-  inputs = jinja2_sources
+python_action("precompile_js_templates") {
+  python_binary = ":mojom_bindings_generator"
+  sources = _js_template_sources
   outputs = [ "$target_gen_dir/js_templates.zip" ]
   args = [
     "-o",
@@ -187,10 +195,9 @@ action("precompile_js_templates") {
   ]
 }
 
-action("precompile_ts_templates") {
-  script = mojom_generator_script
-  sources = mojom_generator_sources + _ts_template_sources
-  inputs = jinja2_sources
+python_action("precompile_ts_templates") {
+  python_binary = ":mojom_bindings_generator"
+  sources = _ts_template_sources
   outputs = [ "$target_gen_dir/ts_templates.zip" ]
   args = [
     "-o",
@@ -202,10 +209,9 @@ action("precompile_ts_templates") {
   ]
 }
 
-action("precompile_rust_templates") {
-  script = mojom_generator_script
-  sources = mojom_generator_sources + _rust_template_sources
-  inputs = jinja2_sources
+python_action("precompile_rust_templates") {
+  python_binary = ":mojom_bindings_generator"
+  sources = _rust_template_sources
   outputs = [ "$target_gen_dir/rust_templates.zip" ]
   args = [
     "-o",
@@ -217,10 +223,9 @@ action("precompile_rust_templates") {
   ]
 }
 
-action("precompile_mojolpm_templates") {
-  script = mojom_generator_script
-  sources = mojom_generator_sources + _mojolpm_template_sources
-  inputs = jinja2_sources
+python_action("precompile_mojolpm_templates") {
+  python_binary = ":mojom_bindings_generator"
+  sources = _mojolpm_template_sources
   outputs = [ "$target_gen_dir/mojolpm_templates.zip" ]
   args = [
     "-o",
@@ -232,10 +237,9 @@ action("precompile_mojolpm_templates") {
   ]
 }
 
-action("precompile_fuzzilli_templates") {
-  script = mojom_generator_script
-  sources = mojom_generator_sources + _fuzzilli_template_sources
-  inputs = jinja2_sources
+python_action("precompile_fuzzilli_templates") {
+  python_binary = ":mojom_bindings_generator"
+  sources = _fuzzilli_template_sources
   outputs = [ "$target_gen_dir/fuzzilli_templates.zip" ]
   args = [
     "-o",

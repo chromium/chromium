@@ -159,3 +159,103 @@ template("action_foreach_with_pydeps") {
     inputs += rebase_path(_pydeps_entries, ".", _script_dir)
   }
 }
+
+# Creates a .pyz archive at "$target_out_dir/$target_name.pyz" in
+# $default_toolchain containing precompiled .pyc files for |script| and its
+# module dependencies. Evaluated as a no-op in secondary toolchains so callers
+# in any toolchain can use python_action().
+#
+# Variables
+#   script: (required) Path to the entry-point .py script.
+#   pydeps_file: (optional) Path to .pydeps file. Defaults to "${script}deps"
+#       when |inputs| is not set.
+#   inputs: (optional) List of .py files to bundle into the archive.
+#   deps, public_deps, testonly, visibility: Normal meaning.
+#
+# Limitations
+#   Bundled modules are loaded by a minimal importer that does not support
+#   pkgutil.iter_modules() or importlib.resources. inspect.getsource() works
+#   only when .py files exist on disk (i.e. not on remote builders).
+#
+# Example
+#   python_binary("my_tool") {
+#     script = "my_tool.py"
+#   }
+template("python_binary") {
+  if (current_toolchain == default_toolchain) {
+    action_with_pydeps(target_name) {
+      forward_variables_from(invoker,
+                             [
+                               "deps",
+                               "public_deps",
+                               "testonly",
+                               "visibility",
+                             ])
+      _output = "$target_out_dir/$target_name.pyz"
+
+      script = "//build/create_pyz.py"
+      depfile = "$target_gen_dir/$target_name.d"
+      inputs = [ invoker.script ]
+      outputs = [ _output ]
+
+      args = [
+        "--script",
+        rebase_path(invoker.script, root_build_dir),
+        "--output",
+        rebase_path(_output, root_build_dir),
+        "--depfile",
+        rebase_path(depfile, root_build_dir),
+      ]
+
+      if (defined(invoker.pydeps_file) || !defined(invoker.inputs)) {
+        if (defined(invoker.pydeps_file)) {
+          _pydeps_file = invoker.pydeps_file
+        } else {
+          _pydeps_file = "${invoker.script}deps"
+        }
+        _pydeps_lines = read_file(_pydeps_file, "list lines")
+        _pydeps_entries = filter_exclude(_pydeps_lines, [ "#*" ])
+        _pydeps_dir = get_path_info(_pydeps_file, "dir")
+        inputs +=
+            rebase_path(_pydeps_entries, ".", _pydeps_dir) + [ _pydeps_file ]
+        args += [
+          "--pydeps",
+          rebase_path(_pydeps_file, root_build_dir),
+        ]
+      }
+
+      if (defined(invoker.inputs)) {
+        inputs += invoker.inputs
+        _rebased_inputs = rebase_path(invoker.inputs, root_build_dir)
+        args += [ "--inputs=$_rebased_inputs" ]
+      }
+    }
+  } else {
+    not_needed([ "target_name" ])
+    not_needed(invoker, "*")
+  }
+}
+
+# An action() that executes a python_binary() .pyz archive built in
+# $default_toolchain.
+#
+# Variables
+#   python_binary: (required) Label of the python_binary() target (without
+#       toolchain).
+#   All other action() variables are forwarded.
+template("python_action") {
+  action(target_name) {
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+    forward_variables_from(invoker,
+                           "*",
+                           TESTONLY_AND_VISIBILITY + [ "python_binary" ])
+    _python_binary = "${invoker.python_binary}($default_toolchain)"
+    _pyz_name = get_label_info(_python_binary, "name")
+    script =
+        get_label_info(_python_binary, "target_out_dir") + "/$_pyz_name.pyz"
+    if (!defined(deps)) {
+      deps = []
+    }
+    deps += [ _python_binary ]
+  }
+}

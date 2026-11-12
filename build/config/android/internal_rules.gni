@@ -663,9 +663,9 @@ template("write_build_config") {
                  "target_name",
                ])
   } else {
-    action_with_pydeps(target_name) {
+    python_action(target_name) {
       forward_variables_from(invoker, [ "testonly" ])
-      script = "//build/android/gyp/write_build_config.py"
+      python_binary = "//build/android:write_build_config"
       depfile = "$target_gen_dir/$target_name.d"
       inputs = _inputs
       outputs = _outputs

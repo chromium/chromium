@@ -65,7 +65,7 @@ def __step_config(ctx, step_config):
         # See also https://chromium.googlesource.com/chromium/src/build/+/HEAD/android/docs/java_toolchain.md
         {
             "name": "android/write_build_config",
-            "command_prefix": platform.python_bin + " ../../build/android/gyp/write_build_config.py",
+            "command_prefix": platform.python_bin + " obj/build/android/write_build_config.pyz",
             "handler": "android_write_build_config" if remote_run else None,
             "remote": remote_run,
             "restat_content": True,

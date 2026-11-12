@@ -2926,6 +2926,7 @@ _GENERIC_PYDEPS_FILES = [
     'build/android/resource_sizes.pydeps',
     'build/android/test_runner.pydeps',
     'build/android/test_wrapper/logdog_wrapper.pydeps',
+    'build/create_pyz.pydeps',
     'build/fuchsia/starview/run_cuttlefish.pydeps',
     'build/fuchsia/starview/run_cuttlefish_test.pydeps',
     'build/fuchsia/test/component_storage_test.pydeps',

@@ -1,3 +1,4 @@
+import("//build/config/python.gni")
 import("//build/rust/rust_static_library.gni")
 
 # This is a fragment of the larger "mojom" template from "mojom.gni", split into
@@ -10,9 +11,6 @@ template("mojom_rust") {
                            "output_target_name",
                            "all_deps",
                            "sources_list",
-                           "mojom_generator_script",
-                           "mojom_generator_sources",
-                           "jinja2_sources",
                            "parser_target_name",
                            "common_generator_args",
                            "message_scrambling_inputs",
@@ -87,10 +85,9 @@ template("mojom_rust") {
       visibility = [ ":$rust_generator_target_name" ]
     }
 
-    action(rust_generator_target_name) {
-      script = mojom_generator_script
-      inputs = mojom_generator_sources + jinja2_sources +
-               get_target_outputs(":${base_name}_dep_info")
+    python_action(rust_generator_target_name) {
+      python_binary = "//mojo/public/tools/bindings:mojom_bindings_generator"
+      inputs = get_target_outputs(":${base_name}_dep_info")
       if (defined(rust_typemaps)) {
         inputs += [ "$target_gen_dir/${base_name}_typemap.json" ]
       }
@@ -217,9 +214,6 @@ template("mojom_rust") {
 
     not_needed([
                  "output_target_name",
-                 "mojom_generator_script",
-                 "mojom_generator_sources",
-                 "jinja2_sources",
                  "parser_target_name",
                  "common_generator_args",
                  "message_scrambling_inputs",

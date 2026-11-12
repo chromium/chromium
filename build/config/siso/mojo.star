@@ -21,7 +21,7 @@ def __step_config(ctx, step_config):
     step_config["rules"].extend([
         {
             "name": "mojo/mojom_bindings_generator",
-            "command_prefix": platform.python_bin + " ../../mojo/public/tools/bindings/mojom_bindings_generator.py",
+            "command_prefix": platform.python_bin + " obj/mojo/public/tools/bindings/mojom_bindings_generator.pyz",
             "restat": True,
             "remote": remote_run,
             "timeout": "2m",
@@ -31,7 +31,7 @@ def __step_config(ctx, step_config):
         },
         {
             "name": "mojo/mojom_parser",
-            "command_prefix": platform.python_bin + " ../../mojo/public/tools/mojom/mojom_parser.py",
+            "command_prefix": platform.python_bin + " obj/mojo/public/tools/mojom/mojom_parser.pyz",
             "remote": remote_run and runtime.os != "windows",
             "timeout": "2m",
             "output_local": True,
@@ -40,7 +40,7 @@ def __step_config(ctx, step_config):
         },
         {
             "name": "mojo/generate_type_mappings",
-            "command_prefix": platform.python_bin + " ../../mojo/public/tools/bindings/generate_type_mappings.py",
+            "command_prefix": platform.python_bin + " obj/mojo/public/tools/bindings/generate_type_mappings.pyz",
             "remote": remote_run,
             "timeout": "2m",
             "output_local": True,
