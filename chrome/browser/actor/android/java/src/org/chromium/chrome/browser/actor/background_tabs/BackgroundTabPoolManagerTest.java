@@ -193,7 +193,7 @@ public class BackgroundTabPoolManagerTest {
                                 ChromePreferenceKeys.BACKGROUND_TAB_POOL_LAST_PROFILE_TOKEN, null));
 
         // When cache is cleared, pool is emptied and destroyed, and token is cleared
-        pool2.clearAll();
+        pool2.removeTabById(TAB_ID_1);
         ShadowLooper.idleMainLooper();
         assertNull(BackgroundTabPoolManager.getPoolForTesting(mProfile));
         assertNull(

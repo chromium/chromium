@@ -411,7 +411,7 @@ public class ActorBackgroundActuationIntegrationTest {
                     assertTrue(mTab.getIsOffscreenRenderingSupplier().get());
                     BackgroundTabPool pool = BackgroundTabRestorationHelper.acquirePool(selector);
                     assertNotNull(pool);
-                    assertTrue(pool.hasPlaceholder(placeholderTabId));
+                    assertTrue(pool.getAllPlaceholderTabIds().contains(placeholderTabId));
                 });
 
         // Destroy previous activity while background actuation keeps the task alive.
@@ -641,7 +641,6 @@ public class ActorBackgroundActuationIntegrationTest {
                 () -> {
                     BackgroundTabPool pool = BackgroundTabRestorationHelper.acquirePool(selector);
                     assertNotNull(pool);
-                    assertTrue(pool.hasPlaceholder(placeholderTabId));
                     assertTrue(pool.getAllPlaceholderTabIds().contains(placeholderTabId));
                 });
 

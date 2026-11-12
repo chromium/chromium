@@ -345,7 +345,7 @@ public class ActorBackgroundActuationManagerTest {
         BackgroundTabPool pool = BackgroundTabPoolManager.acquire(mProfile);
         try {
             assertNotNull(pool.getLiveTab(100));
-            assertTrue(pool.hasPlaceholder(101));
+            assertTrue(pool.getAllPlaceholderTabIds().contains(101));
         } finally {
             BackgroundTabPoolManager.release(pool);
         }
@@ -1429,7 +1429,7 @@ public class ActorBackgroundActuationManagerTest {
 
         BackgroundTabPool pool = BackgroundTabPoolManager.acquire(mProfile);
         try {
-            pool.removeLiveTabByOriginalId(100);
+            pool.loadTabByOriginalId(100);
         } finally {
             BackgroundTabPoolManager.release(pool);
         }

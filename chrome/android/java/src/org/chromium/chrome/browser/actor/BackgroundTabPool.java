@@ -95,12 +95,6 @@ public class BackgroundTabPool
         return mLiveEntries.isEmpty() && mPlaceholderToTabId.isEmpty();
     }
 
-    /** Returns the number of active live in-memory tabs in the pool. */
-    public int getLiveTabCount() {
-        checkNotDestroyed();
-        return mLiveEntries.size();
-    }
-
     /**
      * Adds a live in-memory tab to the pool, attaching {@link TabStateAttributes.Observer} and
      * saving its state if dirty.
@@ -157,17 +151,6 @@ public class BackgroundTabPool
         allIds.addAll(cachedIds);
         allIds.addAll(mLiveEntries.keySet());
         return Collections.unmodifiableSet(allIds);
-    }
-
-    /**
-     * Returns whether the pool has a background tab associated with the given placeholder tab ID.
-     *
-     * @param placeholderTabId The placeholder tab ID.
-     * @return True if the placeholder tab ID exists in the pool.
-     */
-    public boolean hasPlaceholder(@TabId int placeholderTabId) {
-        checkNotDestroyed();
-        return mPlaceholderToTabId.containsKey(placeholderTabId);
     }
 
     /**
@@ -278,34 +261,6 @@ public class BackgroundTabPool
         notifyIfEmptied();
     }
 
-    /**
-     * Removes the live in-memory tab with the given original tab ID from memory only.
-     *
-     * @param originalTabId The original tab ID of the tab to remove from memory.
-     */
-    public void removeLiveTabByOriginalId(@TabId int originalTabId) {
-        checkNotDestroyed();
-        LiveBackgroundTab tab = mLiveEntries.remove(originalTabId);
-        if (tab != null) {
-            removeTabObserver(tab.getTab());
-        }
-        notifyIfEmptied();
-    }
-
-    /** Clears all live and cached tabs in the pool. */
-    public void clearAll() {
-        checkNotDestroyed();
-        for (int i = 0; i < mLiveEntries.size(); i++) {
-            LiveBackgroundTab liveTab = mLiveEntries.valueAt(i);
-            removeTabObserver(liveTab.getTab());
-        }
-        mLiveEntries.clear();
-        mPlaceholderToTabId.clear();
-        mTabCache.clearAll();
-        mAssociationStore.clearAll();
-        notifyIfEmptied();
-    }
-
     /** Cleans up on-disk persisted cache post restoration. */
     public void cleanupPostRestore() {
         checkNotDestroyed();
@@ -348,8 +303,7 @@ public class BackgroundTabPool
         return mIsDestroyed;
     }
 
-    @VisibleForTesting
-    public void notifyIfEmptied() {
+    private void notifyIfEmptied() {
         if (isEmpty() && !mIsDestroyed) {
             PostTask.postTask(TaskTraits.UI_DEFAULT, mOnEmptyCallback);
         }
