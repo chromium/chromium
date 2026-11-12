@@ -374,7 +374,7 @@ TEST_F(OtpCoordinatorTest,
 
   const base::Time t0 = base::Time::Now();
   SendGmailOtp("999000", t0 + base::Seconds(10),
-               base::TimeTicks::Now() - base::Minutes(2));
+               base::TimeTicks::Now() - base::Minutes(4));
   SendGmailOtp("222222", t0 + base::Seconds(20));
   phish_guard_delegate_->WaitForChecks();
   EXPECT_EQ(frame_observer_->otp_available_notifications(), 4u);
@@ -396,22 +396,18 @@ TEST_F(OtpCoordinatorTest,
   EXPECT_THAT(coordinator_->GetAvailableTokens(other_origin_target),
               HasValue("333333"));
 
-  // After 61 seconds, the 1-minute Gmail TTL expires (and a newly added field
-  // on `other.test` does not inherit the expired Gmail candidate "333333"),
-  // while the 3-minute SMS token ("111111") remains valid.
-  const OtpTarget third_origin_target =
-      AddOtpForm(1, GURL("https://third.test"))[0];
-  phish_guard_delegate_->WaitForChecks();
+  // Gmail tokens remain valid at 2 minutes and expire after the 3-minute TTL
+  // (and a newly added field on `other.test` does not inherit the expired
+  // candidate "333333").
+  task_environment_.AdvanceClock(base::Minutes(2));
+  EXPECT_THAT(coordinator_->GetAvailableTokens(target), HasValue("222222"));
   task_environment_.AdvanceClock(base::Seconds(61));
   EXPECT_THAT(coordinator_->GetAvailableTokens(target), IsEmpty());
   EXPECT_THAT(coordinator_->GetAvailableTokens(other_origin_target), IsEmpty());
   const OtpTarget late_other_origin_target =
       AddOtpForm(1, GURL("https://other.test"))[0];
-  phish_guard_delegate_->WaitForChecks();
   EXPECT_THAT(coordinator_->GetAvailableTokens(late_other_origin_target),
-              HasValue("111111"));
-  EXPECT_THAT(coordinator_->GetAvailableTokens(third_origin_target),
-              HasValue("111111"));
+              IsEmpty());
 }
 
 TEST_F(OtpCoordinatorTest,
@@ -555,14 +551,14 @@ TEST_F(OtpCoordinatorTest,
 
   // Submitting with the offered value "222222" consumes "222222", so
   // re-listening on `site1_target` keeps "222222" suppressed until its
-  // 1-minute used-code TTL expires.
+  // 3-minute used-code TTL expires.
   coordinator_->OnOtpFormSubmitted(
       BuildFormWithFieldValue(site1_target, "222222"));
   EXPECT_THAT(coordinator_->GetAvailableTokens(site1_target), IsEmpty());
   coordinator_->StartListeningForOtp(site1_target);
   EXPECT_THAT(coordinator_->GetAvailableTokens(site1_target), IsEmpty());
 
-  task_environment_.AdvanceClock(base::Minutes(2));
+  task_environment_.AdvanceClock(base::Minutes(4));
   SendGmailOtp("222222", base::Time::Now());
   phish_guard_delegate_->WaitForChecks();
   EXPECT_THAT(coordinator_->GetAvailableTokens(site1_target),

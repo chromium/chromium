@@ -15,11 +15,11 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
+#include "components/autofill/core/browser/integrators/one_time_tokens/otp_types.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/autofill_test_util.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/one_time_tokens/core/browser/fake_gmail_otp_service.h"
-#include "components/one_time_tokens/core/browser/gmail_otp_backend.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
 #include "components/one_time_tokens/core/browser/one_time_token_type.h"
@@ -806,7 +806,7 @@ TEST_F(GmailOtpSourceTest,
 }
 
 // -----------------------------------------------------------------------------
-// 12. Token expiration after `kGmailTokenCacheDuration` (cached & incoming)
+// 12. Token expiration after `kGmailOtpCacheDuration`
 // -----------------------------------------------------------------------------
 
 TEST_F(GmailOtpSourceTest, ExpiresCachedTokenAfterCacheDuration_SingleOrigin) {
@@ -818,8 +818,7 @@ TEST_F(GmailOtpSourceTest, ExpiresCachedTokenAfterCacheDuration_SingleOrigin) {
   task_environment_.RunUntilIdle();
   ASSERT_EQ(source.GetAvailable(target).size(), 1u);
 
-  task_environment_.FastForwardBy(one_time_tokens::kGmailTokenCacheDuration +
-                                  base::Seconds(1));
+  task_environment_.FastForwardBy(kGmailOtpCacheDuration + base::Seconds(1));
   EXPECT_THAT(source.GetAvailable(target), IsEmpty());
 }
 
@@ -839,9 +838,8 @@ TEST_F(GmailOtpSourceTest, ExpiresCachedTokenAfterCacheDuration_TwoOrigins) {
   task_environment_.RunUntilIdle();
 
   // Advance so `target_a`'s cached token expires while `target_b`'s cached
-  // token is still within `kGmailTokenCacheDuration`.
-  task_environment_.FastForwardBy(one_time_tokens::kGmailTokenCacheDuration +
-                                  base::Seconds(10));
+  // token is still within `kGmailOtpCacheDuration`.
+  task_environment_.FastForwardBy(kGmailOtpCacheDuration + base::Seconds(10));
   EXPECT_THAT(source.GetAvailable(target_a), IsEmpty());
   EXPECT_THAT(
       source.GetAvailable(target_b),
@@ -854,8 +852,7 @@ TEST_F(GmailOtpSourceTest, ExpiresCachedTokenAfterCacheDuration_OpaqueOrigin) {
   GmailOtpSource source(client_);
   const OtpTarget opaque_target = MakeOpaqueTarget();
   source.Start(opaque_target);
-  task_environment_.FastForwardBy(one_time_tokens::kGmailTokenCacheDuration +
-                                  base::Seconds(1));
+  task_environment_.FastForwardBy(kGmailOtpCacheDuration + base::Seconds(1));
 
   EXPECT_EQ(service_->num_get_freshest_cached_otp_calls(), 0u);
   EXPECT_THAT(source.GetAvailable(opaque_target), IsEmpty());
@@ -872,8 +869,7 @@ TEST_F(GmailOtpSourceTest,
   task_environment_.RunUntilIdle();
   ASSERT_EQ(source.GetAvailable(target).size(), 1u);
 
-  task_environment_.FastForwardBy(one_time_tokens::kGmailTokenCacheDuration +
-                                  base::Seconds(1));
+  task_environment_.FastForwardBy(kGmailOtpCacheDuration + base::Seconds(1));
   EXPECT_THAT(source.GetAvailable(target), IsEmpty());
 }
 
@@ -891,9 +887,8 @@ TEST_F(GmailOtpSourceTest, ExpiresIncomingTokenAfterCacheDuration_TwoOrigins) {
   task_environment_.RunUntilIdle();
 
   // Advance so `target_a`'s incoming token expires while `target_b`'s incoming
-  // token is still within `kGmailTokenCacheDuration`.
-  task_environment_.FastForwardBy(one_time_tokens::kGmailTokenCacheDuration -
-                                  base::Seconds(10));
+  // token is still within `kGmailOtpCacheDuration`.
+  task_environment_.FastForwardBy(kGmailOtpCacheDuration - base::Seconds(10));
   EXPECT_THAT(source.GetAvailable(target_a), IsEmpty());
   EXPECT_THAT(
       source.GetAvailable(target_b),
@@ -906,8 +901,7 @@ TEST_F(GmailOtpSourceTest,
   const OtpTarget opaque_target = MakeOpaqueTarget();
   source.Start(opaque_target);
   service_->ProcessCallbacks(MakeToken("111111", "otp@a.test"));
-  task_environment_.FastForwardBy(one_time_tokens::kGmailTokenCacheDuration +
-                                  base::Seconds(1));
+  task_environment_.FastForwardBy(kGmailOtpCacheDuration + base::Seconds(1));
 
   EXPECT_EQ(service_->num_subscribe_calls(), 0u);
   EXPECT_THAT(source.GetAvailable(opaque_target), IsEmpty());

@@ -12,7 +12,6 @@
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "components/autofill/core/common/unique_ids.h"
-#include "components/one_time_tokens/core/browser/gmail_otp_backend.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/one_time_tokens/core/browser/sms_otp_service.h"
 #include "url/origin.h"
@@ -78,7 +77,7 @@ bool OtpTokenIdentity::IsStrictlyNewerThan(
 }
 
 base::TimeDelta OtpTokenIdentity::CacheDuration() const {
-  return sender.has_value() ? one_time_tokens::kGmailTokenCacheDuration
+  return sender.has_value() ? kGmailOtpCacheDuration
                             : one_time_tokens::kCacheDurationForOldTokens;
 }
 
