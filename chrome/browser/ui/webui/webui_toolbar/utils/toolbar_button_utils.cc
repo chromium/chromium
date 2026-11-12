@@ -369,9 +369,16 @@ ActionItemToPinnedToolbarAction(actions::ActionItem* item) {
                            : vector_icons::kChatOldIcon));
       return toolbar_ui_api::mojom::PinnedToolbarAction::kSidePanelShowComments;
     case kActionShowAiOverlayDialog:
-      CHECK_EQ(icon, &(features::IsRoundedIconsEnabled()
-                           ? vector_icons::kMicFilledIcon
-                           : vector_icons::kMicOldIcon));
+      // The icon is swapped at runtime: a pause icon while the overlay is
+      // showing, and a generated (non-vector) image that animates with the
+      // audio energy while the overlay is listening or speaking.
+      CHECK(!icon ||
+            icon == &(features::IsRoundedIconsEnabled()
+                          ? vector_icons::kMicFilledIcon
+                          : vector_icons::kMicOldIcon) ||
+            icon == &(features::IsRoundedIconsEnabled()
+                          ? vector_icons::kPauseFilledIcon
+                          : vector_icons::kPauseOldIcon));
       return toolbar_ui_api::mojom::PinnedToolbarAction::kShowAiOverlayDialog;
     case kActionTtcToolbar:
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
