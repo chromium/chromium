@@ -404,16 +404,42 @@ TEST_F(RemoteActorCredentialBottomSheetViewControllerTest,
       ConfigurationAtRow(0).title);
 }
 
-// Tests that the first row has a checkmark when the suggestions arrive after
-// the view has loaded.
+// Tests that a single suggestion arriving after the view has loaded has a
+// checkmark and isn't selectable.
 TEST_F(RemoteActorCredentialBottomSheetViewControllerTest,
        SelectedRowHasCheckmark) {
   [view_controller_ setDomain:base::SysUTF16ToNSString(kTestDomain)];
   [view_controller_ loadViewIfNeeded];
-  [view_controller_ setSuggestions:@[
-    PasswordSuggestion(@"user1"), PasswordSuggestion(@"user2")
-  ]];
+  [view_controller_ setSuggestions:@[ PasswordSuggestion(@"user1") ]];
 
+  UITableView* table_view = TableView();
+  ASSERT_TRUE(table_view);
+  UITableViewCell* cell = CellAtRow(0);
+  EXPECT_EQ(UITableViewCellAccessoryCheckmark, cell.accessoryType);
+
+  [table_view.delegate tableView:table_view
+                 willDisplayCell:cell
+               forRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
+  EXPECT_FALSE(cell.userInteractionEnabled);
+}
+
+// Tests that selecting another row moves the checkmark to it.
+TEST_F(RemoteActorCredentialBottomSheetViewControllerTest,
+       SelectingAnotherRowMovesCheckmark) {
+  LoadViewWithSuggestions(
+      @[ PasswordSuggestion(@"user1"), PasswordSuggestion(@"user2") ]);
+  UITableView* table_view = TableView();
+  ASSERT_TRUE(table_view);
+  EXPECT_EQ(UITableViewCellAccessoryCheckmark, CellAtRow(0).accessoryType);
+  EXPECT_EQ(UITableViewCellAccessoryNone, CellAtRow(1).accessoryType);
+
+  [table_view.delegate tableView:table_view
+         didSelectRowAtIndexPath:[NSIndexPath indexPathForRow:1 inSection:0]];
+  EXPECT_EQ(UITableViewCellAccessoryNone, CellAtRow(0).accessoryType);
+  EXPECT_EQ(UITableViewCellAccessoryCheckmark, CellAtRow(1).accessoryType);
+
+  [table_view.delegate tableView:table_view
+         didSelectRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
   EXPECT_EQ(UITableViewCellAccessoryCheckmark, CellAtRow(0).accessoryType);
   EXPECT_EQ(UITableViewCellAccessoryNone, CellAtRow(1).accessoryType);
 }
