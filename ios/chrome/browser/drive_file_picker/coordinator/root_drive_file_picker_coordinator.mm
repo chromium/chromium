@@ -373,7 +373,7 @@ void ConfirmChangeProfileWithCompletion(
 
   _navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
   _navigationController.presentationController.delegate = self;
-  // TODO(crbug.com/441764702): Add `mediumDetent` back.
+  // TODO(crbug.com/585080085): Add `mediumDetent` back.
   _navigationController.sheetPresentationController.detents =
       @[ [UISheetPresentationControllerDetent largeDetent] ];
   _navigationController.sheetPresentationController.selectedDetentIdentifier =
