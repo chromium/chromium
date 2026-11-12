@@ -5,11 +5,13 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_IWA_COMMAND_SCHEDULER_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_IWA_COMMAND_SCHEDULER_H_
 
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
@@ -34,6 +36,10 @@ class ScopedProfileKeepAlive;
 namespace content {
 class StoragePartitionConfig;
 }  // namespace content
+
+namespace url {
+class Origin;
+}  // namespace url
 
 namespace web_app {
 
@@ -152,6 +158,12 @@ class IwaCommandScheduler final {
       base::OnceCallback<void(std::optional<content::StoragePartitionConfig>)>
           callback,
       const base::Location& location = FROM_HERE);
+
+  // Calculates the total browsing data size for all installed Isolated Web
+  // Apps.
+  void GetIsolatedWebAppBrowsingData(
+      base::OnceCallback<void(base::flat_map<url::Origin, uint64_t>)> callback,
+      const base::Location& call_location = FROM_HERE);
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Gets the path to an IWA bundle in the cache for a given `session_type`. If

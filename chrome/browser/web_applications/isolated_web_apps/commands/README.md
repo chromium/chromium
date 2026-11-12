@@ -14,9 +14,7 @@ This directory contains `WebAppCommand` implementations for Isolated Web Apps
   `CheckIsolatedWebAppBundleUserInstallabilityCommand`,
   `GetControlledFramePartitionWithLock`
   (`get_controlled_frame_partition_command.{h,cc}`), and
-  `GetIsolatedWebAppBrowsingDataCommand` (an exception currently scheduled via
-  the standalone `GetIsolatedWebAppBrowsingData()` helper in
-  `isolated_web_apps/get_isolated_web_app_browsing_data.h`).
+  `GetIsolatedWebAppBrowsingDataCommand`.
 - **Cache & Storage Hygiene:** `CleanupOrphanedIsolatedWebAppsCommand`, plus
   ChromeOS bundle cache commands (`CopyBundleToCacheCommand`,
   `GetBundleCachePathCommand`, `CleanupBundleCacheCommand`, and

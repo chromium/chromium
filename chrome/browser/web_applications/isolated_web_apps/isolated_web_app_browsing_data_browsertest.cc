@@ -28,9 +28,9 @@
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/commands/web_app_uninstall_command.h"
-#include "chrome/browser/web_applications/isolated_web_apps/get_isolated_web_app_browsing_data.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/iwa_command_scheduler.h"
 #include "chrome/browser/web_applications/isolated_web_apps/remove_isolated_web_app_data.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/key_distribution/test_utils.h"
@@ -123,7 +123,8 @@ class IsolatedWebAppBrowsingDataTest : public IsolatedWebAppBrowserTestHarness {
 
   int64_t GetIwaUsage(const IsolatedWebAppUrlInfo& url_info) {
     base::test::TestFuture<base::flat_map<url::Origin, uint64_t>> future;
-    web_app::GetIsolatedWebAppBrowsingData(profile(), future.GetCallback());
+    IwaCommandScheduler::From(web_app_provider())
+        .GetIsolatedWebAppBrowsingData(future.GetCallback());
     base::flat_map<url::Origin, uint64_t> result = future.Get();
     return result.contains(url_info.origin()) ? result.at(url_info.origin())
                                               : 0;

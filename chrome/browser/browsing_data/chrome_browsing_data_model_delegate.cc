@@ -28,8 +28,9 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
-#include "chrome/browser/web_applications/isolated_web_apps/get_isolated_web_app_browsing_data.h"
+#include "chrome/browser/web_applications/isolated_web_apps/iwa_command_scheduler.h"
 #include "chrome/browser/web_applications/isolated_web_apps/remove_isolated_web_app_data.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #endif
 
 namespace {
@@ -47,6 +48,21 @@ IsolatedWebAppBrowsingDataToDelegateEntries(
         size);
   }
   return entries;
+}
+
+void GetAllIsolatedWebAppDataKeys(
+    Profile* profile,
+    base::OnceCallback<
+        void(std::vector<ChromeBrowsingDataModelDelegate::DelegateEntry>)>
+        callback) {
+  auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
+  if (!provider) {
+    std::move(callback).Run({});
+    return;
+  }
+  web_app::IwaCommandScheduler::From(*provider).GetIsolatedWebAppBrowsingData(
+      base::BindOnce(&IsolatedWebAppBrowsingDataToDelegateEntries)
+          .Then(std::move(callback)));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -119,9 +135,7 @@ void ChromeBrowsingDataModelDelegate::GetAllDataKeys(
 
 #if !BUILDFLAG(IS_ANDROID)
   if (storage_partition_->GetConfig().is_default()) {
-    web_app::GetIsolatedWebAppBrowsingData(
-        profile_, base::BindOnce(&IsolatedWebAppBrowsingDataToDelegateEntries)
-                      .Then(concurrent.CreateCallback()));
+    GetAllIsolatedWebAppDataKeys(profile_, concurrent.CreateCallback());
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

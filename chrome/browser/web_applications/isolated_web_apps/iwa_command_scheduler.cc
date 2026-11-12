@@ -22,6 +22,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/commands/check_isolated_web_app_bundle_user_installability_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/cleanup_orphaned_isolated_web_apps_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/get_controlled_frame_partition_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/commands/get_isolated_web_app_browsing_data_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/isolated_web_app_apply_update_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/isolated_web_app_prepare_and_store_update_command.h"
@@ -34,6 +35,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "content/public/browser/storage_partition_config.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/web_applications/isolated_web_apps/commands/cleanup_bundle_cache_command.h"
@@ -144,6 +146,15 @@ void IwaCommandScheduler::GetControlledFramePartition(
       std::move(callback),
       /*arg_for_shutdown=*/
       std::optional<content::StoragePartitionConfig>(std::nullopt), location);
+}
+
+void IwaCommandScheduler::GetIsolatedWebAppBrowsingData(
+    base::OnceCallback<void(base::flat_map<url::Origin, uint64_t>)> callback,
+    const base::Location& call_location) {
+  provider_->command_manager().ScheduleCommand(
+      std::make_unique<GetIsolatedWebAppBrowsingDataCommand>(
+          &profile_.get(), std::move(callback)),
+      call_location);
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

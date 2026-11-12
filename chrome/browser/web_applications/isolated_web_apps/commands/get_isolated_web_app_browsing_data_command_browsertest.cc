@@ -11,8 +11,8 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
-#include "chrome/browser/web_applications/isolated_web_apps/get_isolated_web_app_browsing_data.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/iwa_command_scheduler.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
@@ -96,7 +96,8 @@ class GetIsolatedWebAppBrowsingDataCommandBrowserTest
 IN_PROC_BROWSER_TEST_F(GetIsolatedWebAppBrowsingDataCommandBrowserTest,
                        NoIsolatedWebAppsInstalled) {
   base::test::TestFuture<base::flat_map<url::Origin, uint64_t>> future;
-  web_app::GetIsolatedWebAppBrowsingData(profile(), future.GetCallback());
+  IwaCommandScheduler::From(web_app_provider())
+      .GetIsolatedWebAppBrowsingData(future.GetCallback());
   base::flat_map<url::Origin, uint64_t> result = future.Get();
 
   EXPECT_THAT(result.size(), Eq(0UL));
@@ -107,7 +108,8 @@ IN_PROC_BROWSER_TEST_F(GetIsolatedWebAppBrowsingDataCommandBrowserTest,
   IsolatedWebAppUrlInfo iwa_url_info = InstallApp();
 
   base::test::TestFuture<base::flat_map<url::Origin, uint64_t>> future;
-  web_app::GetIsolatedWebAppBrowsingData(profile(), future.GetCallback());
+  IwaCommandScheduler::From(web_app_provider())
+      .GetIsolatedWebAppBrowsingData(future.GetCallback());
   base::flat_map<url::Origin, uint64_t> result = future.Get();
 
   EXPECT_THAT(result, UnorderedElementsAre(Pair(iwa_url_info.origin(), 0)));
@@ -126,7 +128,8 @@ IN_PROC_BROWSER_TEST_F(GetIsolatedWebAppBrowsingDataCommandBrowserTest,
       ExecJs(iwa2_frame, "localStorage.setItem('key', '!'.repeat(5000))"));
 
   base::test::TestFuture<base::flat_map<url::Origin, uint64_t>> future;
-  web_app::GetIsolatedWebAppBrowsingData(profile(), future.GetCallback());
+  IwaCommandScheduler::From(web_app_provider())
+      .GetIsolatedWebAppBrowsingData(future.GetCallback());
   base::flat_map<url::Origin, uint64_t> result = future.Get();
 
   EXPECT_THAT(result,
@@ -142,7 +145,8 @@ IN_PROC_BROWSER_TEST_F(GetIsolatedWebAppBrowsingDataCommandBrowserTest,
   CreateControlledFrame(iwa_frame, proxy_server_url(), "in_memory", 1000);
 
   base::test::TestFuture<base::flat_map<url::Origin, uint64_t>> future;
-  web_app::GetIsolatedWebAppBrowsingData(profile(), future.GetCallback());
+  IwaCommandScheduler::From(web_app_provider())
+      .GetIsolatedWebAppBrowsingData(future.GetCallback());
   base::flat_map<url::Origin, uint64_t> result = future.Get();
 
   EXPECT_THAT(result, UnorderedElementsAre(Pair(iwa_url_info.origin(),
