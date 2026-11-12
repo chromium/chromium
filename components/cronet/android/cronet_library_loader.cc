@@ -18,7 +18,6 @@
 #include "base/android/android_info.h"
 #include "base/android/base_jni_init.h"
 #include "base/android/jni_android.h"
-#include "base/android/jni_registrar.h"
 #include "base/android/jni_string.h"
 #include "base/android/jni_utils.h"
 #include "base/android/library_loader/library_loader_hooks.h"

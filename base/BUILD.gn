@@ -1477,8 +1477,6 @@ component("base") {
       "android/jni_array.h",
       "android/jni_bytebuffer.cc",
       "android/jni_bytebuffer.h",
-      "android/jni_registrar.cc",
-      "android/jni_registrar.h",
       "android/jni_string.cc",
       "android/jni_string.h",
       "android/jni_utils.cc",

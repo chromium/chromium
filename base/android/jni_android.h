@@ -25,12 +25,6 @@ namespace android {
 // Used to mark symbols to be exported in a shared library's symbol table.
 #define JNI_EXPORT __attribute__((visibility("default")))
 
-// Contains the registration method information for initializing JNI bindings.
-struct RegistrationMethod {
-  const char* name;
-  bool (*func)(JNIEnv* env);
-};
-
 using LogFatalCallback = void (*)(const char* message);
 
 BASE_EXPORT extern LogFatalCallback g_log_fatal_callback_for_testing;
