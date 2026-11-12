@@ -1449,17 +1449,19 @@ TEST_F(OtpManagerImplTest,
 }
 
 // Tests that AnyOtpFieldContainsTypedInput returns true when an OTP field has
-// user typed input.
+// non-empty user typed input, and false when its value is empty.
 TEST_F(OtpManagerImplTest,
        AnyOtpFieldContainsTypedInput_OtpFieldWithTypedInput) {
   OtpManagerImpl otp_manager(autofill_manager(), &sms_otp_service_);
   const FormStructure* form = AddFormWithOtpField();
   ASSERT_TRUE(form);
-  test_api(autofill_manager())
-      .FindCachedFormById(form->global_id())
-      ->field(0)
-      ->AddFieldModifier(FieldModifier::kUser);
+  AutofillField* otp_field = test_api(autofill_manager())
+                                 .FindCachedFormById(form->global_id())
+                                 ->field(0);
+  otp_field->AddFieldModifier(FieldModifier::kUser);
+  EXPECT_FALSE(test_api(otp_manager).AnyOtpFieldContainsTypedInput());
 
+  otp_field->set_value(u"123");
   EXPECT_TRUE(test_api(otp_manager).AnyOtpFieldContainsTypedInput());
 }
 
@@ -1486,25 +1488,31 @@ TEST_F(OtpManagerImplTest,
   ASSERT_TRUE(non_otp_form);
 
   // Add user modifier to the non-OTP field in the multi-field form.
-  test_api(autofill_manager())
-      .FindCachedFormById(multi_field_form->global_id())
-      ->field(0)
-      ->AddFieldModifier(FieldModifier::kUser);
+  AutofillField* first_name_field =
+      test_api(autofill_manager())
+          .FindCachedFormById(multi_field_form->global_id())
+          ->field(0);
+  first_name_field->set_value(u"Alice");
+  first_name_field->AddFieldModifier(FieldModifier::kUser);
 
   // Add user modifier to the non-OTP form.
-  test_api(autofill_manager())
-      .FindCachedFormById(non_otp_form->global_id())
-      ->field(0)
-      ->AddFieldModifier(FieldModifier::kUser);
+  AutofillField* non_otp_form_field =
+      test_api(autofill_manager())
+          .FindCachedFormById(non_otp_form->global_id())
+          ->field(0);
+  non_otp_form_field->set_value(u"Bob");
+  non_otp_form_field->AddFieldModifier(FieldModifier::kUser);
 
   // Since only non-OTP fields have user input, it should still return false.
   EXPECT_FALSE(test_api(otp_manager).AnyOtpFieldContainsTypedInput());
 
-  // Now add user modifier to the OTP field in the multi-field form.
-  test_api(autofill_manager())
-      .FindCachedFormById(multi_field_form->global_id())
-      ->field(1)
-      ->AddFieldModifier(FieldModifier::kUser);
+  // Now add user modifier and value to the OTP field in the multi-field form.
+  AutofillField* otp_field =
+      test_api(autofill_manager())
+          .FindCachedFormById(multi_field_form->global_id())
+          ->field(1);
+  otp_field->set_value(u"123");
+  otp_field->AddFieldModifier(FieldModifier::kUser);
 
   // Now an OTP field contains typed input, so it should return true.
   EXPECT_TRUE(test_api(otp_manager).AnyOtpFieldContainsTypedInput());
@@ -2192,11 +2200,12 @@ TEST_F(OtpManagerImplProactiveTriggerTest,
   otp_manager().OnBeforeFocusOnFormField(autofill_manager(), form->global_id(),
                                          otp_field_id);
 
-  // Add user modifier to simulate typed input.
-  test_api(autofill_manager())
-      .FindCachedFormById(form->global_id())
-      ->field(0)
-      ->AddFieldModifier(FieldModifier::kUser);
+  // Add user modifier and value to simulate typed input.
+  AutofillField* otp_field = test_api(autofill_manager())
+                                 .FindCachedFormById(form->global_id())
+                                 ->field(0);
+  otp_field->set_value(u"123");
+  otp_field->AddFieldModifier(FieldModifier::kUser);
 
   EXPECT_CALL(otp_phish_guard_delegate(),
               StartOtpPhishGuardCheck(form->field(0)->host_frame(), _))
@@ -2936,10 +2945,11 @@ TEST_F(OtpManagerImplOnTickleReceivedTest,
   otp_manager.OnBeforeFocusOnFormField(autofill_manager(), form->global_id(),
                                        otp_field_id);
 
-  test_api(autofill_manager())
-      .FindCachedFormById(form->global_id())
-      ->field(0)
-      ->AddFieldModifier(FieldModifier::kUser);
+  AutofillField* otp_field = test_api(autofill_manager())
+                                 .FindCachedFormById(form->global_id())
+                                 ->field(0);
+  otp_field->set_value(u"123");
+  otp_field->AddFieldModifier(FieldModifier::kUser);
 
   test_api(otp_manager).OnTickleReceived();
 
@@ -3731,6 +3741,7 @@ TEST_F(OtpManagerImplTest,
       test_api(autofill_manager()).FindCachedFormById(form->global_id());
   ASSERT_TRUE(cached_form);
   ASSERT_GT(cached_form->field_count(), 0u);
+  cached_form->field(0)->set_value(u"123");
   cached_form->field(0)->AddFieldModifier(FieldModifier::kUser);
 
   prefs::SetAutofillGmailOtpFillingEnabled(autofill_client().GetPrefs(), true);

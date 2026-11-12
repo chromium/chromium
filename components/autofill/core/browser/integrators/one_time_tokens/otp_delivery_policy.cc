@@ -58,8 +58,7 @@ OtpDeliveryPolicy::Decision OtpDeliveryPolicy::Evaluate(const Input& input) {
       // Tab visibility and window focus deferral are handled downstream by
       // `OtpSuggestionDropdownDispatcher` so triggers arriving while a tab is
       // backgrounded can be shown when the user returns.
-      if (input.any_otp_field_has_typed_input ||
-          input.typed_in_any_field_after_detection) {
+      if (input.any_otp_field_has_typed_input) {
         return {.allowed = false, .reason = SkipReason::kTypedInputPresent};
       }
       if (input.is_android) {
@@ -99,7 +98,7 @@ std::string_view OtpDeliveryPolicy::SkipReasonToStringView(SkipReason reason) {
     case SkipReason::kNonOtpFieldFocused:
       return "Reason: A non-OTP form field currently has focus.";
     case SkipReason::kTypedInputPresent:
-      return "Reason: User has already typed input.";
+      return "Reason: User has already typed into an OTP field.";
     case SkipReason::kProactiveUnfocusedOnAndroid:
       return "Reason: Proactive trigger on Android requires an OTP field to be "
              "focused so the Keyboard Accessory does not pop up unexpectedly.";

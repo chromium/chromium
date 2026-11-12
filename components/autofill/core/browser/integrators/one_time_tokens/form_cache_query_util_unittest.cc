@@ -147,21 +147,31 @@ TEST_F(FormCacheQueryUtilTest, FindOtpField) {
               FieldsAre(form, form->field(1)));
 }
 
-// Verifies that `AnyOtpFieldContainsTypedInput()` only reports user input typed
-// into an eligible OTP field of an OTP form and ignores user input in non-OTP
-// fields or non-OTP forms.
+// Verifies that `AnyOtpFieldContainsTypedInput()` only reports non-empty user
+// input typed into an eligible OTP field of an OTP form and ignores empty
+// fields, non-OTP fields, or non-OTP forms.
 TEST_F(FormCacheQueryUtilTest, AnyOtpFieldContainsTypedInput) {
   FormStructure* cross_site_form =
       AddOtpForm(url::Origin::Create(GURL("https://other.test")));
+  cross_site_form->field(1)->set_value(u"123");
   cross_site_form->field(1)->AddFieldModifier(FieldModifier::kUser);
   EXPECT_FALSE(AnyOtpFieldContainsTypedInput(autofill_manager()));
 
   FormStructure* form = AddOtpForm();
+  form->field(0)->set_value(u"Alice");
   form->field(0)->AddFieldModifier(FieldModifier::kUser);
   EXPECT_FALSE(AnyOtpFieldContainsTypedInput(autofill_manager()));
 
+  // `FieldModifier::kUser` with an empty value (e.g. after clearing the field)
+  // does not count as containing typed input.
   form->field(1)->AddFieldModifier(FieldModifier::kUser);
+  EXPECT_FALSE(AnyOtpFieldContainsTypedInput(autofill_manager()));
+
+  form->field(1)->set_value(u"123");
   EXPECT_TRUE(AnyOtpFieldContainsTypedInput(autofill_manager()));
+
+  form->field(1)->set_value(u"");
+  EXPECT_FALSE(AnyOtpFieldContainsTypedInput(autofill_manager()));
 }
 
 // Verifies that `IsActiveNonEmbeddedDriver()`, `FindOtpField()`,
@@ -171,6 +181,7 @@ TEST_F(FormCacheQueryUtilTest, AnyOtpFieldContainsTypedInput) {
 TEST_F(FormCacheQueryUtilTest, OwningDriverInactiveOrEmbedded) {
   FormStructure* form = AddOtpForm();
   FieldGlobalId otp_field_id = form->field(1)->global_id();
+  form->field(1)->set_value(u"123");
   form->field(1)->AddFieldModifier(FieldModifier::kUser);
 
   ASSERT_TRUE(IsActiveNonEmbeddedDriver(autofill_driver()));
@@ -232,6 +243,7 @@ TEST_F(FormCacheQueryUtilTest, ChildFrameOtpField_HostDriverState) {
       .main_frame_origin = main_origin_,
   });
   FieldGlobalId otp_field_id = form->field(1)->global_id();
+  form->field(1)->set_value(u"123");
   form->field(1)->AddFieldModifier(FieldModifier::kUser);
 
   EXPECT_THAT(FindOtpField(autofill_manager(), form->global_id(), otp_field_id),

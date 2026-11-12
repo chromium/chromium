@@ -239,27 +239,44 @@ TEST_F(OtpTabToFrameOrchestratorTest, SuppressesProactiveTriggerOnNonOtpFocus) {
   EXPECT_THAT(QuerySuggestions(form, *field), HasValue("111111"));
 }
 
-// Tests that submitting an OTP form consumes the submitted value and resets
-// typing state, allowing subsequent forms to receive proactive triggers.
+// Tests that typing into a non-OTP field does not suppress a later proactive
+// trigger once an OTP field has focus.
 TEST_F(OtpTabToFrameOrchestratorTest,
-       OnBeforeFormSubmittedConsumesSubmittedCodeAndResetsTypingState) {
+       TypingInNonOtpFieldDoesNotSuppressProactiveTrigger) {
   const FormStructure& form = AddOtpForm();
   const AutofillField* field = form.field(0);
 
   FieldGlobalId non_otp_field(autofill_driver().GetFrameToken(),
                               FieldRendererId(999));
   autofill_manager().NotifyObservers(
+      &AutofillManager::Observer::OnBeforeFocusOnFormField, form.global_id(),
+      non_otp_field);
+  autofill_manager().NotifyObservers(
       &AutofillManager::Observer::OnBeforeTextFieldValueChanged,
       form.global_id(), non_otp_field);
   autofill_manager().NotifyObservers(
       &AutofillManager::Observer::OnAfterTextFieldValueChanged,
       form.global_id(), non_otp_field);
+  autofill_manager().NotifyObservers(
+      &AutofillManager::Observer::OnBeforeFocusOnFormField, form.global_id(),
+      field->global_id());
+
+  SendSmsOtp("444444");
+  EXPECT_THAT(autofill_driver().triggered_fields(),
+              ElementsAre(field->global_id()));
+  EXPECT_THAT(QuerySuggestions(form, *field), HasValue("444444"));
+}
+
+// Tests that submitting an OTP form consumes the submitted value and that a
+// newer OTP is still offered and proactively triggered on a new OTP form.
+TEST_F(OtpTabToFrameOrchestratorTest,
+       OnBeforeFormSubmittedConsumesSubmittedCode) {
+  const FormStructure& form = AddOtpForm();
+  const AutofillField* field = form.field(0);
+
   SendSmsOtp("222222");
-  EXPECT_THAT(autofill_driver().triggered_fields(), IsEmpty());
   EXPECT_THAT(QuerySuggestions(form, *field), HasValue("222222"));
 
-  // Submitting `form` consumes its typed OTP value and clears typing state,
-  // allowing a proactive trigger on `form2` when a new OTP arrives.
   FormData submitted_form = form.ToFormData();
   test_api(submitted_form).field(0).set_value(u"222222");
   autofill_manager().NotifyObservers(
@@ -272,6 +289,9 @@ TEST_F(OtpTabToFrameOrchestratorTest,
   SendSmsOtp("222222");
   EXPECT_THAT(QuerySuggestions(form2, *form2.field(0)), IsEmpty());
 
+  // A fresh OTP arriving after submission is offered on `form2` and
+  // proactively triggers on its focused OTP field.
+  autofill_driver().clear_triggered_fields();
   autofill_manager().NotifyObservers(
       &AutofillManager::Observer::OnBeforeFocusOnFormField, form2.global_id(),
       form2.field(0)->global_id());

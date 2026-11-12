@@ -57,8 +57,9 @@ class OtpTargetFieldIdentifierTest
     const LocalFrameToken host_frame =
         field_host_frame.value_or(manager.driver().GetFrameToken());
     for (FieldType type : types) {
-      form_description.fields.push_back(
-          {.server_type = type, .host_frame = host_frame});
+      form_description.fields.push_back({.server_type = type,
+                                         .host_frame = host_frame,
+                                         .value = user_typed ? u"123" : u""});
     }
     FormData form = test::GetFormData(form_description);
     auto form_structure = std::make_unique<FormStructure>(form);
@@ -161,6 +162,18 @@ TEST_F(OtpTargetFieldIdentifierTest, FrameLifecycleAndRegistration) {
   FormData otp_form_1 = AddForm(autofill_manager(1), {ONE_TIME_CODE});
 
   EXPECT_TRUE(identifier.AnyOtpFieldContainsTypedInput());
+  // Clearing the OTP field's value makes `AnyOtpFieldContainsTypedInput()`
+  // return false even though `FieldModifier::kUser` remains set.
+  test_api(autofill_manager(0))
+      .FindCachedFormById(otp_form_0.global_id())
+      ->field(0)
+      ->set_value(u"");
+  EXPECT_FALSE(identifier.AnyOtpFieldContainsTypedInput());
+  test_api(autofill_manager(0))
+      .FindCachedFormById(otp_form_0.global_id())
+      ->field(0)
+      ->set_value(u"123");
+  EXPECT_TRUE(identifier.AnyOtpFieldContainsTypedInput());
   EXPECT_THAT(
       identifier.GetEligibleTargets(),
       ElementsAre(
@@ -239,26 +252,6 @@ TEST_F(OtpTargetFieldIdentifierTest, FrameLifecycleAndRegistration) {
   EXPECT_FALSE(identifier.AnyOtpFieldContainsTypedInput());
   EXPECT_FALSE(identifier.GetTarget().has_value());
   EXPECT_THAT(identifier.GetEligibleTargets(), IsEmpty());
-}
-
-// Verifies that `TypedInAnyFieldAfterOtpDetection()` only records user typing
-// that occurs after an OTP field has been detected in the tab and resets when
-// OTP fields are cleared.
-TEST_F(OtpTargetFieldIdentifierTest, TypingAfterOtpDetection) {
-  OtpTargetFieldIdentifier identifier;
-  EXPECT_FALSE(identifier.TypedInAnyFieldAfterOtpDetection());
-
-  // Typing before an OTP field is detected does not set the flag.
-  identifier.OnTextFieldValueChanged();
-  EXPECT_FALSE(identifier.TypedInAnyFieldAfterOtpDetection());
-
-  // Typing after an OTP field is detected sets the flag until cleared.
-  identifier.OnOtpFieldsDetected();
-  identifier.OnTextFieldValueChanged();
-  EXPECT_TRUE(identifier.TypedInAnyFieldAfterOtpDetection());
-
-  identifier.OnOtpFieldsCleared();
-  EXPECT_FALSE(identifier.TypedInAnyFieldAfterOtpDetection());
 }
 
 }  // namespace

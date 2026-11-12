@@ -62,9 +62,6 @@ class OtpTabToFrameOrchestrator : public OtpManager,
                                 FormGlobalId form_id,
                                 FieldGlobalId field_id) override;
   void OnBeforeFocusOnNonFormField(AutofillManager& manager) override;
-  void OnAfterTextFieldValueChanged(AutofillManager& manager,
-                                    FormGlobalId form_id,
-                                    FieldGlobalId field_id) override;
   void OnSuggestionsShown(AutofillManager& manager,
                           base::span<const Suggestion> suggestions) override;
   void OnBeforeFormSubmitted(AutofillManager& manager,

@@ -474,7 +474,6 @@ TEST_F(OtpSecurityGatewayTest,
       .is_keyboard_visible = true,
       .has_non_otp_focus_anywhere = false,
       .any_otp_field_has_typed_input = false,
-      .typed_in_any_field_after_detection = false,
   };
   EXPECT_TRUE(gateway.EvaluateProactiveTrigger(target, candidate, valid_context)
                   .allowed);
@@ -508,7 +507,6 @@ TEST_F(OtpSecurityGatewayTest,
       .is_keyboard_visible = false,
       .has_non_otp_focus_anywhere = false,
       .any_otp_field_has_typed_input = false,
-      .typed_in_any_field_after_detection = false,
   };
   OtpSecurityGateway::ProactiveTriggerContext hidden_keyboard_context =
       unfocused_context;
@@ -580,7 +578,6 @@ TEST_F(OtpSecurityGatewayTest,
       .is_keyboard_visible = true,
       .has_non_otp_focus_anywhere = false,
       .any_otp_field_has_typed_input = false,
-      .typed_in_any_field_after_detection = false,
   };
 
   // Cross-frame or unverified frame (`verified_frame != target.frame`) fails

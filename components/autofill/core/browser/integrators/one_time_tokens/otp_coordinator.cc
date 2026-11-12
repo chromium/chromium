@@ -92,7 +92,6 @@ void OtpCoordinator::StartListeningForOtp(const OtpTarget& target) {
       deliveries_.try_emplace(target.field, target);
   bool offered_from_peer = false;
   if (processing_new_target) {
-    target_field_identifier_.OnOtpFieldsDetected();
     const SiteFrame site_frame = GetSiteFrame(target);
     if (phishing_blocked_site_frames_.contains(site_frame)) {
       it->second.BlockOnPhishing();
@@ -239,10 +238,6 @@ void OtpCoordinator::OnWindowFocusChanged(bool is_focused) {
       is_tab_visible_) {
     RetryDeferredProactiveTriggers();
   }
-}
-
-void OtpCoordinator::OnTextFieldValueChanged() {
-  target_field_identifier_.OnTextFieldValueChanged();
 }
 
 void OtpCoordinator::OnOtpSuggestionsShown(FieldGlobalId field,
@@ -493,9 +488,6 @@ void OtpCoordinator::TryProactiveTrigger(const OtpTarget& target,
                              .any_otp_field_has_typed_input =
                                  target_field_identifier_
                                      .AnyOtpFieldContainsTypedInput(),
-                             .typed_in_any_field_after_detection =
-                                 target_field_identifier_
-                                     .TypedInAnyFieldAfterOtpDetection(),
                          })
                      .allowed) {
               return false;
@@ -585,7 +577,6 @@ void OtpCoordinator::StopSourcesIfNoRemainingTargets(
 
   if (deliveries_.empty()) {
     ++listening_generation_;
-    target_field_identifier_.OnOtpFieldsCleared();
     for (auto& source : sources_) {
       source->Stop();
     }

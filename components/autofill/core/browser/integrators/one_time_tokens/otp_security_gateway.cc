@@ -122,8 +122,6 @@ OtpDeliveryPolicy::Decision OtpSecurityGateway::EvaluateProactiveTrigger(
                     context.has_non_otp_focus_anywhere,
                 .any_otp_field_has_typed_input =
                     context.any_otp_field_has_typed_input,
-                .typed_in_any_field_after_detection =
-                    context.typed_in_any_field_after_detection,
                 .is_android = kIsAndroid,
                 .is_otp_field_focused = context.is_otp_field_focused,
                 .is_keyboard_visible = context.is_keyboard_visible,
