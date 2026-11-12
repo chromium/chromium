@@ -94,6 +94,12 @@ class GbmPixmapWayland : public gfx::NativePixmap {
 
   // Says a wl_buffer has been created and must removed.
   bool created_wl_buffer_ = false;
+
+  // Whether the buffer object was allocated without explicit modifiers and its
+  // modifier was not advertised by the Wayland compositor. In that case,
+  // `DRM_FORMAT_MOD_INVALID` (implicit modifier) is sent to the compositor
+  // instead of the modifier reported by the driver.
+  bool use_implicit_modifier_for_wl_buffer_ = false;
 };
 
 }  // namespace ui

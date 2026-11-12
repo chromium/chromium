@@ -8,6 +8,7 @@
 #include <gbm.h>
 #include <xf86drmMode.h>
 
+#include <algorithm>
 #include <memory>
 
 #include "base/containers/flat_set.h"
@@ -90,6 +91,15 @@ bool GbmPixmapWayland::InitializeBuffer(
     // creation without modifiers, and leave the choices to driver.
     if (!gbm_bo_ && buffer_manager_->AllowsImplicitModifierForFormat(format)) {
       gbm_bo_ = gbm_device->CreateBuffer(fourcc_format, size, gbm_flags);
+      // The driver may report a modifier for the implicitly allocated buffer
+      // (e.g. `DRM_FORMAT_MOD_LINEAR`) that the compositor did not advertise.
+      // Such a buffer must be submitted with `DRM_FORMAT_MOD_INVALID`, which
+      // the compositor advertised, or it may reject the buffer.
+      if (gbm_bo_ &&
+          !std::ranges::contains(buffer_manager_->GetModifiersForFormat(format),
+                                 gbm_bo_->GetFormatModifier())) {
+        use_implicit_modifier_for_wl_buffer_ = true;
+      }
     }
   }
 
@@ -243,7 +253,9 @@ gfx::NativePixmapHandle GbmPixmapWayland::ExportHandle() const {
 
 void GbmPixmapWayland::CreateDmabufBasedWlBuffer(
     const gfx::OverlayPlaneData& overlay_plane_data) {
-  uint64_t modifier = gbm_bo_->GetFormatModifier();
+  const uint64_t modifier = use_implicit_modifier_for_wl_buffer_
+                                ? DRM_FORMAT_MOD_INVALID
+                                : gbm_bo_->GetFormatModifier();
 
   std::vector<uint32_t> strides;
   std::vector<uint32_t> offsets;

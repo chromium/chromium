@@ -1559,6 +1559,74 @@ TEST_P(WaylandSurfaceFactoryTest, ConcurrentBufferIDAllocation) {
   EXPECT_FALSE(ids.contains(0u));
 }
 
+// When the compositor advertises `DRM_FORMAT_MOD_INVALID` and allocation with
+// the advertised explicit modifiers fails, the buffer is allocated without
+// modifiers. If the driver then reports a modifier the compositor did not
+// advertise (e.g. `DRM_FORMAT_MOD_LINEAR` on virgl), the buffer must be
+// submitted with `DRM_FORMAT_MOD_INVALID` instead. Otherwise, the compositor
+// may reject the buffer.
+TEST_P(WaylandSurfaceFactoryTest, ImplicitModifierFallbackWlBufferModifier) {
+  gl::SetGLImplementation(gl::kGLImplementationEGLGLES2);
+
+  buffer_manager_gpu_->use_fake_gbm_device_for_test_ = true;
+  // MockGbmDevice fails to allocate with an explicit `DRM_FORMAT_MOD_INVALID`
+  // modifier, like Mesa, and allocations without modifiers report
+  // `DRM_FORMAT_MOD_LINEAR`.
+  buffer_manager_gpu_->gbm_device_ = std::make_unique<MockGbmDevice>();
+  buffer_manager_gpu_->supports_dmabuf_ = true;
+
+  auto* gl_ozone = surface_factory_->GetGLOzone(
+      gl::GLImplementationParts(gl::kGLImplementationEGLGLES2));
+  ASSERT_TRUE(gl_ozone);
+  auto presenter = gl_ozone->CreateSurfacelessViewGLSurface(
+      gl::GetDefaultDisplay(), widget_);
+  ASSERT_TRUE(presenter);
+
+  struct {
+    std::vector<uint64_t> advertised_modifiers;
+    uint64_t expected_modifier;
+  } const kTestCases[] = {
+      // Only implicit modifiers are advertised (e.g. Mir on virgl): the
+      // driver-reported `DRM_FORMAT_MOD_LINEAR` is not advertised.
+      {{DRM_FORMAT_MOD_INVALID}, DRM_FORMAT_MOD_INVALID},
+      // The driver-reported modifier is advertised, so it is sent as is.
+      {{DRM_FORMAT_MOD_LINEAR, DRM_FORMAT_MOD_INVALID}, DRM_FORMAT_MOD_LINEAR},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(testing::Message()
+                 << "advertised modifiers: "
+                 << testing::PrintToString(test_case.advertised_modifiers));
+    buffer_manager_gpu_->supported_formats_with_modifiers_ = {
+        {viz::SinglePlaneFormat::kBGRA_8888, test_case.advertised_modifiers}};
+
+    auto native_pixmap = surface_factory()->CreateNativePixmap(
+        widget_, nullptr, window_->applied_state().size_px,
+        viz::SinglePlaneFormat::kBGRA_8888, gfx::BufferUsage::SCANOUT);
+    ASSERT_TRUE(native_pixmap);
+    // The buffer object was allocated without modifiers.
+    EXPECT_EQ(native_pixmap->GetFormatModifier(), DRM_FORMAT_MOD_LINEAR);
+
+    ScheduleOverlayPlane(presenter.get(), native_pixmap, /*z_order=*/INT32_MIN);
+
+    // Wait until the wl_buffer creation request reaches the server.
+    base::RunLoop().RunUntilIdle();
+
+    PostToServerAndWait([expected_modifier = test_case.expected_modifier](
+                            wl::TestWaylandServerThread* server) {
+      auto params_vector = server->zwp_linux_dmabuf_v1()->buffer_params();
+      ASSERT_FALSE(params_vector.empty());
+      wl::TestZwpLinuxBufferParamsV1* params = params_vector.back();
+      const uint64_t modifier =
+          (static_cast<uint64_t>(params->modifier_hi_) << 32) |
+          params->modifier_lo_;
+      EXPECT_EQ(modifier, expected_modifier);
+      zwp_linux_buffer_params_v1_send_created(params->resource(),
+                                              params->buffer_resource());
+    });
+  }
+}
+
 class WaylandSurfaceFactoryCompositorV3 : public WaylandSurfaceFactoryTest {};
 
 TEST_P(WaylandSurfaceFactoryCompositorV3, SurfaceDamageTest) {
