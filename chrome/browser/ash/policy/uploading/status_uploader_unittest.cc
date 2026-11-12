@@ -92,6 +92,12 @@ class StatusUploaderTest : public testing::Test {
     // StatusUploader observes webrtc::MediaCaptureDispatcher::GetInstance().
     // Create it here, as ChromeBrowserMainParts does early in production.
     MediaCaptureDevicesDispatcher::GetInstance();
+
+    // The detector is a process-wide singleton, so the activity a previous
+    // test reported outlives it. IsScreenshotAllowed() measures idleness
+    // against that timestamp while each test starts the clock afresh, which
+    // leaves the device looking busy before this test has touched anything.
+    ui::UserActivityDetector::Get()->ResetStateForTesting();
   }
 
   void TearDown() override {
