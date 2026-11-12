@@ -7,8 +7,10 @@
 #include <algorithm>
 
 #include "base/command_line.h"
+#include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -215,6 +217,20 @@ class DestructionWindowDelegate : public TestPlatformWindowDelegate {
   std::unique_ptr<X11Window> window_;
 };
 
+class ActivationTrackingWindowDelegate : public TestPlatformWindowDelegate {
+ public:
+  ActivationTrackingWindowDelegate() = default;
+  ~ActivationTrackingWindowDelegate() override = default;
+
+  bool active() const { return active_; }
+
+  // PlatformWindowDelegate:
+  void OnActivationChanged(bool active) override { active_ = active; }
+
+ private:
+  bool active_ = false;
+};
+
 // Returns the list of rectangles which describe |window|'s bounding region via
 // the X shape extension.
 std::vector<gfx::Rect> GetShapeRects(x11::Window window) {
@@ -300,6 +316,31 @@ class X11WindowTest : public testing::Test {
     // Remove native frame so that X server doesn't change our bounds.
     window->SetUseNativeFrame(false);
     return window;
+  }
+
+  // Runs the tasks that are already posted to the current sequence.
+  void RunPendingTasks() {
+    base::RunLoop run_loop;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  void DispatchCrossingEvent(x11::Window window,
+                             bool enter,
+                             x11::NotifyMode mode,
+                             x11::NotifyDetail detail) {
+    x11::CrossingEvent crossing_event;
+    crossing_event.opcode = enter ? x11::CrossingEvent::EnterNotify
+                                  : x11::CrossingEvent::LeaveNotify;
+    crossing_event.event = window;
+    crossing_event.root = x11::Connection::Get()->default_root();
+    // Set CROSSING_FLAG_FOCUS: the focus is the PointerRoot or an ancestor.
+    crossing_event.same_screen_focus = 1;
+    crossing_event.mode = mode;
+    crossing_event.detail = detail;
+    x11::Event xev(false, std::move(crossing_event));
+    x11::Connection::Get()->DispatchEvent(xev);
   }
 
   void DispatchSingleEventToWidget(x11::Event* x11_event, x11::Window window) {
@@ -892,6 +933,100 @@ TEST_F(X11WindowSyncCounterTest, NewSyncRequestResetsConfigureSize) {
   SendConfigure(gfx::Size(130, 130));
   window_->OnCompleteSwapAfterResize(gfx::Size(130, 130));
   EXPECT_EQ(GetCounterValue(), 2u);
+}
+
+// Under PointerRoot focus, a window that has the pointer stays active while
+// one of its menus grabs the pointer. https://crbug.com/40134309
+TEST_F(X11WindowTest, PointerFocusSurvivesPointerGrab) {
+  ActivationTrackingWindowDelegate delegate;
+  constexpr gfx::Rect bounds(10, 10, 100, 100);
+  auto window = CreateX11Window(&delegate, bounds, nullptr);
+  delegate.set_window(window.get());
+  const auto x11_window = static_cast<x11::Window>(delegate.widget());
+  ASSERT_NE(x11_window, x11::Window::None);
+
+  // The pointer enters the window while the PointerRoot is focused.
+  DispatchCrossingEvent(x11_window, true, x11::NotifyMode::Normal,
+                        x11::NotifyDetail::Ancestor);
+  EXPECT_TRUE(delegate.active());
+
+  // Another window (e.g. a menu) grabs the pointer.  The pointer does not move,
+  // so the window still receives keyboard input and stays active.
+  DispatchCrossingEvent(x11_window, false, x11::NotifyMode::Grab,
+                        x11::NotifyDetail::Nonlinear);
+  EXPECT_TRUE(delegate.active());
+
+  // The grab ends with the pointer still in the window.
+  DispatchCrossingEvent(x11_window, true, x11::NotifyMode::Ungrab,
+                        x11::NotifyDetail::Nonlinear);
+  EXPECT_TRUE(delegate.active());
+
+  // The pointer leaves the window, so the PointerRoot no longer focuses it.
+  DispatchCrossingEvent(x11_window, false, x11::NotifyMode::Normal,
+                        x11::NotifyDetail::Ancestor);
+  EXPECT_FALSE(delegate.active());
+
+  // A grab ending with the pointer outside the window leaves it inactive.
+  DispatchCrossingEvent(x11_window, true, x11::NotifyMode::Normal,
+                        x11::NotifyDetail::Ancestor);
+  EXPECT_TRUE(delegate.active());
+  DispatchCrossingEvent(x11_window, false, x11::NotifyMode::Grab,
+                        x11::NotifyDetail::Nonlinear);
+  EXPECT_TRUE(delegate.active());
+  DispatchCrossingEvent(x11_window, false, x11::NotifyMode::Ungrab,
+                        x11::NotifyDetail::Nonlinear);
+  EXPECT_FALSE(delegate.active());
+
+  delegate.set_window(nullptr);
+}
+
+// Under PointerRoot focus, a window stays active while the pointer moves into
+// a window that has capture, e.g. its menu, and the activation change is
+// applied when capture is released. https://crbug.com/40134309
+TEST_F(X11WindowTest, PointerFocusDeferredWhileCaptured) {
+  ActivationTrackingWindowDelegate delegate;
+  auto window =
+      CreateX11Window(&delegate, gfx::Rect(10, 10, 100, 100), nullptr);
+  delegate.set_window(window.get());
+  const auto x11_window = static_cast<x11::Window>(delegate.widget());
+  ASSERT_NE(x11_window, x11::Window::None);
+
+  TestPlatformWindowDelegate menu_delegate;
+  auto menu =
+      CreateX11Window(&menu_delegate, gfx::Rect(50, 50, 100, 100), nullptr);
+  menu_delegate.set_window(menu.get());
+
+  DispatchCrossingEvent(x11_window, true, x11::NotifyMode::Normal,
+                        x11::NotifyDetail::Ancestor);
+  EXPECT_TRUE(delegate.active());
+
+  // The pointer moves into the menu, which has capture.
+  menu->SetCapture();
+  DispatchCrossingEvent(x11_window, false, x11::NotifyMode::Normal,
+                        x11::NotifyDetail::Nonlinear);
+  EXPECT_TRUE(delegate.active());
+
+  // Capture is released with the pointer outside the window.
+  menu->ReleaseCapture();
+  RunPendingTasks();
+  EXPECT_FALSE(delegate.active());
+
+  // The pointer moves into the menu and back before capture is released.
+  DispatchCrossingEvent(x11_window, true, x11::NotifyMode::Normal,
+                        x11::NotifyDetail::Ancestor);
+  EXPECT_TRUE(delegate.active());
+  menu->SetCapture();
+  DispatchCrossingEvent(x11_window, false, x11::NotifyMode::Normal,
+                        x11::NotifyDetail::Nonlinear);
+  DispatchCrossingEvent(x11_window, true, x11::NotifyMode::Normal,
+                        x11::NotifyDetail::Nonlinear);
+  EXPECT_TRUE(delegate.active());
+  menu->ReleaseCapture();
+  RunPendingTasks();
+  EXPECT_TRUE(delegate.active());
+
+  menu_delegate.set_window(nullptr);
+  delegate.set_window(nullptr);
 }
 
 }  // namespace ui

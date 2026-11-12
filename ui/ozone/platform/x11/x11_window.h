@@ -79,6 +79,10 @@ class X11Window : public PlatformWindow,
   // X11WindowManager calls this.
   void OnXWindowLostCapture();
 
+  // X11WindowManager posts a task to call this on every window when capture
+  // is released.
+  void OnCaptureReleased();
+
   void OnCursorUpdate();
 
   gfx::AcceleratedWidget GetWidget() const;
@@ -487,14 +491,25 @@ class X11Window : public PlatformWindow,
   // Is the pointer in |xwindow_| or one of its children?
   bool has_pointer_ = false;
 
+  // Like |has_pointer_|, but ignores crossing events caused by pointer grabs
+  // (NotifyGrab), which do not move the pointer and so do not change which
+  // window the PointerRoot sends keyboard input to.
+  bool has_pointer_for_focus_ = false;
+
   // Is |xwindow_| or one of its children focused?
   bool has_window_focus_ = false;
 
-  // (An ancestor window or the PointerRoot is focused) && |has_pointer_|.
+  // (An ancestor window or the PointerRoot is focused) &&
+  // |has_pointer_for_focus_|.
   // |has_pointer_focus_| == true is the odd case where we will receive keyboard
   // input when |has_window_focus_| == false.  |has_window_focus_| and
   // |has_pointer_focus_| are mutually exclusive.
   bool has_pointer_focus_ = false;
+
+  // True if a crossing event arrived while Chrome had capture, so
+  // |has_pointer_focus_| must be updated from |has_pointer_for_focus_| once
+  // capture is released.
+  bool pointer_focus_deferred_ = false;
 
   // X11 does not support defocusing windows; you can only focus a different
   // window.  If we would like to be defocused, we just ignore keyboard input we

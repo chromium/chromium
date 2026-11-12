@@ -2349,15 +2349,51 @@ void X11Window::OnCrossingEvent(bool enter,
   }
 
   has_pointer_ = enter;
+
+  // A grab only redirects pointer events; the pointer itself does not move, so
+  // the PointerRoot keeps sending keyboard input to the window under the
+  // pointer.  Crossing events with a mode of NotifyGrab must not change pointer
+  // focus, otherwise a window loses activation when one of its menus grabs the
+  // pointer.  Crossing events with a mode of NotifyUngrab report where the
+  // pointer is when the grab ends, so they are still used.
+  if (mode != x11::NotifyMode::Grab) {
+    has_pointer_for_focus_ = enter;
+  }
   if (focus_in_window_or_ancestor && !has_window_focus_) {
     // If we reach this point, we know the focus is in an ancestor or the
     // pointer root.  The definition of |has_pointer_focus_| is (An ancestor
-    // window or the PointerRoot is focused) && |has_pointer_|.  Therefore, we
-    // can just use |has_pointer_| in the assignment.  The transitions for when
-    // the focus changes are handled in OnFocusEvent().
-    has_pointer_focus_ = has_pointer_;
+    // window or the PointerRoot is focused) && |has_pointer_for_focus_|.
+    // Therefore, we can just use |has_pointer_for_focus_| in the assignment.
+    // The transitions for when the focus changes are handled in
+    // OnFocusEvent().
+    if (mode == x11::NotifyMode::Normal &&
+        X11WindowManager::GetInstance()->located_events_grabber()) {
+      // Chrome has capture, e.g. because a menu is open, and the pointer moved
+      // between windows, e.g. from a browser window into its menu.  Losing
+      // activation now would close the menu, so defer the change until
+      // capture is released.
+      pointer_focus_deferred_ = true;
+    } else {
+      has_pointer_focus_ = has_pointer_for_focus_;
+      pointer_focus_deferred_ = false;
+    }
   }
 
+  AfterActivationStateChanged();
+}
+
+void X11Window::OnCaptureReleased() {
+  // Keep deferring if capture was taken again in the meantime.
+  if (!pointer_focus_deferred_ || is_shutting_down_ ||
+      X11WindowManager::GetInstance()->located_events_grabber()) {
+    return;
+  }
+  pointer_focus_deferred_ = false;
+  if (has_window_focus_) {
+    return;
+  }
+  BeforeActivationStateChanged();
+  has_pointer_focus_ = has_pointer_for_focus_;
   AfterActivationStateChanged();
 }
 
@@ -2385,14 +2421,15 @@ void X11Window::OnFocusEvent(bool focus_in,
     has_window_focus_ = focus_in;
   }
 
-  if (!notify_grab && has_pointer_) {
+  if (!notify_grab && has_pointer_for_focus_) {
     switch (detail) {
       case x11::NotifyDetail::Ancestor:
       case x11::NotifyDetail::Virtual:
-        // If we reach this point, we know |has_pointer_| was true before and
-        // after this event.  Since the definition of |has_pointer_focus_| is
-        // (An ancestor window or the PointerRoot is focused) && |has_pointer_|,
-        // we only need to worry about transitions on the first conjunct.
+        // If we reach this point, we know |has_pointer_for_focus_| was true
+        // before and after this event.  Since the definition of
+        // |has_pointer_focus_| is (An ancestor window or the PointerRoot is
+        // focused) && |has_pointer_for_focus_|, we only need to worry about
+        // transitions on the first conjunct.
         // Therefore, |has_pointer_focus_| will become true when:
         // 1. Focus moves from |xwindow_| to an ancestor
         //    (FocusOut with NotifyAncestor)
@@ -2443,6 +2480,9 @@ void X11Window::OnFocusEvent(bool focus_in,
     }
   }
 
+  if (!notify_grab) {
+    pointer_focus_deferred_ = false;
+  }
   ignore_keyboard_input_ = false;
 
   AfterActivationStateChanged();
@@ -2502,6 +2542,7 @@ void X11Window::HandleEvent(const x11::Event& xev) {
     window_mapped_in_server_ = false;
     map_pending_ = false;
     has_pointer_ = false;
+    has_pointer_for_focus_ = false;
     has_pointer_grab_ = false;
     has_pointer_focus_ = false;
     has_window_focus_ = false;

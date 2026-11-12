@@ -6,6 +6,10 @@
 
 #include <algorithm>
 
+#include "base/functional/bind.h"
+#include "base/location.h"
+#include "base/memory/weak_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "ui/base/x/x11_pointer_grab.h"
 #include "ui/events/event.h"
 #include "ui/events/types/event_type.h"
@@ -65,6 +69,15 @@ void X11WindowManager::UngrabEvents(X11Window* window) {
   auto* old_grabber = located_events_grabber_.get();
   located_events_grabber_ = nullptr;
   old_grabber->OnXWindowLostCapture();
+
+  // Let windows apply pointer focus changes that were deferred while capture
+  // was held.  This is asynchronous because UngrabEvents() may be called while
+  // a window is being destroyed, and activation changes may destroy windows.
+  for (const auto& pair : windows_) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&X11Window::OnCaptureReleased,
+                                  pair.second->GetWeakPtr()));
+  }
 }
 
 void X11WindowManager::AddWindow(X11Window* window) {
