@@ -108,15 +108,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GCM.RegistrationRequest" units="requests"
-    expires_after="2023-04-16">
-  <owner>peter@chromium.org</owner>
-  <summary>
-    Number of registration requests sent to Google Cloud Messaging. Recorded
-    immediately after the request has started.
-  </summary>
-</histogram>
-
 <histogram name="GCM.RegistrationRequest.NetErrorCode" enum="NetErrorCodes"
     expires_after="2023-04-16">
   <owner>peter@chromium.org</owner>

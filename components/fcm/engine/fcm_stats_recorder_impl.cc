@@ -9,7 +9,6 @@
 #include "base/containers/circular_deque.h"
 #include "base/format_macros.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -316,7 +315,6 @@ void FcmStatsRecorderImpl::RecordRegistration(const std::string& app_id,
 void FcmStatsRecorderImpl::RecordRegistrationSent(
     const std::string& app_id,
     const std::string& sender_ids) {
-  UMA_HISTOGRAM_COUNTS_1M("GCM.RegistrationRequest", 1);
   if (!is_recording_) {
     return;
   }
