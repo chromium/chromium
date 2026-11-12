@@ -1,7 +1,10 @@
+evanstade@microsoft.com
 fergal@chromium.org
 leimy@chromium.org
 mych@chromium.org
 rakina@chromium.org
+
+file://storage/OWNERS     #{LAST_RESORT_SUGGESTION}
 
 # Emeritus
 memmott@chromium.org      #{LAST_RESORT_SUGGESTION}
