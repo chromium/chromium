@@ -6,7 +6,6 @@ package org.chromium.content_shell_apk;
 
 import org.chromium.base.process_launcher.ChildProcessConnection;
 import org.chromium.base.process_launcher.IChildProcessService;
-import org.chromium.base.process_launcher.IFileDescriptorInfo;
 import org.chromium.content.browser.ChildProcessLauncherHelperImpl;
 import org.chromium.content.browser.LauncherThread;
 
@@ -51,29 +50,6 @@ public final class ChildProcessLauncherTestUtils {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public static ChildProcessLauncherHelperImpl startForTesting(
-            final boolean sandboxed,
-            final String[] commandLine,
-            final IFileDescriptorInfo[] filesToBeMapped,
-            final boolean doSetupConnection) {
-        return runOnLauncherAndGetResult(
-                new Callable<ChildProcessLauncherHelperImpl>() {
-                    @Override
-                    public ChildProcessLauncherHelperImpl call() {
-                        return ChildProcessLauncherHelperImpl.createAndStartForTesting(
-                                commandLine,
-                                filesToBeMapped,
-                                sandboxed,
-                                /* reducePriorityOnBackground= */ false,
-                                /* canUseWarmUpConnection= */ true,
-                                /* binderCallback= */ null,
-                                doSetupConnection,
-                                /* isSpareRenderer= */ false,
-                                /* isForOutermostMainFrame= */ true);
-                    }
-                });
     }
 
     public static ChildProcessConnection getConnection(
