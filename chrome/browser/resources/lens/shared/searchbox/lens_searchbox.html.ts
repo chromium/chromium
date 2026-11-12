@@ -7,12 +7,10 @@ import {html, nothing} from '//resources/lit/v3_0/lit.rollup.js';
 import type {LensSearchboxElement} from './lens_searchbox.js';
 
 export function getHtml(this: LensSearchboxElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <div id="inputWrapper" @focusout="${this.onInputWrapperFocusout}"
     @keydown="${this.onInputWrapperKeydown}">
-  <cr-searchbox-input id="input"
-      exportparts="searchbox-input"
+  <cr-searchbox-input id="input" exportparts="searchbox-input"
       .searchboxIcon="${this.searchboxIcon_}"
       .searchboxAriaDescription="${this.searchboxAriaDescription}"
       .selectedMatch="${this.selectedMatch}"
@@ -25,8 +23,7 @@ export function getHtml(this: LensSearchboxElement) {
       @input-focus-changed="${this.onInputFocusChanged}">
     ${this.showThumbnail ? html`
       <div id="thumbnailContainer" slot="thumbnail">
-        <cr-searchbox-thumbnail
-            thumbnail-url="${this.thumbnailUrl_}"
+        <cr-searchbox-thumbnail thumbnail-url="${this.thumbnailUrl_}"
             ?is-deletable="${this.isThumbnailDeletable_}"
             @remove-thumbnail-click="${this.onRemoveThumbnailClick_}"
             role="button" aria-label="${this.i18n('searchboxThumbnailLabel')}"
@@ -34,7 +31,7 @@ export function getHtml(this: LensSearchboxElement) {
         </cr-searchbox-thumbnail>
       </div>
     ` : nothing}
-    ${this.searchboxLensSearchEnabled_? html`
+    ${this.searchboxLensSearchEnabled_ ? html`
       <div class="searchbox-icon-button-container lens">
         <button id="lensSearchButton" class="searchbox-icon-button lens"
             @click="${this.onLensSearchClick_}"
@@ -44,15 +41,12 @@ export function getHtml(this: LensSearchboxElement) {
     ` : ''}
   </cr-searchbox-input>
   <cr-searchbox-dropdown id="matches" part="searchbox-dropdown"
-      exportparts="dropdown-content"
-      role="listbox" .result="${this.result}"
+      exportparts="dropdown-content" role="listbox" .result="${this.result}"
       selected-match-index="${this.selectedMatchIndex}"
       @selected-match-index-changed="${this.onSelectedMatchIndexChanged}"
       @match-focusin="${this.onMatchFocusin}"
-      @match-click="${this.onMatchClick}"
-      ?hidden="${!this.dropdownIsVisible}">
+      @match-click="${this.onMatchClick}" ?hidden="${!this.dropdownIsVisible}">
   </cr-searchbox-dropdown>
 </div>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

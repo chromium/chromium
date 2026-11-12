@@ -7,16 +7,16 @@ import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {CustomizeButtonsElement} from './customize_buttons.js';
 
 export function getHtml(this: CustomizeButtonsElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <div id="customizeButtons">
   ${this.showWallpaperSearchButton ? html`
-    <cr-button id="wallpaperSearchButton"
-        class="customize-button" @click="${this.onWallpaperSearchClick_}"
+    <cr-button id="wallpaperSearchButton" class="customize-button"
+        @click="${this.onWallpaperSearchClick_}"
         title="$i18n{customizeThisPageWallpaperSearch}"
         aria-pressed="${this.showWallpaperSearch}">
       <cr-icon id="wallpaperSearchIcon" class="customize-icon"
-          slot="prefix-icon" icon="ntp:sparkle-custom"></cr-icon>
+          slot="prefix-icon" icon="ntp:sparkle-custom">
+      </cr-icon>
       <div id="wallpaperSearchText" class="customize-text"
           ?hidden="${this.showWallpaperSearch}">
         $i18n{wallpaperSearchButton}
@@ -35,5 +35,4 @@ export function getHtml(this: CustomizeButtonsElement) {
   </cr-button>
 </div>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

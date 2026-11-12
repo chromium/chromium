@@ -25,9 +25,7 @@ export function getHtml(this: SearchboxGhostLoaderElement) {
     <div class="suggestion-loader-container">
       ${this.getSuggestionItems().map(() => html`
         <div class="ghost-loader-item">
-          <cr-searchbox-icon
-              class="searchbox-icon"
-              match=""
+          <cr-searchbox-icon class="searchbox-icon" match=""
               default-icon="//resources/cr_components/searchbox/icons/search_cr23.svg">
           </cr-searchbox-icon>
           <div class="loading-bar"></div>

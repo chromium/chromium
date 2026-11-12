@@ -11,7 +11,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {FeedbackToastElement} from './feedback_toast.js';
 
 export function getHtml(this: FeedbackToastElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <cr-toast id="feedbackToast" duration="0">
   <div id="feedbackToastMessage">$i18n{feedbackToastMessage}</div>
@@ -26,5 +25,4 @@ export function getHtml(this: FeedbackToastElement) {
   </div>
 </cr-toast>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

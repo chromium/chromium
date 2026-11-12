@@ -7,7 +7,6 @@ import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {IndividualPromosElement} from './individual_promos.js';
 
 export function getHtml(this: IndividualPromosElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <div id="promos">
   ${this.promo_ ? html`
@@ -20,16 +19,15 @@ export function getHtml(this: IndividualPromosElement) {
       <cr-icon id="actionIcon" icon="cr:chevron-right"></cr-icon>
       <cr-icon-button id="menuButton" iron-icon="cr:more-vert"
           @click="${this.onMenuButtonClick_}"
-          aria-label="$i18n{ntpPromoMenuA11yLabel}"
-          title="$i18n{ntpPromoMenu}">
+          aria-label="$i18n{ntpPromoMenuA11yLabel}" title="$i18n{ntpPromoMenu}">
       </cr-icon-button>
     </button>
     <cr-action-menu id="actionMenu">
       <button class="dropdown-item" @click="${this.onPromoDismissed_}">
         $i18n{ntpPromoDismiss}
       </button>
-    </cr-action-menu>` : ''}
+    </cr-action-menu>
+  ` : ''}
 </div>
 <!--_html_template_end_-->`;
-  // clang-format on
 }
