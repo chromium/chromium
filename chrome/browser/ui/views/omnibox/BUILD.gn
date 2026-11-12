@@ -368,6 +368,7 @@ source_set("browser_tests") {
     "//components/contextual_search:public",
     "//components/keyed_service/content",
     "//components/omnibox/browser",
+    "//components/omnibox/common:features",
     "//components/permissions",
     "//components/permissions:test_support",
     "//components/strings:components_strings",

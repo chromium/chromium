@@ -37,13 +37,18 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_delegate.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/ui/webui/cr_components/searchbox/contextual_searchbox_handler.h"
+#include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/permissions/permission_request_manager_test_api.h"
+#include "components/contextual_search/input_state_model.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
+#include "components/omnibox/common/composebox_features.h"
+#include "components/omnibox/common/input_state.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
@@ -52,6 +57,8 @@
 #include "components/variations/service/variations_service.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/render_widget_host.h"
+#include "content/public/browser/web_ui.h"
+#include "content/public/browser/web_ui_controller.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -59,6 +66,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/choosers/file_chooser.mojom.h"
+#include "third_party/omnibox_proto/model_mode.pb.h"
+#include "third_party/omnibox_proto/searchbox_config.pb.h"
 #include "ui/actions/actions.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/compositor/compositor.h"
@@ -1537,4 +1546,104 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimPopupCreateOnDemandBrowserTest,
   ASSERT_TRUE(content);
   EXPECT_TRUE(presenter->IsShown());
   EXPECT_TRUE(content::WaitForLoadStop(content->GetWrappedWebContents()));
+}
+
+// Tests that, with dynamic AIM fulfillment, the AI Mode button opens the
+// compose box in AI Mode, i.e. with the default model selected.
+class OmniboxAimPopupAiModeButtonBrowserTest
+    : public OmniboxAimPopupBrowserTest {
+ public:
+  OmniboxAimPopupAiModeButtonBrowserTest() {
+    feature_list_.InitWithFeatures({omnibox::kDynamicAimFulfillment,
+                                    omnibox::kDynamicAimFulfillmentOmnibox},
+                                   {});
+  }
+
+  void SetUpOnMainThread() override {
+    OmniboxAimPopupBrowserTest::SetUpOnMainThread();
+    omnibox::SearchboxConfig& config =
+        static_cast<MockAimEligibilityService*>(
+            AimEligibilityServiceFactory::GetForProfile(
+                browser()->GetProfile()))
+            ->config();
+    config.add_model_configs()->set_model(
+        omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
+    config.add_model_configs()->set_model(
+        omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+    // Closing the compose box leaves AI Mode. Keep it open if another test
+    // window takes OS activation, as
+    // `OmniboxAimPopupOnDemandCreationBrowserTest` does.
+    location_bar()->GetOmniboxPopupAimPresenter()->SetPermissionPromptShowing(
+        true);
+  }
+
+ protected:
+  // Opens the compose box through `OpenAiMode()` and waits until the page has
+  // its input state.
+  void OpenAiMode(OmniboxEditModel::AimActivation activation) {
+    location_bar()->GetOmniboxController()->edit_model()->OpenAiMode(
+        activation);
+    auto* presenter = location_bar()->GetOmniboxPopupAimPresenter();
+    if (!presenter->IsShown()) {
+      presenter->Show();
+    }
+    content::WebContents* contents =
+        presenter->GetWebUIContent()->GetWrappedWebContents();
+    ASSERT_TRUE(content::WaitForLoadStop(contents));
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return content::EvalJs(
+                 contents,
+                 "!!document.querySelector('omnibox-aim-app')"
+                 ".shadowRoot.querySelector('cr-omnibox-composebox')"
+                 ".inputState")
+          .ExtractBool();
+    }));
+  }
+
+  // The input state of the compose box, as the browser sees it.
+  omnibox::InputState GetInputState() {
+    return location_bar()
+        ->GetOmniboxPopupAimPresenter()
+        ->GetWebUIContent()
+        ->GetWrappedWebContents()
+        ->GetWebUI()
+        ->GetController()
+        ->GetAs<OmniboxPopupUI>()
+        ->GetContextualSearchboxHandler()
+        ->input_state_model()
+        ->GetInputState();
+  }
+
+  bool WaitForDefaultModel() {
+    return base::test::RunUntil([&]() {
+      return GetInputState().active_model ==
+             omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR;
+    });
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(OmniboxAimPopupAiModeButtonBrowserTest,
+                       ClickEntersAiMode) {
+  OpenAiMode(OmniboxEditModel::AimActivation::kClickOrGesture);
+  EXPECT_TRUE(WaitForDefaultModel());
+  EXPECT_TRUE(GetInputState().will_fulfill_in_aim);
+}
+
+IN_PROC_BROWSER_TEST_F(OmniboxAimPopupAiModeButtonBrowserTest,
+                       KeyboardEntersAiMode) {
+  OpenAiMode(OmniboxEditModel::AimActivation::kKeyboard);
+  EXPECT_TRUE(WaitForDefaultModel());
+  EXPECT_TRUE(GetInputState().will_fulfill_in_aim);
+}
+
+// Adding context from the "+" menu opens the compose box without AI Mode.
+IN_PROC_BROWSER_TEST_F(OmniboxAimPopupAiModeButtonBrowserTest,
+                       ContextMenuDoesNotEnterAiMode) {
+  OpenAiMode(OmniboxEditModel::AimActivation::kContextMenu);
+  EXPECT_EQ(GetInputState().active_model,
+            omnibox::ModelMode::MODEL_MODE_UNSPECIFIED);
+  EXPECT_FALSE(GetInputState().will_fulfill_in_aim);
 }

@@ -284,6 +284,10 @@ class OmniboxEditModel {
   // Virtual for testing.
   virtual void OpenAiMode(AimActivation activation);
 
+  // Whether to open the compose box in AI Mode (e.g. from the AI Mode button).
+  // Set on every open; read once when the compose box is shown.
+  bool enter_aim_mode() const { return enter_aim_mode_; }
+
   // Opens the composebox for the AskG flow by setting the popup state.
   virtual void OpenComposeboxForAskG();
 
@@ -932,6 +936,9 @@ class OmniboxEditModel {
   // This is needed to properly update the SearchModel state when the user
   // presses escape.
   bool in_revert_ = false;
+
+  // See `enter_aim_mode()`.
+  bool enter_aim_mode_ = false;
 
   // Indicates if the upcoming autocomplete search is allowed to be treated as
   // an exact keyword match.  If this is true then keyword mode will be

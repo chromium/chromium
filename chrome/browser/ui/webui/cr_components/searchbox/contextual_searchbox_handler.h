@@ -386,6 +386,14 @@ class ContextualSearchboxHandler
   // uses. Called by the NTP and Omnibox popup when their feature is enabled.
   void OptInToDynamicAimFulfillment();
 
+  // Returns the input state model that a handler in `web_contents` uses for
+  // `session_handle`, creating it if needed. For the Omnibox popup, that's the
+  // model of the active tab.
+  static base::WeakPtr<contextual_search::InputStateModel>
+  GetOrCreateInputStateModelForSession(
+      content::WebContents* web_contents,
+      contextual_search::ContextualSearchSessionHandle& session_handle);
+
   // Map of context tokens (frontend) to tab IDs (backend);
   // used for determining which tabs to underline based on frontend changes, and
   // for sending `tabID`s to cobrowsing when going from an AIM entrypoint to

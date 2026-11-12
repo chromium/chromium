@@ -136,6 +136,11 @@ class InputStateModel {
     return dynamic_aim_fulfillment_enabled_;
   }
 
+  // Enters AI Mode without picking a model, e.g. for the Omnibox AI Mode
+  // button. With dynamic AIM fulfillment, routing then shows the default model,
+  // including once the models arrive or the model opts in later.
+  void EnterAimMode();
+
   // Returns the current state.
   const InputState& GetInputState() const;
 
