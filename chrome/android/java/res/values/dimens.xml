@@ -168,6 +168,15 @@ found in the LICENSE file.
     <dimen name="mvt_container_bottom_padding_small">16dp</dimen>
     <dimen name="mvt_container_top_margin_medium">24dp</dimen>
     <dimen name="mvt_container_top_margin_large">32dp</dimen>
+    <!-- TODO(crbug.com/549681251): Once NTP Aurora V2 is launched, move these spacings into the
+         layout XML and remove the code that adds them. -->
+    <dimen name="ntp_aurora_v2_logo_top_margin_delta_small">44dp</dimen>
+    <dimen name="ntp_aurora_v2_logo_top_margin_delta_large">28dp</dimen>
+    <dimen name="ntp_aurora_v2_logo_bottom_margin_delta_small">0dp</dimen>
+    <dimen name="ntp_aurora_v2_logo_bottom_margin_delta_large">8dp</dimen>
+    <dimen name="ntp_aurora_v2_mvt_top_margin_delta_small">4dp</dimen>
+    <dimen name="ntp_aurora_v2_mvt_top_margin_delta_large">12dp</dimen>
+    <dimen name="ntp_aurora_v2_section_padding_delta">4dp</dimen>
     <dimen name="tile_layout_no_logo_top_margin">16dp</dimen>
 
     <dimen name="content_suggestions_card_bottom_margin">12dp</dimen>
