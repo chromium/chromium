@@ -491,7 +491,7 @@ public class StripLayoutUtils {
     /**
      * Get the x and y coordinates of the position of the hover card, in px.
      *
-     * @param hoverCardView The {@link TabHoverCardView} being positioned.
+     * @param hoverCardView The hover card {@link View} being positioned.
      * @param isActiveTab Whether the tab is the active tab, {@code true} if the hovered tab is also
      *     the active tab, {@code false} otherwise.
      * @param tabX The tab x-position to compute hover card positioning.
@@ -503,7 +503,7 @@ public class StripLayoutUtils {
      */
     @VisibleForTesting
     public static float[] getHoverCardPosition(
-            TabHoverCardView hoverCardView,
+            View hoverCardView,
             boolean isActiveTab,
             float tabX,
             float tabWidth,
@@ -517,7 +517,14 @@ public class StripLayoutUtils {
         float windowWidthDp = windowWidthPx / displayDensity;
 
         // 2. Determine the hover card width.
-        float hoverCardWidthPx = TabHoverCardView.getHoverCardWidthPx(context);
+        int maxCardWidthPx = TabHoverCardView.getHoverCardWidthPx(context);
+        hoverCardView.measure(
+                View.MeasureSpec.makeMeasureSpec(maxCardWidthPx, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+        float hoverCardWidthPx =
+                hoverCardView.getMeasuredWidth() > 0
+                        ? hoverCardView.getMeasuredWidth()
+                        : maxCardWidthPx;
         float hoverCardWidthDp = hoverCardWidthPx / displayDensity;
 
         // 3. Determine the horizontal position of the hover card.

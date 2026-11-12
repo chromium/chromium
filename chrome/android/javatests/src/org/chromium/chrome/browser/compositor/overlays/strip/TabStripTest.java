@@ -132,7 +132,7 @@ public class TabStripTest {
                         helper.finishScrollForTesting();
                         helper.updateLayout(LayoutManagerImpl.time());
                         helper.finishAnimations();
-                        helper.clearTabHoverState();
+                        helper.clearHoverState();
                     }
                 });
     }

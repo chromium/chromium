@@ -121,6 +121,8 @@ import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
 import org.chromium.chrome.browser.tasks.tab_management.GroupSharedState;
+import org.chromium.chrome.browser.tasks.tab_management.TabGroupHoverCardPresenter;
+import org.chromium.chrome.browser.tasks.tab_management.TabGroupHoverCardView;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinatorFactory;
 import org.chromium.chrome.browser.tasks.tab_management.TabHoverCardView;
@@ -650,7 +652,10 @@ public class StripLayoutHelper
 
     // Tab hover state.
     private @Nullable StripLayoutTab mLastHoveredTab;
+    private @Nullable StripLayoutGroupTitle mLastHoveredGroupTitle;
     private @Nullable TabHoverCardView mTabHoverCardView;
+    private @Nullable TabGroupHoverCardView mTabGroupHoverCardView;
+    private @Nullable TabGroupHoverCardPresenter mTabGroupHoverCardPresenter;
     private long mLastHoverCardExitTime;
 
     // Tab Group Sync.
@@ -891,10 +896,16 @@ public class StripLayoutHelper
     public void destroy() {
         mStripTabEventHandler.removeCallbacksAndMessages(null);
         mLastHoveredTab = null;
+        mLastHoveredGroupTitle = null;
         if (mTabHoverCardView != null) {
             mTabHoverCardView.destroy();
             mTabHoverCardView = null;
         }
+        if (mTabGroupHoverCardView != null) {
+            mTabGroupHoverCardView.destroy();
+            mTabGroupHoverCardView = null;
+        }
+        mTabGroupHoverCardPresenter = null;
         if (mDataSharingService != null) {
             mDataSharingService.removeObserver(mDataSharingObserver);
             mDataSharingService = null;
@@ -1874,7 +1885,7 @@ public class StripLayoutHelper
         if (selected) {
             bringActiveTabToVisibleArea(/* time= */ 0, /* animate= */ false);
         } else {
-            clearLastHoveredTab();
+            clearLastHoveredView();
             finishAnimations();
             // Further drag events go to the newly selected helper, so hide the indicator here.
             hideLinkDropIndicator();
@@ -2973,13 +2984,15 @@ public class StripLayoutHelper
      * @param isTrailingButtonHovered Whether a trailing button was hovered.
      */
     public void onHoverEnter(float x, float y, boolean isTrailingButtonHovered) {
-        StripLayoutTab hoveredTab = getTabAtPosition(x);
+        StripLayoutView hoveredView = getViewAtPositionX(x, /* includeGroupTitles= */ true);
 
-        // Hovered into a tab on the strip.
-        if (hoveredTab != null && !isTrailingButtonHovered) {
-            updateLastHoveredTab(hoveredTab);
+        // Hovered into a tab or group title on the strip.
+        if (hoveredView != null && !isTrailingButtonHovered) {
+            updateLastHoveredView(hoveredView);
             // Check whether the close button on the hovered tab is being hovered on.
-            StripLayoutTabDelegate.updateTabCloseHoverState(hoveredTab, x, y);
+            if (hoveredView instanceof StripLayoutTab hoveredTab) {
+                StripLayoutTabDelegate.updateTabCloseHoverState(hoveredTab, x, y);
+            }
         } else {
             // Check whether the new tab or tab search button is being hovered.
             updateCompositorButtonHoverState(x, y, isTrailingButtonHovered);
@@ -2998,16 +3011,17 @@ public class StripLayoutHelper
         // Check whether the new tab or tab search button is being hovered.
         updateCompositorButtonHoverState(x, y, isTrailingButtonHovered);
 
-        StripLayoutTab hoveredTab = getTabAtPosition(x);
-        // Hovered into a non-tab region within the strip.
-        if (hoveredTab == null || isTrailingButtonHovered) {
-            clearLastHoveredTab();
-        } else if (hoveredTab == mLastHoveredTab) {
-            if (!StripLayoutTabDelegate.updateTabCloseHoverState(hoveredTab, x, y)) return;
+        StripLayoutView hoveredView = getViewAtPositionX(x, /* includeGroupTitles= */ true);
+        // Hovered into a non-tab/non-group-title region within the strip.
+        if (hoveredView == null || isTrailingButtonHovered) {
+            clearLastHoveredView();
+        } else if (hoveredView == mLastHoveredTab) {
+            if (!StripLayoutTabDelegate.updateTabCloseHoverState(mLastHoveredTab, x, y)) return;
+        } else if (hoveredView == mLastHoveredGroupTitle) {
+            return;
         } else {
-            // Hovered from one tab to another tab on the strip.
-            clearLastHoveredTab();
-            updateLastHoveredTab(hoveredTab);
+            // Hovered from one strip view to another on the strip.
+            updateLastHoveredView(hoveredView);
         }
         mUpdateHost.requestUpdate();
     }
@@ -3015,7 +3029,7 @@ public class StripLayoutHelper
     /** Called on hover exit event. */
     public void onHoverExit(boolean inTabStrip) {
         // TODO(crbug.com/419015257): Use inTabStrip to delay resize on tab close from mouse.
-        clearLastHoveredTab();
+        clearLastHoveredView();
 
         // Clear tab strip button hover state.
         clearCompositorButtonHoverStateIfNotClicked();
@@ -3057,9 +3071,9 @@ public class StripLayoutHelper
         mUpdateHost.requestUpdate();
     }
 
-    /** Clears the tab hover state and requests a UI update if a tab was being hovered. */
-    protected void clearTabHoverState() {
-        if (clearLastHoveredTab()) {
+    /** Clears the hover state and requests a UI update if a strip view was being hovered. */
+    protected void clearHoverState() {
+        if (clearLastHoveredView()) {
             mUpdateHost.requestUpdate();
         }
     }
@@ -3100,12 +3114,27 @@ public class StripLayoutHelper
         mTabHoverCardView = tabHoverCardView;
         // If onHoverEnter was already processed before this method call, show card now.
         if (mLastHoveredTab != null && !mTabHoverCardView.isShown()) {
-            showTabHoverCardView(/* isDelayedCall= */ false);
+            showHoverCardView(/* isDelayedCall= */ false);
+        }
+    }
+
+    void setTabGroupHoverCardView(
+            TabGroupHoverCardView tabGroupHoverCardView,
+            TabGroupHoverCardPresenter tabGroupHoverCardPresenter) {
+        mTabGroupHoverCardView = tabGroupHoverCardView;
+        mTabGroupHoverCardPresenter = tabGroupHoverCardPresenter;
+        // If onHoverEnter was already processed before this method call, show card now.
+        if (mLastHoveredGroupTitle != null && !mTabGroupHoverCardView.isShown()) {
+            showHoverCardView(/* isDelayedCall= */ false);
         }
     }
 
     @Nullable TabHoverCardView getTabHoverCardViewForTesting() {
         return mTabHoverCardView;
+    }
+
+    @Nullable TabGroupHoverCardView getTabGroupHoverCardViewForTesting() {
+        return mTabGroupHoverCardView;
     }
 
     void setLastHoveredTabForTesting(StripLayoutTab tab) {
@@ -3115,6 +3144,10 @@ public class StripLayoutHelper
 
     @Nullable StripLayoutTab getLastHoveredTab() {
         return mLastHoveredTab;
+    }
+
+    @Nullable StripLayoutGroupTitle getLastHoveredGroupTitleForTesting() {
+        return mLastHoveredGroupTitle;
     }
 
     void setTabGroupContextMenuCoordinatorForTesting(
@@ -3136,12 +3169,15 @@ public class StripLayoutHelper
         ResettersForTesting.register(() -> mTabStripContextMenuCoordinator = null);
     }
 
-    private boolean clearLastHoveredTab() {
-        if (mLastHoveredTab == null) {
+    private boolean clearLastHoveredView() {
+        if (mLastHoveredTab == null && mLastHoveredGroupTitle == null) {
             return false;
         }
-        mTabDelegate.setIsTabHovered(mLastHoveredTab, false);
-        mLastHoveredTab = null;
+        if (mLastHoveredTab != null) {
+            mTabDelegate.setIsTabHovered(mLastHoveredTab, false);
+            mLastHoveredTab = null;
+        }
+        mLastHoveredGroupTitle = null;
         // Hide hover card view.
         mStripTabEventHandler.removeMessages(MESSAGE_HOVER_CARD);
         // Hover card view can be null if hover event was processed before view inflation completes.
@@ -3151,12 +3187,20 @@ public class StripLayoutHelper
             }
             mTabHoverCardView.hide();
         }
+        if (mTabGroupHoverCardView != null) {
+            if (mTabGroupHoverCardView.isShown()) {
+                mLastHoverCardExitTime = SystemClock.uptimeMillis();
+            }
+            mTabGroupHoverCardView.hide();
+        }
         return true;
     }
 
     @VisibleForTesting
-    void updateLastHoveredTab(StripLayoutTab hoveredTab) {
-        if (hoveredTab == null) return;
+    void updateLastHoveredView(@Nullable StripLayoutView hoveredView) {
+        if (hoveredView == null) return;
+
+        clearLastHoveredView();
 
         // Do nothing if attempting to update the hover state of a tab while a tab strip animation
         // is running. This is to avoid applying the tab hover state during animations triggered for
@@ -3166,19 +3210,28 @@ public class StripLayoutHelper
 
         // Do nothing if hovering into a drawn tab that is for example, hidden behind the model
         // selector button.
-        if (isViewCompletelyHidden(hoveredTab)) return;
+        if (isViewCompletelyHidden(hoveredView)) return;
 
-        mLastHoveredTab = hoveredTab;
-        mTabDelegate.setIsTabHovered(hoveredTab, true);
+        float width;
+        if (hoveredView instanceof StripLayoutTab hoveredTab) {
+            mLastHoveredTab = hoveredTab;
+            mTabDelegate.setIsTabHovered(hoveredTab, true);
+            width = hoveredTab.getWidth();
+        } else if (hoveredView instanceof StripLayoutGroupTitle hoveredGroupTitle) {
+            mLastHoveredGroupTitle = hoveredGroupTitle;
+            width = hoveredGroupTitle.getPaddedWidth();
+        } else {
+            return;
+        }
 
-        // Show the tab hover card.
+        // Show the hover card.
         // Just in case, cancel the previous delayed hover card event.
         mStripTabEventHandler.removeMessages(MESSAGE_HOVER_CARD);
         if (shouldShowHoverCardImmediately()) {
-            showTabHoverCardView(/* isDelayedCall= */ false);
+            showHoverCardView(/* isDelayedCall= */ false);
         } else {
             mStripTabEventHandler.sendEmptyMessageDelayed(
-                    MESSAGE_HOVER_CARD, getHoverCardDelay(mLastHoveredTab.getWidth()));
+                    MESSAGE_HOVER_CARD, getHoverCardDelay(width));
         }
     }
 
@@ -3200,8 +3253,19 @@ public class StripLayoutHelper
                 tabWidth, StripLayoutUtils.getMinTabWidthDp(), MAX_TAB_WIDTH_DP);
     }
 
-    private void showTabHoverCardView(boolean isDelayedCall) {
-        if (mLastHoveredTab == null || isActiveTab(mLastHoveredTab.getTabId())) {
+    private void showHoverCardView(boolean isDelayedCall) {
+        // Don't allow the hovercard to show when any context menu is already showing.
+        if (isViewContextMenuShowing()) return;
+
+        if (mLastHoveredTab != null) {
+            showTabHoverCardView(mLastHoveredTab, isDelayedCall);
+        } else if (mLastHoveredGroupTitle != null) {
+            showTabGroupHoverCardView(mLastHoveredGroupTitle);
+        }
+    }
+
+    private void showTabHoverCardView(StripLayoutTab hoveredTab, boolean isDelayedCall) {
+        if (isActiveTab(hoveredTab.getTabId())) {
             return;
         }
         // TODO(crbug.com/396683827): If there are no calls with unexpectedly null
@@ -3214,19 +3278,35 @@ public class StripLayoutHelper
 
         if (mModel == null) return;
 
-        // Don't allow the hovercard to show when any context menu is already showing.
-        if (isViewContextMenuShowing()) return;
-
-        int hoveredTabIndex = findIndexForTab(mLastHoveredTab.getTabId());
+        int hoveredTabIndex = findIndexForTab(hoveredTab.getTabId());
         float[] position =
                 StripLayoutUtils.getHoverCardPosition(
                         mTabHoverCardView,
-                        isActiveTab(mLastHoveredTab.getTabId()),
-                        mLastHoveredTab.getDrawX(),
-                        mLastHoveredTab.getWidth(),
+                        isActiveTab(hoveredTab.getTabId()),
+                        hoveredTab.getDrawX(),
+                        hoveredTab.getWidth(),
                         mHeight,
                         mTopPadding);
         mTabHoverCardView.show(mModel.getTabAt(hoveredTabIndex), position[0], position[1]);
+    }
+
+    private void showTabGroupHoverCardView(StripLayoutGroupTitle hoveredGroupTitle) {
+        if (mTabGroupHoverCardView == null || mTabGroupHoverCardPresenter == null) {
+            return;
+        }
+        if (!mTabGroupHoverCardPresenter.bindData(
+                mTabGroupHoverCardView, hoveredGroupTitle.getTabGroupId())) {
+            return;
+        }
+        float[] position =
+                StripLayoutUtils.getHoverCardPosition(
+                        mTabGroupHoverCardView,
+                        /* isActiveTab= */ true,
+                        hoveredGroupTitle.getPaddedX(),
+                        hoveredGroupTitle.getPaddedWidth(),
+                        mHeight,
+                        mTopPadding);
+        mTabGroupHoverCardView.show(position[0], position[1]);
     }
 
     private Animator getViewWidthAnimator(StripLayoutView view, float targetWidth, int duration) {
@@ -3294,7 +3374,7 @@ public class StripLayoutHelper
      */
     public void click(long time, float x, float y, int buttons, int modifiers) {
         StripLayoutView clickedView = determineClickedView(x, y, buttons);
-        clearLastHoveredTab();
+        clearLastHoveredView();
         if (clickedView == null) {
             if (MotionEventUtils.isSecondaryClick(buttons)) {
                 // A right click on empty strip space or the new tab button (where
@@ -3768,7 +3848,7 @@ public class StripLayoutHelper
                         // ended. This is to prevent the hover state from sticking after an action
                         // on the strip, including and not limited to tab closure and tab
                         // reordering.
-                        clearTabHoverState();
+                        clearHoverState();
                     }
                 });
         mRunningAnimator.start();
@@ -5317,7 +5397,7 @@ public class StripLayoutHelper
                     mUpdateHost.requestUpdate();
                     break;
                 case MESSAGE_HOVER_CARD:
-                    showTabHoverCardView(/* isDelayedCall= */ true);
+                    showHoverCardView(/* isDelayedCall= */ true);
                     mUpdateHost.requestUpdate();
                     break;
                 default:
@@ -5409,9 +5489,14 @@ public class StripLayoutHelper
      */
     @VisibleForTesting
     boolean isViewCompletelyHidden(StripLayoutView view) {
+        if (!view.isVisible()) return true;
+        if (view instanceof StripLayoutGroupTitle groupTitle) {
+            // TODO(crbug.com/520018084): Unify unpinned visible bound checks for group titles.
+            return groupTitle.getPaddedX() + groupTitle.getPaddedWidth() <= getVisibleLeftBound()
+                    || groupTitle.getPaddedX() >= getVisibleRightBound();
+        }
         boolean isPinned = (view instanceof StripLayoutTab tab) && tab.getIsPinned();
-        return !view.isVisible()
-                || isViewCompletelyHiddenAt(view.getDrawX(), view.getWidth(), isPinned);
+        return isViewCompletelyHiddenAt(view.getDrawX(), view.getWidth(), isPinned);
     }
 
     /**

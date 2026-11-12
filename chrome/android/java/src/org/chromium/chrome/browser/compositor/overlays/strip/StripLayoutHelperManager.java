@@ -105,6 +105,8 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.tabstrip.StripVisibilityState;
 import org.chromium.chrome.browser.tabstrip.TabStripSceneLayerHolder;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
+import org.chromium.chrome.browser.tasks.tab_management.TabGroupHoverCardPresenter;
+import org.chromium.chrome.browser.tasks.tab_management.TabGroupHoverCardView;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabHoverCardView;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
@@ -256,11 +258,12 @@ public class StripLayoutHelperManager
     // Non-null only when the WebUI new tab button is enabled.
     private @Nullable NtbWebUiCoordinator mNtbWebUiCoordinator;
     private final ViewStub mTabHoverCardViewStub;
+    private final ViewStub mTabGroupHoverCardViewStub;
     private float mLastVisibleViewportOffsetY;
     private @Nullable OmniboxStub mOmniboxStub;
     private final Callback<String> mUrlTextChangeListener =
             (ignored) -> {
-                getActiveStripLayoutHelper().clearTabHoverState();
+                getActiveStripLayoutHelper().clearHoverState();
             };
     private float mSceneLayerYOffset;
     private float mSceneLayerVisibleHeight; // Used during height transition.
@@ -372,9 +375,12 @@ public class StripLayoutHelperManager
                 return;
             }
 
-            // Inflate the hover card ViewStub if not already inflated.
+            // Inflate the hover card ViewStubs if not already inflated.
             if (mTabHoverCardViewStub.getParent() != null) {
                 mTabHoverCardViewStub.inflate();
+            }
+            if (mTabGroupHoverCardViewStub.getParent() != null) {
+                mTabGroupHoverCardViewStub.inflate();
             }
 
             // Run whichever coordinator is losing hover before the one gaining hover so that
@@ -479,6 +485,7 @@ public class StripLayoutHelperManager
      *     tab drag and drop.
      * @param controlContainerView View passed to {@link TabStripDragHandler} for drag and drop.
      * @param tabHoverCardViewStub The ViewStub representing the strip tab hover card.
+     * @param tabGroupHoverCardViewStub The ViewStub representing the strip tab group hover card.
      * @param tabContentManagerSupplier Supplier of the manager providing tab thumbnail snapshots.
      * @param browserControlsStateProvider BrowserControlsStateProvider for drag drop.
      * @param windowAndroid The {@link WindowAndroid} instance to access Activity.
@@ -521,6 +528,7 @@ public class StripLayoutHelperManager
             DragAndDropDelegate dragDropDelegate,
             View controlContainerView,
             ViewStub tabHoverCardViewStub,
+            ViewStub tabGroupHoverCardViewStub,
             MonotonicObservableSupplier<TabContentManager> tabContentManagerSupplier,
             BrowserControlsStateProvider browserControlsStateProvider,
             ActivityWindowAndroid windowAndroid,
@@ -675,6 +683,7 @@ public class StripLayoutHelperManager
                         this::updateHelperEndMargins);
 
         mTabHoverCardViewStub = tabHoverCardViewStub;
+        mTabGroupHoverCardViewStub = tabGroupHoverCardViewStub;
 
         if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
             mTabStripDragHandler =
@@ -795,6 +804,14 @@ public class StripLayoutHelperManager
                             assumeNonNull(mTabModelSelector), tabContentManagerSupplier);
                     mNormalHelper.setTabHoverCardView(hoverCardView);
                     mIncognitoHelper.setTabHoverCardView(hoverCardView);
+                });
+        tabGroupHoverCardViewStub.setOnInflateListener(
+                (viewStub, view) -> {
+                    var hoverCardView = (TabGroupHoverCardView) view;
+                    var hoverCardPresenter =
+                            new TabGroupHoverCardPresenter(assumeNonNull(mTabModelSelector));
+                    mNormalHelper.setTabGroupHoverCardView(hoverCardView, hoverCardPresenter);
+                    mIncognitoHelper.setTabGroupHoverCardView(hoverCardView, hoverCardPresenter);
                 });
 
         if (tabModelStartupInfoSupplier != null) {

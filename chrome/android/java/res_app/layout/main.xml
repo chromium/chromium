@@ -184,6 +184,13 @@ found in the LICENSE file.
             android:layout="@layout/tab_hover_card_holder" />
 
         <ViewStub
+            android:id="@+id/tab_group_hover_card_holder_stub"
+            android:layout_width="@dimen/tab_hover_card_width"
+            android:layout_height="wrap_content"
+            android:inflatedId="@+id/tab_group_hover_card_holder"
+            android:layout="@layout/tab_group_hover_card_holder" />
+
+        <ViewStub
             android:id="@+id/vertical_tab_hover_card_holder_stub"
             android:layout_width="@dimen/tab_hover_card_width"
             android:layout_height="wrap_content"

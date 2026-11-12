@@ -149,6 +149,8 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
 import org.chromium.chrome.browser.tabmodel.TabUngrouper;
 import org.chromium.chrome.browser.tasks.tab_management.TabDragHandlerBase;
+import org.chromium.chrome.browser.tasks.tab_management.TabGroupHoverCardPresenter;
+import org.chromium.chrome.browser.tasks.tab_management.TabGroupHoverCardView;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinatorFactory;
 import org.chromium.chrome.browser.tasks.tab_management.TabHoverCardView;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -260,6 +262,8 @@ public class StripLayoutHelperTest {
     private View mInteractingTabView;
     private View mControlContainer;
     private TabHoverCardView mTabHoverCardView;
+    private TabGroupHoverCardView mTabGroupHoverCardView;
+    private TabGroupHoverCardPresenter mTabGroupHoverCardPresenter;
     private SharedGroupTestHelper mSharedGroupTestHelper;
 
     // TODO(crbug.com/369736293): Verify usages and remove duplicate implementations of
@@ -2896,7 +2900,7 @@ public class StripLayoutHelperTest {
         when(mTabContextMenuCoordinator.isMenuShowing()).thenReturn(true);
 
         // Now try to hover on the tab.
-        mStripLayoutHelper.updateLastHoveredTab(
+        mStripLayoutHelper.updateLastHoveredView(
                 mStripLayoutHelper.getStripLayoutTabsForTesting()[0]);
 
         assertEquals(View.GONE, mTabHoverCardView.getVisibility());
@@ -2912,7 +2916,7 @@ public class StripLayoutHelperTest {
         when(mTabGroupContextMenuCoordinator.isMenuShowing()).thenReturn(true);
 
         // Now try to hover on the tab.
-        mStripLayoutHelper.updateLastHoveredTab(
+        mStripLayoutHelper.updateLastHoveredView(
                 mStripLayoutHelper.getStripLayoutTabsForTesting()[0]);
 
         assertEquals(View.GONE, mTabHoverCardView.getVisibility());
@@ -4227,7 +4231,7 @@ public class StripLayoutHelperTest {
 
         // Hover on tabs[2], and close it.
         int index = 2;
-        mStripLayoutHelper.updateLastHoveredTab(tabs[index]);
+        mStripLayoutHelper.updateLastHoveredView(tabs[index]);
         assertEquals(View.VISIBLE, mTabHoverCardView.getVisibility());
 
         // Fake the tab closure.
@@ -4338,7 +4342,7 @@ public class StripLayoutHelperTest {
     public void testChangingModelClearsTabHoverState() {
         // Initialize hover card, then hover on a tab.
         initializeTabHoverTest();
-        mStripLayoutHelper.updateLastHoveredTab(
+        mStripLayoutHelper.updateLastHoveredView(
                 mStripLayoutHelper.getStripLayoutTabsForTesting()[0]);
         assertEquals(View.VISIBLE, mTabHoverCardView.getVisibility());
 
@@ -4355,7 +4359,7 @@ public class StripLayoutHelperTest {
         // Initialize hover card, then hover on a tab.
         initializeTabHoverTest();
         StripLayoutTab hoveredTab = mStripLayoutHelper.getStripLayoutTabsForTesting()[0];
-        mStripLayoutHelper.updateLastHoveredTab(hoveredTab);
+        mStripLayoutHelper.updateLastHoveredView(hoveredTab);
         assertEquals(View.VISIBLE, mTabHoverCardView.getVisibility());
 
         // Now click on the tab that's originating the hovercard.
@@ -4371,7 +4375,7 @@ public class StripLayoutHelperTest {
         // Initialize hover card, then hover on a tab.
         initializeTabHoverTest();
         StripLayoutTab hoveredTab = mStripLayoutHelper.getStripLayoutTabsForTesting()[0];
-        mStripLayoutHelper.updateLastHoveredTab(hoveredTab);
+        mStripLayoutHelper.updateLastHoveredView(hoveredTab);
         assertEquals(View.VISIBLE, mTabHoverCardView.getVisibility());
 
         // Set up things necessary for right-click.
@@ -5946,7 +5950,7 @@ public class StripLayoutHelperTest {
         // Assume tab0 is selected, tab1 is hovered on.
         initializeTabHoverTest();
         var hoveredTab = mStripLayoutHelper.getStripLayoutTabsForTesting()[1];
-        mStripLayoutHelper.updateLastHoveredTab(hoveredTab);
+        mStripLayoutHelper.updateLastHoveredView(hoveredTab);
         assertEquals(
                 "Last hovered tab is not set.", hoveredTab, mStripLayoutHelper.getLastHoveredTab());
         float[] position1 =
@@ -5974,7 +5978,7 @@ public class StripLayoutHelperTest {
         // Assume 4th tab is selected.
         initializeTabHoverTest();
         var hoveredTab = mStripLayoutHelper.getStripLayoutTabsForTesting()[3];
-        mStripLayoutHelper.updateLastHoveredTab(hoveredTab);
+        mStripLayoutHelper.updateLastHoveredView(hoveredTab);
         assertEquals(View.GONE, mTabHoverCardView.getVisibility());
     }
 
@@ -5994,7 +5998,7 @@ public class StripLayoutHelperTest {
                 PADDING_TOP);
 
         var hoveredTab = mStripLayoutHelper.getStripLayoutTabsForTesting()[1];
-        mStripLayoutHelper.updateLastHoveredTab(hoveredTab);
+        mStripLayoutHelper.updateLastHoveredView(hoveredTab);
         assertEquals(
                 "Last hovered tab is not set.", hoveredTab, mStripLayoutHelper.getLastHoveredTab());
         float[] position2 =
@@ -6026,13 +6030,15 @@ public class StripLayoutHelperTest {
         var animator = mock(Animator.class);
         when(animator.isRunning()).thenReturn(true);
         mStripLayoutHelper.setRunningAnimatorForTesting(animator);
-        mStripLayoutHelper.updateLastHoveredTab(hoveredTab);
+        mStripLayoutHelper.updateLastHoveredView(hoveredTab);
         assertEquals(View.GONE, mTabHoverCardView.getVisibility());
     }
 
     @Test
     public void testIsViewCompletelyHidden() {
         initializeTabHoverTest();
+        groupTabs(0, 2, TAB_GROUP_ID_1);
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
         var hoveredTab = mStripLayoutHelper.getStripLayoutTabsForTesting()[1];
 
         // Set simulated hovered StripLayoutTab drawX and width to assume a position beyond the left
@@ -6049,6 +6055,118 @@ public class StripLayoutHelperTest {
         assertTrue(
                 "Tab should be considered hidden for hover state.",
                 mStripLayoutHelper.isViewCompletelyHidden(hoveredTab));
+
+        StripLayoutGroupTitle groupTitle = mStripLayoutHelper.findGroupTitle(TAB_GROUP_ID_1);
+        assertNotNull(groupTitle);
+        assertFalse(
+                "Visible group title at strip start should not be considered hidden.",
+                mStripLayoutHelper.isViewCompletelyHidden(groupTitle));
+
+        float startMargin = groupTitle.getPaddedX() - groupTitle.getDrawX();
+        groupTitle.setDrawX(
+                mStripLayoutHelper.getVisibleLeftBound()
+                        - startMargin
+                        - groupTitle.getPaddedWidth());
+        assertTrue(
+                "Group title beyond left visible bound should be considered hidden.",
+                mStripLayoutHelper.isViewCompletelyHidden(groupTitle));
+
+        groupTitle.setDrawX(mStripLayoutHelper.getVisibleRightBound() - startMargin);
+        assertTrue(
+                "Group title beyond right visible bound should be considered hidden.",
+                mStripLayoutHelper.isViewCompletelyHidden(groupTitle));
+    }
+
+    @Test
+    public void testUpdateLastHoveredGroupTitle() {
+        initializeTabHoverTest();
+        groupTabs(0, 2, TAB_GROUP_ID_1);
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+        StripLayoutGroupTitle groupTitle = mStripLayoutHelper.findGroupTitle(TAB_GROUP_ID_1);
+        assertNotNull(groupTitle);
+
+        mStripLayoutHelper.updateLastHoveredView(groupTitle);
+        assertEquals(
+                "Last hovered group title is not set.",
+                groupTitle,
+                mStripLayoutHelper.getLastHoveredGroupTitleForTesting());
+        float[] position =
+                StripLayoutUtils.getHoverCardPosition(
+                        mTabGroupHoverCardView,
+                        /* isActiveTab= */ true,
+                        groupTitle.getPaddedX(),
+                        groupTitle.getPaddedWidth(),
+                        STRIP_HEIGHT,
+                        0f);
+        assertEquals(View.VISIBLE, mTabGroupHoverCardView.getVisibility());
+        TextView titleView = mTabGroupHoverCardView.findViewById(R.id.group_title);
+        assertEquals(TabGroupTitleUtils.getDefaultTitle(mContext, 2), titleView.getText());
+        assertEquals(position[0], mTabGroupHoverCardView.getX(), EPSILON);
+        assertEquals(position[1], mTabGroupHoverCardView.getY(), EPSILON);
+    }
+
+    @Test
+    public void testUpdateLastHoveredGroupTitle_NonZeroStripTopPadding() {
+        initializeTabHoverTest();
+        groupTabs(0, 2, TAB_GROUP_ID_1);
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+        StripLayoutGroupTitle groupTitle = mStripLayoutHelper.findGroupTitle(TAB_GROUP_ID_1);
+        assertNotNull(groupTitle);
+
+        mStripLayoutHelper.onSizeChanged(
+                STRIP_WIDTH,
+                STRIP_HEIGHT,
+                false,
+                TIMESTAMP,
+                PADDING_LEFT,
+                PADDING_RIGHT,
+                PADDING_TOP);
+
+        mStripLayoutHelper.updateLastHoveredView(groupTitle);
+        float[] position =
+                StripLayoutUtils.getHoverCardPosition(
+                        mTabGroupHoverCardView,
+                        /* isActiveTab= */ true,
+                        groupTitle.getPaddedX(),
+                        groupTitle.getPaddedWidth(),
+                        STRIP_HEIGHT,
+                        PADDING_TOP);
+        assertEquals(View.VISIBLE, mTabGroupHoverCardView.getVisibility());
+        assertEquals(position[0], mTabGroupHoverCardView.getX(), EPSILON);
+        assertEquals(position[1], mTabGroupHoverCardView.getY(), EPSILON);
+    }
+
+    @Test
+    public void testOnHoverEnterAndMove_TabAndGroupTitleTransition() {
+        initializeTabHoverTest();
+        groupTabs(0, 2, TAB_GROUP_ID_1);
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+        StripLayoutGroupTitle groupTitle = mStripLayoutHelper.findGroupTitle(TAB_GROUP_ID_1);
+        StripLayoutTab tab1 = mStripLayoutHelper.getStripLayoutTabsForTesting()[1];
+        assertNotNull(groupTitle);
+
+        // Hover enter on the group title.
+        float groupCenterX = groupTitle.getPaddedX() + groupTitle.getPaddedWidth() / 2f;
+        mStripLayoutHelper.onHoverEnter(groupCenterX, STRIP_HEIGHT / 2f, false);
+        assertEquals(groupTitle, mStripLayoutHelper.getLastHoveredGroupTitleForTesting());
+        assertNull(mStripLayoutHelper.getLastHoveredTab());
+        assertEquals(View.VISIBLE, mTabGroupHoverCardView.getVisibility());
+        assertEquals(View.GONE, mTabHoverCardView.getVisibility());
+
+        // Hover move to an unselected tab (tab1).
+        float tab1CenterX = tab1.getDrawX() + tab1.getWidth() / 2f;
+        mStripLayoutHelper.onHoverMove(tab1CenterX, STRIP_HEIGHT / 2f, false);
+        assertNull(mStripLayoutHelper.getLastHoveredGroupTitleForTesting());
+        assertEquals(tab1, mStripLayoutHelper.getLastHoveredTab());
+        assertEquals(View.GONE, mTabGroupHoverCardView.getVisibility());
+        assertEquals(View.VISIBLE, mTabHoverCardView.getVisibility());
+
+        // Hover exit clears hover state and hides the hover card.
+        mStripLayoutHelper.onHoverExit(/* inTabStrip= */ false);
+        assertNull(mStripLayoutHelper.getLastHoveredGroupTitleForTesting());
+        assertNull(mStripLayoutHelper.getLastHoveredTab());
+        assertEquals(View.GONE, mTabGroupHoverCardView.getVisibility());
+        assertEquals(View.GONE, mTabHoverCardView.getVisibility());
     }
 
     private void initializeTabHoverTest() {
@@ -6062,10 +6180,19 @@ public class StripLayoutHelperTest {
                         mActivity
                                 .getLayoutInflater()
                                 .inflate(R.layout.tab_hover_card_holder, /* root= */ null);
+        when(mTabModelSelector.getCurrentModel()).thenReturn(mModel);
         when(mTabModelSelector.getCurrentTabModelSupplier())
                 .thenReturn(ObservableSuppliers.createMonotonic());
         mTabHoverCardView.initialize(mTabModelSelector, () -> mTabContentManager);
         mStripLayoutHelper.setTabHoverCardView(mTabHoverCardView);
+        mTabGroupHoverCardView =
+                (TabGroupHoverCardView)
+                        mActivity
+                                .getLayoutInflater()
+                                .inflate(R.layout.tab_group_hover_card_holder, /* root= */ null);
+        mTabGroupHoverCardPresenter = new TabGroupHoverCardPresenter(mTabModelSelector);
+        mStripLayoutHelper.setTabGroupHoverCardView(
+                mTabGroupHoverCardView, mTabGroupHoverCardPresenter);
         // For ease of dp/px calculation.
         mTabHoverCardView.getContext().getResources().getDisplayMetrics().density = 1f;
     }
@@ -6148,9 +6275,9 @@ public class StripLayoutHelperTest {
         initializeTabHoverTest();
 
         // Create calls on the correct states.
-        mStripLayoutHelper.updateLastHoveredTab(
+        mStripLayoutHelper.updateLastHoveredView(
                 mStripLayoutHelper.getStripLayoutTabsForTesting()[0]);
-        mStripLayoutHelper.clearTabHoverState();
+        mStripLayoutHelper.clearHoverState();
 
         histogramWatcher.assertExpected(
                 "Shouldn't record any unexpectedly null mTabHoverCardView calls.");
@@ -6167,7 +6294,7 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.destroy();
 
         // Create calls on the incorrect states.
-        mStripLayoutHelper.updateLastHoveredTab(
+        mStripLayoutHelper.updateLastHoveredView(
                 mStripLayoutHelper.getStripLayoutTabsForTesting()[0]);
 
         // Check histograms.

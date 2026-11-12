@@ -32,9 +32,12 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tasks.tab_management.TabGroupHoverCardView;
 import org.chromium.chrome.browser.tasks.tab_management.TabHoverCardView;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.url.JUnitTestGURLs;
+
+import java.util.List;
 
 /** Unit tests for {@link TabHoverCardView} positioning on the tab strip. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -254,6 +257,47 @@ public class StripTabHoverCardPositionUnitTest {
                 "Card x position is incorrect.",
                 38f - detachedCardOffset - cardShadowLength,
                 position[0],
+                0f);
+    }
+
+    @Test
+    public void getHoverCardPosition_GroupHoverCardWidth_RtlAndRightClamp() {
+        Activity activity = buildActivity(Activity.class).setup().get();
+        activity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        TabGroupHoverCardView groupHoverCardView =
+                (TabGroupHoverCardView)
+                        activity.getLayoutInflater()
+                                .inflate(R.layout.tab_group_hover_card_holder, null);
+        groupHoverCardView.bindData("Group", List.of("Tab 1"), /* excessCount= */ 0, false);
+
+        float cardShadowLength =
+                mContext.getResources().getDimension(R.dimen.popup_menu_shadow_length);
+        float windowHorizontalMargin =
+                mContext.getResources()
+                        .getDimension(R.dimen.tab_hover_card_window_horizontal_margin);
+        int windowWidth = mContext.getResources().getDisplayMetrics().widthPixels;
+
+        // 1. LTR clamping at right window edge uses the measured group card width.
+        float[] ltrPosition =
+                StripLayoutUtils.getHoverCardPosition(
+                        groupHoverCardView, true, windowWidth, TAB_WIDTH, STRIP_STACK_HEIGHT, 0f);
+        int measuredWidth = groupHoverCardView.getMeasuredWidth();
+        assertEquals(
+                "Group card should clamp using its measured width from the right window edge.",
+                windowWidth - measuredWidth - windowHorizontalMargin,
+                ltrPosition[0],
+                0f);
+
+        // 2. RTL placement aligns the group card's right edge with the group title's right edge.
+        LocalizationUtils.setRtlForTesting(true);
+        float groupTitleX = 300f;
+        float[] rtlPosition =
+                StripLayoutUtils.getHoverCardPosition(
+                        groupHoverCardView, true, groupTitleX, TAB_WIDTH, STRIP_STACK_HEIGHT, 0f);
+        assertEquals(
+                "Group card right edge should align with group title right edge in RTL.",
+                groupTitleX - (measuredWidth - TAB_WIDTH) - cardShadowLength,
+                rtlPosition[0],
                 0f);
     }
 

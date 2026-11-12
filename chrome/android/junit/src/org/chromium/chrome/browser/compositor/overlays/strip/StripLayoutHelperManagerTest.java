@@ -226,6 +226,7 @@ public class StripLayoutHelperManagerTest {
     private Activity mActivity;
     private ToolbarControlContainer mControlContainer;
     private ViewStub mTabHoverCardViewStub;
+    private ViewStub mTabGroupHoverCardViewStub;
     private SettableMonotonicObservableSupplier<TabModelStartupInfo> mTabModelStartupInfoSupplier;
     private SettableNonNullObservableSupplier<Integer> mTabStripHeightSupplier;
     private int mToolbarPrimaryColor;
@@ -271,6 +272,7 @@ public class StripLayoutHelperManagerTest {
 
         mControlContainer = new ToolbarControlContainer(mActivity, null);
         mTabHoverCardViewStub = new ViewStub(mActivity);
+        mTabGroupHoverCardViewStub = new ViewStub(mActivity);
         when(mToolbarManager.getStatusBarColorController()).thenReturn(mStatusBarColorController);
         when(mDesktopWindowStateManager.isInUnfocusedDesktopWindow()).thenReturn(false);
         when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
@@ -327,6 +329,7 @@ public class StripLayoutHelperManagerTest {
                         mDragDropDelegate,
                         mControlContainer,
                         mTabHoverCardViewStub,
+                        mTabGroupHoverCardViewStub,
                         mTabContentManagerSupplier,
                         mBrowserControlStateProvider,
                         mWindowAndroid,
