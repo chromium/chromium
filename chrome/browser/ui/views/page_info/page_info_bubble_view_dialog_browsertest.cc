@@ -697,11 +697,6 @@ class PageInfoBubbleViewCookiesSubpageBrowserTest : public DialogBrowserTest {
     cookie_info.allowed_sites_count = 9;
     cookie_info.enforcement = enforcement_;
     cookie_info.controls_state = controls_state_;
-    if (rws_enabled_) {
-      const std::u16string kSiteOrigin = u"example.com";
-      cookie_info.rws_info = {PageInfoUI::CookiesRwsInfo(kSiteOrigin)};
-      cookie_info.rws_info->is_managed = rws_managed_;
-    }
     if (is_temporary_exception_) {
       cookie_info.expiration = GetReferenceTime() + base::Days(30);
     }
@@ -741,8 +736,6 @@ class PageInfoBubbleViewCookiesSubpageBrowserTest : public DialogBrowserTest {
   CookieControlsEnforcement enforcement_ =
       CookieControlsEnforcement::kNoEnforcement;
   CookieControlsState controls_state_ = CookieControlsState::kBlocked3pc;
-  bool rws_enabled_ = false;
-  bool rws_managed_ = false;
   bool is_temporary_exception_ = false;
 
  private:
@@ -753,19 +746,6 @@ class PageInfoBubbleViewCookiesSubpageBrowserTest : public DialogBrowserTest {
       /*time_ticks_override=*/nullptr, /*thread_ticks_override=*/nullptr};
   base::test::ScopedFeatureList feature_list_;
 };
-
-IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewCookiesSubpageBrowserTest,
-                       InvokeUi_RwsOn) {
-  rws_enabled_ = true;
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewCookiesSubpageBrowserTest,
-                       InvokeUi_ManagedRwsOn) {
-  rws_enabled_ = true;
-  rws_managed_ = true;
-  ShowAndVerifyUi();
-}
 
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewCookiesSubpageBrowserTest,
                        InvokeUi_CookiesBlocked) {

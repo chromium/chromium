@@ -149,9 +149,6 @@ void ShowPaymentMethods(BrowserWindowInterface* bwi);
 void ShowContactInfo(BrowserWindowInterface* bwi);
 void ShowIdentityDocs(BrowserWindowInterface* bwi);
 void ShowTravel(BrowserWindowInterface* bwi);
-void ShowAllSitesSettingsFilteredByRwsOwner(
-    BrowserWindowInterface* browser,
-    const std::string& rws_owner_host_name);
 
 // Shows all recent shared tab group activities.
 void ShowSharedTabGroupActivity(Profile* profile);

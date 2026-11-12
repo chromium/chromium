@@ -19,7 +19,6 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/page_info/merchant_trust_service_factory.h"
 #include "chrome/browser/permissions/system/system_permission_settings.h"
-#include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/hats/mock_trust_safety_sentiment_service.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
@@ -197,11 +196,6 @@ class PageInfoBubbleViewTestApi {
             VIEW_ID_PAGE_INFO_BLOCK_THIRD_PARTY_COOKIES_SUBTITLE);
   }
 
-  views::View* rws_button() {
-    return bubble_delegate_->GetViewByID(
-        PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_RWS_SETTINGS);
-  }
-
   RichHoverButton* certificate_button() const {
     return static_cast<RichHoverButton*>(bubble_delegate_->GetViewByID(
         PageInfoViewFactory::
@@ -322,7 +316,7 @@ class PageInfoBubbleViewTestApi {
     return actual_count;
   }
 
-  // Simulates updating the number of blocked and allowed sites and rws info.
+  // Simulates updating the number of blocked and allowed sites.
   void SetCookieInfo(const PageInfoUI::CookiesInfo& cookie_info) {
     presenter_->ui_for_testing()->SetCookieInfo(cookie_info);
   }

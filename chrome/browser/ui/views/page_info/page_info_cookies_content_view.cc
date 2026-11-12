@@ -252,8 +252,6 @@ void PageInfoCookiesContentView::SetCookieInfo(const CookiesInfo& cookie_info) {
       IDS_PAGE_INFO_COOKIES_ALLOWED_SITES_COUNT,
       cookie_info.allowed_sites_count));
 
-  SetRwsCookiesInfo(cookie_info.rws_info);
-
   PreferredSizeChanged();
   if (!initialized_callback_.is_null()) {
     std::move(initialized_callback_).Run();
@@ -383,64 +381,6 @@ void PageInfoCookiesContentView::OnToggleButtonPressed() {
       /*block_third_party_cookies=*/!third_party_cookies_toggle_->GetIsOn());
   third_party_cookies_container_->NotifyAccessibilityEventDeprecated(
       ax::mojom::Event::kAlert, true);
-}
-
-void PageInfoCookiesContentView::SetRwsCookiesInfo(
-    std::optional<CookiesRwsInfo> rws_info) {
-  if (rws_info.has_value()) {
-    InitRwsButton(rws_info->is_managed);
-    rws_button_->SetVisible(true);
-
-    // Update the text displaying the name of RWS owner.
-    rws_button_->SetTitleText(
-        l10n_util::GetStringUTF16(IDS_PAGE_INFO_RWS_BUTTON_TITLE));
-    rws_button_->SetSubtitleText(l10n_util::GetStringFUTF16(
-        IDS_PAGE_INFO_RWS_BUTTON_SUBTITLE, rws_info->owner_name));
-  } else if (rws_button_) {
-    rws_button_->SetVisible(false);
-  }
-  if (!rws_histogram_recorded_) {
-    rws_histogram_recorded_ = true;
-    base::UmaHistogramBoolean("Security.PageInfo.Cookies.HasFPSInfo",
-                              rws_info.has_value());
-  }
-}
-
-void PageInfoCookiesContentView::InitRwsButton(bool is_managed) {
-  if (rws_button_) {
-    return;
-  }
-
-  // Create the `rws_button_` with temporary values for title and subtitle
-  // as we don't have data yet, it will be updated.
-  rws_button_ = cookies_buttons_container_view_->AddChildView(
-      std::make_unique<RichHoverButton>(
-          base::BindRepeating(
-              &PageInfoCookiesContentView::RwsSettingsButtonClicked,
-              base::Unretained(this)),
-          PageInfoViewFactory::GetImageModel(
-              features::IsRoundedIconsEnabled()
-                  ? vector_icons::kTenancyFilledIcon
-                  : vector_icons::kTenancyOldIcon),
-          l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES),
-          /*secondary_text=*/u" ", PageInfoViewFactory::GetLaunchIcon(),
-          is_managed ? PageInfoViewFactory::GetImageModel(
-                           features::IsRoundedIconsEnabled()
-                               ? vector_icons::kDomainIcon
-                               : vector_icons::kBusinessOldIcon)
-                     : ui::ImageModel()));
-  rws_button_->SetID(
-      PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_RWS_SETTINGS);
-  rws_button_->SetTooltipText(
-      l10n_util::GetStringUTF16(IDS_PAGE_INFO_RWS_BUTTON_TOOLTIP));
-  rws_button_->SetTitleTextStyleAndColor(views::style::STYLE_BODY_3_MEDIUM,
-                                         kColorPageInfoForeground);
-  rws_button_->SetSubtitleTextStyleAndColor(views::style::STYLE_BODY_4,
-                                            kColorPageInfoSubtitleForeground);
-}
-
-void PageInfoCookiesContentView::RwsSettingsButtonClicked(ui::Event const&) {
-  presenter_->OpenAllSitesViewFilteredToRws();
 }
 
 void PageInfoCookiesContentView::AddThirdPartyCookiesContainer() {

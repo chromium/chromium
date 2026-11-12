@@ -367,11 +367,6 @@ PageInfoUI::CookiesInfo::CookiesInfo() = default;
 PageInfoUI::CookiesInfo::CookiesInfo(CookiesInfo&& cookie_info) = default;
 PageInfoUI::CookiesInfo::~CookiesInfo() = default;
 
-PageInfoUI::CookiesRwsInfo::CookiesRwsInfo(const std::u16string& owner_name)
-    : owner_name(owner_name) {}
-
-PageInfoUI::CookiesRwsInfo::~CookiesRwsInfo() = default;
-
 PageInfoUI::ChosenObjectInfo::ChosenObjectInfo(
     const PageInfo::ChooserUIInfo& ui_info,
     std::unique_ptr<permissions::ObjectPermissionContextBase::Object>

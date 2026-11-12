@@ -671,23 +671,6 @@ void ShowTravel(BrowserWindowInterface* bwi) {
   ShowSettingsSubPage(bwi, kTravelSubPage);
 }
 
-void ShowAllSitesSettingsFilteredByRwsOwner(
-    BrowserWindowInterface* browser,
-    const std::string& rws_owner_host_name) {
-  GURL url = GetSettingsUrl(kAllSitesSettingsSubpage);
-  if (!rws_owner_host_name.empty()) {
-    GURL::Replacements replacements;
-    std::string query("searchSubpage=");
-    query += base::EscapeQueryParamValue(
-        base::StrCat({"related:", rws_owner_host_name}),
-        /*use_plus=*/false);
-    replacements.SetQueryStr(query);
-    url = url.ReplaceComponents(replacements);
-  }
-
-  ShowSingletonTabIgnorePathOverwriteNTP(browser, url);
-}
-
 void ShowEnterpriseManagementPageInTabbedBrowser(
     BrowserWindowInterface* browser) {
   // Management shows in a tab because it has a "back" arrow that takes the

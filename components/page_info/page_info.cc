@@ -56,7 +56,6 @@
 #include "components/permissions/permission_util.h"
 #include "components/permissions/permissions_client.h"
 #include "components/permissions/request_type.h"
-#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/core/browser/metrics_collector/safe_browsing_metrics_collector.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
@@ -623,10 +622,6 @@ void PageInfo::RecordPageInfoAction(page_info::PageInfoAction action) {
       base::RecordAction(base::UserMetricsAction(
           "PageInfo.CookiesSubpage.SettingsLinkClicked"));
       break;
-    case page_info::PAGE_INFO_ALL_SITES_WITH_FPS_FILTER_OPENED:
-      base::RecordAction(base::UserMetricsAction(
-          "PageInfo.CookiesSubpage.AllSitesFilteredOpened"));
-      break;
     case page_info::PAGE_INFO_SHOW_FULL_HISTORY_CLICKED:
       base::RecordAction(
           base::UserMetricsAction("PageInfo.History.ShowFullHistoryClicked"));
@@ -916,21 +911,6 @@ void PageInfo::OpenCookiesSettingsView() {
 #else
   RecordPageInfoAction(page_info::PAGE_INFO_COOKIES_SETTINGS_OPENED);
   delegate_->ShowCookiesSettings();
-#endif
-}
-
-void PageInfo::OpenAllSitesViewFilteredToRws() {
-#if BUILDFLAG(IS_ANDROID)
-  NOTREACHED();
-#else
-  auto rws_owner = delegate_->GetRwsOwner(site_url_);
-  RecordPageInfoAction(page_info::PAGE_INFO_ALL_SITES_WITH_FPS_FILTER_OPENED);
-  if (rws_owner) {
-    delegate_->ShowAllSitesSettingsFilteredByRwsOwner(*rws_owner);
-  } else {
-    delegate_->ShowAllSitesSettingsFilteredByRwsOwner(std::u16string());
-  }
-
 #endif
 }
 
@@ -1541,9 +1521,6 @@ bool PageInfo::ShouldShowPermission(
     return true;
   }
 
-  // TODO(crbug.com/40064079): Filter out FPS related STORAGE_ACCESS
-  // permissions.
-
   // ---
   // Note: Put type-specific extra checks above this line.
   // ---
@@ -1615,10 +1592,6 @@ void PageInfo::PresentSitePermissions() {
       ContentSetting setting = content_settings->GetContentSetting(
           requester.GetURL(), site_url_, permission_info.type, &info);
 
-      if (info.metadata.decided_by_related_website_sets()) {
-        continue;
-      }
-
       PopulatePermissionInfo(permission_info, content_settings, info, setting);
       if (ShouldShowPermission(permission_info)) {
         permission_info_list.push_back(permission_info);
@@ -1673,13 +1646,9 @@ std::set<net::SchemefulSite> PageInfo::GetTwoSitePermissionRequesters(
     if (!setting.secondary_pattern.Matches(site_url_)) {
       continue;  // Skip unrelated settings.
     }
-    if (type == ContentSettingsType::STORAGE_ACCESS) {
-      if (setting.primary_pattern.Matches(site_url_)) {
-        continue;  // Skip first-party settings.
-      }
-      if (setting.metadata.decided_by_related_website_sets()) {
-        continue;
-      }
+    if (type == ContentSettingsType::STORAGE_ACCESS &&
+        setting.primary_pattern.Matches(site_url_)) {
+      continue;  // Skip first-party settings.
     }
     GURL requesting_url = setting.primary_pattern.ToRepresentativeUrl();
     requesters.insert(net::SchemefulSite(requesting_url));
@@ -1701,14 +1670,6 @@ void PageInfo::PresentSiteDataInternal(base::OnceClosure done) {
 
   PageInfoUI::CookiesInfo cookies_info;
   cookies_info.allowed_sites_count = GetSitesWithAllowedCookiesAccessCount();
-
-#if !BUILDFLAG(IS_ANDROID)
-  if (auto rws_owner = delegate_->GetRwsOwner(site_url_);
-      rws_owner.has_value()) {
-    cookies_info.rws_info = PageInfoUI::CookiesRwsInfo(*rws_owner);
-    cookies_info.rws_info->is_managed = delegate_->IsRwsManaged(site_url_);
-  }
-#endif
   cookies_info.controls_state = cookie_controls_state_;
   cookies_info.enforcement = cookie_enforcement_;
   cookies_info.expiration = cookie_exception_expiration_;

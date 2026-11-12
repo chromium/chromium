@@ -20,8 +20,6 @@
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
 #include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
-#include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
-#include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/password_protection/chrome_password_protection_service.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
@@ -253,17 +251,6 @@ void ChromePageInfoDelegate::FocusWebContents() {
   BrowserWebContentsDelegate::From(browser)->ActivateContents(web_contents_);
 }
 
-std::optional<std::u16string> ChromePageInfoDelegate::GetRwsOwner(
-    const GURL& site_url) {
-  return PrivacySandboxServiceFactory::GetForProfile(GetProfile())
-      ->GetRelatedWebsiteSetOwnerForDisplay(site_url);
-}
-
-bool ChromePageInfoDelegate::IsRwsManaged(const GURL& site_url) {
-  return PrivacySandboxServiceFactory::GetForProfile(GetProfile())
-      ->IsPartOfManagedRelatedWebsiteSet(net::SchemefulSite(site_url));
-}
-
 // static
 void ChromePageInfoDelegate::RegisterPageInfoInfoBar(
     infobars::BrowserInfoBarManager* infobar_manager) {
@@ -377,13 +364,6 @@ void ChromePageInfoDelegate::ShowSiteSettings(const GURL& site_url) {
 void ChromePageInfoDelegate::ShowCookiesSettings() {
   BrowserWindowInterface* browser = get_browser_callback_.Run(web_contents_);
   chrome::ShowSettingsSubPage(browser, chrome::kCookieSettingsSubPage);
-}
-
-void ChromePageInfoDelegate::ShowAllSitesSettingsFilteredByRwsOwner(
-    const std::u16string& rws_owner) {
-  BrowserWindowInterface* browser = get_browser_callback_.Run(web_contents_);
-  chrome::ShowAllSitesSettingsFilteredByRwsOwner(browser,
-                                                 base::UTF16ToUTF8(rws_owner));
 }
 
 void ChromePageInfoDelegate::ShowSyncSettings() {

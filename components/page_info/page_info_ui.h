@@ -69,20 +69,8 @@ class PageInfoUI {
     SecurityDescriptionType type;
   };
 
-  // `CookiesRwsInfo` contains information about a specific Related website set.
-  struct CookiesRwsInfo {
-    explicit CookiesRwsInfo(const std::u16string& owner_name);
-    ~CookiesRwsInfo();
-
-    // The name of the owner of the RWS.
-    std::u16string owner_name;
-
-    // Whether the Rws are managed by the company.
-    bool is_managed = false;
-  };
-
   // `CookiesInfo` contains information about the sites that are allowed
-  // to access cookies and rws cookies info for new UI.
+  // to access cookies.
   struct CookiesInfo {
     CookiesInfo();
     CookiesInfo(CookiesInfo&&);
@@ -96,8 +84,6 @@ class PageInfoUI {
 
     // The state of cookie controls to display.
     CookieControlsState controls_state;
-
-    std::optional<CookiesRwsInfo> rws_info;
 
     // The expiration of the active third-party cookie exception.
     base::Time expiration;
