@@ -1897,9 +1897,6 @@ IN_PROC_BROWSER_TEST_P(WebUILocationBarInteractiveUiTest,
 // Tests that if initial interaction just selected-all and didn't unelide
 // that moving the caret will unelide.
 IN_PROC_BROWSER_TEST_P(WebUILocationBarInteractiveUiTest, UnelideCaretMove) {
-  gfx::Range expected_final_selection =
-      mode() == Mode::kFull ? gfx::Range(0) : gfx::Range(8);
-
   RunTestSequence(
       InstrumentTab(kTabId), WaitForWebContentsReady(kTabId),
       InstrumentNonTabWebView(kWebUIToolbarId, GetToolbarWebView()),
@@ -1917,10 +1914,11 @@ IN_PROC_BROWSER_TEST_P(WebUILocationBarInteractiveUiTest, UnelideCaretMove) {
       WaitTillOmniboxViewText("local.test"),
       WaitTillOmniboxViewSelection("local.test", gfx::Range(10, 0)),
       // Press left-arrow. This should trigger unelision (and put
-      // the caret after the scheme).
+      // the caret after the scheme, i.e. at the start of the elided URL, in
+      // both modes).
       InAnyContext(SendKeyPress(InputWebContents(), ui::VKEY_LEFT)),
       WaitTillOmniboxViewText("https://local.test"),
-      WaitTillOmniboxViewSelection("", expected_final_selection));
+      WaitTillOmniboxViewSelection("", gfx::Range(8)));
 }
 
 // Test of Ctrl-K focus omnibox + activates default search shortcut.
