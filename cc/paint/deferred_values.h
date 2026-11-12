@@ -9,11 +9,8 @@
 #include <memory>
 #include <optional>
 
-#include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
 #include "cc/paint/animation_curve_proxy.h"
-#include "cc/paint/deferred_property_key.h"
-#include "cc/paint/deferred_value_map.h"
 #include "cc/paint/paint_export.h"
 #include "third_party/skia/include/core/SkColor.h"
 
@@ -31,6 +28,19 @@ class CC_PAINT_EXPORT DeferredValueGenerator {
   virtual ~DeferredValueGenerator();
 
   virtual Type GetType() const = 0;
+
+  // Creates a new generator with the same source and no progress yet.
+  // Subclasses must return their own type.
+  virtual std::unique_ptr<DeferredValueGenerator> CreateWithSameSource()
+      const = 0;
+
+  // Returns true if `other` uses the same curve or source, so an existing
+  // generator and its progress can carry across commits.
+  virtual bool HasSameSource(const DeferredValueGenerator& other) const = 0;
+
+  // Generators returning false stay in the main-thread map without being
+  // synced to the impl thread.
+  virtual bool CanRunOnImplThread() const;
 
   // Sets the progress, or clears it when the animation no longer drives the
   // value. Returns true if the progress changed.
@@ -76,10 +86,12 @@ class CC_PAINT_EXPORT DeferredColorValueGenerator final
   // DeferredValueGenerator:
   ~DeferredColorValueGenerator() override;
   Type GetType() const override;
+  std::unique_ptr<DeferredValueGenerator> CreateWithSameSource() const override;
+  bool HasSameSource(const DeferredValueGenerator& other) const override;
 
   const AnimationCurveProxy<SkColor4f>* curve() const { return curve_.get(); }
   SkColor4f GetColor() const { return value_; }
-  void SetColor(SkColor4f color) {
+  void SetColorForTesting(SkColor4f color) {
     value_ = color;
     set_has_value(true);
   }
@@ -92,15 +104,6 @@ class CC_PAINT_EXPORT DeferredColorValueGenerator final
   scoped_refptr<const AnimationCurveProxy<SkColor4f>> curve_;
   SkColor4f value_ = SkColors::kTransparent;
 };
-
-// Maps each deferred property to its value generator.
-using DeferredValues = base::flat_map<DeferredPropertyKey,
-                                      std::unique_ptr<DeferredValueGenerator>>;
-
-// Samples `values` whose progress changed, and returns the map of resolved
-// values. Keys without a value are omitted so raster keeps the fallback.
-CC_PAINT_EXPORT DeferredValueMap
-GenerateDeferredValueMap(DeferredValues& values);
 
 }  // namespace cc
 

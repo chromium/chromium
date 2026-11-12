@@ -3016,5 +3016,26 @@ TEST_F(LayerTreeImplTest, AsValueIntoRenderSurfaceLayerList) {
       *id_ref_1);
 }
 
+// PushPropertiesTo copies deferred values to the active tree while keeping the
+// recycled pending tree's copy for diffing on the next update.
+TEST_F(LayerTreeImplTest, PushPropertiesCopiesDeferredValues) {
+  constexpr DeferredPropertyKey kKey{ElementId(7),
+                                     DeferredPropertyType::kBackgroundColor};
+
+  host_impl().CreatePendingTree();
+  host_impl().pending_tree()->SetDeferredValues(
+      DeferredValueMap({{kKey, SkColors::kBlue}}));
+  EXPECT_EQ(DeferredValueMap(), host_impl().active_tree()->deferred_values());
+
+  host_impl().ActivateSyncTree();
+  EXPECT_EQ(DeferredValueMap({{kKey, SkColors::kBlue}}),
+            host_impl().active_tree()->deferred_values());
+
+  // The recycled pending tree retains its prior map across activation.
+  host_impl().CreatePendingTree();
+  EXPECT_EQ(DeferredValueMap({{kKey, SkColors::kBlue}}),
+            host_impl().pending_tree()->deferred_values());
+}
+
 }  // namespace
 }  // namespace cc

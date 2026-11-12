@@ -25,6 +25,9 @@ struct CC_PAINT_EXPORT DeferredValueMap {
 
   DeferredValueMap Clone() const;
 
+  // Copies `other`'s entries in place, reusing existing map capacity.
+  void CopyFrom(const DeferredValueMap& other);
+
   friend bool operator==(const DeferredValueMap&,
                          const DeferredValueMap&) = default;
 

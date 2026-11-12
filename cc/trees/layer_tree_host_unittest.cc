@@ -47,8 +47,11 @@
 #include "cc/metrics/events_metrics_manager.h"
 #include "cc/metrics/scroll_timing_buffer.h"
 #include "cc/metrics/ukm_dropped_frames_data.h"
+#include "cc/paint/deferred_value_generators.h"
+#include "cc/paint/deferred_values.h"
 #include "cc/paint/image_animation_count.h"
 #include "cc/resources/ui_resource_manager.h"
+#include "cc/test/animation_test_common.h"
 #include "cc/test/event_metrics_test_creator.h"
 #include "cc/test/fake_content_layer_client.h"
 #include "cc/test/fake_frame_info.h"
@@ -10718,6 +10721,111 @@ class LayerTreeHostTestCommitPropertySnapshot : public LayerTreeHostTest {
 };
 
 SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeHostTestCommitPropertySnapshot);
+
+// Updating deferred value generators on AnimationHost commits them to the
+// compositor and populates the sync tree's map. Activation then copies that
+// map to the active tree.
+class LayerTreeHostTestCommitDeferredValues : public LayerTreeHostTest {
+ public:
+  void BeginTest() override {
+    // Commit white as the initial deferred color.
+    PushSolidColor(SkColors::kWhite);
+  }
+
+  void WillCommitCompleteOnThread(LayerTreeHostImpl* host_impl) override {
+    // Stands in for an animation tick. This hook runs after the commit pushed
+    // the generators and before CommitComplete() samples them.
+    static_cast<AnimationHost*>(host_impl->mutator_host())
+        ->SetDeferredValueGeneratorProgress(kKey, 1.f);
+  }
+
+  void CommitCompleteOnThread(LayerTreeHostImpl* host_impl) override {
+    // Commit updates the sync tree's deferred values while leaving the active
+    // tree untouched until activation.
+    const SkColor4f expected =
+        commit_count_ == 0 ? SkColors::kWhite : SkColors::kRed;
+    EXPECT_EQ(DeferredValueMap({{kKey, expected}}),
+              host_impl->sync_tree()->deferred_values());
+    if (!host_impl->CommitsToActiveTree()) {
+      const DeferredValueMap prior =
+          commit_count_ == 0 ? DeferredValueMap()
+                             : DeferredValueMap({{kKey, SkColors::kWhite}});
+      EXPECT_EQ(prior, host_impl->active_tree()->deferred_values());
+    }
+  }
+
+  void DidActivateTreeOnThread(LayerTreeHostImpl* host_impl) override {
+    // Activation copies the committed map to the active tree. Commit red next
+    // to check a second cycle.
+    if (commit_count_++ == 0) {
+      EXPECT_EQ(DeferredValueMap({{kKey, SkColors::kWhite}}),
+                host_impl->active_tree()->deferred_values());
+      MainThreadTaskRunner()->PostTask(
+          FROM_HERE,
+          base::BindOnce(&LayerTreeHostTestCommitDeferredValues::PushSolidColor,
+                         base::Unretained(this), SkColors::kRed));
+      return;
+    }
+    EXPECT_EQ(DeferredValueMap({{kKey, SkColors::kRed}}),
+              host_impl->active_tree()->deferred_values());
+    EndTest();
+  }
+
+ private:
+  void PushSolidColor(SkColor4f color) {
+    DeferredValueGenerators generators;
+    generators.Set(kKey,
+                   std::make_unique<DeferredColorValueGenerator>(
+                       base::MakeRefCounted<TestColorCurve>(color, color)));
+    animation_host()->SetDeferredValueGenerators(generators);
+  }
+
+  static constexpr DeferredPropertyKey kKey{
+      ElementId(42), DeferredPropertyType::kBackgroundColor};
+  int commit_count_ = 0;
+};
+
+SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeHostTestCommitDeferredValues);
+
+// A commit that does not update the deferred value generators leaves the
+// compositor's existing generators untouched.
+class LayerTreeHostTestUnrelatedCommitKeepsDeferredValues
+    : public LayerTreeHostTest {
+ public:
+  void BeginTest() override {
+    DeferredValueGenerators generators;
+    generators.Set(kKey, std::make_unique<DeferredColorValueGenerator>(curve_));
+    animation_host()->SetDeferredValueGenerators(generators);
+  }
+
+  void WillCommitCompleteOnThread(LayerTreeHostImpl* host_impl) override {
+    if (host_impl->sync_tree()->source_frame_number() == 0) {
+      static_cast<AnimationHost*>(host_impl->mutator_host())
+          ->SetDeferredValueGeneratorProgress(kKey, 1.f);
+    }
+  }
+
+  void DidActivateTreeOnThread(LayerTreeHostImpl* host_impl) override {
+    // Both frame 0 and the unrelated frame 1 commit keep the cached sample
+    // without resampling `curve_`.
+    EXPECT_EQ(DeferredValueMap({{kKey, SkColors::kWhite}}),
+              host_impl->active_tree()->deferred_values());
+    EXPECT_EQ(1, curve_->samples());
+    if (host_impl->active_tree()->source_frame_number() == 0) {
+      PostSetNeedsCommitToMainThread();
+    } else {
+      EndTest();
+    }
+  }
+
+ private:
+  static constexpr DeferredPropertyKey kKey{
+      ElementId(42), DeferredPropertyType::kBackgroundColor};
+  scoped_refptr<TestColorCurve> curve_ = base::MakeRefCounted<TestColorCurve>();
+};
+
+SINGLE_AND_MULTI_THREAD_TEST_F(
+    LayerTreeHostTestUnrelatedCommitKeepsDeferredValues);
 
 class LayerTreeHostTestHideLayerAndSubtree
     : public LayerTreeHostTestWithHelper {

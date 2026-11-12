@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/time/time.h"
 #include "cc/paint/element_id.h"
 #include "cc/trees/mutator_host_delegate.h"
@@ -16,6 +17,8 @@
 
 namespace cc {
 
+struct DeferredPropertyKey;
+struct DeferredValueMap;
 class MutatorEvents;
 class MutatorHostDelegate;
 class LayerTreeMutator;
@@ -163,6 +166,12 @@ class MutatorHost {
   virtual bool HasSmilAnimation() const = 0;
   virtual bool HasViewTransition() const = 0;
   virtual bool HasScrollLinkedAnimation(ElementId for_scroller) const = 0;
+
+  // Returns whether deferred values need to be updated on Impl.
+  [[nodiscard]] virtual bool NeedsUpdateDeferredValues() const = 0;
+  // Updates deferred values on Impl and returns the keys whose value changed.
+  [[nodiscard]] virtual base::flat_set<DeferredPropertyKey>
+  UpdateDeferredValues(DeferredValueMap& values) = 0;
 
   // Iterates through all currently-ticking animations and returns the common
   // harmonic tick interval. If every active animation has a stepped timing

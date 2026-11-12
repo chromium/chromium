@@ -5,8 +5,10 @@
 #include "cc/animation/animation_host.h"
 
 #include <limits>
+#include <memory>
 #include <utility>
 
+#include "base/containers/flat_set.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -15,6 +17,9 @@
 #include "cc/animation/scroll_timeline.h"
 #include "cc/animation/worklet_animation.h"
 #include "cc/base/features.h"
+#include "cc/paint/deferred_property_key.h"
+#include "cc/paint/deferred_value_map.h"
+#include "cc/paint/deferred_values.h"
 #include "cc/test/animation_test_common.h"
 #include "cc/test/animation_timelines_test_common.h"
 #include "cc/test/mock_layer_tree_mutator.h"
@@ -856,6 +861,63 @@ TEST_F(AnimationHostTest, InitClientAnimationStateRemovesStaleTimelines) {
   EXPECT_FALSE(host_->GetTimelineById(timeline_id_));
   EXPECT_FALSE(timeline_->animation_host());
   EXPECT_FALSE(layer->is_currently_animating(TargetProperty::TRANSFORM));
+}
+
+TEST_F(AnimationHostTest, SetDeferredValueGeneratorsRequestsPushOnlyOnChange) {
+  constexpr DeferredPropertyKey kKey{ElementId(1),
+                                     DeferredPropertyType::kBackgroundColor};
+
+  host_->SetDeferredValueGenerators({});
+  EXPECT_FALSE(host_->needs_push_properties());
+
+  DeferredValueGenerators generators;
+  generators.Set(kKey, std::make_unique<DeferredColorValueGenerator>(
+                           base::MakeRefCounted<TestColorCurve>()));
+  host_->SetDeferredValueGenerators(generators);
+  EXPECT_TRUE(host_->needs_push_properties());
+
+  // Re-submitting the same key and curve after a push is a no-op.
+  PushProperties();
+  EXPECT_FALSE(host_->needs_push_properties());
+  host_->SetDeferredValueGenerators(generators);
+  EXPECT_FALSE(host_->needs_push_properties());
+
+  // Replacing the curve requests another push.
+  generators.Set(kKey, std::make_unique<DeferredColorValueGenerator>(
+                           base::MakeRefCounted<TestColorCurve>(
+                               SkColors::kRed, SkColors::kBlue)));
+  host_->SetDeferredValueGenerators(generators);
+  EXPECT_TRUE(host_->needs_push_properties());
+}
+
+TEST_F(AnimationHostTest, PushAndUpdateDeferredValues) {
+  constexpr DeferredPropertyKey kKey1{ElementId(1),
+                                      DeferredPropertyType::kBackgroundColor};
+  constexpr DeferredPropertyKey kKey2{ElementId(2),
+                                      DeferredPropertyType::kBackgroundColor};
+  auto curve = base::MakeRefCounted<TestColorCurve>();
+
+  DeferredValueGenerators generators;
+  generators.Set(kKey1, std::make_unique<DeferredColorValueGenerator>(curve));
+  host_->SetDeferredValueGenerators(generators);
+  PushProperties();
+  EXPECT_EQ(1u, host_impl_->deferred_value_generators_for_testing().size());
+  EXPECT_TRUE(host_impl_->NeedsUpdateDeferredValues());
+
+  EXPECT_TRUE(host_impl_->SetDeferredValueGeneratorProgress(kKey1, 1.f));
+  DeferredValueMap values;
+  EXPECT_EQ(base::flat_set<DeferredPropertyKey>{kKey1},
+            host_impl_->UpdateDeferredValues(values));
+  EXPECT_FALSE(host_impl_->NeedsUpdateDeferredValues());
+  EXPECT_EQ(DeferredValueMap({{kKey1, SkColors::kWhite}}), values);
+
+  // Pushing an added key keeps `kKey1`'s sampled value without resampling.
+  generators.Set(kKey2, std::make_unique<DeferredColorValueGenerator>(curve));
+  host_->SetDeferredValueGenerators(generators);
+  PushProperties();
+  EXPECT_TRUE(host_impl_->UpdateDeferredValues(values).empty());
+  EXPECT_EQ(DeferredValueMap({{kKey1, SkColors::kWhite}}), values);
+  EXPECT_EQ(1, curve->samples());
 }
 
 }  // namespace

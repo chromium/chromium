@@ -4,6 +4,7 @@
 
 #include "cc/trees/client_layer_tree_host_impl.h"
 
+#include <tuple>
 #include <utility>
 
 #include "base/check.h"
@@ -378,6 +379,12 @@ void ClientLayerTreeHostImpl::
   sync_tree()->InvalidateRasterInducingScrolls(
       pending_invalidation_raster_inducing_scrolls_);
   pending_invalidation_raster_inducing_scrolls_.clear();
+
+  // This frame's animations have already ticked, so the sync tree gets the
+  // progress they just set.
+  // TODO(crbug.com/582257806): Invalidate the returned keys on the sync tree.
+  std::ignore = mutator_host_->UpdateDeferredValues(
+      sync_tree()->deferred_values_mutable());
 
   base::flat_map<PaintWorkletInput::PropertyKey,
                  std::pair<PaintWorkletInput::PropertyValue,

@@ -25,6 +25,7 @@
 #include "cc/layers/layer_impl.h"
 #include "cc/layers/layer_list_iterator.h"
 #include "cc/metrics/event_metrics.h"
+#include "cc/paint/deferred_value_map.h"
 #include "cc/resources/ui_resource_client.h"
 #include "cc/trees/browser_controls_params.h"
 #include "cc/trees/layer_tree_host.h"
@@ -377,6 +378,19 @@ class CC_EXPORT LayerTreeImpl {
 
   SkColor4f background_color() const { return background_color_; }
   void set_background_color(SkColor4f color) { background_color_ = color; }
+
+  const DeferredValueMap& deferred_values() const {
+    DCHECK(!IsRecycleTree());
+    return deferred_values_;
+  }
+  DeferredValueMap& deferred_values_mutable() {
+    DCHECK(IsSyncTree());
+    return deferred_values_;
+  }
+  void SetDeferredValues(const DeferredValueMap& values) {
+    DCHECK(!IsRecycleTree());
+    deferred_values_.CopyFrom(values);
+  }
 
   gfx::OverlayTransform display_transform_hint() const {
     return display_transform_hint_;
@@ -927,6 +941,7 @@ class CC_EXPORT LayerTreeImpl {
   raw_ptr<HeadsUpDisplayLayerImpl> hud_layer_;
   PropertyTrees property_trees_;
   SkColor4f background_color_;
+  DeferredValueMap deferred_values_;
 
   ViewportPropertyIds viewport_property_ids_;
 

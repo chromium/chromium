@@ -6,6 +6,7 @@
 #define CC_ANIMATION_ANIMATION_HOST_H_
 
 #include <memory>
+#include <optional>
 #include <unordered_map>
 #include <vector>
 
@@ -16,6 +17,7 @@
 #include "cc/animation/animation_export.h"
 #include "cc/animation/keyframe_model.h"
 #include "cc/base/protected_sequence_synchronizer.h"
+#include "cc/paint/deferred_value_generators.h"
 #include "cc/trees/layer_tree_mutator.h"
 #include "cc/trees/mutator_host.h"
 #include "cc/trees/mutator_host_delegate.h"
@@ -121,6 +123,19 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
   void ResetNeedsPushProperties();
   bool needs_push_properties() const {
     return needs_push_properties_.Read(*this);
+  }
+
+  // Keeps a copy of the generators in `source` that can run on the impl thread.
+  // If the copy changed, requests a commit to push it to the impl thread.
+  void SetDeferredValueGenerators(const DeferredValueGenerators& source);
+
+  // Updates or clears the progress of the compositor generator for `key`, if
+  // present. Returns true if the generator's progress changed.
+  bool SetDeferredValueGeneratorProgress(const DeferredPropertyKey& key,
+                                         std::optional<float> progress);
+
+  const DeferredValueGenerators& deferred_value_generators_for_testing() const {
+    return deferred_value_generators_.Read(*this);
   }
 
   // MutatorHost implementation.
@@ -249,6 +264,9 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
   bool HasSmilAnimation() const override;
   bool HasViewTransition() const override;
   bool HasScrollLinkedAnimation(ElementId for_scroller) const override;
+  bool NeedsUpdateDeferredValues() const override;
+  base::flat_set<DeferredPropertyKey> UpdateDeferredValues(
+      DeferredValueMap& values) override;
 
   // Starts/stops metrics tracking represented by `sequence_id`.
   void StartCompositorMetricsTracking(TrackedAnimationSequenceId sequence_id);
@@ -308,6 +326,7 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
 
   ProtectedSequenceReadable<ElementToAnimationsMap> element_to_animations_map_;
   ProtectedSequenceReadable<AnimationsList> ticking_animations_;
+  ProtectedSequenceReadable<DeferredValueGenerators> deferred_value_generators_;
 
   // A list of all timelines which this host owns.
   ProtectedSequenceReadable<IdToTimelineMap> id_to_timeline_map_;

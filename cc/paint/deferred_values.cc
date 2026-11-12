@@ -13,6 +13,10 @@ namespace cc {
 DeferredValueGenerator::DeferredValueGenerator() = default;
 DeferredValueGenerator::~DeferredValueGenerator() = default;
 
+bool DeferredValueGenerator::CanRunOnImplThread() const {
+  return true;
+}
+
 bool DeferredValueGenerator::SetProgress(std::optional<float> progress) {
   if (progress_ == progress) {
     return false;
@@ -51,23 +55,20 @@ DeferredValueGenerator::Type DeferredColorValueGenerator::GetType() const {
   return Type::kColor;
 }
 
-void DeferredColorValueGenerator::Sample() {
-  curve_->Sample(progress(), &value_);
+std::unique_ptr<DeferredValueGenerator>
+DeferredColorValueGenerator::CreateWithSameSource() const {
+  return std::make_unique<DeferredColorValueGenerator>(curve_);
 }
 
-DeferredValueMap GenerateDeferredValueMap(DeferredValues& values) {
-  base::flat_map<DeferredPropertyKey, SkColor4f>::container_type colors;
-  colors.reserve(values.size());
-  for (auto& [key, generator] : values) {
-    generator->RecomputeValue();
-    if (const auto* color = DeferredColorValueGenerator::From(generator.get());
-        color && color->has_value()) {
-      colors.emplace_back(key, color->GetColor());
-    }
-  }
-  // `values` is already sorted by key, so build the `flat_map` in one pass.
-  return DeferredValueMap(base::flat_map<DeferredPropertyKey, SkColor4f>(
-      base::sorted_unique, std::move(colors)));
+bool DeferredColorValueGenerator::HasSameSource(
+    const DeferredValueGenerator& other) const {
+  // A curve never changes once cc has it, so equal pointers mean equal curves.
+  const auto* color_other = From(&other);
+  return color_other && curve_.get() == color_other->curve();
+}
+
+void DeferredColorValueGenerator::Sample() {
+  curve_->Sample(progress(), &value_);
 }
 
 }  // namespace cc

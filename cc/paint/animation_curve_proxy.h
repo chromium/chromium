@@ -17,7 +17,8 @@ class AnimationCurveProxy {
 
   // Called by scoped_refptr, so cc can keep the curve alive. Implementations
   // forward these to the ref count they already have, so cc and the embedder
-  // share one count.
+  // share one count. The count must be thread-safe, since cc releases curves
+  // on the compositor thread.
   virtual void AddRef() const = 0;
   virtual void Release() const = 0;
 

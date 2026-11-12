@@ -21,6 +21,8 @@ cc_component("paint") {
     "deferred_paint_record.cc",
     "deferred_paint_record.h",
     "deferred_property_key.h",
+    "deferred_value_generators.cc",
+    "deferred_value_generators.h",
     "deferred_value_map.cc",
     "deferred_value_map.h",
     "deferred_values.cc",

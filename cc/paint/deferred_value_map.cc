@@ -23,4 +23,11 @@ DeferredValueMap DeferredValueMap::Clone() const {
   return DeferredValueMap(cloned_colors);
 }
 
+void DeferredValueMap::CopyFrom(const DeferredValueMap& other) {
+  // Unpack both maps so adding a member fails to compile until copied here.
+  auto& [this_colors] = *this;
+  const auto& [other_colors] = other;
+  this_colors = other_colors;
+}
+
 }  // namespace cc

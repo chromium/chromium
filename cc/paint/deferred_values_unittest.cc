@@ -5,8 +5,9 @@
 #include "cc/paint/deferred_values.h"
 
 #include <memory>
-#include <utility>
 
+#include "cc/paint/deferred_property_key.h"
+#include "cc/paint/deferred_value_map.h"
 #include "cc/test/animation_test_common.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -51,34 +52,42 @@ TEST(DeferredValuesTest, SamplesLazily) {
   EXPECT_EQ(1, curve->samples());
 }
 
-// The map holds sampled and SetColor() values, and skips generators with no
-// value so raster uses the color that paint recorded.
-TEST(DeferredValuesTest, GenerateDeferredValueMap) {
+// CreateWithSameSource() creates a fresh unsampled generator that shares the
+// curve without copying progress or cached samples.
+TEST(DeferredValuesTest, CreateWithSameSource) {
   auto curve = base::MakeRefCounted<TestColorCurve>();
-  const DeferredPropertyKey sampled{ElementId(1),
+  DeferredColorValueGenerator generator(curve);
+  generator.SetProgress(0.5f);
+  generator.RecomputeValue();
+  EXPECT_TRUE(generator.has_value());
+
+  std::unique_ptr<DeferredValueGenerator> cloned =
+      generator.CreateWithSameSource();
+  EXPECT_TRUE(generator.HasSameSource(*cloned));
+  EXPECT_TRUE(cloned->CanRunOnImplThread());
+  EXPECT_FALSE(cloned->NeedsRecompute());
+  EXPECT_FALSE(cloned->has_value());
+
+  DeferredColorValueGenerator other(
+      base::MakeRefCounted<TestColorCurve>(SkColors::kRed, SkColors::kBlue));
+  EXPECT_FALSE(generator.HasSameSource(other));
+}
+
+// CopyFrom() makes the destination equal to `other`, dropping keys that
+// `other` does not have.
+TEST(DeferredValuesTest, CopyFrom) {
+  const DeferredPropertyKey same{ElementId(1),
+                                 DeferredPropertyType::kBackgroundColor};
+  const DeferredPropertyKey removed{ElementId(2),
                                     DeferredPropertyType::kBackgroundColor};
-  const DeferredPropertyKey direct{ElementId(2),
-                                   DeferredPropertyType::kBackgroundColor};
-  const DeferredPropertyKey unsampled{ElementId(3),
-                                      DeferredPropertyType::kBackgroundColor};
+  const DeferredPropertyKey added{ElementId(3),
+                                  DeferredPropertyType::kBackgroundColor};
 
-  DeferredValues values;
-  auto sampled_gen = std::make_unique<DeferredColorValueGenerator>(curve);
-  sampled_gen->SetProgress(1.f);
-  values.emplace(sampled, std::move(sampled_gen));
-
-  auto direct_gen = std::make_unique<DeferredColorValueGenerator>(curve);
-  direct_gen->SetColor(SkColors::kRed);
-  values.emplace(direct, std::move(direct_gen));
-
-  values.emplace(unsampled,
-                 std::make_unique<DeferredColorValueGenerator>(curve));
-
-  DeferredValueMap map = GenerateDeferredValueMap(values);
-  EXPECT_EQ(
-      DeferredValueMap({{sampled, SkColors::kWhite}, {direct, SkColors::kRed}}),
-      map);
-  EXPECT_EQ(1, curve->samples());
+  DeferredValueMap map({{same, SkColors::kRed}, {added, SkColors::kBlue}});
+  DeferredValueMap copied(
+      {{same, SkColors::kWhite}, {removed, SkColors::kWhite}});
+  copied.CopyFrom(map);
+  EXPECT_EQ(map, copied);
   EXPECT_EQ(map, map.Clone());
 }
 
