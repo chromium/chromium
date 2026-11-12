@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
@@ -28,6 +29,25 @@ namespace {
 
 const char kHotspotFeatureUsage[] = "ChromeOS.FeatureUsage.Hotspot";
 
+class HotspotCapabilitiesChangedWaiter
+    : public HotspotCapabilitiesProvider::Observer {
+ public:
+  explicit HotspotCapabilitiesChangedWaiter(
+      HotspotCapabilitiesProvider* provider) {
+    observation_.Observe(provider);
+  }
+
+  void Wait() { run_loop_.Run(); }
+
+ private:
+  void OnHotspotCapabilitiesChanged() override { run_loop_.Quit(); }
+
+  base::RunLoop run_loop_;
+  base::ScopedObservation<HotspotCapabilitiesProvider,
+                          HotspotCapabilitiesProvider::Observer>
+      observation_{this};
+};
+
 }  // namespace
 
 class HotspotFeatureUsageMetricsTest : public testing::Test {
@@ -44,6 +64,10 @@ class HotspotFeatureUsageMetricsTest : public testing::Test {
         std::make_unique<EnterpriseManagedMetadataStore>();
     hotspot_capabilities_provider_ =
         std::make_unique<HotspotCapabilitiesProvider>();
+    // Wait for the initial Shill capabilities before tests override the allow
+    // status, so the pending reply cannot overwrite their settings.
+    HotspotCapabilitiesChangedWaiter capabilities_waiter(
+        hotspot_capabilities_provider_.get());
     hotspot_allowed_flag_handler_ =
         std::make_unique<HotspotAllowedFlagHandler>();
     hotspot_capabilities_provider_->Init(
@@ -55,7 +79,7 @@ class HotspotFeatureUsageMetricsTest : public testing::Test {
         enterprise_managed_metadata_store_.get(),
         hotspot_capabilities_provider_.get());
 
-    base::RunLoop().RunUntilIdle();
+    capabilities_waiter.Wait();
   }
 
   void SetHotspotAllowStatus(
