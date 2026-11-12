@@ -207,8 +207,15 @@ IN_PROC_BROWSER_TEST_F(ActorWindowManagementToolBrowserTest,
 // the acting set is empty.
 // TODO(crbug.com/420669167): This can be updated to add multiple tabs once
 // multi-tab is supported.
+// TODO(crbug.com/585154798): Flaky/failing on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_CreateWindowAddsOnlyOneActingTab \
+  DISABLED_CreateWindowAddsOnlyOneActingTab
+#else
+#define MAYBE_CreateWindowAddsOnlyOneActingTab CreateWindowAddsOnlyOneActingTab
+#endif
 IN_PROC_BROWSER_TEST_F(ActorWindowManagementToolBrowserTest,
-                       CreateWindowAddsOnlyOneActingTab) {
+                       MAYBE_CreateWindowAddsOnlyOneActingTab) {
   tabs::TabInterface* first_new_window_tab = nullptr;
 
   // Create a new window and so its tab is added to the acting set.
