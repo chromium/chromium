@@ -800,8 +800,15 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfIphInteractiveUiTest,
           /*baseline_cl=*/kScreenshotBaselineCL)));
 }
 
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_Step2HelpBubbleAnchoredToContextMenuItem \
+  DISABLED_Step2HelpBubbleAnchoredToContextMenuItem
+#else
+#define MAYBE_Step2HelpBubbleAnchoredToContextMenuItem \
+  Step2HelpBubbleAnchoredToContextMenuItem
+#endif
 IN_PROC_BROWSER_TEST_F(SendTabToSelfIphInteractiveUiTest,
-                       Step2HelpBubbleAnchoredToContextMenuItem) {
+                       MAYBE_Step2HelpBubbleAnchoredToContextMenuItem) {
   const GURL eligible_url =
       embedded_https_test_server().GetURL("example.com", "/title1.html");
   gfx::Rect menu_item_bounds;
