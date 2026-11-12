@@ -1003,19 +1003,26 @@ void AccountPreviewDataServiceImpl::OnAllFetchesCompleted(
     ResetTimer();
   }
 
-  FinalizeAllAccountsFetch(AsyncPreferredAccountResult::kFetched);
+  FinalizeAllAccountsFetch(/*fetch_completed=*/true);
 }
 
 void AccountPreviewDataServiceImpl::OnAllAccountsFetchCanceled() {
-  FinalizeAllAccountsFetch(AsyncPreferredAccountResult::kCancelled);
+  FinalizeAllAccountsFetch(/*fetch_completed=*/false);
 }
 
 void AccountPreviewDataServiceImpl::FinalizeAllAccountsFetch(
-    AsyncPreferredAccountResult result) {
+    bool fetch_completed) {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   if (!pending_preferred_account_requests_.empty()) {
-    ResolvePendingPreferredAccountRequests(GetPreferredAccountForSignin(),
-                                           result);
+    std::optional<AccountPreviewPreference> preference =
+        GetPreferredAccountForSignin();
+    AsyncPreferredAccountResult result =
+        fetch_completed
+            ? (preference.has_value()
+                   ? AsyncPreferredAccountResult::kFetchedWithResult
+                   : AsyncPreferredAccountResult::kFetchedWithoutResult)
+            : AsyncPreferredAccountResult::kCancelled;
+    ResolvePendingPreferredAccountRequests(std::move(preference), result);
   }
 #endif
 
