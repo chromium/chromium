@@ -1813,6 +1813,7 @@ public class ImeTest {
     @Test
     @MediumTest
     @Feature({"TextInput"})
+    @DisableIf.Build(supported_abis_includes = "x86_64", message = "https://crbug.com/585134688")
     public void testUiThreadAccess() throws Exception {
         final ChromiumBaseInputConnection connection = mRule.getConnection();
         ThreadUtils.runOnUiThreadBlocking(
