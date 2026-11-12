@@ -827,6 +827,152 @@ suite('ComposeboxAutocomplete', () => {
         });
 
     test(
+        'retains trailing space when pressing space on a selected match',
+        async () => {
+          loadTimeData.overrideValues(
+              {composeboxShowZps: true, composeboxShowTypedSuggest: true});
+          element = createTestElement();
+          await microtasksFinished();
+
+          const input = element.getInputElement().inputElement;
+          const matchesElement = element.$.matches;
+
+          setInputValue(input, 'what is');
+          input.dispatchEvent(new Event('input'));
+          await microtasksFinished();
+
+          searchboxCallbackRouterRemote.autocompleteResultChanged(
+              createAutocompleteResultForTesting({
+                queryId: element.activeQueryId,
+                input: 'what is',
+                matches: [
+                  createSearchMatchForTesting({
+                    fillIntoEdit: 'what is',
+                    allowedToBeDefaultMatch: true,
+                    type: 'search-what-you-typed',
+                  }),
+                  createSearchMatchForTesting({
+                    fillIntoEdit: 'what is a flock camera',
+                  }),
+                ],
+              }));
+          await searchboxCallbackRouterRemote.$.flushForTesting();
+          await microtasksFinished();
+
+          input.dispatchEvent(new KeyboardEvent(
+              'keydown', {key: 'ArrowDown', bubbles: true, composed: true}));
+          await microtasksFinished();
+          assertEquals(1, matchesElement.selectedMatchIndex);
+          assertEquals('what is a flock camera', getInputValue(input));
+
+          // Simulate pressing Space on the selected match.
+          setInputValue(input, 'what is a flock camera ');
+          input.dispatchEvent(new Event('input'));
+          await microtasksFinished();
+
+          // Synchronous verbatim response collapses trailing whitespace in
+          // `fillIntoEdit`.
+          const verbatimMatch = createSearchMatchForTesting({
+            fillIntoEdit: 'what is a flock camera',
+            allowedToBeDefaultMatch: true,
+            type: 'search-what-you-typed',
+          });
+          searchboxCallbackRouterRemote.autocompleteResultChanged(
+              createAutocompleteResultForTesting({
+                queryId: element.activeQueryId,
+                input: 'what is a flock camera ',
+                matches: [verbatimMatch],
+              }));
+          await searchboxCallbackRouterRemote.$.flushForTesting();
+          await microtasksFinished();
+
+          assertEquals(0, matchesElement.selectedMatchIndex);
+          assertEquals('what is a flock camera ', element.input);
+          assertEquals('what is a flock camera ', getInputValue(input));
+          assertEquals('what is a flock camera ', element.lastQueriedInput);
+
+          // Async suggestions arrive for the same query.
+          searchboxCallbackRouterRemote.autocompleteResultChanged(
+              createAutocompleteResultForTesting({
+                queryId: element.activeQueryId,
+                input: 'what is a flock camera ',
+                matches: [
+                  verbatimMatch,
+                  createSearchMatchForTesting({
+                    fillIntoEdit: 'what is a flock camera used for',
+                  }),
+                ],
+              }));
+          await searchboxCallbackRouterRemote.$.flushForTesting();
+          await microtasksFinished();
+
+          assertEquals(0, matchesElement.selectedMatchIndex);
+          assertEquals('what is a flock camera ', element.input);
+          assertEquals('what is a flock camera ', getInputValue(input));
+          assertEquals('what is a flock camera ', element.lastQueriedInput);
+
+          // Continue typing 'cost' and verify the space between 'camera' and
+          // 'cost' is retained and queried.
+          searchboxHandler.resetResolver('queryAutocomplete');
+          setInputValue(input, 'what is a flock camera cost');
+          input.dispatchEvent(new Event('input'));
+          const queryArgs =
+              await searchboxHandler.whenCalled('queryAutocomplete');
+          await microtasksFinished();
+
+          assertEquals('what is a flock camera cost', queryArgs[2]);
+          assertEquals('what is a flock camera cost', element.input);
+          assertEquals('what is a flock camera cost', getInputValue(input));
+        });
+
+    test(
+        'restores lastQueriedInput including trailing space when returning ' +
+            'to default match',
+        async () => {
+          loadTimeData.overrideValues(
+              {composeboxShowZps: true, composeboxShowTypedSuggest: true});
+          element = createTestElement();
+          await microtasksFinished();
+
+          const input = element.getInputElement().inputElement;
+          const matchesElement = element.$.matches;
+
+          setInputValue(input, 'what is ');
+          input.dispatchEvent(new Event('input'));
+          await microtasksFinished();
+
+          searchboxCallbackRouterRemote.autocompleteResultChanged(
+              createAutocompleteResultForTesting({
+                queryId: element.activeQueryId,
+                input: 'what is ',
+                matches: [
+                  createSearchMatchForTesting({
+                    fillIntoEdit: 'what is',
+                    allowedToBeDefaultMatch: true,
+                  }),
+                  createSearchMatchForTesting({
+                    fillIntoEdit: 'what is diwali',
+                  }),
+                ],
+              }));
+          await searchboxCallbackRouterRemote.$.flushForTesting();
+          await microtasksFinished();
+
+          input.dispatchEvent(new KeyboardEvent(
+              'keydown', {key: 'ArrowDown', bubbles: true, composed: true}));
+          await microtasksFinished();
+          assertEquals(1, matchesElement.selectedMatchIndex);
+          assertEquals('what is diwali', element.input);
+
+          input.dispatchEvent(new KeyboardEvent(
+              'keydown', {key: 'PageUp', bubbles: true, composed: true}));
+          await microtasksFinished();
+          assertEquals(0, matchesElement.selectedMatchIndex);
+          assertEquals('what is ', element.input);
+          assertEquals('what is ', getInputValue(input));
+        });
+
+    test(
         'arrow up/down enables submit for suggestion with no query',
         async () => {
           loadTimeData.overrideValues({composeboxShowZps: true});

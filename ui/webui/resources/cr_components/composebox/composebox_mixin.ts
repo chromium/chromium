@@ -684,29 +684,28 @@ export const ComposeboxEmbedderMixin =
               changedProperties as Map<PropertyKey, unknown>;
           if (changedPrivateProperties.has('selectedMatchIndex')) {
             if (this.selectedMatch &&
-                this.shouldPreviewMatchInInput_(this.selectedMatch)) {
+                this.shouldPreviewMatchInInput_(
+                    this.selectedMatch, this.selectedMatchIndex)) {
               // Update the input.
               if (this.input !== this.selectedMatch.fillIntoEdit) {
                 this.getInputElement().resetHeight();
                 this.input = this.selectedMatch.fillIntoEdit;
               }
-            } else if (!this.lastQueriedInput) {
-              // This is for cases when focus leaves the matches/input or a
-              // match that is not previewed is selected in zero-state.
+            } else if (!this.selectedMatch && !this.lastQueriedInput) {
+              // This is for cases when focus leaves the matches/input in
+              // zero-state.
               // If there was already text in the input do not clear it.
               // Only clear input when not empty, otherwise this impacts
               // suggestions getting fetched for zero state.
               if (this.input) {
                 this.clearInput();
               }
-            } else {
-              // For typed queries reset the input back to typed value when
-              // focus leaves the match or a match that is not previewed is
-              // selected.
-              if (this.input !== this.lastQueriedInput) {
-                this.getInputElement().resetHeight();
-                this.input = this.lastQueriedInput;
-              }
+            } else if (this.input !== this.lastQueriedInput) {
+              // Reset the input back to the last queried value (which is ''
+              // in zero-state) when focus leaves the match or a match that is
+              // not previewed is selected.
+              this.getInputElement().resetHeight();
+              this.input = this.lastQueriedInput;
             }
           }
           if (changedPrivateProperties.has('attachedContext')) {
@@ -999,7 +998,8 @@ export const ComposeboxEmbedderMixin =
             // change (and therefore `selectedMatch` does not get updated since
             // `onSelectedMatchIndexChanged_` is not called).
             this.selectedMatch = this.result.matches[this.selectedMatchIndex]!;
-            if (this.shouldPreviewMatchInInput_(this.selectedMatch)) {
+            if (this.shouldPreviewMatchInInput_(
+                    this.selectedMatch, this.selectedMatchIndex)) {
               this.input = this.selectedMatch.fillIntoEdit;
             }
           } else {
@@ -2561,9 +2561,16 @@ export const ComposeboxEmbedderMixin =
           }
         }
 
-        // kHint matches only set the placeholder when accepted, and rich image
-        // matches are not text queries, so neither replaces the user's input.
-        private shouldPreviewMatchInInput_(match: AutocompleteMatch): boolean {
+        // The default match at index 0 represents the user's current input
+        // rather than a suggestion preview (its `fillIntoEdit` collapses
+        // whitespace, which would strip trailing spaces). `kHint` matches only
+        // set the placeholder when accepted, and rich image matches are not
+        // text queries, so none of these replace the user's input.
+        private shouldPreviewMatchInInput_(
+            match: AutocompleteMatch, matchIndex: number): boolean {
+          if (matchIndex === 0 && match.allowedToBeDefaultMatch) {
+            return false;
+          }
           if (this.richImageSuggestionsEnabled &&
               match.suggestTemplate.style === SuggestStyle.kRichImage) {
             return false;
