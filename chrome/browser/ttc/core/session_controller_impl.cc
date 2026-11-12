@@ -4,11 +4,13 @@
 
 #include "chrome/browser/ttc/core/session_controller_impl.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
 #include "base/check_deref.h"
 #include "base/dcheck_is_on.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/no_destructor.h"
@@ -22,6 +24,8 @@
 #include "chrome/browser/ttc/app/public/audio_controller.h"
 #include "chrome/browser/ttc/core/features.h"
 #include "chrome/browser/ttc/core/lock_or_suspend_detector.h"
+#include "chrome/browser/ttc/core/pointer_input_observer.h"
+#include "chrome/browser/ttc/core/pointer_tracker.h"
 #include "chrome/browser/ttc/core/session_inactivity_detector.h"
 #include "chrome/browser/ttc/core/session_journal_impl.h"
 #include "chrome/browser/ttc/core/session_view.h"
@@ -54,6 +58,18 @@ void DCheckSessionLifecycleTransition(SessionLifecycle from,
 #endif  // DCHECK_IS_ON()
 }
 
+PointerTracker::Config PointerTrackerConfigFromFeatureParams() {
+  PointerTracker::Config config;
+  config.dwell_radius_dip =
+      static_cast<float>(kTtcGetPointerDwellRadiusDip.Get());
+  config.min_dwell_duration = kTtcGetPointerMinDwellDuration.Get();
+  config.pre_turn_lookback = kTtcGetPointerPreTurnLookback.Get();
+  config.idle_limit = kTtcGetPointerIdleLimit.Get();
+  // Zero or fewer results would make the tool useless, or wrap on the cast.
+  config.max_results = std::max(1, kTtcGetPointerMaxResults.Get());
+  return config;
+}
+
 }  // namespace
 
 SessionControllerImpl::SessionControllerImpl(
@@ -75,6 +91,10 @@ SessionControllerImpl::SessionControllerImpl(
   observers_.AddObserver(session_view_.get());
   GetJournal().Log("TtcSessionStart", {});
 
+  if (base::FeatureList::IsEnabled(kTtcGetPointer)) {
+    pointer_tracker_ = std::make_unique<PointerTracker>(
+        PointerTrackerConfigFromFeatureParams());
+  }
   voice_focused_contents_tracker_observation_.Observe(
       voice_focused_contents_tracker_.get());
 
@@ -314,6 +334,9 @@ void SessionControllerImpl::OnSpeakerChanged(Speaker speaker) {
     return;
   }
   speaker_ = speaker;
+  if (speaker_ == Speaker::kUser) {
+    user_turn_start_ = base::TimeTicks::Now();
+  }
   for (SessionController::Observer& observer : observers_) {
     observer.OnSpeakerChanged(speaker_);
   }
@@ -353,6 +376,7 @@ void SessionControllerImpl::EndSessionAsync() {
 }
 
 void SessionControllerImpl::SendTextInput(const std::string& text) {
+  user_turn_start_ = base::TimeTicks::Now();
   conversation_->SendTextInput(text);
 }
 
@@ -369,6 +393,14 @@ void SessionControllerImpl::OnVoiceFocusedContentsChanged(
                             base::Unretained(conversation_.get())),
         base::BindRepeating(&SessionControllerImpl::OnPageContextFetched,
                             base::Unretained(this)));
+  }
+  if (pointer_tracker_) {
+    // Positions were relative to the old contents.
+    pointer_tracker_->Clear();
+    pointer_input_observer_ = web_contents
+                                  ? std::make_unique<PointerInputObserver>(
+                                        pointer_tracker_.get(), web_contents)
+                                  : nullptr;
   }
   conversation_->OnPageContextInvalidated();
 }

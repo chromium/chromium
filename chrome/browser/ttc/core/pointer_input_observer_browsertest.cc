@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ttc/core/pointer_input_observer.h"
 
+#include <algorithm>
 #include <optional>
 #include <vector>
 
@@ -184,6 +185,26 @@ IN_PROC_BROWSER_TEST_F(PointerInputObserverBrowserTest,
       blink::WebInputEvent::Type::kMouseMove, gfx::Point(30, 40));
   ASSERT_TRUE(location);
   EXPECT_POINTF_EQ(gfx::PointF(30, 40), location->point);
+}
+
+// Positions refer to the page they were recorded on, so a new page in the
+// same tab starts afresh.
+IN_PROC_BROWSER_TEST_F(PointerInputObserverBrowserTest,
+                       ForgetsThePreviousPage) {
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(), embedded_test_server()->GetURL("/title1.html")));
+  PointerInputObserver observer(&tracker_, web_contents());
+  std::optional<PointerTracker::Location> location = SendAndResolve(
+      blink::WebInputEvent::Type::kMouseDown, gfx::Point(70, 80));
+  ASSERT_TRUE(location);
+  ASSERT_TRUE(location->is_press);
+
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(), embedded_test_server()->GetURL("/title2.html")));
+  // The click is gone. Not checking for no locations at all: the window
+  // system may send the new page a mouse move for where the real mouse is.
+  EXPECT_TRUE(
+      std::ranges::none_of(Resolve(), &PointerTracker::Location::is_press));
 }
 
 IN_PROC_BROWSER_TEST_F(PointerInputObserverBrowserTest,

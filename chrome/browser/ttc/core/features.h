@@ -52,6 +52,22 @@ inline constexpr base::FeatureParam<base::TimeDelta> kHotlConfirmationTimeout{
 // go/ttc-get-pointer.
 BASE_DECLARE_FEATURE(kTtcGetPointer);
 
+// Thresholds for resolving where the user pointed; see PointerTracker::Config.
+inline constexpr base::FeatureParam<double> kTtcGetPointerDwellRadiusDip{
+    &kTtcGetPointer, "dwell_radius_dip", 12.0};
+inline constexpr base::FeatureParam<base::TimeDelta>
+    kTtcGetPointerMinDwellDuration{&kTtcGetPointer, "min_dwell_duration",
+                                   base::Milliseconds(300)};
+inline constexpr base::FeatureParam<base::TimeDelta>
+    kTtcGetPointerPreTurnLookback{&kTtcGetPointer, "pre_turn_lookback",
+                                  base::Seconds(1)};
+inline constexpr base::FeatureParam<base::TimeDelta> kTtcGetPointerIdleLimit{
+    &kTtcGetPointer, "idle_limit", base::Seconds(15)};
+// The most locations get_pointer reports; more than one serves "compare this
+// with that".
+inline constexpr base::FeatureParam<int> kTtcGetPointerMaxResults{
+    &kTtcGetPointer, "max_results", 1};
+
 }  // namespace ttc
 
 #endif  // CHROME_BROWSER_TTC_CORE_FEATURES_H_

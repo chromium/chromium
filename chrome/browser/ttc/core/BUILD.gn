@@ -373,6 +373,7 @@ source_set("browser_tests") {
   sources = [
     "page_context_monitor_browsertest.cc",
     "pointer_input_observer_browsertest.cc",
+    "session_controller_impl_browsertest.cc",
     "session_journal_impl_browsertest.cc",
     "tool_controller_browsertest.cc",
     "ttc_keyed_service_browsertest.cc",

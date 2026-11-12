@@ -17,6 +17,7 @@ class WebInputEvent;
 }  // namespace blink
 
 namespace content {
+class Page;
 class RenderFrameHost;
 class WebContents;
 }  // namespace content
@@ -25,7 +26,9 @@ namespace ttc {
 
 class PointerTracker;
 
-// Feeds a PointerTracker with the mouse's movements over a WebContents.
+// Feeds a PointerTracker with the mouse's movements over a WebContents, and
+// clears it when the contents shows a new page, since positions on the old
+// page say nothing about the new one.
 // TODO(crbug.com/571268337): Record touch too. That needs care with several
 // fingers (the moving one, not touches[0]), hovering styluses, and Android's
 // InputOnViz, which withholds touch moves from input event observers.
@@ -52,6 +55,7 @@ class PointerInputObserver
   // content::WebContentsObserver:
   void RenderFrameHostChanged(content::RenderFrameHost* old_host,
                               content::RenderFrameHost* new_host) override;
+  void PrimaryPageChanged(content::Page& page) override;
 
   // content::RenderWidgetHostObserver:
   void RenderWidgetHostDestroyed(content::RenderWidgetHost* host) override;

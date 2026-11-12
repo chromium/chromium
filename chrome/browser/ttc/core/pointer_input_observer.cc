@@ -42,6 +42,10 @@ void PointerInputObserver::RenderFrameHostChanged(
   ObserveFrame(new_host);
 }
 
+void PointerInputObserver::PrimaryPageChanged(content::Page& page) {
+  tracker_->Clear();
+}
+
 void PointerInputObserver::RenderWidgetHostDestroyed(
     content::RenderWidgetHost* host) {
   host->RemoveInputEventObserver(this);

@@ -9,6 +9,7 @@
 #include <memory>
 #include <numbers>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -28,6 +29,7 @@
 #include "chrome/browser/ttc/app/public/audio_controller.h"
 #include "chrome/browser/ttc/core/buildflags.h"
 #include "chrome/browser/ttc/core/features.h"
+#include "chrome/browser/ttc/core/pointer_tracker.h"
 #include "chrome/browser/ttc/core/states.h"
 #if BUILDFLAG(ENABLE_TTC_WEBUI)
 #include "chrome/browser/ttc/core/eval_harness.mojom.h"
@@ -44,6 +46,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/point_f.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
@@ -554,6 +557,54 @@ TEST_F(TtcSessionControllerImplTest, FinishedSessionStopsReportingSpeaker) {
   EXPECT_EQ(controller.GetSpeaker(), Speaker::kIdle);
 
   controller.RemoveObserver(&observer);
+}
+
+// The user's turn starts when they start speaking or send text; the model's
+// turn leaves it alone.
+TEST_F(TtcSessionControllerImplTest, UserTurnStartFollowsTheUsersTurns) {
+  SessionControllerImpl controller(*service_);
+  // Exact comparisons with Now() hold because the test uses mock time.
+  EXPECT_EQ(controller.user_turn_start(), base::TimeTicks::Now());
+
+  task_environment_.FastForwardBy(base::Seconds(5));
+  controller.OnSpeakerChanged(Speaker::kUser);
+  const base::TimeTicks first_turn = base::TimeTicks::Now();
+  EXPECT_EQ(controller.user_turn_start(), first_turn);
+
+  task_environment_.FastForwardBy(base::Seconds(5));
+  controller.OnSpeakerChanged(Speaker::kModel);
+  EXPECT_EQ(controller.user_turn_start(), first_turn);
+
+  task_environment_.FastForwardBy(base::Seconds(5));
+  controller.SendTextInput("what is this?");
+  EXPECT_EQ(controller.user_turn_start(), base::TimeTicks::Now());
+}
+
+// The tracker exists only with the feature, and takes its thresholds from the
+// feature's params.
+TEST_F(TtcSessionControllerImplTest, PointerTrackerFollowsFeatureAndParams) {
+  {
+    SessionControllerImpl controller(*service_);
+    EXPECT_FALSE(controller.pointer_tracker());
+  }
+  // Two clicks at different spots are two locations; how many are reported
+  // depends on max_results, which is at least one however Finch sets it.
+  for (const auto& [max_results, expected_count] :
+       {std::pair("2", 2u), std::pair("-1", 1u)}) {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeatureWithParameters(
+        kTtcGetPointer, {{"max_results", max_results}});
+    SessionControllerImpl controller(*service_);
+    ASSERT_TRUE(controller.pointer_tracker());
+    const base::TimeTicks now = base::TimeTicks::Now();
+    controller.pointer_tracker()->RecordSample(now, gfx::PointF(10, 10),
+                                               /*is_press=*/true);
+    controller.pointer_tracker()->RecordSample(now, gfx::PointF(300, 300),
+                                               /*is_press=*/true);
+    EXPECT_EQ(controller.pointer_tracker()->ResolveLocations(now, now).size(),
+              expected_count)
+        << "max_results=" << max_results;
+  }
 }
 
 TEST_F(TtcSessionControllerImplTest, FinishedSessionStopsUpdatingTranscripts) {

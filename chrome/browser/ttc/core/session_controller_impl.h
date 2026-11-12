@@ -36,6 +36,8 @@ class WebContents;
 
 namespace ttc {
 
+class PointerInputObserver;
+class PointerTracker;
 class SessionInactivityDetector;
 class SessionView;
 class TtcKeyedService;
@@ -103,6 +105,14 @@ class SessionControllerImpl : public SessionController,
   SessionView& session_view() { return CHECK_DEREF(session_view_.get()); }
   Conversation& conversation() { return CHECK_DEREF(conversation_.get()); }
 
+  // Where the pointer has been over the voice-focused contents, for the
+  // get_pointer tool. Null unless kTtcGetPointer is enabled.
+  PointerTracker* pointer_tracker() { return pointer_tracker_.get(); }
+
+  // When the user's latest turn began: the last time they started speaking or
+  // sent text, or when the session started if they have not yet.
+  base::TimeTicks user_turn_start() const { return user_turn_start_; }
+
  private:
   void OnPageContextFetched(const PageContextResult& result);
   void OnInactivityTimeout();
@@ -134,6 +144,13 @@ class SessionControllerImpl : public SessionController,
   SessionJournalImpl journal_;
   ToolController tool_controller_;
   std::unique_ptr<TtcPageContextMonitor> page_context_monitor_;
+
+  // Both null unless kTtcGetPointer is enabled; the observer also while there
+  // are no voice-focused contents. The observer refers to the tracker, so it
+  // is declared after it.
+  std::unique_ptr<PointerTracker> pointer_tracker_;
+  std::unique_ptr<PointerInputObserver> pointer_input_observer_;
+  base::TimeTicks user_turn_start_ = base::TimeTicks::Now();
 
   SessionLifecycle session_lifecycle_ = SessionLifecycle::kInitializing;
   Speaker speaker_ = Speaker::kIdle;
