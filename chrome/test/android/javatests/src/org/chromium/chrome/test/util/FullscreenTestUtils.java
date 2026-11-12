@@ -20,6 +20,7 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabTestUtils;
@@ -39,7 +40,8 @@ public class FullscreenTestUtils {
      */
     public static void togglePersistentFullscreenAndAssert(
             final Tab tab, final boolean state, Activity activity) {
-        togglePersistentFullscreenAndAssert(tab, state, activity, false);
+        togglePersistentFullscreenAndAssert(
+                tab, state, activity, isFullscreenInsetsApiMigrationEnabled());
     }
 
     /**
@@ -88,7 +90,7 @@ public class FullscreenTestUtils {
                 activity,
                 prefersNavigationBar,
                 prefersStatusBar,
-                false,
+                isFullscreenInsetsApiMigrationEnabled(),
                 INVALID_DISPLAY);
     }
 
@@ -176,16 +178,26 @@ public class FullscreenTestUtils {
      * @param state Whether the tab should be to fullscreen.
      * @param activity The {@link Activity} owning the tab.
      */
+    // TODO(crbug.com/427980115): Rename method or refactor calls to modern APIs.
     public static void waitForFullscreenFlag(
             final Tab tab, final boolean state, final Activity activity) {
+        if (isFullscreenInsetsApiMigrationEnabled()) {
+            waitForFullscreen(tab, state);
+            return;
+        }
         CriteriaHelper.pollUiThread(
                 () -> isFullscreenFlagSet(tab, state, activity),
                 6000L,
                 CriteriaHelper.DEFAULT_POLLING_INTERVAL);
     }
 
+    // TODO(crbug.com/427980115): Rename method or refactor calls to modern APIs.
     public static void waitForHideNavigationFlag(
             final Tab tab, final boolean state, final Activity activity) {
+        if (isFullscreenInsetsApiMigrationEnabled()) {
+            waitForHideNavigation(tab, state);
+            return;
+        }
         CriteriaHelper.pollUiThread(
                 () -> isHideNavigationFlagSet(tab, state, activity),
                 6000L,
@@ -301,6 +313,11 @@ public class FullscreenTestUtils {
     private static boolean isPictureInPictureMode(
             final boolean isInPictureInPictureMode, final Activity activity) {
         return activity.isInPictureInPictureMode() == isInPictureInPictureMode;
+    }
+
+    /** Whether fullscreen is driven by WindowInsetsController rather than system UI flags. */
+    private static boolean isFullscreenInsetsApiMigrationEnabled() {
+        return ChromeFeatureList.sFullscreenInsetsApiMigration.isEnabled();
     }
 
     private static boolean isFullscreenFlagSet(
