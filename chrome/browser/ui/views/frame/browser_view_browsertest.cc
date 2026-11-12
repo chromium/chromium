@@ -64,6 +64,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view_observer.h"
+#include "chrome/browser/ui/views/frame/base_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/contents_container_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_tester.h"
@@ -82,6 +83,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/tab_modal_confirm_dialog_views.h"
+#include "chrome/browser/ui/views/tabs/common/tab_strip_collection_controller.h"
 #include "chrome/browser/ui/views/tabs/common/tab_view.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab/tab_accessibility.h"
@@ -2592,19 +2594,39 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, CutCopyPasteFocusedNativeViews) {
   // the button or close the tab (regression test for crbug.com/582411426).
   chrome::AddTabAt(browser(), GURL(url::kAboutBlankURL), -1, true);
   ASSERT_EQ(2, browser()->GetTabStripModel()->count());
-  browser_view()->horizontal_tab_strip_for_testing()->StopAnimating();
+  if (auto* const tabstrip =
+          browser_view()->horizontal_tab_strip_for_testing()) {
+    tabstrip->StopAnimating();
+  } else if (auto* const base_region =
+                 views::AsViewClass<BaseTabStripRegionView>(
+                     browser_view()->tab_strip_view())) {
+    if (auto* controller = base_region->GetTabStripCollectionController()) {
+      controller->animation_coordinator().StopAllAnimationsForTesting();
+    }
+  }
   views::test::RunScheduledLayout(browser_view());
 
   browser_view()->GetWidget()->Activate();
   views::test::WaitForWidgetActive(browser_view()->GetWidget(), true);
   views::FocusManager* focus_manager = browser_view()->GetFocusManager();
 
-  Tab* active_tab = browser_view()->horizontal_tab_strip_for_testing()->tab_at(
-      browser()->GetTabStripModel()->active_index());
-  ASSERT_TRUE(active_tab->close_button());
-  focus_manager->SetFocusedView(active_tab->close_button());
-  ASSERT_EQ(active_tab->close_button(), focus_manager->GetFocusedView());
-  ASSERT_TRUE(active_tab->close_button()->CanHandleAccelerators());
+  views::View* active_tab_view =
+      browser_view()->tab_strip_view()->GetTabAnchorView(
+          browser()
+              ->GetTabStripModel()
+              ->GetTabAtIndex(browser()->GetTabStripModel()->active_index())
+              ->GetHandle());
+  views::Button* close_button = nullptr;
+  if (auto* const tab = views::AsViewClass<Tab>(active_tab_view)) {
+    close_button = tab->close_button();
+  } else if (auto* const tab_view =
+                 views::AsViewClass<TabView>(active_tab_view)) {
+    close_button = tab_view->close_button_for_testing();
+  }
+  ASSERT_TRUE(close_button);
+  focus_manager->SetFocusedView(close_button);
+  ASSERT_EQ(close_button, focus_manager->GetFocusedView());
+  ASSERT_TRUE(close_button->CanHandleAccelerators());
 
   browser_view()->Cut();
   browser_view()->Copy();

@@ -12,10 +12,13 @@
 #include "build/build_config.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
+#include "chrome/browser/ui/views/frame/base_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
+#include "chrome/browser/ui/views/tabs/common/tab_strip_collection_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -33,6 +36,7 @@
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/views/view_utils.h"
 
 class BrowserRootViewBrowserTest : public InProcessBrowserTest {
  public:
@@ -227,9 +231,24 @@ IN_PROC_BROWSER_TEST_F(BrowserRootViewBrowserTest,
   }
 
   TabStripModel* model = browser()->GetTabStripModel();
-  TabStrip* tabstrip = BrowserView::GetBrowserViewForBrowser(browser())
-                           ->horizontal_tab_strip_for_testing();
   ASSERT_TRUE(model->SupportsTabGroups());
+
+  auto toggle_collapsed = [&](tab_groups::TabGroupId group) {
+    auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+    if (auto* const tabstrip =
+            browser_view->horizontal_tab_strip_for_testing()) {
+      tabstrip->ToggleTabGroupCollapsedState(group);
+      return;
+    }
+    if (auto* const base_region = views::AsViewClass<BaseTabStripRegionView>(
+            browser_view->tab_strip_view())) {
+      base_region->GetTabStripCollectionController()
+          ->ToggleTabGroupCollapsedState(
+              model->group_model()->GetTabGroup(group),
+              ToggleTabGroupCollapsedStateOrigin::kMouse);
+      return;
+    }
+  };
 
   // Create 5 tabs, with the leftmost, center, and rightmost in collapsed tab
   // groups.
@@ -241,9 +260,9 @@ IN_PROC_BROWSER_TEST_F(BrowserRootViewBrowserTest,
   tab_groups::TabGroupId left_group = model->AddToNewGroup({0});
   tab_groups::TabGroupId center_group = model->AddToNewGroup({2});
   tab_groups::TabGroupId right_group = model->AddToNewGroup({4});
-  tabstrip->ToggleTabGroupCollapsedState(left_group);
-  tabstrip->ToggleTabGroupCollapsedState(center_group);
-  tabstrip->ToggleTabGroupCollapsedState(right_group);
+  toggle_collapsed(left_group);
+  toggle_collapsed(center_group);
+  toggle_collapsed(right_group);
   ASSERT_EQ(1, model->active_index());
   ASSERT_TRUE(model->IsTabCollapsed(0));
   ASSERT_FALSE(model->IsTabCollapsed(1));

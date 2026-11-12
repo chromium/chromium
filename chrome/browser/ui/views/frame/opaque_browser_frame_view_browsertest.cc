@@ -634,7 +634,7 @@ IN_PROC_BROWSER_TEST_F(LinuxNativeBrowserFrameViewTest,
 
   ASSERT_GT(config->data.redraw_count, 0);
   const int expected_tabstrip_height =
-      view->horizontal_tab_strip_for_testing()->GetPreferredSize().height();
+      view->tab_strip_view()->GetTabStripView()->GetPreferredSize().height();
   const BrowserLayoutParams initial_params =
       frame_view->GetBrowserLayoutParams();
   const float initial_exclusion_height =

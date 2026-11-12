@@ -267,9 +267,21 @@ class SavedTabGroupInteractiveTest
 
   MultiStep HoverTabAt(int index) {
     const char kTabToHover[] = "Tab to hover";
-    return Steps(NameDescendantViewByType<Tab>(kBrowserViewElementId,
-                                               kTabToHover, index),
-                 MoveMouseTo(kTabToHover));
+    return Steps(
+        NameViewRelative(
+            kBrowserViewElementId, kTabToHover,
+            base::BindOnce(
+                [](int index, BrowserView* browser_view) -> views::View* {
+                  auto* const model =
+                      browser_view->browser()->GetTabStripModel();
+                  if (index < 0 || index >= model->count()) {
+                    return nullptr;
+                  }
+                  return browser_view->tab_strip_view()->GetTabAnchorView(
+                      model->GetTabAtIndex(index)->GetHandle());
+                },
+                index)),
+        MoveMouseTo(kTabToHover));
   }
 
   MultiStep WaitToFetchFavicon(int tab_index, const GURL& favicon_url) {
