@@ -445,7 +445,11 @@ double FuzzyFinder::MatchCandidate(std::u16string_view query,
       kInitialBoundaryBonus + kMatchScore +
       (kBoundaryBonus + kMatchScore) * static_cast<double>(m - 1);
 
-  const double raw_norm =
-      kScoreBias + (max_score / max_possible) * (1.0 - kScoreBias);
-  return std::clamp(raw_norm, 0.0, 1.0);
+  constexpr double kMaxCoverageBonus = 0.02;
+  const double alignment_norm =
+      kScoreBias +
+      (max_score / max_possible) * (1.0 - kScoreBias - kMaxCoverageBonus);
+  const double coverage_bonus =
+      (static_cast<double>(m) / n) * kMaxCoverageBonus;
+  return std::clamp(alignment_norm + coverage_bonus, 0.0, 1.0);
 }

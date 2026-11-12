@@ -108,10 +108,11 @@ TEST_F(FuzzyFinderTest, SubstringPrefixAndSuffixMatches) {
   EXPECT_THAT(ExtractResultTitles(results), ElementsAre(u"Open New Tab"));
   EXPECT_LE(results.size(), 4u);
 
-  // Infix / substring match
+  // Infix / substring match ranks by coverage length:
+  // "Brand New" (len 9) > "New Window" (len 10) > "Open New Tab" (len 12)
   results = finder.FuzzyFind(u"New", /*max_results=*/3);
   EXPECT_THAT(ExtractResultTitles(results),
-              ElementsAre(u"Open New Tab", u"New Window", u"Brand New"));
+              ElementsAre(u"Brand New", u"New Window", u"Open New Tab"));
   EXPECT_LE(results.size(), 3u);
 
   // Suffix match
@@ -371,21 +372,25 @@ TEST_F(FuzzyFinderTest, LegacyFindSubstringMatching) {
 
 TEST_F(FuzzyFinderTest, FuzzyFindExactAndWordBoundaryRanking) {
   // Query "tab" (m = 3, max_possible = 80):
-  // 1. "Tab" (exact word boundary match):
-  //    raw_score = 76, norm = 0.25 + (76/80)*0.75 = 0.9625.
-  // 2. "Establish" (infix match, non-boundary):
-  //    raw_score = 60, norm = 0.25 + (60/80)*0.75 = 0.8125.
+  // 1. "Tab" (exact word boundary match, n = 3):
+  //    raw_score = 76, alignment_norm = 0.25 + (76/80)*0.73 = 0.9435
+  //    coverage_bonus = (3/3)*0.02 = 0.02
+  //    total = 0.9635.
+  // 2. "Establish" (infix match, non-boundary, n = 9):
+  //    raw_score = 60, alignment_norm = 0.25 + (60/80)*0.73 = 0.7975
+  //    coverage_bonus = (3/9)*0.02 = 0.0066
+  //    total = 0.8041.
   // 3. "Tag" (typo substitution 'b' -> 'g'): rejected for short queries (<= 3).
   // 4. "History" (no match): score = 0.0.
-  // Expected rank: "Tab" (0.9625) > "Establish" (0.8125).
+  // Expected rank: "Tab" (0.9635) > "Establish" (0.8041).
   auto items = CreateItems({{u"Tab"}, {u"Establish"}, {u"Tag"}, {u"History"}});
   FuzzyFinder finder(items);
 
   auto results = finder.FuzzyFind(u"tab", /*max_results=*/4);
   EXPECT_THAT(ExtractResultTitles(results), ElementsAre(u"Tab", u"Establish"));
   ASSERT_EQ(results.size(), 2u);
-  EXPECT_NEAR(results[0].score, 0.9625, 0.001);
-  EXPECT_NEAR(results[1].score, 0.8125, 0.001);
+  EXPECT_NEAR(results[0].score, 0.9635, 0.001);
+  EXPECT_NEAR(results[1].score, 0.8041, 0.001);
   EXPECT_GT(results[0].score, results[1].score);
 }
 
@@ -411,19 +416,21 @@ TEST_F(FuzzyFinderTest, FuzzyFindTranspositionSwapTolerance) {
   // Query "abcd" (m = 4, max_possible = 104):
   // 1. "acbd" (adjacent swap 'b' and 'c'):
   //    raw_score = 32 + (2*16 - 6) + (16 + 6) = 80,
-  //    norm = 0.25 + (80/104)*0.75 = 0.8269.
+  //    norm = 0.25 + (80/104)*0.73 = 0.8115.
+  //    coverage = 0.02 * 4/4 = 0.02, total = 0.8315.
   // 2. "axcd" (typo substitution 'b' -> 'x', allowed for m > 3):
   //    raw_score = 32 + (-12) + 16 + (16 + 6) = 58,
-  //    norm = 0.25 + (58/104)*0.75 = 0.6683.
-  // Expected rank: "acbd" (0.8269) > "axcd" (0.6683).
+  //    norm = 0.25 + (58/104)*0.73 = 0.6571.
+  //    coverage = 0.02 * 4/4 = 0.02, total = 0.6771.
+  // Expected rank: "acbd" (0.8315) > "axcd" (0.6771).
   auto items = CreateItems({{u"acbd"}, {u"axcd"}, {u"xyzw"}});
   FuzzyFinder finder(items);
 
   auto results = finder.FuzzyFind(u"abcd", /*max_results=*/3);
   EXPECT_THAT(ExtractResultTitles(results), ElementsAre(u"acbd", u"axcd"));
   ASSERT_EQ(results.size(), 2u);
-  EXPECT_NEAR(results[0].score, 0.8269, 0.001);
-  EXPECT_NEAR(results[1].score, 0.6683, 0.001);
+  EXPECT_NEAR(results[0].score, 0.8315, 0.001);
+  EXPECT_NEAR(results[1].score, 0.6771, 0.001);
   EXPECT_GT(results[0].score, results[1].score);
 }
 
@@ -435,14 +442,15 @@ TEST_F(FuzzyFinderTest, FuzzyFindTranspositionInitialCharacters) {
   //          score = (16 * 2) - 6 = 26, consecutive = 2
   // - Row 2: 'b' matches candidate[2]:
   //          score = 26 + 16 + 6 (kConsecutiveBonus) = 48
-  // - Normalized score: 0.25 + (48 / 80) * 0.75 = 0.70.
+  // - Normalized score: 0.25 + (48 / 80) * 0.73 = 0.688.
+  // - Coverage: 0.02 * 3/3 = 0.02, total = 0.708.
   auto items = CreateItems({{u"Tab"}, {u"History"}});
   FuzzyFinder finder(items);
 
   auto results = finder.FuzzyFind(u"atb", /*max_results=*/1);
   EXPECT_THAT(ExtractResultTitles(results), ElementsAre(u"Tab"));
   ASSERT_EQ(results.size(), 1u);
-  EXPECT_NEAR(results[0].score, 0.70, 0.001);
+  EXPECT_NEAR(results[0].score, 0.708, 0.001);
 }
 
 TEST_F(FuzzyFinderTest, FuzzyFindTypoTolerance) {
@@ -453,7 +461,7 @@ TEST_F(FuzzyFinderTest, FuzzyFindTypoTolerance) {
 
   auto results = finder.FuzzyFind(u"progile", /*max_results=*/3);
   EXPECT_THAT(ExtractResultTitles(results),
-              ElementsAre(u"Customize this profile", u"Close this profile"));
+              ElementsAre(u"Close this profile", u"Customize this profile"));
   ASSERT_EQ(results.size(), 2u);
   EXPECT_GT(results[0].score, 0.0);
 }
@@ -499,15 +507,14 @@ TEST_F(FuzzyFinderTest, FuzzyFindSynonymOnlyMatch) {
 }
 
 TEST_F(FuzzyFinderTest, FuzzyFindStableTieBreakingPreservesOrder) {
-  // Identical title match scores should preserve the original corpus order.
-  auto items = CreateItems(
-      {{u"Bookmark Tab"}, {u"Bookmark All Tabs"}, {u"Bookmark Bar"}});
+  // Identical title match scores and same candidate length should preserve the
+  // original corpus order.
+  auto items = CreateItems({{u"Bookmark Bar"}, {u"Bookmark Tab"}});
   FuzzyFinder finder(items);
 
-  auto results = finder.FuzzyFind(u"bookmark", /*max_results=*/3);
-  EXPECT_THAT(
-      ExtractResultTitles(results),
-      ElementsAre(u"Bookmark Tab", u"Bookmark All Tabs", u"Bookmark Bar"));
+  auto results = finder.FuzzyFind(u"bookmark", /*max_results=*/2);
+  EXPECT_THAT(ExtractResultTitles(results),
+              ElementsAre(u"Bookmark Bar", u"Bookmark Tab"));
 }
 
 TEST_F(FuzzyFinderTest, FuzzyFindSecondaryTextMatch) {
@@ -828,6 +835,17 @@ TEST_F(FuzzyFinderTest, MinScoreParamChangesCutoff) {
   EXPECT_THAT(lenient_titles,
               ::testing::Contains(u"Page Event Resource Filter"));
   EXPECT_THAT(lenient_titles, ::testing::Not(::testing::Contains(u"History")));
+}
+
+TEST_F(FuzzyFinderTest, CoverageBonusRanksExactMatchFirst) {
+  auto items = CreateItems({{u"Import bookmarks and settings"}, {u"Settings"}});
+  FuzzyFinder finder(items);
+
+  auto results = finder.FuzzyFind(u"settings", /*max_results=*/2);
+  EXPECT_THAT(ExtractResultTitles(results),
+              ElementsAre(u"Settings", u"Import bookmarks and settings"));
+  ASSERT_EQ(results.size(), 2u);
+  EXPECT_GT(results[0].score, results[1].score);
 }
 
 }  // namespace
