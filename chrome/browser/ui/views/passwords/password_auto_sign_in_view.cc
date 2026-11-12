@@ -57,9 +57,9 @@ PasswordAutoSignInView::PasswordAutoSignInView(
       GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
           GetWebContents());
 
-  // Sign-in dialogs opened for inactive browser windows do not auto-close on
-  // MacOS. This matches existing Cocoa bubble behavior.
-  // TODO(varkha): Remove the limitation as part of http://crbug.com/40496900 .
+  // Only start the auto-close timer if the browser window is active.
+  // Otherwise, `OnWidgetActivationChanged()` starts it once the browser
+  // window or the bubble is activated.
   if (browser && browser->IsActive()) {
     timer_.Start(FROM_HERE, GetTimeout(), this,
                  &PasswordAutoSignInView::OnTimer);
