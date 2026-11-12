@@ -4,11 +4,14 @@
 
 #include "chrome/browser/ui/tabs/tab_group_data.h"
 
+#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/saved_tab_groups/public/tab_group_sync_service.h"
+#include "components/sync/base/collaboration_id.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
@@ -138,6 +141,40 @@ IN_PROC_BROWSER_TEST_F(TabGroupDataBrowserTest, NotifyOnTabMovedInGroup) {
             second_tab_url);
   EXPECT_EQ(updated_tab_group_data.tab_data[1].last_committed_url,
             first_tab_url);
+}
+
+IN_PROC_BROWSER_TEST_F(TabGroupDataBrowserTest, InitialAndUpdatedSharingState) {
+  const tab_groups::TabGroupId group_id =
+      browser()->tab_strip_model()->AddToNewGroup({0});
+  TabGroup* const tab_group =
+      browser()->tab_strip_model()->group_model()->GetTabGroup(group_id);
+
+  TabGroupDataObserver observer(tab_group);
+  EXPECT_FALSE(observer.tab_group_data().is_sharing_group);
+
+  tab_groups::TabGroupSyncService* const sync_service =
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
+          browser()->GetProfile());
+  if (sync_service) {
+    sync_service->MakeTabGroupSharedForTesting(
+        group_id, syncer::CollaborationId("fake_collab_id"));
+
+    bool was_notified = false;
+    base::CallbackListSubscription subscription =
+        observer.RegisterTabGroupDataChangedCallback(base::BindRepeating(
+            [](bool* was_notified) { *was_notified = true; }, &was_notified));
+
+    browser()->tab_strip_model()->ChangeTabGroupVisuals(
+        group_id, *tab_group->visual_data());
+
+    EXPECT_TRUE(was_notified);
+    EXPECT_TRUE(observer.tab_group_data().is_sharing_group);
+
+    // Verify a new observer on an already-shared group initializes
+    // is_sharing_group to true.
+    TabGroupDataObserver observer2(tab_group);
+    EXPECT_TRUE(observer2.tab_group_data().is_sharing_group);
+  }
 }
 
 }  // namespace tabs

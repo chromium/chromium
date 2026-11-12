@@ -93,6 +93,7 @@ TabGroupDataObserver::TabGroupDataObserver(TabGroup* group)
     : tab_group_(group) {
   tab_group_data_.visual_data = *tab_group_->visual_data();
   tab_group_data_.num_tabs_in_group = tab_group_->tab_count();
+  tab_group_data_.is_sharing_group = IsTabGroupShared();
   RefreshTabData();
   attention_indicator_observation_.Observe(
       tab_group_->GetTabGroupFeatures()->attention_indicator());
@@ -115,6 +116,7 @@ TabGroupDataObserver::RegisterTabGroupDataChangedCallback(
 
 void TabGroupDataObserver::OnVisualDataChanged() {
   tab_group_data_.visual_data = *tab_group_->visual_data();
+  tab_group_data_.is_sharing_group = IsTabGroupShared();
   tab_group_data_changed_callback_list_.Notify();
 }
 
@@ -133,8 +135,15 @@ void TabGroupDataObserver::OnGroupChanged() {
     tab_group_data_.num_tabs_in_group = tab_group_->tab_count();
   }
 
+  const bool is_sharing_group = IsTabGroupShared();
+  const bool sharing_change =
+      tab_group_data_.is_sharing_group != is_sharing_group;
+  if (sharing_change) {
+    tab_group_data_.is_sharing_group = is_sharing_group;
+  }
+
   const bool tab_data_change = RefreshTabData();
-  if (num_tab_change || tab_data_change) {
+  if (num_tab_change || tab_data_change || sharing_change) {
     tab_group_data_changed_callback_list_.Notify();
   }
 }

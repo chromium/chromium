@@ -144,6 +144,7 @@ class TabGroupHeaderView : public views::FlexLayoutView,
   views::ImageView* attention_indicator_for_testing() {
     return attention_indicator_;
   }
+  views::ImageView* sync_icon_for_testing() { return sync_icon_; }
   views::Label* title_label_for_testing() { return group_header_label_; }
   TabGroupEditorBubbleTracker* editor_bubble_tracker_for_testing() {
     return &editor_bubble_tracker_;
