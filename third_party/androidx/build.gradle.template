@@ -154,6 +154,7 @@ dependencies {
     compileLatest 'androidx.print:print:+'
     compileLatest 'androidx.sqlite:sqlite-android:+'
     compileLatest 'androidx.concurrent:concurrent-futures-ktx:+'
+    compileLatest 'androidx.datastore:datastore-guava:+'
 
     compileLatest 'androidx.credentials.registry:registry-provider:+'
     compileLatest 'androidx.credentials.registry:registry-provider-play-services:+'

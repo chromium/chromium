@@ -555,7 +555,7 @@ No modifications.
                 gnTarget = ":${depTargetName}"
             }
 
-            if (targetName.contains('guava') && gnTarget == '//third_party/android_deps:guava_java') {
+            if (targetName.startsWith('com_google_guava_') && gnTarget == '//third_party/android_deps:guava_java') {
                 // Prevent circular dep caused by having listenablefuture aliased to guava_android.
                 return
             }
