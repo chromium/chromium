@@ -93,7 +93,8 @@ class InvertedIndexTest : public ::testing::Test {
     index_.AddDocuments(
         documents,
         base::BindOnce([](bool* callback_done) { *callback_done = true; },
-                       &callback_done));
+                       &callback_done)
+            .Then(task_environment_.QuitClosure()));
     Wait();
     ASSERT_TRUE(callback_done);
   }
@@ -109,7 +110,8 @@ class InvertedIndexTest : public ::testing::Test {
                                  *callback_done = true;
                                  *num_deleted = num_deleted_callback;
                                },
-                               &callback_done, &num_deleted));
+                               &callback_done, &num_deleted)
+                               .Then(task_environment_.QuitClosure()));
     Wait();
     ASSERT_TRUE(callback_done);
     EXPECT_EQ(num_deleted, expect_num_deleted);
@@ -126,7 +128,8 @@ class InvertedIndexTest : public ::testing::Test {
                                  *callback_done = true;
                                  *num_deleted = num_deleted_callback;
                                },
-                               &callback_done, &num_deleted));
+                               &callback_done, &num_deleted)
+                               .Then(task_environment_.QuitClosure()));
     Wait();
     ASSERT_TRUE(callback_done);
     EXPECT_EQ(num_deleted, expect_num_deleted);
@@ -134,8 +137,10 @@ class InvertedIndexTest : public ::testing::Test {
 
   void ClearInvertedIndexAndCheck() {
     bool callback_done = false;
-    index_.ClearInvertedIndex(base::BindOnce(
-        [](bool* callback_done) { *callback_done = true; }, &callback_done));
+    index_.ClearInvertedIndex(
+        base::BindOnce([](bool* callback_done) { *callback_done = true; },
+                       &callback_done)
+            .Then(task_environment_.QuitClosure()));
     Wait();
     ASSERT_TRUE(callback_done);
   }
@@ -165,8 +170,10 @@ class InvertedIndexTest : public ::testing::Test {
 
   void BuildInvertedIndexAndCheck() {
     bool callback_done = false;
-    index_.BuildInvertedIndex(base::BindOnce(
-        [](bool* callback_done) { *callback_done = true; }, &callback_done));
+    index_.BuildInvertedIndex(
+        base::BindOnce([](bool* callback_done) { *callback_done = true; },
+                       &callback_done)
+            .Then(task_environment_.QuitClosure()));
     Wait();
     ASSERT_TRUE(callback_done);
   }
@@ -185,7 +192,8 @@ class InvertedIndexTest : public ::testing::Test {
 
   TermSet GetTermToBeUpdated() { return index_.terms_to_be_updated_; }
 
-  void Wait() { task_environment_.RunUntilIdle(); }
+  // Run the queued ThreadPool work until the operation's callback completes.
+  void Wait() { task_environment_.RunUntilQuit(); }
 
  protected:
   base::test::TaskEnvironment task_environment_{
