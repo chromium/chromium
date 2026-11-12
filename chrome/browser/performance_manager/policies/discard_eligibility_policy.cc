@@ -284,11 +284,13 @@ DiscardEligibilityPolicy::CanDiscardWithCustomRecentVisibilityWindow(
   }
 
   // Don't discard tabs that are playing or have recently played audio.
-  if (page_node->IsAudible()) {
+  auto [is_audible, audible_change_time] = page_node->GetAudibleState();
+  if (is_audible) {
     add_reason_and_update_result(CannotDiscardReason::kAudible,
                                  CanDiscardResult::kProtected);
-  } else if (page_node->GetTimeSinceLastAudibleChange().value_or(
-                 base::TimeDelta::Max()) < kTabAudioProtectionTime) {
+  } else if (audible_change_time.has_value() &&
+             (base::TimeTicks::Now() - audible_change_time.value()) <
+                 kTabAudioProtectionTime) {
     add_reason_and_update_result(CannotDiscardReason::kRecentlyAudible,
                                  CanDiscardResult::kProtected);
   }

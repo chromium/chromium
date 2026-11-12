@@ -201,9 +201,12 @@ bool CpuHealthTracker::CanDiscardPage(
 
   // We should not discard pages that played audio during the measurement window
   // as it may affect CPU measurements.
+  std::optional<base::TimeTicks> last_audible_change_time =
+      page_node->GetAudibleState().last_change_time;
   const bool did_audio_status_change =
-      page_node->GetTimeSinceLastAudibleChange().value_or(
-          base::TimeDelta::Max()) < measurement_window;
+      last_audible_change_time.has_value() &&
+      (base::TimeTicks::Now() - last_audible_change_time.value()) <
+          measurement_window;
 
   return !did_audio_status_change &&
          eligibility_policy->CanDiscardWithCustomRecentVisibilityWindow(

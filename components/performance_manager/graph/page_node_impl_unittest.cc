@@ -91,32 +91,6 @@ TEST_F(PageNodeImplTest, RemoveFrame) {
   EXPECT_EQ(0u, GraphImplOperations::GetFrameNodes(page_node.get()).size());
 }
 
-TEST_F(PageNodeImplTest, GetTimeSinceLastAudibleChange) {
-  MockSinglePageInSingleProcessGraph mock_graph(graph());
-  EXPECT_FALSE(mock_graph.page->IsAudible());
-  EXPECT_EQ(std::nullopt, mock_graph.page->GetTimeSinceLastAudibleChange());
-
-  mock_graph.page->SetIsAudible(true);
-  EXPECT_TRUE(mock_graph.page->IsAudible());
-  AdvanceClock(base::Seconds(42));
-  EXPECT_EQ(base::Seconds(42),
-            mock_graph.page->GetTimeSinceLastAudibleChange());
-
-  mock_graph.page->SetIsAudible(false);
-  AdvanceClock(base::Seconds(23));
-  EXPECT_EQ(base::Seconds(23),
-            mock_graph.page->GetTimeSinceLastAudibleChange());
-  EXPECT_FALSE(mock_graph.page->IsAudible());
-
-  // Test a page that's audible at creation.
-  auto audible_page = CreateNode<PageNodeImpl>(
-      nullptr, /*browser_context_id=*/base::UnguessableToken(), GURL(),
-      PagePropertyFlags{PagePropertyFlag::kIsAudible});
-  AdvanceClock(base::Seconds(56));
-  EXPECT_EQ(base::Seconds(56), audible_page->GetTimeSinceLastAudibleChange());
-  EXPECT_TRUE(audible_page->IsAudible());
-}
-
 TEST_F(PageNodeImplTest, GetTimeSinceLastNavigation) {
   MockSinglePageInSingleProcessGraph mock_graph(graph());
   // Before any commit events, timedelta should be 0.
@@ -291,6 +265,45 @@ TEST_F(PageNodeImplTest, GetVisibilityState) {
   EXPECT_EQ((PageNode::VisibilityState{false, t1}),
             mock_graph.page->GetVisibilityState());
   EXPECT_FALSE(mock_graph.page->IsVisible());
+}
+
+TEST_F(PageNodeImplTest, GetAudibleState) {
+  MockSinglePageInSingleProcessGraph mock_graph(graph());
+  EXPECT_FALSE(mock_graph.page->IsAudible());
+  EXPECT_EQ((PageNode::AudibleState{false, std::nullopt}),
+            mock_graph.page->GetAudibleState());
+
+  base::TimeTicks t0 = base::TimeTicks::Now();
+  mock_graph.page->SetIsAudible(true);
+  EXPECT_TRUE(mock_graph.page->IsAudible());
+  AdvanceClock(base::Seconds(42));
+  EXPECT_EQ((PageNode::AudibleState{true, t0}),
+            mock_graph.page->GetAudibleState());
+
+  base::TimeTicks t1 = base::TimeTicks::Now();
+  {
+    MockObserver obs(graph());
+    EXPECT_CALL(obs, OnIsAudibleChanged(ToPublic(mock_graph.page.get())))
+        .WillOnce([&](const PageNode* page_node) {
+          EXPECT_EQ((PageNode::AudibleState{false, t1}),
+                    page_node->GetAudibleState());
+        });
+    mock_graph.page->SetIsAudible(false);
+  }
+  AdvanceClock(base::Seconds(23));
+  EXPECT_EQ((PageNode::AudibleState{false, t1}),
+            mock_graph.page->GetAudibleState());
+  EXPECT_FALSE(mock_graph.page->IsAudible());
+
+  // Test a page that's audible at creation.
+  base::TimeTicks t2 = base::TimeTicks::Now();
+  auto audible_page = CreateNode<PageNodeImpl>(
+      nullptr, /*browser_context_id=*/base::UnguessableToken(), GURL(),
+      PagePropertyFlags{PagePropertyFlag::kIsAudible});
+  AdvanceClock(base::Seconds(56));
+  EXPECT_EQ((PageNode::AudibleState{true, t2}),
+            audible_page->GetAudibleState());
+  EXPECT_TRUE(audible_page->IsAudible());
 }
 
 TEST_F(PageNodeImplTest, ObserverWorks) {

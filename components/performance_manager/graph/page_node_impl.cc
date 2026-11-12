@@ -147,13 +147,9 @@ bool PageNodeImpl::IsAudible() const {
   return is_audible_.value();
 }
 
-std::optional<base::TimeDelta> PageNodeImpl::GetTimeSinceLastAudibleChange()
-    const {
+PageNode::AudibleState PageNodeImpl::GetAudibleState() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (audible_change_time_.has_value()) {
-    return base::TimeTicks::Now() - audible_change_time_.value();
-  }
-  return std::nullopt;
+  return {is_audible_.value(), audible_change_time_};
 }
 
 bool PageNodeImpl::HasPictureInPicture() const {
@@ -376,12 +372,10 @@ void PageNodeImpl::SetIsVisible(bool is_visible) {
 
 void PageNodeImpl::SetIsAudible(bool is_audible) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (is_audible_.SetAndMaybeNotify(this, is_audible)) {
-    // The change time needs to be updated after observers are notified, as they
-    // use this to determine time passed since the *previous* state change. They
-    // can infer the current state change time themselves via NowTicks.
+  if (is_audible_.value() != is_audible) {
     audible_change_time_ = base::TimeTicks::Now();
   }
+  is_audible_.SetAndMaybeNotify(this, is_audible);
 }
 
 void PageNodeImpl::SetHasPictureInPicture(bool has_picture_in_picture) {

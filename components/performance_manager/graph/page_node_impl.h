@@ -88,7 +88,7 @@ class PageNodeImpl
   bool IsVisible() const override;
   VisibilityState GetVisibilityState() const override;
   bool IsAudible() const override;
-  std::optional<base::TimeDelta> GetTimeSinceLastAudibleChange() const override;
+  AudibleState GetAudibleState() const override;
   bool HasPictureInPicture() const override;
   bool HasFreezingOriginTrialOptOut() const override;
   bool IsOffTheRecord() const override;

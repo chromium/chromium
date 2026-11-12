@@ -132,12 +132,21 @@ class PageNode : public TypedNode<PageNode> {
   // See PageNodeObserver::OnIsAudibleChanged.
   virtual bool IsAudible() const = 0;
 
-  // Returns the time since the last audible change. Unlike
-  // GetVisibilityState().last_change_time, this returns nullopt for a node
-  // which has never been audible. If a node is audible when created, it is
-  // considered to change from inaudible to audible at that point.
-  virtual std::optional<base::TimeDelta> GetTimeSinceLastAudibleChange()
-      const = 0;
+  // Returns the page's current audible state and the time at which it
+  // transitioned to that state. Unlike GetVisibilityState().last_change_time,
+  // `last_change_time` is nullopt for a node which has never been audible. If a
+  // node is audible when created, it is considered to change from inaudible to
+  // audible at that point.
+  struct AudibleState {
+    bool is_audible;
+    // Time at which the page transitioned to `is_audible`, or nullopt if the
+    // page has never been audible. Already updated when
+    // `PageNodeObserver::OnIsAudibleChanged()` is invoked.
+    std::optional<base::TimeTicks> last_change_time;
+
+    friend bool operator==(const AudibleState&, const AudibleState&) = default;
+  };
+  virtual AudibleState GetAudibleState() const = 0;
 
   // Returns true if this page is displaying content in a picture-in-picture
   // window, false otherwise.
@@ -333,10 +342,6 @@ class PageNodeObserver : public base::CheckedObserver {
   virtual void OnIsVisibleChanged(const PageNode* page_node) {}
 
   // Invoked when the IsAudible property changes.
-  //
-  // GetTimeSinceLastAudibleChange() will return the time since the previous
-  // IsAudible change. After all observers have fired it will return the time of
-  // this property change.
   virtual void OnIsAudibleChanged(const PageNode* page_node) {}
 
   // Invoked when the HasPictureInPicture property changes.

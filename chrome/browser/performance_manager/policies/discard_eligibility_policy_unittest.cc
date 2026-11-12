@@ -180,7 +180,7 @@ TEST_F(DiscardEligibilityPolicyTest, TestCannotDiscardVisiblePage) {
 TEST_F(DiscardEligibilityPolicyTest, TestCannotDiscardAudiblePage) {
   page_node()->SetIsAudible(true);
   // Ensure that the discard is being blocked because audio is playing, not
-  // because GetTimeSinceLastAudibleChange() is recent.
+  // because GetAudibleState().last_change_time is recent.
   task_env().FastForwardBy(kTabAudioProtectionTime * 2);
   ExpectCanDiscardProtected(page_node(),
                             {DiscardReason::URGENT, DiscardReason::PROACTIVE,
