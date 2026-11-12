@@ -9,7 +9,6 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
-#import "components/actor/core/task_source_info.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
@@ -23,11 +22,9 @@
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/fullscreen/public/fullscreen_metrics.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
-#import "ios/chrome/browser/intelligence/actor/model/actor_service.h"
-#import "ios/chrome/browser/intelligence/actor/public/actor_task_lifecycle_observer.h"
-#import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_data.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_actor_task_store.h"
+#import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_actor_task_store_manager.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_mediator_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_mediator_event_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_ui_state_manager.h"
@@ -80,7 +77,7 @@ using ios::provider::GeminiErrorCode;
 using ios::provider::GeminiViewMode;
 using ios::provider::GeminiViewState;
 
-@interface GeminiContainerMediator () <ActorTaskLifecycleObserver,
+@interface GeminiContainerMediator () <GeminiActorTaskStoreManagerObserver,
                                        GeminiContainerUIStateManagerDelegate,
                                        IdentityManagerObserving,
                                        IncognitoStateObserver,
@@ -179,14 +176,8 @@ class GeminiContainerMediatorTabHelperObserver
   raw_ptr<WebStateList> _webStateList;
   // Profile for the browser.
   raw_ptr<ProfileIOS> _profile;
-  // Service tracking actor tasks and updates.
-  raw_ptr<actor::ActorService> _actorService;
-  // ID of the Gemini actor task driving actuation, if any.
-  std::optional<actor::ActorTaskId> _actuationTaskId;
-  // Store of the Gemini actor task driving actuation, if any.
-  // TODO(crbug.com/579385900): Move ownership to a profile-scoped
-  // `GeminiActorTaskManager` so the store outlives the container.
-  GeminiActorTaskStore* _actuationTaskStore;
+  // Creates the stores of the Gemini actor tasks.
+  GeminiActorTaskStoreManager* _taskStoreManager;
   // Authentication service used to retrieve the primary identity.
   raw_ptr<AuthenticationService> _authService;
   // Incognito state for the browser's scene.
@@ -250,7 +241,9 @@ class GeminiContainerMediatorTabHelperObserver
           browser->GetSceneState().lensOverlayStateNotifier;
       _incognitoState = browser->GetSceneState().incognitoState;
     }
-    _actorService = actorService;
+    _taskStoreManager =
+        [[GeminiActorTaskStoreManager alloc] initWithActorService:actorService];
+    [_taskStoreManager addObserver:self];
     _gatewayManager = [[GeminiGatewayManager alloc] initWithBrowser:browser
                                                   viewStateDelegate:self];
     _gatewayManager.tabPickerHandler.sharedTabsManager = sharedTabsManager;
@@ -353,9 +346,6 @@ class GeminiContainerMediatorTabHelperObserver
 }
 
 - (void)connect {
-  if (_actorService) {
-    _actorService->AddTaskLifecycleObserver(self);
-  }
   [_tabGridState addObserver:self];
   [_lensOverlayStateNotifier addObserver:self];
   [self updateSharedTabsForActiveWebState];
@@ -402,13 +392,9 @@ class GeminiContainerMediatorTabHelperObserver
 - (void)disconnect {
   [self onFloatyDismiss];
 
-  if (_actorService) {
-    _actorService->RemoveTaskLifecycleObserver(self);
-    _actorService = nullptr;
-  }
-  _actuationTaskId.reset();
-  [_actuationTaskStore disconnect];
-  _actuationTaskStore = nil;
+  [_taskStoreManager removeObserver:self];
+  [_taskStoreManager disconnect];
+  _taskStoreManager = nil;
   [_tabGridState removeObserver:self];
   _tabGridState = nil;
   [_lensOverlayStateNotifier removeObserver:self];
@@ -502,43 +488,24 @@ class GeminiContainerMediatorTabHelperObserver
   [self forceDismiss];
 }
 
-#pragma mark - ActorTaskLifecycleObserver
+#pragma mark - GeminiActorTaskStoreManagerObserver
 
-- (void)actorServiceDidStartTaskWithID:(actor::ActorTaskId)taskID
-                            sourceInfo:
-                                (const actor::TaskSourceInfo&)sourceInfo {
-  if (sourceInfo.type != actor::TaskSourceInfo::Client::kGlic) {
-    return;
-  }
-  // TODO(crbug.com/565875367): Track multiple concurrent tasks.
-  _actuationTaskId = taskID;
-  [_actuationTaskStore disconnect];
-  _actuationTaskStore =
-      [[GeminiActorTaskStore alloc] initWithTaskID:taskID
-                                      actorService:_actorService];
+- (void)actorTaskStoreManager:(GeminiActorTaskStoreManager*)manager
+               didCreateStore:(GeminiActorTaskStore*)store {
   // Actuation must be active before the worklog starts, otherwise its initial
   // height updates are ignored by `containerDidChangeActuationHeight:`.
   [self setActuationActive:YES];
   [self.delegate geminiContainerMediator:self
-             didStartActuationTaskWithID:taskID
-                              dataSource:_actuationTaskStore
-                           actionHandler:_actuationTaskStore];
+      didStartActuationTaskWithDataSource:store
+                            actionHandler:store];
 }
 
-- (void)actorServiceDidStopTaskWithID:(actor::ActorTaskId)taskID
-                           sourceInfo:(const actor::TaskSourceInfo&)sourceInfo
-                           finalState:(actor::ActorTaskState)finalState {
-  if (_actuationTaskId != taskID) {
-    return;
-  }
+- (void)actorTaskStoreManager:(GeminiActorTaskStoreManager*)manager
+           didDisconnectStore:(GeminiActorTaskStore*)store {
   // Deactivate first so the worklog reset doesn't override the restored
   // minimized detent height.
   [self setActuationActive:NO];
-  [self.delegate geminiContainerMediator:self
-              didStopActuationTaskWithID:taskID];
-  _actuationTaskId.reset();
-  [_actuationTaskStore disconnect];
-  _actuationTaskStore = nil;
+  [self.delegate geminiContainerMediatorDidStopActuationTask:self];
 }
 
 #pragma mark - AssistantContainerDelegate

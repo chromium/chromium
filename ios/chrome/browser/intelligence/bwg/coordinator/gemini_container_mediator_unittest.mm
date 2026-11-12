@@ -15,7 +15,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
-#import "components/actor/core/task_source_info.h"
 #import "components/autofill/core/common/autofill_debug_features.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/feature_engagement/public/feature_constants.h"
@@ -32,9 +31,10 @@
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/fullscreen/public/fullscreen_metrics.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/test/test_fullscreen_controller.h"
-#import "ios/chrome/browser/intelligence/actor/public/actor_task_lifecycle_observer.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_data.h"
+#import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_actor_task_store.h"
+#import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_actor_task_store_manager.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_mediator_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_mediator_event_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
@@ -92,9 +92,10 @@
 #import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
 
-@interface GeminiContainerMediator (Testing) <ActorTaskLifecycleObserver,
-                                              IdentityManagerObserving,
-                                              IncognitoStateObserver>
+@interface GeminiContainerMediator (Testing) <
+    GeminiActorTaskStoreManagerObserver,
+    IdentityManagerObserving,
+    IncognitoStateObserver>
 - (void)cancelPageContextGeneration;
 - (void)setActuationActive:(BOOL)actuationActive;
 - (GeminiConfiguration*)createGeminiConfigurationForActiveWebState:
@@ -165,8 +166,7 @@ NSString* const kTestConversationID = @"conversation_id";
 @interface FakeGeminiContainerMediatorDelegate
     : NSObject <GeminiContainerMediatorDelegate>
 @property(nonatomic, weak) FakeGeminiContainerConsumer* consumer;
-@property(nonatomic, readonly) std::vector<actor::ActorTaskId> startedTaskIDs;
-@property(nonatomic, readonly) std::vector<actor::ActorTaskId> stoppedTaskIDs;
+@property(nonatomic, readonly) BOOL taskStopped;
 @property(nonatomic, weak, readonly) id<ActorTaskDataSource> startedDataSource;
 @property(nonatomic, weak, readonly) id<ActorTaskActionHandler>
     startedActionHandler;
@@ -176,18 +176,17 @@ NSString* const kTestConversationID = @"conversation_id";
 
 @implementation FakeGeminiContainerMediatorDelegate
 - (void)geminiContainerMediator:(GeminiContainerMediator*)mediator
-    didStartActuationTaskWithID:(actor::ActorTaskId)taskID
-                     dataSource:(id<ActorTaskDataSource>)dataSource
-                  actionHandler:(id<ActorTaskActionHandler>)actionHandler {
-  _startedTaskIDs.push_back(taskID);
+    didStartActuationTaskWithDataSource:(id<ActorTaskDataSource>)dataSource
+                          actionHandler:
+                              (id<ActorTaskActionHandler>)actionHandler {
   _startedDataSource = dataSource;
   _startedActionHandler = actionHandler;
   _actuationActiveOnStart = _consumer.isActuationActive;
 }
 
-- (void)geminiContainerMediator:(GeminiContainerMediator*)mediator
-     didStopActuationTaskWithID:(actor::ActorTaskId)taskID {
-  _stoppedTaskIDs.push_back(taskID);
+- (void)geminiContainerMediatorDidStopActuationTask:
+    (GeminiContainerMediator*)mediator {
+  _taskStopped = YES;
   _actuationActiveOnStop = _consumer.isActuationActive;
 }
 @end
@@ -1409,36 +1408,17 @@ TEST_F(GeminiContainerMediatorTest, TestGeminiActuationTaskNotifiesDelegate) {
   delegate.consumer = consumer;
   mediator_.delegate = delegate;
 
-  const actor::TaskSourceInfo source(actor::TaskSourceInfo::Client::kGlic,
-                                     std::nullopt);
-  [mediator_ actorServiceDidStartTaskWithID:kTaskId sourceInfo:source];
-  EXPECT_EQ(std::vector<actor::ActorTaskId>{kTaskId}, delegate.startedTaskIDs);
-  EXPECT_TRUE(delegate.startedDataSource);
-  EXPECT_TRUE(delegate.startedActionHandler);
+  GeminiActorTaskStore* store =
+      [[GeminiActorTaskStore alloc] initWithTaskID:kTaskId
+                                      actorService:nullptr];
+  [mediator_ actorTaskStoreManager:nil didCreateStore:store];
+  EXPECT_EQ(delegate.startedDataSource, store);
+  EXPECT_EQ(delegate.startedActionHandler, store);
   EXPECT_TRUE(delegate.actuationActiveOnStart);
 
-  [mediator_ actorServiceDidStopTaskWithID:kTaskId
-                                sourceInfo:source
-                                finalState:actor::ActorTaskState::kFinished];
-  EXPECT_EQ(std::vector<actor::ActorTaskId>{kTaskId}, delegate.stoppedTaskIDs);
+  [mediator_ actorTaskStoreManager:nil didDisconnectStore:store];
+  EXPECT_TRUE(delegate.taskStopped);
   EXPECT_FALSE(delegate.actuationActiveOnStop);
-}
-
-// Tests that non-Gemini actuation tasks are not forwarded to the delegate.
-TEST_F(GeminiContainerMediatorTest, TestNonGeminiActuationTaskIgnored) {
-  FakeGeminiContainerMediatorDelegate* delegate =
-      [[FakeGeminiContainerMediatorDelegate alloc] init];
-  mediator_.delegate = delegate;
-
-  const actor::TaskSourceInfo source(actor::TaskSourceInfo::Client::kTtc,
-                                     std::nullopt);
-  [mediator_ actorServiceDidStartTaskWithID:kTaskId sourceInfo:source];
-  [mediator_ actorServiceDidStopTaskWithID:kTaskId
-                                sourceInfo:source
-                                finalState:actor::ActorTaskState::kFinished];
-
-  EXPECT_TRUE(delegate.startedTaskIDs.empty());
-  EXPECT_TRUE(delegate.stoppedTaskIDs.empty());
 }
 
 // Tests that the reported actuation height drives the medium detent height and

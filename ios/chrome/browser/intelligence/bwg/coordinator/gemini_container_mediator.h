@@ -144,7 +144,7 @@ class GeminiSharedTabsManager;
 - (void)fetchZeroStateSuggestions:(GeminiStartupState*)startupState;
 
 // Handles initial setup for UI state, page context generation, and connecting
-// observed services (e.g. actor service) when the container session starts.
+// observed services when the container session starts.
 - (void)connect;
 
 // Disconnects raw pointers owned by the mediator and dismisses handlers.

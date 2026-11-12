@@ -148,15 +148,15 @@
 #pragma mark - GeminiContainerMediatorDelegate
 
 - (void)geminiContainerMediator:(GeminiContainerMediator*)mediator
-    didStartActuationTaskWithID:(actor::ActorTaskId)taskID
-                     dataSource:(id<ActorTaskDataSource>)dataSource
-                  actionHandler:(id<ActorTaskActionHandler>)actionHandler {
+    didStartActuationTaskWithDataSource:(id<ActorTaskDataSource>)dataSource
+                          actionHandler:
+                              (id<ActorTaskActionHandler>)actionHandler {
   [_actuationWorklogCoordinator startObservingDataSource:dataSource
                                            actionHandler:actionHandler];
 }
 
-- (void)geminiContainerMediator:(GeminiContainerMediator*)mediator
-     didStopActuationTaskWithID:(actor::ActorTaskId)taskID {
+- (void)geminiContainerMediatorDidStopActuationTask:
+    (GeminiContainerMediator*)mediator {
   [_actuationWorklogCoordinator stopObservingDataSource];
 }
 
