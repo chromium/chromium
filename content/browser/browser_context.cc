@@ -110,7 +110,9 @@ BrowserContext::~BrowserContext() {
 }
 
 DownloadManager* BrowserContext::GetDownloadManager() {
-  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
+  // TODO(crbug.com/584097080): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return impl()->GetDownloadManager();
 }
 
