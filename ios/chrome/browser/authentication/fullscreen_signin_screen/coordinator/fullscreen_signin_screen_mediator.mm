@@ -610,6 +610,7 @@ enum class SigninScreenState {
                                          email:selectedIdentity.userEmail
                                      givenName:selectedIdentity.userGivenName
                                         avatar:avatar
+                                  headerAvatar:nil
                                        managed:[self isIdentityKnownToBeManaged:
                                                          selectedIdentity]];
   }

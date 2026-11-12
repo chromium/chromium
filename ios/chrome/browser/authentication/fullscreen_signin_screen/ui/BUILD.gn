@@ -10,8 +10,10 @@ source_set("ui") {
   ]
   deps = [
     "//base",
+    "//components/strings:components_strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/authentication/fullscreen_signin_screen/ui/resources",
+    "//ios/chrome/browser/authentication/ui_bundled/resources",
     "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
     "//ios/chrome/browser/authentication/ui_bundled/views",
     "//ios/chrome/browser/first_run/public:constants",
@@ -23,6 +25,24 @@ source_set("ui") {
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/promo_style",
     "//ios/chrome/common/ui/util",
+    "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "fullscreen_signin_screen_view_controller_unittest.mm" ]
+  deps = [
+    ":ui",
+    "//base",
+    "//components/strings:components_strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
+    "//ios/chrome/browser/authentication/ui_bundled/views",
+    "//ios/chrome/common/ui/button_stack",
+    "//ios/chrome/common/ui/promo_style",
+    "//ios/chrome/test/app:test_support",
+    "//testing/gtest",
     "//ui/base",
   ]
 }

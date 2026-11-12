@@ -50,18 +50,24 @@ typedef NS_ENUM(NSUInteger, SigninScreenConsumerScreenIntent) {
 // If there is a signed-in account (in deeplink signin flow) we show the
 // signed-in identity email along with the target account email in the subtitle.
 @property(nonatomic, copy) NSString* targetIdentityEmail;
+// Customized title overriding the default title, or `nil` if the default title
+// should be used. This property needs to be set before the view is loaded.
+@property(nonatomic, copy) NSString* titleOverride;
 // Customized subtitle overriding the default subtitle when a preferred account
 // is selected, or nil if the default subtitle should be used. Once set, it is
 // not updated if the selected account changes.
 @property(nonatomic, copy) NSString* subtitleOverride;
 
-// Sets the `userName`, `email`, `givenName` and `avatar` of the selected
-// identity. The `userName` and `givenName` can be nil. Notifies the UI that an
-// identity is available.
+// Sets the `userName`, `email`, `givenName`, `avatar`, `headerAvatar` (the
+// avatar displayed in the screen header), and `managed` status of the selected
+// identity. `userName` and `givenName` can be `nil`; `headerAvatar` must be
+// non-`nil` in the account switching promo flow and can be `nil` otherwise.
+// Notifies the UI that an identity is available.
 - (void)setSelectedIdentityUserName:(NSString*)userName
                               email:(NSString*)email
                           givenName:(NSString*)givenName
                              avatar:(UIImage*)avatar
+                       headerAvatar:(UIImage*)headerAvatar
                             managed:(BOOL)managed;
 // Notifies the consumer that no identity is available and that the UI should be
 // updated accordingly.

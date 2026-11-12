@@ -4,8 +4,12 @@
 
 #import "ios/chrome/browser/authentication/fullscreen_signin_screen/ui/fullscreen_signin_screen_view_controller.h"
 
+#import "base/check.h"
+#import "base/check_op.h"
+#import "base/not_fatal_until.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_context_style.h"
 #import "ios/chrome/browser/authentication/ui_bundled/views/identity_button_control.h"
 #import "ios/chrome/browser/first_run/public/first_run_constants.h"
@@ -18,7 +22,7 @@
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/device_form_factor.h"
-#import "ui/base/l10n/l10n_util.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
 
@@ -62,6 +66,8 @@ NSString* const kCollaborationSigninHeaderBackground =
   SigninContextStyle _contextStyle;
   // Default subtitle text before any `subtitleOverride` is applied.
   NSString* _defaultSubtitleText;
+  // Email of the currently selected identity.
+  NSString* _selectedIdentityEmail;
 }
 
 @dynamic delegate;
@@ -71,6 +77,7 @@ NSString* const kCollaborationSigninHeaderBackground =
 @synthesize syncEnabled = _syncEnabled;
 @synthesize currentPrimaryIdentityEmail = _currentPrimaryIdentityEmail;
 @synthesize targetIdentityEmail = _targetIdentityEmail;
+@synthesize titleOverride = _titleOverride;
 @synthesize subtitleOverride = _subtitleOverride;
 
 - (instancetype)initWithContextStyle:(SigninContextStyle)contextStyle {
@@ -96,8 +103,10 @@ NSString* const kCollaborationSigninHeaderBackground =
   // Set banner.
 #if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   self.bannerName = kChromeSigninBannerImage;
-  self.headerImage = MakeSymbolMulticolor(
-      SymbolWithPointSize(SymbolMulticolorChromeball, kHeaderImageSize));
+  if (_contextStyle != SigninContextStyle::kAccountSwitchingPromo) {
+    self.headerImage = MakeSymbolMulticolor(
+        SymbolWithPointSize(SymbolMulticolorChromeball, kHeaderImageSize));
+  }
 #else
   self.bannerName = kChromiumSigninBannerImage;
 #endif
@@ -144,7 +153,9 @@ NSString* const kCollaborationSigninHeaderBackground =
       break;
     }
   }
-  [self updateSubtitleText];
+  if (self.titleOverride) {
+    self.titleText = self.titleOverride;
+  }
   [self generateDisclaimer];
 
   // Add `self.identityControl` if needed.
@@ -206,6 +217,7 @@ NSString* const kCollaborationSigninHeaderBackground =
   // Call super after setting up the strings and others, as required per super
   // class.
   [super viewDidLoad];
+  [self updateSubtitleText];
   [self.delegate fullscreenSigninScreenViewControllerViewDidLoad:self];
 }
 
@@ -215,9 +227,14 @@ NSString* const kCollaborationSigninHeaderBackground =
   if (!_identityControl) {
     _identityControl = [[IdentityButtonControl alloc] initWithFrame:CGRectZero];
     _identityControl.translatesAutoresizingMaskIntoConstraints = NO;
-    [_identityControl addTarget:self
-                         action:@selector(identityButtonControlTapped:forEvent:)
-               forControlEvents:UIControlEventTouchUpInside];
+    if (_contextStyle == SigninContextStyle::kAccountSwitchingPromo) {
+      _identityControl.interactive = NO;
+    } else {
+      [_identityControl
+                 addTarget:self
+                    action:@selector(identityButtonControlTapped:forEvent:)
+          forControlEvents:UIControlEventTouchUpInside];
+    }
 
     // Setting the content hugging priority isn't working, so creating a
     // low-priority constraint to make sure that the view is as small as
@@ -244,15 +261,22 @@ NSString* const kCollaborationSigninHeaderBackground =
                               email:(NSString*)email
                           givenName:(NSString*)givenName
                              avatar:(UIImage*)avatar
+                       headerAvatar:(UIImage*)headerAvatar
                             managed:(BOOL)managed {
   DCHECK_NE(self.signinStatus, SigninScreenConsumerSigninStatusDisabled);
   DCHECK(email);
   DCHECK(avatar);
+  _selectedIdentityEmail = [email copy];
   self.personalizedButtonPrompt =
       givenName ? givenName : (userName ? userName : email);
   [self updateUIForIdentityAvailable:YES];
   [self.identityControl setIdentityName:userName email:email managed:managed];
   [self.identityControl setIdentityAvatar:avatar];
+  if (_contextStyle == SigninContextStyle::kAccountSwitchingPromo) {
+    CHECK(headerAvatar, base::NotFatalUntil::M170);
+    self.headerImage = headerAvatar;
+    [self updateSubtitleText];
+  }
 }
 
 - (void)noIdentityAvailable {
@@ -265,6 +289,11 @@ NSString* const kCollaborationSigninHeaderBackground =
   self.configuration.loading = !UIEnabled;
   [self reloadConfiguration];
   self.view.userInteractionEnabled = UIEnabled;
+}
+
+- (void)setTitleOverride:(NSString*)titleOverride {
+  CHECK(!self.viewLoaded, base::NotFatalUntil::M170);
+  _titleOverride = [titleOverride copy];
 }
 
 - (void)setSubtitleOverride:(NSString*)subtitleOverride {
@@ -376,6 +405,16 @@ NSString* const kCollaborationSigninHeaderBackground =
       }
       break;
     }
+    case SigninContextStyle::kAccountSwitchingPromo: {
+      self.shouldHideBanner = YES;
+      self.headerImageType = PromoStyleImageType::kAvatar;
+      CHECK(self.headerImage, base::NotFatalUntil::M170);
+      self.headerBackgroundImage =
+          [UIImage imageNamed:@"sync_opt_in_background"];
+      self.titleText =
+          l10n_util::GetNSString(IDS_IOS_ACCOUNT_SWITCHING_PROMO_TITLE);
+      break;
+    }
     case SigninContextStyle::kDefault: {
       // Use in the context of the fullscreen sign-in promo dialog.
       self.titleText = [self promoSignInHeaderText];
@@ -394,8 +433,11 @@ NSString* const kCollaborationSigninHeaderBackground =
 // using `subtitleOverride` if present, or `_defaultSubtitleText` otherwise.
 - (void)updateSubtitleText {
   self.subtitleText = self.subtitleOverride ?: _defaultSubtitleText;
-  if (self.viewLoaded) {
+  if (self.subtitleLabel) {
     self.subtitleLabel.text = self.subtitleText;
+    if (_contextStyle == SigninContextStyle::kAccountSwitchingPromo) {
+      [self applyAccountSwitchingSubtitleStyling];
+    }
   }
 }
 
@@ -420,11 +462,57 @@ NSString* const kCollaborationSigninHeaderBackground =
             l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_STAY_SIGNED_OUT);
       }
       break;
+    case SigninContextStyle::kAccountSwitchingPromo:
+      self.configuration.secondaryActionString =
+          l10n_util::GetNSString(IDS_NOT_NOW);
+      break;
     case SigninContextStyle::kDefault:
       self.configuration.secondaryActionString =
           l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_STAY_SIGNED_OUT);
       break;
   }
+}
+
+// Highlights the target account email in bold in `subtitleLabel` to match the
+// account switching visual hierarchy.
+- (void)applyAccountSwitchingSubtitleStyling {
+  CHECK(self.subtitleLabel, base::NotFatalUntil::M170);
+  if (!self.subtitleText.length) {
+    return;
+  }
+  CHECK(_selectedIdentityEmail.length, base::NotFatalUntil::M170);
+  if (!_selectedIdentityEmail.length) {
+    return;
+  }
+  NSRange targetRange =
+      [self.subtitleText rangeOfString:_selectedIdentityEmail];
+  if (targetRange.location == NSNotFound) {
+    return;
+  }
+  UIFont* baseFont = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+  self.subtitleLabel.font = baseFont;
+  self.subtitleLabel.text = self.subtitleText;
+  UITraitCollection* defaultTraitCollection =
+      [UITraitCollection traitCollectionWithPreferredContentSizeCategory:
+                             UIContentSizeCategoryLarge];
+  UIFont* unscaledBodyFont =
+      [UIFont preferredFontForTextStyle:UIFontTextStyleBody
+          compatibleWithTraitCollection:defaultTraitCollection];
+  UIFontDescriptor* boldDescriptor = [unscaledBodyFont.fontDescriptor
+      fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitBold];
+  UIFont* boldFont =
+      boldDescriptor ? [UIFont fontWithDescriptor:boldDescriptor size:0.0]
+                     : [UIFont boldSystemFontOfSize:unscaledBodyFont.pointSize];
+  boldFont = [[UIFontMetrics metricsForTextStyle:UIFontTextStyleBody]
+      scaledFontForFont:boldFont];
+  NSMutableAttributedString* attributedSubtitle =
+      [[NSMutableAttributedString alloc]
+          initWithAttributedString:self.subtitleLabel.attributedText];
+  [attributedSubtitle addAttribute:NSFontAttributeName
+                             value:boldFont
+                             range:targetRange];
+  self.subtitleLabel.attributedText = attributedSubtitle;
+  self.subtitleLabel.textAlignment = NSTextAlignmentCenter;
 }
 
 @end

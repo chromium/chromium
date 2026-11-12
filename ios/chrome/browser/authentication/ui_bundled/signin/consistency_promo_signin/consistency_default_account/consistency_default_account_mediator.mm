@@ -386,6 +386,7 @@ NSString* GetPromoLabelString(
           IDS_IOS_SIGNIN_GROUP_COLLABORATION_HALF_SHEET_SUBTITLE);
       break;
     case SigninContextStyle::kDeeplinkSignin:
+    case SigninContextStyle::kAccountSwitchingPromo:
     case SigninContextStyle::kDefault:
       break;
   }

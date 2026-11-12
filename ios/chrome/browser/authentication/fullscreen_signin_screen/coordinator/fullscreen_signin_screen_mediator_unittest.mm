@@ -62,6 +62,7 @@ using AccountPreviewPreference =
 @property(nonatomic, assign) BOOL syncEnabled;
 @property(nonatomic, copy) NSString* currentPrimaryIdentityEmail;
 @property(nonatomic, copy) NSString* targetIdentityEmail;
+@property(nonatomic, copy) NSString* titleOverride;
 @property(nonatomic, copy) NSString* subtitleOverride;
 @property(nonatomic, copy) NSString* subtitleOverrideWhenContentLoadingStopped;
 @property(nonatomic, copy) NSString* selectedEmail;
@@ -76,6 +77,7 @@ using AccountPreviewPreference =
                               email:(NSString*)email
                           givenName:(NSString*)givenName
                              avatar:(UIImage*)avatar
+                       headerAvatar:(UIImage*)headerAvatar
                             managed:(BOOL)managed {
   self.selectedEmail = email;
 }

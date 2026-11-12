@@ -58,6 +58,7 @@
     }
     case SigninContextStyle::kDeeplinkSignin:
       NOTREACHED();
+    case SigninContextStyle::kAccountSwitchingPromo:
     case SigninContextStyle::kDefault: {
       self.titleText = l10n_util::GetNSString(IDS_IOS_HISTORY_SYNC_TITLE);
       self.subtitleText = l10n_util::GetNSString(IDS_IOS_HISTORY_SYNC_SUBTITLE);

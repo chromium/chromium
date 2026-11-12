@@ -18,6 +18,10 @@ enum class SigninContextStyle {
   kCollaborationShareTabGroup,
   // Shown when following sign-in after scanning a QR code on another device.
   kDeeplinkSignin,
+  // Shown when offering to switch accounts via the smart account switching
+  // startup promo (only shown when a personal account is signed-in in the
+  // current profile).
+  kAccountSwitchingPromo,
 };
 
 #endif  // IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_SIGNIN_SIGNIN_CONTEXT_STYLE_H_
