@@ -665,6 +665,7 @@ public class CollaborationIntegrationTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisabledTest(message = "crbug.com/577059413")
     public void testTilesDialogRender() throws Exception {
         mDataSharingUIDelegate.overrideAvatarColor(ACCOUNT1.getGaiaId(), Color.RED);
         mDataSharingUIDelegate.overrideAvatarColor(ACCOUNT2.getGaiaId(), Color.BLUE);
