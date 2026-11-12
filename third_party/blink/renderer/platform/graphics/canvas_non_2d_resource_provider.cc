@@ -172,9 +172,6 @@ CanvasNon2DResourceProvider::CanvasNon2DResourceProvider(
       context_lost_callback_(std::move(context_lost_callback)),
       is_software_(false),
       snapshot_paint_image_id_(cc::PaintImage::GetNextId()),
-      recorder_for_external_draws_(
-          std::make_unique<MemoryManagedPaintRecorder>(Size(),
-                                                       /*client=*/nullptr)),
       context_provider_wrapper_(std::move(context_provider_wrapper)) {
   CanvasMemoryDumpProvider::Instance()->RegisterClient(this);
   if (context_provider_wrapper_) {
@@ -241,9 +238,6 @@ CanvasNon2DResourceProvider::CanvasNon2DResourceProvider(
       context_lost_callback_(std::move(context_lost_callback)),
       is_software_(true),
       snapshot_paint_image_id_(cc::PaintImage::GetNextId()),
-      recorder_for_external_draws_(
-          std::make_unique<MemoryManagedPaintRecorder>(Size(),
-                                                       /*client=*/nullptr)),
       shared_image_interface_provider_(
           shared_image_interface_provider
               ? shared_image_interface_provider->GetWeakPtr()
@@ -467,9 +461,10 @@ CanvasNon2DResourceProvider::DoExternalOverdrawAndProduceResource(
     }
   }
 
-  draw_callback(recorder_for_external_draws_->getRecordingCanvas());
-  if (recorder_for_external_draws_->HasReleasableDrawOps()) {
-    FlushRecording(recorder_for_external_draws_->ReleaseMainRecording());
+  MemoryManagedPaintRecorder recorder(Size(), /*client=*/nullptr);
+  draw_callback(recorder.getRecordingCanvas());
+  if (recorder.HasReleasableDrawOps()) {
+    FlushRecording(recorder.ReleaseMainRecording());
   }
 
   if (IsSoftware()) {
@@ -490,9 +485,10 @@ CanvasNon2DResourceProvider::DoExternalOverdrawAndSnapshot(
     return nullptr;
   }
 
-  draw_callback(recorder_for_external_draws_->getRecordingCanvas());
-  if (recorder_for_external_draws_->HasReleasableDrawOps()) {
-    FlushRecording(recorder_for_external_draws_->ReleaseMainRecording());
+  MemoryManagedPaintRecorder recorder(Size(), /*client=*/nullptr);
+  draw_callback(recorder.getRecordingCanvas());
+  if (recorder.HasReleasableDrawOps()) {
+    FlushRecording(recorder.ReleaseMainRecording());
   }
   return Snapshot();
 }
