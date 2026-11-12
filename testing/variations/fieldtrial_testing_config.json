@@ -12388,6 +12388,22 @@
             ]
         }
     ],
+    "LazyKeyedServiceInstantiationStudy": [
+        {
+            "platforms": [
+                "android",
+                "android_desktop"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "LazyKeyedServiceInstantiation"
+                    ]
+                }
+            ]
+        }
+    ],
     "LazyParseInlineStyleSheets": [
         {
             "platforms": [
