@@ -11,6 +11,7 @@
 
 #include "base/base_export.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ref.h"
 #include "base/profiler/thread_group_profiler.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/waitable_event.h"
@@ -24,6 +25,7 @@
 
 namespace base {
 
+class HistogramBase;
 class WorkerThreadObserver;
 class ThreadGroupProfiler;
 
@@ -184,6 +186,9 @@ class BASE_EXPORT ThreadGroupImpl : public ThreadGroup,
   // This is used to label the thread group's histograms with
   // {ProcessName}.{ThreadGroup} for lock contention monitoring.
   const std::string histogram_label_;
+
+  // Registered during construction and outlives the thread group.
+  const raw_ref<HistogramBase> unnecessary_wakeup_histogram_;
 };
 
 }  // namespace internal

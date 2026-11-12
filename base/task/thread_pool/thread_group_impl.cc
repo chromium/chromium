@@ -284,7 +284,10 @@ ThreadGroupImpl::ThreadGroupImpl(
       tracked_ref_factory_(this),
       monitor_worker_thread_priorities_(monitor_worker_thread_priorities),
       record_lock_contention_(record_lock_contention),
-      histogram_label_(histogram_label) {
+      histogram_label_(histogram_label),
+      unnecessary_wakeup_histogram_(*BooleanHistogram::FactoryGet(
+          unnecessary_wakeup_histogram_label_,
+          HistogramBase::kUmaTargetedHistogramFlag)) {
   DCHECK(!thread_group_label_.empty());
 }
 
@@ -745,10 +748,7 @@ void ThreadGroupImpl::WorkerDelegate::OnWorkerBecomesIdleLockRequired(
 void ThreadGroupImpl::WorkerDelegate::RecordUnnecessaryWakeup() {
   DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
 
-  base::BooleanHistogram::FactoryGet(
-      outer_->unnecessary_wakeup_histogram_label_,
-      base::Histogram::kUmaTargetedHistogramFlag)
-      ->Add(true);
+  outer_->unnecessary_wakeup_histogram_->AddBoolean(true);
 
   TRACE_EVENT_INSTANT("wakeup.flow", "ThreadPool.UnnecessaryWakeup");
 }

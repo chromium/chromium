@@ -21,6 +21,9 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/metrics/histogram.h"
+#include "base/metrics/histogram_samples.h"
+#include "base/metrics/record_histogram_checker.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/profiler/module_cache.h"
 #include "base/profiler/periodic_sampling_scheduler.h"
@@ -66,6 +69,163 @@ constexpr size_t kNumTasksPostedPerThread = 150;
 // worker is allowed to cleanup.
 constexpr TimeDelta kReclaimTimeForCleanupTests = Milliseconds(500);
 constexpr size_t kLargeNumber = 512;
+
+// Exposes a spurious wakeup without posting a task, so that the real worker
+// loop exercises WorkerDelegate::RecordUnnecessaryWakeup().
+class WakeupThreadGroup : public ThreadGroupImpl {
+ public:
+  using ThreadGroupImpl::ThreadGroupImpl;
+
+  void WakeUpWorker() {
+    scoped_refptr<WorkerThread> worker;
+    {
+      CheckedAutoLock auto_lock(lock_);
+      CHECK_EQ(workers_.size(), 1u);
+      worker = workers_.front();
+    }
+    worker->WakeUp();
+  }
+};
+
+// ShouldRecord() runs under the recorder lock. Only the explicit test query
+// with hash zero waits; normal histogram creation is unaffected.
+class BlockingWakeupRecordChecker : public RecordHistogramChecker {
+ public:
+  BlockingWakeupRecordChecker(TestWaitableEvent* entered,
+                              TestWaitableEvent* release)
+      : entered_(entered), release_(release) {}
+
+  bool ShouldRecord(uint32_t hash) const override {
+    if (hash == 0) {
+      entered_->Signal();
+      release_->Wait();
+    }
+    return true;
+  }
+
+ private:
+  const raw_ptr<TestWaitableEvent> entered_;
+  const raw_ptr<TestWaitableEvent> release_;
+};
+
+class ThreadGroupUnnecessaryWakeupTest : public testing::Test,
+                                         public ThreadGroup::Delegate {
+ protected:
+  void SetUp() override {
+    recorder_ = StatisticsRecorder::CreateTemporaryForTesting();
+    ASSERT_TRUE(service_thread_.Start());
+  }
+
+  void TearDown() override {
+    if (group_) {
+      group_->JoinForTesting();
+      group_.reset();
+    }
+    service_thread_.Stop();
+    recorder_.reset();
+  }
+
+  void CreateGroup(std::string_view label) {
+    // Histogram recording does not depend on background-thread support.
+    group_ = std::make_unique<WakeupThreadGroup>(
+        label, "WakeupTest", ThreadType::kDefault, 0,
+        task_tracker_.GetTrackedRef(), tracked_ref_factory_.GetTrackedRef());
+    // Registration must not depend on Start() having been called.
+    EXPECT_NE(StatisticsRecorder::FindHistogram(
+                  "ThreadPool.UnnecessaryWakeup." + std::string(label)),
+              nullptr);
+    group_->Start(1, 1, TimeDelta::Max(), service_thread_.task_runner(),
+                  nullptr, ThreadGroup::WorkerEnvironment::NONE,
+                  /*synchronous_thread_start_for_testing=*/true);
+    // Start() can defer worker creation to the service thread. Complete startup
+    // before a test holds the recorder lock or wakes the worker.
+    service_thread_.FlushForTesting();
+    group_->WaitForAllWorkersIdleForTesting();
+  }
+
+  bool WaitForSample(HistogramBase* histogram, int count) {
+    const TimeTicks deadline =
+        TimeTicks::Now() + TestTimeouts::action_timeout();
+    while (histogram->SnapshotSamples()->TotalCount() < count) {
+      if (TimeTicks::Now() >= deadline) {
+        return false;
+      }
+      PlatformThread::Sleep(Milliseconds(1));
+    }
+    return true;
+  }
+
+  ThreadGroup* GetThreadGroup(ThreadType, ThreadPolicy) override {
+    return group_.get();
+  }
+
+  std::unique_ptr<StatisticsRecorder> recorder_;
+  TaskTracker task_tracker_;
+  TrackedRefFactory<ThreadGroup::Delegate> tracked_ref_factory_{this};
+  Thread service_thread_{"WakeupTestService"};
+  std::unique_ptr<WakeupThreadGroup> group_;
+};
+
+TEST_F(ThreadGroupUnnecessaryWakeupTest, RecordsWhileRecorderLockIsHeld) {
+  CreateGroup("WakeupLockTest");
+  // Pre-create the histogram on both versions. This test must cover the first
+  // and subsequent wakeups, rather than only a warmed-up worker-local cache.
+  HistogramBase* histogram = BooleanHistogram::FactoryGet(
+      "ThreadPool.UnnecessaryWakeup.WakeupLockTest",
+      HistogramBase::kUmaTargetedHistogramFlag);
+  TestWaitableEvent entered;
+  TestWaitableEvent release;
+  StatisticsRecorder::SetRecordChecker(
+      std::make_unique<BlockingWakeupRecordChecker>(&entered, &release));
+  Thread lock_holder("RecorderLockHolder");
+  ASSERT_TRUE(lock_holder.Start());
+  lock_holder.task_runner()->PostTask(
+      FROM_HERE, BindLambdaForTesting(
+                     [] { StatisticsRecorder::ShouldRecordHistogram(0); }));
+  entered.Wait();
+
+  for (int count = 1; count <= 3; ++count) {
+    group_->WakeUpWorker();
+    if (!WaitForSample(histogram, count)) {
+      ADD_FAILURE()
+          << "Unnecessary-wakeup recording waited for the recorder lock";
+      break;
+    }
+  }
+
+  // Always release before joining, including when the regression is present.
+  release.Signal();
+  lock_holder.Stop();
+  StatisticsRecorder::SetRecordChecker(nullptr);
+}
+
+TEST_F(ThreadGroupUnnecessaryWakeupTest, LabelsAndRecreatedGroups) {
+  for (std::string_view label :
+       {"WakeupLabelA", "WakeupLabelB", "WakeupLabelA"}) {
+    CreateGroup(label);
+    const std::string name =
+        "ThreadPool.UnnecessaryWakeup." + std::string(label);
+    HistogramBase* histogram = StatisticsRecorder::FindHistogram(name);
+    ASSERT_NE(histogram, nullptr);
+    const int previous = histogram->SnapshotSamples()->TotalCount();
+    EXPECT_EQ(BOOLEAN_HISTOGRAM, histogram->GetHistogramType());
+    EXPECT_TRUE(histogram->HasFlags(HistogramBase::kUmaTargetedHistogramFlag));
+    for (int count = 1; count <= 3; ++count) {
+      group_->WakeUpWorker();
+      ASSERT_TRUE(WaitForSample(histogram, previous + count));
+    }
+    group_->JoinForTesting();
+    group_.reset();
+  }
+  EXPECT_EQ(6, StatisticsRecorder::FindHistogram(
+                   "ThreadPool.UnnecessaryWakeup.WakeupLabelA")
+                   ->SnapshotSamples()
+                   ->GetCount(1));
+  EXPECT_EQ(3, StatisticsRecorder::FindHistogram(
+                   "ThreadPool.UnnecessaryWakeup.WakeupLabelB")
+                   ->SnapshotSamples()
+                   ->GetCount(1));
+}
 
 class ThreadGroupImplImplTestBase : public ThreadGroup::Delegate {
  public:
