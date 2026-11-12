@@ -314,7 +314,7 @@ bool PopupMayExceedContentAreaBounds(content::WebContents* web_contents) {
   // allow-listed to draw popups outside the boundary of the extension popup.
   if (url.SchemeIs(extensions::kExtensionScheme)) {
     views::Widget* widget = views::Widget::GetTopLevelWidgetForNativeView(
-        web_contents->GetContentNativeView());
+        web_contents->GetNativeView());
     return widget && widget->GetName() == ExtensionPopup::kViewClassName;
   }
   return false;

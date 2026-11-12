@@ -1652,31 +1652,25 @@ bool PopupViewViews::DoUpdateBoundsAndRedrawPopup(bool prefer_prev_arrow_side) {
 
   gfx::Rect popup_bounds;
 
-  const gfx::Rect content_area_bounds = GetContentAreaBounds();
-  // TODO(crbug.com/40799454) Once popups can render outside the main window on
-  // Linux, use the screen bounds.
-  const gfx::Rect top_window_bounds = GetTopWindowBounds();
-  const gfx::Rect& max_bounds_for_popup =
-      PopupMayExceedContentAreaBounds(controller_->GetWebContents())
-          ? top_window_bounds
-          : content_area_bounds;
-
-  // Intersect with the current monitor's work area to avoid showing popups
-  // outside the screen.
-  gfx::Rect visible_content_area_bounds = IntersectWithDisplayBounds(
-      controller_->GetWebContents(), max_bounds_for_popup);
+  const gfx::Rect max_bounds_for_popup = GetMaxPopupBounds();
+  // For root popups, the anchor element is in the `WebContents` and must
+  // overlap the visible content area. For sub-popups, the anchor is a row in
+  // the parent popup, which may extend into `max_bounds_for_popup` (e.g. in an
+  // extension popup).
+  const gfx::Rect max_bounds_for_element =
+      parent_ ? max_bounds_for_popup : GetVisibleContentAreaBounds();
 
   gfx::Rect element_bounds =
       gfx::ToEnclosingRect(controller_->element_bounds());
 
-  // An element that is contained by the `content_area_bounds` (even if empty,
+  // An element that is contained by `max_bounds_for_element` (even if empty,
   // which means either the height or the width is 0) is never outside the
-  // content area. An empty element case can happen with caret bounds, which
+  // allowed area. An empty element case can happen with caret bounds, which
   // sometimes has 0 width.
-  if (!visible_content_area_bounds.Contains(element_bounds)) {
-    // If the element exceeds the content area, ensure that the popup is still
-    // visually attached to the input element.
-    element_bounds.Intersect(content_area_bounds);
+  if (!max_bounds_for_element.Contains(element_bounds)) {
+    // If the element exceeds the allowed area, ensure that the popup is still
+    // visually attached to the anchor element.
+    element_bounds.Intersect(max_bounds_for_element);
     if (element_bounds.IsEmpty()) {
       controller_->Hide(SuggestionHidingReason::kElementOutsideOfContentArea);
       return false;
@@ -1696,12 +1690,12 @@ bool PopupViewViews::DoUpdateBoundsAndRedrawPopup(bool prefer_prev_arrow_side) {
     return false;
   }
 
-  if (!CanShowDropdownInBounds(visible_content_area_bounds)) {
+  if (!CanShowDropdownInBounds(max_bounds_for_popup)) {
     controller_->Hide(SuggestionHidingReason::kInsufficientSpace);
     return false;
   }
 
-  CalculatePopupYAndHeight(preferred_size.height(), visible_content_area_bounds,
+  CalculatePopupYAndHeight(preferred_size.height(), max_bounds_for_popup,
                            element_bounds, &popup_bounds);
 
   // Adjust the width to compensate for a scroll bar, if necessary, and for
@@ -1737,7 +1731,7 @@ bool PopupViewViews::DoUpdateBoundsAndRedrawPopup(bool prefer_prev_arrow_side) {
           /*is_root_popup=*/!parent_, prefer_prev_arrow_side,
           /*prev_arrow=*/border ? border->arrow() : BubbleBorder::Arrow::NONE);
   popup_bounds = GetOptimalPositionAndPlaceArrowOnPopup(
-      element_bounds, visible_content_area_bounds, preferred_size,
+      element_bounds, max_bounds_for_popup, preferred_size,
       preferred_popup_sides);
 
   if (OverlapsWithAnotherPrompt(popup_bounds)) {
@@ -1857,13 +1851,13 @@ int PopupViewViews::GetPopupMaxWidth() const {
 }
 
 bool PopupViewViews::CanShowDropdownInBounds(
-    const gfx::Rect& visible_content_area_bounds) const {
+    const gfx::Rect& max_bounds_for_popup) const {
   gfx::Rect element_bounds =
       gfx::ToEnclosingRect(controller_->element_bounds());
 
-  // At least one suggestion and the sticky footer should be shown in the
-  // visible_content_area_bounds of the content area so that the user notices
-  // the presence of the popup.
+  // At least one suggestion and the sticky footer should be shown in
+  // `max_bounds_for_popup` so that the user notices the presence of the
+  // popup.
   int min_height = 0;
   if (body_container_ && !body_container_->children().empty()) {
     min_height += body_container_->children()[0]->GetPreferredSize().height();
@@ -1877,8 +1871,7 @@ bool PopupViewViews::CanShowDropdownInBounds(
     min_height += footer_container_->GetPreferredSize().height();
   }
 
-  return CanShowDropdownHere(min_height, visible_content_area_bounds,
-                             element_bounds);
+  return CanShowDropdownHere(min_height, max_bounds_for_popup, element_bounds);
 }
 
 PopupRowView* PopupViewViews::MaybeGetPopupRowViewAt(size_t index) {

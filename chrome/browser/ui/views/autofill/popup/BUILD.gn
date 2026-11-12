@@ -602,6 +602,7 @@ source_set("unit_tests") {
     ":popup_warning_view",
     ":test_support",
     "//chrome/browser/ui/views/autofill/payments:bnpl_issuer_linked_pill",
+    "//chrome/browser/ui/views/extensions:extension_popup",
     "//chrome/test:test_support",
     "//chrome/test/base:testing_browser_process",
     "//components/autofill/content/browser:test_support",

@@ -165,7 +165,8 @@ bool BoundsOverlapWithPictureInPictureWindow(const gfx::Rect& screen_bounds);
 // Returns whether a popup may vertically exceed the bounds of `web_contents`.
 // This is permitted for extension popups. Here we only enforce that the
 // autofill popup is at least attached to the extension popup (or overlaps the
-// extension popup) and stays within the bounds of the browser window.
+// extension popup), does not extend above the top of `web_contents`, and stays
+// within the bounds of the browser window.
 bool PopupMayExceedContentAreaBounds(content::WebContents* web_contents);
 
 // Returns whether the suggestion with this `type` can have child

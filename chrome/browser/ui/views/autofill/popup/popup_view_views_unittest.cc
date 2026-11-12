@@ -43,6 +43,7 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_view_views_test_api.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_warning_view.h"
+#include "chrome/browser/ui/views/extensions/extension_popup.h"
 #include "chrome/test/base/testing_browser_process_death_test_mixin.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
@@ -249,6 +250,7 @@ class PopupViewViewsTest : public ChromeViewsTestBase {
 
     // Destroy the WebContents hosting widget.
     web_contents_widget_.reset();
+    top_window_widget_.reset();
     web_contents_.reset();  // Destroy WebContents after its hosting widget's
                             // WebView is gone.
     profile_.reset();
@@ -387,6 +389,43 @@ class PopupViewViewsTest : public ChromeViewsTestBase {
     web_contents_widget().SetBounds(bounds);
   }
 
+  void SetUpExtensionPopup(const gfx::Rect& top_window_bounds,
+                           const gfx::Rect& extension_popup_bounds) {
+    view_ = nullptr;
+    generator_.reset();
+    widget_.reset();
+    if (web_contents_widget_) {
+      static_cast<views::WebView*>(web_contents_widget_->GetContentsView())
+          ->SetWebContents(nullptr);
+      web_contents_widget_.reset();
+    }
+
+    top_window_widget_ =
+        CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+    top_window_widget_->SetBounds(top_window_bounds);
+    top_window_widget_->Show();
+
+    views::Widget::InitParams params =
+        CreateParamsForTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+                                  views::Widget::InitParams::Type::TYPE_POPUP);
+    params.parent = top_window_widget_->GetNativeView();
+    params.context = top_window_widget_->GetNativeWindow();
+    params.name = ExtensionPopup::kViewClassName;
+    web_contents_widget_ = CreateTestWidget(std::move(params));
+    auto* web_view = web_contents_widget_->SetContentsView(
+        std::make_unique<views::WebView>(profile_.get()));
+    web_view->SetWebContents(web_contents_.get());
+    web_contents_widget_->SetBounds(extension_popup_bounds);
+    web_contents_widget_->Show();
+
+    content::WebContentsTester* web_contents_tester =
+        content::WebContentsTester::For(web_contents_.get());
+    web_contents_tester->SetLastCommittedURL(
+        GURL("chrome-extension://abcdefghijklmnop/popup.html"));
+    ON_CALL(autofill_popup_controller_, container_view())
+        .WillByDefault(Return(web_contents_->GetNativeView()));
+  }
+
  protected:
   views::View& GetRowViewAt(size_t index) {
     return *std::visit([](views::View* view) { return view; },
@@ -435,6 +474,7 @@ class PopupViewViewsTest : public ChromeViewsTestBase {
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<views::Widget> widget_;
+  std::unique_ptr<views::Widget> top_window_widget_;
   std::unique_ptr<views::Widget> web_contents_widget_;
   std::unique_ptr<ui::test::EventGenerator> generator_;
   raw_ptr<TestPopupViewViews> view_;
@@ -3016,6 +3056,115 @@ TEST_F(PopupPositioningTest, SmallWebContentsBottomElementLargePopupAbove) {
 
   EXPECT_THAT(widget().GetWindowBoundsInScreen(), IsInside(AreaAboveElement()));
   EXPECT_THAT(widget().GetWindowBoundsInScreen(), IsAdjacent());
+}
+
+// Tests that a popup in a small extension popup can vertically exceed the
+// extension popup's `WebContents` bounds into the containing window below it.
+TEST_F(PopupPositioningTest,
+       ExtensionPopupAllowsLargePopupBelowSmallWebContents) {
+  SetUpExtensionPopup(/*top_window_bounds=*/{0, 0, 800, 600},
+                      /*extension_popup_bounds=*/{400, 100, 300, 50});
+  ASSERT_TRUE(PopupMayExceedContentAreaBounds(&web_contents()));
+  SetElementBounds(Top(CenterX(kWideElementRect)));
+
+  EXPECT_CALL(controller(), Hide).Times(0);
+  CreateAndShowView(
+      std::vector<SuggestionType>(5, SuggestionType::kAutocompleteEntry));
+
+  EXPECT_THAT(widget().GetWindowBoundsInScreen(), IsInside(AreaBelowElement()));
+  EXPECT_THAT(widget().GetWindowBoundsInScreen(), IsAdjacent());
+  EXPECT_GT(widget().GetWindowBoundsInScreen().bottom(),
+            web_contents().GetContainerBounds().bottom());
+}
+
+// Tests that in an extension popup, an element positioned outside the extension
+// popup's `WebContents` bounds (even if within the top-level window bounds)
+// hides the popup with `kElementOutsideOfContentArea`.
+TEST_F(PopupPositioningTest, ExtensionPopupHidesWhenElementOutsideContentArea) {
+  SetUpExtensionPopup(/*top_window_bounds=*/{0, 0, 800, 600},
+                      /*extension_popup_bounds=*/{400, 100, 300, 200});
+  ASSERT_TRUE(PopupMayExceedContentAreaBounds(&web_contents()));
+  // Position the element inside `top_window_bounds` (e.g. over the omnibox)
+  // but outside `extension_popup_bounds`.
+  controller().set_element_bounds({100, 40, 200, 25});
+
+  EXPECT_CALL(controller(),
+              Hide(SuggestionHidingReason::kElementOutsideOfContentArea));
+  CreateAndShowView(
+      std::vector<SuggestionType>(2, SuggestionType::kAutocompleteEntry));
+}
+
+// Tests that in an extension popup, an element partially above the extension
+// popup's `WebContents` bounds is clamped to the extension popup's bounds.
+TEST_F(PopupPositioningTest,
+       ExtensionPopupClampsPartiallyOutsideElementToContentArea) {
+  SetUpExtensionPopup(/*top_window_bounds=*/{0, 0, 800, 600},
+                      /*extension_popup_bounds=*/{400, 100, 300, 200});
+  ASSERT_TRUE(PopupMayExceedContentAreaBounds(&web_contents()));
+  // Element starts at `y = 40` (above the extension popup) and extends to
+  // `y = 125` (inside the extension popup).
+  controller().set_element_bounds({450, 40, 200, 85});
+
+  EXPECT_CALL(controller(), Hide).Times(0);
+  CreateAndShowView(
+      std::vector<SuggestionType>(2, SuggestionType::kAutocompleteEntry));
+
+  EXPECT_GE(widget().GetWindowBoundsInScreen().y(),
+            web_contents().GetContainerBounds().y());
+}
+
+// Tests that in an extension popup, the popup bounds do not extend above the
+// top of the extension popup's `WebContents` bounds into the top window area.
+TEST_F(PopupPositioningTest, ExtensionPopupDoesNotExtendAboveContentAreaTop) {
+  SetUpExtensionPopup(/*top_window_bounds=*/{0, 0, 800, 600},
+                      /*extension_popup_bounds=*/{100, 100, 600, 495});
+  ASSERT_TRUE(PopupMayExceedContentAreaBounds(&web_contents()));
+  // Element spans almost the full height from the top of the extension popup
+  // to the bottom of the top window, leaving insufficient space below it and no
+  // allowed space above the extension popup's top edge.
+  controller().set_element_bounds({150, 100, 200, 490});
+
+  EXPECT_CALL(controller(), Hide(SuggestionHidingReason::kInsufficientSpace));
+  CreateAndShowView(
+      std::vector<SuggestionType>(2, SuggestionType::kAutocompleteEntry));
+}
+
+// Tests that in a small extension popup, a sub-popup anchored to a parent row
+// that extends below the extension popup's `WebContents` bounds can still open.
+TEST_F(PopupPositioningTest,
+       ExtensionPopupAllowsSubPopupOutsideWebContentsBounds) {
+  SetUpExtensionPopup(/*top_window_bounds=*/{0, 0, 800, 600},
+                      /*extension_popup_bounds=*/{400, 100, 300, 50});
+  ASSERT_TRUE(PopupMayExceedContentAreaBounds(&web_contents()));
+  SetElementBounds(Top(CenterX(kWideElementRect)));
+
+  Suggestion expandable_suggestion = CreateSuggestionWithChildren(
+      SuggestionType::kPasswordEntry,
+      {Suggestion(u"Child", SuggestionType::kPasswordFieldByFieldFilling)});
+  controller().set_suggestions(
+      std::vector<Suggestion>(5, expandable_suggestion));
+  CreateAndShowView();
+
+  // The last row of the root popup extends below the extension popup's
+  // `WebContents` bounds.
+  gfx::RectF control_cell_bounds = GetPopupRowViewAt(4).GetControlCellBounds();
+  ASSERT_GT(control_cell_bounds.y(),
+            web_contents().GetContainerBounds().bottom());
+
+  NiceMock<MockAutofillPopupController> sub_controller;
+  sub_controller.set_suggestions(
+      {Suggestion(u"Child", SuggestionType::kPasswordFieldByFieldFilling)});
+  sub_controller.set_element_bounds(control_cell_bounds);
+  ON_CALL(sub_controller, GetWebContents())
+      .WillByDefault(Return(&web_contents()));
+  ON_CALL(sub_controller, container_view())
+      .WillByDefault(Return(web_contents().GetNativeView()));
+
+  EXPECT_CALL(sub_controller, Hide).Times(0);
+  base::WeakPtr<AutofillPopupView> sub_view =
+      view().CreateSubPopupView(sub_controller.GetWeakPtr());
+  ASSERT_TRUE(sub_view);
+  EXPECT_TRUE(sub_view->Show(AutoselectFirstSuggestion(false)));
 }
 
 TEST_F(PopupViewViewsTest, StandaloneCvcSuggestion_ElementId) {

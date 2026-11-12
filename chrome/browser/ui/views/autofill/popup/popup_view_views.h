@@ -340,7 +340,7 @@ class PopupViewViews : public PopupBaseView,
   int GetPopupMinWidth() const;
   int GetPopupMaxWidth() const;
 
-  bool CanShowDropdownInBounds(const gfx::Rect& bounds) const;
+  bool CanShowDropdownInBounds(const gfx::Rect& max_bounds_for_popup) const;
 
   // Opens a sub-popup on a new row (and closes the open one if any), or just
   // closes the existing if `std::nullopt` is passed.

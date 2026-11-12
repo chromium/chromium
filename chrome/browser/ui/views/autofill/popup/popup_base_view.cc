@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/autofill/popup/popup_base_view.h"
 
+#include <algorithm>
 #include <memory>
 #include <string_view>
 #include <utility>
@@ -31,6 +32,7 @@
 #include "ui/color/color_id.h"
 #include "ui/display/screen.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/scrollbar_size.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -528,9 +530,29 @@ gfx::Rect PopupBaseView::GetTopWindowBounds() const {
   return gfx::Rect();
 }
 
+gfx::Rect PopupBaseView::GetVisibleContentAreaBounds() const {
+  return IntersectWithDisplayBounds(GetWebContents(), GetContentAreaBounds());
+}
+
+gfx::Rect PopupBaseView::GetMaxPopupBounds() const {
+  const gfx::Rect content_area_bounds = GetContentAreaBounds();
+  if (!PopupMayExceedContentAreaBounds(GetWebContents())) {
+    return IntersectWithDisplayBounds(GetWebContents(), content_area_bounds);
+  }
+  // TODO(crbug.com/40799454): Once popups can render outside the main window on
+  // Linux, use the screen bounds.
+  gfx::Rect max_bounds_for_popup = GetTopWindowBounds();
+  // Prevent the popup from extending above the top of the `WebContents` into
+  // the browser's top chrome (toolbar/omnibox and tab strip).
+  max_bounds_for_popup.Inset(gfx::Insets::TLBR(
+      std::max(0, content_area_bounds.y() - max_bounds_for_popup.y()), 0, 0,
+      0));
+  return IntersectWithDisplayBounds(GetWebContents(), max_bounds_for_popup);
+}
+
 gfx::Rect PopupBaseView::GetOptimalPositionAndPlaceArrowOnPopup(
     const gfx::Rect& element_bounds,
-    const gfx::Rect& visible_content_area_bounds,
+    const gfx::Rect& max_bounds_for_popup,
     const gfx::Size& preferred_size,
     base::span<const views::BubbleArrowSide> preferred_popup_sides) {
   views::BubbleBorder* border = static_cast<views::BubbleBorder*>(
@@ -541,7 +563,7 @@ gfx::Rect PopupBaseView::GetOptimalPositionAndPlaceArrowOnPopup(
 
   // Deduce the arrow and the position.
   views::BubbleBorder::Arrow arrow = GetOptimalPopupPlacement(
-      /*visible_content_area_bounds=*/visible_content_area_bounds,
+      /*visible_content_area_bounds=*/max_bounds_for_popup,
       /*element_bounds=*/element_bounds,
       /*popup_preferred_size=*/preferred_size,
       /*right_to_left=*/delegate_->GetElementTextDirection() ==
@@ -564,7 +586,7 @@ gfx::Rect PopupBaseView::GetOptimalPositionAndPlaceArrowOnPopup(
     border->set_arrow(arrow);
     border->AddArrowToBubbleCornerAndPointTowardsAnchor(
         element_bounds, popup_bounds,
-        visible_content_area_bounds.y() - kMaxPopupWebContentsTopYOverflow);
+        max_bounds_for_popup.y() - kMaxPopupWebContentsTopYOverflow);
   }
 
   return popup_bounds;
@@ -572,18 +594,8 @@ gfx::Rect PopupBaseView::GetOptimalPositionAndPlaceArrowOnPopup(
 
 bool PopupBaseView::DoUpdateBoundsAndRedrawPopup() {
   gfx::Size preferred_size = GetPreferredSize();
-  const gfx::Rect content_area_bounds = GetContentAreaBounds();
-  // TODO(crbug.com/40799454) Once popups can render outside the main window on
-  // Linux, use the screen bounds.
-  const gfx::Rect top_window_bounds = GetTopWindowBounds();
-  const gfx::Rect& max_bounds_for_popup =
-      PopupMayExceedContentAreaBounds(GetWebContents()) ? top_window_bounds
-                                                        : content_area_bounds;
-
-  // Intersect with the current monitor's work area to avoid showing popups
-  // outside the screen.
-  gfx::Rect visible_content_area_bounds =
-      IntersectWithDisplayBounds(GetWebContents(), max_bounds_for_popup);
+  const gfx::Rect visible_content_area_bounds = GetVisibleContentAreaBounds();
+  const gfx::Rect max_bounds_for_popup = GetMaxPopupBounds();
 
   gfx::Rect element_bounds = gfx::ToEnclosingRect(delegate_->element_bounds());
 
@@ -613,14 +625,13 @@ bool PopupBaseView::DoUpdateBoundsAndRedrawPopup() {
   // That function checks whether the popup element has enough place to render
   // either to the top of the focused element or to the bottom of the focused
   // element.
-  if (!CanShowDropdownHere(item_height, visible_content_area_bounds,
-                           element_bounds)) {
+  if (!CanShowDropdownHere(item_height, max_bounds_for_popup, element_bounds)) {
     HideController(SuggestionHidingReason::kInsufficientSpace);
     return false;
   }
 
   gfx::Rect popup_bounds = GetOptimalPositionAndPlaceArrowOnPopup(
-      element_bounds, visible_content_area_bounds, preferred_size,
+      element_bounds, max_bounds_for_popup, preferred_size,
       kDefaultPreferredPopupSides);
 
   if (OverlapsWithAnotherPrompt(popup_bounds)) {

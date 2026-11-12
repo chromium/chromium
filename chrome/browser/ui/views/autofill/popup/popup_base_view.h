@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/views/bubble/bubble_border_arrow_utils.h"
 #include "ui/views/focus/native_view_focus_manager.h"
 #include "ui/views/widget/widget.h"
@@ -92,6 +93,14 @@ class PopupBaseView : public PopupRowView::AccessibilitySelectionDelegate,
 
   // Returns the bounds of the content area in screen space.
   gfx::Rect GetContentAreaBounds() const;
+
+  // Returns the bounds of the content area in screen space, intersected with
+  // the display bounds.
+  gfx::Rect GetVisibleContentAreaBounds() const;
+
+  // Returns the maximum bounds in screen space within which the popup may be
+  // placed, intersected with the display bounds.
+  gfx::Rect GetMaxPopupBounds() const;
 
   // Update size of popup and paint. If there is insufficient height to draw the
   // popup, it hides and thus deletes |this| and returns false. (virtual for
