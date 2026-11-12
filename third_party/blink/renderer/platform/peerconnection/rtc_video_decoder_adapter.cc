@@ -239,7 +239,6 @@ class RTCVideoDecoderAdapter::Impl {
 
   void Initialize(const media::VideoDecoderConfig& config,
                   CrossThreadOnceFunction<void(bool)> init_cb,
-                  base::TimeTicks start_time,
                   media::VideoDecoderType* decoder_type);
   void Decode(scoped_refptr<media::DecoderBuffer> buffer,
               uint32_t rtp_timestamp,
@@ -282,7 +281,6 @@ class RTCVideoDecoderAdapter::Impl {
   media::VideoCodec video_codec_;
 
   int32_t outstanding_decode_requests_ = 0;
-  std::optional<base::TimeTicks> start_time_;
   raw_ptr<webrtc::DecodedImageCallback> decode_complete_callback_ = nullptr;
   int32_t consecutive_error_count_ = 0;
   // Requests that have not been submitted to the decoder yet.
@@ -303,7 +301,6 @@ class RTCVideoDecoderAdapter::Impl {
 void RTCVideoDecoderAdapter::Impl::Initialize(
     const media::VideoDecoderConfig& config,
     CrossThreadOnceFunction<void(bool)> init_cb,
-    base::TimeTicks start_time,
     media::VideoDecoderType* decoder_type) {
   DVLOG(3) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
@@ -313,7 +310,6 @@ void RTCVideoDecoderAdapter::Impl::Initialize(
     // TODO(sandersd): Plumb a real log sink here so that we can contribute to
     // the media-internals UI. The current log just discards all messages.
     media_log_ = std::make_unique<media::NullMediaLog>();
-    start_time_ = start_time;
     video_decoder_ = gpu_factories_->CreateVideoDecoder(
         media_log_.get(), blink::BindRepeating(&OnRequestOverlayInfo));
 
@@ -525,14 +521,6 @@ void RTCVideoDecoderAdapter::Impl::OnOutput(
 
   const base::TimeDelta timestamp = frame->timestamp();
 
-  // Record time to first frame if we haven't yet.
-  if (start_time_) {
-    // We haven't recorded the first frame time yet, so do so now.
-    base::UmaHistogramTimes("Media.RTCVideoDecoderFirstFrameLatencyMs",
-                            base::TimeTicks::Now() - *start_time_);
-    start_time_.reset();
-  }
-
   auto it = std::ranges::find(decode_timestamps_, timestamp,
                               &DecodeTimestamp::media_timestamp);
   if (it == decode_timestamps_.end()) {
@@ -673,7 +661,6 @@ bool RTCVideoDecoderAdapter::InitializeSync(
           *media_task_runner_.get(), FROM_HERE,
           CrossThreadBindOnce(&RTCVideoDecoderAdapter::Impl::Initialize,
                               weak_impl_, config, std::move(init_cb),
-                              start_time,
                               CrossThreadUnretained(&decoder_type_)))) {
     if (!async_init_waiter_->TimedWait(
             g_init_timeout_for_testing.value_or(base::Seconds(10)))) {
@@ -963,8 +950,7 @@ bool RTCVideoDecoderAdapter::ReinitializeSync(
                           CrossThreadUnretained(&result));
   CrossThreadOnceClosure flush_success_cb = CrossThreadBindOnce(
       &RTCVideoDecoderAdapter::Impl::Initialize, weak_impl_, config,
-      std::move(init_cb),
-      /*start_time=*/base::TimeTicks(), CrossThreadUnretained(&decoder_type_));
+      std::move(init_cb), CrossThreadUnretained(&decoder_type_));
   CrossThreadOnceClosure flush_fail_cb =
       CrossThreadBindOnce(&FinishWait, CrossThreadUnretained(&waiter),
                           CrossThreadUnretained(&result), false);
