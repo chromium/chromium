@@ -1,0 +1,12 @@
+diff --git a/src/libunwindstack/RegsInfo.h b/src/libunwindstack/RegsInfo.h
+index 28b297e..d6f495b 100644
+--- a/src/libunwindstack/RegsInfo.h
++++ b/src/libunwindstack/RegsInfo.h
+@@ -17,6 +17,7 @@
+ #pragma once
+ 
+ #include <stdint.h>
++#include <stdlib.h>
+ 
+ #include <unwindstack/Regs.h>
+ 

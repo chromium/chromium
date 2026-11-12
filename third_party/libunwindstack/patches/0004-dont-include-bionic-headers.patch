@@ -1,0 +1,35 @@
+diff --git a/src/libunwindstack/MemoryMte.cpp b/src/libunwindstack/MemoryMte.cpp
+index 3841744..681aea6 100644
+--- a/src/libunwindstack/MemoryMte.cpp
++++ b/src/libunwindstack/MemoryMte.cpp
+@@ -17,7 +17,7 @@
+ #include <sys/ptrace.h>
+ #include <sys/uio.h>
+ 
+-#if defined(__BIONIC__)
++#if defined(__BIONIC__) && !defined(__ANDROID_NDK__)
+ #include <bionic/mte.h>
+ #else
+ #define mte_supported() false
+diff --git a/src/libunwindstack/RegsArm64.cpp b/src/libunwindstack/RegsArm64.cpp
+index cf19454..d43db7d 100644
+--- a/src/libunwindstack/RegsArm64.cpp
++++ b/src/libunwindstack/RegsArm64.cpp
+@@ -19,7 +19,7 @@
+ 
+ #include <functional>
+ 
+-#if defined(__BIONIC__)
++#if defined(__BIONIC__) && !defined(__ANDROID_NDK__)
+ #include <bionic/pac.h>
+ #endif
+ 
+@@ -60,7 +60,7 @@ static uint64_t strip_pac(uint64_t pc, uint64_t mask) {
+   if (mask) {
+     pc &= ~mask;
+   } else {
+-#if defined(__BIONIC__)
++#if defined(__BIONIC__) && !defined(__ANDROID_NDK__)
+     pc = __bionic_clear_pac_bits(pc);
+ #endif
+   }

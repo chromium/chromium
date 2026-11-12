@@ -230,7 +230,6 @@ per-file third_party/libphonenumber/src=*
 per-file third_party/libprotobuf-mutator/src=*
 per-file third_party/libsrtp=*
 per-file third_party/libunwind/src=*
-per-file third_party/libunwindstack_tmp=*
 per-file third_party/libva-fake-driver/src=*
 per-file third_party/libvpx/source/libvpx=*
 per-file third_party/libwebm/source=*

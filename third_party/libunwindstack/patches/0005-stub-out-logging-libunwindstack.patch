@@ -1,0 +1,81 @@
+diff --git a/src/libunwindstack/LogAndroid.cpp b/src/libunwindstack/LogAndroid.cpp
+index 6fb613f..b88b8d9 100644
+--- a/src/libunwindstack/LogAndroid.cpp
++++ b/src/libunwindstack/LogAndroid.cpp
+@@ -16,17 +16,6 @@
+ 
+ #include <stdarg.h>
+ #include <stdint.h>
+-#include <stdio.h>
+-
+-#include <string>
+-
+-#define LOG_TAG "unwind"
+-#include <log/log.h>
+-
+-#if defined(__BIONIC__)
+-#include <async_safe/log.h>
+-#endif
+-#include <android-base/stringprintf.h>
+ 
+ #include <unwindstack/Log.h>
+ 
+@@ -34,54 +23,13 @@ namespace unwindstack {
+ 
+ namespace Log {
+ 
+-// Send the data to the log.
+-static void LogWithPriority(int priority, uint8_t indent, const char* format, va_list args) {
+-  std::string real_format;
+-  if (indent > 0) {
+-    real_format = android::base::StringPrintf("%*s%s", 2 * indent, " ", format);
+-  } else {
+-    real_format = format;
+-  }
+-  LOG_PRI_VA(priority, LOG_TAG, real_format.c_str(), args);
+-}
+-
+-void Info(const char* format, ...) {
+-  va_list args;
+-  va_start(args, format);
+-  LogWithPriority(ANDROID_LOG_INFO, 0, format, args);
+-  va_end(args);
+-}
++void Info(const char* format, ...) {}
+ 
+-void Info(uint8_t indent, const char* format, ...) {
+-  va_list args;
+-  va_start(args, format);
+-  LogWithPriority(ANDROID_LOG_INFO, indent, format, args);
+-  va_end(args);
+-}
++void Info(uint8_t indent, const char* format, ...) {}
+ 
+-void Error(const char* format, ...) {
+-  va_list args;
+-  va_start(args, format);
+-  LogWithPriority(ANDROID_LOG_ERROR, 0, format, args);
+-  va_end(args);
+-}
++void Error(const char* format, ...) {}
+ 
+-#if defined(__BIONIC__)
+-void AsyncSafe(const char* format, ...) {
+-  va_list args;
+-  va_start(args, format);
+-  async_safe_format_log_va_list(ANDROID_LOG_ERROR, "libunwindstack", format, args);
+-  va_end(args);
+-}
+-#else
+-void AsyncSafe(const char* format, ...) {
+-  va_list args;
+-  va_start(args, format);
+-  vprintf(format, args);
+-  printf("\n");
+-  va_end(args);
+-}
+-#endif
++void AsyncSafe(const char* format, ...) {}
+ 
+ }  // namespace Log
+ 

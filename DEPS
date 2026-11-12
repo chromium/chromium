@@ -2682,11 +2682,6 @@ deps = {
   'src/third_party/libsrtp':
     Var('chromium_git') + '/chromium/deps/libsrtp.git' + '@' + 'cd5d177bf1fde755ddb4c7f0d9ff7693f8b49e5e',
 
-  'src/third_party/libunwindstack_tmp': {
-      'url': Var('chromium_git') + '/chromium/src/third_party/libunwindstack.git' + '@' + 'f1d37918397daa1afd6f21de6e6a4c5ab0bee53b',
-      'condition': 'checkout_android',
-  },
-
   'src/third_party/libva-fake-driver/src':
     Var('chromium_git') + '/chromiumos/platform/libva-fake-driver.git' + '@' + '04f902b9ba9f8083b19d22e7b55591bbcaae31c0',
 

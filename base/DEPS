@@ -7,7 +7,7 @@ include_rules = [
   # We are moving the old jni_generator to jni_zero, some references will remain
   # in //base.
   "+third_party/jni_zero",
-  "+third_party/libunwindstack_tmp/src/libunwindstack/include",
+  "+third_party/libunwindstack/src/libunwindstack/include",
   "+third_party/lss",
   "+third_party/modp_b64",
   "+third_party/perfetto/include",

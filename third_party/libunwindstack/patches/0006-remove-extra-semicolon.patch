@@ -1,0 +1,13 @@
+diff --git a/src/libunwindstack/include/unwindstack/Unwinder.h b/src/libunwindstack/include/unwindstack/Unwinder.h
+index d78da5c..91fd1d5 100644
+--- a/src/libunwindstack/include/unwindstack/Unwinder.h
++++ b/src/libunwindstack/include/unwindstack/Unwinder.h
+@@ -85,7 +85,7 @@ class Unwinder {
+   static std::string FormatFrame(ArchEnum arch, const FrameData& frame,
+                                  bool display_build_id = true);
+ 
+-  void SetArch(ArchEnum arch) { arch_ = arch; };
++  void SetArch(ArchEnum arch) { arch_ = arch; }
+ 
+   void SetJitDebug(JitDebug* jit_debug);
+ 

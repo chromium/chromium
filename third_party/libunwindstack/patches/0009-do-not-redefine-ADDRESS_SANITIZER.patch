@@ -1,0 +1,12 @@
+diff --git a/src/libartbase/base/memory_tool.h b/src/libartbase/base/memory_tool.h
+index 675ceb2..4e6cf57 100644
+--- a/src/libartbase/base/memory_tool.h
++++ b/src/libartbase/base/memory_tool.h
+@@ -28,7 +28,6 @@ namespace art {
+ #if __has_feature(address_sanitizer)
+ 
+ # include <sanitizer/asan_interface.h>
+-# define ADDRESS_SANITIZER
+ 
+ # ifdef ART_ENABLE_ADDRESS_SANITIZER
+ #  define MEMORY_TOOL_MAKE_NOACCESS(p, s) __asan_poison_memory_region(p, s)

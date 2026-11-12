@@ -1,0 +1,22 @@
+diff --git a/src/android-base/file.cpp b/src/android-base/file.cpp
+index f71773b..1956266 100644
+--- a/src/android-base/file.cpp
++++ b/src/android-base/file.cpp
+@@ -314,7 +314,7 @@ bool ReadFully(borrowed_fd fd, void* data, size_t byte_count) {
+   while (remaining > 0) {
+     ssize_t n = TEMP_FAILURE_RETRY(read(fd.get(), p, remaining));
+     if (n == 0) {  // EOF
+-      errno = ENODATA;
++      errno = EIO;
+       return false;
+     }
+     if (n == -1) return false;
+@@ -363,7 +363,7 @@ bool ReadFullyAtOffset(borrowed_fd fd, void* data, size_t byte_count, off64_t of
+   while (byte_count > 0) {
+     ssize_t n = TEMP_FAILURE_RETRY(pread(fd.get(), p, byte_count, offset));
+     if (n == 0) {  // EOF
+-      errno = ENODATA;
++      errno = EIO;
+       return false;
+     }
+     if (n == -1) return false;

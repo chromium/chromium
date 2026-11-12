@@ -1,0 +1,149 @@
+diff --git a/src/libunwindstack/DexFile.cpp b/src/libunwindstack/DexFile.cpp
+index 0bb069f..c187315 100644
+--- a/src/libunwindstack/DexFile.cpp
++++ b/src/libunwindstack/DexFile.cpp
+@@ -34,9 +34,6 @@
+
+ namespace unwindstack {
+
+-std::map<DexFile::MappedFileKey, std::weak_ptr<DexFile::DexFileApi>> DexFile::g_mapped_dex_files;
+-std::mutex DexFile::g_lock;
+-
+ static bool CheckDexSupport() {
+   if (std::string err_msg; !art_api::dex::TryLoadLibdexfile(&err_msg)) {
+     Log::Error("Failed to initialize DEX file support: %s", err_msg.c_str());
+@@ -46,6 +43,9 @@ static bool CheckDexSupport() {
+ }
+
+ std::shared_ptr<DexFile> DexFile::CreateFromDisk(uint64_t addr, uint64_t size, MapInfo* map) {
++  static auto& mapped_dex_files = *new std::map<MappedFileKey, std::weak_ptr<DexFileApi>>;
++  static auto& lock = *new std::mutex;  // Guards the static cache above.
++
+   if (map == nullptr || map->name().empty()) {
+     return nullptr;  // MapInfo not backed by file.
+   }
+@@ -58,9 +58,9 @@ std::shared_ptr<DexFile> DexFile::CreateFromDisk(uint64_t addr, uint64_t size, M
+   uint64_t offset_in_file = (addr - map->start()) + map->offset();
+
+   // Fast-path: Check if the dex file was already mapped from disk.
+-  std::lock_guard<std::mutex> guard(g_lock);
++  std::lock_guard<std::mutex> guard(lock);
+   MappedFileKey cache_key(map->name(), offset_in_file, size);
+-  std::weak_ptr<DexFileApi>& cache_entry = g_mapped_dex_files[cache_key];
++  std::weak_ptr<DexFileApi>& cache_entry = mapped_dex_files[cache_key];
+   std::shared_ptr<DexFileApi> dex_api = cache_entry.lock();
+   if (dex_api != nullptr) {
+     return std::shared_ptr<DexFile>(new DexFile(addr, size, std::move(dex_api)));
+diff --git a/src/libunwindstack/DexFile.h b/src/libunwindstack/DexFile.h
+index c4235db..25a9883 100644
+--- a/src/libunwindstack/DexFile.h
++++ b/src/libunwindstack/DexFile.h
+@@ -74,8 +74,6 @@ class DexFile {
+   // Therefore, we maintain cache to avoid loading the same file (sub-range) many times.
+   // The cache is weak: It will not keep DexFiles alive (the weak_ptr will become null).
+   using MappedFileKey = std::tuple<std::string, uint64_t, uint64_t>;  // (path, offset, size).
+-  static std::map<MappedFileKey, std::weak_ptr<DexFileApi>> g_mapped_dex_files;
+-  static std::mutex g_lock;  // Guards the static cache above.
+ };
+
+ }  // namespace unwindstack
+diff --git a/src/libdexfile/dex/dex_file_loader.cc b/src/libdexfile/dex/dex_file_loader.cc
+index 3ceb754..a3184ae 100644
+--- a/src/libdexfile/dex/dex_file_loader.cc
++++ b/src/libdexfile/dex/dex_file_loader.cc
+@@ -109,8 +109,6 @@ class MemMapContainer : public DexFileContainer {
+
+ }  // namespace
+
+-const File DexFileLoader::kInvalidFile;
+-
+ bool DexFileLoader::IsMagicValid(uint32_t magic) {
+   return IsMagicValid(reinterpret_cast<uint8_t*>(&magic));
+ }
+@@ -254,7 +252,7 @@ bool DexFileLoader::InitAndReadMagic(size_t header_offset,
+     *magic = *reinterpret_cast<const uint32_t*>(root_container_->Begin() + header_offset);
+   } else {
+     // Open the file if we have not been given the file-descriptor directly before.
+-    if (!file_->IsValid()) {
++    if (!file_) {
+       CHECK(!filename_.empty());
+       owned_file_ = File(filename_, O_RDONLY, /* check_usage= */ false);
+       if (!owned_file_->IsValid()) {
+@@ -277,7 +275,7 @@ bool DexFileLoader::MapRootContainer(std::string* error_msg) {
+   }
+
+   CHECK(MemMap::IsInitialized());
+-  CHECK(file_->IsValid());
++  CHECK(file_);
+   struct stat sbuf;
+   memset(&sbuf, 0, sizeof(sbuf));
+   if (fstat(file_->Fd(), &sbuf) == -1) {
+diff --git a/src/libdexfile/dex/dex_file_loader.h b/src/libdexfile/dex/dex_file_loader.h
+index 6530303..ea4b5e7 100644
+--- a/src/libdexfile/dex/dex_file_loader.h
++++ b/src/libdexfile/dex/dex_file_loader.h
+@@ -162,7 +162,6 @@ class DexFileLoader {
+
+   DexFileLoader(const char* filename, const File* file, const std::string& location)
+       : filename_(filename), file_(file), location_(location) {
+-    CHECK(file != nullptr);  // Must be non-null, but may be invalid.
+   }
+
+   DexFileLoader(std::shared_ptr<DexFileContainer> container, const std::string& location)
+@@ -180,10 +179,10 @@ class DexFileLoader {
+       : DexFileLoader(/*filename=*/location.c_str(), file, location) {}
+
+   DexFileLoader(const char* filename, const std::string& location)
+-      : DexFileLoader(filename, /*file=*/&kInvalidFile, location) {}
++      : DexFileLoader(filename, /*file=*/nullptr, location) {}
+
+   explicit DexFileLoader(const std::string& location)
+-      : DexFileLoader(location.c_str(), /*file=*/&kInvalidFile, location) {}
++      : DexFileLoader(location.c_str(), /*file=*/nullptr, location) {}
+
+   virtual ~DexFileLoader() {}
+
+@@ -265,8 +264,6 @@ class DexFileLoader {
+   }
+
+  protected:
+-  static const File kInvalidFile;  // Used for "no file descriptor" (-1).
+-
+   bool InitAndReadMagic(size_t header_offset, uint32_t* magic, std::string* error_msg);
+
+   // Ensure we have root container.  If we are backed by a file, memory-map it.
+@@ -324,7 +321,7 @@ class DexFileLoader {
+   // The DexFileLoader can be backed either by file or by memory (i.e. DexFileContainer).
+   // We can not just mmap the file since APKs might be unreasonably large for 32-bit system.
+   std::string filename_;
+-  const File* file_ = &kInvalidFile;
++  const File* file_ = nullptr;
+   std::optional<File> owned_file_;  // May be used as backing storage for 'file_'.
+   std::shared_ptr<DexFileContainer> root_container_;
+   const std::string location_;
+diff --git a/src/libartbase/base/mem_map.cc b/src/libartbase/base/mem_map.cc
+index d6e7e16..48505aa 100644
+--- a/src/libartbase/base/mem_map.cc
++++ b/src/libartbase/base/mem_map.cc
+@@ -59,9 +59,6 @@ using Maps = AllocationTrackingMultiMap<void*, MemMap*, kAllocatorTagMaps>;
+ // All the non-empty MemMaps. Use a multimap as we do a reserve-and-divide (eg ElfMap::Load()).
+ static Maps* gMaps GUARDED_BY(MemMap::GetMemMapsLock()) = nullptr;
+
+-// A map containing unique strings used for indentifying anonymous mappings
+-static std::map<std::string, int> debugStrMap GUARDED_BY(MemMap::GetMemMapsLock());
+-
+ // Retrieve iterator to a `gMaps` entry that is known to exist.
+ Maps::iterator GetGMapsEntry(const MemMap& map) REQUIRES(MemMap::GetMemMapsLock()) {
+   DCHECK(map.IsValid());
+@@ -283,6 +280,10 @@ void MemMap::SetDebugName(void* map_ptr, const char* name, size_t size) {
+
+   std::string debug_friendly_name("dalvik-");
+   debug_friendly_name += name;
++
++  // A map containing unique strings used for indentifying anonymous mappings
++  static auto& debugStrMap GUARDED_BY(MemMap::GetMemMapsLock()) = *new std::map<std::string, int>;
++
+   auto it = debugStrMap.find(debug_friendly_name);
+
+   if (it == debugStrMap.end()) {
+

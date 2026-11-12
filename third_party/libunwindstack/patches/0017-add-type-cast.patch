@@ -1,0 +1,46 @@
+diff --git a/src/libunwindstack/include/unwindstack/DwarfSection.h b/src/libunwindstack/include/unwindstack/DwarfSection.h
+index 24931b8..83ee955 100644
+--- a/src/libunwindstack/include/unwindstack/DwarfSection.h
++++ b/src/libunwindstack/include/unwindstack/DwarfSection.h
+@@ -66,16 +66,16 @@ class DwarfSection {
+       index_++;
+       return *this;
+     }
+-    iterator& operator++(int increment) {
+-      index_ += increment;
++    iterator& operator++(int) {
++      ++index_;
+       return *this;
+     }
+     iterator& operator--() {
+       index_--;
+       return *this;
+     }
+-    iterator& operator--(int decrement) {
+-      index_ -= decrement;
++    iterator& operator--(int) {
++      --index_;
+       return *this;
+     }
+
+diff --git a/src/libunwindstack/include/unwindstack/MapInfo.h b/src/libunwindstack/include/unwindstack/MapInfo.h
+index 9f025ff..61eb548 100644
+--- a/src/libunwindstack/include/unwindstack/MapInfo.h
++++ b/src/libunwindstack/include/unwindstack/MapInfo.h
+@@ -42,7 +42,7 @@ class MapInfo {
+       : start_(start),
+         end_(end),
+         offset_(offset),
+-        flags_(flags),
++        flags_(static_cast<uint16_t>(flags)),
+         name_(name),
+         elf_fields_(nullptr),
+         prev_map_(prev_map) {}
+@@ -50,7 +50,7 @@ class MapInfo {
+       : start_(start),
+         end_(end),
+         offset_(offset),
+-        flags_(flags),
++        flags_(static_cast<uint16_t>(flags)),
+         name_(name),
+         elf_fields_(nullptr) {}

@@ -31,8 +31,8 @@
 #include "base/test/bind.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/libunwindstack_tmp/src/libunwindstack/include/unwindstack/Maps.h"
-#include "third_party/libunwindstack_tmp/src/libunwindstack/include/unwindstack/Memory.h"
+#include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/Maps.h"
+#include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/Memory.h"
 
 extern char __executable_start;
 

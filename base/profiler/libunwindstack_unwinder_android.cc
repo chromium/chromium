@@ -17,19 +17,19 @@
 #include "base/profiler/profile_builder.h"
 #include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
-#include "third_party/libunwindstack_tmp/src/libunwindstack/include/unwindstack/Elf.h"
-#include "third_party/libunwindstack_tmp/src/libunwindstack/include/unwindstack/Error.h"
-#include "third_party/libunwindstack_tmp/src/libunwindstack/include/unwindstack/Maps.h"
-#include "third_party/libunwindstack_tmp/src/libunwindstack/include/unwindstack/Memory.h"
-#include "third_party/libunwindstack_tmp/src/libunwindstack/include/unwindstack/Regs.h"
-#include "third_party/libunwindstack_tmp/src/libunwindstack/include/unwindstack/Unwinder.h"
+#include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/Elf.h"
+#include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/Error.h"
+#include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/Maps.h"
+#include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/Memory.h"
+#include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/Regs.h"
+#include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/Unwinder.h"
 
 #if defined(ARCH_CPU_ARM_FAMILY) && defined(ARCH_CPU_32_BITS)
-#include "third_party/libunwindstack_tmp/src/libunwindstack/include/unwindstack/MachineArm.h"
-#include "third_party/libunwindstack_tmp/src/libunwindstack/include/unwindstack/RegsArm.h"
+#include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/MachineArm.h"
+#include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/RegsArm.h"
 #elif defined(ARCH_CPU_ARM_FAMILY) && defined(ARCH_CPU_64_BITS)
-#include "third_party/libunwindstack_tmp/src/libunwindstack/include/unwindstack/MachineArm64.h"
-#include "third_party/libunwindstack_tmp/src/libunwindstack/include/unwindstack/RegsArm64.h"
+#include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/MachineArm64.h"
+#include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/RegsArm64.h"
 #endif  // #if defined(ARCH_CPU_ARM_FAMILY) && defined(ARCH_CPU_32_BITS)
 
 namespace base {

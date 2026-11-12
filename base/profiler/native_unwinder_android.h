@@ -11,8 +11,8 @@
 #include "base/base_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/profiler/unwinder.h"
-#include "third_party/libunwindstack_tmp/src/libunwindstack/include/unwindstack/DexFiles.h"
-#include "third_party/libunwindstack_tmp/src/libunwindstack/include/unwindstack/Memory.h"
+#include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/DexFiles.h"
+#include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/Memory.h"
 
 namespace base {
 

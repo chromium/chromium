@@ -1,0 +1,47 @@
+diff --git a/src/libunwindstack/Demangle.cpp b/src/libunwindstack/Demangle.cpp
+index 8d0bfd6..b2fedac 100644
+--- a/src/libunwindstack/Demangle.cpp
++++ b/src/libunwindstack/Demangle.cpp
+@@ -17,6 +17,7 @@
+ #include <cxxabi.h>
+ #include <stdlib.h>
+ 
++#include <array>
+ #include <string>
+ 
+ #include <rustc_demangle.h>
+@@ -30,22 +31,24 @@ std::string DemangleNameIfNeeded(const std::string& name) {
+     return name;
+   }
+ 
+-  char* demangled_str = nullptr;
+   if (name[1] == 'Z') {
+     // Try to demangle C++ name.
+-    demangled_str = abi::__cxa_demangle(name.c_str(), nullptr, nullptr, nullptr);
+-  } else if (name[1] == 'R') {
+-    // Try to demangle rust name.
+-    demangled_str = rustc_demangle(name.c_str(), nullptr, nullptr, nullptr);
++    char* demangled_str =
++        abi::__cxa_demangle(name.c_str(), nullptr, nullptr, nullptr);
++    return demangled_str != nullptr ? std::string(demangled_str) : name;
+   }
+ 
+-  if (demangled_str == nullptr) {
+-    return name;
++  if (name[1] == 'R') {
++    // Try to demangle rust name.
++    // This uses the same buffer size as:
++    // https://source.chromium.org/chromium/chromium/src/+/main:third_party/breakpad/breakpad/src/common/language.cc;l=186;drc=f5123d71965578abf905d6388a79a232597bb1eb
++    std::array<char, 1 * 1024 * 1024> rustc_demangled;
++    int success = rustc_demangle(name.c_str(), rustc_demangled.data(),
++                                 rustc_demangled.size());
++    return success == 1 ? std::string(rustc_demangled.data()) : name;
+   }
+ 
+-  std::string demangled_name(demangled_str);
+-  free(demangled_str);
+-  return demangled_name;
++  return name;
+ }
+ 
+ }  // namespace unwindstack

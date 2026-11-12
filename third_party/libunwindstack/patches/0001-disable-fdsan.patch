@@ -1,0 +1,115 @@
+diff --git a/src/android-base/include/android-base/unique_fd.h b/src/android-base/include/android-base/unique_fd.h
+index 1ffe02f..110712c 100644
+--- a/src/android-base/include/android-base/unique_fd.h
++++ b/src/android-base/include/android-base/unique_fd.h
+@@ -29,7 +29,11 @@
+ // Including other headers from libbase frequently results in inclusion of
+ // android-base/macros.h, which causes macro collisions.
+ 
+-#if defined(__BIONIC__)
++#if defined(__BIONIC__) && defined(__ANDROID_API__) && __ANDROID_API__ >= 29
++  #define FDSAN_AVAILABLE 1
++#endif
++
++#if defined(FDSAN_AVAILABLE)
+ #include <android/fdsan.h>
+ #endif
+ #if !defined(_WIN32) && !defined(__TRUSTY__)
+@@ -151,7 +155,7 @@ class unique_fd_impl final {
+ // The actual details of closing are factored out to support unusual cases.
+ // Almost everyone will want this DefaultCloser, which handles fdsan on bionic.
+ struct DefaultCloser {
+-#if defined(__BIONIC__)
++#if defined(FDSAN_AVAILABLE)
+   static void Tag(int fd, void* old_addr, void* new_addr) {
+     if (android_fdsan_exchange_owner_tag) {
+       uint64_t old_tag = android_fdsan_create_owner_tag(ANDROID_FDSAN_OWNER_TYPE_UNIQUE_FD,
+diff --git a/src/libartbase/base/unix_file/fd_file.cc b/src/libartbase/base/unix_file/fd_file.cc
+index bb34b75..d8befde 100644
+--- a/src/libartbase/base/unix_file/fd_file.cc
++++ b/src/libartbase/base/unix_file/fd_file.cc
+@@ -21,7 +21,11 @@
+ #include <sys/types.h>
+ #include <unistd.h>
+ 
+-#if defined(__BIONIC__)
++#if defined(__BIONIC__) && defined(__ANDROID_API__) && __ANDROID_API__ >= 29
++  #define FDSAN_AVAILABLE 1
++#endif
++
++#if defined(FDSAN_AVAILABLE)
+ #include <android/fdsan.h>
+ #endif
+ 
+@@ -135,7 +139,7 @@ static int fsync(int fd) {
+ }
+ #endif
+ 
+-#if defined(__BIONIC__)
++#if defined(FDSAN_AVAILABLE)
+ static uint64_t GetFdFileOwnerTag(FdFile* fd_file) {
+   return android_fdsan_create_owner_tag(ANDROID_FDSAN_OWNER_TYPE_ART_FDFILE,
+                                         reinterpret_cast<uint64_t>(fd_file));
+@@ -154,7 +158,7 @@ FdFile::FdFile(int fd, const std::string& path, bool check_usage,
+       fd_(fd),
+       file_path_(path),
+       read_only_mode_(read_only_mode) {
+-#if defined(__BIONIC__)
++#if defined(FDSAN_AVAILABLE)
+   if (fd >= 0) {
+     android_fdsan_exchange_owner_tag(fd, 0, GetFdFileOwnerTag(this));
+   }
+@@ -191,7 +195,7 @@ FdFile::FdFile(FdFile&& other) noexcept
+       fd_(other.fd_),
+       file_path_(std::move(other.file_path_)),
+       read_only_mode_(other.read_only_mode_) {
+-#if defined(__BIONIC__)
++#if defined(FDSAN_AVAILABLE)
+   if (fd_ >= 0) {
+     android_fdsan_exchange_owner_tag(fd_, GetFdFileOwnerTag(&other), GetFdFileOwnerTag(this));
+   }
+@@ -214,7 +218,7 @@ FdFile& FdFile::operator=(FdFile&& other) noexcept {
+   file_path_ = std::move(other.file_path_);
+   read_only_mode_ = other.read_only_mode_;
+ 
+-#if defined(__BIONIC__)
++#if defined(FDSAN_AVAILABLE)
+   if (fd_ >= 0) {
+     android_fdsan_exchange_owner_tag(fd_, GetFdFileOwnerTag(&other), GetFdFileOwnerTag(this));
+   }
+@@ -232,7 +236,7 @@ int FdFile::Release() {
+   int tmp_fd = fd_;
+   fd_ = kInvalidFd;
+   guard_state_ = GuardState::kNoCheck;
+-#if defined(__BIONIC__)
++#if defined(FDSAN_AVAILABLE)
+   if (tmp_fd >= 0) {
+     android_fdsan_exchange_owner_tag(tmp_fd, GetFdFileOwnerTag(this), 0);
+   }
+@@ -248,7 +252,7 @@ void FdFile::Reset(int fd, bool check_usage) {
+   }
+   fd_ = fd;
+ 
+-#if defined(__BIONIC__)
++#if defined(FDSAN_AVAILABLE)
+   if (fd_ >= 0) {
+     android_fdsan_exchange_owner_tag(fd_, 0, GetFdFileOwnerTag(this));
+   }
+@@ -297,7 +301,7 @@ bool FdFile::Open(const std::string& path, int flags, mode_t mode) {
+     return false;
+   }
+ 
+-#if defined(__BIONIC__)
++#if defined(FDSAN_AVAILABLE)
+   android_fdsan_exchange_owner_tag(fd_, 0, GetFdFileOwnerTag(this));
+ #endif
+ 
+@@ -314,7 +318,7 @@ bool FdFile::Open(const std::string& path, int flags, mode_t mode) {
+ }
+ 
+ int FdFile::Close() {
+-#if defined(__BIONIC__)
++#if defined(FDSAN_AVAILABLE)
+   int result = android_fdsan_close_with_tag(fd_, GetFdFileOwnerTag(this));
+ #else
+   int result = close(fd_);

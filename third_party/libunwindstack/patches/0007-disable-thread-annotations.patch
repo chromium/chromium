@@ -1,0 +1,48 @@
+diff --git a/src/android-base/include/android-base/thread_annotations.h b/src/android-base/include/android-base/thread_annotations.h
+index 53fe6da..336c19f 100644
+--- a/src/android-base/include/android-base/thread_annotations.h
++++ b/src/android-base/include/android-base/thread_annotations.h
+@@ -29,8 +29,7 @@
+ #define SHARED_CAPABILITY(...) \
+       THREAD_ANNOTATION_ATTRIBUTE__(shared_capability(__VA_ARGS__))
+ 
+-#define GUARDED_BY(x) \
+-      THREAD_ANNOTATION_ATTRIBUTE__(guarded_by(x))
++#define GUARDED_BY(x)
+ 
+ #define PT_GUARDED_BY(x) \
+       THREAD_ANNOTATION_ATTRIBUTE__(pt_guarded_by(x))
+@@ -47,20 +46,17 @@
+ #define ACQUIRED_AFTER(...) \
+       THREAD_ANNOTATION_ATTRIBUTE__(acquired_after(__VA_ARGS__))
+ 
+-#define REQUIRES(...) \
+-      THREAD_ANNOTATION_ATTRIBUTE__(requires_capability(__VA_ARGS__))
++#define REQUIRES(...)
+ 
+ #define REQUIRES_SHARED(...) \
+       THREAD_ANNOTATION_ATTRIBUTE__(requires_shared_capability(__VA_ARGS__))
+ 
+-#define ACQUIRE(...) \
+-      THREAD_ANNOTATION_ATTRIBUTE__(acquire_capability(__VA_ARGS__))
++#define ACQUIRE(...)
+ 
+ #define ACQUIRE_SHARED(...) \
+       THREAD_ANNOTATION_ATTRIBUTE__(acquire_shared_capability(__VA_ARGS__))
+ 
+-#define RELEASE(...) \
+-      THREAD_ANNOTATION_ATTRIBUTE__(release_capability(__VA_ARGS__))
++#define RELEASE(...)
+ 
+ #define RELEASE_SHARED(...) \
+       THREAD_ANNOTATION_ATTRIBUTE__(release_shared_capability(__VA_ARGS__))
+@@ -80,8 +76,7 @@
+ #define ASSERT_SHARED_CAPABILITY(x) \
+       THREAD_ANNOTATION_ATTRIBUTE__(assert_shared_capability(x))
+ 
+-#define RETURN_CAPABILITY(x) \
+-      THREAD_ANNOTATION_ATTRIBUTE__(lock_returned(x))
++#define RETURN_CAPABILITY(x)
+ 
+ #define EXCLUSIVE_LOCK_FUNCTION(...) \
+       THREAD_ANNOTATION_ATTRIBUTE__(exclusive_lock_function(__VA_ARGS__))

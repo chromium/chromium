@@ -1,0 +1,22 @@
+diff --git a/src/libartbase/base/mem_map.cc b/src/libartbase/base/mem_map.cc
+index e044890..d6e7e16 100644
+--- a/src/libartbase/base/mem_map.cc
++++ b/src/libartbase/base/mem_map.cc
+@@ -120,7 +120,7 @@ static constexpr uintptr_t LOW_MEM_START = 64 * KB;
+ // do not have Bionic, simply start with LOW_MEM_START.
+ 
+ // Function is standalone so it can be tested somewhat in mem_map_test.cc.
+-#ifdef __BIONIC__
++#if defined(__BIONIC__) && !defined(__ANDROID_NDK__)
+ uintptr_t CreateStartPos(uint64_t input, size_t page_size) {
+   CHECK_NE(0, ART_BASE_ADDRESS);
+ 
+@@ -137,7 +137,7 @@ uintptr_t CreateStartPos(uint64_t input, size_t page_size) {
+ #endif
+ 
+ static uintptr_t GenerateNextMemPos(size_t page_size) {
+-#ifdef __BIONIC__
++#if defined(__BIONIC__) && !defined(__ANDROID_NDK__)
+   uint64_t random_data;
+   arc4random_buf(&random_data, sizeof(random_data));
+   return CreateStartPos(random_data, page_size);

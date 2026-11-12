@@ -1,0 +1,20 @@
+diff --git a/src/libunwindstack/Memory.cpp b/src/libunwindstack/Memory.cpp
+index ff78df7..6f3ac27 100644
+--- a/src/libunwindstack/Memory.cpp
++++ b/src/libunwindstack/Memory.cpp
+@@ -95,7 +95,15 @@ static size_t ProcessVmRead(pid_t pid, uint64_t remote_src, void* dst, size_t le
+       ++iovecs_used;
+     }
+
++// process_vm_readv availability is gated on __ANDROID_API__ >= 23 in
++// third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/sys/uio.h
++// When not available set rc to 0
++#if __ANDROID_API__ >= 23
+     ssize_t rc = process_vm_readv(pid, &dst_iov, 1, src_iovs, iovecs_used, 0);
++#else
++    static_cast<void>(&dst_iov);
++    ssize_t rc = 0;
++#endif
+     if (rc == -1) {
+       return total_read;
+     }
