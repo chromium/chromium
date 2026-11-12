@@ -1,7 +1,7 @@
 Name: CityHash
 URL: https://github.com/google/cityhash
 Version: 1.1.1
-Revision: 8af9b8c
+Revision: f5dc54147fcce12cefd16548c8e760d68ac04226
 Update Mechanism: Static (https://crbug.com/584078463)
 License: MIT
 License File: COPYING
@@ -10,6 +10,9 @@ Shipped: yes
 
 Description:
 This is a fast non-cryptographic hash function.
+
+The upstream repository is archived, and this copy is synced to its last
+commit. No further updates are expected.
 
 There are currently two distinct sets of CityHash functions:
 v1.0.3 and v1.1+ that produce distinct outputs.
@@ -26,4 +29,3 @@ build pass.
 - remove unneeded CRC32 stuff.
 - formating to make 'git cl format' happy.
 - Use the builtins for bswap when compiling with clang.
-- https://github.com/google/cityhash/pull/36
