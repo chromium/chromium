@@ -2219,7 +2219,7 @@
       "chrome-desktop-ntp@google.com",
       "chrome-signin-desktop-team@google.com"
     ],
-    "expiry_milestone": 160
+    "expiry_milestone": 165
   },
   {
     "name": "composebox-persistent-aim-button-omnibox",
