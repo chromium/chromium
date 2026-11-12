@@ -59,6 +59,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowBuild;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
@@ -83,6 +84,7 @@ import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgrou
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.PlatformType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils.IneligibilityReason;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils.SupportedConfigurationSwitch;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.content_public.browser.WebContentsObserver;
@@ -3125,6 +3127,47 @@ public class EdgeToEdgeControllerTest {
                 "isTopEdgeToEdgeEnabled() should be false when EDGE_TO_EDGE_EVERYWHERE is"
                         + " disabled.",
                 EdgeToEdgeUtils.isTopEdgeToEdgeEnabled());
+    }
+
+    @Test
+    public void testRecordTopEligibility_PhoneGestureAndThreeButton_Eligible() {
+        try (var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord("Android.EdgeToEdge.Top.Eligible", true)
+                        .expectNoRecords("Android.EdgeToEdge.Top.IneligibilityReason")
+                        .build()) {
+            EdgeToEdgeUtils.setHas3ButtonNavBarForTesting(true);
+            assertTrue(EdgeToEdgeUtils.recordTopEligibilityForEveryStart(mActivity));
+        }
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    public void testRecordTopEligibility_Tablet_IneligibleFormFactor() {
+        assertTrue(DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity));
+        try (var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord("Android.EdgeToEdge.Top.Eligible", false)
+                        .expectIntRecord(
+                                "Android.EdgeToEdge.Top.IneligibilityReason",
+                                IneligibilityReason.FORM_FACTOR)
+                        .build()) {
+            assertFalse(EdgeToEdgeUtils.recordTopEligibilityForEveryStart(mActivity));
+        }
+    }
+
+    @Test
+    public void testRecordTopEligibility_Automotive_IneligibleDeviceType() {
+        DeviceInfo.setIsAutomotiveForTesting(true);
+        try (var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord("Android.EdgeToEdge.Top.Eligible", false)
+                        .expectIntRecord(
+                                "Android.EdgeToEdge.Top.IneligibilityReason",
+                                IneligibilityReason.DEVICE_TYPE)
+                        .build()) {
+            assertFalse(EdgeToEdgeUtils.recordTopEligibilityForEveryStart(mActivity));
+        }
     }
 
     // TODO: Verify that the value of the updated insets returned from the

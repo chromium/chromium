@@ -59,6 +59,9 @@ public class EdgeToEdgeUtils {
             "Android.EdgeToEdge.Eligible2.OnCreateController";
     private static final String INELIGIBLE_REASON_ON_CREATE_HISTOGRAM =
             "Android.EdgeToEdge.IneligibilityReason2.OnCreateController";
+    private static final String TOP_ELIGIBLE_HISTOGRAM = "Android.EdgeToEdge.Top.Eligible";
+    private static final String TOP_INELIGIBLE_REASON_HISTOGRAM =
+            "Android.EdgeToEdge.Top.IneligibilityReason";
     private static final String MISSING_NAVBAR_INSETS_HISTOGRAM =
             "Android.EdgeToEdge.MissingNavbarInsets2";
     private static final String DRAW_TO_EDGE_UNSUPPORTED_CONFIG_HISTOGRAM =
@@ -305,23 +308,26 @@ public class EdgeToEdgeUtils {
     }
 
     /**
-     * Record if the current activity is eligible for edge to edge. If not, also record the reason
-     * why it is ineligible. This is for the general "for all users" check at startup.
+     * Record if the current activity is eligible for bottom edge to edge. If not, also record the
+     * reason why it is ineligible. This is for the general "for all users" check at startup.
      *
      * @param activity The current active activity.
-     * @return Whether the activity is eligible for edge to edge based on device configuration.
+     * @return Whether the activity is eligible for bottom edge to edge based on device
+     *     configuration.
      */
-    public static boolean recordEligibilityForEveryStart(Activity activity) {
+    public static boolean recordBottomEligibilityForEveryStart(Activity activity) {
         return recordEligibility(activity, ELIGIBLE_HISTOGRAM, INELIGIBLE_REASON_HISTOGRAM);
     }
 
     /**
-     * Record if the current activity is eligible for edge to edge when the controller is created.
+     * Record if the current activity is eligible for bottom edge to edge when the controller is
+     * created.
      *
      * @param activity The current active activity.
-     * @return Whether the activity is eligible for edge to edge based on device configuration.
+     * @return Whether the activity is eligible for bottom edge to edge based on device
+     *     configuration.
      */
-    public static boolean recordEligibilityOnCreate(Activity activity) {
+    public static boolean recordEligibilityOnCreateForBottomChin(Activity activity) {
         return recordEligibility(
                 activity, ELIGIBLE_ON_CREATE_HISTOGRAM, INELIGIBLE_REASON_ON_CREATE_HISTOGRAM);
     }
@@ -368,6 +374,45 @@ public class EdgeToEdgeUtils {
         }
 
         RecordHistogram.recordBooleanHistogram(eligibleName, eligible);
+
+        return eligible;
+    }
+
+    /**
+     * Record if the current activity is eligible for top edge to edge. If not, also record the
+     * reason why it is ineligible. This is for the general "for all users" check at startup.
+     *
+     * @param activity The current active activity.
+     * @return Whether the activity is eligible for top edge to edge based on device configuration.
+     */
+    public static boolean recordTopEligibilityForEveryStart(Activity activity) {
+        boolean eligible = true;
+
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity)) {
+            eligible = false;
+            RecordHistogram.recordEnumeratedHistogram(
+                    TOP_INELIGIBLE_REASON_HISTOGRAM,
+                    IneligibilityReason.FORM_FACTOR,
+                    IneligibilityReason.NUM_TYPES);
+        }
+
+        if (Build.VERSION.SDK_INT < VERSION_CODES.R) {
+            eligible = false;
+            RecordHistogram.recordEnumeratedHistogram(
+                    TOP_INELIGIBLE_REASON_HISTOGRAM,
+                    IneligibilityReason.OS_VERSION,
+                    IneligibilityReason.NUM_TYPES);
+        }
+
+        if (DeviceInfo.isAutomotive()) {
+            eligible = false;
+            RecordHistogram.recordEnumeratedHistogram(
+                    TOP_INELIGIBLE_REASON_HISTOGRAM,
+                    IneligibilityReason.DEVICE_TYPE,
+                    IneligibilityReason.NUM_TYPES);
+        }
+
+        RecordHistogram.recordBooleanHistogram(TOP_ELIGIBLE_HISTOGRAM, eligible);
 
         return eligible;
     }
