@@ -486,17 +486,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Lens.ImageClassification.SdkError" enum="LensSdkError"
-    expires_after="2022-08-07">
-  <owner>yusuyoutube@google.com</owner>
-  <owner>benwgold@google.com</owner>
-  <summary>
-    Logged the error code when there is a Lens SDK error occurred within the
-    classification session. The error code is an integer constant defined by the
-    SDK. Only logged on Android. See http://b/170422682 for more details.
-  </summary>
-</histogram>
-
 <histogram name="Lens.Omnibox.LensSupportStatus" enum="LensSupportStatus"
     expires_after="2024-09-01">
   <owner>yusuyoutube@google.com</owner>

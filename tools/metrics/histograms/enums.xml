@@ -7314,16 +7314,6 @@ shown properly on the user-facing crash UI.
   <int value="19" label="Disabled: user is in Incognito mode"/>
 </enum>
 
-<enum name="LensSdkError">
-  <int value="1" label="Internal Error"/>
-  <int value="2" label="Session already started"/>
-  <int value="3" label="Session not started"/>
-  <int value="4" label="Query missing payload"/>
-  <int value="5" label="Query payload missing image"/>
-  <int value="6" label="Query image failed to resolve"/>
-  <int value="7" label="Classification error"/>
-</enum>
-
 <enum name="LensSupportStatus">
   <summary>Whether lens is supported and if not the reason why.</summary>
   <int value="0" label="Lens Search Supported"/>
