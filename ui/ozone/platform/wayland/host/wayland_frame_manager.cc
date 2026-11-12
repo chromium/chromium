@@ -807,6 +807,9 @@ bool WaylandFrameManager::EnsureImageDescriptionsExist(WaylandFrame& frame) {
     ensure(subsurface->wayland_surface(), config);
   }
   ensure(frame.root_surface, frame.root_config);
+  if (has_description_pending_creation) {
+    connection_->Flush();
+  }
   return has_description_pending_creation;
 }
 

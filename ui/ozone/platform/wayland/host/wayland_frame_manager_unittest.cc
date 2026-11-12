@@ -9,6 +9,10 @@
 #include <vector>
 
 #include "base/files/file_util.h"
+#include "base/test/bind.h"
+#include "base/test/run_until.h"
+#include "base/threading/platform_thread.h"
+#include "base/time/time.h"
 #include "skia/ext/skcolorspace_primaries.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -601,6 +605,31 @@ TEST_F(WaylandFrameManagerColorManagementTest,
   RecordPQFrame(150.f);
   EXPECT_EQ(0u, NumPendingFrames());
   EXPECT_EQ(4u, NumSubmittedFrames());
+}
+
+// Holding a frame also holds back the commit that would flush the image
+// description requests. Poll the server without running the client's message
+// loop, whose glib event watcher flushes on every iteration.
+TEST_F(WaylandFrameManagerColorManagementTest, HeldFrameFlushesRequests) {
+  InitBufferManager();
+  RecordPQFrame(203.f);
+  EXPECT_EQ(1u, NumPendingFrames());
+
+  // TimeTicks::Now() is mocked here, so bound the wait by iterations.
+  size_t created = 0;
+  for (int i = 0; i < 2000 && created == 0; ++i) {
+    server_.Post(base::BindLambdaForTesting([&] {
+      created = server_.wp_color_manager()->created_descriptions().size();
+    }));
+    server_.FlushForTesting();
+    if (created == 0) {
+      base::PlatformThread::Sleep(base::Milliseconds(1));
+    }
+  }
+  EXPECT_EQ(1u, created);
+
+  // Once the loop runs, the requests get flushed and the frame drains.
+  EXPECT_TRUE(base::test::RunUntil([&] { return NumSubmittedFrames() == 1u; }));
 }
 
 }  // namespace ui
