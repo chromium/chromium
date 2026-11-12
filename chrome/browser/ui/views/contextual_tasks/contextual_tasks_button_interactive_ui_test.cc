@@ -3935,8 +3935,18 @@ IN_PROC_BROWSER_TEST_F(
     ContextualTasksPinnedButtonActiveIndicatorCircleHighlightInteractiveTest,
     ShowsCircleHighlightOnlyWhenPanelClosedAndRefreshesOnHighlight) {
   raw_ptr<PinnedActionToolbarButton> pinned_button = nullptr;
+  const std::u16string expected_open_tooltip = l10n_util::GetStringUTF16(
+      contextual_tasks::GetContextualTasksPinningStringId(
+          IDS_CONTEXTUAL_TASKS_CUSTOMIZE_CHROME_LABEL));
+  const std::u16string expected_close_tooltip = l10n_util::GetStringUTF16(
+      contextual_tasks::GetContextualTasksPinningStringId(
+          IDS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CLOSE_TOOL_TIP));
+  const std::u16string expected_reopen_tooltip = l10n_util::GetStringUTF16(
+      contextual_tasks::GetContextualTasksPinningStringId(
+          IDS_CONTEXTUAL_TASKS_SIDE_PANEL_REOPEN_TOOL_TIP));
 
-  auto VerifyCircleHighlight = [&](bool expected_active) {
+  auto VerifyCircleHighlight = [&](bool expected_active,
+                                   const std::u16string& expected_tooltip) {
     ASSERT_NE(pinned_button, nullptr);
     actions::ActionItem* const action_item =
         actions::ActionManager::Get().FindAction(
@@ -3947,6 +3957,7 @@ IN_PROC_BROWSER_TEST_F(
               ActionItemEngagedIndicatorStyle::kCircleHighlight);
     EXPECT_EQ(action_item->GetProperty(kActionItemUnderlineIndicatorKey),
               expected_active);
+    EXPECT_EQ(pinned_button->GetTooltipText(), expected_tooltip);
     ASSERT_NE(pinned_button->GetStatusIndicatorForTesting(), nullptr);
     EXPECT_FALSE(pinned_button->GetStatusIndicatorForTesting()->GetVisible());
     EXPECT_EQ(pinned_button->GetBackground() != nullptr, expected_active);
@@ -3969,7 +3980,7 @@ IN_PROC_BROWSER_TEST_F(
       // Zero state: no circle highlight, and close side panel action is not
       // registered.
       Do([&]() {
-        VerifyCircleHighlight(false);
+        VerifyCircleHighlight(false, expected_open_tooltip);
         EXPECT_EQ(actions::ActionManager::Get().FindAction(
                       kActionContextualTasksCloseSidePanel,
                       BrowserActions::From(browser())->root_action_item()),
@@ -3981,9 +3992,9 @@ IN_PROC_BROWSER_TEST_F(
       // the circle highlight and hides the underline.
       CreateTaskForTab(0),
       SimulateOpeningContextualTaskSidePanel(),
-      Do([&]() { VerifyCircleHighlight(false); }),
+      Do([&]() { VerifyCircleHighlight(false, expected_close_tooltip); }),
       SimulateClosingContextualTaskSidePanel(),
-      Do([&]() { VerifyCircleHighlight(true); }),
+      Do([&]() { VerifyCircleHighlight(true, expected_reopen_tooltip); }),
       // Dynamically switching the engaged indicator style updates the status
       // indicator and background immediately.
       Do([&]() {
@@ -4008,13 +4019,13 @@ IN_PROC_BROWSER_TEST_F(
       }),
       // Switching to Tab 1 (no ongoing task) clears the circle highlight.
       SelectTab(kTabStripElementId, 1),
-      Do([&]() { VerifyCircleHighlight(false); }),
+      Do([&]() { VerifyCircleHighlight(false, expected_open_tooltip); }),
       // Switching back to Tab 0 restores the circle highlight.
       SelectTab(kTabStripElementId, 0),
-      Do([&]() { VerifyCircleHighlight(true); }),
+      Do([&]() { VerifyCircleHighlight(true, expected_reopen_tooltip); }),
       // Disassociating the task clears the circle highlight.
       RemoveTaskFromTab(0),
-      Do([&]() { VerifyCircleHighlight(false); }));
+      Do([&]() { VerifyCircleHighlight(false, expected_open_tooltip); }));
 }
 
 IN_PROC_BROWSER_TEST_F(

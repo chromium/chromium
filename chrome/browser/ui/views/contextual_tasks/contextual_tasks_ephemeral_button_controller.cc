@@ -91,16 +91,21 @@ ContextualTasksEphemeralButtonController::
   Profile* const profile = browser_window_interface_->GetProfile();
   contextual_tasks::ContextualTasksService* const contextual_tasks_service =
       contextual_tasks::ContextualTasksServiceFactory::GetForProfile(profile);
-  contextual_task_observation_.Observe(contextual_tasks_service);
+  if (contextual_tasks_service) {
+    contextual_task_observation_.Observe(contextual_tasks_service);
+  }
   tab_change_subscription_ =
       browser_window_interface_->RegisterActiveTabDidChange(base::BindRepeating(
           &ContextualTasksEphemeralButtonController::OnActiveTabChange,
           base::Unretained(this)));
 
-  contextual_task_entry_observation_.Observe(
-      SidePanelRegistry::From(browser_window_interface_)
-          ->GetEntryForKey(
-              SidePanelEntryKey(SidePanelEntryId::kContextualTasks)));
+  if (auto* const registry =
+          SidePanelRegistry::From(browser_window_interface_)) {
+    if (auto* const entry = registry->GetEntryForKey(
+            SidePanelEntryKey(SidePanelEntryId::kContextualTasks))) {
+      contextual_task_entry_observation_.Observe(entry);
+    }
+  }
 
   aim_eligibility_service_ =
       AimEligibilityServiceFactory::GetForProfile(profile);
@@ -340,6 +345,7 @@ void ContextualTasksEphemeralButtonController::OnEntryWillHide(
       MaybeNotifyVisibilityShouldChange();
     } else {
       UpdatePinnedButtonActiveIndicator();
+      UpdatePinButtonTooltip();
     }
     return;
   }
@@ -992,9 +998,14 @@ void ContextualTasksEphemeralButtonController::
 }
 
 void ContextualTasksEphemeralButtonController::UpdatePinButtonTooltip() {
-  if (!contextual_tasks::
-          IsContextualTasksEphemeralPinButtonRefactorEnabled() ||
-      !browser_window_interface_) {
+  if (!browser_window_interface_) {
+    return;
+  }
+  const bool is_pinned = contextual_tasks::GetEffectivePinState(
+      browser_window_interface_->GetProfile());
+  if (!is_pinned &&
+      !contextual_tasks::
+          IsContextualTasksEphemeralPinButtonRefactorEnabled()) {
     return;
   }
   BrowserActions* const browser_actions =
@@ -1010,10 +1021,14 @@ void ContextualTasksEphemeralButtonController::UpdatePinButtonTooltip() {
     return;
   }
 
-  const bool is_pinned = contextual_tasks::GetEffectivePinState(
-      browser_window_interface_->GetProfile());
   int tooltip_id = IDS_CONTEXTUAL_TASKS_CUSTOMIZE_CHROME_LABEL;
-  if (!is_pinned) {
+  if (is_pinned) {
+    if (IsPanelOpen()) {
+      tooltip_id = IDS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CLOSE_TOOL_TIP;
+    } else if (ShouldShowPinnedButtonActiveIndicator()) {
+      tooltip_id = IDS_CONTEXTUAL_TASKS_SIDE_PANEL_REOPEN_TOOL_TIP;
+    }
+  } else {
     tooltip_id = IsPanelOpen()
                      ? IDS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CLOSE_TOOL_TIP
                      : IDS_CONTEXTUAL_TASKS_SIDE_PANEL_REOPEN_TOOL_TIP;
