@@ -105,12 +105,16 @@
 -All/FormMutationTest.RemoveFormlessFields/1
 -All/FormMutationTest.RemoveFormlessPasswordFields/0
 -All/FormMutationTest.RemoveFormlessPasswordFields/1
+-All/FormMutationTest.RemoveFormRegisteredDuringDelayWithGarbageCollection/0
+-All/FormMutationTest.RemoveFormRegisteredDuringDelayWithGarbageCollection/1
 -All/FormMutationTest.RemoveMultipleForms/0
 -All/FormMutationTest.RemoveMultipleForms/1
 -All/FormMutationTest.RemoveMultipleFormsAndFormlessFields/0
 -All/FormMutationTest.RemoveMultipleFormsAndFormlessFields/1
 -All/FormMutationTest.RemoveNonPasswordForm/0
 -All/FormMutationTest.RemoveNonPasswordForm/1
+-All/FormMutationTest.RemoveUnreferencedElementsWithGarbageCollection/0
+-All/FormMutationTest.RemoveUnreferencedElementsWithGarbageCollection/1
 
 # TODO(crbug.com/40945942): Test currently fails on iOS blink.
 -FormJsTest.GetIframeElements
