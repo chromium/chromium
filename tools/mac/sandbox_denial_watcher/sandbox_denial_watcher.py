@@ -41,6 +41,7 @@ import webbrowser
 
 from bug_tracker import (
     get_bug_url,
+    get_chrome_version,
     get_denial_summary,
     get_seatbelt_profile,
     normalize_denials,
@@ -490,7 +491,11 @@ def prompt_to_file_bug(
     logger = logging.getLogger("sandbox_denial_watcher")
 
     first = denials[0]
-    dialog_text = f"{first.process_name}: {get_denial_summary(denials)}"
+    version = get_chrome_version(first)
+    version_str = f" [{version}]" if version != "unknown" else ""
+    dialog_text = (
+        f"{first.process_name}{version_str}: {get_denial_summary(denials)}"
+    )
 
     with _dialog_lock:
         try:
@@ -549,7 +554,9 @@ class SandboxDenialWatcher:
         self._batch_window_seconds = batch_window_seconds
         self._cooldown_seconds = cooldown_seconds
         self._batch_lock = threading.Lock()
-        self._active_batches: dict[tuple[str, str], list[SandboxDenial]] = {}
+        self._active_batches: dict[
+            tuple[str, str, str], list[SandboxDenial]
+        ] = {}
         self._prompted_denials: set[tuple[str, str]] = set()
         # Caches process command lines per PID with a bounded LRU cache so
         # rapid bursts of denials do not invoke `ps` repeatedly.
@@ -557,7 +564,7 @@ class SandboxDenialWatcher:
             _get_process_command_line
         )
 
-    def _flush_batch(self, batch_key: tuple[str, str]) -> None:
+    def _flush_batch(self, batch_key: tuple[str, str, str]) -> None:
         """Flushes a pending batch of denials and prompts the user."""
         with self._batch_lock:
             denials = self._active_batches.pop(batch_key, None)
@@ -590,7 +597,19 @@ class SandboxDenialWatcher:
     def _report_denial(self, denial_event: SandboxDenial) -> None:
         """Logs an unexpected denial and queues it into a batch."""
         self._logger.info("[DENIAL] %s", denial_event.event_message)
-        batch_key = (denial_event.process_name, denial_event.action)
+        # Capture the process command line now (rather than when the batch
+        # flushes) in case a short-lived process exits beforehand.
+        if not denial_event.command_line:
+            command_line = self._get_command_line(denial_event.pid)
+            if command_line:
+                denial_event = replace(denial_event, command_line=command_line)
+
+        chrome_version = get_chrome_version(denial_event)
+        batch_key = (
+            denial_event.process_name,
+            denial_event.action,
+            chrome_version,
+        )
 
         with self._batch_lock:
             key = (denial_event.action, _normalize_target(denial_event.target))
@@ -607,14 +626,6 @@ class SandboxDenialWatcher:
                 return
 
             if batch_key not in self._active_batches:
-                # Capture the process command line now (rather than when the
-                # batch flushes) in case a short-lived process exits beforehand.
-                if not denial_event.command_line:
-                    command_line = self._get_command_line(denial_event.pid)
-                    if command_line:
-                        denial_event = replace(
-                            denial_event, command_line=command_line
-                        )
                 self._active_batches[batch_key] = [denial_event]
                 timer = threading.Timer(
                     self._batch_window_seconds,

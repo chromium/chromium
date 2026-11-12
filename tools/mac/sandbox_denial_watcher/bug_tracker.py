@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from pathlib import Path
 import platform
+import plistlib
 import re
 from typing import Optional, Sequence, Union
 import urllib.parse
@@ -19,14 +20,6 @@ from log_events import SandboxDenial
 _COMPONENT_ID = "1455745"
 _BUG_TITLE_PREFIX = "[macOS Sandbox] Unexpected denial:"
 _BUG_TRACKER_URL = "https://issues.chromium.org/issues/new"
-
-# Maximum length of the generated pre-filled issue URL to avoid exceeding
-# browser or server URL length limits when many denials are detected.
-_MAX_BUG_URL_LENGTH = 8000
-
-# Reserve ~1,000 URL-encoded chars for the base URL, title, and non-log
-# sections of the bug description.
-_MAX_DENIAL_LOGS_ENCODED_LENGTH = _MAX_BUG_URL_LENGTH - 1000
 
 # Maximum length of the generated pre-filled issue URL to avoid exceeding
 # browser or server URL length limits when many denials are detected.
@@ -194,6 +187,80 @@ def get_seatbelt_profile(denial: SandboxDenial) -> str:
     return _get_process_and_profile(denial)[1]
 
 
+# Matches the framework version in Chrome/Chromium helper executable paths.
+_FRAMEWORK_VERSION_PATTERN = re.compile(
+    r"\.framework/Versions/(\d+(?:\.\d+)+)/"
+)
+
+# Matches the root .app bundle in executable paths.
+_APP_BUNDLE_PATTERN = re.compile(
+    r"(?P<bundle>(?:^|.*?/)(?P<app>[^/]+\.app))/Contents/(?:Frameworks|MacOS)"
+)
+
+# Maps app bundle names to human-readable channel/flavor names.
+_PRODUCT_CHANNELS: dict[str, str] = {
+    "Google Chrome Canary": "Canary",
+    "Google Chrome Dev": "Dev",
+    "Google Chrome Beta": "Beta",
+    "Google Chrome": "Stable",
+    "Chromium": "Chromium",
+}
+
+
+def get_chrome_version(
+    denial_or_cmd: Union[SandboxDenial, Optional[str]],
+) -> str:
+    """Returns the Chrome version and channel, e.g. '159.0.8146.0 (Canary)'.
+
+    Extracts the running version from the versioned framework directory path
+    in the command line, falling back to Info.plist of the enclosing bundle
+    or crashpad annotations. Returns 'unknown' if unavailable.
+    """
+    command_line = (
+        denial_or_cmd.command_line
+        if isinstance(denial_or_cmd, SandboxDenial)
+        else denial_or_cmd
+    )
+    if not command_line:
+        return "unknown"
+
+    ver_match = _FRAMEWORK_VERSION_PATTERN.search(command_line)
+    version = ver_match.group(1) if ver_match else None
+
+    app_match = _APP_BUNDLE_PATTERN.search(command_line)
+    channel = None
+    if app_match:
+        app_name = app_match.group("app")[:-4]
+        channel = _PRODUCT_CHANNELS.get(app_name, app_name)
+        if not version:
+            info_plist = (
+                Path(app_match.group("bundle")) / "Contents" / "Info.plist"
+            )
+            if info_plist.is_file():
+                try:
+                    with open(info_plist, "rb") as f:
+                        plist = plistlib.load(f)
+                        version = plist.get("CFBundleShortVersionString")
+                except (OSError, plistlib.InvalidFileException):
+                    pass
+
+    if not version:
+        ver_flag = re.search(r"--annotation=ver=([^\s]+)", command_line)
+        if ver_flag:
+            version = ver_flag.group(1)
+
+    if not channel:
+        chan_flag = re.search(r"--annotation=channel=([^\s]+)", command_line)
+        if chan_flag:
+            channel = chan_flag.group(1).capitalize()
+
+    if version and channel:
+        return f"{version} ({channel})"
+    if version:
+        return version
+    return "unknown"
+
+
 def _truncate_denial_logs(
     denial_logs: str,
     max_encoded_len: int = _MAX_DENIAL_LOGS_ENCODED_LENGTH,
@@ -222,6 +289,7 @@ def _truncate_denial_logs(
 def _get_bug_body(denials: Sequence[SandboxDenial]) -> str:
     """Generates the bug description for a sequence of related denials."""
     process_type, seatbelt_profile = _get_process_and_profile(denials[0])
+    chrome_version = get_chrome_version(denials[0])
     unique_messages = list(dict.fromkeys(d.event_message for d in denials))
     denial_logs = _truncate_denial_logs(
         _redact_home_dir("\n".join(unique_messages))
@@ -233,7 +301,8 @@ def _get_bug_body(denials: Sequence[SandboxDenial]) -> str:
     )
     return (
         f"Process type: {process_type}\n"
-        f"Seatbelt profile: {seatbelt_profile}\n\n"
+        f"Seatbelt profile: {seatbelt_profile}\n"
+        f"Chrome version: {chrome_version}\n\n"
         f"{header}\n```\n{denial_logs}\n```\n"
         "\n"
         f"{_get_system_info()}\n"

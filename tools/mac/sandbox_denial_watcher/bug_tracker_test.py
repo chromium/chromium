@@ -24,6 +24,7 @@ from bug_tracker import (
     _get_process_and_profile,
     _redact_home_dir,
     get_bug_url,
+    get_chrome_version,
     get_seatbelt_profile,
 )
 from log_events import SandboxDenial
@@ -178,6 +179,19 @@ class GetBugUrlTest(unittest.TestCase):
         _, params = _parse_url(get_bug_url(_denial("com.apple.foo")))
         self.assertIn("macOS version: 15.1", params["description"])
         self.assertIn("Architecture: arm64", params["description"])
+
+    def test_description_includes_chrome_version(self):
+        cmd = (
+            "/Applications/Google Chrome Canary.app/Contents/Frameworks/"
+            "Google Chrome Framework.framework/Versions/159.0.8146.0/Helpers/"
+            "Google Chrome Helper (Renderer).app/Contents/MacOS/"
+            "Google Chrome Helper (Renderer) --type=renderer"
+        )
+        denial = _denial("com.apple.foo", command_line=cmd)
+        _, params = _parse_url(get_bug_url(denial))
+        self.assertIn(
+            "Chrome version: 159.0.8146.0 (Canary)", params["description"]
+        )
 
     @patch("bug_tracker.platform.machine", return_value="")
     @patch("bug_tracker.platform.mac_ver", return_value=("", ("", "", ""), ""))
@@ -452,6 +466,51 @@ class RedactHomeDirTest(unittest.TestCase):
 
     def test_empty_home_dir_leaves_text_unchanged(self):
         self.assertEqual(_redact_home_dir("/a/b", home_dir="/"), "/a/b")
+
+
+class GetChromeVersionTest(unittest.TestCase):
+    """Verifies Chrome version and channel extraction from command lines."""
+
+    def test_extracts_version_and_channel_from_framework_path(self):
+        cmd = (
+            "/Applications/Google Chrome Canary.app/Contents/Frameworks/"
+            "Google Chrome Framework.framework/Versions/159.0.8146.0/Helpers/"
+            "Google Chrome Helper (Renderer).app/Contents/MacOS/"
+            "Google Chrome Helper (Renderer) --type=renderer"
+        )
+        self.assertEqual(get_chrome_version(cmd), "159.0.8146.0 (Canary)")
+
+    def test_extracts_stable_channel(self):
+        cmd = (
+            "/Applications/Google Chrome.app/Contents/Frameworks/"
+            "Google Chrome Framework.framework/Versions/131.0.6778.86/Helpers/"
+            "Google Chrome Helper.app/Contents/MacOS/"
+            "Google Chrome Helper --type=utility"
+        )
+        self.assertEqual(get_chrome_version(cmd), "131.0.6778.86 (Stable)")
+
+    def test_extracts_local_chromium_build(self):
+        cmd = (
+            "out/Default/Chromium.app/Contents/Frameworks/"
+            "Chromium Framework.framework/Versions/159.0.8148.0/Helpers/"
+            "Chromium Helper.app/Contents/MacOS/Chromium Helper"
+        )
+        self.assertEqual(get_chrome_version(cmd), "159.0.8148.0 (Chromium)")
+
+    def test_extracts_crashpad_annotations(self):
+        cmd = (
+            "chrome_crashpad_handler --annotation=ver=159.0.8146.0 "
+            "--annotation=channel=canary"
+        )
+        self.assertEqual(get_chrome_version(cmd), "159.0.8146.0 (Canary)")
+
+    def test_returns_unknown_for_none_or_system_service(self):
+        self.assertEqual(get_chrome_version(None), "unknown")
+        mtl = (
+            "/System/Library/Frameworks/Metal.framework/Versions/A/XPCServices/"
+            "MTLCompilerService.xpc/Contents/MacOS/MTLCompilerService"
+        )
+        self.assertEqual(get_chrome_version(mtl), "unknown")
 
 
 if __name__ == "__main__":

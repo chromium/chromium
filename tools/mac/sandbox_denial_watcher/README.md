@@ -50,7 +50,7 @@ When unexpected denials occur:
 
 - The terminal displays each full `[DENIAL]` log message in real time.
 - Related denials occurring within a short time window are batched together by
-  process and operation type.
+  process, operation type, and Chrome version.
 - A single `[REPORT]` URL is emitted for the batch, and a macOS dialog appears
   with **Dismiss** and **File bug** buttons:
   - Clicking **File bug** opens your browser to a pre-filled issue on the
@@ -59,8 +59,8 @@ When unexpected denials occur:
   - Clicking **Dismiss** or letting the dialog close after 15 seconds
     suppresses notifications for that denial for one hour.
 
-The pre-filled bug includes the denial, your macOS version, and your CPU
-architecture. Your home directory is replaced with `~`, but please review the
+The pre-filled bug includes the denial, the Chrome version, your macOS version,
+and your CPU architecture. Your home directory is replaced with `~`, but please review the
 report for any other personal information before filing it. Please also fill
 in the "What were you doing when this notification was triggered?" section;
 this context helps developers reproduce and resolve the issue more quickly.
