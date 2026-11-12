@@ -111,6 +111,13 @@ class MetricsServiceBrowserTest : public InProcessBrowserTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // Enable the metrics service for testing (in recording-only mode).
     metrics::EnableMetricsRecordingOnlyForTesting(command_line);
+#if BUILDFLAG(IS_WIN)
+    // Disable in-process stack traces in child processes on Windows since
+    // symbolizing stack traces via DbgHelp in intentionally crashed renderer
+    // processes is unneeded and can time out under load, and DbgHelp is
+    // unreliable in low-memory conditions (see crbug.com/41302062).
+    command_line->AppendSwitch(switches::kDisableInProcessStackTraces);
+#endif
   }
 
   void SetUp() override {
@@ -288,11 +295,6 @@ IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserTest, CrashRenderersInRust) {
 // OOM code only works on Windows.
 #if BUILDFLAG(IS_WIN) && !defined(ADDRESS_SANITIZER)
 IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserTest, OOMRenderers) {
-  // Disable stack traces during this test since DbgHelp is unreliable in
-  // low-memory conditions (see crbug.com/41302062).
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kDisableInProcessStackTraces);
-
   base::HistogramTester histogram_tester;
 
   OpenTabsAndNavigateToCrashyUrl(blink::kChromeUIMemoryExhaustURL);

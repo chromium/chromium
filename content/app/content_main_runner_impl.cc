@@ -1062,9 +1062,14 @@ int ContentMainRunnerImpl::Initialize(ContentMainParams params) {
   // happen before crash reporting is initialized (which for chrome happens in
   // the call to PreSandboxStartup() on the delegate below), because otherwise
   // this would interfere with signal handlers used by crash reporting.
-  if (should_enable_stack_dump &&
-      !command_line.HasSwitch(switches::kDisableInProcessStackTraces)) {
-    base::debug::EnableInProcessStackDumping();
+  if (should_enable_stack_dump) {
+    if (!command_line.HasSwitch(switches::kDisableInProcessStackTraces)) {
+      base::debug::EnableInProcessStackDumping();
+    } else {
+#if BUILDFLAG(IS_WIN)
+      base::debug::DisableInProcessStackDumpingForTesting();  // IN-TEST
+#endif
+    }
   }
 
   base::debug::VerifyDebugger();
