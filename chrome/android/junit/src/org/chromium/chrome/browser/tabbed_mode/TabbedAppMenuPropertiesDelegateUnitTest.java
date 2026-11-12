@@ -2556,6 +2556,26 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
     @Test
     @Config(sdk = 31)
+    public void testPageMenuItems_multiInstance_ntpShowsNewWindowInsteadOfMoveToOtherWindow() {
+        setUpMocksForPageMenu();
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.NTP_URL);
+        MultiWindowTestUtils.enableMultiInstance();
+        MultiWindowTestUtils.createInstance(
+                /* instanceId= */ 0,
+                /* url= */ "https://url0",
+                /* tabCount= */ 1,
+                /* taskId= */ 123);
+
+        mIsMultiWindowApiSupported = true;
+        mIsMoveToOtherWindowSupported = true;
+
+        ModelList modelList = createMenuForMultiWindow();
+        assertTrue(isMenuVisible(modelList, R.id.new_window_menu_id));
+        assertFalse(isMenuVisible(modelList, R.id.move_to_other_window_menu_id));
+    }
+
+    @Test
+    @Config(sdk = 31)
     public void testPageMenuItems_multiInstance_manageAllWindow() {
         setUpMocksForPageMenu();
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.SEARCH_URL);
@@ -3449,6 +3469,23 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     }
 
     @Test
+    public void testShouldShowNewMenu_phoneOnNtp_returnsTrue() {
+        mActivityTabProvider.setForTesting(mTab);
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.NTP_URL);
+        assertTrue(
+                doTestShouldShowNewMenu(
+                        /* isAutomotive= */ false,
+                        /* isMultiInstanceEnabled= */ true,
+                        /* currentWindowInstances= */ 1,
+                        /* isTabletSizeScreen= */ false,
+                        /* isChromeRunningInAdjacentWindow= */ false,
+                        /* isInMultiWindowMode= */ false,
+                        /* isInMultiDisplayMode= */ false,
+                        /* isMultiInstanceRunning= */ false));
+        verify(mTabbedAppMenuPropertiesDelegate, atLeastOnce()).isTabletSizeScreen();
+    }
+
+    @Test
     public void testShouldShowNewMenu_multiInstanceRunning_returnsFalse() {
         assertFalse(
                 doTestShouldShowNewMenu(
@@ -3521,6 +3558,17 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                         /* isInMultiDisplayMode= */ true,
                         /* isMoveToOtherWindowSupported= */ false));
         verify(mTabbedAppMenuPropertiesDelegate, never()).isTabletSizeScreen();
+    }
+
+    @Test
+    public void testShouldShowMoveToOtherWindow_onNtp_returnsFalse() {
+        mActivityTabProvider.setForTesting(mTab);
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.NTP_URL);
+        assertFalse(
+                doTestShouldShowMoveToOtherWindowMenu(
+                        /* isInMultiDisplayMode= */ false,
+                        /* isMoveToOtherWindowSupported= */ true));
+        verify(mMultiWindowModeStateDispatcher, never()).isMoveToOtherWindowSupported(any());
     }
 
     @Test

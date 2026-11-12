@@ -1649,9 +1649,10 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
             if (MultiWindowUtils.getInstanceCount(PersistedInstanceType.ACTIVE)
                     >= MultiWindowUtils.getMaxInstances()) return false;
 
-            // On phones, show the menu only when in split-screen, with a single instance
-            // running on the foreground.
+            // On phones, show the menu only when on the New Tab Page (NTP), or when in
+            // split-screen with a single instance running on the foreground.
             return isTabletSizeScreen()
+                    || isCurrentTabNtp()
                     || (!mMultiWindowModeStateDispatcher.isChromeRunningInAdjacentWindow()
                             && (mMultiWindowModeStateDispatcher.isInMultiWindowMode()
                                     || mMultiWindowModeStateDispatcher.isInMultiDisplayMode()));
@@ -1687,7 +1688,13 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
      */
     protected boolean shouldShowMoveToOtherWindow() {
         if (!isMultiInstanceEnabled() && shouldShowNewWindow()) return false;
+        if (isCurrentTabNtp()) return false;
         return mMultiWindowModeStateDispatcher.isMoveToOtherWindowSupported(mTabModelSelector);
+    }
+
+    private boolean isCurrentTabNtp() {
+        Tab currentTab = mActivityTabProvider.get();
+        return currentTab != null && UrlUtilities.isNtpUrl(currentTab.getUrl());
     }
 
     @VisibleForTesting
