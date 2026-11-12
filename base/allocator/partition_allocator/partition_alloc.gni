@@ -301,7 +301,7 @@ declare_args() {
   # true, the UnprotectedInRelease trait is ignored, giving those pointers
   # BackupRefPtr protection. Pointers marked UnprotectedInReleaseForPerformance
   # remain unprotected in release builds.
-  remove_unprotected_in_release_trait = false
+  remove_unprotected_in_release_trait = true
 
   # Make explicit calls to ASAN at runtime, e.g. to mark quarrantined memory
   # as poisoned. Allows ASAN to tell if a particular memory error is protected
