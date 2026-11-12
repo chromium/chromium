@@ -4,7 +4,6 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/field_types.h"
-#import "components/autofill/core/common/autofill_features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
@@ -126,13 +125,6 @@ UIViewController* TopPresentedViewController() {
 @end
 
 @implementation AutofillAddAddressManuallyTestCase
-
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  config.features_disabled.push_back(
-      autofill::features::kAutofillAiWithDataSchema);
-  return config;
-}
 
 - (void)setUp {
   [super setUp];
