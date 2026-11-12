@@ -185,10 +185,11 @@ const char* ToShutdownTriggerCrashKeyString(ShutdownTrigger trigger) {
 void CheckAccessedOnCorrectThread() {
   // Some APIs below are accessed after UI thread has been torn down, so cater
   // for both situations here.
-  CHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI) ||
-            !content::BrowserThread::IsThreadInitialized(
-                content::BrowserThread::UI),
-        base::NotFatalUntil::M161);
+  // TODO(crbug.com/584626681): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(
+      content::BrowserThread::CurrentlyOn(content::BrowserThread::UI) ||
+      !content::BrowserThread::IsThreadInitialized(content::BrowserThread::UI));
 }
 
 }  // namespace
