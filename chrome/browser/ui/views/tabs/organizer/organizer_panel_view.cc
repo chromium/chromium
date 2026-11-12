@@ -130,27 +130,40 @@ class OrganizerPanelViewImpl : public OrganizerPanelView,
     auto* const currently_focused = focus_manager->GetFocusedView();
     if (visible) {
       if (web_contents() && web_view_->IsDrawn()) {
+        was_drawn_ = true;
         previously_focused_view_.SetView(currently_focused);
         web_view_->RequestFocus();
       } else {
+        was_drawn_ = false;
         previously_focused_view_.SetView(nullptr);
       }
-    } else if (previously_focused_view_) {
-      if (!currently_focused || Contains(currently_focused)) {
-        if (GetWidget() && !GetWidget()->IsActive()) {
-          focus_manager->SetStoredFocusView(previously_focused_view_.view());
-        } else {
-          focus_manager->SetFocusedView(previously_focused_view_.view());
-        }
+    } else {
+      const bool was_drawn = std::exchange(was_drawn_, false);
+      // Only restore or update focus when the panel had been drawn and is
+      // hiding within a visible widget rather than when the widget itself hides
+      // or closes.
+      if (!was_drawn || !starting_view || !GetWidget() ||
+          !GetWidget()->IsVisible() || GetWidget()->IsClosed()) {
+        previously_focused_view_.SetView(nullptr);
+        return;
       }
-      previously_focused_view_.SetView(nullptr);
-    } else if (!currently_focused || Contains(currently_focused)) {
-      // Losing visibility and there's no view to set as currently focused.
-      // Focus the location bar only if the browser window is active.
-      if (GetWidget() && GetWidget()->IsActive()) {
-        if (auto* browser_view =
-                BrowserView::GetBrowserViewForBrowser(&browser())) {
-          browser_view->SetFocusToLocationBar(false);
+      if (previously_focused_view_) {
+        if (!currently_focused || Contains(currently_focused)) {
+          if (!GetWidget()->IsActive()) {
+            focus_manager->SetStoredFocusView(previously_focused_view_.view());
+          } else {
+            focus_manager->SetFocusedView(previously_focused_view_.view());
+          }
+        }
+        previously_focused_view_.SetView(nullptr);
+      } else if (!currently_focused || Contains(currently_focused)) {
+        // Losing visibility and there's no view to set as currently focused.
+        // Focus the location bar only if the browser window is active.
+        if (GetWidget()->IsActive()) {
+          if (auto* browser_view =
+                  BrowserView::GetBrowserViewForBrowser(&browser())) {
+            browser_view->SetFocusToLocationBar(false);
+          }
         }
       }
     }
@@ -176,6 +189,7 @@ class OrganizerPanelViewImpl : public OrganizerPanelView,
   raw_ptr<OrganizerPanelWebView> web_view_ = nullptr;
   base::ScopedObservation<views::View, views::ViewObserver> observation_{this};
   views::ViewTracker previously_focused_view_;
+  bool was_drawn_ = false;
 };
 
 }  // namespace

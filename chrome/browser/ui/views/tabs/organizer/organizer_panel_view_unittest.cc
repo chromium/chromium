@@ -252,6 +252,28 @@ TEST_F(OrganizerPanelViewTest,
   EXPECT_EQ(widget()->GetFocusManager()->GetStoredFocusView(), initial_view);
 }
 
+TEST_F(OrganizerPanelViewTest, WidgetHideDoesNotRestoreFocus) {
+  CreateView();
+  state_controller()->SetOrganizerVisible(true);
+  views::View* web_view = GetWebView();
+  ASSERT_NE(web_view, nullptr);
+
+  views::View* initial_view =
+      widget()->GetRootView()->AddChildView(std::make_unique<views::View>());
+  initial_view->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
+
+  web_view->SetVisible(false);
+  initial_view->RequestFocus();
+  EXPECT_EQ(widget()->GetFocusManager()->GetFocusedView(), initial_view);
+
+  web_view->SetVisible(true);
+  EXPECT_EQ(widget()->GetFocusManager()->GetFocusedView(), web_view);
+
+  widget()->Hide();
+  EXPECT_NE(widget()->GetFocusManager()->GetFocusedView(), initial_view);
+  EXPECT_NE(widget()->GetFocusManager()->GetStoredFocusView(), initial_view);
+}
+
 TEST_F(OrganizerPanelViewTest, LazyWebContentsInitialization) {
   CreateView(/*show_widget=*/false);
   views::WebView* web_view = views::AsViewClass<views::WebView>(GetWebView());
