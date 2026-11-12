@@ -13,6 +13,7 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <ranges>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -1271,7 +1272,7 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame,
                 ? active_tree_->root_layer()->bounds().ToString()
                 : "null");
         SCOPED_CRASH_KEY_NUMBER("cc", "surface_count",
-                                frame->render_surface_list->size());
+                                active_tree_->GetRenderSurfaceList().size());
         SCOPED_CRASH_KEY_STRING32(
             "cc", "top_controls",
             base::NumberToString(active_tree_->CurrentTopControlsShownRatio()));
@@ -1310,10 +1311,11 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame,
     return DrawResult::kSuccess;
   }
 
-  TRACE_EVENT_BEGIN("cc,benchmark", "LayerTreeHostImpl::CalculateRenderPasses",
-                    "render_surface_list.size()",
-                    static_cast<uint64_t>(frame->render_surface_list->size()),
-                    "RequiresHighResToDraw", RequiresHighResToDraw());
+  TRACE_EVENT_BEGIN(
+      "cc,benchmark", "LayerTreeHostImpl::CalculateRenderPasses",
+      "render_surface_list.size()",
+      static_cast<uint64_t>(active_tree_->GetRenderSurfaceList().size()),
+      "RequiresHighResToDraw", RequiresHighResToDraw());
 
   // HandleVisibilityChanged contributed to the above damage check, so reset it
   // now that we're going to draw.
@@ -1333,10 +1335,9 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame,
   CHECK(active_tree_->RootRenderSurface()->BackdropFilters().IsEmpty());
 
   // Create the render passes in dependency order.
-  size_t render_surface_list_size = frame->render_surface_list->size();
-  for (size_t i = 0; i < render_surface_list_size; ++i) {
-    const size_t surface_index = render_surface_list_size - 1 - i;
-    int effect_id = (*frame->render_surface_list)[surface_index];
+  const RenderSurfaceList& render_surface_list =
+      active_tree_->GetRenderSurfaceList();
+  for (int effect_id : std::views::reverse(render_surface_list)) {
     RenderSurfaceImpl* render_surface =
         active_tree_->GetRenderSurface(effect_id);
 
@@ -1736,7 +1737,6 @@ DrawResult LayerTreeHostImpl::PrepareToDraw(FrameData* frame,
     frame->checkerboarded_needs_raster = !tile_manager_.PrepareToDraw();
   }
 
-  frame->render_surface_list = &active_tree_->GetRenderSurfaceList();
   frame->render_passes.clear();
   frame->unbounded_render_passes.clear();
   frame->will_draw_layers.clear();
@@ -3033,8 +3033,9 @@ std::optional<SubmitInfo> LayerTreeHostImpl::DrawLayers(FrameData* frame) {
 
   // The next frame should start by assuming nothing has changed, and changes
   // are noted as they occur.
-  for (size_t i = 0; i < frame->render_surface_list->size(); i++) {
-    int effect_id = (*frame->render_surface_list)[i];
+  // Draw properties may have been marked dirty since PrepareToDraw(), but the
+  // list still reflects the surfaces that were drawn in this frame.
+  for (int effect_id : active_tree_->GetLastComputedRenderSurfaceList()) {
     auto* surface = active_tree_->GetRenderSurface(effect_id);
     surface->damage_tracker()->DidDrawDamagedArea();
   }
@@ -3103,8 +3104,8 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
 
   if (debug_state_.ShowDebugRects()) {
     debug_rect_history_->SaveDebugRectsForCurrentFrame(
-        active_tree(), active_tree_->hud_layer(), *frame->render_surface_list,
-        debug_state_);
+        active_tree(), active_tree_->hud_layer(),
+        active_tree_->GetLastComputedRenderSurfaceList(), debug_state_);
   }
 
   TRACE_EVENT_INSTANT("cc", "Scroll Delta This Frame", "x",
@@ -3162,7 +3163,7 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
     ViewTransitionRequest::ViewTransitionElementMap view_transition_element_map;
     const auto& capture_view_transition_tokens =
         active_tree_->GetCaptureViewTransitionTokens();
-    for (int effect_id : *frame->render_surface_list) {
+    for (int effect_id : active_tree_->GetLastComputedRenderSurfaceList()) {
       RenderSurfaceImpl* render_surface =
           active_tree_->GetRenderSurface(effect_id);
       const auto& view_transition_element_resource_id =

@@ -3979,7 +3979,7 @@ class LayerTreeHostTestDeviceScaleFactorScalesViewportAndLayers
     impl->DidDrawAllLayers(frame_data);
 
     const RenderSurfaceList& render_surface_list =
-        *frame_data.render_surface_list;
+        impl->active_tree()->GetRenderSurfaceList();
 
     // Both layers should be drawing into the root render surface.
     ASSERT_EQ(1u, render_surface_list.size());

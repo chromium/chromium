@@ -9224,7 +9224,7 @@ TEST_P(LayerTreeHostImplTest, RootLayerDoesntCreateExtraSurface) {
   TestFrameData frame;
 
   EXPECT_EQ(DrawResult::kSuccess, host_impl_->PrepareToDraw(&frame));
-  EXPECT_EQ(1u, frame.render_surface_list->size());
+  EXPECT_EQ(1u, host_impl_->active_tree()->GetRenderSurfaceList().size());
   EXPECT_EQ(1u, frame.render_passes.size());
   host_impl_->DidDrawAllLayers(frame);
 }

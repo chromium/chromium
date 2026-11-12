@@ -548,6 +548,15 @@ class CC_EXPORT LayerTreeImpl {
   void set_ui_resource_request_queue(UIResourceRequestQueue queue);
 
   const RenderSurfaceList& GetRenderSurfaceList() const;
+  // Returns the render surface list computed by the most recent
+  // UpdateDrawProperties(), even if draw properties have since been marked
+  // dirty. LayerTreeHostImpl uses this after PrepareToDraw(), while the list
+  // still describes the frame being drawn but draw properties can already be
+  // dirty (e.g. from HUD updates, view transition requests or copy requests).
+  // Prefer GetRenderSurfaceList() everywhere else.
+  const RenderSurfaceList& GetLastComputedRenderSurfaceList() const {
+    return render_surface_list_;
+  }
   RenderSurfaceImpl* GetRenderSurface(int effect_id);
   const RenderSurfaceImpl* GetRenderSurface(int effect_id) const;
   const Region& UnoccludedScreenSpaceRegion() const;
