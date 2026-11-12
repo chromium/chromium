@@ -7,18 +7,23 @@
 #include "ash/public/cpp/ambient/ambient_client.h"
 #include "ash/public/cpp/ambient/ambient_mode_photo_source.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
+#include "base/check_deref.h"
+#include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 
 namespace {
 
 using AmbientModePhotoSource = ash::ambient::AmbientModePhotoSource;
 
 AmbientModePhotoSource GetAmbientModePhotoSourcePref(
-    PrefService* pref_service) {
-  auto value = pref_service->GetInteger(
-      ash::ambient::prefs::kAmbientModePhotoSourcePref);
+    const PrefService& pref_service) {
+  auto value =
+      pref_service.GetInteger(ash::ambient::prefs::kAmbientModePhotoSourcePref);
 
   CHECK_LE(0, value, base::NotFatalUntil::M161);
   CHECK_GE(static_cast<int>(AmbientModePhotoSource::kMaxValue), value,
@@ -35,21 +40,25 @@ AmbientModeMetricsProvider::~AmbientModeMetricsProvider() = default;
 void AmbientModeMetricsProvider::ProvideCurrentSessionData(
     metrics::ChromeUserMetricsExtension* uma_proto_unused) {
   auto* ambient_client = ash::AmbientClient::Get();
-  if (!ambient_client || !ambient_client->IsAmbientModeAllowed())
+  if (!ambient_client || !ambient_client->IsAmbientModeAllowed()) {
     return;
+  }
 
-  // |IsAmbientModeAllowed| guarantees a valid profile exists for the active
-  // user.
-  PrefService* pref_service =
-      ProfileManager::GetActiveUserProfile()->GetPrefs();
-  CHECK(pref_service, base::NotFatalUntil::M161);
+  // `IsAmbientModeAllowed()` returns false until the active user's profile is
+  // created.
+  const PrefService* pref_service =
+      CHECK_DEREF(
+          user_manager::UserManager::Get()->FindUser(
+              CHECK_DEREF(
+                  session_manager::SessionManager::Get()->GetActiveSession())
+                  .account_id()))
+          .GetProfilePrefs();
+  CHECK(pref_service);
 
-  bool enabled =
-      pref_service->GetBoolean(ash::ambient::prefs::kAmbientModeEnabled);
-
-  if (!enabled)
+  if (!pref_service->GetBoolean(ash::ambient::prefs::kAmbientModeEnabled)) {
     return;
+  }
 
   base::UmaHistogramEnumeration("Ash.AmbientMode.PhotoSource",
-                                GetAmbientModePhotoSourcePref(pref_service));
+                                GetAmbientModePhotoSourcePref(*pref_service));
 }

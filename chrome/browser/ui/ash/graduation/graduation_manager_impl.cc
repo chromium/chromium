@@ -22,7 +22,7 @@
 #include "base/time/time.h"
 #include "base/timer/wall_clock_timer.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
@@ -33,7 +33,10 @@
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/google/core/common/google_util.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_partition_config.h"
@@ -92,15 +95,21 @@ void GraduationManagerImpl::ResumeTimerForTesting() {
 }
 
 void GraduationManagerImpl::OnUserSessionStarted(bool is_primary) {
-  profile_ = ProfileManager::GetActiveUserProfile();
-  CHECK(profile_);
+  const session_manager::Session* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  CHECK(active_session);
+  content::BrowserContext* browser_context =
+      BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          active_session->account_id());
+  CHECK(browser_context);
+  profile_ = Profile::FromBrowserContext(browser_context);
   pref_change_registrar_.Reset();
   // Graduation is only offered to managed users. The user's policy status is
-  // known once its Profile has been added, which happened before the session
+  // known once its `Profile` has been added, which happened before the session
   // started. If it isn't, treat the user as unmanaged, matching
-  // ProfileUserManagerController's default.
+  // `ProfileUserManagerController`'s default.
   const user_manager::User& user = CHECK_DEREF(
-      BrowserContextHelper::Get()->GetUserByBrowserContext(profile_));
+      user_manager::UserManager::Get()->FindUser(active_session->account_id()));
   if (!user.is_managed().value_or(false)) {
     return;
   }

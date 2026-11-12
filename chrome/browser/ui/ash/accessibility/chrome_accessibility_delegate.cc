@@ -7,11 +7,16 @@
 #include <limits>
 
 #include "ash/accessibility/accessibility_prefs_custom_associator.h"
+#include "base/check.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
 #include "chrome/browser/prefs/pref_service_syncable_util.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/sync_preferences/pref_service_syncable.h"
+#include "content/public/browser/browser_context.h"
 
 using ash::AccessibilityManager;
 using ash::MagnificationManager;
@@ -52,8 +57,17 @@ double ChromeAccessibilityDelegate::GetSavedScreenMagnifierScale() {
 std::unique_ptr<ash::AccessibilityPrefsCustomAssociator>
 ChromeAccessibilityDelegate::CreatePrefsCustomAssociator(
     PrefService* pref_service) {
+  // TODO(crbug.com/278643115): Take `account_id` from the callers.
+  const session_manager::Session* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  CHECK(active_session);
+  content::BrowserContext* browser_context =
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          active_session->account_id());
+  CHECK(browser_context);
   sync_preferences::PrefServiceSyncable* pref_service_syncable =
-      PrefServiceSyncableFromProfile(ProfileManager::GetActiveUserProfile());
+      PrefServiceSyncableFromProfile(
+          Profile::FromBrowserContext(browser_context));
   if (pref_service_syncable == pref_service) {
     return std::make_unique<ash::AccessibilityPrefsCustomAssociator>(
         pref_service_syncable);

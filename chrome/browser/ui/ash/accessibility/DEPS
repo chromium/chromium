@@ -21,6 +21,6 @@ specific_include_rules = {
   ],
   "chrome_accessibility_delegate\\.cc": [
     "+chrome/browser/prefs/pref_service_syncable_util.h",
-    "+chrome/browser/profiles/profile_manager.h"
+    "+chrome/browser/profiles/profile.h",
   ]
 }
