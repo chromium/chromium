@@ -110,8 +110,8 @@ public interface TabCreator {
      * @param type The TabLaunchType describing how this Tab was created.
      * @param addTabToModel A CompletableFuture that should be eventually completed by the caller
      *     with the decision whether the newly created Tab should be added to the tab model.
-     *     Typically this Future should be already completed with |true| before passing it to this
-     *     method, however, sometimes it is beneficial to create a Tab without adding it to the
+     *     Typically this Future should be already completed with {@code true} before passing it to
+     *     this method, however, sometimes it is beneficial to create a Tab without adding it to the
      *     current TabModel (e.g. if the Tab will ultimately be shown to the user in a new window
      *     and it's not possible to make this decision at new Tab's creation time).
      * @return The new Tab or null if a Tab was not created successfully.
@@ -136,8 +136,8 @@ public interface TabCreator {
      * @param index The index to insert the tab at.
      * @param addTabToModel A CompletableFuture that should be eventually completed by the caller
      *     with the decision whether the newly created Tab should be added to the tab model.
-     *     Typically this Future should be already completed with |true| before passing it to this
-     *     method, however, sometimes it is beneficial to create a Tab without adding it to the
+     *     Typically this Future should be already completed with {@code true} before passing it to
+     *     this method, however, sometimes it is beneficial to create a Tab without adding it to the
      *     current TabModel (e.g. if the Tab will ultimately be shown to the user in a new window
      *     and it's not possible to make this decision at new Tab's creation time).
      * @return The new Tab or null if a Tab was not created successfully.

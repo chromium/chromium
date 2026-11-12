@@ -309,14 +309,14 @@ public abstract class TabModelJniBridge implements TabModelInternal {
     }
 
     /**
-     * Returns the {@link TabCreator} for the given {@link Profile}.
+     * Returns the incognito {@link TabCreator} if {@code isIncognito} is true, otherwise the
+     * regular {@link TabCreator}.
      *
      * <p>Please note that, the {@link TabCreator} and {@link TabCollectionTabModelImpl} are
      * separate instances for {@link ChromeTabbedActivity} and {@link CustomTabActivity} across both
      * regular and Incognito modes which allows us to pass the boolean directly.
      *
-     * @param incognito A boolean to indicate whether to return IncognitoTabCreator or
-     *     RegularTabCreator.
+     * @param isIncognito Whether to return the incognito or the regular {@link TabCreator}.
      */
     protected abstract TabCreator getTabCreator(boolean isIncognito);
 
@@ -617,9 +617,7 @@ public abstract class TabModelJniBridge implements TabModelInternal {
     @CalledByNative
     public abstract boolean containsTabGroup(@JniType("base::Token") @Nullable Token tabGroupId);
 
-    /**
-     * @return A list of tab groups in this tab model. Order is not guaranteed.
-     */
+    /** Returns a list of tab groups in this tab model. Order is not guaranteed. */
     @CalledByNative
     protected abstract @JniType("std::vector<base::Token>") List<Token> listTabGroups();
 

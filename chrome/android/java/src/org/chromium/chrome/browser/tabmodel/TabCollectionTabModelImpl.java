@@ -351,6 +351,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
      * @param profile The {@link Profile} tabs in the tab collection tab model belongs to.
      * @param activityType The type of activity this tab collection tab model is for.
      * @param customTabProfileType The profile type of the custom tab, or null if not a custom tab.
+     * @param tabModelType The type of the TabModel.
      * @param regularTabCreator The tab creator for regular tabs.
      * @param incognitoTabCreator The tab creator for incognito tabs.
      * @param orderController Controls logic for selecting and positioning tabs.
@@ -2760,6 +2761,16 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
      * Notifies observers that {@code tabs} are about to be destroyed and finishes closing any tab
      * groups that close with them.
      *
+     * @param tabs The list of {@link Tab}s that were closed.
+     * @param saveToTabRestoreService Whether the closed tabs can be restored to the
+     *     TabRestoreService.
+     * @param closingSource The tab closing source, e.g. the tablet tab strip.
+     * @param undoRunnable The runnable supplied with the closure to run if it is undone, or null if
+     *     none was supplied or it is not known when the closure is finalized.
+     * @param isAllTabs Whether the closure was a close-all; false if not known when the closure is
+     *     finalized.
+     * @param isUndoable Whether the closure is undoable and is being finalized while {@code tabs}
+     *     are still in the model, so that it can be undone by restoring them.
      * @param removeHidingGroups Whether to stop treating the closing groups as hiding right away.
      */
     private void notifyOnFinishingMultipleTabClosure(

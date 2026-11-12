@@ -17,11 +17,15 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 @NullMarked
 interface TabModelOrderController {
     /**
-     * Determine the insertion index of the next tab. If it's not the result of a link being
-     * pressed, the provided index will be returned.
+     * Determines the insertion index of the next tab. Returns {@link TabList#INVALID_TAB_INDEX} to
+     * let the {@link TabModel} choose the index when {@code type} bypasses insertion order
+     * calculation, or when a pinned {@code newTab} cannot be placed at {@code position}. Otherwise
+     * returns {@code position}, unless the launch type places the tab at the end of the model or
+     * adjacent to its opener.
      *
      * @param type The launch type of the new tab.
      * @param position The provided position.
+     * @param newTab The new tab to insert. Its pinned state and parent can affect the index.
      * @return Where to insert the tab.
      */
     int determineInsertionIndex(@TabLaunchType int type, int position, Tab newTab);

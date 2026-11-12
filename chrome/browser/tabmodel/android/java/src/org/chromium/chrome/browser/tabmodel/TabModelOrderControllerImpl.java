@@ -173,9 +173,7 @@ class TabModelOrderControllerImpl implements TabModelOrderController {
                 || isCurrentModelIncognitoBranded != isNewTabIncognitoBranded;
     }
 
-    /**
-     * @return {@code true} If both tabs have the same model type, {@code false} otherwise.
-     */
+    /** Returns whether {@code model} and {@code tab} have the same model type. */
     static boolean sameModelType(TabModel model, Tab tab) {
         return model.isIncognito() == tab.isIncognito();
     }

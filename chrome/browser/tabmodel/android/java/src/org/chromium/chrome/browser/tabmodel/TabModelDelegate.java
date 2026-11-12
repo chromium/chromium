@@ -31,9 +31,7 @@ public interface TabModelDelegate {
      */
     void requestToShowTab(@Nullable Tab tab, @TabSelectionType int type);
 
-    /**
-     * @return Whether reparenting is currently in progress for this TabModel.
-     */
+    /** Returns whether reparenting is currently in progress for this TabModel. */
     boolean isReparentingInProgress();
 
     /**

@@ -24,7 +24,7 @@ public class SettableLookAheadObservableSupplier<T>
     private boolean mLookAheadValueSet;
 
     /**
-     * Manually declare to look ahead observers that the supplier will be set to |value|.
+     * Manually declare to look ahead observers that the supplier will be set to {@code value}.
      *
      * @param value The value the supplier will be set to.
      */

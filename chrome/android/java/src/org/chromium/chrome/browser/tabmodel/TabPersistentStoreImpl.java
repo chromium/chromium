@@ -1043,9 +1043,7 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
         saveNextTab();
     }
 
-    /**
-     * @return Whether the specified tab is in any pending save operations.
-     */
+    /** Returns whether the specified tab is in any pending save operations. */
     @VisibleForTesting
     /* package */ boolean isTabPendingSave(Tab tab) {
         return (mSaveTabTask != null && mSaveTabTask.mTab.equals(tab)) || mTabsToSave.contains(tab);
@@ -1243,7 +1241,10 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
     }
 
     /**
-     * @param isIncognitoSelected Whether the tab model is incognito.
+     * @param isIncognitoSelected Whether the incognito tab model is currently selected. Decides
+     *     whether the incognito or the standard active tab is restored first.
+     * @param fromMerge Whether the tabs being read come from a merged metadata file. Merged tabs
+     *     are never restored first and are added at the end of the tab model.
      * @return A callback for reading data from tab models.
      */
     private OnTabStateReadCallback createOnTabStateReadCallback(
@@ -2174,8 +2175,8 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
     }
 
     /**
-     * @return The shared pref APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE. This is used when we need to
-     *     know the last known tab state before the active tab from the tab state is read.
+     * Returns the shared pref APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE. This is used when we need to
+     * know the last known tab state before the active tab from the tab state is read.
      */
     public static @ActiveTabState int readLastKnownActiveTabStatePref() {
         return ChromeSharedPreferences.getInstance()

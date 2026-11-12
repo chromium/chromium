@@ -19,31 +19,27 @@ public interface AsyncTabParamsManager {
      */
     void add(int tabId, AsyncTabParams params);
 
-    /**
-     * @return Whether there is already an {@link AsyncTabParams} added for the given ID.
-     */
+    /** Returns whether there is already an {@link AsyncTabParams} added for the given ID. */
     boolean hasParamsForTabId(int tabId);
 
     /**
-     * @return Whether there are any saved {@link AsyncTabParams} with a tab to reparent. All
-     *     implementations of this are keyed off of a user gesture so the likelihood of having more
-     *     than one is zero.
+     * Returns whether there are any saved {@link AsyncTabParams} with a tab to reparent. All
+     * implementations of this are keyed off of a user gesture so the likelihood of having more than
+     * one is zero.
      */
     boolean hasParamsWithTabToReparent();
 
     /**
-     * @return Whether there is an {@link AsyncTabParams} for the given ID with a tab to reparent.
+     * Returns whether there is an {@link AsyncTabParams} for the given ID with a tab to reparent.
      */
     boolean hasParamsWithTabToReparent(int tabId);
 
     /**
-     * @return A map of tab IDs to AsyncTabParams containing data that will be used later when a tab
-     *     is opened via an intent.
+     * Returns a map of tab IDs to AsyncTabParams containing data that will be used later when a tab
+     * is opened via an intent.
      */
     SparseArray<AsyncTabParams> getAsyncTabParams();
 
-    /**
-     * @return Retrieves and removes AsyncTabCreationParams for a particular tab id.
-     */
+    /** Retrieves and removes the {@link AsyncTabParams} for the given tab ID. */
     AsyncTabParams remove(int tabId);
 }

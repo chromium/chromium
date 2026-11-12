@@ -7,15 +7,16 @@ package org.chromium.chrome.browser.tabmodel;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.os.Bundle;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
 
 import org.chromium.build.annotations.Contract;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 
 /** This class is a container for the metadata of multiple tabs that are being reparented. */
 @NullMarked
@@ -72,6 +73,7 @@ public class MultiTabMetadata {
      *
      * @param tabIds The list of tab IDs.
      * @param urls The list of URLs.
+     * @param isPinned Whether each tab is pinned, in the same order as {@code tabIds}.
      * @param isIncognito Whether the tabs are in incognito mode.
      * @return A new {@link MultiTabMetadata} object.
      */

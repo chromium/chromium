@@ -358,9 +358,7 @@ public class PendingTabClosureManager {
         mTabClosureEvents.add(new TabClosureEvent(tabs, undoRunnable, tabClosingSource));
     }
 
-    /**
-     * @return the list of rewindable tabs.
-     */
+    /** Returns the list of rewindable tabs. */
     public TabList getRewoundList() {
         return mRewoundList;
     }
