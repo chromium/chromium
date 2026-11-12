@@ -75,7 +75,12 @@ std::unique_ptr<DXGISwapChainImageBacking> DXGISwapChainImageBacking::Create(
       gpu::DirectCompositionRootSurfaceBufferCount(gr_context_type);
   desc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT |
                      /* Needed to bind to GL texture */ DXGI_USAGE_SHADER_INPUT;
-  desc.Scaling = DXGI_SCALING_STRETCH;
+  // The DComp brush APIs let visuals participate in layout. Use NONE so the
+  // swap chain is not scaled to the visual's layout size. Older DComp versions
+  // require STRETCH for composition swap chains, but ignore the scaling mode
+  // because visuals must opt-in to participate in layout.
+  desc.Scaling = gl::ShouldUseDirectCompositionBrushes() ? DXGI_SCALING_NONE
+                                                         : DXGI_SCALING_STRETCH;
   desc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
   desc.AlphaMode = SkAlphaTypeIsOpaque(si_info.alpha_type)
                        ? DXGI_ALPHA_MODE_IGNORE

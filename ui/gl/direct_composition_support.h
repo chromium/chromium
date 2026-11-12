@@ -75,6 +75,10 @@ GL_EXPORT ID3D12CommandQueue* GetDirectCompositionD3D12CommandQueue();
 // chain. Overridden with --disable-direct-composition.
 GL_EXPORT bool DirectCompositionSupported();
 
+// Returns true if the active direct composition device supports brushes and the
+// `DCompBrushes` feature is enabled.
+GL_EXPORT bool ShouldUseDirectCompositionBrushes();
+
 // Returns true if video overlays are supported and should be used. Overridden
 // with --enable-direct-composition-video-overlays and
 // --disable-direct-composition-video-overlays. This function is thread safe.

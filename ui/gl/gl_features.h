@@ -27,7 +27,6 @@ GL_EXPORT bool UseCompositorClockVSyncInterval();
 GL_EXPORT BASE_DECLARE_FEATURE(kDefaultPassthroughCommandDecoder);
 #endif
 
-
 #if BUILDFLAG(IS_WIN)
 GL_EXPORT BASE_DECLARE_FEATURE(kUseCompositorClockVSyncInterval);
 #endif  // BUILDFLAG(IS_WIN)
@@ -66,6 +65,8 @@ GL_EXPORT bool IsSwiftShaderUsedForWebGLByCommandLine(
 
 #if BUILDFLAG(IS_WIN)
 GL_EXPORT BASE_DECLARE_FEATURE(kAllowD3D11WarpFallback);
+
+GL_EXPORT BASE_DECLARE_FEATURE(kDCompBrushes);
 
 GL_EXPORT BASE_DECLARE_FEATURE(kDCompOnD3D12);
 #endif

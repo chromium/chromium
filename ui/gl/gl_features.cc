@@ -122,6 +122,10 @@ bool UseCompositorClockVSyncInterval() {
              features::kUseCompositorClockVSyncInterval);
 }
 
+// Killswitch to enables the use of `IDCompositionBrush` and DComp visual layout
+// APIs where supported.
+BASE_FEATURE(kDCompBrushes, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables DirectComposition textures backed by D3D12 resources.
 // When this feature is enabled, the GPU pipeline may create and present DComp-
 // backed surfaces using the D3D12 path and leverage Dawn’s D3D12 device. This

@@ -1748,7 +1748,8 @@ base::expected<void, CommitError> SwapChainPresenter::ReallocateSwapChain(
   desc.SampleDesc.Count = 1;
   desc.BufferCount = swap_chain_buffer_count_;
   desc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-  desc.Scaling = DXGI_SCALING_STRETCH;
+  desc.Scaling = ShouldUseDirectCompositionBrushes() ? DXGI_SCALING_NONE
+                                                     : DXGI_SCALING_STRETCH;
   desc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
   desc.Flags =
       DXGI_SWAP_CHAIN_FLAG_YUV_VIDEO | DXGI_SWAP_CHAIN_FLAG_FULLSCREEN_VIDEO;
