@@ -1,7 +1,7 @@
-diff --git a/src/android-base/file.cpp b/src/android-base/file.cpp
+diff --git a/src/file.cpp b/src/file.cpp
 index f71773b..1956266 100644
---- a/src/android-base/file.cpp
-+++ b/src/android-base/file.cpp
+--- a/src/file.cpp
++++ b/src/file.cpp
 @@ -314,7 +314,7 @@ bool ReadFully(borrowed_fd fd, void* data, size_t byte_count) {
    while (remaining > 0) {
      ssize_t n = TEMP_FAILURE_RETRY(read(fd.get(), p, remaining));

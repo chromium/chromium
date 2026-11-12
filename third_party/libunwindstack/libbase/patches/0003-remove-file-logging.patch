@@ -1,7 +1,7 @@
-diff --git a/src/android-base/include/android-base/logging.h b/src/android-base/include/android-base/logging.h
+diff --git a/src/include/android-base/logging.h b/src/include/android-base/logging.h
 index 179ddf0..2d21638 100644
---- a/src/android-base/include/android-base/logging.h
-+++ b/src/android-base/include/android-base/logging.h
+--- a/src/include/android-base/logging.h
++++ b/src/include/android-base/logging.h
 @@ -218,7 +218,13 @@ struct LogAbortAfterFullExpr {
  // FATAL it also causes an abort. For example:
  //

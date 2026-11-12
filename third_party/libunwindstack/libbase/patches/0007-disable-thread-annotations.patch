@@ -1,7 +1,7 @@
-diff --git a/src/android-base/include/android-base/thread_annotations.h b/src/android-base/include/android-base/thread_annotations.h
+diff --git a/src/include/android-base/thread_annotations.h b/src/include/android-base/thread_annotations.h
 index 53fe6da..336c19f 100644
---- a/src/android-base/include/android-base/thread_annotations.h
-+++ b/src/android-base/include/android-base/thread_annotations.h
+--- a/src/include/android-base/thread_annotations.h
++++ b/src/include/android-base/thread_annotations.h
 @@ -29,8 +29,7 @@
  #define SHARED_CAPABILITY(...) \
        THREAD_ANNOTATION_ATTRIBUTE__(shared_capability(__VA_ARGS__))

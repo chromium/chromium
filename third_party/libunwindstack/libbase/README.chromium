@@ -1,0 +1,23 @@
+Name: libbase
+URL: https://android.googlesource.com/platform/system/libbase
+Version: N/A
+Revision: a5c86f3574f744b22a82a8cd08e7fa0bf7210c28
+Update Mechanism: Manual
+License: Apache-2.0
+License File: //third_party/libunwindstack/LICENSE
+Shipped: yes
+Security Critical: yes
+
+Description:
+Common helpers from AOSP (android-base): files, strings, logging macros,
+unique_fd. libunwindstack, libdexfile and libartbase include them as
+"android-base/...", and //third_party/libunwindstack builds them into its
+libunwindstack and posix_strerror_r targets.
+
+src/ holds the files BUILD.gn lists, from the upstream repository root.
+Patches 0001, 0003, 0007 and 0015 in patches/ change some of them.
+Chromium also added two #include lines to logging.h and strings.h
+without a patch (libunwindstack.git dcd4e94).
+
+To update, copy those files at the new revision into src/, reapply the
+changes above, and update Revision.

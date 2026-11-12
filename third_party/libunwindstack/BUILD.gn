@@ -30,7 +30,7 @@ config("warnings") {
 }
 
 source_set("posix_strerror_r") {
-  sources = [ "src/android-base/posix_strerror_r.cpp" ]
+  sources = [ "libbase/src/posix_strerror_r.cpp" ]
 
   # This requires the use of undef, which doesn't play nice with modules.
   use_libcxx_modules = false
@@ -38,7 +38,7 @@ source_set("posix_strerror_r") {
 
 source_set("libunwindstack") {
   include_dirs = [
-    "src/android-base/include",
+    "libbase/src/include",
     "src/libartbase",
     "src/libdexfile",
     "src/libdexfile/external/include",
@@ -89,24 +89,24 @@ source_set("libunwindstack") {
     "src/libunwindstack/include/unwindstack/UserX86_64.h",
   ]
   sources = [
+    "libbase/src/file.cpp",
+    "libbase/src/include/android-base/errno_restorer.h",
+    "libbase/src/include/android-base/file.h",
+    "libbase/src/include/android-base/logging.h",
+    "libbase/src/include/android-base/macros.h",
+    "libbase/src/include/android-base/mapped_file.h",
+    "libbase/src/include/android-base/off64_t.h",
+    "libbase/src/include/android-base/parseint.h",
+    "libbase/src/include/android-base/stringprintf.h",
+    "libbase/src/include/android-base/strings.h",
+    "libbase/src/include/android-base/thread_annotations.h",
+    "libbase/src/include/android-base/threads.h",
+    "libbase/src/include/android-base/unique_fd.h",
+    "libbase/src/include/android-base/utf8.h",
+    "libbase/src/stringprintf.cpp",
+    "libbase/src/strings.cpp",
+    "libbase/src/threads.cpp",
     "libprocinfo/src/include/procinfo/process_map.h",
-    "src/android-base/file.cpp",
-    "src/android-base/include/android-base/errno_restorer.h",
-    "src/android-base/include/android-base/file.h",
-    "src/android-base/include/android-base/logging.h",
-    "src/android-base/include/android-base/macros.h",
-    "src/android-base/include/android-base/mapped_file.h",
-    "src/android-base/include/android-base/off64_t.h",
-    "src/android-base/include/android-base/parseint.h",
-    "src/android-base/include/android-base/stringprintf.h",
-    "src/android-base/include/android-base/strings.h",
-    "src/android-base/include/android-base/thread_annotations.h",
-    "src/android-base/include/android-base/threads.h",
-    "src/android-base/include/android-base/unique_fd.h",
-    "src/android-base/include/android-base/utf8.h",
-    "src/android-base/stringprintf.cpp",
-    "src/android-base/strings.cpp",
-    "src/android-base/threads.cpp",
     "src/libartbase/base/allocator.h",
     "src/libartbase/base/array_ref.h",
     "src/libartbase/base/atomic.h",

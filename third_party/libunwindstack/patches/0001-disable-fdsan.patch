@@ -1,29 +1,3 @@
-diff --git a/src/android-base/include/android-base/unique_fd.h b/src/android-base/include/android-base/unique_fd.h
-index 1ffe02f..110712c 100644
---- a/src/android-base/include/android-base/unique_fd.h
-+++ b/src/android-base/include/android-base/unique_fd.h
-@@ -29,7 +29,11 @@
- // Including other headers from libbase frequently results in inclusion of
- // android-base/macros.h, which causes macro collisions.
- 
--#if defined(__BIONIC__)
-+#if defined(__BIONIC__) && defined(__ANDROID_API__) && __ANDROID_API__ >= 29
-+  #define FDSAN_AVAILABLE 1
-+#endif
-+
-+#if defined(FDSAN_AVAILABLE)
- #include <android/fdsan.h>
- #endif
- #if !defined(_WIN32) && !defined(__TRUSTY__)
-@@ -151,7 +155,7 @@ class unique_fd_impl final {
- // The actual details of closing are factored out to support unusual cases.
- // Almost everyone will want this DefaultCloser, which handles fdsan on bionic.
- struct DefaultCloser {
--#if defined(__BIONIC__)
-+#if defined(FDSAN_AVAILABLE)
-   static void Tag(int fd, void* old_addr, void* new_addr) {
-     if (android_fdsan_exchange_owner_tag) {
-       uint64_t old_tag = android_fdsan_create_owner_tag(ANDROID_FDSAN_OWNER_TYPE_UNIQUE_FD,
 diff --git a/src/libartbase/base/unix_file/fd_file.cc b/src/libartbase/base/unix_file/fd_file.cc
 index bb34b75..d8befde 100644
 --- a/src/libartbase/base/unix_file/fd_file.cc
