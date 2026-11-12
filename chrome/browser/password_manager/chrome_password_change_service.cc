@@ -33,6 +33,8 @@
 #include "url/gurl.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/actor/actor_surface.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/password_manager/password_change/change_password_form_waiter.h"
 #include "chrome/browser/password_manager/password_change/features.h"
 #include "chrome/browser/password_manager/password_change/model_quality_logs_uploader.h"
@@ -252,6 +254,24 @@ ChromePasswordChangeService::StartPasswordChangeFromCheckup(
   return password_change_from_checkup_delegates_.back()->GetWeakPtr();
 }
 #endif  // BUILDFLAG(IS_ANDROID)
+
+password_manager::PasswordChangeCredentialsProvider*
+ChromePasswordChangeService::GetCredentialsProviderForActorSurface(
+    int32_t actor_surface_id) {
+#if !BUILDFLAG(IS_ANDROID)
+  actor::ActorSurface* surface =
+      actor::ActorSurfaceHandle::FromRawValue(actor_surface_id).Get();
+  if (!surface) {
+    return nullptr;
+  }
+  for (const auto& data : password_change_data_) {
+    if (data.delegate->IsPasswordChangeOngoing(surface->GetWebContents())) {
+      return data.delegate.get();
+    }
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+  return nullptr;
+}
 
 PasswordChangeDelegate* ChromePasswordChangeService::GetPasswordChangeDelegate(
     content::WebContents* web_contents) {

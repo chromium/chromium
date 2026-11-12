@@ -78,6 +78,7 @@ static_library("browser") {
     "password_autofill_manager.h",
     "password_bubble_experiment.cc",
     "password_bubble_experiment.h",
+    "password_change/password_change_credentials_provider.h",
     "password_change/password_change_service_interface.cc",
     "password_change/password_change_service_interface.h",
     "password_change_backup_password_cleaner.cc",

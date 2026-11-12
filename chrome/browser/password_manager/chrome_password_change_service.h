@@ -128,6 +128,8 @@ class ChromePasswordChangeService
 
   // Add overridden change password URL.
   void AddChangePasswordUrlOverride(const GURL& url) override;
+  password_manager::PasswordChangeCredentialsProvider*
+  GetCredentialsProviderForActorSurface(int32_t actor_surface_id) override;
 
   // Checks if user has interacted with the feature and only then general
   // availability.

@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_CHANGE_PASSWORD_CHANGE_SERVICE_INTERFACE_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_CHANGE_PASSWORD_CHANGE_SERVICE_INTERFACE_H_
 
+#include <cstdint>
 #include <vector>
 
 #include "components/autofill/core/common/language_code.h"
@@ -12,6 +13,7 @@
 
 namespace password_manager {
 
+class PasswordChangeCredentialsProvider;
 struct PasswordForm;
 enum class LogInWithChangedPasswordOutcome;
 
@@ -36,6 +38,13 @@ class PasswordChangeServiceInterface {
 
   // Add overridden change password URL.
   virtual void AddChangePasswordUrlOverride(const GURL& url) = 0;
+
+  // Returns the credentials provider of the password change flow running on
+  // the actor surface identified by `actor_surface_id` (the raw value of its
+  // `actor::ActorSurfaceHandle`), or nullptr if there is no such flow. The
+  // surface may be a tab or a headless page.
+  virtual PasswordChangeCredentialsProvider*
+  GetCredentialsProviderForActorSurface(int32_t actor_surface_id) = 0;
 };
 
 // Return overridden change password URL passed to chrome switch.

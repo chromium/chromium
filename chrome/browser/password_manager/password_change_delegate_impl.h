@@ -20,6 +20,7 @@
 #include "chrome/browser/password_manager/password_change_delegate.h"
 #include "chrome/browser/ui/passwords/password_change_ui_controller.h"
 #include "chrome/browser/ui/passwords/password_change_ui_delegate.h"
+#include "components/password_manager/core/browser/password_change/password_change_credentials_provider.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_string.h"
 #include "components/tabs/public/tab_interface.h"
@@ -41,9 +42,11 @@ class Profile;
 // This class controls password change process including acceptance of privacy
 // notice, opening of a new tab, navigation to the change password url, password
 // generation and form submission.
-class PasswordChangeDelegateImpl : public PasswordChangeDelegate,
-                                   public PasswordChangeUIDelegate,
-                                   public PasswordChangeActuator::Observer {
+class PasswordChangeDelegateImpl
+    : public PasswordChangeDelegate,
+      public PasswordChangeUIDelegate,
+      public PasswordChangeActuator::Observer,
+      public password_manager::PasswordChangeCredentialsProvider {
  public:
   static constexpr char kFinalPasswordChangeStatusHistogram[] =
       "PasswordManager.FinalPasswordChangeStatus";
@@ -140,6 +143,12 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate,
   void RetryLoginCheck() override;
   void OpenPasswordChangeTab() override;
   void OnUiDismissed() override;
+
+  // password_manager::PasswordChangeCredentialsProvider impl
+  base::expected<password_manager::PasswordString, Error> GetOldPassword()
+      const override;
+  base::expected<password_manager::PasswordString, Error>
+  GetNewPassword(password_manager::PasswordFormManager* form_manager) override;
 
  private:
   void OnOtpNotFound();

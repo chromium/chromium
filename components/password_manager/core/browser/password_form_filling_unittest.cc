@@ -125,6 +125,10 @@ class MockPasswordChangeService : public PasswordChangeServiceInterface {
               (password_manager::LogInWithChangedPasswordOutcome, const GURL&),
               (const, override));
   MOCK_METHOD(void, AddChangePasswordUrlOverride, (const GURL&), (override));
+  MOCK_METHOD(PasswordChangeCredentialsProvider*,
+              GetCredentialsProviderForActorSurface,
+              (int32_t),
+              (override));
 };
 
 PasswordFormFillData::LoginCollection::const_iterator FindPasswordByUsername(
