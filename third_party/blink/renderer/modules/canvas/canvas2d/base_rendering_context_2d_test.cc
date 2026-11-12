@@ -438,11 +438,6 @@ class BaseRenderingContext2DSharedImageTest : public testing::Test {
     return resource->GetSyncTokenForTesting();
   }
 
-  void EnsureResourceRecycled(
-      scoped_refptr<ExportedCanvasResource>&& resource) {
-    resource.reset();
-  }
-
   test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   scoped_refptr<viz::TestContextProvider> test_context_provider_;
@@ -685,7 +680,8 @@ TEST_P(BaseRenderingContext2DSharedImageSyncTokenTest,
   }
   auto old_shared_image = resource->GetSharedImageForTesting();
 
-  EnsureResourceRecycled(std::move(resource));
+  // Trigger resource recycling.
+  resource.reset();
 
   context->fillRect(0, 0, 1, 1);
   auto resource_again = context->PaintRenderingResultsToResource(
@@ -720,7 +716,10 @@ TEST_P(BaseRenderingContext2DSharedImageSyncTokenTest, UnusedResources) {
   }
 
   EXPECT_FALSE(context->UnusedResourcesReclaimTimerIsRunningForTesting());
-  EnsureResourceRecycled(std::move(resource));
+
+  // Trigger resource recycling.
+  resource.reset();
+
   // The reclaim task has been posted.
   EXPECT_TRUE(context->UnusedResourcesReclaimTimerIsRunningForTesting());
 
@@ -753,7 +752,8 @@ TEST_P(BaseRenderingContext2DSharedImageSyncTokenTest,
     ASSERT_NE(GetSyncToken(resource.get()), GetSyncToken(new_resource.get()));
   }
   EXPECT_FALSE(context->UnusedResourcesReclaimTimerIsRunningForTesting());
-  EnsureResourceRecycled(std::move(resource));
+  // Trigger resource recycling.
+  resource.reset();
   // There is a ready-to-reuse resource.
   EXPECT_TRUE(context->HasUnusedResourcesForTesting());
   // No task posted.
@@ -780,7 +780,8 @@ TEST_P(BaseRenderingContext2DSharedImageSyncTokenTest,
     ASSERT_NE(GetSyncToken(resource.get()), GetSyncToken(new_resource.get()));
   }
   EXPECT_FALSE(context->UnusedResourcesReclaimTimerIsRunningForTesting());
-  EnsureResourceRecycled(std::move(resource));
+  // Trigger resource recycling.
+  resource.reset();
   EXPECT_TRUE(context->UnusedResourcesReclaimTimerIsRunningForTesting());
 
   // There is a ready-to-reuse resource.
@@ -806,7 +807,8 @@ TEST_P(BaseRenderingContext2DSharedImageSyncTokenTest,
     ASSERT_NE(GetSyncToken(resource.get()), GetSyncToken(new_resource.get()));
   }
 
-  EnsureResourceRecycled(std::move(resource));
+  // Trigger resource recycling.
+  resource.reset();
   EXPECT_TRUE(context->HasUnusedResourcesForTesting());
   task_environment_.FastForwardBy(base::Seconds(1));
 
