@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.download.tray;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -14,6 +15,8 @@ import android.view.InputDevice;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.junit.After;
 import org.junit.Before;
@@ -28,14 +31,17 @@ import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.TimeUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.download.DownloadStateModel;
 import org.chromium.chrome.browser.download.R;
+import org.chromium.chrome.browser.download.tray.DownloadTrayItemProperties.RowType;
 import org.chromium.components.offline_items_collection.LegacyHelpers;
 import org.chromium.components.offline_items_collection.OfflineContentProvider;
 import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.OfflineItemState;
 import org.chromium.ui.accessibility.AccessibilityStateTestHelper;
+import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 
 import java.util.List;
@@ -88,6 +94,7 @@ public class DownloadTrayCoordinatorTest {
         item.id = LegacyHelpers.buildLegacyContentId(/* isOfflinePage= */ false, "a");
         item.title = "report.pdf";
         item.state = OfflineItemState.IN_PROGRESS;
+        item.creationTimeMs = TimeUtils.currentTimeMillis(); // Within the model's recent window.
         mModel.onItemsAdded(List.of(item));
         OfflineItem completed = item.clone();
         completed.state = OfflineItemState.COMPLETE;
@@ -102,10 +109,28 @@ public class DownloadTrayCoordinatorTest {
         return popup;
     }
 
+    private SimpleRecyclerViewAdapter shownAdapter() {
+        RecyclerView list = (RecyclerView) shownPopup().getContentView();
+        assertNotNull(list);
+        SimpleRecyclerViewAdapter adapter = (SimpleRecyclerViewAdapter) list.getAdapter();
+        assertNotNull(adapter);
+        return adapter;
+    }
+
+    /** Builds and binds the first row as the list would; it only lays out rows when drawn. */
+    private View firstRow() {
+        SimpleRecyclerViewAdapter adapter = shownAdapter();
+        RecyclerView list = (RecyclerView) shownPopup().getContentView();
+        SimpleRecyclerViewAdapter.ViewHolder holder =
+                adapter.createViewHolder(list, RowType.COMPLETED);
+        adapter.bindViewHolder(holder, 0);
+        return holder.itemView;
+    }
+
     @Test
     public void testCompletion_showsPopupThatAutoDismisses() {
         completeDownload();
-        shownPopup();
+        assertEquals(1, shownAdapter().getItemCount());
 
         ShadowLooper.idleMainLooper(
                 DownloadTrayCoordinator.AUTO_DISMISS_MS - 1, TimeUnit.MILLISECONDS);
@@ -117,8 +142,7 @@ public class DownloadTrayCoordinatorTest {
     @Test
     public void testMouseEnteringPopup_cancelsAutoDismiss() {
         completeDownload();
-        View row = shownPopup().getContentView();
-        assertNotNull(row);
+        View row = firstRow();
 
         MotionEvent hoverEnter =
                 MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_ENTER, 0, 0, /* metaState= */ 0);
@@ -143,9 +167,7 @@ public class DownloadTrayCoordinatorTest {
     public void testClickingRow_opensAndDismisses() {
         OfflineItem item = completeDownload();
 
-        View row = shownPopup().getContentView();
-        assertNotNull(row);
-        row.performClick();
+        firstRow().performClick();
 
         verify(mOnActioned).run();
         verify(mDelegate).openItem(item);

@@ -4,7 +4,11 @@
 
 package org.chromium.chrome.browser.download.tray;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
+import android.util.ArrayMap;
+import android.util.ArraySet;
 import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
@@ -17,31 +21,38 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.download.DownloadIconUtils;
 import org.chromium.chrome.browser.download.DownloadStateModel;
 import org.chromium.chrome.browser.download.R;
+import org.chromium.chrome.browser.download.tray.DownloadTrayItemProperties.RowType;
 import org.chromium.components.browser_ui.util.DownloadUtils;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.OfflineItemState;
+import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 /**
- * Decides when the download tray shows a download and builds the models for its rows. Mirrors the
- * desktop download bubble's partial view: a download this window saw in progress that completes is
- * shown in a popup anchored to the toolbar button.
+ * Decides when the download tray shows downloads and builds the models for its rows. Mirrors the
+ * desktop download bubble's partial view: once nothing is downloading, every download this window
+ * saw complete that the user hasn't acted on yet is listed in a popup anchored to the toolbar
+ * button.
  */
 @NullMarked
 class DownloadTrayMediator implements DownloadStateModel.Observer {
     /** Shows and dismisses the tray popup on the mediator's behalf. */
     interface PopupController {
         /**
-         * Shows {@code row} in a popup anchored to {@code anchor}, replacing any shown popup.
+         * Shows {@code rows} in a popup anchored to {@code anchor}, replacing any shown popup. The
+         * list is live: rows changed or removed while the popup shows are reflected in it.
          *
          * @return Whether the popup is showing, e.g. false if there is no room for it.
          */
-        boolean showCompletion(View anchor, PropertyModel row);
+        boolean showCompletions(View anchor, ModelList rows);
 
         /** Dismisses the popup, if showing. */
         void dismiss();
@@ -62,14 +73,25 @@ class DownloadTrayMediator implements DownloadStateModel.Observer {
     private final DownloadTrayDelegate mDelegate;
     private final PopupController mPopupController;
 
-    /** The download in the showing popup, or null if no popup is showing. */
-    private @Nullable ContentId mShownId;
+    /**
+     * Downloads this window saw complete that the user hasn't acted on, as desktop's {@code
+     * !WasActionedOn()}. Their data comes from {@link DownloadStateModel#getRecentCompletedItems()}
+     * when shown, so ones that have aged out of it count as actioned, as on desktop. These sets and
+     * maps hold at most a few dozen entries (bounded by that list), so array-backed ones suffice.
+     */
+    private final Set<ContentId> mUnactionedIds = new ArraySet<>();
+
+    /** The rows in the showing popup by download; empty if no popup is showing. */
+    private final Map<ContentId, ListItem> mShownRows = new ArrayMap<>();
+
+    /** The showing popup's list, or null if no popup is showing. */
+    private @Nullable ModelList mShownList;
 
     /**
-     * The latest completion waiting to be shown once nothing is still downloading, or null. Kept so
-     * it is still shown if the last active download fails, is cancelled or is removed.
+     * Completions since the last popup, waiting to be shown once nothing is still downloading. Kept
+     * so they are still shown if the last active download fails, is cancelled or is removed.
      */
-    private @Nullable OfflineItem mPendingCompletion;
+    private final Set<ContentId> mPendingIds = new ArraySet<>();
 
     /**
      * When the last popup was shown. Starts one interval in the past so the first completion always
@@ -116,58 +138,85 @@ class DownloadTrayMediator implements DownloadStateModel.Observer {
 
     /** Called by the popup controller whenever the popup is dismissed, for any reason. */
     void onDismissed() {
-        mShownId = null;
+        mShownRows.clear();
+        mShownList = null;
     }
 
     // DownloadStateModel.Observer implementation:
 
     @Override
     public void onItemChanged(OfflineItem item, @Nullable OfflineItem previous) {
-        // The model only caches active downloads, so a null previous means it wasn't active.
-        if (previous == null
-                || !DownloadStateModel.isVisibleInWindow(
-                        item, mIsIncognitoSelected.getAsBoolean())) {
-            return;
+        ContentId id = assumeNonNull(item.id); // The model only reports items with ids.
+        boolean completed = item.state == OfflineItemState.COMPLETE && !isDangerous(item);
+        if (completed) {
+            // A shown row follows its download, e.g. renamed from the Downloads page.
+            ListItem shownRow = mShownRows.get(id);
+            if (shownRow != null) {
+                updateRow(shownRow.model, item);
+            }
+        } else {
+            // No longer a completed download, e.g. retried or flagged as dangerous, so it is
+            // neither listed nor a reason to show the popup, as if removed.
+            dropCompletion(id);
         }
+
+        // The model only caches active downloads, so a null previous means it wasn't active.
+        if (previous == null) return;
         // As on desktop, an active download ends when it stops being active or is flagged as
         // dangerous (desktop counts those as done). Pausing or waiting to auto-resume isn't an
         // ending: a waiting completion is shown once that download ends.
         if (DownloadStateModel.isActive(item) && !isDangerous(item)) return;
 
-        // Only a download this window saw in progress that has just completed is shown.
-        if (item.state == OfflineItemState.COMPLETE && !isDangerous(item)) {
-            mPendingCompletion = item;
+        // Only a download this window saw in progress that has just completed is shown. It is
+        // remembered even if the window doesn't show it right now, e.g. an incognito download
+        // while regular tabs are shown, so it is listed once the window switches.
+        if (completed) {
+            mUnactionedIds.add(id);
+        }
+
+        // Downloads this window doesn't show neither open its popup nor hold it back.
+        if (!DownloadStateModel.isVisibleInWindow(item, mIsIncognitoSelected.getAsBoolean())) {
+            return;
+        }
+        if (completed) {
+            mPendingIds.add(id);
         }
         // Any active download ending (completed or not) may leave nothing downloading.
-        maybeShowPendingCompletion();
+        maybeShowPendingCompletions();
     }
 
     @Override
     public void onItemRemoved(ContentId id, @Nullable OfflineItem previous) {
         // E.g. deleted from the Downloads page while its popup is showing.
-        if (id.equals(mShownId)) mPopupController.dismiss();
-
-        if (mPendingCompletion != null && id.equals(mPendingCompletion.id)) {
-            mPendingCompletion = null;
-        } else if (previous != null) {
+        dropCompletion(id);
+        if (previous != null) {
             // An active download removed, e.g. cancelled, may leave nothing downloading.
-            maybeShowPendingCompletion();
+            maybeShowPendingCompletions();
         }
     }
 
-    private void maybeShowPendingCompletion() {
-        // TODO(crbug.com/574064718): Show all recent completions in a list instead of only the
-        // last one, as desktop's partial view does.
-        if (mPendingCompletion == null || isAnythingDownloading()) return;
-        OfflineItem item = mPendingCompletion;
-        mPendingCompletion = null;
-
-        // Re-checked as the window may have switched between regular and incognito since.
-        if (!mIsWindowFocused.getAsBoolean()
-                || !DownloadStateModel.isVisibleInWindow(
-                        item, mIsIncognitoSelected.getAsBoolean())) {
-            return;
+    /**
+     * Drops {@code id} from the un-actioned and pending completions and takes its row out of the
+     * showing popup, closing it once nothing is left.
+     */
+    private void dropCompletion(ContentId id) {
+        mUnactionedIds.remove(id);
+        mPendingIds.remove(id);
+        ListItem shownRow = mShownRows.remove(id);
+        if (shownRow == null || mShownList == null) return;
+        mShownList.remove(shownRow);
+        if (mShownRows.isEmpty()) {
+            mPopupController.dismiss();
         }
+    }
+
+    private void maybeShowPendingCompletions() {
+        if (mPendingIds.isEmpty() || isAnythingDownloading()) return;
+        mPendingIds.clear();
+
+        // As on desktop, a completion while the popup is up isn't added to it; it's listed the next
+        // time the popup opens.
+        if (mShownList != null || !mIsWindowFocused.getAsBoolean()) return;
 
         long now = TimeUtils.elapsedRealtimeMillis();
         if (now - mLastShownTimeMs < MIN_SHOW_INTERVAL_MS) return;
@@ -175,13 +224,44 @@ class DownloadTrayMediator implements DownloadStateModel.Observer {
         View anchor = mAnchorSupplier.get();
         if (anchor == null || !anchor.isShown()) return;
 
-        // Showing replaces any previous popup, whose dismissal resets mShownId, so set it after.
-        if (!mPopupController.showCompletion(anchor, createCompletedItemModel(item))) return;
+        Map<ContentId, ListItem> rowsById = new ArrayMap<>();
+        ModelList rows = buildUnactionedRows(rowsById);
+        if (rows.isEmpty()) return;
+
+        // Showing replaces any previous popup, whose dismissal clears the shown rows, so set them
+        // after.
+        if (!mPopupController.showCompletions(anchor, rows)) return;
         mLastShownTimeMs = now;
-        mShownId = item.id;
+        mShownList = rows;
+        mShownRows.putAll(rowsById);
+    }
+
+    /**
+     * Builds rows for the un-actioned completions this window shows, most recently started first,
+     * recording each row's download in {@code rowsById}. Completions no longer in the model's
+     * recent list are forgotten, as desktop marks them actioned.
+     */
+    private ModelList buildUnactionedRows(Map<ContentId, ListItem> rowsById) {
+        // Re-checked as the window may have switched between regular and incognito since.
+        boolean isIncognitoSelected = mIsIncognitoSelected.getAsBoolean();
+        Set<ContentId> stillRecent = new ArraySet<>();
+        ModelList rows = new ModelList();
+        for (OfflineItem item : mModel.getRecentCompletedItems()) {
+            ContentId id = assumeNonNull(item.id); // The model only keeps items with ids.
+            if (!mUnactionedIds.contains(id)) continue;
+            stillRecent.add(id);
+            if (DownloadStateModel.isVisibleInWindow(item, isIncognitoSelected)) {
+                ListItem row = new ListItem(RowType.COMPLETED, createCompletedItemModel(item));
+                rows.add(row);
+                rowsById.put(id, row);
+            }
+        }
+        mUnactionedIds.retainAll(stillRecent);
+        return rows;
     }
 
     private void onOpen(OfflineItem item) {
+        mUnactionedIds.remove(item.id);
         mOnActioned.run();
         mPopupController.dismiss();
         mDelegate.openItem(item);
@@ -212,12 +292,17 @@ class DownloadTrayMediator implements DownloadStateModel.Observer {
     }
 
     private PropertyModel createCompletedItemModel(OfflineItem item) {
-        return new PropertyModel.Builder(DownloadTrayItemProperties.ALL_KEYS)
-                .with(DownloadTrayItemProperties.ICON, DownloadIconUtils.getIconForItem(item))
-                .with(DownloadTrayItemProperties.TITLE, item.title)
-                .with(DownloadTrayItemProperties.DESCRIPTION, getCompletedDescription(item))
-                .with(DownloadTrayItemProperties.ON_OPEN, v -> onOpen(item))
-                .build();
+        PropertyModel row = new PropertyModel(DownloadTrayItemProperties.ALL_KEYS);
+        updateRow(row, item);
+        return row;
+    }
+
+    /** Fills {@code row} from {@code item}, e.g. after it was renamed while showing. */
+    private void updateRow(PropertyModel row, OfflineItem item) {
+        row.set(DownloadTrayItemProperties.ICON, DownloadIconUtils.getIconForItem(item));
+        row.set(DownloadTrayItemProperties.TITLE, item.title);
+        row.set(DownloadTrayItemProperties.DESCRIPTION, getCompletedDescription(item));
+        row.set(DownloadTrayItemProperties.ON_OPEN, v -> onOpen(item));
     }
 
     /**

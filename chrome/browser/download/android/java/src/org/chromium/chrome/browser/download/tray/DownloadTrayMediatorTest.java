@@ -7,8 +7,8 @@ package org.chromium.chrome.browser.download.tray;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.clearInvocations;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
@@ -32,6 +32,7 @@ import org.robolectric.Robolectric;
 
 import org.chromium.base.Callback;
 import org.chromium.base.FakeTimeTestRule;
+import org.chromium.base.TimeUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.download.DownloadStateModel;
 import org.chromium.chrome.browser.download.R;
@@ -42,10 +43,13 @@ import org.chromium.components.offline_items_collection.LegacyHelpers;
 import org.chromium.components.offline_items_collection.OfflineContentProvider;
 import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.OfflineItemState;
+import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /** Unit tests for {@link DownloadTrayMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -58,7 +62,7 @@ public class DownloadTrayMediatorTest {
     @Mock private DownloadTrayDelegate mDelegate;
     @Mock private Runnable mOnActioned;
     @Captor private ArgumentCaptor<Callback<ArrayList<OfflineItem>>> mGetAllItemsCallbackCaptor;
-    @Captor private ArgumentCaptor<PropertyModel> mRowCaptor;
+    @Captor private ArgumentCaptor<ModelList> mRowsCaptor;
 
     private Activity mActivity;
     private View mAnchor;
@@ -68,6 +72,8 @@ public class DownloadTrayMediatorTest {
     private boolean mIsIncognitoSelected;
     private View mCurrentAnchor;
 
+    private int mItemCount;
+
     @Before
     public void setUp() {
         // A real, attached view so isShown() behaves as in production.
@@ -75,14 +81,7 @@ public class DownloadTrayMediatorTest {
         mAnchor = new View(mActivity);
         mActivity.setContentView(mAnchor);
         mCurrentAnchor = mAnchor;
-        // Like the real popup, showing replaces (and so dismisses) any popup already showing.
-        doAnswer(
-                        invocation -> {
-                            mMediator.onDismissed();
-                            return true;
-                        })
-                .when(mPopupController)
-                .showCompletion(any(), any());
+        doReturn(true).when(mPopupController).showCompletions(any(), any());
         mModel = new DownloadStateModel(mProvider);
         verify(mProvider).getAllItems(mGetAllItemsCallbackCaptor.capture());
         mMediator =
@@ -101,16 +100,18 @@ public class DownloadTrayMediatorTest {
         return LegacyHelpers.buildLegacyContentId(/* isOfflinePage= */ false, guid);
     }
 
-    private static OfflineItem createItem(String guid, @OfflineItemState int state) {
+    private OfflineItem createItem(String guid, @OfflineItemState int state) {
         OfflineItem item = new OfflineItem();
         item.id = id(guid);
         item.title = guid + ".pdf";
         item.state = state;
         item.totalSizeBytes = 4_300_000;
+        // Started now, each later than the one before, so the list order is defined.
+        item.creationTimeMs = TimeUtils.currentTimeMillis() + mItemCount++;
         return item;
     }
 
-    private static OfflineItem createIncognitoItem(
+    private OfflineItem createIncognitoItem(
             String guid, @OfflineItemState int state, OtrProfileId profileId) {
         OfflineItem item = createItem(guid, state);
         item.isOffTheRecord = true;
@@ -126,9 +127,30 @@ public class DownloadTrayMediatorTest {
         return ended;
     }
 
+    /** Simulates the popup closing, e.g. auto-dismissing, and the min interval passing. */
+    private void dismissAndWait() {
+        mMediator.onDismissed();
+        mFakeTime.advanceMillis(DownloadTrayMediator.MIN_SHOW_INTERVAL_MS);
+    }
+
+    /** Returns the rows of the most recently shown popup. */
+    private ModelList captureShownRows() {
+        verify(mPopupController, atLeastOnce()).showCompletions(eq(mAnchor), mRowsCaptor.capture());
+        return mRowsCaptor.getValue();
+    }
+
     private PropertyModel captureShownRow() {
-        verify(mPopupController).showCompletion(eq(mAnchor), mRowCaptor.capture());
-        return mRowCaptor.getValue();
+        ModelList rows = captureShownRows();
+        assertEquals(1, rows.size());
+        return rows.get(0).model;
+    }
+
+    private static List<CharSequence> titles(ModelList rows) {
+        List<CharSequence> titles = new ArrayList<>();
+        for (ListItem row : rows) {
+            titles.add(row.model.get(DownloadTrayItemProperties.TITLE));
+        }
+        return titles;
     }
 
     @Test
@@ -168,20 +190,21 @@ public class DownloadTrayMediatorTest {
         mAnchor.setVisibility(View.GONE);
         runToState("hidden-anchor", OfflineItemState.COMPLETE);
 
-        verify(mPopupController, never()).showCompletion(any(), any());
+        verify(mPopupController, never()).showCompletions(any(), any());
     }
 
     @Test
-    public void testCompletionWhileOthersDownloading_waitsUntilAllDone() {
+    public void testCompletionWhileOthersDownloading_waitsUntilAllDoneThenListsBoth() {
         mModel.onItemsAdded(
                 List.of(
                         createItem("a", OfflineItemState.IN_PROGRESS),
                         createItem("b", OfflineItemState.IN_PROGRESS)));
         mModel.onItemUpdated(createItem("a", OfflineItemState.COMPLETE), /* updateDelta= */ null);
-        verify(mPopupController, never()).showCompletion(any(), any());
+        verify(mPopupController, never()).showCompletions(any(), any());
 
+        // Most recently started first, as on desktop.
         mModel.onItemUpdated(createItem("b", OfflineItemState.COMPLETE), /* updateDelta= */ null);
-        assertEquals("b.pdf", captureShownRow().get(DownloadTrayItemProperties.TITLE));
+        assertEquals(List.of("b.pdf", "a.pdf"), titles(captureShownRows()));
     }
 
     @Test
@@ -211,7 +234,7 @@ public class DownloadTrayMediatorTest {
 
         // As on desktop, pausing "b" doesn't end it, so "a" keeps waiting.
         mModel.onItemUpdated(createItem("b", OfflineItemState.PAUSED), /* updateDelta= */ null);
-        verify(mPopupController, never()).showCompletion(any(), any());
+        verify(mPopupController, never()).showCompletions(any(), any());
 
         // Once resumed, "b" being flagged as dangerous ends it, as on desktop.
         mModel.onItemUpdated(
@@ -223,7 +246,7 @@ public class DownloadTrayMediatorTest {
     }
 
     @Test
-    public void testLastActiveDownloadFailingOrRemoved_showsWaitingCompletion() {
+    public void testLastActiveDownloadFailingOrRemoved_showsWaitingCompletions() {
         // "a" completes while "b" runs; "b" then fails.
         mModel.onItemsAdded(
                 List.of(
@@ -233,16 +256,16 @@ public class DownloadTrayMediatorTest {
         mModel.onItemUpdated(createItem("b", OfflineItemState.FAILED), /* updateDelta= */ null);
         assertEquals("a.pdf", captureShownRow().get(DownloadTrayItemProperties.TITLE));
 
-        // "c" completes while "d" runs; "d" is then removed, e.g. cancelled.
-        clearInvocations(mPopupController);
-        mFakeTime.advanceMillis(DownloadTrayMediator.MIN_SHOW_INTERVAL_MS);
+        // "c" completes while "d" runs; "d" is then removed, e.g. cancelled. "a", not acted on, is
+        // listed again, as on desktop.
+        dismissAndWait();
         mModel.onItemsAdded(
                 List.of(
                         createItem("c", OfflineItemState.IN_PROGRESS),
                         createItem("d", OfflineItemState.IN_PROGRESS)));
         mModel.onItemUpdated(createItem("c", OfflineItemState.COMPLETE), /* updateDelta= */ null);
         mModel.onItemRemoved(id("d"));
-        assertEquals("c.pdf", captureShownRow().get(DownloadTrayItemProperties.TITLE));
+        assertEquals(List.of("c.pdf", "a.pdf"), titles(captureShownRows()));
     }
 
     @Test
@@ -255,8 +278,8 @@ public class DownloadTrayMediatorTest {
                         createIncognitoItem("c", OfflineItemState.IN_PROGRESS, primary),
                         createIncognitoItem("d", OfflineItemState.IN_PROGRESS, primary)));
 
-        // Showing regular tabs, an incognito download neither replaces a waiting regular one nor
-        // holds it back.
+        // Showing regular tabs, an incognito download is neither listed with a waiting regular one
+        // nor holds it back.
         mModel.onItemUpdated(createItem("a", OfflineItemState.COMPLETE), /* updateDelta= */ null);
         mModel.onItemUpdated(
                 createIncognitoItem("c", OfflineItemState.COMPLETE, primary),
@@ -264,11 +287,11 @@ public class DownloadTrayMediatorTest {
         mModel.onItemUpdated(createItem("b", OfflineItemState.FAILED), /* updateDelta= */ null);
         assertEquals("a.pdf", captureShownRow().get(DownloadTrayItemProperties.TITLE));
 
-        // Showing incognito tabs, downloads from their profile show, and other incognito profiles'
-        // (e.g. incognito Custom Tabs') don't hold them back.
-        clearInvocations(mPopupController);
+        // Showing incognito tabs, downloads from their profile and regular ones show (as desktop's
+        // incognito bubble), and other incognito profiles' (e.g. incognito Custom Tabs') don't hold
+        // them back.
+        dismissAndWait();
         mIsIncognitoSelected = true;
-        mFakeTime.advanceMillis(DownloadTrayMediator.MIN_SHOW_INTERVAL_MS);
         mModel.onItemsAdded(
                 List.of(
                         createIncognitoItem(
@@ -278,7 +301,7 @@ public class DownloadTrayMediatorTest {
         mModel.onItemUpdated(
                 createIncognitoItem("d", OfflineItemState.COMPLETE, primary),
                 /* updateDelta= */ null);
-        assertEquals("d.pdf", captureShownRow().get(DownloadTrayItemProperties.TITLE));
+        assertEquals(List.of("d.pdf", "c.pdf", "a.pdf"), titles(captureShownRows()));
     }
 
     @Test
@@ -295,19 +318,29 @@ public class DownloadTrayMediatorTest {
 
         mIsIncognitoSelected = false;
         mModel.onItemUpdated(createItem("b", OfflineItemState.FAILED), /* updateDelta= */ null);
-        verify(mPopupController, never()).showCompletion(any(), any());
+        verify(mPopupController, never()).showCompletions(any(), any());
     }
 
     @Test
-    public void testWaitingCompletionRemoved_isNotShown() {
+    public void testWaitingCompletionRemovedOrRetried_isNotShown() {
+        // An earlier, un-actioned completion alone doesn't warrant a popup: only a new one does.
+        runToState("earlier", OfflineItemState.COMPLETE);
+        dismissAndWait();
+
+        // "a" completes while "b" runs, then is removed; "c" completes, then is retried and fails.
         mModel.onItemsAdded(
                 List.of(
                         createItem("a", OfflineItemState.IN_PROGRESS),
-                        createItem("b", OfflineItemState.IN_PROGRESS)));
+                        createItem("b", OfflineItemState.IN_PROGRESS),
+                        createItem("c", OfflineItemState.IN_PROGRESS)));
         mModel.onItemUpdated(createItem("a", OfflineItemState.COMPLETE), /* updateDelta= */ null);
         mModel.onItemRemoved(id("a"));
+        mModel.onItemUpdated(createItem("c", OfflineItemState.COMPLETE), /* updateDelta= */ null);
+        mModel.onItemUpdated(
+                createItem("c", OfflineItemState.IN_PROGRESS), /* updateDelta= */ null);
+        mModel.onItemUpdated(createItem("c", OfflineItemState.FAILED), /* updateDelta= */ null);
         mModel.onItemUpdated(createItem("b", OfflineItemState.FAILED), /* updateDelta= */ null);
-        verify(mPopupController, never()).showCompletion(any(), any());
+        verify(mPopupController, times(1)).showCompletions(any(), any());
     }
 
     @Test
@@ -320,39 +353,90 @@ public class DownloadTrayMediatorTest {
         inOrder.verify(mOnActioned).run();
         inOrder.verify(mPopupController).dismiss();
         inOrder.verify(mDelegate).openItem(item);
+
+        // Acted on, it isn't listed with the next completion.
+        dismissAndWait();
+        runToState("next", OfflineItemState.COMPLETE);
+        assertEquals("next.pdf", captureShownRow().get(DownloadTrayItemProperties.TITLE));
     }
 
     @Test
     public void testCompletionsWithinMinInterval_showOnce() {
         runToState("a", OfflineItemState.COMPLETE);
+        mMediator.onDismissed();
         mFakeTime.advanceMillis(DownloadTrayMediator.MIN_SHOW_INTERVAL_MS - 1);
         runToState("b", OfflineItemState.COMPLETE);
-        verify(mPopupController, times(1)).showCompletion(any(), any());
+        verify(mPopupController, times(1)).showCompletions(any(), any());
 
+        // Once allowed again, the completion that was held back is listed too.
         mFakeTime.advanceMillis(1);
         runToState("c", OfflineItemState.COMPLETE);
-        verify(mPopupController, times(2)).showCompletion(any(), any());
+        assertEquals(List.of("c.pdf", "b.pdf", "a.pdf"), titles(captureShownRows()));
+    }
+
+    @Test
+    public void testCompletionWhilePopupShowing_isListedNextTime() {
+        runToState("a", OfflineItemState.COMPLETE);
+
+        // As on desktop, the showing popup isn't replaced, even once the min interval has passed.
+        mFakeTime.advanceMillis(DownloadTrayMediator.MIN_SHOW_INTERVAL_MS);
+        runToState("b", OfflineItemState.COMPLETE);
+        verify(mPopupController, times(1)).showCompletions(any(), any());
+
+        dismissAndWait();
+        runToState("c", OfflineItemState.COMPLETE);
+        assertEquals(List.of("c.pdf", "b.pdf", "a.pdf"), titles(captureShownRows()));
+    }
+
+    @Test
+    public void testCompletionNoLongerRecent_isForgotten() {
+        runToState("a", OfflineItemState.COMPLETE);
+
+        // Past the model's recent window, "a" is no longer listed and, as on desktop, counts as
+        // acted on from then on.
+        dismissAndWait();
+        mFakeTime.advanceMillis(TimeUnit.HOURS.toMillis(24));
+        runToState("b", OfflineItemState.COMPLETE);
+        assertEquals("b.pdf", captureShownRow().get(DownloadTrayItemProperties.TITLE));
     }
 
     @Test
     public void testPopupThatCouldNotShow_doesNotStartMinInterval() {
         // E.g. no room for the popup: the next completion must not be rate-limited.
-        doReturn(false).when(mPopupController).showCompletion(any(), any());
+        doReturn(false).when(mPopupController).showCompletions(any(), any());
         runToState("a", OfflineItemState.COMPLETE);
         mModel.onItemRemoved(id("a"));
         verify(mPopupController, never()).dismiss();
 
-        doReturn(true).when(mPopupController).showCompletion(any(), any());
+        doReturn(true).when(mPopupController).showCompletions(any(), any());
         runToState("b", OfflineItemState.COMPLETE);
-        verify(mPopupController, times(2)).showCompletion(any(), any());
+        verify(mPopupController, times(2)).showCompletions(any(), any());
     }
 
     @Test
-    public void testRemovingShownItem_dismisses() {
-        runToState("a", OfflineItemState.COMPLETE);
-        mModel.onItemRemoved(id("other"));
-        verify(mPopupController, never()).dismiss();
+    public void testShownRows_updateInPlaceAndRemovalDismissesOnceEmpty() {
+        mModel.onItemsAdded(
+                List.of(
+                        createItem("a", OfflineItemState.IN_PROGRESS),
+                        createItem("b", OfflineItemState.IN_PROGRESS)));
+        mModel.onItemUpdated(createItem("a", OfflineItemState.COMPLETE), /* updateDelta= */ null);
+        mModel.onItemUpdated(createItem("b", OfflineItemState.COMPLETE), /* updateDelta= */ null);
+        ModelList rows = captureShownRows();
+        assertEquals(List.of("b.pdf", "a.pdf"), titles(rows));
 
+        // E.g. renamed from the Downloads page while the popup is showing.
+        OfflineItem renamed = createItem("a", OfflineItemState.COMPLETE);
+        renamed.title = "renamed.pdf";
+        mModel.onItemUpdated(renamed, /* updateDelta= */ null);
+        assertEquals(List.of("b.pdf", "renamed.pdf"), titles(rows));
+
+        // E.g. retried, so no longer a completed download, or deleted from the Downloads page;
+        // the popup closes once nothing is left in it.
+        mModel.onItemUpdated(
+                createItem("b", OfflineItemState.IN_PROGRESS), /* updateDelta= */ null);
+        mModel.onItemRemoved(id("other"));
+        assertEquals(List.of("renamed.pdf"), titles(rows));
+        verify(mPopupController, never()).dismiss();
         mModel.onItemRemoved(id("a"));
         verify(mPopupController).dismiss();
 
@@ -371,9 +455,9 @@ public class DownloadTrayMediatorTest {
         mMediator.destroy();
         verify(mPopupController).dismiss();
 
-        mFakeTime.advanceMillis(DownloadTrayMediator.MIN_SHOW_INTERVAL_MS);
+        dismissAndWait();
         runToState("b", OfflineItemState.COMPLETE);
-        verify(mPopupController, times(1)).showCompletion(any(), any());
+        verify(mPopupController, times(1)).showCompletions(any(), any());
     }
 
     @Test

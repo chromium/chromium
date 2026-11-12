@@ -6,10 +6,15 @@ package org.chromium.chrome.browser.download.tray;
 
 import android.view.View;
 
+import androidx.annotation.IntDef;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * Properties of a single download row in the download toolbar button tray. Shared by the completion
@@ -17,6 +22,13 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
  */
 @NullMarked
 class DownloadTrayItemProperties {
+    /** View types of the rows in the download tray list. */
+    @IntDef({RowType.COMPLETED})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface RowType {
+        int COMPLETED = 0;
+    }
+
     /** The file-type icon drawable resource. */
     static final WritableIntPropertyKey ICON = new WritableIntPropertyKey();
 
