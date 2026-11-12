@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "content/browser/gpu/gpu_data_manager_impl.h"
 #include "content/browser/media/capture/frame_sink_video_capture_device.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
@@ -208,6 +209,16 @@ bool ContentCaptureDeviceBrowserTestBase::IsFixedAspectRatioTest() const {
 
 bool ContentCaptureDeviceBrowserTestBase::IsCrossSiteCaptureTest() const {
   return false;
+}
+
+bool ContentCaptureDeviceBrowserTestBase::IsSoftwareOrSwiftShaderCompositing()
+    const {
+  if (IsSoftwareCompositingTest()) {
+    return true;
+  }
+  auto* const gpu_data_manager = GpuDataManagerImpl::GetInstance();
+  return !gpu_data_manager || gpu_data_manager->IsGpuCompositingDisabled() ||
+         gpu_data_manager->GetGPUInfo().UsesSwiftShader();
 }
 
 void ContentCaptureDeviceBrowserTestBase::SetUp() {

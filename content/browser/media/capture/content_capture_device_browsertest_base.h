@@ -102,6 +102,10 @@ class ContentCaptureDeviceBrowserTestBase : public ContentBrowserTest {
   virtual bool IsFixedAspectRatioTest() const;
   virtual bool IsCrossSiteCaptureTest() const;
 
+  // Returns true when the test is configured for software compositing, or when
+  // the browser falls back to software compositing or SwiftShader at runtime.
+  bool IsSoftwareOrSwiftShaderCompositing() const;
+
   // Used to customize the video pixel format that will be used for capture.
   virtual media::VideoPixelFormat GetVideoPixelFormat() const;
 

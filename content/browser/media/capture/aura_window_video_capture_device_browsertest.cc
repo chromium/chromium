@@ -4,10 +4,15 @@
 
 #include "content/browser/media/capture/aura_window_video_capture_device.h"
 
+#include <string>
 #include <tuple>
 
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_timeouts.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/test/pixel_test_utils.h"
 #include "components/viz/common/features.h"
@@ -30,6 +35,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gl/gl_switches.h"
 
 namespace content {
 namespace {
@@ -48,10 +54,14 @@ class AuraWindowVideoCaptureDeviceBrowserTest
   ~AuraWindowVideoCaptureDeviceBrowserTest() override = default;
 
   aura::Window* GetCapturedWindow() const {
+#if BUILDFLAG(IS_CHROMEOS)
+    return shell()->window();
+#else
     // Note: The Window with an associated compositor frame sink (required for
     // capture) is the root window, which is an immediate ancestor of the
     // aura::Window provided by shell()->window().
     return shell()->window()->GetRootWindow();
+#endif
   }
 
   // Returns the location of the content within the window.
@@ -68,21 +78,36 @@ class AuraWindowVideoCaptureDeviceBrowserTest
   // found in the captured frames queue, or until a testing failure has
   // occurred.
   void WaitForFrameWithColor(SkColor color) {
-    VLOG(1) << "Waiting for frame content area filled with color: red="
-            << SkColorGetR(color) << ", green=" << SkColorGetG(color)
-            << ", blue=" << SkColorGetB(color);
+    static constexpr base::TimeDelta kRefreshFrameInterval =
+        base::Milliseconds(250);
+
+    const std::string color_string =
+        base::StringPrintf("red=%d, green=%d, blue=%d", SkColorGetR(color),
+                           SkColorGetG(color), SkColorGetB(color));
+    VLOG(1) << "Waiting for frame content area filled with color: "
+            << color_string;
+
+    const base::TimeTicks start_time = base::TimeTicks::Now();
+    const base::TimeTicks deadline =
+        start_time + TestTimeouts::action_max_timeout();
+    base::TimeTicks next_refresh_frame_time =
+        start_time + kRefreshFrameInterval;
+    SkBitmap last_frame;
 
     while (!testing::Test::HasFailure()) {
-      EXPECT_TRUE(capture_stack()->Started());
       EXPECT_FALSE(capture_stack()->ErrorOccurred());
       capture_stack()->ExpectNoLogMessages();
 
       while (capture_stack()->HasCapturedFrames() &&
              !testing::Test::HasFailure()) {
+        // The device only reports that it has started once it delivers its
+        // first frame, so this can only be checked after a frame arrives.
+        EXPECT_TRUE(capture_stack()->Started());
         // Pop the next frame from the front of the queue and convert to a RGB
         // bitmap for analysis.
         const SkBitmap rgb_frame = capture_stack()->NextCapturedFrame();
         EXPECT_FALSE(rgb_frame.empty());
+        last_frame = rgb_frame;
 
         // Three regions of the frame will be analyzed: 1) the WebContents
         // region containing a solid color, 2) the remaining part of the
@@ -99,9 +124,11 @@ class AuraWindowVideoCaptureDeviceBrowserTest
         const gfx::RectF webcontents_in_frame_rect_f = TransformSimilarly(
             gfx::Rect(window_size), window_in_frame_rect_f, webcontents_rect);
 
-        // viz::SoftwareRenderer does not do color space management. Otherwise
-        // (normal case), be strict about color differences.
-        const int max_color_diff = IsSoftwareCompositingTest()
+        // viz::SoftwareRenderer does not do color space management, and bots
+        // without hardware GPUs may fall back to software compositing or
+        // SwiftShader at runtime. Otherwise (normal case), be strict about
+        // color differences.
+        const int max_color_diff = IsSoftwareOrSwiftShaderCompositing()
                                        ? kVeryLooseMaxColorDifference
                                        : kMaxColorDifference;
 
@@ -124,7 +151,8 @@ class AuraWindowVideoCaptureDeviceBrowserTest
                 << ToSafeIncludeRect(window_in_frame_rect_f).ToString()
                 << " and has average color " << average_window_rgb
                 << ", letterbox region has average color "
-                << average_letterbox_rgb;
+                << average_letterbox_rgb << ", max_color_diff is "
+                << max_color_diff;
 
         // The letterboxed region should always be black.
         if (IsFixedAspectRatioTest()) {
@@ -147,6 +175,28 @@ class AuraWindowVideoCaptureDeviceBrowserTest
           VLOG(3) << "PNG dump of undesired frame: "
                   << cc::GetPNGDataUrl(rgb_frame);
         }
+      }
+
+      const base::TimeTicks now = base::TimeTicks::Now();
+      if (now >= deadline) {
+        ADD_FAILURE() << "Timed out after "
+                      << (now - start_time).InMilliseconds()
+                      << " ms waiting for a frame with color=" << color_string
+                      << ". "
+                      << (last_frame.empty()
+                              ? std::string("No frame was captured at all.")
+                              : base::StrCat(
+                                    {"Last captured frame, PNG dump:\n",
+                                     cc::GetPNGDataUrl(last_frame)}));
+        return;
+      }
+
+      if (now >= next_refresh_frame_time) {
+        next_refresh_frame_time = now + kRefreshFrameInterval;
+        VLOG(1) << "No matching frame after "
+                << (now - start_time).InMilliseconds()
+                << " ms; requesting a refresh frame.";
+        device()->RequestRefreshFrame();
       }
 
       // Wait for at least the minimum capture period before checking for more
@@ -174,6 +224,20 @@ class AuraWindowVideoCaptureDeviceBrowserTest
   }
 
   void WaitForFirstFrame() final { WaitForFrameWithColor(SK_ColorBLACK); }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ContentCaptureDeviceBrowserTestBase::SetUpCommandLine(command_line);
+#if BUILDFLAG(IS_WIN)
+    if (!IsSoftwareCompositingTest()) {
+      // On Windows ARM64, Skia Graphite is disabled and ANGLE + SwiftShader
+      // Vulkan (`SkiaOutputDeviceGL` on `NativeViewGLSurfaceEGL`) flips FBO 0
+      // readback upside down when `EGL_SURFACE_ORIENTATION_INVERT_Y_ANGLE` is
+      // set. Match `WebContentsVideoCaptureDeviceBrowserTestP` by using the
+      // GPU in non-software compositing tests on Windows.
+      command_line->AppendSwitch(switches::kUseGpuInTests);
+    }
+#endif
+  }
 };
 
 // Tests that the device refuses to start if the target window was destroyed
@@ -211,12 +275,11 @@ IN_PROC_BROWSER_TEST_F(AuraWindowVideoCaptureDeviceBrowserTest,
   RunUntilIdle();
 }
 
-// Disabled (https://crbug.com/1096946)
 // Tests that the device starts, captures a frame, and then gracefully
 // errors-out because the target window is destroyed before the device is
 // stopped.
 IN_PROC_BROWSER_TEST_F(AuraWindowVideoCaptureDeviceBrowserTest,
-                       DISABLED_ErrorsOutWhenWindowIsDestroyed) {
+                       ErrorsOutWhenWindowIsDestroyed) {
   NavigateToInitialDocument();
   AllocateAndStartAndWaitForFirstFrame();
 
@@ -234,12 +297,11 @@ IN_PROC_BROWSER_TEST_F(AuraWindowVideoCaptureDeviceBrowserTest,
   StopAndDeAllocate();
 }
 
-// Disabled (https://crbug.com/1096946)
 // Tests that the device stops delivering frames while suspended. When resumed,
 // any content changes that occurred during the suspend should cause a new frame
 // to be delivered, to ensure the client is up-to-date.
 IN_PROC_BROWSER_TEST_F(AuraWindowVideoCaptureDeviceBrowserTest,
-                       DISABLED_SuspendsAndResumes) {
+                       SuspendsAndResumes) {
   NavigateToInitialDocument();
   AllocateAndStartAndWaitForFirstFrame();
 
@@ -269,11 +331,10 @@ IN_PROC_BROWSER_TEST_F(AuraWindowVideoCaptureDeviceBrowserTest,
   StopAndDeAllocate();
 }
 
-// Disabled (https://crbug.com/1096946)
 // Tests that the device delivers refresh frames when asked, while the source
 // content is not changing.
 IN_PROC_BROWSER_TEST_F(AuraWindowVideoCaptureDeviceBrowserTest,
-                       DISABLED_DeliversRefreshFramesUponRequest) {
+                       DeliversRefreshFramesUponRequest) {
   NavigateToInitialDocument();
   AllocateAndStartAndWaitForFirstFrame();
 
@@ -310,9 +371,8 @@ class AuraWindowVideoCaptureDeviceBrowserTestWin
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(https://crbug.com/1096946): enable.
 IN_PROC_BROWSER_TEST_F(AuraWindowVideoCaptureDeviceBrowserTestWin,
-                       DISABLED_CapturesOccludedWindow) {
+                       CapturesOccludedWindow) {
   aura::WindowTreeHost* window_tree_host = shell()->window()->GetHost();
   aura::test::DisableNativeWindowOcclusionTracking(window_tree_host);
   NavigateToInitialDocument();
@@ -335,14 +395,13 @@ IN_PROC_BROWSER_TEST_F(AuraWindowVideoCaptureDeviceBrowserTestWin,
 
   StopAndDeAllocate();
 }
-#endif
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS)
-// Disabled (https://crbug.com/1096946)
 // On ChromeOS, another window may occlude a window that is being captured.
 // Make sure the visibility is set to visible during capture if it's occluded.
 IN_PROC_BROWSER_TEST_F(AuraWindowVideoCaptureDeviceBrowserTest,
-                       DISABLED_CapturesOccludedWindows) {
+                       CapturesOccludedWindows) {
   NavigateToInitialDocument();
   AllocateAndStartAndWaitForFirstFrame();
 
@@ -357,6 +416,15 @@ IN_PROC_BROWSER_TEST_F(AuraWindowVideoCaptureDeviceBrowserTest,
   window->Show();
   EXPECT_EQ(aura::Window::OcclusionState::VISIBLE,
             shell()->web_contents()->GetNativeView()->GetOcclusionState());
+
+  static constexpr SkColor kColorsToCycleThrough[] = {
+      SK_ColorRED,  SK_ColorGREEN,   SK_ColorBLUE,  SK_ColorYELLOW,
+      SK_ColorCYAN, SK_ColorMAGENTA, SK_ColorWHITE,
+  };
+  for (SkColor color : kColorsToCycleThrough) {
+    ChangePageContentColor(color);
+    WaitForFrameWithColor(color);
+  }
 
   window.reset();
   StopAndDeAllocate();
@@ -394,12 +462,11 @@ INSTANTIATE_TEST_SUITE_P(
                                      true /* fixed aspect ratio */)));
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-// Disabled (https://crbug.com/1096946)
 // Tests that the device successfully captures a series of content changes,
 // whether the browser is running with software compositing or GPU-accelerated
 // compositing.
 IN_PROC_BROWSER_TEST_P(AuraWindowVideoCaptureDeviceBrowserTestP,
-                       DISABLED_CapturesContentChanges) {
+                       CapturesContentChanges) {
   SCOPED_TRACE(testing::Message()
                << "Test parameters: "
                << (IsSoftwareCompositingTest() ? "Software Compositing"

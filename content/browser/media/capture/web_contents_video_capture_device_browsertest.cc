@@ -16,7 +16,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/test/pixel_test_utils.h"
-#include "content/browser/gpu/gpu_data_manager_impl.h"
 #include "content/browser/media/capture/content_capture_device_browsertest_base.h"
 #include "content/browser/media/capture/fake_video_capture_stack.h"
 #include "content/browser/media/capture/frame_test_util.h"
@@ -314,15 +313,6 @@ class WebContentsVideoCaptureDeviceBrowserTest
   }
 
  protected:
-  bool IsSoftwareOrSwiftShaderCompositing() const {
-    if (IsSoftwareCompositingTest()) {
-      return true;
-    }
-    auto* const gpu_data_manager = GpuDataManagerImpl::GetInstance();
-    return !gpu_data_manager || gpu_data_manager->IsGpuCompositingDisabled() ||
-           gpu_data_manager->GetGPUInfo().UsesSwiftShader();
-  }
-
   // Don't call this. Call <BaseClass>::GetExpectedSourceSize() instead.
   gfx::Size GetCapturedSourceSize() const final {
     return shell()
