@@ -1256,19 +1256,6 @@ void ActorKeyedService::NotifyPendingTaskCountChanged() {
   pending_task_count_change_callback_list_.Notify(GetPendingTasksCount());
 }
 
-#if BUILDFLAG(IS_ANDROID)
-base::CallbackListSubscription
-ActorKeyedService::AddForegroundServiceStartedCallback(
-    EnsureForegroundServiceStartedCallback callback) {
-  return ensure_foreground_service_started_callbacks_.Add(std::move(callback));
-}
-
-void ActorKeyedService::EnsureForegroundServiceStarted(
-    const std::string& glic_trigger_message_id) {
-  ensure_foreground_service_started_callbacks_.Notify(glic_trigger_message_id);
-}
-#endif
-
 void ActorKeyedService::RemoveExternalTriggerPendingTask() {
   external_trigger_expiry_.Stop();
   if (pending_tasks_.erase(ExternalTriggerKey()) > 0) {

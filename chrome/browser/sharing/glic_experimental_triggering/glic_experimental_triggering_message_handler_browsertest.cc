@@ -1203,9 +1203,8 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalTriggeringMessageHandlerBrowserTest,
       done_future;
 
   // Send the message. Since kGlicBackgroundTriggering is enabled, it should
-  // add the observer, save the request, and call
-  // EnsureForegroundServiceStarted. It returns early and does NOT call
-  // done_callback yet.
+  // add the observer, save the request, and call `AddPendingTask()`. It
+  // returns early and does NOT call `done_callback` yet.
   handler_->OnMessage(std::move(message), done_future.GetCallback());
 
   // Verify that no response was sent yet (done_future is not ready).
