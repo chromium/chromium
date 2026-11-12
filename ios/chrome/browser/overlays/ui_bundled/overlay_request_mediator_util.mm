@@ -9,7 +9,8 @@
 
 std::unique_ptr<OverlayRequestSupport> CreateAggregateSupportForMediators(
     NSArray<Class>* mediator_classes) {
-  std::vector<const OverlayRequestSupport*> supports(mediator_classes.count);
+  std::vector<raw_ptr<const OverlayRequestSupport, DanglingUntriaged>> supports(
+      mediator_classes.count);
   for (size_t index = 0; index < supports.size(); ++index) {
     Class mediator_class = mediator_classes[index];
     DCHECK([mediator_class isSubclassOfClass:[OverlayRequestMediator class]]);

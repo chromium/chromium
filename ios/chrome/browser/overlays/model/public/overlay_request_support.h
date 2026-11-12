@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "ios/chrome/browser/overlays/model/public/overlay_request.h"
 
 // Helper object that allows objects to specify support for a subset of
@@ -19,7 +20,8 @@ class OverlayRequestSupport {
   // OverlayRequestSupports in `supports` returns true from IsRequestSupport()
   // for the same request.
   OverlayRequestSupport(
-      const std::vector<const OverlayRequestSupport*>& supports);
+      const std::vector<
+          raw_ptr<const OverlayRequestSupport, DanglingUntriaged>>& supports);
   virtual ~OverlayRequestSupport();
 
   // Whether `request` is supported by this instance.  The default
@@ -39,7 +41,8 @@ class OverlayRequestSupport {
 
   // The OverlayRequestSupports to aggregate.  Empty for OverlayRequestSupports
   // created with the default constructor.
-  const std::vector<const OverlayRequestSupport*> aggregated_support_;
+  const std::vector<raw_ptr<const OverlayRequestSupport, DanglingUntriaged>>
+      aggregated_support_;
 };
 
 // Template used to create OverlayRequestSupports that only support

@@ -48,7 +48,8 @@ const OverlayRequestSupport* OverlayBrowserAgentBase::GetRequestSupport(
   if (!storage.request_support) {
     const std::vector<std::unique_ptr<OverlayRequestCallbackInstaller>>&
         installers = storage.installers;
-    std::vector<const OverlayRequestSupport*> supports(installers.size());
+    std::vector<raw_ptr<const OverlayRequestSupport, DanglingUntriaged>>
+        supports(installers.size());
     for (size_t index = 0; index < installers.size(); ++index) {
       DCHECK(installers[index]->GetRequestSupport());
       supports[index] = installers[index]->GetRequestSupport();

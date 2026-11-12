@@ -24,7 +24,7 @@ class DisabledOverlayResponseSupport : public OverlayResponseSupport {
 }  // namespace
 
 OverlayResponseSupport::OverlayResponseSupport(
-    const std::vector<const OverlayResponseSupport*>& supports)
+    const std::vector<raw_ptr<const OverlayResponseSupport>>& supports)
     : aggregated_support_(supports) {}
 
 OverlayResponseSupport::OverlayResponseSupport() = default;

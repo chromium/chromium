@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "ios/chrome/browser/overlays/model/public/overlay_response.h"
 
 // Helper object that allows objects to specify support for a subset of
@@ -19,7 +20,7 @@ class OverlayResponseSupport {
   // OverlayRequestSupports in `supports` returns true from
   // IsResponseSupported() for the same response.
   OverlayResponseSupport(
-      const std::vector<const OverlayResponseSupport*>& supports);
+      const std::vector<raw_ptr<const OverlayResponseSupport>>& supports);
   virtual ~OverlayResponseSupport();
 
   // Whether `response` is supported by this instance.  The default
@@ -39,7 +40,7 @@ class OverlayResponseSupport {
 
   // The OverlayResponseSupports to aggregate.  Empty for
   // OverlayResponseSupports created with the default constructor.
-  const std::vector<const OverlayResponseSupport*> aggregated_support_;
+  const std::vector<raw_ptr<const OverlayResponseSupport>> aggregated_support_;
 };
 
 // Template used to create OverlayResponseSupports that only support

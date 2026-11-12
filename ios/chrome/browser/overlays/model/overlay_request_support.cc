@@ -24,7 +24,8 @@ class DisabledOverlayRequestSupport : public OverlayRequestSupport {
 }  // namespace
 
 OverlayRequestSupport::OverlayRequestSupport(
-    const std::vector<const OverlayRequestSupport*>& supports)
+    const std::vector<raw_ptr<const OverlayRequestSupport, DanglingUntriaged>>&
+        supports)
     : aggregated_support_(supports) {}
 
 OverlayRequestSupport::OverlayRequestSupport() = default;
