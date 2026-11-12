@@ -40,6 +40,10 @@ GetContentDispositionPDFResponse(const net::test_server::HttpRequest& request);
 // Waits until Download button is shown.
 [[nodiscard]] bool WaitForDownloadButton(bool loading);
 
+// Taps the Download button on Download Manager UI and confirms in the account
+// picker when Save to Drive is available.
+void StartLocalDownload();
+
 }  // namespace download
 
 #endif  // IOS_CHROME_BROWSER_DOWNLOAD_UI_DOWNLOAD_EGTEST_UTIL_H_

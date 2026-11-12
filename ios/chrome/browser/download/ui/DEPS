@@ -11,3 +11,9 @@ include_rules = [
   "+ios/components/enterprise/analysis/features.h",
   # keep-sorted end
 ]
+
+specific_include_rules = {
+  "^download_egtest_util\\.mm": [
+    "+ios/chrome/browser/account_picker/ui_bundled",
+  ],
+}

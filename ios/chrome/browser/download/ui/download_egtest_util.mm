@@ -5,17 +5,42 @@
 #import "ios/chrome/browser/download/ui/download_egtest_util.h"
 
 #import "base/test/ios/wait_util.h"
+#import "ios/chrome/browser/account_picker/ui_bundled/account_picker_confirmation/account_picker_confirmation_screen_constants.h"
+#import "ios/chrome/browser/account_picker/ui_bundled/account_picker_screen/account_picker_screen_constants.h"
 #import "ios/chrome/browser/download/ui/download_manager_constants.h"
+#import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "net/test/embedded_test_server/http_response.h"
 
 namespace download {
 
-id<GREYMatcher> DownloadButton() {
+namespace {
+
+// Matcher for the account picker.
+id<GREYMatcher> AccountPicker() {
   return grey_allOf(
-      grey_accessibilityID(kDownloadManagerDownloadAccessibilityIdentifier),
-      grey_enabled(), nil);
+      grey_accessibilityID(
+          kAccountPickerScreenNavigationControllerAccessibilityIdentifier),
+      grey_sufficientlyVisible(), nil);
+}
+
+// Matcher for the "Save" button in the account picker.
+id<GREYMatcher> AccountPickerPrimaryButton() {
+  return grey_allOf(
+      grey_accessibilityID(kAccountPickerPrimaryButtonAccessibilityIdentifier),
+      grey_interactable(), nil);
+}
+
+}  // namespace
+
+id<GREYMatcher> DownloadButton() {
+  NSString* accessibility_id =
+      [ChromeEarlGrey isIncognitoMode]
+          ? kDownloadManagerDownloadAccessibilityIdentifier
+          : kDownloadManagerSaveEllipsisAccessibilityIdentifier;
+  return grey_allOf(grey_accessibilityID(accessibility_id), grey_enabled(),
+                    nil);
 }
 
 std::unique_ptr<net::test_server::HttpResponse> GetResponse(
@@ -85,6 +110,17 @@ GetContentDispositionPDFResponse(const net::test_server::HttpRequest& request) {
                         error:&error];
         return (error == nil);
       });
+}
+
+void StartLocalDownload() {
+  [[EarlGrey selectElementWithMatcher:DownloadButton()]
+      performAction:grey_tap()];
+  if (![ChromeEarlGrey isIncognitoMode]) {
+    [ChromeEarlGrey waitForUIElementToAppearWithMatcher:AccountPicker()];
+    [[EarlGrey selectElementWithMatcher:AccountPickerPrimaryButton()]
+        performAction:grey_tap()];
+    [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:AccountPicker()];
+  }
 }
 
 }  // namespace download

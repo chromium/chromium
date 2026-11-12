@@ -20,10 +20,10 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/download/ui/download_egtest_util.h"
 #import "ios/chrome/browser/policy/model/policy_app_interface.h"
 #import "ios/chrome/browser/policy/model/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
@@ -166,37 +166,6 @@ ElementSelector* ApplyPoliciesButton() {
   return [ElementSelector selectorWithElementID:kApplyPoliciesButton];
 }
 
-// Matcher for "Download" button on Download Manager UI.
-id<GREYMatcher> DownloadButton() {
-  return grey_accessibilityID(
-      @"kDownloadManagerDownloadAccessibilityIdentifier");
-}
-
-// Waits until Download button is shown.
-[[nodiscard]] bool WaitForDownloadButton() {
-  return base::test::ios::WaitUntilConditionOrTimeout(
-      base::test::ios::kWaitForPageLoadTimeout, ^{
-        NSError* error = nil;
-        [[EarlGrey selectElementWithMatcher:DownloadButton()]
-            assertWithMatcher:grey_interactable()
-                        error:&error];
-        return (error == nil);
-      });
-}
-
-// Waits until Open in... button is shown on file download.
-[[nodiscard]] bool WaitForOpenInButton() {
-  // These downloads usually take longer and need a longer timeout.
-  constexpr base::TimeDelta kLongDownloadTimeout = base::Minutes(1);
-  return base::test::ios::WaitUntilConditionOrTimeout(kLongDownloadTimeout, ^{
-    NSError* error = nil;
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::OpenInButton()]
-        assertWithMatcher:grey_interactable()
-                    error:&error];
-    return (error == nil);
-  });
-}
-
 }  // namespace
 
 // Base test case for chrome://policy WebUI pages.
@@ -230,7 +199,6 @@ id<GREYMatcher> DownloadButton() {
     // can only be accessed in non-stable channels.
     config.additional_args = {"--fake-variations-channel=canary"};
   }
-  config.features_disabled.push_back(kIOSSaveToDriveSignedOut);
   return config;
 }
 
@@ -450,10 +418,11 @@ id<GREYMatcher> DownloadButton() {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElement(ExportLogsButton())];
   // Verify the download button at the bottom shows.
-  GREYAssert(WaitForDownloadButton(), @"Download button did not show up");
-  [[EarlGrey selectElementWithMatcher:DownloadButton()]
-      performAction:grey_tap()];
-  GREYAssert(WaitForOpenInButton(), @"Open in... button did not show up");
+  GREYAssert(download::WaitForDownloadButton(/*loading=*/true),
+             @"Download button did not show up");
+  download::StartLocalDownload();
+  GREYAssert(download::WaitForOpenInButton(),
+             @"Open in... button did not show up");
 }
 
 // Tests that the version information displayed is correct.

@@ -111,6 +111,8 @@ source_set("test_util") {
   ]
 
   deps = [
+    "//ios/chrome/browser/account_picker/ui_bundled/account_picker_confirmation:constants",
+    "//ios/chrome/browser/account_picker/ui_bundled/account_picker_screen",
     "//ios/chrome/browser/download/ui:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
