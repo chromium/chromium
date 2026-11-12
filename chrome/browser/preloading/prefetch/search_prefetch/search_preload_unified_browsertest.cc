@@ -1633,8 +1633,17 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
 
 // Tests prerender is not cancelled after SearchPrefetchService cancels prefetch
 // requests.
+// TODO(crbug.com/584572708): Fails consistently on
+// android-14-tablet-landscape-arm64-rel.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_SuggestionChangeAfterStartPrerender \
+  DISABLED_SuggestionChangeAfterStartPrerender
+#else
+#define MAYBE_SuggestionChangeAfterStartPrerender \
+  SuggestionChangeAfterStartPrerender
+#endif
 IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
-                       SuggestionChangeAfterStartPrerender) {
+                       MAYBE_SuggestionChangeAfterStartPrerender) {
   base::HistogramTester histogram_tester;
   const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
   ASSERT_TRUE(GetActiveWebContents());
