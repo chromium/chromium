@@ -32,13 +32,6 @@
       },
     },
   },
-  'amd_radeon_rx_5500_xt': {
-    'swarming': {
-      'dimensions': {
-        'gpu': '1002:7340',
-      },
-    },
-  },
   'android': {
     'swarming': {
       'dimensions': {
@@ -1179,6 +1172,26 @@
       'dimensions': {
         'cpu': 'x86-64',
         'gpu': '10de',
+        'os': 'Windows',
+      },
+    },
+  },
+  'win_high_perf_amd_gpu': {
+    'fail_if_unused': False,
+    'swarming': {
+      'dimensions': {
+        'cpu': 'x86-64',
+        'gpu': '1002:7340|1002:7550',
+        'os': 'Windows',
+      },
+    },
+  },
+  'win_high_perf_nvidia_gpu': {
+    'fail_if_unused': False,
+    'swarming': {
+      'dimensions': {
+        'cpu': 'x86-64',
+        'gpu': '10de:2184|10de:2783|10de:2f04',
         'os': 'Windows',
       },
     },

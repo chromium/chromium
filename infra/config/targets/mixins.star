@@ -1372,6 +1372,34 @@ targets.mixin(
     ),
 )
 
+# Expands Windows AMD non-WPT optimization_guide suites across discrete high
+# performance cards (RX 5500 XT on Win10 and RX 9070 XT on Win11) while
+# excluding lower performance integrated AMD APUs (1002:1638 and 1002:164e).
+targets.mixin(
+    name = "win_high_perf_amd_gpu",
+    swarming = targets.swarming(
+        dimensions = {
+            "cpu": "x86-64",
+            "gpu": "1002:7340|1002:7550",
+            "os": "Windows",
+        },
+    ),
+)
+
+# Expands Windows NVIDIA non-WPT optimization_guide suites across high
+# performance cards (GTX 1660 on Win10 plus RTX 4070 and RTX 5070 on Win11)
+# while excluding lower performance cards (for example 10de:2507 RTX 3050).
+targets.mixin(
+    name = "win_high_perf_nvidia_gpu",
+    swarming = targets.swarming(
+        dimensions = {
+            "cpu": "x86-64",
+            "gpu": "10de:2184|10de:2783|10de:2f04",
+            "os": "Windows",
+        },
+    ),
+)
+
 targets.mixin(
     name = "linux_amd_780m_experimental",
     swarming = targets.swarming(

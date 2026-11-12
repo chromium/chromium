@@ -4,12 +4,6 @@
 # 2. Run //infra/config/main.star
 
 {
-  'AMD_RADEON_RX_5500_XT': {
-    'identifier': 'AMD Radeon RX 5500 XT',
-    'mixins': [
-      'amd_radeon_rx_5500_xt',
-    ],
-  },
   'CHANNEL_BETA': {
     'identifier': 'Beta Channel',
     'args': [
@@ -62,6 +56,7 @@
     'identifier': 'Intel UHD 630 or 770',
     'mixins': [
       'intel_uhd_630_or_770',
+      'win10',
     ],
   },
   'IPHONE_13': {
@@ -90,6 +85,18 @@
     'mixins': [
       'ios_runtime_cache_18_5',
       'use-ios-simulator-cache',
+    ],
+  },
+  'WIN_HIGH_PERF_AMD': {
+    'identifier': 'AMD RX 5500 XT or RX 9070 XT',
+    'mixins': [
+      'win_high_perf_amd_gpu',
+    ],
+  },
+  'WIN_HIGH_PERF_NVIDIA': {
+    'identifier': 'NVIDIA GTX 1660 or RTX 4070 or RTX 5070',
+    'mixins': [
+      'win_high_perf_nvidia_gpu',
     ],
   },
 }

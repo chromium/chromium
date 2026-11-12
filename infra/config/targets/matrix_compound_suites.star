@@ -1059,13 +1059,10 @@ targets.legacy_matrix_compound_suite(
             ],
         ),
         "optimization_guide_gpu_gtests": targets.legacy_matrix_config(
-            mixins = [
-                "win10",
-            ],
             variants = [
-                "AMD_RADEON_RX_5500_XT",
+                "WIN_HIGH_PERF_AMD",
                 "INTEL_UHD_630_OR_770",
-                "NVIDIA_GEFORCE_GTX_1660",
+                "WIN_HIGH_PERF_NVIDIA",
             ],
         ),
     },
@@ -1077,17 +1074,19 @@ targets.legacy_matrix_compound_suite(
         "model_validation_tests_suite": targets.legacy_matrix_config(
             mixins = [
                 "gce",
+                "win10",
             ],
         ),
         "model_validation_tests_light_suite": targets.legacy_matrix_config(
             mixins = [
                 "gce",
+                "win10",
             ],
         ),
         "ondevice_stability_tests_suite": targets.legacy_matrix_config(
             variants = [
-                "AMD_RADEON_RX_5500_XT",
-                "NVIDIA_GEFORCE_GTX_1660",
+                "WIN_HIGH_PERF_AMD",
+                "WIN_HIGH_PERF_NVIDIA",
             ],
         ),
     },
@@ -1109,23 +1108,17 @@ targets.legacy_matrix_compound_suite(
             ],
         ),
         "ondevice_api_scrape_tests_suite": targets.legacy_matrix_config(
-            mixins = [
-                "win10",
-            ],
             variants = [
-                "AMD_RADEON_RX_5500_XT",
+                "WIN_HIGH_PERF_AMD",
                 "INTEL_UHD_630_OR_770",
-                "NVIDIA_GEFORCE_GTX_1660",
+                "WIN_HIGH_PERF_NVIDIA",
             ],
         ),
         "ondevice_stability_tests_suite": targets.legacy_matrix_config(
-            mixins = [
-                "win10",
-            ],
             variants = [
-                "AMD_RADEON_RX_5500_XT",
+                "WIN_HIGH_PERF_AMD",
                 "INTEL_UHD_630_OR_770",
-                "NVIDIA_GEFORCE_GTX_1660",
+                "WIN_HIGH_PERF_NVIDIA",
             ],
         ),
         "litert_e2e_tests_gpu_suite": targets.legacy_matrix_config(

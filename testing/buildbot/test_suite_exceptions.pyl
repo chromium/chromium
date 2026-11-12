@@ -228,7 +228,7 @@
       'ToTWinOfficial64',
     ],
   },
-  'ondevice_stability_tests AMD Radeon RX 5500 XT': {
+  'ondevice_stability_tests AMD RX 5500 XT or RX 9070 XT': {
     'modifications': {
       'optimization_guide-win32': {
         'args': [
@@ -246,7 +246,7 @@
       },
     },
   },
-  'ondevice_stability_tests NVIDIA GeForce GTX 1660': {
+  'ondevice_stability_tests NVIDIA GTX 1660 or RTX 4070 or RTX 5070': {
     'modifications': {
       'optimization_guide-win32': {
         'args': [

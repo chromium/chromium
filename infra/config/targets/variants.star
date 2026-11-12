@@ -151,6 +151,7 @@ targets.variant(
     identifier = "Intel UHD 630 or 770",
     mixins = [
         "intel_uhd_630_or_770",
+        "win10",
     ],
 )
 
@@ -729,5 +730,21 @@ targets.variant(
     identifier = "10de:2184",
     mixins = [
         "win10_nvidia_gtx_1660_stable",
+    ],
+)
+
+targets.variant(
+    name = "WIN_HIGH_PERF_AMD",
+    identifier = "AMD RX 5500 XT or RX 9070 XT",
+    mixins = [
+        "win_high_perf_amd_gpu",
+    ],
+)
+
+targets.variant(
+    name = "WIN_HIGH_PERF_NVIDIA",
+    identifier = "NVIDIA GTX 1660 or RTX 4070 or RTX 5070",
+    mixins = [
+        "win_high_perf_nvidia_gpu",
     ],
 )
