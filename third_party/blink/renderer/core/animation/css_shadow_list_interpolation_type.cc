@@ -133,9 +133,10 @@ InterpolationValue CSSShadowListInterpolationType::MaybeConvertValue(
 
   const auto& value_list = To<CSSValueList>(value);
   return ListInterpolationFunctions::CreateList(
-      value_list.length(), [&value_list, &state](wtf_size_t index) {
+      value_list.length(),
+      [&value_list, &state, &conversion_checkers](wtf_size_t index) {
         return InterpolationValue(InterpolableShadow::MaybeConvertCSSValue(
-            value_list.Item(index), state));
+            value_list.Item(index), state, conversion_checkers));
       });
 }
 
@@ -156,10 +157,11 @@ InterpolationValue
 CSSShadowListInterpolationType::MaybeConvertStandardPropertyUnderlyingValue(
     const ComputedStyle& style) const {
   // TODO(crbug.com/1231644): Need to pass an appropriate color provider here.
-  return ConvertShadowList(GetShadowList(CssProperty(), style),
-                           style.EffectiveZoom(),
-                           /*theme_info=*/
-                           {.color_scheme = style.UsedColorScheme()});
+  return ConvertShadowList(
+      GetShadowList(CssProperty(), style), style.EffectiveZoom(),
+      /*theme_info=*/
+      {.color_scheme = style.UsedColorScheme(),
+       .accent_color = style.ResolveMirroredAccentColor()});
 }
 
 void CSSShadowListInterpolationType::Composite(

@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/animation/interpolable_color.h"
 #include "third_party/blink/renderer/core/animation/interpolable_length.h"
 #include "third_party/blink/renderer/core/animation/interpolable_value.h"
+#include "third_party/blink/renderer/core/animation/interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/interpolation_value.h"
 #include "third_party/blink/renderer/core/animation/pairwise_interpolation_value.h"
 #include "third_party/blink/renderer/core/style/shadow_data.h"
@@ -40,8 +41,10 @@ class InterpolableShadow : public InterpolableValue {
                                     const ColorThemeInfo&);
   static InterpolableShadow* CreateNeutral();
 
-  static InterpolableShadow* MaybeConvertCSSValue(const CSSValue&,
-                                                  const StyleResolverState&);
+  static InterpolableShadow* MaybeConvertCSSValue(
+      const CSSValue&,
+      const StyleResolverState&,
+      InterpolationType::ConversionCheckers&);
 
   // Helpers for CSSListInterpolationFunctions.
   static PairwiseInterpolationValue MaybeMergeSingles(InterpolableValue* start,

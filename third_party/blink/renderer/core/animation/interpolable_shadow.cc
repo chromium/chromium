@@ -24,13 +24,16 @@ InterpolableLength* MaybeConvertLength(const CSSPrimitiveValue* value) {
   return InterpolableLength::CreatePixels(0);
 }
 
-InterpolableColor* MaybeConvertColor(const CSSValue* value,
-                                     const StyleResolverState* state) {
+InterpolableColor* MaybeConvertColor(
+    const CSSValue* value,
+    const StyleResolverState* state,
+    InterpolationType::ConversionCheckers& conversion_checkers) {
   if (value) {
     // TODO(crbug.com/498954025): Support unresolved color-mix in shadow
     // animations.
     return DynamicTo<InterpolableColor>(
-        CSSColorInterpolationType::MaybeCreateInterpolableColor(*value, state));
+        CSSColorInterpolationType::MaybeCreateInterpolableColor(
+            *value, state, conversion_checkers));
   }
   const ColorThemeInfo theme_info =
       state ? state->GetColorThemeInfo() : ColorThemeInfo{};
@@ -83,7 +86,8 @@ InterpolableShadow* InterpolableShadow::CreateNeutral() {
 // static
 InterpolableShadow* InterpolableShadow::MaybeConvertCSSValue(
     const CSSValue& value,
-    const StyleResolverState& state) {
+    const StyleResolverState& state,
+    InterpolationType::ConversionCheckers& conversion_checkers) {
   const auto* shadow = DynamicTo<CSSShadowValue>(value);
   if (!shadow) {
     return nullptr;
@@ -101,7 +105,8 @@ InterpolableShadow* InterpolableShadow::MaybeConvertCSSValue(
   InterpolableLength* y = MaybeConvertLength(shadow->y.Get());
   InterpolableLength* blur = MaybeConvertLength(shadow->blur.Get());
   InterpolableLength* spread = MaybeConvertLength(shadow->spread.Get());
-  InterpolableColor* color = MaybeConvertColor(shadow->color, &state);
+  InterpolableColor* color =
+      MaybeConvertColor(shadow->color, &state, conversion_checkers);
 
   // If any of the conversations failed, we can't represent this CSSValue.
   if (!x || !y || !blur || !spread || !color) {

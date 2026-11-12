@@ -61,7 +61,8 @@ InterpolationValue GetInterpolationValueFromCSSValue(
   }
 
   return InterpolationValue(
-      CSSColorInterpolationType::MaybeCreateInterpolableColor(*value, &state));
+      CSSColorInterpolationType::MaybeCreateInterpolableColor(
+          *value, &state, conversion_checkers));
 }
 
 bool IsCompatible(const InterpolableValue* a, const InterpolableValue* b) {

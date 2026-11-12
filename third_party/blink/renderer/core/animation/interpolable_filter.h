@@ -6,8 +6,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_INTERPOLABLE_FILTER_H_
 
 #include <memory>
+
 #include "base/notreached.h"
 #include "third_party/blink/renderer/core/animation/interpolable_value.h"
+#include "third_party/blink/renderer/core/animation/interpolation_type.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/style/filter_operation.h"
 
@@ -34,8 +36,10 @@ class CORE_EXPORT InterpolableFilter final : public InterpolableValue {
                                          const CSSProperty& property,
                                          double zoom,
                                          const ColorThemeInfo&);
-  static InterpolableFilter* MaybeConvertCSSValue(const CSSValue&,
-                                                  const StyleResolverState&);
+  static InterpolableFilter* MaybeConvertCSSValue(
+      const CSSValue&,
+      const StyleResolverState&,
+      InterpolationType::ConversionCheckers&);
 
   // Create an InterpolableFilter representing the 'initial value for
   // interpolation' for the given OperationType.

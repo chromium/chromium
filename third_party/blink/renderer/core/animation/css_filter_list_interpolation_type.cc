@@ -175,7 +175,7 @@ InterpolationValue CSSFilterListInterpolationType::MaybeConvertInherit(
 InterpolationValue CSSFilterListInterpolationType::MaybeConvertValue(
     const CSSValue& value,
     const StyleResolverState& state,
-    ConversionCheckers&) const {
+    ConversionCheckers& conversion_checkers) const {
   auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
   if (identifier_value && identifier_value->GetValueID() == CSSValueID::kNone) {
     return InterpolationValue(MakeGarbageCollected<InterpolableList>(0));
@@ -189,8 +189,8 @@ InterpolationValue CSSFilterListInterpolationType::MaybeConvertValue(
   wtf_size_t length = list.length();
   auto* interpolable_list = MakeGarbageCollected<InterpolableList>(length);
   for (wtf_size_t i = 0; i < length; i++) {
-    InterpolableFilter* result =
-        InterpolableFilter::MaybeConvertCSSValue(list.Item(i), state);
+    InterpolableFilter* result = InterpolableFilter::MaybeConvertCSSValue(
+        list.Item(i), state, conversion_checkers);
     if (!result) {
       return nullptr;
     }
@@ -203,10 +203,11 @@ InterpolationValue
 CSSFilterListInterpolationType::MaybeConvertStandardPropertyUnderlyingValue(
     const ComputedStyle& style) const {
   // TODO(crbug.com/1231644): Need to pass an appropriate color provider here.
-  return ConvertFilterList(GetFilterList(CssProperty(), style), CssProperty(),
-                           style.EffectiveZoom(),
-                           /*theme_info=*/
-                           {.color_scheme = style.UsedColorScheme()});
+  return ConvertFilterList(
+      GetFilterList(CssProperty(), style), CssProperty(), style.EffectiveZoom(),
+      /*theme_info=*/
+      {.color_scheme = style.UsedColorScheme(),
+       .accent_color = style.ResolveMirroredAccentColor()});
 }
 
 PairwiseInterpolationValue CSSFilterListInterpolationType::MaybeMergeSingles(

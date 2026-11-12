@@ -9,6 +9,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/animation/interpolable_color.h"
 #include "third_party/blink/renderer/core/animation/interpolable_value.h"
+#include "third_party/blink/renderer/core/css/css_test_helpers.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
+#include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 
@@ -141,6 +146,47 @@ TEST(CSSColorInterpolationTypeTest, Oklab) {
   ASSERT_EQ(0.5, result_color.Alpha());
   ASSERT_EQ(Color::ColorSpace::kOklab,
             result_color.GetColorInterpolationSpace());
+}
+
+class CSSColorConversionDependencyTest : public RenderingTest {
+ protected:
+  void ExpectCheckerCount(const char* expression, wtf_size_t expected) {
+    SCOPED_TRACE(expression);
+    const CSSValue* value =
+        css_test_helpers::ParseValue(GetDocument(), "<color>", expression);
+    ASSERT_TRUE(value);
+    StyleResolverState state(GetDocument(), *GetDocument().body());
+    state.CreateNewClonedStyle(GetDocument().body()->ComputedStyleRef());
+    CSSInterpolationType::ConversionCheckers checkers;
+    ASSERT_TRUE(CSSColorInterpolationType::MaybeCreateInterpolableColor(
+        *value, &state, checkers));
+    EXPECT_EQ(expected, checkers.size());
+  }
+};
+
+TEST_F(CSSColorConversionDependencyTest, NoAccentDependency) {
+  SetBodyInnerHTML("<div></div>");
+  ExpectCheckerCount("light-dark(red, blue)", 0u);
+  ExpectCheckerCount("light-dark(red, AccentColor)", 0u);
+  ExpectCheckerCount("color-mix(in srgb, red, blue)", 0u);
+  ExpectCheckerCount("rgb(from red r g b)", 0u);
+  ExpectCheckerCount("contrast-color(red)", 0u);
+  ExpectCheckerCount("alpha(from red / 0.5)", 0u);
+}
+
+TEST_F(CSSColorConversionDependencyTest, AccentDependencyWithAutoAccent) {
+  SetBodyInnerHTML("<div></div>");
+  ExpectCheckerCount("AccentColor", 1u);
+  ExpectCheckerCount("AccentColorText", 1u);
+  ExpectCheckerCount("light-dark(AccentColor, red)", 1u);
+  ExpectCheckerCount("color-mix(in srgb, red, AccentColorText)", 1u);
+  ExpectCheckerCount("rgb(from AccentColor r g b)", 1u);
+  ExpectCheckerCount("contrast-color(AccentColor)", 1u);
+  ExpectCheckerCount("alpha(from AccentColor / 0.5)", 1u);
+  ExpectCheckerCount(
+      "color-mix(in srgb, rgb(from AccentColor r g b), "
+      "contrast-color(AccentColorText))",
+      1u);
 }
 
 }  // namespace blink

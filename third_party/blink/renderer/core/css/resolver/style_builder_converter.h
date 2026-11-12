@@ -599,10 +599,13 @@ struct ResolveColorValueContext {
 
 // Returns the computed <color> value for `value`. Note that it's expected that
 // `value` is the result of parsing a <color> value.
+// If supplied, `depends_on_accent_color` is set to true when resolution
+// encounters an accent keyword; otherwise its value is unchanged.
 // See: https://drafts.csswg.org/css-color/#resolving-color-values
 CORE_EXPORT StyleColor
 ResolveColorValue(const CSSValue& value,
-                  const ResolveColorValueContext& context);
+                  const ResolveColorValueContext& context,
+                  bool* depends_on_accent_color = nullptr);
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RESOLVER_STYLE_BUILDER_CONVERTER_H_

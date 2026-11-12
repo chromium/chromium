@@ -52,7 +52,8 @@ class CORE_EXPORT CSSColorInterpolationType : public CSSInterpolationType {
                                                     const ColorThemeInfo&);
   static BaseInterpolableColor* MaybeCreateInterpolableColor(
       const CSSValue&,
-      const StyleResolverState*);
+      const StyleResolverState*,
+      ConversionCheckers&);
 
   static BaseInterpolableColor* CreateBaseInterpolableColor(
       const StyleColor&,

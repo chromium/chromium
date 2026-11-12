@@ -125,7 +125,8 @@ InterpolationValue CSSPaintInterpolationType::MaybeConvertValue(
     const StyleResolverState& state,
     ConversionCheckers& conversion_checkers) const {
   InterpolableValue* interpolable_color =
-      CSSColorInterpolationType::MaybeCreateInterpolableColor(value, &state);
+      CSSColorInterpolationType::MaybeCreateInterpolableColor(
+          value, &state, conversion_checkers);
   if (!interpolable_color)
     return nullptr;
   return InterpolationValue(interpolable_color);
