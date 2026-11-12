@@ -213,14 +213,12 @@
         {% for i in range(num_privileged_services) %}
         <service android:name="org.chromium.content.app.PrivilegedProcessService{{ i }}"
                  android:process=":privileged_process{{ i }}"
-                 android:isolatedProcess="false"
                  android:exported="false" />
         {% endfor %}
 
         {% for i in range(2) %}
         <service android:name="org.chromium.content.app.SandboxedGpuProcessService{{ i }}"
                  android:process=":sandboxed_gpu_process{{ i }}"
-                 android:isolatedProcess="false"
                  {% if sandboxed_gpu_service_extra_attr != '' %}
                  {{ sandboxed_gpu_service_extra_attr|safe }}
                  {% endif %}

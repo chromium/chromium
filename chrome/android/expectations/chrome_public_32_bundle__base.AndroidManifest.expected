@@ -254,84 +254,72 @@
     <service  # DIFF-ANCHOR: 0c6c4fd9
         android:name="org.chromium.content.app.PrivilegedProcessService0"
         android:exported="false"
-        android:isolatedProcess="false"
         android:permission="$PACKAGE.permission.CHILD_SERVICE"
         android:process=":privileged_process0">
     </service>  # DIFF-ANCHOR: 0c6c4fd9
     <service  # DIFF-ANCHOR: 6f89af32
         android:name="org.chromium.content.app.PrivilegedProcessService1"
         android:exported="false"
-        android:isolatedProcess="false"
         android:permission="$PACKAGE.permission.CHILD_SERVICE"
         android:process=":privileged_process1">
     </service>  # DIFF-ANCHOR: 6f89af32
     <service  # DIFF-ANCHOR: 40e0d738
         android:name="org.chromium.content.app.PrivilegedProcessService2"
         android:exported="false"
-        android:isolatedProcess="false"
         android:permission="$PACKAGE.permission.CHILD_SERVICE"
         android:process=":privileged_process2">
     </service>  # DIFF-ANCHOR: 40e0d738
     <service  # DIFF-ANCHOR: b197517d
         android:name="org.chromium.content.app.PrivilegedProcessService3"
         android:exported="false"
-        android:isolatedProcess="false"
         android:permission="$PACKAGE.permission.CHILD_SERVICE"
         android:process=":privileged_process3">
     </service>  # DIFF-ANCHOR: b197517d
     <service  # DIFF-ANCHOR: 52303702
         android:name="org.chromium.content.app.PrivilegedProcessService4"
         android:exported="false"
-        android:isolatedProcess="false"
         android:permission="$PACKAGE.permission.CHILD_SERVICE"
         android:process=":privileged_process4">
     </service>  # DIFF-ANCHOR: 52303702
     <service  # DIFF-ANCHOR: 31202801
         android:name="org.chromium.content.app.PrivilegedProcessService5"
         android:exported="false"
-        android:isolatedProcess="false"
         android:permission="$PACKAGE.permission.CHILD_SERVICE"
         android:process=":privileged_process5">
     </service>  # DIFF-ANCHOR: 31202801
     <service  # DIFF-ANCHOR: f3d04117
         android:name="org.chromium.content.app.PrivilegedProcessService6"
         android:exported="false"
-        android:isolatedProcess="false"
         android:permission="$PACKAGE.permission.CHILD_SERVICE"
         android:process=":privileged_process6">
     </service>  # DIFF-ANCHOR: f3d04117
     <service  # DIFF-ANCHOR: 996f3c1a
         android:name="org.chromium.content.app.PrivilegedProcessService7"
         android:exported="false"
-        android:isolatedProcess="false"
         android:permission="$PACKAGE.permission.CHILD_SERVICE"
         android:process=":privileged_process7">
     </service>  # DIFF-ANCHOR: 996f3c1a
     <service  # DIFF-ANCHOR: 702086b6
         android:name="org.chromium.content.app.PrivilegedProcessService8"
         android:exported="false"
-        android:isolatedProcess="false"
         android:permission="$PACKAGE.permission.CHILD_SERVICE"
         android:process=":privileged_process8">
     </service>  # DIFF-ANCHOR: 702086b6
     <service  # DIFF-ANCHOR: 40feb0a4
         android:name="org.chromium.content.app.PrivilegedProcessService9"
         android:exported="false"
-        android:isolatedProcess="false"
         android:permission="$PACKAGE.permission.CHILD_SERVICE"
         android:process=":privileged_process9">
     </service>  # DIFF-ANCHOR: 40feb0a4
     <service  # DIFF-ANCHOR: 9b807118
         android:name="org.chromium.content.app.SandboxedGpuProcessService0"
         android:exported="false"
-        android:isolatedProcess="false"
         android:permission="$PACKAGE.permission.CHILD_SERVICE"
         android:process=":sandboxed_gpu_process0">
     </service>  # DIFF-ANCHOR: 9b807118
     <service  # DIFF-ANCHOR: 775c7ab8
         android:name="org.chromium.content.app.SandboxedGpuProcessService1"
         android:exported="false"
-        android:isolatedProcess="false"
         android:permission="$PACKAGE.permission.CHILD_SERVICE"
         android:process=":sandboxed_gpu_process1">
     </service>  # DIFF-ANCHOR: 775c7ab8

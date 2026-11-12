@@ -1393,7 +1393,6 @@ by a child template that "extends" this file.
       <service android:name="org.chromium.content.app.PrivilegedProcessService{{ i }}"
           android:process="{{ privileged_process_name }}"
           android:permission="{{ manifest_package }}.permission.CHILD_SERVICE"
-          android:isolatedProcess="false"
           android:exported="false" />
 
       {% endfor %}
@@ -1402,7 +1401,6 @@ by a child template that "extends" this file.
       <service android:name="org.chromium.content.app.SandboxedGpuProcessService{{ i }}"
           android:process=":sandboxed_gpu_process{{ i }}"
           android:permission="{{ manifest_package }}.permission.CHILD_SERVICE"
-          android:isolatedProcess="false"
           {% if sandboxed_gpu_service_extra_attr != '' %}
           {{ sandboxed_gpu_service_extra_attr|safe }}
           {% endif %}
