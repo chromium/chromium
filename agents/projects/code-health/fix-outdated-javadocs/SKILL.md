@@ -70,9 +70,13 @@ between edits, then proceed directly to Step 4. Refer to
    brand-new Javadoc comments for undocumented methods, private methods, or
    trivial getters/setters.
 
-### Step 4: Validation
+### Step 4: Formatting & Automated Review
 
-1. **Code Formatting:** Run `git cl format` to format changes.
+1. **Format & Lint:** Run
+   `python3 agents/projects/code-health/hub/scripts/format_and_lint.py` (must
+   exit 0).
+2. **Automated Review:** Skipped (documentation-only changes); proceed directly
+   to Step 5.
 
 ### Step 5: Verification
 

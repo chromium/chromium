@@ -141,18 +141,15 @@ patterns.
    the codebase. Each individual change must have a corresponding 'What & Why'
    explanation provided to the user.
 
-### Step 5: Validation
+### Step 5: Formatting & Automated Review
 
-1. **Linting & Formatting:**
-   - **XML Linting:** Execute
-     `python3 tools/metrics/histograms/validate_format.py` to validate all
-     metadata changes. Address any errors that are reported.
-   - **Code Formatting:** Execute `git cl format` to format the modified source
-     code. Address any errors that are reported.
-2. **Mandatory Final Review:** Follow the
-   [Automated Review Protocol](references/automated_review.md) to delegate a
-   final review of the patch to the `generalist` sub-agent. Proceed to the
-   Verification phase only after the review returns `PASS`.
+1. **Format & Lint:** Run
+   `python3 agents/projects/code-health/hub/scripts/format_and_lint.py` (must
+   exit 0).
+2. **Automated Review:** Follow
+   [Automated Review](../hub/references/automated_review.md), passing
+   [review_rules.md](references/review_rules.md) as
+   `<SKILL_SPECIFIC_CLEANUP_RULES>`.
 
 ### Step 6: Verification
 

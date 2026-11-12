@@ -62,14 +62,15 @@ directly to Step 4.
      `R.string.accessibility_expanded_group`) are now unused. If they are,
      remove them from the corresponding `.grd` / `.grsp` resource files.
 
-### Step 4: Validation
+### Step 4: Formatting & Automated Review
 
-1. **Code Formatting:** Execute `git cl format` to format the modified source
-   code. Address any errors that are reported.
-2. **Mandatory Final Review:** Follow the
-   [Automated Review Protocol](references/automated_review.md) to delegate a
-   final review of the patch to the `generalist` sub-agent. Proceed to the
-   Verification phase only after the review returns `PASS`.
+1. **Format & Lint:** Run
+   `python3 agents/projects/code-health/hub/scripts/format_and_lint.py` (must
+   exit 0).
+2. **Automated Review:** Follow
+   [Automated Review](../hub/references/automated_review.md), passing
+   [review_rules.md](references/review_rules.md) as
+   `<SKILL_SPECIFIC_CLEANUP_RULES>`.
 
 ### Step 5: Verification
 

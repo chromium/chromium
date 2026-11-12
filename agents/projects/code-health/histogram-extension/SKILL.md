@@ -34,6 +34,11 @@ nearing expiration.
   by +6 months or +1 year (in `YYYY-MM-DD` format).
 - Carefully replace the `expires_after="YYYY-MM-DD"` string constraint inline,
   being sure not to modify other attributes.
+- After editing the XML, run
+  `python3 agents/projects/code-health/hub/scripts/format_and_lint.py` (must
+  exit 0) to validate the XML formatting via `validate_format.py`.
+- **Automated Review:** Skipped (metadata-only changes); proceed directly to
+  Step 3.
 
 ### 3. Submission
 
