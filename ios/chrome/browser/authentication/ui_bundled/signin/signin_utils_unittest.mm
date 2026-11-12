@@ -8,6 +8,7 @@
 
 #import <memory>
 
+#import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
 #import "base/test/scoped_feature_list.h"
@@ -21,6 +22,7 @@
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/signin/public/base/signin_switches.h"
+#import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "components/sync_preferences/pref_service_mock_factory.h"
@@ -41,10 +43,9 @@
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/signin_util.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/browser/sync/model/test_sync_service_utils.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
-#import "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
-#import "services/network/test/test_url_loader_factory.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
@@ -70,15 +71,11 @@ class SigninUtilsTest : public PlatformTest {
     PlatformTest::SetUp();
     TestProfileIOS::Builder builder;
     builder.SetPrefService(CreatePrefService());
-    // Keep network requests (e.g. background image fetches) pending instead
-    // of hitting the real network stack.
-    builder.SetSharedURLLoaderFactory(
-        test_url_loader_factory_.GetSafeWeakWrapper());
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              SyncServiceFactory::GetDefaultFactory());
+                              base::BindOnce(&CreateTestSyncService));
     builder.AddTestingFactory(
         feature_engagement::TrackerFactory::GetInstance(),
         base::BindRepeating(&BuildFeatureEngagementMockTracker));
@@ -87,12 +84,16 @@ class SigninUtilsTest : public PlatformTest {
     profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
     identity_manager_ = IdentityManagerFactory::GetForProfile(profile_);
     sync_service_ = SyncServiceFactory::GetForProfile(profile_);
+    // `TestSyncService` enables all selectable types by default, whereas
+    // history and tabs sync require an explicit opt-in on iOS.
+    sync_service_->GetUserSettings()->SetSelectedType(
+        syncer::UserSelectableType::kHistory, false);
+    sync_service_->GetUserSettings()->SetSelectedType(
+        syncer::UserSelectableType::kTabs, false);
     account_manager_service_ =
         ChromeAccountManagerServiceFactory::GetForProfile(profile_);
     mock_tracker_ = static_cast<feature_engagement::test::MockTracker*>(
         feature_engagement::TrackerFactory::GetForProfile(profile_));
-    time_in_past_ = base::Time::Now();
-    task_environment_.FastForwardBy(base::Days(2));
   }
 
   void TearDown() override {
@@ -135,14 +136,12 @@ class SigninUtilsTest : public PlatformTest {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   base::test::ScopedFeatureList feature_list_;
-  network::TestURLLoaderFactory test_url_loader_factory_;
   TestProfileManagerIOS profile_manager_;
   raw_ptr<TestProfileIOS> profile_ = nullptr;
   raw_ptr<feature_engagement::test::MockTracker> mock_tracker_ = nullptr;
   raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
   raw_ptr<syncer::SyncService> sync_service_ = nullptr;
   raw_ptr<ChromeAccountManagerService> account_manager_service_ = nullptr;
-  base::Time time_in_past_;
 };
 
 // Should not show the sign-in upgrade for the first time, after FRE.
@@ -560,10 +559,7 @@ TEST_F(SigninUtilsTest, TestWillShowIfSignedInWithoutHistoryOptIn) {
   const base::Version version_1_0("1.0");
   signin::RecordFullscreenSigninPromoStarted(
       identity_manager_, account_manager_service_, version_1_0);
-  // Using task_environment_.FastForwardBy() causes this test to crash due to
-  // sync internal logic.
-  GetLocalState()->SetTime(
-      prefs::kSigninStartupPromoLastShownTimeWithRandomOffset, time_in_past_);
+  task_environment_.FastForwardBy(base::Days(100));
 
   EXPECT_TRUE(signin::ShouldPresentUserSigninUpgrade(profile_, version_1_0));
   EXPECT_FALSE(
@@ -586,10 +582,7 @@ TEST_F(SigninUtilsTest, TestWillNotShowIfSignedInWithHistoryOptIn) {
   const base::Version version_1_0("1.0");
   signin::RecordFullscreenSigninPromoStarted(
       identity_manager_, account_manager_service_, version_1_0);
-  // Using task_environment_.FastForwardBy() causes this test to crash due to
-  // sync internal logic.
-  GetLocalState()->SetTime(
-      prefs::kSigninStartupPromoLastShownTimeWithRandomOffset, time_in_past_);
+  task_environment_.FastForwardBy(base::Days(100));
 
   syncer::SyncUserSettings* sync_user_settings =
       sync_service_->GetUserSettings();

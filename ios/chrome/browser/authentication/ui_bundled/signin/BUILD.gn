@@ -176,8 +176,6 @@ source_set("unit_tests") {
     "//ios/chrome/test/fakes",
     "//ios/web/public/test",
     "//net",
-    "//services/network:test_support",
-    "//services/network/public/cpp",
     "//testing/gtest",
     "//third_party/ocmock",
     "//ui/base",
