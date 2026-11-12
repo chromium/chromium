@@ -1,22 +1,21 @@
 caption: Configure Custom Watermark Settings
 desc: |-
-  Allows administrators to customize the appearance of watermarks applied by Data Loss Prevention (DLP) rules. This includes setting its fill/outline opacity, defining its font size, and setting its timestamp time zone.
+  Allows administrators to customize the appearance of watermarks applied by Data Loss Prevention (DLP) rules. This includes setting its fill/outline opacity, defining its font size, and setting its timestamp time zone. The timestamp time zone is currently not supported on iOS.
   If this policy or some values is not set, Chrome will use its default watermark behavior.
   The default values on desktop are: fill opacity at 4, outline opacity at 6, font size at 24. On iOS, the default values are: fill opacity at 10, outline opacity at 15, font size at 16. On all platforms, the timestamp time zone defaults to 'user_device' (user's local device time zone).
 
   The 'Fill Opacity' is a percentage from 0 (fully transparent) to 100 (fully opaque).
   The 'Outline Opacity' is a percentage from 0 (fully transparent) to 100 (fully opaque).
   The 'Font Size' is specified in points.
-  The 'Timestamp Timezone' specifies the IANA time zone identifier (e.g. 'America/Toronto') used for formatting watermark timestamps (supported starting in Chrome 152+), which follows the names in the IANA Time Zone Database ( https://www.iana.org/time-zones ).
+  The 'Timestamp Timezone' specifies the IANA time zone identifier (e.g. 'America/Toronto') used for formatting watermark timestamps (supported starting in Chrome 152+), which follows the names in the IANA Time Zone Database ( https://www.iana.org/time-zones ). This is currently not supported on iOS.
 owners:
 - adamkl@google.com
 - cbe-cep-eng@google.com
 
-future_on:
-- ios
 supported_on:
 - chrome.*:139-
 - chrome_os:139-
+- ios:160-
 
 features:
   cloud_only: true
@@ -42,7 +41,7 @@ schema:
       description: "Font size of the watermark text in points."
     timestamp_timezone:
       type: string
-      description: "IANA time zone identifier (e.g. 'America/Toronto') used for formatting watermark timestamps (supported starting in Chrome 152+). Defaults to 'user_device'."
+      description: "IANA time zone identifier (e.g. 'America/Toronto') used for formatting watermark timestamps (supported starting in Chrome 152+, but not supported on iOS yet). Defaults to 'user_device'."
 example_value:
   fill_opacity: 4
   outline_opacity: 6
