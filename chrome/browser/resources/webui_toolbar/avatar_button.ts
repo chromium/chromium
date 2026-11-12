@@ -322,6 +322,9 @@ export class AvatarButtonElement extends AvatarButtonElementBase {
   }
 
   protected onClick_(e: PointerEvent) {
+    if (!this.state.enabled) {
+      return;
+    }
     if (!this.highlightTracker.shouldSkipClick(e)) {
       TrackedElementManager.getInstance().notifyElementActivated(this);
       // TODO(behamilton): Log an error if this fails.

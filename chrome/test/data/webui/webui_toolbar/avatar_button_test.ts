@@ -26,12 +26,14 @@ interface Transition {
 
 suite('AvatarButtonTest', function() {
   let avatar: AvatarButtonElement;
+  let testBrowserProxy: TestToolbarBrowserProxy;
   // Width of the fake toolbar's window, used to compute the available width.
   let windowWidth: number;
 
   setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    BrowserProxyImpl.setInstance(new TestToolbarBrowserProxy());
+    testBrowserProxy = new TestToolbarBrowserProxy();
+    BrowserProxyImpl.setInstance(testBrowserProxy);
 
     // A fake toolbar containing only the avatar button, which provides the
     // methods the button uses during layout. Layout constants are normally
@@ -291,5 +293,25 @@ suite('AvatarButtonTest', function() {
 
     await setState({hasLinearGradientRing: true});
     assertEquals(3, requestLayoutCount);
+  });
+
+  test('ClickDisabled', async function() {
+    assertTrue(avatar.state.enabled);
+
+    await setState({enabled: false});
+    assertFalse(avatar.state.enabled);
+
+    // Clicking the disabled button should not call showAvatarMenu.
+    avatar.$.button.click();
+    assertEquals(
+        0, testBrowserProxy.toolbarUIHandler.getCallCount('showAvatarMenu'));
+
+    // Re-enabling and clicking should call showAvatarMenu.
+    await setState({enabled: true});
+    assertTrue(avatar.state.enabled);
+
+    avatar.$.button.click();
+    assertEquals(
+        1, testBrowserProxy.toolbarUIHandler.getCallCount('showAvatarMenu'));
   });
 });

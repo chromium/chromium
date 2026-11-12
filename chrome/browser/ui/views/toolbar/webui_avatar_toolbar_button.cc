@@ -195,6 +195,10 @@ void WebUIAvatarToolbarButton::RemoveObserver(
 }
 
 void WebUIAvatarToolbarButton::ButtonPressed(bool is_source_accelerator) {
+  if (!IsButtonEnabled()) {
+    return;
+  }
+
   if (state_manager_ && delegate_->GetView()->GetWidget()) {
     // Pressing the button typically shows a bubble anchored to it, so wait
     // until the button is visible before handling the press. This is needed
@@ -266,6 +270,19 @@ void WebUIAvatarToolbarButton::OnControlsAppearInactiveChanged() {
   UpdateState();
 }
 
+bool WebUIAvatarToolbarButton::IsButtonEnabled() const {
+  if (!state_manager_) {
+    return false;
+  }
+  bool is_enabled = true;
+#if BUILDFLAG(IS_CHROMEOS)
+  Profile* profile = delegate_->GetBrowser()->GetProfile();
+  is_enabled = profile->IsOffTheRecord() && !profile->IsGuestSession() &&
+               !profile->GetOTRProfileID().IsCaptivePortal();
+#endif
+  return is_enabled;
+}
+
 void WebUIAvatarToolbarButton::UpdateState() {
   if (!state_manager_ || !is_initialized_ ||
       !delegate_->GetView()->GetWidget()) {
@@ -281,12 +298,7 @@ void WebUIAvatarToolbarButton::UpdateState() {
 
   state->state = MapAvatarState(state_manager_->GetActiveState());
 
-  bool is_enabled = true;
-#if BUILDFLAG(IS_CHROMEOS)
-  Profile* profile = delegate_->GetBrowser()->GetProfile();
-  is_enabled = profile->IsOffTheRecord() && !profile->IsGuestSession() &&
-               !profile->GetOTRProfileID().IsCaptivePortal();
-#endif
+  bool is_enabled = IsButtonEnabled();
 
   const ui::ColorProvider* const color_provider =
       delegate_->GetView()->GetColorProvider();

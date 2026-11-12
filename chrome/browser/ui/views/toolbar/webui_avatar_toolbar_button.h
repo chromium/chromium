@@ -75,6 +75,9 @@ class WebUIAvatarToolbarButton : public AvatarToolbarButtonInterface {
 
   bool is_initialized() const { return is_initialized_; }
 
+  // Returns whether the avatar button is enabled for the current profile.
+  bool IsButtonEnabled() const;
+
   void NotifyIPHPromoChanged(bool has_promo);
 
   // Called when the toolbar state's `controls_appear_inactive` changes, so the
