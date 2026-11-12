@@ -18,6 +18,9 @@ import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.text.Spanned;
 import android.text.style.StyleSpan;
+import android.view.InputDevice;
+import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.FrameLayout;
@@ -101,6 +104,11 @@ public class GlicBottomSheetFreCoordinatorUnitTest {
         return ((MarginLayoutParams) content.getLayoutParams()).bottomMargin;
     }
 
+    private static void pressEnter(View view) {
+        view.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER));
+        view.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_ENTER));
+    }
+
     private GlicBottomSheetFreCoordinator createCoordinator(boolean isEnterpriseAccount) {
         return createCoordinator(isEnterpriseAccount, /* backgroundColor= */ 0);
     }
@@ -123,9 +131,11 @@ public class GlicBottomSheetFreCoordinatorUnitTest {
                 createCoordinator(/* isEnterpriseAccount= */ false);
         View rootView = coordinator.getView();
         assertEquals(mParentContainer, rootView.getParent());
+        View contentContainer = rootView.findViewById(R.id.glic_fre_content_container);
         assertEquals(
                 mActivity.getString(R.string.glic_fre_dialog_title),
-                ViewCompat.getAccessibilityPaneTitle(rootView));
+                ViewCompat.getAccessibilityPaneTitle(contentContainer));
+        assertTrue(contentContainer.isImportantForAccessibility());
 
         TextViewWithClickableSpans bodyView = rootView.findViewById(R.id.glic_fre_body);
         StyleSpan[] styleSpans = getSpans(bodyView, StyleSpan.class);
@@ -196,6 +206,37 @@ public class GlicBottomSheetFreCoordinatorUnitTest {
         coordinator.getView().findViewById(R.id.glic_fre_accept_button).performClick();
 
         verifyNoInteractions(mOnAccept);
+    }
+
+    @Test
+    public void testNonClickableRootIgnoresHoverAndKeyEvents() {
+        GlicBottomSheetFreCoordinator coordinator =
+                createCoordinator(/* isEnterpriseAccount= */ false);
+        View rootView = coordinator.getView();
+        View closeButton = rootView.findViewById(R.id.glic_fre_close_button);
+        ShadowLooper.idleMainLooper();
+        closeButton.setFocusableInTouchMode(true);
+        assertTrue(closeButton.requestFocus());
+        MotionEvent hover =
+                MotionEvent.obtain(
+                        0,
+                        0,
+                        MotionEvent.ACTION_HOVER_ENTER,
+                        closeButton.getX() + 1,
+                        closeButton.getY() + 1,
+                        0);
+        hover.setSource(InputDevice.SOURCE_TOUCHSCREEN);
+
+        rootView.setClickable(false);
+        assertFalse(rootView.dispatchGenericMotionEvent(hover));
+        pressEnter(rootView);
+        verifyNoInteractions(mOnDecline);
+
+        rootView.setClickable(true);
+        assertTrue(rootView.dispatchGenericMotionEvent(hover));
+        pressEnter(rootView);
+        verify(mOnDecline).run();
+        hover.recycle();
     }
 
     @Test
