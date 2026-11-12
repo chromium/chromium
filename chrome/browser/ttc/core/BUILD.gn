@@ -110,6 +110,8 @@ source_set("impl") {
     "page_context.cc",
     "page_context_util.cc",
     "page_context_util.h",
+    "pointer_input_observer.cc",
+    "pointer_input_observer.h",
     "pointer_tracker.cc",
     "pointer_tracker.h",
     "session_controller_impl.cc",
@@ -168,6 +170,7 @@ source_set("impl") {
     "//components/ttc/app/public",
     "//content/public/browser",
     "//content/public/common",
+    "//third_party/blink/public/common:headers",
     "//ui/actions:actions_headers",
     "//ui/base/idle",
     "//ui/gfx/geometry",
@@ -334,6 +337,7 @@ source_set("browser_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   sources = [
     "page_context_monitor_browsertest.cc",
+    "pointer_input_observer_browsertest.cc",
     "session_journal_impl_browsertest.cc",
     "tool_controller_browsertest.cc",
     "ttc_keyed_service_browsertest.cc",
@@ -387,8 +391,11 @@ source_set("browser_tests") {
     "//skia",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/blink/public/common:headers",
     "//ui/base",
+    "//ui/gfx:test_support",
     "//ui/gfx/codec",
+    "//ui/gfx/geometry",
     "//url",
   ]
   if (!is_android) {
