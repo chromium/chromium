@@ -11,6 +11,9 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_file.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
@@ -286,6 +289,55 @@ TEST_F(CrostiniExportImportTest, TestNotAllowed) {
       base::BindOnce([](CrostiniResult result) {
         EXPECT_EQ(result, CrostiniResult::NOT_ALLOWED);
       }));
+}
+
+TEST_F(CrostiniExportImportTest, TestFileDialogNotAllowed) {
+  profile()->GetPrefs()->SetBoolean(
+      crostini::prefs::kUserCrostiniExportImportUIAllowedByPolicy, false);
+
+  // The requests are dropped without leaving anything behind that would
+  // conflict with a later request.
+  crostini_export_import_->ExportDiskImageFlow(default_container_id_, nullptr);
+  crostini_export_import_->ImportDiskImageFlow(default_container_id_, nullptr);
+  EXPECT_FALSE(crostini_export_import_->GetExportImportOperationStatus());
+}
+
+TEST_F(CrostiniExportImportTest, TestImportFromPathWhileFileDialogOpen) {
+  // Simulate the file dialog being open for a backup of another container.
+  crostini_export_import_->FillOperationData(
+      ExportImportType::EXPORT_DISK_IMAGE, custom_container_id_);
+
+  // A restore that is given its path directly, as when started from the Files
+  // app, doesn't use the file dialog and must not interfere with it.
+  crostini_export_import_->ImportContainer(default_container_id_, tarball_,
+                                           base::DoNothing());
+  task_environment_.RunUntilIdle();
+  base::WeakPtr<CrostiniExportImportNotificationController> import_controller =
+      GetController(default_container_id_);
+  ASSERT_NE(import_controller, nullptr);
+  EXPECT_EQ(import_controller->type(), ExportImportType::IMPORT);
+  EXPECT_EQ(import_controller->status(), Status::RUNNING);
+
+  // The file dialog's operation still starts when a file is selected.
+  base::ScopedTempFile zipfile;
+  EXPECT_TRUE(zipfile.Create());
+  crostini_export_import_->FileSelected(ui::SelectedFileInfo(zipfile.path()),
+                                        0);
+  task_environment_.RunUntilIdle();
+  base::WeakPtr<CrostiniExportImportNotificationController> export_controller =
+      GetController(custom_container_id_);
+  ASSERT_NE(export_controller, nullptr);
+  EXPECT_EQ(export_controller->type(), ExportImportType::EXPORT_DISK_IMAGE);
+  EXPECT_EQ(export_controller->status(), Status::RUNNING);
+
+  // Finish both operations.
+  SendImportProgress(
+      default_container_id_,
+      vm_tools::cicerone::ImportLxdContainerProgressSignal_Status_DONE);
+  EXPECT_EQ(GetController(default_container_id_), nullptr);
+  SendDiskImageProgress(custom_container_id_,
+                        vm_tools::concierge::DISK_STATUS_CREATED, 100);
+  EXPECT_EQ(GetController(custom_container_id_), nullptr);
 }
 
 TEST_F(CrostiniExportImportTest, TestExportDiskImageSuccess) {

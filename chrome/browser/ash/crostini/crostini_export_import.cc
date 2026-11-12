@@ -107,31 +107,29 @@ void CrostiniExportImport::FillOperationData(ExportImportType type) {
 void CrostiniExportImport::ExportDiskImageFlow(
     guest_os::GuestId container_id,
     content::WebContents* web_contents) {
-  FillOperationData(ExportImportType::EXPORT_DISK_IMAGE,
-                    std::move(container_id));
-  OpenFileDialog(web_contents);
+  OpenFileDialog(ExportImportType::EXPORT_DISK_IMAGE, std::move(container_id),
+                 web_contents);
 }
 
 void CrostiniExportImport::ImportDiskImageFlow(
     guest_os::GuestId container_id,
     content::WebContents* web_contents) {
-  FillOperationData(ExportImportType::IMPORT_DISK_IMAGE,
-                    std::move(container_id));
-  OpenFileDialog(web_contents);
+  OpenFileDialog(ExportImportType::IMPORT_DISK_IMAGE, std::move(container_id),
+                 web_contents);
 }
 
 void CrostiniExportImport::ExportContainer(guest_os::GuestId container_id,
                                            content::WebContents* web_contents) {
-  FillOperationData(ExportImportType::EXPORT, std::move(container_id));
-  OpenFileDialog(web_contents);
+  OpenFileDialog(ExportImportType::EXPORT, std::move(container_id),
+                 web_contents);
 }
 
 void CrostiniExportImport::ImportContainer(guest_os::GuestId container_id,
                                            content::WebContents* web_contents) {
   // Technically this could be ExportImportType::IMPORT_DISK_IMAGE but we won't
   // know for sure until we see the file type chosen.
-  FillOperationData(ExportImportType::IMPORT, std::move(container_id));
-  OpenFileDialog(web_contents);
+  OpenFileDialog(ExportImportType::IMPORT, std::move(container_id),
+                 web_contents);
 }
 
 base::FilePath CrostiniExportImport::GetDefaultBackupPath() const {
@@ -150,7 +148,9 @@ base::FilePath CrostiniExportImport::GetDefaultImageBackupPath() const {
                          exploded.month, exploded.day_of_month));
 }
 
-void CrostiniExportImport::OpenFileDialog(content::WebContents* web_contents) {
+void CrostiniExportImport::OpenFileDialog(ExportImportType type,
+                                          guest_os::GuestId container_id,
+                                          content::WebContents* web_contents) {
   if (!crostini::CrostiniFeatures::Get()->IsExportImportUIAllowed(profile_)) {
     return;
   }
@@ -159,7 +159,9 @@ void CrostiniExportImport::OpenFileDialog(content::WebContents* web_contents) {
     return;
   }
 
-  CHECK(operation_data_);
+  // Remember the operation until the user has selected a file. This must only
+  // happen once it's certain that the dialog is going to be shown.
+  FillOperationData(type, std::move(container_id));
 
   ui::SelectFileDialog::Type file_selector_mode;
   unsigned title = 0;
@@ -168,7 +170,7 @@ void CrostiniExportImport::OpenFileDialog(content::WebContents* web_contents) {
       {FILE_PATH_LITERAL("img.zst"), FILE_PATH_LITERAL("tar.gz"),
        FILE_PATH_LITERAL("tini"), FILE_PATH_LITERAL("tgz")}};
 
-  switch (operation_data_->type) {
+  switch (type) {
     case ExportImportType::EXPORT:
       // TODO(crbug.com/345312503): deprecate once disk image export flows are
       // proven stable. Import will need to exist for a while to support legacy
@@ -204,14 +206,16 @@ void CrostiniExportImport::OpenFileDialog(content::WebContents* web_contents) {
 
 void CrostiniExportImport::FileSelected(const ui::SelectedFileInfo& file,
                                         int index) {
+  auto operation_data = std::move(operation_data_);
   // During migration phase, we cannot be sure if an import file is a container
   // or disk image backup until we can rely on the extension.
   // TODO(crbug.com/345312503): consider looking at magic header bytes?
-  if (operation_data_->type == ExportImportType::IMPORT &&
+  if (operation_data->type == ExportImportType::IMPORT &&
       file.path().Extension().ends_with("img.zst")) {
-    operation_data_->type = ExportImportType::IMPORT_DISK_IMAGE;
+    operation_data->type = ExportImportType::IMPORT_DISK_IMAGE;
   }
-  Start(file.path(), base::DoNothing());
+  Start(operation_data->type, std::move(operation_data->container_id),
+        file.path(), base::DoNothing());
   select_folder_dialog_.reset();
 }
 
@@ -224,8 +228,8 @@ void CrostiniExportImport::ExportContainer(
     guest_os::GuestId container_id,
     base::FilePath path,
     CrostiniManager::CrostiniResultCallback callback) {
-  FillOperationData(ExportImportType::EXPORT, std::move(container_id));
-  Start(path, std::move(callback));
+  Start(ExportImportType::EXPORT, std::move(container_id), std::move(path),
+        std::move(callback));
 }
 
 void CrostiniExportImport::ImportContainer(
@@ -239,43 +243,41 @@ void CrostiniExportImport::ImportContainer(
                   "non-existent container: "
                << container_id;
   }
-  FillOperationData(ExportImportType::IMPORT, std::move(container_id));
-  Start(path, std::move(callback));
+  Start(ExportImportType::IMPORT, std::move(container_id), std::move(path),
+        std::move(callback));
 }
 
 void CrostiniExportImport::ExportDiskImageWithCallback(
     guest_os::GuestId container_id,
     base::FilePath path,
     CrostiniManager::CrostiniResultCallback callback) {
-  FillOperationData(ExportImportType::EXPORT_DISK_IMAGE,
-                    std::move(container_id));
-  Start(path, std::move(callback));
+  Start(ExportImportType::EXPORT_DISK_IMAGE, std::move(container_id),
+        std::move(path), std::move(callback));
 }
 
 void CrostiniExportImport::ImportDiskImageWithCallback(
     guest_os::GuestId container_id,
     base::FilePath path,
     CrostiniManager::CrostiniResultCallback callback) {
-  FillOperationData(ExportImportType::IMPORT_DISK_IMAGE,
-                    std::move(container_id));
-  Start(path, std::move(callback));
+  Start(ExportImportType::IMPORT_DISK_IMAGE, std::move(container_id),
+        std::move(path), std::move(callback));
 }
 
 void CrostiniExportImport::Start(
+    ExportImportType type,
+    guest_os::GuestId container_id,
     base::FilePath path,
     CrostiniManager::CrostiniResultCallback callback) {
-  auto operation_data = std::move(operation_data_);
   if (!crostini::CrostiniFeatures::Get()->IsExportImportUIAllowed(profile_)) {
     return std::move(callback).Run(CrostiniResult::NOT_ALLOWED);
   }
 
   auto controller =
       std::make_unique<CrostiniExportImportNotificationController>(
-          profile_, operation_data->type, GetUniqueNotificationId(), path,
-          operation_data->container_id);
+          profile_, type, GetUniqueNotificationId(), path, container_id);
   controller->SetStatusRunning(0);
 
-  auto it = notification_controllers_.find(operation_data->container_id);
+  auto it = notification_controllers_.find(container_id);
   if (it != notification_controllers_.end()) {
     // There is already an operation in progress. Ensure the existing
     // notification is (re)displayed so the user knows why this new concurrent
@@ -284,14 +286,14 @@ void CrostiniExportImport::Start(
     controller->SetStatusFailedConcurrentOperation(it->second->type());
     return;
   } else {
-    notification_controllers_.emplace_hint(it, operation_data->container_id,
+    notification_controllers_.emplace_hint(it, container_id,
                                            std::move(controller));
     for (auto& observer : observers_) {
       observer.OnCrostiniExportImportOperationStatusChanged(true);
     }
   }
 
-  switch (operation_data->type) {
+  switch (type) {
     case ExportImportType::EXPORT:
       base::ThreadPool::PostTaskAndReply(
           FROM_HERE, {base::MayBlock()},
@@ -305,36 +307,31 @@ void CrostiniExportImport::Start(
               path),
           base::BindOnce(
               &CrostiniExportImport::EnsureLxdStartedThenSharePath,
-              weak_ptr_factory_.GetWeakPtr(), operation_data->container_id,
-              path,
+              weak_ptr_factory_.GetWeakPtr(), container_id, path,
               base::BindOnce(&CrostiniExportImport::ExportAfterSharing,
-                             weak_ptr_factory_.GetWeakPtr(),
-                             operation_data->container_id, path,
+                             weak_ptr_factory_.GetWeakPtr(), container_id, path,
                              std::move(callback))));
       break;
     case ExportImportType::IMPORT:
       CrostiniExportImport::EnsureLxdStartedThenSharePath(
-          operation_data->container_id, path,
+          container_id, path,
           base::BindOnce(&CrostiniExportImport::ImportAfterSharing,
-                         weak_ptr_factory_.GetWeakPtr(),
-                         operation_data->container_id, path,
+                         weak_ptr_factory_.GetWeakPtr(), container_id, path,
                          std::move(callback)));
       break;
     case ExportImportType::EXPORT_DISK_IMAGE:
       // TODO(b:345312503): restart VM if it was started?
       crostini::CrostiniManager::GetForProfile(profile_)->StopVm(
-          operation_data->container_id.vm_name,
+          container_id.vm_name,
           base::BindOnce(&CrostiniExportImport::ExportDiskImage,
-                         weak_ptr_factory_.GetWeakPtr(),
-                         operation_data->container_id, path,
+                         weak_ptr_factory_.GetWeakPtr(), container_id, path,
                          std::move(callback)));
       break;
     case ExportImportType::IMPORT_DISK_IMAGE:
       crostini::CrostiniManager::GetForProfile(profile_)->StopVm(
-          operation_data->container_id.vm_name,
+          container_id.vm_name,
           base::BindOnce(&CrostiniExportImport::ImportDiskImage,
-                         weak_ptr_factory_.GetWeakPtr(),
-                         operation_data->container_id, path,
+                         weak_ptr_factory_.GetWeakPtr(), container_id, path,
                          std::move(callback)));
       break;
   }

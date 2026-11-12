@@ -158,6 +158,8 @@ class CrostiniExportImport : public KeyedService,
                            TestImportDiskImageCancelled);
   FRIEND_TEST_ALL_PREFIXES(CrostiniExportImportTest,
                            TestImportDiskImageDoneBeforeCancelled);
+  FRIEND_TEST_ALL_PREFIXES(CrostiniExportImportTest,
+                           TestImportFromPathWhileFileDialogOpen);
 
   struct OperationData {
     OperationData(ExportImportType type, guest_os::GuestId id);
@@ -179,7 +181,9 @@ class CrostiniExportImport : public KeyedService,
   void FileSelected(const ui::SelectedFileInfo& file, int index) override;
   void FileSelectionCanceled() override;
 
-  void Start(base::FilePath path,
+  void Start(ExportImportType type,
+             guest_os::GuestId container_id,
+             base::FilePath path,
              CrostiniManager::CrostiniResultCallback callback);
 
   // Restart VM with LXD if required and share the file path with VM.
@@ -251,7 +255,9 @@ class CrostiniExportImport : public KeyedService,
                         CrostiniManager::CrostiniResultCallback callback,
                         CrostiniResult result);
 
-  void OpenFileDialog(content::WebContents* web_contents);
+  void OpenFileDialog(ExportImportType type,
+                      guest_os::GuestId container_id,
+                      content::WebContents* web_contents);
 
   std::string GetUniqueNotificationId();
 
@@ -265,6 +271,8 @@ class CrostiniExportImport : public KeyedService,
   raw_ptr<Profile> profile_;
   scoped_refptr<ui::SelectFileDialog> select_folder_dialog_;
   NotificationControllerMap notification_controllers_;
+  // The operation that the open file dialog is for. Only set while the dialog
+  // is open.
   std::unique_ptr<OperationData> operation_data_;
   // Notifications must have unique-per-profile identifiers.
   // A non-static member on a profile-keyed-service will suffice.
