@@ -288,6 +288,42 @@ TEST_F(ConnectionProxyTest, WithProxyConfigured) {
   EXPECT_TRUE(*has_chrome_proxy_);
 }
 
+TEST_F(ConnectionProxyTest, ReentrantDisconnectDuringPendingDrainDoesNotCrash) {
+  connection_proxy_ = std::make_unique<ConnectionProxy>(
+      GURL("https://proxy.example.com"), &logger_, &token_manager_,
+      &network_driver_,
+      base::BindOnce(
+          [](ConnectionProxyTest* test,
+             network::NetworkContextGetter context_getter,
+             std::optional<bool> has_chrome_proxy)
+              -> std::unique_ptr<Connection> {
+            // Simulate factory returning nullptr on immediate disconnect.
+            return nullptr;
+          },
+          base::Unretained(this)),
+      base::BindOnce(&ConnectionProxyTest::OnDisconnect,
+                     base::Unretained(this)));
+
+  base::test::TestFuture<base::expected<proto::PrivateAiResponse, StatusCode>>
+      future1;
+  base::test::TestFuture<base::expected<proto::PrivateAiResponse, StatusCode>>
+      future2;
+  connection_proxy_->Send(proto::PrivateAiRequest(), base::Seconds(10),
+                          future1.GetCallback());
+  connection_proxy_->Send(proto::PrivateAiRequest(), base::Seconds(10),
+                          future2.GetCallback());
+
+  token_manager_.RespondToGetAuthTokenForProxy(phosphor::BlindSignedAuthToken{
+      .token = FakeTokenManager::kFakeProxyToken,
+      .encoded_extensions = "cHJveHlfZXh0ZW5zaW9ucw=="});
+
+  EXPECT_TRUE(on_disconnect_called_);
+  ASSERT_TRUE(future1.IsReady());
+  EXPECT_EQ(future1.Get().error(), StatusCode::kConnectionClosedByClient);
+  ASSERT_TRUE(future2.IsReady());
+  EXPECT_EQ(future2.Get().error(), StatusCode::kConnectionClosedByClient);
+}
+
 }  // namespace
 
 }  // namespace private_ai

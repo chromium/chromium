@@ -139,6 +139,9 @@ void ConnectionProxy::OnDestroy(StatusCode status_code) {
 
   if (inner_connection_) {
     inner_connection_->OnDestroy(status_code);
+    // OnDestroy() can be reached re-entrantly from within a call on
+    // `inner_connection_`, so keep it alive until `this` is destroyed.
+    destroyed_inner_connection_ = std::move(inner_connection_);
   }
 
   token_manager_ = nullptr;
@@ -213,11 +216,21 @@ void ConnectionProxy::OnProxyToken(
                    weak_factory_.GetWeakPtr()),
                has_chrome_proxy);
 
-  for (auto& pending : pending_requests_) {
+  if (!inner_connection_) {
+    CallOnDisconnect(StatusCode::kConnectionClosedByClient);
+    return;
+  }
+
+  auto pending_requests = std::move(pending_requests_);
+  for (auto& pending : pending_requests) {
+    if (!inner_connection_) {
+      std::move(pending.callback)
+          .Run(base::unexpected(StatusCode::kConnectionClosedByClient));
+      continue;
+    }
     inner_connection_->Send(std::move(pending.request), pending.timeout,
                             std::move(pending.callback));
   }
-  pending_requests_.clear();
 }
 
 }  // namespace private_ai

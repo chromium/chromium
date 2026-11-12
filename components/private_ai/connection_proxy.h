@@ -98,6 +98,9 @@ class ConnectionProxy : public Connection {
 
   mojo::Remote<network::mojom::NetworkContext> proxied_context_;
   std::unique_ptr<Connection> inner_connection_;
+  // Holds `inner_connection_` after OnDestroy() so that it is destroyed
+  // together with `this` rather than synchronously during OnDestroy().
+  std::unique_ptr<Connection> destroyed_inner_connection_;
 
   std::vector<PendingRequest> pending_requests_;
   bool is_initializing_ = true;
