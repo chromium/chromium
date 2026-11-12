@@ -9,10 +9,15 @@
 #include <set>
 #include <utility>
 
+#include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/test/simple_test_tick_clock.h"
+#include "base/time/default_tick_clock.h"
+#include "base/time/time.h"
 #include "content/browser/payments/payment_app_context_impl.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
 #include "content/browser/service_worker/fake_embedded_worker_instance_client.h"
@@ -20,6 +25,9 @@
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_context_wrapper_test_api.h"
+#include "content/browser/service_worker/service_worker_registration.h"
+#include "content/browser/service_worker/service_worker_test_utils.h"
+#include "content/browser/service_worker/service_worker_version.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
@@ -311,6 +319,37 @@ void PaymentAppContentUnitTestBase::RespondPendingPaymentRequest(
     payments::mojom::PaymentHandlerResponsePtr response) {
   std::move(worker_helper_->response_callback_)
       ->OnResponseForPaymentRequest(std::move(response));
+}
+
+bool PaymentAppContentUnitTestBase::RequestServiceWorkerTermination(
+    int64_t registration_id) {
+  scoped_refptr<ServiceWorkerRegistration> registration =
+      worker_helper_->context()->GetLiveRegistration(registration_id);
+  CHECK(registration);
+  ServiceWorkerVersion* version = registration->active_version();
+  CHECK(version);
+  return version->OnRequestTermination(
+      version->GetLatestExternalKeepaliveSequenceNumberForTest());
+}
+
+void PaymentAppContentUnitTestBase::ExpireServiceWorkerRequests(
+    int64_t registration_id) {
+  scoped_refptr<ServiceWorkerRegistration> registration =
+      worker_helper_->context()->GetLiveRegistration(registration_id);
+  CHECK(registration);
+  ServiceWorkerVersion* version = registration->active_version();
+  CHECK(version);
+
+  base::SimpleTestTickClock tick_clock;
+  tick_clock.SetNowTicks(base::TimeTicks::Now() +
+                         ServiceWorkerVersion::kRequestTimeout +
+                         base::Seconds(1));
+  version->SetTickClockForTesting(&tick_clock);
+  version->RunUserTasksForTesting();
+  // Timing out a request stops the worker; wait for that before restoring the
+  // default clock so `tick_clock` outlives every use.
+  StopServiceWorker(version);
+  version->SetTickClockForTesting(base::DefaultTickClock::GetInstance());
 }
 
 int64_t PaymentAppContentUnitTestBase::last_sw_registration_id() const {

@@ -35,7 +35,11 @@ RespondWithCallback::RespondWithCallback(
                                  weak_ptr_factory_.GetWeakPtr()));
 }
 
-RespondWithCallback::~RespondWithCallback() = default;
+RespondWithCallback::~RespondWithCallback() {
+  // `FinishRequest()` is a no-op if the request already completed, timed out,
+  // or was cleared when the service worker stopped.
+  FinishServiceWorkerRequest();
+}
 
 void RespondWithCallback::FinishServiceWorkerRequest() {
   service_worker_version_->FinishRequest(request_id_, /*was_handled=*/false);

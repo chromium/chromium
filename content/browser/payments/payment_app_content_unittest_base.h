@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_PAYMENTS_PAYMENT_APP_CONTENT_UNITTEST_BASE_H_
 #define CONTENT_BROWSER_PAYMENTS_PAYMENT_APP_CONTENT_UNITTEST_BASE_H_
 
+#include <cstdint>
 #include <memory>
 #include <vector>
 
@@ -52,6 +53,14 @@ class PaymentAppContentUnitTestBase : public testing::Test {
   void SetNoPaymentRequestResponseImmediately();
   void RespondPendingPaymentRequest(
       payments::mojom::PaymentHandlerResponsePtr response);
+  // Requests termination of the running active service worker of
+  // `registration_id`. When idle (no in-flight requests), stops the worker and
+  // returns true; otherwise keeps it running and returns false.
+  bool RequestServiceWorkerTermination(int64_t registration_id);
+  // Advances the active service worker's request clock past `kRequestTimeout`
+  // and runs its timeout check, expiring in-flight requests, and waits for the
+  // resulting worker stop.
+  void ExpireServiceWorkerRequests(int64_t registration_id);
 
   PaymentAppContextImpl* payment_app_context();
 

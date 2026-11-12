@@ -5,13 +5,16 @@
 #include "content/browser/payments/payment_app_provider_impl.h"
 
 #include <cstddef>
+#include <cstdint>
 #include <string>
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
+#include "components/payments/mojom/payment_request_data.mojom.h"
 #include "content/browser/payments/installed_payment_apps_finder_impl.h"
 #include "content/browser/payments/payment_app_content_unittest_base.h"
 #include "content/browser/payments/payment_app_installer.h"
@@ -25,8 +28,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/payments/payment_app.mojom.h"
+#include "third_party/blink/public/mojom/payments/payment_app_events.mojom.h"
+#include "third_party/blink/public/mojom/payments/payment_request.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 MATCHER_P(PermissionTypeMatcher, id, "") {
   return ::testing::Matches(::testing::Eq(id))(
@@ -74,6 +80,13 @@ void CaptureAbortResult(base::OnceClosure callback,
                         bool payment_event_result) {
   *out_payment_event_result = payment_event_result;
   std::move(callback).Run();
+}
+
+payments::mojom::PaymentRequestEventDataPtr CreatePaymentRequestEventData() {
+  auto event_data = payments::mojom::PaymentRequestEventData::New();
+  event_data->method_data.push_back(payments::mojom::PaymentMethodData::New());
+  event_data->total = payments::mojom::PaymentCurrencyAmount::New();
+  return event_data;
 }
 
 }  // namespace
@@ -191,6 +204,11 @@ class PaymentAppProviderTest : public PaymentAppContentUnitTestBase {
         PaymentAppProvider::GetOrCreateForWebContents(web_contents_);
     return static_cast<PaymentAppProviderImpl*>(provider)
         ->payment_handler_disconnected_for_test_;
+  }
+
+  void DestroyWebContents() {
+    test_web_contents_factory_.DestroyWebContents(
+        web_contents_.ExtractAsDangling());
   }
 
  private:
@@ -389,6 +407,107 @@ TEST_F(PaymentAppProviderTest, OnPaymentHandlerDisconnectedTest) {
   GetPaymentHandlerWebContentsObserver()->PrimaryMainFrameRenderProcessGone(
       base::TERMINATION_STATUS_PROCESS_CRASHED);
   ASSERT_TRUE(PaymentHandlerDisconnected());
+}
+
+TEST_F(PaymentAppProviderTest,
+       DestroyWebContentsFinishesInflightServiceWorkerRequests) {
+  InstallPaymentApp(GURL("https://example.test"),
+                    GURL("https://example.test/script.js"));
+  int64_t registration_id = last_sw_registration_id();
+
+  SetNoPaymentRequestResponseImmediately();
+
+  bool called = false;
+  InvokePaymentApp(registration_id,
+                   url::Origin::Create(GURL("https://example.test")),
+                   CreatePaymentRequestEventData(),
+                   base::BindOnce(&InvokePaymentAppCallback, &called));
+  ASSERT_FALSE(called);
+
+  // The in-flight payment request keeps the service worker alive.
+  EXPECT_FALSE(RequestServiceWorkerTermination(registration_id));
+
+  // Tearing down the merchant WebContents must finish the in-flight request.
+  DestroyWebContents();
+  EXPECT_FALSE(called);
+  EXPECT_TRUE(RequestServiceWorkerTermination(registration_id));
+}
+
+TEST_F(PaymentAppProviderTest,
+       AbortInflightPaymentFinishesServiceWorkerRequests) {
+  const GURL scope("https://example.test/");
+  InstallPaymentApp(scope, GURL("https://example.test/script.js"));
+  int64_t registration_id = last_sw_registration_id();
+  const url::Origin sw_origin = url::Origin::Create(scope);
+
+  SetNoPaymentRequestResponseImmediately();
+
+  bool called = false;
+  InvokePaymentApp(registration_id, sw_origin, CreatePaymentRequestEventData(),
+                   base::BindOnce(&InvokePaymentAppCallback, &called));
+  ASSERT_FALSE(called);
+  EXPECT_FALSE(RequestServiceWorkerTermination(registration_id));
+
+  // Quit when idle so `DispatchAbortPaymentEvent()`'s completion reply on the
+  // separate `ServiceWorker` Mojo pipe also lands before checking idle state.
+  bool payment_aborted = false;
+  base::RunLoop loop;
+  AbortPayment(registration_id, sw_origin, "id",
+               base::BindOnce(&CaptureAbortResult, loop.QuitWhenIdleClosure(),
+                              &payment_aborted));
+  loop.Run();
+  ASSERT_TRUE(payment_aborted);
+  EXPECT_FALSE(called);
+  EXPECT_TRUE(RequestServiceWorkerTermination(registration_id));
+}
+
+TEST_F(PaymentAppProviderTest, CompletedRequestExtraFinishIsNoOp) {
+  base::HistogramTester histograms;
+  InstallPaymentApp(GURL("https://example.test"),
+                    GURL("https://example.test/script.js"));
+  int64_t registration_id = last_sw_registration_id();
+
+  bool called = false;
+  InvokePaymentApp(registration_id,
+                   url::Origin::Create(GURL("https://example.test")),
+                   CreatePaymentRequestEventData(),
+                   base::BindOnce(&InvokePaymentAppCallback, &called));
+  ASSERT_TRUE(called);
+
+  // The response already finished the `respondWith()` request, so the
+  // destructor's second `FinishRequest()` records nothing: one sample each for
+  // event dispatch and `respondWith()`.
+  histograms.ExpectTotalCount("ServiceWorker.PaymentRequestEvent.Time", 2);
+  EXPECT_TRUE(RequestServiceWorkerTermination(registration_id));
+}
+
+TEST_F(PaymentAppProviderTest, TimedOutRequestExtraFinishIsNoOp) {
+  base::HistogramTester histograms;
+  InstallPaymentApp(GURL("https://example.test"),
+                    GURL("https://example.test/script.js"));
+  int64_t registration_id = last_sw_registration_id();
+
+  SetNoPaymentRequestResponseImmediately();
+
+  bool called = false;
+  payments::mojom::PaymentHandlerResponsePtr response;
+  InvokePaymentApp(
+      registration_id, url::Origin::Create(GURL("https://example.test")),
+      CreatePaymentRequestEventData(),
+      base::BindOnce(&CaptureInvokePaymentAppResponse, &called, &response));
+  ASSERT_FALSE(called);
+  EXPECT_FALSE(RequestServiceWorkerTermination(registration_id));
+
+  // Timing out removes the request before destroying the callback, so the
+  // destructor's `FinishRequest()` is a no-op.
+  ExpireServiceWorkerRequests(registration_id);
+  ASSERT_TRUE(called);
+  ASSERT_TRUE(response);
+  EXPECT_EQ(payments::mojom::PaymentEventResponseType::PAYMENT_EVENT_TIMEOUT,
+            response->response_type);
+  // Only the completed event-dispatch request records duration; the timed-out
+  // `respondWith()` request and destructor no-op do not.
+  histograms.ExpectTotalCount("ServiceWorker.PaymentRequestEvent.Time", 1);
 }
 
 }  // namespace content
