@@ -14787,6 +14787,7 @@
                     "name": "Enabled",
                     "enable_features": [
                         "InlinePdfV2",
+                        "InlinePdfV2Download",
                         "InlinePdfV2Incognito",
                         "PdfReuseFragment"
                     ]
