@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//chrome/browser/resources/accessibility/tools/manifest.gni")
-import("//chrome/common/features.gni")
 import("//chrome/test/base/ash/js2gtest.gni")
 import("//tools/typescript/ts_library.gni")
 import("strings/accessibility_strings.gni")

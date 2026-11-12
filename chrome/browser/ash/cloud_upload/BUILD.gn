@@ -15,7 +15,6 @@ static_library("cloud_upload") {
     "//base",
     "//chrome/browser/policy",
     "//chrome/browser/profiles:profile",
-    "//chrome/common:constants",
     "//chromeos/ash/experiences/extensions/common/api",
     "//chromeos/constants",
     "//components/prefs",

@@ -51,7 +51,6 @@ static_library("reporting") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profile_util",
     "//chrome/browser/sessions",
-    "//chrome/common:constants",
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/disks",
     "//chromeos/ash/components/login/session",

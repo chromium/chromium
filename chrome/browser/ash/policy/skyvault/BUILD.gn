@@ -57,8 +57,6 @@ static_library("skyvault") {
     "//chrome/browser/chromeos/extensions/login_screen/login/cleanup",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profile_manager",
-    "//chrome/common:chrome_features",
-    "//chrome/common:constants",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/dbus/userdataauth",

@@ -17,7 +17,6 @@ static_library("desk_api") {
     "//base",
     "//chrome/browser:resources",
     "//chrome/browser/profiles:profile",
-    "//chrome/common",
     "//chromeos/ash/components/browser_context_helper",
     "//components/keyed_service/content",
     "//components/keyed_service/core",

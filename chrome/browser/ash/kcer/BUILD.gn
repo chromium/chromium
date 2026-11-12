@@ -19,7 +19,6 @@ static_library("kcer") {
     "//chrome/browser/ash/profiles",
     "//chrome/browser/net",
     "//chrome/browser/profiles:profile",
-    "//chrome/common",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",
     "//chromeos/ash/components/kcer",

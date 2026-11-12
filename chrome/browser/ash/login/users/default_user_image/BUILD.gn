@@ -19,7 +19,6 @@ static_library("default_user_image") {
 
   deps = [
     "//ash/constants",
-    "//chrome/common",
     "//ui/chromeos/resources",
     "//ui/chromeos/strings",
   ]

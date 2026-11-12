@@ -53,7 +53,6 @@ static_library("camera_app") {
     "//chrome/browser/ui/webui/ash/system_web_dialog",
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",
-    "//chrome/common:constants",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/browser_delegate",
     "//chromeos/ash/experiences/camera:camera_save_handler",

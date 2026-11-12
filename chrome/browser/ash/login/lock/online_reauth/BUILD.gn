@@ -31,7 +31,6 @@ static_library("online_reauth") {
     "//chrome/browser/ash/login/auth",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/signin",
-    "//chrome/common:constants",
     "//chromeos/ash/components/settings",
     "//components/prefs",
     "//components/user_manager",

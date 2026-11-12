@@ -27,7 +27,6 @@ static_library("input_method_manager") {
     "//chrome/browser/ash/input_method",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/ash/keyboard",
-    "//chrome/common:constants",
     "//chromeos/ash/experiences/arc",
     "//chromeos/ash/services/ime/public/mojom",
     "//components/crx_file",

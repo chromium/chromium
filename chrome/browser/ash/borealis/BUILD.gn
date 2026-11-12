@@ -78,7 +78,6 @@ static_library("borealis") {
     "//chrome/browser/policy",
     "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/sessions",
-    "//chrome/common:chrome_features",
     "//chromeos/ash/components/borealis",
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/dbus:vm_applications_apps_proto",

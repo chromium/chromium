@@ -24,7 +24,6 @@ static_library("floating_sso") {
     "//chrome/browser/ash/floating_workspace:utils",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/sync:factories",
-    "//chrome/common",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/channel",
     "//chromeos/constants",

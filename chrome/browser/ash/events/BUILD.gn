@@ -22,7 +22,6 @@ static_library("events") {
     "//chrome/browser/ash/notifications",
     "//chrome/browser/extensions",
     "//chrome/browser/ui/ash/login",
-    "//chrome/common",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/install_attributes",
     "//chromeos/ash/components/nearby/common/connections_manager",

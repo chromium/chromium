@@ -17,7 +17,6 @@ include_rules = [
   "+chrome/browser/ash/file_manager",
   "+chrome/browser/ash/profiles",
   "+chrome/browser/profiles",
-  "+chrome/common/chrome_constants.h",
   "+chrome/test/base",
 ]
 
@@ -38,6 +37,7 @@ specific_include_rules = {
   ],
 
   "drivefs_test_support\\.cc": [
+    "+chrome/common/chrome_constants.h",
     "+chrome/common/chrome_paths.h",
   ],
 

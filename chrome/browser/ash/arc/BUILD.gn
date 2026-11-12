@@ -73,7 +73,6 @@ static_library("arc") {
     "//chrome/browser/ui/extensions",
     "//chrome/browser/ui/webui:theme_source",
     "//chrome/browser/ui/webui/ash/diagnostics_dialog",
-    "//chrome/common",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/demo_mode",

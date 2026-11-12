@@ -61,7 +61,6 @@ static_library("system") {
     "//chrome/browser/ash/policy/server_backed_state",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile_manager",
-    "//chrome/common:constants",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/install_attributes",
     "//chromeos/ash/components/login/session",

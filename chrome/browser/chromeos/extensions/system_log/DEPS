@@ -12,7 +12,6 @@ include_rules = [
   # b/332804822. Whenever possible, avoid adding new //chrome dependencies to
   # this list.
   "+chrome/browser/profiles/profile.h",
-  "+chrome/common",
 ]
 
 specific_include_rules = {
@@ -29,5 +28,6 @@ specific_include_rules = {
     "+chrome/browser/ash/policy/test_support",
     "+chrome/browser/ash/settings",
     "+chrome/browser/ash/test",
+    "+chrome/common/chrome_paths.h",
   ],
 }

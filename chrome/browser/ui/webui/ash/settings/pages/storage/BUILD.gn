@@ -31,7 +31,6 @@ static_library("storage") {
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ui/webui/ash/settings/pages/device",
     "//chrome/browser/ui/webui/ash/settings/search",
-    "//chrome/common",
     "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/dbus/userdataauth",
     "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",

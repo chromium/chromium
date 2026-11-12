@@ -94,8 +94,6 @@ source_set("impl") {
     "//chrome/browser/ash/fusebox",
     "//chrome/browser/extensions",
     "//chrome/browser/file_system_access",
-    "//chrome/common",
-    "//chrome/common/extensions/api",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/dbus/cros_disks",
     "//chromeos/ash/components/drivefs",

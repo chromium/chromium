@@ -69,5 +69,4 @@ include_rules = [
   "+chrome/browser/ui/views/select_file_dialog_extension/select_file_dialog_extension_factory.h",
   "+chrome/browser/ui/views/select_file_dialog_extension/select_file_dialog_extension.h",
   "+chrome/browser/ui/webui/ash/settings/pref_names.h",
-  "+chrome/common",
 ]

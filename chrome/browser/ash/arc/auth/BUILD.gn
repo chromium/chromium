@@ -30,7 +30,6 @@ static_library("auth") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/signin",
     "//chrome/browser/ui/ash/account_manager",
-    "//chrome/common",
     "//chromeos/ash/components/account_manager",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/experiences/arc",

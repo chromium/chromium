@@ -26,7 +26,6 @@ static_library("uploading") {
     "//chrome/browser/policy",
     "//chrome/browser/profiles:profile_manager",
     "//chrome/common",
-    "//chrome/common:non_code_constants",
     "//chromeos/ash/components/settings",
     "//components/feedback/redaction_tool",
     "//components/policy/core/browser",

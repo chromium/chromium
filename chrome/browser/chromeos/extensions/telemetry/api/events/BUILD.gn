@@ -62,7 +62,6 @@ source_set("event_manager") {
     "//base",
     "//chrome/browser/chromeos/extensions/telemetry/api/common",
     "//chrome/browser/chromeos/extensions/telemetry/api/common:util",
-    "//chrome/common/chromeos/extensions",
     "//chrome/common/chromeos/extensions/api",
     "//chromeos/ash/services/cros_healthd/public/cpp",
     "//chromeos/ash/services/cros_healthd/public/mojom",

@@ -52,7 +52,6 @@ static_library("demo_mode") {
     "//chrome/browser/component_updater",
     "//chrome/browser/metrics",
     "//chrome/browser/profiles:profile_manager",
-    "//chrome/common",
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/demo_mode",
     "//chromeos/ash/components/growth",

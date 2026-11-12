@@ -37,8 +37,6 @@ static_library("preferences") {
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/system",
     "//chrome/browser/ui/ash/system",
-    "//chrome/common:chrome_features",
-    "//chrome/common:constants",
     "//chromeos/ash/components/dbus/pciguard",
     "//chromeos/ash/components/dbus/update_engine:proto",
     "//chromeos/ash/components/editor_menu/public/cpp",

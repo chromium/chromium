@@ -35,7 +35,6 @@ include_rules = [
   "+chrome/browser/component_updater",
   "+chrome/browser/policy",
   "+chrome/browser/profiles",
-  "+chrome/common/chrome_switches.h",
   "+chrome/test/base",
 
   "+mojo/core",
@@ -48,5 +47,8 @@ specific_include_rules = {
   ],
   "cryptohome_key_delegate_service_provider_browsertest\\.cc": [
     "+chrome/browser/browser_process.h",
-  ]
+  ],
+  "proxy_resolution_service_provider_browsertest\\.cc": [
+    "+chrome/common/chrome_switches.h",
+  ],
 }

@@ -33,7 +33,6 @@ static_library("scheduled_task_handler") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/ui/ash/device_scheduled_reboot",
-    "//chrome/common:chrome_features",
     "//chromeos/ash/components/dbus/update_engine",
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/settings",

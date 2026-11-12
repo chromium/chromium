@@ -75,7 +75,6 @@ static_library("file_system_provider") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/ash/multi_user",
     "//chrome/browser/ui/browser_window",
-    "//chrome/common",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/browser_delegate",
     "//chromeos/ash/experiences/extensions/common",

@@ -18,7 +18,6 @@ static_library("echo_private") {
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/notifications",
     "//chrome/browser/extensions",
-    "//chrome/common",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/browser_delegate",
     "//chromeos/ash/components/report:utils",

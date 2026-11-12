@@ -47,8 +47,6 @@ include_rules = [
   "+chrome/browser/ui/webui/ash/cloud_upload",
   "+chrome/browser/ui/webui/ash/office_fallback",
   "+chrome/browser/ui/webui/extensions",
-  "+chrome/common/chrome_features.h",
-  "+chrome/common/chrome_switches.h",
   "+chrome/grit",
   "+chrome/services/file_util/public/cpp",
 ]
@@ -88,9 +86,16 @@ specific_include_rules = {
     "+chrome/browser/sync/sync_service_factory.h",
   ],
   "file_manager_browsertest_base\\.cc": [
+    "+chrome/common/chrome_switches.h",
     "+chrome/common/pref_names.h",
   ],
   "volume_manager_factory\\.cc": [
     "+chrome/browser/browser_process.h",
+  ],
+  "file_tasks_unittest\\.cc": [
+    "+chrome/common/chrome_features.h",
+  ],
+  "open_with_browser_browsertest\\.cc": [
+    "+chrome/common/chrome_features.h",
   ],
 }

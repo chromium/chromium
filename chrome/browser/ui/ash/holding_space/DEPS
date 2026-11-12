@@ -22,7 +22,6 @@ include_rules = [
   "+chrome/browser/download",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash/thumbnail_loader",
-  "+chrome/common",
 ]
 
 specific_include_rules = {
@@ -45,5 +44,6 @@ specific_include_rules = {
   ],
   "holding_space_keyed_service_browsertest\\.cc": [
     "+chrome/browser/signin/identity_manager_factory.h",
+    "+chrome/common/chrome_paths.h",
   ],
 }

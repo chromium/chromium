@@ -25,7 +25,6 @@ static_library("note_taking") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/web_applications",
-    "//chrome/common:constants",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/experiences/arc",
     "//chromeos/ash/experiences/arc:arc_metrics_constants",

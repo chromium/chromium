@@ -24,7 +24,6 @@ static_library("login_state") {
 
   deps = [
     "//chrome/browser/profiles:profile",
-    "//chrome/common:non_code_constants",
     "//chromeos/ash/components/browser_context_helper",
     "//components/session_manager:base",
     "//components/session_manager/core",

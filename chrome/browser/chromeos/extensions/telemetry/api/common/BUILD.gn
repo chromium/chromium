@@ -46,7 +46,6 @@ source_set("util") {
     "//ash/webui/shimless_rma/backend",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/browser_window",
-    "//chrome/common",
     "//chromeos/ash/components/browser_delegate",
     "//chromeos/constants",
     "//components/security_state/content",

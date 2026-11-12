@@ -34,7 +34,6 @@ static_library("quick_insert") {
     "//chrome/browser/ash/login/session",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/ash/thumbnail_loader",
-    "//chrome/common",
     "//chromeos/ash/components/bookmarks:bookmark_model_provider",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/drivefs/mojom",

@@ -29,7 +29,6 @@ include_rules = [
   "+chrome/browser/ui/browser_window/public/profile_browser_collection.h",
   "+chrome/browser/ui/browser_window/public/global_browser_collection.h",
   "+chrome/browser/web_applications",
-  "+chrome/common",
   "+chrome/test",
 ]
 
@@ -46,11 +45,13 @@ specific_include_rules = {
   ],
   "web_app_cleanup_handler_browsertest\\.cc": [
     "+chrome/browser/ui/web_applications",
+    "+chrome/common/pref_names.h",
   ],
   "extension_cleanup_handler_browsertest\\.cc": [
     "+chrome/browser/browser_process.h",
     "+chrome/browser/extensions/chrome_test_extension_loader.h",
     "+chrome/browser/extensions/policy_test_utils.h",
     "+chrome/browser/policy/extension_force_install_mixin.h",
+    "+chrome/common/chrome_paths.h",
   ]
 }

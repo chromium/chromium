@@ -29,7 +29,6 @@ static_library("intent_helper") {
     "//chrome/browser/ash/system",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
-    "//chrome/common",
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/settings",
     "//chromeos/ash/experiences/arc",

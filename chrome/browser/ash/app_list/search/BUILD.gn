@@ -87,7 +87,6 @@ static_library("search") {
     "//chrome/browser/ui/webui/ash/settings/search",
     "//chrome/browser/ui/webui/ash/settings/search/mojom",
     "//chrome/browser/web_applications",
-    "//chrome/common:constants",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/favicon:favicon_service_provider",
     "//chromeos/ash/components/history:history_service_provider",

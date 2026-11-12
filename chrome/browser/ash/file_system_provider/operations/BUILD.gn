@@ -50,7 +50,6 @@ static_library("operations") {
 
   deps = [
     "//base",
-    "//chrome/common",
     "//chromeos/ash/experiences/extensions/common/api",
     "//extensions/browser",
     "//storage/browser",

@@ -24,7 +24,6 @@ static_library("customization") {
     "//chrome/browser/ash/net",
     "//chrome/browser/extensions:external_loader",
     "//chrome/browser/profiles",
-    "//chrome/common",
     "//chromeos/ash/components/system",
     "//components/application_locale_storage",
     "//components/pref_registry",

@@ -39,7 +39,6 @@ include_rules = [
   "+chrome/browser/web_applications/web_app_provider.h",
   "+chrome/browser/web_applications/web_app_registrar.h",
   "+chrome/browser/web_applications/web_app_tab_helper.h",
-  "+chrome/common/chrome_switches.h",
 ]
 
 specific_include_rules = {
@@ -73,5 +72,11 @@ specific_include_rules = {
   "kiosk_troubleshooting_tools_browsertest\\.cc": [
     "+chrome/browser/ui/browser_init_state.h",
     "+chrome/browser/ui/views/task_manager_view.h",
+  ],
+  "fake_cws\\.cc": [
+    "+chrome/common/chrome_switches.h",
+  ],
+  "kiosk_browser_session_browsertest\\.cc": [
+    "+chrome/common/chrome_switches.h",
   ],
 }

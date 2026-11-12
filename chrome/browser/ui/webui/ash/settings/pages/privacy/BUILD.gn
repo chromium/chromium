@@ -56,8 +56,6 @@ static_library("privacy") {
     "//chrome/browser/metrics",
     "//chrome/browser/ui/webui/ash/settings/search",
     "//chrome/browser/web_applications",
-    "//chrome/common",
-    "//chrome/common:chrome_features",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/dbus/pciguard",
     "//chromeos/ash/components/dbus/userdataauth",

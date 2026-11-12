@@ -16,7 +16,6 @@ static_library("language_packs") {
 
   deps = [
     "//base",
-    "//chrome/common",
     "//chromeos/ash/components/language_packs",
     "//content/public/browser",
     "//extensions/browser",

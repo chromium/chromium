@@ -19,6 +19,7 @@ static_library("multi_user") {
     "//ash/public/cpp",
     "//base",
     "//chrome/app:command_ids",
+    "//chrome/app:generated_resources",
     "//chrome/browser/ash/accessibility",
     "//chrome/browser/ash/app_restore",
     "//chrome/browser/ash/arc",

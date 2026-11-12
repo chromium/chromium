@@ -49,8 +49,6 @@ static_library("status_collector") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/webui/ash/settings/pages/storage",
-    "//chrome/common:chrome_features",
-    "//chrome/common:constants",
     "//chromeos/ash/components/audio",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/channel",

@@ -39,7 +39,6 @@ static_library("settings") {
     "//chrome/browser:flags",
     "//chrome/browser/ash/tpm",
     "//chrome/browser/site_isolation",
-    "//chrome/common:constants",
     "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/dbus/session_manager",

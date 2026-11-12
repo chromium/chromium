@@ -33,7 +33,6 @@ static_library("shimless_rma") {
     "//chrome/browser/ui/webui/ash/diagnostics_dialog",
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications/isolated_web_apps",
-    "//chrome/common:constants",
     "//chrome/common/chromeos/extensions",
     "//chromeos/ash/components/browser_context_helper",
     "//components/qr_code_generator:bitmap_generator",

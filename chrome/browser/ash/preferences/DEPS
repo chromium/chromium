@@ -15,7 +15,6 @@ include_rules = [
   # We don't want more dependencies on c/b/ui/ash.
   "+chrome/browser/ui/ash/login",
   "+chrome/browser/ui/ash/system",
-  "+chrome/common/chrome_constants.h",
   "+chrome/test/base",
 ]
 
@@ -26,6 +25,7 @@ specific_include_rules = {
   "preferences_unittest\\.cc": [
     "+chrome/browser/ash/settings/scoped_cros_settings_test_helper.h",
     "+chrome/browser/ash/settings/scoped_testing_cros_settings.h",
-    "+chrome/browser/global_features.h"
+    "+chrome/browser/global_features.h",
+    "+chrome/common/chrome_constants.h",
   ]
 }

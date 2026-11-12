@@ -38,8 +38,6 @@ static_library("crostini") {
     "//chrome/browser/ui/views/crostini",
     "//chrome/browser/ui/webui/ash/crostini_installer",
     "//chrome/browser/ui/webui/ash/settings/search",
-    "//chrome/common",
-    "//chrome/common:constants",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/install_attributes",
     "//chromeos/ash/components/login/session",

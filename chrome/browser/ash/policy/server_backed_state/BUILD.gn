@@ -15,7 +15,6 @@ static_library("server_backed_state") {
   deps = [
     "//ash/constants",
     "//base",
-    "//chrome/common:constants",
     "//chromeos/ash/components/dbus/session_manager",
     "//components/prefs",
   ]

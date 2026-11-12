@@ -33,7 +33,6 @@ static_library("magic_boost") {
 
     # TODO: Use //chrome/browser/ash/input_method after fixing cyclic
     # dependency.
-    "//chrome/common:buildflags",
     "//chromeos/ash/services/orca/public/mojom",
     "//components/lens:buildflags",
     "//components/paint_preview/buildflags",

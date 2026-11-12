@@ -34,8 +34,6 @@ static_library("main") {
     "//chrome/browser/ui/webui:plural_string_handler",
     "//chrome/browser/ui/webui:policy_indicator_localized_strings_provider",
     "//chrome/browser/ui/webui/ash/settings/search",
-    "//chrome/common",
-    "//chrome/common:chrome_features",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/browser_delegate",
     "//chromeos/ash/components/install_attributes",

@@ -17,7 +17,6 @@ static_library("essential_search") {
     "//base",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
-    "//chrome/common:constants",
     "//chromeos/constants",
     "//components/prefs",
     "//components/session_manager:base",

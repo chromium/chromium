@@ -29,7 +29,6 @@ static_library("metrics") {
     "//chrome/browser/metrics",
     "//chrome/browser/ui/webui/ash/settings/pages",
     "//chrome/browser/ui/webui/ash/settings/search",
-    "//chrome/common:constants",
     "//chromeos/ash/components/settings",
     "//components/user_manager",
   ]

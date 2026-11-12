@@ -43,7 +43,6 @@ source_set("webapk") {
     "//chrome/browser/ash/arc/session",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/web_applications",
-    "//chrome/common:non_code_constants",
     "//chromeos/ash/experiences/arc:arc_base",
     "//chromeos/ash/experiences/arc/mojom",
     "//chromeos/ash/experiences/arc/session",

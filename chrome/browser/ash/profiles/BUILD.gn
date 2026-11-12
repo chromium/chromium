@@ -21,7 +21,6 @@ static_library("profiles") {
     "//chrome/browser:browser_process_platform_part",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profile_manager",
-    "//chrome/common:non_code_constants",
     "//chromeos/ash/components/browser_context_helper",
     "//components/user_manager",
     "//content/public/browser",

@@ -16,7 +16,6 @@ static_library("dns_over_https") {
     "//base",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/net",
-    "//chrome/common",
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/system",
     "//components/prefs",

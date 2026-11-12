@@ -45,7 +45,6 @@ static_library("a11y") {
     "//chrome/browser/speech",
     "//chrome/browser/ui:chrome_pages",
     "//chrome/browser/ui/webui/ash/settings/search",
-    "//chrome/common",
     "//chromeos/ash/components/browser_delegate",
     "//chromeos/ash/experiences/settings_ui/resources:strings",
     "//chromeos/components/kiosk",

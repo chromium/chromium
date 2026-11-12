@@ -31,8 +31,6 @@ static_library("about") {
     "//chrome/browser/ui/webui/ash/settings/search",
     "//chrome/browser/ui/webui/management",
     "//chrome/browser/ui/webui/version",
-    "//chrome/common",
-    "//chrome/common:constants",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/install_attributes",
     "//chromeos/ash/components/signin:identity_manager_provider",

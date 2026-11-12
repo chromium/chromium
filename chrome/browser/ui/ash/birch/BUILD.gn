@@ -51,7 +51,6 @@ static_library("birch") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/signin",
     "//chrome/browser/sync",
-    "//chrome/common",
     "//components/favicon_base",
     "//components/history/core/browser",
     "//components/prefs",

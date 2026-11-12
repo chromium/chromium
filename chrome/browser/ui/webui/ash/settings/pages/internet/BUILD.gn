@@ -36,8 +36,6 @@ static_library("internet") {
     "//chrome/browser/ui/webui:extension_control_handler",
     "//chrome/browser/ui/webui/ash/cellular_setup",
     "//chrome/browser/ui/webui/ash/settings/search",
-    "//chrome/common",
-    "//chrome/common:chrome_features",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/dbus/hermes",
     "//chromeos/ash/components/network",

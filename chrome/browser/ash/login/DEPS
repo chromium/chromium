@@ -42,9 +42,6 @@ include_rules = [
   "+chrome/browser/ui/ash",
   "+chrome/browser/ui/aura/accessibility",
   "+chrome/browser/ui/webui/ash",
-  "+chrome/common/chrome_constants.h",
-  "+chrome/common/chrome_switches.h",
-  "+chrome/common/extensions",
   "+chrome/grit",
 
   # Dependencies outside of //chrome:
@@ -87,6 +84,7 @@ specific_include_rules = {
     "+services/network/network_context.h",
   ],
   "crash_restore_browsertest\\.cc": [
+    "+chrome/common/chrome_constants.h",
     "+chrome/common/pref_names.h",
   ],
   "existing_user_controller\\.cc": [
@@ -94,9 +92,22 @@ specific_include_rules = {
     "+ash/shell.h",
   ],
   "webview_login_browsertest\\.cc": [
+    "+chrome/common/chrome_switches.h",
     "+chrome/common/pref_names.h",
   ],
   "wizard_controller_unittest\\.cc": [
     "+chrome/browser/ash/browser_delegate/browser_controller_impl.h",
-  ]
+  ],
+  "auth_factor_config_browsertest\\.cc": [
+    "+chrome/common/extensions/api/quick_unlock_private.h",
+  ],
+  "enable_debugging_browsertest\\.cc": [
+    "+chrome/common/chrome_constants.h",
+  ],
+  "proxy_auth_dialog_browsertest\\.cc": [
+    "+chrome/common/chrome_switches.h",
+  ],
+  "wizard_controller_browsertest\\.cc": [
+    "+chrome/common/chrome_switches.h",
+  ],
 }

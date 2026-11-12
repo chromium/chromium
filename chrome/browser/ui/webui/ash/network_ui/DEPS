@@ -26,7 +26,6 @@ include_rules = [
   "+chrome/browser/profiles/profile.h",
   "+chrome/browser/ui/select_file_policy/chrome_select_file_policy.h",
   "+chrome/browser/ui/webui/certificate_manager/certificate_manager_utils.h",
-  "+chrome/common",
   "+chrome/grit",
 ]
 

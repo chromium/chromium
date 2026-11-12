@@ -30,8 +30,6 @@ static_library("release_notes") {
     "//chrome/browser/policy",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:chrome_pages",
-    "//chrome/common:constants",
-    "//chrome/common:non_code_constants",
     "//chromeos/ash/components/channel",
     "//chromeos/ash/components/login/login_state",
     "//chromeos/strings",

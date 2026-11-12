@@ -29,7 +29,6 @@ static_library("info_private") {
     "//chrome/browser/ash/policy/enrollment",
     "//chrome/browser/ash/system",
     "//chrome/browser/profiles:profile",
-    "//chrome/common:constants",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/install_attributes",
     "//chromeos/ash/components/network",

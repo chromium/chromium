@@ -52,7 +52,6 @@ static_library("autotest_private") {
     "//chrome/browser/ui/views/crostini",
     "//chrome/browser/ui/web_applications",
     "//chrome/browser/ui/webui/ash/crostini_installer",
-    "//chrome/common",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/browser_delegate",
     "//chromeos/ash/components/dbus",

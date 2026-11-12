@@ -22,7 +22,6 @@ include_rules = [
   "+chrome/browser/media/webrtc",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash/system_web_apps",
-  "+chrome/common/chrome_switches.h",
   "+chrome/common/webui_url_constants.h",
 ]
 
@@ -47,5 +46,8 @@ specific_include_rules = {
   "video_conference_media_listener_browsertest\\.cc": [
     "+chrome/browser/ui/ash/main_extra_parts/chrome_browser_main_extra_parts_ash.h",
     "+chrome/browser/ui/tabs/tab_strip_model.h",
+  ],
+  "video_conference_integration_browsertest\\.cc": [
+    "+chrome/common/chrome_switches.h",
   ],
 }

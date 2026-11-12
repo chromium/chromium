@@ -23,12 +23,12 @@ static_library("power") {
     "suspend_perf_reporter.cc",
     "suspend_perf_reporter.h",
   ]
-
+  public_deps = [ "//components/metrics" ]
   deps = [
     "//ash",
     "//ash/constants",
     "//base",
-    "//chrome/common",
+    "//chrome/app:generated_resources",
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/demo_mode",
     "//chromeos/dbus/power",

@@ -24,7 +24,6 @@ static_library("print_management") {
     "//ash/webui/settings/public/constants:mojom",
     "//chrome/browser/ash/printing/history",
     "//chrome/browser/history",
-    "//chrome/common:constants",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/experiences/settings_ui",
     "//chromeos/printing",

@@ -54,7 +54,6 @@ static_library("net") {
     "//chrome/browser/net",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/login",
-    "//chrome/common",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/dbus/shill",

@@ -82,7 +82,6 @@ static_library("app_list") {
     "//chrome/browser/ui:chrome_pages",
     "//chrome/browser/ui/ash/app_icon_color_cache",
     "//chrome/browser/web_applications",
-    "//chrome/common",
     "//chromeos/ash/components/bookmarks:bookmark_model_provider",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/browser_delegate",

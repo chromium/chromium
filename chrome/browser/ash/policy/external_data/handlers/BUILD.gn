@@ -35,7 +35,6 @@ static_library("handlers") {
     "//chrome/browser/ash/printing/enterprise",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
-    "//chrome/common:constants",
     "//chromeos/ash/components/settings",
     "//components/policy:generated",
     "//components/prefs",

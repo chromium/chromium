@@ -39,7 +39,6 @@ static_library("ml") {
     "//chrome/browser/ash/power",
     "//chrome/browser/ash/power/ml/smart_dim",
     "//chrome/browser/tab_contents",
-    "//chrome/common:constants",
     "//chromeos/ash/components/browser_delegate",
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/install_attributes",

@@ -48,7 +48,6 @@ static_library("attestation") {
     "//chrome/browser/net",
     "//chrome/browser/policy",
     "//chrome/browser/profiles",
-    "//chrome/common:constants",
     "//chromeos/ash/components/attestation",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/cryptohome",

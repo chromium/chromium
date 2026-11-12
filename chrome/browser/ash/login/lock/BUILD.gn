@@ -49,8 +49,6 @@ static_library("lock") {
     "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/ash/login",
-    "//chrome/common:constants",
-    "//chrome/common:non_code_constants",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/dbus/biod:biod_proto",
     "//chromeos/ash/components/dbus/session_manager",

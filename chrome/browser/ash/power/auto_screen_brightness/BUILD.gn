@@ -49,7 +49,6 @@ static_library("auto_screen_brightness") {
   deps = [
     "//ash/constants",
     "//base",
-    "//chrome/common",
     "//chromeos/components/sensors",
     "//chromeos/components/sensors/mojom",
     "//chromeos/dbus/power",

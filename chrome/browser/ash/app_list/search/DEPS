@@ -31,7 +31,6 @@ include_rules = [
   "+chrome/browser/ui/webui/ash/settings/search",
   "+chrome/browser/ui/webui/ash/settings/services/settings_manager",
   "+chrome/browser/ui/webui/ash/settings/test_support",
-  "+chrome/common/chrome_constants.h",
   "+chrome/test/base",
 ]
 
@@ -48,6 +47,7 @@ specific_include_rules = {
   "omnibox_provider_unittest\\.cc": [
     "+chrome/browser/favicon/favicon_service_factory.h",
     "+chrome/browser/history/history_service_factory.h",
+    "+chrome/common/chrome_constants.h",
   ],
   ".*(unittest|browsertest)\\.cc": [
     "+chrome/browser/signin/chrome_signin_client_factory.h",

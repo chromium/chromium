@@ -17,7 +17,6 @@ include_rules = [
   # Whenever possible, avoid adding new //chrome dependencies to this list.
   "+chrome/browser/profiles/profile.h",
   "+chrome/browser/ui/webui/settings",
-  "+chrome/common",
   "+chrome/test",
 ]
 
@@ -25,5 +24,6 @@ specific_include_rules = {
   # Only used to install a TestingFactory for the test.
   "search_engines_handler_unittest\\.cc": [
     "+chrome/browser/search_engines",
+    "+chrome/common/chrome_constants.h",
   ],
 }

@@ -24,7 +24,6 @@ static_library("dialogs") {
     "//chrome/app:generated_resources",
     "//chrome/browser/chromeos/policy/dlp",
     "//chrome/browser/chromeos/policy/dlp/dialogs",
-    "//chrome/common:chrome_features",
     "//components/enterprise/common/proto:connectors_proto",
     "//components/enterprise/data_controls/core/browser",
     "//components/services/quarantine/public/mojom",

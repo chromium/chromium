@@ -27,7 +27,6 @@ static_library("kerberos") {
     "//chrome/browser/ash/profiles",
     "//chrome/browser/policy",
     "//chrome/browser/profiles:profile",
-    "//chrome/common",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/dbus/kerberos",
     "//chromeos/ash/components/dbus/kerberos:kerberos_proto",

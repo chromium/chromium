@@ -34,7 +34,6 @@ static_library("enterprise") {
     "//ash/constants",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles",
-    "//chrome/common:constants",
     "//chromeos/ash/components/settings",
     "//chromeos/printing",
     "//components/device_event_log",

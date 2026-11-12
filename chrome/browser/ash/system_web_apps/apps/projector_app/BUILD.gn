@@ -21,7 +21,6 @@ static_library("projector_app") {
     "//ash/webui/projector_app/public/cpp",
     "//base",
     "//chrome/browser/profiles:profile",
-    "//chrome/common",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/channel",
     "//chromeos/ash/components/signin:identity_manager_provider",

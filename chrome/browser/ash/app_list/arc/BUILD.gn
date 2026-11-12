@@ -60,8 +60,6 @@ static_library("arc") {
     "//chrome/browser/ash/arc/boot_phase_monitor",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources:component_extension_resources",
-    "//chrome/common:chrome_features",
-    "//chrome/common:constants",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/demo_mode",
     "//chromeos/ash/experiences/arc",

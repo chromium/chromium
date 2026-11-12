@@ -61,7 +61,6 @@ static_library("app_install") {
     # registers this dialog), so :ui allows the circular include instead of
     # this target depending on the :ui monolith directly.
     "//chrome/browser/web_applications",
-    "//chrome/common",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/constants",
     "//components/metrics/structured:events",

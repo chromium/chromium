@@ -4,8 +4,8 @@
 
 import(
     "//chrome/browser/resources/chromeos/accessibility/tools/run_jsbundler.gni")
-import("//chrome/common/features.gni")
 import("//chrome/test/base/ash/js2gtest.gni")
+import("//extensions/buildflags/buildflags.gni")
 import("//testing/test.gni")
 import("//tools/typescript/ts_library.gni")
 

@@ -15,8 +15,8 @@ static_library("screen_capture") {
   deps = [
     "//ash",
     "//base",
+    "//chrome/app:generated_resources",
     "//chrome/browser/ash/notifications",
-    "//chrome/common",
     "//chromeos/ash/experiences/arc",
     "//chromeos/ash/experiences/arc/mojom",
     "//components/keyed_service/core",
