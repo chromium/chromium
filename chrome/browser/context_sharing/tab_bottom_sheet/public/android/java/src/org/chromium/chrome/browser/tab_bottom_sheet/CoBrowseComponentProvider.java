@@ -51,7 +51,6 @@ public interface CoBrowseComponentProvider {
      * @param context The {@link Context} used to construct the placeholder view.
      * @param backgroundColor The background color of the container.
      * @param placeholderElemColor The fill color of the skeleton placeholder blocks.
-     * @param isSidePanel True when hosted in a side panel, false when hosted in a bottom sheet.
      * @param onCloseClicked Callback invoked when the loading view's close button is clicked.
      * @return A custom loading placeholder {@link View}, or null if unsupported.
      */
@@ -59,7 +58,6 @@ public interface CoBrowseComponentProvider {
             Context context,
             @ColorInt int backgroundColor,
             @ColorInt int placeholderElemColor,
-            boolean isSidePanel,
             Runnable onCloseClicked) {
         return null;
     }

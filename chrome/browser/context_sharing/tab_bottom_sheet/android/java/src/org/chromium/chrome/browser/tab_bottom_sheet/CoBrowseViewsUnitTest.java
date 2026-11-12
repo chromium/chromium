@@ -9,7 +9,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -332,8 +331,7 @@ public class CoBrowseViewsUnitTest {
     public void testLoadingPlaceholder_MutualExclusionWithEmptyPlaceholderAndWebContents() {
         View loadingPlaceholder = new View(mContext);
         when(mMockContentProvider.setupPlaceholderView(any())).thenReturn(true);
-        when(mMockContentProvider.createLoadingPlaceholderView(
-                        any(), anyInt(), anyInt(), anyBoolean(), any()))
+        when(mMockContentProvider.createLoadingPlaceholderView(any(), anyInt(), anyInt(), any()))
                 .thenReturn(loadingPlaceholder);
 
         View rootView = LayoutInflater.from(mContext).inflate(R.layout.tab_bottom_sheet, null);
@@ -407,11 +405,10 @@ public class CoBrowseViewsUnitTest {
     public void testLoadingPlaceholder_CloseCallbackPassedAndDestroyed() {
         View loadingPlaceholder = new View(mContext);
         final Runnable[] capturedCloseCallback = new Runnable[1];
-        when(mMockContentProvider.createLoadingPlaceholderView(
-                        any(), anyInt(), anyInt(), anyBoolean(), any()))
+        when(mMockContentProvider.createLoadingPlaceholderView(any(), anyInt(), anyInt(), any()))
                 .thenAnswer(
                         invocation -> {
-                            capturedCloseCallback[0] = invocation.getArgument(4);
+                            capturedCloseCallback[0] = invocation.getArgument(3);
                             return loadingPlaceholder;
                         });
 
@@ -443,8 +440,7 @@ public class CoBrowseViewsUnitTest {
     @Test
     public void testLoadingPlaceholder_SidePanelZeroTopMargin() {
         View loadingPlaceholder = new View(mContext);
-        when(mMockContentProvider.createLoadingPlaceholderView(
-                        any(), anyInt(), anyInt(), anyBoolean(), any()))
+        when(mMockContentProvider.createLoadingPlaceholderView(any(), anyInt(), anyInt(), any()))
                 .thenReturn(loadingPlaceholder);
 
         View rootView = LayoutInflater.from(mContext).inflate(R.layout.tab_bottom_sheet, null);

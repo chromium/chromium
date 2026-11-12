@@ -343,7 +343,6 @@ public class CoBrowseViews {
                             mContainerView.getContext(),
                             mBackgroundColor,
                             mPlaceholderElemColor,
-                            mContainerType == CoBrowseContainerType.SIDE_PANEL,
                             mOnCloseClicked);
             if (mLoadingPlaceholderView != null) {
                 mLoadingPlaceholderContainer.addView(

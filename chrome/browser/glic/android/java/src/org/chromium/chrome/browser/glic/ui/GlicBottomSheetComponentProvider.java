@@ -107,7 +107,6 @@ public class GlicBottomSheetComponentProvider implements CoBrowseComponentProvid
             Context context,
             @ColorInt int backgroundColor,
             @ColorInt int placeholderElemColor,
-            boolean isSidePanel,
             Runnable onCloseClicked) {
         return GlicLoadingPlaceholderView.create(
                 context, backgroundColor, placeholderElemColor, onCloseClicked);

@@ -67,7 +67,6 @@ public class TestCoBrowseComponentProvider implements CoBrowseComponentProvider 
             Context context,
             @ColorInt int backgroundColor,
             @ColorInt int placeholderElemColor,
-            boolean isSidePanel,
             Runnable onCloseClicked) {
         ResettersForTesting.register(() -> sLastLoadingCloseCallback = null);
         sLastLoadingCloseCallback = onCloseClicked;
