@@ -320,6 +320,12 @@ no circumstances is something matching an entry in this list a security bug.
 
 When reporting a bug:
 
+* **You must attach a "repro.json" file to every report. This is critical:
+  without it, your report cannot be reproduced automatically.** It tells the
+  reproduction system how to reproduce your bug: environment, build, flags, and
+  which attached files to use. Follow the format in
+  [`repro_config.md`](../../agents/skills/vuln-report-check/references/repro_config.md)
+  exactly.
 * Do not log _anything_ as part of your proof of concept. If your bug is
   legitimate, it must have external, observable consequences as described above.
   Log messages can be misleading, and we will ignore them when assessing your
@@ -391,7 +397,7 @@ When reporting a bug:
       `poc.html`:
       `ln -s <chromium-out-dir>/gen gen`.
     * For bugs that simulate a compromised renderer with a source patch, a
-      single unified diff called "poc.patch". This patch must only change code
+      single unified diff called "patch.diff". This patch must only change code
       that runs in the renderer.
     * For bugs that have a demonstration video, a single mp4 file called
       "poc.mp4".
@@ -403,7 +409,8 @@ When reporting a bug:
     * Identify which Chromium commit introduced the bug
 
 In general, a shorter bug report is better. Bug reports should be as short as
-possible, but no shorter.
+possible, but no shorter. The report text must be at most 8,000 characters; put
+long logs and stack traces in attached files instead.
 
 ## Further Reading
 
