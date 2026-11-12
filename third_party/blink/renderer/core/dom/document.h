@@ -58,7 +58,6 @@
 #include "third_party/blink/public/mojom/page/page.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom-blink-forward.h"
-#include "third_party/blink/public/mojom/permissions_policy/document_policy_feature.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/scroll/scrollbar_mode.mojom-blink-forward.h"
 #include "third_party/blink/public/web/web_form_related_change_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
@@ -417,9 +416,6 @@ class CORE_EXPORT Document : public ContainerNode,
   bool HasDocumentPictureInPictureWindow() const;
 
   network::mojom::ReferrerPolicy GetReferrerPolicy() const;
-
-  bool DocumentPolicyFeatureObserved(
-      mojom::blink::DocumentPolicyFeature feature);
 
   bool CanContainRangeEndPoint() const override { return true; }
 
@@ -3219,11 +3215,6 @@ class CORE_EXPORT Document : public ContainerNode,
   bool is_for_external_handler_;
 
   Member<LazyLoadMediaObserver> lazy_load_media_observer_;
-
-  // Tracks which document policies have already been parsed, so as not to
-  // count them multiple times. The size of this vector is 0 until
-  // `DocumentPolicyFeatureObserved` is called.
-  Vector<bool> parsed_document_policies_;
 
   AtomicString override_last_modified_;
 

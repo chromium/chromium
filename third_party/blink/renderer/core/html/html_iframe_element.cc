@@ -24,7 +24,6 @@
 
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 
-#include "base/metrics/histogram_macros.h"
 #include "components/viz/common/surfaces/tracked_element_rects.h"
 #include "services/network/public/cpp/connection_allowlist.h"
 #include "services/network/public/cpp/connection_allowlist_parser.h"
@@ -462,13 +461,6 @@ DocumentPolicyFeatureState HTMLIFrameElement::ConstructRequiredPolicy() const {
         "Iframe policy attribute cannot specify reporting endpoint."));
   }
 
-  for (const auto& policy_entry : new_required_policy.feature_state) {
-    mojom::blink::DocumentPolicyFeature feature = policy_entry.first;
-    if (!GetDocument().DocumentPolicyFeatureObserved(feature)) {
-      UMA_HISTOGRAM_ENUMERATION(
-          "Blink.UseCounter.DocumentPolicy.PolicyAttribute", feature);
-    }
-  }
   return new_required_policy.feature_state;
 }
 

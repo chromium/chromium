@@ -5878,18 +5878,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.UseCounter.DocumentPolicy.PolicyAttribute"
-    enum="DocumentPolicyFeature" expires_after="2023-03-31">
-  <owner>iclelland@chromium.org</owner>
-  <owner>feature-control@chromium.org</owner>
-  <summary>
-    Counts the use of a specific document policy via the &quot;policy&quot;
-    attribute. Each policy is counted only once per page load.
-
-    Not recorded if the page is prerendered and cancelled.
-  </summary>
-</histogram>
-
 <histogram name="Blink.UseCounter.DocumentPolicy.ReportOnly"
     enum="DocumentPolicyFeature" expires_after="2023-03-31">
   <owner>iclelland@chromium.org</owner>

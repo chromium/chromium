@@ -159,31 +159,6 @@ TEST_F(DocumentPolicySimTest,
   main_resource.Finish();
 }
 
-TEST_F(DocumentPolicySimTest, DocumentPolicyPolicyAttributeHistogramTest) {
-  base::HistogramTester histogram_tester;
-
-  SimRequest main_resource("https://example.com", "text/html");
-  LoadURL("https://example.com");
-
-  // Same feature should only be reported once in a document despite its
-  // occurrence.
-  main_resource.Complete(R"(
-    <iframe policy="force-load-at-top"></iframe>
-    <iframe policy="force-load-at-top=?0"></iframe>
-    <iframe
-      policy="force-load-at-top,sync-xhr=?0">
-    </iframe>
-  )");
-
-  histogram_tester.ExpectTotalCount(
-      "Blink.UseCounter.DocumentPolicy.PolicyAttribute", 2);
-  histogram_tester.ExpectBucketCount(
-      "Blink.UseCounter.DocumentPolicy.PolicyAttribute",
-      3 /* kForceLoadAtTop */, 1);
-  histogram_tester.ExpectBucketCount(
-      "Blink.UseCounter.DocumentPolicy.PolicyAttribute", 12 /* kSyncXHR */, 1);
-}
-
 TEST_F(DocumentPolicySimTest, DocumentPolicyEnforcedReportHistogramTest) {
   base::HistogramTester histogram_tester;
 
