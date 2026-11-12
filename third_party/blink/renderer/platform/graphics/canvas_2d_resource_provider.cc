@@ -109,69 +109,14 @@ void Canvas2DResourceProvider::SetResourceRecyclingEnabled(bool value) {
 }
 
 Canvas2DResourceProvider::Canvas2DResourceProvider(
-    gfx::Size size,
-    viz::SharedImageFormat format,
-    SkAlphaType alpha_type,
-    const gfx::ColorSpace& color_space,
-    const gfx::HDRMetadata& hdr_metadata,
+    std::unique_ptr<gpu::SharedImagePool<CanvasResourceSharedImage>> image_pool,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
-    bool is_accelerated,
-    gpu::SharedImageUsageSet shared_image_usage_flags)
-    : context_provider_wrapper_(std::move(context_provider_wrapper)),
+    const gfx::HDRMetadata& hdr_metadata)
+    : image_pool_(std::move(image_pool)),
+      context_provider_wrapper_(std::move(context_provider_wrapper)),
       hdr_metadata_(hdr_metadata) {
+  CHECK(image_pool_);
   CHECK(context_provider_wrapper_);
-
-  auto* sii =
-      context_provider_wrapper_->ContextProvider().SharedImageInterface();
-  CHECK(sii);
-
-  // These SharedImages are both read and written by the raster interface
-  // (both occur, for example, when copying canvas resources between
-  // canvases). Additionally, these SharedImages can be put into
-  // AcceleratedStaticBitmapImages (via Bitmap()) that are then copied into
-  // GL textures by WebGL (via
-  // AcceleratedStaticBitmapImage::CopyToTexture()).
-  shared_image_usage_flags =
-      shared_image_usage_flags | gpu::SHARED_IMAGE_USAGE_RASTER_READ |
-      gpu::SHARED_IMAGE_USAGE_RASTER_WRITE | gpu::SHARED_IMAGE_USAGE_GLES2_READ;
-  // Add WEBGPU_READ usage to allow importing into WebGPU without a copy.
-  if (base::FeatureList::IsEnabled(kCanvasResourceIsWebGPUCompatible)) {
-    shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_WEBGPU_READ;
-  }
-
-  std::optional<gfx::BufferUsage> buffer_usage = std::nullopt;
-  if (!is_accelerated) {
-    // Ideally we should add SHARED_IMAGE_USAGE_CPU_WRITE_ONLY to the shared
-    // image usage flag here since mailbox will be used for CPU writes by
-    // the client. But doing that stops us from using CompoundImagebacking
-    // as many backings do not support SHARED_IMAGE_USAGE_CPU_WRITE_ONLY.
-    // TODO(https://crbug.com/40280504): Add that usage flag back here once
-    // the issue is resolved.
-    buffer_usage = gfx::BufferUsage::SCANOUT_CPU_READ_WRITE;
-    if (base::FeatureList::IsEnabled(kAppendCpuUsages)) {
-      shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_CPU_READ |
-                                  gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY;
-    }
-  }
-
-  gpu::ImageInfo image_info(size, format, shared_image_usage_flags, color_space,
-                            kTopLeft_GrSurfaceOrigin, alpha_type, buffer_usage,
-                            /*is_software=*/false);
-
-  std::optional<base::TimeDelta> expiration_time =
-      (base::FeatureList::IsEnabled(kCanvas2DReclaimUnusedResources))
-          ? std::make_optional(kUnusedResourceExpirationTime)
-          : std::nullopt;
-  bool is_single_buffered = shared_image_usage_flags.Has(
-      gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE);
-
-  image_pool_ = gpu::SharedImagePool<CanvasResourceSharedImage>::Create(
-      image_info, sii,
-      is_accelerated ? "CanvasResourceRaster" : "CanvasResourceRasterGmb",
-      is_single_buffered ? 0 : kMaxRecycledCanvasResources, expiration_time);
-
-  // Single buffered mode supported only for accelerated canvas.
-  CHECK(!IsSingleBuffered() || is_accelerated);
 }
 
 Canvas2DResourceProvider::Canvas2DResourceProvider(

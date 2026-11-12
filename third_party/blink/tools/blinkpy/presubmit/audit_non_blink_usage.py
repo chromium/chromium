@@ -1872,6 +1872,7 @@ _CONFIG = [
         'allowed': [
             'base::flat_map',
             'display::Display',
+            'gfx::BufferUsage',
             'gl::GpuPreference',
             'gpu::ClientSharedImage',
             'gpu::ContextSupport',

@@ -43,14 +43,12 @@ class WebGraphicsSharedImageInterfaceProvider;
 class PLATFORM_EXPORT Canvas2DResourceProvider
     : public CanvasResourceSharedImage::Client {
  public:
-  Canvas2DResourceProvider(gfx::Size size,
-                           viz::SharedImageFormat format,
-                           SkAlphaType alpha_type,
-                           const gfx::ColorSpace& color_space,
-                           const gfx::HDRMetadata& hdr_metadata,
-                           base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
-                           bool is_accelerated,
-                           gpu::SharedImageUsageSet shared_image_usage_flags);
+  Canvas2DResourceProvider(
+      std::unique_ptr<gpu::SharedImagePool<CanvasResourceSharedImage>>
+          image_pool,
+      base::WeakPtr<WebGraphicsContext3DProviderWrapper>
+          context_provider_wrapper,
+      const gfx::HDRMetadata& hdr_metadata);
   Canvas2DResourceProvider(
       std::unique_ptr<gpu::SharedImagePool<CanvasResourceSharedImage>>
           image_pool,
@@ -78,10 +76,6 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
       bool is_accelerated);
 
   base::WeakPtr<Canvas2DResourceProvider> CreateWeakPtr();
-
-  // The maximum number of in-flight resources waiting to be used for
-  // recycling.
-  static constexpr int kMaxRecycledCanvasResources = 3;
 
   // If this instance is single-buffered or |resource_recycling_enabled_| is
   // false, |image_pool_| will not recycle resources.

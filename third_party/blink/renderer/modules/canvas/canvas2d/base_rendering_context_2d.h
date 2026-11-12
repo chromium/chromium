@@ -465,6 +465,10 @@ class MODULES_EXPORT BaseRenderingContext2D
   GetAnimatedImageFrameIndexMap(uint32_t id) const;
   CanvasImageProvider* GetOrCreateCanvasImageProvider();
 
+  // The maximum number of in-flight resources waiting to be used for
+  // recycling.
+  static constexpr int kMaxRecycledCanvasResources = 3;
+
   Canvas2DColorParams color_params_;
   std::unique_ptr<Canvas2DResourceProvider> shared_image_provider_;
   scoped_refptr<CanvasResourceSharedImage> resource_;
