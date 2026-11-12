@@ -37,7 +37,7 @@ CameraPanTiltZoomPermissionContext::CameraPanTiltZoomPermissionContext(
     : ContentSettingPermissionContextBase(
           browser_context,
           ContentSettingsType::CAMERA_PAN_TILT_ZOOM,
-          network::mojom::PermissionsPolicyFeature::kNotFound),
+          network::mojom::PermissionsPolicyFeature::kCamera),
       delegate_(std::move(delegate)),
       device_enumerator_(device_enumerator) {
   DCHECK(device_enumerator_);

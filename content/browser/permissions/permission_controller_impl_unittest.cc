@@ -869,6 +869,71 @@ TEST_F(PermissionControllerImplWithDelegateTest, PermissionPolicyTest) {
             permission_controller->GetPermissionStatusForCurrentDocument(
                 geolocation_permission_descriptor, child_without_policy));
 }
+
+TEST_F(PermissionControllerImplWithDelegateTest,
+       CameraPanTiltZoomPermissionPolicyTest) {
+  const char* kOrigin1 = "https://example.com";
+  const char* kOrigin2 = "https://example-child.com";
+
+  NavigateAndCommit(GURL(kOrigin1));
+  PermissionController* permission_controller =
+      GetBrowserContext()->GetPermissionController();
+  RenderFrameHost* parent = main_rfh();
+  ASSERT_TRUE(parent);
+
+  const auto ptz_descriptor = content::PermissionDescriptorUtil::
+      CreatePermissionDescriptorForPermissionType(
+          PermissionType::CAMERA_PAN_TILT_ZOOM);
+
+  // Top level frame initially has permission in ASK state.
+  EXPECT_EQ(PermissionStatus::ASK,
+            permission_controller->GetPermissionStatusForCurrentDocument(
+                ptz_descriptor, parent));
+
+  // Cross-origin iframe without 'camera' policy must be DENIED.
+  content::RenderFrameHost* child_without_policy =
+      AddChildRFH(parent, GURL(kOrigin2));
+  ASSERT_TRUE(child_without_policy);
+  EXPECT_EQ(PermissionStatus::DENIED,
+            permission_controller->GetPermissionStatusForCurrentDocument(
+                ptz_descriptor, child_without_policy));
+
+  // Requesting permission from child frame without policy must be rejected
+  // immediately with FEATURE_POLICY source without prompting.
+  base::test::TestFuture<const std::vector<content::PermissionResult>&> future;
+  content::PermissionRequestDescription request_description(
+      content::PermissionDescriptorUtil::
+          CreatePermissionDescriptorForPermissionType(
+              PermissionType::CAMERA_PAN_TILT_ZOOM),
+      /*user_gesture=*/true);
+  permission_controller->RequestPermissionsFromCurrentDocument(
+      child_without_policy, request_description, future.GetCallback());
+  const std::vector<content::PermissionResult>& results = future.Get();
+  ASSERT_EQ(1u, results.size());
+  EXPECT_EQ(PermissionStatus::DENIED, results[0].status);
+  EXPECT_EQ(content::PermissionStatusSource::FEATURE_POLICY, results[0].source);
+
+  // Cross-origin iframe with 'camera' policy must follow top-level state.
+  content::RenderFrameHost* child_with_policy =
+      AddChildRFH(parent, GURL(kOrigin2),
+                  network::mojom::PermissionsPolicyFeature::kCamera);
+  ASSERT_TRUE(child_with_policy);
+  EXPECT_EQ(PermissionStatus::ASK,
+            permission_controller->GetPermissionStatusForCurrentDocument(
+                ptz_descriptor, child_with_policy));
+
+  permission_manager()->SetPermissionStatus(GURL(kOrigin1),
+                                            PermissionStatus::GRANTED);
+  EXPECT_EQ(PermissionStatus::GRANTED,
+            permission_controller->GetPermissionStatusForCurrentDocument(
+                ptz_descriptor, parent));
+  EXPECT_EQ(PermissionStatus::GRANTED,
+            permission_controller->GetPermissionStatusForCurrentDocument(
+                ptz_descriptor, child_with_policy));
+  EXPECT_EQ(PermissionStatus::DENIED,
+            permission_controller->GetPermissionStatusForCurrentDocument(
+                ptz_descriptor, child_without_policy));
+}
 #endif
 
 TEST_P(PermissionControllerImplTestWithApproxLocation,

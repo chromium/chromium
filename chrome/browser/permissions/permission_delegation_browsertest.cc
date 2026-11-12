@@ -168,6 +168,52 @@ IN_PROC_BROWSER_TEST_F(PermissionDelegationBrowserTest, DelegatedToTwoFrames) {
   EXPECT_EQ(1, prompt_factory()->TotalRequestCount());
 }
 
+IN_PROC_BROWSER_TEST_F(PermissionDelegationBrowserTest,
+                       PanTiltZoomPermissionsPolicyDelegation) {
+  // Main frame is on a.com, iframe 1 is on b.com without camera policy,
+  // and iframe 2 is on c.com with camera policy.
+  GURL main_frame_url =
+      embedded_https_test_server().GetURL("a.com", "/two_iframes_blank.html");
+  GURL iframe_url_1 =
+      embedded_https_test_server().GetURL("b.com", "/simple.html");
+  GURL iframe_url_2 =
+      embedded_https_test_server().GetURL("c.com", "/simple.html");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
+  content::RenderFrameHost* main_frame =
+      GetWebContents()->GetPrimaryMainFrame();
+
+  // iframe 1 has no camera permissions policy.
+  // iframe 2 has camera permissions policy delegated to it.
+  EXPECT_TRUE(content::ExecJs(
+      main_frame, "document.getElementById('iframe2').allow = 'camera *';"));
+
+  // Load the iframes.
+  EXPECT_TRUE(
+      content::NavigateIframeToURL(GetWebContents(), "iframe1", iframe_url_1));
+  EXPECT_TRUE(
+      content::NavigateIframeToURL(GetWebContents(), "iframe2", iframe_url_2));
+
+  content::RenderFrameHost* frame_1 = content::FrameMatchingPredicate(
+      GetWebContents()->GetPrimaryPage(),
+      base::BindRepeating(&content::FrameMatchesName, "iframe1"));
+  ASSERT_NE(nullptr, frame_1);
+  content::RenderFrameHost* frame_2 = content::FrameMatchingPredicate(
+      GetWebContents()->GetPrimaryPage(),
+      base::BindRepeating(&content::FrameMatchesName, "iframe2"));
+  ASSERT_NE(nullptr, frame_2);
+
+  constexpr char kQueryPanTiltZoomScript[] =
+      "navigator.permissions.query({name: 'camera', panTiltZoom: true})"
+      "  .then(status => status.state);";
+
+  // Subframe without 'camera' policy must return "denied".
+  EXPECT_EQ("denied", content::EvalJs(frame_1, kQueryPanTiltZoomScript));
+
+  // Subframe with 'camera' policy must return "prompt".
+  EXPECT_EQ("prompt", content::EvalJs(frame_2, kQueryPanTiltZoomScript));
+}
+
 class ContextualTasksPermissionDelegationBrowserTest
     : public PermissionDelegationBrowserTest {
  public:

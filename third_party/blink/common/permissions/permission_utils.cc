@@ -129,6 +129,7 @@ PermissionTypeToPermissionsPolicyFeature(PermissionType permission) {
     case PermissionType::AUDIO_CAPTURE:
       return network::mojom::PermissionsPolicyFeature::kMicrophone;
     case PermissionType::VIDEO_CAPTURE:
+    case PermissionType::CAMERA_PAN_TILT_ZOOM:
       return network::mojom::PermissionsPolicyFeature::kCamera;
     case PermissionType::MIDI:
       return network::mojom::PermissionsPolicyFeature::kMidiFeature;
@@ -183,7 +184,6 @@ PermissionTypeToPermissionsPolicyFeature(PermissionType permission) {
     case PermissionType::BACKGROUND_FETCH:
     case PermissionType::WAKE_LOCK_SYSTEM:
     case PermissionType::NFC:
-    case PermissionType::CAMERA_PAN_TILT_ZOOM:
     case PermissionType::NOTIFICATIONS:
     case PermissionType::KEYBOARD_LOCK:
     case PermissionType::POINTER_LOCK:
