@@ -33,14 +33,6 @@ is backwards-compatible and can parse dex files for Chromium built with
 `min-sdk` version bumps, given it can currently parse versions from 35-40.
 `libdexfile` and its dependency `libartbase` come from `platform/art/` in AOSP.
 
-Dependent Android libraries pulled in partially:
-----------------------------------------------------------------------------------------------------------------------------------
-| name        | path in Android source code                                 | License | revisions                                |
-| ----------- | ----------------------------------------------------------- | ------- | ---------------------------------------- |
-| libartbase  | art/libartbase/                                             | Apache  | ddd4776acaa0a4fb0e6027cd063ec450f518c7d7 |
-| libdexfile  | art/libdexfile/                                             | Apache  | ddd4776acaa0a4fb0e6027cd063ec450f518c7d7 |
-----------------------------------------------------------------------------------------------------------------------------------
-
 Steps to update `libunwindstack`:
 
 1. Update the contents to the upstream revision.
@@ -49,10 +41,7 @@ Steps to update `libunwindstack`:
     rm -rf src
     mkdir temp src
     git clone https://android.googlesource.com/platform/system/unwinding -b main temp/unwinding
-    git clone https://android.googlesource.com/platform/art -b main temp/art
     cp -pr temp/unwinding/libunwindstack src/libunwindstack
-    cp -pr temp/art/libdexfile src/libdexfile
-    cp -pr temp/art/libartbase src/libartbase
     # Get revisions of repositories.
     head temp/*/.git/refs/heads/main
     rm -rf temp
@@ -109,13 +98,7 @@ Steps to update `libunwindstack`:
 
 
 Local modifications:
-The libbase patches are in libbase/patches/.
-
-- `0001-disable-fdsan.patch:`:
-
-  Disables `fdsan` in ART's `fd_file.cc` below Android API level 29, as
-  the NDK has `fdsan` only from 29 (https://bit.ly/2W4II7E).
-  libbase/patches/0001 does the same for `unique_fd.h`.
+The libbase and ART patches are in libbase/patches/ and art/patches/.
 
 - `0002-create-local-process-memory.patch:`:
 
@@ -138,46 +121,15 @@ The libbase patches are in libbase/patches/.
   Chromium builds with `-Wextra-semi`, so redundant semicolons need to be
   removed to build successfully.
 
-- `0008-replace-allocator-destroy-construct-calls.patch`:
-
-  Replace calls to the `destroy` and `construct` members of allocator with
-  calls to `destroy` and `construct` defined in `std::allocator_traits<T>`.
-
-- `0009-do-not-redefine-ADDRESS_SANITIZER.patch`:
-
-  Do not redefine the `ADDRESS_SANITIZER` macro as the chromium ASAN build
-  already defines it.
-
-- `0010-remove-art-format.patch`:
-
-  Removes dependency on `ART_FORMAT` to remove the need for `fmtlib`, upon
-  which the upstream `libunwindstack` depends.
-
-- `0011-remove-dexfile-trace-and-zip-support.patch`:
-
-  Removes dependency on `palette.h` and `zip_archive.h`, upon which the
-  upstream `libunwindstack` depends, but that are not needed/unused for
-  Chromium's use cases for `libunwindstack`.
-
-- `0012-remove-mmap-file-logging.patch`:
-
-  Removes calls to `PrintFileToLog` in `mem_map.cc`, which helps to suppress
-  log statements and avoid `liblog` dependency which the upstream
-  `libunwindstack` depends on.
-
 - `0013-use-third-party-rustc-demangle.patch`:
 
   Correctly uses the version of `rustc_demangle` currently available in
   Chromium's `third_party`.
 
-- `0014-dont-use-bionic-functions.patch`:
-
-  Similar to `0004-dont-include-bionic-headers.patch`, don't use
-  functions/constants defined in Bionic headers.
-
 - `0016-remove-static-initializers.patch`:
 
-  Remove static initializers from DexFile, dex_file_loader, and mem_map.
+  Remove static initializers from DexFile (art/patches/0016 does
+  dex_file_loader and mem_map).
 
 - `0017-add-type-cast.patch`:
 

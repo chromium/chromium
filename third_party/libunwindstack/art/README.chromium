@@ -1,0 +1,27 @@
+Name: ART libdexfile and libartbase
+URL: https://android.googlesource.com/platform/art
+Version: N/A
+Revision: ddd4776acaa0a4fb0e6027cd063ec450f518c7d7
+Update Mechanism: Manual
+License: Apache-2.0
+License File: //third_party/libunwindstack/LICENSE
+Shipped: yes
+Security Critical: yes
+
+Description:
+Two libraries of the Android Runtime: libdexfile parses dex files, and
+libartbase holds the helpers it needs. libunwindstack uses libdexfile to
+symbolize interpreted Java frames, and //third_party/libunwindstack
+builds both into its libunwindstack target.
+
+src/ holds the files BUILD.gn lists from the libdexfile/ and libartbase/
+directories of the upstream repository, plus two headers they include
+that BUILD.gn does not list: libartbase/base/unix_file/random_access_file.h
+and libdexfile/dex/proto_reference.h. Patches 0001, 0008, 0009, 0010,
+0011, 0012, 0014 and 0016 in patches/ change some of them. Chromium also
+added #include lines to libartbase mem_map.cc and to libdexfile
+compact_dex_file.cc, standard_dex_file.cc and dex_file_verifier.cc
+without a patch (libunwindstack.git dcd4e94 and 0928ad0).
+
+To update, copy those files at the new revision into src/, reapply the
+changes above, and update Revision.
