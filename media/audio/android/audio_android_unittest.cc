@@ -34,6 +34,7 @@
 #include "build/build_config.h"
 #include "media/audio/android/audio_device_type.h"
 #include "media/audio/android/audio_manager_android.h"
+#include "media/audio/android/muteable_audio_output_stream.h"
 #include "media/audio/audio_device_description.h"
 #include "media/audio/audio_device_info_accessor_for_tests.h"
 #include "media/audio/audio_features.h"
@@ -132,6 +133,38 @@ int RealOnMoreData(base::TimeDelta /* delay */,
   dest->Zero();
   return dest->frames();
 }
+
+class MockMuteableAudioOutputStream : public MuteableAudioOutputStream {
+ public:
+  explicit MockMuteableAudioOutputStream(AudioManagerAndroid* manager)
+      : manager_(manager) {}
+  ~MockMuteableAudioOutputStream() override = default;
+
+  bool Open() override { return true; }
+  void Close() override { manager_->ReleaseOutputStream(this); }
+  void Start(AudioSourceCallback* callback) override {}
+  void Stop() override {}
+  void Flush() override {}
+  void SetVolume(double volume) override {}
+  void GetVolume(double* volume) override {}
+  MOCK_METHOD(void, SetMute, (bool muted), (override));
+
+ private:
+  const raw_ptr<AudioManagerAndroid> manager_;
+};
+
+class TestAudioManagerAndroid : public AudioManagerAndroid {
+ public:
+  TestAudioManagerAndroid(std::unique_ptr<AudioThread> audio_thread,
+                          AudioLogFactory* audio_log_factory)
+      : AudioManagerAndroid(std::move(audio_thread), audio_log_factory) {}
+
+  AudioOutputStream* MakeLinearOutputStream(
+      const AudioParameters& params,
+      const LogCallback& log_callback) override {
+    return new NiceMock<MockMuteableAudioOutputStream>(this);
+  }
+};
 
 }  // namespace
 
@@ -834,6 +867,145 @@ class AudioAndroidInputTest : public AudioAndroidOutputTest {
   raw_ptr<AudioInputStream> audio_input_stream_;
   AudioParameters audio_input_parameters_;
 };
+
+class AudioAndroidStaticJniTest : public testing::Test {
+ public:
+  AudioAndroidStaticJniTest()
+      : audio_manager_(std::make_unique<TestAudioManagerAndroid>(
+            std::make_unique<TestAudioThread>(),
+            &fake_audio_log_factory_)) {}
+
+  AudioAndroidStaticJniTest(const AudioAndroidStaticJniTest&) = delete;
+  AudioAndroidStaticJniTest& operator=(const AudioAndroidStaticJniTest&) =
+      delete;
+
+  ~AudioAndroidStaticJniTest() override { ShutdownAudioManager(); }
+
+ protected:
+  TestAudioManagerAndroid* audio_manager() { return audio_manager_.get(); }
+
+  void InitializeJniDelegate() {
+    audio_manager_->InitializeIfNeeded();
+    FlushAudioThread();
+  }
+
+  void FlushAudioThread() {
+    base::RunLoop run_loop;
+    audio_manager_->GetTaskRunner()->PostTaskAndReply(
+        FROM_HERE, base::DoNothing(), run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  void ShutdownAudioManager() {
+    if (!is_shutdown_) {
+      audio_manager_->Shutdown();
+      base::RunLoop().RunUntilIdle();
+      is_shutdown_ = true;
+    }
+  }
+
+ private:
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::SingleThreadTaskEnvironment::MainThreadType::UI};
+  FakeAudioLogFactory fake_audio_log_factory_;
+  std::unique_ptr<TestAudioManagerAndroid> audio_manager_;
+  bool is_shutdown_ = false;
+};
+
+TEST_F(AudioAndroidStaticJniTest, SetMute) {
+  AudioParameters linear_params(AudioParameters::AUDIO_PCM_LINEAR,
+                                ChannelLayoutConfig::Stereo(), 48000, 1024);
+  auto* stream = static_cast<MockMuteableAudioOutputStream*>(
+      audio_manager()->MakeAudioOutputStream(
+          linear_params, AudioDeviceDescription::kDefaultDeviceId,
+          AudioManager::LogCallback()));
+  ASSERT_NE(stream, nullptr);
+
+  // InstanceHolder is empty until InitializeIfNeeded() creates JniDelegateImpl.
+  EXPECT_CALL(*stream, SetMute(_)).Times(0);
+  JNI_AudioManagerAndroid_SetMute(/*env=*/nullptr, /*muted=*/true);
+  FlushAudioThread();
+  testing::Mock::VerifyAndClearExpectations(stream);
+
+  InitializeJniDelegate();
+
+  EXPECT_CALL(*stream, SetMute(true)).Times(1);
+  JNI_AudioManagerAndroid_SetMute(/*env=*/nullptr, /*muted=*/true);
+  FlushAudioThread();
+  testing::Mock::VerifyAndClearExpectations(stream);
+
+  EXPECT_CALL(*stream, SetMute(false)).Times(1);
+  JNI_AudioManagerAndroid_SetMute(/*env=*/nullptr, /*muted=*/false);
+  FlushAudioThread();
+  testing::Mock::VerifyAndClearExpectations(stream);
+
+  stream->Close();
+  ShutdownAudioManager();
+
+  JNI_AudioManagerAndroid_SetMute(/*env=*/nullptr, /*muted=*/true);
+}
+
+TEST_F(AudioAndroidStaticJniTest, OnScoStateChanged) {
+  JNI_AudioManagerAndroid_OnScoStateChanged(/*env=*/nullptr, /*state=*/true);
+  FlushAudioThread();
+  EXPECT_FALSE(audio_manager()->IsBluetoothScoEnabledForTesting());
+
+  InitializeJniDelegate();
+
+  const bool initial_sco = audio_manager()->IsBluetoothScoEnabledForTesting();
+  JNI_AudioManagerAndroid_OnScoStateChanged(/*env=*/nullptr, !initial_sco);
+  FlushAudioThread();
+  EXPECT_EQ(audio_manager()->IsBluetoothScoEnabledForTesting(), !initial_sco);
+
+  JNI_AudioManagerAndroid_OnScoStateChanged(/*env=*/nullptr, initial_sco);
+  FlushAudioThread();
+  EXPECT_EQ(audio_manager()->IsBluetoothScoEnabledForTesting(), initial_sco);
+
+  ShutdownAudioManager();
+
+  JNI_AudioManagerAndroid_OnScoStateChanged(/*env=*/nullptr, !initial_sco);
+  EXPECT_EQ(audio_manager()->IsBluetoothScoEnabledForTesting(), initial_sco);
+}
+
+TEST_F(AudioAndroidStaticJniTest, OnMicrophoneMuteStateChanged) {
+  int mic_mute_callbacks = 0;
+  bool last_mic_muted = false;
+  auto subscription =
+      audio_manager()->AddInputMuteStateChangeCallback(base::BindRepeating(
+          [](int* count, bool* last_state, bool muted) {
+            ++*count;
+            *last_state = muted;
+          },
+          &mic_mute_callbacks, &last_mic_muted));
+
+  JNI_AudioManagerAndroid_OnMicrophoneMuteStateChanged(/*env=*/nullptr,
+                                                       /*muted=*/true);
+  FlushAudioThread();
+  EXPECT_EQ(mic_mute_callbacks, 0);
+
+  InitializeJniDelegate();
+
+  const bool initial_muted = audio_manager()->IsMicrophoneMuted();
+  JNI_AudioManagerAndroid_OnMicrophoneMuteStateChanged(/*env=*/nullptr,
+                                                       !initial_muted);
+  FlushAudioThread();
+  EXPECT_EQ(audio_manager()->IsMicrophoneMuted(), !initial_muted);
+  EXPECT_EQ(mic_mute_callbacks, 1);
+  EXPECT_EQ(last_mic_muted, !initial_muted);
+
+  JNI_AudioManagerAndroid_OnMicrophoneMuteStateChanged(/*env=*/nullptr,
+                                                       initial_muted);
+  FlushAudioThread();
+  EXPECT_EQ(audio_manager()->IsMicrophoneMuted(), initial_muted);
+  EXPECT_EQ(mic_mute_callbacks, 2);
+  EXPECT_EQ(last_mic_muted, initial_muted);
+
+  ShutdownAudioManager();
+
+  JNI_AudioManagerAndroid_OnMicrophoneMuteStateChanged(/*env=*/nullptr,
+                                                       !initial_muted);
+  EXPECT_EQ(mic_mute_callbacks, 2);
+}
 
 TEST_F(AudioAndroidOutputTest, NotifiesMicrophoneMuteStateChanges) {
   RunOnAudioThread(base::BindOnce(

@@ -180,6 +180,7 @@ class MEDIA_EXPORT AudioManagerAndroid : public AudioManagerBase {
   base::TimeDelta GetOutputLatency();
 
   bool IsMicrophoneMuted();
+  bool IsBluetoothScoEnabledForTesting();
 
   // Returns a bitmask of audio encoding formats supported by all connected HDMI
   // output devices.
@@ -286,6 +287,13 @@ class MEDIA_EXPORT AudioManagerAndroid : public AudioManagerBase {
   // input stream is destroyed. Also affects the stream type of output streams.
   bool communication_mode_is_on_;
 };
+
+MEDIA_EXPORT void JNI_AudioManagerAndroid_SetMute(JNIEnv* env, bool muted);
+MEDIA_EXPORT void JNI_AudioManagerAndroid_OnScoStateChanged(JNIEnv* env,
+                                                            bool state);
+MEDIA_EXPORT void JNI_AudioManagerAndroid_OnMicrophoneMuteStateChanged(
+    JNIEnv* env,
+    bool muted);
 
 }  // namespace media
 

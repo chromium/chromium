@@ -114,7 +114,6 @@ class AudioManagerAndroid {
     private static final int DEFAULT_SAMPLING_RATE = 44100;
 
     private final AudioManager mAudioManager;
-    private final long mNativeAudioManagerAndroid;
     private final boolean mIsAutomotive;
     // Enabled during initialization if MODIFY_AUDIO_SETTINGS permission is
     // granted. Required to shift system-wide audio settings.
@@ -143,12 +142,11 @@ class AudioManagerAndroid {
 
     /** Construction */
     @CalledByNative
-    private static AudioManagerAndroid createAudioManagerAndroid(long nativeAudioManagerAndroid) {
-        return new AudioManagerAndroid(nativeAudioManagerAndroid);
+    private static AudioManagerAndroid createAudioManagerAndroid() {
+        return new AudioManagerAndroid();
     }
 
-    private AudioManagerAndroid(long nativeAudioManagerAndroid) {
-        mNativeAudioManagerAndroid = nativeAudioManagerAndroid;
+    private AudioManagerAndroid() {
         mAudioManager =
                 (AudioManager)
                         ContextUtils.getApplicationContext()
@@ -217,10 +215,7 @@ class AudioManagerAndroid {
     private void initScoStateListener() {
         mScoStateListener =
                 new ScoStateListener(
-                        state -> {
-                            AudioManagerAndroidJni.get()
-                                    .onScoStateChanged(mNativeAudioManagerAndroid, state);
-                        });
+                        state -> AudioManagerAndroidJni.get().onScoStateChanged(state));
     }
 
     /** Initializes the listener for system microphone mute state changes. */
@@ -230,10 +225,7 @@ class AudioManagerAndroid {
         mMicrophoneMuteStateListener =
                 new MicrophoneMuteStateListener(
                         mAudioManager,
-                        muted ->
-                                AudioManagerAndroidJni.get()
-                                        .onMicrophoneMuteStateChanged(
-                                                mNativeAudioManagerAndroid, muted));
+                        muted -> AudioManagerAndroidJni.get().onMicrophoneMuteStateChanged(muted));
         return mAudioManager.isMicrophoneMute();
     }
 
@@ -629,8 +621,7 @@ class AudioManagerAndroid {
                         // implementation can ensure that the volume is completely muted.
                         int volume = mAudioManager.getStreamVolume(AudioManager.STREAM_VOICE_CALL);
                         if (DEBUG) logd("AudioManagerAndroidJni.get().setMute: " + (volume == 0));
-                        AudioManagerAndroidJni.get()
-                                .setMute(mNativeAudioManagerAndroid, (volume == 0));
+                        AudioManagerAndroidJni.get().setMute(volume == 0);
                     }
                 };
 
@@ -809,11 +800,11 @@ class AudioManagerAndroid {
     interface Natives {
         void onDevicesChanged(boolean added);
 
-        void setMute(long nativeAudioManagerAndroid, boolean muted);
+        void setMute(boolean muted);
 
-        void onScoStateChanged(long nativeAudioManagerAndroid, boolean state);
+        void onScoStateChanged(boolean state);
 
-        void onMicrophoneMuteStateChanged(long nativeAudioManagerAndroid, boolean muted);
+        void onMicrophoneMuteStateChanged(boolean muted);
 
         boolean isAudioPlaybackCaptureAllowedFeatureEnabled();
     }
