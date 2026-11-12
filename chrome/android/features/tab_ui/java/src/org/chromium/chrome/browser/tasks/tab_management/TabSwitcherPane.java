@@ -229,11 +229,9 @@ public class TabSwitcherPane extends TabSwitcherPaneBase implements TabSwitcherD
             return;
         }
 
-        boolean isNotVisibleOrSelected = !mIsVisibleSupplier.get() || !tabModel.isActiveModel();
-
-        if (isNotVisibleOrSelected) {
+        if (!shouldShowTabs(tabModel)) {
             cancelWaitForTabStateInitializedTimer();
-            coordinator.resetWithListOfTabs(null);
+            resetCoordinatorTabs(coordinator, null);
         } else {
             // TODO(crbug.com/373850469): Add unit tests when robolectric supports Android V.
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM
@@ -247,7 +245,7 @@ public class TabSwitcherPane extends TabSwitcherPaneBase implements TabSwitcherD
             }
 
             finishWaitForTabStateInitializedTimer();
-            coordinator.resetWithListOfTabs(tabs);
+            resetCoordinatorTabs(coordinator, tabs);
         }
     }
 

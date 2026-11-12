@@ -7,8 +7,10 @@ package org.chromium.chrome.browser.hub;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -187,6 +189,78 @@ public class PaneManagerImplUnitTest {
 
         paneManager.destroy();
         verifyNoInteractions(mTabSwitcherPane);
+    }
+
+    @Test
+    public void testNotifyLoadHint_replacesQueuedLoadHint() {
+        PaneListBuilder builder =
+                new PaneListBuilder(new DefaultPaneOrderController())
+                        .registerPane(
+                                PaneId.TAB_SWITCHER,
+                                LazyOneshotSupplier.fromValue(mTabSwitcherPane))
+                        .registerPane(
+                                PaneId.INCOGNITO_TAB_SWITCHER,
+                                LazyOneshotSupplier.fromValue(mIncognitoTabSwitcherPane));
+        mHubVisibilitySupplier.set(true);
+        PaneManagerImpl paneManager =
+                new PaneManagerImpl(
+                        builder, mHubVisibilitySupplier, /* defaultPaneId= */ PaneId.TAB_SWITCHER);
+        RobolectricUtil.runAllBackgroundAndUi();
+        clearInvocations(mTabSwitcherPane);
+        // Focusing another pane queues WARM for the previous pane.
+        paneManager.focusPane(PaneId.INCOGNITO_TAB_SWITCHER);
+
+        paneManager.notifyLoadHint(PaneId.TAB_SWITCHER, LoadHint.PREVIEW);
+        verify(mTabSwitcherPane).notifyLoadHint(eq(LoadHint.PREVIEW));
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verify(mTabSwitcherPane, never()).notifyLoadHint(eq(LoadHint.WARM));
+        paneManager.destroy();
+    }
+
+    @Test
+    public void testNotifyLoadHint_focusedPane_asserts() {
+        PaneListBuilder builder =
+                new PaneListBuilder(new DefaultPaneOrderController())
+                        .registerPane(
+                                PaneId.TAB_SWITCHER,
+                                LazyOneshotSupplier.fromValue(mTabSwitcherPane));
+        mHubVisibilitySupplier.set(true);
+        PaneManagerImpl paneManager =
+                new PaneManagerImpl(
+                        builder, mHubVisibilitySupplier, /* defaultPaneId= */ PaneId.TAB_SWITCHER);
+        assertTrue(paneManager.focusPane(PaneId.TAB_SWITCHER));
+
+        assertThrows(
+                AssertionError.class,
+                () -> paneManager.notifyLoadHint(PaneId.TAB_SWITCHER, LoadHint.WARM));
+        paneManager.destroy();
+    }
+
+    @Test
+    public void testNotifyLoadHint_hubHidden_keepsQueuedCold() {
+        PaneListBuilder builder =
+                new PaneListBuilder(new DefaultPaneOrderController())
+                        .registerPane(
+                                PaneId.TAB_SWITCHER,
+                                LazyOneshotSupplier.fromValue(mTabSwitcherPane))
+                        .registerPane(
+                                PaneId.INCOGNITO_TAB_SWITCHER,
+                                LazyOneshotSupplier.fromValue(mIncognitoTabSwitcherPane));
+        mHubVisibilitySupplier.set(true);
+        PaneManagerImpl paneManager =
+                new PaneManagerImpl(
+                        builder, mHubVisibilitySupplier, /* defaultPaneId= */ PaneId.TAB_SWITCHER);
+        RobolectricUtil.runAllBackgroundAndUi();
+        mHubVisibilitySupplier.set(false);
+        clearInvocations(mIncognitoTabSwitcherPane);
+
+        paneManager.notifyLoadHint(PaneId.INCOGNITO_TAB_SWITCHER, LoadHint.WARM);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verify(mIncognitoTabSwitcherPane).notifyLoadHint(eq(LoadHint.COLD));
+        verify(mIncognitoTabSwitcherPane, never()).notifyLoadHint(eq(LoadHint.WARM));
+        paneManager.destroy();
     }
 
     @Test

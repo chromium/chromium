@@ -27,6 +27,16 @@ public interface PaneManager extends PaneLookup {
      */
     boolean focusPane(@PaneId int paneId);
 
+    /**
+     * Sends a {@link LoadHint} to the {@link Pane} for {@link PaneId} now and drops any hint still
+     * queued for it. Does nothing while the Hub is hidden. To make a pane {@link LoadHint#HOT}, use
+     * {@link #focusPane}.
+     *
+     * @param paneId The {@link PaneId} of the {@link Pane} to notify.
+     * @param loadHint The {@link LoadHint} to send, other than {@link LoadHint#HOT}.
+     */
+    void notifyLoadHint(@PaneId int paneId, @LoadHint int loadHint);
+
     /** Returns an ordered list of {@link PaneId} for panes that are currently active. */
     List<Integer> getActivePaneOrder();
 }

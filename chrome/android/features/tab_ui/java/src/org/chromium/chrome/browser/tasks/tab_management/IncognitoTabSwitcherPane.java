@@ -274,14 +274,15 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
             return;
         }
 
-        boolean isNotVisibleOrSelected = !mIsVisibleSupplier.get() || !tabModel.isActiveModel();
         boolean incognitoReauthShowing = isIncognitoReauthPending();
 
-        if (isNotVisibleOrSelected || incognitoReauthShowing) {
-            coordinator.resetWithListOfTabs(null);
+        if (!shouldShowTabs(tabModel) || incognitoReauthShowing) {
+            resetCoordinatorTabs(coordinator, null);
             cancelWaitForTabStateInitializedTimer();
 
-            if (incognitoReauthShowing) {
+            // Skip this during a preview: the toolbar applies the search state of every pane,
+            // focused or not, so it would disable the search box of the pane the user is on.
+            if (incognitoReauthShowing && !isPreviewing()) {
                 mHubSearchEnabledStateSupplier.set(false);
             }
         } else {
@@ -295,7 +296,7 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
                         coordinator::setTabSwitcherContentSensitivity,
                         "SensitiveContent.TabSwitching.IncognitoTabSwitcherPane.Sensitivity");
             }
-            coordinator.resetWithListOfTabs(tabs);
+            resetCoordinatorTabs(coordinator, tabs);
             finishWaitForTabStateInitializedTimer();
         }
 

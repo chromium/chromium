@@ -112,6 +112,17 @@ public class PaneManagerImpl implements PaneManager {
     }
 
     @Override
+    public void notifyLoadHint(@PaneId int paneId, @LoadHint int loadHint) {
+        assert loadHint != LoadHint.HOT : "Use focusPane() to make a pane HOT.";
+        Pane focusedPane = mCurrentPaneSupplierImpl.get();
+        assert focusedPane == null || focusedPane.getPaneId() != paneId
+                : "Use focusPane() to change the load hint of the focused pane.";
+        // Hiding the Hub queued COLD for every pane, which a late swipe hint must not replace.
+        if (!mHubVisibilitySupplier.get()) return;
+        mPaneTransitionHelper.processTransition(paneId, loadHint);
+    }
+
+    @Override
     public @Nullable Pane getPaneForId(@PaneId int paneId) {
         LazyOneshotSupplier<Pane> paneSupplier = mPanes.get(paneId);
         if (paneSupplier == null) return null;

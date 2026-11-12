@@ -15,6 +15,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
@@ -43,6 +44,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Captor;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -484,17 +486,97 @@ public class TabSwitcherPaneUnitTest {
     }
 
     @Test
-    public void testPrepareForSwipeReveal() {
+    public void testLoadHintPreview_showsTabsWithoutBecomingVisible() {
+        mTabModel.setActive(true);
+
+        mTabSwitcherPane.notifyLoadHint(LoadHint.PREVIEW);
+
+        TabSwitcherPaneCoordinator coordinator = mTabSwitcherPane.getTabSwitcherPaneCoordinator();
+        assertNotNull(coordinator);
+        verify(coordinator).showPreviewTabs(mTabList);
+        verify(coordinator, never()).resetWithListOfTabs(any());
+        verify(coordinator).setInitialScrollIndexOffset();
+        verify(coordinator, never()).requestAccessibilityFocusOnCurrentTab();
+    }
+
+    @Test
+    public void testLoadHintPreview_cancelsPendingCleanup() {
         mTabSwitcherPane.notifyLoadHint(LoadHint.WARM);
         // Once the coordinator exists, a warm pane schedules a soft cleanup.
         mTabSwitcherPane.notifyLoadHint(LoadHint.WARM);
         TabSwitcherPaneCoordinator coordinator = mTabSwitcherPane.getTabSwitcherPaneCoordinator();
 
-        mTabSwitcherPane.prepareForSwipeReveal();
+        mTabSwitcherPane.notifyLoadHint(LoadHint.PREVIEW);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
-        verify(coordinator).setInitialScrollIndexOffset();
         verify(coordinator, never()).softCleanup();
+    }
+
+    @Test
+    public void testLoadHintPreview_tabStateNotInitialized_recordsNoTiming() {
+        when(mTabModel.isTabStateInitialized()).thenReturn(false);
+        mTabSwitcherPane.notifyLoadHint(LoadHint.PREVIEW);
+        TabSwitcherPaneCoordinator coordinator = mTabSwitcherPane.getTabSwitcherPaneCoordinator();
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(
+                                "Android.GridTabSwitcher.TimeToTabStateInitializedFromShown")
+                        .build();
+
+        when(mTabModel.isTabStateInitialized()).thenReturn(true);
+        mTabSwitcherPane.showAllTabs();
+
+        verify(coordinator).showPreviewTabs(mTabList);
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void testLoadHintPreview_inactiveModel_showsTabs() {
+        mTabModel.setActive(false);
+
+        mTabSwitcherPane.notifyLoadHint(LoadHint.PREVIEW);
+
+        verify(mTabSwitcherPane.getTabSwitcherPaneCoordinator()).showPreviewTabs(mTabList);
+    }
+
+    @Test
+    public void testLoadHintPreviewThenWarm_stopsTrackingBeforeCleanup() {
+        mTabSwitcherPane.notifyLoadHint(LoadHint.PREVIEW);
+        TabSwitcherPaneCoordinator coordinator = mTabSwitcherPane.getTabSwitcherPaneCoordinator();
+
+        mTabSwitcherPane.notifyLoadHint(LoadHint.WARM);
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+
+        InOrder inOrder = inOrder(coordinator);
+        inOrder.verify(coordinator).prepareHiding();
+        inOrder.verify(coordinator).softCleanup();
+    }
+
+    @Test
+    public void testLoadHintPreviewThenHot_keepsTracking() {
+        mTabModel.setActive(true);
+        mTabSwitcherPane.notifyLoadHint(LoadHint.PREVIEW);
+        TabSwitcherPaneCoordinator coordinator = mTabSwitcherPane.getTabSwitcherPaneCoordinator();
+
+        mTabSwitcherPane.notifyLoadHint(LoadHint.HOT);
+
+        verify(coordinator, never()).prepareHiding();
+        verify(coordinator).resetWithListOfTabs(mTabList);
+        verify(coordinator).requestAccessibilityFocusOnCurrentTab();
+    }
+
+    @Test
+    public void testLoadHintPreviewThenCold_stopsTrackingBeforeCleanup() {
+        mTabSwitcherPane.notifyLoadHint(LoadHint.PREVIEW);
+        TabSwitcherPaneCoordinator coordinator = mTabSwitcherPane.getTabSwitcherPaneCoordinator();
+
+        mTabSwitcherPane.notifyLoadHint(LoadHint.COLD);
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+
+        InOrder inOrder = inOrder(coordinator);
+        inOrder.verify(coordinator).prepareHiding();
+        inOrder.verify(coordinator).softCleanup();
+        assertNull(mTabSwitcherPane.getTabSwitcherPaneCoordinator());
     }
 
     @Test

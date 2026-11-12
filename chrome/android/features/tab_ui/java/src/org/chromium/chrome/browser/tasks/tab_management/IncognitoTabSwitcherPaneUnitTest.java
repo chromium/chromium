@@ -338,6 +338,33 @@ public class IncognitoTabSwitcherPaneUnitTest {
     }
 
     @Test
+    public void testLoadHintPreview_inactiveModel_showsTabs() {
+        when(mIncognitoTabModel.isActiveModel()).thenReturn(false);
+
+        mIncognitoTabSwitcherPane.notifyLoadHint(LoadHint.PREVIEW);
+
+        TabSwitcherPaneCoordinator coordinator =
+                mIncognitoTabSwitcherPane.getTabSwitcherPaneCoordinator();
+        verify(coordinator).showPreviewTabs(mTabList);
+        verify(coordinator, never()).requestAccessibilityFocusOnCurrentTab();
+    }
+
+    @Test
+    public void testLoadHintPreview_reauthPending_showsNoTabs() {
+        mIncognitoReauthControllerSupplier.set(mIncognitoReauthController);
+        RobolectricUtil.runAllBackgroundAndUi();
+        when(mIncognitoReauthController.isIncognitoReauthPending()).thenReturn(true);
+        when(mIncognitoReauthController.isReauthPageShowing()).thenReturn(true);
+
+        mIncognitoTabSwitcherPane.notifyLoadHint(LoadHint.PREVIEW);
+
+        TabSwitcherPaneCoordinator coordinator =
+                mIncognitoTabSwitcherPane.getTabSwitcherPaneCoordinator();
+        verify(coordinator).showPreviewTabs(null);
+        assertTrue(mIncognitoTabSwitcherPane.getHubSearchEnabledStateSupplier().get());
+    }
+
+    @Test
     public void testLoadHintColdHot_TabStateNotInitialized() {
         when(mIncognitoTabModel.isActiveModel()).thenReturn(true);
         when(mIncognitoTabModel.isTabStateInitialized()).thenReturn(false);

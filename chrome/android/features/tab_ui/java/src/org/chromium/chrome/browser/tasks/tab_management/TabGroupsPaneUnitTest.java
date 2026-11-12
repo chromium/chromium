@@ -153,6 +153,22 @@ public class TabGroupsPaneUnitTest {
     }
 
     @Test
+    public void testNotifyLoadHint_preview_showsList() {
+        mTabGroupsPane.notifyLoadHint(LoadHint.PREVIEW);
+
+        assertNotEquals(0, mTabGroupsPane.getRootView().getChildCount());
+    }
+
+    @Test
+    public void testNotifyLoadHint_previewThenHot_keepsOneList() {
+        mTabGroupsPane.notifyLoadHint(LoadHint.PREVIEW);
+
+        mTabGroupsPane.notifyLoadHint(LoadHint.HOT);
+
+        assertEquals(1, mTabGroupsPane.getRootView().getChildCount());
+    }
+
+    @Test
     public void testDestroy_WhileHot() {
         mTabGroupsPane.notifyLoadHint(LoadHint.HOT);
         mTabGroupsPane.destroy();
