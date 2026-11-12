@@ -28,6 +28,7 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/search.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "ui/accessibility/platform/ax_platform.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -350,6 +351,16 @@ bool IsWebUIOmniboxInBrowserViewEnabled() {
          kWebUIOmniboxFullPopupUseBrowserView.Get();
 }
 
+bool ShouldHostUnboundedOmniboxInLocationBar() {
+  // TODO(crbug.com/584371333): WebUILocationBar doesn't host the omnibox in
+  // the location bar yet.
+  // The page needs HTMLElement.showUnboundedElement() to pop its dropdown out
+  // of the location bar. Without it the dropdown would be clipped.
+  return internal::IsWebUIOmniboxFullPopupEnabled() &&
+         kWebUIOmniboxFullPopupHostUnboundedInLocationBar.Get() &&
+         base::FeatureList::IsEnabled(blink::features::kUnboundedElement);
+}
+
 bool IsAimPopupFeatureEnabled() {
   return base::FeatureList::IsEnabled(internal::kWebUIOmniboxAimPopup);
 }
@@ -370,7 +381,10 @@ bool ShouldDrawAimShadowInWebUI() {
 }
 
 bool ShouldDrawFullPopupShadowInWebUI() {
-  return base::FeatureList::IsEnabled(kOmniboxFullWebUIShadow);
+  // In the location bar the page fills the location bar, so it reserves no
+  // shadow padding. The popped-out dropdown draws its own shadow in CSS.
+  return base::FeatureList::IsEnabled(kOmniboxFullWebUIShadow) &&
+         !ShouldHostUnboundedOmniboxInLocationBar();
 }
 
 bool ShouldDeferAimShowUntilVisualStateReady() {
@@ -585,6 +599,9 @@ const base::FeatureParam<bool> kContextButtonShowSuggestionLabel{
     "Omnibox_ContextButtonShowSuggestionLabel", false};
 const base::FeatureParam<bool> kWebUIOmniboxFullPopupUseBrowserView{
     &internal::kWebUIOmniboxFullPopup, "Omnibox_UseBrowserView", false};
+const base::FeatureParam<bool> kWebUIOmniboxFullPopupHostUnboundedInLocationBar{
+    &internal::kWebUIOmniboxFullPopup, "Omnibox_HostUnboundedInLocationBar",
+    false};
 const base::FeatureParam<bool> kWebUIOmniboxFullPopupMultiline{
     &internal::kWebUIOmniboxFullPopup, "Omnibox_Multiline", false};
 const base::FeatureParam<bool> kWebUIOmniboxFullPopupDogfoodFeedback{

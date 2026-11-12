@@ -164,6 +164,11 @@ extern const base::FeatureParam<bool> kContextButtonShowSuggestionLabel;
 // If enabled, then the WebUI Omnibox will be rendered in a WebView in the
 // BrowserView.
 extern const base::FeatureParam<bool> kWebUIOmniboxFullPopupUseBrowserView;
+// If enabled, then LocationBarView hosts the Full WebUI Omnibox in a WebView
+// in place of its text field, and the page pops its dropdown out of the
+// toolbar with the Unbounded Element API.
+extern const base::FeatureParam<bool>
+    kWebUIOmniboxFullPopupHostUnboundedInLocationBar;
 extern const base::FeatureParam<bool> kWebUIOmniboxFullPopupMultiline;
 // If enabled, the Full WebUI Omnibox shows a button in the input that opens a
 // form to file dogfood feedback.
@@ -184,6 +189,10 @@ bool ShouldUseWebUIOmniboxFullHandler();
 
 // Returns true if `kWebUIOmniboxInBrowserView` is enabled.
 bool IsWebUIOmniboxInBrowserViewEnabled();
+
+// Returns true if `kWebUIOmniboxFullPopupHostUnboundedInLocationBar` is
+// enabled and Blink's `kUnboundedElement` feature is on.
+bool ShouldHostUnboundedOmniboxInLocationBar();
 
 // Returns true if `kWebUIOmniboxDynamicAiModeButton` is enabled and its
 // `kWebUIOmniboxDynamicAnimation` param is true. Use these rather than reading

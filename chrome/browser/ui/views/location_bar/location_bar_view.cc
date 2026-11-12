@@ -71,6 +71,7 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_closer.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_full_presenter.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_host.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_location_bar_host.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_browser_view.h"
@@ -399,17 +400,26 @@ void LocationBarView::Init() {
       omnibox_popup_view_ =
           std::make_unique<OmniboxPopupViewBrowserView>(this, browser_);
     } else if (is_full_webui_omnibox_) {
-      auto presenter = std::make_unique<OmniboxPopupFullPresenter>(
-          /*location_bar=*/this, /*presenter_delegate=*/*this,
-          omnibox_controller_.get());
-      omnibox_popup_presenter_ = presenter.get();
+      std::unique_ptr<OmniboxPopupHost> popup_host;
+      if (omnibox::ShouldHostUnboundedOmniboxInLocationBar()) {
+        popup_host = std::make_unique<OmniboxPopupLocationBarHost>(
+            *this, *omnibox_controller_);
+      } else {
+        auto presenter = std::make_unique<OmniboxPopupFullPresenter>(
+            /*location_bar=*/this, /*presenter_delegate=*/*this,
+            omnibox_controller_.get());
+        omnibox_popup_presenter_ = presenter.get();
+        popup_host = std::move(presenter);
+      }
       auto popup_view = std::make_unique<OmniboxPopupViewFullWebUI>(
           /*omnibox_view=*/omnibox_view_,
           /*controller=*/omnibox_controller_.get(), /*location_bar=*/this,
-          std::move(presenter),
+          std::move(popup_host),
           base::BindRepeating(&LocationBarView::OnFullWebUiOmniboxReady,
                               weak_factory_.GetWeakPtr()));
-      popup_view->set_presenter(omnibox_popup_presenter_);
+      if (omnibox_popup_presenter_) {
+        popup_view->set_presenter(omnibox_popup_presenter_);
+      }
       omnibox_popup_view_ = std::move(popup_view);
     }
 
