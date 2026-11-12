@@ -283,7 +283,8 @@ TEST_F(StandaloneTrustedVaultClientTest,
   MockTrustedVaultClientObserver observer;
   client->AddObserver(&observer);
 
-  EXPECT_CALL(observer, OnTrustedVaultKeysChanged);
+  EXPECT_CALL(observer,
+              OnTrustedVaultKeysChanged(/*trigger=*/Eq(std::nullopt)));
   StoreKeys(client.get(), account_info.gaia, {kServerKey}, kServerEpoch);
   WaitForIdle(client.get());
   EXPECT_EQ(fake_security_domains_server_->GetMemberCount(),
@@ -327,7 +328,8 @@ TEST_F(StandaloneTrustedVaultClientTest,
 
   // `FetchKeys()` should follow the server side key rotation, notify observers,
   // and register local factors if applicable.
-  EXPECT_CALL(observer, OnTrustedVaultKeysChanged(testing::Eq(std::nullopt)));
+  EXPECT_CALL(observer,
+              OnTrustedVaultKeysChanged(/*trigger=*/Eq(std::nullopt)));
   EXPECT_THAT(FetchKeys(client.get(), account_info),
               ElementsAre(new_epoch_key));
   WaitForIdle(client.get());
@@ -353,7 +355,8 @@ TEST_F(StandaloneTrustedVaultClientTest,
   MockTrustedVaultClientObserver observer;
   client->AddObserver(&observer);
 
-  EXPECT_CALL(observer, OnTrustedVaultKeysChanged);
+  EXPECT_CALL(observer,
+              OnTrustedVaultKeysChanged(/*trigger=*/Eq(std::nullopt)));
   StoreKeys(client.get(), account_info.gaia, {kLocalKeyV1}, kLocalEpochV1);
   WaitForIdle(client.get());
   ASSERT_THAT(FetchKeys(client.get(), account_info), ElementsAre(kLocalKeyV1));
@@ -369,7 +372,8 @@ TEST_F(StandaloneTrustedVaultClientTest,
 
   // Storing retrieved remote keys resolves kLocalDataObsolete and
   // auto-registers the default recovery factors.
-  EXPECT_CALL(observer, OnTrustedVaultKeysChanged);
+  EXPECT_CALL(observer,
+              OnTrustedVaultKeysChanged(/*trigger=*/Eq(std::nullopt)));
   StoreKeys(client.get(), account_info.gaia, {kLocalKeyV1, kRemoteKeyV2},
             kRemoteEpochV2);
   WaitForIdle(client.get());
@@ -422,9 +426,10 @@ TEST_F(StandaloneTrustedVaultClientTest,
 
   // Storing keys in `kChromeSync` should notify only `sync_observer` and
   // propagate the user action trigger.
-  EXPECT_CALL(sync_observer,
-              OnTrustedVaultKeysChanged(
-                  Eq(TrustedVaultUserActionTriggerForUMA::kSettings)));
+  EXPECT_CALL(
+      sync_observer,
+      OnTrustedVaultKeysChanged(
+          /*trigger=*/Eq(TrustedVaultUserActionTriggerForUMA::kSettings)));
   EXPECT_CALL(passkeys_observer, OnTrustedVaultKeysChanged).Times(0);
   sync_client->StoreKeys(account_info.gaia, {kSyncKey}, kServerEpoch,
                          TrustedVaultUserActionTriggerForUMA::kSettings);
@@ -441,7 +446,7 @@ TEST_F(StandaloneTrustedVaultClientTest,
       fake_security_domains_server_->RotateTrustedVaultKey(kSyncKey);
   EXPECT_TRUE(MarkLocalKeysAsStale(sync_client.get(), account_info));
   EXPECT_CALL(sync_observer,
-              OnTrustedVaultKeysChanged(testing::Eq(std::nullopt)));
+              OnTrustedVaultKeysChanged(/*trigger=*/Eq(std::nullopt)));
   EXPECT_CALL(passkeys_observer, OnTrustedVaultKeysChanged).Times(0);
   EXPECT_THAT(FetchKeys(sync_client.get(), account_info),
               ElementsAre(kSyncKey, rotated_sync_key));
@@ -463,8 +468,10 @@ TEST_F(StandaloneTrustedVaultClientTest,
   testing::Mock::VerifyAndClearExpectations(&passkeys_observer);
 
   // Cookie jar changes in IdentityManager should notify all registered clients.
-  EXPECT_CALL(sync_observer, OnTrustedVaultKeysChanged);
-  EXPECT_CALL(passkeys_observer, OnTrustedVaultKeysChanged);
+  EXPECT_CALL(sync_observer,
+              OnTrustedVaultKeysChanged(/*trigger=*/Eq(std::nullopt)));
+  EXPECT_CALL(passkeys_observer,
+              OnTrustedVaultKeysChanged(/*trigger=*/Eq(std::nullopt)));
   identity_test_env_.SetCookieAccounts({});
   testing::Mock::VerifyAndClearExpectations(&sync_observer);
   testing::Mock::VerifyAndClearExpectations(&passkeys_observer);
