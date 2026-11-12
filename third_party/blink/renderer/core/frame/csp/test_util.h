@@ -26,9 +26,11 @@ MATCHER_P2(HasConsole, str, level, "") {
 
 // Simple CSP delegate that stores the console messages logged by the
 // ContentSecurityPolicy context and allows retrieving them.
-class TestCSPDelegate final : public GarbageCollected<TestCSPDelegate>,
-                              public ContentSecurityPolicyDelegate {
+class TestCSPDelegate : public GarbageCollected<TestCSPDelegate>,
+                        public ContentSecurityPolicyDelegate {
  public:
+  virtual ~TestCSPDelegate() = default;
+
   Vector<std::pair<String, ConsoleMessage::Level>>& console_messages() {
     return console_messages_;
   }
@@ -68,7 +70,9 @@ class TestCSPDelegate final : public GarbageCollected<TestCSPDelegate>,
       Vector<network::mojom::blink::ContentSecurityPolicyPtr>) override {}
   bool ScriptSrcExtendedHashesEnabled() override { return false; }
 
-  void Trace(Visitor*) const override {}
+  void Trace(Visitor* visitor) const override {
+    ContentSecurityPolicyDelegate::Trace(visitor);
+  }
 
  private:
   const KURL url_ = KURL("https://example.test/index.html");

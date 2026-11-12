@@ -97,6 +97,26 @@ using network::mojom::ContentSecurityPolicyType;
 
 namespace {
 
+// Snapshots `policies` before iterating.
+//
+// Evaluating or reporting a policy can synchronously notify the inspector or
+// delegate (e.g. ReportBlockedScriptExecutionToInspector), pause in a nested
+// debugger message loop, and re-enter AddPolicies(), reallocating the backing
+// vector and invalidating iterators. Because `policies_` is append-only, raw
+// pointees stay valid.
+//
+// An inline capacity of 4 covers 99.98% of pages (99.93% of pages with CSP,
+// p99.9 = 4) without heap allocation; see https://bit.ly/how-many-csp.
+Vector<const network::mojom::blink::ContentSecurityPolicy*, 4> Snapshot(
+    const Vector<network::mojom::blink::ContentSecurityPolicyPtr>& policies) {
+  Vector<const network::mojom::blink::ContentSecurityPolicy*, 4> snapshot;
+  snapshot.ReserveInitialCapacity(policies.size());
+  for (const auto& policy : policies) {
+    snapshot.push_back(policy.get());
+  }
+  return snapshot;
+}
+
 // Returns true if the given `header_type` should be checked given
 // `check_header_type` and `reporting_disposition`.
 bool CheckHeaderTypeMatches(
@@ -334,9 +354,11 @@ void ContentSecurityPolicy::ApplyPolicySideEffectsToDelegate() {
   // an already-bound CSP) explicitly notifies the browser after this call.
   delegate_->ApplyInsecureRequestPolicy(insecure_request_policy_);
 
-  for (const auto& console_message : console_messages_)
+  ConsoleMessageVector console_messages;
+  console_messages.swap(console_messages_);
+  for (const auto& console_message : console_messages) {
     delegate_->AddConsoleMessage(console_message);
-  console_messages_.clear();
+  }
 
   // We disable 'eval()' even in the case of report-only policies, and rely on
   // the check in the V8Initializer::codeGenerationCheckCallbackInMainThread
@@ -669,7 +691,7 @@ bool ContentSecurityPolicy::AllowInline(
 
   // Step 3. For each policy in element’s Document's global object’s CSP list:
   // [spec text]
-  for (const auto& policy : policies_) {
+  for (const auto* policy : Snapshot(policies_)) {
     // May be allowed by hash, if 'unsafe-hashes' is present in a policy.
     // Check against the digest of the |content| and also check whether inline
     // script is allowed.
@@ -716,14 +738,15 @@ bool ContentSecurityPolicy::AllowEval(
   // or not -- because even in report-only we need to run the checks in order to
   // generate the reports. This, however, is a global property, so we compute it
   // here and pass it to each per-policy check.
+  const auto policies = Snapshot(policies_);
   bool trusted_types_enforced =
-      std::ranges::any_of(policies_, [](const auto& policy) {
+      std::ranges::any_of(policies, [](const auto* policy) {
         return CSPDirectiveListRequiresTrustedTypesEnforcing(*policy);
       });
   bool is_allowed = true;
   Vector<network::IntegrityMetadata> csp_hash_values;
   FillInCSPHashValues(script_content, hash_algorithms_used_, csp_hash_values);
-  for (const auto& policy : policies_) {
+  for (const auto* policy : policies) {
     is_allowed &= CSPDirectiveListAllowEval(
         *policy, this, reporting_disposition, exception_status, script_content,
         csp_hash_values,
@@ -738,7 +761,7 @@ bool ContentSecurityPolicy::AllowWasmCodeGeneration(
     ContentSecurityPolicy::ExceptionStatus exception_status,
     const String& script_content) {
   bool is_allowed = true;
-  for (const auto& policy : policies_) {
+  for (const auto* policy : Snapshot(policies_)) {
     is_allowed &= CSPDirectiveListAllowWasmCodeGeneration(
         *policy, this, reporting_disposition, exception_status, script_content);
   }
@@ -880,7 +903,7 @@ std::optional<CSPDirectiveName> GetDirectiveTypeFromRequestContextType(
 
 // [spec] https://w3c.github.io/webappsec-csp/#does-resource-hint-violate-policy
 bool AllowResourceHintRequestForPolicy(
-    network::mojom::blink::ContentSecurityPolicy& csp,
+    const network::mojom::blink::ContentSecurityPolicy& csp,
     ContentSecurityPolicy* policy,
     const KURL& document_url,
     const KURL& url,
@@ -949,7 +972,7 @@ bool ContentSecurityPolicy::AllowRequest(
   // executing "Does resource hint request violate policy?" on request and
   // policy.
   if (request_context == mojom::blink::RequestContextType::PREFETCH) {
-    return std::ranges::all_of(policies_, [&](const auto& policy) {
+    return std::ranges::all_of(Snapshot(policies_), [&](const auto* policy) {
       return !CheckHeaderTypeMatches(check_header_type, reporting_disposition,
                                      policy->header->type) ||
              AllowResourceHintRequestForPolicy(
@@ -1032,7 +1055,7 @@ bool ContentSecurityPolicy::AllowFromSource(
   }
 
   CSPCheckResult result = CSPCheckResult::Allowed();
-  for (const auto& policy : policies_) {
+  for (const auto* policy : Snapshot(policies_)) {
     if (!CheckHeaderTypeMatches(check_header_type, reporting_disposition,
                                 policy->header->type)) {
       continue;
@@ -1143,7 +1166,7 @@ bool ContentSecurityPolicy::AllowTrustedTypePolicy(
     std::optional<base::UnguessableToken> issue_id) {
   bool is_allowed = true;
   violation_details = AllowTrustedTypePolicyDetails::kAllowed;
-  for (const auto& policy : policies_) {
+  for (const auto* policy : Snapshot(policies_)) {
     if (!CheckHeaderTypeMatches(CheckHeaderType::kCheckAll,
                                 ReportingDisposition::kReport,
                                 policy->header->type)) {
@@ -1171,7 +1194,7 @@ bool ContentSecurityPolicy::AllowTrustedTypeAssignmentFailure(
     const String& sample_prefix,
     std::optional<base::UnguessableToken> issue_id) {
   bool allow = true;
-  for (const auto& policy : policies_) {
+  for (const auto* policy : Snapshot(policies_)) {
     allow &= CSPDirectiveListAllowTrustedTypeAssignmentFailure(
         *policy, this, message, sample, sample_prefix, issue_id);
   }
@@ -1559,7 +1582,7 @@ void ContentSecurityPolicy::PostViolationReport(
 
 void ContentSecurityPolicy::ReportMixedContent(const KURL& blocked_url,
                                                RedirectStatus redirect_status) {
-  for (const auto& policy : policies_) {
+  for (const auto* policy : Snapshot(policies_)) {
     if (policy->block_all_mixed_content) {
       ReportViolation(CSPDirectiveName::BlockAllMixedContent, blocked_url,
                       policy->report_endpoints, policy->use_reporting_api,
