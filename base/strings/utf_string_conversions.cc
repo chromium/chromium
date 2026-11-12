@@ -12,6 +12,7 @@
 #include <concepts>
 #include <ostream>
 #include <string_view>
+#include <tuple>
 #include <type_traits>
 
 #include "base/compiler_specific.h"
@@ -307,26 +308,34 @@ bool UTFConversion(const InputString& src_str, DestString* dest_str) {
 // UTF16 <-> UTF8 --------------------------------------------------------------
 
 bool UTF8ToUTF16(const char* src, size_t src_len, std::u16string* output) {
-  return UTFConversion(std::string_view(src, src_len), output);
+  return UTF8ToUTF16(std::string_view(src, src_len), output);
+}
+
+bool UTF8ToUTF16(std::string_view src, std::u16string* output) {
+  return UTFConversion(src, output);
 }
 
 std::u16string UTF8ToUTF16(std::string_view utf8) {
   std::u16string ret;
   // Ignore the success flag of this call, it will do the best it can for
   // invalid input, which is what we want here.
-  UTF8ToUTF16(utf8.data(), utf8.size(), &ret);
+  std::ignore = UTF8ToUTF16(utf8, &ret);
   return ret;
 }
 
 bool UTF16ToUTF8(const char16_t* src, size_t src_len, std::string* output) {
-  return UTFConversion(std::u16string_view(src, src_len), output);
+  return UTF16ToUTF8(std::u16string_view(src, src_len), output);
+}
+
+bool UTF16ToUTF8(std::u16string_view src, std::string* output) {
+  return UTFConversion(src, output);
 }
 
 std::string UTF16ToUTF8(std::u16string_view utf16) {
   std::string ret;
   // Ignore the success flag of this call, it will do the best it can for
   // invalid input, which is what we want here.
-  UTF16ToUTF8(utf16.data(), utf16.length(), &ret);
+  std::ignore = UTF16ToUTF8(utf16, &ret);
   return ret;
 }
 
@@ -336,7 +345,11 @@ std::string UTF16ToUTF8(std::u16string_view utf16) {
 // When wide == UTF-16 the conversions are a NOP.
 
 bool WideToUTF16(const wchar_t* src, size_t src_len, std::u16string* output) {
-  output->assign(src, UNSAFE_TODO(src + src_len));
+  return WideToUTF16(std::wstring_view(src, src_len), output);
+}
+
+bool WideToUTF16(std::wstring_view src, std::u16string* output) {
+  output->assign(src.begin(), src.end());
   return true;
 }
 
@@ -345,7 +358,11 @@ std::u16string WideToUTF16(std::wstring_view wide) {
 }
 
 bool UTF16ToWide(const char16_t* src, size_t src_len, std::wstring* output) {
-  output->assign(src, UNSAFE_TODO(src + src_len));
+  return UTF16ToWide(std::u16string_view(src, src_len), output);
+}
+
+bool UTF16ToWide(std::u16string_view src, std::wstring* output) {
+  output->assign(src.begin(), src.end());
   return true;
 }
 
@@ -356,26 +373,34 @@ std::wstring UTF16ToWide(std::u16string_view utf16) {
 #elif defined(WCHAR_T_IS_32_BIT)
 
 bool WideToUTF16(const wchar_t* src, size_t src_len, std::u16string* output) {
-  return UTFConversion(std::wstring_view(src, src_len), output);
+  return WideToUTF16(std::wstring_view(src, src_len), output);
+}
+
+bool WideToUTF16(std::wstring_view src, std::u16string* output) {
+  return UTFConversion(src, output);
 }
 
 std::u16string WideToUTF16(std::wstring_view wide) {
   std::u16string ret;
   // Ignore the success flag of this call, it will do the best it can for
   // invalid input, which is what we want here.
-  WideToUTF16(wide.data(), wide.length(), &ret);
+  std::ignore = WideToUTF16(wide, &ret);
   return ret;
 }
 
 bool UTF16ToWide(const char16_t* src, size_t src_len, std::wstring* output) {
-  return UTFConversion(std::u16string_view(src, src_len), output);
+  return UTF16ToWide(std::u16string_view(src, src_len), output);
+}
+
+bool UTF16ToWide(std::u16string_view src, std::wstring* output) {
+  return UTFConversion(src, output);
 }
 
 std::wstring UTF16ToWide(std::u16string_view utf16) {
   std::wstring ret;
   // Ignore the success flag of this call, it will do the best it can for
   // invalid input, which is what we want here.
-  UTF16ToWide(utf16.data(), utf16.length(), &ret);
+  std::ignore = UTF16ToWide(utf16, &ret);
   return ret;
 }
 
@@ -386,14 +411,18 @@ std::wstring UTF16ToWide(std::u16string_view utf16) {
 // UTF8ToWide is the same code, regardless of whether wide is 16 or 32 bits
 
 bool UTF8ToWide(const char* src, size_t src_len, std::wstring* output) {
-  return UTFConversion(std::string_view(src, src_len), output);
+  return UTF8ToWide(std::string_view(src, src_len), output);
+}
+
+bool UTF8ToWide(std::string_view src, std::wstring* output) {
+  return UTFConversion(src, output);
 }
 
 std::wstring UTF8ToWide(std::string_view utf8) {
   std::wstring ret;
   // Ignore the success flag of this call, it will do the best it can for
   // invalid input, which is what we want here.
-  UTF8ToWide(utf8.data(), utf8.length(), &ret);
+  std::ignore = UTF8ToWide(utf8, &ret);
   return ret;
 }
 
@@ -401,7 +430,11 @@ std::wstring UTF8ToWide(std::string_view utf8) {
 // Easy case since we can use the "utf" versions we already wrote above.
 
 bool WideToUTF8(const wchar_t* src, size_t src_len, std::string* output) {
-  return UTF16ToUTF8(as_u16cstr(src), src_len, output);
+  return WideToUTF8(std::wstring_view(src, src_len), output);
+}
+
+bool WideToUTF8(std::wstring_view src, std::string* output) {
+  return UTF16ToUTF8(std::u16string_view(as_u16cstr(src), src.size()), output);
 }
 
 std::string WideToUTF8(std::wstring_view wide) {
@@ -411,14 +444,18 @@ std::string WideToUTF8(std::wstring_view wide) {
 #elif defined(WCHAR_T_IS_32_BIT)
 
 bool WideToUTF8(const wchar_t* src, size_t src_len, std::string* output) {
-  return UTFConversion(std::wstring_view(src, src_len), output);
+  return WideToUTF8(std::wstring_view(src, src_len), output);
+}
+
+bool WideToUTF8(std::wstring_view src, std::string* output) {
+  return UTFConversion(src, output);
 }
 
 std::string WideToUTF8(std::wstring_view wide) {
   std::string ret;
   // Ignore the success flag of this call, it will do the best it can for
   // invalid input, which is what we want here.
-  WideToUTF8(wide.data(), wide.length(), &ret);
+  std::ignore = WideToUTF8(wide, &ret);
   return ret;
 }
 

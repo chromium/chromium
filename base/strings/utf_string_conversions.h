@@ -21,31 +21,59 @@ namespace base {
 // do the best it can and put the result in the output buffer. The versions that
 // return strings ignore this error and just return the best conversion
 // possible.
+
+// DEPRECATED: Use the std::wstring_view overload instead.
+// See https://crbug.com/581500971.
 BASE_EXPORT bool WideToUTF8(const wchar_t* src,
                             size_t src_len,
                             std::string* output);
+[[nodiscard]] BASE_EXPORT bool WideToUTF8(std::wstring_view src,
+                                          std::string* output);
 [[nodiscard]] BASE_EXPORT std::string WideToUTF8(std::wstring_view wide);
+
+// DEPRECATED: Use the std::string_view overload instead.
+// See https://crbug.com/581500971.
 BASE_EXPORT bool UTF8ToWide(const char* src,
                             size_t src_len,
                             std::wstring* output);
+[[nodiscard]] BASE_EXPORT bool UTF8ToWide(std::string_view src,
+                                          std::wstring* output);
 [[nodiscard]] BASE_EXPORT std::wstring UTF8ToWide(std::string_view utf8);
 
+// DEPRECATED: Use the std::wstring_view overload instead.
+// See https://crbug.com/581500971.
 BASE_EXPORT bool WideToUTF16(const wchar_t* src,
                              size_t src_len,
                              std::u16string* output);
+[[nodiscard]] BASE_EXPORT bool WideToUTF16(std::wstring_view src,
+                                           std::u16string* output);
 [[nodiscard]] BASE_EXPORT std::u16string WideToUTF16(std::wstring_view wide);
+
+// DEPRECATED: Use the std::u16string_view overload instead.
+// See https://crbug.com/581500971.
 BASE_EXPORT bool UTF16ToWide(const char16_t* src,
                              size_t src_len,
                              std::wstring* output);
+[[nodiscard]] BASE_EXPORT bool UTF16ToWide(std::u16string_view src,
+                                           std::wstring* output);
 [[nodiscard]] BASE_EXPORT std::wstring UTF16ToWide(std::u16string_view utf16);
 
+// DEPRECATED: Use the std::string_view overload instead.
+// See https://crbug.com/581500971.
 BASE_EXPORT bool UTF8ToUTF16(const char* src,
                              size_t src_len,
                              std::u16string* output);
+[[nodiscard]] BASE_EXPORT bool UTF8ToUTF16(std::string_view src,
+                                           std::u16string* output);
 [[nodiscard]] BASE_EXPORT std::u16string UTF8ToUTF16(std::string_view utf8);
+
+// DEPRECATED: Use the std::u16string_view overload instead.
+// See https://crbug.com/581500971.
 BASE_EXPORT bool UTF16ToUTF8(const char16_t* src,
                              size_t src_len,
                              std::string* output);
+[[nodiscard]] BASE_EXPORT bool UTF16ToUTF8(std::u16string_view src,
+                                           std::string* output);
 [[nodiscard]] BASE_EXPORT std::string UTF16ToUTF8(std::u16string_view utf16);
 
 // This converts an ASCII string, typically a hardcoded constant, to a UTF16

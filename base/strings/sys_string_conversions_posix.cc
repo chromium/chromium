@@ -24,9 +24,7 @@ std::string SysWideToUTF8(const std::wstring& wide) {
 std::wstring SysUTF8ToWide(std::string_view utf8) {
   // In theory this should be using the system-provided conversion rather
   // than our ICU, but this will do for now.
-  std::wstring out;
-  UTF8ToWide(utf8.data(), utf8.size(), &out);
-  return out;
+  return UTF8ToWide(utf8);
 }
 
 #if defined(SYSTEM_NATIVE_UTF8) || BUILDFLAG(IS_ANDROID)

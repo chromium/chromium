@@ -22,7 +22,7 @@ std::optional<std::u16string> ReadUTF8FromVMOAsUTF16(
     return std::nullopt;
   }
   std::u16string output;
-  return UTF8ToUTF16(output_utf8->data(), output_utf8->size(), &output)
+  return UTF8ToUTF16(*output_utf8, &output)
              ? std::optional<std::u16string>(std::move(output))
              : std::nullopt;
 }

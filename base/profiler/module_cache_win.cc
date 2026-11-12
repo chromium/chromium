@@ -9,6 +9,7 @@
 #include <psapi.h>
 
 #include <string>
+#include <string_view>
 
 #include "base/debug/alias.h"
 #include "base/process/process_handle.h"
@@ -51,7 +52,7 @@ void GetDebugInfoForModule(HMODULE module_handle,
   }
 
   FilePath::StringType pdb_filename;
-  if (!UTF8ToWide(pdb_file, pdb_file_length, &pdb_filename)) {
+  if (!UTF8ToWide(std::string_view(pdb_file, pdb_file_length), &pdb_filename)) {
     return;
   }
   *pdb_name = FilePath(std::move(pdb_filename)).BaseName();

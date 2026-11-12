@@ -5,6 +5,7 @@
 #include "base/strings/string_util.h"
 
 #include <cinttypes>
+#include <tuple>
 
 #include "base/features.h"
 #include "base/strings/utf_string_conversions.h"
@@ -63,7 +64,7 @@ void MeasureUTF8ToUTF16(const std::string& name,
   std::u16string output;
   TimeTicks t0 = TimeTicks::Now();
   for (size_t i = 0; i < iterations; ++i) {
-    UTF8ToUTF16(input.data(), input.length(), &output);
+    std::ignore = UTF8ToUTF16(input, &output);
   }
   TimeDelta time = TimeTicks::Now() - t0;
   uint64_t normalized_ms =
@@ -90,7 +91,7 @@ void MeasureUTF16ToUTF8(const std::string& name,
   std::string output;
   TimeTicks t0 = TimeTicks::Now();
   for (size_t i = 0; i < iterations; ++i) {
-    UTF16ToUTF8(input.data(), input.length(), &output);
+    std::ignore = UTF16ToUTF8(input, &output);
   }
   TimeDelta time = TimeTicks::Now() - t0;
   uint64_t normalized_ms =
@@ -117,7 +118,7 @@ void MeasureUTF8ToWide(const std::string& name,
   std::wstring output;
   TimeTicks t0 = TimeTicks::Now();
   for (size_t i = 0; i < iterations; ++i) {
-    UTF8ToWide(input.data(), input.length(), &output);
+    std::ignore = UTF8ToWide(input, &output);
   }
   TimeDelta time = TimeTicks::Now() - t0;
   uint64_t normalized_ms =

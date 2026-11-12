@@ -6,6 +6,9 @@
 
 #include <stddef.h>
 
+#include <string_view>
+#include <tuple>
+
 #include "base/features.h"
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
@@ -122,21 +125,21 @@ TEST(UTFStringConversionsTest, ConvertUTF8ToWide) {
 
   for (const auto& i : convert_cases) {
     std::wstring converted;
-    EXPECT_EQ(i.success, UTF8ToWide(i.utf8, strlen(i.utf8), &converted));
+    EXPECT_EQ(i.success, UTF8ToWide(i.utf8, &converted));
     std::wstring expected(i.wide);
     EXPECT_EQ(expected, converted);
   }
 
   // Manually test an embedded NULL.
   std::wstring converted;
-  EXPECT_TRUE(UTF8ToWide("\00Z\t", 3, &converted));
+  EXPECT_TRUE(UTF8ToWide(std::string_view("\00Z\t", 3), &converted));
   ASSERT_EQ(3U, converted.length());
   EXPECT_EQ(static_cast<wchar_t>(0), converted[0]);
   EXPECT_EQ('Z', converted[1]);
   EXPECT_EQ('\t', converted[2]);
 
   // Make sure that conversion replaces, not appends.
-  EXPECT_TRUE(UTF8ToWide("B", 1, &converted));
+  EXPECT_TRUE(UTF8ToWide("B", &converted));
   ASSERT_EQ(1U, converted.length());
   EXPECT_EQ('B', converted[0]);
 }
@@ -164,8 +167,7 @@ TEST(UTFStringConversionsTest, ConvertUTF16ToUTF8) {
 
   for (const auto& test : convert_cases) {
     std::string converted;
-    EXPECT_EQ(test.success,
-              WideToUTF8(test.utf16, wcslen(test.utf16), &converted));
+    EXPECT_EQ(test.success, WideToUTF8(test.utf16, &converted));
     std::string expected(test.utf8);
     EXPECT_EQ(expected, converted);
   }
@@ -195,8 +197,7 @@ TEST(UTFStringConversionsTest, ConvertUTF32ToUTF8) {
 
   for (const auto& test : convert_cases) {
     std::string converted;
-    EXPECT_EQ(test.success,
-              WideToUTF8(test.utf32, wcslen(test.utf32), &converted));
+    EXPECT_EQ(test.success, WideToUTF8(test.utf32, &converted));
     std::string expected(test.utf8);
     EXPECT_EQ(expected, converted);
   }
@@ -253,14 +254,14 @@ TEST(UTFStringConversionsTest, UTFConversionASCIISequenceGapsCoverage) {
     bool res_fast;
     {
       ScopedFastAsciiFeatureHelper features(true);
-      res_fast = UTF8ToUTF16(str.data(), str.length(), &out_fast);
+      res_fast = UTF8ToUTF16(str, &out_fast);
     }
 
     std::u16string out_legacy;
     bool res_legacy;
     {
       ScopedFastAsciiFeatureHelper features(false);
-      res_legacy = UTF8ToUTF16(str.data(), str.length(), &out_legacy);
+      res_legacy = UTF8ToUTF16(str, &out_legacy);
     }
 
     EXPECT_EQ(res_fast, res_legacy) << "Mismatch in return value for: " << str;
@@ -272,13 +273,15 @@ TEST(UTFStringConversionsTest, UTFConversionASCIISequenceGapsCoverage) {
     std::string out16_legacy;
     {
       ScopedFastAsciiFeatureHelper features(true);
-      UTF16ToUTF8(out_fast.data(), out_fast.length(), &out16_fast);
+      res_fast = UTF16ToUTF8(out_fast, &out16_fast);
     }
     {
       ScopedFastAsciiFeatureHelper features(false);
-      UTF16ToUTF8(out_legacy.data(), out_legacy.length(), &out16_legacy);
+      res_legacy = UTF16ToUTF8(out_legacy, &out16_legacy);
     }
-    EXPECT_EQ(out16_fast, out16_legacy);
+    EXPECT_EQ(res_fast, res_legacy) << "Mismatch in return value for: " << str;
+    EXPECT_EQ(out16_fast, out16_legacy)
+        << "Mismatch in roundtrip output for: " << str;
   }
 }
 
@@ -287,14 +290,14 @@ void UTF8ToUTF16FastPathMatchesLegacy(std::string_view input) {
   bool res_fast;
   {
     ScopedFastAsciiFeatureHelper features(true);
-    res_fast = UTF8ToUTF16(input.data(), input.size(), &out_fast);
+    res_fast = UTF8ToUTF16(input, &out_fast);
   }
 
   std::u16string out_legacy;
   bool res_legacy;
   {
     ScopedFastAsciiFeatureHelper features(false);
-    res_legacy = UTF8ToUTF16(input.data(), input.size(), &out_legacy);
+    res_legacy = UTF8ToUTF16(input, &out_legacy);
   }
 
   EXPECT_EQ(res_fast, res_legacy);
@@ -307,14 +310,14 @@ void UTF16ToUTF8FastPathMatchesLegacy(std::u16string_view input) {
   bool res_fast;
   {
     ScopedFastAsciiFeatureHelper features(true);
-    res_fast = UTF16ToUTF8(input.data(), input.size(), &out_fast);
+    res_fast = UTF16ToUTF8(input, &out_fast);
   }
 
   std::string out_legacy;
   bool res_legacy;
   {
     ScopedFastAsciiFeatureHelper features(false);
-    res_legacy = UTF16ToUTF8(input.data(), input.size(), &out_legacy);
+    res_legacy = UTF16ToUTF8(input, &out_legacy);
   }
 
   EXPECT_EQ(res_fast, res_legacy);
@@ -327,14 +330,14 @@ void UTF8ToWideFastPathMatchesLegacy(std::string_view input) {
   bool res_fast;
   {
     ScopedFastAsciiFeatureHelper features(true);
-    res_fast = UTF8ToWide(input.data(), input.size(), &out_fast);
+    res_fast = UTF8ToWide(input, &out_fast);
   }
 
   std::wstring out_legacy;
   bool res_legacy;
   {
     ScopedFastAsciiFeatureHelper features(false);
-    res_legacy = UTF8ToWide(input.data(), input.size(), &out_legacy);
+    res_legacy = UTF8ToWide(input, &out_legacy);
   }
 
   EXPECT_EQ(res_fast, res_legacy);
@@ -347,14 +350,14 @@ void WideToUTF8FastPathMatchesLegacy(std::wstring_view input) {
   bool res_fast;
   {
     ScopedFastAsciiFeatureHelper features(true);
-    res_fast = WideToUTF8(input.data(), input.size(), &out_fast);
+    res_fast = WideToUTF8(input, &out_fast);
   }
 
   std::string out_legacy;
   bool res_legacy;
   {
     ScopedFastAsciiFeatureHelper features(false);
-    res_legacy = WideToUTF8(input.data(), input.size(), &out_legacy);
+    res_legacy = WideToUTF8(input, &out_legacy);
   }
 
   EXPECT_EQ(res_fast, res_legacy);
@@ -367,14 +370,14 @@ void WideToUTF16FastPathMatchesLegacy(std::wstring_view input) {
   bool res_fast;
   {
     ScopedFastAsciiFeatureHelper features(true);
-    res_fast = WideToUTF16(input.data(), input.size(), &out_fast);
+    res_fast = WideToUTF16(input, &out_fast);
   }
 
   std::u16string out_legacy;
   bool res_legacy;
   {
     ScopedFastAsciiFeatureHelper features(false);
-    res_legacy = WideToUTF16(input.data(), input.size(), &out_legacy);
+    res_legacy = WideToUTF16(input, &out_legacy);
   }
 
   EXPECT_EQ(res_fast, res_legacy);
@@ -387,19 +390,46 @@ void UTF16ToWideFastPathMatchesLegacy(std::u16string_view input) {
   bool res_fast;
   {
     ScopedFastAsciiFeatureHelper features(true);
-    res_fast = UTF16ToWide(input.data(), input.size(), &out_fast);
+    res_fast = UTF16ToWide(input, &out_fast);
   }
 
   std::wstring out_legacy;
   bool res_legacy;
   {
     ScopedFastAsciiFeatureHelper features(false);
-    res_legacy = UTF16ToWide(input.data(), input.size(), &out_legacy);
+    res_legacy = UTF16ToWide(input, &out_legacy);
   }
 
   EXPECT_EQ(res_fast, res_legacy);
   EXPECT_EQ(out_fast, out_legacy);
 }
 FUZZ_TEST(UTFStringConversionsTest, UTF16ToWideFastPathMatchesLegacy);
+
+TEST(UTFStringConversionsTest, ValidatingViewOverloads) {
+  std::u16string out16;
+  EXPECT_TRUE(
+      UTF8ToUTF16(std::string_view("\xe4\xbd\xa0\xe5\xa5\xbd"), &out16));
+  EXPECT_EQ(u"\x4f60\x597d", out16);
+  EXPECT_FALSE(UTF8ToUTF16(std::string_view("\xe4\xa0\xe5\xa5\xbd"), &out16));
+  EXPECT_EQ(u"\xfffd\x597d", out16);
+
+  std::string out8;
+  EXPECT_TRUE(UTF16ToUTF8(std::u16string_view(u"\x4f60\x597d"), &out8));
+  EXPECT_EQ("\xe4\xbd\xa0\xe5\xa5\xbd", out8);
+  EXPECT_FALSE(UTF16ToUTF8(std::u16string_view(u"\xd800\x597d"), &out8));
+  EXPECT_EQ("\xef\xbf\xbd\xe5\xa5\xbd", out8);
+
+  std::wstring out_wide;
+  EXPECT_TRUE(UTF16ToWide(std::u16string_view(u"\x4f60\x597d"), &out_wide));
+  EXPECT_EQ(L"\x4f60\x597d", out_wide);
+  EXPECT_TRUE(WideToUTF16(std::wstring_view(L"\x4f60\x597d"), &out16));
+  EXPECT_EQ(u"\x4f60\x597d", out16);
+#if defined(WCHAR_T_IS_32_BIT)
+  EXPECT_FALSE(UTF16ToWide(std::u16string_view(u"\xd800\x597d"), &out_wide));
+  EXPECT_EQ(L"\xfffd\x597d", out_wide);
+  EXPECT_FALSE(WideToUTF16(std::wstring_view(L"\xd800\x597d"), &out16));
+  EXPECT_EQ(u"\xfffd\x597d", out16);
+#endif
+}
 
 }  // namespace base

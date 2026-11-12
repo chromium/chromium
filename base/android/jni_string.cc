@@ -7,6 +7,7 @@
 #include <array>
 #include <cstdint>
 #include <string_view>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -14,6 +15,7 @@
 #include "base/containers/span.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/utf_string_conversions.h"
 
 namespace {
@@ -41,15 +43,16 @@ void ConvertJavaStringToUTF8(JNIEnv* env, jstring str, std::string* result) {
   int32_t length = env->GetStringLength(str);
 
   // Stack allocation for smallish strings.
-  std::array<uint16_t, kStackBufferSize> stack_buf;
-
-  uint16_t* buf = stack_buf.data();
-  std::vector<uint16_t> heap_buf;
+  std::array<char16_t, kStackBufferSize> stack_buf;
+  std::vector<char16_t> heap_buf;
+  base::span<char16_t> buf;
 
   // Heap allocation for large ones.
   if (length > kStackBufferSize) {
-    heap_buf.resize(static_cast<size_t>(length));
-    buf = heap_buf.data();
+    heap_buf.resize(base::checked_cast<size_t>(length));
+    buf = heap_buf;
+  } else {
+    buf = base::span(stack_buf).first(base::checked_cast<size_t>(length));
   }
 
   // Why use GetStringRegion():
@@ -58,9 +61,8 @@ void ConvertJavaStringToUTF8(JNIEnv* env, jstring str, std::string* result) {
   //  * `GetStringCharsCritical()` does the same for strings that internally
   //    stored as "compressed" (no multi-byte chars).
   //  * `GetStringUTFRegion()` returns modified UTF-8, which is not helpful.
-  env->GetStringRegion(str, 0, length, buf);
-  UTF16ToUTF8(reinterpret_cast<const char16_t*>(buf),
-              static_cast<size_t>(length), result);
+  env->GetStringRegion(str, 0, length, reinterpret_cast<uint16_t*>(buf.data()));
+  std::ignore = UTF16ToUTF8(base::as_string_view(buf), result);
   CheckException(env);
 }
 
