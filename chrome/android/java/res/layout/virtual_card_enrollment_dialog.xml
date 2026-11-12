@@ -21,21 +21,40 @@ found in the LICENSE file.
         android:layout_centerHorizontal="true"
         android:importantForAccessibility="no" />
 
-    <androidx.appcompat.widget.DialogTitle
-        android:id="@+id/dialog_title"
+    <LinearLayout
+        android:id="@+id/title_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/secure_illustration_view"
         android:layout_marginTop="@dimen/virtual_card_enrollment_dialog_title_margin_top"
-        tools:text="Make it more secure with a virtual card?"
-        android:textAppearance="@style/TextAppearance.AlertDialogTitleStyle" />
+        android:orientation="horizontal">
+
+        <androidx.appcompat.widget.DialogTitle
+            android:id="@+id/dialog_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            tools:text="Make it more secure with a virtual card?"
+            android:textAppearance="@style/TextAppearance.AlertDialogTitleStyle" />
+
+        <ImageView
+            android:id="@+id/title_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="20dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="6dp"
+            android:adjustViewBounds="true"
+            android:scaleType="fitEnd"
+            android:visibility="gone"
+            android:contentDescription="@string/autofill_from_google_account" />
+    </LinearLayout>
 
     <RelativeLayout
         android:id="@+id/card_container"
         android:background="@drawable/card_container_background"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/dialog_title"
+        android:layout_below="@id/title_container"
         android:layout_marginTop="@dimen/virtual_card_enrollment_dialog_description_margin_top"
         android:padding="@dimen/virtual_card_enrollment_dialog_card_container_padding">
 

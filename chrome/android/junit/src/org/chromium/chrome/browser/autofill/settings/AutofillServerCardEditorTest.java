@@ -92,7 +92,10 @@ import org.chromium.url.GURL;
 @RunWith(BaseRobolectricTestRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DisableFeatures(ChromeFeatureList.AUTOFILL_ENABLE_WALLET_BRANDING_V2)
-@EnableFeatures(ChromeFeatureList.CCT_DONT_OVERRIDE_INTENT_MIME_TYPE)
+@EnableFeatures({
+    ChromeFeatureList.AUTOFILL_ENABLE_GRADIENT_GOOGLE_LOGOS,
+    ChromeFeatureList.CCT_DONT_OVERRIDE_INTENT_MIME_TYPE
+})
 public class AutofillServerCardEditorTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();

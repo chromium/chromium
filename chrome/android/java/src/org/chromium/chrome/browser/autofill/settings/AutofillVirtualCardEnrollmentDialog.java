@@ -8,6 +8,7 @@ import android.content.Context;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.chromium.base.Callback;
@@ -90,6 +91,14 @@ public class AutofillVirtualCardEnrollmentDialog {
             titleTextView.setText(
                     mContext.getString(
                             R.string.autofill_virtual_card_enrollment_dialog_title_label_v2));
+        } else if (ChromeFeatureList.isEnabled(
+                AutofillFeatures.AUTOFILL_ENABLE_GRADIENT_GOOGLE_LOGOS)) {
+            titleTextView.setText(
+                    mContext.getString(
+                            R.string.autofill_virtual_card_enrollment_dialog_title_label));
+            ImageView titleIconView = customView.findViewById(R.id.title_icon);
+            titleIconView.setVisibility(View.VISIBLE);
+            titleIconView.setImageResource(R.drawable.googlepay_with_gradient);
         } else {
             AutofillUiUtils.inlineTitleStringWithLogo(
                     mContext,

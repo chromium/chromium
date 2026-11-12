@@ -9,11 +9,13 @@ import static com.google.common.truth.Truth.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
 import android.text.SpannableString;
 import android.text.style.ImageSpan;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -49,9 +51,8 @@ import java.util.List;
 
 /** Unit tests for {@link AutofillVirtualCardEnrollmentDialog}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@DisableFeatures({
-    AutofillFeatures.AUTOFILL_ENABLE_WALLET_BRANDING_V2,
-})
+@DisableFeatures({AutofillFeatures.AUTOFILL_ENABLE_WALLET_BRANDING_V2})
+@EnableFeatures({AutofillFeatures.AUTOFILL_ENABLE_GRADIENT_GOOGLE_LOGOS})
 public class AutofillVirtualCardEnrollmentDialogTest {
     private static final String LEGAL_MESSAGE_URL = "http://www.google.com";
     private static final String ACCEPT_BUTTON_TEXT = "Yes";
@@ -252,8 +253,11 @@ public class AutofillVirtualCardEnrollmentDialogTest {
     }
 
     @Test
-    @DisableFeatures({AutofillFeatures.AUTOFILL_ENABLE_WALLET_BRANDING_V2})
-    public void dialogTitle_WalletBrandingV2Disabled() {
+    @DisableFeatures({
+        AutofillFeatures.AUTOFILL_ENABLE_WALLET_BRANDING_V2,
+        AutofillFeatures.AUTOFILL_ENABLE_GRADIENT_GOOGLE_LOGOS
+    })
+    public void dialogTitle_WithGooglePayLogo() {
         // Create activity.
         Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
         // Create a new AutofillVirtualCardEnrollmentDialog with Activity as the context instead.
@@ -279,6 +283,42 @@ public class AutofillVirtualCardEnrollmentDialogTest {
         SpannableString spannableTitle = (SpannableString) titleText;
         ImageSpan[] imageSpans = spannableTitle.getSpans(0, 1, ImageSpan.class);
         assertThat(imageSpans).hasLength(1);
+        assertThat(shadowOf(imageSpans[0].getDrawable()).getCreatedFromResId())
+                .isEqualTo(R.drawable.google_pay_with_divider);
+        View customView =
+                mModalDialogManager.getShownDialogModel().get(ModalDialogProperties.CUSTOM_VIEW);
+        assertThat(customView.findViewById(R.id.title_icon).getVisibility()).isEqualTo(View.GONE);
+    }
+
+    @Test
+    @DisableFeatures({AutofillFeatures.AUTOFILL_ENABLE_WALLET_BRANDING_V2})
+    @EnableFeatures({AutofillFeatures.AUTOFILL_ENABLE_GRADIENT_GOOGLE_LOGOS})
+    public void dialogTitle_WithGradientGooglePayLogo() {
+        // Create activity.
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        // Create a new AutofillVirtualCardEnrollmentDialog with Activity as the context instead.
+        mDialog =
+                new AutofillVirtualCardEnrollmentDialog(
+                        activity,
+                        mModalDialogManager,
+                        mImageFetcher,
+                        mVirtualCardEnrollmentFields,
+                        ACCEPT_BUTTON_TEXT,
+                        DECLINE_BUTTON_TEXT,
+                        mOnLinkClickedMock,
+                        mResultHandlerMock);
+        mDialog.show();
+        // Make sure that the dialog was shown properly.
+        assertThat(mModalDialogManager.getShownDialogModel()).isNotNull();
+        // Assert that the text of the title is correct and the right-aligned icon is shown.
+        assertThat(getTitleTextFromCurrentDialog().toString())
+                .isEqualTo("Make it more secure with a virtual card next time?");
+        View customView =
+                mModalDialogManager.getShownDialogModel().get(ModalDialogProperties.CUSTOM_VIEW);
+        ImageView titleIconView = customView.findViewById(R.id.title_icon);
+        assertThat(titleIconView.getVisibility()).isEqualTo(View.VISIBLE);
+        assertThat(shadowOf(titleIconView.getDrawable()).getCreatedFromResId())
+                .isEqualTo(R.drawable.googlepay_with_gradient);
     }
 
     @Test
