@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.paint_preview;
 
 import android.os.SystemClock;
+import android.util.SparseArray;
 
 import androidx.annotation.IntDef;
 
@@ -15,8 +16,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.paintpreview.player.CompositorStatus;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.function.Supplier;
 
 /** Helper class for recording metrics related to TabbedPaintPreview. */
@@ -53,6 +52,7 @@ public class StartupPaintPreviewMetrics {
     public interface PaintPreviewMetricsObserver {
         /**
          * Called on the first paint of a paint preview
+         *
          * @param durationMs duration from activity creation to first paint. Reported in millis.
          */
         void onFirstPaint(long durationMs);
@@ -64,7 +64,7 @@ public class StartupPaintPreviewMetrics {
         void onUnrecordedFirstPaint();
     }
 
-    private static final Map<Integer, String> UPTIME_HISTOGRAM_MAP = new HashMap<>();
+    private static final SparseArray<String> UPTIME_HISTOGRAM_MAP = new SparseArray<>();
 
     static {
         UPTIME_HISTOGRAM_MAP.put(
@@ -151,10 +151,11 @@ public class StartupPaintPreviewMetrics {
                 "Browser.PaintPreview.TabbedPlayer.SnackbarCount", snackbarShownCount);
         RecordHistogram.recordEnumeratedHistogram(
                 "Browser.PaintPreview.TabbedPlayer.ExitCause", exitCause, ExitCause.COUNT);
-        if (mShownTime == 0 || !UPTIME_HISTOGRAM_MAP.containsKey(exitCause)) return;
+        String histogram = UPTIME_HISTOGRAM_MAP.get(exitCause);
+        if (mShownTime == 0 || histogram == null) return;
 
         long upTime = System.currentTimeMillis() - mShownTime;
-        RecordHistogram.recordLongTimesHistogram(UPTIME_HISTOGRAM_MAP.get(exitCause), upTime);
+        RecordHistogram.recordLongTimesHistogram(histogram, upTime);
     }
 
     void addMetricsObserver(PaintPreviewMetricsObserver observer) {
