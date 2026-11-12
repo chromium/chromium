@@ -8,10 +8,12 @@
 #include <vector>
 
 #include "base/test/scoped_command_line.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/switches.h"
@@ -152,6 +154,9 @@ TEST(WebUIOriginAccessTest, HostPermissionOptIns) {
 TEST(WebUIOriginAccessTest, HostPermissionOptInsRequireTrust) {
   // --extensions-on-chrome-urls lets any extension declare chrome:// host
   // permissions, but declaring them doesn't grant access without trust.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      extensions_features::kDisableExtensionsOnChromeUrlsSwitch);
   base::test::ScopedCommandLine command_line;
   command_line.GetProcessCommandLine()->AppendSwitch(
       switches::kExtensionsOnChromeURLs);
