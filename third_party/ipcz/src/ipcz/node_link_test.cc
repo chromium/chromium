@@ -8,10 +8,12 @@
 
 #include "ipcz/driver_memory.h"
 #include "ipcz/features.h"
+#include "ipcz/ipcz.h"
 #include "ipcz/link_side.h"
 #include "ipcz/link_type.h"
 #include "ipcz/node_link_memory.h"
 #include "ipcz/node_messages.h"
+#include "ipcz/parcel.h"
 #include "ipcz/remote_router_link.h"
 #include "ipcz/router.h"
 #include "ipcz/sublink_id.h"
@@ -168,6 +170,61 @@ TEST_F(NodeLinkTest, BasicTransmissionWithMessage) {
   EXPECT_EQ(IPCZ_RESULT_OK, result);
   EXPECT_EQ(sizeof(kMessage), received_data_size);
   EXPECT_STREQ("hello", received_data);
+
+  router0->CloseRoute();
+  router1->CloseRoute();
+
+  link0->Deactivate();
+  link1->Deactivate();
+}
+
+TEST_F(NodeLinkTest, TransmissionWithNoParcelCapacity) {
+  // Only node1 disables shared memory for the parcel data it allocates.
+  const IpczCreateNodeOptions options = {
+      .size = sizeof(options),
+      .memory_flags = IPCZ_MEMORY_NO_PARCEL_CAPACITY,
+  };
+  Ref<Node> node0 = MakeRefCounted<Node>(Node::Type::kBroker, GetDriver());
+  Ref<Node> node1 =
+      MakeRefCounted<Node>(Node::Type::kNormal, GetDriver(), &options);
+
+  auto [link0, link1] = LinkNodes(node0, node1);
+  auto [router0, router1] = AttachRouters(link0, link1);
+
+  // Parcel data allocated by node0 uses the link's shared memory, while parcel
+  // data allocated by node1 falls back to the heap.
+  Parcel parcel0;
+  parcel0.AllocateData(sizeof(kMessage), /*allow_partial=*/false,
+                       &link0->memory());
+  EXPECT_TRUE(parcel0.has_data_fragment());
+
+  Parcel parcel1;
+  parcel1.AllocateData(sizeof(kMessage), /*allow_partial=*/false,
+                       &link1->memory());
+  EXPECT_FALSE(parcel1.has_data_fragment());
+  EXPECT_EQ(sizeof(kMessage), parcel1.data_view().size());
+
+  auto expect_transfer = [](Router& from, Router& to) {
+    EXPECT_EQ(IPCZ_RESULT_OK, from.Put(MessageSpan(), {}));
+
+    IpczPortalStatus status = {.size = sizeof(status)};
+    to.QueryStatus(status);
+    EXPECT_EQ(1u, status.num_local_parcels);
+    EXPECT_EQ(sizeof(kMessage), status.num_local_bytes);
+
+    char received_data[100] = {};
+    size_t received_data_size = sizeof(received_data);
+    EXPECT_EQ(IPCZ_RESULT_OK, to.Get(0, received_data, &received_data_size,
+                                     nullptr, nullptr, nullptr));
+    EXPECT_EQ(sizeof(kMessage), received_data_size);
+    EXPECT_STREQ("hello", received_data);
+  };
+
+  // Send from router0 to router1.
+  expect_transfer(*router0, *router1);
+
+  // Send in the reverse direction.
+  expect_transfer(*router1, *router0);
 
   router0->CloseRoute();
   router1->CloseRoute();

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <bit>
 #include <cstring>
 #include <string>
 
@@ -162,6 +163,31 @@ TEST_F(APITest, CreateNode) {
             ipcz().CreateNode(&GetDefaultDriver(), IPCZ_CREATE_NODE_AS_BROKER,
                               &options, &node));
   EXPECT_EQ(IPCZ_RESULT_OK, ipcz().Close(node, IPCZ_NO_FLAGS, nullptr));
+}
+
+TEST_F(APITest, CreateNodeParcelCapacityPolicies) {
+  // Try every combination of the four parcel capacity policy flags (bits 0-3)
+  // along with an unrelated flag, which is ignored. Only combinations with at
+  // most one policy flag are valid.
+  static_assert((IPCZ_MEMORY_FIXED_PARCEL_CAPACITY |
+                 IPCZ_MEMORY_NO_PARCEL_CAPACITY |
+                 IPCZ_MEMORY_EXPAND_PARCEL_CAPACITY_ONCE |
+                 IPCZ_MEMORY_RESTRICTED_DYNAMIC_PARCEL_CAPACITY) == 0xf);
+  for (IpczMemoryFlags bits = 0; bits < 16; ++bits) {
+    const IpczCreateNodeOptions options = {
+        .size = sizeof(options),
+        .memory_flags = bits | (IpczMemoryFlags{1} << 31),
+    };
+    IpczHandle node;
+    const IpczResult result =
+        ipcz().CreateNode(&GetDefaultDriver(), IPCZ_NO_FLAGS, &options, &node);
+    if (std::popcount(bits) <= 1) {
+      ASSERT_EQ(IPCZ_RESULT_OK, result);
+      EXPECT_EQ(IPCZ_RESULT_OK, ipcz().Close(node, IPCZ_NO_FLAGS, nullptr));
+    } else {
+      EXPECT_EQ(IPCZ_RESULT_INVALID_ARGUMENT, result);
+    }
+  }
 }
 
 TEST_F(APITest, ConnectNodeInvalid) {

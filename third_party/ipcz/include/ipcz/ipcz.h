@@ -470,6 +470,19 @@ class IpczDriver {
 // Flags which may be passed via the `memory_flags` field of
 // IpczCreateNodeOptions to configure features of ipcz internal memory
 // allocation and usage.
+//
+// IPCZ_MEMORY_FIXED_PARCEL_CAPACITY, IPCZ_MEMORY_NO_PARCEL_CAPACITY,
+// IPCZ_MEMORY_EXPAND_PARCEL_CAPACITY_ONCE, and
+// IPCZ_MEMORY_RESTRICTED_DYNAMIC_PARCEL_CAPACITY select mutually exclusive
+// parcel capacity policies, and CreateNode() rejects options which set more
+// than one of them. If none of them is set, a node expands the shared memory
+// pools it uses to allocate parcel data on demand.
+//
+// The capacity limits described below apply to each node link's shared memory
+// pool as a whole: capacity added by either node, including capacity for
+// internal link state, counts toward them. Each node applies its own policy
+// against its current view of the pool, so concurrent expansion by both nodes,
+// or expansion by a node using a different policy, may exceed these limits.
 typedef uint32_t IpczMemoryFlags;
 
 // If this flag is set, the node will not attempt to expand the shared memory
@@ -480,6 +493,29 @@ typedef uint32_t IpczMemoryFlags;
 // constant. Note that memory may still be expanded to facilitate new portal
 // links as needed.
 #define IPCZ_MEMORY_FIXED_PARCEL_CAPACITY ((IpczMemoryFlags)(1 << 0))
+
+// If this flag is set, the node will not use shared memory for any parcel data
+// it allocates, so its application messages to other nodes always fall back
+// onto driver I/O for transmission. Parcels from nodes without this flag may
+// still use shared memory. Note that capacity for 64-byte blocks may still be
+// expanded to facilitate new portal links as needed.
+#define IPCZ_MEMORY_NO_PARCEL_CAPACITY ((IpczMemoryFlags)(1 << 1))
+
+// If this flag is set, the node will expand the shared memory pools it uses to
+// allocate parcel data at most once per block size per node link, and only for
+// block sizes from 128 bytes to 32 KB, inclusive. Parcel data of other block
+// sizes never expands the pools. Note that capacity for 64-byte blocks may
+// still be expanded to facilitate new portal links as needed.
+#define IPCZ_MEMORY_EXPAND_PARCEL_CAPACITY_ONCE ((IpczMemoryFlags)(1 << 2))
+
+// If this flag is set, the node will expand the shared memory pools it uses to
+// allocate parcel data only for block sizes up to 64 KB, and only up to a limit
+// of 512 KB of usable capacity per block size per node link, including the
+// link's initial capacity for that block size. Note that capacity for 64-byte
+// blocks may still be expanded beyond this limit to facilitate new portal links
+// as needed.
+#define IPCZ_MEMORY_RESTRICTED_DYNAMIC_PARCEL_CAPACITY \
+  ((IpczMemoryFlags)(1 << 3))
 
 // Feature identifiers which may be passed through IpczCreateNodeOptions to
 // control dynamic runtime features.
@@ -896,8 +932,9 @@ class IpczAPI {
   //    IPCZ_RESULT_OK if a new node was created. In this case, `*node` is
   //        populated with a valid node handle upon return.
   //
-  //    IPCZ_RESULT_INVALID_ARGUMENT if `node` is null, or `driver` is null or
-  //        invalid.
+  //    IPCZ_RESULT_INVALID_ARGUMENT if `node` is null, `driver` is null or
+  //        invalid, or `options` sets more than one of the mutually exclusive
+  //        parcel capacity policy flags described with IpczMemoryFlags.
   //
   //    IPCZ_RESULT_UNIMPLEMENTED if some condition of the runtime environment
   //        or architecture-specific details of the ipcz build would prevent it

@@ -137,6 +137,12 @@ IpczResult IpczAPIImpl::CreateNode(const IpczDriver* driver,
     return IPCZ_RESULT_INVALID_ARGUMENT;
   }
 
+  if (options &&
+      !ipcz::NodeLinkMemory::GetParcelCapacityPolicy(options->memory_flags)) {
+    // More than one parcel capacity policy flag is set.
+    return IPCZ_RESULT_INVALID_ARGUMENT;
+  }
+
   // ipcz relies on lock-free implementations of both 32-bit and 64-bit atomics,
   // assuming any applicable alignment requirements are met. This is not
   // required by the standard, but it is a reasonable expectation for modern

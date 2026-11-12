@@ -51,6 +51,18 @@ constexpr size_t kMinBlockAllocatorCapacity = 8;
 // automatically in response to failed allocation requests.
 constexpr size_t kMaxBlockAllocatorCapacityPerFragmentSize = 2 * 1024 * 1024;
 
+// The maximum block size eligible for a single dynamic expansion when
+// IPCZ_MEMORY_EXPAND_PARCEL_CAPACITY_ONCE is enabled. Each node using this mode
+// adds at most one dynamic buffer for each eligible block size, so if both
+// nodes use it, a link may end up with up to two such buffers (one per node).
+constexpr size_t kMaxSingleExpansionBlockSize = 32 * 1024;
+
+// The restricted maximum total BlockAllocator capacity to automatically reserve
+// for any given fragment size when
+// IPCZ_MEMORY_RESTRICTED_DYNAMIC_PARCEL_CAPACITY is enabled.
+constexpr size_t kRestrictedMaxBlockAllocatorCapacityPerFragmentSize =
+    512 * 1024;
+
 // The minimum fragment size (in bytes) to support with dedicated BufferPool
 // capacity. All fragment sizes are powers of two. Fragment allocations below
 // this size are rounded up to this size.
@@ -101,6 +113,24 @@ uint32_t ToOffset(void* ptr, void* base) {
 // `fragment_size` bytes.
 size_t GetBlockSizeForFragmentSize(size_t fragment_size) {
   return std::max(kMinFragmentSize, absl::bit_ceil(fragment_size));
+}
+
+// Returns the byte size of one new shared memory buffer which adds capacity
+// for blocks of `block_size` bytes to the BufferPool: the smallest multiple of
+// kBlockAllocatorPageSize which can fit at least kMinBlockAllocatorCapacity
+// such blocks.
+size_t GetNewBufferSize(size_t block_size) {
+  const size_t min_buffer_size = block_size * kMinBlockAllocatorCapacity;
+  const size_t num_pages =
+      (min_buffer_size + kBlockAllocatorPageSize - 1) / kBlockAllocatorPageSize;
+  return num_pages * kBlockAllocatorPageSize;
+}
+
+// Returns the usable block capacity in bytes of one new shared memory buffer
+// for blocks of `block_size` bytes, excluding the single block reserved by
+// BlockAllocator for its header.
+size_t GetNewBufferBlockCapacity(size_t block_size) {
+  return GetNewBufferSize(block_size) - block_size;
 }
 
 }  // namespace
@@ -161,9 +191,11 @@ NodeLinkMemory::NodeLinkMemory(Ref<Node> node,
     : node_(std::move(node)),
       link_side_(side),
       available_features_(node_->features().Intersect(remote_features)),
-      allow_memory_expansion_for_parcel_data_(
-          (node_->options().memory_flags & IPCZ_MEMORY_FIXED_PARCEL_CAPACITY) ==
-          0),
+      // CreateNode() rejects multiple parcel capacity policy flags, but nodes
+      // constructed directly (e.g. by tests) bypass it and fall back to kFixed.
+      parcel_capacity_policy_(
+          GetParcelCapacityPolicy(node_->options().memory_flags)
+              .value_or(ParcelCapacityPolicy::kFixed)),
       primary_buffer_memory_(primary_buffer_memory.bytes()),
       primary_buffer_(
           *reinterpret_cast<PrimaryBuffer*>(primary_buffer_memory_.data())) {
@@ -253,6 +285,30 @@ Ref<NodeLinkMemory> NodeLinkMemory::Create(Ref<Node> node,
                                      std::move(memory)));
 }
 
+// static
+std::optional<NodeLinkMemory::ParcelCapacityPolicy>
+NodeLinkMemory::GetParcelCapacityPolicy(IpczMemoryFlags memory_flags) {
+  constexpr IpczMemoryFlags kPolicyFlags =
+      IPCZ_MEMORY_FIXED_PARCEL_CAPACITY | IPCZ_MEMORY_NO_PARCEL_CAPACITY |
+      IPCZ_MEMORY_EXPAND_PARCEL_CAPACITY_ONCE |
+      IPCZ_MEMORY_RESTRICTED_DYNAMIC_PARCEL_CAPACITY;
+  switch (memory_flags & kPolicyFlags) {
+    case 0:
+      return ParcelCapacityPolicy::kDynamic;
+    case IPCZ_MEMORY_FIXED_PARCEL_CAPACITY:
+      return ParcelCapacityPolicy::kFixed;
+    case IPCZ_MEMORY_NO_PARCEL_CAPACITY:
+      return ParcelCapacityPolicy::kNoCapacity;
+    case IPCZ_MEMORY_EXPAND_PARCEL_CAPACITY_ONCE:
+      return ParcelCapacityPolicy::kExpandOnce;
+    case IPCZ_MEMORY_RESTRICTED_DYNAMIC_PARCEL_CAPACITY:
+      return ParcelCapacityPolicy::kRestrictedDynamic;
+    default:
+      // More than one policy flag is set.
+      return std::nullopt;
+  }
+}
+
 BufferId NodeLinkMemory::AllocateNewBufferId() {
   if (available_features_.mem_v2()) {
     const uint64_t side_bit =
@@ -312,6 +368,11 @@ bool NodeLinkMemory::AddBlockBuffer(BufferId id,
 }
 
 Fragment NodeLinkMemory::AllocateFragmentInternal(size_t size) {
+  if (parcel_capacity_policy_ == ParcelCapacityPolicy::kNoCapacity) {
+    // This node never allocates parcel data from shared memory.
+    return {};
+  }
+
   if (size == 0 || size > kMaxFragmentSizeForBlockAllocation) {
     // TODO: Support an alternative allocation scheme for large requests.
     return {};
@@ -414,15 +475,25 @@ void NodeLinkMemory::NotifyLinkDisconnected() {
   buffer_pool_.DropPendingBufferCallbacks();
 }
 
+size_t NodeLinkMemory::TotalBlockCountForTesting(size_t block_size) {
+  return buffer_pool_.GetTotalBlockCapacity(block_size) / block_size;
+}
+
+// static
+size_t NodeLinkMemory::NewBufferBlockCountForTesting(size_t block_size) {
+  return GetNewBufferBlockCapacity(block_size) / block_size;
+}
+
 void NodeLinkMemory::MaybeExpandParcelBlockCapacity(size_t block_size) {
-  if (!allow_memory_expansion_for_parcel_data_) {
+  if (parcel_capacity_policy_ == ParcelCapacityPolicy::kFixed ||
+      parcel_capacity_policy_ == ParcelCapacityPolicy::kNoCapacity) {
     return;
   }
 
   Ref<NodeLink> link;
   {
     absl::MutexLock lock(&mutex_);
-    if (!CanExpandBlockCapacity(block_size)) {
+    if (!CanExpandBlockCapacityLocked(block_size)) {
       return;
     }
     link = StartCapacityRequestLocked(block_size, /*callback=*/nullptr);
@@ -433,10 +504,33 @@ void NodeLinkMemory::MaybeExpandParcelBlockCapacity(size_t block_size) {
   }
 }
 
-bool NodeLinkMemory::CanExpandBlockCapacity(size_t block_size) {
-  return allow_memory_expansion_for_parcel_data_ &&
-         buffer_pool_.GetTotalBlockCapacity(block_size) <
-             kMaxBlockAllocatorCapacityPerFragmentSize;
+bool NodeLinkMemory::CanExpandBlockCapacityLocked(size_t block_size) {
+  // Each policy below is evaluated against this node's current view of the
+  // link's shared pool capacity for `block_size`, including buffers added by
+  // the remote node and buffers added for RouterLinkState allocation. That view
+  // may not yet include capacity the remote node just added, so concurrent
+  // expansion by both nodes, or expansion by a remote node using a different
+  // policy, may exceed these limits.
+  switch (parcel_capacity_policy_) {
+    case ParcelCapacityPolicy::kDynamic:
+      break;
+
+    case ParcelCapacityPolicy::kFixed:
+    case ParcelCapacityPolicy::kNoCapacity:
+      return false;
+
+    case ParcelCapacityPolicy::kExpandOnce:
+      return block_size <= kMaxSingleExpansionBlockSize &&
+             buffer_pool_.GetTotalBlockCapacity(block_size) <
+                 GetNewBufferBlockCapacity(block_size);
+
+    case ParcelCapacityPolicy::kRestrictedDynamic:
+      return buffer_pool_.GetTotalBlockCapacity(block_size) +
+                 GetNewBufferBlockCapacity(block_size) <=
+             kRestrictedMaxBlockAllocatorCapacityPerFragmentSize;
+  }
+  return buffer_pool_.GetTotalBlockCapacity(block_size) <
+         kMaxBlockAllocatorCapacityPerFragmentSize;
 }
 
 void NodeLinkMemory::RequestBlockCapacity(
@@ -476,10 +570,7 @@ Ref<NodeLink> NodeLinkMemory::StartCapacityRequestLocked(
 
 void NodeLinkMemory::AllocateBlockBuffer(Ref<NodeLink> link,
                                          size_t block_size) {
-  const size_t min_buffer_size = block_size * kMinBlockAllocatorCapacity;
-  const size_t num_pages =
-      (min_buffer_size + kBlockAllocatorPageSize - 1) / kBlockAllocatorPageSize;
-  const size_t buffer_size = num_pages * kBlockAllocatorPageSize;
+  const size_t buffer_size = GetNewBufferSize(block_size);
   node_->AllocateSharedMemory(
       buffer_size, [self = WrapRefCounted(this), block_size,
                     link = std::move(link)](DriverMemory memory) {
