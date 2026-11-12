@@ -129,15 +129,6 @@ class PolicyStorage {
     policy_invalidation_topic_ = policy_invalidation_topic;
   }
 
-  const std::optional<enterprise_management::PolicyData::MarketSegment>
-  market_segment() const {
-    return market_segment_;
-  }
-  void set_market_segment(
-      enterprise_management::PolicyData::MarketSegment segment) {
-    market_segment_ = segment;
-  }
-
   const std::optional<enterprise_management::PolicyData::MetricsLogSegment>
   metrics_log_segment() const {
     return metrics_log_segment_;
@@ -247,8 +238,6 @@ class PolicyStorage {
 
   std::string policy_invalidation_topic_;
 
-  std::optional<enterprise_management::PolicyData::MarketSegment>
-      market_segment_;
   std::optional<enterprise_management::PolicyData::MetricsLogSegment>
       metrics_log_segment_;
   std::optional<

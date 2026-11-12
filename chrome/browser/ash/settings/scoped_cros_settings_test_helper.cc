@@ -7,22 +7,16 @@
 #include <memory>
 
 #include "base/check.h"
-#include "base/functional/callback_helpers.h"
 #include "base/values.h"
 #include "chrome/browser/ash/ownership/fake_owner_settings_service.h"
-#include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/settings/cros_settings_holder.h"
 #include "chrome/browser/ash/settings/device_settings_provider.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/ash/settings/scoped_test_device_settings_service.h"
 #include "chrome/browser/browser_process.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
-#include "chromeos/ash/components/settings/device_settings_cache.h"
 #include "chromeos/ash/components/settings/user_login_permission_tracker.h"
 #include "components/ownership/mock_owner_key_util.h"
-#include "components/policy/proto/chrome_device_policy.pb.h"
-#include "components/policy/proto/device_management_backend.pb.h"
-#include "components/prefs/pref_service.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -112,34 +106,6 @@ void ScopedCrosSettingsTestHelper::SetDouble(const std::string& path,
 void ScopedCrosSettingsTestHelper::SetString(const std::string& path,
                                              const std::string& in_value) {
   Set(path, base::Value(in_value));
-}
-
-void ScopedCrosSettingsTestHelper::StoreCachedDeviceSetting(
-    const std::string& path) {
-  const base::Value* const value = stub_settings_provider_ptr_->Get(path);
-  if (value) {
-    enterprise_management::PolicyData data;
-    enterprise_management::ChromeDeviceSettingsProto settings;
-    if (device_settings_cache::Retrieve(&data,
-                                        g_browser_process->local_state())) {
-      CHECK(settings.ParseFromString(data.policy_value()));
-    }
-    OwnerSettingsServiceAsh::UpdateDeviceSettings(path, *value, settings);
-    CHECK(settings.SerializeToString(data.mutable_policy_value()));
-    CHECK(device_settings_cache::Store(data, g_browser_process->local_state()));
-    g_browser_process->local_state()->CommitPendingWrite(base::DoNothing(),
-                                                         base::DoNothing());
-  }
-}
-
-void ScopedCrosSettingsTestHelper::CopyStoredValue(const std::string& path) {
-  CrosSettingsProvider* provider = real_settings_provider_
-                                       ? real_settings_provider_.get()
-                                       : CrosSettings::Get()->GetProvider(path);
-  const base::Value* const value = provider->Get(path);
-  if (value) {
-    stub_settings_provider_ptr_->Set(path, *value);
-  }
 }
 
 StubInstallAttributes* ScopedCrosSettingsTestHelper::InstallAttributes() {

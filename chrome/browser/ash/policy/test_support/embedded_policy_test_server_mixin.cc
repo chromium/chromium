@@ -198,11 +198,6 @@ void EmbeddedPolicyTestServerMixin::SetAvailableLicenses(
       has_kiosk_license);
 }
 
-void EmbeddedPolicyTestServerMixin::SetMarketSegment(
-    enterprise_management::PolicyData::MarketSegment segment) {
-  policy_test_server_->policy_storage()->set_market_segment(segment);
-}
-
 void EmbeddedPolicyTestServerMixin::SetMetricsLogSegment(
     enterprise_management::PolicyData::MetricsLogSegment segment) {
   policy_test_server_->policy_storage()->set_metrics_log_segment(segment);
@@ -305,13 +300,6 @@ void EmbeddedPolicyTestServerMixin::MarkUserAsManaged(
          "considered managed";
   policy_test_server_->policy_storage()->add_managed_user(
       account_id.GetUserEmail());
-}
-
-void EmbeddedPolicyTestServerMixin::MarkAllUsersAsManaged() {
-  CHECK(capabilities_.contains(PER_USER_MANAGEMENT_STATUS))
-      << "Without PER_USER_MANAGEMENT_STATUS capability all users are "
-         "considered managed";
-  policy_test_server_->policy_storage()->add_managed_user("*");
 }
 
 }  // namespace ash

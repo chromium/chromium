@@ -104,7 +104,6 @@ static_library("test_support") {
     "//chromeos/dbus/power",
     "//chromeos/dbus/tpm_manager",
     "//components/policy/proto",
-    "//components/prefs",
     "//components/user_manager",
     "//content/public/browser",
     "//content/test:test_support",

@@ -196,7 +196,6 @@ static_library("test_support") {
     "//chromeos/ash/components/settings:test_support",
     "//chromeos/dbus/constants",
     "//components/policy:generated",
-    "//components/policy/core/browser",
     "//components/policy/core/common",
     "//components/policy/core/common:common_constants",
     "//components/policy/core/common:test_support",

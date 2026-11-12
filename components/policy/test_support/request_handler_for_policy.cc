@@ -259,10 +259,6 @@ bool RequestHandlerForPolicy::ProcessCloudPolicy(
         policy_data.add_device_affiliation_ids(device_affiliation_id);
       }
     }
-    if (policy_storage()->market_segment()) {
-      policy_data.set_market_segment(
-          policy_storage()->market_segment().value());
-    }
   }
 
   std::string directory_api_id = policy_storage()->directory_api_id();

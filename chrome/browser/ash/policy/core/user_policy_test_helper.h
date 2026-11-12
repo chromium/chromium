@@ -38,11 +38,6 @@ class UserPolicyTestHelper {
 
   void SetPolicy(const enterprise_management::CloudPolicySettings& policy);
 
-  // Can be optionally used to wait for the initial policy to be applied to the
-  // profile. Alternatively, a login can be simulated, which makes it
-  // unnecessary to call this function.
-  void WaitForInitialPolicy(Profile* profile);
-
   // Updates the policy test server with the given policy. Then calls
   // RefreshPolicyAndWait().
   void SetPolicyAndWait(

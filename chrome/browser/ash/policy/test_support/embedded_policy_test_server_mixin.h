@@ -120,10 +120,6 @@ class EmbeddedPolicyTestServerMixin : public InProcessBrowserTestMixin {
   // Sets which types of licenses are possible to use for enrollment.
   void SetAvailableLicenses(bool has_enterpise_license, bool has_kiosk_license);
 
-  // Sets market segment for the device, this information is provided via policy
-  // metadata.
-  void SetMarketSegment(
-      enterprise_management::PolicyData::MarketSegment segment);
   // Sets metric segment for the user, this information is provided via policy
   // metadata.
   void SetMetricsLogSegment(
@@ -177,7 +173,6 @@ class EmbeddedPolicyTestServerMixin : public InProcessBrowserTestMixin {
   // Methods used in conjunction with PER_USER_MANAGEMENT_STATUS capability.
   // Allow to mark individual/all users as managed.
   void MarkUserAsManaged(const AccountId& account_id);
-  void MarkAllUsersAsManaged();
 
  private:
   std::unique_ptr<policy::EmbeddedPolicyTestServer> policy_test_server_;
