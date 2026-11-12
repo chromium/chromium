@@ -283,7 +283,7 @@ class CORE_EXPORT HTMLCanvasElement final
 
   // OffscreenCanvasPlaceholder implementation.
   void SetOffscreenCanvasResource(
-      scoped_refptr<ExportedCanvasResource>&&) override;
+      scoped_refptr<ExportedCanvasResource>) override;
 
   // Accessibility support related functions.
   void OnAxObjectIgnoredStateChanged(bool is_ignored);

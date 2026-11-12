@@ -185,7 +185,7 @@ CanvasResourceSharedImage::CreateForTesting(
 }
 
 void CanvasResourceSharedImage::OnRefReturned(
-    scoped_refptr<CanvasResource>&& resource) {
+    scoped_refptr<CanvasResource> resource) {
   // Create a downcast ref to the resource as a CanvasResourceSI to pass over to
   // the provider.
   auto downcast_ref = scoped_refptr<CanvasResourceSharedImage>(this);

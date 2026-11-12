@@ -826,7 +826,7 @@ bool OffscreenCanvas::PushFrameIfNeeded() {
 }
 
 bool OffscreenCanvas::PushFrame(
-    scoped_refptr<ExportedCanvasResource>&& exported_resource) {
+    scoped_refptr<ExportedCanvasResource> exported_resource) {
   TRACE_EVENT0("blink", "OffscreenCanvas::PushFrame");
   DCHECK(needs_push_frame_);
   needs_push_frame_ = false;

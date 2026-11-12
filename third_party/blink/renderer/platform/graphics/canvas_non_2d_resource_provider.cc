@@ -373,7 +373,7 @@ void CanvasNon2DResourceProvider::OnFlushForImage(
 }
 
 void CanvasNon2DResourceProvider::OnResourceRefReturned(
-    scoped_refptr<CanvasResourceSharedImage>&& resource) {
+    scoped_refptr<CanvasResourceSharedImage> resource) {
   if (!resource->IsLost() && resource->HasOneRef() && image_pool_) {
     image_pool_->ReleaseImage(std::move(resource));
   }
@@ -601,7 +601,7 @@ scoped_refptr<StaticBitmapImage> CanvasNon2DResourceProvider::Snapshot() {
     // the ref-count on the resource as a proxy for a read lock to allow
     // recycling the resource once all refs have been released.
     auto release_callback = base::BindOnce(
-        [](scoped_refptr<CanvasResourceSharedImage>&& resource,
+        [](scoped_refptr<CanvasResourceSharedImage> resource,
            const gpu::SyncToken& sync_token, bool lost_resource) {
           CHECK(resource);
           CHECK(!lost_resource);

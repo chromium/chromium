@@ -153,7 +153,7 @@ class PLATFORM_EXPORT CanvasNon2DResourceProvider
   void OnContextDestroyed() override;
 
   void OnResourceRefReturned(
-      scoped_refptr<CanvasResourceSharedImage>&& resource) override;
+      scoped_refptr<CanvasResourceSharedImage> resource) override;
   void OnDestroyResource() override { --num_inflight_resources_; }
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd) override;
   size_t GetSize() const override;

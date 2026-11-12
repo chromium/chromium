@@ -81,11 +81,11 @@ enum class CanvasResourceProviderType {
 class PLATFORM_EXPORT CanvasResource : public gpu::ClientImage {
  public:
   using ReleaseCallback = base::OnceCallback<void(
-      scoped_refptr<blink::CanvasResource>&& canvas_resource,
+      scoped_refptr<blink::CanvasResource> canvas_resource,
       const gpu::SyncToken& sync_token,
       bool is_lost)>;
 
-  virtual void OnRefReturned(scoped_refptr<CanvasResource>&& resource) {}
+  virtual void OnRefReturned(scoped_refptr<CanvasResource> resource) {}
 
   static void DropRefOnOwningThread(scoped_refptr<CanvasResource> resource);
 
@@ -133,7 +133,7 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
    public:
     virtual ~Client() = default;
     virtual void OnResourceRefReturned(
-        scoped_refptr<CanvasResourceSharedImage>&& resource) = 0;
+        scoped_refptr<CanvasResourceSharedImage> resource) = 0;
     virtual void OnDestroyResource() = 0;
   };
 
@@ -163,7 +163,7 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
                   bool is_accelerated);
   bool IsInitialized() const { return is_initialized_; }
 
-  void OnRefReturned(scoped_refptr<CanvasResource>&& resource) final;
+  void OnRefReturned(scoped_refptr<CanvasResource> resource) final;
   const gfx::HDRMetadata& GetHdrMetadata() const final { return hdr_metadata_; }
 
   // Save (and wait on) this sync token on the context used by this resource for

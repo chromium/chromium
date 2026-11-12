@@ -96,7 +96,7 @@ class PLATFORM_EXPORT CanvasHibernationHandler {
 
   void InitiateHibernationIfNecessary();
 
-  void SaveForHibernation(sk_sp<SkImage>&& image,
+  void SaveForHibernation(sk_sp<SkImage> image,
                           base::MemoryReductionTaskContext context,
                           base::TimeDelta delay);
   // Returns the uncompressed image for this hibernation image. Does not

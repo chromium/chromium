@@ -73,7 +73,7 @@ CanvasResourceDispatcher::CanvasResourceDispatcher(
 CanvasResourceDispatcher::~CanvasResourceDispatcher() = default;
 
 void CanvasResourceDispatcher::DispatchFrame(
-    scoped_refptr<ExportedCanvasResource>&& exported_resource,
+    scoped_refptr<ExportedCanvasResource> exported_resource,
     const gfx::Rect& damage_rect,
     bool is_opaque) {
   TRACE_EVENT0("blink", "CanvasResourceDispatcher::DispatchFrame");
@@ -93,7 +93,7 @@ void CanvasResourceDispatcher::DispatchFrame(
 }
 
 void CanvasResourceDispatcher::PrepareFrame(
-    scoped_refptr<ExportedCanvasResource>&& exported_resource,
+    scoped_refptr<ExportedCanvasResource> exported_resource,
     const gfx::Rect& damage_rect,
     bool is_opaque,
     viz::CompositorFrame* frame) {

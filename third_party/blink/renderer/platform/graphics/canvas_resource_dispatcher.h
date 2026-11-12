@@ -67,7 +67,7 @@ class PLATFORM_EXPORT CanvasResourceDispatcher
     return animation_state_ ==
            OffscreenCanvasPlaceholder::AnimationState::kSuspended;
   }
-  void DispatchFrame(scoped_refptr<ExportedCanvasResource>&&,
+  void DispatchFrame(scoped_refptr<ExportedCanvasResource>,
                      const gfx::Rect& damage_rect,
                      bool is_opaque);
   void ReplaceBeginFrameAck(const viz::BeginFrameArgs& args) {
@@ -98,7 +98,7 @@ class PLATFORM_EXPORT CanvasResourceDispatcher
   using ExportedResourceMap =
       HashMap<viz::ResourceId, scoped_refptr<ExportedCanvasResource>>;
 
-  void PrepareFrame(scoped_refptr<ExportedCanvasResource>&&,
+  void PrepareFrame(scoped_refptr<ExportedCanvasResource>,
                     const gfx::Rect& damage_rect,
                     bool is_opaque,
                     viz::CompositorFrame* frame);

@@ -38,7 +38,7 @@ class MockPlaceholderClient : public OffscreenCanvasPlaceholder::Client {
   }
 
   void PostImageToPlaceholder(
-      scoped_refptr<ExportedCanvasResource>&& resource) override {
+      scoped_refptr<ExportedCanvasResource> resource) override {
     OffscreenCanvasPlaceholder::Client::PostImageToPlaceholder(
         std::move(resource));
     OnPostImageToPlaceholder();

@@ -56,7 +56,7 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
   void ClearUnusedResources();
 
   void OnResourceRefReturned(
-      scoped_refptr<CanvasResourceSharedImage>&& resource) override;
+      scoped_refptr<CanvasResourceSharedImage> resource) override;
   void OnDestroyResource() override { --num_inflight_resources_; }
 
   base::WeakPtr<Canvas2DResourceProvider> CreateWeakPtr();

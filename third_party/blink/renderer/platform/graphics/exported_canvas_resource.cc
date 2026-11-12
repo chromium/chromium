@@ -52,7 +52,7 @@ ExportedCanvasResource::~ExportedCanvasResource() {
 
 // static
 void ExportedCanvasResource::OnPlaceholderReleasedResource(
-    scoped_refptr<ExportedCanvasResource>&& exported_resource) {
+    scoped_refptr<ExportedCanvasResource> exported_resource) {
   if (!exported_resource) {
     return;
   }
@@ -134,7 +134,7 @@ scoped_refptr<StaticBitmapImage> ExportedCanvasResource::Bitmap() {
     // the ref-count on the resource as a proxy for a read lock to allow
     // recycling the resource once all refs have been released.
     auto release_callback = base::BindOnce(
-        [](scoped_refptr<ExportedCanvasResource>&& exported_resource,
+        [](scoped_refptr<ExportedCanvasResource> exported_resource,
            const gpu::SyncToken& sync_token, bool lost_resource) {
           exported_resource->last_access_sync_token_ = sync_token;
           if (exported_resource->wait_sync_token_) {

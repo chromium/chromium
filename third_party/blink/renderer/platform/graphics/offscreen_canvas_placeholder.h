@@ -59,8 +59,7 @@ class PLATFORM_EXPORT OffscreenCanvasPlaceholder {
 
    protected:
     // virtual and protected for testing
-    virtual void PostImageToPlaceholder(
-        scoped_refptr<ExportedCanvasResource>&&);
+    virtual void PostImageToPlaceholder(scoped_refptr<ExportedCanvasResource>);
     // virtual for mocking
     virtual void OnMainThreadReceivedImage();
 
@@ -81,7 +80,7 @@ class PLATFORM_EXPORT OffscreenCanvasPlaceholder {
         base::WeakPtr<Client> client,
         scoped_refptr<base::SingleThreadTaskRunner> task_runner,
         DOMNodeId placeholder_canvas_id,
-        scoped_refptr<blink::ExportedCanvasResource>&& canvas_resource);
+        scoped_refptr<blink::ExportedCanvasResource> canvas_resource);
 
     base::RepeatingClosure animation_state_callback_;
 
@@ -107,7 +106,7 @@ class PLATFORM_EXPORT OffscreenCanvasPlaceholder {
   ~OffscreenCanvasPlaceholder();
 
   virtual void SetOffscreenCanvasResource(
-      scoped_refptr<ExportedCanvasResource>&&);
+      scoped_refptr<ExportedCanvasResource>);
   void SetClient(base::WeakPtr<Client>,
                  scoped_refptr<base::SingleThreadTaskRunner>);
 

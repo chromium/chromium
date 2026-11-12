@@ -32,7 +32,7 @@ class PLATFORM_EXPORT ExportedCanvasResource
   ~ExportedCanvasResource();
 
   static void OnPlaceholderReleasedResource(
-      scoped_refptr<ExportedCanvasResource>&& resource);
+      scoped_refptr<ExportedCanvasResource> resource);
 
   gfx::Size Size() const;
   bool OriginClean() const;

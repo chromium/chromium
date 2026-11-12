@@ -2090,7 +2090,7 @@ ScriptPromise<ImageBitmap> HTMLCanvasElement::CreateImageBitmap(
 }
 
 void HTMLCanvasElement::SetOffscreenCanvasResource(
-    scoped_refptr<ExportedCanvasResource>&& image) {
+    scoped_refptr<ExportedCanvasResource> image) {
   OffscreenCanvasPlaceholder::SetOffscreenCanvasResource(std::move(image));
   SetSize(OffscreenCanvasFrame()->Size());
   NotifyOutOfBandFrame();

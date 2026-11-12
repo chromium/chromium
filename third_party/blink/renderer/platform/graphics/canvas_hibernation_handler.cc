@@ -132,7 +132,7 @@ CanvasHibernationHandler::~CanvasHibernationHandler() {
 }
 
 void CanvasHibernationHandler::SaveForHibernation(
-    sk_sp<SkImage>&& image,
+    sk_sp<SkImage> image,
     base::MemoryReductionTaskContext context,
     base::TimeDelta delay) {
   DCheckInvariant();

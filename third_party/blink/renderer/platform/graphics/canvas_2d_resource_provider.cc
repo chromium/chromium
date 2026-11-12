@@ -64,7 +64,7 @@ Canvas2DResourceProvider::CreateWeakPtr() {
 }
 
 void Canvas2DResourceProvider::OnResourceRefReturned(
-    scoped_refptr<CanvasResourceSharedImage>&& resource) {
+    scoped_refptr<CanvasResourceSharedImage> resource) {
   if (!resource->IsLost() && resource->HasOneRef() &&
       resource_recycling_enabled_ && image_pool_) {
     image_pool_->ReleaseImage(std::move(resource));

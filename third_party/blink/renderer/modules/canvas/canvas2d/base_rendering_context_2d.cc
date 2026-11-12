@@ -1067,7 +1067,7 @@ scoped_refptr<StaticBitmapImage> BaseRenderingContext2D::Snapshot() {
       // the ref-count on the resource as a proxy for a read lock to allow
       // recycling the resource once all refs have been released.
       auto release_callback = blink::BindOnce(
-          [](scoped_refptr<CanvasResourceSharedImage>&& resource,
+          [](scoped_refptr<CanvasResourceSharedImage> resource,
              const gpu::SyncToken& sync_token, bool lost_resource) {
             CHECK(resource);
 

@@ -44,7 +44,7 @@ void OffscreenCanvasPlaceholder::Client::UpdatePlaceholderImage(
     base::WeakPtr<OffscreenCanvasPlaceholder::Client> client,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     DOMNodeId placeholder_canvas_id,
-    scoped_refptr<blink::ExportedCanvasResource>&& canvas_resource) {
+    scoped_refptr<blink::ExportedCanvasResource> canvas_resource) {
   DCHECK(IsMainThread());
 
   OffscreenCanvasPlaceholder* placeholder_canvas =
@@ -73,7 +73,7 @@ void OffscreenCanvasPlaceholder::Client::DispatchFrame(
 }
 
 void OffscreenCanvasPlaceholder::Client::PostImageToPlaceholder(
-    scoped_refptr<ExportedCanvasResource>&& canvas_resource) {
+    scoped_refptr<ExportedCanvasResource> canvas_resource) {
   CHECK(placeholder_task_runner_);
   PostCrossThreadTask(
       *placeholder_task_runner_, FROM_HERE,
@@ -144,7 +144,7 @@ OffscreenCanvasPlaceholder::~OffscreenCanvasPlaceholder() {
 }
 
 void OffscreenCanvasPlaceholder::SetOffscreenCanvasResource(
-    scoped_refptr<ExportedCanvasResource>&& new_frame) {
+    scoped_refptr<ExportedCanvasResource> new_frame) {
   DCHECK(IsOffscreenCanvasRegistered());
   DCHECK(new_frame);
 
