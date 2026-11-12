@@ -91,22 +91,6 @@ TEST_F(PageNodeImplTest, RemoveFrame) {
   EXPECT_EQ(0u, GraphImplOperations::GetFrameNodes(page_node.get()).size());
 }
 
-TEST_F(PageNodeImplTest, GetLastVisibilityChangeTime) {
-  MockSinglePageInSingleProcessGraph mock_graph(graph());
-
-  base::TimeTicks t0 = base::TimeTicks::Now();
-  mock_graph.page->SetIsVisible(true);
-  EXPECT_TRUE(mock_graph.page->IsVisible());
-  AdvanceClock(base::Seconds(42));
-  EXPECT_EQ(t0, mock_graph.page->GetLastVisibilityChangeTime());
-
-  base::TimeTicks t1 = base::TimeTicks::Now();
-  mock_graph.page->SetIsVisible(false);
-  AdvanceClock(base::Seconds(23));
-  EXPECT_EQ(t1, mock_graph.page->GetLastVisibilityChangeTime());
-  EXPECT_FALSE(mock_graph.page->IsVisible());
-}
-
 TEST_F(PageNodeImplTest, GetTimeSinceLastAudibleChange) {
   MockSinglePageInSingleProcessGraph mock_graph(graph());
   EXPECT_FALSE(mock_graph.page->IsAudible());
@@ -284,6 +268,30 @@ using ::testing::InSequence;
 using ::testing::Invoke;
 
 }  // namespace
+
+TEST_F(PageNodeImplTest, GetVisibilityState) {
+  MockSinglePageInSingleProcessGraph mock_graph(graph());
+
+  base::TimeTicks t0 = base::TimeTicks::Now();
+  mock_graph.page->SetIsVisible(true);
+  EXPECT_TRUE(mock_graph.page->IsVisible());
+  AdvanceClock(base::Seconds(42));
+  EXPECT_EQ((PageNode::VisibilityState{true, t0}),
+            mock_graph.page->GetVisibilityState());
+
+  base::TimeTicks t1 = base::TimeTicks::Now();
+  MockObserver obs(graph());
+  EXPECT_CALL(obs, OnIsVisibleChanged(ToPublic(mock_graph.page.get())))
+      .WillOnce([&](const PageNode* page_node) {
+        EXPECT_EQ((PageNode::VisibilityState{false, t1}),
+                  page_node->GetVisibilityState());
+      });
+  mock_graph.page->SetIsVisible(false);
+  AdvanceClock(base::Seconds(23));
+  EXPECT_EQ((PageNode::VisibilityState{false, t1}),
+            mock_graph.page->GetVisibilityState());
+  EXPECT_FALSE(mock_graph.page->IsVisible());
+}
 
 TEST_F(PageNodeImplTest, ObserverWorks) {
   auto process = CreateNode<ProcessNodeImpl>();

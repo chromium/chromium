@@ -180,9 +180,11 @@ PageDiscardingHelper::DiscardMultiplePagesImpl(
         !discard_protected_tabs) {
       continue;
     }
+    auto [is_visible, last_visibility_change_time] =
+        page_node->GetVisibilityState();
     candidates.emplace_back(page_node->GetWeakPtr(), can_discard_result,
-                            page_node->IsVisible(), page_node->IsFocused(),
-                            page_node->GetLastVisibilityChangeTime());
+                            is_visible, page_node->IsFocused(),
+                            last_visibility_change_time);
   }
 
   // Sorts with descending importance.

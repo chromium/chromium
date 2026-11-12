@@ -181,7 +181,7 @@ bool SiteDataNodeData::ShouldRecordFeatureUsageEvent(FeatureType feature_type) {
          heuristics.IsInBackground(page_node_) &&
          heuristics.IsOutsideBackgroundingGracePeriod(
              page_node_, feature_type,
-             now - page_node_->GetLastVisibilityChangeTime());
+             now - page_node_->GetVisibilityState().last_change_time);
 }
 
 void SiteDataNodeData::MaybeNotifyBackgroundFeatureUsage(

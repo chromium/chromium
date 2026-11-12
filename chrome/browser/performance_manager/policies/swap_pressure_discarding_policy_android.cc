@@ -358,9 +358,9 @@ bool SwapPressureDiscardingPolicyAndroid::DiscardUnderSwapPressure(
   std::vector<PageNodeSortProxy> candidates;
   candidates.reserve(live_tabs.size());
   for (const PageNode* page_node : live_tabs) {
-    if (!page_node->IsVisible() &&
-        (now - page_node->GetLastVisibilityChangeTime()) <
-            kMinTimeInBackground) {
+    auto [is_visible, visibility_change_time] = page_node->GetVisibilityState();
+    if (!is_visible &&
+        (now - visibility_change_time) < kMinTimeInBackground) {
       has_aging_background_tab = true;
     }
 
@@ -371,9 +371,8 @@ bool SwapPressureDiscardingPolicyAndroid::DiscardUnderSwapPressure(
     if (can_discard != CanDiscardResult::kEligible) {
       continue;
     }
-    candidates.emplace_back(page_node->GetWeakPtr(), can_discard,
-                            page_node->IsVisible(), page_node->IsFocused(),
-                            page_node->GetLastVisibilityChangeTime());
+    candidates.emplace_back(page_node->GetWeakPtr(), can_discard, is_visible,
+                            page_node->IsFocused(), visibility_change_time);
   }
 
   if (candidates.empty()) {
@@ -414,7 +413,7 @@ bool SwapPressureDiscardingPolicyAndroid::DiscardUnderSwapPressure(
     target_estimated_reclaimed += footprint;
     candidate_infos.push_back(DiscardCandidateInfo{
         .page_node = std::move(weak_node),
-        .time_in_bg = now - node->GetLastVisibilityChangeTime(),
+        .time_in_bg = now - node->GetVisibilityState().last_change_time,
         .estimated_footprint = footprint,
     });
   }

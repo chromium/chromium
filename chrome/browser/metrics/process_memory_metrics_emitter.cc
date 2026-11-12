@@ -1911,12 +1911,14 @@ ProcessMemoryMetricsEmitter::GetProcessToPageInfoMap(
       PageInfo& page_info = process_info.page_infos.emplace_back();
       page_info.ukm_source_id = page_node->GetUkmSourceID();
 
+      auto [is_visible, last_visibility_change_time] =
+          page_node->GetVisibilityState();
       page_info.tab_id = tab_id;
       page_info.hosts_main_frame = HostsMainFrame(process_node, page_node);
-      page_info.is_visible = page_node->IsVisible();
+      page_info.is_visible = is_visible;
       page_info.is_1p_ntp = Is1pNtpUrl(page_node->GetMainFrameUrl());
       page_info.time_since_last_visibility_change =
-          now - page_node->GetLastVisibilityChangeTime();
+          now - last_visibility_change_time;
       page_info.time_since_last_navigation =
           page_node->GetTimeSinceLastNavigation();
     }

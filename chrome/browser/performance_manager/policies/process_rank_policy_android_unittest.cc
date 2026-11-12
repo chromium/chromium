@@ -744,8 +744,9 @@ TEST_F(ProcessRankPolicyAndroidTest, ProtectRecentlyVisibleTab) {
 
   page_graph.page.get()->SetIsFocused(false);
 
-  // Make the page visible then invisible.
+  // Make the page visible for longer than `kDuration`, then invisible.
   page_graph.page.get()->SetIsVisible(true);
+  task_environment()->FastForwardBy(kDuration * 2);
   page_graph.page.get()->SetIsVisible(false);
 
   // The page should be protected because it was recently visible.

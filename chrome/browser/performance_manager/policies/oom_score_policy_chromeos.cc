@@ -79,11 +79,12 @@ void OomScorePolicyChromeOS::HandlePageNodeEvents() {
   for (const PageNode* page_node : all_page_nodes) {
     CanDiscardResult can_discard_result = eligibility_policy->CanDiscard(
         page_node, DiscardEligibilityPolicy::DiscardReason::URGENT);
-    bool is_visible = page_node->IsVisible();
+    auto [is_visible, last_visibility_change_time] =
+        page_node->GetVisibilityState();
     bool is_focused = page_node->IsFocused();
     candidates.emplace_back(page_node->GetWeakPtr(), can_discard_result,
                             is_visible, is_focused,
-                            page_node->GetLastVisibilityChangeTime());
+                            last_visibility_change_time);
   }
 
   // Sorts with descending importance.

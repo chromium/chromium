@@ -133,11 +133,13 @@ void TerminationTargetPolicy::UpdateTerminationTarget(
           policies::CanDiscardResult::kEligible) {
         target.can_discard = false;
       }
-      if (page_node->IsVisible()) {
+      auto [is_visible, last_visibility_change_time] =
+          page_node->GetVisibilityState();
+      if (is_visible) {
         target.last_visible_time = base::TimeTicks::Max();
       } else {
-        target.last_visible_time = std::max(
-            target.last_visible_time, page_node->GetLastVisibilityChangeTime());
+        target.last_visible_time =
+            std::max(target.last_visible_time, last_visibility_change_time);
       }
     }
   }

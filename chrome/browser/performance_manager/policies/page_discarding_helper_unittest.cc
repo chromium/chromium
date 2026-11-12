@@ -312,8 +312,8 @@ TEST_F(PageDiscardingHelperTest, DiscardAPageTwoCandidates) {
   page_node2->SetIsVisible(false);
   AdvanceClock(base::Minutes(30));
   EXPECT_EQ(kEligible, CanDiscard(page_node2.get(), DiscardReason::URGENT));
-  EXPECT_LT(page_node()->GetLastVisibilityChangeTime(),
-            page_node2->GetLastVisibilityChangeTime());
+  EXPECT_LT(page_node()->GetVisibilityState().last_change_time,
+            page_node2->GetVisibilityState().last_change_time);
 
   process_node()->set_resident_set(base::MiB(1));
   process_node2->set_resident_set(base::MiB(2));
@@ -393,8 +393,8 @@ TEST_F(PageDiscardingHelperTest, DiscardAPageTwoCandidatesNoRSSData) {
   page_node()->SetIsVisible(false);
   AdvanceClock(base::Minutes(30));
   EXPECT_EQ(kEligible, CanDiscard(page_node(), DiscardReason::URGENT));
-  EXPECT_LT(page_node2->GetLastVisibilityChangeTime(),
-            page_node()->GetLastVisibilityChangeTime());
+  EXPECT_LT(page_node2->GetVisibilityState().last_change_time,
+            page_node()->GetVisibilityState().last_change_time);
 
   // |page_node2| should be discarded as there's no RSS data for any of the
   // pages and it's the least recently visible page.
@@ -422,8 +422,8 @@ TEST_F(PageDiscardingHelperTest, DiscardMultiplePagesTwoCandidatesNoRSSData) {
   page_node()->SetIsVisible(false);
   AdvanceClock(base::Minutes(30));
   EXPECT_EQ(kEligible, CanDiscard(page_node(), DiscardReason::URGENT));
-  EXPECT_LT(page_node2->GetLastVisibilityChangeTime(),
-            page_node()->GetLastVisibilityChangeTime());
+  EXPECT_LT(page_node2->GetVisibilityState().last_change_time,
+            page_node()->GetVisibilityState().last_change_time);
 
   // |page_node2| should be discarded as there's no RSS data for any of the
   // pages and it's the least recently visible page.

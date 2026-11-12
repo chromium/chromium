@@ -137,9 +137,9 @@ bool PageNodeImpl::IsVisible() const {
   return is_visible_.value();
 }
 
-base::TimeTicks PageNodeImpl::GetLastVisibilityChangeTime() const {
+PageNode::VisibilityState PageNodeImpl::GetVisibilityState() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return visibility_change_time_;
+  return {is_visible_.value(), visibility_change_time_};
 }
 
 bool PageNodeImpl::IsAudible() const {
@@ -368,13 +368,10 @@ void PageNodeImpl::SetIsFocused(bool is_focused) {
 
 void PageNodeImpl::SetIsVisible(bool is_visible) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (is_visible_.SetAndMaybeNotify(this, is_visible)) {
-    // The change time needs to be updated after observers are notified, as they
-    // use this to determine time passed since the *previous* visibility state
-    // change. They can infer the current state change time themselves via
-    // NowTicks.
+  if (is_visible_.value() != is_visible) {
     visibility_change_time_ = base::TimeTicks::Now();
   }
+  is_visible_.SetAndMaybeNotify(this, is_visible);
 }
 
 void PageNodeImpl::SetIsAudible(bool is_audible) {

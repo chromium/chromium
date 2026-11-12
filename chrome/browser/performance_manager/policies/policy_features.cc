@@ -92,7 +92,8 @@ const int kNodeTrimBackoffTimeSec = 1800;
 //
 // * To mitigate load pressure on system because the system is busy just after
 //   resuming for a while.
-// * GetLastVisibilityChangeTime() of each node become meaningless because
+// * GetVisibilityState().last_change_time of each node become meaningless
+//   because
 //   the monotonic clock keeps proceeding during dark resume. Waiting for
 //   kNodeInvisibleTimeSec after resuming ensures that enough time has elapsed
 //   so that inappropriately added time from dark resume can no longer affect

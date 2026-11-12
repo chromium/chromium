@@ -184,13 +184,14 @@ std::string DumpTabDiscardsInfo(Graph* graph) {
     std::vector<std::string> reasons =
         GetCannotDiscardReasonsForPageNode(page_node);
     bool can_discard = reasons.empty();
+    auto [is_visible, visibility_change_time] = page_node->GetVisibilityState();
     candidates.push_back(TabCandidate{
         .page_node = page_node,
         .cannot_discard_reasons = std::move(reasons),
         .can_discard = can_discard,
-        .is_visible = page_node->IsVisible(),
+        .is_visible = is_visible,
         .is_focused = page_node->IsFocused(),
-        .last_visibility_change_time = page_node->GetLastVisibilityChangeTime(),
+        .last_visibility_change_time = visibility_change_time,
     });
   }
 
@@ -211,8 +212,8 @@ std::string DumpTabDiscardsInfo(Graph* graph) {
         GetLifecycleStateString(page_node, visibility, loading_state);
 
     int64_t last_active_seconds = 0;
-    if (!page_node->IsVisible()) {
-      base::TimeDelta elapsed = now - page_node->GetLastVisibilityChangeTime();
+    if (!candidate.is_visible) {
+      base::TimeDelta elapsed = now - candidate.last_visibility_change_time;
       last_active_seconds = std::max<int64_t>(0, elapsed.InSeconds());
     }
 

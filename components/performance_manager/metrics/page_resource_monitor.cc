@@ -49,10 +49,12 @@ PageMeasurementBackgroundState GetBackgroundStateForMeasurementPeriod(
     const PageNode* page_node,
     base::TimeTicks now,
     base::TimeTicks time_of_last_resource_usage) {
-  if (time_of_last_resource_usage < page_node->GetLastVisibilityChangeTime()) {
+  auto [is_visible, last_visibility_change_time] =
+      page_node->GetVisibilityState();
+  if (time_of_last_resource_usage < last_visibility_change_time) {
     return PageMeasurementBackgroundState::kMixedForegroundBackground;
   }
-  if (page_node->IsVisible()) {
+  if (is_visible) {
     return PageMeasurementBackgroundState::kForeground;
   }
   // Check if the page was audible for the entire measurement period.

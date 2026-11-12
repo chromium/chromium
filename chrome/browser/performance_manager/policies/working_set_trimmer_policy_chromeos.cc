@@ -198,8 +198,10 @@ void WorkingSetTrimmerPolicyChromeOS::TrimNodesOnGraph() {
   const base::TimeTicks now_ticks = base::TimeTicks::Now();
   if (!trim_imperceptible_process_) {
     for (const PageNode* page_node : GetOwningGraph()->GetAllPageNodes()) {
-      if (!page_node->IsVisible() &&
-          (now_ticks - page_node->GetLastVisibilityChangeTime()) >
+      auto [is_visible, last_visibility_change_time] =
+          page_node->GetVisibilityState();
+      if (!is_visible &&
+          (now_ticks - last_visibility_change_time) >
               params_.node_invisible_time) {
         // Get the process node and if it has not been
         // trimmed within the backoff period, we will do that
@@ -243,7 +245,7 @@ void WorkingSetTrimmerPolicyChromeOS::TrimNodesOnGraph() {
         const PageNode* page_node = frame_node->GetPageNode();
         if (page_node &&
             (IsPagePerceptible(page_node) ||
-             (now_ticks - page_node->GetLastVisibilityChangeTime()) <=
+             (now_ticks - page_node->GetVisibilityState().last_change_time) <=
                  params_.node_invisible_time)) {
           all_frames_imperceptible = false;
           break;
