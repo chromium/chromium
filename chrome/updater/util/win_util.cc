@@ -84,7 +84,6 @@
 #include "chrome/updater/updater_version.h"
 #include "chrome/updater/util/util.h"
 #include "chrome/updater/util/win_util.h"
-#include "chrome/updater/win/scoped_handle.h"
 #include "chrome/updater/win/user_info.h"
 #include "chrome/updater/win/win_constants.h"
 #include "chrome/windows_services/service_program/scoped_client_impersonation.h"
@@ -1686,10 +1685,12 @@ void LogComCaller(base::cstring_view caller_func) {
     return;
   }
 
-  ScopedKernelHANDLE handle;
+  // `ICallingProcessInfo` is undocumented, so `handle` is only trusted and
+  // owned if the call succeeds. Closing an unspecified value on failure could
+  // close an unrelated handle owned by this process.
+  HANDLE handle = nullptr;
   hr = calling_proc_info->OpenCallerProcessHandle(
-      PROCESS_QUERY_LIMITED_INFORMATION,
-      ScopedKernelHANDLE::Receiver(handle).get());
+      PROCESS_QUERY_LIMITED_INFORMATION, &handle);
   if (FAILED(hr)) {
     VLOG(2) << caller_func
             << ": ICallingProcessInfo::OpenCallerProcessHandle failed: "
@@ -1697,7 +1698,7 @@ void LogComCaller(base::cstring_view caller_func) {
     return;
   }
 
-  const base::Process process(handle.release());
+  const base::Process process(handle);
   if (!process.IsValid()) {
     VLOG(2) << caller_func
             << ": ICallingProcessInfo::OpenCallerProcessHandle returned an "
