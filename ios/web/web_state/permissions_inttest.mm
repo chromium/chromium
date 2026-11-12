@@ -147,11 +147,6 @@ constexpr std::string_view kInsecureUrl = "http://www.chromium.org";
 // API afterwards.
 TEST_F(PermissionsInttest,
        TestsThatPermissionStateChangedObserverInvokedForCameraOnly) {
-  // TODO(crbug.com/342245057): Camera access is broken in the simulator on iOS
-  // 17.5.
-  if (@available(iOS 17.5, *)) {
-    GTEST_SKIP() << "Test disabled on iOS 17.5.";
-  }
   EXPECT_CALL(observer_, PermissionStateChanged(web_state(), PermissionCamera))
       .Times(testing::Exactly(2))
       .WillOnce(VerifyPermissionState(web_state(), PermissionCamera,
@@ -166,9 +161,10 @@ TEST_F(PermissionsInttest,
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, true, ^bool {
     return LastRequestedPermissionsMatchesPermissions(@[ @(PermissionCamera) ]);
   }));
-  SpinRunLoopWithMinDelay(kWebViewDecisionHandlingTimeout);
-  EXPECT_EQ(web_state()->GetStateForPermission(PermissionCamera),
-            PermissionStateAllowed);
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, true, ^bool {
+    return web_state()->GetStateForPermission(PermissionCamera) ==
+           PermissionStateAllowed;
+  }));
 
   // Update permission through web state API.
   web_state()->SetStateForPermission(PermissionStateBlocked, PermissionCamera);
@@ -217,11 +213,6 @@ TEST_F(PermissionsInttest,
 // when both are requested by the web page and set via web_state() afterwards.
 TEST_F(PermissionsInttest,
        TestsThatPermissionStateChangedObserverInvokedForCameraAndMicrophone) {
-  // TODO(crbug.com/342245057): Camera access is broken in the simulator on iOS
-  // 17.5.
-  if (@available(iOS 17.5, *)) {
-    GTEST_SKIP() << "Test disabled on iOS 17.5.";
-  }
   EXPECT_CALL(observer_, PermissionStateChanged(web_state(), PermissionCamera))
       .Times(testing::Exactly(2))
       .WillOnce(VerifyPermissionState(web_state(), PermissionCamera,
@@ -240,11 +231,12 @@ TEST_F(PermissionsInttest,
     return LastRequestedPermissionsMatchesPermissions(
         @[ @(PermissionCamera), @(PermissionMicrophone) ]);
   }));
-  SpinRunLoopWithMinDelay(kWebViewDecisionHandlingTimeout);
-  EXPECT_EQ(web_state()->GetStateForPermission(PermissionCamera),
-            PermissionStateAllowed);
-  EXPECT_EQ(web_state()->GetStateForPermission(PermissionMicrophone),
-            PermissionStateAllowed);
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, true, ^bool {
+    return web_state()->GetStateForPermission(PermissionCamera) ==
+               PermissionStateAllowed &&
+           web_state()->GetStateForPermission(PermissionMicrophone) ==
+               PermissionStateAllowed;
+  }));
 
   // Update permission through web state API.
   web_state()->SetStateForPermission(PermissionStateBlocked, PermissionCamera);
