@@ -8784,11 +8784,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(download::features::kSmartSuggestionForLargeDownloads)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
-    {"pwa-update-dialog-for-icon",
-     flag_descriptions::kPwaUpdateDialogForAppIconName,
-     flag_descriptions::kPwaUpdateDialogForAppIconDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kPwaUpdateDialogForIcon)},
-
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
     {"enable-oop-print-drivers", flag_descriptions::kEnableOopPrintDriversName,
      flag_descriptions::kEnableOopPrintDriversDescription, kOsDesktop,
@@ -9527,14 +9522,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
-    {"pwa-restore-ui", flag_descriptions::kPwaRestoreUiName,
-     flag_descriptions::kPwaRestoreUiDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kPwaRestoreUi)},
-
-    {"pwa-restore-ui-at-startup", flag_descriptions::kPwaRestoreUiAtStartupName,
-     flag_descriptions::kPwaRestoreUiAtStartupDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kPwaRestoreUiAtStartup)},
-
     {"always-show-install-disambiguation-dialog",
      flag_descriptions::kAlwaysShowInstallDisambiguationDialogName,
      flag_descriptions::kAlwaysShowInstallDisambiguationDialogDescription,

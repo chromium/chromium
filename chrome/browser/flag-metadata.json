@@ -8506,21 +8506,6 @@
     "expiry_milestone": 133
   },
   {
-    "name": "pwa-restore-ui",
-    "owners": [ "finnur@chromium.org", "beverloo@chromium.org" ],
-    "expiry_milestone": 140
-  },
-  {
-    "name": "pwa-restore-ui-at-startup",
-    "owners": [ "finnur@chromium.org", "beverloo@chromium.org" ],
-    "expiry_milestone": 150
-  },
-  {
-    "name": "pwa-update-dialog-for-icon",
-    "owners": [ "finnur@chromium.org", "beverloo@chromium.org" ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "pwm-show-suggestions-on-autofocus",
     "owners": [ "kenrb@chromium.org", "derinel@google.com" ],
     "expiry_milestone": 165

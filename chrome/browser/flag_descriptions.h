@@ -3133,22 +3133,12 @@ inline constexpr char kCrasProcessorWavDumpDescription[] =
     "Make CrasProcessor produce WAVE file dumps for the audio processing "
     "pipeline";
 
-inline constexpr char kPwaRestoreUiName[] = "Enable the PWA Restore UI";
-inline constexpr char kPwaRestoreUiDescription[] =
-    "When enabled, the PWA Restore UI can be shown";
-
 inline constexpr char kAlwaysShowInstallDisambiguationDialogName[] =
     "Always show install or create shortcut disambiguation dialog";
 inline constexpr char kAlwaysShowInstallDisambiguationDialogDescription[] =
     "Always show the PWA universal install bottom sheet disambiguation "
     "dialog instead of auto-redirecting to the install or shortcut creation "
     "dialog.";
-
-inline constexpr char kPwaRestoreUiAtStartupName[] =
-    "Force-shows the PWA Restore UI at startup";
-inline constexpr char kPwaRestoreUiAtStartupDescription[] =
-    "When enabled, the PWA Restore UI will be forced to show on startup (even "
-    "if the PwaRestoreUi flag is disabled and there are no apps to restore)";
 
 inline constexpr char kStartSurfaceReturnTimeName[] =
     "Start surface return time";
@@ -4427,11 +4417,6 @@ inline constexpr char kOrganizerPanelForeignTabsName[] =
     "Organizer Panel Foreign Tabs";
 inline constexpr char kOrganizerPanelForeignTabsDescription[] =
     "Enables cross-device tabs in the Organizer Panel.";
-
-inline constexpr char kPwaUpdateDialogForAppIconName[] =
-    "Enable PWA install update dialog for icon changes";
-inline constexpr char kPwaUpdateDialogForAppIconDescription[] =
-    "Enable a confirmation dialog that shows up when a PWA changes its icon";
 
 inline constexpr char kRemoteActorCredentialSharingName[] =
     "Enable password sharing with remote actors";
