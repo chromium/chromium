@@ -28,6 +28,30 @@ constexpr std::string_view kQrNotFoundSuffix = "QrNotFound";
 constexpr int kMaxQrCodeAttemptIndex = 3;
 // LINT.ThenChange(/components/facilitated_payments/content/browser/content_facilitated_payments_driver_factory.cc:MaxQrCodeChecksPerPage)
 
+// Returns the variant suffix of
+// `FacilitatedPayments.QrCode.{QrCodeScheme}.ValidationResult`.
+// LINT.IfChange(QrCodeSchemeToString)
+std::string_view QrCodeSchemeToString(QrCodeScheme scheme) {
+  switch (scheme) {
+    case QrCodeScheme::kUnknown:
+      return "Unknown";
+    case QrCodeScheme::kPix:
+      return "Pix";
+    case QrCodeScheme::kDuitNow:
+      return "DuitNow";
+    case QrCodeScheme::kPromptPay:
+      return "PromptPay";
+    case QrCodeScheme::kQris:
+      return "Qris";
+    case QrCodeScheme::kShopeePay:
+      return "ShopeePay";
+    case QrCodeScheme::kMoMo:
+      return "MoMo";
+  }
+  NOTREACHED();
+}
+// LINT.ThenChange(/tools/metrics/histograms/metadata/facilitated_payments/histograms.xml:QrCodeScheme)
+
 static constexpr std::string_view kPixAccountLinkingHistogramPrefix =
     "FacilitatedPayments.Pix.AccountLinking.";
 
@@ -164,6 +188,14 @@ void LogQrCodeSuccessfulAttemptIndex(int attempt_index) {
   base::UmaHistogramExactLinear(
       "FacilitatedPayments.QrCode.SuccessfulAttemptIndex", attempt_index,
       kMaxQrCodeAttemptIndex + 1);
+}
+
+void LogQrCodeValidationResult(QrCodeScheme scheme,
+                               QrCodeValidationResult result) {
+  base::UmaHistogramEnumeration(
+      base::StrCat({"FacilitatedPayments.QrCode.", QrCodeSchemeToString(scheme),
+                    ".ValidationResult"}),
+      result);
 }
 
 void LogPixIframeIsSameOriginAsMainFrame(bool is_same_origin) {

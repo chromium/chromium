@@ -77,6 +77,20 @@ reviewer.
   <variant name="QrNotFound" summary="decoded no QR code"/>
 </variants>
 
+<!-- LINT.IfChange(QrCodeScheme) -->
+
+<variants name="QrCodeScheme">
+  <variant name="DuitNow" summary="DuitNow (Malaysia)"/>
+  <variant name="MoMo" summary="MoMo (Vietnam)"/>
+  <variant name="Pix" summary="Pix (Brazil)"/>
+  <variant name="PromptPay" summary="PromptPay (Thailand)"/>
+  <variant name="Qris" summary="QRIS (Indonesia)"/>
+  <variant name="ShopeePay" summary="ShopeePay (Malaysia)"/>
+  <variant name="Unknown" summary="no supported payment scheme"/>
+</variants>
+
+<!-- LINT.ThenChange(/components/facilitated_payments/core/metrics/facilitated_payments_metrics.cc:QrCodeSchemeToString) -->
+
 <histogram
     name="FacilitatedPayments.A2A.InvokePaymentApp.{Result}.LatencyAfterDetectingPaymentLink"
     units="ms" expires_after="2027-04-30">
@@ -746,6 +760,27 @@ reviewer.
     decoding pass decodes at least one QR code. [Frequency] Logged at most once
     per page, since detection stops for the page once a QR code is found.
   </summary>
+</histogram>
+
+<histogram name="FacilitatedPayments.QrCode.{QrCodeScheme}.ValidationResult"
+    enum="FacilitatedPayments.QrCode.ValidationResult"
+    expires_after="2027-04-30">
+  <owner>qihuizhao@google.com</owner>
+  <owner>siashah@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records the validation result of a QR code decoded from a page's images,
+    split by the payment scheme ({QrCodeScheme}) that its merchant account
+    information identifies. QR codes that are not EMV Merchant-Presented codes,
+    or that identify no supported scheme, are logged under Unknown. Used to
+    measure which payment schemes are shown at checkout, and how often the codes
+    of each scheme fail validation. [Trigger] A payment QR code decoding pass
+    decodes at least one QR code on the page's primary main frame while it is
+    still active. [Frequency] Logged once for each QR code that the pass
+    decoded. At most one pass per page logs, since detection stops for the page
+    once a QR code is found.
+  </summary>
+  <token key="QrCodeScheme" variants="QrCodeScheme"/>
 </histogram>
 
 <histogram

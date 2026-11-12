@@ -89,6 +89,23 @@ TEST(FacilitatedPaymentsMetricsTest, LogQrCodeHeuristicSignals) {
       kAllSignalsSample, /*expected_bucket_count=*/1);
 }
 
+// Tests that each validation result is logged under the variant of its scheme.
+TEST(FacilitatedPaymentsMetricsTest, LogQrCodeValidationResult) {
+  base::HistogramTester histogram_tester;
+
+  LogQrCodeValidationResult(QrCodeScheme::kDuitNow,
+                            QrCodeValidationResult::kFailedCrcCheck);
+  LogQrCodeValidationResult(QrCodeScheme::kUnknown,
+                            QrCodeValidationResult::kNotPaymentCode);
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.QrCode.DuitNow.ValidationResult",
+      QrCodeValidationResult::kFailedCrcCheck, /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.QrCode.Unknown.ValidationResult",
+      QrCodeValidationResult::kNotPaymentCode, /*expected_bucket_count=*/1);
+}
+
 TEST(FacilitatedPaymentsMetricsTest, LogPixCodeCopiedInIframe) {
   base::HistogramTester histogram_tester;
 

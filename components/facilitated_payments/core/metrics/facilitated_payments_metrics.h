@@ -324,6 +324,48 @@ using QrCodeHeuristicSignals =
                   QrCodeHeuristicSignal::kFacilitatedPaymentLink,
                   QrCodeHeuristicSignal::kMaxValue>;
 
+// The scheme of a decoded QR code, which selects the variant of
+// `FacilitatedPayments.QrCode.{QrCodeScheme}.ValidationResult`. Mirrors the
+// Rust `PaymentQrCodeScheme`, whose generated C++ name is taken.
+enum class QrCodeScheme {
+  // The QR code is not of a supported payment scheme.
+  kUnknown,
+  kPix,
+  kDuitNow,
+  kPromptPay,
+  kQris,
+  kShopeePay,
+  kMoMo,
+};
+
+// The validation result of a decoded QR code. Mirrors the Rust
+// `PaymentQrCodeValidationResult`, whose generated C++ name is taken.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(QrCodeValidationResult)
+enum class QrCodeValidationResult {
+  // A valid code of a scheme other than Pix.
+  kValid = 0,
+  // A valid static Pix code.
+  kValidPixStatic = 1,
+  // A valid dynamic Pix code.
+  kValidPixDynamic = 2,
+  // Not an EMV Merchant-Presented QR code.
+  kNotPaymentCode = 3,
+  // A valid EMV Merchant-Presented QR code of no supported scheme.
+  kUnsupportedScheme = 4,
+  // A data object or template did not parse, or the CRC data object is missing
+  // or not the final data object.
+  kFailedTlvParsing = 5,
+  // The CRC does not match the rest of the code.
+  kFailedCrcCheck = 6,
+  // The additional data field template data object is present but empty.
+  kEmptyAdditionalDataFieldTemplate = 7,
+  kMaxValue = kEmptyAdditionalDataFieldTemplate,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/facilitated_payments/enums.xml:FacilitatedPayments.QrCode.ValidationResult)
+
 // Converts `PaymentLinkValidator::Scheme` to a string for logging.
 std::string SchemeToString(PaymentLinkValidator::Scheme scheme);
 
@@ -352,6 +394,10 @@ void LogQrCodeHeuristicSignals(QrCodeHeuristicSignals signals,
 // Logs the 1-based index of the decoding pass that first decoded a QR code on
 // a page.
 void LogQrCodeSuccessfulAttemptIndex(int attempt_index);
+
+// Logs the validation `result` of a decoded QR code under its `scheme`.
+void LogQrCodeValidationResult(QrCodeScheme scheme,
+                               QrCodeValidationResult result);
 
 // Log when a given payment link in a certain page for an eWallet push payment
 // flow is detected.

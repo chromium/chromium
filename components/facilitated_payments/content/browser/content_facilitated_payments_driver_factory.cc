@@ -5,7 +5,9 @@
 #include "components/facilitated_payments/content/browser/content_facilitated_payments_driver_factory.h"
 
 #include <algorithm>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "base/check_deref.h"
 #include "base/feature_list.h"
@@ -197,18 +199,26 @@ void ContentFacilitatedPaymentsDriverFactory::OnBarcodesDetected(
   }
 
   has_detected_qr_code_ = has_qr_code;
+  ContentFacilitatedPaymentsDriver& driver =
+      GetOrCreateForFrame(render_frame_host);
   // Turns off the renderer's heuristic scans, since this page either has a QR
   // code or has used all its checks, so no further signals are needed.
   const mojo::AssociatedRemote<mojom::FacilitatedPaymentsAgent>& agent =
-      GetOrCreateForFrame(render_frame_host).GetFacilitatedPaymentsAgent();
+      driver.GetFacilitatedPaymentsAgent();
   if (agent.is_bound()) {
     agent->SetQrCodeDetectionEnabled(false);
   }
   if (!has_qr_code) {
     return;
   }
-  // TODO(crbug.com/556832672): Validate the decoded QR codes and forward them
-  // to the frame's driver.
+  std::vector<std::string> qr_codes;
+  qr_codes.reserve(qr_code_count);
+  for (wallet::WalletBarcode& barcode : barcodes) {
+    if (barcode.format == wallet::WalletBarcodeFormat::QR_CODE) {
+      qr_codes.push_back(std::move(barcode.raw_value));
+    }
+  }
+  driver.OnPaymentQrCodesDetected(qr_codes);
 }
 
 void ContentFacilitatedPaymentsDriverFactory::RenderFrameDeleted(

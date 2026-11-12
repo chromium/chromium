@@ -68,6 +68,16 @@ class MockContentFacilitatedPaymentsDriver
 
 namespace {
 
+constexpr char kDuitNowValidationResultHistogram[] =
+    "FacilitatedPayments.QrCode.DuitNow.ValidationResult";
+constexpr char kUnknownValidationResultHistogram[] =
+    "FacilitatedPayments.QrCode.Unknown.ValidationResult";
+// A DuitNow code with a valid CRC.
+constexpr char kDuitNowCode[] =
+    "00020126280014A0000006150001"
+    "0106890000"
+    "5802MY6304DCBC";
+
 // Records each `Detect()` request so that tests can inspect the options and
 // finish the detection when they choose.
 class FakeBarcodeDetector : public wallet::WalletablePassBarcodeDetector {
@@ -692,6 +702,44 @@ TEST_F(ContentFacilitatedPaymentsDriverFactoryTest,
   histogram_tester.ExpectUniqueSample(kQrFoundSignalsHistogram,
                                       QualifyingSignalsSample(), 1);
   histogram_tester.ExpectUniqueSample(kSuccessfulAttemptIndexHistogram, 1, 1);
+}
+
+// Tests that the decoded QR codes, and only those, are validated and logged.
+TEST_F(ContentFacilitatedPaymentsDriverFactoryTest,
+       OnBarcodesDetected_QrCodes_LogsValidationResults) {
+  base::HistogramTester histogram_tester;
+  NavigateAndCommit(GURL("https://merchant.example/checkout"));
+  factory_->OnHeuristicSignalsReported(main_rfh(), *MakeQualifyingSignals());
+
+  barcode_detector_->Finish(
+      {{.raw_value = kDuitNowCode,
+        .format = wallet::WalletBarcodeFormat::QR_CODE},
+       {.raw_value = kDuitNowCode,
+        .format = wallet::WalletBarcodeFormat::DATA_MATRIX},
+       {.raw_value = "payload",
+        .format = wallet::WalletBarcodeFormat::QR_CODE}});
+
+  histogram_tester.ExpectUniqueSample(kDuitNowValidationResultHistogram,
+                                      QrCodeValidationResult::kValid, 1);
+  histogram_tester.ExpectUniqueSample(kUnknownValidationResultHistogram,
+                                      QrCodeValidationResult::kNotPaymentCode,
+                                      1);
+}
+
+// Tests that the QR codes of a pass that finishes after the page was navigated
+// away from are not validated, since they no longer belong to the shown page.
+TEST_F(ContentFacilitatedPaymentsDriverFactoryTest,
+       OnBarcodesDetected_AfterNavigation_DoesNotLogValidationResults) {
+  base::HistogramTester histogram_tester;
+  NavigateAndCommit(GURL("https://merchant.example/checkout"));
+  factory_->OnHeuristicSignalsReported(main_rfh(), *MakeQualifyingSignals());
+  NavigateAndCommit(GURL("https://merchant.example/order"));
+
+  barcode_detector_->Finish({{.raw_value = kDuitNowCode,
+                              .format = wallet::WalletBarcodeFormat::QR_CODE}});
+
+  histogram_tester.ExpectTotalCount(kDuitNowValidationResultHistogram, 0);
+  histogram_tester.ExpectTotalCount(kUnknownValidationResultHistogram, 0);
 }
 
 // Tests that the exploration arm extracts images for a square candidate even

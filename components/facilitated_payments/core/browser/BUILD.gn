@@ -72,6 +72,7 @@ static_library("browser") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "facilitated_payments_driver_qr_code_unittest.cc",
     "network_api/facilitated_payments_initiate_payment_request_details_unittest.cc",
     "network_api/facilitated_payments_initiate_payment_request_unittest.cc",
     "network_api/facilitated_payments_network_interface_unittest.cc",

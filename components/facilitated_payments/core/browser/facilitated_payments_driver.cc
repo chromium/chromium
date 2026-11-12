@@ -7,25 +7,67 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/check_deref.h"
+#include "base/strings/string_view_rust.h"
 #include "build/build_config.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_client.h"
+#include "components/facilitated_payments/core/metrics/facilitated_payments_metrics.h"
+#include "components/facilitated_payments/core/validation/payment_qr_validator_cxx.rs.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/strings/string_view_rust.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/facilitated_payments/core/browser/payment_link_manager.h"
 #include "components/facilitated_payments/core/browser/pix_manager.h"
-#include "components/facilitated_payments/core/metrics/facilitated_payments_metrics.h"
-#include "components/facilitated_payments/core/validation/payment_qr_validator_cxx.rs.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace payments::facilitated {
 
-#if BUILDFLAG(IS_ANDROID)
 namespace {
 
+QrCodeScheme TranslateRustPaymentQrCodeScheme(PaymentQrCodeScheme scheme) {
+  switch (scheme) {
+    case PaymentQrCodeScheme::Unknown:
+      return QrCodeScheme::kUnknown;
+    case PaymentQrCodeScheme::Pix:
+      return QrCodeScheme::kPix;
+    case PaymentQrCodeScheme::DuitNow:
+      return QrCodeScheme::kDuitNow;
+    case PaymentQrCodeScheme::PromptPay:
+      return QrCodeScheme::kPromptPay;
+    case PaymentQrCodeScheme::Qris:
+      return QrCodeScheme::kQris;
+    case PaymentQrCodeScheme::ShopeePay:
+      return QrCodeScheme::kShopeePay;
+    case PaymentQrCodeScheme::MoMo:
+      return QrCodeScheme::kMoMo;
+  }
+}
+
+QrCodeValidationResult TranslateRustPaymentQrCodeValidationResult(
+    PaymentQrCodeValidationResult result) {
+  switch (result) {
+    case PaymentQrCodeValidationResult::Valid:
+      return QrCodeValidationResult::kValid;
+    case PaymentQrCodeValidationResult::ValidPixStatic:
+      return QrCodeValidationResult::kValidPixStatic;
+    case PaymentQrCodeValidationResult::ValidPixDynamic:
+      return QrCodeValidationResult::kValidPixDynamic;
+    case PaymentQrCodeValidationResult::NotPaymentCode:
+      return QrCodeValidationResult::kNotPaymentCode;
+    case PaymentQrCodeValidationResult::UnsupportedScheme:
+      return QrCodeValidationResult::kUnsupportedScheme;
+    case PaymentQrCodeValidationResult::FailedTlvParsing:
+      return QrCodeValidationResult::kFailedTlvParsing;
+    case PaymentQrCodeValidationResult::FailedCrcCheck:
+      return QrCodeValidationResult::kFailedCrcCheck;
+    case PaymentQrCodeValidationResult::EmptyAdditionalDataFieldTemplate:
+      return QrCodeValidationResult::kEmptyAdditionalDataFieldTemplate;
+  }
+}
+
+#if BUILDFLAG(IS_ANDROID)
 // Translates the raw validation result, returning `std::nullopt` for
 // uninteresting inputs (i.e. filtering out results that indicate the text was
 // never a payment code to begin with, while keeping those that might indicate
@@ -52,9 +94,9 @@ std::optional<PixCodeRustValidationResult> TranslateRustPixQrCodeResult(
       return PixCodeRustValidationResult::kUnknownPixCodeType;
   }
 }
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace
-#endif  // BUILDFLAG(IS_ANDROID)
 
 FacilitatedPaymentsDriver::FacilitatedPaymentsDriver(
     FacilitatedPaymentsClient* client,
@@ -63,6 +105,18 @@ FacilitatedPaymentsDriver::FacilitatedPaymentsDriver(
       api_client_creator_(std::move(api_client_creator)) {}
 
 FacilitatedPaymentsDriver::~FacilitatedPaymentsDriver() = default;
+
+void FacilitatedPaymentsDriver::OnPaymentQrCodesDetected(
+    const std::vector<std::string>& qr_codes) const {
+  // Each QR code is logged, since a page can show codes of several schemes.
+  for (const std::string& qr_code : qr_codes) {
+    PaymentQrCodeValidation validation =
+        validate_payment_qr_code(base::StringViewToRustSlice(qr_code));
+    LogQrCodeValidationResult(
+        TranslateRustPaymentQrCodeScheme(validation.scheme),
+        TranslateRustPaymentQrCodeValidationResult(validation.result));
+  }
+}
 
 #if BUILDFLAG(IS_ANDROID)
 void FacilitatedPaymentsDriver::DidNavigateToOrAwayFromPage() const {

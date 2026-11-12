@@ -6,6 +6,8 @@
 #define COMPONENTS_FACILITATED_PAYMENTS_CORE_BROWSER_FACILITATED_PAYMENTS_DRIVER_H_
 
 #include <memory>
+#include <string>
+#include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "build/build_config.h"
@@ -41,6 +43,11 @@ class FacilitatedPaymentsDriver {
   FacilitatedPaymentsDriver& operator=(const FacilitatedPaymentsDriver&) =
       delete;
   virtual ~FacilitatedPaymentsDriver();
+
+  // Validates each of the `qr_codes` decoded from the page's images as a
+  // payment QR code, and logs its scheme and validation result. The codes can
+  // be any QR codes, e.g. URLs, which are logged as not being payment codes.
+  void OnPaymentQrCodesDetected(const std::vector<std::string>& qr_codes) const;
 
 #if BUILDFLAG(IS_ANDROID)
   // The Pix and payment link flows are only available on Android.

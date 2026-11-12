@@ -259,6 +259,21 @@ reviewer.
 
 <!-- LINT.ThenChange(/components/facilitated_payments/core/metrics/facilitated_payments_metrics.h:QrCodeHeuristicSignal) -->
 
+<!-- LINT.IfChange(FacilitatedPayments.QrCode.ValidationResult) -->
+
+<enum name="FacilitatedPayments.QrCode.ValidationResult">
+  <int value="0" label="Valid (non-Pix scheme)"/>
+  <int value="1" label="Valid static Pix code"/>
+  <int value="2" label="Valid dynamic Pix code"/>
+  <int value="3" label="Not a payment code"/>
+  <int value="4" label="Unsupported scheme"/>
+  <int value="5" label="Failed TLV parsing"/>
+  <int value="6" label="Failed CRC check"/>
+  <int value="7" label="Empty additional data field template"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/facilitated_payments/core/metrics/facilitated_payments_metrics.h:QrCodeValidationResult) -->
+
 <!-- LINT.IfChange(FacilitatedPayments.UiScreen) -->
 
 <enum name="FacilitatedPayments.UiScreen">
