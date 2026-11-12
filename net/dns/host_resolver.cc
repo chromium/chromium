@@ -30,7 +30,7 @@
 #include "net/base/host_port_pair.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_change_notifier.h"
-#include "net/base/task/task_runner.h"
+#include "net/base/scheduler/task_runner.h"
 #include "net/dns/context_host_resolver.h"
 #include "net/dns/dns_alias_utility.h"
 #include "net/dns/dns_client.h"

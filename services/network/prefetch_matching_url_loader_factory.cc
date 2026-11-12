@@ -12,7 +12,7 @@
 #include "base/strings/strcat.h"
 #include "base/task/common/task_annotator.h"
 #include "base/task/single_thread_task_runner.h"
-#include "net/base/task/task_runner.h"
+#include "net/base/scheduler/task_runner.h"
 #include "services/network/cors/cors_url_loader_factory.h"
 #include "services/network/prefetch_cache.h"
 #include "services/network/prefetch_url_loader_client.h"

@@ -15,7 +15,7 @@
 #include "net/base/features.h"
 #include "net/base/request_priority.h"
 #include "net/base/scheduler/net_task_priority.h"
-#include "net/base/task/task_runner.h"
+#include "net/base/scheduler/task_runner.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

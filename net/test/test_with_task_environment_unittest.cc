@@ -8,7 +8,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "net/base/features.h"
-#include "net/base/task/task_runner.h"
+#include "net/base/scheduler/task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {

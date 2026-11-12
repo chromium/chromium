@@ -14,7 +14,7 @@
 #include "net/base/request_priority.h"
 #include "net/base/scheduler/net_task_priority.h"
 #include "net/base/scheduler/sequence_manager_configurator.h"
-#include "net/base/task/task_runner.h"
+#include "net/base/scheduler/task_runner.h"
 
 namespace net {
 

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef NET_BASE_TASK_TASK_RUNNER_H_
-#define NET_BASE_TASK_TASK_RUNNER_H_
+#ifndef NET_BASE_SCHEDULER_TASK_RUNNER_H_
+#define NET_BASE_SCHEDULER_TASK_RUNNER_H_
 
 #include <array>
 
@@ -50,4 +50,4 @@ NET_EXPORT TaskRunnerGlobals& GetTaskRunnerGlobals();
 
 }  // namespace net
 
-#endif  // NET_BASE_TASK_TASK_RUNNER_H_
+#endif  // NET_BASE_SCHEDULER_TASK_RUNNER_H_

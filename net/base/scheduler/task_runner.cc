@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "net/base/task/task_runner.h"
+#include "net/base/scheduler/task_runner.h"
 
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
@@ -11,9 +11,7 @@
 
 namespace net {
 
-namespace {
-
-}  // namespace
+namespace {}  // namespace
 
 const scoped_refptr<base::SingleThreadTaskRunner>& GetTaskRunner(
     RequestPriority priority) {

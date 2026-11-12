@@ -50,7 +50,7 @@
 #include "net/base/load_flags.h"
 #include "net/base/load_timing_info.h"
 #include "net/base/net_errors.h"
-#include "net/base/task/task_runner.h"
+#include "net/base/scheduler/task_runner.h"
 #include "net/base/trace_constants.h"
 #include "net/base/transport_info.h"
 #include "net/base/upload_data_stream.h"

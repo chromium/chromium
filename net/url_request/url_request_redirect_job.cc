@@ -16,7 +16,7 @@
 #include "net/base/features.h"
 #include "net/base/load_timing_info.h"
 #include "net/base/net_errors.h"
-#include "net/base/task/task_runner.h"
+#include "net/base/scheduler/task_runner.h"
 #include "net/http/http_log_util.h"
 #include "net/http/http_raw_request_headers.h"
 #include "net/http/http_response_headers.h"

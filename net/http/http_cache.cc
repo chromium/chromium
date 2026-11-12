@@ -46,7 +46,7 @@
 #include "net/base/net_errors.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/network_isolation_key.h"
-#include "net/base/task/task_runner.h"
+#include "net/base/scheduler/task_runner.h"
 #include "net/base/upload_data_stream.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/disk_cache/simple/simple_version_upgrade.h"

@@ -10,7 +10,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "net/base/features.h"
 #include "net/base/net_errors.h"
-#include "net/base/task/task_runner.h"
+#include "net/base/scheduler/task_runner.h"
 
 namespace net {
 
