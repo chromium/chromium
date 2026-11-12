@@ -123,7 +123,7 @@ void AddAdditionalRequestHeaders(network::ResourceRequest* resource_request,
   UpdateAdditionalHeadersForBrowserInitiatedRequest(
       &resource_request->headers, browser_context,
       /*should_update_existing_headers=*/false, renderer_preferences,
-      /*is_for_worker_script=*/true);
+      BrowserInitiatedRequestSource::kWorkerScript);
 }
 
 // Build `PolicyContainerPolicies` from the worker script response headers or

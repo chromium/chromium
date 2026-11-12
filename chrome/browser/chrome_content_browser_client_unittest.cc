@@ -150,6 +150,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
+#include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
@@ -2554,6 +2555,30 @@ TEST_F(ChromeContentBrowserClientTest,
       future.GetCallback());
   EXPECT_FALSE(future.Get<0>());
   EXPECT_EQ(top_chrome_webui_profile->UniqueId(), future.Get<1>());
+}
+
+// Tests that UpdateRendererPreferencesForWorker() skips updating renderer
+// preferences for TopChromeWebUIProfile, which does not have the user
+// preferences that UpdateFromSystemSettings() depends on.
+TEST_F(ChromeContentBrowserClientTest,
+       TopChromeWebUIProfileUpdateRendererPreferencesForWorker) {
+  // Enable Do Not Track for the regular user profile.
+  profile()->GetPrefs()->SetBoolean(prefs::kEnableDoNotTrack, true);
+
+  webui::ScopedTopChromeWebUIProfileForTesting scoped_profile;
+  Profile* top_chrome_webui_profile = webui::GetTopChromeWebUIProfile();
+  ASSERT_TRUE(top_chrome_webui_profile);
+
+  ChromeContentBrowserClient client;
+  blink::RendererPreferences top_chrome_prefs;
+  client.UpdateRendererPreferencesForWorker(top_chrome_webui_profile,
+                                            &top_chrome_prefs);
+  EXPECT_FALSE(top_chrome_prefs.enable_do_not_track);
+
+  // Test a regular user profile still has its preferences updated.
+  blink::RendererPreferences user_prefs;
+  client.UpdateRendererPreferencesForWorker(profile(), &user_prefs);
+  EXPECT_TRUE(user_prefs.enable_do_not_track);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

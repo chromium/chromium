@@ -2163,6 +2163,10 @@ chromium-metrics-reviews@google.com.
 
     Logged each time the Sec-GPC header is attached to an outgoing request,
     during request finalization. Subsampled to one out of one thousand times.
+    For `Prefetch`, this is logged during prefetch header preparation (including
+    for decoy prefetches and `PrePrefetch` header pre-calculations that may not
+    result in a network request), and a served prefetch will also record
+    `FrameNavigation` upon navigation.
   </summary>
 </histogram>
 

@@ -15,9 +15,12 @@
 #include "components/prefs/pref_service.h"
 #include "components/universal_optout/features.h"
 #include "components/universal_optout/prefs.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/prefetch_test_util.h"
+#include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/common/features.h"
 
@@ -213,6 +216,11 @@ INSTANTIATE_TEST_SUITE_P(
 // in the renderer without a reload.
 class ChromeGlobalPrivacyControlAllEnabledTest : public InProcessBrowserTest {
  protected:
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+  }
+
   content::WebContents* GetWebContents() {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
@@ -252,6 +260,40 @@ IN_PROC_BROWSER_TEST_F(ChromeGlobalPrivacyControlAllEnabledTest,
   EXPECT_EQ("None", content::EvalJs(
                         GetWebContents(),
                         "fetch('/echoheader?Sec-GPC').then(r => r.text());"));
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeGlobalPrivacyControlAllEnabledTest,
+                       SpeculationRulesPrefetchSendsSecGpcHeader) {
+  ASSERT_TRUE(embedded_https_test_server().Start());
+  SetUniversalOptOutPref(true);
+
+  const GURL initial_url =
+      embedded_https_test_server().GetURL("a.com", "/empty.html");
+  const GURL prefetch_url =
+      embedded_https_test_server().GetURL("a.com", "/echoheader?Sec-GPC");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
+
+  content::test::TestPrefetchWatcher test_prefetch_watcher;
+  ASSERT_TRUE(content::ExecJs(GetWebContents()->GetPrimaryMainFrame(),
+                              content::JsReplace(R"(
+                                const script = document.createElement('script');
+                                script.type = 'speculationrules';
+                                script.text = JSON.stringify({
+                                  prefetch: [{source: 'list', urls: [$1]}]
+                                });
+                                document.head.appendChild(script);
+                              )",
+                                                 prefetch_url)));
+  test_prefetch_watcher.WaitUntilPrefetchResponseCompleted(
+      GetWebContents()->GetPrimaryMainFrame()->GetDocumentToken(),
+      prefetch_url);
+
+  ASSERT_TRUE(
+      content::NavigateToURLFromRenderer(GetWebContents(), prefetch_url));
+  EXPECT_TRUE(test_prefetch_watcher.PrefetchUsedInLastNavigation());
+  EXPECT_EQ("1", content::EvalJs(GetWebContents(), "document.body.innerText;"));
+  EXPECT_EQ(true, content::EvalJs(GetWebContents(),
+                                  "navigator.globalPrivacyControl"));
 }
 
 }  // namespace

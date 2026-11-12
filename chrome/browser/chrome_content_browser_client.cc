@@ -3405,8 +3405,13 @@ void ChromeContentBrowserClient::UpdateRendererPreferencesForWorker(
     blink::RendererPreferences* out_prefs) {
   CHECK(browser_context, base::NotFatalUntil::M163);
   CHECK(out_prefs, base::NotFatalUntil::M163);
-  renderer_preferences_util::UpdateFromSystemSettings(
-      out_prefs, Profile::FromBrowserContext(browser_context));
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  // TopChromeWebUIProfile only hosts Top Chrome WebUIs and does not have the
+  // user preferences that UpdateFromSystemSettings() depends on.
+  if (profile->IsTopChromeWebUIProfile()) {
+    return;
+  }
+  renderer_preferences_util::UpdateFromSystemSettings(out_prefs, profile);
 }
 
 content::AllowServiceWorkerResult

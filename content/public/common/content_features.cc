@@ -892,6 +892,10 @@ const base::FeatureParam<bool>
         &kPrefetchOffTheMainThread, "check_will_create_url_loader_factory",
         false};
 
+// Kill switch for attaching browser-initiated privacy request headers
+// (`Sec-GPC` and `DNT`) to prefetch requests.
+BASE_FEATURE(kPrefetchPrivacyHeaders, base::FEATURE_ENABLED_BY_DEFAULT);
+
 // If explicitly disabled, prefetch proxy is not used.
 BASE_FEATURE(kPrefetchProxy, base::FEATURE_ENABLED_BY_DEFAULT);
 

@@ -10,6 +10,7 @@
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/devtools/network_service_devtools_observer.h"
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
+#include "content/browser/loader/browser_initiated_resource_request.h"
 #include "content/browser/loader/navigation_url_loader_impl.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/prefetch/prefetch_streaming_url_loader_common_types.h"
@@ -17,6 +18,10 @@
 #include "content/browser/preloading/preload_pipeline_info_impl.h"
 #include "content/browser/preloading/preloading_trigger_type_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/renderer_host/render_view_host_delegate.h"
+#include "content/browser/renderer_host/render_view_host_impl.h"
+#include "content/browser/renderer_preferences_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/client_hints.h"
@@ -28,6 +33,7 @@
 #include "services/network/public/cpp/http_request_headers_update_params.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
 #include "third_party/blink/public/common/navigation/preloading_headers.h"
+#include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "url/origin.h"
 
 namespace content {
@@ -510,6 +516,38 @@ network::HttpRequestHeadersUpdateParams PrepareInitialHeadersForPrefetchPhase2(
     AddVariationsHeaderForPrefetch(
         headers_update_params.modified_cors_exempt_headers, request_url,
         prefetch_request, is_first_party_context_for_variations_header);
+  }
+
+  // ------------------------------------------------------------------------
+  // [2] `Sec-GPC`, `DNT`:
+  if (base::FeatureList::IsEnabled(features::kPrefetchPrivacyHeaders) &&
+      request_url.SchemeIsHTTPOrHTTPS()) {
+    blink::RendererPreferences renderer_prefs;
+    if (const auto* renderer_initiator =
+            prefetch_request.GetRendererInitiatorInfo()) {
+      if (RenderFrameHostImpl* rfh = renderer_initiator->GetRenderFrameHost()) {
+        RenderViewHostImpl* rvh = rfh->render_view_host();
+        renderer_prefs = rvh->GetDelegate()->GetRendererPrefs(rvh);
+      } else {
+        // The initiator `RenderFrameHost` is already gone. Fall back to the
+        // browser-initiated path.
+        CHECK(prefetch_request.browser_context());
+        UpdateRendererPreferencesForWorkerHelper(
+            prefetch_request.browser_context(), &renderer_prefs);
+      }
+    } else {
+      CHECK(prefetch_request.GetBrowserInitiatorInfo());
+      CHECK(prefetch_request.browser_context());
+
+      UpdateRendererPreferencesForWorkerHelper(
+          prefetch_request.browser_context(), &renderer_prefs);
+    }
+
+    UpdateAdditionalHeadersForBrowserInitiatedRequest(
+        &headers_update_params.modified_headers,
+        prefetch_request.browser_context(),
+        /*should_update_existing_headers=*/false, renderer_prefs,
+        BrowserInitiatedRequestSource::kPrefetch);
   }
 
   // ------------------------------------------------------------------------

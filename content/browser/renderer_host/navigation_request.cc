@@ -416,7 +416,7 @@ void AddAdditionalRequestHeaders(
       render_view_host->GetDelegate()->GetRendererPrefs(render_view_host);
   UpdateAdditionalHeadersForBrowserInitiatedRequest(
       headers, browser_context, is_reload, render_prefs,
-      /*is_for_worker_script*=*/false);
+      BrowserInitiatedRequestSource::kNavigation);
 
   // Tack an 'Upgrade-Insecure-Requests' header to outgoing navigational
   // requests, as described in
