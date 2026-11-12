@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -14,6 +15,7 @@
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/glic/glic_settings_util.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
@@ -366,6 +368,10 @@ void BrowserCommandHandler::OpenGlic() {
   glic::GlicKeyedService* glic_service = glic::GlicKeyedService::Get(profile_);
 
   if (!glic_service) {
+    if (base::FeatureList::IsEnabled(features::kGlicBrowserCommandFallback)) {
+      NavigateToURL(GURL(features::kGlicBrowserCommandFallbackUrl.Get()),
+                    ui::mojom::WindowOpenDisposition::kNewForegroundTab);
+    }
     return;
   }
 
