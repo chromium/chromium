@@ -7,7 +7,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
@@ -35,10 +34,6 @@ class VerticalTabStripBottomContainerInteractiveUiTest
     : public VerticalTabsInteractiveTestMixin<InteractiveBrowserTest> {
  public:
   using VerticalTabsInteractiveTestMixin::VerticalTabsInteractiveTestMixin;
-
-  const std::vector<base::test::FeatureRef> GetDisabledFeatures() override {
-    return {organizer_panel::kOrganizerPanel};
-  }
 
  private:
   const gfx::AnimationTestApi::RenderModeResetter disable_rich_animations_ =
