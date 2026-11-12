@@ -3295,7 +3295,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
         if (id == R.id.bookmark_this_page_id || id == R.id.bookmark_this_page_menu_id) {
             var bookmarker = assumeNonNull(mTabBookmarkerSupplier.get());
-            bookmarker.addOrEditBookmark(currentTab);
+            bookmarker.addOrEditBookmark(currentTab, /* anchorView= */ null);
             TrackerFactory.getTrackerForProfile(currentTab.getProfile())
                     .notifyEvent(EventConstants.APP_MENU_BOOKMARK_STAR_ICON_PRESSED);
             if (id == R.id.bookmark_this_page_id) {
@@ -3360,7 +3360,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
         if (id == R.id.enable_price_tracking_menu_id) {
             var bookmarker = assumeNonNull(mTabBookmarkerSupplier.get());
-            bookmarker.startOrModifyPriceTracking(currentTab);
+            bookmarker.startOrModifyPriceTracking(currentTab, /* anchorView= */ null);
             RecordUserAction.record("MobileMenuEnablePriceTracking");
             TrackerFactory.getTrackerForProfile(currentTab.getProfile())
                     .notifyEvent(EventConstants.SHOPPING_LIST_PRICE_TRACK_FROM_MENU);

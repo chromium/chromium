@@ -200,10 +200,10 @@ public class TabGridContextMenuCoordinator extends TabOverflowMenuCoordinator<@T
                 recordUserActionWithPrefix(
                         tab.getTabGroupId() == null ? "AddToGroup" : "MoveToGroup");
             } else if (menuId == R.id.edit_bookmark) {
-                tabBookmarker.addOrEditBookmark(tab);
+                tabBookmarker.addOrEditBookmark(tab, /* anchorView= */ null);
                 recordUserActionWithPrefix("EditBookmark");
             } else if (menuId == R.id.add_to_bookmarks) {
-                tabBookmarker.addOrEditBookmark(tab);
+                tabBookmarker.addOrEditBookmark(tab, /* anchorView= */ null);
                 recordUserActionWithPrefix("AddBookmark");
             } else if (menuId == R.id.send_tab_to_self) {
                 assert !tab.isIncognitoBranded();

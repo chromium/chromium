@@ -26,7 +26,9 @@ import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.PopupWindow;
 
+import androidx.annotation.IdRes;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.Before;
@@ -39,9 +41,12 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
+import org.robolectric.RuntimeEnvironment;
+import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -113,6 +118,7 @@ public class BookmarkUtilsTest {
     @Mock private IdentityManager mIdentityManager;
     @Mock private BookmarkManagerOpener mBookmarkManagerOpener;
     @Mock private PriceDropNotificationManager mPriceDropNotificationManager;
+    @Mock private BookmarkModel mTabBookmarkModel;
 
     private Activity mActivity;
     private FakeBookmarkModel mBookmarkModel;
@@ -220,7 +226,8 @@ public class BookmarkUtilsTest {
                 /* fromExplicitTrackUi= */ false,
                 mBookmarkManagerOpener,
                 mPriceDropNotificationManager,
-                false);
+                /* isBookmarkBarVisible= */ false,
+                /* anchorView= */ null);
 
         histograms.assertExpected();
     }
@@ -263,7 +270,8 @@ public class BookmarkUtilsTest {
                 /* fromExplicitTrackUi= */ false,
                 mBookmarkManagerOpener,
                 mPriceDropNotificationManager,
-                false);
+                /* isBookmarkBarVisible= */ false,
+                /* anchorView= */ null);
         histograms.assertExpected();
         // Verify index-aligned results list has size 2 and non-null elements
         verify(mBookmarkIdListCallback).onResult(mBookmarkIdListCaptor.capture());
@@ -309,7 +317,8 @@ public class BookmarkUtilsTest {
                 /* fromExplicitTrackUi= */ false,
                 mBookmarkManagerOpener,
                 mPriceDropNotificationManager,
-                false);
+                /* isBookmarkBarVisible= */ false,
+                /* anchorView= */ null);
 
         histograms.assertExpected();
     }
@@ -337,7 +346,8 @@ public class BookmarkUtilsTest {
                 /* fromExplicitTrackUi= */ false,
                 mBookmarkManagerOpener,
                 mPriceDropNotificationManager,
-                false);
+                /* isBookmarkBarVisible= */ false,
+                /* anchorView= */ null);
 
         verify(mBookmarkIdListCallback).onResult(mBookmarkIdListCaptor.capture());
         assertEquals(1, mBookmarkIdListCaptor.getValue().size());
@@ -388,12 +398,71 @@ public class BookmarkUtilsTest {
                 /* fromExplicitTrackUi= */ false,
                 mBookmarkManagerOpener,
                 mPriceDropNotificationManager,
-                false);
+                /* isBookmarkBarVisible= */ false,
+                /* anchorView= */ null);
 
         verify(mBookmarkIdListCallback).onResult(mBookmarkIdListCaptor.capture());
         assertEquals(1, mBookmarkIdListCaptor.getValue().size());
         assertNotNull(mBookmarkIdListCaptor.getValue().get(0));
         verifyNoInteractions(mBottomSheetController);
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    @EnableFeatures(ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_POPUP)
+    public void testShowSaveFlow_desktopPopup_usesProvidedVisibleAnchorView() {
+        setUpDesktopPopup();
+        View bookmarkButton = addViewToContent(R.id.bookmark_button);
+        View anchorView = addViewToContent(View.NO_ID);
+
+        addOrEditBookmarkWithAnchor(anchorView);
+
+        assertPopupAnchoredTo(anchorView, bookmarkButton);
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    @EnableFeatures(ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_POPUP)
+    public void testShowSaveFlow_desktopPopup_hiddenAnchorFallsBackToBookmarkButton() {
+        setUpDesktopPopup();
+        View bookmarkButton = addViewToContent(R.id.bookmark_button);
+        View hiddenAnchor = addViewToContent(View.NO_ID);
+        hiddenAnchor.setVisibility(View.GONE);
+
+        addOrEditBookmarkWithAnchor(hiddenAnchor);
+
+        assertPopupAnchoredTo(bookmarkButton, hiddenAnchor);
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    @EnableFeatures(ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_POPUP)
+    public void testStartOrModifyPriceTracking_existingBookmark_forwardsAnchorView() {
+        setUpDesktopPopup();
+        View bookmarkButton = addViewToContent(R.id.bookmark_button);
+        View anchorView = addViewToContent(View.NO_ID);
+        BookmarkId bookmarkId =
+                mBookmarkModel.addBookmark(
+                        mBookmarkModel.getDefaultBookmarkFolder(),
+                        /* index= */ 0,
+                        "test title",
+                        new GURL("https://test.com"));
+        doReturn(bookmarkId).when(mTabBookmarkModel).getUserBookmarkIdForTab(mTab);
+        TabBookmarker tabBookmarker =
+                new TabBookmarker(
+                        mActivity,
+                        ObservableSuppliers.createNonNull(mTabBookmarkModel),
+                        /* bottomSheetControllerSupplier= */ () -> mBottomSheetController,
+                        /* snackbarManagerSupplier= */ () -> mSnackbarManager,
+                        mBookmarkManagerOpener,
+                        /* priceDropNotificationManagerSupplier= */ () ->
+                                mPriceDropNotificationManager,
+                        /* bookmarkBarVisibilitySupplier= */ () -> false,
+                        /* saveBookmarkOfflineCallback= */ (_, _) -> {});
+
+        tabBookmarker.startOrModifyPriceTracking(mTab, anchorView);
+
+        assertPopupAnchoredTo(anchorView, bookmarkButton);
     }
 
     @Test
@@ -416,7 +485,8 @@ public class BookmarkUtilsTest {
                 /* fromExplicitTrackUi= */ false,
                 mBookmarkManagerOpener,
                 mPriceDropNotificationManager,
-                false);
+                /* isBookmarkBarVisible= */ false,
+                /* anchorView= */ null);
 
         verify(mBookmarkManagerOpener, never()).startEditActivity(any(), any(), any());
     }
@@ -440,7 +510,8 @@ public class BookmarkUtilsTest {
                 /* fromExplicitTrackUi= */ false,
                 mBookmarkManagerOpener,
                 mPriceDropNotificationManager,
-                /* isBookmarkBarVisible= */ false);
+                /* isBookmarkBarVisible= */ false,
+                /* anchorView= */ null);
 
         // Phone-sized displays have no tab strip, so the bottom sheet save flow is used.
         verify(mBottomSheetController).requestShowContent(any(), anyBoolean());
@@ -466,7 +537,8 @@ public class BookmarkUtilsTest {
                 /* fromExplicitTrackUi= */ false,
                 mBookmarkManagerOpener,
                 mPriceDropNotificationManager,
-                /* isBookmarkBarVisible= */ false);
+                /* isBookmarkBarVisible= */ false,
+                /* anchorView= */ null);
 
         verify(mBookmarkManagerOpener).startEditActivity(mActivity, mProfile, bookmarkId);
         verifyNoInteractions(mBottomSheetController);
@@ -490,7 +562,8 @@ public class BookmarkUtilsTest {
                 /* fromExplicitTrackUi= */ false,
                 mBookmarkManagerOpener,
                 mPriceDropNotificationManager,
-                false);
+                /* isBookmarkBarVisible= */ false,
+                /* anchorView= */ null);
 
         verify(mBookmarkManagerOpener).startEditActivity(mActivity, mProfile, bookmarkId);
     }
@@ -533,7 +606,8 @@ public class BookmarkUtilsTest {
                 /* fromExplicitTrackUi= */ false,
                 mBookmarkManagerOpener,
                 mPriceDropNotificationManager,
-                false);
+                /* isBookmarkBarVisible= */ false,
+                /* anchorView= */ null);
         histograms.assertExpected();
         // Verify index-aligned results list has size 2 and non-null elements
         verify(mBookmarkIdListCallback).onResult(mBookmarkIdListCaptor.capture());
@@ -1025,5 +1099,53 @@ public class BookmarkUtilsTest {
         assertEquals(
                 res.getDimensionPixelSize(R.dimen.improved_bookmark_icon_radius),
                 BookmarkViewUtils.getImageIconCornerRadius(res, BookmarkRowDisplayPref.COMPACT));
+    }
+
+    /**
+     * Verifies the active popup is anchored to {@code expectedAnchor}: the popup dismisses itself
+     * when its anchor is detached, but not when {@code otherView} is.
+     */
+    private void assertPopupAnchoredTo(View expectedAnchor, View otherView) {
+        PopupWindow popup =
+                Shadows.shadowOf(RuntimeEnvironment.getApplication()).getLatestPopupWindow();
+        assertNotNull(popup);
+        assertTrue(popup.isShowing());
+        ViewGroup content = mActivity.findViewById(android.R.id.content);
+        content.removeView(otherView);
+        assertTrue(popup.isShowing());
+        content.removeView(expectedAnchor);
+        assertFalse(popup.isShowing());
+    }
+
+    private void setUpDesktopPopup() {
+        BookmarkModel.setInstanceForTesting(mBookmarkModel);
+        mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        doReturn("test title").when(mTab).getTitle();
+        doReturn(new GURL("https://test.com")).when(mTab).getOriginalUrl();
+    }
+
+    private View addViewToContent(@IdRes int id) {
+        View view = new View(mActivity);
+        view.setId(id);
+        ViewGroup content = mActivity.findViewById(android.R.id.content);
+        content.addView(view);
+        return view;
+    }
+
+    private void addOrEditBookmarkWithAnchor(@Nullable View anchorView) {
+        BookmarkUtils.addOrEditBookmark(
+                Collections.singletonList(null),
+                mBookmarkModel,
+                Collections.singletonList(mTab),
+                /* snackbarManager= */ null,
+                mBottomSheetController,
+                mActivity,
+                BookmarkType.NORMAL,
+                mBookmarkIdListCallback,
+                /* fromExplicitTrackUi= */ false,
+                mBookmarkManagerOpener,
+                mPriceDropNotificationManager,
+                /* isBookmarkBarVisible= */ false,
+                anchorView);
     }
 }

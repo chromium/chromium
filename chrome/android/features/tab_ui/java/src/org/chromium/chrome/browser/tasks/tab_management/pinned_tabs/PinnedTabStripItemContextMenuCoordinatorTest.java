@@ -173,7 +173,7 @@ public class PinnedTabStripItemContextMenuCoordinatorTest {
                 TAB_ID,
                 /* collaborationId= */ null,
                 /* listViewTouchTracker= */ null);
-        verify(mTabBookmarker).addOrEditBookmark(mTab);
+        verify(mTabBookmarker).addOrEditBookmark(mTab, /* anchorView= */ null);
     }
 
     @Test
@@ -190,7 +190,7 @@ public class PinnedTabStripItemContextMenuCoordinatorTest {
                 TAB_ID,
                 /* collaborationId= */ null,
                 /* listViewTouchTracker= */ null);
-        verify(mTabBookmarker).addOrEditBookmark(mTab);
+        verify(mTabBookmarker).addOrEditBookmark(mTab, /* anchorView= */ null);
     }
 
     @Test

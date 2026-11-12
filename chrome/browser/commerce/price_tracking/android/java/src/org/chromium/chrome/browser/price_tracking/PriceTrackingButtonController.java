@@ -148,7 +148,7 @@ public class PriceTrackingButtonController extends BaseButtonDataProvider {
                     CallbackUtils.emptyCallback(),
                     PriceDropNotificationManagerFactory.create(profile));
         } else {
-            mTabBookmarkerSupplier.get().startOrModifyPriceTracking(mActiveTabSupplier.get());
+            mTabBookmarkerSupplier.get().startOrModifyPriceTracking(mActiveTabSupplier.get(), view);
         }
     }
 

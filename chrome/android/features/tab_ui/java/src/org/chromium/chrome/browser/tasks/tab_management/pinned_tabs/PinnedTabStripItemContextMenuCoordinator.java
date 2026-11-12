@@ -227,10 +227,10 @@ public class PinnedTabStripItemContextMenuCoordinator
                 recordUserActionWithPrefix(
                         tab.getTabGroupId() == null ? "AddToGroup" : "MoveToGroup");
             } else if (menuId == R.id.edit_bookmark) {
-                tabBookmarker.addOrEditBookmark(tab);
+                tabBookmarker.addOrEditBookmark(tab, /* anchorView= */ null);
                 recordUserActionWithPrefix("EditBookmark");
             } else if (menuId == R.id.add_to_bookmarks) {
-                tabBookmarker.addOrEditBookmark(tab);
+                tabBookmarker.addOrEditBookmark(tab, /* anchorView= */ null);
                 recordUserActionWithPrefix("AddBookmark");
             } else if (menuId == R.id.unpin_tab) {
                 tabModel.unpinTab(tab.getId());

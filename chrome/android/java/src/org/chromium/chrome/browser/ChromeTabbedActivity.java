@@ -1529,7 +1529,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                     v -> {
                         var bookmarker = assumeNonNull(mTabBookmarkerSupplier.get());
                         var tab = assertNonNull(getActivityTab());
-                        bookmarker.addOrEditBookmark(tab);
+                        bookmarker.addOrEditBookmark(tab, v);
                     };
 
             NonNullObservableSupplier<Integer> archivedTabCountSupplier =

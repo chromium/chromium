@@ -129,12 +129,13 @@ public class PriceTrackingButtonControllerUnitTest {
 
     @Test
     public void testPriceTrackingButtonClick() {
+        View view = new View(mActivity);
         PriceTrackingButtonController priceTrackingButtonController = createButtonController();
         ButtonData buttonData = priceTrackingButtonController.get(mMockTab);
 
-        buttonData.getButtonSpec().getOnClickListener().onClick(null);
+        buttonData.getButtonSpec().getOnClickListener().onClick(view);
 
-        verify(mMockTabBookmarker).startOrModifyPriceTracking(mMockTab);
+        verify(mMockTabBookmarker).startOrModifyPriceTracking(mMockTab, view);
     }
 
     @Test
@@ -153,7 +154,7 @@ public class PriceTrackingButtonControllerUnitTest {
 
         buttonData.getButtonSpec().getOnClickListener().onClick(view);
 
-        verify(mMockTabBookmarker, never()).startOrModifyPriceTracking(mMockTab);
+        verify(mMockTabBookmarker, never()).startOrModifyPriceTracking(any(), any());
         verify(mMockPriceTrackingUtilsJni)
                 .setPriceTrackingStateForBookmark(
                         eq(mMockProfile),

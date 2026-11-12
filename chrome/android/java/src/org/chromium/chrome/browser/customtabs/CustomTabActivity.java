@@ -406,7 +406,7 @@ public class CustomTabActivity extends BaseCustomTabActivity {
         if (id == R.id.bookmark_this_page_id) {
             var bookmarker = assumeNonNull(mTabBookmarkerSupplier.get());
             var tab = assertNonNull(getActivityTab());
-            bookmarker.addOrEditBookmark(tab);
+            bookmarker.addOrEditBookmark(tab, /* anchorView= */ null);
             RecordUserAction.record("MobileMenuAddToBookmarks");
             return true;
         } else if (id == R.id.open_in_browser_id) {

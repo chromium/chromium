@@ -13,6 +13,7 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Looper;
+import android.view.View;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
@@ -181,7 +182,8 @@ public class AddToBookmarksToolbarButtonControllerUnitTest {
                             AddToBookmarksToolbarButtonController
                                     addToBookmarksToolbarButtonController =
                                             createController(activity);
-                            addToBookmarksToolbarButtonController.onClick(null);
+                            View view = new View(activity);
+                            addToBookmarksToolbarButtonController.onClick(view);
 
                             Assert.assertEquals(
                                     1,
@@ -191,7 +193,7 @@ public class AddToBookmarksToolbarButtonControllerUnitTest {
                                     .notifyEvent(
                                             EventConstants
                                                     .ADAPTIVE_TOOLBAR_CUSTOMIZATION_ADD_TO_BOOKMARKS_OPENED);
-                            verify(mTabBookmarker).addOrEditBookmark(mTab);
+                            verify(mTabBookmarker).addOrEditBookmark(mTab, view);
                         });
     }
 

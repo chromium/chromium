@@ -90,6 +90,8 @@ public class BookmarkUtils {
      * @param bookmarkManagerOpener Manages opening bookmarks.
      * @param priceDropNotificationManager Manages price drop notifications.
      * @param isBookmarkBarVisible True when the user is currently showing the bookmark bar.
+     * @param anchorView The view that triggered the flow, used to anchor the bookmark popup. Falls
+     *     back to a default anchor if null or not shown.
      */
     public static void addOrEditBookmark(
             @Nullable List<@Nullable BookmarkItem> existingBookmarkItems,
@@ -103,7 +105,8 @@ public class BookmarkUtils {
             boolean fromExplicitTrackUi,
             BookmarkManagerOpener bookmarkManagerOpener,
             PriceDropNotificationManager priceDropNotificationManager,
-            boolean isBookmarkBarVisible) {
+            boolean isBookmarkBarVisible,
+            @Nullable View anchorView) {
         if (tabs.size() == 1) {
             assert bottomSheetController != null;
             BookmarkItem existingBookmarkItem =
@@ -121,7 +124,8 @@ public class BookmarkUtils {
                     fromExplicitTrackUi,
                     bookmarkManagerOpener,
                     priceDropNotificationManager,
-                    isBookmarkBarVisible);
+                    isBookmarkBarVisible,
+                    anchorView);
         } else {
             assert snackbarManager != null : "Snackbar manager should never be null";
             addOrEditMultipleBookmarks(
@@ -147,7 +151,8 @@ public class BookmarkUtils {
             boolean fromExplicitTrackUi,
             BookmarkManagerOpener bookmarkManagerOpener,
             PriceDropNotificationManager priceDropNotificationManager,
-            boolean isBookmarkBarVisible) {
+            boolean isBookmarkBarVisible,
+            @Nullable View anchorView) {
         assert bookmarkModel.isBookmarkModelLoaded();
         if (existingBookmarkItem != null) {
             if (shouldUseBookmarkPopup(activity)) {
@@ -160,7 +165,8 @@ public class BookmarkUtils {
                         /* wasBookmarkMoved= */ false,
                         /* isNewBookmark= */ false,
                         bookmarkManagerOpener,
-                        priceDropNotificationManager);
+                        priceDropNotificationManager,
+                        anchorView);
             } else {
                 bookmarkManagerOpener.startEditActivity(
                         activity, tab.getProfile(), existingBookmarkItem.getId());
@@ -197,7 +203,8 @@ public class BookmarkUtils {
                 /* wasBookmarkMoved= */ false,
                 /* isNewBookmark= */ true,
                 bookmarkManagerOpener,
-                priceDropNotificationManager);
+                priceDropNotificationManager,
+                anchorView);
         callback.onResult(Collections.singletonList(newBookmarkId));
     }
 
@@ -294,6 +301,8 @@ public class BookmarkUtils {
      * @param isNewBookmark Whether the bookmark is newly created.
      * @param bookmarkManagerOpener Manages opening bookmarks.
      * @param priceDropNotificationManager Manages price drop notifications.
+     * @param anchorView The view that triggered the flow, used to anchor the bookmark popup. Falls
+     *     back to a default anchor if null or not shown.
      */
     static void showSaveFlow(
             Activity activity,
@@ -304,7 +313,8 @@ public class BookmarkUtils {
             boolean wasBookmarkMoved,
             boolean isNewBookmark,
             BookmarkManagerOpener bookmarkManagerOpener,
-            PriceDropNotificationManager priceDropNotificationManager) {
+            PriceDropNotificationManager priceDropNotificationManager,
+            @Nullable View anchorView) {
         if (bookmarkId == null) {
             Log.e(TAG, "Null bookmark found when showing the save flow, aborting.");
             return;
@@ -313,28 +323,11 @@ public class BookmarkUtils {
         ShoppingService shoppingService = ShoppingServiceFactory.getForProfile(profile);
 
         if (shouldUseBookmarkPopup(activity)) {
-            View decorView =
-                    activity.getWindow() != null
-                            ? activity.getWindow().getDecorView()
-                            : activity.findViewById(android.R.id.content);
-            View anchor = findFirstShownView(decorView, R.id.bookmark_button);
-
-            // When the bookmark button isn't visible, fallback to the 3-dot menu.
-            if (anchor == null) {
-                anchor = findFirstShownView(decorView, R.id.menu_button_wrapper);
-            }
-
-            // As a last resort, anchor to the content view. This should be rare/never happen.
-            if (anchor == null) {
-                anchor = activity.findViewById(android.R.id.content);
-            }
-            assert anchor != null && anchor.isShown() : "Unable to find anchor for bookmark popup.";
-
             BookmarkPopupCoordinator popupCoordinator =
                     new BookmarkPopupCoordinator(
                             activity,
                             profile,
-                            anchor,
+                            resolvePopupAnchorView(activity, anchorView),
                             bookmarkManagerOpener,
                             shoppingService,
                             priceDropNotificationManager);
@@ -507,7 +500,8 @@ public class BookmarkUtils {
                     /* wasBookmarkMoved= */ false,
                     /* isNewBookmark= */ true,
                     bookmarkManagerOpener,
-                    priceDropNotificationManager);
+                    priceDropNotificationManager,
+                    /* anchorView= */ null);
         } else {
             Snackbar snackbar =
                     Snackbar.make(
@@ -1101,6 +1095,34 @@ public class BookmarkUtils {
     public static int getChildOpenableInNewTabBookmarkCountForFolder(
             BookmarkModel bookmarkModel, BookmarkId folderId) {
         return getOpenableInNewTabBookmarkCount(bookmarkModel, bookmarkModel.getChildIds(folderId));
+    }
+
+    /**
+     * Returns {@code anchorView} if it is attached and shown, otherwise falls back to the bookmark
+     * button, then the 3-dot menu, then the content view.
+     */
+    private static View resolvePopupAnchorView(Activity activity, @Nullable View anchorView) {
+        if (anchorView != null && anchorView.isAttachedToWindow() && anchorView.isShown()) {
+            return anchorView;
+        }
+
+        View decorView =
+                activity.getWindow() != null
+                        ? activity.getWindow().getDecorView()
+                        : activity.findViewById(android.R.id.content);
+        View anchor = findFirstShownView(decorView, R.id.bookmark_button);
+
+        // When the bookmark button isn't visible, fallback to the 3-dot menu.
+        if (anchor == null) {
+            anchor = findFirstShownView(decorView, R.id.menu_button_wrapper);
+        }
+
+        // As a last resort, anchor to the content view. This should be rare/never happen.
+        if (anchor == null) {
+            anchor = activity.findViewById(android.R.id.content);
+        }
+        assert anchor != null && anchor.isShown() : "Unable to find anchor for bookmark popup.";
+        return anchor;
     }
 
     /**
