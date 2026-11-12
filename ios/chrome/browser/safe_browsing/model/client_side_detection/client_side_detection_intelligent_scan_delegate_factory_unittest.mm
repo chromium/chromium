@@ -9,7 +9,7 @@
 
 #import "base/test/scoped_feature_list.h"
 #import "components/optimization_guide/core/optimization_guide_features.h"
-#import "components/safe_browsing/core/browser/intelligent_scan_delegate.h"
+#import "components/safe_browsing/core/browser/client_side_detection/intelligent_scan_delegate/intelligent_scan_delegate.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"

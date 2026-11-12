@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/safe_browsing/core/browser/intelligent_scan_delegate.h"
+#include "components/safe_browsing/core/browser/client_side_detection/intelligent_scan_delegate/intelligent_scan_delegate.h"
 
 namespace safe_browsing {
 

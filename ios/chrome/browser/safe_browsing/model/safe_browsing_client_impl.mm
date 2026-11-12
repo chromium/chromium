@@ -10,7 +10,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "components/enterprise/connectors/core/reporting_event_router.h"
 #import "components/prefs/pref_service.h"
-#import "components/safe_browsing/core/browser/intelligent_scan_delegate.h"
+#import "components/safe_browsing/core/browser/client_side_detection/intelligent_scan_delegate/intelligent_scan_delegate.h"
 #import "components/safe_browsing/core/browser/realtime/url_lookup_service.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "components/safe_browsing/core/common/proto/csd.pb.h"

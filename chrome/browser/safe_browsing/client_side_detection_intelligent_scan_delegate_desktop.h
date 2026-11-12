@@ -14,7 +14,7 @@
 #include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom-forward.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "components/safe_browsing/core/browser/intelligent_scan_delegate.h"
+#include "components/safe_browsing/core/browser/client_side_detection/intelligent_scan_delegate/intelligent_scan_delegate.h"
 
 class PrefService;
 class OptimizationGuideKeyedService;

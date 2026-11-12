@@ -15,7 +15,7 @@
 #import "base/memory/raw_ref.h"
 #import "base/unguessable_token.h"
 #import "components/prefs/pref_change_registrar.h"
-#import "components/safe_browsing/core/browser/intelligent_scan_delegate.h"
+#import "components/safe_browsing/core/browser/client_side_detection/intelligent_scan_delegate/intelligent_scan_delegate.h"
 
 class PrefService;
 

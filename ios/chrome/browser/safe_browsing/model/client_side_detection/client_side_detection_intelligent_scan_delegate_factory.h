@@ -7,7 +7,7 @@
 
 #import <memory>
 
-#import "components/safe_browsing/core/browser/intelligent_scan_delegate.h"
+#import "components/safe_browsing/core/browser/client_side_detection/intelligent_scan_delegate/intelligent_scan_delegate.h"
 #import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Singleton that owns `IntelligentScanDelegate` objects, one for each active

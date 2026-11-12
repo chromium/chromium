@@ -12,9 +12,9 @@ source_set("client_side_detection") {
 
   public_deps = [
     ":client_side_detection_service_base",
-    "//components/safe_browsing/core/browser:intelligent_scan_delegate",
     "//components/safe_browsing/core/browser:referring_app_info",
     "//components/safe_browsing/core/browser:token_fetcher",
+    "//components/safe_browsing/core/browser/client_side_detection/intelligent_scan_delegate",
     "//components/safe_browsing/core/browser/db:sb_protocol_manager_util",
     "//components/safe_browsing/core/common/fbs:client_model",
   ]
@@ -89,9 +89,9 @@ source_set("unit_tests") {
     "//components/optimization_guide/core:test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/prefs:test_support",
-    "//components/safe_browsing/core/browser:intelligent_scan_delegate",
     "//components/safe_browsing/core/browser:referring_app_info",
     "//components/safe_browsing/core/browser:verdict_cache_manager",
+    "//components/safe_browsing/core/browser/client_side_detection/intelligent_scan_delegate",
     "//components/safe_browsing/core/browser/db:sb_protocol_manager_util",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:features",

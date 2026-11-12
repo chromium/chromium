@@ -24,7 +24,7 @@
 #import "components/optimization_guide/proto/features/scam_detection.pb.h"
 #import "components/optimization_guide/proto/model_execution.pb.h"
 #import "components/prefs/testing_pref_service.h"
-#import "components/safe_browsing/core/browser/intelligent_scan_delegate.h"
+#import "components/safe_browsing/core/browser/client_side_detection/intelligent_scan_delegate/intelligent_scan_delegate.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "components/safe_browsing/core/common/proto/csd.pb.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"

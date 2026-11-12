@@ -10,7 +10,7 @@
 #import "base/check.h"
 #import "base/feature_list.h"
 #import "components/prefs/pref_service.h"
-#import "components/safe_browsing/core/browser/intelligent_scan_delegate.h"
+#import "components/safe_browsing/core/browser/client_side_detection/intelligent_scan_delegate/intelligent_scan_delegate.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"

@@ -1,0 +1,27 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("intelligent_scan_delegate") {
+  sources = [
+    "intelligent_scan_delegate.cc",
+    "intelligent_scan_delegate.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/keyed_service/core",
+    "//components/safe_browsing/core/common/proto:csd_proto",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "intelligent_scan_delegate_unittest.cc" ]
+  deps = [
+    ":intelligent_scan_delegate",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+}

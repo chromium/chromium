@@ -12,7 +12,7 @@
 #include "chrome/common/chrome_features.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/policy/core/common/management/management_service.h"
-#include "components/safe_browsing/core/browser/intelligent_scan_delegate.h"
+#include "components/safe_browsing/core/browser/client_side_detection/intelligent_scan_delegate/intelligent_scan_delegate.h"
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/safe_browsing/android/client_side_detection_intelligent_scan_delegate_android.h"
 #else

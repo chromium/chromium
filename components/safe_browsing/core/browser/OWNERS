@@ -4,6 +4,4 @@ per-file suspicious_site_warning_allowlist*=awado@google.com
 # HaTS
 per-file safe_browsing_hats_delegate*=nwokedi@chromium.org
 
-per-file intelligent_scan_delegate*=skrakowi@chromium.org
-
 per-file referrer_chain_provider.h=file://components/safe_browsing/content/browser/navigation_observer/OWNERS
