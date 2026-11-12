@@ -14,6 +14,7 @@ python_library("run_cuttlefish") {
            "simg2img.py",
            "README.run_cuttlefish.md",
 
+           "provision_starview_device.py",
            "//third_party/android_sdk/public/platform-tools/adb",
 
            # TODO(crbug.com/517946352): We use host_cpu directly here to avoid

@@ -11,7 +11,14 @@ import subprocess
 import time
 from typing import Optional, Sequence, Union
 
-from common import DIR_SRC_ROOT
+DIR_SRC_ROOT = os.path.abspath(
+    os.environ.get(
+        'SRC_ROOT',
+        os.path.join(
+            os.path.dirname(__file__), os.pardir, os.pardir, os.pardir
+        ),
+    )
+)
 
 DEFAULT_ADB_PATH = os.path.join(
     DIR_SRC_ROOT,
