@@ -516,6 +516,10 @@ class CORE_EXPORT CSSParserImpl {
 
   PrivateNameMap* private_names_ = nullptr;
 
+  // Set while parsing a @mixin. Maps the hygienic name of each @private
+  // variable in the mixin, including in nested rules, to its authored name.
+  PrivateNameMap* mixin_authored_private_names_ = nullptr;
+
   HeapHashMap<String, Member<const MediaQuerySet>> media_query_cache_;
 };
 

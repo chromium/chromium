@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/cascade_layer.h"
 #include "third_party/blink/renderer/core/css/cascade_layered.h"
+#include "third_party/blink/renderer/core/css/css_private_bindings.h"
 #include "third_party/blink/renderer/core/css/media_query_evaluator.h"
 #include "third_party/blink/renderer/core/css/resolver/media_query_result.h"
 #include "third_party/blink/renderer/core/css/robin_hood_map.h"
@@ -366,14 +367,28 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
     Member<StyleRuleMixin> mixin;
     Member<StyleRuleApplyMixin> invoking_apply_rule;
     Member<MixinParameterBindings> mixin_parameter_bindings;
+    // The @private names in scope where the @apply is. Rules from the @apply's
+    // @contents block are added in this scope instead of the mixin's.
+    Member<const CSSPrivateBindings> outer_private_scope;
+    // Maps the hygienic name of each @private variable declared in the mixin
+    // to the one it has for this @apply.
+    PrivateNameMap mixin_to_local_hygienic_names;
+    // True while adding the @apply's @contents block. It is written outside
+    // of the mixin.
+    bool is_in_contents = false;
 
     void Trace(Visitor* visitor) const {
       visitor->Trace(mixin);
       visitor->Trace(invoking_apply_rule);
       visitor->Trace(mixin_parameter_bindings);
+      visitor->Trace(outer_private_scope);
     }
   };
   using ApplyMixinsStack = HeapVector<ApplyingMixin, 4>;
+
+  // Returns the mixin whose body contains the rules being added, or null if
+  // they were written outside of any mixin.
+  static const ApplyingMixin* MixinBeingApplied(const ApplyMixinsStack& stack);
 
   void ApplyMixin(StyleRule* parent_rule,
                   StyleRuleApplyMixin* apply_mixin_rule,
@@ -673,6 +688,9 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   // declared in `rules`.
   const CSSPrivateBindings* PrivateScopeForRules(
       base::span<const Member<StyleRuleBase>> rules) const;
+  const CSSPrivateBindings* PrivateScopeForMixinRules(
+      base::span<const Member<StyleRuleBase>> rules,
+      const ApplyingMixin& applying_mixin) const;
   void FlattenMixinLocals(
       base::span<const Member<StyleRuleBase>> rules,
       const MediaQueryEvaluator& medium,

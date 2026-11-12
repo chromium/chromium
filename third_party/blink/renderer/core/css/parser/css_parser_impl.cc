@@ -2552,6 +2552,9 @@ StyleRuleMixin* CSSParserImpl::ConsumeMixinRule(CSSParserTokenStream& stream) {
   PrivateNameMap private_names;
   base::AutoReset<PrivateNameMap*> reset_private_names(&private_names_,
                                                        &private_names);
+  PrivateNameMap authored_private_names;
+  base::AutoReset<PrivateNameMap*> reset_authored_private_names(
+      &mixin_authored_private_names_, &authored_private_names);
   ConsumeBlockContents(stream, StyleRule::kMixin, CSSNestingType::kMixin,
                        /*parent_rule_for_nesting=*/nullptr,
                        /*nested_declarations_start_index=*/0, &child_rules,
@@ -2565,6 +2568,7 @@ StyleRuleMixin* CSSParserImpl::ConsumeMixinRule(CSSParserTokenStream& stream) {
     style_sheet_->SetHasMixinRules();
   }
   return MakeGarbageCollected<StyleRuleMixin>(name, std::move(*parameters),
+                                              std::move(authored_private_names),
                                               std::move(child_rules));
 }
 
@@ -2722,6 +2726,13 @@ StyleRule* CSSParserImpl::ConsumePrivateRule(CSSParserTokenStream& stream) {
   HeapVector<CSSPropertyValue, 64> properties;
   ConsumeDeclarationListForPrivate(stream, *context_, registry, *private_names_,
                                    properties);
+  if (mixin_authored_private_names_) {
+    for (const CSSPropertyValue& property : properties) {
+      const AtomicString& private_name = property.CustomPropertyName();
+      mixin_authored_private_names_->Set(
+          private_name, registry.AuthoredPrivatePropertyName(private_name));
+    }
+  }
 
   if (observer_) {
     observer_->EndRuleBody(stream.LookAheadOffset());

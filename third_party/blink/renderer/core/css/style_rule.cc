@@ -1207,16 +1207,19 @@ void StyleRuleFunction::TraceAfterDispatch(blink::Visitor* visitor) const {
 StyleRuleMixin::StyleRuleMixin(
     AtomicString name,
     HeapVector<StyleRuleFunction::Parameter> parameters,
+    PrivateNameMap authored_private_names,
     HeapVector<Member<StyleRuleBase>> child_rules)
     : StyleRuleGroup(kMixin, child_rules),
       name_(std::move(name)),
-      parameters_(std::move(parameters)) {}
+      parameters_(std::move(parameters)),
+      authored_private_names_(std::move(authored_private_names)) {}
 
 StyleRuleMixin::StyleRuleMixin(const StyleRuleMixin& other,
                                HeapVector<Member<StyleRuleBase>> child_rules)
     : StyleRuleGroup(kMixin, child_rules),
       name_(other.name_),
-      parameters_(other.parameters_) {}
+      parameters_(other.parameters_),
+      authored_private_names_(other.authored_private_names_) {}
 
 void StyleRuleMixin::TraceAfterDispatch(blink::Visitor* visitor) const {
   StyleRuleGroup::TraceAfterDispatch(visitor);

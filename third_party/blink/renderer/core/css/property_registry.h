@@ -40,6 +40,9 @@ class CORE_EXPORT PropertyRegistry : public GarbageCollected<PropertyRegistry> {
                                const CSSSyntaxDefinition&);
   const AtomicString& AuthoredPrivatePropertyName(
       const AtomicString& private_name) const;
+  const PrivateNameMap& GetAuthoredPrivateNames() const {
+    return authored_private_names_;
+  }
   const PropertyRegistration* PrivateRegistration(
       const AtomicString& private_name) const;
   PropertyRegistry* CopyPrivateRegistry() const;
