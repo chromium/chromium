@@ -46,6 +46,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuItemDelegate;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.external_intents.ExternalNavigationHelper;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.AdditionalNavigationParams;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -205,7 +206,7 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.setData(Uri.parse(url.getSpec()));
-        IntentUtils.safeStartActivity(mTab.getContext(), intent);
+        startExternalActivity(intent);
     }
 
     @Override
@@ -220,7 +221,7 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.setData(Uri.parse(url.getSpec()));
-        IntentUtils.safeStartActivity(mTab.getContext(), intent);
+        startExternalActivity(intent);
     }
 
     @Override
@@ -233,8 +234,9 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
     @Override
     public void onSendTextMessage(GURL url) {
         Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.setData(Uri.parse("sms:" + UrlUtilities.getTelNumber(url)));
-        IntentUtils.safeStartActivity(mTab.getContext(), intent);
+        startExternalActivity(intent);
     }
 
     @Override
@@ -255,6 +257,26 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
                     MailTo.parse(url.getSpec()).getTo().split(",")[0]);
         } else if (UrlUtilities.isTelScheme(url)) {
             intent.putExtra(ContactsContract.Intents.Insert.PHONE, UrlUtilities.getTelNumber(url));
+        }
+        startExternalActivity(intent);
+    }
+
+    private void startExternalActivity(Intent intent) {
+        if (isIncognito()) {
+            InterceptNavigationDelegateTabHelper tabHelper =
+                    InterceptNavigationDelegateTabHelper.getFromTab(mTab);
+            if (tabHelper != null) {
+                ExternalNavigationHelper helper =
+                        tabHelper.getInterceptNavigationDelegate().getExternalNavigationHelper();
+                if (helper != null) {
+                    helper.launchExternalAppWithIncognitoConfirmation(
+                            intent,
+                            /* navigationId= */ -1,
+                            mTab.getContext(),
+                            CallbackUtils.emptyRunnable());
+                }
+            }
+            return;
         }
         IntentUtils.safeStartActivity(mTab.getContext(), intent);
     }
