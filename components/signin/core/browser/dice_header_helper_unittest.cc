@@ -904,9 +904,11 @@ TEST_F(DiceHeaderHelperTest, AppendOrRemoveDiceRequestHeader_GaiaSyncDisabled) {
   ASSERT_FALSE(client_id.empty());
   CheckDiceHeaderRequest(
       GURL("https://accounts.google.com"), GaiaId("0123456789"),
-      base::StringPrintf("version=%s,client_id=%s,device_id=DeviceID,signin_"
-                         "mode=all_accounts,signout_mode=show_confirmation",
-                         kDiceProtocolVersion2, client_id.c_str()));
+      base::StringPrintf(
+          "version=%s,client_id=%s,device_id=DeviceID,"
+          "primary_account_id=0123456789,linked_accounts=1,"
+          "signin_mode=all_accounts,signout_mode=show_confirmation",
+          kDiceProtocolVersion2, client_id.c_str()));
 }
 
 TEST_F(DiceHeaderHelperTest, AppendOrRemoveDiceRequestHeader_GaiaSyncEnabled) {
@@ -919,7 +921,8 @@ TEST_F(DiceHeaderHelperTest, AppendOrRemoveDiceRequestHeader_GaiaSyncEnabled) {
       GURL("https://accounts.google.com"), GaiaId("0123456789"),
       base::StringPrintf(
           "version=%s,client_id=%s,device_id=DeviceID,sync_account_id="
-          "0123456789,signin_mode=all_accounts,signout_mode=show_confirmation",
+          "0123456789,primary_account_id=0123456789,linked_accounts=1,"
+          "signin_mode=all_accounts,signout_mode=show_confirmation",
           kDiceProtocolVersion2, client_id.c_str()));
 }
 
@@ -933,9 +936,11 @@ TEST_F(DiceHeaderHelperTest, AppendOrRemoveDiceRequestHeader_CookiesBlocked) {
   ASSERT_FALSE(client_id.empty());
   CheckDiceHeaderRequest(
       GURL("https://accounts.google.com"), GaiaId("0123456789"),
-      base::StringPrintf("version=%s,client_id=%s,device_id=DeviceID,signin_"
-                         "mode=all_accounts,signout_mode=show_confirmation",
-                         kDiceProtocolVersion2, client_id.c_str()));
+      base::StringPrintf(
+          "version=%s,client_id=%s,device_id=DeviceID,"
+          "primary_account_id=0123456789,linked_accounts=1,"
+          "signin_mode=all_accounts,signout_mode=show_confirmation",
+          kDiceProtocolVersion2, client_id.c_str()));
 }
 
 TEST_F(DiceHeaderHelperTest, AppendOrRemoveDiceRequestHeader_DiceDisabled) {
@@ -950,41 +955,16 @@ TEST_F(DiceHeaderHelperTest, AppendOrRemoveDiceRequestHeader_EmptyDeviceID) {
   device_id_ = std::string();
   const GURL url("https://accounts.google.com");
   std::string client_id = GaiaUrls::GetInstance()->oauth2_chrome_client_id();
-  CheckDiceHeaderRequest(url, GaiaId("0123456789"),
-                         "version=" + std::string(kDiceProtocolVersion2) +
-                             ",client_id=" + client_id +
-                             ",signin_mode=all_accounts,signout_mode=show_"
-                             "confirmation");
-}
-
-TEST_F(
-    DiceHeaderHelperTest,
-    AppendOrRemoveDiceRequestHeader_DiceLinkedAccounts_SyncDisabled_PrimarySet) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {switches::kDiceLinkedAccounts, switches::kDiceHeaderVersion2}, {});
-
-  account_consistency_ = AccountConsistencyMethod::kDice;
-  sync_enabled_ = false;
-  std::string client_id = GaiaUrls::GetInstance()->oauth2_chrome_client_id();
-  ASSERT_FALSE(client_id.empty());
-
   CheckDiceHeaderRequest(
-      GURL("https://accounts.google.com"), GaiaId("0123456789"),
-      base::StringPrintf(
-          "version=%s,client_id=%s,device_id=DeviceID,"
-          "primary_account_id=0123456789,linked_accounts=1,"
-          "signin_mode=all_accounts,signout_mode=show_confirmation",
-          kDiceProtocolVersion2, client_id.c_str()));
+      url, GaiaId("0123456789"),
+      "version=" + std::string(kDiceProtocolVersion2) +
+          ",client_id=" + client_id +
+          ",primary_account_id=0123456789,linked_accounts=1,"
+          "signin_mode=all_accounts,signout_mode=show_confirmation");
 }
 
-TEST_F(
-    DiceHeaderHelperTest,
-    AppendOrRemoveDiceRequestHeader_DiceLinkedAccounts_SyncDisabled_PrimaryEmpty) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {switches::kDiceLinkedAccounts, switches::kDiceHeaderVersion2}, {});
-
+TEST_F(DiceHeaderHelperTest,
+       AppendOrRemoveDiceRequestHeader_SyncDisabled_PrimaryEmpty) {
   account_consistency_ = AccountConsistencyMethod::kDice;
   sync_enabled_ = false;
   std::string client_id = GaiaUrls::GetInstance()->oauth2_chrome_client_id();
@@ -995,28 +975,6 @@ TEST_F(
       base::StringPrintf(
           "version=%s,client_id=%s,device_id=DeviceID,"
           "linked_accounts=1,"
-          "signin_mode=all_accounts,signout_mode=show_confirmation",
-          kDiceProtocolVersion2, client_id.c_str()));
-}
-
-TEST_F(
-    DiceHeaderHelperTest,
-    AppendOrRemoveDiceRequestHeader_DiceLinkedAccounts_SyncEnabled_PrimarySet) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {switches::kDiceLinkedAccounts, switches::kDiceHeaderVersion2}, {});
-
-  account_consistency_ = AccountConsistencyMethod::kDice;
-  sync_enabled_ = true;
-  std::string client_id = GaiaUrls::GetInstance()->oauth2_chrome_client_id();
-  ASSERT_FALSE(client_id.empty());
-
-  CheckDiceHeaderRequest(
-      GURL("https://accounts.google.com"), GaiaId("0123456789"),
-      base::StringPrintf(
-          "version=%s,client_id=%s,device_id=DeviceID,sync_account_id="
-          "0123456789,"
-          "primary_account_id=0123456789,linked_accounts=1,"
           "signin_mode=all_accounts,signout_mode=show_confirmation",
           kDiceProtocolVersion2, client_id.c_str()));
 }
@@ -1036,6 +994,23 @@ TEST_F(DiceHeaderHelperTest,
       base::StringPrintf("version=%s,client_id=%s,device_id=DeviceID,signin_"
                          "mode=all_accounts,signout_mode=show_confirmation",
                          kDiceProtocolVersion, client_id.c_str()));
+}
+
+TEST_F(DiceHeaderHelperTest,
+       AppendOrRemoveDiceRequestHeader_DiceLinkedAccountsDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(switches::kDiceLinkedAccounts);
+
+  account_consistency_ = AccountConsistencyMethod::kDice;
+  sync_enabled_ = false;
+
+  std::string client_id = GaiaUrls::GetInstance()->oauth2_chrome_client_id();
+  ASSERT_FALSE(client_id.empty());
+  CheckDiceHeaderRequest(
+      GURL("https://accounts.google.com"), GaiaId("0123456789"),
+      base::StringPrintf("version=%s,client_id=%s,device_id=DeviceID,signin_"
+                         "mode=all_accounts,signout_mode=show_confirmation",
+                         kDiceProtocolVersion2, client_id.c_str()));
 }
 
 }  // namespace signin
