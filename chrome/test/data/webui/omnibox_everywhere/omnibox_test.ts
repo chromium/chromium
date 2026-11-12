@@ -4831,6 +4831,15 @@ suite('OmniboxEverywhereContextMenuTest', () => {
         assertTrue(!!composebox);
         assertTrue(composebox.isPendingContextUpload);
         assertFalse(composebox.computeShowDropdown());
+        composebox.isContextMenuOpen = true;
+        assertFalse(composebox.computeShowDropdown());
+        composebox.isContextMenuOpen = false;
+
+        // Window blur while context upload is pending (e.g. native file picker
+        // sheet taking focus) does not clear active state in persistent mode.
+        window.dispatchEvent(new Event('blur'));
+        await microtasksFinished();
+        assertTrue(app.hasAttribute('is-active'));
 
         // Delivering a file context resets isPendingContextUpload and plays
         // glow.
@@ -4852,6 +4861,11 @@ suite('OmniboxEverywhereContextMenuTest', () => {
 
         assertFalse(composebox.isPendingContextUpload);
         assertTrue(glowPlayed);
+
+        // Once the pending upload is resolved, window blur clears active state.
+        window.dispatchEvent(new Event('blur'));
+        await microtasksFinished();
+        assertFalse(app.hasAttribute('is-active'));
       });
 
   test(
@@ -4917,8 +4931,10 @@ suite('OmniboxEverywhereContextMenuTest', () => {
             app.shadowRoot.querySelector('omnibox-everywhere-composebox');
         assertTrue(!!composebox);
         assertFalse(composebox.isPendingContextUpload);
+        composebox.input = 'existing multiline query';
+        await microtasksFinished();
 
-        // Initiate screenshot from within composebox mode.
+        // Initiate screenshot/file upload from within composebox mode.
         testEverywhereProxy.page.openComposebox({
           tool: ToolMode.kUnspecified,
           model: ModelMode.kUnspecified,
@@ -4933,17 +4949,19 @@ suite('OmniboxEverywhereContextMenuTest', () => {
             app.shadowRoot.querySelector('omnibox-everywhere-composebox');
         assertTrue(!!composebox);
         assertTrue(composebox.isPendingContextUpload);
+        assertEquals('existing multiline query', composebox.input);
 
         // Cancel the screenshot capture.
         testEverywhereProxy.page.onScreenshotCaptureCancelled();
         await microtasksFinished();
 
         // Should remain in composebox mode with isPendingContextUpload reset to
-        // false.
+        // false and typed query preserved.
         composebox =
             app.shadowRoot.querySelector('omnibox-everywhere-composebox');
         assertTrue(!!composebox);
         assertFalse(composebox.isPendingContextUpload);
+        assertEquals('existing multiline query', composebox.input);
       });
 
   test('input does not overspill profile icon in RTL or LTR', async () => {

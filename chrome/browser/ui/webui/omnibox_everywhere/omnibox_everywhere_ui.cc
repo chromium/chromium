@@ -42,6 +42,7 @@
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/browser/ui/webui/omnibox_everywhere/composebox_everywhere_handler.h"
 #include "chrome/browser/ui/webui/omnibox_everywhere/debug/omnibox_everywhere_debug_page_handler.h"
+#include "chrome/browser/ui/webui/omnibox_everywhere/omnibox_everywhere_file_selector.h"
 #include "chrome/browser/ui/webui/omnibox_everywhere/omnibox_everywhere_handler.h"
 #include "chrome/browser/ui/webui/omnibox_everywhere/omnibox_everywhere_hotkey_bubble_view.h"
 #include "chrome/browser/ui/webui/omnibox_everywhere/omnibox_everywhere_page_handler.h"
@@ -1007,12 +1008,23 @@ void OmniboxEverywhereUI::ExecuteScreenshotCommand(
 void OmniboxEverywhereUI::OnScreenshotCaptureDone(
     const std::optional<base::UnguessableToken>& token) {
   if (!token.has_value()) {
-    if (context_upload_origin_was_searchbox_) {
-      SetIsComposebox(false);
-    }
-    if (page_handler_) {
-      page_handler_->OnScreenshotCaptureCancelled();
-    }
+    OnContextUploadCanceled();
+    return;
+  }
+  context_upload_origin_was_searchbox_ = false;
+}
+
+void OmniboxEverywhereUI::OnContextUploadCanceled() {
+  // Shared cancellation handler for both screenshot capture and the native file
+  // chooser (`OmniboxEverywhereFileSelector::FileSelectionCanceled`). If the
+  // upload started from the Searchbox, revert `is_composebox_mode_` and notify
+  // the WebUI so it transitions back from the collapsed Composebox pill to the
+  // Searchbox.
+  if (context_upload_origin_was_searchbox_) {
+    SetIsComposebox(false);
+  }
+  if (page_handler_) {
+    page_handler_->OnScreenshotCaptureCancelled();
   }
   context_upload_origin_was_searchbox_ = false;
 }
@@ -1152,7 +1164,7 @@ void OmniboxEverywhereUI::CancelTransientUi() {
   }
   ResetScreenshotMenu();
   if (file_selector_) {
-    file_selector_->CancelFileSelection();
+    file_selector_->Cancel();
   }
   if (omnibox_handler_) {
     omnibox_handler_->CleanupDrivePicker();
@@ -1176,6 +1188,21 @@ void OmniboxEverywhereUI::OnDemoted() {
 }
 
 void OmniboxEverywhereUI::OnFileChooserOpened() {
+  // Record whether the user launched the file chooser from the Searchbox so
+  // `OnContextUploadCanceled()` can return to the Searchbox if the dialog is
+  // cancelled. Then immediately transition the WebUI into the collapsed
+  // Composebox pill (`is_pending_context_upload = true`) so the widget shrinks
+  // to its compact height before `OmniboxEverywhereFileSelector` presents the
+  // native file chooser sheet. When `is_composebox_mode_` is already true,
+  // `OpenComposebox()` updates `isPendingContextUpload` in-place on the
+  // existing `<omnibox-everywhere-composebox>`, preserving any typed query,
+  // attached context chips, and active tool/model selections.
+  context_upload_origin_was_searchbox_ = !is_composebox_mode_;
+
+  auto initial_state = omnibox_everywhere::mojom::ComposeboxInitialState::New();
+  initial_state->is_pending_context_upload = true;
+  OpenComposebox(std::move(initial_state));
+
   if (auto* service =
           OmniboxEverywhereServiceFactory::GetForProfile(profile_)) {
     service->OnFileChooserOpened();
@@ -1212,15 +1239,14 @@ void OmniboxEverywhereUI::ShowContextActionMenu(const gfx::Rect& anchor_rect) {
   }
 
   if (!file_selector_) {
-    file_selector_ = std::make_unique<OmniboxPopupFileSelector>(
-        web_contents->GetTopLevelNativeWindow());
-    file_selector_->set_open_ai_mode_callback(base::BindRepeating(
-        &OmniboxEverywhereUI::OpenComposebox, weak_factory_.GetWeakPtr(),
-        /*initial_state=*/nullptr));
-    file_selector_->set_file_chooser_opened_callback(base::BindRepeating(
-        &OmniboxEverywhereUI::OnFileChooserOpened, weak_factory_.GetWeakPtr()));
-    file_selector_->set_file_chooser_closed_callback(base::BindRepeating(
-        &OmniboxEverywhereUI::OnFileChooserClosed, weak_factory_.GetWeakPtr()));
+    file_selector_ = std::make_unique<OmniboxEverywhereFileSelector>(
+        web_contents->GetTopLevelNativeWindow(),
+        base::BindRepeating(&OmniboxEverywhereUI::OnFileChooserOpened,
+                            weak_factory_.GetWeakPtr()),
+        base::BindRepeating(&OmniboxEverywhereUI::OnFileChooserClosed,
+                            weak_factory_.GetWeakPtr()),
+        base::BindRepeating(&OmniboxEverywhereUI::OnContextUploadCanceled,
+                            weak_factory_.GetWeakPtr()));
   }
 
   gfx::Point screen_point = CalculateContextMenuAnchorPoint(
