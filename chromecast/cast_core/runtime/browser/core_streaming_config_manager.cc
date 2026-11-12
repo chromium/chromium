@@ -19,6 +19,10 @@
 #include "media/base/channel_layout.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_decoder_config.h"
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace chromecast {
 namespace {
@@ -58,6 +62,23 @@ constexpr char kMediaCapabilitiesBindingName[] =
   return ::media::AudioCodec::kUnknown;
 }
 
+// Returns `size` in the orientation of the primary display, which follows
+// screen rotation while the size in AV Settings does not.
+gfx::Size OrientToPrimaryDisplay(const gfx::Size& size) {
+  display::Screen* screen = display::Screen::Get();
+  if (!screen || size.IsEmpty()) {
+    return size;
+  }
+  const gfx::Size display_size = screen->GetPrimaryDisplay().GetSizeInPixel();
+  if (display_size.IsEmpty() || display_size.width() == display_size.height()) {
+    return size;
+  }
+  const bool is_display_portrait = display_size.height() > display_size.width();
+  const bool is_size_portrait = size.height() > size.width();
+  return is_display_portrait == is_size_portrait ? size
+                                                 : gfx::TransposeSize(size);
+}
+
 cast_streaming::ReceiverConfig CreateConfig(
     const PlatformInfoSerializer& deserializer) {
   cast_streaming::ReceiverConfig constraints;
@@ -67,7 +88,8 @@ cast_streaming::ReceiverConfig CreateConfig(
   const std::optional<int> frame_rate = deserializer.MaxFrameRate();
   if (width && *width && height && *height && frame_rate && *frame_rate) {
     cast_streaming::ReceiverConfig::Display display;
-    display.dimensions = gfx::Rect{*width, *height};
+    display.dimensions =
+        gfx::Rect(OrientToPrimaryDisplay(gfx::Size(*width, *height)));
     display.max_frame_rate = *frame_rate;
     display.can_scale_content = true;
     constraints.display_description = std::move(display);

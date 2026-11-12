@@ -5,6 +5,7 @@
 #include "chromecast/cast_core/runtime/browser/core_streaming_config_manager.h"
 
 #include <algorithm>
+#include <optional>
 #include <string_view>
 
 #include "base/test/task_environment.h"
@@ -14,6 +15,10 @@
 #include "media/base/channel_layout.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/display/display.h"
+#include "ui/display/test/test_screen.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 
 using testing::_;
 using testing::StrictMock;
@@ -59,8 +64,17 @@ class CoreStreamingConfigManagerTest : public testing::Test {
 
   void FailOnError(cast_receiver::Status status) { FAIL() << status; }
 
+  void SetPrimaryDisplaySizeInPixels(const gfx::Size& size) {
+    display::Display display = test_screen_->GetPrimaryDisplay();
+    display.SetScaleAndBounds(1.0f, gfx::Rect(size));
+    test_screen_->display_list().UpdateDisplay(display);
+  }
+
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
+  std::optional<display::test::TestScreen> test_screen_{
+      std::in_place, /*create_display=*/true, /*register_screen=*/true};
 
   CoreStreamingConfigManager streaming_config_manager_;
   testing::StrictMock<MockConfigObserver> observer_;
@@ -156,6 +170,85 @@ TEST_F(CoreStreamingConfigManagerTest, DisplayDescriptionEnablesScaling) {
   EXPECT_EQ(config.display_description->dimensions.width(), 1920);
   EXPECT_EQ(config.display_description->dimensions.height(), 1080);
   EXPECT_EQ(config.display_description->max_frame_rate, 60);
+}
+
+TEST_F(CoreStreamingConfigManagerTest,
+       PortraitDisplayTransposesLandscapeAvSettings) {
+  SetPrimaryDisplaySizeInPixels(gfx::Size(1080, 1920));
+  PlatformInfoSerializer serializer;
+  serializer.SetMaxWidth(3840);
+  serializer.SetMaxHeight(2160);
+  serializer.SetMaxFrameRate(60);
+  EXPECT_CALL(observer_, OnStreamingConfigSet(_));
+  EXPECT_TRUE(PostMessage(serializer.Serialize()));
+  ASSERT_TRUE(streaming_config_manager_.has_config());
+
+  const auto& config = streaming_config_manager_.config();
+  ASSERT_TRUE(config.display_description.has_value());
+  EXPECT_EQ(config.display_description->dimensions.size(),
+            gfx::Size(2160, 3840));
+}
+
+TEST_F(CoreStreamingConfigManagerTest,
+       LandscapeDisplayTransposesPortraitAvSettings) {
+  SetPrimaryDisplaySizeInPixels(gfx::Size(1920, 1080));
+  PlatformInfoSerializer serializer;
+  serializer.SetMaxWidth(1080);
+  serializer.SetMaxHeight(1920);
+  serializer.SetMaxFrameRate(60);
+  EXPECT_CALL(observer_, OnStreamingConfigSet(_));
+  EXPECT_TRUE(PostMessage(serializer.Serialize()));
+  ASSERT_TRUE(streaming_config_manager_.has_config());
+
+  const auto& config = streaming_config_manager_.config();
+  ASSERT_TRUE(config.display_description.has_value());
+  EXPECT_EQ(config.display_description->dimensions.size(),
+            gfx::Size(1920, 1080));
+}
+
+TEST_F(CoreStreamingConfigManagerTest,
+       NoScreenInstancePreservesAvSettingsDimensions) {
+  test_screen_.reset();
+  ASSERT_EQ(display::Screen::Get(), nullptr);
+
+  PlatformInfoSerializer serializer;
+  serializer.SetMaxWidth(1080);
+  serializer.SetMaxHeight(1920);
+  serializer.SetMaxFrameRate(60);
+  EXPECT_CALL(observer_, OnStreamingConfigSet(_));
+  EXPECT_TRUE(PostMessage(serializer.Serialize()));
+  ASSERT_TRUE(streaming_config_manager_.has_config());
+
+  const auto& config = streaming_config_manager_.config();
+  ASSERT_TRUE(config.display_description.has_value());
+  EXPECT_EQ(config.display_description->dimensions.size(),
+            gfx::Size(1080, 1920));
+}
+
+TEST_F(CoreStreamingConfigManagerTest,
+       EmptyOrSquareDisplayPreservesAvSettingsDimensions) {
+  PlatformInfoSerializer serializer;
+  serializer.SetMaxWidth(1080);
+  serializer.SetMaxHeight(1920);
+  serializer.SetMaxFrameRate(60);
+
+  SetPrimaryDisplaySizeInPixels(gfx::Size(0, 0));
+  EXPECT_CALL(observer_, OnStreamingConfigSet(_));
+  EXPECT_TRUE(PostMessage(serializer.Serialize()));
+  ASSERT_TRUE(
+      streaming_config_manager_.config().display_description.has_value());
+  EXPECT_EQ(
+      streaming_config_manager_.config().display_description->dimensions.size(),
+      gfx::Size(1080, 1920));
+
+  SetPrimaryDisplaySizeInPixels(gfx::Size(1080, 1080));
+  EXPECT_CALL(observer_, OnStreamingConfigSet(_));
+  EXPECT_TRUE(PostMessage(serializer.Serialize()));
+  ASSERT_TRUE(
+      streaming_config_manager_.config().display_description.has_value());
+  EXPECT_EQ(
+      streaming_config_manager_.config().display_description->dimensions.size(),
+      gfx::Size(1080, 1920));
 }
 
 }  // namespace chromecast

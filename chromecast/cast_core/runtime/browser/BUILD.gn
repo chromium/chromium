@@ -81,6 +81,8 @@ cast_source_set("runtime_service_impl") {
     "//third_party/cast_core/public/src/proto/web:message_channel_proto",
     "//third_party/grpc:grpc++",
     "//third_party/openscreen/src/cast/common:public",
+    "//ui/display",
+    "//ui/gfx/geometry",
     "//url",
   ]
   friend = [ ":unit_tests" ]
@@ -170,5 +172,8 @@ cast_source_set("unit_tests") {
     "//third_party/cast_core/public/src/proto/metrics:metrics_recorder_proto",
     "//third_party/grpc:grpc++",
     "//third_party/metrics_proto",
+    "//ui/display",
+    "//ui/display:test_support",
+    "//ui/gfx/geometry",
   ]
 }
