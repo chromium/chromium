@@ -6,6 +6,8 @@
 
 #if defined(ADDRESS_SANITIZER)
 
+#include <sanitizer/common_interface_defs.h>
+
 #include <map>
 #include <memory>
 #include <sstream>
@@ -41,11 +43,13 @@ bool ExitedCleanly(int exit_status) {
 #define MAYBE_CrashInErrorCallback DISABLED_CrashInErrorCallback
 #define MAYBE_ShouldExitCleanly DISABLED_ShouldExitCleanly
 #define MAYBE_TaskTraceCallback DISABLED_TaskTraceCallback
+#define MAYBE_DeathCallbackRuns DISABLED_DeathCallbackRuns
 #else
 #define MAYBE_ErrorCallback ErrorCallback
 #define MAYBE_CrashInErrorCallback CrashInErrorCallback
 #define MAYBE_ShouldExitCleanly ShouldExitCleanly
 #define MAYBE_TaskTraceCallback TaskTraceCallback
+#define MAYBE_DeathCallbackRuns DeathCallbackRuns
 #endif
 
 // TODO(crbug.com/447520906): Fix the test on Mac-ASan and merge this back with
@@ -135,6 +139,24 @@ TEST_F(AsanServiceTest, MAYBE_ShouldAbort) {
 
   // This should now not exit immediately.
   AsanHeapUseAfterFree();
+}
+
+TEST_F(AsanServiceTest, MAYBE_DeathCallbackRuns) {
+  // When AddressSanitizer is going to terminate the process itself, AsanService
+  // must not terminate it first: callbacks registered with
+  // `__sanitizer_set_death_callback()` only run when AddressSanitizer does the
+  // termination. libFuzzer uses such a callback to save the crashing input.
+  if (!AsanService::GetInstance()->halt_on_error()) {
+    GTEST_SKIP() << "Skipped because of halt_on_error=0";
+  }
+
+  EXPECT_DEATH(
+      {
+        __sanitizer_set_death_callback(
+            [] { AsanService::GetInstance()->Log("\nDeathCallbackRan"); });
+        AsanHeapUseAfterFree();
+      },
+      "DeathCallbackRan");
 }
 
 class AsanTaskTraceTest {

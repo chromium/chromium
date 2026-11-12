@@ -46,6 +46,13 @@ class BASE_EXPORT AsanService {
   // access due to additional quarantining logic. If your hook will rely on
   // setting `should_abort`, then it is necessary to ensure that
   // halt_on_error() == false before registering the hook.
+  //
+  // When halt_on_error() == true, AddressSanitizer terminates the process
+  // itself after the callbacks have run, and AsanService leaves that to it.
+  // This keeps callbacks registered with `__sanitizer_set_death_callback()`
+  // working, which libFuzzer uses to save the input that caused the crash.
+  // AsanService only terminates the process directly when halt_on_error() ==
+  // false, or when a callback sets `should_exit_cleanly`.
   using ErrorCallback = void (*)(const char* reason,
                                  bool* should_exit_cleanly,
                                  bool* should_abort);

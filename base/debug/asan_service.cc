@@ -249,12 +249,20 @@ void AsanService::RunErrorCallbacks(const char* reason) {
   if (should_exit_cleanly) {
     Log("\n==%i==EXITING", (int)process_id);
     Process::TerminateCurrentProcessImmediately(0);
+  } else if (halt_on_error()) {
+    // AddressSanitizer terminates the process itself once this callback
+    // returns. Leave that to AddressSanitizer rather than calling Abort() here,
+    // so that callbacks registered with `__sanitizer_set_death_callback()`
+    // still run. libFuzzer relies on its death callback to save the input that
+    // caused the crash.
+    if (!should_abort) {
+      Log("AsanService ErrorCallback has cleared should_abort, but "
+          "ASAN_OPTIONS does not contain halt_on_error=0, so AddressSanitizer "
+          "will abort!");
+    }
   } else if (should_abort) {
     Log("\n==%i==ABORTING", (int)process_id);
     Abort();
-  } else if (halt_on_error()) {
-    Log("AsanService ErrorCallback has cleared should_abort, but ASAN_OPTIONS "
-        "does not contain halt_on_error=0, so AddressSanitizer will abort!");
   }
 }
 

@@ -49,6 +49,8 @@ test("fuzzing_unittests") {
     ]
 
     data_deps += [
+      ":llvm_asan_service_crashing_fuzzer",
+      ":llvm_asan_service_stub_fuzzer",
       ":llvm_crashing_fuzzer",
       ":llvm_stub_fuzzer",
       ":lpm_stub_fuzzer",
@@ -67,6 +69,8 @@ test("fuzzing_unittests") {
       if (use_centipede) {
         data_deps += [
           ":test_config_only_LLVMFuzzer_TestOneInput_fuzzer__generate",
+          ":wrapped_llvm_asan_service_crashing_fuzzer_LLVMFuzzer_TestOneInput_fuzzer__generate",
+          ":wrapped_llvm_asan_service_stub_fuzzer_LLVMFuzzer_TestOneInput_fuzzer__generate",
           ":wrapped_llvm_crashing_fuzzer_LLVMFuzzer_TestOneInput_fuzzer__generate",
           ":wrapped_llvm_stub_fuzzer_LLVMFuzzer_TestOneInput_fuzzer__generate",
         ]
@@ -196,6 +200,22 @@ fuzzer_test("llvm_crashing_fuzzer") {
   is_fuzztest_compatible = false
 }
 
+fuzzer_test("llvm_asan_service_stub_fuzzer") {
+  sources = [ "llvm_asan_service_stub_fuzzer.cc" ]
+  deps = [ "//base" ]
+  deps += _test_fuzzer_extra_deps
+  additional_configs = [ "//testing/libfuzzer:no_clusterfuzz" ]
+  is_fuzztest_compatible = false
+}
+
+fuzzer_test("llvm_asan_service_crashing_fuzzer") {
+  sources = [ "llvm_asan_service_crashing_fuzzer.cc" ]
+  deps = [ "//base" ]
+  deps += _test_fuzzer_extra_deps
+  additional_configs = [ "//testing/libfuzzer:no_clusterfuzz" ]
+  is_fuzztest_compatible = false
+}
+
 fuzzable_proto_library("lpm_test_proto") {
   sources = [ "lpm_test.proto" ]
 }
@@ -265,6 +285,28 @@ if (use_centipede) {
 
   test("wrapped_llvm_crashing_fuzzer") {
     sources = [ "llvm_crashing_fuzzer.cc" ]
+    fuzztests = [ "LLVMFuzzer.TestOneInput" ]
+    deps = [
+      "//base",
+      "//third_party/fuzztest:llvm_wrapper",
+    ]
+    deps += _test_fuzzer_extra_deps
+    configs += [ "//testing/libfuzzer:no_clusterfuzz" ]
+  }
+
+  test("wrapped_llvm_asan_service_stub_fuzzer") {
+    sources = [ "llvm_asan_service_stub_fuzzer.cc" ]
+    fuzztests = [ "LLVMFuzzer.TestOneInput" ]
+    deps = [
+      "//base",
+      "//third_party/fuzztest:llvm_wrapper",
+    ]
+    deps += _test_fuzzer_extra_deps
+    configs += [ "//testing/libfuzzer:no_clusterfuzz" ]
+  }
+
+  test("wrapped_llvm_asan_service_crashing_fuzzer") {
+    sources = [ "llvm_asan_service_crashing_fuzzer.cc" ]
     fuzztests = [ "LLVMFuzzer.TestOneInput" ]
     deps = [
       "//base",
