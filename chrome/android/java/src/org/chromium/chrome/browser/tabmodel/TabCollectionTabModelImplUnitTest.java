@@ -72,6 +72,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -148,7 +149,7 @@ public class TabCollectionTabModelImplUnitTest {
                             if (mExpectNoJniCalls) {
                                 org.junit.Assert.fail("JNI getAllTabs called when not expected");
                             }
-                            return mTabs;
+                            return new ArrayList<>(mTabs);
                         });
 
         when(mTabCollectionTabModelImplJni.addTabRecursive(
@@ -1156,6 +1157,29 @@ public class TabCollectionTabModelImplUnitTest {
         assertFalse(
                 "A tab not in the set and not active should not be selected.",
                 mTabModel.isTabMultiSelected(unselectedTabId));
+    }
+
+    @Test
+    public void testGetHighlightedTabs() {
+        assertTrue(mTabModel.getHighlightedTabs().isEmpty());
+
+        // The mocked order controller inserts at index 0, so the strip order is tab3, tab2, tab1
+        // and tab1 (added first) is the active tab at index 2.
+        MockTab tab1 = addTabAtFront(1);
+        MockTab tab2 = addTabAtFront(2);
+        MockTab tab3 = addTabAtFront(3);
+        assertEquals(List.of(tab3, tab2, tab1), mTabModel.getAllTabs());
+        assertEquals(List.of(tab1), mTabModel.getHighlightedTabs());
+
+        mTabModel.setTabsMultiSelected(
+                new LinkedHashSet<>(Arrays.asList(tab1.getId(), tab3.getId())),
+                /* isSelected= */ true);
+        assertEquals(List.of(tab1, tab3), mTabModel.getOrderedMultiSelectedTabs());
+        assertEquals(List.of(tab3, tab1), mTabModel.getHighlightedTabs());
+
+        mTabModel.clearMultiSelection(/* notifyObservers= */ false);
+        mTabModel.destroy();
+        assertTrue(mTabModel.getHighlightedTabs().isEmpty());
     }
 
     @Test

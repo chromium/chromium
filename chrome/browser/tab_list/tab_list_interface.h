@@ -127,6 +127,10 @@ class TabListInterface {
   virtual void HighlightTabs(tabs::TabHandle tab_to_activate,
                              const std::set<tabs::TabHandle>& tabs) = 0;
 
+  // Returns an in-order list of currently-highlighted (multi-selected) tabs
+  // in the tab strip.
+  virtual std::vector<tabs::TabInterface*> GetHighlightedTabs() = 0;
+
   // Moves the `tab` to `index`. The nearest valid index will be used.
   virtual void MoveTab(tabs::TabHandle tab, int index) = 0;
 

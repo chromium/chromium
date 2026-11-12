@@ -260,6 +260,18 @@ void TabListBridge::HighlightTabs(tabs::TabHandle tab_to_activate,
   tab_strip_->SetSelectionFromModel(selection_state);
 }
 
+std::vector<tabs::TabInterface*> TabListBridge::GetHighlightedTabs() {
+  const auto& selection_model = tab_strip_->selection_model();
+  std::vector<tabs::TabInterface*> highlighted_tabs;
+  highlighted_tabs.reserve(selection_model.size());
+  for (tabs::TabInterface* tab : *tab_strip_) {
+    if (selection_model.IsSelected(tab)) {
+      highlighted_tabs.push_back(tab);
+    }
+  }
+  return highlighted_tabs;
+}
+
 void TabListBridge::MoveTab(tabs::TabHandle tab, int index) {
   int current_index = GetIndexOfTab(tab);
   CHECK_NE(index, tab_list::kNoTabIndex)

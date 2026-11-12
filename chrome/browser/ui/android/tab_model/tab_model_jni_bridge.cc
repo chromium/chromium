@@ -696,6 +696,21 @@ void TabModelJniBridge::HighlightTabs(tabs::TabHandle tab_to_activate,
                                        tabs_to_highlight);
 }
 
+std::vector<tabs::TabInterface*> TabModelJniBridge::GetHighlightedTabs() {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> jobj = java_object_.get(env);
+  std::vector<TabAndroid*> tab_androids =
+      Java_TabModelJniBridge_getHighlightedTabs(env, jobj);
+
+  std::vector<tabs::TabInterface*> tabs;
+  tabs.reserve(tab_androids.size());
+  for (TabAndroid* tab_android : tab_androids) {
+    CHECK(tab_android);
+    tabs.push_back(tab_android);
+  }
+  return tabs;
+}
+
 void TabModelJniBridge::MoveTab(tabs::TabHandle tab, int index) {
   TabAndroid* tab_android = TabAndroid::FromTabHandle(tab);
   if (!tab_android) {

@@ -1024,6 +1024,25 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         return mTabsList;
     }
 
+    @Override
+    protected List<Tab> getHighlightedTabs() {
+        assertOnUiThread();
+        if (mNativeTabCollectionTabModelImplPtr == 0) return Collections.emptyList();
+        if (mMultiSelectedTabs.isEmpty()) {
+            @Nullable Tab currentTab = mCurrentTabSupplier.get();
+            return currentTab != null
+                    ? Collections.singletonList(currentTab)
+                    : Collections.emptyList();
+        }
+        List<Tab> highlightedTabs = new ArrayList<>(mMultiSelectedTabs.size());
+        for (Tab tab : getAllTabs()) {
+            if (mMultiSelectedTabs.contains(tab.getId())) {
+                highlightedTabs.add(tab);
+            }
+        }
+        return highlightedTabs;
+    }
+
     private void invalidateCache() {
         assertOnUiThread();
         mTabsList = null;

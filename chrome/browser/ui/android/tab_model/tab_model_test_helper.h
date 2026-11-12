@@ -111,6 +111,7 @@ class TestTabModel : public TabModel {
   int GetIndexOfTab(tabs::TabHandle tab) override;
   void HighlightTabs(tabs::TabHandle tab_to_activate,
                      const std::set<tabs::TabHandle>& tabs) override;
+  std::vector<tabs::TabInterface*> GetHighlightedTabs() override;
   void MoveTab(tabs::TabHandle tab, int index) override;
   void CloseTab(tabs::TabHandle tab) override;
   std::vector<tabs::TabInterface*> GetAllTabs() override;
@@ -269,6 +270,7 @@ class OwningTestTabModel : public TabModel {
   int GetIndexOfTab(tabs::TabHandle tab) override;
   void HighlightTabs(tabs::TabHandle tab_to_activate,
                      const std::set<tabs::TabHandle>& tabs) override;
+  std::vector<tabs::TabInterface*> GetHighlightedTabs() override;
   void MoveTab(tabs::TabHandle tab, int index) override;
   void CloseTab(tabs::TabHandle tab) override;
   std::vector<tabs::TabInterface*> GetAllTabs() override;

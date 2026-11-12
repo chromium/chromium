@@ -249,6 +249,11 @@ void TestTabModel::HighlightTabs(tabs::TabHandle tab_to_activate,
   NOTIMPLEMENTED();
 }
 
+std::vector<tabs::TabInterface*> TestTabModel::GetHighlightedTabs() {
+  NOTIMPLEMENTED();
+  return {};
+}
+
 void TestTabModel::MoveTab(tabs::TabHandle tab, int index) {
   NOTIMPLEMENTED();
 }
@@ -692,6 +697,11 @@ int OwningTestTabModel::GetIndexOfTab(tabs::TabHandle tab) {
 void OwningTestTabModel::HighlightTabs(tabs::TabHandle tab_to_activate,
                                        const std::set<tabs::TabHandle>& tabs) {
   NOTIMPLEMENTED();
+}
+
+std::vector<tabs::TabInterface*> OwningTestTabModel::GetHighlightedTabs() {
+  NOTIMPLEMENTED();
+  return {};
 }
 
 void OwningTestTabModel::MoveTab(tabs::TabHandle tab, int index) {

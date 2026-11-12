@@ -609,6 +609,10 @@ public abstract class TabModelJniBridge implements TabModelInternal {
     @CalledByNative
     protected abstract @JniType("std::vector<TabAndroid*>") List<Tab> getAllTabs();
 
+    /** Returns the highlighted (multi-selected) tabs in ascending tab-strip index order. */
+    @CalledByNative
+    protected abstract @JniType("std::vector<TabAndroid*>") List<Tab> getHighlightedTabs();
+
     @Override
     @CalledByNative
     public abstract boolean containsTabGroup(@JniType("base::Token") @Nullable Token tabGroupId);

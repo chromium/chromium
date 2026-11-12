@@ -645,6 +645,8 @@ IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, HighlightTabs) {
 
   TabListInterface* tab_list_interface = TabListInterface::From(browser());
   ASSERT_TRUE(tab_list_interface);
+  EXPECT_THAT(tab_list_interface->GetHighlightedTabs(),
+              testing::ElementsAre(MatchesTab(url4)));
 
   // Select the tabs with `url1` and `url2` and make the tab with `url2` the
   // active tab.
@@ -662,6 +664,16 @@ IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, HighlightTabs) {
   EXPECT_TRUE(tab_strip_model->IsTabSelected(1));
   EXPECT_FALSE(tab_strip_model->IsTabSelected(2));
   EXPECT_FALSE(tab_strip_model->IsTabSelected(3));
+  EXPECT_THAT(tab_list_interface->GetHighlightedTabs(),
+              testing::ElementsAre(MatchesTab(url1), MatchesTab(url2)));
+
+  // Highlight non-contiguous tabs and verify ascending strip index order.
+  tab_list_interface->HighlightTabs(
+      tab_list_interface->GetTab(2)->GetHandle(),
+      {tab_list_interface->GetTab(0)->GetHandle(),
+       tab_list_interface->GetTab(2)->GetHandle()});
+  EXPECT_THAT(tab_list_interface->GetHighlightedTabs(),
+              testing::ElementsAre(MatchesTab(url1), MatchesTab(url3)));
 }
 
 IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest,
