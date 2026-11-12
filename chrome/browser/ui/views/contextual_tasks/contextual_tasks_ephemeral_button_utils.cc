@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_ephemeral_button_utils.h"
 
-#include <optional>
 #include <utility>
 
 #include "base/check.h"
@@ -14,17 +13,16 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
-#include "base/values.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/immersive/immersive_mode_controller.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
+#include "chrome/browser/ui/side_panel/side_panel_prefs.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_ephemeral_button_controller.h"
-#include "chrome/common/pref_names.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/prefs/pref_service.h"
@@ -40,14 +38,8 @@ bool IsContextualTasksSidePanelRightAligned(BrowserWindowInterface* browser) {
   if (!pref_service) {
     return false;
   }
-  const base::DictValue& overrides =
-      pref_service->GetDict(prefs::kSidePanelAlignmentOverrides);
-  std::optional<bool> override_value = overrides.FindBool(
-      SidePanelEntryIdToString(SidePanelEntryId::kContextualTasks));
-  if (override_value.has_value()) {
-    return *override_value;
-  }
-  return pref_service->GetBoolean(prefs::kSidePanelHorizontalAlignment);
+  return side_panel_prefs::IsSidePanelRightAligned(
+      *pref_service, SidePanelEntryId::kContextualTasks);
 }
 
 bool IsEphemeralButtonTrailing(BrowserWindowInterface* browser) {

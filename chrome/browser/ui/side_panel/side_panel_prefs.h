@@ -6,8 +6,10 @@
 #define CHROME_BROWSER_UI_SIDE_PANEL_SIDE_PANEL_PREFS_H_
 
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 
+class PrefService;
 class Profile;
 
 namespace user_prefs {
@@ -19,6 +21,16 @@ namespace side_panel_prefs {
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
 base::ListValue GetConfigurableSidePanelAlignments(Profile* profile);
+
+#if !BUILDFLAG(IS_ANDROID)
+// Returns whether the side panel for `entry_id` is aligned to the right edge of
+// the browser window. This is the physical side in both LTR and RTL; RTL is
+// already accounted for in the pref defaults. Uses the per-entry override in
+// `prefs::kSidePanelAlignmentOverrides` if set, otherwise
+// `prefs::kSidePanelHorizontalAlignment`.
+bool IsSidePanelRightAligned(const PrefService& pref_service,
+                             SidePanelEntryId entry_id);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace side_panel_prefs
 

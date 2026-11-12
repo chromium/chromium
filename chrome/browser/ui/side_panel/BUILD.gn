@@ -140,10 +140,16 @@ source_set("unit_tests") {
   ]
 
   if (!is_android) {
-    sources += [ "side_panel_metrics_unittest.cc" ]
+    sources += [
+      "side_panel_metrics_unittest.cc",
+      "side_panel_prefs_unittest.cc",
+    ]
     deps += [
       ":side_panel_views_dependent",
       "//base/test:test_support",
+      "//chrome/common:constants",
+      "//components/prefs",
+      "//components/sync_preferences:test_support",
     ]
   }
 }
