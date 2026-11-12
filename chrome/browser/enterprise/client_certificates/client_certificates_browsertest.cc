@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <cstdint>
+#include <vector>
+
 #include "base/json/json_writer.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -9,6 +12,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/after_startup_task_utils.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/client_certificates/certificate_provisioning_service_factory.h"
@@ -30,6 +34,8 @@
 #include "components/enterprise/client_certificates/core/constants.h"
 #include "components/enterprise/client_certificates/core/context_delegate.h"
 #include "components/enterprise/client_certificates/core/features.h"
+#include "components/enterprise/client_certificates/core/private_key.h"
+#include "components/enterprise/client_certificates/core/private_key_types.h"
 #include "components/enterprise/client_certificates/core/scoped_ssl_key_converter.h"
 #include "components/keyed_service/core/keyed_service_base_factory.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
@@ -45,6 +51,11 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "components/enterprise/client_certificates/android/browser_binding/browser_key.h"
+#include "components/enterprise/client_certificates/android/browser_binding/browser_key_store.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 namespace client_certificates {
 
 using ManagementContextMixin = enterprise::test::ManagementContextMixin;
@@ -59,12 +70,30 @@ struct CapturedRequest {
   scoped_refptr<net::X509Certificate> client_certificate{};
 };
 
+#if BUILDFLAG(IS_ANDROID)
+constexpr char kKeyLoadResultHistogram[] =
+    "Enterprise.ClientCertificates.ClankKeyLoadResult";
+// ClankClientCertificatesKeyLoadResult value "Not found" in
+// tools/metrics/histograms/metadata/enterprise/enums.xml; histogram enum
+// values are stable.
+constexpr int kKeyLoadResultNotFound = 1;
+#endif  // BUILDFLAG(IS_ANDROID)
+
 }  // namespace
 
 class ClientCertificateBrowserTest : public MixinBasedPlatformBrowserTest,
                                      public testing::WithParamInterface<bool> {
  protected:
-  ClientCertificateBrowserTest() : scoped_key_converter_(true) {
+  ClientCertificateBrowserTest()
+      : ClientCertificateBrowserTest(/*mock_unexportable_keys=*/true) {}
+
+  // When `mock_unexportable_keys` is false, no unexportable key provider is
+  // available and the next key source is used for the managed identity's
+  // private key. On Android that is the keystore-backed
+  // `AndroidPrivateKeyFactory`, as in production, where //crypto has no
+  // unexportable key provider.
+  explicit ClientCertificateBrowserTest(bool mock_unexportable_keys)
+      : scoped_key_converter_(mock_unexportable_keys) {
     scoped_feature_list_.InitWithFeatures(
         {::features::kLazyKeyedServiceInstantiation,
          features::kClientCertCommonNameAttribute},
@@ -76,7 +105,6 @@ class ClientCertificateBrowserTest : public MixinBasedPlatformBrowserTest,
             .is_cloud_machine_managed = !is_profile_scenario(),
             .affiliated = false,
         });
-
   }
 
   void SetUp() override {
@@ -211,26 +239,36 @@ class ClientCertificateBrowserTest : public MixinBasedPlatformBrowserTest,
     }
   }
 
-  void EnablePolicyAndWaitForIdentity(
-      std::optional<std::string> common_name_source = std::nullopt) {
-    CertificateProvisioningService* provisioning_service;
+  CertificateProvisioningService* GetProvisioningService() {
     if (is_profile_scenario()) {
-      SetUserPolicy(1, std::move(common_name_source));
-      provisioning_service =
-          CertificateProvisioningServiceFactory::GetForProfile(GetProfile());
-    } else {
-      SetBrowserPolicy(1, std::move(common_name_source));
-      provisioning_service = g_browser_process->browser_policy_connector()
-                                 ->chrome_browser_cloud_management_controller()
-                                 ->GetCertificateProvisioningService();
+      return CertificateProvisioningServiceFactory::GetForProfile(GetProfile());
     }
+    return g_browser_process->browser_policy_connector()
+        ->chrome_browser_cloud_management_controller()
+        ->GetCertificateProvisioningService();
+  }
 
-    ASSERT_TRUE(provisioning_service);
-
+  std::optional<ClientIdentity> GetManagedIdentity() {
+    CertificateProvisioningService* provisioning_service =
+        GetProvisioningService();
+    if (!provisioning_service) {
+      return std::nullopt;
+    }
     base::test::TestFuture<std::optional<ClientIdentity>> test_future;
     provisioning_service->GetManagedIdentity(test_future.GetCallback());
+    return test_future.Get();
+  }
 
-    VerifyIdentity(test_future.Get());
+  void EnablePolicyAndWaitForIdentity(
+      std::optional<std::string> common_name_source = std::nullopt) {
+    if (is_profile_scenario()) {
+      SetUserPolicy(1, std::move(common_name_source));
+    } else {
+      SetBrowserPolicy(1, std::move(common_name_source));
+    }
+
+    ASSERT_TRUE(GetProvisioningService());
+    VerifyIdentity(GetManagedIdentity());
   }
 
   void VerifyIdentity(const std::optional<ClientIdentity>& managed_identity) {
@@ -292,16 +330,9 @@ IN_PROC_BROWSER_TEST_P(ClientCertificateBrowserTest,
   EnablePolicyAndWaitForIdentity(kCommonNameSourceComputerName);
   std::string expected_device_name =
       SanitizeAndTruncateCommonName(policy::GetDeviceName());
-  CertificateProvisioningService* provisioning_service =
-      is_profile_scenario()
-          ? CertificateProvisioningServiceFactory::GetForProfile(GetProfile())
-          : g_browser_process->browser_policy_connector()
-                ->chrome_browser_cloud_management_controller()
-                ->GetCertificateProvisioningService();
-  base::test::TestFuture<std::optional<ClientIdentity>> test_future;
-  provisioning_service->GetManagedIdentity(test_future.GetCallback());
-  ASSERT_TRUE(test_future.Get());
-  EXPECT_EQ(test_future.Get()->certificate->subject().common_name,
+  std::optional<ClientIdentity> identity = GetManagedIdentity();
+  ASSERT_TRUE(identity);
+  EXPECT_EQ(identity->certificate->subject().common_name,
             expected_device_name.empty() ? GetDefaultExpectedCommonName()
                                          : expected_device_name);
 }
@@ -387,5 +418,83 @@ INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     ClientCertificateBrowserTest,
     testing::Bool());
+
+#if BUILDFLAG(IS_ANDROID)
+
+// Stores the managed identity's private key in the Android keystore, as in
+// production, instead of the mocked unexportable key provider.
+class ClientCertificateAndroidKeyStoreBrowserTest
+    : public ClientCertificateBrowserTest {
+ protected:
+  ClientCertificateAndroidKeyStoreBrowserTest()
+      : ClientCertificateBrowserTest(/*mock_unexportable_keys=*/false) {}
+
+  void TearDownOnMainThread() override {
+    // Keystore entries outlive the test's user data dir; do not leak the
+    // provisioned key on the device.
+    if (std::optional<ClientIdentity> identity = GetManagedIdentity()) {
+      DeleteKeyStoreEntry(*identity);
+    }
+    ClientCertificateBrowserTest::TearDownOnMainThread();
+  }
+
+  // Deletes the keystore entry backing `identity`'s private key while leaving
+  // the stored identity (key identifier and certificate) in place, as happens
+  // when the keystore loses the key, e.g. after a keystore reset.
+  void DeleteKeyStoreEntry(const ClientIdentity& identity) {
+    ASSERT_TRUE(identity.private_key);
+    ASSERT_EQ(identity.private_key->GetSource(), PrivateKeySource::kAndroidKey);
+    const std::string key_id = identity.private_key->ToProto().wrapped_key();
+    scoped_refptr<BrowserKeyStore> key_store = CreateBrowserKeyStoreInstance();
+    std::vector<uint8_t> credential_id(key_id.begin(), key_id.end());
+    key_store->DeleteBrowserKey(credential_id);
+    ASSERT_FALSE(key_store->GetBrowserKeyForCredentialId(credential_id));
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(ClientCertificateAndroidKeyStoreBrowserTest,
+                       PRE_RecoversFromLostKeyStoreKey) {
+  EnablePolicyAndWaitForIdentity();
+  // A fresh user data dir has no stored identity, so no key load is attempted.
+  histogram_tester().ExpectTotalCount(kKeyLoadResultHistogram, 0);
+
+  // Lose the key; the identity in storage is left behind.
+  // `TearDownOnMainThread()` deletes the entry again, which is a no-op.
+  std::optional<ClientIdentity> identity = GetManagedIdentity();
+  ASSERT_TRUE(identity);
+  DeleteKeyStoreEntry(*identity);
+}
+
+// The stored identity refers to a key that the keystore no longer has. Loading
+// it must fail so that a new identity is provisioned, rather than a new key
+// being paired with the old certificate.
+IN_PROC_BROWSER_TEST_P(ClientCertificateAndroidKeyStoreBrowserTest,
+                       RecoversFromLostKeyStoreKey) {
+  SetCertificateAutoselectionPolicy();
+  EnablePolicyAndWaitForIdentity();
+
+  histogram_tester().ExpectUniqueSample(kKeyLoadResultHistogram,
+                                        kKeyLoadResultNotFound, 1);
+  histogram_tester().ExpectUniqueSample(
+      base::StringPrintf(
+          "Enterprise.ClientCertificate.%s.Provisioning.CertificateCreation."
+          "Outcome",
+          is_profile_scenario() ? "Profile" : "Browser"),
+      true, 1);
+
+  // The new identity is usable for mTLS.
+  ASSERT_TRUE(content::NavigateToURL(
+      chrome_test_utils::GetActiveWebContents(this),
+      embedded_https_test_server().GetURL("mtls.google.com", "/mtls")));
+  ASSERT_TRUE(captured_request_);
+  VerifyClientCert(captured_request_->client_certificate);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    ClientCertificateAndroidKeyStoreBrowserTest,
+    testing::Bool());
+
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace client_certificates
