@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/barrier_closure.h"
-#include "base/debug/crash_logging.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -319,10 +318,6 @@ std::string GetEventStatusString(blink::ServiceWorkerStatusCode status_code) {
     case blink::ServiceWorkerStatusCode::kErrorTimeout:
       return "timeout";
     default:
-      SCOPED_CRASH_KEY_NUMBER("BGSM", "status_code",
-                              static_cast<int>(status_code));
-      DUMP_WILL_BE_NOTREACHED()
-          << "status_code " << static_cast<int>(status_code);
       return "unknown error";
   }
 }
