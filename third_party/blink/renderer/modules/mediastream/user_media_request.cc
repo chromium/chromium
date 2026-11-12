@@ -88,27 +88,12 @@ enum class GetDisplayMediaSystemWindowOrExcludeConstraint {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-enum class GetDisplayMediaConstraintsDisplaySurface {
-  kNotSpecified = 0,
-  kTab = 1,
-  kWindow = 2,
-  kMonitor = 3,
-  kMaxValue = kMonitor
-};
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
 enum class GetDisplayMediaBooleanConstraint {
   kNotSpecified = 0,
   kTrue = 1,
   kFalse = 2,
   kMaxValue = kFalse
 };
-
-void RecordUma(GetDisplayMediaConstraintsDisplaySurface value) {
-  base::UmaHistogramEnumeration(
-      "Media.GetDisplayMedia.Constraints.DisplaySurface", value);
-}
 
 template <typename NumericConstraint>
 bool SetUsesNumericConstraint(
@@ -328,25 +313,6 @@ void RecordGetDisplayMediaSystemWindowOrExcludeConstraintUma(
     }
   }
   base::UmaHistogramEnumeration(histogram_name, value);
-}
-
-void RecordPreferredDisplaySurfaceConstraintUma(
-    const mojom::blink::PreferredDisplaySurface preferred_display_surface) {
-  switch (preferred_display_surface) {
-    case mojom::blink::PreferredDisplaySurface::NO_PREFERENCE:
-      RecordUma(GetDisplayMediaConstraintsDisplaySurface::kNotSpecified);
-      return;
-    case mojom::blink::PreferredDisplaySurface::MONITOR:
-      RecordUma(GetDisplayMediaConstraintsDisplaySurface::kMonitor);
-      return;
-    case mojom::blink::PreferredDisplaySurface::WINDOW:
-      RecordUma(GetDisplayMediaConstraintsDisplaySurface::kWindow);
-      return;
-    case mojom::blink::PreferredDisplaySurface::BROWSER:
-      RecordUma(GetDisplayMediaConstraintsDisplaySurface::kTab);
-      return;
-  }
-  NOTREACHED();
 }
 
 void RecordBooleanConstraintUma(std::optional<bool> boolean,
@@ -610,8 +576,6 @@ UserMediaRequest* UserMediaRequest::Create(
     preferred_display_surface = mojom::blink::PreferredDisplaySurface::BROWSER;
   }
   result->set_preferred_display_surface(preferred_display_surface);
-  if (media_type == UserMediaRequestType::kDisplayMedia)
-    RecordPreferredDisplaySurfaceConstraintUma(preferred_display_surface);
 
   // The default is to request dynamic surface switching.
   result->set_dynamic_surface_switching_requested(
