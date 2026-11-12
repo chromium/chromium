@@ -10,6 +10,8 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/base_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/tabs/common/pinned_tab_container_view.h"
+#include "chrome/browser/ui/views/tabs/common/tab_collection_animating_layout_manager.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_types.h"
 #include "chrome/browser/ui/views/test/vertical_tabs_browser_test_mixin.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -69,6 +71,12 @@ class TabStripViewBrowserTest
 
   int GetMainAxisSize(const views::View* view) const {
     return views::GetMainAxis(layout_orientation(), view->size());
+  }
+
+  void EnableRichAnimations() {
+    animation_mode_reset_.reset();
+    animation_mode_reset_ = gfx::AnimationTestApi::SetRichAnimationRenderMode(
+        gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED);
   }
 
  private:
@@ -185,6 +193,94 @@ IN_PROC_BROWSER_TEST_P(TabStripViewBrowserTest,
                                     is_horizontal() ? 0 : 1);
   histogram_tester.ExpectTotalCount("TabStrip.TimeToSwitch",
                                     is_horizontal() ? 1 : 0);
+}
+
+IN_PROC_BROWSER_TEST_P(TabStripViewBrowserTest,
+                       ClosingLastPinnedTabAnimatesOut) {
+  AppendPinnedTab();
+  RunScheduledLayouts();
+
+  EnableRichAnimations();
+
+  ASSERT_NE(tab_strip_view(), nullptr);
+  ASSERT_NE(pinned_tabs_scroll_view(), nullptr);
+  PinnedTabContainerView* const pinned_container =
+      tab_strip_view()->GetPinnedTabsContainer();
+  ASSERT_NE(pinned_container, nullptr);
+  ASSERT_EQ(pinned_container->children().size(), 1u);
+
+  const int initial_pinned_size = GetMainAxisSize(pinned_tabs_scroll_view());
+  EXPECT_GT(initial_pinned_size, 0);
+
+  // Close the last (and only) pinned tab.
+  tab_strip_model()->CloseWebContentsAt(0, TabCloseTypes::CLOSE_USER_GESTURE);
+  RunScheduledLayouts();
+
+  // The pinned container should animate out the closing tab rather than
+  // snapping to 0 immediately and clipping or destroying the tab view.
+  EXPECT_TRUE(
+      TabCollectionAnimatingLayoutManager::IsViewAnimating(pinned_container));
+  EXPECT_EQ(pinned_container->children().size(), 1u);
+  EXPECT_EQ(GetMainAxisSize(pinned_tabs_scroll_view()), initial_pinned_size);
+
+  // Once the animation completes, the pending-delete tab view should be removed
+  // and the pinned scroll view should collapse to 0 along the main axis.
+  vertical_tab_strip_controller()
+      ->animation_coordinator()
+      .StopAllAnimationsForTesting();
+  RunScheduledLayouts();
+
+  EXPECT_FALSE(
+      TabCollectionAnimatingLayoutManager::IsViewAnimating(pinned_container));
+  EXPECT_TRUE(pinned_container->children().empty());
+  EXPECT_EQ(GetMainAxisSize(pinned_tabs_scroll_view()), 0);
+}
+
+IN_PROC_BROWSER_TEST_P(TabStripViewBrowserTest,
+                       ClosingLastPinnedSplitTabAnimatesOut) {
+  AppendPinnedTab();
+  AppendPinnedTab();
+  tab_strip_model()->ActivateTabAt(
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
+  tab_strip_model()->AddToNewSplit(
+      {1}, {}, split_tabs::SplitTabCreatedSource::kTabContextMenu);
+  RunScheduledLayouts();
+
+  EnableRichAnimations();
+
+  ASSERT_NE(tab_strip_view(), nullptr);
+  ASSERT_NE(pinned_tabs_scroll_view(), nullptr);
+  PinnedTabContainerView* const pinned_container =
+      tab_strip_view()->GetPinnedTabsContainer();
+  ASSERT_NE(pinned_container, nullptr);
+  ASSERT_EQ(pinned_container->children().size(), 1u);
+
+  const int initial_pinned_size = GetMainAxisSize(pinned_tabs_scroll_view());
+  EXPECT_GT(initial_pinned_size, 0);
+
+  // Close both tabs in the pinned split view together.
+  tab_strip_model()->CloseSelectedTabs();
+  RunScheduledLayouts();
+
+  // The pinned container should animate out the closing split view rather than
+  // snapping to 0 immediately.
+  EXPECT_TRUE(
+      TabCollectionAnimatingLayoutManager::IsViewAnimating(pinned_container));
+  EXPECT_FALSE(pinned_container->children().empty());
+  EXPECT_EQ(GetMainAxisSize(pinned_tabs_scroll_view()), initial_pinned_size);
+
+  // Once the animation completes, the pending-delete views should be removed
+  // and the pinned scroll view should collapse to 0 along the main axis.
+  vertical_tab_strip_controller()
+      ->animation_coordinator()
+      .StopAllAnimationsForTesting();
+  RunScheduledLayouts();
+
+  EXPECT_FALSE(
+      TabCollectionAnimatingLayoutManager::IsViewAnimating(pinned_container));
+  EXPECT_TRUE(pinned_container->children().empty());
+  EXPECT_EQ(GetMainAxisSize(pinned_tabs_scroll_view()), 0);
 }
 
 INSTANTIATE_TEST_SUITE_P(

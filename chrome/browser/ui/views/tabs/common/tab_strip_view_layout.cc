@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/views/tabs/common/pinned_tab_container_view.h"
@@ -139,8 +140,15 @@ views::ProposedLayout TabStripViewLayout::CalculateHorizontalLayout(
       pinned_bounds, views::SizeBounds(pinned_width, container_height));
 
   if (pinned_width > 0) {
-    const int container_overlap =
+    int container_overlap =
         is_pinned_overflowing ? tab_overlap / 2 : tab_overlap;
+    const int single_pinned_width =
+        TabStyle::Get()->GetPinnedWidth(/*is_split=*/false);
+    if (single_pinned_width > 0 && pinned_width < single_pinned_width) {
+      container_overlap = base::ClampRound(
+          static_cast<double>(container_overlap * pinned_width) /
+          single_pinned_width);
+    }
     x += has_unpinned ? std::max(0, pinned_width - container_overlap)
                       : pinned_width;
   }

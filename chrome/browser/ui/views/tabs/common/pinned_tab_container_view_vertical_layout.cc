@@ -62,7 +62,7 @@ PinnedTabContainerViewVerticalLayout::CalculateProposedLayout(
   int children_on_row = children.size();
 
   if (children_on_row == 0) {
-    layouts.host_size = gfx::Size(0, 0);
+    layouts.host_size = gfx::Size(size_bounds.width().value_or(0), 0);
     return layouts;
   }
 

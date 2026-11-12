@@ -60,7 +60,7 @@ PinnedTabContainerView::PinnedTabContainerView(
               ? TabCollectionAnimatingLayoutManager::AnimationAxis::kHorizontal
               : TabCollectionAnimatingLayoutManager::AnimationAxis::
                     kHorizontalWrappingVertically,
-          /*animate_host_size=*/false))) {
+          /*animate_host_size=*/true))) {
   collection_node->set_remove_child_from_node(base::BindRepeating(
       &TabCollectionAnimatingLayoutManager::AnimateAndDestroyChildView,
       base::Unretained(base::to_address(layout_manager_))));
