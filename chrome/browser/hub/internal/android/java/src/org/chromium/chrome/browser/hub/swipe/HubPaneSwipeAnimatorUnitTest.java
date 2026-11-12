@@ -14,6 +14,10 @@ import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
+import static org.chromium.chrome.browser.hub.HubAnimationConstants.PANE_SETTLE_MIN_DURATION_MS;
+import static org.chromium.chrome.browser.hub.HubAnimationConstants.PANE_SLIDE_ANIMATION_DURATION_MS;
+
+import android.animation.Animator;
 import android.app.Activity;
 import android.os.Looper;
 import android.view.View;
@@ -34,7 +38,9 @@ import org.robolectric.Shadows;
 import org.robolectric.android.controller.ActivityController;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.ui.animation.AnimationHandler;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.interpolators.Interpolators;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -45,7 +51,9 @@ public class HubPaneSwipeAnimatorUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private HubPaneSwipeAnimator.SwipeAnimationProgressCallback mProgressCallback;
+    @Mock private AnimationHandler mAnimationHandler;
     @Captor private ArgumentCaptor<Float> mProgressCaptor;
+    @Captor private ArgumentCaptor<Animator> mAnimatorCaptor;
 
     private ActivityController<TestActivity> mActivityController;
     private HubPaneSwipeAnimator mAnimator;
@@ -366,6 +374,23 @@ public class HubPaneSwipeAnimatorUnitTest {
     }
 
     @Test
+    public void testAnimateSettle_usesEmphasizedCurveScaledToRemainingDistance() {
+        // 800 of 1000 px remain, so the settle takes 80% of the full slide duration.
+        Animator settle = captureSettleAnimation(/* startTranslationX= */ -200f);
+
+        assertEquals(Interpolators.EMPHASIZED, settle.getInterpolator());
+        assertEquals(Math.round(PANE_SLIDE_ANIMATION_DURATION_MS * 0.8f), settle.getDuration());
+    }
+
+    @Test
+    public void testAnimateSettle_durationClampsToMinimum() {
+        // 100 of 1000 px remain, which would be shorter than the minimum settle duration.
+        Animator settle = captureSettleAnimation(/* startTranslationX= */ -900f);
+
+        assertEquals(PANE_SETTLE_MIN_DURATION_MS, settle.getDuration());
+    }
+
+    @Test
     public void testForceFinishAnimation() {
         // Calling forceFinishAnimation when no animation is running is a safe no-op.
         mAnimator.forceFinishAnimation();
@@ -382,5 +407,21 @@ public class HubPaneSwipeAnimatorUnitTest {
         assertFalse(ended.get());
         mAnimator.forceFinishAnimation();
         assertTrue(ended.get());
+    }
+
+    /** Starts a left-swipe switch settle and returns the animation it hands to the handler. */
+    private Animator captureSettleAnimation(float startTranslationX) {
+        mCurrentView.setTranslationX(startTranslationX);
+        new HubPaneSwipeAnimator(mAnimationHandler)
+                .animateSettle(
+                        mCurrentView,
+                        mAdjacentView,
+                        /* isSwitch= */ true,
+                        /* isSwipeLeft= */ true,
+                        CONTAINER_WIDTH,
+                        /* progressCallback= */ null,
+                        () -> {});
+        verify(mAnimationHandler).startAnimation(mAnimatorCaptor.capture());
+        return mAnimatorCaptor.getValue();
     }
 }

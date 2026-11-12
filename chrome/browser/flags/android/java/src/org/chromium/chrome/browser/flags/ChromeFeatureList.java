@@ -2721,11 +2721,6 @@ public abstract class ChromeFeatureList {
                             "release_slot_on_dom_content_loaded", false);
     public static final MutableBooleanParamWithSafeDefault sSwipeToSwitchPaneAnimateSearchBox =
             sEnableSwipeToSwitchPane.newBooleanParam("animate_search_box", false);
-    public static final MutableIntParamWithSafeDefault sSwipeToSwitchPaneMaxDurationMs =
-            sEnableSwipeToSwitchPane.newIntParam("max_duration_ms", 250);
-    public static final MutableBooleanParamWithSafeDefault
-            sSwipeToSwitchPaneUseEmphasizedInterpolator =
-                    sEnableSwipeToSwitchPane.newBooleanParam("use_emphasized_interpolator", false);
     public static final MutableBooleanParamWithSafeDefault
             sTabBottomSheetSuppressBottomToolbarWhileOpen =
                     sTabBottomSheet.newBooleanParam("suppress_bottom_toolbar_while_open", false);

@@ -29,9 +29,9 @@ import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.HubColorMixer.ColorBlendProgress;
 import org.chromium.chrome.browser.hub.HubPaneHostView.PaneViewProvider;
-import org.chromium.chrome.browser.hub.swipe.HubPaneSwipeAnimationConfig;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
@@ -120,7 +120,9 @@ public class HubCoordinator implements PaneHubController, BackPressHandler, Pane
         Context context = containerView.getContext();
         mBackPressStateChangeCallback = (ignored) -> updateHandleBackPressSupplier();
         mPaneManager = paneManager;
-        mShouldAnimateSearchBox = HubPaneSwipeAnimationConfig.shouldAnimateSearchBox();
+        mShouldAnimateSearchBox =
+                ChromeFeatureList.sEnableSwipeToSwitchPane.isEnabled()
+                        && ChromeFeatureList.sSwipeToSwitchPaneAnimateSearchBox.getValue();
         mFocusedPaneHandleBackPressSupplier =
                 paneManager
                         .getFocusedPaneSupplier()
