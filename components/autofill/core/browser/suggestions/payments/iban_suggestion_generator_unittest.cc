@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/suggestions/payments/iban_suggestion_generator.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -75,6 +76,19 @@ Matcher<Suggestion> EqualsIbanSuggestion(
                                      {Suggestion::Text(identifier_string)}}));
 }
 
+class MockPaymentsAutofillClient : public payments::TestPaymentsAutofillClient {
+ public:
+  explicit MockPaymentsAutofillClient(AutofillClient* client)
+      : payments::TestPaymentsAutofillClient(client) {
+    ON_CALL(*this, GetIbanManager).WillByDefault([this] {
+      return payments::TestPaymentsAutofillClient::GetIbanManager();
+    });
+  }
+  ~MockPaymentsAutofillClient() override = default;
+
+  MOCK_METHOD(MockIbanManager*, GetIbanManager, (), (override));
+};
+
 class IbanSuggestionGeneratorTest : public testing::Test {
  protected:
   IbanSuggestionGeneratorTest() {
@@ -83,7 +97,7 @@ class IbanSuggestionGeneratorTest : public testing::Test {
     prefs_ = test::PrefServiceForTesting();
     payments_data_manager().SetAutofillPaymentMethodsEnabled(true);
     autofill_client_.set_payments_autofill_client(
-        std::make_unique<payments::TestPaymentsAutofillClient>(
+        std::make_unique<testing::NiceMock<MockPaymentsAutofillClient>>(
             &autofill_client_));
     payments_data_manager().SetAutofillWalletImportEnabled(true);
 
@@ -97,6 +111,10 @@ class IbanSuggestionGeneratorTest : public testing::Test {
   }
 
   TestAutofillClient& client() { return autofill_client_; }
+  MockPaymentsAutofillClient& payments_autofill_client() {
+    return *static_cast<MockPaymentsAutofillClient*>(
+        autofill_client_.GetPaymentsAutofillClient());
+  }
   FormStructure& form() { return *form_structure_; }
   AutofillField& field() { return *form_structure_->fields().front(); }
   PersonalDataManager& personal_data_manager() {
@@ -376,6 +394,33 @@ TEST_F(IbanSuggestionGeneratorTest, NoWarningForNonSecureContextWithoutIbans) {
       GURL("http://example.test"));
 
   EXPECT_THAT(GetSuggestionsForIbans(), IsEmpty());
+}
+
+// Tests that IBAN suggestions are not generated and blocklist metrics are not
+// logged when `PaymentsAutofillClient` or `IbanManager` is unavailable (e.g.
+// on iOS).
+TEST_F(IbanSuggestionGeneratorTest, UnsupportedClientDoesNotGenerateIbans) {
+  SetUpLocalIban(test::GetLocalIban().value(), test::GetLocalIban().nickname());
+  Iban server_iban = test::GetServerIban();
+  SetUpServerIban(server_iban.instrument_id(), server_iban.prefix(),
+                  server_iban.suffix(), server_iban.nickname());
+
+  {
+    base::HistogramTester histogram_tester;
+    ON_CALL(payments_autofill_client(), GetIbanManager)
+        .WillByDefault(Return(nullptr));
+    EXPECT_THAT(GetSuggestionsForIbans(), IsEmpty());
+    histogram_tester.ExpectTotalCount(
+        "Autofill.Iban.SuggestionsBlockListStatus", 0);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+    client().set_payments_autofill_client(nullptr);
+    EXPECT_THAT(GetSuggestionsForIbans(), IsEmpty());
+    histogram_tester.ExpectTotalCount(
+        "Autofill.Iban.SuggestionsBlockListStatus", 0);
+  }
 }
 
 }  // namespace

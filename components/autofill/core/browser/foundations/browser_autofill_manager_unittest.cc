@@ -573,7 +573,11 @@ class MockCreditCardAccessManager : public CreditCardAccessManager {
 class MockPaymentsAutofillClient : public payments::TestPaymentsAutofillClient {
  public:
   explicit MockPaymentsAutofillClient(AutofillClient* client)
-      : payments::TestPaymentsAutofillClient(client) {}
+      : payments::TestPaymentsAutofillClient(client) {
+    ON_CALL(*this, GetIbanManager).WillByDefault([this] {
+      return payments::TestPaymentsAutofillClient::GetIbanManager();
+    });
+  }
   ~MockPaymentsAutofillClient() override = default;
 
   MOCK_METHOD(bool, HasCreditCardScanFeature, (), (const, override));
@@ -581,6 +585,7 @@ class MockPaymentsAutofillClient : public payments::TestPaymentsAutofillClient {
               OnCardDataAvailable,
               (const FilledCardInformationBubbleOptions&, const url::Origin&),
               (override));
+  MOCK_METHOD(MockIbanManager*, GetIbanManager, (), (override));
 };
 
 class MockAutofillClient : public TestAutofillClient {
@@ -8541,6 +8546,70 @@ TEST_F(BrowserAutofillManagerTest,
                   FillingProduct::kOneTimePassword, expected_survey_data));
 
   FormSubmitted(response_data);
+}
+
+class BrowserAutofillManagerIbanSuggestionGenerationTest
+    : public BrowserAutofillManagerTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  BrowserAutofillManagerIbanSuggestionGenerationTest() {
+    feature_list_.InitWithFeatureState(
+        features::kAutofillNewSuggestionGeneration, GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         BrowserAutofillManagerIbanSuggestionGenerationTest,
+                         testing::Bool());
+
+// Tests that IBAN suggestions are only generated when the client provides
+// `IbanManager`, and that unsupported clients (such as iOS) do not generate
+// IBAN suggestions even when server IBANs are synced.
+TEST_P(BrowserAutofillManagerIbanSuggestionGenerationTest,
+       DoesNotGenerateIbanSuggestionsWithoutIbanManager) {
+  personal_data().test_payments_data_manager().AddServerIban(
+      test::GetServerIban());
+  ON_CALL(iban_manager(), OnGetSingleFieldSuggestions)
+      .WillByDefault(
+          [this](const FormStructure& form, const FormFieldData& field,
+                 const AutofillField& autofill_field, AutofillClient& client,
+                 SingleFieldFillRouter::OnSuggestionsReturnedCallback&
+                     on_suggestions_returned) {
+            return iban_manager().IbanManager::OnGetSingleFieldSuggestions(
+                form, field, autofill_field, client, on_suggestions_returned);
+          });
+  ON_CALL(autocomplete_history_manager(), OnGetSingleFieldSuggestions)
+      .WillByDefault(
+          [](const FormData& form, const FormStructure* form_structure,
+             const FormFieldData& field, const AutofillField* autofill_field,
+             const AutofillClient& client,
+             SingleFieldFillRouter::OnSuggestionsReturnedCallback
+                 on_suggestions_returned) {
+            std::move(on_suggestions_returned).Run(field.global_id(), {});
+          });
+
+  FormData form = CreateTestIbanFormData(/*value=*/"");
+  FormsSeen({form});
+
+  auto& mock_payments_client =
+      static_cast<MockPaymentsAutofillClient&>(payments_autofill_client());
+
+  // When `IbanManager` is present, IBAN suggestions are generated.
+  OnAskForValuesToFill(form, form.fields()[0]);
+  EXPECT_THAT(external_delegate()->suggestions(),
+              Contains(Field(&Suggestion::type, SuggestionType::kIbanEntry)));
+
+  // When `IbanManager` is null (e.g. on iOS), IBAN suggestions are not
+  // generated and blocklist metrics are not logged.
+  base::HistogramTester histogram_tester;
+  ON_CALL(mock_payments_client, GetIbanManager).WillByDefault(Return(nullptr));
+  OnAskForValuesToFill(form, form.fields()[0]);
+  EXPECT_THAT(external_delegate()->suggestions(), IsEmpty());
+  histogram_tester.ExpectTotalCount("Autofill.Iban.SuggestionsBlockListStatus",
+                                    0);
 }
 
 }  // namespace

@@ -3559,7 +3559,9 @@ void BrowserAutofillManager::InitializeSuggestionGenerators(
     suggestion_generators_.push_back(
         std::make_unique<AutofillAiSuggestionGenerator>());
   }
-  if (relevant_filling_products.contains(FillingProduct::kIban)) {
+  if (relevant_filling_products.contains(FillingProduct::kIban) &&
+      client().GetPaymentsAutofillClient() &&
+      client().GetPaymentsAutofillClient()->GetIbanManager()) {
     suggestion_generators_.push_back(
         std::make_unique<IbanSuggestionGenerator>());
   }

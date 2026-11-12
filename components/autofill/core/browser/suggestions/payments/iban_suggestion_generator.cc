@@ -22,6 +22,7 @@
 #include "components/autofill/core/browser/integrators/optimization_guide/autofill_optimization_guide_decider.h"
 #include "components/autofill/core/browser/metrics/payments/iban_metrics.h"
 #include "components/autofill/core/browser/payments/iban_manager.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator_util.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
@@ -151,6 +152,13 @@ void IbanSuggestionGenerator::GenerateSuggestions(
     const AutofillField* trigger_autofill_field,
     AutofillClient& client,
     base::FunctionRef<void(ReturnedSuggestions)> callback) {
+  payments::PaymentsAutofillClient* payments_client =
+      client.GetPaymentsAutofillClient();
+  if (!payments_client || !payments_client->GetIbanManager()) {
+    callback({SuggestionDataSource::kIban, {}});
+    return;
+  }
+
   if (client.IsAutofillTypeBlockedByPolicy(
           client.GetLastCommittedPrimaryMainFrameURL(),
           AutofillClient::AutofillPolicyDataCategory::kPayments)) {
@@ -164,8 +172,7 @@ void IbanSuggestionGenerator::GenerateSuggestions(
     callback({SuggestionDataSource::kIban, {}});
     return;
   }
-  if (!client.GetPaymentsAutofillClient()
-           ->GetPaymentsDataManager()
+  if (!payments_client->GetPaymentsDataManager()
            .IsAutofillPaymentMethodsEnabled()) {
     callback({SuggestionDataSource::kIban, {}});
     return;
@@ -190,9 +197,8 @@ void IbanSuggestionGenerator::GenerateSuggestions(
             kBlocklistIsNotAvailable);
   }
 
-  std::vector<Iban> ibans = client.GetPaymentsAutofillClient()
-                                ->GetPaymentsDataManager()
-                                .GetOrderedIbansToSuggest();
+  std::vector<Iban> ibans =
+      payments_client->GetPaymentsDataManager().GetOrderedIbansToSuggest();
   // If the input box content equals any of the available IBANs, then
   // assume the IBAN has been filled, and don't show any suggestions.
   if (!trigger_autofill_field ||
