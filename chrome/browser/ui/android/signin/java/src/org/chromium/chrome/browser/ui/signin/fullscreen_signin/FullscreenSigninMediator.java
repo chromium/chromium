@@ -14,6 +14,9 @@ import org.chromium.chrome.browser.signin.services.BadgeConfig;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninCoordinator.Delegate;
+import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEffect.RecordNativeInitialized;
+import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEvent.NativeReady;
+import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninReducer.Result;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -22,14 +25,19 @@ import org.chromium.ui.modelutil.PropertyModel;
 /**
  * State-machine implementation of {@link FullscreenSigninCoordinator.Mediator}, behind {@link
  * org.chromium.components.signin.SigninFeatures#FULLSCREEN_SIGNIN_MEDIATOR_STATE_MACHINE}.
+ *
+ * <p>Decisions are made by {@link FullscreenSigninReducer}. This class feeds it events and runs the
+ * effects it returns.
  */
 @NullMarked
 class FullscreenSigninMediator implements FullscreenSigninCoordinator.Mediator {
     private final Context mContext;
+    private final Delegate mDelegate;
     private final @SigninAccessPoint int mAccessPoint;
     private final PropertyModel mModel;
 
     private FullscreenSigninConfig mConfig;
+    private FullscreenSigninState mState = new FullscreenSigninState();
     private boolean mDestroyed;
 
     FullscreenSigninMediator(
@@ -40,6 +48,7 @@ class FullscreenSigninMediator implements FullscreenSigninCoordinator.Mediator {
             FullscreenSigninConfig config,
             @SigninAccessPoint int accessPoint) {
         mContext = context;
+        mDelegate = delegate;
         mConfig = config;
         mAccessPoint = accessPoint;
 
@@ -55,6 +64,13 @@ class FullscreenSigninMediator implements FullscreenSigninCoordinator.Mediator {
                         mConfig.subtitle,
                         mConfig.dismissText,
                         /* showInitialLoadProgressSpinner= */ true);
+
+        mDelegate
+                .getNativeInitializationPromise()
+                .then(
+                        result -> {
+                            onNativeLoaded();
+                        });
 
         SigninMetricsUtils.logSigninStarted(mAccessPoint);
     }
@@ -133,6 +149,28 @@ class FullscreenSigninMediator implements FullscreenSigninCoordinator.Mediator {
     public @Nullable BadgeConfig getContinueButtonBadgeConfigForTesting() {
         // TODO(crbug.com/579875669): Return the selected account's continue button badge.
         return null;
+    }
+
+    private void onNativeLoaded() {
+        dispatch(new NativeReady());
+    }
+
+    /** Reduces {@code event} and runs the resulting effects in order. */
+    private void dispatch(FullscreenSigninEvent event) {
+        // Inputs arrive asynchronously, so they can arrive after the mediator is destroyed. See
+        // https://crbug.com/40214143.
+        if (mDestroyed) return;
+        Result result = FullscreenSigninReducer.reduce(mState, event);
+        mState = result.getState();
+        for (FullscreenSigninEffect effect : result.getEffects()) {
+            runEffect(effect);
+        }
+    }
+
+    private void runEffect(FullscreenSigninEffect effect) {
+        switch (effect) {
+            case RecordNativeInitialized _ -> mDelegate.recordNativeInitializedHistogram();
+        }
     }
 
     private void onSelectedAccountClicked() {

@@ -119,10 +119,14 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/signin/fullscreen_signin/FreManagementNoticeDialogHelper.java",
     "java/src/org/chromium/chrome/browser/ui/signin/fullscreen_signin/FullscreenSigninConfig.java",
     "java/src/org/chromium/chrome/browser/ui/signin/fullscreen_signin/FullscreenSigninCoordinator.java",
+    "java/src/org/chromium/chrome/browser/ui/signin/fullscreen_signin/FullscreenSigninEffect.java",
+    "java/src/org/chromium/chrome/browser/ui/signin/fullscreen_signin/FullscreenSigninEvent.java",
     "java/src/org/chromium/chrome/browser/ui/signin/fullscreen_signin/FullscreenSigninLoadPoint.java",
     "java/src/org/chromium/chrome/browser/ui/signin/fullscreen_signin/FullscreenSigninMediator.java",
     "java/src/org/chromium/chrome/browser/ui/signin/fullscreen_signin/FullscreenSigninMediatorLegacy.java",
     "java/src/org/chromium/chrome/browser/ui/signin/fullscreen_signin/FullscreenSigninProperties.java",
+    "java/src/org/chromium/chrome/browser/ui/signin/fullscreen_signin/FullscreenSigninReducer.java",
+    "java/src/org/chromium/chrome/browser/ui/signin/fullscreen_signin/FullscreenSigninState.java",
     "java/src/org/chromium/chrome/browser/ui/signin/fullscreen_signin/FullscreenSigninView.java",
     "java/src/org/chromium/chrome/browser/ui/signin/fullscreen_signin/FullscreenSigninViewBinder.java",
     "java/src/org/chromium/chrome/browser/ui/signin/fullscreen_signin/UMADialogCoordinator.java",
@@ -248,6 +252,7 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/ui/signin/account_picker/WebSigninAccountPickerDelegateTest.java",
     "junit/src/org/chromium/chrome/browser/ui/signin/fullscreen_signin/FreManagementNoticeDialogHelperTest.java",
     "junit/src/org/chromium/chrome/browser/ui/signin/fullscreen_signin/FullscreenSigninMediatorTest.java",
+    "junit/src/org/chromium/chrome/browser/ui/signin/fullscreen_signin/FullscreenSigninReducerTest.java",
     "junit/src/org/chromium/chrome/browser/ui/signin/fullscreen_signin/FullscreenSigninViewBinderTest.java",
   ]
   deps = [
