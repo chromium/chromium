@@ -1406,24 +1406,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="MobileStartup.ToolbarInflationTime{ChromeActivityName}"
-    units="ms" expires_after="2023-12-28">
-  <owner>pasko@chromium.org</owner>
-  <summary>
-    Android: The time spent performing toolbar layout inflation.
-    {ChromeActivityName}
-  </summary>
-  <token key="ChromeActivityName">
-    <variant name=".ChromeTabbedActivity"
-        summary="Activity launched in TABBED mode on Android"/>
-    <variant name=".CustomTabActivity"
-        summary="Activity launched with a CUSTOM TAB on Android"/>
-    <variant name=".DocumentActivity"
-        summary="Activity launched in DOCUMENT mode (Tabs and apps together)
-                 on Android"/>
-  </token>
-</histogram>
-
 <histogram name="MobileStartup.UnparcelBundleRecursiveDuration" units="ms"
     expires_after="2027-01-20">
   <owner>mthiesse@chromium.org</owner>

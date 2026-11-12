@@ -25,7 +25,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.PersistableBundle;
-import android.os.SystemClock;
 import android.text.format.DateUtils;
 import android.util.Pair;
 import android.util.Size;
@@ -450,11 +449,6 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     private final SettableMonotonicObservableSupplier<SnackbarManager> mSnackbarManagerSupplier =
             ObservableSuppliers.createMonotonic();
     private @Nullable ChromeActivitySnackbarHelper mChromeActivitySnackbarHelper;
-
-    // Timestamp in ms when initial layout inflation begins
-    private long mInflateInitialLayoutBeginMs;
-    // Timestamp in ms when initial layout inflation ends
-    private long mInflateInitialLayoutEndMs;
 
     /** Whether or not a PolicyChangeListener was added. */
     private boolean mDidAddPolicyChangeListener;
@@ -882,7 +876,6 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
      */
     @Override
     protected final void triggerLayoutInflation() {
-        mInflateInitialLayoutBeginMs = SystemClock.elapsedRealtime();
         try (TraceEvent _ = TraceEvent.scoped("ChromeActivity.triggerLayoutInflation")) {
             SelectionPopupController.setShouldGetReadbackViewFromWindowAndroid();
             SelectionPopupController.setAllowSurfaceControlMagnifier();
@@ -968,8 +961,6 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
     @Override
     protected void onInitialLayoutInflationComplete() {
-        mInflateInitialLayoutEndMs = SystemClock.elapsedRealtime();
-
         mRootUiCoordinator.getStatusBarColorController().updateStatusBarColor();
 
         ViewGroup rootView = (ViewGroup) getWindow().getDecorView().getRootView();
@@ -1769,9 +1760,6 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                         () -> {
                             if (isActivityFinishingOrDestroyed()) return;
                             if (getToolbarManager() != null) {
-                                RecordHistogram.recordTimesHistogram(
-                                        "MobileStartup.ToolbarInflationTime." + simpleName,
-                                        mInflateInitialLayoutEndMs - mInflateInitialLayoutBeginMs);
                                 getToolbarManager()
                                         .onDeferredStartup(getOnCreateTimestampMs(), simpleName);
                             }
