@@ -22,12 +22,14 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.TriState;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.user_education.IphCommand;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
+import org.chromium.components.browser_ui.accessibility.PageZoomUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.content_public.browser.WebContents;
@@ -51,6 +53,8 @@ public class PageZoomIphControllerTest {
 
     @Before
     public void setUp() {
+        PageZoomUtils.setHasAnySavedZoomLevelsForTesting(TriState.FALSE);
+        PageZoomUtils.setUsesDefaultPageZoomLevelForTesting(TriState.TRUE);
         mPageZoomIphController =
                 new PageZoomIphController(
                         mAppMenuHandler, mToolbarMenuButton, mUserEducationHelper);
@@ -123,6 +127,27 @@ public class PageZoomIphControllerTest {
                         new GURL(
                                 UrlConstants.CHROME_URL_PREFIX
                                         + UrlConstants.NEW_TAB_PAGE_THIRD_PARTY_HOST));
+        Assert.assertFalse(PageZoomIphController.shouldShowForTab(mTab));
+    }
+
+    @Test
+    public void testShouldShowForTab_hasUsedPageZoomFeature() {
+        when(mTab.getWebContents()).thenReturn(mWebContents);
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
+
+        PageZoomUtils.setHasAnySavedZoomLevelsForTesting(TriState.TRUE);
+        Assert.assertFalse(PageZoomIphController.shouldShowForTab(mTab));
+
+        PageZoomUtils.setHasAnySavedZoomLevelsForTesting(TriState.FALSE);
+        Assert.assertTrue(PageZoomIphController.shouldShowForTab(mTab));
+
+        PageZoomUtils.setUsesDefaultPageZoomLevelForTesting(TriState.FALSE);
+        Assert.assertFalse(PageZoomIphController.shouldShowForTab(mTab));
+
+        PageZoomUtils.setUsesDefaultPageZoomLevelForTesting(TriState.TRUE);
+        Assert.assertTrue(PageZoomIphController.shouldShowForTab(mTab));
+
+        PageZoomUtils.setShouldAlwaysShowZoomMenuItem(false);
         Assert.assertFalse(PageZoomIphController.shouldShowForTab(mTab));
     }
 }

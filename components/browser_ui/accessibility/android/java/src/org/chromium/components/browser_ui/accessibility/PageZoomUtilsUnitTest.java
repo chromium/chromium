@@ -22,6 +22,7 @@ import org.chromium.content.browser.HostZoomMapImpl;
 import org.chromium.content.browser.HostZoomMapImplJni;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.HostZoomMap;
+import org.chromium.content_public.browser.SiteZoomInfo;
 
 /** Unit tests for {@link PageZoomUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -209,5 +210,24 @@ public class PageZoomUtilsUnitTest {
         Assert.assertEquals("50%", PageZoomUtils.formatZoomPercentage(-3.80));
         Assert.assertEquals("150%", PageZoomUtils.formatZoomPercentage(2.22));
         Assert.assertEquals("300%", PageZoomUtils.formatZoomPercentage(6.03));
+    }
+
+    @Test
+    public void testHasAnySavedZoomLevels() {
+        when(mHostZoomMapMock.getAllHostZoomLevels(mContextMock)).thenReturn(new SiteZoomInfo[0]);
+        Assert.assertFalse(PageZoomUtils.hasAnySavedZoomLevels(mContextMock));
+
+        when(mHostZoomMapMock.getAllHostZoomLevels(mContextMock))
+                .thenReturn(new SiteZoomInfo[] {new SiteZoomInfo("example.com", 1.56)});
+        Assert.assertTrue(PageZoomUtils.hasAnySavedZoomLevels(mContextMock));
+    }
+
+    @Test
+    public void testUsesDefaultPageZoomLevel() {
+        when(mHostZoomMapMock.getDefaultZoomLevel(mContextMock)).thenReturn(0.0);
+        Assert.assertTrue(PageZoomUtils.usesDefaultPageZoomLevel(mContextMock));
+
+        when(mHostZoomMapMock.getDefaultZoomLevel(mContextMock)).thenReturn(1.56);
+        Assert.assertFalse(PageZoomUtils.usesDefaultPageZoomLevel(mContextMock));
     }
 }

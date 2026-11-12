@@ -73,6 +73,8 @@ public class PageZoomUtils {
     private static final double DEFAULT_ZOOM_LEVEL_SNAP_RANGE = 0.03;
 
     private static @TriState int sShouldShowMenuItemForTesting;
+    private static @TriState int sHasAnySavedZoomLevelsForTesting;
+    private static @TriState int sUsesDefaultPageZoomLevelForTesting;
 
     /**
      * Bars have values 0 to 100 by default. For simplicity, we will keep these values and convert
@@ -194,6 +196,37 @@ public class PageZoomUtils {
     }
 
     /**
+     * Returns true if the user has any saved per-site zoom levels in {@link HostZoomMap}.
+     *
+     * @param browserContextHandle The profile to check saved zoom levels against.
+     * @return boolean
+     */
+    public static boolean hasAnySavedZoomLevels(BrowserContextHandle browserContextHandle) {
+        if (sHasAnySavedZoomLevelsForTesting != TriState.NOT_SET) {
+            return sHasAnySavedZoomLevelsForTesting == TriState.TRUE;
+        }
+        return !HostZoomMap.getAllHostZoomLevels(browserContextHandle).isEmpty();
+    }
+
+    /**
+     * Returns true if the profile uses the default global zoom level (0.0, corresponding to 100%)
+     * in {@link HostZoomMap}, or false if the user has set a custom default zoom level (e.g. via
+     * Accessibility Settings).
+     *
+     * @param browserContextHandle The profile to check the default zoom level against.
+     * @return boolean
+     */
+    public static boolean usesDefaultPageZoomLevel(BrowserContextHandle browserContextHandle) {
+        if (sUsesDefaultPageZoomLevelForTesting != TriState.NOT_SET) {
+            return sUsesDefaultPageZoomLevelForTesting == TriState.TRUE;
+        }
+        // The default (unset) zoom level is 0.0 (which maps to 100% by 1.2^0 = 1, see comment at
+        // top of file). We will fetch the current profile's default zoom level, and any non-zero
+        // value will be considered a user choice (non-default).
+        return Math.abs(getDefaultZoomLevel(browserContextHandle)) <= MathUtils.EPSILON;
+    }
+
+    /**
      * Records UMA histogram for a measure of the Page Zoom feature usage by checking if the user
      * has any saved zoom levels or a default zoom setting, considering either as a user that has
      * interacted with the feature. Recorded during post-native initialization.
@@ -201,14 +234,8 @@ public class PageZoomUtils {
      * @param lastUsedRegularProfile The profile to check feature usage against
      */
     public static void recordFeatureUsage(BrowserContextHandle lastUsedRegularProfile) {
-        boolean hasAnySavedZoomLevels =
-                !HostZoomMap.getAllHostZoomLevels(lastUsedRegularProfile).isEmpty();
-
-        // The default (unset) zoom level is 0.0 (which maps to 100% by 1.2^0 = 1, see comment at
-        // top of file). We will fetch the current profile's default zoom level, and any non-zero
-        // value will be considered a user choice (non-default).
-        boolean hasDefaultZoomLevel =
-                Math.abs(getDefaultZoomLevel(lastUsedRegularProfile)) > MathUtils.EPSILON;
+        boolean hasAnySavedZoomLevels = hasAnySavedZoomLevels(lastUsedRegularProfile);
+        boolean hasDefaultZoomLevel = !usesDefaultPageZoomLevel(lastUsedRegularProfile);
 
         PageZoomUma.logFeatureUsageHistogram(hasAnySavedZoomLevels, hasDefaultZoomLevel);
     }
@@ -447,6 +474,27 @@ public class PageZoomUtils {
     public static void setShouldShowMenuItemForTesting(@TriState int isEnabled) {
         sShouldShowMenuItemForTesting = isEnabled;
         ResettersForTesting.register(() -> sShouldShowMenuItemForTesting = TriState.NOT_SET);
+    }
+
+    /**
+     * Used for testing only, allows a mocked value for the {@link hasAnySavedZoomLevels} method.
+     *
+     * @param hasAnySavedZoomLevels Whether the user has any saved site zoom levels.
+     */
+    public static void setHasAnySavedZoomLevelsForTesting(@TriState int hasAnySavedZoomLevels) {
+        sHasAnySavedZoomLevelsForTesting = hasAnySavedZoomLevels;
+        ResettersForTesting.register(() -> sHasAnySavedZoomLevelsForTesting = TriState.NOT_SET);
+    }
+
+    /**
+     * Used for testing only, allows a mocked value for the {@link usesDefaultPageZoomLevel} method.
+     *
+     * @param usesDefaultPageZoomLevel Whether the profile uses the default page zoom level.
+     */
+    public static void setUsesDefaultPageZoomLevelForTesting(
+            @TriState int usesDefaultPageZoomLevel) {
+        sUsesDefaultPageZoomLevelForTesting = usesDefaultPageZoomLevel;
+        ResettersForTesting.register(() -> sUsesDefaultPageZoomLevelForTesting = TriState.NOT_SET);
     }
 
     public static long getReadableZoomLevel(double zoomFactor) {
