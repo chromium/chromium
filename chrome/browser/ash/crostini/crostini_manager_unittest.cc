@@ -5,9 +5,11 @@
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 
 #include <memory>
+#include <string>
 
 #include "ash/constants/ash_features.h"
 #include "base/barrier_closure.h"
+#include "base/files/file_util.h"
 #include "base/files/scoped_temp_file.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -1910,6 +1912,74 @@ TEST_F(CrostiniManagerTest, ImportDiskImageSuccess) {
 
   EXPECT_EQ(result_future.Get<0>(), CrostiniResult::SUCCESS);
   EXPECT_EQ(fake_concierge_client_->import_disk_image_call_count(), 1);
+}
+
+TEST_F(CrostiniManagerTest, ExportDiskImageAlreadyInProgress) {
+  base::ScopedTempFile export_path;
+  ASSERT_TRUE(export_path.Create());
+  TestFuture<CrostiniResult> export_future;
+  crostini_manager()->ExportDiskImage(container_id(), "my_cool_user_id_hash",
+                                      export_path.path(), false,
+                                      export_future.GetCallback());
+  task_environment_.FastForwardBy(base::Seconds(2));
+  EXPECT_EQ(fake_concierge_client_->export_disk_image_call_count(), 1);
+  EXPECT_FALSE(export_future.IsReady());
+
+  // A second operation for the same guest is rejected. It must neither
+  // truncate its target file nor send another request to concierge.
+  base::ScopedTempFile second_path;
+  ASSERT_TRUE(second_path.Create());
+  ASSERT_TRUE(base::WriteFile(second_path.path(), "contents"));
+  TestFuture<CrostiniResult> second_future;
+  crostini_manager()->ExportDiskImage(container_id(), "my_cool_user_id_hash",
+                                      second_path.path(), false,
+                                      second_future.GetCallback());
+  EXPECT_EQ(second_future.Get(), CrostiniResult::DISK_IMAGE_FAILED);
+  task_environment_.FastForwardBy(base::Seconds(2));
+  EXPECT_EQ(fake_concierge_client_->export_disk_image_call_count(), 1);
+  std::string contents;
+  EXPECT_TRUE(base::ReadFileToString(second_path.path(), &contents));
+  EXPECT_EQ(contents, "contents");
+
+  // The first operation is unaffected.
+  EXPECT_FALSE(export_future.IsReady());
+  vm_tools::concierge::DiskImageStatusResponse done_signal;
+  done_signal.set_status(vm_tools::concierge::DISK_STATUS_CREATED);
+  fake_concierge_client_->NotifyDiskImageProgress(done_signal);
+  EXPECT_EQ(export_future.Get(), CrostiniResult::SUCCESS);
+}
+
+TEST_F(CrostiniManagerTest, ImportDiskImageAlreadyInProgress) {
+  vm_tools::concierge::ImportDiskImageResponse response;
+  response.set_status(vm_tools::concierge::DISK_STATUS_IN_PROGRESS);
+  fake_concierge_client_->set_import_disk_image_response(response);
+
+  base::ScopedTempFile import_path;
+  ASSERT_TRUE(import_path.Create());
+  TestFuture<CrostiniResult> import_future;
+  crostini_manager()->ImportDiskImage(container_id(), "my_cool_user_id_hash",
+                                      import_path.path(),
+                                      import_future.GetCallback());
+  task_environment_.FastForwardBy(base::Seconds(2));
+  EXPECT_EQ(fake_concierge_client_->import_disk_image_call_count(), 1);
+  EXPECT_FALSE(import_future.IsReady());
+
+  // A second operation for the same guest is rejected without sending another
+  // request to concierge.
+  TestFuture<CrostiniResult> second_future;
+  crostini_manager()->ImportDiskImage(container_id(), "my_cool_user_id_hash",
+                                      import_path.path(),
+                                      second_future.GetCallback());
+  EXPECT_EQ(second_future.Get(), CrostiniResult::DISK_IMAGE_FAILED);
+  task_environment_.FastForwardBy(base::Seconds(2));
+  EXPECT_EQ(fake_concierge_client_->import_disk_image_call_count(), 1);
+
+  // The first operation is unaffected.
+  EXPECT_FALSE(import_future.IsReady());
+  vm_tools::concierge::DiskImageStatusResponse done_signal;
+  done_signal.set_status(vm_tools::concierge::DISK_STATUS_CREATED);
+  fake_concierge_client_->NotifyDiskImageProgress(done_signal);
+  EXPECT_EQ(import_future.Get(), CrostiniResult::SUCCESS);
 }
 
 TEST_F(CrostiniManagerTest, ExportContainerSuccess) {

@@ -2030,6 +2030,7 @@ void CrostiniManager::ExportDiskImage(guest_os::GuestId vm_id,
   if (disk_image_callbacks_.find(vm_id) != disk_image_callbacks_.end()) {
     LOG(ERROR) << "Disk image operation currently running for " << vm_id;
     std::move(callback).Run(CrostiniResult::DISK_IMAGE_FAILED);
+    return;
   }
   disk_image_callbacks_.emplace(vm_id, std::move(callback));
 
@@ -2123,6 +2124,7 @@ void CrostiniManager::ImportDiskImage(guest_os::GuestId vm_id,
   if (disk_image_callbacks_.find(vm_id) != disk_image_callbacks_.end()) {
     LOG(ERROR) << "Disk image operation currently running for " << vm_id;
     std::move(callback).Run(CrostiniResult::DISK_IMAGE_FAILED);
+    return;
   }
   disk_image_callbacks_.emplace(vm_id, std::move(callback));
 
@@ -2243,7 +2245,7 @@ void CrostiniManager::OnDiskImageProgress(
     default:
       call_original_callback = true;
       result = CrostiniResult::DISK_IMAGE_FAILED;
-      LOG(ERROR) << "Failed during disk image export: " << signal.status()
+      LOG(ERROR) << "Failed during disk image operation: " << signal.status()
                  << ", " << signal.failure_reason();
   }
 
@@ -2263,7 +2265,9 @@ void CrostiniManager::OnDiskImageProgress(
   if (call_original_callback) {
     auto it = disk_image_callbacks_.find(uuid_it->second);
     if (it == disk_image_callbacks_.end()) {
-      LOG(ERROR) << "No export callbacks for " << uuid_it->second;
+      LOG(ERROR) << "No disk image callback for " << uuid_it->second;
+      disk_image_uuid_to_guest_id_.erase(uuid_it);
+      return;
     }
     std::move(it->second).Run(result);
     // The callback and its uuid mapping are done now, remove
@@ -3670,7 +3674,7 @@ void CrostiniManager::OnCancelDiskImageOp(
     std::optional<vm_tools::concierge::SuccessFailureResponse> response) {
   auto it = disk_image_callbacks_.find(key);
   if (it == disk_image_callbacks_.end()) {
-    LOG(ERROR) << "No export callback for " << key;
+    LOG(ERROR) << "No disk image callback for " << key;
     return;
   }
 
@@ -3686,7 +3690,7 @@ void CrostiniManager::OnCancelDiskImageOp(
 
   auto cb_it = disk_image_callbacks_.find(key);
   if (cb_it == disk_image_callbacks_.end()) {
-    LOG(ERROR) << "No export callback for " << key;
+    LOG(ERROR) << "No disk image callback for " << key;
     return;
   }
 
