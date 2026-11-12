@@ -4814,11 +4814,8 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, MAYBE_testGetPageMetadataOnNavigation) {
   ExecuteJsTest();
 }
 
-// TODO(crbug.com/454086033): Re-enable this test once I figure out how to
-// discard the tab while preserving the test harness.
 #if !BUILDFLAG(IS_ANDROID)
-IN_PROC_BROWSER_TEST_P(GlicApiTest,
-                       DISABLED_testGetPageMetadataWebContentsChanged) {
+IN_PROC_BROWSER_TEST_P(GlicApiTest, testGetPageMetadataWebContentsChanged) {
   // Navigate the first tab.
   ASSERT_TRUE(content::NavigateToURL(
       GetTabListInterface()->GetActiveTab()->GetContents(),
