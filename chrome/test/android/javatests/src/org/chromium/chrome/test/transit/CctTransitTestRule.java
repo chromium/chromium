@@ -15,6 +15,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
+import org.chromium.chrome.test.transit.page.BasePageStation;
 import org.chromium.chrome.test.transit.page.CctPageStation;
 import org.chromium.content_public.browser.WebContents;
 
@@ -42,12 +43,27 @@ public class CctTransitTestRule implements TestRule {
      * @return the active entry {@link CctPageStation}
      */
     public CctPageStation startCustomTabActivityWithIntent(Intent intent) {
+        return startCustomTabActivityWithIntent(
+                intent, CctPageStation.newBuilder().withEntryPoint());
+    }
+
+    /**
+     * Start the test in a CCT page showing |expectedUrl|, which can differ from the Intent's URL.
+     *
+     * @return the active entry {@link CctPageStation}
+     */
+    public CctPageStation startCustomTabActivityWithIntent(Intent intent, String expectedUrl) {
+        return startCustomTabActivityWithIntent(
+                intent, CctPageStation.newBuilder().initForEntryPointUrl(expectedUrl));
+    }
+
+    private CctPageStation startCustomTabActivityWithIntent(
+            Intent intent, BasePageStation.Builder<CctPageStation> builder) {
         EntryPointSentinelStation sentinel = new EntryPointSentinelStation();
         sentinel.setAsEntryPoint();
 
-        CctPageStation page = CctPageStation.newBuilder().withEntryPoint().build();
         return sentinel.runTo(() -> mActivityTestRule.startCustomTabActivityWithIntent(intent))
-                .arriveAt(page);
+                .arriveAt(builder.build());
     }
 
     public CustomTabActivity getActivity() {

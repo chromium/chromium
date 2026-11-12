@@ -504,17 +504,7 @@ public class CustomTabActivityIncognitoTest {
         mCustomTabActivityTestRule.buildSessionWithHiddenTab(token);
         Assert.assertTrue(
                 connection.mayLaunchUrl(token.getToken(), Uri.parse(mTestPage), null, null));
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    Criteria.checkThat(
-                            "Tab was not created",
-                            connection.getSpeculationParamsForTesting(),
-                            Matchers.notNullValue());
-                },
-                LONG_TIMEOUT_MS,
-                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
-        ChromeTabUtils.waitForTabPageLoaded(
-                connection.getSpeculationParamsForTesting().hiddenTab.tab, mTestPage);
+        CustomTabsTestUtils.ensureCompletedSpeculationForUrl(mTestPage);
         mCustomTabActivityTestRule.setCustomSessionInitiatedForIntent();
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
         connection.cleanUpSession(token.getToken());

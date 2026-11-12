@@ -180,6 +180,7 @@ import org.chromium.chrome.test.OverrideContextWrapperTestRule;
 import org.chromium.chrome.test.transit.CctTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.CctPageStation;
 import org.chromium.chrome.test.transit.page.ReferrerCondition;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeTabUtils;
@@ -2138,11 +2139,9 @@ public class CustomTabActivityTest {
     public void testHistoryNoSpeculation() throws Exception {
         Context context = getInstrumentation().getTargetContext().getApplicationContext();
         Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(context, mTestPage);
-        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
-        final Tab tab = mCustomTabActivityTestRule.getActivity().getActivityTab();
-        ThreadUtils.runOnUiThreadBlocking(
-                (Runnable) () -> tab.loadUrl(new LoadUrlParams(mTestPage2)));
-        ChromeTabUtils.waitForTabPageLoaded(tab, mTestPage2);
+        CctPageStation page = mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
+        page = page.loadPageProgrammatically(mTestPage2);
+        final Tab tab = page.getTab();
 
         Assert.assertTrue(tab.canGoBack());
         Assert.assertFalse(tab.canGoForward());
@@ -2315,17 +2314,7 @@ public class CustomTabActivityTest {
         connection.newSession(token.getToken());
         setCanUseHiddenTabForSession(token, true);
         Assert.assertTrue(connection.mayLaunchUrl(token.getToken(), Uri.parse(url), null, null));
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    Criteria.checkThat(
-                            connection.getHiddenTabForTesting(), Matchers.notNullValue());
-                });
-        Tab hiddenTab =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () -> {
-                            return connection.getHiddenTabForTesting();
-                        });
-        ChromeTabUtils.waitForTabPageLoaded(hiddenTab, url);
+        CustomTabsTestUtils.ensureCompletedSpeculationForUrl(url);
         String actualHeader = webServer.getLastRequest("/ok.html").headerValue("X-CCT-Client-Data");
         assertEquals(expectedHeader, actualHeader);
         webServer.shutdown();
@@ -2620,17 +2609,7 @@ public class CustomTabActivityTest {
             setCanUseHiddenTabForSession(token, true);
             Assert.assertTrue(
                     connection.mayLaunchUrl(token.getToken(), Uri.parse(url), null, null));
-            CriteriaHelper.pollUiThread(
-                    () -> {
-                        Criteria.checkThat(
-                                connection.getHiddenTabForTesting(), Matchers.notNullValue());
-                    });
-            Tab hiddenTab =
-                    ThreadUtils.runOnUiThreadBlocking(
-                            () -> {
-                                return connection.getHiddenTabForTesting();
-                            });
-            ChromeTabUtils.waitForTabPageLoaded(hiddenTab, url);
+            CustomTabsTestUtils.ensureCompletedSpeculationForUrl(url);
         } else {
             mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
         }
@@ -2955,12 +2934,9 @@ public class CustomTabActivityTest {
     public void testBackPressNavigationFailure() {
         Context context = getInstrumentation().getTargetContext().getApplicationContext();
         Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(context, mTestPage);
-        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
-        final Tab tab = getActivity().getActivityTab();
-
-        ThreadUtils.runOnUiThreadBlocking(
-                (Runnable) () -> tab.loadUrl(new LoadUrlParams(mTestPage2)));
-        ChromeTabUtils.waitForTabPageLoaded(tab, mTestPage2);
+        mCustomTabActivityTestRule
+                .startCustomTabActivityWithIntent(intent)
+                .loadPageProgrammatically(mTestPage2);
 
         BackPressHandler navigationHandler =
                 getActivity()

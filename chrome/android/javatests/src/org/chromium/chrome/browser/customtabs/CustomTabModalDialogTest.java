@@ -38,9 +38,10 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.transit.CctTransitTestRule;
+import org.chromium.chrome.test.transit.page.CctPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
-import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.UiUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -53,8 +54,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 @Features.EnableFeatures(ChromeFeatureList.CCT_TAB_MODAL_DIALOG)
 public class CustomTabModalDialogTest {
 
-    @Rule
-    public CustomTabActivityTestRule mCustomTabActivityTestRule = new CustomTabActivityTestRule();
+    @Rule public CctTransitTestRule mCustomTabActivityTestRule = new CctTransitTestRule();
 
     private static final String TEST_PAGE = "/chrome/test/data/android/google.html";
     private static final String TEST_PAGE_2 = "/chrome/test/data/android/test.html";
@@ -158,8 +158,8 @@ public class CustomTabModalDialogTest {
     public void testNavigationDismissTabModalDialog() {
         Context context = getInstrumentation().getTargetContext().getApplicationContext();
         Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(context, mTestPage);
-        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
-        final Tab tab = mCustomTabActivityTestRule.getActivity().getActivityTab();
+        CctPageStation page = mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
+        final Tab tab = page.getTab();
 
         ModalDialogManager dialogManager =
                 mCustomTabActivityTestRule.getActivity().getModalDialogManagerSupplier().get();
@@ -192,9 +192,7 @@ public class CustomTabModalDialogTest {
 
         CriteriaHelper.pollUiThread(() -> dialogManager.isShowing());
 
-        ThreadUtils.runOnUiThreadBlocking(
-                (Runnable) () -> tab.loadUrl(new LoadUrlParams(mTestPage2)));
-        ChromeTabUtils.waitForTabPageLoaded(tab, mTestPage2);
+        page.loadPageProgrammatically(mTestPage2);
 
         Assert.assertTrue(tab.canGoBack());
         Assert.assertFalse(tab.canGoForward());
@@ -207,15 +205,13 @@ public class CustomTabModalDialogTest {
     public void testBackPressDismissTabModalDialog() {
         Context context = getInstrumentation().getTargetContext().getApplicationContext();
         Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(context, mTestPage);
-        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
-        final Tab tab = mCustomTabActivityTestRule.getActivity().getActivityTab();
+        CctPageStation page = mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
+        final Tab tab = page.getTab();
 
         ModalDialogManager dialogManager =
                 mCustomTabActivityTestRule.getActivity().getModalDialogManagerSupplier().get();
 
-        ThreadUtils.runOnUiThreadBlocking(
-                (Runnable) () -> tab.loadUrl(new LoadUrlParams(mTestPage2)));
-        ChromeTabUtils.waitForTabPageLoaded(tab, mTestPage2);
+        page.loadPageProgrammatically(mTestPage2);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

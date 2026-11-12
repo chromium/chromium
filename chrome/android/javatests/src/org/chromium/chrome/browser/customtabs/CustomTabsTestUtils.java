@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.customtabs;
 
 import static org.junit.Assert.assertEquals;
 
-import static org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule.LONG_TIMEOUT_MS;
-
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -33,21 +31,25 @@ import org.junit.Assert;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.TriState;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.base.test.transit.Triggers;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.PackageManagerWrapper;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
-import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.chrome.test.transit.page.PageLoadedCondition;
+import org.chromium.chrome.test.transit.page.PageUrlCondition;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Supplier;
 
 /** Utility class that contains convenience calls related with custom tabs testing. */
 @JNINamespace("customtabs")
@@ -155,18 +157,18 @@ public class CustomTabsTestUtils {
 
     /** Waits for the speculation of |url| to complete. */
     public static void ensureCompletedSpeculationForUrl(final String url) {
-        CriteriaHelper.pollUiThread(
+        // The speculation tab is hidden, so it can't be a page Station. The Conditions wait for
+        // the speculation tab to be created.
+        Supplier<Tab> hiddenTabSupplier =
                 () -> {
-                    Criteria.checkThat(
-                            "Tab was not created",
-                            CustomTabsConnection.getInstance().getSpeculationParamsForTesting(),
-                            Matchers.notNullValue());
-                },
-                LONG_TIMEOUT_MS,
-                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
-        ChromeTabUtils.waitForTabPageLoaded(
-                CustomTabsConnection.getInstance().getSpeculationParamsForTesting().hiddenTab.tab,
-                url);
+                    var params =
+                            CustomTabsConnection.getInstance().getSpeculationParamsForTesting();
+                    return params == null ? null : params.hiddenTab.tab;
+                };
+        Triggers.noopTo()
+                .waitFor(
+                        new PageLoadedCondition(hiddenTabSupplier, TriState.NOT_SET),
+                        new PageUrlCondition(Matchers.is(url), hiddenTabSupplier));
     }
 
     /**

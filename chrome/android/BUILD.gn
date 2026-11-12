@@ -1431,6 +1431,8 @@ if (_is_default_toolchain) {
       ":chrome_app_java_resources",
       "//base:base_java",
       "//base:base_java_test_support",
+      "//base:tristate_java",
+      "//base/test:public_transit_java",
       "//build/android:build_java",
       "//cc:cc_java",
       "//chrome/android:chrome_java",

@@ -28,4 +28,9 @@ public class CctPageStation extends BasePageStation<CustomTabActivity> {
                 declareEnterConditionAsElement(new WebContentsPresentCondition(loadedTabElement));
         declareEnterCondition(new FrameInfoUpdatedCondition(webContentsElement));
     }
+
+    /** Loads a |url| in the same tab and waits to transition to a new CctPageStation. */
+    public CctPageStation loadPageProgrammatically(String url) {
+        return loadPageProgrammatically(url, newBuilder());
+    }
 }

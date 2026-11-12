@@ -7,8 +7,6 @@ package org.chromium.chrome.browser.customtabs;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 
-import static org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule.LONG_TIMEOUT_MS;
-
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -23,7 +21,6 @@ import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
-import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -123,21 +120,6 @@ public class CustomTabPostMessageTest {
     private void setCanUseHiddenTabForSession(SessionHolder sessionHolder, boolean useHiddenTab) {
         CustomTabsConnection.getInstance()
                 .setCanUseHiddenTabForSession(sessionHolder, useHiddenTab);
-    }
-
-    private static void ensureCompletedSpeculationForUrl(final String url) {
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    Criteria.checkThat(
-                            "Tab was not created",
-                            CustomTabsConnection.getInstance().getSpeculationParamsForTesting(),
-                            Matchers.notNullValue());
-                },
-                LONG_TIMEOUT_MS,
-                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
-        ChromeTabUtils.waitForTabPageLoaded(
-                CustomTabsConnection.getInstance().getSpeculationParamsForTesting().hiddenTab.tab,
-                url);
     }
 
     /**
@@ -444,7 +426,7 @@ public class CustomTabPostMessageTest {
 
         setCanUseHiddenTabForSession(sessionHolder, true);
         session.mayLaunchUrl(Uri.parse(url), null, null);
-        ensureCompletedSpeculationForUrl(url);
+        CustomTabsTestUtils.ensureCompletedSpeculationForUrl(url);
 
         if (requestTime == BEFORE_INTENT) {
             channelRequested =
