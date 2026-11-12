@@ -195,9 +195,10 @@ public final class AdaptiveUiControllerImpl implements AdaptiveUiController {
      * Picks the container for one {@link #show}: a dialog on desktop form factors and a sheet
      * elsewhere, falling back to the other one when the preferred one isn't allowed.
      */
-    static @AdaptiveUiContainer int selectContainer(@AdaptiveUiContainer int allowedContainers) {
-        boolean dialogAllowed = (allowedContainers & AdaptiveUiContainer.MODAL_DIALOG) != 0;
-        boolean sheetAllowed = (allowedContainers & AdaptiveUiContainer.BOTTOM_SHEET) != 0;
+    static @AdaptiveUiContainer int selectContainer(
+            Set<@AdaptiveUiContainer Integer> allowedContainers) {
+        boolean dialogAllowed = allowedContainers.contains(AdaptiveUiContainer.MODAL_DIALOG);
+        boolean sheetAllowed = allowedContainers.contains(AdaptiveUiContainer.BOTTOM_SHEET);
         if (!dialogAllowed && !sheetAllowed) {
             throw new IllegalArgumentException(
                     "AdaptiveUiController needs BOTTOM_SHEET or MODAL_DIALOG in allowed"

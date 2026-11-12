@@ -8,21 +8,19 @@ import androidx.annotation.IntDef;
 
 import org.chromium.build.annotations.NullMarked;
 
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /** Containers that can host an adaptive UI entry. */
 @NullMarked
-@IntDef(
-        flag = true,
-        value = {
-            AdaptiveUiContainer.BOTTOM_SHEET,
-            AdaptiveUiContainer.MODAL_DIALOG,
-            AdaptiveUiContainer.SIDE_PANEL,
-        })
+@IntDef({AdaptiveUiContainer.BOTTOM_SHEET, AdaptiveUiContainer.MODAL_DIALOG})
 @Retention(RetentionPolicy.SOURCE)
+@Target(ElementType.TYPE_USE)
 public @interface AdaptiveUiContainer {
-    int BOTTOM_SHEET = 1 << 0;
-    int MODAL_DIALOG = 1 << 1;
-    int SIDE_PANEL = 1 << 2;
+    int BOTTOM_SHEET = 0;
+    int MODAL_DIALOG = 1;
+
+    int COUNT = 2;
 }

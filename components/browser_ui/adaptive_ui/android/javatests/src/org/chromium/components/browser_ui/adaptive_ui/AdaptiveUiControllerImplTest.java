@@ -53,6 +53,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
+import java.util.Set;
 
 /** Unit tests for {@link AdaptiveUiControllerImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -173,10 +174,12 @@ public class AdaptiveUiControllerImplTest {
         assertEquals(
                 AdaptiveUiContainer.MODAL_DIALOG,
                 AdaptiveUiControllerImpl.selectContainer(
-                        AdaptiveUiContainer.BOTTOM_SHEET | AdaptiveUiContainer.MODAL_DIALOG));
+                        Set.of(
+                                AdaptiveUiContainer.BOTTOM_SHEET,
+                                AdaptiveUiContainer.MODAL_DIALOG)));
         assertEquals(
                 AdaptiveUiContainer.BOTTOM_SHEET,
-                AdaptiveUiControllerImpl.selectContainer(AdaptiveUiContainer.BOTTOM_SHEET));
+                AdaptiveUiControllerImpl.selectContainer(Set.of(AdaptiveUiContainer.BOTTOM_SHEET)));
     }
 
     @Test
@@ -185,17 +188,20 @@ public class AdaptiveUiControllerImplTest {
         assertEquals(
                 AdaptiveUiContainer.BOTTOM_SHEET,
                 AdaptiveUiControllerImpl.selectContainer(
-                        AdaptiveUiContainer.BOTTOM_SHEET | AdaptiveUiContainer.MODAL_DIALOG));
+                        Set.of(
+                                AdaptiveUiContainer.BOTTOM_SHEET,
+                                AdaptiveUiContainer.MODAL_DIALOG)));
         assertEquals(
                 AdaptiveUiContainer.MODAL_DIALOG,
-                AdaptiveUiControllerImpl.selectContainer(AdaptiveUiContainer.MODAL_DIALOG));
+                AdaptiveUiControllerImpl.selectContainer(Set.of(AdaptiveUiContainer.MODAL_DIALOG)));
     }
 
     @Test
-    public void testSelectContainer_SidePanelOnlyThrows() {
+    public void testSelectContainer_NoAllowedContainerThrows() {
+        Set<Integer> allowedContainers = Set.of();
         assertThrows(
                 IllegalArgumentException.class,
-                () -> AdaptiveUiControllerImpl.selectContainer(AdaptiveUiContainer.SIDE_PANEL));
+                () -> AdaptiveUiControllerImpl.selectContainer(allowedContainers));
     }
 
     @Test

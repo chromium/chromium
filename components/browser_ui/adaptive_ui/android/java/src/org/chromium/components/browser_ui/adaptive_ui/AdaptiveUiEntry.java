@@ -8,17 +8,21 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
 /** Model representing an entry in the adaptive UI system. */
 @NullMarked
 public class AdaptiveUiEntry {
     private final @AdaptiveUiScope int mScope;
-    private final @AdaptiveUiContainer int mAllowedContainers;
+    private final Set<@AdaptiveUiContainer Integer> mAllowedContainers;
     private final PropertyModel mPropertyModel;
     private final @Nullable AdaptiveUiObserver mObserver;
 
     private AdaptiveUiEntry(
             @AdaptiveUiScope int scope,
-            @AdaptiveUiContainer int allowedContainers,
+            Set<@AdaptiveUiContainer Integer> allowedContainers,
             PropertyModel propertyModel,
             @Nullable AdaptiveUiObserver observer) {
         mScope = scope;
@@ -31,7 +35,8 @@ public class AdaptiveUiEntry {
         return mScope;
     }
 
-    public @AdaptiveUiContainer int getAllowedContainers() {
+    /** Returns the containers this entry may be shown in; never empty. */
+    public Set<@AdaptiveUiContainer Integer> getAllowedContainers() {
         return mAllowedContainers;
     }
 
@@ -50,7 +55,7 @@ public class AdaptiveUiEntry {
     /** Builder for {@link AdaptiveUiEntry}. */
     public static class Builder {
         private final PropertyModel mPropertyModel;
-        private @AdaptiveUiContainer int mAllowedContainers;
+        private final Set<@AdaptiveUiContainer Integer> mAllowedContainers = new HashSet<>();
         private @AdaptiveUiScope int mScope = AdaptiveUiScope.TRANSIENT;
         private @Nullable AdaptiveUiObserver mObserver;
 
@@ -71,7 +76,7 @@ public class AdaptiveUiEntry {
         }
 
         public Builder addAllowedContainer(@AdaptiveUiContainer int container) {
-            mAllowedContainers |= container;
+            mAllowedContainers.add(container);
             return this;
         }
 
@@ -91,11 +96,15 @@ public class AdaptiveUiEntry {
          * @throws IllegalStateException if no allowed container was set.
          */
         public AdaptiveUiEntry build() {
-            if (mAllowedContainers == 0) {
+            if (mAllowedContainers.isEmpty()) {
                 throw new IllegalStateException(
                         "At least one allowed container must be specified.");
             }
-            return new AdaptiveUiEntry(mScope, mAllowedContainers, mPropertyModel, mObserver);
+            return new AdaptiveUiEntry(
+                    mScope,
+                    Collections.unmodifiableSet(new HashSet<>(mAllowedContainers)),
+                    mPropertyModel,
+                    mObserver);
         }
     }
 }
