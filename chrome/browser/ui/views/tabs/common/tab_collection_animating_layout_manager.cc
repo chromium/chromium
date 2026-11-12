@@ -109,6 +109,17 @@ void RemoveViewFromChildLayouts(
   child_layouts.erase(to_erase.begin(), to_erase.end());
 }
 
+void SortChildLayoutsByMidpointX(
+    views::ProposedLayout::ChildLayoutList& child_layouts) {
+  std::stable_sort(
+      child_layouts.begin(), child_layouts.end(),
+      [](const views::ChildLayout& lhs, const views::ChildLayout& rhs) {
+        const int lhs_midpoint = lhs.bounds.x() + lhs.bounds.width() / 2;
+        const int rhs_midpoint = rhs.bounds.x() + rhs.bounds.width() / 2;
+        return lhs_midpoint < rhs_midpoint;
+      });
+}
+
 }  // namespace
 
 bool TabCollectionAnimatingLayoutManager::Delegate::IsDragging() const {
@@ -569,14 +580,7 @@ void TabCollectionAnimatingLayoutManager::SetStartingLayoutToCurrent() {
     // GetProposedLayout which is in model order, however current_layout_ is an
     // interpolated layout based on the order of `host_view()->children()`. Sort
     // the child layouts of `current_layout_` based on their x-position.
-    std::stable_sort(
-        current_layout_.child_layouts.begin(),
-        current_layout_.child_layouts.end(),
-        [](views::ChildLayout lhs, views::ChildLayout rhs) {
-          const int lhs_midpoint = lhs.bounds.x() + lhs.bounds.width() / 2;
-          const int rhs_midpoint = rhs.bounds.x() + rhs.bounds.width() / 2;
-          return lhs_midpoint < rhs_midpoint;
-        });
+    SortChildLayoutsByMidpointX(current_layout_.child_layouts);
   }
   SetStartingLayout(current_layout_);
 }
@@ -718,6 +722,9 @@ void TabCollectionAnimatingLayoutManager::SnapViewsToTargetLayout(
     } else {
       starting_layout_.child_layouts.push_back(*target_child_layout);
     }
+  }
+  if (!views_to_snap.empty() && animation_axis_ == AnimationAxis::kHorizontal) {
+    SortChildLayoutsByMidpointX(starting_layout_.child_layouts);
   }
   SetStartingLayout(starting_layout_);
   SetTargetLayout(target_layout_);
