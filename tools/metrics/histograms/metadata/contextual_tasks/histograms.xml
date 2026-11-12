@@ -1096,6 +1096,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ContextualTasks.Session.QuerySubmitCount.AbaOnRamp"
+    units="queries" expires_after="2027-06-18">
+  <owner>juanmojica@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded when a contextual tasks side panel session opened via the ABA
+    search journey contextual cue ends (when the side panel is closed, its
+    associated tabs are closed or expire from the cache, or the browser window
+    is closed). Records the number of queries the user submitted from the side
+    panel composebox during that open session. The restored AI Overview turn
+    isn't a submitted query, so 0 means the side panel was closed without a
+    follow-up query.
+  </summary>
+</histogram>
+
 <histogram name="ContextualTasks.SidePanel.TimeToFirstContentfulPaint"
     units="ms" expires_after="2027-04-11">
   <owner>hujasonx@google.com</owner>

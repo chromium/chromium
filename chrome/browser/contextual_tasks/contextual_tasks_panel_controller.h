@@ -174,6 +174,8 @@ class ContextualTasksPanelController {
   // Called when a user clicks a link inside the panel. Also counts as an AI
   // interaction.
   virtual void OnLinkClicked() = 0;
+  // Called when the user submits a query from the panel's composebox.
+  virtual void OnQuerySubmitted() = 0;
 
   // Sets a task to be used once the side panel opens. Used to open a specific
   // task without associating a web contents (which would inherently get added

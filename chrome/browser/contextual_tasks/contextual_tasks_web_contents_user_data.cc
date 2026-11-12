@@ -1043,6 +1043,7 @@ void ContextualTasksWebContentsUserData::HandleOnSubmitQueryRequest(
     if (controller && controller->IsPanelOpenForContextualTask() &&
         controller->GetActiveWebContents() == &GetWebContents()) {
       controller->OnAiInteraction();
+      controller->OnQuerySubmitted();
     }
   }
 

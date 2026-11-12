@@ -10577,6 +10577,17 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="ContextualTasks.SearchJourney.QuerySubmitted">
+  <owner>juanmojica@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <description>
+    Recorded when the user submits a query from the composebox of a Contextual
+    Tasks side panel session opened via the ABA search journey contextual cue.
+    The restored AI Overview turn isn't a submitted query, so this is recorded
+    for follow-up queries.
+  </description>
+</action>
+
 <action name="ContextualTasks.SearchJourney.Restored">
   <owner>juanmojica@google.com</owner>
   <owner>chrome-contextual-tasks-eng@google.com</owner>

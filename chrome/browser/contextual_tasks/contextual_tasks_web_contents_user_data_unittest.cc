@@ -3430,6 +3430,7 @@ TEST_F(ContextualTasksWebContentsUserDataTest,
   user_data->SetSearchMessageDispatcherForTesting(base::DoNothing());
 
   EXPECT_CALL(mock_panel_controller, OnAiInteraction()).Times(1);
+  EXPECT_CALL(mock_panel_controller, OnQuerySubmitted()).Times(1);
 
   content::WebContentsTester::For(web_contents_)
       ->TestDidReceiveMouseDownEvent();

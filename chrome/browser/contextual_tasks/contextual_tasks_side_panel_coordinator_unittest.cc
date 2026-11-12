@@ -4969,6 +4969,148 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
 }
 
 TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       AbaOnRampQuerySubmitCount_RecordedAtSessionEnd) {
+  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
+
+  ContextualTask task(base::Uuid::GenerateRandomV4());
+  ON_CALL(*mock_controller_, GetContextualTaskForTab(_))
+      .WillByDefault(Return(task));
+
+  coordinator_->Show(
+      /*transition_from_tab=*/false,
+      omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_ABA_ONRAMP_IPH);
+
+  coordinator_->OnQuerySubmitted();
+  coordinator_->OnQuerySubmitted();
+  EXPECT_EQ(2, user_action_tester.GetActionCount(
+                   "ContextualTasks.SearchJourney.QuerySubmitted"));
+
+  coordinator_->Close();
+  coordinator_->OnSurfaceStateChanged(
+      ContextualTasksPanelHost::SurfaceState::kClosed,
+      ContextualTasksPanelHost::StateChangeReason::kUserAction);
+
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.Session.QuerySubmitCount.AbaOnRamp", 2, 1);
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       AbaOnRampQuerySubmitCount_ZeroWhenClosedWithoutQuery) {
+  base::HistogramTester histogram_tester;
+
+  ContextualTask task(base::Uuid::GenerateRandomV4());
+  ON_CALL(*mock_controller_, GetContextualTaskForTab(_))
+      .WillByDefault(Return(task));
+
+  coordinator_->Show(
+      /*transition_from_tab=*/false,
+      omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_ABA_ONRAMP_IPH);
+  coordinator_->Close();
+  coordinator_->OnSurfaceStateChanged(
+      ContextualTasksPanelHost::SurfaceState::kClosed,
+      ContextualTasksPanelHost::StateChangeReason::kUserAction);
+
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.Session.QuerySubmitCount.AbaOnRamp", 0, 1);
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       QuerySubmitCount_NotRecordedForOtherEntryPoints) {
+  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
+
+  ContextualTask task(base::Uuid::GenerateRandomV4());
+  ON_CALL(*mock_controller_, GetContextualTaskForTab(_))
+      .WillByDefault(Return(task));
+
+  coordinator_->Show(
+      /*transition_from_tab=*/false,
+      omnibox::ChromeAimEntryPoint::
+          DESKTOP_CHROME_LENS_CONTEXTUAL_SEARCHBOX_ENTRY_POINT);
+  coordinator_->OnQuerySubmitted();
+  coordinator_->Close();
+  coordinator_->OnSurfaceStateChanged(
+      ContextualTasksPanelHost::SurfaceState::kClosed,
+      ContextualTasksPanelHost::StateChangeReason::kUserAction);
+
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "ContextualTasks.SearchJourney.QuerySubmitted"));
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.Session.QuerySubmitCount.AbaOnRamp", 0);
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       AbaOnRampQuerySubmitCount_ResetsForEachSession) {
+  base::HistogramTester histogram_tester;
+
+  ContextualTask task(base::Uuid::GenerateRandomV4());
+  ON_CALL(*mock_controller_, GetContextualTaskForTab(_))
+      .WillByDefault(Return(task));
+
+  for (int i = 0; i < 2; ++i) {
+    coordinator_->Show(
+        /*transition_from_tab=*/false,
+        omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_ABA_ONRAMP_IPH);
+    coordinator_->OnQuerySubmitted();
+    coordinator_->Close();
+    coordinator_->OnSurfaceStateChanged(
+        ContextualTasksPanelHost::SurfaceState::kClosed,
+        ContextualTasksPanelHost::StateChangeReason::kUserAction);
+  }
+
+  // Each session records its own single query rather than a running total.
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.Session.QuerySubmitCount.AbaOnRamp", 1, 2);
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       AbaOnRampQuerySubmitCount_RecordedAfterMovingToNewThread) {
+  base::test::ScopedFeatureList tab_state_feature(
+      kContextualTasksSidePanelTabState);
+  TrackTabAssociations();
+  ON_CALL(*mock_controller_, DisassociateTabFromTask(_, _))
+      .WillByDefault([this](const base::Uuid& task_id, SessionID tab_id) {
+        if (auto it = tab_to_task_.find(tab_id);
+            it != tab_to_task_.end() && it->second == task_id) {
+          tab_to_task_.erase(it);
+        }
+      });
+
+  base::HistogramTester histogram_tester;
+  ContextualTask shared_task(base::Uuid::GenerateRandomV4());
+  existing_tasks_.insert(shared_task.GetTaskId());
+
+  tabs::TabInterface* tab1 = tab_list_->GetActiveTab();
+  tabs::TabInterface* tab2 = CreateMockTab();
+  tab_to_task_[sessions::SessionTabHelper::IdForTab(tab1->GetContents())] =
+      shared_task.GetTaskId();
+  tab_to_task_[sessions::SessionTabHelper::IdForTab(tab2->GetContents())] =
+      shared_task.GetTaskId();
+
+  coordinator_->Show(
+      /*transition_from_tab=*/false,
+      omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_ABA_ONRAMP_IPH);
+
+  // Move the active tab to a new thread while the panel is already open.
+  ContextualTask new_task(base::Uuid::GenerateRandomV4());
+  existing_tasks_.insert(new_task.GetTaskId());
+  EXPECT_CALL(*mock_controller_, CreateTask()).WillOnce(Return(new_task));
+  ASSERT_TRUE(coordinator_->MoveActiveTabToNewThreadIfShared());
+
+  coordinator_->OnQuerySubmitted();
+  coordinator_->OnQuerySubmitted();
+
+  coordinator_->Close();
+  coordinator_->OnSurfaceStateChanged(
+      ContextualTasksPanelHost::SurfaceState::kClosed,
+      ContextualTasksPanelHost::StateChangeReason::kUserAction);
+
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.Session.QuerySubmitCount.AbaOnRamp", 2, 1);
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
        SessionLinkClickCount_AndCloseSidePanelMetrics_WithLinkClicks) {
   base::HistogramTester histogram_tester;
 
