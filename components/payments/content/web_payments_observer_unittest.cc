@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/payments/web_payments_observer.h"
+#include "components/payments/content/web_payments_observer.h"
 
 #include <memory>
 #include <string>
@@ -14,10 +14,10 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
-#include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/payments/core/features.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/mock_navigation_handle.h"
+#include "content/public/test/test_renderer_host.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/resource_request_body.h"
@@ -34,18 +34,18 @@ constexpr char kChallengeResponseHistogram[] =
 
 }  // namespace
 
-class WebPaymentsObserverTest : public ChromeRenderViewHostTestHarness {
+class WebPaymentsObserverTest : public content::RenderViewHostTestHarness {
  public:
   ~WebPaymentsObserverTest() override = default;
 
   void SetUp() override {
-    ChromeRenderViewHostTestHarness::SetUp();
+    content::RenderViewHostTestHarness::SetUp();
     observer_ = std::make_unique<WebPaymentsObserver>(web_contents());
   }
 
   void TearDown() override {
     observer_.reset();
-    ChromeRenderViewHostTestHarness::TearDown();
+    content::RenderViewHostTestHarness::TearDown();
   }
 
   // Returns the UKM source ID of the next page of the navigation.

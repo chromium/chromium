@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PAYMENTS_WEB_PAYMENTS_OBSERVER_H_
-#define CHROME_BROWSER_PAYMENTS_WEB_PAYMENTS_OBSERVER_H_
+#ifndef COMPONENTS_PAYMENTS_CONTENT_WEB_PAYMENTS_OBSERVER_H_
+#define COMPONENTS_PAYMENTS_CONTENT_WEB_PAYMENTS_OBSERVER_H_
 
 #include "content/public/browser/web_contents_observer.h"
 
@@ -57,4 +57,4 @@ class WebPaymentsObserver : public content::WebContentsObserver {
 
 }  // namespace payments
 
-#endif  // CHROME_BROWSER_PAYMENTS_WEB_PAYMENTS_OBSERVER_H_
+#endif  // COMPONENTS_PAYMENTS_CONTENT_WEB_PAYMENTS_OBSERVER_H_

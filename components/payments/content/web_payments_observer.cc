@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/payments/web_payments_observer.h"
+#include "components/payments/content/web_payments_observer.h"
 
 #include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"

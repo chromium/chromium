@@ -46,6 +46,7 @@ specific_include_rules = {
     "+chromeos/ash/experiences/arc/test",
   ],
   ".*test.(cc|h)": [
-    "+components/os_crypt/async/browser/test_utils.h"
+    "+components/os_crypt/async/browser/test_utils.h",
+    "+components/ukm/test_ukm_recorder.h",
   ]
 }

@@ -57,6 +57,8 @@ static_library("content") {
     "service_worker_payment_app.h",
     "service_worker_payment_app_factory.cc",
     "service_worker_payment_app_factory.h",
+    "web_payments_observer.cc",
+    "web_payments_observer.h",
   ]
 
   deps = [
@@ -85,6 +87,7 @@ static_library("content") {
     "//crypto",
     "//device/fido",
     "//services/data_decoder/public/cpp",
+    "//services/network/public/cpp",
     "//third_party/blink/public:blink_headers",
     "//url",
   ]
@@ -248,6 +251,7 @@ source_set("payment_content_unit_tests") {
     "secure_payment_confirmation_service_unittest.cc",
     "secure_payment_confirmation_validation_unittest.cc",
     "service_worker_payment_app_finder_unittest.cc",
+    "web_payments_observer_unittest.cc",
   ]
 
   if (!is_android) {
@@ -288,6 +292,7 @@ source_set("payment_content_unit_tests") {
     "//components/payments/core:method_strings",
     "//components/payments/core:test_support",
     "//components/strings:components_strings_grit",
+    "//components/ukm:test_support",
     "//components/webauthn/core/browser",
     "//components/webauthn/core/browser:test_support",
     "//components/webdata/common",
@@ -295,7 +300,10 @@ source_set("payment_content_unit_tests") {
     "//crypto:test_support",
     "//net:test_support",
     "//services/metrics/public/cpp:metrics_cpp",
+    "//services/metrics/public/cpp:ukm_builders",
     "//services/network:test_support",
+    "//services/network/public/cpp",
+    "//testing/gmock",
     "//testing/gtest",
     "//third_party/blink/public:blink_headers",
     "//third_party/icu",
