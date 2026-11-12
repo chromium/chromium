@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_INTERSTITIALS_ENTERPRISE_WARN_PAGE_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "components/enterprise/connectors/core/enterprise_interstitial_base.h"
 #include "components/safe_browsing/content/browser/interstitials/safe_browsing_blocking_page.h"
 #include "components/security_interstitials/content/security_interstitial_page.h"
@@ -27,6 +28,11 @@ class EnterpriseWarnPage
   static const security_interstitials::SecurityInterstitialPage::TypeID
       kTypeForTesting;
 
+  // `ui_manager` is retained for the lifetime of this page and is notified via
+  // `BaseUIManager::OnBlockingPageDone()` when the user proceeds or when the
+  // interstitial closes, so it must outlive this object. It may be null (e.g.
+  // in tests), in which case the allowlist is not updated and the pending
+  // allowlist is not cleaned up.
   // |request_url| is the URL which triggered the interstitial page.
   EnterpriseWarnPage(
       safe_browsing::BaseUIManager* ui_manager,
@@ -63,7 +69,12 @@ class EnterpriseWarnPage
   int GetHTMLTemplateId() override;
 
  private:
+  void CleanupPendingAllowlist();
+
   const raw_ptr<safe_browsing::BaseUIManager> ui_manager_;
+  base::WeakPtr<content::WebContents> web_contents_weak_ptr_;
+  bool proceeded_ = false;
+  bool pending_allowlist_cleaned_up_ = false;
   const safe_browsing::SafeBrowsingBlockingPage::UnsafeResourceList
       unsafe_resources_;
 };

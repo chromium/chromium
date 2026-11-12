@@ -194,6 +194,10 @@ class SafeBrowsingBlockingPageRealTimeUrlCheckTest
   void EnableExtendedReporting(bool enable);
   FakeSafeBrowsingUIManager* GetUiManager();
   void NavigateToURL(GURL url, bool expect_success = true);
+  // Reloads the active tab (as a user pressing reload on an interstitial
+  // would) and waits for the resulting navigation and any async Safe Browsing
+  // checks to complete.
+  void Reload();
   void SetReportSentCallback(base::OnceClosure callback);
 
   TestSafeBrowsingServiceFactory factory_;

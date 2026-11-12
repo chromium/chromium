@@ -41,7 +41,10 @@
 #include "components/safe_browsing/core/browser/verdict_cache_manager.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/security_interstitials/content/security_interstitial_controller_client.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
@@ -225,7 +228,7 @@ TestSafeBrowsingBlockingPageFactory::CreateEnterpriseBlockPage(
     const SafeBrowsingBlockingPage::UnsafeResourceList& unsafe_resources) {
   shown_interstitial_ = InterstitialShown::kEnterpriseBlock;
   return new EnterpriseBlockPage(
-      web_contents, main_frame_url, unsafe_resources,
+      ui_manager, web_contents, main_frame_url, unsafe_resources,
       std::make_unique<EnterpriseBlockControllerClient>(web_contents,
                                                         main_frame_url));
 }
@@ -475,6 +478,15 @@ void SafeBrowsingBlockingPageRealTimeUrlCheckTest::NavigateToURL(
   ASSERT_EQ(SafeBrowsingBlockingPagePlatformBrowserTest::NavigateToURL(url),
             expect_success);
 #endif
+  SafeBrowsingBlockingPageTestHelper::MaybeWaitForAsyncChecksToComplete(
+      web_contents(), factory_.test_safe_browsing_service()->ui_manager().get(),
+      /*wait_for_load_stop=*/true);
+}
+void SafeBrowsingBlockingPageRealTimeUrlCheckTest::Reload() {
+  content::TestNavigationObserver observer(web_contents(), 1);
+  web_contents()->GetController().Reload(content::ReloadType::NORMAL,
+                                         /*check_for_repost=*/false);
+  observer.Wait();
   SafeBrowsingBlockingPageTestHelper::MaybeWaitForAsyncChecksToComplete(
       web_contents(), factory_.test_safe_browsing_service()->ui_manager().get(),
       /*wait_for_load_stop=*/true);

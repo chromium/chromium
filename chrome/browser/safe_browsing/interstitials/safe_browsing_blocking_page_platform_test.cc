@@ -13,6 +13,7 @@
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/safe_browsing/interstitials/safe_browsing_blocking_page_platform_test_helper.h"
 #include "chrome/browser/safe_browsing/verdict_cache_manager_factory.h"
+#include "chrome/browser/ssl/chrome_security_state_util.h"
 #include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/connectors_prefs.h"
 #include "components/policy/policy_constants.h"
@@ -24,6 +25,7 @@
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "components/security_interstitials/core/controller_client.h"
 #include "components/unified_consent/pref_names.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -138,6 +140,140 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingBlockingPageRealTimeUrlCheckTest,
   ASSERT_EQ(
       blocking_page_factory_ptr_->GetShownInterstitial(),
       TestSafeBrowsingBlockingPageFactory::InterstitialShown::kEnterpriseWarn);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SafeBrowsingBlockingPageRealTimeUrlCheckTest,
+    EnterpriseRealTimeUrlCheck_EnterpriseBlockClearedAfterRuleFixed) {
+  safe_browsing::SetSafeBrowsingState(
+      profile()->GetPrefs(),
+      safe_browsing::SafeBrowsingState::STANDARD_PROTECTION);
+
+  profile()->GetPrefs()->SetInteger(
+      enterprise_connectors::kEnterpriseRealTimeUrlCheckMode,
+      enterprise_connectors::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED);
+  profile()->GetPrefs()->SetInteger(
+      enterprise_connectors::kEnterpriseRealTimeUrlCheckScope,
+      policy::POLICY_SCOPE_MACHINE);
+  SetDMTokenForTesting(policy::DMToken::CreateValidToken("dm_token"));
+
+  GURL url = embedded_test_server()->GetURL(kEmptyPage);
+  SetupUrlRealTimeVerdictInCacheManager(
+      url, profile(), RTLookupResponse::ThreatInfo::DANGEROUS,
+      RTLookupResponse::ThreatInfo::MANAGED_POLICY);
+  NavigateToURL(url, /*expect_success=*/false);
+  ASSERT_TRUE(
+      chrome_browser_interstitials::IsShowingInterstitial(web_contents()));
+  EXPECT_EQ(chrome_security_state::GetMaliciousContentStatus(web_contents()),
+            security_state::MALICIOUS_CONTENT_STATUS_MANAGED_POLICY_BLOCK);
+  EXPECT_EQ(chrome_security_state::GetSecurityLevel(web_contents()),
+            security_state::DANGEROUS);
+
+  // Simulate the enterprise block rule being fixed so the URL now returns SAFE.
+  SetupUrlRealTimeVerdictInCacheManager(url, profile(),
+                                        RTLookupResponse::ThreatInfo::SAFE,
+                                        /*threat_type=*/std::nullopt);
+  NavigateToURL(url, /*expect_success=*/true);
+  ASSERT_FALSE(
+      chrome_browser_interstitials::IsShowingInterstitial(web_contents()));
+  EXPECT_EQ(chrome_security_state::GetMaliciousContentStatus(web_contents()),
+            security_state::MALICIOUS_CONTENT_STATUS_NONE);
+  EXPECT_NE(chrome_security_state::GetSecurityLevel(web_contents()),
+            security_state::DANGEROUS);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SafeBrowsingBlockingPageRealTimeUrlCheckTest,
+    EnterpriseRealTimeUrlCheck_EnterpriseWarnClearedAfterDismissAndRuleFixed) {
+  safe_browsing::SetSafeBrowsingState(
+      profile()->GetPrefs(),
+      safe_browsing::SafeBrowsingState::STANDARD_PROTECTION);
+
+  profile()->GetPrefs()->SetInteger(
+      enterprise_connectors::kEnterpriseRealTimeUrlCheckMode,
+      enterprise_connectors::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED);
+  profile()->GetPrefs()->SetInteger(
+      enterprise_connectors::kEnterpriseRealTimeUrlCheckScope,
+      policy::POLICY_SCOPE_MACHINE);
+  SetDMTokenForTesting(policy::DMToken::CreateValidToken("dm_token"));
+
+  GURL url = embedded_test_server()->GetURL(kEmptyPage);
+  SetupUrlRealTimeVerdictInCacheManager(
+      url, profile(), RTLookupResponse::ThreatInfo::WARN,
+      RTLookupResponse::ThreatInfo::MANAGED_POLICY);
+  NavigateToURL(url, /*expect_success=*/false);
+  ASSERT_TRUE(
+      chrome_browser_interstitials::IsShowingInterstitial(web_contents()));
+  EXPECT_EQ(chrome_security_state::GetMaliciousContentStatus(web_contents()),
+            security_state::MALICIOUS_CONTENT_STATUS_MANAGED_POLICY_WARN);
+  EXPECT_EQ(chrome_security_state::GetSecurityLevel(web_contents()),
+            security_state::DANGEROUS);
+
+  // Simulate the warning rule being fixed and reload without clicking Proceed.
+  SetupUrlRealTimeVerdictInCacheManager(url, profile(),
+                                        RTLookupResponse::ThreatInfo::SAFE,
+                                        /*threat_type=*/std::nullopt);
+  NavigateToURL(url, /*expect_success=*/true);
+  ASSERT_FALSE(
+      chrome_browser_interstitials::IsShowingInterstitial(web_contents()));
+  EXPECT_EQ(chrome_security_state::GetMaliciousContentStatus(web_contents()),
+            security_state::MALICIOUS_CONTENT_STATUS_NONE);
+  EXPECT_NE(chrome_security_state::GetSecurityLevel(web_contents()),
+            security_state::DANGEROUS);
+}
+
+// Mirrors the scenario from b/525459937: an admin rule blocks a site, the user
+// reloads the interstitial while the rule is still in place, the admin fixes
+// the rule, and the user reloads once more. Once the page loads, the "blocked
+// by your organization" security indicator must be gone.
+IN_PROC_BROWSER_TEST_F(
+    SafeBrowsingBlockingPageRealTimeUrlCheckTest,
+    EnterpriseRealTimeUrlCheck_EnterpriseBlockClearedAfterReloadsAndRuleFixed) {
+  safe_browsing::SetSafeBrowsingState(
+      profile()->GetPrefs(),
+      safe_browsing::SafeBrowsingState::STANDARD_PROTECTION);
+
+  profile()->GetPrefs()->SetInteger(
+      enterprise_connectors::kEnterpriseRealTimeUrlCheckMode,
+      enterprise_connectors::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED);
+  profile()->GetPrefs()->SetInteger(
+      enterprise_connectors::kEnterpriseRealTimeUrlCheckScope,
+      policy::POLICY_SCOPE_MACHINE);
+  SetDMTokenForTesting(policy::DMToken::CreateValidToken("dm_token"));
+
+  GURL url = embedded_test_server()->GetURL(kEmptyPage);
+  SetupUrlRealTimeVerdictInCacheManager(
+      url, profile(), RTLookupResponse::ThreatInfo::DANGEROUS,
+      RTLookupResponse::ThreatInfo::MANAGED_POLICY);
+  NavigateToURL(url, /*expect_success=*/false);
+  ASSERT_TRUE(
+      chrome_browser_interstitials::IsShowingInterstitial(web_contents()));
+  EXPECT_EQ(chrome_security_state::GetMaliciousContentStatus(web_contents()),
+            security_state::MALICIOUS_CONTENT_STATUS_MANAGED_POLICY_BLOCK);
+
+  // Reloading while the rule is still in place shows the interstitial again.
+  // Each interstitial adds a pending allowlist entry, so this also checks that
+  // the entries stay balanced when one interstitial replaces another.
+  Reload();
+  ASSERT_TRUE(
+      chrome_browser_interstitials::IsShowingInterstitial(web_contents()));
+  EXPECT_EQ(chrome_security_state::GetMaliciousContentStatus(web_contents()),
+            security_state::MALICIOUS_CONTENT_STATUS_MANAGED_POLICY_BLOCK);
+  EXPECT_EQ(chrome_security_state::GetSecurityLevel(web_contents()),
+            security_state::DANGEROUS);
+
+  // The admin fixes the rule and the user reloads the tab.
+  SetupUrlRealTimeVerdictInCacheManager(url, profile(),
+                                        RTLookupResponse::ThreatInfo::SAFE,
+                                        /*threat_type=*/std::nullopt);
+  Reload();
+  ASSERT_FALSE(
+      chrome_browser_interstitials::IsShowingInterstitial(web_contents()));
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), url);
+  EXPECT_EQ(chrome_security_state::GetMaliciousContentStatus(web_contents()),
+            security_state::MALICIOUS_CONTENT_STATUS_NONE);
+  EXPECT_NE(chrome_security_state::GetSecurityLevel(web_contents()),
+            security_state::DANGEROUS);
 }
 
 class SafeBrowsingBlockingPageHatsSurveyPlatformTest

@@ -146,7 +146,7 @@ ChromeSafeBrowsingBlockingPageFactory::CreateEnterpriseBlockPage(
     const GURL& main_frame_url,
     const SafeBrowsingBlockingPage::UnsafeResourceList& unsafe_resources) {
   return new EnterpriseBlockPage(
-      web_contents, main_frame_url, unsafe_resources,
+      ui_manager, web_contents, main_frame_url, unsafe_resources,
       std::make_unique<EnterpriseBlockControllerClient>(web_contents,
                                                         main_frame_url));
 }

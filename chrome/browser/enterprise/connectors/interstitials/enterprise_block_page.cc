@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/enterprise/connectors/core/enterprise_interstitial_util.h"
 #include "components/grit/components_resources.h"
+#include "components/safe_browsing/content/browser/interstitials/base_ui_manager.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
 #include "components/security_interstitials/content/security_interstitial_controller_client.h"
@@ -18,6 +19,7 @@
 #include "components/security_interstitials/core/metrics_helper.h"
 #include "components/security_interstitials/core/urls.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/browser/web_contents.h"
 #include "net/base/net_errors.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -29,6 +31,7 @@ const security_interstitials::SecurityInterstitialPage::TypeID
         &EnterpriseBlockPage::kTypeForTesting;
 
 EnterpriseBlockPage::EnterpriseBlockPage(
+    safe_browsing::BaseUIManager* ui_manager,
     content::WebContents* web_contents,
     const GURL& request_url,
     const safe_browsing::SafeBrowsingBlockingPage::UnsafeResourceList&
@@ -40,6 +43,9 @@ EnterpriseBlockPage::EnterpriseBlockPage(
           web_contents,
           request_url,
           std::move(controller_client)),
+      ui_manager_(ui_manager),
+      web_contents_weak_ptr_(web_contents ? web_contents->GetWeakPtr()
+                                          : nullptr),
       unsafe_resources_(unsafe_resources) {
   controller()->metrics_helper()->RecordUserDecision(MetricsHelper::SHOW);
   controller()->metrics_helper()->RecordUserInteraction(
@@ -48,7 +54,9 @@ EnterpriseBlockPage::EnterpriseBlockPage(
       security_interstitials::MetricsHelper::PROCEEDING_DISABLED);
 }
 
-EnterpriseBlockPage::~EnterpriseBlockPage() = default;
+EnterpriseBlockPage::~EnterpriseBlockPage() {
+  CleanupPendingAllowlist();
+}
 
 security_interstitials::SecurityInterstitialPage::TypeID
 EnterpriseBlockPage::GetTypeForTesting() {
@@ -74,7 +82,20 @@ void EnterpriseBlockPage::PopulateInterstitialStrings(
   PopulateStrings(load_time_data);
 }
 
-void EnterpriseBlockPage::OnInterstitialClosing() {}
+void EnterpriseBlockPage::OnInterstitialClosing() {
+  CleanupPendingAllowlist();
+}
+
+void EnterpriseBlockPage::CleanupPendingAllowlist() {
+  if (pending_allowlist_cleaned_up_ || !ui_manager_ ||
+      !web_contents_weak_ptr_ || web_contents_weak_ptr_->IsBeingDestroyed()) {
+    return;
+  }
+  pending_allowlist_cleaned_up_ = true;
+  ui_manager_->OnBlockingPageDone(unsafe_resources_, /*proceed=*/false,
+                                  web_contents_weak_ptr_.get(), request_url(),
+                                  /*showed_interstitial=*/true);
+}
 
 void EnterpriseBlockPage::CommandReceived(const std::string& command) {
   if (command == "\"pageLoadComplete\"") {

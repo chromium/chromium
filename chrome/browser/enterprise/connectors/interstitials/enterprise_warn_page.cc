@@ -18,6 +18,7 @@
 #include "components/security_interstitials/core/common_string_util.h"
 #include "components/security_interstitials/core/urls.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/browser/web_contents.h"
 #include "net/base/net_errors.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -41,13 +42,19 @@ EnterpriseWarnPage::EnterpriseWarnPage(
           request_url,
           std::move(controller_client)),
       ui_manager_(ui_manager),
+      web_contents_weak_ptr_(web_contents ? web_contents->GetWeakPtr()
+                                          : nullptr),
       unsafe_resources_(unsafe_resources) {
   controller()->metrics_helper()->RecordUserDecision(MetricsHelper::SHOW);
   controller()->metrics_helper()->RecordUserInteraction(
       MetricsHelper::TOTAL_VISITS);
 }
 
-EnterpriseWarnPage::~EnterpriseWarnPage() = default;
+EnterpriseWarnPage::~EnterpriseWarnPage() {
+  if (!proceeded_) {
+    CleanupPendingAllowlist();
+  }
+}
 
 security_interstitials::SecurityInterstitialPage::TypeID
 EnterpriseWarnPage::GetTypeForTesting() {
@@ -73,7 +80,22 @@ void EnterpriseWarnPage::PopulateInterstitialStrings(
   PopulateStrings(load_time_data);
 }
 
-void EnterpriseWarnPage::OnInterstitialClosing() {}
+void EnterpriseWarnPage::OnInterstitialClosing() {
+  if (!proceeded_) {
+    CleanupPendingAllowlist();
+  }
+}
+
+void EnterpriseWarnPage::CleanupPendingAllowlist() {
+  if (pending_allowlist_cleaned_up_ || !ui_manager_ ||
+      !web_contents_weak_ptr_ || web_contents_weak_ptr_->IsBeingDestroyed()) {
+    return;
+  }
+  pending_allowlist_cleaned_up_ = true;
+  ui_manager_->OnBlockingPageDone(unsafe_resources_, /*proceed=*/false,
+                                  web_contents_weak_ptr_.get(), request_url(),
+                                  /*showed_interstitial=*/true);
+}
 
 void EnterpriseWarnPage::CommandReceived(const std::string& command) {
   if (command == "\"pageLoadComplete\"") {
@@ -91,12 +113,15 @@ void EnterpriseWarnPage::CommandReceived(const std::string& command) {
       controller()->GoBack();
       break;
     case security_interstitials::CMD_PROCEED: {
+      proceeded_ = true;
       controller()->metrics_helper()->RecordUserDecision(
           MetricsHelper::PROCEED);
       // Add to allowlist.
-      ui_manager_->OnBlockingPageDone(unsafe_resources_, /*proceed=*/true,
-                                      web_contents(), request_url(),
-                                      /*showed_interstitial=*/true);
+      if (ui_manager_) {
+        ui_manager_->OnBlockingPageDone(unsafe_resources_, /*proceed=*/true,
+                                        web_contents(), request_url(),
+                                        /*showed_interstitial=*/true);
+      }
       controller()->Proceed();
       break;
     }

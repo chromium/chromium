@@ -8,9 +8,15 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "components/enterprise/connectors/core/enterprise_interstitial_base.h"
 #include "components/safe_browsing/content/browser/interstitials/safe_browsing_blocking_page.h"
 #include "components/security_interstitials/content/security_interstitial_page.h"
+
+namespace safe_browsing {
+class BaseUIManager;
+}  // namespace safe_browsing
 
 class GURL;
 
@@ -25,9 +31,15 @@ class EnterpriseBlockPage
   static const security_interstitials::SecurityInterstitialPage::TypeID
       kTypeForTesting;
 
+  // `ui_manager` is retained for the lifetime of this page and is notified via
+  // `BaseUIManager::OnBlockingPageDone()` when the interstitial closes, so it
+  // must outlive this object. It may be null (e.g. in tests, or when Safe
+  // Browsing is not available), in which case the pending allowlist is not
+  // cleaned up when the interstitial closes.
   // |request_url| is the URL which triggered the interstitial page. It can be
   // a main frame or a subresource URL.
   EnterpriseBlockPage(
+      safe_browsing::BaseUIManager* ui_manager,
       content::WebContents* web_contents,
       const GURL& request_url,
       const safe_browsing::SafeBrowsingBlockingPage::UnsafeResourceList&
@@ -60,6 +72,11 @@ class EnterpriseBlockPage
   int GetHTMLTemplateId() override;
 
  private:
+  void CleanupPendingAllowlist();
+
+  const raw_ptr<safe_browsing::BaseUIManager> ui_manager_;
+  base::WeakPtr<content::WebContents> web_contents_weak_ptr_;
+  bool pending_allowlist_cleaned_up_ = false;
   const safe_browsing::SafeBrowsingBlockingPage::UnsafeResourceList
       unsafe_resources_;
 };

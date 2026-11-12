@@ -361,8 +361,14 @@ CreateSafeBrowsingBlockingPage(content::WebContents* web_contents) {
 std::unique_ptr<EnterpriseBlockPage> CreateEnterpriseBlockPage(
     content::WebContents* web_contents) {
   const GURL kRequestUrl("https://enterprise-block.example.net");
+  safe_browsing::BaseUIManager* ui_manager = nullptr;
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+  if (g_browser_process->safe_browsing_service()) {
+    ui_manager = g_browser_process->safe_browsing_service()->ui_manager().get();
+  }
+#endif
   return std::make_unique<EnterpriseBlockPage>(
-      web_contents, kRequestUrl,
+      ui_manager, web_contents, kRequestUrl,
       safe_browsing::SafeBrowsingBlockingPage::UnsafeResourceList(),
       std::make_unique<EnterpriseBlockControllerClient>(web_contents,
                                                         kRequestUrl));
