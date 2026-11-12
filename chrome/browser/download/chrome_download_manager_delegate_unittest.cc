@@ -24,7 +24,6 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -515,7 +514,6 @@ void ChromeDownloadManagerDelegateTest::VerifyMixedContentExtensionOverride(
     const base::FieldTrialParams& parameters,
     download::DownloadInterruptReason interrupt_reason,
     download::DownloadItem::InsecureDownloadStatus insecure_download_status) {
-  base::HistogramTester histograms;
   base::test::ScopedFeatureList feature_list;
 
   feature_list.InitAndEnableFeatureWithParameters(
@@ -526,9 +524,6 @@ void ChromeDownloadManagerDelegateTest::VerifyMixedContentExtensionOverride(
 
   EXPECT_EQ(interrupt_reason, target_info.interrupt_reason);
   EXPECT_EQ(insecure_download_status, target_info.insecure_download_status);
-  histograms.ExpectUniqueSample(
-      kInsecureDownloadHistogramName,
-      InsecureDownloadSecurityStatus::kInitiatorSecureFileInsecure, 1);
 }
 
 }  // namespace
@@ -936,16 +931,12 @@ TEST_F(ChromeDownloadManagerDelegateTest,
       PrepareDownloadItemForInsecureBlocking(kSecureSilentlyBlockableFile,
                                              kSecureOrigin, kRedirectUrl);
   base::test::ScopedFeatureList feature_list;
-  base::HistogramTester histograms;
 
   feature_list.InitAndEnableFeature(features::kTreatUnsafeDownloadsAsActive);
   download::DownloadTargetInfo target_info =
       DetermineDownloadTarget(download_item.get());
   EXPECT_EQ(download::DOWNLOAD_INTERRUPT_REASON_NONE,
             target_info.interrupt_reason);
-  histograms.ExpectUniqueSample(
-      kInsecureDownloadHistogramName,
-      InsecureDownloadSecurityStatus::kInitiatorSecureFileSecure, 1);
 }
 
 TEST_F(ChromeDownloadManagerDelegateTest, BlockedAsActiveContent_HttpPageOk) {
@@ -959,7 +950,6 @@ TEST_F(ChromeDownloadManagerDelegateTest, BlockedAsActiveContent_HttpPageOk) {
 
   // Blocking shouldn't occur if the target is secure.
   {
-    base::HistogramTester histograms;
     std::unique_ptr<download::MockDownloadItem> download_item =
         PrepareDownloadItemForInsecureBlocking(kHttpsUrl, kInsecureOrigin,
                                                std::nullopt);
@@ -968,14 +958,10 @@ TEST_F(ChromeDownloadManagerDelegateTest, BlockedAsActiveContent_HttpPageOk) {
 
     EXPECT_EQ(download::DOWNLOAD_INTERRUPT_REASON_NONE,
               target_info.interrupt_reason);
-    histograms.ExpectUniqueSample(
-        kInsecureDownloadHistogramName,
-        InsecureDownloadSecurityStatus::kInitiatorInsecureFileSecure, 1);
   }
 
   // Nor should blocking occur if the target is insecure.
   {
-    base::HistogramTester histograms;
     std::unique_ptr<download::MockDownloadItem> download_item =
         PrepareDownloadItemForInsecureBlocking(kHttpUrl, kInsecureOrigin,
                                                std::nullopt);
@@ -984,9 +970,6 @@ TEST_F(ChromeDownloadManagerDelegateTest, BlockedAsActiveContent_HttpPageOk) {
 
     EXPECT_EQ(download::DOWNLOAD_INTERRUPT_REASON_NONE,
               target_info.interrupt_reason);
-    histograms.ExpectUniqueSample(
-        kInsecureDownloadHistogramName,
-        InsecureDownloadSecurityStatus::kInitiatorInsecureFileInsecure, 1);
   }
 }
 
@@ -1009,7 +992,6 @@ TEST_F(ChromeDownloadManagerDelegateTest,
       .WillByDefault(ReturnRefOfCopy(kSecureOrigin.GetURL()));
   ON_CALL(*download_item, GetDownloadSource())
       .WillByDefault(Return(download::DownloadSource::CONTEXT_MENU));
-  base::HistogramTester histograms;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kTreatUnsafeDownloadsAsActive);
 
@@ -1018,9 +1000,6 @@ TEST_F(ChromeDownloadManagerDelegateTest,
 
   EXPECT_EQ(download::DownloadItem::InsecureDownloadStatus::BLOCK,
             target_info.insecure_download_status);
-  histograms.ExpectUniqueSample(
-      kInsecureDownloadHistogramName,
-      InsecureDownloadSecurityStatus::kInitiatorInferredSecureFileInsecure, 1);
 }
 
 TEST_F(ChromeDownloadManagerDelegateTest, BlockedAsActiveContent_HttpChain) {
@@ -1040,7 +1019,6 @@ TEST_F(ChromeDownloadManagerDelegateTest, BlockedAsActiveContent_HttpChain) {
       PrepareDownloadItemForInsecureBlocking(kSecureSilentlyBlockableFile,
                                              kSecureOrigin, kRedirectUrl);
   base::test::ScopedFeatureList feature_list;
-  base::HistogramTester histograms;
 
   feature_list.InitAndEnableFeature(features::kTreatUnsafeDownloadsAsActive);
   download::DownloadTargetInfo target_info =
@@ -1048,9 +1026,6 @@ TEST_F(ChromeDownloadManagerDelegateTest, BlockedAsActiveContent_HttpChain) {
 
   EXPECT_EQ(download::DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED,
             target_info.interrupt_reason);
-  histograms.ExpectUniqueSample(
-      kInsecureDownloadHistogramName,
-      InsecureDownloadSecurityStatus::kInitiatorSecureFileInsecure, 1);
 }
 
 TEST_F(ChromeDownloadManagerDelegateTest,
@@ -1079,15 +1054,12 @@ TEST_F(ChromeDownloadManagerDelegateTest,
       download::DownloadItem::InsecureDownloadStatus::SAFE);
 }
 
-// Verify that downloads initiated by a non-unique hostname are blocked and
-// we record that the download was from a non-unique source.
+// Verify that downloads initiated by a non-unique hostname are blocked.
 TEST_F(ChromeDownloadManagerDelegateTest,
        BlockedAsActiveContent_NonUniqueInitiator) {
   const GURL kRedirectUrl("https://example.org/");
   const GURL kFinalUrl("https://example.org/xyz.foo");
   const auto kInitiator = Origin::Create(GURL("http://10.0.0.1"));
-
-  base::HistogramTester histograms;
 
   std::unique_ptr<download::MockDownloadItem> download_item =
       PrepareDownloadItemForInsecureBlocking(kFinalUrl, kInitiator,
@@ -1105,13 +1077,10 @@ TEST_F(ChromeDownloadManagerDelegateTest,
             target_info.interrupt_reason);
   EXPECT_EQ(download::DownloadItem::InsecureDownloadStatus::BLOCK,
             target_info.insecure_download_status);
-  histograms.ExpectUniqueSample(
-      kInsecureDownloadHistogramName,
-      InsecureDownloadSecurityStatus::kInitiatorInsecureNonUniqueFileSecure, 1);
 }
 
-// Verify that downloads from a non-unique download url aren't treated as secure
-// nor do they record different metrics.
+// Verify that downloads from a non-unique download url aren't treated as
+// secure.
 TEST_F(ChromeDownloadManagerDelegateTest,
        BlockedAsActiveContent_NonUniqueFinalUrl) {
   const GURL kRedirectUrl("https://example.org/");
@@ -1119,7 +1088,6 @@ TEST_F(ChromeDownloadManagerDelegateTest,
   const auto kInitiator = Origin::Create(GURL("https://example.org"));
 
   base::test::ScopedFeatureList feature_list;
-  base::HistogramTester histograms;
 
   std::unique_ptr<download::MockDownloadItem> download_item =
       PrepareDownloadItemForInsecureBlocking(kFinalUrl, kInitiator,
@@ -1139,9 +1107,6 @@ TEST_F(ChromeDownloadManagerDelegateTest,
             target_info.interrupt_reason);
   EXPECT_EQ(download::DownloadItem::InsecureDownloadStatus::SILENT_BLOCK,
             target_info.insecure_download_status);
-  histograms.ExpectUniqueSample(
-      kInsecureDownloadHistogramName,
-      InsecureDownloadSecurityStatus::kInitiatorSecureFileInsecure, 1);
 }
 
 // Verify that downloads coming from localhost are considered secure.
@@ -1151,7 +1116,6 @@ TEST_F(ChromeDownloadManagerDelegateTest, BlockedAsActiveContent_Localhost) {
   const auto kInitiator = Origin::Create(GURL("https://example.org"));
 
   base::test::ScopedFeatureList feature_list;
-  base::HistogramTester histograms;
 
   std::unique_ptr<download::MockDownloadItem> download_item =
       PrepareDownloadItemForInsecureBlocking(kFinalUrl, kInitiator,
@@ -1171,9 +1135,6 @@ TEST_F(ChromeDownloadManagerDelegateTest, BlockedAsActiveContent_Localhost) {
             target_info.interrupt_reason);
   EXPECT_EQ(download::DownloadItem::InsecureDownloadStatus::SAFE,
             target_info.insecure_download_status);
-  histograms.ExpectUniqueSample(
-      kInsecureDownloadHistogramName,
-      InsecureDownloadSecurityStatus::kInitiatorSecureFileSecure, 1);
 }
 
 // Verify that downloads initiated by localhost are considered secure.
@@ -1184,7 +1145,6 @@ TEST_F(ChromeDownloadManagerDelegateTest,
   const auto kInitiator = Origin::Create(GURL("http://localhost"));
 
   base::test::ScopedFeatureList feature_list;
-  base::HistogramTester histograms;
 
   std::unique_ptr<download::MockDownloadItem> download_item =
       PrepareDownloadItemForInsecureBlocking(kFinalUrl, kInitiator,
@@ -1204,9 +1164,6 @@ TEST_F(ChromeDownloadManagerDelegateTest,
             target_info.interrupt_reason);
   EXPECT_EQ(download::DownloadItem::InsecureDownloadStatus::SAFE,
             target_info.insecure_download_status);
-  histograms.ExpectUniqueSample(
-      kInsecureDownloadHistogramName,
-      InsecureDownloadSecurityStatus::kInitiatorSecureFileSecure, 1);
 }
 
 // Verify that insecure in a blob URL are considered secure.
@@ -1218,7 +1175,6 @@ TEST_F(ChromeDownloadManagerDelegateTest,
   const auto kSecureOrigin = Origin::Create(GURL("https://example.org"));
 
   base::test::ScopedFeatureList feature_list;
-  base::HistogramTester histograms;
 
   std::unique_ptr<download::MockDownloadItem> download_item =
       PrepareDownloadItemForInsecureBlocking(kFinalUrl, kSecureOrigin,
@@ -1238,9 +1194,6 @@ TEST_F(ChromeDownloadManagerDelegateTest,
             target_info.interrupt_reason);
   EXPECT_EQ(download::DownloadItem::InsecureDownloadStatus::SAFE,
             target_info.insecure_download_status);
-  histograms.ExpectUniqueSample(
-      kInsecureDownloadHistogramName,
-      InsecureDownloadSecurityStatus::kInitiatorSecureFileSecure, 1);
 }
 
 TEST_F(ChromeDownloadManagerDelegateTest, BlockedAsActiveContent_SilentBlock) {
@@ -1678,8 +1631,6 @@ TEST_F(ChromeDownloadManagerDelegateTest,
 
   pref_service()->SetBoolean(prefs::kHttpsOnlyModeEnabled, true);
 
-  base::HistogramTester histograms;
-
   std::unique_ptr<download::MockDownloadItem> download_item =
       PrepareDownloadItemForInsecureBlocking(kFinalUrl, kInitiator,
                                              kRedirectUrl);
@@ -1696,9 +1647,6 @@ TEST_F(ChromeDownloadManagerDelegateTest,
             target_info.interrupt_reason);
   EXPECT_EQ(download::DownloadItem::InsecureDownloadStatus::BLOCK,
             target_info.insecure_download_status);
-  histograms.ExpectUniqueSample(
-      kInsecureDownloadHistogramName,
-      InsecureDownloadSecurityStatus::kInitiatorInsecureFileInsecure, 1);
 }
 
 // Test that we block context-menu-initiated downloads if initiator is insecure.

@@ -621,25 +621,6 @@ chromium-metrics-reviews@google.com.
       label="Download message not shown due to null message dispatcher"/>
 </enum>
 
-<enum name="InsecureDownloadSecurityStatus">
-  <int value="0" label="Secure download initiated by unknown source"/>
-  <int value="1" label="Insecure download initiated by unknown source"/>
-  <int value="2" label="Secure download initiated by secure source"/>
-  <int value="3" label="Insecure download initiated by secure source"/>
-  <int value="4" label="Secure download initiated by insecure source"/>
-  <int value="5" label="Insecure download initiated by insecure source"/>
-  <int value="6" label="Secure download initiated by inferred-secure source"/>
-  <int value="7" label="Insecure download initiated by inferred-secure source"/>
-  <int value="8" label="Secure download initiated by inferred-insecure source"/>
-  <int value="9"
-      label="Insecure download initiated by inferred-insecure source"/>
-  <int value="10" label="Download ignored as not relevant for blocking"/>
-  <int value="11"
-      label="Insecure download initiated by insecure non-unique source"/>
-  <int value="12"
-      label="Secure download initiated by insecure non-unique source"/>
-</enum>
-
 <enum name="MediaMetadataEvent">
   <int value="0" label="Metadata request started"/>
   <int value="1" label="Metadata request failed"/>

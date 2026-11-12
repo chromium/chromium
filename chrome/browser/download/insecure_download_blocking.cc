@@ -10,7 +10,6 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -88,68 +87,13 @@ const char kSafeExtensions[] =
      "jpg,jpeg,png,gif,tif,tiff,ico,webp,avif,"
      "aac,midi,ogg,wav,webm,mp3,mp4,m4a,flac,mpeg,mov,wmv");
 
-// Get appropriate enum value for the initiator/download security state combo
-// for histogram reporting. |dl_secure| signifies whether the download was
-// a secure source. |inferred| is whether the initiator value is our best guess.
-// |insecure_nonunique| indicates whether the download was initiated by an
-// insecure non-unique hostname.
-InsecureDownloadSecurityStatus GetDownloadBlockingEnum(
-    std::optional<url::Origin> initiator,
-    bool dl_secure,
-    bool inferred,
-    bool insecure_nonunique) {
-  if (insecure_nonunique) {
-    if (dl_secure) {
-      return InsecureDownloadSecurityStatus::
-          kInitiatorInsecureNonUniqueFileSecure;
-    }
-    return InsecureDownloadSecurityStatus::
-        kInitiatorInsecureNonUniqueFileInsecure;
-  }
-  if (inferred) {
-    if (network::IsUrlPotentiallyTrustworthy(initiator->GetURL())) {
-      if (dl_secure) {
-        return InsecureDownloadSecurityStatus::
-            kInitiatorInferredSecureFileSecure;
-      }
-      return InsecureDownloadSecurityStatus::
-          kInitiatorInferredSecureFileInsecure;
-    }
-
-    if (dl_secure) {
-      return InsecureDownloadSecurityStatus::
-          kInitiatorInferredInsecureFileSecure;
-    }
-    return InsecureDownloadSecurityStatus::
-        kInitiatorInferredInsecureFileInsecure;
-  }
-
-  if (!initiator.has_value()) {
-    if (dl_secure)
-      return InsecureDownloadSecurityStatus::kInitiatorUnknownFileSecure;
-    return InsecureDownloadSecurityStatus::kInitiatorUnknownFileInsecure;
-  }
-
-  if (network::IsUrlPotentiallyTrustworthy(initiator->GetURL())) {
-    if (dl_secure)
-      return InsecureDownloadSecurityStatus::kInitiatorSecureFileSecure;
-    return InsecureDownloadSecurityStatus::kInitiatorSecureFileInsecure;
-  }
-
-  if (dl_secure)
-    return InsecureDownloadSecurityStatus::kInitiatorInsecureFileSecure;
-  return InsecureDownloadSecurityStatus::kInitiatorInsecureFileInsecure;
-}
-
 struct InsecureDownloadData {
   InsecureDownloadData(const base::FilePath& path,
                        const download::DownloadItem* item)
       : item_(item) {
     // Configure initiator.
-    bool initiator_inferred = false;
     initiator_ = item->GetRequestInitiator();
     if (!initiator_.has_value() && item->GetTabUrl().is_valid()) {
-      initiator_inferred = true;
       initiator_ = url::Origin::Create(item->GetTabUrl());
     }
 
@@ -195,14 +139,6 @@ struct InsecureDownloadData {
         (network::IsUrlPotentiallyTrustworthy(dl_url) ||
          dl_url.SchemeIsBlob() || dl_url.SchemeIsFile());
 
-    // Check if the initiator is insecure and non-unique.
-    bool insecure_nonunique = false;
-    if (initiator_.has_value() &&
-        !network::IsUrlPotentiallyTrustworthy(initiator_->GetURL()) &&
-        net::IsHostnameNonUnique(initiator_->GetURL().GetHost())) {
-      insecure_nonunique = true;
-    }
-
     // Configure mixed content status.
     // Some downloads don't qualify for blocking, and are thus never
     // mixed-content. At a minimum, this includes:
@@ -235,18 +171,8 @@ struct InsecureDownloadData {
         download_source == DownloadSource::INTERNAL_API ||
         download_source == DownloadSource::EXTENSION_API ||
         download_source == DownloadSource::EXTENSION_INSTALLER) {
-      base::UmaHistogramEnumeration(
-          kInsecureDownloadHistogramName,
-          InsecureDownloadSecurityStatus::kDownloadIgnored);
       is_mixed_content_ = false;
     } else {  // Not ignorable download.
-      // Record some metrics first.
-      auto security_status =
-          GetDownloadBlockingEnum(initiator_, download_delivered_securely,
-                                  initiator_inferred, insecure_nonunique);
-      base::UmaHistogramEnumeration(kInsecureDownloadHistogramName,
-                                    security_status);
-
       // Mixed downloads are those initiated by a secure initiator but not
       // delivered securely.
       is_mixed_content_ = (initiator_.has_value() &&
