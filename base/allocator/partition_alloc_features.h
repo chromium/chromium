@@ -217,8 +217,6 @@ BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocUsePriorityInheritanceLocks);
 #endif  // PA_BUILDFLAG(ENABLE_PARTITION_LOCK_PRIORITY_INHERITANCE)
 
-BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocTighterAlignedAllocBound);
-
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocMemoryPressureMonitor);
 
 }  // namespace base::features

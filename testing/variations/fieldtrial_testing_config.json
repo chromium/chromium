@@ -15179,28 +15179,6 @@
             ]
         }
     ],
-    "PartitionAllocTighterAlignedAllocBound": [
-        {
-            "platforms": [
-                "android",
-                "android_desktop",
-                "android_webview",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PartitionAllocTighterAlignedAllocBound"
-                    ]
-                }
-            ]
-        }
-    ],
     "PartitionAllocUnretainedDanglingPtr": [
         {
             "platforms": [

@@ -1329,9 +1329,6 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
   }
 #endif  // PA_BUILDFLAG(HAS_MEMORY_TAGGING)
 
-  bool enable_tighter_aligned_alloc_bound = base::FeatureList::IsEnabled(
-      base::features::kPartitionAllocTighterAlignedAllocBound);
-
   allocator_shim::ConfigurePartitions(
       allocator_shim::EnableBrp(brp_config.enable_brp),
       brp_config.extra_extras_size,
@@ -1340,9 +1337,7 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
       scheduler_loop_quarantine_global_config,
       scheduler_loop_quarantine_thread_local_config,
       scheduler_loop_quarantine_for_sanitized_object_config,
-      allocator_shim::EventuallyZeroFreedMemory(eventually_zero_freed_memory),
-      allocator_shim::EnableTighterAlignedAllocBound(
-          enable_tighter_aligned_alloc_bound));
+      allocator_shim::EventuallyZeroFreedMemory(eventually_zero_freed_memory));
 
   const uint32_t extras_size = allocator_shim::GetMainPartitionRootExtrasSize();
   // As per description, extras are optional and are expected not to

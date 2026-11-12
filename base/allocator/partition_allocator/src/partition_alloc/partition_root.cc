@@ -1174,8 +1174,6 @@ void PartitionRoot::Init(PartitionOptions opts) {
         internal::GetMetadataOffset(settings_.pool_handle);
 #endif  // PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
 
-    settings_.use_tighter_aligned_alloc_bound =
-        (opts.tighter_aligned_alloc_bound == PartitionOptions::kEnabled);
     settings_.allow_giga_allocations =
         (opts.allow_giga_allocations == PartitionOptions::kAllowed);
 
@@ -1713,8 +1711,6 @@ void PartitionRoot::DumpStats(const char* partition_name,
 
   stats.total_intended_leak_bytes =
       intended_leak_size_.load(std::memory_order_relaxed);
-  stats.total_aligned_alloc_wasted_bytes =
-      total_aligned_alloc_wasted_bytes_.load(std::memory_order_relaxed);
 
   // Collect data with the lock held, cannot allocate or call third-party code
   // below.

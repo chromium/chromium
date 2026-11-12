@@ -173,8 +173,6 @@ struct PartitionOptions {
   ThreadIsolationOption thread_isolation;
 #endif
 
-  EnableToggle tighter_aligned_alloc_bound = kDisabled;
-
   // When enabled, any allocation freed through this partition root is
   // sanitized (overwritten with a quarantine pattern) and permanently leaked
   // without returning its slot to the freelist. Cannot be used with
@@ -284,7 +282,6 @@ class alignas(internal::kPartitionCachelineSize)
     std::ptrdiff_t metadata_offset_ = 0;
 #endif
 
-    bool use_tighter_aligned_alloc_bound = false;
     bool allow_giga_allocations = false;
   };
 
@@ -644,12 +641,6 @@ class alignas(internal::kPartitionCachelineSize)
   void ResetForTesting(bool allow_leaks);
   void ResetBookkeepingForTesting();
   void SetGlobalEmptySlotSpanRingIndexForTesting(int16_t index);
-  void SetUseTighterAlignedAllocBoundForTesting(bool enable) {
-    settings_.use_tighter_aligned_alloc_bound = enable;
-  }
-  bool use_tighter_aligned_alloc_bound_for_testing() const {
-    return settings_.use_tighter_aligned_alloc_bound;
-  }
 
   PA_ALWAYS_INLINE BucketDistribution GetBucketDistribution() const;
 
@@ -1017,7 +1008,6 @@ class alignas(internal::kPartitionCachelineSize)
 #endif  // PA_CONFIG(USE_PARTITION_ROOT_ENUMERATOR)
 
   std::atomic<uint64_t> intended_leak_size_;
-  std::atomic<uint64_t> total_aligned_alloc_wasted_bytes_{0};
 
   friend class internal::ThreadCache;
   template <internal::QuarantineTarget>

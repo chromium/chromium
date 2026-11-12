@@ -266,16 +266,13 @@ PA_ALWAYS_INLINE void ConfigurePartitionsForTesting() {
       partition_alloc::internal::SchedulerLoopQuarantineConfig();
 
   auto eventually_zero_freed_memory = EventuallyZeroFreedMemory(false);
-  auto enable_tighter_aligned_alloc_bound =
-      EnableTighterAlignedAllocBound(false);
 
   ConfigurePartitions(enable_brp, brp_extra_extras_size, enable_memory_tagging,
                       memory_tagging_reporting_mode, distribution,
                       scheduler_loop_quarantine_global_config,
                       scheduler_loop_quarantine_thread_local_config,
                       scheduler_loop_quarantine_for_sanitized_object_config,
-                      eventually_zero_freed_memory,
-                      enable_tighter_aligned_alloc_bound);
+                      eventually_zero_freed_memory);
 }
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 

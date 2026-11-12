@@ -1703,31 +1703,10 @@ PartitionRoot::GetAdjustedSizeForAlignment(size_t alignment,
     // Handle cases such as size = 16, alignment = 64.
     // Wastes memory when a large alignment is requested with a small size, but
     // this is hard to avoid, and should not be too common.
-    if (raw_size < alignment) [[unlikely]] {
-      raw_size = alignment;
-    } else {
-      if (settings_.use_tighter_aligned_alloc_bound) {
-        raw_size = internal::base::bits::AlignUp(raw_size, alignment);
-      } else {
-        // PartitionAlloc only guarantees alignment for power-of-two sized
-        // allocations. To make sure this applies here, round up the allocation
-        // size.
-        raw_size = static_cast<size_t>(1) << (int{sizeof(size_t) * 8} -
-                                              std::countl_zero(raw_size - 1));
-        PA_DCHECK(std::has_single_bit(raw_size));
-      }
-    }
+    raw_size = internal::base::bits::AlignUp(raw_size, alignment);
     PA_DCHECK(raw_size % alignment == 0);
     // Adjust back, because AllocInternalNoHooks/Alloc will adjust it again.
     adjusted_size = AdjustSizeForExtrasSubtract(raw_size);
-    // TODO(crbug.com/491627887): Remove this metric once we've confirmed the
-    // impact.
-    //
-    // Note: raw_size is always >= requested_size depending on the size
-    // of Extras.
-    size_t wasted_bytes = raw_size - requested_size;
-    total_aligned_alloc_wasted_bytes_.fetch_add(wasted_bytes,
-                                                std::memory_order_relaxed);
   }
   return adjusted_size;
 }

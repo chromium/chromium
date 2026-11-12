@@ -4968,34 +4968,7 @@ TEST_P(PartitionAllocWithFreeWithSizeAndAlignmentTest, AlignedAlloc) {
 }
 
 TEST_P(PartitionAllocWithFreeWithSizeAndAlignmentTest,
-       AlignedAllocWastedBytesTracking) {
-  SimplePartitionStatsDumper dumper_before;
-  allocator.root()->DumpStats("test", true, false, &dumper_before);
-  uint64_t wasted_before =
-      dumper_before.stats().total_aligned_alloc_wasted_bytes;
-
-  // Use a non-power-of-two requested size (60,000) below the alignment boundary
-  // so that wasted_bytes > 0 is guaranteed regardless of extras_size (0, 8, 16,
-  // etc).
-  constexpr size_t kSize = 60000;
-  constexpr size_t kReqAlignment = 16384;
-  ASSERT_NE(allocator.root()->AdjustSizeForExtrasAdd(kSize) % kReqAlignment,
-            0u);
-  void* ptr = allocator.root()->AlignedAlloc(kReqAlignment, kSize);
-  ASSERT_TRUE(ptr);
-
-  SimplePartitionStatsDumper dumper_after;
-  allocator.root()->DumpStats("test", true, false, &dumper_after);
-  uint64_t wasted_after = dumper_after.stats().total_aligned_alloc_wasted_bytes;
-
-  EXPECT_GT(wasted_after, wasted_before);
-
-  GetParam().free_func(allocator.root(), ptr, kSize, kReqAlignment);
-}
-
-TEST_P(PartitionAllocWithFreeWithSizeAndAlignmentTest,
        AlignedAllocPowerOfTwoDoesNotAllocate2PageSize) {
-  allocator.root()->SetUseTighterAlignedAllocBoundForTesting(true);
   // Test power-of-two requested sizes with alignments <= PartitionPageSize().
   const struct {
     size_t requested_size;
@@ -5045,37 +5018,6 @@ TEST_P(PartitionAllocWithFreeWithSizeAndAlignmentTest,
                            test_case.alignment);
     }
   }
-}
-
-TEST_P(PartitionAllocWithFreeWithSizeAndAlignmentTest,
-       AlignedAllocTighterBound) {
-  // requested_size = 70,000, alignment = 16,384.
-  // Legacy power-of-two mode rounds 70,000 + extras to 131,072 (128 KiB).
-  // Tighter bound mode rounds 70,000 + extras to AlignUp(70,000 + extras,
-  // 16,384) = 81,920 (80 KiB). This holds true for all possible extras_size
-  // values (0, 8, 16, 32).
-  constexpr size_t kSize = 70000;
-  constexpr size_t kReqAlignment = 16384;
-
-  // 1. Legacy behavior (Power-of-two rounding)
-  allocator.root()->SetUseTighterAlignedAllocBoundForTesting(false);
-  void* ptr_legacy = allocator.root()->AlignedAlloc(kReqAlignment, kSize);
-  ASSERT_TRUE(ptr_legacy);
-  size_t slot_size_legacy = PartitionRoot::GetExternalUsableSize(ptr_legacy);
-  GetParam().free_func(allocator.root(), ptr_legacy, kSize, kReqAlignment);
-
-  // 2. Tighter bound behavior (AlignUp)
-  allocator.root()->SetUseTighterAlignedAllocBoundForTesting(true);
-  void* ptr_tighter = allocator.root()->AlignedAlloc(kReqAlignment, kSize);
-  ASSERT_TRUE(ptr_tighter);
-  size_t slot_size_tighter = PartitionRoot::GetExternalUsableSize(ptr_tighter);
-  GetParam().free_func(allocator.root(), ptr_tighter, kSize, kReqAlignment);
-
-  // Tighter bound allocation capacity must be strictly smaller than legacy
-  // power-of-two rounding.
-  EXPECT_LT(slot_size_tighter, slot_size_legacy);
-  EXPECT_EQ(slot_size_tighter,
-            allocator.root()->AdjustSizeForExtrasSubtract(81920u));
 }
 
 // Test that the optimized `GetSlotNumber` implementation produces valid

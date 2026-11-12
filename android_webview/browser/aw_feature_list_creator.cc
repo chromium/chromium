@@ -112,7 +112,6 @@ const char* const kNonembeddedLowEntropySourceDenylist[] = {
     "NoSelectionMenuCaching",
     "PartitionAllocBackupRefPtrAndroid",
     "PartitionAllocMiracleObject",
-    "PartitionAllocTighterAlignedAllocBound",
     "PaymentRequestEnforceLNAWithClientSecurityState",
     "Prerender2FallbackPrefetchSpecRules",
     "PreviewHandwritingGesture",
