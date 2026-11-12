@@ -47,6 +47,7 @@
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/raster_interface.h"
+#include "gpu/command_buffer/client/shared_image_pool.h"
 #include "gpu/command_buffer/common/capabilities.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -144,6 +145,7 @@
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkSurface.h"
+#include "third_party/skia/include/gpu/ganesh/GrTypes.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/vector2d_f.h"
@@ -542,10 +544,19 @@ void BaseRenderingContext2D::CreateSharedImageProviderForSoftwareCompositor() {
   CHECK(format == viz::SharedImageFormat::N32Format() ||
         format == viz::SinglePlaneFormat::kRGBA_F16);
 
+  auto* sii = shared_image_interface_provider->SharedImageInterface();
+  CHECK(sii);
+  gpu::ImageInfo image_info(
+      Host()->Size(), format, gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
+      color_params_.GetGfxColorSpace(), kTopLeft_GrSurfaceOrigin,
+      color_params_.GetAlphaType(), /*buffer_usage=*/std::nullopt,
+      /*is_software=*/true);
+  auto image_pool = gpu::SharedImagePool<CanvasResourceSharedImage>::Create(
+      image_info, sii, "CanvasResourceSharedImage",
+      Canvas2DResourceProvider::kMaxRecycledCanvasResources);
   shared_image_provider_ = std::make_unique<Canvas2DResourceProvider>(
-      Host()->Size(), format, color_params_.GetAlphaType(),
-      color_params_.GetGfxColorSpace(), color_params_.GetGfxHdrMetadata(),
-      shared_image_interface_provider);
+      std::move(image_pool), shared_image_interface_provider,
+      color_params_.GetGfxHdrMetadata());
   CreateSoftwareSurface();
   if (!surface_) {
     shared_image_provider_.reset();

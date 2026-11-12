@@ -52,12 +52,10 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
                            bool is_accelerated,
                            gpu::SharedImageUsageSet shared_image_usage_flags);
   Canvas2DResourceProvider(
-      gfx::Size size,
-      viz::SharedImageFormat format,
-      SkAlphaType alpha_type,
-      const gfx::ColorSpace& color_space,
-      const gfx::HDRMetadata& hdr_metadata,
-      WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider);
+      std::unique_ptr<gpu::SharedImagePool<CanvasResourceSharedImage>>
+          image_pool,
+      WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
+      const gfx::HDRMetadata& hdr_metadata);
 
   ~Canvas2DResourceProvider() override;
 

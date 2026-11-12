@@ -175,25 +175,15 @@ Canvas2DResourceProvider::Canvas2DResourceProvider(
 }
 
 Canvas2DResourceProvider::Canvas2DResourceProvider(
-    gfx::Size size,
-    viz::SharedImageFormat format,
-    SkAlphaType alpha_type,
-    const gfx::ColorSpace& color_space,
-    const gfx::HDRMetadata& hdr_metadata,
-    WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider)
-    : shared_image_interface_provider_(
+    std::unique_ptr<gpu::SharedImagePool<CanvasResourceSharedImage>> image_pool,
+    WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
+    const gfx::HDRMetadata& hdr_metadata)
+    : image_pool_(std::move(image_pool)),
+      shared_image_interface_provider_(
           shared_image_interface_provider->GetWeakPtr()),
       hdr_metadata_(hdr_metadata) {
+  CHECK(image_pool_);
   CHECK(shared_image_interface_provider_);
-  auto* sii = shared_image_interface_provider_->SharedImageInterface();
-  CHECK(sii);
-  gpu::ImageInfo image_info(
-      size, format, gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY, color_space,
-      kTopLeft_GrSurfaceOrigin, alpha_type, /*buffer_usage=*/std::nullopt,
-      /*is_software=*/true);
-  image_pool_ = gpu::SharedImagePool<CanvasResourceSharedImage>::Create(
-      image_info, sii, "CanvasResourceSharedImage",
-      kMaxRecycledCanvasResources);
 }
 
 Canvas2DResourceProvider::~Canvas2DResourceProvider() {
