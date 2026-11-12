@@ -4,6 +4,7 @@
 
 #include "chrome/browser/password_manager/password_manager_uitest_util.h"
 
+#include "base/auto_reset.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -36,7 +37,10 @@ void TestGenerationPopupObserver::WaitForStatus(GenerationPopup status) {
   SCOPED_TRACE(::testing::Message()
                << "WaitForStatus " << static_cast<int>(status));
   base::RunLoop run_loop;
-  run_loop_ = &run_loop;
+
+  // To satisfy `-Wlifetime-safety`, ensure that frame-local `run_loop`
+  // doesn't get smuggled out of this scope.
+  base::AutoReset<decltype(run_loop_)> resetter{&run_loop_, &run_loop};
   run_loop_->Run();
   EXPECT_EQ(popup_showing_, status);
 }
@@ -45,7 +49,10 @@ void TestGenerationPopupObserver::WaitForStatus(GenerationPopup status) {
 void TestGenerationPopupObserver::WaitForStatusChange() {
   SCOPED_TRACE(::testing::Message() << "WaitForStatusChange");
   base::RunLoop run_loop;
-  run_loop_ = &run_loop;
+
+  // To satisfy `-Wlifetime-safety`, ensure that frame-local `run_loop`
+  // doesn't get smuggled out of this scope.
+  base::AutoReset<decltype(run_loop_)> resetter{&run_loop_, &run_loop};
   run_loop_->Run();
 }
 void TestGenerationPopupObserver::MaybeQuitRunLoop() {
@@ -61,7 +68,10 @@ ObservingAutofillClient::ObservingAutofillClient(
 
 void ObservingAutofillClient::WaitForAutofillPopup() {
   base::RunLoop run_loop;
-  run_loop_ = &run_loop;
+
+  // To satisfy `-Wlifetime-safety`, ensure that frame-local `run_loop`
+  // doesn't get smuggled out of this scope.
+  base::AutoReset<decltype(run_loop_)> resetter{&run_loop_, &run_loop};
   run_loop.Run();
   ASSERT_FALSE(run_loop_);
 }
