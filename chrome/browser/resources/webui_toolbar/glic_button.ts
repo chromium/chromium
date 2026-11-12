@@ -70,7 +70,8 @@ export class GlicButtonElement extends GlicButtonElementBase {
     const oldState = changedProperties.get('state');
     const stateNeedsLayout = changedProperties.has('state') &&
         (!oldState || oldState.shouldShow !== this.state.shouldShow ||
-         oldState.nudgeLabel !== this.state.nudgeLabel);
+         oldState.nudgeLabel !== this.state.nudgeLabel ||
+         oldState.isSplit !== this.state.isSplit);
     if (stateNeedsLayout || changedProperties.has('label')) {
       this.fire('request-layout');
     }
@@ -89,7 +90,10 @@ export class GlicButtonElement extends GlicButtonElementBase {
   }
 
   protected getLabel_(): string {
-    return this.state.nudgeLabel || this.label;
+    // TODO(crbug.com/583827259): Animate hiding and showing the label when
+    // entering and leaving split mode, matching GlicButton::Collapse() and
+    // GlicButton::Expand() in Views.
+    return this.state.nudgeLabel || (this.state.isSplit ? '' : this.label);
   }
 
   protected getTooltip_(): string {
@@ -101,7 +105,8 @@ export class GlicButtonElement extends GlicButtonElementBase {
     if (this.state.open) {
       return loadTimeData.getString('glicButtonTooltipClose');
     }
-    return this.getLabel_() || loadTimeData.getString('glicButtonAccName');
+    return this.state.nudgeLabel || this.label ||
+        loadTimeData.getString('glicButtonAccName');
   }
 
   protected onClick_(e: PointerEvent) {

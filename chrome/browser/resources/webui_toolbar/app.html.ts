@@ -87,6 +87,10 @@ ${this.isLocationBarEnabled_ ? html`
     <glic-button id="glic-button" .state="${this.toolbarState_.glicButtonState}"
         .hidden="${!this.toolbarState_.glicButtonState.shouldShow}">
     </glic-button>
+    <glic-actor-task-icon id="glic-actor-task-icon"
+        .state="${this.toolbarState_.glicActorTaskIconState}"
+        .hidden="${!this.toolbarState_.glicActorTaskIconState.shouldShow}">
+    </glic-actor-task-icon>
   ` : ''}
   ${this.isAvatarButtonEnabled_ ? html`
     <avatar-button id="avatar"

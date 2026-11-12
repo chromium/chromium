@@ -40,6 +40,17 @@
       var(--color-avatar-button-highlight-default-foreground);
 }
 
+/* The icon-only Glic half of the split button matches Views' collapsed
+ * GlicButton: kCollapsedWidth (41px, glic_button.h), whose last 2px are
+ * unpainted but clickable kSpaceBetweenButtons internal padding
+ * (ToolbarGlicButton::Collapse()). The actor task icon starts right after it,
+ * so the negative margin cancels the toolbar gap. */
+#button[flat-edge='end'] {
+  --toolbar-chip-min-width: 39px;
+  --toolbar-chip-trailing-margin: 2px;
+  margin-inline-end: calc(-1 * var(--toolbar-icon-default-margin));
+}
+
 :host(.anchor-highlight) #button {
   --toolbar-chip-highlight-opacity: 1;
 }

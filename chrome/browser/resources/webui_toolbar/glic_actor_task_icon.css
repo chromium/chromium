@@ -1,0 +1,81 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//resources/cr_elements/cr_hidden_style_lit.css.js
+ * #scheme=relative
+ * #include=cr-hidden-style-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  /* kActorNudgeLabelMargin (glic_actor_task_icon.h), the label's horizontal
+   * margin in Views. */
+  --glic-actor-nudge-label-margin: 6px;
+  display: flex;
+  align-self: center;
+}
+
+/* Views' ToolbarGlicActorTaskIcon is never narrower than the button height
+ * plus kActorNudgeLabelMargin (GetMinimumSize()), with or without a nudge
+ * label. */
+#button {
+  --toolbar-chip-bg-color: var(--color-toolbar-glic-button-background-default);
+  --toolbar-chip-icon-label-gap: var(--glic-actor-nudge-label-margin);
+  --toolbar-chip-label-side-spacing: 0px;
+  --toolbar-chip-min-width: calc(var(--toolbar-chip-height) +
+                                 var(--glic-actor-nudge-label-margin));
+  --toolbar-chip-padding-start: var(--toolbar-button-padding-start);
+  --toolbar-chip-padding-end: calc(var(--toolbar-button-padding-end) +
+                                   var(--glic-actor-nudge-label-margin));
+  --toolbar-chip-font-family: var(--toolbar-button-font-family);
+  --toolbar-chip-font-size: var(--toolbar-button-font-size);
+  --toolbar-chip-font-weight: var(--toolbar-button-font-weight);
+}
+
+:host(.anchor-highlight) #button {
+  --toolbar-chip-highlight-opacity: 1;
+}
+
+:host([collapsed]) #text {
+  display: none;
+}
+
+/* Without a shown label, Views keeps the icon at the start inset followed by
+ * the empty label's kActorNudgeLabelMargin. Centered in the minimum width, the
+ * icon plus this margin puts the icon at the same inset. */
+:host(:not([has-label])) #icon {
+  margin-inline-end: var(--glic-actor-nudge-label-margin);
+}
+
+/* Unlike app-menu-button, the icon keeps the standard toolbar icon colors even
+ * while a nudge label is shown, matching native ToolbarGlicActorTaskIcon
+ * (UpdateIconsWithStandardColors()). */
+#icon {
+  color: var(--color-toolbar-button-icon);
+}
+
+/* ToolbarButton flips its canvas in RTL, which mirrors the icon. */
+:host-context([dir=rtl]) #icon {
+  transform: scaleX(-1);
+}
+
+/* The nudge label uses LabelButton's default kColorLabelForeground, since
+ * ToolbarGlicActorTaskIcon never sets a highlight text color. */
+#text {
+  color: var(--color-label-foreground);
+}
+
+#button.help-anchor-highlight #icon {
+  color: var(--color-toolbar-feature-promo-highlight);
+}
+
+:host-context(toolbar-app[controls-appear-inactive])
+    #button:not(.help-anchor-highlight) #icon {
+  color: var(--color-toolbar-button-icon-inactive);
+}
+
+:host-context(toolbar-app[controls-appear-inactive]) #text {
+  color: var(--color-label-foreground-disabled);
+}

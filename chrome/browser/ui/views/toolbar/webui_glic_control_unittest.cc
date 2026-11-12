@@ -335,6 +335,34 @@ TEST_F(WebUIGlicControlTest, SplitShowsUnpinnedControlAndUnsplitHidesIt) {
   EXPECT_FALSE(control_->IsVisible());
 }
 
+TEST_F(WebUIGlicControlTest, SetIsSplitNotifiesPreferredSizeWhileVisible) {
+  control_->SetVisible(true);
+  ASSERT_TRUE(control_->IsVisible());
+  testing::Mock::VerifyAndClearExpectations(delegate_.get());
+
+  // A pinned Glic button stays visible when split, but its width changes.
+  EXPECT_CALL(*delegate_, OnPreferredSizeChanged());
+  control_->SetIsSplit(true);
+  EXPECT_TRUE(control_->IsVisible());
+  testing::Mock::VerifyAndClearExpectations(delegate_.get());
+
+  EXPECT_CALL(*delegate_, OnPreferredSizeChanged()).Times(0);
+  control_->SetIsSplit(true);
+  testing::Mock::VerifyAndClearExpectations(delegate_.get());
+
+  EXPECT_CALL(*delegate_, OnPreferredSizeChanged());
+  control_->SetIsSplit(false);
+  EXPECT_TRUE(control_->IsVisible());
+  testing::Mock::VerifyAndClearExpectations(delegate_.get());
+
+  // A hidden Glic button stays hidden when split, so the size is unchanged.
+  control_->SetVisible(false);
+  testing::Mock::VerifyAndClearExpectations(delegate_.get());
+  EXPECT_CALL(*delegate_, OnPreferredSizeChanged()).Times(0);
+  control_->SetIsSplit(true);
+  EXPECT_FALSE(control_->IsVisible());
+}
+
 TEST_F(WebUIGlicControlTest, SetIsSplitTrueClearsActiveNudge) {
   control_->SetVisible(true);
   control_->SetNudgeLabel("Summarize this page");

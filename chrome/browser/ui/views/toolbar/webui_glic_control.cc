@@ -168,7 +168,9 @@ void WebUIGlicControl::SetIsSplit(bool is_split) {
     nudge_label_.clear();
   }
   UpdateState();
-  if (was_visible != IsVisible()) {
+  // Splitting changes the button width, and its visibility while unpinned, so
+  // the preferred size changes unless the button stays hidden.
+  if (was_visible || IsVisible()) {
     delegate_->OnPreferredSizeChanged();
   }
 }

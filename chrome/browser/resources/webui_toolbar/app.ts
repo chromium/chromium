@@ -55,6 +55,7 @@ const TRACKED_ELEMENTS: Array<{selector: string, id: string}> = [
   },
   {selector: '#media', id: 'kToolbarMediaButtonElementId'},
   {selector: '#glic-button', id: 'kGlicButtonElementId'},
+  {selector: '#glic-actor-task-icon', id: 'kGlicActorTaskIconElementId'},
   {selector: '#avatar', id: 'kToolbarAvatarButtonElementId'},
   {selector: '#app-menu', id: 'kToolbarAppMenuButtonElementId'},
 ];
@@ -549,6 +550,7 @@ export class ToolbarAppElement extends AppElementBase {
       '#battery-saver',
       '#performance-intervention',
       '#glic-button',
+      '#glic-actor-task-icon',
       '#avatar',
       '#media',
       '#overflow',
@@ -891,6 +893,10 @@ export class ToolbarAppElement extends AppElementBase {
       this.toolbarGlicButtonResizingEnabled_ ?
           this.shadowRoot.querySelector<ResponsiveControl&HTMLElement>(
               '#glic-button') :
+          null,
+      this.toolbarGlicButtonResizingEnabled_ ?
+          this.shadowRoot.querySelector<ResponsiveControl&HTMLElement>(
+              '#glic-actor-task-icon') :
           null,
       this.shadowRoot.querySelector<ResponsiveControl&HTMLElement>('#forward'),
       this.shadowRoot.querySelector<ResponsiveControl&HTMLElement>('#home'),

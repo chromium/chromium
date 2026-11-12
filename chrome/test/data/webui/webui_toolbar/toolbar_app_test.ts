@@ -12,6 +12,7 @@ import type {TrackedElementIdentifier} from 'chrome://resources/mojo/ui/webui/re
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
+import type {GlicActorTaskIconElement, GlicButtonElement} from 'chrome://webui-toolbar.top-chrome/lazy_load.js';
 import {AppMenuIconType, AppMenuSeverity, AvatarToolbarButtonState, BrowserProxyImpl, ContentSettingImageType, createDefaultLocationBarState, INVALID_FOCUS_REQUEST_HANDLE, PageActionAnimationStyle, PageActionId, TrackedElementManager} from 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
 import type {FocusRequestListener, ToolbarAppElement, ToolbarStateListener} from 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
 
@@ -1025,6 +1026,7 @@ suite('ToolbarAppTest', () => {
           'avatar',
           'split-tabs',
           'glic-button',
+          'glic-actor-task-icon',
           'forward',
           'home',
           'pinnedToolbarActions',
@@ -1113,8 +1115,62 @@ suite('ToolbarAppTest', () => {
         'Glic button should be excluded from responsive controls when resizing flag is disabled');
   });
 
+  test('GlicSplitButtonAndActorTaskIconStatePropagation', async () => {
+    loadTimeData.overrideValues({enableGlicButton: true});
+
+    app = document.createElement('toolbar-app');
+    document.body.appendChild(app);
+
+    const state = createMockToolbarState();
+    state.glicButtonState.shouldShow = true;
+    browserProxy.fireToolbarStateListener([], state);
+    await microtasksFinished();
+
+    const glicButton =
+        app.shadowRoot.querySelector<GlicButtonElement>('#glic-button')!;
+    const actorIcon = app.shadowRoot.querySelector<GlicActorTaskIconElement>(
+        '#glic-actor-task-icon')!;
+    assertEquals(actorIcon, glicButton.nextElementSibling);
+    assertTrue(
+        startTrackingCalls.some(c => c[1] === 'kGlicActorTaskIconElementId'));
+    assertFalse(glicButton.hidden);
+    assertTrue(actorIcon.hidden);
+    assertEquals(null, glicButton.$.button.flatEdge);
+
+    const splitState = createMockToolbarState();
+    splitState.glicButtonState.shouldShow = true;
+    splitState.glicButtonState.isSplit = true;
+    splitState.glicActorTaskIconState.shouldShow = true;
+    splitState.glicActorTaskIconState.nudgeLabel = 'Check task';
+    browserProxy.fireToolbarStateListener([], splitState);
+    await microtasksFinished();
+    assertFalse(glicButton.hidden);
+    assertFalse(actorIcon.hidden);
+    assertEquals('end', glicButton.$.button.flatEdge);
+    assertEquals('Check task', actorIcon.state.nudgeLabel);
+    // Like Views, the actor task icon starts right after the 41px collapsed
+    // Glic button, whatever the toolbar gap (0 in touch mode).
+    for (const gap of ['2px', '0px']) {
+      app.style.setProperty('--toolbar-icon-default-margin', gap);
+      assertEquals(
+          41,
+          actorIcon.getBoundingClientRect().left -
+              glicButton.getBoundingClientRect().left);
+    }
+
+    browserProxy.fireToolbarStateListener([], state);
+    await microtasksFinished();
+    assertFalse(glicButton.hidden);
+    assertTrue(actorIcon.hidden);
+    assertEquals(null, glicButton.$.button.flatEdge);
+    assertEquals(null, actorIcon.state.nudgeLabel);
+  });
+
   test('ControlsAppearInactive', async () => {
-    loadTimeData.overrideValues({enableAppMenuButton: true});
+    loadTimeData.overrideValues({
+      enableAppMenuButton: true,
+      enableGlicButton: true,
+    });
     const rootStyle = document.documentElement.style;
     rootStyle.setProperty('--color-toolbar-button-icon', 'rgb(1, 2, 3)');
     rootStyle.setProperty(
@@ -1123,6 +1179,10 @@ suite('ToolbarAppTest', () => {
     app = document.createElement('toolbar-app');
     document.body.appendChild(app);
     const state = createMockToolbarState();
+    // An active actor task shows the icon next to the split Glic button.
+    state.glicButtonState.shouldShow = true;
+    state.glicButtonState.isSplit = true;
+    state.glicActorTaskIconState.shouldShow = true;
     browserProxy.fireToolbarStateListener([], state);
     await microtasksFinished();
 
@@ -1130,6 +1190,8 @@ suite('ToolbarAppTest', () => {
         app.shadowRoot.querySelector('reload-button')!.$.button;
     const appMenuChip = app.shadowRoot.querySelector('app-menu-button')!
                             .shadowRoot.querySelector('toolbar-chip-button')!;
+    const actorIcon = app.shadowRoot.querySelector('glic-actor-task-icon')!
+                          .shadowRoot.querySelector<HTMLElement>('#icon')!;
     function getFillColor(): string {
       return getComputedStyle(reloadIconButton)
           .getPropertyValue('--cr-icon-button-fill-color')
@@ -1138,6 +1200,7 @@ suite('ToolbarAppTest', () => {
     assertFalse(app.hasAttribute('controls-appear-inactive'));
     assertEquals('rgb(1, 2, 3)', getFillColor());
     assertEquals('rgb(1, 2, 3)', getComputedStyle(appMenuChip).color);
+    assertEquals('rgb(1, 2, 3)', getComputedStyle(actorIcon).color);
 
     state.controlsAppearInactive = true;
     browserProxy.fireToolbarStateListener([], {...state});
@@ -1145,6 +1208,7 @@ suite('ToolbarAppTest', () => {
     assertTrue(app.hasAttribute('controls-appear-inactive'));
     assertEquals('rgb(4, 5, 6)', getFillColor());
     assertEquals('rgb(4, 5, 6)', getComputedStyle(appMenuChip).color);
+    assertEquals('rgb(4, 5, 6)', getComputedStyle(actorIcon).color);
 
     state.controlsAppearInactive = false;
     browserProxy.fireToolbarStateListener([], {...state});
@@ -1152,6 +1216,7 @@ suite('ToolbarAppTest', () => {
     assertFalse(app.hasAttribute('controls-appear-inactive'));
     assertEquals('rgb(1, 2, 3)', getFillColor());
     assertEquals('rgb(1, 2, 3)', getComputedStyle(appMenuChip).color);
+    assertEquals('rgb(1, 2, 3)', getComputedStyle(actorIcon).color);
 
     rootStyle.removeProperty('--color-toolbar-button-icon');
     rootStyle.removeProperty('--color-toolbar-button-icon-inactive');
@@ -1161,6 +1226,7 @@ suite('ToolbarAppTest', () => {
     loadTimeData.overrideValues({
       enableAvatarButton: true,
       enableAppMenuButton: true,
+      enableGlicButton: true,
     });
     const disabledLabelColor = 'rgb(7, 8, 9)';
     const rootStyle = document.documentElement.style;
@@ -1172,6 +1238,10 @@ suite('ToolbarAppTest', () => {
     const state = createMockToolbarState();
     state.avatarControlState.text = 'Paused';
     state.appMenuControlState.labelText = 'Update';
+    state.glicButtonState.shouldShow = true;
+    state.glicButtonState.isSplit = true;
+    state.glicActorTaskIconState.shouldShow = true;
+    state.glicActorTaskIconState.nudgeLabel = 'Needs review';
     state.locationBarState.selectedKeyword = {
       shortName: 'Bookmarks',
       fullName: 'Search Bookmarks',
@@ -1212,6 +1282,8 @@ suite('ToolbarAppTest', () => {
     const labels = [
       root.querySelector('avatar-button')!.$.text,
       root.querySelector('app-menu-button')!.shadowRoot.querySelector('#text')!,
+      root.querySelector('glic-actor-task-icon')!.shadowRoot.querySelector(
+          '#text')!,
       locationBar.querySelector('selected-keyword')!.shadowRoot.querySelector(
           '#text-wrap')!,
       locationBar.querySelector('content-settings-icons')!.shadowRoot

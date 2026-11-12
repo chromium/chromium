@@ -38,10 +38,8 @@
   --toolbar-chip-padding-start: 0px;
   --toolbar-chip-padding-end: 0px;
 
-  /* External margins implemented as host padding to expand the clickable
-   * hit target to the screen edges (Fitts's Law) without stretching the
-   * internal visual button. Defaults to 0; currently used by the App Menu
-   * button to extend its hit target to the screen corner. */
+  /* External margins implemented as host padding, which is clickable but not
+   * painted, without stretching the internal visual button. Defaults to 0. */
   padding-inline-end: var(--toolbar-chip-trailing-margin, 0);
   padding-inline-start: var(--toolbar-chip-leading-margin, 0);
 
@@ -70,7 +68,7 @@
   gap: 0;
   height: var(--toolbar-chip-height);
   justify-content: center;
-  min-width: var(--toolbar-chip-height);
+  min-width: var(--toolbar-chip-min-width, var(--toolbar-chip-height));
   outline: none;
   padding-block: 0;
   padding-inline-end: var(--toolbar-chip-collapsed-padding-end);

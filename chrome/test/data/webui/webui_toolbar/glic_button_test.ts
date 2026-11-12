@@ -644,4 +644,74 @@ suite('GlicButtonTest', function() {
     assertEquals(toolbarColor, chipVar('--toolbar-chip-bg-color'));
     assertEquals('', chipVar('--toolbar-chip-fg-color'));
   });
+
+  test('SplitStateFlattensTrailingEdgeAndHidesDefaultLabel', async function() {
+    const chip = element.$.button;
+    element.label = 'Ask Gemini';
+    element.state = {
+      open: false,
+      shouldShow: true,
+      isContextMenuVisible: false,
+      shouldMatchToolbarStyle: false,
+      useCustomThemeFallback: false,
+      nudgeLabel: null,
+      isSplit: false,
+    };
+    await element.updateComplete;
+    await chip.updateComplete;
+    await microtasksFinished();
+
+    assertEquals(null, chip.flatEdge);
+    assertFalse(chip.hasAttribute('flat-edge'));
+    assertTrue(chip.hasAttribute('has-label'));
+    assertEquals(
+        'Ask Gemini',
+        element.shadowRoot.querySelector('#text')?.textContent?.trim());
+    assertEquals('Ask Gemini', chip.ariaLabel);
+
+    let requestLayoutCount = 0;
+    element.addEventListener('request-layout', () => {
+      requestLayoutCount++;
+    });
+
+    // Entering split mode sets flatEdge='end', hides default label, preserves
+    // ariaLabel 'Ask Gemini', and fires request-layout.
+    element.state = {
+      ...element.state,
+      isSplit: true,
+    };
+    await element.updateComplete;
+    await chip.updateComplete;
+    await microtasksFinished();
+
+    assertEquals(1, requestLayoutCount);
+    assertEquals('end', chip.flatEdge);
+    assertEquals('end', chip.getAttribute('flat-edge'));
+    assertFalse(chip.hasAttribute('has-label'));
+    assertEquals(null, element.shadowRoot.querySelector('#text'));
+    assertEquals('Ask Gemini', chip.ariaLabel);
+    assertEquals('Ask Gemini', chip.$.button.getAttribute('aria-label'));
+    // The icon-only split half matches Views' collapsed GlicButton: a 39px
+    // painted pill plus 2px of unpainted padding.
+    assertEquals('39px', window.getComputedStyle(chip.$.button).minWidth);
+    assertEquals('2px', window.getComputedStyle(chip).paddingInlineEnd);
+
+    // Exiting split mode clears flatEdge and restores the default label.
+    element.state = {
+      ...element.state,
+      isSplit: false,
+    };
+    await element.updateComplete;
+    await chip.updateComplete;
+    await microtasksFinished();
+
+    assertEquals(2, requestLayoutCount);
+    assertEquals(null, chip.flatEdge);
+    assertFalse(chip.hasAttribute('flat-edge'));
+    assertTrue(chip.hasAttribute('has-label'));
+    assertEquals(
+        'Ask Gemini',
+        element.shadowRoot.querySelector('#text')?.textContent?.trim());
+    assertEquals('Ask Gemini', chip.ariaLabel);
+  });
 });

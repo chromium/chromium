@@ -26,6 +26,8 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/glic/glic_actor_task_icon.h"
+#include "chrome/browser/ui/views/glic/glic_button.h"
 #include "chrome/browser/ui/views/toolbar/test_support/glic_button_test_accessor.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_glic_button_interface.h"
 #include "chrome/browser/ui/views/toolbar/webui_glic_actor_task_icon_control.h"
@@ -37,6 +39,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/menu/menu_controller.h"
@@ -239,6 +242,11 @@ IN_PROC_BROWSER_TEST_F(WebUIGlicControlInteractiveTest,
   const int slot_delta =
       GetLayoutConstant(LayoutConstant::kToolbarButtonHeight) +
       GetLayoutConstant(LayoutConstant::kToolbarIconDefaultMargin);
+  // Beyond their slots, the split Glic half spans Views' collapsed width, and
+  // the actor task icon is kActorNudgeLabelMargin wider than a square button,
+  // with or without a nudge.
+  const int split_extra_width =
+      glic::kCollapsedWidth - slot_delta + glic::kActorNudgeLabelMargin;
   const int base_preferred_width =
       webui_toolbar->CalculatePreferredSize({}).width();
 
@@ -250,7 +258,8 @@ IN_PROC_BROWSER_TEST_F(WebUIGlicControlInteractiveTest,
       static_cast<WebUIGlicControl*>(webui_toolbar->GetGlicControl());
 
   // Showing the actor task icon and splitting the Glic button updates both
-  // states and adds exactly one button slot to the toolbar's preferred width.
+  // states and adds one button slot, the split Glic width, and the actor task
+  // icon's kActorNudgeLabelMargin to the toolbar's preferred width.
   actor_control->SetVisible(true);
   glic_control->SetIsSplit(true);
   actor_control->ShowNudgeLabel(u"Needs review");
@@ -269,8 +278,10 @@ IN_PROC_BROWSER_TEST_F(WebUIGlicControlInteractiveTest,
             toolbar_delegate->GetState().glic_actor_task_icon_state->tooltip);
   EXPECT_TRUE(
       toolbar_delegate->GetState().glic_actor_task_icon_state->is_pressed);
-  EXPECT_EQ(base_preferred_width + slot_delta,
+  EXPECT_EQ(base_preferred_width + slot_delta + split_extra_width,
             webui_toolbar->CalculatePreferredSize({}).width());
+  // The WebUI element reports itself as the actor task icon's anchor.
+  ASSERT_TRUE(WaitForTrackedElementVisible(kGlicActorTaskIconElementId));
 
   // Hiding the nudge (`ExecuteHideToolbarNudge` -> `SetIsShowingNudge(false)`)
   // clears the label and restores the default tooltip while keeping the split
@@ -283,6 +294,8 @@ IN_PROC_BROWSER_TEST_F(WebUIGlicControlInteractiveTest,
             toolbar_delegate->GetState().glic_actor_task_icon_state->tooltip);
   EXPECT_TRUE(
       toolbar_delegate->GetState().glic_actor_task_icon_state->should_show);
+  EXPECT_EQ(base_preferred_width + slot_delta + split_extra_width,
+            webui_toolbar->CalculatePreferredSize({}).width());
 
   // Hiding the actor task icon and unsplitting the Glic button restores the
   // base width.
@@ -300,6 +313,7 @@ IN_PROC_BROWSER_TEST_F(WebUIGlicControlInteractiveTest,
       toolbar_delegate->GetState().glic_actor_task_icon_state->is_pressed);
   EXPECT_EQ(base_preferred_width,
             webui_toolbar->CalculatePreferredSize({}).width());
+  ASSERT_TRUE(WaitForTrackedElementHidden(kGlicActorTaskIconElementId));
 
   // Unpin Glic: both buttons are hidden and 0 Glic slots are reserved.
   browser()->GetProfile()->GetPrefs()->SetBoolean(
@@ -310,7 +324,8 @@ IN_PROC_BROWSER_TEST_F(WebUIGlicControlInteractiveTest,
   EXPECT_EQ(base_preferred_width - slot_delta, unpinned_preferred_width);
 
   // Starting a task while unpinned: the split forces the Glic button visible,
-  // so both buttons show and reserve 2 slots.
+  // so both buttons show and reserve 2 slots plus the split Glic and actor
+  // task icon widths.
   actor_control->SetVisible(true);
   glic_control->SetIsSplit(true);
   glic_button.GetControl()->SetVisible(true);
@@ -318,7 +333,7 @@ IN_PROC_BROWSER_TEST_F(WebUIGlicControlInteractiveTest,
   EXPECT_TRUE(toolbar_delegate->GetState().glic_button_state->is_split);
   EXPECT_TRUE(
       toolbar_delegate->GetState().glic_actor_task_icon_state->should_show);
-  EXPECT_EQ(unpinned_preferred_width + 2 * slot_delta,
+  EXPECT_EQ(unpinned_preferred_width + 2 * slot_delta + split_extra_width,
             webui_toolbar->CalculatePreferredSize({}).width());
 
   // If the Glic button is hidden mid-task (e.g. GlicButtonController calls
@@ -379,10 +394,16 @@ IN_PROC_BROWSER_TEST_F(WebUIGlicControlInteractiveTest,
   ASSERT_TRUE(actor_control);
   actor_control->SetVisible(true);
   ASSERT_FALSE(actor_control->GetIsPressed());
+  ASSERT_TRUE(WaitForTrackedElementVisible(kGlicActorTaskIconElementId));
 
   base::UserActionTester user_action_tester;
-  webui_toolbar->OnGlicActorTaskIconClicked();
-  EXPECT_TRUE(fake_delegate.IsActivityListBubbleShowing());
+  ASSERT_TRUE(
+      content::ExecJs(GetWebUIWebContents(),
+                      "document.querySelector('toolbar-app').shadowRoot"
+                      "    .querySelector('#glic-actor-task-icon').shadowRoot"
+                      "    .querySelector('#button').click();"));
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return fake_delegate.IsActivityListBubbleShowing(); }));
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "Actor.Ui.GlobalTaskIndicator.NeedsAttention.Click"));
 

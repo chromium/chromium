@@ -50,6 +50,8 @@
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/glic/glic_actor_task_icon.h"
+#include "chrome/browser/ui/views/glic/glic_button.h"
 #include "chrome/browser/ui/views/global_media_controls/media_toolbar_button.h"
 #include "chrome/browser/ui/views/location_bar/webui_content_setting_image_control.h"
 #include "chrome/browser/ui/views/location_bar/webui_location_bar.h"
@@ -2117,6 +2119,21 @@ gfx::Size WebUIToolbarWebView::ComputeLayout(
   int width = button_count * size;
   if (button_count > 0) {
     width += (button_count - 1) * gap;
+  }
+  if (features::IsWebUIGlicButtonEnabled() && glic_control_.IsVisible()) {
+    // The split Glic half spans Views' collapsed GlicButton width, including
+    // its 2px unpainted kSpaceBetweenButtons padding (toolbar_glic_button.cc),
+    // and the actor task icon follows it with no gap. Kept in sync with
+    // glic_button.css.
+    if (glic_control_.GetIsSplit()) {
+      width += glic::kCollapsedWidth - (size + gap);
+    }
+    // The actor task icon is never narrower than the button height plus the
+    // nudge label margin, matching ToolbarGlicActorTaskIcon::GetMinimumSize().
+    // Kept in sync with glic_actor_task_icon.css.
+    if (glic_actor_task_icon_control_.ShouldShow()) {
+      width += glic::kActorNudgeLabelMargin;
+    }
   }
 
   // TODO(crbug.com/517948314): This isn't sizing the forward button correctly.
