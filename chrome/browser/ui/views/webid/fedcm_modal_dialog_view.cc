@@ -79,12 +79,11 @@ content::WebContents* FedCmModalDialogView::ShowPopupWindow(
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
           url, disposition, ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
-  base::WeakPtr<FedCmModalDialogView> weak_this =
-      weak_ptr_factory_.GetWeakPtr();
-  content::WebContents* popup_window = delegate->OpenURLFromTab(
-      source_window_, params, /*navigation_handle_callback=*/{});
-
-  if (!weak_this) {
+  content::WebContents* popup_window = nullptr;
+  if (!RunAndCheckAlive([&]() {
+        popup_window = delegate->OpenURLFromTab(
+            source_window_, params, /*navigation_handle_callback=*/{});
+      })) {
     return nullptr;
   }
 
@@ -93,15 +92,19 @@ content::WebContents* FedCmModalDialogView::ShowPopupWindow(
     return nullptr;
   }
 
+  // Observe the pop-up before resizing and focusing it, so that
+  // `popup_window_` is cleared if the pop-up is destroyed meanwhile. In that
+  // case, the observer gets `OnPopupWindowDestroyed()`, which may delete `this`
+  // and, if closing the pop-up cancels the flow, dismisses the flow.
+  Observe(popup_window_);
+
   // When `is_fullscreen` is true, the content will be automatically activated
   // because we requested a `NEW_FOREGROUND_TAB` disposition.
   if (!is_fullscreen) {
-    ResizeAndFocusPopupWindow();
-    if (!weak_this) {
+    if (!RunAndCheckAlive([&]() { ResizeAndFocusPopupWindow(); })) {
       return nullptr;
     }
   }
-  Observe(popup_window_);
 
   return popup_window_;
 }
@@ -146,8 +149,16 @@ void FedCmModalDialogView::ResizeAndFocusPopupWindow() {
   if (custom_y_position_) {
     popup_window_bounds.set_y(*custom_y_position_);
   }
-  popup_window_->GetDelegate()->SetContentsBounds(popup_window_,
-                                                  popup_window_bounds);
+  if (!RunAndCheckAlive([&]() {
+        popup_window_->GetDelegate()->SetContentsBounds(popup_window_,
+                                                        popup_window_bounds);
+      })) {
+    return;
+  }
+  // Resizing may have closed the pop-up.
+  if (!popup_window_) {
+    return;
+  }
   popup_window_->GetDelegate()->ActivateContents(popup_window_);
 }
 
@@ -205,6 +216,14 @@ void FedCmModalDialogView::ResetObserver() {
 
 FedCmModalDialogView::Observer* FedCmModalDialogView::GetObserverForTesting() {
   return observer_;
+}
+
+bool FedCmModalDialogView::RunAndCheckAlive(
+    base::FunctionRef<void()> callback) {
+  base::WeakPtr<FedCmModalDialogView> weak_this =
+      weak_ptr_factory_.GetWeakPtr();
+  callback();
+  return weak_this != nullptr;
 }
 
 }  // namespace webid

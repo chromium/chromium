@@ -2594,6 +2594,35 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   EXPECT_FALSE(controller);
 }
 
+// Tests that showing a pop-up window while one is open returns early if
+// resizing and focusing the open pop-up window closes it without closing the
+// view, e.g. for the "use other account" pop-up. This is defensive: resizing
+// and focusing are not known to close the pop-up today.
+TEST_F(FedCmAccountSelectionViewDesktopTest,
+       ResizeAndFocusPopupWindowClosesPopupWindow) {
+  for (blink::mojom::RpMode rp_mode :
+       {blink::mojom::RpMode::kActive, blink::mojom::RpMode::kPassive}) {
+    SCOPED_TRACE(rp_mode == blink::mojom::RpMode::kActive ? "Active"
+                                                          : "Passive");
+    std::unique_ptr<TestFedCmAccountSelectionView> controller =
+        CreateAndShow(accounts_);
+    CreateAndShowPopupWindow(*controller);
+    ASSERT_FALSE(controller->GetPopupWindow()->UserCloseCancelsFlow());
+    EXPECT_CALL(*controller->GetPopupWindow(), ResizeAndFocusPopupWindow)
+        .WillOnce([&controller]() {
+          // Emulate the pop-up window being closed, which notifies the
+          // observer.
+          controller->OnPopupWindowDestroyed();
+        });
+
+    // This should not crash.
+    EXPECT_FALSE(controller->ShowModalDialog(GURL(u"https://example.com"),
+                                             rp_mode, base::DoNothing()));
+    ASSERT_TRUE(controller);
+    EXPECT_FALSE(controller->GetPopupWindowForTesting());
+  }
+}
+
 // Tests that `Show()` does not use the view, and does not report the dialog as
 // shown, if notifying the delegate that the accounts were displayed destroys
 // the view.

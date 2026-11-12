@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webid/identity_dialog_controller.h"
@@ -90,6 +91,11 @@ class FedCmModalDialogView : public content::WebContentsObserver {
   Observer* GetObserverForTesting();
 
  private:
+  // Runs `callback` while guarding against `this` being deleted, e.g. by
+  // opening, resizing or focusing the pop-up window. Returns false if `this`
+  // got deleted. In that case, the caller must return early.
+  [[nodiscard]] bool RunAndCheckAlive(base::FunctionRef<void()> callback);
+
   raw_ptr<content::WebContents> source_window_{nullptr};
   raw_ptr<content::WebContents> popup_window_{nullptr};
   raw_ptr<Observer> observer_{nullptr};

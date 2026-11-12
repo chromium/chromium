@@ -1065,6 +1065,11 @@ content::WebContents* FedCmAccountSelectionView::ShowModalDialog(
             [&]() { popup_window_->ResizeAndFocusPopupWindow(); })) {
       return nullptr;
     }
+    // `ResizeAndFocusPopupWindow()` is not known to close the pop-up, but as a
+    // preventative measure, check for null/UAF.
+    if (!popup_window_) {
+      return nullptr;
+    }
   } else {
     popup_window_ = CreatePopupWindow();
   }
