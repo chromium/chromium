@@ -2906,7 +2906,9 @@ public class LocationBarMediator
     private void onWindowFocusChanged(boolean windowHasFocus) {
         updateShowFocusRing();
         updateActivationChip();
-        if (windowHasFocus) maybeShowOrClearCursorInLocationBar();
+        // Regaining window focus (e.g. after a popup closes) is not a new input request. Only
+        // place the cursor when the location bar is not already attached to a session.
+        if (windowHasFocus && mCurrentInput == null) maybeShowOrClearCursorInLocationBar();
     }
 
     private void onLocationBarSelectionChanged() {

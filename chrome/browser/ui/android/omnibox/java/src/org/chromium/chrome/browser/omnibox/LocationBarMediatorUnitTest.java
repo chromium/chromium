@@ -5312,6 +5312,24 @@ public class LocationBarMediatorUnitTest {
     }
 
     @Test
+    @Config(qualifiers = "sw600dp")
+    public void testOnWindowFocusChanged_attachedSession_doesNotBeginInputAgain() {
+        DeviceInput.setSupportsAlphabeticKeyboardForTesting(true);
+        doReturn(GURL.emptyGURL()).when(mLocationBarDataProvider).getCurrentGurl();
+
+        // Gaining window focus without a session places the cursor and starts a session.
+        mWindowHasFocusSupplier.set(false);
+        mWindowHasFocusSupplier.set(true);
+        assertTrue(mSessionState.isSessionActive());
+        clearInvocations(mFuseboxCoordinator);
+
+        // Regaining window focus (e.g. after a popup closes) must not begin input again.
+        mWindowHasFocusSupplier.set(false);
+        mWindowHasFocusSupplier.set(true);
+        verify(mFuseboxCoordinator, never()).beginInput(any());
+    }
+
+    @Test
     public void testBeginInput_ReentrancyGuard() {
         mMediator.onFinishNativeInitialization();
         mProfileSupplier.set(mProfile);
