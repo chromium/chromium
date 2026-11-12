@@ -316,11 +316,6 @@ Node* ContextMenuController::GetContextMenuNodeWithImageContents() {
     }
   }
 
-  // Only log if we found an image node within the hit test.
-  if (found_image_node != nullptr) {
-    base::UmaHistogramCounts1000("Blink.ContextMenu.ImageSelection.Depth",
-                                 hit_test_depth);
-  }
   // If there is anything preventing this image selection, return nullptr.
   uint32_t blocking_image_selection_mask =
       ~(EnumToBitmask(ImageSelectionOutcome::kImageFoundStandard) |
@@ -723,8 +718,6 @@ bool ContextMenuController::ShowContextMenu(
     // does not override a topmost media element.
     // TODO(benwgold): Consider extending penetration to all media types.
     Node* potential_image_node = result.InnerNodeOrImageMapImage();
-    SCOPED_BLINK_UMA_HISTOGRAM_TIMER(
-        "Blink.ContextMenu.ImageSelection.ElapsedTime");
     potential_image_node = GetContextMenuNodeWithImageContents();
 
     if (potential_image_node != nullptr &&

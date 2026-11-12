@@ -1041,35 +1041,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.ContextMenu.ImageSelection.Depth" units="count"
-    expires_after="2023-08-31">
-  <owner>flackr@chromium.org</owner>
-  <owner>blink-interactions-team@google.com</owner>
-  <summary>
-    The depth of the discovered image node in the hit test list when performing
-    a penetrating image selection search.
-
-    Only recorded when a user long presses or right clicks a document (and an
-    image is found).
-  </summary>
-</histogram>
-
-<histogram name="Blink.ContextMenu.ImageSelection.ElapsedTime"
-    units="microseconds" expires_after="2023-08-31">
-  <owner>flackr@chromium.org</owner>
-  <owner>blink-interactions-team@google.com</owner>
-  <summary>
-    The amount of time it took to iterate through the dom looking for an image
-    node.
-
-    Only recorded when a user long presses or right clicks a document.
-
-    Note: This metric drops reports on clients with low-resolution clocks, which
-    means these reports will be biased against a portion of the population on
-    Windows. See Windows.HasHighResolutionTimeTicks for the affected sample.
-  </summary>
-</histogram>
-
 <histogram name="Blink.ContextMenu.ImageSelection.RetrievalOutcome"
     enum="ImageSelectionRetrievalOutcome" expires_after="2023-08-31">
   <owner>flackr@chromium.org</owner>
