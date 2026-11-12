@@ -1864,16 +1864,18 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonPinningV2InteractiveTest,
                               ax::mojom::CheckedState::kFalse));
 }
 
+// This tests the following CUJ:
+//  (1) User signs in to an eligible account with a tab associated with a task.
+//  (2) User opens the Contextual Tasks side panel.
+//  (3) Ephemeral toolbar button appears highlighted with the close tooltip and
+//      records ActivePanelOpen metrics.
+//  (4) User closes the Contextual Tasks side panel.
+//  (5) Ephemeral toolbar button remains visible unhighlighted with the reopen
+//      tooltip and records ActivePanelCollapsed metrics.
+//  (6) User clicks the ephemeral toolbar button to reopen and then close the
+//      side panel, updating highlight state, tooltips, and user action metrics.
 IN_PROC_BROWSER_TEST_P(ContextualTasksPinningV2ParamInteractiveTest,
                        ButtonShowsAndHighlightsWhileSidePanelIsOpen) {
-#if BUILDFLAG(IS_WIN)
-  if (IsRefactorEnabled()) {
-    // TODO(crbug.com/576477029): On 1024x768 Windows bots, clamping the
-    // 1280x800 window overflows `PinnedToolbarActionsContainer` when the side
-    // panel and sign-in avatar pill are both open, hiding the button mid-step.
-    GTEST_SKIP();
-  }
-#endif
   base::UserActionTester user_action_tester;
   base::HistogramTester histogram_tester;
   const std::u16string expected_open_tooltip = l10n_util::GetStringUTF16(
